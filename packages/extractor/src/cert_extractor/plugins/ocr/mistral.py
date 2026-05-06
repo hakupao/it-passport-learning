@@ -66,7 +66,8 @@ class MistralOCREngine(OCREngine):
                 f"to use the Mistral OCR plugin (per D-070)"
             )
         try:
-            from mistralai import Mistral  # type: ignore[import-not-found]
+            # mistralai v2.x exposes Mistral under mistralai.client (namespace pkg).
+            from mistralai.client import Mistral  # type: ignore[import-not-found]
         except ImportError as exc:
             raise RuntimeError(
                 "mistralai package is not installed; run `uv sync --all-packages`"
