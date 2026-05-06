@@ -23,7 +23,9 @@ def main(ctx: click.Context) -> None:
     """cert-extractor — pluggable OCR + LLM-driven extractor for cert exam content."""
     if ctx.invoked_subcommand is None:
         click.echo(f"cert-extractor {__version__} (schema {SCHEMA_VERSION})")
-        click.echo("Subcommands: dry-run | classify-pages | hard-reocr [--help]")
+        click.echo(
+            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure [--help]"
+        )
 
 
 @main.command("dry-run")
@@ -371,6 +373,107 @@ def hard_reocr(
     click.echo(f"[hard-reocr]        verdict   = {result.halted_verdict}")
     click.echo(f"[hard-reocr]        cleaned/  = {result.output_dir}")
     click.echo(f"[hard-reocr]        cost.json = {result.cost_path}")
+
+
+@main.command("extract-structure")
+@click.option(
+    "--ocr-dir",
+    "ocr_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "--classified-dir",
+    "classified_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "--cleaned-dir",
+    "cleaned_dir",
+    default=None,
+    type=click.Path(file_okay=False, path_type=Path),
+    help="Optional Stage 3 cleaned/ output; pages here override ocr/.",
+)
+@click.option("--cert-id", default="itpassport_r6", show_default=True)
+@click.option("--page-limit", default=None, type=int)
+@click.option("--run-id", default=None, help="Defaults to parent dir name of --ocr-dir.")
+@click.option(
+    "--tier",
+    type=click.Choice(["haiku", "sonnet", "opus"]),
+    default="sonnet",
+    show_default=True,
+)
+@click.option(
+    "--confirm",
+    is_flag=True,
+    default=False,
+    help=(
+        "REQUIRED to actually invoke Claude (consumes max-plan quota or "
+        "ANTHROPIC_API_KEY budget). Without --confirm, prints plan and exits."
+    ),
+)
+def extract_structure(
+    ocr_dir: Path,
+    classified_dir: Path,
+    cleaned_dir: Path | None,
+    cert_id: str,
+    page_limit: int | None,
+    run_id: str | None,
+    tier: str,
+    confirm: bool,
+) -> None:
+    """Stage 4 structure extraction (per D-008 stage 4 + D-056 + D-069)."""
+    inferred_run_id = run_id or ocr_dir.parent.name
+    run_dir = ocr_dir.parent
+
+    page_files = sorted(ocr_dir.glob("page_*.md"))
+    if page_limit is not None:
+        page_files = page_files[:page_limit]
+
+    click.echo(f"[extract-structure] cert_id        = {cert_id}")
+    click.echo(f"[extract-structure] ocr_dir        = {ocr_dir}")
+    click.echo(f"[extract-structure] classified_dir = {classified_dir}")
+    click.echo(f"[extract-structure] cleaned_dir    = {cleaned_dir or run_dir / 'cleaned'}")
+    click.echo(f"[extract-structure] run_id         = {inferred_run_id}")
+    click.echo(f"[extract-structure] tier           = {tier}")
+    click.echo(f"[extract-structure] pages on disk  = {len(page_files)}")
+
+    if not confirm:
+        click.echo("")
+        click.echo(
+            "[extract-structure] --confirm NOT passed; aborting before any Claude call."
+        )
+        sys.exit(0)
+
+    from cert_extractor.pipeline.stage4_structure import (
+        Stage4Structure,
+        make_extractor_factory,
+    )
+
+    extractor = make_extractor_factory(cert_id=cert_id, tier=tier)()
+    runner = Stage4Structure(extractor=extractor)
+
+    click.echo("[extract-structure] starting…")
+    result = runner.run(
+        ocr_dir=ocr_dir,
+        classified_dir=classified_dir,
+        run_dir=run_dir,
+        cert_id=cert_id,
+        run_id=inferred_run_id,
+        cleaned_dir=cleaned_dir,
+        page_limit=page_limit,
+    )
+
+    click.echo("")
+    click.echo(f"[extract-structure] DONE   pages_processed = {result.pages_processed}")
+    click.echo(f"[extract-structure]        pages_skipped   = {result.pages_skipped}")
+    click.echo(f"[extract-structure]        entities        = {result.entities_extracted}")
+    click.echo(f"[extract-structure]        by_type         = {result.by_type}")
+    click.echo(f"[extract-structure]        fail_count      = {result.fail_count}")
+    click.echo(f"[extract-structure]        verdict_halted  = {result.halted_verdict}")
+    click.echo(f"[extract-structure]        cost.json       = {result.cost_path}")
+    click.echo(f"[extract-structure]        output_dir      = {result.output_dir}")
 
 
 if __name__ == "__main__":
