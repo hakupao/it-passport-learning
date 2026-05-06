@@ -99,13 +99,16 @@ class ClaudeClient:
         self,
         system: str,
         model: str,
+        allowed_tools: list[str] | None = None,
+        permission_mode: str = "default",
+        max_turns: int = 1,
     ) -> ClaudeAgentOptions:
         kwargs: dict = {
             "system_prompt": system,
             "model": model,
-            "max_turns": 1,
-            "allowed_tools": [],
-            "permission_mode": "default",
+            "max_turns": max_turns,
+            "allowed_tools": list(allowed_tools or []),
+            "permission_mode": permission_mode,
         }
         if self.max_budget_usd is not None:
             kwargs["max_budget_usd"] = self.max_budget_usd
@@ -116,14 +119,29 @@ class ClaudeClient:
         system: str,
         user: str,
         tier: ModelTier | str | None = None,
+        allowed_tools: list[str] | None = None,
+        permission_mode: str = "default",
+        max_turns: int = 1,
     ) -> ClaudeResponse:
         """Run a one-shot Claude query and return text + cost.
 
         ``tier`` accepts the short tier name from D-061 (``"haiku" / "sonnet"
         / "opus"``) or a fully-qualified model id (``"claude-sonnet-4-6"``).
+
+        ``allowed_tools`` + ``permission_mode`` enable tool-mediated workflows
+        (per D-069 §2.1 — claude-agent-sdk is the only access path; Vision
+        ingestion goes via the Read tool rather than image content blocks,
+        which the SDK's user message API does not surface). For batch use,
+        pass ``permission_mode="acceptEdits"`` to skip interactive prompts.
         """
         model = _resolve_model(tier or self.default_tier)
-        options = self._build_options(system=system, model=model)
+        options = self._build_options(
+            system=system,
+            model=model,
+            allowed_tools=allowed_tools,
+            permission_mode=permission_mode,
+            max_turns=max_turns,
+        )
         return asyncio.run(_run_query(prompt=user, options=options))
 
 

@@ -23,7 +23,7 @@ def main(ctx: click.Context) -> None:
     """cert-extractor — pluggable OCR + LLM-driven extractor for cert exam content."""
     if ctx.invoked_subcommand is None:
         click.echo(f"cert-extractor {__version__} (schema {SCHEMA_VERSION})")
-        click.echo("Subcommands: dry-run | classify-pages [--help]")
+        click.echo("Subcommands: dry-run | classify-pages | hard-reocr [--help]")
 
 
 @main.command("dry-run")
@@ -239,6 +239,138 @@ def classify_pages(
     click.echo(f"[classify-pages]        by_label         = {result.by_label}")
     click.echo(f"[classify-pages]        cost.json        = {result.cost_path}")
     click.echo(f"[classify-pages]        output_dir       = {result.output_dir}")
+
+
+@main.command("hard-reocr")
+@click.option(
+    "--ocr-dir",
+    "ocr_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Directory of stage-1 OCR markdown.",
+)
+@click.option(
+    "--raw-dir",
+    "raw_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Directory of raw page images (page_NNN.jpg).",
+)
+@click.option("--cert-id", default="itpassport_r6", show_default=True)
+@click.option(
+    "--page-limit",
+    default=None,
+    type=int,
+)
+@click.option(
+    "--force-pages",
+    default="",
+    help="Comma-separated page numbers to re-OCR regardless of heuristic (e.g. '2,16').",
+)
+@click.option(
+    "--run-id",
+    default=None,
+    help="Reuse run_id; defaults to the parent dir of --ocr-dir.",
+)
+@click.option(
+    "--tier",
+    type=click.Choice(["haiku", "sonnet", "opus"]),
+    default="sonnet",
+    show_default=True,
+)
+@click.option(
+    "--dry",
+    is_flag=True,
+    default=False,
+    help="Run heuristic only — print which pages WOULD be re-OCR'd, then exit. No --confirm needed.",
+)
+@click.option(
+    "--confirm",
+    is_flag=True,
+    default=False,
+    help="REQUIRED to actually invoke Claude Vision (consumes quota / budget).",
+)
+def hard_reocr(
+    ocr_dir: Path,
+    raw_dir: Path,
+    cert_id: str,
+    page_limit: int | None,
+    force_pages: str,
+    run_id: str | None,
+    tier: str,
+    dry: bool,
+    confirm: bool,
+) -> None:
+    """Stage 3 hard re-OCR (per D-008 stage 3 + D-007 + D-069)."""
+    from cert_extractor.pipeline.quality import assess
+
+    inferred_run_id = run_id or ocr_dir.parent.name
+    run_dir = ocr_dir.parent
+
+    forced: list[int] = []
+    if force_pages.strip():
+        forced = [int(x.strip()) for x in force_pages.split(",") if x.strip()]
+
+    page_files = sorted(ocr_dir.glob("page_*.md"))
+    if page_limit is not None:
+        page_files = page_files[:page_limit]
+
+    flagged: list[tuple[int, str]] = []
+    for path in page_files:
+        page_number = int(path.stem.split("_")[1])
+        text = path.read_text(encoding="utf-8")
+        qv = assess(text)
+        if qv.degenerate or page_number in forced:
+            tag = "FORCED" if page_number in forced and not qv.degenerate else qv.reason
+            flagged.append((page_number, tag))
+
+    click.echo(f"[hard-reocr] cert_id    = {cert_id}")
+    click.echo(f"[hard-reocr] ocr_dir    = {ocr_dir}")
+    click.echo(f"[hard-reocr] raw_dir    = {raw_dir}")
+    click.echo(f"[hard-reocr] run_id     = {inferred_run_id}")
+    click.echo(f"[hard-reocr] tier       = {tier}")
+    click.echo(f"[hard-reocr] inspected  = {len(page_files)} pages")
+    click.echo(f"[hard-reocr] flagged    = {len(flagged)} pages")
+    for page_number, reason in flagged:
+        click.echo(f"[hard-reocr]   page_{page_number:03d}  {reason}")
+
+    if dry or not confirm:
+        click.echo("")
+        if dry:
+            click.echo("[hard-reocr] --dry passed; heuristic-only run complete. Exiting.")
+        else:
+            click.echo(
+                "[hard-reocr] --confirm NOT passed; aborting before any Claude Vision call."
+            )
+        sys.exit(0)
+
+    from cert_extractor.pipeline.stage3_reocr import (
+        Stage3HardReocr,
+        make_engine_factory,
+    )
+
+    engine = make_engine_factory(tier=tier)()
+    runner = Stage3HardReocr(engine=engine)
+
+    click.echo("[hard-reocr] starting Vision re-OCR…")
+    result = runner.run(
+        ocr_dir=ocr_dir,
+        raw_dir=raw_dir,
+        run_dir=run_dir,
+        cert_id=cert_id,
+        run_id=inferred_run_id,
+        page_limit=page_limit,
+        force_pages=forced or None,
+    )
+
+    click.echo("")
+    click.echo(f"[hard-reocr] DONE   inspected = {result.pages_inspected}")
+    click.echo(f"[hard-reocr]        flagged   = {result.pages_flagged}  {result.flagged_pages}")
+    click.echo(f"[hard-reocr]        re-OCR'd  = {result.pages_reocrd}")
+    click.echo(f"[hard-reocr]        fail_count= {result.fail_count}")
+    click.echo(f"[hard-reocr]        verdict   = {result.halted_verdict}")
+    click.echo(f"[hard-reocr]        cleaned/  = {result.output_dir}")
+    click.echo(f"[hard-reocr]        cost.json = {result.cost_path}")
 
 
 if __name__ == "__main__":
