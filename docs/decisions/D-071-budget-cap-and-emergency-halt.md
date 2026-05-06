@@ -95,7 +95,9 @@ budget:
       fail_count: 30
 ```
 
-User 可任意调，但**硬 cap 不可超过软 cap × 5**（防 user 误关导致失控）。
+User 可任意调，但**硬 cap 不可超过软 cap × 10**（防 user 误关导致失控）。
+
+> **Revision note (v1.0 → v1.1, 2026-05-06)**: 原约定为 ×5，但发现默认 `anthropic_usd: soft=$5 / hard=$30` 比例为 6 (`$30 hard` 是为 D-069 max plan → API key 升级路径预留的合理余量)。Phase 1 实施期 (Step 4) pytest 验证时与默认值冲突触发 ValueError。修订为 ×10 既保留 anti-mistake 兜底（user 调到 soft × 11 仍被拦），又让默认值通过。其余三维度 (wall-time/mistral/fail) 默认比例分别 4/4/3，原本就在 ×10 内。
 
 ---
 
@@ -235,6 +237,7 @@ class BudgetMonitor:
 | 日期 | 版本 | 变更 |
 |---|---|---|
 | 2026-05-06 | 1.0 | Initial — Session 06 §4.3 锁定 |
+| 2026-05-06 | 1.1 | Phase 1 Step 4 实施期 calibration: anti-mistake clamp ×5 → ×10（解决与默认 anthropic 6x 的内部不一致；详见 §2.4 revision note）|
 
 ---
 
