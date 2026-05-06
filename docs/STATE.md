@@ -6,12 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-06 (Session 02 — **Topic #3 全闭合 ✅**，准备关 session + 执行 GH push) |
-| 当前阶段 | 设计阶段（**未**进入实施；GH push 待执行 per D-047） |
-| Phase 1 状态 | Topic #1 ✅ + Topic #2 ✅ + **Topic #3 ✅ 已闭合**（Q10-Q16 全锁）|
+| 最后更新 | 2026-05-06 (Session 02 ✅ **Closed** — Topic #3 全闭合 + GH push 已执行) |
+| 当前阶段 | 设计阶段（**未**进入实施；GitHub repo 已建并 push 首 commit `d50432e`） |
+| Phase 1 状态 | Topic #1 ✅ + Topic #2 ✅ + **Topic #3 ✅** 已闭合（Q10-Q16 全锁）|
 | 已锁定决定数 | **53** (D-001 ~ D-053) |
 | 未决问题数 | **6** open（详见 §4），18 closed |
-| 当前会话 | **Session 02** ([2026-05-06-session-02.md](discussion/2026-05-06-session-02.md))，**关 session 前剩余**: 资料自检 → 关 session §8 → git init + 首 commit + GH push (D-047) |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, noreply email) |
+| 下一会话 | **Session 03** — 进入 **Topic #4 (schema 深化)**；按慢节奏 (3a) 起手 |
 
 ---
 
