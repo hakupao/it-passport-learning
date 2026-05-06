@@ -23,7 +23,7 @@ def main(ctx: click.Context) -> None:
     """cert-extractor — pluggable OCR + LLM-driven extractor for cert exam content."""
     if ctx.invoked_subcommand is None:
         click.echo(f"cert-extractor {__version__} (schema {SCHEMA_VERSION})")
-        click.echo("Subcommands: dry-run [--help]")
+        click.echo("Subcommands: dry-run | classify-pages [--help]")
 
 
 @main.command("dry-run")
@@ -132,6 +132,113 @@ def dry_run(
     click.echo(f"[dry-run]        verdict_halted = {result.halted_verdict}")
     click.echo(f"[dry-run]        cost.json      = {result.cost_path}")
     click.echo(f"[dry-run]        output_dir     = {result.output_dir}")
+
+
+@main.command("classify-pages")
+@click.option(
+    "--ocr-dir",
+    "ocr_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Directory of stage-1 OCR markdown (e.g. data/<cert>/runs/<run_id>/ocr).",
+)
+@click.option(
+    "--cert-id",
+    default="itpassport_r6",
+    show_default=True,
+)
+@click.option(
+    "--page-limit",
+    default=None,
+    type=int,
+    help="Optional cap on pages to classify (for re-runs / partial sweeps).",
+)
+@click.option(
+    "--data-dir",
+    default="data",
+    show_default=True,
+    type=click.Path(file_okay=False, path_type=Path),
+)
+@click.option(
+    "--run-id",
+    default=None,
+    help=(
+        "Reuse an existing run_id (writes classified/ into the same run dir). "
+        "Defaults to inferring from --ocr-dir's parent."
+    ),
+)
+@click.option(
+    "--tier",
+    type=click.Choice(["haiku", "sonnet", "opus"]),
+    default="sonnet",
+    show_default=True,
+    help="Claude model tier (per D-061).",
+)
+@click.option(
+    "--confirm",
+    is_flag=True,
+    default=False,
+    help=(
+        "REQUIRED to actually invoke Claude (consumes max-plan quota or "
+        "ANTHROPIC_API_KEY budget). Without --confirm, prints plan and exits."
+    ),
+)
+def classify_pages(
+    ocr_dir: Path,
+    cert_id: str,
+    page_limit: int | None,
+    data_dir: Path,
+    run_id: str | None,
+    tier: str,
+    confirm: bool,
+) -> None:
+    """Stage 2 page classify (per D-008 stage 2 + D-069 LLM access)."""
+    inferred_run_id = run_id or ocr_dir.parent.name
+    run_dir = ocr_dir.parent
+
+    file_count = sum(1 for _ in ocr_dir.glob("page_*.md"))
+    target_count = min(file_count, page_limit) if page_limit else file_count
+
+    click.echo(f"[classify-pages] cert_id    = {cert_id}")
+    click.echo(f"[classify-pages] ocr_dir    = {ocr_dir}")
+    click.echo(f"[classify-pages] run_dir    = {run_dir}")
+    click.echo(f"[classify-pages] run_id     = {inferred_run_id}")
+    click.echo(f"[classify-pages] tier       = {tier}")
+    click.echo(f"[classify-pages] pages      = {target_count} (of {file_count} on disk)")
+
+    if not confirm:
+        click.echo("")
+        click.echo(
+            "[classify-pages] --confirm NOT passed; aborting before any Claude call. "
+            "Re-run with --confirm to actually execute (consumes quota / budget)."
+        )
+        sys.exit(0)
+
+    # Late import — avoids loading claude-agent-sdk during plain --help.
+    from cert_extractor.pipeline.stage2_classify import (
+        Stage2PageClassifier,
+        make_classifier_factory,
+    )
+
+    classifier = make_classifier_factory(tier=tier)()
+    runner = Stage2PageClassifier(classifier=classifier)
+
+    click.echo("[classify-pages] starting…")
+    result = runner.run(
+        ocr_dir=ocr_dir,
+        run_dir=run_dir,
+        cert_id=cert_id,
+        run_id=inferred_run_id,
+        page_limit=page_limit,
+    )
+
+    click.echo("")
+    click.echo(f"[classify-pages] DONE   pages_classified = {result.pages_classified}")
+    click.echo(f"[classify-pages]        fail_count       = {result.fail_count}")
+    click.echo(f"[classify-pages]        verdict_halted   = {result.halted_verdict}")
+    click.echo(f"[classify-pages]        by_label         = {result.by_label}")
+    click.echo(f"[classify-pages]        cost.json        = {result.cost_path}")
+    click.echo(f"[classify-pages]        output_dir       = {result.output_dir}")
 
 
 if __name__ == "__main__":
