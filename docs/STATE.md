@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-06 (Session 02 ✅ **Closed** — Topic #3 全闭合 + GH push 已执行) |
-| 当前阶段 | 设计阶段（**未**进入实施；GitHub repo 已建并 push 首 commit `d50432e`） |
-| Phase 1 状态 | Topic #1 ✅ + Topic #2 ✅ + **Topic #3 ✅** 已闭合（Q10-Q16 全锁）|
-| 已锁定决定数 | **53** (D-001 ~ D-053) |
-| 未决问题数 | **6** open（详见 §4），18 closed |
+| 最后更新 | 2026-05-06 (Session 06 ✅ **Closed** — Topic #7 全闭合 ★ Phase 1 设计阶段彻底收尾，5 D + 3 独立 ADR) |
+| 当前阶段 | 设计阶段（**Phase 1 实施 gate ✅ 已解锁**；等 user 显式 "开始实施" 切阶段；GitHub repo `d50432e`） |
+| Phase 1 状态 | **Topic #1~#7 ✅ 全闭合** ★（D-001~D-073 / 7 独立 ADR）|
+| 已锁定决定数 | **73** (D-001 ~ D-073) |
+| 未决问题数 | **3** open（详见 §4），40 closed |
 | GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, noreply email) |
-| 下一会话 | **Session 03** — 进入 **Topic #4 (schema 深化)**；按慢节奏 (3a) 起手 |
+| 下一会话 | **Session 07** — user 选择题: (1) **进入 Phase 1 实施** / (2) 保留设计阶段开 Topic #8/9 |
 
 ---
 
@@ -143,21 +143,25 @@ GUI **不在 v1**，Phase 3 再考虑。
 | OQ | 问题 | 归 Topic |
 |---|---|---|
 | OQ-01 | Phase 1 实际要支持的源类型优先级（v1 后） | Topic #1 收尾后开放 |
-| OQ-02 | OCR 引擎抽象的更细颗粒度（部分覆盖） | Topic #4 |
-| OQ-04 | 抽检样本量 N 怎么定 | Topic #5 |
+| OQ-02 | OCR 引擎抽象的更细颗粒度（部分覆盖） | Topic #1 后续 |
 | OQ-05 | A/B/C 三个 Phase 的具体形态 + 启动顺序 | Topic #8 |
-| OQ-06 | Anthropic API key 就绪状态 | Topic #7 |
-| OQ-07 | Mistral Scale plan 升级状态 | Topic #7 |
 
-（已闭合的 OQ-08~OQ-20 详见 session 日志 §4）
+（已闭合的 OQ-04/06/07/08~39 详见 session-01~06 日志 §3-4）
+
+> **里程碑**:
+> - **Phase 1 设计阶段彻底收尾**: Topic #1~#7 ✅ 全闭合（D-001~D-073, 7 独立 ADR）
+> - **Phase 1 实施 gate ✅ 解锁**: 等 user 显式 "开始实施" 切阶段
+> - 剩余 3 OQ 全在 Phase 1 范围外（Topic #1 后续 / Topic #8 Phase 2-4）
 
 ---
 
-## 5. 下一步 / Resume Instructions (current = mid-Session 02)
+## 5. 下一步 / Resume Instructions (current = between Session 06 closed & Session 07 not started)
 
-**Session 01 已闭合**。**Session 02 — Topic #3 全闭合 ✅**: Q10-Q16 全锁；剩余 = 关 session 自检 + GH push。
+**Session 01-06 全已闭合**。**Topic #7 (LLM 接入 + 成本预算 + 启动策略 / Phase 1 实施 gate) ✅** 5 D 锁定 (D-069~D-073) + D-069 / D-071 / D-073 三份独立 ADR 已写。**Phase 1 设计阶段彻底收尾**。
 
-### 已锁的仓库形态（D-034 ~ D-053）
+**Phase 1 实施 gate ✅ 已解锁** — Session 07 起手 user 选择: (1) 进入 Phase 1 实施 / (2) 保留设计阶段开 Topic #8/9。
+
+### 已锁的仓库形态（D-034 ~ D-053，Topic #3 产物）
 
 ```
 . (mono-repo, 单 git repo, 所有 Phase 1-5)
@@ -203,28 +207,30 @@ GUI **不在 v1**，Phase 3 再考虑。
 
 > Canonical pyproject.toml + tests + .gitignore + data 范例见 [`docs/discussion/2026-05-06-session-02.md`](discussion/2026-05-06-session-02.md) §4.1 + §4.2 + §4.3 + §4.5。
 
-### Session 02 进度
+### Session 06 ✅ Closed — Topic #7 全闭合 ★ Phase 1 实施 gate 解锁
 
-| Q | OQ | 状态 |
-|---|---|---|
-| Q10 | (D-034) | ✅ Session 01 |
-| Q11 | (D-035) | ✅ Session 01 |
-| Q12 | OQ-16 | ✅ Session 02 (D-036~D-039) |
-| Q13 | OQ-17 | ✅ Session 02 (D-040~D-043) |
-| Q14 | OQ-18 | ✅ Session 02 (D-044~D-046) |
-| Q15 | OQ-19 | ✅ Session 02 (D-048~D-049 + 3 文件落盘) |
-| Q16 | OQ-20 | ✅ **本场刚闭合** (D-050~D-053) — **Topic #3 完成** |
+| Q | OQ | D 锁定 | 一行 spec |
+|---|---|---|---|
+| — | OQ-06 | (status) | ✅ user 答 max 20 plan ok |
+| — | OQ-07 | (status) | ✅ user 答 Scale plan 升级了 |
+| Q32 | OQ-35 | **D-069** | Claude Agent SDK + max plan via OAuth；零额外费用起步；**独立 ADR**: `docs/decisions/D-069-anthropic-via-agent-sdk.md` |
+| Q33 | OQ-36 | **D-070** | Mistral Python SDK + 50 pages dry-run + user 审核 → 全本 |
+| Q34 | OQ-37 | **D-071** | 软硬 cap 三档（wall-time/cost/fail count）+ WARN 等人决 + 重跑上限；**独立 ADR**: `docs/decisions/D-071-budget-cap-and-emergency-halt.md` |
+| Q35 | OQ-38 | **D-072** | per-stage cost 进 evidence + run summary 写 cost.json |
+| Q36 | OQ-39 | **D-073** | 单 chapter dry-run → user retro → 全本；与规则 C retro 对接；**独立 ADR**: `docs/decisions/D-073-phase1-launch-strategy.md` |
 
-### 接续动作（如果新 Claude 中途接手 Session 02）
+> 历史: Session 01-06 全闭合。Topic #1~#7 全 ✅。**Phase 1 设计阶段彻底收尾**。
 
-1. 读本文件 (`docs/STATE.md`) — 30 秒概览
-2. 读 `docs/discussion/2026-05-06-session-02.md` §2 + §4.1~§4.5 — 看 D-036~D-053 已锁内容
-3. 读 `docs/discussion/2026-05-06-session-01.md` §3 + §4 — 复习 D-001~D-035 + 全部 OQ
-4. **当前位置**: Topic #3 全闭合。剩余动作（关 session 流程）:
-   - 资料完整性自检（per D-027 第 5 条）
-   - 写 session-02 §8 关 session 总结
-   - 执行 GH push（per D-047）: git init → 写 .gitignore → 首 commit → `gh repo create --public` → push
-5. 下一 Session 03 将进入 **Topic #4 (schema 深化)**
+### 接续动作（Session 07 起手 / 新 Claude 接手）
+
+1. 读本文件 (`docs/STATE.md`) — 30 秒概览（注意 **Phase 1 实施 gate ✅ 解锁**）
+2. 读 `docs/discussion/2026-05-06-session-06.md` §2 + §6（5 D + 关 session 总结 + §6.6 就绪状态总览）
+3. 必要时读 7 份 ADR (`D-058` schema / `D-061` reviewer / `D-063` audit failure / `D-065` plugin loading / `D-069` Anthropic SDK / `D-071` budget cap / `D-073` Phase 1 启动)
+4. 必要时回看 session-01~05 §2 + §6 复习 D-001~D-068
+5. **当前位置**: Topic #7 ✅ 闭合 + **Phase 1 实施 gate 解锁**。Session 07 起手是 user 选择题:
+   - **(1) 进入 Phase 1 实施**（design 阶段不写代码 → 解锁；起手实施 dry-run 单 chapter per D-073）
+   - **(2) 保留设计阶段** 开 Topic #8 (Phase 2-4 形态) / Topic #9 (Phase 1 实施前 retro 触发条件)
+6. 进 Session 07 时按 user 选择执行
 
 ---
 
