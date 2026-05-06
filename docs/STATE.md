@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-06 (Session 07 mid — **Step 5 dry-run ✅ PASS**；等 user 开 Step 6) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅；50 pages OCR @ $0.05；evidence 落盘；下一步 Step 6 (stage 2-7 + 全本) |
-| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅（dry-run Stage A done, Stage B user retro PASS）|
+| 最后更新 | 2026-05-06 (Session 07 ✅ **Closed (paused at Step 5 PASS)** — 9 commits 全 push) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅ at HEAD；Step 6 (stage 2-7 + 全本) 留 Session 08 |
+| Phase 1 状态 | 设计 ✅ (D-001~D-073 / 7 ADR) + 实施 Step 0~5 ✅ (92 tests / 50 pages OCR @ $0.05 / Stage B PASS) |
 | 已锁定决定数 | **73** (D-001 ~ D-073，含 D-071 v1.1 修订) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `140ce34`) |
-| 当前会话 | **Session 07** — Phase 1 实施 Step 5 ✅ Stage B PASS；evidence 落盘；待 user 开 Step 6 全本 |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **`4a3958c`**) |
+| 下一会话 | **Session 08** — Phase 1 Step 6: stage 2-7 实施 + 全本（user 选 (a) 直接开 / (b) 先升级 Anthropic 双轨 / (c) 先复盘 dry-run samples 调 prompt） |
 
 ---
 
