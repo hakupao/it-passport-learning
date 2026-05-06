@@ -11,7 +11,7 @@
 | Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6 in-progress (6.0 session setup / 6.1 ClaudeClient / 6.2 Stage 2 scaffold) |
 | 已锁定决定数 | **73** (D-001 ~ D-073，含 D-071 v1.1 修订) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **`0eb2a70`**) |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **`decfa90`**) |
 | 下一会话 | (本会话进行中) Session 08 子步 6.3 等 user 开门 → Stage 2 真跑 50 pages |
 
 ---
