@@ -7,8 +7,8 @@
 | 字段 | 值 |
 |---|---|
 | 最后更新 | 2026-05-06 (Session 08 ⏳ **In progress** — Step 6 起手, user 选 (a) 直接开) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6 子步 6.0-6.2 进行中 (Stage 2 scaffold), 6.3 等 user LLM-spend gate |
-| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6 in-progress (6.0 session setup / 6.1 ClaudeClient / 6.2 Stage 2 scaffold) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6 子步 6.0-6.3 ✅ (Stage 2 scaffold + 50-page real run + audit), 6.4 (Stage 3) 待启动 |
+| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.3 ✅ (Stage 2 scaffold + 50/50 PASS classify + step_02_audit.md) |
 | 已锁定决定数 | **73** (D-001 ~ D-073，含 D-071 v1.1 修订) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
 | GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **`decfa90`**) |
