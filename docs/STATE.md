@@ -155,15 +155,20 @@ GUI **不在 v1**，Phase 3 再考虑。
 
 ---
 
-## 5. 下一步 / Resume Instructions (current = mid-Session 07, Phase 1 实施起手)
+## 5. 下一步 / Resume Instructions (current = between Session 07 closed at Step 5 PASS & Session 08 not started)
 
-**Session 01-06 全已闭合**。**Topic #7 (LLM 接入 + 成本预算 + 启动策略 / Phase 1 实施 gate) ✅** 5 D 锁定 (D-069~D-073) + D-069 / D-071 / D-073 三份独立 ADR 已写。
+**Session 01-07 全已闭合**。Phase 1 设计 + 实施起手 + Stage 1 dry-run + Stage B 用户 retro PASS 全部完成。**Phase 1 Step 6 (stage 2-7 + 全本) 是 Session 08 第一题**。
 
-**Session 07 Phase 1 实施起手进展**:
-- ✅ Step 0: 73 D + 7 ADR + 4 session log baseline commit `6d4035c` + push to origin/main
-- ✅ Step 1: branch 选 (a) 直接 main（per user "全部按你的提议"）
-- ✅ Step 2: STATE.md 切阶段标记 设计 → 实施
-- ⏸ Step 3-5: 待执行（包骨架 / plugin loader / 4 axis 内置 plugin / dry-run 单 chapter）
+**Session 07 关键产物 (HEAD `652b09e`)**:
+- 9 commits: design baseline (`6d4035c`) → phase switch (`c6c3660`) → 包骨架 (`bd6b0c7`) → 核心模块 + 77 tests (`841f5b9`) → 内置 plugins + dry-run CLI + 92 tests (`5c2251c`) → state/log sync (`98f2a63`) → mistralai import fix (`140ce34`) → Step 5 evidence (`4a3958c`) → Session 07 close (`652b09e`)
+- 92 unit tests pass
+- 50 pages 真实 OCR 数据 + Stage B PASS evidence 落盘 (`evidence/itpassport_r6/runs/dry_run_2026-05-06T16-58-10/step_01_audit.md`)
+- 累计成本: $0.05 (Mistral) + $0 (Anthropic max plan)
+
+**Session 08 起手 user 三选**:
+- **(a) 直接开 Step 6** — Claude 从 stage 2 page classify 一路实施到 stage 7 + 全本，撞 cap 就停等 user 决策
+- **(b) 先升级 Anthropic 双轨** — 加 ANTHROPIC_API_KEY env 走 pay-as-you-go ~$30 全本，不撞 max plan 5h quota（per D-069 §2.4 零代码变更升级）
+- **(c) 先复盘 dry-run OCR samples 调 prompt** — review `data/itpassport_r6/runs/dry_run_2026-05-06T16-58-10/ocr/page_*.md`，针对 known 小问题（HTML entity / 表格化）调 stage 5 翻译 prompt 或 stage 4 structure prompt
 
 ### 已锁的仓库形态（D-034 ~ D-053，Topic #3 产物）
 
