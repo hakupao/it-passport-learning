@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-06 (Session 07 mid — Step 0~4b 完成；**等 user 开门 Step 5 dry-run** ★) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~4b ✅ at `5c2251c`；92 tests pass；下一步 Step 5 dry-run **必须 user 显式 --confirm** |
-| Phase 1 状态 | 设计 ✅ + 实施 Step 0~4b ✅（92 tests / 4 commits / 5 modules / 2 plugins / 1 dry-run runner / CLI 安全门） |
-| 已锁定决定数 | **73** (D-001 ~ D-073，含 D-071 v1.1 修订)|
+| 最后更新 | 2026-05-06 (Session 07 mid — **Step 5 dry-run ✅ PASS**；等 user 开 Step 6) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅；50 pages OCR @ $0.05；evidence 落盘；下一步 Step 6 (stage 2-7 + 全本) |
+| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅（dry-run Stage A done, Stage B user retro PASS）|
+| 已锁定决定数 | **73** (D-001 ~ D-073，含 D-071 v1.1 修订) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `5c2251c`) |
-| 当前会话 | **Session 07** — Phase 1 实施 Step 0~4b 完成；待 Step 5 dry-run user 开门（spend ~$0.05 + max plan quota） |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `140ce34`) |
+| 当前会话 | **Session 07** — Phase 1 实施 Step 5 ✅ Stage B PASS；evidence 落盘；待 user 开 Step 6 全本 |
 
 ---
 
