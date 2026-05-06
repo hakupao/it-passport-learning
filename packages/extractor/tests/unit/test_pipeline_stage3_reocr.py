@@ -217,6 +217,51 @@ def test_stage3_halts_on_fail_cap(tmp_path: Path) -> None:
     assert result.fail_count >= 2
 
 
+def test_stage3_output_subdir_routes_writes(tmp_path: Path) -> None:
+    """Vision-vs-Mistral comparison runs need to land in a parallel dir."""
+    ocr = {1: _GOOD_PAGE_TEXT}
+    ocr_dir, raw_dir = _seed(tmp_path, ocr, image_pages={1})
+    fake = _FakeEngine(responses={1: "# vision-output"})
+    runner = Stage3HardReocr(engine=fake)  # type: ignore[arg-type]
+    result = runner.run(
+        ocr_dir=ocr_dir,
+        raw_dir=raw_dir,
+        run_dir=tmp_path,
+        cert_id="itpassport_r6",
+        run_id="dry_run_test",
+        force_pages=[1],
+        output_subdir="vision_full",
+    )
+    assert result.pages_reocrd == 1
+    assert (tmp_path / "vision_full" / "page_001.md").exists()
+    assert "vision-output" in (tmp_path / "vision_full" / "page_001.md").read_text()
+    assert not (tmp_path / "cleaned" / "page_001.md").exists()
+
+
+def test_stage3_skip_existing_avoids_double_billing(tmp_path: Path) -> None:
+    """With skip_existing=True, an already-re-OCR'd page in --output-subdir is not re-billed."""
+    ocr = {2: _BAD_PAGE_TEXT}
+    ocr_dir, raw_dir = _seed(tmp_path, ocr, image_pages={2})
+    cleaned_dir = tmp_path / "cleaned"
+    cleaned_dir.mkdir()
+    (cleaned_dir / "page_002.md").write_text("# already done", encoding="utf-8")
+
+    fake = _FakeEngine(responses={})
+    runner = Stage3HardReocr(engine=fake)  # type: ignore[arg-type]
+    result = runner.run(
+        ocr_dir=ocr_dir,
+        raw_dir=raw_dir,
+        run_dir=tmp_path,
+        cert_id="itpassport_r6",
+        run_id="dry_run_test",
+        skip_existing=True,
+    )
+    assert result.pages_reocrd == 0
+    assert fake.calls == []
+    # Existing page is preserved.
+    assert (cleaned_dir / "page_002.md").read_text() == "# already done"
+
+
 def test_stage3_attributes_cost_to_stage_3(tmp_path: Path) -> None:
     ocr = {2: _BAD_PAGE_TEXT}
     ocr_dir, raw_dir = _seed(tmp_path, ocr, image_pages={2})

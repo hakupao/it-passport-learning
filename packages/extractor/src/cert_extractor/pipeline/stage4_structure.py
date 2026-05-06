@@ -308,6 +308,7 @@ class Stage4Structure:
         run_id: str,
         cleaned_dir: Path | str | None = None,
         page_limit: int | None = None,
+        skip_existing: bool = True,
     ) -> Stage4Result:
         ocr_dir = Path(ocr_dir)
         classified_dir = Path(classified_dir)
@@ -345,6 +346,12 @@ class Stage4Structure:
         for page_path, page_number in pages:
             label = self._read_label(classified_dir, page_number)
             if label is None or label in self.skip_labels:
+                skipped_pages += 1
+                continue
+
+            if skip_existing and (out_dir / f"page_{page_number:03d}.json").exists():
+                # Idempotent re-runs: don't re-spend LLM quota on pages
+                # already on disk. Counts as skipped, not processed.
                 skipped_pages += 1
                 continue
 

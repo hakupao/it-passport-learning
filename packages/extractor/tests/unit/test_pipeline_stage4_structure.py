@@ -331,3 +331,53 @@ def test_skip_labels_documented() -> None:
     expected = {PageLabel.COVER, PageLabel.BLANK, PageLabel.TOC,
                 PageLabel.GLOSSARY, PageLabel.INDEX, PageLabel.OTHER}
     assert SKIP_LABELS == expected
+
+
+def test_runner_skip_existing_default_true(tmp_path: Path) -> None:
+    """A re-run on an already-populated structured/ should NOT re-bill the LLM."""
+    ocr_dir, classified = _seed_dirs(tmp_path, ocr={5: "x", 6: "y"}, labels={5: "content", 6: "content"})
+    structured_dir = tmp_path / "structured"
+    structured_dir.mkdir()
+    # Pretend page 5 was already extracted in a previous run.
+    (structured_dir / "page_005.json").write_text("[]", encoding="utf-8")
+
+    fake = _FakeClient(['[{"type":"section","title_jp":"x","section_number":"1"}]'])
+    extractor = StructureExtractor(client=fake, cert_id="itpassport_r6", tier="sonnet")  # type: ignore[arg-type]
+    runner = Stage4Structure(extractor=extractor)
+
+    result = runner.run(
+        ocr_dir=ocr_dir,
+        classified_dir=classified,
+        run_dir=tmp_path,
+        cert_id="itpassport_r6",
+        run_id="dry_run_test",
+        # skip_existing default True
+    )
+    # Only page 6 was processed; the LLM was called once total.
+    assert result.pages_processed == 1
+    assert len(fake.calls) == 1
+    # page 6 prompt contains "y" (its OCR text), not "x" (page 5's text).
+    assert "y" in fake.calls[0]["user"]
+
+
+def test_runner_skip_existing_false_reprocesses(tmp_path: Path) -> None:
+    """With skip_existing=False, a populated dir gets fully re-run."""
+    ocr_dir, classified = _seed_dirs(tmp_path, ocr={5: "x"}, labels={5: "content"})
+    structured_dir = tmp_path / "structured"
+    structured_dir.mkdir()
+    (structured_dir / "page_005.json").write_text("[]", encoding="utf-8")
+
+    fake = _FakeClient(['[{"type":"section","title_jp":"x","section_number":"1"}]'])
+    extractor = StructureExtractor(client=fake, cert_id="itpassport_r6", tier="sonnet")  # type: ignore[arg-type]
+    runner = Stage4Structure(extractor=extractor)
+
+    result = runner.run(
+        ocr_dir=ocr_dir,
+        classified_dir=classified,
+        run_dir=tmp_path,
+        cert_id="itpassport_r6",
+        run_id="dry_run_test",
+        skip_existing=False,
+    )
+    assert result.pages_processed == 1
+    assert len(fake.calls) == 1

@@ -141,11 +141,13 @@ class Stage3HardReocr:
         run_id: str,
         page_limit: int | None = None,
         force_pages: list[int] | None = None,
+        output_subdir: str = "cleaned",
+        skip_existing: bool = False,
     ) -> Stage3Result:
         ocr_dir = Path(ocr_dir)
         raw_dir = Path(raw_dir)
         run_dir = Path(run_dir)
-        out_dir = run_dir / "cleaned"
+        out_dir = run_dir / output_subdir
         out_dir.mkdir(parents=True, exist_ok=True)
 
         pages = self._sorted_page_files(ocr_dir)
@@ -185,6 +187,12 @@ class Stage3HardReocr:
 
             should_reocr = qv.degenerate or (page_number in force_set)
             if not should_reocr:
+                continue
+
+            if skip_existing and (out_dir / f"page_{page_number:03d}.md").exists():
+                # Idempotent re-runs: a page already re-OCR'd doesn't get
+                # billed again. Still counts as "flagged" for visibility.
+                flagged.append(page_number)
                 continue
 
             flagged.append(page_number)

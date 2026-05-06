@@ -14,6 +14,36 @@ from zoneinfo import ZoneInfo
 import click
 
 from cert_extractor import SCHEMA_VERSION, __version__
+from cert_extractor.budget.monitor import (
+    DEFAULT_HARD,
+    DEFAULT_SOFT,
+    BudgetMonitor,
+    CapLevels,
+)
+
+
+def _build_monitor(
+    anthropic_soft_usd: float | None,
+    anthropic_hard_usd: float | None,
+) -> BudgetMonitor:
+    """Build a BudgetMonitor with optional anthropic cap overrides (D-071)."""
+    soft = DEFAULT_SOFT
+    hard = DEFAULT_HARD
+    if anthropic_soft_usd is not None:
+        soft = CapLevels(
+            wall_time_seconds=soft.wall_time_seconds,
+            mistral_usd=soft.mistral_usd,
+            anthropic_usd=anthropic_soft_usd,
+            fail_count=soft.fail_count,
+        )
+    if anthropic_hard_usd is not None:
+        hard = CapLevels(
+            wall_time_seconds=hard.wall_time_seconds,
+            mistral_usd=hard.mistral_usd,
+            anthropic_usd=anthropic_hard_usd,
+            fail_count=hard.fail_count,
+        )
+    return BudgetMonitor(soft=soft, hard=hard)
 
 
 @click.group(invoke_without_command=True)
@@ -270,6 +300,24 @@ def classify_pages(
     help="Comma-separated page numbers to re-OCR regardless of heuristic (e.g. '2,16').",
 )
 @click.option(
+    "--all-pages",
+    is_flag=True,
+    default=False,
+    help="Force Vision re-OCR on EVERY page in --ocr-dir (bypasses heuristic). Use for full-engine comparison runs.",
+)
+@click.option(
+    "--output-subdir",
+    default="cleaned",
+    show_default=True,
+    help="Subdirectory under run_dir for output (e.g. 'cleaned' or 'vision_full' for parallel comparison runs).",
+)
+@click.option(
+    "--skip-existing/--no-skip-existing",
+    default=False,
+    show_default=True,
+    help="Skip pages that already have output in --output-subdir (idempotent re-run).",
+)
+@click.option(
     "--run-id",
     default=None,
     help="Reuse run_id; defaults to the parent dir of --ocr-dir.",
@@ -279,6 +327,18 @@ def classify_pages(
     type=click.Choice(["haiku", "sonnet", "opus"]),
     default="sonnet",
     show_default=True,
+)
+@click.option(
+    "--anthropic-soft-usd",
+    default=None,
+    type=float,
+    help="Override D-071 anthropic_usd soft cap (default $5).",
+)
+@click.option(
+    "--anthropic-hard-usd",
+    default=None,
+    type=float,
+    help="Override D-071 anthropic_usd hard cap (default $30).",
 )
 @click.option(
     "--dry",
@@ -298,8 +358,13 @@ def hard_reocr(
     cert_id: str,
     page_limit: int | None,
     force_pages: str,
+    all_pages: bool,
+    output_subdir: str,
+    skip_existing: bool,
     run_id: str | None,
     tier: str,
+    anthropic_soft_usd: float | None,
+    anthropic_hard_usd: float | None,
     dry: bool,
     confirm: bool,
 ) -> None:
@@ -317,6 +382,9 @@ def hard_reocr(
     if page_limit is not None:
         page_files = page_files[:page_limit]
 
+    if all_pages:
+        forced = [int(p.stem.split("_")[1]) for p in page_files]
+
     flagged: list[tuple[int, str]] = []
     for path in page_files:
         page_number = int(path.stem.split("_")[1])
@@ -326,13 +394,16 @@ def hard_reocr(
             tag = "FORCED" if page_number in forced and not qv.degenerate else qv.reason
             flagged.append((page_number, tag))
 
-    click.echo(f"[hard-reocr] cert_id    = {cert_id}")
-    click.echo(f"[hard-reocr] ocr_dir    = {ocr_dir}")
-    click.echo(f"[hard-reocr] raw_dir    = {raw_dir}")
-    click.echo(f"[hard-reocr] run_id     = {inferred_run_id}")
-    click.echo(f"[hard-reocr] tier       = {tier}")
-    click.echo(f"[hard-reocr] inspected  = {len(page_files)} pages")
-    click.echo(f"[hard-reocr] flagged    = {len(flagged)} pages")
+    click.echo(f"[hard-reocr] cert_id        = {cert_id}")
+    click.echo(f"[hard-reocr] ocr_dir        = {ocr_dir}")
+    click.echo(f"[hard-reocr] raw_dir        = {raw_dir}")
+    click.echo(f"[hard-reocr] run_id         = {inferred_run_id}")
+    click.echo(f"[hard-reocr] tier           = {tier}")
+    click.echo(f"[hard-reocr] output_subdir  = {output_subdir}")
+    click.echo(f"[hard-reocr] all_pages      = {all_pages}")
+    click.echo(f"[hard-reocr] skip_existing  = {skip_existing}")
+    click.echo(f"[hard-reocr] inspected      = {len(page_files)} pages")
+    click.echo(f"[hard-reocr] flagged        = {len(flagged)} pages")
     for page_number, reason in flagged:
         click.echo(f"[hard-reocr]   page_{page_number:03d}  {reason}")
 
@@ -352,7 +423,11 @@ def hard_reocr(
     )
 
     engine = make_engine_factory(tier=tier)()
-    runner = Stage3HardReocr(engine=engine)
+    monitor = _build_monitor(
+        anthropic_soft_usd=anthropic_soft_usd,
+        anthropic_hard_usd=anthropic_hard_usd,
+    )
+    runner = Stage3HardReocr(engine=engine, monitor=monitor)
 
     click.echo("[hard-reocr] starting Vision re-OCR…")
     result = runner.run(
@@ -363,6 +438,8 @@ def hard_reocr(
         run_id=inferred_run_id,
         page_limit=page_limit,
         force_pages=forced or None,
+        output_subdir=output_subdir,
+        skip_existing=skip_existing,
     )
 
     click.echo("")
@@ -405,6 +482,24 @@ def hard_reocr(
     show_default=True,
 )
 @click.option(
+    "--skip-existing/--no-skip-existing",
+    default=True,
+    show_default=True,
+    help="Skip pages that already have structured/page_NNN.json (idempotent re-run).",
+)
+@click.option(
+    "--anthropic-soft-usd",
+    default=None,
+    type=float,
+    help="Override D-071 anthropic_usd soft cap (default $5).",
+)
+@click.option(
+    "--anthropic-hard-usd",
+    default=None,
+    type=float,
+    help="Override D-071 anthropic_usd hard cap (default $30).",
+)
+@click.option(
     "--confirm",
     is_flag=True,
     default=False,
@@ -421,6 +516,9 @@ def extract_structure(
     page_limit: int | None,
     run_id: str | None,
     tier: str,
+    skip_existing: bool,
+    anthropic_soft_usd: float | None,
+    anthropic_hard_usd: float | None,
     confirm: bool,
 ) -> None:
     """Stage 4 structure extraction (per D-008 stage 4 + D-056 + D-069)."""
@@ -452,7 +550,11 @@ def extract_structure(
     )
 
     extractor = make_extractor_factory(cert_id=cert_id, tier=tier)()
-    runner = Stage4Structure(extractor=extractor)
+    monitor = _build_monitor(
+        anthropic_soft_usd=anthropic_soft_usd,
+        anthropic_hard_usd=anthropic_hard_usd,
+    )
+    runner = Stage4Structure(extractor=extractor, monitor=monitor)
 
     click.echo("[extract-structure] starting…")
     result = runner.run(
@@ -463,6 +565,7 @@ def extract_structure(
         run_id=inferred_run_id,
         cleaned_dir=cleaned_dir,
         page_limit=page_limit,
+        skip_existing=skip_existing,
     )
 
     click.echo("")
