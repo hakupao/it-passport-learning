@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-06 (Session 07 起手 — **阶段切换 ★ 设计阶段 → 实施阶段**) |
-| 当前阶段 | **实施阶段 (Phase 1)** ★ — 设计阶段全部 73 D + 7 ADR 已 baseline at `6d4035c`；user 直答 "先 phase1" 切阶段；下一步 = Step 3 包骨架 |
-| Phase 1 状态 | **设计 ✅** (Topic #1~#7 / D-001~D-073 / 7 ADR) → **实施进行中** (Step 0 baseline ✅ / Step 1 main branch ✅ / Step 2 切阶段 ✅ / Step 3-5 待执行) |
-| 已锁定决定数 | **73** (D-001 ~ D-073) |
+| 最后更新 | 2026-05-06 (Session 07 mid — Step 0~4b 完成；**等 user 开门 Step 5 dry-run** ★) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~4b ✅ at `5c2251c`；92 tests pass；下一步 Step 5 dry-run **必须 user 显式 --confirm** |
+| Phase 1 状态 | 设计 ✅ + 实施 Step 0~4b ✅（92 tests / 4 commits / 5 modules / 2 plugins / 1 dry-run runner / CLI 安全门） |
+| 已锁定决定数 | **73** (D-001 ~ D-073，含 D-071 v1.1 修订)|
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, baseline `6d4035c`) |
-| 当前会话 | **Session 07** — Phase 1 实施起手；Step 0 baseline + Step 1 main branch + Step 2 切阶段已完成；待 Step 3 实化包骨架 |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `5c2251c`) |
+| 当前会话 | **Session 07** — Phase 1 实施 Step 0~4b 完成；待 Step 5 dry-run user 开门（spend ~$0.05 + max plan quota） |
 
 ---
 
