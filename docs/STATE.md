@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-06 (Session 06 ✅ **Closed** — Topic #7 全闭合 ★ Phase 1 设计阶段彻底收尾，5 D + 3 独立 ADR) |
-| 当前阶段 | 设计阶段（**Phase 1 实施 gate ✅ 已解锁**；等 user 显式 "开始实施" 切阶段；GitHub repo `d50432e`） |
-| Phase 1 状态 | **Topic #1~#7 ✅ 全闭合** ★（D-001~D-073 / 7 独立 ADR）|
+| 最后更新 | 2026-05-06 (Session 07 起手 — **阶段切换 ★ 设计阶段 → 实施阶段**) |
+| 当前阶段 | **实施阶段 (Phase 1)** ★ — 设计阶段全部 73 D + 7 ADR 已 baseline at `6d4035c`；user 直答 "先 phase1" 切阶段；下一步 = Step 3 包骨架 |
+| Phase 1 状态 | **设计 ✅** (Topic #1~#7 / D-001~D-073 / 7 ADR) → **实施进行中** (Step 0 baseline ✅ / Step 1 main branch ✅ / Step 2 切阶段 ✅ / Step 3-5 待执行) |
 | 已锁定决定数 | **73** (D-001 ~ D-073) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, noreply email) |
-| 下一会话 | **Session 07** — user 选择题: (1) **进入 Phase 1 实施** / (2) 保留设计阶段开 Topic #8/9 |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, baseline `6d4035c`) |
+| 当前会话 | **Session 07** — Phase 1 实施起手；Step 0 baseline + Step 1 main branch + Step 2 切阶段已完成；待 Step 3 实化包骨架 |
 
 ---
 
@@ -155,11 +155,15 @@ GUI **不在 v1**，Phase 3 再考虑。
 
 ---
 
-## 5. 下一步 / Resume Instructions (current = between Session 06 closed & Session 07 not started)
+## 5. 下一步 / Resume Instructions (current = mid-Session 07, Phase 1 实施起手)
 
-**Session 01-06 全已闭合**。**Topic #7 (LLM 接入 + 成本预算 + 启动策略 / Phase 1 实施 gate) ✅** 5 D 锁定 (D-069~D-073) + D-069 / D-071 / D-073 三份独立 ADR 已写。**Phase 1 设计阶段彻底收尾**。
+**Session 01-06 全已闭合**。**Topic #7 (LLM 接入 + 成本预算 + 启动策略 / Phase 1 实施 gate) ✅** 5 D 锁定 (D-069~D-073) + D-069 / D-071 / D-073 三份独立 ADR 已写。
 
-**Phase 1 实施 gate ✅ 已解锁** — Session 07 起手 user 选择: (1) 进入 Phase 1 实施 / (2) 保留设计阶段开 Topic #8/9。
+**Session 07 Phase 1 实施起手进展**:
+- ✅ Step 0: 73 D + 7 ADR + 4 session log baseline commit `6d4035c` + push to origin/main
+- ✅ Step 1: branch 选 (a) 直接 main（per user "全部按你的提议"）
+- ✅ Step 2: STATE.md 切阶段标记 设计 → 实施
+- ⏸ Step 3-5: 待执行（包骨架 / plugin loader / 4 axis 内置 plugin / dry-run 单 chapter）
 
 ### 已锁的仓库形态（D-034 ~ D-053，Topic #3 产物）
 
