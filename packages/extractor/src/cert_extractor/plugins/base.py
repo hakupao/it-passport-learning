@@ -11,12 +11,40 @@ Per:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from typing import Any, Callable, ClassVar, TypeVar
 
 from pydantic import BaseModel
 
 # 4 axis identifiers (per D-021 + D-064)
 AXES: tuple[str, ...] = ("source", "ocr", "translator", "exporter")
+
+
+@dataclass
+class OCRResult:
+    """Return value of ``OCREngine.ocr_page`` (carries text + cost metadata)."""
+
+    text: str  # extracted markdown
+    cost_usd: float = 0.0
+    pages_processed: int = 1
+
+
+@dataclass
+class TranslationResult:
+    """Return value of ``TranslatorPlugin.translate``."""
+
+    text: str
+    cost_usd: float = 0.0
+    tokens_input: int = 0
+    tokens_output: int = 0
+
+
+@dataclass
+class PageList:
+    """Return value of ``SourceReader.list_pages``."""
+
+    pages: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class BasePlugin(ABC):
@@ -54,16 +82,16 @@ class SourceReader(BasePlugin):
     """
 
     @abstractmethod
-    def list_pages(self, source_path: str) -> list[str]:
-        """Return paths to extracted page images / texts in book order."""
+    def list_pages(self, source_path: str, output_dir: str) -> PageList:
+        """Extract pages from source_path into output_dir; return paths in book order."""
 
 
 class OCREngine(BasePlugin):
     """OCR engine axis (D-021)."""
 
     @abstractmethod
-    def ocr_page(self, page_path: str) -> str:
-        """Return extracted markdown text for one page image."""
+    def ocr_page(self, page_path: str) -> OCRResult:
+        """Return extracted text + cost metadata for one page image."""
 
 
 class TranslatorPlugin(BasePlugin):
@@ -73,7 +101,7 @@ class TranslatorPlugin(BasePlugin):
     """
 
     @abstractmethod
-    def translate(self, text_jp: str, target_lang: str) -> str:
+    def translate(self, text_jp: str, target_lang: str) -> TranslationResult:
         """Translate Japanese source text into target language."""
 
 
