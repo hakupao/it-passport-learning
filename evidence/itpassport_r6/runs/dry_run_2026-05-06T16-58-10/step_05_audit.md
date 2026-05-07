@@ -296,5 +296,5 @@ reviewer + Step 6.10 Stage 7 export.
 | Stage A auditor | Claude main session (Opus 4.7) | 2026-05-07T11:35+09:00 | **PASS** (14/14 leaves clean; 1 cosmetic F-ROW1-NUMERAL noted) |
 | Stage A reviewer (规则 D 隔离) | user (Session 09 mid-run) | 2026-05-07T11:35+09:00 | **PASS** — authorized Stage B with relaxed cap |
 | Stage B auditor | Claude main session (Opus 4.7) | 2026-05-07T12:30+09:00 | **PASS** — 5/5 audit pages clean (1 cosmetic WARN F-CHOICE-MARKER); 393/393 leaves translated post-attempt-006 |
-| Stage B reviewer (规则 D 隔离) | user (manual retro) | TBD | TBD — awaiting Session 09 close |
-| Final | user + Claude consensus | TBD | pending Stage B reviewer signoff |
+| Stage B reviewer (规则 D 隔离) | user (Session 09 close) | 2026-05-07T13:00+09:00 | **PASS** — user reviewed audit summary + cosmetic findings; signed off to close Step 6.8 and resume at Step 6.9 in Session 10 (option (b) per session close prompt) |
+| Final | user + Claude consensus | 2026-05-07T13:00+09:00 | **PASS** — Stage 5 output approved for Stage 6 reviewer + Stage 7 export consumption |

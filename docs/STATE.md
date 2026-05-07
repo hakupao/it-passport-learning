@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-07 (**Session 09 in flight** — Step 6.8 Stage 5 trilingual translate **PASS** at attempt 006; D-074 locked) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8 ✅; Stage 6/7 + 全本 + retro 留 Session 09 续段 / Session 10+ |
-| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.7 PASS + **Step 6.8 PASS**（393/393 trilingual leaves, 0 untranslated, 5-page audit 4 PASS + 1 cosmetic WARN）+ 202 unit tests pass |
+| 最后更新 | 2026-05-07 (**Session 09 ✅ Closed** at Step 6.8 PASS + user retro PASS; D-074 locked) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8 ✅; Stage 6/7 + 全本 + retro 留 Session 10+ |
+| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.7 PASS + **Step 6.8 PASS**（393/393 trilingual leaves, 0 untranslated, 5-page audit 4 PASS + 1 cosmetic WARN, user retro PASS）+ 202 unit tests pass |
 | 已锁定决定数 | **74** (D-001 ~ D-074，新增 D-074 Stage 5 prompt wrapper-clause) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **post-Session-09 commit**) |
-| 下一会话 | **Session 09 续段 OR Session 10** — Step 6.9 Stage 6 audit reviewer LLM (per D-060/D-061/D-063); 详见 §5 |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **Session-09 close commit**) |
+| 下一会话 | **Session 10** — Step 6.9 Stage 6 audit reviewer LLM (per D-060/D-061/D-063); 详见 §5 |
 
 ---
 
