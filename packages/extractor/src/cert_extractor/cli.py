@@ -54,7 +54,7 @@ def main(ctx: click.Context) -> None:
     if ctx.invoked_subcommand is None:
         click.echo(f"cert-extractor {__version__} (schema {SCHEMA_VERSION})")
         click.echo(
-            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure | extract-glossary | translate-entities [--help]"
+            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure | extract-glossary | translate-entities | audit-trilingual [--help]"
         )
 
 
@@ -804,6 +804,176 @@ def translate_entities(
     click.echo(f"[translate-entities]        verdict_halted    = {result.halted_verdict}")
     click.echo(f"[translate-entities]        translated/       = {result.output_dir}")
     click.echo(f"[translate-entities]        cost.json         = {result.cost_path}")
+
+
+@main.command("audit-trilingual")
+@click.option(
+    "--translated-dir",
+    "translated_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Directory of stage-5 translated/ JSON output.",
+)
+@click.option(
+    "--structured-dir",
+    "structured_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Directory of stage-4 structured/ JSON output (for jp ground truth).",
+)
+@click.option(
+    "--glossary-path",
+    "glossary_path",
+    required=True,
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+)
+@click.option(
+    "--cleaned-dir",
+    "cleaned_dir",
+    default=None,
+    type=click.Path(file_okay=False, path_type=Path),
+    help="Optional Stage 3 cleaned/ markdown — preferred source for D5 answer-line ground truth.",
+)
+@click.option(
+    "--ocr-dir",
+    "ocr_dir",
+    default=None,
+    type=click.Path(file_okay=False, path_type=Path),
+    help="Optional Stage 1 ocr/ markdown — used by D5 only when cleaned/ is missing for a page.",
+)
+@click.option("--cert-id", default="itpassport_r6", show_default=True)
+@click.option("--run-id", default=None)
+@click.option("--page-limit", default=None, type=int)
+@click.option(
+    "--pages",
+    default=None,
+    help=(
+        "Comma-separated page numbers to audit (Stage A subset, e.g. '14,30,38,43,45'). "
+        "Mutually exclusive with --page-limit; both can be combined."
+    ),
+)
+@click.option(
+    "--tier",
+    type=click.Choice(["haiku", "sonnet", "opus"]),
+    default="opus",
+    show_default=True,
+    help="Per D-077 §2.2: opus is the locked default for Stage 6 reviewer.",
+)
+@click.option(
+    "--chunk-size",
+    default=4,
+    show_default=True,
+    type=int,
+    help="Per D-077 §2.2: 4 entities per LLM call (heavier per-entity context than Stage 5).",
+)
+@click.option(
+    "--anthropic-soft-usd",
+    default=999.0,
+    show_default=True,
+    type=float,
+    help="Per D-077 §2.9: caps relaxed for Stage 6 dry-run (quality > cost).",
+)
+@click.option(
+    "--anthropic-hard-usd",
+    default=999.0,
+    show_default=True,
+    type=float,
+)
+@click.option(
+    "--confirm",
+    is_flag=True,
+    default=False,
+    help="REQUIRED to actually invoke Claude (consumes max-plan quota or ANTHROPIC_API_KEY budget).",
+)
+def audit_trilingual(
+    translated_dir: Path,
+    structured_dir: Path,
+    glossary_path: Path,
+    cleaned_dir: Path | None,
+    ocr_dir: Path | None,
+    cert_id: str,
+    run_id: str | None,
+    page_limit: int | None,
+    pages: str | None,
+    tier: str,
+    chunk_size: int,
+    anthropic_soft_usd: float,
+    anthropic_hard_usd: float,
+    confirm: bool,
+) -> None:
+    """Stage 6 audit reviewer (per D-077). Two-pass: deterministic detectors + opus LLM reviewer."""
+    inferred_run_id = run_id or translated_dir.parent.name
+    run_dir = translated_dir.parent
+
+    page_filter: list[int] | None = None
+    if pages:
+        page_filter = sorted({int(p.strip()) for p in pages.split(",") if p.strip()})
+
+    page_count = sum(1 for _ in translated_dir.glob("page_*.json"))
+
+    click.echo(f"[audit-trilingual] cert_id            = {cert_id}")
+    click.echo(f"[audit-trilingual] translated_dir     = {translated_dir} ({page_count} pages)")
+    click.echo(f"[audit-trilingual] structured_dir     = {structured_dir}")
+    click.echo(f"[audit-trilingual] cleaned_dir        = {cleaned_dir or run_dir / 'cleaned'}")
+    click.echo(f"[audit-trilingual] ocr_dir            = {ocr_dir or run_dir / 'ocr'}")
+    click.echo(f"[audit-trilingual] glossary           = {glossary_path}")
+    click.echo(f"[audit-trilingual] run_id             = {inferred_run_id}")
+    click.echo(f"[audit-trilingual] tier               = {tier}")
+    click.echo(f"[audit-trilingual] chunk_size         = {chunk_size}")
+    click.echo(f"[audit-trilingual] page_filter        = {page_filter}")
+    click.echo(f"[audit-trilingual] page_limit         = {page_limit}")
+    click.echo(f"[audit-trilingual] anthropic_caps     = soft ${anthropic_soft_usd} / hard ${anthropic_hard_usd}")
+
+    if not confirm:
+        click.echo("")
+        click.echo(
+            "[audit-trilingual] --confirm NOT passed; aborting before any Claude call."
+        )
+        sys.exit(0)
+
+    from cert_extractor.pipeline.stage6_audit.reviewer import (
+        make_reviewer_factory,
+    )
+    from cert_extractor.pipeline.stage6_audit.runner import (
+        Stage6Audit,
+    )
+
+    reviewer = make_reviewer_factory(tier=tier, chunk_size=chunk_size)()
+    monitor = _build_monitor(
+        anthropic_soft_usd=anthropic_soft_usd,
+        anthropic_hard_usd=anthropic_hard_usd,
+    )
+    runner = Stage6Audit(reviewer=reviewer, monitor=monitor)
+
+    click.echo("[audit-trilingual] starting…")
+    result = runner.run(
+        structured_dir=structured_dir,
+        translated_dir=translated_dir,
+        glossary_path=glossary_path,
+        run_dir=run_dir,
+        cert_id=cert_id,
+        run_id=inferred_run_id,
+        cleaned_dir=cleaned_dir or (run_dir / "cleaned"),
+        ocr_dir=ocr_dir or (run_dir / "ocr"),
+        page_limit=page_limit,
+        page_filter=page_filter,
+    )
+
+    summary = result.summary
+    click.echo("")
+    click.echo(f"[audit-trilingual] DONE   pages_processed   = {result.pages_processed}")
+    click.echo(f"[audit-trilingual]        overall_verdict   = {summary.overall_verdict}")
+    click.echo(f"[audit-trilingual]        pass / warn / fail= {summary.pass_pages} / {summary.warn_pages} / {summary.fail_pages}")
+    click.echo(f"[audit-trilingual]        pass_rate         = {summary.pass_rate:.3f}")
+    click.echo(f"[audit-trilingual]        safety_failed     = {summary.safety_failed}")
+    click.echo(f"[audit-trilingual]        repair_stage_hint = {summary.most_severe_repair_stage}")
+    click.echo(f"[audit-trilingual]        run_level_issues  = {len(summary.run_level_issues)}")
+    click.echo(f"[audit-trilingual]        cost_shadow_total = ${summary.cost_usd_shadow_total:.4f}")
+    click.echo(f"[audit-trilingual]        fail_count        = {result.fail_count}")
+    if result.halt_reason:
+        click.echo(f"[audit-trilingual]        halt_reason       = {result.halt_reason}")
+    click.echo(f"[audit-trilingual]        review.json       = {result.output_path}")
+    click.echo(f"[audit-trilingual]        cost.json         = {result.cost_path}")
 
 
 if __name__ == "__main__":
