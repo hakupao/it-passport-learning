@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-06 (Session 08 ⏳ **In progress** — Step 6 起手, user 选 (a) 直接开) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.7 ✅ (Stage 2~4.5 全跑 PASS); 6.8 (stage 5 translate) 留 Session 09 |
-| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.7 ✅ (172 entities + 55 locked glossary entries; cumulative $9.14 shadow / $0.05 billed) |
+| 最后更新 | 2026-05-07 (Session 08 ✅ **Closed at Step 6.7 PASS + 6.8 scaffold**; Stage 5 实跑留 Session 09) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8(scaffold) ✅; Stage 5 实跑 + Stage 6/7 + 全本 + retro 留 Session 09+ |
+| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.7 PASS（172 entities + 55 glossary entries）+ 6.8 Stage 5 scaffold（scaffold-only, 197 unit tests pass） |
 | 已锁定决定数 | **73** (D-001 ~ D-073，含 D-071 v1.1 修订) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
 | GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **`decfa90`**) |
-| 下一会话 | (本会话进行中) Session 08 子步 6.3 等 user 开门 → Stage 2 真跑 50 pages |
+| 下一会话 | **Session 09** — Step 6.8 Stage 5 trilingual translate 实跑（scaffold 已就绪 at git HEAD）。详见 §5 + Session 08 §6.8 预告 |
 
 ---
 

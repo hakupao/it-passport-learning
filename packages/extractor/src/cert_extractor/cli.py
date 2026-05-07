@@ -54,7 +54,7 @@ def main(ctx: click.Context) -> None:
     if ctx.invoked_subcommand is None:
         click.echo(f"cert-extractor {__version__} (schema {SCHEMA_VERSION})")
         click.echo(
-            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure | extract-glossary [--help]"
+            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure | extract-glossary | translate-entities [--help]"
         )
 
 
@@ -681,6 +681,113 @@ def extract_glossary(
     click.echo(f"[extract-glossary]        verdict_halted  = {result.halted_verdict}")
     click.echo(f"[extract-glossary]        glossary.json   = {result.output_path}")
     click.echo(f"[extract-glossary]        cost.json       = {result.cost_path}")
+
+
+@main.command("translate-entities")
+@click.option(
+    "--structured-dir",
+    "structured_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+)
+@click.option(
+    "--glossary-path",
+    "glossary_path",
+    required=True,
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+)
+@click.option("--cert-id", default="itpassport_r6", show_default=True)
+@click.option("--run-id", default=None)
+@click.option("--page-limit", default=None, type=int)
+@click.option(
+    "--tier",
+    type=click.Choice(["haiku", "sonnet", "opus"]),
+    default="sonnet",
+    show_default=True,
+)
+@click.option(
+    "--skip-existing/--no-skip-existing",
+    default=True,
+    show_default=True,
+)
+@click.option("--anthropic-soft-usd", default=None, type=float)
+@click.option("--anthropic-hard-usd", default=None, type=float)
+@click.option(
+    "--confirm",
+    is_flag=True,
+    default=False,
+    help="REQUIRED to actually invoke Claude.",
+)
+def translate_entities(
+    structured_dir: Path,
+    glossary_path: Path,
+    cert_id: str,
+    run_id: str | None,
+    page_limit: int | None,
+    tier: str,
+    skip_existing: bool,
+    anthropic_soft_usd: float | None,
+    anthropic_hard_usd: float | None,
+    confirm: bool,
+) -> None:
+    """Stage 5 trilingual translation (per D-008 + D-055 + D-012)."""
+    from cert_extractor.schema.glossary import Glossary
+
+    inferred_run_id = run_id or structured_dir.parent.name
+    run_dir = structured_dir.parent
+    glossary = Glossary.model_validate_json(glossary_path.read_text(encoding="utf-8"))
+
+    page_files = sorted(structured_dir.glob("page_*.json"))
+    if page_limit is not None:
+        page_files = page_files[:page_limit]
+
+    click.echo(f"[translate-entities] cert_id        = {cert_id}")
+    click.echo(f"[translate-entities] structured_dir = {structured_dir}")
+    click.echo(f"[translate-entities] glossary       = {glossary_path} ({len(glossary.entries)} entries)")
+    click.echo(f"[translate-entities] run_id         = {inferred_run_id}")
+    click.echo(f"[translate-entities] tier           = {tier}")
+    click.echo(f"[translate-entities] skip_existing  = {skip_existing}")
+    click.echo(f"[translate-entities] pages on disk  = {len(page_files)}")
+
+    if not confirm:
+        click.echo("")
+        click.echo(
+            "[translate-entities] --confirm NOT passed; aborting before any Claude call."
+        )
+        sys.exit(0)
+
+    from cert_extractor.pipeline.stage5_translate import (
+        Stage5Translate,
+        make_engine_factory,
+    )
+
+    engine = make_engine_factory(glossary=glossary, tier=tier)()
+    monitor = _build_monitor(
+        anthropic_soft_usd=anthropic_soft_usd,
+        anthropic_hard_usd=anthropic_hard_usd,
+    )
+    runner = Stage5Translate(engine=engine, monitor=monitor)
+
+    click.echo("[translate-entities] starting…")
+    result = runner.run(
+        structured_dir=structured_dir,
+        run_dir=run_dir,
+        cert_id=cert_id,
+        run_id=inferred_run_id,
+        page_limit=page_limit,
+        skip_existing=skip_existing,
+    )
+
+    click.echo("")
+    click.echo(f"[translate-entities] DONE   pages_processed   = {result.pages_processed}")
+    click.echo(f"[translate-entities]        pages_skipped     = {result.pages_skipped}")
+    click.echo(f"[translate-entities]        fields_translated = {result.fields_translated}")
+    click.echo(f"[translate-entities]        glossary_hits     = {result.glossary_hits}")
+    click.echo(f"[translate-entities]        llm_calls         = {result.llm_calls}")
+    click.echo(f"[translate-entities]        fail_count        = {result.fail_count}")
+    click.echo(f"[translate-entities]        verdict_halted    = {result.halted_verdict}")
+    click.echo(f"[translate-entities]        translated/       = {result.output_dir}")
+    click.echo(f"[translate-entities]        cost.json         = {result.cost_path}")
 
 
 if __name__ == "__main__":
