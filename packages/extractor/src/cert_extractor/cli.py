@@ -713,6 +713,18 @@ def extract_glossary(
 @click.option("--anthropic-soft-usd", default=None, type=float)
 @click.option("--anthropic-hard-usd", default=None, type=float)
 @click.option(
+    "--max-items-per-call",
+    default=8,
+    show_default=True,
+    type=int,
+    help=(
+        "Cap the number of jp items sent to Claude in a single LLM request. "
+        "Pages with more unresolved leaves dispatch multiple sub-batches. "
+        "Lower values reduce long-context quality decay; higher values "
+        "amortize subprocess overhead."
+    ),
+)
+@click.option(
     "--confirm",
     is_flag=True,
     default=False,
@@ -728,6 +740,7 @@ def translate_entities(
     skip_existing: bool,
     anthropic_soft_usd: float | None,
     anthropic_hard_usd: float | None,
+    max_items_per_call: int,
     confirm: bool,
 ) -> None:
     """Stage 5 trilingual translation (per D-008 + D-055 + D-012)."""
@@ -741,13 +754,14 @@ def translate_entities(
     if page_limit is not None:
         page_files = page_files[:page_limit]
 
-    click.echo(f"[translate-entities] cert_id        = {cert_id}")
-    click.echo(f"[translate-entities] structured_dir = {structured_dir}")
-    click.echo(f"[translate-entities] glossary       = {glossary_path} ({len(glossary.entries)} entries)")
-    click.echo(f"[translate-entities] run_id         = {inferred_run_id}")
-    click.echo(f"[translate-entities] tier           = {tier}")
-    click.echo(f"[translate-entities] skip_existing  = {skip_existing}")
-    click.echo(f"[translate-entities] pages on disk  = {len(page_files)}")
+    click.echo(f"[translate-entities] cert_id            = {cert_id}")
+    click.echo(f"[translate-entities] structured_dir     = {structured_dir}")
+    click.echo(f"[translate-entities] glossary           = {glossary_path} ({len(glossary.entries)} entries)")
+    click.echo(f"[translate-entities] run_id             = {inferred_run_id}")
+    click.echo(f"[translate-entities] tier               = {tier}")
+    click.echo(f"[translate-entities] max_items_per_call = {max_items_per_call}")
+    click.echo(f"[translate-entities] skip_existing      = {skip_existing}")
+    click.echo(f"[translate-entities] pages on disk      = {len(page_files)}")
 
     if not confirm:
         click.echo("")
@@ -761,7 +775,9 @@ def translate_entities(
         make_engine_factory,
     )
 
-    engine = make_engine_factory(glossary=glossary, tier=tier)()
+    engine = make_engine_factory(
+        glossary=glossary, tier=tier, max_items_per_call=max_items_per_call
+    )()
     monitor = _build_monitor(
         anthropic_soft_usd=anthropic_soft_usd,
         anthropic_hard_usd=anthropic_hard_usd,

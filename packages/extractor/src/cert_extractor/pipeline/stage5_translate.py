@@ -83,6 +83,15 @@ You will receive a JSON array of input strings. For each string, return:
   symbolic / a placeholder, return the same string in all three fields.
 - Output ONLY the JSON array on one line. No preamble, no commentary,
   no code fences.
+- **ALWAYS return a complete trilingual rendering for every input.**
+  The glossary lock above tells you HOW to render locked surfaces
+  within your output, NOT whether to translate. If an input string
+  contains a locked surface as a substring (or a near-synonym of one),
+  translate the rest of the string normally in zh + en and substitute
+  the locked translation only for the locked substring itself. NEVER
+  return an empty `zh` or `en`, and NEVER omit an item from the output
+  array, just because a glossary surface appears in the input. The
+  wrapper definition / sentence is itself the translation target.
 """
 
 USER_PROMPT_TEMPLATE = """\
@@ -112,12 +121,18 @@ class TranslationRequest:
 
 @dataclass
 class TranslationBatchResult:
-    """Outcome of one LLM batch call (pre-glossary resolution included)."""
+    """Outcome of one page's translation (pre-glossary resolution included).
+
+    A page may dispatch multiple sub-batch LLM calls when the unresolved
+    item count exceeds ``TranslationEngine.max_items_per_call``; each call
+    appends a ``ClaudeResponse`` to ``responses``. ``llm_requests`` equals
+    ``len(responses)``.
+    """
 
     trilinguals: dict[FieldPath, Trilingual]
     glossary_hits: int
     llm_requests: int
-    response: ClaudeResponse | None
+    responses: list[ClaudeResponse] = field(default_factory=list)
     skipped: list[tuple[TranslationRequest, str]] = field(default_factory=list)
 
 
@@ -230,11 +245,17 @@ def _glossary_to_prompt_subset(lookup: dict[str, GlossaryEntry]) -> str:
 
 @dataclass
 class TranslationEngine:
-    """LLM-driven page-level translation with glossary lookahead."""
+    """LLM-driven page-level translation with glossary lookahead.
+
+    ``max_items_per_call`` caps each LLM request's input list size to keep
+    long-context translation quality stable; pages with more unresolved
+    leaves than the cap dispatch multiple sequential sub-batch calls.
+    """
 
     client: ClaudeClient
     glossary: Glossary
     tier: ModelTier | str = "sonnet"
+    max_items_per_call: int = 8
 
     def translate_batch(
         self,
@@ -243,7 +264,7 @@ class TranslationEngine:
     ) -> TranslationBatchResult:
         if not requests:
             return TranslationBatchResult(
-                trilinguals={}, glossary_hits=0, llm_requests=0, response=None
+                trilinguals={}, glossary_hits=0, llm_requests=0
             )
 
         lookup = self.glossary.by_jp_surface()
@@ -258,40 +279,47 @@ class TranslationEngine:
                 unresolved.append(req)
 
         skipped: list[tuple[TranslationRequest, str]] = []
-        response: ClaudeResponse | None = None
+        responses: list[ClaudeResponse] = []
 
         if unresolved:
             system = TRANSLATE_SYSTEM_PROMPT_TEMPLATE.format(
                 glossary_json=_glossary_to_prompt_subset(lookup)
             )
-            batch_json = json.dumps([r.jp for r in unresolved], ensure_ascii=False)
-            user = USER_PROMPT_TEMPLATE.format(
-                page_number=page_number,
-                n=len(unresolved),
-                batch_json=batch_json,
-            )
-            response = self.client.call(system=system, user=user, tier=self.tier)
-            items = parse_translation_response(response.text, n=len(unresolved))
+            chunk_size = max(1, self.max_items_per_call)
+            for start in range(0, len(unresolved), chunk_size):
+                chunk = unresolved[start : start + chunk_size]
+                batch_json = json.dumps([r.jp for r in chunk], ensure_ascii=False)
+                user = USER_PROMPT_TEMPLATE.format(
+                    page_number=page_number,
+                    n=len(chunk),
+                    batch_json=batch_json,
+                )
+                response = self.client.call(system=system, user=user, tier=self.tier)
+                responses.append(response)
+                items = parse_translation_response(response.text, n=len(chunk))
 
-            # Length must match input order; truncate or pad-skip as needed.
-            for req, item in zip(unresolved, items):
-                jp = item.get("jp")
-                zh = item.get("zh")
-                en = item.get("en")
-                if not isinstance(zh, str) or not isinstance(en, str) or not zh or not en:
-                    skipped.append((req, f"missing zh/en: {item!r}"))
-                    continue
-                resolved[req.path] = Trilingual(jp=req.jp, zh=zh, en=en)
-            # If model returned fewer items than requested, mark the tail as skipped.
-            if len(items) < len(unresolved):
-                for req in unresolved[len(items) :]:
-                    skipped.append((req, "model returned short batch"))
+                for req, item in zip(chunk, items):
+                    zh = item.get("zh")
+                    en = item.get("en")
+                    if (
+                        not isinstance(zh, str)
+                        or not isinstance(en, str)
+                        or not zh
+                        or not en
+                    ):
+                        skipped.append((req, f"missing zh/en: {item!r}"))
+                        continue
+                    resolved[req.path] = Trilingual(jp=req.jp, zh=zh, en=en)
+
+                if len(items) < len(chunk):
+                    for req in chunk[len(items) :]:
+                        skipped.append((req, "model returned short batch"))
 
         return TranslationBatchResult(
             trilinguals=resolved,
             glossary_hits=len(requests) - len(unresolved),
-            llm_requests=1 if unresolved else 0,
-            response=response,
+            llm_requests=len(responses),
+            responses=responses,
             skipped=skipped,
         )
 
@@ -398,14 +426,14 @@ class Stage5Translate:
                     break
                 continue
 
-            if batch.response is not None:
+            for resp in batch.responses:
                 tracker.add_anthropic(
                     stage_id=STAGE_ID,
-                    tokens_input=batch.response.tokens_input,
-                    tokens_output=batch.response.tokens_output,
-                    usd=batch.response.cost_usd,
+                    tokens_input=resp.tokens_input,
+                    tokens_output=resp.tokens_output,
+                    usd=resp.cost_usd,
                 )
-                total_calls += 1
+            total_calls += len(batch.responses)
             tracker.add_wall_time(time.monotonic() - t0)
 
             for skipped_req, reason in batch.skipped:
@@ -467,9 +495,15 @@ def make_engine_factory(
     glossary: Glossary,
     tier: ModelTier | str = "sonnet",
     max_budget_usd: float | None = None,
+    max_items_per_call: int = 8,
 ):
     def _factory() -> TranslationEngine:
         client = ClaudeClient(max_budget_usd=max_budget_usd)
-        return TranslationEngine(client=client, glossary=glossary, tier=tier)
+        return TranslationEngine(
+            client=client,
+            glossary=glossary,
+            tier=tier,
+            max_items_per_call=max_items_per_call,
+        )
 
     return _factory

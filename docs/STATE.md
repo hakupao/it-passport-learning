@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-07 (Session 08 ✅ **Closed at Step 6.7 PASS + 6.8 scaffold**; Stage 5 实跑留 Session 09) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8(scaffold) ✅; Stage 5 实跑 + Stage 6/7 + 全本 + retro 留 Session 09+ |
-| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.7 PASS（172 entities + 55 glossary entries）+ 6.8 Stage 5 scaffold（scaffold-only, 197 unit tests pass） |
-| 已锁定决定数 | **73** (D-001 ~ D-073，含 D-071 v1.1 修订) |
+| 最后更新 | 2026-05-07 (**Session 09 in flight** — Step 6.8 Stage 5 trilingual translate **PASS** at attempt 006; D-074 locked) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8 ✅; Stage 6/7 + 全本 + retro 留 Session 09 续段 / Session 10+ |
+| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.7 PASS + **Step 6.8 PASS**（393/393 trilingual leaves, 0 untranslated, 5-page audit 4 PASS + 1 cosmetic WARN）+ 202 unit tests pass |
+| 已锁定决定数 | **74** (D-001 ~ D-074，新增 D-074 Stage 5 prompt wrapper-clause) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **`decfa90`**) |
-| 下一会话 | **Session 09** — Step 6.8 Stage 5 trilingual translate 实跑（scaffold 已就绪 at git HEAD）。详见 §5 + Session 08 §6.8 预告 |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **post-Session-09 commit**) |
+| 下一会话 | **Session 09 续段 OR Session 10** — Step 6.9 Stage 6 audit reviewer LLM (per D-060/D-061/D-063); 详见 §5 |
 
 ---
 
@@ -155,7 +155,36 @@ GUI **不在 v1**，Phase 3 再考虑。
 
 ---
 
-## 5. 下一步 / Resume Instructions (current = between Session 07 closed at Step 5 PASS & Session 08 not started)
+## 5. 下一步 / Resume Instructions (current = Session 09 in flight, Step 6.8 PASS, awaiting user retro on Stage 5 + decision to continue or close Session 09)
+
+### Session 09 in-flight summary (Step 6.8 Stage 5 ✅)
+
+- **393/393 trilingual leaves translated, 0 UNTRANSLATED**
+- 5-page reviewer audit (108 leaves / 27.5% coverage): **4 PASS + 1 cosmetic WARN** (page_043 choice-marker inconsistency, non-blocking)
+- 6 attempts: opus chunk=8 (initial 31 pages) → chunk=4 → chunk=1 (page_031 fixed) → sonnet chunk=1 (regression) → sonnet+new prompt → **opus+new prompt = clean**
+- D-074 locks the new "always translate the wrapper" prompt clause in `TRANSLATE_SYSTEM_PROMPT_TEMPLATE` (with regression-guard test)
+- 5 failure files archived per 规则 B; D-074 ADR + Stage 5 evidence + retry partials all committed
+- Cumulative dry-run shadow $19.14 / $0.05 billed (max-plan OAuth = $0 anthropic billed)
+
+### Next sub-steps (6.9 onwards)
+
+| Sub-step | Content | State |
+|---|---|---|
+| 6.9 | Stage 6 audit reviewer LLM (per D-060/D-061/D-063) | ⏸ — next entry point |
+| 6.10 | Stage 7 export (envelope + JSON/Markdown/SQLite, refuse UNTRANSLATED) | ⏸ |
+| 6.11 | 全本 579 pages run (per D-073 Stage C) + GitHub Release (per D-046) | ⏸ |
+| 6.12 | Phase 1 收尾 RETROSPECTIVE.md (per 规则 C) | ⏸ |
+
+### Resume entry-point for next Claude
+
+1. Read this file (`docs/STATE.md`) — top table + this section
+2. Read `evidence/.../step_05_audit.md` Stage B section + Decision (Stage 5 PASS basis)
+3. Read `failures/stage5_translate/stage5-2026-05-07-001..005.md` + `docs/decisions/D-074-stage5-prompt-wrapper-clause.md` for the prompt-fix evolution
+4. Resume at **Step 6.9** — Stage 6 audit reviewer LLM. D-061 spec is the starting design; D-063 covers audit-failure handling.
+
+---
+
+## 5b. Historical resume note (pre-Session-09)
 
 **Session 01-07 全已闭合**。Phase 1 设计 + 实施起手 + Stage 1 dry-run + Stage B 用户 retro PASS 全部完成。**Phase 1 Step 6 (stage 2-7 + 全本) 是 Session 08 第一题**。
 
