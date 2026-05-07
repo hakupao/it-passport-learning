@@ -326,6 +326,29 @@ class TestAnswerIndexMismatch:
         )
         assert issues == []
 
+    def test_term_only_page_with_answer_prose_skips(self):
+        # Stage A regression: page_045 is term-only (0 questions) but the
+        # OCR has answer-explanation prose ("解答 1-7\nウ ...") that
+        # previously triggered a false-positive Question.answer_index
+        # safety FAIL.  D5 must short-circuit when no question entities.
+        translated = [
+            _term(id_="t1", page=45, jp="HRTech", zh="HR科技", en="HR Tech"),
+            _term(id_="t2", page=45, jp="CIO", zh="首席信息官", en="CIO"),
+        ]
+        cleaned = (
+            "ア．エコファームとは…\n"
+            "解答 1-7\nウ 図を見ると…\n"
+            "解答 1-8\nエ 「利益責任」と…\n"
+            "解答 1-9\nウ 「情報システム」の…\n"
+        )
+        issues = _detect_answer_index_mismatch(
+            _inputs(page=45, translated=translated, cleaned_text=cleaned)
+        )
+        assert issues == [], (
+            "D5 must short-circuit on term-only pages even when source "
+            "text contains stray answer markers (Stage A regression)."
+        )
+
 
 # ---------------------------------------------------------------------------
 # D6 choice_marker_inconsistent
@@ -396,6 +419,35 @@ class TestNumericInconsistent:
 
     def test_no_numbers_anywhere_no_issue(self):
         t = [_term(id_="t1", page=14, jp="abc", zh="def", en="ghi")]
+        assert _detect_numeric_inconsistent(_inputs(translated=t)) == []
+
+    def test_circled_numerals_normalize(self):
+        # Stage A regression: page_014 table cells have jp `①イメージ図`
+        # / zh `①示意图` / en `(1) Conceptual Diagram`. Without circled
+        # normalization, jp/zh report 0 numerics while en reports {"1"},
+        # yielding a false-positive FAIL.
+        t = [
+            _term(
+                id_="t1",
+                page=14,
+                jp="①イメージ図",
+                zh="①示意图",
+                en="(1) Conceptual Diagram",
+            )
+        ]
+        assert _detect_numeric_inconsistent(_inputs(translated=t)) == []
+
+    def test_circled_numerals_higher_range(self):
+        # ⑩ → 10 in normalization.
+        t = [
+            _term(
+                id_="t1",
+                page=14,
+                jp="第⑩条の規定",
+                zh="第10条的规定",
+                en="Article 10 provision",
+            )
+        ]
         assert _detect_numeric_inconsistent(_inputs(translated=t)) == []
 
 

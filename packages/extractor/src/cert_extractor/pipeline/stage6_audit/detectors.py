@@ -333,16 +333,27 @@ def _parse_answer_letters(cleaned_text: str) -> list[str]:
 def _detect_answer_index_mismatch(inputs: Phase1Inputs) -> list[Stage6Issue]:
     if not inputs.cleaned_text:
         return []
-    letters = _parse_answer_letters(inputs.cleaned_text)
-    if not letters:
-        return []  # No parseable answer line — D-076 -1 envelope check covers Stage 4
 
-    expected_indices = [_KANA_TO_INDEX[k] for k in letters if k in _KANA_TO_INDEX]
     questions: list[tuple[int, dict]] = [
         (idx, ent)
         for idx, ent in enumerate(inputs.translated_entities)
         if isinstance(ent, dict) and ent.get("type") == "question"
     ]
+    # D5 only applies to pages that actually contain question entities.
+    # Stage A surfaced this: page_045 is term-only (0 questions) but the
+    # OCR text bled in answer-explanation prose ("解答 1-7\nウ ...") from
+    # an adjacent page. The detector previously fired a Question.answer_index
+    # safety FAIL on a page with no questions — false positive that halted
+    # the entire run. If structured/ has 0 questions, stray answer markers
+    # in the source text are a Stage 3 / Stage 4 concern, not Stage 6.
+    if not questions:
+        return []
+
+    letters = _parse_answer_letters(inputs.cleaned_text)
+    if not letters:
+        return []  # No parseable answer line — D-076 -1 envelope check covers Stage 4
+
+    expected_indices = [_KANA_TO_INDEX[k] for k in letters if k in _KANA_TO_INDEX]
 
     issues: list[Stage6Issue] = []
 
@@ -487,11 +498,62 @@ _FULLWIDTH_DIGIT_TRANS = str.maketrans(
         "．": ".",
     }
 )
+
+# Circled single-digit numerals (Unicode U+2460..U+2468) — keep this as a
+# str-translate table for speed.
+_CIRCLED_SINGLE_DIGIT_TRANS = str.maketrans(
+    {
+        "①": "1",
+        "②": "2",
+        "③": "3",
+        "④": "4",
+        "⑤": "5",
+        "⑥": "6",
+        "⑦": "7",
+        "⑧": "8",
+        "⑨": "9",
+    }
+)
+
+# Multi-digit circled numerals (U+2469..U+2473) translate to 10..20 — must
+# go via .replace() since str.maketrans only supports 1-char outputs.
+# Order matters: replace longer codepoint forms first.
+_CIRCLED_MULTI_DIGIT_REPLACEMENTS: tuple[tuple[str, str], ...] = (
+    ("⑳", "20"),
+    ("⑲", "19"),
+    ("⑱", "18"),
+    ("⑰", "17"),
+    ("⑯", "16"),
+    ("⑮", "15"),
+    ("⑭", "14"),
+    ("⑬", "13"),
+    ("⑫", "12"),
+    ("⑪", "11"),
+    ("⑩", "10"),
+)
 _NUMERIC_RE = re.compile(r"\d+(?:\.\d+)?%?")
 
 
+def _normalize_for_numerics(text: str) -> str:
+    """Normalize digit-bearing characters into ASCII so D7 can reason
+    about cross-language numeric fidelity. Handles full-width Arabic
+    digits, full-width %, full-width period, and circled numerals 1-20.
+
+    Stage A surfaced page_014 false positive: tables use circled `①-⑥`
+    in jp/zh, but en uses `(1)..(6)` — without this normalization,
+    jp/zh reported zero numerics while en reported {1..6}, yielding a
+    spurious FAIL.
+    """
+    text = text.translate(_FULLWIDTH_DIGIT_TRANS)
+    for circled, replacement in _CIRCLED_MULTI_DIGIT_REPLACEMENTS:
+        if circled in text:
+            text = text.replace(circled, replacement)
+    text = text.translate(_CIRCLED_SINGLE_DIGIT_TRANS)
+    return text
+
+
 def _extract_numerics(text: str) -> set[str]:
-    return set(_NUMERIC_RE.findall(text.translate(_FULLWIDTH_DIGIT_TRANS)))
+    return set(_NUMERIC_RE.findall(_normalize_for_numerics(text)))
 
 
 def _detect_numeric_inconsistent(inputs: Phase1Inputs) -> list[Stage6Issue]:

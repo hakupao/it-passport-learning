@@ -149,13 +149,94 @@ Halt conditions per D-077 §2.8:
 | 9 | Recall: at least 1 issue raised on a page known to need work (e.g. page_045 F-COP21) | TBD |
 | 10 | Precision: 0 issues on the clean baseline page_014 | TBD |
 
-### Findings (Stage A) — TBD post-run
+### Findings (Stage A) — post-run 2026-05-07T20:55+09:00
 
-(populated after Stage A completes)
+**Run summary**:
 
-### Decision (Stage A) — TBD post-run
+| Field | Value |
+|---|---|
+| pages_processed | 5 (014, 030, 038, 043, 045) |
+| overall_verdict | **FAIL** |
+| pass / warn / fail pages | **0 / 2 / 3** |
+| pass_rate | 0.000 |
+| safety_failed | True (page_045 → `Question.answer_index`) |
+| most_severe_repair_stage | "4" |
+| run_level_issues | 2 (D13 glossary surface_concept_split — INFO) |
+| LLM calls | 12 |
+| cost_shadow | $2.8734 (~$0.24/call — opus heavier than $0.05 pre-run estimate) |
+| cumulative dry-run shadow | $50.32 |
+| real billed | $0.05 Mistral / $0 Anthropic (max-plan OAuth) |
+| halt_reason | page_045 safety FAIL — halted per D-077 §2.8 |
 
-(PASS / WARN / FAIL → authorize Stage B / re-tune prompt / repair upstream)
+**Per-page result**:
+
+| Page | Verdict | Fid | LD | Issues | Notable |
+|---|---|---|---|---|---|
+| 014 | FAIL | FAIL | PASS | 5 | **D7 false positive ×4** (circled numerals `①-⑥` not in regex); 1 INFO LLM (ITパスポート→护照) |
+| 030 | WARN | PASS | WARN | 1 | D9 glossary_lock_missed (経営者→en) |
+| 038 | FAIL | FAIL | WARN | 5 | 1 D7 numeric (need verify); 1 D9; 1 D11 INFO (kana_helper); **2 LLM unfaithful** (alternate-name + 手作業 idiom) |
+| 043 | WARN | WARN | WARN | 7 | **D6 F-CHOICE-MARKER hit** ✓ on Q2 (`[A,A,ウ,ウ]`); 5× D9; 1 LLM unfaithful (CEO/CFO/CIO inconsistent style) |
+| 045 | FAIL | PASS | FAIL | 7 | **D5 false positive safety FAIL** (0 questions on page; OCR has answer-explanation prose); 3× D9; 3× D11 INFO (kana_helper) |
+
+#### True positives (real audit value)
+
+- ✅ **F-CHOICE-MARKER caught**: page_043 entity[1] (Q2) zh choices use mixed `[uppercase, uppercase, katakana, katakana]` — exactly the worksheet §B.4.3 pattern.
+- ✅ **LLM Phase 2 high-quality catches** (3 issues, all reasonable):
+  - page_014 entity[1].rows[2][1].zh: zh "IT 护照" — Chinese-speaking IT learners typically retain "ITパスポート"/"IT Passport"; literal `护照` is awkward.
+  - page_038 entity[2].definition.en: jp notes the alternate Japanese name `機能別組織`; en renders the alternate name as the same English term — alternate-Japanese-name fidelity issue.
+  - page_038 entity[5].definition.zh: `手作業 → 人工作业` is technically correct but `手工操作` is more idiomatic for Chinese-speaking IT learners.
+  - page_043 entity[4].choices[3].en: bare CEO/CFO/CIO style for choices A/B/C but choice D expanded → style inconsistency with the others.
+
+#### False positives (detector bugs surfaced by real data)
+
+| # | Detector | Symptom | Root cause | Fix |
+|---|---|---|---|---|
+| FP1 | **D7 numeric_inconsistent** | page_014 raises 4× FAIL on table rows 0-2 | Table jp uses Unicode circled numerals `①②③④⑤⑥` (U+2460-U+2465); D7 regex `\d+` doesn't match them; en uses `(1)(2)..`; jp_n={} vs en_n={"1",..} → FAIL | Extend `_FULLWIDTH_DIGIT_TRANS` (or equivalent normalization) to include circled `①-⑳ → 1-20`. |
+| FP2 | **D5 answer_index_mismatch** | page_045 raises safety FAIL `Question.answer_index` despite page having 0 question entities | OCR text has answer-explanation prose ("解答 1-7\nウ ..." for previous page's questions bleeding into page_045 source); regex matches 6 answer markers; count mismatch fires; tagged as `Question.answer_index` safety field → halts run | Add early return: `if len(questions) == 0: return []`. Pages without question entities aren't D5 territory; an answer line with no questions is a Stage 4 / Stage 3 concern, not Stage 6. |
+
+#### Ambiguous (low-precision but acceptable noise)
+
+- **D9 glossary_lock_missed**: 8 WARN issues across pages 030/038/043/045. Some real (en lacks the locked term verbatim), some are reasonable paraphrases (e.g. en uses `Information` instead of literal `system`). Lower priority — WARN is non-blocking per D-077 §2.5; user retro can dismiss noisy ones. Phase-2 polish, not Stage A blocker.
+
+#### Plan-B mitigation verified
+
+- **F-COP21 NOT caught by D10** — but this is success, not failure. The glossary patch from Session 09b (worksheet C.4.2 (B+C) combined) replaced the locked en `(COP21 (21st Conference of the Parties))` with a non-nested form, so D10's `\([^()]*\([^()]*\)[^()]*\)` regex correctly finds nothing. The page_045 ent[16] inspection in glossary_translation_review_2026-05-07.md confirms the post-Plan-B en is clean.
+
+#### Halt strategy verified
+
+- D-077 §2.8 safety-FAIL fast-halt fired correctly on page_045 (no Stage A pages 014-043 cost was wasted; only page_045 itself completed). After the halt, the run aggregated and emitted Stage6RunSummary with `halt_reason` populated. `most_severe_repair_stage = "4"` correctly points to Stage 4 (where answer_index extraction belongs).
+
+### Decision (Stage A) — 2026-05-07T20:55+09:00
+
+**WARN with required fixes** — Stage A surfaces 2 deterministic-detector
+false positives that must be patched before Stage B (would over-fire
+across 40 pages otherwise) and confirms 1 LLM-Phase-2 prompt is producing
+high-quality catches.
+
+**Required fixes (no LLM cost; deterministic + tests)**:
+
+1. **D7 fix**: extend digit normalization to handle circled numerals
+   `①-⑳`. Add regression test: jp `①イメージ図` / zh `①示意图` / en
+   `(1) Conceptual Diagram` → no issue.
+2. **D5 fix**: short-circuit detector when page has 0 question entities.
+   Add regression test: page with 0 questions + cleaned text containing
+   answer markers → 0 issues.
+
+**Optional polish (deferrable to Stage B retro)**:
+
+3. **D9 noise reduction**: consider stripping case + leading punctuation
+   in substring check; or relax to INFO when the leaf is non-Term prose.
+   Current WARN level is acceptable for Stage A, becomes noisy at Stage B
+   scale (40 pages × multi-glossary-key-per-leaf could emit 100+ WARNs).
+
+**Re-run plan**: after fixes + new tests pass, re-run Stage A on the same
+5 pages. Expected delta:
+
+- page_014: 4 FAIL → expected 0-1 FAIL (only legitimate numeric issues if any).
+- page_045: safety FAIL → expected: D5 silent; remaining issues stay (D9 + D11 INFO).
+- F-CHOICE-MARKER catch on page_043 stays (D6 unchanged).
+- LLM Phase 2 catches stay (Phase 2 unchanged).
+- New cost: another ~$2.87 shadow. Total dry-run shadow → ~$53.
 
 ---
 
