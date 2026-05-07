@@ -240,6 +240,133 @@ high-quality catches.
 
 ---
 
+## Stage A re-run #1 (post D5+D7 FP fix, commit `a624f28`) — 2026-05-07T21:10+09:00
+
+### Result
+
+| Field | Value | Delta vs Stage A #0 |
+|---|---|---|
+| pages_processed | 5 | (same) |
+| overall_verdict | **FAIL** | (same; remaining FAILs are D7 strict, not safety) |
+| pass / warn / fail | 0 / 3 / 2 | from 0/2/3 — **page_045 moved FAIL → WARN** |
+| safety_failed | **False** ✅ | from True — **D5 short-circuit verified** |
+| most_severe_repair | "5" | from "4" — answer_index FP gone |
+| LLM calls | 12 | (same) |
+| cost_shadow | $2.7631 | (similar) |
+
+### Key wins
+
+- ✅ **D5 page_045 safety FAIL eliminated** by `len(questions)==0` short-circuit.
+- ✅ **D7 page_014 4 FALSE FAILs reduced to 1** by circled-numeral normalization (`①-⑳ → 1-20`).
+- ✅ Run no longer halts on safety FAIL — completes all 5 pages.
+- ✅ F-CHOICE-MARKER catch retained (page_043 entity[1] zh).
+- ✅ LLM Phase 2 catches retained (page_038 alt-name fidelity, page_038 idiomatic 手作業, page_014 ITパスポート→护照).
+
+### Remaining 2 FAILs are real translation-style differences (not bugs)
+
+- **page_014.entities[1].rows[1][1]**: jp `4種類` / zh `4种` / en `four types`. Populated numeric sets agree on `{"4"}`; en uses spelled-out form. Real fidelity preserved.
+- **page_038.entities[3].definition**: jp `1つ上に` / zh `一个` / en (article). Populated sets agree on `{"1"}`; "1つ" paraphrased to article in en. Real fidelity preserved.
+
+D7 was over-strict in calling these FAIL. Lock follow-up commit `162aebb` (D7 severity heuristic): split FAIL/WARN by populated-set agreement (all-agree → WARN; conflicting populated values → FAIL).
+
+---
+
+## Stage A re-run #2 (post D7 severity polish, commit `162aebb`) — 2026-05-07T21:25+09:00
+
+### Result
+
+| Field | Value | Delta vs re-run #1 |
+|---|---|---|
+| pages_processed | 5 | (same) |
+| overall_verdict | **WARN** | from FAIL — **0 FAILs remain** |
+| pass / warn / fail | **0 / 5 / 0** | from 0/3/2 — clean |
+| safety_failed | False | (same) |
+| most_severe_repair | "5" | (same; Stage 5 prompt-tune territory) |
+| LLM calls | 12 | (same) |
+| cost_shadow | $2.7808 | (similar) |
+| run_level_issues | 2 (D13 INFO) | (same) |
+
+### Per-page summary
+
+| Page | Verdict | F / W / I | Notable |
+|---|---|---|---|
+| 014 | WARN | 0 / 1 / 0 | D7 numeric WARN (4種類↔four types); LLM (ITパスポート→护照) note absent re-run-2 |
+| 030 | WARN | 0 / 1 / 0 | D9 glossary_lock_missed (経営者→en) |
+| 038 | WARN | 0 / 3 / 1 | D7 numeric WARN; D9; D11 INFO; **🤖 LLM "circular definition" catch** ✓ |
+| 043 | WARN | 0 / 6 / 1 | **D6 F-CHOICE-MARKER WARN** ✓; 5× D9 (システム / 組織形態 / CEO / CFO / CIO not in en); LLM 自我完结型 idiomatic INFO ✓ |
+| 045 | WARN | 0 / 3 / 3 | 3× D9; 3× D11 INFO (kana_helper missing) |
+
+### True positives (real audit value, all LLM-emitted catches verified high quality)
+
+- **page_038 entity[2].definition.en**: LLM caught a circular English definition where the term name appears inside its own definition. Real fidelity issue Phase 1 detectors couldn't see.
+- **page_043 entity[3].choices[3].zh**: LLM caught `自己完結的→自我完结型` as Japanese-style direct translation; suggests `自主完整` for Chinese-IT-textbook idiom.
+
+### False positives — none after D7 polish.
+
+### Verdict chain final state
+
+| Run | overall | safety | P/W/F |
+|---|---|---|---|
+| Stage A #0 (initial) | FAIL | True (halted) | 0/2/3 |
+| Stage A re-run #1 | FAIL | False | 0/3/2 |
+| **Stage A re-run #2** | **WARN** | **False** | **0/5/0** ← clean baseline |
+
+### Stage 6 detector + LLM Phase 2 verification matrix
+
+| Component | Status | Evidence |
+|---|---|---|
+| D1 jp_mutation | unfired (Stage 5 D-075 already preserves jp) | implicit confirmation |
+| D2 untranslated_residue | unfired (Stage 5 = 0 sentinel post Plan-B) | confirms Plan-B clean |
+| D3 schema_invalid | unfired | translated/ all valid |
+| D4 answer_index_out_of_range | unfired (D-076 envelope already gates) | implicit |
+| D5 answer_index_mismatch | **fixed** (page_045 short-circuit) | re-run #1 + #2 silent |
+| D6 choice_marker_inconsistent | **fired correctly** on page_043 Q2 | F-CHOICE-MARKER caught ✓ |
+| D7 numeric_inconsistent | **polished** (severity heuristic) | 4 FP → 0 FP |
+| D8 glossary_lock_violated | unfired (Plan-B glossary patches stable) | confirms |
+| D9 glossary_lock_missed | fired noisy WARN ×9 | acceptable Phase-2 polish item |
+| D10 redundant_nested_parens | **silent** (F-COP21 mitigated by glossary patch) | Plan-B verified |
+| D11 kana_helper_missing | INFO ×4 on katakana terms | informational |
+| D12 kana_helper_format | unfired | (no kana_helper present in Stage A pages) |
+| D13 glossary_surface_concept_split | run_level INFO ×2 | confirms グリーンIT etc cosmetic |
+| L1 hallucination | unfired | LLM didn't see hallucinations |
+| L2 omission | unfired | LLM didn't see omissions |
+| L3 unfaithful | fired correctly ×1 (page_038 circular EN) | high-quality LLM catch |
+| L4 idiomatic | fired correctly ×1 (page_043 自我完结型) | high-quality LLM catch |
+
+### Stage A reviewer (规则 D 隔离) sign-off — pending user retro
+
+User picked "C" earlier (re-run + Stage B). Stage A re-run #2 result is
+shown above; user retro on this output is required before Stage B
+dispatch per D-077 §6.4 + CLAUDE.md gate. **Stage B is deferred to
+Session 11 per user instruction "收个尾。保存记录一下，下次再跑 Stage B"** at
+2026-05-07T21:30+09:00.
+
+---
+
+## Cumulative cost (after Stage A iterations)
+
+| Stage | Calls | Tokens out | Shadow USD |
+|---|---|---|---|
+| Stage 1 (Mistral OCR) | 50 | — | $0.05 real |
+| Stage 2 (classify) | 50 | 2,470 | $2.57 shadow |
+| Stage 3 (Vision re-OCR) | 53 | 49,089 | $3.91 shadow |
+| Stage 4 (Structure + Plan-B re-run) | 81 | 55,891 | $5.21 shadow |
+| Stage 4.5 (Glossary) | 1 | 17,535 | $0.36 shadow |
+| Stage 5 (Translate + Plan-B re-run) | 186 | 64,123 | $35.40 shadow |
+| **Stage 6 (Audit, 3 dispatches)** | **36** | **32,293** | **$8.42 shadow** |
+| **Cumulative dry-run shadow** | — | — | **$55.86** |
+| Real billed | — | — | **$0.05 Mistral / $0 Anthropic (max-plan OAuth)** |
+
+### Stage 6 dispatch breakdown
+
+| Run | Time | Calls | Shadow | Notes |
+|---|---|---|---|---|
+| Stage A #0 | 2026-05-07T20:50 | 12 | $2.87 | Initial run; surfaced D5+D7 FPs; halted on page_045 safety FAIL |
+| Stage A re-run #1 | 2026-05-07T21:10 | 12 | $2.76 | After D5+D7 FP fix; safety FAIL gone; 2 D7 strict FAILs persist |
+| Stage A re-run #2 | 2026-05-07T21:25 | 12 | $2.78 | After D7 severity polish; **0 FAILs, clean baseline** |
+
+---
+
 ## Stage B dispatch plan (post Stage A user PASS)
 
 ```
@@ -304,10 +431,14 @@ For Stage B user retro, sample-check at least:
 | Role | Name | Time | Status |
 |---|---|---|---|
 | Pre-run scaffold author | Claude main session (Opus 4.7 1M ctx) | 2026-05-07T20:30+09:00 | scaffold ✅ (315 unit tests pass; 103 are Stage 6) |
-| Stage A LLM dispatcher | (user-gated) | TBD | TBD |
-| Stage A auditor | Claude main session | TBD | TBD |
-| Stage A reviewer (规则 D 隔离) | user retro | TBD | TBD |
-| Stage B LLM dispatcher | (user-gated) | TBD | TBD |
-| Stage B auditor | Claude main session | TBD | TBD |
-| Stage B reviewer (规则 D 隔离) | user retro | TBD | TBD |
+| Stage A #0 LLM dispatcher | user-authorized via "go Stage A" | 2026-05-07T20:48+09:00 | dispatched ✅ (12 calls, $2.87 shadow) |
+| Stage A #0 auditor | Claude main session (Opus 4.7) | 2026-05-07T20:55+09:00 | retro ✅ — surfaced D5/D7 FPs |
+| Stage A re-run #1 LLM dispatcher | user-authorized via "1" path | 2026-05-07T21:08+09:00 | dispatched ✅ (12 calls, $2.76 shadow) |
+| Stage A re-run #1 auditor | Claude main session (Opus 4.7) | 2026-05-07T21:10+09:00 | retro ✅ — D5 fixed, D7 needs severity polish |
+| Stage A re-run #2 LLM dispatcher | user-authorized via "C" path | 2026-05-07T21:23+09:00 | dispatched ✅ (12 calls, $2.78 shadow) |
+| Stage A re-run #2 auditor | Claude main session (Opus 4.7) | 2026-05-07T21:25+09:00 | retro ✅ — **clean baseline (0 FAIL, no safety, no halt)** |
+| Stage A reviewer (规则 D 隔离) | user retro on re-run #2 | (deferred to Session 11) | pending |
+| Stage B LLM dispatcher | (deferred to Session 11) | TBD | per user "下次再跑" 2026-05-07T21:30 |
+| Stage B auditor | (deferred) | TBD | TBD |
+| Stage B reviewer (规则 D 隔离) | (deferred) | TBD | TBD |
 | Final | user + Claude consensus | TBD | TBD |

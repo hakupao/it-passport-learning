@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-07 (**Session 10 in flight** — D-077 locked under D-019 "你来定": Stage 6 reviewer = two-pass deterministic + opus LLM, two-tier verdict, repair_stage tagging, Stage A 5-page → Stage B 40-page; new memory `feedback_quality_over_cost.md` locked) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8 ✅ (post Plan-B); **Step 6.9 设计 ✅ (D-077), 实施 in progress**; Step 6.10/6.11/6.12 pending |
-| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.7 PASS + Step 6.8 PASS post Plan-B（382/382 trilingual leaves, 0 untranslated, 0 jp mutations, 10/10 question.answer_index ground-truth match, 13 glossary patches applied, 2 hand-translations for stuck definitions）+ 212 unit tests pass + **Step 6.9 Stage 6 reviewer ADR (D-077) locked, scaffold pending** |
+| 最后更新 | 2026-05-07 (**Session 10 paused at clean Stage A baseline** — D-077 locked, Stage 6 module + 320 tests, 3 LLM dispatches (Stage A #0/#1/#2) verified detector + opus prompt v1.0 produces 0-FAIL clean run on 5 pages; **Stage B 40-page deferred to Session 11 per user "下次再跑"**) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8 ✅ (post Plan-B); **Step 6.9 设计 ✅ (D-077) + scaffold ✅ + Stage A clean baseline ✅ (0 FAIL / 5 WARN / 0 PASS, safety_failed=False)**; Step 6.9 Stage B + 6.10/6.11/6.12 pending |
+| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.8 PASS post Plan-B（382/382 trilingual leaves, 0 untranslated, 0 jp mutations, 10/10 answer_index ground-truth, 13 glossary patches, 2 hand-translations）+ **Step 6.9 Stage 6 ADR D-077 locked + Stage 6 module + 320/320 unit tests + Stage A 5-page audit ran 3× to clean baseline (0 FAIL, F-CHOICE-MARKER/LLM unfaithful/idiomatic catches verified)** |
 | 已锁定决定数 | **77** (D-001 ~ D-077；Session 10 新增 D-077 Stage 6 audit reviewer design — two-pass deterministic + LLM, two-tier verdict, repair_stage; amends D-063 retry semantics) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **Session-09b Plan-B close commit `1ed07a6`** — Session 10 in flight, no commits yet) |
-| 下一会话 | **Session 10 (current, in flight)** — Step 6.9 Stage 6 audit reviewer scaffold + tests, then user-gated LLM dispatch; 详见 §5 |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **Session-10 close commit pending** — 3 commits this session: `39b8710` scaffold + `a624f28` D5/D7 FP fixes + `162aebb` D7 severity polish) |
+| 下一会话 | **Session 11** — Stage B 40-page audit dispatch + retro (per user instruction at 2026-05-07T21:30); 详见 §5 |
 
 ---
 
@@ -155,28 +155,37 @@ GUI **不在 v1**，Phase 3 再考虑。
 
 ---
 
-## 5. 下一步 / Resume Instructions (current = **Session 10 in flight**, Step 6.9 Stage 6 design ✅ via D-077, scaffold + LLM dispatch pending)
+## 5. 下一步 / Resume Instructions (current = **Session 10 closed at Stage A clean baseline**, Stage B 40-page deferred to Session 11)
 
-### Session 10 in flight — Step 6.9 Stage 6 design ✅, scaffold next
+### Session 10 close summary — Stage 6 scaffold + Stage A 0-FAIL baseline ✅
 
-**Decision locked**: D-077 — Stage 6 audit reviewer LLM (two-pass deterministic + LLM, two-tier verdict, repair_stage tagging, Stage A 5-page → Stage B 40-page; amends D-063 retry semantics). ADR: `docs/decisions/D-077-stage6-audit-reviewer.md`. Session log: `docs/discussion/2026-05-07-session-10.md`.
+**D locked**: D-077 — Stage 6 audit reviewer LLM (two-pass deterministic + LLM, two-tier verdict, repair_stage tagging, Stage A 5-page → Stage B 40-page; amends D-063 retry semantics). ADR: `docs/decisions/D-077-stage6-audit-reviewer.md`. Session log: `docs/discussion/2026-05-07-session-10.md`.
 
 **Memory**: new `feedback_quality_over_cost.md` (default to highest-quality / safest design option; do not pre-frame around shadow cost — user feedback Session 10 起手).
 
-**Next implementation sub-steps** (per session-10 log §4):
+**3 commits this session**:
+- `39b8710` — Stage 6 audit reviewer scaffold (D-077 + 5 modules + 4 test files + 103 unit tests)
+- `a624f28` — D5/D7 false-positive fixes from Stage A retro (D5 short-circuit on 0-question pages; D7 circled-numeral normalization)
+- `162aebb` — D7 numeric_inconsistent severity heuristic (FAIL only on real conflict; WARN on style/paraphrase)
 
-| # | Action | LLM ($)? |
-|---|---|---|
-| 6.9.1 | Pydantic schemas (`pipeline/stage6_audit/schema.py`) + tests | no |
-| 6.9.2 | Phase 1 deterministic detectors (D1-D13) + tests | no |
-| 6.9.3 | Phase 2 LLM reviewer engine + tests (LLM mocked) | no |
-| 6.9.4 | Stage 6 runner + CLI `audit-trilingual` + tests | no |
-| 6.9.5 | Scaffold `step_06_audit.md` evidence file | no |
-| **GATE** | **User authorizes Stage A LLM dispatch** | — |
-| 6.9.6 | Stage A: 5 pages (014/043/045/030/038) | yes |
-| 6.9.7 | User retro on Stage A (precision + recall) | — |
-| 6.9.8 | Stage B: 40 pages | yes |
-| 6.9.9 | User retro on Stage B → Stage 6 sign-off | — |
+**3 LLM dispatches** (Stage A 5-page audit, total 36 calls, $8.42 shadow / $0 billed):
+- Stage A #0: surfaced D5+D7 FPs; halted on page_045 safety FAIL
+- Stage A re-run #1: D5 fixed, 2 D7 strict FAILs persist
+- Stage A re-run #2: 0 FAILs / 5 WARN, clean baseline ready for Stage B
+
+**Stage A re-run #2 result** (current `audit/stage6_review.json`): overall=WARN, safety_failed=False, P/W/F=0/5/0, repair_stage="5". Real catches verified: F-CHOICE-MARKER (page_043 D6) + LLM Phase 2 circular-definition (page_038) + LLM idiomatic 自我完结型 (page_043).
+
+### Next sub-steps for Session 11
+
+| # | Action | LLM ($)? | Status |
+|---|---|---|---|
+| 6.9.1~6.9.5 | Stage 6 scaffold + 320 unit tests | no | ✅ done |
+| Stage A #0/#1/#2 | 5-page audit verification (3 dispatches) | yes ($8.42 shadow) | ✅ done |
+| **6.9.8** | **Stage B 40-page audit dispatch + retro** | yes (~$10-15 shadow estimate) | ⏸ Session 11 |
+| 6.9.9 | User retro on Stage B → Stage 6 sign-off | — | ⏸ |
+| 6.10 | Stage 7 export (envelope + JSON/Markdown/SQLite) | yes | ⏸ |
+| 6.11 | 全本 579-page run (per D-073 Stage C) + GitHub Release (D-046) | yes | ⏸ |
+| 6.12 | Phase 1 RETROSPECTIVE.md (per 规则 C) | no | ⏸ |
 
 ### Session 09 + 09b summary (Step 6.8 Stage 5 ✅ post Plan-B)
 
@@ -212,13 +221,13 @@ GUI **不在 v1**，Phase 3 再考虑。
 | 6.11 | 全本 579 pages run (per D-073 Stage C) + GitHub Release (per D-046) | ⏸ |
 | 6.12 | Phase 1 收尾 RETROSPECTIVE.md (per 规则 C) | ⏸ |
 
-### Resume entry-point for next Claude
+### Resume entry-point for Session 11
 
-1. Read this file (`docs/STATE.md`) — top table + this section.
-2. Read `docs/discussion/2026-05-07-session-10.md` §2 + §4 (D-077 lock + implementation step ladder).
-3. Read `docs/decisions/D-077-stage6-audit-reviewer.md` — full Stage 6 spec (two-pass, two-tier, repair_stage, dry-run plan).
-4. Optionally re-read `docs/decisions/D-061-reviewer-mapping.md` + `docs/decisions/D-063-audit-failure-handling.md` (D-077 §2.6 amends D-063 retry semantics).
-5. Resume at the next un-done sub-step in §5 "Next implementation sub-steps" ladder. Respect the **GATE** before any LLM dispatch — user must authorize Stage A.
+1. Read this file (`docs/STATE.md`) — top table + §5 "Next sub-steps".
+2. Read `docs/discussion/2026-05-07-session-10.md` §2 + §6/§7/§8 (D-077 lock, 3 commits, Stage A iteration ledger, close summary).
+3. Read `evidence/itpassport_r6/runs/dry_run_2026-05-06T16-58-10/step_06_audit.md` Stage A re-run #2 section (clean baseline) — Session 11 picks up from this verdict.
+4. Read `docs/decisions/D-077-stage6-audit-reviewer.md` only if needed for Stage B mechanics (§2.7 Stage B plan + §2.8 halt strategy).
+5. Resume at **Step 6.9.8 — Stage B 40-page dispatch**. Command in `step_06_audit.md` "Stage B dispatch plan" section. **GATE**: user must explicitly authorize Stage B LLM dispatch ("go Stage B" / "授权 Stage B"). Stage A re-run #2 user retro is implicit per "下次再跑 Stage B" instruction; if user wants explicit retro on the 5 pages first, present `audit/stage6_review.json` summary before dispatching.
 
 ---
 
