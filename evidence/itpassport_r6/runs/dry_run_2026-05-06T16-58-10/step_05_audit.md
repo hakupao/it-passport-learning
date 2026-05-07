@@ -407,5 +407,5 @@ Outstanding:
 | Stage B reviewer (false-PASS) | user retro (post-close) | 2026-05-07T15:00+09:00 | **FAIL** — caught 2 architectural bugs Claude self-audit missed; triggered Plan-B per user worksheet |
 | Plan-B coder | Claude main session (Opus 4.7 1M ctx) | 2026-05-07T17:00+09:00 | ✅ schema (D-075/076) + Stage 4 prompt + Stage 5 engine fixes; 212 unit tests pass |
 | Plan-B re-run auditor | Claude main session (Opus 4.7) | 2026-05-07T18:00+09:00 | **PASS** — 0 untrans, 0 jp mutations, 10/10 answer_index match ground truth, 10/10 glossary patches verified |
-| Plan-B reviewer (规则 D 隔离) | user (manual retro on Plan-B output) | TBD | **PASS pending verbal sign-off on 2 hand-translations** (page_030 ent[4] 経営理念 + page_038 ent[2] 職能別組織) |
-| Final | user + Claude consensus | TBD | pending Plan-B reviewer signoff above |
+| Plan-B reviewer (规则 D 隔离) | user (manual retro on Plan-B output) | 2026-05-07T19:00+09:00 | **PASS** — user signed off on the 2 hand-translations (page_030 ent[4] 経営理念 + page_038 ent[2] 職能別組織) |
+| Final | user + Claude consensus | 2026-05-07T19:00+09:00 | **PASS** — Stage 5 output (post Plan-B) approved for Stage 6 reviewer + Stage 7 export consumption |
