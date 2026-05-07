@@ -391,8 +391,9 @@ class TestChoiceMarkerInconsistent:
 
 
 class TestNumericInconsistent:
-    def test_year_mismatch_flagged(self):
-        # A term-like leaf with a year in jp but missing in zh.
+    def test_year_mismatch_flagged_warn_when_one_side_omits(self):
+        # jp+en agree on "1980" but zh omits — populated sets {1980} agree,
+        # missing zh is a paraphrase. WARN-level (not FAIL).
         t = [
             _term(
                 id_="t1",
@@ -404,6 +405,47 @@ class TestNumericInconsistent:
         ]
         issues = _detect_numeric_inconsistent(_inputs(translated=t))
         assert any(i.issue_type == "numeric_inconsistent" for i in issues)
+        assert all(
+            i.severity == Stage6IssueSeverity.WARN
+            for i in issues if i.issue_type == "numeric_inconsistent"
+        )
+
+    def test_conflicting_numbers_flagged_fail(self):
+        # jp says 1980, zh says 1990 — populated sets disagree, real bug.
+        t = [
+            _term(
+                id_="t1",
+                page=14,
+                jp="1980年制定",
+                zh="1990年制定",
+                en="enacted in 1980",
+            )
+        ]
+        issues = _detect_numeric_inconsistent(_inputs(translated=t))
+        assert any(
+            i.severity == Stage6IssueSeverity.FAIL
+            and i.issue_type == "numeric_inconsistent"
+            for i in issues
+        )
+
+    def test_spelled_out_english_warn_not_fail(self):
+        # Stage A regression: jp "4種類" / zh "4种" / en "four types" —
+        # populated sets agree on {"4"}, en omits Arabic digit because of
+        # English style preference. WARN, not FAIL.
+        t = [
+            _term(
+                id_="t1",
+                page=14,
+                jp="4種類の文字",
+                zh="4种文字",
+                en="four types of text",
+            )
+        ]
+        issues = _detect_numeric_inconsistent(_inputs(translated=t))
+        assert all(
+            i.severity == Stage6IssueSeverity.WARN
+            for i in issues if i.issue_type == "numeric_inconsistent"
+        )
 
     def test_full_width_digits_normalize(self):
         t = [

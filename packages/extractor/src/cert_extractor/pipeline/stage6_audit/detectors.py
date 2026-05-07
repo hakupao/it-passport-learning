@@ -566,11 +566,34 @@ def _detect_numeric_inconsistent(inputs: Phase1Inputs) -> list[Stage6Issue]:
             continue
         if jp_n == zh_n == en_n:
             continue
+        # Severity heuristic (Stage A retro):
+        # - If every populated set agrees and the rest are empty, the
+        #   "missing" side likely uses a spelled-out form (e.g. jp "4種類"
+        #   / zh "4种" / en "four types") or is a fidelity-preserving
+        #   paraphrase ("1つ上" → "above"). Translation-style difference,
+        #   not a fidelity bug → WARN.
+        # - If two or more populated sets disagree on the numeric content,
+        #   one of them is semantically wrong → FAIL.
+        populated_sets = [s for s in (jp_n, zh_n, en_n) if s]
+        if len({frozenset(s) for s in populated_sets}) <= 1:
+            severity = Stage6IssueSeverity.WARN
+            rationale = (
+                "Numeric tokens disagree (one or more languages omit a "
+                "digit the others kept). Likely a spelled-out / paraphrase "
+                "translation; user retro to confirm fidelity."
+            )
+        else:
+            severity = Stage6IssueSeverity.FAIL
+            rationale = (
+                "Numeric tokens conflict across jp/zh/en (different values "
+                "in different languages). Year, percent, or count fidelity "
+                "is a learner-facing FAIL."
+            )
         issues.append(
             _make_issue(
                 issue_id=f"D7-page_{inputs.page:03d}-{len(issues)+1:04d}",
                 issue_type="numeric_inconsistent",
-                severity=Stage6IssueSeverity.FAIL,
+                severity=severity,
                 detector=Stage6IssueDetector.deterministic,
                 entity_path=_path_str(inputs.page, ent_idx, path),
                 evidence={
@@ -581,10 +604,7 @@ def _detect_numeric_inconsistent(inputs: Phase1Inputs) -> list[Stage6Issue]:
                     "zh_numerics": ",".join(sorted(zh_n)),
                     "en_numerics": ",".join(sorted(en_n)),
                 },
-                rationale=(
-                    "Numeric token sets differ across jp/zh/en. Year, percent, "
-                    "or count fidelity is a learner-facing FAIL."
-                ),
+                rationale=rationale,
             )
         )
     return issues
