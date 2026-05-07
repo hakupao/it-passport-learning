@@ -54,7 +54,7 @@ def main(ctx: click.Context) -> None:
     if ctx.invoked_subcommand is None:
         click.echo(f"cert-extractor {__version__} (schema {SCHEMA_VERSION})")
         click.echo(
-            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure [--help]"
+            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure | extract-glossary [--help]"
         )
 
 
@@ -577,6 +577,110 @@ def extract_structure(
     click.echo(f"[extract-structure]        verdict_halted  = {result.halted_verdict}")
     click.echo(f"[extract-structure]        cost.json       = {result.cost_path}")
     click.echo(f"[extract-structure]        output_dir      = {result.output_dir}")
+
+
+@main.command("extract-glossary")
+@click.option(
+    "--structured-dir",
+    "structured_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Directory of stage-4 structured/ JSON output.",
+)
+@click.option("--cert-id", default="itpassport_r6", show_default=True)
+@click.option(
+    "--run-id",
+    default=None,
+    help="Defaults to grandparent run dir name.",
+)
+@click.option(
+    "--tier",
+    type=click.Choice(["haiku", "sonnet", "opus"]),
+    default="sonnet",
+    show_default=True,
+)
+@click.option(
+    "--skip-existing/--no-skip-existing",
+    default=True,
+    show_default=True,
+    help="If glossary/glossary.json already exists, load it instead of re-running.",
+)
+@click.option(
+    "--anthropic-soft-usd",
+    default=None,
+    type=float,
+)
+@click.option(
+    "--anthropic-hard-usd",
+    default=None,
+    type=float,
+)
+@click.option(
+    "--confirm",
+    is_flag=True,
+    default=False,
+    help="REQUIRED to actually invoke Claude. Without --confirm, prints plan and exits.",
+)
+def extract_glossary(
+    structured_dir: Path,
+    cert_id: str,
+    run_id: str | None,
+    tier: str,
+    skip_existing: bool,
+    anthropic_soft_usd: float | None,
+    anthropic_hard_usd: float | None,
+    confirm: bool,
+) -> None:
+    """Stage 4.5 glossary extraction (per D-008 + D-012)."""
+    inferred_run_id = run_id or structured_dir.parent.name
+    run_dir = structured_dir.parent
+    page_files = sorted(structured_dir.glob("page_*.json"))
+
+    click.echo(f"[extract-glossary] cert_id        = {cert_id}")
+    click.echo(f"[extract-glossary] structured_dir = {structured_dir}")
+    click.echo(f"[extract-glossary] run_id         = {inferred_run_id}")
+    click.echo(f"[extract-glossary] tier           = {tier}")
+    click.echo(f"[extract-glossary] structured pages = {len(page_files)}")
+
+    if not confirm:
+        click.echo("")
+        click.echo(
+            "[extract-glossary] --confirm NOT passed; aborting before any Claude call."
+        )
+        sys.exit(0)
+
+    from cert_extractor.pipeline.stage4_5_glossary import (
+        Stage4_5Glossary,
+        make_extractor_factory,
+    )
+
+    extractor = make_extractor_factory(
+        cert_id=cert_id, run_id=inferred_run_id, tier=tier
+    )()
+    monitor = _build_monitor(
+        anthropic_soft_usd=anthropic_soft_usd,
+        anthropic_hard_usd=anthropic_hard_usd,
+    )
+    runner = Stage4_5Glossary(extractor=extractor, monitor=monitor)
+
+    click.echo("[extract-glossary] starting…")
+    result = runner.run(
+        structured_dir=structured_dir,
+        run_dir=run_dir,
+        cert_id=cert_id,
+        run_id=inferred_run_id,
+        skip_existing=skip_existing,
+    )
+
+    click.echo("")
+    click.echo(f"[extract-glossary] DONE   pages_scanned   = {result.pages_scanned}")
+    click.echo(f"[extract-glossary]        terms_harvested = {result.terms_harvested}")
+    click.echo(f"[extract-glossary]        unique_surfaces = {result.unique_surfaces}")
+    click.echo(f"[extract-glossary]        entries_locked  = {result.entries_locked}")
+    click.echo(f"[extract-glossary]        fail_count      = {result.fail_count}")
+    click.echo(f"[extract-glossary]        verdict_halted  = {result.halted_verdict}")
+    click.echo(f"[extract-glossary]        glossary.json   = {result.output_path}")
+    click.echo(f"[extract-glossary]        cost.json       = {result.cost_path}")
 
 
 if __name__ == "__main__":
