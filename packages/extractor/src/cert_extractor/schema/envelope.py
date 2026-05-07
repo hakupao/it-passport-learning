@@ -62,6 +62,27 @@ class Envelope(BaseModel):
             )
         return self
 
+    @model_validator(mode="after")
+    def no_unknown_question_answer(self) -> "Envelope":
+        """Per D-076: Stage 4 may emit `answer_index = -1` when it cannot
+        parse the answer line; Stage 7 export refuses to ship those — they
+        require manual repair (re-run Stage 4 with a fixed prompt, or
+        patch the structured/ data) before becoming learner-facing."""
+        unknown: list[str] = []
+        for item in self.items:
+            if getattr(item, "type", None) != "question":
+                continue
+            if getattr(item, "answer_index", 0) == -1:
+                unknown.append(getattr(item, "id", "<?>"))
+        if unknown:
+            head = ", ".join(unknown[:5])
+            tail = "..." if len(unknown) > 5 else ""
+            raise ValueError(
+                f"Question(s) with unknown answer_index (-1) in "
+                f"{len(unknown)} entity(ies): [{head}{tail}]"
+            )
+        return self
+
 
 def _walk_for_untranslated(obj: object, breadcrumb: str) -> list[str]:
     """Walk a Pydantic model recursively, collecting any field with UNTRANSLATED."""

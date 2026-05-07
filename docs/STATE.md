@@ -6,12 +6,12 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-07 (**Session 09 ✅ Closed** at Step 6.8 PASS + user retro PASS; D-074 locked) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8 ✅; Stage 6/7 + 全本 + retro 留 Session 10+ |
-| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.7 PASS + **Step 6.8 PASS**（393/393 trilingual leaves, 0 untranslated, 5-page audit 4 PASS + 1 cosmetic WARN, user retro PASS）+ 202 unit tests pass |
-| 已锁定决定数 | **74** (D-001 ~ D-074，新增 D-074 Stage 5 prompt wrapper-clause) |
+| 最后更新 | 2026-05-07 (**Session 09b ✅ Closed at Plan-B PASS** — user retro caught 2 architectural bugs in original Stage 5 PASS, locked D-075 + D-076, re-ran Stage 4 + Stage 5, hand-wrote 2 stuck definitions) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8 ✅ (post Plan-B); Stage 6/7 + 全本 + retro 留 Session 10+ |
+| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.7 PASS + **Step 6.8 PASS post Plan-B**（382/382 trilingual leaves, 0 untranslated, 0 jp mutations, 10/10 question.answer_index ground-truth match, 13 glossary patches applied, 2 hand-translations for stuck definitions）+ 212 unit tests pass |
+| 已锁定决定数 | **76** (D-001 ~ D-076；Session 09b 新增 D-075 Stage 5 jp-preservation contract + D-076 Stage 4 answer-line parsing requirement) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **Session-09 close commit**) |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **Session-09b Plan-B close commit**) |
 | 下一会话 | **Session 10** — Step 6.9 Stage 6 audit reviewer LLM (per D-060/D-061/D-063); 详见 §5 |
 
 ---
@@ -157,14 +157,30 @@ GUI **不在 v1**，Phase 3 再考虑。
 
 ## 5. 下一步 / Resume Instructions (current = Session 09 in flight, Step 6.8 PASS, awaiting user retro on Stage 5 + decision to continue or close Session 09)
 
-### Session 09 in-flight summary (Step 6.8 Stage 5 ✅)
+### Session 09 + 09b summary (Step 6.8 Stage 5 ✅ post Plan-B)
 
-- **393/393 trilingual leaves translated, 0 UNTRANSLATED**
-- 5-page reviewer audit (108 leaves / 27.5% coverage): **4 PASS + 1 cosmetic WARN** (page_043 choice-marker inconsistency, non-blocking)
-- 6 attempts: opus chunk=8 (initial 31 pages) → chunk=4 → chunk=1 (page_031 fixed) → sonnet chunk=1 (regression) → sonnet+new prompt → **opus+new prompt = clean**
-- D-074 locks the new "always translate the wrapper" prompt clause in `TRANSLATE_SYSTEM_PROMPT_TEMPLATE` (with regression-guard test)
-- 5 failure files archived per 规则 B; D-074 ADR + Stage 5 evidence + retry partials all committed
-- Cumulative dry-run shadow $19.14 / $0.05 billed (max-plan OAuth = $0 anthropic billed)
+**Session 09 (false-PASS, then user retro)**:
+- 393 trilingual leaves, 6 retry attempts produced 0 untrans residue
+- D-074 locked: Stage 5 prompt wrapper-clause
+- Closed at PASS, but user retro caught architectural bugs (see Session 09b)
+
+**Session 09b (Plan-B fix)**:
+- User retro worksheet (`docs/discussion/2026-05-07-stage5-user-retro-worksheet.md`) + 3 review sub-files caught:
+  - Stage 4 `answer_index` bug: page_043 had `[0,0,0,0,0]` should be `[2,2,2,3,2]`
+  - Stage 5 `_glossary_lookup` jp-mutation: 10 leaves on 7 pages had `translated.jp != structured.jp`
+  - Glossary content: ~10 entries needed translation polish
+- D-075 locked: Stage 5 jp-preservation contract + regression test
+- D-076 locked: Stage 4 answer-line parsing + envelope `-1` rejection + regression test
+- Stage 4 re-run (40 pages) + page_043 re-OCR (vision_full → cleaned/) + glossary 13 patches + Stage 5 re-run (40 pages, opus, chunk=8) + 2 chunk=1 retries on stubborn pages + 2 hand-translations
+- **Final: 382/382 leaves translated, 0 UNTRANSLATED, 0 jp mutations, 10/10 question.answer_index match ground truth**
+- Cumulative dry-run shadow **$47.44** / $0.05 billed (max-plan OAuth = $0 Anthropic billed)
+- 212 unit tests pass (197 base + 15 Plan-B regression guards)
+
+**Open per Plan-B Decision**:
+- F-MISTRAL-ANSWER-LINE-LOSS — Phase-2 Stage 3 heuristic enhancement
+- F-CHOICE-MARKER — Stage 6 WARN + Stage 7 export normalize
+- F-COP21 — partially mitigated by glossary patch; remainder defers to Stage 7
+- 2 hand-translations awaiting user verbal sign-off (claude-drafted, doc'd in evidence)
 
 ### Next sub-steps (6.9 onwards)
 

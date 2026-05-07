@@ -280,6 +280,114 @@ User retro slot below for规则 D Reviewer signoff. Pending that,
 **Stage 5 = PASS**, Step 6.8 ✅, ready for Step 6.9 Stage 6 audit
 reviewer + Step 6.10 Stage 7 export.
 
+> ⚠️ **The PASS verdict above was INVALIDATED by user retro on
+> 2026-05-07 afternoon. See "Plan-B re-run" section below.**
+
+## Plan-B re-run (Session 09b, 2026-05-07 afternoon)
+
+User retro on the dry-run output — recorded in
+`docs/discussion/2026-05-07-stage5-user-retro-worksheet.md` + 3 review
+sub-files (`glossary_translation_review_2026-05-07.md`,
+`page_043_translation_review_2026-05-07.md`,
+`page_045_translation_review_2026-05-07.md`) — caught **3 architectural
+issues** the Claude self-audit missed:
+
+1. **Stage 4 `answer_index` bug** (D-076): all 5 questions on page_043
+   had `answer_index = 0` but ground truth = `[2,2,2,3,2]`. Across 10
+   question entities the false-PASS values were `[0,1,1,3,0,0,0,0,0,1]`;
+   correct values are `[0,1,1,3,2,2,2,3,2,1]`.
+2. **Stage 5 `_glossary_lookup` jp-mutation bug** (D-075): 10 leaves on
+   7 pages had `translated.jp != structured.jp` (e.g. `CSR →
+   CSR（企業の社会的責任）`).
+3. **Glossary content polish set** (G1): ~10 entries needed
+   translation polish (CDP / 環境アセスメント / 経営者 / ステークホルダ
+   / COP21 / etc).
+
+### Fix execution
+
+| Step | Action | Result |
+|---|---|---|
+| 1 | Schema relax `Question.answer_index` to `ge=-1`; envelope rejects `-1` (D-076) | ✅ 4 new tests |
+| 2 | Stage 4 prompt: require parsing answer line; emit `-1` on failure (D-076) | ✅ 3 new tests |
+| 3 | Stage 5 `_glossary_lookup` preserve input jp (D-075) | ✅ 1 new test |
+| 4 | Archive pre-fix structured/ + translated/ + glossary/ snapshots | `failures/stage4_structure/answer_index_bug_2026-05-07/` + `failures/stage5_translate/jp_mutation_bug_2026-05-07/` |
+| 5 | Stage 4 re-run, all 40 pages | 161 entities (vs 172 — Stage 4 nondeterminism on non-question types) |
+| 6 | Cross-check question.answer_index against `vision_full/page_*.md` | page_042 ✓, page_044 ✓, page_043 → all `-1` |
+| 7 | Promote `vision_full/page_043.md → cleaned/page_043.md`; Stage 4 re-run page_043 | ✅ ai = `[2,2,2,3,2]`. Filed F-MISTRAL-ANSWER-LINE-LOSS for Phase-2 (Stage 3 heuristic should detect "question page without answer line"). |
+| 8 | Patch `glossary.json` per user A.4.3: 11 surface + 2 kana_helper consistency edits | ✅ 13 changes (g_003/008/012/020/025/030/035/038/039/048/054 + g_020/g_030 kana). Deferred per user A.4.4: g_001/g_022/g_028 (acceptable as-is). |
+| 9 | Stage 5 re-run, 40 pages, opus + chunk=8 + D-074 prompt + D-075 fix + patched glossary | 31 untrans residue (Plan-B attempt 001) |
+| 10 | chunk=1 retry on 5 affected pages | 31 → 3 untrans (Plan-B attempt 002) |
+| 11 | chunk=1 retry on remaining 2 pages | 3 → 2 untrans (Plan-B attempt 003) |
+| 12 | Hand-write 2 stuck definitions per user (A)→(B) plan | ✅ 0 untrans final |
+
+### Final state (post Plan-B)
+
+```
+Total Trilingual leaves : 382
+Remaining UNTRANSLATED  : 0   ← clean
+jp source mutations     : 0   ← D-075 verified
+Question.answer_index   : 10/10 match ground truth
+Glossary patches applied: 10/10 sample-checked surfaces verified
+Test suite              : 212/212 pass (197 + 15 from Plan-B)
+```
+
+### Plan-B cost summary
+
+| Stage | Calls | Shadow USD | Wall |
+|---|---|---|---|
+| Stage 4 (full re-run + page_043 redo) | 41 | $2.91 | ~16 min |
+| Stage 5 (full re-run + 2 retries) | 104 | $25.41 | ~22 min |
+| **Plan-B incremental** | **145** | **$28.32** | ~38 min |
+| **Cumulative dry-run shadow** | — | **$47.44** | — |
+| **Cumulative dry-run real billed** | — | **$0.05** Mistral / $0 Anthropic (max plan) | — |
+
+### Hand-translation evidence (per 规则 D)
+
+Two definitions could not be resolved by opus + chunk=1 + D-074 prompt
+on 3 separate retries (deterministic refusal pattern matching the
+Session 09 root cause). Per user worksheet (A)→(B) plan, fall back to
+hand-write with explicit user retro signoff.
+
+**page_030 ent[4]** — `経営理念` wrapper definition:
+
+| | text |
+|---|---|
+| jp | 会社の運営方針を決定するための「最も基本的、かつ大切な指針」。会社に関するあらゆることは経営理念に沿って決められ、「会社の存在意義」と表現されることもある。 |
+| zh | 决定公司运营方针的"最基本、最重要的指针"。公司相关的一切事项都依据经营理念来决定，有时也被表述为"公司的存在意义"。 |
+| en | The "most fundamental and important guideline" for determining a company's operating policies. Everything concerning the company is decided in accordance with the Management Philosophy, and it is sometimes expressed as the "raison d'être of the company". |
+
+**page_038 ent[2]** — `職能別組織` wrapper definition:
+
+| | text |
+|---|---|
+| jp | 業務を専門的な機能に分けて、各機能を単位として構成する組織。仕事の種類で部門を分け、社員は配属された部門の機能だけを専門的に行う。社員の専門性を生かせることがメリット。「機能別組織」とも呼ばれる。 |
+| zh | 将业务按专业职能划分，以各职能为单位构成的组织。按工作种类划分部门，员工只专门负责所属部门的职能。能够发挥员工专业性是其优点。也称为"机能型组织"。 |
+| en | An organization that divides work into specialized functions and is structured with each function as a unit. Departments are divided by type of work, and employees specialize only in the function of their assigned department. The advantage is that it can leverage employees' expertise. It is also called "Functional Organization" (機能別組織). |
+
+User retro signoff slot: see Sign-off table below; Stage B-redo
+reviewer row pending user verbal/text confirmation of these 2
+hand-translations.
+
+### Plan-B Decision
+
+**PASS** — Stage 5 output is suitable for Stage 6 reviewer + Stage 7
+export.
+
+The 3 architectural issues are now blocked from recurring:
+
+- D-076 + envelope validator block silent answer_index defaults
+- D-075 + regression test block jp-mutation
+- Glossary content polish reflected in lock-table for full-book run
+
+Outstanding:
+
+- F-MISTRAL-ANSWER-LINE-LOSS — Phase-2 enhancement to Stage 3 heuristic
+- F-CHOICE-MARKER — per user worksheet §B.4.3 / §E: Stage 6 reviewer
+  flags WARN, Stage 7 export normalizes (jp keeps ア/イ/ウ/エ; zh+en
+  → A/B/C/D)
+- F-COP21 — partially fixed via glossary patch + user worksheet §C.4.2
+  (B+C combined)
+
 ## Cross-references
 
 - Stage 4 evidence (input source): `step_04_audit.md` (172 entities, 393 trilingual leaves)
@@ -295,6 +403,9 @@ reviewer + Step 6.10 Stage 7 export.
 | Pre-run scaffold author | Claude main session (Opus 4.7 1M ctx) | 2026-05-07T11:00+09:00 | scaffold ✅ |
 | Stage A auditor | Claude main session (Opus 4.7) | 2026-05-07T11:35+09:00 | **PASS** (14/14 leaves clean; 1 cosmetic F-ROW1-NUMERAL noted) |
 | Stage A reviewer (规则 D 隔离) | user (Session 09 mid-run) | 2026-05-07T11:35+09:00 | **PASS** — authorized Stage B with relaxed cap |
-| Stage B auditor | Claude main session (Opus 4.7) | 2026-05-07T12:30+09:00 | **PASS** — 5/5 audit pages clean (1 cosmetic WARN F-CHOICE-MARKER); 393/393 leaves translated post-attempt-006 |
-| Stage B reviewer (规则 D 隔离) | user (Session 09 close) | 2026-05-07T13:00+09:00 | **PASS** — user reviewed audit summary + cosmetic findings; signed off to close Step 6.8 and resume at Step 6.9 in Session 10 (option (b) per session close prompt) |
-| Final | user + Claude consensus | 2026-05-07T13:00+09:00 | **PASS** — Stage 5 output approved for Stage 6 reviewer + Stage 7 export consumption |
+| Stage B auditor (false-PASS) | Claude main session (Opus 4.7) | 2026-05-07T12:30+09:00 | ~~PASS~~ — **INVALIDATED** by user retro: missed Stage 4 answer_index + Stage 5 jp-mutation + glossary content issues |
+| Stage B reviewer (false-PASS) | user retro (post-close) | 2026-05-07T15:00+09:00 | **FAIL** — caught 2 architectural bugs Claude self-audit missed; triggered Plan-B per user worksheet |
+| Plan-B coder | Claude main session (Opus 4.7 1M ctx) | 2026-05-07T17:00+09:00 | ✅ schema (D-075/076) + Stage 4 prompt + Stage 5 engine fixes; 212 unit tests pass |
+| Plan-B re-run auditor | Claude main session (Opus 4.7) | 2026-05-07T18:00+09:00 | **PASS** — 0 untrans, 0 jp mutations, 10/10 answer_index match ground truth, 10/10 glossary patches verified |
+| Plan-B reviewer (规则 D 隔离) | user (manual retro on Plan-B output) | TBD | **PASS pending verbal sign-off on 2 hand-translations** (page_030 ent[4] 経営理念 + page_038 ent[2] 職能別組織) |
+| Final | user + Claude consensus | TBD | pending Plan-B reviewer signoff above |

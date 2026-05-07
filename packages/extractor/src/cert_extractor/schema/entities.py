@@ -53,7 +53,13 @@ class Question(_BaseEntity):
     stem: Trilingual = Field(..., description="题干 (三语)")
     choices: list[Trilingual] = Field(..., min_length=2, description="≥2 选项")
     answer_index: int = Field(
-        ..., ge=0, description="正确答案 index (0-based) [SAFETY FIELD per D-063]"
+        ...,
+        ge=-1,
+        description=(
+            "正确答案 index (0-based); -1 = Stage 4 couldn't parse the answer "
+            "line for this question — Stage 7 export refuses to ship it (per "
+            "D-076 + Envelope.no_unknown_question_answer). [SAFETY FIELD per D-063]"
+        ),
     )
 
 

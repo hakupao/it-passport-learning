@@ -1,10 +1,10 @@
-"""Unit tests for schema/envelope.py — Envelope (D-058) + UNTRANSLATED leak detection (D-055)."""
+"""Unit tests for schema/envelope.py — Envelope (D-058) + UNTRANSLATED leak detection (D-055) + unknown answer_index rejection (D-076)."""
 import pytest
 from pydantic import ValidationError
 
 from cert_extractor import SCHEMA_VERSION, UNTRANSLATED
 from cert_extractor.schema.common import Anchor, Trilingual
-from cert_extractor.schema.entities import Chapter, Term
+from cert_extractor.schema.entities import Chapter, Question, Term
 from cert_extractor.schema.envelope import Envelope
 
 
@@ -87,3 +87,45 @@ class TestUntranslatedLeakDetection:
             Envelope(cert_id="itpassport_r6", items=[bad1])
         msg = str(exc_info.value)
         assert "2 field" in msg or "leak" in msg
+
+
+def _q(qid: str, answer_index: int) -> Question:
+    return Question(
+        id=qid,
+        anchor=_anchor(),
+        stem=_tri("Q?", "问?", "Q?"),
+        choices=[_tri("a", "甲", "a"), _tri("b", "乙", "b")],
+        answer_index=answer_index,
+    )
+
+
+class TestUnknownAnswerIndexRejection:
+    """Per D-076: Stage 7 export refuses Question entities whose
+    answer_index is the -1 unknown sentinel emitted by Stage 4."""
+
+    def test_envelope_passes_with_known_answer(self):
+        env = Envelope(cert_id="itpassport_r6", items=[_q("q1", 0)])
+        assert env.items[0].answer_index == 0
+
+    def test_envelope_rejects_unknown_answer(self):
+        with pytest.raises(ValidationError) as exc_info:
+            Envelope(cert_id="itpassport_r6", items=[_q("q1", -1)])
+        msg = str(exc_info.value)
+        assert "unknown answer_index" in msg
+        assert "q1" in msg
+
+    def test_multiple_unknown_answers_summarized(self):
+        with pytest.raises(ValidationError) as exc_info:
+            Envelope(
+                cert_id="itpassport_r6",
+                items=[_q("q1", -1), _q("q2", -1), _q("q3", 0)],
+            )
+        msg = str(exc_info.value)
+        assert "2 entity" in msg
+
+    def test_non_question_minus_one_unrelated(self):
+        """A Chapter entity has no answer_index; the validator must not
+        misfire on non-question types even if -1 appears in unrelated
+        numeric fields."""
+        env = Envelope(cert_id="itpassport_r6", items=[_chapter()])
+        assert env.cert_id == "itpassport_r6"

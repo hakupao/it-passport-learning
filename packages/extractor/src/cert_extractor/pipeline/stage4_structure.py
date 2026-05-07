@@ -74,9 +74,22 @@ Allowed `type` values and required keys:
 
 - "question": an exam-style multiple-choice question.
     - stem_jp (string)
-    - choices_jp (list of >=2 choice strings)
-    - answer_index (0-based integer of the correct choice; use 0 if the
-      page does not state the answer)
+    - choices_jp (list of >=2 choice strings; preserve the original
+      Japanese choice markers verbatim, e.g. "ア．..." / "イ．..." )
+    - answer_index (0-based integer of the correct choice)
+        - REQUIRED: Look at the bottom of the page for an answer line
+          such as "問題1-5 ウ" or "問題1-5 ウ　問題1-6 エ". This is the
+          authoritative source of the correct answer. Map markers to
+          indices: ア=0, イ=1, ウ=2, エ=3 (and オ=4, カ=5, ... if more
+          choices exist).
+        - If a question is identified by its problem number (e.g. "問題
+          1-5"), find that exact problem number in the answer line and
+          use ITS letter, not the first one you see.
+        - If, AFTER carefully scanning the entire page including its
+          footer, you cannot find an unambiguous answer for a question,
+          set answer_index to -1 (the unknown sentinel). Do NOT default
+          to 0. Stage 7 export refuses -1 entries; setting -1 forces
+          downstream repair instead of silently shipping a wrong answer.
 
 - "table": a table with a caption.
     - caption_jp
@@ -239,12 +252,17 @@ def _build_entity(item: dict, eid: str, anchor: Anchor) -> Entity | None:
         choices_raw = item["choices_jp"]
         if not isinstance(choices_raw, list) or len(choices_raw) < 2:
             raise ValueError("question.choices_jp must be a list of >=2 items")
+        # Per D-076: if Stage 4 couldn't parse the answer line, the LLM
+        # should emit -1 (unknown sentinel) rather than silently defaulting
+        # to 0 (which is a valid choice). If the field is missing entirely,
+        # we still default to -1 so the downstream Envelope validator
+        # rejects the entity rather than shipping a fabricated answer.
         return Question(
             id=eid,
             anchor=anchor,
             stem=_trilingual(item["stem_jp"]),
             choices=[_trilingual(str(c)) for c in choices_raw],
-            answer_index=int(item.get("answer_index", 0)),
+            answer_index=int(item.get("answer_index", -1)),
         )
     if etype == "table":
         rows_raw = item["rows_jp"]

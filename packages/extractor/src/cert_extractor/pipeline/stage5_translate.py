@@ -192,11 +192,19 @@ def _apply(entities: list[dict], path: FieldPath, value: Trilingual) -> None:
 def _glossary_lookup(jp: str, lookup: dict[str, GlossaryEntry]) -> Trilingual | None:
     """Stand-alone glossary hit only. Definitions / stems / captions
     are sent to the LLM with the glossary in the prompt; we don't try
-    to do mid-string substitution here."""
+    to do mid-string substitution here.
+
+    Per D-075: Stage 5 must NEVER mutate the input jp surface. The
+    glossary entry's ``surface`` carries the canonical jp form, which
+    may differ from ``jp`` (e.g. when ``jp`` is an alias the user wrote
+    elsewhere on the page). Build a Trilingual that keeps the input
+    jp verbatim and uses the entry's locked zh + en for the
+    translations.
+    """
     entry = lookup.get(jp)
     if entry is None:
         return None
-    return entry.surface
+    return Trilingual(jp=jp, zh=entry.surface.zh, en=entry.surface.en)
 
 
 _JSON_ARRAY_RE = re.compile(r"\[.*\]", re.DOTALL)

@@ -179,6 +179,52 @@ def test_engine_resolves_glossary_without_llm_call() -> None:
     assert result.trilinguals[FieldPath(0, ("surface",))].zh == "经营理念"
 
 
+def test_glossary_hit_preserves_input_jp_when_alias_differs_from_canonical() -> None:
+    """Per D-075: Stage 5 MUST NOT mutate the input jp surface. When the
+    input jp is an alias (e.g. ``CSR``) and the glossary's canonical
+    form is longer (``CSR（企業の社会的責任）``), the resolved Trilingual
+    must carry the input jp verbatim while using the glossary's locked
+    zh + en for the translations.
+
+    This regression-guards a bug where ``_glossary_lookup`` returned the
+    glossary entry's ``surface`` Trilingual directly, replacing the
+    source jp with the canonical form. Caught post-hoc on page_034
+    (CSR), page_045 (HRTech / CIO / CEO), page_050 (alias-merged
+    プレーンストーミング), and others.
+    """
+    glossary_entries = [
+        GlossaryEntry(
+            id="g_001",
+            surface=Trilingual(
+                jp="CSR（企業の社会的責任）", zh="企业社会责任",
+                en="Corporate Social Responsibility (CSR)",
+            ),
+            first_page=1,
+            occurrences=[1],
+            aliases_jp=["CSR"],
+        )
+    ]
+    glossary = Glossary(cert_id="itpassport_r6", run_id="r1", entries=glossary_entries)
+    fake = _FakeClient([])
+    eng = TranslationEngine(client=fake, glossary=glossary, tier="sonnet")  # type: ignore[arg-type]
+
+    # Use the alias form as the page-source jp (what Stage 4 emitted on
+    # page_034 / page_044).
+    requests = [
+        TranslationRequest(jp="CSR", path=FieldPath(0, ("surface",))),
+    ]
+    result = eng.translate_batch(requests, page_number=34)
+
+    resolved = result.trilinguals[FieldPath(0, ("surface",))]
+    assert resolved.jp == "CSR", (
+        "Stage 5 must preserve the input jp surface; got "
+        f"{resolved.jp!r} (canonical-form leak from glossary)"
+    )
+    assert resolved.zh == "企业社会责任"
+    assert resolved.en == "Corporate Social Responsibility (CSR)"
+    assert fake.calls == []  # glossary hit, no LLM call
+
+
 def test_engine_calls_llm_for_unresolved_only() -> None:
     glossary = _gloss(("経営理念", "经营理念", "Management philosophy"))
     fake = _FakeClient(

@@ -118,6 +118,37 @@ def test_items_to_entities_question_too_few_choices_skipped() -> None:
     assert "choices_jp" in skipped[0][1]
 
 
+def test_items_to_entities_question_missing_answer_index_defaults_to_minus_one() -> None:
+    """Per D-076: when Stage 4's LLM omits answer_index entirely, the
+    coercion layer must default to -1 (unknown sentinel), NOT 0. Stage 7
+    export will then refuse the entity rather than silently shipping a
+    fabricated answer == ア."""
+    entities, _ = _entities_for(
+        [{"type": "question", "stem_jp": "Q?", "choices_jp": ["a", "b"]}]
+    )
+    assert isinstance(entities[0], Question)
+    assert entities[0].answer_index == -1
+
+
+def test_items_to_entities_question_explicit_minus_one_preserved() -> None:
+    entities, _ = _entities_for(
+        [{"type": "question", "stem_jp": "Q?", "choices_jp": ["a", "b"], "answer_index": -1}]
+    )
+    assert entities[0].answer_index == -1
+
+
+def test_stage4_prompt_includes_answer_line_parsing_clause() -> None:
+    """Regression guard for D-076: the Stage 4 system prompt must
+    explicitly instruct the model to parse the answer line at the
+    bottom of each page. Without this clause the model defaults to
+    answer_index=0 silently — the bug surfaced post-hoc on page_043."""
+    from cert_extractor.pipeline.stage4_structure import STRUCTURE_SYSTEM_PROMPT
+
+    assert "問題1-5 ウ" in STRUCTURE_SYSTEM_PROMPT or "answer line" in STRUCTURE_SYSTEM_PROMPT
+    assert "ア=0" in STRUCTURE_SYSTEM_PROMPT or "ア = 0" in STRUCTURE_SYSTEM_PROMPT
+    assert "-1" in STRUCTURE_SYSTEM_PROMPT
+
+
 def test_items_to_entities_table() -> None:
     entities, _ = _entities_for(
         [

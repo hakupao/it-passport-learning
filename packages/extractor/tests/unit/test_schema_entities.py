@@ -67,6 +67,29 @@ class TestDiscriminatedUnion:
         )
         assert q.answer_index == 0
 
+    def test_question_accepts_minus_one_for_unknown_answer(self):
+        """Per D-076: -1 is the unknown sentinel emitted by Stage 4 when
+        it cannot parse the answer line. Schema must accept it; Envelope
+        validator (separate test) refuses it at export time."""
+        q = Question(
+            id="q1",
+            anchor=_anchor(),
+            stem=_tri(),
+            choices=[_tri("a"), _tri("b")],
+            answer_index=-1,
+        )
+        assert q.answer_index == -1
+
+    def test_question_rejects_below_minus_one(self):
+        with pytest.raises(ValidationError):
+            Question(
+                id="q1",
+                anchor=_anchor(),
+                stem=_tri(),
+                choices=[_tri("a"), _tri("b")],
+                answer_index=-2,
+            )
+
     def test_question_choices_min_2(self):
         with pytest.raises(ValidationError):
             Question(
