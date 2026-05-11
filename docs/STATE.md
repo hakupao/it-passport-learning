@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-11 (**Session 12 in progress — D-078 Stage 7 export v1 design locked**. 4 open Q posed → user answered (Q1=JSON+MD / Q2=per-page / Q3=sidecar polish_items / Q4=dual-gate) → proposal → user 2-override (ASCII `[JP]/[ZH]/[EN]` markers + full D1-D13 Gate A) → D-078 ADR written. Step 6.10 implementation plan in place: TDD scaffold 6.10.1-6.10.6 → user-gated dry-run 6.10.7 → user sample-review 6.10.8 → closure 6.10.9. All-deterministic; no LLM cost.) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.9 ✅; **Step 6.10 Stage 7 export — design ✅ (D-078); implementation pending**; 6.11 / 6.12 pending |
-| Phase 1 状态 | 设计 ✅ + Step 0~5 ✅ + Step 6.0~6.8 PASS post Plan-B + Step 6.9 Stage 6 ✅ CLOSED (clean baseline 0 FAIL) + **Step 6.10 Stage 7 design ✅ (D-078 ADR locked): per-page JSON+MD with sidecar polish_items, ASCII language markers, dual gate (full D1-D13 + Stage 7 contract check), CLI `export-trilingual`, target ≥ 40 new tests = suite ≥ 364 pass**. Ready for TDD scaffolding 6.10.1+. |
+| 最后更新 | 2026-05-11 (**Session 12 — Step 6.10 Stage 7 export ✅ CLOSED**. D-078 ADR locked → 5-module Stage 7 scaffold + CLI `export-trilingual` + 103 new unit tests (suite 427/427 pass). Real 40-page dry-run produced 84 files with both gates PASS; Gate A pre-normalize ordering bug surfaced+fixed via real data. User sample-review PASS ("ok通过") on page_006/014/022/038/043. **Step 6.11 entry point unlocked (全本 579 页 + GitHub Release tag per D-046)**.) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.10 ✅; **Step 6.11 全本 579-page Plan-C + GitHub Release = next entry point**; 6.12 pending |
+| Phase 1 状态 | 设计 ✅ + Step 0~6.9 ✅ + **Step 6.10 ✅ CLOSED**: D-078 + Stage 7 module (5 files, 103 tests) + CLI + dual-gate (Gate A pre-normalize) + real-data dry-run 40/40 PASS + 84 files emitted + user sample-review PASS. Stage 7 release artifact ready for Phase 2/3 consumers. Ready for **Step 6.11**: re-run Stages 1-7 on full 579-page book, GitHub Release tag per D-046. |
 | 已锁定决定数 | **78** (D-001 ~ D-078；Session 12 新增 D-078 — Stage 7 export v1 design; amends D-008 by scoping v1 to JSON+MD) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
 | GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `50e8d1b` Session-10 close. Session 11 commits pending: worksheet + Stage A snapshot + Session 11 log + Stage B post-dispatch artifacts.) |
-| 下一会话 | **Session 12 (current)** — Stage 7 export design D-078 ✅ locked; **next entry point = Step 6.10.1 TDD scaffold** (schema.py + tests, deterministic, no LLM cost); 详见 §5 |
+| 下一会话 | **Session 13** — Step 6.11 全本 579-page Plan-C run (Stages 1-7) + GitHub Release tag (per D-046); 详见 §5 |
 
 ---
 
@@ -228,16 +228,17 @@ Stage 7 export contract reminders:
 | 6.9.8d | Closure worksheet Q1 = B → user hand-edit page_022 + documented | no | ✅ done |
 | 6.9.8e | Stage B rerun #3 (after hand-edit) | yes ($10.75 / $0 billed) | ✅ done (22/18/0 clean) |
 | **6.9.9** | **Stage 6 closure — step_06_audit.md narrative + sign-off + STATE sync** | no | ✅ **done — Stage 6 CLOSED** |
-| **6.10 design** | **Stage 7 export v1 design — D-078 ADR** (per-page JSON+MD, sidecar polish_items, ASCII markers, dual-gate D1-D13+contract, CLI `export-trilingual`) | no | ✅ done (Session 12, 2026-05-11) |
-| 6.10.1 | `schema.py` (Pydantic envelopes + IndexEntry + PolishItem + ReleaseGateResult) + tests | no | ⏸ next entry point (TDD) |
-| 6.10.2 | `normalizers.py` (choice_marker_normalize + untranslated_scan) + tests | no | ⏸ |
-| 6.10.3 | `gates.py` (Gate A full D1-D13 wrapper + Gate B contract self-check) + tests | no | ⏸ |
-| 6.10.4 | `emitters.py` (page_json + page_md + index + polish_items + readme) + tests | no | ⏸ |
-| 6.10.5 | `runner.py` (Stage7Export orchestrator) + CLI subcommand `export-trilingual` + tests | no | ⏸ |
-| 6.10.6 | Scaffold `evidence/.../step_07_export.md` pre-run snapshot | no | ⏸ |
-| 6.10.7 | Dry-run on existing 40-page output (Gate A + Gate B both PASS) | no | ⏸ user-gated |
-| 6.10.8 | User sample-reviews page_006.json + page_006.md + polish_items.json | — | ⏸ |
-| 6.10.9 | Step 6.10 closure (`step_07_export.md` write-up + STATE sync) | — | ⏸ |
+| 6.10 design | Stage 7 export v1 — D-078 ADR | no | ✅ done (Session 12) |
+| 6.10.1 | `schema.py` + 25 tests | no | ✅ done |
+| 6.10.2 | `normalizers.py` + 37 tests | no | ✅ done |
+| 6.10.3 | `gates.py` + 14 tests | no | ✅ done |
+| 6.10.4 | `emitters.py` + 18 tests | no | ✅ done |
+| 6.10.5 | `runner.py` + CLI `export-trilingual` + 9 tests (incl. half-width-jp regression) | no | ✅ done |
+| 6.10.6 | `evidence/.../step_07_export.md` post-dispatch | no | ✅ done |
+| 6.10.7 | Real 40-page dry-run (84 files emitted; Gate A pre-normalize fix applied) | no | ✅ done (0 LLM cost) |
+| 6.10.8 | User sample-review (page_006/014/022/038/043) | — | ✅ PASS ("ok通过", 2026-05-11) |
+| 6.10.9 | Step 6.10 closure (step_07_export.md + STATE sync) | — | ✅ done (this turn) |
+| **6.11** | **全本 579-page Plan-C run (Stages 1-7) + GitHub Release tag per D-046** | yes (Stages 1-6 LLM) | ⏸ next entry point (Session 13) |
 | 6.11 | 全本 579-page Plan-C + GitHub Release (per D-046) | yes (Stages 1-6) | ⏸ |
 | 6.12 | Phase 1 RETROSPECTIVE.md (per 规则 C) | no | ⏸ |
 
