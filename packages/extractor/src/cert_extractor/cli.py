@@ -54,7 +54,7 @@ def main(ctx: click.Context) -> None:
     if ctx.invoked_subcommand is None:
         click.echo(f"cert-extractor {__version__} (schema {SCHEMA_VERSION})")
         click.echo(
-            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure | extract-glossary | translate-entities | audit-trilingual [--help]"
+            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure | extract-glossary | translate-entities | audit-trilingual | export-trilingual [--help]"
         )
 
 
@@ -974,6 +974,157 @@ def audit_trilingual(
         click.echo(f"[audit-trilingual]        halt_reason       = {result.halt_reason}")
     click.echo(f"[audit-trilingual]        review.json       = {result.output_path}")
     click.echo(f"[audit-trilingual]        cost.json         = {result.cost_path}")
+
+
+# ---------------------------------------------------------------------------
+# Stage 7 export — per-page JSON + Markdown (per D-078)
+# ---------------------------------------------------------------------------
+
+
+@main.command("export-trilingual")
+@click.option(
+    "--translated-dir",
+    "translated_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Directory of Stage 5 translated/ JSON output.",
+)
+@click.option(
+    "--structured-dir",
+    "structured_dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Directory of Stage 4 structured/ JSON output (needed for Gate A D1).",
+)
+@click.option(
+    "--glossary-path",
+    "glossary_path",
+    required=True,
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+)
+@click.option(
+    "--audit-path",
+    "audit_path",
+    required=True,
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    help="Stage 6 audit/stage6_review.json (source of polish_items.json sidecar).",
+)
+@click.option(
+    "--output-dir",
+    "output_dir",
+    required=True,
+    type=click.Path(file_okay=False, path_type=Path),
+    help="Output directory under data/.../output (will be created).",
+)
+@click.option(
+    "--cleaned-dir",
+    "cleaned_dir",
+    default=None,
+    type=click.Path(file_okay=False, path_type=Path),
+    help="Optional Stage 3 cleaned/ markdown — used by Gate A D5.",
+)
+@click.option("--cert-id", default="itpassport_r6", show_default=True)
+@click.option(
+    "--run-id",
+    default=None,
+    help="Inferred from translated-dir parent name if omitted.",
+)
+@click.option(
+    "--schema-version",
+    default="v1",
+    show_default=True,
+    type=click.Choice(["v1"]),
+    help="Output schema version (per D-078).",
+)
+@click.option(
+    "--formats",
+    default="json,md",
+    show_default=True,
+    help="Comma-separated subset of {json,md} (v1 only emits these two).",
+)
+@click.option(
+    "--confirm",
+    is_flag=True,
+    default=False,
+    help="REQUIRED to actually write files. Stage 7 has no LLM cost but writes 80+ files; --confirm avoids accidental overwrite.",
+)
+def export_trilingual(
+    translated_dir: Path,
+    structured_dir: Path,
+    glossary_path: Path,
+    audit_path: Path,
+    output_dir: Path,
+    cleaned_dir: Path | None,
+    cert_id: str,
+    run_id: str | None,
+    schema_version: str,
+    formats: str,
+    confirm: bool,
+) -> None:
+    """Stage 7 export (per D-078). Per-page JSON + Markdown + sidecar polish items.
+
+    Dual release gate: full D1-D13 Phase-1 re-run + Stage 7 contract self-check.
+    Refuses to write if either gate fails.
+    """
+    from cert_extractor.pipeline.stage7_export.runner import Stage7Export
+
+    inferred_run_id = run_id or translated_dir.parent.name
+    fmt_list = [f.strip() for f in formats.split(",") if f.strip()]
+    allowed_formats = {"json", "md"}
+    unknown = set(fmt_list) - allowed_formats
+    if unknown:
+        raise click.UsageError(
+            f"--formats received unknown value(s): {sorted(unknown)}; "
+            f"v1 supports only {sorted(allowed_formats)}."
+        )
+
+    click.echo(f"[export-trilingual] cert_id        = {cert_id}")
+    click.echo(f"[export-trilingual] run_id         = {inferred_run_id}")
+    click.echo(f"[export-trilingual] translated_dir = {translated_dir}")
+    click.echo(f"[export-trilingual] structured_dir = {structured_dir}")
+    click.echo(f"[export-trilingual] glossary_path  = {glossary_path}")
+    click.echo(f"[export-trilingual] audit_path     = {audit_path}")
+    click.echo(f"[export-trilingual] cleaned_dir    = {cleaned_dir}")
+    click.echo(f"[export-trilingual] output_dir     = {output_dir}")
+    click.echo(f"[export-trilingual] schema_version = {schema_version}")
+    click.echo(f"[export-trilingual] formats        = {fmt_list}")
+
+    if not confirm:
+        click.echo(
+            "[export-trilingual] --confirm NOT passed; aborting before any write."
+        )
+        return
+
+    click.echo("[export-trilingual] starting…")
+
+    result = Stage7Export().run(
+        translated_dir=translated_dir,
+        structured_dir=structured_dir,
+        glossary_path=glossary_path,
+        audit_path=audit_path,
+        output_dir=output_dir,
+        cleaned_dir=cleaned_dir,
+        cert_id=cert_id,
+        run_id=inferred_run_id,
+        formats=tuple(fmt_list),
+    )
+
+    click.echo("")
+    click.echo(f"[export-trilingual] DONE  gate_a_passed      = {result.gate_result.gate_a_passed}")
+    click.echo(f"[export-trilingual]       gate_b_passed      = {result.gate_result.gate_b_passed}")
+    click.echo(f"[export-trilingual]       passed             = {result.passed}")
+    click.echo(f"[export-trilingual]       pages_written      = {result.pages_written}")
+    click.echo(f"[export-trilingual]       files_written      = {len(result.files_written)}")
+    click.echo(f"[export-trilingual]       choices_normalized = {result.choices_normalized}")
+
+    if not result.gate_result.passed:
+        click.echo("")
+        click.echo("[export-trilingual] FAILURES (no output written):")
+        for line in result.gate_result.all_failures:
+            click.echo(f"  {line}")
+        raise click.ClickException("Stage 7 export refused due to release-gate failures.")
+
+    click.echo(f"[export-trilingual]       output_dir         = {output_dir.resolve()}")
 
 
 if __name__ == "__main__":
