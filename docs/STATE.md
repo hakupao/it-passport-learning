@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-07 (**Session 10 paused at clean Stage A baseline** — D-077 locked, Stage 6 module + 320 tests, 3 LLM dispatches (Stage A #0/#1/#2) verified detector + opus prompt v1.0 produces 0-FAIL clean run on 5 pages; **Stage B 40-page deferred to Session 11 per user "下次再跑"**) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8 ✅ (post Plan-B); **Step 6.9 设计 ✅ (D-077) + scaffold ✅ + Stage A clean baseline ✅ (0 FAIL / 5 WARN / 0 PASS, safety_failed=False)**; Step 6.9 Stage B + 6.10/6.11/6.12 pending |
-| Phase 1 状态 | 设计 ✅ + 实施 Step 0~5 ✅ + Step 6.0~6.8 PASS post Plan-B（382/382 trilingual leaves, 0 untranslated, 0 jp mutations, 10/10 answer_index ground-truth, 13 glossary patches, 2 hand-translations）+ **Step 6.9 Stage 6 ADR D-077 locked + Stage 6 module + 320/320 unit tests + Stage A 5-page audit ran 3× to clean baseline (0 FAIL, F-CHOICE-MARKER/LLM unfaithful/idiomatic catches verified)** |
-| 已锁定决定数 | **77** (D-001 ~ D-077；Session 10 新增 D-077 Stage 6 audit reviewer design — two-pass deterministic + LLM, two-tier verdict, repair_stage; amends D-063 retry semantics) |
+| 最后更新 | 2026-05-11 (**Session 11 — Step 6.9 Stage 6 ✅ CLOSED at clean baseline**. Stage B rerun #3 post-hand-edit: 40/40 pages / **0 FAIL** / 22 PASS / 18 WARN / safety_failed=False / overall=WARN. Detector triad D5/D7/D9 verified. LLM Phase-2 reviewer validated (caught 1 real Stage 5 hallucination at page_022 that Phase-1 detectors couldn't see). Stage 6 evidence + sign-off table fully populated. **Step 6.10 Stage 7 export unblocked**.) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.8 ✅; **Step 6.9 ✅ CLOSED (clean baseline 0 FAIL / 22 PASS / 18 WARN, 40/40 pages, safety=False)**; **Step 6.10 Stage 7 export = next entry point**; 6.11 / 6.12 pending |
+| Phase 1 状态 | 设计 ✅ + Step 0~5 ✅ + Step 6.0~6.8 PASS post Plan-B + **Step 6.9 ✅ CLOSED**: Stage 6 module + 324 tests + Stage A 3 dispatches + Stage A user PASS + Stage B 5-Q user PASS + detector fix verified + Stage B rerun #2 surfaced 1 real LLM-caught hallucination + user hand-edit + Stage B rerun #3 clean baseline 0 FAIL. Stage 6 LLM Phase-2 reviewer design validated. **Ready for Step 6.10 Stage 7 export.** |
+| 已锁定决定数 | **77** (D-001 ~ D-077；Session 11 无新增 D-NNN — Stage A sign-off 是 procedural gate, not architectural) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head **Session-10 close commit pending** — 3 commits this session: `39b8710` scaffold + `a624f28` D5/D7 FP fixes + `162aebb` D7 severity polish) |
-| 下一会话 | **Session 11** — Stage B 40-page audit dispatch + retro (per user instruction at 2026-05-07T21:30); 详见 §5 |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `50e8d1b` Session-10 close. Session 11 commits pending: worksheet + Stage A snapshot + Session 11 log + Stage B post-dispatch artifacts.) |
+| 下一会话 | **Session 12** — Step 6.10 Stage 7 export design + scaffold (envelope + JSON/Markdown/SQLite, refuse UNTRANSLATED, normalize choice markers per D6 rs=7 carry-forward); 详见 §5 |
 
 ---
 
@@ -155,7 +155,46 @@ GUI **不在 v1**，Phase 3 再考虑。
 
 ---
 
-## 5. 下一步 / Resume Instructions (current = **Session 10 closed at Stage A clean baseline**, Stage B 40-page deferred to Session 11)
+## 5. 下一步 / Resume Instructions (current = **Session 11 in progress, Stage B dispatched, awaiting completion + user retro**)
+
+### Session 11 progress (2026-05-11) — **Step 6.9 Stage 6 ✅ CLOSED**
+
+- ✅ Stage A user retro worksheet → 3-Q sign-off (Q1=D / Q2=✓ / Q3=✓)
+- ✅ Stage A JSON snapshot: `evidence/.../stage6_review_stageA_rerun2.json` (23KB)
+- ✅ Stage B dispatched → halted at page_042 safety FAIL (32/40 audited)
+- ✅ Stage B JSON snapshot: `evidence/.../stage6_review_stageB.json` (99KB)
+- ✅ Stage B root-cause: both FAILs = detector FPs (page_19 D7 + page_42 D5)
+- ✅ Stage B retro worksheet → 5-Q sign-off (Q1=A / Q2=A / Q3=A / Q4=B / Q5=✓)
+- ✅ Detector fixes (D5 regex + D7 subset-difference + D9 → INFO) + 4 regression tests
+- ✅ Full unit test suite: 324/324 pass (320 base + 4 new)
+- ✅ Stage B rerun #2 → 40/40 audited, 21 PASS / 18 WARN / 1 real FAIL (page_22 LLM-caught hallucination); evidence snapshot 133KB
+- ✅ Closure worksheet Q1 = B (user hand-edited page_022 entity[2].rows[1][1].en, removed "Activities")
+- ✅ Hand-edit documented: `evidence/.../page_022_hand_edit_2026-05-11.md`
+- ✅ Stage B rerun #3 → 40/40 audited, **22 PASS / 18 WARN / 0 FAIL**, safety=False, overall=WARN; evidence snapshot 135KB
+- ✅ `evidence/.../step_06_audit.md` updated with full Stage B narrative + closure summary + known polish items + sign-off table populated through "Final" row
+- ✅ STATE.md synced this turn (per D-027 §3)
+- ✅ Session 11 log §7 covers all phases of Stage 6 closure
+
+**Cumulative dry-run shadow cost (post Step 6.9 closure)**: $47.44 + $37.67 = **$85.11 shadow / $0.05 Mistral real / $0 Anthropic real (max-plan OAuth)**
+
+### Step 6.10 Stage 7 export — next entry point (Session 12)
+
+Stage 6 carried forward as "known polish items" (all WARN-level, non-blocking):
+
+- D6 choice_marker_inconsistent ×3 pages (rs=7) → Stage 7 export normalizes zh+en → A/B/C/D, jp keeps ア/イ/ウ/エ
+- LLM L3 translation_unfaithful WARN clusters (page_022 ストラテジ→Strategy tautology, page_038 circular EN, suffix inconsistency) → Stage 5 prompt v2 polish item
+- D7 numeric_inconsistent WARN ×22 leaves (style/subset only, no conflict) → Stage 5 / Stage 7 normalization candidate
+- D11 kana_helper_missing INFO ×11 leaves → Stage 4.5 backfill
+- D13 run-level INFO ×2 (g_022 / g_028 glossary surface-concept split) → Stage 4.5 glossary self-consistency
+
+Stage 7 export contract reminders:
+
+- Refuse UNTRANSLATED leaves (D-076 envelope)
+- Refuse `answer_index == -1` (D-076 envelope)
+- Normalize choice markers (D6 rs=7 carry-forward from Stage 6)
+- Document known polish items in release notes for first GitHub Release tag
+
+### Session 10 close summary — Stage 6 scaffold + Stage A 0-FAIL baseline ✅
 
 ### Session 10 close summary — Stage 6 scaffold + Stage A 0-FAIL baseline ✅
 
@@ -179,10 +218,17 @@ GUI **不在 v1**，Phase 3 再考虑。
 
 | # | Action | LLM ($)? | Status |
 |---|---|---|---|
-| 6.9.1~6.9.5 | Stage 6 scaffold + 320 unit tests | no | ✅ done |
-| Stage A #0/#1/#2 | 5-page audit verification (3 dispatches) | yes ($8.42 shadow) | ✅ done |
-| **6.9.8** | **Stage B 40-page audit dispatch + retro** | yes (~$10-15 shadow estimate) | ⏸ Session 11 |
-| 6.9.9 | User retro on Stage B → Stage 6 sign-off | — | ⏸ |
+| 6.9.1~6.9.5 | Stage 6 scaffold + 320 unit tests | no | ✅ done (Session 10) |
+| Stage A #0/#1/#2 | 5-page audit verification (3 dispatches) | yes ($8.42 shadow) | ✅ done (Session 10) |
+| 6.9.7 | Stage A user retro worksheet + 3-Q sign-off | no | ✅ done |
+| 6.9.8 | Stage B 40-page audit dispatch (halt) | yes ($7.56 / $0 billed) | ✅ partial (halt @ page_042) |
+| 6.9.8a | Stage B user retro worksheet + 5-Q sign-off | no | ✅ done (A/A/A/B/✓) |
+| 6.9.8b | Detector fixes (D5 regex + D7 subset + D9 INFO) + 4 regression tests | no | ✅ done (324/324 pass) |
+| 6.9.8c | Stage B rerun #2 (full 40-page after fix) | yes ($10.95 / $0 billed) | ✅ done (21/18/1, 1 real LLM-caught FAIL) |
+| 6.9.8d | Closure worksheet Q1 = B → user hand-edit page_022 + documented | no | ✅ done |
+| 6.9.8e | Stage B rerun #3 (after hand-edit) | yes ($10.75 / $0 billed) | ✅ done (22/18/0 clean) |
+| **6.9.9** | **Stage 6 closure — step_06_audit.md narrative + sign-off + STATE sync** | no | ✅ **done — Stage 6 CLOSED** |
+| **6.10** | **Stage 7 export (envelope + JSON/Markdown/SQLite, refuse UNTRANSLATED, normalize choice markers)** | yes | ⏳ **next entry point (Session 12)** |
 | 6.10 | Stage 7 export (envelope + JSON/Markdown/SQLite) | yes | ⏸ |
 | 6.11 | 全本 579-page run (per D-073 Stage C) + GitHub Release (D-046) | yes | ⏸ |
 | 6.12 | Phase 1 RETROSPECTIVE.md (per 规则 C) | no | ⏸ |

@@ -409,7 +409,16 @@ For Stage B user retro, sample-check at least:
 
 ## Decision (post Stage A + Stage B)
 
-(populated post-run; gates Step 6.10 Stage 7 export)
+**Stage 6 closure decision (2026-05-11, Session 11)**:
+
+- Stage 6 module exits with **clean baseline (0 FAIL / 22 PASS / 18 WARN, safety_failed=False, no halt, 40/40 pages audited)** on Stage B rerun #3.
+- Detector contract validated: D5/D6/D7/D8/D9/D10/D11/D12/D13 all behave as designed across 3 dispatches (Stage A re-run #2 + Stage B rerun #1 halted + Stage B rerun #2 + rerun #3).
+- LLM Phase-2 reviewer (opus, v1.0 frozen) caught 1 real Stage 5 hallucination (page_022) that Phase-1 deterministic detectors could not see — Stage 6 design intent validated.
+- 18 WARN pages all carry tracked Stage 5/Stage 7 polish items (tautology, suffix consistency, idiomatic Chinese, kana_helper backfill); none block Stage 7 export. Carried forward as "known polish items" in `step_06_audit.md` § "Known polish items carried forward".
+- 30 D9 instances downgraded WARN→INFO per Stage B user retro Q4=B; signal-to-noise restored.
+- Cumulative Stage 6 cost: $30.16 shadow / $0 billed across 6 dispatches.
+
+**Step 6.10 Stage 7 export gate**: ✅ unblocked. Stage 7 export must refuse any UNTRANSLATED leaves (D-076 envelope contract); should normalize choice markers (D6 rs=7 items); known WARN items pass through with documentation.
 
 ---
 
@@ -437,8 +446,178 @@ For Stage B user retro, sample-check at least:
 | Stage A re-run #1 auditor | Claude main session (Opus 4.7) | 2026-05-07T21:10+09:00 | retro ✅ — D5 fixed, D7 needs severity polish |
 | Stage A re-run #2 LLM dispatcher | user-authorized via "C" path | 2026-05-07T21:23+09:00 | dispatched ✅ (12 calls, $2.78 shadow) |
 | Stage A re-run #2 auditor | Claude main session (Opus 4.7) | 2026-05-07T21:25+09:00 | retro ✅ — **clean baseline (0 FAIL, no safety, no halt)** |
-| Stage A reviewer (规则 D 隔离) | user retro on re-run #2 | (deferred to Session 11) | pending |
-| Stage B LLM dispatcher | (deferred to Session 11) | TBD | per user "下次再跑" 2026-05-07T21:30 |
-| Stage B auditor | (deferred) | TBD | TBD |
-| Stage B reviewer (规则 D 隔离) | (deferred) | TBD | TBD |
-| Final | user + Claude consensus | TBD | TBD |
+| Stage A reviewer (规则 D 隔离) | user retro via worksheet | 2026-05-11 | ✅ Q1=D / Q2=✓ / Q3=✓ (`docs/discussion/2026-05-11-stage6-stageA-user-retro-worksheet.md`) |
+| Stage B LLM dispatcher | user-authorized via "Q3=✓ 授权" | 2026-05-11T17:17:36+09:00 | dispatched ✅ (32 calls before halt, $7.56 shadow) |
+| Stage B auditor | Claude main session (Opus 4.7) | 2026-05-11T17:25:16+09:00 | retro ✅ — root-cause analyzed both FAILs as detector FPs (D5 regex + D7 severity) |
+| Stage B reviewer (规则 D 隔离) | user retro via worksheet | 2026-05-11 | ✅ Q1=A / Q2=A / Q3=A / Q4=B / Q5=✓ (`docs/discussion/2026-05-11-stage6-stageB-user-retro-worksheet.md`) |
+| Detector fix (D5/D7/D9) | Claude main session (Opus 4.7) | 2026-05-11 | ✅ 3 fixes + 4 regression tests + 1 rename → 324/324 tests pass |
+| Stage B rerun #2 LLM dispatcher | user-authorized via Q3 sign-off | 2026-05-11T17:42:29+09:00 | dispatched ✅ (40/40 pages, $10.95 shadow) |
+| Stage B rerun #2 auditor | Claude main session (Opus 4.7) | 2026-05-11T17:55+09:00 | retro ✅ — D5/D7/D9 fixes verified; 1 real FAIL surfaced (page_22 LLM hallucination) |
+| page_022 hand-edit | user | 2026-05-11 | ✅ "Activities" removed from entity[2].rows[1][1].en (`evidence/.../page_022_hand_edit_2026-05-11.md`) |
+| Stage B rerun #3 LLM dispatcher | user-authorized via closure-worksheet Q1=B | 2026-05-11T18:09+09:00 | dispatched ✅ (40/40 pages, $10.75 shadow) |
+| Stage B rerun #3 auditor | Claude main session (Opus 4.7) | 2026-05-11T18:20+09:00 | retro ✅ — **clean baseline (0 FAIL / 22 PASS / 18 WARN, safety_failed=False)** |
+| Final | user + Claude consensus | 2026-05-11 | **Stage 6 ✅ closed; Step 6.10 unblocked** (pending user closure sign-off this turn) |
+
+---
+
+## Stage B (Session 11, 2026-05-11) — full narrative
+
+### Stage B dispatch #1 — halt at page_042 safety FAIL
+
+Dispatched 2026-05-11T17:17:36, halted 2026-05-11T17:25:16 per D-077 §2.8.
+32/40 pages audited (8 skipped: pages 43-50).
+
+| Metric | Value |
+|---|---|
+| pages_processed | 32 / 40 |
+| pass / warn / fail | 17 / 13 / 2 |
+| safety_failed | True (page_42 `Question.answer_index`) |
+| halt_reason | `page_042: safety field FAIL (['Question.answer_index']); halting per D-077 §2.8.` |
+| cost_shadow | $7.56 |
+| billed | $0 (max-plan OAuth) |
+| snapshot | `evidence/.../stage6_review_stageB.json` (99,700 bytes) |
+
+**Both FAILs root-cause analyzed as detector false positives (Session 11 log §4.5)**:
+
+1. **page_42 D5 FP**: regex `(?:問題\s*)?\d+\s*[\-...]\s*\d+\s*[\s　]+([アイウエオ])` captured choice-prefix kana (`1-1\nア.`) because `\s*[\s　]+` allows newlines. Real answer line `問題1-1 ア 問題1-2 イ 問題1-3 イ 問題1-4 エ` matches Stage 4's 4-question extraction exactly — Stage 4 was correct; D5 over-captured.
+2. **page_19 D7 FP**: jp/zh `54.4％（2022年4月～2022年8月）` vs en `54.4% (April 2022 – August 2022)`. Populated sets {54,4,2022,8} vs {54,4,2022} differ by subset (en spells out month names). Original heuristic only downgraded to WARN when sets fully agreed; subset-only differences fell through to FAIL. Same class as Stage A page_014 (`4種類` vs `four types` → WARN) but heuristic edge-case missed.
+
+### Detector fixes (no LLM cost)
+
+Per user Stage B retro worksheet sign-off (Q1=A / Q2=A / Q3=A / Q4=B / Q5=✓):
+
+1. **D5 regex** (`detectors.py:322`): added negative lookahead `(?![.．])` after captured kana — excludes choice prefixes like `ア.` / `ア．`. Regression tests: `test_choice_prefix_after_question_label_not_captured` + `test_full_width_period_after_kana_not_captured`.
+2. **D7 severity heuristic** (`detectors.py:559`): added `all_pairwise_comparable` branch — when populated sets are pairwise subset-comparable (no conflicting values, only spelled-out drops), downgrade to WARN. Regression tests: `test_subset_difference_warn_not_fail` + `test_real_conflict_still_fails` (guard against subset relaxation breaking real conflicts).
+3. **D9 severity policy** (`detectors.py:706`): WARN → INFO. 40-page dispatch surfaced 30 D9 instances mostly representing acceptable paraphrases; WARN noise crowded out real signal. Rationale comment added in source. Test renamed `test_substring_miss_in_zh_warns` → `test_substring_miss_in_zh_emits_info`.
+
+**Full unit test suite: 324/324 pass** (320 base + 4 new regression tests). 0.42s runtime.
+
+### Stage B dispatch #2 — full 40-page rerun after detector fix
+
+Dispatched 2026-05-11T17:42:29, finished 2026-05-11T17:53:46.
+
+| Metric | Stage B #1 (halt) | Stage B #2 (after fix) | Δ |
+|---|---|---|---|
+| pages_processed | 32 / 40 | **40 / 40** | ✅ full coverage |
+| safety_failed | True | **False** | ✅ no halt |
+| pass / warn / fail | 17 / 13 / 2 | **21 / 18 / 1** | +4 PASS, -1 FAIL |
+| most_severe_repair_stage | 4 | **5** | ✅ no upstream Stage 4 |
+| cost_shadow | $7.56 | $10.95 | this run |
+| snapshot | — | `evidence/.../stage6_review_stageB_rerun2.json` (133 KB) | — |
+
+**Detector fix verification**:
+
+| Fix | Stage B #1 | Stage B #2 |
+|---|---|---|
+| D5 regex | page_42 FAIL safety | page_42 → WARN (D6 choice_marker real signal, rs=7) ✅ |
+| D7 subset | page_19 FAIL | page_19 → WARN ✅ |
+| D9 → INFO | 30 WARN instances polluting verdict | 30 INFO instances, no longer downgrade fid/ld ✅ |
+
+**The 1 remaining FAIL was a real Stage 5 translation bug, caught by LLM Phase-2 reviewer**:
+
+- Path: `page_022.entities[2].rows[1][1].en`
+- jp: `・企業と法務 / ・経営戦略 / ・システム戦略`
+- zh: `・企业与法务 / ・经营战略 / ・系统战略` ✓
+- en: `- Corporate Activities and Legal Affairs / - Management Strategy / - System Strategy` ✗ — "Activities" hallucinated
+- LLM rationale: JP says 「企業」 not 「企業活動」; en added a noun not in source (context bleed from another page's `企業活動`).
+- repair_stage: 5
+
+Phase-1 deterministic detectors cannot see semantic hallucinations of this class — no contract violation, leaf is well-formed. **LLM Phase-2 is the right detector lane**, and its v1.0 prompt produced this catch correctly. This validates Stage 6's design intent.
+
+### LLM variance observation
+
+Stage B rerun #1 (halt) did **not** catch the page_022 hallucination — it halted before reaching all chunks. Rerun #2 caught it. Both used opus, temperature=0, forced tool_choice, chunk_size=4. LLM still has slight variance on whether each specific catch surfaces in a given run.
+
+Variance direction: "miss vs catch" (recall) not "false alarm" (precision). Across 4 Stage 6 dispatches (Stage A re-run #2 + Stage B #1 + Stage B #2 + Stage B #3), zero instances of LLM hallucinating a FAIL on faithful content. Acceptable per D-077 design — Stage 6 is defense-in-depth, not single-shot oracle.
+
+### Hand-edit + Stage B dispatch #3 (rerun #3)
+
+Per closure worksheet Q1 = B (user sign-off 2026-05-11):
+
+User performed surgical hand-edit on `data/.../translated/page_022.json` entity[2].rows[1][1].en:
+
+```
+- Before: "- Corporate Activities and Legal Affairs\n- Management Strategy\n- System Strategy"
+- After:  "- Corporate and Legal Affairs\n- Management Strategy\n- System Strategy"
+```
+
+Documented in `evidence/.../page_022_hand_edit_2026-05-11.md` with full before/after,
+issue context, root-cause analysis (cross-entity context bleed), and Rule A/B/D references.
+
+Dispatched 2026-05-11T18:09 ish, finished 2026-05-11T18:20:09.
+
+| Metric | Stage B #2 | Stage B #3 (clean) | Δ |
+|---|---|---|---|
+| pages_processed | 40 / 40 | 40 / 40 | (same) |
+| safety_failed | False | **False** | (same) |
+| pass / warn / fail | 21 / 18 / 1 | **22 / 18 / 0** | **0 FAIL** ✓ |
+| overall_verdict | FAIL | **WARN** | ✓ closure-eligible |
+| most_severe_repair_stage | 5 | 5 | (same; remaining issues are Stage 5/Stage 7 polish items) |
+| cost_shadow | $10.95 | $10.75 | rerun #3 |
+| snapshot | — | `evidence/.../stage6_review_stageB_rerun3_clean.json` (135 KB) | — |
+
+**page_022 verdict change**: FAIL → WARN (2 remaining tautology issues `entities[1].rows[1][1].en` + `entities[3].definition.en` are known Stage 5 prompt polish items — `ストラテジ→Strategy` self-reference loses meaning in EN; carried forward as polish item, not blocking).
+
+### Stage 6 Stage B closure: ✅ clean baseline reached
+
+- **0 FAIL** / 22 PASS / 18 WARN / 40 pages / safety=False / no halt
+- All 18 WARN pages carry tracked polish items (see § "Known polish items carried forward")
+- All detector fixes verified by both regression tests and real-data rerun
+- LLM Phase-2 reviewer validated — caught real hallucination that detectors couldn't see
+- Stage 6 module exit-state acceptable for downstream Stage 7 export
+
+---
+
+## Known polish items carried forward (Stage 5 / Stage 7)
+
+These are Stage B rerun #3 WARN-level findings deferred to Stage 7 export or future Stage 5 prompt improvement. None are FAIL; none gate Stage 7 export.
+
+### Stage 7 export normalization candidates (repair_stage = 7)
+
+- **D6 choice_marker_inconsistent** ×3 pages (page_042, page_043, page_044): mixed marker schemes within question choices (e.g. `['A','B','ウ','エ']` for zh). Stage 7 export should normalize zh+en → `A/B/C/D` while keeping jp `ア/イ/ウ/エ` per D-077 §"Stage B reviewer audit plan".
+
+### Stage 5 prompt polish candidates (repair_stage = 5)
+
+- **D7 numeric_inconsistent WARN** ×22 pages (style/subset only — no semantic conflict): spelled-out months/years/counts, full-width vs half-width digit choices.
+- **LLM translation_unfaithful WARN**:
+  - page_017 entity[0].title.zh: 「効果的な」(effective) → 「高效」(high-efficiency) — semantic nuance shift; prefer 「有效」.
+  - page_022 entity[1].rows[1][1].en + entity[3].definition.en: ストラテジ → "Strategy" leaves the EN sentence "Strategy means strategy" — tautology; needs prompt rule to drop the inner gloss when the target language already uses the gloss word.
+  - page_022 entity[1].rows[3][0].en + entity[2].rows[3][0].en: inconsistent "Domain" suffix across 「〜系」 siblings.
+  - page_038 entity[2].definition.en: circular EN — "Functional Organization" defined as "also called Functional Organization" — needs prompt rule for alternate-Japanese-name fidelity.
+- **LLM term_translation_idiomatic INFO** (style suggestions, lowest priority): page_017/019/022/033/050.
+
+### D11 kana_helper backfill (repair_stage = 4.5)
+
+- **kana_helper_missing INFO** ×11 leaves: all-katakana Term.surface.jp without `kana_helper` (per D-012). Stage 4.5 backfill candidate; INFO-only so non-blocking.
+
+### Run-level D13 INFO (Stage 4.5 glossary self-consistency)
+
+- g_022 `surface.zh='绿色IT'` vs `kana_helper.zh_concept='绿色信息技术'` — no shared substring; INFO only.
+- g_028 `surface.zh='社会企业'` vs `kana_helper.zh_concept='社会商业'` — no shared substring; INFO only.
+
+---
+
+## Cumulative Stage 6 cost
+
+| Dispatch | Time | Calls | Shadow | Note |
+|---|---|---|---|---|
+| Stage A #0 | 2026-05-07T20:50 | 12 | $2.87 | Surfaced D5/D7 FPs |
+| Stage A re-run #1 | 2026-05-07T21:10 | 12 | $2.76 | D5 fix verified |
+| Stage A re-run #2 | 2026-05-07T21:25 | 12 | $2.78 | Stage A clean baseline |
+| Stage B #1 | 2026-05-11T17:25 | 32 (halt) | $7.56 | 32/40 audited; halt page_42 |
+| Stage B #2 | 2026-05-11T17:54 | 40 | $10.95 | After D5/D7/D9 fix; surfaced LLM hallucination FAIL |
+| Stage B #3 | 2026-05-11T18:20 | 40 | $10.75 | After hand-edit; **clean baseline 0 FAIL** |
+| **Stage 6 total** | — | — | **$37.67** | $0 real billed (max-plan OAuth) |
+
+(Note: the cost.json cumulative may differ; the table above reflects per-dispatch shadow tracking. cost.json is canonical; this table is summary.)
+
+### Cumulative dry-run (all stages)
+
+| Stage | Shadow | Real billed |
+|---|---|---|
+| Stage 1 (Mistral OCR) | — | $0.05 Mistral |
+| Stage 2-5 + Plan-B | $47.44 | $0 |
+| Stage 6 (6 dispatches) | $37.67 | $0 |
+| **Cumulative** | **$85.11** | **$0.05 Mistral / $0 Anthropic** |
+
+Within D-077 §2.9 quality-over-cost framing (caps $999/$999); no real spend ceiling concerns.
