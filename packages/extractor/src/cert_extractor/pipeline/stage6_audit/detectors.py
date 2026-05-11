@@ -318,10 +318,16 @@ def _detect_answer_index_out_of_range(inputs: Phase1Inputs) -> list[Stage6Issue]
 
 
 # Pattern: "問題1-5 ウ" or "1-5 ウ" with various separators.
+# Stage B regression (page_042): `\s*[\s　]+` allows newlines, so the
+# regex previously captured choice-prefix kana like `1-1\nア.` from
+# question stems as if they were answer markers. The negative lookahead
+# `(?![.．])` excludes any kana immediately followed by a period — those
+# are choice prefixes (e.g. `ア. 企業が…`), not answer-line tokens
+# (which are bare kana separated by spaces: `問題1-1 ア 問題1-2 イ`).
 _KANA_TO_INDEX = {"ア": 0, "イ": 1, "ウ": 2, "エ": 3, "オ": 4}
 _ANSWER_TOKEN_RE = re.compile(
     r"(?:問題\s*)?\d+\s*[\-‐–—ー－]\s*\d+"
-    r"\s*[\s　]+([アイウエオ])"
+    r"\s*[\s　]+([アイウエオ])(?![.．])"
 )
 
 
@@ -566,21 +572,35 @@ def _detect_numeric_inconsistent(inputs: Phase1Inputs) -> list[Stage6Issue]:
             continue
         if jp_n == zh_n == en_n:
             continue
-        # Severity heuristic (Stage A retro):
-        # - If every populated set agrees and the rest are empty, the
-        #   "missing" side likely uses a spelled-out form (e.g. jp "4種類"
-        #   / zh "4种" / en "four types") or is a fidelity-preserving
-        #   paraphrase ("1つ上" → "above"). Translation-style difference,
-        #   not a fidelity bug → WARN.
-        # - If two or more populated sets disagree on the numeric content,
-        #   one of them is semantically wrong → FAIL.
+        # Severity heuristic (Stage A retro + Stage B retro):
+        # - If every populated set agrees, or only one side is populated,
+        #   the "missing" side uses a spelled-out form (e.g. jp "4種類"
+        #   / zh "4种" / en "four types"). Style difference → WARN.
+        # - Stage B retro (page_019): jp/zh `2022年4月～8月` vs en
+        #   `April 2022 – August 2022`. Populated sets differ (en lacks
+        #   "8" because August spelled out), but **no conflicting values
+        #   across languages** — sets are pairwise comparable by ⊆.
+        #   Partial spelled-out → WARN.
+        # - If sets are pairwise incomparable (e.g. jp "1980" vs zh "1990"),
+        #   one language carries a different value → semantic FAIL.
         populated_sets = [s for s in (jp_n, zh_n, en_n) if s]
-        if len({frozenset(s) for s in populated_sets}) <= 1:
+        unique_sets = {frozenset(s) for s in populated_sets}
+        all_pairwise_comparable = all(
+            a <= b or b <= a for a in populated_sets for b in populated_sets
+        )
+        if len(unique_sets) <= 1:
             severity = Stage6IssueSeverity.WARN
             rationale = (
                 "Numeric tokens disagree (one or more languages omit a "
                 "digit the others kept). Likely a spelled-out / paraphrase "
                 "translation; user retro to confirm fidelity."
+            )
+        elif all_pairwise_comparable:
+            severity = Stage6IssueSeverity.WARN
+            rationale = (
+                "Numeric tokens differ by subset only (one language drops "
+                "digits the others keep — likely spelled-out months/years). "
+                "No conflicting values across languages; user retro to confirm."
             )
         else:
             severity = Stage6IssueSeverity.FAIL
@@ -691,11 +711,18 @@ def _detect_glossary_lock_missed(inputs: Phase1Inputs) -> list[Stage6Issue]:
             if en_locked and en_locked not in en_text:
                 missing_in.append("en")
             if missing_in:
+                # D9 severity policy: WARN → INFO (Stage B retro, Q4=B).
+                # 40-page dispatch surfaced 30 D9 instances of which only
+                # a handful represented real glossary drift; the rest were
+                # acceptable paraphrases (single/plural, casing, idiomatic
+                # synonyms). At WARN scale this becomes retro noise that
+                # crowds out real signals. INFO keeps the report visible
+                # without contributing to overall_verdict downgrade.
                 issues.append(
                     _make_issue(
                         issue_id=f"D9-page_{inputs.page:03d}-{len(issues)+1:04d}",
                         issue_type="glossary_lock_missed",
-                        severity=Stage6IssueSeverity.WARN,
+                        severity=Stage6IssueSeverity.INFO,
                         detector=Stage6IssueDetector.deterministic,
                         entity_path=_path_str(inputs.page, ent_idx, path),
                         evidence={

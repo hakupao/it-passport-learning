@@ -349,6 +349,66 @@ class TestAnswerIndexMismatch:
             "text contains stray answer markers (Stage A regression)."
         )
 
+    def test_choice_prefix_after_question_label_not_captured(self):
+        # Stage B regression (page_042): OCR has lines like
+        #   "1-1\nア. 企業が..."
+        # The original regex `\s*[\s　]+([アイウエオ])` allowed the
+        # newline between `1-1` and `ア.` to match, capturing the
+        # choice-prefix kana as if it were an answer-line token. 3 such
+        # false-positive captures combined with the real 4-marker answer
+        # line yielded 7 total matches and tripped a safety FAIL on a
+        # page where Stage 4 had extracted 4 questions correctly.
+        # Fix: negative lookahead `(?![.．])` after the captured kana —
+        # answer-line kana are bare and space-separated, never followed
+        # by a period.
+        cleaned = (
+            "## 問題\n"
+            "### Q1 stem here\n"
+            "(平成21年度)\n\n"
+            "1-1\n"
+            "ア. choice A1\n"
+            "イ. choice B1\n"
+            "ウ. choice C1\n"
+            "エ. choice D1\n\n"
+            "## 問題\n"
+            "### Q2 stem here\n"
+            "(平成22年度)\n\n"
+            "1-2\n"
+            "ア. choice A2\n"
+            "イ. choice B2\n"
+            "ウ. choice C2\n"
+            "エ. choice D2\n\n"
+            "問題1-1 ア 問題1-2 イ\n"
+        )
+        translated = [
+            _question(id_="q1", page=42, answer_index=0),  # ア
+            _question(id_="q2", page=42, answer_index=1),  # イ
+        ]
+        issues = _detect_answer_index_mismatch(
+            _inputs(page=42, translated=translated, cleaned_text=cleaned)
+        )
+        assert issues == [], (
+            "D5 must not capture choice-prefix 'ア.' as answer markers "
+            "(Stage B regression: page_042 had 3 such false captures "
+            "before the negative-lookahead fix)."
+        )
+
+    def test_full_width_period_after_kana_not_captured(self):
+        # Belt-and-suspenders: full-width period 'ア．' (U+FF0E) must
+        # also disqualify the kana as an answer-line token, since OCR
+        # output frequently uses the full-width form for Japanese text.
+        cleaned = (
+            "1-1\n"
+            "ア．choice A1\n"
+            "イ．choice B1\n\n"
+            "問題1-1 ア\n"
+        )
+        translated = [_question(id_="q1", page=42, answer_index=0)]
+        issues = _detect_answer_index_mismatch(
+            _inputs(page=42, translated=translated, cleaned_text=cleaned)
+        )
+        assert issues == []
+
 
 # ---------------------------------------------------------------------------
 # D6 choice_marker_inconsistent
@@ -492,6 +552,54 @@ class TestNumericInconsistent:
         ]
         assert _detect_numeric_inconsistent(_inputs(translated=t)) == []
 
+    def test_subset_difference_warn_not_fail(self):
+        # Stage B regression (page_019): jp/zh keep month digits, en
+        # spells them out — same content, partial spelled-out.
+        #   jp/zh `54.4％（2022年4月～2022年8月）` → {"54","4","2022","8"}
+        #   en    `54.4% (April 2022 – August 2022)` → {"54","4","2022"}
+        # The original heuristic only downgraded to WARN when all
+        # populated sets were identical; subset-only differences fell
+        # through to FAIL. After the fix, pairwise-comparable sets
+        # (en ⊆ jp = zh) are WARN — no conflicting values exist across
+        # languages, just spelled-out forms in one of them.
+        t = [
+            _term(
+                id_="t1",
+                page=19,
+                jp="54.4％（2022年4月～2022年8月）",
+                zh="54.4％（2022年4月～2022年8月）",
+                en="54.4% (April 2022 – August 2022)",
+            )
+        ]
+        issues = _detect_numeric_inconsistent(_inputs(translated=t))
+        assert any(i.issue_type == "numeric_inconsistent" for i in issues), (
+            "Subset difference should still surface as an issue."
+        )
+        assert all(
+            i.severity == Stage6IssueSeverity.WARN
+            for i in issues if i.issue_type == "numeric_inconsistent"
+        ), "Subset-only set difference must be WARN, not FAIL."
+
+    def test_real_conflict_still_fails(self):
+        # Sanity check that the subset-relaxation didn't downgrade real
+        # conflicts: jp says 1980, zh says 1990 — neither set is a
+        # subset of the other → real semantic conflict → FAIL stays.
+        t = [
+            _term(
+                id_="t1",
+                page=14,
+                jp="1980年制定",
+                zh="1990年制定",
+                en="1980 enacted",
+            )
+        ]
+        issues = _detect_numeric_inconsistent(_inputs(translated=t))
+        assert any(
+            i.severity == Stage6IssueSeverity.FAIL
+            and i.issue_type == "numeric_inconsistent"
+            for i in issues
+        ), "Conflicting values must still FAIL even after subset relaxation."
+
 
 # ---------------------------------------------------------------------------
 # D8 glossary_lock_violated
@@ -529,7 +637,11 @@ class TestGlossaryLockViolated:
 
 
 class TestGlossaryLockMissed:
-    def test_substring_miss_in_zh_warns(self):
+    def test_substring_miss_in_zh_emits_info(self):
+        # Stage B retro (Q4=B): D9 severity policy downgraded WARN → INFO.
+        # Real signal-to-noise on 40-page dispatch was too low at WARN
+        # (30 instances, most acceptable paraphrases). INFO keeps the
+        # report visible without contributing to overall_verdict.
         glos = _glossary(
             _entry(id_="g_001", jp="CSR", zh="企业社会责任", en="CSR"),
         )
@@ -546,8 +658,11 @@ class TestGlossaryLockMissed:
             )
         ]
         issues = _detect_glossary_lock_missed(_inputs(translated=t, glossary=glos))
-        assert any(i.severity == Stage6IssueSeverity.WARN for i in issues)
+        assert any(i.severity == Stage6IssueSeverity.INFO for i in issues)
         assert all(i.issue_type == "glossary_lock_missed" for i in issues)
+        assert all(
+            i.severity == Stage6IssueSeverity.INFO for i in issues
+        ), "D9 must emit INFO (Stage B retro Q4=B)."
 
     def test_short_glossary_key_skipped(self):
         # 2-char key shouldn't trigger spurious substring match.
