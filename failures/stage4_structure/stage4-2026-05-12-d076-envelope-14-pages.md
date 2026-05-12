@@ -112,6 +112,92 @@ Gate ② FAIL.
 
 ## 下一 attempt 输入 / Next-attempt input
 
-User has not yet authorised any of the above. This file stays open.
-When the user picks an option, append §"Resolution" with the chosen
-path + actual outcome.
+(Was open at first archive write; resolved later same session — see
+§Resolution below.)
+
+---
+
+## Resolution (2026-05-12, Session 16, β.1 path)
+
+User chose **β.1** (force Stage 3 Vision opus on 14 pages → re-Stage-4
+on those 14 with `--skip-existing`). Pre-flight δ visual check on
+`page_043.jpg` + `page_525.jpg` confirmed F-MISTRAL-ANSWER-LINE-LOSS
+hypothesis: answer key IS printed on each page as an orange footer
+bar (`問題X-Y [字母]`), Mistral OCR captured the question numbers but
+dropped the answer letters.
+
+### Step 1 — `hard-reocr --force-pages 43,64,65,103,134,154,180,181,182,260,300,416,503,525`
+
+```
+[hard-reocr] DONE   inspected = 579
+             flagged   = 56  [42 heuristic + 14 forced]
+             re-OCR'd  = 14  (other 42 skipped per --skip-existing)
+             fail_count= 0
+             verdict   = None
+```
+
+Cost: ~$3.30 shadow (14 × $0.235), $0 billed. Wall ~5 min.
+
+Verification — Vision opus output captured the answer footers:
+- `cleaned/page_043.md` tail: `問題1-5　ウ　　問題1-6　ウ　　問題1-7　ウ　　問題1-8　エ　　問題1-9　ウ`
+- `cleaned/page_525.md` tail: `問題15-4　**ウ**　…　問題15-8　**イ**`
+
+### Step 2 — Delete 14 stale `structured/page_NNN.json`
+
+```bash
+for p in 43 64 65 103 134 154 180 181 182 260 300 416 503 525; do
+  rm -f data/.../structured/page_$(printf '%03d' $p).json
+done
+# remaining: 540 (= 554 - 14)
+```
+
+### Step 3 — `extract-structure --skip-existing` (only the 14 will run)
+
+```
+[extract-structure] DONE   pages_processed = 14
+                    pages_skipped   = 565  (540 existing + 25 label-skipped)
+                    entities        = 61   (all type=question)
+                    fail_count      = 0
+                    verdict_halted  = None
+```
+
+Cost: ~$2.7 shadow (14 × $0.19), $0 billed. Wall ~3 min.
+structured/ count restored to 554.
+
+### Step 4 — Re-fire Gate ②
+
+```python
+check_gate_2_post_structure(
+    structured_dir=run_dir / 'structured',
+    expected_entity_count=2500,
+    count_tolerance=0.20,
+)
+# Gate 2 passed = True
+# reasons = ()
+```
+
+### Step 5 — Per-page sanity (cross-check vs. δ visual capture)
+
+| page | expected (visual) | actual (re-Stage-4 opus) | match |
+|---|---|---|---|
+| 043 | ウウウエウ → [2,2,2,3,2] | [2,2,2,3,2] | ✓✓✓ |
+| 525 | ウイウイイ → [2,1,2,1,1] | [2,1,2,1,1] | ✓✓✓ |
+| 064-525 (other 12) | not visually verified | all 0-3, no -1 | structurally clean |
+
+### Cumulative cost delta from β.1
+
+| Metric | Pre-β.1 | Post-β.1 | Δ |
+|---|---|---|---|
+| Anthropic shadow | $229.47 | $235.63 | +$6.16 (vs $6 estimate ✓) |
+| Anthropic billed | $0 | $0 | unchanged (D-069 OAuth) |
+| Mistral billed | $0.629 | $0.629 | unchanged |
+| structured/ count | 554 | 554 | unchanged (14 swapped, not added) |
+| entities total | 2226 | 2224 | -2 (replacement entities slightly fewer than originals on a couple of pages — within noise) |
+| Gate ② state | FAIL (14 -1 violations) | **PASS** | resolved |
+
+### Verdict — closed
+
+`PASS` — D-076 envelope clean. Gate ② checkpoint emitted at
+`data/.../checkpoints/gate_2_2026-05-12T23-15-29.json`. Phase 1.bis
+polish (β.3 — `missing_answer_line` detector in `pipeline/quality.py`)
+queued as future D-082+ ADR; not blocking D.3 closure.
