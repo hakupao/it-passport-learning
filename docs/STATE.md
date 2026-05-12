@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-11 (**Session 12 — Step 6.10 Stage 7 export ✅ CLOSED**. D-078 ADR locked → 5-module Stage 7 scaffold + CLI `export-trilingual` + 103 new unit tests (suite 427/427 pass). Real 40-page dry-run produced 84 files with both gates PASS; Gate A pre-normalize ordering bug surfaced+fixed via real data. User sample-review PASS ("ok通过") on page_006/014/022/038/043. **Step 6.11 entry point unlocked (全本 579 页 + GitHub Release tag per D-046)**.) |
-| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.10 ✅; **Step 6.11 全本 579-page Plan-C + GitHub Release = next entry point**; 6.12 pending |
-| Phase 1 状态 | 设计 ✅ + Step 0~6.9 ✅ + **Step 6.10 ✅ CLOSED**: D-078 + Stage 7 module (5 files, 103 tests) + CLI + dual-gate (Gate A pre-normalize) + real-data dry-run 40/40 PASS + 84 files emitted + user sample-review PASS. Stage 7 release artifact ready for Phase 2/3 consumers. Ready for **Step 6.11**: re-run Stages 1-7 on full 579-page book, GitHub Release tag per D-046. |
-| 已锁定决定数 | **78** (D-001 ~ D-078；Session 12 新增 D-078 — Stage 7 export v1 design; amends D-008 by scoping v1 to JSON+MD) |
+| 最后更新 | 2026-05-12 (**Session 13 — 6.11.A.1 + A.2 + A.3 全 done with mixed verdict**. A.1/A.2 polish 代码 ✅ (KanaHelper.auto_backfill + scan + split + 14 tests + claude_client thinking-disabled bug fix + 1 test = 442/442 suite). **A.3 re-baseline run** at `dry_run_2026-05-12T09-48-06_polish_a/`: Stage 4.5 → Stage 5 → Phase 1 verifier 全跑完，**0 UNTRANSLATED** 达成（经历 5 attempts：chunk=8 fail / chunk=1 partial / opus surgical / hand-translate 4）。**D-080 v1.0 §2.3 acceptance FAIL ❌**：D11 +0 (架构 gap — Stage 4.5 polish 不到 translated/ Term entity), D13 +8 (detector 定义与 polish 错位)；D1/D5/D7 FAIL 全 0 ✅. **D-080 amended v1.1**：§2.3 withdrawn, polish 代码保留作 Stage C 安全网, 真正修法是 Stage 5 propagation + D13 detector-aware polish (D-080 §8.6 v2 follow-up)。**累计 shadow ~$22-27 / $0 billed via max-plan OAuth**。**Next executable = 6.11.B.1 — CLI `stage --from N` 子命令 + 6 tests**.) |
+| 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.10 ✅; **Step 6.11 三轨设计已锁，进入 6.11.A 实施 TDD 起手**; 6.12 RETROSPECTIVE pending |
+| Phase 1 状态 | 设计 ✅ + Step 0~6.9 ✅ + Step 6.10 ✅ CLOSED + **Step 6.11 设计 ✅ (D-079/080/081)**: D-079 cadence + D-080 partial polish + D-081 Release asset shape. 实施分 5 轨: A=D-080 polish (~$10 shadow validation), B=D-079 runner+checkpoint infra, C=D-081 release-publish module, D=579-page Stage C 5-gate execution (Mistral ~$0.58 billed, Anthropic $0 billed via max-plan OAuth), E=Release publish + sign-off. |
+| 已锁定决定数 | **81** (D-001 ~ D-081；Session 13 新增 D-079 / D-080 / D-081 三条 standalone ADR per D-029) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `50e8d1b` Session-10 close. Session 11 commits pending: worksheet + Stage A snapshot + Session 11 log + Stage B post-dispatch artifacts.) |
-| 下一会话 | **Session 13** — Step 6.11 全本 579-page Plan-C run (Stages 1-7) + GitHub Release tag (per D-046); 详见 §5 |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `cc1f738` Session-12 close. **本地领先 origin/main 5 commits** — Session 11/12 close 物未 push, 用户 gate.) |
+| 下一会话 | **Session 13 continuation OR Session 14** — 用户选 α (continue here) / β (close + new session) / γ (push first); 起手 = 6.11.A.1 Stage 4.5 builder TDD; 详见 §5 |
 
 ---
 
@@ -155,7 +155,7 @@ GUI **不在 v1**，Phase 3 再考虑。
 
 ---
 
-## 5. 下一步 / Resume Instructions (current = **Session 11 in progress, Stage B dispatched, awaiting completion + user retro**)
+## 5. 下一步 / Resume Instructions (current = **Session 13 open — Step 6.11 设计层 3D 锁完，进入实施 TDD 起手 (6.11.A.1)**)
 
 ### Session 11 progress (2026-05-11) — **Step 6.9 Stage 6 ✅ CLOSED**
 
@@ -238,9 +238,35 @@ Stage 7 export contract reminders:
 | 6.10.7 | Real 40-page dry-run (84 files emitted; Gate A pre-normalize fix applied) | no | ✅ done (0 LLM cost) |
 | 6.10.8 | User sample-review (page_006/014/022/038/043) | — | ✅ PASS ("ok通过", 2026-05-11) |
 | 6.10.9 | Step 6.10 closure (step_07_export.md + STATE sync) | — | ✅ done (this turn) |
-| **6.11** | **全本 579-page Plan-C run (Stages 1-7) + GitHub Release tag per D-046** | yes (Stages 1-6 LLM) | ⏸ next entry point (Session 13) |
-| 6.11 | 全本 579-page Plan-C + GitHub Release (per D-046) | yes (Stages 1-6) | ⏸ |
-| 6.12 | Phase 1 RETROSPECTIVE.md (per 规则 C) | no | ⏸ |
+| **6.11 设计层** | D-079 + D-080 + D-081 — Stage C cadence + 部分 polish + Release asset shape | no | ✅ done (Session 13) |
+| **6.11.A** | D-080 Stage 4.5 polish 实施 + 40-page 重 baseline 验证 | A.3 = yes (~$10 shadow / $0 billed) | ⏸ next entry point |
+| 6.11.A.1 | Stage 4.5 `scan_katakana_terms_for_backfill` + `kana_stop_list.txt` (20 词种子) + KanaHelper.auto_backfill 字段 + 9 unit tests | no | ✅ done (suite 436/436) |
+| 6.11.A.2 | Stage 4.5 `split_multi_concept_items` (6 separators, balanced/unbalanced 双路径, warn 透传) + 5 unit tests | no | ✅ done (suite 441/441) |
+| 6.11.A.3 | 40-page re-baseline (Stage 4.5 → 5 → 6 phase-1); D11/D13 INFO = 0 验证 | yes (~$22-27 shadow / $0 billed via max-plan OAuth, 5 attempts incl 2 bug fixes) | ⚠️ done with NO-ACCEPTANCE — D-080 v1.1 §8 amended (acceptance withdrawn) |
+| 6.11.A.4 | `evidence/.../step_45_polish.md` + STATE.md sync + D-080 v1.1 amend | no | ✅ done (this turn) |
+| **6.11.B** | D-079 runner + checkpoint infra | no | ⏸ next |
+| 6.11.B.1 | CLI `stage --from N [--redo]` + 6 tests | no | ⏸ next |
+| 6.11.B.2 | Checkpoint emitter `gate_N_<ts>.json` + 5 tests | no | ⏸ |
+| 6.11.B.3 | 5 个 gate 的 halt criteria checker + 8 tests | no | ⏸ |
+| **6.11.C** | D-081 release-publish 模块 | no | ⏸ |
+| 6.11.C.1 | `cert_extractor.release.tag_name()` + 4 tests | no | ⏸ |
+| 6.11.C.2 | `cert_extractor.release.compose_notes()` + 4 tests | no | ⏸ |
+| 6.11.C.3 | `cert_extractor.release.publish()` orchestrator + integration test (mock gh) | no | ⏸ |
+| 6.11.C.4 | 手写 `docs/release-notes/itpassport-r6-v1.0.0-intro.md` (~200 字) | no | ⏸ |
+| **6.11.D** | Stage C 579-page 5-gate 执行 | yes (Mistral ~$0.58 billed; Anthropic $0 billed via max-plan OAuth) | ⏸ |
+| 6.11.D.1 | Pre-flight: `gh auth status`, Mistral key, 579-page EPUB sanity | no | ⏸ user gate |
+| 6.11.D.2 | Stage 0 unpack + Stage 1 OCR → Gate ① | Mistral $0.58 | ⏸ user gate |
+| 6.11.D.3 | Stage 2 classify + Stage 3 re-OCR + Stage 4 structure → Gate ② | Anthropic $0 billed | ⏸ user gate |
+| 6.11.D.4 | Stage 4.5 glossary → Gate ③ (D11/D13 = 0) | Anthropic $0 billed | ⏸ user gate |
+| 6.11.D.5 | Stage 5 translation → Gate ④ (0 jp mutation) | Anthropic $0 billed | ⏸ user gate |
+| 6.11.D.6 | Stage 6 audit → Gate ⑤ (safety_failed=False) | Anthropic $0 billed | ⏸ user gate |
+| 6.11.D.7 | Stage 7 export (D-078 dual gate) → 579-page `output/` | no | ⏸ |
+| **6.11.E** | Release publication | no | ⏸ |
+| 6.11.E.1 | Push 5 prior commits + Session 13 commits to origin/main | no | ⏸ user gate |
+| 6.11.E.2 | `cert-extractor release-publish --version v1.0.0 --target <SHA> --confirm` → `itpassport-r6-v1.0.0` | no | ⏸ user gate |
+| 6.11.E.3 | Verify Release page: 6 assets, README renders, SHA256SUMS verifies | no | ⏸ user |
+| 6.11.E.4 | `evidence/.../step_06_11_release.md` + STATE.md sync Step 6.11 ✅ | no | ⏸ |
+| **6.12** | Phase 1 RETROSPECTIVE.md (per 规则 C) | no | ⏸ |
 
 ### Session 09 + 09b summary (Step 6.8 Stage 5 ✅ post Plan-B)
 
