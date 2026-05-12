@@ -74,6 +74,195 @@ Produce the canonical glossary now.
 
 _PAGE_FILE_RE = re.compile(r"^page_(\d+)\.json$")
 
+# Per D-080: auto-backfill scan ranges. All-katakana = every char in one of
+# these Unicode blocks (no kanji / hiragana / latin / digit allowed).
+_KATAKANA_BLOCKS = (
+    (0x30A0, 0x30FF),  # Katakana
+    (0x31F0, 0x31FF),  # Katakana Phonetic Extensions
+    (0xFF66, 0xFF9F),  # Halfwidth Katakana
+)
+
+_KANA_AUTO_BACKFILL_MIN_LEN = 3
+
+_DEFAULT_KANA_STOP_LIST_PATH = Path(__file__).parent / "kana_stop_list.txt"
+
+
+def _is_katakana_char(ch: str) -> bool:
+    code = ord(ch)
+    return any(lo <= code <= hi for lo, hi in _KATAKANA_BLOCKS)
+
+
+def _is_all_katakana(surface: str) -> bool:
+    """True when every character of ``surface`` is in a katakana block.
+
+    Used by D-080 auto-backfill scan to decide whether a glossary term needs
+    a kana_helper placeholder. Empty strings return False (length filter
+    handled separately by the scan).
+    """
+    return bool(surface) and all(_is_katakana_char(ch) for ch in surface)
+
+
+def load_kana_stop_list(path: Path | str | None = None) -> set[str]:
+    """Load the kana stop-list (terms exempt from D-080 auto-backfill).
+
+    File format: one term per line. Blank lines and lines starting with ``#``
+    are ignored. Surrounding whitespace is stripped. Missing file → empty
+    set (no backfill exemption); callers that need a strict load should
+    check ``path.exists()`` first.
+    """
+    target = Path(path) if path is not None else _DEFAULT_KANA_STOP_LIST_PATH
+    if not target.exists():
+        return set()
+    out: set[str] = set()
+    for line in target.read_text(encoding="utf-8").splitlines():
+        term = line.strip()
+        if not term or term.startswith("#"):
+            continue
+        out.add(term)
+    return out
+
+
+# Per D-080 polish #2: separators on which a multi-concept glossary surface
+# is split into 1 entry per concept. Restricted to the 6 explicit characters
+# listed in the ADR §2.1; other candidates (e.g. fullwidth slash ／) deferred
+# until a re-baseline shows they actually appear in source data.
+_CONCEPT_SEPARATORS = ("/", "→", ",", "、", "；", ";")
+_CONCEPT_SEPARATOR_RE = re.compile("|".join(re.escape(s) for s in _CONCEPT_SEPARATORS))
+_MIN_CONCEPT_PARTS = 2
+
+
+def _split_concepts(text: str) -> list[str]:
+    """Split ``text`` on any concept separator; trim and drop empty parts."""
+    if not isinstance(text, str):
+        return [""]
+    parts = [p.strip() for p in _CONCEPT_SEPARATOR_RE.split(text)]
+    return [p for p in parts if p]
+
+
+def split_multi_concept_items(
+    items: list[dict],
+) -> tuple[list[dict], list[dict]]:
+    """D-080 polish #2 — split glossary items whose surface contains
+    multi-concept separators.
+
+    For each item, jp / zh / en are split on the 6 ADR separators. If all
+    three languages produce the same number of parts N ≥ 2, the original
+    item is replaced by N split items (one per concept); otherwise the
+    original is kept untouched and a WARN entry is recorded for evidence.
+
+    Aliases and kana_helper on a multi-concept original are ambiguous after
+    split (which split inherits the alias?) — both are cleared on all split
+    items; the downstream ``scan_katakana_terms_for_backfill`` pass
+    re-decides kana_helper per split surface.
+
+    Returns ``(items_out, warns)`` where ``warns`` is a list of dicts:
+
+        {"surface_jp": "<original>", "reason": "<diagnostic>"}
+
+    Callers (e.g. Stage 4.5 runner) surface ``warns`` to
+    ``evidence/.../step_45_glossary.md`` per D-080 §2.1.
+    """
+    items_out: list[dict] = []
+    warns: list[dict] = []
+    for item in items:
+        if not isinstance(item, dict):
+            items_out.append(item)
+            continue
+        jp = item.get("surface_jp", "")
+        zh = item.get("surface_zh", "")
+        en = item.get("surface_en", "")
+        jp_parts = _split_concepts(jp)
+        zh_parts = _split_concepts(zh)
+        en_parts = _split_concepts(en)
+        any_split = max(len(jp_parts), len(zh_parts), len(en_parts)) >= _MIN_CONCEPT_PARTS
+        if not any_split:
+            items_out.append(item)
+            continue
+        balanced = (
+            len(jp_parts) == len(zh_parts) == len(en_parts)
+            and len(jp_parts) >= _MIN_CONCEPT_PARTS
+        )
+        if not balanced:
+            warns.append(
+                {
+                    "surface_jp": jp,
+                    "reason": (
+                        f"unbalanced concept split: jp={len(jp_parts)} "
+                        f"zh={len(zh_parts)} en={len(en_parts)} parts; original kept"
+                    ),
+                }
+            )
+            items_out.append(item)
+            continue
+        for j, z, e in zip(jp_parts, zh_parts, en_parts, strict=True):
+            split_item = dict(item)
+            split_item["surface_jp"] = j
+            split_item["surface_zh"] = z
+            split_item["surface_en"] = e
+            split_item["aliases_jp"] = []  # ambiguity-free; re-author downstream if needed
+            split_item["kana_helper"] = None  # let scan_katakana_terms_for_backfill re-decide
+            items_out.append(split_item)
+    return items_out, warns
+
+
+def scan_katakana_terms_for_backfill(
+    items: list[dict],
+    stop_list: set[str] | None = None,
+) -> list[dict]:
+    """D-080 polish #1 — auto-backfill kana_helper for all-katakana terms.
+
+    Operates on raw glossary items as returned by the LLM (post
+    ``parse_glossary_response``, pre ``items_to_entries``). For each item
+    whose ``surface_jp`` is all-katakana, length ≥ 3 chars, not in the
+    stop-list, and currently has ``kana_helper is None``, inject a
+    placeholder kana_helper with ``auto_backfill=True``.
+
+    Returns a NEW list (does not mutate input). Items not eligible for
+    backfill are passed through unchanged.
+
+    Placeholder shape per D-080 §2.1::
+
+        {
+            "surface": <surface_jp>,
+            "reading": <surface_jp>,    # Stage 5 may refine to hiragana
+            "zh_concept": <surface_zh>,
+            "auto_backfill": True,
+        }
+
+    Malformed items (missing/empty ``surface_zh``) are passed through
+    untouched — ``items_to_entries`` is the canonical schema validator and
+    will skip them via its existing ValidationError path.
+    """
+    stops = stop_list if stop_list is not None else load_kana_stop_list()
+    out: list[dict] = []
+    for item in items:
+        if not isinstance(item, dict):
+            out.append(item)
+            continue
+        surface_jp = item.get("surface_jp")
+        surface_zh = item.get("surface_zh")
+        eligible = (
+            isinstance(surface_jp, str)
+            and len(surface_jp) >= _KANA_AUTO_BACKFILL_MIN_LEN
+            and _is_all_katakana(surface_jp)
+            and surface_jp not in stops
+            and item.get("kana_helper") is None
+            and isinstance(surface_zh, str)
+            and surface_zh.strip()
+        )
+        if not eligible:
+            out.append(item)
+            continue
+        patched = dict(item)
+        patched["kana_helper"] = {
+            "surface": surface_jp,
+            "reading": surface_jp,
+            "zh_concept": surface_zh,
+            "auto_backfill": True,
+        }
+        out.append(patched)
+    return out
+
 
 @dataclass
 class HarvestedTerm:
@@ -91,6 +280,7 @@ class GlossaryExtractResult:
     raw_items: list[dict]
     skipped: list[tuple[dict, str]]
     response: ClaudeResponse
+    concept_split_warns: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -130,6 +320,8 @@ class GlossaryExtractor:
             tier=self.tier,
         )
         items = parse_glossary_response(response.text)
+        items, concept_split_warns = split_multi_concept_items(items)
+        items = scan_katakana_terms_for_backfill(items)
         entries, skipped = items_to_entries(
             items=items,
             occurrences=occurrences,
@@ -141,6 +333,7 @@ class GlossaryExtractor:
             raw_items=items,
             skipped=skipped,
             response=response,
+            concept_split_warns=concept_split_warns,
         )
 
 
@@ -217,6 +410,7 @@ def _build_entry(
             surface=str(kana_helper_raw["surface"]),
             reading=str(kana_helper_raw["reading"]),
             zh_concept=str(kana_helper_raw["zh_concept"]),
+            auto_backfill=bool(kana_helper_raw.get("auto_backfill", False)),
         )
 
     return GlossaryEntry(

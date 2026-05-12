@@ -109,6 +109,17 @@ class ClaudeClient:
             "max_turns": max_turns,
             "allowed_tools": list(allowed_tools or []),
             "permission_mode": permission_mode,
+            # claude-agent-sdk 0.1.74 defaults to adaptive extended thinking
+            # on supported models (Sonnet 4.6+, Opus 4.6+). All cert-extractor
+            # stages are structural (glossary harvest, translation, audit
+            # detector verdicts) — no extended reasoning required, and on
+            # Opus 4.7+ the SDK omits thinking text by default, which causes
+            # the AssistantMessage TextBlock to come back empty while output
+            # tokens are silently consumed by hidden thinking (observed in
+            # Session 13 6.11.A.3 dispatch: 35 871 output tokens, 0 entries
+            # locked). Disable thinking unconditionally; re-enable per-call
+            # if a future stage actually benefits.
+            "thinking": {"type": "disabled"},
         }
         if self.max_budget_usd is not None:
             kwargs["max_budget_usd"] = self.max_budget_usd

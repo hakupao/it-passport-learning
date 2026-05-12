@@ -33,13 +33,25 @@ class KanaHelper(BaseModel):
             reading="arugorizumu",
             zh_concept="算法",
         )
+
+    Per D-080 (Session 13): the ``auto_backfill`` flag distinguishes
+    placeholders auto-injected by Stage 4.5 (when an all-katakana surface
+    came back from the LLM with ``kana_helper=null``) from human-authored or
+    LLM-authored entries. Both pass D11 audit; the flag exists for
+    traceability — Stage 5 / Stage 7 consumers may treat backfilled entries
+    differently (e.g. Stage 5 prompt v2 could refine the ``reading`` /
+    ``zh_concept`` rather than treating it as a hard lock).
     """
 
     model_config = ConfigDict(extra="forbid", strict=True)
 
     surface: str = Field(..., min_length=1, description="片假名表面形")
-    reading: str = Field(..., min_length=1, description="罗马字读法")
+    reading: str = Field(..., min_length=1, description="罗马字读法 (or katakana itself for auto-backfilled placeholders, per D-080)")
     zh_concept: str = Field(..., min_length=1, description="对应的中文概念词")
+    auto_backfill: bool = Field(
+        default=False,
+        description="True when this kana_helper was auto-injected by Stage 4.5 (per D-080) rather than authored",
+    )
 
 
 class Anchor(BaseModel):

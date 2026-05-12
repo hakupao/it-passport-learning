@@ -109,6 +109,16 @@ def test_build_options_omits_budget_when_unset() -> None:
     assert opts.max_budget_usd is None or opts.max_budget_usd == 0
 
 
+def test_build_options_disables_thinking_by_default() -> None:
+    """Per Session 13 6.11.A.3 incident — claude-agent-sdk 0.1.74 defaults
+    adaptive thinking on, which silently consumes output tokens (35 871 obs.)
+    while leaving the AssistantMessage TextBlock empty. We need every call
+    site to disable thinking unless explicitly re-enabled."""
+    client = cc.ClaudeClient()
+    opts = client._build_options(system="x", model="claude-sonnet-4-6")
+    assert opts.thinking == {"type": "disabled"}
+
+
 def test_extract_usage_handles_dict_attr_and_none() -> None:
     assert cc._extract_usage(None) == (0, 0)
     assert cc._extract_usage({"input_tokens": 5, "output_tokens": 9}) == (5, 9)
