@@ -105,7 +105,16 @@ def check_gate_2_post_structure(
         except json.JSONDecodeError as e:
             reasons.append(f"{path.name}: invalid JSON ({e})")
             continue
-        entities = payload.get("entities", [])
+        # Stage 4 writes structured/page_NNN.json as a top-level JSON array of
+        # entity objects (per stage4_structure.py emitter). Earlier checker draft
+        # assumed dict-with-"entities"-key — keep dict path for back-compat.
+        if isinstance(payload, list):
+            entities = payload
+        elif isinstance(payload, dict):
+            entities = payload.get("entities", [])
+        else:
+            reasons.append(f"{path.name}: unexpected top-level type {type(payload).__name__}")
+            continue
         entity_count += len(entities)
         for ent in entities:
             if ent.get("type") == "question" and ent.get("answer_index") == -1:

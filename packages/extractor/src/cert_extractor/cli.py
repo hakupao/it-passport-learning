@@ -25,23 +25,27 @@ from cert_extractor.budget.monitor import (
 def _build_monitor(
     anthropic_soft_usd: float | None,
     anthropic_hard_usd: float | None,
+    fail_count_soft: int | None = None,
+    fail_count_hard: int | None = None,
+    wall_time_soft: int | None = None,
+    wall_time_hard: int | None = None,
 ) -> BudgetMonitor:
-    """Build a BudgetMonitor with optional anthropic cap overrides (D-071)."""
+    """Build a BudgetMonitor with optional anthropic / fail / wall cap overrides (D-071)."""
     soft = DEFAULT_SOFT
     hard = DEFAULT_HARD
-    if anthropic_soft_usd is not None:
+    if any(v is not None for v in (anthropic_soft_usd, fail_count_soft, wall_time_soft)):
         soft = CapLevels(
-            wall_time_seconds=soft.wall_time_seconds,
+            wall_time_seconds=wall_time_soft if wall_time_soft is not None else soft.wall_time_seconds,
             mistral_usd=soft.mistral_usd,
-            anthropic_usd=anthropic_soft_usd,
-            fail_count=soft.fail_count,
+            anthropic_usd=anthropic_soft_usd if anthropic_soft_usd is not None else soft.anthropic_usd,
+            fail_count=fail_count_soft if fail_count_soft is not None else soft.fail_count,
         )
-    if anthropic_hard_usd is not None:
+    if any(v is not None for v in (anthropic_hard_usd, fail_count_hard, wall_time_hard)):
         hard = CapLevels(
-            wall_time_seconds=hard.wall_time_seconds,
+            wall_time_seconds=wall_time_hard if wall_time_hard is not None else hard.wall_time_seconds,
             mistral_usd=hard.mistral_usd,
-            anthropic_usd=anthropic_hard_usd,
-            fail_count=hard.fail_count,
+            anthropic_usd=anthropic_hard_usd if anthropic_hard_usd is not None else hard.anthropic_usd,
+            fail_count=fail_count_hard if fail_count_hard is not None else hard.fail_count,
         )
     return BudgetMonitor(soft=soft, hard=hard)
 
@@ -207,6 +211,47 @@ def dry_run(
     help="Claude model tier (per D-061).",
 )
 @click.option(
+    "--anthropic-soft-usd",
+    default=None,
+    type=float,
+    help="Override D-071 anthropic_usd soft cap (default $5).",
+)
+@click.option(
+    "--anthropic-hard-usd",
+    default=None,
+    type=float,
+    help="Override D-071 anthropic_usd hard cap (default $30).",
+)
+@click.option(
+    "--fail-count-soft",
+    default=None,
+    type=int,
+    help="Override D-071 fail_count soft cap (default 10).",
+)
+@click.option(
+    "--fail-count-hard",
+    default=None,
+    type=int,
+    help="Override D-071 fail_count hard cap (default 30).",
+)
+@click.option(
+    "--wall-time-soft",
+    default=None,
+    type=int,
+    help="Override D-071 wall_time_seconds soft cap (default 7200 = 2h).",
+)
+@click.option(
+    "--wall-time-hard",
+    default=None,
+    type=int,
+    help="Override D-071 wall_time_seconds hard cap (default 28800 = 8h).",
+)
+@click.option(
+    "--skip-existing/--no-skip-existing",
+    default=False,
+    help="Skip pages with existing classified/page_NNN.json (idempotent re-run).",
+)
+@click.option(
     "--confirm",
     is_flag=True,
     default=False,
@@ -222,6 +267,13 @@ def classify_pages(
     data_dir: Path,
     run_id: str | None,
     tier: str,
+    anthropic_soft_usd: float | None,
+    anthropic_hard_usd: float | None,
+    fail_count_soft: int | None,
+    fail_count_hard: int | None,
+    wall_time_soft: int | None,
+    wall_time_hard: int | None,
+    skip_existing: bool,
     confirm: bool,
 ) -> None:
     """Stage 2 page classify (per D-008 stage 2 + D-069 LLM access)."""
@@ -231,12 +283,21 @@ def classify_pages(
     file_count = sum(1 for _ in ocr_dir.glob("page_*.md"))
     target_count = min(file_count, page_limit) if page_limit else file_count
 
-    click.echo(f"[classify-pages] cert_id    = {cert_id}")
-    click.echo(f"[classify-pages] ocr_dir    = {ocr_dir}")
-    click.echo(f"[classify-pages] run_dir    = {run_dir}")
-    click.echo(f"[classify-pages] run_id     = {inferred_run_id}")
-    click.echo(f"[classify-pages] tier       = {tier}")
-    click.echo(f"[classify-pages] pages      = {target_count} (of {file_count} on disk)")
+    click.echo(f"[classify-pages] cert_id        = {cert_id}")
+    click.echo(f"[classify-pages] ocr_dir        = {ocr_dir}")
+    click.echo(f"[classify-pages] run_dir        = {run_dir}")
+    click.echo(f"[classify-pages] run_id         = {inferred_run_id}")
+    click.echo(f"[classify-pages] tier           = {tier}")
+    click.echo(f"[classify-pages] pages          = {target_count} (of {file_count} on disk)")
+    click.echo(f"[classify-pages] skip_existing  = {skip_existing}")
+    if anthropic_soft_usd is not None:
+        click.echo(f"[classify-pages] anthropic_soft = ${anthropic_soft_usd:.2f} (D-071 override)")
+    if anthropic_hard_usd is not None:
+        click.echo(f"[classify-pages] anthropic_hard = ${anthropic_hard_usd:.2f} (D-071 override)")
+    if fail_count_soft is not None:
+        click.echo(f"[classify-pages] fail_soft      = {fail_count_soft} (D-071 override)")
+    if fail_count_hard is not None:
+        click.echo(f"[classify-pages] fail_hard      = {fail_count_hard} (D-071 override)")
 
     if not confirm:
         click.echo("")
@@ -253,7 +314,15 @@ def classify_pages(
     )
 
     classifier = make_classifier_factory(tier=tier)()
-    runner = Stage2PageClassifier(classifier=classifier)
+    monitor = _build_monitor(
+        anthropic_soft_usd=anthropic_soft_usd,
+        anthropic_hard_usd=anthropic_hard_usd,
+        fail_count_soft=fail_count_soft,
+        fail_count_hard=fail_count_hard,
+        wall_time_soft=wall_time_soft,
+        wall_time_hard=wall_time_hard,
+    )
+    runner = Stage2PageClassifier(classifier=classifier, monitor=monitor)
 
     click.echo("[classify-pages] starting…")
     result = runner.run(
@@ -262,6 +331,7 @@ def classify_pages(
         cert_id=cert_id,
         run_id=inferred_run_id,
         page_limit=page_limit,
+        skip_existing=skip_existing,
     )
 
     click.echo("")
@@ -341,6 +411,30 @@ def classify_pages(
     help="Override D-071 anthropic_usd hard cap (default $30).",
 )
 @click.option(
+    "--fail-count-soft",
+    default=None,
+    type=int,
+    help="Override D-071 fail_count soft cap (default 10).",
+)
+@click.option(
+    "--fail-count-hard",
+    default=None,
+    type=int,
+    help="Override D-071 fail_count hard cap (default 30).",
+)
+@click.option(
+    "--wall-time-soft",
+    default=None,
+    type=int,
+    help="Override D-071 wall_time_seconds soft cap (default 7200 = 2h).",
+)
+@click.option(
+    "--wall-time-hard",
+    default=None,
+    type=int,
+    help="Override D-071 wall_time_seconds hard cap (default 28800 = 8h).",
+)
+@click.option(
     "--dry",
     is_flag=True,
     default=False,
@@ -365,6 +459,10 @@ def hard_reocr(
     tier: str,
     anthropic_soft_usd: float | None,
     anthropic_hard_usd: float | None,
+    fail_count_soft: int | None,
+    fail_count_hard: int | None,
+    wall_time_soft: int | None,
+    wall_time_hard: int | None,
     dry: bool,
     confirm: bool,
 ) -> None:
@@ -426,6 +524,10 @@ def hard_reocr(
     monitor = _build_monitor(
         anthropic_soft_usd=anthropic_soft_usd,
         anthropic_hard_usd=anthropic_hard_usd,
+        fail_count_soft=fail_count_soft,
+        fail_count_hard=fail_count_hard,
+        wall_time_soft=wall_time_soft,
+        wall_time_hard=wall_time_hard,
     )
     runner = Stage3HardReocr(engine=engine, monitor=monitor)
 
@@ -500,6 +602,30 @@ def hard_reocr(
     help="Override D-071 anthropic_usd hard cap (default $30).",
 )
 @click.option(
+    "--fail-count-soft",
+    default=None,
+    type=int,
+    help="Override D-071 fail_count soft cap (default 10).",
+)
+@click.option(
+    "--fail-count-hard",
+    default=None,
+    type=int,
+    help="Override D-071 fail_count hard cap (default 30).",
+)
+@click.option(
+    "--wall-time-soft",
+    default=None,
+    type=int,
+    help="Override D-071 wall_time_seconds soft cap (default 7200 = 2h).",
+)
+@click.option(
+    "--wall-time-hard",
+    default=None,
+    type=int,
+    help="Override D-071 wall_time_seconds hard cap (default 28800 = 8h).",
+)
+@click.option(
     "--confirm",
     is_flag=True,
     default=False,
@@ -519,6 +645,10 @@ def extract_structure(
     skip_existing: bool,
     anthropic_soft_usd: float | None,
     anthropic_hard_usd: float | None,
+    fail_count_soft: int | None,
+    fail_count_hard: int | None,
+    wall_time_soft: int | None,
+    wall_time_hard: int | None,
     confirm: bool,
 ) -> None:
     """Stage 4 structure extraction (per D-008 stage 4 + D-056 + D-069)."""
@@ -553,6 +683,10 @@ def extract_structure(
     monitor = _build_monitor(
         anthropic_soft_usd=anthropic_soft_usd,
         anthropic_hard_usd=anthropic_hard_usd,
+        fail_count_soft=fail_count_soft,
+        fail_count_hard=fail_count_hard,
+        wall_time_soft=wall_time_soft,
+        wall_time_hard=wall_time_hard,
     )
     runner = Stage4Structure(extractor=extractor, monitor=monitor)
 

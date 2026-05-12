@@ -199,6 +199,7 @@ class Stage2PageClassifier:
         cert_id: str,
         run_id: str,
         page_limit: int | None = None,
+        skip_existing: bool = False,
     ) -> Stage2Result:
         ocr_dir = Path(ocr_dir)
         run_dir = Path(run_dir)
@@ -232,6 +233,9 @@ class Stage2PageClassifier:
         classified = 0
 
         for page_path, page_number in pages:
+            out_path = out_dir / f"page_{page_number:03d}.json"
+            if skip_existing and out_path.exists():
+                continue
             t0 = time.monotonic()
             try:
                 ocr_text = page_path.read_text(encoding="utf-8")

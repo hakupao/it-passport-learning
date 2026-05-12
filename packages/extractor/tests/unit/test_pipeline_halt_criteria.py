@@ -129,6 +129,38 @@ def test_gate_1_fails_when_zero_byte_ocr_file_present(tmp_path) -> None:
 # Gate ②
 
 
+def test_gate_2_reads_top_level_list_schema_from_real_structured_files(tmp_path) -> None:
+    """Stage 4 writes structured/page_NNN.json as a top-level JSON array
+    of entity dicts (no wrapping 'entities' key). Checker must support
+    both shapes for forward compatibility with the live emitter."""
+    structured = tmp_path / "structured"
+    structured.mkdir()
+    # Top-level list shape — matches stage4_structure emitter as of 2026-05-12
+    _write_json(
+        structured / "page_018.json",
+        [
+            {
+                "id": "itpassport_r6::section::p018::0",
+                "type": "section",
+                "title": {"jp": "ITパスポート試験とは", "zh": "<UNTRANSLATED>", "en": "<UNTRANSLATED>"},
+            },
+            {
+                "id": "itpassport_r6::figure::p018::1",
+                "type": "figure",
+                "caption": {"jp": "対策が大切", "zh": "<UNTRANSLATED>", "en": "<UNTRANSLATED>"},
+            },
+        ],
+    )
+    _write_json(structured / "page_019.json", [])  # auto-skipped page → empty list
+
+    result = check_gate_2_post_structure(
+        structured_dir=structured,
+        expected_entity_count=2,
+    )
+    assert result.passed is True
+    assert result.reasons == ()
+
+
 def test_gate_2_fails_on_answer_index_minus_1(tmp_path) -> None:
     structured = tmp_path / "structured"
     structured.mkdir()

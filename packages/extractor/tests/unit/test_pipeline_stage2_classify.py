@@ -188,6 +188,38 @@ def test_stage2_runner_honors_page_limit(tmp_path: Path) -> None:
     assert classified == ["page_001.json", "page_002.json", "page_003.json"]
 
 
+def test_stage2_runner_skip_existing_does_not_call_classifier_for_done_pages(tmp_path: Path) -> None:
+    """skip_existing=True must short-circuit pages with existing classified/page_NNN.json."""
+    ocr = _seed_ocr_dir(tmp_path, {n: f"p{n}" for n in range(1, 6)})
+    out_dir = tmp_path / "classified"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    # Pre-seed pages 1, 2, 3 as already classified
+    for n in (1, 2, 3):
+        (out_dir / f"page_{n:03d}.json").write_text(
+            '{"page_number":' + str(n) + ',"label":"content","confidence":0.9}',
+            encoding="utf-8",
+        )
+    # Classifier only has 2 responses — enough for pages 4 and 5; if it gets called
+    # for pages 1-3 the StopIteration / index error would surface as a runner failure.
+    fake = _FakeClient(
+        [ClaudeResponse(text='{"label":"content","confidence":0.9}') for _ in range(2)]
+    )
+    classifier = PageClassifier(client=fake, tier="sonnet")  # type: ignore[arg-type]
+    runner = Stage2PageClassifier(classifier=classifier)
+
+    result = runner.run(
+        ocr_dir=ocr,
+        run_dir=tmp_path,
+        cert_id="itpassport_r6",
+        run_id="dry_run_skip_existing",
+        skip_existing=True,
+    )
+    assert result.pages_classified == 2
+    assert result.fail_count == 0
+    classified = sorted(p.name for p in Path(result.output_dir).iterdir())
+    assert classified == [f"page_{n:03d}.json" for n in range(1, 6)]
+
+
 def test_stage2_runner_halts_on_fail_cap(tmp_path: Path) -> None:
     ocr = _seed_ocr_dir(tmp_path, {n: f"p{n}" for n in range(1, 21)})
 
