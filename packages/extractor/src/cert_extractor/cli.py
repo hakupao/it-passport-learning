@@ -54,7 +54,7 @@ def main(ctx: click.Context) -> None:
     if ctx.invoked_subcommand is None:
         click.echo(f"cert-extractor {__version__} (schema {SCHEMA_VERSION})")
         click.echo(
-            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure | extract-glossary | translate-entities | audit-trilingual | export-trilingual [--help]"
+            "Subcommands: dry-run | classify-pages | hard-reocr | extract-structure | extract-glossary | translate-entities | audit-trilingual | export-trilingual | stage [--help]"
         )
 
 
@@ -1125,6 +1125,102 @@ def export_trilingual(
         raise click.ClickException("Stage 7 export refused due to release-gate failures.")
 
     click.echo(f"[export-trilingual]       output_dir         = {output_dir.resolve()}")
+
+
+# ---------------------------------------------------------------------------
+# Stage resume / dispatcher — per D-079 §2.4 (6.11.B.1 planner slice)
+# ---------------------------------------------------------------------------
+
+
+@main.command("stage")
+@click.option(
+    "--from",
+    "stage_from",
+    required=True,
+    type=str,
+    help="Stage id to resume from: 1 | 2 | 3 | 4 | 4.5 | 5 | 6 | 7 (per D-079 §2.4).",
+)
+@click.option(
+    "--redo",
+    is_flag=True,
+    default=False,
+    help="Delete the stage's existing output dir before running (force re-run).",
+)
+@click.option(
+    "--run-id",
+    required=True,
+    help="Existing run_id under data/<cert-id>/runs/.",
+)
+@click.option(
+    "--cert-id",
+    default="itpassport_r6",
+    show_default=True,
+)
+@click.option(
+    "--data-dir",
+    default="data",
+    show_default=True,
+    type=click.Path(file_okay=False, path_type=Path),
+)
+def stage(
+    stage_from: str,
+    redo: bool,
+    run_id: str,
+    cert_id: str,
+    data_dir: Path,
+) -> None:
+    """Plan a stage resume from N (per D-079 §2.4).
+
+    6.11.B.1 scope: planner + --redo cleanup. Actual stage execution
+    wiring + checkpoint emission + gate halt-criteria checks land in
+    6.11.B.2 + 6.11.B.3.
+    """
+    from cert_extractor.pipeline.stage_dispatch import (
+        build_resume_command_hint,
+        clear_stage_output,
+        parse_stage_id,
+        plan_resume,
+        stage_output_dir,
+    )
+
+    try:
+        sid = parse_stage_id(stage_from)
+    except ValueError as e:
+        raise click.UsageError(str(e)) from e
+
+    run_dir = Path(data_dir) / cert_id / "runs" / run_id
+    if not run_dir.exists():
+        raise click.UsageError(
+            f"run_dir not found: {run_dir}; create it via `dry-run` first."
+        )
+
+    if redo:
+        target = stage_output_dir(sid, run_dir)
+        click.echo(f"[stage] --redo: clearing {target}")
+        removed = clear_stage_output(sid, run_dir)
+        click.echo(f"[stage]         removed = {removed}")
+
+    plan = plan_resume(sid)
+    next_hint = build_resume_command_hint(plan, run_id=run_id, cert_id=cert_id)
+
+    click.echo(f"[stage] cert_id        = {cert_id}")
+    click.echo(f"[stage] run_id         = {run_id}")
+    click.echo(f"[stage] run_dir        = {run_dir}")
+    click.echo(f"[stage] from           = {sid}")
+    click.echo(f"[stage] stages_to_run  = {list(plan.stages_to_run)}")
+    click.echo(f"[stage] halt_after     = stage {plan.halt_after_stage}")
+    if plan.halt_at_gate is not None:
+        click.echo(f"[stage] halt_at_gate   = Gate {plan.halt_at_gate}")
+        if next_hint:
+            click.echo(f"[stage] next_resume    = {next_hint}")
+    else:
+        click.echo("[stage] halt_at_gate   = (none — pipeline end)")
+
+    click.echo("")
+    click.echo(
+        "[stage] 6.11.B.1 scaffolding only — stage execution + checkpoint "
+        "emission + gate halt-criteria checks land in 6.11.B.2 + 6.11.B.3."
+    )
 
 
 if __name__ == "__main__":
