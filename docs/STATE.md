@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-12 (**Session 13 — 6.11.A.1 + A.2 + A.3 全 done with mixed verdict**. A.1/A.2 polish 代码 ✅ (KanaHelper.auto_backfill + scan + split + 14 tests + claude_client thinking-disabled bug fix + 1 test = 442/442 suite). **A.3 re-baseline run** at `dry_run_2026-05-12T09-48-06_polish_a/`: Stage 4.5 → Stage 5 → Phase 1 verifier 全跑完，**0 UNTRANSLATED** 达成（经历 5 attempts：chunk=8 fail / chunk=1 partial / opus surgical / hand-translate 4）。**D-080 v1.0 §2.3 acceptance FAIL ❌**：D11 +0 (架构 gap — Stage 4.5 polish 不到 translated/ Term entity), D13 +8 (detector 定义与 polish 错位)；D1/D5/D7 FAIL 全 0 ✅. **D-080 amended v1.1**：§2.3 withdrawn, polish 代码保留作 Stage C 安全网, 真正修法是 Stage 5 propagation + D13 detector-aware polish (D-080 §8.6 v2 follow-up)。**累计 shadow ~$22-27 / $0 billed via max-plan OAuth**。**Next executable = 6.11.B.1 — CLI `stage --from N` 子命令 + 6 tests**.) |
+| 最后更新 | 2026-05-12 (**Session 14 — Step 6.11.B ✅ 全 3 sub-step + 6.11.C ✅ 全 4 sub-step done**. B.1 = `pipeline/stage_dispatch.py` planner + CLI `stage --from N [--redo]` + 6 tests. B.2 = `pipeline/checkpoint.py` D-079 §2.4 Pydantic Checkpoint + emitter/loader + tokyo_timestamp_slug + 5 tests. B.3 = `pipeline/halt_criteria.py` HaltResult + 5 gate checkers + _walk_translation Plan-B regression guards + 8 tests. C.1 = `release/tag_name.py` D-081 §2.1 underscore↔dash mapping + 4 tests. C.2 = `release/notes.py` D-081 §2.3 5-section Markdown composer + 4 tests. C.3 = `release/publish.py` D-081 §2.4 8-step orchestrator (validate / zip / SHA256SUMS / compose-notes / gh-create / gh-view) with injectable gh_runner mock + 4 tests. C.4 = `docs/release-notes/itpassport-r6-v1.0.0-intro.md` hand-written ~250-word intro. **Suite 442 → 473** (+31), ruff clean. Smoke render confirms 5-H2-section 2.9KB Release body assembles correctly. **No new D**, no LLM cost. **Next executable = 6.11.D.1 pre-flight (user-gated; gh auth status + Mistral key + 579-page EPUB sanity)**.) |
 | 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.10 ✅; **Step 6.11 三轨设计已锁，进入 6.11.A 实施 TDD 起手**; 6.12 RETROSPECTIVE pending |
 | Phase 1 状态 | 设计 ✅ + Step 0~6.9 ✅ + Step 6.10 ✅ CLOSED + **Step 6.11 设计 ✅ (D-079/080/081)**: D-079 cadence + D-080 partial polish + D-081 Release asset shape. 实施分 5 轨: A=D-080 polish (~$10 shadow validation), B=D-079 runner+checkpoint infra, C=D-081 release-publish module, D=579-page Stage C 5-gate execution (Mistral ~$0.58 billed, Anthropic $0 billed via max-plan OAuth), E=Release publish + sign-off. |
 | 已锁定决定数 | **81** (D-001 ~ D-081；Session 13 新增 D-079 / D-080 / D-081 三条 standalone ADR per D-029) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
 | GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `cc1f738` Session-12 close. **本地领先 origin/main 5 commits** — Session 11/12 close 物未 push, 用户 gate.) |
-| 下一会话 | **Session 13 continuation OR Session 14** — 用户选 α (continue here) / β (close + new session) / γ (push first); 起手 = 6.11.A.1 Stage 4.5 builder TDD; 详见 §5 |
+| 下一会话 | **Session 14 close OR Session 15** — 起手 = 6.11.D.1 pre-flight (`gh auth status`, Mistral key, 579-page EPUB sanity), **user gate required** per D-073 + D-079 before any Stage C LLM dispatch; 详见 §5 |
 
 ---
 
@@ -244,15 +244,15 @@ Stage 7 export contract reminders:
 | 6.11.A.2 | Stage 4.5 `split_multi_concept_items` (6 separators, balanced/unbalanced 双路径, warn 透传) + 5 unit tests | no | ✅ done (suite 441/441) |
 | 6.11.A.3 | 40-page re-baseline (Stage 4.5 → 5 → 6 phase-1); D11/D13 INFO = 0 验证 | yes (~$22-27 shadow / $0 billed via max-plan OAuth, 5 attempts incl 2 bug fixes) | ⚠️ done with NO-ACCEPTANCE — D-080 v1.1 §8 amended (acceptance withdrawn) |
 | 6.11.A.4 | `evidence/.../step_45_polish.md` + STATE.md sync + D-080 v1.1 amend | no | ✅ done (this turn) |
-| **6.11.B** | D-079 runner + checkpoint infra | no | ⏸ next |
-| 6.11.B.1 | CLI `stage --from N [--redo]` + 6 tests | no | ⏸ next |
-| 6.11.B.2 | Checkpoint emitter `gate_N_<ts>.json` + 5 tests | no | ⏸ |
-| 6.11.B.3 | 5 个 gate 的 halt criteria checker + 8 tests | no | ⏸ |
-| **6.11.C** | D-081 release-publish 模块 | no | ⏸ |
-| 6.11.C.1 | `cert_extractor.release.tag_name()` + 4 tests | no | ⏸ |
-| 6.11.C.2 | `cert_extractor.release.compose_notes()` + 4 tests | no | ⏸ |
-| 6.11.C.3 | `cert_extractor.release.publish()` orchestrator + integration test (mock gh) | no | ⏸ |
-| 6.11.C.4 | 手写 `docs/release-notes/itpassport-r6-v1.0.0-intro.md` (~200 字) | no | ⏸ |
+| **6.11.B** | D-079 runner + checkpoint infra | no | ✅ done (Session 14, all 3 sub-steps) |
+| 6.11.B.1 | CLI `stage --from N [--redo]` + 6 tests (`pipeline/stage_dispatch.py` planner + cleanup; suite 442→448) | no | ✅ done (Session 14) |
+| 6.11.B.2 | Checkpoint emitter `gate_N_<ts>.json` + 5 tests (`pipeline/checkpoint.py` Pydantic Checkpoint + emit_checkpoint + tokyo_timestamp_slug + load_checkpoint; suite 448→453) | no | ✅ done (Session 14) |
+| 6.11.B.3 | 5 个 gate 的 halt criteria checker + 8 tests (`pipeline/halt_criteria.py` HaltResult + `_within_tolerance` + 5 checkers + `_walk_translation` Plan-B regression guards; suite 453→461) | no | ✅ done (Session 14) |
+| **6.11.C** | D-081 release-publish 模块 | no | ✅ done (Session 14, all 4 sub-steps) |
+| 6.11.C.1 | `cert_extractor.release.tag_name()` + 4 tests (`release/__init__.py` + `release/tag_name.py` underscore↔dash mapping + ParsedTag NamedTuple + version normalization + round-trip; suite 461→465) | no | ✅ done (Session 14) |
+| 6.11.C.2 | `cert_extractor.release.compose_notes()` + 4 tests (`release/notes.py` D-081 §2.3 5-section Markdown composer + polish aggregation + GitContext; suite 465→469) | no | ✅ done (Session 14) |
+| 6.11.C.3 | `cert_extractor.release.publish()` orchestrator + integration test (mock gh) (`release/publish.py` D-081 §2.4 8-step: validate→zip→SHA256SUMS→compose-notes→gh-create→gh-view + injectable `gh_runner`; suite 469→473) | no | ✅ done (Session 14) |
+| 6.11.C.4 | 手写 `docs/release-notes/itpassport-r6-v1.0.0-intro.md` (~250 字; project background + kana_helper rationale + what-you-get + audience; smoke-rendered through compose_notes → clean 2.9KB body) | no | ✅ done (Session 14) |
 | **6.11.D** | Stage C 579-page 5-gate 执行 | yes (Mistral ~$0.58 billed; Anthropic $0 billed via max-plan OAuth) | ⏸ |
 | 6.11.D.1 | Pre-flight: `gh auth status`, Mistral key, 579-page EPUB sanity | no | ⏸ user gate |
 | 6.11.D.2 | Stage 0 unpack + Stage 1 OCR → Gate ① | Mistral $0.58 | ⏸ user gate |
