@@ -65,7 +65,13 @@ def check_gate_1_post_ocr(
         reasons.append(f"zero-byte OCR files: {zero_byte}")
     if cost_path.exists():
         cost = json.loads(cost_path.read_text(encoding="utf-8"))
-        mistral = float(cost.get("mistral_usd", 0.0))
+        # Canonical schema (runner.py / stage*_classify.py): nested under
+        # ``current``. Flat key tolerated as legacy/test fallback only.
+        current = cost.get("current") if isinstance(cost.get("current"), dict) else None
+        if current is not None and "mistral_usd" in current:
+            mistral = float(current["mistral_usd"])
+        else:
+            mistral = float(cost.get("mistral_usd", 0.0))
         if not _within_tolerance(
             mistral, expected_mistral_usd, tolerance=cost_tolerance
         ):

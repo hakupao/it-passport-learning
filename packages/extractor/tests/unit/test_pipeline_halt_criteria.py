@@ -64,6 +64,47 @@ def test_gate_1_passes_with_matching_pages_and_cost_in_band(tmp_path) -> None:
     assert result.reasons == ()
 
 
+def test_gate_1_reads_nested_current_mistral_usd_from_real_cost_json(tmp_path) -> None:
+    """Lock the canonical cost.json schema emitted by runner.py / stage*_classify.py.
+
+    Surfaced during 6.11.D.2: B.3 originally tested only the flat
+    ``{"mistral_usd": x}`` fixture; real cost.json nests under
+    ``current``. Both must be readable so the checker stays robust to
+    test fixtures while honouring the canonical emitter shape.
+    """
+    raw = tmp_path / "raw"
+    ocr = tmp_path / "ocr"
+    raw.mkdir()
+    ocr.mkdir()
+    (raw / "page_001.jpg").write_bytes(b"\x00" * 64)
+    (ocr / "page_001.md").write_text("ok\n", encoding="utf-8")
+    cost = tmp_path / "cost.json"
+    _write_json(
+        cost,
+        {
+            "run_id": "r1",
+            "cert_id": "itpassport_r6",
+            "current": {
+                "wall_time_seconds": 1.0,
+                "mistral_pages": 1,
+                "mistral_usd": 0.001,
+                "anthropic_usd": 0.0,
+                "fail_count": 0,
+            },
+            "by_stage": {"1": {"usd": 0.001, "calls": 1}},
+        },
+    )
+
+    result = check_gate_1_post_ocr(
+        raw_dir=raw,
+        ocr_dir=ocr,
+        cost_path=cost,
+        expected_mistral_usd=0.001,
+        cost_tolerance=0.10,
+    )
+    assert result.passed is True, result.reasons
+
+
 def test_gate_1_fails_when_zero_byte_ocr_file_present(tmp_path) -> None:
     raw = tmp_path / "raw"
     ocr = tmp_path / "ocr"
