@@ -6,13 +6,13 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | 2026-05-12 (**Session 14 — Step 6.11.B ✅ 全 3 sub-step + 6.11.C ✅ 全 4 sub-step done**. B.1 = `pipeline/stage_dispatch.py` planner + CLI `stage --from N [--redo]` + 6 tests. B.2 = `pipeline/checkpoint.py` D-079 §2.4 Pydantic Checkpoint + emitter/loader + tokyo_timestamp_slug + 5 tests. B.3 = `pipeline/halt_criteria.py` HaltResult + 5 gate checkers + _walk_translation Plan-B regression guards + 8 tests. C.1 = `release/tag_name.py` D-081 §2.1 underscore↔dash mapping + 4 tests. C.2 = `release/notes.py` D-081 §2.3 5-section Markdown composer + 4 tests. C.3 = `release/publish.py` D-081 §2.4 8-step orchestrator (validate / zip / SHA256SUMS / compose-notes / gh-create / gh-view) with injectable gh_runner mock + 4 tests. C.4 = `docs/release-notes/itpassport-r6-v1.0.0-intro.md` hand-written ~250-word intro. **Suite 442 → 473** (+31), ruff clean. Smoke render confirms 5-H2-section 2.9KB Release body assembles correctly. **No new D**, no LLM cost. **Next executable = 6.11.D.1 pre-flight (user-gated; gh auth status + Mistral key + 579-page EPUB sanity)**.) |
+| 最后更新 | 2026-05-12 (**Session 14 CLOSED — Step 6.11.B ✅ + 6.11.C ✅ + 2 commits pushed + D.1 pre-flight ✅ with Mistral-key blocker**. B-track = `pipeline/{stage_dispatch,checkpoint,halt_criteria}.py` + CLI `stage --from N [--redo]` + 19 tests (D-079 §2.1/§2.4)。C-track = `release/{tag_name,notes,publish}.py` + intro markdown + 12 tests (D-081 §2.1/§2.3/§2.4)。 **Suite 442 → 473** (+31), ruff clean。Commits `0836ec2` + `93eebff` pushed to origin/main。 **D.1 pre-flight**: gh auth ✅ (hakupao, repo+workflow scopes), EPUB ✅ (579 page-image entries 精确匹配), Anthropic OAuth ✓ (Session 13 已验证 max-plan Keychain path), **MISTRAL_API_KEY ❌ 未在 shell — D.2 启动 blocker**。 **No new D**, no LLM cost。**Next executable = 6.11.D.2 — user 在 shell `export MISTRAL_API_KEY=...` 后 run `cert-extractor dry-run --source IT-Passport.epub --cert-id itpassport_r6 --page-limit 579 --confirm`，Stage 0 unpack + Stage 1 OCR ~$0.58 billed → Gate ①**.) |
 | 当前阶段 | **实施阶段 (Phase 1)** — Step 0~5 ✅; Step 6.0~6.10 ✅; **Step 6.11 三轨设计已锁，进入 6.11.A 实施 TDD 起手**; 6.12 RETROSPECTIVE pending |
 | Phase 1 状态 | 设计 ✅ + Step 0~6.9 ✅ + Step 6.10 ✅ CLOSED + **Step 6.11 设计 ✅ (D-079/080/081)**: D-079 cadence + D-080 partial polish + D-081 Release asset shape. 实施分 5 轨: A=D-080 polish (~$10 shadow validation), B=D-079 runner+checkpoint infra, C=D-081 release-publish module, D=579-page Stage C 5-gate execution (Mistral ~$0.58 billed, Anthropic $0 billed via max-plan OAuth), E=Release publish + sign-off. |
 | 已锁定决定数 | **81** (D-001 ~ D-081；Session 13 新增 D-079 / D-080 / D-081 三条 standalone ADR per D-029) |
 | 未决问题数 | **3** open（详见 §4），40 closed |
-| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `cc1f738` Session-12 close. **本地领先 origin/main 5 commits** — Session 11/12 close 物未 push, 用户 gate.) |
-| 下一会话 | **Session 14 close OR Session 15** — 起手 = 6.11.D.1 pre-flight (`gh auth status`, Mistral key, 579-page EPUB sanity), **user gate required** per D-073 + D-079 before any Stage C LLM dispatch; 详见 §5 |
+| GitHub repo | **https://github.com/hakupao/it-passport-learning** (Public, main, head `93eebff` Session-14 close. **origin/main 已 sync** — Session 14 两条 atomic commits 已 push: `0836ec2` (B-track) + `93eebff` (C-track+docs); 之前以为的 "5 commits ahead" 实际已 push) |
+| 下一会话 | **Session 15** — Session 14 已 closed at `93eebff`. 起手 = 6.11.D.2 — user 先 `export MISTRAL_API_KEY=...` 验证 shell 环境，再 run `cert-extractor dry-run --source IT-Passport.epub --cert-id itpassport_r6 --page-limit 579 --confirm`. 跑完后 Claude 用 `check_gate_1_post_ocr` 验 Gate ①. 详见 §5 |
 
 ---
 
@@ -254,7 +254,7 @@ Stage 7 export contract reminders:
 | 6.11.C.3 | `cert_extractor.release.publish()` orchestrator + integration test (mock gh) (`release/publish.py` D-081 §2.4 8-step: validate→zip→SHA256SUMS→compose-notes→gh-create→gh-view + injectable `gh_runner`; suite 469→473) | no | ✅ done (Session 14) |
 | 6.11.C.4 | 手写 `docs/release-notes/itpassport-r6-v1.0.0-intro.md` (~250 字; project background + kana_helper rationale + what-you-get + audience; smoke-rendered through compose_notes → clean 2.9KB body) | no | ✅ done (Session 14) |
 | **6.11.D** | Stage C 579-page 5-gate 执行 | yes (Mistral ~$0.58 billed; Anthropic $0 billed via max-plan OAuth) | ⏸ |
-| 6.11.D.1 | Pre-flight: `gh auth status`, Mistral key, 579-page EPUB sanity | no | ⏸ user gate |
+| 6.11.D.1 | Pre-flight: `gh auth status` ✅ (hakupao, repo+workflow scopes), 579-page EPUB ✅ (`./IT-Passport.epub` 256 MB, 579 page-image entries), Anthropic OAuth ✓ (Session 13 path), **MISTRAL_API_KEY ❌ 未在 shell** | no | ⏳ done with blocker (Session 14, user 在 Session 15 shell export 后即解除) |
 | 6.11.D.2 | Stage 0 unpack + Stage 1 OCR → Gate ① | Mistral $0.58 | ⏸ user gate |
 | 6.11.D.3 | Stage 2 classify + Stage 3 re-OCR + Stage 4 structure → Gate ② | Anthropic $0 billed | ⏸ user gate |
 | 6.11.D.4 | Stage 4.5 glossary → Gate ③ (D11/D13 = 0) | Anthropic $0 billed | ⏸ user gate |
