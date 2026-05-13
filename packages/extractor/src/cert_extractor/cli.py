@@ -847,6 +847,30 @@ def extract_glossary(
 @click.option("--anthropic-soft-usd", default=None, type=float)
 @click.option("--anthropic-hard-usd", default=None, type=float)
 @click.option(
+    "--fail-count-soft",
+    default=None,
+    type=int,
+    help="Override D-071 fail_count soft cap (default 10).",
+)
+@click.option(
+    "--fail-count-hard",
+    default=None,
+    type=int,
+    help="Override D-071 fail_count hard cap (default 30).",
+)
+@click.option(
+    "--wall-time-soft",
+    default=None,
+    type=int,
+    help="Override D-071 wall_time_seconds soft cap (default 7200 = 2h).",
+)
+@click.option(
+    "--wall-time-hard",
+    default=None,
+    type=int,
+    help="Override D-071 wall_time_seconds hard cap (default 28800 = 8h).",
+)
+@click.option(
     "--max-items-per-call",
     default=8,
     show_default=True,
@@ -874,6 +898,10 @@ def translate_entities(
     skip_existing: bool,
     anthropic_soft_usd: float | None,
     anthropic_hard_usd: float | None,
+    fail_count_soft: int | None,
+    fail_count_hard: int | None,
+    wall_time_soft: int | None,
+    wall_time_hard: int | None,
     max_items_per_call: int,
     confirm: bool,
 ) -> None:
@@ -896,6 +924,18 @@ def translate_entities(
     click.echo(f"[translate-entities] max_items_per_call = {max_items_per_call}")
     click.echo(f"[translate-entities] skip_existing      = {skip_existing}")
     click.echo(f"[translate-entities] pages on disk      = {len(page_files)}")
+    if anthropic_soft_usd is not None:
+        click.echo(f"[translate-entities] anthropic_soft     = ${anthropic_soft_usd:.2f} (D-071 override)")
+    if anthropic_hard_usd is not None:
+        click.echo(f"[translate-entities] anthropic_hard     = ${anthropic_hard_usd:.2f} (D-071 override)")
+    if fail_count_soft is not None:
+        click.echo(f"[translate-entities] fail_soft          = {fail_count_soft} (D-071 override)")
+    if fail_count_hard is not None:
+        click.echo(f"[translate-entities] fail_hard          = {fail_count_hard} (D-071 override)")
+    if wall_time_soft is not None:
+        click.echo(f"[translate-entities] wall_soft          = {wall_time_soft}s (D-071 override)")
+    if wall_time_hard is not None:
+        click.echo(f"[translate-entities] wall_hard          = {wall_time_hard}s (D-071 override)")
 
     if not confirm:
         click.echo("")
@@ -915,6 +955,10 @@ def translate_entities(
     monitor = _build_monitor(
         anthropic_soft_usd=anthropic_soft_usd,
         anthropic_hard_usd=anthropic_hard_usd,
+        fail_count_soft=fail_count_soft,
+        fail_count_hard=fail_count_hard,
+        wall_time_soft=wall_time_soft,
+        wall_time_hard=wall_time_hard,
     )
     runner = Stage5Translate(engine=engine, monitor=monitor)
 
