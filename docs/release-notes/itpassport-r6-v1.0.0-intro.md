@@ -1,4 +1,4 @@
-The first **trilingual edition** of the IT パスポート (Japan Information-Technology Engineers Examination — "IT Passport") study material for **Reiwa 6 (FY 2024)**, produced from the official Japanese textbook *「いちばんやさしい ITパスポート 絶対合格の教科書＋出る順問題集」* by Kyosuke Takahashi.
+The first **trilingual edition** of the IT パスポート (Japan Information-Technology Engineers Examination — "IT Passport") study material for **Reiwa 6 (FY 2024)**, produced from a Japanese-language exam-preparation textbook (title and author intentionally omitted).
 
 Every chapter, term, table, and practice question carries three parallel renderings — **Japanese (original)**, **Chinese (zh)**, and **English (en)** — with `kana_helper` annotations on every all-katakana technical term, pairing the kana surface with the writer's reading and a one-line Chinese concept gloss. That last field is the project's reason for existing: technical material in Japan renders foreign-origin terms in katakana, and a non-native reader's bottleneck is katakana scanning, not the underlying concept.
 
