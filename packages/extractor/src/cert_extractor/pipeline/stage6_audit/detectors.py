@@ -333,7 +333,16 @@ _ANSWER_TOKEN_RE = re.compile(
 
 def _parse_answer_letters(cleaned_text: str) -> list[str]:
     """Return answer kana letters in document order; empty if no matches."""
-    return _ANSWER_TOKEN_RE.findall(cleaned_text)
+    # Session 20 Stage B regression (page_181): Stage 3 hard-page re-OCR
+    # (Vision LLM) emits markdown bold around answer kana, e.g.
+    # `問題4-19  **エ**  問題4-20  **ウ**`. The `**` is not whitespace,
+    # so `\s*[\s　]+([アイウエオ])` fails between `問題N-M` and the kana,
+    # causing the detector to miss real answers and emit a false-positive
+    # page-level safety FAIL. Stripping `**` first is a minimal, scoped
+    # fix: D5 only consumes the cleaned text for answer-line parsing,
+    # and the negative lookahead `(?![.．])` still excludes choice
+    # prefixes (`**ア**.` → after strip → `ア.` → still rejected).
+    return _ANSWER_TOKEN_RE.findall(cleaned_text.replace("**", ""))
 
 
 def _detect_answer_index_mismatch(inputs: Phase1Inputs) -> list[Stage6Issue]:

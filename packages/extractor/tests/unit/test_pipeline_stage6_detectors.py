@@ -409,6 +409,38 @@ class TestAnswerIndexMismatch:
         )
         assert issues == []
 
+    def test_markdown_bold_answer_line_session20_page_181(self):
+        # Session 20 Stage B regression (page_181): Stage 3 hard-page
+        # re-OCR (Vision LLM) emitted markdown bold around each answer
+        # kana on the answer line, e.g.
+        #   "問題4-19  **エ**  問題4-20  **ウ**  問題4-21  **ウ**  問題4-22  **ウ**"
+        # The `**` is not whitespace, so the regex `\s*[\s　]+[アイウエオ]`
+        # failed to match between the question number and the kana,
+        # causing the detector to find only stray bare kana (likely a
+        # choice prefix the lookahead missed in a different OCR layout)
+        # and emit a page-level safety FAIL "Source answer line has 1
+        # answers (イ) but page has 4 question entities; cannot align".
+        # The actual Stage 4 answer_index values [3,2,2,2] mapped
+        # correctly to [エ,ウ,ウ,ウ] ground truth — a pure detector FP.
+        # Fix: strip `**` from cleaned_text inside _parse_answer_letters
+        # before regex application.
+        cleaned = (
+            "問題4-19　**エ**　　問題4-20　**ウ**　　問題4-21　**ウ**　　問題4-22　**ウ**\n"
+        )
+        translated = [
+            _question(id_="q1", page=181, answer_index=3),  # エ
+            _question(id_="q2", page=181, answer_index=2),  # ウ
+            _question(id_="q3", page=181, answer_index=2),  # ウ
+            _question(id_="q4", page=181, answer_index=2),  # ウ
+        ]
+        issues = _detect_answer_index_mismatch(
+            _inputs(page=181, translated=translated, cleaned_text=cleaned)
+        )
+        assert issues == [], (
+            "D5 must strip markdown bold (`**`) from cleaned source "
+            "before answer-line regex (Session 20 page_181 regression)."
+        )
+
 
 # ---------------------------------------------------------------------------
 # D6 choice_marker_inconsistent
