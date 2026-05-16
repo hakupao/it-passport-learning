@@ -325,9 +325,20 @@ def _detect_answer_index_out_of_range(inputs: Phase1Inputs) -> list[Stage6Issue]
 # are choice prefixes (e.g. `ア. 企業が…`), not answer-line tokens
 # (which are bare kana separated by spaces: `問題1-1 ア 問題1-2 イ`).
 _KANA_TO_INDEX = {"ア": 0, "イ": 1, "ウ": 2, "エ": 3, "オ": 4}
+# Session 20 Stage B rerun regression (page_181): the separator between
+# the question label and the answer kana was `\s*[\s　]+`, which lets
+# `\s` consume newlines. This permitted the regex to span from a
+# `### 問題 4-19` heading across a blank line into the question stem
+# `インターネット…`, capturing the leading `イ` as if it were an
+# answer-line token. The negative lookahead `(?![.．])` doesn't help
+# here because the next char after `イ` is `ン` (the second char of
+# `インターネット`), not a period. Fix: restrict the separator to literal
+# ASCII space + full-width space (U+3000), no newlines. Answer lines
+# are always single-line (`問題4-19  エ  問題4-20  ウ`), so this is
+# semantically tight without rejecting any real pattern.
 _ANSWER_TOKEN_RE = re.compile(
     r"(?:問題\s*)?\d+\s*[\-‐–—ー－]\s*\d+"
-    r"\s*[\s　]+([アイウエオ])(?![.．])"
+    r"[ 　]+([アイウエオ])(?![.．])"
 )
 
 

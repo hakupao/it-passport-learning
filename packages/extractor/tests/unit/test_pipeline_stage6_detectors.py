@@ -409,6 +409,51 @@ class TestAnswerIndexMismatch:
         )
         assert issues == []
 
+    def test_stem_start_kana_after_question_heading_session20_page_181(self):
+        # Session 20 Stage B rerun regression (page_181 second FP): after
+        # the `**bold**` strip fixed the answer-line parse, the detector
+        # still over-counted by 1 because the regex separator
+        # `\s*[\s　]+` allowed newlines. The cleaned source had:
+        #     ### 問題 4-19
+        #
+        #     インターネットショッピング…
+        # The regex captured `イ` (first char of "インターネット") as
+        # the answer to question 4-19, because `問題 4-19\n\nイ` matched.
+        # The negative lookahead `(?![.．])` didn't reject it (next char
+        # after `イ` is `ン`, not a period). Fix: require the separator
+        # between question label and answer kana to be inline whitespace
+        # only (ASCII space ` ` or full-width space `　`), no newlines —
+        # which matches how answer lines are actually written in the
+        # source PDF (e.g. `問題4-19  エ  問題4-20  ウ`).
+        cleaned = (
+            "### 問題 4-19\n"
+            "\n"
+            "インターネットショッピングにおいて、Webページの閲覧履歴…\n"
+            "\n"
+            "- ア．アフィリエイト\n"
+            "- イ．オークション\n"
+            "- ウ．フラッシュマーケティング\n"
+            "- エ．レコメンデーション\n"
+            "\n"
+            "### 問題 4-20\n"
+            "\n"
+            "ウェブアクセシビリティの説明として、最も適切なものはどれか。\n"
+            "\n"
+            "問題4-19　エ　　問題4-20　ウ\n"
+        )
+        translated = [
+            _question(id_="q1", page=181, answer_index=3),  # エ
+            _question(id_="q2", page=181, answer_index=2),  # ウ
+        ]
+        issues = _detect_answer_index_mismatch(
+            _inputs(page=181, translated=translated, cleaned_text=cleaned)
+        )
+        assert issues == [], (
+            "D5 must not capture stem-start kana as answer markers "
+            "across newlines after a `### 問題 N-M` heading "
+            "(Session 20 page_181 rerun regression)."
+        )
+
     def test_markdown_bold_answer_line_session20_page_181(self):
         # Session 20 Stage B regression (page_181): Stage 3 hard-page
         # re-OCR (Vision LLM) emitted markdown bold around each answer
