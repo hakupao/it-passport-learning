@@ -614,6 +614,21 @@ _EN_SPELLED_LARGE_NUM_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Session 21 Stage 7 Gate A regression #2 (page_066): jp `2万円` is
+# strip-able via `_JP_ZH_LARGE_NUM_UNIT_RE`, but en `20,000 yen`
+# (post comma-strip → `20000 yen`) is a 5-digit pure-digit currency
+# amount that no other pattern catches. jp/zh use the unit-prefix
+# (万 = 10^4) for amounts ≥ 10,000; en typically renders these as
+# pure-digit comma-separated numbers. Strip en `\b\d{5,}\s*(yen|
+# dollar)\b` so the 万-equivalent residual is symmetric with the
+# jp/zh side. Threshold of 5 digits is chosen so 4-digit amounts
+# (like `5000円` / `5,000 yen`) — which jp/zh would NOT use a 万
+# prefix for — keep their digits and match en directly.
+_EN_LARGE_DIGIT_CURRENCY_RE = re.compile(
+    r"\b\d{5,}\s*(?:yen|dollars?|JPY|USD)\b",
+    re.IGNORECASE,
+)
+
 # Session 21 Stage 7 Gate A regression (page_215, etc.): comma-separated
 # numbers in English (`1,429 yen`) don't match jp/zh equivalents
 # (`1429円`) because the existing `\d+` regex captures `1,429` as two
@@ -653,6 +668,7 @@ def _normalize_for_numerics(text: str) -> str:
     text = _EN_ERA_PREFIX_RE.sub("", text)
     text = _JP_ZH_LARGE_NUM_UNIT_RE.sub("", text)
     text = _EN_SPELLED_LARGE_NUM_RE.sub("", text)
+    text = _EN_LARGE_DIGIT_CURRENCY_RE.sub("", text)
     return text
 
 

@@ -829,6 +829,35 @@ class TestNumericInconsistent:
             "(Session 21 page_215 regression)."
         )
 
+    def test_en_large_digit_currency_session21_page_066(self):
+        # Session 21 Stage 7 Gate A regression #2 (page_066): jp text
+        # uses `2万円` (= 20,000 yen) AND `5,000円` (= 5,000 yen).
+        # en text uses `20,000 yen` AND `5,000 yen` — pure-digit
+        # comma-separated. After comma strip + 万 strip, jp side
+        # reduces to `{5000}` but en side keeps `{20000, 5000}` because
+        # `20000 yen` is a 5-digit pure-digit amount no other strip
+        # catches. Result: jp ⊂ en with extra `20000` → incomparable
+        # → FAIL.
+        # Fix: strip `\b\d{5,}\s*(yen|dollar)\b` from en so 万-
+        # equivalent amounts disappear symmetrically. 4-digit amounts
+        # (like 5,000) stay intact for comparison.
+        t = [
+            _term(
+                id_="t1",
+                page=66,
+                jp="固定費は年間3,000万円。単価が2万円、変動費が5,000円。",
+                zh="固定成本3,000万日元。单价2万日元，变动成本5,000日元。",
+                en="Fixed cost is 30 million yen per year. Unit price 20,000 yen, variable cost 5,000 yen.",
+            )
+        ]
+        issues = _detect_numeric_inconsistent(_inputs(translated=t))
+        fail_issues = [i for i in issues if i.severity == Stage6IssueSeverity.FAIL]
+        assert fail_issues == [], (
+            "D7 must strip en 5+ digit pure-digit currency amounts "
+            "(symmetric with jp/zh 万 unit-prefix strip) "
+            "(Session 21 page_066 regression)."
+        )
+
     def test_english_romaji_era_prefix_session21_page_064(self):
         # Session 21 Stage 7 Gate A regression (page_064): jp/zh stems
         # carry `（平成24年度）` and en stem carries `(FY Heisei 24)`.
