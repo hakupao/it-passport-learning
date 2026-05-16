@@ -559,6 +559,19 @@ _CIRCLED_MULTI_DIGIT_REPLACEMENTS: tuple[tuple[str, str], ...] = (
 )
 _NUMERIC_RE = re.compile(r"\d+(?:\.\d+)?%?")
 
+# Session 20 Stage B rerun #2 regression (page_262): jp/zh stems carry
+# `（平成30年度）` and en carries `(FY2018)` — both refer to the same
+# real-world year (平成30 = 2018) but D7 reads jp_numerics={30},
+# zh_numerics={30}, en_numerics={2018} and fires a FAIL on
+# "different values". Era → Gregorian-year conversion is a standard
+# translation localization, not a numeric fidelity conflict.
+# Strip these tokens from all three languages before counting so the
+# residual numerics are comparable apples-to-apples.
+_JP_ERA_YEAR_RE = re.compile(
+    r"(?:平成|令和|昭和|大正|明治)\s*\d+\s*年(?:度)?"
+)
+_EN_FY_YEAR_RE = re.compile(r"\bFY\s*\d{4}\b", re.IGNORECASE)
+
 
 def _normalize_for_numerics(text: str) -> str:
     """Normalize digit-bearing characters into ASCII so D7 can reason
@@ -569,12 +582,20 @@ def _normalize_for_numerics(text: str) -> str:
     in jp/zh, but en uses `(1)..(6)` — without this normalization,
     jp/zh reported zero numerics while en reported {1..6}, yielding a
     spurious FAIL.
+
+    Session 20 Stage B rerun #2 surfaced page_262 FP: jp/zh `（平成30年度）`
+    vs en `(FY2018)` flagged as a "different values" FAIL even though
+    the conversion is a standard translation pattern. The strips
+    below remove era-year and FY-year markers before downstream
+    digit extraction.
     """
     text = text.translate(_FULLWIDTH_DIGIT_TRANS)
     for circled, replacement in _CIRCLED_MULTI_DIGIT_REPLACEMENTS:
         if circled in text:
             text = text.replace(circled, replacement)
     text = text.translate(_CIRCLED_SINGLE_DIGIT_TRANS)
+    text = _JP_ERA_YEAR_RE.sub("", text)
+    text = _EN_FY_YEAR_RE.sub("", text)
     return text
 
 

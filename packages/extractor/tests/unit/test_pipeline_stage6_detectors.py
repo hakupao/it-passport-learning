@@ -677,6 +677,70 @@ class TestNumericInconsistent:
             for i in issues
         ), "Conflicting values must still FAIL even after subset relaxation."
 
+    def test_japanese_era_to_fy_year_conversion_no_issue_session20_page_262(self):
+        # Session 20 Stage B rerun #2 regression (page_262 D7 FAIL):
+        # jp/zh question stems carry `（平成30年度）` (Heisei 30 era marker)
+        # while en uses `(FY2018)` (Gregorian fiscal year). Heisei 30 =
+        # 2018, so the conversion is a standard translation localization,
+        # not a numeric fidelity conflict. The original D7 extracted
+        # jp_numerics={30}, zh_numerics={30}, en_numerics={2018} and
+        # flagged the pairwise-incomparable sets as a FAIL "different
+        # values across languages".
+        # Fix: strip Japanese era-year tokens (平成|令和|昭和|大正|明治
+        # + digits + 年(度)?) from jp/zh AND strip `FY\d{4}` tokens
+        # from en before numeric extraction. After stripping, residual
+        # numerics in all three are empty → no D7 issue raised.
+        t = [
+            _question(
+                id_="q1",
+                page=262,
+                stem_jp="プログラムのテスト手法に関して。（平成30年度）",
+                stem_zh="关于程序测试方法。（平成30年度）",
+                stem_en="Regarding program testing methods. (FY2018)",
+                answer_index=0,
+            )
+        ]
+        assert _detect_numeric_inconsistent(_inputs(page=262, translated=t)) == [], (
+            "D7 must treat Japanese era → Gregorian fiscal-year conversion "
+            "as a localization pattern, not a numeric fidelity conflict "
+            "(Session 20 page_262 regression)."
+        )
+
+    def test_japanese_reiwa_era_to_fy_year_conversion_no_issue(self):
+        # Companion to page_262 test — verify 令和 also strips correctly.
+        # 令和3 = 2021, en "FY2021" should not collide with jp "令和3年度".
+        t = [
+            _question(
+                id_="q1",
+                page=262,
+                stem_jp="既存のプログラムを改善する活動。（令和3年度）",
+                stem_zh="改善既有程序的活动。（令和3年度）",
+                stem_en="An activity that improves existing programs. (FY2021)",
+                answer_index=0,
+            )
+        ]
+        assert _detect_numeric_inconsistent(_inputs(page=262, translated=t)) == []
+
+    def test_real_year_conflict_still_fails_after_era_strip(self):
+        # Belt-and-suspenders: a genuine year conflict outside any era
+        # marker must still FAIL — the era-stripping should not mask
+        # real fidelity bugs.
+        t = [
+            _term(
+                id_="t1",
+                page=14,
+                jp="2020年制定",
+                zh="2021年制定",  # genuine conflict
+                en="enacted in 2020",
+            )
+        ]
+        issues = _detect_numeric_inconsistent(_inputs(translated=t))
+        assert any(
+            i.severity == Stage6IssueSeverity.FAIL
+            and i.issue_type == "numeric_inconsistent"
+            for i in issues
+        ), "Genuine year conflicts must still FAIL post era-strip patch."
+
 
 # ---------------------------------------------------------------------------
 # D8 glossary_lock_violated
