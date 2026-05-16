@@ -409,7 +409,52 @@ class TestAnswerIndexMismatch:
         )
         assert issues == []
 
-    def test_stem_start_kana_after_question_heading_session20_page_181(self):
+    def test_stem_start_kana_inline_question_heading_session21_page_260(self):
+        # Session 21 Stage 7 Gate A regression (page_260): the cleaned
+        # source had an inline question heading like
+        #   "### 問題 6-9 アジャイル開発の特徴として…"
+        # The space between `6-9` and `ア` matched `[ 　]+`; the
+        # captured `ア` was followed by `ジ` (the second char of
+        # "アジャイル", katakana U+30B8). The Session 20 lookahead
+        # `(?![.．])` only rejected period suffixes, so this stray
+        # stem-start kana was captured as if it were an answer-line
+        # token, yielding 6 letters vs 5 questions → safety FAIL.
+        # Fix: extend the negative lookahead to also reject any
+        # subsequent hiragana / katakana / CJK ideograph, so the
+        # standalone-kana invariant for answer-line tokens is enforced
+        # (real answer kana are followed by whitespace, full-width
+        # space, end-of-line, or the next "問題" marker — never by
+        # another Japanese character).
+        cleaned = (
+            "### 問題 6-5\n"
+            "Some stem A.\n\n"
+            "### 問題 6-6\n"
+            "Some stem B.\n\n"
+            "### 問題 6-7\n"
+            "Some stem C.\n\n"
+            "### 問題 6-8\n"
+            "Some stem D.\n\n"
+            "### 問題 6-9 アジャイル開発の特徴として、適切なものはどれか。\n"
+            "\n"
+            "問題6-5 ウ　問題6-6 イ　問題6-7 ウ　問題6-8 ウ　問題6-9 エ\n"
+        )
+        translated = [
+            _question(id_="q1", page=260, answer_index=2),
+            _question(id_="q2", page=260, answer_index=1),
+            _question(id_="q3", page=260, answer_index=2),
+            _question(id_="q4", page=260, answer_index=2),
+            _question(id_="q5", page=260, answer_index=3),
+        ]
+        issues = _detect_answer_index_mismatch(
+            _inputs(page=260, translated=translated, cleaned_text=cleaned)
+        )
+        assert issues == [], (
+            "D5 must not capture stem-start kana from an inline "
+            "question heading like `問題 6-9 アジャイル…` "
+            "(Session 21 page_260 regression)."
+        )
+
+    def test_markdown_bold_answer_line_session20_page_181(self):
         # Session 20 Stage B rerun regression (page_181 second FP): after
         # the `**bold**` strip fixed the answer-line parse, the detector
         # still over-counted by 1 because the regex separator
@@ -720,6 +765,99 @@ class TestNumericInconsistent:
             )
         ]
         assert _detect_numeric_inconsistent(_inputs(page=262, translated=t)) == []
+
+    def test_japanese_amount_unit_vs_english_spelled_out_session21_page_060(self):
+        # Session 21 Stage 7 Gate A regression (page_060): table row
+        # has jp `100万円` / zh `100万日元` / en `1 million yen`. Same
+        # real amount (100万 = 1,000,000 = 1 million); semantic
+        # equivalence with different unit-prefix conventions. The
+        # original D7 extracted jp_numerics={100}, zh_numerics={100},
+        # en_numerics={1} → pairwise-incomparable FAIL.
+        # Fix: `_normalize_for_numerics` strips `\d+\s*[万億兆]` from
+        # jp/zh and `\d+\s*(million|billion|trillion)` from en before
+        # numeric extraction, reducing the pre-comparison residual to
+        # the unit-word (which has no digits).
+        t = [
+            _term(
+                id_="t1",
+                page=60,
+                jp="100万円",
+                zh="100万日元",
+                en="1 million yen",
+            )
+        ]
+        assert _detect_numeric_inconsistent(_inputs(translated=t)) == [], (
+            "D7 must treat jp `Nman/Noku` ↔ en `N million/billion` "
+            "as semantic equivalence (Session 21 page_060 regression)."
+        )
+
+    def test_japanese_oku_vs_english_billion_session21_page_491(self):
+        # Companion: 億 (= 1e8) ↔ "billion" (= 1e9 in US English, but
+        # in jp-en bilingual context 43億 ≈ 4.3 billion is the
+        # standard translation). Both stripped → empty.
+        t = [
+            _term(
+                id_="t1",
+                page=491,
+                jp="アドレスの総数は約43億個",
+                zh="地址总数约为43亿个",
+                en="approximately 4.3 billion addresses",
+            )
+        ]
+        assert _detect_numeric_inconsistent(_inputs(translated=t)) == []
+
+    def test_comma_separated_number_normalization_session21_page_215(self):
+        # Session 21 Stage 7 Gate A regression (page_215): jp `1429円`
+        # vs en `1,429 yen` — same value, English uses thousand-
+        # separator comma. Pre-fix the regex extracted `{1429}` from
+        # jp and `{1, 429}` from en (the comma split `1,429` into two
+        # tokens), causing a spurious mismatch.
+        # Fix: `_normalize_for_numerics` strips `(\d),(?=\d)` first so
+        # `1,429` becomes `1429` across all three languages.
+        t = [
+            _term(
+                id_="t1",
+                page=215,
+                jp="本体価格1429円＋税",
+                zh="定价1429日元（不含税）",
+                en="The list price is 1,429 yen plus tax",
+            )
+        ]
+        assert _detect_numeric_inconsistent(_inputs(translated=t)) == [], (
+            "D7 must treat comma-separated numbers (`1,429`) as "
+            "equivalent to their no-comma form (`1429`) "
+            "(Session 21 page_215 regression)."
+        )
+
+    def test_english_romaji_era_prefix_session21_page_064(self):
+        # Session 21 Stage 7 Gate A regression (page_064): jp/zh stems
+        # carry `（平成24年度）` and en stem carries `(FY Heisei 24)`.
+        # The Session 20 D7 patch (114a1af) only stripped Japanese-
+        # script era markers + `\bFY\d{4}\b` (numeric Gregorian) but
+        # not English-romaji era prefixes (`Heisei N`, `Reiwa N`,
+        # etc.). Result: jp/zh post-strip = {}, en post-strip = {24}
+        # → mismatch.
+        # Fix: extend with `\b(Heisei|Reiwa|Showa|Taisho|Meiji)\s+\d+\b`
+        # English-romaji era stripping.
+        t = [
+            _term(
+                id_="t1",
+                page=64,
+                jp="2種類のデータの関係性…（平成24年度）",
+                zh="表示两种数据之间关系（平成24年度）",
+                en="representing the relationship between two types of data (FY Heisei 24)",
+            )
+        ]
+        # Note: jp/zh `2種類` / `两种` / `two types` is a separate
+        # paraphrase pattern (likely WARN). Era stripping should leave
+        # the `2` for D7 to compare correctly — `{2}` in all three.
+        issues = _detect_numeric_inconsistent(_inputs(translated=t))
+        fail_issues = [i for i in issues if i.severity == Stage6IssueSeverity.FAIL]
+        assert fail_issues == [], (
+            "D7 must strip English-romaji era prefixes (`Heisei N` etc.) "
+            "so era-translated stems don't FAIL on residual digits "
+            "(Session 21 page_064 regression)."
+        )
 
     def test_real_year_conflict_still_fails_after_era_strip(self):
         # Belt-and-suspenders: a genuine year conflict outside any era

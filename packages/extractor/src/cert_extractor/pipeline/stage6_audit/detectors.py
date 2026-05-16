@@ -333,12 +333,23 @@ _KANA_TO_INDEX = {"ア": 0, "イ": 1, "ウ": 2, "エ": 3, "オ": 4}
 # answer-line token. The negative lookahead `(?![.．])` doesn't help
 # here because the next char after `イ` is `ン` (the second char of
 # `インターネット`), not a period. Fix: restrict the separator to literal
-# ASCII space + full-width space (U+3000), no newlines. Answer lines
-# are always single-line (`問題4-19  エ  問題4-20  ウ`), so this is
-# semantically tight without rejecting any real pattern.
+# ASCII space + full-width space (U+3000), no newlines.
+#
+# Session 21 Stage 7 Gate A regression (page_260): same-line stem-start
+# kana FP. The page has a heading `問題 6-9 アジャイル開発の特徴…` —
+# `問題 6-9` then space then `ア` (first char of "アジャイル", the
+# Japanese transliteration of "Agile"). The space matches `[ 　]+`,
+# `ア` is in `[アイウエオ]`, and the existing `(?![.．])` lookahead only
+# rejects period suffixes — `ア` here is followed by `ジ` (katakana
+# U+30B8), so the regex wrongly captured it as the answer to question
+# 6-9. Fix: extend the negative lookahead to also exclude hiragana
+# (ぁ-ゖ), katakana (ァ-ヺ), and CJK ideographs
+# (一-鿿) — answer-line tokens are bare standalone kana
+# followed by whitespace/end-of-line/next-question-label, never by
+# another Japanese character.
 _ANSWER_TOKEN_RE = re.compile(
     r"(?:問題\s*)?\d+\s*[\-‐–—ー－]\s*\d+"
-    r"[ 　]+([アイウエオ])(?![.．])"
+    r"[ 　]+([アイウエオ])(?![.．ぁ-ゖァ-ヺ一-鿿])"
 )
 
 
@@ -572,6 +583,46 @@ _JP_ERA_YEAR_RE = re.compile(
 )
 _EN_FY_YEAR_RE = re.compile(r"\bFY\s*\d{4}\b", re.IGNORECASE)
 
+# Session 21 Stage 7 Gate A regression (page_064, etc.): English text
+# may keep the romaji era marker (e.g., `(FY Heisei 24)` when source
+# is `(平成24年度)`). The Session 20 D7 patch only stripped Japanese-
+# script era markers + numeric `FYDDDD`. Strip the English-romaji era
+# pattern too so `(FY Heisei 24)` post-normalize matches `(平成24年度)`
+# post-normalize at zero numerics.
+_EN_ERA_PREFIX_RE = re.compile(
+    r"\b(?:Heisei|Reiwa|Showa|Taisho|Meiji)\s+\d+\b",
+    re.IGNORECASE,
+)
+
+# Session 21 Stage 7 Gate A regression (page_060/066/122/415/491/492):
+# jp `100万円` vs en `1 million yen` is a standard translation
+# localization (万 = 10,000 ≈ "ten thousand"; 億 = 100,000,000 ≈
+# "hundred million"). jp_numerics={100}, en_numerics={1} causes a
+# pairwise-incomparable FAIL even though both express the same real
+# amount. The conversion is semantic equivalence with different unit-
+# prefix conventions; D7 should not flag.
+# Strip jp/zh `\d(.\d)?\s*[万億兆]` AND en `\d(.\d)?\s*(million|billion|
+# trillion)` so both sides reduce to the residual (non-large-number)
+# numerics for comparison.
+_JP_ZH_LARGE_NUM_UNIT_RE = re.compile(
+    # `億` (U+5104) is the Japanese / traditional Chinese form;
+    # `亿` (U+4EBF) is the simplified Chinese form. Both must strip.
+    r"\d+(?:\.\d+)?\s*[万億亿兆]"
+)
+_EN_SPELLED_LARGE_NUM_RE = re.compile(
+    r"\b\d+(?:\.\d+)?\s*(?:million|billion|trillion)\b",
+    re.IGNORECASE,
+)
+
+# Session 21 Stage 7 Gate A regression (page_215, etc.): comma-separated
+# numbers in English (`1,429 yen`) don't match jp/zh equivalents
+# (`1429円`) because the existing `\d+` regex captures `1,429` as two
+# tokens `{1, 429}` while jp captures one token `{1429}`. Strip the
+# thousand-separator comma between adjacent digits so `1,429` → `1429`
+# before downstream extraction. Applied to all three languages because
+# jp/zh sometimes use commas too (e.g., `3,000万円`).
+_COMMA_IN_NUMBER_RE = re.compile(r"(\d),(?=\d)")
+
 
 def _normalize_for_numerics(text: str) -> str:
     """Normalize digit-bearing characters into ASCII so D7 can reason
@@ -594,8 +645,14 @@ def _normalize_for_numerics(text: str) -> str:
         if circled in text:
             text = text.replace(circled, replacement)
     text = text.translate(_CIRCLED_SINGLE_DIGIT_TRANS)
+    # Strip thousand-separator commas first so subsequent patterns see
+    # contiguous digits (e.g. `1,429` → `1429`, `3,000万` → `3000万`).
+    text = _COMMA_IN_NUMBER_RE.sub(r"\1", text)
     text = _JP_ERA_YEAR_RE.sub("", text)
     text = _EN_FY_YEAR_RE.sub("", text)
+    text = _EN_ERA_PREFIX_RE.sub("", text)
+    text = _JP_ZH_LARGE_NUM_UNIT_RE.sub("", text)
+    text = _EN_SPELLED_LARGE_NUM_RE.sub("", text)
     return text
 
 
