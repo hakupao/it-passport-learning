@@ -1,0 +1,80 @@
+{
+  "page": 416,
+  "round": "R9",
+  "worker": "R9-B4",
+  "verdict": "FAIL",
+  "leaves_total": 6,
+  "leaves_clean": 0,
+  "leaves_polish": 0,
+  "leaves_defect": 6,
+  "findings": [
+    {
+      "leaf_id": "itpassport_r6::question::p416::0",
+      "severity": "defect",
+      "category": "choice_marker",
+      "lang": "en",
+      "jp": "ア/イ/ウ/エ",
+      "zh": "A/B/C/D",
+      "en": "a./b./c./d.",
+      "issue": "CONFIRMED R9-A finding: en choice labels are lowercase 'a. b. c. d.' — duplication-artifact / wrong case. Spec requires uppercase A. B. C. D.",
+      "recommended_fix": "Uppercase all en choice prefixes to A./B./C./D."
+    },
+    {
+      "leaf_id": "itpassport_r6::question::p416::1",
+      "severity": "defect",
+      "category": "choice_marker",
+      "lang": "both",
+      "jp": "ア/イ/ウ/エ",
+      "zh": "A/B/ウ/エ",
+      "en": "a./b./C./D.",
+      "issue": "Double break: en mixes lowercase a./b. with uppercase C./D.; zh mixes Latin A/B with Katakana ウ/エ. Both languages broken in same question.",
+      "recommended_fix": "Uppercase en to A./B./C./D.; replace ウ/エ in zh with C/D."
+    },
+    {
+      "leaf_id": "itpassport_r6::question::p416::2",
+      "severity": "defect",
+      "category": "choice_marker",
+      "lang": "zh",
+      "jp": "ア/イ/ウ/エ",
+      "zh": "ア/イ/ウ/エ",
+      "en": "A/B/C/D",
+      "issue": "All four zh choices carry raw Katakana ア/イ/ウ/エ — Japanese-script leakage into Chinese output.",
+      "recommended_fix": "Replace ア/イ/ウ/エ with A/B/C/D in zh choices."
+    },
+    {
+      "leaf_id": "itpassport_r6::question::p416::3",
+      "severity": "defect",
+      "category": "choice_marker",
+      "lang": "zh",
+      "jp": "ア/イ/ウ/エ",
+      "zh": "甲/乙/丙/丁",
+      "en": "A/B/C/D",
+      "issue": "CJK ordinals 甲乙丙丁 in zh.",
+      "recommended_fix": "Normalize zh markers to A/B/C/D."
+    },
+    {
+      "leaf_id": "itpassport_r6::question::p416::4",
+      "severity": "defect",
+      "category": "choice_marker",
+      "lang": "zh",
+      "jp": "ア/イ/ウ/エ",
+      "zh": "甲/乙/丙/エ",
+      "en": "A/B/C/D",
+      "issue": "Triple-style mix in zh: CJK ordinals 甲乙丙 + Katakana エ in same question.",
+      "recommended_fix": "Replace all four zh prefixes with A/B/C/D."
+    },
+    {
+      "leaf_id": "itpassport_r6::question::p416::5",
+      "severity": "defect",
+      "category": "choice_marker",
+      "lang": "zh",
+      "jp": "ア/イ/ウ/エ",
+      "zh": "ア/イ/ウ/エ",
+      "en": "A/B/C/D",
+      "issue": "All four zh choices carry raw Katakana ア/イ/ウ/エ. Same severity as Q2.",
+      "recommended_fix": "Replace ア/イ/ウ/エ with A/B/C/D in zh choices."
+    }
+  ],
+  "release_impacting": true,
+  "notes": "Worst page in batch: 0 clean leaves of 6. Confirms R9-A's lowercase-en artifact (Q0+Q1) and adds widespread zh-side script leakage. Translation bodies remain faithful (technical terms accurate)."
+}

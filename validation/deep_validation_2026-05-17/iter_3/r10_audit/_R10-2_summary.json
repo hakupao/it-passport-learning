@@ -1,0 +1,32 @@
+{
+  "round": "R10",
+  "worker": "R10-2",
+  "pages_assigned": [171, 200, 201, 257, 305, 332, 339, 354],
+  "pages_audited": 8,
+  "verdicts": {
+    "PASS": [171, 201, 257, 305, 332, 339, 354],
+    "WARN": [],
+    "FAIL": [200]
+  },
+  "release_impacting_pages": [200],
+  "release_impacting_categories_seen": ["semantic-defect-source", "factual-inversion"],
+  "recurring_defects_observed": [
+    {
+      "defect": "callout-banner-misread: '試験にココが出る' → '試験にはつしが出る'",
+      "pages": [200, 305],
+      "severity": "medium",
+      "release_impact": "none (banner stripped by Stage 3 cleaner)",
+      "fix_class": "Stage 2/3 regex post-OCR normalization"
+    }
+  ],
+  "convergence_assessment": {
+    "zero_anomaly": false,
+    "blocking_finding": "p200 ホスティングサービス JP definition was corrupted '明確' → '不明確' by Stage 4 structurer, and all three language surfaces (jp/zh/en) ship the incorrect factual claim. This inverts the very distinction the page teaches (hosting=clear-location vs cloud=unclear-location).",
+    "recommended_action_for_R10_aggregator": "Route p200 to R11 fixer. Patch must update structured/page_200.json::p200::2.definition.jp, then re-translate zh/en (or hand-patch all 3 surfaces consistently), then propagate to translated/output/glossary. Verify glossary.json hosting entry too.",
+    "non_blocking_followups": [
+      "Stage 2 OCR-fixup rule for '試験にココが出る' banner (cosmetic, observed twice in 8-page sample → recurring)",
+      "Future: exam-explanation extraction for p332-class pages (design gap, not v1.0.0 scope)"
+    ]
+  },
+  "method": "Rule D hard isolation honored: did not read v1_ocr, iter_2, iter_3/r9a_ocr, iter_3/r9b_translation, v2_translation, step_06_audit, stage6_review*. Fresh judgment from raw/ocr/cleaned (where present)/classified/structured/translated/output only."
+}

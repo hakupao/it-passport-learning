@@ -1,0 +1,28 @@
+{
+  "page": 416,
+  "round": "R9",
+  "worker": "R9-A4",
+  "verdict": "WARN",
+  "score": 0.84,
+  "findings": [
+    {
+      "severity": "mid",
+      "category": "answer_letter_contamination",
+      "location": "translated/page_416.json + output/pages/page_416.md EN section — choices for Q0 and Q1",
+      "jp_actual": "EN choice labels for Q0: 'A. a. DRAM and SRAM', 'B. b. DRAM and flash memory', 'C. c. ROM and SRAM', 'D. d. ROM and flash memory' — lowercase letter artifact (a/b/c/d) duplicated after A/B/C/D",
+      "jp_expected": "EN choices should be 'A. DRAM and SRAM', 'B. DRAM and flash memory', etc. — no duplicate lowercase prefix",
+      "trace": "JP OCR for all 6 questions is clean and matches ocr/page_416.md exactly. Answer indices correct: Q0→エ(3) ROM+flash, Q1→エ(3) SSD, Q2→イ(1) dpi, Q3→エ(3) RGB, Q4→ウ(2) display resolution, Q5→イ(1) 3D printer. The EN choice-label duplication 'A. a.' / 'B. b.' exists in translated.json and propagates into output/pages/page_416.md EN section. Also in translated.json block_1 zh field and block_2 zh field: ウ/エ JP-label prefixes remain instead of C/D. OCR answer line in raw 'page_416.md' is blank at end ('問題11-6　　問題11-7...　　') — answer letters missing from OCR answer-key line, but these are correctly embedded as answer_index in structured data.",
+      "recommended_fix": "Remove duplicate lowercase letter in EN choice labels. Fix JP-label leakage in ZH fields for blocks 1-2."
+    },
+    {
+      "severity": "low",
+      "category": "answer_key_line_missing",
+      "location": "ocr/page_416.md final line",
+      "jp_actual": "問題11-6　　問題11-7　　問題11-8　　問題11-9　　問題11-10　　問題11-11　　(trailing whitespace — answer letters blank)",
+      "jp_expected": "Answer letters エ/エ/イ/エ/ウ/イ should follow each problem number",
+      "trace": "OCR captured problem numbers but answer letters at end of page were not captured. This affects only the OCR answer-key summary line; correct answers are embedded as answer_index in structured JSON so release impact is contained.",
+      "recommended_fix": "Verify OCR on this line against raw image; supplement if needed."
+    }
+  ],
+  "release_impacting": true
+}

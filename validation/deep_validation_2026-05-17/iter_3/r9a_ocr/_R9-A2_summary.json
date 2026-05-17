@@ -1,0 +1,45 @@
+{
+  "round": "R9",
+  "worker": "R9-A2",
+  "audit_date": "2026-05-17",
+  "pages_audited": [202, 217, 240, 246, 250, 255, 311, 314],
+  "verdicts": {
+    "PASS": [202, 246, 255],
+    "WARN": [217, 240, 250, 311, 314],
+    "FAIL": []
+  },
+  "counts": {
+    "PASS": 3,
+    "WARN": 5,
+    "FAIL": 0,
+    "total": 8
+  },
+  "release_impacting_defects": 0,
+  "cross_page_patterns": [
+    {
+      "pattern": "callout_misread",
+      "description": "Stylized callout banner text 'コレが出る！' consistently OCR'd as 'つしが出る！' or 'つしか出る！'. Confirmed on pages 217, 311, 314. Likely systemic across all pages containing this decorative element.",
+      "severity": "med",
+      "pages_affected": [217, 311, 314],
+      "release_impacting": false,
+      "recommended_fix": "Add a global OCR post-correction rule: regex replace /試験にはつし[かが]出る/g → '試験にはコレが出る！' across all ocr/*.md files. Then re-run cleaning/structuring pipeline if callout content is ever extracted."
+    },
+    {
+      "pattern": "html_entity_escape",
+      "description": "Blockquote markdown in OCR output escaped as '&gt;' HTML entities instead of raw '>' on page 314.",
+      "severity": "low",
+      "pages_affected": [314],
+      "release_impacting": false,
+      "recommended_fix": "Unescape &gt; in OCR markdown post-processing step."
+    },
+    {
+      "pattern": "stray_level_indicator",
+      "description": "Difficulty/level icon rendered as lone 'A' character on its own line (page 240).",
+      "severity": "low",
+      "pages_affected": [240],
+      "release_impacting": false,
+      "recommended_fix": "Strip isolated single uppercase ASCII letters on their own line in OCR output when surrounded by Japanese text and image refs."
+    }
+  ],
+  "overall_assessment": "No FAIL verdicts. Zero release-impacting defects across all 8 pages. All findings are confined to OCR narrative text and do not propagate to structured translated output or release pages. The dominant systemic issue is the recurring callout banner misread ('コレが' → 'つしが'/'つしか') which warrants a corpus-wide fix in the OCR post-correction pipeline but does not affect end-user-visible content in v1.0.0."
+}

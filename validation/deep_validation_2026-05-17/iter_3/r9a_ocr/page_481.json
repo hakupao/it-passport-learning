@@ -1,0 +1,28 @@
+{
+  "page": 481,
+  "round": "R9",
+  "worker": "R9-A3",
+  "verdict": "FAIL",
+  "score": 0.45,
+  "findings": [
+    {
+      "severity": "high",
+      "category": "wrong_char",
+      "location": "OCR body text — congestion term; output/pages/page_481.md § [JP] ### 幅輳",
+      "jp_actual": "幅輳",
+      "jp_expected": "輻輳",
+      "trace": "OCR reads 「幅帳」 in the OCR .md; the structured/translated pipeline corrected partially to 「幅輳」 but still wrong — correct kanji is 「輻輳」 (ふくそう, network congestion). 「幅」(width) ≠ 「輻」(spoke of a wheel). The wrong kanji propagated into output/pages/page_481.md as the section heading 「### 幅輳」 and into translated/page_481.json surface.jp = 「幅輳」. This is a HIGH-severity defect: the term name is visibly wrong and a learner looking up 「輻輳」 would not find this entry.",
+      "recommended_fix": "Fix term surface.jp from 「幅輳」 to 「輻輳」 in translated/page_481.json and regenerate output/pages/page_481.md. Also correct OCR source 「幅帳」 annotation."
+    },
+    {
+      "severity": "med",
+      "category": "callout_misread",
+      "location": "OCR body — callout box at bottom of page",
+      "jp_actual": "試験にはつしか出る！",
+      "jp_expected": "試験にはコレが出る！",
+      "trace": "The stylized callout box text was OCR-read as 「試験にはつしか出る！」 — 「コレ」 misread as 「つし」 (known コレ→つし pattern from prior rounds). This callout is not carried into the output page (callout content is summarised in the bullet points), so release impact is nil for the output file.",
+      "recommended_fix": "Correct OCR callout reading to 「試験にはコレが出る！」. Not release-impacting as content is not in output."
+    }
+  ],
+  "release_impacting": true
+}

@@ -1,0 +1,68 @@
+{
+  "round": "R9",
+  "worker": "R9-A5",
+  "audit_date": "2026-05-17",
+  "pages_assigned": [418, 469, 472, 548, 552, 17, 109, 449],
+  "pages_audited": 8,
+  "verdicts": {
+    "PASS": [548, 552, 109, 449],
+    "WARN": [469, 17],
+    "FAIL": [418, 472]
+  },
+  "release_impacting_pages": [418, 469, 472],
+  "defect_catalogue": [
+    {
+      "defect_id": "R9-A5-D01",
+      "pages": [418, 472],
+      "severity": "high",
+      "category": "missing_text",
+      "summary": "Answer-explanation pages silently dropped by pipeline. Page 418 loses 解答11-5~11-13 (9 blocks); page 472 loses 解答13-7~13-10 (4 blocks + 1 figure). Both structured=[] and translated=[] and output is empty shell.",
+      "root_cause_hypothesis": "Classifier does not recognise answer-explanation page type; pages fall through to empty extraction.",
+      "release_impacting": true,
+      "fix_action": "Add answer_explanation classifier rule; re-run structure+translate for pages 418 and 472."
+    },
+    {
+      "defect_id": "R9-A5-D02",
+      "pages": [469],
+      "severity": "med",
+      "category": "wrong_char",
+      "summary": "Question p469::1 choices[2-3]: ZH and EN fields retain raw katakana labels ウ/エ instead of C/D. Confirmed in output/pages/page_469.md.",
+      "release_impacting": true,
+      "fix_action": "Patch translated/page_469.json p469::1 choices[2].zh/en and choices[3].zh/en; re-render output."
+    },
+    {
+      "defect_id": "R9-A5-D03",
+      "pages": [469],
+      "severity": "med",
+      "category": "wrong_char",
+      "summary": "Question p469::2 EN choices: katakana ア/イ/ウ/エ romanised as ア./i./u./e. instead of mapped to A./B./C./D. Confirmed in output/pages/page_469.md lines 138-140.",
+      "release_impacting": true,
+      "fix_action": "Patch translated/page_469.json p469::2 choices[0-3].en labels; re-render output."
+    },
+    {
+      "defect_id": "R9-A5-D04",
+      "pages": [17],
+      "severity": "med",
+      "category": "other",
+      "summary": "Page 17 entirely absent from pipeline (no raw/ocr/output). Likely intentional copyright/colophon exclusion but not documented.",
+      "release_impacting": false,
+      "fix_action": "Verify exclusion is intentional; document in pipeline exclusion list."
+    },
+    {
+      "defect_id": "R9-A5-D05",
+      "pages": [109, 449],
+      "severity": "low",
+      "category": "missing_text",
+      "summary": "Chapter-opener pages extract only the chapter title; body content (study-focus bullets, position table, image refs) silently dropped. Not exam-critical.",
+      "release_impacting": false,
+      "fix_action": "Low priority enhancement — extract 'ここに注目して読もう！' bullets and position tables from chapter-opener pages."
+    }
+  ],
+  "overall_assessment": "R9 round reveals 2 systemic FAIL pages (418, 472) from a pipeline classifier gap that drops answer-explanation pages entirely, plus 1 WARN page (469) with katakana-label translation defects in ZH/EN choice fields. All three are release-impacting. Pages 548, 552, 109, 449 are clean. Page 17 absence needs documentation.",
+  "recommended_priority": [
+    "HIGH: Fix D01 (pages 418, 472) — content loss, not just cosmetic",
+    "HIGH: Fix D02+D03 (page 469) — choice-letter corruption in published output",
+    "LOW: Document D04 (page 17) exclusion",
+    "LOW: Enhancement D05 (chapter openers) deferred to post-v1.0"
+  ]
+}

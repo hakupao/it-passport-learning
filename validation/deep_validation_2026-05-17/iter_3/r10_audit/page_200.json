@@ -1,0 +1,41 @@
+{
+  "page": 200,
+  "round": "R10",
+  "worker": "R10-2",
+  "verdict": "FAIL",
+  "ocr_findings": [
+    {
+      "severity": "medium",
+      "category": "callout-misread",
+      "location": "ocr/page_200.md line 1",
+      "jp_actual": "試験にはつしが出る！",
+      "jp_expected": "試験にココが出る！",
+      "trace": "Recurring 'ココ'→'はつし' misread on stylized callout banner. Same defect on p305. Banner is dropped by downstream cleaning, no entity impact.",
+      "recommended_fix": "Stage 2/3 regex fixup '試験にはつしが出る' → '試験にココが出る'."
+    },
+    {
+      "severity": "low",
+      "category": "icon-misread",
+      "location": "ocr/page_200.md line 18-20",
+      "jp_actual": "### 0.00 laaS  /  ライアース",
+      "jp_expected": "(bullet icon) IaaS  /  イアース (reading guide)",
+      "trace": "Bullet glyph rendered as '0.00'; capital 'I' rendered as lowercase 'l' (laaS instead of IaaS); furigana 'イアース' misread as 'ライアース'. Stage 4 correctly normalized to 'IaaS' in structured/translated/output, so no downstream impact.",
+      "recommended_fix": "Stage 2 normalization: bullet icons → strip; 'laaS'→'IaaS'. Already handled de facto by structurer."
+    }
+  ],
+  "translation_findings": [
+    {
+      "leaf_id": "itpassport_r6::term::p200::2",
+      "severity": "defect",
+      "category": "semantic-defect-source",
+      "lang": "both",
+      "jp": "他社の敷地内にある、他社が所有しているサーバを利用するサービスである（契約しているサーバの所在が不明確）",
+      "zh": "使用位于其他公司场地内、由其他公司所拥有的服务器的服务（所签约服务器的所在地不明确）",
+      "en": "A service that uses servers located in and owned by another company (the location of the contracted server is unclear)",
+      "issue": "RELEASE-IMPACTING SOURCE DEFECT: The JP definition for ホスティングサービス says '所在が不明確' (location unclear), but the OCR (line 5) and book content say '所在が明確' (location IS clear). Stage 4 structurer flipped 明確→不明確, likely contaminated by the adjacent クラウドコンピューティング definition which legitimately is '不明確'. zh and en translations faithfully reflect the wrong JP — so all three language surfaces ship a factually incorrect distinction (hosting vs cloud). This collapses the very contrast the page is teaching: hosting=clear-location, cloud=unclear-location.",
+      "recommended_fix": "Correct JP definition to '...サービスである（契約しているサーバの所在が明確）'. Re-translate zh: '...的服务（所签约服务器的所在地明确）'. Re-translate en: '...(the location of the contracted server is clear)'. Apply to structured/translated/output/glossary."
+    }
+  ],
+  "release_impacting": true,
+  "release_impacting_categories": ["semantic-defect-source", "factual-inversion"]
+}

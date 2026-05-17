@@ -1,0 +1,31 @@
+{
+  "page": 566,
+  "round": "R12",
+  "worker": "R12-3",
+  "verdict": "FAIL",
+  "ocr_findings": [
+    {"severity": "CRITICAL", "category": "security-term-definition-inversion", "detail": "Term 'バックドア' definition is 'システムに不正に侵入されたあとのアクセス経路' (= access route LEFT AFTER illegal intrusion). Correct OCR definition: 'システムに意図的に設けられた秘密のアクセス経路' (intentionally created secret access route). Inversion changes the security concept's meaning — backdoors are pre-planted, not post-intrusion artifacts. ZH/EN propagate the wrong meaning."},
+    {"severity": "CRITICAL", "category": "security-term-definition-inversion", "detail": "Term 'デジタル署名' definition is 'なりすましのデータを送るために、秘密鍵を使用する' (= 'use private key TO SEND spoofed data'). This INVERTS the security purpose. ZH '为了发送冒名顶替的数据而使用私钥' and EN 'Using the private key to send spoofed data' propagate this dangerous inversion — digital signatures DETECT spoofing, they do not enable it. Per OCR: 'デジタル署名を使うと、なりすましやデータの改ざんを検知できる'."},
+    {"severity": "CRITICAL", "category": "wrong-term-hallucination", "detail": "Term 'ベストソリューションズ' (ZH '最佳解决方案', EN 'Best Solutions') does not exist in the OCR source. The correct term per OCR is 'ペネトレーションテスト' (Penetration Test) — a test method that attacks a system to discover security weaknesses. The output has invented a wrong term name while keeping a vaguely-related definition. This is a security-curriculum-level defect."},
+    {"severity": "HIGH", "category": "wrong-term-name", "detail": "Term 'シングルパスワード' (ZH '单密码', EN 'Single Password') is incorrect. OCR clearly defines this concept as 'ワンタイムパスワード' (One-Time Password). 'シングルパスワード' is not a recognized security term and could be confused with single-factor passwords."},
+    {"severity": "HIGH", "category": "term-definition-inversion", "detail": "Term 'ショルダーハック' definition is 'のぞき見防止フィルムを貼ること' (= 'applying a privacy filter'). That is the DEFENSE, not the attack. Per OCR: 'ショルダーハックの防止策は『のぞき見防止フィルムを貼る』こと'. Term and its countermeasure are conflated. ZH/EN propagate the inversion."},
+    {"severity": "HIGH", "category": "term-name-truncation", "detail": "Term '完全' should be '完全性' (Integrity, one of the CIA triad). Per OCR: '完全性：改ざんされていないデータ'. The character '性' was truncated; ZH renders '完全' (= 'complete'), EN renders 'Complete'. The CIA triad concept is broken."},
+    {"severity": "HIGH", "category": "definition-garbled-text", "detail": "Term 'リスクマネジメント' definition is '含めの活動に存在する危険を発生するもゆるリスクを管理し、そのリスクによる損失を最小の費用で抑えるための方法' — '含めの活動' and 'もゆるリスク' are nonsense fragments (cleaned-stage corruption of OCR's '会社の活動に伴って発生するあらゆるリスク'). ZH translation tries to make sense of it but the JP source is unreadable."},
+    {"severity": "MEDIUM", "category": "hallucinated-extra-term", "detail": "Term 'セキュリティ・バイ・デフォルト' definition 'PCのお初期化やCOSの組み合わせを最初から考慮して、出荷時にOSのセキュリティの設定を行うこと' contains 'COS' (should be 'OS') and 'お初期化' (should be '初期化'). The term itself does not appear in the page 566 raw OCR (only 'セキュリティバイデザイン' appears). Likely hallucinated by cleaning stage."},
+    {"severity": "MEDIUM", "category": "hallucinated-definition-content", "detail": "Term 'バイオメトリクス認証' definition includes 'ネットトレース' (net tracing) which is not in the OCR source. OCR lists '指紋や虹彩、筆跡、キーストローク'. 'Net tracing' is not a biometric. ZH/EN propagate."},
+    {"severity": "MEDIUM", "category": "term-name-mismatch", "detail": "Term '多要素認証' definition matches OCR's '2要素認証とは、2つの要素を用いて...'. While multi-factor and two-factor are conceptually related, the surface form was changed and the definition still says 'two or more', producing internal inconsistency."},
+    {"severity": "MEDIUM", "category": "DMZ-definition-weakening", "detail": "Term 'DMZ' JP definition: '企業ネットワークと外部ネットワークの間に存在する領域として隔離されたネットワーク領域' — weaker than the OCR's '両方から論理的に隔離されたネットワーク領域' (LOGICALLY isolated from BOTH). 'BETWEEN' loses the key 'isolated from both' property."}
+  ],
+  "translation_findings": [
+    {"severity": "CRITICAL", "category": "ZH-EN-propagate-JP-security-inversions", "detail": "All the JP security-term inversions above are faithfully propagated into ZH and EN. The translations themselves are linguistically faithful, but the source content is dangerously wrong — meaning every faithful translation amplifies the security defect across three languages."}
+  ],
+  "release_impacting": true,
+  "release_impacting_categories": [
+    "security-term-definition-inversion",
+    "wrong-term-hallucination",
+    "wrong-term-name",
+    "term-definition-inversion",
+    "term-name-truncation",
+    "definition-garbled-text"
+  ]
+}

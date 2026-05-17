@@ -1,0 +1,52 @@
+{
+  "round": "R9",
+  "worker": "R9-B3",
+  "role": "translation_audit",
+  "pages_assigned": [338, 381, 385, 410, 458, 474, 481, 492],
+  "pages_audited": 8,
+  "totals": {
+    "leaves_total": 26,
+    "leaves_clean": 22,
+    "leaves_polish": 3,
+    "leaves_defect": 1
+  },
+  "verdicts": {
+    "PASS": [338, 381, 385, 410, 458, 474],
+    "WARN": [492],
+    "FAIL": [481]
+  },
+  "verdict_counts": {"PASS": 6, "WARN": 1, "FAIL": 1},
+  "release_impacting_pages": [481],
+  "release_impacting_count": 1,
+  "key_findings": [
+    {
+      "page": 481,
+      "severity": "defect",
+      "summary": "JP OCR error '幅輳' should be '輻輳' (network congestion). ZH/EN translations self-corrected to correct meaning ('网络拥塞' / 'Congestion'), so this is a JP-side surface defect, not a translation defect. Release-impacting because JP surface is the canonical lookup key."
+    },
+    {
+      "page": 492,
+      "severity": "polish",
+      "summary": "EN translations on IPv6/IPv4/IPアドレスの枯渇問題 use Title-Case common nouns ('IP Address', 'Internet Protocol', 'Decimal') mid-prose, plus one ungrammatical phrase 'expressed in Decimal number'. Glossary-style capitalization bleeding into body text. Faithfulness fine; fluency lacking."
+    }
+  ],
+  "observations": [
+    "ZH translation quality is uniformly strong across all 8 pages — no zh polish findings.",
+    "EN translation quality is mostly strong but shows recurring Title-Case-common-noun pattern on technical-term pages (p492). Suggest pipeline-level prompt note: 'in definition body, common nouns referring to defined terms should be lowercase unless they are proper nouns or acronyms'.",
+    "Acronym handling is good (HTML, MTBF, LAN/WAN, FHD, VGA family all preserved with optional zh expansion).",
+    "Formula preservation is precise (MTBF, transmission efficiency, transmission time).",
+    "No choice markers (ア/イ/ウ/エ) appeared on any of the 8 assigned pages, so the choice-marker normalization rule could not be tested in this sample.",
+    "kana_helper was null on every term across all 8 pages — no kana_helper.zh_concept claims to verify."
+  ],
+  "rule_d_isolation_confirmed": true,
+  "sources_read": [
+    "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/translated/page_{338,381,385,410,458,474,481,492}.json"
+  ],
+  "sources_NOT_read": [
+    "validation/deep_validation_2026-05-17/v1_ocr/",
+    "validation/deep_validation_2026-05-17/iter_2/",
+    "validation/deep_validation_2026-05-17/v2_translation/",
+    "evidence/itpassport_r6/runs/.../step_06_audit.md",
+    "audit/stage6_review*.json"
+  ]
+}

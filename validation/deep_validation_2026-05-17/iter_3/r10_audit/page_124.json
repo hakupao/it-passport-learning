@@ -1,0 +1,77 @@
+{
+  "page": 124,
+  "round": "R10",
+  "worker": "R10-1",
+  "verdict": "FAIL",
+  "ocr_findings": [],
+  "translation_findings": [
+    {
+      "leaf_id": "output/pages/page_124.md  Question itpassport_r6::question::p124::0 (EN answer line)",
+      "severity": "defect",
+      "category": "choice_marker",
+      "lang": "en",
+      "jp": "ア. 金のなる木",
+      "zh": "A. 现金牛（PPM）",
+      "en": "> **Answer**: A. a. Cash Cow",
+      "issue": "Released markdown answer line has DUPLICATE choice marker: 'A. a. Cash Cow'. The choices array was correctly normalized to A/B/C/D, but the export-time answer-text composer concatenated the legacy lowercase marker 'a.' from the pre-normalization choice text. Result reaches output/pages/*.md — release-impacting.",
+      "recommended_fix": "In the markdown exporter, normalize the answer-text exactly like the choice text (strip any leading [A-Da-d甲-丁ア-エ][\\.．、]\\s* before prepending the canonical 'A. ' prefix). Re-render all output/pages/*.md; verify with grep -nE '\\*\\*Answer\\*\\*: [A-D]\\. [a-d]\\.'."
+    },
+    {
+      "leaf_id": "output/pages/page_124.md  Question itpassport_r6::question::p124::1 (EN answer line)",
+      "severity": "defect",
+      "category": "choice_marker",
+      "lang": "en",
+      "jp": "イ. 自社の商品価格",
+      "zh": "B. 本公司的商品价格",
+      "en": "> **Answer**: B. b. Product prices of one's own company",
+      "issue": "Same duplicate-marker bug ('B. b. …') as above; reaches released markdown. Same root cause and same fix.",
+      "recommended_fix": "Same exporter normalization (see q::0 fix); covers all 4 questions on this page and 10+ other pages (042, 064, 125, 155, 182, 203, 205, 259, 261, …) confirmed by `grep -lnE '\\*\\*Answer\\*\\*: [A-D]\\. [a-d]\\.' output/pages/*.md`."
+    },
+    {
+      "leaf_id": "translated/page_124.json question::p124::1 choices[2,3] zh",
+      "severity": "polish",
+      "category": "choice_marker",
+      "lang": "zh",
+      "jp": "ウ. ターゲットとしている市場の伸び / エ. 日本経済の動向",
+      "zh": "丙. 目标市场的增长 / 丁. 日本经济的动向",
+      "en": "C. Growth of the target market / D. Trends in the Japanese economy",
+      "issue": "translated/ still carries 丙/丁 markers on choices[2] and [3] of q::1; the choices[0,1] of the same question carry ア/イ. Mixed-marker leak. Stage-6/export programmatic fix has already normalized output/ to A/B/C/D so the released artifact is fine — but the canonical translated/ is inconsistent.",
+      "recommended_fix": "Add a one-shot normalizer pass over translated/page_*.json choices[*].zh and [*].en so the canonical layer is also clean (strip ア-エ/甲-丁/lowercase a-d/A-D leading markers, force-prefix uppercase A./B./C./D.)."
+    },
+    {
+      "leaf_id": "translated/page_124.json question::p124::1 choices[2,3] en",
+      "severity": "polish",
+      "category": "choice_marker",
+      "lang": "en",
+      "jp": "ウ. ターゲットとしている市場の伸び / エ. 日本経済の動向",
+      "zh": "丙. 目标市场的增长 / 丁. 日本经济的动向",
+      "en": "C. Growth of the target market / D. Trends in the Japanese economy",
+      "issue": "EN side of q::1 uses uppercase C./D. while choices[0,1] use lowercase a./b. — within the same question. Inconsistent. Output exporter already normalizes, so released artifact is uniform A-D.",
+      "recommended_fix": "Same canonical-translated normalizer as above."
+    },
+    {
+      "leaf_id": "translated/page_124.json question::p124::2 choices[*] zh",
+      "severity": "polish",
+      "category": "choice_marker",
+      "lang": "zh",
+      "jp": "ア/イ/ウ/エ. …",
+      "zh": "甲/乙/丙/丁. …",
+      "en": "A/B/C/D. …",
+      "issue": "Full 甲乙丙丁 set in zh choices of q::2 — Sinitic ordinal markers introduced where ア-エ should have been mapped directly to A-D. Same root cause; released output already corrected.",
+      "recommended_fix": "Same canonical-translated normalizer."
+    },
+    {
+      "leaf_id": "translated/page_124.json question::p124::2 choices[*] en",
+      "severity": "polish",
+      "category": "choice_marker",
+      "lang": "en",
+      "jp": "ア/イ/ウ/エ. …",
+      "zh": "甲/乙/丙/丁. …",
+      "en": "A/B/C/D. …",
+      "issue": "q::2 en uses uppercase A-D (correct), but inconsistency across questions on the same page (q::0 uses lowercase a./b./c./d. in en). Programmatic normalization to A-D in translated/ would harmonize.",
+      "recommended_fix": "Same canonical-translated normalizer."
+    }
+  ],
+  "release_impacting": true,
+  "release_impacting_categories": ["choice_marker"]
+}

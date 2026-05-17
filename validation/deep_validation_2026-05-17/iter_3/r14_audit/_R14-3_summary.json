@@ -1,0 +1,27 @@
+{
+  "round": "R14",
+  "worker": "R14-3",
+  "scope": "JP-OCR + ZH/EN-translation dual-track convergence audit",
+  "pages_audited": [376, 388, 399, 415, 420, 446, 476, 537],
+  "page_count": 8,
+  "verdicts": {
+    "PASS": [376, 388, 399, 415, 420, 446, 476, 537],
+    "WARN": [],
+    "FAIL": []
+  },
+  "release_impacting_defects": 0,
+  "release_impacting_categories": [],
+  "non_release_findings": [
+    {
+      "category": "upstream_choice_marker_residue",
+      "severity": "LOW",
+      "pages": [388, 415, 446],
+      "summary": "translated/ stage retains stray Japanese (ア-エ) or Chinese (甲乙丙丁) choice markers in zh field for some choices, but output/page_NNN.{md,json} (release artifact) is fully normalized to A./B./C./D. on every spot-checked occurrence. Not release-impacting; intermediate stage only.",
+      "verification_method": "Read output/page_NNN.json for pages 388, 415, 446 and confirmed A./B./C./D. on all 12 questions / 48 choices."
+    }
+  ],
+  "ocr_observations": "All 8 pages: OCR text aligns with downstream cleaned/translated content. No wrong-char / missing-text / table-flatten / answer-line-loss / Hangul / garbled-order / callout-misread detected. Tail '<!-- entity anchors: ... -->' literal placeholder shipped to output (not a Phase-1 regression — present across all pages).",
+  "translation_observations": "Trilingual coherence good across exam (388/415/446) and section (376/399/420/476/537) pages. Answer indices match JP source for all 12 exam questions. Security-term definitions on p537 (PKI vs CA) correctly directed (no inversion). Glossary surfaces unique across pages reviewed. Minor: p446 EN year-edition format mixes '(FY2009)' and '(FY Heisei 31)' — cosmetic, no semantic loss.",
+  "convergence_signal": "ZERO release-impacting defects on R14-3 sample of 8 fresh pages. Sample-level evidence consistent with prior R13 convergence claim.",
+  "verdict": "PASS — no blocking issues; release v1.0.0 sample-track GREEN on this slice."
+}
