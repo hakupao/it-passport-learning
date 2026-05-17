@@ -1,0 +1,38 @@
+{
+  "page": 470,
+  "round": "R15",
+  "worker": "R15-TRANS-C",
+  "track": "translation_zh_en",
+  "verdict": "WARN",
+  "leaves_audited": 15,
+  "translation_findings": [
+    {
+      "entity_id": "itpassport_r6::question::p470::1",
+      "leaf_path": "choices[0..3].zh (著者 vs 作者; 本 vs 书 vs 书籍)",
+      "lang": "zh",
+      "category": "glossary_collision",
+      "severity": "MED",
+      "release_impacting": false,
+      "jp": "ア．出版社 → 著者 → 本 / イ．出版社 → 著者 ← 本 / ウ．出版社 ← 著者 → 本 / エ．出版社 ← 著者 ← 本",
+      "zh": "A. 出版社 → 著者 → 书 / B. 出版社 → 著者 ← 书 / C. 出版社 ← 作者 → 书籍 / D. 出版社 ← 作者 ← 书籍",
+      "en": "A. Publisher → Author → Book / B. Publisher → Author ← Book / C. Publisher ← Author → Book / D. Publisher ← Author ← Book",
+      "issue": "Within the same question, zh choices A/B render 著者 as '著者' and 本 as '书', while zh choices C/D render 著者 as '作者' and 本 as '书籍'. The JP source uses identical wording in all four. The en column is consistent (Author/Book throughout). This inconsistency could confuse the learner about whether 著者 and 作者 are the same entity in the same E-R puzzle.",
+      "suggested_fix": "Normalize zh to one consistent rendering across all four choices — recommend '作者' + '书' (or '著者' + '书') used everywhere."
+    },
+    {
+      "entity_id": "itpassport_r6::question::p470::1",
+      "leaf_path": "stem.zh (条件 wording)",
+      "lang": "zh",
+      "category": "fluency",
+      "severity": "LOW",
+      "release_impacting": false,
+      "jp": "出版社と著者と本の関係を示すE-R図はどれか。… 出版社は、複数の著者と契約している。… 著者は、複数の本を書いている。…",
+      "zh": "表示出版社、著者与书籍之间关系的实体-关系图（E-R图）是哪一项？… 出版社与多名著者签订契约。… 著者撰写多本书。…",
+      "en": "Which E-R Diagram shows the relationships among publisher, author, and book ...",
+      "issue": "Stem uses '著者' and '书籍'; choices A/B use '著者'+'书' and C/D use '作者'+'书籍'. The 4-way drift compounds the glossary collision above.",
+      "suggested_fix": "Choose one zh rendering and apply across stem + all 4 choices."
+    }
+  ],
+  "release_impacting": false,
+  "narrative": "Three questions, ア/イ/ウ/エ correctly mapped to A/B/C/D in both zh and en. All answer indices correct. Main finding: Q1 (E-R diagram) has zh terminology drift within a single question — choices A/B use '著者/书', C/D use '作者/书籍', stem uses '著者/书籍'. Same JP wording, three different zh renderings. Not release-blocking but a quality polish concern."
+}

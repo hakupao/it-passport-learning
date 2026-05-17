@@ -1,0 +1,38 @@
+{
+  "page": 87,
+  "round": "R15",
+  "worker": "R15-TRANS-A",
+  "track": "translation_zh_en",
+  "verdict": "FAIL",
+  "leaves_audited": 75,
+  "translation_findings": [
+    {
+      "entity_id": "itpassport_r6::question::p087::4",
+      "leaf_path": "$.entities[4].choices[3].en",
+      "lang": "en",
+      "category": "choice_marker_en",
+      "severity": "HIGH",
+      "release_impacting": true,
+      "jp": "エ．労働者派遣契約書",
+      "zh": "D. 劳务派遣合同书",
+      "en": "D. Option D. Worker Dispatch Contract",
+      "issue": "EN choice text starts with duplicated marker: 'D. Option D. Worker Dispatch Contract'. The 'D. ' prefix appears twice — once as the convention marker, once embedded as literal 'Option D.' text. This violates the en choice-marker convention (single 'A./B./C./D.' prefix) and is visible release-side. Note: choices[0..2].en are clean ('A. Contract for Work agreement', 'B. Employment Contract', 'C. Sales contract'); only choice D is malformed. This is the correct answer (answer_index=3), so the visible defect is on the answer line.",
+      "suggested_fix": "Replace en with 'D. Worker Dispatch Contract' (drop the embedded 'Option D.' fragment)."
+    },
+    {
+      "entity_id": "itpassport_r6::question::p087::3",
+      "leaf_path": "$.entities[3].choices[0].en",
+      "lang": "en",
+      "category": "fluency",
+      "severity": "LOW",
+      "release_impacting": false,
+      "jp": "ア．生活の安定、労働力の質的向上のために最低の賃金を保障した法律",
+      "zh": "A. 为稳定生活、提升劳动力素质而保障最低工资的法律",
+      "en": "A. A law that guarantees minimum wages to stabilize livelihoods and improve the quality of the workforce",
+      "issue": "Faithful translation — for IT Passport context, '最低の賃金を保障した法律' actually refers to the Minimum Wage Act (最低賃金法), a distractor against Labor Standards Act. EN rendering 'guarantees minimum wages' is semantically correct. No defect; logged because the JP wording is slightly unusual ('保障した' past-tense framing) and the translation handles it cleanly. PASS at leaf level.",
+      "suggested_fix": "None required."
+    }
+  ],
+  "release_impacting": true,
+  "narrative": "5 question entities, 4 choices each (20 choice leaves × jp/zh/en = 60) + 5 stems × jp/zh/en = 15, total 75 leaves. ONE release-impacting EN choice-marker defect: question 4 (X社/A社 派遣 context), correct-answer choice D, EN text has duplicated marker 'D. Option D. Worker Dispatch Contract'. zh + jp markers and all other choices/stems clean. zh choice markers correctly A./B./C./D., jp correctly ア./イ./ウ./エ. Semantic faithfulness across all questions is solid (no inversion, no answer drift, terminology like 不正アクセス助長行為 → 'facilitating unauthorized access' / '助长非法访问' is correct). FAIL verdict due to the en marker defect on the answer line of q4."
+}

@@ -1,0 +1,33 @@
+{
+  "page": 459,
+  "round": "R15",
+  "worker": "R15-OCR-C",
+  "track": "ocr_jp",
+  "label": "content",
+  "cleaned_used": false,
+  "verdict": "PASS",
+  "ocr_findings": [
+    {
+      "entity_id": "ocr_callout_only",
+      "category": "callout_misread",
+      "severity": "LOW",
+      "release_impacting": false,
+      "where": "OCR source line 44",
+      "ocr_says": "試験にはつしが出る！",
+      "json_says": "(not present — callout not extracted as entity)",
+      "note": "Same '試験にはコレが出る！' → 'つし' OCR misread as on other pages. Does not leak into structured or output JSON."
+    },
+    {
+      "entity_id": "itpassport_r6::table::p459::1 row[1][2]",
+      "category": "phone_number_digit_count",
+      "severity": "LOW",
+      "release_impacting": false,
+      "where": "学生表（正規化後）, 山田太郎 row, 電話番号 cell",
+      "ocr_says": "090-99999999X (9 nines in after-normalization table)",
+      "json_says": "090-99999999X",
+      "note": "The OCR source itself shows '090-9999999X' (8 nines) in the before-normalization table and '090-99999999X' (9 nines) in the after-normalization table. The pipeline faithfully reproduced both values as-is. This is a source-level inconsistency (likely a typo in the original textbook), not a pipeline OCR defect. The structured JSON correctly mirrors the OCR for both tables."
+    }
+  ],
+  "release_impacting": false,
+  "narrative": "Content page covering 正規化 with three tables (学生表before/after, 教員表) and two term entities (正規化, E-R図). All JP table cells and term definitions match OCR faithfully. The 'つし' callout misread is OCR-layer noise not present in output. The phone-number digit discrepancy between tables is an accurate transcription of what the OCR captured and appears to be a source typographic inconsistency, not a pipeline error."
+}

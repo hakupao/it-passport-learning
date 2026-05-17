@@ -1,0 +1,51 @@
+{
+  "page": 120,
+  "round": "R15",
+  "worker": "R15-TRANS-A",
+  "track": "translation_zh_en",
+  "verdict": "WARN",
+  "leaves_audited": 102,
+  "translation_findings": [
+    {
+      "entity_id": "itpassport_r6::term::p120::7",
+      "leaf_path": "$.entities[5].surface (term 4P)",
+      "lang": "zh",
+      "category": "terminology",
+      "severity": "LOW",
+      "release_impacting": false,
+      "jp": "4P",
+      "zh": "4P营销组合",
+      "en": "4P",
+      "issue": "ZH surface expands '4P' to '4P营销组合' (4P Marketing Mix), adding 营销组合 not present in JP surface. EN stays as bare '4P'. This is glossary-style helpful expansion but creates zh/en asymmetry. The same expansion is consistently used in the definition body ('故称为「4P」') zh-side. Not release-impacting because both terms still uniquely identify the concept and definition explains it.",
+      "suggested_fix": "Consider standardizing surface to bare '4P' in zh (or expanding en to '4P (Marketing Mix)') for symmetry."
+    },
+    {
+      "entity_id": "itpassport_r6::term::p120::6",
+      "leaf_path": "$.entities[4].definition (term マーケティングミックス)",
+      "lang": "zh",
+      "category": "terminology",
+      "severity": "LOW",
+      "release_impacting": false,
+      "jp": "...その4つの手段は「4P」とも呼ばれる",
+      "zh": "...这四种手段也被称为「4P营销组合」",
+      "en": "...These four means are also called \"4P\"",
+      "issue": "ZH definition expands '4P' alias to '4P营销组合', but jp/en both render as bare '4P'. Internally consistent with the term 4P zh surface, but introduces a small JP→ZH alias drift (jp says '4Pと呼ばれる', literally 'are called 4P', not '4P营销组合'). Low impact for learner clarity.",
+      "suggested_fix": "Match JP literal: '也被称为「4P」' (drop 营销组合 here)."
+    },
+    {
+      "entity_id": "itpassport_r6::table::p120::9",
+      "leaf_path": "$.entities[8].rows[4][1] (Honda Promotion example)",
+      "lang": "zh",
+      "category": "fluency",
+      "severity": "LOW",
+      "release_impacting": false,
+      "jp": "「YOU MEET THE NICEST PEOPLE ON A HONDA（素晴らしい人々、Hondaに乗る）」という広告",
+      "zh": "\"YOU MEET THE NICEST PEOPLE ON A HONDA（最棒的人都骑本田）\"的广告",
+      "en": "The advertisement \"YOU MEET THE NICEST PEOPLE ON A HONDA\"",
+      "issue": "EN drops the JP-side gloss '（素晴らしい人々、Hondaに乗る）'. EN keeps only the English slogan, which is the original source quote — defensible because the gloss is redundant in EN. ZH retains a gloss with slightly different framing ('最棒的人都骑本田' vs literal '素晴らしい人々、Hondaに乗る'='wonderful people ride Honda'). Both are acceptable polish-level adaptations.",
+      "suggested_fix": "Optional: add bracketed gloss to EN for parity, e.g. 'The advertisement \"YOU MEET THE NICEST PEOPLE ON A HONDA\" (Wonderful people ride Honda)'."
+    }
+  ],
+  "release_impacting": false,
+  "narrative": "6 term entities + 2 tables (TOB/MBO/Outsourcing/Capital Alliance/Marketing Mix/4P + 'Other Related Terms' table + 'Honda's 4P' table). All semantic content faithfully rendered: 'TOB公開買付け', '経営権の取得', '自社の業務を他社に外注' all correct in zh/en. The same TOB/MBO/Outsourcing/Capital-Alliance content appears in both the term list and the table — consistent rendering with only minor wording variation (株式↔股票, 株 acceptable variants). WARN-level: zh expands '4P'→'4P营销组合' as glossary alias (consistent with p121 term 4P), creating jp/zh/en surface asymmetry. No inversion, no hallucination, no marker concerns (no question entities)."
+}

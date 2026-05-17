@@ -1,0 +1,33 @@
+{
+  "page": 92,
+  "round": "R15",
+  "worker": "R15-OCR-A",
+  "track": "ocr_jp",
+  "label": "content",
+  "cleaned_used": true,
+  "verdict": "WARN",
+  "ocr_findings": [
+    {
+      "entity_id": null,
+      "category": "missing_text",
+      "severity": "MED",
+      "release_impacting": false,
+      "where": "structured/page_092.json (only 1 entity captured from multi-concept page)",
+      "ocr_says": "Page covers: (1) コンプライアンス activity details (業務マニュアル作成/内部通報/社員教育), (2) ソーシャルメディアポリシー definition, (3) callout with コンプライアンス 3-item summary, (4) start of 個人情報保護法 section",
+      "json_says": "Only 1 entity: ソーシャルメディアポリシー. コンプライアンス sub-terms and 個人情報保護法 introduction not captured.",
+      "note": "The page contains substantive content beyond the single captured term. コンプライアンス activity terms (業務マニュアル、内部通報、社員教育) are likely spread across multiple pages and may be captured on adjacent pages. 個人情報保護法 section starts near the bottom and cuts off — likely captured on the next page. Partial capture is MED severity; not release-impacting since the key term for this page (ソーシャルメディアポリシー) is accurately captured."
+    },
+    {
+      "entity_id": null,
+      "category": "callout",
+      "severity": "LOW",
+      "release_impacting": false,
+      "where": "cleaned/page_092.md line 9 vs ocr/page_092.md line 11",
+      "ocr_says": "- 法令：法律や条例など (in callout bullet)",
+      "json_says": "Callout not captured in output (correctly suppressed). Cleaned version has '法律：法律や条例など' — OCR 'コレが出る！' callout was re-cleaned with minor discrepancy in bullet label (法令 vs 法律), but this does not affect output.",
+      "note": "The cleaned/ file has '法律：法律や条例など' where OCR has '法令：法律や条例など'. The OCR version is more likely correct (法令 = laws and regulations is the standard term). However the callout is not captured in output so this discrepancy has no release impact."
+    }
+  ],
+  "release_impacting": false,
+  "narrative": "Page 092 captures only 1 entity (ソーシャルメディアポリシー) which is accurate against the cleaned source. The page contains richer content including コンプライアンス activity details and the opening of 個人情報保護法 that are not captured here — likely attributed to adjacent pages. A minor OCR vs cleaned discrepancy in a callout bullet (法令 vs 法律) does not affect output. WARN for partial content capture, not release-impacting."
+}
