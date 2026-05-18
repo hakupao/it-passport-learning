@@ -1,0 +1,170 @@
+{
+  "agent_id": "R18-ITPRO-ZH",
+  "language": "zh",
+  "perspective": "IT 专业从事者 (senior IT engineer, mainland-PRC tech-industry Chinese)",
+  "round": "R18",
+  "iter": 5,
+  "isolation": "Rule-D — fresh context; did not read iter_3/iter_4/RETROSPECTIVE/D-076/077/080/081/step_06/step_07",
+  "sample_size": 30,
+  "pages_audited": [75, 100, 106, 119, 128, 146, 179, 181, 199, 207, 210, 225, 231, 249, 285, 292, 300, 302, 317, 327, 363, 369, 371, 392, 430, 432, 464, 484, 487, 555],
+  "summary": {
+    "fail_count": 2,
+    "warn_count": 6,
+    "info_count": 4,
+    "pages_with_findings": 8,
+    "pages_clean": 22
+  },
+  "findings": [
+    {
+      "id": "R18-ZH-F001",
+      "severity": "FAIL",
+      "category": "domain_concept_error",
+      "page": 249,
+      "entity_id": "itpassport_r6::table::p249::2",
+      "field": "rows[2][2] (白盒测试 → 缺点 cell)",
+      "current_zh": "无法发现程序的错误",
+      "issue": "Concept error released to learners: white-box test (白盒测试) is described as having the demerit '无法发现程序的错误'. From a senior IT engineer perspective this is factually wrong — white-box testing exists precisely TO find program errors (logic/branch/path bugs); the actual industry-acknowledged demerit is that white-box testing cannot effectively verify spec coverage / missing-feature defects / requirements correctness (i.e. it cannot detect issues outside the implemented code). The current text teaches mainland-PRC learners the opposite of the correct concept. Note: zh side faithfully mirrors the underlying JP text 「プログラムの誤りを見つけられない」 which is itself a domain error from the source, but the zh release reproduces the defect verbatim and becomes a concept-correctness failure on the zh side.",
+      "expected_zh_recommendation": "无法发现程序中规格说明未覆盖的错误 / 无法验证程序是否遗漏了规格要求的功能 (or similar — emphasize 'cannot find spec-coverage / missing-feature errors', not 'cannot find errors').",
+      "release_impact": "Learners studying for ITパスポート in Chinese will memorize an inverted definition of white-box testing limitations. High likelihood of misanswering related exam questions and propagating wrong concept into their later engineering work.",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "R18-ZH-F002",
+      "severity": "FAIL",
+      "category": "terminology_drift_internal",
+      "page": 225,
+      "entity_ids": [
+        "itpassport_r6::section::p225::0",
+        "itpassport_r6::term::p225::1",
+        "itpassport_r6::term::p225::4",
+        "itpassport_r6::figure::p225::9"
+      ],
+      "issue": "Same page uses TWO different zh names for the same concept (提案依頼書 / RFP / Request for Proposal). The section title and the 提案依頼書 entry call it '提案邀请书（RFP）'. The RFP term entry calls it '提案请求书（RFP）'. The figure caption again calls it '提案邀请书（RFP）'. This is internal terminology drift on a single learning page covering RFI/RFP — exactly the wrong place to be inconsistent, because the whole page is teaching the learner what RFP means. In mainland-PRC IT-procurement convention both '提案邀请书' and '提案请求书' exist, but a learning page MUST pick one and use it everywhere. Glossary shows yet another variant ('提案请求书（RFP）' as RFP surface, p224 first_page), increasing surface confusion.",
+      "expected_zh_recommendation": "Choose one of {提案邀请书, 提案请求书} and apply across section title, 提案依頼書 entry, RFP entry, figure caption, and glossary. Mainland-PRC government/enterprise procurement docs more often use '需求建议书' or '采购建议邀请书', but inside the IT-vendor world '提案请求书' is the most common modern phrasing.",
+      "release_impact": "Learner cannot tell whether 提案邀请书 and 提案请求书 are the same thing or two different RFx documents, on the very page that defines RFx. This directly damages the chapter's didactic purpose.",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "R18-ZH-W001",
+      "severity": "WARN",
+      "category": "terminology_drift_cross_page",
+      "pages": [199, "glossary"],
+      "issue": "Page 199 cleanly disambiguates the four solution-hosting models: ハウジングサービス → '主机托管服务' (own server on vendor premises), ホスティングサービス → '主机租用服务' (vendor-owned server rented). This disambiguation is correct and aligns with mainland-PRC IDC industry usage. HOWEVER, glossary.json maps BOTH ハウジングサービス AND ホスティングサービス to '主机托管服务' (same zh surface). Once the glossary is exported / consumed by downstream tooling, the disambiguation built on p199 collapses and learners using the glossary as a lookup will see two different JP concepts both labelled '主机托管服务', causing confusion (and the exam frequently tests this exact distinction).",
+      "expected_zh_recommendation": "Update glossary so ホスティングサービス surface.zh = '主机租用服务' (matching page 199 panel), while keeping ハウジングサービス surface.zh = '主机托管服务'. This restores consistency between in-page teaching and glossary lookup.",
+      "release_impact": "Exam-relevant disambiguation lost in the glossary export.",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "R18-ZH-W002",
+      "severity": "WARN",
+      "category": "mainland_convention",
+      "page": 119,
+      "entity_id": "itpassport_r6::term::p119::1",
+      "field": "surface.zh",
+      "current_zh": "风险企业",
+      "issue": "ベンチャー企業 (venture company / startup) is translated as '风险企业'. In mainland-PRC tech-industry usage the dominant term is '初创企业' or '创业公司'; '风险企业' is more commonly the Taiwan/HK rendering. Mainland readers will parse '风险企业' as 'a company that poses risk' (e.g. a financially distressed firm) rather than 'a high-growth startup', which inverts the connotation.",
+      "expected_zh_recommendation": "Use '初创企业' (preferred mainland-tech) or '创业公司'. Keep '风险企业' only if there is an explicit project decision to do so (and then document in glossary as a stylistic choice).",
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "R18-ZH-W003",
+      "severity": "WARN",
+      "category": "terminology_precision",
+      "page": 225,
+      "entity_id": "itpassport_r6::term::p225::3",
+      "field": "surface.zh",
+      "current_zh": "信息请求书（RFI）",
+      "issue": "Mainland-PRC enterprise procurement convention more commonly renders RFI as '信息征询书' or '需求信息书'. '信息请求书' is a literal char-by-char translation that doesn't match either ISO/IEC procurement standards localizations or PRC industry usage. Not factually wrong but not the term a senior IT engineer would expect to see in a learning material.",
+      "expected_zh_recommendation": "'信息征询书（RFI）' or simply '信息征询函（RFI）'.",
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "R18-ZH-W004",
+      "severity": "WARN",
+      "category": "terminology_precision",
+      "page": 432,
+      "entity_id": "itpassport_r6::term::p432::0",
+      "field": "definition.zh",
+      "current_zh": "对完全备份之后新增的数据进行备份。",
+      "issue": "差分バックアップ (Differential Backup) definition: 'data newly added since the full backup'. Mainland-PRC IT-ops convention: 差异备份 backs up data that has CHANGED (added, modified) since the last full backup — not just '新增' (newly added). The current zh wording implies only inserts are captured, missing modifications. The same issue affects 增分バックアップ on the same page (defines incremental as '上次备份以来新增的数据' — again should be 'changed since last backup'). This is a domain-knowledge defect that will cause learners to misanswer exam questions on the diff between full/differential/incremental.",
+      "expected_zh_recommendation": "差异备份: '备份自上次完全备份以来发生变化（新增或修改）的数据。'  增量备份: '仅备份自上次备份（无论是完全、差异还是增量备份）以来发生变化的数据。'",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "R18-ZH-W005",
+      "severity": "WARN",
+      "category": "terminology_precision",
+      "page": 484,
+      "entity_id": "itpassport_r6::term::p484::1",
+      "field": "definition.zh",
+      "current_zh": "一种不下载电子邮件、直接在邮件服务器上浏览邮件的协议。",
+      "issue": "IMAP definition oversimplification: 'without downloading email, view on server'. In real-world IMAP (and exam-relevant facts), the client DOES download message metadata and (optionally) bodies for caching; the distinguishing point vs POP is that the canonical copy stays on the server and is synced rather than transferred-and-deleted. Saying 'not downloading' is technically inaccurate from a senior IT engineer perspective. JP text has the same simplification, so this is a faithful translation, but a learning material should still be accurate.",
+      "expected_zh_recommendation": "Add a clarifying phrase: '一种将电子邮件保留在邮件服务器上、由客户端按需访问/同步邮件的协议。与POP不同，IMAP不会把邮件从服务器删除，因此可以在多个设备间同步邮件状态。'",
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "R18-ZH-W006",
+      "severity": "WARN",
+      "category": "terminology_precision",
+      "page": 363,
+      "entity_id": "itpassport_r6::term::p363::0",
+      "field": "surface.zh",
+      "current_zh": "参数（实参/形参）",
+      "issue": "引数 surface translated as '参数（实参/形参）'. The Japanese 引数 maps in mainland-PRC programming convention specifically to '实参' (actual argument), NOT to '形参' (formal parameter, which is 仮引数 / parameter in JP/EN). Bundling both into a single surface conflates two distinct CS concepts and will confuse a learner doing word-by-word lookup. The accompanying definition '在函数定义的()中写「类型名: 参数名」' actually describes a FORMAL parameter (form: type:name in definition), so the definition is consistent with '形参', but the JP 引数 term is the umbrella JP word.",
+      "expected_zh_recommendation": "Either use '参数（引数）' (umbrella term) or split into two terms. Avoid '（实参/形参）' suffix which mis-suggests they are synonyms.",
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "R18-ZH-I001",
+      "severity": "INFO",
+      "category": "stylistic_mainland",
+      "page": 100,
+      "entity_id": "itpassport_r6::term::p100::0",
+      "field": "surface.zh",
+      "current_zh": "国际标准化组织（ISO）",
+      "issue": "ISO surface is rendered as '国际标准化组织（ISO）' instead of just 'ISO'. Convention question: source JP surface is just 'ISO' (3 chars). Expanding the abbreviation in zh surface is helpful pedagogically but is asymmetric with how IMAP/POP/SLA are handled (which sometimes keep the abbrev as-is). No release-impact, just an internal-style inconsistency.",
+      "confidence": "LOW"
+    },
+    {
+      "id": "R18-ZH-I002",
+      "severity": "INFO",
+      "category": "mainland_convention",
+      "page": 199,
+      "entity_id": "itpassport_r6::term::p199::0",
+      "field": "definition.zh",
+      "current_zh": "租用放置在其他公司场地内、由其他公司所有的服务器的服务。",
+      "issue": "云计算 definition reads naturally but mainland-PRC IT industry would more idiomatically frame cloud computing in terms of '按需获取计算资源' / '资源池化' (NIST 5 essential characteristics). Current rendering treats it as just 'renting someone else's server', which is true to source but loses the PaaS/IaaS/SaaS abstraction that mainland-tech learners are expected to internalize. Source-faithful, so INFO not WARN.",
+      "confidence": "LOW"
+    },
+    {
+      "id": "R18-ZH-I003",
+      "severity": "INFO",
+      "category": "mainland_convention",
+      "page": 179,
+      "entity_id": "itpassport_r6::term::p179::6",
+      "field": "definition.zh",
+      "current_zh": "执行特定功能的系统。通常指「微型计算机」，内置于各种民用设备和工业设备中。",
+      "issue": "嵌入式系统 definition equates it with 'マイクロコンピュータ → 微型计算机'. Mainland-PRC engineering convention: 嵌入式系统 is broader than '微型计算机' — it is a special-purpose computing system built around a microcontroller (MCU) or microprocessor (MPU). '微型计算机' in mainland tech often means a desktop micro-PC class machine, not an MCU. Source-faithful translation, so INFO; but a senior engineer would push back on the equivalence.",
+      "confidence": "LOW"
+    },
+    {
+      "id": "R18-ZH-I004",
+      "severity": "INFO",
+      "category": "terminology_precision",
+      "page": 487,
+      "entity_id": "itpassport_r6::term::p487::3",
+      "field": "definition.zh",
+      "current_zh": "为每个应用软件分配的、表示信息出入口的数值。用于识别通信对方的应用软件。",
+      "issue": "ポート番号 definition. Mainland-PRC networking convention: port numbers are tied to transport-layer endpoints (TCP/UDP sockets), not just 'application software'. A more precise mainland-engineer phrasing: '在TCP/UDP传输层用于标识主机上某个具体通信端点（通常对应某个应用进程）的16位整数'. Source-faithful, INFO only.",
+      "confidence": "LOW"
+    }
+  ],
+  "pages_clean_no_findings": [75, 106, 128, 146, 181, 207, 210, 231, 285, 292, 300, 302, 317, 327, 369, 371, 392, 430, 464, 555],
+  "notes": [
+    "Sample 30/30 examined zh-side leaf-by-leaf as requested. JP and EN sides not audited (out of scope).",
+    "Page 106, 207, 285, 302 had leaf_count=0 (empty entities arrays) — flagged informally but treated as not-applicable for zh audit.",
+    "Pages 231, 317, 369 are chapter_title singletons — only chapter title zh checked, all clean.",
+    "Truth-table pages (327) and code-syntax pages (363) have correct zh translations of all operator/syntax cells.",
+    "Glossary cross-check identified the ハウジング/ホスティング conflation (W001); other terms surveyed in glossary were consistent with page surfaces."
+  ]
+}

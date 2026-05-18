@@ -1,0 +1,120 @@
+{
+  "agent_id": "R22-VERIFY",
+  "subagent_type": "critic",
+  "scope": "blind re-audit of post-R21 state for pages 309 + 327 + glossary g_538",
+  "rule_d_blind_to": ["r18_audit", "r18_triage", "r19_fixes_log", "r20_audit", "r21_fixes_log", "r21_apply_fixes.py"],
+  "pages_audited": [309, 327],
+  "glossary_entries_audited": ["g_538"],
+  "leaves_checked": 58,
+  "perspectives_applied": ["IT professional", "educator", "reader"],
+  "findings": [
+    {
+      "page": 309,
+      "entity_idx": 1,
+      "entity_type": "table",
+      "leaf_path": "rows[2][1].en",
+      "lang": "en",
+      "perspective": "reader",
+      "severity": "WARN",
+      "defect": "Mid-sentence capitalization of 'Unauthorized Access' in running prose looks like a glossary surface form leaked into definition text. Other nouns in the same row (natural disasters, acts of destruction) are lowercase. Reader notices stylistic inconsistency.",
+      "evidence_excerpt": "Degree of protection of information systems from natural disasters, Unauthorized Access, and acts of destruction"
+    },
+    {
+      "page": 309,
+      "entity_idx": 1,
+      "entity_type": "table",
+      "leaf_path": "rows[2][0].zh",
+      "lang": "zh",
+      "perspective": "IT pro",
+      "severity": "INFO",
+      "defect": "zh keeps literal '安全性' for the system-audit pillar that en correctly renders as 'Security'. zh '安全性' is ambiguous in Chinese (safety vs security) but is the conventional system-audit pillar term in CN ITPM literature; acceptable as-is. Flagged only as a register/precision note.",
+      "evidence_excerpt": "信息系统对自然灾害、非法访问和破坏行为的防护程度"
+    },
+    {
+      "page": 327,
+      "entity_idx": 4,
+      "entity_type": "term",
+      "leaf_path": "definition.en",
+      "lang": "en",
+      "perspective": "IT pro",
+      "severity": "WARN",
+      "defect": "NAND is expanded as 'Negative AND' — the standard IT/CS expansion is 'NOT-AND' (or 'Not AND'). 'Negative AND' is a back-translation from Japanese 否定論理積 and is non-standard in English digital-logic literature. The body of the definition correctly says 'It means \"NOT AND\"', so the parenthetical contradicts the body.",
+      "evidence_excerpt": "NAND (Negative AND). An operation combining logical AND with negation ... It means \"NOT AND\"."
+    },
+    {
+      "page": 327,
+      "entity_idx": 5,
+      "entity_type": "term",
+      "leaf_path": "definition.en",
+      "lang": "en",
+      "perspective": "IT pro",
+      "severity": "WARN",
+      "defect": "Same defect as entity 4 — NOR expanded as 'Negative OR'; standard English expansion is 'NOT-OR'. Internal contradiction with body which says 'It means \"NOT OR\"'.",
+      "evidence_excerpt": "NOR (Negative OR). An operation combining logical OR with negation ... It means \"NOT OR\"."
+    },
+    {
+      "page": 327,
+      "entity_idx": 7,
+      "entity_type": "table",
+      "leaf_path": "caption.zh",
+      "lang": "zh",
+      "perspective": "educator",
+      "severity": "WARN",
+      "defect": "zh caption asymmetry between NAND and NOR tables. NAND table zh caption = 'NAND运算的真值表' (bare 'NAND'); NOR table zh caption = '逻辑或非（NOR）运算的真值表' (long form). Either both should use bare abbreviations or both should use the long form; current state is inconsistent within a single page and confuses readers comparing the two tables.",
+      "evidence_excerpt": "zh NAND caption: 'NAND运算的真值表'  vs  zh NOR caption: '逻辑或非（NOR）运算的真值表'"
+    },
+    {
+      "page": 327,
+      "entity_idx": 7,
+      "entity_type": "table",
+      "leaf_path": "rows[0][2].zh",
+      "lang": "zh",
+      "perspective": "reader",
+      "severity": "WARN",
+      "defect": "NOR truth-table header in zh is 'A NOR B（A或非B）' with an inline Chinese gloss, while the parallel NAND truth-table header in zh is bare 'A NAND B' (no gloss). Within the same page, the same kind of header should be formatted the same way. Looks like a localizer reached for an extra gloss on NOR but did not apply it to NAND. Asymmetric content (educator concern) + visual noise (reader concern).",
+      "evidence_excerpt": "NAND zh header: 'A NAND B'  vs  NOR zh header: 'A NOR B（A或非B）'"
+    },
+    {
+      "page": 327,
+      "entity_idx": 2,
+      "entity_type": "term",
+      "leaf_path": "definition.zh",
+      "lang": "zh",
+      "perspective": "reader",
+      "severity": "INFO",
+      "defect": "Minor stylistic inconsistency: zh definition uses inline '（XOR）' gloss before the '日语称为' sentence — different parenthetical structure than entities 0/1/3 which only use the '日语称为「...」' pattern. Not wrong; cosmetic.",
+      "evidence_excerpt": "两个布尔输入不同（一真一假）时输出真（1），相同时输出假（0）的逻辑运算（XOR）。日语称为「排他的論理和」。"
+    },
+    {
+      "glossary_id": "g_538",
+      "entity_type": "glossary",
+      "leaf_path": "surface.zh",
+      "lang": "zh",
+      "perspective": "IT pro",
+      "severity": "INFO",
+      "defect": "zh surface '主机租用服务' is non-standard for 'ホスティングサービス'. Conventional Chinese term is '主机托管服务' (web/server hosting) or '虚拟主机服务' (shared hosting). '主机租用' specifically means 'host rental', which is one mode of hosting but does not cover shared/cloud hosting. kana_helper.zh_concept matches surface.zh so internal consistency holds; flagged only for terminological precision.",
+      "evidence_excerpt": "surface.zh='主机租用服务'; kana_helper.zh_concept='主机租用服务'"
+    }
+  ],
+  "internal_consistency_checks": {
+    "g_538_surface_jp_matches_kana_helper_surface": true,
+    "g_538_zh_concept_matches_surface_zh": true,
+    "g_538_kana_helper_reading_correct_romaji": true,
+    "p327_NAND_truth_table_semantically_correct": true,
+    "p327_NOR_truth_table_semantically_correct": true,
+    "p327_logic_op_definitions_match_truth_table_semantics": true,
+    "p309_CIA_triad_completeness": true,
+    "p309_three_pillars_jp_zh_en_parallel": true
+  },
+  "summary": {
+    "PASS_pages": 0,
+    "WARN_pages": 2,
+    "FAIL_pages": 0,
+    "release_impacting_pages": 0,
+    "FAIL_count": 0,
+    "WARN_count": 5,
+    "INFO_count": 3
+  },
+  "verdict": "ACCEPT-WITH-RESERVATIONS",
+  "verdict_justification": "Zero FAIL findings. Both pages are semantically correct at the IT-pro lens (system-audit Security pillar correctly mapped to 'Security' in en; truth tables for NAND/NOR computed correctly; CIA triad complete; logic-op definitions match their truth tables). 5 WARN findings are stylistic/terminological asymmetries that do not block release but should be tracked for polish: (1) leaked capitalization in p309 en, (2-3) non-standard 'Negative AND/OR' expansions on p327 en that contradict the body text, (4-5) zh NOR table caption + header asymmetry vs NAND table on same page. 3 INFO are cosmetic. Glossary g_538 is internally consistent across surface/kana_helper/zh_concept; the zh term choice is non-standard but defensible. Release-impacting pages: 0."
+}

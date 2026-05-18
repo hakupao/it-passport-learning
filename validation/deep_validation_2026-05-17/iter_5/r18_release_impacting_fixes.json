@@ -1,0 +1,243 @@
+{
+  "round": "R18",
+  "triage_at": "2026-05-18T00:30:00Z",
+  "triage_agent": "analyst (subagent_type=analyst)",
+  "rule_d_isolation": "triage agent is different subagent_type from the 9 R18 code-reviewer agents",
+  "target_run": "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/",
+  "sample_size": 30,
+  "release_impacting_fixes": [
+    {
+      "fix_id": "F1",
+      "page": 249,
+      "entity_idx": 1,
+      "entity_id": "itpassport_r6::table::p249::2",
+      "entity_type": "table",
+      "leaf_path": "rows[1][2].{jp,zh,en} (White-Box Test → Disadvantage column)",
+      "languages_affected": ["jp", "zh", "en"],
+      "perspectives_flagging": ["ITPRO-JP", "ITPRO-ZH", "ITPRO-EN", "EDU-JP", "EDU-ZH", "EDU-EN", "READER-EN"],
+      "perspective_count": 7,
+      "defect_summary": "white-box test demerit semantically inverted across all 3 languages: 'cannot find program errors' is the exact opposite of what white-box testing does",
+      "evidence_excerpts": {
+        "jp": "プログラムの誤りを見つけられない",
+        "zh": "无法发现程序的错误",
+        "en": "Cannot find errors in the program"
+      },
+      "root_cause": "Source-faithful Stage-5 (JP textbook source has imprecise wording; zh+en mirrored it). Net result = concept inversion for learners.",
+      "fix_class": "fixable_surgical",
+      "proposed_action": "Rewrite the cell across jp+zh+en. jp: '仕様自体の誤りや要求漏れは検出できない'; zh: '无法发现规格说明书本身的错误或需求遗漏'; en: 'Cannot detect specification errors or missing functionality (errors of omission)'",
+      "regen_md": true,
+      "files_to_patch": [
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/translated/page_249.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_249.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_249.md"
+      ]
+    },
+    {
+      "fix_id": "F2",
+      "page": 249,
+      "entity_idx": 1,
+      "entity_id": "itpassport_r6::table::p249::2",
+      "entity_type": "table",
+      "leaf_path": "rows[2][2].{jp,zh,en} (Black-Box Test → Disadvantage column)",
+      "languages_affected": ["jp", "zh", "en"],
+      "perspectives_flagging": ["ITPRO-JP", "ITPRO-ZH", "ITPRO-EN", "EDU-JP", "EDU-EN", "READER-JP", "READER-EN"],
+      "perspective_count": 7,
+      "defect_summary": "JP cell has broken grammar (missing particle: 'すべての複雑なテストしないので'); zh has nested parens '（程序错误（Bug））'; en has singular/plural mismatch '(Bug)' for plural 'defects'. Source JP is broken; faithfully propagated to zh+en.",
+      "evidence_excerpts": {
+        "jp": "すべての複雑なテストしないので、発生頻度が低い不具合（バグ）が見つけられない可能性がある",
+        "zh": "由于不进行所有复杂的测试，可能无法发现发生频率较低的缺陷（程序错误（Bug））",
+        "en": "Since not all complex tests are performed, there is a possibility that low-frequency defects (Bug) may not be found"
+      },
+      "root_cause": "OCR or Stage-4/5 particle drop in JP source; Stage-5 literal pass-through to zh+en preserved the brokenness.",
+      "fix_class": "fixable_surgical",
+      "proposed_action": "Rewrite cell across jp+zh+en. jp: 'すべての分岐や条件を網羅的にテストするわけではないので、発生頻度が低い不具合（バグ）が見つけられない可能性がある'; zh: '由于无法穷举所有代码路径，可能漏掉低频触发的缺陷（Bug）'; en: 'Because it does not exercise every internal execution path, rarely triggered defects (bugs) may go undetected'",
+      "regen_md": true,
+      "files_to_patch": [
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/translated/page_249.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_249.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_249.md"
+      ]
+    },
+    {
+      "fix_id": "F3",
+      "page": 363,
+      "entity_idx": 3,
+      "entity_id": "itpassport_r6::term::p363::3",
+      "entity_type": "term",
+      "leaf_path": "surface.{jp,zh,en}",
+      "languages_affected": ["jp", "zh", "en"],
+      "perspectives_flagging": ["ITPRO-JP", "ITPRO-EN", "EDU-JP", "EDU-ZH", "EDU-EN", "READER-JP", "READER-ZH", "READER-EN"],
+      "perspective_count": 8,
+      "defect_summary": "term entity surface is a full sentence in all 3 languages; glossary indexing breaks and learners see a sentence where a term headword should be",
+      "evidence_excerpts": {
+        "jp": "関数の呼び出し時に引数を指定すると、その引数が関数に渡されます。",
+        "zh": "调用函数时指定参数，该参数会被传递给函数。",
+        "en": "When you specify an argument when calling a function, that argument is passed to the function."
+      },
+      "root_cause": "Stage-4 entity-boundary mis-extraction: a body paragraph was tagged as a term entity.",
+      "fix_class": "fixable_structural",
+      "proposed_action": "Rewrite surface to a noun phrase in all 3 languages while keeping the definition (which is already paragraph-like and acceptable). jp: '引数を指定した関数の呼び出し'; zh: '带参数的函数调用'; en: 'Function call with arguments'. Note: there is also a section::p363::1 'Calling a Function with Arguments' on the same page — keep the term distinct or merge per planner judgment.",
+      "regen_md": true,
+      "files_to_patch": [
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/translated/page_363.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_363.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_363.md"
+      ]
+    },
+    {
+      "fix_id": "F4",
+      "page": 392,
+      "entity_idx": 6,
+      "entity_id": "itpassport_r6::term::p392::6",
+      "entity_type": "term",
+      "leaf_path": "surface.{jp,zh,en}",
+      "languages_affected": ["jp", "zh", "en"],
+      "perspectives_flagging": ["EDU-JP", "EDU-ZH", "EDU-EN", "READER-JP", "READER-EN"],
+      "perspective_count": 5,
+      "defect_summary": "term entity surface is a full sentence in all 3 languages (same pattern as F3)",
+      "evidence_excerpts": {
+        "jp": "コンピュータを区別する境界線が曖昧になっている",
+        "zh": "区分计算机的边界正在变得模糊",
+        "en": "The Boundaries That Distinguish Computers Are Becoming Blurry"
+      },
+      "root_cause": "Stage-4 entity-boundary mis-extraction (same as F3).",
+      "fix_class": "fixable_structural",
+      "proposed_action": "Rewrite surface to a noun phrase. jp: 'コンピュータ分類境界の曖昧化'; zh: '计算机分类边界的模糊化'; en: 'Blurring of Computer-Category Boundaries'. Definition can be kept as-is.",
+      "regen_md": true,
+      "files_to_patch": [
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/translated/page_392.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_392.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_392.md"
+      ]
+    },
+    {
+      "fix_id": "F5",
+      "page": 225,
+      "entity_idx": "multiple",
+      "entity_id": "itpassport_r6::section::p225::0 + ::term::p225::1 + ::term::p225::4 + ::figure::p225::9",
+      "entity_type": "cross-entity within-page consistency",
+      "leaf_path": "surface.zh / title.zh / caption.zh",
+      "languages_affected": ["zh"],
+      "perspectives_flagging": ["ITPRO-ZH"],
+      "perspective_count": 1,
+      "perspective_confidence": "HIGH (cross-verified across 4 entities on same page + glossary)",
+      "defect_summary": "Same page uses 提案邀请书 in some entities and 提案请求书 in others for the same concept (RFP). Internal terminology drift on the exact page that teaches RFP.",
+      "evidence_excerpts": {
+        "section_title.zh": "提案邀请书（RFP）",
+        "term_p225_1.surface.zh": "提案邀请书（RFP）",
+        "term_p225_4.surface.zh": "提案请求书（RFP）",
+        "figure_caption.zh": "提案邀请书（RFP）",
+        "glossary.RFP.surface.zh": "提案请求书（RFP）"
+      },
+      "root_cause": "Stage-5 within-page consistency miss (two zh surfaces produced by LLM for what is the same JP concept).",
+      "fix_class": "fixable_surgical",
+      "proposed_action": "Normalize all 4 within-page zh occurrences + glossary RFP zh surface to '提案邀请书（RFP）' (matches mainland-PRC IT-vendor usage and the section title that already exists). Update term::p225::4 surface.zh and glossary g_RFP surface.zh.",
+      "regen_md": true,
+      "files_to_patch": [
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/translated/page_225.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_225.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/glossary.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_225.md",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/glossary.md"
+      ]
+    },
+    {
+      "fix_id": "F6",
+      "page": "glossary",
+      "entity_idx": null,
+      "entity_id": "glossary entries for ハウジングサービス and ホスティングサービス",
+      "entity_type": "glossary",
+      "leaf_path": "surface.zh (both terms)",
+      "languages_affected": ["zh"],
+      "perspectives_flagging": ["ITPRO-ZH"],
+      "perspective_count": 1,
+      "perspective_confidence": "HIGH (cross-verified against page 199 panel definitions)",
+      "defect_summary": "Glossary maps both ハウジングサービス AND ホスティングサービス to the same zh surface '主机托管服务', collapsing the disambiguation that page 199 correctly draws (ハウジング = 主机托管服务 = own server on vendor premises; ホスティング = 主机租用服务 = vendor server rented). On exam this distinction is tested.",
+      "evidence_excerpts": {
+        "page_199_panel_housing.zh": "主机托管服务",
+        "page_199_panel_hosting.zh": "主机租用服务",
+        "glossary_housing.surface.zh": "主机托管服务",
+        "glossary_hosting.surface.zh": "主机托管服务 (DEFECT — should be 主机租用服务)"
+      },
+      "root_cause": "Glossary policy / Stage-5 polysemy collapse — two distinct JP concepts merged to one zh surface in glossary.",
+      "fix_class": "fixable_glossary",
+      "proposed_action": "Update glossary ホスティングサービス surface.zh from '主机托管服务' to '主机租用服务'. Keep ハウジングサービス as '主机托管服务'. Matches iter-4 F2 surgical-override pattern (g_524 流程→进程 case).",
+      "regen_md": true,
+      "files_to_patch": [
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/glossary.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/glossary.md"
+      ]
+    },
+    {
+      "fix_id": "F7",
+      "page": 432,
+      "entity_idx": "0,1",
+      "entity_id": "itpassport_r6::term::p432::0 (差分バックアップ) + itpassport_r6::term::p432::1 (増分バックアップ)",
+      "entity_type": "term",
+      "leaf_path": "definition.{jp,zh,en} (both entities)",
+      "languages_affected": ["jp", "zh", "en"],
+      "perspectives_flagging": ["ITPRO-JP", "ITPRO-ZH", "ITPRO-EN", "EDU-JP", "EDU-EN"],
+      "perspective_count": 5,
+      "defect_summary": "Differential and Incremental backup definitions say only 'newly added' data, but actual definitions include both 'added AND modified' data. Concept-correctness defect on an ITパスポート high-frequency exam topic.",
+      "evidence_excerpts": {
+        "differential.jp": "フルバックアップ以降、新たに追加されたデータをバックアップする",
+        "differential.zh": "对完全备份之后新增的数据进行备份。",
+        "differential.en": "Backing up data that has been newly added since the full backup",
+        "incremental.jp": "前回のバックアップから新たに追加されたデータのみをバックアップする",
+        "incremental.zh": "仅备份自上次备份以来新增的数据。",
+        "incremental.en": "Backing up only the data that has been newly added since the previous backup"
+      },
+      "root_cause": "Source-faithful Stage-5 mirror of JP under-specification.",
+      "severity_reclassification_note": "Each individual reviewer marked WARN, but 5 perspectives flagging + concept-error on high-frequency exam topic → elevate to RELEASE_IMPACTING.",
+      "fix_class": "fixable_surgical",
+      "proposed_action": "Rewrite both definitions across jp+zh+en. 差分.jp: '前回のフルバックアップ以降に変更（追加・修正）されたすべてのデータをバックアップする方式'; 差分.zh: '备份自上次完全备份以来发生变化（新增或修改）的所有数据'; 差分.en: 'Backing up all data that has changed (added or modified) since the last full backup'. 増分.jp: '前回のバックアップ以降に変更（追加・修正）されたデータのみをバックアップする方式（前回は フル・差分・増分のいずれも含む）'; 増分.zh: '仅备份自上次备份（无论完全、差异或增量）以来发生变化（新增或修改）的数据'; 増分.en: 'Backing up only the data that has changed (added or modified) since the previous backup (full, differential, or incremental)'",
+      "regen_md": true,
+      "files_to_patch": [
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/translated/page_432.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_432.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_432.md"
+      ]
+    },
+    {
+      "fix_id": "F8",
+      "page": 327,
+      "entity_idx": "0,1,2,3",
+      "entity_id": "itpassport_r6::term::p327::0 (論理積) + ::1 (論理和) + ::2 (排他的論理和) + ::3 (否定)",
+      "entity_type": "term",
+      "leaf_path": "definition.zh (4 terms)",
+      "languages_affected": ["zh"],
+      "perspectives_flagging": ["EDU-ZH", "EDU-EN"],
+      "perspective_count": 2,
+      "perspective_confidence": "HIGH (EDU-ZH × 4 explicit FAIL; EDU-EN INFO acknowledges same content-free issue on en side)",
+      "defect_summary": "All 4 logical-operator term definitions in zh say only 'Japanese name for AND/OR/XOR/NOT operation' — zero teaching value to zh learner. Truth tables on same page partially salvage the lesson but term definitions remain release-impacting on the zh side.",
+      "evidence_excerpts": {
+        "p327_0.definition.zh": "逻辑与（AND）运算的日语名称。",
+        "p327_1.definition.zh": "逻辑或（OR）运算的日语名称。",
+        "p327_2.definition.zh": "XOR运算的日语名称。",
+        "p327_3.definition.zh": "NOT运算的日语名称。"
+      },
+      "root_cause": "Stage-5 literally translated the JP-internal etymology comment ('日本語名称') into zh; framing is meaningless to a zh reader (who doesn't need to know the JP name for these primitives).",
+      "fix_class": "fixable_surgical",
+      "proposed_action": "Replace definition.zh for each with truth-table semantics. 逻辑与: '两个布尔输入都为真（1）时输出真（1），否则输出假（0）的逻辑运算。日语称为「論理積」。'; 逻辑或: '两个布尔输入中至少有一个为真（1）时输出真（1），仅当两者都为假时输出假（0）的逻辑运算。日语称为「論理和」。'; 异或: '两个布尔输入不同（一真一假）时输出真（1），相同时输出假（0）的逻辑运算（XOR）。日语称为「排他的論理和」。'; 否定: '将单个布尔输入反转的一元运算（0→1，1→0）。日语称为「否定」。'",
+      "regen_md": true,
+      "files_to_patch": [
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/translated/page_327.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_327.json",
+        "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/output/pages/page_327.md"
+      ]
+    }
+  ],
+  "release_impacting_count": 8,
+  "deferred_phase2_count": 52,
+  "source_defects_count": 1,
+  "pages_with_release_impacting_findings": [199, 225, 249, 327, 363, 392, 432],
+  "glossary_level_fixes": 1,
+  "statistics": {
+    "total_raw_findings_across_9_audits": 207,
+    "after_cross_correlation_dedup": 115,
+    "release_impacting": 8,
+    "warn": 52,
+    "info": 32,
+    "pages_with_at_least_one_release_impacting": 6
+  }
+}

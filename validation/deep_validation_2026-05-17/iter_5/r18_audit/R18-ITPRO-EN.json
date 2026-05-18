@@ -1,0 +1,335 @@
+{
+  "agent_id": "R18-ITPRO-EN",
+  "language": "en",
+  "perspective": "IT professional (senior engineer; international tech-English convention)",
+  "rule_d_isolation": true,
+  "input_scope": {
+    "cert_id": "itpassport_r6",
+    "run_id": "dry_run_2026-05-12T13-23-19",
+    "pages_audited": [
+      75,
+      100,
+      106,
+      119,
+      128,
+      146,
+      179,
+      181,
+      199,
+      207,
+      210,
+      225,
+      231,
+      249,
+      285,
+      292,
+      300,
+      302,
+      317,
+      327,
+      363,
+      369,
+      371,
+      392,
+      430,
+      432,
+      464,
+      484,
+      487,
+      555
+    ],
+    "page_count": 30
+  },
+  "audited_at": "2026-05-17T14:53:23.625794Z",
+  "summary": {
+    "total_findings": 29,
+    "by_severity": {
+      "FAIL": 2,
+      "WARN": 6,
+      "INFO": 21
+    },
+    "empty_pages": [
+      106,
+      207,
+      285,
+      302
+    ],
+    "chapter_only_pages": [
+      231,
+      317,
+      369
+    ],
+    "headline_findings": [
+      "FAIL p075 — '1-Click' patent expired 2017 not 2018 (factual error)",
+      "FAIL p249 — White-Box demerit 'cannot find errors in program' is the opposite of what white-box testing does (conceptual error)",
+      "WARN p199 — Housing/Hosting are JP-English loanwords; international IT-EN convention is 'Colocation' / 'Dedicated hosting'",
+      "WARN p432 — Differential/Incremental backup definitions say 'newly added' but should be 'changed (added or modified)'",
+      "WARN p075 — Patent surface '1-Click Buy Now' is button label; Amazon's patent is just '1-Click'",
+      "WARN p363 — Term entity surface is a full sentence (likely upstream extraction error mirrored on EN side)",
+      "WARN p249 — Black-Box demerit phrasing awkward + 'Bug'/'defects' number mismatch"
+    ]
+  },
+  "findings": [
+    {
+      "page": 75,
+      "entity_id": "itpassport_r6::term::p075::0",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "term_casing",
+      "issue": "'Trademark Right' is capitalized as a proper noun headline; the body text mixes 'the trademark right' (lowercase) which is the actual IP term. Acceptable as a learning-card surface, just inconsistent casing.",
+      "suggestion": "Either lowercase the surface ('trademark right') or keep title-case consistently."
+    },
+    {
+      "page": 75,
+      "entity_id": "itpassport_r6::term::p075::2",
+      "field": "surface.en",
+      "severity": "WARN",
+      "category": "domain_terminology",
+      "issue": "Amazon's well-known business-model patent is universally called '1-Click' (US 5,960,411), not '1-Click Buy Now'. The latter is a button label, not the patent name.",
+      "suggestion": "Rename surface to '1-Click' (or '1-Click Ordering') and keep the button-label wording inside the definition."
+    },
+    {
+      "page": 75,
+      "entity_id": "itpassport_r6::term::p075::2",
+      "field": "definition.en",
+      "severity": "FAIL",
+      "category": "factual_number",
+      "issue": "Statement 'The patent expired in 2018' is factually wrong. Amazon's U.S. 1-Click patent (US 5,960,411) expired in September 2017 (20-year term from 1997 priority). The Japanese 1-Click patent also expired in 2017.",
+      "suggestion": "Change '2018' to '2017'. Confirm against original source — this may be an upstream Japanese text error inherited rather than translation drift, but the en side should not propagate it."
+    },
+    {
+      "page": 100,
+      "entity_id": "itpassport_r6::term::p100::0",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "standards_pedantic",
+      "issue": "Convention: ISO officially is NOT an acronym; it derives from Greek 'isos' (equal). The current phrasing 'ISO (International Organization for Standardization) is an organization...' is the common gloss used in textbooks and acceptable for IT Passport level.",
+      "suggestion": "Optionally add a sentence noting ISO is not strictly an acronym; otherwise leave as-is."
+    },
+    {
+      "page": 100,
+      "entity_id": "itpassport_r6::table::p100::2",
+      "field": "rows[3] (ISO 9002)",
+      "severity": "INFO",
+      "category": "standards_currency",
+      "issue": "ISO 9002:2016 'Guidelines for the application of ISO 9001:2015' is correctly described. Acceptable.",
+      "suggestion": "No change required."
+    },
+    {
+      "page": 128,
+      "entity_id": "itpassport_r6::term::p128::1",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "domain_terminology",
+      "issue": "The standard Kaplan/Norton BSC perspective is 'Internal Business Process' (or 'Internal Process'). The text omits 'Internal'. Not wrong, but tech-English convention adds the qualifier.",
+      "suggestion": "Optionally update to 'Internal Business Process' in both term and table caption for closer alignment with the canonical Kaplan/Norton terminology."
+    },
+    {
+      "page": 146,
+      "entity_id": "itpassport_r6::table::p146::0 / itpassport_r6::term::p146::2",
+      "field": "definition.en (cross-entity)",
+      "severity": "INFO",
+      "category": "consistency",
+      "issue": "Same Japanese ML definition produces two slightly different English paraphrases ('becomes capable of making future predictions' vs 'becomes able to make future predictions'). Same meaning; minor stylistic drift.",
+      "suggestion": "For glossary consistency, render the same source sentence identically across table and term entries on the same page."
+    },
+    {
+      "page": 146,
+      "entity_id": "itpassport_r6::term::p146::6",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "ml_terminology",
+      "issue": "'correct answer data' is a literal translation; standard ML English uses 'labels' or 'labeled data' or 'ground truth'. Beginner-friendly translation is OK.",
+      "suggestion": "Optionally add parenthetical: '...input data paired with correct-answer data (labels / ground truth) as a set'."
+    },
+    {
+      "page": 179,
+      "entity_id": "itpassport_r6::term::p179::6",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "domain_terminology",
+      "issue": "'microcomputer' is a loose translation of マイコン. In modern English tech writing the standard term is 'microcontroller (MCU)' for embedded contexts. Acceptable at IT Passport level but slightly dated.",
+      "suggestion": "Optionally clarify with 'a microcomputer (microcontroller / MCU)' on first introduction."
+    },
+    {
+      "page": 179,
+      "entity_id": "itpassport_r6::term::p179::9",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "phrasing",
+      "issue": "'it is also called firm (fixed) ware' is awkward English phrasing. Native convention: 'the term firmware comes from firm (= fixed) + ware'.",
+      "suggestion": "Rephrase: 'and is therefore called firmware (firm = fixed)'."
+    },
+    {
+      "page": 199,
+      "entity_id": "itpassport_r6::figure::p199::2",
+      "field": "panels[1] / panels[2] surface.en",
+      "severity": "WARN",
+      "category": "domain_terminology",
+      "issue": "'Housing service' is a Japanese loanword (ハウジングサービス). In international English IT industry usage this is called 'Colocation' (or 'Colo'). Likewise 'Hosting service' as defined here (provider owns the server, customer rents it) is closer to 'Dedicated hosting' or 'Managed hosting'. Using the JP-English forms without a gloss may confuse non-Japanese IT readers and is non-standard for ISO/IETF/cloud-industry materials.",
+      "suggestion": "Either keep JP-English terms with a parenthetical international gloss ('Housing service (Colocation)' / 'Hosting service (Dedicated / managed hosting)') or switch to the international terms. Required disclosure for fidelity-to-source but IT-pro reader will be confused without the gloss."
+    },
+    {
+      "page": 210,
+      "entity_id": "itpassport_r6::term::p210::0",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "etymology",
+      "issue": "'Mining originally means digging for gold' is too narrow — in English, 'mining' is the general extraction of any ore/mineral, not specifically gold. (The original JP probably said '金を掘る' as a colorful example, but EN literal translation reads as factually narrow.)",
+      "suggestion": "Soften to '\"Mining\" originally refers to extracting valuable material from the earth (e.g., digging for ore or gold).'"
+    },
+    {
+      "page": 249,
+      "entity_id": "itpassport_r6::table::p249::2",
+      "field": "rows[1] (White Box) Advantage",
+      "severity": "INFO",
+      "category": "testing_terminology",
+      "issue": "'Can verify all processing (branch paths)' overstates white-box testing. In CS testing literature white-box achieves *branch coverage* (or path coverage targets) but cannot exhaustively verify every path (combinatorial path explosion). Acceptable simplification for IT Passport level.",
+      "suggestion": "Soften to 'Can cover all branches / internal logic paths in principle' or 'Achieves branch-coverage testing of internal logic.'"
+    },
+    {
+      "page": 249,
+      "entity_id": "itpassport_r6::table::p249::2",
+      "field": "rows[1] (White Box) Disadvantage",
+      "severity": "FAIL",
+      "category": "testing_concept",
+      "issue": "'Cannot find errors in the program' is the OPPOSITE of what white-box testing does. White-box (structural) testing's whole purpose is to find errors using code-path coverage. The intended meaning is most likely: 'cannot find errors of OMISSION — i.e., requirements that are missing from the code entirely, because the test starts from the existing code'. As written, the EN is technically incorrect and would confuse / mislead an IT-pro reader.",
+      "suggestion": "Rephrase to: 'Cannot detect missing functionality (errors of omission) — it only tests what is already coded.' Verify against original JP source ('プログラムの誤りを見つけられない'); the JP is also imprecise but the EN should clarify rather than translate literally."
+    },
+    {
+      "page": 249,
+      "entity_id": "itpassport_r6::table::p249::2",
+      "field": "rows[2] (Black Box) Disadvantage",
+      "severity": "WARN",
+      "category": "phrasing_concept",
+      "issue": "'Since not all complex tests are performed, there is a possibility that low-frequency defects (Bug) may not be found' — awkward English and conceptually muddy. 'low-frequency defects' usually translates 発生頻度が低い不具合 = 'edge-case bugs' or 'rare-path defects'. Parenthetical '(Bug)' as singular tag for plural 'defects' is grammatically inconsistent.",
+      "suggestion": "Rephrase to: 'Since not all internal code paths are exercised, rare edge-case defects (bugs) may go undetected.'"
+    },
+    {
+      "page": 327,
+      "entity_id": "itpassport_r6::term::p327::4",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "logic_terminology",
+      "issue": "'NAND (Negative AND)' — conventional English expansion is 'NOT AND' (sometimes 'Negated AND'); 'Negative AND' is uncommon in EN logic textbooks. The body text correctly notes 'It means NOT AND', so consistency would be better with 'Negated AND' or just 'NAND'.",
+      "suggestion": "Change 'NAND (Negative AND)' → 'NAND (Negated AND)' or drop the expansion since 'NOT AND' is already explained inline."
+    },
+    {
+      "page": 327,
+      "entity_id": "itpassport_r6::term::p327::5",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "logic_terminology",
+      "issue": "Same as g_122: 'NOR (Negative OR)' — conventional EN is 'NOT OR' or 'Negated OR'.",
+      "suggestion": "Change 'NOR (Negative OR)' → 'NOR (Negated OR)'."
+    },
+    {
+      "page": 363,
+      "entity_id": "itpassport_r6::term::p363::3",
+      "field": "surface.en",
+      "severity": "WARN",
+      "category": "schema_misclassification",
+      "issue": "Entity is type='term' but the surface is a full English sentence ('When you specify an argument when calling a function...'), not a term/keyword. Likely an upstream extraction error (paragraph mis-tagged as term). En side faithfully mirrors JP, so no translation defect, but the en surface reads strangely as a glossary headword.",
+      "suggestion": "Either re-classify the block as a 'paragraph' / explanation, or extract a shorter headword (e.g., 'Passing arguments to a function call')."
+    },
+    {
+      "page": 363,
+      "entity_id": "itpassport_r6::figure::p363::4",
+      "field": "caption.en",
+      "severity": "INFO",
+      "category": "i18n",
+      "issue": "EN code example contains 'こんにちは' romanized as 'Konnichiwa'. For en-only readers this is opaque; a gloss like 'Konnichiwa (Hello)' would improve readability.",
+      "suggestion": "Add parenthetical gloss the first time: 'Konnichiwa (Hello)'."
+    },
+    {
+      "page": 392,
+      "entity_id": "itpassport_r6::term::p392::2",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "cross_reference",
+      "issue": "Cross-reference '(p.216)' inside EN text refers to original JP-book pagination. If the en output is consumed independently of the JP book, this page-number may not resolve.",
+      "suggestion": "Either keep with note 'p.216 of the original Japanese edition' or replace with the corresponding en-side anchor/page reference."
+    },
+    {
+      "page": 432,
+      "entity_id": "itpassport_r6::term::p432::0",
+      "field": "definition.en",
+      "severity": "WARN",
+      "category": "domain_terminology",
+      "issue": "'Backing up data that has been newly added since the full backup' is incomplete. Standard EN industry definition of differential backup is 'data that has been ADDED OR MODIFIED (changed) since the last full backup', not only added. Important distinction in storage / backup engineering. (Note: JP source uses 新たに追加された which is similarly loose; en should resolve the ambiguity rather than mirror.)",
+      "suggestion": "Rephrase: 'Backing up all data that has changed (added or modified) since the last full backup.'"
+    },
+    {
+      "page": 432,
+      "entity_id": "itpassport_r6::term::p432::1",
+      "field": "definition.en",
+      "severity": "WARN",
+      "category": "domain_terminology",
+      "issue": "'Backing up only the data that has been newly added since the previous backup' — same issue as differential. Standard EN definition: 'data that has changed (added or modified) since the previous backup (whether full or incremental)'.",
+      "suggestion": "Rephrase: 'Backing up only the data that has changed since the previous backup (full or incremental).'"
+    },
+    {
+      "page": 484,
+      "entity_id": "itpassport_r6::term::p484::0",
+      "field": "surface.en",
+      "severity": "INFO",
+      "category": "version_specificity",
+      "issue": "'POP (Post Office Protocol)' — in 2026 mail-server practice, the de-facto version is POP3 (RFC 1939). Bare 'POP' is the IT-Passport convention but a tech professional would expect 'POP3'.",
+      "suggestion": "Optionally note 'POP (Post Office Protocol; current version POP3, RFC 1939)' for IT-pro readers."
+    },
+    {
+      "page": 484,
+      "entity_id": "itpassport_r6::term::p484::1",
+      "field": "surface.en",
+      "severity": "INFO",
+      "category": "version_specificity",
+      "issue": "'IMAP' — current version is IMAP4rev1 (RFC 3501) / IMAP4rev2 (RFC 9051). Acceptable for IT Passport but a senior IT engineer would expect version qualifier.",
+      "suggestion": "Optionally add: 'IMAP (current: IMAP4rev1/2)'."
+    },
+    {
+      "page": 487,
+      "entity_id": "itpassport_r6::term::p487::2",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "domain_terminology",
+      "issue": "'ICANN ... manages IP Addresses so they do not duplicate worldwide' — informal/simplified. Technically ICANN coordinates IANA functions; the regional internet registries (RIRs: ARIN, RIPE, APNIC, LACNIC, AFRINIC) actually allocate IP-address blocks. Acceptable for IT Passport level.",
+      "suggestion": "Optionally expand: 'ICANN coordinates global IP-address allocation (delegated to IANA / regional registries) so addresses do not duplicate worldwide.'"
+    },
+    {
+      "page": 487,
+      "entity_id": "itpassport_r6::term::p487::4",
+      "field": "surface.en / definition.en",
+      "severity": "INFO",
+      "category": "term_casing",
+      "issue": "Inconsistent casing: 'IP Address' (capital A) used as surface, but in tech-English convention the canonical form is 'IP address' (capital IP only). Same applies to 'Global IP Address' / 'Private IP Address' in the glossary.",
+      "suggestion": "Standardize to 'IP address' (capital IP, lowercase address) site-wide, or accept title-case as a deliberate display style — but be consistent."
+    },
+    {
+      "page": 487,
+      "entity_id": "itpassport_r6::section::p487::0",
+      "field": "title.en",
+      "severity": "INFO",
+      "category": "phrasing",
+      "issue": "Section title 'Relationship between address and IP Address' — lowercase 'address' then capital-case 'IP Address' in same string is jarring. Native EN would say 'Relationship Between (Physical) Address and IP Address' or 'Mail Address vs. IP Address' or similar.",
+      "suggestion": "Clarify: 'Relationship between a Physical Address and an IP Address' (if 住所=physical/postal address) or rephrase per intent of original JP heading."
+    },
+    {
+      "page": 555,
+      "entity_id": "itpassport_r6::question::p555::0",
+      "field": "choices[3].en",
+      "severity": "INFO",
+      "category": "version_currency",
+      "issue": "WPA2 is the canonical IT-Passport exam answer for wireless encryption, but as of 2026 the industry-current standard is WPA3 (released 2018). For senior IT engineers reading this, a note 'WPA2 is the IPA-syllabus answer; WPA3 supersedes it in industry practice' would be valuable.",
+      "suggestion": "Add explanatory note in commentary (if present): 'Although WPA3 supersedes WPA2 in current practice, IT-Passport syllabus uses WPA2 as the answer.'"
+    },
+    {
+      "page": 555,
+      "entity_id": "itpassport_r6::question::p555::1",
+      "field": "choices[0].en",
+      "severity": "INFO",
+      "category": "version_currency",
+      "issue": "Answer A 'Overwrite multiple times with 00, FF, or random' reflects DoD 5220.22-M and older guidance. NIST SP 800-88 Rev.1 (current 2014, still authoritative) says a single overwrite suffices for modern HDDs; SSDs require cryptographic erase or vendor sanitize commands. For IT Passport this remains the canonical answer.",
+      "suggestion": "Optionally note 'Modern guidance (NIST SP 800-88) accepts a single overwrite for HDDs; SSDs require cryptographic erase.'"
+    }
+  ]
+}

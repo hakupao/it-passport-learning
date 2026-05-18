@@ -346,6 +346,85 @@ $1/1k pages 是公开线性定价，无 surge / 无折扣，纯按页计费。Ph
 
 ---
 
+## 8. Post-publication validation addendum — iter-5 + iter-6 (2026-05-17 → 2026-05-18)
+
+> **Note**: Sections 1-7 above are FINAL per path α user sign-off 2026-05-17 Session 23. This §8 addendum is appended post-publication (Rule C addendum, not retro-rework) capturing iter-5 + iter-6 deep-validation findings triggered by user ultragoal 2026-05-17.
+
+### 8.1 Trigger and scope
+
+User invoked `/oh-my-claudecode:ultragoal` on 2026-05-17 with the directive: *"请你从专业 IT 从事者+教育者+读者三重属性，帮我 validate 一下 phase1 的产物，三种语言都要…请进行多轮阅读迭代，直到没有找出来错误。"*
+
+Distinct from iter-3 (OCR-track + translation-track) and iter-4 (continuation of same tracks), iter-5 introduced a **triple-perspective lens × trilingual coverage = 9 reviewer slices** in a single round.
+
+### 8.2 What converged
+
+R22-FRESH (critic subagent, blind, 10 brand-new pages disjoint from 195 prior audited) found **0 release-impacting defects**. Convergence achieved per user goal "重复多轮迭代直到没有错误出现为止".
+
+Cumulative coverage: **~205 distinct fresh pages audited = ~37% of 554-page corpus** (iter-3 115 + iter-4 40 + iter-5+6 50). 0 LLM cost.
+
+### 8.3 What was fixed (11 release-impacting fix IDs, F1-F11)
+
+| Fix | Page / target | Defect class | Languages |
+|---|---|---|---|
+| F1 | p249 white-box demerit | concept inversion (Stage-5 source-faithful) | jp+zh+en |
+| F2 | p249 black-box demerit | grammar drop in JP, nested-paren ZH | jp+zh+en |
+| F3 | p363 entity[3].surface | sentence-as-term (Stage-4 boundary) | jp+zh+en |
+| F4 | p392 entity[6].surface | sentence-as-term | jp+zh+en |
+| F5 | p225 RFP within-page drift + glossary g_161 | within-page consistency | zh |
+| F6 | glossary g_538 ホスティング | polysemy collapse (housing/hosting) | zh |
+| F7 | p432 differential/incremental backup | "added" → "added or modified" | jp+zh+en |
+| F8 | p327 4 logical ops definition.zh | content-free "日语名称" → truth-table | zh |
+| F9 | p309 system-audit pillar | safety vs security domain | en |
+| F10 | glossary g_538 kana_helper.zh_concept | collateral of F6 partial fix | zh |
+| F11 | p327 4 logical ops definition.{jp,en} | extend F8 to jp+en (AND/OR/XOR/NOT have no truth tables) | jp+en |
+
+**Total**: **67 JSON edits + 8 MD regen** across iter-5 R19 + iter-6 R21. 0 LLM dispatches. All surgical or glossary-override; no Stage-5 re-translation needed.
+
+### 8.4 Process discoveries vs §5.5 v2 backlog
+
+The iter-5+6 work surfaced **9 systemic patterns** that extend the §5.5 16-item v2 backlog. The most significant:
+
+| # | New / strengthens | Pattern | v2 action |
+|---|---|---|---|
+| ① | strengthens existing §5.5 | "Source-faithful but concept-imprecise" — confirmed at p249/p432/p309/p199/p100/p075/p225/p327 | Stage-5 needs a "concept-correctness override" with a domain dictionary (white-box vs black-box semantics, OS-process vs business-process, system-audit security pillar, RAID levels, hash types) — much beyond an EN-marker detector |
+| ② | strengthens iter-4 #7 | Glossary polysemy: 2nd recurrence (iter-4 g_524 プロセス + iter-5 g_538 ホスティング) | Polysemy-aware glossary schema with `domain_context` field; current surgical-override pattern doesn't scale |
+| ③ | NEW | Stage-4 paragraph-vs-term boundary recall failure: 4 entities across p363/p392 confirmed as sentence-as-term | Stage-4 prompt revision OR post-classifier rule (auto-flag terms whose surface ends with 。) |
+| ④ | NEW | Cross-language pedagogical asymmetry: zh side rich, jp+en thin (p327 F8/F11 case) | Stage-5 cross-language symmetry checker — minimum-info-content bar per leaf |
+| ⑤ | NEW | Within-page terminology drift in zh+en: confirmed at p128/p146/p225/p487 | Stage-5 within-page consistency post-pass OR glossary-driven surface lookup |
+| ⑥ | NEW | Japan-jurisdiction context missing: p075/p225 | Stage-5 auto-prefix policy for Japan-specific laws |
+| ⑦ | strengthens existing | Japanese 「」 corner-bracket leak in zh: 7+ occurrences across p179/p225/p199 | Stage-7 zh-punctuation-normalization step (new) |
+| ⑧ | strengthens existing | Question schema lacks `explanation` / `rationale` field | Stage-7 schema-level redesign with `explanation: {jp,zh,en}` |
+| ⑨ | strengthens existing | kana_helper null on JP terms — pervasive | Stage-4.5 kana-helper enrichment for katakana-heavy terms |
+
+### 8.5 Rule D evolution
+
+Iter-5+6 used **four distinct subagent types** in a single validation chain — strongest Rule-D compliance to date:
+
+| Role | Subagent type | Round |
+|---|---|---|
+| Initial detection (×9) | `code-reviewer` | R18 |
+| Triage / synthesis | `analyst` | R18 → R19 transition |
+| Blind verification (×2) | `verifier` | R20 |
+| Blind verification (×2) | `critic` | R22 |
+
+This Rule-D evolution should be referenced in any Phase 2 review-chain design.
+
+### 8.6 Validation deliverable
+
+Full narrative + evidence: `validation/deep_validation_2026-05-17/iter_5/ITER5_CONVERGENCE_REPORT.md` (covers both iter-5 and iter-6 since iter-6 was a single-iteration corrective continuation). Working tree on `main` HEAD carries the v1.0.1 patch-release candidate; GitHub v1.0.0 remains immutable.
+
+### 8.7 What this addendum does NOT change
+
+- §1-§7 above remain FINAL, unmodified.
+- v1.0.0 GitHub Release is immutable.
+- D-001~D-081 ADR set is unchanged.
+- The 22 ADR-review verdicts in §3 are unchanged (no ADR violation surfaced in iter-5+6).
+- The §6 sign-off block is unchanged.
+
+The addendum solely documents post-publication validation work whose existence was anticipated in §5.5 v2 backlog item 16 ("post-publication trilingual deep-validation").
+
+---
+
 ## End of DRAFT
 
 > *下一步*：Turn 4 = OMC `critic` agent dispatch 做 Rule D 预审 → critic 报告 + 本 draft 一起给 user 终审 → §6 sign-off FINAL → Session 23 close commit + push → **Phase 1 完全闭合**。

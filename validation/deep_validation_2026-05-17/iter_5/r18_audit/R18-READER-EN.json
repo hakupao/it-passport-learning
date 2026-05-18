@@ -1,0 +1,247 @@
+{
+  "agent_id": "R18-READER-EN",
+  "perspective": "reader",
+  "language": "en",
+  "iter": 5,
+  "audited_at": "2026-05-17",
+  "pages_audited": [75, 100, 106, 119, 128, 146, 179, 181, 199, 207, 210, 225, 231, 249, 285, 292, 300, 302, 317, 327, 363, 369, 371, 392, 430, 432, 464, 484, 487, 555],
+  "pages_with_no_entities": [106, 207, 285, 302],
+  "summary": {
+    "total_pages": 30,
+    "total_findings": 18,
+    "fail_count": 0,
+    "warn_count": 9,
+    "info_count": 9
+  },
+  "findings": [
+    {
+      "page": 100,
+      "entity_id": "itpassport_r6::term::p100::0",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "style/passive-voice",
+      "excerpt": "The standards established by this organization are also called \"ISO\".",
+      "note": "Slight tone shift from JP source ('呼んだりします' is colloquial). The English is grammatical and natural — but the Japanese source phrases it more loosely ('also sometimes called'). Reader-side: no stumble, mild flattening only."
+    },
+    {
+      "page": 119,
+      "entity_id": "itpassport_r6::term::p119::2",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "tautology",
+      "excerpt": "\"Venture\" means \"adventure\" and \"Capital\" means \"capital\".",
+      "note": "Reads as tautology to an EN reader ('Capital means capital'). Not wrong, since the JP source explicitly glosses 「資本」, but EN readers will find it odd / circular. Consider 'Capital means funds/financial resources'."
+    },
+    {
+      "page": 128,
+      "entity_id": "itpassport_r6::term::p128::1",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "punctuation/quoting-style",
+      "excerpt": "four perspectives: 'Financial,' 'Customer,' 'Business Process,' and 'Learning and Growth.'",
+      "note": "Uses single quotes with comma-inside-quote (American style). Mixed within the corpus — other entities use double quotes. Consistency issue across pages, not blocking on this single page."
+    },
+    {
+      "page": 146,
+      "entity_id": "itpassport_r6::table::p146::0",
+      "field": "rows[1][1].en",
+      "severity": "INFO",
+      "category": "punctuation/quoting-style",
+      "excerpt": "By providing 'training data' to a computer, the computer itself becomes capable of making future predictions and decisions.",
+      "note": "Single quotes around 'training data'; on p146 term::p146::2 the same phrase is rendered as 'learning data' (no quotes inconsistency, but lexical inconsistency)."
+    },
+    {
+      "page": 146,
+      "entity_id": "itpassport_r6::term::p146::2 vs table::p146::0",
+      "field": "definition.en",
+      "severity": "WARN",
+      "category": "terminology-inconsistency",
+      "excerpt": "table: '\"training data\"' vs term: '\"learning data\"' for the same JP source 「学習用のデータ」",
+      "note": "Same page, same Japanese phrase translated two different ways within neighboring entities. 'Training data' is the EN-standard ML term; 'learning data' is a literal calque. Reader sees the inconsistency immediately."
+    },
+    {
+      "page": 146,
+      "entity_id": "itpassport_r6::table::p146::0",
+      "field": "rows[3][1].en + term::p146::4.definition.en",
+      "severity": "WARN",
+      "category": "MT-artifact/redundancy",
+      "excerpt": "A model that layers neural networks into multiple layers",
+      "note": "Redundant phrasing — 'layers ... into multiple layers'. Native-EN reader stumbles. Consider 'A multi-layer neural network model' or 'A model that stacks neural networks into multiple layers'."
+    },
+    {
+      "page": 146,
+      "entity_id": "itpassport_r6::term::p146::3",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "trailing-punctuation",
+      "excerpt": "One form of machine learning",
+      "note": "Missing terminal period. Inconsistent with sister entity term::p146::2 which ends with a period. Several entities on this page omit the final period after the second sentence."
+    },
+    {
+      "page": 179,
+      "entity_id": "itpassport_r6::table::p179::1 + term::p179::4",
+      "field": "rows[3][1].en / definition.en",
+      "severity": "WARN",
+      "category": "self-reference-loop",
+      "excerpt": "A factory that improves efficiency by connecting factory machines to a network. Also called a \"smart factory\"",
+      "note": "Defining 'Smart Factory' as 'Also called a smart factory' is a tautology for an EN reader — the JP literally says スマート工場 (smart kōjō) which IS the alternate name, but the EN rendering 'smart factory' is the SAME as the headword 'Smart Factory'. Reader confusion."
+    },
+    {
+      "page": 181,
+      "entity_id": "itpassport_r6::question::p181::1",
+      "field": "stem.en",
+      "severity": "INFO",
+      "category": "lexical-localization",
+      "excerpt": "Which is an appropriate example of Freemium?",
+      "note": "Term 'フリーミアム' (Freemium) is referenced bare in EN; an undergraduate EN reader will likely know the term, but a brief inline gloss ('a free-tier-plus-paid-upgrade business model') would help. Not blocking."
+    },
+    {
+      "page": 181,
+      "entity_id": "itpassport_r6::question::p181::1",
+      "field": "choices[0].en",
+      "severity": "INFO",
+      "category": "wording",
+      "excerpt": "A. A fast-food restaurant service where, if you hold a purchased flat-rate pass, you can receive unlimited drinks within the validity period",
+      "note": "Long, comma-heavy sentence with embedded conditional. Reads more like a contract clause than natural English. Could be tightened: 'A fast-food service that lets you drink unlimited beverages within the validity period of a flat-rate pass you purchased.'"
+    },
+    {
+      "page": 199,
+      "entity_id": "itpassport_r6::term::p199::0",
+      "field": "definition.en",
+      "severity": "WARN",
+      "category": "broken-reference-style",
+      "excerpt": "Unlike Hosting Service, the location of the contracted server is unclear.",
+      "note": "'Hosting Service' is capitalized as if a defined proper-noun term, but no anchor exists on this entity (the comparison panels are in a SEPARATE entity figure::p199::2 below). EN reader reading just term::p199::0 has no referent. Should be 'Unlike a hosting service,' (lowercase, indefinite)."
+    },
+    {
+      "page": 199,
+      "entity_id": "itpassport_r6::figure::p199::2",
+      "field": "panels.notes.en (housing service)",
+      "severity": "INFO",
+      "category": "register-shift",
+      "excerpt": "The customer essentially rents the installation site.",
+      "note": "'Essentially' is an informal hedge in an otherwise formal definition register. The JP uses 「〜イメージ」 (image/concept). Better: 'The customer effectively rents only the installation site.'"
+    },
+    {
+      "page": 249,
+      "entity_id": "itpassport_r6::table::p249::2",
+      "field": "rows[1][2].en",
+      "severity": "FAIL",
+      "category": "logic-error/MT-artifact",
+      "excerpt": "Cannot find errors in the program",
+      "note": "This is the 'Disadvantage of White Box Test' cell. The original JP says 「プログラムの誤りを見つけられない」 in context of a white-box test column header — but stated as a flat 'cannot find errors' it CONTRADICTS the entire purpose of testing. EN reader will be very confused: white-box tests are known specifically for finding errors. The JP source itself is suspect / mis-OCR'd; the EN translator passed it through verbatim. This is a high-impact reader stumble."
+    },
+    {
+      "page": 249,
+      "entity_id": "itpassport_r6::table::p249::2",
+      "field": "rows[2][2].en",
+      "severity": "WARN",
+      "category": "MT-artifact/grammar",
+      "excerpt": "Since not all complex tests are performed, there is a possibility that low-frequency defects (Bug) may not be found",
+      "note": "Awkward parenthetical '(Bug)' — singular, capitalized, with no article. Reads as a label rather than a gloss. Better: '(bugs)' lowercase plural, or remove entirely. Also 'all complex tests' is ambiguous — meant 'all possible test combinations.'"
+    },
+    {
+      "page": 292,
+      "entity_id": "itpassport_r6::figure::p292::1",
+      "field": "caption.en",
+      "severity": "WARN",
+      "category": "date-format/run-on",
+      "excerpt": "New Sales Management System Operations Service Level Agreement (SLA) Version 2.0 6/28/2020 TekuTeku Co., Ltd.",
+      "note": "Caption is a run-on string with no separators. 'New Sales Management System Operations' / 'Service Level Agreement (SLA)' / 'Version 2.0' / '6/28/2020' / 'TekuTeku Co., Ltd.' should be separated by punctuation. Also date '6/28/2020' is US-style but the rest of the corpus uses Japanese-style dates (令和2年 etc.). Reader cannot parse this as continuous prose."
+    },
+    {
+      "page": 363,
+      "entity_id": "itpassport_r6::term::p363::3",
+      "field": "surface.en",
+      "severity": "FAIL",
+      "category": "type-misuse/MT-artifact",
+      "excerpt": "When you specify an argument when calling a function, that argument is passed to the function.",
+      "note": "This is a 'term' entity, but the 'surface' (headword) is a full sentence, not a term. This is a Stage-5/structural defect surfaced through the EN reader's eye: the entity-type is wrong (should be type:paragraph or type:explanation, not type:term). Reader sees a 'glossary entry' whose headword is a sentence — extremely confusing."
+    },
+    {
+      "page": 363,
+      "entity_id": "itpassport_r6::figure::p363::4",
+      "field": "caption.en",
+      "severity": "WARN",
+      "category": "untranslated-residual + missing-gloss",
+      "excerpt": "Program example: Function call (with arguments) — ○hello(string: name) / output name / output \"Konnichiwa\" / hello(\"Yamada-san\")",
+      "note": "Mixed-language artifact: 'Konnichiwa' is romaji (transliteration) of こんにちは; 'Yamada-san' uses Japanese honorific -san without gloss. Per spec, transliterated proper nouns are OK, but 'Konnichiwa' is a common-noun greeting, not a proper noun — better translated to 'Hello' with an explanatory note, or kept as こんにちは and explained. Also the figure's '○' marker bullet is undocumented in EN convention."
+    },
+    {
+      "page": 363,
+      "entity_id": "itpassport_r6::figure::p363::5",
+      "field": "caption.en",
+      "severity": "WARN",
+      "category": "untranslated-residual",
+      "excerpt": "Output example: Yamada-san Konnichiwa",
+      "note": "The EN 'output example' contains untranslated romaji ('Konnichiwa') and an unglossed Japanese honorific ('-san'). EN reader unfamiliar with Japanese cannot map this to the lecture content. Acceptable IF the output of the program is verbatim Japanese (it is — the program outputs こんにちは); but then it should be in original kana, not romaji."
+    },
+    {
+      "page": 392,
+      "entity_id": "itpassport_r6::term::p392::6",
+      "field": "surface.en",
+      "severity": "WARN",
+      "category": "type-misuse",
+      "excerpt": "The Boundaries That Distinguish Computers Are Becoming Blurry",
+      "note": "Like page 363, this 'term' headword is actually a full sentence (in Title Case). EN reader expecting a glossary entry encounters a thesis statement. Entity-type should be paragraph/note, not term."
+    },
+    {
+      "page": 392,
+      "entity_id": "itpassport_r6::term::p392::3 / p392::4",
+      "field": "section_number / surface.en",
+      "severity": "INFO",
+      "category": "punctuation/quoting-style",
+      "excerpt": "There are many types of \"computers\". ... Today, the criteria used to distinguish types of computers are essentially only \"size\" and \"processing power\".",
+      "note": "Heavy use of double-quoted terms inside flowing prose. Acceptable, but density is high — 3+ quoted strings in a 2-sentence paragraph slows reading."
+    },
+    {
+      "page": 484,
+      "entity_id": "itpassport_r6::term::p484::1",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "register-mix",
+      "excerpt": "In the IT Passport exam, it is sometimes asked with the phrase \"a protocol for viewing email managed on a mail server.\"",
+      "note": "'It is sometimes asked with the phrase' — slight literal-translation feel. More natural: 'In the IT Passport exam, this is sometimes phrased as ...'. Not blocking."
+    },
+    {
+      "page": 487,
+      "entity_id": "itpassport_r6::section::p487::0",
+      "field": "title.en",
+      "severity": "WARN",
+      "category": "capitalization-inconsistency",
+      "excerpt": "Relationship between address and IP Address",
+      "note": "Inconsistent capitalization within one phrase: lowercase 'address' on first occurrence, Title Case 'IP Address' on second (in same title). Both refer to the same concept; the JP source uses 「住所」 (=address, real-world postal address) vs 「IPアドレス」 (=IP address), but the EN distinction is lost AND the casing is inconsistent. Reader pauses to figure out if these are two different concepts."
+    },
+    {
+      "page": 487,
+      "entity_id": "itpassport_r6::term::p487::4",
+      "field": "definition.en",
+      "severity": "INFO",
+      "category": "wording",
+      "excerpt": "must be a unique value that does not duplicate anywhere in the world.",
+      "note": "'Does not duplicate' is intransitive use of 'duplicate' — slightly awkward. Better: 'is unique worldwide' or 'has no duplicates anywhere in the world'."
+    },
+    {
+      "page": 555,
+      "entity_id": "itpassport_r6::question::p555::*",
+      "field": "choices[*].en",
+      "severity": "INFO",
+      "category": "marker-format",
+      "excerpt": "A. Configure MAC address filtering. ... B. Stop ESSID notifications ...",
+      "note": "Markers use 'A.' / 'B.' / 'C.' / 'D.' consistently — good. No duplicate prefix bug ('A. Option A.') observed on this page. Marker style aligns across all question pages reviewed."
+    }
+  ],
+  "cross_page_observations": {
+    "marker_consistency": "A./B./C./D. used consistently across all question pages (p181, p300, p555). No 'D. Option D' duplicate-marker collision observed.",
+    "quoting_style": "Mixed single-quote vs double-quote usage across entities; not within a single entity. Low-severity but visible.",
+    "untranslated_residuals": "p363 contains romaji ('Konnichiwa', 'Yamada-san') in code examples — flagged WARN. No CJK characters leaked into EN strings on any other page reviewed.",
+    "title_case": "Generally consistent Title Case for term.surface.en (e.g., 'Trademark Right', 'Cloud Computing'). p392 and p363 violate this by putting full sentences in the surface field.",
+    "date_format": "p292 uses '6/28/2020' (US m/d/y) — inconsistent with the rest of the corpus's Japanese-era / kanji dates. Single occurrence."
+  },
+  "verdict": "WARN",
+  "blockers": [
+    "p249 row 'Cannot find errors in the program' — semantic contradiction; EN reader will be confused (FAIL)",
+    "p363 term::p363::3 — sentence-as-headword in a 'term' entity (FAIL)"
+  ],
+  "recommendation": "Fix the two FAIL items in iter_5 follow-up. WARN items are surface-level polish — acceptable for v1.0.0 release but worth a pass in v1.0.1. INFO items are stylistic."
+}

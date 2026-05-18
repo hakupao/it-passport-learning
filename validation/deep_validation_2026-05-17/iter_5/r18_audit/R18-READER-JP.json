@@ -1,0 +1,151 @@
+{
+  "agent_id": "R18-READER-JP",
+  "perspective": "reader",
+  "language": "jp",
+  "pages_audited": [75, 100, 106, 119, 128, 146, 179, 181, 199, 207, 210, 225, 231, 249, 285, 292, 300, 302, 317, 327, 363, 369, 371, 392, 430, 432, 464, 484, 487, 555],
+  "summary": {
+    "fail_count": 2,
+    "warn_count": 6,
+    "info_count": 5
+  },
+  "findings": [
+    {
+      "id": "R18-001",
+      "page": 249,
+      "entity_id": "itpassport_r6::table::p249::2",
+      "severity": "FAIL",
+      "category": "grammar_broken",
+      "jp_text": "すべての複雑なテストしないので、発生頻度が低い不具合（バグ）が見つけられない可能性がある",
+      "issue": "文法破綻。動詞「しない」の前に目的語マーカーが欠落。「すべての複雑なテストはしない」または「すべての複雑なテストを行わない」とすべき。日本語ネイティブが読むと意味は何とか推測できるが、明確に機械翻訳臭がする破綻文。学習者が文意を一度で取れず立ち止まる。",
+      "suggested_fix": "「すべての複雑なテストを行わないので、発生頻度が低い不具合（バグ）を見つけられない可能性がある」"
+    },
+    {
+      "id": "R18-002",
+      "page": 363,
+      "entity_id": "itpassport_r6::term::p363::3",
+      "severity": "FAIL",
+      "category": "structural_term_is_sentence",
+      "jp_text": "surface.jp = 「関数の呼び出し時に引数を指定すると、その引数が関数に渡されます。」",
+      "issue": "term entity の surface（見出し語）が完全な解説文。用語集として読むと「これは用語？それとも本文？」と混乱する。surface は名詞句（例：「引数の渡し方」）にすべき。読者は「これが見出しの意味になるはず」と探すが見出しが文章なので読みのリズムが崩れる。",
+      "suggested_fix": "surface を「引数を指定した関数呼び出し」など名詞化、現在の文は definition の冒頭に統合する。"
+    },
+    {
+      "id": "R18-003",
+      "page": 181,
+      "entity_id": "itpassport_r6::question::p181::*",
+      "severity": "WARN",
+      "category": "marker_inconsistency_cross_language",
+      "jp_text": "jp: ア．／イ．／ウ．／エ．  vs  zh/en: A. B. C. D.",
+      "issue": "日本語面ではア/イ/ウ/エ、中英ではA/B/C/D。日本語読者が「ア＝A」の対応を把握するには認知コストがかかる（しかし IT パスポート本試験の慣例として ア/イ/ウ/エ は正しいので jp 面のみで読む限り問題なし）。日本語面単独では破綻していないため WARN 止まり。",
+      "suggested_fix": "日本語面のみを読む読者には問題なし。多言語並列表示時に「ア (A)」のような対応表示があれば親切。"
+    },
+    {
+      "id": "R18-004",
+      "page": 181,
+      "entity_id": "itpassport_r6::question::p181::0",
+      "severity": "WARN",
+      "category": "punctuation_inconsistency",
+      "jp_text": "ア．アフィリエイト  /  イ．オークション  /  ウ．フラッシュマーケティング  /  エ．レコメンデーション",
+      "issue": "ア／イ／ウ／エ の後は全角ピリオド「．」になっている。IT パスポート公式問題集の慣例（全角ピリオドが多い）に沿うため許容範囲だが、p181::1, ::2, ::3 では選択肢末尾の句点「。」の有無が混在（::0 は句点なし、::2 は句点あり、::1 は句点なし）。同一ページ内の選択肢で末尾句点ポリシーが揺れる。",
+      "suggested_fix": "同一問題内で選択肢末尾の句点を統一する。"
+    },
+    {
+      "id": "R18-005",
+      "page": 363,
+      "entity_id": "itpassport_r6::figure::p363::4",
+      "severity": "WARN",
+      "category": "orphan_marker",
+      "jp_text": "「○hello(文字列型: name) / nameを出力する / \"こんにちは\"を出力する / hello(\"山田さん\")」",
+      "issue": "プログラム例の冒頭「○hello」の「○」が浮いている。教科書の擬似コード記法（関数定義マーカーとして〇を使う書籍がある）かもしれないが、見出しの説明がないため日本語読者は「丸印は何？」と一瞬詰まる。",
+      "suggested_fix": "「○」が関数定義マーカーである旨を凡例として補足、または記号を削除。"
+    },
+    {
+      "id": "R18-006",
+      "page": 363,
+      "entity_id": "itpassport_r6::figure::p363::5",
+      "severity": "WARN",
+      "category": "output_label_unnatural",
+      "jp_text": "「出力例: 山田さんこんにちは」",
+      "issue": "出力例として「山田さんこんにちは」が空白なしで連結されている。プログラムの出力としては正しいが、日本語の自然文として読むと「山田さん、こんにちは」のように読点が欲しい。プログラム動作仕様としては許容できるが、図キャプションとして単独で出てくると違和感。",
+      "suggested_fix": "「出力例（連結結果）: 山田さんこんにちは」のように「これは連結結果」と明示。"
+    },
+    {
+      "id": "R18-007",
+      "page": 146,
+      "entity_id": "itpassport_r6::term::p146::2-6, itpassport_r6::table::p146::0",
+      "severity": "WARN",
+      "category": "sentence_terminator_inconsistency",
+      "jp_text": "「…行えるようになる」「…機械学習の1つ」「…用いられる」",
+      "issue": "p146 の term エンティティの定義文末に句点「。」が欠落しているものが連続。隣接する他ページ（p179, p199 等）では句点ありで終わるため、ページ間で文末ポリシーが不統一。読者が「文が途中で切れた？」と一瞬感じる。",
+      "suggested_fix": "全ページ通して定義文末に「。」を付与（または一貫して省略）。"
+    },
+    {
+      "id": "R18-008",
+      "page": 292,
+      "entity_id": "itpassport_r6::figure::p292::1",
+      "severity": "WARN",
+      "category": "caption_run_on",
+      "jp_text": "「新販売管理システム運用 サービスレベル合意書（Service Level Agreement） バージョン 2.0 令和2年6月28日 株式会社テクテク」",
+      "issue": "図キャプションが半角スペース区切りで複数フィールドを連結。読点や中黒「・」「｜」がないため、どこまでが文書名でどこからがバージョン・日付・社名なのか視覚的に切れない。読者は一度立ち止まって構造を解読する必要がある。",
+      "suggested_fix": "「新販売管理システム運用 サービスレベル合意書（SLA）｜バージョン 2.0｜令和2年6月28日｜株式会社テクテク」のように区切り記号を入れる。"
+    },
+    {
+      "id": "R18-009",
+      "page": 199,
+      "entity_id": "itpassport_r6::figure::p199::2",
+      "severity": "INFO",
+      "category": "em_dash_in_caption",
+      "jp_text": "「ソリューションの形態の違い — 4種の比較図（オンプレミス／ハウジングサービス／ホスティングサービス／クラウドコンピューティング）」",
+      "issue": "em dash「—」を全角環境で使用。日本語文中では「：」または全角ダッシュ「――」が一般的。読みは可能だが日本語キャプションとしてはやや西洋風。",
+      "suggested_fix": "「ソリューションの形態の違い：4種の比較図…」"
+    },
+    {
+      "id": "R18-010",
+      "page": 327,
+      "entity_id": "itpassport_r6::term::p327::3",
+      "severity": "INFO",
+      "category": "term_uniqueness",
+      "jp_text": "surface.jp = 「否定」、definition「NOT演算の日本語名称。」",
+      "issue": "「否定」だけだと用語としてやや曖昧（哲学的・法律的な「否定」と紛らわしい）。文脈上「論理否定」が望ましいが、本文中で論理回路節と分かるなら許容範囲。",
+      "suggested_fix": "「論理否定」または surface に「（NOT）」を付記する案を検討。"
+    },
+    {
+      "id": "R18-011",
+      "page": 392,
+      "entity_id": "itpassport_r6::term::p392::2",
+      "severity": "INFO",
+      "category": "orphan_cross_reference",
+      "jp_text": "「第6章で「システムはハードウェアとソフトウェアから構成される」と解説しました（p.216）」",
+      "issue": "p.216 への内部参照あり。リーフ単体で読むと p.216 のアンカー不明（ただし書籍全体としては正常）。リーフ単独配布の場合、読者は p.216 がどこか分からず立ち止まる可能性。",
+      "suggested_fix": "リーフ単独で読まれる前提なら「（第6章を参照）」と曖昧化する選択肢あり。"
+    },
+    {
+      "id": "R18-012",
+      "page": 392,
+      "entity_id": "itpassport_r6::term::p392::6",
+      "severity": "INFO",
+      "category": "surface_is_sentence",
+      "jp_text": "surface.jp = 「コンピュータを区別する境界線が曖昧になっている」",
+      "issue": "p363::3 と同様、term の見出しが完結文形「…曖昧になっている」になっている。用語集の項目としては不自然。definition との関係も「surface = 主張、definition = その理由」になっており、用語/解説の役割分担が逆転している。",
+      "suggested_fix": "surface を「コンピュータの区別境界の曖昧化」など名詞句に。"
+    },
+    {
+      "id": "R18-013",
+      "page": 487,
+      "entity_id": "itpassport_r6::section::p487::0",
+      "severity": "INFO",
+      "category": "missing_entity_id_gap",
+      "jp_text": "page_487 entities: index 0, 2, 3, 4 — index 1 が欠番",
+      "issue": "エンティティ ID 列に欠番（::p487::1 が無い）。読者には見えない構造的問題だが、リーフ生成漏れの可能性を示唆。jp 読者として直接の支障なし。",
+      "suggested_fix": "ID 採番を連続化、または欠番理由をスキーマで明示。"
+    }
+  ],
+  "observations": {
+    "marker_consistency": "jp面の選択肢マーカーは全ページでア/イ/ウ/エに統一。日本語読者として違和感なし。",
+    "kanji_kana_balance": "全体に漢字とカナのバランスは良好。常用漢字レベルで読める。",
+    "tone": "ですます調と常体（だ／である）の混在は限定的（p119 等で短い体言止め定義はあるが、長文定義はですます調で一貫）。読みの違和感少。",
+    "ascii_zenkaku": "数字・括弧は概ね半角統一。p146 等で（）と()が混在（例：「（Machine Learning）」「(ニューロン)」）。微妙だが reading-block ではない。",
+    "chinese_leak": "jp 面に中国語簡体字や zh 専用語の漏れは検出されず（zh 面のクリーン分離は成功）。",
+    "p_NN_orphan": "p392 で「p.216」への内部参照あり。書籍全体としては正常な書誌構造内参照。"
+  }
+}

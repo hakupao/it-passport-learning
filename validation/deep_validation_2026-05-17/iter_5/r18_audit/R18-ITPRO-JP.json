@@ -1,0 +1,71 @@
+{
+  "agent_id": "R18-ITPRO-JP",
+  "perspective": "IT professional",
+  "language": "jp",
+  "model": "claude-opus-4-7[1m]",
+  "status": "complete",
+  "pages_audited": [75, 100, 106, 119, 128, 146, 179, 181, 199, 207, 210, 225, 231, 249, 285, 292, 300, 302, 317, 327, 363, 369, 371, 392, 430, 432, 464, 484, 487, 555],
+  "leaves_checked": 374,
+  "findings": [
+    {
+      "page": 249,
+      "entity_idx": 1,
+      "entity_type": "table",
+      "leaf_path": "rows[1][2].jp (ホワイトボックステスト row, デメリット cell)",
+      "severity": "FAIL",
+      "defect": "Concept inversion: white-box test demerit cell says 'プログラムの誤りを見つけられない' (cannot find program errors). This is the exact opposite of the white-box test definition. White-box testing inspects internal logic and branch coverage and IS the technique best suited to finding implementation/program errors. The correct demerit is that white-box testing cannot detect specification (requirements) errors because it assumes the spec itself is correct. As written, the table teaches students the inverse of the actual concept and will cause systematic miscategorization on exam questions distinguishing white-box vs black-box.",
+      "evidence_excerpt": "ホワイトボックステスト | すべての処理（分岐経路）を検証できる | プログラムの誤りを見つけられない",
+      "suggested_root_cause": "Stage-5 (LLM table rewrite mis-swapped advantage/demerit semantics, or condensed merit/demerit rows incorrectly)"
+    },
+    {
+      "page": 249,
+      "entity_idx": 1,
+      "entity_type": "table",
+      "leaf_path": "rows[2][2].jp (ブラックボックステスト デメリット cell)",
+      "severity": "WARN",
+      "defect": "Garbled grammar: 'すべての複雑なテストしないので' is missing a particle and reads ungrammatically. Should be 'すべての（複雑な）パターンをテストしないので' or 'すべての複雑なテストはしないので'. The meaning is still inferable, but the JP is exam-textbook-unworthy.",
+      "evidence_excerpt": "すべての複雑なテストしないので、発生頻度が低い不具合（バグ）が見つけられない可能性がある",
+      "suggested_root_cause": "Stage-4 OCR or Stage-5 LLM dropped a particle during normalization"
+    },
+    {
+      "page": 363,
+      "entity_idx": 3,
+      "entity_type": "term",
+      "leaf_path": "surface.jp",
+      "severity": "WARN",
+      "defect": "Entity misclassified as a 'term': the surface is a full sentence '関数の呼び出し時に引数を指定すると、その引数が関数に渡されます。' which is body prose, not a term name. The 'definition' field then continues the same prose. Result: glossary will ingest a sentence as if it were a term headword. Not concept-wrong, but Stage-5 structural classification leaked prose into the term namespace.",
+      "evidence_excerpt": "surface.jp = '関数の呼び出し時に引数を指定すると、その引数が関数に渡されます。'",
+      "suggested_root_cause": "Stage-5 entity-typing prompt"
+    },
+    {
+      "page": 432,
+      "entity_idx": 0,
+      "entity_type": "term",
+      "leaf_path": "definition.jp (差分バックアップ definition)",
+      "severity": "WARN",
+      "defect": "Definition under-specifies: 'フルバックアップ以降、新たに追加されたデータをバックアップする'. The reference point (full backup) is correct, but '新たに追加された' is too narrow — differential backup captures both added and modified (changed) data. Should be '変更/追加された'. The 増分バックアップ definition on this same page also uses '新たに追加された' so the two definitions are nearly indistinguishable except for the reference point. For exam purposes the reference-point distinction (since-full vs since-last-backup) is what gets tested and IS preserved, so this is WARN not FAIL — but the verb choice is technically imprecise.",
+      "evidence_excerpt": "差分バックアップ: フルバックアップ以降、新たに追加されたデータをバックアップすることです。 / 増分バックアップ: 前回のバックアップから新たに追加されたデータのみをバックアップすることです。",
+      "suggested_root_cause": "Stage-5 LLM definition normalization used same verb for both backup types"
+    },
+    {
+      "page": 100,
+      "entity_idx": 0,
+      "entity_type": "term",
+      "leaf_path": "definition.jp",
+      "severity": "INFO",
+      "defect": "Header location: 'ISOの本部はスイスのジュネーブにあります' is factually correct. No defect.",
+      "evidence_excerpt": "ISOの本部はスイスのジュネーブにあります。",
+      "suggested_root_cause": "n/a — verified PASS, logged as INFO for audit trail only"
+    }
+  ],
+  "summary": {
+    "PASS_pages": 27,
+    "WARN_pages": 2,
+    "FAIL_pages": 1,
+    "release_impacting_pages": 1,
+    "total_findings": 5,
+    "FAIL_count": 1,
+    "WARN_count": 3,
+    "INFO_count": 1
+  }
+}

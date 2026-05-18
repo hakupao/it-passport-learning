@@ -1,0 +1,28 @@
+{
+  "agent_id": "R18-READER-ZH",
+  "perspective": "reader",
+  "language": "zh",
+  "model": "claude-opus-4-7[1m]",
+  "saved_by": "parent_from_inline_result",
+  "pages_audited": [75, 100, 106, 119, 128, 146, 179, 181, 199, 207, 210, 225, 231, 249, 285, 292, 300, 302, 317, 327, 363, 369, 371, 392, 430, 432, 464, 484, 487, 555],
+  "leaves_checked_estimate": 600,
+  "findings": [
+    {"page": 179, "entity_idx": null, "entity_type": "term", "leaf_path": "definition.zh", "severity": "WARN", "defect": "Japanese 全角 corner brackets 「」 used inside Chinese definition (drone term); mainland 简体中文 standard uses \"\" curly quotes", "evidence_excerpt": "无人飞行器。「Drone」是无线遥控无人机的意思", "suggested_root_cause": "Stage-5 translation preserved jp brackets in zh; Stage-7 punctuation-normalization gap"},
+    {"page": 179, "entity_idx": null, "entity_type": "term", "leaf_path": "definition.zh", "severity": "WARN", "defect": "Japanese 「」 brackets in smart factory term zh", "evidence_excerpt": "也被称为「智能工厂」", "suggested_root_cause": "Stage-5 / Stage-7 punctuation"},
+    {"page": 179, "entity_idx": null, "entity_type": "term", "leaf_path": "definition.zh", "severity": "WARN", "defect": "Japanese 「」 brackets in embedded-system term zh", "evidence_excerpt": "通常指「微型计算机」", "suggested_root_cause": "Stage-5 / Stage-7 punctuation"},
+    {"page": 179, "entity_idx": null, "entity_type": "term", "leaf_path": "definition.zh", "severity": "WARN", "defect": "Japanese 「」 brackets + retained English 'Firm/ware' mid-Chinese", "evidence_excerpt": "因此也被称为「Firm（固定的）ware」", "suggested_root_cause": "Stage-5"},
+    {"page": 225, "entity_idx": null, "entity_type": "term", "leaf_path": "definition.zh", "severity": "WARN", "defect": "Japanese 「」 brackets in RFI definition zh", "evidence_excerpt": "目的是「供应商初步筛选」与「收集技术信息」", "suggested_root_cause": "Stage-5 punctuation"},
+    {"page": 225, "entity_idx": null, "entity_type": "term", "leaf_path": "definition.zh", "severity": "WARN", "defect": "Japanese 「」 brackets in green-procurement term zh", "evidence_excerpt": "以「绿色采购法」为契机得以普及", "suggested_root_cause": "Stage-5 punctuation"},
+    {"page": 249, "entity_idx": null, "entity_type": "table", "leaf_path": "row.zh", "severity": "WARN", "defect": "Nested parens（（））and faithful reproduction of broken-source Japanese yields awkward zh", "evidence_excerpt": "由于不进行所有复杂的测试，可能无法发现发生频率较低的缺陷（程序错误（Bug））", "suggested_root_cause": "Stage-4 OCR or source / Stage-5 literal translation"},
+    {"page": 363, "entity_idx": 3, "entity_type": "term", "leaf_path": "surface.jp+zh", "severity": "WARN", "defect": "A 'term' entry whose surface is a full sentence (paragraph as surface) — structural mis-extraction", "evidence_excerpt": "surface.jp='関数の呼び出し時に引数を指定すると、その引数が関数に渡されます。' surface.zh='调用函数时指定参数，该参数会被传递给函数'", "suggested_root_cause": "Stage-4 entity-boundary extraction"},
+    {"page": 363, "entity_idx": 4, "entity_type": "figure", "leaf_path": "caption.zh", "severity": "INFO", "defect": "Code-example Japanese literals ('こんにちは', '山田さん') embedded in Chinese figure caption — likely intentional code-string preservation but reader may stumble", "evidence_excerpt": "输出 \"こんにちは\" / hello(\"山田さん\")", "suggested_root_cause": "intentional code-literal preservation"},
+    {"page": 363, "entity_idx": 5, "entity_type": "figure", "leaf_path": "caption.zh", "severity": "INFO", "defect": "Output-example caption literally Japanese", "evidence_excerpt": "输出示例：山田さんこんにちは", "suggested_root_cause": "intentional code-output preservation"},
+    {"page": 128, "entity_idx": null, "entity_type": "table", "leaf_path": "row.zh", "severity": "WARN", "defect": "BSC table inconsistent within-page rendering 顾客 vs 客户 of same jp 顧客", "evidence_excerpt": "顾客视角 ... 从客户视角进行评价", "suggested_root_cause": "Stage-5 within-page consistency"},
+    {"page": 146, "entity_idx": null, "entity_type": "table", "leaf_path": "row.zh", "severity": "INFO", "defect": "Within-page two slightly different translations of 'jp:学習用のデータ' (学习用数据 / 用于学习的数据)", "evidence_excerpt": "term: 用于学习的数据 ; table-row: 学习用数据", "suggested_root_cause": "Stage-5 within-page consistency"},
+    {"page": 199, "entity_idx": 2, "entity_type": "figure", "leaf_path": "caption.zh", "severity": "INFO", "defect": "Awkward consecutive 的的: '通过...的组合的示意图'", "evidence_excerpt": "...组合的示意图", "suggested_root_cause": "Stage-5 phrasing"},
+    {"page": 327, "entity_idx": 7, "entity_type": "table", "leaf_path": "header.zh", "severity": "INFO", "defect": "Header gloss inconsistency: 'A NOR B（A或非B）' has zh gloss but neighbor 'A NAND B' does not", "evidence_excerpt": "A NOR B（A或非B）vs A NAND B", "suggested_root_cause": "Stage-5"},
+    {"page": 292, "entity_idx": null, "entity_type": "figure", "leaf_path": "caption.zh", "severity": "INFO", "defect": "Mixed Japanese corporate form 株式会社 with romaji name TekuTeku — culturally inert for mainland reader", "evidence_excerpt": "株式会社TekuTeku", "suggested_root_cause": "Stage-5 proper-noun policy"}
+  ],
+  "summary": {"PASS_pages": 18, "WARN_pages": 9, "FAIL_pages": 0, "release_impacting_pages": 0, "total_findings": 15, "FAIL_count": 0, "WARN_count": 9, "INFO_count": 6},
+  "notes": "Most pervasive issue: residual Japanese 「」 corner brackets inside Chinese definitions across at least 6 pages (179, 225). Bounded but consistent Stage-5 / Stage-7 punctuation-normalization gap. No release-impacting (FAIL) defects from a reader-zh perspective on the 30-page sample."
+}
