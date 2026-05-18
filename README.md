@@ -1,156 +1,129 @@
-# IT Passport Learning — Trilingual Content Factory
+# IT Passport — Trilingual Learning Content + `cert-extractor`
 
-> A pipeline that turns a single Japanese certification exam textbook into trilingual (JP / ZH / EN) learning content. **Phase 1 is the cert-extractor: a pluggable, OCR-driven, glossary-constrained translation pipeline.**
-
-[![Status: design phase](https://img.shields.io/badge/status-design%20phase-lightgrey)](docs/STATE.md)
+[![Phase 1](https://img.shields.io/badge/Phase%201-%E2%9C%85%20DONE-brightgreen)](docs/STATE.md)
+[![Latest release](https://img.shields.io/badge/release-v1.0.2-blue)](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.2)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
+[![Audit](https://img.shields.io/badge/full--corpus-100%25-success)](RETROSPECTIVE.md#9-post-publication-validation-addendum)
 [![License](https://img.shields.io/badge/license-pending-lightgrey)](#license)
 
-> 🇨🇳 中文版本: [README.zh-CN.md](README.zh-CN.md)
+> A single Japanese **IT パスポート** (Reiwa 6) certification textbook → a structured, trilingual (**JP / ZH / EN**) study dataset.
+> Pipeline: **`cert-extractor`** (Mistral OCR → Claude structure → Claude translation → dual-gate audit → GitHub Release).
+>
+> 🇨🇳 [中文版 README](README.zh-CN.md)
 
 ---
 
-## ⚠️ Status
+## Choose your path
 
-**Design phase. No runnable code yet.** Two design sessions ([01](docs/discussion/2026-05-06-session-01.md) / [02](docs/discussion/2026-05-06-session-02.md)) have produced **53 locked decisions (D-001 ~ D-053)** covering project scope, architecture, repo layout, build tooling, testing, Git policy, and runtime data layout. Implementation begins after the design phase closes.
+### 🎓 I'm here to **learn** the IT Passport exam
 
-For the always-current snapshot, read **[`docs/STATE.md`](docs/STATE.md)** first.
+Go straight to **[Releases](https://github.com/hakupao/it-passport-learning/releases)** and grab the latest trilingual bundle.
 
----
+| What | Where |
+|---|---|
+| **Latest content** | [`itpassport-r6-v1.0.2`](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.2) — 554 pages, 2 224 entities, 6 059 trilingual leaves, 908-term glossary, ~736 post-pub corrections |
+| Original | [`itpassport-r6-v1.0.0`](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.0) — kept immutable |
+| How to read | `index.json` → `pages/page_NNN.json` (or `.md`) → `glossary.json` — see `output/README.md` inside the zip |
 
-## Why this exists
+Every term carries a `{jp, zh, en}` triple. Every katakana-only IT term carries a `kana_helper = {surface, reading, zh_concept}` so non-native readers map kana → concept in one glance. That's the whole reason this exists.
 
-Non-native learners of Japanese-language technical exams are often blocked not by *concepts* (CPU, TCP/IP, ROI, …) but by **kana / kanji recognition**. Once a learner sees `アクセシビリティ → accessibility → 可访问性` once, the term sticks. This project turns one IT Passport (ITパスポート) textbook into a structured, trilingual, term-locked dataset that anyone in the same situation can reuse.
+### 💻 I'm a **developer** and want to use `cert-extractor`
 
-The book targeted in Phase 1 is bibliographic input only — its raw content is **not** redistributed (see [License](#license)).
+`cert-extractor` is cert-agnostic by design (D-010) — the same pipeline is meant to onboard any cert.
 
----
+- Tour: **[`packages/extractor/README.md`](packages/extractor/README.md)**
+- Architecture: 4 pluggable axes (source / OCR / translator / exporter) per [D-021](docs/decisions/)
+- Stages: 8 (unpack → OCR → classify → re-OCR → structure → glossary → translate → audit → export) per [D-008](docs/decisions/)
 
-## Phase 1 in one diagram
-
-```
-EPUB (scanned images)
-   │
-   ▼
-[ Source Reader (pluggable) ]
-   │
-   ▼
-[ OCR — Mistral OCR (primary) / Claude Vision (hard pages) ]
-   │
-   ▼
-[ Page Classify → Hard-page Re-OCR → Structure ]
-   │
-   ▼
-[ Glossary lock (terms_glossary.json) ]
-   │
-   ▼
-[ Trilingual Translation (Claude, glossary-constrained) ]
-   │
-   ▼
-[ Audit (sampled, per Rule A) ]
-   │
-   ▼
-output/
-  ├── itpassport.json
-  ├── itpassport.jsonl
-  ├── itpassport.db
-  └── markdown/
+```bash
+# clone, install, run tests
+git clone https://github.com/hakupao/it-passport-learning
+cd it-passport-learning
+uv sync
+uv run pytest packages/extractor/tests/
 ```
 
-Pluggable on **four axes**: Source Reader / OCR Engine / Translator / Exporter (see `docs/decisions/D-021-four-axis-pluggable.md`).
+To onboard a new certification: drop the source EPUB/PDF into `.source/`, write `pipelines/<cert_id>.yaml`, and run the same `cert-extractor` CLI. Runtime data lands at `data/<cert_id>/runs/<run_id>/<stage>/`.
+
+### 🔬 I'm a **researcher** / **future me** stepping into Phase 2
+
+| First read | Why |
+|---|---|
+| **[`docs/STATE.md`](docs/STATE.md)** | Live state — what's locked, what's open, where to resume |
+| [`RETROSPECTIVE.md`](RETROSPECTIVE.md) | Phase 1 retro, including §8 (iter-5+6) + §9 (iter-7+8) post-publication validation addenda |
+| [`docs/decisions/`](docs/decisions/) | 82 locked ADRs (D-001 … D-082) — the project's institutional memory |
+| [`validation/`](validation/) | The ~80-agent / 9-subagent-type / 100%-coverage post-publication validation chain that took v1.0.0 → v1.0.2 |
+
+Phase 2 brainstorm is the next user-triggered session — entry point listed in `STATE.md` §5 "下一会话".
 
 ---
 
-## Roadmap
+## What this project is (the long version)
 
-| Phase | Goal | Status |
-|-------|------|--------|
-| **1** | `cert-extractor` Python pipeline (this repo's core) | 🚧 Design |
-| 2 | Personal study tool (CLI / Anki / Obsidian — TBD) | ⏳ Future |
-| 3 | Web app (Next.js or Astro — TBD) | ⏳ Future |
-| 4 | AI study assistant (RAG over the trilingual dataset) | ⏳ Future |
-| 5 | Generalize to any certification textbook | ⏳ Future |
+Non-native learners of Japanese-language technical exams are blocked by **kana / kanji recognition**, not by concepts. CPU, TCP/IP, ROI are already known. `アクセシビリティ → accessibility → 可访问性`, seen once, sticks.
+
+So Phase 1 built **a pipeline (`cert-extractor`)** and **shipped a trilingual dataset** from one IT パスポート Reiwa 6 textbook. Every chapter, term, table, and practice question carries `{jp, zh, en}` renderings with kana-helper annotations.
+
+The source textbook is acknowledged as input only — its raw content is **not** redistributed (see [License](#license)).
 
 ---
 
-## Repository layout (locked — see D-034 ~ D-053)
+## Phase status
+
+| Phase | Status | Notes |
+|---|---|---|
+| **Phase 1 — Trilingual content factory** | ✅ DONE | `cert-extractor` shipped + v1.0.0 + v1.0.2 published. RETROSPECTIVE.md FINAL with §8/§9 addenda. |
+| **Phase 2 — Personal study tool** | brainstorm gate open | Entry = OQ-05 + RETROSPECTIVE §5.5 carry-forward + 15 systemic patterns from iter-5..8 |
+| Phase 3 — Web app / question bank | not yet designed | — |
+| Phase 4 — AI study assistant | not yet designed | — |
+| Phase 5 — `cert-extractor` as general framework | not yet designed | — |
+
+---
+
+## Repository tour
 
 ```
 .
-├── pyproject.toml              # uv workspace root (hatchling backend)
-├── uv.lock                     # committed (reproducibility)
-├── packages/
-│   └── extractor/              # the cert-extractor package
-│       ├── pyproject.toml
-│       ├── src/cert_extractor/
-│       └── tests/
-│           ├── _fixtures/      # MANIFEST + mini_sample.epub
-│           ├── unit/
-│           ├── integration/
-│           └── e2e/
-├── pipelines/                  # YAML pipeline configs
-├── docs/                       # design docs, decisions, session logs
-│   ├── STATE.md                # ← live state (start here)
-│   ├── discussion/             # session-by-session journal
-│   ├── decisions/              # ADRs for major decisions
-│   └── templates/              # evidence / failure / retro templates
-├── apps/                       # reserved for Phase 3+
-├── evidence/                   # rule A audit evidence (committed; created at impl. time)
-├── failures/                   # rule B failure archive (committed; created at impl. time)
-└── data/                       # runtime pipeline products — gitignored
-    └── <cert_id>/runs/<run_id>/
-        ├── raw/ ocr/ classified/ cleaned/
-        ├── structured/ glossary/ translated/
-        └── output/             # released via GitHub Release + git tag
+├── README.md / README.zh-CN.md      this file (D-082 v2 landing)
+├── CLAUDE.md / AGENTS.md            session-tool context (D-049)
+├── RETROSPECTIVE.md                 Phase 1 retro + §8/§9 addenda (Rule C)
+├── pyproject.toml / uv.lock         uv workspace root (D-036/037/038)
+├── .source/                         🟦 gitignored input artifacts (D-082) — EPUB lives here
+├── packages/extractor/              🟢 the cert-extractor package — see its README
+├── apps/                            reserved for Phase 3+ (D-038)
+├── docs/                            📚 STATE / decisions (ADRs) / discussion / release-notes / templates
+├── evidence/                        Rule-A audit evidence per run
+├── failures/                        Rule-B failed-attempt archive
+├── validation/                      post-publication deep validation chain (iter-3..8)
+└── data/                            🟦 gitignored runtime data (D-050)
 ```
 
+Each tracked subdir has its own `README.md` describing what lives there.
+
 ---
 
-## Documentation map
+## Build provenance (Phase 1 numbers)
 
-| If you want… | Read this |
+| Metric | Value |
 |---|---|
-| Project status right now | **`docs/STATE.md`** |
-| Why a decision was made | search `D-NNN` in `docs/discussion/`, or read the ADR in `docs/decisions/` |
-| Discussion history | `docs/discussion/` (one file per session) |
-| Operating principles | `docs/discussion/README.md` (D-027) |
-| ADR conventions | `docs/decisions/README.md` (D-029) |
-| Evidence / failure / retro templates | `docs/templates/` (D-030 / D-032 / D-033) |
-
----
-
-## Engineering discipline (Tier 3)
-
-This project follows four hard rules from the maintainer's `~/.claude/CLAUDE.md`:
-
-| Rule | What it requires |
-|------|------------------|
-| **A — Semantic audit** | Any pipeline step with > 50 % compression or rewrite must be sample-audited (N samples, recorded under `evidence/`). |
-| **B — Failure archival** | Every failed attempt is preserved under `failures/<stage>/<attempt-id>.md`, never deleted. |
-| **C — Retrospective** | Each Phase ends with a `RETROSPECTIVE.md`. |
-| **D — Writer/reviewer separation** | Writer agent and reviewer agent are different `subagent_type`s. No same-context self-review. |
-
----
-
-## Reading guide for new contributors / new Claude sessions
-
-1. **30 seconds:** `docs/STATE.md`
-2. **5 minutes:** `docs/discussion/2026-05-06-session-01.md` (project genesis + Phase 1 architecture)
-3. **5 minutes:** `docs/discussion/2026-05-06-session-02.md` (repo layout + tooling decisions)
-4. **As needed:** ADRs in `docs/decisions/`
-
-The repo also contains a project-level **`CLAUDE.md`** at the root — instructions specific to Claude Code working sessions in this repo.
+| Pipeline run | `dry_run_2026-05-12T13-23-19` (canonical for both v1.0.0 + v1.0.2) |
+| Source corpus | IT パスポート Reiwa 6 — 579 source pages → 554 emitted |
+| Output | 2 224 entities / 6 059 trilingual leaves / 908-term glossary |
+| Test suite | 492 unit + integration |
+| Cost | **Mistral $0.58 billed** / Anthropic $0 billed (max-plan OAuth per D-069) |
+| Post-pub corrections (iter-3..8) | ~736 JSON edits + 46 MD regens, 38 fix IDs, **$0 LLM billed** |
+| Rule-D subagent diversity | **9** types (code-reviewer / analyst / verifier / critic / scientist / tracer / executor / architect / qa-tester) |
 
 ---
 
 ## License
 
-License is **deferred** until Phase 1 has runnable code (anticipated: MIT).
-
-The targeted textbook *itself* is © its publisher and author — only **bibliographic references** appear in this repository. **No raw textbook content** is committed to git history (see `.gitignore` + D-045 in `docs/discussion/2026-05-06-session-02.md`).
+- **Code, pipeline, ADRs, release artifacts** — License: pending (will be a permissive OSS license; consult repo owner before redistribution).
+- **Source textbook** — Not redistributed. Title and author intentionally omitted from artifacts (per the project's privacy convention 2026-05-17). You must legally acquire the EPUB separately and place it at `.source/IT-Passport.epub` if you want to re-run the pipeline.
+- **Generated trilingual content** — Released under the GitHub Release; same redistribution caveats apply (derived from copyrighted source, intended for personal-study use and as a methodology demonstration).
 
 ---
 
-## Author
+## Getting in touch / contributing
 
-Maintained by the project owner — feedback / questions welcome via GitHub Issues once code lands.
+This is a personal Tier-3 R&D project. Issues + PRs welcome but expect a slow-pace D-019 review cadence. Read [`docs/STATE.md`](docs/STATE.md) and the most recent session log before opening anything substantive.

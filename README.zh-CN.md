@@ -1,156 +1,129 @@
-# IT Passport Learning — 三语学习内容工厂
+# IT Passport — 三语学习内容 + `cert-extractor`
 
-> 把一本日语资格考试教材转化为日中英三语学习内容的内容工厂。**Phase 1 = cert-extractor：一个 OCR 驱动、术语表约束、可插拔的翻译 pipeline。**
-
-[![状态: 设计期](https://img.shields.io/badge/status-%E8%AE%BE%E8%AE%A1%E6%9C%9F-lightgrey)](docs/STATE.md)
+[![Phase 1](https://img.shields.io/badge/Phase%201-%E2%9C%85%20DONE-brightgreen)](docs/STATE.md)
+[![最新发布](https://img.shields.io/badge/release-v1.0.2-blue)](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.2)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
+[![Audit](https://img.shields.io/badge/%E5%85%A8%E9%87%8F%E6%A0%B8%E9%AA%8C-100%25-success)](RETROSPECTIVE.md#9-post-publication-validation-addendum)
 [![License](https://img.shields.io/badge/license-%E5%BE%85%E5%AE%9A-lightgrey)](#license--许可)
 
-> 🇬🇧 English version: [README.md](README.md)
+> 一本日语 **IT パスポート（令和 6 年度）**资格考试教材 → 结构化的三语（**日 / 中 / 英**）学习数据集。
+> Pipeline：**`cert-extractor`**（Mistral OCR → Claude 结构化 → Claude 翻译 → 双门 audit → GitHub Release）。
+>
+> 🇬🇧 [English README](README.md)
 
 ---
 
-## ⚠️ 当前状态
+## 选你的入口
 
-**设计阶段，尚未进入实施。代码暂未开始。** 两场设计 session ([01](docs/discussion/2026-05-06-session-01.md) / [02](docs/discussion/2026-05-06-session-02.md)) 已产出 **53 条锁定决定 (D-001 ~ D-053)**，覆盖项目范围 / 架构 / 仓库布局 / 构建工具 / 测试 / Git 政策 / 运行时数据布局。设计期闭合后才进入实施。
+### 🎓 我是来**学** IT Passport 的
 
-要看当前最新状态，先读 **[`docs/STATE.md`](docs/STATE.md)**。
+直接去 **[Releases](https://github.com/hakupao/it-passport-learning/releases)** 下三语学习包。
 
----
+| 内容 | 位置 |
+|---|---|
+| **最新版** | [`itpassport-r6-v1.0.2`](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.2) — 554 页 / 2 224 entities / 6 059 三语叶子 / 908 术语表 / ~736 处发布后校订 |
+| 原始版 | [`itpassport-r6-v1.0.0`](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.0) — 不可变保留 |
+| 怎么看 | `index.json` → `pages/page_NNN.json`（或 `.md`）→ `glossary.json` — 详见 zip 内的 `output/README.md` |
 
-## 为什么做这个项目
+每条术语都有 `{jp, zh, en}` 三元组。每条全片假名的 IT 术语额外带 `kana_helper = {surface, reading, zh_concept}`，让非母语读者一眼把假名映射到概念。这就是这个项目存在的全部理由。
 
-非母语日语技术考试学习者，卡住的不是**概念**（CPU / TCP/IP / ROI / 等等），而是**假名 / 汉字字形识读**。一旦看过一次 `アクセシビリティ → accessibility → 可访问性`，这个词就记住了。本项目把一本 ITパスポート 教材转成结构化、三语对照、术语锁定的数据集，让所有同样处境的人都能复用。
+### 💻 我是**开发者**，想用 `cert-extractor`
 
-Phase 1 锁定的目标书仅作为**输入引用** —— 原书内容**不**入版本控制 / 不分发（详见 [License / 许可](#license--许可)）。
+`cert-extractor` 从一开始就设计成 cert-agnostic（D-010）——同一套 pipeline 应能 onboard 任意资格。
 
----
+- 入口：**[`packages/extractor/README.md`](packages/extractor/README.md)**
+- 架构：4 个可插拔轴（source / OCR / translator / exporter），见 [D-021](docs/decisions/)
+- Stage：8 个（unpack → OCR → classify → re-OCR → structure → glossary → translate → audit → export），见 [D-008](docs/decisions/)
 
-## Phase 1 一图概览
-
-```
-EPUB（扫描图）
-   │
-   ▼
-[ Source Reader（可插拔）]
-   │
-   ▼
-[ OCR — Mistral OCR (主) / Claude Vision (难页)]
-   │
-   ▼
-[ 页面分类 → 难页复核 → 结构化抽取 ]
-   │
-   ▼
-[ 术语表锁定 (terms_glossary.json) ]
-   │
-   ▼
-[ 三语翻译 (Claude，受术语表约束) ]
-   │
-   ▼
-[ 抽检（按规则 A 抽样）]
-   │
-   ▼
-output/
-  ├── itpassport.json
-  ├── itpassport.jsonl
-  ├── itpassport.db
-  └── markdown/
+```bash
+# 克隆 + 装依赖 + 跑测试
+git clone https://github.com/hakupao/it-passport-learning
+cd it-passport-learning
+uv sync
+uv run pytest packages/extractor/tests/
 ```
 
-四轴可插拔: Source Reader / OCR Engine / Translator / Exporter（见 `docs/decisions/D-021-four-axis-pluggable.md`）。
+要 onboard 新资格：把源 EPUB/PDF 放 `.source/`，写 `pipelines/<cert_id>.yaml`，再跑同一个 `cert-extractor` CLI。运行时数据落到 `data/<cert_id>/runs/<run_id>/<stage>/`。
+
+### 🔬 我是**研究者** / **未来的自己**，准备进 Phase 2
+
+| 先读 | 为什么 |
+|---|---|
+| **[`docs/STATE.md`](docs/STATE.md)** | Live state — 锁了什么、还开着什么、从哪续 |
+| [`RETROSPECTIVE.md`](RETROSPECTIVE.md) | Phase 1 retro，含 §8（iter-5+6）+ §9（iter-7+8）发布后 validation 追加 |
+| [`docs/decisions/`](docs/decisions/) | 82 条已锁 ADR（D-001 … D-082）——项目的制度记忆 |
+| [`validation/`](validation/) | ~80 个 agent / 9 类 subagent / 100 % 覆盖的发布后 validation 链，把 v1.0.0 推到 v1.0.2 |
+
+Phase 2 brainstorm 是下个用户触发的 session，入口列在 `STATE.md` §5「下一会话」。
 
 ---
 
-## 路线图
+## 项目背景（长版）
 
-| Phase | 目标 | 状态 |
-|-------|------|--------|
-| **1** | `cert-extractor` Python pipeline (本 repo 核心) | 🚧 设计期 |
-| 2 | 个人备考工具 (CLI / Anki / Obsidian — 待定) | ⏳ 后续 |
-| 3 | Web 应用 (Next.js 或 Astro — 待定) | ⏳ 后续 |
-| 4 | AI 学习助手 (基于三语数据集的 RAG) | ⏳ 后续 |
-| 5 | 通用化到任意资格教材 | ⏳ 后续 |
+非母语日语技术考试学习者卡的不是**概念**（CPU / TCP/IP / ROI），而是**假名 / 汉字字形识读**。一次看过 `アクセシビリティ → accessibility → 可访问性`，就记住了。
+
+所以 Phase 1 做了**一条 pipeline（`cert-extractor`）**和**一份三语数据集**（来自一本 IT パスポート 令和 6 年度 教材）。每个章节、术语、表格、练习题都带 `{jp, zh, en}` 三语渲染 + 假名辅助标注。
+
+源教材仅作为**输入引用**——原书内容**不**重新分发（见 [License / 许可](#license--许可)）。
 
 ---
 
-## 仓库结构（已锁定，详见 D-034 ~ D-053）
+## 各 Phase 状态
+
+| Phase | 状态 | 备注 |
+|---|---|---|
+| **Phase 1 — 三语内容工厂** | ✅ DONE | `cert-extractor` 完成 + v1.0.0 + v1.0.2 已发布。RETROSPECTIVE.md FINAL 含 §8/§9 追加。 |
+| **Phase 2 — 个人备考工具** | brainstorm gate 开启 | 入口 = OQ-05 + RETROSPECTIVE §5.5 carry-forward + iter-5..8 surfaced 的 15 个 systemic patterns |
+| Phase 3 — Web app / 题库 | 未设计 | — |
+| Phase 4 — AI 学习助手 | 未设计 | — |
+| Phase 5 — `cert-extractor` 作为通用框架 | 未设计 | — |
+
+---
+
+## 仓库地图
 
 ```
 .
-├── pyproject.toml              # uv workspace 根（hatchling 后端）
-├── uv.lock                     # 必 commit（reproducibility）
-├── packages/
-│   └── extractor/              # cert-extractor 包
-│       ├── pyproject.toml
-│       ├── src/cert_extractor/
-│       └── tests/
-│           ├── _fixtures/      # MANIFEST + mini_sample.epub
-│           ├── unit/
-│           ├── integration/
-│           └── e2e/
-├── pipelines/                  # YAML pipeline 配置
-├── docs/                       # 设计文档 / 决定 / session 日志
-│   ├── STATE.md                # ← live state（从这里开始读）
-│   ├── discussion/             # 按 session 编年体日志
-│   ├── decisions/              # 重大决定 ADR
-│   └── templates/              # 证据 / 失败 / 复盘 模板
-├── apps/                       # 留给 Phase 3+
-├── evidence/                   # 规则 A 抽检证据（commit；实施期建）
-├── failures/                   # 规则 B 失败归档（commit；实施期建）
-└── data/                       # 运行时 pipeline 产物 — gitignored
-    └── <cert_id>/runs/<run_id>/
-        ├── raw/ ocr/ classified/ cleaned/
-        ├── structured/ glossary/ translated/
-        └── output/             # 走 GitHub Release + git tag 发版
+├── README.md / README.zh-CN.md      本文件（D-082 v2 landing）
+├── CLAUDE.md / AGENTS.md            session 工具上下文（D-049）
+├── RETROSPECTIVE.md                 Phase 1 retro + §8/§9 追加（Rule C）
+├── pyproject.toml / uv.lock         uv workspace 根（D-036/037/038）
+├── .source/                         🟦 gitignored 输入素材（D-082）—— EPUB 放这里
+├── packages/extractor/              🟢 cert-extractor 包 —— 见其 README
+├── apps/                            预留给 Phase 3+（D-038）
+├── docs/                            📚 STATE / decisions（ADRs）/ discussion / release-notes / templates
+├── evidence/                        Rule-A 单次 run 的 audit 证据
+├── failures/                        Rule-B 失败 attempt 归档
+├── validation/                      发布后 deep validation 链（iter-3..8）
+└── data/                            🟦 gitignored 运行时数据（D-050）
 ```
 
+每个被 track 的子目录都有自己的 `README.md` 说明用途。
+
 ---
 
-## 文档导航
+## Build 数据（Phase 1）
 
-| 想知道...... | 读这里 |
+| 指标 | 值 |
 |---|---|
-| 项目当前状态 | **`docs/STATE.md`** |
-| 某个决定为什么这么定 | session 日志中搜 `D-NNN`，或重大决定的 ADR (`docs/decisions/`) |
-| 讨论历史 | `docs/discussion/`（按 session 一文件） |
-| 操作守则 | `docs/discussion/README.md` (D-027) |
-| ADR 规约 | `docs/decisions/README.md` (D-029) |
-| 证据 / 失败 / 复盘 模板 | `docs/templates/` (D-030 / D-032 / D-033) |
-
----
-
-## 工程纪律 (Tier 3)
-
-本项目遵循维护者 `~/.claude/CLAUDE.md` 中的四条硬规则：
-
-| 规则 | 要求 |
-|------|------|
-| **A — 语义抽检** | 任何步骤压缩率 / 改写率 > 50%，必须做 N 样本独立抽检，证据存 `evidence/`。 |
-| **B — 失败归档不删** | 所有失败 attempt 归档到 `failures/<stage>/<attempt-id>.md`，绝不删除。 |
-| **C — 复盘强制** | 每个 Phase 收尾前必写 `RETROSPECTIVE.md`，至少三段：保留做法 / 必须补上的缺口 / 关键决策复盘。 |
-| **D — 审阅隔离** | Writer agent 和 Reviewer agent 不能是同一 `subagent_type`，禁止同 context 自审。 |
-
----
-
-## 新 contributor / 新 Claude session 阅读指南
-
-1. **30 秒**: `docs/STATE.md`
-2. **5 分钟**: `docs/discussion/2026-05-06-session-01.md`（项目立项 + Phase 1 架构）
-3. **5 分钟**: `docs/discussion/2026-05-06-session-02.md`（仓库布局 + 工具链）
-4. **按需**: `docs/decisions/` 中的 ADR
-
-repo 根还有一份项目级 **`CLAUDE.md`**，是给未来在本 repo 工作的 Claude session 的特定指引。
+| Pipeline run | `dry_run_2026-05-12T13-23-19`（v1.0.0 + v1.0.2 共用） |
+| 源教材 | IT パスポート 令和 6 年度 —— 579 页 → 输出 554 页 |
+| Output | 2 224 entities / 6 059 三语叶子 / 908 术语表 |
+| 测试集 | 492 个 unit + integration |
+| 成本 | **Mistral $0.58 billed** / Anthropic $0 billed（max-plan OAuth，per D-069） |
+| 发布后校订（iter-3..8） | ~736 JSON edits + 46 MD regens，38 个 fix ID，**$0 LLM billed** |
+| Rule-D subagent 多样性 | **9** 类（code-reviewer / analyst / verifier / critic / scientist / tracer / executor / architect / qa-tester） |
 
 ---
 
 ## License / 许可
 
-License **暂时延迟**到 Phase 1 有可运行代码时再加（预期 MIT）。
-
-目标教材本身的著作权属其出版社及作者，本仓库**只引用书目**，**不**入任何原书内容到 git history（见 `.gitignore` + D-045，详见 `docs/discussion/2026-05-06-session-02.md`）。
+- **代码、pipeline、ADRs、release artifacts** —— License 待定（将采用某种宽松 OSS license；redistribution 前请咨询 repo owner）。
+- **源教材** —— **不**重新分发。书名 + 作者按项目隐私规则（2026-05-17 起）从所有 artifact 中略去。要重跑 pipeline，需自行合法获取 EPUB 放到 `.source/IT-Passport.epub`。
+- **生成的三语内容** —— 通过 GitHub Release 发布；同样适用 redistribution 注意事项（衍生自版权源、面向个人学习 + 方法论展示用途）。
 
 ---
 
-## 作者
+## 联系 / 贡献
 
-由项目所有者维护 —— 等代码落地后欢迎通过 GitHub Issues 反馈 / 提问。
+这是个个人 Tier-3 R&D 项目。Issues + PR 欢迎，但请预期 D-019 慢节奏 review。开 substantive issue 前先读 [`docs/STATE.md`](docs/STATE.md) + 最近一份 session log。
