@@ -425,6 +425,95 @@ The addendum solely documents post-publication validation work whose existence w
 
 ---
 
+## 9. Post-publication validation addendum — iter-7 + iter-8 FULL-CORPUS (2026-05-18)
+
+> **Note**: §1-§7 are FINAL per path α user sign-off 2026-05-17 Session 23; §8 captures iter-5+6 sampling. This §9 captures iter-7+8 full-corpus validation triggered by user clarification 2026-05-18.
+
+### 9.1 Trigger
+
+After iter-5+6 statistical sampling (~37 % coverage), user clarified: *"我希望是全量的，逐字逐句的检测，而不是抽查，请派发多个 agent 同步进行"* — full corpus, word-by-word, parallel agents.
+
+### 9.2 What changed vs iter-5+6
+
+- **Coverage**: 37 % → **100 %** (554 / 554 pages).
+- **Agent strategy**: chunked dispatch (56 chunks × ~10 pages) with **6 sequential batches of ~10 parallel agents each**.
+- **Reviewer model**: combined triple-perspective in one agent per chunk (rather than 9-slice perspective × language) — 56 reviewers instead of 504, manageable.
+
+### 9.3 What converged
+
+R27-VERIFY (critic, blind) on iter-8 fixes: **0 release-impacting** ✅. Convergence achieved per user goal.
+
+### 9.4 What was fixed (27 fix IDs total, F12-F38)
+
+| Phase | Fix IDs | Pages | Defect classes |
+|---|---|---|---|
+| **Iter-7 R24** | F12-F36 (25 fixes) | 34 | Wrong-concept defs (p039 / p072 / p491 / p501 / p539); OCR contamination (p562 DevOps); systemic jp-kanji-in-zh (p238/p241/p353/p354/p361/p530); デュアル/デュプレックス zh swap (p374/p375/p444/p563); housing/hosting zh disambiguation (p198/p200/p561); concept inversions; security/safety conflations; many more |
+| **Iter-8 R26** | F37 (p522 CIA EN), F38 (p200 housing zh F19-residual) | 2 | Marker tautology + F19 missed entity |
+| **+ false-positive filtered** | R25-F001 p083 | — | Agent hallucinated jp 約 leak; actual is 约 (simplified). Documented, not fixed. |
+
+**Total iter-7+8**: 130 JSON edits + 36 MD regenerations. 0 LLM billed cost.
+
+### 9.5 Process discovery: 6 new systemic patterns
+
+Extending the §5.5 v2 backlog + §8.4 iter-5+6 patterns:
+
+| # | Pattern | v2 action |
+|---|---|---|
+| ⑩ | OCR boundary contamination: definitions absorb neighbor-block content (p562 DevOps got white-box content; p562 アジャイル got waterfall reference) | Stage-4 entity-boundary classifier with OCR-noise tolerance |
+| ⑪ | OCR phonetic-character errors in JP (ベ↔ペ; 主な↔さな; お初期化; COSの), silently corrected in zh+en | Stage-4 phonetic-consistency check for katakana + cross-language anomaly detector |
+| ⑫ | Two distinct jp-kanji-in-zh vectors: F21 character substitutions (確/発/開/択/処/対) + F23 non-standard zh terms (双工系统 = full-duplex, not dual-system) | Stage-7 zh character-set + glossary canonical normalizer; OpenCC-style mapping |
+| ⑬ | ZH surface collisions from translation without sibling-term awareness (housing/hosting both → 主机托管; レプリケーション/複写 both → 复制) | Glossary-driven sibling-term disambiguation pass with per-page collision check |
+| ⑭ | Wrong-version content: definition body unrelated to surface term (IPv6 def describing IPv4) | Stage-5 surface↔definition coherence check (cosine-similarity or key-token presence) |
+| ⑮ | False-positive risk in audit chain on kanji-form match (R25-F001 hallucination) | Triage rubric should verify unicode codepoint before classifying as kanji-leak FAIL |
+
+### 9.6 Rule D evolution
+
+Iter-7+8 dispatched **7 distinct subagent types** (the strongest Rule-D compliance to date):
+
+| Role | Subagent type | Round |
+|---|---|---|
+| Full-corpus detection (×56) | `scientist` | R23 |
+| Triage / synthesis | `tracer` | R23 → R24 transition |
+| Fix-script author | `executor` (Opus) | R24 (drafted; parent ran) |
+| Blind verification fixed-pages | `architect` (Opus, read-only) | R25-VERIFY |
+| Blind verification fresh-rescan | `qa-tester` | R25-FRESH-RESCAN |
+| Iter-8 corrective | (parent-written, no subagent) | R26 |
+| Final convergence verify | `critic` (Opus) | R27 |
+
+Total subagent diversity across iter-5+6+7+8: **9 distinct types** (code-reviewer, analyst, verifier, critic, scientist, tracer, executor, architect, qa-tester).
+
+### 9.7 Validation deliverable
+
+Full narrative + evidence: `validation/deep_validation_2026-05-17/iter_7/ITER7_FULLCORPUS_CONVERGENCE_REPORT.md` (10 sections covering R23 → R27).
+
+Working tree `main` HEAD now carries the **v1.0.2 patch-release candidate**:
+- v1.0.0 (GitHub Release, immutable)
+- + iter-3 (535 corrections)
+- + iter-4 (4 JSON + 2 MD)
+- + iter-5 (48 JSON + 6 MD, F1-F8)
+- + iter-6 (19 JSON + 2 MD, F9-F11)
+- + iter-7 (126 JSON + 34 MD, F12-F36) ← **full-corpus**
+- + iter-8 (4 JSON + 2 MD, F37-F38)
+- = **~736 JSON edit-units + 46 MD regens total**.
+
+### 9.8 Honest acknowledgments
+
+- **Coverage claim audit**: iter-7 achieved 100 % atomic-leaf coverage at the agent-instruction level. LLM "atomic" reading is not deterministic byte-comparison — agents apply careful attention but heuristic skimming on dense pages cannot be ruled out. The 56-agent parallelism + R25 verify cross-check is the strongest signal we can produce without deterministic per-leaf scripts.
+- **False-positive count**: 42 + 1 false positives filtered between R23 raw findings and R26 final. Audit chain confidence is high but not infinite.
+- **Path-write fragility**: a few R23 agents wrote to relative `iter_7/r23_audit/` instead of `validation/deep_validation_2026-05-17/iter_7/r23_audit/` — parent relocated. Future runs should hard-code absolute paths in agent prompts.
+
+### 9.9 What this addendum does NOT change
+
+- §1-§8 of this RETROSPECTIVE remain FINAL/UNMODIFIED.
+- v1.0.0 GitHub Release is immutable.
+- D-001~D-081 ADR set is unchanged.
+- The 22 ADR-review verdicts in §3 are unchanged (no ADR violation surfaced in iter-7+8).
+- The §6 sign-off block is unchanged.
+
+This addendum documents post-publication full-corpus validation work that was specifically requested by the user after iter-5+6 sampling, fulfilling §5.5 v2 backlog item 16 ("post-publication trilingual deep-validation") at the strongest possible cadence (full-corpus, not sample).
+
+---
+
 ## End of DRAFT
 
 > *下一步*：Turn 4 = OMC `critic` agent dispatch 做 Rule D 预审 → critic 报告 + 本 draft 一起给 user 终审 → §6 sign-off FINAL → Session 23 close commit + push → **Phase 1 完全闭合**。

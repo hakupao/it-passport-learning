@@ -1,0 +1,80 @@
+{
+  "agent_id": "R27-VERIFY",
+  "subagent_type": "critic",
+  "scope": "blind verify of p200 + p522 + glossary g_453/g_538 post-iter-8 fixes",
+  "pages_audited": [200, 522],
+  "leaves_checked": 25,
+  "findings": [
+    {
+      "id": "F-01",
+      "page": 200,
+      "entity_id": "itpassport_r6::term::p200::1",
+      "check": "ハウジングサービス coherence jp/zh/en across surface + definition; distinguishable from ホスティングサービス",
+      "verdict": "PASS",
+      "severity": "INFO",
+      "evidence": "surface.zh='服务器托管服务' (托管 = customer-owned-server colocation in CN IT usage), en='Housing Service'; definition jp='他社の敷地内に自社のサーバを置くサービスである', zh='在其他公司场地内放置本公司服务器的服务', en='places one's own servers within another company's premises'. All three languages encode co-location semantics (own server, their facility) and are clearly distinct from p200::2 ホスティング whose definitions encode 'other company's server'."
+    },
+    {
+      "id": "F-02",
+      "page": 200,
+      "entity_id": "itpassport_r6::term::p200::2",
+      "check": "ホスティングサービス coherence and contrast with ハウジング",
+      "verdict": "PASS",
+      "severity": "INFO",
+      "evidence": "surface.zh='主机租用服务' (= renting provider's host), en='Hosting Service'; definition uniformly 'uses servers located in and owned by another company'. Properly inverted from p200::1 (own server vs. their server)."
+    },
+    {
+      "id": "F-03",
+      "page": 522,
+      "entity_id": "itpassport_r6::table::p522::3",
+      "check": "EN col[0] cells of CIA table row 1/2/3 for redundant English-word tautology",
+      "verdict": "PASS",
+      "severity": "INFO",
+      "evidence": "rows[1][0].en='Confidentiality'; rows[2][0].en='Integrity'; rows[3][0].en='Availability'. Each EN cell is a single clean label with no doubled English form. The (Confidentiality)/(Integrity)/(Availability) parentheticals appear only in jp/zh cells where they serve as cross-language reference, which is appropriate."
+    },
+    {
+      "id": "F-04",
+      "page": null,
+      "entity_id": "glossary::g_453",
+      "check": "g_453 surface matches inheriting page p200 entity 1 surface",
+      "verdict": "PASS",
+      "severity": "INFO",
+      "evidence": "g_453.surface={jp:'ハウジングサービス', zh:'服务器托管服务', en:'Housing Service'} === p200::1.surface; kana_helper.zh_concept='服务器托管服务' coherent; occurrences include 200."
+    },
+    {
+      "id": "F-05",
+      "page": null,
+      "entity_id": "glossary::g_538",
+      "check": "g_538 surface matches inheriting page p200 entity 2 surface",
+      "verdict": "PASS",
+      "severity": "INFO",
+      "evidence": "g_538.surface={jp:'ホスティングサービス', zh:'主机租用服务', en:'Hosting Service'} === p200::2.surface; kana_helper.zh_concept='主机租用服务' coherent; occurrences include 200."
+    },
+    {
+      "id": "F-06",
+      "page": 522,
+      "entity_id": "itpassport_r6::table::p522::3",
+      "check": "Table row label col[0] jp/zh include English parenthetical — possible cell-level tautology",
+      "verdict": "INFO",
+      "severity": "INFO",
+      "evidence": "jp '機密性\\n(Confidentiality)' and zh '机密性\\n(Confidentiality)'. Not tautology in those languages — English form is reference annotation. Consistent with standalone entities p522::0..2 whose surfaces also carry the English in jp."
+    },
+    {
+      "id": "F-07",
+      "page": 200,
+      "entity_id": "itpassport_r6::term::p200::3",
+      "check": "クラウドコンピューティング definition vs ホスティング — only differs in 明確/不明確",
+      "verdict": "INFO",
+      "severity": "MINOR",
+      "evidence": "p200::3 definition is structurally identical to p200::2 except '所在が不明確'. Faithful to source-book contrastive framing but stylistically minimal. Not release-impacting; outside the three named audit targets."
+    }
+  ],
+  "summary": {
+    "FAIL_count": 0,
+    "WARN_count": 0,
+    "INFO_count": 7,
+    "release_impacting_pages": 0
+  },
+  "verdict": "CLEAN — 0 release-impacting defects on the three named audit targets (p200 ハウジング/ホスティング coherence, p522 CIA EN col[0] tautology, glossary g_453/g_538 surface consistency).",
+  "mode": "thorough; no escalation triggered"
+}
