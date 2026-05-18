@@ -1,0 +1,193 @@
+{
+  "agent_id": "r23",
+  "subagent_type": "scientist",
+  "chunk_id": "chunk_55",
+  "pages_audited": [
+    562,
+    563,
+    565,
+    566
+  ],
+  "page_564_status": "absent_from_output_directory",
+  "leaves_checked": 141,
+  "term_entities_checked": 134,
+  "audited_at": "2026-05-17T16:05:00Z",
+  "severity_summary": {
+    "CRITICAL": 0,
+    "HIGH": 3,
+    "MEDIUM": 4,
+    "LOW": 1
+  },
+  "findings": [
+    {
+      "finding_id": "F55-01",
+      "severity": "HIGH",
+      "type": "ocr_error_jp_text",
+      "leaf_id": "itpassport_r6::term::p562::2",
+      "page": 562,
+      "field": "jp_def",
+      "lens": [
+        "jp"
+      ],
+      "detail": "\"要件定義プロセスのさな目的\" — OCR corruption: \"主な\" misread as \"さな\" (character-level OCR error). JP text retains corrupted reading. ZH/EN silently corrected to \"根本目的\" / \"underlying purpose\". Cross-language inconsistency: JP fails, ZH/EN pass.",
+      "evidence": {
+        "jp_text": "要件定義プロセスのさな目的はユーザーのニーズを知ること。",
+        "zh_text": "其根本目的在于了解用户的需求。",
+        "en_text": "Its underlying purpose is to understand user needs."
+      }
+    },
+    {
+      "finding_id": "F55-02",
+      "severity": "HIGH",
+      "type": "ocr_contamination_wrong_concept",
+      "leaf_id": "itpassport_r6::term::p562::21",
+      "page": 562,
+      "field": "jp_def",
+      "lens": [
+        "jp",
+        "zh",
+        "en"
+      ],
+      "detail": "DevOps JP definition contains an appended sentence \"プロトタイピング、プログラムの構造仕様書などで、内部構造を見ること\" — this describes ホワイトボックステスト, not DevOps. OCR boundary error merged content from a neighboring block. ZH/EN propagated this contaminated text faithfully.",
+      "evidence": {
+        "jp_text": "DevOpsとは、開発側と運用側が連携してシステム化を実現する考え方。プロトタイピング、プログラムの構造仕様書などで、内部構造を見ることである。",
+        "zh_text": "DevOps 是一种开发方与运维方紧密协作以实现系统化的思想，常借助原型设计和程序结构说明书来掌握内部结构。",
+        "en_text": "DevOps is a philosophy in which development and operations cooperate to deliver systems, often using prototyping and structural specifications to understand the internals."
+      }
+    },
+    {
+      "finding_id": "F55-03",
+      "severity": "HIGH",
+      "type": "ocr_error_jp_text",
+      "leaf_id": "itpassport_r6::term::p566::27",
+      "page": 566,
+      "field": "jp_def",
+      "lens": [
+        "jp"
+      ],
+      "detail": "セキュリティ・バイ・デフォルト JP def contains two OCR artifacts: (1) \"PCのお初期化\" — spurious \"お\" prefix on 初期化; (2) \"COS の組み合わせ\" — spurious \"C\" prefix on OS. ZH correctly renders \"初始化\" and \"OS\". EN also correct. JP definition is inaccurate for learners reading JP-only.",
+      "evidence": {
+        "jp_text": "PCのお初期化やCOSの組み合わせを最初から考慮して、出荷時にOSのセキュリティの設定を行うこと",
+        "zh_text": "从一开始就考虑PC的初始化和OS的组合，在出厂时进行OS的安全设置",
+        "en_text": "Considering PC initialization and OS combinations from the outset, and configuring OS security settings at the time of shipment"
+      }
+    },
+    {
+      "finding_id": "F55-04",
+      "severity": "MEDIUM",
+      "type": "ocr_garbled_jp_text",
+      "leaf_id": "itpassport_r6::term::p562::20",
+      "page": 562,
+      "field": "jp_def",
+      "lens": [
+        "jp"
+      ],
+      "detail": "アジャイル開発 JP def: \"一定期間ごとに、ウォーターフォール・モデルなどで\" is incoherent — Agile development is explicitly contrasted with, not based on, the waterfall model. Sentence is OCR noise contaminating the JP text. ZH/EN silently omitted this incoherence and rendered correct meaning.",
+      "evidence": {
+        "jp_text": "アジャイル開発、反復型開発などを覚えておく。一定期間ごとに、ウォーターフォール・モデルなどで、仕様変更に強い。",
+        "zh_text": "需要掌握敏捷开发与迭代型开发等方法。它们以固定周期反复推进开发，对需求变更适应性强。",
+        "en_text": "Remember Agile development and iterative development. These approaches progress in fixed cycles and are robust against specification changes."
+      }
+    },
+    {
+      "finding_id": "F55-05",
+      "severity": "MEDIUM",
+      "type": "jp_char_in_zh",
+      "leaf_id": "itpassport_r6::term::p562::29",
+      "page": 562,
+      "field": "zh_def",
+      "lens": [
+        "zh"
+      ],
+      "detail": "U+30FB KATAKANA MIDDLE DOT (・) at position 33 in ZH def for PDCA Cycle: \"检查・评价\". This is a Japanese-script character (Katakana block) that must not appear in Chinese text. Should be replaced with · (U+00B7 MIDDLE DOT) or the Chinese connective 与/和.",
+      "evidence": {
+        "zh_text": "对应「计划」的选项是 Plan，对应「实施」的是 Do，对应「检查・评价」的是 Check，对应「改进」的是 Act。",
+        "char_codepoint": "U+30FB",
+        "char_name": "KATAKANA MIDDLE DOT",
+        "char_position": 33
+      }
+    },
+    {
+      "finding_id": "F55-06",
+      "severity": "MEDIUM",
+      "type": "jp_punct_in_zh",
+      "affected_leaves": [
+        "itpassport_r6::term::p562::29",
+        "itpassport_r6::term::p562::30",
+        "itpassport_r6::term::p566::19",
+        "itpassport_r6::term::p566::20"
+      ],
+      "pages": [
+        562,
+        566
+      ],
+      "field": "zh_def",
+      "lens": [
+        "zh"
+      ],
+      "detail": "JP-style corner-bracket quotation marks 「」used in ZH definitions across 4 leaves. Standard mainland Chinese typography requires double curly quotation marks () or book title marks (《》). Affects: PDCA Cycle (p562), SLM (p562), SSL/TLS (p566), HTTPS (p566).",
+      "evidence": [
+        {
+          "leaf_id": "p562::29",
+          "zh_snippet": "对应「计划」的选项是 Plan"
+        },
+        {
+          "leaf_id": "p562::30",
+          "zh_snippet": "持续维持并改进「服务级别」的活动"
+        },
+        {
+          "leaf_id": "p566::19",
+          "zh_snippet": "采用的是「https://」"
+        },
+        {
+          "leaf_id": "p566::20",
+          "zh_snippet": "https后面的「S」表示的是「SSL/TLS」"
+        }
+      ]
+    },
+    {
+      "finding_id": "F55-07",
+      "severity": "MEDIUM",
+      "type": "duplicate_term_context_mismatch",
+      "affected_leaves": [
+        "itpassport_r6::term::p563::4",
+        "itpassport_r6::term::p566::9"
+      ],
+      "pages": [
+        563,
+        566
+      ],
+      "lens": [
+        "jp",
+        "zh",
+        "en"
+      ],
+      "detail": "Term 可用性 (Availability) appears on two pages with different definitions: p563 = ITSM availability ('service usable when needed'), p566 = CIA triad availability ('access to necessary information assets'). Both are conceptually valid but different exam contexts. No cross-reference annotation linking the two occurrences.",
+      "evidence": {
+        "p563_def_jp": "サービスを利用したいときに利用できること",
+        "p566_def_jp": "必要な情報資産にアクセスできること"
+      }
+    },
+    {
+      "finding_id": "F55-08",
+      "severity": "LOW",
+      "type": "zh_terminology_unconventional",
+      "affected_leaves": [
+        "itpassport_r6::term::p563::23",
+        "itpassport_r6::term::p563::24"
+      ],
+      "page": 563,
+      "lens": [
+        "zh"
+      ],
+      "detail": "Non-standard ZH IT surface terms: デュプレックスシステム→\"双联系统\" (should be 双机热备 or 主备系统) and デュアルシステム→\"双工系统\" (双工 in Chinese means full-duplex communications, not dual-processing). Conceptual definitions are accurate; only the surface label is non-standard for mainland IT learners.",
+      "evidence": {
+        "duplex_zh_surface": "双联系统",
+        "dual_zh_surface": "双工系统",
+        "duplex_def_zh": "由主运行计算机和为故障待命的计算机两台计算机构成的系统结构",
+        "dual_def_zh": "两台计算机执行相同处理，并对结果进行核对以确认正确性的系统构成"
+      }
+    }
+  ],
+  "summary": "Chunk 55 covers 4 pages (562, 563, 565, 566; page 564 absent). 141 entities audited (134 terms, 5 sections, 2 headings). 3 HIGH findings: two OCR errors in JP text (p562::2 'さな目的' corruption, p566::27 'お初期化'/'COS' artifacts) and one concept-contamination in DevOps definition (p562::21) where a ホワイトボックステスト sentence was appended. 2 MEDIUM character-level issues: U+30FB katakana middle dot in ZH field (p562::29) and JP-style 「」brackets in ZH across 4 leaves (p562, p566). 1 MEDIUM cross-page duplicate: 可用性 defined differently in ITSM vs CIA triad contexts without cross-reference. 1 MEDIUM garbled JP for Agile (p562::20). 1 LOW unconventional ZH terminology for duplex/dual systems (p563). No U+FFFD replacement characters. All required fields populated. ZH/EN silently correct JP OCR errors in 3 of 4 HIGH/MEDIUM cases, creating JP-only accuracy degradation."
+}

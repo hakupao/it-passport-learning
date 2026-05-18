@@ -1,0 +1,139 @@
+{
+  "agent_id": "r23-chunk_36-scientist",
+  "subagent_type": "scientist",
+  "chunk_id": "chunk_36",
+  "pages_audited": [
+    372,
+    373,
+    374,
+    375,
+    376,
+    377,
+    378,
+    379,
+    380,
+    381
+  ],
+  "leaves_checked": 124,
+  "entities_checked": {
+    "total": 45,
+    "term": 23,
+    "table": 5,
+    "section": 7,
+    "figure": 10
+  },
+  "audit_timestamp": "2026-05-17T16:00:00Z",
+  "audit_method": "triple_perspective_tri_lingual",
+  "lenses": [
+    "A_semantic_fidelity",
+    "B_cross_language_consistency",
+    "C_terminology_accuracy"
+  ],
+  "statistics": {
+    "findings_total": 9,
+    "FAIL": 4,
+    "WARN": 5,
+    "entities_with_issues": 9,
+    "entities_clean": 26,
+    "languages_affected": {
+      "zh": 9,
+      "en": 0,
+      "jp": 0
+    },
+    "glossary_surface_mismatches": 0,
+    "structural_issues": 0
+  },
+  "findings": [
+    {
+      "page": 372,
+      "entity_id": "itpassport_r6::table::p372::5",
+      "lens": "B",
+      "severity": "WARN",
+      "lang": "zh",
+      "issue": "ZH inconsistency: する rendered as '进行' in row1 but '执行' in row2 for same column",
+      "detail": "Row1 col2 ZH='进行', row2 col2 ZH='执行' both translate JP='する' in column 'クライアント側でデータ表示'. Inconsistent within same table.",
+      "fix": "Standardize: use '执行' throughout or '进行' throughout for する in this table."
+    },
+    {
+      "page": 374,
+      "entity_id": "itpassport_r6::term::p374::0",
+      "lens": "C",
+      "severity": "WARN",
+      "lang": "zh",
+      "issue": "ZH surface '单工系统' may conflict with simplex communication mode (単工通信) terminology",
+      "detail": "単工系统 in Chinese may be confused with simplex transmission direction (一方向通信). Some CN IT exam materials use '单机系统' instead for シンプレックスシステム (single-computer configuration). Needs domain expert review for target-audience clarity.",
+      "fix": "Consider '单机系统' or clarify in ZH definition that this refers to single-computer configuration, not simplex comms."
+    },
+    {
+      "page": 374,
+      "entity_id": "itpassport_r6::term::p374::1",
+      "lens": "C",
+      "severity": "FAIL",
+      "lang": "zh",
+      "issue": "ZH surface assignment INVERTS standard Chinese IT terminology for デュプレックス vs デュアル",
+      "detail": "In Chinese IT education: デュプレックスシステム (duplex, standby) = 双工系统; デュアルシステム (dual, parallel checking) = 双重系统. This pipeline assigned デュプレックス=双联系统 and デュアル=双工系统, which inverts the standard. 双工 (duplex) in Chinese unambiguously refers to two-way/dual-channel operation matching デュプレックス, not デュアル.",
+      "fix": "Reassign: デュプレックスシステム→双工系统 (or 热备用系统); デュアルシステム→双重系统 (or 双机系统)."
+    },
+    {
+      "page": 374,
+      "entity_id": "itpassport_r6::term::p374::2",
+      "lens": "C",
+      "severity": "FAIL",
+      "lang": "zh",
+      "issue": "ZH surface '双工系统' is wrong term for デュアルシステム (dual parallel-checking system)",
+      "detail": "双工 (duplex) in Chinese means two-way simultaneous communication/operation, which maps to デュプレックス not デュアル. デュアルシステム should be 双重系统 or 双机系统.",
+      "fix": "Change ZH surface to '双重系统' or '双机容错系统'. See paired finding on p374::1."
+    },
+    {
+      "page": 375,
+      "entity_id": "itpassport_r6::term::p375::4",
+      "lens": "C",
+      "severity": "FAIL",
+      "lang": "zh",
+      "issue": "ZH surface '双联系统' inherited incorrect terminology from p374 — same FAIL as p374::1",
+      "detail": "Repeat instance of デュプレックスシステム ZH=双联系统 terminological error (see p374::1 finding).",
+      "fix": "Same fix: change to 双工系统 or 热备用系统."
+    },
+    {
+      "page": 375,
+      "entity_id": "itpassport_r6::term::p375::5",
+      "lens": "C",
+      "severity": "FAIL",
+      "lang": "zh",
+      "issue": "ZH surface '双工系统' inherited incorrect terminology from p374 — same FAIL as p374::2",
+      "detail": "Repeat instance of デュアルシステム ZH=双工系统 terminological error (see p374::2 finding).",
+      "fix": "Same fix: change to 双重系统 or 双机系统."
+    },
+    {
+      "page": 377,
+      "entity_id": "itpassport_r6::table::p377::2",
+      "lens": "B",
+      "severity": "WARN",
+      "lang": "zh",
+      "issue": "ZH level-column cells inconsistently elaborate: some rows add full Chinese names, others use plain 'RAID N'",
+      "detail": "RAID 0='RAID 0', RAID 1='磁盘阵列1级（RAID 1，镜像）', RAID 2='磁盘阵列2级（RAID 2）', RAID 5='RAID 5', RAID 6='磁盘阵列6（RAID 6）'. Inconsistent formatting within same table column — learner may be confused about which levels have Chinese names.",
+      "fix": "Standardize: either all cells use 'RAID N' or all cells add the Chinese elaboration."
+    },
+    {
+      "page": 379,
+      "entity_id": "itpassport_r6::term::p379::3",
+      "lens": "B",
+      "severity": "WARN",
+      "lang": "zh",
+      "issue": "Two separate term entries (応答時間 p379::2 and レスポンスタイム p379::3) share identical ZH and EN surfaces",
+      "detail": "Both ZH surface = '响应时间', both EN surface = 'Response Time'. Learner cannot distinguish between the two entries by surface alone. Should differentiate: 応答時間=响应时间, レスポンスタイム=响应时间（レスポンスタイム）or note katakana variant.",
+      "fix": "Add parenthetical to レスポンスタイム entry: ZH='响应时间（レスポンスタイム音译）', EN='Response Time (Katakana: レスポンスタイム)'."
+    },
+    {
+      "page": 380,
+      "entity_id": "itpassport_r6::table::p380::3",
+      "lens": "A",
+      "severity": "WARN",
+      "lang": "jp,zh,en",
+      "issue": "Table TCO row first cell has prefix 'コスト/成本/Cost' before the term label in all three languages",
+      "detail": "JP='コスト TCO（Total Cost of Ownership）', ZH='成本 总拥有成本（TCO）', EN='Cost TCO (Total Cost of Ownership)'. The 'コスト/成本/Cost' prefix appears to be a residual table category label bleeding into the term cell — inconsistent with other rows (which just have the term name).",
+      "fix": "Clean table cell to just 'TCO（Total Cost of Ownership）'/'总拥有成本（TCO）'/'TCO (Total Cost of Ownership)'."
+    }
+  ],
+  "summary": "Chunk 36 (pp.372-381) covers system configurations (client-server, thin client, simplex/duplex/dual), RAID (0-6), NAS, system performance metrics (response time, benchmark), cost indicators (TCO), and reliability (MTBF). All 45 entities are structurally complete with no missing fields. Glossary surface alignment: 0 mismatches. 4 FAIL findings — all in ZH, all Lens C (terminology accuracy): デュプレックスシステム is rendered as '双联系统' and デュアルシステム as '双工系统', which INVERTS standard Chinese IT terminology (双工 = duplex/two-way = デュプレックス, not デュアル). This systematic error repeats on both p374 and p375 (4 FAIL total). 5 WARN findings: inconsistent ZH verb choice within table p372::5 (する as '进行' vs '执行'); RAID level table ZH cells inconsistently elaborated; 単工系統 ZH borderline with simplex comms term; duplicate Response Time entries with identical ZH/EN surfaces; TCO table cell has residual category-label prefix. EN content: 0 issues. JP content: 0 issues. Release impact: FAIL findings block release for ZH audience on duplex/dual terminology."
+}

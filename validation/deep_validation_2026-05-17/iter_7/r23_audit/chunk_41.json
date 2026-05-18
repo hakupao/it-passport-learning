@@ -1,0 +1,78 @@
+{
+  "agent_id": "r23-chunk41-scientist",
+  "subagent_type": "scientist",
+  "chunk_id": "chunk_41",
+  "audited_at": "2026-05-17T16:01:58.605999Z",
+  "pages_audited": [
+    422,
+    423,
+    424,
+    425,
+    426,
+    427,
+    428,
+    429,
+    430,
+    431
+  ],
+  "leaves_checked": 41,
+  "entity_breakdown": {
+    "term": 25,
+    "section": 4,
+    "figure": 11,
+    "table": 1
+  },
+  "verdict_counts": {
+    "CRITICAL": 0,
+    "WARN": 3,
+    "INFO": 2
+  },
+  "findings": [
+    {
+      "finding_id": "C41-F01",
+      "severity": "WARN",
+      "type": "jp_kana_leak_zh",
+      "leaf": "itpassport_r6::figure::p429::2",
+      "field": "caption.zh",
+      "detail": "ZH caption retains untranslated JP kana filenames (りんご.jpg, バナナ.jpg, みかん.jpg, どんぐりころころ.mp3, ぞうさん.mp3, おもちゃのチャチャチャ.mp3) and JP-specific term 高解像度. EN caption fully localizes these (apple.jpg, banana.jpg, mikan.jpg, donguri-korokoro.mp3). Inconsistent localization policy: ZH learners cannot parse kana filenames. Folder name 音楽 uses JP orthography (楽) instead of simplified Chinese 音乐.",
+      "verdict": "WARN — ZH localization notably inferior to EN; concept still teachable but ZH learner experience degraded"
+    },
+    {
+      "finding_id": "C41-F02",
+      "severity": "WARN",
+      "type": "jp_kana_leak_zh",
+      "leaf": "itpassport_r6::term::p429::3",
+      "field": "definition.zh",
+      "detail": "ZH definition retains JP kana filename 「どんぐりころころ.mp3」and JP folder name 「音楽」(should be 音乐 in simplified Chinese). EN definition translates folder to [Music] and transliterates filename to [donguri-korokoro.mp3]. ZH keeps JP originals without gloss.",
+      "verdict": "WARN — 音楽 orthography mismatch (JP traditional 楽 vs simplified 乐); kana filename unreadable to ZH learners"
+    },
+    {
+      "finding_id": "C41-F03",
+      "severity": "INFO",
+      "type": "jp_kana_in_zh_path_literal",
+      "leaf": "itpassport_r6::figure::p429::4",
+      "field": "caption.zh",
+      "detail": "ZH caption preserves JP path literal '../音楽/どんぐりころころ.mp3'. EN gives '../Music/donguri-korokoro.mp3'. For path syntax teaching this is ambiguous: the JP path is the actual example being demonstrated, but ZH localization inconsistently uses a different strategy than EN.",
+      "verdict": "INFO — Defensible as literal path retention; inconsistent vs EN localization approach"
+    },
+    {
+      "finding_id": "C41-F04",
+      "severity": "WARN",
+      "type": "semantic_translation",
+      "leaf": "itpassport_r6::term::p422::1",
+      "field": "definition.en",
+      "detail": "Translation of 見かけ上 as 'Apparently' is ambiguous. English 'apparently' can mean 'evidently true' (opposite intent). Context requires 'seemingly'/'ostensibly' to convey that multitasking creates an ILLUSION of simultaneity (actual time-sliced execution). ZH 表面上看 correctly conveys 'on the surface' (illusory). EN mistranslation risks confusing learners about whether simultaneous execution is real or apparent.",
+      "verdict": "WARN — 'Apparently' should be 'seemingly' or 'ostensibly'; ZH is correct"
+    },
+    {
+      "finding_id": "C41-F05",
+      "severity": "INFO",
+      "type": "sentence_as_term",
+      "leaf": "itpassport_r6::term::p429::1",
+      "field": "surface.jp",
+      "detail": "Term surface '1階層上のディレクトリは「..」で表す' is a rule statement sentence, not a noun-phrase term. Same pattern in ZH ('上一级目录用「..」表示') and EN ('The Parent Directory Is Represented by \"..\"'). Mirrors the section heading (p429::section::0). Consistent across all 3 languages; this is an intentional textbook rule-label pattern.",
+      "verdict": "INFO — Intentional design pattern (rule-label), consistent across languages; no change needed"
+    }
+  ],
+  "summary": "chunk_41 covers OS topics: single/multi-task, BIOS, data management, file systems, directory/path navigation (absolute/relative, .., ./), and backup. No CRITICAL defects found (no mojibake, no empty fields, no duplicate IDs). 3 WARN findings: (1-2) ZH localization of p429 path examples retains untranslated JP kana filenames and JP-orthography folder names (音楽 should be 音乐 in simplified Chinese), creating an inconsistency vs the EN localization which fully translates/transliterates; (3) EN definition of マルチタスク mistranslates 見かけ上 as 'Apparently' where 'seemingly'/'ostensibly' is needed to correctly convey the illusory nature of parallel execution. 2 INFO findings: path-literal retention in ZH caption (defensible) and one sentence-as-term surface (intentional textbook rule-label pattern, consistent across all 3 languages)."
+}

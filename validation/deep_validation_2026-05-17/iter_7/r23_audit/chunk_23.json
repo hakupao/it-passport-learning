@@ -1,0 +1,121 @@
+{
+  "agent_id": "r23-chunk23-scientist",
+  "subagent_type": "scientist",
+  "chunk_id": "chunk_23",
+  "pages_audited": [
+    242,
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250,
+    251
+  ],
+  "leaves_checked": 49,
+  "leaf_breakdown": {
+    "term": 30,
+    "section": 5,
+    "figure": 9,
+    "table": 5
+  },
+  "audit_dimensions": [
+    "lens_1_semantic_accuracy",
+    "lens_2_language_quality",
+    "lens_3_consistency_and_glossary_alignment"
+  ],
+  "findings": [
+    {
+      "finding_id": "F01",
+      "severity": "INFO",
+      "leaf_id": "itpassport_r6::term::p243::1,itpassport_r6::term::p243::2",
+      "page": 243,
+      "lens": "semantic_accuracy",
+      "issue_type": "false_positive_pipeline_warn",
+      "detail": "stage6_verdict=WARN driven by numeric_inconsistent D7 flags: JP/ZH use numeral '2', EN uses spelled-out 'two'. Semantically identical. Content is accurate. FALSE POSITIVE.",
+      "action": "no_fix_needed"
+    },
+    {
+      "finding_id": "F02",
+      "severity": "COSMETIC",
+      "leaf_id": "multiple",
+      "page": "245,250",
+      "lens": "language_quality",
+      "issue_type": "missing_terminal_period",
+      "detail": "10 EN definitions are complete thoughts but lack a terminal period (e.g., p245::1-3, p250::0-6). JP and ZH equivalents also lack terminal punctuation consistently. Pattern is uniform, not truncation.",
+      "affected_leaves": [
+        "itpassport_r6::term::p245::1",
+        "itpassport_r6::term::p245::2",
+        "itpassport_r6::term::p245::3",
+        "itpassport_r6::term::p250::0",
+        "itpassport_r6::term::p250::1",
+        "itpassport_r6::term::p250::2",
+        "itpassport_r6::term::p250::3",
+        "itpassport_r6::term::p250::4",
+        "itpassport_r6::term::p250::5",
+        "itpassport_r6::term::p250::6"
+      ],
+      "action": "low_priority_cosmetic"
+    },
+    {
+      "finding_id": "F03",
+      "severity": "MINOR",
+      "leaf_id": "itpassport_r6::table::p249::2",
+      "page": 249,
+      "lens": "semantic_accuracy",
+      "issue_type": "semantic_shift",
+      "detail": "White Box Test demerit: JP='要求漏れ' (missing requirements) and ZH='需求遗漏' (missing requirements) but EN='missing functionality (errors of omission)'. '要求漏れ' specifically means requirement gaps, not missing functionality. EN should read 'missing requirements' or 'requirement gaps' not 'missing functionality'.",
+      "action": "fix_recommended"
+    },
+    {
+      "finding_id": "F04",
+      "severity": "PASS",
+      "leaf_id": "ALL",
+      "page": "242-251",
+      "lens": "consistency",
+      "issue_type": "none",
+      "detail": "All 30 term surfaces match glossary exactly (0 mismatches). Only 1 term appears on multiple pages (ブラックボックステスト: p248+p249) with consistent ZH=黑盒测试, EN=Black Box Test across both pages. Zero cross-page inconsistencies.",
+      "action": "none"
+    },
+    {
+      "finding_id": "F05",
+      "severity": "INFO",
+      "leaf_id": "itpassport_r6::term::p243::1,itpassport_r6::term::p243::2",
+      "page": 243,
+      "lens": "consistency",
+      "issue_type": "pipeline_info_artifact",
+      "detail": "11 glossary_lock_missed INFO flags on p243: detector looks for exact locked EN surface strings within definition bodies. Inspection confirms the correct EN terms ARE present (e.g., 'System architecture design' in EN external design def). Pipeline artifact, not a content defect.",
+      "action": "no_fix_needed"
+    },
+    {
+      "finding_id": "F06",
+      "severity": "INFO",
+      "leaf_id": "itpassport_r6::term::p248::4",
+      "page": 248,
+      "lens": "language_quality",
+      "issue_type": "zh_term_choice",
+      "detail": "運用テスト translated as ZH='运行测试'. More common Chinese IT industry term would be '运维测试' (operations+maintenance test). However '运行测试' (operational run test) is internally consistent and clearly defined. Acceptable rendering; recommend consideration of '运维测试' as alternative.",
+      "action": "optional_improvement"
+    }
+  ],
+  "statistics": {
+    "total_findings": 6,
+    "by_severity": {
+      "CRITICAL": 0,
+      "RELEASE_IMPACTING": 0,
+      "MINOR": 1,
+      "COSMETIC": 1,
+      "INFO": 3,
+      "PASS": 1
+    },
+    "glossary_mismatches": 0,
+    "cross_page_inconsistencies": 0,
+    "false_positive_pipeline_flags": 13,
+    "actual_content_defects": 1
+  },
+  "summary": "Chunk 23 (pages 242-251): 49 leaves audited across 3 lenses x 3 languages. Topic domain: software design phases (architecture design, detailed design, programming, testing, acceptance). 1 MINOR semantic defect found: table p249 row1 EN renders JP '要求漏れ' (missing requirements) as 'missing functionality' — imprecise but not misleading for exam purposes. 10 COSMETIC missing terminal periods in EN definitions (uniform pattern, not truncation). Page 243 WARN verdict is a FALSE POSITIVE: 2 numeric_inconsistent flags (numeral '2' vs spelled-out 'two') and 11 glossary_lock_missed INFOs — all pipeline artifacts. Glossary alignment: 30/30 term surfaces match glossary exactly. Cross-page consistency: 1 repeat term (ブラックボックステスト) fully consistent across p248/p249. Overall: content is release-quality with 0 release-impacting defects.",
+  "audited_at": "2026-05-17T15:58:00Z",
+  "data_source": "data/itpassport_r6/runs/dry_run_2026-05-12T13-23-19/translated/"
+}

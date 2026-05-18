@@ -1,0 +1,97 @@
+{
+  "agent_id": "scientist-r23-chunk39",
+  "subagent_type": "scientist",
+  "chunk_id": "r23_chunk_39",
+  "pages_audited": [
+    402,
+    403,
+    404,
+    405,
+    406,
+    407,
+    408,
+    409,
+    410,
+    411
+  ],
+  "leaves_checked": 159,
+  "findings": [
+    {
+      "finding_id": "F39-001",
+      "severity": "HIGH",
+      "lens": "terminological_accuracy",
+      "page": 410,
+      "entity_id": "itpassport_r6::table::p410::0",
+      "leaf_path": "row[4]cell[1]",
+      "issue": "Resolution label 1280x960 mapped to 'QVGA' is factually incorrect. QVGA = 320x240 (Quarter VGA). 1280x960 has no standard VESA acronym. This error is propagated identically across JP/ZH/EN — it is a source-content error faithfully translated.",
+      "jp_val": "QVGA",
+      "zh_val": "QVGA",
+      "en_val": "QVGA",
+      "correct_value": "QVGA = 320x240, not 1280x960",
+      "action_required": "Fix source data: either correct the resolution value to 320x240, or remove/blank the QVGA label for 1280x960 row"
+    },
+    {
+      "finding_id": "F39-002",
+      "severity": "MEDIUM",
+      "lens": "structural_metadata",
+      "page": "403+405",
+      "entity_id": "section_number_11-04",
+      "leaf_path": "section_number",
+      "issue": "Duplicate section_number '11-04' assigned to two different section titles: p403='半導体メモリ' (Semiconductor Memory) and p405='記憶' (Memory). Different titles under same number indicates a metadata extraction error. (11-05 is also duplicated but with the same title '入力と出力' on p407 and p409, which is expected for a multi-page section.)",
+      "p403_title_jp": "半導体メモリ",
+      "p405_title_jp": "記憶",
+      "action_required": "Verify source structure: confirm correct section numbers for p403 and p405"
+    },
+    {
+      "finding_id": "F39-003",
+      "severity": "LOW",
+      "lens": "trilingual_consistency",
+      "page": 410,
+      "entity_id": "itpassport_r6::table::p410::0",
+      "leaf_path": "row[8]cell[1]",
+      "issue": "Asymmetric abbreviation expansion for FHD: JP='FHD' (no expansion), ZH='全高清（FHD）' (has expansion), EN='FHD (Full HD)' (has expansion). JP should add '（Full HD）' for trilingual consistency.",
+      "jp_val": "FHD",
+      "zh_val": "全高清（FHD）",
+      "en_val": "FHD (Full HD)",
+      "action_required": "Add '（Full HD）' to JP value, or accept as intentional JP source brevity"
+    },
+    {
+      "finding_id": "F39-004",
+      "severity": "LOW",
+      "lens": "trilingual_consistency",
+      "page": 411,
+      "entity_id": "itpassport_r6::term::p411::2",
+      "leaf_path": "surface",
+      "issue": "Asymmetric abbreviation expansion for USB surface: JP='USB' (no expansion), ZH='通用串行总线（USB）' (has expansion), EN='USB (Universal Serial Bus)' (has expansion). Glossary JP entry is 'USB（Universal Serial Bus）' confirming expansion exists.",
+      "jp_val": "USB",
+      "zh_val": "通用串行总线（USB）",
+      "en_val": "USB (Universal Serial Bus)",
+      "glossary_jp": "USB（Universal Serial Bus）",
+      "action_required": "Add '（Universal Serial Bus）' to JP surface, consistent with glossary and ZH/EN"
+    },
+    {
+      "finding_id": "F39-005",
+      "severity": "LOW",
+      "lens": "trilingual_consistency",
+      "page": 402,
+      "entity_id": "itpassport_r6::table::p402::0",
+      "leaf_path": "row[4]cell[1] and row[5]cell[1]",
+      "issue": "ZH internal register inconsistency: same JP phrase '電気を使って...半導体メモリ' rendered as '利用电...' in table rows but '利用电流...' in corresponding term definition entities on the same page. '利用电流' (using electric current) is more technically precise.",
+      "table_zh_sample": "利用电在半导体存储器上读写数据的装置",
+      "term_zh_sample": "利用电流读写半导体存储器中数据的装置",
+      "action_required": "Harmonize to '利用电流' in table rows for consistency with term definitions"
+    }
+  ],
+  "summary": "Chunk 39 (pages 402-411) covers removable storage, semiconductor memory (RAM/ROM/DRAM/SRAM/Flash), input/output devices (keyboard, mouse, touch panel, scanner, printers), display technology, and I/O interfaces. 159 atomic leaves checked across 55 entities (38 terms, 4 tables, 8 figures, 5 sections). Completeness: PASS — all leaves fully populated in jp/zh/en. Semantic consistency: PASS — 32 flagged pairs resolved as true false-positives (language-neutral abbreviations and numeric values). 1 HIGH finding: QVGA label factually incorrect for resolution 1280x960 (source-content error propagated across all 3 languages). 1 MEDIUM finding: duplicate section_number 11-04 on two different section titles (p403 vs p405). 3 LOW findings: asymmetric abbreviation expansion (FHD on p410, USB on p411) and ZH internal register inconsistency (利用电 vs 利用电流 on p402). Overall trilingual translation quality is HIGH — definitions are accurate, register is appropriate, and technical terminology is correct throughout.",
+  "audit_timestamp": "2026-05-17T15:59:38.069056Z",
+  "stats": {
+    "leaves_checked": 159,
+    "completeness_issues": 0,
+    "semantic_issues_raw": 32,
+    "semantic_issues_after_fp_filter": 0,
+    "terminological_structural_issues": 5,
+    "high_severity": 1,
+    "medium_severity": 1,
+    "low_severity": 3
+  }
+}

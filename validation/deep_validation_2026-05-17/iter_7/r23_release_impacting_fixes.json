@@ -1,0 +1,496 @@
+{
+  "round": "R23",
+  "iter": 7,
+  "triage_agent": "tracer",
+  "scientist_agents": 56,
+  "triage_at": "2026-05-18T00:30:00Z",
+  "fix_ids_note": "iter-5 used F1-F8, iter-6 used F9-F11; this iter-7 triage starts at F12",
+  "raw_findings_in": 503,
+  "after_dedup_and_fp_filter": 25,
+  "severity_classes": {
+    "RELEASE_IMPACTING": 25,
+    "WARN": 0,
+    "INFO": 0
+  },
+  "release_impacting_fixes": [
+    {
+      "fix_id": "F12",
+      "pages": [15],
+      "source_chunks": ["chunk_01"],
+      "entity_ids": ["itpassport_r6::figure::p015::0"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "wrong_concept_caption",
+      "fields": ["caption.jp", "caption.zh", "caption.en"],
+      "summary": "RAID figure caption describes only RAID-1 mirroring as if it were generic RAID. All three languages affected.",
+      "evidence": {
+        "jp": "複数のハードディスクに同じ内容を書きこませることで信頼性を高めるRAIDの方式",
+        "zh": "通过将相同内容写入多个硬盘来提高可靠性的RAID方式",
+        "en": "A RAID method that improves reliability by writing the same content to multiple hard disks"
+      },
+      "fix_action": "Generalize caption to describe RAID as a family of redundant disk array techniques; RAID-1 mirroring detail belongs in body text, not the overarching caption.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F13",
+      "pages": [33],
+      "source_chunks": ["chunk_03"],
+      "entity_ids": ["itpassport_r6::table::p033::0 row[4][0]"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "ocr_garbled_kana",
+      "fields": ["rows[4][0].jp"],
+      "summary": "Table cell contains garbled kana 'エステイジーズ SDGs' — OCR misread of 'エスディージーズ SDGs'.",
+      "evidence": {
+        "garbled_jp": "エステイジーズ SDGs",
+        "correct_jp": "エスディージーズ SDGs"
+      },
+      "fix_action": "Replace 'エステイジーズ' with 'エスディージーズ' in the JP table cell.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F14",
+      "pages": [39],
+      "source_chunks": ["chunk_04"],
+      "entity_ids": ["itpassport_r6::term::p039::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "wrong_concept_definition",
+      "fields": ["definition.jp", "definition.zh", "definition.en"],
+      "summary": "職能別組織 (Functional Organization) definition describes a single-owner firm where 'the owner makes all decisions' — that is the definition of 個人企業 or 直線組織, not 職能別組織.",
+      "evidence": {
+        "wrong_jp": "事業が1つしかなく、経営者が意思決定を行う組織形態",
+        "correct_concept": "Functional organization divides departments by specialized function (sales, engineering, accounting, etc.); employees may report to multiple functional managers."
+      },
+      "fix_action": "Rewrite definition across all three languages to describe functional specialization (機能別部門への分割 / 按职能部门划分 / departmentalization by function).",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F15",
+      "pages": [56],
+      "source_chunks": ["chunk_05"],
+      "entity_ids": ["itpassport_r6::term::p056::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "incomplete_definition",
+      "fields": ["definition.en", "definition.zh"],
+      "summary": "貸借対照表 (Balance Sheet) EN/ZH definitions mention only 'assets'; omit liabilities and equity — the other two mandatory components of a balance sheet.",
+      "evidence": {
+        "incomplete_en": "A table that lists all of a company's assets.",
+        "incomplete_zh": "列出公司所有资产的报表。",
+        "correct_concept": "Balance sheet = assets = liabilities + equity (fundamental accounting equation)"
+      },
+      "fix_action": "Extend EN and ZH definitions to include liabilities (負債 / 负债) and equity (純資産 / 净资产) as the other two sections of the balance sheet.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F16",
+      "pages": [60],
+      "source_chunks": ["chunk_06"],
+      "entity_ids": ["itpassport_r6::term::p060::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "domain_terminology_error",
+      "fields": ["definition.en"],
+      "summary": "売上総利益 is 'gross profit' (revenue minus cost of goods sold), not 'gross margin'. EN definition uses 'gross margin' which is a ratio (percentage), not an absolute amount — different concept.",
+      "evidence": {
+        "incorrect_en_surface_or_def": "uses 'gross margin' to describe 売上総利益",
+        "correct_en": "Gross profit = Net sales - Cost of goods sold (an absolute monetary amount, not a ratio)"
+      },
+      "fix_action": "Replace 'gross margin' with 'gross profit' in EN surface and/or definition.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F17",
+      "pages": [72],
+      "source_chunks": ["chunk_07"],
+      "entity_ids": ["itpassport_r6::term::p072::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "wrong_concept_definition",
+      "fields": ["definition.jp", "definition.zh", "definition.en"],
+      "summary": "プロトコル (Protocol) definition states 'rules for using a programming language' — that is not protocol. Protocol = communication rules / agreed procedures for data exchange between systems.",
+      "evidence": {
+        "wrong_jp": "プログラム言語を使うときの特別な約束",
+        "correct_concept": "Protocol = agreed rules governing data communication between networked systems (e.g., TCP/IP, HTTP)"
+      },
+      "fix_action": "Rewrite definition in all three languages: protocol is a set of agreed rules for data communication, not a programming language convention.",
+      "fix_class": "fixable_structural"
+    },
+    {
+      "fix_id": "F18",
+      "pages": [190],
+      "source_chunks": ["chunk_18"],
+      "entity_ids": ["itpassport_r6::term::p190::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "false_friend_surface",
+      "fields": ["surface.en"],
+      "summary": "業務モデル EN surface is 'Business Model' — false friend. The JP definition describes process/workflow diagrams (業務フロー), not a business model (収益構造). Wrong English label will mislead EN readers.",
+      "evidence": {
+        "en_surface": "Business Model",
+        "jp_def_context": "describes process diagrams / workflow analysis",
+        "correct_en": "Business Process Model or Workflow Model"
+      },
+      "fix_action": "Change EN surface from 'Business Model' to 'Business Process Model' or 'Workflow Diagram' consistent with JP definition content.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F19",
+      "pages": [198, 200, 561],
+      "source_chunks": ["chunk_18", "chunk_54"],
+      "entity_ids": [
+        "itpassport_r6::term::p198::*",
+        "itpassport_r6::term::p200::*",
+        "itpassport_r6::term::p561::21",
+        "itpassport_r6::term::p561::22"
+      ],
+      "severity": "RELEASE_IMPACTING",
+      "type": "zh_surface_collision",
+      "fields": ["surface.zh"],
+      "summary": "ハウジングサービス and ホスティングサービス both translate to '主机托管服务' in ZH. These are distinct concepts (housing = customer places own server at provider; hosting = customer rents provider's server). The collision makes the two terms indistinguishable in ZH.",
+      "evidence": {
+        "housing_jp": "ハウジングサービス",
+        "hosting_jp": "ホスティングサービス",
+        "both_zh": "主机托管服务",
+        "confirmed_at_p198_figure_caption": "主机托管服務与主机托管服务"
+      },
+      "fix_action": "Assign distinct ZH surfaces: ハウジング→'服务器托管服务' (customer's own server co-located); ホスティング→'主机租用服务' (provider's server rented). Apply consistently across p198, p200, p561.",
+      "fix_class": "fixable_glossary"
+    },
+    {
+      "fix_id": "F20",
+      "pages": [219],
+      "source_chunks": ["chunk_20"],
+      "entity_ids": ["itpassport_r6::term::p219::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "semantic_mismatch_en",
+      "fields": ["definition.en"],
+      "summary": "システム化計画 EN definition says 'embody the Process' where it should say 'realize the Concept' (or 'formulate the system plan'). 'Embody the process' contradicts the purpose of the planning phase, which is to conceptualize and plan, not execute.",
+      "evidence": {
+        "wrong_en": "embody the Process",
+        "correct_concept": "formulate the system development plan / realize the concept into a concrete plan"
+      },
+      "fix_action": "Rewrite EN definition to accurately describe the システム化計画 phase: planning/blueprinting the system, not embodying/executing a process.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F21",
+      "pages": [238, 241, 353, 354, 361, 530],
+      "source_chunks": ["chunk_22", "chunk_33", "chunk_34", "chunk_35", "chunk_50"],
+      "entity_ids": [
+        "itpassport_r6::term::p238::*",
+        "itpassport_r6::term::p241::*",
+        "itpassport_r6::term::p353::*",
+        "itpassport_r6::term::p354::*",
+        "itpassport_r6::term::p361::*",
+        "itpassport_r6::term::p530::4"
+      ],
+      "severity": "RELEASE_IMPACTING",
+      "type": "jp_kanji_in_zh_field",
+      "fields": ["surface.zh", "definition.zh"],
+      "summary": "Systemic pipeline leak of Japanese-form kanji into Simplified Chinese fields. Confirmed character substitutions: 確 (U+78BA) for 确 (U+786E), 発 (U+767A) for 发 (U+53D1), 開 (U+958B) for 开 (U+5F00), 択 (U+629E) for 择 (U+62E9), 処 (U+51E6) for 处 (U+5904), 対 (U+5BFE) for 对 (U+5BF9). All appear visually close but are wrong character sets for Simplified Chinese.",
+      "evidence": {
+        "p238_p241": "確 U+78BA, 発 U+767A, 開 U+958B in ZH definitions",
+        "p353_p354_p361": "択 U+629E, 処 U+51E6 in ZH definitions",
+        "p530": "対 U+5BFE in ZH surface of 共通鍵暗号方式"
+      },
+      "fix_action": "Systematic ZH field scan and replacement: 確→确, 発→发, 開→开, 択→择, 処→处, 対→对. These are pipeline-level substitutions that need a bulk correction pass across all affected pages.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F22",
+      "pages": [270],
+      "source_chunks": ["chunk_25"],
+      "entity_ids": ["itpassport_r6::term::p270::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "subject_confusion_jp",
+      "fields": ["definition.jp"],
+      "summary": "PMBOK Stakeholder row: JP definition uses 'プロジェクト' as subject twice in contradictory positions, creating an incoherent sentence. One occurrence should be 'ステークホルダー' (stakeholder).",
+      "evidence": {
+        "garbled_jp": "プロジェクトに影響を与え、またはプロジェクトから影響を受ける個人やグループ (both uses say プロジェクト)",
+        "correct_concept": "Stakeholders are people/groups who influence or are influenced by the project — subject should be the stakeholders, not the project twice."
+      },
+      "fix_action": "Correct JP definition so that the subject is clearly ステークホルダー affecting or being affected by プロジェクト.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F23",
+      "pages": [374, 375, 444, 563],
+      "source_chunks": ["chunk_36", "chunk_43", "chunk_55"],
+      "entity_ids": [
+        "itpassport_r6::term::p374::*",
+        "itpassport_r6::term::p375::*",
+        "itpassport_r6::term::p444::*",
+        "itpassport_r6::term::p563::23",
+        "itpassport_r6::term::p563::24"
+      ],
+      "severity": "RELEASE_IMPACTING",
+      "type": "zh_surface_inverted_terminology",
+      "fields": ["surface.zh"],
+      "summary": "デュプレックスシステム→'双联系统' and デュアルシステム→'双工系统' are both non-standard and additionally misleading: '双工' in Chinese IT means full-duplex communications, not dual-processing. Affects learners who look up these terms in Chinese IT references.",
+      "evidence": {
+        "duplex_zh_assigned": "双联系统",
+        "dual_zh_assigned": "双工系统",
+        "dual_zh_correct_cn_term": "双重系统 or 双机热备",
+        "duplex_zh_correct_cn_term": "双联系统 (acceptable) / 主备系统"
+      },
+      "fix_action": "Change デュアルシステム ZH surface from '双工系统' to '双重系统' (dual-redundant processing). Verify デュプレックス ZH surface against standard mainland IT glossary. Apply across p374, p375, p444, p563.",
+      "fix_class": "fixable_glossary"
+    },
+    {
+      "fix_id": "F24",
+      "pages": [433],
+      "source_chunks": ["chunk_41"],
+      "entity_ids": ["itpassport_r6::term::p433::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "incomplete_definition",
+      "fields": ["definition.jp", "definition.zh", "definition.en"],
+      "summary": "差分バックアップ (Differential Backup) and 増分バックアップ (Incremental Backup) definitions omit that they back up 'modified/changed data since last backup'. Definitions describe the backup schedule without the critical 'what changed' qualifier.",
+      "evidence": {
+        "differential_missing": "Definition does not state that differential backup captures all changes since the last full backup",
+        "incremental_missing": "Definition does not state that incremental backup captures only changes since the last incremental (or full) backup"
+      },
+      "fix_action": "Amend both definitions in all three languages to explicitly state the scope of data captured: differential = all changes since last FULL backup; incremental = changes since last backup of any type.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F25",
+      "pages": [433],
+      "source_chunks": ["chunk_41"],
+      "entity_ids": [
+        "itpassport_r6::term::p433::* (レプリケーション)",
+        "itpassport_r6::term::p433::* (複写)"
+      ],
+      "severity": "RELEASE_IMPACTING",
+      "type": "zh_surface_collision",
+      "fields": ["surface.zh"],
+      "summary": "レプリケーション and 複写 both map to ZH surface '复制'. These are distinct concepts (replication = real-time DB synchronization across systems; 複写 = file/record copy operation). Indistinguishable in ZH.",
+      "evidence": {
+        "replication_zh": "复制",
+        "fukusha_zh": "复制",
+        "distinction": "レプリケーション is real-time mirroring to standby system; 複写 is a simpler copy/duplicate operation"
+      },
+      "fix_action": "Assign distinct ZH surfaces: レプリケーション→'数据复制（实时同步）' or '主从复制'; 複写→'文件复制' or '数据复制（手动）'.",
+      "fix_class": "fixable_glossary"
+    },
+    {
+      "fix_id": "F26",
+      "pages": [491],
+      "source_chunks": ["chunk_47"],
+      "entity_ids": ["itpassport_r6::term::p491::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "wrong_version_content",
+      "fields": ["definition.jp", "definition.zh", "definition.en"],
+      "summary": "IPv6 definition body describes IPv4 (32-bit addresses, approximately 4.3 billion addresses) rather than IPv6 (128-bit, approximately 3.4×10^38 addresses). Content is factually inverted for the labeled term.",
+      "evidence": {
+        "wrong_in_def": "32-bit address space, ~4.3 billion addresses",
+        "correct_ipv6": "128-bit address space, ~3.4×10^38 (340 undecillion) addresses"
+      },
+      "fix_action": "Replace IPv6 definition body in all three languages with accurate IPv6 content: 128-bit addressing, vastly larger address space than IPv4, designed to solve IPv4 exhaustion.",
+      "fix_class": "fixable_structural"
+    },
+    {
+      "fix_id": "F27",
+      "pages": [501],
+      "source_chunks": ["chunk_48"],
+      "entity_ids": ["itpassport_r6::term::p501::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "semantic_framing_error",
+      "fields": ["definition.jp", "definition.zh", "definition.en"],
+      "summary": "クラウドコンピューティング definition frames the concept as 'a conventional method that was slow because servers were distant' — this is the opposite of the exam-correct framing. Cloud computing is positioned as the modern flexible solution, not a legacy slow method.",
+      "evidence": {
+        "misleading_jp": "サーバはユーザーから離れた場所にあるので通信に時間がかかっていた従来の方式",
+        "correct_framing": "Cloud computing is a model where computing resources (servers, storage, apps) are delivered on demand over the internet, enabling flexible scalability."
+      },
+      "fix_action": "Rewrite definition to describe cloud computing as a modern service model (on-demand, scalable, internet-delivered), removing the 'slow conventional method' framing.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F28",
+      "pages": [508],
+      "source_chunks": ["chunk_49"],
+      "entity_ids": ["itpassport_r6::term::p508::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "security_safety_conflation",
+      "fields": ["definition.en"],
+      "summary": "情報セキュリティ EN definition uses 'ensuring safety' instead of 'ensuring security'. In English IT, 'safety' refers to physical harm prevention; 'security' refers to information protection (confidentiality, integrity, availability). Conflation misleads English learners.",
+      "evidence": {
+        "wrong_en": "ensuring safety of information",
+        "correct_en": "ensuring security of information"
+      },
+      "fix_action": "Replace 'safety' with 'security' in the EN definition of 情報セキュリティ.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F29",
+      "pages": [509, 538],
+      "source_chunks": ["chunk_49", "chunk_52"],
+      "entity_ids": [
+        "itpassport_r6::term::p509::*",
+        "itpassport_r6::term::p538::*"
+      ],
+      "severity": "RELEASE_IMPACTING",
+      "type": "nonstandard_en_surface",
+      "fields": ["surface.en"],
+      "summary": "ショルダーハック EN surface is 'Shoulder Hacking'. The universally accepted English industry term is 'Shoulder Surfing'. 'Shoulder Hacking' does not appear in security frameworks (NIST, OWASP, ISO 27001). Affects two pages.",
+      "evidence": {
+        "assigned_en": "Shoulder Hacking",
+        "correct_industry_term": "Shoulder Surfing",
+        "sources": "NIST SP 800-63, OWASP, ISO 27002 all use 'Shoulder Surfing'"
+      },
+      "fix_action": "Replace EN surface 'Shoulder Hacking' with 'Shoulder Surfing' on p509 and p538.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F30",
+      "pages": [511],
+      "source_chunks": ["chunk_49"],
+      "entity_ids": ["itpassport_r6::term::p511::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "cross_language_concept_mismatch",
+      "fields": ["surface.en", "surface.zh"],
+      "summary": "RAT EN/ZH surfaces add 'Trojan' ('RAT (Remote Access Trojan)') while JP definition explicitly states 'Remote Administration Tool / Remote Access Tool'. RAT is distinct from Trojan in classification; conflating them is a factual error for security learners.",
+      "evidence": {
+        "en_surface": "RAT (Remote Access Trojan)",
+        "zh_surface_has_trojan_too": true,
+        "jp_def": "Remote Administration Tool / Remote Access Tool — no mention of Trojan"
+      },
+      "fix_action": "Change EN surface to 'RAT (Remote Access Tool)' or 'RAT (Remote Administration Tool)'. Remove 'Trojan' from ZH surface. Align all three languages on the tool classification.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F31",
+      "pages": [539],
+      "source_chunks": ["chunk_52"],
+      "entity_ids": ["itpassport_r6::term::p539::*"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "semantic_inversion",
+      "fields": ["definition.jp", "definition.zh", "definition.en"],
+      "summary": "技術的セキュリティ対策 definition states 'countermeasures against threats CAUSED BY technical means' — semantically inverted. The term means 'security countermeasures that USE technical means', not countermeasures against technically-caused threats.",
+      "evidence": {
+        "wrong_jp": "技術的な手段によって引き起こされる脅威への対策",
+        "correct_jp": "技術的な手段を用いたセキュリティ対策 (countermeasures that employ technical means)"
+      },
+      "fix_action": "Rewrite definition in all three languages: 技術的セキュリティ対策 = security measures implemented through technical means (access control systems, encryption, firewalls, etc.) — not countermeasures against technically-caused threats.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F32",
+      "pages": [544],
+      "source_chunks": ["chunk_53"],
+      "entity_ids": ["itpassport_r6::term::p544::3"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "ocr_kana_typo",
+      "fields": ["surface.jp", "definition.jp"],
+      "summary": "ペネトレーションテスト JP surface and definition body contain 'ベネトレーション' — voiced dakuten (ベ) instead of semi-voiced handakuten (ペ). This is a character-level OCR error that renders the term unrecognizable to Japanese learners.",
+      "evidence": {
+        "wrong_jp_surface": "ベネトレーションテスト",
+        "correct_jp_surface": "ペネトレーションテスト",
+        "character_error": "ベ (U+30D9, voiced) vs ペ (U+30DA, semi-voiced) — single diacritic difference"
+      },
+      "fix_action": "Replace all instances of 'ベネトレーション' with 'ペネトレーション' in surface.jp and definition.jp for p544.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F33",
+      "pages": [546],
+      "source_chunks": ["chunk_53"],
+      "entity_ids": ["itpassport_r6::term::p546::0"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "jp_script_in_zh_field",
+      "fields": ["definition.zh"],
+      "summary": "セキュアブート ZH definition contains untranslated katakana tokens 'セキュア' and 'ブート' within the Chinese text, plus Japanese-style corner brackets 「」wrapping them. JP katakana must not appear in ZH output.",
+      "evidence": {
+        "zh_def_with_katakana": "contains 「セキュア」(Secure) and 「ブート」(Boot) as Japanese katakana within Chinese text",
+        "correct_zh": "Use Chinese characters '安全' and '启动' or Latin 'Secure' and 'Boot'"
+      },
+      "fix_action": "Replace katakana 'セキュア' with Chinese/Latin equivalent and 'ブート' with '启动' or 'Boot' in ZH definition. Replace all JP corner brackets with Chinese double quotation marks.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F34",
+      "pages": [562],
+      "source_chunks": ["chunk_55"],
+      "entity_ids": ["itpassport_r6::term::p562::21"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "ocr_contamination_wrong_concept",
+      "fields": ["definition.jp", "definition.zh", "definition.en"],
+      "summary": "DevOps definition contains an appended sentence describing ホワイトボックステスト (white-box testing): 'プロトタイピング、プログラムの構造仕様書などで、内部構造を見ること'. This is OCR boundary contamination from a neighboring text block. All three languages propagated the contaminated content.",
+      "evidence": {
+        "wrong_jp_tail": "プロトタイピング、プログラムの構造仕様書などで、内部構造を見ることである。",
+        "correct_devops_concept": "DevOps = collaboration between development and operations teams to deliver systems faster and more reliably",
+        "contamination_source": "ホワイトボックステスト definition from neighboring OCR block"
+      },
+      "fix_action": "Remove the contaminating sentence from DevOps definition in all three languages. Retain only content about development-operations collaboration.",
+      "fix_class": "fixable_structural"
+    },
+    {
+      "fix_id": "F35",
+      "pages": [562],
+      "source_chunks": ["chunk_55"],
+      "entity_ids": ["itpassport_r6::term::p562::2"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "ocr_error_jp_text",
+      "fields": ["definition.jp"],
+      "summary": "要件定義プロセス JP definition contains 'さな目的' — OCR corruption of '主な目的' (main purpose). ZH and EN silently correct to '根本目的' / 'underlying purpose', creating a cross-language inconsistency where only JP is wrong.",
+      "evidence": {
+        "corrupted_jp": "要件定義プロセスのさな目的はユーザーのニーズを知ること。",
+        "correct_jp": "要件定義プロセスの主な目的はユーザーのニーズを知ること。",
+        "zh_correct": "其根本目的在于了解用户的需求。",
+        "en_correct": "Its underlying purpose is to understand user needs."
+      },
+      "fix_action": "Replace 'さな目的' with '主な目的' in definition.jp for p562::2.",
+      "fix_class": "fixable_surgical"
+    },
+    {
+      "fix_id": "F36",
+      "pages": [566],
+      "source_chunks": ["chunk_55"],
+      "entity_ids": ["itpassport_r6::term::p566::27"],
+      "severity": "RELEASE_IMPACTING",
+      "type": "ocr_error_jp_text",
+      "fields": ["definition.jp"],
+      "summary": "セキュリティ・バイ・デフォルト JP definition contains two OCR artifacts: (1) 'お初期化' — spurious honorific 'お' prefix on 初期化; (2) 'COSの組み合わせ' — spurious 'C' prefix on OS. ZH and EN are correct; only JP is affected.",
+      "evidence": {
+        "corrupted_jp": "PCのお初期化やCOSの組み合わせを最初から考慮して、出荷時にOSのセキュリティの設定を行うこと",
+        "correct_jp": "PCの初期化やOSの組み合わせを最初から考慮して、出荷時にOSのセキュリティの設定を行うこと",
+        "zh_correct": "从一开始就考虑PC的初始化和OS的组合，在出厂时进行OS的安全设置",
+        "en_correct": "Considering PC initialization and OS combinations from the outset, and configuring OS security settings at the time of shipment"
+      },
+      "fix_action": "Remove spurious 'お' from 'お初期化' (→ '初期化') and remove spurious 'C' from 'COSの' (→ 'OSの') in definition.jp for p566::27.",
+      "fix_class": "fixable_surgical"
+    }
+  ],
+  "false_positives_filtered": [
+    {
+      "source": "chunk_37",
+      "raw_count": 17,
+      "reason": "Empty surface/definition on figure/section/question/table/chapter entities — by design; these entity types use caption/title/stem/rows fields, not surface/definition."
+    },
+    {
+      "source": "chunk_11",
+      "raw_count": 7,
+      "reason": "Agent self-labeled all 7 findings as FALSE-POSITIVE."
+    },
+    {
+      "source": "chunk_13",
+      "raw_count": 16,
+      "reason": "SURFACE_NOT_IN_DEF pattern — agent noted this is textbook-style AI/ML definitions; JP surface as acronym not restated verbatim in body text is acceptable."
+    },
+    {
+      "source": "chunk_28",
+      "raw_count": 1,
+      "reason": "p296 mojibake claim: spot-check of actual page_296.json shows clean text — likely terminal rendering artifact, not actual U+FFFD in data."
+    },
+    {
+      "source": "chunk_19",
+      "raw_count": "multiple INFO",
+      "reason": "Structural placeholder entities on answer-practice pages — by-design question/figure stubs."
+    }
+  ],
+  "warn_findings_summary": [
+    "JP-style 「」brackets in ZH definitions — systemic across ~12 pages (chunks 53/55 and others); WARN level, fix in bulk pass",
+    "U+30FB Katakana Middle Dot in ZH text (chunk_55 p562::29) — WARN",
+    "Fullwidth/halfwidth punctuation inconsistency — WARN throughout",
+    "Inconsistent Japanese era notation 平成28年度 vs FY2016 across ZH/EN — WARN",
+    "p557 answer-key stub entities with choice markers only (ア．イ．) — WARN; pipeline gap",
+    "页面缺失: page_558, page_564 absent from output directory — WARN pipeline gap",
+    "可用性 (Availability) defined differently in ITSM context vs CIA triad without cross-reference — WARN",
+    "p501 クラウドコンピューティング duplicate entity on p516 (リスクマネジメント) — WARN; causes learner confusion",
+    "p523 完全性/Integrity definition omits accuracy+destruction dimensions vs p522 canonical — WARN"
+  ]
+}

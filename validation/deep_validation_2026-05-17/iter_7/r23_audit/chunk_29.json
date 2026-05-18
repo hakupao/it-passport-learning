@@ -1,0 +1,101 @@
+{
+  "agent_id": "scientist-r23-chunk29",
+  "subagent_type": "scientist",
+  "chunk_id": "chunk_29",
+  "pages_audited": [
+    302,
+    303,
+    304,
+    305,
+    306,
+    307,
+    308,
+    309,
+    310,
+    311
+  ],
+  "leaves_checked": 23,
+  "audit_timestamp": "2026-05-17T15:55:10.591299Z",
+  "severity_summary": {
+    "CRITICAL": 0,
+    "ERROR": 0,
+    "WARN": 3,
+    "MINOR": 1,
+    "INFO": 1,
+    "release_impacting": 0
+  },
+  "overall_verdict": "PASS_WITH_WARNINGS",
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "WARN",
+      "page": 303,
+      "entity_ids": [
+        "itpassport_r6::term::p303::3",
+        "itpassport_r6::table::p303::4"
+      ],
+      "lens": "internal_consistency",
+      "field": "definition.zh",
+      "issue": "BCP ZH definition inconsistent within same page: term leaf uses '不可预测事态' + '汇总' but table cell uses '突发情况' + '归纳'. Same JP source '不測の事態…をまとめた'. Intra-page ZH divergence may confuse learners.",
+      "jp_source": "不測の事態を想定して、事業をいかに継続するかをまとめた計画",
+      "zh_term": "针对灾害或事故等不可预测事态，汇总如何持续开展业务的计划",
+      "zh_table": "针对灾害或事故等突发情况，归纳如何延续业务的计划",
+      "recommended_fix": "Unify to single ZH rendering, prefer '不可预测事态' + '汇总' to match term definition.",
+      "verdict": "WARN"
+    },
+    {
+      "id": "F-02",
+      "severity": "WARN",
+      "page": "307+311",
+      "entity_ids": [
+        "itpassport_r6::section::p307::0",
+        "itpassport_r6::section::p311::0"
+      ],
+      "lens": "internal_consistency",
+      "field": "section_number",
+      "issue": "Duplicate section_number '08-05' on two distinct sections: p307 'システム監査/系统审计/System Audit' and p311 '監査人の独立性/审计人员的独立性/Auditor Independence'. Downstream indexing will collide.",
+      "recommended_fix": "Assign distinct identifiers, e.g., '08-05' and '08-05-01', or sequential '08-05' / '08-06'.",
+      "verdict": "WARN"
+    },
+    {
+      "id": "F-03",
+      "severity": "WARN",
+      "page": 309,
+      "entity_ids": [
+        "itpassport_r6::section::p309::0"
+      ],
+      "lens": "internal_consistency",
+      "field": "section_number",
+      "issue": "Section p309 uses section_number '09' while all adjacent sections use '08-NN' format. Inconsistent numbering scheme across chunk — likely OCR artifact or pipeline labeling error.",
+      "recommended_fix": "Verify source and correct to match surrounding '08-NN' scheme.",
+      "verdict": "WARN"
+    },
+    {
+      "id": "F-04",
+      "severity": "MINOR",
+      "page": 309,
+      "entity_ids": [
+        "itpassport_r6::table::p309::1"
+      ],
+      "lens": "semantic_fidelity_en",
+      "field": "rows[2][1].en",
+      "issue": "Spurious mid-sentence capitalization: 'Unauthorized Access' should be 'unauthorized access'. JP '不正アクセス' is a common noun. EN convention: do not capitalize mid-sentence common nouns.",
+      "bad_text": "...natural disasters, Unauthorized Access, and acts of destruction",
+      "corrected_text": "...natural disasters, unauthorized access, and acts of destruction",
+      "verdict": "MINOR"
+    },
+    {
+      "id": "F-05",
+      "severity": "INFO",
+      "page": 308,
+      "entity_ids": [
+        "itpassport_r6::table::p308::3"
+      ],
+      "lens": "structural",
+      "field": "rows[1][1].{jp,zh,en}, rows[2][1].{jp,zh,en}",
+      "issue": "Raw METI URLs embedded inline in table cell text across all three languages. Not a translation error — structurally consistent — but may render as raw text in learner UI. Consider moving URLs to a separate 'url_ref' field.",
+      "verdict": "INFO"
+    }
+  ],
+  "summary": "Chunk 29 (pages 302-311) covers Facility Management (ファシリティマネジメント / 设施管理) and System Audit (システム監査 / 系统审计). Page 302 is empty (leaf_count=0). 23 leaf fields audited across 3 lenses (JP->ZH fidelity, JP->EN fidelity, internal consistency). 0 CRITICAL/ERROR findings. 3 WARNings: BCP ZH intra-page inconsistency (F-01), duplicate section_number '08-05' on two sections (F-02), and section_number '09' format outlier (F-03). 1 MINOR: spurious capitalization of 'Unauthorized Access' in EN table cell (F-04). 1 INFO: raw URLs inline in table cells (F-05). No release-impacting defects. Overall verdict: PASS_WITH_WARNINGS."
+}

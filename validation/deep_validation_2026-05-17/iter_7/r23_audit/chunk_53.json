@@ -1,0 +1,135 @@
+{
+  "agent_id": "r23",
+  "subagent_type": "scientist",
+  "chunk_id": "chunk_53",
+  "pages_audited": [
+    542,
+    543,
+    544,
+    545,
+    546,
+    547,
+    548,
+    549,
+    550,
+    551
+  ],
+  "leaves_checked": 60,
+  "findings": [
+    {
+      "finding_id": "F1",
+      "severity": "MAJOR",
+      "category": "jp_script_in_zh_definition",
+      "entity_id": "itpassport_r6::term::p546::0",
+      "page": 546,
+      "lang": "zh",
+      "field": "definition",
+      "description": "ZH definition contains katakana script (katakana tokens: sekkyua, buuto). JP katakana should not appear in ZH output; use Chinese characters or Latin equivalents.",
+      "evidence": "ZH def contains: katakana_matches=['セキュア','ブート']",
+      "suggested_fix": "Replace katakana tokens with Latin 'Secure' and 'Boot'; replace JP brackets with Chinese quotation marks."
+    },
+    {
+      "finding_id": "F2a",
+      "severity": "MINOR",
+      "category": "jp_brackets_in_zh_definition",
+      "entity_id": "itpassport_r6::term::p546::0",
+      "page": 546,
+      "lang": "zh",
+      "field": "definition",
+      "description": "JP-style brackets used in ZH definition. Chinese convention uses standard Chinese quotation marks.",
+      "evidence": "occurrences: ['「セキュア」', '「安全」', '「ブート」', '「启动」', '「安全的计算机启动」']",
+      "suggested_fix": "Replace JP brackets with Chinese double quotation marks in ZH definitions."
+    },
+    {
+      "finding_id": "F2b",
+      "severity": "MINOR",
+      "category": "jp_brackets_in_zh_definition",
+      "entity_id": "itpassport_r6::term::p547::0",
+      "page": 547,
+      "lang": "zh",
+      "field": "definition",
+      "description": "JP-style brackets used in ZH definition. Chinese convention uses standard Chinese quotation marks.",
+      "evidence": "occurrences: ['「区块」']",
+      "suggested_fix": "Replace JP brackets with Chinese double quotation marks in ZH definitions."
+    },
+    {
+      "finding_id": "F2c",
+      "severity": "MINOR",
+      "category": "jp_brackets_in_zh_definition",
+      "entity_id": "itpassport_r6::term::p549::1",
+      "page": 549,
+      "lang": "zh",
+      "field": "definition",
+      "description": "JP-style brackets used in ZH definition. Chinese convention uses standard Chinese quotation marks.",
+      "evidence": "occurrences: ['「生物」', '「测量」']",
+      "suggested_fix": "Replace JP brackets with Chinese double quotation marks in ZH definitions."
+    },
+    {
+      "finding_id": "F3",
+      "severity": "CRITICAL",
+      "category": "jp_surface_typo",
+      "entity_id": "itpassport_r6::term::p544::3",
+      "page": 544,
+      "lang": "jp",
+      "field": "surface_and_definition",
+      "description": "JP surface 'betone-reshon tesuto' (BE-ne-to-re-e-shon) is a typo for 'penetore-shon tesuto' (PE-ne-to-re-e-shon). BE (voiced dakuten) vs PE (semi-voiced handakuten) error. The typo propagates into the JP definition body.",
+      "evidence": "surface.jp='ベネトレーションテスト'; correct form is 'ペネトレーションテスト'",
+      "suggested_fix": "Replace 'ベネトレーション' with 'ペネトレーション' in surface.jp and throughout definition.jp."
+    },
+    {
+      "finding_id": "F4",
+      "severity": "MINOR",
+      "category": "security_safety_conflation_en",
+      "entity_id": "itpassport_r6::term::p546::0",
+      "page": 546,
+      "lang": "en",
+      "field": "definition",
+      "description": "EN definition glosses 'Secure' as 'safe'. In English computing context, 'secure' means 'protected/hardened', not 'safe'. This conflates security and safety concepts for English learners.",
+      "evidence": "EN def contains: '\"Secure\" means \"safe,\"'",
+      "suggested_fix": "Change to: '\"Secure\" means \"protected\" or \"hardened\"'."
+    },
+    {
+      "finding_id": "F5",
+      "severity": "INFO",
+      "category": "duplicate_surface_terms_summary_page",
+      "entity_id": "p548_summary_page",
+      "page": 548,
+      "lang": "jp",
+      "field": "surface",
+      "description": "Page 548 is a summary/review page that re-lists 13 terms already defined on pp542-547, producing expected duplicate JP surface terms across the chunk. Not an error if summary pages are intentional.",
+      "evidence": "13 duplicate JP surfaces including DMZ, SSL/TLS, VPN, SSO, etc.",
+      "suggested_fix": "Add entity annotation is_summary=true or type='summary_term' to distinguish from primary definitions."
+    },
+    {
+      "finding_id": "F6",
+      "severity": "MINOR",
+      "category": "descriptive_phrase_as_term_surface",
+      "entity_id": "itpassport_r6::term::p548::0",
+      "page": 548,
+      "lang": "jp",
+      "field": "surface",
+      "description": "'ransomware-heno-taisaku' is a descriptive phrase ('countermeasures against ransomware'), not a canonical IT term. Using it as a term surface may confuse downstream glossary indexing.",
+      "evidence": "surface.jp='ランサムウェアへの対策'",
+      "suggested_fix": "Mark as type='section' or 'note', or rename surface to canonical term form."
+    }
+  ],
+  "summary": "Chunk 53 (pp542-551, security/auth topic): 60 entities audited across 10 pages. 1 CRITICAL defect: JP surface typo 'ベネトレーション' should be 'ペネトレーション' (p544, voiced/semi-voiced dakuten error, propagates into definition body). 1 MAJOR defect: katakana script leak into ZH definition for セキュアブート (p546). 4 MINOR defects: JP brackets in ZH definitions (pp546/547/549), and 'Secure'='safe' conflation in EN (p546). 1 MINOR: descriptive phrase used as term surface (p548). 1 INFO: 13 expected duplicate terms on summary page 548. No U+FFFD, no trilingual parity gaps, no duplicate entity IDs. ZH surface glossary parity: 100% match on 28 of 33 terms (5 absent from glossary, all summary-page variants).",
+  "audit_timestamp": "2026-05-17T16:03:53.207772Z",
+  "statistics": {
+    "total_entities": 60,
+    "term_entities": 46,
+    "pages_with_findings": [
+      544,
+      546,
+      547,
+      548,
+      549
+    ],
+    "defects_by_severity": {
+      "CRITICAL": 1,
+      "MAJOR": 1,
+      "MINOR": 5,
+      "INFO": 1
+    }
+  }
+}

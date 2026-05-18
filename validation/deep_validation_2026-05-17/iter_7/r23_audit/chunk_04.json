@@ -1,0 +1,200 @@
+{
+  "chunk": "chunk_04",
+  "reviewer": "R23",
+  "reviewed_at": "2026-05-18T00:00:00Z",
+  "pages": [
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61
+  ],
+  "status": "complete",
+  "summary": {
+    "total_entities": 61,
+    "FAIL": 3,
+    "WARN": 9,
+    "INFO": 3,
+    "topics": [
+      "会計基礎用語/损益分岐点 (§36/§01-07)",
+      "財務諸表/财务报表 (§01-08)"
+    ],
+    "release_blocking": [
+      "F012 gross margin vs gross profit domain error",
+      "F014 B/S EN def incomplete",
+      "F015 B/S ZH def incomplete"
+    ]
+  },
+  "findings": [
+    {
+      "id": "F001",
+      "severity": "WARN",
+      "page": 52,
+      "entity_id": "figure fig0",
+      "perspective": "Reader",
+      "language": "zh",
+      "issue": "ZH caption uses ASCII double-quotes (\"\") instead of CJK brackets 「」, inconsistent with figs 1 & 2 on same page and JP source 「」",
+      "current": "\"销售额 = 费用\"→盈亏平衡点",
+      "suggested": "「销售额 = 费用」→盈亏平衡点"
+    },
+    {
+      "id": "F002",
+      "severity": "WARN",
+      "page": 52,
+      "entity_id": "figure fig0",
+      "perspective": "Reader",
+      "language": "en",
+      "issue": "EN caption fig0 uses 'Expenses' (plural) while figs 1,2 use 'Expense' (singular). JP source 費用 is mass noun - singular 'Expense' matches JP convention better; should be consistent",
+      "current": "\"Sales = Expenses\"",
+      "suggested": "\"Sales = Expense\""
+    },
+    {
+      "id": "F003",
+      "severity": "INFO",
+      "page": 53,
+      "entity_id": "section §01-07",
+      "perspective": "Educator",
+      "language": "all",
+      "issue": "Section '損益分岐点' appears as §36 on p52 and §01-07 on p53 - likely two different numbering systems (textbook chapter vs curriculum sequence). Not a translation error but section_number inconsistency may confuse navigation.",
+      "current": "p52: §36, p53: §01-07 (same topic)",
+      "suggested": "Verify if both numbering systems are intentional; if so, document in schema"
+    },
+    {
+      "id": "F004",
+      "severity": "WARN",
+      "page": 57,
+      "entity_id": "section §01-08",
+      "perspective": "Reader",
+      "language": "en",
+      "issue": "Same section §01-08 title has EN inconsistency: p56='Financial Statements and Six Profits', p57='Financial Statements and the Six Profits'. Definite article difference across two pages of same section.",
+      "current": "p56: 'Six Profits' | p57: 'the Six Profits'",
+      "suggested": "Standardize: 'Financial Statements and the Six Types of Profit' or 'Financial Statements and Six Profits'"
+    },
+    {
+      "id": "F005",
+      "severity": "WARN",
+      "page": 57,
+      "entity_id": "term 他人資本",
+      "perspective": "IT pro",
+      "language": "en",
+      "issue": "EN 'Liabilities (Other Capital)' - 'Other Capital' is literal translation artifact. Standard EN accounting term is 'Debt Capital' or simply 'Liabilities'. The parenthetical misleads; 他人資本 is a Japanese accounting category equivalent to external/borrowed capital.",
+      "current": "Liabilities (Other Capital)",
+      "suggested": "Debt Capital (他人資本) — or 'External Capital / Liabilities'"
+    },
+    {
+      "id": "F006",
+      "severity": "WARN",
+      "page": 57,
+      "entity_id": "term 自己資本",
+      "perspective": "IT pro",
+      "language": "zh",
+      "issue": "ZH '自有资本' is a direct calque from Japanese. Standard Chinese accounting term is '所有者权益' (Owners' Equity) or '股东权益'. '自有资本' is understandable but non-standard in China GAAP context; may mislead exam learners translating to Chinese financial reporting.",
+      "current": "自有资本",
+      "suggested": "股东权益 / 所有者权益（自有资本）"
+    },
+    {
+      "id": "F007",
+      "severity": "INFO",
+      "page": 57,
+      "entity_id": "term 総資本 definition",
+      "perspective": "Reader",
+      "language": "zh",
+      "issue": "ZH definition of 総資本 references '他人资本（负债）' - the parenthetical gloss of 负债 is helpful but creates inconsistency: the standalone ZH surface for 他人資本 is '他人资本（负债）' (with gloss) while here it repeats inside a definition. Acceptable but slightly redundant.",
+      "current": "「他人资本（负债）」与「自有资本」的合计",
+      "suggested": "No change required; INFO only"
+    },
+    {
+      "id": "F008",
+      "severity": "WARN",
+      "page": 58,
+      "entity_id": "term 総資本回転率",
+      "perspective": "IT pro",
+      "language": "all",
+      "issue": "Formula labels 総資本回転率(%) but Total Capital Turnover Ratio is conventionally dimensionless (expressed as 'times/回転', not %). Multiplying by 100 to get % is non-standard usage. JP exam may use % convention but EN/ZH translations perpetuate a potentially misleading unit label. Should note this is exam-specific convention.",
+      "current": "Total Capital Turnover Ratio (%) = Sales ÷ Total Capital × 100",
+      "suggested": "Add note: '(exam convention: expressed as %, not standard industry 回転 ratio)'"
+    },
+    {
+      "id": "F009",
+      "severity": "WARN",
+      "page": 60,
+      "entity_id": "term 営業外",
+      "perspective": "Educator",
+      "language": "en",
+      "issue": "EN definition 'Refers to side business' for 営業外 is a simplification metaphor that may mislead. In accounting, 営業外 = non-operating items (interest income/expense, investment gains/losses) — not literally a 'side business'. The JP pedagogical metaphor works in Japanese context but 'side business' in EN implies a separate business venture.",
+      "current": "Refers to \"side business\"",
+      "suggested": "Non-operating items (e.g., interest income/expense). Note: JP pedagogy uses \"side business\" as a teaching metaphor only."
+    },
+    {
+      "id": "F010",
+      "severity": "INFO",
+      "page": 61,
+      "entity_id": "term 黒字倒産",
+      "perspective": "IT pro",
+      "language": "en",
+      "issue": "EN surface 'Profitable Bankruptcy' is a coined translation; no standard EN equivalent exists. The concept is more precisely described as 'cash-flow insolvency despite accounting profits'. Surface label is acceptable as a coined term for exam purposes but the EN definition adequately explains it.",
+      "current": "Profitable Bankruptcy",
+      "suggested": "Acceptable; optionally add '(cash-flow insolvency)' as parenthetical"
+    },
+    {
+      "id": "F011",
+      "severity": "WARN",
+      "page": 55,
+      "entity_id": "term 損益分岐点 surface",
+      "perspective": "Reader",
+      "language": "en",
+      "issue": "EN surface 'break-even point' (all lowercase) on p55 conflicts with 'Break-Even Point' (title case) on p52 and in glossary. Capitalization inconsistency within the same technical term.",
+      "current": "p55 surface: 'break-even point'",
+      "suggested": "Standardize to 'Break-Even Point' (title case, matching p52 and glossary)"
+    },
+    {
+      "id": "F012",
+      "severity": "FAIL",
+      "page": 60,
+      "entity_id": "table row3 売上総利益",
+      "perspective": "IT pro",
+      "language": "en",
+      "issue": "EN table row uses 'Also called gross margin' but the standalone term entity says 'Also called gross profit'. More critically: Gross Margin (%) and Gross Profit (amount) are DIFFERENT accounting concepts. JP '粗利益' = gross profit (amount), NOT gross margin (ratio/%). Using 'gross margin' here is a domain error.",
+      "current": "table: 'Also called gross margin' | term entity: 'Also called gross profit'",
+      "suggested": "Use 'gross profit' consistently. Remove 'gross margin' usage to avoid domain confusion."
+    },
+    {
+      "id": "F013",
+      "severity": "WARN",
+      "page": 61,
+      "entity_id": "table row5 税引前当期純利益",
+      "perspective": "Reader",
+      "language": "en",
+      "issue": "EN inconsistency: p61 table uses 'Pre-Tax Net Income' but p60 term entity uses 'Income Before Taxes' for same JP term 税引前当期純利益. Standard EN GAAP term is 'Income Before Taxes' or 'Pre-Tax Income'.",
+      "current": "p61 table: 'Pre-Tax Net Income' | p60 term: 'Income Before Taxes'",
+      "suggested": "Standardize to 'Income Before Taxes' (GAAP-aligned)"
+    },
+    {
+      "id": "F014",
+      "severity": "FAIL",
+      "page": 56,
+      "entity_id": "term 貸借対照表 (short def)",
+      "perspective": "IT pro",
+      "language": "en",
+      "issue": "EN short definition 'A table that lists all of a company's assets' is factually incomplete. Balance sheet lists assets, liabilities, AND equity/net assets. Omitting liabilities and equity is a domain error that will confuse learners.",
+      "current": "A table that lists all of a company's assets.",
+      "suggested": "A statement listing a company's assets, liabilities, and net assets (equity) at a specific point in time."
+    },
+    {
+      "id": "F015",
+      "severity": "FAIL",
+      "page": 56,
+      "entity_id": "term 貸借対照表 (short def)",
+      "perspective": "IT pro",
+      "language": "zh",
+      "issue": "ZH short definition '记载公司全部财产的表' (a table recording all company property) is also incomplete - balance sheet records 资产、负债 and 净资产, not just 财产 (property/assets). Same domain error as EN.",
+      "current": "记载公司全部财产的表",
+      "suggested": "记载公司资产、负债及净资产的财务报表"
+    }
+  ]
+}

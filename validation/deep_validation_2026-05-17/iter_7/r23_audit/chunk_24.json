@@ -1,0 +1,134 @@
+{
+  "agent_id": "scientist-r23-chunk24",
+  "subagent_type": "scientist",
+  "chunk_id": "chunk_24",
+  "pages_audited": [
+    252,
+    253,
+    254,
+    255,
+    256,
+    257,
+    258,
+    259,
+    260,
+    261
+  ],
+  "leaves_checked": 42,
+  "generated_at": "2026-05-17T15:55:55.725071Z",
+  "entity_breakdown": {
+    "section": 6,
+    "term": 19,
+    "figure": 2,
+    "table": 2,
+    "question": 13
+  },
+  "audit_lenses": [
+    "semantic_accuracy",
+    "trilingual_consistency",
+    "structural_completeness"
+  ],
+  "findings": [
+    {
+      "finding_id": "F001",
+      "severity": "WARN",
+      "lens": "structural_completeness",
+      "type": "missing_terminal_punctuation",
+      "scope": "cross-lingual",
+      "affected_entities": [
+        "itpassport_r6::term::p253::1",
+        "itpassport_r6::term::p258::1",
+        "itpassport_r6::term::p258::2",
+        "itpassport_r6::term::p258::3",
+        "itpassport_r6::term::p258::4",
+        "itpassport_r6::term::p258::5"
+      ],
+      "affected_count": 6,
+      "languages_affected": [
+        "jp",
+        "zh",
+        "en"
+      ],
+      "detail": "6 term definitions end without terminal punctuation (period / 。). The pattern is consistent across JP+ZH+EN for the same entities, indicating source-level truncation at the OCR or structured-extraction stage rather than per-language translation error.",
+      "example_jp": "term::p258::1 JP ends: '...ソフトウェアを部品化することで再利用をしやすくし、開発を効率化する手法' (no 。)",
+      "example_en": "term::p258::1 EN ends: '...that componentizes software to facilitate reuse and improve development efficiency' (no .)",
+      "release_impact": "WARN — incomplete sentences degrade readability but content is substantively correct"
+    },
+    {
+      "finding_id": "F002",
+      "severity": "WARN",
+      "lens": "structural_completeness",
+      "type": "missing_section_number",
+      "scope": "metadata",
+      "affected_entities": [
+        "itpassport_r6::section::p256::0",
+        "itpassport_r6::section::p256::2"
+      ],
+      "affected_count": 2,
+      "detail": "Two sub-sections on page 256 have section_number=None. Titles: 'アジャイル開発が求められる背景' and 'アジャイル開発の特徴'. These are paragraph-level sub-headings within section 06-07 that were not assigned hierarchical numbering during the structuring stage.",
+      "release_impact": "WARN — navigation/indexing affected; content is complete and correct"
+    },
+    {
+      "finding_id": "F003",
+      "severity": "INFO",
+      "lens": "structural_completeness",
+      "type": "empty_table_corner_cell",
+      "scope": "false_positive",
+      "affected_entities": [
+        "itpassport_r6::table::p256::4"
+      ],
+      "affected_count": 1,
+      "detail": "Table p256::4 rows[0][0] is empty across all 3 languages. This is intentional: it is the top-left corner cell of a 2-column comparison table (Waterfall vs Agile). The empty cell is structurally correct for a comparison header layout.",
+      "release_impact": "NONE — confirmed intentional, no defect"
+    },
+    {
+      "finding_id": "F004",
+      "severity": "INFO",
+      "lens": "trilingual_consistency",
+      "type": "cross_script_length_disparity",
+      "scope": "systemic_false_positive",
+      "affected_count": 29,
+      "detail": "29 entities flagged for EN definition length being 3-5x longer than JP/ZH (character count). After semantic spot-checks, this is expected: Japanese/Chinese are logographic (1 char ≈ 1 morpheme), English alphabetic (many chars per word). Content is semantically equivalent. No content truncation detected in EN (all checked definitions end properly).",
+      "release_impact": "NONE — linguistically normal, not a content defect"
+    },
+    {
+      "finding_id": "F005",
+      "severity": "PASS",
+      "lens": "semantic_accuracy",
+      "type": "question_answer_correctness",
+      "scope": "all_questions",
+      "affected_count": 13,
+      "detail": "All 13 questions have answer_index in valid range [0,3] and 4 choices each. 3 spot-checked answers verified semantically correct: (1) System quality clarification → System Requirements Definition ✓; (2) Software migration to production → Software Installation ✓; (3) Classes/inheritance/reuse → Object-Oriented ✓.",
+      "release_impact": "NONE — questions and answers validated"
+    },
+    {
+      "finding_id": "F006",
+      "severity": "PASS",
+      "lens": "semantic_accuracy",
+      "type": "duplicate_term_surface_check",
+      "scope": "term_inventory",
+      "detail": "Surface 'アジャイル開発' appears in both p255::1 and p256::3. These are complementary not duplicate: p255::1 is a 2-sentence intro definition; p256::3 is an extended exam-strategy explanation. Intentional pedagogical depth progression.",
+      "release_impact": "NONE — not a duplicate defect"
+    }
+  ],
+  "summary": {
+    "verdict": "WARN",
+    "critical_count": 0,
+    "warn_count": 2,
+    "info_count": 1,
+    "pass_count": 2,
+    "false_positive_count": 2,
+    "key_defects": [
+      "F001: 6 term definitions missing terminal punctuation across all 3 languages (source-level truncation)",
+      "F002: 2 sub-section entities missing section_number metadata on page 256"
+    ],
+    "no_defects_in": [
+      "Question answer correctness (13/13 valid, 3 spot-checked semantically correct)",
+      "Trilingual completeness (all jp/zh/en fields populated)",
+      "Table content (4 rows, content semantically correct)",
+      "Figure captions (2 figures with complete trilingual captions)",
+      "Answer index range (all 13 within [0,3])"
+    ],
+    "content_topic": "Software development lifecycle: maintenance process, waterfall model, agile development, DevOps, XP, TDD, object-oriented, reverse engineering, Scrum"
+  }
+}

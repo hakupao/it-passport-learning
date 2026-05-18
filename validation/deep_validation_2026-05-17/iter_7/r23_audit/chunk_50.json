@@ -1,0 +1,139 @@
+{
+  "agent_id": "r23-chunk50",
+  "subagent_type": "scientist",
+  "chunk_id": "chunk_50",
+  "pages_audited": [
+    512,
+    513,
+    514,
+    515,
+    516,
+    517,
+    518,
+    519,
+    520,
+    521
+  ],
+  "leaves_checked": 49,
+  "audit_dimensions": [
+    "U+FFFD encoding corruption",
+    "JP kana leak into ZH fields",
+    "Duplicate leaf IDs",
+    "Duplicate surface terms (same vs cross-page restatement)",
+    "Sentence-as-term in surface.jp",
+    "Safety/security concept correctness (9 security-specific terms checked)",
+    "Acronym expansion in EN definitions",
+    "Empty / suspiciously short definitions (false positives confirmed)",
+    "Table cell completeness (trilingual, U+FFFD, kana-in-zh)",
+    "Section title duplication",
+    "ZH translation consistency across duplicate JP sources"
+  ],
+  "findings": [
+    {
+      "finding_id": "F01",
+      "severity": "HIGH",
+      "issue": "DUPLICATE_ENTITY_IDENTICAL_CONTENT",
+      "pages": [
+        515,
+        516
+      ],
+      "leaf_ids": [
+        "itpassport_r6::term::p515::1",
+        "itpassport_r6::term::p516::1"
+      ],
+      "field": "entity",
+      "description": "リスクマネジメント (Risk Management) appears as a full term entity on both p515 and p516 with word-for-word identical JP definition. This is a release-impacting duplicate: learners will see the same term defined twice in sequential pages.",
+      "evidence": "defn.jp identical: '会社の活動に伴って発生するあらゆるリスクを管理し、そのリスクによる損失を最小の費用で食い止めるためのプロセス。'",
+      "recommendation": "Deduplicate: retain one canonical entry (p515 or p516), remove the other. If both pages need the term, use a cross-reference or stub pointer."
+    },
+    {
+      "finding_id": "F02",
+      "severity": "MEDIUM",
+      "issue": "INCONSISTENT_ZH_TRANSLATION_OF_IDENTICAL_JP_SOURCE",
+      "pages": [
+        515,
+        516
+      ],
+      "leaf_ids": [
+        "itpassport_r6::term::p515::1",
+        "itpassport_r6::term::p516::1"
+      ],
+      "field": "definition.zh",
+      "description": "The two duplicate リスクマネジメント entries use different ZH wording for identical JP source text: p515 says '以最低成本控制由该风险带来的损失的过程' while p516 says '以最低成本遏制风险造成损失的流程'. Both are semantically correct but inconsistent.",
+      "evidence": "p515 zh ends '…损失的过程', p516 zh ends '…损失的流程'",
+      "recommendation": "Resolve with F01 deduplication. Adopt one ZH rendering canonically."
+    },
+    {
+      "finding_id": "F03",
+      "severity": "MEDIUM",
+      "issue": "DUPLICATE_SECTION_TITLE",
+      "pages": [
+        515,
+        517
+      ],
+      "leaf_ids": [
+        "itpassport_r6::section::p515::0",
+        "itpassport_r6::section::p517::0"
+      ],
+      "field": "title.jp",
+      "description": "Section heading 'リスクマネジメント' appears on both p515 and p517. Two separate section-type entities carry the same JP title. This may confuse table-of-contents generation or navigation.",
+      "evidence": "itpassport_r6::section::p515::0 title.jp='リスクマネジメント', itpassport_r6::section::p517::0 title.jp='リスクマネジメント'",
+      "recommendation": "Verify whether these are genuinely two subsections of the same topic (sub-numbering missing) or a pipeline section-detection duplicate."
+    },
+    {
+      "finding_id": "F04",
+      "severity": "MEDIUM",
+      "issue": "ACRONYM_NOT_EXPANDED_IN_EN_DEFINITION",
+      "pages": [
+        513
+      ],
+      "leaf_ids": [
+        "itpassport_r6::term::p513::6"
+      ],
+      "field": "definition.en",
+      "description": "DDoS攻撃 EN definition ('An attack that overloads a system by repeatedly sending massive amounts of access requests from many computers via the Internet to a targeted server.') does not expand the DDoS acronym to 'Distributed Denial of Service'. The surface.en is only 'DDoS Attack'. Learners reading only the EN definition cannot decode the abbreviation.",
+      "evidence": "surface.en='DDoS Attack'; defn.en does not contain 'Distributed' or 'Denial of Service'",
+      "recommendation": "Prepend expansion: 'DDoS (Distributed Denial of Service) Attack is an attack that…'"
+    },
+    {
+      "finding_id": "F05",
+      "severity": "LOW",
+      "issue": "DUPLICATE_SURFACE_CROSS_PAGE_RESTATEMENT",
+      "pages": [
+        512,
+        513,
+        514
+      ],
+      "leaf_ids": [
+        "itpassport_r6::term::p512::0 + itpassport_r6::term::p514::7",
+        "itpassport_r6::term::p512::1 + itpassport_r6::term::p513::1",
+        "itpassport_r6::term::p512::2 + itpassport_r6::term::p513::2",
+        "itpassport_r6::term::p512::3 + itpassport_r6::term::p513::3",
+        "itpassport_r6::term::p512::4 + itpassport_r6::term::p514::8"
+      ],
+      "field": "surface.jp",
+      "description": "5 security terms appear as both full-form definitions (p512) and abbreviated summary entries on later pages (p513/p514). Content differs (full vs short). These are intentional pedagogical restatements (summary boxes), not copy errors. No content defect detected.",
+      "evidence": "DoS攻撃, 総当たり攻撃, 辞書攻撃, パスワードリスト攻撃, クロスサイトスクリプティング each appear twice with differing definition lengths",
+      "recommendation": "INFO only. Confirm pipeline is aware these are intentional summary variants, not duplicates to deduplicate."
+    }
+  ],
+  "finding_counts": {
+    "CRITICAL": 0,
+    "HIGH": 1,
+    "MEDIUM": 3,
+    "LOW": 1,
+    "total": 5
+  },
+  "clean_checks": [
+    "U+FFFD: 0 instances across all 49 leaves",
+    "JP kana in ZH fields: 0 instances",
+    "ZH surface identical to JP: 0 instances",
+    "Duplicate leaf IDs: 0",
+    "Sentence-as-term: 0",
+    "Empty definitions: 0 (2 short-form entries confirmed accurate translations of brief JP originals)",
+    "Table cell completeness: PASS (3 tables, 15 rows total, no empty cells, no encoding issues)",
+    "Security concept accuracy: 9 terms checked; DoS/XSS/Ransomware/Phishing/SQLi all correctly translated"
+  ],
+  "summary": "CHUNK_50 MOSTLY_PASS with 1 HIGH + 3 MEDIUM + 1 LOW finding. No CRITICAL defects (no U+FFFD, no kana-in-ZH, no empty definitions). Primary issue: リスクマネジメント (Risk Management) duplicated as identical entities on p515 and p516 [F01, HIGH], with a secondary ZH inconsistency between the two copies [F02, MEDIUM]. DDoS acronym unexpanded in EN definition [F04, MEDIUM]. Duplicate section heading on p515 and p517 [F03, MEDIUM]. 5 cross-page summary restatements are pedagogical design, not defects [F05, LOW]. Security/safety concept translations for all 20 checked terms are semantically correct.",
+  "audited_at": "2026-05-18T00:00:00Z"
+}
