@@ -130,15 +130,26 @@ creation + 6-asset upload via `gh release create` (see D-081 §2.4).
 
 | field | value |
 |---|---|
-| Target SHA | (filled post-publish) |
-| Published at | (filled post-publish) |
-| Release URL | (filled post-publish) |
+| Target SHA | `8563c499453ca8c9adb6731352c5c1ad534261fa` (the v1.0.3 backfill commit) |
+| Published at | `2026-05-19T00:56:20Z` |
+| Release URL | https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.3 |
+| Author | hakupao |
+| Draft / prerelease | false / false |
+| Asset count | 6 |
+| Asset payload | 2,374,304 bytes (2.26 MB total) |
 
-Sub-steps:
+Sub-steps executed:
 
-1. Dry-run `run_release_publish_v1_0_3.py --dry-run` — stage 6 assets under `release/`
-2. Confirm with `--confirm` — `gh release create` + `gh release view`
-3. Verify Release page byte-for-byte vs staged assets
+1. ✅ Dry-run `run_release_publish_v1_0_3.py --dry-run` — staged 6 assets (2.26 MB) under `data/.../release/itpassport-r6-v1.0.3/`
+2. ⚠️ First `--confirm` attempt failed: target SHA `8563c499...` not yet reachable on origin (gh release create requires the target commit to be visible on remote when creating a new tag). Recovered by `git push origin main` (pushed `64bf5d2..8563c49`), then retried.
+3. ✅ Retry `--confirm` — `gh release create` succeeded; tag `itpassport-r6-v1.0.3` created on target SHA `8563c499`; 6 assets uploaded.
+4. ✅ `gh release view` — byte-for-byte asset size verification:
+   - `itpassport-r6-output-v1.0.3.zip` = 1,827,571 bytes (matches staged)
+   - `README.md` = 690 bytes (matches staged)
+   - `index.json` = 114,123 bytes (matches staged)
+   - `glossary.json` = 317,921 bytes (matches staged)
+   - `polish_items.json` = 113,584 bytes (matches staged)
+   - `SHA256SUMS.txt` = 415 bytes (matches staged)
 
 ---
 
