@@ -91,7 +91,7 @@ When in doubt, read STATE.md and ask the user.
 ## Repo layout assumptions (locked D-034 ~ D-053)
 
 - `pyproject.toml` at root = uv workspace umbrella (hatchling backend, `requires-python = ">=3.11,<4.0"`).
-- `packages/extractor/` is Phase 1's only package; `apps/` reserved for Phase 3+.
+- `packages/extractor/` is Phase 1's only package; `apps/` is for Phase 2+ web/CLI apps (`apps/web/` = Phase 2 Next.js 15 app per D-093).
 - Tests at `packages/extractor/tests/` with `unit/`, `integration/`, `e2e/` subdirs (D-040, D-042); `_fixtures/` for test data (D-043).
 - All runtime pipeline data lives under **`/data/<cert_id>/runs/<run_id>/<stage>/`** with stages = `raw/ ocr/ classified/ cleaned/ structured/ glossary/ translated/ output/` (D-050, D-051, D-052, D-053). The whole `/data/` is **gitignored** (D-050 supersedes D-045's scattered entries).
 - Final `output/` releases go via **GitHub Release + git tag**, not via git history (D-046).
