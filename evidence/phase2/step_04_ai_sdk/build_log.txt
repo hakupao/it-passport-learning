@@ -1,0 +1,43 @@
+Phase 2 Step 4 — pnpm build output (POST-D-095)
+Date: 2026-05-19 Session 35 Turn 3
+Command: pnpm build (in apps/web)
+
+> web@0.1.0 build /Users/bojiangzhang/MyProject/IT-Passport-Learning/apps/web
+> next build
+
+   ▲ Next.js 15.5.18
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in N/A
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/6) ...
+   Generating static pages (1/6)
+   Generating static pages (2/6)
+   Generating static pages (4/6)
+ ✓ Generating static pages (6/6)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                         Size  First Load JS
+┌ ○ /                            5.41 kB         119 kB
+├ ○ /_not-found                      0 B         114 kB
+└ ƒ /api/hello-ai                    0 B            0 B
++ First Load JS shared by all     118 kB
+  ├ chunks/2790b3612848e04f.js   75.3 kB
+  ├ chunks/9865a60df75e956a.js   20.8 kB
+  └ other shared chunks (total)  21.7 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+Exit: 0
+Comparison vs prior runs:
+- Step 3:        5 static / 119 kB First Load JS / 1.4 s
+- Step 4 v1:     5 static + 1 dynamic / 119 kB / 2.1 s (Anthropic-only scaffold)
+- Step 4 v2 D-095: 5 static + 1 dynamic / 119 kB / ~2.0 s (DeepSeek default + Anthropic switchable)
+- Regression: none (First Load JS identical; new route still server-only, 0 client bundle)
+
+pnpm lint exit 0 (1 minor unused-import warning eliminated in fix-up commit)
+tsc exit 0 (via next build "Linting and checking validity of types")

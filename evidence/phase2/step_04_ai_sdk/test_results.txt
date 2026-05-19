@@ -1,0 +1,58 @@
+Phase 2 Step 4 — pnpm test output (POST-D-095)
+Date: 2026-05-19 Session 35 Turn 3
+Command: pnpm test (vitest run, in apps/web)
+
+> web@0.1.0 test /Users/bojiangzhang/MyProject/IT-Passport-Learning/apps/web
+> vitest run
+
+ RUN  v4.1.6 /Users/bojiangzhang/MyProject/IT-Passport-Learning/apps/web
+
+ Test Files  4 passed (4)
+      Tests  48 passed (48)
+   Start at  18:29:21
+   Duration  198ms (transform 94ms, setup 0ms, import 169ms, tests 80ms, environment 0ms)
+
+Exit: 0
+
+Cumulative test breakdown (POST-D-095):
+- Step 2 (FsDataSource.test.ts):    13 tests   (unchanged)
+- Step 3 (assembleScope.test.ts):   10 tests   (unchanged)
+- Step 3 (index.test.ts):            5 tests   (unchanged)
+- Step 4 (provider.test.ts):        20 tests   (POST-D-095 — replaces deleted anthropic.test.ts 8 tests)
+                                    -----
+                                     48 tests pass / 0 fail / 0 skip
+
+  ↑ Net +12 vs Step 3 baseline (was 36 in Step 4 v1; refactor +12 over v1 net delta)
+
+provider.test.ts breakdown (20 tests, 5 describe blocks):
+  getActiveProvider (3):
+    - default deepseek when LLM_PROVIDER unset
+    - returns anthropic when LLM_PROVIDER=anthropic
+    - returns deepseek for any other LLM_PROVIDER value (incl. empty string)
+  getModel (4):
+    - returns a model for deepseek smoke role
+    - returns a model for anthropic smoke role
+    - uses active provider when none specified
+    - returns different model objects for chat vs quiz on deepseek
+  buildMessagesWithStablePrefix (4):
+    - 3 messages in order [system, system, user]
+    - corpus first, instruction middle, user last
+    - anthropic cacheControl:ephemeral only on first message; others undefined
+    - preserves multi-line corpus verbatim
+  readCacheUsage (9):
+    - undefined → unknown / all-null
+    - unrecognised keys → unknown / all-null
+    - anthropic shape — creation + read tokens parsed
+    - anthropic second-call (cache hit) shape parsed
+    - deepseek shape — hit + miss tokens parsed
+    - deepseek second-call (cache hit) shape parsed
+    - anthropic non-numeric defensive → null
+    - deepseek non-numeric defensive → null
+    - anthropic key precedence over deepseek when both present
+
+NOT covered by these unit tests (deferred to LLM gate runtime evidence):
+- Actual streamText() call against DeepSeek or Anthropic API (HARD GATE pending user `go LLM`)
+- Real promptCacheHitTokens / promptCacheMissTokens observation (DeepSeek default path)
+- Real cacheCreationInputTokens / cacheReadInputTokens observation (Anthropic switch path, optional second-round)
+- /api/hello-ai end-to-end HTTP smoke (deferred to LLM gate)
+- Provider switch via LLM_PROVIDER=anthropic env var on a real deploy (deferred)

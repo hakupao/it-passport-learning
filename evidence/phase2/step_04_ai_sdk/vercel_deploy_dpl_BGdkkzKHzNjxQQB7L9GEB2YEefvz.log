@@ -1,0 +1,56 @@
+Phase 2 Step 4 — Vercel preview deploy log (POST-D-095)
+Date: 2026-05-19 Session 35 Turn 3
+Command: vercel deploy --yes (from apps/web)
+
+Preview URL:    https://web-2ffvc7sz0-bojiangs-projects.vercel.app
+Deployment id:  dpl_BGdkkzKHzNjxQQB7L9GEB2YEefvz
+Inspector URL:  https://vercel.com/bojiangs-projects/web/BGdkkzKHzNjxQQB7L9GEB2YEefvz
+Build region:   iad1
+readyState:     READY
+target:         null (preview)
+
+Vercel log tail:
+  Creating build cache...
+  Preview     https://web-2ffvc7sz0-bojiangs-projects.vercel.app
+
+JSON envelope:
+  {
+    "status": "ok",
+    "deployment": {
+      "id": "dpl_BGdkkzKHzNjxQQB7L9GEB2YEefvz",
+      "url": "https://web-2ffvc7sz0-bojiangs-projects.vercel.app",
+      "inspectorUrl": "https://vercel.com/bojiangs-projects/web/BGdkkzKHzNjxQQB7L9GEB2YEefvz",
+      "readyState": "READY",
+      "target": null,
+      "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_BGdkkzKHzNjxQQB7L9GEB2YEefvz"
+    },
+    "message": "Deployment web-2ffvc7sz0-bojiangs-projects.vercel.app ready."
+  }
+
+Exit: 0
+
+Relation to prior deploy:
+- Prior: dpl_9MniAsEGaGeMVKBwzLrRSzRS8zXA (Session 35 Turn 2, PRE-D-095, Anthropic-only scaffold)
+- This:  dpl_BGdkkzKHzNjxQQB7L9GEB2YEefvz (Session 35 Turn 3, POST-D-095, DeepSeek default + Anthropic switchable)
+- Both preserved per Rule B spirit (evidence append-only); production alias unchanged.
+
+Notes (D-095 specific):
+- Active provider in this deploy = `deepseek` (LLM_PROVIDER env var unset → default per D-095 §2.1)
+- ANTHROPIC_API_KEY + DEEPSEEK_API_KEY both unset → POST /api/hello-ai returns HTTP 500 (no money spent)
+- GET /api/hello-ai → 200 with text body advertising active provider + expected key name + D-095 stable-prefix note
+- HARD GATE: user must `vercel env add DEEPSEEK_API_KEY preview` (default path) — optionally also `ANTHROPIC_API_KEY preview` if switch-mode verification desired in same gate
+- Cost this deploy: $0 真 billed (Vercel Hobby tier per D-091 §2.1 α-now)
+
+Verification commands (post-key-setup):
+  # Default DeepSeek path (env LLM_PROVIDER unset):
+  vercel env add DEEPSEEK_API_KEY preview          # interactive — user pastes key
+  vercel deploy --yes                              # redeploy with key in env
+  curl -i https://web-<new-sha>-bojiangs-projects.vercel.app/api/hello-ai  # GET 200, X-LLM-Provider: deepseek
+  curl -X POST https://web-<new-sha>-bojiangs-projects.vercel.app/api/hello-ai  # POST 200 streamed "ok"
+  vercel logs https://web-<new-sha>-bojiangs-projects.vercel.app           # fetch [hello-ai] {...} cache report
+
+  # Optional Anthropic switch path:
+  vercel env add ANTHROPIC_API_KEY preview         # interactive — user pastes key
+  vercel env add LLM_PROVIDER preview --value=anthropic  # or interactive
+  vercel deploy --yes                              # redeploy
+  curl -i https://web-<other-sha>-bojiangs-projects.vercel.app/api/hello-ai  # GET 200, X-LLM-Provider: anthropic
