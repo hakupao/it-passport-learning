@@ -1,0 +1,122 @@
+# Vercel first deploy log — Phase 2 Step 1
+
+Captured 2026-05-19 Session 32 Turn 3 via `cd apps/web && vercel deploy --yes`.
+
+---
+
+## Result
+
+| 字段 | 值 |
+|---|---|
+| **Deployment ID** | `dpl_2JMygfKhYsAJnZZZdVskPAKSRSUy` |
+| **Production URL** | https://web-lifln1qfn-bojiangs-projects.vercel.app |
+| **Aliased URL** | https://web-mu-sandy-78.vercel.app |
+| **Inspector** | https://vercel.com/bojiangs-projects/web/2JMygfKhYsAJnZZZdVskPAKSRSUy |
+| **Vercel Project** | `bojiangs-projects/web` (orgId `team_TBX54Ug849En1mIVwZJLhK1N`, projectId `prj_MsfuRLtz6IdKTg1WvQNmv1lb33qE`) |
+| **Target** | production (default first deploy on Hobby tier) |
+| **Region** | Washington, D.C., USA (East) – iad1 |
+| **Build machine** | 2 cores, 8 GB |
+| **Status** | READY |
+| **Wall** | ~60s total (build 52s + upload/finalize) |
+| **Smoke test** | `curl -sI https://web-mu-sandy-78.vercel.app/` → `HTTP/2 200 OK`, Content-Type: text/html |
+| **Auth method** | Vercel CLI OAuth device flow (per Session 32 Turn 3 manual login mid-flow) — account = `hakupao` |
+| **真 billed** | **$0** — Hobby tier free (per D-091 §2.1 α-now path) |
+
+---
+
+## Build phase
+
+```
+Detected Next.js (Build Command: next build, Output Directory: Next.js default)
+Linked      bojiangs-projects/web
+Deploying bojiangs-projects/web
+
+Running build in Washington, D.C., USA (East) – iad1
+Build machine configuration: 2 cores, 8 GB
+Retrieving list of deployment files...
+Previous build caches not available.
+Downloading 16 deployment files...
+Running "vercel build"
+Vercel CLI 53.3.2
+Installing dependencies...
+added 327 packages in 32s
+137 packages are looking for funding
+Detected Next.js version: 15.5.18
+Running "npm run build"
+> web@0.1.0 build
+> next build --turbopack
+▲ Next.js 15.5.18 (Turbopack)
+Creating an optimized production build ...
+✓ Finished writing to disk in 14ms
+✓ Compiled successfully in 6.9s
+Linting and checking validity of types ...
+Collecting page data ...
+Generating static pages (0/5) ...
+✓ Generating static pages (5/5)
+Finalizing page optimization ...
+Collecting build traces ...
+```
+
+---
+
+## Build output sizes
+
+| Route | Size | First Load JS |
+|---|---|---|
+| `/` (○ static) | 5.43 kB | 119 kB |
+| `/_not-found` (○ static) | 0 B | 114 kB |
+| First Load JS shared by all | — | 118 kB |
+| ├ chunks/46598acfa87bc38a.js | — | 75.4 kB |
+| ├ chunks/4ee574f56b8250fb.js | — | 20.8 kB |
+| └ other shared chunks | — | 21.4 kB |
+
+- Traced Next.js server files in: 46.158ms
+- Created all serverless functions in: 140.422ms
+- Collected static files (public/, static/, .next/static): 3.771ms
+- Build Completed in /vercel/output: **52s**
+
+---
+
+## Deployment manifest (JSON output)
+
+```json
+{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_2JMygfKhYsAJnZZZdVskPAKSRSUy",
+    "url": "https://web-lifln1qfn-bojiangs-projects.vercel.app",
+    "inspectorUrl": "https://vercel.com/bojiangs-projects/web/2JMygfKhYsAJnZZZdVskPAKSRSUy",
+    "readyState": "READY",
+    "target": "production",
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_2JMygfKhYsAJnZZZdVskPAKSRSUy"
+  },
+  "message": "Deployment web-lifln1qfn-bojiangs-projects.vercel.app ready."
+}
+```
+
+---
+
+## Smoke test (post-deploy)
+
+```
+$ curl -sI https://web-mu-sandy-78.vercel.app/
+HTTP/2 200
+accept-ranges: bytes
+access-control-allow-origin: *
+age: 0
+cache-control: public, max-age=0, must-revalidate
+content-disposition: inline
+content-type: text/html; charset=utf-8
+date: Tue, 19 May 2026 06:37:28 GMT
+```
+
+---
+
+## Notes (post-deploy observations)
+
+1. **Vercel CLI 53.3.2** 在 Vercel 构建机器上运行（vs 本地 54.1.0）— build runtime 用 Vercel-side pinned CLI；本地 CLI 仅做 link + upload。
+2. **Project name** = `web`（默认 cwd dir 名）— 通用名匹配 D-093 §2.1 锁 + future multi-cert via DataSource。如需 rename 可在 Vercel dashboard 改。
+3. **Org** = `bojiangs-projects`（user 个人 Hobby 团队），per D-091 §2.1 α-now Hobby 路径 ✅。
+4. **Target=production** despite `vercel deploy --yes`（无 `--prod`）— Vercel CLI 首次 deploy 默认 production target on Hobby tier。后续 git push 触发 preview deploys。
+5. **Turbopack** build mode active（`next build --turbopack`）— Next.js 15 stable Turbopack。
+6. **Telemetry** 默认开（Next.js 15 anonymous usage telemetry）— Phase 2 实施 retro 可考虑 opt-out (`npx next telemetry disable`).
