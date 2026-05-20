@@ -14,6 +14,7 @@
 
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo } from "react";
 
@@ -28,15 +29,12 @@ interface GlossaryListProps {
   summaries: GlossarySummary[];
 }
 
-const TITLE = "IT パスポート — 用語集";
-const SUBTITLE = "AI 解説つき用語集（α 自用 / 908 用語）";
-const EMPTY_HINT = "用語が見つかりませんでした。";
-const EXPLAIN_LABEL = "解説を見る";
-const READING_PREFIX = "読み：";
-
 export function GlossaryList({
   summaries,
 }: GlossaryListProps): React.ReactElement {
+  const t = useTranslations("GlossaryList");
+  const tCommon = useTranslations("Common");
+  const tTerm = useTranslations("TermPopover");
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeTerm = parseTermParam(searchParams.get("term"));
@@ -80,19 +78,19 @@ export function GlossaryList({
   }, [router, searchParams]);
 
   return (
-    <main className="flex flex-col min-h-screen max-w-5xl mx-auto p-4 sm:p-6 gap-4">
+    <main className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-4">
       <header className="border-b border-black/[.08] dark:border-white/[.12] pb-3">
         <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
-          {TITLE}
+          {t("title")}
         </h1>
         <p className="text-xs sm:text-sm text-black/60 dark:text-white/60 mt-1">
-          {SUBTITLE}
+          {t("subtitle")}
         </p>
       </header>
 
       {summaries.length === 0 ? (
         <p className="text-center text-sm text-black/50 dark:text-white/50 py-12">
-          {EMPTY_HINT}
+          {t("emptyHint")}
         </p>
       ) : (
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -106,13 +104,13 @@ export function GlossaryList({
                   {s.surfaceJp}
                 </span>
                 <span className="text-[10px] uppercase tracking-wider text-black/40 dark:text-white/40 shrink-0">
-                  {`p${s.firstPage}`}
+                  {t("pageBadge", { page: s.firstPage })}
                 </span>
               </div>
 
               {s.kanaReading && (
                 <p className="text-[11px] text-black/55 dark:text-white/55" lang="ja">
-                  {READING_PREFIX}
+                  {tTerm("readingPrefix")}
                   {s.kanaReading}
                 </p>
               )}
@@ -128,7 +126,7 @@ export function GlossaryList({
                 onClick={() => handleSelect(s.surfaceJp)}
                 className="mt-1 self-start text-[11px] rounded-md bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 hover:opacity-90 transition-opacity"
               >
-                {EXPLAIN_LABEL}
+                {tCommon("explain")}
               </button>
             </li>
           ))}

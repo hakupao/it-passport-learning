@@ -1,35 +1,14 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "IT パスポート 三語学習",
-  description:
-    "Trilingual (jp/zh/en) study companion for the Japanese IT Passport exam — α private build.",
-};
+// Phase 2 Step 12 — root layout simplified to pass-through (D-099 §2.5 LD-7).
+//
+// With the [locale] segment owning <html>/<body> + NextIntlClientProvider, the
+// root layout has nothing to add. Next.js still requires app/layout.tsx to
+// exist; this minimal form satisfies the requirement without conflicting with
+// the locale-scoped layout in app/[locale]/layout.tsx.
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
-  );
+  return children;
 }

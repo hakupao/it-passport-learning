@@ -14,6 +14,7 @@
 
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo } from "react";
 
@@ -24,14 +25,11 @@ interface QuizListProps {
   summaries: QuizSummary[];
 }
 
-const TITLE = "IT パスポート — 問題集";
-const SUBTITLE = "練習問題（α 自用 / 254 問）";
-const EMPTY_HINT = "問題が見つかりませんでした。";
-const EXPLAIN_LABEL = "解説を見る";
-const ANSWER_PREFIX = "正答：";
 const CHOICE_SEP = "／";
 
 export function QuizList({ summaries }: QuizListProps): React.ReactElement {
+  const t = useTranslations("QuizList");
+  const tCommon = useTranslations("Common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeQid = searchParams.get("qid");
@@ -76,19 +74,19 @@ export function QuizList({ summaries }: QuizListProps): React.ReactElement {
   }, [router, searchParams]);
 
   return (
-    <main className="flex flex-col min-h-screen max-w-5xl mx-auto p-4 sm:p-6 gap-4">
+    <main className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-4">
       <header className="border-b border-black/[.08] dark:border-white/[.12] pb-3">
         <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
-          {TITLE}
+          {t("title")}
         </h1>
         <p className="text-xs sm:text-sm text-black/60 dark:text-white/60 mt-1">
-          {SUBTITLE}
+          {t("subtitle")}
         </p>
       </header>
 
       {summaries.length === 0 ? (
         <p className="text-center text-sm text-black/50 dark:text-white/50 py-12">
-          {EMPTY_HINT}
+          {t("emptyHint")}
         </p>
       ) : (
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -99,22 +97,25 @@ export function QuizList({ summaries }: QuizListProps): React.ReactElement {
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[10px] uppercase tracking-wider text-black/40 dark:text-white/40">
-                  {`第 ${s.page} ページ 問${s.entityIndex + 1}`}
+                  {t("pageEntity", {
+                    page: s.page,
+                    index: s.entityIndex + 1,
+                  })}
                 </span>
                 {s.answerLetterJp && (
                   <span className="text-xs text-black/60 dark:text-white/60">
-                    {ANSWER_PREFIX}
+                    {t("answerPrefix")}
                     {s.answerLetterJp}
                   </span>
                 )}
               </div>
 
-              <p className="text-sm leading-snug text-black/85 dark:text-white/85">
+              <p className="text-sm leading-snug text-black/85 dark:text-white/85" lang="ja">
                 {s.stemJp}
               </p>
 
               {s.choices.length > 0 && (
-                <p className="text-xs text-black/50 dark:text-white/50 line-clamp-2">
+                <p className="text-xs text-black/50 dark:text-white/50 line-clamp-2" lang="ja">
                   {s.choices
                     .map((c) => `${c.letterJp}.${stripChoicePrefix(c.text.jp)}`)
                     .join(CHOICE_SEP)}
@@ -126,7 +127,7 @@ export function QuizList({ summaries }: QuizListProps): React.ReactElement {
                 onClick={() => handleSelect(s.questionId)}
                 className="mt-1 self-start text-xs rounded-lg bg-black text-white dark:bg-white dark:text-black px-3 py-1.5 hover:opacity-90 transition-opacity"
               >
-                {EXPLAIN_LABEL}
+                {tCommon("explain")}
               </button>
             </li>
           ))}

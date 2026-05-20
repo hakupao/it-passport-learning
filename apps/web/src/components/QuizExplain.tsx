@@ -17,6 +17,7 @@
 
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { streamQuizExplain } from "@/lib/quiz/quizSseTransport";
@@ -31,19 +32,15 @@ interface QuizExplainProps {
   onClose: () => void;
 }
 
-const ERROR_FALLBACK = "AI 暂时不可用，请稍后重试。";
-const BUSY_TEXT = "AI が回答を生成しています…（最長 約30〜45秒）";
-const BUSY_TEXT_CN = "AI 正在分析…（最长约 30-45 秒）";
-const EMPTY_OUTPUT_HINT =
-  "AI からの解説本文が空でした。もう一度お試しください。";
-const RETRY_LABEL = "再試行 / 再试一次";
-const CLOSE_LABEL = "閉じる / 关闭";
-const ANSWER_PREFIX = "正答：";
+// Surface strings flow through useTranslations("QuizExplain") + Common.
+// D-088 §2.4 locked Chinese error fallback is now D-099 §2.5 per-locale lock.
 
 export function QuizExplain({
   summary,
   onClose,
 }: QuizExplainProps): React.ReactElement | null {
+  const t = useTranslations("QuizExplain");
+  const tCommon = useTranslations("Common");
   const [phase, setPhase] = useState<StreamPhase>("idle");
   const [output, setOutput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -100,7 +97,7 @@ export function QuizExplain({
         onError: (message) => {
           if (requestSeqRef.current !== mySeq) return;
           setPhase("error");
-          setErrorMessage(message || ERROR_FALLBACK);
+          setErrorMessage(message || tCommon("errorFallback"));
         },
         onComplete: () => {
           if (requestSeqRef.current !== mySeq) return;
@@ -114,7 +111,7 @@ export function QuizExplain({
         },
       },
     });
-  }, []);
+  }, [tCommon]);
 
   // Kick off / cancel the SSE stream as `summary` changes.
   useEffect(() => {
@@ -136,10 +133,12 @@ export function QuizExplain({
 
   const correctAnswerLabel =
     summary.answerLetterJp != null
-      ? `${ANSWER_PREFIX}${summary.answerLetterJp}`
+      ? `${t("answerPrefix")}${summary.answerLetterJp}`
       : null;
   const showEmptyHint =
     phase === "error" && output === "" && errorMessage === "";
+  const busyText = t("busyText");
+  const closeLabel = tCommon("close");
 
   return (
     <div
@@ -161,7 +160,10 @@ export function QuizExplain({
               id="quiz-explain-title"
               className="text-base sm:text-lg font-semibold tracking-tight"
             >
-              {`第 ${summary.page} ページ 問${summary.entityIndex + 1}`}
+              {t("pageEntity", {
+                page: summary.page,
+                index: summary.entityIndex + 1,
+              })}
             </h2>
             <p className="mt-1 text-xs text-black/60 dark:text-white/60 line-clamp-3">
               {summary.stem.jp}
@@ -175,7 +177,7 @@ export function QuizExplain({
           <button
             type="button"
             onClick={onClose}
-            aria-label={CLOSE_LABEL}
+            aria-label={closeLabel}
             className="shrink-0 rounded-md px-2 py-1 text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors"
           >
             ✕
@@ -186,9 +188,7 @@ export function QuizExplain({
           className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-3"
           aria-live="polite"
         >
-          {phase === "loading" && (
-            <BusySkeleton textJp={BUSY_TEXT} textCn={BUSY_TEXT_CN} />
-          )}
+          {phase === "loading" && <BusySkeleton text={busyText} />}
 
           {(phase === "streaming" || phase === "done") && output && (
             <article className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-sm sm:text-base leading-relaxed">
@@ -198,7 +198,7 @@ export function QuizExplain({
 
           {phase === "streaming" && (
             <p className="text-xs italic text-black/50 dark:text-white/50">
-              {BUSY_TEXT}
+              {busyText}
             </p>
           )}
 
@@ -207,7 +207,7 @@ export function QuizExplain({
               role="alert"
               className="text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg px-3 py-2"
             >
-              {EMPTY_OUTPUT_HINT}
+              {tCommon("emptyOutputHint")}
             </p>
           )}
 
@@ -234,7 +234,7 @@ export function QuizExplain({
               onClick={() => startStream(summary.questionId)}
               className="text-sm rounded-lg border border-black/[.12] dark:border-white/[.14] px-3 py-1.5 hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors"
             >
-              {RETRY_LABEL}
+              {tCommon("retry")}
             </button>
           )}
           <button
@@ -242,7 +242,7 @@ export function QuizExplain({
             onClick={onClose}
             className="text-sm rounded-lg bg-black text-white dark:bg-white dark:text-black px-3 py-1.5 hover:opacity-90 transition-opacity"
           >
-            {CLOSE_LABEL}
+            {closeLabel}
           </button>
         </footer>
       </div>
@@ -250,13 +250,7 @@ export function QuizExplain({
   );
 }
 
-function BusySkeleton({
-  textJp,
-  textCn,
-}: {
-  textJp: string;
-  textCn: string;
-}): React.ReactElement {
+function BusySkeleton({ text }: { text: string }): React.ReactElement {
   return (
     <div className="space-y-3" data-testid="quiz-explain-busy">
       <div className="space-y-2">
@@ -268,7 +262,7 @@ function BusySkeleton({
 
       <div
         role="progressbar"
-        aria-label={textJp}
+        aria-label={text}
         aria-valuemin={0}
         aria-valuemax={100}
         className="h-1 rounded bg-black/[.05] dark:bg-white/[.08] overflow-hidden relative"
@@ -276,12 +270,7 @@ function BusySkeleton({
         <div className="quiz-explain-progress h-full bg-black/40 dark:bg-white/40 rounded" />
       </div>
 
-      <p className="text-xs text-black/60 dark:text-white/60">
-        <span className="block">{textJp}</span>
-        <span className="block text-black/40 dark:text-white/40">
-          {textCn}
-        </span>
-      </p>
+      <p className="text-xs text-black/60 dark:text-white/60">{text}</p>
 
       <style>{`
         @keyframes quiz-explain-progress-keyframes {

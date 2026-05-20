@@ -1,22 +1,25 @@
 // Phase 2 Step 9 — <Chat /> client component (D-085 §2.1 Chat mode surface).
 //
-// Session 41 4Q-locked design:
+// Session 41 4Q-locked design (history):
 //   Q1=a AI SDK data stream + useChat hook  →  zero custom SSE consumer logic.
 //   Q2=a localStorage cross-session         →  history via historyStore.ts.
-//   Q3=a pin last conversation              →  restore on mount; "新しい会話"
-//                                                 button is the only path to
-//                                                 clear (D-085 §2.2 §5.1 — 0
-//                                                 思考成本启动).
-//   Q4=a hardcoded zh-CN now                →  no i18n catalog; Step 12 抽取.
+//   Q3=a pin last conversation              →  restore on mount; new-chat
+//                                                 button is the only clear path
+//                                                 (D-085 §2.2 §5.1).
+//   Q4=a hardcoded zh-CN now                →  Step 12 i18n catalog extraction.
 //
-// Step 12 will integrate this surface into the 3-tab Layout (D-085 §2.3 Top
-// tabs); for Step 9 it is mounted on a standalone /chat page to give Module C
-// its first UI data point per D-094 §2.4 mid-implementation retro.
+// Step 12 (Session 44, D-099) integration:
+//   - All surface strings now flow through useTranslations("Chat") + Common.
+//   - ERROR_FALLBACK was D-088 §2.4 locked Chinese; D-099 §2.5 partial-supersede
+//     extends the lock to locale-aware variants (ja/zh/en) — same principle,
+//     per-locale lock.
+//   - Surface is now mounted under [locale]/chat, inheriting the top NavTabs.
 
 "use client";
 
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
+import { useTranslations } from "next-intl";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 
 import {
@@ -24,17 +27,6 @@ import {
   loadChatHistory,
   saveChatHistory,
 } from "@/lib/chat/historyStore";
-
-const PLACEHOLDER = "教科書に関する質問をどうぞ。例：DNS とは何か？";
-const SEND_LABEL = "送信";
-const NEW_CHAT_LABEL = "新しい会話 / 新对话";
-const TITLE = "IT パスポート — Chat";
-const SUBTITLE = "教科書ベース三語チューター（α 自用）";
-const EMPTY_HINT =
-  "AI が教科書（令和6年度 / 554 ページ）を文脈として回答します。" +
-  "ページ番号引用は教科書原文との照合に使えます。";
-const STREAMING_HINT = "回答生成中…";
-const ERROR_FALLBACK = "AI 暂时不可用，请稍后重试。";
 
 function isBrowser(): boolean {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -50,6 +42,8 @@ function extractMessageText(msg: UIMessage): string {
 }
 
 export function Chat(): React.ReactElement {
+  const t = useTranslations("Chat");
+  const tCommon = useTranslations("Common");
   const { messages, sendMessage, setMessages, status, error } = useChat();
   const [input, setInput] = useState("");
   const [restored, setRestored] = useState(false);
@@ -114,17 +108,19 @@ export function Chat(): React.ReactElement {
   };
 
   const isStreaming = status === "submitted" || status === "streaming";
-  const errorMessage = error?.message?.trim() ? error.message : ERROR_FALLBACK;
+  const errorMessage = error?.message?.trim()
+    ? error.message
+    : tCommon("errorFallback");
 
   return (
-    <main className="flex flex-col h-screen max-w-3xl mx-auto p-4 sm:p-6 gap-3">
+    <main className="flex flex-col h-[calc(100vh-3rem)] max-w-3xl mx-auto p-4 sm:p-6 gap-3">
       <header className="flex items-start justify-between border-b border-black/[.08] dark:border-white/[.12] pb-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
-            {TITLE}
+            {t("title")}
           </h1>
           <p className="text-xs sm:text-sm text-black/60 dark:text-white/60 mt-1">
-            {SUBTITLE}
+            {t("subtitle")}
           </p>
         </div>
         <button
@@ -133,7 +129,7 @@ export function Chat(): React.ReactElement {
           disabled={messages.length === 0 || isStreaming}
           className="text-xs sm:text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          {NEW_CHAT_LABEL}
+          {t("newChat")}
         </button>
       </header>
 
@@ -144,7 +140,7 @@ export function Chat(): React.ReactElement {
       >
         {messages.length === 0 && (
           <p className="text-center text-sm text-black/50 dark:text-white/50 py-12 px-4">
-            {EMPTY_HINT}
+            {t("emptyHint")}
           </p>
         )}
         {messages.map((m) => {
@@ -162,7 +158,7 @@ export function Chat(): React.ReactElement {
                     : "bg-black/[.04] dark:bg-white/[.08] rounded-2xl px-4 py-2 max-w-[80%] whitespace-pre-wrap text-sm sm:text-base"
                 }
               >
-                {text || (isUser ? "" : STREAMING_HINT)}
+                {text || (isUser ? "" : t("streaming"))}
               </div>
             </div>
           );
@@ -170,7 +166,7 @@ export function Chat(): React.ReactElement {
         {isStreaming && messages[messages.length - 1]?.role === "user" && (
           <div className="flex justify-start">
             <div className="bg-black/[.04] dark:bg-white/[.08] rounded-2xl px-4 py-2 max-w-[80%] text-sm italic text-black/60 dark:text-white/60">
-              {STREAMING_HINT}
+              {t("streaming")}
             </div>
           </div>
         )}
@@ -190,18 +186,18 @@ export function Chat(): React.ReactElement {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={PLACEHOLDER}
+          placeholder={t("placeholder")}
           disabled={isStreaming}
           className="flex-1 border border-black/[.12] dark:border-white/[.14] rounded-lg px-3 py-2 bg-white dark:bg-black text-sm sm:text-base focus:outline-none focus:border-black/40 dark:focus:border-white/40 disabled:opacity-50"
           autoComplete="off"
-          aria-label="メッセージ入力"
+          aria-label={t("inputAriaLabel")}
         />
         <button
           type="submit"
           disabled={isStreaming || !input.trim()}
           className="bg-black text-white dark:bg-white dark:text-black rounded-lg px-4 py-2 text-sm sm:text-base font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {SEND_LABEL}
+          {tCommon("send")}
         </button>
       </form>
     </main>
