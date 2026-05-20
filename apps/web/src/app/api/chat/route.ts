@@ -1,36 +1,42 @@
-// Phase 2 Step 5 — POST /api/chat (whole-book scope, stateless single-turn SSE).
+// Phase 2 Step 9 — POST /api/chat (whole-book scope, AI SDK v6 data stream).
 //
-// Session 37 4Q-locked design:
-//   Q1=a scope = whole-book only (assembleWholeBook from Step 3)
-//   Q2=a stateless single-turn SSE { scope, userMessage } → text deltas + final
-//        usage frame
-//   Q3=a curl-only smoke this session; UI deferred to Module C
-//   Q4=a code green + N≥3 真 call retro 轻 (cache hit baseline + chars/N calibration)
-//
-// D-097 firewall: route at `/api/chat` is gated by middleware Basic Auth;
-// smoke calls require `-u claude:<pass>` header.
-//
-// D-095 stable-prefix: whole-book corpus block goes first as system, then the
-// short per-session instruction, then user message. Maximises DeepSeek server-
-// side automatic prefix cache + Anthropic ephemeral block cache (via the
-// providerOptions.anthropic namespace on the corpus message) simultaneously.
+// Session 41 4Q-locked design (Q1=a AI SDK data stream + useChat):
+//   - Request body shape changed from the Step 5 `{scope, userMessage}` envelope
+//     to the AI SDK v6 `{messages: UIMessage[]}` shape that the `useChat` hook
+//     auto-posts. Multi-turn conversation history is now preserved client-side
+//     in localStorage (D-085 §2.2 Resume contract) and shipped on every call.
+//   - The Step 5 stable-prefix layout (corpus → SYSTEM_INSTRUCTION → user) is
+//     inlined here rather than going through `buildMessagesWithStablePrefix`,
+//     because that helper signs against a single `userMessage: string`; the
+//     conversation `UIMessage[]` is spread after the two system messages so the
+//     cached prefix (corpus + instruction) stays byte-identical across turns,
+//     which is the precondition for DeepSeek's automatic prefix cache and
+//     Anthropic's ephemeral block cache (D-095 §2.3).
+//   - SSE wire format is now AI SDK v6's UI message stream protocol (managed by
+//     `toUIMessageStreamResponse`), NOT the Step 5 custom `{type:"delta",text}`
+//     framing. `useChat` consumes this natively.
+//   - D-088 §2.4 user-surface contract honoured via `toUIMessageStreamResponse`
+//     `onError` returning the locked Chinese fallback through `formatUserFacingError`.
+//   - D-091 §2.5(β) cache-hit tripwire eval retained in `onFinish` —
+//     `toUIMessageStreamResponse({ onFinish })` exposes `usage` +
+//     `providerMetadata` so tripwire telemetry survives the migration.
+//   - The other 3 routes (`/api/{hello-ai, quiz/explain, glossary/hover}`)
+//     remain on the Step 5 `buildChatSseResponse` encoder because their UI
+//     consumers (Step 10 modal, Step 11 popover) are single-shot, not useChat-
+//     based, and would gain nothing from the AI SDK data-stream protocol
+//     overhead.
 //
 // Runtime = nodejs (FsDataSource reads JSON via fs); maxDuration = 30s.
 
-import { streamText } from "ai";
+import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { getDataSource, warmUp } from "@/lib/data";
 import { assembleWholeBook } from "@/lib/data/assembleScope";
 import {
-  buildMessagesWithStablePrefix,
   getActiveProvider,
   getModel,
   readCacheUsage,
 } from "@/lib/ai/provider";
-import {
-  buildChatSseResponse,
-  validateChatRequestBody,
-} from "@/lib/ai/chat";
-import { STREAM_CONFIG } from "@/lib/ai/retry";
+import { STREAM_CONFIG, formatUserFacingError } from "@/lib/ai/retry";
 import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
 
 export const runtime = "nodejs";
@@ -54,6 +60,17 @@ function jsonError(status: number, message: string): Response {
   });
 }
 
+interface ChatRequestBody {
+  messages: UIMessage[];
+}
+
+function validateRequestBody(raw: unknown): ChatRequestBody | null {
+  if (!raw || typeof raw !== "object") return null;
+  const body = raw as { messages?: unknown };
+  if (!Array.isArray(body.messages) || body.messages.length === 0) return null;
+  return { messages: body.messages as UIMessage[] };
+}
+
 export async function POST(request: Request): Promise<Response> {
   let rawBody: unknown;
   try {
@@ -62,9 +79,12 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError(400, "invalid JSON body");
   }
 
-  const parsed = validateChatRequestBody(rawBody);
-  if (!parsed.ok) {
-    return jsonError(400, parsed.error);
+  const parsed = validateRequestBody(rawBody);
+  if (!parsed) {
+    return jsonError(
+      400,
+      'request body must include a non-empty `messages: UIMessage[]` array',
+    );
   }
 
   await warmUp();
@@ -72,20 +92,33 @@ export async function POST(request: Request): Promise<Response> {
   const wholeBook = await assembleWholeBook(ds);
 
   const provider = getActiveProvider();
+  const conversation = await convertToModelMessages(parsed.messages);
+
   const result = streamText({
     model: getModel("chat"),
     maxRetries: STREAM_CONFIG.maxRetries,
-    messages: buildMessagesWithStablePrefix(
-      wholeBook.contextBlock,
-      SYSTEM_INSTRUCTION,
-      parsed.body.userMessage,
-    ),
+    abortSignal: request.signal,
+    messages: [
+      {
+        role: "system",
+        content: wholeBook.contextBlock,
+        providerOptions: {
+          anthropic: { cacheControl: { type: "ephemeral" } },
+        },
+      },
+      {
+        role: "system",
+        content: SYSTEM_INSTRUCTION,
+      },
+      ...conversation,
+    ],
     onFinish: ({ usage, providerMetadata }) => {
       console.log(
         "[chat]",
         JSON.stringify({
           provider,
           scope: "whole-book",
+          turnCount: parsed.messages.length,
           tokenEstimate: wholeBook.tokenEstimate,
           inputTokens: usage.inputTokens,
           outputTokens: usage.outputTokens,
@@ -95,22 +128,25 @@ export async function POST(request: Request): Promise<Response> {
       );
       const tripwire = evaluateCacheTripwire({
         usage: readCacheUsage(providerMetadata),
-        totalInputTokens: typeof usage.inputTokens === "number"
-          ? usage.inputTokens
-          : null,
+        totalInputTokens:
+          typeof usage.inputTokens === "number" ? usage.inputTokens : null,
         route: "/api/chat",
       });
       if (tripwire !== null) recordTripwireEvent(tripwire);
     },
   });
 
-  return buildChatSseResponse({
-    textStream: result.textStream,
-    usagePromise: result.usage,
-    providerMetadataPromise: result.providerMetadata as PromiseLike<
-      Record<string, unknown> | undefined
-    >,
-    provider,
+  return result.toUIMessageStreamResponse({
+    onError: (error) => {
+      // D-088 §2.4 user-surface contract: emit the locked Chinese fallback
+      // message, NOT the raw provider error. The raw error is still logged
+      // separately for debug visibility via `vercel logs`.
+      console.error("[/api/chat] stream error", error);
+      return formatUserFacingError(error);
+    },
+    headers: {
+      "X-LLM-Provider": provider,
+    },
   });
 }
 
@@ -119,14 +155,13 @@ export async function GET(): Promise<Response> {
   const expectedKey =
     provider === "anthropic" ? "ANTHROPIC_API_KEY" : "DEEPSEEK_API_KEY";
   return new Response(
-    `POST { "scope": "whole-book", "userMessage": "<text>" } to this endpoint.\n` +
-      `SSE response: text deltas as { type: 'delta', text }, then a final\n` +
-      `{ type: 'usage', cacheCreationInputTokens, cacheReadInputTokens, ... } frame,\n` +
-      `then [DONE].\n` +
+    `POST { "messages": UIMessage[] } to this endpoint.\n` +
+      `SSE response: AI SDK v6 UI message stream protocol (text-delta, ` +
+      `start, finish frames). Consume via @ai-sdk/react useChat hook.\n` +
       `Active provider (env LLM_PROVIDER): ${provider}\n` +
       `Required env var on this deploy: ${expectedKey}\n` +
       `D-097 firewall: request must include Basic Auth header.\n` +
-      `D-095 stable-prefix layout (corpus → instruction → user) is applied.\n`,
+      `D-095 stable-prefix layout (corpus → instruction → conversation) is applied.\n`,
     {
       status: 200,
       headers: {

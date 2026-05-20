@@ -1,91 +1,19 @@
-// Unit tests for /api/chat helper: SSE encoder + request body validator.
+// Unit tests for the shared single-shot SSE encoder in `lib/ai/chat.ts`.
 //
-// Session 37 Step 5 Batch B coverage:
-//   - validateChatRequestBody: scope/userMessage/edge cases (7 cases)
-//   - buildChatSseResponse: SSE wire format, delta ordering, usage frame
-//     derivation (anthropic + deepseek + unknown), empty-chunk skip,
-//     error path → error frame, header set (8 cases)
+// Originally Step 5 also tested `validateChatRequestBody` here; those cases
+// were retired in Step 9 when `/api/chat` migrated to the AI SDK v6 UI message
+// stream protocol (the validator + ChatRequestBody type had no other caller).
+// `buildChatSseResponse` remains in use by /api/{hello-ai, quiz/explain,
+// glossary/hover}.
+//
+// Coverage:
+//   - SSE wire format, delta ordering, usage frame derivation
+//     (anthropic + deepseek + unknown), empty-chunk skip, error path
+//     → error frame, header set (6 cases)
 
 import { describe, expect, it, vi } from "vitest";
 
-import {
-  USER_MESSAGE_MAX_LENGTH,
-  buildChatSseResponse,
-  validateChatRequestBody,
-} from "../chat";
-
-describe("validateChatRequestBody", () => {
-  it("accepts a valid whole-book + non-empty userMessage payload", () => {
-    const r = validateChatRequestBody({
-      scope: "whole-book",
-      userMessage: "What is OSI?",
-    });
-    expect(r.ok).toBe(true);
-    if (r.ok) {
-      expect(r.body.scope).toBe("whole-book");
-      expect(r.body.userMessage).toBe("What is OSI?");
-    }
-  });
-
-  it("rejects null/undefined body", () => {
-    expect(validateChatRequestBody(null).ok).toBe(false);
-    expect(validateChatRequestBody(undefined).ok).toBe(false);
-  });
-
-  it("rejects non-object body (string / number / array)", () => {
-    expect(validateChatRequestBody("hi").ok).toBe(false);
-    expect(validateChatRequestBody(42).ok).toBe(false);
-    // Arrays are objects in JS but the validator must still reject because
-    // scope/userMessage cannot be array-indexed and yield required fields.
-    const arr = validateChatRequestBody([]);
-    expect(arr.ok).toBe(false);
-  });
-
-  it("rejects unsupported scope (per Q1=a Step 5 whole-book only)", () => {
-    for (const scope of ["chapter", "question", "term-hover", "", "WHOLE-BOOK"]) {
-      const r = validateChatRequestBody({ scope, userMessage: "x" });
-      expect(r.ok).toBe(false);
-      if (!r.ok) expect(r.error).toContain("scope");
-    }
-  });
-
-  it("rejects missing scope field", () => {
-    const r = validateChatRequestBody({ userMessage: "x" });
-    expect(r.ok).toBe(false);
-  });
-
-  it("rejects non-string userMessage", () => {
-    for (const userMessage of [123, null, undefined, {}, []]) {
-      const r = validateChatRequestBody({ scope: "whole-book", userMessage });
-      expect(r.ok).toBe(false);
-    }
-  });
-
-  it("rejects empty userMessage (length === 0)", () => {
-    const r = validateChatRequestBody({ scope: "whole-book", userMessage: "" });
-    expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.error).toContain("non-empty");
-  });
-
-  it("rejects userMessage longer than USER_MESSAGE_MAX_LENGTH", () => {
-    const big = "あ".repeat(USER_MESSAGE_MAX_LENGTH + 1);
-    const r = validateChatRequestBody({
-      scope: "whole-book",
-      userMessage: big,
-    });
-    expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.error).toContain(String(USER_MESSAGE_MAX_LENGTH));
-  });
-
-  it("accepts userMessage at the exact maximum length", () => {
-    const exact = "a".repeat(USER_MESSAGE_MAX_LENGTH);
-    const r = validateChatRequestBody({
-      scope: "whole-book",
-      userMessage: exact,
-    });
-    expect(r.ok).toBe(true);
-  });
-});
+import { buildChatSseResponse } from "../chat";
 
 async function* asyncIter<T>(items: T[]): AsyncGenerator<T> {
   for (const item of items) yield item;

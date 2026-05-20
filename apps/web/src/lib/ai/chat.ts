@@ -1,10 +1,19 @@
-// Phase 2 Step 5 — SSE encoder + request validator for /api/chat.
+// Phase 2 Step 5 / Step 9 — single-shot SSE encoder for /api/{hello-ai,
+// quiz/explain, glossary/hover}.
 //
-// Session 37 4Q-locked design (Q2=a stateless single-turn SSE):
-//   wire format = `data: {...}\n\n` events on text/event-stream
+// Originally Step 5 hosted both an `/api/chat` request validator and a custom
+// SSE encoder here. Step 9 migrated `/api/chat` to the AI SDK v6 UI message
+// stream protocol (consumed by useChat), so the validator + ChatRequestBody
+// type were retired (no other caller).
+//
+// The single-shot encoder below is still in use by 3 routes whose UIs (Step 10
+// modal, Step 11 popover) are NOT multi-turn chat surfaces and have nothing to
+// gain from the AI SDK data-stream protocol. The wire format remains:
+//   `data: {...}\n\n` events on text/event-stream
 //     - delta:   { "type": "delta", "text": "..." }
 //     - usage:   { "type": "usage", ...cache metadata + token totals }
 //     - done:    `data: [DONE]\n\n`
+//     - error:   { "type": "error", "message": <locked Chinese surface> }
 //
 // This module is decoupled from the AI SDK type surface on purpose — it
 // accepts a plain `{ textStream, usagePromise, providerMetadataPromise }`
@@ -13,48 +22,6 @@
 import type { ProviderKind, CacheUsageReport } from "./provider";
 import { readCacheUsage } from "./provider";
 import { formatUserFacingError } from "./retry";
-
-export interface ChatRequestBody {
-  scope: "whole-book";
-  userMessage: string;
-}
-
-export type ChatBodyValidation =
-  | { ok: true; body: ChatRequestBody }
-  | { ok: false; error: string };
-
-/** Step 5 hard cap; whole-book corpus prefix already dominates the input. */
-export const USER_MESSAGE_MAX_LENGTH = 8192;
-
-export function validateChatRequestBody(raw: unknown): ChatBodyValidation {
-  if (!raw || typeof raw !== "object") {
-    return { ok: false, error: "request body must be a JSON object" };
-  }
-  const obj = raw as Record<string, unknown>;
-  if (obj.scope !== "whole-book") {
-    return {
-      ok: false,
-      error:
-        `unsupported scope "${String(obj.scope)}": Step 5 supports only "whole-book"`,
-    };
-  }
-  if (typeof obj.userMessage !== "string") {
-    return { ok: false, error: "userMessage must be a string" };
-  }
-  if (obj.userMessage.length === 0) {
-    return { ok: false, error: "userMessage must be a non-empty string" };
-  }
-  if (obj.userMessage.length > USER_MESSAGE_MAX_LENGTH) {
-    return {
-      ok: false,
-      error: `userMessage exceeds ${USER_MESSAGE_MAX_LENGTH} character limit`,
-    };
-  }
-  return {
-    ok: true,
-    body: { scope: "whole-book", userMessage: obj.userMessage },
-  };
-}
 
 export interface ChatDeltaFrame {
   type: "delta";
