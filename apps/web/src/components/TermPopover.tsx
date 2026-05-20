@@ -11,12 +11,20 @@
 // D-088 §2.4 error surface = locked Chinese fallback via formatUserFacingError.
 // D-097 firewall: browser HTTP auth cache carries Basic Auth from the first
 // list-page load; fetch() inherits it automatically.
+//
+// Session 46 Step 14 a11y polish (Full WCAG 2.1 AA):
+//   - Contrast bumps mirror QuizExplain (text-black/40 → /55, /50 → /60).
+//   - Focus trap + restore via useFocusTrap (LD-5).
+//   - aria-busy on content area (LD-7).
+//   - prefers-reduced-motion gate on skeleton + progressbar (LD-6).
+//   - Uniform focus-visible ring (LD-4) on close / retry / footer-close.
 
 "use client";
 
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 import { streamGlossaryHover } from "@/lib/glossary/glossarySseTransport";
 import type { GlossarySummary } from "@/lib/glossary/glossaryScope";
 
@@ -28,6 +36,9 @@ interface TermPopoverProps {
   /** Close handler: clears `?term=` from URL and dismisses the popover. */
   onClose: () => void;
 }
+
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-black dark:focus-visible:ring-white";
 
 // Surface strings flow through useTranslations("TermPopover") + Common.
 // D-088 §2.4 locked Chinese error fallback now D-099 §2.5 per-locale lock.
@@ -44,6 +55,9 @@ export function TermPopover({
   const [usageHint, setUsageHint] = useState<string>("");
   const abortRef = useRef<AbortController | null>(null);
   const requestSeqRef = useRef<number>(0);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(summary !== null, dialogRef);
 
   useEffect(() => {
     if (!summary) return;
@@ -126,12 +140,14 @@ export function TermPopover({
     phase === "error" && output === "" && errorMessage === "";
   const busyText = t("busyText");
   const closeLabel = tCommon("close");
+  const isBusy = phase === "loading" || phase === "streaming";
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="term-popover-title"
+      ref={dialogRef}
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -151,17 +167,17 @@ export function TermPopover({
               {summary.surfaceJp}
             </h2>
             {summary.kanaReading && (
-              <p className="mt-1 text-xs text-black/60 dark:text-white/60" lang="ja">
+              <p className="mt-1 text-xs text-black/65 dark:text-white/65" lang="ja">
                 {t("readingPrefix")}
                 {summary.kanaReading}
               </p>
             )}
-            <p className="mt-1 text-xs text-black/55 dark:text-white/55">
+            <p className="mt-1 text-xs text-black/60 dark:text-white/60">
               <span lang="zh">{summary.surfaceZh}</span>
               {" · "}
               <span lang="en">{summary.surfaceEn}</span>
             </p>
-            <p className="mt-1 text-[10px] uppercase tracking-wider text-black/40 dark:text-white/40">
+            <p className="mt-1 text-[10px] uppercase tracking-wider text-black/55 dark:text-white/55">
               {t("pageOccurrence", {
                 firstPage: summary.firstPage,
                 count: summary.occurrenceCount,
@@ -172,7 +188,7 @@ export function TermPopover({
             type="button"
             onClick={onClose}
             aria-label={closeLabel}
-            className="shrink-0 rounded-md px-2 py-1 text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors"
+            className={`shrink-0 rounded-md px-2 py-1 text-sm text-black/65 dark:text-white/65 hover:text-black dark:hover:text-white hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors ${FOCUS_RING}`}
           >
             ✕
           </button>
@@ -181,6 +197,7 @@ export function TermPopover({
         <div
           className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-3"
           aria-live="polite"
+          aria-busy={isBusy}
         >
           {phase === "loading" && <BusySkeleton text={busyText} />}
 
@@ -191,7 +208,7 @@ export function TermPopover({
           )}
 
           {phase === "streaming" && (
-            <p className="text-xs italic text-black/50 dark:text-white/50">
+            <p className="text-xs italic text-black/60 dark:text-white/60">
               {busyText}
             </p>
           )}
@@ -215,7 +232,7 @@ export function TermPopover({
           )}
 
           {usageHint && phase === "done" && (
-            <p className="text-[10px] uppercase tracking-wider text-black/40 dark:text-white/40 pt-2 border-t border-black/[.06] dark:border-white/[.08]">
+            <p className="text-[10px] uppercase tracking-wider text-black/55 dark:text-white/55 pt-2 border-t border-black/[.06] dark:border-white/[.08]">
               {usageHint}
             </p>
           )}
@@ -226,7 +243,7 @@ export function TermPopover({
             <button
               type="button"
               onClick={() => startStream(summary.surfaceJp)}
-              className="text-sm rounded-lg border border-black/[.12] dark:border-white/[.14] px-3 py-1.5 hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors"
+              className={`text-sm rounded-lg border border-black/[.18] dark:border-white/[.22] px-3 py-1.5 hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors ${FOCUS_RING}`}
             >
               {tCommon("retry")}
             </button>
@@ -234,7 +251,7 @@ export function TermPopover({
           <button
             type="button"
             onClick={onClose}
-            className="text-sm rounded-lg bg-black text-white dark:bg-white dark:text-black px-3 py-1.5 hover:opacity-90 transition-opacity"
+            className={`text-sm rounded-lg bg-black text-white dark:bg-white dark:text-black px-3 py-1.5 hover:opacity-90 transition-opacity ${FOCUS_RING}`}
           >
             {closeLabel}
           </button>
@@ -248,9 +265,9 @@ function BusySkeleton({ text }: { text: string }): React.ReactElement {
   return (
     <div className="space-y-3" data-testid="term-popover-busy">
       <div className="space-y-2">
-        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] animate-pulse w-3/4" />
-        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] animate-pulse w-full" />
-        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] animate-pulse w-5/6" />
+        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] motion-safe:animate-pulse w-3/4" />
+        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] motion-safe:animate-pulse w-full" />
+        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] motion-safe:animate-pulse w-5/6" />
       </div>
 
       <div
@@ -263,7 +280,7 @@ function BusySkeleton({ text }: { text: string }): React.ReactElement {
         <div className="term-popover-progress h-full bg-black/40 dark:bg-white/40 rounded" />
       </div>
 
-      <p className="text-xs text-black/60 dark:text-white/60">{text}</p>
+      <p className="text-xs text-black/65 dark:text-white/65">{text}</p>
 
       <style>{`
         @keyframes term-popover-progress-keyframes {
@@ -271,8 +288,16 @@ function BusySkeleton({ text }: { text: string }): React.ReactElement {
           50%  { margin-left: 100%; width: 35%; }
           100% { margin-left: -35%; width: 35%; }
         }
-        .term-popover-progress {
-          animation: term-popover-progress-keyframes 1.6s ease-in-out infinite;
+        @media (prefers-reduced-motion: no-preference) {
+          .term-popover-progress {
+            animation: term-popover-progress-keyframes 1.6s ease-in-out infinite;
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .term-popover-progress {
+            margin-left: 30%;
+            width: 40%;
+          }
         }
       `}</style>
     </div>

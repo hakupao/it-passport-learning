@@ -14,12 +14,22 @@
 // D-088 §2.4 error surface = locked Chinese fallback via formatUserFacingError.
 // D-097 firewall: browser HTTP auth cache carries Basic Auth from the first
 // list-page load; fetch() inherits it automatically.
+//
+// Session 46 Step 14 a11y polish (Full WCAG 2.1 AA):
+//   - Contrast: text-black/40 → /55 / text-black/50 → /60.
+//   - Focus trap + restore via useFocusTrap (LD-5; 2.4.3); initial focus on
+//     close button so a keyboard user can dismiss with one keypress.
+//   - aria-busy on content area (LD-7) while phase is loading/streaming.
+//   - prefers-reduced-motion gate on skeleton pulse + indeterminate progress
+//     bar (LD-6) via `motion-safe:animate-pulse` and a wrapped media query.
+//   - Uniform focus-visible ring (LD-4) on close / retry / footer-close.
 
 "use client";
 
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 import { streamQuizExplain } from "@/lib/quiz/quizSseTransport";
 import type { QuizSummary } from "@/lib/quiz/quizScope";
 
@@ -31,6 +41,9 @@ interface QuizExplainProps {
   /** Close handler: clears `?qid=` from URL and dismisses the modal. */
   onClose: () => void;
 }
+
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-black dark:focus-visible:ring-white";
 
 // Surface strings flow through useTranslations("QuizExplain") + Common.
 // D-088 §2.4 locked Chinese error fallback is now D-099 §2.5 per-locale lock.
@@ -47,6 +60,10 @@ export function QuizExplain({
   const [usageHint, setUsageHint] = useState<string>("");
   const abortRef = useRef<AbortController | null>(null);
   const requestSeqRef = useRef<number>(0);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Focus trap + restore (LD-5; WCAG 2.4.3). Engaged only when summary is set.
+  useFocusTrap(summary !== null, dialogRef);
 
   // Dismiss-on-ESC + scroll lock while modal open.
   useEffect(() => {
@@ -139,12 +156,14 @@ export function QuizExplain({
     phase === "error" && output === "" && errorMessage === "";
   const busyText = t("busyText");
   const closeLabel = tCommon("close");
+  const isBusy = phase === "loading" || phase === "streaming";
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="quiz-explain-title"
+      ref={dialogRef}
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -165,11 +184,11 @@ export function QuizExplain({
                 index: summary.entityIndex + 1,
               })}
             </h2>
-            <p className="mt-1 text-xs text-black/60 dark:text-white/60 line-clamp-3">
+            <p className="mt-1 text-xs text-black/65 dark:text-white/65 line-clamp-3" lang="ja">
               {summary.stem.jp}
             </p>
             {correctAnswerLabel && (
-              <p className="mt-1 text-xs text-black/70 dark:text-white/70">
+              <p className="mt-1 text-xs text-black/75 dark:text-white/75">
                 {correctAnswerLabel}
               </p>
             )}
@@ -178,7 +197,7 @@ export function QuizExplain({
             type="button"
             onClick={onClose}
             aria-label={closeLabel}
-            className="shrink-0 rounded-md px-2 py-1 text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors"
+            className={`shrink-0 rounded-md px-2 py-1 text-sm text-black/65 dark:text-white/65 hover:text-black dark:hover:text-white hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors ${FOCUS_RING}`}
           >
             ✕
           </button>
@@ -187,6 +206,7 @@ export function QuizExplain({
         <div
           className="flex-1 overflow-y-auto px-4 sm:px-5 py-4 space-y-3"
           aria-live="polite"
+          aria-busy={isBusy}
         >
           {phase === "loading" && <BusySkeleton text={busyText} />}
 
@@ -197,7 +217,7 @@ export function QuizExplain({
           )}
 
           {phase === "streaming" && (
-            <p className="text-xs italic text-black/50 dark:text-white/50">
+            <p className="text-xs italic text-black/60 dark:text-white/60">
               {busyText}
             </p>
           )}
@@ -221,7 +241,7 @@ export function QuizExplain({
           )}
 
           {usageHint && phase === "done" && (
-            <p className="text-[10px] uppercase tracking-wider text-black/40 dark:text-white/40 pt-2 border-t border-black/[.06] dark:border-white/[.08]">
+            <p className="text-[10px] uppercase tracking-wider text-black/55 dark:text-white/55 pt-2 border-t border-black/[.06] dark:border-white/[.08]">
               {usageHint}
             </p>
           )}
@@ -232,7 +252,7 @@ export function QuizExplain({
             <button
               type="button"
               onClick={() => startStream(summary.questionId)}
-              className="text-sm rounded-lg border border-black/[.12] dark:border-white/[.14] px-3 py-1.5 hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors"
+              className={`text-sm rounded-lg border border-black/[.18] dark:border-white/[.22] px-3 py-1.5 hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors ${FOCUS_RING}`}
             >
               {tCommon("retry")}
             </button>
@@ -240,7 +260,7 @@ export function QuizExplain({
           <button
             type="button"
             onClick={onClose}
-            className="text-sm rounded-lg bg-black text-white dark:bg-white dark:text-black px-3 py-1.5 hover:opacity-90 transition-opacity"
+            className={`text-sm rounded-lg bg-black text-white dark:bg-white dark:text-black px-3 py-1.5 hover:opacity-90 transition-opacity ${FOCUS_RING}`}
           >
             {closeLabel}
           </button>
@@ -254,10 +274,10 @@ function BusySkeleton({ text }: { text: string }): React.ReactElement {
   return (
     <div className="space-y-3" data-testid="quiz-explain-busy">
       <div className="space-y-2">
-        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] animate-pulse w-3/4" />
-        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] animate-pulse w-full" />
-        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] animate-pulse w-5/6" />
-        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] animate-pulse w-2/3" />
+        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] motion-safe:animate-pulse w-3/4" />
+        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] motion-safe:animate-pulse w-full" />
+        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] motion-safe:animate-pulse w-5/6" />
+        <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] motion-safe:animate-pulse w-2/3" />
       </div>
 
       <div
@@ -270,7 +290,7 @@ function BusySkeleton({ text }: { text: string }): React.ReactElement {
         <div className="quiz-explain-progress h-full bg-black/40 dark:bg-white/40 rounded" />
       </div>
 
-      <p className="text-xs text-black/60 dark:text-white/60">{text}</p>
+      <p className="text-xs text-black/65 dark:text-white/65">{text}</p>
 
       <style>{`
         @keyframes quiz-explain-progress-keyframes {
@@ -278,8 +298,16 @@ function BusySkeleton({ text }: { text: string }): React.ReactElement {
           50%  { margin-left: 100%; width: 35%; }
           100% { margin-left: -35%; width: 35%; }
         }
-        .quiz-explain-progress {
-          animation: quiz-explain-progress-keyframes 1.6s ease-in-out infinite;
+        @media (prefers-reduced-motion: no-preference) {
+          .quiz-explain-progress {
+            animation: quiz-explain-progress-keyframes 1.6s ease-in-out infinite;
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .quiz-explain-progress {
+            margin-left: 30%;
+            width: 40%;
+          }
         }
       `}</style>
     </div>

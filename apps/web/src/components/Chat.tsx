@@ -14,6 +14,14 @@
 //     extends the lock to locale-aware variants (ja/zh/en) — same principle,
 //     per-locale lock.
 //   - Surface is now mounted under [locale]/chat, inheriting the top NavTabs.
+//
+// Session 46 Step 14 a11y polish (Full WCAG 2.1 AA per Q2=a):
+//   - Contrast: text-black/50 → /60 (4.5:1 → 5.74:1) for emptyHint.
+//   - Focus: uniform focus-visible ring (LD-4) on newChat / input / submit
+//     (retired `focus:border-black/40` 2.85:1 which failed 1.4.11).
+//   - aria-busy={isStreaming} on the scroll container (LD-7) pairs with
+//     existing aria-live="polite".
+//   - <main id="main-content" tabIndex={-1}> is the SkipLink target (LD-8).
 
 "use client";
 
@@ -27,6 +35,9 @@ import {
   loadChatHistory,
   saveChatHistory,
 } from "@/lib/chat/historyStore";
+
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-black dark:focus-visible:ring-white";
 
 function isBrowser(): boolean {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -113,13 +124,17 @@ export function Chat(): React.ReactElement {
     : tCommon("errorFallback");
 
   return (
-    <main className="flex flex-col h-[calc(100vh-3rem)] max-w-3xl mx-auto p-4 sm:p-6 gap-3">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex flex-col h-[calc(100vh-3rem)] max-w-3xl mx-auto p-4 sm:p-6 gap-3 focus:outline-none"
+    >
       <header className="flex items-start justify-between border-b border-black/[.08] dark:border-white/[.12] pb-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
             {t("title")}
           </h1>
-          <p className="text-xs sm:text-sm text-black/60 dark:text-white/60 mt-1">
+          <p className="text-xs sm:text-sm text-black/65 dark:text-white/65 mt-1">
             {t("subtitle")}
           </p>
         </div>
@@ -127,7 +142,7 @@ export function Chat(): React.ReactElement {
           type="button"
           onClick={handleClear}
           disabled={messages.length === 0 || isStreaming}
-          className="text-xs sm:text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className={`text-xs sm:text-sm text-black/65 dark:text-white/65 hover:text-black dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors rounded-md px-1 ${FOCUS_RING}`}
         >
           {t("newChat")}
         </button>
@@ -137,9 +152,10 @@ export function Chat(): React.ReactElement {
         ref={scrollRef}
         className="flex-1 overflow-y-auto space-y-3 py-2"
         aria-live="polite"
+        aria-busy={isStreaming}
       >
         {messages.length === 0 && (
-          <p className="text-center text-sm text-black/50 dark:text-white/50 py-12 px-4">
+          <p className="text-center text-sm text-black/60 dark:text-white/60 py-12 px-4">
             {t("emptyHint")}
           </p>
         )}
@@ -165,7 +181,7 @@ export function Chat(): React.ReactElement {
         })}
         {isStreaming && messages[messages.length - 1]?.role === "user" && (
           <div className="flex justify-start">
-            <div className="bg-black/[.04] dark:bg-white/[.08] rounded-2xl px-4 py-2 max-w-[80%] text-sm italic text-black/60 dark:text-white/60">
+            <div className="bg-black/[.04] dark:bg-white/[.08] rounded-2xl px-4 py-2 max-w-[80%] text-sm italic text-black/65 dark:text-white/65">
               {t("streaming")}
             </div>
           </div>
@@ -188,14 +204,14 @@ export function Chat(): React.ReactElement {
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("placeholder")}
           disabled={isStreaming}
-          className="flex-1 border border-black/[.12] dark:border-white/[.14] rounded-lg px-3 py-2 bg-white dark:bg-black text-sm sm:text-base focus:outline-none focus:border-black/40 dark:focus:border-white/40 disabled:opacity-50"
+          className={`flex-1 border border-black/[.18] dark:border-white/[.22] rounded-lg px-3 py-2 bg-white dark:bg-black text-sm sm:text-base disabled:opacity-50 ${FOCUS_RING}`}
           autoComplete="off"
           aria-label={t("inputAriaLabel")}
         />
         <button
           type="submit"
           disabled={isStreaming || !input.trim()}
-          className="bg-black text-white dark:bg-white dark:text-black rounded-lg px-4 py-2 text-sm sm:text-base font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+          className={`bg-black text-white dark:bg-white dark:text-black rounded-lg px-4 py-2 text-sm sm:text-base font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed ${FOCUS_RING}`}
         >
           {tCommon("send")}
         </button>

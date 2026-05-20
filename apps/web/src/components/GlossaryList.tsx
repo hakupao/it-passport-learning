@@ -11,6 +11,12 @@
 //
 // Pure client component; the server <GlossaryListPage /> hydrates it with the
 // pre-built GlossarySummary[] derived from the corpus glossary.
+//
+// Session 46 Step 14 a11y polish (Full WCAG 2.1 AA):
+//   - Contrast: text-black/50 → /60 (emptyHint) / text-black/40 → /55 (page
+//     badge).
+//   - Focus: uniform focus-visible ring on the Explain button (LD-4).
+//   - <main id="main-content" tabIndex={-1}> is the SkipLink target (LD-8).
 
 "use client";
 
@@ -28,6 +34,9 @@ import {
 interface GlossaryListProps {
   summaries: GlossarySummary[];
 }
+
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-black dark:focus-visible:ring-white";
 
 export function GlossaryList({
   summaries,
@@ -78,18 +87,22 @@ export function GlossaryList({
   }, [router, searchParams]);
 
   return (
-    <main className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-4">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-4 focus:outline-none"
+    >
       <header className="border-b border-black/[.08] dark:border-white/[.12] pb-3">
         <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
           {t("title")}
         </h1>
-        <p className="text-xs sm:text-sm text-black/60 dark:text-white/60 mt-1">
+        <p className="text-xs sm:text-sm text-black/65 dark:text-white/65 mt-1">
           {t("subtitle")}
         </p>
       </header>
 
       {summaries.length === 0 ? (
-        <p className="text-center text-sm text-black/50 dark:text-white/50 py-12">
+        <p className="text-center text-sm text-black/60 dark:text-white/60 py-12">
           {t("emptyHint")}
         </p>
       ) : (
@@ -103,19 +116,19 @@ export function GlossaryList({
                 <span className="text-sm font-medium tracking-tight" lang="ja">
                   {s.surfaceJp}
                 </span>
-                <span className="text-[10px] uppercase tracking-wider text-black/40 dark:text-white/40 shrink-0">
+                <span className="text-[10px] uppercase tracking-wider text-black/55 dark:text-white/55 shrink-0">
                   {t("pageBadge", { page: s.firstPage })}
                 </span>
               </div>
 
               {s.kanaReading && (
-                <p className="text-[11px] text-black/55 dark:text-white/55" lang="ja">
+                <p className="text-[11px] text-black/60 dark:text-white/60" lang="ja">
                   {tTerm("readingPrefix")}
                   {s.kanaReading}
                 </p>
               )}
 
-              <p className="text-[11px] text-black/55 dark:text-white/55 line-clamp-1">
+              <p className="text-[11px] text-black/60 dark:text-white/60 line-clamp-1">
                 <span lang="zh">{s.surfaceZh}</span>
                 {" · "}
                 <span lang="en">{s.surfaceEn}</span>
@@ -124,7 +137,7 @@ export function GlossaryList({
               <button
                 type="button"
                 onClick={() => handleSelect(s.surfaceJp)}
-                className="mt-1 self-start text-[11px] rounded-md bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 hover:opacity-90 transition-opacity"
+                className={`mt-1 self-start text-[11px] rounded-md bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 hover:opacity-90 transition-opacity ${FOCUS_RING}`}
               >
                 {tCommon("explain")}
               </button>

@@ -9,6 +9,11 @@
 // — clicking "問題集" when the locale is /zh routes to /zh/quiz, not /ja/quiz.
 // Active styling derives from `usePathname()` matched against the per-locale
 // internal pathnames ("/chat", "/quiz", "/glossary").
+//
+// Session 46 Step 14 a11y polish:
+//   - Uniform focus-visible ring (LD-4; WCAG 1.4.11 + 2.4.7) on all Link tabs.
+//   - aria-label on <nav> already present; aria-current="page" already on
+//     active tab.
 
 "use client";
 
@@ -21,6 +26,9 @@ import { LocaleSwitcher } from "./LocaleSwitcher";
 
 const TAB_PATHS = ["/chat", "/quiz", "/glossary"] as const;
 type TabPath = (typeof TAB_PATHS)[number];
+
+const FOCUS_RING =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-black dark:focus-visible:ring-white";
 
 export function NavTabs(): React.ReactElement {
   const pathname = usePathname();
@@ -48,8 +56,8 @@ export function NavTabs(): React.ReactElement {
                   aria-current={isActive ? "page" : undefined}
                   className={
                     isActive
-                      ? "inline-flex items-center px-2.5 sm:px-3 h-8 rounded-full text-xs sm:text-sm font-medium bg-black text-white dark:bg-white dark:text-black transition-colors"
-                      : "inline-flex items-center px-2.5 sm:px-3 h-8 rounded-full text-xs sm:text-sm text-black/65 dark:text-white/65 hover:text-black dark:hover:text-white hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors"
+                      ? `inline-flex items-center px-2.5 sm:px-3 h-8 rounded-full text-xs sm:text-sm font-medium bg-black text-white dark:bg-white dark:text-black transition-colors ${FOCUS_RING}`
+                      : `inline-flex items-center px-2.5 sm:px-3 h-8 rounded-full text-xs sm:text-sm text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white hover:bg-black/[.04] dark:hover:bg-white/[.08] transition-colors ${FOCUS_RING}`
                   }
                 >
                   {labels[p]}

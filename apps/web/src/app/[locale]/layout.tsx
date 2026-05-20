@@ -15,6 +15,7 @@ import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { NavTabs } from "@/components/NavTabs";
+import { SkipLink } from "@/components/SkipLink";
 import { routing } from "@/i18n/routing";
 
 import "../globals.css";
@@ -60,6 +61,7 @@ export default async function LocaleLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider>
+          <SkipLink />
           <NavTabs />
           {children}
         </NextIntlClientProvider>

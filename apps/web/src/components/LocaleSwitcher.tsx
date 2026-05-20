@@ -7,6 +7,10 @@
 //
 // Renders as a native <select> for a11y + zero-CSS dropdown styling work; the
 // learning-tool audience is small and a richer combobox is Step 14 polish.
+//
+// Session 46 Step 14 a11y polish:
+//   - Replaced focus:border-black/40 (2.85:1, fails 1.4.11) with uniform
+//     focus-visible ring (LD-4) on the <select> control.
 
 "use client";
 
@@ -36,7 +40,7 @@ export function LocaleSwitcher(): React.ReactElement {
   };
 
   return (
-    <label className="flex items-center gap-1.5 text-xs sm:text-sm text-black/70 dark:text-white/70">
+    <label className="flex items-center gap-1.5 text-xs sm:text-sm text-black/75 dark:text-white/75">
       <span className="sr-only">{tLocale("switcherLabel")}</span>
       <span aria-hidden="true">🌐</span>
       <select
@@ -44,7 +48,7 @@ export function LocaleSwitcher(): React.ReactElement {
         onChange={handleChange}
         disabled={isPending}
         aria-label={tLocale("switcherLabel")}
-        className="bg-transparent border border-black/[.12] dark:border-white/[.14] rounded-md px-1.5 py-1 text-xs sm:text-sm focus:outline-none focus:border-black/40 dark:focus:border-white/40 disabled:opacity-60"
+        className="bg-transparent border border-black/[.18] dark:border-white/[.22] rounded-md px-1.5 py-1 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-black dark:focus-visible:ring-white disabled:opacity-60"
       >
         {routing.locales.map((l) => (
           <option key={l} value={l}>
