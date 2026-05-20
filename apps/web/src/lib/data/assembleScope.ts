@@ -10,16 +10,19 @@
 //     reframe to markdown if Vercel AI SDK prompt template demands (sub-ADR amend).
 //   - tokenEstimate = Math.ceil(contextBlock.length / 3) conservative heuristic
 //     post-Step-6 calibration. Empirical chars/N ratio is content-dependent
-//     across N=3 真 measurements:
-//       Step 4 hello-ai glossary: chars/4 over-estimates by +37%   (actual chars/N ≈ 5.5)
-//       Step 5 whole-book lean:   chars/4 under-estimates by −21%  (actual chars/N ≈ 3.17)
-//       Step 6 quiz question:     chars/4 under-estimates by −79%  (actual chars/N ≈ 0.85 for small JSON; outlier)
-//     Step 6 small-payload under-estimate is dominated by JSON formatting
-//     overhead and Japanese kanji density. chars/3 is the conservative middle
-//     ground for whole-book (where over-estimate < ctx limit is safe). Per-scope
-//     heuristics TBD at Step 7 hover (smallest payload). See
-//     `evidence/phase2/step_06_quiz/cache_audit_2026-05-20.md` §3.1 for full
-//     calibration data + D-094 §2.1 amendment-pattern rationale.
+//     across N=4 真 measurements:
+//       Step 4 hello-ai glossary: chars/4 over-estimates by +37%   (actual chars/N ≈ 5.5 — large-payload English-heavy JSON)
+//       Step 5 whole-book lean:   chars/4 under-estimates by −21%  (actual chars/N ≈ 3.17 — large-payload CJK-mix JSON)
+//       Step 6 quiz question:     chars/4 under-estimates by −79%  (actual chars/N ≈ 0.85 — small-payload, sys+user overhead dominates total input)
+//       Step 7 term-hover:        chars/3 under-estimates by ~21%  (actual chars/N ≈ 2.0-2.4 — smallest payload, ~480-char single glossary entry)
+//     Step 7 close decision (Session 39 Q3=a): KEEP universal chars/3 (no
+//     per-scope split). Rationale per
+//     `evidence/phase2/step_07_glossary/cache_audit_2026-05-20.md` §7.2 —
+//     estimator's job is rough cost pre-flight, not strict budget enforcement;
+//     chars/3 sits in the middle of the N=4 empirical range (0.85 → 5.5) and
+//     over-estimates the only scope close to a provider ctx limit (whole-book
+//     lean at ~93K vs DeepSeek 128K). Per-scope split would couple the estimator
+//     to scope identity (currently agnostic) without budget-critical accuracy gain.
 //
 // Cache boundary (D-088 §2.3): system_prompt + full glossary are cached; the
 // per-scope excerpt assembled here is the UN-cached per-call input.
