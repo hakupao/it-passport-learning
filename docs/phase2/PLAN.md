@@ -164,7 +164,7 @@ RETROSPECTIVE_phase2.md                     # Phase 2 收尾 (Rule C) — Phase 
 - 移动端 native（PWA 之外）
 - Offline mode / service worker 完整 cache (PWA 基本可后续加)
 - **多用户账户系统** (NextAuth / Auth.js + DB-backed accounts/sessions + multi-IdP + multi-device sync) — β-ready 之后 per D-083 §2.5
-- **α single-user firewall** (Vercel Password Protection 一键开启级别，无 user identity / session / DB) — Phase 2 α **in-scope** per **D-096 §2.3**；Session 36 entry 5 min ops 配置 (Vercel dashboard → project `web` → Settings → Deployment Protection → Password Protection ON for preview + production)。**与多用户账户系统是性质不同的需求**：firewall = 平台层访问 token，account system = 应用层 user identity + state。
+- **α single-user firewall** (Next.js Edge middleware + HTTP Basic Auth (RFC 7617), 无 user identity / session / DB) — Phase 2 α **in-scope** per **D-097 supersede D-096 §2.3**；Session 36 in-flight 实施 (`apps/web/src/middleware.ts` ~30 行 + vitest test + `FIREWALL_BASIC_AUTH` env var on Vercel preview+production)。**与多用户账户系统是性质不同的需求**：firewall = 平台层访问 token (Basic Auth credential)，account system = 应用层 user identity + state。**Cloudflare Access 作 Phase 3+ β 阶段备选** per D-097 §2.3（α 阶段 rejected: 4-8h migration + D-093 supersede + Edge runtime AI SDK 兼容性风险）。
 
 ---
 
