@@ -33,6 +33,7 @@ import {
 } from "@/lib/ai/hover";
 import { STREAM_CONFIG } from "@/lib/ai/retry";
 import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
+import { recordCapEvent } from "@/lib/ai/cap";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -107,6 +108,17 @@ export async function POST(request: Request): Promise<Response> {
         route: "/api/glossary/hover",
       });
       if (tripwire !== null) recordTripwireEvent(tripwire);
+      void recordCapEvent({
+        route: "/api/glossary/hover",
+        role: "hover",
+        usage: {
+          inputTokens:
+            typeof usage.inputTokens === "number" ? usage.inputTokens : null,
+          outputTokens:
+            typeof usage.outputTokens === "number" ? usage.outputTokens : null,
+        },
+        cache: readCacheUsage(providerMetadata),
+      });
     },
   });
 

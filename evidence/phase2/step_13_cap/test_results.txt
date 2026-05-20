@@ -1,0 +1,49 @@
+
+ RUN  v4.1.6 /Users/bojiangzhang/MyProject/IT-Passport-Learning/apps/web
+
+ ✓ src/lib/ai/__tests__/cap.test.ts > cap.ts constants — D-090 §2.1 + D-100 §2.1 > PER_QUERY_WALL_CENTS = 100 ($1.00 per LD-6) 1ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > cap.ts constants — D-090 §2.1 + D-100 §2.1 > DAILY_CAP_CENTS = 500 ($5.00 per D-090 §2.1 α soft cap) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > cap.ts constants — D-090 §2.1 + D-100 §2.1 > DAY_KEY_TTL_SECONDS = 172800 (48h, 2× window per LD-5) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > pricingFor — provider × role dispatch (LD-9) > anthropic any role → opus pricing 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > pricingFor — provider × role dispatch (LD-9) > deepseek quiz → reasoner pricing per D-095 §2.1 role matrix 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > pricingFor — provider × role dispatch (LD-9) > deepseek non-quiz → chat pricing 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > pricingFor — provider × role dispatch (LD-9) > unknown provider → deepseek-chat fallback (conservative default) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > estimateCallMicroUsd — provider-aware cost math > DeepSeek: 16 miss + 384 hit + 78 out matches Session 44 ~$0.000122 baseline 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > estimateCallMicroUsd — provider-aware cost math > DeepSeek reasoner: cold quiz call uses reasoner pricing (higher) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > estimateCallMicroUsd — provider-aware cost math > Anthropic: clamps implied miss to ≥0 when hit+creation exceeds inputTotal 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > estimateCallMicroUsd — provider-aware cost math > Anthropic: ephemeral creation + read priced per cache tiers 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > estimateCallMicroUsd — provider-aware cost math > Unknown provider: treats all input as miss (conservative) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > estimateCallMicroUsd — provider-aware cost math > Null usage tokens treated as 0 (under-count not crash per LD-8) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > formatJstDayKey — JST 00:00 reset per D-090 §2.1 / LD-4 > UTC noon → same JST date 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > formatJstDayKey — JST 00:00 reset per D-090 §2.1 / LD-4 > UTC 14:59 → JST 23:59 same day 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > formatJstDayKey — JST 00:00 reset per D-090 §2.1 / LD-4 > UTC 15:00 → JST 00:00 NEXT day (boundary crossing) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > formatJstDayKey — JST 00:00 reset per D-090 §2.1 / LD-4 > UTC midnight Dec 31 → JST 09:00 same day 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > formatJstDayKey — JST 00:00 reset per D-090 §2.1 / LD-4 > UTC 23:00 Dec 31 → JST 08:00 Jan 1 next year 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > getCapMode — PHASE2_CAP_MODE env switch (LD-7) > undefined env → silent-log (α default per D-090 §2.2) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > getCapMode — PHASE2_CAP_MODE env switch (LD-7) > empty string → silent-log fallback 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > getCapMode — PHASE2_CAP_MODE env switch (LD-7) > warn → warn 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > getCapMode — PHASE2_CAP_MODE env switch (LD-7) > confirm → confirm 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > getCapMode — PHASE2_CAP_MODE env switch (LD-7) > halt → halt 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > getCapMode — PHASE2_CAP_MODE env switch (LD-7) > garbage value → silent-log fallback (no crash) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > loadRedisFromEnv — LD-8 graceful degradation > missing both env vars → null + [cap-degraded] logged once 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > loadRedisFromEnv — LD-8 graceful degradation > missing only token → null 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > loadRedisFromEnv — LD-8 graceful degradation > missing only url → null 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — happy path > emits [cap] log + INCRBY + EXPIRE on each call 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — happy path > accumulates day total across multiple calls 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — degraded mode (no Redis) > returns event with dayTotalAfter=null when redis null + still logs [cap] 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — per-query wall breach (LD-6) > breaches wall on whole-book Opus uncached call (>$1) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — per-query wall breach (LD-6) > does NOT breach wall on typical hover call ($0.000122) 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — day cap breach (LD-3 + LD-6) > [cap-breach] fires on the call that crosses 5_000_000 μUSD 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — day cap breach (LD-3 + LD-6) > [cap-breach] does NOT re-fire when day total already past cap before call 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — day cap breach (LD-3 + LD-6) > dayCapBreached=false when below cap 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — Redis error handling (LD-8) > catches incrby throw → [cap-redis-error] logged + dayTotalAfter=null + returns normally 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — Redis error handling (LD-8) > catches expire throw without losing the increment value 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — β mode stub annotation (LD-7) > [cap-mode-stub] fires when mode=warn AND wall breached 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — β mode stub annotation (LD-7) > [cap-mode-stub] does NOT fire in silent-log mode 0ms
+ ✓ src/lib/ai/__tests__/cap.test.ts > recordCapEvent — β mode stub annotation (LD-7) > [cap-mode-stub] does NOT fire when no breach even in non-α mode 0ms
+
+ Test Files  1 passed (1)
+      Tests  40 passed (40)
+   Start at  21:14:57
+   Duration  114ms (transform 19ms, setup 0ms, import 25ms, tests 6ms, environment 0ms)
+
