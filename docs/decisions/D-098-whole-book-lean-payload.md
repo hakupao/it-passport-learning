@@ -75,6 +75,21 @@
 - **Total ~58-60K tokens** (匹配 Step 4 hello-ai 实测 57,993，因为 lean 主体即 glossary 同 hello-ai；chapters list 新增 +300 tokens 净增可忽略)
 - **DeepSeek 64K margin**: ~4-6K tokens for system instruction + user message + output → 边缘可用，需要 sub-step 留 calibration TODO
 
+> **§2.2 v1.1 in-place amend — 2026-05-20 Session 38 (per D-080 v1.1 §8 / D-094 §2.1 amendment pattern; non-supersede)**:
+>
+> Step 5 close N=3 真 LLM 实测 input_tokens = **92,814** (call #1 cold) / 92,815 (call #2) / 92,814 (call #3)。即原 §2.2 预估 ~58-60K **偏低 ~55%**（actual / predicted = 92,814 / 59,000 ≈ 1.57×）。
+>
+> **根因**：§2.2 预估按 "lean 主体即 glossary 同 hello-ai" 计算，但 Step 5 hello-ai 用的是 raw glossary `entries` 子集，而 Step 5 实际 `assembleWholeBook` 还做了 JSON.stringify(payload, null, 2) 整体格式化外加 `chapters` (16 entries × full Trilingual title fields 实际 ~5-10 KB 而非估算的 2.4 KB) + 顶层 wrapper (`scope/cert_id/run_id/totals/chapters/glossary_entries` 5 key + pretty-print 缩进开销)。
+>
+> **影响**：DeepSeek 64K 假设余量被实测穿透——但 V3.2 模型实际 ctx ≥ 93K (D-098 §1 conservative 64K 假设解禁；Step 5 3/3 call 成功证实)；α 阶段无生产事故，无需 hot-fix。
+>
+> **行动**：
+> 1. 本注记 in-place 落档，保留 §2.2 原文记录历史预估
+> 2. assembleScope.ts chars/4 → **chars/3** 校准 (Session 38 Step 6 close 同 turn 完成；详见 `evidence/phase2/step_06_quiz/cache_audit_2026-05-20.md` §3.1 N=3 数据 + 新 estimator inline comment)
+> 3. 不开新 D-NNN——本注记 + assembleScope.ts 注释构成完整 calibration trail
+>
+> **Cross-check** post-chars/3 calibration on Step 5 same payload：294 KB / 3 ≈ 98K tokens 预估 vs actual 93K = +5.4% over (safely conservative)。Step 6 question ~575 chars / 3 ≈ 192 tokens 预估 vs actual 2,693 = −93% under (small JSON formatting overhead dominates)。Per-scope heuristics 未来 Step 7 hover 收尾时再决定是否拆分。
+
 ### 2.3 Step 5 retro 仍按 Q4=a 跑 (per 4Q)
 
 - Step 5 close gate 不变：N≥3 真 LLM call (call #1 cache creation / call #2 cache read / call #3 cache read confirm)

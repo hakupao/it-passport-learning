@@ -8,10 +8,18 @@
 // Output contract: { scope, contextBlock: string, tokenEstimate: number, meta }
 //   - contextBlock = JSON.stringify(payload, null, 2) — α-now form; Step 4 may
 //     reframe to markdown if Vercel AI SDK prompt template demands (sub-ADR amend).
-//   - tokenEstimate = Math.ceil(contextBlock.length / 4) conservative heuristic.
-//     CJK-heavy content measured ~9 chars/token in `evidence/phase2_d089_poc_2026-05-19/measurement.md`,
-//     so chars/4 over-estimates by ~2x (safe pre-flight cost guess). Calibration
-//     TODO deferred to Step 4 retro per D-091 §2.5 implementation tripwire.
+//   - tokenEstimate = Math.ceil(contextBlock.length / 3) conservative heuristic
+//     post-Step-6 calibration. Empirical chars/N ratio is content-dependent
+//     across N=3 真 measurements:
+//       Step 4 hello-ai glossary: chars/4 over-estimates by +37%   (actual chars/N ≈ 5.5)
+//       Step 5 whole-book lean:   chars/4 under-estimates by −21%  (actual chars/N ≈ 3.17)
+//       Step 6 quiz question:     chars/4 under-estimates by −79%  (actual chars/N ≈ 0.85 for small JSON; outlier)
+//     Step 6 small-payload under-estimate is dominated by JSON formatting
+//     overhead and Japanese kanji density. chars/3 is the conservative middle
+//     ground for whole-book (where over-estimate < ctx limit is safe). Per-scope
+//     heuristics TBD at Step 7 hover (smallest payload). See
+//     `evidence/phase2/step_06_quiz/cache_audit_2026-05-20.md` §3.1 for full
+//     calibration data + D-094 §2.1 amendment-pattern rationale.
 //
 // Cache boundary (D-088 §2.3): system_prompt + full glossary are cached; the
 // per-scope excerpt assembled here is the UN-cached per-call input.
@@ -36,7 +44,12 @@ export interface AssembledScope {
 }
 
 function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4);
+  // chars/3 conservative heuristic post-Step-6 calibration. Older chars/4 ratio
+  // proved content-dependent (see file header for the N=3 measurement table).
+  // Over-estimate on whole-book lean is safe (still well under provider ctx);
+  // under-estimate on quiz question is acceptable because question payload sits
+  // far below all provider limits.
+  return Math.ceil(text.length / 3);
 }
 
 function packScope(
