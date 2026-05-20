@@ -83,32 +83,47 @@ describe("assembleChapter", () => {
   });
 });
 
-describe("assembleWholeBook", () => {
-  // Use a stub DataSource so we don't load 554 pages in unit tests.
-  function stubDs(pages: Page[]): DataSource {
+describe("assembleWholeBook (D-098 lean payload)", () => {
+  // Stub DataSource with explicit chapters + glossary entries (the new lean
+  // payload shape per D-098 §2.1). `pages` and `loadWholeBook` are still on
+  // the stub but no longer consumed by assembleWholeBook itself — kept for
+  // DataSource interface conformance and to guard against accidental re-
+  // introduction of the full-pages payload (asserted below).
+  function stubDs(chapterCount: number, glossarySize: number): DataSource {
+    const chapters = Array.from({ length: chapterCount }, (_, i) => ({
+      chapter_id: `ch${String(i).padStart(2, "0")}`,
+      title_jp: `章 ${i}`,
+      title_zh: `章 ${i}`,
+      title_en: `Chapter ${i}`,
+      first_page: i * 30 + 1,
+      last_page: i * 30 + 30,
+    }));
+    const glossaryEntries: GlossaryEntry[] = Array.from(
+      { length: glossarySize },
+      (_, i) => ({
+        id: `g_${String(i).padStart(3, "0")}`,
+        surface: { jp: `語${i}`, zh: `词${i}`, en: `word${i}` },
+        kana_helper: null,
+        first_page: i + 1,
+        occurrences: [],
+        aliases_jp: [],
+      }),
+    );
     const idx: IndexV2 = {
       schema_version: "v2",
       cert_id: "itpassport_r6",
       run_id: "stub",
       exported_at: "2026-05-19T00:00:00Z",
-      totals: { pages: pages.length, entities: 0, leaves: 0 },
+      totals: { pages: 0, entities: 0, leaves: 0 },
       stage6_summary: {
         verdict: "PASS",
-        pass_pages: pages.length,
+        pass_pages: 0,
         warn_pages: 0,
         fail_pages: 0,
         polish_items_count: 0,
       },
-      pages: pages.map((p) => ({
-        page: p.page,
-        json: `pages/page_${String(p.page).padStart(3, "0")}.json`,
-        md: `pages/page_${String(p.page).padStart(3, "0")}.md`,
-        entity_count: p.entities.length,
-        leaf_count: p.leaf_count,
-        verdict: p.stage6_verdict,
-        polish_items_count: 0,
-      })),
-      chapters: [],
+      pages: [],
+      chapters,
       glossary_index: { surface_jp_to_id: {}, id_to_surface: {} },
       entity_by_id: {},
       v2_built_at: "2026-05-19T00:00:00Z",
@@ -116,44 +131,60 @@ describe("assembleWholeBook", () => {
     };
     return {
       loadIndex: async () => idx,
-      loadPage: async (n) => {
-        const found = pages.find((p) => p.page === n);
-        if (!found) throw new Error(`stub: page ${n} not found`);
-        return found;
+      loadPage: async () => {
+        throw new Error("stub: loadPage not used by lean assembleWholeBook");
       },
-      loadChapter: async () => pages,
+      loadChapter: async () => [],
       loadGlossary: async () => ({
         schema_version: "v1",
         cert_id: "itpassport_r6",
         run_id: "stub",
         generated_at: "2026-05-19T00:00:00Z",
-        entries: [],
+        entries: glossaryEntries,
       }),
-      loadWholeBook: async () => pages,
+      loadWholeBook: async () => {
+        throw new Error(
+          "stub: loadWholeBook MUST NOT be called by lean assembleWholeBook " +
+            "(per D-098 §2.1 — guarding against accidental full-pages revert)",
+        );
+      },
     };
   }
 
-  it("packs all stub pages as scope='whole-book'", async () => {
-    const fakePages: Page[] = [1, 2, 3, 4, 5].map((page) => ({
-      schema_version: "v1",
-      cert_id: "itpassport_r6",
-      run_id: "stub",
-      stage: 7,
-      page,
-      exported_at: "2026-05-19T00:00:00Z",
-      stage6_verdict: "PASS",
-      leaf_count: 0,
-      entities: [],
-    }));
-    const out = await assembleWholeBook(stubDs(fakePages));
+  it("packs chapters + glossary as scope='whole-book' (no pages array)", async () => {
+    const out = await assembleWholeBook(stubDs(16, 908));
     expect(out.scope).toBe("whole-book");
     expect(out.tokenEstimate).toBeGreaterThan(0);
-    expect(out.meta.page_count).toBe(5);
+    expect(out.meta.chapter_count).toBe(16);
+    expect(out.meta.glossary_entry_count).toBe(908);
+    expect(out.meta.cert_id).toBe("itpassport_r6");
 
     const payload = JSON.parse(out.contextBlock);
     expect(payload.scope).toBe("whole-book");
-    expect(payload.pages.length).toBe(5);
-    expect(payload.pages[0].page).toBe(1);
+    expect(payload.cert_id).toBe("itpassport_r6");
+    expect(payload.run_id).toBe("stub");
+    expect(payload.totals).toEqual({ pages: 0, entities: 0, leaves: 0 });
+    expect(Array.isArray(payload.chapters)).toBe(true);
+    expect(payload.chapters.length).toBe(16);
+    expect(payload.chapters[0].chapter_id).toBe("ch00");
+    expect(Array.isArray(payload.glossary_entries)).toBe(true);
+    expect(payload.glossary_entries.length).toBe(908);
+    expect(payload.glossary_entries[0].id).toBe("g_000");
+  });
+
+  it("does not include a pages array (D-098 §2.1 lean invariant)", async () => {
+    const out = await assembleWholeBook(stubDs(3, 5));
+    const payload = JSON.parse(out.contextBlock);
+    expect(payload.pages).toBeUndefined();
+  });
+
+  it("propagates empty chapters + empty glossary cleanly", async () => {
+    const out = await assembleWholeBook(stubDs(0, 0));
+    const payload = JSON.parse(out.contextBlock);
+    expect(payload.chapters).toEqual([]);
+    expect(payload.glossary_entries).toEqual([]);
+    expect(out.meta.chapter_count).toBe(0);
+    expect(out.meta.glossary_entry_count).toBe(0);
   });
 });
 

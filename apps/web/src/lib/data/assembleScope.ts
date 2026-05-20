@@ -1,6 +1,10 @@
 // D-089 §2.3 per-scope excerpt assembly fns — Session 34 Step 3.
 // 4 thin wrappers on top of DataSource, one per D-085 §2.4 mode-dependent scope.
 //
+// Session 37 D-098 amend: assembleWholeBook reshaped to lean payload (chapters
+// + glossary, no pages array) so the whole-book corpus fits DeepSeek's 64K
+// context window. Other 3 assemble fns unchanged.
+//
 // Output contract: { scope, contextBlock: string, tokenEstimate: number, meta }
 //   - contextBlock = JSON.stringify(payload, null, 2) — α-now form; Step 4 may
 //     reframe to markdown if Vercel AI SDK prompt template demands (sub-ADR amend).
@@ -128,21 +132,33 @@ export async function assembleChapter(
 }
 
 /**
- * Standalone Chat mode (D-085) — all 554 pages.
- * Expected token range: ~800K (fits Opus 4.7 1M ctx per measurement.md).
+ * Standalone Chat mode (D-085) — lean payload per D-098 §2.1.
+ *
+ * α-now form: chapters (16) + glossary entries (908), NO full pages array.
+ * Expected token range: ~58-60K (fits DeepSeek 64K + Anthropic 200K + 1M).
+ * Step 4 hello-ai measured 57,993 input tokens for glossary alone; the added
+ * chapters list (~2 KB / ~300 tokens) is negligible.
+ *
+ * D-098 §2.4 supersedes the original D-085 "full 554-page corpus" semantics
+ * for whole-book scope; full-corpus form deferred to Phase 3+ β when a 1M-ctx
+ * model is selected (will be reintroduced as a separate fn — D-098 §2.4 hook).
  */
 export async function assembleWholeBook(ds: DataSource): Promise<AssembledScope> {
-  const idx = await ds.loadIndex();
-  const pages = await ds.loadWholeBook();
+  const [idx, glossary] = await Promise.all([
+    ds.loadIndex(),
+    ds.loadGlossary(),
+  ]);
   const payload = {
     scope: "whole-book" as const,
     cert_id: idx.cert_id,
     run_id: idx.run_id,
     totals: idx.totals,
-    pages,
+    chapters: idx.chapters,
+    glossary_entries: glossary.entries,
   };
   return packScope("whole-book", payload, {
-    page_count: pages.length,
+    chapter_count: idx.chapters.length,
+    glossary_entry_count: glossary.entries.length,
     cert_id: idx.cert_id,
   });
 }
