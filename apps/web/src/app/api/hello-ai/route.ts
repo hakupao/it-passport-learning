@@ -26,6 +26,8 @@ import {
   getModel,
   readCacheUsage,
 } from "@/lib/ai/provider";
+import { STREAM_CONFIG } from "@/lib/ai/retry";
+import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -49,6 +51,7 @@ export async function POST(): Promise<Response> {
   const provider = getActiveProvider();
   const result = streamText({
     model: getModel("smoke"),
+    maxRetries: STREAM_CONFIG.maxRetries,
     messages: buildMessagesWithStablePrefix(
       corpusBlock,
       SYSTEM_INSTRUCTION,
@@ -69,6 +72,14 @@ export async function POST(): Promise<Response> {
           cacheMissInputTokens: cacheUsage.cacheMissInputTokens,
         }),
       );
+      const tripwire = evaluateCacheTripwire({
+        usage: cacheUsage,
+        totalInputTokens: typeof usage.inputTokens === "number"
+          ? usage.inputTokens
+          : null,
+        route: "/api/hello-ai",
+      });
+      if (tripwire !== null) recordTripwireEvent(tripwire);
     },
   });
 

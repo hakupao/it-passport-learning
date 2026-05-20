@@ -12,6 +12,7 @@
 
 import type { ProviderKind, CacheUsageReport } from "./provider";
 import { readCacheUsage } from "./provider";
+import { formatUserFacingError } from "./retry";
 
 export interface ChatRequestBody {
   scope: "whole-book";
@@ -135,9 +136,15 @@ export function buildChatSseResponse(args: BuildChatSseArgs): Response {
         controller.enqueue(encode(usageFrame));
         controller.enqueue(DONE_FRAME);
       } catch (err) {
+        // D-088 §2.4 user-surface contract: emit the locked Chinese fallback
+        // message, NOT the raw err.message (which may leak provider internals
+        // or appear as an inscrutable English stack trace). The original error
+        // is still console.error'd below so debugging via `vercel logs`
+        // remains intact.
+        console.error("[buildChatSseResponse] stream error", err);
         const errFrame: ChatErrorFrame = {
           type: "error",
-          message: err instanceof Error ? err.message : String(err),
+          message: formatUserFacingError(err),
         };
         controller.enqueue(encode(errFrame));
       } finally {

@@ -24,11 +24,14 @@ import {
   buildMessagesWithStablePrefix,
   getActiveProvider,
   getModel,
+  readCacheUsage,
 } from "@/lib/ai/provider";
 import {
   buildChatSseResponse,
   validateChatRequestBody,
 } from "@/lib/ai/chat";
+import { STREAM_CONFIG } from "@/lib/ai/retry";
+import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -71,6 +74,7 @@ export async function POST(request: Request): Promise<Response> {
   const provider = getActiveProvider();
   const result = streamText({
     model: getModel("chat"),
+    maxRetries: STREAM_CONFIG.maxRetries,
     messages: buildMessagesWithStablePrefix(
       wholeBook.contextBlock,
       SYSTEM_INSTRUCTION,
@@ -89,6 +93,14 @@ export async function POST(request: Request): Promise<Response> {
           providerMetadata,
         }),
       );
+      const tripwire = evaluateCacheTripwire({
+        usage: readCacheUsage(providerMetadata),
+        totalInputTokens: typeof usage.inputTokens === "number"
+          ? usage.inputTokens
+          : null,
+        route: "/api/chat",
+      });
+      if (tripwire !== null) recordTripwireEvent(tripwire);
     },
   });
 

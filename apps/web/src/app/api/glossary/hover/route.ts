@@ -23,6 +23,7 @@ import {
   buildMessagesWithStablePrefix,
   getActiveProvider,
   getModel,
+  readCacheUsage,
 } from "@/lib/ai/provider";
 import { buildChatSseResponse } from "@/lib/ai/chat";
 import {
@@ -30,6 +31,8 @@ import {
   HOVER_USER_PROMPT,
   validateHoverRequestBody,
 } from "@/lib/ai/hover";
+import { STREAM_CONFIG } from "@/lib/ai/retry";
+import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -75,6 +78,7 @@ export async function POST(request: Request): Promise<Response> {
   const provider = getActiveProvider();
   const result = streamText({
     model: getModel("hover"),
+    maxRetries: STREAM_CONFIG.maxRetries,
     messages: buildMessagesWithStablePrefix(
       scope.contextBlock,
       HOVER_SYSTEM_INSTRUCTION,
@@ -95,6 +99,14 @@ export async function POST(request: Request): Promise<Response> {
           providerMetadata,
         }),
       );
+      const tripwire = evaluateCacheTripwire({
+        usage: readCacheUsage(providerMetadata),
+        totalInputTokens: typeof usage.inputTokens === "number"
+          ? usage.inputTokens
+          : null,
+        route: "/api/glossary/hover",
+      });
+      if (tripwire !== null) recordTripwireEvent(tripwire);
     },
   });
 

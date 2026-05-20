@@ -6,7 +6,7 @@
 //     derivation (anthropic + deepseek + unknown), empty-chunk skip,
 //     error path → error frame, header set (8 cases)
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   USER_MESSAGE_MAX_LENGTH,
@@ -225,19 +225,41 @@ describe("buildChatSseResponse — SSE wire format + framing", () => {
   });
 
   it("emits an error frame (no usage / no [DONE]) when the textStream throws mid-flight", async () => {
-    const response = buildChatSseResponse({
-      textStream: failingIter("provider quota exhausted"),
-      usagePromise: Promise.resolve({}),
-      providerMetadataPromise: Promise.resolve(undefined),
-      provider: "deepseek",
-    });
-    const frames = await collectSseFrames(response);
-    // delta "first chunk" then error frame; no usage / no [DONE] after error.
-    expect(frames).toHaveLength(2);
-    expect(JSON.parse(frames[0]!)).toEqual({ type: "delta", text: "first chunk" });
-    const errFrame = JSON.parse(frames[1]!);
-    expect(errFrame.type).toBe("error");
-    expect(errFrame.message).toContain("provider quota exhausted");
+    // Suppress the intentional [buildChatSseResponse] stream error log emitted
+    // by the catch branch under test — keeps the test output readable while
+    // the contract (locked Chinese user-facing message per D-088 §2.4) is
+    // still asserted.
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    try {
+      const response = buildChatSseResponse({
+        textStream: failingIter("provider quota exhausted"),
+        usagePromise: Promise.resolve({}),
+        providerMetadataPromise: Promise.resolve(undefined),
+        provider: "deepseek",
+      });
+      const frames = await collectSseFrames(response);
+      // delta "first chunk" then error frame; no usage / no [DONE] after error.
+      expect(frames).toHaveLength(2);
+      expect(JSON.parse(frames[0]!)).toEqual({
+        type: "delta",
+        text: "first chunk",
+      });
+      const errFrame = JSON.parse(frames[1]!);
+      expect(errFrame.type).toBe("error");
+      // D-088 §2.4 user-surface contract: emit the locked Chinese fallback
+      // text, NOT the raw provider error message. The raw error is captured
+      // separately via console.error for debug visibility (asserted below).
+      expect(errFrame.message).toBe("AI 暂时不可用，请稍后重试。");
+      expect(errorSpy).toHaveBeenCalled();
+      const firstCall = errorSpy.mock.calls[0];
+      expect(firstCall?.[0]).toBe("[buildChatSseResponse] stream error");
+      expect(firstCall?.[1]).toBeInstanceOf(Error);
+      expect((firstCall?.[1] as Error).message).toBe("provider quota exhausted");
+    } finally {
+      errorSpy.mockRestore();
+    }
   });
 
   it("coerces missing token totals to null in the usage frame", async () => {
