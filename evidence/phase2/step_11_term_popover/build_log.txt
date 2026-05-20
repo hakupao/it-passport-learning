@@ -1,0 +1,54 @@
+Phase 2 Step 11 — Term Popover UI · pnpm build output (Session 43 · 2026-05-20)
+
+$ pnpm build
+$ next build --turbopack
+   ▲ Next.js 15.5.18 (Turbopack)
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Finished writing to disk in 115ms
+ ✓ Compiled successfully in 2.2s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/10) ...
+   Generating static pages (2/10) 
+   Generating static pages (4/10) 
+   Generating static pages (7/10) 
+ ✓ Generating static pages (10/10)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                         Size  First Load JS
+┌ ○ /                            5.41 kB         120 kB
+├ ○ /_not-found                      0 B         114 kB
+├ ƒ /api/chat                        0 B            0 B
+├ ƒ /api/glossary/hover              0 B            0 B
+├ ƒ /api/hello-ai                    0 B            0 B
+├ ƒ /api/quiz/explain                0 B            0 B
+├ ○ /chat                         122 kB         236 kB
+├ ƒ /glossary                    4.23 kB         119 kB
+└ ƒ /quiz                        4.26 kB         119 kB
++ First Load JS shared by all     121 kB
+  ├ chunks/7033258074dd6746.js   75.3 kB
+  └ chunks/ab9f47a0721cbf15.js   13.4 kB
+  └ other shared chunks (total)  32.8 kB
+
+
+ƒ Middleware                     37.6 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+---
+
+Compared to Step 10 baseline (Session 42 close):
+- Routes: 11 → 12 (+/glossary ƒ 4.23 kB).
+- Middleware: 37.6 kB (unchanged).
+- First Load JS shared: 121 kB (unchanged).
+- /chat: 122 kB / First Load 236 kB (unchanged).
+- /quiz: 4.26 kB / First Load 119 kB (unchanged).
+
+No regression on existing routes; new /glossary route is the smallest of the
+three UI pages (Step 11 carries no quiz-choice machinery and no chat-history
+machinery, so the bundle delta vs /quiz is purely the term-card layout +
+glossarySseTransport ~ -30 bytes net).

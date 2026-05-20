@@ -50,10 +50,27 @@ export interface Page {
   polish_items_ref?: string | null;
 }
 
+/**
+ * Phonetic reading helper for Japanese surfaces. Present on ~308 of the 908
+ * v1.0.3 entries; null for the other ~600 (typically Latin acronyms / ASCII
+ * surfaces where the reading equals the surface).
+ *
+ * Shape locked by the v1.0.3 cert-extractor glossary builder; the TS type was
+ * originally declared as `string | null` from the schema sketch, but the real
+ * runtime payload is an object — see Session 43 Rule B archive
+ * `failures/step_11_attempt_1_kana_helper_object_shape_mismatch.md`.
+ */
+export interface KanaHelper {
+  surface: string;
+  reading: string;
+  zh_concept?: string;
+  auto_backfill?: boolean;
+}
+
 export interface GlossaryEntry {
   id: string;
   surface: Trilingual;
-  kana_helper: string | null;
+  kana_helper: KanaHelper | null;
   first_page: number;
   occurrences: number[];
   aliases_jp: string[];
