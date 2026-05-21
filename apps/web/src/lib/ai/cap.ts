@@ -21,6 +21,11 @@
 //   LD-8  graceful degradation: missing env vars → log + serve (never crash)
 //   LD-9  pricing table inline (LD-9 cents-tolerance per D-100 §2.5)
 //   LD-10 RedisLike interface injected via deps for test isolation
+//   LD-11 (Session 47 amend) env var read accepts UPSTASH_REDIS_REST_* (D-100
+//         §2.3 primary) OR KV_REST_API_* (Vercel Marketplace 'Upstash for
+//         Redis' / legacy 'Vercel KV powered by Upstash' integration injects
+//         the latter naming). UPSTASH_* wins when both present so explicit
+//         override stays authoritative. See D-100 §2.3 Session 47 amendment.
 //
 // Wiring: each /api route's `onFinish` callback awaits one `recordCapEvent`
 // after `recordTripwireEvent`. The synchronous `[cap]` cost log emits BEFORE
@@ -193,8 +198,11 @@ let degradedLoggedOnce = false;
 /**
  * Lazy-load Upstash Redis from env. Memoised across calls.
  *
- *   - both env vars present → returns RedisLike instance
- *   - either env var absent → returns null + emits `[cap-degraded]` once
+ *   - either flavor of env vars present → returns RedisLike instance
+ *     (UPSTASH_REDIS_REST_URL/TOKEN preferred per D-100 §2.3 primary;
+ *      falls back to KV_REST_API_URL/TOKEN per LD-11 — Vercel Marketplace
+ *      Upstash integrations inject the latter naming on Preview+Production)
+ *   - neither flavor present → returns null + emits `[cap-degraded]` once
  *   - dynamic import fails  → returns null + emits `[cap-degraded]` once
  *
  * Routes never crash on Redis absence — α-silent visibility prefers serving
@@ -202,8 +210,11 @@ let degradedLoggedOnce = false;
  */
 export async function loadRedisFromEnv(): Promise<RedisLike | null> {
   if (cachedRedis !== undefined) return cachedRedis;
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  // LD-11: UPSTASH_* wins so explicit override stays authoritative.
+  const url =
+    process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+  const token =
+    process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
   if (!url || !token) {
     if (!degradedLoggedOnce) {
       console.warn(

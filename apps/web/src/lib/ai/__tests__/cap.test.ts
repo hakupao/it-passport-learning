@@ -300,6 +300,8 @@ describe("loadRedisFromEnv — LD-8 graceful degradation", () => {
   it("missing both env vars → null + [cap-degraded] logged once", async () => {
     delete process.env.UPSTASH_REDIS_REST_URL;
     delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
     const warn = vi.spyOn(console, "warn");
     const r1 = await loadRedisFromEnv();
     const r2 = await loadRedisFromEnv();
@@ -314,12 +316,48 @@ describe("loadRedisFromEnv — LD-8 graceful degradation", () => {
   it("missing only token → null", async () => {
     process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
     delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
     expect(await loadRedisFromEnv()).toBeNull();
   });
 
   it("missing only url → null", async () => {
     delete process.env.UPSTASH_REDIS_REST_URL;
     process.env.UPSTASH_REDIS_REST_TOKEN = "abc";
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
+    expect(await loadRedisFromEnv()).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// loadRedisFromEnv — LD-11 KV_* legacy fallback (Session 47 amend)
+//
+// Vercel Marketplace 'Upstash for Redis' and legacy 'Vercel KV powered by
+// Upstash' integrations inject KV_REST_API_URL / KV_REST_API_TOKEN env vars.
+// cap.ts accepts them as fallback so the Redis-backed counter works without
+// renaming or aliasing env vars on the Vercel dashboard.
+
+describe("loadRedisFromEnv — LD-11 KV_* legacy fallback", () => {
+  it("KV_REST_API_* only present → returns Redis instance + no [cap-degraded]", async () => {
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    process.env.KV_REST_API_URL = "https://kv-test.upstash.io";
+    process.env.KV_REST_API_TOKEN = "kv-test-token";
+    const warn = vi.spyOn(console, "warn");
+    const r = await loadRedisFromEnv();
+    expect(r).not.toBeNull();
+    const degradedCalls = warn.mock.calls.filter(
+      (c) => c[0] === "[cap-degraded]",
+    );
+    expect(degradedCalls).toHaveLength(0);
+  });
+
+  it("KV url present but KV token missing → null", async () => {
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    process.env.KV_REST_API_URL = "https://kv-test.upstash.io";
+    delete process.env.KV_REST_API_TOKEN;
     expect(await loadRedisFromEnv()).toBeNull();
   });
 });

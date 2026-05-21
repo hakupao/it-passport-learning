@@ -83,6 +83,20 @@ Set automatically by Vercel Marketplace Upstash integration on:
 
 **No alternative reads**: no `KV_REST_API_URL` (deprecated naming) / no `REDIS_URL` (TCP form not used) / no `VERCEL_KV_*` (deprecated package's naming).
 
+**Amendment 2026-05-21 Session 47 (per D-080 v1.1 §8 in-place amend pattern)**: empirical discovery during Session 47 turn-4 prod deploy attempt — the Vercel Marketplace 'Upstash for Redis' integration (and the legacy 'Vercel KV powered by Upstash' integration) auto-injects env vars under the `KV_REST_API_URL` + `KV_REST_API_TOKEN` names, NOT under `UPSTASH_REDIS_REST_*`. The original §2.3 "exactly two vars / no fallback" assumption was based on Context7 Upstash docs snippets which use the `UPSTASH_REDIS_REST_*` names — those are the names you get when you wire Upstash directly without going through Vercel Marketplace.
+
+To avoid a manual dashboard alias / env-var-duplication step every time a new project provisions Upstash, `loadRedisFromEnv()` now reads **either** flavor with `UPSTASH_REDIS_REST_*` winning on a tie (so explicit override via dashboard `vercel env add` stays authoritative). Documented in cap.ts as **LD-11**. Test coverage: 2 new vitest cases in `__tests__/cap.test.ts` `describe("loadRedisFromEnv — LD-11 KV_* legacy fallback")` (KV-only present → returns Redis instance + no `[cap-degraded]`; KV url present but token missing → null). Existing 3 LD-8 graceful-degradation tests defensively delete both flavors so pre-existing test semantics are preserved.
+
+The new `loadRedisFromEnv()` body:
+```ts
+const url =
+  process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+const token =
+  process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
+```
+
+Backend Redis is identical regardless of which flavor of env-var name the integration chose to inject — Upstash provides it either way. The `REDIS_URL` (TCP form) and `KV_REST_API_READ_ONLY_TOKEN` env vars that the Vercel Marketplace integration also injects remain unused per the rest of §2.3.
+
 ### 2.4 Graceful degradation contract
 
 **Lock**: when `UPSTASH_REDIS_REST_URL` and/or `UPSTASH_REDIS_REST_TOKEN` is absent at runtime, the cap module MUST NOT crash any /api route. Specifically:
