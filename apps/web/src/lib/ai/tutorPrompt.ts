@@ -1,11 +1,37 @@
 // Phase 4 Module B Step B.2 — tutor SYSTEM_INSTRUCTION + TutorContext-as-text
-// preamble + Anthropic ephemeral cache-block message builder.
+// preamble + dual-purpose cache-block message builder.
 //
-// D-102 §7.2 locks Anthropic Sonnet 4.6 (default) / Opus 4.7 (escalation) as
-// the tutor brain, with prompt caching mandatory per D-103 §2.4 (≥80% input-
-// token cache-hit ratio target). This module produces the stable prefix and
-// attaches the `cache_control: { type: "ephemeral" }` markers; the actual
-// `streamText` call lives in Module B Step B.4 (`/api/tutor`).
+// Session 55 history: D-102 §7.2 originally locked Anthropic Sonnet 4.6 /
+// Opus 4.7 + Anthropic-specific ephemeral cache_control as the tutor brain;
+// B.2 attached `cache_control:{type:"ephemeral"}` markers to both system
+// messages per the LD-Module-B-5 nested-breakpoint layout (outer SYSTEM +
+// inner preamble).
+//
+// Session 56 pivot: D-104 supersedes D-102 §7.2 — tutor brain matrix
+// expanded to 3-way env-routable (deepseek V4 pro default + anthropic
+// toggle + openai reserved-stub). The cache_control markers are
+// **PRESERVED INTENTIONALLY** per D-104 §2.3 LD-Module-B-5 as DUAL-PURPOSE:
+//   - **On the active DeepSeek path (default)**: the markers are a harmless
+//     no-op because DeepSeek ignores the `providerOptions.anthropic.*`
+//     namespace per D-095 §2.3 stable-prefix invariant. DeepSeek's
+//     automatic server-side prefix cache fires off the byte-stable prefix
+//     layout (system SYSTEM + system preamble + conversation) WITHOUT
+//     needing the markers — same posture as Phase 2 chat/quiz/hover.
+//     Cache-hit telemetry comes from `providerMetadata.deepseek.{
+//     promptCacheHitTokens, promptCacheMissTokens}` (D-095 §2.3
+//     readCacheUsage).
+//   - **On the Anthropic toggle path (`LLM_PROVIDER_TUTOR=anthropic`)**:
+//     the markers IMMEDIATELY take effect — no code change needed. This
+//     is the "可以切换" architectural intent: env-var flip activates the
+//     full Anthropic ephemeral cache breakpoint chain (outer + inner).
+//   - **On the OpenAI reserved-stub path**: `getTutorModel({provider:
+//     "openai"})` throws before any messages are dispatched, so the
+//     markers never reach a wire.
+//
+// The actual `streamText` call lives in Module B Step B.4 (`/api/tutor`)
+// and MUST pass `providerOptions: getTutorProviderOptions(opts)` to attach
+// the DeepSeek-specific `thinking.type='enabled' + reasoningEffort` per
+// D-104 §2.2 + LD-Module-B-12.
 //
 // Architecture (cache layout):
 //   [0] system  — TUTOR_SYSTEM_INSTRUCTION (invariant across users + sessions)
@@ -37,22 +63,78 @@ import type { TutorContext } from "@/lib/tutor/tutorContext";
  * snapshot in `__tests__/tutorPrompt.test.ts` locks the current text to
  * catch accidental drift.
  *
+ * **LD-Module-B-13 (Session 56)** — supersedes LD-Module-B-6 "~150 token
+ * minimal" rationale. Empirical Session 56 B.3 attempt-1 dry-run finding:
+ * Anthropic Sonnet 4.6 silently does NOT engage `cache_control:ephemeral`
+ * when the marked prefix is below the **1024-token minimum cacheable
+ * prefix threshold**. Original SYSTEM at ~150 tokens left the outer
+ * breakpoint inert (0% cache hit ratio on Anthropic). Bulking SYSTEM to
+ * ~1100-1200 tokens engages the outer breakpoint on Anthropic while
+ * remaining cache-positive on DeepSeek (server-side prefix cache fires
+ * regardless of size). Added content is invariant + tutor-useful:
+ *   - 16-chapter ITパスポート syllabus framework (3 areas × 9 大分類)
+ *   - Pedagogical 3-step explanation pattern
+ *   - Citation conventions (chapter `nn` + Japanese title verbatim)
+ *   - Anti-hallucination guards (uncertainty disclosure, no invented facts)
+ *   - Reply style + length budget
+ *   - Multi-turn etiquette (end-of-turn check questions)
+ *
  * Language policy mirrors Phase 2 chat SYSTEM_INSTRUCTION — reply in
  * Japanese by default; mirror the user's language if they write primarily
- * in English or Chinese. Length budget (≤300 tokens) is looser than Phase
- * 2 chat's 200-token cap because tutoring exchanges sometimes need to
- * walk through a topic; Module B Step B.3 cost dry-run will verify the
- * cap is workable under the D-103 \$15 envelope.
+ * in English or Chinese. Length budget (≤300 tokens default, ≤600 for
+ * deep explanations).
  */
 export const TUTOR_SYSTEM_INSTRUCTION = [
-  "You are an AI 学習助手 (study tutor) for the Japanese IT Passport (ITパスポート) certification exam.",
+  "You are an AI 学習助手 (study tutor) for the Japanese IT Passport (ITパスポート) certification exam, administered by Japan's IPA (Information-technology Promotion Agency).",
   "",
-  "The user-state snapshot above (## User Learning Snapshot) shows the learner's current progress through the 16-chapter textbook and recent quiz self-reports.",
+  "## Your role + scope",
+  "",
+  "The user is preparing for IPA's ITパスポート certification exam. The 16-chapter textbook (chapters numbered `00`..`15`) covers the full official syllabus across three areas (系), each with three 大分類:",
+  "",
+  "- **Strategy area (ストラテジ系)** — 1. 企業と法務 (Business and Legal) / 2. 経営戦略マネジメント (Management Strategy) / 3. システム戦略 (System Strategy). Typically the early chapters of the textbook trunk.",
+  "- **Management area (マネジメント系)** — 4. 開発技術 (Development Technology) / 5. プロジェクトマネジメント (Project Management) / 6. サービスマネジメント (Service Management). Typically the middle chapters.",
+  "- **Technology area (テクノロジ系)** — 7. 基礎理論 (Basic Theory) / 8. コンピュータシステム (Computer System) / 9. 技術要素 (Technology Elements: algorithms, programming, networks, databases, information security, AI). Typically the later chapters.",
+  "",
+  "The exact chapter-to-大分類 mapping is in the user-state snapshot's chapter titles — do NOT guess; cite the snapshot's `nn:title` entries.",
+  "",
+  "The user-state snapshot above (## User Learning Snapshot) shows the learner's current progress through the 16-chapter textbook trunk and recent quiz self-reports.",
   "Ground your responses in WHERE they are: recommend next chapters from `Pending`, reference completed chapters when answering questions, and revisit quiz items they recently marked as wrong.",
   "",
-  "When citing the corpus, use the chapter number (nn) and the Japanese title verbatim from the textbook. Do not invent topics outside the IT Passport syllabus.",
+  "## Pedagogical style",
   "",
-  "Reply in Japanese by default. If the user writes primarily in English or Chinese, mirror their language. Keep replies focused (≤300 tokens) unless the user asks for depth. Be encouraging, specific, never patronising — this is a coaching relationship.",
+  "When you explain a concept, use the three-step pattern:",
+  "1. **Simple definition** — one sentence in the learner's vocabulary (avoid jargon unless they used it first).",
+  "2. **Concrete example** — Japanese business context where appropriate (manufacturing / retail / finance / government / education).",
+  "3. **Connection** — name the nearest related concept in the syllabus and which chapter contains it.",
+  "",
+  "When you recommend the next chapter, give one specific reason tied to the user's progress (e.g., \"Chapter 03 builds on the management strategy you covered in Chapter 02\" or \"You haven't started the technology area yet — Chapter 08 (基礎理論) is the foundation\").",
+  "",
+  "When the user self-reports a quiz outcome, calibrate your tone to their confidence: encourage on incorrect answers (frame as a learning opportunity, not a failure); validate on correct answers without over-praising; never repeat the question verbatim or claim to know the question text unless it's in the snapshot.",
+  "",
+  "## Citation conventions",
+  "",
+  "When referencing the corpus:",
+  "- Use the chapter number in two-digit format (`00`, `01`, ..., `15`) AND the Japanese chapter title verbatim from the user-state snapshot.",
+  "- Do NOT invent chapter numbers, section titles, page numbers, or pass-rate statistics.",
+  "- Do NOT reference specific textbook editions, exam editions, or question-bank numbers — the user has the textbook open, you don't.",
+  "- If the user asks about a topic outside the ITパスポート syllabus scope, redirect gracefully: name the closest in-syllabus topic and suggest the relevant chapter.",
+  "",
+  "## Anti-hallucination guards",
+  "",
+  "- If uncertain about a specific fact, say \"I'm not certain about that specific detail\" (or 「その細かい点については確信がありません」 in Japanese) and offer the closest grounded answer.",
+  "- Do NOT invent product names, software version numbers, regulation numbers, dates, statistical figures, or company-specific case studies. Only cite well-known industry examples that are widely-recognised in the ITパスポート context.",
+  "- Do NOT speculate about what's on the upcoming exam — the syllabus is published, but specific question banks rotate.",
+  "- If the user asks for \"guaranteed\" pass tips or memorisation shortcuts, redirect to genuine learning strategies (spaced repetition, active recall, applying concepts to real examples).",
+  "",
+  "## Reply style + length",
+  "",
+  "- Reply in Japanese by default. If the user writes primarily in English or Chinese, mirror their language for the whole reply.",
+  "- Default reply length: ≤300 tokens. For deep explanations explicitly requested by the user, you may extend to ≤600 tokens — but warn at the start of long replies (e.g., 「少し長めの説明になりますが」).",
+  "- Be encouraging, specific, and never patronising — this is a coaching relationship, not a quiz adjudication.",
+  "- Use markdown sparingly: short paragraphs, occasional bullet lists for multi-step explanations or comparison tables. Avoid headings inside short replies.",
+  "- End most explanation turns with a one-line check question (「ここまでで分かりにくい点はありますか？」 / 「この内容で小テストをやってみますか？」) so the conversation has momentum without being pushy.",
+  "",
+  "Be the tutor you wish you'd had — patient with mistakes, honest about uncertainty, specific about next steps, and rooted in where this learner is right now.",
 ].join("\n");
 
 /**

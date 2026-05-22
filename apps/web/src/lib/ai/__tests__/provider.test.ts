@@ -2,8 +2,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   buildMessagesWithStablePrefix,
   getActiveProvider,
+  getActiveTutorProvider,
   getModel,
   getTutorModel,
+  getTutorProviderOptions,
   readCacheUsage,
 } from "../provider";
 
@@ -61,51 +63,202 @@ describe("provider — D-095 model factory", () => {
       expect(chat).not.toBe(quiz);
     });
 
-    it("Phase 4 B.1 — tutor role returns anthropic Sonnet 4.6 regardless of provider arg", () => {
-      // D-102 §7.2: tutor is anthropic-pinned; the provider arg is ignored.
+    it("Phase 4 D-104 §2.1 — tutor role routes via getTutorModel (independent of LLM_PROVIDER arg)", () => {
+      // The Phase 2 `provider` arg passed to getModel is IGNORED on the
+      // tutor path — tutor reads its own env (LLM_PROVIDER_TUTOR) per
+      // D-104 §2.5. Passing "deepseek" or "anthropic" here both delegate
+      // to getTutorModel() which uses the tutor env.
       const m1 = getModel("tutor", "deepseek");
       const m2 = getModel("tutor", "anthropic");
       expect(m1).toBeDefined();
       expect(m2).toBeDefined();
     });
 
-    it("Phase 4 B.1 — tutor role ignores LLM_PROVIDER env", () => {
-      delete process.env.LLM_PROVIDER;
-      const m1 = getModel("tutor");
-      process.env.LLM_PROVIDER = "anthropic";
-      const m2 = getModel("tutor");
-      process.env.LLM_PROVIDER = "deepseek";
-      const m3 = getModel("tutor");
-      expect(m1).toBeDefined();
-      expect(m2).toBeDefined();
-      expect(m3).toBeDefined();
+    it("Phase 4 D-104 §2.5 — tutor role uses LLM_PROVIDER_TUTOR env, not LLM_PROVIDER", () => {
+      const originalTutor = process.env.LLM_PROVIDER_TUTOR;
+      try {
+        // LLM_PROVIDER=anthropic but LLM_PROVIDER_TUTOR=deepseek → tutor stays on deepseek.
+        process.env.LLM_PROVIDER = "anthropic";
+        delete process.env.LLM_PROVIDER_TUTOR;
+        const m = getModel("tutor");
+        expect(m).toBeDefined();
+      } finally {
+        if (originalTutor === undefined) {
+          delete process.env.LLM_PROVIDER_TUTOR;
+        } else {
+          process.env.LLM_PROVIDER_TUTOR = originalTutor;
+        }
+      }
+    });
+  });
+});
+
+describe("Phase 4 D-104 §2.5 — getActiveTutorProvider env routing", () => {
+  const originalTutor = process.env.LLM_PROVIDER_TUTOR;
+  afterEach(() => {
+    if (originalTutor === undefined) {
+      delete process.env.LLM_PROVIDER_TUTOR;
+    } else {
+      process.env.LLM_PROVIDER_TUTOR = originalTutor;
+    }
+  });
+
+  it("defaults to deepseek when LLM_PROVIDER_TUTOR unset (LD-Module-B-10 + LD-Module-B-12)", () => {
+    delete process.env.LLM_PROVIDER_TUTOR;
+    expect(getActiveTutorProvider()).toBe("deepseek");
+  });
+
+  it("returns anthropic when LLM_PROVIDER_TUTOR=anthropic (toggle path active)", () => {
+    process.env.LLM_PROVIDER_TUTOR = "anthropic";
+    expect(getActiveTutorProvider()).toBe("anthropic");
+  });
+
+  it("returns openai when LLM_PROVIDER_TUTOR=openai (reserved-stub path selected)", () => {
+    process.env.LLM_PROVIDER_TUTOR = "openai";
+    expect(getActiveTutorProvider()).toBe("openai");
+  });
+
+  it("returns deepseek for any other LLM_PROVIDER_TUTOR value", () => {
+    process.env.LLM_PROVIDER_TUTOR = "bogus";
+    expect(getActiveTutorProvider()).toBe("deepseek");
+    process.env.LLM_PROVIDER_TUTOR = "";
+    expect(getActiveTutorProvider()).toBe("deepseek");
+  });
+});
+
+describe("Phase 4 D-104 §2.1 — getTutorModel 3-way env-routable", () => {
+  const originalTutor = process.env.LLM_PROVIDER_TUTOR;
+  afterEach(() => {
+    if (originalTutor === undefined) {
+      delete process.env.LLM_PROVIDER_TUTOR;
+    } else {
+      process.env.LLM_PROVIDER_TUTOR = originalTutor;
+    }
+  });
+
+  it("default returns a DeepSeek V4 pro model (LD-Module-B-12)", () => {
+    delete process.env.LLM_PROVIDER_TUTOR;
+    const m = getTutorModel();
+    expect(m).toBeDefined();
+    expect(typeof m).toBe("object");
+  });
+
+  it("explicit provider:'deepseek' returns a model regardless of env", () => {
+    process.env.LLM_PROVIDER_TUTOR = "anthropic";
+    const m = getTutorModel({ provider: "deepseek" });
+    expect(m).toBeDefined();
+  });
+
+  it("explicit provider:'anthropic' returns Sonnet 4.6 by default", () => {
+    delete process.env.LLM_PROVIDER_TUTOR;
+    const m = getTutorModel({ provider: "anthropic" });
+    expect(m).toBeDefined();
+  });
+
+  it("explicit provider:'anthropic' with escalate=true returns Opus 4.7 (different model object)", () => {
+    const def = getTutorModel({ provider: "anthropic" });
+    const esc = getTutorModel({ provider: "anthropic", escalate: true });
+    expect(def).toBeDefined();
+    expect(esc).toBeDefined();
+    expect(def).not.toBe(esc);
+  });
+
+  it("DeepSeek escalate=true returns the SAME model (escalation lives in providerOptions, not model swap per D-104 §2.2)", () => {
+    // The LanguageModel object identity is per anthropic()/deepseek() factory call;
+    // both calls fabricate a fresh object, so we don't assert reference equality.
+    // We assert the function accepts the explicit escalate flag without throwing.
+    const a = getTutorModel({ provider: "deepseek", escalate: false });
+    const b = getTutorModel({ provider: "deepseek", escalate: true });
+    expect(a).toBeDefined();
+    expect(b).toBeDefined();
+  });
+
+  it("LLM_PROVIDER_TUTOR=anthropic env toggles to Anthropic without explicit provider arg", () => {
+    process.env.LLM_PROVIDER_TUTOR = "anthropic";
+    const m = getTutorModel();
+    expect(m).toBeDefined();
+  });
+
+  it("LD-Module-B-11 — provider:'openai' throws a Phase-5-reserved error (interface-only stub)", () => {
+    expect(() => getTutorModel({ provider: "openai" })).toThrow(
+      /reserved for Phase 5/i,
+    );
+  });
+
+  it("LD-Module-B-11 — LLM_PROVIDER_TUTOR=openai env-selects the stub and throws on call", () => {
+    process.env.LLM_PROVIDER_TUTOR = "openai";
+    expect(() => getTutorModel()).toThrow(/reserved for Phase 5/i);
+  });
+
+  it("LD-Module-B-11 — error message points to the valid LLM_PROVIDER_TUTOR values", () => {
+    expect(() => getTutorModel({ provider: "openai" })).toThrow(
+      /LLM_PROVIDER_TUTOR=deepseek/,
+    );
+  });
+});
+
+describe("Phase 4 D-104 §2.2 — getTutorProviderOptions thinking + reasoningEffort", () => {
+  const originalTutor = process.env.LLM_PROVIDER_TUTOR;
+  afterEach(() => {
+    if (originalTutor === undefined) {
+      delete process.env.LLM_PROVIDER_TUTOR;
+    } else {
+      process.env.LLM_PROVIDER_TUTOR = originalTutor;
+    }
+  });
+
+  it("DeepSeek default: thinking.enabled + reasoningEffort:'high'", () => {
+    delete process.env.LLM_PROVIDER_TUTOR;
+    expect(getTutorProviderOptions()).toEqual({
+      deepseek: {
+        thinking: { type: "enabled" },
+        reasoningEffort: "high",
+      },
     });
   });
 
-  describe("getTutorModel — D-102 §7.2 + D-103 §2.4", () => {
-    it("returns a model instance by default (Sonnet 4.6)", () => {
-      const m = getTutorModel();
-      expect(m).toBeDefined();
-      expect(typeof m).toBe("object");
+  it("DeepSeek escalate=true: reasoningEffort bumps to 'max' (same model)", () => {
+    expect(
+      getTutorProviderOptions({ provider: "deepseek", escalate: true }),
+    ).toEqual({
+      deepseek: {
+        thinking: { type: "enabled" },
+        reasoningEffort: "max",
+      },
     });
+  });
 
-    it("returns a different model instance when escalate=true (Opus 4.7)", () => {
-      const def = getTutorModel();
-      const esc = getTutorModel({ escalate: true });
-      expect(def).toBeDefined();
-      expect(esc).toBeDefined();
-      // Sonnet vs Opus → different model objects.
-      expect(def).not.toBe(esc);
+  it("DeepSeek escalate=false (default): reasoningEffort='high'", () => {
+    expect(
+      getTutorProviderOptions({ provider: "deepseek", escalate: false }),
+    ).toEqual({
+      deepseek: {
+        thinking: { type: "enabled" },
+        reasoningEffort: "high",
+      },
     });
+  });
 
-    it("escalate=false (default) returns the same selection as no-arg", () => {
-      const a = getTutorModel();
-      const b = getTutorModel({ escalate: false });
-      // Both return Sonnet 4.6 — the AI SDK anthropic() factory returns a
-      // fresh object per call, so we don't assert reference equality; we
-      // assert the function accepts the explicit `false` without throwing.
-      expect(a).toBeDefined();
-      expect(b).toBeDefined();
+  it("Anthropic: returns empty options (cache_control attached at message level by buildTutorMessages)", () => {
+    expect(getTutorProviderOptions({ provider: "anthropic" })).toEqual({});
+    expect(
+      getTutorProviderOptions({ provider: "anthropic", escalate: true }),
+    ).toEqual({});
+  });
+
+  it("OpenAI: returns empty options (unreachable in practice — getTutorModel throws first)", () => {
+    expect(getTutorProviderOptions({ provider: "openai" })).toEqual({});
+  });
+
+  it("uses LLM_PROVIDER_TUTOR env when provider arg omitted", () => {
+    process.env.LLM_PROVIDER_TUTOR = "anthropic";
+    expect(getTutorProviderOptions()).toEqual({});
+    process.env.LLM_PROVIDER_TUTOR = "deepseek";
+    expect(getTutorProviderOptions()).toEqual({
+      deepseek: {
+        thinking: { type: "enabled" },
+        reasoningEffort: "high",
+      },
     });
   });
 });
@@ -190,6 +343,60 @@ describe("readCacheUsage — unified anthropic + deepseek + unknown", () => {
     expect(u.provider).toBe("anthropic");
     expect(u.cacheCreationInputTokens).toBe(0);
     expect(u.cacheReadInputTokens).toBe(19800);
+  });
+
+  it("Session 56 fix — parses anthropic nested-usage shape (actual AI SDK response)", () => {
+    // Empirical Session 56 anthropic-debug diagnostic: AI SDK exposes
+    // cache_read_input_tokens ONLY under providerMetadata.anthropic.usage
+    // (snake_case, nested) and NOT at the top-level anthropic.* like
+    // cacheCreationInputTokens. Reader must fall through to the nested
+    // path when top-level is absent.
+    const meta = {
+      anthropic: {
+        cacheCreationInputTokens: 0,
+        usage: {
+          input_tokens: 16,
+          cache_creation_input_tokens: 0,
+          cache_read_input_tokens: 1284,
+          output_tokens: 148,
+        },
+      },
+    };
+    const u = readCacheUsage(meta);
+    expect(u.provider).toBe("anthropic");
+    expect(u.cacheCreationInputTokens).toBe(0);
+    expect(u.cacheReadInputTokens).toBe(1284);
+  });
+
+  it("Session 56 fix — top-level fields take precedence over nested when both present", () => {
+    const meta = {
+      anthropic: {
+        cacheCreationInputTokens: 999,
+        cacheReadInputTokens: 888,
+        usage: {
+          cache_creation_input_tokens: 100,
+          cache_read_input_tokens: 200,
+        },
+      },
+    };
+    const u = readCacheUsage(meta);
+    expect(u.cacheCreationInputTokens).toBe(999);
+    expect(u.cacheReadInputTokens).toBe(888);
+  });
+
+  it("Session 56 fix — nested fallback when top-level fields missing", () => {
+    const meta = {
+      anthropic: {
+        // No top-level cache fields at all — only nested usage.
+        usage: {
+          cache_creation_input_tokens: 161,
+          cache_read_input_tokens: 1284,
+        },
+      },
+    };
+    const u = readCacheUsage(meta);
+    expect(u.cacheCreationInputTokens).toBe(161);
+    expect(u.cacheReadInputTokens).toBe(1284);
   });
 
   it("parses deepseek shape — hit + miss tokens", () => {

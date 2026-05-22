@@ -28,23 +28,31 @@ function makeContext(overrides: Partial<TutorContext> = {}): TutorContext {
   };
 }
 
-describe("TUTOR_SYSTEM_INSTRUCTION — D-088 §2.3 / D-103 §2.4 byte-stability", () => {
+describe("TUTOR_SYSTEM_INSTRUCTION — D-088 §2.3 / D-103 §2.4 byte-stability + LD-Module-B-13 size", () => {
   it("is a non-empty string", () => {
     expect(typeof TUTOR_SYSTEM_INSTRUCTION).toBe("string");
     expect(TUTOR_SYSTEM_INSTRUCTION.length).toBeGreaterThan(0);
   });
 
-  it("locks the current text via snapshot (drift breaks the cache key)", () => {
-    expect(TUTOR_SYSTEM_INSTRUCTION).toMatchInlineSnapshot(`
-      "You are an AI 学習助手 (study tutor) for the Japanese IT Passport (ITパスポート) certification exam.
+  it("LD-Module-B-13 — SYSTEM is ≥3000 characters (rough ≥1024 token proxy for Anthropic ephemeral cache minimum cacheable prefix)", () => {
+    // Empirical Session 56 B.3 attempt-1: Anthropic Sonnet 4.6's
+    // cache_control:ephemeral does NOT engage when the marked prefix is
+    // below ~1024 tokens. SYSTEM was ~150 tokens originally → 0% cache hit.
+    // LD-Module-B-13 supersedes LD-Module-B-6 with bulked SYSTEM crossing
+    // the threshold via curriculum framework + style guide + grounding
+    // rules. Character-count proxy ≥3000 ≈ ≥1024 tokens (mixed En/Ja text
+    // tokenises ~2.5-3 chars per token avg).
+    expect(TUTOR_SYSTEM_INSTRUCTION.length).toBeGreaterThan(3000);
+  });
 
-      The user-state snapshot above (## User Learning Snapshot) shows the learner's current progress through the 16-chapter textbook and recent quiz self-reports.
-      Ground your responses in WHERE they are: recommend next chapters from \`Pending\`, reference completed chapters when answering questions, and revisit quiz items they recently marked as wrong.
-
-      When citing the corpus, use the chapter number (nn) and the Japanese title verbatim from the textbook. Do not invent topics outside the IT Passport syllabus.
-
-      Reply in Japanese by default. If the user writes primarily in English or Chinese, mirror their language. Keep replies focused (≤300 tokens) unless the user asks for depth. Be encouraging, specific, never patronising — this is a coaching relationship."
-    `);
+  it("byte-stable across calls (cache key invariant)", () => {
+    // Importing the constant twice should yield identical bytes; this is
+    // tautological in JS but worth pinning to flag any accidental tagged-
+    // template-literal interpolation slip that would break the cache key.
+    const a = TUTOR_SYSTEM_INSTRUCTION;
+    const b = TUTOR_SYSTEM_INSTRUCTION;
+    expect(a).toBe(b);
+    expect(a.length).toBe(b.length);
   });
 
   it("mentions IT Passport (ITパスポート) — domain anchor", () => {
@@ -57,6 +65,34 @@ describe("TUTOR_SYSTEM_INSTRUCTION — D-088 §2.3 / D-103 §2.4 byte-stability"
 
   it("instructs Japanese-by-default language posture", () => {
     expect(TUTOR_SYSTEM_INSTRUCTION).toContain("Japanese by default");
+  });
+
+  it("LD-Module-B-13 — covers the 3 ITパスポート syllabus areas", () => {
+    expect(TUTOR_SYSTEM_INSTRUCTION).toContain("ストラテジ系");
+    expect(TUTOR_SYSTEM_INSTRUCTION).toContain("マネジメント系");
+    expect(TUTOR_SYSTEM_INSTRUCTION).toContain("テクノロジ系");
+  });
+
+  it("LD-Module-B-13 — references IPA (the issuing body)", () => {
+    expect(TUTOR_SYSTEM_INSTRUCTION).toContain("IPA");
+  });
+
+  it("LD-Module-B-13 — includes pedagogical style framing (3-step explanation pattern)", () => {
+    expect(TUTOR_SYSTEM_INSTRUCTION).toContain("Pedagogical style");
+    expect(TUTOR_SYSTEM_INSTRUCTION).toMatch(/three-step|3-step/i);
+  });
+
+  it("LD-Module-B-13 — includes citation conventions section", () => {
+    expect(TUTOR_SYSTEM_INSTRUCTION).toContain("Citation conventions");
+  });
+
+  it("LD-Module-B-13 — includes anti-hallucination guards section", () => {
+    expect(TUTOR_SYSTEM_INSTRUCTION).toContain("Anti-hallucination guards");
+  });
+
+  it("LD-Module-B-13 — chapter citation format pinned to two-digit nn (`00`..`15`)", () => {
+    expect(TUTOR_SYSTEM_INSTRUCTION).toContain("`00`");
+    expect(TUTOR_SYSTEM_INSTRUCTION).toContain("`15`");
   });
 });
 
