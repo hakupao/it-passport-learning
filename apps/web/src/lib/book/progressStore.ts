@@ -248,3 +248,30 @@ export function isChapterInProgress(
   if (c.completedAt) return false;
   return typeof c.scrollY === "number" && c.scrollY > 0;
 }
+
+/**
+ * Convenience wrapper for the common quiz-self-report case (Phase 4 Module A
+ * Step A.2): read current state, record the outcome, persist back. Used by
+ * `<QuizExplain />`'s self-report footer once the AI explanation streams
+ * (phase === "done"). Returns the new `BookProgress` so callers can keep
+ * the in-memory state in sync without an extra `loadProgress` roundtrip.
+ *
+ * Storage failures are swallowed inside the underlying `saveProgress` —
+ * a user in private mode still sees the self-report take effect in the
+ * current modal session, the persistence layer just no-ops.
+ *
+ * Idempotent at the storage level via `recordQuizAnswer` overwrite
+ * semantics — a user re-self-reporting (wrong → right, or vice versa)
+ * ends up with the most recent outcome on disk.
+ */
+export function persistQuizOutcome(
+  storage: StorageLike,
+  qid: string,
+  correct: boolean,
+  key: string = PROGRESS_STORAGE_KEY,
+): BookProgress {
+  const current = loadProgress(storage, key);
+  const next = recordQuizAnswer(current, qid, correct);
+  saveProgress(storage, next, key);
+  return next;
+}

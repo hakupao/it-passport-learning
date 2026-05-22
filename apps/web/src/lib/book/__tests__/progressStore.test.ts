@@ -15,6 +15,7 @@ import {
   isChapterInProgress,
   loadProgress,
   markChapterCompleted,
+  persistQuizOutcome,
   recordChapterScroll,
   recordQuizAnswer,
   saveProgress,
@@ -328,5 +329,48 @@ describe("isChapterCompleted / isChapterInProgress / countCompletedChapters", ()
     p = markChapterCompleted(p, "99", "2026-05-22T99:00:00.000Z");
     const nns = ["00", "01", "02", "03", "04", "05"];
     expect(countCompletedChapters(p, nns)).toBe(2);
+  });
+});
+
+describe("persistQuizOutcome", () => {
+  it("round-trips a new outcome via storage", () => {
+    const s = makeMemoryStorage();
+    const out = persistQuizOutcome(s, "page_042_entity_0", true);
+    expect(out.quiz["page_042_entity_0"]?.correct).toBe(true);
+    expect(loadProgress(s).quiz["page_042_entity_0"]?.correct).toBe(true);
+  });
+
+  it("overwrites a prior outcome (retry semantics)", () => {
+    const s = makeMemoryStorage();
+    persistQuizOutcome(s, "page_042_entity_0", false);
+    const out = persistQuizOutcome(s, "page_042_entity_0", true);
+    expect(out.quiz["page_042_entity_0"]?.correct).toBe(true);
+    expect(loadProgress(s).quiz["page_042_entity_0"]?.correct).toBe(true);
+  });
+
+  it("swallows storage failures (no throw, returned state still reflects intent)", () => {
+    const s: StorageLike = {
+      getItem: () => null,
+      setItem: () => {
+        throw new Error("QuotaExceededError");
+      },
+      removeItem: () => undefined,
+    };
+    expect(() =>
+      persistQuizOutcome(s, "page_042_entity_0", true),
+    ).not.toThrow();
+    // Returned state still reflects the in-memory record even when persistence failed.
+    const out = persistQuizOutcome(s, "page_042_entity_0", true);
+    expect(out.quiz["page_042_entity_0"]?.correct).toBe(true);
+  });
+
+  it("honours a custom storage key (cross-key isolation)", () => {
+    const s = makeMemoryStorage();
+    persistQuizOutcome(s, "page_042_entity_0", true, "itp:book:progress:test");
+    expect(
+      loadProgress(s, "itp:book:progress:test").quiz["page_042_entity_0"]
+        ?.correct,
+    ).toBe(true);
+    expect(loadProgress(s).quiz["page_042_entity_0"]).toBeUndefined();
   });
 });

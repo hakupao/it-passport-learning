@@ -1,0 +1,56 @@
+Phase 4 Module A close gate — `pnpm exec vitest run` from apps/web — Session 54 2026-05-22
+Shared with A.1 + A.2 + A.3 per whole-module-1-sitting convention.
+
+ RUN  v4.1.6 /Users/bojiangzhang/MyProject/IT-Passport-Learning/apps/web
+
+ Test Files  23 passed (23)
+      Tests  366 passed (366)
+   Start at  15:36:42
+   Duration  692ms (transform 663ms, setup 0ms, import 1.47s, tests 556ms, environment 5ms)
+
+==========================================================================================
+Test count delta vs Phase 3 close baseline (Session 52 vitest 344/344 PASS):
+==========================================================================================
+
+Before Module A: 344 tests (22 test files)
+After Module A:  366 tests (23 test files) — **+22 tests, +1 test file**
+
+Breakdown of +22:
+- +18 tutorContext (NEW file `apps/web/src/lib/tutor/__tests__/tutorContext.test.ts`):
+  · 6 projectChapterStatuses cases (empty / one completed / one inProgress / completed-with-scrollY / mixed buckets / subset)
+  · 7 projectRecentQuiz cases (empty / single / multiple-sorted / ties-broken-by-qid / limit / default-limit / negative-limit)
+  · 5 loadTutorContext cases (cold / round-trip / storage-failure / corrupt-shape / options.recentQuizLimit)
+- +4 persistQuizOutcome (MOD `apps/web/src/lib/book/__tests__/progressStore.test.ts`):
+  · round-trips a new outcome via storage
+  · overwrites a prior outcome (retry semantics)
+  · swallows storage failures (no throw, returned state still reflects intent)
+  · honours a custom storage key (cross-key isolation)
+
+==========================================================================================
+Per-file targeted runs (intermediate verification during implementation):
+==========================================================================================
+
+Step A.1 + A.3 (after `tutorContext.ts` + `tutorContext.test.ts` landed):
+ RUN  v4.1.6
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Duration  119ms
+
+Step A.2 (after `persistQuizOutcome` + 4 cases landed):
+ RUN  v4.1.6
+ Test Files  3 passed (3)
+      Tests  69 passed (69)
+   Duration  152ms
+
+Module A close (full suite):
+ RUN  v4.1.6
+ Test Files  23 passed (23)
+      Tests  366 passed (366)
+   Duration  692ms
+
+==========================================================================================
+Failures during Module A: 0
+==========================================================================================
+
+No vitest failure events. No tsc strict-mode catches. No eslint warnings.
+Rule B 失败归档 disposition: n/a Session 54 (no failed attempts).

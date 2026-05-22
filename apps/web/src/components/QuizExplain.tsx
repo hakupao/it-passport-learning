@@ -30,6 +30,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
+import { loadProgress, persistQuizOutcome } from "@/lib/book/progressStore";
 import { streamQuizExplain } from "@/lib/quiz/quizSseTransport";
 import type { QuizSummary } from "@/lib/quiz/quizScope";
 
@@ -58,6 +59,12 @@ export function QuizExplain({
   const [output, setOutput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [usageHint, setUsageHint] = useState<string>("");
+  // Phase 4 Module A Step A.2 — self-report wire (LD-Module-A-1).
+  // "unset" until user clicks one of the two buttons; rehydrated from
+  // progressStore on summary change so a reopened modal shows the prior pick.
+  const [selfReport, setSelfReport] = useState<"unset" | "correct" | "wrong">(
+    "unset",
+  );
   const abortRef = useRef<AbortController | null>(null);
   const requestSeqRef = useRef<number>(0);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -145,6 +152,31 @@ export function QuizExplain({
       abortRef.current?.abort();
     };
   }, [summary, startStream]);
+
+  // Phase 4 Module A Step A.2 — rehydrate self-report state from storage
+  // when summary changes (LD-Module-A-1). Mount-gate via useEffect lets us
+  // touch window.localStorage safely on the client without SSR fallout.
+  useEffect(() => {
+    if (!summary) {
+      setSelfReport("unset");
+      return;
+    }
+    if (typeof window === "undefined") return;
+    const existing = loadProgress(window.localStorage).quiz[summary.questionId];
+    setSelfReport(
+      existing ? (existing.correct ? "correct" : "wrong") : "unset",
+    );
+  }, [summary]);
+
+  const handleSelfReport = useCallback(
+    (correct: boolean) => {
+      if (!summary) return;
+      if (typeof window === "undefined") return;
+      persistQuizOutcome(window.localStorage, summary.questionId, correct);
+      setSelfReport(correct ? "correct" : "wrong");
+    },
+    [summary],
+  );
 
   if (!summary) return null;
 
@@ -244,6 +276,46 @@ export function QuizExplain({
             <p className="text-[10px] uppercase tracking-wider text-black/55 dark:text-white/55 pt-2 border-t border-black/[.06] dark:border-white/[.08]">
               {usageHint}
             </p>
+          )}
+
+          {phase === "done" && (
+            <div
+              className="pt-3 mt-1 border-t border-black/[.06] dark:border-white/[.08] space-y-2"
+              role="group"
+              aria-label={t("selfReportPrompt")}
+            >
+              <p className="text-xs text-black/65 dark:text-white/65">
+                {t("selfReportPrompt")}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSelfReport(true)}
+                  aria-pressed={selfReport === "correct"}
+                  className={`text-xs rounded-lg px-3 py-1.5 border transition-colors ${FOCUS_RING} ${
+                    selfReport === "correct"
+                      ? "bg-emerald-600 text-white border-emerald-600"
+                      : "border-black/[.18] dark:border-white/[.22] hover:bg-black/[.04] dark:hover:bg-white/[.08]"
+                  }`}
+                >
+                  {selfReport === "correct" ? "✓ " : ""}
+                  {t("selfReportCorrect")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelfReport(false)}
+                  aria-pressed={selfReport === "wrong"}
+                  className={`text-xs rounded-lg px-3 py-1.5 border transition-colors ${FOCUS_RING} ${
+                    selfReport === "wrong"
+                      ? "bg-amber-600 text-white border-amber-600"
+                      : "border-black/[.18] dark:border-white/[.22] hover:bg-black/[.04] dark:hover:bg-white/[.08]"
+                  }`}
+                >
+                  {selfReport === "wrong" ? "✗ " : ""}
+                  {t("selfReportWrong")}
+                </button>
+              </div>
+            </div>
           )}
         </div>
 

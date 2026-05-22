@@ -10,9 +10,9 @@
 
 | # | Module | Step | Scope | Est wall | Actual | Status |
 |---|---|---|---|---|---|---|
-| A.1 | Data | Tutor read-surface types | Define `TutorContext` shape projecting `progressStore` → `{completedChapters: ChapterRef[], inProgress: ChapterRef[], pendingChapters: ChapterRef[], recentQuiz: QuizAttempt[]}`. Pure types + projection helpers; vitest cases for projection. No API call. | 60-120 min | TBD | ⏸ pending G1 |
-| A.2 | Data | Wire `recordQuizAnswer` into `<QuizExplain />` | Promote RETROSPECTIVE_phase3 §2.3 holdover #1 per D-102 §7.1 — call `recordQuizAnswer(qid, correct)` on Q resolution. vitest update; `<QuizExplain />` surface lifecycle preserved (D-085 §2.4 frozen contract honored — wire is additive, not refactoring). | 60-120 min | TBD | ⏸ pending A.1 |
-| A.3 | Data | `loadTutorContext()` helper + tests | Pure helper that reads progressStore + `recordQuizAnswer`-populated quiz dict → emits `TutorContext`. SSR-safe via `StorageLike` (Phase 3 LD-Step3-A pattern). vitest coverage: empty / partial / full progress / quiz history mixed correct+incorrect. | 60-120 min | TBD | ⏸ pending A.2 |
+| A.1 | Data | Tutor read-surface types | Define `TutorContext` shape projecting `progressStore` → `{completedChapters: ChapterSummary[], inProgressChapters: ChapterSummary[], pendingChapters: ChapterSummary[], recentQuiz: QuizAttempt[]}`. Pure types + projection helpers; vitest cases for projection. No API call. | 60-120 min | **~25 min** | ✅ DONE Session 54 |
+| A.2 | Data | Wire `recordQuizAnswer` into `<QuizExplain />` | Promoted RETROSPECTIVE_phase3 §2.3 holdover #1 per D-102 §7.1 — added `persistQuizOutcome` helper to progressStore + self-report binary UI in QuizExplain footer at `phase === "done"` (LD-Module-A-1; honest signal absent picker UX). vitest +4 cases; `<QuizExplain />` surface lifecycle preserved (D-085 §2.4 frozen contract honored — wire is additive leaf UI, not refactoring; modal frame footer untouched). +3 i18n keys × 3 locales. | 60-120 min | **~40 min** | ✅ DONE Session 54 |
+| A.3 | Data | `loadTutorContext()` helper + tests | Pure helper composing `loadProgress` + A.1 projection helpers → emits `TutorContext`. SSR-safe via `StorageLike` (Phase 3 LD-Step3-A pattern). vitest +5 cases: cold / round-trip / storage-failure / corrupt-shape / options.recentQuizLimit. | 60-120 min | **~15 min** | ✅ DONE Session 54 |
 | B.1 | Brain | Lock Anthropic model + SDK setup | Confirm `@anthropic-ai/sdk` version in `apps/web/package.json` supports ephemeral cache blocks. Lock default model `claude-sonnet-4-6`. Document Opus 4.7 escalation criterion (likely "user explicitly asks for harder reasoning" or "Sonnet refuses / gives low-confidence answer"). | 30-90 min | TBD | ⏸ pending A.3 |
 | B.2 | Brain | Tutor SYSTEM_INSTRUCTION + cache blocks | Author SYSTEM_INSTRUCTION (progress-aware tutor persona; ITPassport-domain anchored; cite-chapter conventions). Stable preamble block (TutorContext-as-text) wrapped in `cache_control: {type: "ephemeral"}` for 5-min TTL prefix cache. **Target ≥80% cache hit ratio per D-103 §2.4.** vitest snapshot for SYSTEM stability. | 90-180 min | TBD | ⏸ pending B.1 |
 | B.3 | Brain | Cost dry-run + **user gate G2** | Run \~10 mock conversations against locked SYSTEM + preamble + Sonnet 4.6. Measure: input tokens / output tokens / cache hit ratio / cost per conversation. **Requires explicit user approval per CLAUDE.md** ("first LLM API call gate"). Compare projected Phase 4 burn vs D-103 \$15 cap. If projection exceeds cap, revise Module B and re-run dry-run before Step B.4. | 60-120 min + user wait | TBD | ⏸ pending B.2 + user gate G2 |
@@ -116,9 +116,10 @@ PLAN.md inherits all rejections without re-listing here.
 | D-102 (form) | ✅ LOCKED Session 53 Turn 6 |
 | D-103 (cost cap) | ✅ LOCKED Session 53 Turn 6 |
 | PLAN.md | ✅ On disk (this file) |
-| Module A 实施 gate (G1) | ⏸ user-pending |
-| Module B/C/D gates (G2-G6) | ⏸ downstream (gated on prior module close + user signal) |
-| Cost tripwire (G7) | ⏸ silent until first real Anthropic API call at Module B Step B.3 |
+| Module A 实施 gate (G1) | ✅ FIRED + CLOSED Session 54 — A.1 + A.2 + A.3 all DONE in one sitting per user `开始 Phase 4 Module A` signal 2026-05-22 |
+| Module B/C/D gates (G2-G6) | ⏸ downstream (gated on prior module close + user signal); next user signal needed = `开始 Phase 4 Module B` to fire G2 |
+| Cost tripwire (G7) | ⏸ silent — Module A had \$0 LLM cost (types + wire-up + projection helper); first Anthropic call at Module B Step B.3 dry-run gate G2 |
 | RETROSPECTIVE_phase4.md | ⏸ future commitment (Phase 4 close, Module D Step D.3) |
-| γ tripwire baseline | midpoint × 1.0 (NOT Phase 3 multiplier) |
+| γ tripwire baseline | midpoint × 1.0 (NOT Phase 3 multiplier) — **revised from Module A actuals N=3**: A.1 -72% / A.2 -56% / A.3 -83% / mean **-70% under midpoint** (similar to Phase 3 mean -59%; Module A behaves more like composition since data layer projects existing Phase 3 progressStore). Watch Module B (new-infra surface) for whether γ reverts to midpoint × 1.0 as predicted. |
 | β tripwire | re-opens at Module D prod deploy with Anthropic-cache mechanism (new bucket) |
+| Module A LD-N | LD-Module-A-1 (self-report binary UI) / LD-Module-A-2[a-e] (TutorContext shape + projection invariants) / LD-Module-A-3[a-d] (loadTutorContext composer) — all in-source per D-094 §2.1 |

@@ -1,0 +1,77 @@
+Phase 4 Module A close gate — `pnpm exec next build` from apps/web — Session 54 2026-05-22
+Shared with A.1 + A.2 + A.3 per whole-module-1-sitting convention.
+
+ ✓ Compiled successfully in 1433ms
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/23) ...
+   Generating static pages (5/23)
+   Generating static pages (11/23)
+   Generating static pages (17/23)
+ ✓ Generating static pages (23/23)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /_not-found                            994 B         103 kB
+├ ● /[locale]                              170 B         119 kB
+├   ├ /ja
+├   ├ /zh
+├   └ /en
+├ ● /[locale]/book                       1.38 kB         121 kB
+├   ├ /ja/book
+├   ├ /zh/book
+├   └ /en/book
+├ ƒ /[locale]/book/chapter/[nn]          5.13 kB         181 kB
+├ ● /[locale]/chat                       1.93 kB         169 kB
+├   ├ /ja/chat
+├   ├ /zh/chat
+├   └ /en/chat
+├ ● /[locale]/glossary                   4.72 kB         119 kB
+├   ├ /ja/glossary
+├   ├ /zh/glossary
+├   └ /en/glossary
+├ ● /[locale]/quiz                       1.57 kB         120 kB
+├   ├ /ja/quiz
+├   ├ /zh/quiz
+├   └ /en/quiz
+├ ƒ /api/chat                              134 B         102 kB
+├ ƒ /api/glossary/hover                    134 B         102 kB
+├ ƒ /api/hello-ai                          134 B         102 kB
+└ ƒ /api/quiz/explain                      134 B         102 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/434e674c-bc139cc0bf032096.js  54.2 kB
+  ├ chunks/439-6ed716f0c90afc6f.js         46 kB
+  └ other shared chunks (total)          1.92 kB
+
+
+ƒ Middleware                             44.2 kB
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+==========================================================================================
+Bundle delta vs Phase 3 close baseline (Session 52 build_log evidence/phase3/step_03_progress/):
+==========================================================================================
+
+Middleware:                   44.2 kB → 44.2 kB    UNCHANGED
+Shared First Load JS:         102 kB  → 102 kB     UNCHANGED
+/[locale]/chat First Load:    169 kB  → 169 kB     UNCHANGED   ← Phase 2 D-085 §2.4 frozen contract preserved through Module A
+/[locale]/quiz Size:          1.57 kB → 1.57 kB    UNCHANGED   ← self-report UI absorbed in tolerance
+/[locale]/quiz First Load:    120 kB  → 120 kB     UNCHANGED
+/[locale]/book Size:          1.3 kB  → 1.38 kB    +0.08 kB (sub-noise)
+/[locale]/book First Load:    121 kB  → 121 kB     UNCHANGED
+/[locale]/book/chapter/[nn]:  5.57 kB → 5.13 kB    -0.44 kB (Next 15.5 chunk reshuffle, not our diff)
+/[locale]/book/chapter First: 181 kB  → 181 kB     UNCHANGED
+/[locale]/glossary:           4.72 kB / 119 kB     UNCHANGED
+
+==========================================================================================
+Gates fired at Module A close (Session 54):
+==========================================================================================
+- pnpm exec vitest run                        ✅ 366/366 PASS (was 344 at Phase 3 close → +22)
+- pnpm exec tsc --noEmit                       ✅ clean
+- pnpm exec eslint src                         ✅ 0 errors / 0 warnings
+- pnpm exec next build                         ✅ 23 static pages green
+
+No LLM cost incurred — Module A is types + wire-up + projection helper. First LLM call deferred to Module B Step B.3 dry-run gate G2 + explicit user approval per CLAUDE.md.
