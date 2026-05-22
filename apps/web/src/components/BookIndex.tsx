@@ -11,6 +11,10 @@
 
 import { useTranslations } from "next-intl";
 
+import {
+  BookProgressSummary,
+  ChapterProgressPill,
+} from "./BookProgressSummary";
 import { Link } from "@/i18n/navigation";
 import type { ChapterSummary } from "@/lib/book/chapterScope";
 
@@ -23,6 +27,7 @@ const FOCUS_RING =
 
 export function BookIndex({ chapters }: BookIndexProps): React.ReactElement {
   const t = useTranslations("Book");
+  const nns = chapters.map((c) => c.nn);
 
   return (
     <main
@@ -37,6 +42,7 @@ export function BookIndex({ chapters }: BookIndexProps): React.ReactElement {
         <p className="text-xs sm:text-sm text-black/65 dark:text-white/65 mt-1">
           {t("subtitle")}
         </p>
+        <BookProgressSummary nns={nns} />
       </header>
 
       {chapters.length === 0 ? (
@@ -58,6 +64,8 @@ export function BookIndex({ chapters }: BookIndexProps): React.ReactElement {
                   {t("pageRange", { first: c.firstPage, last: c.lastPage })}
                 </span>
               </div>
+
+              <ChapterProgressPill nn={c.nn} />
 
               <p
                 className="text-sm sm:text-base leading-snug text-black/90 dark:text-white/90 font-medium"

@@ -23,6 +23,7 @@
 
 import { useTranslations } from "next-intl";
 
+import { ChapterCompletionGate } from "./ChapterCompletionGate";
 import { ChapterEndPanel } from "./ChapterEndPanel";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { Link } from "@/i18n/navigation";
@@ -137,6 +138,8 @@ export function ChapterReader({
       )}
 
       <ChapterEndPanel scope={scope} questions={chapterQuestions} />
+
+      <ChapterCompletionGate nn={summary.nn} />
 
       <SelectionToolbar />
 
