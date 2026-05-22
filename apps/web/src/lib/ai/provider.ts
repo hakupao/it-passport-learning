@@ -16,15 +16,44 @@ import type { LanguageModel, ModelMessage } from "ai";
 
 export type ProviderKind = "deepseek" | "anthropic";
 
-/** D-085 modes + a `smoke` role for /api/hello-ai health checks. */
-export type ModelRole = "chat" | "quiz" | "hover" | "smoke";
+/**
+ * D-085 modes + `smoke` for /api/hello-ai health checks + `tutor` for the
+ * Phase 4 AI 学習助手 surface (D-102 §7.2 lock — pinned to Anthropic
+ * regardless of LLM_PROVIDER env).
+ */
+export type ModelRole = "chat" | "quiz" | "hover" | "smoke" | "tutor";
 
 /**
  * Anthropic-side single-model pin per D-088 §2.1 (preserved when provider
  * switches to anthropic; D-095 does NOT supersede that intent on the
- * Anthropic path — only adds a provider-switch layer above it).
+ * Anthropic path — only adds a provider-switch layer above it). Used by
+ * chat / quiz / hover / smoke roles when LLM_PROVIDER=anthropic.
  */
 const ANTHROPIC_MODEL_ID = "claude-opus-4-7";
+
+/**
+ * Phase 4 tutor brain — D-102 §7.2 locked model pair:
+ *   - default = `claude-sonnet-4-6` (instruction-following + cost)
+ *   - escalation = `claude-opus-4-7` (harder reasoning fallback)
+ *
+ * Escalation criterion (D-102 §7.2): caller passes `{ escalate: true }`
+ * when the user explicitly asks for harder reasoning OR a prior Sonnet turn
+ * gave a low-confidence / "I'm not sure" response and the user retries. The
+ * tutor surface (Module C) wires the escalate flag; this module just
+ * exposes the typed selector. Both IDs are anthropic-only — the tutor role
+ * intentionally ignores LLM_PROVIDER (D-103 §2.4 mandatory ephemeral cache
+ * is anthropic-specific; DeepSeek's automatic prefix cache uses a different
+ * mechanism and is not the tutor path).
+ */
+const ANTHROPIC_TUTOR_DEFAULT_MODEL_ID = "claude-sonnet-4-6";
+const ANTHROPIC_TUTOR_ESCALATION_MODEL_ID = "claude-opus-4-7";
+
+/**
+ * Roles that participate in the LLM_PROVIDER env-routed matrix. The `tutor`
+ * role is intentionally excluded — it's anthropic-pinned per D-102 §7.2 and
+ * has its own selector below.
+ */
+type DeepseekRole = Exclude<ModelRole, "tutor">;
 
 /**
  * DeepSeek per-role model matrix per D-095 §2.1 + Q2=d 混搭：
@@ -35,9 +64,10 @@ const ANTHROPIC_MODEL_ID = "claude-opus-4-7";
  *
  * `deepseek-v4-pro` is NOT a callable API model string as of 2026-05-19
  * (verified via api-docs.deepseek.com Context7 query); D-095 §2.5(ε)
- * DeepSeek-side mirror tripwire covers future V4 graduation.
+ * DeepSeek-side mirror tripwire covers future V4 graduation. The `tutor`
+ * role intentionally does NOT appear here — see `getTutorModel`.
  */
-const DEEPSEEK_MODEL_BY_ROLE: Record<ModelRole, string> = {
+const DEEPSEEK_MODEL_BY_ROLE: Record<DeepseekRole, string> = {
   chat: "deepseek-chat",
   quiz: "deepseek-reasoner",
   hover: "deepseek-chat",
@@ -49,11 +79,47 @@ export function getActiveProvider(): ProviderKind {
   return process.env.LLM_PROVIDER === "anthropic" ? "anthropic" : "deepseek";
 }
 
-/** Construct the LanguageModel for the given role on the given (or active) provider. */
+/**
+ * Tutor model selector — anthropic-pinned per D-102 §7.2.
+ *
+ * Default = Sonnet 4.6 (cost-efficient, strong instruction-following).
+ * Escalation = Opus 4.7 (harder reasoning) when `opts.escalate === true`.
+ * Per D-103 §2.4 ephemeral cache is MANDATORY on the tutor SYSTEM + preamble
+ * prefix; the cache-control attachment is the caller's responsibility (see
+ * `lib/ai/tutorPrompt.ts buildTutorMessages`).
+ */
+export interface GetTutorModelOptions {
+  /**
+   * When true, return the Opus 4.7 escalation model instead of the default
+   * Sonnet 4.6. Defaults to false. See D-102 §7.2 for the escalation
+   * criterion (user explicitly requests harder reasoning OR retry after a
+   * low-confidence Sonnet turn).
+   */
+  escalate?: boolean;
+}
+
+export function getTutorModel(
+  options: GetTutorModelOptions = {},
+): LanguageModel {
+  const modelId = options.escalate
+    ? ANTHROPIC_TUTOR_ESCALATION_MODEL_ID
+    : ANTHROPIC_TUTOR_DEFAULT_MODEL_ID;
+  return anthropic(modelId);
+}
+
+/**
+ * Construct the LanguageModel for the given role on the given (or active)
+ * provider. The `tutor` role is anthropic-pinned (D-102 §7.2) and ignores
+ * the `provider` arg — callers that need the escalation model must use
+ * `getTutorModel({ escalate: true })` directly.
+ */
 export function getModel(
   role: ModelRole,
   provider: ProviderKind = getActiveProvider(),
 ): LanguageModel {
+  if (role === "tutor") {
+    return getTutorModel();
+  }
   if (provider === "anthropic") {
     return anthropic(ANTHROPIC_MODEL_ID);
   }

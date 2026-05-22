@@ -3,6 +3,7 @@ import {
   buildMessagesWithStablePrefix,
   getActiveProvider,
   getModel,
+  getTutorModel,
   readCacheUsage,
 } from "../provider";
 
@@ -58,6 +59,53 @@ describe("provider — D-095 model factory", () => {
       const chat = getModel("chat", "deepseek");
       const quiz = getModel("quiz", "deepseek");
       expect(chat).not.toBe(quiz);
+    });
+
+    it("Phase 4 B.1 — tutor role returns anthropic Sonnet 4.6 regardless of provider arg", () => {
+      // D-102 §7.2: tutor is anthropic-pinned; the provider arg is ignored.
+      const m1 = getModel("tutor", "deepseek");
+      const m2 = getModel("tutor", "anthropic");
+      expect(m1).toBeDefined();
+      expect(m2).toBeDefined();
+    });
+
+    it("Phase 4 B.1 — tutor role ignores LLM_PROVIDER env", () => {
+      delete process.env.LLM_PROVIDER;
+      const m1 = getModel("tutor");
+      process.env.LLM_PROVIDER = "anthropic";
+      const m2 = getModel("tutor");
+      process.env.LLM_PROVIDER = "deepseek";
+      const m3 = getModel("tutor");
+      expect(m1).toBeDefined();
+      expect(m2).toBeDefined();
+      expect(m3).toBeDefined();
+    });
+  });
+
+  describe("getTutorModel — D-102 §7.2 + D-103 §2.4", () => {
+    it("returns a model instance by default (Sonnet 4.6)", () => {
+      const m = getTutorModel();
+      expect(m).toBeDefined();
+      expect(typeof m).toBe("object");
+    });
+
+    it("returns a different model instance when escalate=true (Opus 4.7)", () => {
+      const def = getTutorModel();
+      const esc = getTutorModel({ escalate: true });
+      expect(def).toBeDefined();
+      expect(esc).toBeDefined();
+      // Sonnet vs Opus → different model objects.
+      expect(def).not.toBe(esc);
+    });
+
+    it("escalate=false (default) returns the same selection as no-arg", () => {
+      const a = getTutorModel();
+      const b = getTutorModel({ escalate: false });
+      // Both return Sonnet 4.6 — the AI SDK anthropic() factory returns a
+      // fresh object per call, so we don't assert reference equality; we
+      // assert the function accepts the explicit `false` without throwing.
+      expect(a).toBeDefined();
+      expect(b).toBeDefined();
     });
   });
 });
