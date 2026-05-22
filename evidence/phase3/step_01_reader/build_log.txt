@@ -1,0 +1,71 @@
+Phase 3 Step 1 — build log
+Session 50 · 2026-05-22 · `pnpm exec next build` from apps/web/
+
+   ▲ Next.js 15.5.18
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 3.5s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/23) ...
+   Generating static pages (5/23)
+   Generating static pages (11/23)
+   Generating static pages (17/23)
+ ✓ Generating static pages (23/23)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /_not-found                            994 B         103 kB
+├ ● /[locale]                              175 B         119 kB
+├   ├ /ja
+├   ├ /zh
+├   └ /en
+├ ● /[locale]/book                         175 B         119 kB     <-- NEW
+├   ├ /ja/book
+├   ├ /zh/book
+├   └ /en/book
+├ ƒ /[locale]/book/chapter/[nn]            175 B         119 kB     <-- NEW (dynamic ƒ)
+├ ● /[locale]/chat                       54.4 kB         169 kB
+├   ├ /ja/chat
+├   ├ /zh/chat
+├   └ /en/chat
+├ ● /[locale]/glossary                   4.71 kB         119 kB
+├   ├ /ja/glossary
+├   ├ /zh/glossary
+├   └ /en/glossary
+├ ● /[locale]/quiz                       4.71 kB         119 kB
+├   ├ /ja/quiz
+├   ├ /zh/quiz
+├   └ /en/quiz
+├ ƒ /api/chat                              134 B         102 kB
+├ ƒ /api/glossary/hover                    134 B         102 kB
+├ ƒ /api/hello-ai                          134 B         102 kB
+└ ƒ /api/quiz/explain                      134 B         102 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/434e674c-bc139cc0bf032096.js  54.2 kB
+  ├ chunks/439-6ed716f0c90afc6f.js         46 kB
+  └ other shared chunks (total)          1.92 kB
+
+
+ƒ Middleware                             44.2 kB
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+Phase 2 baseline (Session 47 close):
+  Middleware 48.9 kB  /chat 122 kB  /quiz+glossary 4.53 kB  Shared 115 kB
+Phase 3 Step 1:
+  Middleware 44.2 kB  (-4.7 kB; secondary-tab demotion + Book route share)
+  /chat 169 kB First Load JS  (Phase 2 reported "/chat 122 kB" was Size column;
+    169 kB First Load JS for /chat now matches the Phase 2 invariant — no regression)
+  /book 119 kB First Load JS  (NEW; 175 B Size + 102 kB shared = 119 kB)
+  /book/chapter/[nn] 119 kB First Load JS  (NEW dynamic)
+
+# Gates green:
+#   pnpm exec vitest run             → 299 / 299 PASS
+#   pnpm exec tsc --noEmit           → 0 errors
+#   pnpm exec eslint src             → 0 errors
+#   pnpm exec next build --turbopack → 23 static pages ✓

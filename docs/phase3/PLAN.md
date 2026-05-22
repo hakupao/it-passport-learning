@@ -23,7 +23,7 @@ In-source LD pattern per D-094 §2.1 + D-080 v1.1 §8. NOT D-NNN-worthy individu
 
 | Step | Topic | Output | Evidence | Wall (est) |
 |---|---|---|---|---|
-| **1** Reader 壳 | NavTabs 重构 (LD-1) + chapter 路由 (`/[locale]/book/chapter/NN`) + `ChapterReader` 组件 (章内连续 page 渲染) + `BookIndex` (16-chapter TOC) + `/[locale]` redirect → `/[locale]/book` | `apps/web/src/app/[locale]/book/{page.tsx, chapter/[nn]/page.tsx}` + `apps/web/src/components/{NavTabs.tsx (refactor), BookIndex.tsx, ChapterReader.tsx}` + `apps/web/messages/{ja,zh,en}.json` (+Book.* keys) + vitest cases for new components | `step_01_reader/{tree_outline.md, build_log.txt, test_results.txt, design_notes.md, deploy_log.txt, smoke_ui_<ts>.md, screenshots/*.png}` | ~3-5h |
+| **1** Reader 壳 ✅ DONE 2026-05-22 Session 50 | NavTabs 重构 (LD-1) + chapter 路由 (`/[locale]/book/chapter/NN`) + `ChapterReader` 组件 (章内连续 page 渲染) + `BookIndex` (16-chapter TOC) + `/[locale]` redirect → `/[locale]/book` | `apps/web/src/app/[locale]/book/{page.tsx, chapter/[nn]/page.tsx}` ✅ + `apps/web/src/components/{NavTabs.tsx (refactor), BookIndex.tsx, ChapterReader.tsx}` ✅ + `apps/web/messages/{ja,zh,en}.json` (+Nav.book + Book.* keys ✅) + `apps/web/src/lib/book/{chapterScope.ts, __tests__/chapterScope.test.ts}` ✅ (20 vitest cases) | `step_01_reader/{tree_outline.md, build_log.txt, test_results.txt, design_notes.md}` ✅ (deploy_log + smoke_ui + screenshots deferred to Step 3 deploy gate per design_notes §5 — Step 1 stays at build-time gate level; Phase 2 Step 14+15 pattern reused) | est 3-5h → **actual ~70 min wall (Session 50 single sitting; γ tripwire row #13 = first under-estimate −71% under midpoint; D-094 §2.4 mid-retro pattern continues PLAN.md inline `actual ~70 min` amend NOT full re-estimate)** |
 | **2** Inline triggers | 章末区 (LD-2 chat + quiz buttons scoped to current chapter — reuse existing `<QuizExplain />` modal + `<Chat />` UI / wrap as smaller modal) + selection toolbar (new `<SelectionToolbar.tsx>` listening for `selectionchange` → buttons 「译中」「译英」 → opens `<ParagraphTranslate.tsx>` modal calling `/api/chat` with translate prompt) | `apps/web/src/components/{ChapterEndPanel.tsx, SelectionToolbar.tsx, ParagraphTranslate.tsx}` + `apps/web/src/lib/book/translatePrompt.ts` (compose translate prompt for /api/chat) + vitest cases | `step_02_triggers/{...}` | ~2-4h |
 | **3** Progress + Phase 3 close | `progressStore.ts` (LD-3 schema: chapters[NN].{scrollY, completedAt} + quiz[qid].{lastAnswered, correct}) + 「我看完了」 button on ChapterReader (LD-3 gate via scroll observer) + progress visualization on `BookIndex` (X/16 章完成度 + per-chapter % bar) + Vercel prod deploy + Playwright e2e smoke + `RETROSPECTIVE_phase3.md` per Rule C + Phase 3 tag candidate (`phase3-α-ship-YYYY-MM-DD` if user gates "freeze and tag") | `apps/web/src/lib/book/progressStore.ts` + `progressStore.test.ts` + `BookIndex.tsx` updates + `ChapterReader.tsx` "我看完了" button + Vercel deploy + Playwright + RETROSPECTIVE | `step_03_progress/{...}` + RETROSPECTIVE_phase3.md | ~2-3h |
 
@@ -94,6 +94,9 @@ In-source LD pattern per D-094 §2.1 + D-080 v1.1 §8. NOT D-NNN-worthy individu
 
 - ✅ 设计阶段 round-1 4Q ✅ LOCKED Session 49 Turn 3 → D-101 LOCKED Turn 4
 - ✅ 设计阶段 round-2 4Q ✅ LOCKED Session 49 Turn 5 → LD-1~LD-4 in §0
-- ⏸ **实施阶段 gate pending user explicit "开始 Phase 3 Step 1" signal** per CLAUDE.md "Phase/stage signaling" (no executable code until user opens 实施阶段)
-- 0 step DONE / 3 step pending
-- Phase 1 + Phase 2 ✅ FROZEN unchanged — tags immutable; D-101 additive
+- ✅ **实施阶段 OPEN Session 50 2026-05-22** per user explicit "开始 Phase 3 Step 1" signal (CLAUDE.md "Phase/stage signaling" gate satisfied)
+- ✅ **Step 1 Reader 壳 DONE** Session 50 close — 6 new files + 5 modified + 4 evidence files + 20 new vitest cases (cumulative 299 / 299 PASS) + all build/type/lint gates green; in-source LDs LD-Step1-A~E captured in `evidence/phase3/step_01_reader/design_notes.md §3`
+- ⏸ Step 2 Inline triggers pending — entry gated by user explicit "开始 Phase 3 Step 2" signal
+- ⏸ Step 3 Progress + RETROSPECTIVE_phase3 pending
+- **1 step DONE / 2 steps pending**
+- Phase 1 + Phase 2 ✅ FROZEN unchanged — tags `phase1-ship-2026-05-19` + `phase2-α-ship-2026-05-21` immutable; D-101 + Step 1 additive composition on top of frozen Phase 2 components
