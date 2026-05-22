@@ -1,30 +1,47 @@
-// Phase 3 Step 1 — <ChapterReader /> continuous chapter-page flow (D-101 §2.2).
+// Phase 3 Step 1 + Step 2 — <ChapterReader /> continuous chapter-page flow
+// (D-101 §2.2).
 //
-// Renders an ordered, scrollable column of pages within a single chapter.
-// LD-2/3 inline triggers (selection toolbar, 章末 chat+quiz, scroll-to-end
-// gate) are deferred to Step 2 + Step 3 respectively. This component is
-// the "shell" — page markers + entity body + prev/next sibling navigation
-// at the footer.
+// Step 1 (Session 50): renders an ordered, scrollable column of pages
+// within a single chapter — page markers + entity body + prev/next
+// sibling navigation at the footer.
+//
+// Step 2 (Session 51): mounts the inline triggers on top of the shell —
+//   - <ChapterEndPanel /> 章末固定区 (LD-2): always-visible panel with
+//     "问本章" + "测本章" buttons, both reusing existing /api/* endpoints
+//     and modals (D-088 §2.3 stable-prefix invariant preserved).
+//   - <SelectionToolbar /> (LD-2 sub-clarification): floating toolbar
+//     that appears when the user highlights text inside the page list;
+//     two translate-only buttons (zh/en) open <ParagraphTranslate />.
 //
 // Content body is strictly ja per D-101 §2.3 (textbook authenticity); the
 // surrounding chrome (page heading, prev/next buttons) follows the active
 // chrome locale via next-intl. lang="ja" attribute on body text is
 // preserved so screen readers + browser hyphenation handle Japanese
-// content correctly.
+// content correctly. The page list container carries
+// `data-chapter-content="true"` so the SelectionToolbar can scope itself
+// to body text only (NavTabs / panel buttons / modal text are ignored).
 
 import { useTranslations } from "next-intl";
 
+import { ChapterEndPanel } from "./ChapterEndPanel";
+import { SelectionToolbar } from "./SelectionToolbar";
 import { Link } from "@/i18n/navigation";
 import {
   projectRenderEntities,
   type ChapterSummary,
 } from "@/lib/book/chapterScope";
+import type { ChapterScopeArgs } from "@/lib/book/translatePrompt";
 import type { Page } from "@/lib/data/types";
+import type { QuizSummary } from "@/lib/quiz/quizScope";
 
 interface ChapterReaderProps {
   summary: ChapterSummary;
   pages: Page[];
   siblings: { prevNn: string | null; nextNn: string | null };
+  /** Question summaries for entities within this chapter's page range. */
+  chapterQuestions: QuizSummary[];
+  /** Raw ja title for the chapter-scope marker (independent of UI locale). */
+  titleJp: string;
 }
 
 const FOCUS_RING =
@@ -34,8 +51,16 @@ export function ChapterReader({
   summary,
   pages,
   siblings,
+  chapterQuestions,
+  titleJp,
 }: ChapterReaderProps): React.ReactElement {
   const t = useTranslations("Book");
+  const scope: ChapterScopeArgs = {
+    nn: summary.nn,
+    titleJp,
+    firstPage: summary.firstPage,
+    lastPage: summary.lastPage,
+  };
 
   return (
     <main
@@ -75,7 +100,10 @@ export function ChapterReader({
           {t("emptyHint")}
         </p>
       ) : (
-        <ol className="flex flex-col gap-8">
+        <ol
+          className="flex flex-col gap-8"
+          data-chapter-content="true"
+        >
           {pages.map((page) => {
             const entities = projectRenderEntities(page);
             return (
@@ -107,6 +135,10 @@ export function ChapterReader({
           })}
         </ol>
       )}
+
+      <ChapterEndPanel scope={scope} questions={chapterQuestions} />
+
+      <SelectionToolbar />
 
       <footer className="flex items-center justify-between gap-3 border-t border-black/[.08] dark:border-white/[.12] pt-4 mt-4">
         <div>

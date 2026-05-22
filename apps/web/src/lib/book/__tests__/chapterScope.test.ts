@@ -2,9 +2,10 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { ChapterRef, IndexV2, Page } from "@/lib/data/types";
+import type { ChapterRef, Entity, IndexV2, Page } from "@/lib/data/types";
 import {
   buildAllChapterSummaries,
+  buildChapterQuestionSummaries,
   buildChapterSummary,
   chapterIdToNn,
   findChapterByPage,
@@ -254,5 +255,96 @@ describe("projectRenderEntities", () => {
     if (!first) throw new Error("unreachable");
     expect(first.textJp).toBeNull();
     expect(first.type).toBe("text");
+  });
+});
+
+describe("buildChapterQuestionSummaries", () => {
+  const makeQuestion = (
+    id: string,
+    page: number,
+    entityIndex: number,
+    stem: string,
+    answerIndex = 0,
+  ): Entity => ({
+    id,
+    anchor: { page, block_id: `page_${page}_block_${entityIndex}`, section_path: [] },
+    type: "question",
+    stem: { jp: stem, zh: "", en: "" },
+    choices: [
+      { jp: "選択肢1", zh: "", en: "" },
+      { jp: "選択肢2", zh: "", en: "" },
+      { jp: "選択肢3", zh: "", en: "" },
+      { jp: "選択肢4", zh: "", en: "" },
+    ],
+    answer_index: answerIndex,
+  });
+
+  const ref = C("ch01", 28, 57);
+  const pages: Page[] = [
+    {
+      schema_version: "v1",
+      cert_id: "x",
+      run_id: "x",
+      stage: 7,
+      page: 28,
+      exported_at: "2026-05-22T00:00:00Z",
+      stage6_verdict: "PASS",
+      leaf_count: 1,
+      entities: [
+        makeQuestion("p28_e0", 28, 0, "p28 question 0"),
+        makeQuestion("p28_e1", 28, 1, "p28 question 1"),
+      ],
+    },
+    {
+      schema_version: "v1",
+      cert_id: "x",
+      run_id: "x",
+      stage: 7,
+      page: 35,
+      exported_at: "2026-05-22T00:00:00Z",
+      stage6_verdict: "PASS",
+      leaf_count: 1,
+      entities: [makeQuestion("p35_e0", 35, 0, "p35 question")],
+    },
+  ];
+
+  const baseIndex = idx([ref], [28, 35]);
+  const index: IndexV2 = {
+    ...baseIndex,
+    entity_by_id: {
+      // Inside chapter range:
+      page_028_entity_0: { page: 28, entity_index: 0, type: "question", id: "p28_e0" },
+      page_028_entity_1: { page: 28, entity_index: 1, type: "question", id: "p28_e1" },
+      page_035_entity_0: { page: 35, entity_index: 0, type: "question", id: "p35_e0" },
+      // Outside chapter range — must be filtered out:
+      page_070_entity_0: { page: 70, entity_index: 0, type: "question", id: "p70_e0" },
+      // Same range, not a question — must be filtered out:
+      page_028_entity_99: { page: 28, entity_index: 99, type: "section", id: "p28_sec" },
+    },
+  };
+
+  it("collects only question entities within the chapter range, ordered by (page,index)", () => {
+    const out = buildChapterQuestionSummaries(ref, index, pages);
+    expect(out.map((s) => s.questionId)).toEqual([
+      "page_028_entity_0",
+      "page_028_entity_1",
+      "page_035_entity_0",
+    ]);
+    expect(out[0]?.stemJp).toBe("p28 question 0");
+  });
+
+  it("silently skips ids whose page is not in the provided pages array", () => {
+    const partial = pages.filter((p) => p.page === 28);
+    const out = buildChapterQuestionSummaries(ref, index, partial);
+    expect(out.map((s) => s.questionId)).toEqual([
+      "page_028_entity_0",
+      "page_028_entity_1",
+    ]);
+  });
+
+  it("returns an empty list when no questions live in the chapter range", () => {
+    const otherChapter = C("ch07", 200, 250);
+    const out = buildChapterQuestionSummaries(otherChapter, index, pages);
+    expect(out).toEqual([]);
   });
 });

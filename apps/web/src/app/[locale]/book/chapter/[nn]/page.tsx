@@ -16,6 +16,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { ChapterReader } from "@/components/ChapterReader";
 import {
+  buildChapterQuestionSummaries,
   buildChapterSummary,
   chapterIdToNn,
   getChapterSiblings,
@@ -70,6 +71,15 @@ export default async function ChapterPage({
   const summary = buildChapterSummary(ref, locale as AppLocale, index);
   const pages = await ds.loadChapter(chapterId);
   const siblings = getChapterSiblings(chapterIdToNn(chapterId), index);
+  const chapterQuestions = buildChapterQuestionSummaries(ref, index, pages);
 
-  return <ChapterReader summary={summary} pages={pages} siblings={siblings} />;
+  return (
+    <ChapterReader
+      summary={summary}
+      pages={pages}
+      siblings={siblings}
+      chapterQuestions={chapterQuestions}
+      titleJp={ref.title_jp}
+    />
+  );
 }

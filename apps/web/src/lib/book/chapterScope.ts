@@ -5,6 +5,7 @@
 // LD-1: NavTabs keeps 4 tabs, Book is the visual 主体.
 // Per CLAUDE.md "Phase/stage signaling": 实施阶段 entered Session 50.
 
+import { buildQuizSummary, type QuizSummary } from "@/lib/quiz/quizScope";
 import type { ChapterRef, IndexV2, Page } from "@/lib/data/types";
 
 export type AppLocale = "ja" | "zh" | "en";
@@ -134,6 +135,48 @@ export interface RenderEntity {
   textJp: string | null;
   sectionNumber: string | null;
   imageRef: string | null;
+}
+
+/**
+ * Build QuizSummary[] for every question entity that lives within the
+ * active chapter's page range. Used by <ChapterEndPanel /> "测本章" to
+ * surface a chapter-scoped picker without a new API call — the question
+ * ids come from idx.entity_by_id (already eager-loaded) and the per-page
+ * Page objects were already fetched for <ChapterReader />, so this is
+ * a pure projection.
+ *
+ * Returned list is ordered by (page, entityIndex) — same convention as
+ * `listQuestionIds()`. Pages array must cover every page referenced by
+ * the chapter's question ids; missing pages → that id is silently skipped
+ * (the picker just shows fewer items, never a runtime crash).
+ */
+export function buildChapterQuestionSummaries(
+  ref: ChapterRef,
+  index: IndexV2,
+  pages: Page[],
+): QuizSummary[] {
+  const byPage = new Map<number, Page>();
+  for (const p of pages) byPage.set(p.page, p);
+  const refs = Object.entries(index.entity_by_id)
+    .filter(
+      ([, r]) =>
+        r.type === "question" &&
+        r.page >= ref.first_page &&
+        r.page <= ref.last_page,
+    )
+    .map(([key, r]) => ({ key, page: r.page, entityIndex: r.entity_index }));
+  refs.sort((a, b) => {
+    if (a.page !== b.page) return a.page - b.page;
+    return a.entityIndex - b.entityIndex;
+  });
+  const out: QuizSummary[] = [];
+  for (const r of refs) {
+    const page = byPage.get(r.page);
+    if (!page) continue;
+    const summary = buildQuizSummary(r.key, page, r.entityIndex);
+    if (summary) out.push(summary);
+  }
+  return out;
 }
 
 export function projectRenderEntities(page: Page): RenderEntity[] {
