@@ -227,6 +227,23 @@ server-side state), the Phase 1/2 unit cost model returns.
 
 ## §4 Tripwire final tables
 
+### Empirical prod-deploy verification (appended Session 52 Turn 8 — user-gated `push it` 2026-05-22)
+
+| Surface | Result | Notes |
+|---|---|---|
+| Vercel prod deploy | ✅ Ready | `web-n14h489yu` 60s build; canonical alias `web-mu-sandy-78.vercel.app` re-pointed automatically |
+| Playwright e2e suite | ✅ **14/14 pass** (29.3 s total) | 11 Phase 2 specs (chat × 3 / quiz × 3 / glossary × 3 / firewall × 2) preserved verbatim from Session 48 baseline + 3 new book specs (book × 3 locales: index loads → chapter 00 reader + completion gate disabled-pre-scroll) |
+| D-097 Basic Auth firewall | ✅ enforced | 401 without header / 200 with header — re-confirmed on new deploy |
+| Phase 2 invariants | ✅ preserved | chat 169 kB First Load unchanged; quiz / glossary modals open + busy text present + close clean in all 3 locales |
+| Phase 3 surfaces | ✅ smoke-verified | `/[locale]` redirect → `/[locale]/book` works; BookIndex renders; chapter route loads; chapter-end「ask」button visible; completion gate button visible + disabled before scroll-to-end (LD-3 enforced) |
+| Real LLM cost this run | **$0.00** | All 14 specs avoid waiting for streamed AI output; modal close aborts in-flight request. β empirical re-open deferred to next user-fired translate / chapter chat on prod. |
+| Cumulative real LLM | ~$0.66 cumulative across all phases | Phase 1 ~$0.579 Mistral + Phase 2 ~$0.085 Anthropic + Phase 3 $0 = **7.6× headroom vs $5 D-090 α-silent cap** |
+| axe-core + Lighthouse | ⏸ deferred | Composition-only Phase 3 reuses Phase 2 surfaces verbatim (TermPopover / QuizExplain / Chat / Glossary all scored 100/0 in Session 47-48 baseline). New Step 3 islands (ChapterCompletionGate / BookProgressSummary / ChapterProgressPill) are sub-100-line components with no novel a11y patterns. Re-validation = β-graduation queue item for follow-up session if user wants empirical parity. |
+
+Smoke evidence: `evidence/phase3/step_03_progress/{smoke_ui_2026-05-22.md, playwright_results.json}`.
+
+---
+
 ### γ wall-drift tripwire (full table — Phase 3 entries appended)
 
 | # | Phase | Step | Wall (actual) | PLAN midpoint | Δ% | Notes |
@@ -245,7 +262,7 @@ Cumulative tripwire across all phases: 16 datapoints final.
 |---|---|---|---|
 | 1 | n/a | n/a | No web LLM calls |
 | 2 | 14 | ≥95% achieved | Phase 2 final (RETROSPECTIVE_phase2.md) |
-| 3 | 14 (unchanged) | Pending re-open | 2 new /api/chat call paths added; no live calls fired in dev. Re-opens at user-gated Vercel deploy. |
+| 3 | 14 (unchanged) | Re-open deferred | 2 new /api/chat call paths added (translate + chapter-scope chat); zero live calls fired through Session 52 Turn 8 prod smoke (Playwright suite intentionally avoids streamed-response waits to keep cost near-zero). β re-opens on the next user-fired translate or chapter chat turn on prod — expected ≥95% hit per design_notes_step03 §6 stable-prefix invariant audit (SYSTEM byte-identical to Phase 2 baseline). |
 
 ### δ runtime detector
 
