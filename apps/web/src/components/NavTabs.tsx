@@ -24,7 +24,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
 const PRIMARY_TAB = "/book" as const;
-const SECONDARY_TAB_PATHS = ["/chat", "/quiz", "/glossary"] as const;
+const SECONDARY_TAB_PATHS = ["/chat", "/quiz", "/glossary", "/tutor"] as const;
 type SecondaryTabPath = (typeof SECONDARY_TAB_PATHS)[number];
 
 const FOCUS_RING =
@@ -44,6 +44,7 @@ export function NavTabs(): React.ReactElement {
     "/chat": tNav("chat"),
     "/quiz": tNav("quiz"),
     "/glossary": tNav("glossary"),
+    "/tutor": tNav("tutor"),
   };
 
   return (
