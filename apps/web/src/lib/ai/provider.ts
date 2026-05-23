@@ -12,14 +12,30 @@
 //
 // D-104 (Session 56) supersedes D-102 §7.2 for the `tutor` role only — tutor
 // brain matrix expanded to 3-way env-routable (deepseek default + anthropic
-// toggle + openai reserved-stub). Phase 2 routes unchanged here; D-105 will
-// migrate them in the B.4 commit (legacy deepseek-chat / -reasoner →
-// V4-flash with thinking.type passthrough). Tutor uses its own env
-// `LLM_PROVIDER_TUTOR` per D-104 §2.5 (separate from `LLM_PROVIDER`).
+// toggle + openai reserved-stub). Tutor uses its own env `LLM_PROVIDER_TUTOR`
+// per D-104 §2.5 (separate from `LLM_PROVIDER`).
+//
+// D-105 (Session 57) executes the legacy DeepSeek model ID migration for Phase
+// 2 routes in this commit (B.4): `deepseek-chat` + `deepseek-reasoner` → all
+// shift to `deepseek-v4-flash` with route-handler-level
+// `providerOptions.deepseek.thinking.type` injection per D-105 §2.1 table.
+// The model-ID change is bottom-of-stack per D-105 §2.2 — D-085 §2.4 frozen
+// surface (modal lifecycle / SSE format / SYSTEM bytes / wire shape /
+// stable-prefix layout) is preserved unchanged. See `getPhase2ProviderOptions`
+// for the thinking.type dispatch.
 
 import { anthropic } from "@ai-sdk/anthropic";
 import { deepseek } from "@ai-sdk/deepseek";
-import type { LanguageModel, ModelMessage } from "ai";
+import type { JSONValue, LanguageModel, ModelMessage } from "ai";
+
+/**
+ * Local JSON-object shape matching the AI SDK's `SharedV3ProviderOptions =
+ * Record<string, JSONObject>` constraint without requiring `@ai-sdk/
+ * provider-utils` as a direct dependency (it is a transitive of `ai` /
+ * `@ai-sdk/anthropic` / `@ai-sdk/deepseek`, not a direct package.json entry).
+ * Inner values are JSON-serialisable per the AI SDK's wire contract.
+ */
+type ProviderOptionsShape = Record<string, Record<string, JSONValue>>;
 
 export type ProviderKind = "deepseek" | "anthropic";
 
@@ -93,30 +109,85 @@ const ANTHROPIC_TUTOR_ESCALATION_MODEL_ID = "claude-opus-4-7";
 type DeepseekRole = Exclude<ModelRole, "tutor">;
 
 /**
- * DeepSeek per-role model matrix per D-095 §2.1 + Q2=d 混搭：
+ * DeepSeek per-role model matrix.
+ *
+ * **Original D-095 §2.1 (pre-migrate) values** (preserved here as a comment
+ * trail for the D-105 supersede record):
  *   chat   → deepseek-chat       (V3.2 base, general)
  *   quiz   → deepseek-reasoner   (R1 base, reasoning)
- *   hover  → deepseek-chat       (V3.2 base, light)
- *   smoke  → deepseek-chat       (V3.2 base, health check)
+ *   hover  → deepseek-chat
+ *   smoke  → deepseek-chat
  *
- * **D-095 §2.5(ε) tripwire FIRED 2026-05-22** — legacy `deepseek-chat` +
- * `deepseek-reasoner` deprecate 2026-07-24 per DeepSeek API change log
- * (Context7 verification). **D-105 handles the migrate** (B.4 commit
- * shifts all 4 entries here to `deepseek-v4-flash` with route-handler-
- * level `providerOptions.deepseek.thinking.type` injection). Keeping
- * legacy IDs in this commit (Session 56) because B.4 is the atomic
- * pivot per D-105 §2.4 ordering; flipping early would break Phase 2 if
- * tests expect the legacy IDs.
+ * **Post D-105 §2.1 migrate (this commit, Session 57 B.4)** — all four
+ * roles shift to `deepseek-v4-flash`. The thinking-mode behavior that
+ * previously came from picking `deepseek-chat` (non-thinking) vs
+ * `deepseek-reasoner` (thinking) is now expressed via the per-role
+ * `providerOptions.deepseek.thinking.type` field (see
+ * `getPhase2ProviderOptions`):
+ *   chat   → v4-flash + thinking.type='disabled'   (legacy non-thinking parity)
+ *   quiz   → v4-flash + thinking.type='enabled'    (legacy thinking parity)
+ *           + reasoningEffort='high'
+ *   hover  → v4-flash + thinking.type='disabled'
+ *   smoke  → v4-flash + thinking.type='disabled'
+ *
+ * Per Context7 DeepSeek API change log (verified 2026-05-22 Session 56
+ * Turn 5): legacy `deepseek-chat` mapped to V4 flash non-thinking and
+ * `deepseek-reasoner` mapped to V4 flash thinking. So this migrate is a
+ * pricing/behavior-neutral substitution that resolves the **D-095 §2.5(ε)
+ * tripwire FIRE** (legacy IDs deprecate 2026-07-24) without altering
+ * Phase 2 surface behavior per D-105 §2.2 / D-085 §2.4 frozen contract.
  *
  * `tutor` is NOT in this table per D-104 §2.6 LD-Module-B-4 — see
- * `getTutorModel` for the env-routable matrix.
+ * `getTutorModel` for the env-routable matrix (V4 pro tier).
  */
 const DEEPSEEK_MODEL_BY_ROLE: Record<DeepseekRole, string> = {
-  chat: "deepseek-chat",
-  quiz: "deepseek-reasoner",
-  hover: "deepseek-chat",
-  smoke: "deepseek-chat",
+  chat: "deepseek-v4-flash",
+  quiz: "deepseek-v4-flash",
+  hover: "deepseek-v4-flash",
+  smoke: "deepseek-v4-flash",
 };
+
+/**
+ * D-105 §2.1 per-role thinking-mode dispatch for the Phase 2 DeepSeek path.
+ *
+ * Returns the `providerOptions` object to pass to `streamText` so the V4
+ * flash model behaves as the legacy alias did:
+ *   - `chat`/`hover`/`smoke` → thinking disabled (legacy `deepseek-chat`
+ *     parity; cheaper + cache-stable + no extra reasoning latency)
+ *   - `quiz` → thinking enabled + reasoningEffort='high' (legacy
+ *     `deepseek-reasoner` parity; high effort matches the prior R1 depth)
+ *
+ * The Anthropic path is untouched by D-105 — Anthropic continues to use
+ * `claude-opus-4-7` for Phase 2 routes (the LLM_PROVIDER=anthropic toggle
+ * remains valid). Callers should therefore only attach these options when
+ * `getActiveProvider() === "deepseek"`; on the Anthropic path passing an
+ * empty `providerOptions` is correct.
+ *
+ * Tutor role is NOT supported here — use `getTutorProviderOptions` instead.
+ *
+ * **LD-Module-B-15 (Session 57)** — thinking.type field lives at the
+ * call-site `providerOptions.deepseek.thinking.type`, NOT baked into the
+ * LanguageModel object (mirrors the tutor path symmetry per D-104 §2.2).
+ * This keeps `getModel(role)` a pure model factory and isolates the
+ * thinking-mode delta to one place per route handler.
+ */
+export function getPhase2ProviderOptions(
+  role: DeepseekRole,
+): ProviderOptionsShape {
+  if (role === "quiz") {
+    return {
+      deepseek: {
+        thinking: { type: "enabled" },
+        reasoningEffort: "high",
+      },
+    };
+  }
+  return {
+    deepseek: {
+      thinking: { type: "disabled" },
+    },
+  };
+}
 
 /** Resolve active Phase 2 provider from env. Default = `deepseek` per D-095 §2.1. */
 export function getActiveProvider(): ProviderKind {
@@ -219,16 +290,14 @@ export function getTutorModel(
  */
 export function getTutorProviderOptions(
   options: GetTutorModelOptions = {},
-): Record<string, unknown> {
+): ProviderOptionsShape {
   const provider = options.provider ?? getActiveTutorProvider();
 
   if (provider === "deepseek") {
     return {
       deepseek: {
-        thinking: { type: "enabled" as const },
-        reasoningEffort: options.escalate
-          ? ("max" as const)
-          : ("high" as const),
+        thinking: { type: "enabled" },
+        reasoningEffort: options.escalate ? "max" : "high",
       },
     };
   }

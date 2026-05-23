@@ -4,6 +4,7 @@ import {
   getActiveProvider,
   getActiveTutorProvider,
   getModel,
+  getPhase2ProviderOptions,
   getTutorModel,
   getTutorProviderOptions,
   readCacheUsage,
@@ -260,6 +261,63 @@ describe("Phase 4 D-104 §2.2 — getTutorProviderOptions thinking + reasoningEf
         reasoningEffort: "high",
       },
     });
+  });
+});
+
+describe("Phase 2 D-105 §2.1 — getPhase2ProviderOptions thinking dispatch", () => {
+  it("chat → thinking disabled (legacy deepseek-chat non-thinking parity)", () => {
+    expect(getPhase2ProviderOptions("chat")).toEqual({
+      deepseek: { thinking: { type: "disabled" } },
+    });
+  });
+
+  it("hover → thinking disabled (light single-pass term explain)", () => {
+    expect(getPhase2ProviderOptions("hover")).toEqual({
+      deepseek: { thinking: { type: "disabled" } },
+    });
+  });
+
+  it("smoke → thinking disabled (health-check minimal)", () => {
+    expect(getPhase2ProviderOptions("smoke")).toEqual({
+      deepseek: { thinking: { type: "disabled" } },
+    });
+  });
+
+  it("quiz → thinking enabled + reasoningEffort='high' (legacy reasoner parity)", () => {
+    expect(getPhase2ProviderOptions("quiz")).toEqual({
+      deepseek: {
+        thinking: { type: "enabled" },
+        reasoningEffort: "high",
+      },
+    });
+  });
+
+  it("returned shape is safe to pass on Anthropic path (anthropic SDK ignores deepseek namespace)", () => {
+    // The contract: the helper always emits a `{deepseek:{...}}` shape; the
+    // Anthropic SDK has no opinion on this namespace, so it's a no-op there.
+    // This makes call sites simpler — pass the same options object regardless
+    // of LLM_PROVIDER without provider-aware branching at the route handler.
+    const opts = getPhase2ProviderOptions("chat");
+    expect(Object.keys(opts)).toEqual(["deepseek"]);
+  });
+});
+
+describe("Phase 2 D-105 §2.1 — getModel returns v4-flash for all roles", () => {
+  it("chat role returns a model object (deepseek-v4-flash under the hood)", () => {
+    const m = getModel("chat", "deepseek");
+    expect(m).toBeDefined();
+    expect(typeof m).toBe("object");
+  });
+
+  it("quiz role returns a different model object than chat (separate factory call)", () => {
+    const chat = getModel("chat", "deepseek");
+    const quiz = getModel("quiz", "deepseek");
+    expect(chat).not.toBe(quiz);
+  });
+
+  it("hover + smoke return model objects (deepseek-v4-flash)", () => {
+    expect(getModel("hover", "deepseek")).toBeDefined();
+    expect(getModel("smoke", "deepseek")).toBeDefined();
   });
 });
 

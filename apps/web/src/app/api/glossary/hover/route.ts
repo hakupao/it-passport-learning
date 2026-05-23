@@ -23,6 +23,7 @@ import {
   buildMessagesWithStablePrefix,
   getActiveProvider,
   getModel,
+  getPhase2ProviderOptions,
   readCacheUsage,
 } from "@/lib/ai/provider";
 import { buildChatSseResponse } from "@/lib/ai/chat";
@@ -80,6 +81,9 @@ export async function POST(request: Request): Promise<Response> {
   const result = streamText({
     model: getModel("hover"),
     maxRetries: STREAM_CONFIG.maxRetries,
+    // D-105 §2.1 — V4 flash thinking disabled = legacy `deepseek-chat` parity
+    // for light single-pass term explain. Anthropic SDK ignores `deepseek`.
+    providerOptions: getPhase2ProviderOptions("hover"),
     messages: buildMessagesWithStablePrefix(
       scope.contextBlock,
       HOVER_SYSTEM_INSTRUCTION,
@@ -143,7 +147,9 @@ export async function GET(): Promise<Response> {
       `then [DONE].\n` +
       `Active provider (env LLM_PROVIDER): ${provider}\n` +
       `Active hover model: ${
-        provider === "anthropic" ? "claude-opus-4-7" : "deepseek-chat"
+        provider === "anthropic"
+          ? "claude-opus-4-7"
+          : "deepseek-v4-flash (thinking disabled)"
       }\n` +
       `Required env var on this deploy: ${expectedKey}\n` +
       `D-097 firewall: request must include Basic Auth header.\n` +

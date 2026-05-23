@@ -22,6 +22,7 @@ import {
   buildMessagesWithStablePrefix,
   getActiveProvider,
   getModel,
+  getPhase2ProviderOptions,
   readCacheUsage,
 } from "@/lib/ai/provider";
 import { buildChatSseResponse } from "@/lib/ai/chat";
@@ -88,6 +89,10 @@ export async function POST(request: Request): Promise<Response> {
   const result = streamText({
     model: getModel("quiz"),
     maxRetries: STREAM_CONFIG.maxRetries,
+    // D-105 §2.1 — V4 flash with thinking enabled + reasoningEffort='high'
+    // = legacy `deepseek-reasoner` parity. Anthropic SDK ignores the
+    // `deepseek` namespace, so this is safe on either provider path.
+    providerOptions: getPhase2ProviderOptions("quiz"),
     messages: buildMessagesWithStablePrefix(
       scope.contextBlock,
       QUIZ_SYSTEM_INSTRUCTION,
@@ -152,7 +157,9 @@ export async function GET(): Promise<Response> {
       `then [DONE].\n` +
       `Active provider (env LLM_PROVIDER): ${provider}\n` +
       `Active quiz model: ${
-        provider === "anthropic" ? "claude-opus-4-7" : "deepseek-reasoner"
+        provider === "anthropic"
+          ? "claude-opus-4-7"
+          : "deepseek-v4-flash (thinking enabled, reasoningEffort=high)"
       }\n` +
       `Required env var on this deploy: ${expectedKey}\n` +
       `D-097 firewall: request must include Basic Auth header.\n` +

@@ -24,6 +24,7 @@ import {
   buildMessagesWithStablePrefix,
   getActiveProvider,
   getModel,
+  getPhase2ProviderOptions,
   readCacheUsage,
 } from "@/lib/ai/provider";
 import { STREAM_CONFIG } from "@/lib/ai/retry";
@@ -53,6 +54,9 @@ export async function POST(): Promise<Response> {
   const result = streamText({
     model: getModel("smoke"),
     maxRetries: STREAM_CONFIG.maxRetries,
+    // D-105 §2.1 — V4 flash thinking disabled = legacy `deepseek-chat`
+    // smoke-check parity. Anthropic SDK ignores the deepseek namespace.
+    providerOptions: getPhase2ProviderOptions("smoke"),
     messages: buildMessagesWithStablePrefix(
       corpusBlock,
       SYSTEM_INSTRUCTION,

@@ -62,6 +62,24 @@ export const DAY_KEY_TTL_SECONDS = 172_800;
 //   - DeepSeek deepseek-reasoner: in miss $0.55 / hit $0.14 / out $2.19 per 1M
 //   - Anthropic claude-opus-4-7:  in $15.00 / out $75.00 / cache creation $18.75 / read $1.50
 //
+// Phase 4 additions (Session 56 B.3 dry-run pricing sourced; Session 57 B.4
+// LD-Module-B-15):
+//   - DeepSeek deepseek-v4-pro (tutor): in miss $1.74 / hit $0.145 /
+//     write $1.74 / out $3.48 per 1M (post-2026-05-31 baseline; the
+//     pre-deadline 75% discount drops to $0.435 / $0.003625 / $0.435 /
+//     $0.87 but cap tracker uses the post-discount baseline as a
+//     conservative upper bound — α-silent visibility, under-spend is OK)
+//   - Anthropic claude-sonnet-4-6 (tutor default per D-104 §2.1): in $3.00
+//     / out $15.00 / cache creation $3.75 / read $0.30 per 1M (Anthropic
+//     public pricing 2026-05-22). Escalation to Opus 4.7 is rare per D-104
+//     §2.2 — cap tracker uses Sonnet pricing for all anthropic tutor calls.
+//
+// Phase 2 routes (chat/quiz/hover/smoke) post D-105 migrate continue to use
+// the legacy CHAT / REASONER pricing tiers — V4 flash non-thinking-mode
+// pricing matches deepseek-chat per Context7 verification, and V4 flash
+// thinking-mode pricing matches deepseek-reasoner. No new pricing tier
+// needed; the legacy aliases now map to V4 flash internally per DeepSeek.
+//
 // Pricing drift acceptable per D-100 §2.5 LD-9 (α-silent visibility, cents
 // tolerance). Re-verify on β graduation; update Module D Step 14 a11y pass.
 
@@ -93,11 +111,48 @@ export const PRICING_ANTHROPIC_OPUS: PricingTier = Object.freeze({
   outputPerMillion: 75_000_000,
 });
 
-/** Dispatch pricing by (provider, role) per LD-9. */
+/**
+ * D-104 + LD-Module-B-15 Phase 4 tutor brain tiers. Conservative post-
+ * discount baseline rates (see file-header pricing note for the discount
+ * window). Cap tracker prefers under-counting cost over under-counting
+ * spend, hence the post-discount baseline.
+ */
+export const PRICING_DEEPSEEK_V4_PRO: PricingTier = Object.freeze({
+  inputMissPerMillion: 1_740_000,
+  inputHitPerMillion: 145_000,
+  inputCreationPerMillion: null,
+  outputPerMillion: 3_480_000,
+});
+
+export const PRICING_ANTHROPIC_SONNET: PricingTier = Object.freeze({
+  inputMissPerMillion: 3_000_000,
+  inputHitPerMillion: 300_000,
+  inputCreationPerMillion: 3_750_000,
+  outputPerMillion: 15_000_000,
+});
+
+/**
+ * Dispatch pricing by (provider, role) per LD-9 + LD-Module-B-15.
+ *
+ *   - `tutor` role on Anthropic → Sonnet 4.6 tier (D-104 §2.1 default; Opus
+ *     4.7 escalation rare and undercount-acceptable per α-silent envelope)
+ *   - `tutor` role on DeepSeek → V4 pro tier (D-104 §2.1 default)
+ *   - all other roles on Anthropic → Opus tier (D-088 §2.1 single-model pin)
+ *   - `quiz` on DeepSeek → reasoner-tier pricing (V4 flash thinking parity)
+ *   - other roles on DeepSeek → chat-tier pricing (V4 flash non-thinking
+ *     parity; legacy `deepseek-chat` mapped to V4 flash non-thinking per
+ *     Context7 DeepSeek API change log)
+ *   - unknown provider → chat-tier (conservative under-count)
+ */
 export function pricingFor(
   provider: ProviderKind | "unknown",
   role: ModelRole,
 ): PricingTier {
+  if (role === "tutor") {
+    return provider === "anthropic"
+      ? PRICING_ANTHROPIC_SONNET
+      : PRICING_DEEPSEEK_V4_PRO;
+  }
   if (provider === "anthropic") return PRICING_ANTHROPIC_OPUS;
   if (role === "quiz") return PRICING_DEEPSEEK_REASONER;
   return PRICING_DEEPSEEK_CHAT;

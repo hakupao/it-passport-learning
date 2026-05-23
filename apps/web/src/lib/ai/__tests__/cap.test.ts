@@ -7,8 +7,10 @@ import {
   PER_QUERY_WALL_CENTS,
   PER_QUERY_WALL_MICRO_USD,
   PRICING_ANTHROPIC_OPUS,
+  PRICING_ANTHROPIC_SONNET,
   PRICING_DEEPSEEK_CHAT,
   PRICING_DEEPSEEK_REASONER,
+  PRICING_DEEPSEEK_V4_PRO,
   _resetCapModuleState,
   estimateCallMicroUsd,
   formatJstDayKey,
@@ -128,27 +130,57 @@ describe("cap.ts constants — D-090 §2.1 + D-100 §2.1", () => {
 // ---------------------------------------------------------------------------
 // pricingFor — dispatch matrix
 
-describe("pricingFor — provider × role dispatch (LD-9)", () => {
-  it("anthropic any role → opus pricing", () => {
+describe("pricingFor — provider × role dispatch (LD-9 + LD-Module-B-15)", () => {
+  it("anthropic non-tutor role → opus pricing (D-088 §2.1 single-model pin)", () => {
     expect(pricingFor("anthropic", "chat")).toBe(PRICING_ANTHROPIC_OPUS);
     expect(pricingFor("anthropic", "quiz")).toBe(PRICING_ANTHROPIC_OPUS);
     expect(pricingFor("anthropic", "hover")).toBe(PRICING_ANTHROPIC_OPUS);
     expect(pricingFor("anthropic", "smoke")).toBe(PRICING_ANTHROPIC_OPUS);
   });
 
-  it("deepseek quiz → reasoner pricing per D-095 §2.1 role matrix", () => {
+  it("anthropic tutor → Sonnet 4.6 pricing per D-104 §2.1 default (LD-Module-B-15)", () => {
+    expect(pricingFor("anthropic", "tutor")).toBe(PRICING_ANTHROPIC_SONNET);
+  });
+
+  it("deepseek quiz → reasoner pricing (V4 flash thinking parity per Context7)", () => {
     expect(pricingFor("deepseek", "quiz")).toBe(PRICING_DEEPSEEK_REASONER);
   });
 
-  it("deepseek non-quiz → chat pricing", () => {
+  it("deepseek non-quiz Phase 2 roles → chat pricing (V4 flash non-thinking parity)", () => {
     expect(pricingFor("deepseek", "chat")).toBe(PRICING_DEEPSEEK_CHAT);
     expect(pricingFor("deepseek", "hover")).toBe(PRICING_DEEPSEEK_CHAT);
     expect(pricingFor("deepseek", "smoke")).toBe(PRICING_DEEPSEEK_CHAT);
   });
 
-  it("unknown provider → deepseek-chat fallback (conservative default)", () => {
+  it("deepseek tutor → V4 pro pricing per D-104 §2.1 default (LD-Module-B-15)", () => {
+    expect(pricingFor("deepseek", "tutor")).toBe(PRICING_DEEPSEEK_V4_PRO);
+  });
+
+  it("unknown provider non-tutor → deepseek-chat fallback (conservative default)", () => {
     expect(pricingFor("unknown", "chat")).toBe(PRICING_DEEPSEEK_CHAT);
     expect(pricingFor("unknown", "quiz")).toBe(PRICING_DEEPSEEK_REASONER);
+  });
+
+  it("unknown provider tutor → V4 pro fallback (conservative — matches active default)", () => {
+    expect(pricingFor("unknown", "tutor")).toBe(PRICING_DEEPSEEK_V4_PRO);
+  });
+});
+
+describe("PRICING_DEEPSEEK_V4_PRO + PRICING_ANTHROPIC_SONNET shape sanity", () => {
+  it("V4 pro tier is frozen + has expected μUSD rates per file-header pricing note", () => {
+    expect(Object.isFrozen(PRICING_DEEPSEEK_V4_PRO)).toBe(true);
+    expect(PRICING_DEEPSEEK_V4_PRO.inputMissPerMillion).toBe(1_740_000);
+    expect(PRICING_DEEPSEEK_V4_PRO.inputHitPerMillion).toBe(145_000);
+    expect(PRICING_DEEPSEEK_V4_PRO.inputCreationPerMillion).toBeNull();
+    expect(PRICING_DEEPSEEK_V4_PRO.outputPerMillion).toBe(3_480_000);
+  });
+
+  it("Sonnet 4.6 tier is frozen + has expected μUSD rates per Anthropic 2026-05-22 public pricing", () => {
+    expect(Object.isFrozen(PRICING_ANTHROPIC_SONNET)).toBe(true);
+    expect(PRICING_ANTHROPIC_SONNET.inputMissPerMillion).toBe(3_000_000);
+    expect(PRICING_ANTHROPIC_SONNET.inputHitPerMillion).toBe(300_000);
+    expect(PRICING_ANTHROPIC_SONNET.inputCreationPerMillion).toBe(3_750_000);
+    expect(PRICING_ANTHROPIC_SONNET.outputPerMillion).toBe(15_000_000);
   });
 });
 

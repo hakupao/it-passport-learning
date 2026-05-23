@@ -34,6 +34,7 @@ import { assembleWholeBook } from "@/lib/data/assembleScope";
 import {
   getActiveProvider,
   getModel,
+  getPhase2ProviderOptions,
   readCacheUsage,
 } from "@/lib/ai/provider";
 import { STREAM_CONFIG, formatUserFacingError } from "@/lib/ai/retry";
@@ -99,6 +100,10 @@ export async function POST(request: Request): Promise<Response> {
     model: getModel("chat"),
     maxRetries: STREAM_CONFIG.maxRetries,
     abortSignal: request.signal,
+    // D-105 §2.1 — V4 flash with thinking disabled = legacy `deepseek-chat`
+    // non-thinking parity. Anthropic SDK ignores the `deepseek` namespace,
+    // so the same options object is safe to pass on either provider path.
+    providerOptions: getPhase2ProviderOptions("chat"),
     messages: [
       {
         role: "system",
