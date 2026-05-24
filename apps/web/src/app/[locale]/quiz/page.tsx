@@ -9,6 +9,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ThemedPage } from "@/components/shells/ThemedPage";
 import { getDataSource, warmUp } from "@/lib/data";
 import { buildQuizSummary, type QuizSummary } from "@/lib/quiz/quizScope";
+import type { ChapterRef } from "@/lib/data/types";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +26,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-async function loadQuizSummaries(): Promise<QuizSummary[]> {
+async function loadQuizData(): Promise<{ summaries: QuizSummary[]; chapters: ChapterRef[] }> {
   await warmUp();
   const ds = getDataSource();
   const idx = await ds.loadIndex();
+
+  const chapters: ChapterRef[] = idx.chapters ?? [];
 
   const refs = Object.entries(idx.entity_by_id)
     .filter(([, ref]) => ref.type === "question")
@@ -55,12 +58,12 @@ async function loadQuizSummaries(): Promise<QuizSummary[]> {
     const summary = buildQuizSummary(ref.questionId, page, ref.entityIndex);
     if (summary) summaries.push(summary);
   }
-  return summaries;
+  return { summaries, chapters };
 }
 
 export default async function QuizPage({ params }: Props): Promise<React.ReactElement> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const summaries = await loadQuizSummaries();
-  return <ThemedPage page="quiz" props={{ summaries }} />;
+  const { summaries, chapters } = await loadQuizData();
+  return <ThemedPage page="quiz" props={{ summaries, chapters }} />;
 }

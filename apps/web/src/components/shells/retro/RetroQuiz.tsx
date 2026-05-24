@@ -3,16 +3,22 @@
 import { useTranslations } from "next-intl";
 import { QuizExplain } from "@/components/QuizExplain";
 import { useQuizState } from "@/hooks/useQuizState";
+import { groupQuizByChapter, useCollapsible } from "@/hooks/useGrouping";
 import type { QuizSummary } from "@/lib/quiz/quizScope";
+import type { ChapterRef } from "@/lib/data/types";
 
 interface RetroQuizProps {
   summaries: QuizSummary[];
+  chapters?: ChapterRef[];
 }
 
-export function RetroQuiz({ summaries }: RetroQuizProps): React.ReactElement {
+export function RetroQuiz({ summaries, chapters = [] }: RetroQuizProps): React.ReactElement {
   const t = useTranslations("QuizList");
   const tCommon = useTranslations("Common");
   const { activeSummary, handleSelect, handleClose } = useQuizState(summaries);
+  const groups = groupQuizByChapter(summaries, chapters);
+  const firstChapterId = groups[0]?.chapterId;
+  const { isOpen, toggle } = useCollapsible(firstChapterId != null ? [firstChapterId] : []);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-8rem)] p-2 gap-2 text-black">
@@ -28,7 +34,8 @@ export function RetroQuiz({ summaries }: RetroQuizProps): React.ReactElement {
           <p className="text-center text-[11px] text-[#808080] py-8">
             {t("emptyHint")}
           </p>
-        ) : (
+        ) : groups.length === 0 ? (
+          // Fallback: flat list when no chapter data available
           <ul className="space-y-1">
             {summaries.map((s) => (
               <li
@@ -37,10 +44,7 @@ export function RetroQuiz({ summaries }: RetroQuizProps): React.ReactElement {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[10px] text-[#808080]">
-                    {t("pageEntity", {
-                      page: s.page,
-                      index: s.entityIndex + 1,
-                    })}
+                    {t("pageEntity", { page: s.page, index: s.entityIndex + 1 })}
                   </span>
                   {s.answerLetterJp && (
                     <span className="text-[10px] text-[#808080]">
@@ -49,11 +53,7 @@ export function RetroQuiz({ summaries }: RetroQuizProps): React.ReactElement {
                     </span>
                   )}
                 </div>
-
-                <p className="text-xs leading-snug" lang="ja">
-                  {s.stemJp}
-                </p>
-
+                <p className="text-xs leading-snug" lang="ja">{s.stemJp}</p>
                 <button
                   type="button"
                   onClick={() => handleSelect(s.questionId)}
@@ -64,6 +64,55 @@ export function RetroQuiz({ summaries }: RetroQuizProps): React.ReactElement {
               </li>
             ))}
           </ul>
+        ) : (
+          <div className="space-y-1">
+            {groups.map((group) => (
+              <div key={group.chapterId} className="mb-1">
+                {/* Group header — outset border button like a retro folder tab */}
+                <button
+                  type="button"
+                  onClick={() => toggle(group.chapterId)}
+                  className="w-full flex items-center justify-between bg-[#c0c0c0] border-2 border-outset-retro px-2 py-1 text-left active:border-inset-retro"
+                >
+                  <span className="text-[11px] font-bold">{group.label}</span>
+                  <span className="text-[10px] text-[#444]">
+                    {group.items.length}問 {isOpen(group.chapterId) ? "▾" : "▸"}
+                  </span>
+                </button>
+                {isOpen(group.chapterId) && (
+                  <div className="border-2 border-inset-retro bg-white p-1 mt-0.5">
+                    <ul className="space-y-1">
+                      {group.items.map((s) => (
+                        <li
+                          key={s.questionId}
+                          className="bg-[#ffffcc] border border-[#808080] p-2 flex flex-col gap-1"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] text-[#808080]">
+                              {t("pageEntity", { page: s.page, index: s.entityIndex + 1 })}
+                            </span>
+                            {s.answerLetterJp && (
+                              <span className="text-[10px] text-[#808080]">
+                                {t("answerPrefix")}{s.answerLetterJp}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs leading-snug" lang="ja">{s.stemJp}</p>
+                          <button
+                            type="button"
+                            onClick={() => handleSelect(s.questionId)}
+                            className="self-start text-[10px] bg-[#c0c0c0] border-2 border-outset-retro px-2 py-0.5 active:border-inset-retro"
+                          >
+                            {tCommon("explain")}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         )}
       </div>
 

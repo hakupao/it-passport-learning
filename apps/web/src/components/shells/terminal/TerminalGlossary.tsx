@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { TermPopover } from "@/components/TermPopover";
 import { useGlossaryState } from "@/hooks/useGlossaryState";
+import { groupGlossaryByLetter } from "@/hooks/useGrouping";
 import type { GlossarySummary } from "@/lib/glossary/glossaryScope";
 
 interface TerminalGlossaryProps {
@@ -12,6 +13,7 @@ interface TerminalGlossaryProps {
 export function TerminalGlossary({ summaries }: TerminalGlossaryProps): React.ReactElement {
   const t = useTranslations("GlossaryList");
   const tCommon = useTranslations("Common");
+  const groups = groupGlossaryByLetter(summaries);
   const { activeSummary, handleSelect, handleClose } = useGlossaryState(summaries);
 
   return (
@@ -22,7 +24,7 @@ export function TerminalGlossary({ summaries }: TerminalGlossaryProps): React.Re
         <div className="text-[#555] text-xs">{t("subtitle")}</div>
       </div>
 
-      {/* grep-style output */}
+      {/* grep-style output grouped by kana row */}
       <div className="flex-1 overflow-y-auto">
         {summaries.length === 0 ? (
           <div className="text-[#555] py-8 px-2">
@@ -30,30 +32,40 @@ export function TerminalGlossary({ summaries }: TerminalGlossaryProps): React.Re
             {t("emptyHint")}
           </div>
         ) : (
-          <ul className="space-y-1">
-            {summaries.map((s) => (
-              <li key={s.id}>
-                <button
-                  type="button"
-                  onClick={() => handleSelect(s.surfaceJp)}
-                  className="w-full text-left py-0.5 px-1 hover:bg-white/[.03] transition-colors group"
-                  aria-label={`${tCommon("explain")}: ${s.surfaceJp}`}
-                >
-                  <span className="text-[#555]">glossary:</span>
-                  <span className="text-[#ce9178]">{s.id}</span>
-                  <span className="text-[#555]">:</span>
-                  <span className="text-[#d4d4d4] group-hover:text-[#4ec9b0] transition-colors" lang="ja">
-                    {s.surfaceJp}
-                  </span>
-                  <span className="text-[#555]">{"  ("}</span>
-                  <span className="text-[#6a9955]" lang="zh">{s.surfaceZh}</span>
-                  <span className="text-[#555]"> / </span>
-                  <span className="text-[#569cd6]" lang="en">{s.surfaceEn}</span>
-                  <span className="text-[#555]">{")"}</span>
-                </button>
-              </li>
+          <div className="space-y-4">
+            {groups.map((group) => (
+              <div key={group.letter}>
+                {/* Section heading */}
+                <div className="text-[#6a9955] text-xs py-0.5 px-1 mb-1">
+                  ## {group.letter}行 ({group.items.length})
+                </div>
+                <ul className="space-y-0">
+                  {group.items.map((s) => (
+                    <li key={s.id}>
+                      <button
+                        type="button"
+                        onClick={() => handleSelect(s.surfaceJp)}
+                        className="w-full text-left py-0.5 px-1 hover:bg-white/[.03] transition-colors group"
+                        aria-label={`${tCommon("explain")}: ${s.surfaceJp}`}
+                      >
+                        <span className="text-[#555]">glossary:</span>
+                        <span className="text-[#ce9178]">{s.id}</span>
+                        <span className="text-[#555]">:</span>
+                        <span className="text-[#d4d4d4] group-hover:text-[#4ec9b0] transition-colors" lang="ja">
+                          {s.surfaceJp}
+                        </span>
+                        <span className="text-[#555]">{"  ("}</span>
+                        <span className="text-[#6a9955]" lang="zh">{s.surfaceZh}</span>
+                        <span className="text-[#555]"> / </span>
+                        <span className="text-[#569cd6]" lang="en">{s.surfaceEn}</span>
+                        <span className="text-[#555]">{")"}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
 
