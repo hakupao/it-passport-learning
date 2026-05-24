@@ -1,15 +1,10 @@
 // Phase 2 Step 12 — /[locale]/chat page hosting the <Chat /> surface.
-//
-// Moved from /chat (Step 9 standalone) into the [locale] segment so the
-// surface inherits NextIntlClientProvider + the top NavTabs + LocaleSwitcher.
-// Component body itself is unchanged at this layer — strings are translated
-// inside <Chat /> via useTranslations.
+// Stage 10 update — delegates rendering to ThemedPage.
 
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { Chat } from "@/components/Chat";
-import { setRequestLocale } from "next-intl/server";
-import { getTranslations } from "next-intl/server";
+import { ThemedPage } from "@/components/shells/ThemedPage";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -27,5 +22,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ChatPage({ params }: Props): Promise<React.ReactElement> {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <Chat />;
+  return <ThemedPage page="chat" />;
 }

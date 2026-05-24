@@ -3,7 +3,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { Tutor } from "@/components/Tutor";
+import { ThemedPage } from "@/components/shells/ThemedPage";
 import {
   buildAllChapterSummaries,
   type AppLocale,
@@ -41,5 +41,5 @@ export default async function TutorPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const chapters = await loadChapterSummaries(locale as AppLocale);
-  return <Tutor chapters={chapters} />;
+  return <ThemedPage page="tutor" props={{ chapters }} />;
 }

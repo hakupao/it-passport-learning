@@ -6,7 +6,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { QuizList } from "@/components/QuizList";
+import { ThemedPage } from "@/components/shells/ThemedPage";
 import { getDataSource, warmUp } from "@/lib/data";
 import { buildQuizSummary, type QuizSummary } from "@/lib/quiz/quizScope";
 
@@ -62,5 +62,5 @@ export default async function QuizPage({ params }: Props): Promise<React.ReactEl
   const { locale } = await params;
   setRequestLocale(locale);
   const summaries = await loadQuizSummaries();
-  return <QuizList summaries={summaries} />;
+  return <ThemedPage page="quiz" props={{ summaries }} />;
 }

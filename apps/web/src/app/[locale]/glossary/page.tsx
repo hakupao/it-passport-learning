@@ -6,7 +6,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { GlossaryList } from "@/components/GlossaryList";
+import { ThemedPage } from "@/components/shells/ThemedPage";
 import { getDataSource, warmUp } from "@/lib/data";
 import {
   listGlossarySummaries,
@@ -39,5 +39,5 @@ export default async function GlossaryPage({ params }: Props): Promise<React.Rea
   const { locale } = await params;
   setRequestLocale(locale);
   const summaries = await loadGlossarySummaries();
-  return <GlossaryList summaries={summaries} />;
+  return <ThemedPage page="glossary" props={{ summaries }} />;
 }

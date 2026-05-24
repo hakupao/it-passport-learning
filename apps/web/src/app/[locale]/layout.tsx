@@ -1,4 +1,6 @@
 // Phase 2 Step 12 — [locale] segment layout (D-099 §2.5 LD-7).
+// Stage 10 update — wraps children in ShellProvider; NavTabs/SkipLink
+// removed (navigation is now owned by each shell chrome).
 //
 // Owns the <html> + <body> + NextIntlClientProvider chain so client components
 // nested under /ja /zh /en have a locale context. The root app/layout.tsx is
@@ -9,13 +11,12 @@
 // useTranslations(), losing the static optimization on /[locale]/page.tsx.
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import { NavTabs } from "@/components/NavTabs";
-import { SkipLink } from "@/components/SkipLink";
+import { ShellProvider } from "@/components/shells/ShellProvider";
 import { routing } from "@/i18n/routing";
 
 import "../globals.css";
@@ -27,6 +28,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
   subsets: ["latin"],
 });
 
@@ -58,12 +64,12 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <NextIntlClientProvider>
-          <SkipLink />
-          <NavTabs />
-          {children}
+          <ShellProvider>
+            {children}
+          </ShellProvider>
         </NextIntlClientProvider>
       </body>
     </html>

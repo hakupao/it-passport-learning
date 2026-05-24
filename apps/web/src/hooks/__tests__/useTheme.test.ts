@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
-  type Theme,
   THEMES,
   THEME_STORAGE_KEY,
   DEFAULT_THEME,
