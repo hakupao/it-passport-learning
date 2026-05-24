@@ -1,4 +1,94 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { Suspense } from "react";
+import { Link, usePathname } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { ThemeSwitcher } from "@/components/shells/ThemeSwitcher";
+
+const NAV_ITEMS = [
+  { href: "/chat", label: "chat" },
+  { href: "/quiz", label: "quiz" },
+  { href: "/glossary", label: "gloss" },
+  { href: "/tutor", label: "tutor" },
+  { href: "/book", label: "book", disabled: true },
+] as const;
+
 export function TerminalShell({ children }: { children: ReactNode }): React.ReactElement {
-  return <div data-shell="terminal">{children}</div>;
+  const pathname = usePathname();
+
+  return (
+    <div
+      className="min-h-screen bg-[#1e1e1e] font-mono text-[#d4d4d4] text-sm"
+      data-shell="terminal"
+    >
+      {/* Sticky header */}
+      <header className="sticky top-0 z-30 bg-[#2d2d2d] border-b border-[#444]">
+        <div className="mx-auto max-w-5xl flex items-center justify-between gap-3 px-3 sm:px-4 h-10">
+          {/* Left: macOS traffic lights */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5">
+              <span
+                className="w-3 h-3 rounded-full bg-[#ff5f56] inline-block"
+                aria-hidden="true"
+              />
+              <span
+                className="w-3 h-3 rounded-full bg-[#ffbd2e] inline-block"
+                aria-hidden="true"
+              />
+              <span
+                className="w-3 h-3 rounded-full bg-[#27c93f] inline-block"
+                aria-hidden="true"
+              />
+            </div>
+            {/* Tab bar */}
+            <nav className="flex items-center gap-0 ml-3">
+              {NAV_ITEMS.map((item) => {
+                const isActive =
+                  pathname === item.href ||
+                  pathname.startsWith(`${item.href}/`);
+                const isDisabled =
+                  "disabled" in item && item.disabled;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={isActive ? "page" : undefined}
+                    aria-disabled={isDisabled || undefined}
+                    className={
+                      isActive
+                        ? "px-3 py-1 text-xs text-[#4ec9b0] border-b border-[#4ec9b0] transition-colors"
+                        : isDisabled
+                          ? "px-3 py-1 text-xs text-[#555] cursor-not-allowed"
+                          : "px-3 py-1 text-xs text-[#888] hover:text-[#ccc] transition-colors"
+                    }
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Right: theme + locale + label */}
+          <div className="flex items-center gap-2 shrink-0 text-[#888]">
+            <ThemeSwitcher />
+            <Suspense fallback={null}>
+              <LocaleSwitcher />
+            </Suspense>
+            <span className="text-[#555] text-xs hidden sm:inline">itp@study:~</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="focus:outline-none max-w-5xl mx-auto"
+      >
+        {children}
+      </main>
+    </div>
+  );
 }
