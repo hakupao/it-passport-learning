@@ -30,13 +30,13 @@ export function TerminalGlossary({ summaries }: TerminalGlossaryProps): React.Re
             {t("emptyHint")}
           </div>
         ) : (
-          <ul className="space-y-0">
+          <ul className="space-y-1">
             {summaries.map((s) => (
               <li key={s.id}>
                 <button
                   type="button"
                   onClick={() => handleSelect(s.surfaceJp)}
-                  className="w-full text-left py-0.5 px-1 hover:bg-[#2a2a2a] transition-colors group"
+                  className="w-full text-left py-0.5 px-1 hover:bg-white/[.03] transition-colors group"
                   aria-label={`${tCommon("explain")}: ${s.surfaceJp}`}
                 >
                   <span className="text-[#555]">glossary:</span>

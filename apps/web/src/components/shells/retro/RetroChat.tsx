@@ -59,8 +59,8 @@ export function RetroChat(): React.ReactElement {
               <div
                 className={
                   isUser
-                    ? "bg-[#ffffcc] border border-[#808080] px-2 py-1 max-w-[80%] whitespace-pre-wrap text-xs"
-                    : "bg-[#e0e0e0] border border-[#808080] px-2 py-1 max-w-[80%] whitespace-pre-wrap text-xs"
+                    ? "bg-[#ffffcc] border border-[#808080] px-3 py-1.5 max-w-[80%] whitespace-pre-wrap text-xs"
+                    : "bg-[#e0e0e0] border border-[#808080] px-3 py-1.5 max-w-[80%] whitespace-pre-wrap text-xs"
                 }
               >
                 {text || (isUser ? "" : t("streaming"))}
@@ -70,7 +70,7 @@ export function RetroChat(): React.ReactElement {
         })}
         {isStreaming && messages[messages.length - 1]?.role === "user" && (
           <div className="flex justify-start">
-            <div className="bg-[#e0e0e0] border border-[#808080] px-2 py-1 max-w-[80%] text-xs italic text-[#808080]">
+            <div className="bg-[#e0e0e0] border border-[#808080] px-3 py-1.5 max-w-[80%] text-xs italic text-[#808080]">
               {t("streaming")}
             </div>
           </div>
@@ -95,14 +95,14 @@ export function RetroChat(): React.ReactElement {
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("placeholder")}
           disabled={isStreaming}
-          className="flex-1 border-2 border-inset-retro px-2 py-0.5 text-xs bg-white disabled:bg-[#c0c0c0] focus:outline-none"
+          className="flex-1 h-7 border-2 border-inset-retro px-2 text-xs bg-white disabled:bg-[#c0c0c0] focus:outline-none"
           autoComplete="off"
           aria-label={t("inputAriaLabel")}
         />
         <button
           type="submit"
           disabled={isStreaming || !input.trim()}
-          className="bg-[#c0c0c0] border-2 border-outset-retro px-3 py-0.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed active:border-inset-retro"
+          className="h-7 px-4 bg-[#c0c0c0] border-2 border-outset-retro text-xs disabled:opacity-50 disabled:cursor-not-allowed active:border-inset-retro"
         >
           {tCommon("send")}
         </button>
@@ -110,7 +110,7 @@ export function RetroChat(): React.ReactElement {
           type="button"
           onClick={handleClear}
           disabled={messages.length === 0 || isStreaming}
-          className="bg-[#c0c0c0] border-2 border-outset-retro px-3 py-0.5 text-xs disabled:opacity-50 disabled:cursor-not-allowed active:border-inset-retro"
+          className="h-7 px-4 bg-[#c0c0c0] border-2 border-outset-retro text-xs disabled:opacity-50 disabled:cursor-not-allowed active:border-inset-retro"
         >
           {t("newChat")}
         </button>

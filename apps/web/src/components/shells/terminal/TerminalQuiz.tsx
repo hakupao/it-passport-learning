@@ -35,7 +35,7 @@ export function TerminalQuiz({ summaries }: TerminalQuizProps): React.ReactEleme
             <div className="text-[#555] text-xs pb-1">
               total {summaries.length} questions
             </div>
-            <ul>
+            <ul className="space-y-1">
               {summaries.map((s) => {
                 const stem = s.stemJp.length > 40
                   ? `${s.stemJp.slice(0, 40)}…`
@@ -45,7 +45,7 @@ export function TerminalQuiz({ summaries }: TerminalQuizProps): React.ReactEleme
                     <button
                       type="button"
                       onClick={() => handleSelect(s.questionId)}
-                      className="w-full text-left flex items-baseline gap-2 py-0.5 hover:bg-[#2a2a2a] px-1 transition-colors group"
+                      className="w-full text-left flex items-baseline gap-2 py-0.5 hover:bg-white/[.03] px-1 transition-colors group"
                     >
                       <span className="text-[#555] shrink-0 text-xs">-rw-r--r--</span>
                       <span className="text-[#555] shrink-0 text-xs">1</span>

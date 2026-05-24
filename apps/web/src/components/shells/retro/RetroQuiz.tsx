@@ -33,7 +33,7 @@ export function RetroQuiz({ summaries }: RetroQuizProps): React.ReactElement {
             {summaries.map((s) => (
               <li
                 key={s.questionId}
-                className="bg-[#ffffcc] border border-[#808080] p-2 mb-1 flex flex-col gap-1"
+                className="bg-[#ffffcc] border border-[#808080] p-3 mb-2 flex flex-col gap-1"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[10px] text-[#808080]">

@@ -34,7 +34,7 @@ export function RetroGlossary({ summaries }: RetroGlossaryProps): React.ReactEle
             {summaries.map((s) => (
               <li
                 key={s.id}
-                className="border-b border-[#808080] p-2 flex items-start justify-between gap-2"
+                className="border-b border-[#808080] p-3 flex items-start justify-between gap-2 hover:bg-[#e8e8e8]"
               >
                 <div className="flex flex-col gap-0.5 min-w-0">
                   <span className="text-xs font-bold" lang="ja">

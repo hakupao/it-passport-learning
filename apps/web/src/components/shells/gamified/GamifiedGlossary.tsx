@@ -16,12 +16,12 @@ export function GamifiedGlossary({ summaries }: GamifiedGlossaryProps): React.Re
   const { activeSummary, handleSelect, handleClose } = useGlossaryState(summaries);
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-4">
+    <div className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-5">
       <header className="border-b border-white/[.08] pb-3">
-        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
+        <h1 className="text-lg sm:text-xl font-semibold tracking-tight">
           {t("title")}
         </h1>
-        <p className="text-xs sm:text-sm text-white/50 mt-1">
+        <p className="text-xs text-white/50 mt-1">
           {t("subtitle")}
         </p>
       </header>
@@ -31,11 +31,11 @@ export function GamifiedGlossary({ summaries }: GamifiedGlossaryProps): React.Re
           {t("emptyHint")}
         </p>
       ) : (
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {summaries.map((s) => (
             <li
               key={s.id}
-              className="border border-white/[.08] rounded-xl p-3 bg-white/[.03] flex flex-col gap-1.5 hover:border-[#e94560]/50 transition-colors"
+              className="border border-white/[.08] rounded-xl p-4 bg-white/[.03] flex flex-col gap-1.5 hover:border-[#e94560]/50 transition-colors"
             >
               <div className="flex items-baseline justify-between gap-2">
                 <span className="text-sm font-medium tracking-tight text-white/90" lang="ja">
@@ -62,7 +62,7 @@ export function GamifiedGlossary({ summaries }: GamifiedGlossaryProps): React.Re
               <button
                 type="button"
                 onClick={() => handleSelect(s.surfaceJp)}
-                className="mt-1 self-start text-[11px] rounded-md bg-[#e94560] text-white px-2.5 py-1 hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
+                className="mt-1 self-start h-7 px-3 rounded-md bg-[#e94560] text-white text-[11px] font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
               >
                 {tCommon("explain")}
               </button>

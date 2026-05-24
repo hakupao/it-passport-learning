@@ -35,7 +35,7 @@ export function TerminalChat(): React.ReactElement {
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto space-y-2 py-1"
+        className="flex-1 overflow-y-auto space-y-3 py-1"
         aria-live="polite"
         aria-busy={isStreaming}
       >
@@ -52,7 +52,7 @@ export function TerminalChat(): React.ReactElement {
               {isUser ? (
                 <TerminalPrompt text={text} />
               ) : (
-                <div className="border-l-2 border-[#ce9178] pl-3 ml-2 text-[#ce9178] whitespace-pre-wrap leading-relaxed">
+                <div className="border-l-2 border-[#ce9178] pl-3 ml-2 text-[#ce9178] whitespace-pre-wrap leading-relaxed text-sm">
                   {text || <span className="italic text-[#555]">{t("streaming")}</span>}
                 </div>
               )}

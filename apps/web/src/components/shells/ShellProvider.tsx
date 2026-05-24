@@ -25,7 +25,9 @@ export function ShellProvider({ children }: ShellProviderProps): React.ReactElem
 
   return (
     <ThemeContext.Provider value={themeValue}>
-      <Shell>{children}</Shell>
+      <div className="transition-opacity duration-150">
+        <Shell>{children}</Shell>
+      </div>
     </ThemeContext.Provider>
   );
 }
