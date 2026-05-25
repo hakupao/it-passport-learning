@@ -1,253 +1,227 @@
 <div align="center">
 
-# IT Passport — 三语学习内容 + `cert-extractor`
+# IT Passport Learning
 
-### Phase 1 —— 已交付 · 已审计 · 已发布
+### 面向 ITパスポート 资格考试的三语学习 Web 应用
 
-*一本日语 IT パスポート（令和 6 年度）资格考试教材 → 结构化的三语（**日 / 中 / 英**）学习数据集，由可插拔的 `cert-extractor` pipeline 生产。*
+*结构化日语教材内容 + AI 学习工具 —— **日 / 中 / 英** 三语。*
 
-[![Phase 1](https://img.shields.io/badge/Phase%201-%E2%9C%85%20DONE-brightgreen?style=for-the-badge)](docs/STATE.md)
-[![Release](https://img.shields.io/badge/release-v1.0.2-blue?style=for-the-badge&logo=github)](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.2)
-[![Full-corpus audit](https://img.shields.io/badge/%E5%85%A8%E9%87%8F%E6%A0%B8%E9%AA%8C-100%25-success?style=for-the-badge)](RETROSPECTIVE.md#9-post-publication-validation-addendum)
+[![在线访问](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E8%AE%BF%E9%97%AE-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://itlearn.bojiangz.com)
+[![Phase 4](https://img.shields.io/badge/Phase%204-%E2%9C%85%20DONE-brightgreen?style=for-the-badge)](docs/STATE.md)
+[![Tests](https://img.shields.io/badge/%E6%B5%8B%E8%AF%95-978%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#技术栈)
+[![ADRs](https://img.shields.io/badge/%E5%B7%B2%E9%94%81%20ADR-107-6f42c1?style=for-the-badge)](docs/decisions/)
 
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-000?logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=000)](https://react.dev/)
+[![AI SDK](https://img.shields.io/badge/AI%20SDK-v6-000?logo=vercel&logoColor=white)](https://ai-sdk.dev/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Python](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![uv](https://img.shields.io/badge/built%20with-uv%20workspace-261230?logo=astral&logoColor=white)](https://github.com/astral-sh/uv)
-[![pytest](https://img.shields.io/badge/tests-492%20passing-0A9EDC?logo=pytest&logoColor=white)](packages/extractor/tests)
-[![ADRs](https://img.shields.io/badge/%E5%B7%B2%E9%94%81%20ADR-82-6f42c1)](docs/decisions/)
-[![LLM cost](https://img.shields.io/badge/Anthropic%20billed-%240-success)](RETROSPECTIVE.md#0-元数据--metadata)
-[![Mistral cost](https://img.shields.io/badge/Mistral%20billed-%240.58-orange?logo=mistralai&logoColor=white)](RETROSPECTIVE.md#0-元数据--metadata)
-[![License](https://img.shields.io/badge/license-%E5%BE%85%E5%AE%9A-lightgrey)](#license--许可)
+[![License](https://img.shields.io/badge/license-%E5%BE%85%E5%AE%9A-lightgrey)](#许可)
 
-[🇬🇧 English README](README.md) &nbsp;·&nbsp; 🇨🇳 **中文**
+[:gb: English README](README.md) &nbsp;&middot;&nbsp; :cn: **中文**
 
 </div>
 
 ---
 
-## Phase 1 —— 我们做了什么
+## 这是什么？
 
-**11 天 · 23 场 session · 82 条已锁决定 · 一条 pipeline · 一份三语数据集 · 两次 GitHub Release。**
+**[itlearn.bojiangz.com](https://itlearn.bojiangz.com)** —— 面向日本 IT パスポート 考试（令和 6 年度）的三语学习工具。
 
-`cert-extractor` 吃进一本日语资格教材，吐出一份结构化的 `{jp, zh, en}` 三语学习数据集 —— 每个章节、术语、表格、练习题都带三语渲染，每个全片假名的 IT 术语还附上 `kana_helper` 标注，让非母语读者一眼把假名映射到概念。**这就是这个项目存在的全部理由。**
+非母语的日语技术考试学习者卡的不是**概念**（CPU / TCP/IP / ROI），而是**假名/汉字识读**。`アクセシビリティ → accessibility → 可访问性`，看一次就记住了。这个项目把一本教材变成完整的三语学习体验 —— 读教材、做题、查术语、AI 对话、个性化辅导，全部三语。
 
-Phase 1 交付物：
+### 五大学习面
 
-- **`cert-extractor`** —— Mistral OCR + Claude LLM 的 8 阶段 pipeline，从一开始就 cert-agnostic（D-010），4 轴可插拔架构（D-021）。
-- **`itpassport-r6-v1.0.0`**（原始版）+ **`itpassport-r6-v1.0.2`**（发布后校订版）—— 两个 GitHub Release，覆盖 IT パスポート 令和 6 年度 教材的三语数据集。
-- **完整 Tier-3 追溯档案** —— 82 条 ADR · 23 份 session log · 12 个 failure 归档 · 5 个 gate checkpoint · 351 行 retrospective · 一条 **~80 agents · 9 类 subagent · 100% 覆盖** 的发布后 validation 链。
+| 面 | 功能 |
+|---|---|
+| **教科书** | 全书阅读器 —— 16 章连续翻页、划词翻译、章内对话 & 测验、阅读进度追踪 |
+| **测验** | 按章节分组的练习题 —— AI 为每道题生成解析 |
+| **术语表** | 908 条三语术语 —— 按领域 & 章节分组，带 `kana_helper` 标注和 AI 悬浮解释 |
+| **对话** | 自由 AI 对话 —— 围绕 IT Passport 话题，支持上下文和对话历史 |
+| **助教** | AI 学习助手 —— 读取你的进度、答题记录和章节状态，给出个性化指导，难题自动升级模型 |
+
+### 三套主题皮肤
+
+随时切换视觉主题：
+
+- **Gamified** —— 现代渐变 UI，进度游戏化
+- **Retro** —— Windows 95 复古风，可拖拽窗口
+- **Terminal** —— 黑客/终端风，绿字黑底
 
 ---
 
-## Phase 1 亮点
+## 快速开始
 
-| | |
-|---|---|
-| 📚 **三语数据集** | 554 页 · 2 224 个 entity · **6 059 个三语叶子** · 908 条术语表 |
-| 🈁 **`kana_helper` 全覆盖** | 每个全片假名的 IT 术语都带 `{surface, reading, zh_concept}` —— 假名 → 概念，一眼对位 |
-| 🧩 **Cert-agnostic pipeline** | 4 个可插拔轴（source / OCR / translator / exporter）；新资格只需写 `pipelines/<cert_id>.yaml` |
-| 🛡 **双门 audit** | 确定性 detector **+** LLM reviewer（D-077）**+** Stage 7 export envelope（D-078）—— 拒绝任何 untranslated / 非法 sentinel 叶子 |
-| 💸 **近零账单** | 全本 579 页跑下来 **$0.58 Mistral · $0 Anthropic**（max-plan OAuth，D-069） |
-| 🔬 **100% 发布后核验** | iter-3..8 通过并行 scientist agent 审了**全部 554 页** → ~736 处校订作为 v1.0.2 发布，**$0 LLM 计费** |
-| 🧪 **测试先行** | 492 个 unit + integration 测试；ruff 干净；`_fixtures/` 下划线前缀（D-043）防 pytest 误收 |
-| 📜 **Tier-3 全追溯** | 82 条 ADR · 23 份 session log · 12 个 failure 归档 · 5 个 gate checkpoint · FINAL `RETROSPECTIVE.md`（D-033） |
+访问 **[itlearn.bojiangz.com](https://itlearn.bojiangz.com)** —— 无需安装。
+
+应用支持三种界面语言（日语 / 中文 / 英语），通过右上角语言切换器切换。
 
 ---
 
-## 选你的入口
+## 架构
 
-### 🎓 我是来**学** IT Passport 的
-
-直接去 **[Releases](https://github.com/hakupao/it-passport-learning/releases)** 下三语学习包。
-
-| 内容 | 位置 |
-|---|---|
-| **最新版** | [`itpassport-r6-v1.0.2`](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.2) — 554 页 / 2 224 entities / 6 059 三语叶子 / 908 术语表 / ~736 处发布后校订 |
-| 原始版 | [`itpassport-r6-v1.0.0`](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.0) — 不可变保留 |
-| 怎么看 | `index.json` → `pages/page_NNN.json`（或 `.md`）→ `glossary.json` —— 详见 zip 内的 `output/README.md` |
-
-每条术语都有 `{jp, zh, en}` 三元组。每条全片假名的 IT 术语额外带 `kana_helper = {surface, reading, zh_concept}`，让非母语读者一眼把假名映射到概念。
-
-### 💻 我是**开发者**，想用 `cert-extractor`
-
-`cert-extractor` 从一开始就设计成 cert-agnostic（D-010）——同一套 pipeline 应能 onboard 任意资格。
-
-- 入口：**[`packages/extractor/README.md`](packages/extractor/README.md)**
-- 架构：4 个可插拔轴（source / OCR / translator / exporter），见 [D-021](docs/decisions/)
-- Stage：8 个（unpack → OCR → classify → re-OCR → structure → glossary → translate → audit → export），见 [D-008](docs/decisions/)
-
-```bash
-# 克隆 + 装依赖 + 跑测试
-git clone https://github.com/hakupao/it-passport-learning
-cd it-passport-learning
-uv sync
-uv run pytest packages/extractor/tests/
 ```
-
-要 onboard 新资格：把源 EPUB/PDF 放 `.source/`，写 `pipelines/<cert_id>.yaml`，再跑同一个 `cert-extractor` CLI。运行时数据落到 `data/<cert_id>/runs/<run_id>/<stage>/`。
-
-### 🔬 我是**研究者** / **未来的自己**，准备进 Phase 2
-
-| 先读 | 为什么 |
-|---|---|
-| **[`docs/STATE.md`](docs/STATE.md)** | Live state —— 锁了什么、还开着什么、从哪续 |
-| [`RETROSPECTIVE.md`](RETROSPECTIVE.md) | Phase 1 retro，含 §8（iter-5+6）+ §9（iter-7+8）发布后 validation 追加 |
-| [`docs/decisions/`](docs/decisions/) | 82 条已锁 ADR（D-001 … D-082）——项目的制度记忆 |
-| [`validation/`](validation/) | ~80 个 agent / 9 类 subagent / 100% 覆盖的发布后 validation 链，把 v1.0.0 推到 v1.0.2 |
-
-Phase 2 brainstorm 是下个用户触发的 session，入口列在 `STATE.md` §5「下一会话」。
-
----
-
-## 跑出这份数据的 pipeline
-
-```mermaid
-flowchart LR
-    SRC[📚 EPUB<br/>.source/] --> S0[0 · 解包<br/>page_NNN.jpg]
-    S0 --> S1[1 · OCR<br/><b>Mistral</b>]
-    S1 --> S2[2 · 页面分类<br/>Claude Sonnet]
-    S2 --> S3[3 · 复核 OCR<br/>Claude Vision<br/><i>条件触发</i>]
-    S3 --> S4[4 · 结构化<br/>Claude → entities]
-    S4 --> S45[4.5 · 术语表<br/><b>翻译前锁定</b>]
-    S45 --> S5[5 · 翻译<br/>Claude · 术语表约束]
-    S5 --> S6[6 · 审计<br/>确定性 + LLM<br/>D-077 / D-079 gates]
-    S6 --> S7[7 · 导出<br/>JSON · MD · SQLite<br/>D-078 双门 envelope]
-    S7 --> REL[🚀 GitHub Release<br/>D-046 / D-081]
-
-    style SRC fill:#fff7ed,stroke:#fb923c,color:#000
-    style S1 fill:#fef3c7,stroke:#f59e0b,color:#000
-    style S5 fill:#fef3c7,stroke:#f59e0b,color:#000
-    style S6 fill:#dcfce7,stroke:#16a34a,color:#000
-    style S7 fill:#dcfce7,stroke:#16a34a,color:#000
-    style REL fill:#dbeafe,stroke:#2563eb,color:#000
+itlearn.bojiangz.com
+        │
+        ▼
+┌─────────────────────────────────────┐
+│  Next.js 15 (App Router, Turbopack) │
+│  React 19 · Tailwind CSS v4         │
+│  next-intl (ja/zh/en)               │
+├─────────────────────────────────────┤
+│  5 个页面: /book /chat /quiz        │
+│            /glossary /tutor         │
+├─────────────────────────────────────┤
+│  5 个 API 路由:                     │
+│    /api/chat        (DeepSeek V4)   │
+│    /api/quiz/explain (DeepSeek V4)  │
+│    /api/glossary/hover (DeepSeek V4)│
+│    /api/tutor       (多模型)        │
+│    /api/hello-ai    (健康检查)      │
+├─────────────────────────────────────┤
+│  AI SDK v6 (streamText)             │
+│  DeepSeek V4 Flash/Pro · Anthropic  │
+│  Claude Sonnet/Opus · OpenAI (预留) │
+├─────────────────────────────────────┤
+│  Vercel (部署) · Analytics ·        │
+│  Speed Insights                     │
+└─────────────────────────────────────┘
+        │
+        ▼
+  cert-extractor pipeline (Phase 1)
+  Mistral OCR + Claude LLM → 三语数据集
 ```
-
-每个 stage 都把证据写进 `evidence/<cert_id>/runs/<run_id>/`。每道 gate（`gate_N_<ts>.json`，per D-079）都是 halt 点 + 自动 criteria 检查 —— pipeline 不能跳过验定静默前进。
 
 ---
 
 ## Phase 路线图
 
-```mermaid
-flowchart TD
-    P1["<b>Phase 1</b><br/>三语内容工厂<br/>✅ DONE — v1.0.2"]
-    P2["<b>Phase 2</b><br/>个人备考工具<br/>🟡 brainstorm gate 开启"]
-    P3["Phase 3<br/>Web app / 题库<br/>⚪ 未设计"]
-    P4["Phase 4<br/>AI 学习助手<br/>⚪ 未设计"]
-    P5["Phase 5<br/>cert-extractor 通用框架<br/>⚪ 未设计"]
-
-    P1 ==>|RETROSPECTIVE §5.5<br/>+ 15 个 systemic pattern| P2
-    P2 -.-> P3
-    P2 -.-> P4
-    P3 -.-> P5
-    P4 -.-> P5
-
-    style P1 fill:#34d399,color:#000,stroke:#059669
-    style P2 fill:#fde68a,color:#000,stroke:#d97706
-    style P3 fill:#f3f4f6,color:#6b7280,stroke:#9ca3af
-    style P4 fill:#f3f4f6,color:#6b7280,stroke:#9ca3af
-    style P5 fill:#f3f4f6,color:#6b7280,stroke:#9ca3af
-```
-
-| Phase | 状态 | 备注 |
+| Phase | 状态 | 交付物 |
 |---|---|---|
-| **Phase 1 — 三语内容工厂** | ✅ DONE | `cert-extractor` 完成 + v1.0.0 + v1.0.2 已发布。`RETROSPECTIVE.md` FINAL，含 §8/§9 追加。 |
-| **Phase 2 — 个人备考工具** | 🟡 brainstorm gate 开启 | 入口 = OQ-05 + RETROSPECTIVE §5.5 carry-forward + iter-5..8 收集到的 15 个 systemic pattern |
-| Phase 3 — Web app / 题库 | ⚪ 未设计 | — |
-| Phase 4 — AI 学习助手 | ⚪ 未设计 | — |
-| Phase 5 — `cert-extractor` 通用框架 | ⚪ 未设计 | — |
+| **Phase 1 — 内容工厂** | :white_check_mark: 完成 | `cert-extractor` pipeline —— 554 页、2224 entities、6059 三语叶子、908 术语表。两次 GitHub Release（v1.0.0 + v1.0.2）。 |
+| **Phase 2 — 学习工具** | :white_check_mark: 完成 | Next.js 15 Web 应用 —— 对话、测验、术语表三大面。DeepSeek AI 集成。三语 UI。Vercel 部署。 |
+| **Phase 3 — 教科书阅读器** | :white_check_mark: 完成 | 全书阅读器 —— 16 章连续翻页、划词翻译工具栏、章内对话 & 测验、阅读进度 & 完成追踪。 |
+| **Phase 4 — AI 助教** | :white_check_mark: 完成 | AI 学习助手 —— 多模型大脑（DeepSeek/Anthropic/OpenAI）、上下文感知、难题自动升级、三套主题皮肤（Gamified/Retro/Terminal）。 |
+| **Stage 8-9 — 内容重建** | :white_check_mark: 完成 | Web 用教材 pipeline —— 16 章蓝图 + 105 课 JSON 文件从 OCR 重建。 |
+| **Stage 10 — 图片提取** | :hourglass: 下一步 | 从教材页面提取并关联图片。 |
 
 ---
 
-## 项目背景（长版）
+## 技术栈
 
-非母语日语技术考试学习者卡的不是**概念**（CPU / TCP/IP / ROI），而是**假名 / 汉字字形识读**。一次看过 `アクセシビリティ → accessibility → 可访问性`，就记住了。
-
-所以 Phase 1 做了**一条 pipeline（`cert-extractor`）**和**一份三语数据集**（来自一本 IT パスポート 令和 6 年度 教材）。每个章节、术语、表格、练习题都带 `{jp, zh, en}` 三语渲染 + 假名辅助标注。
-
-源教材仅作为**输入引用**——原书内容**不**重新分发（见 [License / 许可](#license--许可)）。
+| 层 | 技术 |
+|---|---|
+| 框架 | Next.js 15.5（App Router, Turbopack） |
+| UI | React 19, Tailwind CSS v4, Radix UI, Lucide icons |
+| AI | AI SDK v6, DeepSeek V4 Flash/Pro, Anthropic Claude Sonnet/Opus |
+| 国际化 | next-intl（日语 / 中文 / 英语） |
+| 测试 | Vitest（486 前端测试）、Playwright（e2e）、pytest（492 pipeline 测试） |
+| 部署 | Vercel, Vercel Analytics, Speed Insights |
+| 内容 pipeline | Python 3.11+, uv workspace, Mistral OCR, Claude LLM |
+| 限流 | Upstash Redis |
 
 ---
 
-## 仓库地图
+## 仓库结构
 
 ```
 .
-├── README.md / README.zh-CN.md      本文件（D-082 v2 landing）
-├── CLAUDE.md / AGENTS.md            session 工具上下文（D-049）
-├── RETROSPECTIVE.md                 Phase 1 retro + §8/§9 追加（Rule C）
-├── pyproject.toml / uv.lock         uv workspace 根（D-036/037/038）
-├── .source/                         🟦 gitignored 输入素材（D-082）—— EPUB 放这里
-├── packages/extractor/              🟢 cert-extractor 包 —— 见其 README
-├── apps/                            预留给 Phase 3+（D-038）
-├── docs/                            📚 STATE / decisions（ADRs）/ discussion / release-notes / templates
-├── evidence/                        Rule-A 单次 run 的 audit 证据
-├── failures/                        Rule-B 失败 attempt 归档
-├── validation/                      发布后 deep validation 链（iter-3..8）
-└── data/                            🟦 gitignored 运行时数据（D-050）
+├── apps/web/                    Next.js 15 Web 应用
+│   ├── src/app/[locale]/        5 个页面路由 (book/chat/quiz/glossary/tutor)
+│   ├── src/app/api/             5 个 API 路由 (chat/quiz/glossary/tutor/hello-ai)
+│   ├── src/components/          UI 组件 + 3 套主题皮肤
+│   ├── src/lib/                 AI 供应商、数据层、工具库
+│   └── messages/                国际化字符串 (ja/zh/en)
+├── packages/extractor/          Phase 1 cert-extractor pipeline
+├── docs/                        STATE.md、ADR、session log
+│   ├── STATE.md                 项目实时状态（真相源）
+│   ├── decisions/               107 条已锁 ADR (D-001 … D-107)
+│   └── discussion/              60 份 session log
+├── evidence/                    审核证据 (Rule A)
+├── failures/                    失败归档 (Rule B)
+├── data/                        [gitignored] pipeline 运行时数据
+└── .source/                     [gitignored] 源教材 EPUB
 ```
-
-每个被 track 的子目录都有自己的 `README.md` 说明用途。
 
 ---
 
-## Build 数据（Phase 1）
+## 本地开发
 
-<details open>
-<summary><strong>核心指标</strong></summary>
+```bash
+# 克隆
+git clone https://github.com/hakupao/it-passport-learning
+cd it-passport-learning
+
+# Web 应用
+cd apps/web
+pnpm install
+pnpm dev              # http://localhost:3000
+
+# 跑测试
+pnpm test             # Vitest（486 个测试）
+pnpm test:e2e         # Playwright e2e
+
+# 内容 pipeline（Phase 1）
+cd ../..
+uv sync
+uv run pytest packages/extractor/tests/
+```
+
+### 环境变量
+
+Web 应用需要 AI 供应商密钥来驱动对话/测验/助教功能：
+
+| 变量 | 必填 | 说明 |
+|---|---|---|
+| `LLM_PROVIDER` | 是 | 默认 AI 供应商（`deepseek`） |
+| `DEEPSEEK_API_KEY` | 是 | DeepSeek API 密钥 |
+| `LLM_PROVIDER_TUTOR` | 否 | 助教专用供应商覆盖（`deepseek` / `anthropic`） |
+| `ANTHROPIC_API_KEY` | 否 | Anthropic API 密钥（助教 Anthropic 模式） |
+| `UPSTASH_REDIS_REST_URL` | 否 | Upstash Redis URL（限流用） |
+| `UPSTASH_REDIS_REST_TOKEN` | 否 | Upstash Redis token |
+
+---
+
+## 构建数据
+
+<details>
+<summary><strong>Phase 1 pipeline 指标</strong></summary>
 
 | 指标 | 值 |
 |---|---|
-| Pipeline run | `dry_run_2026-05-12T13-23-19`（v1.0.0 + v1.0.2 共用） |
-| 源教材 | IT パスポート 令和 6 年度 —— 579 页 → 输出 554 页 |
-| Output | **2 224 entities · 6 059 三语叶子 · 908 术语表** |
-| 测试集 | 492 个 unit + integration |
-| 成本 | **Mistral $0.58 billed** · Anthropic $0 billed（max-plan OAuth，per D-069） |
-| Anthropic shadow 成本 | $657.36（仅 visibility，从未 billed） |
-| 发布后校订（iter-3..8） | ~736 JSON edits + 46 MD regens · 38 个 fix ID · **$0 LLM billed** |
-| Rule-D subagent 多样性 | **9** 类（code-reviewer · analyst · verifier · critic · scientist · tracer · executor · architect · qa-tester） |
-| Sessions / wall-time | 23 sessions / 11 天 · ~50 主动工时 |
+| 源教材 | IT パスポート 令和 6 年度 —— 579 页 |
+| 产出 | 554 页、2224 entities、6059 三语叶子、908 术语表 |
+| 成本 | Mistral $0.58 billed、Anthropic $0 billed |
+| 发布后校订 | ~736 处 JSON 编辑，100% 自动化验证 |
+| 最新 release | [`itpassport-r6-v1.0.2`](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.2) |
 
 </details>
 
 <details>
-<summary><strong>Tier-3 追溯档案</strong></summary>
+<summary><strong>项目统计</strong></summary>
 
-| Artifact | 数量 | 路径 |
-|---|---|---|
-| 已锁 ADR | **82** (D-001 … D-082) | `docs/decisions/` |
-| Session log | 23 | `docs/discussion/YYYY-MM-DD-session-NN.md` |
-| Failure 归档（Rule B） | 12 `.md` + 8 个产物子目录（~95 个页面快照） | `failures/` |
-| 抽检 evidence（Rule A） | 13 `.md` + 多份 JSON checkpoint | `evidence/` |
-| Gate checkpoint（D-079） | 5 | `evidence/.../gate_N_<ts>.json` |
-| Phase 复盘（Rule C） | 1（FINAL，351 行，含 §8/§9 追加） | `RETROSPECTIVE.md` |
-| 结转 Phase 2 的开放 OQ | 3（OQ-01 / OQ-02 / OQ-05） | `docs/STATE.md` §4 |
-
-</details>
-
-<details>
-<summary><strong>4 轴插件矩阵</strong></summary>
-
-| 轴 | v1 内置 | 预留 v2+ |
-|---|---|---|
-| Source reader | `epub_image` | `pdf` · `txt` · `html` · `docx` · `markdown` |
-| OCR engine | `mistral` | `claude_vision` · `paddle` · `olmocr` · `tesseract` |
-| Translator | `claude_sonnet_46` | `gpt` · `gemini` · `deepl` |
-| Exporter | `json` · `markdown` · `sqlite` | `anki` · `notion` · `csv` |
+| 指标 | 值 |
+|---|---|
+| 已锁 ADR | 107（D-001 … D-107） |
+| Session log | 60 份 |
+| 测试集 | 486 前端（Vitest）+ 492 pipeline（pytest）= **978 个测试** |
+| Git tag | 7 个（3 个内容 release + 4 个 phase ship tag） |
+| 已完成 Phase | 4 |
 
 </details>
 
 ---
 
-## License / 许可
+## 许可
 
-- **代码、pipeline、ADRs、release artifacts** —— License 待定（将采用某种宽松 OSS license；redistribution 前请咨询 repo owner）。
-- **源教材** —— **不**重新分发。书名 + 作者按项目隐私规则（2026-05-17 起）从所有 artifact 中略去。要重跑 pipeline，需自行合法获取 EPUB 放到 `.source/IT-Passport.epub`。
-- **生成的三语内容** —— 通过 GitHub Release 发布；同样适用 redistribution 注意事项（衍生自版权源、面向个人学习 + 方法论展示用途）。
+- **代码、pipeline、ADR** —— License 待定（将采用宽松 OSS license；redistribution 前请咨询 repo owner）。
+- **源教材** —— **不**重新分发。要重跑 pipeline 需自行合法获取 EPUB。
+- **生成的三语内容** —— 通过 GitHub Release 发布，面向个人学习用途。
 
 ---
 
-## 联系 / 贡献
+## 贡献
 
-这是个个人 Tier-3 R&D 项目。Issues + PR 欢迎，但请预期 D-019 慢节奏 review。开 substantive issue 前先读 [`docs/STATE.md`](docs/STATE.md) + 最近一份 session log。
+这是个人 R&D 项目。Issues 和 PR 欢迎。提交 substantive issue 前先读 [`docs/STATE.md`](docs/STATE.md) 和最近的 session log。
 
-<p align="right"><a href="#it-passport--三语学习内容--cert-extractor">↑ 回到顶部</a></p>
+<p align="right"><a href="#it-passport-learning">↑ 回到顶部</a></p>
