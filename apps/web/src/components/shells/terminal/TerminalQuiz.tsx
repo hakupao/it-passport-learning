@@ -39,28 +39,35 @@ export function TerminalQuiz({ summaries, chapters = [] }: TerminalQuizProps): R
           // Fallback: flat file list when no chapter data available
           <div className="space-y-0">
             <div className="text-[#555] text-xs pb-1">total {summaries.length} questions</div>
-            <ul className="space-y-1">
-              {summaries.map((s) => {
-                const stem = s.stemJp.length > 40 ? `${s.stemJp.slice(0, 40)}…` : s.stemJp;
-                return (
-                  <li key={s.questionId}>
-                    <button
-                      type="button"
-                      onClick={() => handleSelect(s.questionId)}
-                      className="w-full text-left flex items-baseline gap-2 py-0.5 hover:bg-white/[.03] px-1 transition-colors group"
-                    >
-                      <span className="text-[#555] shrink-0 text-xs">-rw-r--r--</span>
-                      <span className="text-[#555] shrink-0 text-xs">1</span>
-                      <span className="text-[#569cd6] shrink-0 text-xs">itp</span>
-                      <span className="text-[#555] shrink-0 text-xs">staff</span>
-                      <span className="text-[#ce9178] shrink-0 text-xs w-12 text-right">p.{s.page}</span>
-                      <span className="text-[#d4d4d4] text-xs truncate group-hover:text-[#4ec9b0] transition-colors" lang="ja">
-                        {stem}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
+            <ul className="space-y-3">
+              {summaries.map((s) => (
+                <li key={s.questionId} className="border-l-2 border-[#333] pl-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSelect(s.questionId)}
+                    className="w-full text-left flex items-baseline gap-2 py-0.5 hover:bg-white/[.03] px-1 transition-colors group"
+                  >
+                    <span className="text-[#ce9178] shrink-0 text-xs">p.{s.page}</span>
+                    <span className="text-[#d4d4d4] text-xs group-hover:text-[#4ec9b0] transition-colors" lang="ja">
+                      {s.stemJp}
+                    </span>
+                  </button>
+                  {s.choices.length > 0 && (
+                    <ul className="pl-4 mt-0.5 space-y-0.5">
+                      {s.choices.map((c) => (
+                        <li
+                          key={c.letterJp}
+                          className={`text-xs ${c.letterJp === s.answerLetterJp ? "text-[#4ec9b0]" : "text-[#888]"}`}
+                          lang="ja"
+                        >
+                          {c.text.jp}
+                          {c.letterJp === s.answerLetterJp && <span className="ml-1 text-[#6a9955]">✓</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
             </ul>
             <div className="text-[#555] text-xs pt-2">
               <span className="text-[#808080]">$ </span>
@@ -100,29 +107,36 @@ export function TerminalQuiz({ summaries, chapters = [] }: TerminalQuizProps): R
                 </button>
                 {isOpen(group.chapterId) && (
                   <ul className="pl-4 border-l border-[#333] ml-2 mt-0.5 mb-1">
-                    {group.items.map((s) => {
-                      const stem = s.stemJp.length > 40 ? `${s.stemJp.slice(0, 40)}…` : s.stemJp;
-                      return (
-                        <li key={s.questionId}>
-                          <button
-                            type="button"
-                            onClick={() => handleSelect(s.questionId)}
-                            className="w-full text-left flex items-baseline gap-2 py-0.5 hover:bg-[#2a2a2a] px-1 transition-colors group"
-                          >
-                            <span className="text-[#555] shrink-0 text-xs">-rw-r--r--</span>
-                            <span className="text-[#555] shrink-0 text-xs">1</span>
-                            <span className="text-[#569cd6] shrink-0 text-xs">itp</span>
-                            <span className="text-[#555] shrink-0 text-xs">staff</span>
-                            <span className="text-[#ce9178] shrink-0 text-xs w-12 text-right">
-                              p.{s.page}
-                            </span>
-                            <span className="text-[#d4d4d4] text-xs truncate group-hover:text-[#4ec9b0] transition-colors" lang="ja">
-                              {stem}
-                            </span>
-                          </button>
-                        </li>
-                      );
-                    })}
+                    {group.items.map((s) => (
+                      <li key={s.questionId} className="mb-2">
+                        <button
+                          type="button"
+                          onClick={() => handleSelect(s.questionId)}
+                          className="w-full text-left flex items-baseline gap-2 py-0.5 hover:bg-[#2a2a2a] px-1 transition-colors group"
+                        >
+                          <span className="text-[#ce9178] shrink-0 text-xs">
+                            p.{s.page}
+                          </span>
+                          <span className="text-[#d4d4d4] text-xs group-hover:text-[#4ec9b0] transition-colors" lang="ja">
+                            {s.stemJp}
+                          </span>
+                        </button>
+                        {s.choices.length > 0 && (
+                          <ul className="pl-4 mt-0.5 space-y-0.5">
+                            {s.choices.map((c) => (
+                              <li
+                                key={c.letterJp}
+                                className={`text-xs ${c.letterJp === s.answerLetterJp ? "text-[#4ec9b0]" : "text-[#888]"}`}
+                                lang="ja"
+                              >
+                                {c.text.jp}
+                                {c.letterJp === s.answerLetterJp && <span className="ml-1 text-[#6a9955]">✓</span>}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
                   </ul>
                 )}
               </div>

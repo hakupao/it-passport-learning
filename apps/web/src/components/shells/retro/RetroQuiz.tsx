@@ -54,6 +54,19 @@ export function RetroQuiz({ summaries, chapters = [] }: RetroQuizProps): React.R
                   )}
                 </div>
                 <p className="text-xs leading-snug" lang="ja">{s.stemJp}</p>
+                {s.choices.length > 0 && (
+                  <ul className="flex flex-col gap-0.5 mt-1">
+                    {s.choices.map((c) => (
+                      <li
+                        key={c.letterJp}
+                        className={`text-[11px] leading-snug px-1.5 py-0.5 ${c.letterJp === s.answerLetterJp ? "bg-[#ccffcc] border border-[#009900] font-bold" : "bg-[#f0f0f0] border border-[#c0c0c0]"}`}
+                        lang="ja"
+                      >
+                        {c.text.jp}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <button
                   type="button"
                   onClick={() => handleSelect(s.questionId)}
@@ -98,6 +111,19 @@ export function RetroQuiz({ summaries, chapters = [] }: RetroQuizProps): React.R
                             )}
                           </div>
                           <p className="text-xs leading-snug" lang="ja">{s.stemJp}</p>
+                          {s.choices.length > 0 && (
+                            <ul className="flex flex-col gap-0.5 mt-1">
+                              {s.choices.map((c) => (
+                                <li
+                                  key={c.letterJp}
+                                  className={`text-[11px] leading-snug px-1.5 py-0.5 ${c.letterJp === s.answerLetterJp ? "bg-[#ccffcc] border border-[#009900] font-bold" : "bg-[#f0f0f0] border border-[#c0c0c0]"}`}
+                                  lang="ja"
+                                >
+                                  {c.text.jp}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                           <button
                             type="button"
                             onClick={() => handleSelect(s.questionId)}

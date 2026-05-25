@@ -60,6 +60,19 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
               <p className="text-sm leading-relaxed text-white/85" lang="ja">
                 {s.stemJp}
               </p>
+              {s.choices.length > 0 && (
+                <ul className="flex flex-col gap-1 mt-1">
+                  {s.choices.map((c) => (
+                    <li
+                      key={c.letterJp}
+                      className={`text-xs leading-relaxed px-3 py-1.5 rounded-lg ${c.letterJp === s.answerLetterJp ? "bg-[#e94560]/15 text-white/90 border border-[#e94560]/30" : "text-white/60 bg-white/[.03]"}`}
+                      lang="ja"
+                    >
+                      {c.text.jp}
+                    </li>
+                  ))}
+                </ul>
+              )}
               <button
                 type="button"
                 onClick={() => handleSelect(s.questionId)}
@@ -104,6 +117,19 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
                       <p className="text-sm leading-relaxed text-white/85" lang="ja">
                         {s.stemJp}
                       </p>
+                      {s.choices.length > 0 && (
+                        <ul className="flex flex-col gap-1 mt-1">
+                          {s.choices.map((c) => (
+                            <li
+                              key={c.letterJp}
+                              className={`text-xs leading-relaxed px-3 py-1.5 rounded-lg ${c.letterJp === s.answerLetterJp ? "bg-[#e94560]/15 text-white/90 border border-[#e94560]/30" : "text-white/60 bg-white/[.03]"}`}
+                              lang="ja"
+                            >
+                              {c.text.jp}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleSelect(s.questionId)}
