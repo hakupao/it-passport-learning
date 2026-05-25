@@ -45,9 +45,10 @@ export function RetroChat(): React.ReactElement {
         aria-busy={isStreaming}
       >
         {messages.length === 0 && (
-          <p className="text-center text-[11px] text-[#808080] py-8 px-4">
-            {t("emptyHint")}
-          </p>
+          <div className="flex flex-col items-center gap-2 py-8 px-4">
+            <div className="text-3xl">💬</div>
+            <p className="text-center text-[11px] text-[#808080]">{t("emptyHint")}</p>
+          </div>
         )}
         {messages.map((m) => {
           const text = extractMessageText(m);

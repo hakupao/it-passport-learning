@@ -33,6 +33,7 @@ export function RetroMenuBar(): React.ReactElement {
               <span
                 key={item.href}
                 aria-disabled="true"
+                title={tNav("bookLockedTooltip")}
                 className="px-3 py-0.5 text-xs relative text-[#808080] cursor-not-allowed select-none"
               >
                 <span className="underline">{firstChar}</span>

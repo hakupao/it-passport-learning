@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { QuizExplain } from "@/components/QuizExplain";
 import { useQuizState } from "@/hooks/useQuizState";
@@ -23,6 +23,17 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
   const firstChapterId = groups[0]?.chapterId;
   const { isOpen, toggle } = useCollapsible(firstChapterId != null ? [firstChapterId] : []);
   const [revealed, setRevealed] = useState<Set<string>>(new Set());
+  const [focusMode, setFocusMode] = useState(false);
+  const [focusIndex, setFocusIndex] = useState(0);
+
+  const allQuestions = groups.flatMap((g) => g.items);
+
+  const handlePrev = useCallback(() => {
+    setFocusIndex((i) => Math.max(0, i - 1));
+  }, []);
+  const handleNext = useCallback(() => {
+    setFocusIndex((i) => Math.min(allQuestions.length - 1, i + 1));
+  }, [allQuestions.length]);
 
   function toggleReveal(qid: string) {
     setRevealed((prev) => {
@@ -101,51 +112,107 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
         </p>
       </header>
 
-      {summaries.length === 0 ? (
-        <p className="text-center text-sm text-white/40 py-12">
-          {t("emptyHint")}
+      {/* Chapter gap note + mode toggle */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[10px] text-white/30 italic">
+          {t("chapterGapNote")}
         </p>
-      ) : groups.length === 0 ? (
-        // Fallback: flat list when no chapter data available
-        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {summaries.map((s) => (
-            <li
-              key={s.questionId}
-              className="border border-white/[.08] rounded-xl p-5 bg-white/[.03] flex flex-col gap-2 hover:border-[#e94560]/50 transition-colors"
+        <button
+          type="button"
+          onClick={() => { setFocusMode((v) => !v); setFocusIndex(0); }}
+          className="text-[10px] px-3 py-1 rounded-full border border-white/[.12] text-white/50 hover:text-white/80 hover:border-white/[.2] transition-colors"
+        >
+          {focusMode ? t("listMode") : t("focusMode")}
+        </button>
+      </div>
+
+      {focusMode && allQuestions.length > 0 ? (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={handlePrev}
+              disabled={focusIndex === 0}
+              className="text-xs px-3 py-1.5 rounded-lg border border-white/[.12] text-white/60 hover:text-white/90 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
-              {renderItemContent(s)}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <div className="space-y-3">
-          {groups.map((group) => (
-            <div key={group.chapterId} className="border border-white/[.08] rounded-xl overflow-hidden">
-              <button
-                type="button"
-                onClick={() => toggle(group.chapterId)}
-                className="w-full flex items-center justify-between px-5 py-3 bg-white/[.03] hover:bg-white/[.05] transition-colors text-left"
-              >
-                <span className="text-sm font-medium">{group.label}</span>
-                <span className="text-xs text-white/40">
-                  {t("questionCount", { count: group.items.length })} {isOpen(group.chapterId) ? "▾" : "▸"}
-                </span>
-              </button>
-              {isOpen(group.chapterId) && (
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4">
-                  {group.items.map((s) => (
-                    <li
-                      key={s.questionId}
-                      className="border border-white/[.06] rounded-lg p-4 bg-white/[.02] flex flex-col gap-2 hover:border-[#e94560]/40 transition-colors"
-                    >
-                      {renderItemContent(s)}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
+              {t("prevQuestion")}
+            </button>
+            <span className="text-xs text-white/40">
+              {t("questionProgress", { current: focusIndex + 1, total: allQuestions.length })}
+            </span>
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={focusIndex === allQuestions.length - 1}
+              className="text-xs px-3 py-1.5 rounded-lg border border-white/[.12] text-white/60 hover:text-white/90 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              {t("nextQuestion")}
+            </button>
+          </div>
+          <div className="border border-white/[.08] rounded-xl p-5 bg-white/[.03] flex flex-col gap-2">
+            {allQuestions[focusIndex] && renderItemContent(allQuestions[focusIndex]!)}
+          </div>
         </div>
+      ) : (
+        <>
+          {summaries.length === 0 ? (
+            <p className="text-center text-sm text-white/40 py-12">
+              {t("emptyHint")}
+            </p>
+          ) : groups.length === 0 ? (
+            // Fallback: flat list when no chapter data available
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {summaries.map((s) => (
+                <li
+                  key={s.questionId}
+                  className="border border-white/[.08] rounded-xl p-5 bg-white/[.03] flex flex-col gap-2 hover:border-[#e94560]/50 transition-colors"
+                >
+                  {renderItemContent(s)}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="space-y-3">
+              {groups.map((group) => (
+                <div key={group.chapterId} className="border border-white/[.08] rounded-xl overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggle(group.chapterId)}
+                    className="w-full flex items-center justify-between px-5 py-3 bg-white/[.03] hover:bg-white/[.05] transition-colors text-left"
+                  >
+                    <span className="text-sm font-medium">{group.label}</span>
+                    <span className="text-xs text-white/40">
+                      {t("questionCount", { count: group.items.length })} {isOpen(group.chapterId) ? "▾" : "▸"}
+                    </span>
+                  </button>
+                  {isOpen(group.chapterId) && (
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4">
+                      {group.items.map((s) => (
+                        <li
+                          key={s.questionId}
+                          className="border border-white/[.06] rounded-lg p-4 bg-white/[.02] flex flex-col gap-2 hover:border-[#e94560]/40 transition-colors"
+                        >
+                          {renderItemContent(s)}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {!focusMode && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-6 z-20 w-10 h-10 rounded-full bg-[#e94560] text-white shadow-lg flex items-center justify-center hover:opacity-90 transition-opacity"
+          aria-label={tCommon("backToTop")}
+        >
+          ↑
+        </button>
       )}
 
       <QuizExplain summary={activeSummary} onClose={handleClose} />

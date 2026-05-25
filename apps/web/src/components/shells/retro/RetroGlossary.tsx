@@ -33,7 +33,7 @@ export function RetroGlossary({ summaries, chapters }: RetroGlossaryProps): Reac
   const [query, setQuery] = useState("");
   const filtered = filterSummaries(summaries, query);
   const domains = groupGlossaryByDomain(filtered, chapters);
-  const { isOpen, toggle } = useCollapsible(domains.map((d) => d.domain));
+  const { isOpen, toggle } = useCollapsible([]);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-8rem)] p-2 gap-2 text-black">

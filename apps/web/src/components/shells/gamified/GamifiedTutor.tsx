@@ -40,7 +40,7 @@ export function GamifiedTutor({ chapters }: GamifiedTutorProps): React.ReactElem
           type="button"
           onClick={handleClear}
           disabled={messages.length === 0 || isStreaming}
-          className="h-7 px-3 rounded-md bg-white/[.06] border border-white/[.1] text-xs font-medium text-white/50 hover:text-white/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560]"
+          className="h-7 px-3 rounded-md bg-white/[.06] border border-white/[.1] text-xs font-medium text-white/50 hover:text-white/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4ecdc4]"
         >
           {t("newChat")}
         </button>
@@ -53,9 +53,12 @@ export function GamifiedTutor({ chapters }: GamifiedTutorProps): React.ReactElem
         aria-busy={isStreaming}
       >
         {messages.length === 0 && (
-          <p className="text-center text-sm text-white/40 py-12 px-4">
-            {t("emptyHint")}
-          </p>
+          <div className="flex flex-col items-center gap-3 py-12 px-4">
+            <div className="text-4xl">🎓</div>
+            <p className="text-sm text-white/40 text-center max-w-sm">
+              {t("emptyHint")}
+            </p>
+          </div>
         )}
         {messages.map((m) => {
           const text = extractMessageText(m);
@@ -68,7 +71,7 @@ export function GamifiedTutor({ chapters }: GamifiedTutorProps): React.ReactElem
               <div
                 className={
                   isUser
-                    ? "bg-[#e94560] text-white rounded-2xl px-4 py-2 max-w-[75%] whitespace-pre-wrap text-sm leading-relaxed"
+                    ? "bg-[#4ecdc4] text-white rounded-2xl px-4 py-2 max-w-[75%] whitespace-pre-wrap text-sm leading-relaxed"
                     : "bg-white/[.06] border border-white/[.08] rounded-2xl px-4 py-2 max-w-[75%] text-sm leading-relaxed"
                 }
               >
@@ -107,14 +110,14 @@ export function GamifiedTutor({ chapters }: GamifiedTutorProps): React.ReactElem
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("placeholder")}
           disabled={isStreaming}
-          className="flex-1 h-10 border border-white/[.12] rounded-lg px-3 bg-white/[.04] text-white placeholder:text-white/30 text-sm disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560]"
+          className="flex-1 h-10 border border-white/[.12] rounded-lg px-3 bg-white/[.04] text-white placeholder:text-white/30 text-sm disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4ecdc4]"
           autoComplete="off"
           aria-label={t("inputAriaLabel")}
         />
         <button
           type="submit"
           disabled={isStreaming || !input.trim()}
-          className="h-10 px-5 bg-[#e94560] text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
+          className="h-10 px-5 bg-[#4ecdc4] text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4ecdc4] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
         >
           {tCommon("send")}
         </button>

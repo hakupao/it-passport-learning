@@ -54,6 +54,8 @@ export interface QuizExplainStreamCallbacks {
 
 export interface QuizExplainStreamArgs {
   questionId: string;
+  /** Locale for the explanation language (ja/zh/en). */
+  locale?: string;
   /** Defaults to `/api/quiz/explain`; overridable for tests. */
   endpoint?: string;
   /** AbortSignal for caller-driven cancellation (modal close). */
@@ -152,6 +154,7 @@ export async function streamQuizExplain(
 ): Promise<void> {
   const {
     questionId,
+    locale,
     endpoint = DEFAULT_ENDPOINT,
     signal,
     fetchImpl = globalThis.fetch,
@@ -171,7 +174,7 @@ export async function streamQuizExplain(
     response = await fetchImpl(targetUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question_id: questionId }),
+      body: JSON.stringify({ question_id: questionId, locale }),
       signal,
     });
   } catch (err) {

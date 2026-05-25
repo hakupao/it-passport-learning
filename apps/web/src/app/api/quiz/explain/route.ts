@@ -28,7 +28,7 @@ import {
 import { buildChatSseResponse } from "@/lib/ai/chat";
 import {
   QUIZ_EXPLAIN_USER_PROMPT,
-  QUIZ_SYSTEM_INSTRUCTION,
+  getQuizSystemInstruction,
   validateQuizExplainRequestBody,
 } from "@/lib/ai/quiz";
 import { STREAM_CONFIG } from "@/lib/ai/retry";
@@ -95,7 +95,7 @@ export async function POST(request: Request): Promise<Response> {
     providerOptions: getPhase2ProviderOptions("quiz"),
     messages: buildMessagesWithStablePrefix(
       scope.contextBlock,
-      QUIZ_SYSTEM_INSTRUCTION,
+      getQuizSystemInstruction(parsed.body.locale),
       QUIZ_EXPLAIN_USER_PROMPT,
     ),
     onFinish: ({ usage, providerMetadata }) => {

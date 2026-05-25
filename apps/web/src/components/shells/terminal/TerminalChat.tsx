@@ -41,7 +41,8 @@ export function TerminalChat(): React.ReactElement {
         aria-busy={isStreaming}
       >
         {messages.length === 0 && (
-          <div className="text-[#555] py-8 px-2 text-xs">
+          <div className="py-8 px-2 text-xs space-y-1">
+            <div className="text-[#569cd6]">$ cat /etc/motd</div>
             <div className="text-[#6a9955]"># {t("emptyHint")}</div>
           </div>
         )}

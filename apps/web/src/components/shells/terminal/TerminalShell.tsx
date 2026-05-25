@@ -57,6 +57,7 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
                     <span
                       key={item.href}
                       aria-disabled="true"
+                      title={tNav("bookLockedTooltip")}
                       className="px-3 py-1 text-xs text-[#555] cursor-not-allowed select-none"
                     >
                       {tNav(item.key)}

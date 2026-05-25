@@ -47,9 +47,12 @@ export function GamifiedChat(): React.ReactElement {
         aria-busy={isStreaming}
       >
         {messages.length === 0 && (
-          <p className="text-center text-sm text-white/40 py-12 px-4">
-            {t("emptyHint")}
-          </p>
+          <div className="flex flex-col items-center gap-3 py-12 px-4">
+            <div className="text-4xl">💬</div>
+            <p className="text-sm text-white/40 text-center max-w-sm">
+              {t("emptyHint")}
+            </p>
+          </div>
         )}
         {messages.map((m) => {
           const text = extractMessageText(m);

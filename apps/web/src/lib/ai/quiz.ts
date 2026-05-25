@@ -14,6 +14,7 @@
 
 export interface QuizExplainRequestBody {
   question_id: string;
+  locale?: string;
 }
 
 export type QuizExplainBodyValidation =
@@ -42,9 +43,10 @@ export function validateQuizExplainRequestBody(
       error: `question_id exceeds ${QUESTION_ID_MAX_LENGTH} character limit`,
     };
   }
+  const locale = typeof obj.locale === "string" ? obj.locale : undefined;
   return {
     ok: true,
-    body: { question_id: obj.question_id },
+    body: { question_id: obj.question_id, locale },
   };
 }
 
@@ -56,22 +58,33 @@ export function validateQuizExplainRequestBody(
  * The user message slot carries a fixed prompt — quiz explain is server-driven,
  * not multi-turn (Q3=a stateless single-turn SSE).
  */
-export const QUIZ_SYSTEM_INSTRUCTION = [
-  "You are a tutor for Japanese IT Passport (ITパスポート) exam learners.",
-  "The corpus block above contains a single exam question with its page-level",
-  "context (other entities on the same page: section text, tables, figures).",
-  "Use it as the single source of truth — do not invent facts not grounded in",
-  "the corpus block.",
-  "",
-  "Structure your reply as:",
-  "1. 問題の要点 (one-line restatement of the question).",
-  "2. 各選択肢の判定 (walk every choice; mark correct/incorrect and justify).",
-  "3. 正答の理由 (why the correct answer is correct, grounded in the corpus).",
-  "",
-  "Reply in Japanese unless the question itself is primarily English or Chinese,",
-  "in which case mirror the source language.",
-  "Keep the reply concise (≤600 tokens).",
-].join("\n");
+const JA_ENTRY = { lang: "Japanese", headings: ["問題の要点", "各選択肢の判定", "正答の理由"] as [string, string, string] };
+const REPLY_LANGUAGE: Record<string, { lang: string; headings: [string, string, string] }> = {
+  ja: JA_ENTRY,
+  zh: { lang: "Chinese (Simplified)", headings: ["题目要点", "各选项判定", "正确答案的理由"] },
+  en: { lang: "English", headings: ["Key Point", "Choice Analysis", "Correct Answer Rationale"] },
+};
+
+export function getQuizSystemInstruction(locale?: string): string {
+  const { lang, headings } = REPLY_LANGUAGE[locale ?? "ja"] ?? JA_ENTRY;
+  return [
+    "You are a tutor for Japanese IT Passport (ITパスポート) exam learners.",
+    "The corpus block above contains a single exam question with its page-level",
+    "context (other entities on the same page: section text, tables, figures).",
+    "Use it as the single source of truth — do not invent facts not grounded in",
+    "the corpus block.",
+    "",
+    "Structure your reply as:",
+    `1. ${headings[0]} (one-line restatement of the question).`,
+    `2. ${headings[1]} (walk every choice; mark correct/incorrect and justify).`,
+    `3. ${headings[2]} (why the correct answer is correct, grounded in the corpus).`,
+    "",
+    `Reply in ${lang}. Keep Japanese terms in their original form where appropriate.`,
+    "Keep the reply concise (≤600 tokens).",
+  ].join("\n");
+}
+
+export const QUIZ_SYSTEM_INSTRUCTION = getQuizSystemInstruction("ja");
 
 /** Fixed user-slot prompt for quiz explain — server-driven, not client text. */
 export const QUIZ_EXPLAIN_USER_PROMPT =

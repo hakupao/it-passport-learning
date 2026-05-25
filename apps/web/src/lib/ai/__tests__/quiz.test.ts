@@ -11,6 +11,7 @@ import {
   QUESTION_ID_MAX_LENGTH,
   QUIZ_EXPLAIN_USER_PROMPT,
   QUIZ_SYSTEM_INSTRUCTION,
+  getQuizSystemInstruction,
   validateQuizExplainRequestBody,
 } from "../quiz";
 
@@ -69,7 +70,7 @@ describe("validateQuizExplainRequestBody", () => {
     expect(r.ok).toBe(true);
   });
 
-  it("strips extra fields — validated body carries only question_id", () => {
+  it("strips extra fields — validated body carries only question_id and locale", () => {
     const r = validateQuizExplainRequestBody({
       question_id: "page_100_entity_0",
       extra_field: "should be ignored",
@@ -77,7 +78,18 @@ describe("validateQuizExplainRequestBody", () => {
     });
     expect(r.ok).toBe(true);
     if (r.ok) {
-      expect(Object.keys(r.body)).toEqual(["question_id"]);
+      expect(Object.keys(r.body)).toEqual(["question_id", "locale"]);
+    }
+  });
+
+  it("passes locale through when provided", () => {
+    const r = validateQuizExplainRequestBody({
+      question_id: "page_042_entity_0",
+      locale: "zh",
+    });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.body.locale).toBe("zh");
     }
   });
 });
@@ -100,5 +112,13 @@ describe("quiz prompt constants", () => {
     expect(QUIZ_EXPLAIN_USER_PROMPT.length).toBeGreaterThan(0);
     expect(QUIZ_EXPLAIN_USER_PROMPT).toMatch(/choice/i);
     expect(QUIZ_EXPLAIN_USER_PROMPT).toMatch(/justif|correct/i);
+  });
+
+  it("getQuizSystemInstruction returns locale-appropriate language instruction", () => {
+    expect(getQuizSystemInstruction("ja")).toContain("Reply in Japanese");
+    expect(getQuizSystemInstruction("zh")).toContain("Reply in Chinese");
+    expect(getQuizSystemInstruction("en")).toContain("Reply in English");
+    expect(getQuizSystemInstruction()).toContain("Reply in Japanese");
+    expect(getQuizSystemInstruction("xx")).toContain("Reply in Japanese");
   });
 });

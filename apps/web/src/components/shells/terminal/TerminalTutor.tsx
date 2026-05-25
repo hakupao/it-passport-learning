@@ -47,7 +47,8 @@ export function TerminalTutor({ chapters }: TerminalTutorProps): React.ReactElem
         aria-busy={isStreaming}
       >
         {messages.length === 0 && (
-          <div className="text-[#555] py-8 px-2 text-xs">
+          <div className="py-8 px-2 text-xs space-y-1">
+            <div className="text-[#c586c0]">$ tutor --interactive</div>
             <div className="text-[#6a9955]"># {t("emptyHint")}</div>
           </div>
         )}
@@ -59,7 +60,7 @@ export function TerminalTutor({ chapters }: TerminalTutorProps): React.ReactElem
               {isUser ? (
                 <TerminalPrompt text={text} />
               ) : (
-                <div className="border-l-2 border-[#ce9178] pl-3 ml-2 text-[#ce9178] leading-relaxed">
+                <div className="border-l-2 border-[#c586c0] pl-3 ml-2 text-[#c586c0] leading-relaxed">
                   {text
                     ? <Markdown className="prose prose-sm prose-inherit max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">{text}</Markdown>
                     : <span className="italic text-[#555]">{t("streaming")}</span>
@@ -70,7 +71,7 @@ export function TerminalTutor({ chapters }: TerminalTutorProps): React.ReactElem
           );
         })}
         {isStreaming && messages[messages.length - 1]?.role === "user" && (
-          <div className="border-l-2 border-[#ce9178] pl-3 ml-2">
+          <div className="border-l-2 border-[#c586c0] pl-3 ml-2">
             <span className="italic text-[#555]">{t("streaming")}</span>
           </div>
         )}

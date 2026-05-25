@@ -39,7 +39,7 @@ export function GamifiedGlossary({ summaries, chapters }: GamifiedGlossaryProps)
   const [query, setQuery] = useState("");
   const filtered = filterSummaries(summaries, query);
   const domains = groupGlossaryByDomain(filtered, chapters);
-  const { isOpen, toggle } = useCollapsible(domains.map((d) => d.domain));
+  const { isOpen, toggle } = useCollapsible([]);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-5">
@@ -145,6 +145,15 @@ export function GamifiedGlossary({ summaries, chapters }: GamifiedGlossaryProps)
           })}
         </div>
       )}
+
+      <button
+        type="button"
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="fixed bottom-6 right-6 z-20 w-10 h-10 rounded-full bg-[#e94560] text-white shadow-lg flex items-center justify-center hover:opacity-90 transition-opacity"
+        aria-label={tCommon("backToTop")}
+      >
+        ↑
+      </button>
 
       <TermPopover summary={activeSummary} onClose={handleClose} />
     </div>

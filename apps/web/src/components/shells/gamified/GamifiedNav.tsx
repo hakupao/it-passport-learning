@@ -21,9 +21,9 @@ export function GamifiedNav(): React.ReactElement {
   return (
     <nav className="sticky top-0 z-30 bg-[#1a1a2e] border-b border-white/[.06]">
       <div className="mx-auto max-w-5xl flex items-center justify-between gap-3 px-3 sm:px-4 h-12">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="w-7 h-7 bg-[#e94560] rounded-md flex items-center justify-center text-white text-[10px] font-extrabold">IP</div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
               const isDisabled = "disabled" in item && item.disabled;
@@ -34,6 +34,7 @@ export function GamifiedNav(): React.ReactElement {
                   <span
                     key={item.href}
                     aria-disabled="true"
+                    title={tNav("bookLockedTooltip")}
                     className="px-3 py-1 rounded-full text-xs text-white/30 cursor-not-allowed select-none"
                   >
                     {label}
@@ -58,7 +59,7 @@ export function GamifiedNav(): React.ReactElement {
             })}
           </div>
         </div>
-        <div className="flex items-center gap-2 text-white/60">
+        <div className="flex items-center gap-2 text-white/60 shrink-0">
           <ThemeSwitcher />
           <Suspense fallback={null}>
             <LocaleSwitcher />

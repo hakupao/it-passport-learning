@@ -232,7 +232,7 @@ export function TermPopover({
             </p>
           )}
 
-          {usageHint && phase === "done" && (
+          {usageHint && phase === "done" && process.env.NODE_ENV === "development" && (
             <p className="text-[10px] uppercase tracking-wider text-black/55 dark:text-white/55 pt-2 border-t border-black/[.06] dark:border-white/[.08]">
               {usageHint}
             </p>

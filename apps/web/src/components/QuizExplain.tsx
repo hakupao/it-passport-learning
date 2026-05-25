@@ -26,7 +26,7 @@
 
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Markdown } from "@/components/Markdown";
@@ -56,6 +56,7 @@ export function QuizExplain({
 }: QuizExplainProps): React.ReactElement | null {
   const t = useTranslations("QuizExplain");
   const tCommon = useTranslations("Common");
+  const locale = useLocale();
   const [phase, setPhase] = useState<StreamPhase>("idle");
   const [output, setOutput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -100,6 +101,7 @@ export function QuizExplain({
 
     void streamQuizExplain({
       questionId,
+      locale,
       signal: controller.signal,
       callbacks: {
         onDelta: (delta) => {
@@ -136,7 +138,7 @@ export function QuizExplain({
         },
       },
     });
-  }, [tCommon]);
+  }, [tCommon, locale]);
 
   // Kick off / cancel the SSE stream as `summary` changes.
   useEffect(() => {
@@ -273,7 +275,7 @@ export function QuizExplain({
             </p>
           )}
 
-          {usageHint && phase === "done" && (
+          {usageHint && phase === "done" && process.env.NODE_ENV === "development" && (
             <p className="text-[10px] uppercase tracking-wider text-black/55 dark:text-white/55 pt-2 border-t border-black/[.06] dark:border-white/[.08]">
               {usageHint}
             </p>

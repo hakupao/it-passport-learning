@@ -51,9 +51,10 @@ export function RetroTutor({ chapters }: RetroTutorProps): React.ReactElement {
         aria-busy={isStreaming}
       >
         {messages.length === 0 && (
-          <p className="text-center text-[11px] text-[#808080] py-8 px-4">
-            {t("emptyHint")}
-          </p>
+          <div className="flex flex-col items-center gap-2 py-8 px-4">
+            <div className="text-3xl">🎓</div>
+            <p className="text-center text-[11px] text-[#808080]">{t("emptyHint")}</p>
+          </div>
         )}
         {messages.map((m) => {
           const text = extractMessageText(m);
@@ -66,7 +67,7 @@ export function RetroTutor({ chapters }: RetroTutorProps): React.ReactElement {
               <div
                 className={
                   isUser
-                    ? "bg-[#ffffcc] border border-[#808080] px-2 py-1 max-w-[80%] whitespace-pre-wrap text-xs"
+                    ? "bg-[#ccffcc] border border-[#808080] px-2 py-1 max-w-[80%] whitespace-pre-wrap text-xs"
                     : "bg-[#e0e0e0] border border-[#808080] px-2 py-1 max-w-[80%] text-xs"
                 }
               >
