@@ -33,7 +33,7 @@ export function BookIndex({ chapters }: BookIndexProps): React.ReactElement {
     <main
       id="main-content"
       tabIndex={-1}
-      className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-5 focus:outline-none"
+      className="flex flex-col min-h-[calc(100dvh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-5 focus:outline-none"
     >
       <header className="border-b border-black/[.08] dark:border-white/[.12] pb-3">
         <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">

@@ -27,7 +27,7 @@ export function TerminalTutor({ chapters }: TerminalTutorProps): React.ReactElem
   } = useTutorSession(chapters, tCommon("errorFallback"));
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 gap-3 font-mono text-sm">
+    <div className="flex flex-col h-[calc(100dvh-3rem)] max-w-5xl mx-auto p-4 gap-3 font-mono text-sm">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#444] pb-2">
         <div>

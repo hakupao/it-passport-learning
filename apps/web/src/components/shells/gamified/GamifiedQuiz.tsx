@@ -88,7 +88,7 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
         <button
           type="button"
           onClick={() => handleSelect(s.questionId)}
-          className="mt-1 self-start h-8 px-4 rounded-lg bg-[#e94560] text-white text-xs font-semibold hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
+          className="mt-1 self-start min-h-[36px] h-9 px-4 rounded-lg bg-[#e94560] text-white text-xs font-semibold hover:opacity-90 active:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
         >
           {tCommon("explain")}
         </button>
@@ -97,7 +97,7 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-5">
+    <div className="flex flex-col min-h-[calc(100dvh-var(--nav-height,3.5rem))] max-w-5xl mx-auto p-3 sm:p-6 gap-4 sm:gap-5">
       <header className="border-b border-white/[.08] pb-3">
         <h1 className="text-lg sm:text-xl font-semibold tracking-tight">
           {t("title")}
@@ -133,7 +133,7 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
               type="button"
               onClick={handlePrev}
               disabled={focusIndex === 0}
-              className="text-xs px-3 py-1.5 rounded-lg border border-white/[.12] text-white/60 hover:text-white/90 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="min-h-[40px] text-xs sm:text-sm px-4 py-2 rounded-lg border border-white/[.12] text-white/60 hover:text-white/90 active:bg-white/[.08] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               {t("prevQuestion")}
             </button>
@@ -144,7 +144,7 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
               type="button"
               onClick={handleNext}
               disabled={focusIndex === allQuestions.length - 1}
-              className="text-xs px-3 py-1.5 rounded-lg border border-white/[.12] text-white/60 hover:text-white/90 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="min-h-[40px] text-xs sm:text-sm px-4 py-2 rounded-lg border border-white/[.12] text-white/60 hover:text-white/90 active:bg-white/[.08] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               {t("nextQuestion")}
             </button>

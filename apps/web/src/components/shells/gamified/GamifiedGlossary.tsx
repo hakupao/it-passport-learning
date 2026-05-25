@@ -42,7 +42,7 @@ export function GamifiedGlossary({ summaries, chapters }: GamifiedGlossaryProps)
   const { isOpen, toggle } = useCollapsible([]);
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-5">
+    <div className="flex flex-col min-h-[calc(100dvh-var(--nav-height,3.5rem))] max-w-5xl mx-auto p-3 sm:p-6 gap-4 sm:gap-5">
       <header className="border-b border-white/[.08] pb-3">
         <h1 className="text-lg sm:text-xl font-semibold tracking-tight">
           {t("title")}
@@ -55,11 +55,13 @@ export function GamifiedGlossary({ summaries, chapters }: GamifiedGlossaryProps)
       {/* Search bar */}
       <div className="sticky z-10 -mx-4 sm:-mx-6 px-4 sm:px-6 py-2 bg-[#0f0f1a]/90 backdrop-blur border-b border-white/[.06]" style={{ top: "var(--nav-height)" }}>
         <input
-          type="text"
+          type="search"
+          inputMode="search"
+          enterKeyHint="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t("searchPlaceholder")}
-          className="w-full h-9 px-3 rounded-lg bg-white/[.06] border border-white/[.1] text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:border-[#e94560]/50 transition-colors"
+          className="w-full h-10 sm:h-9 px-4 sm:px-3 rounded-xl sm:rounded-lg bg-white/[.06] border border-white/[.1] text-base sm:text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:border-[#e94560]/50 transition-colors"
         />
       </div>
 
@@ -129,7 +131,7 @@ export function GamifiedGlossary({ summaries, chapters }: GamifiedGlossaryProps)
                               <button
                                 type="button"
                                 onClick={() => handleSelect(s.surfaceJp)}
-                                className="mt-1 self-start h-7 px-3 rounded-md bg-[#e94560] text-white text-[11px] font-medium hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
+                                className="mt-1 self-start min-h-[32px] h-8 px-3 rounded-md bg-[#e94560] text-white text-[11px] font-medium hover:opacity-90 active:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
                               >
                                 {tCommon("explain")}
                               </button>

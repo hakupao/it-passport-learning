@@ -20,7 +20,7 @@ export function RetroChat(): React.ReactElement {
   } = useChatSession(tCommon("errorFallback"));
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] p-2 gap-2 text-black">
+    <div className="flex flex-col h-[calc(100dvh-8rem)] p-2 gap-2 text-black">
       {/* Header */}
       <div className="flex items-center justify-between border-b-2 border-[#808080] pb-1">
         <div>
@@ -95,21 +95,22 @@ export function RetroChat(): React.ReactElement {
       )}
 
       {/* Input area */}
-      <form onSubmit={handleSubmit} className="flex gap-1">
+      <form onSubmit={handleSubmit} className="flex gap-1 safe-bottom">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("placeholder")}
           disabled={isStreaming}
-          className="flex-1 h-7 border-2 border-inset-retro px-2 text-xs bg-white disabled:bg-[#c0c0c0] focus:outline-none"
+          enterKeyHint="send"
+          className="flex-1 h-9 sm:h-7 border-2 border-inset-retro px-2 text-sm sm:text-xs bg-white disabled:bg-[#c0c0c0] focus:outline-none"
           autoComplete="off"
           aria-label={t("inputAriaLabel")}
         />
         <button
           type="submit"
           disabled={isStreaming || !input.trim()}
-          className="h-7 px-4 bg-[#c0c0c0] border-2 border-outset-retro text-xs disabled:opacity-50 disabled:cursor-not-allowed active:border-inset-retro"
+          className="h-9 sm:h-7 px-4 bg-[#c0c0c0] border-2 border-outset-retro text-sm sm:text-xs disabled:opacity-50 disabled:cursor-not-allowed active:border-inset-retro"
         >
           {tCommon("send")}
         </button>

@@ -20,7 +20,7 @@ export function GamifiedChat(): React.ReactElement {
   } = useChatSession(tCommon("errorFallback"));
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3rem)] max-w-3xl mx-auto p-4 sm:p-6 gap-5">
+    <div className="flex flex-col h-[calc(100dvh-var(--nav-height,3.5rem))] max-w-3xl mx-auto p-3 sm:p-6 gap-3 sm:gap-5">
       <header className="flex items-start justify-between border-b border-white/[.08] pb-3">
         <div>
           <h1 className="text-lg sm:text-xl font-semibold tracking-tight">
@@ -34,7 +34,7 @@ export function GamifiedChat(): React.ReactElement {
           type="button"
           onClick={handleClear}
           disabled={messages.length === 0 || isStreaming}
-          className="h-7 px-3 rounded-md bg-white/[.06] border border-white/[.1] text-xs font-medium text-white/50 hover:text-white/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560]"
+          className="min-h-[36px] px-3 rounded-md bg-white/[.06] border border-white/[.1] text-xs font-medium text-white/50 hover:text-white/90 active:bg-white/[.1] disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560]"
         >
           {t("newChat")}
         </button>
@@ -65,8 +65,8 @@ export function GamifiedChat(): React.ReactElement {
               <div
                 className={
                   isUser
-                    ? "bg-[#e94560] text-white rounded-2xl px-4 py-2 max-w-[75%] whitespace-pre-wrap text-sm leading-relaxed"
-                    : "bg-white/[.06] border border-white/[.08] rounded-2xl px-4 py-2 max-w-[75%] text-sm leading-relaxed"
+                    ? "bg-[#e94560] text-white rounded-2xl px-3.5 sm:px-4 py-2 max-w-[85%] sm:max-w-[75%] whitespace-pre-wrap text-sm leading-relaxed"
+                    : "bg-white/[.06] border border-white/[.08] rounded-2xl px-3.5 sm:px-4 py-2 max-w-[85%] sm:max-w-[75%] text-sm leading-relaxed"
                 }
               >
                 {isUser
@@ -81,7 +81,7 @@ export function GamifiedChat(): React.ReactElement {
         })}
         {isStreaming && messages[messages.length - 1]?.role === "user" && (
           <div className="flex justify-start">
-            <div className="bg-white/[.06] border border-white/[.08] rounded-2xl px-4 py-2 max-w-[75%] text-sm italic text-white/50">
+            <div className="bg-white/[.06] border border-white/[.08] rounded-2xl px-3.5 sm:px-4 py-2 max-w-[85%] sm:max-w-[75%] text-sm italic text-white/50">
               {t("streaming")}
             </div>
           </div>
@@ -97,21 +97,22 @@ export function GamifiedChat(): React.ReactElement {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex gap-2 safe-bottom">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("placeholder")}
           disabled={isStreaming}
-          className="flex-1 h-10 border border-white/[.12] rounded-lg px-3 bg-white/[.04] text-white placeholder:text-white/30 text-sm disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560]"
+          enterKeyHint="send"
+          className="flex-1 h-11 sm:h-10 border border-white/[.12] rounded-xl sm:rounded-lg px-4 sm:px-3 bg-white/[.04] text-white placeholder:text-white/30 text-base sm:text-sm disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560]"
           autoComplete="off"
           aria-label={t("inputAriaLabel")}
         />
         <button
           type="submit"
           disabled={isStreaming || !input.trim()}
-          className="h-10 px-5 bg-[#e94560] text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
+          className="h-11 sm:h-10 px-5 bg-[#e94560] text-white rounded-xl sm:rounded-lg text-sm font-semibold hover:opacity-90 active:opacity-80 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e94560] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f1a]"
         >
           {tCommon("send")}
         </button>

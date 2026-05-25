@@ -86,7 +86,7 @@ export function RetroQuiz({ summaries, chapters = [] }: RetroQuizProps): React.R
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-8rem)] p-2 gap-2 text-black">
+    <div className="flex flex-col min-h-[calc(100dvh-8rem)] p-2 gap-2 text-black">
       {/* Header */}
       <div className="border-b-2 border-[#808080] pb-1">
         <h1 className="text-sm font-bold">{t("title")}</h1>

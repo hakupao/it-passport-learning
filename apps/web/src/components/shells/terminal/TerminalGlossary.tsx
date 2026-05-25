@@ -41,7 +41,7 @@ export function TerminalGlossary({ summaries, chapters }: TerminalGlossaryProps)
   const { isOpen, toggle } = useCollapsible([]);
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 gap-3 font-mono text-sm">
+    <div className="flex flex-col min-h-[calc(100dvh-3rem)] max-w-5xl mx-auto p-4 gap-3 font-mono text-sm">
       {/* Header */}
       <div className="border-b border-[#444] pb-2">
         <div className="text-[#4ec9b0] font-semibold"># {t("title")}</div>

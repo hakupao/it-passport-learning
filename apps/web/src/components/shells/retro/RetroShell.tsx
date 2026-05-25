@@ -8,7 +8,7 @@ export function RetroShell({ children }: { children: ReactNode }): React.ReactEl
   const tShell = useTranslations("Shell");
   return (
     <div
-      className="min-h-screen bg-[#008080] p-2 sm:p-4 font-[Tahoma,sans-serif] text-xs"
+      className="min-h-dvh bg-[#008080] p-2 sm:p-4 font-[Tahoma,sans-serif] text-xs"
       data-shell="retro"
     >
       {/* Main application window */}
@@ -27,7 +27,7 @@ export function RetroShell({ children }: { children: ReactNode }): React.ReactEl
         <RetroMenuBar />
 
         {/* Content area */}
-        <div className="bg-white border-2 border-inset-retro m-1 min-h-[calc(100vh-8rem)]">
+        <div className="bg-white border-2 border-inset-retro m-1 min-h-[calc(100dvh-8rem)]">
           <main id="main-content" tabIndex={-1} className="focus:outline-none">
             {children}
           </main>

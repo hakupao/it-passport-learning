@@ -21,12 +21,12 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
 
   return (
     <div
-      className="min-h-screen bg-[#1e1e1e] font-mono text-[#d4d4d4] text-sm"
+      className="min-h-dvh bg-[#1e1e1e] font-mono text-[#d4d4d4] text-sm"
       data-shell="terminal"
     >
       {/* Sticky header */}
       <header className="sticky top-0 z-30 bg-[#2d2d2d] border-b border-[#444]">
-        <div className="mx-auto max-w-5xl flex items-center justify-between gap-3 px-3 sm:px-4 h-10">
+        <div className="mx-auto max-w-5xl flex items-center justify-between gap-2 px-3 sm:px-4 h-12 sm:h-10">
           {/* Left: macOS traffic lights */}
           <div className="flex items-center gap-2 shrink-0">
             <div className="flex items-center gap-1.5">
@@ -58,7 +58,7 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
                       key={item.href}
                       aria-disabled="true"
                       title={tNav("bookLockedTooltip")}
-                      className="px-3 py-1 text-xs text-[#555] cursor-not-allowed select-none"
+                      className="min-h-[36px] px-3 py-2 sm:py-1 text-xs text-[#555] cursor-not-allowed select-none inline-flex items-center whitespace-nowrap"
                     >
                       {tNav(item.key)}
                     </span>
@@ -72,8 +72,8 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
                     aria-current={isActive ? "page" : undefined}
                     className={
                       isActive
-                        ? "px-3 py-1 text-xs text-[#4ec9b0] border-b border-[#4ec9b0] transition-colors"
-                        : "px-3 py-1 text-xs text-[#888] hover:text-[#ccc] transition-colors"
+                        ? "min-h-[36px] px-3 py-2 sm:py-1 text-xs text-[#4ec9b0] border-b border-[#4ec9b0] transition-colors inline-flex items-center whitespace-nowrap"
+                        : "min-h-[36px] px-3 py-2 sm:py-1 text-xs text-[#888] hover:text-[#ccc] active:text-[#ccc] transition-colors inline-flex items-center whitespace-nowrap"
                     }
                   >
                     {tNav(item.key)}

@@ -26,7 +26,7 @@ export function RetroTutor({ chapters }: RetroTutorProps): React.ReactElement {
   } = useTutorSession(chapters, tCommon("errorFallback"));
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] p-2 gap-2 text-black">
+    <div className="flex flex-col h-[calc(100dvh-8rem)] p-2 gap-2 text-black">
       {/* Header */}
       <div className="flex items-center justify-between border-b-2 border-[#808080] pb-1">
         <div>

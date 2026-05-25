@@ -13,7 +13,7 @@ const NAV_LINKS = [
 export function TerminalBook(): React.ReactElement {
   const t = useTranslations("Book");
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 gap-3 font-mono text-sm">
+    <div className="flex flex-col min-h-[calc(100dvh-3rem)] max-w-5xl mx-auto p-4 gap-3 font-mono text-sm">
       <div className="border-b border-[#444] pb-2">
         <div className="text-[#4ec9b0] font-semibold"># {t("welcomeHeading")}</div>
         <div className="text-[#555] text-xs mt-1">{t("welcomeDescription")}</div>

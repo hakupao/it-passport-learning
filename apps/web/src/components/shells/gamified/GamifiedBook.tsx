@@ -14,7 +14,7 @@ export function GamifiedBook(): React.ReactElement {
   const t = useTranslations("Book");
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 sm:p-6 gap-6">
+    <div className="flex flex-col min-h-[calc(100dvh-var(--nav-height,3.5rem))] max-w-5xl mx-auto p-3 sm:p-6 gap-5 sm:gap-6">
       <header className="border-b border-white/[.08] pb-4 text-center sm:text-left">
         <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
           {t("welcomeHeading")}

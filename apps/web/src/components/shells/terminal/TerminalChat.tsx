@@ -21,7 +21,7 @@ export function TerminalChat(): React.ReactElement {
   } = useChatSession(tCommon("errorFallback"));
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 gap-3 font-mono text-sm">
+    <div className="flex flex-col h-[calc(100dvh-3rem)] max-w-5xl mx-auto p-3 sm:p-4 gap-3 font-mono text-sm">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#444] pb-2">
         <div>
@@ -105,7 +105,8 @@ export function TerminalChat(): React.ReactElement {
               }
             }}
             disabled={isStreaming}
-            className="flex-1 bg-transparent border-none outline-none text-[#d4d4d4] font-mono text-sm disabled:opacity-50 caret-[#d4d4d4]"
+            enterKeyHint="send"
+            className="flex-1 h-10 sm:h-auto bg-transparent border-none outline-none text-[#d4d4d4] font-mono text-base sm:text-sm disabled:opacity-50 caret-[#d4d4d4]"
             autoComplete="off"
             autoFocus
             aria-label={t("inputAriaLabel")}

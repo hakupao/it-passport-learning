@@ -19,7 +19,7 @@ export function RetroMenuBar(): React.ReactElement {
   const tNav = useTranslations("Nav");
 
   return (
-    <nav className="bg-[#c0c0c0] border-b border-[#808080] flex items-center justify-between px-1">
+    <nav className="bg-[#c0c0c0] border-b border-[#808080] flex items-center justify-between px-1 overflow-x-auto scrollbar-hide">
       <div className="flex items-center">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -34,7 +34,7 @@ export function RetroMenuBar(): React.ReactElement {
                 key={item.href}
                 aria-disabled="true"
                 title={tNav("bookLockedTooltip")}
-                className="px-3 py-0.5 text-xs relative text-[#808080] cursor-not-allowed select-none"
+                className="min-h-[32px] px-3 py-1.5 sm:py-0.5 text-xs relative text-[#808080] cursor-not-allowed select-none inline-flex items-center whitespace-nowrap"
               >
                 <span className="underline">{firstChar}</span>
                 {rest} 🔒
@@ -48,10 +48,10 @@ export function RetroMenuBar(): React.ReactElement {
               href={item.href}
               aria-current={isActive ? "page" : undefined}
               className={[
-                "px-3 py-0.5 text-xs relative",
+                "min-h-[32px] px-3 py-1.5 sm:py-0.5 text-xs relative inline-flex items-center whitespace-nowrap",
                 isActive
                   ? "bg-[#000080] text-white"
-                  : "text-black hover:bg-[#000080] hover:text-white",
+                  : "text-black hover:bg-[#000080] hover:text-white active:bg-[#000080] active:text-white",
               ].join(" ")}
             >
               <span className="underline">{firstChar}</span>
