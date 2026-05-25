@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Markdown } from "@/components/Markdown";
 import { useChatSession, extractMessageText } from "@/hooks/useChatSession";
 import { TerminalPrompt } from "./TerminalPrompt";
 
@@ -52,8 +53,11 @@ export function TerminalChat(): React.ReactElement {
               {isUser ? (
                 <TerminalPrompt text={text} />
               ) : (
-                <div className="border-l-2 border-[#ce9178] pl-3 ml-2 text-[#ce9178] whitespace-pre-wrap leading-relaxed text-sm">
-                  {text || <span className="italic text-[#555]">{t("streaming")}</span>}
+                <div className="border-l-2 border-[#ce9178] pl-3 ml-2 text-[#ce9178] leading-relaxed text-sm">
+                  {text
+                    ? <Markdown className="prose prose-sm prose-inherit max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">{text}</Markdown>
+                    : <span className="italic text-[#555]">{t("streaming")}</span>
+                  }
                 </div>
               )}
             </div>

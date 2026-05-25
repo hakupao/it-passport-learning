@@ -22,6 +22,7 @@ import type { UIMessage } from "ai";
 import { useTranslations } from "next-intl";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 
+import { Markdown } from "@/components/Markdown";
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 import {
   applyChapterScope,
@@ -179,10 +180,15 @@ export function ChapterChatModal({
                   className={
                     isUser
                       ? "bg-black text-white dark:bg-white dark:text-black rounded-2xl px-4 py-2 max-w-[85%] whitespace-pre-wrap text-sm sm:text-base"
-                      : "bg-black/[.04] dark:bg-white/[.08] rounded-2xl px-4 py-2 max-w-[85%] whitespace-pre-wrap text-sm sm:text-base"
+                      : "bg-black/[.04] dark:bg-white/[.08] rounded-2xl px-4 py-2 max-w-[85%] text-sm sm:text-base"
                   }
                 >
-                  {text || (isUser ? "" : tChat("streaming"))}
+                  {isUser
+                    ? text
+                    : text
+                      ? <Markdown className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">{text}</Markdown>
+                      : tChat("streaming")
+                  }
                 </div>
               </div>
             );

@@ -29,6 +29,7 @@
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { Markdown } from "@/components/Markdown";
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 import { loadProgress, persistQuizOutcome } from "@/lib/book/progressStore";
 import { streamQuizExplain } from "@/lib/quiz/quizSseTransport";
@@ -243,9 +244,9 @@ export function QuizExplain({
           {phase === "loading" && <BusySkeleton text={busyText} />}
 
           {(phase === "streaming" || phase === "done") && output && (
-            <article className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-sm sm:text-base leading-relaxed">
+            <Markdown className="prose prose-sm dark:prose-invert max-w-none prose-headings:text-sm prose-headings:font-semibold prose-headings:mt-4 prose-headings:mb-1.5 prose-p:my-1.5 prose-ul:my-1.5 prose-ol:my-1.5 prose-li:my-0.5">
               {output}
-            </article>
+            </Markdown>
           )}
 
           {phase === "streaming" && (

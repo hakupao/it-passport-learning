@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { ChapterSummary } from "@/lib/book/chapterScope";
 import { useTutorSession } from "@/hooks/useTutorSession";
+import { Markdown } from "@/components/Markdown";
 import { extractMessageText } from "@/hooks/useChatSession";
 
 interface GamifiedTutorProps {
@@ -68,10 +69,15 @@ export function GamifiedTutor({ chapters }: GamifiedTutorProps): React.ReactElem
                 className={
                   isUser
                     ? "bg-[#e94560] text-white rounded-2xl px-4 py-2 max-w-[75%] whitespace-pre-wrap text-sm leading-relaxed"
-                    : "bg-white/[.06] border border-white/[.08] rounded-2xl px-4 py-2 max-w-[75%] whitespace-pre-wrap text-sm leading-relaxed"
+                    : "bg-white/[.06] border border-white/[.08] rounded-2xl px-4 py-2 max-w-[75%] text-sm leading-relaxed"
                 }
               >
-                {text || (isUser ? "" : t("streaming"))}
+                {isUser
+                  ? text
+                  : text
+                    ? <Markdown className="prose prose-sm prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">{text}</Markdown>
+                    : t("streaming")
+                }
               </div>
             </div>
           );

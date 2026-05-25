@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { ChapterSummary } from "@/lib/book/chapterScope";
 import { useTutorSession } from "@/hooks/useTutorSession";
+import { Markdown } from "@/components/Markdown";
 import { extractMessageText } from "@/hooks/useChatSession";
 
 interface RetroTutorProps {
@@ -66,10 +67,15 @@ export function RetroTutor({ chapters }: RetroTutorProps): React.ReactElement {
                 className={
                   isUser
                     ? "bg-[#ffffcc] border border-[#808080] px-2 py-1 max-w-[80%] whitespace-pre-wrap text-xs"
-                    : "bg-[#e0e0e0] border border-[#808080] px-2 py-1 max-w-[80%] whitespace-pre-wrap text-xs"
+                    : "bg-[#e0e0e0] border border-[#808080] px-2 py-1 max-w-[80%] text-xs"
                 }
               >
-                {text || (isUser ? "" : t("streaming"))}
+                {isUser
+                  ? text
+                  : text
+                    ? <Markdown className="prose prose-sm prose-inherit max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">{text}</Markdown>
+                    : t("streaming")
+                }
               </div>
             </div>
           );

@@ -28,6 +28,7 @@ import type { UIMessage } from "ai";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 
+import { Markdown } from "@/components/Markdown";
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
 import {
   clampTranslateSource,
@@ -185,12 +186,11 @@ export function ParagraphTranslate({
               {t("translateResult", { target: targetLabel })}
             </p>
             {assistantText ? (
-              <p
-                className="text-sm sm:text-base leading-relaxed text-black/90 dark:text-white/90 whitespace-pre-wrap"
-                lang={request.target === "zh" ? "zh-Hans" : "en"}
-              >
-                {assistantText}
-              </p>
+              <div lang={request.target === "zh" ? "zh-Hans" : "en"}>
+                <Markdown className="prose prose-sm dark:prose-invert max-w-none text-sm sm:text-base leading-relaxed text-black/90 dark:text-white/90">
+                  {assistantText}
+                </Markdown>
+              </div>
             ) : isStreaming ? (
               <div className="space-y-2" data-testid="paragraph-translate-busy">
                 <div className="h-3 rounded bg-black/[.06] dark:bg-white/[.10] motion-safe:animate-pulse w-5/6" />

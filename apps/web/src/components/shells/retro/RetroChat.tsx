@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Markdown } from "@/components/Markdown";
 import { useChatSession, extractMessageText } from "@/hooks/useChatSession";
 
 export function RetroChat(): React.ReactElement {
@@ -60,10 +61,15 @@ export function RetroChat(): React.ReactElement {
                 className={
                   isUser
                     ? "bg-[#ffffcc] border border-[#808080] px-3 py-1.5 max-w-[80%] whitespace-pre-wrap text-xs"
-                    : "bg-[#e0e0e0] border border-[#808080] px-3 py-1.5 max-w-[80%] whitespace-pre-wrap text-xs"
+                    : "bg-[#e0e0e0] border border-[#808080] px-3 py-1.5 max-w-[80%] text-xs"
                 }
               >
-                {text || (isUser ? "" : t("streaming"))}
+                {isUser
+                  ? text
+                  : text
+                    ? <Markdown className="prose prose-sm prose-inherit max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">{text}</Markdown>
+                    : t("streaming")
+                }
               </div>
             </div>
           );
