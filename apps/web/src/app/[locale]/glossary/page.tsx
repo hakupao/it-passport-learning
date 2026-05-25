@@ -8,6 +8,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { ThemedPage } from "@/components/shells/ThemedPage";
 import { getDataSource, warmUp } from "@/lib/data";
+import type { ChapterRef } from "@/lib/data/types";
 import {
   listGlossarySummaries,
   type GlossarySummary,
@@ -28,16 +29,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-async function loadGlossarySummaries(): Promise<GlossarySummary[]> {
+async function loadGlossaryData(): Promise<{ summaries: GlossarySummary[]; chapters: ChapterRef[] }> {
   await warmUp();
   const ds = getDataSource();
-  const glossary = await ds.loadGlossary();
-  return listGlossarySummaries(glossary);
+  const [glossary, idx] = await Promise.all([ds.loadGlossary(), ds.loadIndex()]);
+  const summaries = listGlossarySummaries(glossary);
+  const chapters: ChapterRef[] = idx.chapters ?? [];
+  return { summaries, chapters };
 }
 
 export default async function GlossaryPage({ params }: Props): Promise<React.ReactElement> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const summaries = await loadGlossarySummaries();
-  return <ThemedPage page="glossary" props={{ summaries }} />;
+  const { summaries, chapters } = await loadGlossaryData();
+  return <ThemedPage page="glossary" props={{ summaries, chapters }} />;
 }
