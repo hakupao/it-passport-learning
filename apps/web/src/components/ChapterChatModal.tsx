@@ -124,7 +124,7 @@ export function ChapterChatModal({
       }}
     >
       <div
-        className="w-full sm:max-w-2xl bg-white dark:bg-black border border-black/10 dark:border-white/[.14] rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col h-[85vh] sm:h-[70vh]"
+        className="w-full sm:max-w-2xl bg-white dark:bg-black text-black dark:text-white border border-black/10 dark:border-white/[.14] rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col h-[85vh] sm:h-[70vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-start justify-between gap-3 border-b border-black/[.08] dark:border-white/[.12] p-4 sm:p-5">

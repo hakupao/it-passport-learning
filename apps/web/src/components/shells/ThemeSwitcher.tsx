@@ -19,7 +19,7 @@ export function ThemeSwitcher(): React.ReactElement {
       className="text-xs bg-transparent border border-current/20 rounded px-1 py-0.5"
     >
       {THEMES.map((t) => (
-        <option key={t} value={t}>{LABELS[t]}</option>
+        <option key={t} value={t} className="text-black bg-white">{LABELS[t]}</option>
       ))}
     </select>
   );

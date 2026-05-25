@@ -40,7 +40,7 @@ export function LocaleSwitcher(): React.ReactElement {
   };
 
   return (
-    <label className="flex items-center gap-1.5 text-xs sm:text-sm text-black/75 dark:text-white/75">
+    <label className="flex items-center gap-1.5 text-xs sm:text-sm">
       <span className="sr-only">{tLocale("switcherLabel")}</span>
       <span aria-hidden="true">🌐</span>
       <select
@@ -48,10 +48,10 @@ export function LocaleSwitcher(): React.ReactElement {
         onChange={handleChange}
         disabled={isPending}
         aria-label={tLocale("switcherLabel")}
-        className="bg-transparent border border-black/[.18] dark:border-white/[.22] rounded-md px-1.5 py-1 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black focus-visible:ring-black dark:focus-visible:ring-white disabled:opacity-60"
+        className="bg-transparent border border-current/20 rounded-md px-1.5 py-1 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current/40 disabled:opacity-60"
       >
         {routing.locales.map((l) => (
-          <option key={l} value={l}>
+          <option key={l} value={l} className="text-black bg-white">
             {tLocale(l)}
           </option>
         ))}

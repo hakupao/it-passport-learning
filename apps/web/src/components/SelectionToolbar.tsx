@@ -163,7 +163,7 @@ export function SelectionToolbar(): React.ReactElement | null {
             top: `${toolbar.top}px`,
             zIndex: 40,
           }}
-          className="flex items-center gap-1 bg-white dark:bg-black border border-black/15 dark:border-white/20 rounded-lg shadow-lg px-1 py-1"
+          className="flex items-center gap-1 bg-white dark:bg-black text-black dark:text-white border border-black/15 dark:border-white/20 rounded-lg shadow-lg px-1 py-1"
         >
           <button
             type="button"
