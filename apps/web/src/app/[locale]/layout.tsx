@@ -16,6 +16,9 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import { ShellProvider } from "@/components/shells/ShellProvider";
 import { routing } from "@/i18n/routing";
 
@@ -70,6 +73,8 @@ export default async function LocaleLayout({
           <ShellProvider>
             {children}
           </ShellProvider>
+          <Analytics />
+          <SpeedInsights />
         </NextIntlClientProvider>
       </body>
     </html>
