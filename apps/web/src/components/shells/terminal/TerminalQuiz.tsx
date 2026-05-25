@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { QuizExplain } from "@/components/QuizExplain";
 import { useQuizState } from "@/hooks/useQuizState";
@@ -21,6 +22,16 @@ export function TerminalQuiz({ summaries, chapters = [] }: TerminalQuizProps): R
   const groups = groupQuizByChapter(summaries, chapters);
   const firstChapterId = groups[0]?.chapterId;
   const { isOpen, toggle } = useCollapsible(firstChapterId != null ? [firstChapterId] : []);
+  const [revealed, setRevealed] = useState<Set<string>>(new Set());
+
+  function toggleReveal(qid: string) {
+    setRevealed((prev) => {
+      const next = new Set(prev);
+      if (next.has(qid)) next.delete(qid);
+      else next.add(qid);
+      return next;
+    });
+  }
 
   function renderStemTranslation(s: QuizSummary) {
     const stemTranslation = trilingualFor(s.stem, locale);
@@ -32,24 +43,37 @@ export function TerminalQuiz({ summaries, chapters = [] }: TerminalQuizProps): R
 
   function renderChoices(s: QuizSummary) {
     if (s.choices.length === 0) return null;
+    const shown = revealed.has(s.questionId);
     return (
-      <ul className="pl-4 mt-0.5 space-y-0.5">
-        {s.choices.map((c) => {
-          const choiceTranslation = trilingualFor(c.text, locale);
-          return (
-            <li
-              key={c.letterJp}
-              className={`text-xs ${c.letterJp === s.answerLetterJp ? "text-[#4ec9b0]" : "text-[#888]"}`}
-            >
-              <span lang="ja">{c.text.jp}</span>
-              {locale !== "ja" && choiceTranslation && (
-                <span className="text-[#666] ml-1" lang={locale}>({choiceTranslation})</span>
-              )}
-              {c.letterJp === s.answerLetterJp && <span className="ml-1 text-[#6a9955]">✓</span>}
-            </li>
-          );
-        })}
-      </ul>
+      <>
+        <ul className="pl-4 mt-0.5 space-y-0.5">
+          {s.choices.map((c) => {
+            const choiceTranslation = trilingualFor(c.text, locale);
+            return (
+              <li
+                key={c.letterJp}
+                className={`text-xs ${shown && c.letterJp === s.answerLetterJp ? "text-[#4ec9b0]" : "text-[#888]"}`}
+              >
+                <span lang="ja">{c.text.jp}</span>
+                {locale !== "ja" && choiceTranslation && (
+                  <span className="text-[#666] ml-1" lang={locale}>({choiceTranslation})</span>
+                )}
+                {shown && c.letterJp === s.answerLetterJp && <span className="ml-1 text-[#6a9955]">✓</span>}
+              </li>
+            );
+          })}
+        </ul>
+        {s.answerLetterJp && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); toggleReveal(s.questionId); }}
+            className="pl-4 mt-0.5 text-xs text-[#569cd6] hover:text-[#9cdcfe] transition-colors"
+          >
+            <span className="text-[#808080]">$ </span>
+            {shown ? t("hideAnswer") : t("showAnswer")}
+          </button>
+        )}
+      </>
     );
   }
 

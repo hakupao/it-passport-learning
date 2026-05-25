@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { QuizExplain } from "@/components/QuizExplain";
 import { useQuizState } from "@/hooks/useQuizState";
@@ -21,9 +22,20 @@ export function RetroQuiz({ summaries, chapters = [] }: RetroQuizProps): React.R
   const groups = groupQuizByChapter(summaries, chapters);
   const firstChapterId = groups[0]?.chapterId;
   const { isOpen, toggle } = useCollapsible(firstChapterId != null ? [firstChapterId] : []);
+  const [revealed, setRevealed] = useState<Set<string>>(new Set());
+
+  function toggleReveal(qid: string) {
+    setRevealed((prev) => {
+      const next = new Set(prev);
+      if (next.has(qid)) next.delete(qid);
+      else next.add(qid);
+      return next;
+    });
+  }
 
   function renderItemContent(s: QuizSummary) {
     const stemTranslation = trilingualFor(s.stem, locale);
+    const shown = revealed.has(s.questionId);
     return (
       <>
         <div className="flex items-center justify-between gap-2">
@@ -31,9 +43,13 @@ export function RetroQuiz({ summaries, chapters = [] }: RetroQuizProps): React.R
             {t("pageEntity", { page: s.page, index: s.entityIndex + 1 })}
           </span>
           {s.answerLetterJp && (
-            <span className="text-[10px] text-[#808080]">
-              {t("answerPrefix")}{s.answerLetterJp}
-            </span>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); toggleReveal(s.questionId); }}
+              className="text-[10px] text-[#808080] hover:text-[#444] transition-colors bg-[#c0c0c0] border-2 border-outset-retro px-1.5 active:border-inset-retro"
+            >
+              {shown ? `${t("answerPrefix")}${s.answerLetterJp}` : t("showAnswer")}
+            </button>
           )}
         </div>
         <p className="text-xs leading-snug" lang="ja">{s.stemJp}</p>
@@ -47,7 +63,7 @@ export function RetroQuiz({ summaries, chapters = [] }: RetroQuizProps): React.R
               return (
                 <li
                   key={c.letterJp}
-                  className={`text-[11px] leading-snug px-1.5 py-0.5 ${c.letterJp === s.answerLetterJp ? "bg-[#ccffcc] border border-[#009900] font-bold" : "bg-[#f0f0f0] border border-[#c0c0c0]"}`}
+                  className={`text-[11px] leading-snug px-1.5 py-0.5 ${shown && c.letterJp === s.answerLetterJp ? "bg-[#ccffcc] border border-[#009900] font-bold" : "bg-[#f0f0f0] border border-[#c0c0c0]"}`}
                 >
                   <span lang="ja">{c.text.jp}</span>
                   {locale !== "ja" && choiceTranslation && (

@@ -33,6 +33,7 @@ export function ChapterQuizPicker({
   const tQuiz = useTranslations("QuizList");
   const tCommon = useTranslations("Common");
   const [activeSummary, setActiveSummary] = useState<QuizSummary | null>(null);
+  const [revealed, setRevealed] = useState<Set<string>>(new Set());
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useFocusTrap(open && activeSummary === null, dialogRef);
@@ -120,10 +121,23 @@ export function ChapterQuizPicker({
                         })}
                       </span>
                       {q.answerLetterJp && (
-                        <span className="text-xs text-black/65 dark:text-white/65">
-                          {tQuiz("answerPrefix")}
-                          {q.answerLetterJp}
-                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setRevealed((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(q.questionId)) next.delete(q.questionId);
+                              else next.add(q.questionId);
+                              return next;
+                            });
+                          }}
+                          className="text-xs text-black/65 dark:text-white/65 hover:text-black dark:hover:text-white transition-colors"
+                        >
+                          {revealed.has(q.questionId)
+                            ? `${tQuiz("answerPrefix")}${q.answerLetterJp}`
+                            : tQuiz("showAnswer")}
+                        </button>
                       )}
                     </div>
                     <p

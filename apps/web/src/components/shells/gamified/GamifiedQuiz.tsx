@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { QuizExplain } from "@/components/QuizExplain";
 import { useQuizState } from "@/hooks/useQuizState";
@@ -21,9 +22,20 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
   const groups = groupQuizByChapter(summaries, chapters);
   const firstChapterId = groups[0]?.chapterId;
   const { isOpen, toggle } = useCollapsible(firstChapterId != null ? [firstChapterId] : []);
+  const [revealed, setRevealed] = useState<Set<string>>(new Set());
+
+  function toggleReveal(qid: string) {
+    setRevealed((prev) => {
+      const next = new Set(prev);
+      if (next.has(qid)) next.delete(qid);
+      else next.add(qid);
+      return next;
+    });
+  }
 
   function renderItemContent(s: QuizSummary) {
     const stemTranslation = trilingualFor(s.stem, locale);
+    const shown = revealed.has(s.questionId);
     return (
       <>
         <div className="flex items-center justify-between gap-2">
@@ -31,9 +43,13 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
             {t("pageEntity", { page: s.page, index: s.entityIndex + 1 })}
           </span>
           {s.answerLetterJp && (
-            <span className="text-[10px] text-white/50">
-              {t("answerPrefix")}{s.answerLetterJp}
-            </span>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); toggleReveal(s.questionId); }}
+              className="text-[10px] text-white/50 hover:text-white/70 transition-colors"
+            >
+              {shown ? `${t("answerPrefix")}${s.answerLetterJp}` : t("showAnswer")}
+            </button>
           )}
         </div>
         <p className="text-sm leading-relaxed text-white/85" lang="ja">{s.stemJp}</p>
@@ -47,7 +63,7 @@ export function GamifiedQuiz({ summaries, chapters = [] }: GamifiedQuizProps): R
               return (
                 <li
                   key={c.letterJp}
-                  className={`text-xs leading-relaxed px-3 py-1.5 rounded-lg ${c.letterJp === s.answerLetterJp ? "bg-[#e94560]/15 text-white/90 border border-[#e94560]/30" : "text-white/60 bg-white/[.03]"}`}
+                  className={`text-xs leading-relaxed px-3 py-1.5 rounded-lg ${shown && c.letterJp === s.answerLetterJp ? "bg-[#e94560]/15 text-white/90 border border-[#e94560]/30" : "text-white/60 bg-white/[.03]"}`}
                 >
                   <span lang="ja">{c.text.jp}</span>
                   {locale !== "ja" && choiceTranslation && (
