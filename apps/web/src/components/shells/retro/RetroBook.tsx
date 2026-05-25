@@ -1,22 +1,23 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { RetroWindow } from "./RetroWindow";
 
 export function RetroBook(): React.ReactElement {
+  const t = useTranslations("Book");
   return (
     <div className="p-4">
-      <RetroWindow title="📖 Book.exe — Error">
+      <RetroWindow title={t("retroWindowTitle")}>
         <div className="bg-[#c0c0c0] p-6 flex flex-col items-center gap-4 text-black">
           <div className="flex items-start gap-4">
             <div className="text-4xl leading-none">🚫</div>
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-bold">Book.exe has encountered a problem.</p>
+              <p className="text-xs font-bold">{t("retroErrorHeading")}</p>
               <p className="text-xs">
-                The requested content is being rebuilt.
-                Stage 8-11 pipeline in progress.
+                {t("retroErrorMessage")}
               </p>
               <p className="text-[10px] text-[#808080]">
-                Error code: PIPELINE_IN_PROGRESS_0x0811
+                {t("retroErrorCode")}
               </p>
             </div>
           </div>

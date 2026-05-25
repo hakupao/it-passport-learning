@@ -8,6 +8,13 @@ export interface Trilingual {
   en: string;
 }
 
+export function trilingualFor(tri: Trilingual, locale: string): string | undefined {
+  if (locale === "ja") return tri.jp;
+  if (locale === "zh") return tri.zh;
+  if (locale === "en") return tri.en;
+  return undefined;
+}
+
 export interface EntityAnchor {
   page: number;
   block_id: string;

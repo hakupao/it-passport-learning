@@ -19,7 +19,7 @@ export function RetroMenuBar(): React.ReactElement {
   const tNav = useTranslations("Nav");
 
   return (
-    <div className="bg-[#c0c0c0] border-b border-[#808080] flex items-center justify-between px-1">
+    <nav className="bg-[#c0c0c0] border-b border-[#808080] flex items-center justify-between px-1">
       <div className="flex items-center">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -28,24 +28,33 @@ export function RetroMenuBar(): React.ReactElement {
           const firstChar = label.charAt(0);
           const rest = label.slice(1);
 
+          if (isDisabled) {
+            return (
+              <span
+                key={item.href}
+                aria-disabled="true"
+                className="px-3 py-0.5 text-xs relative text-[#808080] cursor-not-allowed select-none"
+              >
+                <span className="underline">{firstChar}</span>
+                {rest} 🔒
+              </span>
+            );
+          }
+
           return (
             <Link
               key={item.href}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
-              aria-disabled={isDisabled || undefined}
               className={[
                 "px-3 py-0.5 text-xs relative",
                 isActive
                   ? "bg-[#000080] text-white"
-                  : isDisabled
-                    ? "text-[#808080] cursor-not-allowed"
-                    : "text-black hover:bg-[#000080] hover:text-white",
+                  : "text-black hover:bg-[#000080] hover:text-white",
               ].join(" ")}
             >
               <span className="underline">{firstChar}</span>
               {rest}
-              {isDisabled ? " 🔒" : ""}
             </Link>
           );
         })}
@@ -56,6 +65,6 @@ export function RetroMenuBar(): React.ReactElement {
           <LocaleSwitcher />
         </Suspense>
       </div>
-    </div>
+    </nav>
   );
 }

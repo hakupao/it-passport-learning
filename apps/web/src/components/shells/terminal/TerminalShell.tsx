@@ -2,20 +2,22 @@
 
 import type { ReactNode } from "react";
 import { Suspense } from "react";
+import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ThemeSwitcher } from "@/components/shells/ThemeSwitcher";
 
 const NAV_ITEMS = [
-  { href: "/chat", label: "chat" },
-  { href: "/quiz", label: "quiz" },
-  { href: "/glossary", label: "gloss" },
-  { href: "/tutor", label: "tutor" },
-  { href: "/book", label: "book", disabled: true },
+  { href: "/chat", key: "chat" },
+  { href: "/quiz", key: "quiz" },
+  { href: "/glossary", key: "glossary" },
+  { href: "/tutor", key: "tutor" },
+  { href: "/book", key: "book", disabled: true },
 ] as const;
 
 export function TerminalShell({ children }: { children: ReactNode }): React.ReactElement {
   const pathname = usePathname();
+  const tNav = useTranslations("Nav");
 
   return (
     <div
@@ -49,21 +51,31 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
                   pathname.startsWith(`${item.href}/`);
                 const isDisabled =
                   "disabled" in item && item.disabled;
+
+                if (isDisabled) {
+                  return (
+                    <span
+                      key={item.href}
+                      aria-disabled="true"
+                      className="px-3 py-1 text-xs text-[#555] cursor-not-allowed select-none"
+                    >
+                      {tNav(item.key)}
+                    </span>
+                  );
+                }
+
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    aria-disabled={isDisabled || undefined}
                     className={
                       isActive
                         ? "px-3 py-1 text-xs text-[#4ec9b0] border-b border-[#4ec9b0] transition-colors"
-                        : isDisabled
-                          ? "px-3 py-1 text-xs text-[#555] cursor-not-allowed"
-                          : "px-3 py-1 text-xs text-[#888] hover:text-[#ccc] transition-colors"
+                        : "px-3 py-1 text-xs text-[#888] hover:text-[#ccc] transition-colors"
                     }
                   >
-                    {item.label}
+                    {tNav(item.key)}
                   </Link>
                 );
               })}
@@ -76,7 +88,7 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
             <Suspense fallback={null}>
               <LocaleSwitcher />
             </Suspense>
-            <span className="text-[#555] text-xs hidden sm:inline">itp@study:~</span>
+            <span className="text-[#555] text-xs hidden sm:inline">you@itp:~</span>
           </div>
         </div>
       </header>

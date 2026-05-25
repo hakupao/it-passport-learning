@@ -42,7 +42,7 @@ export function GamifiedGlossary({ summaries }: GamifiedGlossaryProps): React.Re
       ) : (
         <>
           {/* Sticky alphabet jump nav */}
-          <div className="sticky top-0 z-10 -mx-4 sm:-mx-6 px-4 sm:px-6 py-2 bg-[#0f0f1a]/90 backdrop-blur border-b border-white/[.06]">
+          <div className="sticky z-10 -mx-4 sm:-mx-6 px-4 sm:px-6 py-2 bg-[#0f0f1a]/90 backdrop-blur border-b border-white/[.06]" style={{ top: "var(--nav-height)" }}>
             <div className="flex flex-wrap gap-1">
               {groups.map((g) => (
                 <button
@@ -68,7 +68,7 @@ export function GamifiedGlossary({ summaries }: GamifiedGlossaryProps): React.Re
                 }}
               >
                 <h2 className="text-xs font-semibold uppercase tracking-widest text-[#e94560] mb-3 border-b border-white/[.06] pb-1">
-                  {group.letter}行
+                  {t("rowLabel", { letter: group.letter })}
                 </h2>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {group.items.map((s) => (

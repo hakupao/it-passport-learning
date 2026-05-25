@@ -106,14 +106,6 @@ export function RetroChat(): React.ReactElement {
         >
           {tCommon("send")}
         </button>
-        <button
-          type="button"
-          onClick={handleClear}
-          disabled={messages.length === 0 || isStreaming}
-          className="h-7 px-4 bg-[#c0c0c0] border-2 border-outset-retro text-xs disabled:opacity-50 disabled:cursor-not-allowed active:border-inset-retro"
-        >
-          {t("newChat")}
-        </button>
       </form>
     </div>
   );

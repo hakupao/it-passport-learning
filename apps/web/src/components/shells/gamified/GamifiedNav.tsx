@@ -27,21 +27,32 @@ export function GamifiedNav(): React.ReactElement {
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
               const isDisabled = "disabled" in item && item.disabled;
+              const label = <>{tNav(item.key)}{isDisabled ? " 🔒" : ""}</>;
+
+              if (isDisabled) {
+                return (
+                  <span
+                    key={item.href}
+                    aria-disabled="true"
+                    className="px-3 py-1 rounded-full text-xs text-white/30 cursor-not-allowed select-none"
+                  >
+                    {label}
+                  </span>
+                );
+              }
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   aria-current={isActive ? "page" : undefined}
-                  aria-disabled={isDisabled || undefined}
                   className={
                     isActive
                       ? "px-3 py-1 rounded-full text-xs font-semibold bg-[#e94560] text-white transition-colors"
-                      : isDisabled
-                        ? "px-3 py-1 rounded-full text-xs text-white/30 cursor-not-allowed"
-                        : "px-3 py-1 rounded-full text-xs text-white/60 hover:text-white/90 hover:bg-white/[.06] transition-colors"
+                      : "px-3 py-1 rounded-full text-xs text-white/60 hover:text-white/90 hover:bg-white/[.06] transition-colors"
                   }
                 >
-                  {tNav(item.key)}{isDisabled ? " 🔒" : ""}
+                  {label}
                 </Link>
               );
             })}

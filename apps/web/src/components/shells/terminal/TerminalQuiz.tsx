@@ -1,11 +1,12 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { QuizExplain } from "@/components/QuizExplain";
 import { useQuizState } from "@/hooks/useQuizState";
 import { groupQuizByChapter, useCollapsible } from "@/hooks/useGrouping";
 import type { QuizSummary } from "@/lib/quiz/quizScope";
 import type { ChapterRef } from "@/lib/data/types";
+import { trilingualFor } from "@/lib/data/types";
 
 interface TerminalQuizProps {
   summaries: QuizSummary[];
@@ -15,10 +16,42 @@ interface TerminalQuizProps {
 export function TerminalQuiz({ summaries, chapters = [] }: TerminalQuizProps): React.ReactElement {
   const t = useTranslations("QuizList");
   const tCommon = useTranslations("Common");
+  const locale = useLocale();
   const { activeSummary, handleSelect, handleClose } = useQuizState(summaries);
   const groups = groupQuizByChapter(summaries, chapters);
   const firstChapterId = groups[0]?.chapterId;
   const { isOpen, toggle } = useCollapsible(firstChapterId != null ? [firstChapterId] : []);
+
+  function renderStemTranslation(s: QuizSummary) {
+    const stemTranslation = trilingualFor(s.stem, locale);
+    if (locale === "ja" || !stemTranslation) return null;
+    return (
+      <div className="pl-1 text-[#888] text-xs mt-0.5" lang={locale}>{stemTranslation}</div>
+    );
+  }
+
+  function renderChoices(s: QuizSummary) {
+    if (s.choices.length === 0) return null;
+    return (
+      <ul className="pl-4 mt-0.5 space-y-0.5">
+        {s.choices.map((c) => {
+          const choiceTranslation = trilingualFor(c.text, locale);
+          return (
+            <li
+              key={c.letterJp}
+              className={`text-xs ${c.letterJp === s.answerLetterJp ? "text-[#4ec9b0]" : "text-[#888]"}`}
+            >
+              <span lang="ja">{c.text.jp}</span>
+              {locale !== "ja" && choiceTranslation && (
+                <span className="text-[#666] ml-1" lang={locale}>({choiceTranslation})</span>
+              )}
+              {c.letterJp === s.answerLetterJp && <span className="ml-1 text-[#6a9955]">✓</span>}
+            </li>
+          );
+        })}
+      </ul>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-3rem)] max-w-5xl mx-auto p-4 gap-3 font-mono text-sm">
@@ -38,7 +71,7 @@ export function TerminalQuiz({ summaries, chapters = [] }: TerminalQuizProps): R
         ) : groups.length === 0 ? (
           // Fallback: flat file list when no chapter data available
           <div className="space-y-0">
-            <div className="text-[#555] text-xs pb-1">total {summaries.length} questions</div>
+            <div className="text-[#555] text-xs pb-1">{t("questionCount", { count: summaries.length })}</div>
             <ul className="space-y-3">
               {summaries.map((s) => (
                 <li key={s.questionId} className="border-l-2 border-[#333] pl-2">
@@ -52,20 +85,8 @@ export function TerminalQuiz({ summaries, chapters = [] }: TerminalQuizProps): R
                       {s.stemJp}
                     </span>
                   </button>
-                  {s.choices.length > 0 && (
-                    <ul className="pl-4 mt-0.5 space-y-0.5">
-                      {s.choices.map((c) => (
-                        <li
-                          key={c.letterJp}
-                          className={`text-xs ${c.letterJp === s.answerLetterJp ? "text-[#4ec9b0]" : "text-[#888]"}`}
-                          lang="ja"
-                        >
-                          {c.text.jp}
-                          {c.letterJp === s.answerLetterJp && <span className="ml-1 text-[#6a9955]">✓</span>}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {renderStemTranslation(s)}
+                  {renderChoices(s)}
                 </li>
               ))}
             </ul>
@@ -78,7 +99,7 @@ export function TerminalQuiz({ summaries, chapters = [] }: TerminalQuizProps): R
           // Chapter-grouped directory listing
           <div className="space-y-1">
             <div className="text-[#555] text-xs pb-1">
-              total {summaries.length} questions · {groups.length} chapters
+              {t("totalSummary", { questions: summaries.length, chapters: groups.length })}
             </div>
             {groups.map((group) => (
               <div key={group.chapterId}>
@@ -121,20 +142,8 @@ export function TerminalQuiz({ summaries, chapters = [] }: TerminalQuizProps): R
                             {s.stemJp}
                           </span>
                         </button>
-                        {s.choices.length > 0 && (
-                          <ul className="pl-4 mt-0.5 space-y-0.5">
-                            {s.choices.map((c) => (
-                              <li
-                                key={c.letterJp}
-                                className={`text-xs ${c.letterJp === s.answerLetterJp ? "text-[#4ec9b0]" : "text-[#888]"}`}
-                                lang="ja"
-                              >
-                                {c.text.jp}
-                                {c.letterJp === s.answerLetterJp && <span className="ml-1 text-[#6a9955]">✓</span>}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+                        {renderStemTranslation(s)}
+                        {renderChoices(s)}
                       </li>
                     ))}
                   </ul>

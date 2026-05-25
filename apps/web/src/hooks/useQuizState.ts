@@ -45,7 +45,7 @@ export function useQuizState(summaries: QuizSummary[]): QuizState {
     const next = new URLSearchParams(searchParams.toString());
     next.delete("qid");
     const qs = next.toString();
-    router.replace(qs ? `?${qs}` : "?", { scroll: false });
+    router.replace(qs ? `?${qs}` : window.location.pathname, { scroll: false });
   }, [router, searchParams]);
 
   return { activeQid, activeSummary, handleSelect, handleClose };

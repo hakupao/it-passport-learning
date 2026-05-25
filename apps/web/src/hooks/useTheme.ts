@@ -55,7 +55,6 @@ export function useThemeProvider(): ThemeContextValue {
     setThemeState(t);
     if (typeof window !== "undefined") {
       saveTheme(window.localStorage, t);
-      document.body.setAttribute("data-theme", t);
     }
   }, []);
 

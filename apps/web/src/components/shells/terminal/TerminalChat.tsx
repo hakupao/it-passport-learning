@@ -28,7 +28,7 @@ export function TerminalChat(): React.ReactElement {
           <div className="text-[#555] text-xs">{t("subtitle")}</div>
         </div>
         {messages.length > 0 && (
-          <span className="text-[#555] text-xs">[ctrl+l to clear]</span>
+          <span className="text-[#555] text-xs">{t("clearHint")}</span>
         )}
       </div>
 
@@ -72,7 +72,7 @@ export function TerminalChat(): React.ReactElement {
           role="alert"
           className="text-[#f44747] border border-[#f44747] px-3 py-2 text-xs"
         >
-          <span className="text-[#808080]">stderr: </span>
+          <span className="text-[#808080]">{t("stderrPrefix")}</span>
           {errorMessage}
         </div>
       )}

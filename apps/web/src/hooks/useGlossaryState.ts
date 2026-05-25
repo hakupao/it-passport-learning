@@ -49,7 +49,7 @@ export function useGlossaryState(summaries: GlossarySummary[]): GlossaryState {
     const next = new URLSearchParams(searchParams.toString());
     next.delete("term");
     const qs = next.toString();
-    router.replace(qs ? `?${qs}` : "?", { scroll: false });
+    router.replace(qs ? `?${qs}` : window.location.pathname, { scroll: false });
   }, [router, searchParams]);
 
   return { activeTerm, activeSummary, handleSelect, handleClose };

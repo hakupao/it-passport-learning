@@ -34,7 +34,7 @@ export function TerminalTutor({ chapters }: TerminalTutorProps): React.ReactElem
           <div className="text-[#555] text-xs">{t("subtitle")}</div>
         </div>
         {messages.length > 0 && (
-          <span className="text-[#555] text-xs">[ctrl+l to clear]</span>
+          <span className="text-[#555] text-xs">{t("clearHint")}</span>
         )}
       </div>
 
@@ -78,7 +78,7 @@ export function TerminalTutor({ chapters }: TerminalTutorProps): React.ReactElem
           role="alert"
           className="text-[#f44747] border border-[#f44747] px-3 py-2 text-xs"
         >
-          <span className="text-[#808080]">stderr: </span>
+          <span className="text-[#808080]">{t("stderrPrefix")}</span>
           {errorMessage}
         </div>
       )}
@@ -103,6 +103,7 @@ export function TerminalTutor({ chapters }: TerminalTutorProps): React.ReactElem
             disabled={isStreaming}
             className="flex-1 bg-transparent border-none outline-none text-[#d4d4d4] font-mono text-sm disabled:opacity-50 caret-[#d4d4d4]"
             autoComplete="off"
+            autoFocus
             aria-label={t("inputAriaLabel")}
           />
         </form>

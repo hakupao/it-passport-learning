@@ -37,7 +37,7 @@ export function TerminalGlossary({ summaries }: TerminalGlossaryProps): React.Re
               <div key={group.letter}>
                 {/* Section heading */}
                 <div className="text-[#6a9955] text-xs py-0.5 px-1 mb-1">
-                  ## {group.letter}行 ({group.items.length})
+                  ## {t("rowLabel", { letter: group.letter })} ({group.items.length})
                 </div>
                 <ul className="space-y-0">
                   {group.items.map((s) => (
