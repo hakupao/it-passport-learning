@@ -6,9 +6,9 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-05-26 Session 63 — 全量重构 COMPLETE** |
-| 当前阶段 | **Phase 5 Stage 1 实施待 gate** |
-| 锁定决策 | **113** (D-001 ~ D-113) |
+| 最后更新 | **2026-05-26 Session 65 — Stage 1 シラバス構造化提取 COMPLETE** |
+| 当前阶段 | **Phase 5 Stage 2 待启动** |
+| 锁定决策 | **118** (D-001 ~ D-118) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
 
 ---
@@ -30,7 +30,7 @@
 
 | Stage | 内容 | Status |
 |-------|------|--------|
-| 1 | シラバス構造化提取 (Claude vision) | ⏸ 待 gate |
+| 1 | シラバス構造化提取 (Claude vision) | ✅ **Session 65 完成** |
 | 2 | 過去問全量提取 (~2000 題) | ⏸ (可与 Stage 1 并行) |
 | 3 | 知識マッピング (過去問 → シラバス节点) | ⏸ |
 | 4 | AI 教科書生成 (三语详细讲解 + 图解) | ⏸ |
@@ -115,9 +115,41 @@ Plan: `docs/phase5/PLAN.md`
 - D-102 ~ D-107: Phase 4 + Stage 8-10
 - D-108 ~ D-109: Phase 5 方向転換 + 数据目录
 - **D-110 ~ D-113: Session 63 全量重构**
+- **D-114 ~ D-118: Session 64 教科書設計（導航 + ユニット架构 + 記憶フック + 排列規則 + JSON Schema）**
 
 ---
 
-## Next (Session 64)
+## Session 64 新决策
 
-用户 `开始 Stage 1` → シラバス PDF 下载 + Claude vision 提取。Stage 1 & 2 可并行。
+| ID | 内容 |
+|----|------|
+| **D-114** | 学習路径組織方式 — 双軌導航：シラバス官方树为主导航 + テクノロジ→マネジメント→ストラテジ 推荐路径 |
+| **D-115** | 学習ユニット内容架构 — 5~8 用語/~15 min 为原子单位，四段结构（概要→用語講解→まとめ→チャレンジ），深度嵌入即時チェック + AI Tutor |
+| **D-116** | 記憶フック「○○といえば××」为每个用語的标准配置 |
+| **D-117** | ユニット内用語排列 — 概念依赖优先 + 出題頻度辅助排序 |
+| **D-118** | Stage 4 输出 JSON Schema — unit_index.json + units/{id}.json，Quiz 引用不内嵌，三语 `_jp/_zh/_en` 平铺 |
+
+---
+
+## Session 65 Stage 1 完成
+
+### 产出物
+
+| 文件 | 大小 | 内容 |
+|------|------|------|
+| `data/ip/syllabus/knowledge_tree.json` | 67 KB | 完整シラバス树: 3 categories / 9 大分類 / 23 中分類 / 63 topics / **1,413 用語** |
+| `data/ip/syllabus/exam_meta.json` | 1.2 KB | IT Passport 考试元信息 (120分/100問/IRT/合格基準) |
+| `data/ip/syllabus/official_glossary.json` | 1.6 KB | 考试用語規約 (記号/言語/表計算仕様) |
+
+### Rule A 审核
+
+N=10 独立抽检 (code-reviewer agent)，**10/10 PASS**。证据: `evidence/phase5/stage_01_audit.md`
+
+---
+
+## Next (Session 66)
+
+Stage 1 完成。下一步:
+1. **启动 Stage 2**: `开始 Stage 2` → 過去問 PDF 全量提取 → question_bank.json (~2000 題)
+2. Stage 2 完成后 → Stage 3 知識マッピング
+3. **剩余设计**: AI Tutor 联动 system prompt 模板（可在 Stage 2 完成后再定）
