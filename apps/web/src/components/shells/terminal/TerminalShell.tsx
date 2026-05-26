@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { href: "/quiz", key: "quiz" },
   { href: "/glossary", key: "glossary" },
   { href: "/tutor", key: "tutor" },
-  { href: "/book", key: "book", disabled: true },
 ] as const;
 
 export function TerminalShell({ children }: { children: ReactNode }): React.ReactElement {
@@ -49,22 +48,6 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
                 const isActive =
                   pathname === item.href ||
                   pathname.startsWith(`${item.href}/`);
-                const isDisabled =
-                  "disabled" in item && item.disabled;
-
-                if (isDisabled) {
-                  return (
-                    <span
-                      key={item.href}
-                      aria-disabled="true"
-                      title={tNav("bookLockedTooltip")}
-                      className="min-h-[36px] px-3 py-2 sm:py-1 text-xs text-[#555] cursor-not-allowed select-none inline-flex items-center whitespace-nowrap"
-                    >
-                      {tNav(item.key)}
-                    </span>
-                  );
-                }
-
                 return (
                   <Link
                     key={item.href}

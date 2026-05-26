@@ -11,7 +11,6 @@ const NAV_ITEMS = [
   { href: "/quiz", key: "quiz" },
   { href: "/glossary", key: "glossary" },
   { href: "/tutor", key: "tutor" },
-  { href: "/book", key: "book", disabled: true },
 ] as const;
 
 export function GamifiedNav(): React.ReactElement {
@@ -26,22 +25,6 @@ export function GamifiedNav(): React.ReactElement {
           <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide -mx-1 px-1">
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-              const isDisabled = "disabled" in item && item.disabled;
-              const label = <>{tNav(item.key)}{isDisabled ? " 🔒" : ""}</>;
-
-              if (isDisabled) {
-                return (
-                  <span
-                    key={item.href}
-                    aria-disabled="true"
-                    title={tNav("bookLockedTooltip")}
-                    className="min-h-[36px] px-3 py-2 rounded-full text-xs text-white/30 cursor-not-allowed select-none inline-flex items-center"
-                  >
-                    {label}
-                  </span>
-                );
-              }
-
               return (
                 <Link
                   key={item.href}
@@ -53,7 +36,7 @@ export function GamifiedNav(): React.ReactElement {
                       : "min-h-[36px] px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm text-white/60 hover:text-white/90 hover:bg-white/[.06] active:bg-white/[.1] transition-colors inline-flex items-center whitespace-nowrap"
                   }
                 >
-                  {label}
+                  {tNav(item.key)}
                 </Link>
               );
             })}

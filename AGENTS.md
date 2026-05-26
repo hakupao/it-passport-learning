@@ -18,7 +18,13 @@ You will be lost without these. Don't skip them.
 
 ## What this project is
 
-A trilingual learning content factory for the IT Passport (ITパスポート) certification exam. Phase 1 = `cert-extractor`, a pluggable OCR + LLM-driven content pipeline. See `README.md` for the user-facing story; see `docs/STATE.md` for current state.
+A trilingual (ja/zh/en) learning web app + AI textbook pipeline for the IT Passport (ITパスポート) certification exam.
+
+- **Web app**: Next.js 15 at `apps/web/` — quiz, glossary, chat, AI tutor
+- **Phase 5**: IPA 官方源 → Claude vision 提取 → AI 生成三语教科書
+- **Tech stack**: TypeScript only (D-110). No Python.
+
+See `docs/STATE.md` for current state; `docs/phase5/PLAN.md` for the active plan.
 
 ---
 
@@ -29,13 +35,13 @@ A trilingual learning content factory for the IT Passport (ITパスポート) ce
 - `docs/discussion/YYYY-MM-DD-session-NN.md` — session journal (append-only)
 - `docs/STATE.md` — live state snapshot (rewritten end of every session)
 - `docs/decisions/D-NNN-*.md` — ADRs for major decisions
-- `evidence/step_NN_audit.md` — semantic audit (Rule A)
-- `failures/step_NN_attempt_X.md` — failure archive (Rule B)
-- `RETROSPECTIVE.md` — Phase retro (Rule C)
+- `evidence/` — semantic audit (Rule A)
+- `failures/` — failure archive (Rule B)
+- `RETROSPECTIVE_phaseN.md` — Phase retro (Rule C)
 
 ---
 
-## Hard rules (mirrored from `~/.Codex/AGENTS.md` for visibility)
+## Hard rules
 
 | Rule | One-liner |
 |------|---|
@@ -74,7 +80,7 @@ When the user explicitly says "you decide" / "你来定" for a sub-question, Cod
 | If `docs/STATE.md` says... | Behavior |
 |---|---|
 | "**设计阶段**" | Do **not** write executable code. Only design docs / discussion / decisions. |
-| "**实施阶段**" or has Phase 1 build artifacts | Code is allowed under TDD; respect Tier 3 evidence requirements. |
+| "**实施阶段**" | Code is allowed under TDD; respect Tier 3 evidence requirements. |
 
 When in doubt, read STATE.md and ask the user.
 
@@ -88,21 +94,18 @@ When in doubt, read STATE.md and ask the user.
 
 ---
 
-## Repo layout assumptions (locked D-034 ~ D-053)
+## Repo layout (D-111, restructured Session 63)
 
-- `pyproject.toml` at root = uv workspace umbrella (hatchling backend, `requires-python = ">=3.11,<4.0"`).
-- `packages/extractor/` is Phase 1's only package; `apps/` is for Phase 2+ web/CLI apps (`apps/web/` = Phase 2 Next.js 15 app per D-093).
-- Tests at `packages/extractor/tests/` with `unit/`, `integration/`, `e2e/` subdirs (D-040, D-042); `_fixtures/` for test data (D-043).
-- All runtime pipeline data lives under **`/data/<cert_id>/runs/<run_id>/<stage>/`** with stages = `raw/ ocr/ classified/ cleaned/ structured/ glossary/ translated/ output/` (D-050, D-051, D-052, D-053). The whole `/data/` is **gitignored** (D-050 supersedes D-045's scattered entries).
-- Final `output/` releases go via **GitHub Release + git tag**, not via git history (D-046).
-- `evidence/`, `failures/`, `RETROSPECTIVE.md` are **committed** (Rules A / B / C).
-- `uv.lock` is **committed** (reproducibility, per uv official).
+- `apps/web/` = Next.js 15 app (sole pnpm workspace member).
+- `scripts/` = Phase 5 extraction scripts (TypeScript).
+- `docs/` = STATE.md + active decisions (D-082+) + active session logs (53+) + `archive/` for historical docs.
+- `data/` = pipeline data (**gitignored**). Final output via GitHub Release + git tag.
+- `evidence/`, `failures/`, `RETROSPECTIVE*.md` are **committed** (Rules A/B/C).
 
 ---
 
 ## What you should NOT do without explicit user approval
 
-- Run any LLM API call (Mistral / Anthropic) that costs money. Phase 1 implementation will need them, but the user opens that gate.
 - Push, force-push, or rebase published history.
 - Create / modify GitHub releases or issues without confirmation.
 - Delete files under `failures/` or `evidence/` (Rules A + B forbid).

@@ -8,7 +8,7 @@ import {
   buildAllChapterSummaries,
   type AppLocale,
   type ChapterSummary,
-} from "@/lib/book/chapterScope";
+} from "@/lib/data/chapterScope";
 import { getDataSource, warmUp } from "@/lib/data";
 
 export const dynamic = "force-dynamic";

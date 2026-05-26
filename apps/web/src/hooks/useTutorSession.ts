@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
-import type { ChapterSummary } from "@/lib/book/chapterScope";
+import type { ChapterSummary } from "@/lib/data/chapterScope";
 import type { TutorContext } from "@/lib/tutor/tutorContext";
 import { loadTutorContext } from "@/lib/tutor/tutorContext";
 import { shouldEscalate } from "@/lib/tutor/escalation";

@@ -42,7 +42,7 @@ import {
 } from "../provider";
 import { buildTutorMessages } from "../tutorPrompt";
 import type { TutorContext } from "@/lib/tutor/tutorContext";
-import type { ChapterSummary } from "@/lib/book/chapterScope";
+import type { ChapterSummary } from "@/lib/data/chapterScope";
 
 const ENABLED = process.env.RUN_TUTOR_DRYRUN === "1";
 

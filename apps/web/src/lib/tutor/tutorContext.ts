@@ -21,14 +21,14 @@
 // stable preamble block (Anthropic ephemeral cache target per D-103 §2.4).
 // This module has NO LLM cost — A.1+A.3 are pure logic.
 
-import type { ChapterSummary } from "@/lib/book/chapterScope";
+import type { ChapterSummary } from "@/lib/data/chapterScope";
 import {
   type BookProgress,
   type StorageLike,
   isChapterCompleted,
   isChapterInProgress,
   loadProgress,
-} from "@/lib/book/progressStore";
+} from "@/lib/data/progressStore";
 
 /** One quiz answer attempt, projected for tutor consumption. */
 export interface QuizAttempt {

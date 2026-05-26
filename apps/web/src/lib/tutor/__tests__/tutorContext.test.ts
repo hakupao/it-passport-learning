@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { ChapterSummary } from "@/lib/book/chapterScope";
+import type { ChapterSummary } from "@/lib/data/chapterScope";
 import {
   type StorageLike,
   emptyProgress,
@@ -13,7 +13,7 @@ import {
   recordChapterScroll,
   recordQuizAnswer,
   saveProgress,
-} from "@/lib/book/progressStore";
+} from "@/lib/data/progressStore";
 import {
   DEFAULT_RECENT_QUIZ_LIMIT,
   loadTutorContext,

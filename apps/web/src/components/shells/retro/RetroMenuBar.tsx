@@ -11,7 +11,6 @@ const NAV_ITEMS = [
   { href: "/quiz", key: "quiz" },
   { href: "/glossary", key: "glossary" },
   { href: "/tutor", key: "tutor" },
-  { href: "/book", key: "book", disabled: true },
 ] as const;
 
 export function RetroMenuBar(): React.ReactElement {
@@ -23,25 +22,9 @@ export function RetroMenuBar(): React.ReactElement {
       <div className="flex items-center">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-          const isDisabled = "disabled" in item && item.disabled;
-          const label = tNav(item.key as "chat" | "quiz" | "glossary" | "tutor" | "book");
+          const label = tNav(item.key as "chat" | "quiz" | "glossary" | "tutor");
           const firstChar = label.charAt(0);
           const rest = label.slice(1);
-
-          if (isDisabled) {
-            return (
-              <span
-                key={item.href}
-                aria-disabled="true"
-                title={tNav("bookLockedTooltip")}
-                className="min-h-[32px] px-3 py-1.5 sm:py-0.5 text-xs relative text-[#808080] cursor-not-allowed select-none inline-flex items-center whitespace-nowrap"
-              >
-                <span className="underline">{firstChar}</span>
-                {rest} 🔒
-              </span>
-            );
-          }
-
           return (
             <Link
               key={item.href}

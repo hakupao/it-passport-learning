@@ -31,7 +31,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Markdown } from "@/components/Markdown";
 import { useFocusTrap } from "@/lib/a11y/useFocusTrap";
-import { loadProgress, persistQuizOutcome } from "@/lib/book/progressStore";
+import { loadProgress, persistQuizOutcome } from "@/lib/data/progressStore";
 import { streamQuizExplain } from "@/lib/quiz/quizSseTransport";
 import type { QuizSummary } from "@/lib/quiz/quizScope";
 

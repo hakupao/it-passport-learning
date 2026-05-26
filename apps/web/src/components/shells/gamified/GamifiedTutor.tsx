@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { ChapterSummary } from "@/lib/book/chapterScope";
+import type { ChapterSummary } from "@/lib/data/chapterScope";
 import { useTutorSession } from "@/hooks/useTutorSession";
 import { Markdown } from "@/components/Markdown";
 import { extractMessageText } from "@/hooks/useChatSession";

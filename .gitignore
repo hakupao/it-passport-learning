@@ -1,62 +1,5 @@
 # ============================================================
-# Standard Python (per GitHub canonical Python.gitignore) (D-044)
-# ============================================================
-
-# Bytecode / cache
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-
-# Distribution / packaging
-build/
-dist/
-*.egg-info/
-*.egg
-sdist/
-wheels/
-share/python-wheels/
-
-# Virtual environments
-.venv/
-venv/
-env/
-ENV/
-
-# Test / coverage / type-checker caches
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.tox/
-.hypothesis/
-.coverage
-.coverage.*
-htmlcov/
-coverage.xml
-*.cover
-
-# pyenv
-.python-version
-
-# Logs
-*.log
-pip-log.txt
-pip-delete-this-directory.txt
-# evidence/ and failures/ are committed per CLAUDE.md Rules A + B —
-# their *.log files must not be blanket-ignored (Session 34 drift fix).
-!evidence/**/*.log
-!failures/**/*.log
-
-# Jupyter
-.ipynb_checkpoints/
-
-# ============================================================
-# uv (D-039 + D-045)
-# ============================================================
-# uv.lock IS committed (do NOT ignore) — reproducibility
-
-# ============================================================
-# macOS / IDE / editor (D-044)
+# macOS / IDE / editor
 # ============================================================
 .DS_Store
 ._*
@@ -69,52 +12,8 @@ pip-delete-this-directory.txt
 *~
 
 # ============================================================
-# Project: copyrighted source materials (D-045 + D-082)
-# ============================================================
-# 原书 EPUB + 其他不可分发的输入素材统一放 .source/ (D-082 v2 重构)
-# 整目录 ignore, 仅保留 README.md 以便 grep 出该目录用途
-/.source/*
-!/.source/README.md
-# 历史兼容: 若 EPUB 误放回根目录, 仍然 ignore (D-045 原条目保留)
-/*.epub
-
-# ============================================================
-# Project: secrets (D-045)
-# ============================================================
-.env
-.env.*
-!.env.example
-
-# ============================================================
-# Project: OMC local state (D-045)
-# ============================================================
-.omc/
-
-# ============================================================
-# Project: Pipeline runtime data (D-050 supersedes D-045 散条目)
-# 所有 stage 产物统一在 /data/ 之下，整目录 ignore；
-# 终产物走 GitHub Release + git tag 发版 (D-046)
-# ============================================================
-/data/
-
-# ============================================================
-# Test fixtures: large gitignored set (D-043 + D-045)
-# 小样本 commit；大样本 + 完整 EPUB 页 jpg 不入 git
-# ============================================================
-packages/extractor/tests/_fixtures/pages/
-packages/extractor/tests/_fixtures/large_*
-
-# ============================================================
-# Phase 2 PoC spike (Session 29 D-088 γ PoC, throwaway)
-# 全 ignore — 仅 evidence/phase2_d088_poc_*/ 入 git
-# ============================================================
-.phase2-spike/
-
-# ============================================================
-# Phase 2 TS/Node monorepo (D-093 + D-087)
-# pnpm workspace hoisted node_modules at repo root；
-# apps/<name>/node_modules 由各 app .gitignore 兜底，但 root 必须显式排除
-# pnpm-lock.yaml IS committed (do NOT ignore) — reproducibility per pnpm 官方
+# Node.js / pnpm
+# pnpm-lock.yaml IS committed — reproducibility per pnpm official
 # ============================================================
 node_modules/
 .next/
@@ -122,12 +21,50 @@ node_modules/
 .turbo/
 .swc/
 .pnpm-store/
+.tailwind-cache/
 
-# Next.js / Vercel / Vite local envs (secrets)
+# ============================================================
+# Secrets / local env
+# ============================================================
+.env
+.env.*
+!.env.example
 .env.local
 .env.development.local
 .env.production.local
 .env.test.local
 
-# Tailwind 4 cache
-.tailwind-cache/
+# ============================================================
+# Copyrighted source materials
+# 原书 EPUB + IPA PDF 等不可分发的输入素材放 .source/
+# ============================================================
+/.source/*
+!/.source/README.md
+/*.epub
+
+# ============================================================
+# OMC local state
+# ============================================================
+.omc/
+
+# ============================================================
+# Pipeline runtime data (D-050 + D-109)
+# 所有提取产物在 /data/ 下，终产物走 GitHub Release + git tag
+# ============================================================
+/data/
+
+# ============================================================
+# Logs
+# evidence/ and failures/ are committed per Rules A + B —
+# their *.log files must not be blanket-ignored.
+# ============================================================
+*.log
+!evidence/**/*.log
+!failures/**/*.log
+
+# ============================================================
+# Test artifacts
+# ============================================================
+test-screenshots/
+playwright-report/
+test-results/

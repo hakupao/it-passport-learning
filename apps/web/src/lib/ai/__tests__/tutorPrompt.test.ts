@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ChapterSummary } from "@/lib/book/chapterScope";
+import type { ChapterSummary } from "@/lib/data/chapterScope";
 import type { TutorContext } from "@/lib/tutor/tutorContext";
 import {
   TUTOR_SYSTEM_INSTRUCTION,
