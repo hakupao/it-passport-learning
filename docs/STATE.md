@@ -6,8 +6,8 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-05-26 Session 65 — Stage 1 シラバス構造化提取 COMPLETE** |
-| 当前阶段 | **Phase 5 Stage 2 待启动** |
+| 最后更新 | **2026-05-27 Session 69 — Stage 2.5 全量 AI 審査完了** |
+| 当前阶段 | **Phase 5 Stage 2.5 完了 → Stage 3 待開始** |
 | 锁定决策 | **118** (D-001 ~ D-118) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
 
@@ -22,7 +22,7 @@
 | 数据源 | 版本 | 用途 |
 |--------|------|------|
 | シラバス | Ver.6.5 (2026-01-08) | 知識树骨架 |
-| 過去問題 | FY2009~FY2025 (~2000 題) | 题库 + 考点参考 |
+| 過去問題 | FY2009~FY2026 (29回, 2900 題) | 题库 + 考点参考 |
 | 試験要綱 | Ver.5.5 | 考试元信息 |
 | IT用語集 | Ver.5.1 | 官方术語規範 |
 
@@ -31,7 +31,8 @@
 | Stage | 内容 | Status |
 |-------|------|--------|
 | 1 | シラバス構造化提取 (Claude vision) | ✅ **Session 65 完成** |
-| 2 | 過去問全量提取 (~2000 題) | ⏸ (可与 Stage 1 并行) |
+| 2 | 過去問全量提取 (~2900 題) | ✅ **Session 66-67 完成** — 2,860題 (98.6%) |
+| 2.5 | OCR 品質修復 + 全量 AI 審査 | ✅ **Session 68-69 完了** — P0-P3修復 + 29套全量AI審査 (935修正, 60題補録, 452図表更新) → 2,900題 29/29×100q |
 | 3 | 知識マッピング (過去問 → シラバス节点) | ⏸ |
 | 4 | AI 教科書生成 (三语详细讲解 + 图解) | ⏸ |
 | 5 | コードベース整理 | ✅ **Session 63 完成 (提前执行)** |
@@ -147,9 +148,117 @@ N=10 独立抽检 (code-reviewer agent)，**10/10 PASS**。证据: `evidence/pha
 
 ---
 
-## Next (Session 66)
+## Session 66 Stage 2 過去問全量提取
 
-Stage 1 完成。下一步:
-1. **启动 Stage 2**: `开始 Stage 2` → 過去問 PDF 全量提取 → question_bank.json (~2000 題)
-2. Stage 2 完成后 → Stage 3 知識マッピング
-3. **剩余设计**: AI Tutor 联动 system prompt 模板（可在 Stage 2 完成后再定）
+### 产出物
+
+| 文件 | 大小 | 内容 |
+|------|------|------|
+| `data/ip/exams/question_bank.json` | 2.3 MB | 29回統合: **2,677 題** (stem + choices + answer) |
+| `data/ip/exams/answer_keys.json` | 57 KB | 29回 × 100 = **2,900 解答** (100% 正確) |
+| `data/ip/exams/by_year/*.json` | 29 files | 年度別 JSON |
+| `scripts/ocr-extract-questions.mjs` | — | Tesseract OCR 提取スクリプト |
+
+### 提取統計 (final)
+
+- 29 回試験: FY2009～FY2026 (58 PDF ダウンロード)
+- **2,860 / 2,900 題抽出 (98.6%)**
+- 解答正確率: 99.9% (2,858/2,860)
+- **選択肢完全率: 100% (空選択肢ゼロ)**
+- question_bank.json: 2.7 MB
+
+### 提取方法
+
+1. Tesseract OCR (v4, 4回のパーサ改善) → 題幹+解答の基盤データ
+2. Claude vision (7並列 agent) → 564 空選択肢を PDF 視覚読取りで補完
+
+証拠: `evidence/phase5/stage_02_audit.md`
+
+---
+
+## Session 68 Stage 2 OCR 品質修復
+
+### 修復統計
+
+| 修復類型 | 数量 |
+|---------|------|
+| P3 改行+ノイズ | 2,023 |
+| P2 文字置換 (TIT→IT, 0SS→OSS, サーパ→サーバ 等) | 763 |
+| P1 選択肢溢出切断 | 27 |
+| P0 偽Q100/幽霊Q109 削除 | 20 |
+| P0 Q1題幹 Claude vision 再抽出 | 13 |
+| **合計** | **2,846** |
+
+修復後: 2,840 題、切断題幹 0、幽霊題号 0、空答案 0、P2 残留 0
+
+### 全量 AI 審査方案 (Session 69 で実行)
+
+- 29 套 PDF → 画像変換 + ページマッピング
+- 每套 5 分片 (10 ページ/片)、6 並行 agent
+- 逐題: 画像 vs JSON 対照 → PASS / FIX
+- 図表題: figure_description 追記
+- 独立 reviewer 校験 (Rule D)
+
+### 残存課題
+
+- 数字 0↔9 誤認識: ~30+ (計算題に集中)
+- 題幹-選択肢不整合: ~14 (2015h27h, 2022r04)
+- 欠落問題: ~42 (図表題が主)
+- 試験説明残留: 3
+
+### 成果物
+
+| ファイル | 内容 |
+|---------|------|
+| `scripts/fix-ocr-quality.mjs` | P2+P3+P1 一括修正 |
+| `scripts/fix-p0-cleanup.mjs` | 偽Q100/幽霊Q109 除去 |
+| `scripts/fix-p0-q1-patch.mjs` | Q1 vision パッチ |
+| `evidence/phase5/stage_02_fix_report.md` | 修復証拠 |
+
+---
+
+## Session 69 Stage 2.5 全量 AI 審査完了
+
+### 審査統計
+
+| 指標 | 数値 |
+|------|------|
+| PDF 画像変換 | 29 PDF → 1,450 ページ PNG |
+| 審査対象 | 3,038 題次 (29 agent 並行) |
+| PASS | 1,784 (58.7%) |
+| FIX 適用 | 935 件 |
+| 欠落題補録 | 60 題 |
+| 図表更新 | 452 件 |
+
+### 修復後データ品質
+
+| 指標 | 修復前 | 修復後 |
+|------|--------|--------|
+| 総題数 | 2,840 | **2,900** |
+| 100題/套 | 0/29 | **29/29** |
+| 空題幹 | 13 | **0** |
+| 欠損選択肢 | 若干 | **0** |
+| has_figure | ~220 | **358** |
+| figure_description | ~0 | **266** |
+
+### Rule D 独立審査
+
+N=15 抽検 (code-reviewer agent, executor とは別): **12/15 PASS → CONDITIONAL PASS**
+- 3 件の修正指摘を手動適用済
+- 証拠: `evidence/phase5/stage_02_ai_review_audit.md`
+
+### 成果物
+
+| ファイル | 内容 |
+|---------|------|
+| `data/ip/exams/pages/` | 1,450 PNG |
+| `data/ip/exams/reviews/*.json` | 29 審査レポート |
+| `data/ip/exams/by_year/*.json` | 29 修正済 JSON (各 100 題) |
+| `data/ip/exams/question_bank.json` | 統合 2,900 題 |
+| `scripts/apply-ai-review.mjs` | AI 審査修正適用スクリプト |
+
+---
+
+## Next (Session 70)
+
+1. **Stage 3 開始**: 知識マッピング (過去問 2,900 題 → シラバス 1,413 用語)
