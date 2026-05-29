@@ -6,11 +6,11 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-05-29 Session 71 — Stage 2 補完完了：図表 FAIL 96件修復 (93修復 + 3降格) + FAIL計数調和** |
-| 当前阶段 | **Phase 5 Stage 2 補完完了 → Stage 3 待開始** |
-| 锁定决策 | **118** (D-001 ~ D-118) |
+| 最后更新 | **2026-05-29 Session 71 — Stage 2 補完完了 + Stage 2.6 実測審核を計画 (D-119)** |
+| 当前阶段 | **Phase 5 Stage 2.6 データ実測審核 (実施阶段・計画済、次セッション実行) → Stage 3 はゲート (D-119) 通過後** |
+| 锁定决策 | **119** (D-001 ~ D-119) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
-| 残課題 | has_figure不一致16件 (figure_path欠落、本96とは別) + q026型 stem汚染の全量精査 |
+| 次セッション | **Stage 2.6 審核を実行** — 計画書 `docs/phase5/STAGE_2.6_AUDIT_PLAN.md`、決定 `D-119` |
 
 ---
 
@@ -35,7 +35,8 @@
 | 2 | 過去問全量提取 (~2900 題) | ✅ **Session 66-67 完成** — 2,860題 (98.6%) |
 | 2.5 | OCR 品質修復 + 全量 AI 審査 | ✅ **Session 68-69 完了** — P0-P3修復 + 29套全量AI審査 (935修正, 60題補録, 452図表更新) → 2,900題 29/29×100q |
 | 2 補完 | ページマッピング + 図表裁剪 + 検証 + **FAIL修復** | ✅ **Session 70-71 完了** — 502図裁剪 → FAIL 96件を再推定で修復 (93修復+3降格) |
-| 3 | 知識マッピング (過去問 → シラバス节点) | ⏸ **次の開始対象** |
+| 2.6 | **データ実測審核** (新視点+外部源で正確度を CI 付き実測) | 🔵 **計画済 (D-119)、次セッション実行** — 計画 `docs/phase5/STAGE_2.6_AUDIT_PLAN.md` |
+| 3 | 知識マッピング (過去問 → シラバス节点) | ⏸ **Stage 2.6 ゲート通過後** |
 | 4 | AI 教科書生成 (三语详细讲解 + 图解) | ⏸ |
 | 5 | コードベース整理 | ✅ **Session 63 完成 (提前执行)** |
 | 6 | Web App 数据統合 | ⏸ |
@@ -119,6 +120,7 @@ Plan: `docs/phase5/PLAN.md`
 - D-108 ~ D-109: Phase 5 方向転換 + 数据目录
 - **D-110 ~ D-113: Session 63 全量重构**
 - **D-114 ~ D-118: Session 64 教科書設計（導航 + ユニット架构 + 記憶フック + 排列規則 + JSON Schema）**
+- **D-119: Session 71 Stage 2.6 データ実測審核 + Stage 3 ゲート（分層審核 / 外部源許可 / 確実即修・曖昧帰档）**
 
 ---
 
@@ -305,9 +307,16 @@ N=15 抽検 (code-reviewer agent, executor とは別): **12/15 PASS → CONDITIO
 
 ---
 
-## Next (Session 72)
+## Next (Session 72) — Stage 2.6 データ実測審核を実行
 
-1. **Stage 3 開始**: 知識マッピング (過去問 2,900 題 → シラバス 1,413 用語) — Stage 1+2 完了済で着手可能。
-2. **残課題 (Stage 3 と並行可)**:
-   - **has_figure 不一致 16 件**: `has_figure=true` だが `figure_path` 欠落（本 96 とは 0 重複の既存問題）。一覧: `data/ip/exams/.tmp/repair/orphan_has_figure_no_path.json`。図表抽出 or 降格の判定が必要。
-   - **stem 汚染の全量精査**: q026 で stem×choices×figure 不整合（別問題の stem 混入）を発見。同種バグの有無を全 2,900 題で監査検討。
+**Stage 3 の前に Stage 2.6 を完了させる**（D-119 ゲート）。ユーザー指示: 「遺留項ゼロまで実測してから Stage 3」。
+
+実行仕様: **`docs/phase5/STAGE_2.6_AUDIT_PLAN.md`**（決定根拠 `docs/decisions/D-119-stage-2.6-data-audit.md`）。
+
+要点:
+1. **全量センサス**（L3 跨题汚染 / L4 図文引用 / L6 答案分布）を全 2,900 題に → フラグ triage。
+2. **抽样深核**（L1 再解答逆検査 / L2 跨字段整合 / L5 数字 / L-ext 外部源交叉）を N≈100 層化 + 既知シードで → loop-until-no-new-class。
+3. 欠陥は D-119 方針（確実→即時修+backup / 曖昧→帰档）。
+4. ゲート 4 条件充足 → **Stage 3 開始**。
+
+**既知シード**: has_figure 孤児 16 (`data/ip/exams/.tmp/repair/orphan_has_figure_no_path.json`) / 題幹-選択肢不整合 ~14 (@2015h27h,2022r04) / 0↔9 数字誤識 ~30 / q026 型 stem 汚染。
