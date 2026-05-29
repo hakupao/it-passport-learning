@@ -6,10 +6,11 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-05-27 Session 70 — Stage 2 補完：ページマッピング + 図表裁剪 + 全量検証** |
-| 当前阶段 | **Phase 5 Stage 2 補完中 (図表修復 102件残) → Stage 3 待開始** |
+| 最后更新 | **2026-05-29 Session 71 — Stage 2 補完完了：図表 FAIL 96件修復 (93修復 + 3降格) + FAIL計数調和** |
+| 当前阶段 | **Phase 5 Stage 2 補完完了 → Stage 3 待開始** |
 | 锁定决策 | **118** (D-001 ~ D-118) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
+| 残課題 | has_figure不一致16件 (figure_path欠落、本96とは別) + q026型 stem汚染の全量精査 |
 
 ---
 
@@ -33,7 +34,8 @@
 | 1 | シラバス構造化提取 (Claude vision) | ✅ **Session 65 完成** |
 | 2 | 過去問全量提取 (~2900 題) | ✅ **Session 66-67 完成** — 2,860題 (98.6%) |
 | 2.5 | OCR 品質修復 + 全量 AI 審査 | ✅ **Session 68-69 完了** — P0-P3修復 + 29套全量AI審査 (935修正, 60題補録, 452図表更新) → 2,900題 29/29×100q |
-| 3 | 知識マッピング (過去問 → シラバス节点) | ⏸ |
+| 2 補完 | ページマッピング + 図表裁剪 + 検証 + **FAIL修復** | ✅ **Session 70-71 完了** — 502図裁剪 → FAIL 96件を再推定で修復 (93修復+3降格) |
+| 3 | 知識マッピング (過去問 → シラバス节点) | ⏸ **次の開始対象** |
 | 4 | AI 教科書生成 (三语详细讲解 + 图解) | ⏸ |
 | 5 | コードベース整理 | ✅ **Session 63 完成 (提前执行)** |
 | 6 | Web App 数据統合 | ⏸ |
@@ -284,8 +286,28 @@ N=15 抽検 (code-reviewer agent, executor とは別): **12/15 PASS → CONDITIO
 
 ---
 
-## Next (Session 71)
+## Session 71 Stage 2 補完完了（図表 FAIL 修復）
 
-1. **図表修復**: 102 枚の FAIL 図表を修復 — bbox 再推定 + 再裁剪 (FAIL 一覧: `_all_fails.json`)
-2. **has_figure 不一致の精査**: Vision 追加 152 題 vs Stage 2 未検出 17 題
-3. 修復完了後 → **Stage 3 開始**: 知識マッピング (過去問 2,900 題 → シラバス 1,413 用語)
+### 実施内容
+
+1. **FAIL 計数調和 (Item 1)**: `_all_fails.json` の `total_fail:102` は誤り。`fails` 配列 97 件のうち 1 件重複 → **真の唯一 FAIL = 96 件**。証拠: `evidence/phase5/stage_02_fail_reconciliation.md` + canonical 清单 `figures/_fails_canonical.json`。
+2. **Session 70 成果のコミット (Item 2)**: commit `7f85ca9`（STATE + session-70 ログ + 4 スクリプト）。
+3. **図表 96 件修復 (Item 3)**: 主ループ編成 + workflow 並列ビジョンの多ラウンド方式。**93 修復 + 3 降格、未解決 0**。
+   - ラウンド 1-3: ESTIMATE(general-purpose) → 確定的裁剪 → VERIFY(explore, Rule D) → loop-until-dry。86 件が自動収束。
+   - 手動 7 件: 跨ページ誤マッピング 2 (q097→p42, q061→p24)、位置誤認 2 (q069, q008)、表頭截断 3 (q011, q026, q072)。
+   - 降格 3 件: q063 / q090 / q029（真の図表なし、独立確認済）。
+   - Rule A/D 最終監査 (code-reviewer, N=15): 14 PASS + 1 → q026 の **stem 汚染バグ**を発見し訂正（図表は正しかった）。
+   - 証拠: `evidence/phase5/stage_02_figure_repair.md` + `audit_results_figure_repair.json`。
+
+### データ最終状態
+
+総 2,900 題 / 空答案 0 / figure_repaired 96 / has_figure(path付) 修復済。旧図 96 + 降格 3 を `figures/_rejected/` に温存 (Rule B)。
+
+---
+
+## Next (Session 72)
+
+1. **Stage 3 開始**: 知識マッピング (過去問 2,900 題 → シラバス 1,413 用語) — Stage 1+2 完了済で着手可能。
+2. **残課題 (Stage 3 と並行可)**:
+   - **has_figure 不一致 16 件**: `has_figure=true` だが `figure_path` 欠落（本 96 とは 0 重複の既存問題）。一覧: `data/ip/exams/.tmp/repair/orphan_has_figure_no_path.json`。図表抽出 or 降格の判定が必要。
+   - **stem 汚染の全量精査**: q026 で stem×choices×figure 不整合（別問題の stem 混入）を発見。同種バグの有無を全 2,900 題で監査検討。
