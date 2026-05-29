@@ -6,8 +6,8 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-05-27 Session 69 — Stage 2.5 全量 AI 審査完了** |
-| 当前阶段 | **Phase 5 Stage 2.5 完了 → Stage 3 待開始** |
+| 最后更新 | **2026-05-27 Session 70 — Stage 2 補完：ページマッピング + 図表裁剪 + 全量検証** |
+| 当前阶段 | **Phase 5 Stage 2 補完中 (図表修復 102件残) → Stage 3 待開始** |
 | 锁定决策 | **118** (D-001 ~ D-118) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
 
@@ -259,6 +259,33 @@ N=15 抽検 (code-reviewer agent, executor とは別): **12/15 PASS → CONDITIO
 
 ---
 
-## Next (Session 70)
+## Session 70 Stage 2 補完
 
-1. **Stage 3 開始**: 知識マッピング (過去問 2,900 題 → シラバス 1,413 用語)
+### 実施内容
+
+1. **データ品質修正**: 空答案 28 題を `answer_keys.json` から回填 + 2025r07-q026 手動修正
+2. **全量ページマッピング**: 二重チャネル（Tesseract OCR + Claude Vision 29 agent）→ 95.8% 一致率、Vision 採用
+3. **図表裁剪**: 502 枚を bbox 座標で裁剪 → `data/ip/exams/figures/`
+4. **JSON 回写**: 2,900 題に `source` (ページ溯源) + 493 題に `figure_path` / `figure_bbox_pct` / `figure_type`
+5. **全量検証**: 502 枚全数を 13 バッチ agent で目視検証 → 400 PASS / 102 FAIL (20.3%)
+
+### 成果物
+
+| ファイル | 内容 |
+|---------|------|
+| `data/ip/exams/mappings/*_pages.json` | OCR マッピング (29 套) |
+| `data/ip/exams/mappings/*_vision.json` | Vision マッピング (29 套) |
+| `data/ip/exams/mappings/final/*.json` | merge 済最終マッピング (29 套) |
+| `data/ip/exams/figures/*.png` | 裁剪済図表 (502 枚) |
+| `data/ip/exams/figures/_all_fails.json` | 検証 FAIL 一覧 (102 件) |
+| `scripts/build-page-mapping.py` | Tesseract OCR マッピング |
+| `scripts/compare-and-merge-mappings.mjs` | 二重チャネル比対 |
+| `scripts/crop-and-update.mjs` | 裁剪 + JSON 回写 |
+
+---
+
+## Next (Session 71)
+
+1. **図表修復**: 102 枚の FAIL 図表を修復 — bbox 再推定 + 再裁剪 (FAIL 一覧: `_all_fails.json`)
+2. **has_figure 不一致の精査**: Vision 追加 152 題 vs Stage 2 未検出 17 題
+3. 修復完了後 → **Stage 3 開始**: 知識マッピング (過去問 2,900 題 → シラバス 1,413 用語)
