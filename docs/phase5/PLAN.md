@@ -171,12 +171,38 @@ Claude vision 逐页（或多页批量）读取 PDF，提取为结构化 JSON。
 
 ---
 
-## §5 Stage 3 详细设计: 知識マッピング
+## §5 Stage 3 详细设计: 知識マッピング (D-126, Session 75)
 
-- AI 读取每道過去問 + シラバス知識树 → 判定该题考查哪个（些）知識节点
-- 填充 `syllabus_refs[]`
-- Rule A N=20 抽检映射准确性
-- 输出: enriched question_bank.json
+2,900 題 → `knowledge_tree.json`（63 小分類 / 1,413 用語）にマッピング。
+
+### 设计决策 (D-126)
+
+- **粒度 = 二层**: 小分類 primary + 用語 tags。
+- **基数 = primary + secondary[]**: 主小分類 1 + 関連 0〜2。
+- **检证 = 双盲 + coverage 分析**（D-125 流用、Rule D）。
+
+### syllabus_refs schema（旧 `[]` を置換）
+
+```json
+"syllabus_refs": {
+  "primary_topic": "tech-07-01",        // 小分類 id（主）
+  "secondary_topics": ["tech-07-02"],   // 小分類 id（0〜2）
+  "terms": ["主記憶", "キャッシュメモリ"], // 用語（0〜N）
+  "confidence": "high|medium|low",
+  "mapping_status": "agree|reconciled|escalated"
+}
+```
+
+### 手法（G3 起動）
+
+1. syllabus index 準備（63 小分類 + 配下用語、マッパーが Read する参照ファイル）。
+2. double-pass: 1 題 2 独立マッパー（異 subagent_type, Rule D）→ {primary, secondary, terms, confidence}。バッチ。
+3. reconcile: primary 一致→confirmed / 不一致→escalate。secondary/terms は和集合候補。
+4. coverage 分析: 63 小分類別の被マッピング題数、0 題 gap 報告。
+5. Rule A: N=20 層化独立監査（第3 subagent_type）。
+
+输出: enriched `question_bank.json` + `by_year/*`。invariants（correct_answer/answer_keys/figure/group/source）不変。
+ADR: `docs/decisions/D-126-stage-3-knowledge-mapping-design.md`。
 
 ---
 

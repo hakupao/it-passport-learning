@@ -7,10 +7,10 @@
 | 字段 | 值 |
 |---|---|
 | 最后更新 | **2026-05-31 Session 75 — Stage 2.7 commit(`30209a3`) → Stage 2.7b hi-dpi/多ページ二次修復(71→10残存, 0.34%, D-125) → ゲート受容(Step1) → Stage 3 設計開始** |
-| 当前阶段 | **Phase 5 Stage 2.7/2.7b 完了 → ゲート受容済 → Stage 3 知識マッピング「設計阶段」開始（実装前に D-019 設計問答）** |
-| 锁定决策 | **125** (D-001 ~ D-125) |
+| 当前阶段 | **Phase 5 Stage 3 知識マッピング — 設計 locked (D-126)。実装(G3)待ち** |
+| 锁定决策 | **126** (D-001 ~ D-126) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
-| 次セッション | **Stage 3（知識マッピング）設計を進める**。Stage 2.7b で残存欠陥 71→10（0.34%、全て answer 保存・主毒除去済）。残 10 題（figure-stem 描述差 + inline-table garble 2 + N-1 跨ページ）は任意の per-question 手当て対象（Stage 3 と並行可）。証拠: `evidence/phase5/stage_027b_repair.md` / `RETROSPECTIVE_stage2.7.md`。Stage 3 設計問答は session-75 ログ参照。 |
+| 次セッション | **Stage 3 実装(G3)起動**: 2,900題 double-pass マッピング → reconcile → coverage → Rule A → enriched question_bank。設計は D-126 で確定（二層: 小分類primary+用語tags / primary+secondary[] / 双盲+coverage）。残 10 フラグ題も stem 有でマッピング可（ブロックせず）。証拠: `evidence/phase5/stage_027b_repair.md`。実装方針: PLAN §5。 |
 
 ---
 
@@ -129,6 +129,7 @@ Plan: `docs/phase5/PLAN.md`
 - **D-123: Session 74 Stage 2.7 を多段パイプライン化（改良scan→scan先行ゲート→欠陥のみ独立検証→検証済のみ適用→再CI）。パイロットで単一パス検出＋即転写適用が不可信（ハルシネーション/プレースホルダ/group見逃し）と実証、却下。scan は印刷文を先に逐語転写。**
 - **D-124: Session 74 Stage 2.7 検出を「Opus ブラインド転写→機械的diff」に確定。3パイロットで真因=モデルと実証（default explore は dense日本語OCR不可でエコー/ハルシネーション、Opus は既存173dpi画像で正確）。stored非開示でエコー不能、NFKC+バイグラム類似度で候補抽出（high recall、精度は検証段で担保）。**
 - **D-125: Session 75 Stage 2.7b hi-dpi/多ページ二次パス方式を確定。300dpi分帯クロップ（整页高dpiは無効）+ ページN/N+1レンダ + double-blind(explore/code-reviewer) + bank規約正規化(問NN/〔分類〕/図ブロック剥離) + figure_inherent明示分類 + Rule A逐字監査(答案字母映射核験)。残71→10(0.34%)、全answer保存。教訓: NFKC+strip類似度は句読点/記号に盲目→独立逐字監査が機械の盲点を埋める。**
+- **D-126: Session 75 Stage 3 知識マッピング設計を確定（ユーザー問答）。二層粒度(小分類primary + 用語tags) / 基数 primary+secondary[](1主+0〜2関連) / 検証=双盲(異subagent_type)+coverage分析。syllabus_refs を `[]`→{primary_topic, secondary_topics[], terms[], confidence, mapping_status} に。invariants 不変。実装は G3。ADR: `D-126-stage-3-knowledge-mapping-design.md`。**
 
 ---
 
