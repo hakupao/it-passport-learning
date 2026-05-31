@@ -6,11 +6,11 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-05-29 Session 73 — Stage 2.6 完了(図表+groups.json+has_figure整合110+Phase C CI)。Phase C で stem/choices 系統 garble≈12%発見 → Stage 2.7 新設(D-122)** |
-| 当前阶段 | **Phase 5 Stage 2.7 全量 stem/choices 源照合・修復 (実施阶段・未着手) → Stage 3 はゲート (D-119+D-122) 通過後** |
-| 锁定决策 | **122** (D-001 ~ D-122) |
+| 最后更新 | **2026-05-31 Session 74 — Stage 2.7 完遂: 全2900題スキャン→603候補→double-blind+3way検証→521修復適用(Rule A 95%)。残存≈5%(answer-key保存)。再CI実測(真FN 2.5%)。ゲート受容待ち** |
+| 当前阶段 | **Phase 5 Stage 2.7 修復完了 (実施阶段・収尾) → Stage 3 はゲート条件5(再CI受容)でユーザー受容後に開始** |
+| 锁定决策 | **124** (D-001 ~ D-124) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
-| 次セッション | **Stage 2.7 を実行** — 自己完結仕様 `docs/phase5/STAGE_2.7_PLAN.md`。全2900題 stored stem/choices vs 源ページ vision 照合 → garble+内容不一致(q085型) 修復 → 再CI → Stage 3。answer_keys は不変(100%確認済)。 |
+| 次セッション | **Stage 2.7 ゲート受容判断 → Stage 3**。再CI 結果(`evidence/phase5/stage_027_reCI.md`): 残存≈5%(answer-key保存、主毒content_mismatch/致命garble除去済、真FN 2.5%はdistractor語句)。①ユーザーが受容→Stage 3(知識マッピング)開始可。②残課題=hi-dpi二次パス: 62 `s027_unresolved` + 8 `s027_choice_anomaly`(多ページ/表/式choices, q099/q086含む)を per-question hi-dpi クロップで修復。証拠: `RETROSPECTIVE_stage2.7.md`。 |
 
 ---
 
@@ -36,7 +36,7 @@
 | 2.5 | OCR 品質修復 + 全量 AI 審査 | ✅ **Session 68-69 完了** — P0-P3修復 + 29套全量AI審査 (935修正, 60題補録, 452図表更新) → 2,900題 29/29×100q |
 | 2 補完 | ページマッピング + 図表裁剪 + 検証 + **FAIL修復** | ✅ **Session 70-71 完了** — 502図裁剪 → FAIL 96件を再推定で修復 (93修復+3降格) |
 | 2.6 | **データ実測審核** (新視点+外部源で正確度を CI 付き実測) | ✅ **Session 72-73 完了** — 図表(単問16+共有図16群groups.json)+has_figure整合110+Phase C CI(critical 17/100, 母集団≈12%, answer_keys 100%) |
-| 2.7 | **全量 stem/choices 源照合・修復** (Phase C 発見の garble≈12%除去) | ⏸ **未着手 (D-122)** — 仕様 `docs/phase5/STAGE_2.7_PLAN.md` |
+| 2.7 | **全量 stem/choices 源照合・修復** (Phase C 発見の garble≈12%除去) | 🔄 **実施中 (D-122+D-123)** — heuristic 13.0%、多段パイプライン(改良scan→検証→適用)。仕様 `STAGE_2.7_PLAN.md`+`D-123` |
 | 3 | 知識マッピング (過去問 → シラバス节点) | ⏸ **Stage 2.7 ゲート通過後** |
 | 4 | AI 教科書生成 (三语详细讲解 + 图解) | ⏸ |
 | 5 | コードベース整理 | ✅ **Session 63 完成 (提前执行)** |
@@ -125,6 +125,8 @@ Plan: `docs/phase5/PLAN.md`
 - **D-120: Session 72 連問共有図「グループ共有図モデル」新設（group_id + groups メタ、sibling は複製せず参照）**
 - **D-121: Session 72 duplicate_extraction 系統バグ確認（4件収束）+ 修復方針（PDF再抽出+answer_keys正答復元）+ choice_swap/choice_ocr 新類**
 - **D-122: Session 73 Stage 2.7「全量 stem/choices 源照合・修復」新設（Phase C で stem garble≈12%・q085型内容不一致発見、answer_keys は100%健全）。Stage 3 ゲートに追加。**
+- **D-123: Session 74 Stage 2.7 を多段パイプライン化（改良scan→scan先行ゲート→欠陥のみ独立検証→検証済のみ適用→再CI）。パイロットで単一パス検出＋即転写適用が不可信（ハルシネーション/プレースホルダ/group見逃し）と実証、却下。scan は印刷文を先に逐語転写。**
+- **D-124: Session 74 Stage 2.7 検出を「Opus ブラインド転写→機械的diff」に確定。3パイロットで真因=モデルと実証（default explore は dense日本語OCR不可でエコー/ハルシネーション、Opus は既存173dpi画像で正確）。stored非開示でエコー不能、NFKC+バイグラム類似度で候補抽出（high recall、精度は検証段で担保）。**
 
 ---
 
