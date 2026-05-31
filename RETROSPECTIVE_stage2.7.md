@@ -44,3 +44,16 @@
 
 1. 多ページ問題 + 表/式 choices を hi-dpi per-question クロップで二次修復（escalate 62 + anomaly 8 + q099/q086）。
 2. Stage 3（知識マッピング）へ: 確定修復済データで開始可（D-122 ゲート条件5 = 再CI 受容後）。
+
+---
+
+## 追記 — Stage 2.7b 完了（Session 75, 2026-05-31, D-125）
+
+上記「次アクション 1」を実施。残存 71（62 unresolved + 9 anomaly）を **hi-dpi/多ページ double-blind** で二次修復:
+
+- **300dpi 分帯クロップ + ページ N/N+1**（整页高dpiは downsample で無効、跨ページが残存欠陥の主因と実証）。
+- double-blind（explore + code-reviewer, Opus, Rule D）→ reconcile（bank規約正規化）→ apply → **Rule A 監査 N=31（答案字母映射核験付）** → post-audit。
+- 結果: **71 → 10 残存（2.45%→0.34%）**。confirmed 20 / figure_inherent 15 / cleared 28。s027b 修復 stem 14 + choices 14。空 stem/choices/answer = 0、answer_keys/correct_answer/figure/group 不変。
+- Gap 1-5 への対応: Gap 3（跨ページ）= N+1 レンダで解消、Gap 4（表/式 choices）= 300dpi 分帯で解消。**新たな教訓**: NFKC+strip 類似度は句読点/記号に盲目 → 独立 Rule A 逐字監査が機械の盲点を埋める唯一の保険（D-125）。
+- 証拠: `evidence/phase5/stage_027b_repair.md` / ADR `docs/decisions/D-125-*.md`。
+- 残 10 題（figure-stem 描述差 + inline-table garble 2 + N-1 跨ページ）は任意の per-question 手当て対象。**全て answer 保存・主毒除去済のため Stage 3 をブロックしない**。
