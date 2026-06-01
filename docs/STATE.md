@@ -6,11 +6,11 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-05-31 Session 75 — Stage 2.7 commit(`30209a3`) → Stage 2.7b hi-dpi/多ページ二次修復(71→10残存, 0.34%, D-125) → ゲート受容(Step1) → Stage 3 設計開始** |
-| 当前阶段 | **Phase 5 Stage 3 知識マッピング — 設計 locked (D-126)。実装(G3)待ち** |
+| 最后更新 | **2026-06-01 Session 76 — Stage 3 知識マッピング実装(G3)完了。2,900題 double-pass(95.9%一致)→tie-break(analyst)→reconcile→coverage(gap 0/63)→Rule A N=20(妥当率100%)→apply。enriched question_bank 完成** |
+| 当前阶段 | **Phase 5 Stage 3 ✅ 完了。次は Stage 4 (AI 教科書生成, G4) — 設計済(D-114〜118)、ユーザー gate 待ち** |
 | 锁定决策 | **126** (D-001 ~ D-126) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
-| 次セッション | **Stage 3 実装(G3)起動**: 2,900題 double-pass マッピング → reconcile → coverage → Rule A → enriched question_bank。設計は D-126 で確定（二層: 小分類primary+用語tags / primary+secondary[] / 双盲+coverage）。残 10 フラグ題も stem 有でマッピング可（ブロックせず）。証拠: `evidence/phase5/stage_027b_repair.md`。実装方針: PLAN §5。 |
+| 次セッション | **Stage 4 (G4) 起動待ち**: シラバス末端節点ごとに三語教科書ユニット生成（D-114〜118）。基盤データ = enriched question_bank.json（syllabus_refs 充填済: primary_topic→ユニット構成 / terms→用語講解 / question id→inline_quiz）。任意フォローアップ: syllabus 語彙ギャップ補完 / low-confidence 59題見直し（共に非ブロック）。証拠: `evidence/phase5/stage_03_mapping.md`。 |
 
 ---
 
@@ -38,7 +38,7 @@
 | 2.6 | **データ実測審核** (新視点+外部源で正確度を CI 付き実測) | ✅ **Session 72-73 完了** — 図表(単問16+共有図16群groups.json)+has_figure整合110+Phase C CI(critical 17/100, 母集団≈12%, answer_keys 100%) |
 | 2.7 | **全量 stem/choices 源照合・修復** (Phase C 発見の garble≈12%除去) | ✅ **Session 74 完了** — 全2900スキャン→603候補→521修復(double-blind+3way, Rule A 95%)。再CI 残存≈5% |
 | 2.7b | **hi-dpi/多ページ二次修復** (残存71フラグ) | ✅ **Session 75 完了 (D-125)** — 300dpi分帯+N/N+1+double-blind→71→10残存(0.34%)。confirmed 20/figure_inherent 15/cleared 28。Rule A監査 N=31(answer映射核験) |
-| 3 | 知識マッピング (過去問 → シラバス节点) | 🔄 **Session 75 設計阶段開始**（ゲート受容済） |
+| 3 | 知識マッピング (過去問 → シラバス节点) | ✅ **Session 76 完了 (G3, D-126)** — 2,900題 double-pass(95.9%一致)+tie-break+Rule A N=20(妥当率100%)。gap 0/63、enriched question_bank、invariant不変 |
 | 4 | AI 教科書生成 (三语详细讲解 + 图解) | ⏸ |
 | 5 | コードベース整理 | ✅ **Session 63 完成 (提前执行)** |
 | 6 | Web App 数据統合 | ⏸ |

@@ -12,7 +12,7 @@
 |---|-------|-------|------|--------|
 | 1 | シラバス構造化提取 | Download シラバス Ver.6.5 PDF → Claude vision 逐页提取 → `knowledge_tree.json`（大分類→中分類→小分類→用語 完整树）。同时提取試験要綱 → `exam_meta.json` + IT用語集 → `official_glossary.json` | — | ⏸ 待 gate |
 | 2 | 過去問全量提取 | Download ~20 年 PDF（問題冊子 + 解答例）→ Claude vision 提取 → `question_bank.json`（~2000 題: 題幹 + 4 选项 + 正答 + 年度 + 出題番号） | — | ⏸ |
-| 3 | 知識マッピング | AI 辅助将每道過去問映射到シラバス知識节点 → enriched `question_bank.json` with `syllabus_refs[]`。Rule A N-sample 抽检 | Stage 1 + 2 | ⏸ |
+| 3 | 知識マッピング | AI 辅助将每道過去問映射到シラバス知識节点 → enriched `question_bank.json` with `syllabus_refs[]`。Rule A N-sample 抽检 | Stage 1 + 2 | ✅ **Session 76 (G3)** — 95.9%一致 / Rule A 妥当率100% / gap 0/63 |
 | 4 | AI 教科書生成 | 对シラバス每个末端节点生成三语详细讲解（日主 + 中 + 英）。含例子、图解（Mermaid→SVG）。Pre-computed trilingual。分批生成，cap batch size。Rule A 每批抽检 | Stage 1 + 3 | ⏸ |
 | 5 | コードベース整理 | 打 tag 保存当前状态 → 删除废弃代码（Phase 1 pipeline / book reader / book routes / stage scripts）→ 更新 CLAUDE.md 项目描述 | Stage 4 数据就绪后 | ⏸ |
 | 6 | Web App 数据統合 | 接入新数据源 → 适配 Quiz（過去問题库）/ Glossary（官方用語）/ 教科書阅读界面（シラバス树导航）→ 测试 → 部署 | Stage 5 | ⏸ |
@@ -171,7 +171,9 @@ Claude vision 逐页（或多页批量）读取 PDF，提取为结构化 JSON。
 
 ---
 
-## §5 Stage 3 详细设计: 知識マッピング (D-126, Session 75)
+## §5 Stage 3 详细设计: 知識マッピング (D-126, Session 75 / 実装 Session 76 ✅)
+
+> **Status**: ✅ 完了 (G3, Session 76)。2,900 題 double-pass(95.9%一致) → tie-break(analyst) → reconcile → coverage(gap 0/63) → Rule A N=20(妥当率100%, 0 wrong) → apply。実施証拠: `evidence/phase5/stage_03_mapping.md`。
 
 2,900 題 → `knowledge_tree.json`（63 小分類 / 1,413 用語）にマッピング。
 
