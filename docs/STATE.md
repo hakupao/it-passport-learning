@@ -6,11 +6,11 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-06-01 Session 77 — Stage 3.5「後置クリーン」✅完了(D-127)。push 4commit同期 / 3.5b 補词4(term1413→1417) / 3.5a low-conf重判59題(scientist+Opus, confirmed53/changed6/↑42/↓0/仍low17) / terms清洗17題(造語除去,全題樹内0残存) / Rule A N=20(重判correct6+accept9+wrong1[q065 3:1争議維持], 補词4はbackup対比で審計duplicate誤判を証伪=全件正)。次=G4 起動待ち** |
+| 最后更新 | **2026-06-01 Session 77 — Stage 3.5「後置クリーン」✅完了(D-127)。push 4commit同期 / 3.5b 補词4(term1413→1417) / 3.5a low-conf重判59題(scientist+Opus, confirmed53/changed6/↑42/↓0/仍low17) / terms清洗17題(造語除去,全題樹内0残存) / Rule A N=20(重判correct6+accept9+wrong1) / q065はユーザー裁定で審計採用→strategy-01-02改判 / 補词4はbackup対比で審計duplicate誤判を証伪=全件正 / q065 answer矛盾は原PDF核査で数据健全と確認(解題理解層)。次=G4 起動待ち** |
 | 当前阶段 | **Phase 5 Stage 3.5 ✅完了。次は Stage 4 (AI 教科書生成, G4) — 設計済(D-114〜118)、ユーザー gate 待ち** |
 | 锁定决策 | **127** (D-001 ~ D-127) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
-| 次セッション | **G4 (Stage 4) 起動待ち**: シラバス末端節点ごとに三語教科書ユニット生成(D-114〜118)。基盤=enriched question_bank.json(syllabus_refs 充填+重判+terms清洗済、confidence high2292/medium591/low17)。任意フォロー(非ブロック): q065 primary裁定 / 仍low17題のG4時注意 / 2011h23tokubetsu-q099 choices OCR再確認。証拠: `evidence/phase5/stage_035_mapping.md` + `stage_035_audit.md`。 |
+| 次セッション | **G4 (Stage 4) 起動待ち**: シラバス末端節点ごとに三語教科書ユニット生成(D-114〜118)。基盤=enriched question_bank.json(syllabus_refs 充填+重判+terms清洗済、confidence high2292/medium591/low17)。残フォロー(非ブロック): 仍low17題のG4時注意 / q065はG4でIPA公式解説に従う(answer ウ) / 2011h23tokubetsu-q099 choices OCR再確認。証拠: `evidence/phase5/stage_035_mapping.md` + `stage_035_audit.md`。 |
 
 ---
 
