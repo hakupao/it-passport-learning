@@ -6,11 +6,11 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-06-01 Session 76 — Stage 3 知識マッピング実装(G3)完了。2,900題 double-pass(95.9%一致)→tie-break(analyst)→reconcile→coverage(gap 0/63)→Rule A N=20(妥当率100%)→apply。enriched question_bank 完成** |
-| 当前阶段 | **Phase 5 Stage 3 ✅ 完了。次は Stage 4 (AI 教科書生成, G4) — 設計済(D-114〜118)、ユーザー gate 待ち** |
-| 锁定决策 | **126** (D-001 ~ D-126) |
+| 最后更新 | **2026-06-01 Session 77 — Stage 3.5「後置クリーン」✅完了(D-127)。push 4commit同期 / 3.5b 補词4(term1413→1417) / 3.5a low-conf重判59題(scientist+Opus, confirmed53/changed6/↑42/↓0/仍low17) / terms清洗17題(造語除去,全題樹内0残存) / Rule A N=20(重判correct6+accept9+wrong1[q065 3:1争議維持], 補词4はbackup対比で審計duplicate誤判を証伪=全件正)。次=G4 起動待ち** |
+| 当前阶段 | **Phase 5 Stage 3.5 ✅完了。次は Stage 4 (AI 教科書生成, G4) — 設計済(D-114〜118)、ユーザー gate 待ち** |
+| 锁定决策 | **127** (D-001 ~ D-127) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
-| 次セッション | **Stage 4 (G4) 起動待ち**: シラバス末端節点ごとに三語教科書ユニット生成（D-114〜118）。基盤データ = enriched question_bank.json（syllabus_refs 充填済: primary_topic→ユニット構成 / terms→用語講解 / question id→inline_quiz）。任意フォローアップ: syllabus 語彙ギャップ補完 / low-confidence 59題見直し（共に非ブロック）。証拠: `evidence/phase5/stage_03_mapping.md`。 |
+| 次セッション | **G4 (Stage 4) 起動待ち**: シラバス末端節点ごとに三語教科書ユニット生成(D-114〜118)。基盤=enriched question_bank.json(syllabus_refs 充填+重判+terms清洗済、confidence high2292/medium591/low17)。任意フォロー(非ブロック): q065 primary裁定 / 仍low17題のG4時注意 / 2011h23tokubetsu-q099 choices OCR再確認。証拠: `evidence/phase5/stage_035_mapping.md` + `stage_035_audit.md`。 |
 
 ---
 
@@ -39,6 +39,7 @@
 | 2.7 | **全量 stem/choices 源照合・修復** (Phase C 発見の garble≈12%除去) | ✅ **Session 74 完了** — 全2900スキャン→603候補→521修復(double-blind+3way, Rule A 95%)。再CI 残存≈5% |
 | 2.7b | **hi-dpi/多ページ二次修復** (残存71フラグ) | ✅ **Session 75 完了 (D-125)** — 300dpi分帯+N/N+1+double-blind→71→10残存(0.34%)。confirmed 20/figure_inherent 15/cleared 28。Rule A監査 N=31(answer映射核験) |
 | 3 | 知識マッピング (過去問 → シラバス节点) | ✅ **Session 76 完了 (G3, D-126)** — 2,900題 double-pass(95.9%一致)+tie-break+Rule A N=20(妥当率100%)。gap 0/63、enriched question_bank、invariant不変 |
+| 3.5 | **後置クリーン** (low-conf 重判 + 語彙核心語補完) | ✅ **Session 77 完了 (D-127)** — 補词4 / 重判59(↑42低減: low59→17) / terms清洗17 / Rule A N=20(改判6是認, 補词4正[審計duplicate誤判をbackup証伪]) |
 | 4 | AI 教科書生成 (三语详细讲解 + 图解) | ⏸ |
 | 5 | コードベース整理 | ✅ **Session 63 完成 (提前执行)** |
 | 6 | Web App 数据統合 | ⏸ |
@@ -130,6 +131,7 @@ Plan: `docs/phase5/PLAN.md`
 - **D-124: Session 74 Stage 2.7 検出を「Opus ブラインド転写→機械的diff」に確定。3パイロットで真因=モデルと実証（default explore は dense日本語OCR不可でエコー/ハルシネーション、Opus は既存173dpi画像で正確）。stored非開示でエコー不能、NFKC+バイグラム類似度で候補抽出（high recall、精度は検証段で担保）。**
 - **D-125: Session 75 Stage 2.7b hi-dpi/多ページ二次パス方式を確定。300dpi分帯クロップ（整页高dpiは無効）+ ページN/N+1レンダ + double-blind(explore/code-reviewer) + bank規約正規化(問NN/〔分類〕/図ブロック剥離) + figure_inherent明示分類 + Rule A逐字監査(答案字母映射核験)。残71→10(0.34%)、全answer保存。教訓: NFKC+strip類似度は句読点/記号に盲目→独立逐字監査が機械の盲点を埋める。**
 - **D-126: Session 75 Stage 3 知識マッピング設計を確定（ユーザー問答）。二層粒度(小分類primary + 用語tags) / 基数 primary+secondary[](1主+0〜2関連) / 検証=双盲(異subagent_type)+coverage分析。syllabus_refs を `[]`→{primary_topic, secondary_topics[], terms[], confidence, mapping_status} に。invariants 不変。実装は G3。ADR: `D-126-stage-3-knowledge-mapping-design.md`。**
+- **D-127: Session 77 Stage 3.5「Stage 3 後置クリーン」を新設（ユーザー選択、G4 前置の任意品質クリーン）。3.5a low-conf 59題を Opus+figure で跨段高精度重判（昇格可なら confidence↑、依然 low は入档、subagent_type 既存4段と相異=Rule D）。3.5b 語彙ギャップ19語を甄别し核心考点語4のみ knowledge_tree へ補完（サービスデスク/セキュリティパッチ/アジャイル/組込みシステム、仮想サーバ等は不補、term 1413→1417 文字列級挿入）。term計数 1413 は総出現数で正(当初「1391修正」案は Set去重の誤判定で撤回)。invariants 不変、バックアップ `.pre-s035`、Rule A/B/D 適用。ADR: `D-127-stage-3.5-post-mapping-cleanup.md`。**
 
 ---
 
