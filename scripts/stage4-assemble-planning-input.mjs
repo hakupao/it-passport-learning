@@ -18,23 +18,29 @@ const TREE = join(ROOT, "data/ip/syllabus/knowledge_tree.json");
 const BANK = join(ROOT, "data/ip/exams/question_bank.json");
 const OUT_DIR = join(ROOT, "data/ip/textbook/.planning");
 
-const PILOTS = ["strategy-02-04", "management-11-29", "technology-16-43"];
-
 const tree = JSON.parse(readFileSync(TREE, "utf8"));
 const bank = JSON.parse(readFileSync(BANK, "utf8"));
 const questions = bank.questions;
 
-// --- 全 topic を平坦化 (id -> {topic, category}) ---
+// --- 全 topic を平坦化 (id -> {topic, category}), 出現順 = シラバス自然順 ---
 const topicMap = new Map();
+const allTopicIds = [];
 for (const cat of tree.categories) {
   for (const mj of cat.major_categories) {
     for (const md of mj.medium_categories) {
       for (const tp of md.topics || []) {
         topicMap.set(tp.id, { topic: tp, category: cat.id, major: mj.name_jp, medium: md.name_jp });
+        allTopicIds.push(tp.id);
       }
     }
   }
 }
+
+// --- 対象 topic: CLI args 指定 (空 = 全 63 topic, D-128-A 全量) ---
+// 使用例: node stage4-assemble-planning-input.mjs                  # 全 63
+//         node stage4-assemble-planning-input.mjs strategy-01-02 ... # 指定のみ
+const TARGETS = process.argv.slice(2).length ? process.argv.slice(2) : allTopicIds;
+for (const id of TARGETS) if (!topicMap.has(id)) throw new Error(`unknown topic id: ${id}`);
 
 // --- 節点級題頻 (primary) を全 63 topic で集計 → 分位閾値 (D-131-C) ---
 const primaryCount = new Map(); // topicId -> #questions where primary_topic==topicId
@@ -68,10 +74,10 @@ function termFreq(topicId, term) {
   return { inTopic, global };
 }
 
-// --- pilot 節点ごとに入力を構築 ---
-const stats = { generated_for: PILOTS, badge_thresholds: { t33, t67, rule: "n<t33=低頻 / t33<=n<t67=標準 / n>=t67=頻出" }, topics: [] };
+// --- 対象 topic ごとに入力を構築 ---
+const stats = { generated_for: TARGETS, badge_thresholds: { t33, t67, rule: "n<t33=低頻 / t33<=n<t67=標準 / n>=t67=頻出" }, topics: [] };
 
-for (const id of PILOTS) {
+for (const id of TARGETS) {
   const entry = topicMap.get(id);
   if (!entry) throw new Error(`pilot topic not found: ${id}`);
   const tp = entry.topic;

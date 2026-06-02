@@ -102,6 +102,8 @@ function plannerPrompt(topicId, feedback) {
 
 ## ルール (プロジェクト確定決策)
 1. **5〜8 term/unit** (D-115: 1ユニット≈15分の原子単位)。逸脱(4 or 9)は強い概念的根拠がある場合のみ、rationale に明記。
+   - **topic 全体が5語未満の場合**: 分割せず単一 unit にする (unit の term 数 = topic の全 term 数、3〜4語でも正当)。
+   - **topic が大規模(40語超)の場合**: 同じ 5〜8 規則で多数 unit に分割。意味のまとまりを最優先し、最終 unit が端数(3〜4語)になっても可 (rationale に明記)。
 2. **入力 terms を過不足なく使う**: 全 term をちょうど1回ずつ、いずれかの unit に入れる。term 文字列は入力と**完全一致**(改変・追加・削除・翻訳しない)。
 3. **排列 = 概念依存を最優先、出題頻度を補助** (D-117):
    - unit の順序(unit_order): 前提概念を扱う unit を先に。
@@ -136,7 +138,7 @@ ${JSON.stringify(plan)}
 ## 必ず機械的に検算する項目
 1. **all_terms_covered**: 入力 terms の全 term が plan に**ちょうど1回**出現するか。漏れ=missing_terms、入力に無い term=extra_terms(捏造) に列挙。
 2. **no_duplicates**: 同じ term が2回以上現れていないか(duplicate_terms)。
-3. **unit_sizes_ok**: 各 unit が 5〜8 term か。逸脱があれば issue に unit_id と term 数を記載(rationale で正当化されているか評価)。
+3. **unit_sizes_ok**: 各 unit が 5〜8 term か。逸脱があれば issue に unit_id と term 数を記載(rationale で正当化されているか評価)。**ただし: topic 全体の term が5未満なら単一 unit がその term 数(3〜4等)になるのは正当 → unit_sizes_ok=true。大規模 topic で最終 unit が端数(3〜4語)になるのも rationale があれば軽微(low)、unit_sizes_ok は維持してよい。**
 4. **concept_order_sound**: 前提概念が依存先より前にあるか(概念依存の妥当性)。明確な逆転は high。
 5. **freq_order_aux**: unit 内で概念的に同格な term は freq_in_topic 高→低 になっているか(補助規則なので軽微)。
 6. **prereq_consistent**: 各 unit の prerequisites が unit_order と矛盾しないか(後の unit を前提にしていないか)。
@@ -151,7 +153,11 @@ StructuredOutput ツールで REVIEW_SCHEMA に従い返してください。`
 }
 
 // ---- 実行: pipeline(plan → review&repair) ----
-const topicIds = Array.isArray(args) && args.length ? args : ['strategy-02-04', 'management-11-29', 'technology-16-43']
+// args は JSON 文字列で届く場合があるため頑健にパース (Session 79 で Phase B に追加した対策を Phase A にも適用)。
+const parsedArgs = typeof args === 'string' && args.trim() ? JSON.parse(args) : args
+const topicIds = Array.isArray(parsedArgs) && parsedArgs.length
+  ? parsedArgs
+  : ['strategy-02-04', 'management-11-29', 'technology-16-43'] // 既定 = pilot 3 (args 未指定時のみ)
 const MAX_ROUNDS = 3
 
 const results = await pipeline(
@@ -202,7 +208,16 @@ const results = await pipeline(
       if (!replanned) break
       current = replanned
     }
-    return { topic_id: topicId, final_plan: current, final_review: review, rounds: history.length, history }
+    // final_plan は planner agent が plan_{id}.json へ既に Write 済 (general-purpose は Write 可)。
+    // reviewer (code-reviewer) は read-only で書けないため、review は workflow 返回値経由で永続化する。
+    return {
+      topic_id: topicId,
+      rounds: history.length,
+      final_review: review,
+      history_verdicts: history.map((h) => ({ round: h.round, verdict: h.verdict })),
+      units: current?.units?.length ?? 0,
+      total_terms: current?.units?.reduce((s, u) => s + (u.terms?.length || 0), 0) ?? 0,
+    }
   }
 )
 
@@ -211,9 +226,16 @@ const summary = clean.map((r) => ({
   topic_id: r.topic_id,
   verdict: r.final_review?.verdict,
   rounds: r.rounds,
-  units: r.final_plan?.units?.length,
-  total_terms: r.final_plan?.units?.reduce((s, u) => s + (u.terms?.length || 0), 0),
+  units: r.units,
+  total_terms: r.total_terms,
 }))
 log(`Phase A 完了: ${summary.map((s) => `${s.topic_id}=${s.verdict}(${s.units}u/${s.total_terms}t,${s.rounds}r)`).join(' | ')}`)
 
-return { summary, results: clean }
+// reviews[] = review_{id}.json 形 (stage4-phaseA-persist.mjs が落盘)。
+const reviews = clean.map((r) => ({
+  topic_id: r.topic_id,
+  rounds: r.rounds,
+  final_review: r.final_review,
+  history_verdicts: r.history_verdicts,
+}))
+return { summary, reviews }

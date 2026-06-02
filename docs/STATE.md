@@ -6,11 +6,11 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-06-02 Session 79 — G4 Phase A 実行完了。pilot 3節点の per-topic 規劃 pass → 統合 ToC。3/3 Rule D PASS。**実行=Claude Code Workflow `wf_9dacedbb-06f` (pipeline: plan=general-purpose/opus → review-and-repair=code-reviewer/opus, 別 subagent_type=Rule D, repair最大3R, ultracode, 外部API不使用 D-132)**。結果: strategy-02-04 知的財産権=3u(8/5/5)/PASS-r1 / management-11-29 サービスマネジメントシステム=5u(全5)/PASS-r2(CONCERNS→修復) / technology-16-43 システムの構成=4u(6/6/6/7)/PASS-r2。計 12 unit / 68 用語。独立確定性検算: term 過不足0・捏造0・重複0・サイズ全5〜8。badge=全63節点分位(低頻<27.7≤標準<39.7≤頻出)。産出: `unit_index.pilot.json` + `.planning/*` + `evidence/stage_04_toc_pilot/{toc_pilot.md,audit.md}`。**次=ユーザー ToC ゲート審査 (D-128-A)、承認後 Phase B 正文生成。** |
-| 当前阶段 | **Phase 5 Stage 4 実行中。Phase A(ToC)+B(日語+翻訳) pilot 完了。12 unit 三語 (`_jp/_zh/_en`, 68語×3) + 19図。Rule D 日語12/12・翻訳11+1。Rule A 日語15/15正確・翻訳8/8忠実。日語ゲート承認済。**三語ゲート(Phase B pilot 最終)提出→ユーザー審査待ち**。承認後 全量(63 topic)** |
+| 最后更新 | **2026-06-02 Session 80 — G4 全量 Phase A 完了。63/63 topic 規劃 → 正式 ToC `unit_index.json`。ToC ゲート審査待ち。** step1 脚本泛化 (assemble→全63 / workflow→lean reviews 返却+境界prompt+args硬化 / 新 `phaseA-persist` [reviewer=code-reviewer は Write 非搭載のため返却値経由で review 永続化] / merge-toc→正式 unit_index.json + 確定性結構復検を HARD gate 化)。step2 = 検証批 5 (大節点91/88 + 亜下限3/4語) → gate PASS → 全量 55。**結果: 63 topic / 244 unit / 1417 term。Rule D PASS=54/CONCERNS=9/FAIL=0。HARD構造復検 失敗=0 (入力1417=配置1417, 過不足0/捏造0/重複0)**。大節点全 PASS (77語=1R)。実行=Workflow `wf_95479e6c-8ad`(検証5) + `wf_fdd23701-9ef`(残55, 186agent/9.3M tok)。pilot3 plan は再規劃せず複用。産出: `unit_index.json`(866KB) + `evidence/stage_04_toc/{toc.md,structural_audit.json,gate_report.md}`。**ToC ゲート (D-128-A) = ユーザー承認済 (2026-06-02、修正要望なし)。次 = step3 schema 体検 → step4 全量 Phase B。** |
+| 当前阶段 | **Phase 5 Stage 4 実行中。Phase A 全量完了 + ToC ゲート承認済 (63 topic/244 unit/1417 term, Rule D 54P/9C/0F, HARD構造復検0失敗)。三語ゲート済の pilot 12 unit は温存。次 = step3 (pilot 12 unit を web app 接続し schema 体検) → step4 全量 Phase B (日語→翻訳, 分批ゲート)。** |
 | 锁定决策 | **132** (D-001 ~ D-132) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
-| 次セッション | **G4 全量 (63 topic) — 起動語「开始 G4 全量」。合意した順序 (Session 79 末、pilot 承認済)**: ① **脚本泛化** (LLM不要・機械): `assemble-planning-input.mjs` の PILOTS→全63 topic、`merge-toc.mjs`→正式 `unit_index.json` 出力、`fixtures/assemble-units/render/merge-translations` の入力を `.pilot.json`→正式 index に。② **全量 Phase A 規劃のみ** (`phaseA-planning.workflow`, 63 topic を 2〜3 批で) → 全書 `unit_index.json` → **ToC ゲート** (安く構造を先に確定、最重要)。③ **大量内容前に schema 落地体検**: 既存 12 pilot unit を web app の最小阅读視図に接続し、JSON 形状/三語切換/図レンダが UI で OK か確認 (schema 修正は 12 unit で発見≫250)。④ **全量 Phase B**: 日語 分批→ゲート→翻訳 分批→マージ。第一批は保守的に (1 category + 1ゲート) で放大後の新坑を確認してから開放。translator 本土用語指針=**適用済・未検証** (第一批 Rule A で確認)。91語級 topic の切分も未圧測。session 分割 (~12〜18h workflow, 定額 D-132)。各段 Rule A/D。完了後 Stage 5→6。残(非ブロック): low17題 / q065=answer ウ。再利用可スクリプト10本は session-79 参照。 |
+| 次セッション | **ToC ゲート承認後の続き。残順序**: ③ **schema 落地体検**: pilot 12 unit を web app 最小阅读視図に接続、JSON/三語/図レンダを UI 確認 (schema 修正は 12 で発見≫250)。④ **全量 Phase B**: 日語 分批→ゲート→翻訳 分批→マージ。第一批保守的 (1 category + 1ゲート)。translator 本土用語指針=適用済・未検証 (第一批 Rule A 確認)。各段 Rule A/D。完了後 Stage 5→6。残(非ブロック): low17題 / q065=answer ウ。**Phase B 脚本泛化 (fixtures/assemble-units/render/merge-translations の .pilot.json→正式 index) は step4 着手時に即跑即測で実施 (step1 から後ろ倒し、報備済)**。Phase A 再利用スクリプト: assemble-planning-input / phaseA-planning.workflow / phaseA-persist / merge-toc。 |
 
 ---
 
@@ -40,7 +40,7 @@
 | 2.7b | **hi-dpi/多ページ二次修復** (残存71フラグ) | ✅ **Session 75 完了 (D-125)** — 300dpi分帯+N/N+1+double-blind→71→10残存(0.34%)。confirmed 20/figure_inherent 15/cleared 28。Rule A監査 N=31(answer映射核験) |
 | 3 | 知識マッピング (過去問 → シラバス节点) | ✅ **Session 76 完了 (G3, D-126)** — 2,900題 double-pass(95.9%一致)+tie-break+Rule A N=20(妥当率100%)。gap 0/63、enriched question_bank、invariant不変 |
 | 3.5 | **後置クリーン** (low-conf 重判 + 語彙核心語補完) | ✅ **Session 77 完了 (D-127)** — 補词4 / 重判59(↑42低減: low59→17) / terms清洗17 / Rule A N=20(改判6是認, 補词4正[審計duplicate誤判をbackup証伪]) |
-| 4 | AI 教科書生成 (三语详细讲解 + 图解) | 🔄 **Session 79 Phase A+B pilot 完了** — 12 unit **三語** (`_jp/_zh/_en`,68語×3)+19図。Rule D 日語12/12・翻訳11+1、Rule A 日語15/15・翻訳8/8。日語ゲート承認。**三語ゲート待ち** → 全量(63 topic) |
+| 4 | AI 教科書生成 (三语详细讲解 + 图解) | 🔄 **Session 80 全量 Phase A 完了 + ToC ゲート承認済** — 63 topic/244 unit/1417語 正式 ToC `unit_index.json`。Rule D 54P/9C/0F、HARD構造復検0失敗(1417語過不足0)。pilot 12 unit 三語(Session 79, 三語ゲート済)は温存。次 step3 schema 体検 → step4 全量 Phase B |
 | 5 | コードベース整理 | ✅ **Session 63 完成 (提前执行)** |
 | 6 | Web App 数据統合 | ⏸ |
 
