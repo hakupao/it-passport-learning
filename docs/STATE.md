@@ -6,11 +6,11 @@
 
 | 字段 | 值 |
 |---|---|
-| 最后更新 | **2026-06-02 Session 78 — G4 起動 → Stage 4 生成設計を確定(D-128〜131)。D-128 二段式(規劃→ToCゲート→内容)+pilot-first(3跨類節点)。**実行=全工程 Claude Code Workflow/Opus subagents+ultracode (D-132: Max plan, 外部 Anthropic API/Batches 不使用、当初 Batches 案撤回)**。D-129 全工程 Opus 4.8・最高effort=adaptive thinking+`effort:max`(budget_tokens廃止を公式確認・temp/top_p/top_k も除去)・三語=日語権威源→二次翻訳。D-130 per-topic LLM 規劃pass→廉価ToCゲート。D-131 選題=term題池/節点抽样・頻度=題数分位・難度は捏造せず(年度+term跨度)・図解二軌(Mermaid新図 + 原裁剪図を `figure_index.json` 索引附加)。規模更正: 旧330〜530→実~180〜240 unit。後段でユーザー共識: API 境界=構建期 Claude Code(外部API不使用)/ web運行時 外部API(D-132 範囲収窄)+ Mistral 残留清理。次=Phase A(pilot 3節点 ToC 規劃→ユーザー審査)。** |
-| 当前阶段 | **Phase 5 Stage 4 (AI 教科書生成) 実行中。生成設計確定(D-128〜131)。次は Phase A: pilot 3節点の ToC 規劃 → ユーザー審査ゲート** |
+| 最后更新 | **2026-06-02 Session 79 — G4 Phase A 実行完了。pilot 3節点の per-topic 規劃 pass → 統合 ToC。3/3 Rule D PASS。**実行=Claude Code Workflow `wf_9dacedbb-06f` (pipeline: plan=general-purpose/opus → review-and-repair=code-reviewer/opus, 別 subagent_type=Rule D, repair最大3R, ultracode, 外部API不使用 D-132)**。結果: strategy-02-04 知的財産権=3u(8/5/5)/PASS-r1 / management-11-29 サービスマネジメントシステム=5u(全5)/PASS-r2(CONCERNS→修復) / technology-16-43 システムの構成=4u(6/6/6/7)/PASS-r2。計 12 unit / 68 用語。独立確定性検算: term 過不足0・捏造0・重複0・サイズ全5〜8。badge=全63節点分位(低頻<27.7≤標準<39.7≤頻出)。産出: `unit_index.pilot.json` + `.planning/*` + `evidence/stage_04_toc_pilot/{toc_pilot.md,audit.md}`。**次=ユーザー ToC ゲート審査 (D-128-A)、承認後 Phase B 正文生成。** |
+| 当前阶段 | **Phase 5 Stage 4 実行中。Phase A(ToC)+B(日語+翻訳) pilot 完了。12 unit 三語 (`_jp/_zh/_en`, 68語×3) + 19図。Rule D 日語12/12・翻訳11+1。Rule A 日語15/15正確・翻訳8/8忠実。日語ゲート承認済。**三語ゲート(Phase B pilot 最終)提出→ユーザー審査待ち**。承認後 全量(63 topic)** |
 | 锁定决策 | **132** (D-001 ~ D-132) |
 | Open Questions | OQ-01 + OQ-02 (Phase 1 carryover, low priority) |
-| 次セッション | **G4 Phase A 起動**: pilot 3節点 (technology-16-43 システムの構成 / management-11-29 サービスマネジメントシステム / strategy-02-04 知的財産権) に per-topic 規劃 pass (**Claude Code Workflow + Opus subagents + ultracode**, D-132) → 統合 ToC → ユーザー審査。承認後 Phase B 内容生成(Claude Code)+Rule A 抽检+単 unit **吞吐/耗時**外挿 → 全量 workflow gate。設計: D-128〜132。残フォロー(非ブロック): 仍low17題のG4時注意 / q065はG4でIPA公式解説に従う(answer ウ)。着手前確認: mmdc/mermaid-cli 工具链(Phase B 図レンダ、本地CLI)。**API 境界(D-132): 構建期=Claude Code(外部API不使用)/ web運行時=外部API(provider.ts 不変)**。Q1〜Q4 答案+共識整理は session-78 §「G4 作業キックオフ整理」。 |
+| 次セッション | **三語ゲート → 全量 (63 topic)**: ① ユーザーが `evidence/phase5/stage_04_content_jp/{sample_trilingual.md,sample_jp.md,audit.md}` + `units/*.json`(三語) + `figures/*.svg` を審査 → Phase B pilot 完了判定。承認 → ② **全量**: Phase A 規劃(残60 topic, `stage4-phaseA-planning.workflow.mjs` を全 topic 入力で)→ToC ゲート→Phase B 日語(`...content-jp...`)→ゲート→翻訳(`...translate...`)→マージ。session 分割 (~12〜18h workflow, 定額 D-132)。**全量前に translator prompt へ「日式借词回避・中国本土標準 IT 用語」指針+例を追加** (pilot Rule A 学び)。残フォロー(非ブロック): low17題 / q065=answer ウ。微小実装決定は session-79。再利用可スクリプト: assemble-planning-input / phaseA-planning.workflow / merge-toc / phaseB-fixtures / phaseB-content-jp.workflow / assemble-units / render-figures / phaseB-translate.workflow / merge-translations / ruleA-audit(jp,translation)。 |
 
 ---
 
@@ -40,7 +40,7 @@
 | 2.7b | **hi-dpi/多ページ二次修復** (残存71フラグ) | ✅ **Session 75 完了 (D-125)** — 300dpi分帯+N/N+1+double-blind→71→10残存(0.34%)。confirmed 20/figure_inherent 15/cleared 28。Rule A監査 N=31(answer映射核験) |
 | 3 | 知識マッピング (過去問 → シラバス节点) | ✅ **Session 76 完了 (G3, D-126)** — 2,900題 double-pass(95.9%一致)+tie-break+Rule A N=20(妥当率100%)。gap 0/63、enriched question_bank、invariant不変 |
 | 3.5 | **後置クリーン** (low-conf 重判 + 語彙核心語補完) | ✅ **Session 77 完了 (D-127)** — 補词4 / 重判59(↑42低減: low59→17) / terms清洗17 / Rule A N=20(改判6是認, 補词4正[審計duplicate誤判をbackup証伪]) |
-| 4 | AI 教科書生成 (三语详细讲解 + 图解) | 🔄 **Session 78 生成設計確定 (D-128〜131)** — Phase A (pilot ToC) 待ち |
+| 4 | AI 教科書生成 (三语详细讲解 + 图解) | 🔄 **Session 79 Phase A+B pilot 完了** — 12 unit **三語** (`_jp/_zh/_en`,68語×3)+19図。Rule D 日語12/12・翻訳11+1、Rule A 日語15/15・翻訳8/8。日語ゲート承認。**三語ゲート待ち** → 全量(63 topic) |
 | 5 | コードベース整理 | ✅ **Session 63 完成 (提前执行)** |
 | 6 | Web App 数据統合 | ⏸ |
 
