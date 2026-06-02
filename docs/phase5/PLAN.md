@@ -14,7 +14,7 @@
 | 2 | 過去問全量提取 | Download ~20 年 PDF（問題冊子 + 解答例）→ Claude vision 提取 → `question_bank.json`（~2000 題: 題幹 + 4 选项 + 正答 + 年度 + 出題番号） | — | ⏸ |
 | 3 | 知識マッピング | AI 辅助将每道過去問映射到シラバス知識节点 → enriched `question_bank.json` with `syllabus_refs[]`。Rule A N-sample 抽检 | Stage 1 + 2 | ✅ **Session 76 (G3)** — 95.9%一致 / Rule A 妥当率100% / gap 0/63 |
 | 3.5 | 後置クリーン (D-127) | low-conf 59題の Opus 跨段重判 + 語彙ギャップ核心語補完 (knowledge_tree)。G4 前置の任意品質クリーン (ユーザー選択) | Stage 3 | ✅ **Session 77** — 補词4 / 重判59(low59→17) / terms清洗17 / Rule A N=20妥当 |
-| 4 | AI 教科書生成 | 对シラバス每个末端节点生成三语详细讲解（日主 + 中 + 英）。含例子、图解（Mermaid→SVG）。Pre-computed trilingual。分批生成，cap batch size。Rule A 每批抽检 | Stage 1 + 3 | ⏸ |
+| 4 | AI 教科書生成 | 对シラバス每个末端节点生成三语详细讲解（日主 + 中 + 英）。含例子、图解（Mermaid→SVG）。Pre-computed trilingual。分批生成，cap batch size。Rule A 每批抽检 | Stage 1 + 3 | 🔄 **Session 78 实行设计确定 (D-128〜131)** — Phase A (pilot ToC) 待ち |
 | 5 | コードベース整理 | 打 tag 保存当前状态 → 删除废弃代码（Phase 1 pipeline / book reader / book routes / stage scripts）→ 更新 CLAUDE.md 项目描述 | Stage 4 数据就绪后 | ⏸ |
 | 6 | Web App 数据統合 | 接入新数据源 → 适配 Quiz（過去問题库）/ Glossary（官方用語）/ 教科書阅读界面（シラバス树导航）→ 测试 → 部署 | Stage 5 | ⏸ |
 
@@ -264,6 +264,22 @@ data/ip/textbook/
 - 分批生成，每批 ~10 个ユニット
 - 每批 Rule A N=3 独立审核
 - Batch size capped（per memory: 长上下文衰减控制）
+
+---
+
+### 实行设计 (D-128~132, Session 78 / G4 起動時に確定)
+
+D-114~118 は内容架构・導航 (高層)。Session 78 で「どう生成するか」を確定:
+
+- **D-128 アーキテクチャ/実行**: 二段式 = **Phase A 規劃 (per-topic LLM → 全書 ToC)** → 廉価 ToC ゲート (ユーザー審査) → **Phase B 内容生成**。**pilot-first** (3 跨類節点: technology-16-43 / management-11-29 / strategy-02-04) で schema+質+吞吐+Rule A を検証してから全量。実行チャネル: **全工程 Claude Code (Workflow/subagents/ultracode, `model=opus`) — 外部 API 不使用 (D-132)**。pilot=小 workflow(3節点) / 全量=大 workflow(63 topic)。
+- **D-129 モデル/三語**: 全工程 **Opus** (`model=opus` + ultracode、Claude Code 経路 D-132; API の effort/budget_tokens は不使用)。三語 = **日語権威源 → 二次翻訳** (一致性/可審計/官方術語忠実、pre-computed)。
+- **D-130 単元分割/排列**: per-topic LLM 規劃 pass。入力 {topic, terms[], term 題頻, 前置概念} → 出力 = ユニット分割(5〜8語)+順序 (概念依存+頻度, D-117)。ToC 先行確定。
+- **D-131 選題/頻度/図解**: 即時チェック=term 題池字符串匹配 / チャレンジ=節点抽样 / 出題頻度=題数分位 (頻出/標準/低頻) / 「混合難度」は捏造せず**年度+term 跨度**で定義。**図解二軌**: ① Mermaid 新図→SVG (`textbook/figures/`)、② Stage2 原裁剪図を `figure_index.json` で索引附加し溯源対照 (unit に `source_figures[]`)。
+- **D-132 実行制約**: 全 LLM 工作は **Claude Code (Max plan)** — 外部 Anthropic API / Batches API 不使用。機械装配・図レンダは TS/JS スクリプト。コストは定額、見積りは**吞吐/耗時 + Max plan レート制限**。
+- **規模更正**: D-115 の 330〜530 unit は旧推定語数 2,651 ベース。curated tree 1,417 → 実 **~180〜240 unit**。
+- schema 拡張: unit に `generated_figures[]` + `source_figures[]`、全局 `figure_index.json`。
+
+> 着手前確認 (Phase A): mmdc/mermaid-cli 工具链 (Phase B 図レンダ、本地 CLI)。**外部 Anthropic API は不使用 (D-132)** — 全 LLM は Claude Code 経路 (Workflow/subagents)。
 
 ---
 
