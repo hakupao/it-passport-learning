@@ -87,6 +87,13 @@ errors 0 · warnings 0 · lang-complete 12/12 · generated figs 19/19 · source 
 - **Rule D**: writer = main agent (harness 実装) ≠ reviewer = code-reviewer subagent (opus, 別 subagent_type)。指摘→修正→再 review の写審分離ループ。
 - **invariants 不変**: question_bank / knowledge_tree / answer_keys / textbook units 未改 (harness は読取専用、新規コードのみ)。
 
+## Post-commit 安全审查 (path-traversal hardening)
+
+commit a2851b9 後の自動 security review が `loadUnit(unitId)` に **path traversal (HIGH)** を検出 (`[unitId]` = user-controlled URL param、deployed app で本番露出)。却下せず修正:
+- `loadUnit`: 厳格 allowlist `UNIT_ID_RE=/^[a-z0-9][a-z0-9-]{0,63}$/` (`.`/`/`/NUL 排除)。
+- `loadGeneratedSvg`/`loadSourcePngDataUri`: `confineToRoot()` で resolve 後 root 内包確認 (脱出→null)。
+- 検証: `loader.test.ts` 11 PASS (CI安全)、正規ページ SCHEMA OK 維持、traversal=404。
+
 ## 発見した schema 上の所見 (Phase B/Stage 6 への申し送り)
 
 1. **全 Mermaid SVG が同一 id `my-svg`**: 1ページに複数 inline すると `<style>#my-svg{...}` が衝突しうる (全図同一テーマのため視覚影響は無いが、Stage 6 で本番表示する際は render script で id 一意化が望ましい)。
