@@ -3,6 +3,10 @@
  * Stage 4 Phase B — 翻訳マージ (確定的, D-118 三語平铺)
  * translation_{unit}.json (zh/en) を units/{unit}.json に _zh/_en 平铺で結合。
  * term は term_jp で整合 (同数・同順を検証、不一致は fail)。lang_status を更新。
+ *
+ * 全量バッチ対応 (Session 82):
+ *  - CLI args = 対象 unit id。空=translation_*.json が存在し未マージ (lang_status.zh!=='generated') の全 unit。
+ *  - バッチ外 (未翻訳) unit の translation 欠落は error にしない (明示指定時のみ error)。
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -12,7 +16,12 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const UNITS = join(ROOT, "data/ip/textbook/units");
 const PL = join(ROOT, "data/ip/textbook/.planning");
 
-const ids = JSON.parse(readFileSync(join(ROOT, "data/ip/textbook/unit_index.pilot.json"), "utf8")).topics.flatMap((t) => t.units.map((u) => u.unit_id));
+const allIds = JSON.parse(readFileSync(join(ROOT, "data/ip/textbook/unit_index.json"), "utf8")).topics.flatMap((t) => t.units.map((u) => u.unit_id));
+const TARGET = process.argv.slice(2);
+const hasTrans = (uid) => existsSync(join(PL, `translation_${uid}.json`));
+const alreadyMerged = (uid) => existsSync(join(UNITS, `${uid}.json`)) && JSON.parse(readFileSync(join(UNITS, `${uid}.json`), "utf8")).lang_status?.zh === "generated";
+// 明示指定=そのまま / 既定=翻訳存在 かつ 未マージ
+const ids = TARGET.length ? TARGET : allIds.filter((uid) => hasTrans(uid) && !alreadyMerged(uid));
 
 let merged = 0;
 const errors = [];

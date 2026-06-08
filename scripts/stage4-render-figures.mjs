@@ -6,7 +6,7 @@
  * 成功: figure.rendered=true。失敗: 「無図」に降格 (figure=null) + .mmd と error を
  * failures/ に归档 (Rule B)。units json を更新。確定的・LLM 不要 (D-132)。
  */
-import { readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -21,8 +21,10 @@ mkdirSync(FIG, { recursive: true });
 mkdirSync(TMP, { recursive: true });
 mkdirSync(FAILDIR, { recursive: true });
 
-const unitFiles = readdirSync(UNITS).filter((f) => f.endsWith(".json"));
-let ok = 0, fail = 0, total = 0;
+// 全量バッチ対応 (Session 82): CLI args=対象 unit id (空=全 unit)。既レンダ図は skip。
+const TARGET = new Set(process.argv.slice(2));
+const unitFiles = readdirSync(UNITS).filter((f) => f.endsWith(".json")).filter((f) => !TARGET.size || TARGET.has(f.replace(/\.json$/, "")));
+let ok = 0, fail = 0, total = 0, skip = 0;
 const failures = [];
 
 for (const uf of unitFiles) {
@@ -32,6 +34,8 @@ for (const uf of unitFiles) {
   for (const t of doc.terms) {
     if (!t.figure || !t.figure.mermaid) continue;
     total += 1;
+    // 既レンダ skip (pilot 等を再生成しない、冪等)
+    if (t.figure.rendered === true && existsSync(join(FIG, t.figure.svg_path.split("/").pop()))) { skip += 1; continue; }
     const base = t.figure.svg_path.split("/").pop().replace(/\.svg$/, "");
     const mmd = join(TMP, base + ".mmd");
     const out = join(FIG, base + ".svg");
@@ -56,7 +60,7 @@ for (const uf of unitFiles) {
 }
 
 console.log("=== Mermaid → SVG レンダ ===");
-console.log(`total=${total} ok=${ok} fail=${fail}`);
+console.log(`total=${total} ok=${ok} fail=${fail} skip(既レンダ)=${skip}`);
 if (failures.length) {
   console.log("失敗 (降格+归档 failures/stage_04_figures/):");
   for (const f of failures) console.log(`  [${f.unit}] ${f.term} (${f.base}): ${f.error}`);

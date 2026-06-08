@@ -61,7 +61,7 @@ const samples = (Array.isArray(parsed) ? parsed : []).map((s) => { const [unit_i
 if (!samples.length) throw new Error('no samples')
 
 const results = await parallel(
-  samples.map((s) => () => agent(auditPrompt(s.unit_id, s.term), { label: `traudit:${s.unit_id}:${s.term}`, phase: 'Audit', schema: AUDIT_SCHEMA, model: 'opus', agentType: 'critic' }))
+  samples.map((s) => () => agent(auditPrompt(s.unit_id, s.term), { label: `traudit:${s.unit_id}:${s.term}`, phase: 'Audit', schema: AUDIT_SCHEMA, model: 'opus', agentType: 'oh-my-claudecode:critic' }))
 )
 const clean = results.filter(Boolean)
 const faithful = clean.filter((r) => r.faithful).length

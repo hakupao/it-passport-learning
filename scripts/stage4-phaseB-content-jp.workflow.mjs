@@ -1,6 +1,6 @@
 export const meta = {
   name: 'stage4-phaseB-content-jp',
-  description: 'Stage 4 Phase B: 12 unit の日語正文生成 (四段 D-115) + Rule D 核験',
+  description: 'Stage 4 Phase B: バッチ unit の日語正文生成 (四段 D-115) + Rule D 核験 (args=unit id 配列)',
   phases: [
     { title: 'Write', detail: 'general-purpose(opus) が日語正文(概要/用語講解/まとめ+Mermaid)を生成' },
     { title: 'Review', detail: 'code-reviewer(opus) Rule D 核験 + 非PASS は repair' },
@@ -87,7 +87,7 @@ const REVIEW_SCHEMA = {
 }
 
 const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
-const idxPath = `${ROOT}/data/ip/textbook/unit_index.pilot.json`
+const idxPath = `${ROOT}/data/ip/textbook/unit_index.json`
 const contentPath = (u) => `${ROOT}/data/ip/textbook/.planning/content_${u}.json`
 
 function writerPrompt(unitId, feedback) {

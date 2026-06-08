@@ -2,7 +2,7 @@
 /**
  * Stage 4 Phase B — 確定的 fixtures 装配 (D-131-A/B 選題 + D-131-E 原裁剪図索引)
  *
- * 非 LLM (D-132)。unit_index.pilot.json の各 unit に対し:
+ * 非 LLM (D-132)。unit_index.json (全量 ToC) の各 unit に対し:
  *  - inline_quiz: 即時チェック (per term 1〜2題, D-131-A)
  *  - challenge_questions: チャレンジ (per unit 3〜5題, D-131-B, 混合=年度+term跨度 D-131-D)
  *  - source_figures: 引用題が持つ原裁剪図/group共有図 (D-131-E track2)
@@ -17,7 +17,7 @@ import { dirname, join } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const rd = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
 
-const toc = rd("data/ip/textbook/unit_index.pilot.json");
+const toc = rd("data/ip/textbook/unit_index.json");
 const bank = rd("data/ip/exams/question_bank.json");
 const groups = rd("data/ip/exams/groups.json");
 const questions = bank.questions;
@@ -180,7 +180,7 @@ for (const topic of toc.topics) {
 // figure_index を直列化
 const figureIndexOut = {
   schema_version: "stage4-figure-index-v1",
-  scope: "pilot-3-nodes",
+  scope: "full",
   note: "原裁剪図/group共有図の溯源索引 (D-131-E track2)。再裁剪せず Stage2 figures を参照。",
   figures: [...figureIndex.values()].map((f) => ({
     figure_path: f.figure_path,
@@ -192,8 +192,8 @@ const figureIndexOut = {
   })),
 };
 
-writeFileSync(join(ROOT, "data/ip/textbook/.planning/quiz_fixtures.pilot.json"), JSON.stringify({ scope: "pilot-3-nodes", units: fixtures }, null, 2));
-writeFileSync(join(ROOT, "data/ip/textbook/figure_index.pilot.json"), JSON.stringify(figureIndexOut, null, 2));
+writeFileSync(join(ROOT, "data/ip/textbook/.planning/quiz_fixtures.json"), JSON.stringify({ scope: "full", units: fixtures }, null, 2));
+writeFileSync(join(ROOT, "data/ip/textbook/figure_index.json"), JSON.stringify(figureIndexOut, null, 2));
 
 // 要約
 console.log("=== Phase B fixtures 装配完了 ===");
@@ -203,5 +203,5 @@ for (const f of fixtures) {
   tIn += m.inline_total; tCh += m.challenge_count; tFb += m.inline_fallback_terms.length; tFig += m.source_figure_count;
   console.log(`[${f.unit_id}] inline=${m.inline_total}(fb:${m.inline_fallback_terms.length}) challenge=${m.challenge_count}(年${m.challenge_year_span}/term${m.challenge_terms_covered}) figs=${m.source_figure_count}`);
 }
-console.log(`\n計: inline=${tIn} challenge=${tCh} fallback_terms=${tFb} source_figures(unique paths)=${figureIndexOut.figures.length} (unit参照延べ=${tFig})`);
-console.log("出力: .planning/quiz_fixtures.pilot.json + figure_index.pilot.json");
+console.log(`\n計: units=${fixtures.length} inline=${tIn} challenge=${tCh} fallback_terms=${tFb} source_figures(unique paths)=${figureIndexOut.figures.length} (unit参照延べ=${tFig})`);
+console.log("出力: .planning/quiz_fixtures.json + figure_index.json");

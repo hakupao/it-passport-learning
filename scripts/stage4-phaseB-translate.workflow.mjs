@@ -90,7 +90,7 @@ function translatorPrompt(unitId, feedback) {
 ## 翻訳方針
 - **忠実第一**: 日語の意味・ニュアンス・教育的意図を正確に保持。情報の追加・省略・改変をしない。
 - **専門用語**: IT パスポートの標準的な zh/en 専門用語を使う(例: 著作権法=著作权法/Copyright Act、特許=专利/patent、仮想化=虚拟化/virtualization、可用性=可用性/availability)。
-- **zh は中国本土の標準 IT 用語を使い、日式借词を避ける** (pilot Rule A の学び)。例: 稼働率→「可用率/运行率」(×稼动率)、解約→「取消订阅/退订」(×解约)、定義要件→「定义要素」(×定义要件)、パリティ→「校验信息/奇偶校验」(×校验位)、稼働→「运行」(×稼动)。意味だけでなく本土読者にとって自然な語形を選ぶ。
+- **zh は中国本土の標準 IT 用語を使い、日式借词を避ける** (pilot/管理批 Rule A の学び)。例: 稼働率→「可用率/运行率」(×稼动率)、解約→「取消订阅/退订」(×解约)、定義要件→「定义要素」(×定义要件)、パリティ→「校验信息/奇偶校验」(×校验位)、稼働→「运行」(×稼动)、**成果物→「交付物」(×成果物)**、**妥当性確認(テスト)→「确认(测试)」(×有效性确认)**(確認=validation は本土標準で「确认」、検証=verification は「验证」と対にする)。意味だけでなく本土読者にとって自然な語形を選ぶ。
 - **term_jp**: 日語 term をそのままキーとして保持(同数・同順・同一文字列)。加えて term_zh / term_en に訳語を付す。
 - **記憶フック**: 「○○といえば××」のニーモニック性を各言語で自然に再現 (zh 例「说到○○就是××」/ en 例「○○ → ××」or「Think of ○○ as ××」)。意味の核を保つ。
 - 文体: 学習者向けにやさしく、但し正確に。zh は簡体字。en は平易な学習英語。
@@ -141,7 +141,7 @@ const results = await pipeline(
     let current = trans
     let review = null
     for (let round = 1; round <= MAX_ROUNDS; round++) {
-      review = await agent(reviewerPrompt(unitId, current), { label: `trrev:${unitId}#${round}`, phase: 'Review', schema: REVIEW_SCHEMA, model: 'opus', agentType: 'code-reviewer' })
+      review = await agent(reviewerPrompt(unitId, current), { label: `trrev:${unitId}#${round}`, phase: 'Review', schema: REVIEW_SCHEMA, model: 'opus', agentType: 'oh-my-claudecode:code-reviewer' })
       history.push({ round, verdict: review?.verdict })
       if (!review || review.verdict === 'PASS') break
       if (round === MAX_ROUNDS) break
