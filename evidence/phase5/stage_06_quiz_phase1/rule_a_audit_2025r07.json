@@ -1,0 +1,43 @@
+{
+  "stage": "Phase 5 Stage 6 / Quiz Phase 1 (翻訳 backfill)",
+  "decision": "D-136",
+  "exam": "2025r07",
+  "session": 87,
+  "auditor": "oh-my-claudecode:critic (opus) — translator=general-purpose, in-pipeline reviewer=code-reviewer と別 subagent_type (Rule A 独立 + Rule D 写審分離)",
+  "method": "N=12 層化抽検 (figure 8 / cleaned 8、決定的サンプリング)。各サンプルで JP源(input) vs 翻訳(sidecar) を独立核験、figure問は図画像を Read して clean stem の図一致を核験",
+  "result": {
+    "n": 12,
+    "accurate": 12,
+    "accuracy_rate": "100%",
+    "bySeverity": { "none": 10, "low": 2, "medium": 0, "high": 0 },
+    "all_checks_true": true,
+    "checks_covered": ["faithful_zh", "faithful_en", "terminology_ok", "clean_stem_faithful"]
+  },
+  "low_issues": [
+    {
+      "id": "2025r07-q062",
+      "lang": "zh",
+      "detail": "b/c 選択肢訳「物理的／逻辑的」が日本語連体形「的」を残しやや日式。穴埋めトークン a/b/c を表構造に挿入する制約による意図的処理。意味・正誤判定 (正解ア=主存储器/物理的/逻辑的) に影響なし。"
+    },
+    {
+      "id": "2025r07-q065",
+      "lang": "en/zh",
+      "detail": "en stem の構文がやや不自然 (which is the information... → which information... が自然)、zh 選択肢エ「模式（schema）」が英語併記。いずれも意味保持・正誤無影響の文体/表記の軽微指摘。"
+    }
+  ],
+  "conclusion": "PASS — 12/12 accurate, 0 medium/high。figure 問の vision-clean 再構成 (q026 売掛金表等) も独立 critic が図一致を確認。low 2 件は化粧レベル (意味・正誤判定に無影響)。Phase 1 翻訳 pipeline (D-136) は全量スケールに信頼可。",
+  "raw_audits": [
+    {"id":"2025r07-q001","accurate":true,"severity":"none"},
+    {"id":"2025r07-q026","accurate":true,"severity":"none","note":"figure: 壊れた raw OCR 表を図から完璧に再構成 (発注/入荷 garble→受注/売上計上/現金回収)。正解 ウ=2,300 整合"},
+    {"id":"2025r07-q029","accurate":true,"severity":"none"},
+    {"id":"2025r07-q037","accurate":true,"severity":"none"},
+    {"id":"2025r07-q045","accurate":true,"severity":"none"},
+    {"id":"2025r07-q062","accurate":true,"severity":"low"},
+    {"id":"2025r07-q065","accurate":true,"severity":"low"},
+    {"id":"2025r07-q069","accurate":true,"severity":"none"},
+    {"id":"2025r07-q072","accurate":true,"severity":"none"},
+    {"id":"2025r07-q076","accurate":true,"severity":"none"},
+    {"id":"2025r07-q083","accurate":true,"severity":"none"},
+    {"id":"2025r07-q098","accurate":true,"severity":"none"}
+  ]
+}

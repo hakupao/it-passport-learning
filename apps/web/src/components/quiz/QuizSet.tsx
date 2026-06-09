@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import { orderedChoices, type QuizQuestion } from "@/lib/quiz/quizModel";
+import { localizedChoices, localizedStem, type QuizQuestion } from "@/lib/quiz/quizModel";
 
 import styles from "./quiz.module.css";
 
@@ -47,7 +47,7 @@ export function QuizSet({
         <p className={styles.empty}>{t("empty")}</p>
       ) : (
         questions.map((q, i) => (
-          <QuestionCard key={q.id} q={q} index={i + 1} t={t} />
+          <QuestionCard key={q.id} q={q} index={i + 1} t={t} locale={locale} />
         ))
       )}
     </div>
@@ -58,20 +58,22 @@ function QuestionCard({
   q,
   index,
   t,
+  locale,
 }: {
   q: QuizQuestion;
   index: number;
   t: ReturnType<typeof useTranslations>;
+  locale: string;
 }): React.ReactElement {
   const [revealed, setRevealed] = useState(false);
-  const choices = orderedChoices(q);
+  const choices = localizedChoices(q, locale);
 
   return (
     <article className={styles.qCard}>
       <p className={styles.qSource}>
         {index}. {t("sourcePrefix")}: {q.source_label}
       </p>
-      <p className={styles.qStem}>{q.stem_jp}</p>
+      <p className={styles.qStem}>{localizedStem(q, locale)}</p>
       {q.figure ? (
         // eslint-disable-next-line @next/next/no-img-element -- static pre-optimized WebP from /public, dimensions vary
         <img
