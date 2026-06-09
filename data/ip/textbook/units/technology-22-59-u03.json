@@ -1,0 +1,238 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-22-59-u03",
+  "topic_id": "technology-22-59",
+  "category": "technology",
+  "title_jp": "メール・ファイル・運用プロトコル",
+  "unit_summary_jp": "電子メールの送受信(SMTP/POP/IMAP)、ファイル転送(FTP)、時刻同期とIP自動設定(NTP/DHCP)など、身近な応用層プロトコルを理解する。",
+  "order_in_topic": 3,
+  "prerequisites": [
+    "technology-22-59-u01",
+    "technology-22-59-u02"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、電子メールの送受信(SMTP・POP・IMAP)、ファイル転送(FTP)、時刻同期(NTP)、IPアドレスの自動設定(DHCP)といった、私たちが日常的に使う応用層プロトコルを学びます。どれが送信用でどれが受信用か、各プロトコルの役割を区別する問題が頻出で、ネットワーク分野の得点源になる重要単元です。",
+    "freq_badge": "標準",
+    "est_minutes": 18,
+    "intro_zh": "在本单元中，我们将学习日常生活中常用的应用层协议，包括电子邮件的收发（SMTP、POP、IMAP）、文件传输（FTP）、时间同步（NTP）以及 IP 地址的自动配置（DHCP）。考试经常出题要求区分各协议的作用——哪个用于发送、哪个用于接收，因此本单元是网络领域的重要得分点。",
+    "intro_en": "In this unit, we learn the application-layer protocols we use every day, including sending and receiving email (SMTP, POP, IMAP), file transfer (FTP), time synchronization (NTP), and automatic IP address configuration (DHCP). Exam questions frequently ask you to distinguish each protocol's role—which one is for sending and which is for receiving—making this an important unit and a reliable source of points in the networking field."
+  },
+  "terms": [
+    {
+      "term": "SMTP",
+      "definition_jp": "電子メールを送信・転送するためのプロトコル。",
+      "explanation_jp": "SMTP(Simple Mail Transfer Protocol)は、メールを送る側で使われるプロトコルです。利用者がメールを送信するとき、また送信側メールサーバから受信側メールサーバへメールを届けるときに使われます。\n\nメールの流れは「送信(SMTP)→ 受信(POP/IMAP)」と覚えます。SMTPはあくまで送る・運ぶ役で、受け取って読み出す役は別プロトコルである点が試験の定番です。POPやIMAPとの違い(送信か受信か)を必ず区別できるようにしましょう。",
+      "analogy_jp": "ポストに手紙を投函し、郵便局が宛先の郵便局まで配送する流れにあたります。SMTPは「送り出して運ぶ」担当で、受け取りは別の仕組みが行います。",
+      "memory_hook_jp": "SMTPといえばメール送信",
+      "inline_quiz": [
+        "2009h21a-q069",
+        "2011h23a-q077"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"送信者\"] -->|\"SMTP\"| B[\"送信メールサーバ\"]; B -->|\"SMTP\"| C[\"受信メールサーバ\"]; C -->|\"POP/IMAP\"| D[\"受信者\"]",
+        "svg_path": "figures/technology-22-59-u03-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "SMTP",
+      "term_en": "SMTP",
+      "definition_zh": "用于发送和转发电子邮件的协议。",
+      "definition_en": "A protocol for sending and relaying email.",
+      "explanation_zh": "SMTP（Simple Mail Transfer Protocol，简单邮件传输协议）是邮件发送方使用的协议。当用户发送邮件时，以及发送方邮件服务器向接收方邮件服务器投递邮件时，都会用到它。\n\n邮件的流程可以记为「发送（SMTP）→ 接收（POP/IMAP）」。SMTP 只负责发送和传送，接收并读取邮件由其他协议负责，这是考试的常考点。请务必能够区分它与 POP、IMAP 的差异（是发送还是接收）。",
+      "explanation_en": "SMTP (Simple Mail Transfer Protocol) is the protocol used by the sending side of email. It is used when a user sends a message, and also when a sending mail server delivers a message to a receiving mail server.\n\nRemember the flow of mail as \"send (SMTP) → receive (POP/IMAP).\" SMTP is purely the role that sends and carries; receiving and reading messages is handled by a different protocol, and this is a classic exam point. Make sure you can always distinguish it from POP and IMAP (sending versus receiving).",
+      "analogy_zh": "相当于把信投进邮筒，再由邮局把信投递到收件方所在邮局的过程。SMTP 负责「寄出并运送」，而接收则由另一套机制完成。",
+      "analogy_en": "It is like dropping a letter into a mailbox, after which the post office delivers it to the post office at the destination. SMTP handles \"sending out and carrying,\" while receiving is done by a separate mechanism.",
+      "memory_hook_zh": "说到 SMTP 就是发送邮件",
+      "memory_hook_en": "SMTP → sending email"
+    },
+    {
+      "term": "POP",
+      "definition_jp": "受信メールサーバからメールを取り出して受信する代表的なプロトコル。",
+      "explanation_jp": "POP(Post Office Protocol、現在はPOP3が主流)は、受信側がメールサーバに届いたメールを自分の端末にダウンロードして読むためのプロトコルです。\n\n基本動作として、メールを端末に取り込み、サーバ上の元メールは削除する(残さない)のが特徴です。そのため別の端末からは同じメールを見られないことがあります。試験では「送信のSMTP/受信のPOP」という対比と、サーバにメールを残すIMAPとの違いがよく問われます。",
+      "analogy_jp": "私書箱に届いた郵便物を自宅に全部持ち帰り、私書箱は空にするイメージ。手元には残りますが、他の場所からは見られなくなります。",
+      "memory_hook_jp": "POPといえばメールを端末に取り込む受信",
+      "inline_quiz": [
+        "2009h21h-q075",
+        "2013h25a-q065"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "POP",
+      "term_en": "POP",
+      "definition_zh": "从接收邮件服务器取出邮件进行接收的代表性协议。",
+      "definition_en": "A representative protocol that retrieves and receives email from a receiving mail server.",
+      "explanation_zh": "POP（Post Office Protocol，邮局协议，目前以 POP3 为主流）是接收方把已送达邮件服务器的邮件下载到自己终端上阅读的协议。\n\n其基本动作的特点是：把邮件取到终端上，并删除服务器上的原始邮件（不保留）。因此从其他终端可能无法看到同一封邮件。考试中常考「发送用 SMTP / 接收用 POP」的对比，以及它与把邮件保留在服务器上的 IMAP 之间的差异。",
+      "explanation_en": "POP (Post Office Protocol; POP3 is the current mainstream version) is the protocol by which the receiving side downloads messages that have arrived at the mail server onto its own device to read them.\n\nA defining feature of its basic operation is that it pulls the message onto the device and deletes the original message on the server (it does not keep it). As a result, the same message may not be viewable from another device. Exams often test the contrast \"SMTP for sending / POP for receiving,\" as well as the difference from IMAP, which keeps messages on the server.",
+      "analogy_zh": "好比把信箱里收到的邮件全部取回家中，使信箱清空。邮件留在手边，但从其他地方就看不到了。",
+      "analogy_en": "Imagine taking all the mail that arrived in your P.O. box back home, leaving the box empty. The mail stays with you, but it can no longer be seen from anywhere else.",
+      "memory_hook_zh": "说到 POP 就是把邮件取到终端上的接收",
+      "memory_hook_en": "POP → receiving by pulling email onto your device"
+    },
+    {
+      "term": "IMAP",
+      "definition_jp": "メールをサーバ上に保持したまま管理・閲覧する受信プロトコル。",
+      "explanation_jp": "IMAP(Internet Message Access Protocol)は、POPと同じく受信用のプロトコルですが、メールをサーバ上に残したまま読む点が異なります。既読・未読やフォルダ分けといった状態もサーバ側で管理されます。\n\nそのため、パソコン・スマートフォンなど複数の端末から同じメール環境を同期して使えるのが利点です。試験では、端末にダウンロードして削除するPOPとの違い(サーバに残すか・複数端末で同期できるか)が頻出ポイントです。",
+      "analogy_jp": "クラウド上のアルバムを見るように、写真本体はサーバに置いたまま、どの端末からでも同じ状態を見られるイメージです。",
+      "memory_hook_jp": "IMAPといえばサーバに残して複数端末で同期する受信",
+      "inline_quiz": [
+        "2012h24a-q077",
+        "2013h25h-q084"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"受信メールサーバ\"]; A -->|\"取り込んで削除\"| B[\"POP: 端末に保存\"]; A -->|\"残したまま閲覧\"| C[\"IMAP: 複数端末で同期\"]",
+        "svg_path": "figures/technology-22-59-u03-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "IMAP",
+      "term_en": "IMAP",
+      "definition_zh": "在服务器上保留邮件的同时进行管理和查看的接收协议。",
+      "definition_en": "A receiving protocol that manages and views email while keeping it stored on the server.",
+      "explanation_zh": "IMAP（Internet Message Access Protocol，互联网邮件访问协议）和 POP 一样是接收用协议，但区别在于它把邮件保留在服务器上阅读。已读/未读、文件夹分类等状态也由服务器端管理。\n\n因此其优点是可以从电脑、智能手机等多个终端同步使用同一套邮件环境。考试中，它与「下载到终端并删除」的 POP 之间的差异（是否保留在服务器上、能否在多终端同步）是常考要点。",
+      "explanation_en": "IMAP (Internet Message Access Protocol) is a receiving protocol like POP, but it differs in that you read messages while they remain on the server. States such as read/unread and folder organization are also managed on the server side.\n\nIts advantage is therefore that you can use the same mail environment in sync across multiple devices, such as a PC and a smartphone. On exams, the difference from POP—which downloads to the device and deletes (whether messages stay on the server, and whether they can sync across multiple devices)—is a frequently tested point.",
+      "analogy_zh": "就像查看云端的相册一样，照片本身留在服务器上，从任何终端都能看到相同的状态。",
+      "analogy_en": "It is like viewing an album in the cloud: the photos themselves stay on the server, and you can see the same state from any device.",
+      "memory_hook_zh": "说到 IMAP 就是保留在服务器上、多终端同步的接收",
+      "memory_hook_en": "IMAP → receiving that keeps mail on the server and syncs across multiple devices"
+    },
+    {
+      "term": "FTP",
+      "definition_jp": "ネットワーク上でファイルを転送するためのプロトコル。",
+      "explanation_jp": "FTP(File Transfer Protocol)は、コンピュータ間でファイルをアップロード・ダウンロードするためのプロトコルです。サーバ上のファイルを取得したり、サーバへファイルを置いたりするときに使われます。\n\nメール系(SMTP/POP/IMAP)とは用途が異なり、扱うのは「ファイルそのもの」です。試験では各プロトコルの用途を結びつける問題が多く、FTP=ファイル転送、と用途で区別できることが重要です。なお通信を暗号化しないため、安全性を高めた方式が使われることもあります。",
+      "analogy_jp": "宅配便で荷物(ファイル)そのものを送り届けたり受け取ったりするサービスにあたります。手紙(メール)とは別の、荷物専用の運送です。",
+      "memory_hook_jp": "FTPといえばファイル転送",
+      "inline_quiz": [
+        "2012h24h-q060"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "FTP",
+      "term_en": "FTP",
+      "definition_zh": "用于在网络上传输文件的协议。",
+      "definition_en": "A protocol for transferring files over a network.",
+      "explanation_zh": "FTP（File Transfer Protocol，文件传输协议）是用于在计算机之间上传和下载文件的协议。它用于获取服务器上的文件，或把文件放到服务器上。\n\n它与邮件类协议（SMTP/POP/IMAP）用途不同，处理的是「文件本身」。考试中经常出题要求把各协议与其用途对应起来，因此能从用途上区分出「FTP＝文件传输」很重要。此外，由于它不对通信加密，有时会使用安全性更高的方式。",
+      "explanation_en": "FTP (File Transfer Protocol) is a protocol for uploading and downloading files between computers. It is used to retrieve files on a server or to place files onto a server.\n\nIts purpose differs from the mail protocols (SMTP/POP/IMAP): what it handles is \"the file itself.\" Exams often ask you to match each protocol to its purpose, so it is important to distinguish \"FTP = file transfer\" by purpose. Note that because it does not encrypt communication, a more secure method is sometimes used instead.",
+      "analogy_zh": "相当于用快递把包裹（文件）本身寄出或收取的服务。它与寄信（邮件）不同，是专门运送包裹的方式。",
+      "analogy_en": "It is like a courier service that sends or receives the package (the file) itself. Unlike sending letters (email), it is a separate delivery method dedicated to packages.",
+      "memory_hook_zh": "说到 FTP 就是文件传输",
+      "memory_hook_en": "FTP → file transfer"
+    },
+    {
+      "term": "NTP",
+      "definition_jp": "ネットワーク経由でコンピュータの時刻を正しく同期するプロトコル。",
+      "explanation_jp": "NTP(Network Time Protocol)は、ネットワーク上の機器の時計を正確な時刻に合わせる(同期する)ためのプロトコルです。基準となる時刻サーバから時刻を取得し、各機器の時刻を一致させます。\n\nログの記録時刻をそろえたり、時刻のずれによるトラブルを防いだりする、通信を支える裏方の運用基盤プロトコルです。試験では「時刻同期=NTP」という用途の対応を押さえておけば十分です。",
+      "analogy_jp": "学校や駅の時計を標準時の電波に合わせて、みんなの時計を同じ時刻にそろえるようなものです。ずれをなくす役目を担います。",
+      "memory_hook_jp": "NTPといえば時刻同期",
+      "inline_quiz": [
+        "2011h23tokubetsu-q085"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "NTP",
+      "term_en": "NTP",
+      "definition_zh": "通过网络将计算机的时间正确同步的协议。",
+      "definition_en": "A protocol that correctly synchronizes a computer's time over a network.",
+      "explanation_zh": "NTP（Network Time Protocol，网络时间协议）是用于把网络上设备的时钟调整到准确时间（同步）的协议。它从作为基准的时间服务器获取时间，使各设备的时间保持一致。\n\n它是支撑通信的幕后运维基础协议，能让日志记录的时间保持一致，并防止因时间偏差引起的故障。考试中只要掌握「时间同步＝NTP」这一用途对应即可。",
+      "explanation_en": "NTP (Network Time Protocol) is a protocol for setting (synchronizing) the clocks of devices on a network to the correct time. It obtains the time from a reference time server and brings each device's time into agreement.\n\nIt is a behind-the-scenes operational infrastructure protocol that supports communication—aligning the timestamps in logs and preventing trouble caused by time drift. On exams, it is enough to remember the correspondence \"time synchronization = NTP.\"",
+      "analogy_zh": "好比把学校或车站的时钟对准标准时的电波信号，使大家的时钟都统一到相同的时间。它承担消除时间偏差的职责。",
+      "analogy_en": "It is like setting the clocks at a school or station to a standard-time radio signal so that everyone's clocks show the same time. It plays the role of eliminating discrepancies.",
+      "memory_hook_zh": "说到 NTP 就是时间同步",
+      "memory_hook_en": "NTP → time synchronization"
+    },
+    {
+      "term": "DHCP",
+      "definition_jp": "IPアドレスなどの設定を端末へ自動的に割り当てるプロトコル。",
+      "explanation_jp": "DHCP(Dynamic Host Configuration Protocol)は、ネットワークに接続した端末に対し、IPアドレスやサブネットマスク、デフォルトゲートウェイ、DNSサーバなどの設定を自動で配布するプロトコルです。\n\nこれにより、利用者が手作業でIPアドレスを設定しなくても、機器をつなぐだけでネットワークが使えるようになります。試験では「IPアドレスの自動割り当て=DHCP」という役割と、NTP同様に通信を支える運用基盤プロトコルである点が問われます。",
+      "analogy_jp": "イベント会場で受付に行くと、座席番号(IPアドレス)を自動で割り振ってもらえるようなもの。自分で番号を決めなくても済みます。",
+      "memory_hook_jp": "DHCPといえばIPアドレスの自動割り当て",
+      "inline_quiz": [
+        "2011h23tokubetsu-q086"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "DHCP",
+      "term_en": "DHCP",
+      "definition_zh": "自动为终端分配 IP 地址等配置的协议。",
+      "definition_en": "A protocol that automatically assigns settings such as IP addresses to devices.",
+      "explanation_zh": "DHCP（Dynamic Host Configuration Protocol，动态主机配置协议）是为接入网络的终端自动分发 IP 地址、子网掩码、默认网关、DNS 服务器等配置的协议。\n\n有了它，用户无需手动设置 IP 地址，只要把设备接上就能使用网络。考试中会考查「IP 地址的自动分配＝DHCP」这一作用，以及它和 NTP 一样都是支撑通信的运维基础协议这一点。",
+      "explanation_en": "DHCP (Dynamic Host Configuration Protocol) is a protocol that automatically distributes settings such as the IP address, subnet mask, default gateway, and DNS server to devices that connect to a network.\n\nThanks to it, the network becomes usable simply by connecting a device, without the user manually configuring an IP address. On exams, the role \"automatic IP address assignment = DHCP\" is tested, as well as the point that, like NTP, it is an operational infrastructure protocol that supports communication.",
+      "analogy_zh": "好比在活动会场去前台报到时，自动被分配一个座位号（IP 地址），无需自己决定号码。",
+      "analogy_en": "It is like going to the reception desk at an event venue and being automatically assigned a seat number (IP address), so you do not have to decide the number yourself.",
+      "memory_hook_zh": "说到 DHCP 就是 IP 地址的自动分配",
+      "memory_hook_en": "DHCP → automatic IP address assignment"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "SMTP: SMTPといえばメール送信",
+      "POP: POPといえばメールを端末に取り込む受信",
+      "IMAP: IMAPといえばサーバに残して複数端末で同期する受信",
+      "FTP: FTPといえばファイル転送",
+      "NTP: NTPといえば時刻同期",
+      "DHCP: DHCPといえばIPアドレスの自動割り当て"
+    ],
+    "key_points_jp": [
+      "メールは「送信=SMTP」「受信=POP/IMAP」と役割で区別する。",
+      "POPはメールを端末にダウンロードしてサーバから削除、IMAPはサーバに残して複数端末で同期する点が違い。",
+      "FTPはファイルそのものを転送するプロトコルで、メール系とは用途が異なる。",
+      "NTPは時刻同期、DHCPはIPアドレスの自動割り当てを担う運用基盤プロトコル。",
+      "各プロトコルは「用途とプロトコル名の対応」を結びつけて覚えるのが得点のコツ。"
+    ],
+    "key_points_zh": [
+      "邮件按作用区分为「发送＝SMTP」「接收＝POP/IMAP」。",
+      "POP 把邮件下载到终端并从服务器删除，IMAP 把邮件保留在服务器上并在多终端同步，这是两者的区别。",
+      "FTP 是传输文件本身的协议，与邮件类协议用途不同。",
+      "NTP 负责时间同步，DHCP 负责 IP 地址的自动分配，二者都是运维基础协议。",
+      "把「用途与协议名称的对应」联系起来记忆，是各协议得分的诀窍。"
+    ],
+    "key_points_en": [
+      "Distinguish email by role: \"sending = SMTP,\" \"receiving = POP/IMAP.\"",
+      "POP downloads email to the device and deletes it from the server, while IMAP keeps it on the server and syncs across multiple devices—that is the difference.",
+      "FTP is a protocol that transfers files themselves, and its purpose differs from the mail protocols.",
+      "NTP handles time synchronization and DHCP handles automatic IP address assignment; both are operational infrastructure protocols.",
+      "Linking \"the purpose to the protocol name\" when memorizing each protocol is the key to scoring points."
+    ],
+    "memory_hooks_zh": [
+      "SMTP：说到 SMTP 就是发送邮件",
+      "POP：说到 POP 就是把邮件取到终端上的接收",
+      "IMAP：说到 IMAP 就是保留在服务器上、多终端同步的接收",
+      "FTP：说到 FTP 就是文件传输",
+      "NTP：说到 NTP 就是时间同步",
+      "DHCP：说到 DHCP 就是 IP 地址的自动分配"
+    ],
+    "memory_hooks_en": [
+      "SMTP: SMTP → sending email",
+      "POP: POP → receiving by pulling email onto your device",
+      "IMAP: IMAP → receiving that keeps mail on the server and syncs across multiple devices",
+      "FTP: FTP → file transfer",
+      "NTP: NTP → time synchronization",
+      "DHCP: DHCP → automatic IP address assignment"
+    ]
+  },
+  "challenge_questions": [
+    "2014h26a-q079",
+    "2016h28a-q085",
+    "2017h29h-q074",
+    "2018h30a-q088",
+    "2014h26h-q058"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2009h21a-q069",
+      "figure_path": "figures/2009h21a-q069.png",
+      "figure_type": "diagram",
+      "figure_description": "メール送受信プロトコルを示す図（メールクライアント→①メール送信→メールサーバ→③メール転送→メールサーバ，メールサーバ→②メール受信→メールクライアント）とプロトコル組合せ表",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "邮件、文件与运维协议",
+  "title_en": "Mail, File, and Operations Protocols",
+  "unit_summary_zh": "理解贴近日常的应用层协议，包括电子邮件的收发（SMTP/POP/IMAP）、文件传输（FTP）、时间同步与 IP 自动配置（NTP/DHCP）。",
+  "unit_summary_en": "Understand the everyday application-layer protocols, including sending/receiving email (SMTP/POP/IMAP), file transfer (FTP), and time synchronization and automatic IP configuration (NTP/DHCP)."
+}

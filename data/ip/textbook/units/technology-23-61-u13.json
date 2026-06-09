@@ -1,0 +1,120 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-23-61-u13",
+  "topic_id": "technology-23-61",
+  "category": "technology",
+  "title_jp": "攻撃の準備段階 — 偵察行為",
+  "unit_summary_jp": "攻撃に先立つ情報収集(フットプリンティング)とポートスキャンという偵察行為を理解する。",
+  "order_in_topic": 13,
+  "prerequisites": [
+    "technology-23-61-u01",
+    "technology-23-61-u09",
+    "technology-23-61-u10"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、攻撃者が本格的な攻撃に取りかかる前に行う「偵察行為」を学びます。公開情報から下調べをするフットプリンティングと、稼働中のサービスを技術的に探るポートスキャンの2つを、偵察の粗から精への流れとして押さえます。攻撃の前段を知ることで、各種攻撃がどのように準備されるかを理解できます。",
+    "freq_badge": "頻出",
+    "est_minutes": 8,
+    "intro_zh": "在本单元中，我们将学习攻击者在正式发动攻击之前所进行的「侦察行为」。我们把两件事作为侦察由粗到精的流程来掌握：从公开信息着手摸底的踩点，以及在技术层面探查运行中服务的端口扫描。了解攻击的前置阶段，就能理解各类攻击是如何被准备出来的。",
+    "intro_en": "In this unit, you will learn about the \"reconnaissance\" that an attacker carries out before launching a full-scale attack. We will grasp two activities as a flow from coarse to fine reconnaissance: footprinting, which gathers preliminary intelligence from public information, and port scanning, which technically probes the services that are running. By knowing the lead-up to an attack, you can understand how various attacks are prepared."
+  },
+  "terms": [
+    {
+      "term": "フットプリンティング",
+      "definition_jp": "攻撃の前段として、公開情報から標的の下調べをする情報収集行為。",
+      "explanation_jp": "フットプリンティングは、攻撃者が標的を狙う前に、まず公開されている情報を集めて「足跡(footprint)」をたどるように下調べをする行為です。Webサイトやドメイン登録情報(WHOIS)、SNS、検索エンジンなど、誰でも見られる情報源から組織名・担当者・使用機器・メールアドレスなどを集めます。\n\n特徴は、標的のシステムに直接侵入したり攻撃したりせず、外から見える情報だけを集める点です。そのため気づかれにくく、攻撃の成功率を高めるための準備になります。試験では「攻撃前の情報収集・下調べ」という位置づけと、後述のポートスキャンより前段(より粗い偵察)である点を押さえておきましょう。",
+      "analogy_jp": "空き巣が押し入る前に、表札・郵便受け・SNSの投稿などを見て「いつ留守か」「家族構成は」と外から下調べするのに似ています。家には入らず、見える情報だけ集める段階です。",
+      "memory_hook_jp": "フットプリンティングといえば公開情報からの攻撃前の下調べ",
+      "inline_quiz": [
+        "2009h21a-q058"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "踩点(信息收集)",
+      "term_en": "Footprinting",
+      "definition_zh": "作为攻击的前置阶段，从公开信息对目标进行摸底的信息收集行为。",
+      "definition_en": "Information-gathering activity that, as a preliminary stage of an attack, conducts background research on the target from public information.",
+      "explanation_zh": "踩点是指攻击者在锁定目标之前，先收集公开可得的信息，像追踪「足迹(footprint)」一样进行摸底的行为。攻击者从网站、域名注册信息(WHOIS)、社交网络、搜索引擎等任何人都能看到的信息源，收集组织名称、负责人、所用设备、电子邮件地址等信息。\n\n其特点在于：不直接入侵或攻击目标的系统，只收集从外部可见的信息。因此不易被察觉，是为提高攻击成功率所做的准备。在考试中，要把握它「攻击前的信息收集与摸底」这一定位，以及它比后文的端口扫描更靠前(属于更粗略的侦察)这一点。",
+      "explanation_en": "Footprinting is the activity in which an attacker, before targeting a victim, first gathers publicly available information and conducts background research as if tracing \"footprints.\" From sources anyone can see — such as websites, domain registration records (WHOIS), social networks, and search engines — the attacker collects the organization name, key personnel, the equipment in use, email addresses, and so on.\n\nIts defining feature is that it does not directly intrude into or attack the target's system; it only gathers information visible from the outside. Because of this it is hard to notice, and it serves as preparation to raise the success rate of an attack. For the exam, grasp its positioning as \"information gathering and background research before an attack,\" and the point that it comes earlier than the port scanning described later (it is coarser reconnaissance).",
+      "analogy_zh": "这就像窃贼在闯入之前，先看看门牌、信箱、社交网络上的帖子，从外面摸清「什么时候家里没人」「家庭成员有几口」。这是一个不进屋、只收集可见信息的阶段。",
+      "analogy_en": "It is like a burglar who, before breaking in, checks the nameplate, the mailbox, and social-media posts to figure out from the outside \"when the house is empty\" and \"how many family members there are.\" It is the stage of gathering only visible information without entering the house.",
+      "memory_hook_zh": "说到踩点，就是攻击前从公开信息进行的摸底",
+      "memory_hook_en": "Footprinting → background research from public information before an attack"
+    },
+    {
+      "term": "ポートスキャン",
+      "definition_jp": "標的の各ポートへ通信を試み、稼働中のサービスや弱点を探る偵察行為。",
+      "explanation_jp": "ポートスキャンは、標的のコンピュータが持つ多数の「ポート(通信の出入口)」に順番に通信を送り、どのポートが開いていてどんなサービスが動いているかを調べる行為です。開いているポートから、稼働中のサービスやその種類・バージョンが分かり、既知の弱点(脆弱性)を探る手がかりになります。\n\nフットプリンティングが外部の公開情報を集める粗い偵察なのに対し、ポートスキャンは標的へ実際に通信を送る、より技術的で精密な偵察です。攻撃の侵入口を見つける準備にあたります。試験では「ポート(サービスの入口)が開いているかを調べる行為」であること、攻撃前の偵察に位置づくことを押さえましょう。",
+      "analogy_jp": "建物のドアや窓を一つずつノックして回り、「どこが開いているか」「中で何が動いているか」を確かめる行為に似ています。鍵の掛かっていない入口を探す下見です。",
+      "memory_hook_jp": "ポートスキャンといえば開いているポート(サービスの入口)を探す偵察",
+      "inline_quiz": [
+        "2023r05-q073"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"偵察(下見)\"] --> B[\"フットプリンティング\"]; A --> C[\"ポートスキャン\"]; B --> D[\"公開情報の収集(粗い偵察)\"]; C --> E[\"開いているポートの探索(精密な偵察)\"]; D --> F[\"攻撃の準備\"]; E --> F",
+        "svg_path": "figures/technology-23-61-u13-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "端口扫描",
+      "term_en": "Port scanning",
+      "definition_zh": "向目标的各个端口尝试通信，以探查运行中的服务或弱点的侦察行为。",
+      "definition_en": "Reconnaissance activity that attempts communication with each of the target's ports to probe for running services or weaknesses.",
+      "explanation_zh": "端口扫描是指依次向目标计算机所拥有的众多「端口(通信的出入口)」发送通信，调查哪些端口处于开放状态、运行着什么样的服务的行为。从开放的端口可以得知运行中的服务及其种类、版本，从而成为探查已知弱点(漏洞)的线索。\n\n相对于踩点是收集外部公开信息的粗略侦察，端口扫描则是向目标实际发送通信、更具技术性且更精密的侦察。它相当于寻找攻击入侵口的准备。在考试中，要把握它是「调查端口(服务入口)是否开放的行为」，并且定位于攻击前的侦察。",
+      "explanation_en": "Port scanning is the activity of sending communication in turn to the many \"ports (the entry/exit points of communication)\" that a target computer has, in order to find out which ports are open and what kind of services are running. From the open ports you can learn the running services and their type and version, which becomes a clue for probing known weaknesses (vulnerabilities).\n\nWhereas footprinting is coarse reconnaissance that gathers external public information, port scanning is more technical and precise reconnaissance that actually sends communication to the target. It amounts to preparation for finding an entry point for intrusion. For the exam, grasp that it is \"an activity that checks whether a port (a service's entrance) is open,\" and that it is positioned as reconnaissance before an attack.",
+      "analogy_zh": "这就像挨个敲遍建筑物的门和窗，确认「哪里是开着的」「里面在运转着什么」。这是寻找没有上锁入口的探看。",
+      "analogy_en": "It is like knocking on a building's doors and windows one by one to confirm \"which ones are open\" and \"what is operating inside.\" It is a scouting to find an unlocked entrance.",
+      "memory_hook_zh": "说到端口扫描，就是寻找开放端口(服务入口)的侦察",
+      "memory_hook_en": "Port scanning → reconnaissance that looks for open ports (a service's entrance)"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "フットプリンティング: フットプリンティングといえば公開情報からの攻撃前の下調べ",
+      "ポートスキャン: ポートスキャンといえば開いているポート(サービスの入口)を探す偵察"
+    ],
+    "key_points_jp": [
+      "攻撃には、本格的な攻撃の前に標的を調べる「偵察行為」という準備段階がある。",
+      "フットプリンティングは、Webやドメイン情報など公開情報から標的を下調べする粗い偵察で、標的に直接触れないため気づかれにくい。",
+      "ポートスキャンは、標的の各ポートへ通信を送り、開いているポートや稼働サービス・弱点を探る精密で技術的な偵察である。",
+      "偵察は「フットプリンティング(公開情報)→ポートスキャン(技術的探索)」と、粗い段階から精密な段階へ進む。"
+    ],
+    "key_points_zh": [
+      "攻击存在一个准备阶段，即在正式攻击之前调查目标的「侦察行为」。",
+      "踩点是从网站、域名信息等公开信息对目标进行摸底的粗略侦察；由于不直接接触目标，因此不易被察觉。",
+      "端口扫描是向目标的各个端口发送通信，探查开放端口、运行服务及弱点的精密而具技术性的侦察。",
+      "侦察按「踩点(公开信息)→端口扫描(技术性探查)」由粗略阶段推进到精密阶段。"
+    ],
+    "key_points_en": [
+      "An attack has a preparation stage — the \"reconnaissance\" that investigates the target before the full-scale attack.",
+      "Footprinting is coarse reconnaissance that conducts background research on the target from public information such as websites and domain records; because it does not directly touch the target, it is hard to notice.",
+      "Port scanning is precise and technical reconnaissance that sends communication to each of the target's ports to probe for open ports, running services, and weaknesses.",
+      "Reconnaissance proceeds from a coarse stage to a precise stage: \"footprinting (public information) → port scanning (technical probing).\""
+    ],
+    "memory_hooks_zh": [
+      "踩点: 说到踩点，就是攻击前从公开信息进行的摸底",
+      "端口扫描: 说到端口扫描，就是寻找开放端口(服务入口)的侦察"
+    ],
+    "memory_hooks_en": [
+      "Footprinting: Footprinting → background research from public information before an attack",
+      "Port scanning: Port scanning → reconnaissance that looks for open ports (a service's entrance)"
+    ]
+  },
+  "challenge_questions": [
+    "2009h21a-q071",
+    "2009h21h-q068",
+    "2010h22a-q075",
+    "2010h22h-q087",
+    "2011h23a-q059"
+  ],
+  "source_figures": [],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "攻击的准备阶段 — 侦察行为",
+  "title_en": "The Preparation Stage of an Attack — Reconnaissance",
+  "unit_summary_zh": "理解先于攻击的信息收集(踩点)与端口扫描这两种侦察行为。",
+  "unit_summary_en": "Understand the two reconnaissance activities that precede an attack: information gathering (footprinting) and port scanning."
+}

@@ -1,0 +1,227 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "management-08-25-u03",
+  "topic_id": "management-08-25",
+  "category": "management",
+  "title_jp": "テスト技法と結合・性能検証",
+  "unit_summary_jp": "外部仕様に基づくテスト技法と、モジュールを統合した段階での結合・性能・負荷・回帰の検証を学ぶ。",
+  "order_in_topic": 3,
+  "prerequisites": [
+    "management-08-25-u02"
+  ],
+  "overview": {
+    "intro_jp": "このユニットでは、外部仕様に着目するブラックボックステスト、複数モジュールを組み合わせる統合テスト、応答時間や処理量を測る性能テスト、高負荷時の挙動を見る負荷テスト、修正後に既存機能が壊れていないか確かめる回帰テストを学ぶ。部品を統合して品質を測る段階の技法・工程・観点であり、ITパスポートでも頻出の重要分野である。",
+    "freq_badge": "頻出",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习：关注外部规格的黑盒测试、组合多个模块的集成测试、测量响应时间和处理量的性能测试、观察高负载下行为的负载测试，以及在修改后确认既有功能是否被破坏的回归测试。这些是将各部件集成起来、衡量质量这一阶段的技术、工序与视角，在 IT 护照考试中也是经常出现的重要领域。",
+    "intro_en": "In this unit, you will learn about black-box testing that focuses on external specifications, integration testing that combines multiple modules, performance testing that measures response time and processing volume, load testing that observes behavior under heavy load, and regression testing that confirms whether existing functions remain intact after a change. These are the techniques, processes, and viewpoints of the stage where parts are integrated and quality is measured, and they form an important area that appears frequently in the IT Passport exam."
+  },
+  "terms": [
+    {
+      "term": "ブラックボックステスト",
+      "definition_jp": "内部構造を見ず、入力と出力(外部仕様)が正しいかだけを確認するテスト技法。",
+      "explanation_jp": "ブラックボックステストは、プログラムの中身(処理の流れやコード)を意識せず、「ある入力を与えたら、仕様どおりの出力が返るか」だけに注目するテスト技法です。利用者目線で機能が要求どおり動くかを確かめます。\n\n試験では、内部構造に着目するホワイトボックステストとの対比が頻出です。ブラックボックスは外部仕様ベース、ホワイトボックスは内部ロジックベースと覚えましょう。代表的な技法に、入力範囲を区切る同値分割や、境界の前後を狙う境界値分析があります。",
+      "analogy_jp": "自動販売機をテストするとき、内部の配線は見ずに「100円入れてボタンを押したら正しい飲み物が出るか」だけを確認するようなもの。中身を知らなくても入出力で判断します。",
+      "memory_hook_jp": "ブラックボックステストといえば中身を見ず入出力(外部仕様)で確認",
+      "inline_quiz": [
+        "2009h21h-q042",
+        "2010h22a-q089"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "黑盒测试",
+      "term_en": "Black-box testing",
+      "definition_zh": "不看内部结构，只确认输入与输出（外部规格）是否正确的测试技术。",
+      "definition_en": "A test technique that does not look at the internal structure and only checks whether the inputs and outputs (the external specification) are correct.",
+      "explanation_zh": "黑盒测试是一种不去关注程序内部（处理流程或代码），只关注「给定某个输入后，是否返回符合规格的输出」的测试技术。它从用户的视角确认功能是否按要求运作。\n\n考试中，黑盒测试与关注内部结构的白盒测试之间的对比经常出现。请记住：黑盒以外部规格为基础，白盒以内部逻辑为基础。代表性的技术有划分输入范围的等价类划分，以及瞄准边界前后取值的边界值分析。",
+      "explanation_en": "Black-box testing is a test technique that pays no attention to the inside of the program (the flow of processing or the code) and focuses only on \"whether, given a certain input, the output returned matches the specification.\" It confirms from the user's point of view whether a function works as required.\n\nIn the exam, the contrast with white-box testing, which focuses on the internal structure, appears often. Remember that black-box is based on the external specification while white-box is based on the internal logic. Representative techniques include equivalence partitioning, which divides the input range, and boundary value analysis, which targets values just before and after a boundary.",
+      "analogy_zh": "就像测试自动售货机时，不去看内部的线路，只确认「投入 100 日元并按下按钮后，是否出来正确的饮料」。即使不了解内部构造，也能凭输入和输出来判断。",
+      "analogy_en": "It is like testing a vending machine by not looking at the internal wiring and only confirming \"if you insert 100 yen and press a button, does the correct drink come out.\" You can judge from the input and output even without knowing the inside.",
+      "memory_hook_zh": "说到黑盒测试，就是不看内部、用输入输出（外部规格）来确认",
+      "memory_hook_en": "Black-box testing → confirm via input and output (external spec) without looking inside"
+    },
+    {
+      "term": "統合テスト",
+      "definition_jp": "単体検証済みの複数モジュールを結合し、連携が正しく動くか確認する工程。",
+      "explanation_jp": "統合テスト(結合テスト)は、それぞれ単体テストを通ったモジュールを組み合わせ、モジュール間でデータの受け渡しや呼び出しが正しく行われるかを確認する工程です。単体では問題なくても、つなぐと不具合が出ることを検出します。\n\n試験では、単体テスト→統合テスト→システムテスト→受入れテストという工程の順序が問われます。下位から組み上げるボトムアップ、上位から組むトップダウンなどの結合方式がある点も押さえておきましょう。",
+      "analogy_jp": "車の部品検査を終えたエンジン・ブレーキ・ハンドルを実際に組み付け、ペダルを踏むと連動して止まるかなど、部品どうしの連携を確かめる試走のようなものです。",
+      "memory_hook_jp": "統合テストといえば複数モジュールを結合し連携を確認する工程",
+      "inline_quiz": [
+        "2010h22a-q048",
+        "2010h22h-q034"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"単体テスト\"] --> B[\"統合テスト\"]; B --> C[\"システムテスト\"]; C --> D[\"受入れテスト\"]",
+        "svg_path": "figures/management-08-25-u03-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "集成测试",
+      "term_en": "Integration testing",
+      "definition_zh": "将已通过单元验证的多个模块结合起来，确认它们之间的协作是否正确运作的工序。",
+      "definition_en": "A process that combines multiple modules already verified individually and checks whether their cooperation works correctly.",
+      "explanation_zh": "集成测试（结合测试）是一道工序：将各自已通过单元测试的模块组合起来，确认模块之间的数据传递和调用是否正确进行。它能检测出单独运行没问题、但一连接就出故障的情况。\n\n考试中会考查工序顺序：单元测试→集成测试→系统测试→验收测试。还应掌握结合方式，例如从下层逐步往上组装的自底向上（Bottom-up），以及从上层开始组装的自顶向下（Top-down）。",
+      "explanation_en": "Integration testing (also called combination testing) is a process that combines modules each of which has passed unit testing, and checks whether data passing and calls between modules are performed correctly. It detects defects that do not appear in a single module but emerge once they are connected.\n\nIn the exam, the order of the processes—unit testing → integration testing → system testing → acceptance testing—is tested. You should also keep in mind that there are combination approaches such as bottom-up, which builds up from the lower layers, and top-down, which builds from the upper layers.",
+      "analogy_zh": "就像把已完成零件检验的发动机、刹车、方向盘实际组装到一起，再去试车：踩下踏板时它们是否联动并停下来，以此确认各部件之间的协作。",
+      "analogy_en": "It is like actually assembling an engine, brakes, and steering wheel that have each passed parts inspection, then doing a test run to confirm cooperation between parts—for example, whether pressing the pedal makes them work together and stop the car.",
+      "memory_hook_zh": "说到集成测试，就是结合多个模块、确认协作的工序",
+      "memory_hook_en": "Integration testing → the process of combining multiple modules and confirming their cooperation"
+    },
+    {
+      "term": "性能テスト",
+      "definition_jp": "応答時間や処理量など、システムの処理性能(非機能要件)を測定し評価するテスト。",
+      "explanation_jp": "性能テストは、統合されたシステムが実用上必要な速さ・量で処理できるかを測るテストです。応答時間(レスポンスタイム)や単位時間あたりの処理量(スループット)などの指標を測定し、要求水準を満たすか評価します。\n\n試験では、「機能が正しいか」ではなく「どれだけ速く・多く処理できるか」という非機能要件を確かめる点が問われます。機能テストとの違い、また高負荷条件を扱う負荷テストとの関係を整理しておくとよいでしょう。",
+      "analogy_jp": "新しく開通した高速道路で「制限速度どおりに走れるか」「渋滞なくスムーズに流れるか」を計測点で測るようなもの。正しく通れるかではなく、どれだけ速く流れるかを見ます。",
+      "memory_hook_jp": "性能テストといえば応答時間や処理量を測る非機能の検証",
+      "inline_quiz": [
+        "2010h22a-q038"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "性能测试",
+      "term_en": "Performance testing",
+      "definition_zh": "测量并评估响应时间、处理量等系统处理性能（非功能需求）的测试。",
+      "definition_en": "A test that measures and evaluates a system's processing performance (a non-functional requirement), such as response time and processing volume.",
+      "explanation_zh": "性能测试用于衡量已集成的系统是否能以实用上所需的速度和量来处理。它测量响应时间（Response Time）、单位时间的处理量（吞吐量，Throughput）等指标，评估是否满足要求水准。\n\n考试中考查的是确认「非功能需求」这一点，即不是「功能是否正确」，而是「能处理得多快、多大量」。最好整理清楚它与功能测试的区别，以及它与处理高负载条件的负载测试之间的关系。",
+      "explanation_en": "Performance testing measures whether an integrated system can process at the speed and volume needed for practical use. It measures indicators such as response time and processing volume per unit of time (throughput) and evaluates whether the required level is met.\n\nIn the exam, the point tested is confirming the \"non-functional requirements\"—that is, not \"whether the function is correct\" but \"how fast and how much it can process.\" It is good to organize the difference from functional testing, as well as the relationship to load testing, which deals with high-load conditions.",
+      "analogy_zh": "就像在新开通的高速公路上设置测量点，检测「能否按限速行驶」「是否畅通无堵地通行」。看的不是能否正确通过，而是车流能跑多快。",
+      "analogy_en": "It is like setting up measurement points on a newly opened highway to check \"whether you can drive at the speed limit\" and \"whether traffic flows smoothly without congestion.\" What you look at is not whether you can pass correctly, but how fast the flow can go.",
+      "memory_hook_zh": "说到性能测试，就是测量响应时间和处理量的非功能验证",
+      "memory_hook_en": "Performance testing → non-functional verification that measures response time and processing volume"
+    },
+    {
+      "term": "負荷テスト",
+      "definition_jp": "想定上限やそれを超える高負荷をかけ、システムの挙動や限界を確認するテスト。",
+      "explanation_jp": "負荷テストは、多数の同時アクセスや大量データなど、高い負荷をかけた状態でシステムが正常に動き続けるか、どこまで耐えられるかを確認するテストです。性能テストの一種・延長として位置づけられます。\n\n試験では、通常の性能測定よりも厳しい条件で耐久性や限界点を見るのが負荷テストだと押さえましょう。ピーク時アクセスでも落ちないか、処理が破綻しないかといった信頼性・可用性の確認につながる観点が問われます。",
+      "analogy_jp": "橋に何台ものトラックを同時に載せ、設計上の重さや想定を超える重量まで耐えられるかを試す耐荷重テストのようなものです。",
+      "memory_hook_jp": "負荷テストといえば高負荷をかけて限界・耐久を確認",
+      "inline_quiz": [
+        "2010h22a-q091"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "负载测试",
+      "term_en": "Load testing",
+      "definition_zh": "施加设想上限或超过上限的高负载，确认系统行为及极限的测试。",
+      "definition_en": "A test that applies the assumed upper limit or a high load exceeding it, to confirm the system's behavior and its limits.",
+      "explanation_zh": "负载测试是在施加大量并发访问、海量数据等高负载状态下，确认系统能否持续正常运作、以及能承受到什么程度的测试。它被定位为性能测试的一种或延伸。\n\n考试中请把握住：负载测试是在比通常性能测量更严苛的条件下，考察耐久性和极限点。它考查的视角与可靠性、可用性的确认相关，例如在峰值访问下是否不宕机、处理是否不崩溃。",
+      "explanation_en": "Load testing is a test that, under a high-load state such as many simultaneous accesses or massive amounts of data, confirms whether the system keeps operating normally and how much it can withstand. It is positioned as a kind or an extension of performance testing.\n\nIn the exam, keep in mind that load testing examines durability and the limit point under conditions more severe than ordinary performance measurement. The viewpoint tested connects to confirming reliability and availability, such as whether the system stays up under peak access and whether processing does not break down.",
+      "analogy_zh": "就像在桥上同时压上好几辆卡车，试验它能否承受设计上的重量、乃至超过设想的重量的承重测试。",
+      "analogy_en": "It is like a load-bearing test in which several trucks are placed on a bridge at the same time to try whether it can withstand the designed weight and even weights beyond what was assumed.",
+      "memory_hook_zh": "说到负载测试，就是施加高负载、确认极限与耐久",
+      "memory_hook_en": "Load testing → apply heavy load and confirm the limit and durability"
+    },
+    {
+      "term": "回帰テスト",
+      "definition_jp": "修正や機能追加の後、既存の機能が壊れていないか再確認するテスト。",
+      "explanation_jp": "回帰テスト(リグレッションテスト)は、プログラムを修正・改良したときに、その変更が原因でこれまで正常だった他の機能に不具合(デグレード)を起こしていないかを再度確認するテストです。\n\n試験では、新しく直した箇所だけでなく「既存機能への悪影響がないか」を確かめるのが目的だと問われます。変更のたびに繰り返し実施するため、テストの自動化と相性がよい点も知っておくと役立ちます。",
+      "analogy_jp": "家の一部屋をリフォームした後、他の部屋の電気や水道がちゃんと使えるかを一通り見て回るようなもの。直した所以外に影響が出ていないか確認します。",
+      "memory_hook_jp": "回帰テストといえば修正後に既存機能が壊れていないか再確認",
+      "inline_quiz": [
+        "2009h21h-q053"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"プログラムを修正\"] --> B[\"回帰テストを実施\"]; B --> C[\"既存機能が正常\"]; B --> D[\"デグレードを発見\"]; D --> A",
+        "svg_path": "figures/management-08-25-u03-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "回归测试",
+      "term_en": "Regression testing",
+      "definition_zh": "在修改或追加功能之后，重新确认既有功能是否未被破坏的测试。",
+      "definition_en": "A test that, after a fix or a feature addition, re-confirms whether the existing functions have not been broken.",
+      "explanation_zh": "回归测试（Regression Testing）是在修改、改良程序时，再次确认该变更是否导致原本正常的其他功能出现故障（劣化，Degrade）的测试。\n\n考试中考查的目的是：不只是确认新修正的部位，而是确认「对既有功能是否有不良影响」。由于每次变更都要反复执行，因此它与测试自动化很契合——了解这一点也会很有帮助。",
+      "explanation_en": "Regression testing is a test that, when a program is fixed or improved, re-confirms whether that change has caused defects (degradation) in other functions that had been working normally.\n\nIn the exam, the purpose tested is to confirm not only the newly fixed part but also \"whether there is any adverse effect on existing functions.\" Because it is run repeatedly with every change, it is also useful to know that it is a good fit for test automation.",
+      "analogy_zh": "就像把家里的一个房间装修之后，把其他房间的电和水都走一遍、看看是否还能正常使用。确认除了改动的地方之外有没有受到影响。",
+      "analogy_en": "It is like, after remodeling one room in your house, going around to check whether the electricity and water in the other rooms still work properly. You confirm whether anything outside the changed spot has been affected.",
+      "memory_hook_zh": "说到回归测试，就是修改后重新确认既有功能是否未被破坏",
+      "memory_hook_en": "Regression testing → after a fix, re-confirm whether existing functions remain intact"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "ブラックボックステスト: ブラックボックステストといえば中身を見ず入出力(外部仕様)で確認",
+      "統合テスト: 統合テストといえば複数モジュールを結合し連携を確認する工程",
+      "性能テスト: 性能テストといえば応答時間や処理量を測る非機能の検証",
+      "負荷テスト: 負荷テストといえば高負荷をかけて限界・耐久を確認",
+      "回帰テスト: 回帰テストといえば修正後に既存機能が壊れていないか再確認"
+    ],
+    "key_points_jp": [
+      "ブラックボックステストは外部仕様(入出力)に基づく技法で、内部構造を見るホワイトボックステストと対をなす。",
+      "テスト工程は単体→統合→システム→受入れの順で進み、統合テストはモジュール間連携の検証を担う。",
+      "性能テストは応答時間・処理量などの非機能を測り、負荷テストはさらに高負荷条件で限界・耐久を確認する。",
+      "回帰テストは修正後に既存機能が壊れていないか(デグレード)を再確認する変更管理の検証である。",
+      "技法(ブラックボックス)→工程(統合)→観点(性能・負荷)→変更検証(回帰)へと、品質を測る段階が広がる。"
+    ],
+    "key_points_zh": [
+      "黑盒测试是基于外部规格（输入输出）的技术，与查看内部结构的白盒测试成对出现。",
+      "测试工序按单元→集成→系统→验收的顺序进行，集成测试承担模块间协作的验证。",
+      "性能测试测量响应时间、处理量等非功能项，负载测试则进一步在高负载条件下确认极限与耐久。",
+      "回归测试是变更管理的验证，用于修改后重新确认既有功能是否被破坏（劣化）。",
+      "从技术（黑盒）→工序（集成）→视角（性能、负载）→变更验证（回归），衡量质量的阶段不断扩展。"
+    ],
+    "key_points_en": [
+      "Black-box testing is a technique based on the external specification (inputs and outputs), and it forms a pair with white-box testing, which looks at the internal structure.",
+      "The testing processes proceed in the order unit → integration → system → acceptance, and integration testing is responsible for verifying cooperation between modules.",
+      "Performance testing measures non-functional items such as response time and processing volume, while load testing goes further and confirms the limit and durability under high-load conditions.",
+      "Regression testing is a verification within change management, used to re-confirm after a fix whether existing functions have been broken (degraded).",
+      "From technique (black-box) → process (integration) → viewpoint (performance, load) → change verification (regression), the stages of measuring quality keep expanding."
+    ],
+    "memory_hooks_zh": [
+      "黑盒测试：说到黑盒测试，就是不看内部、用输入输出（外部规格）来确认",
+      "集成测试：说到集成测试，就是结合多个模块、确认协作的工序",
+      "性能测试：说到性能测试，就是测量响应时间和处理量的非功能验证",
+      "负载测试：说到负载测试，就是施加高负载、确认极限与耐久",
+      "回归测试：说到回归测试，就是修改后重新确认既有功能是否未被破坏"
+    ],
+    "memory_hooks_en": [
+      "Black-box testing: Black-box testing → confirm via input and output (external spec) without looking inside",
+      "Integration testing: Integration testing → the process of combining multiple modules and confirming their cooperation",
+      "Performance testing: Performance testing → non-functional verification that measures response time and processing volume",
+      "Load testing: Load testing → apply heavy load and confirm the limit and durability",
+      "Regression testing: Regression testing → after a fix, re-confirm whether existing functions remain intact"
+    ]
+  },
+  "challenge_questions": [
+    "2010h22h-q040",
+    "2011h23tokubetsu-q054",
+    "2012h24a-q046",
+    "2011h23a-q041",
+    "2013h25a-q035"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2010h22a-q089",
+      "figure_path": "figures/2010h22a-q089.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22a-q048",
+      "figure_path": "figures/2010h22a-q048.png",
+      "figure_type": "diagram",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22a-q091",
+      "figure_path": "figures/2010h22a-q091.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "测试技术与集成、性能验证",
+  "title_en": "Test Techniques and Integration/Performance Verification",
+  "unit_summary_zh": "学习基于外部规格的测试技术，以及在模块集成阶段进行的集成、性能、负载、回归验证。",
+  "unit_summary_en": "Learn test techniques based on external specifications, and the integration, performance, load, and regression verification carried out at the stage where modules are combined."
+}

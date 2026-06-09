@@ -8,6 +8,7 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ThemeSwitcher } from "@/components/shells/ThemeSwitcher";
 
 const NAV_ITEMS = [
+  { href: "/textbook", key: "textbook" },
   { href: "/chat", key: "chat" },
   { href: "/quiz", key: "quiz" },
   { href: "/glossary", key: "glossary" },

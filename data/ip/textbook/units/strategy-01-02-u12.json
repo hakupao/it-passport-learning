@@ -1,0 +1,251 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "strategy-01-02-u12",
+  "topic_id": "strategy-01-02",
+  "category": "strategy",
+  "title_jp": "BI・データウェアハウスとマイニング",
+  "unit_summary_jp": "蓄積した大量データを意思決定に活かすBI・データウェアハウスと、知見を掘り出すマイニング技術を学ぶ。",
+  "order_in_topic": 12,
+  "prerequisites": [
+    "strategy-01-02-u08"
+  ],
+  "overview": {
+    "intro_jp": "このユニットでは、蓄積した大量のデータを経営の意思決定に活かす考え方であるBIと、その基盤となる統合データ蓄積庫のデータウェアハウス、そして蓄積データから役立つ知見を掘り出すデータマイニングを学ぶ。対象となるビッグデータ、文章への応用であるテキストマイニングと共起キーワード、全体プロセスのデータサイエンスのサイクルまでを俯瞰する。データ利活用は頻出分野で、用語の役割の違いを押さえることが重要である。",
+    "freq_badge": "頻出",
+    "est_minutes": 21,
+    "intro_zh": "本单元学习把积累的海量数据用于经营决策的理念 BI，作为其基础的统一数据积累库——数据仓库，以及从积累数据中挖掘有用洞见的数据挖掘。还会一并俯瞰其分析对象大数据、面向文本的应用——文本挖掘与共现关键词，以及作为整体流程的数据科学循环。数据利用是高频领域，把握各术语在职能上的差异十分重要。",
+    "intro_en": "This unit covers BI—the idea of leveraging accumulated large volumes of data for managerial decision-making—the data warehouse that serves as its foundation as a unified data store, and data mining, which digs useful insights out of accumulated data. It also gives an overview of big data (the target of analysis), text mining and co-occurrence keywords (its application to text), and the data science cycle as the overall process. Data utilization is a frequently tested area, and it is important to grasp the differences in the roles of each term."
+  },
+  "terms": [
+    {
+      "term": "BI",
+      "definition_jp": "蓄積データを分析・可視化し、経営の意思決定に役立てる手法やツールの総称。",
+      "explanation_jp": "BIはビジネスインテリジェンス(Business Intelligence)の略で、企業内に蓄積された大量のデータを集計・分析・可視化し、経営判断や業務改善に活かす仕組みや考え方を指します。売上や在庫などのデータをグラフやダッシュボードで分かりやすく示し、人の意思決定を支援します。\n\n試験では、BIが『データを意思決定に活かす側の考え方』であり、後述のデータウェアハウスやデータマイニングを支えとして成り立つ点が問われます。データそのものを貯める仕組み(DWH)や知見を掘る技術(マイニング)とは役割が異なり、それらを活用して経営に役立てる側である点を区別しましょう。",
+      "analogy_jp": "倉庫(DWH)にある大量の食材を、見やすい献立表やグラフにまとめて『今日は何を仕入れるべきか』を店長が決めやすくする参謀役のイメージ。",
+      "memory_hook_jp": "BIといえば蓄積データを分析・可視化して意思決定を支援する仕組み",
+      "inline_quiz": [
+        "2015h27h-q006"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "BI（商业智能）",
+      "term_en": "BI",
+      "definition_zh": "对积累数据进行分析、可视化，以助力经营决策的方法或工具的统称。",
+      "definition_en": "A general term for methods and tools that analyze and visualize accumulated data to aid managerial decision-making.",
+      "explanation_zh": "BI 是商业智能（Business Intelligence）的缩写，指对企业内积累的大量数据进行汇总、分析、可视化，并用于经营判断和业务改进的机制或理念。它把销售额、库存等数据用图表或仪表盘直观呈现，从而支援人的决策。\n考试中会考查这样一点：BI 是「把数据用于决策这一侧的理念」，它依托于后面讲到的数据仓库和数据挖掘才得以成立。它与积累数据本身的机制（DWH）、挖掘洞见的技术（挖掘）职能不同，要区分出 BI 是利用这些成果来服务经营的一侧。",
+      "explanation_en": "BI stands for Business Intelligence and refers to the mechanisms or concepts of aggregating, analyzing, and visualizing the large volumes of data accumulated within a company, then putting them to use in management decisions and business improvement. It presents data such as sales and inventory clearly through charts and dashboards, supporting human decision-making.\nThe exam asks that BI is \"the side that leverages data for decision-making\" and that it is established on top of the data warehouses and data mining discussed later. Its role differs from the mechanism that stores the data itself (DWH) and the technique that digs out insights (mining); distinguish BI as the side that utilizes those to serve management.",
+      "analogy_zh": "就像把仓库（DWH）里大量的食材整理成易看的菜单表或图表，让店长更容易决定「今天该进什么货」的参谋角色。",
+      "analogy_en": "Like a staff officer who organizes the large stock of ingredients in the warehouse (DWH) into easy-to-read menus and charts, making it easier for the store manager to decide \"what should we stock up on today.\"",
+      "memory_hook_zh": "说到 BI 就是分析、可视化积累数据来支援决策的机制",
+      "memory_hook_en": "BI → a mechanism that analyzes and visualizes accumulated data to support decision-making"
+    },
+    {
+      "term": "データウェアハウス",
+      "definition_jp": "分析のために各システムのデータを統合・蓄積した時系列のデータベース。",
+      "explanation_jp": "データウェアハウス(DWH)は、販売・在庫・顧客などの基幹システムに散らばったデータを、分析しやすい形に整えて一元的に蓄積する大規模なデータベースです。日々のデータを時系列で貯め続け、後から多角的に集計・分析できるよう設計されています。\n\n試験では、DWHがBIやデータマイニングの『基盤(土台)』であり、業務処理用のデータベースとは目的が異なる点が問われます。日々の取引を高速処理する通常のDBに対し、DWHは過去データを蓄積して分析するためのものである、という用途の違いを押さえましょう。",
+      "analogy_jp": "各店舗の売上伝票をすべて一か所の大きな書庫に整理して貯めておく倉庫のようなもの。あとで自由に取り出して傾向を分析できます。",
+      "memory_hook_jp": "データウェアハウスといえば分析用にデータを統合・蓄積する基盤",
+      "inline_quiz": [
+        "2010h22a-q009"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"販売システム\"] --> D[\"データウェアハウス\"]; B[\"在庫システム\"] --> D; C[\"顧客システム\"] --> D; D --> E[\"BIで分析・可視化\"]; D --> F[\"データマイニングで知見抽出\"]",
+        "svg_path": "figures/strategy-01-02-u12-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "数据仓库",
+      "term_en": "Data Warehouse",
+      "definition_zh": "为分析而把各系统数据整合、积累起来的时间序列数据库。",
+      "definition_en": "A time-series database that integrates and accumulates data from various systems for analysis.",
+      "explanation_zh": "数据仓库（DWH）是一种大规模数据库，它把散落在销售、库存、客户等核心系统中的数据整理成便于分析的形式，统一地积累起来。它把每天的数据按时间序列持续积累，并被设计成日后可以多角度地汇总、分析。\n考试中会考查这样一点：DWH 是 BI 和数据挖掘的「基础（地基）」，其目的与业务处理用的数据库不同。相对于高速处理日常交易的普通 DB，DWH 是用来积累历史数据进行分析的——要把握住这一用途上的差异。",
+      "explanation_en": "A data warehouse (DWH) is a large-scale database that arranges data scattered across core systems such as sales, inventory, and customers into a form that is easy to analyze, and accumulates it in a unified place. It keeps accumulating daily data in time series and is designed so that it can later be aggregated and analyzed from many angles.\nThe exam asks that the DWH is the \"foundation (base)\" of BI and data mining, and that its purpose differs from databases used for business processing. In contrast to an ordinary DB that processes daily transactions at high speed, a DWH exists to accumulate historical data for analysis—grasp this difference in purpose.",
+      "analogy_zh": "就像把各门店的销售单据全部整理、存放到一个大书库里的仓库。日后可以自由取出，分析趋势。",
+      "analogy_en": "Like a warehouse where all the sales slips from each store are organized and stored in one large archive. Later you can freely take them out and analyze trends.",
+      "memory_hook_zh": "说到数据仓库就是为分析而整合、积累数据的基础",
+      "memory_hook_en": "Data warehouse → the foundation that integrates and accumulates data for analysis"
+    },
+    {
+      "term": "データマイニング",
+      "definition_jp": "大量データから統計やAIで規則性や相関などの知見を掘り出す技術。",
+      "explanation_jp": "データマイニングは、蓄積された大量のデータを統計手法や機械学習などで分析し、人が気づきにくい規則性・相関・パターンを掘り出す技術です。『マイニング(採掘)』の名のとおり、データの山から価値ある知見を発掘するイメージです。\n\n試験では、有名な例として『紙おむつとビールが一緒に買われやすい』といった、商品の同時購入の関係を見つける分析(相関ルールの発見)がよく挙げられます。データを貯めるDWHや可視化するBIとは異なり、隠れた関係や傾向そのものを見つけ出す中核技術である点が問われます。",
+      "analogy_jp": "大量のレシートを分析して『この商品とあの商品は一緒に買われやすい』という意外な法則を見つけ出す、データの探偵のような役割です。",
+      "memory_hook_jp": "データマイニングといえば大量データから隠れた規則性や相関を掘り出す技術",
+      "inline_quiz": [
+        "2009h21a-q004",
+        "2011h23tokubetsu-q009"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "数据挖掘",
+      "term_en": "Data Mining",
+      "definition_zh": "用统计或 AI 从海量数据中挖掘规律、相关等洞见的技术。",
+      "definition_en": "A technique that uses statistics or AI to dig out insights such as regularities and correlations from large volumes of data.",
+      "explanation_zh": "数据挖掘是用统计手法或机器学习等对积累的海量数据进行分析，从而挖掘出人难以察觉的规律、相关、模式的技术。正如「挖掘（mining）」之名，它给人一种从数据之山中发掘有价值洞见的印象。\n考试中常举的著名例子是「纸尿裤和啤酒容易被一起购买」这类发现商品同时购买关系的分析（关联规则的发现）。它与积累数据的 DWH、做可视化的 BI 不同，会考查它是发现隐藏的关系或趋势本身的核心技术这一点。",
+      "explanation_en": "Data mining is a technique that analyzes accumulated large volumes of data with statistical methods, machine learning, and the like to dig out regularities, correlations, and patterns that people find hard to notice. As the name \"mining\" suggests, it evokes the image of unearthing valuable insights from a mountain of data.\nA famous example often cited on the exam is analysis that finds relationships of simultaneous purchase, such as \"diapers and beer tend to be bought together\" (discovery of association rules). Unlike the DWH that stores data or the BI that visualizes it, the exam asks that this is the core technique for finding hidden relationships and trends themselves.",
+      "analogy_zh": "就像分析大量小票，找出「这件商品和那件商品容易被一起买」这种意外规律的数据侦探。",
+      "analogy_en": "Like a data detective who analyzes large numbers of receipts and discovers surprising rules such as \"this product and that product tend to be bought together.\"",
+      "memory_hook_zh": "说到数据挖掘就是从海量数据中挖出隐藏规律和相关的技术",
+      "memory_hook_en": "Data mining → a technique that digs hidden regularities and correlations out of large volumes of data"
+    },
+    {
+      "term": "ビッグデータ",
+      "definition_jp": "従来手法では扱いにくい、量・種類・発生速度が大きい多様なデータ。",
+      "explanation_jp": "ビッグデータは、量(Volume)が膨大で、種類(Variety)が多様、発生・更新の速度(Velocity)が速い、といった特徴を持つ大規模で多様なデータの総称です。SNSの投稿、センサーの記録、購買履歴など、従来のデータベースだけでは扱いきれない多様なデータが含まれます。\n\n試験では、ビッグデータがデータマイニングなどの『分析対象となる大量データ』である点と、数値表のような整った構造化データだけでなく、文章・画像・音声などの非構造化データも含む点が問われます。3つのV(量・種類・速度)という特徴も押さえておきましょう。",
+      "analogy_jp": "整理された家計簿だけでなく、日々大量に流れ込むSNSの声・写真・位置情報まで含む、形も量もバラバラな情報の大洪水のようなものです。",
+      "memory_hook_jp": "ビッグデータといえば量・種類・速度が大きい多様な大量データ",
+      "inline_quiz": [
+        "2016h28a-q027"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "大数据",
+      "term_en": "Big Data",
+      "definition_zh": "传统手法难以处理的、量、种类、产生速度都很大的多样数据。",
+      "definition_en": "Diverse data—large in volume, variety, and speed of generation—that is hard to handle with conventional methods.",
+      "explanation_zh": "大数据是一类大规模而多样的数据的统称，具有量（Volume）庞大、种类（Variety）多样、产生与更新速度（Velocity）快等特征。它包含 SNS 的发帖、传感器的记录、购买历史等仅靠传统数据库无法完全处理的多样数据。\n考试中会考查这样两点：大数据是数据挖掘等的「分析对象的海量数据」；它不仅包含像数值表那样整齐的结构化数据，也包含文本、图像、语音等非结构化数据。还要把握住 3 个 V（量、种类、速度）这一特征。",
+      "explanation_en": "Big data is a general term for large-scale and diverse data, characterized by a huge volume (Volume), diverse variety (Variety), and a fast speed of generation and updating (Velocity). It includes diverse data that ordinary databases alone cannot fully handle, such as SNS posts, sensor records, and purchase histories.\nThe exam asks two points: that big data is the \"large volume of data that is the target of analysis\" for data mining and the like, and that it includes not only neatly structured data like numeric tables but also unstructured data such as text, images, and audio. Also grasp the characteristic of the three Vs (volume, variety, velocity).",
+      "analogy_zh": "不仅有整理好的家计簿，还包含每天大量涌入的 SNS 声音、照片、位置信息——就像一场形态和数量都参差不齐的信息大洪水。",
+      "analogy_en": "Not just a tidy household ledger, but also the SNS voices, photos, and location data flooding in every day—like a great flood of information that varies in both form and volume.",
+      "memory_hook_zh": "说到大数据就是量、种类、速度都很大的多样海量数据",
+      "memory_hook_en": "Big data → diverse large-volume data that is large in volume, variety, and velocity"
+    },
+    {
+      "term": "テキストマイニング",
+      "definition_jp": "文章などの非構造化テキストを解析し有用な情報を取り出す技術。",
+      "explanation_jp": "テキストマイニングは、アンケートの自由記述やSNS投稿、問い合わせ履歴といった文章(非構造化テキスト)を、単語に分解して出現頻度や関係を分析し、有用な傾向や知見を取り出す技術です。データマイニングを文章データに応用したものといえます。\n\n試験では、数値データではなく『文章を対象に分析する』点が最大のポイントです。顧客の声から不満の多い話題を見つけるなど、これまで定量化しにくかった自由な文章から傾向をつかむ用途が問われます。後述の共起キーワードは、この分析の代表的な手法の一つです。",
+      "analogy_jp": "大量のアンケートの感想文を読み解き、『最近この言葉がよく出てくるな』という話題の傾向を自動でつかみ取る読み手のような技術です。",
+      "memory_hook_jp": "テキストマイニングといえば文章を解析して傾向や知見を取り出す技術",
+      "inline_quiz": [
+        "2012h24a-q005"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "文本挖掘",
+      "term_en": "Text Mining",
+      "definition_zh": "解析文本等非结构化文字、提取有用信息的技术。",
+      "definition_en": "A technique that analyzes unstructured text such as documents and extracts useful information.",
+      "explanation_zh": "文本挖掘是把问卷的自由填写、SNS 发帖、咨询记录等文本（非结构化文字）拆分成单词，分析其出现频率和关系，从而提取有用趋势和洞见的技术。可以说它是把数据挖掘应用到文本数据上的产物。\n考试中最大的要点是它「以文本为对象进行分析」，而非数值数据。会考查从客户的声音中找出不满较多的话题等用途——从过去难以量化的自由文本中把握趋势。后面讲到的共现关键词，是这种分析的代表性手法之一。",
+      "explanation_en": "Text mining is a technique that breaks text (unstructured writing) such as free-response survey answers, SNS posts, and inquiry records into words, analyzes their frequency of appearance and relationships, and extracts useful trends and insights. It can be called the application of data mining to text data.\nThe biggest point for the exam is that it \"analyzes text as its target,\" not numeric data. The exam asks about uses such as finding topics with many complaints from customers' voices—grasping trends from free text that was previously hard to quantify. Co-occurrence keywords, discussed later, are one representative method of this analysis.",
+      "analogy_zh": "就像一位读者解读大量问卷的感想文，自动把握「最近这个词经常出现」这样的话题趋势的技术。",
+      "analogy_en": "Like a reader who interprets large numbers of free-text survey comments and automatically grasps topic trends such as \"this word has been showing up a lot lately.\"",
+      "memory_hook_zh": "说到文本挖掘就是解析文本、提取趋势和洞见的技术",
+      "memory_hook_en": "Text mining → a technique that analyzes text to extract trends and insights"
+    },
+    {
+      "term": "共起キーワード",
+      "definition_jp": "同じ文章中で一緒に出現しやすい関係にある語の組み合わせ。",
+      "explanation_jp": "共起キーワードとは、ある文章群の中で同時に現れやすい単語の組み合わせのことです。テキストマイニングで、文章中の語と語のつながりを分析することで、どの言葉が一緒に使われやすいかを明らかにします。\n\n試験では、テキストマイニングの具体的な分析概念として問われます。例えば口コミで『価格』と『高い』がよく一緒に出るなら、価格への不満が多いと推測できます。単語の出現回数だけでなく、語どうしの関係性(つながり)に注目する点が特徴です。",
+      "analogy_jp": "会話の中で『雨』と聞けば『傘』が一緒に出てきやすいように、同じ話題でセットで登場しやすい言葉の組み合わせを見つけることです。",
+      "memory_hook_jp": "共起キーワードといえば同じ文章で一緒に出やすい語の組み合わせ",
+      "inline_quiz": [
+        "2012h24h-q027"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "共现关键词",
+      "term_en": "Co-occurrence Keywords",
+      "definition_zh": "在同一文本中容易一起出现、彼此相关的词的组合。",
+      "definition_en": "A combination of words that tend to appear together and are related within the same text.",
+      "explanation_zh": "共现关键词是指在某一文本群中容易同时出现的单词组合。在文本挖掘中，通过分析文本中词与词之间的联系，弄清哪些词容易被一起使用。\n考试中会作为文本挖掘的具体分析概念来考查。例如在口碑中若「价格」和「贵」经常一起出现，就可以推测对价格的不满较多。它的特点是不只看单词的出现次数，而关注词与词之间的关系（联系）。",
+      "explanation_en": "Co-occurrence keywords are combinations of words that tend to appear simultaneously within a certain body of text. In text mining, by analyzing the connections between words in the text, it clarifies which words tend to be used together.\nThe exam asks about it as a concrete analytical concept of text mining. For example, if \"price\" and \"expensive\" often appear together in reviews, one can infer that there are many complaints about price. Its feature is that it focuses not only on the number of times words appear but on the relationships (connections) between words.",
+      "analogy_zh": "就像对话中一听到「雨」就容易跟着出现「伞」一样，是找出在同一话题中容易成套登场的词的组合。",
+      "analogy_en": "Just as hearing \"rain\" in conversation tends to bring \"umbrella\" along with it, it is finding combinations of words that tend to appear as a set in the same topic.",
+      "memory_hook_zh": "说到共现关键词就是同一文本中容易一起出现的词的组合",
+      "memory_hook_en": "Co-occurrence keywords → combinations of words that tend to appear together in the same text"
+    },
+    {
+      "term": "データサイエンスのサイクル",
+      "definition_jp": "課題設定から収集・分析・活用・評価まで繰り返すデータ活用の一連の流れ。",
+      "explanation_jp": "データサイエンスのサイクルは、データを価値ある成果につなげるための一連のプロセスを指します。一般に、課題の設定、データの収集・整理、分析・モデル化、結果の活用(意思決定)、そして評価・改善という流れを繰り返し回していきます。\n\n試験では、データ活用が一度きりではなく、評価結果を次の分析に反映して継続的に改善していく『循環するプロセス』である点が問われます。BI・DWH・マイニングといった個別の道具を、この全体の流れの中でどう位置づけるかを俯瞰する締めくくりの概念として押さえましょう。",
+      "analogy_jp": "料理で『何を作るか決め→材料を集め→調理し→出して反応を見て→次はもっと美味しく』と繰り返し改善していく一連の流れに似ています。",
+      "memory_hook_jp": "データサイエンスのサイクルといえば収集・分析・活用・評価を繰り返す流れ",
+      "inline_quiz": [
+        "2014h26a-q016"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph LR; A[\"課題設定\"] --> B[\"データ収集・整理\"]; B --> C[\"分析・モデル化\"]; C --> D[\"活用・意思決定\"]; D --> E[\"評価・改善\"]; E --> A",
+        "svg_path": "figures/strategy-01-02-u12-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "数据科学循环",
+      "term_en": "The Data Science Cycle",
+      "definition_zh": "从设定课题到收集、分析、利用、评估反复循环的数据利用全流程。",
+      "definition_en": "The whole flow of data utilization that repeats from problem setting through collection, analysis, application, and evaluation.",
+      "explanation_zh": "数据科学循环是指把数据转化为有价值成果的一连串过程。一般会反复循环这样的流程：设定课题，收集、整理数据，分析、建模，利用结果（决策），以及评估、改进。\n考试中会考查这样一点：数据利用不是一次性的，而是把评估结果反映到下一次分析中、持续改进的「循环过程」。把它作为收尾概念来把握——俯瞰 BI、DWH、挖掘这些各自的工具在整体流程中如何定位。",
+      "explanation_en": "The data science cycle refers to the series of processes for turning data into valuable results. Generally, it repeatedly goes around a flow of setting a problem, collecting and organizing data, analyzing and modeling, applying the results (decision-making), and evaluating and improving.\nThe exam asks that data utilization is not a one-time thing but a \"cyclical process\" that reflects evaluation results into the next analysis and continuously improves. Grasp it as the wrap-up concept—taking a bird's-eye view of how individual tools such as BI, DWH, and mining are positioned within this overall flow.",
+      "analogy_zh": "类似做菜中「决定做什么→备齐食材→烹饪→端出来看反应→下次做得更好吃」这样反复改进的一连串流程。",
+      "analogy_en": "Similar to cooking, where you repeatedly improve through a flow of \"decide what to make → gather ingredients → cook → serve and watch the reaction → make it even tastier next time.\"",
+      "memory_hook_zh": "说到数据科学循环就是收集、分析、利用、评估反复循环的流程",
+      "memory_hook_en": "The data science cycle → a flow that repeats collection, analysis, application, and evaluation"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "BI: BIといえば蓄積データを分析・可視化して意思決定を支援する仕組み",
+      "データウェアハウス: データウェアハウスといえば分析用にデータを統合・蓄積する基盤",
+      "データマイニング: データマイニングといえば大量データから隠れた規則性や相関を掘り出す技術",
+      "ビッグデータ: ビッグデータといえば量・種類・速度が大きい多様な大量データ",
+      "テキストマイニング: テキストマイニングといえば文章を解析して傾向や知見を取り出す技術",
+      "共起キーワード: 共起キーワードといえば同じ文章で一緒に出やすい語の組み合わせ",
+      "データサイエンスのサイクル: データサイエンスのサイクルといえば収集・分析・活用・評価を繰り返す流れ"
+    ],
+    "key_points_jp": [
+      "BIは蓄積データを分析・可視化して経営の意思決定に活かす上位の考え方で、DWHやマイニングを土台に成り立つ。",
+      "データウェアハウスは各システムのデータを統合・蓄積する分析用の基盤で、日々の業務処理用DBとは目的が異なる。",
+      "データマイニングは大量データから隠れた規則性・相関を掘り出す中核技術(例:同時購入の関係発見)で、本ユニット最頻出。",
+      "ビッグデータは量・種類・速度(3つのV)が大きい多様なデータで、マイニングの分析対象となる。",
+      "テキストマイニングは文章への応用で、共起キーワード(一緒に出やすい語の関係)が代表的概念。全体はデータサイエンスのサイクルで循環的に回す。"
+    ],
+    "key_points_zh": [
+      "BI 是把积累数据分析、可视化以服务经营决策的上层理念，依托 DWH 和挖掘这一地基才得以成立。",
+      "数据仓库是把各系统数据整合、积累起来的分析用基础，其目的与日常业务处理用 DB 不同。",
+      "数据挖掘是从海量数据中挖出隐藏规律、相关的核心技术（例：发现同时购买关系），是本单元最高频考点。",
+      "大数据是量、种类、速度（3 个 V）都很大的多样数据，是挖掘的分析对象。",
+      "文本挖掘是面向文本的应用，共现关键词（容易一起出现的词的关系）是其代表概念。整体通过数据科学循环循环往复地运转。"
+    ],
+    "key_points_en": [
+      "BI is the higher-level concept of analyzing and visualizing accumulated data to serve managerial decision-making, and it is established on the foundation of DWH and mining.",
+      "A data warehouse is an analytical foundation that integrates and accumulates data from various systems, and its purpose differs from a DB used for daily business processing.",
+      "Data mining is the core technique for digging hidden regularities and correlations out of large volumes of data (e.g., discovering simultaneous-purchase relationships), and it is the most frequently tested point in this unit.",
+      "Big data is diverse data that is large in volume, variety, and velocity (the three Vs), and it is the target of analysis for mining.",
+      "Text mining is the application to text, with co-occurrence keywords (relationships of words that tend to appear together) as its representative concept. The whole thing is run cyclically through the data science cycle."
+    ],
+    "memory_hooks_zh": [
+      "BI：说到 BI 就是分析、可视化积累数据来支援决策的机制",
+      "数据仓库：说到数据仓库就是为分析而整合、积累数据的基础",
+      "数据挖掘：说到数据挖掘就是从海量数据中挖出隐藏规律和相关的技术",
+      "大数据：说到大数据就是量、种类、速度都很大的多样海量数据",
+      "文本挖掘：说到文本挖掘就是解析文本、提取趋势和洞见的技术",
+      "共现关键词：说到共现关键词就是同一文本中容易一起出现的词的组合",
+      "数据科学循环：说到数据科学循环就是收集、分析、利用、评估反复循环的流程"
+    ],
+    "memory_hooks_en": [
+      "BI: BI → a mechanism that analyzes and visualizes accumulated data to support decision-making",
+      "Data warehouse: Data warehouse → the foundation that integrates and accumulates data for analysis",
+      "Data mining: Data mining → a technique that digs hidden regularities and correlations out of large volumes of data",
+      "Big data: Big data → diverse large-volume data that is large in volume, variety, and velocity",
+      "Text mining: Text mining → a technique that analyzes text to extract trends and insights",
+      "Co-occurrence keywords: Co-occurrence keywords → combinations of words that tend to appear together in the same text",
+      "The data science cycle: The data science cycle → a flow that repeats collection, analysis, application, and evaluation"
+    ]
+  },
+  "challenge_questions": [
+    "2019h31h-q028",
+    "2019r01a-q023",
+    "2020r02o-q007",
+    "2021r03-q019",
+    "2024r06-q026"
+  ],
+  "source_figures": [],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "BI、数据仓库与数据挖掘",
+  "title_en": "BI, Data Warehouse, and Mining",
+  "unit_summary_zh": "学习把积累的海量数据用于决策的 BI 与数据仓库，以及从中挖掘洞见的数据挖掘技术。",
+  "unit_summary_en": "Learn about BI and data warehouses, which leverage accumulated large volumes of data for decision-making, and mining techniques that dig out insights from them."
+}

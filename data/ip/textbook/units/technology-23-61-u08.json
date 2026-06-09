@@ -1,0 +1,181 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-23-61-u08",
+  "topic_id": "technology-23-61",
+  "category": "technology",
+  "title_jp": "パスワード・認証を狙う攻撃",
+  "unit_summary_jp": "辞書攻撃・ブルートフォース攻撃・パスワードリスト攻撃・クレデンシャルスタッフィングなど認証突破の手口を理解する。",
+  "order_in_topic": 8,
+  "prerequisites": [
+    "technology-23-61-u01",
+    "technology-23-61-u03"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、ID・パスワードによる認証を突破しようとする代表的な攻撃を学びます。語句を試す辞書攻撃から、全数を試すブルートフォース攻撃、さらに漏えいした認証情報を使い回すパスワードリスト攻撃・クレデンシャルスタッフィングへと、手口の進化を順に押さえます。認証はセキュリティの入口であり、出題頻度の高い重要分野です。",
+    "freq_badge": "頻出",
+    "est_minutes": 13,
+    "intro_zh": "在本单元中，你将学习试图突破基于 ID 与密码的认证的几种典型攻击。从逐个尝试词语的字典攻击，到穷举全部组合的暴力破解攻击，再到反复使用已泄露认证信息的密码列表攻击与撞库攻击，按手法的演进顺序依次掌握。认证是安全的入口，也是出题频率很高的重要领域。",
+    "intro_en": "In this unit, you will learn the typical attacks that try to break authentication based on IDs and passwords. We follow the evolution of these techniques in order: from the dictionary attack that tries likely words, to the brute-force attack that tries every possible combination, and on to password list attacks and credential stuffing that reuse leaked credentials. Authentication is the entry point of security and a high-frequency, important exam topic."
+  },
+  "terms": [
+    {
+      "term": "辞書攻撃",
+      "definition_jp": "辞書の単語など使われやすい語句を順に試してパスワードを破る攻撃。",
+      "explanation_jp": "辞書攻撃は、辞書に載っている単語や「password」「123456」のようによく使われる文字列をあらかじめリスト化し、それを順に試して正しいパスワードを当てる攻撃です。\n\n人間が覚えやすい単語をパスワードにしがちな心理を突くため、意味のある語をそのまま使うと破られやすくなります。試験では、考えうる文字の組み合わせをすべて試すブルートフォース攻撃との違い(辞書=ありそうな語に絞る、ブルートフォース=全数を試す)が問われます。対策は、辞書に載らない複雑で長いパスワードにすることです。",
+      "analogy_jp": "鍵の暗証番号を「誕生日」「1234」など、人がよく使いそうな番号から優先して試していく泥棒のようなものです。ありがちな候補を狙い撃ちします。",
+      "memory_hook_jp": "辞書攻撃といえばありそうな語句を順に試す推測攻撃",
+      "inline_quiz": [
+        "2011h23tokubetsu-q075"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "字典攻击",
+      "term_en": "Dictionary attack",
+      "definition_zh": "按顺序尝试字典里的单词等容易被使用的词语来破解密码的攻击。",
+      "definition_en": "An attack that cracks a password by trying, in order, easily-used words such as words found in a dictionary.",
+      "explanation_zh": "字典攻击是预先把字典里收录的单词，以及像「password」「123456」这样常被使用的字符串整理成列表，再按顺序逐个尝试，从而猜中正确密码的攻击。\n\n它利用了人们倾向于把容易记住的单词设为密码这一心理，因此直接使用有意义的词语就很容易被破解。考试中常考它与穷举所有可能字符组合的暴力破解攻击之间的区别（字典＝缩小到可能的词语，暴力破解＝穷举全部）。对策是使用字典里查不到、复杂而又长的密码。",
+      "explanation_en": "A dictionary attack prepares a list of words found in a dictionary, plus commonly-used strings like \"password\" or \"123456\", and tries them one by one in order to guess the correct password.\n\nIt exploits the human tendency to choose easy-to-remember words as passwords, so using a meaningful word as-is makes the password easy to crack. The exam asks about the difference from a brute-force attack, which tries every possible character combination (dictionary = narrowed to likely words; brute force = tries them all). The countermeasure is to use a complex, long password that is not in any dictionary.",
+      "analogy_zh": "就像小偷在猜锁的密码时，优先从「生日」「1234」等人们常用的号码开始试。专门盯着那些常见的候选下手。",
+      "analogy_en": "It is like a thief guessing a lock's PIN by first trying numbers people commonly use, such as a birthday or \"1234\". They target the likely candidates first.",
+      "memory_hook_zh": "说到字典攻击，就是按顺序尝试可能词语的猜测型攻击",
+      "memory_hook_en": "Dictionary attack → a guessing attack that tries likely words in order"
+    },
+    {
+      "term": "ブルートフォース攻撃",
+      "definition_jp": "考えうる文字の組み合わせを総当たりで試してパスワードを破る攻撃。",
+      "explanation_jp": "ブルートフォース攻撃(総当たり攻撃)は、考えられる文字・数字・記号の組み合わせを片端からすべて試し、力ずくでパスワードを割り出す攻撃です。時間さえかければ理論上は必ず正解に到達します。\n\nパスワードが短いほど組み合わせが少なく短時間で破られ、長く複雑なほど試行回数が爆発的に増えて破りにくくなります。試験では、語句に絞る辞書攻撃との違いや、対策として「一定回数失敗でロックするアカウントロック」「パスワードの長文字数化」が問われます。逆に正しいパスワードを固定し利用者IDを次々試すリバースブルートフォース攻撃も押さえておきましょう。",
+      "analogy_jp": "ダイヤル錠を0000から9999まで順番にすべて回して開けようとするようなもの。手間はかかりますが、いつかは必ず合う番号にたどり着きます。",
+      "memory_hook_jp": "ブルートフォース攻撃といえば全組み合わせを総当たり",
+      "inline_quiz": [
+        "2014h26h-q051"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "暴力破解攻击",
+      "term_en": "Brute-force attack",
+      "definition_zh": "穷举尝试所有可能的字符组合来破解密码的攻击。",
+      "definition_en": "An attack that cracks a password by exhaustively trying every conceivable character combination.",
+      "explanation_zh": "暴力破解攻击（穷举攻击）是把所有可能的字符、数字、符号组合从头到尾逐一尝试，用蛮力推算出密码的攻击。只要时间足够，理论上必定能到达正确答案。\n\n密码越短，组合就越少，越能在短时间内被破解；越长越复杂，尝试次数就爆炸式增长，越难被破解。考试中常考它与缩小到词语范围的字典攻击之间的区别，以及作为对策的「失败一定次数即锁定的账户锁定」和「加长密码字符数」。此外，固定正确密码、逐个尝试用户 ID 的反向暴力破解攻击也要一并掌握。",
+      "explanation_en": "A brute-force attack (exhaustive attack) tries every conceivable combination of characters, digits, and symbols from start to finish, computing the password by sheer force. Given enough time, it will, in theory, always reach the correct answer.\n\nThe shorter the password, the fewer the combinations and the faster it is cracked; the longer and more complex it is, the more the number of attempts explodes and the harder it is to crack. The exam asks about the difference from a dictionary attack, which narrows down to words, and about countermeasures such as \"account lockout that locks after a set number of failures\" and \"lengthening the password\". Conversely, also keep in mind the reverse brute-force attack, which fixes one correct password and tries user IDs one after another.",
+      "analogy_zh": "就像把转盘锁从 0000 到 9999 依次全部转一遍来开锁。虽然费工夫，但总有一刻会转到对上的号码。",
+      "analogy_en": "It is like turning a combination lock through every number from 0000 to 9999 in order to open it. It takes effort, but you will eventually land on the number that fits.",
+      "memory_hook_zh": "说到暴力破解攻击，就是穷举所有组合",
+      "memory_hook_en": "Brute-force attack → try every combination exhaustively"
+    },
+    {
+      "term": "パスワードリスト攻撃",
+      "definition_jp": "他所から漏えいしたID・パスワードの一覧を別サイトで試す攻撃。",
+      "explanation_jp": "パスワードリスト攻撃は、どこかのサービスから漏えい・流出したID とパスワードの組をリスト化し、それを使って別のサービスへのログインを試みる攻撃です。推測ではなく「実在した正しい組」を使う点が特徴です。\n\n複数のサイトで同じID・パスワードを使い回している利用者が被害に遭いやすく、1つの漏えいが芋づる式に他サービスの不正ログインへ波及します。試験では、推測で当てる辞書攻撃・ブルートフォース攻撃との違い(リスト攻撃=漏えい情報の再利用)と、対策が「パスワードの使い回しをやめる」「多要素認証」である点が問われます。",
+      "analogy_jp": "あるマンションで拾った鍵束を、別のマンションの同じ住人の部屋でも試してみる空き巣のようなもの。同じ鍵を使い回していると次々と開いてしまいます。",
+      "memory_hook_jp": "パスワードリスト攻撃といえば漏えい情報の使い回し悪用",
+      "inline_quiz": [
+        "2015h27h-q084"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"推測系\"]; A --> B[\"辞書攻撃\"]; A --> C[\"ブルートフォース攻撃\"]; D[\"再利用系\"]; D --> E[\"パスワードリスト攻撃\"]; D --> F[\"クレデンシャルスタッフィング\"]",
+        "svg_path": "figures/technology-23-61-u08-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "密码列表攻击",
+      "term_en": "Password list attack",
+      "definition_zh": "把从别处泄露的 ID／密码清单拿到另一网站上试用的攻击。",
+      "definition_en": "An attack that takes a list of IDs and passwords leaked from somewhere and tries them on a different site.",
+      "explanation_zh": "密码列表攻击是把从某个服务泄露、外流的 ID 与密码组合整理成列表，再用它去尝试登录其他服务的攻击。其特点在于使用的不是猜测，而是「曾真实存在的正确组合」。\n\n在多个网站上重复使用相同 ID／密码的用户最容易受害，一处泄露会像顺藤摸瓜一样波及其他服务的非法登录。考试中常考它与靠猜测命中的字典攻击、暴力破解攻击之间的区别（列表攻击＝复用泄露信息），以及对策是「不要重复使用密码」「多因素认证」。",
+      "explanation_en": "A password list attack compiles into a list the ID-and-password pairs leaked or spilled from some service, and uses them to attempt logins to other services. Its hallmark is that it uses \"genuine, correct pairs that really existed\" rather than guesses.\n\nUsers who reuse the same ID and password across multiple sites are most likely to be harmed, and a single leak spreads to unauthorized logins on other services like links in a chain. The exam asks about the difference from dictionary and brute-force attacks, which hit by guessing (list attack = reuse of leaked information), and that the countermeasures are \"stop reusing passwords\" and \"multi-factor authentication\".",
+      "analogy_zh": "就像盗贼把在某栋公寓里捡到的一串钥匙，拿到另一栋公寓里同一住户的房间也试一试。只要重复使用同一把钥匙，门就会被一扇接一扇地打开。",
+      "analogy_en": "It is like a burglar taking a bunch of keys found at one apartment building and trying them on the same resident's unit at another building. If the same key is reused, doors open one after another.",
+      "memory_hook_zh": "说到密码列表攻击，就是滥用泄露信息进行复用",
+      "memory_hook_en": "Password list attack → abusing leaked credentials by reuse"
+    },
+    {
+      "term": "クレデンシャルスタッフィング",
+      "definition_jp": "漏えいした認証情報を自動化ツールで大量・多サイトに試す攻撃。",
+      "explanation_jp": "クレデンシャルスタッフィングは、漏えいしたID・パスワードの組(クレデンシャル)を、自動化されたツールを使って多数のサイトへ大規模かつ高速に試す攻撃です。パスワードリスト攻撃を機械化・大規模化したものといえます。\n\nボットで何万件もの組を一気に試すため、使い回しのある利用者が広範囲で同時に被害を受けます。試験では、人手による試行ではなく自動化・大量試行である点、パスワードの使い回しを前提とする点が問われます。対策は使い回しの回避・多要素認証に加え、不審なアクセスを検知する仕組みです。",
+      "analogy_jp": "拾った大量の鍵束を、ロボットが手分けして街じゅうの家の鍵穴に片端から差し込んでいくようなもの。人手では無理な規模を機械で一気にこなします。",
+      "memory_hook_jp": "クレデンシャルスタッフィングといえばリスト攻撃の自動化・大規模版",
+      "inline_quiz": [
+        "2017h29h-q095"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "撞库攻击",
+      "term_en": "Credential stuffing",
+      "definition_zh": "用自动化工具向大量、多个网站尝试已泄露认证信息的攻击。",
+      "definition_en": "An attack that uses automated tools to try leaked credentials against many sites at scale.",
+      "explanation_zh": "撞库攻击是利用自动化工具，把泄露的 ID／密码组合（凭证）大规模、高速地向众多网站尝试的攻击。可以说它是把密码列表攻击机械化、大规模化后的产物。\n\n由于用机器人一口气尝试数万条组合，存在密码复用的用户会在大范围内同时受害。考试中常考它并非人工逐个尝试、而是自动化的大量尝试这一点，以及它以密码复用为前提这一点。对策除了避免复用、多因素认证之外，还包括检测可疑访问的机制。",
+      "explanation_en": "Credential stuffing uses automated tools to try leaked ID-and-password pairs (credentials) against numerous sites at massive scale and high speed. It can be described as a mechanized, scaled-up version of the password list attack.\n\nBecause bots try tens of thousands of pairs at once, users who reuse passwords are harmed across a wide range simultaneously. The exam asks about the point that it is automated, high-volume trying rather than manual attempts, and that it assumes password reuse. Countermeasures include, in addition to avoiding reuse and multi-factor authentication, a mechanism to detect suspicious access.",
+      "analogy_zh": "就像把捡来的一大堆钥匙交给机器人分头去做，往全城每户人家的锁孔里逐个插试。人力办不到的规模，机器一口气就完成了。",
+      "analogy_en": "It is like handing a huge pile of found keys to robots that split the work and insert them one after another into the keyholes of every house in town. A scale impossible by hand is done all at once by machines.",
+      "memory_hook_zh": "说到撞库攻击，就是列表攻击的自动化、大规模版",
+      "memory_hook_en": "Credential stuffing → the automated, large-scale version of the list attack"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "辞書攻撃: 辞書攻撃といえばありそうな語句を順に試す推測攻撃",
+      "ブルートフォース攻撃: ブルートフォース攻撃といえば全組み合わせを総当たり",
+      "パスワードリスト攻撃: パスワードリスト攻撃といえば漏えい情報の使い回し悪用",
+      "クレデンシャルスタッフィング: クレデンシャルスタッフィングといえばリスト攻撃の自動化・大規模版"
+    ],
+    "key_points_jp": [
+      "認証突破の手口は、推測で当てる『推測系』(辞書攻撃・ブルートフォース攻撃)と、漏えい情報を使い回す『再利用系』(パスワードリスト攻撃・クレデンシャルスタッフィング)に大別される。",
+      "辞書攻撃はありそうな語句に絞り、ブルートフォース攻撃は全組み合わせを総当たりする点が違い。対策はアカウントロックと長く複雑なパスワード。",
+      "パスワードリスト攻撃・クレデンシャルスタッフィングは『パスワードの使い回し』が被害の根本原因で、使い回しをやめ多要素認証を使うことが有効。",
+      "クレデンシャルスタッフィングはパスワードリスト攻撃を自動化ツールで大規模・高速に行ったもの。",
+      "全体を通じ、複雑で長いパスワード・使い回しの回避・多要素認証が共通の防御策となる。"
+    ],
+    "key_points_zh": [
+      "突破认证的手法大致分为靠猜测命中的「猜测型」（字典攻击、暴力破解攻击）和复用泄露信息的「复用型」（密码列表攻击、撞库攻击）。",
+      "区别在于：字典攻击缩小到可能的词语，暴力破解攻击穷举所有组合。对策是账户锁定和又长又复杂的密码。",
+      "密码列表攻击、撞库攻击受害的根本原因是「密码复用」，停止复用并使用多因素认证才有效。",
+      "撞库攻击是用自动化工具把密码列表攻击大规模、高速地执行的产物。",
+      "贯穿全篇，复杂而又长的密码、避免复用、多因素认证是共通的防御措施。"
+    ],
+    "key_points_en": [
+      "Authentication-breaking techniques fall broadly into the \"guessing type\" that hits by guessing (dictionary attack, brute-force attack) and the \"reuse type\" that reuses leaked information (password list attack, credential stuffing).",
+      "The difference: a dictionary attack narrows down to likely words, while a brute-force attack exhaustively tries every combination. Countermeasures are account lockout and a long, complex password.",
+      "For password list attacks and credential stuffing, the root cause of harm is \"password reuse\"; stopping reuse and using multi-factor authentication is effective.",
+      "Credential stuffing is a password list attack carried out at large scale and high speed using automated tools.",
+      "Throughout, a complex and long password, avoiding reuse, and multi-factor authentication are the common defensive measures."
+    ],
+    "memory_hooks_zh": [
+      "字典攻击：说到字典攻击，就是按顺序尝试可能词语的猜测型攻击",
+      "暴力破解攻击：说到暴力破解攻击，就是穷举所有组合",
+      "密码列表攻击：说到密码列表攻击，就是滥用泄露信息进行复用",
+      "撞库攻击：说到撞库攻击，就是列表攻击的自动化、大规模版"
+    ],
+    "memory_hooks_en": [
+      "Dictionary attack: Dictionary attack → a guessing attack that tries likely words in order",
+      "Brute-force attack: Brute-force attack → try every combination exhaustively",
+      "Password list attack: Password list attack → abusing leaked credentials by reuse",
+      "Credential stuffing: Credential stuffing → the automated, large-scale version of the list attack"
+    ]
+  },
+  "challenge_questions": [
+    "2016h28a-q083",
+    "2017h29h-q081",
+    "2022r04-q095",
+    "2019r01a-q080",
+    "2025r07-q073"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2025r07-q073",
+      "figure_path": "figures/2025r07-q073.png",
+      "figure_type": "table",
+      "figure_description": "a，b，cと攻撃名の組合せを示す3列4行の選択肢表。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "针对密码与认证的攻击",
+  "title_en": "Attacks Targeting Passwords and Authentication",
+  "unit_summary_zh": "理解字典攻击、暴力破解攻击、密码列表攻击、撞库攻击等突破认证的手法。",
+  "unit_summary_en": "Understand authentication-breaking techniques such as dictionary attacks, brute-force attacks, password list attacks, and credential stuffing."
+}

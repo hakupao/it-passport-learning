@@ -1,0 +1,213 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-13-35-u07",
+  "topic_id": "technology-13-35",
+  "category": "technology",
+  "title_jp": "生成モデルと大規模言語モデル",
+  "unit_summary_jp": "データを生成する深層学習モデルGANと、生成AIの中核である大規模言語モデル(LLM)、その活用技法プロンプトエンジニアリングを学ぶ。",
+  "order_in_topic": 7,
+  "prerequisites": [
+    "technology-13-35-u06"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、新しいデータそのものを作り出す深層学習モデルGANから、生成AIの中核である大規模言語モデル(LLM)、そしてLLMを上手に使いこなす技法プロンプトエンジニアリングまでを学びます。生成AIは近年の出題が増えている注目分野で、各用語の略称と正式名称、そして「生成する」という共通テーマを押さえることが試験で重要になります。",
+    "freq_badge": "標準",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将从能够创造出全新数据本身的深度学习模型 GAN，学到作为生成式 AI 核心的大语言模型（LLM），再到能够巧妙驾驭 LLM 的技巧——提示工程。生成式 AI 是近年出题增多的热门领域，掌握各术语的简称与全称，以及「生成」这一共同主题，对考试很重要。",
+    "intro_en": "In this unit, you will learn from GAN, a deep learning model that creates entirely new data itself, to the large language model (LLM) at the core of generative AI, and on to prompt engineering, the technique for skillfully handling LLMs. Generative AI is a hot area with increasing exam coverage in recent years, and for the exam it is important to master each term's abbreviation and full name, as well as the shared theme of \"generating.\""
+  },
+  "terms": [
+    {
+      "term": "GAN",
+      "definition_jp": "二つのネットワークを競わせて本物そっくりのデータを生成する深層学習モデル。",
+      "explanation_jp": "GANは、画像などのデータを新しく生成することを得意とする深層学習モデルです。「生成器(ジェネレータ)」と「識別器(ディスクリミネータ)」という二つのネットワークが、偽物を作る側と見破る側として互いに競い合いながら学習します。\n\nこの競争を繰り返すうちに、生成器は本物と見分けがつかないほど精巧なデータを作れるようになります。試験では、データを分類・識別するモデルではなく「データを新しく生成する」代表的なモデルであること、二つのネットワークが対立しながら学ぶ仕組みが問われます。",
+      "analogy_jp": "偽札職人(生成器)と鑑定士(識別器)がいたちごっこをするようなもの。鑑定士に見破られまいと職人の腕が上がり、最後は本物そっくりの札ができあがります。",
+      "memory_hook_jp": "GANといえば生成器と識別器を競わせて本物そっくりを作る",
+      "inline_quiz": [
+        "2009h21a-q097"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph LR; A[\"ランダムな入力\"] --> B[\"生成器(偽データを作る)\"]; B --> C[\"識別器(本物か偽物か判定)\"]; D[\"本物のデータ\"] --> C; C --> E[\"競い合って精度が向上\"]",
+        "svg_path": "figures/technology-13-35-u07-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "GAN（生成对抗网络）",
+      "term_en": "GAN",
+      "definition_zh": "让两个网络相互竞争、生成以假乱真数据的深度学习模型。",
+      "definition_en": "A deep learning model that pits two networks against each other to generate data nearly indistinguishable from the real thing.",
+      "explanation_zh": "GAN 是一种擅长全新生成图像等数据的深度学习模型。「生成器（generator）」和「判别器（discriminator）」这两个网络，分别作为造假的一方和识破的一方，在相互竞争中学习。\n\n在反复进行这种竞争的过程中，生成器逐渐能够造出与真品难以区分、精致逼真的数据。考试中会考查：它不是对数据进行分类、识别的模型，而是「全新生成数据」的代表性模型，以及两个网络相互对立着学习的机制。",
+      "explanation_en": "GAN is a deep learning model that excels at newly generating data such as images. Two networks — a \"generator\" and a \"discriminator\" — learn while competing with each other as the side that makes fakes and the side that sees through them.\n\nAs this competition is repeated, the generator becomes able to produce data so refined that it is indistinguishable from the real thing. On the exam, you are asked that it is not a model that classifies or identifies data but a representative model that \"newly generates data,\" and about the mechanism in which two networks learn while opposing each other.",
+      "analogy_zh": "就像伪钞匠（生成器）和鉴定师（判别器）在玩猫鼠游戏。为了不被鉴定师识破，匠人的手艺不断精进，最终造出以假乱真的钞票。",
+      "analogy_en": "Like a counterfeiter (generator) and an appraiser (discriminator) playing a cat-and-mouse game. To avoid being seen through by the appraiser, the counterfeiter's skill keeps improving, until at last they produce bills indistinguishable from the real thing.",
+      "memory_hook_zh": "说到 GAN，就是让生成器和判别器相互竞争、造出以假乱真",
+      "memory_hook_en": "GAN → pit a generator and a discriminator against each other to make something indistinguishable from the real thing"
+    },
+    {
+      "term": "敵対的生成ネットワーク",
+      "definition_jp": "GANの正式名称。二つの網が敵対しながらデータを生成する手法。",
+      "explanation_jp": "敵対的生成ネットワークは、GAN(Generative Adversarial Network)の正式な日本語名称です。「敵対的」は生成器と識別器が互いに競い合う(敵対する)関係を、「生成」は新しいデータを作り出すことを表しています。\n\n名称そのものが仕組みを言い表している点がポイントです。試験では、GANという略称と「敵対的生成ネットワーク」という正式名称が対応していること、名前の通り二つのネットワークが敵対的に学習する生成モデルであることが問われます。",
+      "analogy_jp": "「敵対」「生成」「ネットワーク」という三つの言葉が、そのまま“競い合って・新しく作る・二つの網”という中身を説明している名札のようなものです。",
+      "memory_hook_jp": "敵対的生成ネットワークといえばGANの正式名称",
+      "inline_quiz": [
+        "2009h21h-q066"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "生成对抗网络",
+      "term_en": "Generative Adversarial Network",
+      "definition_zh": "GAN 的全称。两个网络相互对抗着生成数据的方法。",
+      "definition_en": "The full name of GAN. A method in which two networks generate data while adversarially competing.",
+      "explanation_zh": "生成对抗网络是 GAN（Generative Adversarial Network）的正式名称。「对抗」表示生成器和判别器相互竞争（对抗）的关系，「生成」表示创造出新的数据。\n\n要点在于，名称本身就道出了其机制。考试中会考查：GAN 这一简称与「生成对抗网络」这一全称相对应，以及正如其名，它是两个网络对抗式学习的生成模型。",
+      "explanation_en": "Generative Adversarial Network is the formal name of GAN (Generative Adversarial Network). \"Adversarial\" expresses the relationship in which the generator and discriminator compete (oppose) with each other, and \"generative\" expresses creating new data.\n\nThe key point is that the name itself describes the mechanism. On the exam, you are asked that the abbreviation GAN corresponds to the full name \"Generative Adversarial Network,\" and that, as the name says, it is a generative model in which two networks learn adversarially.",
+      "analogy_zh": "「对抗」「生成」「网络」这三个词，本身就像一张名牌，直接说明了它的内容——「相互竞争、全新创造、两个网络」。",
+      "analogy_en": "The three words \"adversarial,\" \"generative,\" and \"network\" are like a name tag that directly explains the contents: \"competing with each other, creating anew, two networks.\"",
+      "memory_hook_zh": "说到生成对抗网络，就是 GAN 的全称",
+      "memory_hook_en": "Generative Adversarial Network → the full name of GAN"
+    },
+    {
+      "term": "LLM",
+      "definition_jp": "膨大な文章を学習し人間のような文章を生成するAIモデル。",
+      "explanation_jp": "LLMは、インターネット上の膨大な量の文章を学習し、人間が書いたような自然な文章を生成できるAIモデルです。質問に答えたり、文章を要約・翻訳したり、文章を続けて書いたりと、言葉に関する幅広い作業をこなせるのが特徴です。\n\n近年の対話型生成AIサービスの中核技術であり、生成AIの代表例として出題されます。試験では、LLMが「大規模言語モデル」の略称であること、大量のテキストを学習して言語を扱う生成AIである、という基本理解が問われます。",
+      "analogy_jp": "とてつもない数の本を読破した物知りの相談相手のようなもの。質問すれば、それまで読んだ膨大な文章をもとに自然な言葉で答えを組み立ててくれます。",
+      "memory_hook_jp": "LLMといえば膨大な文章を学習して文章を生成するAI",
+      "inline_quiz": [
+        "2025r07-q080"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "LLM（大语言模型）",
+      "term_en": "LLM",
+      "definition_zh": "学习海量文章、生成类似人类文章的 AI 模型。",
+      "definition_en": "An AI model that learns from vast amounts of text and generates human-like text.",
+      "explanation_zh": "LLM 是一种学习互联网上海量文章、能够生成宛如人类所写的自然文章的 AI 模型。它能回答提问、对文章进行摘要与翻译、续写文章等，胜任与语言相关的广泛工作，这是它的特点。\n\n它是近年对话型生成式 AI 服务的核心技术，作为生成式 AI 的代表例出题。考试中会考查这样的基本理解：LLM 是「大语言模型」的简称，是学习大量文本、处理语言的生成式 AI。",
+      "explanation_en": "LLM is an AI model that learns from the vast amount of text on the internet and can generate natural text as if written by a human. Its characteristic is that it can handle a wide range of language-related tasks, such as answering questions, summarizing and translating text, and continuing to write text.\n\nIt is the core technology behind recent conversational generative AI services and is tested as a representative example of generative AI. On the exam, the basic understanding is asked that LLM is the abbreviation of \"Large Language Model,\" a generative AI that learns from large amounts of text and handles language.",
+      "analogy_zh": "就像一位读遍了数量惊人的书籍、知识渊博的咨询对象。只要提问，它就会基于此前读过的海量文章，用自然的语言组织出答案。",
+      "analogy_en": "Like a knowledgeable advisor who has read through a staggering number of books. Ask a question, and based on the vast amount of text it has read, it assembles an answer in natural language.",
+      "memory_hook_zh": "说到 LLM，就是学习海量文章、生成文章的 AI",
+      "memory_hook_en": "LLM → an AI that learns from vast amounts of text and generates text"
+    },
+    {
+      "term": "大規模言語モデル",
+      "definition_jp": "LLMの正式名称。大量の言語データを学習した生成AIモデル。",
+      "explanation_jp": "大規模言語モデルは、LLM(Large Language Model)の正式な日本語名称です。「大規模」は学習に使う文章量とモデルの規模が非常に大きいこと、「言語モデル」は言葉のつながりやすさを予測して文章を扱う仕組みを表しています。\n\n試験では、LLMという略称と「大規模言語モデル」という正式名称が対応していること、名称の通り大量の言語データを学習した生成AIであることが問われます。GANが主に画像などを生成するのに対し、こちらは文章(言語)を生成する点で対比して覚えると効果的です。",
+      "analogy_jp": "「大規模」=膨大な文章で鍛えた、「言語モデル」=言葉を扱う頭脳、という名前がそのまま中身を表しています。図書館一館分を覚えた言葉の専門家のイメージです。",
+      "memory_hook_jp": "大規模言語モデルといえばLLMの正式名称",
+      "inline_quiz": [
+        "2010h22a-q083"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "大语言模型",
+      "term_en": "Large Language Model",
+      "definition_zh": "LLM 的全称。学习了大量语言数据的生成式 AI 模型。",
+      "definition_en": "The full name of LLM. A generative AI model that has learned from large amounts of language data.",
+      "explanation_zh": "大语言模型是 LLM（Large Language Model）的正式名称。「大规模」表示用于学习的文章量与模型规模都非常庞大，「语言模型」表示一种预测词语衔接可能性、从而处理文章的机制。\n\n考试中会考查：LLM 这一简称与「大语言模型」这一全称相对应，以及正如其名，它是学习了大量语言数据的生成式 AI。GAN 主要生成图像等，而它生成的是文章（语言），与 GAN 对照着记会很有效。",
+      "explanation_en": "Large Language Model is the formal name of LLM (Large Language Model). \"Large\" expresses that both the amount of text used for learning and the scale of the model are very large, and \"language model\" expresses a mechanism that predicts how likely words are to connect and thereby handles text.\n\nOn the exam, you are asked that the abbreviation LLM corresponds to the full name \"Large Language Model,\" and that, as the name says, it is a generative AI that has learned from large amounts of language data. Whereas GAN mainly generates images and the like, this one generates text (language), so it is effective to remember it in contrast with GAN.",
+      "analogy_zh": "「大规模」＝用海量文章磨炼而成，「语言模型」＝处理语言的大脑，这个名字本身就道出了它的内容。可以想象成一位记住了整整一座图书馆的语言专家。",
+      "analogy_en": "\"Large\" = honed with a vast amount of text, \"language model\" = a brain that handles language — the name itself describes the contents. Picture a language expert who has memorized an entire library's worth of books.",
+      "memory_hook_zh": "说到大语言模型，就是 LLM 的全称",
+      "memory_hook_en": "Large Language Model → the full name of LLM"
+    },
+    {
+      "term": "プロンプトエンジニアリング",
+      "definition_jp": "AIへの指示文を工夫し望む回答を引き出す技法。",
+      "explanation_jp": "プロンプトエンジニアリングは、生成AI(LLMなど)に与える指示や質問の文章(プロンプト)を工夫し、より的確で望ましい回答を引き出す技法です。同じAIでも、指示の出し方しだいで回答の質が大きく変わるため重要視されます。\n\n例えば「役割を与える」「手順を細かく示す」「出力の形式を指定する」といった工夫が含まれます。試験では、これがモデルそのものを作る技術ではなく、出来上がったAIを「使いこなす側」の活用技法である点が問われます。",
+      "analogy_jp": "検索エンジンで良い結果を得るために検索キーワードを工夫するのと同じように、AIにうまく頼むための“聞き方の工夫”だと考えると分かりやすいです。",
+      "memory_hook_jp": "プロンプトエンジニアリングといえば指示文を工夫して望む回答を引き出す技法",
+      "inline_quiz": [
+        "2026r08-q098"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "提示工程",
+      "term_en": "Prompt engineering",
+      "definition_zh": "对给 AI 的指令文加以斟酌，从而引出理想回答的技巧。",
+      "definition_en": "A technique of crafting the instruction text given to an AI in order to elicit the desired answer.",
+      "explanation_zh": "提示工程是一种通过斟酌给生成式 AI（如 LLM）的指令或提问文本（提示词），从而引出更准确、更理想回答的技巧。即便是同一个 AI，回答质量也会因下达指令的方式而大相径庭，因此它受到重视。\n\n例如「赋予角色」「细致地给出步骤」「指定输出的格式」等斟酌都包含在内。考试中会考查这一点：它不是制造模型本身的技术，而是「驾驭」已建好的 AI 的运用技巧。",
+      "explanation_en": "Prompt engineering is a technique of crafting the instruction or question text (the prompt) given to a generative AI (such as an LLM) in order to elicit a more accurate and desirable answer. Even with the same AI, the quality of the answer changes greatly depending on how the instruction is given, which is why it is valued.\n\nFor example, it includes crafting such as \"assigning a role,\" \"giving the steps in detail,\" and \"specifying the output format.\" On the exam, the point asked is that this is not a technique for building the model itself but a usage technique on the \"side that handles\" an already-built AI.",
+      "analogy_zh": "就像在搜索引擎中为了得到好结果而斟酌搜索关键词一样，可以把它理解为为了把事情顺利托付给 AI 而下的「提问方式上的功夫」，这样就好懂了。",
+      "analogy_en": "Just as you craft your search keywords to get good results in a search engine, you can understand it as the \"art of how to ask\" so you can successfully entrust a task to the AI — that makes it easy to grasp.",
+      "memory_hook_zh": "说到提示工程，就是斟酌指令文、引出理想回答的技巧",
+      "memory_hook_en": "Prompt engineering → the technique of crafting the instruction text to elicit the desired answer"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "GAN: GANといえば生成器と識別器を競わせて本物そっくりを作る",
+      "敵対的生成ネットワーク: 敵対的生成ネットワークといえばGANの正式名称",
+      "LLM: LLMといえば膨大な文章を学習して文章を生成するAI",
+      "大規模言語モデル: 大規模言語モデルといえばLLMの正式名称",
+      "プロンプトエンジニアリング: プロンプトエンジニアリングといえば指示文を工夫して望む回答を引き出す技法"
+    ],
+    "key_points_jp": [
+      "GAN(敵対的生成ネットワーク)は、生成器と識別器の二つのネットワークを競わせて本物そっくりのデータを生成する深層学習モデルである。",
+      "LLM(大規模言語モデル)は、膨大な文章を学習して人間のような自然な文章を生成するAIで、対話型生成AIの中核技術である。",
+      "GANは主に画像などを、LLMは文章(言語)を生成する点で対比して覚えると整理しやすい。",
+      "略称と正式名称の対応(GAN=敵対的生成ネットワーク、LLM=大規模言語モデル)は頻出なので必ずセットで押さえる。",
+      "プロンプトエンジニアリングは、モデルを作る技術ではなく、指示文を工夫してAIから望む回答を引き出す「使いこなす側」の活用技法である。"
+    ],
+    "key_points_zh": [
+      "GAN（生成对抗网络）是让生成器和判别器这两个网络相互竞争、生成以假乱真数据的深度学习模型。",
+      "LLM（大语言模型）是学习海量文章、生成类似人类自然文章的 AI，是对话型生成式 AI 的核心技术。",
+      "GAN 主要生成图像等，LLM 生成文章（语言），对照着记会更便于梳理。",
+      "简称与全称的对应（GAN＝生成对抗网络，LLM＝大语言模型）是高频考点，务必成套掌握。",
+      "提示工程不是制造模型的技术，而是通过斟酌指令文、从 AI 引出理想回答的「驾驭一方」的运用技巧。"
+    ],
+    "key_points_en": [
+      "GAN (Generative Adversarial Network) is a deep learning model that pits two networks — a generator and a discriminator — against each other to generate data indistinguishable from the real thing.",
+      "LLM (Large Language Model) is an AI that learns from vast amounts of text and generates natural, human-like text, and it is the core technology of conversational generative AI.",
+      "GAN mainly generates images and the like, while LLM generates text (language); remembering them in contrast makes them easier to organize.",
+      "The correspondence between abbreviation and full name (GAN = Generative Adversarial Network, LLM = Large Language Model) is frequently tested, so be sure to master them as a set.",
+      "Prompt engineering is not a technique for building a model but a usage technique on the \"side that handles\" the AI, eliciting the desired answer from it by crafting the instruction text."
+    ],
+    "memory_hooks_zh": [
+      "GAN：说到 GAN，就是让生成器和判别器相互竞争、造出以假乱真",
+      "生成对抗网络：说到生成对抗网络，就是 GAN 的全称",
+      "LLM：说到 LLM，就是学习海量文章、生成文章的 AI",
+      "大语言模型：说到大语言模型，就是 LLM 的全称",
+      "提示工程：说到提示工程，就是斟酌指令文、引出理想回答的技巧"
+    ],
+    "memory_hooks_en": [
+      "GAN: GAN → pit a generator and a discriminator against each other to make something indistinguishable from the real thing",
+      "Generative Adversarial Network: Generative Adversarial Network → the full name of GAN",
+      "LLM: LLM → an AI that learns from vast amounts of text and generates text",
+      "Large Language Model: Large Language Model → the full name of LLM",
+      "Prompt engineering: Prompt engineering → the technique of crafting the instruction text to elicit the desired answer"
+    ]
+  },
+  "challenge_questions": [
+    "2010h22h-q060",
+    "2011h23a-q078",
+    "2013h25a-q076",
+    "2013h25h-q078",
+    "2018h30h-q075"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2009h21a-q097",
+      "figure_path": "figures/2009h21a-q097.png",
+      "figure_type": null,
+      "figure_description": "図1：販売管理データベース構造（取引先表・取引先担当者表・商品表・販売単価表の4表）と図2：請求書の様式",
+      "group_id": "2009h21a-mqC"
+    },
+    {
+      "source": "question",
+      "question_id": "2009h21h-q066",
+      "figure_path": "figures/2009h21h-q066.png",
+      "figure_type": "table",
+      "figure_description": "サンプリング周期と量子化の段階数の組合せ表。ア〜エの4行にサンプリング周期（長い/短い）と量子化の段階数（多い/少ない）の2列構成。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "生成模型与大语言模型",
+  "title_en": "Generative Models and Large Language Models",
+  "unit_summary_zh": "学习用于生成数据的深度学习模型 GAN、作为生成式 AI 核心的大语言模型（LLM），以及运用 LLM 的技巧——提示工程。",
+  "unit_summary_en": "Learn GAN, a deep learning model that generates data; the large language model (LLM) at the core of generative AI; and prompt engineering, the technique for using it well."
+}

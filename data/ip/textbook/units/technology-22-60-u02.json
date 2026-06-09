@@ -1,0 +1,212 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-22-60-u02",
+  "topic_id": "technology-22-60",
+  "category": "technology",
+  "title_jp": "ドメイン名・DNSとWebの仕組み",
+  "unit_summary_jp": "数値のIPアドレスを人間に分かりやすい名前へ対応づけるドメイン名・DNSと、Web閲覧の基礎(URL・cookie・RSS)を学ぶ。",
+  "order_in_topic": 2,
+  "prerequisites": [
+    "technology-22-60-u01"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、数値のIPアドレスを人間に分かりやすい名前へ対応づけるドメイン名とその変換役であるDNS、そしてWeb閲覧の基礎となるURL・cookie・RSSを学びます。インターネット利用のたびに必ず働く基盤技術であり、ネットワーク応用分野でも特に頻出のテーマです。",
+    "freq_badge": "頻出",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习把数字 IP 地址对应到人类易懂名称的域名及其负责转换的 DNS，以及作为 Web 浏览基础的 URL、cookie 和 RSS。这是每次使用互联网时都必然运作的基础技术，也是网络应用领域中尤为高频出现的主题。",
+    "intro_en": "In this unit, you will learn about domain names, which map numeric IP addresses to human-friendly names, and DNS, which performs that conversion, as well as URL, cookie, and RSS, the foundations of web browsing. These are core technologies that work every time you use the internet, and they are especially frequently tested topics in the network applications field."
+  },
+  "terms": [
+    {
+      "term": "ドメイン名",
+      "definition_jp": "数値のIPアドレスに対応づけられた、人間に分かりやすい階層的な名前。",
+      "explanation_jp": "ドメイン名は、コンピュータが使う数値のIPアドレスを、人間が覚えやすい文字の名前に置き換えたものです。例えば「example.co.jp」のように、ドットで区切られた階層構造を持ち、右側ほど大きな分類(jp は日本、co は企業)を表します。\n\n同じ相手を指すのにIPアドレスとドメイン名の二通りの表し方がある、という関係が試験の要点です。IPアドレスが変わってもドメイン名はそのまま使い続けられる利点があります。次に学ぶDNSは、このドメイン名とIPアドレスを橋渡しする仕組みです。",
+      "analogy_jp": "電話番号(IPアドレス)に対する「○○さん」という名前のようなもの。番号そのままより、名前で相手を指したほうが人間には分かりやすく覚えやすいのと同じです。",
+      "memory_hook_jp": "ドメイン名といえばIPアドレスに対応する人間向けの名前",
+      "inline_quiz": [
+        "2012h24h-q073",
+        "2014h26h-q071"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "域名",
+      "term_en": "Domain name",
+      "definition_zh": "对应到数字 IP 地址的、人类易懂的分层式名称。",
+      "definition_en": "A human-friendly, hierarchical name mapped to a numeric IP address.",
+      "explanation_zh": "域名是把计算机使用的数字 IP 地址替换成人类容易记忆的文字名称。例如「example.co.jp」这样，用点号分隔，具有分层结构，越靠右表示的分类范围越大（jp 表示日本，co 表示企业）。\n\n指向同一个对象时，存在 IP 地址和域名两种表示方式，这一关系是考试的要点。即使 IP 地址发生变化，域名仍可以照常继续使用，这是它的优点。接下来要学习的 DNS，就是在域名和 IP 地址之间架起桥梁的机制。",
+      "explanation_en": "A domain name replaces the numeric IP address used by computers with a text name that is easy for people to remember. For example, in \"example.co.jp\" the parts are separated by dots and form a hierarchical structure, where the further right a part is, the broader the category it represents (jp means Japan, co means a company).\n\nThe key exam point is the relationship that the same target can be expressed in two ways: by IP address and by domain name. An advantage is that even if the IP address changes, the domain name can keep being used as is. DNS, which you will learn next, is the mechanism that bridges domain names and IP addresses.",
+      "analogy_zh": "就像对应电话号码（IP 地址）的「○○先生」这个名字一样。比起直接用号码，用名字来指代对方，对人类来说更易懂、更好记，道理是一样的。",
+      "analogy_en": "It is like the name \"Mr. So-and-so\" that corresponds to a phone number (IP address). Just as referring to someone by name is easier for people to understand and remember than using the number itself.",
+      "memory_hook_zh": "说到域名，就是对应 IP 地址的、面向人类的名称",
+      "memory_hook_en": "Domain name -> the human-friendly name that corresponds to an IP address"
+    },
+    {
+      "term": "DNS",
+      "definition_jp": "ドメイン名とIPアドレスを相互に変換する名前解決の仕組み。",
+      "explanation_jp": "DNS(Domain Name System)は、入力されたドメイン名に対応するIPアドレスを調べて返す仕組みです。この変換作業を名前解決と呼びます。利用者がブラウザにドメイン名を入力すると、PCはDNSサーバに問い合わせ、得られたIPアドレスを使って目的のサーバへ接続します。\n\n試験では「ドメイン名をIPアドレスに変換するのはDNS」という役割が頻出です。ドメイン名そのもの(名前)と、それを変換する仕組み(DNS)を混同しないことが重要です。DNSが正しく動かないと、名前でのインターネット接続ができなくなります。",
+      "analogy_jp": "名前から電話番号を調べてくれる電話帳の案内サービスのようなもの。相手の名前を伝えると番号を教えてくれて、初めて電話をかけられるのと同じ役割です。",
+      "memory_hook_jp": "DNSといえばドメイン名をIPアドレスに変換する名前解決",
+      "inline_quiz": [
+        "2009h21h-q059",
+        "2017h29h-q066"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"利用者PC\"] --> B[\"DNSサーバ\"]; B --> C[\"IPアドレスを回答\"]; C --> D[\"目的のWebサーバへ接続\"]",
+        "svg_path": "figures/technology-22-60-u02-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "DNS",
+      "term_en": "DNS",
+      "definition_zh": "在域名和 IP 地址之间相互转换的名称解析机制。",
+      "definition_en": "The name-resolution mechanism that converts between domain names and IP addresses.",
+      "explanation_zh": "DNS（Domain Name System）是查询并返回所输入域名对应 IP 地址的机制。这个转换工作称为名称解析。当用户在浏览器中输入域名时，PC 会向 DNS 服务器查询，并使用得到的 IP 地址连接到目标服务器。\n\n在考试中，「将域名转换为 IP 地址的是 DNS」这一职责经常出现。重要的是不要把域名本身（名称）与转换它的机制（DNS）混淆。如果 DNS 无法正常工作，就无法通过名称连接互联网。",
+      "explanation_en": "DNS (Domain Name System) is the mechanism that looks up and returns the IP address corresponding to an entered domain name. This conversion work is called name resolution. When a user enters a domain name in a browser, the PC queries a DNS server and uses the IP address it receives to connect to the target server.\n\nOn the exam, the role that \"DNS is what converts a domain name into an IP address\" appears frequently. It is important not to confuse the domain name itself (the name) with the mechanism that converts it (DNS). If DNS does not work correctly, you cannot connect to the internet by name.",
+      "analogy_zh": "就像根据名字帮你查电话号码的电话簿查号服务。告诉它对方的名字，它就告诉你号码，你才能拨打电话，扮演的是同样的角色。",
+      "analogy_en": "It is like a phone-book directory service that looks up a phone number from a name. You give it the person's name, it tells you the number, and only then can you place the call—DNS plays the same role.",
+      "memory_hook_zh": "说到 DNS，就是把域名转换为 IP 地址的名称解析",
+      "memory_hook_en": "DNS -> name resolution that converts a domain name into an IP address"
+    },
+    {
+      "term": "URL",
+      "definition_jp": "Web上の資源の所在を示す住所表記(アドレス)。",
+      "explanation_jp": "URL(Uniform Resource Locator)は、Web上のページやファイルがどこにあるかを示す住所のような表記です。「https://example.co.jp/index.html」のように、通信方式を表すスキーム(https)、サーバを指すドメイン名、その中の場所を示すパスなどを組み合わせて構成されます。\n\nドメイン名を含む点でDNSや名前解決とつながっています。試験では、URLがWebページやファイルなどWeb資源の場所を一意に指し示す表記であること、HTTPやHTTPSといったスキーム部分の意味を問う問題が出ます。各部分が何を表すかを押さえておきましょう。",
+      "analogy_jp": "「○○県△△市□□町1-2-3」という住所と同じで、大きな範囲から細かい場所へと順に絞り込み、Web上の特定のページまでたどり着ける表記です。",
+      "memory_hook_jp": "URLといえばWeb資源の所在を示す住所表記",
+      "inline_quiz": [
+        "2010h22a-q074"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"URL\"] --> B[\"スキーム(https)\"]; A --> C[\"ドメイン名(example.co.jp)\"]; A --> D[\"パス(/index.html)\"]",
+        "svg_path": "figures/technology-22-60-u02-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "URL",
+      "term_en": "URL",
+      "definition_zh": "表示 Web 上资源所在位置的地址表示法。",
+      "definition_en": "An address notation that indicates the location of a resource on the web.",
+      "explanation_zh": "URL（Uniform Resource Locator）是表示 Web 上的页面或文件位于何处的、类似地址的表示法。如「https://example.co.jp/index.html」这样，由表示通信方式的协议方案（https）、指向服务器的域名、以及表示其内部位置的路径等组合构成。\n\n由于包含域名，它与 DNS 和名称解析相关联。考试中会出现这样的题目：URL 是唯一指明网页、文件等 Web 资源位置的表示法，以及考查 HTTP、HTTPS 等协议方案部分的含义。请掌握各个部分各自表示什么。",
+      "explanation_en": "A URL (Uniform Resource Locator) is an address-like notation that indicates where a page or file is located on the web. For example, \"https://example.co.jp/index.html\" is made up of a scheme that indicates the communication method (https), a domain name that points to a server, and a path that indicates the location within it.\n\nBecause it contains a domain name, it is connected to DNS and name resolution. On the exam, questions ask that a URL is a notation that uniquely indicates the location of web resources such as web pages and files, and ask about the meaning of the scheme part such as HTTP or HTTPS. Be sure you know what each part represents.",
+      "analogy_zh": "和「○○省△△市□□街 1-2-3」这样的地址一样，从大范围逐步缩小到具体位置，最终能定位到 Web 上的特定页面的一种表示法。",
+      "analogy_en": "Just like an address such as \"○○ Prefecture, △△ City, □□ Town 1-2-3,\" it narrows down step by step from a large area to a specific location, letting you reach a particular page on the web.",
+      "memory_hook_zh": "说到 URL，就是表示 Web 资源所在位置的地址表示法",
+      "memory_hook_en": "URL -> the address notation that indicates where a web resource is located"
+    },
+    {
+      "term": "cookie",
+      "definition_jp": "Webサーバがブラウザに保存させる、利用者を識別するための小さなデータ。",
+      "explanation_jp": "cookie(クッキー)は、Webサーバが利用者のブラウザに一時的に保存させる小さなデータです。次に同じサイトへアクセスしたときにこのデータが送り返されるため、サーバは「前に来た利用者」を識別できます。\n\nログイン状態の維持、買い物かごの中身の保持、サイトの表示設定の記憶などに使われます。試験では、cookieがブラウザ側に保存され利用者を識別・状態保持するために使われる点が問われます。便利な反面、利用者の行動が追跡されうるためプライバシー面の話題にも関わることを押さえておきましょう。",
+      "analogy_jp": "再来店時に提示する会員カードのようなもの。お店(サーバ)が客(利用者)に渡しておき、次に来たときそれを見せることで「いつもの人」と分かる仕組みです。",
+      "memory_hook_jp": "cookieといえばブラウザに保存して利用者を識別する小さなデータ",
+      "inline_quiz": [
+        "2010h22a-q059"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "cookie",
+      "term_en": "cookie",
+      "definition_zh": "Web 服务器让浏览器保存的、用于识别用户的小型数据。",
+      "definition_en": "Small data that a web server has the browser store in order to identify the user.",
+      "explanation_zh": "cookie 是 Web 服务器让用户浏览器临时保存的小型数据。下次访问同一站点时，这份数据会被送回，因此服务器能够识别出「之前来过的用户」。\n\n它用于保持登录状态、保存购物车内容、记忆站点的显示设置等。考试中会考查 cookie 保存在浏览器一侧、用于识别用户和保持状态这一点。请掌握：它虽然方便，但由于用户的行为可能被追踪，因此也涉及隐私方面的话题。",
+      "explanation_en": "A cookie is small data that a web server has the user's browser store temporarily. When the user next accesses the same site, this data is sent back, so the server can identify \"a user who came before.\"\n\nIt is used to keep a login state, retain the contents of a shopping cart, remember a site's display settings, and so on. On the exam, the point tested is that a cookie is stored on the browser side and used to identify the user and retain state. Keep in mind that, while convenient, it can also relate to privacy topics because a user's behavior may be tracked.",
+      "analogy_zh": "就像再次到店时出示的会员卡。商店（服务器）事先发给顾客（用户），下次来时出示它，就能认出是「熟客」，是这样一种机制。",
+      "analogy_en": "It is like a membership card you present when you visit the store again. The store (server) gives it to the customer (user) in advance, and when they return and show it, the store recognizes them as \"a regular.\"",
+      "memory_hook_zh": "说到 cookie，就是保存在浏览器中、用于识别用户的小型数据",
+      "memory_hook_en": "cookie -> small data stored in the browser to identify the user"
+    },
+    {
+      "term": "RSS",
+      "definition_jp": "Webサイトの更新情報をまとめて配信するための文書形式。",
+      "explanation_jp": "RSSは、ニュースサイトやブログなどの更新情報(見出し・要約・日付・リンクなど)を、決まった形式でまとめて配信するための仕組みです。利用者はRSSリーダーなどの専用ソフトに登録しておくと、各サイトを一つずつ見て回らなくても、新着情報をまとめて受け取れます。\n\n試験では、RSSがWebサイトの更新情報を配信・購読するための形式であることが問われます。自分から各サイトを巡回するのではなく、更新があったら情報が集まってくる点が特徴で、情報収集を効率化するサービスとして押さえておきましょう。",
+      "analogy_jp": "気になる雑誌をまとめて定期購読するようなもの。新しい号が出るたびに自分で買いに行かなくても、新着がまとめて手元に届くのと同じ便利さです。",
+      "memory_hook_jp": "RSSといえばWebサイトの更新情報をまとめて配信する形式",
+      "inline_quiz": [
+        "2009h21a-q075",
+        "2012h24a-q054"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "RSS",
+      "term_en": "RSS",
+      "definition_zh": "用于汇总分发 Web 站点更新信息的文档格式。",
+      "definition_en": "A document format for bundling and distributing a website's update information.",
+      "explanation_zh": "RSS 是把新闻站点、博客等的更新信息（标题、摘要、日期、链接等），按固定格式汇总后进行分发的机制。用户只要在 RSS 阅读器等专用软件中订阅，就无需逐一浏览各个站点，也能汇总接收到最新信息。\n\n考试中会考查 RSS 是用于分发和订阅 Web 站点更新信息的格式。其特点是：不是自己去逐个巡查各站点，而是一旦有更新，信息就会汇集过来。请将其作为提高信息收集效率的服务来掌握。",
+      "explanation_en": "RSS is a mechanism that bundles the update information of news sites, blogs, and the like (headlines, summaries, dates, links, etc.) into a fixed format and distributes it. If users subscribe in dedicated software such as an RSS reader, they can receive new information all together without having to visit each site one by one.\n\nOn the exam, the point tested is that RSS is a format for distributing and subscribing to a website's update information. Its characteristic is that, rather than patrolling each site yourself, information comes to you whenever there is an update. Understand it as a service that makes information gathering more efficient.",
+      "analogy_zh": "就像一并定期订阅你感兴趣的杂志。即使新一期出版时不用自己去买，新到的内容也会一并送到手边，是同样的便利。",
+      "analogy_en": "It is like taking out regular subscriptions to the magazines you care about all at once. Just as you don't have to go buy each new issue yourself—new issues are delivered to you together—RSS offers the same convenience.",
+      "memory_hook_zh": "说到 RSS，就是汇总分发 Web 站点更新信息的格式",
+      "memory_hook_en": "RSS -> the format that bundles and distributes a website's update information"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "ドメイン名: ドメイン名といえばIPアドレスに対応する人間向けの名前",
+      "DNS: DNSといえばドメイン名をIPアドレスに変換する名前解決",
+      "URL: URLといえばWeb資源の所在を示す住所表記",
+      "cookie: cookieといえばブラウザに保存して利用者を識別する小さなデータ",
+      "RSS: RSSといえばWebサイトの更新情報をまとめて配信する形式"
+    ],
+    "key_points_jp": [
+      "ドメイン名は数値のIPアドレスに対応する人間可読な階層的名前で、同じ相手を二通りで表せる。",
+      "DNSはドメイン名とIPアドレスを相互変換する名前解決の仕組みで、名前でのインターネット接続を支える。",
+      "URLはスキーム・ドメイン名・パスなどから成り、Web資源の所在を一意に示す住所表記である。",
+      "cookieはブラウザ側に保存される小さなデータで、利用者の識別やログイン状態などの状態保持に使う。",
+      "RSSはWebサイトの更新情報をまとめて配信・購読するための形式で、情報収集を効率化する。"
+    ],
+    "key_points_zh": [
+      "域名是对应数字 IP 地址的、人类可读的分层式名称，可以用两种方式表示同一个对象。",
+      "DNS 是在域名和 IP 地址之间相互转换的名称解析机制，支撑着通过名称连接互联网。",
+      "URL 由协议方案、域名、路径等组成，是唯一指明 Web 资源所在位置的地址表示法。",
+      "cookie 是保存在浏览器一侧的小型数据，用于识别用户以及保持登录状态等状态信息。",
+      "RSS 是用于汇总分发和订阅 Web 站点更新信息的格式，能提高信息收集效率。"
+    ],
+    "key_points_en": [
+      "A domain name is a human-readable, hierarchical name that corresponds to a numeric IP address, letting the same target be expressed in two ways.",
+      "DNS is the name-resolution mechanism that converts between domain names and IP addresses, supporting internet connection by name.",
+      "A URL consists of a scheme, a domain name, a path, and so on, and is an address notation that uniquely indicates where a web resource is located.",
+      "A cookie is small data stored on the browser side, used to identify the user and retain state such as the login status.",
+      "RSS is a format for bundling, distributing, and subscribing to a website's update information, which makes information gathering more efficient."
+    ],
+    "memory_hooks_zh": [
+      "域名：说到域名，就是对应 IP 地址的、面向人类的名称",
+      "DNS：说到 DNS，就是把域名转换为 IP 地址的名称解析",
+      "URL：说到 URL，就是表示 Web 资源所在位置的地址表示法",
+      "cookie：说到 cookie，就是保存在浏览器中、用于识别用户的小型数据",
+      "RSS：说到 RSS，就是汇总分发 Web 站点更新信息的格式"
+    ],
+    "memory_hooks_en": [
+      "Domain name: Domain name -> the human-friendly name that corresponds to an IP address",
+      "DNS: DNS -> name resolution that converts a domain name into an IP address",
+      "URL: URL -> the address notation that indicates where a web resource is located",
+      "cookie: cookie -> small data stored in the browser to identify the user",
+      "RSS: RSS -> the format that bundles and distributes a website's update information"
+    ]
+  },
+  "challenge_questions": [
+    "2010h22h-q059",
+    "2012h24a-q071",
+    "2012h24h-q075",
+    "2015h27h-q060",
+    "2019h31h-q057"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2012h24a-q054",
+      "figure_path": "figures/2012h24a-q054.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "域名、DNS 与 Web 的工作原理",
+  "title_en": "Domain Names, DNS, and How the Web Works",
+  "unit_summary_zh": "学习将数字 IP 地址对应到人类易懂名称的域名与 DNS，以及 Web 浏览的基础知识（URL、cookie、RSS）。",
+  "unit_summary_en": "Learn about domain names and DNS, which map numeric IP addresses to human-friendly names, along with the basics of web browsing (URL, cookie, RSS)."
+}

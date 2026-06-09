@@ -1,0 +1,182 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-23-63-u12",
+  "topic_id": "technology-23-63",
+  "category": "technology",
+  "title_jp": "認証局と証明書の運用・失効",
+  "unit_summary_jp": "認証局(CA)による証明書の発行と、CRL(証明書失効リスト)による失効管理を学ぶ。",
+  "order_in_topic": 12,
+  "prerequisites": [
+    "technology-23-63-u11"
+  ],
+  "overview": {
+    "intro_jp": "このユニットでは、公開鍵暗号の信頼を支える「認証局(CA)」が電子証明書を発行・管理するしくみと、有効期限前に証明書を無効化する「CRL(証明書失効リスト)」による失効管理を学ぶ。CA・CRLは情報セキュリティ分野で頻出する重要用語である。",
+    "freq_badge": "頻出",
+    "est_minutes": 13,
+    "intro_zh": "在本单元中，将学习支撑公钥加密信任体系的「认证中心(CA)」如何发行和管理数字证书，以及通过在有效期到期前作废证书的「CRL(证书吊销列表)」来进行吊销管理。CA 与 CRL 是信息安全领域的高频重要术语。",
+    "intro_en": "In this unit, you will learn how a \"Certificate Authority (CA)\"—which underpins the trust of public-key cryptography—issues and manages digital certificates, and how revocation is managed through a \"CRL (Certificate Revocation List)\" that invalidates a certificate before its expiration date. CA and CRL are frequently tested, important terms in the field of information security."
+  },
+  "terms": [
+    {
+      "term": "CA",
+      "definition_jp": "電子証明書を発行・管理する認証局を表す英略称(Certificate Authority)。",
+      "explanation_jp": "CAは「Certificate Authority(認証局)」の略で、公開鍵が本当に本人のものであることを保証するため、電子証明書を発行・管理する信頼された第三者機関です。申請者の身元を確認したうえで、その公開鍵に対して自らの電子署名を付けた証明書を発行します。\n\n試験では、CAが「公開鍵の持ち主を保証する役割」を担う点が問われます。暗号化や復号を行う機関ではなく、証明書の発行・更新・失効という運用を担当する点を押さえましょう。発行だけでなく、不正利用が判明した証明書を失効させる管理も重要な役割です。",
+      "analogy_jp": "役所が発行する印鑑証明のようなもの。本人確認をしたうえで「この印鑑(公開鍵)は確かにこの人のものです」と公的に保証してくれる存在がCAです。",
+      "memory_hook_jp": "CAといえば電子証明書を発行・管理する信頼された認証局",
+      "inline_quiz": [
+        "2009h21a-q085",
+        "2014h26a-q055"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"利用者\"] --> B[\"CAへ証明書を申請\"]; B --> C[\"CAが本人確認\"]; C --> D[\"電子証明書を発行\"]; D --> E[\"不正時はCAが失効\"]",
+        "svg_path": "figures/technology-23-63-u12-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "CA(认证中心)",
+      "term_en": "CA (Certificate Authority)",
+      "definition_zh": "表示发行和管理数字证书的认证中心的英文缩写(Certificate Authority)。",
+      "definition_en": "An English abbreviation (Certificate Authority) denoting the entity that issues and manages digital certificates.",
+      "explanation_zh": "CA 是「Certificate Authority(认证中心)」的缩写，它是一个受信任的第三方机构，为了保证某个公钥确实属于其本人，负责发行和管理数字证书。它在确认申请者身份之后，向该公钥发行一份附有自己数字签名的证书。\n\n考试中会考查 CA 承担「保证公钥持有者身份」这一角色的要点。请记住，它不是执行加密或解密的机构，而是负责证书发行、更新、吊销等运营工作的机构。除发行之外，将已查明被滥用的证书予以吊销的管理工作也是其重要职责。",
+      "explanation_en": "CA is short for \"Certificate Authority,\" a trusted third-party organization that issues and manages digital certificates in order to guarantee that a public key truly belongs to its owner. After verifying the applicant's identity, it issues a certificate for that public key bearing its own digital signature.\n\nExams test the point that the CA plays the role of \"guaranteeing the owner of a public key.\" Keep in mind that it is not an organization that performs encryption or decryption, but one that handles the operations of issuing, renewing, and revoking certificates. Beyond issuance, the management task of revoking a certificate found to be misused is also an important role.",
+      "analogy_zh": "就像政府机关发行的印章证明一样。CA 就是那个在确认本人身份之后，公开担保「这枚印章(公钥)确实属于此人」的存在。",
+      "analogy_en": "It is like a seal certificate issued by a government office. A CA is the entity that, after verifying a person's identity, officially guarantees that \"this seal (public key) truly belongs to this person.\"",
+      "memory_hook_zh": "说到 CA，就是发行和管理数字证书的受信任认证中心",
+      "memory_hook_en": "CA → the trusted authority that issues and manages digital certificates"
+    },
+    {
+      "term": "認証局",
+      "definition_jp": "電子証明書を発行・管理する信頼された第三者機関。CAの日本語表現。",
+      "explanation_jp": "認証局は、CA(Certificate Authority)を日本語で表した呼び方で、両者は同じものを指します。公開鍵基盤(PKI)の中心となり、利用者の本人確認を行ったうえで電子証明書を発行し、その内容に責任を持ちます。\n\n試験では、認証局とCAが同一概念であること、そして「公開鍵と持ち主を結び付けて保証する」役割が問われます。証明書には認証局の電子署名が付いており、その署名を検証することで証明書が本物だと確認できます。発行後の更新や失効まで含めて運用する点も覚えておきましょう。",
+      "analogy_jp": "パスポートを発行する政府機関のような存在。身元を確かめたうえで公的な証明書を出し、必要なら無効にもする、信頼の元締めの役割を担います。",
+      "memory_hook_jp": "認証局といえばCAの日本語名で公開鍵の持ち主を保証する機関",
+      "inline_quiz": [
+        "2010h22a-q073",
+        "2013h25h-q100"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "认证中心",
+      "term_en": "Certificate Authority (Japanese term)",
+      "definition_zh": "发行和管理数字证书的受信任第三方机构。CA 的日语表达。",
+      "definition_en": "A trusted third-party organization that issues and manages digital certificates. The Japanese expression for CA.",
+      "explanation_zh": "认证中心是 CA(Certificate Authority)的日语称呼，二者指的是同一个事物。它是公钥基础设施(PKI)的核心，在完成对用户的本人身份确认之后发行数字证书，并对其内容负责。\n\n考试中会考查认证中心与 CA 是同一概念，以及它「将公钥与持有者关联起来并予以担保」的角色。证书上附有认证中心的数字签名，通过验证该签名即可确认证书是真实的。还应记住，它的运营工作一直延续到证书发行之后的更新与吊销。",
+      "explanation_en": "Certificate Authority is the Japanese way of referring to the CA (Certificate Authority); the two refer to the same thing. It serves as the center of a public key infrastructure (PKI), issuing a digital certificate after verifying the user's identity and taking responsibility for its contents.\n\nExams test that the Certificate Authority and the CA are the same concept, and its role of \"linking a public key to its owner and guaranteeing it.\" A certificate bears the Certificate Authority's digital signature, and by verifying that signature you can confirm the certificate is genuine. Also remember that its operation extends through post-issuance renewal and revocation.",
+      "analogy_zh": "就像发行护照的政府机构一样。它在确认身份之后出具公共证明文件，必要时还会将其作废，承担着信任的总把关角色。",
+      "analogy_en": "It is like the government agency that issues passports. After confirming identity, it issues an official certificate and, when necessary, invalidates it as well, serving as the central gatekeeper of trust.",
+      "memory_hook_zh": "说到认证中心，就是 CA 的日语名，是担保公钥持有者的机构",
+      "memory_hook_en": "Certificate Authority → the Japanese name for CA, the entity that guarantees a public key's owner"
+    },
+    {
+      "term": "CRL",
+      "definition_jp": "有効期限前に失効した証明書の一覧。Certificate Revocation Listの略。",
+      "explanation_jp": "CRLは「Certificate Revocation List(証明書失効リスト)」の略で、有効期限が来る前に失効させられた電子証明書を一覧にしたものです。秘密鍵の漏えいや所属の変更などで証明書を無効にしたいとき、認証局(CA)がその証明書をCRLに登録します。\n\n試験では、証明書の有効性を確認する際に、有効期限が切れていないかだけでなく、CRLに載っていないか(失効していないか)も確かめる必要がある点が問われます。CRLは認証局が発行・更新し、失効した証明書の識別番号(シリアル番号)が記載される点を押さえましょう。",
+      "analogy_jp": "停止されたクレジットカードの番号をまとめた「無効カード一覧」のようなもの。期限内でも紛失・不正があれば一覧に載せ、使えないようにします。",
+      "memory_hook_jp": "CRLといえば期限前に失効した証明書の一覧",
+      "inline_quiz": [
+        "2018h30a-q062"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "CRL(证书吊销列表)",
+      "term_en": "CRL (Certificate Revocation List)",
+      "definition_zh": "在有效期到期前被吊销的证书的一览表。Certificate Revocation List 的缩写。",
+      "definition_en": "A list of certificates that have been revoked before their expiration date. Short for Certificate Revocation List.",
+      "explanation_zh": "CRL 是「Certificate Revocation List(证书吊销列表)」的缩写，它将在有效期到来之前被吊销的数字证书汇总成一览表。当由于私钥泄露或所属变更等原因需要作废某证书时，认证中心(CA)会将该证书登记到 CRL 中。\n\n考试中会考查这一要点：在确认证书有效性时，不仅要检查有效期是否到期，还需要确认它是否未被列入 CRL(即是否未被吊销)。请记住，CRL 由认证中心发行和更新，其中会记载被吊销证书的标识号(序列号)。",
+      "explanation_en": "CRL is short for \"Certificate Revocation List,\" which compiles into a list the digital certificates that were revoked before their expiration date arrived. When a certificate needs to be invalidated due to reasons such as private-key leakage or a change of affiliation, the Certificate Authority (CA) registers that certificate in the CRL.\n\nExams test the point that, when confirming a certificate's validity, you must not only check whether the expiration date has passed but also confirm that it is not listed in the CRL (i.e., that it has not been revoked). Keep in mind that the CRL is issued and updated by the Certificate Authority, and that it records the identification number (serial number) of each revoked certificate.",
+      "analogy_zh": "就像汇总已停用信用卡卡号的「无效卡名单」一样。即便还在有效期内，只要发生丢失或盗用，就会被列入名单，使其无法使用。",
+      "analogy_en": "It is like an \"invalid card list\" that compiles the numbers of suspended credit cards. Even within the validity period, if a card is lost or used fraudulently, it is put on the list so it can no longer be used.",
+      "memory_hook_zh": "说到 CRL，就是有效期前被吊销的证书一览表",
+      "memory_hook_en": "CRL → the list of certificates revoked before their expiration date"
+    },
+    {
+      "term": "証明書失効リスト",
+      "definition_jp": "失効した電子証明書をまとめた一覧。CRLの日本語表現。",
+      "explanation_jp": "証明書失効リストは、CRL(Certificate Revocation List)を日本語で表した呼び方で、両者は同じものを指します。何らかの理由で有効期限前に無効化された電子証明書を一覧にしたもので、認証局(CA)が発行・更新し続けます。\n\n試験では、証明書失効リストとCRLが同一概念であること、そして証明書を検証する側がこのリストを参照して「すでに失効していないか」を確認する点が問われます。期限切れと失効は区別され、失効は期限前でも起こり得る点、リストには失効した証明書のシリアル番号が記される点を押さえましょう。",
+      "analogy_jp": "図書館の「貸出停止になった本のリスト」のようなもの。期限が残っていても、問題が見つかった本(証明書)はこのリストに載せて利用を止めます。",
+      "memory_hook_jp": "証明書失効リストといえばCRLの日本語名で失効証明書の一覧",
+      "inline_quiz": [
+        "2025r07-q087"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "证书吊销列表",
+      "term_en": "Certificate Revocation List (Japanese term)",
+      "definition_zh": "汇总已吊销数字证书的一览表。CRL 的日语表达。",
+      "definition_en": "A list compiling revoked digital certificates. The Japanese expression for CRL.",
+      "explanation_zh": "证书吊销列表是 CRL(Certificate Revocation List)的日语称呼，二者指的是同一个事物。它将出于某种原因在有效期前被作废的数字证书汇总成一览表，并由认证中心(CA)持续发行和更新。\n\n考试中会考查证书吊销列表与 CRL 是同一概念，以及验证证书的一方会参照此列表来确认「是否已经被吊销」这一要点。请记住，到期与吊销是有区别的，吊销即便在有效期前也可能发生，而且列表中会记载被吊销证书的序列号。",
+      "explanation_en": "Certificate Revocation List (in Japanese) is the Japanese way of referring to the CRL (Certificate Revocation List); the two refer to the same thing. It compiles into a list the digital certificates that were invalidated before their expiration date for some reason, and it is continuously issued and updated by the Certificate Authority (CA).\n\nExams test that the (Japanese-named) certificate revocation list and the CRL are the same concept, and the point that the party verifying a certificate references this list to confirm whether it \"has already been revoked.\" Keep in mind that expiration and revocation are distinct, that revocation can occur even before the expiration date, and that the list records the serial numbers of revoked certificates.",
+      "analogy_zh": "就像图书馆的「已停止外借的图书清单」一样。即便借阅期还没用完，只要发现了问题，有问题的书(证书)也会被列入清单并停止使用。",
+      "analogy_en": "It is like a library's \"list of books no longer available for lending.\" Even if the loan period remains, any book (certificate) found to have a problem is put on the list and taken out of use.",
+      "memory_hook_zh": "说到证书吊销列表，就是 CRL 的日语名，是已吊销证书的一览表",
+      "memory_hook_en": "Certificate Revocation List → the Japanese name for CRL, the list of revoked certificates"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "CA: CAといえば電子証明書を発行・管理する信頼された認証局",
+      "認証局: 認証局といえばCAの日本語名で公開鍵の持ち主を保証する機関",
+      "CRL: CRLといえば期限前に失効した証明書の一覧",
+      "証明書失効リスト: 証明書失効リストといえばCRLの日本語名で失効証明書の一覧"
+    ],
+    "key_points_jp": [
+      "CA(認証局)は、本人確認を行ったうえで公開鍵と持ち主を結び付ける電子証明書を発行・管理する信頼された第三者機関である。",
+      "CAと認証局、CRLと証明書失効リストはそれぞれ同一概念の英略称と日本語表現であり、対応を押さえる。",
+      "CRL(証明書失効リスト)は、有効期限前に無効化された証明書を認証局がまとめた一覧で、失効証明書のシリアル番号が記載される。",
+      "証明書の有効性確認では、有効期限の確認に加えてCRLに載っていない(失効していない)ことの確認が必要となる。",
+      "期限切れと失効は区別され、失効は秘密鍵漏えいなどにより有効期限前でも発生し得る。"
+    ],
+    "key_points_zh": [
+      "CA(认证中心)是一个受信任的第三方机构，它在完成本人身份确认之后，发行并管理将公钥与持有者关联起来的数字证书。",
+      "CA 与认证中心、CRL 与证书吊销列表，分别是同一概念的英文缩写与日语表达，要掌握它们的对应关系。",
+      "CRL(证书吊销列表)是认证中心将在有效期前被作废的证书汇总而成的一览表，其中记载着被吊销证书的序列号。",
+      "在确认证书有效性时，除了检查有效期之外，还需要确认它未被列入 CRL(即未被吊销)。",
+      "到期与吊销是有区别的，吊销可能因私钥泄露等原因在有效期到期前发生。"
+    ],
+    "key_points_en": [
+      "A CA (Certificate Authority) is a trusted third-party organization that, after verifying identity, issues and manages digital certificates linking a public key to its owner.",
+      "CA and Certificate Authority, and CRL and Certificate Revocation List, are respectively the English abbreviation and the Japanese expression for the same concept; master the correspondence.",
+      "A CRL (Certificate Revocation List) is a list compiled by the Certificate Authority of certificates invalidated before their expiration date, in which the serial numbers of revoked certificates are recorded.",
+      "When confirming a certificate's validity, in addition to checking the expiration date, you must confirm that it is not listed in the CRL (i.e., that it has not been revoked).",
+      "Expiration and revocation are distinct; revocation can occur before the expiration date due to reasons such as private-key leakage."
+    ],
+    "memory_hooks_zh": [
+      "CA：说到 CA，就是发行和管理数字证书的受信任认证中心",
+      "认证中心：说到认证中心，就是 CA 的日语名，是担保公钥持有者的机构",
+      "CRL：说到 CRL，就是有效期前被吊销的证书一览表",
+      "证书吊销列表：说到证书吊销列表，就是 CRL 的日语名，是已吊销证书的一览表"
+    ],
+    "memory_hooks_en": [
+      "CA: CA → the trusted authority that issues and manages digital certificates",
+      "Certificate Authority: Certificate Authority → the Japanese name for CA, the entity that guarantees a public key's owner",
+      "CRL: CRL → the list of certificates revoked before their expiration date",
+      "Certificate Revocation List: Certificate Revocation List → the Japanese name for CRL, the list of revoked certificates"
+    ]
+  },
+  "challenge_questions": [
+    "2016h28h-q057",
+    "2017h29h-q065",
+    "2020r02o-q100",
+    "2024r06-q066",
+    "2026r08-q090"
+  ],
+  "source_figures": [
+    {
+      "source": "group",
+      "question_id": "2013h25h-q100",
+      "figure_path": "figures/_groups/2013h25h-mqD.png",
+      "figure_type": "group_shared",
+      "figure_description": "図1 N社ショッピングサイトの経路図",
+      "group_id": "2013h25h-mqD"
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "认证中心与证书的运营和吊销",
+  "title_en": "The Certificate Authority and the Operation and Revocation of Certificates",
+  "unit_summary_zh": "学习由认证中心(CA)发行证书，以及通过 CRL(证书吊销列表)进行吊销管理的机制。",
+  "unit_summary_en": "Learn how a Certificate Authority (CA) issues certificates and how revocation is managed through a CRL (Certificate Revocation List)."
+}

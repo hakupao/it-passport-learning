@@ -1,21 +1,34 @@
-// Stage 4 step3 — /[locale]/textbook/[unitId] : single-unit schema view.
+// Stage 6 (Session 85) — /[locale]/textbook/[unitId] : production unit reader.
 //
-// Renders the full trilingual 4-part unit (overview/terms/summary/challenge) with
-// inlined figures + quiz-reference resolution, plus a per-unit issue panel.
+// loadUnit() allowlists the unitId slug (path-traversal guard retained from the
+// harness loader). The index is read once for in-topic prev/next + breadcrumb.
 
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
-import { UnitDetail } from "@/components/textbook/UnitDetail";
-import { loadQuestionBankIds, loadUnit } from "@/lib/textbook/loader";
-import type { TextbookUnit } from "@/lib/textbook/types";
-import { validateUnit } from "@/lib/textbook/validate";
-
-import styles from "@/components/textbook/textbook.module.css";
+import { UnitReader } from "@/components/textbook/UnitReader";
+import {
+  loadReaderIndex,
+  loadUnit,
+  neighbors,
+  pick,
+  type TextbookUnit,
+} from "@/lib/textbook/reader";
 
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ locale: string; unitId: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, unitId } = await params;
+  try {
+    const unit = await loadUnit(unitId);
+    return { title: pick(unit as unknown as Record<string, unknown>, "title", locale) };
+  } catch {
+    return {};
+  }
+}
 
 export default async function UnitPage({
   params,
@@ -30,42 +43,8 @@ export default async function UnitPage({
     notFound();
   }
 
-  const [resolvedIds, report] = await Promise.all([
-    loadQuestionBankIds(),
-    validateUnit(unit),
-  ]);
+  const index = await loadReaderIndex();
+  const nb = neighbors(index, unitId);
 
-  return (
-    <main className={styles.page}>
-      <a className={styles.backLink} href={`/${locale}/textbook`}>
-        ← schema report
-      </a>
-
-      <UnitDetail unit={unit} resolvedIds={resolvedIds} />
-
-      <div className={styles.issues}>
-        <strong>schema check — </strong>
-        {report.issues.length === 0 ? (
-          <span className={styles.issueClean}>✓ no issues</span>
-        ) : (
-          <span>
-            {report.errorCount} error(s), {report.warnCount} warning(s)
-          </span>
-        )}
-        <ul>
-          {report.issues.map((iss, i) => (
-            <li
-              key={i}
-              className={
-                iss.severity === "error" ? styles.issueErr : styles.issueWarn
-              }
-            >
-              [{iss.severity}] <span className={styles.mono}>{iss.field}</span> —{" "}
-              {iss.message}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </main>
-  );
+  return <UnitReader unit={unit} neighbors={nb} locale={locale} />;
 }

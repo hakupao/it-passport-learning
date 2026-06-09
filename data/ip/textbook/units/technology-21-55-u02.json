@@ -1,0 +1,245 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-21-55-u02",
+  "topic_id": "technology-21-55",
+  "category": "technology",
+  "title_jp": "E-R図・キー設計と正規化",
+  "unit_summary_jp": "E-R図による実体と関連のモデリング、主キー・外部キーによる行の識別とテーブル間の関連付け、正規化による冗長排除、インデックスによる検索最適化という、関係データベース設計の核を理解する。",
+  "order_in_topic": 2,
+  "prerequisites": [
+    "technology-21-55-u01"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、関係データベース設計の核心を学びます。E-R図で実体と関連をモデル化し、主キーで行を一意に識別、外部キーでテーブル間を関連付け、インデックスで検索を高速化、正規化で冗長を排除します。データベース設計は『データベース設計』topic の最頻出領域であり、ITパスポートでも主キー・外部キー・正規化が繰り返し問われる超重要単元です。",
+    "freq_badge": "頻出",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习关系数据库设计的核心。用 E-R 图对实体与关联建模，用主键唯一识别行，用外键关联各张表，用索引加速检索，用规范化消除冗余。数据库设计是「数据库设计」这一主题中出现频率最高的领域，在 IT 护照考试中，主键、外键、规范化也被反复考查，是极其重要的单元。",
+    "intro_en": "In this unit, we learn the core of relational database design. We model entities and relationships with E-R diagrams, uniquely identify rows with primary keys, link tables with foreign keys, speed up searches with indexes, and eliminate redundancy through normalization. Database design is the most frequently tested area within the \"Database Design\" topic, and on the IT Passport exam, primary keys, foreign keys, and normalization are asked repeatedly, making this an extremely important unit."
+  },
+  "terms": [
+    {
+      "term": "E-R図",
+      "definition_jp": "実体(エンティティ)と実体間の関連(リレーションシップ)を図で表すデータモデリング手法。",
+      "explanation_jp": "E-R図(Entity-Relationship図)は、データベースに何を保存し、どう関係づけるかを設計段階で図にしたものです。『顧客』『商品』『注文』といった管理対象を実体(エンティティ)として四角で表し、実体どうしのつながりを関連(リレーションシップ)として線で結びます。\n\n試験では、関連に付く『1対1』『1対多』『多対多』といった多重度(カーディナリティ)がよく問われます。例えば『1人の顧客が複数の注文を持つ』は1対多の関連です。E-R図はあくまで概念設計の道具で、ここで描いた関連を後から外部キーで実装します。テーブルそのものを表す図ではなく『設計図』である点を押さえましょう。",
+      "analogy_jp": "建物を建てる前の間取り図のようなもの。『リビング』『キッチン』という部屋(実体)と、ドアでつながる関係(関連)を先に図で決めてから、実際の工事(テーブル作成)に入るイメージです。",
+      "memory_hook_jp": "E-R図といえば実体と関連をモデル化する設計図",
+      "inline_quiz": [
+        "2009h21a-q014",
+        "2011h23a-q057"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"顧客\"] -->|\"1対多\"| B[\"注文\"]; B -->|\"多対多\"| C[\"商品\"]",
+        "svg_path": "figures/technology-21-55-u02-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "E-R图（实体-关联图）",
+      "term_en": "E-R Diagram",
+      "definition_zh": "用图来表示实体（Entity）以及实体之间的关联（Relationship）的数据建模方法。",
+      "definition_en": "A data modeling technique that uses a diagram to represent entities and the relationships between them.",
+      "explanation_zh": "E-R 图（Entity-Relationship 图，实体-关联图）是在设计阶段，把数据库中要保存什么、各部分如何相互关联，用图画出来的成果。把「客户」「商品」「订单」这类管理对象作为实体（Entity）用方框表示，再把实体之间的联系作为关联（Relationship）用连线连接起来。\n\n考试中常考查附在关联上的「一对一」「一对多」「多对多」等基数（多重度）。例如「一位客户拥有多个订单」就是一对多的关联。E-R 图始终是概念设计的工具，这里画出的关联会在之后用外键来实现。要记住它不是表示表本身的图，而是一张「设计图」。",
+      "explanation_en": "An E-R diagram (Entity-Relationship diagram) is what you draw at the design stage to show what to store in a database and how the parts relate to one another. Management targets such as \"customer,\" \"product,\" and \"order\" are represented as entities with rectangles, and the connections between entities are linked as relationships with lines.\n\nThe exam often asks about the cardinality (multiplicity) attached to a relationship, such as \"one-to-one,\" \"one-to-many,\" and \"many-to-many.\" For example, \"one customer has multiple orders\" is a one-to-many relationship. An E-R diagram is purely a tool for conceptual design; the relationships drawn here are later implemented with foreign keys. Keep in mind that it is not a diagram of the tables themselves, but a \"blueprint.\"",
+      "analogy_zh": "就像盖房子前的户型图。先在图上定好「客厅」「厨房」这些房间（实体），以及通过门相连的关系（关联），然后才进入实际的施工（创建表）。",
+      "analogy_en": "Like a floor plan drawn before building a house. You first decide on the diagram which rooms (entities) like the \"living room\" and \"kitchen\" exist and how they connect through doors (relationships), and only then start the actual construction (creating tables).",
+      "memory_hook_zh": "说到 E-R 图，就是对实体与关联建模的设计图",
+      "memory_hook_en": "E-R diagram → the blueprint that models entities and relationships"
+    },
+    {
+      "term": "主キー",
+      "definition_jp": "テーブル内の1行(レコード)を一意に識別するための列、またはその組み合わせ。",
+      "explanation_jp": "主キー(プライマリキー)は、テーブルの中で1行を確実に1つだけ特定するための列です。例えば『社員番号』を主キーにすれば、同姓同名の社員がいても番号で必ず区別できます。\n\n主キーには重要な制約が2つあります。値が重複してはいけない『一意性』と、空(NULL)にしてはいけない『非NULL制約』です。試験では『主キーには重複・NULLが許されない』という性質がよく問われます。氏名のように重複しうる列は主キーに向きません。複数列を組み合わせて1つの主キーとする『複合キー』も出題されます。",
+      "analogy_jp": "クラスの出席番号のようなもの。名前は同じ人がいるかもしれませんが、出席番号は必ず1人に1つで重複せず、空欄もない。だから番号を言えば誰か一人に確定できます。",
+      "memory_hook_jp": "主キーといえば行を一意に識別(重複・NULL禁止)",
+      "inline_quiz": [
+        "2009h21a-q098",
+        "2009h21a-q100"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "主键",
+      "term_en": "Primary Key",
+      "definition_zh": "用于在表中唯一识别一行（记录）的列，或这些列的组合。",
+      "definition_en": "A column, or combination of columns, used to uniquely identify a single row (record) within a table.",
+      "explanation_zh": "主键（Primary Key）是用于在表中确切地只锁定一行的列。例如把「员工编号」设为主键，那么即使有同名同姓的员工，也一定能用编号区分开。\n\n主键有两个重要约束：值不允许重复的「唯一性」，以及不允许为空（NULL）的「非 NULL 约束」。考试中常考查「主键不允许重复和 NULL」这一性质。像姓名这样可能重复的列不适合做主键。把多个列组合起来作为一个主键的「复合主键」也会出题。",
+      "explanation_en": "A primary key is a column used to pin down exactly one row in a table. For example, if you make \"employee number\" the primary key, you can always distinguish employees by number even when they have the same name.\n\nA primary key has two important constraints: \"uniqueness,\" meaning values must not be duplicated, and the \"NOT NULL constraint,\" meaning it must not be empty (NULL). The exam often asks about the property that \"primary keys do not allow duplicates or NULL.\" A column like a name, which can be duplicated, is unsuitable as a primary key. The \"composite key,\" which combines multiple columns into one primary key, is also tested.",
+      "analogy_zh": "就像班级里的学号。名字可能有重名的人，但学号一定是一人一个、不会重复、也没有空缺。所以只要说出学号，就能确定到某一个人。",
+      "analogy_en": "Like a student number in a class. There may be people with the same name, but each person has exactly one student number, with no duplicates and no blanks. So stating a number pins down exactly one person.",
+      "memory_hook_zh": "说到主键，就是唯一识别行（禁止重复与 NULL）",
+      "memory_hook_en": "Primary key → uniquely identifies a row (no duplicates, no NULL)"
+    },
+    {
+      "term": "外部キー",
+      "definition_jp": "他のテーブルの主キーを参照し、テーブル間を関連付けるための列。",
+      "explanation_jp": "外部キー(フォーリンキー)は、あるテーブルの列が別のテーブルの主キーを指し示すことで、2つのテーブルをつなぐ仕組みです。例えば『注文』テーブルの『顧客ID』列が『顧客』テーブルの主キー『顧客ID』を参照すれば、どの注文が誰のものか結びつきます。E-R図で描いた関連を実際に実装するのが外部キーです。\n\n試験では『参照整合性』がよく問われます。これは外部キーが指す相手の行が必ず存在しなければならないというルールで、存在しない顧客IDの注文は登録できません。主キーと違い、外部キーは値の重複が許される(同じ顧客が複数注文できる)点も区別して覚えましょう。",
+      "analogy_jp": "宅配便の伝票に書く『お届け先の会員番号』のようなもの。番号は会員名簿(別テーブル)に実在する人を指していなければならず、存在しない番号は書けません。",
+      "memory_hook_jp": "外部キーといえば他テーブルの主キーを参照して関連付け",
+      "inline_quiz": [
+        "2009h21a-q084",
+        "2010h22a-q079"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "外键",
+      "term_en": "Foreign Key",
+      "definition_zh": "引用另一张表的主键，用于关联表与表之间关系的列。",
+      "definition_en": "A column that references the primary key of another table to link tables together.",
+      "explanation_zh": "外键（Foreign Key）是通过让一张表中的列指向另一张表的主键，从而把两张表连接起来的机制。例如让「订单」表的「客户ID」列引用「客户」表的主键「客户ID」，就能把哪个订单属于谁联系起来。把 E-R 图中画出的关联实际加以实现的，就是外键。\n\n考试中常考查「参照完整性」。它是一条规则，要求外键所指向的对方那一行必须存在，因此不能登记一个不存在的客户ID所对应的订单。与主键不同，外键允许值重复（同一个客户可以下多个订单），这一点也要区分记住。",
+      "explanation_en": "A foreign key is a mechanism that connects two tables by having a column in one table point to the primary key of another table. For example, if the \"customer ID\" column of the \"orders\" table references the primary key \"customer ID\" of the \"customers\" table, you can link which order belongs to whom. The foreign key is what actually implements the relationships drawn in an E-R diagram.\n\nThe exam often asks about \"referential integrity.\" This is a rule requiring that the row pointed to by a foreign key must exist, so you cannot register an order with a customer ID that does not exist. Unlike a primary key, a foreign key allows duplicate values (the same customer can place multiple orders) — remember this distinction too.",
+      "analogy_zh": "就像快递单上填写的「收件人会员号」。这个号码必须指向会员名册（另一张表）中实际存在的人，不能填写一个不存在的号码。",
+      "analogy_en": "Like the \"recipient's member number\" written on a delivery slip. The number must point to a person who actually exists in the membership roster (another table); you cannot write a number that does not exist.",
+      "memory_hook_zh": "说到外键，就是引用另一张表的主键来建立关联",
+      "memory_hook_en": "Foreign key → references another table's primary key to link them"
+    },
+    {
+      "term": "インデックス",
+      "definition_jp": "列の値と行の位置を対応づけ、検索を高速化する補助的なデータ構造。",
+      "explanation_jp": "インデックス(索引)は、テーブルの特定の列に作る『検索用の早見表』です。インデックスがないと全行を順番に調べる必要がありますが、インデックスがあれば目的の行へ素早くたどり着けます。検索や絞り込みが多い列に作ると効果的です。\n\n試験では利点と欠点の両方が問われます。利点は検索の高速化。一方、データの追加・更新・削除のたびにインデックスも更新するため、書き込みが遅くなり、記憶領域も余分に使うという欠点があります。何にでも付ければよいわけではない点が重要です。",
+      "analogy_jp": "分厚い辞典の巻末にある『索引』のようなもの。索引があれば目的の語をすぐ引けますが、索引自体のページ分だけ本は厚くなり、本文を改訂するたびに索引も直す手間が増えます。",
+      "memory_hook_jp": "インデックスといえば検索高速化だが書き込みは遅くなる",
+      "inline_quiz": [
+        "2013h25a-q051"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "索引",
+      "term_en": "Index",
+      "definition_zh": "将列的值与行的位置对应起来、用于加速检索的辅助性数据结构。",
+      "definition_en": "An auxiliary data structure that maps column values to row positions to speed up searches.",
+      "explanation_zh": "索引（Index）是为表中某个特定列建立的「检索用速查表」。没有索引时需要按顺序逐行查找，而有了索引就能迅速定位到目标行。为检索或筛选频繁的列建立索引会很有效。\n\n考试中会同时考查优点和缺点。优点是加速检索；另一方面，每次对数据进行添加、更新、删除时都要同时更新索引，因此写入会变慢，还会额外占用存储空间，这是它的缺点。并不是给所有列都加上索引就好，这一点很重要。",
+      "explanation_en": "An index is a \"quick-reference table for searching\" built on a specific column of a table. Without an index, you have to scan every row in order, but with an index you can quickly reach the target row. Building an index on columns frequently searched or filtered is effective.\n\nThe exam asks about both the advantages and disadvantages. The advantage is faster searching. On the other hand, because the index must also be updated each time data is added, updated, or deleted, writes become slower and extra storage space is consumed — these are its drawbacks. It is important to note that it is not good to put an index on everything.",
+      "analogy_zh": "就像厚厚的词典卷末的「索引」。有了索引就能立刻查到目标词，但书会因索引本身的页数而变厚，而且每次修订正文，都要多花功夫去改索引。",
+      "analogy_en": "Like the \"index\" at the back of a thick dictionary. With an index you can look up the target word instantly, but the book gets thicker by the pages of the index itself, and every time you revise the main text you have the extra work of fixing the index too.",
+      "memory_hook_zh": "说到索引，就是加速检索但写入会变慢",
+      "memory_hook_en": "Index → speeds up searches but slows down writes"
+    },
+    {
+      "term": "正規化",
+      "definition_jp": "データの重複や矛盾を防ぐため、テーブルを適切に分割して整理する設計手法。",
+      "explanation_jp": "正規化は、1つのテーブルに情報を詰め込みすぎて生じる重複や更新時の矛盾(更新不整合)をなくすため、テーブルを意味のまとまりごとに分割する作業です。主キー・外部キーを使ってテーブルを結びつけながら、冗長なデータを排除します。\n\n試験では段階が問われます。第1正規形(繰り返し項目をなくす)→第2正規形(主キーの一部だけで決まる項目を分離)→第3正規形(主キー以外の項目に依存する項目を分離)と進みます。目的は『データの重複排除』と『整合性の向上』です。逆に分割しすぎると結合処理が増える点も理解しておきましょう。",
+      "analogy_jp": "持ち物を種類ごとに引き出しへ分ける整理整頓のようなもの。何でも一つの箱に入れると同じ物が重複し探しにくいので、用途別に分けて『どこに何があるか』を主キーで参照し合うイメージです。",
+      "memory_hook_jp": "正規化といえばテーブル分割で冗長排除と整合性向上",
+      "inline_quiz": [
+        "2009h21a-q063",
+        "2010h22a-q063"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"非正規形(重複あり)\"] --> B[\"第1正規形:繰り返し項目を除去\"]; B --> C[\"第2正規形:部分関数従属を除去\"]; C --> D[\"第3正規形:推移的関数従属を除去\"]",
+        "svg_path": "figures/technology-21-55-u02-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "规范化",
+      "term_en": "Normalization",
+      "definition_zh": "为防止数据重复与矛盾，将表恰当拆分并加以整理的设计方法。",
+      "definition_en": "A design technique that appropriately splits and organizes tables to prevent data duplication and inconsistency.",
+      "explanation_zh": "规范化是为了消除因一张表塞入过多信息而产生的重复，以及更新时的矛盾（更新异常），把表按意义的归属逐块拆分的工作。一边用主键、外键把各张表连接起来，一边排除冗余的数据。\n\n考试中会考查其阶段。依次推进为：第一范式（消除重复项）→第二范式（分离出仅由主键的一部分决定的项）→第三范式（分离出依赖于主键以外项的项）。目的是「消除数据重复」和「提升一致性」。反过来，如果拆分过度，连接处理会增多，这一点也要理解。",
+      "explanation_en": "Normalization is the work of splitting a table into chunks by meaning, in order to eliminate the duplication that arises from cramming too much information into one table and the inconsistencies at update time (update anomalies). While connecting the tables with primary and foreign keys, it removes redundant data.\n\nThe exam asks about its stages. It proceeds as: first normal form (eliminate repeating items) → second normal form (separate items determined by only part of the primary key) → third normal form (separate items that depend on non-primary-key items). The goals are \"eliminating data duplication\" and \"improving consistency.\" Conversely, if you split too much, join processing increases — understand this point too.",
+      "analogy_zh": "就像把物品按种类分别放进抽屉的整理收纳。什么都塞进一个箱子，同样的东西会重复、又难找，所以按用途分开，再用主键彼此参照「哪里有什么」。",
+      "analogy_en": "Like tidying up by sorting belongings into drawers by type. If you put everything into one box, identical items get duplicated and become hard to find, so you separate them by purpose and cross-reference \"what is where\" via primary keys.",
+      "memory_hook_zh": "说到规范化，就是拆分表以消除冗余、提升一致性",
+      "memory_hook_en": "Normalization → splitting tables to remove redundancy and improve consistency"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "E-R図: E-R図といえば実体と関連をモデル化する設計図",
+      "主キー: 主キーといえば行を一意に識別(重複・NULL禁止)",
+      "外部キー: 外部キーといえば他テーブルの主キーを参照して関連付け",
+      "インデックス: インデックスといえば検索高速化だが書き込みは遅くなる",
+      "正規化: 正規化といえばテーブル分割で冗長排除と整合性向上"
+    ],
+    "key_points_jp": [
+      "E-R図は実体(エンティティ)と関連(リレーションシップ)で構成し、1対多・多対多などの多重度を表す概念設計の道具である。",
+      "主キーは行を一意に識別する列で、重複もNULLも許されない。外部キーは他テーブルの主キーを参照して関連を実装し、参照整合性を保つ。",
+      "インデックスは検索を高速化する一方、書き込みが遅くなり領域を消費するため、付けすぎは禁物である。",
+      "正規化は第1→第2→第3正規形と段階的にテーブルを分割し、データの冗長排除と整合性向上を図る設計手法である。",
+      "E-R図(概念設計)→主キー・外部キー(実装)→正規化(品質向上)という設計の流れで理解すると全体像がつかめる。"
+    ],
+    "key_points_zh": [
+      "E-R 图由实体（Entity）和关联（Relationship）构成，用一对多、多对多等基数来表示，是概念设计的工具。",
+      "主键是唯一识别行的列，不允许重复也不允许 NULL。外键引用另一张表的主键来实现关联，并保持参照完整性。",
+      "索引能加速检索，但会使写入变慢并消耗存储空间，因此不可滥加。",
+      "规范化按第一→第二→第三范式逐阶段拆分表，旨在消除数据冗余、提升一致性，是一种设计方法。",
+      "按 E-R 图（概念设计）→主键、外键（实现）→规范化（提升质量）这一设计流程来理解，就能把握整体全貌。"
+    ],
+    "key_points_en": [
+      "An E-R diagram consists of entities and relationships, expresses cardinalities such as one-to-many and many-to-many, and is a tool for conceptual design.",
+      "A primary key is a column that uniquely identifies a row, allowing neither duplicates nor NULL. A foreign key references another table's primary key to implement relationships and maintain referential integrity.",
+      "An index speeds up searches but slows down writes and consumes storage space, so it must not be added excessively.",
+      "Normalization splits tables stage by stage as first → second → third normal form, aiming to eliminate data redundancy and improve consistency, and is a design technique.",
+      "Understanding it along the design flow of E-R diagram (conceptual design) → primary/foreign keys (implementation) → normalization (quality improvement) lets you grasp the overall picture."
+    ],
+    "memory_hooks_zh": [
+      "E-R图：说到 E-R 图，就是对实体与关联建模的设计图",
+      "主键：说到主键，就是唯一识别行（禁止重复与 NULL）",
+      "外键：说到外键，就是引用另一张表的主键来建立关联",
+      "索引：说到索引，就是加速检索但写入会变慢",
+      "规范化：说到规范化，就是拆分表以消除冗余、提升一致性"
+    ],
+    "memory_hooks_en": [
+      "E-R diagram: E-R diagram → the blueprint that models entities and relationships",
+      "Primary key: Primary key → uniquely identifies a row (no duplicates, no NULL)",
+      "Foreign key: Foreign key → references another table's primary key to link them",
+      "Index: Index → speeds up searches but slows down writes",
+      "Normalization: Normalization → splitting tables to remove redundancy and improve consistency"
+    ]
+  },
+  "challenge_questions": [
+    "2010h22h-q083",
+    "2011h23tokubetsu-q072",
+    "2012h24a-q053",
+    "2012h24h-q079",
+    "2018h30h-q086"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2011h23a-q057",
+      "figure_path": "figures/2011h23a-q057.png",
+      "figure_type": "diagram",
+      "figure_description": "社員表と部署表のE-R図4種類（ア〜エ）を示した図。各図は社員と部署の間の多重度（1対1, 1対多, 多対1, 多対多）をそれぞれ異なる矢印記法で表している。",
+      "group_id": null
+    },
+    {
+      "source": "group",
+      "question_id": "2009h21a-q098",
+      "figure_path": "figures/_groups/2009h21a-mqC.png",
+      "figure_type": "group_shared",
+      "figure_description": "図1 販売管理業務に関するデータベースの構造",
+      "group_id": "2009h21a-mqC"
+    },
+    {
+      "source": "question",
+      "question_id": "2009h21a-q100",
+      "figure_path": "figures/2009h21a-q100.png",
+      "figure_type": "table",
+      "figure_description": "選択肢ア〜エの表構成を示す図（各表の項目をボックスで表示）",
+      "group_id": "2009h21a-mqC"
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22a-q079",
+      "figure_path": "figures/2010h22a-q079.png",
+      "figure_type": "diagram",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23tokubetsu-q072",
+      "figure_path": "figures/2011h23tokubetsu-q072.png",
+      "figure_type": "table",
+      "figure_description": "関係データベースの概念図：2つの表（エンティティ）と主キー・外部キーによるリレーションシップを示した図。a（主キー）とb（フィールド）の穴埋め問題に対応する。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "E-R图、键设计与规范化",
+  "title_en": "E-R Diagrams, Key Design, and Normalization",
+  "unit_summary_zh": "理解关系数据库设计的核心：用 E-R 图对实体与关联进行建模、用主键与外键来识别行并关联表之间的关系、用规范化消除冗余、用索引优化检索。",
+  "unit_summary_en": "Understand the core of relational database design: modeling entities and relationships with E-R diagrams, identifying rows and linking tables with primary and foreign keys, eliminating redundancy through normalization, and optimizing searches with indexes."
+}

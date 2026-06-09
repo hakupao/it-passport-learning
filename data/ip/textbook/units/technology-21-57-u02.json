@@ -1,0 +1,216 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-21-57-u02",
+  "topic_id": "technology-21-57",
+  "category": "technology",
+  "title_jp": "障害回復(リカバリ)",
+  "unit_summary_jp": "障害発生時にデータベースを正しい状態へ戻す回復処理を、チェックポイント・ロールバック(後退復帰)・ロールフォワード(前進復帰)の仕組みで学ぶ。",
+  "order_in_topic": 2,
+  "prerequisites": [
+    "technology-21-57-u01"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、システム障害でデータベースが壊れたとき、正しい状態へ戻す「障害回復(リカバリ)」を学びます。基準点となるチェックポイント、未完了処理を取り消すロールバック(後退復帰)、確定済み更新を再適用するロールフォワード(前進復帰)の仕組みと使い分けは、トランザクション処理の定番出題です。",
+    "freq_badge": "低頻",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习当系统故障破坏了数据库时，把它恢复到正确状态的「故障恢复（恢复处理）」。作为基准点的检查点、撤销未完成处理的回滚（后退恢复）、重新应用已确定更新的前滚（前进恢复），它们的机制与区分使用，是事务处理的经典考点。",
+    "intro_en": "In this unit, you will learn about \"failure recovery,\" which restores a database to a correct state when a system failure has corrupted it. The checkpoint that serves as a reference point, the rollback (backward recovery) that undoes incomplete processing, and the rollforward (forward recovery) that re-applies committed updates — their mechanisms and how to distinguish between them are classic exam topics in transaction processing."
+  },
+  "terms": [
+    {
+      "term": "チェックポイント",
+      "definition_jp": "メモリ上の更新内容を定期的にディスクへ書き出し、回復の基準点とする時点。",
+      "explanation_jp": "チェックポイントは、その時点までの更新を確実にディスクへ反映し、「ここまでは確定済み」と記録する基準点です。これを設けることで、障害が起きても全履歴をたどる必要がなくなり、回復処理を直近のチェックポイント以降だけに絞れます。\n\n回復はこの基準点を起点に行われ、未完了の処理はロールバック、完了済みの処理はロールフォワードで戻します。試験では、チェックポイントが回復処理の出発点になること、ログ(ジャーナル)と組み合わせて使われることを押さえておきましょう。",
+      "analogy_jp": "長い文章を書くとき、こまめに「上書き保存」しておくのと同じ。途中でパソコンが落ちても、最後に保存した地点から書き直せばよく、最初からやり直さずに済みます。",
+      "memory_hook_jp": "チェックポイントといえば回復の起点となる「ここまで確定」の保存地点",
+      "inline_quiz": [
+        "2014h26a-q071"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"処理開始\"] --> B[\"チェックポイント(ここまで確定)\"]; B --> C[\"障害発生\"]; C --> D[\"完了済みはロールフォワード\"]; C --> E[\"未完了はロールバック\"]",
+        "svg_path": "figures/technology-21-57-u02-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "检查点",
+      "term_en": "Checkpoint",
+      "definition_zh": "定期将内存中的更新内容写出到磁盘，并作为恢复基准点的时间点。",
+      "definition_en": "A point in time at which the updates held in memory are periodically written out to disk and recorded as the reference point for recovery.",
+      "explanation_zh": "检查点是把截至该时点的更新可靠地反映到磁盘，并记录为「到此为止已确定」的基准点。设立检查点后，即使发生故障也无需追溯全部历史，可以把恢复处理范围缩小到最近一个检查点之后。\n\n恢复以这个基准点为起点进行：未完成的处理用回滚撤销，已完成的处理用前滚恢复。考试中要记住，检查点是恢复处理的出发点，并且它会与日志（journal）配合使用。",
+      "explanation_en": "A checkpoint reliably reflects the updates up to that moment onto disk and records the reference point of \"confirmed up to here.\" By setting checkpoints, you no longer need to trace the entire history even when a failure occurs, and you can narrow the recovery processing to only the part after the most recent checkpoint.\n\nRecovery is carried out using this reference point as the starting point: incomplete processing is undone by rollback, and completed processing is restored by rollforward. For the exam, remember that the checkpoint becomes the starting point of recovery processing and that it is used in combination with logs (journals).",
+      "analogy_zh": "就像写长篇文章时勤于「保存覆盖」一样。即使中途电脑死机，也只需从最后保存的地方重新写起，不必从头再来。",
+      "analogy_en": "It is just like frequently hitting \"save\" while writing a long document. Even if your computer crashes partway through, you only need to rewrite from the point you last saved, without starting over from the beginning.",
+      "memory_hook_zh": "说到检查点，就是作为恢复起点的「到此已确定」的保存地点。",
+      "memory_hook_en": "Checkpoint → the saved point of \"confirmed up to here\" that serves as the starting point of recovery."
+    },
+    {
+      "term": "ロールバック",
+      "definition_jp": "未完了トランザクションの更新を取り消し、処理前の状態へ戻す操作。",
+      "explanation_jp": "ロールバックは、途中で失敗・中断したトランザクションの更新を打ち消し、その処理を始める前の状態に戻す操作です。更新前の値を記録した「更新前ログ(ビフォアイメージ)」を使って元へ戻します。\n\n時間をさかのぼる向きの回復なので「後退復帰」とも呼ばれます。試験では、未完了の処理に対して行う点、更新前ログを使う点が問われ、確定済みの処理を再適用するロールフォワードとの違いが頻出です。完了していない処理は「なかったこと」にする、と覚えましょう。",
+      "analogy_jp": "ワープロやブラウザの「元に戻す(Undo)」ボタンと同じ。書きかけて失敗した操作を取り消し、手を付ける前の状態にきれいに戻します。",
+      "memory_hook_jp": "ロールバックといえば未完了処理を取り消す後退復帰(Undo)",
+      "inline_quiz": [
+        "2018h30a-q063",
+        "2023r05-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "回滚",
+      "term_en": "Rollback",
+      "definition_zh": "撤销未完成事务的更新，将其恢复到处理之前的状态的操作。",
+      "definition_en": "An operation that undoes the updates of an incomplete transaction and restores the state to what it was before the processing began.",
+      "explanation_zh": "回滚是撤销中途失败或中断的事务的更新，把它恢复到开始该处理之前状态的操作。它使用记录了更新前数值的「更新前日志（前像 / before image）」来还原。\n\n由于是沿时间向回追溯的恢复方向，所以也被称为「后退恢复」。考试中常考它是针对未完成处理执行的、以及它使用更新前日志这两点，并且与重新应用已确定处理的前滚之间的区别经常出现。可以记成：尚未完成的处理就当作「从未发生过」。",
+      "explanation_en": "Rollback is an operation that cancels the updates of a transaction that failed or was interrupted partway through, restoring it to the state before that processing started. It uses the \"before-update log (before image),\" which records the values before the update, to restore the original state.\n\nBecause it is a direction of recovery that goes back in time, it is also called \"backward recovery.\" On the exam, the points asked are that it is performed on incomplete processing and that it uses the before-update log, and the difference from rollforward (which re-applies committed processing) appears frequently. Remember it as: treat the incomplete processing as if it \"never happened.\"",
+      "analogy_zh": "就和文字处理软件或浏览器的「撤销（Undo）」按钮一样。撤销写到一半失败的操作，干净地恢复到动手之前的状态。",
+      "analogy_en": "It is just like the \"Undo\" button in a word processor or browser. It cancels an operation you started but botched, cleanly restoring the state to before you touched it.",
+      "memory_hook_zh": "说到回滚，就是撤销未完成处理的后退恢复（Undo）。",
+      "memory_hook_en": "Rollback → backward recovery that undoes incomplete processing (Undo)."
+    },
+    {
+      "term": "バックワードリカバリ",
+      "definition_jp": "ロールバックによって処理前の状態へ戻す後退復帰の総称。",
+      "explanation_jp": "バックワードリカバリは、ロールバックを使ってデータを時間的に前(処理開始前)へ戻す回復方式の呼び名です。「後退復帰」と訳され、ロールバックそのものを指す総称と考えてよいです。\n\n更新前ログ(ビフォアイメージ)を使い、未完了トランザクションを取り消す点が特徴です。試験では、前進復帰であるフォワードリカバリ(ロールフォワード)と対で問われます。バックワード=後ろ向き=取り消し、と方向のイメージで区別すると間違えません。",
+      "analogy_jp": "録画した動画を「巻き戻し」して、まだ完成していない場面を撮る前まで戻すようなもの。進めた分を巻き戻して、やり直す前の状態に合わせます。",
+      "memory_hook_jp": "バックワードリカバリといえばロールバックで戻す後退復帰",
+      "inline_quiz": [
+        "2017h29a-q076"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "后退恢复",
+      "term_en": "Backward Recovery",
+      "definition_zh": "通过回滚将状态恢复到处理之前的后退恢复的总称。",
+      "definition_en": "A general term for backward recovery that restores the state to before processing by means of rollback.",
+      "explanation_zh": "后退恢复（backward recovery）是使用回滚把数据在时间上回退到（处理开始）之前的恢复方式的名称。它译为「后退恢复」，可以视为指代回滚本身的总称。\n\n其特点是使用更新前日志（前像 / before image），撤销未完成的事务。考试中它会与作为前进恢复的前滚恢复（forward recovery / 前滚）成对出现。用方向的印象来区分就不会出错：backward = 向后 = 撤销。",
+      "explanation_en": "Backward recovery is the name of a recovery method that uses rollback to move data backward in time (to before the processing started). It is translated as \"backward recovery\" and can be regarded as a general term that refers to rollback itself.\n\nIts characteristic is that it uses the before-update log (before image) to cancel incomplete transactions. On the exam, it is asked as a pair with forward recovery (rollforward), which is forward recovery. You will not make mistakes if you distinguish them by the image of direction: backward = facing back = canceling.",
+      "analogy_zh": "就像把录好的视频「倒带」，退回到还没拍摄那个尚未完成场景之前一样。把已经推进的部分倒回去，对齐到重做之前的状态。",
+      "analogy_en": "It is like \"rewinding\" a recorded video back to before you filmed a scene that is not yet finished. You rewind the part you advanced, aligning it to the state before redoing.",
+      "memory_hook_zh": "说到后退恢复，就是用回滚来退回的后退恢复。",
+      "memory_hook_en": "Backward recovery → backward recovery that goes back via rollback."
+    },
+    {
+      "term": "ロールフォワード",
+      "definition_jp": "バックアップに確定済みの更新を再適用し、障害直前の状態へ進める操作。",
+      "explanation_jp": "ロールフォワードは、ディスク障害などで壊れたデータを、バックアップ(過去の保存)に対して「更新後ログ(アフタイメージ)」を順に再適用し、障害直前の正しい状態まで進める操作です。\n\n時間を前へ進める向きの回復なので「前進復帰」とも呼ばれます。対象は正常に完了(コミット)済みのトランザクションです。試験では、更新後ログを使う点、バックアップから再現する点が問われ、未完了処理を取り消すロールバックとの違いが頻出です。完了済みは「もう一度やり直して進める」と覚えましょう。",
+      "analogy_jp": "古いセーブデータから再開し、操作の記録(リプレイ)を流して直前の場面まで一気に進めるゲームのようなもの。確定済みの操作を再生して最新状態に追いつかせます。",
+      "memory_hook_jp": "ロールフォワードといえば確定済み更新を再適用する前進復帰(Redo)",
+      "inline_quiz": [
+        "2015h27a-q071"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"バックアップ\"] --> B[\"更新後ログ(アフタイメージ)を再適用\"]; B --> C[\"障害直前の正しい状態\"]",
+        "svg_path": "figures/technology-21-57-u02-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "前滚",
+      "term_en": "Rollforward",
+      "definition_zh": "对备份重新应用已确定的更新，将其推进到故障发生前状态的操作。",
+      "definition_en": "An operation that re-applies committed updates to a backup, advancing it to the state just before the failure.",
+      "explanation_zh": "前滚是针对因磁盘故障等而损坏的数据，对备份（过去的存档）按顺序重新应用「更新后日志（后像 / after image）」，把它推进到故障发生前正确状态的操作。\n\n由于是沿时间向前推进的恢复方向，所以也被称为「前进恢复」。其对象是已正常完成（提交）的事务。考试中常考它使用更新后日志、以及从备份再现这两点，并且与撤销未完成处理的回滚之间的区别经常出现。可以记成：已完成的就「再做一遍往前推进」。",
+      "explanation_en": "Rollforward is an operation that, for data corrupted by a disk failure or the like, re-applies the \"after-update log (after image)\" in order to a backup (a past archive), advancing it to the correct state just before the failure.\n\nBecause it is a direction of recovery that moves forward in time, it is also called \"forward recovery.\" Its targets are transactions that have completed normally (committed). On the exam, the points asked are that it uses the after-update log and that it reproduces from a backup, and the difference from rollback (which undoes incomplete processing) appears frequently. Remember it as: completed processing is \"redone to advance again.\"",
+      "analogy_zh": "就像从旧的存档重新开始，播放操作记录（replay）一口气推进到故障前那个场面的游戏一样。重放已确定的操作，让它追赶上最新状态。",
+      "analogy_en": "It is like a game where you restart from old save data and play back the record of operations (a replay) to advance all at once to the scene just before the failure. You replay the committed operations to catch up to the latest state.",
+      "memory_hook_zh": "说到前滚，就是重新应用已确定更新的前进恢复（Redo）。",
+      "memory_hook_en": "Rollforward → forward recovery that re-applies committed updates (Redo)."
+    },
+    {
+      "term": "フォワードリカバリ",
+      "definition_jp": "ロールフォワードによって障害直前の状態へ進める前進復帰の総称。",
+      "explanation_jp": "フォワードリカバリは、ロールフォワードを使ってデータを時間的に後(障害直前)へ進める回復方式の呼び名です。「前進復帰」と訳され、ロールフォワードそのものを指す総称と考えてよいです。\n\nバックアップと更新後ログ(アフタイメージ)を使い、確定済みトランザクションを再現する点が特徴です。試験では、後退復帰のバックワードリカバリと対で出ます。フォワード=前向き=再適用、ディスク障害のような物理的破損からの回復に使う、と方向と用途で押さえましょう。",
+      "analogy_jp": "古い写しから清書をやり直すとき、控えのメモ(更新記録)を順に書き写して最新版に追いつかせるようなもの。進めた記録を再現して元の最新状態に戻します。",
+      "memory_hook_jp": "フォワードリカバリといえばロールフォワードで進める前進復帰",
+      "inline_quiz": [
+        "2009h21h-q088"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "前进恢复",
+      "term_en": "Forward Recovery",
+      "definition_zh": "通过前滚将状态推进到故障发生前的前进恢复的总称。",
+      "definition_en": "A general term for forward recovery that advances the state to just before the failure by means of rollforward.",
+      "explanation_zh": "前进恢复（forward recovery）是使用前滚把数据在时间上推进到（故障发生）之前的恢复方式的名称。它译为「前进恢复」，可以视为指代前滚本身的总称。\n\n其特点是使用备份和更新后日志（后像 / after image），再现已确定的事务。考试中它会与作为后退恢复的后退恢复成对出现。用方向和用途来把握：forward = 向前 = 重新应用，用于从磁盘故障这类物理损坏中恢复。",
+      "explanation_en": "Forward recovery is the name of a recovery method that uses rollforward to move data forward in time (to just before the failure). It is translated as \"forward recovery\" and can be regarded as a general term that refers to rollforward itself.\n\nIts characteristic is that it uses a backup and the after-update log (after image) to reproduce committed transactions. On the exam, it appears as a pair with backward recovery. Grasp it by direction and use: forward = facing forward = re-applying, used for recovery from physical corruption such as a disk failure.",
+      "analogy_zh": "就像从旧的誊本重新清写时，把底稿便条（更新记录）按顺序抄写过去、追赶上最新版一样。再现已推进的记录，恢复到原本的最新状态。",
+      "analogy_en": "It is like re-writing a fair copy from an old transcript: you copy the draft notes (the record of updates) in order to catch up to the latest version. You reproduce the records you advanced, restoring the original latest state.",
+      "memory_hook_zh": "说到前进恢复，就是用前滚来推进的前进恢复。",
+      "memory_hook_en": "Forward recovery → forward recovery that advances via rollforward."
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "チェックポイント: チェックポイントといえば回復の起点となる「ここまで確定」の保存地点",
+      "ロールバック: ロールバックといえば未完了処理を取り消す後退復帰(Undo)",
+      "バックワードリカバリ: バックワードリカバリといえばロールバックで戻す後退復帰",
+      "ロールフォワード: ロールフォワードといえば確定済み更新を再適用する前進復帰(Redo)",
+      "フォワードリカバリ: フォワードリカバリといえばロールフォワードで進める前進復帰"
+    ],
+    "key_points_jp": [
+      "チェックポイントは更新をディスクへ書き出した「ここまで確定」の基準点で、回復処理の起点になる。",
+      "ロールバック(後退復帰/バックワードリカバリ)は未完了トランザクションを更新前ログ(ビフォアイメージ)で取り消す。",
+      "ロールフォワード(前進復帰/フォワードリカバリ)は確定済み更新を更新後ログ(アフタイメージ)でバックアップに再適用する。",
+      "未完了はロールバック、完了済みはロールフォワードという使い分けが頻出ポイント。",
+      "ディスク破損などの物理障害からの回復にはバックアップ+ロールフォワード(前進復帰)を用いる。"
+    ],
+    "key_points_zh": [
+      "检查点是把更新写出到磁盘的「到此已确定」的基准点，它成为恢复处理的起点。",
+      "回滚（后退恢复 / backward recovery）用更新前日志（前像 / before image）撤销未完成的事务。",
+      "前滚（前进恢复 / forward recovery）用更新后日志（后像 / after image）将已确定的更新重新应用到备份上。",
+      "未完成的用回滚、已完成的用前滚，这种区分使用是高频考点。",
+      "从磁盘损坏等物理故障中恢复时，使用备份加前滚（前进恢复）。"
+    ],
+    "key_points_en": [
+      "A checkpoint is the \"confirmed up to here\" reference point at which updates have been written out to disk, and it becomes the starting point of recovery processing.",
+      "Rollback (backward recovery) uses the before-update log (before image) to undo incomplete transactions.",
+      "Rollforward (forward recovery) uses the after-update log (after image) to re-apply committed updates to a backup.",
+      "Use rollback for incomplete processing and rollforward for completed processing — this distinction is a frequent exam point.",
+      "For recovery from physical failures such as disk corruption, use a backup plus rollforward (forward recovery)."
+    ],
+    "memory_hooks_zh": [
+      "检查点：说到检查点，就是作为恢复起点的「到此已确定」的保存地点。",
+      "回滚：说到回滚，就是撤销未完成处理的后退恢复（Undo）。",
+      "后退恢复：说到后退恢复，就是用回滚来退回的后退恢复。",
+      "前滚：说到前滚，就是重新应用已确定更新的前进恢复（Redo）。",
+      "前进恢复：说到前进恢复，就是用前滚来推进的前进恢复。"
+    ],
+    "memory_hooks_en": [
+      "Checkpoint: Checkpoint → the saved point of \"confirmed up to here\" that serves as the starting point of recovery.",
+      "Rollback: Rollback → backward recovery that undoes incomplete processing (Undo).",
+      "Backward recovery: Backward recovery → backward recovery that goes back via rollback.",
+      "Rollforward: Rollforward → forward recovery that re-applies committed updates (Redo).",
+      "Forward recovery: Forward recovery → forward recovery that advances via rollforward."
+    ]
+  },
+  "challenge_questions": [
+    "2024r06-q074",
+    "2026r08-q056",
+    "2025r07-q061"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2014h26a-q071",
+      "figure_path": "figures/2014h26a-q071.png",
+      "figure_type": "flowchart",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2015h27a-q071",
+      "figure_path": "figures/2015h27a-q071.png",
+      "figure_type": "table",
+      "figure_description": "処理一覧表。実行順1：トランザクション1（データAを作成する）、実行順2：トランザクション2（データBを作成し、データAを削除する）、実行順3：トランザクション3（データAを作成する）、実行順4：トランザクション4（データBを削除する）。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "故障恢复（恢复处理）",
+  "title_en": "Failure Recovery",
+  "unit_summary_zh": "学习在发生故障时将数据库恢复到正确状态的恢复处理，通过检查点、回滚（后退恢复）、前滚（前进恢复）这几种机制来理解。",
+  "unit_summary_en": "Learn the recovery processing that restores a database to a correct state after a failure, through the mechanisms of checkpoints, rollback (backward recovery), and rollforward (forward recovery)."
+}

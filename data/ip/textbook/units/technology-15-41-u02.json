@@ -1,0 +1,286 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-15-41-u02",
+  "topic_id": "technology-15-41",
+  "category": "technology",
+  "title_jp": "メモリ階層とDRAM規格・モジュール",
+  "unit_summary_jp": "キャッシュ・主記憶・補助記憶というメモリ階層の役割分担と、主記憶を構成するDRAM規格(DDR系)・実装モジュール(DIMM系)を学ぶ。",
+  "order_in_topic": 2,
+  "prerequisites": [
+    "technology-15-41-u01"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、速度と容量のトレードオフを表す「メモリ階層」(キャッシュ・主記憶・補助記憶)の役割分担をまず学び、続いて主記憶を物理的に実現するDRAM規格(DDR3/4/5 SDRAM)とメモリモジュール(DIMM・SO-DIMM)を具体化します。階層の中で各メモリがどこに位置するか、世代やモジュールの違いが試験で問われる重要分野です。",
+    "freq_badge": "標準",
+    "est_minutes": 23,
+    "intro_zh": "在本单元中，我们先学习体现速度与容量权衡关系的「存储器层次结构」（高速缓存、主存储器、辅助存储器）中各部分的分工，接着具体了解从物理上实现主存储器的 DRAM 规格（DDR3/4/5 SDRAM）与内存模块（DIMM、SO-DIMM）。各类存储器在层次结构中位于何处，以及世代和模块之间的差异，都是考试中常考的重要领域。",
+    "intro_en": "In this unit, we first learn how each part divides its role within the \"memory hierarchy\" (cache, main memory, secondary storage) that expresses the trade-off between speed and capacity, then look concretely at the DRAM standards (DDR3/4/5 SDRAM) and memory modules (DIMM, SO-DIMM) that physically realize main memory. Where each memory sits in the hierarchy, and the differences between generations and modules, are an important area frequently tested on the exam."
+  },
+  "terms": [
+    {
+      "term": "キャッシュメモリ",
+      "definition_jp": "CPUと主記憶の速度差を埋める、CPUに近い高速・小容量のメモリ。",
+      "explanation_jp": "キャッシュメモリは、CPUと主記憶の処理速度の差を埋めるために置かれる高速なメモリです。CPUがよく使うデータや命令を一時的に蓄えておき、主記憶へ毎回取りに行く手間を省くことで全体の処理を速くします。\n\nメモリ階層の最上層に位置し、主記憶より高速ですが容量は小さく高価です。CPUに近い順にL1・L2・L3と複数段に分かれることもあります。試験では「CPUと主記憶の間にあって速度差を埋める」「高速だが小容量」という役割と位置づけが問われます。",
+      "analogy_jp": "料理人が手元の小皿によく使う調味料を置いておくようなもの。いちいち遠くの倉庫(主記憶)へ取りに行かず、すぐ手が届くので調理が速く進みます。",
+      "memory_hook_jp": "キャッシュメモリといえばCPUと主記憶の速度差を埋める高速メモリ",
+      "inline_quiz": [
+        "2009h21h-q069",
+        "2010h22h-q066"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"CPU\"] --> B[\"キャッシュメモリ(高速・小容量)\"]; B --> C[\"主記憶(中速・中容量)\"]; C --> D[\"補助記憶(低速・大容量)\"]",
+        "svg_path": "figures/technology-15-41-u02-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "高速缓存（缓存）",
+      "term_en": "Cache memory",
+      "definition_zh": "用于弥补 CPU 与主存储器速度差的、靠近 CPU 的高速、小容量存储器。",
+      "definition_en": "A fast, small-capacity memory located close to the CPU that bridges the speed gap between the CPU and main memory.",
+      "explanation_zh": "高速缓存是为了弥补 CPU 与主存储器处理速度之差而设置的高速存储器。它临时存放 CPU 经常使用的数据和指令，省去每次都要去主存储器读取的麻烦，从而加快整体处理速度。\n\n它位于存储器层次结构的最上层，比主存储器更快，但容量更小、价格更贵。按照离 CPU 由近到远，有时会分为 L1、L2、L3 等多级。考试中常考它「位于 CPU 与主存储器之间、弥补速度差」「速度快但容量小」这一作用和定位。",
+      "explanation_en": "Cache memory is a fast memory placed to bridge the difference in processing speed between the CPU and main memory. It temporarily holds data and instructions the CPU uses often, sparing it the trouble of fetching from main memory every time and thereby speeding up overall processing.\n\nIt sits at the top of the memory hierarchy: faster than main memory, but smaller in capacity and more expensive. It is sometimes divided into multiple levels such as L1, L2, and L3, in order of closeness to the CPU. The exam tends to ask about its role and position as something that \"sits between the CPU and main memory to bridge the speed gap\" and is \"fast but small in capacity.\"",
+      "analogy_zh": "就像厨师把常用的调味料放在手边的小碟里。不必每次都跑到远处的仓库（主存储器）去取，伸手即得，做菜就能更快地进行。",
+      "analogy_en": "Like a cook keeping frequently used seasonings in a small dish at hand. There is no need to walk to the distant storeroom (main memory) each time, so cooking proceeds faster because everything is within reach.",
+      "memory_hook_zh": "说到高速缓存，就是弥补 CPU 与主存储器速度差的高速存储器",
+      "memory_hook_en": "Cache memory → the fast memory that bridges the CPU-main-memory speed gap"
+    },
+    {
+      "term": "主記憶",
+      "definition_jp": "プログラム実行中のデータや命令を保持する中心的なメモリ。",
+      "explanation_jp": "主記憶は、実行中のプログラムやそのデータを一時的に保持する中心的なメモリで、メインメモリとも呼ばれます。CPUは主記憶から命令やデータを読み込んで処理を進めます。\n\nメモリ階層ではキャッシュメモリの下、補助記憶の上に位置し、キャッシュより低速・大容量、補助記憶より高速・小容量です。電源を切ると内容が消える揮発性メモリ(主にDRAM)で構成されます。試験では「実行中のデータを保持する」役割と、補助記憶との「揮発性・速度・容量」の違いが問われます。",
+      "analogy_jp": "作業中の書類を広げておく机の上のようなもの。よく使うものを手前に置けますが広さに限りがあり、片づけ(電源オフ)で何も残りません。",
+      "memory_hook_jp": "主記憶といえばプログラム実行中のデータを保持する中心メモリ",
+      "inline_quiz": [
+        "2009h21a-q083",
+        "2011h23tokubetsu-q069"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "主存储器（内存）",
+      "term_en": "Main memory",
+      "definition_zh": "保存程序运行中数据和指令的核心存储器。",
+      "definition_en": "The central memory that holds the data and instructions of a program while it is running.",
+      "explanation_zh": "主存储器是临时保存运行中的程序及其数据的核心存储器，也称为内存。CPU 从主存储器读取指令和数据来推进处理。\n\n在存储器层次结构中，它位于高速缓存之下、辅助存储器之上，比高速缓存慢但容量大，比辅助存储器快但容量小。它由断电后内容即消失的易失性存储器（主要是 DRAM）构成。考试中常考它「保存运行中数据」的作用，以及与辅助存储器在「易失性、速度、容量」方面的差异。",
+      "explanation_en": "Main memory is the central memory that temporarily holds the running program and its data; it is also called RAM. The CPU reads instructions and data from main memory to carry out processing.\n\nIn the memory hierarchy it sits below cache memory and above secondary storage: slower but larger than cache, and faster but smaller than secondary storage. It is built from volatile memory (mainly DRAM) whose contents are lost when the power is turned off. The exam tends to ask about its role of \"holding data while running\" and its differences from secondary storage in terms of \"volatility, speed, and capacity.\"",
+      "analogy_zh": "就像摊开正在处理的文件的桌面。可以把常用的东西放在眼前，但桌面大小有限，一收拾（断电）就什么都不剩了。",
+      "analogy_en": "Like the top of a desk where you spread out the documents you are working on. You can keep what you use often right in front of you, but the surface is limited in size, and once you clear it (power off) nothing remains.",
+      "memory_hook_zh": "说到主存储器，就是保存程序运行中数据的核心存储器",
+      "memory_hook_en": "Main memory → the central memory that holds data while a program runs"
+    },
+    {
+      "term": "補助記憶",
+      "definition_jp": "主記憶を補い、大容量かつ不揮発でデータを長期保存するメモリ。",
+      "explanation_jp": "補助記憶は、主記憶を補う形でデータやプログラムを長期に保存するメモリで、ハードディスクやSSDなどがこれにあたります。電源を切っても内容が消えない不揮発性で、大容量なのが特徴です。\n\nメモリ階層の最下層に位置し、容量は大きい一方で主記憶より低速です。試験では「不揮発で大容量だが低速」という特徴と、揮発性で高速な主記憶との対比、そしてメモリ階層の最下層という位置づけが問われます。",
+      "analogy_jp": "書類を保管する大きなキャビネットのようなもの。たくさん収納でき、閉めても(電源オフでも)中身は残りますが、取り出すのに机の上より少し手間がかかります。",
+      "memory_hook_jp": "補助記憶といえば大容量・不揮発でデータを長期保存するメモリ",
+      "inline_quiz": [
+        "2011h23a-q079"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "辅助存储器（外存）",
+      "term_en": "Secondary storage",
+      "definition_zh": "补充主存储器，以大容量且非易失方式长期保存数据的存储器。",
+      "definition_en": "Memory that supplements main memory and stores data for the long term with large capacity and non-volatility.",
+      "explanation_zh": "辅助存储器是以补充主存储器的形式长期保存数据和程序的存储器，硬盘、SSD 等都属于此类。它的特点是断电后内容也不会消失（非易失性）且容量大。\n\n它位于存储器层次结构的最下层，容量虽大，但比主存储器慢。考试中常考它「非易失、大容量但速度慢」的特点、与易失且高速的主存储器的对比，以及它处于存储器层次结构最下层这一定位。",
+      "explanation_en": "Secondary storage is memory that stores data and programs for the long term, supplementing main memory; hard disks and SSDs fall into this category. Its characteristics are that its contents are not lost even when the power is turned off (non-volatile) and that it has large capacity.\n\nIt sits at the bottom of the memory hierarchy: its capacity is large, but it is slower than main memory. The exam tends to ask about its characteristic of being \"non-volatile and large-capacity but slow,\" its contrast with the volatile and fast main memory, and its position at the bottom of the memory hierarchy.",
+      "analogy_zh": "就像存放文件的大柜子。能收纳很多东西，关上后（即使断电）里面的东西也还在，但取出时会比从桌面上拿稍微费点事。",
+      "analogy_en": "Like a large cabinet for filing documents. It can hold a lot, and even when closed (power off) its contents remain, but taking something out is a bit more trouble than picking it up off the desktop.",
+      "memory_hook_zh": "说到辅助存储器，就是大容量、非易失、长期保存数据的存储器",
+      "memory_hook_en": "Secondary storage → the large-capacity, non-volatile memory that stores data long-term"
+    },
+    {
+      "term": "DDR3 SDRAM",
+      "definition_jp": "主記憶に使われるDRAM規格の一つで、DDR世代の第3世代。",
+      "explanation_jp": "DDR3 SDRAMは、主記憶を構成するDRAMの規格の一つです。SDRAMはクロック信号に同期して動作するDRAMで、DDR(Double Data Rate)はその信号の立ち上がりと立ち下がりの両方でデータをやり取りし速度を高める方式です。\n\nDDR3はその第3世代で、後のDDR4より前の規格にあたります。試験では細かい性能値より、「主記憶に使われるDRAMの規格」であること、DDR3→DDR4→DDR5と世代が新しいほど高速・低消費電力になる、という世代関係が問われます。",
+      "analogy_jp": "主記憶という製品の「型番の世代」のようなもの。スマートフォンの旧モデルにあたり、後継のDDR4・DDR5より一世代前の規格だとイメージすると分かりやすいです。",
+      "memory_hook_jp": "DDR3 SDRAMといえば主記憶に使うDRAM規格の第3世代",
+      "inline_quiz": [
+        "2012h24h-q063"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "DDR3 SDRAM",
+      "term_en": "DDR3 SDRAM",
+      "definition_zh": "用于主存储器的 DRAM 规格之一，属于 DDR 系列的第三代。",
+      "definition_en": "One of the DRAM standards used for main memory; the third generation in the DDR family.",
+      "explanation_zh": "DDR3 SDRAM 是构成主存储器的 DRAM 规格之一。SDRAM 是与时钟信号同步工作的 DRAM，而 DDR（Double Data Rate）是在信号的上升沿和下降沿两侧都进行数据传输以提高速度的方式。\n\nDDR3 是其第三代，属于 DDR4 之前的规格。考试中比起细节性能数值，更常考它是「用于主存储器的 DRAM 规格」，以及 DDR3→DDR4→DDR5 世代越新越高速、越省电这一世代关系。",
+      "explanation_en": "DDR3 SDRAM is one of the DRAM standards that make up main memory. SDRAM is DRAM that operates in synchronization with a clock signal, and DDR (Double Data Rate) is a scheme that transfers data on both the rising and falling edges of that signal to raise speed.\n\nDDR3 is the third generation of this, a standard that comes before the later DDR4. Rather than detailed performance figures, the exam tends to ask that it is \"a DRAM standard used for main memory\" and about the generational relationship in which newer generations—DDR3 → DDR4 → DDR5—become faster and more power-efficient.",
+      "analogy_zh": "就像主存储器这件产品的「型号世代」。可以想象成智能手机的旧款，是比后续 DDR4、DDR5 早一代的规格，这样就容易理解了。",
+      "analogy_en": "Like the \"model generation\" of the product called main memory. It helps to picture it as an older smartphone model—a standard one generation before its successors DDR4 and DDR5.",
+      "memory_hook_zh": "说到 DDR3 SDRAM，就是用于主存储器的 DRAM 规格第三代",
+      "memory_hook_en": "DDR3 SDRAM → the 3rd-generation DRAM standard used for main memory"
+    },
+    {
+      "term": "DDR4 SDRAM",
+      "definition_jp": "DDR3の後継となるDRAM規格で、DDR世代の第4世代。",
+      "explanation_jp": "DDR4 SDRAMは、DDR3 SDRAMの後継となる主記憶用のDRAM規格で、DDR世代の第4世代です。DDR3に比べて転送速度が向上し、消費電力も抑えられています。\n\n長くパソコンやサーバの主記憶として広く使われてきた規格です。試験では、DDR3とDDR5の間に位置する世代であること、世代が新しいほど高速・省電力になるという世代進化の流れ、そして同じDDRでも世代が違うと差し込めるスロットが異なる点を押さえておくとよいでしょう。",
+      "analogy_jp": "スマートフォンの新モデルへの買い替えと同じで、前世代(DDR3)より速く電池持ちも良くなったイメージ。ただし新旧で端子の形が違い差し替えはできません。",
+      "memory_hook_jp": "DDR4 SDRAMといえばDDR3の後継の第4世代DRAM規格",
+      "inline_quiz": [
+        "2013h25h-q070"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "DDR4 SDRAM",
+      "term_en": "DDR4 SDRAM",
+      "definition_zh": "作为 DDR3 后继的 DRAM 规格，属于 DDR 系列的第四代。",
+      "definition_en": "The DRAM standard that succeeds DDR3; the fourth generation in the DDR family.",
+      "explanation_zh": "DDR4 SDRAM 是作为 DDR3 SDRAM 后继的主存储器用 DRAM 规格，属于 DDR 系列的第四代。与 DDR3 相比，它的传输速度有所提升，功耗也得到抑制。\n\n它长期作为个人电脑和服务器的主存储器被广泛使用。考试中最好记住：它是位于 DDR3 与 DDR5 之间的世代；世代越新越高速、越省电这一世代演进趋势；以及即便同为 DDR，世代不同插槽也不同、无法插入这一点。",
+      "explanation_en": "DDR4 SDRAM is a DRAM standard for main memory that succeeds DDR3 SDRAM, the fourth generation in the DDR family. Compared with DDR3, its transfer speed is improved and its power consumption is also reduced.\n\nIt has long been widely used as the main memory of PCs and servers. On the exam, it is worth keeping in mind that it is the generation positioned between DDR3 and DDR5; the trend of generational evolution in which newer generations are faster and more power-efficient; and the point that even within DDR, a different generation uses a different slot into which it cannot be inserted.",
+      "analogy_zh": "就像换购智能手机的新款，比上一代（DDR3）更快、电池也更耐用的形象。不过新旧款的接口形状不同，无法互换插入。",
+      "analogy_en": "Like upgrading to a newer smartphone model—the image of being faster and longer-lasting on battery than the previous generation (DDR3). However, old and new have differently shaped connectors and cannot be swapped in.",
+      "memory_hook_zh": "说到 DDR4 SDRAM，就是 DDR3 后继的第四代 DRAM 规格",
+      "memory_hook_en": "DDR4 SDRAM → the 4th-generation DRAM standard succeeding DDR3"
+    },
+    {
+      "term": "DDR5 SDRAM",
+      "definition_jp": "DDR4の後継となる最新世代のDRAM規格で、DDR世代の第5世代。",
+      "explanation_jp": "DDR5 SDRAMは、DDR4 SDRAMの後継にあたる主記憶用DRAM規格で、DDR世代では最新の第5世代です。DDR4よりさらに転送速度が向上し、消費電力も抑えられています。\n\nDDR3→DDR4→DDR5という世代の流れの締めにあたります。試験では、最新世代であること、世代が進むほど高速・大容量・省電力になるという全体の傾向、そして各世代でモジュールの規格(スロット形状)が異なり互換性がない点を整理して覚えておくとよいでしょう。",
+      "analogy_jp": "スマートフォンの最新モデルのようなもの。前世代のDDR4よりさらに速く効率も良くなった「最新型番」で、世代の進化の到達点だとイメージできます。",
+      "memory_hook_jp": "DDR5 SDRAMといえばDDR4の後継の最新第5世代DRAM規格",
+      "inline_quiz": [
+        "2014h26h-q065"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "DDR5 SDRAM",
+      "term_en": "DDR5 SDRAM",
+      "definition_zh": "作为 DDR4 后继的最新世代 DRAM 规格，属于 DDR 系列的第五代。",
+      "definition_en": "The latest-generation DRAM standard that succeeds DDR4; the fifth generation in the DDR family.",
+      "explanation_zh": "DDR5 SDRAM 是作为 DDR4 SDRAM 后继的主存储器用 DRAM 规格，是 DDR 系列中最新的第五代。它的传输速度比 DDR4 进一步提升，功耗也得到抑制。\n\n它是 DDR3→DDR4→DDR5 这一世代脉络的收尾。考试中最好整理记住：它是最新世代；世代越往后越高速、大容量、省电这一整体趋势；以及各世代的模块规格（插槽形状）不同、互不兼容这一点。",
+      "explanation_en": "DDR5 SDRAM is a DRAM standard for main memory that succeeds DDR4 SDRAM, the latest fifth generation in the DDR family. Its transfer speed is improved even further than DDR4, and its power consumption is also reduced.\n\nIt caps off the generational flow of DDR3 → DDR4 → DDR5. On the exam, it is best to organize and remember that it is the latest generation; the overall tendency that as generations advance they become faster, higher in capacity, and more power-efficient; and the point that each generation's module standard (slot shape) differs and is not compatible.",
+      "analogy_zh": "就像智能手机的最新款。它是比上一代 DDR4 更快、效率也更高的「最新型号」，可以想象成世代演进的到达点。",
+      "analogy_en": "Like the latest smartphone model. It is the \"newest model number\" that is even faster and more efficient than the previous-generation DDR4—you can picture it as the culmination of the generational evolution.",
+      "memory_hook_zh": "说到 DDR5 SDRAM，就是 DDR4 后继的最新第五代 DRAM 规格",
+      "memory_hook_en": "DDR5 SDRAM → the latest 5th-generation DRAM standard succeeding DDR4"
+    },
+    {
+      "term": "DIMM",
+      "definition_jp": "DRAMチップを基板に搭載し主記憶として装着するメモリモジュール規格。",
+      "explanation_jp": "DIMM(Dual Inline Memory Module)は、DRAMチップを小さな基板に複数搭載し、パソコンやサーバの主記憶として差し込んで使うメモリモジュールの規格です。基板の両面に独立した端子(ピン)を持つのが名前の由来です。\n\nDDR3・DDR4・DDR5といった中身のDRAM規格を、実際に装着できる「板の形」にしたものと考えると分かりやすいです。試験では、DIMMが主記憶を実装するモジュールであること、後述のSO-DIMMがその小型版である、という対比が問われます。",
+      "analogy_jp": "DRAMチップ(部品)を載せて差し込めるようにした「カートリッジ」のようなもの。ゲーム機本体(マザーボード)のスロットにこの板を挿して主記憶を増やすイメージです。",
+      "memory_hook_jp": "DIMMといえばDRAMを搭載し主記憶として装着するモジュール",
+      "inline_quiz": [
+        "2016h28a-q084"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"DRAMチップ(DDR3/4/5)\"] --> B[\"DIMM(デスクトップ・サーバ用)\"]; A --> C[\"SO-DIMM(ノートPC用・小型)\"]",
+        "svg_path": "figures/technology-15-41-u02-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "DIMM（双列直插内存模块）",
+      "term_en": "DIMM",
+      "definition_zh": "将 DRAM 芯片搭载在电路板上、作为主存储器装入的内存模块规格。",
+      "definition_en": "A memory module standard that mounts DRAM chips on a board and is installed as main memory.",
+      "explanation_zh": "DIMM（Dual Inline Memory Module，双列直插内存模块）是把多个 DRAM 芯片搭载在小电路板上、插入使用作为个人电脑和服务器主存储器的内存模块规格。其名称源自电路板两面都带有独立的端子（针脚）。\n\n可以把它理解为：把 DDR3、DDR4、DDR5 这类内部的 DRAM 规格做成实际可装入的「板子形状」。考试中常考：DIMM 是实装主存储器的模块，以及后述的 SO-DIMM 是其小型版这一对比。",
+      "explanation_en": "A DIMM (Dual Inline Memory Module) is a memory-module standard that mounts multiple DRAM chips on a small board and is plugged in for use as the main memory of PCs and servers. The name comes from the fact that it has independent terminals (pins) on both sides of the board.\n\nIt helps to think of it as turning an internal DRAM standard such as DDR3, DDR4, or DDR5 into a \"board shape\" that can actually be installed. The exam tends to ask that DIMM is the module that physically implements main memory, and the contrast that the SO-DIMM described later is its compact version.",
+      "analogy_zh": "就像把 DRAM 芯片（零件）装上去、做成可插入形式的「卡带」。可以想象成把这块板子插入游戏主机本体（主板）的插槽里来扩充主存储器。",
+      "analogy_en": "Like a \"cartridge\" made by mounting DRAM chips (parts) so it can be plugged in. Picture inserting this board into a slot on the game console body (motherboard) to add main memory.",
+      "memory_hook_zh": "说到 DIMM，就是搭载 DRAM、作为主存储器装入的模块",
+      "memory_hook_en": "DIMM → the module that mounts DRAM and is installed as main memory"
+    },
+    {
+      "term": "SO-DIMM",
+      "definition_jp": "DIMMを小型化した、主にノートPC用のメモリモジュール規格。",
+      "explanation_jp": "SO-DIMM(Small Outline DIMM)は、DIMMを小型化したメモリモジュールの規格で、設置スペースの限られるノートパソコンや小型機器の主記憶に使われます。\n\n中身のDRAM(DDR4・DDR5など)は同じでも、基板のサイズや端子の数がDIMMと異なるため、デスクトップ用のDIMMスロットには差せません。試験では、SO-DIMMが「DIMMの小型版でノートPC向け」であること、用途とサイズの違いでDIMMと区別される点が問われます。",
+      "analogy_jp": "据置型ゲーム機用の大きなカートリッジ(DIMM)に対する、携帯型ゲーム機用の小さなカートリッジ(SO-DIMM)のようなもの。中身は同種でも本体に合わせて小型化されています。",
+      "memory_hook_jp": "SO-DIMMといえばDIMMの小型版でノートPC用のモジュール",
+      "inline_quiz": [
+        "2015h27h-q052"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "SO-DIMM（小型双列直插内存模块）",
+      "term_en": "SO-DIMM",
+      "definition_zh": "将 DIMM 小型化、主要用于笔记本电脑的内存模块规格。",
+      "definition_en": "A memory module standard that is a downsized DIMM, used mainly in laptops.",
+      "explanation_zh": "SO-DIMM（Small Outline DIMM）是把 DIMM 小型化的内存模块规格，用于安装空间有限的笔记本电脑和小型设备的主存储器。\n\n即使内部的 DRAM（DDR4、DDR5 等）相同，由于电路板尺寸和端子数量与 DIMM 不同，它也无法插入台式机用的 DIMM 插槽。考试中常考：SO-DIMM 是「DIMM 的小型版、面向笔记本电脑」，以及它凭借用途和尺寸的差异与 DIMM 相区别这一点。",
+      "explanation_en": "A SO-DIMM (Small Outline DIMM) is a memory-module standard that is a downsized DIMM, used for the main memory of laptops and small devices where installation space is limited.\n\nEven if the internal DRAM (DDR4, DDR5, etc.) is the same, because the board size and number of terminals differ from a DIMM, it cannot be inserted into a desktop's DIMM slot. The exam tends to ask that SO-DIMM is \"a compact version of DIMM for laptops\" and that it is distinguished from DIMM by differences in use and size.",
+      "analogy_zh": "就像相对于家用游戏机的大卡带（DIMM），掌机用的小卡带（SO-DIMM）。内部是同类，但为配合机身而做了小型化。",
+      "analogy_en": "Like a small cartridge for a handheld game console (SO-DIMM) versus a large cartridge for a home console (DIMM). The contents are the same kind, but it is downsized to fit the device.",
+      "memory_hook_zh": "说到 SO-DIMM，就是 DIMM 的小型版、用于笔记本电脑的模块",
+      "memory_hook_en": "SO-DIMM → the compact version of DIMM, the module for laptops"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "キャッシュメモリ: キャッシュメモリといえばCPUと主記憶の速度差を埋める高速メモリ",
+      "主記憶: 主記憶といえばプログラム実行中のデータを保持する中心メモリ",
+      "補助記憶: 補助記憶といえば大容量・不揮発でデータを長期保存するメモリ",
+      "DDR3 SDRAM: DDR3 SDRAMといえば主記憶に使うDRAM規格の第3世代",
+      "DDR4 SDRAM: DDR4 SDRAMといえばDDR3の後継の第4世代DRAM規格",
+      "DDR5 SDRAM: DDR5 SDRAMといえばDDR4の後継の最新第5世代DRAM規格",
+      "DIMM: DIMMといえばDRAMを搭載し主記憶として装着するモジュール",
+      "SO-DIMM: SO-DIMMといえばDIMMの小型版でノートPC用のモジュール"
+    ],
+    "key_points_jp": [
+      "メモリ階層は上からキャッシュメモリ→主記憶→補助記憶の順で、上ほど高速・小容量・高価、下ほど低速・大容量・安価というトレードオフがある。",
+      "キャッシュメモリはCPUと主記憶の速度差を埋める高速メモリ、主記憶は実行中データを保持する揮発性の中心メモリ、補助記憶は不揮発・大容量でデータを長期保存する。",
+      "主記憶はDRAMで構成され、その規格がDDR3→DDR4→DDR5 SDRAMと世代を重ね、新しいほど高速・省電力になる。",
+      "DIMMはDRAMチップを搭載して主記憶として装着するモジュール規格で、SO-DIMMはその小型版でノートPC用である。",
+      "世代(DDR3/4/5)やモジュール(DIMM/SO-DIMM)が異なるとスロット形状が違い差し替えできない点に注意する。"
+    ],
+    "key_points_zh": [
+      "存储器层次结构从上到下依次为高速缓存→主存储器→辅助存储器，越往上越高速、容量越小、越贵，越往下越慢、容量越大、越便宜，存在这种权衡关系。",
+      "高速缓存是弥补 CPU 与主存储器速度差的高速存储器，主存储器是保存运行中数据的易失性核心存储器，辅助存储器以非易失、大容量方式长期保存数据。",
+      "主存储器由 DRAM 构成，其规格按 DDR3→DDR4→DDR5 SDRAM 逐代演进，越新越高速、越省电。",
+      "DIMM 是搭载 DRAM 芯片、作为主存储器装入的模块规格，SO-DIMM 是其小型版、用于笔记本电脑。",
+      "注意世代（DDR3/4/5）或模块（DIMM/SO-DIMM）不同时，插槽形状也不同，无法互换插入。"
+    ],
+    "key_points_en": [
+      "The memory hierarchy runs, from top to bottom, cache → main memory → secondary storage; the higher up, the faster, smaller, and more expensive, while the lower down, the slower, larger, and cheaper—a trade-off.",
+      "Cache memory is the fast memory that bridges the CPU-main-memory speed gap, main memory is the volatile central memory that holds running data, and secondary storage stores data long-term in a non-volatile, large-capacity way.",
+      "Main memory is built from DRAM, whose standard advances generation by generation as DDR3 → DDR4 → DDR5 SDRAM, becoming faster and more power-efficient with each newer generation.",
+      "DIMM is the module standard that mounts DRAM chips and is installed as main memory, and SO-DIMM is its compact version for laptops.",
+      "Note that when the generation (DDR3/4/5) or the module (DIMM/SO-DIMM) differs, the slot shape also differs, so they cannot be swapped in."
+    ],
+    "memory_hooks_zh": [
+      "高速缓存：说到高速缓存，就是弥补 CPU 与主存储器速度差的高速存储器",
+      "主存储器：说到主存储器，就是保存程序运行中数据的核心存储器",
+      "辅助存储器：说到辅助存储器，就是大容量、非易失、长期保存数据的存储器",
+      "DDR3 SDRAM：说到 DDR3 SDRAM，就是用于主存储器的 DRAM 规格第三代",
+      "DDR4 SDRAM：说到 DDR4 SDRAM，就是 DDR3 后继的第四代 DRAM 规格",
+      "DDR5 SDRAM：说到 DDR5 SDRAM，就是 DDR4 后继的最新第五代 DRAM 规格",
+      "DIMM：说到 DIMM，就是搭载 DRAM、作为主存储器装入的模块",
+      "SO-DIMM：说到 SO-DIMM，就是 DIMM 的小型版、用于笔记本电脑的模块"
+    ],
+    "memory_hooks_en": [
+      "Cache memory: Cache memory → the fast memory that bridges the CPU-main-memory speed gap",
+      "Main memory: Main memory → the central memory that holds data while a program runs",
+      "Secondary storage: Secondary storage → the large-capacity, non-volatile memory that stores data long-term",
+      "DDR3 SDRAM: DDR3 SDRAM → the 3rd-generation DRAM standard used for main memory",
+      "DDR4 SDRAM: DDR4 SDRAM → the 4th-generation DRAM standard succeeding DDR3",
+      "DDR5 SDRAM: DDR5 SDRAM → the latest 5th-generation DRAM standard succeeding DDR4",
+      "DIMM: DIMM → the module that mounts DRAM and is installed as main memory",
+      "SO-DIMM: SO-DIMM → the compact version of DIMM, the module for laptops"
+    ]
+  },
+  "challenge_questions": [
+    "2016h28h-q072",
+    "2017h29a-q067",
+    "2017h29h-q092",
+    "2018h30a-q065",
+    "2018h30h-q076"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2011h23tokubetsu-q069",
+      "figure_path": "figures/2011h23tokubetsu-q069.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "存储器层次结构与 DRAM 规格、内存模块",
+  "title_en": "Memory Hierarchy and DRAM Standards & Modules",
+  "unit_summary_zh": "学习高速缓存、主存储器、辅助存储器这一存储器层次结构中各自的分工，以及构成主存储器的 DRAM 规格（DDR 系列）与实装内存模块（DIMM 系列）。",
+  "unit_summary_en": "Learn how the memory hierarchy of cache, main memory, and secondary storage divides its roles, and study the DRAM standards (the DDR family) and physical modules (the DIMM family) that make up main memory."
+}

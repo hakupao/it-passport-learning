@@ -1,18 +1,24 @@
-// Stage 4 step3 — /[locale]/textbook : schema-verification index + report.
+// Stage 6 (Session 85) — /[locale]/textbook : production table of contents.
 //
-// Standalone verification harness (Session 81). Reads the 12 pilot units from the
-// gitignored data dir at request time, runs validateUnit() on each, and renders an
-// aggregate schema report. NOT the Stage 6 production reading UI.
+// Replaces the Session-81 schema-verification harness. Loads the full
+// unit_index.json (in-repo per D-133), groups it (D-114 path order), and renders
+// the reader ToC.
 
-import { setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { SchemaReport } from "@/components/textbook/SchemaReport";
-import { loadAllUnits, loadUnitIndex } from "@/lib/textbook/loader";
-import { validateUnit } from "@/lib/textbook/validate";
+import { TextbookToc } from "@/components/textbook/TextbookToc";
+import { buildNav, loadReaderIndex } from "@/lib/textbook/reader";
 
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Textbook" });
+  return { title: t("title"), description: t("subtitle") };
+}
 
 export default async function TextbookIndexPage({
   params,
@@ -20,9 +26,8 @@ export default async function TextbookIndexPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const index = await loadUnitIndex();
-  const units = await loadAllUnits();
-  const reports = await Promise.all(units.map((u) => validateUnit(u)));
+  const index = await loadReaderIndex();
+  const nav = buildNav(index, locale);
 
-  return <SchemaReport index={index} reports={reports} locale={locale} />;
+  return <TextbookToc nav={nav} stats={index.stats} locale={locale} />;
 }

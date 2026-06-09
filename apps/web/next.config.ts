@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -6,8 +8,38 @@ import createNextIntlPlugin from "next-intl/plugin";
 // server. The plugin path argument MUST match the request-config location.
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+// Stage 6 (D-133) — the self-authored textbook corpus lives at repo-root
+// data/ip/textbook (outside apps/web). Set the tracing root to the monorepo
+// root and explicitly include the corpus so the textbook routes' server-side
+// fs reads resolve in the production (serverless) bundle, not just in dev.
+// Keys are route paths; include globs resolve from the project root (apps/web).
+//
+// Globs are narrowed to exactly what the reader reads (the unit index + unit
+// JSONs + generated SVGs) so build traces don't drag in gitignored *.pilot.json
+// residue or the unused figure_index.json (Rule D LOW, Session 85).
+const TEXTBOOK_TRACE = [
+  "../../data/ip/textbook/unit_index.json",
+  "../../data/ip/textbook/units/**/*.json",
+  "../../data/ip/textbook/figures/**/*.svg",
+];
+// Belt-and-suspenders: explicitly keep the gitignored, IPA-copyrighted sibling
+// trees (exams 1.2 GB / sources / syllabus) out of the textbook route trace, in
+// case nft ever resolves a broader base dir than data/ip/textbook.
+const IPA_TRACE_EXCLUDE = [
+  "../../data/ip/exams/**/*",
+  "../../data/ip/sources/**/*",
+  "../../data/ip/syllabus/**/*",
+];
 const nextConfig: NextConfig = {
-  /* config options here */
+  outputFileTracingRoot: path.join(process.cwd(), "..", ".."),
+  outputFileTracingIncludes: {
+    "/[locale]/textbook": TEXTBOOK_TRACE,
+    "/[locale]/textbook/[unitId]": TEXTBOOK_TRACE,
+  },
+  outputFileTracingExcludes: {
+    "/[locale]/textbook": IPA_TRACE_EXCLUDE,
+    "/[locale]/textbook/[unitId]": IPA_TRACE_EXCLUDE,
+  },
 };
 
 export default withNextIntl(nextConfig);

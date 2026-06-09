@@ -1,0 +1,234 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-23-61-u06",
+  "topic_id": "technology-23-61",
+  "category": "technology",
+  "title_jp": "マルウェアの亜種・特殊型",
+  "unit_summary_jp": "スパイウェア・キーロガー・バックドア・RAT・マクロウイルス・ファイルレスマルウェアなど機能特化型マルウェアを理解する。",
+  "order_in_topic": 6,
+  "prerequisites": [
+    "technology-23-61-u05"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、特定の目的に機能を特化させたマルウェアの亜種・特殊型を学びます。情報を盗むスパイウェアやキーロガー、侵入を維持するバックドアやRAT、感染手段が特殊なマクロウイルス、検知を逃れるファイルレスマルウェアが対象です。情報セキュリティは試験で頻出の分野であり、各マルウェアの目的と手口の違いを区別できることが重要です。",
+    "freq_badge": "頻出",
+    "est_minutes": 18,
+    "intro_zh": "在本单元中，我们将学习为特定目的而功能特化的恶意软件变种与特殊类型。学习对象包括窃取信息的间谍软件和键盘记录器、维持入侵通道的后门和 RAT、感染手段特殊的宏病毒，以及逃避检测的无文件恶意软件。信息安全是考试的高频领域，能够区分各类恶意软件在目的与手法上的差异十分重要。",
+    "intro_en": "In this unit, you will learn about malware variants and specialized types whose functions are tailored to specific purposes. The targets include spyware and keyloggers that steal information, backdoors and RATs that maintain intrusion access, macro viruses with special infection methods, and fileless malware that evades detection. Information security is a frequently tested area on the exam, and it is important to be able to distinguish the differences in each malware's purpose and tactics."
+  },
+  "terms": [
+    {
+      "term": "スパイウェア",
+      "definition_jp": "利用者に気づかれず個人情報や利用状況を収集し外部へ送る不正プログラム。",
+      "explanation_jp": "スパイウェアは、パソコンやスマートフォンに潜み、利用者に気づかれないまま閲覧履歴・入力情報・個人情報などを収集し、外部へ送信するマルウェアです。フリーソフトに同梱されて知らずにインストールされることも多くあります。\n\nウイルスのように自己増殖して破壊するのではなく、あくまで「こっそり情報を盗む」点が特徴です。試験では、情報窃取が目的である点と、後述のキーロガー(入力記録)を含む広い情報収集型の総称として問われます。",
+      "analogy_jp": "部屋に仕掛けられた小型の隠しカメラのようなもの。住人に気づかれず日々の様子を記録し、こっそり外部へ映像を送り続けます。",
+      "memory_hook_jp": "スパイウェアといえばこっそり情報を盗んで外部送信",
+      "inline_quiz": [
+        "2009h21a-q058"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "间谍软件",
+      "term_en": "Spyware",
+      "definition_zh": "在用户不察觉的情况下收集个人信息和使用情况并发送到外部的恶意程序。",
+      "definition_en": "Malicious software that collects personal information and usage data without the user's awareness and sends it to an external party.",
+      "explanation_zh": "间谍软件是一种潜伏在电脑或智能手机中、在用户毫不察觉的情况下收集浏览历史、输入信息、个人信息等并发送到外部的恶意软件。它常常随免费软件一同捆绑，使用户在不知情的情况下被安装。\n\n它的特点不是像病毒那样自我复制并进行破坏，而仅仅是「悄悄窃取信息」。考试中会以「目的为窃取信息」这一点，以及作为包含后述键盘记录器（记录输入）在内的广义信息收集型的统称来出题。",
+      "explanation_en": "Spyware is malware that hides in a PC or smartphone and, without the user noticing, collects browsing history, input data, personal information, and the like, then sends it to an external party. It is often bundled with free software and installed without the user's knowledge.\n\nUnlike a virus, it does not self-replicate and destroy; its defining trait is that it merely \"steals information stealthily.\" On the exam, it is asked about both as having the purpose of information theft and as the umbrella term for broad information-collecting malware, including the keylogger (input recording) discussed later.",
+      "analogy_zh": "就像安装在房间里的小型隐藏摄像头。它在住户毫不察觉的情况下记录日常活动，并悄悄不断地把影像发送到外部。",
+      "analogy_en": "Like a tiny hidden camera installed in a room. Without the occupant noticing, it records daily activity and keeps quietly sending the footage to an external party.",
+      "memory_hook_zh": "说到间谍软件，就是悄悄窃取信息并发送到外部",
+      "memory_hook_en": "Spyware → stealthily steals information and sends it outside"
+    },
+    {
+      "term": "キーロガー",
+      "definition_jp": "キーボードの入力内容を記録し攻撃者へ送る情報窃取型の不正プログラム。",
+      "explanation_jp": "キーロガーは、利用者がキーボードで打った文字をすべて記録(ログ)するマルウェアです。記録した内容から、ID・パスワード・クレジットカード番号などの重要情報が盗み取られます。\n\nスパイウェアの一形態で、特に「キー入力の記録」に特化している点が特徴です。試験では、入力情報を盗む手口として問われ、画面に表示されない入力でも記録されてしまうため、ソフトウェアキーボードやワンタイムパスワードが対策として有効である点も押さえておきましょう。",
+      "analogy_jp": "電話の盗聴器のように、利用者が打ち込む一文字一文字をすべて書き写して攻撃者へ報告する、まじめすぎる記録係のようなものです。",
+      "memory_hook_jp": "キーロガーといえばキー入力を記録して盗む",
+      "inline_quiz": [
+        "2011h23tokubetsu-q075"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "键盘记录器",
+      "term_en": "Keylogger",
+      "definition_zh": "记录键盘输入内容并发送给攻击者的信息窃取型恶意程序。",
+      "definition_en": "Information-stealing malicious software that records keyboard input and sends it to an attacker.",
+      "explanation_zh": "键盘记录器是一种把用户用键盘敲下的所有字符全部记录（log）下来的恶意软件。攻击者从记录的内容中窃取 ID、密码、信用卡号等重要信息。\n\n它是间谍软件的一种形态，特点在于专门特化于「按键输入的记录」。考试中会作为窃取输入信息的手法来出题；由于即使是不显示在屏幕上的输入也会被记录，因此软件键盘和一次性密码作为对策有效，这一点也要记牢。",
+      "explanation_en": "A keylogger is malware that records (logs) every character the user types on the keyboard. From the recorded content, important information such as IDs, passwords, and credit card numbers is stolen.\n\nIt is one form of spyware, distinguished by specializing in \"recording keystrokes.\" On the exam, it is asked about as a tactic for stealing input data; because even input that is not shown on screen still gets recorded, keep in mind that an on-screen software keyboard and one-time passwords are effective countermeasures.",
+      "analogy_zh": "就像电话窃听器，把用户敲下的每一个字符都一一抄录下来报告给攻击者，是个过于尽职的记录员。",
+      "analogy_en": "Like a phone wiretap that copies down every single character the user types, one by one, and reports it to the attacker — an overly diligent stenographer.",
+      "memory_hook_zh": "说到键盘记录器，就是记录按键输入并窃取",
+      "memory_hook_en": "Keylogger → records keystrokes and steals them"
+    },
+    {
+      "term": "バックドア",
+      "definition_jp": "攻撃者が正規の認証を通さず再侵入できるよう仕込まれた裏口の仕組み。",
+      "explanation_jp": "バックドアは、一度侵入に成功した攻撃者が、次回から正規の認証手続きを経ずにこっそり再侵入できるよう仕掛けておく「裏口」です。マルウェアによって設置されたり、開発者が残したデバッグ用の入口が悪用されたりします。\n\n目的は「侵入経路の維持・確保」であり、情報を盗むスパイウェア類とは役割が異なります。試験では、正面の認証を回避して何度も入り込むための裏口、という点が問われます。設置されると気づきにくく、長期的に侵入を許す危険があります。",
+      "analogy_jp": "泥棒が最初の侵入時に、家の裏口の鍵をこっそり開けっ放しにしておくようなもの。次からは玄関(正規の認証)を通らず自由に出入りできてしまいます。",
+      "memory_hook_jp": "バックドアといえば認証を回避する再侵入の裏口",
+      "inline_quiz": [
+        "2009h21a-q073"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"攻撃者\"] --> B[\"バックドア(裏口)\"]; B --> C[\"内部システム\"]; D[\"正規の認証\"] -.回避.-> C",
+        "svg_path": "figures/technology-23-61-u06-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "后门",
+      "term_en": "Backdoor",
+      "definition_zh": "为使攻击者无需通过正规认证即可再次入侵而预设的后门机制。",
+      "definition_en": "A back-entrance mechanism planted so an attacker can re-enter without passing the legitimate authentication.",
+      "explanation_zh": "后门是指一旦成功入侵的攻击者为了下次能够不经过正规认证手续就悄悄再次入侵而预先设置的「后门」。它可能由恶意软件设置，也可能是开发者遗留的调试用入口被滥用。\n\n它的目的是「维持、确保入侵通道」，与窃取信息的间谍软件类作用不同。考试中会以绕过正面认证、能够反复入侵的后门这一点来出题。一旦被设置很难被察觉，存在长期被入侵的危险。",
+      "explanation_en": "A backdoor is a \"back entrance\" set up in advance so that an attacker who has once succeeded in breaking in can quietly re-enter from then on without going through the legitimate authentication procedure. It may be installed by malware, or a debugging entrance left by a developer may be abused.\n\nIts purpose is to \"maintain and secure an intrusion route,\" which is a different role from information-stealing spyware. On the exam, it is asked about as a back entrance for bypassing front-door authentication and entering repeatedly. Once installed, it is hard to notice and poses the danger of allowing long-term intrusion.",
+      "analogy_zh": "就像小偷在第一次入侵时偷偷把房屋后门的锁一直开着。从下次起就不必走正门（正规认证），可以自由出入了。",
+      "analogy_en": "Like a burglar who, on the first break-in, quietly leaves the back door unlocked. From then on, they can come and go freely without going through the front door (legitimate authentication).",
+      "memory_hook_zh": "说到后门，就是绕过认证再次入侵的后门",
+      "memory_hook_en": "Backdoor → a back entrance for re-entry that bypasses authentication"
+    },
+    {
+      "term": "RAT",
+      "definition_jp": "感染端末を攻撃者が遠隔から自由に操作できる遠隔操作型マルウェア。",
+      "explanation_jp": "RAT(Remote Access Trojan、遠隔操作ツール)は、感染した端末を攻撃者がインターネット越しに遠隔から操作できるようにするマルウェアです。ファイルの操作、画面の盗み見、カメラやマイクの起動など、まるで手元のように端末を支配されます。\n\nバックドアと機能的に近く、再侵入口を確保したうえで遠隔操作まで行う点が特徴です。試験では、攻撃者が端末を遠隔から思いどおりに操る不正ツール、という観点で問われます。標的型攻撃で利用されることが多いマルウェアです。",
+      "analogy_jp": "他人のパソコンを遠くから操る「乗っ取りリモコン」のようなもの。持ち主に気づかれないまま、攻撃者が画面もカメラも自由に動かせます。",
+      "memory_hook_jp": "RATといえば感染端末を遠隔操作する乗っ取りツール",
+      "inline_quiz": [
+        "2021r03-q094"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "RAT（远程访问木马）",
+      "term_en": "RAT (Remote Access Trojan)",
+      "definition_zh": "使攻击者能够从远程自由操控被感染终端的远程操控型恶意软件。",
+      "definition_en": "Remote-control malware that lets an attacker freely operate an infected device from a distance.",
+      "explanation_zh": "RAT（Remote Access Trojan，远程操控工具）是一种使攻击者能够通过互联网从远程操控被感染终端的恶意软件。文件操作、偷窥屏幕、启动摄像头或麦克风等，终端会被如同近在手边般地完全支配。\n\n它在功能上与后门相近，特点是在确保再次入侵通道的基础上还进行远程操控。考试中会从「攻击者从远程随心所欲操控终端的恶意工具」这一视角来出题。这是一种常被用于定向攻击的恶意软件。",
+      "explanation_en": "A RAT (Remote Access Trojan) is malware that lets an attacker operate an infected device remotely over the internet. File operations, screen snooping, activating the camera or microphone — the device is controlled as if it were right at hand.\n\nIt is functionally close to a backdoor, with the trait that it secures a re-entry route and then goes further to perform remote control. On the exam, it is asked about from the angle of a malicious tool by which an attacker manipulates a device remotely at will. It is malware often used in targeted attacks.",
+      "analogy_zh": "就像从远处操控他人电脑的「劫持遥控器」。在主人毫不察觉的情况下，攻击者可以自由操作屏幕和摄像头。",
+      "analogy_en": "Like a \"hijacking remote control\" that operates someone else's PC from afar. Without the owner noticing, the attacker can freely move the screen and the camera.",
+      "memory_hook_zh": "说到 RAT，就是远程操控被感染终端的劫持工具",
+      "memory_hook_en": "RAT → a hijacking tool that remotely controls an infected device"
+    },
+    {
+      "term": "マクロウイルス",
+      "definition_jp": "文書ファイルのマクロ機能を悪用して感染・動作するウイルス。",
+      "explanation_jp": "マクロウイルスは、ワープロや表計算ソフトの「マクロ」(操作を自動化する小さなプログラム)機能を悪用して作られたウイルスです。マクロを仕込んだ文書ファイルを開くと実行され、感染が広がります。\n\nプログラム本体ではなく文書ファイルを介して感染する点が特殊です。試験では、メールに添付された文書を開いただけで感染しうること、対策としてマクロの自動実行を無効にすることが有効である点が問われます。実行プログラムよりも警戒されにくいため注意が必要です。",
+      "analogy_jp": "一見ふつうの書類に見える封筒に、開けると作動する仕掛けが仕込まれているようなもの。文書だからと油断して開くと罠が動き出します。",
+      "memory_hook_jp": "マクロウイルスといえば文書のマクロを悪用して感染",
+      "inline_quiz": [
+        "2009h21h-q081"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "宏病毒",
+      "term_en": "Macro Virus",
+      "definition_zh": "滥用文档文件的宏功能进行感染和运行的病毒。",
+      "definition_en": "A virus that abuses the macro feature of document files to infect and run.",
+      "explanation_zh": "宏病毒是滥用文字处理或电子表格软件的「宏」（自动执行操作的小程序）功能而制作的病毒。打开嵌入了宏的文档文件时，宏被执行，感染随之扩散。\n\n它的特殊之处在于不是通过程序本体，而是经由文档文件感染。考试中会出题：仅仅打开邮件附带的文档就可能感染，而禁用宏的自动执行作为对策有效。由于它比可执行程序更不易引起警惕，因此需要注意。",
+      "explanation_en": "A macro virus is a virus created by abusing the \"macro\" feature (small programs that automate operations) of word processing or spreadsheet software. When a document file containing an embedded macro is opened, the macro runs and the infection spreads.\n\nWhat is special is that it infects not through a program executable but via a document file. On the exam, it is asked that merely opening a document attached to an email can cause infection, and that disabling the automatic execution of macros is an effective countermeasure. Because it draws less suspicion than an executable program, caution is needed.",
+      "analogy_zh": "就像一个看似普通文件的信封，里面藏着一打开就会触发的机关。因为是文档就放松警惕去打开，陷阱便启动了。",
+      "analogy_en": "Like an envelope that looks like an ordinary document but hides a device that triggers when opened. If you let your guard down and open it just because it's a document, the trap springs into action.",
+      "memory_hook_zh": "说到宏病毒，就是滥用文档的宏进行感染",
+      "memory_hook_en": "Macro virus → abuses a document's macro to infect"
+    },
+    {
+      "term": "ファイルレスマルウェア",
+      "definition_jp": "ファイルとして保存せずメモリ上などで動作し検知を逃れるマルウェア。",
+      "explanation_jp": "ファイルレスマルウェアは、悪意あるプログラムをディスク上のファイルとして保存せず、メモリ(主記憶)上やOS標準のツールを利用して動作するマルウェアです。実体となるファイルが残りにくいのが特徴です。\n\nファイルを検査する従来型のウイルス対策ソフトでは検知しづらく、痕跡も残りにくいため、検知回避に優れた新しいタイプとして扱われます。試験では、ファイルとして実体を持たないことで検知や調査が難しい点が問われます。挙動を監視する対策が有効です。",
+      "analogy_jp": "侵入しても足跡を床に残さず、空中を移動するような泥棒のもの。証拠の品(ファイル)を置いていかないため、後から探しても見つけにくいのです。",
+      "memory_hook_jp": "ファイルレスマルウェアといえばファイルを残さずメモリ上で動き検知回避",
+      "inline_quiz": [
+        "2011h23tokubetsu-q076"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph LR; A[\"侵入\"] --> B[\"メモリ上で実行\"]; B --> C[\"OS標準ツールを悪用\"]; C --> D[\"ファイルを残さず検知回避\"]",
+        "svg_path": "figures/technology-23-61-u06-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "无文件恶意软件",
+      "term_en": "Fileless Malware",
+      "definition_zh": "不作为文件保存、而在内存等中运行以逃避检测的恶意软件。",
+      "definition_en": "Malware that runs in memory and the like without being saved as a file, thereby evading detection.",
+      "explanation_zh": "无文件恶意软件是一种不把恶意程序作为磁盘上的文件保存，而是利用内存（主存）或操作系统自带工具运行的恶意软件。其特点是难以留下作为实体的文件。\n\n对于检查文件的传统型杀毒软件而言它难以被检测，而且不易留下痕迹，因此被视为擅长逃避检测的新型恶意软件。考试中会出题：由于它不以文件形式存在实体，检测和调查都很困难。监控行为的对策有效。",
+      "explanation_en": "Fileless malware is malware that does not save the malicious program as a file on disk but instead runs using memory (main memory) or tools that come standard with the OS. Its trait is that it tends not to leave behind a file as a physical entity.\n\nIt is hard for traditional antivirus software that inspects files to detect, and it leaves few traces, so it is treated as a new type that excels at evading detection. On the exam, it is asked that, because it has no physical existence as a file, detection and investigation are difficult. Countermeasures that monitor behavior are effective.",
+      "analogy_zh": "就像入侵后不在地板上留下脚印、仿佛在空中移动的小偷。因为不留下证物（文件），事后再查也很难找到。",
+      "analogy_en": "Like a burglar who, after breaking in, leaves no footprints on the floor and seems to move through the air. Because no evidence (a file) is left behind, it is hard to find even when investigated afterward.",
+      "memory_hook_zh": "说到无文件恶意软件，就是不留文件、在内存中运行以逃避检测",
+      "memory_hook_en": "Fileless malware → leaves no file, runs in memory, evades detection"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "スパイウェア: スパイウェアといえばこっそり情報を盗んで外部送信",
+      "キーロガー: キーロガーといえばキー入力を記録して盗む",
+      "バックドア: バックドアといえば認証を回避する再侵入の裏口",
+      "RAT: RATといえば感染端末を遠隔操作する乗っ取りツール",
+      "マクロウイルス: マクロウイルスといえば文書のマクロを悪用して感染",
+      "ファイルレスマルウェア: ファイルレスマルウェアといえばファイルを残さずメモリ上で動き検知回避"
+    ],
+    "key_points_jp": [
+      "スパイウェア・キーロガーは情報窃取型で、利用者に気づかれず情報を盗んで外部へ送る。キーロガーは入力記録に特化したスパイウェアの一形態。",
+      "バックドアは認証を回避して再侵入するための裏口、RATはさらに端末を遠隔操作する点が特徴で、両者は侵入維持・支配が目的。",
+      "マクロウイルスは文書ファイルのマクロ機能を悪用し、文書を開くだけで感染しうる。マクロの自動実行を無効にすることが対策。",
+      "ファイルレスマルウェアはファイルを残さずメモリ上などで動作し、従来型のファイル検査では検知しにくい新しいタイプ。",
+      "各マルウェアは『情報を盗む/侵入を維持する/感染手段が特殊/検知を逃れる』のどの目的かで区別して覚えるとよい。"
+    ],
+    "key_points_zh": [
+      "间谍软件和键盘记录器是信息窃取型，在用户不察觉的情况下窃取信息并发送到外部。键盘记录器是专门特化于输入记录的间谍软件的一种形态。",
+      "后门是用于绕过认证再次入侵的后门，RAT 的特点是进一步对终端进行远程操控，两者都以维持入侵和支配为目的。",
+      "宏病毒滥用文档文件的宏功能，仅仅打开文档就可能感染。禁用宏的自动执行是对策。",
+      "无文件恶意软件不留下文件、在内存等中运行，传统型的文件检查难以将其检测出来，属于新型恶意软件。",
+      "对各类恶意软件，按照「窃取信息／维持入侵／感染手段特殊／逃避检测」属于哪一目的来区分记忆为佳。"
+    ],
+    "key_points_en": [
+      "Spyware and keyloggers are information-stealing types that steal information without the user's awareness and send it outside. A keylogger is one form of spyware specialized in input recording.",
+      "A backdoor is a back entrance for re-entering while bypassing authentication, and a RAT additionally remotely controls the device; both aim at maintaining intrusion and control.",
+      "A macro virus abuses the macro feature of document files, and merely opening a document can cause infection. Disabling automatic macro execution is the countermeasure.",
+      "Fileless malware leaves no file and runs in memory and the like; traditional file inspection has difficulty detecting it, making it a new type of malware.",
+      "It is best to memorize each malware by distinguishing which purpose it serves: \"stealing information / maintaining intrusion / special infection method / evading detection.\""
+    ],
+    "memory_hooks_zh": [
+      "间谍软件：说到间谍软件，就是悄悄窃取信息并发送到外部",
+      "键盘记录器：说到键盘记录器，就是记录按键输入并窃取",
+      "后门：说到后门，就是绕过认证再次入侵的后门",
+      "RAT：说到 RAT，就是远程操控被感染终端的劫持工具",
+      "宏病毒：说到宏病毒，就是滥用文档的宏进行感染",
+      "无文件恶意软件：说到无文件恶意软件，就是不留文件、在内存中运行以逃避检测"
+    ],
+    "memory_hooks_en": [
+      "Spyware: Spyware → stealthily steals information and sends it outside",
+      "Keylogger: Keylogger → records keystrokes and steals them",
+      "Backdoor: Backdoor → a back entrance for re-entry that bypasses authentication",
+      "RAT: RAT → a hijacking tool that remotely controls an infected device",
+      "Macro virus: Macro virus → abuses a document's macro to infect",
+      "Fileless malware: Fileless malware → leaves no file, runs in memory, evades detection"
+    ]
+  },
+  "challenge_questions": [
+    "2014h26h-q061",
+    "2020r02o-q058",
+    "2015h27h-q066",
+    "2016h28a-q080",
+    "2017h29a-q056"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2014h26h-q061",
+      "figure_path": "figures/2014h26h-q061.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "恶意软件的变种与特殊类型",
+  "title_en": "Malware Variants and Specialized Types",
+  "unit_summary_zh": "理解间谍软件、键盘记录器、后门、RAT、宏病毒、无文件恶意软件等功能特化型恶意软件。",
+  "unit_summary_en": "Understand function-specialized malware such as spyware, keyloggers, backdoors, RATs, macro viruses, and fileless malware."
+}

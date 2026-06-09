@@ -1,0 +1,225 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-16-43-u03",
+  "topic_id": "technology-16-43",
+  "category": "technology",
+  "title_jp": "仮想化の基本と方式",
+  "unit_summary_jp": "物理資源を論理的に分割・統合する仮想化の考え方と、その実現方式(ホスト型/ハイパーバイザー型/コンテナ型)および仮想マシンの概念を学ぶ。",
+  "order_in_topic": 3,
+  "prerequisites": [
+    "technology-16-43-u01"
+  ],
+  "overview": {
+    "intro_jp": "このユニットでは、1台の物理的なコンピュータの資源を論理的に分割・統合して扱う「仮想化」の考え方と、それを実現する3つの方式(ホスト型・ハイパーバイザー型・コンテナ型)、そして生み出される実体である仮想マシン(VM)を学びます。クラウドや効率的な資源運用の土台となる重要概念で、試験では方式の違いが頻出します。",
+    "freq_badge": "標準",
+    "est_minutes": 18,
+    "intro_zh": "在本单元中，你将学习把一台物理计算机的资源进行逻辑上的分割与整合来使用的「虚拟化」思路，以及实现它的三种方式（宿主型、管理程序型、容器型），还有由此产生的实体——虚拟机（VM）。这是云计算和高效资源运用的基础重要概念，考试中各方式的区别频繁出现。",
+    "intro_en": "In this unit, you will learn the idea of \"virtualization\"—logically dividing and consolidating the resources of a single physical computer for use—along with the three methods that realize it (hosted, hypervisor, and container types), and the virtual machine (VM) that is produced as the actual entity. It is an important foundational concept for the cloud and efficient resource management, and the differences between the methods appear frequently on the exam."
+  },
+  "terms": [
+    {
+      "term": "仮想化",
+      "definition_jp": "物理的な資源を論理的に分割・統合し、実体と異なる構成に見せかける技術。",
+      "explanation_jp": "仮想化とは、CPU・メモリ・ストレージといった物理資源をソフトウェアで抽象化し、1台を複数台に見せたり、複数台を1台に見せたりする技術です。これにより、サーバの台数を減らしつつ用途ごとに環境を分けられ、資源の利用効率が大きく高まります。\n\n試験では、仮想化の目的(資源の有効活用・コスト削減・環境の独立性)と、後述の3方式の違いがよく問われます。物理マシン1台に複数の独立した環境を同居させられる点が、集約や柔軟な運用につながる核心です。",
+      "analogy_jp": "1つの大きな部屋を間仕切りで複数の個室に分けるイメージです。壁(ソフトウェア)で区切れば、1部屋でも複数人がそれぞれ独立して使え、空間を無駄なく活用できます。逆に、複数の部屋の壁を取り払って1つの大部屋として使うように、複数の資源を束ねて1つに見せる『統合』も仮想化に含まれます。",
+      "memory_hook_jp": "仮想化といえば1台を複数に(複数を1台にも)見せる資源の分割・統合",
+      "inline_quiz": [
+        "2011h23a-q054"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"物理サーバ(1台)\"] --> B[\"仮想化\"]; B --> C[\"仮想環境1\"]; B --> D[\"仮想環境2\"]; B --> E[\"仮想環境3\"]",
+        "svg_path": "figures/technology-16-43-u03-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "虚拟化",
+      "term_en": "Virtualization",
+      "definition_zh": "将物理资源进行逻辑上的分割与整合，使其呈现出与实体不同的构成的技术。",
+      "definition_en": "A technology that logically divides and consolidates physical resources, making them appear as a configuration different from the actual entity.",
+      "explanation_zh": "虚拟化是指用软件将 CPU、内存、存储等物理资源抽象化，让一台看起来像多台、或让多台看起来像一台的技术。借此可以在减少服务器数量的同时按用途划分环境，大幅提升资源的利用效率。\n\n考试中常考虚拟化的目的（资源的有效利用、降低成本、环境的独立性），以及后述三种方式的区别。能够在一台物理机上让多个相互独立的环境共存，正是实现集约化和灵活运用的核心。",
+      "explanation_en": "Virtualization is a technology that uses software to abstract physical resources such as CPU, memory, and storage, making one machine appear as many or many machines appear as one. This allows you to reduce the number of servers while separating environments by purpose, greatly improving the efficiency of resource utilization.\n\nThe exam often asks about the purposes of virtualization (effective use of resources, cost reduction, environment independence) and the differences among the three methods described later. The ability to host multiple independent environments together on a single physical machine is the core that leads to consolidation and flexible operation.",
+      "analogy_zh": "可以想象成用隔断把一个大房间分成多个独立小间。只要用墙（软件）隔开，即使是一个房间也能让多个人各自独立使用，把空间利用得不浪费。反过来，就像拆掉多个房间的墙合成一个大房间一样，把多个资源捆绑起来呈现为一个的「整合」也属于虚拟化。",
+      "analogy_en": "Imagine dividing one large room into several independent small rooms with partitions. As long as you separate them with walls (software), even a single room can be used independently by several people, making full use of the space without waste. Conversely, just as you might tear down the walls between several rooms to use them as one large room, \"consolidation\"—bundling multiple resources to appear as one—is also part of virtualization.",
+      "memory_hook_zh": "说到虚拟化，就是把一台呈现为多台（也能把多台呈现为一台）的资源分割与整合",
+      "memory_hook_en": "Virtualization → dividing and consolidating resources to make one look like many (and many look like one)"
+    },
+    {
+      "term": "ホスト型",
+      "definition_jp": "OS上に仮想化ソフトを載せて仮想環境を動かす仮想化方式。",
+      "explanation_jp": "ホスト型は、既存のOS(ホストOS)の上に仮想化ソフトウェアをインストールし、その上で仮想マシンを動かす方式です。普段使っているPCにアプリを1つ追加する感覚で導入でき、最も手軽で分かりやすいのが特徴です。\n\n試験では、ハイパーバイザー型との対比が問われます。ホスト型はホストOSを経由する分だけ処理に余分なオーバーヘッドが生じ、性能面では不利になりがちです。手軽さと引き換えに効率が落ちる、と覚えておくとよいでしょう。",
+      "analogy_jp": "母屋(ホストOS)の中に簡易テントを張って住むイメージです。すぐに張れて手軽ですが、母屋を通る分だけ移動に手間がかかります。",
+      "memory_hook_jp": "ホスト型といえばOSの上に仮想化ソフトを載せる手軽な方式",
+      "inline_quiz": [
+        "2018h30h-q062"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "宿主型",
+      "term_en": "Hosted (Host OS) type",
+      "definition_zh": "在操作系统之上加载虚拟化软件来运行虚拟环境的虚拟化方式。",
+      "definition_en": "A virtualization method that runs virtual environments by placing virtualization software on top of an OS.",
+      "explanation_zh": "宿主型是在既有的操作系统（宿主 OS）之上安装虚拟化软件，并在其上运行虚拟机的方式。它就像在平时使用的 PC 上多添加一个应用那样导入，最为便捷、易于理解是其特点。\n\n考试中常考它与管理程序型的对比。宿主型由于要经过宿主 OS，处理时会产生额外的开销，在性能方面往往处于劣势。记住「以便捷换来效率下降」即可。",
+      "explanation_en": "The hosted type installs virtualization software on top of an existing OS (the host OS) and runs virtual machines on top of that. It can be introduced with the feeling of just adding one application to the PC you normally use, and its characteristic is being the most convenient and easy to understand.\n\nThe exam asks about the contrast with the hypervisor type. Because the hosted type goes through the host OS, extra overhead arises in processing, and it tends to be at a disadvantage in terms of performance. It is good to remember that you trade convenience for lower efficiency.",
+      "analogy_zh": "就像在主屋（宿主 OS）里搭一顶简易帐篷住进去。搭起来很快很方便，但要经过主屋出入会多费些工夫。",
+      "analogy_en": "Imagine pitching a simple tent inside the main house (the host OS) and living in it. It can be set up quickly and conveniently, but coming and going takes extra effort because you have to pass through the main house.",
+      "memory_hook_zh": "说到宿主型，就是在操作系统之上加载虚拟化软件的便捷方式",
+      "memory_hook_en": "Hosted type → loading virtualization software on top of an OS; the convenient method"
+    },
+    {
+      "term": "ハイパーバイザー型",
+      "definition_jp": "ハードウェア上に直接仮想化基盤を載せて仮想環境を動かす方式。",
+      "explanation_jp": "ハイパーバイザー型は、ホストOSを介さず、ハードウェア上に直接「ハイパーバイザー」という仮想化専用の制御ソフトを置く方式です。各仮想マシンはハイパーバイザーが直接管理するため、ホストOSのオーバーヘッドがなく、処理効率が高くなります。\n\n試験では、ホスト型との性能差が頻出ポイントです。余分なOS層を挟まない分だけ高速で、サーバ仮想化の主流方式として大規模な環境で広く使われている点を押さえましょう。",
+      "analogy_jp": "土地の上に直接、複数戸の集合住宅を建てるイメージです。母屋を介さず直に建てるので、各戸の出入りが速く効率的です。",
+      "memory_hook_jp": "ハイパーバイザー型といえばハードに直接載せて高効率",
+      "inline_quiz": [
+        "2019r01a-q057"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "管理程序型（Hypervisor 型）",
+      "term_en": "Hypervisor type",
+      "definition_zh": "在硬件之上直接加载虚拟化基础来运行虚拟环境的方式。",
+      "definition_en": "A method that runs virtual environments by placing the virtualization foundation directly on the hardware.",
+      "explanation_zh": "管理程序型是不经过宿主 OS，而是在硬件之上直接放置一个名为「管理程序（Hypervisor）」的虚拟化专用控制软件的方式。由于各虚拟机由管理程序直接管理，没有宿主 OS 的开销，处理效率更高。\n\n考试中，它与宿主型的性能差距是高频考点。由于不夹一层多余的 OS，所以更快速，作为服务器虚拟化的主流方式被广泛用于大规模环境，这点要记牢。",
+      "explanation_en": "The hypervisor type does not go through a host OS; instead, it places a dedicated virtualization control software called a \"hypervisor\" directly on the hardware. Because each virtual machine is managed directly by the hypervisor, there is no host-OS overhead, and processing efficiency is high.\n\nOn the exam, the performance difference from the hosted type is a frequent point. Be sure to note that, because no extra OS layer is inserted, it is faster and is widely used in large-scale environments as the mainstream method of server virtualization.",
+      "analogy_zh": "就像在地皮上直接建起多户的集合住宅。不经过主屋而直接建造，所以每户的出入都更快、更高效。",
+      "analogy_en": "Imagine building a multi-unit apartment complex directly on the land. Because it is built directly without going through a main house, coming and going for each unit is faster and more efficient.",
+      "memory_hook_zh": "说到管理程序型，就是直接装在硬件上、高效率",
+      "memory_hook_en": "Hypervisor type → placed directly on the hardware; high efficiency"
+    },
+    {
+      "term": "コンテナ型",
+      "definition_jp": "OSのカーネルを共有して軽量な実行環境を分離する仮想化方式。",
+      "explanation_jp": "コンテナ型は、1つのOSのカーネルを複数の環境(コンテナ)で共有しながら、アプリの実行環境だけを分離する方式です。仮想マシンのようにOSをまるごと積まないため、起動が速く、消費する資源も少ない軽量さが最大の特徴です。\n\n試験では、ホスト型・ハイパーバイザー型が仮想マシン単位でOSを持つのに対し、コンテナ型はOS(カーネル)を共有して軽量である、という違いが問われます。軽量・高速・省資源という3点で覚えると区別しやすくなります。",
+      "analogy_jp": "1つの建物の共用設備(カーネル)を皆で使いつつ、各自の作業ブースだけを仕切るシェアオフィスのイメージ。OSを丸ごと持たないので身軽です。",
+      "memory_hook_jp": "コンテナ型といえばOSカーネル共有で軽量・高速",
+      "inline_quiz": [
+        "2019r01a-q074"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph TD; A[\"ホスト型: OS上にソフト\"] --> B[\"効率: 低\"]; C[\"ハイパーバイザー型: ハードに直接\"] --> D[\"効率: 高\"]; E[\"コンテナ型: カーネル共有\"] --> F[\"効率: 最高(軽量)\"]",
+        "svg_path": "figures/technology-16-43-u03-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "容器型",
+      "term_en": "Container type",
+      "definition_zh": "共享操作系统的内核，分离出轻量执行环境的虚拟化方式。",
+      "definition_en": "A virtualization method that shares the OS kernel and isolates lightweight execution environments.",
+      "explanation_zh": "容器型是让多个环境（容器）共享一个操作系统的内核，同时只分离出应用的执行环境的方式。由于不像虚拟机那样整套装载操作系统，所以启动快、消耗的资源也少，轻量是其最大特点。\n\n考试中常考的区别是：宿主型、管理程序型都以虚拟机为单位各自拥有操作系统，而容器型则共享操作系统（内核）因而轻量。用「轻量、高速、省资源」三点来记，就容易区分。",
+      "explanation_en": "The container type shares the kernel of a single OS among multiple environments (containers) while isolating only the applications' execution environments. Because it does not load an entire OS as a virtual machine does, its greatest feature is being lightweight: it starts quickly and consumes few resources.\n\nThe exam asks about this difference: whereas the hosted and hypervisor types each have an OS per virtual machine, the container type shares the OS (kernel) and is therefore lightweight. Remembering the three points—lightweight, fast, resource-saving—makes it easy to distinguish.",
+      "analogy_zh": "就像一座大楼里大家共用公共设施（内核），但各自只隔出自己的工位的共享办公室。因为不必整套拥有操作系统，所以很轻便。",
+      "analogy_en": "Imagine a shared office where everyone uses the building's common facilities (the kernel) together but each person only partitions off their own workstation. Because you don't have to own an entire OS, it is lightweight.",
+      "memory_hook_zh": "说到容器型，就是共享操作系统内核、轻量·高速",
+      "memory_hook_en": "Container type → shares the OS kernel; lightweight and fast"
+    },
+    {
+      "term": "VM",
+      "definition_jp": "仮想化で作られる仮想的なコンピュータ「仮想マシン」の略称。",
+      "explanation_jp": "VMは Virtual Machine の略で、仮想化技術によってソフトウェア的に作り出された仮想的なコンピュータを指します。物理的な1台のマシンの上に、それぞれ独立したOSとアプリを持つVMを複数動作させることができます。\n\n試験では、VM=仮想マシンであるという用語対応がそのまま問われることがあります。VMは物理マシンと同じように振る舞いますが実体はソフトウェアであり、コピーや移動が容易な点も特徴として押さえておきましょう。",
+      "analogy_jp": "ゲーム機の中に「もう一台の仮想のゲーム機」を作るようなものです。見た目も操作も本物そっくりですが、中身はソフトウェアで作られた仮想の機械です。",
+      "memory_hook_jp": "VMといえば仮想マシン(Virtual Machine)の略",
+      "inline_quiz": [
+        "2022r04-q099"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "VM（虚拟机）",
+      "term_en": "VM",
+      "definition_zh": "由虚拟化创建出的虚拟计算机「虚拟机（Virtual Machine）」的简称。",
+      "definition_en": "The abbreviation for \"virtual machine\"—a virtual computer created by virtualization.",
+      "explanation_zh": "VM 是 Virtual Machine 的缩写，指通过虚拟化技术以软件方式创建出的虚拟计算机。可以在一台物理机器之上同时运行多个各自拥有独立操作系统和应用的 VM。\n\n考试中，有时会直接考「VM＝虚拟机」这一用语对应。VM 的行为与物理机器相同，但其本体是软件，易于复制和迁移这一点也要记住。",
+      "explanation_en": "VM is the abbreviation for Virtual Machine, referring to a virtual computer created by software through virtualization technology. On top of a single physical machine, you can run multiple VMs, each with its own independent OS and applications.\n\nOn the exam, the term correspondence \"VM = virtual machine\" is sometimes asked directly. A VM behaves just like a physical machine, but its substance is software, and it is also worth noting that it is easy to copy and move.",
+      "analogy_zh": "就像在一台游戏机里再造出「另一台虚拟的游戏机」。外观和操作都跟真的一模一样，但内里是用软件做出来的虚拟机器。",
+      "analogy_en": "It's like creating \"another virtual game console\" inside a game console. It looks and operates exactly like the real thing, but inside it is a virtual machine made of software.",
+      "memory_hook_zh": "说到 VM，就是虚拟机（Virtual Machine）的简称",
+      "memory_hook_en": "VM → short for Virtual Machine"
+    },
+    {
+      "term": "仮想マシン",
+      "definition_jp": "仮想化により物理マシン上に作られた、独立して動く仮想のコンピュータ。",
+      "explanation_jp": "仮想マシンは、仮想化技術によって作り出される仮想のコンピュータの正式名称で、VMと同じものを指します。1台の物理サーバ上に複数の仮想マシンを作り、それぞれに別々のOSをインストールして独立した1台のコンピュータのように使えます。\n\n試験では、VMとの用語対応に加え、各仮想マシンが独立性を持つ点が問われます。ある仮想マシンの障害が他に波及しにくく、用途ごとに環境を分けられるため、サーバ集約やテスト環境の構築に広く活用されています。",
+      "analogy_jp": "1棟のマンションの中の独立した各部屋のようなものです。建物(物理サーバ)は1つでも、部屋ごとに別々の住人(OS)が独立して暮らせます。",
+      "memory_hook_jp": "仮想マシンといえば物理1台上で動く独立した仮想のPC",
+      "inline_quiz": [
+        "2010h22h-q086"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "虚拟机",
+      "term_en": "Virtual machine",
+      "definition_zh": "通过虚拟化在物理机器上创建出的、独立运行的虚拟计算机。",
+      "definition_en": "An independently running virtual computer created on a physical machine through virtualization.",
+      "explanation_zh": "虚拟机是通过虚拟化技术创建出的虚拟计算机的正式名称，与 VM 指的是同一个东西。可以在一台物理服务器之上创建多个虚拟机，分别安装不同的操作系统，把它们当作各自独立的一台计算机来使用。\n\n考试中，除了与 VM 的用语对应外，还会考各虚拟机具有独立性这一点。某个虚拟机的故障不易波及其他虚拟机，并且可以按用途划分环境，因此被广泛用于服务器集约化和测试环境的搭建。",
+      "explanation_en": "Virtual machine is the formal name for the virtual computer created by virtualization technology, and it refers to the same thing as VM. You can create multiple virtual machines on a single physical server, install a different OS on each, and use them as independent, separate computers.\n\nOn the exam, in addition to the term correspondence with VM, it is also asked that each virtual machine has independence. A failure in one virtual machine is unlikely to spread to others, and environments can be separated by purpose, so they are widely used for server consolidation and building test environments.",
+      "analogy_zh": "就像一栋公寓里相互独立的各个房间。即使建筑（物理服务器）只有一栋，每个房间也能住着各自不同的住户（操作系统），彼此独立生活。",
+      "analogy_en": "It's like the independent rooms within a single apartment building. Even though there is only one building (the physical server), each room can have its own separate resident (OS) living independently.",
+      "memory_hook_zh": "说到虚拟机，就是在一台物理机上运行的独立虚拟 PC",
+      "memory_hook_en": "Virtual machine → an independent virtual PC running on a single physical machine"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "仮想化: 仮想化といえば1台を複数に見せる資源の分割・統合",
+      "ホスト型: ホスト型といえばOSの上に仮想化ソフトを載せる手軽な方式",
+      "ハイパーバイザー型: ハイパーバイザー型といえばハードに直接載せて高効率",
+      "コンテナ型: コンテナ型といえばOSカーネル共有で軽量・高速",
+      "VM: VMといえば仮想マシン(Virtual Machine)の略",
+      "仮想マシン: 仮想マシンといえば物理1台上で動く独立した仮想のPC"
+    ],
+    "key_points_jp": [
+      "仮想化は物理資源を論理的に分割・統合し、1台を複数に(または複数を1台に)見せる技術で、資源の有効活用とコスト削減が目的。",
+      "実現方式は3種類。ホスト型(OS上にソフト)→ハイパーバイザー型(ハードに直接で高効率)→コンテナ型(カーネル共有で軽量)の順に効率・軽量さが高まる。",
+      "コンテナ型はOSをまるごと持たずカーネルを共有するため、起動が速く省資源で、他方式と明確に区別される。",
+      "VMは仮想マシン(Virtual Machine)の略で、同じ概念を指す。",
+      "仮想マシンは物理1台上で独立して動く仮想のコンピュータで、障害が波及しにくくサーバ集約に役立つ。"
+    ],
+    "key_points_zh": [
+      "虚拟化是把物理资源进行逻辑上的分割与整合，让一台呈现为多台（或让多台呈现为一台）的技术，目的是资源的有效利用与降低成本。",
+      "实现方式有三种。按宿主型（在操作系统上加软件）→管理程序型（直接装在硬件上、高效率）→容器型（共享内核、轻量）的顺序，效率与轻量程度依次提高。",
+      "容器型不整套拥有操作系统而是共享内核，因此启动快、省资源，与其他方式有明显区别。",
+      "VM 是虚拟机（Virtual Machine）的简称，指的是同一个概念。",
+      "虚拟机是在一台物理机上独立运行的虚拟计算机，故障不易波及，有助于服务器集约化。"
+    ],
+    "key_points_en": [
+      "Virtualization is a technology that logically divides and consolidates physical resources to make one machine appear as many (or many as one); its purpose is effective use of resources and cost reduction.",
+      "There are three implementation methods. In the order of hosted (software on the OS) → hypervisor (directly on the hardware, high efficiency) → container (shared kernel, lightweight), efficiency and lightness increase.",
+      "The container type does not own an entire OS but shares the kernel, so it starts quickly and saves resources, clearly distinguishing it from the other methods.",
+      "VM is the abbreviation for virtual machine (Virtual Machine) and refers to the same concept.",
+      "A virtual machine is a virtual computer that runs independently on a single physical machine; failures are unlikely to spread, and it helps with server consolidation."
+    ],
+    "memory_hooks_zh": [
+      "虚拟化：说到虚拟化，就是把一台呈现为多台的资源分割与整合",
+      "宿主型：说到宿主型，就是在操作系统之上加载虚拟化软件的便捷方式",
+      "管理程序型：说到管理程序型，就是直接装在硬件上、高效率",
+      "容器型：说到容器型，就是共享操作系统内核、轻量·高速",
+      "VM：说到 VM，就是虚拟机（Virtual Machine）的简称",
+      "虚拟机：说到虚拟机，就是在一台物理机上运行的独立虚拟 PC"
+    ],
+    "memory_hooks_en": [
+      "Virtualization: Virtualization → dividing and consolidating resources to make one look like many",
+      "Hosted type: Hosted type → loading virtualization software on top of an OS; the convenient method",
+      "Hypervisor type: Hypervisor type → placed directly on the hardware; high efficiency",
+      "Container type: Container type → shares the OS kernel; lightweight and fast",
+      "VM: VM → short for Virtual Machine",
+      "Virtual machine: Virtual machine → an independent virtual PC running on a single physical machine"
+    ]
+  },
+  "challenge_questions": [
+    "2009h21a-q078",
+    "2009h21h-q073",
+    "2010h22a-q081",
+    "2011h23a-q082",
+    "2012h24a-q055"
+  ],
+  "source_figures": [],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "虚拟化的基础与方式",
+  "title_en": "Fundamentals and Types of Virtualization",
+  "unit_summary_zh": "学习将物理资源进行逻辑上的分割与整合的虚拟化思路，以及其实现方式（宿主型／管理程序型／容器型）和虚拟机的概念。",
+  "unit_summary_en": "Learn the idea of virtualization, which logically divides and consolidates physical resources, along with its implementation methods (hosted, hypervisor, and container types) and the concept of the virtual machine."
+}

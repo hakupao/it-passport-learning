@@ -1,0 +1,215 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-23-63-u13",
+  "topic_id": "technology-23-63",
+  "category": "technology",
+  "title_jp": "セキュア開発(バイデザイン原則と脆弱性対策)",
+  "unit_summary_jp": "設計段階から安全を組み込むバイデザイン思想と、XSS/SQLインジェクション対策・セキュリティパッチという具体的なセキュア実装を学ぶ。",
+  "order_in_topic": 13,
+  "prerequisites": [],
+  "overview": {
+    "intro_jp": "本ユニットでは、システムを作る前の設計段階から安全性を組み込む「バイデザイン」の考え方(セキュリティ/プライバシーバイデザイン)と、それを具体化するセキュア実装(XSS対策・SQLインジェクション対策・セキュリティパッチ)を学びます。脆弱性は後から直すほど費用も被害も大きく、開発・保守分野で頻出のテーマです。",
+    "freq_badge": "頻出",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习「内建（by design）」的思想——在系统开发开始之前的设计阶段就把安全性嵌入进去（安全内建／隐私内建），以及把它具体落地的安全实现（XSS 防护、SQL 注入防护、安全补丁）。漏洞越是在后期才修复，所需费用和造成的损害就越大，这是开发与运维领域的高频主题。",
+    "intro_en": "In this unit, you will learn the by-design mindset of building security in from the design stage—before system development even begins (security by design / privacy by design)—together with the secure implementations that make it concrete (XSS countermeasures, SQL injection countermeasures, security patches). The later a vulnerability is fixed, the greater the cost and damage, making this a frequently tested topic in the development and maintenance fields."
+  },
+  "terms": [
+    {
+      "term": "セキュリティバイデザイン",
+      "definition_jp": "企画・設計の上流段階から安全性を組み込んでおく開発思想。",
+      "explanation_jp": "セキュリティバイデザインは、システムを作り始めた後でセキュリティを後付けするのではなく、企画・設計といった最も上流の段階からあらかじめ安全対策を織り込んでおく考え方です。\n\n脆弱性は完成後に見つかるほど修正の手戻りが大きく、被害も深刻になります。上流で安全を作り込めば、低コストで強固なシステムになります。試験では「後付けではなく初めから」という方針が要点で、次に出てくるプライバシーバイデザインと対(つい)で問われやすい点に注意しましょう。",
+      "analogy_jp": "家を建てる際、完成後に防犯設備を増設するのではなく、設計図の段階で鍵・窓・配置まで防犯を考えておくようなもの。最初から安全を織り込みます。",
+      "memory_hook_jp": "セキュリティバイデザインといえば設計の上流から安全を組み込む",
+      "inline_quiz": [
+        "2023r05-q061"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"企画\"] --> B[\"設計\"]; B --> C[\"実装\"]; C --> D[\"運用・保守\"]; S[\"セキュリティを最初から組み込む\"] -.-> A",
+        "svg_path": "figures/technology-23-63-u13-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "安全内建（Security by Design）",
+      "term_en": "Security by Design",
+      "definition_zh": "从规划、设计的上游阶段就把安全性嵌入进去的开发思想。",
+      "definition_en": "A development philosophy that builds in safety from the upstream stages of planning and design.",
+      "explanation_zh": "安全内建是指：不是在系统开始开发之后再事后添加安全措施，而是从规划、设计这些最上游的阶段就预先把安全对策织入其中的思路。\n\n漏洞越是在系统完成之后才被发现，修复的返工就越大，造成的损害也越严重。如果在上游就把安全打造好，就能以较低的成本得到坚固的系统。考试中的要点是「不是事后添加，而是从一开始就做」这一方针，并且要注意它常常与接下来出现的隐私内建成对（搭配）出题。",
+      "explanation_en": "Security by design means weaving in safety measures from the most upstream stages—planning and design—rather than bolting on security after development has already started.\n\nThe later a vulnerability is found after completion, the larger the rework to fix it and the more serious the damage. Building safety in upstream yields a robust system at low cost. The exam point is the principle of \"from the very beginning, not bolted on afterward,\" and note that it is often asked as a pair with the privacy by design that follows.",
+      "analogy_zh": "就像建房子时，不是在房子建好后再加装防盗设备，而是在图纸阶段就把锁、窗、布局等防盗考虑进去。从一开始就把安全织进去。",
+      "analogy_en": "Like building a house: rather than adding security equipment after it is finished, you plan locks, windows, and layout for security at the blueprint stage. Safety is woven in from the start.",
+      "memory_hook_zh": "说到安全内建，就是从设计的上游就把安全嵌入进去。",
+      "memory_hook_en": "Security by Design → build safety in from the upstream design stage."
+    },
+    {
+      "term": "プライバシーバイデザイン",
+      "definition_jp": "設計の段階から個人情報の保護をあらかじめ組み込む考え方。",
+      "explanation_jp": "プライバシーバイデザインは、セキュリティバイデザインの「プライバシー版」で、システムやサービスを設計する段階から個人情報・プライバシーの保護をあらかじめ組み込んでおく考え方です。\n\n個人データの収集を必要最小限にする、初期設定を保護寄りにするといった配慮を、後付けではなく設計時から行います。試験では、セキュリティバイデザインが「安全全般」を、プライバシーバイデザインが「個人情報保護」を対象とする点の違いを区別できることがポイントです。",
+      "analogy_jp": "新しいお店を設計するとき、来店者の個人情報をどう守るかを最初の間取りやルール作りの段階で決めておくようなもの。営業を始めてから慌てて対策しません。",
+      "memory_hook_jp": "プライバシーバイデザインといえば設計段階から個人情報保護を組み込む",
+      "inline_quiz": [
+        "2009h21a-q074"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "隐私内建（Privacy by Design）",
+      "term_en": "Privacy by Design",
+      "definition_zh": "从设计阶段起就预先把个人信息保护嵌入进去的思路。",
+      "definition_en": "An approach that builds in personal data protection from the design stage.",
+      "explanation_zh": "隐私内建是安全内建的「隐私版」，指从设计系统或服务的阶段起，就预先把个人信息、隐私的保护嵌入进去的思路。\n\n把个人数据的收集控制在必要的最小限度、把初始设置设为偏向保护等考量，都不是事后添加，而是从设计时就开始做。考试中的关键是要能区分：安全内建的对象是「整体安全」，而隐私内建的对象是「个人信息保护」。",
+      "explanation_en": "Privacy by design is the \"privacy edition\" of security by design: the idea of building protection of personal data and privacy in from the stage of designing a system or service.\n\nMeasures such as limiting the collection of personal data to the necessary minimum and setting defaults toward protection are done from design time, not bolted on afterward. The exam point is to distinguish that security by design targets \"safety in general,\" while privacy by design targets \"personal data protection.\"",
+      "analogy_zh": "就像设计一家新店铺时，在最初的布局和制定规则的阶段就决定好如何保护来店顾客的个人信息。不会等到开始营业后才手忙脚乱地补救。",
+      "analogy_en": "Like designing a new shop: you decide how to protect customers' personal data at the very first stage of floor plan and rule-making. You don't scramble for measures only after opening for business.",
+      "memory_hook_zh": "说到隐私内建，就是从设计阶段起嵌入个人信息保护。",
+      "memory_hook_en": "Privacy by Design → build in personal data protection from the design stage."
+    },
+    {
+      "term": "クロスサイトスクリプティング対策",
+      "definition_jp": "悪意あるスクリプトをWebページに埋め込まれる攻撃を防ぐ対策。",
+      "explanation_jp": "クロスサイトスクリプティング(XSS)は、掲示板や入力フォームなどに攻撃者が悪意あるスクリプト(プログラム)を仕込み、それを見た利用者のブラウザ上で勝手に実行させる攻撃です。Cookieの盗み取りなどに悪用されます。\n\n対策の中心は、利用者が入力した文字をそのまま表示せず、特別な記号を無害な文字へ置き換える「エスケープ処理(サニタイジング)」です。試験では、次のSQLインジェクションが『データベース』を狙うのに対し、XSSは『閲覧者のブラウザ』を狙う点の違いが問われます。",
+      "analogy_jp": "伝言板に他人を陥れる仕掛けの書き込みをされないよう、貼り出す前に危険な文言を無害な表現に直してから掲示するようなものです。",
+      "memory_hook_jp": "クロスサイトスクリプティング対策といえばエスケープ処理でスクリプトを無害化",
+      "inline_quiz": [
+        "2016h28h-q064"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "跨站脚本（XSS）防护",
+      "term_en": "Cross-Site Scripting (XSS) Countermeasures",
+      "definition_zh": "防止把恶意脚本嵌入网页这类攻击的对策。",
+      "definition_en": "Countermeasures that prevent attacks that embed malicious scripts into web pages.",
+      "explanation_zh": "跨站脚本（XSS）是指攻击者在留言板、输入表单等处植入恶意脚本（程序），使浏览到它的用户的浏览器上擅自执行的攻击。常被滥用于窃取 Cookie 等。\n\n防护的核心是「转义处理（净化，sanitizing）」——不把用户输入的字符原样显示，而是把特殊符号替换成无害的字符。考试中会考查：接下来的 SQL 注入针对的是「数据库」，而 XSS 针对的是「浏览者的浏览器」，二者的区别。",
+      "explanation_en": "Cross-site scripting (XSS) is an attack in which an attacker plants a malicious script (program) in places such as message boards or input forms, causing it to run on its own in the browser of a user who views it. It is abused for purposes such as stealing cookies.\n\nThe core countermeasure is \"escape processing (sanitizing)\": instead of displaying user-entered characters as-is, special symbols are replaced with harmless characters. The exam asks about the difference that the SQL injection that follows targets the \"database,\" whereas XSS targets the \"viewer's browser.\"",
+      "analogy_zh": "就像为了防止有人在留言板上写下陷害他人的机关文字，在张贴之前先把危险的措辞改成无害的表达再公示出来。",
+      "analogy_en": "Like a message board: to prevent someone from posting trap text that harms others, you rewrite dangerous wording into harmless expressions before putting it up for display.",
+      "memory_hook_zh": "说到跨站脚本防护，就是用转义处理让脚本失效（无害化）。",
+      "memory_hook_en": "XSS Countermeasures → neutralize scripts with escape processing."
+    },
+    {
+      "term": "SQLインジェクション対策",
+      "definition_jp": "入力値で不正なSQL文を実行させる攻撃からDBを守る対策。",
+      "explanation_jp": "SQLインジェクションは、入力欄に悪意あるSQL文の断片を入れ込み、データベースに本来許されない命令を実行させる攻撃です。情報の不正取得や改ざん・削除を招きます。\n\n代表的な対策は、SQL文の骨組みと入力値をあらかじめ分離する「プレースホルダ(バインド機構)」の利用で、入力をSQLの命令として解釈させないようにします。入力値チェック(サニタイジング)も併用します。試験では、XSSが閲覧者を狙うのに対し、SQLインジェクションは『データベース』を狙う攻撃である点の区別が頻出です。",
+      "analogy_jp": "受付の記入用紙に勝手な命令文を書き足されても、係員が「名前欄は名前」としか扱わず命令として実行しないルールにしておくようなものです。",
+      "memory_hook_jp": "SQLインジェクション対策といえばプレースホルダでSQLと入力を分離",
+      "inline_quiz": [
+        "2026r08-q095"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"利用者の入力値\"] --> B[\"プレースホルダで分離\"]; C[\"SQL文の骨組み\"] --> B; B --> D[\"データベースを保護\"]",
+        "svg_path": "figures/technology-23-63-u13-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "SQL 注入防护",
+      "term_en": "SQL Injection Countermeasures",
+      "definition_zh": "防止通过输入值执行非法 SQL 语句的攻击、保护数据库的对策。",
+      "definition_en": "Countermeasures that protect the database from attacks that use input values to execute illegitimate SQL statements.",
+      "explanation_zh": "SQL 注入是指在输入框中混入恶意 SQL 语句的片段，使数据库执行本不应被允许的命令的攻击。会导致信息被非法获取、被篡改或删除。\n\n代表性的对策是使用「占位符（绑定机制）」——预先把 SQL 语句的骨架与输入值分离开来，使输入不会被解释为 SQL 命令。同时也并用输入值检查（净化，sanitizing）。考试中常考的区别是：XSS 针对的是浏览者，而 SQL 注入是针对「数据库」的攻击。",
+      "explanation_en": "SQL injection is an attack that mixes fragments of malicious SQL statements into input fields, causing the database to execute commands that should not be permitted. It can lead to unauthorized retrieval, tampering, or deletion of information.\n\nA representative countermeasure is the use of \"placeholders (bind mechanism),\" which separate the skeleton of the SQL statement from the input values in advance so that input is not interpreted as a SQL command. Input-value checking (sanitizing) is also used together. The frequently tested distinction is that XSS targets viewers, whereas SQL injection is an attack that targets the \"database.\"",
+      "analogy_zh": "就像即使有人在接待处的登记表上擅自加写命令文字，工作人员也只把「姓名栏当作姓名」来处理、绝不当作命令去执行——事先把规则定好。",
+      "analogy_en": "Like a reception desk: even if someone adds command text onto the registration form on their own, the staff treat the \"name field only as a name\" and never execute it as a command—the rule is set in advance.",
+      "memory_hook_zh": "说到 SQL 注入防护，就是用占位符把 SQL 与输入分离。",
+      "memory_hook_en": "SQL Injection Countermeasures → separate SQL from input with placeholders."
+    },
+    {
+      "term": "セキュリティパッチ",
+      "definition_jp": "発見された脆弱性を修正するために配布される更新プログラム。",
+      "explanation_jp": "セキュリティパッチは、OSやソフトウェアで見つかった脆弱性(セキュリティ上の欠陥)を修正するために、開発元が配布する更新プログラムです。\n\n脆弱性は運用開始後にも次々と発見されるため、パッチを速やかに適用して穴をふさぐことが、攻撃を防ぐ保守上の基本対策になります。適用を怠ると既知の脆弱性を突かれて被害を受けます。試験では、上流の設計対策(バイデザイン)に対し、セキュリティパッチが『運用・保守段階で脆弱性を継続的に是正する』対策である点が問われます。",
+      "analogy_jp": "建物に後から見つかった欠陥を、メーカーから届く補修部品で塞ぐようなもの。放っておくとそこから侵入されてしまいます。",
+      "memory_hook_jp": "セキュリティパッチといえば脆弱性を修正する更新プログラム",
+      "inline_quiz": [
+        "2009h21a-q076"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "安全补丁",
+      "term_en": "Security Patch",
+      "definition_zh": "为修复已发现的漏洞而发布的更新程序。",
+      "definition_en": "An update program distributed to fix a discovered vulnerability.",
+      "explanation_zh": "安全补丁是指为修复在操作系统或软件中发现的漏洞（安全上的缺陷），由开发方发布的更新程序。\n\n由于漏洞在投入运行后仍会接连不断地被发现，因此迅速应用补丁、堵住漏洞，就是防御攻击的运维基本对策。若疏于应用，已知漏洞就会被利用而遭受损害。考试中会考查：相对于上游的设计对策（内建），安全补丁是「在运维阶段持续纠正漏洞」的对策。",
+      "explanation_en": "A security patch is an update program distributed by the developer to fix a vulnerability (a security flaw) found in an OS or software.\n\nBecause vulnerabilities continue to be discovered one after another even after operation begins, promptly applying patches to plug the holes is the basic maintenance countermeasure against attacks. Neglecting to apply them lets known vulnerabilities be exploited and causes damage. The exam asks that, in contrast to upstream design measures (by design), a security patch is a measure that \"continuously corrects vulnerabilities during the operation and maintenance stage.\"",
+      "analogy_zh": "就像用厂商寄来的修补部件去堵住建筑物后来才发现的缺陷一样。放着不管，就会有人从那里侵入。",
+      "analogy_en": "Like plugging a defect found later in a building with repair parts sent by the manufacturer. If you leave it alone, intruders will get in through it.",
+      "memory_hook_zh": "说到安全补丁，就是修复漏洞的更新程序。",
+      "memory_hook_en": "Security Patch → an update program that fixes vulnerabilities."
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "セキュリティバイデザイン: セキュリティバイデザインといえば設計の上流から安全を組み込む",
+      "プライバシーバイデザイン: プライバシーバイデザインといえば設計段階から個人情報保護を組み込む",
+      "クロスサイトスクリプティング対策: クロスサイトスクリプティング対策といえばエスケープ処理でスクリプトを無害化",
+      "SQLインジェクション対策: SQLインジェクション対策といえばプレースホルダでSQLと入力を分離",
+      "セキュリティパッチ: セキュリティパッチといえば脆弱性を修正する更新プログラム"
+    ],
+    "key_points_jp": [
+      "セキュア開発は『設計の上流から安全を組み込む』バイデザイン思想と、その具体的なセキュア実装・保守対策の両輪からなる。",
+      "セキュリティバイデザインは安全全般、プライバシーバイデザインは個人情報保護を、いずれも後付けでなく設計段階から組み込む。",
+      "XSS対策は閲覧者のブラウザを狙う攻撃をエスケープ処理(サニタイジング)で防ぎ、SQLインジェクション対策はデータベースを狙う攻撃をプレースホルダで防ぐ。",
+      "XSSとSQLインジェクションは『狙う対象(ブラウザかデータベースか)』の違いで区別するのが試験の頻出ポイント。",
+      "セキュリティパッチは運用・保守段階で発見された脆弱性を継続的に是正する更新プログラムで、速やかな適用が基本対策。"
+    ],
+    "key_points_zh": [
+      "安全开发由「从设计的上游就把安全嵌入进去」的内建思想，与其具体的安全实现及运维对策这两个轮子共同构成。",
+      "安全内建面向整体安全，隐私内建面向个人信息保护，二者都不是事后添加，而是从设计阶段就嵌入进去。",
+      "XSS 防护用转义处理（净化）来抵御针对浏览者浏览器的攻击；SQL 注入防护用占位符来抵御针对数据库的攻击。",
+      "XSS 与 SQL 注入要按「攻击目标（是浏览器还是数据库）」的不同来区分，这是考试的高频要点。",
+      "安全补丁是在运维阶段持续纠正已发现漏洞的更新程序，迅速应用是基本对策。"
+    ],
+    "key_points_en": [
+      "Secure development consists of two wheels: the by-design mindset of \"building safety in from the upstream design stage,\" and its concrete secure implementations and maintenance measures.",
+      "Security by design targets safety in general, privacy by design targets personal data protection; both are built in from the design stage rather than bolted on afterward.",
+      "XSS countermeasures defend against attacks targeting the viewer's browser with escape processing (sanitizing); SQL injection countermeasures defend against attacks targeting the database with placeholders.",
+      "XSS and SQL injection are distinguished by the difference in their \"target (browser or database),\" which is a frequently tested exam point.",
+      "A security patch is an update program that continuously corrects discovered vulnerabilities during the operation and maintenance stage; prompt application is the basic countermeasure."
+    ],
+    "memory_hooks_zh": [
+      "安全内建：说到安全内建，就是从设计的上游就把安全嵌入进去。",
+      "隐私内建：说到隐私内建，就是从设计阶段起嵌入个人信息保护。",
+      "跨站脚本防护：说到跨站脚本防护，就是用转义处理让脚本失效（无害化）。",
+      "SQL 注入防护：说到 SQL 注入防护，就是用占位符把 SQL 与输入分离。",
+      "安全补丁：说到安全补丁，就是修复漏洞的更新程序。"
+    ],
+    "memory_hooks_en": [
+      "Security by Design: Security by Design → build safety in from the upstream design stage.",
+      "Privacy by Design: Privacy by Design → build in personal data protection from the design stage.",
+      "XSS Countermeasures: XSS Countermeasures → neutralize scripts with escape processing.",
+      "SQL Injection Countermeasures: SQL Injection Countermeasures → separate SQL from input with placeholders.",
+      "Security Patch: Security Patch → an update program that fixes vulnerabilities."
+    ]
+  },
+  "challenge_questions": [
+    "2009h21a-q079",
+    "2009h21h-q062",
+    "2010h22a-q050",
+    "2010h22h-q054",
+    "2011h23a-q007"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2009h21h-q062",
+      "figure_path": "figures/2009h21h-q062.png",
+      "figure_type": "table",
+      "figure_description": "アクセス制御表。人事部グループ属性情報(110)と，所属する4人の個人属性情報（Aさん:100，Bさん:110，Cさん:001，Dさん:未登録）を示す。各ビットは左から参照・更新・追加削除の許可(1)/禁止(0)を表す。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23a-q007",
+      "figure_path": "figures/2011h23a-q007.png",
+      "figure_type": "diagram",
+      "figure_description": "電子証明書の申請から電子入札までの手続きを示した図。入札実施団体と電子入札参加企業のやり取りを①〜⑥の手順で表した流れ図。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "安全开发（内建设计原则与漏洞防护）",
+  "title_en": "Secure Development (By-Design Principles and Vulnerability Countermeasures)",
+  "unit_summary_zh": "学习从设计阶段就把安全嵌入进去的「内建（by design）」思想，以及 XSS／SQL 注入防护、安全补丁等具体的安全实现手段。",
+  "unit_summary_en": "Learn the by-design philosophy of building safety in from the design stage, along with concrete secure implementations such as XSS / SQL injection countermeasures and security patches."
+}

@@ -1,0 +1,162 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-13-34-u07",
+  "topic_id": "technology-13-34",
+  "category": "technology",
+  "title_jp": "離散数学の応用(待ち行列と最適化)",
+  "unit_summary_jp": "グラフ理論を応用した待ち行列モデルと、最適解を求める最適化問題を学ぶ。",
+  "order_in_topic": 7,
+  "prerequisites": [
+    "technology-13-34-u06"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、離散数学を実務に応用した2つのテーマを学びます。レジや窓口に人が並ぶ「待ち行列」のモデルと、限られた条件のもとで最も良い答えを探す「最適化問題」です。いずれもグラフ理論(前ユニット)の考え方を土台とした応用領域で、特に最適化問題は本群で出題されやすい重要テーマです。",
+    "freq_badge": "標準",
+    "est_minutes": 8,
+    "intro_zh": "在本单元中，我们将学习离散数学在实务中应用的两个主题：人们在收银台或服务窗口排队的「排队」模型，以及在有限条件下寻找最优答案的「最优化问题」。两者都是以图论（上一单元）的思路为基础的应用领域，其中最优化问题尤其是本组中容易出题的重要主题。",
+    "intro_en": "In this unit, we learn two themes where discrete mathematics is applied to practical work: the 'queuing' model of people lining up at a checkout or service counter, and the 'optimization problem' of finding the best answer under limited conditions. Both are application areas built on the ideas of graph theory (the previous unit), and optimization problems in particular are an important theme that frequently appears in this group of exam questions."
+  },
+  "terms": [
+    {
+      "term": "待ち行列",
+      "definition_jp": "サービスを待つ対象が順番に並ぶ様子をモデル化した考え方。",
+      "explanation_jp": "待ち行列は、銀行の窓口やレジ、コンピュータの処理要求などで、サービスを受けるまで順番待ちする様子を数学的に表したモデルです。「到着する」「列に並んで待つ」「窓口で処理される」「出ていく」という流れで考えます。\n\n到着のペースや処理にかかる時間によって、待ち時間や行列の長さがどう変わるかを分析でき、窓口を増やすべきかなどの判断に使えます。\n\n試験では、列に並んで順に処理される仕組み(先に来たものから処理する考え方)であることを押さえておけば十分で、複雑な計算式までは問われない水準です。",
+      "analogy_jp": "スーパーのレジに客が一列に並ぶ様子そのもの。客が次々来て、レジで会計を済ませ、終わった人から店を出ていく一連の流れを思い浮かべると分かりやすいです。",
+      "memory_hook_jp": "待ち行列といえば順番待ちの列をモデル化したもの",
+      "inline_quiz": [
+        "2014h26h-q087"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph LR; A[\"到着\"] --> B[\"待ち行列(順番待ち)\"]; B --> C[\"窓口で処理\"]; C --> D[\"退去\"]",
+        "svg_path": "figures/technology-13-34-u07-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "排队（队列）",
+      "term_en": "Queue (Waiting Line)",
+      "definition_zh": "将等待服务的对象依次排队的情形加以建模的思路。",
+      "definition_en": "A way of thinking that models how objects waiting for service line up in order.",
+      "explanation_zh": "排队是对银行窗口、收银台、计算机的处理请求等场景中，在接受服务之前依次等待的情形进行数学化表示的模型。我们按照「到达」「在队列中排队等待」「在窗口被处理」「离开」这样的流程来思考。\n\n根据到达的节奏和处理所需的时间，可以分析等待时间和队列长度会如何变化，从而用于是否应增加窗口等判断。\n\n在考试中，只要掌握「排队后依次处理的机制（先到的先处理的思路）」即可，不会问到复杂的计算公式那种程度。",
+      "explanation_en": "Queuing is a model that mathematically represents situations such as bank counters, checkouts, and computer processing requests, where things wait their turn before receiving service. We think of it as a flow of 'arriving,' 'lining up and waiting in the queue,' 'being processed at the counter,' and 'leaving.'\n\nDepending on the pace of arrivals and the time required for processing, you can analyze how the waiting time and queue length change, which helps with decisions such as whether to add more counters.\n\nIn the exam, it is enough to grasp that it is a mechanism where things line up and are processed in order (the idea that the first to arrive is processed first); complex calculation formulas are not asked at this level.",
+      "analogy_zh": "就像超市收银台前顾客排成一列的情形本身。想象顾客接连到来、在收银台结账、结完账的人依次离开商店这一连串流程，就容易理解了。",
+      "analogy_en": "It is exactly like customers lining up in a single line at a supermarket checkout. It becomes easy to understand if you picture the whole flow: customers keep arriving, pay at the checkout, and those who finish leave the store one after another.",
+      "memory_hook_zh": "说到排队，就是把顺序等待的队列加以建模的东西",
+      "memory_hook_en": "Queue → modeling a line of things waiting their turn"
+    },
+    {
+      "term": "最適化問題",
+      "definition_jp": "与えられた制約のもとで最も良い解を求める問題のこと。",
+      "explanation_jp": "最適化問題は、いくつかの条件(制約)を満たす中で、コストを最小にする、利益を最大にするなど「最も良い答え」を探す問題です。例えば、限られた予算や時間の中で効果が一番高くなる組み合わせを選ぶ、といった場面が当てはまります。\n\n身近な例では、配送の最短ルートを求める、材料を無駄なく割り当てるなど、現実の意思決定の多くが最適化問題として扱えます。\n\n試験では、本群で最も出題されやすいテーマです。「制約の中で最大・最小を求める問題」という考え方と、単に答えを1つ出すのではなく『最も良い解』を探す点を区別できることがポイントです。",
+      "analogy_jp": "決まったお小遣いの中で、欲しいお菓子を一番たくさん(または一番満足できるように)買う組み合わせを選ぶようなもの。条件内で「一番得な選び方」を探します。",
+      "memory_hook_jp": "最適化問題といえば制約の中で最も良い解を探す問題",
+      "inline_quiz": [
+        "2018h30a-q005"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "最优化问题",
+      "term_en": "Optimization Problem",
+      "definition_zh": "在给定约束条件下求出最优解的问题。",
+      "definition_en": "A problem of finding the best solution under given constraints.",
+      "explanation_zh": "最优化问题是在满足若干条件（约束）的前提下，寻找使成本最小、利益最大等「最优答案」的问题。例如，在有限的预算或时间内选出效果最高的组合，就属于这类情形。\n\n身边的例子有：求配送的最短路线、把材料毫无浪费地分配等等，现实中的许多决策都可以作为最优化问题来处理。\n\n在考试中，这是本组最容易出题的主题。要点是理解「在约束中求最大、最小的问题」这一思路，并能区分它不是单纯给出一个答案，而是寻找『最优解』这一点。",
+      "explanation_en": "An optimization problem is a problem of finding the 'best answer'—such as minimizing cost or maximizing profit—while satisfying several conditions (constraints). For example, choosing the combination that gives the highest effect within a limited budget or time fits this category.\n\nFamiliar examples include finding the shortest delivery route or allocating materials without waste; many real-world decisions can be handled as optimization problems.\n\nIn the exam, this is the theme most likely to appear in this group. The key points are to understand the idea of 'a problem of finding the maximum or minimum under constraints,' and to be able to distinguish that it is not about simply producing one answer but about searching for the 'best solution.'",
+      "analogy_zh": "就像在固定的零花钱范围内，选出能买到最多（或最令人满意）想要的零食的组合。在条件之内寻找「最划算的选法」。",
+      "analogy_en": "It is like choosing the combination that lets you buy the most (or the most satisfying) snacks you want within a fixed allowance. You search for 'the most worthwhile choice' within the conditions.",
+      "memory_hook_zh": "说到最优化问题，就是在约束中寻找最优解的问题",
+      "memory_hook_en": "Optimization problem → finding the best solution within constraints"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "待ち行列: 待ち行列といえば順番待ちの列をモデル化したもの",
+      "最適化問題: 最適化問題といえば制約の中で最も良い解を探す問題"
+    ],
+    "key_points_jp": [
+      "待ち行列は、サービスを待つ対象が「到着→待つ→処理→退去」と順に流れる様子をモデル化したもの。",
+      "待ち行列モデルは、到着ペースや処理時間から待ち時間・行列の長さを分析し、窓口数などの判断に役立つ。",
+      "最適化問題は、制約条件を満たす中でコスト最小・利益最大など「最も良い解」を求める問題。",
+      "最適化問題は本群で最も出題されやすく、配送の最短ルートや資源の割り当てなど現実の意思決定に広く応用される。",
+      "どちらも離散数学(グラフ理論)を土台とした応用テーマである。"
+    ],
+    "key_points_zh": [
+      "排队是把等待服务的对象按「到达→等待→处理→离开」依次流动的情形加以建模的东西。",
+      "排队模型可根据到达节奏和处理时间分析等待时间和队列长度，有助于做出窗口数量等判断。",
+      "最优化问题是在满足约束条件的前提下，求成本最小、利益最大等「最优解」的问题。",
+      "最优化问题在本组最容易出题，广泛应用于配送最短路线、资源分配等现实决策中。",
+      "两者都是以离散数学（图论）为基础的应用主题。"
+    ],
+    "key_points_en": [
+      "Queuing models the situation where objects waiting for service flow in order: 'arrive → wait → process → leave.'",
+      "Queuing models analyze waiting time and queue length from the arrival pace and processing time, helping with decisions such as the number of counters.",
+      "An optimization problem is a problem of finding the 'best solution'—such as minimum cost or maximum profit—while satisfying constraints.",
+      "Optimization problems appear most often in this group and are widely applied to real-world decisions such as shortest delivery routes and resource allocation.",
+      "Both are application themes built on the foundation of discrete mathematics (graph theory)."
+    ],
+    "memory_hooks_zh": [
+      "排队：说到排队，就是把顺序等待的队列加以建模的东西",
+      "最优化问题：说到最优化问题，就是在约束中寻找最优解的问题"
+    ],
+    "memory_hooks_en": [
+      "Queue: Queue → modeling a line of things waiting their turn",
+      "Optimization problem: Optimization problem → finding the best solution within constraints"
+    ]
+  },
+  "challenge_questions": [
+    "2016h28h-q033",
+    "2009h21a-q046",
+    "2009h21h-q007",
+    "2010h22a-q082",
+    "2010h22h-q067"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2014h26h-q087",
+      "figure_path": "figures/2014h26h-q087.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2018h30a-q005",
+      "figure_path": "figures/2018h30a-q005.png",
+      "figure_type": "table",
+      "figure_description": "表：作業A=機械X8分・機械Y10分，作業B=機械X10分・機械Y5分，作業C=機械X6分・機械Y8分。図：機械使用スケジュール（A→B→Cの順で作業したときの例）",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2016h28h-q033",
+      "figure_path": "figures/2016h28h-q033.png",
+      "figure_type": "diagram",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2009h21h-q007",
+      "figure_path": "figures/2009h21h-q007.png",
+      "figure_type": "table",
+      "figure_description": "単位：円。株式A・B・C・Dの高成長・中成長・低成長時の予想値上がり幅を示す表。高成長(確率0.4)・中成長(確率0.4)・低成長(確率0.2)の3列，株式A〜Dの4行で構成。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22h-q067",
+      "figure_path": "figures/2010h22h-q067.png",
+      "figure_type": "table",
+      "figure_description": "A列・B列に0〜9の数字の組合せを持つ100行テーブルのサンプル（A=0/B=0, A=0/B=1, A=0/B=2, ..., A=9/B=8, A=9/B=9）。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "离散数学的应用（排队论与最优化）",
+  "title_en": "Applications of Discrete Mathematics (Queuing and Optimization)",
+  "unit_summary_zh": "学习应用图论的排队模型，以及求解最优解的最优化问题。",
+  "unit_summary_en": "Learn queuing models that apply graph theory, and optimization problems that find the best solution."
+}

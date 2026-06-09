@@ -1,0 +1,161 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-21-55-u03",
+  "topic_id": "technology-21-55",
+  "category": "technology",
+  "title_jp": "データ分析と前処理",
+  "unit_summary_jp": "データの結合、品質を整えるデータクレンジング、識別コードを定めるコード設計など、データベースに格納する前のデータの分析・整備の考え方を理解する。",
+  "order_in_topic": 3,
+  "prerequisites": [
+    "technology-21-55-u01",
+    "technology-21-55-u02"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、データをデータベースへ格納する前の「分析・前処理」の考え方を学びます。誤りや表記揺れを正すデータクレンジング、複数のデータを突き合わせる結合、そして項目を識別するためのコード設計です。データ品質を左右する実務的で重要な工程です。",
+    "freq_badge": "頻出",
+    "est_minutes": 11,
+    "intro_zh": "本单元学习将数据存入数据库之前的“分析与预处理”思路。包括纠正错误和写法不一致的数据清洗、把多份数据相互对照的结合，以及为各项目赋予标识的编码设计。这是左右数据质量的、实务性强且重要的工序。",
+    "intro_en": "In this unit, you will learn the concept of \"analysis and preprocessing\" performed before storing data in a database. These are data cleansing to correct errors and inconsistent notation, joining to match multiple datasets together, and code design to identify items. They are practical and important steps that determine data quality."
+  },
+  "terms": [
+    {
+      "term": "データクレンジング",
+      "definition_jp": "誤り・重複・表記揺れを修正してデータの品質を整える前処理。",
+      "explanation_jp": "データクレンジングは、集めたデータに含まれる誤入力・重複・表記の揺れ・欠損などを洗い出し、正しく整える作業です。例えば「(株)」と「株式会社」の表記統一、同じ顧客が二重登録された重複の削除、空欄や明らかな異常値の補正などが該当します。\n\n分析や結合に先立つ最初の工程で、ここを怠ると後続の集計・分析結果が信用できなくなります(「ゴミを入れればゴミが出る」)。試験では、データを格納・活用する前に品質を高める作業がデータクレンジングである、という目的の理解が問われます。",
+      "analogy_jp": "料理の下ごしらえで、野菜の泥や傷んだ部分を取り除き、形を揃えてから調理するようなもの。素材をきれいにしてこそ良い料理になります。",
+      "memory_hook_jp": "データクレンジングといえば誤り・重複・表記揺れを正す前処理",
+      "inline_quiz": [
+        "2009h21a-q014"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "数据清洗",
+      "term_en": "Data Cleansing",
+      "definition_zh": "修正错误、重复和写法不一致，以整理数据质量的预处理。",
+      "definition_en": "Preprocessing that improves data quality by correcting errors, duplicates, and inconsistent notation.",
+      "explanation_zh": "数据清洗是指找出所收集数据中包含的录入错误、重复、写法不一致、缺失等问题，并将其正确整理的工作。例如统一“（株）”与“株式会社”的写法、删除同一客户被重复登记的记录、补正空白或明显的异常值等都属于此类。\n\n它是分析或结合之前的第一道工序，若在此处偷懒，后续的汇总与分析结果就会变得不可信（“输入垃圾，输出垃圾”）。考试中会考查这样的目的理解：在存储和利用数据之前提高其质量的工作就是数据清洗。",
+      "explanation_en": "Data cleansing is the work of finding and properly correcting issues contained in collected data, such as input errors, duplicates, inconsistent notation, and missing values. For example, unifying the notation of \"(Co.)\" and \"Company Ltd.\", deleting duplicate records where the same customer was registered twice, and correcting blanks or obvious abnormal values all fall under this.\n\nIt is the first step before analysis or joining, and neglecting it makes the subsequent aggregation and analysis results untrustworthy (\"garbage in, garbage out\"). The exam tests the understanding of its purpose: the work of improving quality before storing and utilizing data is data cleansing.",
+      "analogy_zh": "就像做菜前的备料：去掉蔬菜上的泥和坏掉的部分，把形状切整齐后再下锅。把食材弄干净，才能做出好菜。",
+      "analogy_en": "Like prepping ingredients before cooking: removing dirt and spoiled parts from vegetables and trimming them to even shapes before cooking. Only by cleaning the ingredients can you make a good dish.",
+      "memory_hook_zh": "说到数据清洗，就是纠正错误、重复、写法不一致的预处理",
+      "memory_hook_en": "Data cleansing → preprocessing that fixes errors, duplicates, and inconsistent notation"
+    },
+    {
+      "term": "データの結合",
+      "definition_jp": "複数のデータを共通項目で突き合わせて1つに統合する処理。",
+      "explanation_jp": "データの結合は、別々に管理されている複数の表(データ)を、共通する項目(キー)を手がかりに突き合わせて1つにまとめる処理です。例えば「顧客番号」を手がかりに、顧客マスタの氏名と注文データの注文額を結びつけ、誰がいくら買ったかを1つの表として得られます。\n\n結合によって、単独の表だけでは分からない関係を見える化でき、分析の幅が広がります。試験では、共通のキー項目をもとに複数データを統合する操作であること、整えた(クレンジング済みの)データを次に統合する工程として位置づくことを押さえます。",
+      "analogy_jp": "名簿と出席カードを「学籍番号」で照合し、「この番号の人は誰で、何回出席したか」を一枚の表にまとめる作業のようなものです。",
+      "memory_hook_jp": "データの結合といえば共通キーで複数データを1つに統合",
+      "inline_quiz": [
+        "2009h21a-q063"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "数据的结合",
+      "term_en": "Data Join",
+      "definition_zh": "用共同的项目把多份数据相互对照，整合为一份的处理。",
+      "definition_en": "Processing that matches multiple datasets by a common item and integrates them into one.",
+      "explanation_zh": "数据的结合是指以共同项目（键）为线索，把分别管理的多张表（数据）相互对照、汇总为一份的处理。例如以“客户编号”为线索，把客户主数据中的姓名与订单数据中的订单金额关联起来，就能得到一张表，看清谁买了多少。\n\n通过结合，可以让仅凭单张表无法看出的关系可视化，从而拓宽分析的广度。考试中要掌握：它是以共同的键项目为依据整合多份数据的操作，并且它处于将整理（已清洗）好的数据进一步整合的工序位置。",
+      "explanation_en": "A data join is the processing that uses a common item (key) as a clue to match and consolidate multiple separately managed tables (data) into one. For example, using \"customer number\" as a clue, you can link the name in the customer master to the order amount in the order data and obtain a single table showing who bought how much.\n\nBy joining, you can visualize relationships that a single table alone cannot reveal, widening the scope of analysis. The exam asks you to grasp that it is an operation integrating multiple datasets based on a common key item, and that it is positioned as the step that next integrates the prepared (cleansed) data.",
+      "analogy_zh": "就像把名册和签到卡用“学号”进行核对，整理出一张表：“这个学号的人是谁、出席了几次”。",
+      "analogy_en": "Like matching a roster and attendance cards by \"student ID\" to compile a single table showing \"who this ID belongs to and how many times they attended.\"",
+      "memory_hook_zh": "说到数据的结合，就是用共同的键把多份数据整合为一份",
+      "memory_hook_en": "Data join → integrating multiple datasets into one by a common key"
+    },
+    {
+      "term": "コード設計",
+      "definition_jp": "データ項目を体系的に分類・識別するためのコード体系を決める設計。",
+      "explanation_jp": "コード設計は、商品・顧客・部門などのデータ項目を一意に識別し、分類・集計しやすくするためのコード(番号や記号)の付け方を決める作業です。桁数や採番ルール、意味の持たせ方(順番号方式・区分コード方式・桁別コードなど)を設計します。\n\n良いコード設計は、一意性が保て、将来の項目追加にも耐え、人が扱いやすいものです。試験では、コードに分類や識別の役割を持たせること、桁数不足で項目が足りなくなる・意味を詰め込みすぎて分かりにくくなるといった設計上の注意点が問われます。データを整え統合した上で、識別の体系を与える観点です。",
+      "analogy_jp": "図書館の本に分類番号(請求記号)を割り振るようなもの。番号の付け方を決めておけば、どの棚の何の本かを一目で識別・整理できます。",
+      "memory_hook_jp": "コード設計といえばデータを識別・分類するコード体系の設計",
+      "inline_quiz": [
+        "2010h22a-q088"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"コード設計\"]; A --> B[\"識別する(一意性)\"]; A --> C[\"分類する(区分)\"]; A --> D[\"集計しやすくする\"]; A --> E[\"桁数・採番ルールを決める\"]",
+        "svg_path": "figures/technology-21-55-u03-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "编码设计",
+      "term_en": "Code Design",
+      "definition_zh": "确定一套编码体系，用于对数据项目进行体系化分类与识别的设计。",
+      "definition_en": "Design that defines a code system for systematically classifying and identifying data items.",
+      "explanation_zh": "编码设计是指确定编码（编号或符号）的赋予方式的工作，使商品、客户、部门等数据项目能够被唯一识别，并便于分类与汇总。要设计位数、编号规则，以及让编码承载意义的方式（顺序号方式、区分编码方式、按位编码等）。\n\n好的编码设计能够保持唯一性、能承受未来项目的增加，并且便于人使用。考试中会考查：要让编码承担分类与识别的作用；以及设计上的注意点，例如位数不足会导致项目不够用、塞入过多意义会变得难以理解。这是在整理并整合数据之后，再赋予识别体系的视角。",
+      "explanation_en": "Code design is the work of deciding how to assign codes (numbers or symbols) so that data items such as products, customers, and departments can be uniquely identified and are easy to classify and aggregate. You design the number of digits, the numbering rules, and how meaning is embedded (sequential-number method, classification-code method, digit-by-digit code, etc.).\n\nGood code design maintains uniqueness, withstands future additions of items, and is easy for people to handle. The exam tests that codes should carry the roles of classification and identification, as well as design cautions such as running out of items due to insufficient digits, or becoming hard to understand by packing in too much meaning. This is the perspective of giving an identification system after the data has been prepared and integrated.",
+      "analogy_zh": "就像给图书馆的书分配分类号（索书号）。事先定好编号的赋予方式，就能一眼识别并整理出某本书在哪个书架、是什么书。",
+      "analogy_en": "Like assigning classification numbers (call numbers) to books in a library. Once you decide how to assign numbers, you can identify and organize at a glance which shelf a book is on and what it is.",
+      "memory_hook_zh": "说到编码设计，就是设计用于识别、分类数据的编码体系",
+      "memory_hook_en": "Code design → designing a code system to identify and classify data"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "データクレンジング: データクレンジングといえば誤り・重複・表記揺れを正す前処理",
+      "データの結合: データの結合といえば共通キーで複数データを1つに統合",
+      "コード設計: コード設計といえばデータを識別・分類するコード体系の設計"
+    ],
+    "key_points_jp": [
+      "データ整備は「クレンジング(整える)→結合(統合する)→コード設計(識別体系を与える)」という流れで考えると理解しやすい。",
+      "データクレンジングは誤り・重複・表記揺れ・欠損を正してデータ品質を高める前処理で、分析・統合に先立つ最初の工程。",
+      "データの結合は共通のキー項目を手がかりに複数のデータを突き合わせ、1つに統合する処理。",
+      "コード設計はデータ項目を一意に識別・分類するためのコード体系を決める設計で、一意性・拡張性・扱いやすさが要点。"
+    ],
+    "key_points_zh": [
+      "数据整理可以按“清洗（整理）→结合（整合）→编码设计（赋予识别体系）”的流程来理解，更容易把握。",
+      "数据清洗是纠正错误、重复、写法不一致、缺失以提高数据质量的预处理，是先于分析与整合的第一道工序。",
+      "数据的结合是以共同的键项目为线索，把多份数据相互对照、整合为一份的处理。",
+      "编码设计是确定编码体系以唯一识别、分类数据项目的设计，要点是唯一性、扩展性和易用性。"
+    ],
+    "key_points_en": [
+      "Data preparation is easier to understand when thought of as the flow \"cleansing (prepare) → joining (integrate) → code design (give an identification system).\"",
+      "Data cleansing is preprocessing that corrects errors, duplicates, inconsistent notation, and missing values to improve data quality, and is the first step before analysis and integration.",
+      "A data join is processing that uses a common key item as a clue to match multiple datasets and integrate them into one.",
+      "Code design is the design of a code system to uniquely identify and classify data items, with uniqueness, extensibility, and ease of use as its key points."
+    ],
+    "memory_hooks_zh": [
+      "数据清洗：说到数据清洗，就是纠正错误、重复、写法不一致的预处理",
+      "数据的结合：说到数据的结合，就是用共同的键把多份数据整合为一份",
+      "编码设计：说到编码设计，就是设计用于识别、分类数据的编码体系"
+    ],
+    "memory_hooks_en": [
+      "Data cleansing: Data cleansing → preprocessing that fixes errors, duplicates, and inconsistent notation",
+      "Data join: Data join → integrating multiple datasets into one by a common key",
+      "Code design: Code design → designing a code system to identify and classify data"
+    ]
+  },
+  "challenge_questions": [
+    "2009h21a-q084",
+    "2010h22a-q063",
+    "2010h22h-q083",
+    "2011h23a-q057",
+    "2011h23tokubetsu-q072"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2011h23a-q057",
+      "figure_path": "figures/2011h23a-q057.png",
+      "figure_type": "diagram",
+      "figure_description": "社員表と部署表のE-R図4種類（ア〜エ）を示した図。各図は社員と部署の間の多重度（1対1, 1対多, 多対1, 多対多）をそれぞれ異なる矢印記法で表している。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23tokubetsu-q072",
+      "figure_path": "figures/2011h23tokubetsu-q072.png",
+      "figure_type": "table",
+      "figure_description": "関係データベースの概念図：2つの表（エンティティ）と主キー・外部キーによるリレーションシップを示した図。a（主キー）とb（フィールド）の穴埋め問題に対応する。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "数据分析与预处理",
+  "title_en": "Data Analysis and Preprocessing",
+  "unit_summary_zh": "理解将数据存入数据库之前的数据分析与整理思路，包括数据的结合、整理质量的数据清洗，以及确定识别编码的编码设计等。",
+  "unit_summary_en": "Understand the concepts of analyzing and preparing data before storing it in a database, including joining data, data cleansing to improve quality, and code design to define identification codes."
+}

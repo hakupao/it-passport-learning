@@ -1,0 +1,267 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-22-60-u05",
+  "topic_id": "technology-22-60",
+  "category": "technology",
+  "title_jp": "モバイル通信の基礎インフラ",
+  "unit_summary_jp": "モバイル通信の全体像と、基地局・アクセスポイント、電波帯(プラチナバンド)、移動時の接続維持(ハンドオーバー・ローミング)を学ぶ。",
+  "order_in_topic": 5,
+  "prerequisites": [
+    "technology-22-60-u04"
+  ],
+  "overview": {
+    "intro_jp": "このユニットでは、スマートフォンなどの無線・モバイル通信を支えるインフラを学ぶ。電波を中継する基地局やアクセスポイント、つながりやすい電波帯(プラチナバンド)、移動しても通信が途切れない仕組み(ハンドオーバー・ローミング)が対象で、ネットワーク応用の頻出分野である。",
+    "freq_badge": "頻出",
+    "est_minutes": 21,
+    "intro_zh": "本单元学习支撑智能手机等无线、移动通信的基础设施。内容涵盖中继电波的基站和接入点、容易连上的电波频段（白金频段），以及移动时通信也不中断的机制（切换、漫游），这是网络应用中的高频考点领域。",
+    "intro_en": "This unit covers the infrastructure that supports wireless and mobile communications such as smartphones. The topics include base stations and access points that relay radio waves, the easy-to-connect radio band (the platinum band), and the mechanisms that keep communication from dropping while you move (handover and roaming). It is a frequently tested area within network applications."
+  },
+  "terms": [
+    {
+      "term": "モバイル通信",
+      "definition_jp": "携帯端末が電波を使って移動しながら通信する、無線通信の総称。",
+      "explanation_jp": "モバイル通信は、スマートフォンや携帯電話などの端末が電波(無線)を使って、移動しながら通話やデータ通信を行う仕組み全体を指します。端末は最寄りの基地局と電波でつながり、そこから先は事業者のネットワークを経由して相手と通信します。\n\n試験では、ケーブルでつなぐ有線通信との対比で、「移動しながら使える=無線である」点が問われます。4Gや5Gといった世代名や、後述の基地局・電波帯・接続維持の仕組みが、すべてこのモバイル通信を成り立たせる要素である、という全体像を押さえましょう。",
+      "analogy_jp": "あちこちに立つ電波の中継塔の間を、端末が見えない糸でつなぎ替えながら歩き回るイメージ。家の固定電話(有線)と違い、外を移動しても話し続けられます。",
+      "memory_hook_jp": "モバイル通信といえば電波で移動しながら通信する無線通信の総称",
+      "inline_quiz": [
+        "2016h28a-q070"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"携帯端末\"] --> B[\"基地局\"]; B --> C[\"通信事業者ネットワーク\"]; C --> D[\"通信相手\"]",
+        "svg_path": "figures/technology-22-60-u05-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "移动通信",
+      "term_en": "Mobile communication",
+      "definition_zh": "便携终端利用电波边移动边通信的无线通信的统称。",
+      "definition_en": "A general term for wireless communication in which a portable device uses radio waves to communicate while moving.",
+      "explanation_zh": "移动通信指的是智能手机、手机等终端利用电波（无线）边移动边进行通话或数据通信的整套机制。终端用电波与最近的基站相连，从那里再经由运营商的网络与对方通信。\n\n考试中会以与用线缆相连的有线通信作对比，考查「能边移动边使用＝属于无线」这一点。要把握整体面貌：4G、5G 这样的代际名称，以及后面讲到的基站、电波频段、保持连接的机制，全都是构成移动通信的要素。",
+      "explanation_en": "Mobile communication refers to the entire mechanism by which devices such as smartphones and mobile phones use radio waves (wireless) to make calls and exchange data while moving. The device connects to the nearest base station by radio, and from there it communicates with the other party through the carrier's network.\n\nThe exam contrasts it with wired communication that uses cables, testing the point that \"being usable while moving = being wireless.\" Grasp the big picture: generation names like 4G and 5G, and the base stations, radio bands, and connection-maintaining mechanisms covered later, are all elements that make mobile communication work.",
+      "analogy_zh": "想象一下：到处矗立着电波中继塔，终端像被一根看不见的线牵着，一边走动一边把这根线在塔之间换接。和家里的固定电话（有线）不同，即便在外面移动也能继续通话。",
+      "analogy_en": "Picture relay towers for radio waves standing here and there, with the device walking around while an invisible thread it holds gets re-attached from tower to tower. Unlike a home landline (wired), you can keep talking even while moving around outside.",
+      "memory_hook_zh": "说到移动通信，就是用电波边移动边通信的无线通信统称",
+      "memory_hook_en": "Mobile communication -> the general term for wireless communication that uses radio waves to communicate while moving"
+    },
+    {
+      "term": "基地局",
+      "definition_jp": "携帯端末と電波でやり取りし、通信網につなぐ無線設備。",
+      "explanation_jp": "基地局は、携帯電話やスマートフォンが電波で接続する無線の拠点です。アンテナと無線機器を備え、端末からの電波を受け取って事業者のネットワークへ中継し、地域(セル)ごとに通信をカバーします。\n\n試験では、モバイル通信を成立させる基礎設備が基地局である点が問われます。1つの基地局がカバーする範囲には限りがあり、エリアを複数のセルに分けて多数の基地局で覆うこと、端末が移動すると後述のハンドオーバーで基地局を切り替える前提となる設備であることを押さえましょう。",
+      "analogy_jp": "街のあちこちに立つ「電波の郵便局」のようなもの。近所の郵便局に手紙を出せば全国へ届くように、近くの基地局に電波を渡せば相手まで届きます。",
+      "memory_hook_jp": "基地局といえば携帯端末が電波で接続する無線の拠点",
+      "inline_quiz": [
+        "2009h21a-q065"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "基站",
+      "term_en": "Base station",
+      "definition_zh": "用电波与便携终端交换信息，并将其接入通信网的无线设备。",
+      "definition_en": "Wireless equipment that exchanges signals with portable devices by radio and connects them to the communication network.",
+      "explanation_zh": "基站是手机、智能手机用电波接入的无线据点。它配备天线和无线设备，接收来自终端的电波并中继到运营商的网络，按地区（小区）分别覆盖通信。\n\n考试中会考查「使移动通信得以成立的基础设备就是基站」这一点。要把握：一个基站能覆盖的范围有限，要把区域划分成多个小区、用大量基站来覆盖；并且基站是终端移动时通过后面讲到的切换来更换基站的前提设备。",
+      "explanation_en": "A base station is the wireless point of access that mobile phones and smartphones connect to by radio. It is equipped with antennas and radio equipment; it receives radio waves from devices and relays them to the carrier's network, covering communication area by area (cell by cell).\n\nThe exam tests the point that the base station is the foundational facility that makes mobile communication possible. Grasp that the range a single base station can cover is limited, so the area is divided into multiple cells covered by many base stations, and that the base station is the facility on which handover (covered later) depends when a device moves and switches stations.",
+      "analogy_zh": "就像立在街道各处的「电波邮局」。正如把信投到附近的邮局就能送达全国，把电波交给附近的基站，也能送到对方那里。",
+      "analogy_en": "Like a \"radio post office\" standing here and there around town. Just as mailing a letter at the nearby post office gets it delivered nationwide, handing your radio waves to the nearby base station gets them through to the other party.",
+      "memory_hook_zh": "说到基站，就是便携终端用电波接入的无线据点",
+      "memory_hook_en": "Base station -> the wireless point of access that portable devices connect to by radio"
+    },
+    {
+      "term": "AP",
+      "definition_jp": "アクセスポイント(Access Point)の略称。無線の接続点を指す。",
+      "explanation_jp": "APはアクセスポイント(Access Point)の略称で、主に無線LAN(Wi-Fi)で端末がネットワークに接続するための接続点を意味します。略語として問題文や選択肢に登場します。\n\n試験では、APが「アクセスポイント」の略であると分かることがまず重要です。直後に学ぶ正式名称「アクセスポイント」と同じものを指すこと、携帯電話網の基地局に相当する無線LAN側の接続点である、という対応関係を押さえておきましょう。",
+      "analogy_jp": "「AP」は名前の頭文字を取ったあだ名のようなもの。フルネーム「アクセスポイント」と同じ人物(設備)を、短く呼んでいるだけです。",
+      "memory_hook_jp": "APといえばアクセスポイントの略(無線の接続点)",
+      "inline_quiz": [
+        "2009h21a-q075"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "AP",
+      "term_en": "AP",
+      "definition_zh": "接入点（Access Point）的简称，指无线的连接点。",
+      "definition_en": "The abbreviation for Access Point; it refers to a wireless point of connection.",
+      "explanation_zh": "AP 是接入点（Access Point）的简称，主要指在无线 LAN（Wi-Fi）中供终端接入网络的连接点。它会以缩写形式出现在题干或选项中。\n\n考试中，首先重要的是能看懂 AP 是「接入点」的简称。要把握这一对应关系：它与紧接着要学的正式名称「接入点」指的是同一样东西，是相当于手机网络中基站的、无线 LAN 一侧的连接点。",
+      "explanation_en": "AP is the abbreviation for Access Point. It mainly refers to the connection point through which devices join the network in a wireless LAN (Wi-Fi). It appears as an abbreviation in question text and answer choices.\n\nOn the exam, the first important thing is to recognize that AP stands for \"access point.\" Grasp the correspondence: it refers to the same thing as the full name \"access point\" you will learn next, and it is the wireless-LAN-side connection point equivalent to a base station in the mobile phone network.",
+      "analogy_zh": "「AP」就像取名字首字母起的昵称。它和全名「接入点」指的是同一个人物（设备），只是叫得更短而已。",
+      "analogy_en": "\"AP\" is like a nickname made from the initials of the name. It refers to the very same person (equipment) as the full name \"access point\" -- just called in a shorter form.",
+      "memory_hook_zh": "说到 AP，就是接入点的简称（无线的连接点）",
+      "memory_hook_en": "AP -> the abbreviation for access point (a wireless point of connection)"
+    },
+    {
+      "term": "アクセスポイント",
+      "definition_jp": "無線LAN端末をネットワークに接続させる、無線の接続点となる機器。",
+      "explanation_jp": "アクセスポイント(AP)は、無線LAN(Wi-Fi)で端末を有線ネットワークやインターネットへ橋渡しする接続点の機器です。家庭やオフィス、店舗などに設置され、近くの端末は電波でこのアクセスポイント経由でネットワークにつながります。\n\n試験では、携帯電話網の基地局に対応する、無線LAN側の接続点がアクセスポイントである点が問われます。SSID(電波の名前)で識別される接続先であること、略称APと同じものを指すことを区別なく覚えましょう。",
+      "analogy_jp": "Wi-Fiの「玄関口」のようなもの。来客(端末)は無線で玄関(アクセスポイント)を通り、そこから家の中(ネットワーク)へ入っていきます。",
+      "memory_hook_jp": "アクセスポイントといえば無線LAN端末をネットワークにつなぐ接続点",
+      "inline_quiz": [
+        "2009h21h-q059"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "接入点",
+      "term_en": "Access point",
+      "definition_zh": "让无线 LAN 终端接入网络的、作为无线连接点的设备。",
+      "definition_en": "A device that serves as the wireless point of connection, letting wireless LAN devices join the network.",
+      "explanation_zh": "接入点（AP）是在无线 LAN（Wi-Fi）中把终端桥接到有线网络或互联网的连接点设备。它安装在家庭、办公室、店铺等处，附近的终端通过电波经由这个接入点接入网络。\n\n考试中会考查：对应于手机网络的基站，无线 LAN 一侧的连接点就是接入点。要把握它是以 SSID（电波的名称）识别的连接目标，并且与简称 AP 指的是同一样东西，二者不加区分地记住即可。",
+      "explanation_en": "An access point (AP) is the connection-point device that bridges devices to a wired network or the internet in a wireless LAN (Wi-Fi). Installed in homes, offices, shops, and so on, nearby devices connect to the network by radio via this access point.\n\nThe exam tests that the access point is the wireless-LAN-side connection point corresponding to the base station of the mobile phone network. Grasp that it is the connection target identified by an SSID (the name of the radio signal), and that it refers to the same thing as the abbreviation AP -- remember them without distinction.",
+      "analogy_zh": "就像 Wi-Fi 的「玄关入口」。访客（终端）用无线穿过玄关（接入点），从那里进入屋内（网络）。",
+      "analogy_en": "Like the \"front entrance\" of Wi-Fi. Visitors (devices) pass through the entrance (the access point) wirelessly, and from there enter the house (the network).",
+      "memory_hook_zh": "说到接入点，就是把无线 LAN 终端接入网络的连接点",
+      "memory_hook_en": "Access point -> the connection point that joins wireless LAN devices to the network"
+    },
+    {
+      "term": "プラチナバンド",
+      "definition_jp": "建物内や遠方まで届きやすい、700〜900MHz帯の電波帯の通称。",
+      "explanation_jp": "プラチナバンドは、おおむね700〜900MHz帯の周波数の電波の通称です。周波数が低い電波は障害物を回り込みやすく遠くまで届きやすいため、ビルの陰や建物内、郊外でもつながりやすいという利点があります。\n\n試験では、「つながりやすい優れた電波帯=プラチナバンド」という特徴が問われます。周波数が低いほど遠くや屋内に届きやすく、高いほど大容量だが届きにくい、という一般的な性質と結びつけて、なぜ各通信事業者がこの帯域を重視するのかを理解しておきましょう。",
+      "analogy_jp": "低い太鼓の音が壁越しでも遠くまで響くのと同じで、低い周波数の電波は障害物を回り込んで届きやすい「贈り物のように貴重な帯域」というわけです。",
+      "memory_hook_jp": "プラチナバンドといえば遠く・屋内まで届きやすい700〜900MHz帯",
+      "inline_quiz": [
+        "2025r07-q071"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "白金频段",
+      "term_en": "Platinum band",
+      "definition_zh": "易于穿透到建筑物内或传到远方的 700～900MHz 频段电波的俗称。",
+      "definition_en": "A common name for the 700-900 MHz radio band, which reaches easily into buildings and over long distances.",
+      "explanation_zh": "白金频段是大致 700～900MHz 频率电波的俗称。频率较低的电波容易绕过障碍物、能传到较远的地方，因此在高楼背阴处、建筑物内部、郊外也容易连上，这是它的优点。\n\n考试中会考查「容易连上的优良电波频段＝白金频段」这一特征。要把它和一般规律联系起来理解：频率越低越容易传到远处和室内，频率越高容量越大但越难传达；由此理解为什么各通信运营商都重视这个频段。",
+      "explanation_en": "The platinum band is a common name for radio waves at roughly 700-900 MHz. Lower-frequency waves bend around obstacles more easily and travel farther, so they connect well even in the shadow of buildings, inside buildings, and in the suburbs -- that is their advantage.\n\nThe exam tests the feature that the platinum band is the \"excellent, easy-to-connect radio band.\" Link it to the general rule -- the lower the frequency, the more easily it reaches far away and indoors; the higher the frequency, the larger the capacity but the harder it is to reach -- and understand why each carrier values this band.",
+      "analogy_zh": "正如低沉的鼓声即便隔着墙也能传到远方，低频率的电波也容易绕过障碍物传达，所以是「像礼物般珍贵的频段」。",
+      "analogy_en": "Just as a low drumbeat carries far even through a wall, low-frequency radio waves bend around obstacles and reach easily -- making this \"a band as precious as a gift.\"",
+      "memory_hook_zh": "说到白金频段，就是易传到远处和室内的 700～900MHz 频段",
+      "memory_hook_en": "Platinum band -> the 700-900 MHz band that reaches easily far away and indoors"
+    },
+    {
+      "term": "ハンドオーバー",
+      "definition_jp": "移動中に接続先の基地局を自動で切り替え、通信を維持する技術。",
+      "explanation_jp": "ハンドオーバーは、利用者が移動して今つながっている基地局の電波が弱くなったとき、より電波の強い別の基地局へ接続を自動で切り替え、通信を途切れさせない技術です。同じ通信事業者のネットワーク内で、基地局(セル)をまたいで起こります。\n\n試験では、「移動しても通話やデータ通信が切れない仕組み=ハンドオーバー」が問われます。次のローミングは「他事業者の網につなぎ替える」ことであるのに対し、ハンドオーバーは原則「同じ事業者内で基地局を切り替える」点が、両者を区別する頻出ポイントです。",
+      "analogy_jp": "リレー走でバトンを次の走者へ渡すように、移動中の端末の通信を、次に電波が強い基地局へ途切れなく引き継いでいくイメージです。",
+      "memory_hook_jp": "ハンドオーバーといえば移動中に基地局を切り替えて通信を維持",
+      "inline_quiz": [
+        "2010h22a-q001"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph LR; A[\"基地局A(電波が弱まる)\"] --> B[\"接続を自動切替\"]; B --> C[\"基地局B(電波が強い)\"]; C --> D[\"通信を維持\"]",
+        "svg_path": "figures/technology-22-60-u05-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "切换（Handover）",
+      "term_en": "Handover",
+      "definition_zh": "在移动中自动切换所连接的基站，从而保持通信的技术。",
+      "definition_en": "A technology that automatically switches the connected base station while moving in order to maintain communication.",
+      "explanation_zh": "切换是指当用户移动、当前所连基站的电波变弱时，自动把连接换到电波更强的另一个基站，从而不让通信中断的技术。它发生在同一通信运营商的网络内、跨越基站（小区）之间。\n\n考试中会考查「即便移动通话或数据通信也不中断的机制＝切换」。区分二者的高频考点是：下面讲到的漫游是「换接到其他运营商的网络」，而切换原则上是「在同一运营商内更换基站」。",
+      "explanation_en": "Handover is the technology that, when a user moves and the radio signal from the currently connected base station weakens, automatically switches the connection to another base station with a stronger signal so that communication does not drop. It occurs across base stations (cells) within the same carrier's network.\n\nThe exam tests \"the mechanism by which calls and data communication do not drop even while moving = handover.\" The frequently tested point that distinguishes the two: roaming (covered next) means \"switching over to another carrier's network,\" whereas handover, in principle, means \"switching base stations within the same carrier.\"",
+      "analogy_zh": "就像接力赛中把接力棒交给下一名跑者一样，把移动中终端的通信不间断地交接给下一个电波更强的基站。",
+      "analogy_en": "Like passing the baton to the next runner in a relay race, the communication of a moving device is handed off seamlessly to the next base station with a stronger signal.",
+      "memory_hook_zh": "说到切换，就是移动中更换基站以保持通信",
+      "memory_hook_en": "Handover -> switch base stations while moving to keep communication alive"
+    },
+    {
+      "term": "ローミング",
+      "definition_jp": "契約事業者の圏外で、他事業者の網を借りて通信を続ける仕組み。",
+      "explanation_jp": "ローミングは、自分が契約している通信事業者のサービス圏外(海外や、自社網が届かない地域)で、提携した他事業者のネットワークを借りて通話やデータ通信を続けられる仕組みです。海外旅行先で自国の携帯がそのまま使える「国際ローミング」が代表例です。\n\n試験では、ハンドオーバーとの違いが問われます。ハンドオーバーが同一事業者内の基地局切替であるのに対し、ローミングは「別の事業者の網を利用して接続を継続する」点が異なります。両者とも『接続を維持する』仕組みですが、相手が自社網か他社網かで区別しましょう。",
+      "analogy_jp": "自分の銀行のATMが近くにない時、提携先の他行ATMで(手数料を払って)お金を引き出せるのと同じ。他社の設備を借りてサービスを続けます。",
+      "memory_hook_jp": "ローミングといえば他事業者の網を借りて圏外でも通信継続",
+      "inline_quiz": [
+        "2010h22a-q059"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "漫游（Roaming）",
+      "term_en": "Roaming",
+      "definition_zh": "在签约运营商的服务范围之外，借用其他运营商的网络继续通信的机制。",
+      "definition_en": "A mechanism for continuing communication outside the contracted carrier's coverage by borrowing another carrier's network.",
+      "explanation_zh": "漫游是指在自己签约的通信运营商服务范围之外（境外，或自家网络覆盖不到的地区），借用合作的其他运营商的网络，继续通话或数据通信的机制。在境外旅行地能直接使用本国手机的「国际漫游」就是典型例子。\n\n考试中会考查它与切换的区别。切换是同一运营商内的基站更换，而漫游不同，它是「利用其他运营商的网络来继续连接」。二者都是『保持连接』的机制，但要按对象是自家网络还是他家网络来区分。",
+      "explanation_en": "Roaming is the mechanism that lets you continue making calls and exchanging data outside the coverage of the carrier you have contracted with (overseas, or in areas your own carrier's network does not reach) by borrowing a partner carrier's network. A representative example is \"international roaming,\" where your home-country phone works as-is when traveling abroad.\n\nThe exam tests the difference from handover. Whereas handover is a base-station switch within the same carrier, roaming differs in that it \"continues the connection by using a different carrier's network.\" Both are mechanisms to maintain the connection, but distinguish them by whether the counterpart is your own carrier's network or another carrier's.",
+      "analogy_zh": "就像附近没有自己银行的 ATM 时，可以在合作的其他银行的 ATM 上（支付手续费）取钱一样。借用其他公司的设备来继续提供服务。",
+      "analogy_en": "Like withdrawing money at a partner bank's ATM (for a fee) when there is no ATM of your own bank nearby. You borrow another company's equipment to keep the service going.",
+      "memory_hook_zh": "说到漫游，就是借用其他运营商的网络在服务范围外也能继续通信",
+      "memory_hook_en": "Roaming -> borrow another carrier's network to keep communicating outside your coverage"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "モバイル通信: モバイル通信といえば電波で移動しながら通信する無線通信の総称",
+      "基地局: 基地局といえば携帯端末が電波で接続する無線の拠点",
+      "AP: APといえばアクセスポイントの略(無線の接続点)",
+      "アクセスポイント: アクセスポイントといえば無線LAN端末をネットワークにつなぐ接続点",
+      "プラチナバンド: プラチナバンドといえば遠く・屋内まで届きやすい700〜900MHz帯",
+      "ハンドオーバー: ハンドオーバーといえば移動中に基地局を切り替えて通信を維持",
+      "ローミング: ローミングといえば他事業者の網を借りて圏外でも通信継続"
+    ],
+    "key_points_jp": [
+      "モバイル通信は電波を使い移動しながら行う無線通信で、端末→基地局→事業者網→相手という流れでつながる。",
+      "無線の接続点には、携帯電話網の「基地局」と、無線LAN(Wi-Fi)の「アクセスポイント(AP)」がある。AP=アクセスポイントの略。",
+      "プラチナバンド(700〜900MHz帯)は障害物を回り込みやすく、遠方や屋内までつながりやすい貴重な電波帯。",
+      "ハンドオーバーは移動中に同一事業者内で基地局を自動で切り替え、通信を途切れさせない技術。",
+      "ローミングは契約事業者の圏外で他事業者の網を借りて通信を続ける仕組みで、同一事業者内のハンドオーバーと区別する。"
+    ],
+    "key_points_zh": [
+      "移动通信是用电波边移动边进行的无线通信，按终端→基站→运营商网络→对方的流程相连。",
+      "无线的连接点有两类：手机网络的「基站」和无线 LAN（Wi-Fi）的「接入点（AP）」。AP＝接入点的简称。",
+      "白金频段（700～900MHz 频段）容易绕过障碍物，能连到远处和室内，是珍贵的电波频段。",
+      "切换是在移动中于同一运营商内自动更换基站、使通信不中断的技术。",
+      "漫游是在签约运营商服务范围外借用其他运营商网络继续通信的机制，要与同一运营商内的切换区分开。"
+    ],
+    "key_points_en": [
+      "Mobile communication is wireless communication carried out while moving using radio waves, connecting in the flow of device -> base station -> carrier network -> the other party.",
+      "There are two kinds of wireless connection points: the \"base station\" of the mobile phone network and the \"access point (AP)\" of the wireless LAN (Wi-Fi). AP = the abbreviation for access point.",
+      "The platinum band (700-900 MHz) bends around obstacles easily and connects to distant places and indoors -- a precious radio band.",
+      "Handover is the technology that automatically switches base stations within the same carrier while moving so that communication does not drop.",
+      "Roaming is the mechanism for continuing communication outside the contracted carrier's coverage by borrowing another carrier's network, and should be distinguished from handover within the same carrier."
+    ],
+    "memory_hooks_zh": [
+      "移动通信：说到移动通信，就是用电波边移动边通信的无线通信统称",
+      "基站：说到基站，就是便携终端用电波接入的无线据点",
+      "AP：说到 AP，就是接入点的简称（无线的连接点）",
+      "接入点：说到接入点，就是把无线 LAN 终端接入网络的连接点",
+      "白金频段：说到白金频段，就是易传到远处和室内的 700～900MHz 频段",
+      "切换：说到切换，就是移动中更换基站以保持通信",
+      "漫游：说到漫游，就是借用其他运营商的网络在服务范围外也能继续通信"
+    ],
+    "memory_hooks_en": [
+      "Mobile communication: Mobile communication -> the general term for wireless communication that communicates while moving using radio waves",
+      "Base station: Base station -> the wireless point of access that portable devices connect to by radio",
+      "AP: AP -> the abbreviation for access point (a wireless point of connection)",
+      "Access point: Access point -> the connection point that joins wireless LAN devices to the network",
+      "Platinum band: Platinum band -> the 700-900 MHz band that reaches easily far away and indoors",
+      "Handover: Handover -> switch base stations while moving to keep communication alive",
+      "Roaming: Roaming -> borrow another carrier's network to keep communicating outside your coverage"
+    ]
+  },
+  "challenge_questions": [
+    "2010h22a-q060",
+    "2010h22h-q058",
+    "2011h23a-q055",
+    "2011h23tokubetsu-q077",
+    "2012h24a-q054"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2025r07-q071",
+      "figure_path": "figures/2025r07-q071.png",
+      "figure_type": "table",
+      "figure_description": "aとbの組合せを示す2列4行の選択肢表。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2012h24a-q054",
+      "figure_path": "figures/2012h24a-q054.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "移动通信的基础设施",
+  "title_en": "Infrastructure Foundations of Mobile Communications",
+  "unit_summary_zh": "学习移动通信的整体面貌，以及基站、接入点、电波频段（白金频段），还有移动时如何保持连接（切换、漫游）。",
+  "unit_summary_en": "Learn the overall picture of mobile communications, plus base stations and access points, radio bands (the platinum band), and how connections are maintained while moving (handover and roaming)."
+}

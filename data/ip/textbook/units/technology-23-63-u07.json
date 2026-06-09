@@ -1,0 +1,251 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-23-63-u07",
+  "topic_id": "technology-23-63",
+  "category": "technology",
+  "title_jp": "暗号化の適用とデジタル署名",
+  "unit_summary_jp": "ディスク/ファイル暗号化の適用と、デジタル署名・署名鍵/検証鍵・タイムスタンプによる真正性保証を学ぶ。",
+  "order_in_topic": 7,
+  "prerequisites": [
+    "technology-23-63-u06"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、暗号技術を実際の場面に適用する方法を学びます。記憶媒体を守るディスク暗号化・ファイル暗号化と、公開鍵暗号とハッシュ関数を組み合わせた「デジタル署名」、それを支える署名鍵・検証鍵、さらに作成時刻を保証するタイムスタンプ・時刻認証までを扱います。デジタル署名は試験で特に高頻出の重要分野です。",
+    "freq_badge": "頻出",
+    "est_minutes": 21,
+    "intro_zh": "在本单元中，我们将学习如何把加密技术应用到实际场景中。内容涵盖：保护存储介质的磁盘加密与文件加密；将公钥加密与哈希函数相结合的“数字签名”，以及支撑它的签名密钥与验证密钥；还有用于保证生成时刻的时间戳与时间认证。数字签名是考试中尤其高频出现的重要领域。",
+    "intro_en": "In this unit, you will learn how to apply cryptographic techniques in real-world situations. It covers disk encryption and file encryption that protect storage media; \"digital signatures\" that combine public-key cryptography with hash functions, together with the signing keys and verification keys that support them; and timestamps and time authentication that guarantee the time of creation. Digital signatures are an especially high-frequency, important topic on the exam."
+  },
+  "terms": [
+    {
+      "term": "ディスク暗号化",
+      "definition_jp": "ハードディスクやSSDなど記憶媒体全体を暗号化する仕組み。",
+      "explanation_jp": "ディスク暗号化は、PCやサーバの記憶媒体(ディスク)全体をまるごと暗号化する技術です。ディスク上に保存されるデータは自動的に暗号化されるため、利用者が個々のファイルを意識して暗号化する必要がありません。\n\n主な目的は、PCやディスクの盗難・紛失時に、第三者が中身を読み取れないようにすることです。たとえ取り出されても鍵がなければ復号できません。試験では、後述のファイル暗号化との粒度の違い(ディスクは媒体全体、ファイルは個別)が問われます。",
+      "analogy_jp": "書類を一枚ずつ封筒に入れるのではなく、書庫の部屋ごと頑丈な金庫にしてしまうようなもの。中の物すべてがまとめて守られます。",
+      "memory_hook_jp": "ディスク暗号化といえば記憶媒体まるごとの暗号化",
+      "inline_quiz": [
+        "2013h25h-q080"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "磁盘加密",
+      "term_en": "Disk encryption",
+      "definition_zh": "对硬盘、SSD 等整个存储介质进行加密的机制。",
+      "definition_en": "A mechanism that encrypts an entire storage medium such as a hard disk or SSD.",
+      "explanation_zh": "磁盘加密是把 PC 或服务器的存储介质（磁盘）整体一次性加密的技术。保存在磁盘上的数据会被自动加密，因此使用者不必逐个去关注并加密每一个文件。\n\n它的主要目的是：当 PC 或磁盘被盗、丢失时，让第三方无法读取其中的内容。即使被取出，没有密钥也无法解密。在考试中，会考查它与后面讲到的文件加密在粒度上的区别（磁盘是针对整个介质，文件是针对单个文件）。",
+      "explanation_en": "Disk encryption is a technique that encrypts the entire storage medium (disk) of a PC or server all at once. Data saved on the disk is encrypted automatically, so the user does not need to consciously encrypt individual files one by one.\n\nIts main purpose is to prevent a third party from reading the contents when a PC or disk is stolen or lost. Even if the disk is removed, it cannot be decrypted without the key. The exam asks about the difference in granularity from file encryption, discussed later (disk covers the whole medium, file covers individual files).",
+      "analogy_zh": "不是把文件一张一张装进信封，而是把整个档案室房间做成一个坚固的保险库。里面的所有东西被一并保护起来。",
+      "analogy_en": "Instead of putting documents into envelopes one sheet at a time, it's like turning the entire archive room into a sturdy vault. Everything inside is protected all together.",
+      "memory_hook_zh": "说到磁盘加密，就是对整个存储介质进行加密",
+      "memory_hook_en": "Disk encryption → encrypting the whole storage medium at once"
+    },
+    {
+      "term": "ファイル暗号化",
+      "definition_jp": "個々のファイル単位でデータを暗号化する仕組み。",
+      "explanation_jp": "ファイル暗号化は、ディスク全体ではなく特定のファイル単位でデータを暗号化する技術です。重要な文書だけを選んで暗号化したり、暗号化したまま相手に送ったりできます。\n\n粒度が細かいため、メール添付やファイル共有など、特定のデータだけを保護したい場面に向いています。試験では、媒体全体を守るディスク暗号化との対比で出題されます。『ディスク=媒体まるごと』『ファイル=必要なものだけ個別に』という使い分けを押さえましょう。",
+      "analogy_jp": "部屋ごと金庫にする代わりに、大事な書類だけを一枚ずつ鍵付きの封筒に入れて持ち運ぶようなもの。必要なものだけを選んで守れます。",
+      "memory_hook_jp": "ファイル暗号化といえばファイル単位の個別暗号化",
+      "inline_quiz": [
+        "2018h30h-q098"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "文件加密",
+      "term_en": "File encryption",
+      "definition_zh": "以单个文件为单位对数据进行加密的机制。",
+      "definition_en": "A mechanism that encrypts data on a per-file basis.",
+      "explanation_zh": "文件加密是只针对特定文件（而非整个磁盘）来加密数据的技术。可以只挑选重要文档进行加密，或在保持加密状态下发送给对方。\n\n由于粒度细，它适合只想保护特定数据的场景，例如邮件附件或文件共享。在考试中，它常与保护整个介质的磁盘加密对比出题。请掌握这种区分用法：“磁盘＝整个介质”“文件＝只针对需要的部分单独加密”。",
+      "explanation_en": "File encryption is a technique that encrypts data per specific file rather than the whole disk. You can encrypt only selected important documents, or send them to others while they remain encrypted.\n\nBecause its granularity is fine, it suits situations where you want to protect only specific data, such as email attachments or file sharing. On the exam, it appears in contrast with disk encryption, which protects the whole medium. Keep the usage distinction in mind: \"disk = the entire medium\" and \"file = only what is needed, encrypted individually.\"",
+      "analogy_zh": "不是把整个房间做成保险库，而是只把重要文件一张一张装进带锁的信封随身携带。可以只挑选需要的东西来保护。",
+      "analogy_en": "Instead of turning a whole room into a vault, it's like putting only the important documents into locked envelopes one sheet at a time to carry around. You can protect just what you need.",
+      "memory_hook_zh": "说到文件加密，就是以文件为单位的单独加密",
+      "memory_hook_en": "File encryption → encrypting data file by file"
+    },
+    {
+      "term": "デジタル署名",
+      "definition_jp": "公開鍵暗号とハッシュで作成者と改ざんの有無を証明する仕組み。",
+      "explanation_jp": "デジタル署名は、電子データに対して「誰が作成したか(本人性)」と「途中で改ざんされていないか(完全性)」を証明する技術です。公開鍵暗号方式とハッシュ関数を組み合わせて実現します。\n\n送信者はデータのハッシュ値を自分の秘密鍵(署名鍵)で暗号化して署名を作り、受信者は送信者の公開鍵(検証鍵)で署名を確認します。ここでは暗号化と逆に「秘密鍵で署名し公開鍵で検証する」点が重要です。試験では、署名は機密性ではなく『本人性・完全性』を保証する技術であること、なりすましや改ざんの検知に使える点が頻出です。",
+      "analogy_jp": "書類に押す「本人にしか押せない実印」と「中身を写し取った封印」を兼ねたようなもの。誰が出したかと、開封・改ざんされていないことを同時に示せます。",
+      "memory_hook_jp": "デジタル署名といえば本人性と改ざん検知を証明",
+      "inline_quiz": [
+        "2009h21h-q077",
+        "2010h22a-q055"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"送信者\"] --> B[\"署名鍵で署名作成\"]; B --> C[\"データと署名を送付\"]; C --> D[\"受信者\"]; D --> E[\"検証鍵で署名検証\"]; E --> F[\"本人性と完全性を確認\"]",
+        "svg_path": "figures/technology-23-63-u07-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "数字签名",
+      "term_en": "Digital signature",
+      "definition_zh": "用公钥加密与哈希证明创建者身份及是否被篡改的机制。",
+      "definition_en": "A mechanism that uses public-key cryptography and hashing to prove the creator and whether data has been tampered with.",
+      "explanation_zh": "数字签名是针对电子数据，用来证明“是谁创建的（身份真实性）”以及“中途是否被篡改（完整性）”的技术。它通过把公钥加密方式与哈希函数相结合来实现。\n\n发送者用自己的私钥（签名密钥）对数据的哈希值加密，生成签名；接收者用发送者的公钥（验证密钥）来确认签名。这里的重点是：与加密相反，这里是“用私钥签名、用公钥验证”。在考试中，常考查签名保证的不是机密性，而是“身份真实性与完整性”，以及它可用于检测冒充和篡改这一点。",
+      "explanation_en": "A digital signature is a technique for proving, for electronic data, \"who created it (authenticity)\" and \"whether it was tampered with along the way (integrity).\" It is realized by combining a public-key cryptosystem with a hash function.\n\nThe sender encrypts the hash value of the data with their own private key (signing key) to create the signature, and the receiver verifies the signature with the sender's public key (verification key). The key point here is that, opposite to encryption, you \"sign with the private key and verify with the public key.\" The exam frequently asks that a signature guarantees not confidentiality but \"authenticity and integrity,\" and that it can be used to detect impersonation and tampering.",
+      "analogy_zh": "就像把“只有本人才能盖的实印”和“封住内容的封印”合二为一。可以同时表明是谁发出的，以及内容未被拆封或篡改。",
+      "analogy_en": "It's like combining \"a registered seal that only the owner can stamp\" with \"a seal that captures the contents.\" It can simultaneously show who sent it and that it has not been opened or tampered with.",
+      "memory_hook_zh": "说到数字签名，就是证明身份真实性与检测篡改",
+      "memory_hook_en": "Digital signature → proving authenticity and detecting tampering"
+    },
+    {
+      "term": "署名鍵",
+      "definition_jp": "デジタル署名を作成する側が使う、本人だけが持つ秘密鍵。",
+      "explanation_jp": "署名鍵は、デジタル署名を作成するときに使う鍵で、送信者本人だけが持つ秘密鍵にあたります。データのハッシュ値をこの鍵で暗号化することで署名が生成されます。\n\n署名鍵は本人以外に知られてはならず、漏えいするとなりすましが可能になります。試験では、署名を「作る」側が使うのが署名鍵(=秘密鍵)で、後述の検証鍵(=公開鍵)と対になることが問われます。暗号化での用途と逆になる点に注意しましょう。",
+      "analogy_jp": "本人しか持っていない実印そのもの。これを使ってはじめて正式な印を押せ、他人に貸せば勝手に署名されてしまいます。",
+      "memory_hook_jp": "署名鍵といえば署名を作る本人だけの秘密鍵",
+      "inline_quiz": [
+        "2009h21h-q086"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "签名密钥",
+      "term_en": "Signing key",
+      "definition_zh": "创建数字签名一方使用、只有本人持有的私钥。",
+      "definition_en": "The private key, held only by the owner, used by the party creating a digital signature.",
+      "explanation_zh": "签名密钥是创建数字签名时使用的密钥，相当于只有发送者本人持有的私钥。用这把密钥对数据的哈希值加密，即可生成签名。\n\n签名密钥绝不能被本人以外的人知道，一旦泄露就可能被冒充。在考试中，会考查：使用签名密钥（＝私钥）的是“创建”签名的一方，它与后面讲到的验证密钥（＝公钥）成对。请注意它与加密时的用途正好相反。",
+      "explanation_en": "The signing key is the key used when creating a digital signature, corresponding to the private key held only by the sender. A signature is generated by encrypting the hash value of the data with this key.\n\nThe signing key must not be known to anyone other than the owner; if leaked, impersonation becomes possible. The exam asks that the signing key (= private key) is used by the party that \"creates\" the signature, and that it is paired with the verification key (= public key) discussed later. Note that its role is the opposite of its use in encryption.",
+      "analogy_zh": "就是只有本人才有的那枚实印本身。只有用它才能盖出正式的印章，借给别人就会被擅自签名。",
+      "analogy_en": "It is the registered seal itself, which only the owner possesses. Only with it can a formal stamp be made, and lending it to someone else lets them sign without permission.",
+      "memory_hook_zh": "说到签名密钥，就是只有本人持有、用来创建签名的私钥",
+      "memory_hook_en": "Signing key → the owner's private key that creates the signature"
+    },
+    {
+      "term": "検証鍵",
+      "definition_jp": "デジタル署名を検証する側が使う、公開された公開鍵。",
+      "explanation_jp": "検証鍵は、受け取ったデジタル署名が正しいかを確認するときに使う鍵で、送信者の公開鍵にあたります。誰でも入手できるよう公開されており、これを使って署名を検証します。\n\n署名鍵(秘密鍵)で作られた署名は、対応する検証鍵(公開鍵)でのみ正しく検証できます。試験では、署名を「確かめる」側が使うのが検証鍵で、署名鍵と一対になること、公開してよい鍵である点が問われます。署名鍵と検証鍵の役割を取り違えないことが重要です。",
+      "analogy_jp": "実印に対する「印鑑証明」や登録された印影のようなもの。誰でも参照でき、押された印が本物かを照合するのに使います。",
+      "memory_hook_jp": "検証鍵といえば署名を確かめる公開鍵",
+      "inline_quiz": [
+        "2014h26a-q077"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "验证密钥",
+      "term_en": "Verification key",
+      "definition_zh": "验证数字签名一方使用、已公开的公钥。",
+      "definition_en": "The published public key used by the party verifying a digital signature.",
+      "explanation_zh": "验证密钥是确认所收到的数字签名是否正确时使用的密钥，相当于发送者的公钥。它被公开，任何人都能获取，用它来验证签名。\n\n用签名密钥（私钥）创建的签名，只能用与之对应的验证密钥（公钥）才能正确验证。在考试中，会考查：使用验证密钥的是“核对”签名的一方，它与签名密钥成对，并且是可以公开的密钥。重要的是不要把签名密钥与验证密钥的作用弄反。",
+      "explanation_en": "The verification key is the key used to confirm whether a received digital signature is correct, corresponding to the sender's public key. It is published so that anyone can obtain it, and it is used to verify the signature.\n\nA signature created with the signing key (private key) can be correctly verified only with the corresponding verification key (public key). The exam asks that the verification key is used by the party that \"checks\" the signature, that it is paired with the signing key, and that it is a key that may be made public. The important thing is not to mix up the roles of the signing key and the verification key.",
+      "analogy_zh": "就像对应实印的“印鉴证明”或登记在册的印影。任何人都能查阅，用来核对盖出的印章是不是真的。",
+      "analogy_en": "It's like the \"seal registration certificate\" for a registered seal, or the registered imprint on file. Anyone can refer to it and use it to check whether a stamped seal is genuine.",
+      "memory_hook_zh": "说到验证密钥，就是用来核对签名的公钥",
+      "memory_hook_en": "Verification key → the public key that checks the signature"
+    },
+    {
+      "term": "タイムスタンプ",
+      "definition_jp": "電子データがその時刻に存在したことを証明する刻印。",
+      "explanation_jp": "タイムスタンプは、電子データが「ある時刻に確かに存在し、それ以降改ざんされていない」ことを証明する技術です。第三者機関(時刻認証局)がデータに正確な時刻情報を付与します。\n\nデジタル署名だけでは「いつ作られたか」までは保証できないため、それを補い、契約書や電子文書の作成時刻を後から否認できないようにします。試験では、タイムスタンプが保証するのは『その時刻の存在証明と非改ざん』であり、後述の時刻認証(信頼できる時刻源)に支えられる点が問われます。",
+      "analogy_jp": "郵便局が押す「消印」のようなもの。その日付に確かに差し出された事実を、利害関係のない第三者が証明してくれます。",
+      "memory_hook_jp": "タイムスタンプといえばその時刻の存在を証明する刻印",
+      "inline_quiz": [
+        "2019r01a-q078"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"利用者\"] --> B[\"データを時刻認証局へ\"]; B --> C[\"正確な時刻を付与\"]; C --> D[\"タイムスタンプ発行\"]; D --> E[\"時刻の存在と非改ざんを証明\"]",
+        "svg_path": "figures/technology-23-63-u07-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "时间戳",
+      "term_en": "Timestamp",
+      "definition_zh": "证明电子数据在该时刻存在过的印记。",
+      "definition_en": "A mark that proves electronic data existed at a particular time.",
+      "explanation_zh": "时间戳是证明电子数据“在某一时刻确实存在，且此后未被篡改”的技术。由第三方机构（时间认证机构）为数据附加准确的时间信息。\n\n仅靠数字签名无法保证“何时创建”，时间戳对此进行补充，使合同、电子文档的创建时刻日后无法被否认。在考试中，会考查：时间戳保证的是“该时刻的存在证明与未被篡改”，并且它依靠后面讲到的时间认证（可信赖的时间源）来支撑。",
+      "explanation_en": "A timestamp is a technique that proves electronic data \"certainly existed at a certain time and has not been tampered with since then.\" A third-party organization (time-stamping authority) attaches accurate time information to the data.\n\nBecause a digital signature alone cannot guarantee \"when it was created,\" a timestamp supplements this and prevents later denial of the creation time of contracts and electronic documents. The exam asks that what a timestamp guarantees is \"proof of existence at that time and non-tampering,\" and that it is supported by time authentication (a trusted time source) discussed later.",
+      "analogy_zh": "就像邮局盖的“邮戳”。由没有利害关系的第三方来证明：那一天确实把信件交寄了这一事实。",
+      "analogy_en": "It's like the \"postmark\" stamped by a post office. A disinterested third party proves the fact that the item was indeed posted on that date.",
+      "memory_hook_zh": "说到时间戳，就是证明数据在该时刻存在的印记",
+      "memory_hook_en": "Timestamp → a mark proving the data existed at that time"
+    },
+    {
+      "term": "時刻認証",
+      "definition_jp": "信頼できる正確な時刻を保証しタイムスタンプを支える仕組み。",
+      "explanation_jp": "時刻認証は、タイムスタンプに用いる時刻が信頼できる正確なものであることを保証する仕組みです。時刻認証局(TSA)などが、改ざんされていない正確な時刻源に基づいて時刻情報を提供します。\n\nタイムスタンプの信頼性は、その元となる時刻が正しいことが前提です。時刻認証はその土台を担い、誰かが勝手に時刻を偽れないようにします。試験では、時刻認証がタイムスタンプを成り立たせる基盤であること、信頼できる第三者(時刻認証局)が関与する点を押さえておきましょう。",
+      "analogy_jp": "標準時を配信する「時報」や公的な時計のようなもの。皆がその正確な時刻を信頼するからこそ、消印の日付にも意味が生まれます。",
+      "memory_hook_jp": "時刻認証といえばタイムスタンプを支える正確な時刻保証",
+      "inline_quiz": [
+        "2010h22h-q065"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "时间认证",
+      "term_en": "Time authentication",
+      "definition_zh": "保证可信赖的准确时间、支撑时间戳的机制。",
+      "definition_en": "A mechanism that guarantees trustworthy, accurate time and supports timestamps.",
+      "explanation_zh": "时间认证是保证时间戳所用时间是可信赖且准确的机制。由时间认证机构（TSA）等基于未被篡改的准确时间源来提供时间信息。\n\n时间戳的可信度，以其所依据的时间正确为前提。时间认证承担这一基础，使任何人都无法擅自伪造时间。在考试中，请掌握：时间认证是使时间戳得以成立的根基，并且有可信赖的第三方（时间认证机构）参与其中。",
+      "explanation_en": "Time authentication is a mechanism that guarantees the time used in a timestamp is trustworthy and accurate. A time-stamping authority (TSA) or similar provides time information based on an accurate, untampered time source.\n\nThe trustworthiness of a timestamp presupposes that the underlying time is correct. Time authentication bears this foundation and prevents anyone from forging the time arbitrarily. The exam asks you to keep in mind that time authentication is the basis that makes timestamps possible, and that a trusted third party (time-stamping authority) is involved.",
+      "analogy_zh": "就像播报标准时间的“报时”或公共时钟。正因为大家都信赖那个准确的时间，邮戳上的日期才有意义。",
+      "analogy_en": "It's like the \"time signal\" that broadcasts standard time, or a public clock. Precisely because everyone trusts that accurate time, the date on a postmark carries meaning.",
+      "memory_hook_zh": "说到时间认证，就是支撑时间戳的准确时间保证",
+      "memory_hook_en": "Time authentication → the accurate-time guarantee that supports timestamps"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "ディスク暗号化: ディスク暗号化といえば記憶媒体まるごとの暗号化",
+      "ファイル暗号化: ファイル暗号化といえばファイル単位の個別暗号化",
+      "デジタル署名: デジタル署名といえば本人性と改ざん検知を証明",
+      "署名鍵: 署名鍵といえば署名を作る本人だけの秘密鍵",
+      "検証鍵: 検証鍵といえば署名を確かめる公開鍵",
+      "タイムスタンプ: タイムスタンプといえばその時刻の存在を証明する刻印",
+      "時刻認証: 時刻認証といえばタイムスタンプを支える正確な時刻保証"
+    ],
+    "key_points_jp": [
+      "暗号化の適用には粒度の違いがあり、ディスク暗号化は記憶媒体全体、ファイル暗号化は個別ファイルを対象とする。",
+      "デジタル署名は公開鍵暗号とハッシュ関数を組み合わせ、機密性ではなく『本人性(なりすまし防止)』と『完全性(改ざん検知)』を保証する。",
+      "署名は署名鍵(秘密鍵)で作成し検証鍵(公開鍵)で検証する。暗号化と鍵の使い方が逆になる点に注意。",
+      "タイムスタンプは電子データがその時刻に存在し改ざんされていないことを証明し、時刻認証(信頼できる時刻源)がその信頼性を支える。",
+      "本ユニットはu06の暗号基礎の応用であり、デジタル署名はPKI(公開鍵基盤)の前提となる。"
+    ],
+    "key_points_zh": [
+      "加密的应用存在粒度差异：磁盘加密针对整个存储介质，文件加密针对单个文件。",
+      "数字签名结合公钥加密与哈希函数，保证的不是机密性，而是“身份真实性（防止冒充）”与“完整性（检测篡改）”。",
+      "签名用签名密钥（私钥）创建，用验证密钥（公钥）验证。请注意密钥的用法与加密相反。",
+      "时间戳证明电子数据在该时刻存在且未被篡改，而时间认证（可信赖的时间源）支撑其可信度。",
+      "本单元是 u06 加密基础的应用，而数字签名是 PKI（公钥基础设施）的前提。"
+    ],
+    "key_points_en": [
+      "Applying encryption involves a difference in granularity: disk encryption targets the entire storage medium, while file encryption targets individual files.",
+      "A digital signature combines public-key cryptography with a hash function, and guarantees not confidentiality but \"authenticity (impersonation prevention)\" and \"integrity (tamper detection).\"",
+      "A signature is created with the signing key (private key) and verified with the verification key (public key). Note that the key usage is the opposite of encryption.",
+      "A timestamp proves that electronic data existed at that time and has not been tampered with, and time authentication (a trusted time source) supports its trustworthiness.",
+      "This unit applies the cryptography fundamentals from u06, and digital signatures are a prerequisite for PKI (public key infrastructure)."
+    ],
+    "memory_hooks_zh": [
+      "磁盘加密：说到磁盘加密，就是对整个存储介质进行加密",
+      "文件加密：说到文件加密，就是以文件为单位的单独加密",
+      "数字签名：说到数字签名，就是证明身份真实性与检测篡改",
+      "签名密钥：说到签名密钥，就是只有本人持有、用来创建签名的私钥",
+      "验证密钥：说到验证密钥，就是用来核对签名的公钥",
+      "时间戳：说到时间戳，就是证明数据在该时刻存在的印记",
+      "时间认证：说到时间认证，就是支撑时间戳的准确时间保证"
+    ],
+    "memory_hooks_en": [
+      "Disk encryption: disk encryption → encrypting the whole storage medium at once",
+      "File encryption: file encryption → encrypting data file by file",
+      "Digital signature: digital signature → proving authenticity and detecting tampering",
+      "Signing key: signing key → the owner's private key that creates the signature",
+      "Verification key: verification key → the public key that checks the signature",
+      "Timestamp: timestamp → a mark proving the data existed at that time",
+      "Time authentication: time authentication → the accurate-time guarantee that supports timestamps"
+    ]
+  },
+  "challenge_questions": [
+    "2011h23a-q060",
+    "2017h29h-q099",
+    "2021r03-q068",
+    "2012h24h-q059",
+    "2013h25a-q060"
+  ],
+  "source_figures": [],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "加密的应用与数字签名",
+  "title_en": "Applying Encryption and Digital Signatures",
+  "unit_summary_zh": "学习磁盘/文件加密的应用，以及通过数字签名、签名密钥/验证密钥、时间戳来保证真实性。",
+  "unit_summary_en": "Learn how to apply disk/file encryption, and how digital signatures, signing/verification keys, and timestamps guarantee authenticity."
+}

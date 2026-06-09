@@ -1,0 +1,208 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "management-08-25-u04",
+  "topic_id": "management-08-25",
+  "category": "management",
+  "title_jp": "妥当性確認・受入れ・移行",
+  "unit_summary_jp": "発注者視点での妥当性確認・受入れテストから、文書整備と本番移行までの最終工程を学ぶ。",
+  "order_in_topic": 4,
+  "prerequisites": [
+    "management-08-25-u03"
+  ],
+  "overview": {
+    "intro_jp": "システム開発の最終工程を学ぶ単元です。開発者による変更検証(リグレッションテスト)から、発注者視点で「正しいものができたか」を確かめる妥当性確認テスト・受入れテスト、運用に必要な利用者マニュアルの整備、そして本番環境への移行までの流れを扱います。受入れテストと移行はこの分野で最頻出級であり、各工程の目的と前後関係を区別できることが得点の鍵になります。",
+    "freq_badge": "頻出",
+    "est_minutes": 16,
+    "intro_zh": "本单元学习系统开发的最终工序。内容涵盖：从开发者进行的变更验证（回归测试），到从发包方视角确认“是否做出了正确的东西”的确认测试与验收测试，再到运维所需的用户手册整备，以及向正式环境迁移的整个流程。验收测试和迁移在本领域属于最高频出题级别，能够区分各工序的目的与前后关系，是得分的关键。",
+    "intro_en": "This is the unit where you learn the final stage of system development. It covers the flow from change verification by developers (regression testing), to validation testing and acceptance testing that confirm from the client's perspective whether \"the right thing was built,\" to preparing the user manuals needed for operation, and finally to migration into the production environment. Acceptance testing and migration are among the most frequently tested topics in this field, and being able to distinguish the purpose and sequencing of each stage is the key to scoring points."
+  },
+  "terms": [
+    {
+      "term": "リグレッションテスト",
+      "definition_jp": "変更後に、それまで正常だった機能が壊れていないか確認する再テスト。",
+      "explanation_jp": "リグレッションテストは「回帰テスト」とも呼ばれ、プログラムを修正・機能追加した際に、その変更が原因で既存の正常な機能に不具合(デグレード)が生じていないかを確認するためのテストです。\n\n変更箇所だけでなく、影響が及ぶ可能性のある周辺機能も再度テストする点が特徴です。試験では『修正によって他の部分が動かなくなる事態を防ぐためのテスト』という目的が問われます。新機能が動くかを見るのではなく、これまで通り動き続けるかを確認するテストである点を押さえましょう。",
+      "analogy_jp": "家具を一台動かした後で、他の家具や扉がちゃんと元どおり使えるか部屋全体を見て回るようなもの。直した所だけでなく周りも確認します。",
+      "memory_hook_jp": "リグレッションテストといえば変更で既存機能が壊れていないか再確認",
+      "inline_quiz": [
+        "2009h21h-q053"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "回归测试",
+      "term_en": "Regression Testing",
+      "definition_zh": "在变更之后，确认原本正常的功能是否被破坏的再次测试。",
+      "definition_en": "A retest that, after a change, confirms whether functions that previously worked correctly have been broken.",
+      "explanation_zh": "回归测试的英文名是 regression test，“regression（回归）”意为“回到原来的状态”，是指在修改程序或追加功能时，确认该变更是否导致既有的正常功能出现缺陷（退化）的测试。\n\n其特点是不仅测试变更处，还要对可能受到影响的周边功能再次进行测试。考试会考查它的目的——“为防止因修改导致其他部分无法运行而进行的测试”。要记住：它不是查看新功能能否运行，而是确认是否能像以往一样继续运行的测试。",
+      "explanation_en": "Regression testing, whose name comes from \"regression\" (a return to the prior state), is a test that, when a program is modified or a feature is added, confirms whether that change has caused a defect (degradation) in existing, previously correct functionality.\n\nIts characteristic is that it retests not only the changed area but also the surrounding functions that could be affected. The exam tests its purpose: \"a test to prevent the situation where a fix makes other parts stop working.\" Keep in mind that it is not a test of whether a new feature works, but a test that confirms whether things keep working as before.",
+      "analogy_zh": "就像挪动一件家具之后，绕着整个房间检查其他家具和门是否还能照常使用。不仅检查动过的地方，也检查周围。",
+      "analogy_en": "It is like, after moving one piece of furniture, walking around the whole room to check whether the other furniture and the doors still work as they did before. You check not only the part you changed, but also its surroundings.",
+      "memory_hook_zh": "说到回归测试，就是再次确认变更是否破坏了既有功能",
+      "memory_hook_en": "Regression Testing → recheck whether a change broke existing functionality"
+    },
+    {
+      "term": "妥当性確認テスト",
+      "definition_jp": "完成したシステムが利用者の要求を満たすか(正しいものを作ったか)を確認するテスト。",
+      "explanation_jp": "妥当性確認テスト(バリデーション)は、開発したシステムが当初の要求事項を本当に満たしているか、つまり「正しいもの(利用者が求めたもの)を作れたか」を確認するテストです。\n\nこれは「正しく作れたか(仕様どおりに動くか)」を見る検証(ベリフィケーション)と対になる概念です。試験では、妥当性確認=要求への適合(求められたものを作れたか)、検証=仕様への適合(作り方は正しかったか)という違いがよく問われます。技術的な動作確認から、発注者・利用者の視点へ移る段階に位置づけられます。",
+      "analogy_jp": "料理が注文どおりの一品になっているかを確かめる作業。「ちゃんと火が通っているか」(検証)ではなく、「そもそも頼んだ料理か」(妥当性確認)を見ます。",
+      "memory_hook_jp": "妥当性確認テストといえば正しいものを作ったか(要求への適合)を確認",
+      "inline_quiz": [
+        "2010h22a-q048",
+        "2012h24a-q033"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "确认测试",
+      "term_en": "Validation Testing",
+      "definition_zh": "确认完成的系统是否满足用户需求（是否做出了正确的东西）的测试。",
+      "definition_en": "A test that confirms whether the completed system meets the user's requirements (whether the right thing was built).",
+      "explanation_zh": "确认测试（确认，validation）是确认所开发的系统是否真正满足了最初的需求事项，也就是确认“是否做出了正确的东西（用户所要求的东西）”的测试。\n\n它与查看“是否正确地做了出来（是否按规格运行）”的验证（verification）是一对相对的概念。考试常常考查二者的区别：确认＝符合需求（是否做出了所要求的东西），验证＝符合规格（做法是否正确）。它处于从技术性的动作确认转向发包方、用户视角的阶段。",
+      "explanation_en": "Validation testing (validation) is a test that confirms whether the developed system truly meets the original requirements—that is, whether \"the right thing (what the user asked for) was built.\"\n\nThis is the counterpart concept to verification, which looks at whether \"it was built correctly (whether it works as specified).\" The exam often tests the difference: validation = conformance to requirements (whether what was asked for was built), and verification = conformance to the specification (whether the way it was built was correct). It is positioned at the stage that shifts from technical operational checks to the perspective of the client and users.",
+      "analogy_zh": "就像确认做出来的菜是否就是点单的那一道。看的不是“是否煮熟了”（验证），而是“这本来是不是点的那道菜”（确认）。",
+      "analogy_en": "It is the task of confirming whether the dish that was made is the one that was ordered. You are not checking \"is it cooked through\" (verification), but \"is this even the dish that was ordered\" (validation).",
+      "memory_hook_zh": "说到确认测试，就是确认是否做出了正确的东西（符合需求）",
+      "memory_hook_en": "Validation Testing → confirm whether the right thing was built (conformance to requirements)"
+    },
+    {
+      "term": "受入れテスト",
+      "definition_jp": "発注者がシステムを受け入れてよいかを最終判定するテスト。",
+      "explanation_jp": "受入れテスト(acceptance test)は、開発側から納品されたシステムを、発注者・利用者が実際の業務環境で使い、要求どおりかを確認したうえで「受け入れる(検収する)」かどうかを判断する最終テストです。\n\n開発者が行う単体・結合・システムテストとは異なり、発注者主体で行われる点が大きな特徴です。試験では『受入れテストは発注者(利用者)側が実施する』『業務が問題なく行えるかを確認して検収につなげる』という観点が頻出です。これに合格して初めて、本番環境への移行へ進みます。",
+      "analogy_jp": "注文住宅の引き渡し前に、施主が実際に家を歩いて確認する内覧のようなもの。納得して「受け取ります」と判断する最終チェックです。",
+      "memory_hook_jp": "受入れテストといえば発注者がシステムを受け入れるか最終判定",
+      "inline_quiz": [
+        "2010h22h-q049",
+        "2011h23tokubetsu-q054"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "验收测试",
+      "term_en": "Acceptance Testing",
+      "definition_zh": "由发包方最终判定是否可以接收系统的测试。",
+      "definition_en": "A test in which the client makes the final decision on whether the system may be accepted.",
+      "explanation_zh": "验收测试（acceptance test）是发包方、用户在实际业务环境中使用由开发方交付的系统，确认其是否符合需求之后，判断是否“接收（验收）”的最终测试。\n\n与开发者进行的单元测试、集成测试、系统测试不同，它以发包方为主体进行，这是其重要特征。考试中常出现这样的观点：“验收测试由发包方（用户）一方实施”“确认业务能否顺利开展，从而进入验收”。只有通过它，才会进入向正式环境迁移的步骤。",
+      "explanation_en": "Acceptance testing is the final test in which the client and users use the system delivered by the development side in an actual business environment, confirm whether it meets the requirements, and then judge whether to \"accept (sign off on)\" it.\n\nUnlike the unit, integration, and system testing carried out by developers, it is characterized by being conducted with the client as the main party. The exam frequently tests the points that \"acceptance testing is conducted by the client (user) side\" and that it \"confirms whether business can be carried out without problems, leading to sign-off.\" Only after passing it does the process move on to migration into the production environment.",
+      "analogy_zh": "就像定制住宅交付前，业主实地走进房子查看的看房验房。是在认可后判断“我收下了”的最终检查。",
+      "analogy_en": "It is like the walk-through inspection where, before a custom-built house is handed over, the owner actually walks through the house to check it. It is the final check where, once satisfied, they decide \"I'll take it.\"",
+      "memory_hook_zh": "说到验收测试，就是发包方最终判定是否接收系统",
+      "memory_hook_en": "Acceptance Testing → the client makes the final call on whether to accept the system"
+    },
+    {
+      "term": "利用者マニュアル",
+      "definition_jp": "システムの操作方法や手順を利用者向けにまとめた説明文書。",
+      "explanation_jp": "利用者マニュアルは、完成したシステムを実際に使う利用者(エンドユーザ)が、操作手順や機能の使い方を理解できるようにまとめた文書です。画面操作の流れ、入力の仕方、トラブル時の対処などが記載されます。\n\n受入れや本番運用へ円滑に引き渡すために必要な成果物で、システム本体だけでなく文書も含めて納品・運用へ渡される点がポイントです。試験では、開発者向けの設計書や運用マニュアルではなく『利用者が業務でシステムを使うための手引き』である点を区別して問われます。",
+      "analogy_jp": "新しい家電に付いてくる「取扱説明書」のようなもの。作った人ではなく使う人のために、操作の手順をやさしくまとめた一冊です。",
+      "memory_hook_jp": "利用者マニュアルといえば利用者向けの操作手順をまとめた文書",
+      "inline_quiz": [
+        "2011h23tokubetsu-q037"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "用户手册",
+      "term_en": "User Manual",
+      "definition_zh": "面向用户、整理系统操作方法和步骤的说明文档。",
+      "definition_en": "An explanatory document, aimed at users, that organizes how to operate the system and its procedures.",
+      "explanation_zh": "用户手册是为了让实际使用完成系统的用户（最终用户）能够理解操作步骤和功能用法而整理的文档。其中会记载画面操作的流程、输入方法、出现故障时的应对等。\n\n它是为了顺利交付给验收和正式运维所必需的交付物，要点在于：交付与运维不仅包含系统本体，也包含文档。考试会考查其区别：它不是面向开发者的设计书或运维手册，而是“供用户在业务中使用系统的指南”。",
+      "explanation_en": "A user manual is a document organized so that the users (end users) who will actually use the completed system can understand the operating procedures and how to use its features. It describes things such as the flow of on-screen operations, how to enter input, and what to do when trouble occurs.\n\nIt is a deliverable needed to hand things over smoothly to acceptance and production operation, and the key point is that not only the system itself but also the documentation is delivered and passed on to operation. The exam tests the distinction that it is not a design document or operations manual for developers, but \"a guide for users to use the system in their work.\"",
+      "analogy_zh": "就像新家电附带的“使用说明书”。它不是为制造者写的，而是为使用者写的，把操作步骤通俗易懂地整理成的一本册子。",
+      "analogy_en": "It is like the \"instruction manual\" that comes with a new home appliance. It is not written for the person who made it, but for the person who uses it—a booklet that lays out the operating steps in an easy-to-understand way.",
+      "memory_hook_zh": "说到用户手册，就是面向用户、整理操作步骤的文档",
+      "memory_hook_en": "User Manual → a document for users that organizes the operating procedures"
+    },
+    {
+      "term": "移行",
+      "definition_jp": "新システムを本番環境へ切り替え、運用を開始できる状態にする最終工程。",
+      "explanation_jp": "移行(マイグレーション)は、受入れの済んだ新システムを本番環境へ導入し、旧システムから新システムへ業務やデータを切り替えて運用を開始する最終工程です。データ移行や運用環境の整備もここに含まれます。\n\n切替え方式には、一度に全面切替えする一斉移行と、段階的に切り替える段階移行などがあり、業務停止のリスクと手間のバランスで選びます。試験では、移行が開発プロセスの終端(運用への引渡し)に位置づけられる点、リグレッションテスト→妥当性確認→受入れ→移行という工程順が問われます。",
+      "analogy_jp": "引っ越しで、新居に荷物を運び入れて生活を始め、旧居を引き払うようなもの。準備を整えたうえで生活の拠点を新しい場所へ切り替えます。",
+      "memory_hook_jp": "移行といえば新システムを本番環境へ切り替える最終工程",
+      "inline_quiz": [
+        "2010h22a-q047",
+        "2011h23a-q048"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"リグレッションテスト\"] --> B[\"妥当性確認テスト\"]; B --> C[\"受入れテスト\"]; C --> D[\"利用者マニュアル整備\"]; D --> E[\"移行\"]; E --> F[\"本番運用\"]",
+        "svg_path": "figures/management-08-25-u04-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "迁移",
+      "term_en": "Migration",
+      "definition_zh": "将新系统切换到正式环境、使其达到可以开始运维状态的最终工序。",
+      "definition_en": "The final stage of switching a new system over to the production environment and bringing it to a state where operation can begin.",
+      "explanation_zh": "迁移（migration）是将通过验收的新系统导入正式环境，把业务和数据从旧系统切换到新系统并开始运维的最终工序。数据迁移和运维环境的整备也包含在内。\n\n切换方式有一次性全面切换的一次性迁移，以及分阶段切换的阶段性迁移等，要在业务停止的风险与工作量之间权衡选择。考试会考查这些点：迁移处于开发流程的末端（向运维交付）的位置，以及“回归测试→确认→验收→迁移”这一工序顺序。",
+      "explanation_en": "Migration is the final stage of introducing the accepted new system into the production environment, switching the business and data from the old system to the new system, and beginning operation. Data migration and preparation of the operating environment are also included here.\n\nSwitchover methods include a one-shot migration that switches everything over at once, and a phased migration that switches over in stages; the choice is made by balancing the risk of business stoppage against the effort involved. The exam tests the point that migration is positioned at the end of the development process (handover to operation), and the stage order of \"regression testing → validation → acceptance → migration.\"",
+      "analogy_zh": "就像搬家时把行李搬进新居、开始新生活，然后退掉旧居。在做好准备之后，把生活的据点切换到新的地方。",
+      "analogy_en": "It is like moving house: you carry your belongings into the new home, start living there, and give up the old place. Once everything is ready, you switch your base of life over to the new location.",
+      "memory_hook_zh": "说到迁移，就是把新系统切换到正式环境的最终工序",
+      "memory_hook_en": "Migration → the final stage of switching the new system over to the production environment"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "リグレッションテスト: リグレッションテストといえば変更で既存機能が壊れていないか再確認",
+      "妥当性確認テスト: 妥当性確認テストといえば正しいものを作ったか(要求への適合)を確認",
+      "受入れテスト: 受入れテストといえば発注者がシステムを受け入れるか最終判定",
+      "利用者マニュアル: 利用者マニュアルといえば利用者向けの操作手順をまとめた文書",
+      "移行: 移行といえば新システムを本番環境へ切り替える最終工程"
+    ],
+    "key_points_jp": [
+      "本単元は『リグレッションテスト→妥当性確認テスト→受入れテスト→利用者マニュアル→移行』という、開発後段から本番運用への引渡しの流れを扱う。",
+      "リグレッションテストは変更によって既存の正常な機能が壊れていないか(デグレード防止)を再確認するテストで、回帰テストと同義。",
+      "妥当性確認テスト=正しいものを作ったか(要求への適合)、検証=正しく作れたか(仕様への適合)という対比が頻出。受入れテストは発注者側が実施する最終判定。",
+      "利用者マニュアルは利用者向けの操作手引きで、受入れ・本番運用へ引き渡すために整備する成果物。",
+      "移行は新システムを本番環境へ切り替える開発の終端工程。一斉移行と段階移行などの方式があり、受入れテスト・移行はこの分野で最頻出級。"
+    ],
+    "key_points_zh": [
+      "本单元处理“回归测试→确认测试→验收测试→用户手册→迁移”这一从开发后段到正式运维交付的流程。",
+      "回归测试是再次确认变更是否破坏了既有的正常功能（防止退化）的测试，其名取自英文 regression（回归、回到原状）之意。",
+      "确认测试＝是否做出了正确的东西（符合需求），验证＝是否正确地做了出来（符合规格），这一对比为高频考点。验收测试由发包方一方实施，是最终判定。",
+      "用户手册是面向用户的操作指南，是为了交付给验收与正式运维而整备的交付物。",
+      "迁移是将新系统切换到正式环境的开发末端工序。有一次性迁移和阶段性迁移等方式，验收测试与迁移在本领域属于最高频出题级别。"
+    ],
+    "key_points_en": [
+      "This unit covers the flow of \"regression testing → validation testing → acceptance testing → user manual → migration,\" from the later stages of development to handover to production operation.",
+      "Regression testing rechecks whether a change has broken existing, correct functionality (preventing degradation); its name derives from \"regression,\" meaning a return to the prior state.",
+      "Validation testing = whether the right thing was built (conformance to requirements), verification = whether it was built correctly (conformance to the specification); this contrast is a frequent exam point. Acceptance testing is conducted by the client side and is the final judgment.",
+      "The user manual is an operating guide for users, a deliverable prepared in order to hand things over to acceptance and production operation.",
+      "Migration is the end-stage of development that switches the new system over to the production environment. There are methods such as one-shot migration and phased migration, and acceptance testing and migration are among the most frequently tested topics in this field."
+    ],
+    "memory_hooks_zh": [
+      "回归测试：说到回归测试，就是再次确认变更是否破坏了既有功能",
+      "确认测试：说到确认测试，就是确认是否做出了正确的东西（符合需求）",
+      "验收测试：说到验收测试，就是发包方最终判定是否接收系统",
+      "用户手册：说到用户手册，就是面向用户、整理操作步骤的文档",
+      "迁移：说到迁移，就是把新系统切换到正式环境的最终工序"
+    ],
+    "memory_hooks_en": [
+      "Regression Testing: Regression Testing → recheck whether a change broke existing functionality",
+      "Validation Testing: Validation Testing → confirm whether the right thing was built (conformance to requirements)",
+      "Acceptance Testing: Acceptance Testing → the client makes the final call on whether to accept the system",
+      "User Manual: User Manual → a document for users that organizes the operating procedures",
+      "Migration: Migration → the final stage of switching the new system over to the production environment"
+    ]
+  },
+  "challenge_questions": [
+    "2012h24a-q037",
+    "2014h26a-q033",
+    "2024r06-q045",
+    "2009h21h-q045",
+    "2015h27h-q034"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2010h22a-q048",
+      "figure_path": "figures/2010h22a-q048.png",
+      "figure_type": "diagram",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "确认、验收与迁移",
+  "title_en": "Validation, Acceptance, and Migration",
+  "unit_summary_zh": "学习从发包方视角进行的确认与验收测试，直到文档整备和正式迁移为止的最终工序。",
+  "unit_summary_en": "Learn the final stages from validation and acceptance testing from the client's perspective, through documentation preparation, to migration into production."
+}

@@ -1,0 +1,212 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "management-11-29-u04",
+  "topic_id": "management-11-29",
+  "category": "management",
+  "title_jp": "サービスの維持と継続的改善",
+  "unit_summary_jp": "可用性・継続性の確保とサービスの報告を通じて状態を把握し、PDCA による継続的改善でサービス品質を高め続ける仕組みを理解する。",
+  "order_in_topic": 4,
+  "prerequisites": [
+    "management-11-29-u02",
+    "management-11-29-u03"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、運用・移行で提供を始めたサービスを「安定して使える状態に保ち、測定・報告に基づいて良くし続ける」維持・改善の仕組みを学ぶ。可用性・継続性の確保からサービスの報告、継続的改善とPDCAまで、サービス品質を支える後半工程は試験で頻出であり、各概念の役割と順序の理解が得点に直結する。",
+    "freq_badge": "頻出",
+    "est_minutes": 16,
+    "intro_zh": "本单元学习如何把运维与迁移阶段开始提供的服务“保持在可稳定使用的状态，并基于测量与报告不断改善”的维持与改进机制。从确保可用性与连续性，到服务报告，再到持续改进与 PDCA，这些支撑服务质量的后半段流程在考试中频繁出现，理解各概念的作用与顺序会直接关系到得分。",
+    "intro_en": "In this unit you learn the maintenance-and-improvement mechanism that keeps a service—whose delivery began in operation and transition—“in a state where it can be used stably, and keeps making it better based on measurement and reporting.” From ensuring availability and continuity, to service reporting, to continual improvement and PDCA, this latter half of the workflow that supports service quality appears frequently on the exam, and understanding the role and order of each concept directly affects your score."
+  },
+  "terms": [
+    {
+      "term": "サービス可用性管理",
+      "definition_jp": "サービスを必要なときに使える状態に保ち、稼働率を維持・向上させる管理活動。",
+      "explanation_jp": "サービス可用性管理は、利用者が「使いたいときにサービスを使える」状態を維持するための活動です。稼働率(可用性)を指標として測定し、合意した水準(SLA)を満たすよう監視・改善します。\n\n可用性は平均故障間隔(MTBF)を長く、平均修復時間(MTTR)を短くするほど高まります。試験では「止まりにくく、止まってもすぐ直る」=可用性という観点や、後述のサービス継続管理(災害など重大事象への備え)との違いがよく問われます。可用性管理は日常的な稼働維持、継続管理は非常時の継続確保、と区別して覚えましょう。",
+      "analogy_jp": "コンビニが「いつ行っても開いている」状態を保つようなもの。停電や故障で閉まる時間をできるだけ短くし、客がいつでも買えるようにする取り組みです。",
+      "memory_hook_jp": "サービス可用性管理といえば、いつでも使える稼働率の維持",
+      "inline_quiz": [
+        "2014h26h-q037",
+        "2016h28a-q035"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"高い可用性\"] --> B[\"MTBF を長く\"]; A --> C[\"MTTR を短く\"]; B --> D[\"故障しにくい\"]; C --> E[\"早く復旧する\"]",
+        "svg_path": "figures/management-11-29-u04-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "服务可用性管理",
+      "term_en": "Service Availability Management",
+      "definition_zh": "保持服务在需要时可使用、维持并提升其可用率的管理活动。",
+      "definition_en": "A management activity that keeps a service usable whenever it is needed and maintains and improves its uptime rate.",
+      "explanation_zh": "服务可用性管理是为了让用户保持“想用时就能用到服务”的状态而进行的活动。它以可用率（可用性）为指标进行测量，并加以监控和改善，使其满足约定的水平（SLA）。\n\n可用性会随着平均故障间隔（MTBF）越长、平均修复时间（MTTR）越短而越高。考试中经常考查“不易停止，即使停止也能很快修好”＝可用性的视角，以及它与后述的服务连续性管理（针对灾害等重大事件的准备）之间的区别。请这样区分记忆：可用性管理是日常的运行维持，连续性管理是非常时期的连续性保障。",
+      "explanation_en": "Service availability management is the activity of keeping the service in a state where users can “use it whenever they want to.” It measures the uptime rate (availability) as a metric and monitors and improves it so that the agreed level (SLA) is met.\n\nAvailability increases the longer the mean time between failures (MTBF) is and the shorter the mean time to repair (MTTR) is. The exam often asks about the viewpoint that “hard to go down, and quickly fixed even when it does” = availability, as well as the difference from service continuity management described later (preparing for major events such as disasters). Remember the distinction: availability management is day-to-day uptime maintenance, while continuity management is securing continuity in emergencies.",
+      "analogy_zh": "就像让便利店保持“任何时候去都开着门”的状态。尽量缩短因停电或故障而关门的时间，让顾客随时都能买到东西。",
+      "analogy_en": "Like keeping a convenience store “open whenever you go.” You make the time it is closed due to power outages or breakdowns as short as possible, so customers can always buy what they need.",
+      "memory_hook_zh": "说到服务可用性管理，就是维持随时可用的可用率。",
+      "memory_hook_en": "Service availability management → maintaining an uptime rate that is usable anytime."
+    },
+    {
+      "term": "サービス継続管理",
+      "definition_jp": "災害など重大な事象が起きてもサービスを継続・早期復旧できるよう備える管理活動。",
+      "explanation_jp": "サービス継続管理は、地震・大規模障害・火災といった通常の運用では想定しきれない重大事象に対して、サービスを止めない、または速やかに復旧させるための備えを行う活動です。BCP(事業継続計画)と密接に関係します。\n\n日常的な稼働を守るサービス可用性管理に対し、継続管理は「最悪の事態でも事業を続ける」ための発展概念です。試験では、バックアップ拠点の確保や復旧目標時間の設定など「非常時への備え」が継続管理に当たる点、可用性管理との対比が問われます。",
+      "analogy_jp": "工場が地震や停電に備えて非常用発電機や別拠点を用意しておくようなもの。普段は使わなくても、いざというときに操業を止めないための保険です。",
+      "memory_hook_jp": "サービス継続管理といえば、災害時でもサービスを止めない備え",
+      "inline_quiz": [
+        "2015h27h-q037"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "服务连续性管理",
+      "term_en": "Service Continuity Management",
+      "definition_zh": "为即使发生灾害等重大事件也能让服务持续运行或快速恢复而进行的准备性管理活动。",
+      "definition_en": "A management activity that prepares so the service can continue running or recover quickly even when a major event such as a disaster occurs.",
+      "explanation_zh": "服务连续性管理是针对地震、大规模故障、火灾等在日常运维中难以完全预想的重大事件，为做到不让服务停止、或能迅速恢复而进行准备的活动。它与 BCP（业务连续性计划）密切相关。\n\n相对于守护日常运行的服务可用性管理，连续性管理是为“即使在最坏情况下也要让业务继续”而设的进阶概念。考试中会考查确保备份据点、设定恢复目标时间等“对非常时期的准备”属于连续性管理这一点，以及它与可用性管理的对比。",
+      "explanation_en": "Service continuity management is the activity of preparing—against major events that normal operations cannot fully anticipate, such as earthquakes, large-scale failures, and fires—so that the service is not stopped, or can be restored swiftly. It is closely related to a BCP (business continuity plan).\n\nWhereas service availability management protects day-to-day uptime, continuity management is the advanced concept for “keeping the business going even in the worst case.” The exam asks that things like securing a backup site and setting a recovery time objective count as “preparation for emergencies” under continuity management, and contrasts it with availability management.",
+      "analogy_zh": "就像工厂为应对地震或停电而预先准备应急发电机或备用据点。平时即使用不上，也是为关键时刻不让生产停下来而买的“保险”。",
+      "analogy_en": "Like a factory preparing an emergency generator or an alternate site against earthquakes and power outages. Even if it is not used in normal times, it is “insurance” to keep operations from stopping when the worst happens.",
+      "memory_hook_zh": "说到服务连续性管理，就是即使灾害时也不让服务停止的准备。",
+      "memory_hook_en": "Service continuity management → preparation to keep the service from stopping even during a disaster."
+    },
+    {
+      "term": "サービスの報告",
+      "definition_jp": "サービスの状態や達成状況を定期的にまとめ、関係者に可視化して伝える活動。",
+      "explanation_jp": "サービスの報告は、稼働率・インシデント件数・SLA達成度などの実績を集計し、利用者や管理者に分かりやすく示す活動です。現状を「見える化」することで、課題の発見や次の改善の判断材料になります。\n\n報告は維持系(可用性・継続性)の状況を可視化し、後続の継続的改善の入力となる橋渡しの役割を持ちます。試験では「報告は改善のための材料を提供する」という位置づけや、正確で適時な報告が意思決定を支える点が問われます。",
+      "analogy_jp": "健康診断の結果レポートのようなもの。数値で現状を示すことで、どこを直せばよいか(次の改善)が見えてきます。",
+      "memory_hook_jp": "サービスの報告といえば、実績の可視化で改善につなげる",
+      "inline_quiz": [
+        "2014h26a-q036"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "服务报告",
+      "term_en": "Service Reporting",
+      "definition_zh": "定期汇总服务的状态与达成情况，并以可视化的方式向相关人员传达的活动。",
+      "definition_en": "An activity that periodically compiles the state and achievement status of a service and conveys it to stakeholders in a visualized way.",
+      "explanation_zh": "服务报告是把可用率、事件（故障）件数、SLA 达成度等实绩加以汇总，并以易懂的方式呈现给用户和管理者的活动。通过将现状“可视化”，为发现课题和判断下一步改善提供依据。\n\n报告承担着把维持类（可用性、连续性）的状况可视化、并作为后续持续改进输入的桥梁作用。考试中会考查“报告为改善提供素材”这一定位，以及准确而及时的报告支撑决策这一点。",
+      "explanation_en": "Service reporting is the activity of aggregating results such as the uptime rate, the number of incidents, and the degree of SLA achievement, and presenting them clearly to users and managers. By making the current state “visible,” it becomes material for finding issues and deciding the next improvement.\n\nReporting plays a bridging role: it visualizes the status of the maintenance side (availability, continuity) and serves as input to the subsequent continual improvement. The exam asks about the positioning that “reporting provides material for improvement,” and that accurate and timely reporting supports decision-making.",
+      "analogy_zh": "就像体检的结果报告。用数值呈现现状，就能看出哪里需要修正（下一步的改善）。",
+      "analogy_en": "Like a health checkup result report. By showing the current state in numbers, you can see what needs fixing (the next improvement).",
+      "memory_hook_zh": "说到服务报告，就是把实绩可视化以连接到改善。",
+      "memory_hook_en": "Service reporting → visualizing results to connect them to improvement."
+    },
+    {
+      "term": "継続的改善",
+      "definition_jp": "サービスの品質を測定・評価し、絶え間なく良くし続ける活動。",
+      "explanation_jp": "継続的改善は、一度きりで終わらせず、サービスを繰り返し見直してより良くしていく活動です。サービスの報告などで得た情報をもとに課題を特定し、改善策を実施して効果を確認します。\n\nこの「回し続ける」考え方を具体的な手順にしたものが後述のPDCAです。試験では、継続的改善が一過性の対応ではなく恒常的な取り組みである点、報告(現状把握)を前提に行われる点、PDCAという方法論によって実現される点が問われます。",
+      "analogy_jp": "スポーツ選手が練習・試合・振り返りを繰り返して少しずつ上達していくようなもの。一度の改善で満足せず、ずっと続けるのがポイントです。",
+      "memory_hook_jp": "継続的改善といえば、止めずに良くし続ける取り組み",
+      "inline_quiz": [
+        "2013h25a-q030",
+        "2014h26a-q031"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "持续改进",
+      "term_en": "Continual Improvement",
+      "definition_zh": "对服务质量进行测量与评价，并不间断地持续使其变好的活动。",
+      "definition_en": "An activity that measures and evaluates service quality and keeps making it better without ceasing.",
+      "explanation_zh": "持续改进是不以一次为限、反复审视服务并使其变得更好的活动。它以服务报告等获得的信息为依据来确定课题，实施改善对策并确认效果。\n\n把这种“不断循环”的思路落实为具体步骤的，就是后述的 PDCA。考试中会考查持续改进不是一次性的应对而是常态化的工作、它以报告（掌握现状）为前提进行、以及它通过 PDCA 这一方法论来实现这几点。",
+      "explanation_en": "Continual improvement is the activity of not stopping after one time but repeatedly reviewing the service to make it better. Based on information obtained from things like service reporting, it identifies issues, implements improvement measures, and confirms the effect.\n\nThe concrete procedure that turns this “keep cycling” mindset into steps is PDCA, described later. The exam asks that continual improvement is not a one-off response but an ongoing effort, that it is carried out on the premise of reporting (grasping the current state), and that it is realized through the PDCA methodology.",
+      "analogy_zh": "就像运动员反复进行训练、比赛、复盘，一点点地进步。要点在于不满足于一次改善，而是一直持续下去。",
+      "analogy_en": "Like an athlete who repeats practice, matches, and review to improve little by little. The point is not to be satisfied with one improvement but to keep going forever.",
+      "memory_hook_zh": "说到持续改进，就是不停下来、持续使其变好的工作。",
+      "memory_hook_en": "Continual improvement → an effort that never stops and keeps making things better."
+    },
+    {
+      "term": "PDCA",
+      "definition_jp": "Plan・Do・Check・Act の4段階を繰り返して継続的に改善する管理手法。",
+      "explanation_jp": "PDCAは、計画(Plan)→実行(Do)→評価(Check)→改善(Act)の4段階を順に行い、最後のActを次のPlanにつなげて何度も回すことで品質を高める手法です。継続的改善を具体的に進めるための代表的な方法論です。\n\n各段階の意味を取り違えないことが重要です。Checkは「計画どおりか評価・点検」、Actは「評価結果を受けた是正・改善」を指します。試験ではPDCAの順序や各段階の内容、サイクルを「繰り返す」ことで継続的に改善する点が頻出です。",
+      "analogy_jp": "料理の上達と同じ。レシピを立て(Plan)、作り(Do)、味見し(Check)、次は塩を減らそうと直す(Act)。これを毎回繰り返してどんどん美味しくなります。",
+      "memory_hook_jp": "PDCAといえば、計画・実行・評価・改善を回し続ける",
+      "inline_quiz": [
+        "2010h22h-q032"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; P[\"Plan 計画\"] --> D[\"Do 実行\"]; D --> C[\"Check 評価\"]; C --> A[\"Act 改善\"]; A --> P",
+        "svg_path": "figures/management-11-29-u04-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "PDCA",
+      "term_en": "PDCA",
+      "definition_zh": "反复进行 Plan、Do、Check、Act 四个阶段以持续改进的管理方法。",
+      "definition_en": "A management method that repeats the four stages of Plan, Do, Check, and Act to improve continually.",
+      "explanation_zh": "PDCA 是按顺序进行计划（Plan）→执行（Do）→评价（Check）→改善（Act）四个阶段，并把最后的 Act 连接到下一个 Plan、反复循环以提升质量的方法。它是把持续改进具体推进下去的代表性方法论。\n\n关键是不要弄错各阶段的含义。Check 指“评价、检查是否按计划进行”，Act 指“接受评价结果而进行的纠正与改善”。考试中频繁考查 PDCA 的顺序、各阶段的内容，以及通过“反复”循环来持续改进这一点。",
+      "explanation_en": "PDCA is a method that carries out the four stages in order—Plan → Do → Check → Act—and raises quality by connecting the final Act to the next Plan and cycling through it again and again. It is the representative methodology for concretely advancing continual improvement.\n\nIt is important not to confuse the meaning of each stage. Check means “evaluating and inspecting whether things went as planned,” and Act means “correction and improvement made in response to the evaluation results.” The exam frequently asks about the order of PDCA, the content of each stage, and the point that improvement continues by “repeating” the cycle.",
+      "analogy_zh": "和厨艺进步一样。定好菜谱（Plan）、动手做（Do）、尝味道（Check）、下次想着少放点盐而加以修正（Act）。每次都这样反复，就会越做越好吃。",
+      "analogy_en": "Same as getting better at cooking. You set the recipe (Plan), cook it (Do), taste it (Check), and fix it by deciding to use less salt next time (Act). Repeat this every time and it keeps getting more delicious.",
+      "memory_hook_zh": "说到 PDCA，就是把计划、执行、评价、改善持续循环下去。",
+      "memory_hook_en": "PDCA → keep cycling Plan, Do, Check, Act."
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "サービス可用性管理: いつでも使える稼働率の維持",
+      "サービス継続管理: 災害時でもサービスを止めない備え",
+      "サービスの報告: 実績の可視化で改善につなげる",
+      "継続的改善: 止めずに良くし続ける取り組み",
+      "PDCA: 計画・実行・評価・改善を回し続ける"
+    ],
+    "key_points_jp": [
+      "サービス可用性管理は日常的に「使える状態(稼働率)」を維持し、サービス継続管理は災害など非常時でも止めない備えを行う。両者の違いは頻出。",
+      "可用性はMTBF(平均故障間隔)を長く、MTTR(平均修復時間)を短くするほど高まる。",
+      "サービスの報告は実績を可視化し、継続的改善の入力(材料)となる橋渡し役。",
+      "継続的改善は一過性でなく恒常的に行う活動で、それを具体化する方法論がPDCA。",
+      "PDCAはPlan→Do→Check→Actの順で回し、Actを次のPlanにつなげて繰り返す。"
+    ],
+    "key_points_zh": [
+      "服务可用性管理在日常维持“可使用的状态（可用率）”，服务连续性管理则做好即使在灾害等非常时期也不停止的准备。二者的区别是高频考点。",
+      "可用性会随着 MTBF（平均故障间隔）越长、MTTR（平均修复时间）越短而越高。",
+      "服务报告把实绩可视化，充当持续改进的输入（素材）的桥梁角色。",
+      "持续改进不是一次性的，而是常态化进行的活动，将其具体化的方法论就是 PDCA。",
+      "PDCA 按 Plan→Do→Check→Act 的顺序循环，并把 Act 连接到下一个 Plan 加以反复。"
+    ],
+    "key_points_en": [
+      "Service availability management maintains a “usable state (uptime rate)” day to day, while service continuity management prepares so the service does not stop even in emergencies such as disasters. The difference between the two is a frequent exam topic.",
+      "Availability increases the longer the MTBF (mean time between failures) is and the shorter the MTTR (mean time to repair) is.",
+      "Service reporting visualizes results and serves as the bridge that becomes the input (material) for continual improvement.",
+      "Continual improvement is not a one-off but an ongoing activity, and the methodology that makes it concrete is PDCA.",
+      "PDCA cycles in the order Plan → Do → Check → Act, connecting Act to the next Plan to repeat."
+    ],
+    "memory_hooks_zh": [
+      "服务可用性管理：维持随时可用的可用率。",
+      "服务连续性管理：即使灾害时也不让服务停止的准备。",
+      "服务报告：把实绩可视化以连接到改善。",
+      "持续改进：不停下来、持续使其变好的工作。",
+      "PDCA：把计划、执行、评价、改善持续循环下去。"
+    ],
+    "memory_hooks_en": [
+      "Service availability management: maintaining an uptime rate usable anytime.",
+      "Service continuity management: preparation to keep the service from stopping even during a disaster.",
+      "Service reporting: visualizing results to connect them to improvement.",
+      "Continual improvement: an effort that never stops and keeps making things better.",
+      "PDCA: keep cycling Plan, Do, Check, Act."
+    ]
+  },
+  "challenge_questions": [
+    "2016h28h-q036",
+    "2018h30a-q056",
+    "2019r01a-q048",
+    "2025r07-q036",
+    "2026r08-q048"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2014h26a-q031",
+      "figure_path": "figures/2014h26a-q031.png",
+      "figure_type": "flowchart",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "服务的维持与持续改进",
+  "title_en": "Service Maintenance and Continual Improvement",
+  "unit_summary_zh": "通过确保可用性与连续性以及服务报告来掌握状态，并借助 PDCA 进行持续改进，理解不断提升服务质量的机制。",
+  "unit_summary_en": "Understand the mechanism for continually raising service quality: grasp the state of the service through ensuring availability and continuity and through service reporting, and keep improving via PDCA-based continual improvement."
+}

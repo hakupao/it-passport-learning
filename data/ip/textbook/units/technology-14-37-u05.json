@@ -1,0 +1,226 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-14-37-u05",
+  "topic_id": "technology-14-37",
+  "category": "technology",
+  "title_jp": "探索と整列のアルゴリズム",
+  "unit_summary_jp": "線形探索法・2分探索法の探索アルゴリズムと、選択ソート・バブルソート・クイックソートの整列アルゴリズムを理解する。",
+  "order_in_topic": 5,
+  "prerequisites": [
+    "technology-14-37-u01",
+    "technology-14-37-u04"
+  ],
+  "overview": {
+    "intro_jp": "このユニットでは、データの中から目的の値を見つける「探索」と、データを順番に並べ替える「整列(ソート)」の代表的なアルゴリズムを学ぶ。線形探索法・2分探索法、選択ソート・バブルソート・クイックソートを、素朴な手法から効率的な手法へと比較しながら理解する。処理の仕組みと速さ(計算量)の違いはITパスポートで頻出する重要分野である。",
+    "freq_badge": "標準",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习从数据中找出目标值的「查找」与将数据按顺序重新排列的「排序」的代表性算法。通过将朴素的方法与高效的方法相对比，理解线性查找法、二分查找法以及选择排序、冒泡排序、快速排序。处理机制与速度（计算量）的差异是 IT 护照考试中频繁出现的重要领域。",
+    "intro_en": "In this unit, you will learn representative algorithms for \"searching\" (finding a target value within data) and \"sorting\" (rearranging data in order). You will understand linear search, binary search, selection sort, bubble sort, and quick sort by comparing naive approaches with efficient ones. The differences in how they work and in their speed (computational complexity) form an important field that appears frequently on the IT Passport exam."
+  },
+  "terms": [
+    {
+      "term": "線形探索法",
+      "definition_jp": "データの先頭から順番に1つずつ調べ、目的の値を探す最も素朴な探索法。",
+      "explanation_jp": "線形探索法は、配列やリストの先頭から末尾に向かって1つずつ値を照合し、目的のデータが見つかれば終了する方法です。逐次探索とも呼ばれます。\n\nデータが並べ替えられていなくても使える手軽さが利点ですが、データ件数が増えるほど調べる回数も増えます。最悪の場合は全件を調べることになり、n個のデータでは平均n/2回、最大n回の比較が必要です。\n\n試験では、整列が不要な点と、後述の2分探索法より一般に遅い点が対比して問われます。データ数nに比例して時間が増える特徴を押さえましょう。",
+      "analogy_jp": "出席番号順に並んでいない名簿で、特定の人を上から一行ずつ指でなぞって探すイメージ。並び順を気にせず探せますが、人数が多いと時間がかかります。",
+      "memory_hook_jp": "線形探索法といえば先頭から順に1つずつ調べる",
+      "inline_quiz": [
+        "2023r05-q069"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "线性查找法",
+      "term_en": "Linear search",
+      "definition_zh": "从数据开头开始逐个依次检查，以找出目标值的最朴素的查找法。",
+      "definition_en": "The most basic search method, which checks data one by one in order from the beginning to find the target value.",
+      "explanation_zh": "线性查找法是从数组或列表的开头朝末尾逐个比对值，一旦找到目标数据就结束的方法。也称为顺序查找。\n\n它的优点在于即使数据没有经过排序也能使用，十分便捷；但数据条数越多，需要检查的次数也越多。在最坏的情况下需要检查全部数据，对于 n 个数据，平均需要 n/2 次、最多 n 次比较。\n\n在考试中，常将它「不需要排序」这一点，与后文二分查找法相比「一般较慢」这一点对比出题。请掌握其处理时间与数据数 n 成正比增长的特征。",
+      "explanation_en": "Linear search compares values one at a time from the beginning to the end of an array or list, and ends as soon as the target data is found. It is also called sequential search.\n\nIts advantage is the convenience of working even when the data is not sorted, but the more data items there are, the more times you have to check. In the worst case you end up checking every item: for n items, it requires n/2 comparisons on average and n comparisons at most.\n\nOn the exam, the point that it needs no sorting is often contrasted with the point that it is generally slower than the binary search covered later. Keep in mind the characteristic that the time increases in proportion to the number of data items n.",
+      "analogy_zh": "想象在一份没有按学号顺序排列的名单中，用手指从上往下逐行划过来寻找某个特定的人。可以不在意排列顺序就开始找，但人数一多就会很费时间。",
+      "analogy_en": "Imagine looking for a specific person on a roster that is not arranged in student-number order, tracing down line by line with your finger. You can search without worrying about the order, but it takes time when there are many people.",
+      "memory_hook_zh": "说到线性查找法，就是从开头依次逐个检查。",
+      "memory_hook_en": "Linear search → check one by one in order from the start."
+    },
+    {
+      "term": "2分探索法",
+      "definition_jp": "整列済みデータの中央と比較し、範囲を半分ずつ絞り込んで探す効率的な探索法。",
+      "explanation_jp": "2分探索法(バイナリサーチ)は、あらかじめ昇順や降順に整列されたデータに対し、まん中の値と目的の値を比較し、目的の値がどちら側にあるかを判断して探索範囲を毎回半分に狭めていく方法です。\n\n1回の比較で候補が半減するため非常に高速で、n個のデータでも比較回数はおよそlog₂n回で済みます。たとえば1000件でも約10回で見つかります。\n\n試験では「データが整列済みであることが前提」という条件と、線形探索より圧倒的に速い点が頻出です。整列されていないデータには使えない点に注意しましょう。",
+      "analogy_jp": "辞書で単語を引くとき、まん中あたりを開いて前か後ろかを判断し、さらにその半分を開く、を繰り返すイメージ。数回めくるだけで目的のページに着きます。",
+      "memory_hook_jp": "2分探索法といえば整列済みを半分ずつ絞り込む",
+      "inline_quiz": [
+        "2026r08-q067"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph TD; A[\"中央の値と比較\"] --> B{\"目的の値と一致?\"}; B -->|\"一致\"| C[\"発見・終了\"]; B -->|\"目的が小さい\"| D[\"左半分に範囲を絞る\"]; B -->|\"目的が大きい\"| E[\"右半分に範囲を絞る\"]; D --> A; E --> A",
+        "svg_path": "figures/technology-14-37-u05-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "二分查找法",
+      "term_en": "Binary search",
+      "definition_zh": "与已排序数据的中间值比较，每次将范围缩小一半来查找的高效查找法。",
+      "definition_en": "An efficient search method that compares with the middle of sorted data and narrows the range by half each time.",
+      "explanation_zh": "二分查找法（binary search）是针对事先按升序或降序排好的数据，将正中间的值与目标值比较，判断目标值在哪一侧，从而每次将查找范围缩小一半的方法。\n\n由于每比较一次候选范围就减半，所以速度非常快，即使是 n 个数据，比较次数也大约只需 log₂n 次。例如即使有 1000 条，约 10 次就能找到。\n\n在考试中，「数据必须已经排序」这一前提条件，以及它远比线性查找快这一点频繁出现。请注意它无法用于未排序的数据。",
+      "explanation_en": "Binary search compares the value in the very middle with the target value for data sorted in ascending or descending order in advance, determines which side the target value is on, and narrows the search range by half each time.\n\nBecause each comparison halves the candidates, it is very fast: even for n items, the number of comparisons is only about log₂n. For example, even with 1,000 items, you can find the target in about 10 comparisons.\n\nOn the exam, the prerequisite that \"the data must already be sorted\" and the point that it is overwhelmingly faster than linear search appear frequently. Note that it cannot be used on unsorted data.",
+      "analogy_zh": "想象在字典里查单词时，先翻开大致中间的位置，判断要找的词在前面还是后面，然后再翻开那一半的中间，如此反复。只需翻几次就能到达目标页。",
+      "analogy_en": "Imagine looking up a word in a dictionary: you open it roughly in the middle, decide whether the word is before or after, then open the middle of that half, and repeat. You reach the target page in just a few flips.",
+      "memory_hook_zh": "说到二分查找法，就是对已排序数据每次缩小一半。",
+      "memory_hook_en": "Binary search → narrow sorted data by half each time."
+    },
+    {
+      "term": "選択ソート",
+      "definition_jp": "未整列部分から最小(最大)値を選び、先頭に置くことを繰り返す整列法。",
+      "explanation_jp": "選択ソートは、データ全体から最小値(または最大値)を選び出して先頭の要素と交換し、次に残りの中から最小値を選んで2番目に置く、という操作を繰り返してデータを並べ替える方法です。\n\n「選んで(select)所定の位置に置く」という発想が直感的で分かりやすいのが特徴です。データ件数をnとすると、比較回数はおよそn²に比例し、データが多いと遅くなります。\n\n試験では、毎回未整列部分から最小値を探して確定させていく動作の流れが問われます。次のバブルソートとの違い(交換のしかた)を整理して覚えましょう。",
+      "analogy_jp": "背の順に並ぶとき、列全体から一番背の低い人を見つけて先頭に立たせ、次に残りで一番低い人を2番目に、と順に決めていくイメージ。",
+      "memory_hook_jp": "選択ソートといえば最小値を選んで先頭に置く",
+      "inline_quiz": [
+        "2025r07-q098"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "选择排序",
+      "term_en": "Selection sort",
+      "definition_zh": "从未排序部分选出最小（最大）值放到开头，并反复进行这一操作的排序法。",
+      "definition_en": "A sorting method that repeatedly selects the minimum (or maximum) value from the unsorted portion and places it at the front.",
+      "explanation_zh": "选择排序是从整批数据中选出最小值（或最大值）与开头的元素交换，接着从剩余部分中选出最小值放到第二个位置，如此反复来重新排列数据的方法。\n\n它的特点是「选出（select）后放到指定位置」这一思路直观易懂。设数据条数为 n，则比较次数大约与 n² 成正比，数据多时就会变慢。\n\n在考试中，常考查每次都从未排序部分寻找最小值并将其确定下来的操作流程。请把它与接下来的冒泡排序的区别（交换的方式）整理清楚来记忆。",
+      "explanation_en": "Selection sort selects the minimum value (or maximum value) from all the data and swaps it with the first element, then selects the minimum from the remaining items and places it in the second position, repeating this to rearrange the data.\n\nIts characteristic is that the idea of \"selecting and placing it in a fixed position\" is intuitive and easy to understand. If the number of data items is n, the number of comparisons is roughly proportional to n², so it becomes slow with a lot of data.\n\nOn the exam, the flow of repeatedly finding the minimum from the unsorted portion and fixing it in place is tested. Sort out and memorize how it differs from the bubble sort that follows (the way swapping is done).",
+      "analogy_zh": "想象按身高排队时，从整列里找出个子最矮的人让他站到最前面，接着从剩下的人里再找最矮的站到第二位，依次确定下来。",
+      "analogy_en": "Imagine lining up by height: you find the shortest person in the whole line and put them at the front, then find the shortest among the rest and put them in second place, deciding positions one by one.",
+      "memory_hook_zh": "说到选择排序，就是选出最小值放到开头。",
+      "memory_hook_en": "Selection sort → select the minimum and place it at the front."
+    },
+    {
+      "term": "バブルソート",
+      "definition_jp": "隣り合う要素を比較し、大小が逆なら交換することを繰り返す基本の整列法。",
+      "explanation_jp": "バブルソートは、隣接する2つの要素を順に比較し、並び順が逆であれば入れ替える操作を端から端まで繰り返して整列する方法です。隣接交換法とも呼ばれます。\n\nこの操作を1巡すると最大値(または最小値)が端に確定し、泡(bubble)が浮かび上がるように値が移動していくことが名前の由来です。比較回数はおよそn²に比例し、件数が多いと遅くなります。\n\n試験では、選択ソートが「最小値を選んで置く」のに対し、バブルソートは「隣同士を比較して交換する」点の違いが頻出です。動作の仕組みを取り違えないようにしましょう。",
+      "analogy_jp": "横一列に並んだ人が、隣の人と背を比べて高い方を右へずらす、を繰り返すイメージ。何巡もすると自然に背の順に整います。",
+      "memory_hook_jp": "バブルソートといえば隣同士を比較して交換",
+      "inline_quiz": [
+        "2023r05-q060"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "冒泡排序",
+      "term_en": "Bubble sort",
+      "definition_zh": "比较相邻元素，若大小顺序颠倒就交换，并反复进行这一操作的基本排序法。",
+      "definition_en": "A basic sorting method that repeatedly compares adjacent elements and swaps them if they are in the wrong order.",
+      "explanation_zh": "冒泡排序是依次比较相邻的两个元素，若排列顺序颠倒就将它们互换，从一端到另一端反复进行这一操作来排序的方法。也称为相邻交换法。\n\n这一操作每进行一轮，就会有一个最大值（或最小值）在末端被确定下来，数值会像气泡（bubble）上浮一样移动，这就是其名称的由来。比较次数大约与 n² 成正比，条数多时就会变慢。\n\n在考试中，选择排序是「选出最小值后放置」，而冒泡排序是「比较相邻两者并交换」，这一区别频繁出现。请不要把两者的工作机制搞混。",
+      "explanation_en": "Bubble sort compares two adjacent elements in turn and swaps them if their order is reversed, repeating this from one end to the other to sort the data. It is also called the adjacent-exchange method.\n\nEach pass of this operation fixes one maximum value (or minimum value) at the end, and values move as if a bubble were rising to the surface, which is the origin of the name. The number of comparisons is roughly proportional to n², so it becomes slow when there are many items.\n\nOn the exam, the difference between selection sort, which \"selects the minimum and places it,\" and bubble sort, which \"compares adjacent pairs and swaps,\" appears frequently. Be careful not to mix up how the two work.",
+      "analogy_zh": "想象横排站成一列的人，每个人和旁边的人比身高，把较高的那个往右挪，如此反复。经过多轮之后，自然就排成了身高顺序。",
+      "analogy_en": "Imagine people standing in a horizontal row, each comparing height with the neighbor and shifting the taller one to the right, repeatedly. After many passes, they naturally end up arranged by height.",
+      "memory_hook_zh": "说到冒泡排序，就是比较相邻两者并交换。",
+      "memory_hook_en": "Bubble sort → compare adjacent pairs and swap."
+    },
+    {
+      "term": "クイックソート",
+      "definition_jp": "基準値で大小2グループに分け、各グループを再帰的に並べ替える高速整列法。",
+      "explanation_jp": "クイックソートは、基準値(ピボット)を1つ選び、それより小さい値の組と大きい値の組にデータを振り分け、それぞれの組に同じ処理を繰り返して整列する方法です。分割統治法に基づく代表的な高速ソートです。\n\n大きな問題を小さな部分問題に分けて解くため、平均的にはおよそn×log₂nに比例する速さで処理でき、選択ソートやバブルソートより高速です。\n\n試験では、ピボットで分割して再帰的に処理する考え方と、n²型の素朴なソートより速い点が問われます。名前のとおり「速い」整列法として位置づけて覚えましょう。",
+      "analogy_jp": "クラスを基準の身長で「それより低い人」「高い人」の2グループに分け、各グループでさらに同じ分け方を繰り返して並べていくイメージ。",
+      "memory_hook_jp": "クイックソートといえば基準値で分けて分割統治",
+      "inline_quiz": [
+        "2010h22a-q069"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph TD; A[\"基準値(ピボット)を選ぶ\"] --> B[\"基準より小さい組\"]; A --> C[\"基準より大きい組\"]; B --> D[\"各組を再帰的に同じ手順で整列\"]; C --> D; D --> E[\"全体が整列済み\"]",
+        "svg_path": "figures/technology-14-37-u05-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "快速排序",
+      "term_en": "Quick sort",
+      "definition_zh": "以基准值将数据分成大小两组，并对各组递归重新排列的高速排序法。",
+      "definition_en": "A fast sorting method that divides data into two groups (smaller and larger) by a pivot value and recursively rearranges each group.",
+      "explanation_zh": "快速排序是选出一个基准值（pivot），将数据分配到比它小的一组和比它大的一组，再对各组反复进行相同处理来排序的方法。它是基于分治法的代表性高速排序。\n\n由于是把大问题拆分成小的子问题来求解，平均而言能以大约与 n×log₂n 成正比的速度处理，比选择排序和冒泡排序都快。\n\n在考试中，常考查用基准值分割后递归处理的思路，以及它比 n² 型的朴素排序更快这一点。请把它定位为名副其实「快速」的排序法来记忆。",
+      "explanation_en": "Quick sort selects one pivot value, distributes the data into a group of values smaller than it and a group of larger values, and repeats the same process on each group to sort. It is a representative fast sort based on the divide-and-conquer method.\n\nBecause it solves a large problem by dividing it into small subproblems, on average it can process at a speed roughly proportional to n×log₂n, faster than selection sort and bubble sort.\n\nOn the exam, the idea of splitting by a pivot and processing recursively, and the point that it is faster than naive n²-type sorts, are tested. Memorize it as a sorting method that is, true to its name, \"quick.\"",
+      "analogy_zh": "想象以一个基准身高把班级分成「比它矮的人」和「比它高的人」两组，再在各组中反复进行同样的分组来排列。",
+      "analogy_en": "Imagine dividing a class into two groups, \"those shorter than the reference height\" and \"those taller,\" then repeating the same grouping within each group to arrange them.",
+      "memory_hook_zh": "说到快速排序，就是以基准值分组并分治。",
+      "memory_hook_en": "Quick sort → split by a pivot and divide and conquer."
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "線形探索法: 線形探索法といえば先頭から順に1つずつ調べる",
+      "2分探索法: 2分探索法といえば整列済みを半分ずつ絞り込む",
+      "選択ソート: 選択ソートといえば最小値を選んで先頭に置く",
+      "バブルソート: バブルソートといえば隣同士を比較して交換",
+      "クイックソート: クイックソートといえば基準値で分けて分割統治"
+    ],
+    "key_points_jp": [
+      "探索は線形探索法(先頭から順)と2分探索法(整列済みを半分ずつ絞る)の2つ。2分探索法はデータが整列済みであることが前提で、線形探索より高速。",
+      "整列(ソート)は選択ソート・バブルソート・クイックソートが代表。選択は最小値を選んで置く、バブルは隣同士を交換する点が違う。",
+      "クイックソートは基準値(ピボット)で大小2組に分け再帰的に処理する分割統治法で、選択・バブルより高速。",
+      "計算量の目安として、線形探索や選択・バブルソートはデータ数nが増えると処理時間が大きく増え、2分探索やクイックソートは効率がよい。",
+      "素朴な手法(線形探索・選択・バブル)と効率的な手法(2分探索・クイック)を対比して、仕組みと速さの違いを押さえることが試験対策の要点。"
+    ],
+    "key_points_zh": [
+      "查找有线性查找法（从开头依次找）和二分查找法（对已排序数据每次缩小一半）两种。二分查找法以数据已排序为前提，比线性查找更快。",
+      "排序的代表是选择排序、冒泡排序和快速排序。区别在于：选择排序是选出最小值放置，冒泡排序是交换相邻两者。",
+      "快速排序是用基准值（pivot）将数据分成大小两组并递归处理的分治法，比选择排序和冒泡排序更快。",
+      "作为计算量的大致衡量，线性查找以及选择排序、冒泡排序在数据数 n 增加时处理时间会大幅增长，而二分查找和快速排序的效率较高。",
+      "把朴素的方法（线性查找、选择排序、冒泡排序）与高效的方法（二分查找、快速排序）对比，掌握其机制与速度的差异，是应考的要点。"
+    ],
+    "key_points_en": [
+      "There are two search methods: linear search (checking in order from the start) and binary search (narrowing sorted data by half each time). Binary search requires the data to be already sorted and is faster than linear search.",
+      "The representative sorts are selection sort, bubble sort, and quick sort. The difference is that selection sort selects the minimum and places it, while bubble sort swaps adjacent pairs.",
+      "Quick sort is a divide-and-conquer method that splits data into two groups (smaller and larger) by a pivot and processes them recursively, faster than selection sort and bubble sort.",
+      "As a rough measure of computational complexity, linear search and selection/bubble sort show a large increase in processing time as the number of data items n grows, whereas binary search and quick sort are efficient.",
+      "Contrasting the naive methods (linear search, selection sort, bubble sort) with the efficient methods (binary search, quick sort) and grasping the differences in how they work and in their speed is the key point for exam preparation."
+    ],
+    "memory_hooks_zh": [
+      "线性查找法：说到线性查找法，就是从开头依次逐个检查。",
+      "二分查找法：说到二分查找法，就是对已排序数据每次缩小一半。",
+      "选择排序：说到选择排序，就是选出最小值放到开头。",
+      "冒泡排序：说到冒泡排序，就是比较相邻两者并交换。",
+      "快速排序：说到快速排序，就是以基准值分组并分治。"
+    ],
+    "memory_hooks_en": [
+      "Linear search: linear search → check one by one in order from the start.",
+      "Binary search: binary search → narrow sorted data by half each time.",
+      "Selection sort: selection sort → select the minimum and place it at the front.",
+      "Bubble sort: bubble sort → compare adjacent pairs and swap.",
+      "Quick sort: quick sort → split by a pivot and divide and conquer."
+    ]
+  },
+  "challenge_questions": [
+    "2010h22h-q053",
+    "2011h23a-q064",
+    "2011h23tokubetsu-q093",
+    "2013h25h-q053",
+    "2015h27a-q048"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2011h23a-q064",
+      "figure_path": "figures/2011h23a-q064.png",
+      "figure_type": "diagram",
+      "figure_description": "1〜4の番号を持つ四つの状態が円形につながれた状態遷移図。時計回りおよび反時計回りに遷移できる。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23tokubetsu-q093",
+      "figure_path": "figures/2011h23tokubetsu-q093.png",
+      "figure_type": "flowchart",
+      "figure_description": "チケット金額計算関数のフローチャート（図1）：開始→条件判定a（購入条件チェック）→Yes側：J+K≧20判定→Yes側：L=0.9×(3,000×J+1,000×K)，No側：L=3,000×J+1,000×K→No側：L=−1→終了 の流れ図。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2015h27a-q048",
+      "figure_path": "figures/2015h27a-q048.png",
+      "figure_type": "flowchart",
+      "figure_description": "流れ図（フローチャート）とデータ区分表。データ区分A:件数10、B:件数30、C:件数50、その他:件数10。流れ図はx, y, zの3段分岐処理構造を示す。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "查找与排序算法",
+  "title_en": "Search and Sorting Algorithms",
+  "unit_summary_zh": "理解线性查找法、二分查找法这两种查找算法，以及选择排序、冒泡排序、快速排序这三种排序算法。",
+  "unit_summary_en": "Understand the search algorithms (linear search and binary search) and the sorting algorithms (selection sort, bubble sort, and quick sort)."
+}

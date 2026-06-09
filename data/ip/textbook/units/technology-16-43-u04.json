@@ -1,0 +1,260 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-16-43-u04",
+  "topic_id": "technology-16-43",
+  "category": "technology",
+  "title_jp": "仮想化の活用とシステムの利用・運用形態",
+  "unit_summary_jp": "仮想化を活かした端末・基盤の構成(シンクライアント/VDI)と移行技術(マイグレーション)、および処理タイミングによる利用形態(対話型/リアルタイム/バッチ)を学ぶ。",
+  "order_in_topic": 4,
+  "prerequisites": [
+    "technology-16-43-u01",
+    "technology-16-43-u03"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、仮想化技術を活かした端末・基盤の構成(シンクライアント・VDI)や仮想環境の移行技術(マイグレーション・ライブマイグレーション)、さらに処理タイミングによる利用形態(対話型・リアルタイム・バッチ)を学びます。仮想化を「どう使い、どう運用するか」という応用面と、処理の特徴で形態を選ぶ視点は、IT パスポートで繰り返し問われる重要分野です。",
+    "freq_badge": "標準",
+    "est_minutes": 21,
+    "intro_zh": "在本单元中，将学习运用虚拟化技术构建的终端、基础设施配置（瘦客户端、VDI）、虚拟环境的迁移技术（迁移、热迁移），以及按处理时机划分的使用形态（交互型、实时、批处理）。如何使用、如何运维虚拟化这一应用层面，以及根据处理特点选择形态的视角，是 IT Passport 中反复考查的重要领域。",
+    "intro_en": "In this unit, you will learn terminal/infrastructure configurations that leverage virtualization technology (thin client, VDI), migration technologies for virtual environments (migration, live migration), and usage modes based on processing timing (interactive, real-time, batch). The application side of \"how to use and operate\" virtualization, and the perspective of choosing a mode based on processing characteristics, are important areas repeatedly tested in the IT Passport exam."
+  },
+  "terms": [
+    {
+      "term": "シンクライアント",
+      "definition_jp": "処理やデータをサーバ側に集約し、端末は入出力に特化させる構成。",
+      "explanation_jp": "シンクライアントは、端末(クライアント)に最小限の機能だけを持たせ、アプリの処理やデータ保存をサーバ側で行う仕組みです。「シン(thin=薄い)」は端末の機能が薄いことを表します。\n\n端末内にデータが残らないため、紛失・盗難時の情報漏えいリスクが小さく、管理も一括化できるのが利点です。試験では、端末にデータを置かないことによるセキュリティ向上・運用管理の効率化という長所が問われます。逆に、ネットワークやサーバが止まると業務が止まる点が短所です。",
+      "analogy_jp": "店頭の券売機のようなもの。券売機自体は画面と入力だけを担い、料金計算や在庫管理は奥のサーバが行う。端末が薄くても裏の本部が賢ければ十分働けます。",
+      "memory_hook_jp": "シンクライアントといえば端末は薄く処理はサーバ集約",
+      "inline_quiz": [
+        "2010h22a-q081"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "瘦客户端",
+      "term_en": "Thin Client",
+      "definition_zh": "将处理和数据集中到服务器端、让终端专注于输入输出的配置。",
+      "definition_en": "A configuration that concentrates processing and data on the server side, while the terminal specializes in input and output.",
+      "explanation_zh": "瘦客户端是一种让终端（客户端）只具备最低限度功能、由服务器端执行应用处理和数据保存的机制。「瘦（thin＝薄）」表示终端的功能很薄（少）。\n\n由于数据不会留存在终端内，遗失、被盗时的信息泄露风险较小，管理也能集中化，这是它的优点。考试中常考查「终端不存放数据所带来的安全性提升、运维管理效率化」这一长处。反过来，一旦网络或服务器停止，业务也会随之停止，这是它的短处。",
+      "explanation_en": "A thin client is a mechanism that gives the terminal (client) only minimal functionality, while application processing and data storage are handled on the server side. \"Thin\" indicates that the terminal's functionality is thin (minimal).\n\nBecause no data remains inside the terminal, the risk of information leakage in case of loss or theft is small, and management can be centralized — these are its advantages. The exam tests the strengths of \"improved security and more efficient operational management from not storing data on the terminal.\" Conversely, its weakness is that if the network or server goes down, business operations stop as well.",
+      "analogy_zh": "就像店门口的售票机。售票机本身只负责屏幕和输入，费用计算和库存管理由后面的服务器完成。即使终端很薄，只要背后的总部够聪明，就足以正常工作。",
+      "analogy_en": "Like a ticket vending machine at a storefront. The machine itself only handles the screen and input, while fare calculation and inventory management are done by the server in the back. Even if the terminal is thin, as long as the headquarters behind it is smart, it can work just fine.",
+      "memory_hook_zh": "说到瘦客户端，就是终端薄、处理集中在服务器",
+      "memory_hook_en": "Thin client → terminal is thin, processing concentrated on the server"
+    },
+    {
+      "term": "VDI",
+      "definition_jp": "サーバ上の仮想デスクトップを端末から操作するデスクトップ仮想化方式。",
+      "explanation_jp": "VDI(Virtual Desktop Infrastructure、仮想デスクトップ基盤)は、サーバ側の仮想マシン上に各利用者のデスクトップ環境を用意し、端末からはその画面を遠隔操作する仕組みです。シンクライアントを実現する代表的な基盤として使われます。\n\n試験では、シンクライアント(端末側の構成概念)と VDI(それを支えるサーバ側の仮想化基盤)の関係を区別できるかが問われます。デスクトップ環境をサーバ上で集中管理できるため、OS 更新やセキュリティ対策を一元化でき、どの端末からでも同じ環境を呼び出せる点が特徴です。",
+      "analogy_jp": "貸ロッカーに自分の作業机を丸ごと預けておくイメージ。どの受付窓口に行っても、同じ自分の机(デスクトップ)を呼び出して使えます。",
+      "memory_hook_jp": "VDIといえばサーバ上の仮想デスクトップを端末から操作",
+      "inline_quiz": [
+        "2011h23a-q086"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph LR\n  A[\"利用者端末\"] -->|\"画面転送\"| B[\"仮想化基盤サーバ\"]\n  B --> C[\"仮想デスクトップ1\"]\n  B --> D[\"仮想デスクトップ2\"]\n  B --> E[\"仮想デスクトップ3\"]",
+        "svg_path": "figures/technology-16-43-u04-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "VDI（虚拟桌面基础设施）",
+      "term_en": "VDI",
+      "definition_zh": "从终端操作服务器上的虚拟桌面的桌面虚拟化方式。",
+      "definition_en": "A desktop virtualization method in which virtual desktops on a server are operated from a terminal.",
+      "explanation_zh": "VDI（Virtual Desktop Infrastructure，虚拟桌面基础设施）是一种在服务器端的虚拟机上为各使用者准备桌面环境、从终端远程操作该画面的机制。它被用作实现瘦客户端的典型基础设施。\n\n考试中考查能否区分瘦客户端（终端侧的配置概念）与 VDI（支撑它的服务器侧虚拟化基础设施）之间的关系。由于可以在服务器上集中管理桌面环境，能够统一进行操作系统更新和安全防护，并且从任何终端都能调出相同的环境，这是它的特点。",
+      "explanation_en": "VDI (Virtual Desktop Infrastructure) is a mechanism that prepares a desktop environment for each user on a virtual machine on the server side, and remotely operates that screen from the terminal. It is used as a representative infrastructure for realizing thin clients.\n\nThe exam tests whether you can distinguish the relationship between a thin client (a configuration concept on the terminal side) and VDI (the server-side virtualization infrastructure that supports it). Because desktop environments can be centrally managed on the server, OS updates and security measures can be unified, and the same environment can be called up from any terminal — these are its characteristics.",
+      "analogy_zh": "就像把自己整张办公桌寄存在出租储物柜里。无论走到哪个接待窗口，都能调出同一张属于自己的桌子（桌面）来使用。",
+      "analogy_en": "Imagine storing your entire work desk in a rental locker. No matter which reception counter you go to, you can call up the same desk of your own (the desktop) and use it.",
+      "memory_hook_zh": "说到 VDI，就是从终端操作服务器上的虚拟桌面",
+      "memory_hook_en": "VDI → operate the virtual desktop on the server from the terminal"
+    },
+    {
+      "term": "マイグレーション",
+      "definition_jp": "システムやデータを別の環境へ移行すること。",
+      "explanation_jp": "マイグレーション(migration)は、システム・データ・仮想マシンなどを、ある環境から別の環境へ移し替えることを指します。サーバ更改やクラウド移行、仮想マシンの別ホストへの移動などが該当します。\n\n試験では「移行」という意味と、仮想化における仮想マシンの移動という文脈で出題されます。次に学ぶライブマイグレーションは、この移行を「稼働させたまま」行う発展形なので、まず移行という総称の意味を押さえておくことが重要です。",
+      "analogy_jp": "引っ越しのようなもの。家具(データやシステム)を今の家から新しい家へまるごと運ぶ作業がマイグレーションです。",
+      "memory_hook_jp": "マイグレーションといえばシステムやデータの別環境への移行",
+      "inline_quiz": [
+        "2013h25h-q059"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "迁移",
+      "term_en": "Migration",
+      "definition_zh": "将系统或数据迁移到另一个环境。",
+      "definition_en": "Moving a system or data to a different environment.",
+      "explanation_zh": "迁移（migration）指的是将系统、数据、虚拟机等从某个环境转移到另一个环境。服务器更新换代、上云迁移、把虚拟机移动到另一台主机等都属于此类。\n\n考试中会以「迁移」这层含义，以及虚拟化中虚拟机移动这一语境来出题。接下来要学习的热迁移，是把这种迁移以「保持运行状态」的方式进行的进阶形态，因此先掌握迁移这一总称的含义很重要。",
+      "explanation_en": "Migration refers to moving a system, data, virtual machine, and so on from one environment to another. Server replacement, cloud migration, and moving a virtual machine to a different host all fall under this.\n\nThe exam covers it both in the sense of \"transfer/relocation\" and in the context of moving virtual machines in virtualization. Live migration, which you will learn next, is an advanced form that performs this migration \"while keeping it running,\" so it is important to first grasp the meaning of migration as the general term.",
+      "analogy_zh": "就像搬家。把家具（数据和系统）从现在的家整体搬到新家的工作，就是迁移。",
+      "analogy_en": "Like moving house. The task of carrying your furniture (data and systems) in its entirety from your current home to a new one is migration.",
+      "memory_hook_zh": "说到迁移，就是把系统或数据迁到另一个环境",
+      "memory_hook_en": "Migration → moving a system or data to a different environment"
+    },
+    {
+      "term": "ライブマイグレーション",
+      "definition_jp": "仮想マシンを稼働させたまま別の物理サーバへ移す技術。",
+      "explanation_jp": "ライブマイグレーションは、仮想マシンを停止せずに動かしたまま、別の物理サーバへ移動させる技術です。利用者にサービスを止めずに、ハードの保守や負荷分散を行えます。\n\n試験では、通常のマイグレーション(移行のために停止を伴うことがある)との違いとして、「無停止で移行できる」点がポイントです。仮想化ならではの可用性向上技術として、保守時もサービスを継続できる利点を理解しましょう。",
+      "analogy_jp": "営業中のお店を、客を追い出さずにそのまま隣のビルへ移すようなもの。お客さん(利用者)は移動に気づかず買い物を続けられます。",
+      "memory_hook_jp": "ライブマイグレーションといえば仮想マシンを無停止で別サーバへ移行",
+      "inline_quiz": [
+        "2019r01a-q057"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "热迁移",
+      "term_en": "Live Migration",
+      "definition_zh": "在虚拟机保持运行的状态下将其迁移到另一台物理服务器的技术。",
+      "definition_en": "A technology that moves a virtual machine to another physical server while it keeps running.",
+      "explanation_zh": "热迁移是一种不停止虚拟机、在其保持运行的状态下将其迁移到另一台物理服务器的技术。可以在不中断对使用者服务的情况下进行硬件维护或负载分散。\n\n考试中，作为与普通迁移（为了迁移有时需要停机）的区别，要点在于「能够不停机地迁移」。请将其理解为虚拟化特有的可用性提升技术，掌握其在维护时也能持续提供服务的优点。",
+      "explanation_en": "Live migration is a technology that moves a virtual machine to another physical server while it keeps running, without stopping it. It allows hardware maintenance and load balancing to be performed without halting service to users.\n\nIn the exam, the key point, as a difference from ordinary migration (which may involve stopping for the move), is that it \"can migrate without downtime.\" Understand it as an availability-enhancing technology unique to virtualization, and grasp its advantage of being able to continue service even during maintenance.",
+      "analogy_zh": "就像把一家正在营业的店，不赶走顾客就直接搬到隔壁大楼。顾客（使用者）察觉不到这次搬迁，可以继续购物。",
+      "analogy_en": "Like moving a store that is open for business to the building next door without kicking out the customers. The customers (users) don't notice the move and can keep shopping.",
+      "memory_hook_zh": "说到热迁移，就是把虚拟机不停机地迁到另一台服务器",
+      "memory_hook_en": "Live migration → move a virtual machine to another server with zero downtime"
+    },
+    {
+      "term": "対話型処理",
+      "definition_jp": "利用者の操作に対し、その都度即座に応答する処理形態。",
+      "explanation_jp": "対話型処理(インタラクティブ処理)は、利用者が入力するたびにシステムがすぐ応答を返す処理形態です。検索や文書編集、ATM 操作など、人とコンピュータがやり取りしながら進める使い方が該当します。\n\n試験では、後でまとめて処理するバッチ処理との対比で問われます。即時のやり取りを重視する点が特徴で、利用者が結果を見ながら次の操作を決められるのが利点です。",
+      "analogy_jp": "店員との会話のようなもの。質問するとすぐ答えが返り、その答えを聞いて次を尋ねる。やり取りしながら進むのが対話型です。",
+      "memory_hook_jp": "対話型処理といえば操作のたびに即応答するやり取り",
+      "inline_quiz": [
+        "2012h24h-q056"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "交互型处理",
+      "term_en": "Interactive Processing",
+      "definition_zh": "针对使用者的操作，每次都立即作出响应的处理形态。",
+      "definition_en": "A processing mode that responds instantly each time the user performs an operation.",
+      "explanation_zh": "交互型处理（interactive 处理）是一种使用者每次输入时系统都立即返回响应的处理形态。检索、文档编辑、ATM 操作等，人与计算机一边来回交流一边推进的使用方式都属于此类。\n\n考试中会与「事后集中处理」的批处理作对比来考查。其特点是重视即时的来回交流，优点是使用者可以一边看结果一边决定下一步操作。",
+      "explanation_en": "Interactive processing is a processing mode in which the system immediately returns a response each time the user inputs something. Uses where humans and computers proceed by exchanging back and forth — such as searching, document editing, and ATM operations — fall under this.\n\nThe exam tests it in contrast with batch processing, which processes things together later. Its characteristic is an emphasis on immediate back-and-forth exchange, and its advantage is that the user can decide the next operation while viewing the results.",
+      "analogy_zh": "就像与店员的对话。一提问马上就有回答，听了回答再问下一个。一边来回交流一边推进，这就是交互型。",
+      "analogy_en": "Like a conversation with a clerk. You ask a question and get an answer right away, then ask the next one based on that answer. Proceeding through back-and-forth exchange is what interactive means.",
+      "memory_hook_zh": "说到交互型处理，就是每次操作都立即响应的来回交流",
+      "memory_hook_en": "Interactive processing → instant response on every operation, back-and-forth exchange"
+    },
+    {
+      "term": "リアルタイム処理",
+      "definition_jp": "要求の発生に対し、定められた制限時間内に即座に処理する形態。",
+      "explanation_jp": "リアルタイム処理は、データや要求が発生したらすぐ、決められた制限時間内に処理を完了させる形態です。座席予約システムや製造ラインの制御、銀行のオンライン取引などで使われます。\n\n試験では、対話型処理と似ていますが、リアルタイム処理は「即時性・応答時間の保証」が重視される点が問われます。バッチ処理(後でまとめて)とは対照的に、遅れが許されない処理に適用されます。",
+      "analogy_jp": "救急通報のようなもの。連絡が入ったら待たせず即対応しなければならない。遅れが許されない即時対応がリアルタイム処理です。",
+      "memory_hook_jp": "リアルタイム処理といえば発生即時に制限時間内で応答",
+      "inline_quiz": [
+        "2018h30a-q094"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "实时处理",
+      "term_en": "Real-time Processing",
+      "definition_zh": "针对请求的发生，在规定的限定时间内立即处理的形态。",
+      "definition_en": "A mode that processes a request instantly within a defined time limit when it occurs.",
+      "explanation_zh": "实时处理是一种数据或请求一旦发生就立即、在规定的限定时间内完成处理的形态。用于座位预订系统、生产线控制、银行在线交易等。\n\n考试中，它与交互型处理相似，但要点在于实时处理重视「即时性、响应时间的保证」。与批处理（事后集中处理）相反，它适用于不允许延迟的处理。",
+      "explanation_en": "Real-time processing is a mode that completes processing immediately within a defined time limit as soon as data or a request occurs. It is used in seat reservation systems, production line control, online banking transactions, and so on.\n\nIn the exam, it resembles interactive processing, but the point tested is that real-time processing emphasizes \"immediacy and guaranteed response time.\" In contrast to batch processing (handling things together later), it applies to processing where delays are not allowed.",
+      "analogy_zh": "就像紧急报警。一接到联络就必须不让对方等待、立即应对。不允许延迟的即时应对就是实时处理。",
+      "analogy_en": "Like an emergency call. The moment a report comes in, you must respond immediately without making the caller wait. Immediate response where delays are not allowed is real-time processing.",
+      "memory_hook_zh": "说到实时处理，就是一发生就立即、在限定时间内响应",
+      "memory_hook_en": "Real-time processing → respond instantly within a time limit the moment it occurs"
+    },
+    {
+      "term": "バッチ処理",
+      "definition_jp": "一定量のデータをためて、まとめて一括処理する形態。",
+      "explanation_jp": "バッチ処理は、データをすぐには処理せず一定量ためておき、後で一括してまとめて処理する形態です。月末の給与計算や請求書の一括発行、夜間のデータ集計などが典型例です。\n\n試験では、対話型・リアルタイム処理(即時応答)との対比で頻出します。即時性は低いものの、大量データを効率よくまとめて処理でき、夜間など負荷の低い時間に実行できる点が利点です。三つの処理形態の違いを整理して覚えましょう。",
+      "analogy_jp": "洗濯物をためてから一度に洗うようなもの。1 枚ずつ洗わず、まとまった量を一括で回した方が効率的、という発想がバッチ処理です。",
+      "memory_hook_jp": "バッチ処理といえばためてまとめて一括処理",
+      "inline_quiz": [
+        "2013h25h-q057"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD\n  A[\"処理形態\"] --> B[\"対話型処理: 操作のたびに即応答\"]\n  A --> C[\"リアルタイム処理: 制限時間内に即時処理\"]\n  A --> D[\"バッチ処理: ためてまとめて一括処理\"]",
+        "svg_path": "figures/technology-16-43-u04-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "批处理",
+      "term_en": "Batch Processing",
+      "definition_zh": "积攒一定量的数据后，集中一次性处理的形态。",
+      "definition_en": "A mode that accumulates a certain amount of data and then processes it all together at once.",
+      "explanation_zh": "批处理是一种不立即处理数据、而是先积攒一定量、之后集中一次性处理的形态。月末的工资计算、批量开具发票、夜间的数据汇总等都是典型例子。\n\n考试中常与交互型、实时处理（即时响应）作对比出题。它虽然即时性低，但能高效地把大量数据集中处理，并且可以在夜间等负载较低的时间执行，这是它的优点。请把三种处理形态的区别整理记忆。",
+      "explanation_en": "Batch processing is a mode that does not process data immediately but accumulates a certain amount and then processes it all together later. Month-end payroll calculation, bulk issuance of invoices, and nighttime data aggregation are typical examples.\n\nThe exam frequently tests it in contrast with interactive and real-time processing (instant response). Although its immediacy is low, it can efficiently process large volumes of data together, and it can be run during low-load hours such as at night — these are its advantages. Organize and memorize the differences among the three processing modes.",
+      "analogy_zh": "就像把要洗的衣服攒起来一次洗。不一件件地洗，而是凑成一定的量一次性洗，这样更高效，这种思路就是批处理。",
+      "analogy_en": "Like accumulating laundry and washing it all at once. Rather than washing one item at a time, washing a gathered batch all together is more efficient — that idea is batch processing.",
+      "memory_hook_zh": "说到批处理，就是攒起来、集中一次性处理",
+      "memory_hook_en": "Batch processing → accumulate, then process all together at once"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "シンクライアント: シンクライアントといえば端末は薄く処理はサーバ集約",
+      "VDI: VDIといえばサーバ上の仮想デスクトップを端末から操作",
+      "マイグレーション: マイグレーションといえばシステムやデータの別環境への移行",
+      "ライブマイグレーション: ライブマイグレーションといえば仮想マシンを無停止で別サーバへ移行",
+      "対話型処理: 対話型処理といえば操作のたびに即応答するやり取り",
+      "リアルタイム処理: リアルタイム処理といえば発生即時に制限時間内で応答",
+      "バッチ処理: バッチ処理といえばためてまとめて一括処理"
+    ],
+    "key_points_jp": [
+      "シンクライアントは端末を薄くし処理・データをサーバへ集約する構成で、情報漏えいリスク低減と一括管理が利点。",
+      "VDI はサーバ上の仮想デスクトップを端末から操作する基盤で、シンクライアントを実現する代表的手段。",
+      "マイグレーションは環境間の移行全般を指し、ライブマイグレーションは仮想マシンを無停止で別サーバへ移す発展技術。",
+      "処理形態は対話型(都度即応答)・リアルタイム(制限時間内に即時)・バッチ(ためて一括)の三つに分かれ、即時性で対比される。",
+      "仮想化の応用と処理形態の選択は、システムの利用・運用方法を決める実務的な視点である。"
+    ],
+    "key_points_zh": [
+      "瘦客户端是把终端做薄、将处理和数据集中到服务器的配置，优点是降低信息泄露风险并实现集中管理。",
+      "VDI 是从终端操作服务器上虚拟桌面的基础设施，是实现瘦客户端的典型手段。",
+      "迁移泛指环境之间的迁移整体，而热迁移是把虚拟机不停机地迁到另一台服务器的进阶技术。",
+      "处理形态分为交互型（每次立即响应）、实时（在限定时间内即时）、批处理（攒起来一次性处理）三种，以即时性来作对比。",
+      "虚拟化的应用与处理形态的选择，是决定系统使用、运维方式的实务性视角。"
+    ],
+    "key_points_en": [
+      "A thin client is a configuration that makes the terminal thin and concentrates processing and data on the server; its advantages are reduced information-leakage risk and centralized management.",
+      "VDI is an infrastructure for operating virtual desktops on a server from a terminal, and is a representative means of realizing thin clients.",
+      "Migration broadly refers to moving between environments overall, while live migration is an advanced technology that moves a virtual machine to another server without downtime.",
+      "Processing modes are divided into three — interactive (instant response each time), real-time (instant within a time limit), and batch (accumulate then process all at once) — and are contrasted by immediacy.",
+      "Applying virtualization and choosing processing modes are practical perspectives that determine how a system is used and operated."
+    ],
+    "memory_hooks_zh": [
+      "瘦客户端：说到瘦客户端，就是终端薄、处理集中在服务器",
+      "VDI：说到 VDI，就是从终端操作服务器上的虚拟桌面",
+      "迁移：说到迁移，就是把系统或数据迁到另一个环境",
+      "热迁移：说到热迁移，就是把虚拟机不停机地迁到另一台服务器",
+      "交互型处理：说到交互型处理，就是每次操作都立即响应的来回交流",
+      "实时处理：说到实时处理，就是一发生就立即、在限定时间内响应",
+      "批处理：说到批处理，就是攒起来、集中一次性处理"
+    ],
+    "memory_hooks_en": [
+      "Thin client: thin client → terminal is thin, processing concentrated on the server",
+      "VDI: VDI → operate the virtual desktop on the server from the terminal",
+      "Migration: migration → moving a system or data to a different environment",
+      "Live migration: live migration → move a virtual machine to another server with zero downtime",
+      "Interactive processing: interactive processing → instant response on every operation, back-and-forth exchange",
+      "Real-time processing: real-time processing → respond instantly within a time limit the moment it occurs",
+      "Batch processing: batch processing → accumulate, then process all together at once"
+    ]
+  },
+  "challenge_questions": [
+    "2011h23tokubetsu-q057",
+    "2015h27h-q067",
+    "2009h21a-q078",
+    "2009h21h-q073",
+    "2010h22h-q086"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2013h25h-q057",
+      "figure_path": "figures/2013h25h-q057.png",
+      "figure_type": "table",
+      "figure_description": "3つのジョブのCPU時間と出力時間を示す表。ジョブ1：CPU時間35秒、出力時間10秒。ジョブ2：CPU時間20秒、出力時間20秒。ジョブ3：CPU時間5秒、出力時間25秒。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "虚拟化的运用与系统的使用、运维形态",
+  "title_en": "Applying Virtualization and System Usage/Operation Modes",
+  "unit_summary_zh": "学习运用虚拟化构建的终端、基础设施配置（瘦客户端 / VDI）与迁移技术（迁移），以及按处理时机划分的使用形态（交互型 / 实时 / 批处理）。",
+  "unit_summary_en": "Learn terminal/infrastructure configurations that leverage virtualization (thin client / VDI), migration technologies (migration), and usage modes based on processing timing (interactive / real-time / batch)."
+}

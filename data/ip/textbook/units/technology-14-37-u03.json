@@ -1,0 +1,263 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-14-37-u03",
+  "topic_id": "technology-14-37",
+  "category": "technology",
+  "title_jp": "入出力と手続・関数",
+  "unit_summary_jp": "入出力の概念と、プログラムを部品化する手続・関数およびその引数・戻り値を理解する。",
+  "order_in_topic": 3,
+  "prerequisites": [
+    "technology-14-37-u02"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、プログラムが外部とデータをやり取りする入出力と、処理をひとまとまりの部品にする手続・関数、そして部品へ値を渡す引数・受け取る戻り値を学びます。プログラムを再利用しやすく分かりやすく作るための基本で、擬似言語の読解にも直結するため試験でも重要なテーマです。",
+    "freq_badge": "標準",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习程序与外部交换数据的输入输出、把处理整合成一个部件的过程·函数，以及向部件传入值的参数和接收的返回值。这是让程序便于复用、易于理解的基础，同时也直接关系到伪代码的阅读，因此在考试中也是一个重要的主题。",
+    "intro_en": "In this unit, you will learn about input/output, by which a program exchanges data with the outside, about procedures and functions that bundle processing into a single part, and about the arguments passed into a part and the return values it gives back. These are the basics for making programs easy to reuse and easy to understand, and they directly tie into reading pseudocode, so this is an important theme on the exam as well."
+  },
+  "terms": [
+    {
+      "term": "入出力",
+      "definition_jp": "プログラムが外部からデータを受け取り、結果を外部へ渡すこと。",
+      "explanation_jp": "入出力とは、プログラムがキーボードやファイルなど外部からデータを受け取る「入力」と、画面やファイルへ結果を送り出す「出力」をまとめた概念です。プログラムは入力されたデータを処理し、その結果を出力する、という流れで動きます。\n\n入力がなければ処理する材料がなく、出力がなければ結果を確認できません。この入力・処理・出力という基本の流れは、あらゆるプログラムに共通します。\n\n試験では、入力・処理・出力の3つの役割の区別や、後で学ぶ引数(部品への入力)・戻り値(部品からの出力)が、この入出力の考え方と対応している点を押さえておくとよいでしょう。",
+      "analogy_jp": "料理に例えると、材料を受け取るのが入力、調理が処理、できた料理を出すのが出力です。材料(入力)がないと作れず、料理(出力)が出ないと食べられません。",
+      "memory_hook_jp": "入出力といえば入力・処理・出力の基本の流れ",
+      "inline_quiz": [
+        "2009h21h-q072"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "输入输出",
+      "term_en": "Input/Output (I/O)",
+      "definition_zh": "程序从外部接收数据，并把结果交给外部。",
+      "definition_en": "A program receiving data from the outside and passing results back to the outside.",
+      "explanation_zh": "输入输出是指，把程序从键盘或文件等外部接收数据的“输入”，和把结果送往屏幕或文件的“输出”合在一起的概念。程序的运行流程是：处理输入进来的数据，再把其结果输出。\n\n没有输入就没有可处理的材料，没有输出就无法确认结果。这种输入·处理·输出的基本流程，是所有程序的共同之处。\n\n在考试中，应当掌握输入·处理·输出这三种角色的区别，以及之后会学到的参数（向部件的输入）·返回值（从部件的输出）与这种输入输出的思路相对应这一点。",
+      "explanation_en": "Input/output is a concept that combines \"input,\" by which a program receives data from outside such as a keyboard or a file, and \"output,\" by which it sends results out to a screen or a file. A program works in the flow of processing the input data and then outputting its result.\n\nWithout input there is no material to process, and without output you cannot check the result. This basic flow of input, processing, and output is common to every program.\n\nOn the exam, it is good to grasp the distinction among the three roles of input, processing, and output, and the point that arguments (input to a part) and return values (output from a part), which you will learn later, correspond to this idea of input/output.",
+      "analogy_zh": "用做菜来比喻，接收食材是输入，烹饪是处理，端出做好的菜是输出。没有食材（输入）就做不出来，菜（输出）端不出来就吃不到。",
+      "analogy_en": "If we compare it to cooking, receiving ingredients is input, cooking is processing, and serving the finished dish is output. Without ingredients (input) you cannot cook, and if the dish (output) is not served you cannot eat.",
+      "memory_hook_zh": "说到输入输出，就是输入·处理·输出的基本流程",
+      "memory_hook_en": "Input/output → the basic flow of input, processing, output"
+    },
+    {
+      "term": "手続",
+      "definition_jp": "一連の処理をまとめて名前を付けた部品。戻り値を返さない。",
+      "explanation_jp": "手続(プロシージャ)とは、いくつかの処理をひとまとめにして名前を付けた部品のことです。同じ処理を何度も使うとき、手続として定義しておけば、名前を呼ぶだけで実行でき、プログラムが短く分かりやすくなります。\n\n手続の特徴は、呼び出した側へ計算結果(戻り値)を返さない点です。「画面に表示する」「ファイルに書き込む」のように、結果を返すより何かの動作を行うこと自体が目的のときに使われます。\n\n試験では、戻り値を返す関数との違いがよく問われます。手続=戻り値なし、関数=戻り値あり、と対比して覚えるのがポイントです。",
+      "analogy_jp": "「玄関の掃除をする」という作業手順に名前を付けたようなものです。頼めば実行してくれますが、何か品物を持ち帰ってくる(戻り値)わけではありません。",
+      "memory_hook_jp": "手続といえば処理をまとめた部品で戻り値なし",
+      "inline_quiz": [
+        "2010h22h-q053"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "过程",
+      "term_en": "Procedure",
+      "definition_zh": "把一连串处理整合起来并命名的部件。不返回返回值。",
+      "definition_en": "A part that bundles a series of processing under a name. It does not return a return value.",
+      "explanation_zh": "过程（procedure）是指，把若干处理整合成一个并加以命名的部件。当同一处理要反复使用时，只要预先定义为过程，仅靠调用名称就能执行，程序也会变得更短、更易懂。\n\n过程的特点是，不向调用方返回计算结果（返回值）。它用于像“在屏幕上显示”“写入文件”这样，目的本身在于执行某个动作、而非返回结果的场合。\n\n在考试中，经常会问到它与返回返回值的函数之间的区别。把过程＝无返回值、函数＝有返回值对比起来记忆，是要点所在。",
+      "explanation_en": "A procedure is a part that bundles several pieces of processing into one and gives it a name. When you use the same processing over and over, if you define it as a procedure beforehand you can run it just by calling its name, and the program becomes shorter and easier to understand.\n\nA feature of a procedure is that it does not return a calculation result (a return value) to the caller. It is used when the goal itself is to perform some action rather than to return a result, such as \"display on the screen\" or \"write to a file.\"\n\nOn the exam, the difference from a function, which returns a return value, is often asked. The key is to remember them as a contrast: procedure = no return value, function = has a return value.",
+      "analogy_zh": "就像给“打扫玄关”这套作业步骤起了个名字。你委托它，它就会执行，但并不会带回什么物品（返回值）。",
+      "analogy_en": "It is like giving a name to a set of work steps such as \"clean the entrance.\" If you ask, it will carry it out, but it does not bring back any item (a return value).",
+      "memory_hook_zh": "说到过程，就是把处理整合起来的部件，且无返回值",
+      "memory_hook_en": "Procedure → a part that bundles processing, with no return value"
+    },
+    {
+      "term": "関数",
+      "definition_jp": "処理をまとめ、結果(戻り値)を呼出し元へ返す部品。",
+      "explanation_jp": "関数とは、一連の処理をまとめた部品で、手続と違い計算結果である戻り値を呼び出した側へ返す点が特徴です。引数として値を受け取り、処理した結果を戻り値として返します。\n\n例えば「2つの数を受け取り合計を返す」関数なら、引数に数値を渡すと、合計が戻り値として返ってきます。返ってきた値はそのまま計算や別の処理に使えます。\n\n試験では、引数(入力)→関数内の処理→戻り値(出力)という流れと、戻り値を返さない手続との違いが頻出です。関数は部品の入出力インタフェースを理解する中心となる概念です。",
+      "analogy_jp": "自動販売機のようなものです。お金(引数)を入れると処理が行われ、商品(戻り値)が出てきます。入れた値に応じて結果が返ってくる点が手続との違いです。",
+      "memory_hook_jp": "関数といえば引数を受け取り戻り値を返す部品",
+      "inline_quiz": [
+        "2011h23tokubetsu-q096",
+        "2023r05-q064"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"呼出し元\"] -->|引数を渡す| B[\"関数 内部の処理\"]; B -->|戻り値を返す| A",
+        "svg_path": "figures/technology-14-37-u03-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "函数",
+      "term_en": "Function",
+      "definition_zh": "把处理整合起来，并把结果（返回值）返回给调用方的部件。",
+      "definition_en": "A part that bundles processing and returns the result (a return value) to the caller.",
+      "explanation_zh": "函数是把一连串处理整合起来的部件，与过程不同，其特点是会把作为计算结果的返回值返回给调用方。它以参数的形式接收值，并把处理后的结果作为返回值返回。\n\n例如，对于一个“接收两个数并返回合计”的函数，把数值作为参数传入，合计就会作为返回值返回。返回来的值可以直接用于计算或其他处理。\n\n在考试中，参数（输入）→函数内部的处理→返回值（输出）这一流程，以及它与不返回返回值的过程的区别，是高频考点。函数是理解部件的输入输出接口的核心概念。",
+      "explanation_en": "A function is a part that bundles a series of processing, and unlike a procedure, its feature is that it returns a return value, which is the calculation result, to the caller. It receives values as arguments and returns the processed result as a return value.\n\nFor example, with a function that \"receives two numbers and returns their sum,\" if you pass numbers as arguments, the sum is returned as the return value. The returned value can be used directly in a calculation or in other processing.\n\nOn the exam, the flow of arguments (input) → processing inside the function → return value (output), and the difference from a procedure that does not return a return value, appear frequently. The function is the central concept for understanding the input/output interface of a part.",
+      "analogy_zh": "就像自动售货机。投入钱（参数）后便进行处理，商品（返回值）就会出来。会根据所投入的值返回相应结果，这一点正是它与过程的区别。",
+      "analogy_en": "It is like a vending machine. When you put in money (an argument), processing is performed, and a product (a return value) comes out. The point that a result comes back depending on the value you put in is what differs from a procedure.",
+      "memory_hook_zh": "说到函数，就是接收参数、返回返回值的部件",
+      "memory_hook_en": "Function → a part that receives arguments and returns a return value"
+    },
+    {
+      "term": "引数",
+      "definition_jp": "手続・関数を呼び出すとき渡す値。部品への入力にあたる。",
+      "explanation_jp": "引数(ひきすう)とは、手続や関数を呼び出すときに渡す値のことです。部品に「この値で処理してほしい」と材料を渡す役割で、部品にとっての入力にあたります。\n\n例えば合計を求める関数に3と5を渡すと、この3と5が引数です。引数を変えれば、同じ関数でも違う結果が得られるため、1つの部品をいろいろな場面で使い回せます。\n\n試験では、引数が部品への入力であること、戻り値(出力)と対をなすことが問われます。渡す側と受け取る側で引数の個数や順番が対応している必要がある点も理解しておきましょう。",
+      "analogy_jp": "自動販売機に入れるお金や、ボタンで選ぶ商品の指定が引数です。何を入れて何を選ぶか(引数)によって、出てくる商品(結果)が変わります。",
+      "memory_hook_jp": "引数といえば部品に渡す値(入力)",
+      "inline_quiz": [
+        "2022r04-q078",
+        "2024r06-q062"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "参数",
+      "term_en": "Argument",
+      "definition_zh": "调用过程·函数时传入的值。相当于向部件的输入。",
+      "definition_en": "The value passed when calling a procedure or function. It corresponds to input to a part.",
+      "explanation_zh": "参数（argument）是指，调用过程或函数时传入的值。它起到向部件传递“请用这个值来处理”这一材料的作用，相当于部件的输入。\n\n例如，向求合计的函数传入 3 和 5，那么这个 3 和 5 就是参数。只要改变参数，即便是同一个函数也能得到不同的结果，因此一个部件可以在各种场合反复使用。\n\n在考试中，会问到参数是向部件的输入、与返回值（输出）构成一对这一点。还要理解：传入方与接收方之间，参数的个数和顺序必须相互对应。",
+      "explanation_en": "An argument is the value passed when calling a procedure or function. It plays the role of handing a part the material \"please process with this value,\" and it corresponds to the input for the part.\n\nFor example, if you pass 3 and 5 to a function that computes a sum, these 3 and 5 are the arguments. By changing the arguments, you can get a different result even from the same function, so a single part can be reused in many situations.\n\nOn the exam, you will be asked that an argument is the input to a part and that it forms a pair with the return value (output). Also understand the point that the number and order of arguments must correspond between the calling side and the receiving side.",
+      "analogy_zh": "投入自动售货机的钱，以及用按钮选择商品的指定，就是参数。投入什么、选择什么（参数），决定了出来的商品（结果）。",
+      "analogy_en": "The money you put into a vending machine, and the selection of a product by a button, are the arguments. What you put in and what you select (the arguments) change the product (the result) that comes out.",
+      "memory_hook_zh": "说到参数，就是传给部件的值（输入）",
+      "memory_hook_en": "Argument → the value passed to a part (input)"
+    },
+    {
+      "term": "戻り値",
+      "definition_jp": "関数が処理結果として呼出し元へ返す値。部品からの出力。",
+      "explanation_jp": "戻り値(返り値)とは、関数が処理した結果として、呼び出した側へ返す値のことです。引数が部品への入力なら、戻り値は部品からの出力にあたり、両者は対の関係にあります。\n\n例えば合計を求める関数に3と5を渡すと、戻り値として8が返ってきます。この8をそのまま画面に表示したり、別の計算に使ったりできます。\n\n試験では、戻り値を返すのが関数、返さないのが手続という違いが頻出です。引数(入力)と戻り値(出力)がセットで部品の入出力インタフェースを構成する、という全体像を押さえておきましょう。",
+      "analogy_jp": "自動販売機にお金(引数)を入れて出てくる商品が戻り値です。入れた指定に応じて返ってくる結果であり、何も出てこない手続とはここが違います。",
+      "memory_hook_jp": "戻り値といえば関数が返す結果(出力)",
+      "inline_quiz": [
+        "2022r04-q096",
+        "2025r07-q099"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "返回值",
+      "term_en": "Return value",
+      "definition_zh": "函数作为处理结果返回给调用方的值。是从部件的输出。",
+      "definition_en": "The value a function returns to the caller as its processing result. It is output from a part.",
+      "explanation_zh": "返回值是指，函数作为处理结果返回给调用方的值。如果说参数是向部件的输入，那么返回值就相当于从部件的输出，二者是成对的关系。\n\n例如，向求合计的函数传入 3 和 5，作为返回值就会返回 8。这个 8 可以直接显示在屏幕上，也可以用于其他计算。\n\n在考试中，返回返回值的是函数、不返回的是过程，这一区别是高频考点。要掌握的整体图景是：参数（输入）与返回值（输出）成套，构成部件的输入输出接口。",
+      "explanation_en": "A return value is the value a function returns to the caller as the result of its processing. If an argument is the input to a part, the return value corresponds to the output from the part, and the two are in a pairwise relationship.\n\nFor example, if you pass 3 and 5 to a function that computes a sum, 8 is returned as the return value. You can display this 8 directly on the screen or use it in another calculation.\n\nOn the exam, the difference that a function returns a return value while a procedure does not appears frequently. Grasp the overall picture that the argument (input) and the return value (output) together make up the input/output interface of a part.",
+      "analogy_zh": "向自动售货机投入钱（参数）后出来的商品，就是返回值。它是根据所投入的指定而返回的结果，这正是它与什么都不返回的过程的区别所在。",
+      "analogy_en": "The product that comes out after you put money (an argument) into a vending machine is the return value. It is the result that comes back according to the selection you put in, and this is exactly where it differs from a procedure, which returns nothing.",
+      "memory_hook_zh": "说到返回值，就是函数返回的结果（输出）",
+      "memory_hook_en": "Return value → the result a function returns (output)"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "入出力: 入出力といえば入力・処理・出力の基本の流れ",
+      "手続: 手続といえば処理をまとめた部品で戻り値なし",
+      "関数: 関数といえば引数を受け取り戻り値を返す部品",
+      "引数: 引数といえば部品に渡す値(入力)",
+      "戻り値: 戻り値といえば関数が返す結果(出力)"
+    ],
+    "key_points_jp": [
+      "入出力は、外部からデータを受け取る入力と結果を送り出す出力で、入力・処理・出力があらゆるプログラムの基本の流れである。",
+      "手続も関数も処理をまとめた再利用できる部品だが、手続は戻り値を返さず、関数は戻り値を返す点が決定的な違いである。",
+      "引数は部品への入力として呼出し時に渡す値、戻り値は部品からの出力として呼出し元へ返す値であり、両者は対をなす。",
+      "引数(入力)と戻り値(出力)がセットで、手続・関数の入出力インタフェースを構成する。",
+      "部品化により同じ処理を名前を呼ぶだけで再利用でき、プログラムが短く分かりやすくなる。"
+    ],
+    "key_points_zh": [
+      "输入输出由从外部接收数据的输入和把结果送出的输出组成，输入·处理·输出是所有程序的基本流程。",
+      "过程和函数都是把处理整合起来、可复用的部件，但过程不返回返回值、函数返回返回值，这是决定性的区别。",
+      "参数是调用时作为向部件输入而传入的值，返回值是作为从部件输出返回给调用方的值，二者成对。",
+      "参数（输入）与返回值（输出）成套，构成过程·函数的输入输出接口。",
+      "通过模块化，仅靠调用名称就能复用同一处理，使程序变得更短、更易懂。"
+    ],
+    "key_points_en": [
+      "Input/output consists of input, which receives data from the outside, and output, which sends out results; input, processing, and output is the basic flow of every program.",
+      "Both procedures and functions are reusable parts that bundle processing, but the decisive difference is that a procedure does not return a return value while a function does.",
+      "An argument is the value passed at call time as input to a part, and the return value is the value returned to the caller as output from the part; the two form a pair.",
+      "The argument (input) and the return value (output) together make up the input/output interface of a procedure or function.",
+      "Through modularization, you can reuse the same processing just by calling its name, making the program shorter and easier to understand."
+    ],
+    "memory_hooks_zh": [
+      "输入输出：说到输入输出，就是输入·处理·输出的基本流程",
+      "过程：说到过程，就是把处理整合起来的部件，且无返回值",
+      "函数：说到函数，就是接收参数、返回返回值的部件",
+      "参数：说到参数，就是传给部件的值（输入）",
+      "返回值：说到返回值，就是函数返回的结果（输出）"
+    ],
+    "memory_hooks_en": [
+      "Input/output: Input/output → the basic flow of input, processing, output",
+      "Procedure: Procedure → a part that bundles processing, with no return value",
+      "Function: Function → a part that receives arguments and returns a return value",
+      "Argument: Argument → the value passed to a part (input)",
+      "Return value: Return value → the result a function returns (output)"
+    ]
+  },
+  "challenge_questions": [
+    "2013h25h-q053",
+    "2026r08-q085",
+    "2019h31h-q071",
+    "2009h21a-q062"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2009h21h-q072",
+      "figure_path": "figures/2009h21h-q072.png",
+      "figure_type": "diagram",
+      "figure_description": "2入力2出力ボックスの図1と，それを2個直列接続した図2。図1：入力A1,A2に対し，B1=A2，B2=A1÷A2の余り。図2：入力15,6で前段ボックスの出力が後段ボックスの入力となる直列接続図。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2022r04-q078",
+      "figure_path": "figures/2022r04-q078.png",
+      "figure_type": "code",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2024r06-q062",
+      "figure_path": "figures/2024r06-q062.png",
+      "figure_type": "code",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2022r04-q096",
+      "figure_path": "figures/2022r04-q096.png",
+      "figure_type": "code",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2025r07-q099",
+      "figure_path": "figures/2025r07-q099.png",
+      "figure_type": "code",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2026r08-q085",
+      "figure_path": "figures/2026r08-q085.png",
+      "figure_type": "code",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2019h31h-q071",
+      "figure_path": "figures/2019h31h-q071.png",
+      "figure_type": "diagram",
+      "figure_description": "ボックス演算図。図1：A1・A2を入力するとB1（=A2）・B2（=A1÷A2の余り）を出力するボックスの説明図。図2：2個のボックスを直列接続し、左ボックスにA1=49・A2=11を入力した構成図。右ボックスのB2を求める。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2009h21a-q062",
+      "figure_path": "figures/2009h21a-q062.png",
+      "figure_type": "table",
+      "figure_description": "英字を文字番号に変換する対応表（a=1, b=2, ..., z=26）",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "输入输出与过程·函数",
+  "title_en": "Input/Output and Procedures & Functions",
+  "unit_summary_zh": "理解输入输出的概念，以及把程序模块化的过程·函数及其参数·返回值。",
+  "unit_summary_en": "Understand the concept of input/output, and the procedures and functions that modularize a program, along with their arguments and return values."
+}

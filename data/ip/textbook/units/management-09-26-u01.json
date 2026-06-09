@@ -1,0 +1,208 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "management-09-26-u01",
+  "topic_id": "management-09-26",
+  "category": "management",
+  "title_jp": "設計・分析の手法とモデリング",
+  "unit_summary_jp": "構造化手法とオブジェクト指向という2大設計パラダイム、その表現手段(UML・ユースケース)、および既存資産を分析するリバースエンジニアリングを学ぶ。",
+  "order_in_topic": 1,
+  "prerequisites": [],
+  "overview": {
+    "intro_jp": "このユニットでは、ソフトウェアをどう捉え設計するかの2大パラダイムである構造化手法とオブジェクト指向、その考えを図で表すモデリング記法(ユースケース・UML)、そして既存資産から設計情報を取り出すリバースエンジニアリングを学ぶ。後続のプロセスモデルやアジャイル実践を理解する土台であり、ITパスポートでも頻出する重要分野である。",
+    "freq_badge": "頻出",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习如何理解和设计软件的两大范式——结构化方法与面向对象，用图来表达这些思想的建模记法（用例、UML），以及从既有资产中提取设计信息的逆向工程。这是理解后续过程模型和敏捷实践的基础，也是 IT 护照考试中频繁出现的重要领域。",
+    "intro_en": "In this unit, you will learn the two major paradigms for how to understand and design software—structured methods and object orientation—the modeling notations that express these ideas in diagrams (use cases, UML), and reverse engineering, which extracts design information from existing assets. This is the foundation for understanding later process models and agile practices, and it is an important area that appears frequently on the IT Passport exam."
+  },
+  "terms": [
+    {
+      "term": "構造化手法",
+      "definition_jp": "処理(機能)に着目し、システムを段階的に細かい機能へ分割して設計する手法。",
+      "explanation_jp": "構造化手法は、システムを「何をするか(処理・機能)」に注目してとらえ、大きな機能を小さな機能へと段階的に分けていく(機能分割する)設計の考え方です。処理の流れやデータの流れを整理しながら、上位から下位へと細分化します。\n\n試験では、データと処理を一体としてまとめるオブジェクト指向との違いが問われます。構造化手法は「処理(機能)中心」、オブジェクト指向は「データと処理をまとめたオブジェクト中心」と対比して覚えるのがポイントです。DFD(データフロー図)などの図法と結び付けて出題されることもあります。",
+      "analogy_jp": "料理の作業を「下ごしらえ→調理→盛り付け」と作業手順(処理)ごとに分けて整理するイメージ。やるべき仕事の流れに沿ってどんどん細かい作業へ分解していきます。",
+      "memory_hook_jp": "構造化手法といえば処理(機能)中心に段階的な機能分割",
+      "inline_quiz": [
+        "2010h22a-q045"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "结构化方法",
+      "term_en": "Structured method",
+      "definition_zh": "着眼于处理（功能），将系统逐步分解为更细小功能来进行设计的方法。",
+      "definition_en": "A method that focuses on processing (functions) and designs a system by progressively breaking it down into finer functions.",
+      "explanation_zh": "结构化方法是一种从「做什么（处理、功能）」的角度来理解系统，并把大功能逐步分解为小功能（功能分解）的设计思路。它在梳理处理流程和数据流程的同时，自上而下地进行细分。\n\n考试中常考它与「把数据和处理合为一体」的面向对象之间的区别。要点是把结构化方法记成「以处理（功能）为中心」，把面向对象记成「以汇集了数据和处理的对象为中心」，两者对比来记。它还常与 DFD（数据流图）等图示法结合出题。",
+      "explanation_en": "A structured method is a design approach that understands a system from the angle of \"what it does (processing, functions)\" and progressively breaks large functions down into smaller ones (functional decomposition). While organizing the flow of processing and data, it subdivides from the top level down to lower levels.\n\nOn the exam, the difference from object orientation—which combines data and processing into one—is tested. The key is to remember structured methods as \"processing (function)-centered\" and object orientation as \"object-centered, combining data and processing,\" contrasting the two. It is also sometimes tested in connection with diagramming techniques such as DFD (data flow diagram).",
+      "analogy_zh": "想象把做菜按「备料 → 烹饪 → 装盘」这样的作业步骤（处理）分开来整理。顺着该做的工作流程，不断把它分解成更细小的作业。",
+      "analogy_en": "Imagine organizing cooking by work steps (processing), such as \"prep ingredients → cook → plate.\" Following the flow of work to be done, you keep breaking it into finer and finer tasks.",
+      "memory_hook_zh": "说到结构化方法，就是以处理（功能）为中心进行逐步的功能分解",
+      "memory_hook_en": "Structured method → processing (function)-centered, stepwise functional decomposition"
+    },
+    {
+      "term": "オブジェクト指向",
+      "definition_jp": "データとその処理(操作)を一体化した「オブジェクト」を単位として設計する考え方。",
+      "explanation_jp": "オブジェクト指向は、関連するデータ(属性)とそれを扱う処理(操作・メソッド)をひとまとめにした「オブジェクト」を基本単位としてシステムを構築する考え方です。共通の性質をひな型として定義した「クラス」から、実体である「オブジェクト」を生成します。\n\n試験では、カプセル化(データと処理をまとめ内部を隠す)、継承(共通の性質を引き継ぐ)、多態性(同じ指示で対象ごとに異なる動作)といった基本特徴が問われます。処理中心の構造化手法と対比され、部品の再利用や保守のしやすさが利点とされる点も頻出です。",
+      "analogy_jp": "「自動車」という設計図(クラス)から、実物の車(オブジェクト)を作るイメージ。車は色や速度(データ)と、走る・止まる(処理)を一体で持ち、設計図を引き継いで新型(継承)も作れます。",
+      "memory_hook_jp": "オブジェクト指向といえばデータと処理をまとめたオブジェクト中心(カプセル化・継承・多態性)",
+      "inline_quiz": [
+        "2009h21a-q047"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"クラス(設計図)\"] --> B[\"オブジェクト(実体)\"]; A --> C[\"カプセル化(データと処理をまとめる)\"]; A --> D[\"継承(性質を引き継ぐ)\"]; A --> E[\"多態性(同じ指示で異なる動作)\"]",
+        "svg_path": "figures/management-09-26-u01-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "面向对象",
+      "term_en": "Object orientation",
+      "definition_zh": "以将数据及其处理（操作）合为一体的「对象」作为单位来进行设计的思路。",
+      "definition_en": "A design approach that uses the \"object\"—which unifies data with its processing (operations)—as the unit of design.",
+      "explanation_zh": "面向对象是一种把相关的数据（属性）和处理这些数据的处理（操作、方法）汇集为一体所形成的「对象」作为基本单位来构建系统的思路。从把共同性质定义为模板的「类」中，生成作为实体的「对象」。\n\n考试中常考封装（把数据和处理汇集在一起并隐藏内部）、继承（继承共同的性质）、多态（同一指令对不同对象产生不同动作）等基本特征。它常与以处理为中心的结构化方法对比，部件的可重用性和易维护性作为其优点也是高频考点。",
+      "explanation_en": "Object orientation is an approach that builds a system using the \"object\"—which bundles together related data (attributes) and the processing that handles it (operations, methods)—as the basic unit. From a \"class\" that defines shared properties as a template, you create \"objects\" that are the actual instances.\n\nOn the exam, basic characteristics are tested: encapsulation (bundling data and processing together and hiding the internals), inheritance (taking over shared properties), and polymorphism (the same instruction producing different behavior depending on the target). It is contrasted with the processing-centered structured method, and the advantages of easy reuse of components and ease of maintenance are also frequently tested.",
+      "analogy_zh": "想象从「汽车」这张设计图（类）造出实物的车（对象）。汽车一体地拥有颜色、速度（数据）和行驶、停止（处理），还能继承设计图来造出新车型（继承）。",
+      "analogy_en": "Imagine building an actual car (object) from a blueprint (class) called \"automobile.\" The car holds color and speed (data) together with driving and stopping (processing) as one, and you can inherit the blueprint to build new models (inheritance) as well.",
+      "memory_hook_zh": "说到面向对象，就是以汇集了数据和处理的对象为中心（封装、继承、多态）",
+      "memory_hook_en": "Object orientation → object-centered, combining data and processing (encapsulation, inheritance, polymorphism)"
+    },
+    {
+      "term": "ユースケース",
+      "definition_jp": "利用者(アクター)から見たシステムの使い方・機能を表した記述。",
+      "explanation_jp": "ユースケースは、システムを使う人や外部システム(アクター)が、システムを通じてどんなことを達成できるかを、利用者の視点でまとめたものです。要求を整理する分析段階で、「誰が」「何をするか」を明確にするために使われます。\n\n試験では、UMLのユースケース図として、アクター(人型)とユースケース(楕円)で機能を表現する記法が問われます。内部の処理手順ではなく「外から見た機能・利用シナリオ」を表す点が、他の図との違いとして重要です。",
+      "analogy_jp": "ATMの使い方を「客が:お金を下ろす・預ける・残高を見る」と利用者目線で一覧にしたもの。機械の内部の仕組みではなく、利用者が何をできるかを並べたイメージです。",
+      "memory_hook_jp": "ユースケースといえば利用者(アクター)視点で見たシステムの使い方",
+      "inline_quiz": [
+        "2010h22h-q029"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "用例",
+      "term_en": "Use case",
+      "definition_zh": "从使用者（参与者）的视角描述系统用法、功能的记述。",
+      "definition_en": "A description of how a system is used and what functions it provides, from the viewpoint of the user (actor).",
+      "explanation_zh": "用例是从使用者的视角，整理出使用系统的人或外部系统（参与者）通过系统能够达成哪些事情的记述。它用于在整理需求的分析阶段，明确「谁」「做什么」。\n\n考试中常考作为 UML 用例图，用参与者（人形）和用例（椭圆）来表示功能的记法。它表示的不是内部的处理步骤，而是「从外部看到的功能、使用场景」，这一点是它与其他图的重要区别。",
+      "explanation_en": "A use case is a description, written from the user's viewpoint, of what the people or external systems that use the system (actors) can accomplish through it. It is used in the analysis stage, where requirements are organized, to clarify \"who\" does \"what.\"\n\nOn the exam, the notation of representing functions with actors (stick figures) and use cases (ovals) as a UML use case diagram is tested. An important difference from other diagrams is that it represents not the internal processing steps but the \"functions and usage scenarios seen from the outside.\"",
+      "analogy_zh": "把 ATM 的用法以使用者视角列成一览，例如「客户：取钱、存钱、查看余额」。这不是机器内部的机制，而是把使用者能做什么并列出来的画面。",
+      "analogy_en": "A list of how to use an ATM, written from the user's viewpoint, such as \"customer: withdraw money, deposit money, check balance.\" It is not the inner workings of the machine, but a lineup of what the user can do.",
+      "memory_hook_zh": "说到用例，就是从使用者（参与者）视角看到的系统用法",
+      "memory_hook_en": "Use case → how the system is used, seen from the user's (actor's) viewpoint"
+    },
+    {
+      "term": "UML",
+      "definition_jp": "オブジェクト指向設計を図で表現するための標準化された統一モデリング言語。",
+      "explanation_jp": "UML(Unified Modeling Language、統一モデリング言語)は、オブジェクト指向に基づくシステムの構造や振る舞いを、決められた記法の図で表すための標準的なモデリング言語です。クラス図・ユースケース図・シーケンス図など複数の図を用途に応じて使い分けます。\n\n試験では、UMLが特定の製品やプログラミング言語ではなく「図で設計を表す共通の表記ルール」である点が問われます。ユースケース図もUMLに含まれる図の一つであり、オブジェクト指向開発で広く使われる標準記法だと押さえましょう。",
+      "analogy_jp": "建築の設計図に共通の製図ルールがあるように、ソフトの設計を誰が見ても同じように読める「共通の図の書き方ルール」がUMLです。",
+      "memory_hook_jp": "UMLといえばオブジェクト指向設計の標準モデリング図(クラス図・ユースケース図など)",
+      "inline_quiz": [
+        "2017h29h-q054"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "UML",
+      "term_en": "UML",
+      "definition_zh": "用于以图来表达面向对象设计的、标准化的统一建模语言。",
+      "definition_en": "A standardized Unified Modeling Language for expressing object-oriented design in diagrams.",
+      "explanation_zh": "UML（Unified Modeling Language，统一建模语言）是一种标准的建模语言，用规定的记法图示来表达基于面向对象的系统的结构和行为。它根据用途分别使用类图、用例图、序列图等多种图。\n\n考试中常考的一点是：UML 不是某个特定产品或编程语言，而是「用图来表达设计的通用表示规则」。要记住用例图也是 UML 所含图之一，UML 是在面向对象开发中被广泛使用的标准记法。",
+      "explanation_en": "UML (Unified Modeling Language) is a standard modeling language for expressing the structure and behavior of object-oriented systems with diagrams in a prescribed notation. It uses multiple diagrams—class diagrams, use case diagrams, sequence diagrams, and so on—chosen according to purpose.\n\nOn the exam, the point tested is that UML is not a specific product or programming language but \"a common notation rule for expressing design in diagrams.\" Keep in mind that the use case diagram is also one of the diagrams included in UML, and that UML is a standard notation widely used in object-oriented development.",
+      "analogy_zh": "就像建筑设计图有通用的制图规则一样，能让任何人都能以同样方式读懂软件设计的「通用画图规则」就是 UML。",
+      "analogy_en": "Just as architectural blueprints have common drafting rules, UML is the \"common rule for drawing diagrams\" that lets anyone read a software design in the same way.",
+      "memory_hook_zh": "说到 UML，就是面向对象设计的标准建模图（类图、用例图等）",
+      "memory_hook_en": "UML → standard modeling diagrams for object-oriented design (class diagram, use case diagram, etc.)"
+    },
+    {
+      "term": "リバースエンジニアリング",
+      "definition_jp": "既存の製品やプログラムを解析し、その仕様や設計情報を取り出す技法。",
+      "explanation_jp": "リバースエンジニアリングは、すでにある製品・ソフトウェア・実行プログラムなどを分析して、内部の構造・仕様・設計情報を後から取り出す技法です。設計書が残っていない既存システムの理解や、保守・再構築のために使われます。\n\n試験では、設計から製品を作る通常の流れ(フォワードエンジニアリング)とは逆向き、つまり「成果物から設計へさかのぼる」点が問われます。古いシステムの仕様を復元する目的が典型例で、リエンジニアリング(再構築)の前段階として登場することもあります。",
+      "analogy_jp": "完成した料理を食べて分析し、レシピ(材料・手順)を推定して書き起こすイメージ。出来上がったものから作り方をさかのぼって解き明かします。",
+      "memory_hook_jp": "リバースエンジニアリングといえば既存成果物から設計情報を逆に取り出す",
+      "inline_quiz": [
+        "2014h26h-q047",
+        "2018h30a-q039"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"設計情報\"] -->|フォワード| B[\"製品・プログラム\"]; B -->|リバースエンジニアリング| A",
+        "svg_path": "figures/management-09-26-u01-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "逆向工程",
+      "term_en": "Reverse engineering",
+      "definition_zh": "解析既有的产品或程序，提取出其规格和设计信息的技术。",
+      "definition_en": "A technique that analyzes an existing product or program and extracts its specifications and design information.",
+      "explanation_zh": "逆向工程是一种事后提取的技术：分析已经存在的产品、软件、可执行程序等，从中取出内部的结构、规格、设计信息。它用于理解没有保留设计书的既有系统，或用于维护、重构。\n\n考试中常考的是：它与从设计制造产品的通常流程（正向工程）方向相反，即「从交付物逆推回设计」。复原旧系统规格是典型例子，它有时也作为再工程（重构）的前置阶段出现。",
+      "explanation_en": "Reverse engineering is a technique for extraction after the fact: it analyzes an existing product, software, executable program, and so on, and pulls out the internal structure, specifications, and design information. It is used to understand existing systems whose design documents have not been kept, and for maintenance or reconstruction.\n\nOn the exam, what is tested is that it runs in the opposite direction to the usual flow of building a product from a design (forward engineering)—that is, \"tracing back from the deliverable to the design.\" Restoring the specifications of an old system is a typical example, and it sometimes appears as the preceding stage of reengineering (reconstruction).",
+      "analogy_zh": "想象吃下做好的菜并加以分析，推测出菜谱（材料、步骤）并写下来。从成品逆推回做法，把它解读出来。",
+      "analogy_en": "Imagine eating a finished dish, analyzing it, then inferring and writing down the recipe (ingredients and steps). You trace back from the finished product to how it was made and decode it.",
+      "memory_hook_zh": "说到逆向工程，就是从既有交付物反向提取出设计信息",
+      "memory_hook_en": "Reverse engineering → extracting design information backward from an existing deliverable"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "構造化手法: 構造化手法といえば処理(機能)中心に段階的な機能分割",
+      "オブジェクト指向: オブジェクト指向といえばデータと処理をまとめたオブジェクト中心(カプセル化・継承・多態性)",
+      "ユースケース: ユースケースといえば利用者(アクター)視点で見たシステムの使い方",
+      "UML: UMLといえばオブジェクト指向設計の標準モデリング図(クラス図・ユースケース図など)",
+      "リバースエンジニアリング: リバースエンジニアリングといえば既存成果物から設計情報を逆に取り出す"
+    ],
+    "key_points_jp": [
+      "構造化手法は処理(機能)中心、オブジェクト指向はデータと処理をまとめたオブジェクト中心。この対比が最頻出。",
+      "オブジェクト指向の基本特徴はカプセル化・継承・多態性で、再利用性と保守性の高さが利点。",
+      "ユースケースは利用者(アクター)視点でシステムの使い方を表し、UMLのユースケース図として描かれる。",
+      "UMLはオブジェクト指向設計を図で表す標準記法で、複数の図を用途別に使い分ける。",
+      "リバースエンジニアリングは既存の成果物から設計情報をさかのぼって取り出す分析技法である。"
+    ],
+    "key_points_zh": [
+      "结构化方法以处理（功能）为中心，面向对象以汇集了数据和处理的对象为中心。这一对比是最高频考点。",
+      "面向对象的基本特征是封装、继承、多态，优点是高可重用性和高可维护性。",
+      "用例从使用者（参与者）视角表示系统的用法，并以 UML 用例图的形式画出。",
+      "UML 是以图表达面向对象设计的标准记法，根据用途分别使用多种图。",
+      "逆向工程是一种从既有交付物逆推提取出设计信息的分析技术。"
+    ],
+    "key_points_en": [
+      "Structured methods are processing (function)-centered; object orientation is object-centered, combining data and processing. This contrast is the most frequently tested.",
+      "The basic characteristics of object orientation are encapsulation, inheritance, and polymorphism, and its advantages are high reusability and high maintainability.",
+      "A use case represents how a system is used from the user's (actor's) viewpoint and is drawn as a UML use case diagram.",
+      "UML is a standard notation for expressing object-oriented design in diagrams, using multiple diagrams chosen according to purpose.",
+      "Reverse engineering is an analysis technique that traces back from an existing deliverable to extract design information."
+    ],
+    "memory_hooks_zh": [
+      "结构化方法：说到结构化方法，就是以处理（功能）为中心进行逐步的功能分解",
+      "面向对象：说到面向对象，就是以汇集了数据和处理的对象为中心（封装、继承、多态）",
+      "用例：说到用例，就是从使用者（参与者）视角看到的系统用法",
+      "UML：说到 UML，就是面向对象设计的标准建模图（类图、用例图等）",
+      "逆向工程：说到逆向工程，就是从既有交付物反向提取出设计信息"
+    ],
+    "memory_hooks_en": [
+      "Structured method: Structured method → processing (function)-centered, stepwise functional decomposition",
+      "Object orientation: Object orientation → object-centered, combining data and processing (encapsulation, inheritance, polymorphism)",
+      "Use case: Use case → how the system is used, seen from the user's (actor's) viewpoint",
+      "UML: UML → standard modeling diagrams for object-oriented design (class diagram, use case diagram, etc.)",
+      "Reverse engineering: Reverse engineering → extracting design information backward from an existing deliverable"
+    ]
+  },
+  "challenge_questions": [
+    "2010h22a-q034",
+    "2020r02o-q037",
+    "2012h24a-q045",
+    "2015h27h-q032",
+    "2021r03-q041"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2010h22a-q045",
+      "figure_path": "figures/2010h22a-q045.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "设计与分析的方法及建模",
+  "title_en": "Design and Analysis Methods and Modeling",
+  "unit_summary_zh": "学习结构化方法与面向对象这两大设计范式、它们的表达手段（UML、用例），以及用于分析既有资产的逆向工程。",
+  "unit_summary_en": "Learn the two major design paradigms—structured methods and object orientation—their means of expression (UML, use cases), and reverse engineering for analyzing existing assets."
+}

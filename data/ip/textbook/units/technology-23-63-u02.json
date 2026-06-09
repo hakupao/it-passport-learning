@@ -1,0 +1,283 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-23-63-u02",
+  "topic_id": "technology-23-63",
+  "category": "technology",
+  "title_jp": "アクセス制御の基礎とネットワーク防御機器",
+  "unit_summary_jp": "アクセス権・アクセス制御の考え方と、ファイアウォール/WAF/IDS/IPSによる境界防御を学ぶ。",
+  "order_in_topic": 2,
+  "prerequisites": [],
+  "overview": {
+    "intro_jp": "情報セキュリティの技術的対策の中核を学ぶ単元です。「誰に何を許すか」というアクセス権の考え方から、それを運用するアクセス制御の仕組み、さらにファイアウォール・WAF・IDS・IPSといった境界防御を担うネットワーク機器へと積み上げます。最頻出のアクセス制御とファイアウォールを含む土台であり、各機器の役割の違いを区別できることが得点の鍵です。",
+    "freq_badge": "頻出",
+    "est_minutes": 21,
+    "intro_zh": "这是学习信息安全技术性对策核心内容的单元。从「允许谁做什么」这一访问权限的思路出发，到运用它的访问控制机制，再到承担边界防御的防火墙、WAF、IDS、IPS 等网络设备，逐层递进。本单元是包含最高频的访问控制与防火墙在内的基础，能够区分各设备角色的差异是得分的关键。",
+    "intro_en": "This unit covers the core of technical measures for information security. It builds up step by step: from the concept of access rights — \"who is allowed to do what\" — to the access control mechanism that operates them, and further to network devices such as firewalls, WAF, IDS, and IPS that handle boundary defense. It is a foundation that includes the most frequently tested access control and firewalls, and the key to scoring is being able to distinguish the differences in each device's role."
+  },
+  "terms": [
+    {
+      "term": "アクセス権",
+      "definition_jp": "利用者やプログラムに対し、資源への読取り・書込み・実行などを許す権限。",
+      "explanation_jp": "アクセス権とは、ファイルやフォルダ、データベースなどの資源に対して、「誰が」「どんな操作(参照・更新・実行など)」をしてよいかを定めた権限のことです。アクセス制御を運用するための最も基礎となる概念です。\n\n権限は利用者個人だけでなく、役割(グループ)単位でまとめて付与することもあります。試験では、業務上必要な最小限の権限だけを与える「最小権限の原則」や、参照は許すが更新は許さないといった操作種別ごとの設定の考え方が問われます。権限を与えすぎないことが情報漏えい防止につながる点を押さえましょう。",
+      "analogy_jp": "建物の入館証のようなもの。ある人は会議室まで、別の人は倉庫の鍵も持つ、というように「どこに入り何ができるか」を一人ひとり決めておく仕組みです。",
+      "memory_hook_jp": "アクセス権といえば誰に何の操作を許すかを定めた権限",
+      "inline_quiz": [
+        "2009h21a-q076"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "访问权限",
+      "term_en": "Access Right",
+      "definition_zh": "授予用户或程序对资源进行读取、写入、执行等操作的权限。",
+      "definition_en": "The authority granted to a user or program to read, write, execute, etc. on a resource.",
+      "explanation_zh": "访问权限是指针对文件、文件夹、数据库等资源，规定「谁」可以进行「什么操作（查看、更新、执行等）」的权限。它是运用访问控制的最基础概念。\n\n权限不仅可以授予用户个人，也可以按角色（组）为单位统一授予。考试中会考查只授予业务上必需的最小限度权限的「最小权限原则」，以及允许查看但不允许更新等按操作类别进行设置的思路。要记住不过度授予权限有助于防止信息泄露这一点。",
+      "explanation_en": "An access right is the authority that defines, for resources such as files, folders, and databases, \"who\" may perform \"what operation (view, update, execute, etc.)\". It is the most basic concept for operating access control.\n\nRights can be granted not only to individual users but also collectively by role (group). The exam asks about the \"principle of least privilege\" — granting only the minimum rights necessary for the job — and about the idea of configuring settings per operation type, such as allowing viewing but not updating. Keep in mind that not granting excessive rights helps prevent information leakage.",
+      "analogy_zh": "就像建筑物的门禁卡。某个人只能到会议室，另一个人还持有仓库的钥匙——这是一种为每个人逐一决定「能进哪里、能做什么」的机制。",
+      "analogy_en": "Like an entry pass for a building. One person can only reach the meeting room, while another also holds the key to the warehouse — a mechanism that decides for each individual \"where they can enter and what they can do.\"",
+      "memory_hook_zh": "说到访问权限，就是规定允许谁做什么操作的权限",
+      "memory_hook_en": "Access right → the authority defining who is allowed to do what operation"
+    },
+    {
+      "term": "アクセス制御",
+      "definition_jp": "アクセス権に基づき、資源への利用可否を判定・制限する仕組み。",
+      "explanation_jp": "アクセス制御は、設定されたアクセス権に従って、利用者が資源を利用できるかどうかを判定し、許可された操作だけを通す仕組みです。本人確認をする「認証」、許可された操作かを判定する「認可」、そして許可外の操作を拒否する「制限」という流れで成り立ちます。\n\n本ユニットの中心概念であり、最頻出です。試験では、認証(本人かどうか)と認可・アクセス制御(何をしてよいか)の違いがよく問われます。また、誰が何にアクセスしたかを記録するアクセスログと組み合わせ、不正の検知・追跡に役立てる点も重要です。",
+      "analogy_jp": "イベント会場のゲート係のようなもの。チケット(認証)を確認し、そのチケットで入れるエリアか(認可)を判定して、対象外の入場は断る、という一連の役割を担います。",
+      "memory_hook_jp": "アクセス制御といえばアクセス権に基づき利用可否を判定する仕組み",
+      "inline_quiz": [
+        "2009h21h-q062",
+        "2010h22a-q093"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"利用者の要求\"] --> B[\"認証(本人確認)\"]; B --> C[\"認可(アクセス権の判定)\"]; C --> D{\"権限あり?\"}; D -->|\"はい\"| E[\"資源の利用を許可\"]; D -->|\"いいえ\"| F[\"拒否\"]",
+        "svg_path": "figures/technology-23-63-u02-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "访问控制",
+      "term_en": "Access Control",
+      "definition_zh": "基于访问权限，判定并限制对资源是否可用的机制。",
+      "definition_en": "A mechanism that determines and restricts whether a resource may be used, based on access rights.",
+      "explanation_zh": "访问控制是依据所设定的访问权限，判定用户是否可以使用资源，并只放行被许可操作的机制。它由确认本人身份的「认证」、判定是否为被许可操作的「授权」，以及拒绝许可之外操作的「限制」这一流程构成。\n\n它是本单元的核心概念，也是最高频考点。考试中经常考查认证（是否本人）与授权、访问控制（可以做什么）的区别。此外，与记录谁访问了什么的访问日志相结合，有助于检测和追查违规行为，这一点也很重要。",
+      "explanation_en": "Access control is a mechanism that, according to the access rights that have been set, determines whether a user can use a resource and lets through only permitted operations. It consists of the flow of \"authentication\" (verifying identity), \"authorization\" (determining whether an operation is permitted), and \"restriction\" (rejecting operations outside what is permitted).\n\nIt is the central concept of this unit and the most frequently tested topic. The exam often asks about the difference between authentication (whether someone is who they claim to be) and authorization / access control (what they are allowed to do). It is also important that, combined with access logs recording who accessed what, it helps detect and trace unauthorized activity.",
+      "analogy_zh": "就像活动会场的检票员。先确认门票（认证），再判定该门票能否进入相应区域（授权），并拒绝非对应区域的入场——承担这一连串的职责。",
+      "analogy_en": "Like the gate staff at an event venue. They check the ticket (authentication), determine whether that ticket allows entry to a given area (authorization), and refuse entry to areas it does not cover — carrying out this whole sequence of roles.",
+      "memory_hook_zh": "说到访问控制，就是基于访问权限判定是否可用的机制",
+      "memory_hook_en": "Access control → the mechanism that decides usability based on access rights"
+    },
+    {
+      "term": "コールバック",
+      "definition_jp": "接続要求を一度切り、登録済み番号へ折り返して回線認証する制御手法。",
+      "explanation_jp": "コールバックは、外部から電話回線などで接続してきた利用者に対し、いったん通信を切断し、システム側からあらかじめ登録された番号へ「折り返し」発信して接続を確立する方式です。これによりアクセスできる相手を限定します。\n\nアクセス制御の一手法であり、登録された正しい場所からの接続だけを許す点で不正アクセス対策になります。試験では、接続元を限定する仕組み、電話料金をシステム側が負担する点などが問われることがあります。回線を使った認証の一種として、アクセス制御群の補足として位置づけられます。",
+      "analogy_jp": "知らない番号からの電話にはすぐ出ず、登録済みの番号にこちらから掛け直して本人を確かめるようなもの。折り返す相手をあらかじめ決めておきます。",
+      "memory_hook_jp": "コールバックといえば登録番号へ折り返して接続元を限定",
+      "inline_quiz": [
+        "2010h22a-q094"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "回拨（Callback）",
+      "term_en": "Callback",
+      "definition_zh": "先切断连接请求，再回拨至已登记号码进行线路认证的控制方法。",
+      "definition_en": "A control method that first disconnects a connection request, then calls back to a registered number to authenticate via the line.",
+      "explanation_zh": "回拨是指对于通过电话线路等从外部接入的用户，先暂时切断通信，再由系统一方向事先登记好的号码「回拨」发起呼叫以建立连接的方式。借此来限定可以访问的对象。\n\n它是访问控制的一种方法，由于只允许来自已登记的正确地点的连接，因而能够作为非法访问的防范措施。考试中可能会考查限定连接来源的机制，以及电话费由系统一方承担等内容。作为使用线路进行认证的一种，它被定位为访问控制类内容的补充。",
+      "explanation_en": "Callback is a method in which, for a user who connects from outside via a telephone line or similar, the system first disconnects the communication and then \"calls back\" to a number registered in advance to establish the connection. This limits who can gain access.\n\nIt is one method of access control, and because it allows only connections from a registered, correct location, it serves as a countermeasure against unauthorized access. The exam may ask about the mechanism for limiting the connection source and about the system bearing the call charges. As a form of authentication using the line, it is positioned as a supplement to the access control group.",
+      "analogy_zh": "就像对陌生号码打来的电话不急着接，而是由自己回拨到已登记的号码以确认对方本人。要回拨的对象是事先就定好的。",
+      "analogy_en": "Like not immediately answering a call from an unknown number, but instead calling back to a registered number yourself to confirm the person's identity. The party you call back is decided in advance.",
+      "memory_hook_zh": "说到回拨，就是回拨至登记号码以限定连接来源",
+      "memory_hook_en": "Callback → call back to a registered number to limit the connection source"
+    },
+    {
+      "term": "ファイアウォール",
+      "definition_jp": "内部と外部ネットワークの境界で通信を監視し、不正な通信を遮断する機器。",
+      "explanation_jp": "ファイアウォール(防火壁)は、組織内部のネットワークとインターネットなど外部との境界に設置し、あらかじめ定めたルールに従って通信を通す・遮断するかを判断する機器・ソフトウェアです。境界防御の代表であり、高頻出です。\n\n主に通信の送信元・宛先のIPアドレスやポート番号を見て、許可された通信だけを通します(パケットフィルタリング)。試験では、後述のWAF(Webアプリの中身まで見る)やIDS/IPS(侵入の検知・防御)との役割分担がよく問われます。ファイアウォールは「境界での出入口管理」が基本機能である点を押さえましょう。",
+      "analogy_jp": "建物の正面玄関に立つ警備員のようなもの。入館リスト(ルール)に載っている人だけを通し、許可のない人の出入りを玄関で止めます。",
+      "memory_hook_jp": "ファイアウォールといえば内部と外部の境界で不正通信を遮断",
+      "inline_quiz": [
+        "2009h21a-q079",
+        "2009h21h-q074"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"外部(インターネット)\"] --> B[\"ファイアウォール\"]; B -->|\"許可\"| C[\"内部ネットワーク\"]; B -->|\"拒否\"| D[\"遮断\"]",
+        "svg_path": "figures/technology-23-63-u02-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "防火墙",
+      "term_en": "Firewall",
+      "definition_zh": "在内部与外部网络的边界监视通信、阻断非法通信的设备。",
+      "definition_en": "A device that monitors communication at the boundary between internal and external networks and blocks unauthorized traffic.",
+      "explanation_zh": "防火墙是设置在组织内部网络与互联网等外部之间的边界上，按照预先设定的规则来判断是放行还是阻断通信的设备或软件。它是边界防御的代表，也是高频考点。\n\n它主要查看通信的源、目的 IP 地址和端口号，只放行被许可的通信（包过滤）。考试中经常考查它与后文的 WAF（连 Web 应用的内容也要检查）、IDS/IPS（入侵的检测、防御）之间的角色分工。要记住防火墙的基本功能是「在边界进行出入口管理」。",
+      "explanation_en": "A firewall is a device or software placed at the boundary between an organization's internal network and the outside such as the internet, deciding whether to pass or block communication according to predefined rules. It is the representative of boundary defense and a high-frequency exam topic.\n\nIt mainly looks at the source and destination IP addresses and port numbers of the communication, letting through only permitted traffic (packet filtering). The exam often asks about its division of roles with the WAF (which inspects even the contents of a web app) and IDS/IPS (detection and defense of intrusions) discussed later. Keep in mind that the firewall's basic function is \"entry/exit management at the boundary.\"",
+      "analogy_zh": "就像站在建筑物正门口的保安。只让在入馆名单（规则）上的人通过，在大门口拦下没有许可的人员进出。",
+      "analogy_en": "Like a guard standing at a building's main entrance. They let through only people on the entry list (the rules) and stop unauthorized people from coming and going at the door.",
+      "memory_hook_zh": "说到防火墙，就是在内外边界阻断非法通信",
+      "memory_hook_en": "Firewall → block unauthorized traffic at the internal/external boundary"
+    },
+    {
+      "term": "WAF",
+      "definition_jp": "Webアプリへの通信内容を検査し、不正な攻撃を防ぐ専用の防御機器。",
+      "explanation_jp": "WAF(Web Application Firewall)は、Webアプリケーションを狙った攻撃を防ぐために、通信の中身(アプリケーション層のデータ)を検査して不正なリクエストを遮断する仕組みです。\n\n通常のファイアウォールがIPアドレスやポートで判断するのに対し、WAFはSQLインジェクションやクロスサイトスクリプティングなど、Webアプリ特有の攻撃パターンを検知して防ぐ点が特徴です。試験では、『Webアプリへの攻撃対策に特化した防御』であり、ファイアウォールでは防ぎにくいアプリ層の攻撃をカバーする点が問われます。FWの応用・特殊化として理解しましょう。",
+      "analogy_jp": "玄関の警備員(FW)が通した来訪者の「持ち物の中身」まで検査する受付係のようなもの。見た目は普通でも、危険物が紛れていないかを内容で確かめます。",
+      "memory_hook_jp": "WAFといえばWebアプリへの攻撃を内容検査で防ぐ",
+      "inline_quiz": [
+        "2024r06-q090"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "WAF（Web 应用防火墙）",
+      "term_en": "WAF",
+      "definition_zh": "检查针对 Web 应用的通信内容、防御非法攻击的专用防御设备。",
+      "definition_en": "A dedicated defense device that inspects the content of traffic to web applications and prevents malicious attacks.",
+      "explanation_zh": "WAF（Web Application Firewall）是为防御针对 Web 应用的攻击，检查通信内容（应用层数据）以阻断非法请求的机制。\n\n相对于普通防火墙以 IP 地址或端口进行判断，WAF 的特点是检测并防御 SQL 注入、跨站脚本等 Web 应用特有的攻击模式。考试中会考查它「专门针对 Web 应用攻击对策的防御」，以及它能覆盖防火墙难以防御的应用层攻击这一点。可将其理解为防火墙的延伸与专门化。",
+      "explanation_en": "A WAF (Web Application Firewall) is a mechanism that, in order to defend against attacks aimed at web applications, inspects the content of communication (application-layer data) and blocks malicious requests.\n\nWhereas an ordinary firewall judges by IP address or port, the WAF is characterized by detecting and preventing attack patterns specific to web applications, such as SQL injection and cross-site scripting. The exam asks that it is \"defense specialized in countering attacks on web applications\" and that it covers application-layer attacks that a firewall has difficulty preventing. Understand it as an application and specialization of the firewall.",
+      "analogy_zh": "就像不仅由门口保安（防火墙）放行访客，还要检查访客「随身物品内容」的前台。即便外表看着正常，也要从内容上确认有没有混入危险物品。",
+      "analogy_en": "Like a reception clerk who, beyond the entrance guard (the firewall) letting visitors in, inspects even the \"contents of their belongings.\" Even if they look normal, the clerk checks the contents to confirm no dangerous items are mixed in.",
+      "memory_hook_zh": "说到 WAF，就是通过内容检查防御针对 Web 应用的攻击",
+      "memory_hook_en": "WAF → defend against attacks on web apps by inspecting content"
+    },
+    {
+      "term": "IDS",
+      "definition_jp": "ネットワークやサーバを監視し、不正侵入の兆候を検知して通知する仕組み。",
+      "explanation_jp": "IDS(Intrusion Detection System、侵入検知システム)は、ネットワークやサーバへの通信を監視し、不正アクセスや攻撃の兆候を見つけると管理者に警告・通知する仕組みです。\n\n大きな特徴は、あくまで「検知して知らせる」までが役割で、通信そのものを止める機能は持たない点です。試験では、防御(遮断)を行うファイアウォールやIPSとの違いがよく問われます。IDSは『見張って気づき、知らせる』装置であり、対処は管理者に委ねられる、という点を押さえると後述のIPSとの対比が明確になります。",
+      "analogy_jp": "建物に取り付けた防犯センサーや見張りカメラのようなもの。怪しい動きを見つけると警報で知らせますが、侵入者自体を取り押さえることはしません。",
+      "memory_hook_jp": "IDSといえば侵入の兆候を検知して通知(遮断はしない)",
+      "inline_quiz": [
+        "2013h25h-q080"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "IDS（入侵检测系统）",
+      "term_en": "IDS",
+      "definition_zh": "监视网络和服务器，检测到非法入侵迹象后进行通知的机制。",
+      "definition_en": "A mechanism that monitors networks and servers, detects signs of unauthorized intrusion, and issues notifications.",
+      "explanation_zh": "IDS（Intrusion Detection System，入侵检测系统）是监视对网络和服务器的通信，一旦发现非法访问或攻击的迹象就向管理员发出警告、通知的机制。\n\n其最大特点是：它的职责仅止于「检测并告知」，并不具备阻止通信本身的功能。考试中经常考查它与进行防御（阻断）的防火墙、IPS 之间的区别。把握住 IDS 是「盯着、察觉、告知」的装置，处置则交由管理员，这样与后文的 IPS 的对比就会很清晰。",
+      "explanation_en": "An IDS (Intrusion Detection System) is a mechanism that monitors communication to networks and servers, and when it finds signs of unauthorized access or attack, warns and notifies the administrator.\n\nIts biggest characteristic is that its role goes only as far as \"detecting and informing\"; it does not have the function to stop the communication itself. The exam often asks about its difference from firewalls and IPS, which perform defense (blocking). Grasping that the IDS is a device that \"watches, notices, and informs,\" leaving the handling to the administrator, makes the contrast with the IPS discussed later clear.",
+      "analogy_zh": "就像安装在建筑物上的防盗传感器或监控摄像头。发现可疑动静时会用警报告知，但并不会去擒住入侵者本人。",
+      "analogy_en": "Like a burglar sensor or surveillance camera installed on a building. When it spots suspicious movement, it informs you with an alarm, but it does not actually seize the intruder.",
+      "memory_hook_zh": "说到 IDS，就是检测入侵迹象并通知（不阻断）",
+      "memory_hook_en": "IDS → detect signs of intrusion and notify (does not block)"
+    },
+    {
+      "term": "IPS",
+      "definition_jp": "不正侵入を検知し、さらにその通信を自動で遮断・防御する仕組み。",
+      "explanation_jp": "IPS(Intrusion Prevention System、侵入防止システム)は、IDSと同じく不正な通信や攻撃の兆候を検知したうえで、さらにその通信を自動的に遮断して被害を未然に防ぐ仕組みです。\n\nIDSが「検知・通知」までなのに対し、IPSは「検知して即座に防御(遮断)」まで行う発展形である点が最大の違いで、試験頻出です。検知後の対処を人手に頼らず自動で止めるため、迅速な防御が可能です。IDSとIPSは名前も働きも似ているため、『知らせるだけ=IDS、止めるまで=IPS』という対比で覚えるのが効果的です。",
+      "analogy_jp": "防犯センサーが鳴るだけでなく、自動でシャッターを下ろして侵入を物理的に止めてくれる装置のようなもの。気づくだけでなく、その場で食い止めます。",
+      "memory_hook_jp": "IPSといえば侵入を検知して自動で遮断・防御",
+      "inline_quiz": [
+        "2010h22a-q095"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "IPS（入侵防御系统）",
+      "term_en": "IPS",
+      "definition_zh": "检测非法入侵，并进一步自动阻断、防御该通信的机制。",
+      "definition_en": "A mechanism that detects unauthorized intrusion and further automatically blocks and defends against that traffic.",
+      "explanation_zh": "IPS（Intrusion Prevention System，入侵防御系统）与 IDS 一样会检测非法通信或攻击的迹象，在此基础上进一步自动阻断该通信，从而防患于未然。\n\n相对于 IDS 止于「检测、通知」，IPS 会一直做到「检测后即刻防御（阻断）」，是其发展形态，这是两者最大的区别，也是考试高频点。由于检测后的处置不依赖人工而是自动阻断，因此能够迅速防御。IDS 与 IPS 名称和作用都很相似，用「只告知＝IDS，连阻止都做＝IPS」的对比来记忆很有效。",
+      "explanation_en": "An IPS (Intrusion Prevention System), like an IDS, detects signs of unauthorized communication or attack, and on top of that automatically blocks the traffic to prevent damage in advance.\n\nWhereas the IDS goes only as far as \"detection and notification,\" the IPS goes all the way to \"detect and immediately defend (block)\" — an advanced form, which is the biggest difference and a frequent exam topic. Because it stops the traffic automatically after detection without relying on human hands, rapid defense is possible. Since IDS and IPS are similar in both name and function, it is effective to remember them with the contrast \"only inform = IDS, goes as far as stopping = IPS.\"",
+      "analogy_zh": "就像防盗传感器不只是响铃，还会自动放下卷帘门、从物理上阻止入侵的装置。不只是察觉，还会当场把入侵挡下来。",
+      "analogy_en": "Like a device where the burglar sensor not only sounds but also automatically lowers a shutter to physically stop the intrusion. It does not just notice — it blocks the intrusion on the spot.",
+      "memory_hook_zh": "说到 IPS，就是检测入侵并自动阻断、防御",
+      "memory_hook_en": "IPS → detect intrusion and automatically block and defend"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "アクセス権: アクセス権といえば誰に何の操作を許すかを定めた権限",
+      "アクセス制御: アクセス制御といえばアクセス権に基づき利用可否を判定する仕組み",
+      "コールバック: コールバックといえば登録番号へ折り返して接続元を限定",
+      "ファイアウォール: ファイアウォールといえば内部と外部の境界で不正通信を遮断",
+      "WAF: WAFといえばWebアプリへの攻撃を内容検査で防ぐ",
+      "IDS: IDSといえば侵入の兆候を検知して通知(遮断はしない)",
+      "IPS: IPSといえば侵入を検知して自動で遮断・防御"
+    ],
+    "key_points_jp": [
+      "本単元は『アクセス権→アクセス制御→ネットワーク防御機器(FW/WAF/IDS/IPS)』と、基礎概念から境界防御の実装へ積み上がる構成。",
+      "アクセス権=誰に何の操作を許すかを定めた権限、アクセス制御=その権限に基づき利用可否を判定する仕組み。認証(本人確認)と認可(操作の可否)の違いが頻出。",
+      "ファイアウォールはIPアドレスやポートで通信を通す・遮断する境界防御の代表機器。WAFはWebアプリへの攻撃を通信内容まで検査して防ぐ特化型。",
+      "IDSは侵入の兆候を検知・通知するだけ、IPSは検知に加えて自動で遮断まで行う。『知らせるだけ=IDS、止めるまで=IPS』の対比が重要。",
+      "コールバックは登録済み番号へ折り返して接続元を限定するアクセス制御手法。各機器・手法の役割の違いを区別できることが得点の鍵。"
+    ],
+    "key_points_zh": [
+      "本单元按「访问权限→访问控制→网络防御设备（FW/WAF/IDS/IPS）」的结构，从基础概念逐层递进到边界防御的实现。",
+      "访问权限＝规定允许谁做什么操作的权限；访问控制＝基于该权限判定是否可用的机制。认证（确认本人）与授权（操作可否）的区别为高频考点。",
+      "防火墙是以 IP 地址和端口来放行 / 阻断通信的边界防御代表设备。WAF 是连通信内容也要检查、专门防御针对 Web 应用攻击的特化型。",
+      "IDS 只检测、通知入侵迹象；IPS 在检测之外还会自动进行阻断。「只告知＝IDS，连阻止都做＝IPS」的对比很重要。",
+      "回拨是回拨至已登记号码以限定连接来源的访问控制方法。能够区分各设备、各方法在角色上的差异，是得分的关键。"
+    ],
+    "key_points_en": [
+      "This unit is structured as \"access rights → access control → network defense devices (FW/WAF/IDS/IPS),\" building up from basic concepts to the implementation of boundary defense.",
+      "Access right = the authority defining who is allowed to do what operation; access control = the mechanism that decides usability based on that authority. The difference between authentication (verifying identity) and authorization (whether an operation is permitted) is frequently tested.",
+      "The firewall is the representative boundary-defense device that passes/blocks traffic by IP address and port. The WAF is a specialized type that inspects even the communication content and is dedicated to defending against attacks on web applications.",
+      "The IDS only detects and notifies signs of intrusion; the IPS, in addition to detection, also automatically blocks. The contrast \"only inform = IDS, goes as far as stopping = IPS\" is important.",
+      "Callback is an access control method that calls back to a registered number to limit the connection source. Being able to distinguish the differences in role among the various devices and methods is the key to scoring."
+    ],
+    "memory_hooks_zh": [
+      "访问权限：说到访问权限，就是规定允许谁做什么操作的权限",
+      "访问控制：说到访问控制，就是基于访问权限判定是否可用的机制",
+      "回拨：说到回拨，就是回拨至登记号码以限定连接来源",
+      "防火墙：说到防火墙，就是在内外边界阻断非法通信",
+      "WAF：说到 WAF，就是通过内容检查防御针对 Web 应用的攻击",
+      "IDS：说到 IDS，就是检测入侵迹象并通知（不阻断）",
+      "IPS：说到 IPS，就是检测入侵并自动阻断、防御"
+    ],
+    "memory_hooks_en": [
+      "Access right: Access right → the authority defining who is allowed to do what operation",
+      "Access control: Access control → the mechanism that decides usability based on access rights",
+      "Callback: Callback → call back to a registered number to limit the connection source",
+      "Firewall: Firewall → block unauthorized traffic at the internal/external boundary",
+      "WAF: WAF → defend against attacks on web apps by inspecting content",
+      "IDS: IDS → detect signs of intrusion and notify (does not block)",
+      "IPS: IPS → detect intrusion and automatically block and defend"
+    ]
+  },
+  "challenge_questions": [
+    "2010h22a-q096",
+    "2010h22h-q068",
+    "2014h26a-q054",
+    "2014h26h-q054",
+    "2011h23tokubetsu-q055"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2009h21h-q062",
+      "figure_path": "figures/2009h21h-q062.png",
+      "figure_type": "table",
+      "figure_description": "アクセス制御表。人事部グループ属性情報(110)と，所属する4人の個人属性情報（Aさん:100，Bさん:110，Cさん:001，Dさん:未登録）を示す。各ビットは左から参照・更新・追加削除の許可(1)/禁止(0)を表す。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22a-q093",
+      "figure_path": "figures/2010h22a-q093.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22a-q094",
+      "figure_path": "figures/2010h22a-q094.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22a-q095",
+      "figure_path": "figures/2010h22a-q095.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "访问控制基础与网络防御设备",
+  "title_en": "Fundamentals of Access Control and Network Defense Devices",
+  "unit_summary_zh": "学习访问权限与访问控制的思路，以及由防火墙 / WAF / IDS / IPS 实现的边界防御。",
+  "unit_summary_en": "Learn the concepts of access rights and access control, plus boundary defense provided by firewalls, WAF, IDS, and IPS."
+}

@@ -1,0 +1,238 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-14-37-u04",
+  "topic_id": "technology-14-37",
+  "category": "technology",
+  "title_jp": "データ型",
+  "unit_summary_jp": "データ型の概念と、整数型・実数型・論理型・文字型の基本型を理解する。",
+  "order_in_topic": 4,
+  "prerequisites": [
+    "technology-14-37-u02",
+    "technology-14-37-u03"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、変数や式が扱う値の「種類」を規定するデータ型と、その代表である整数型・実数型・論理型・文字型の4基本型を学びます。データ型は前の式・代入や引数・戻り値の理解を支え、次に学ぶ探索・整列で扱う配列要素の型の前提にもなる、プログラミングの土台となる概念です。",
+    "freq_badge": "標準",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习用于规定变量或表达式所处理值的「种类」的数据类型，以及其代表性的整数型、实数型、逻辑型、字符型这4种基本类型。数据类型支撑着前面所学的表达式、赋值以及参数、返回值的理解，同时也是后面要学的查找、排序中所处理的数组元素类型的前提，是编程的基石性概念。",
+    "intro_en": "In this unit, you will learn about data types, which define the \"kind\" of value that a variable or expression handles, along with their representative four basic types: integer, real, boolean, and character. Data types underpin your understanding of the earlier topics of expressions, assignment, arguments, and return values, and they also serve as the prerequisite for the element types of arrays handled in the upcoming topics of searching and sorting. They are a foundational concept of programming."
+  },
+  "terms": [
+    {
+      "term": "データ型",
+      "definition_jp": "変数や値が取り得る種類と、それに対して可能な操作を規定する分類。",
+      "explanation_jp": "データ型とは、変数や式が扱う値が「どんな種類のデータか」を定める枠組みです。整数型・実数型・論理型・文字型などがあり、型によって格納できる値の範囲や、その値にできる演算(計算・比較など)が決まります。\n\n型を正しく意識すると、数値どうしの足し算や文字の連結など、その型に合った操作だけを行えます。試験では、各基本型がどんな値を表すかや、型ごとに扱える値が異なることを問う問題が出ます。データ型は4基本型を束ねる上位の総称概念であると押さえておきましょう。",
+      "analogy_jp": "容器の種類を決めるラベルのようなもの。「液体用」「粉用」と決めておけば、その容器に合った中身だけを入れ、適した扱い方ができます。",
+      "memory_hook_jp": "データ型といえば値の種類と可能な操作を規定する分類",
+      "inline_quiz": [
+        "2010h22a-q069"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph TD; A[\"データ型\"]; A --> B[\"整数型\"]; A --> C[\"実数型\"]; A --> D[\"論理型\"]; A --> E[\"文字型\"]",
+        "svg_path": "figures/technology-14-37-u04-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "数据类型",
+      "term_en": "Data Type",
+      "definition_zh": "规定变量或值可取的种类，以及对其可进行的操作的分类。",
+      "definition_en": "A classification that defines the kinds of values a variable or value can take, and the operations that can be performed on them.",
+      "explanation_zh": "数据类型是规定变量或表达式所处理的值「属于哪种数据」的框架。它包括整数型、实数型、逻辑型、字符型等，类型决定了可存储值的范围，以及对该值可进行的运算（计算、比较等）。\n\n正确意识到类型后，就能只进行适合该类型的操作，例如数值之间的相加、字符的连接等。考试中会出现询问各基本类型表示什么样的值，以及不同类型可处理的值各不相同的题目。请记住：数据类型是统括4种基本类型的上位总称概念。",
+      "explanation_en": "A data type is a framework that defines \"what kind of data\" the value handled by a variable or expression is. There are integer, real, boolean, character types, and so on. The type determines the range of values that can be stored and the operations (calculation, comparison, etc.) that can be performed on those values.\n\nWhen you are properly aware of the type, you can perform only the operations appropriate to that type, such as adding numbers together or concatenating characters. Exams ask what kind of value each basic type represents, and that the values handled differ by type. Keep in mind that a data type is a higher-level umbrella concept that groups together the four basic types.",
+      "analogy_zh": "就像决定容器种类的标签一样。事先标明「装液体用」「装粉末用」，就只往该容器里放入适合它的内容物，并采取合适的处理方式。",
+      "analogy_en": "It is like a label that decides the kind of container. By deciding in advance \"for liquids\" or \"for powders,\" you put in only the contents suited to that container and can handle it appropriately.",
+      "memory_hook_zh": "说到数据类型，就是规定值的种类与可进行操作的分类",
+      "memory_hook_en": "Data type → a classification that defines the kind of value and the operations allowed on it"
+    },
+    {
+      "term": "整数型",
+      "definition_jp": "小数部を持たない整数(…,-2,-1,0,1,2,…)を表すデータ型。",
+      "explanation_jp": "整数型は、小数点以下を持たない整数を扱うデータ型です。個数・回数・順番のように、本来分割しない値を表すのに用いられ、加減乗除や大小比較ができます。\n\n試験では、小数を扱える実数型との違いが問われます。たとえば「7÷2」を整数型で計算すると、小数を切り捨てて商の3だけが得られる(言語により扱いは異なる)など、実数型とは結果が変わる点に注意が必要です。人数やループの繰返し回数といった数え上げには整数型が適していると理解しておきましょう。",
+      "analogy_jp": "りんごを「1個、2個、3個」と数えるときの数のようなもの。半分の0.5個とは数えず、必ず区切りのよい整数で扱います。",
+      "memory_hook_jp": "整数型といえば小数を持たない整数を扱う型",
+      "inline_quiz": [
+        "2010h22h-q053"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "整数型",
+      "term_en": "Integer Type",
+      "definition_zh": "表示没有小数部分的整数（…，-2，-1，0，1，2，…）的数据类型。",
+      "definition_en": "A data type that represents integers without a fractional part (…, -2, -1, 0, 1, 2, …).",
+      "explanation_zh": "整数型是处理没有小数点以下部分的整数的数据类型。它用于表示个数、次数、顺序这类本来不会被分割的值，可以进行加减乘除以及大小比较。\n\n考试中会询问它与能处理小数的实数型之间的区别。例如，用整数型计算「7÷2」时，会舍去小数，只得到商3（不同语言的处理方式不同），需要注意这一点与实数型的结果不同。请记住：对于人数、循环的重复次数这类计数，整数型更为合适。",
+      "explanation_en": "The integer type is a data type that handles integers without anything below the decimal point. It is used to represent values that are inherently not divided, such as counts, number of times, and order, and it supports addition, subtraction, multiplication, division, and magnitude comparison.\n\nExams ask about the difference from the real type, which can handle decimals. For example, when you compute \"7 ÷ 2\" with the integer type, the decimal part is truncated and you get only the quotient 3 (the handling differs by language), so note that the result differs from the real type. Keep in mind that the integer type is suitable for counting things like the number of people or the number of loop iterations.",
+      "analogy_zh": "就像数苹果时「1个、2个、3个」所用的数。不会数成半个的0.5个，一定按整齐的整数来处理。",
+      "analogy_en": "It is like the numbers you use when counting apples \"1, 2, 3.\" You do not count half an apple as 0.5; you always handle them as whole, clean integers.",
+      "memory_hook_zh": "说到整数型，就是处理没有小数的整数的类型",
+      "memory_hook_en": "Integer type → a type that handles whole numbers with no decimals"
+    },
+    {
+      "term": "実数型",
+      "definition_jp": "小数点以下を含む実数(例: 3.14, -0.5)を表すデータ型。",
+      "explanation_jp": "実数型は、小数点以下を含む数値を扱うデータ型です。浮動小数点型とも呼ばれ、身長・金額・割合・平均値のように小数が必要な値を表すのに使います。\n\n試験では整数型との対比が中心で、「3.14」や「割り算の小数を含む結果」を保持できるのが実数型です。一方で、コンピュータ内部では実数を完全には正確に表せず、わずかな誤差(丸め誤差)が生じることがある点も特徴です。小数を扱うなら実数型、数え上げなら整数型、と使い分けを押さえましょう。",
+      "analogy_jp": "体重計の「63.5kg」や買い物の「税込み321.84円」のように、きっちり割り切れない端数まで表せる目盛りのようなものです。",
+      "memory_hook_jp": "実数型といえば小数を含む実数を扱う型",
+      "inline_quiz": [
+        "2010h22h-q095"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "实数型",
+      "term_en": "Real Type",
+      "definition_zh": "表示包含小数点以下部分的实数（例：3.14、-0.5）的数据类型。",
+      "definition_en": "A data type that represents real numbers including a fractional part (e.g., 3.14, -0.5).",
+      "explanation_zh": "实数型是处理包含小数点以下部分的数值的数据类型。它也被称为浮点型，用于表示身高、金额、比例、平均值这类需要小数的值。\n\n考试中以与整数型的对比为主，能保留「3.14」或「除法得到的含小数结果」的是实数型。另一方面，在计算机内部无法完全精确地表示实数，可能产生微小的误差（舍入误差），这也是其特点之一。请掌握其区分使用：处理小数就用实数型，计数就用整数型。",
+      "explanation_en": "The real type is a data type that handles numeric values including a fractional part below the decimal point. It is also called a floating-point type, and is used to represent values that require decimals, such as height, amounts of money, ratios, and averages.\n\nExams center on the contrast with the integer type: the real type is what can hold \"3.14\" or \"a division result that includes a decimal.\" On the other hand, a feature is that a computer cannot represent real numbers with complete accuracy internally, so slight errors (rounding errors) can occur. Master the distinction: use the real type for decimals and the integer type for counting.",
+      "analogy_zh": "就像体重计上的「63.5kg」或购物时「含税321.84元」那样，能够表示连无法整除的零头都包含在内的刻度。",
+      "analogy_en": "It is like a scale that can represent even the leftover amounts that do not divide evenly, such as \"63.5 kg\" on a scale or \"321.84 including tax\" when shopping.",
+      "memory_hook_zh": "说到实数型，就是处理包含小数的实数的类型",
+      "memory_hook_en": "Real type → a type that handles real numbers including decimals"
+    },
+    {
+      "term": "論理型",
+      "definition_jp": "真(true)か偽(false)の2値のいずれかを表すデータ型。",
+      "explanation_jp": "論理型は、「真(true)」または「偽(false)」の2つの値だけを取るデータ型です。ブール型とも呼ばれ、条件が成り立つか否かを表します。\n\n選択(分岐)や繰返しの継続判定に使う条件式の結果は、この論理型の値になります。たとえば「点数 >= 60」という条件式は、成り立てば真、成り立たなければ偽を返し、その値で処理の流れが分岐します。試験では、論理型が真偽の2値だけを扱う型であること、条件式や条件分岐と結びつくことが問われます。",
+      "analogy_jp": "電気のスイッチの「オン・オフ」や、質問への「はい・いいえ」のように、答えが必ず2つのどちらかになる状態を表すものです。",
+      "memory_hook_jp": "論理型といえば真か偽の2値を表す型",
+      "inline_quiz": [
+        "2011h23a-q064"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "逻辑型",
+      "term_en": "Boolean Type",
+      "definition_zh": "表示真（true）或假（false）这2个值之一的数据类型。",
+      "definition_en": "A data type that represents one of two values: true or false.",
+      "explanation_zh": "逻辑型是只取「真（true）」或「假（false）」这2个值的数据类型。它也被称为布尔型，用于表示条件是否成立。\n\n用于选择（分支）或重复的继续判断的条件表达式，其结果就是这个逻辑型的值。例如「分数 >= 60」这一条件表达式，成立时返回真，不成立时返回假，并依据该值使处理流程产生分支。考试中会询问逻辑型是只处理真假2个值的类型，以及它与条件表达式、条件分支的关联。",
+      "explanation_en": "The boolean type is a data type that takes only two values: \"true\" or \"false.\" It is also called the boolean type and represents whether a condition holds.\n\nThe result of a conditional expression used for selection (branching) or for deciding whether to continue a loop is a value of this boolean type. For example, the conditional expression \"score >= 60\" returns true if it holds and false if it does not, and the flow of processing branches based on that value. Exams ask that the boolean type handles only the two values true and false, and that it is connected with conditional expressions and conditional branching.",
+      "analogy_zh": "就像电灯开关的「开·关」，或对提问回答「是·否」那样，答案必定是两者之一的状态。",
+      "analogy_en": "It is like the \"on/off\" of an electrical switch, or a \"yes/no\" answer to a question, representing a state whose answer must be one of two.",
+      "memory_hook_zh": "说到逻辑型，就是表示真或假2个值的类型",
+      "memory_hook_en": "Boolean type → a type that represents the two values true or false"
+    },
+    {
+      "term": "文字型",
+      "definition_jp": "1つの文字(例: 'A', 'あ', '5')を表すデータ型。",
+      "explanation_jp": "文字型は、1個の文字を扱うデータ型です。アルファベット・数字・記号・かな漢字などの「文字」を値として持ち、複数の文字をつなげたものは文字列として扱われます。\n\n注意したいのは、文字としての'5'と数値の5は別物だという点です。文字型の'5'は計算の対象ではなく、あくまで表示や並びのための文字です。試験では、数値型(整数・実数)との違いや、文字を扱うのが文字型であることが問われます。数として計算したいなら数値型、表示する記号や名前を扱うなら文字型、と区別しておきましょう。",
+      "analogy_jp": "キーボードのキーを1つ押して入力される「文字そのもの」のイメージ。数字キーの「5」も、計算用の数ではなく印字された記号として扱われます。",
+      "memory_hook_jp": "文字型といえば1つの文字を表す型",
+      "inline_quiz": [
+        "2011h23tokubetsu-q093"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "字符型",
+      "term_en": "Character Type",
+      "definition_zh": "表示1个字符（例：'A'、'あ'、'5'）的数据类型。",
+      "definition_en": "A data type that represents a single character (e.g., 'A', 'あ', '5').",
+      "explanation_zh": "字符型是处理1个字符的数据类型。它以字母、数字、符号、假名汉字等「字符」作为值，将多个字符连接起来的内容则作为字符串来处理。\n\n需要注意的是，作为字符的'5'与数值的5是两回事。字符型的'5'不是计算的对象，仅仅是用于显示或排列的字符。考试中会询问它与数值型（整数、实数）的区别，以及处理字符的是字符型这一点。请区分清楚：想作为数来计算就用数值型，处理要显示的符号或名称就用字符型。",
+      "explanation_en": "The character type is a data type that handles a single character. It holds \"characters\" such as letters, digits, symbols, and kana/kanji as values, and content formed by joining multiple characters is handled as a string.\n\nWhat you should be careful about is that the character '5' and the numeric value 5 are different things. The character-type '5' is not a target of calculation; it is merely a character for display or ordering. Exams ask about the difference from numeric types (integer and real), and that what handles characters is the character type. Make the distinction clear: use a numeric type when you want to calculate as a number, and the character type when you handle a symbol or name to be displayed.",
+      "analogy_zh": "可以想象成按一下键盘上的某个键所输入的「字符本身」。数字键的「5」也不是用于计算的数，而是被当作印出来的符号来处理。",
+      "analogy_en": "Picture \"the character itself\" that is entered by pressing a single key on the keyboard. The \"5\" on the number key is also handled not as a number for calculation, but as a printed symbol.",
+      "memory_hook_zh": "说到字符型，就是表示1个字符的类型",
+      "memory_hook_en": "Character type → a type that represents a single character"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "データ型: データ型といえば値の種類と可能な操作を規定する分類",
+      "整数型: 整数型といえば小数を持たない整数を扱う型",
+      "実数型: 実数型といえば小数を含む実数を扱う型",
+      "論理型: 論理型といえば真か偽の2値を表す型",
+      "文字型: 文字型といえば1つの文字を表す型"
+    ],
+    "key_points_jp": [
+      "データ型は、変数や値が取り得る種類と可能な操作を規定する総称概念で、整数型・実数型・論理型・文字型などの基本型を束ねる。",
+      "整数型は小数を持たない整数、実数型(浮動小数点型)は小数を含む実数を扱い、数え上げか端数を含む値かで使い分ける。",
+      "論理型は真(true)・偽(false)の2値だけを取り、条件式や選択・繰返しの判定結果と結びつく。",
+      "文字型は1つの文字を表し、文字の'5'と数値の5は別物である(計算したいなら数値型、表示する記号なら文字型)。",
+      "データ型の理解は、式・代入や引数・戻り値の扱い、さらに次に学ぶ探索・整列で配列要素の型を考える前提になる。"
+    ],
+    "key_points_zh": [
+      "数据类型是规定变量或值可取的种类与可进行操作的总称概念，统括整数型、实数型、逻辑型、字符型等基本类型。",
+      "整数型处理没有小数的整数，实数型（浮点型）处理包含小数的实数，应按照是计数还是含零头的值来区分使用。",
+      "逻辑型只取真（true）、假（false）2个值，与条件表达式以及选择、重复的判断结果相关联。",
+      "字符型表示1个字符，字符的'5'与数值的5是两回事（想计算就用数值型，要显示的符号就用字符型）。",
+      "对数据类型的理解，是处理表达式、赋值以及参数、返回值的基础，更是后面要学的查找、排序中思考数组元素类型的前提。"
+    ],
+    "key_points_en": [
+      "A data type is an umbrella concept that defines the kinds a variable or value can take and the operations allowed, grouping together basic types such as integer, real, boolean, and character types.",
+      "The integer type handles whole numbers without decimals, while the real type (floating-point type) handles real numbers including decimals; choose between them depending on whether you are counting or handling values with fractional parts.",
+      "The boolean type takes only the two values true and false, and is connected with conditional expressions and with the judgment results of selection and looping.",
+      "The character type represents a single character; the character '5' and the numeric value 5 are different things (use a numeric type to calculate, and the character type for a symbol to be displayed).",
+      "Understanding data types is the basis for handling expressions, assignment, arguments, and return values, and further serves as the prerequisite for thinking about array element types in the upcoming topics of searching and sorting."
+    ],
+    "memory_hooks_zh": [
+      "数据类型：说到数据类型，就是规定值的种类与可进行操作的分类",
+      "整数型：说到整数型，就是处理没有小数的整数的类型",
+      "实数型：说到实数型，就是处理包含小数的实数的类型",
+      "逻辑型：说到逻辑型，就是表示真或假2个值的类型",
+      "字符型：说到字符型，就是表示1个字符的类型"
+    ],
+    "memory_hooks_en": [
+      "Data type: Data type → a classification that defines the kind of value and the operations allowed on it",
+      "Integer type: Integer type → a type that handles whole numbers with no decimals",
+      "Real type: Real type → a type that handles real numbers including decimals",
+      "Boolean type: Boolean type → a type that represents the two values true or false",
+      "Character type: Character type → a type that represents a single character"
+    ]
+  },
+  "challenge_questions": [
+    "2011h23tokubetsu-q096",
+    "2013h25h-q053",
+    "2015h27a-q048",
+    "2015h27h-q059",
+    "2021r03-q074"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2010h22h-q095",
+      "figure_path": "figures/2010h22h-q095.png",
+      "figure_type": "flowchart",
+      "figure_description": "文献検索機能の処理フロー図。開始→文献名あいまい検索・結果表示→該当文献あるか(No→文献なし表示)→貸出レコードあるか(No→eの処理, Yes→fの処理)→終了。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23a-q064",
+      "figure_path": "figures/2011h23a-q064.png",
+      "figure_type": "diagram",
+      "figure_description": "1〜4の番号を持つ四つの状態が円形につながれた状態遷移図。時計回りおよび反時計回りに遷移できる。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23tokubetsu-q093",
+      "figure_path": "figures/2011h23tokubetsu-q093.png",
+      "figure_type": "flowchart",
+      "figure_description": "チケット金額計算関数のフローチャート（図1）：開始→条件判定a（購入条件チェック）→Yes側：J+K≧20判定→Yes側：L=0.9×(3,000×J+1,000×K)，No側：L=3,000×J+1,000×K→No側：L=−1→終了 の流れ図。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2015h27a-q048",
+      "figure_path": "figures/2015h27a-q048.png",
+      "figure_type": "flowchart",
+      "figure_description": "流れ図（フローチャート）とデータ区分表。データ区分A:件数10、B:件数30、C:件数50、その他:件数10。流れ図はx, y, zの3段分岐処理構造を示す。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2021r03-q074",
+      "figure_path": "figures/2021r03-q074.png",
+      "figure_type": "flowchart",
+      "figure_description": "流れ図X：開始→iに1を格納→変換（k:1,1,3）ループ→aを計算しその結果をiに格納→変換ループ終→終了。流れ図Y：開始→iに1を格納→変換（b）ループ→aを計算しその結果をiに格納→変換ループ終→終了。（注）ループ端の繰返し指定は，変数名：初期値，増分，終値を示す。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "数据类型",
+  "title_en": "Data Types",
+  "unit_summary_zh": "理解数据类型的概念，以及整数型、实数型、逻辑型、字符型这几种基本类型。",
+  "unit_summary_en": "Understand the concept of data types and the basic types: integer, real, boolean, and character types."
+}

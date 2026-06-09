@@ -1,0 +1,253 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-23-63-u06",
+  "topic_id": "technology-23-63",
+  "category": "technology",
+  "title_jp": "暗号化の基礎と暗号方式",
+  "unit_summary_jp": "暗号化・復号の概念と、共通鍵・公開鍵・ハイブリッド・ハッシュ関数という基本方式を学ぶ。",
+  "order_in_topic": 6,
+  "prerequisites": [],
+  "overview": {
+    "intro_jp": "本ユニットでは、情報を第三者に読めなくする暗号化と元へ戻す復号の基礎概念から、鍵の使い方で分かれる共通鍵暗号方式・公開鍵暗号方式、両者の長所を組み合わせたハイブリッド暗号方式、そして元データへ戻せない一方向のハッシュ関数までを学びます。デジタル署名・PKI・SSL/TLSなど応用技術すべての土台となる、本分野で最頻出の重要単元です。",
+    "freq_badge": "頻出",
+    "est_minutes": 18,
+    "intro_zh": "在本单元中，我们将从让信息无法被第三方读取的加密、以及将其还原的解密这些基础概念出发，学习按密钥使用方式区分的共享密钥加密方式与公开密钥加密方式，结合两者优点的混合加密方式，以及无法还原原始数据的单向散列函数。它是数字签名、PKI、SSL/TLS 等所有应用技术的基石，也是本领域出题频率最高的重要单元。",
+    "intro_en": "In this unit, you will start from the basic concepts of encryption (making information unreadable to third parties) and decryption (restoring it), then learn the symmetric-key and public-key methods that differ in how keys are used, the hybrid method that combines the strengths of both, and one-way hash functions that cannot be reversed to the original data. This is the foundation for all applied technologies such as digital signatures, PKI, and SSL/TLS, and it is the most frequently tested key unit in this field."
+  },
+  "terms": [
+    {
+      "term": "暗号化",
+      "definition_jp": "鍵を使い、平文を第三者が読めない暗号文へ変換する処理。",
+      "explanation_jp": "暗号化は、そのままでは読める情報(平文)を、決まった手順(アルゴリズム)と鍵を使って、意味の分からない暗号文に変える処理です。通信の盗聴やデータの漏えいが起きても、鍵を持たない第三者には内容を読まれないようにし、機密性を守ります。\n\n暗号文を元の平文へ戻す「復号」と対になる概念で、試験ではこの2語の向きの違いがよく問われます。また、暗号化しても通信が「速くなる」「データが小さくなる」わけではなく、目的はあくまで内容の秘匿である点も押さえましょう。",
+      "analogy_jp": "手紙を、自分と相手だけが知る暗号ルールで意味不明な文字列に書き換えてから送るようなもの。途中で誰かに見られても中身は読まれません。",
+      "memory_hook_jp": "暗号化といえば平文を読めない暗号文に変える処理",
+      "inline_quiz": [
+        "2010h22h-q054",
+        "2011h23a-q070"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "加密",
+      "term_en": "Encryption",
+      "definition_zh": "使用密钥，将明文转换为第三方无法读取的密文的处理。",
+      "definition_en": "The process of using a key to convert plaintext into ciphertext that a third party cannot read.",
+      "explanation_zh": "加密是指将原本可读的信息（明文），使用固定的步骤（算法）和密钥，变成意义无法辨认的密文的处理。即使发生通信窃听或数据泄露，也能让没有密钥的第三方无法读取内容，从而保护机密性。\n\n它与把密文还原为原始明文的「解密」是一对相对的概念，考试中常常考查这两个词方向上的差异。此外，加密并不会让通信「变快」或让数据「变小」，其目的始终只是隐藏内容，这一点也要记牢。",
+      "explanation_en": "Encryption is the process of taking information that is normally readable (plaintext) and turning it into meaningless ciphertext using a fixed procedure (algorithm) and a key. Even if eavesdropping or data leakage occurs, a third party without the key cannot read the content, thus protecting confidentiality.\n\nIt is the counterpart concept to \"decryption,\" which restores ciphertext to the original plaintext, and the exam often asks about the difference in direction between these two terms. Also keep in mind that encryption does not make communication \"faster\" or data \"smaller\"; its sole purpose is to keep the content secret.",
+      "analogy_zh": "就像把一封信，按照只有你和对方才知道的加密规则改写成意义不明的字符串后再寄出。即使中途被别人看到，也读不懂内容。",
+      "analogy_en": "It is like rewriting a letter into a meaningless string of characters using a cipher rule known only to you and the recipient before sending it. Even if someone sees it along the way, they cannot read the content.",
+      "memory_hook_zh": "说到加密，就是把明文变成读不懂的密文的处理",
+      "memory_hook_en": "Encryption → turning plaintext into unreadable ciphertext"
+    },
+    {
+      "term": "復号",
+      "definition_jp": "鍵を使い、暗号文を元の読める平文へ戻す処理。",
+      "explanation_jp": "復号は、暗号化されて読めなくなった暗号文を、正しい鍵を使って元の平文へ戻す処理です。受信側が正規の鍵を持っているときだけ内容を読めるようにすることで、暗号化と組み合わせて安全な通信や保管を実現します。\n\n暗号化と逆向きの操作であり、試験では「暗号化=平文→暗号文」「復号=暗号文→平文」という方向を取り違えないことが重要です。なお、正しい鍵がなければ復号できないのが暗号方式の前提で、鍵が漏れると第三者にも復号されてしまう点も理解しておきましょう。",
+      "analogy_jp": "暗号ルールで書かれた意味不明な手紙を、同じルール(鍵)を知っている人が元の読める文章に戻して読むようなものです。",
+      "memory_hook_jp": "復号といえば暗号文を元の平文に戻す処理",
+      "inline_quiz": [
+        "2009h21a-q074",
+        "2011h23tokubetsu-q088"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "解密",
+      "term_en": "Decryption",
+      "definition_zh": "使用密钥，将密文还原为原始可读明文的处理。",
+      "definition_en": "The process of using a key to restore ciphertext back to the original readable plaintext.",
+      "explanation_zh": "解密是指将经过加密、变得无法读取的密文，使用正确的密钥还原为原始明文的处理。只有当接收方持有合法的密钥时才能读取内容，从而与加密配合，实现安全的通信和保存。\n\n它是与加密方向相反的操作，考试中重要的是不要弄反「加密＝明文→密文」「解密＝密文→明文」这个方向。另外，没有正确的密钥就无法解密，这是加密方式的前提；同时也要理解，一旦密钥泄露，第三方也能解密这一点。",
+      "explanation_en": "Decryption is the process of using the correct key to restore ciphertext that has been encrypted and made unreadable back to the original plaintext. The content can be read only when the receiver holds the legitimate key, which—combined with encryption—achieves secure communication and storage.\n\nIt is the reverse operation of encryption, and on the exam it is important not to mix up the directions \"encryption = plaintext → ciphertext\" and \"decryption = ciphertext → plaintext.\" Also note that it is a premise of cipher methods that decryption is impossible without the correct key, and that if the key leaks, a third party can also decrypt the data.",
+      "analogy_zh": "就像一封用加密规则写成、意义不明的信，由知道相同规则（密钥）的人将其还原为可读的原文来阅读。",
+      "analogy_en": "It is like a meaningless letter written using a cipher rule being restored to its original readable text by someone who knows the same rule (the key).",
+      "memory_hook_zh": "说到解密，就是把密文还原成原始明文的处理",
+      "memory_hook_en": "Decryption → turning ciphertext back into the original plaintext"
+    },
+    {
+      "term": "共通鍵暗号方式",
+      "definition_jp": "暗号化と復号に同一の鍵を使う暗号方式。",
+      "explanation_jp": "共通鍵暗号方式は、送信者が暗号化に使う鍵と、受信者が復号に使う鍵が同じである方式です。処理が速く大量のデータ向きという長所がある一方、その鍵を相手へ安全に渡す「鍵配送」が難しいという課題があります。秘密鍵暗号方式とも呼ばれます。\n\nまた、通信相手が増えるほど必要な鍵の数が大きく増える点も弱点です。試験では、暗号化と復号で鍵が同じなのが共通鍵、鍵が異なるのが公開鍵、という対比がよく問われます。代表的なアルゴリズムにAESがあります。",
+      "analogy_jp": "1本の鍵でかけたり開けたりできる南京錠のようなもの。便利ですが、その鍵を相手に渡す途中で複製されると誰でも開けられてしまいます。",
+      "memory_hook_jp": "共通鍵暗号方式といえば暗号化と復号が同じ鍵",
+      "inline_quiz": [
+        "2009h21h-q077",
+        "2010h22h-q070"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "共享密钥加密方式",
+      "term_en": "Symmetric-key cryptography",
+      "definition_zh": "加密和解密使用同一把密钥的加密方式。",
+      "definition_en": "A cipher method that uses the same key for both encryption and decryption.",
+      "explanation_zh": "共享密钥加密方式是指发送方用于加密的密钥，与接收方用于解密的密钥相同的方式。它的优点是处理速度快、适合大量数据，但同时也存在如何把这把密钥安全地交给对方的「密钥配送」难题。它也被称为私密密钥加密方式。\n\n此外，通信对象越多，所需的密钥数量就增长得越快，这也是它的弱点。考试中常考的对比是：加密和解密使用相同密钥的是共享密钥，使用不同密钥的是公开密钥。代表性的算法有 AES。",
+      "explanation_en": "Symmetric-key cryptography is a method in which the key the sender uses for encryption and the key the receiver uses for decryption are the same. Its advantages are fast processing and suitability for large amounts of data, but it has the challenge of \"key distribution\"—safely delivering that key to the other party. It is also called secret-key cryptography.\n\nAnother weakness is that the number of keys needed grows sharply as the number of communication partners increases. On the exam, a common contrast is that symmetric-key uses the same key for encryption and decryption, while public-key uses different keys. A representative algorithm is AES.",
+      "analogy_zh": "就像一把钥匙既能上锁又能开锁的挂锁。很方便，但如果在把这把钥匙交给对方的途中被复制，任何人都能打开它。",
+      "analogy_en": "It is like a padlock that can be both locked and unlocked with a single key. Convenient, but if that key is copied while being handed to the other party, anyone can open it.",
+      "memory_hook_zh": "说到共享密钥加密方式，就是加密和解密用同一把密钥",
+      "memory_hook_en": "Symmetric-key cryptography → same key for encryption and decryption"
+    },
+    {
+      "term": "公開鍵暗号方式",
+      "definition_jp": "公開鍵で暗号化し、対の秘密鍵で復号する暗号方式。",
+      "explanation_jp": "公開鍵暗号方式は、暗号化用の「公開鍵」と復号用の「秘密鍵」というペアの鍵を使う方式です。公開鍵は誰に配っても構わず、それで暗号化された暗号文は対になる秘密鍵を持つ本人だけが復号できます。これにより共通鍵方式の弱点だった鍵配送の問題を解決します。\n\n受信者が公開鍵を公開し、送信者がそれで暗号化、受信者が自分の秘密鍵で復号するのが基本の流れです。試験では「公開鍵で暗号化→秘密鍵で復号」という鍵の対応、共通鍵より処理が遅い点、デジタル署名やPKIの基盤になる点が頻出です。代表例にRSAがあります。",
+      "analogy_jp": "誰でも投函できる郵便ポスト(公開鍵)に手紙を入れ、その中身は専用の鍵(秘密鍵)を持つ持ち主だけが取り出せる、という仕組みに似ています。",
+      "memory_hook_jp": "公開鍵暗号方式といえば公開鍵で暗号化・秘密鍵で復号",
+      "inline_quiz": [
+        "2010h22a-q055",
+        "2010h22a-q073"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"送信者\"] --> B[\"受信者の公開鍵で暗号化\"]; B --> C[\"暗号文を送信\"]; C --> D[\"受信者の秘密鍵で復号\"]; D --> E[\"受信者\"]",
+        "svg_path": "figures/technology-23-63-u06-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "公开密钥加密方式",
+      "term_en": "Public-key cryptography",
+      "definition_zh": "用公开密钥加密，用配对的私密密钥解密的加密方式。",
+      "definition_en": "A cipher method that encrypts with a public key and decrypts with the paired private key.",
+      "explanation_zh": "公开密钥加密方式是指使用加密用的「公开密钥」和解密用的「私密密钥」这样一对密钥的方式。公开密钥可以发给任何人都没关系，用它加密的密文只有持有配对私密密钥的本人才能解密。由此解决了共享密钥方式所存在的密钥配送难题。\n\n基本流程是：接收方公开自己的公开密钥，发送方用它加密，接收方再用自己的私密密钥解密。考试中常考的内容有「用公开密钥加密→用私密密钥解密」这一密钥对应关系、处理速度比共享密钥慢这一点，以及它是数字签名和 PKI 的基础。代表例有 RSA。",
+      "explanation_en": "Public-key cryptography is a method that uses a pair of keys: a \"public key\" for encryption and a \"private key\" for decryption. The public key may be distributed to anyone, and ciphertext encrypted with it can be decrypted only by the person holding the paired private key. This solves the key-distribution problem that was a weakness of the symmetric-key method.\n\nThe basic flow is that the receiver publishes their public key, the sender encrypts with it, and the receiver decrypts with their own private key. Frequently tested on the exam are the key correspondence \"encrypt with the public key → decrypt with the private key,\" the fact that processing is slower than symmetric-key, and that it is the foundation of digital signatures and PKI. A representative example is RSA.",
+      "analogy_zh": "类似于这样一种机制：把信投入任何人都能投递的邮筒（公开密钥），而其中的内容只有持有专用钥匙（私密密钥）的所有者才能取出。",
+      "analogy_en": "It resembles a mailbox (the public key) into which anyone can drop a letter, but the contents can be retrieved only by the owner who holds the dedicated key (the private key).",
+      "memory_hook_zh": "说到公开密钥加密方式，就是用公开密钥加密、用私密密钥解密",
+      "memory_hook_en": "Public-key cryptography → encrypt with public key, decrypt with private key"
+    },
+    {
+      "term": "ハイブリッド暗号方式",
+      "definition_jp": "公開鍵方式で共通鍵を送り、本文は共通鍵方式で暗号化する方式。",
+      "explanation_jp": "ハイブリッド暗号方式は、共通鍵暗号方式と公開鍵暗号方式を組み合わせて両者の長所を活かす方式です。本文の暗号化には高速な共通鍵方式を使い、その共通鍵そのものを相手へ安全に渡すために、鍵配送に強い公開鍵方式を使います。\n\nこれにより「処理が速い」と「鍵を安全に配れる」を両立でき、SSL/TLSなど実際の通信で広く使われています。試験では、なぜ2方式を組み合わせるのか(速度と鍵配送の両立)、どちらの方式で何を暗号化するのか(共通鍵は公開鍵で、本文は共通鍵で)という役割分担が問われます。",
+      "analogy_jp": "重い荷物(本文)は速い宅配便(共通鍵)で送り、その宅配ボックスの鍵だけは確実な書留(公開鍵)で届けるようなもの。速さと安全を両立させます。",
+      "memory_hook_jp": "ハイブリッド暗号方式といえば共通鍵を公開鍵で配り本文は共通鍵で暗号化",
+      "inline_quiz": [
+        "2023r05-q086"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"共通鍵を生成\"]; A --> B[\"本文を共通鍵で暗号化\"]; A --> C[\"共通鍵を相手の公開鍵で暗号化\"]; B --> D[\"暗号文と暗号化した共通鍵を送信\"]; C --> D; D --> E[\"受信側は秘密鍵で共通鍵を復号し本文を復号\"]",
+        "svg_path": "figures/technology-23-63-u06-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "混合加密方式",
+      "term_en": "Hybrid cryptography",
+      "definition_zh": "用公开密钥方式传送共享密钥，正文则用共享密钥方式加密的方式。",
+      "definition_en": "A method that sends the symmetric key using the public-key method and encrypts the message body with the symmetric-key method.",
+      "explanation_zh": "混合加密方式是将共享密钥加密方式和公开密钥加密方式结合起来、发挥两者优点的方式。正文的加密使用高速的共享密钥方式，而为了把这把共享密钥本身安全地交给对方，则使用擅长密钥配送的公开密钥方式。\n\n由此既能做到「处理速度快」又能做到「安全地配送密钥」，被广泛应用于 SSL/TLS 等实际通信中。考试中常考的是：为什么要把两种方式结合（兼顾速度与密钥配送），以及用哪种方式加密什么（共享密钥用公开密钥加密，正文用共享密钥加密）这种分工。",
+      "explanation_en": "Hybrid cryptography is a method that combines symmetric-key and public-key cryptography to leverage the strengths of both. It uses the fast symmetric-key method to encrypt the message body, and uses the public-key method—strong at key distribution—to safely deliver that symmetric key itself to the other party.\n\nThis achieves both \"fast processing\" and \"safe key distribution\" at the same time, and is widely used in actual communications such as SSL/TLS. The exam asks why two methods are combined (to balance speed and key distribution) and the division of roles regarding which method encrypts what (the symmetric key is encrypted with the public key, and the body is encrypted with the symmetric key).",
+      "analogy_zh": "就像把沉重的行李（正文）用快速的快递（共享密钥）寄出，而只把那个快递柜的钥匙用可靠的挂号信（公开密钥）送达。既快又安全，两者兼顾。",
+      "analogy_en": "It is like shipping heavy luggage (the body) by a fast courier (symmetric key), while delivering only the key to that delivery locker by reliable registered mail (public key). It balances both speed and security.",
+      "memory_hook_zh": "说到混合加密方式，就是共享密钥用公开密钥配送、正文用共享密钥加密",
+      "memory_hook_en": "Hybrid cryptography → distribute the symmetric key with the public key, encrypt the body with the symmetric key"
+    },
+    {
+      "term": "ハッシュ関数",
+      "definition_jp": "任意データを固定長の値へ変換する、元へ戻せない一方向関数。",
+      "explanation_jp": "ハッシュ関数は、入力データの長さにかかわらず、決まった長さの値(ハッシュ値)を出力する関数です。同じ入力からは必ず同じハッシュ値が得られ、入力が少しでも違えば全く異なる値になります。出力から元の入力を復元できない一方向性が大きな特徴です。\n\n暗号化と違い鍵を使わず、復号もできない点が試験で問われます。データが改ざんされていないかの確認(完全性のチェック)やデジタル署名、パスワードの保存などに使われます。代表例にSHA-256があります。",
+      "analogy_jp": "料理を細かく刻んで指紋のような「ペースト」にするようなもの。同じ材料なら同じペーストになりますが、ペーストから元の料理を組み立て直すことはできません。",
+      "memory_hook_jp": "ハッシュ関数といえば元に戻せない固定長の一方向変換",
+      "inline_quiz": [
+        "2009h21h-q086",
+        "2015h27h-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "散列函数",
+      "term_en": "Hash function",
+      "definition_zh": "将任意数据转换为固定长度值的、无法还原的单向函数。",
+      "definition_en": "A one-way function that converts arbitrary data into a fixed-length value and cannot be reversed.",
+      "explanation_zh": "散列函数是指无论输入数据的长度如何，都输出固定长度的值（散列值）的函数。相同的输入必定得到相同的散列值，而输入哪怕只有一点点不同，得到的值就会完全不一样。无法从输出还原出原始输入的单向性是它的一大特征。\n\n考试中常考它与加密不同，不使用密钥，也无法解密。它被用于确认数据是否被篡改（完整性检查）、数字签名、密码的保存等。代表例有 SHA-256。",
+      "explanation_en": "A hash function is a function that outputs a fixed-length value (a hash value) regardless of the length of the input data. The same input always yields the same hash value, and even a tiny difference in the input produces a completely different value. A major characteristic is its one-way nature: the original input cannot be recovered from the output.\n\nThe exam asks that, unlike encryption, it uses no key and cannot be decrypted. It is used for verifying whether data has been tampered with (an integrity check), for digital signatures, for storing passwords, and so on. A representative example is SHA-256.",
+      "analogy_zh": "就像把一道菜切得很碎，做成像指纹一样的「酱泥」。相同的食材会得到相同的酱泥，但无法从酱泥把原来的菜重新拼回去。",
+      "analogy_en": "It is like finely chopping a dish into a fingerprint-like \"paste.\" The same ingredients yield the same paste, but you cannot reassemble the original dish from the paste.",
+      "memory_hook_zh": "说到散列函数，就是无法还原的固定长度单向转换",
+      "memory_hook_en": "Hash function → an irreversible, fixed-length, one-way transformation"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "暗号化: 暗号化といえば平文を読めない暗号文に変える処理",
+      "復号: 復号といえば暗号文を元の平文に戻す処理",
+      "共通鍵暗号方式: 共通鍵暗号方式といえば暗号化と復号が同じ鍵",
+      "公開鍵暗号方式: 公開鍵暗号方式といえば公開鍵で暗号化・秘密鍵で復号",
+      "ハイブリッド暗号方式: ハイブリッド暗号方式といえば共通鍵を公開鍵で配り本文は共通鍵で暗号化",
+      "ハッシュ関数: ハッシュ関数といえば元に戻せない固定長の一方向変換"
+    ],
+    "key_points_jp": [
+      "暗号化は平文を暗号文へ、復号は暗号文を平文へ戻す対の操作で、目的は内容の秘匿(機密性の確保)である。",
+      "共通鍵暗号方式は暗号化と復号で同じ鍵を使い高速だが鍵配送が難しく、公開鍵暗号方式は公開鍵で暗号化・秘密鍵で復号し鍵配送に強いが低速、という違いを区別する。",
+      "公開鍵暗号方式は『公開鍵で暗号化→対の秘密鍵で復号』が基本で、デジタル署名やPKIの基盤となる(代表例RSA)。",
+      "ハイブリッド暗号方式は本文を高速な共通鍵で、その共通鍵を公開鍵で安全に配送し、速度と鍵配送を両立する(SSL/TLSで利用)。",
+      "ハッシュ関数は鍵を使わず復号もできない一方向変換で、改ざん検知やデジタル署名・パスワード保存に使う(代表例SHA-256)。"
+    ],
+    "key_points_zh": [
+      "加密是把明文变为密文，解密是把密文还原为明文，二者是成对的操作，目的是隐藏内容（确保机密性）。",
+      "要区分：共享密钥加密方式在加密和解密时使用同一把密钥、速度快但密钥配送困难；公开密钥加密方式用公开密钥加密、用私密密钥解密、擅长密钥配送但速度慢。",
+      "公开密钥加密方式以「用公开密钥加密→用配对的私密密钥解密」为基本，是数字签名和 PKI 的基础（代表例 RSA）。",
+      "混合加密方式用高速的共享密钥加密正文，并用公开密钥安全配送那把共享密钥，兼顾速度与密钥配送（用于 SSL/TLS）。",
+      "散列函数是不使用密钥、也无法解密的单向转换，用于篡改检测、数字签名和密码保存（代表例 SHA-256）。"
+    ],
+    "key_points_en": [
+      "Encryption turns plaintext into ciphertext and decryption turns ciphertext back into plaintext—a paired pair of operations whose purpose is to keep content secret (ensuring confidentiality).",
+      "Distinguish them: symmetric-key cryptography uses the same key for encryption and decryption and is fast but has difficult key distribution, while public-key cryptography encrypts with the public key and decrypts with the private key, is strong at key distribution but slow.",
+      "Public-key cryptography is fundamentally \"encrypt with the public key → decrypt with the paired private key,\" and is the foundation of digital signatures and PKI (representative example: RSA).",
+      "Hybrid cryptography encrypts the body with the fast symmetric key and distributes that symmetric key safely with the public key, balancing speed and key distribution (used in SSL/TLS).",
+      "A hash function is a one-way transformation that uses no key and cannot be decrypted, used for tamper detection, digital signatures, and password storage (representative example: SHA-256)."
+    ],
+    "memory_hooks_zh": [
+      "加密：说到加密，就是把明文变成读不懂的密文的处理",
+      "解密：说到解密，就是把密文还原成原始明文的处理",
+      "共享密钥加密方式：说到共享密钥加密方式，就是加密和解密用同一把密钥",
+      "公开密钥加密方式：说到公开密钥加密方式，就是用公开密钥加密、用私密密钥解密",
+      "混合加密方式：说到混合加密方式，就是共享密钥用公开密钥配送、正文用共享密钥加密",
+      "散列函数：说到散列函数，就是无法还原的固定长度单向转换"
+    ],
+    "memory_hooks_en": [
+      "Encryption: Encryption → turning plaintext into unreadable ciphertext",
+      "Decryption: Decryption → turning ciphertext back into the original plaintext",
+      "Symmetric-key cryptography: Symmetric-key → same key for encryption and decryption",
+      "Public-key cryptography: Public-key → encrypt with public key, decrypt with private key",
+      "Hybrid cryptography: Hybrid → distribute the symmetric key with the public key, encrypt the body with the symmetric key",
+      "Hash function: Hash function → an irreversible, fixed-length, one-way transformation"
+    ]
+  },
+  "challenge_questions": [
+    "2011h23a-q071",
+    "2012h24a-q056",
+    "2014h26a-q077",
+    "2016h28h-q087",
+    "2018h30a-q084"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2010h22h-q070",
+      "figure_path": "figures/2010h22h-q070.png",
+      "figure_type": "diagram",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2023r05-q086",
+      "figure_path": "figures/2023r05-q086.png",
+      "figure_type": "diagram",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2016h28h-q087",
+      "figure_path": "figures/2016h28h-q087.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "加密的基础与加密方式",
+  "title_en": "Fundamentals of Encryption and Cipher Methods",
+  "unit_summary_zh": "学习加密与解密的概念，以及共享密钥、公开密钥、混合加密和散列函数这几种基本方式。",
+  "unit_summary_en": "Learn the concepts of encryption and decryption, along with the basic methods: symmetric-key, public-key, hybrid, and hash functions."
+}

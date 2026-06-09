@@ -1,0 +1,238 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-15-42-u05",
+  "topic_id": "technology-15-42",
+  "category": "technology",
+  "title_jp": "アクチュエーターとデバイス制御",
+  "unit_summary_jp": "検知結果を物理動作に変えるアクチュエーター群と、OSが機器を扱うデバイス制御(ドライバ/PnP)を学ぶ。",
+  "order_in_topic": 5,
+  "prerequisites": [
+    "technology-15-42-u01",
+    "technology-15-42-u03",
+    "technology-15-42-u04"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、センサーが検知した情報を物理的な動き(回転や往復運動)に変えるアクチュエーター群と、OSが接続機器を正しく扱うための仕組みであるデバイスドライバ・プラグアンドプレイを学びます。入力(センサー)に対する出力側を担う重要分野で、特にドライバとPnPは出題頻度が高い項目です。",
+    "freq_badge": "低頻",
+    "est_minutes": 18,
+    "intro_zh": "在本单元中，你将学习把传感器检测到的信息转化为物理运动（旋转或往复运动）的各类执行器，以及让操作系统正确管理所连接设备的机制——设备驱动程序和即插即用。这是承担输入（传感器）所对应的输出侧的重要领域，其中驱动程序和即插即用尤其是出题频率较高的项目。",
+    "intro_en": "In this unit, you will learn about the actuators that convert information sensed by sensors into physical motion (rotational or reciprocating), as well as the mechanisms that let the OS correctly handle connected equipment—device drivers and Plug and Play. This is a key field that handles the output side corresponding to the input (sensors); device drivers and Plug and Play in particular are frequently tested topics."
+  },
+  "terms": [
+    {
+      "term": "アクチュエーター",
+      "definition_jp": "電気や流体の力を回転・直線などの物理的な動きに変える装置の総称。",
+      "explanation_jp": "アクチュエーターは、コンピュータからの制御信号やエネルギーを受け取り、それを実際の「動き(運動)」に変換する出力装置の総称です。モーターによる回転、シリンダによる押し引きなどが代表例です。\n\nセンサーが外部の状態を電気信号として「読み取る(入力)」のに対し、アクチュエーターは信号を物理的な動作として「出力」します。ちょうど対をなす関係で、IoT機器やロボット、産業機械では『センサーで検知→処理→アクチュエーターで動作』という流れが基本です。試験では、入力側のセンサーと出力側のアクチュエーターの役割の違いを問われます。",
+      "analogy_jp": "人間の体でいえば、目や耳(センサー)が受け取った情報をもとに、実際に手足を動かす「筋肉」にあたる役割の装置です。",
+      "memory_hook_jp": "アクチュエーターといえば信号を物理的な動きに変える出力装置",
+      "inline_quiz": [
+        "2020r02o-q099"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"センサー(入力)\"] --> B[\"コンピュータ(処理)\"]; B --> C[\"アクチュエーター(出力)\"]; C --> D[\"物理的な動き\"]",
+        "svg_path": "figures/technology-15-42-u05-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "执行器",
+      "term_en": "Actuator",
+      "definition_zh": "把电力或流体的力量转换为旋转、直线等物理运动的装置的总称。",
+      "definition_en": "A general term for devices that convert electrical or fluid force into physical motion such as rotation or linear movement.",
+      "explanation_zh": "执行器是接收来自计算机的控制信号或能量，并将其转换为实际「运动」的输出装置的总称。由电机产生的旋转、由气缸/液压缸产生的推拉等都是典型例子。\n\n相对于传感器把外部状态作为电信号「读取（输入）」，执行器则把信号作为物理动作「输出」。两者恰好构成一对关系，在 IoT 设备、机器人、工业机械中，「传感器检测→处理→执行器动作」是基本流程。考试中会考查输入侧的传感器与输出侧的执行器在作用上的区别。",
+      "explanation_en": "An actuator is a general term for an output device that receives control signals or energy from a computer and converts them into actual \"motion.\" Typical examples include rotation produced by a motor and push-pull produced by a cylinder.\n\nWhereas a sensor \"reads\" external conditions as electrical signals (input), an actuator \"outputs\" signals as physical action. The two form a complementary pair, and in IoT devices, robots, and industrial machinery, the basic flow is \"sensor detects → processing → actuator acts.\" The exam asks about the difference in roles between the input-side sensor and the output-side actuator.",
+      "analogy_zh": "用人体来比喻，就相当于根据眼睛、耳朵（传感器）接收到的信息，实际带动手脚运动的「肌肉」这一角色的装置。",
+      "analogy_en": "In terms of the human body, it is the device that plays the role of the \"muscles\"—which actually move the hands and feet based on information received by the eyes and ears (sensors).",
+      "memory_hook_zh": "说到执行器，就是把信号转换为物理运动的输出装置。",
+      "memory_hook_en": "Actuator → the output device that turns signals into physical motion."
+    },
+    {
+      "term": "DCモーター",
+      "definition_jp": "直流電流を流すことで回転する、最も基本的な電気駆動アクチュエーター。",
+      "explanation_jp": "DCモーターは、直流(DC)の電気を流すと軸が回転するモーターで、アクチュエーターの代表例です。電圧を変えることで回転の速さを、電流の向きを変えることで回転の方向を調整できます。\n\n構造が単純で扱いやすく、扇風機やおもちゃ、ロボットの車輪駆動など身近な機器に幅広く使われます。試験では、アクチュエーターの具体例の一つとして、電気を回転運動に変える装置であることを押さえておけば十分です。",
+      "analogy_jp": "乾電池をつなぐと羽根が回る扇風機やプラモデルのモーターそのもの。電気を流せばクルクル回る、いちばん身近な動力源です。",
+      "memory_hook_jp": "DCモーターといえば直流で回る基本の電気アクチュエーター",
+      "inline_quiz": [
+        "2016h28a-q093"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "直流电机",
+      "term_en": "DC motor",
+      "definition_zh": "通过通入直流电流而旋转的、最基本的电力驱动执行器。",
+      "definition_en": "The most basic electrically driven actuator, which rotates when direct current is passed through it.",
+      "explanation_zh": "直流电机是通入直流（DC）电后轴会旋转的电机，是执行器的典型例子。通过改变电压可以调节旋转的快慢，通过改变电流的方向可以调节旋转的方向。\n\n它结构简单、易于使用，广泛用于电风扇、玩具、机器人车轮驱动等身边的设备。考试中只要把握住它是执行器的具体例子之一、是把电力转换为旋转运动的装置，就足够了。",
+      "explanation_en": "A DC motor is a motor whose shaft rotates when direct current (DC) is supplied; it is a typical example of an actuator. Changing the voltage adjusts the rotation speed, and changing the direction of the current adjusts the rotation direction.\n\nWith its simple structure and ease of use, it is widely used in everyday equipment such as electric fans, toys, and the wheel drive of robots. For the exam, it is enough to grasp that it is one concrete example of an actuator and a device that converts electricity into rotational motion.",
+      "analogy_zh": "就是接上干电池叶片就会转的电风扇、塑料模型上的电机本身。一通电就咕噜咕噜转，是最贴近生活的动力源。",
+      "analogy_en": "It is exactly the kind of motor in an electric fan or plastic model whose blade spins when you connect a dry-cell battery. Pass current and it spins round—the most familiar power source there is.",
+      "memory_hook_zh": "说到直流电机，就是用直流电旋转的基本电力执行器。",
+      "memory_hook_en": "DC motor → the basic electric actuator that spins on direct current."
+    },
+    {
+      "term": "油圧シリンダ",
+      "definition_jp": "油の圧力を利用してピストンを直線的に動かすアクチュエーター。",
+      "explanation_jp": "油圧シリンダは、ポンプで加圧した油(作動油)をシリンダに送り込み、その圧力でピストンを押し引きして直線的な動きを生み出す装置です。流体(油)を使う流体駆動アクチュエーターの代表です。\n\n油は圧縮されにくいため、大きな力を正確に伝えられるのが特長で、ショベルカーやプレス機など重い物を強い力で動かす機械に使われます。試験では、空気を使う空気圧シリンダとの対比で、「油圧=大きな力、空気圧=軽快」という違いを押さえると理解しやすくなります。",
+      "analogy_jp": "ショベルカーのアームを力強く持ち上げるあの仕組み。注射器の中の液体を押すと先が動くように、油の圧力で棒を押し出します。",
+      "memory_hook_jp": "油圧シリンダといえば油の圧力で大きな力を出す直線運動",
+      "inline_quiz": [
+        "2016h28h-q081"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "液压缸",
+      "term_en": "Hydraulic cylinder",
+      "definition_zh": "利用油的压力使活塞做直线运动的执行器。",
+      "definition_en": "An actuator that uses oil pressure to move a piston in a straight line.",
+      "explanation_zh": "液压缸是把由泵加压的油（液压油）送入缸体，利用其压力推拉活塞，从而产生直线运动的装置。它是使用流体（油）的流体驱动执行器的代表。\n\n由于油不易被压缩，所以能够准确地传递较大的力，这是它的特点，常用于挖掘机、压力机等用强大力量驱动重物的机械。考试中，与使用空气的气压缸对比，把握住「液压＝大力量、气压＝轻快」这一区别，会更容易理解。",
+      "explanation_en": "A hydraulic cylinder is a device that sends oil pressurized by a pump (hydraulic fluid) into a cylinder and uses that pressure to push and pull a piston, producing linear motion. It is the representative fluid-driven actuator using a fluid (oil).\n\nBecause oil is hard to compress, it can transmit a large force accurately—its key feature—and it is used in machines that move heavy objects with strong force, such as excavators and presses. For the exam, contrasting it with the air cylinder (which uses air) and grasping the difference of \"hydraulic = large force, pneumatic = light and quick\" makes it easier to understand.",
+      "analogy_zh": "就是把挖掘机的机械臂强劲抬起的那种机构。就像按压注射器里的液体时前端会移动一样，用油的压力把杆顶出去。",
+      "analogy_en": "It is the mechanism that powerfully lifts an excavator's arm. Just as pushing the liquid inside a syringe makes the tip move, oil pressure pushes the rod outward.",
+      "memory_hook_zh": "说到液压缸，就是用油的压力发出大力量的直线运动。",
+      "memory_hook_en": "Hydraulic cylinder → linear motion that exerts large force using oil pressure."
+    },
+    {
+      "term": "空気圧シリンダ",
+      "definition_jp": "圧縮した空気の力でピストンを直線的に動かすアクチュエーター。",
+      "explanation_jp": "空気圧シリンダは、圧縮した空気(圧縮空気)をシリンダに送り、その力でピストンを往復運動させる装置です。油圧シリンダと対をなす、もう一つの流体駆動アクチュエーターです。\n\n空気を使うため動作が速く軽快で、油漏れの心配がなく清潔に保てる一方、空気は圧縮されやすいため油圧ほど大きく正確な力は出しにくい特長があります。工場の搬送装置や自動ドアなどに使われます。試験では油圧シリンダとの違い(力の大きさ・速さ)を整理しておきましょう。",
+      "analogy_jp": "自転車の空気入れで押し込んだ空気がピストンを動かすイメージ。バスの扉が「プシュー」と開閉するあの軽快な動きが空気圧の力です。",
+      "memory_hook_jp": "空気圧シリンダといえば圧縮空気で軽快に動く直線運動",
+      "inline_quiz": [
+        "2017h29h-q064"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "气压缸",
+      "term_en": "Pneumatic cylinder",
+      "definition_zh": "利用压缩空气的力量使活塞做直线运动的执行器。",
+      "definition_en": "An actuator that uses the force of compressed air to move a piston in a straight line.",
+      "explanation_zh": "气压缸是把压缩后的空气（压缩空气）送入缸体，利用其力量使活塞做往复运动的装置。它是与液压缸构成一对的另一种流体驱动执行器。\n\n由于使用空气，动作快而轻快，且不必担心漏油、便于保持清洁；另一方面，由于空气容易被压缩，所以不易像液压那样发出又大又准确的力，这是它的特点。常用于工厂的搬运装置、自动门等。考试中请把它与液压缸的区别（力量大小、速度）整理清楚。",
+      "explanation_en": "A pneumatic cylinder is a device that sends compressed air into a cylinder and uses that force to make a piston move back and forth. It is the other fluid-driven actuator, forming a pair with the hydraulic cylinder.\n\nBecause it uses air, its action is fast and light, and there is no worry about oil leaks, keeping it clean; on the other hand, because air is easily compressed, it is hard to exert a force as large and accurate as hydraulics—its characteristic. It is used in factory conveyance equipment, automatic doors, and the like. For the exam, organize the differences from the hydraulic cylinder (force magnitude and speed).",
+      "analogy_zh": "就像用自行车打气筒压进去的空气推动活塞那样。公交车车门「呲——」一声开关的那种轻快动作，就是气压的力量。",
+      "analogy_en": "Picture the air pushed in by a bicycle pump moving a piston. The light, quick motion of a bus door opening and closing with a \"pssht\" is the power of pneumatics.",
+      "memory_hook_zh": "说到气压缸，就是用压缩空气轻快运动的直线运动。",
+      "memory_hook_en": "Pneumatic cylinder → linear motion that moves lightly and quickly with compressed air."
+    },
+    {
+      "term": "デバイスドライバ",
+      "definition_jp": "OSが周辺機器を制御するための専用のソフトウェア。",
+      "explanation_jp": "デバイスドライバは、プリンタやマウスなどの周辺機器(ハードウェア)を、OSが正しく操作できるようにするための専用ソフトウェアです。機器ごとに異なる制御の細かな違いを吸収し、OSと機器の橋渡しをします。\n\nドライバが無い、あるいは合っていないと、機器を接続しても正しく動作しません。新しい周辺機器を使うには、対応するドライバを組み込む(インストールする)必要があります。試験では、ハードウェアではなく「機器を動かすためのソフトウェア」であること、機器ごとに専用のものが必要であることが問われます。",
+      "analogy_jp": "外国の機器を使うときの「通訳」のようなもの。OSの指示を、その機器だけが分かる言葉に翻訳して正しく動かしてくれます。",
+      "memory_hook_jp": "デバイスドライバといえばOSと周辺機器をつなぐ専用ソフト",
+      "inline_quiz": [
+        "2011h23a-q076",
+        "2013h25a-q082"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"OS\"] --> B[\"デバイスドライバ\"]; B --> C[\"周辺機器(プリンタ等)\"]",
+        "svg_path": "figures/technology-15-42-u05-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "设备驱动程序",
+      "term_en": "Device driver",
+      "definition_zh": "操作系统用来控制外围设备的专用软件。",
+      "definition_en": "Specialized software that the OS uses to control peripheral devices.",
+      "explanation_zh": "设备驱动程序是让操作系统能够正确操作打印机、鼠标等外围设备（硬件）的专用软件。它吸收每种设备各不相同的控制细节差异，在操作系统与设备之间架起桥梁。\n\n如果没有驱动程序，或者驱动程序不匹配，那么即使连接了设备也无法正常工作。要使用新的外围设备，就需要装入（安装）对应的驱动程序。考试中会考查它不是硬件而是「驱动设备运行的软件」，以及每种设备都需要专用的驱动程序这两点。",
+      "explanation_en": "A device driver is specialized software that lets the OS correctly operate peripheral devices (hardware) such as printers and mice. It absorbs the fine differences in control that vary from device to device, bridging the OS and the device.\n\nIf there is no driver, or it does not match, the device will not work correctly even when connected. To use a new peripheral, you need to install the corresponding driver. The exam asks that it is not hardware but \"software that drives the equipment,\" and that a dedicated driver is needed for each device.",
+      "analogy_zh": "就像使用外国设备时的「翻译」。它把操作系统的指令翻译成只有那台设备才懂的语言，让设备正确运行。",
+      "analogy_en": "It is like an \"interpreter\" when you use foreign-made equipment. It translates the OS's instructions into a language only that device understands, so the device works correctly.",
+      "memory_hook_zh": "说到设备驱动程序，就是连接操作系统与外围设备的专用软件。",
+      "memory_hook_en": "Device driver → the dedicated software that connects the OS and a peripheral device."
+    },
+    {
+      "term": "プラグアンドプレイ",
+      "definition_jp": "機器を接続すると自動で認識・設定し使える状態にする仕組み。",
+      "explanation_jp": "プラグアンドプレイ(PnP)は、周辺機器をパソコンに接続(プラグ)するだけで、OSが機器を自動的に認識し、必要なデバイスドライバの組み込みや設定を行って、すぐ使える(プレイ)状態にする仕組みです。\n\nこの仕組みにより、利用者が手作業で複雑な設定をしなくても機器を使えるようになり、USB機器などで広く実現されています。試験では、「接続するだけで自動設定される」点と、その自動設定の中でデバイスドライバが組み込まれる、という両者の関係を理解しておくことが重要です。",
+      "analogy_jp": "コンセントに差すだけで使える家電のように、ケーブルを挿すだけで面倒な準備を機械側が勝手に済ませてくれる「差せば使える」仕組みです。",
+      "memory_hook_jp": "プラグアンドプレイといえば接続するだけで自動認識・設定",
+      "inline_quiz": [
+        "2011h23tokubetsu-q087",
+        "2015h27h-q082"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "即插即用",
+      "term_en": "Plug and Play",
+      "definition_zh": "一连接设备就自动识别并设置、使其进入可用状态的机制。",
+      "definition_en": "A mechanism that, as soon as a device is connected, automatically recognizes and configures it so it is ready to use.",
+      "explanation_zh": "即插即用（PnP）是这样一种机制：只要把外围设备连接（plug）到电脑上，操作系统就会自动识别设备，完成所需设备驱动程序的装入和设置，使其立即可用（play）。\n\n借助这种机制，用户无需手动进行复杂的设置就能使用设备，它在 USB 设备等中得到了广泛实现。考试中，重要的是理解「只要连接就会自动设置」这一点，以及在该自动设置过程中会装入设备驱动程序这两者之间的关系。",
+      "explanation_en": "Plug and Play (PnP) is a mechanism whereby simply connecting (plugging) a peripheral into a computer lets the OS automatically recognize the device, install the necessary device driver, and configure settings so it is ready to use (play).\n\nThanks to this mechanism, users can use equipment without performing complex settings by hand, and it is widely implemented in USB devices and the like. For the exam, it is important to understand both the point that \"it is configured automatically just by connecting\" and the relationship that a device driver is installed during that automatic configuration.",
+      "analogy_zh": "就像插上插座就能用的家电那样，只要插上线缆，麻烦的准备工作机器一侧就会自动完成，是一种「一插就能用」的机制。",
+      "analogy_en": "Like a home appliance you can use just by plugging it into an outlet, simply inserting the cable lets the machine handle the troublesome preparation by itself—a \"plug it in and it works\" mechanism.",
+      "memory_hook_zh": "说到即插即用，就是一连接就自动识别、设置。",
+      "memory_hook_en": "Plug and Play → just connect and it auto-recognizes and configures."
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "アクチュエーター: アクチュエーターといえば信号を物理的な動きに変える出力装置",
+      "DCモーター: DCモーターといえば直流で回る基本の電気アクチュエーター",
+      "油圧シリンダ: 油圧シリンダといえば油の圧力で大きな力を出す直線運動",
+      "空気圧シリンダ: 空気圧シリンダといえば圧縮空気で軽快に動く直線運動",
+      "デバイスドライバ: デバイスドライバといえばOSと周辺機器をつなぐ専用ソフト",
+      "プラグアンドプレイ: プラグアンドプレイといえば接続するだけで自動認識・設定"
+    ],
+    "key_points_jp": [
+      "アクチュエーターは制御信号を物理的な動き(回転・直線運動)に変える出力装置の総称で、入力側のセンサーと対をなす。",
+      "DCモーターは電気を回転に変える代表例、油圧シリンダと空気圧シリンダは流体で直線運動を生む代表例(油圧=大きな力、空気圧=軽快)。",
+      "デバイスドライバはOSが周辺機器を制御するための専用ソフトウェアで、機器ごとに対応したものが必要。",
+      "プラグアンドプレイは機器を接続するだけで自動認識・設定して使える状態にする仕組み。",
+      "プラグアンドプレイによる自動設定の中で、対応するデバイスドライバが組み込まれる(両者は密接に関係する)。"
+    ],
+    "key_points_zh": [
+      "执行器是把控制信号转换为物理运动（旋转、直线运动）的输出装置的总称，与输入侧的传感器构成一对。",
+      "直流电机是把电力转换为旋转的代表例；液压缸和气压缸是用流体产生直线运动的代表例（液压＝大力量，气压＝轻快）。",
+      "设备驱动程序是操作系统用来控制外围设备的专用软件，每种设备都需要相应的驱动程序。",
+      "即插即用是一种只要连接设备就自动识别、设置、使其进入可用状态的机制。",
+      "在即插即用的自动设置过程中，会装入相应的设备驱动程序（两者密切相关）。"
+    ],
+    "key_points_en": [
+      "An actuator is a general term for an output device that converts control signals into physical motion (rotation or linear movement), forming a pair with the input-side sensor.",
+      "The DC motor is a representative example of converting electricity into rotation; the hydraulic cylinder and pneumatic cylinder are representative examples of producing linear motion with fluid (hydraulic = large force, pneumatic = light and quick).",
+      "A device driver is specialized software the OS uses to control peripheral devices, and a corresponding driver is needed for each device.",
+      "Plug and Play is a mechanism that automatically recognizes and configures a device just by connecting it, making it ready to use.",
+      "During Plug and Play's automatic configuration, the corresponding device driver is installed (the two are closely related)."
+    ],
+    "memory_hooks_zh": [
+      "执行器：说到执行器，就是把信号转换为物理运动的输出装置。",
+      "直流电机：说到直流电机，就是用直流电旋转的基本电力执行器。",
+      "液压缸：说到液压缸，就是用油的压力发出大力量的直线运动。",
+      "气压缸：说到气压缸，就是用压缩空气轻快运动的直线运动。",
+      "设备驱动程序：说到设备驱动程序，就是连接操作系统与外围设备的专用软件。",
+      "即插即用：说到即插即用，就是一连接就自动识别、设置。"
+    ],
+    "memory_hooks_en": [
+      "Actuator: actuator → the output device that turns signals into physical motion.",
+      "DC motor: DC motor → the basic electric actuator that spins on direct current.",
+      "Hydraulic cylinder: hydraulic cylinder → linear motion that exerts large force using oil pressure.",
+      "Pneumatic cylinder: pneumatic cylinder → linear motion that moves lightly and quickly with compressed air.",
+      "Device driver: device driver → the dedicated software that connects the OS and a peripheral device.",
+      "Plug and Play: Plug and Play → just connect and it auto-recognizes and configures."
+    ]
+  },
+  "challenge_questions": [
+    "2018h30h-q083",
+    "2019r01a-q058",
+    "2021r03-q072",
+    "2026r08-q078",
+    "2015h27a-q050"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2016h28a-q093",
+      "figure_path": "figures/2016h28a-q093.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "执行器与设备控制",
+  "title_en": "Actuators and Device Control",
+  "unit_summary_zh": "学习把检测结果转化为物理动作的各类执行器，以及操作系统管理设备的设备控制机制（驱动程序 / 即插即用）。",
+  "unit_summary_en": "Learn the actuators that turn sensing results into physical motion, and the device control mechanisms by which the OS handles equipment (drivers / Plug and Play)."
+}

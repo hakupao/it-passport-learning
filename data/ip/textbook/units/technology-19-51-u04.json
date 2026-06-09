@@ -1,0 +1,277 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-19-51-u04",
+  "topic_id": "technology-19-51",
+  "category": "technology",
+  "title_jp": "フィードバック表示とWebデザイン実装",
+  "unit_summary_jp": "ホバー・ロールオーバーの反応表示を補い、GUIとCSS・レスポンシブなどWeb向けインタフェース実装を学ぶ。",
+  "order_in_topic": 4,
+  "prerequisites": [
+    "technology-19-51-u01",
+    "technology-19-51-u02",
+    "technology-19-51-u03"
+  ],
+  "overview": {
+    "intro_jp": "操作への反応を伝えるフィードバック表示(ホバー・ロールオーバー)を完結させ、画面部品の総称であるGUIを整理したうえで、CSSやモバイルファースト・レスポンシブWebデザイン・リダイレクトといったWeb向けインタフェースの実装技術を学ぶ単元です。多様な画面で使いやすさを実現する考え方として、CSS・レスポンシブの語が試験で問われます。",
+    "freq_badge": "低頻",
+    "est_minutes": 21,
+    "intro_zh": "本单元先完成传达操作反应的反馈显示（悬停 hover、翻转 rollover），再梳理作为画面部件总称的 GUI，进而学习 CSS、移动优先、响应式 Web 设计、重定向等面向 Web 的界面实现技术。作为在多样画面上实现易用性的思路，CSS、响应式这些词会在考试中被考查。",
+    "intro_en": "This unit first completes the feedback display that conveys responses to operations (hover and rollover), then organizes the GUI as the umbrella term for screen components, and goes on to learn web-oriented interface implementation technologies such as CSS, mobile first, responsive web design, and redirects. As an approach to achieving usability across diverse screens, the terms CSS and responsive are asked about on the exam."
+  },
+  "terms": [
+    {
+      "term": "ホバー",
+      "definition_jp": "マウスポインタを要素の上に重ねている状態のこと。",
+      "explanation_jp": "ホバーは、マウスポインタをボタンやリンクなどの上に「重ねた(乗せた)」状態を指します。クリックする前の段階で、利用者がどの要素に注目しているかをシステムが把握できる操作です。\n\nこのホバー状態を起点に、色を変えたり説明(ツールチップ)を表示したりして、利用者に反応を返します。試験では、ホバーは『クリックではなくポインタを乗せただけの状態』であり、操作に対する手応えを示すフィードバック表示の起点になる点を押さえます。",
+      "analogy_jp": "店先で商品を手に取る前に、まず指をかざして「これかな」と狙いを定める動作に似ています。まだ買っていない(クリックしていない)けれど、注目していることが伝わります。",
+      "memory_hook_jp": "ホバーといえばポインタを乗せただけの状態",
+      "inline_quiz": [
+        "2013h25a-q080"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "悬停（hover）",
+      "term_en": "Hover",
+      "definition_zh": "鼠标指针停留在元素上方的状态。",
+      "definition_en": "The state in which the mouse pointer is placed over an element.",
+      "explanation_zh": "悬停指的是把鼠标指针「叠放（移到）」按钮、链接等元素上方的状态。它是在点击之前的阶段，让系统能够掌握用户正在关注哪个元素的操作。\n\n以这种悬停状态为起点，系统会通过改变颜色或显示说明（工具提示 tooltip）等方式向用户返回反应。考试中要把握：悬停是『并非点击、而是仅把指针移上去的状态』，并且它是向操作返回回应的反馈显示的起点。",
+      "explanation_en": "Hover refers to the state of \"placing (resting)\" the mouse pointer over an element such as a button or a link. It is an action at the stage before clicking, by which the system can grasp which element the user is paying attention to.\n\nStarting from this hover state, the system returns a response to the user by changing colors or displaying explanations (tooltips). On the exam, grasp that hover is 'the state of merely resting the pointer rather than clicking,' and that it is the starting point of the feedback display that gives a response to an operation.",
+      "analogy_zh": "类似于在店面拿起商品之前，先伸出手指比划「是这个吗」来瞄准目标的动作。虽然还没买（没点击），但已经传达出你在关注它。",
+      "analogy_en": "Similar to the action of first pointing a finger and aiming, \"is it this one?\", before picking up a product at a storefront. You haven't bought it yet (haven't clicked), but it conveys that you are paying attention to it.",
+      "memory_hook_zh": "说到悬停，就是仅把指针移上去的状态",
+      "memory_hook_en": "Hover → the state of merely resting the pointer on it"
+    },
+    {
+      "term": "ロールオーバー",
+      "definition_jp": "ポインタを重ねたときに要素の見た目が変化する効果のこと。",
+      "explanation_jp": "ロールオーバーは、ホバー状態(ポインタを乗せた状態)になったときに、ボタンの色や画像が切り替わるなど、見た目が変化する効果を指します。ホバーが「乗せている状態」を指すのに対し、ロールオーバーはその結果として起こる「変化(反応)」を指す点が違いです。\n\nこの変化によって、利用者は『ここはクリックできる要素だ』『今ここを指している』と直感的に分かります。試験では、操作に手応えを返すフィードバック表示の代表例として、ホバーとセットで理解しておくとよいでしょう。",
+      "analogy_jp": "自動ドアの前に立つと「いらっしゃいませ」と表示が光るようなもの。近づいた(ホバーした)ことに対して、見た目が変わって反応が返ってきます。",
+      "memory_hook_jp": "ロールオーバーといえばポインタを重ねると見た目が変化",
+      "inline_quiz": [
+        "2019h31h-q081"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "翻转（rollover）",
+      "term_en": "Rollover",
+      "definition_zh": "当指针叠放在元素上时，元素外观发生变化的效果。",
+      "definition_en": "The effect by which an element's appearance changes when the pointer is placed over it.",
+      "explanation_zh": "翻转指的是当进入悬停状态（把指针移上去的状态）时，按钮的颜色或图像发生切换等、外观随之变化的效果。悬停指的是「正在移上去的状态」，而翻转指的是由此产生的「变化（反应）」，这是两者的区别。\n\n通过这种变化，用户能直观地明白『这里是可以点击的元素』『现在我正指着这里』。考试中，作为向操作返回回应的反馈显示的代表例，最好与悬停成套理解。",
+      "explanation_en": "Rollover refers to the effect by which the appearance changes — such as a button's color or image switching — when the hover state (the state of resting the pointer) is entered. The difference is that whereas hover refers to \"the state of resting\" the pointer, rollover refers to the \"change (response)\" that occurs as a result.\n\nThrough this change, users intuitively understand 'this is a clickable element' and 'I am pointing here right now.' On the exam, as a representative example of a feedback display that returns a response to an operation, it is best understood as a set together with hover.",
+      "analogy_zh": "就像站到自动门前时，显示屏亮起「欢迎光临」一样。对于你靠近（悬停）这件事，外观发生变化并返回了反应。",
+      "analogy_en": "Like the display lighting up with \"Welcome\" when you stand in front of an automatic door. In response to your approaching (hovering), the appearance changes and a reaction comes back.",
+      "memory_hook_zh": "说到翻转，就是指针叠上去后外观发生变化",
+      "memory_hook_en": "Rollover → place the pointer over it and the appearance changes"
+    },
+    {
+      "term": "GUI",
+      "definition_jp": "アイコンやボタンを画面に表示し、直感的に操作させる方式。",
+      "explanation_jp": "GUI(Graphical User Interface)は、アイコン・ボタン・ウィンドウ・メニューなどの図形を画面に表示し、マウスやタッチで直感的に操作できるようにしたインタフェースの総称です。これまで学んだ画面部品を束ねる考え方です。\n\n文字コマンドを打ち込むCUI(Character User Interface)と対比されます。GUIは初心者でも操作しやすい反面、表示や処理に資源を要します。試験では、GUI=図形で操作、CUI=文字で操作という対比と、GUIが視覚的部品で構成される点がよく問われます。",
+      "analogy_jp": "券売機のように、絵や写真のボタンを押すだけで注文できる仕組みがGUI。一方、暗証番号や呪文を正確に打ち込む方式がCUIにあたります。",
+      "memory_hook_jp": "GUIといえば図形(アイコン・ボタン)で直感操作",
+      "inline_quiz": [
+        "2014h26h-q094"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"GUI\"] --> B[\"アイコン\"]; A --> C[\"ボタン\"]; A --> D[\"ウィンドウ\"]; A --> E[\"メニュー\"]",
+        "svg_path": "figures/technology-19-51-u04-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "GUI（图形用户界面）",
+      "term_en": "GUI",
+      "definition_zh": "在画面上显示图标、按钮，让用户直观操作的方式。",
+      "definition_en": "A method that displays icons and buttons on screen and lets the user operate intuitively.",
+      "explanation_zh": "GUI（Graphical User Interface，图形用户界面）是把图标、按钮、窗口、菜单等图形显示在画面上，使其能够用鼠标或触摸进行直观操作的界面的总称。它是把此前学到的各种画面部件汇总起来的思路。\n\n它与敲入文字命令的 CUI（Character User Interface，字符用户界面）相对照。GUI 的优点是即使初学者也容易操作，但代价是显示和处理需要占用资源。考试中常考 GUI＝用图形操作、CUI＝用文字操作的对比，以及 GUI 由可视化部件构成这一点。",
+      "explanation_en": "GUI (Graphical User Interface) is the umbrella term for an interface that displays graphics such as icons, buttons, windows, and menus on screen, enabling intuitive operation by mouse or touch. It is the idea that bundles together the screen components learned so far.\n\nIt is contrasted with a CUI (Character User Interface), in which you type in text commands. While a GUI is easy to operate even for beginners, it requires resources for display and processing. On the exam, the contrast of GUI = operate with graphics versus CUI = operate with text, and the point that a GUI is composed of visual components, are frequently asked.",
+      "analogy_zh": "像自动售票机那样，只要按下带图画或照片的按钮就能下单的机制就是 GUI。而准确敲入密码或「咒语」的方式则相当于 CUI。",
+      "analogy_en": "A mechanism where you can order just by pressing buttons with pictures or photos, like a ticket vending machine, is a GUI. On the other hand, a method of accurately typing in a PIN or an \"incantation\" corresponds to a CUI.",
+      "memory_hook_zh": "说到 GUI，就是用图形（图标、按钮）直观操作",
+      "memory_hook_en": "GUI → operate intuitively with graphics (icons, buttons)"
+    },
+    {
+      "term": "CSS",
+      "definition_jp": "Webページの見た目(色・配置・大きさ)を定義する言語。",
+      "explanation_jp": "CSS(Cascading Style Sheets)は、Webページの文字色・背景・レイアウト・サイズなどの「見た目(デザイン)」を指定するための言語です。文書の中身や構造を記述するHTMLと役割を分担します。\n\nHTMLが『何を表示するか(構造)』を担い、CSSが『どう見せるか(装飾)』を担うという分業が基本です。見た目をCSSにまとめることで、複数ページのデザインを一括変更でき、保守が容易になります。試験では、CSS=見た目の定義、HTML=構造の定義という役割の違いが頻出です。",
+      "analogy_jp": "HTMLが料理の「材料と手順」だとすれば、CSSは「盛りつけと食器選び」。中身は同じでも、CSSを変えるだけで見た目の印象を一新できます。",
+      "memory_hook_jp": "CSSといえばWebページの見た目を定義",
+      "inline_quiz": [
+        "2012h24h-q053"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "CSS",
+      "term_en": "CSS",
+      "definition_zh": "定义 Web 页面外观（颜色、布局、大小）的语言。",
+      "definition_en": "A language that defines the appearance (color, layout, size) of a web page.",
+      "explanation_zh": "CSS（Cascading Style Sheets，层叠样式表）是用来指定 Web 页面的文字颜色、背景、布局、尺寸等「外观（设计）」的语言。它与描述文档内容和结构的 HTML 分工协作。\n\n基本分工是：HTML 负责『显示什么（结构）』，CSS 负责『如何呈现（装饰）』。把外观集中到 CSS 中，就能一次性修改多个页面的设计，便于维护。考试中常考 CSS＝定义外观、HTML＝定义结构这一职责差异。",
+      "explanation_en": "CSS (Cascading Style Sheets) is a language for specifying the \"appearance (design)\" of a web page, such as text color, background, layout, and size. It divides roles with HTML, which describes the content and structure of a document.\n\nThe basic division of labor is that HTML handles 'what to display (structure)' and CSS handles 'how to present it (decoration).' By consolidating the appearance into CSS, you can change the design of multiple pages all at once, making maintenance easier. On the exam, the difference in roles — CSS = defining appearance versus HTML = defining structure — is frequently asked.",
+      "analogy_zh": "如果说 HTML 是菜肴的「食材与步骤」，那么 CSS 就是「摆盘与餐具的选择」。内容相同，只要改 CSS 就能让外观印象焕然一新。",
+      "analogy_en": "If HTML is the \"ingredients and procedure\" of a dish, then CSS is the \"plating and choice of tableware.\" Even with the same contents, just changing the CSS can completely renew the visual impression.",
+      "memory_hook_zh": "说到 CSS，就是定义 Web 页面的外观",
+      "memory_hook_en": "CSS → defines the appearance of a web page"
+    },
+    {
+      "term": "モバイルファースト",
+      "definition_jp": "スマートフォンなど携帯端末での利用を最優先に考える設計思想。",
+      "explanation_jp": "モバイルファーストは、Webサイトやサービスを設計する際に、PCよりも先にスマートフォンなど画面の小さい携帯端末での使いやすさを優先して考える設計思想です。\n\nスマートフォンからの閲覧が主流になった背景から生まれ、限られた画面で必要な情報を絞り込み、指で操作しやすくすることを重視します。これはあくまで『考え方・方針』であり、それを画面幅に応じて実現する具体的手法がレスポンシブWebデザインです。試験では、モバイルファースト=携帯端末を優先する設計思想という位置づけを押さえます。",
+      "analogy_jp": "店づくりで、まず一番混雑する小さな入口から考えるようなもの。最も制約の多い条件(小さい画面)に先に合わせておけば、広い場所(PC)には後から余裕をもって広げられます。",
+      "memory_hook_jp": "モバイルファーストといえば携帯端末優先の設計思想",
+      "inline_quiz": [
+        "2026r08-q060"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "移动优先（mobile first）",
+      "term_en": "Mobile first",
+      "definition_zh": "把智能手机等移动终端上的使用放在最优先考虑的设计思想。",
+      "definition_en": "A design philosophy that gives top priority to use on mobile devices such as smartphones.",
+      "explanation_zh": "移动优先是一种设计思想：在设计 Web 网站或服务时，比起 PC，优先考虑智能手机等小屏幕移动终端上的易用性。\n\n它源于以智能手机浏览为主流的背景，重视在有限的屏幕上精选出必要信息、并便于用手指操作。这终究只是一种『思路、方针』，而把它按屏幕宽度具体实现的手法则是响应式 Web 设计。考试中要把握移动优先＝优先移动终端的设计思想这一定位。",
+      "explanation_en": "Mobile first is a design philosophy that, when designing a website or service, prioritizes usability on small-screen mobile devices such as smartphones over PCs.\n\nIt arose from the background in which browsing from smartphones became mainstream, and it emphasizes narrowing down the necessary information on a limited screen and making it easy to operate with a finger. This is, after all, only a 'way of thinking / a policy,' and the concrete technique that realizes it according to screen width is responsive web design. On the exam, grasp the positioning of mobile first = a design philosophy that prioritizes mobile devices.",
+      "analogy_zh": "就像在规划店铺时，先从最拥挤的那个小入口考虑起。先迁就约束最多的条件（小屏幕），之后再从容地扩展到宽敞的场所（PC）。",
+      "analogy_en": "Like designing a store by first considering the smallest, most crowded entrance. If you fit the most constrained condition (a small screen) first, you can later expand to a spacious place (PC) with room to spare.",
+      "memory_hook_zh": "说到移动优先，就是优先移动终端的设计思想",
+      "memory_hook_en": "Mobile first → the design philosophy that prioritizes mobile devices"
+    },
+    {
+      "term": "レスポンシブWebデザイン",
+      "definition_jp": "画面幅に応じて表示レイアウトを自動で切り替える実装手法。",
+      "explanation_jp": "レスポンシブWebデザインは、PC・タブレット・スマートフォンなど画面幅(解像度)に応じて、同じページの表示レイアウトを自動的に調整する実装手法です。CSSの記述によって、文字や画像の配置・大きさを切り替えます。\n\n端末ごとに別々のページを用意するのではなく、1つのページで多様な画面に対応できる点が特徴です。モバイルファーストという思想を、CSSで具体的に実現する応用にあたります。試験では、レスポンシブWebデザイン=画面幅に応じて表示を変える手法、という定義が頻出です。",
+      "analogy_jp": "伸縮する衣類のように、着る人の体格(画面幅)に合わせて1着で自動的にフィットするイメージ。サイズ違いを何着も用意しなくて済みます。",
+      "memory_hook_jp": "レスポンシブWebデザインといえば画面幅に応じて表示を自動切替",
+      "inline_quiz": [
+        "2017h29a-q058"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph LR; A[\"同一ページ\"] --> B{\"画面幅を判定\"}; B --> C[\"PC向けレイアウト\"]; B --> D[\"タブレット向けレイアウト\"]; B --> E[\"スマホ向けレイアウト\"]",
+        "svg_path": "figures/technology-19-51-u04-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "响应式 Web 设计",
+      "term_en": "Responsive web design",
+      "definition_zh": "根据屏幕宽度自动切换显示布局的实现手法。",
+      "definition_en": "An implementation technique that automatically switches the display layout according to screen width.",
+      "explanation_zh": "响应式 Web 设计是一种实现手法：根据 PC、平板、智能手机等屏幕宽度（分辨率），自动调整同一页面的显示布局。它通过 CSS 的写法来切换文字和图像的排布与大小。\n\n它的特点是不必为每种终端各自准备不同的页面，用一个页面就能适配多样的屏幕。它属于用 CSS 把移动优先这一思想具体实现的应用。考试中常考响应式 Web 设计＝根据屏幕宽度改变显示的手法这一定义。",
+      "explanation_en": "Responsive web design is an implementation technique that automatically adjusts the display layout of the same page according to screen width (resolution), as on a PC, tablet, or smartphone. Through the way CSS is written, it switches the arrangement and size of text and images.\n\nIts feature is that, rather than preparing a separate page for each device, a single page can accommodate diverse screens. It is the application that concretely realizes the mobile-first philosophy with CSS. On the exam, the definition of responsive web design = a technique that changes the display according to screen width is frequently asked.",
+      "analogy_zh": "就像有弹性的衣物，能配合穿着者的体型（屏幕宽度），用一件就自动贴合。省得准备好几件不同尺码。",
+      "analogy_en": "Like stretchy clothing that fits automatically with a single garment to match the wearer's build (screen width). It saves you from preparing many garments in different sizes.",
+      "memory_hook_zh": "说到响应式 Web 设计，就是根据屏幕宽度自动切换显示",
+      "memory_hook_en": "Responsive web design → automatically switch the display according to screen width"
+    },
+    {
+      "term": "リダイレクト",
+      "definition_jp": "アクセスしてきた利用者を別のURLへ自動的に転送する仕組み。",
+      "explanation_jp": "リダイレクトは、利用者があるURLにアクセスしたとき、自動的に別のURLへ転送して目的のページを表示させる仕組みです。サイトの引越し(URL変更)や、HTTPからHTTPSへの誘導などで使われます。\n\n古いアドレスにアクセスが来ても新しいページへ自動で案内できるため、リンク切れを防げます。試験では、リダイレクト=別のURLへ自動転送する画面遷移制御という基本的な意味を押さえておけば十分です。Web実装の補足事項として理解しましょう。",
+      "analogy_jp": "引越し後に旧住所へ届いた郵便を、郵便局が新住所へ自動で転送してくれるサービスに似ています。古い宛先(URL)でも、ちゃんと新しい場所に届きます。",
+      "memory_hook_jp": "リダイレクトといえば別URLへ自動転送",
+      "inline_quiz": [
+        "2011h23tokubetsu-q099"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "重定向（redirect）",
+      "term_en": "Redirect",
+      "definition_zh": "把访问而来的用户自动转送到另一个 URL 的机制。",
+      "definition_en": "A mechanism that automatically forwards a visiting user to a different URL.",
+      "explanation_zh": "重定向是这样一种机制：当用户访问某个 URL 时，自动转送到另一个 URL，让其显示目标页面。它用于网站搬迁（URL 变更）、从 HTTP 引导到 HTTPS 等场景。\n\n由于即使有访问来到旧地址，也能自动引导到新页面，因此可以防止链接失效。考试中只要把握重定向＝自动转送到另一个 URL 的画面跳转控制这一基本含义就足够了。把它作为 Web 实现的补充事项来理解即可。",
+      "explanation_en": "A redirect is a mechanism by which, when a user accesses a certain URL, they are automatically forwarded to a different URL so that the intended page is displayed. It is used for site relocation (URL changes) and for guiding from HTTP to HTTPS.\n\nBecause access coming to an old address can be automatically guided to the new page, broken links can be prevented. On the exam, it is enough to grasp the basic meaning that a redirect = page-transition control that automatically forwards to a different URL. Understand it as a supplementary item of web implementation.",
+      "analogy_zh": "类似于搬家后，邮局把寄到旧住址的邮件自动转送到新住址的服务。即使写的是旧收件地址（URL），也能妥妥送到新地方。",
+      "analogy_en": "Similar to a service where, after you move, the post office automatically forwards mail sent to your old address to the new one. Even with the old destination (URL), it is properly delivered to the new place.",
+      "memory_hook_zh": "说到重定向，就是自动转送到另一个 URL",
+      "memory_hook_en": "Redirect → automatically forward to a different URL"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "ホバー: ホバーといえばポインタを乗せただけの状態",
+      "ロールオーバー: ロールオーバーといえばポインタを重ねると見た目が変化",
+      "GUI: GUIといえば図形(アイコン・ボタン)で直感操作",
+      "CSS: CSSといえばWebページの見た目を定義",
+      "モバイルファースト: モバイルファーストといえば携帯端末優先の設計思想",
+      "レスポンシブWebデザイン: レスポンシブWebデザインといえば画面幅に応じて表示を自動切替",
+      "リダイレクト: リダイレクトといえば別URLへ自動転送"
+    ],
+    "key_points_jp": [
+      "ホバーはポインタを要素に乗せた『状態』、ロールオーバーはその結果として見た目が変化する『反応』で、ともに操作に手応えを返すフィードバック表示。",
+      "GUIはアイコン・ボタンなど図形で直感的に操作する方式の総称で、文字で操作するCUIと対比される。",
+      "CSSはWebページの見た目(装飾)を定義する言語で、構造を担うHTMLと役割を分担する。",
+      "モバイルファーストは携帯端末を優先する『設計思想』、レスポンシブWebデザインは画面幅に応じ表示を自動で切り替える『実装手法』で、思想→実現の関係にある。",
+      "リダイレクトはアクセスを別のURLへ自動転送する画面遷移制御で、Web実装の補足事項。"
+    ],
+    "key_points_zh": [
+      "悬停是把指针移到元素上的『状态』，翻转是由此结果导致外观发生变化的『反应』，二者都是向操作返回回应的反馈显示。",
+      "GUI 是用图标、按钮等图形进行直观操作的方式的总称，与用文字操作的 CUI 相对照。",
+      "CSS 是定义 Web 页面外观（装饰）的语言，与负责结构的 HTML 分工协作。",
+      "移动优先是优先移动终端的『设计思想』，响应式 Web 设计是根据屏幕宽度自动切换显示的『实现手法』，二者是思想→实现的关系。",
+      "重定向是把访问自动转送到另一个 URL 的画面跳转控制，属于 Web 实现的补充事项。"
+    ],
+    "key_points_en": [
+      "Hover is the 'state' of resting the pointer on an element, and rollover is the 'response' in which the appearance changes as a result; both are feedback displays that return a response to an operation.",
+      "A GUI is the umbrella term for a method of operating intuitively with graphics such as icons and buttons, and is contrasted with a CUI, which is operated with text.",
+      "CSS is a language that defines the appearance (decoration) of a web page, dividing roles with HTML, which handles structure.",
+      "Mobile first is a 'design philosophy' that prioritizes mobile devices, and responsive web design is an 'implementation technique' that automatically switches the display according to screen width; the two are in a philosophy → realization relationship.",
+      "A redirect is page-transition control that automatically forwards access to a different URL, and is a supplementary item of web implementation."
+    ],
+    "memory_hooks_zh": [
+      "悬停：说到悬停，就是仅把指针移上去的状态",
+      "翻转：说到翻转，就是指针叠上去后外观发生变化",
+      "GUI：说到 GUI，就是用图形（图标、按钮）直观操作",
+      "CSS：说到 CSS，就是定义 Web 页面的外观",
+      "移动优先：说到移动优先，就是优先移动终端的设计思想",
+      "响应式 Web 设计：说到响应式 Web 设计，就是根据屏幕宽度自动切换显示",
+      "重定向：说到重定向，就是自动转送到另一个 URL"
+    ],
+    "memory_hooks_en": [
+      "Hover: Hover → the state of merely resting the pointer on it",
+      "Rollover: Rollover → place the pointer over it and the appearance changes",
+      "GUI: GUI → operate intuitively with graphics (icons, buttons)",
+      "CSS: CSS → defines the appearance of a web page",
+      "Mobile first: Mobile first → the design philosophy that prioritizes mobile devices",
+      "Responsive web design: Responsive web design → automatically switch the display according to screen width",
+      "Redirect: Redirect → automatically forward to a different URL"
+    ]
+  },
+  "challenge_questions": [
+    "2009h21h-q067",
+    "2011h23tokubetsu-q097",
+    "2013h25h-q065",
+    "2014h26a-q093",
+    "2014h26h-q032"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2011h23tokubetsu-q099",
+      "figure_path": "figures/2011h23tokubetsu-q099.png",
+      "figure_type": "diagram",
+      "figure_description": "4種類のWebサイトページ構成図（ア〜エ）：各図はトップページ・店舗一覧ページ・N町店紹介ページ・懸賞ページの4ページをリンク矢印で結んだ構成を示す。懸賞ページへの導線とN町店紹介ページのアクセス向上を考慮した最適な構成を選ぶ。",
+      "group_id": "2011h23tokubetsu-mqC"
+    },
+    {
+      "source": "group",
+      "question_id": "2011h23tokubetsu-q097",
+      "figure_path": "figures/_groups/2011h23tokubetsu-mqC.png",
+      "figure_type": "group_shared",
+      "figure_description": "図1 懸賞ページ案",
+      "group_id": "2011h23tokubetsu-mqC"
+    },
+    {
+      "source": "question",
+      "question_id": "2014h26a-q093",
+      "figure_path": "figures/2014h26a-q093.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "反馈显示与 Web 设计实现",
+  "title_en": "Feedback Display and Web Design Implementation",
+  "unit_summary_zh": "补充悬停（hover）与翻转（rollover）的反应显示，并学习 GUI 以及 CSS、响应式等面向 Web 的界面实现。",
+  "unit_summary_en": "Complete the response display of hover and rollover, then learn web-oriented interface implementation such as GUI, CSS, and responsive design."
+}

@@ -1,0 +1,209 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-22-59-u02",
+  "topic_id": "technology-22-59",
+  "category": "technology",
+  "title_jp": "TCP/IPとWebプロトコル",
+  "unit_summary_jp": "インターネットの基盤である TCP/IP アーキテクチャとトランスポート層・ポート番号を押さえ、その上で動く HTTP/HTTPS を理解する。",
+  "order_in_topic": 2,
+  "prerequisites": [
+    "technology-22-59-u01"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、インターネットの基盤となる TCP/IP アーキテクチャと、その中でデータを運ぶ TCP/UDP・宛先サービスを識別するポート番号という土台を押さえ、その上で動く代表的な Web プロトコル HTTP/HTTPS までを学びます。通信プロトコルは試験で頻出の標準分野です。",
+    "freq_badge": "標準",
+    "est_minutes": 16,
+    "intro_zh": "本单元先打好基础：作为互联网根基的 TCP/IP 体系结构，其中负责搬运数据的 TCP/UDP，以及用于识别目标服务的端口号；然后再学习运行在其上的代表性 Web 协议 HTTP/HTTPS。通信协议是考试中的高频标准领域。",
+    "intro_en": "In this unit, you first build the foundation: the TCP/IP architecture that underpins the internet, the TCP/UDP that carry data within it, and the port numbers that identify the destination service. Then you learn the representative Web protocols HTTP/HTTPS that run on top of it. Communication protocols are a standard field that appears frequently on the exam."
+  },
+  "terms": [
+    {
+      "term": "TCP/IP",
+      "definition_jp": "インターネットで標準的に使われる通信プロトコルの体系(階層モデル)。",
+      "explanation_jp": "TCP/IP は、インターネットや多くのネットワークで標準として使われる通信規約(プロトコル)の集まりです。データを確実に届ける役割の TCP と、相手まで経路を選んで運ぶ役割の IP を中心に、複数のプロトコルを階層的に組み合わせて構成されます。\n\n一般に「アプリケーション層・トランスポート層・インターネット層・ネットワークインタフェース層」の4階層モデルで表され、OSI 基本参照モデル(u01 で学んだ7階層)を実用化した枠組みと位置づけられます。試験では、HTTP・TCP・IP などがこの体系のどの層に属するか、TCP と IP の役割の違いが問われます。",
+      "analogy_jp": "荷物を確実に届ける宅配の仕組み全体のようなもの。住所を見て経路を選ぶ係(IP)と、抜けや破損なく届いたか確認する係(TCP)が役割分担して協力します。",
+      "memory_hook_jp": "TCP/IPといえばインターネット標準の階層型プロトコル体系",
+      "inline_quiz": [
+        "2010h22h-q080"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"アプリケーション層(HTTP等)\"] --> B[\"トランスポート層(TCP/UDP)\"]; B --> C[\"インターネット層(IP)\"]; C --> D[\"ネットワークインタフェース層\"]",
+        "svg_path": "figures/technology-22-59-u02-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "TCP/IP",
+      "term_en": "TCP/IP",
+      "definition_zh": "互联网上标准使用的通信协议体系（分层模型）。",
+      "definition_en": "The protocol suite (layered model) used as the standard for communication on the internet.",
+      "explanation_zh": "TCP/IP 是在互联网和许多网络中作为标准使用的一组通信规约（协议）。它以负责可靠送达数据的 TCP 和负责为对端选择路径来搬运数据的 IP 为核心，把多个协议分层组合而成。\n\n通常用「应用层、传输层、互联网层、网络接口层」的 4 层模型来表示，可视为把 OSI 基本参考模型（u01 学过的 7 层）加以实用化的框架。考试中会考查 HTTP、TCP、IP 等属于该体系的哪一层，以及 TCP 与 IP 在职责上的区别。",
+      "explanation_en": "TCP/IP is a set of communication conventions (protocols) used as the standard on the internet and many networks. Centered on TCP, which is responsible for reliably delivering data, and IP, which is responsible for choosing a route to the destination and carrying the data, it is built by combining multiple protocols in layers.\n\nIt is generally expressed as a four-layer model of \"application layer, transport layer, internet layer, network interface layer,\" and is positioned as a practical framework that puts the OSI basic reference model (the seven layers learned in u01) into use. On the exam, you are asked which layer of this suite HTTP, TCP, IP, and so on belong to, and the difference in the roles of TCP and IP.",
+      "analogy_zh": "就像把包裹可靠送达的整个快递系统。看地址选路线的人员（IP）和确认有没有遗漏或破损送达的人员（TCP）各司其职、相互配合。",
+      "analogy_en": "It's like the whole courier system for delivering parcels reliably. The staff who read the address and pick the route (IP) and the staff who check that it arrived without anything missing or damaged (TCP) divide up the roles and cooperate.",
+      "memory_hook_zh": "说到 TCP/IP，就是互联网标准的分层式协议体系。",
+      "memory_hook_en": "TCP/IP → the internet's standard layered protocol suite."
+    },
+    {
+      "term": "UDP",
+      "definition_jp": "確認応答を省き高速に送るコネクションレス型のトランスポート層プロトコル。",
+      "explanation_jp": "UDP は、TCP/IP のトランスポート層で TCP と対になるプロトコルです。相手と事前に接続を確立せず、到達確認や再送を行わないため、その分だけ高速・低負荷でデータを送れます。\n\nただし途中でデータが欠けても気付かないため、信頼性は TCP より低くなります。多少の欠落より速さ・リアルタイム性が重要な、音声通話・動画のストリーミング・DNS などで使われます。試験では、確実に届ける TCP との対比で「UDP=高速だが信頼性は保証しない」という性質が問われます。",
+      "analogy_jp": "返事を待たずに次々と一方的に話し続ける拡声器のようなもの。届いたか確認しない分テンポは速いですが、聞き逃しがあっても言い直してはくれません。",
+      "memory_hook_jp": "UDPといえば確認なしで高速だが信頼性は保証しない",
+      "inline_quiz": [
+        "2011h23a-q077"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "UDP",
+      "term_en": "UDP",
+      "definition_zh": "省去确认应答、高速发送的无连接型传输层协议。",
+      "definition_en": "A connectionless transport-layer protocol that sends data fast by omitting acknowledgments.",
+      "explanation_zh": "UDP 是在 TCP/IP 的传输层中与 TCP 成对的协议。它不与对端事先建立连接，也不做到达确认和重传，因此能以更高速、更低负载发送数据。\n\n不过，途中数据丢失也不会察觉，所以可靠性比 TCP 低。它用于比起少量丢失更看重速度和实时性的场景，如语音通话、视频流媒体、DNS 等。考试中会与可靠送达的 TCP 对比，考查「UDP＝高速但不保证可靠性」这一性质。",
+      "explanation_en": "UDP is the protocol paired with TCP in the transport layer of TCP/IP. Because it does not establish a connection with the other party in advance and does not perform delivery confirmation or retransmission, it can send data that much faster and with lower load.\n\nHowever, since it does not notice when data is lost along the way, its reliability is lower than TCP. It is used where speed and real-time performance matter more than a little loss, such as voice calls, video streaming, and DNS. On the exam, in contrast to TCP, which delivers reliably, the property \"UDP = fast but does not guarantee reliability\" is asked.",
+      "analogy_zh": "就像不等回应、一个劲儿单向地说下去的扩音喇叭。不确认是否送达所以节奏快，但即便有人没听到，它也不会再说一遍。",
+      "analogy_en": "It's like a loudspeaker that keeps talking one-way without waiting for a reply. Because it doesn't check whether the message got through, the tempo is fast, but even if someone misses it, it won't repeat itself.",
+      "memory_hook_zh": "说到 UDP，就是不做确认、高速但不保证可靠性。",
+      "memory_hook_en": "UDP → no acknowledgment, fast but reliability is not guaranteed."
+    },
+    {
+      "term": "ポート番号",
+      "definition_jp": "1台の機器内でどの通信サービスかを識別する0〜65535の番号。",
+      "explanation_jp": "ポート番号は、トランスポート層(TCP/UDP)が、1台のコンピュータ上で動く複数のサービスのうち「どのアプリケーション宛ての通信か」を区別するための番号です。IP アドレスが機器を特定するのに対し、ポート番号は機器内のサービスを特定します。\n\n代表的なものは決められており(ウェルノウンポート)、HTTP は80番、HTTPS は443番などが割り当てられています。試験では、IP アドレスとポート番号の役割の違いや、主要プロトコルのポート番号(80/443 など)が問われます。",
+      "analogy_jp": "IP アドレスがマンションの建物の住所なら、ポート番号は各部屋の番号にあたります。建物に届いた荷物を、正しい部屋へ振り分けるためのものです。",
+      "memory_hook_jp": "ポート番号といえば機器内のサービスを識別する番号(HTTP=80,HTTPS=443)",
+      "inline_quiz": [
+        "2009h21a-q055"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"IPアドレス(機器を特定)\"] --> B[\"ポート番号(サービスを特定)\"]; B --> C[\"80番:HTTP\"]; B --> D[\"443番:HTTPS\"]",
+        "svg_path": "figures/technology-22-59-u02-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "端口号",
+      "term_en": "Port Number",
+      "definition_zh": "在一台设备内识别是哪个通信服务的 0～65535 的编号。",
+      "definition_en": "A number from 0 to 65535 that identifies which communication service is involved within a single device.",
+      "explanation_zh": "端口号是传输层（TCP/UDP）用来在一台计算机上运行的多个服务中区分「这是发往哪个应用程序的通信」的编号。IP 地址用于确定设备，而端口号用于确定设备内的服务。\n\n代表性的端口号是规定好的（知名端口），例如 HTTP 分配 80 号、HTTPS 分配 443 号。考试中会考查 IP 地址与端口号在职责上的区别，以及主要协议的端口号（如 80/443）。",
+      "explanation_en": "A port number is the number the transport layer (TCP/UDP) uses to distinguish \"which application the communication is addressed to\" among the multiple services running on a single computer. Whereas an IP address identifies a device, a port number identifies a service within the device.\n\nThe representative ones are fixed (well-known ports), with HTTP assigned port 80 and HTTPS assigned port 443. On the exam, the difference in roles between IP addresses and port numbers, and the port numbers of major protocols (such as 80/443), are asked.",
+      "analogy_zh": "如果说 IP 地址是公寓楼的楼栋地址，那么端口号就相当于各个房间的房号。它用于把送到楼里的包裹分送到正确的房间。",
+      "analogy_en": "If an IP address is the street address of an apartment building, the port number corresponds to each room's number. It is used to sort parcels that arrive at the building into the correct rooms.",
+      "memory_hook_zh": "说到端口号，就是识别设备内服务的编号（HTTP=80，HTTPS=443）。",
+      "memory_hook_en": "Port number → the number that identifies a service within a device (HTTP=80, HTTPS=443)."
+    },
+    {
+      "term": "HTTP",
+      "definition_jp": "WebブラウザとWebサーバ間でWebページをやり取りする通信プロトコル。",
+      "explanation_jp": "HTTP(HyperText Transfer Protocol)は、Web ブラウザと Web サーバの間で、HTML 文書や画像などの Web コンテンツをやり取りするための通信規約です。トランスポート層の TCP を使い、ポート番号は通常80番を利用します。\n\nブラウザがサーバへ「このページをください」と要求(リクエスト)を送り、サーバが内容を返す(レスポンス)という、要求と応答の組で通信します。試験では、HTTP が Web 通信の基本プロトコルであること、ポート80番、後述の HTTPS との違い(暗号化の有無)が問われます。",
+      "analogy_jp": "図書館の窓口で「この本をください」と申込用紙を出し、係員が本を渡してくれるやり取りのようなもの。要求と応答が一対で成り立っています。",
+      "memory_hook_jp": "HTTPといえばWebページをやり取りする通信プロトコル(ポート80)",
+      "inline_quiz": [
+        "2010h22a-q065"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "HTTP",
+      "term_en": "HTTP",
+      "definition_zh": "在 Web 浏览器与 Web 服务器之间收发网页的通信协议。",
+      "definition_en": "A communication protocol for exchanging web pages between a web browser and a web server.",
+      "explanation_zh": "HTTP（HyperText Transfer Protocol，超文本传输协议）是在 Web 浏览器与 Web 服务器之间收发 HTML 文档、图片等 Web 内容的通信规约。它使用传输层的 TCP，端口号通常用 80 号。\n\n通信以「请求—应答」成对进行：浏览器向服务器发出「请把这个页面给我」的请求（request），服务器返回内容（response）。考试中会考查 HTTP 是 Web 通信的基本协议、端口 80 号，以及它与后面要讲的 HTTPS 的区别（是否加密）。",
+      "explanation_en": "HTTP (HyperText Transfer Protocol) is the communication convention for exchanging web content such as HTML documents and images between a web browser and a web server. It uses TCP at the transport layer and normally uses port 80.\n\nCommunication takes place as request-and-response pairs: the browser sends the server a request saying \"please give me this page\" (request), and the server returns the content (response). On the exam, you are asked that HTTP is the basic protocol of web communication, port 80, and the difference from HTTPS discussed later (whether or not it is encrypted).",
+      "analogy_zh": "就像在图书馆窗口递上「请给我这本书」的申请单，工作人员把书递给你的那种往来。请求和应答成对地构成一次交互。",
+      "analogy_en": "It's like the exchange at a library counter where you hand in a request slip saying \"please give me this book\" and a staff member hands you the book. A request and a response form one interaction as a pair.",
+      "memory_hook_zh": "说到 HTTP，就是收发网页的通信协议（端口 80）。",
+      "memory_hook_en": "HTTP → the communication protocol that exchanges web pages (port 80)."
+    },
+    {
+      "term": "HTTPS",
+      "definition_jp": "HTTP通信をTLS/SSLで暗号化し安全にした通信プロトコル。",
+      "explanation_jp": "HTTPS は、HTTP の通信内容を TLS(SSL)という暗号化のしくみで保護したものです。通信が暗号化されるため、途中で盗み見されても内容が読まれにくく、通信相手のサーバが本物かどうかも電子証明書で確認できます。ポート番号は通常443番を使います。\n\nID・パスワードやクレジットカード番号など、機密性が必要な通信で広く使われます。試験では、HTTP との違いが「暗号化の有無」である点、ブラウザの鍵マークや URL の『https://』が安全な通信を示すこと、TLS/SSL による保護であることが問われます。",
+      "analogy_jp": "HTTP がはがきでのやり取りなら、HTTPS は中身が見えない封筒に入れて封印した手紙のようなもの。途中の配達人にも内容を読まれずに届けられます。",
+      "memory_hook_jp": "HTTPSといえばHTTPをTLS/SSLで暗号化した安全な通信(ポート443)",
+      "inline_quiz": [
+        "2012h24h-q080"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "HTTPS",
+      "term_en": "HTTPS",
+      "definition_zh": "用 TLS/SSL 对 HTTP 通信加密、使其更安全的通信协议。",
+      "definition_en": "A communication protocol that encrypts HTTP communication with TLS/SSL to make it secure.",
+      "explanation_zh": "HTTPS 是用 TLS（SSL）这种加密机制保护 HTTP 通信内容的协议。由于通信被加密，即便在途中被窃看也难以被读取，还能通过数字证书确认对方服务器是否为真。端口号通常用 443 号。\n\n它广泛用于 ID、密码、信用卡号等需要机密性的通信。考试中会考查它与 HTTP 的区别在于「是否加密」、浏览器的锁形图标和 URL 中的「https://」表示安全通信，以及它是通过 TLS/SSL 来保护的。",
+      "explanation_en": "HTTPS protects the content of HTTP communication with an encryption mechanism called TLS (SSL). Because the communication is encrypted, even if it is eavesdropped on along the way the content is hard to read, and you can also verify with a digital certificate whether the server you are communicating with is genuine. The port number is normally 443.\n\nIt is widely used for communication that requires confidentiality, such as IDs, passwords, and credit card numbers. On the exam, you are asked that the difference from HTTP is \"whether or not it is encrypted,\" that the browser's lock icon and \"https://\" in the URL indicate secure communication, and that it is protection by TLS/SSL.",
+      "analogy_zh": "如果说 HTTP 是用明信片来往，那么 HTTPS 就像把信纸装进看不见内容的信封并封口的信件。途中的投递员也读不到内容，就能送达。",
+      "analogy_en": "If HTTP is corresponding by postcard, HTTPS is like a letter sealed inside an envelope whose contents can't be seen. It can be delivered without even the carrier along the way reading the content.",
+      "memory_hook_zh": "说到 HTTPS，就是用 TLS/SSL 给 HTTP 加密的安全通信（端口 443）。",
+      "memory_hook_en": "HTTPS → secure communication that encrypts HTTP with TLS/SSL (port 443)."
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "TCP/IP: TCP/IPといえばインターネット標準の階層型プロトコル体系",
+      "UDP: UDPといえば確認なしで高速だが信頼性は保証しない",
+      "ポート番号: ポート番号といえば機器内のサービスを識別する番号(HTTP=80,HTTPS=443)",
+      "HTTP: HTTPといえばWebページをやり取りする通信プロトコル(ポート80)",
+      "HTTPS: HTTPSといえばHTTPをTLS/SSLで暗号化した安全な通信(ポート443)"
+    ],
+    "key_points_jp": [
+      "TCP/IP はインターネット標準のプロトコル体系で、アプリケーション層・トランスポート層・インターネット層・ネットワークインタフェース層の4階層で表される。",
+      "トランスポート層には、確実に届ける TCP と、高速だが信頼性を保証しない UDP の2方式がある。",
+      "ポート番号は1台の機器内でどのサービス宛ての通信かを識別する番号で、IP アドレス(機器の特定)と役割が異なる。",
+      "HTTP は Web ページをやり取りする基本プロトコルでポート80番を使う。",
+      "HTTPS は HTTP を TLS/SSL で暗号化した安全な通信でポート443番を使い、HTTP との違いは暗号化の有無である。"
+    ],
+    "key_points_zh": [
+      "TCP/IP 是互联网标准的协议体系，用应用层、传输层、互联网层、网络接口层这 4 层来表示。",
+      "传输层有两种方式：可靠送达的 TCP，以及高速但不保证可靠性的 UDP。",
+      "端口号是在一台设备内识别通信发往哪个服务的编号，与 IP 地址（确定设备）职责不同。",
+      "HTTP 是收发网页的基本协议，使用端口 80 号。",
+      "HTTPS 是用 TLS/SSL 给 HTTP 加密的安全通信，使用端口 443 号，与 HTTP 的区别在于是否加密。"
+    ],
+    "key_points_en": [
+      "TCP/IP is the internet's standard protocol suite, expressed in four layers: application, transport, internet, and network interface.",
+      "The transport layer has two methods: TCP, which delivers reliably, and UDP, which is fast but does not guarantee reliability.",
+      "A port number is the number that identifies which service the communication is addressed to within a single device, and its role differs from an IP address (which identifies the device).",
+      "HTTP is the basic protocol for exchanging web pages, and it uses port 80.",
+      "HTTPS is secure communication that encrypts HTTP with TLS/SSL, uses port 443, and differs from HTTP in whether or not it is encrypted."
+    ],
+    "memory_hooks_zh": [
+      "TCP/IP：说到 TCP/IP，就是互联网标准的分层式协议体系。",
+      "UDP：说到 UDP，就是不做确认、高速但不保证可靠性。",
+      "端口号：说到端口号，就是识别设备内服务的编号（HTTP=80，HTTPS=443）。",
+      "HTTP：说到 HTTP，就是收发网页的通信协议（端口 80）。",
+      "HTTPS：说到 HTTPS，就是用 TLS/SSL 给 HTTP 加密的安全通信（端口 443）。"
+    ],
+    "memory_hooks_en": [
+      "TCP/IP: TCP/IP → the internet's standard layered protocol suite.",
+      "UDP: UDP → no acknowledgment, fast but reliability is not guaranteed.",
+      "Port number: Port number → the number that identifies a service within a device (HTTP=80, HTTPS=443).",
+      "HTTP: HTTP → the communication protocol that exchanges web pages (port 80).",
+      "HTTPS: HTTPS → secure communication that encrypts HTTP with TLS/SSL (port 443)."
+    ]
+  },
+  "challenge_questions": [
+    "2012h24a-q077",
+    "2015h27a-q077",
+    "2016h28h-q056",
+    "2020r02o-q067",
+    "2016h28a-q065"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2010h22a-q065",
+      "figure_path": "figures/2010h22a-q065.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "TCP/IP 与 Web 协议",
+  "title_en": "TCP/IP and Web Protocols",
+  "unit_summary_zh": "掌握作为互联网基础的 TCP/IP 体系结构、传输层与端口号，并在此基础上理解运行其上的 HTTP/HTTPS。",
+  "unit_summary_en": "Grasp the TCP/IP architecture that forms the foundation of the internet, the transport layer and port numbers, and on that basis understand HTTP/HTTPS, which run on top of it."
+}

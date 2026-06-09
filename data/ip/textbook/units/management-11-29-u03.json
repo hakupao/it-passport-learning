@@ -1,0 +1,209 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "management-11-29-u03",
+  "topic_id": "management-11-29",
+  "category": "management",
+  "title_jp": "変更とサービスの移行",
+  "unit_summary_jp": "構成情報の管理を土台に、変更管理・リリース及び展開管理を経て、新規・変更後のサービスを本番へ移行する一連のプロセスを理解する。",
+  "order_in_topic": 3,
+  "prerequisites": [
+    "management-11-29-u01",
+    "management-11-29-u02"
+  ],
+  "overview": {
+    "intro_jp": "サービスに変更を加え、それを安全に本番環境へ送り出す一連のプロセスを学ぶ単元です。構成情報の正確な把握を土台に、変更の承認・実装・展開・移行・受入れ判定がどう連鎖するかを理解します。サービスマネジメント分野で頻出のテーマであり、各プロセスの役割と前後関係を区別できることが得点の鍵になります。",
+    "freq_badge": "頻出",
+    "est_minutes": 16,
+    "intro_zh": "本单元学习对服务进行变更，并将其安全地送入生产环境的一系列流程。以准确掌握配置信息为基础，理解变更的批准、实施、部署、迁移和验收判定是如何环环相扣的。这是服务管理领域的高频主题，能够区分各流程的角色及其前后关系，是得分的关键。",
+    "intro_en": "This unit covers the full set of processes for making changes to a service and safely rolling them out to the production environment. Building on an accurate grasp of configuration information, you will understand how approval, implementation, deployment, transition, and acceptance decisions for a change link together. This is a frequently tested theme in the service management area, and being able to distinguish the role and ordering of each process is the key to scoring well."
+  },
+  "terms": [
+    {
+      "term": "構成管理",
+      "definition_jp": "サービスを構成する機器・ソフト等の情報を正確に把握し維持する活動。",
+      "explanation_jp": "構成管理は、サーバ・ソフトウェア・ネットワーク機器など、サービスを成り立たせている要素(構成品目)とその関係を記録し、常に最新で正確な状態に保つプロセスです。これらの情報は構成管理データベース(CMDB)に集約されます。\n\n変更を加えるときは、まず「今どんな構成になっているか」を正しく知る必要があります。そのため構成管理は変更管理やリリース管理など、変更系すべての前提となる基盤プロセスです。試験では『正確な構成情報の維持・提供』が目的である点、変更そのものを承認するのは変更管理である点を区別して問われます。",
+      "analogy_jp": "家のリフォーム前に作る「設備の一覧表」のようなもの。どこにどの配管や配線があるかを正確に控えておくから、安全に工事の計画が立てられます。",
+      "memory_hook_jp": "構成管理といえば構成情報を正確に把握・維持する基盤",
+      "inline_quiz": [
+        "2009h21a-q053",
+        "2010h22h-q041"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "配置管理",
+      "term_en": "Configuration Management",
+      "definition_zh": "准确掌握并维护构成服务的设备、软件等信息的活动。",
+      "definition_en": "An activity that accurately grasps and maintains information about the equipment, software, and other items that make up a service.",
+      "explanation_zh": "配置管理是记录服务器、软件、网络设备等支撑服务的各类要素（配置项）及其相互关系，并始终将它们保持在最新、准确状态的流程。这些信息会汇总到配置管理数据库（CMDB）中。\n\n进行变更时，首先需要正确了解“当前是怎样的配置”。因此，配置管理是变更管理、发布管理等所有变更类活动的前提性基础流程。考试中常要求区分：配置管理的目的是“维护并提供准确的配置信息”，而批准变更本身的是变更管理。",
+      "explanation_en": "Configuration management is the process of recording the various elements that make up a service (configuration items)—such as servers, software, and network equipment—along with their relationships, and always keeping that information up to date and accurate. This information is consolidated in a Configuration Management Database (CMDB).\n\nBefore making a change, you first need to correctly know \"what the current configuration looks like.\" For this reason, configuration management is the foundational process that underpins all change-related activities, including change management and release management. Exams ask you to distinguish that the purpose of configuration management is to \"maintain and provide accurate configuration information,\" whereas it is change management that approves a change itself.",
+      "analogy_zh": "就像房屋装修前制作的“设备一览表”。正因为准确记录了哪里有哪些管道和线路，才能安全地制定施工计划。",
+      "analogy_en": "Like the \"inventory of fixtures and utilities\" you draw up before renovating a house. Because you have accurately noted where every pipe and wire runs, you can safely plan the construction work.",
+      "memory_hook_zh": "说到配置管理，就是准确掌握并维护配置信息的基础",
+      "memory_hook_en": "Configuration management -> the foundation that accurately grasps and maintains configuration information"
+    },
+    {
+      "term": "変更管理",
+      "definition_jp": "サービスへの変更を評価・承認し、統制された形で実施を管理する活動。",
+      "explanation_jp": "変更管理は、サービスに対する変更要求を受け、その影響やリスクを評価したうえで承認・却下を決め、混乱なく変更を進めるためのプロセスです。承認なしに勝手な変更が行われるのを防ぎ、変更による障害を未然に抑えます。\n\n構成管理が示す現状情報を踏まえて判断し、承認後の実際の構築・展開はリリース及び展開管理へ引き継ぎます。試験では『変更を承認・統制する』のが変更管理、『実際に展開する』のがリリース管理、という役割分担が頻出ポイントです。",
+      "analogy_jp": "工事の着工前に必要な「工事許可」を出す審査窓口のようなもの。影響を見極めてゴーサインを出す役で、実際に工具を握って作業する人とは別です。",
+      "memory_hook_jp": "変更管理といえば変更を評価・承認し統制する",
+      "inline_quiz": [
+        "2010h22a-q040",
+        "2011h23a-q039"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "变更管理",
+      "term_en": "Change Management",
+      "definition_zh": "对服务的变更进行评估、批准，并以受控的方式管理其实施的活动。",
+      "definition_en": "An activity that evaluates and approves changes to a service and manages their implementation in a controlled manner.",
+      "explanation_zh": "变更管理是接收对服务的变更请求，评估其影响和风险后决定批准或拒绝，并使变更得以无混乱推进的流程。它防止未经批准就擅自进行变更，从而事先抑制由变更引发的故障。\n\n它在配置管理所提供的现状信息的基础上做出判断，而批准后的实际构建与部署则移交给发布及部署管理。考试中的高频要点是这一角色分工：“批准并管控变更”的是变更管理，“实际进行部署”的是发布管理。",
+      "explanation_en": "Change management is the process of receiving change requests for a service, evaluating their impact and risk, deciding to approve or reject them, and moving changes forward without disruption. It prevents unauthorized changes from being made arbitrarily and heads off failures caused by changes.\n\nIt makes decisions based on the current-state information provided by configuration management, and the actual building and deployment after approval is handed over to release and deployment management. A frequently tested point is this division of roles: change management \"approves and controls\" a change, while release management \"actually deploys\" it.",
+      "analogy_zh": "就像在开工前签发所需“施工许可”的审批窗口。它负责判断影响并发出放行信号，与实际握着工具作业的人是两回事。",
+      "analogy_en": "Like the review desk that issues the required \"construction permit\" before work begins. Its job is to assess the impact and give the go-ahead, which is separate from the people who actually pick up the tools and do the work.",
+      "memory_hook_zh": "说到变更管理，就是评估、批准并管控变更",
+      "memory_hook_en": "Change management -> evaluate, approve, and control changes"
+    },
+    {
+      "term": "リリース及び展開管理",
+      "definition_jp": "承認された変更を実際に構築・テストし本番環境へ展開する活動。",
+      "explanation_jp": "リリース及び展開管理は、変更管理で承認された内容を、実際にひとまとまり(リリース)として構築・検証し、本番環境へ配布・導入するプロセスです。複数の変更をまとめて計画的に展開することで、現場の混乱を抑えます。\n\n変更管理が『やってよいか』を決めるのに対し、こちらは『実際に作って届ける』実行段階です。試験ではこの両者の違い、そして展開対象が本番に出る前提として構成管理・変更管理を経ている点が問われます。",
+      "analogy_jp": "許可の下りた工事を実際に施工し、検査を通して引き渡す施工チームのようなもの。設計や許可ではなく、現物を作って現場に納める役割です。",
+      "memory_hook_jp": "リリース及び展開管理といえば承認後の構築・展開(実行段階)",
+      "inline_quiz": [
+        "2010h22a-q033",
+        "2011h23tokubetsu-q040"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "发布及部署管理",
+      "term_en": "Release and Deployment Management",
+      "definition_zh": "将已批准的变更实际构建、测试并部署到生产环境的活动。",
+      "definition_en": "An activity that actually builds and tests approved changes and deploys them to the production environment.",
+      "explanation_zh": "发布及部署管理是将变更管理所批准的内容，作为一个整体（发布单元）实际进行构建与验证，并分发、导入到生产环境的流程。通过将多个变更汇总起来有计划地部署，可以抑制现场的混乱。\n\n如果说变更管理决定的是“是否可以做”，那么本流程则是“实际制作并交付”的执行阶段。考试中会考查两者的区别，以及部署对象在进入生产之前须经过配置管理、变更管理这一前提。",
+      "explanation_en": "Release and deployment management is the process of taking what change management has approved, building and verifying it as a single bundle (a release), and distributing and installing it into the production environment. By bundling multiple changes and deploying them in a planned way, it reduces disruption on the ground.\n\nWhereas change management decides \"whether it may be done,\" this process is the execution stage that \"actually builds and delivers it.\" Exams test the difference between the two, and the premise that anything being deployed must have passed through configuration management and change management before going to production.",
+      "analogy_zh": "就像把获批的工程实际施工、通过检查后交付的施工队。它的职责不是设计或审批，而是制作出实物并交付到现场。",
+      "analogy_en": "Like the construction crew that actually builds the permitted project, passes inspection, and hands it over. Its role is not design or permitting but making the real thing and delivering it to the site.",
+      "memory_hook_zh": "说到发布及部署管理，就是批准后的构建与部署（执行阶段）",
+      "memory_hook_en": "Release and deployment management -> build and deploy after approval (the execution stage)"
+    },
+    {
+      "term": "サービスの移行",
+      "definition_jp": "新規・変更後のサービスを設計段階から本番運用へ移す総括的なプロセス。",
+      "explanation_jp": "サービスの移行は、構成管理・変更管理・リリース及び展開管理といった個々の活動を束ね、新しいサービスや変更後のサービスを本番運用へと円滑に引き渡すことを目的とする総括的な概念です。\n\n個別プロセスがバラバラに動くのではなく、全体として『開発・変更されたものを運用に乗せる』流れを管理します。試験では、リリースを経たサービスを本番へ送り出す段階に位置づけられる点、移行の可否を判断する基準(サービス受入れ基準)とセットで理解しておくと答えやすくなります。",
+      "analogy_jp": "完成した新店舗を「正式オープン」に切り替える引き渡し作業のようなもの。設計・施工・検査をまとめ上げ、実際の営業へバトンを渡す総仕上げです。",
+      "memory_hook_jp": "サービスの移行といえば本番運用へ送り出す総括プロセス",
+      "inline_quiz": [
+        "2025r07-q046"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"構成管理\"] --> B[\"変更管理\"]; B --> C[\"リリース及び展開管理\"]; C --> D[\"サービスの移行\"]; D --> E[\"サービス受入れ基準で判定\"]; E --> F[\"本番運用\"]",
+        "svg_path": "figures/management-11-29-u03-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "服务的迁移",
+      "term_en": "Service Transition",
+      "definition_zh": "将新建或变更后的服务从设计阶段移交到生产运营的总括性流程。",
+      "definition_en": "An overarching process that moves a new or changed service from the design stage into production operation.",
+      "explanation_zh": "服务的迁移是将配置管理、变更管理、发布及部署管理等各项活动汇集起来，以使新服务或变更后的服务顺利交付到生产运营为目的的总括性概念。\n\n它管理的不是各个流程各自孤立运行，而是作为整体“把开发或变更出来的东西投入运营”的流向。考试中如果把它定位为将经过发布的服务送入生产的阶段，并与判断能否迁移的基准（服务验收标准）成对理解，就更容易作答。",
+      "explanation_en": "Service transition is an overarching concept whose purpose is to bundle together the individual activities—configuration management, change management, and release and deployment management—and smoothly hand over a new or changed service into production operation.\n\nIt manages the overall flow of \"putting what was developed or changed into operation\" rather than letting the individual processes run in isolation. On exams, it helps to position it as the stage that sends a released service into production, and to understand it together with the criterion that decides whether transition is allowed (the service acceptance criteria).",
+      "analogy_zh": "就像把建成的新店铺切换为“正式开业”的交付工作。它把设计、施工、检查整合起来，将接力棒交给实际营业，是收尾的总成。",
+      "analogy_en": "Like the handover work that switches a finished new store over to its \"grand opening.\" It pulls together design, construction, and inspection and passes the baton to actual business operation as the final wrap-up.",
+      "memory_hook_zh": "说到服务的迁移，就是送入生产运营的总括流程",
+      "memory_hook_en": "Service transition -> the overarching process that sends a service into production operation"
+    },
+    {
+      "term": "サービス受入れ基準",
+      "definition_jp": "サービスを本番へ移行してよいかを判断するためにあらかじめ定めた基準。",
+      "explanation_jp": "サービス受入れ基準は、新規・変更後のサービスを本番環境へ移行(リリース)してよいかどうかを判定するために、事前に取り決めておく合格条件です。性能・品質・ドキュメント整備・テスト結果などが満たされているかを確認します。\n\nこの基準を満たさないものは本番へ出さないことで、移行による品質低下や障害を防ぎます。試験では、移行を承認するための『判定のものさし』であること、移行プロセスの締めくくりに位置づけられる点を押さえておくとよいでしょう。",
+      "analogy_jp": "新車を出荷する前の「検査合格ライン」のようなもの。決められた項目を全部クリアしないと工場から出せない、という品質のチェックポイントです。",
+      "memory_hook_jp": "サービス受入れ基準といえば本番移行の合格ライン(判定基準)",
+      "inline_quiz": [
+        "2012h24a-q036"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "服务验收标准",
+      "term_en": "Service Acceptance Criteria",
+      "definition_zh": "为判断是否可将服务迁移到生产环境而预先设定的标准。",
+      "definition_en": "Criteria established in advance to judge whether a service may be transitioned into the production environment.",
+      "explanation_zh": "服务验收标准是为判断新建或变更后的服务是否可以迁移（发布）到生产环境而事先约定好的合格条件。它检查性能、质量、文档完备程度、测试结果等是否得到满足。\n\n通过不让未满足该标准的内容上线生产，可以防止因迁移而导致的质量下降或故障。考试中要把握的要点是：它是批准迁移的“判定标尺”，并定位于迁移流程的收尾环节。",
+      "explanation_en": "Service acceptance criteria are the pass conditions agreed upon in advance to judge whether a new or changed service may be transitioned (released) into the production environment. They check whether performance, quality, documentation, test results, and the like have been met.\n\nBy not pushing anything that fails to meet these criteria into production, you prevent quality degradation and failures caused by the transition. The points to remember for exams are that it is the \"yardstick for the decision\" to approve a transition, and that it sits at the closing stage of the transition process.",
+      "analogy_zh": "就像新车出厂前的“检验合格线”。只有所有规定项目全部通过，才能让车出厂，是质量上的检查关卡。",
+      "analogy_en": "Like the \"inspection pass line\" before a new car ships from the factory. The car cannot leave the plant unless every prescribed item clears the bar—a quality checkpoint.",
+      "memory_hook_zh": "说到服务验收标准，就是生产迁移的合格线（判定基准）",
+      "memory_hook_en": "Service acceptance criteria -> the pass line for production transition (the decision benchmark)"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "構成管理: 構成管理といえば構成情報を正確に把握・維持する基盤",
+      "変更管理: 変更管理といえば変更を評価・承認し統制する",
+      "リリース及び展開管理: リリース及び展開管理といえば承認後の構築・展開(実行段階)",
+      "サービスの移行: サービスの移行といえば本番運用へ送り出す総括プロセス",
+      "サービス受入れ基準: サービス受入れ基準といえば本番移行の合格ライン(判定基準)"
+    ],
+    "key_points_jp": [
+      "本単元は『構成管理→変更管理→リリース及び展開管理→サービスの移行→サービス受入れ基準』という、変更が本番に至るまでの依存連鎖を扱う。",
+      "構成管理は変更系すべての土台。正確な構成情報を維持・提供することが役割で、変更を承認するわけではない。",
+      "変更管理は『変更を承認・統制する』役、リリース及び展開管理は『承認された変更を実際に構築・展開する』役で、両者の役割分担が頻出。",
+      "サービスの移行は個別プロセスを束ねて本番運用へ送り出す総括概念で、移行の可否はサービス受入れ基準で判定する。",
+      "サービス受入れ基準は本番移行の合格ラインであり、満たさないものは本番に出さないことで品質低下・障害を防ぐ。"
+    ],
+    "key_points_zh": [
+      "本单元处理的是“配置管理→变更管理→发布及部署管理→服务的迁移→服务验收标准”这一从变更到上线生产的依赖链条。",
+      "配置管理是所有变更类活动的基础。其职责是维护并提供准确的配置信息，而不是批准变更。",
+      "变更管理担任“评估、批准并管控变更”的角色，发布及部署管理担任“实际构建并部署已批准的变更”的角色，两者的角色分工是高频考点。",
+      "服务的迁移是把各个流程汇集起来、送入生产运营的总括概念，能否迁移由服务验收标准来判定。",
+      "服务验收标准是生产迁移的合格线，通过不让未满足标准的内容上线生产来防止质量下降与故障。"
+    ],
+    "key_points_en": [
+      "This unit deals with the dependency chain by which a change reaches production: configuration management -> change management -> release and deployment management -> service transition -> service acceptance criteria.",
+      "Configuration management is the foundation of all change-related activities. Its role is to maintain and provide accurate configuration information, not to approve changes.",
+      "Change management plays the role of \"evaluating, approving, and controlling changes,\" while release and deployment management plays the role of \"actually building and deploying approved changes\"; the division of roles between the two is frequently tested.",
+      "Service transition is the overarching concept that bundles the individual processes and sends them into production operation, and whether transition is allowed is judged by the service acceptance criteria.",
+      "Service acceptance criteria are the pass line for production transition; by not pushing anything that fails to meet them into production, they prevent quality degradation and failures."
+    ],
+    "memory_hooks_zh": [
+      "配置管理：说到配置管理，就是准确掌握并维护配置信息的基础",
+      "变更管理：说到变更管理，就是评估、批准并管控变更",
+      "发布及部署管理：说到发布及部署管理，就是批准后的构建与部署（执行阶段）",
+      "服务的迁移：说到服务的迁移，就是送入生产运营的总括流程",
+      "服务验收标准：说到服务验收标准，就是生产迁移的合格线（判定基准）"
+    ],
+    "memory_hooks_en": [
+      "Configuration management: Configuration management -> the foundation that accurately grasps and maintains configuration information",
+      "Change management: Change management -> evaluate, approve, and control changes",
+      "Release and deployment management: Release and deployment management -> build and deploy after approval (the execution stage)",
+      "Service transition: Service transition -> the overarching process that sends a service into production operation",
+      "Service acceptance criteria: Service acceptance criteria -> the pass line for production transition (the decision benchmark)"
+    ]
+  },
+  "challenge_questions": [
+    "2012h24a-q044",
+    "2019h31h-q036",
+    "2014h26a-q032",
+    "2014h26h-q040",
+    "2015h27a-q034"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2014h26a-q032",
+      "figure_path": "figures/2014h26a-q032.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "变更与服务的迁移",
+  "title_en": "Change and Service Transition",
+  "unit_summary_zh": "以配置信息的管理为基础，经过变更管理、发布及部署管理，理解将新建或变更后的服务迁移到生产环境的一系列流程。",
+  "unit_summary_en": "Build on configuration management as the foundation, then move through change management and release and deployment management to understand the full set of processes that transition new or changed services into production."
+}

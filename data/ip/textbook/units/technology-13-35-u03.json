@@ -1,0 +1,198 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-13-35-u03",
+  "topic_id": "technology-13-35",
+  "category": "technology",
+  "title_jp": "記号的AIと論理推論",
+  "unit_summary_jp": "ルールを人が記述する古典的・記号的AIの枠組みとして、述語論理・演繹/帰納推論・ルールベースを学ぶ。",
+  "order_in_topic": 3,
+  "prerequisites": [],
+  "overview": {
+    "intro_jp": "このユニットでは、ルールを人が記述する古典的・記号的AIの枠組みを学ぶ。知識を表す述語論理を土台に、一般則から個別結論を導く演繹推論、個別事例から一般則を導く帰納推論という対をなす推論形式、そしてそれらをIF-THEN形式で実装するルールベースを扱う。データから学ぶ機械学習(以降のユニット)と対比される、AIの基本的な考え方として重要である。",
+    "freq_badge": "標準",
+    "est_minutes": 13,
+    "intro_zh": "在本单元中，学习由人编写规则的经典符号主义AI框架。以表示知识的谓词逻辑为基础，处理从一般法则导出个别结论的演绎推理、从个别事例导出一般法则的归纳推理这一对推理形式，以及把它们以IF-THEN形式实现的基于规则的方式。它与从数据中学习的机器学习（在后续单元）形成对比，作为AI的基本思想十分重要。",
+    "intro_en": "In this unit, you learn the framework of classical, symbolic AI in which humans write the rules. Building on predicate logic that represents knowledge, you cover a pair of reasoning forms—deductive reasoning, which derives a specific conclusion from a general law, and inductive reasoning, which derives a general law from specific cases—and the rule-based approach that implements them in IF-THEN form. Contrasted with machine learning, which learns from data (covered in later units), this is important as a basic way of thinking about AI."
+  },
+  "terms": [
+    {
+      "term": "述語論理",
+      "definition_jp": "対象の性質や関係を述語と変数で表し、論理的に扱えるようにした記号体系。",
+      "explanation_jp": "述語論理は、「ソクラテスは人間である」のような文を「人間(ソクラテス)」と述語と対象に分けて表し、コンピュータが扱える形に記号化する論理の枠組みです。「すべての」「ある」といった量を表す記号も使え、知識を厳密に表現できます。\n\n試験では、記号的AIが知識を表現し推論する土台が述語論理である、という位置づけが問われます。単なる真偽だけを扱う命題論理よりも、対象どうしの関係まで細かく表せる点が特徴で、後述の演繹推論を成り立たせる基盤になります。",
+      "analogy_jp": "文章を「主語」と「述語」に分けて整理するようなもの。「太郎は学生だ」を『学生(太郎)』と書き、誰が何の性質を持つかを誤解なく機械に伝える共通フォーマットです。",
+      "memory_hook_jp": "述語論理といえば述語と変数で知識を表す記号的AIの土台",
+      "inline_quiz": [
+        "2026r08-q084"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "谓词逻辑",
+      "term_en": "Predicate Logic",
+      "definition_zh": "用谓词和变量表示对象的性质或关系，使其可被逻辑地处理的符号体系。",
+      "definition_en": "A symbolic system that expresses the properties and relations of objects using predicates and variables so they can be handled logically.",
+      "explanation_zh": "谓词逻辑是一种逻辑框架，它把“苏格拉底是人”这样的句子拆分为“人（苏格拉底）”这种谓词和对象的形式来表示，并符号化成计算机能够处理的形式。它还能使用表示数量的“所有”“存在”等符号，从而严密地表达知识。\n\n考试中会考查这样的定位：符号主义AI表示知识并进行推理的基础就是谓词逻辑。与只处理真假的命题逻辑相比，它的特点是连对象之间的关系都能细致地表达出来，并成为支撑后述演绎推理成立的基础。",
+      "explanation_en": "Predicate logic is a logical framework that splits a sentence like \"Socrates is human\" into a predicate and an object—\"Human(Socrates)\"—and symbolizes it into a form a computer can handle. It can also use symbols that express quantity, such as \"all\" and \"some,\" allowing knowledge to be expressed rigorously.\n\nThe exam asks about its role: predicate logic is the foundation on which symbolic AI represents knowledge and performs reasoning. Compared with propositional logic, which handles only truth or falsehood, its distinctive feature is that it can express even the relations between objects in detail, and it becomes the basis that makes the deductive reasoning described later possible.",
+      "analogy_zh": "就像把句子分成“主语”和“谓语”来整理一样。把“太郎是学生”写成『学生（太郎）』，是一种把“谁拥有什么性质”毫无误解地传达给机器的通用格式。",
+      "analogy_en": "It is like organizing a sentence by splitting it into a \"subject\" and a \"predicate.\" Writing \"Taro is a student\" as \"Student(Taro)\" is a common format that conveys to a machine, without any misunderstanding, who has what property.",
+      "memory_hook_zh": "说到谓词逻辑，就是用谓词和变量表示知识的符号主义AI的基础",
+      "memory_hook_en": "Predicate logic → the foundation of symbolic AI that represents knowledge with predicates and variables"
+    },
+    {
+      "term": "演繹推論",
+      "definition_jp": "一般的な法則(前提)から、個別の確実な結論を論理的に導く推論。",
+      "explanation_jp": "演繹推論は、「すべての人間は死ぬ」「ソクラテスは人間だ」という一般則と前提から、「ソクラテスは死ぬ」という結論を必然的に導く推論です。前提が正しければ結論も必ず正しくなります。\n\n試験では、データから一般則を導く帰納推論との対比が頻出です。演繹は『一般→個別』で結論が確実、帰納は『個別→一般』で結論は確実とは限らない、と整理しましょう。述語論理で表した知識から自動的に結論を導く、記号的AIの中心的な仕組みです。",
+      "analogy_jp": "「この店の商品はすべて税込表示」というルールを知っていれば、棚の値札を一つずつ確かめなくても「この商品も税込だ」と確実に言えるようなものです。",
+      "memory_hook_jp": "演繹推論といえば一般則から個別の確実な結論(一般→個別)",
+      "inline_quiz": [
+        "2022r04-q057"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"一般則: すべての人間は死ぬ\"] --> C[\"当てはめて推論\"]; B[\"前提: ソクラテスは人間\"] --> C; C --> D[\"確実な結論: ソクラテスは死ぬ\"]",
+        "svg_path": "figures/technology-13-35-u03-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "演绎推理",
+      "term_en": "Deductive Reasoning",
+      "definition_zh": "从一般性法则（前提）逻辑地导出个别且确定的结论的推理。",
+      "definition_en": "Reasoning that logically derives a specific, certain conclusion from a general law (premise).",
+      "explanation_zh": "演绎推理是从“所有人都会死”“苏格拉底是人”这样的一般法则与前提，必然地导出“苏格拉底会死”这一结论的推理。只要前提正确，结论也必定正确。\n\n考试中，它与从数据导出一般法则的归纳推理的对比经常出现。可以这样整理：演绎是『一般→个别』、结论确定，归纳是『个别→一般』、结论不一定确定。它是从用谓词逻辑表示的知识自动导出结论的、符号主义AI的核心机制。",
+      "explanation_en": "Deductive reasoning derives the conclusion \"Socrates is mortal\" inevitably from the general law and premise \"All humans are mortal\" and \"Socrates is human.\" As long as the premises are correct, the conclusion must also be correct.\n\nThe exam frequently contrasts it with inductive reasoning, which derives a general law from data. Organize it this way: deduction goes \"general → specific\" and its conclusion is certain, whereas induction goes \"specific → general\" and its conclusion is not necessarily certain. It is the central mechanism of symbolic AI that automatically derives conclusions from knowledge expressed in predicate logic.",
+      "analogy_zh": "就像如果你知道“这家店的商品全部都是含税标价”这条规则，那么即使不逐一核对货架上的价签，也能确定地说“这件商品也是含税的”。",
+      "analogy_en": "It is like knowing the rule \"all items in this store are priced tax-included\": even without checking each price tag on the shelf one by one, you can say with certainty, \"this item is also tax-included.\"",
+      "memory_hook_zh": "说到演绎推理，就是从一般法则得出个别且确定的结论（一般→个别）",
+      "memory_hook_en": "Deductive reasoning → from a general law to a specific, certain conclusion (general → specific)"
+    },
+    {
+      "term": "帰納推論",
+      "definition_jp": "個別の複数事例から、共通する一般的な法則や傾向を導く推論。",
+      "explanation_jp": "帰納推論は、「カラスAは黒い」「カラスBも黒い」…という個別の観察を多数集め、「カラスは黒い」という一般則を導く推論です。観察に基づくため結論は確からしいものの、必ず正しいとは限りません(例外がありうる)。\n\n試験では、演繹推論との違いが問われます。帰納は『個別→一般』で結論が確実ではない点が、『一般→個別』で確実な演繹との決定的な差です。データから規則性を見つける考え方は、後に学ぶ機械学習の発想にもつながります。",
+      "analogy_jp": "何日も「朝に太陽が東から昇る」のを見て「太陽は東から昇る」と結論づけるようなもの。多くの事例から法則を見出しますが、絶対の保証はありません。",
+      "memory_hook_jp": "帰納推論といえば個別事例から一般則(個別→一般、確実とは限らない)",
+      "inline_quiz": [
+        "2009h21a-q097"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "归纳推理",
+      "term_en": "Inductive Reasoning",
+      "definition_zh": "从多个个别事例中导出共同的一般性法则或趋势的推理。",
+      "definition_en": "Reasoning that derives a common general law or tendency from multiple specific cases.",
+      "explanation_zh": "归纳推理是把“乌鸦A是黑的”“乌鸦B也是黑的”……这样的个别观察大量收集起来，从而导出“乌鸦是黑的”这一一般法则的推理。由于它基于观察，结论虽然很可能成立，但不一定正确（可能存在例外）。\n\n考试中会考查它与演绎推理的区别。归纳是『个别→一般』、结论不确定，这与『一般→个别』、结论确定的演绎之间存在决定性差异。从数据中发现规律性的思路，也与后面学习的机器学习的思想相联系。",
+      "explanation_en": "Inductive reasoning collects many specific observations—\"Crow A is black,\" \"Crow B is also black,\" and so on—and derives the general law \"crows are black.\" Because it is based on observation, the conclusion is probable but not necessarily correct (there can be exceptions).\n\nThe exam asks about the difference from deductive reasoning. The decisive difference is that induction goes \"specific → general\" with an uncertain conclusion, whereas deduction goes \"general → specific\" with a certain conclusion. The idea of finding regularities from data also connects to the thinking behind machine learning, which you will learn later.",
+      "analogy_zh": "就像连续好多天看到“早上太阳从东方升起”，于是得出“太阳从东方升起”的结论。它从大量事例中发现法则，但没有绝对的保证。",
+      "analogy_en": "It is like seeing \"the sun rises in the east in the morning\" for many days and concluding \"the sun rises in the east.\" It finds a law from many cases, but there is no absolute guarantee.",
+      "memory_hook_zh": "说到归纳推理，就是从个别事例得出一般法则（个别→一般，不一定确定）",
+      "memory_hook_en": "Inductive reasoning → from specific cases to a general law (specific → general, not necessarily certain)"
+    },
+    {
+      "term": "ルールベース",
+      "definition_jp": "「もし〜ならば〜」というルールを人が記述し、それに従って推論・処理する方式。",
+      "explanation_jp": "ルールベースは、専門家の知識を「もし熱が高ければ風邪の疑い」のようなIF-THEN形式のルールとして人があらかじめ書き、入力された事実にルールを当てはめて結論を導く仕組みです。エキスパートシステムの中核技術です。\n\n試験では、ルールを人が記述する記号的AIの代表例である点、そしてデータから自動でパターンを学ぶ機械学習との違いが問われます。判断の根拠(どのルールが使われたか)を説明しやすい一方、ルール作成に手間がかかる点も特徴です。",
+      "analogy_jp": "料理のレシピ集のようなもの。「もし材料がAなら手順Bを行う」と条件と対応を全部書いておけば、その通りに進めて誰でも同じ結果にたどり着けます。",
+      "memory_hook_jp": "ルールベースといえばIF-THENを人が書く記号的AI(エキスパートシステム)",
+      "inline_quiz": [
+        "2009h21h-q066"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph LR; A[\"入力された事実\"] --> B[\"ルール集(もし〜ならば〜)\"]; B --> C[\"当てはまるルールを適用\"]; C --> D[\"結論を出力\"]",
+        "svg_path": "figures/technology-13-35-u03-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "基于规则",
+      "term_en": "Rule-Based",
+      "definition_zh": "由人编写“如果～那么～”的规则，并据此进行推理与处理的方式。",
+      "definition_en": "An approach in which humans write \"if ~ then ~\" rules and perform reasoning and processing according to them.",
+      "explanation_zh": "基于规则的方式，是由人预先把专家的知识写成“如果发烧就疑似感冒”这样的IF-THEN形式的规则，再把规则套用到输入的事实上从而导出结论的机制。它是专家系统的核心技术。\n\n考试中会考查它作为“由人编写规则的符号主义AI的代表例子”这一点，以及它与从数据中自动学习模式的机器学习的区别。它的特点是：一方面容易说明判断的依据（用了哪条规则），另一方面编写规则需要花费很多工夫。",
+      "explanation_en": "In the rule-based approach, humans write an expert's knowledge in advance as IF-THEN rules such as \"if the fever is high, suspect a cold,\" and then apply the rules to the input facts to derive a conclusion. It is the core technology of expert systems.\n\nThe exam asks about the point that it is a representative example of symbolic AI in which humans write the rules, and about its difference from machine learning, which automatically learns patterns from data. Its characteristics are that the basis of a judgment (which rule was used) is easy to explain, while writing the rules takes considerable effort.",
+      "analogy_zh": "就像一本菜谱集。只要把“如果食材是A就执行步骤B”这样的条件和对应关系全部写下来，按照它一步步进行，谁都能得到相同的结果。",
+      "analogy_en": "It is like a collection of cooking recipes. If you write down all the conditions and their corresponding actions—\"if the ingredient is A, carry out step B\"—then anyone who follows it step by step can reach the same result.",
+      "memory_hook_zh": "说到基于规则，就是由人编写IF-THEN的符号主义AI（专家系统）",
+      "memory_hook_en": "Rule-based → symbolic AI in which humans write IF-THEN rules (expert systems)"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "述語論理: 述語論理といえば述語と変数で知識を表す記号的AIの土台",
+      "演繹推論: 演繹推論といえば一般則から個別の確実な結論(一般→個別)",
+      "帰納推論: 帰納推論といえば個別事例から一般則(個別→一般、確実とは限らない)",
+      "ルールベース: ルールベースといえばIF-THENを人が書く記号的AI(エキスパートシステム)"
+    ],
+    "key_points_jp": [
+      "述語論理は対象の性質や関係を述語と変数で記号化し、記号的AIが知識を表現・推論する土台となる。",
+      "演繹推論は『一般→個別』で前提が正しければ結論も必ず正しい、確実な推論である。",
+      "帰納推論は『個別→一般』で多数の事例から法則を導くが、結論は確実とは限らない(演繹との対比が頻出)。",
+      "ルールベースはIF-THEN形式のルールを人が記述する記号的AIで、エキスパートシステムの中核となる。",
+      "知識表現(述語論理)→2種の推論(演繹・帰納)→実装(ルールベース)へと、ルールを人が書く古典的AIの全体像をつかむ。"
+    ],
+    "key_points_zh": [
+      "谓词逻辑用谓词和变量对对象的性质或关系进行符号化，是符号主义AI表示知识、进行推理的基础。",
+      "演绎推理是『一般→个别』，只要前提正确结论也必定正确，是一种确定的推理。",
+      "归纳推理是『个别→一般』，从大量事例中导出法则，但结论不一定确定（与演绎的对比经常出现）。",
+      "基于规则是由人编写IF-THEN形式规则的符号主义AI，是专家系统的核心。",
+      "按照知识表示（谓词逻辑）→两种推理（演绎、归纳）→实现（基于规则）的脉络，把握由人编写规则的经典AI的整体面貌。"
+    ],
+    "key_points_en": [
+      "Predicate logic symbolizes the properties and relations of objects using predicates and variables, and is the foundation on which symbolic AI represents knowledge and reasons.",
+      "Deductive reasoning goes \"general → specific\"; as long as the premises are correct, the conclusion must also be correct—it is certain reasoning.",
+      "Inductive reasoning goes \"specific → general,\" deriving a law from many cases, but the conclusion is not necessarily certain (the contrast with deduction appears frequently).",
+      "Rule-based is symbolic AI in which humans write rules in IF-THEN form, and it is the core of expert systems.",
+      "Following the flow of knowledge representation (predicate logic) → two kinds of reasoning (deduction, induction) → implementation (rule-based), grasp the overall picture of classical AI in which humans write the rules."
+    ],
+    "memory_hooks_zh": [
+      "谓词逻辑：说到谓词逻辑，就是用谓词和变量表示知识的符号主义AI的基础",
+      "演绎推理：说到演绎推理，就是从一般法则得出个别且确定的结论（一般→个别）",
+      "归纳推理：说到归纳推理，就是从个别事例得出一般法则（个别→一般，不一定确定）",
+      "基于规则：说到基于规则，就是由人编写IF-THEN的符号主义AI（专家系统）"
+    ],
+    "memory_hooks_en": [
+      "Predicate logic: Predicate logic → the foundation of symbolic AI that represents knowledge with predicates and variables",
+      "Deductive reasoning: Deductive reasoning → from a general law to a specific, certain conclusion (general → specific)",
+      "Inductive reasoning: Inductive reasoning → from specific cases to a general law (specific → general, not necessarily certain)",
+      "Rule-based: Rule-based → symbolic AI in which humans write IF-THEN rules (expert systems)"
+    ]
+  },
+  "challenge_questions": [
+    "2010h22a-q083",
+    "2010h22h-q060",
+    "2011h23a-q078",
+    "2013h25a-q076",
+    "2013h25h-q078"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2022r04-q057",
+      "figure_path": "figures/2022r04-q057.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2009h21a-q097",
+      "figure_path": "figures/2009h21a-q097.png",
+      "figure_type": null,
+      "figure_description": "図1：販売管理データベース構造（取引先表・取引先担当者表・商品表・販売単価表の4表）と図2：請求書の様式",
+      "group_id": "2009h21a-mqC"
+    },
+    {
+      "source": "question",
+      "question_id": "2009h21h-q066",
+      "figure_path": "figures/2009h21h-q066.png",
+      "figure_type": "table",
+      "figure_description": "サンプリング周期と量子化の段階数の組合せ表。ア〜エの4行にサンプリング周期（長い/短い）と量子化の段階数（多い/少ない）の2列構成。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "符号主义AI与逻辑推理",
+  "title_en": "Symbolic AI and Logical Reasoning",
+  "unit_summary_zh": "作为由人编写规则的经典符号主义AI框架，学习谓词逻辑、演绎/归纳推理与基于规则的方式。",
+  "unit_summary_en": "Learn predicate logic, deductive/inductive reasoning, and rule-based systems as the framework of classical, symbolic AI in which humans write the rules."
+}

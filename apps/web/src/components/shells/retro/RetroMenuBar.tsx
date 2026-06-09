@@ -7,6 +7,7 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ThemeSwitcher } from "@/components/shells/ThemeSwitcher";
 
 const NAV_ITEMS = [
+  { href: "/textbook", key: "textbook" },
   { href: "/chat", key: "chat" },
   { href: "/quiz", key: "quiz" },
   { href: "/glossary", key: "glossary" },
@@ -22,7 +23,9 @@ export function RetroMenuBar(): React.ReactElement {
       <div className="flex items-center">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-          const label = tNav(item.key as "chat" | "quiz" | "glossary" | "tutor");
+          const label = tNav(
+            item.key as "textbook" | "chat" | "quiz" | "glossary" | "tutor",
+          );
           const firstChar = label.charAt(0);
           const rest = label.slice(1);
           return (

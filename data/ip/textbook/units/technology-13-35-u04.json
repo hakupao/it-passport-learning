@@ -1,0 +1,217 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-13-35-u04",
+  "topic_id": "technology-13-35",
+  "category": "technology",
+  "title_jp": "機械学習の枠組み",
+  "unit_summary_jp": "データから学習する機械学習の基本概念と、教師あり・教師なし・強化学習という学習方式の分類を学ぶ。",
+  "order_in_topic": 4,
+  "prerequisites": [
+    "technology-13-35-u03"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、人がルールを書くのではなくデータから規則を学び取る「機械学習」の基本概念と、学習方式の三分類(教師あり・教師なし・強化学習)を学びます。AI分野は近年の出題が増えており、各方式の違いと代表的な用途を区別できることが試験で重要になります。",
+    "freq_badge": "標準",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，学习不靠人来编写规则、而是从数据中学习规律的“机器学习”的基本概念，以及学习方式的三种分类（监督学习、无监督学习、强化学习）。近年来AI领域的出题在增加，能够区分各方式的差异及其代表性用途，在考试中变得很重要。",
+    "intro_en": "In this unit, you learn the basic concepts of \"machine learning,\" which learns rules from data rather than having humans write them, and the three categories of learning methods (supervised, unsupervised, and reinforcement learning). AI has been appearing more often in recent exams, so being able to distinguish the differences among the methods and their representative uses becomes important on the exam."
+  },
+  "terms": [
+    {
+      "term": "特徴量",
+      "definition_jp": "学習・予測の手がかりとして対象から取り出した数値化された特性。",
+      "explanation_jp": "特徴量は、機械学習がデータから捉えるための「着目点」を数値で表したものです。例えば果物を見分けるなら「色」「重さ」「直径」、メールの判別なら「特定の単語の出現回数」などが特徴量にあたります。\n\nどんな特徴量を選ぶかが学習の精度を大きく左右するため、機械学習を語る前提となる重要概念です。試験では、生のデータそのものではなく、判断の手がかりとなる特性を数値化したものが特徴量である、という基本理解が問われます。",
+      "analogy_jp": "果物を見分けるとき「色は赤か」「大きさはどれくらいか」と注目するポイントを書き出すようなもの。その着目点が判断の手がかりになります。",
+      "memory_hook_jp": "特徴量といえば学習の手がかりにする数値化された特性",
+      "inline_quiz": [
+        "2019r01a-q021"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "特征量",
+      "term_en": "Feature",
+      "definition_zh": "作为学习与预测的线索，从对象中提取出来的、被数值化的特性。",
+      "definition_en": "A numerically expressed characteristic extracted from a target to serve as a clue for learning and prediction.",
+      "explanation_zh": "特征量是把机器学习从数据中捕捉对象时所依据的“关注点”用数值表示出来的东西。例如要分辨水果，“颜色”“重量”“直径”就是特征量；要判别邮件，“特定单词的出现次数”等就是特征量。\n\n选择什么样的特征量会很大程度上左右学习的精度，因此它是谈论机器学习的前提性重要概念。考试中会考查这一基本理解：特征量不是原始数据本身，而是把作为判断线索的特性加以数值化后得到的东西。",
+      "explanation_en": "A feature is the \"point of focus\" by which machine learning captures a target from data, expressed as a number. For example, to tell fruits apart, \"color,\" \"weight,\" and \"diameter\" are features; to classify email, \"the number of times a specific word appears\" is a feature.\n\nWhich features you choose greatly affects the accuracy of learning, so it is an important concept that underlies any discussion of machine learning. The exam asks for this basic understanding: a feature is not the raw data itself but a numerical form of the characteristics that serve as clues for judgment.",
+      "analogy_zh": "就像在分辨水果时，把“颜色是不是红的”“大小大概是多少”这些要关注的点一条条写出来。那些关注点就成为判断的线索。",
+      "analogy_en": "It is like writing out the points to focus on when telling fruits apart—\"is the color red?\" \"about how big is it?\" Those points of focus become the clues for judgment.",
+      "memory_hook_zh": "说到特征量，就是作为学习线索的、被数值化的特性",
+      "memory_hook_en": "Feature → a numerically expressed characteristic used as a clue for learning"
+    },
+    {
+      "term": "機械学習",
+      "definition_jp": "大量のデータから規則性を学び取り予測や判断を行うAIの手法。",
+      "explanation_jp": "機械学習は、人があらかじめルールを書くのではなく、コンピュータが大量のデータからパターン(規則性)を自動的に見つけ出す手法です。特徴量を入力として与え、データに潜む傾向を学習し、未知のデータに対して予測や分類を行います。\n\n前ユニットの記号的AI(人がルールを書くAI)と対をなす「データから学ぶAI」の総称で、この対比が試験で問われます。学習の進め方によって、後述の教師あり学習・教師なし学習・強化学習の三つに大きく分類される点も押さえましょう。",
+      "analogy_jp": "たくさんの実例を見て「こういう特徴ならこう」と自分でコツをつかむ見習い職人のようなもの。教科書のルールではなく経験データから判断基準を身につけます。",
+      "memory_hook_jp": "機械学習といえばデータから規則性を学ぶAI",
+      "inline_quiz": [
+        "2020r02o-q004",
+        "2022r04-q067"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"大量のデータ\"] --> B[\"特徴量\"]; B --> C[\"機械学習で規則性を学習\"]; C --> D[\"予測・分類モデル\"]; E[\"未知のデータ\"] --> D; D --> F[\"予測・判断の結果\"]",
+        "svg_path": "figures/technology-13-35-u04-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "机器学习",
+      "term_en": "Machine Learning",
+      "definition_zh": "从大量数据中学习出规律性，从而进行预测或判断的AI方法。",
+      "definition_en": "An AI approach that learns regularities from large amounts of data to make predictions or judgments.",
+      "explanation_zh": "机器学习是这样一种方法：不是由人事先编写规则，而是让计算机从大量数据中自动找出模式（规律性）。把特征量作为输入给入，学习数据中潜藏的趋势，并对未知数据进行预测或分类。\n\n它与上一单元的符号主义AI（由人编写规则的AI）相对应，是“从数据中学习的AI”的总称，这一对比会在考试中考查。还要记住：根据学习的进行方式，它大致分为后述的监督学习、无监督学习、强化学习三类。",
+      "explanation_en": "Machine learning is an approach in which, rather than having humans write rules in advance, the computer automatically finds patterns (regularities) from large amounts of data. Features are given as input, the tendencies hidden in the data are learned, and predictions or classifications are made on unknown data.\n\nIt is the general term for \"AI that learns from data,\" forming a pair with the symbolic AI of the previous unit (AI in which humans write the rules); this contrast is tested on the exam. Also keep in mind that, depending on how learning proceeds, it is broadly divided into the three types described below: supervised, unsupervised, and reinforcement learning.",
+      "analogy_zh": "就像一个见习工匠，看了大量实例后自己摸索出“有这种特征就这样判断”的窍门。他不是靠教科书上的规则，而是从经验数据中掌握判断标准。",
+      "analogy_en": "It is like an apprentice craftsman who, after seeing many real examples, figures out the knack on their own—\"if it has these features, judge it this way.\" They acquire their criteria for judgment not from textbook rules but from experience data.",
+      "memory_hook_zh": "说到机器学习，就是从数据中学习规律性的AI",
+      "memory_hook_en": "Machine learning → AI that learns regularities from data"
+    },
+    {
+      "term": "教師あり学習",
+      "definition_jp": "入力と正解ラベルの組を学習し未知データの予測を行う方式。",
+      "explanation_jp": "教師あり学習は、入力データに「正解(ラベル)」を付けて学習させる方式です。例えば多数の画像に「犬」「猫」という正解を添えて学習させると、未知の画像の種類を予測できるようになります。\n\n結果を予測する「回帰」や、分類する「分類」に使われる最も基本的な方式です。試験では、正解ラベルがある点が教師なし学習との決定的な違いであること、迷惑メール判定や数値予測などの典型例が問われます。",
+      "analogy_jp": "答え付きの問題集で勉強するようなもの。「この問題の答えはこれ」と正解を見ながら繰り返し練習し、本番の未知の問題に備えます。",
+      "memory_hook_jp": "教師あり学習といえば正解ラベル付きデータで学ぶ方式",
+      "inline_quiz": [
+        "2022r04-q024"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "监督学习",
+      "term_en": "Supervised Learning",
+      "definition_zh": "学习输入与正确标签的组合，从而对未知数据进行预测的方式。",
+      "definition_en": "A method that learns pairs of inputs and correct labels to make predictions on unknown data.",
+      "explanation_zh": "监督学习是给输入数据附上“正确答案（标签）”再进行学习的方式。例如给大量图像附上“狗”“猫”这样的正确答案来学习，就能对未知图像的种类作出预测。\n\n它是用于预测结果的“回归”和加以分类的“分类”的最基本方式。考试中会考查：带有正确标签这一点是它与无监督学习的决定性区别，以及垃圾邮件判定、数值预测等典型例子。",
+      "explanation_en": "Supervised learning is a method in which input data is given a \"correct answer (label)\" before learning. For example, by learning from many images labeled \"dog\" or \"cat,\" it becomes able to predict the type of an unknown image.\n\nIt is the most basic method, used for \"regression,\" which predicts a result, and \"classification,\" which sorts data into categories. The exam asks that having correct labels is the decisive difference from unsupervised learning, and about typical examples such as spam-mail judgment and numerical prediction.",
+      "analogy_zh": "就像用带答案的习题集来学习。一边看着“这道题的答案是这个”的正确答案，一边反复练习，为应对实战中的未知题目做好准备。",
+      "analogy_en": "It is like studying with a workbook that has the answers. You practice repeatedly while looking at the correct answers—\"the answer to this problem is this\"—preparing for the unknown problems you will face for real.",
+      "memory_hook_zh": "说到监督学习，就是用带正确标签的数据来学习的方式",
+      "memory_hook_en": "Supervised learning → a method that learns from data with correct labels"
+    },
+    {
+      "term": "教師なし学習",
+      "definition_jp": "正解ラベルなしのデータから構造やグループを見つける方式。",
+      "explanation_jp": "教師なし学習は、正解(ラベル)を与えずに、データそのものに潜む構造やまとまりを見つけ出す方式です。代表例は、似たもの同士を自動的にグループ分けする「クラスタリング」です。\n\n顧客を購買傾向ごとに分けるなど、あらかじめ正解が分からない場面で使われます。試験では、正解ラベルがない点が教師あり学習との違いであること、データを似た者同士に分けるクラスタリングが典型例であることが問われます。",
+      "analogy_jp": "答えのない大量の名刺を、業種や地域が近いもの同士で自然に山分けしていくようなもの。正解は教わらず、似ているかどうかだけで仲間分けします。",
+      "memory_hook_jp": "教師なし学習といえば正解なしで似たもの同士にグループ分け",
+      "inline_quiz": [
+        "2021r03-q020"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "无监督学习",
+      "term_en": "Unsupervised Learning",
+      "definition_zh": "从没有正确标签的数据中找出结构或分组的方式。",
+      "definition_en": "A method that finds structures or groups in data that has no correct labels.",
+      "explanation_zh": "无监督学习是不给出正确答案（标签）、而是找出数据本身潜藏的结构或聚集的方式。代表性例子是把相似的对象自动分组的“聚类”。\n\n它用于事先并不知道正确答案的场合，例如按购买倾向把顾客划分开来。考试中会考查：没有正确标签这一点是它与监督学习的区别，以及把数据按相似者归到一起的聚类是其典型例子。",
+      "explanation_en": "Unsupervised learning is a method that, without giving correct answers (labels), finds the structures or clusters hidden in the data itself. A representative example is \"clustering,\" which automatically groups similar items together.\n\nIt is used in situations where the correct answer is not known in advance, such as dividing customers by their purchasing tendencies. The exam asks that having no correct labels is the difference from supervised learning, and that clustering—grouping data by similarity—is its typical example.",
+      "analogy_zh": "就像把大量没有答案的名片，按行业或地区相近的彼此自然地分成一堆堆。不靠别人教正确答案，只凭是否相似来归类。",
+      "analogy_en": "It is like sorting a large pile of business cards that have no answer key into stacks of cards whose industry or region is close. You are not taught the correct answer; you group them based only on whether they are similar.",
+      "memory_hook_zh": "说到无监督学习，就是不靠正确答案、把相似者分到一组",
+      "memory_hook_en": "Unsupervised learning → grouping similar items together without correct answers"
+    },
+    {
+      "term": "強化学習",
+      "definition_jp": "行動の結果に与えられる報酬を手がかりに最適な行動を学ぶ方式。",
+      "explanation_jp": "強化学習は、試行錯誤しながら行動し、良い結果には「報酬」を与えることで、報酬が最大になる行動を学習させる方式です。正解ラベルを直接与えるのではなく、行動の良し悪しを報酬という形で評価します。\n\nゲームの攻略やロボットの制御、囲碁・将棋のAIなどで使われます。試験では、報酬を手がかりに試行錯誤で学ぶ第三の方式であり、教師あり・教師なしとは異なる枠組みである、という位置づけが問われます。",
+      "analogy_jp": "犬のしつけで、うまくできたらおやつ(報酬)を与えて望ましい行動を覚えさせるようなもの。失敗と成功を繰り返しながら、得をする行動を身につけます。",
+      "memory_hook_jp": "強化学習といえば報酬を手がかりに試行錯誤で学ぶ方式",
+      "inline_quiz": [
+        "2024r06-q065"
+      ],
+      "inline_fallback": true,
+      "figure": {
+        "mermaid": "graph TD; A[\"機械学習\"]; A --> B[\"教師あり学習(正解ラベルあり)\"]; A --> C[\"教師なし学習(正解ラベルなし)\"]; A --> D[\"強化学習(報酬で学習)\"]",
+        "svg_path": "figures/technology-13-35-u04-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "强化学习",
+      "term_en": "Reinforcement Learning",
+      "definition_zh": "以行动结果所给予的奖励为线索，学习最优行动的方式。",
+      "definition_en": "A method that learns the optimal actions using the reward given for the result of an action as a clue.",
+      "explanation_zh": "强化学习是这样一种方式：一边试错一边行动，对好的结果给予“奖励”，从而学习出使奖励最大化的行动。它不直接给出正确标签，而是把行动的好坏以奖励的形式来评价。\n\n它用于游戏攻关、机器人控制，以及围棋、将棋的AI等。考试中会考查它的定位：它是以奖励为线索、通过试错来学习的第三种方式，是与监督学习、无监督学习不同的框架。",
+      "explanation_en": "Reinforcement learning is a method in which an agent acts by trial and error and is given a \"reward\" for good results, thereby learning the actions that maximize the reward. Rather than directly giving correct labels, it evaluates the goodness or badness of actions in the form of rewards.\n\nIt is used in game-playing, robot control, and AI for games like Go and shogi. The exam asks about its positioning: it is the third method that learns through trial and error using rewards as a clue, and it is a framework different from supervised and unsupervised learning.",
+      "analogy_zh": "就像训练狗时，做得好就给零食（奖励），让它记住期望的行为。在反复失败与成功的过程中，逐渐学会能得到好处的行动。",
+      "analogy_en": "It is like training a dog: when it does well, you give it a treat (reward) so it learns the desired behavior. Through repeated failures and successes, it gradually acquires the actions that pay off.",
+      "memory_hook_zh": "说到强化学习，就是以奖励为线索、通过试错来学习的方式",
+      "memory_hook_en": "Reinforcement learning → a method that learns by trial and error using rewards as a clue"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "特徴量: 特徴量といえば学習の手がかりにする数値化された特性",
+      "機械学習: 機械学習といえばデータから規則性を学ぶAI",
+      "教師あり学習: 教師あり学習といえば正解ラベル付きデータで学ぶ方式",
+      "教師なし学習: 教師なし学習といえば正解なしで似たもの同士にグループ分け",
+      "強化学習: 強化学習といえば報酬を手がかりに試行錯誤で学ぶ方式"
+    ],
+    "key_points_jp": [
+      "機械学習は、人がルールを書く記号的AIと対をなし、データから規則性を自動的に学び取るAIの手法である。",
+      "特徴量は、対象から取り出した判断の手がかりとなる数値化された特性で、学習の入力となる。",
+      "機械学習は学習方式により「教師あり学習」「教師なし学習」「強化学習」の三つに大きく分類される。",
+      "教師あり学習は正解ラベルあり(予測・分類)、教師なし学習は正解ラベルなし(クラスタリング)で、ラベルの有無が決定的な違い。",
+      "強化学習は報酬を手がかりに試行錯誤で最適な行動を学ぶ第三の方式で、ゲームやロボット制御などに使われる。"
+    ],
+    "key_points_zh": [
+      "机器学习与由人编写规则的符号主义AI相对应，是从数据中自动学习出规律性的AI方法。",
+      "特征量是从对象中提取出来、作为判断线索的、被数值化的特性，它是学习的输入。",
+      "机器学习按学习方式大致分为“监督学习”“无监督学习”“强化学习”三类。",
+      "监督学习有正确标签（预测、分类），无监督学习没有正确标签（聚类），有无标签是决定性区别。",
+      "强化学习是以奖励为线索、通过试错来学习最优行动的第三种方式，用于游戏和机器人控制等。"
+    ],
+    "key_points_en": [
+      "Machine learning forms a pair with symbolic AI, in which humans write the rules, and is an AI approach that automatically learns regularities from data.",
+      "A feature is a numerically expressed characteristic extracted from a target to serve as a clue for judgment, and it is the input for learning.",
+      "By learning method, machine learning is broadly divided into three types: \"supervised learning,\" \"unsupervised learning,\" and \"reinforcement learning.\"",
+      "Supervised learning has correct labels (prediction, classification) and unsupervised learning has no correct labels (clustering); whether labels exist is the decisive difference.",
+      "Reinforcement learning is the third method, which learns the optimal actions by trial and error using rewards as a clue, and is used for things like games and robot control."
+    ],
+    "memory_hooks_zh": [
+      "特征量：说到特征量，就是作为学习线索的、被数值化的特性",
+      "机器学习：说到机器学习，就是从数据中学习规律性的AI",
+      "监督学习：说到监督学习，就是用带正确标签的数据来学习的方式",
+      "无监督学习：说到无监督学习，就是不靠正确答案、把相似者分到一组",
+      "强化学习：说到强化学习，就是以奖励为线索、通过试错来学习的方式"
+    ],
+    "memory_hooks_en": [
+      "Feature: Feature → a numerically expressed characteristic used as a clue for learning",
+      "Machine learning: Machine learning → AI that learns regularities from data",
+      "Supervised learning: Supervised learning → a method that learns from data with correct labels",
+      "Unsupervised learning: Unsupervised learning → grouping similar items together without correct answers",
+      "Reinforcement learning: Reinforcement learning → a method that learns by trial and error using rewards as a clue"
+    ]
+  },
+  "challenge_questions": [
+    "2025r07-q086",
+    "2023r05-q076",
+    "2020r02o-q022",
+    "2026r08-q016"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2024r06-q065",
+      "figure_path": "figures/2024r06-q065.png",
+      "figure_type": "table",
+      "figure_description": "a・b・cの字句の組合せを示す4行3列の表。各行（ア〜エ）に「回帰」「分類」「クラスタリング」の組合せが示されている。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2023r05-q076",
+      "figure_path": "figures/2023r05-q076.png",
+      "figure_type": "table",
+      "figure_description": "混同行列（単位：枚）。機械学習モデルによる判定：不良品/良品。品質管理担当者の判定が不良品：機械学習=不良品5，機械学習=良品5。品質管理担当者の判定が良品：機械学習=不良品15，機械学習=良品75。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "机器学习的框架",
+  "title_en": "The Framework of Machine Learning",
+  "unit_summary_zh": "学习从数据中学习的机器学习的基本概念，以及监督学习、无监督学习、强化学习这一学习方式的分类。",
+  "unit_summary_en": "Learn the basic concepts of machine learning, which learns from data, and the classification of learning methods into supervised, unsupervised, and reinforcement learning."
+}

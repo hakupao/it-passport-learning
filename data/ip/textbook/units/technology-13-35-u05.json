@@ -1,0 +1,200 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-13-35-u05",
+  "topic_id": "technology-13-35",
+  "category": "technology",
+  "title_jp": "ニューラルネットワークと深層学習",
+  "unit_summary_jp": "ニューラルネットワークの仕組み(学習法・活性関数・過学習)と、それを多層化した深層学習を学ぶ。",
+  "order_in_topic": 5,
+  "prerequisites": [
+    "technology-13-35-u04"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、人間の脳神経を模した学習モデルであるニューラルネットワークの仕組み(学習法のバックプロパゲーション・出力を決める活性関数・落とし穴である過学習)と、それを多層化して飛躍的に性能を高めたディープラーニング(深層学習)を学びます。AI・機械学習分野の中核で、試験でも頻出の重要テーマです。",
+    "freq_badge": "標準",
+    "est_minutes": 16,
+    "intro_zh": "本单元学习模仿人脑神经构造的学习模型——神经网络的运作机制（学习方法反向传播、决定输出的激活函数、以及陷阱过拟合），以及将其多层化、性能大幅提升的深度学习。它是 AI 与机器学习领域的核心，也是考试中频繁出现的重要主题。",
+    "intro_en": "In this unit you will learn how a neural network—a learning model that mimics the human brain's neurons—works (the backpropagation learning method, the activation function that decides the output, and overfitting, the common pitfall), and deep learning, which stacks these into many layers to dramatically boost performance. It is at the core of AI and machine learning and a frequently tested key topic on the exam."
+  },
+  "terms": [
+    {
+      "term": "ニューラルネットワーク",
+      "definition_jp": "人間の脳神経の仕組みをまねた、層状につながる学習モデル。",
+      "explanation_jp": "ニューラルネットワークは、脳の神経細胞(ニューロン)のつながりをまねて作られた数理モデルです。入力層・中間層(隠れ層)・出力層という層が結びつき、各つながりの「重み」を調整しながらデータの特徴を学習します。\n\n大量のデータを与えて重みを少しずつ更新することで、画像の分類や予測などができるようになります。試験では、AI・機械学習の代表的手法であること、脳神経を模した仕組みであること、そしてこれを多層化したものがディープラーニングである、という関係が問われます。",
+      "analogy_jp": "たくさんの人がリレー方式で情報を渡し合い、正解に近づくよう各人の「伝え方の強さ」を少しずつ調整していくチームのようなもの。",
+      "memory_hook_jp": "ニューラルネットワークといえば脳神経を模した層状の学習モデル",
+      "inline_quiz": [
+        "2020r02o-q019",
+        "2021r03-q003"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"入力層\"] --> B[\"中間層(隠れ層)\"]; B --> C[\"出力層\"]",
+        "svg_path": "figures/technology-13-35-u05-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "神经网络",
+      "term_en": "Neural Network",
+      "definition_zh": "模仿人脑神经构造、按层相连的学习模型。",
+      "definition_en": "A learning model connected in layers that imitates the structure of the human brain's neurons.",
+      "explanation_zh": "神经网络是模仿大脑神经细胞（神经元）之间连接而构建的数理模型。它由输入层、中间层（隐藏层）、输出层这些层相互连接，通过调整各连接的「权重」来学习数据的特征。\n\n给它大量数据、一点点更新权重，它就能完成图像分类、预测等任务。考试中常考的是：它是 AI 与机器学习的代表性方法、它是模仿脑神经的构造，以及把它多层化后就是深度学习这一关系。",
+      "explanation_en": "A neural network is a mathematical model built by imitating the connections between the brain's nerve cells (neurons). Layers called the input layer, the middle layer (hidden layer), and the output layer are linked together, and the network learns the features of data by adjusting the \"weight\" of each connection.\n\nBy feeding it large amounts of data and updating the weights bit by bit, it becomes able to classify images, make predictions, and so on. The exam asks that it is a representative method of AI and machine learning, that it is a structure modeled on the brain's neurons, and that stacking it into many layers gives deep learning.",
+      "analogy_zh": "就像许多人以接力方式传递信息，并为了更接近正确答案而一点点调整每个人「传递的强度」的团队。",
+      "analogy_en": "Like a team where many people pass information along in relay fashion, gradually adjusting each person's \"strength of delivery\" so the result gets closer to the correct answer.",
+      "memory_hook_zh": "说到神经网络，就是模仿脑神经的层状学习模型。",
+      "memory_hook_en": "Neural network → a layered learning model that mimics the brain's neurons."
+    },
+    {
+      "term": "バックプロパゲーション",
+      "definition_jp": "出力の誤差を逆向きに伝え、重みを調整する代表的な学習法。",
+      "explanation_jp": "バックプロパゲーション(誤差逆伝播法)は、ニューラルネットワークを学習させる代表的なアルゴリズムです。出力した答えと正解との「誤差」を、出力層から入力層へと逆向きにたどりながら、各つながりの重みを少しずつ修正していきます。\n\nこれを大量のデータで何度も繰り返すことで、ネットワークの予測精度が上がっていきます。試験では、ニューラルネットワークの学習に使われる手法であること、名前のとおり誤差を「後ろ向き(逆方向)」に伝えて重みを調整する点が問われます。",
+      "analogy_jp": "テストの採点結果を見て、どこで間違えたかを逆にたどり、原因となった勉強のやり方を一つずつ直していくようなものです。",
+      "memory_hook_jp": "バックプロパゲーションといえば誤差を逆向きに伝えて重みを調整",
+      "inline_quiz": [
+        "2026r08-q082"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "反向传播",
+      "term_en": "Backpropagation",
+      "definition_zh": "将输出的误差反向传递、调整权重的代表性学习方法。",
+      "definition_en": "A representative learning method that propagates the output error backward to adjust the weights.",
+      "explanation_zh": "反向传播（误差反向传播法）是训练神经网络的代表性算法。它把输出的答案与正确答案之间的「误差」从输出层往输入层反向回溯，一点点修正各连接的权重。\n\n用大量数据反复进行多次，网络的预测精度就会逐步提高。考试中常考的是：它是用于神经网络学习的方法，以及正如其名，它把误差「往后（反方向）」传递来调整权重这一点。",
+      "explanation_en": "Backpropagation (the error backpropagation method) is a representative algorithm for training neural networks. It traces the \"error\" between the output answer and the correct answer backward from the output layer to the input layer, correcting the weight of each connection little by little.\n\nBy repeating this many times with large amounts of data, the network's prediction accuracy improves. The exam asks that it is a method used for training neural networks and that, as its name suggests, it propagates the error \"backward (in the reverse direction)\" to adjust the weights.",
+      "analogy_zh": "就像看了考试的批改结果，反向追溯自己在哪里答错，再把导致错误的学习方法一处处改正过来。",
+      "analogy_en": "Like looking at the marked results of a test, tracing back where you went wrong, and fixing the study methods that caused each mistake one by one.",
+      "memory_hook_zh": "说到反向传播，就是把误差反向传递来调整权重。",
+      "memory_hook_en": "Backpropagation → propagate the error backward to adjust the weights."
+    },
+    {
+      "term": "活性関数",
+      "definition_jp": "ニューロンが受け取った値を、次へ渡す出力に変換する関数。",
+      "explanation_jp": "活性関数は、ニューラルネットワークの各ニューロンで、入力をまとめた値を「どんな出力にして次へ渡すか」を決める関数です。これによってネットワークは単純な比例関係を超えた、複雑なパターンを表現できるようになります。\n\n代表例にはシグモイド関数やReLU(ランプ関数)などがあります。試験では、活性関数がニューロンの出力を決める構成要素であること、ネットワークに非線形な表現力を与える役割を持つことを押さえておけば十分です。",
+      "analogy_jp": "受け取った情報の強さを見て「これは次の人に伝える/伝えない、どれくらいの強さで伝える」を決める、各担当者の判断ルールのようなものです。",
+      "memory_hook_jp": "活性関数といえばニューロンの出力を決める関数",
+      "inline_quiz": [
+        "2023r05-q091"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "激活函数",
+      "term_en": "Activation Function",
+      "definition_zh": "把神经元接收到的值转换为传给下一层的输出的函数。",
+      "definition_en": "A function that converts the value a neuron receives into the output it passes on to the next layer.",
+      "explanation_zh": "激活函数是在神经网络的每个神经元中，决定「把汇总后的输入变成怎样的输出再传给下一层」的函数。有了它，网络才能表达超越简单比例关系的复杂模式。\n\n代表例有 Sigmoid 函数、ReLU（线性整流函数）等。考试中只要掌握：激活函数是决定神经元输出的构成要素，以及它赋予网络非线性表现能力这一作用，就足够了。",
+      "explanation_en": "An activation function is the function in each neuron of a neural network that decides \"what output to produce from the combined input and pass on to the next layer.\" Thanks to it, the network can express complex patterns beyond a simple proportional relationship.\n\nRepresentative examples include the sigmoid function and ReLU (the rectified linear function). For the exam, it is enough to grasp that the activation function is a component that decides a neuron's output and that it gives the network nonlinear expressive power.",
+      "analogy_zh": "就像每位负责人的判断规则：看了接收到的信息强度，决定「这个要不要传给下一个人、以多大的强度传」。",
+      "analogy_en": "Like each handler's decision rule: looking at the strength of the information received, deciding \"whether to pass this on to the next person, and with how much strength.\"",
+      "memory_hook_zh": "说到激活函数，就是决定神经元输出的函数。",
+      "memory_hook_en": "Activation function → the function that decides a neuron's output."
+    },
+    {
+      "term": "過学習",
+      "definition_jp": "訓練データに適応しすぎ、未知データに対応できなくなる状態。",
+      "explanation_jp": "過学習(オーバーフィッティング)は、学習に使った訓練データに合わせすぎてしまい、新しい未知のデータではうまく予測できなくなる現象です。訓練データの細かな特徴やノイズまで覚え込み、本来求めたい「一般化(汎化)」の能力が落ちてしまいます。\n\n訓練データでは高精度なのにテストデータで精度が低い場合は過学習が疑われます。試験では、過学習が機械学習・ニューラルネットの落とし穴であること、データを増やす・モデルを単純にするなどで抑える、という対策の方向性が問われます。",
+      "analogy_jp": "過去問の答えだけを丸暗記してしまい、本番で少し言い回しが変わった問題に対応できなくなる受験生のような状態です。",
+      "memory_hook_jp": "過学習といえば訓練データに適応しすぎて未知データに弱くなる",
+      "inline_quiz": [
+        "2020r02o-q004"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "过拟合",
+      "term_en": "Overfitting",
+      "definition_zh": "过度适应训练数据，导致无法应对未知数据的状态。",
+      "definition_en": "A state in which the model adapts too much to the training data and can no longer handle unknown data.",
+      "explanation_zh": "过拟合是指过度迎合用于学习的训练数据，以致对新的未知数据无法很好地预测的现象。它把训练数据中细微的特征甚至噪声都记了下来，结果本应追求的「泛化」能力反而下降。\n\n如果在训练数据上精度很高、但在测试数据上精度很低，就要怀疑是过拟合。考试中常考的是：过拟合是机器学习、神经网络的陷阱，以及通过增加数据、简化模型等来抑制它这一对策方向。",
+      "explanation_en": "Overfitting is the phenomenon where the model fits the training data used for learning too closely and can no longer predict well on new, unknown data. It memorizes even the fine features and noise of the training data, so the \"generalization\" ability that is actually desired declines.\n\nIf accuracy is high on the training data but low on the test data, overfitting is suspected. The exam asks that overfitting is a pitfall of machine learning and neural networks and that countermeasures point in the direction of increasing the data or simplifying the model.",
+      "analogy_zh": "就像一个考生只把往年真题的答案死记硬背，结果在正式考试中遇到稍微改变了说法的题目就应付不了。",
+      "analogy_en": "Like a student who only rote-memorizes the answers to past exam questions and then can't handle a question on the real exam whose wording has changed slightly.",
+      "memory_hook_zh": "说到过拟合，就是过度适应训练数据、对未知数据变得脆弱。",
+      "memory_hook_en": "Overfitting → adapting too much to the training data and becoming weak on unknown data."
+    },
+    {
+      "term": "ディープラーニング",
+      "definition_jp": "中間層を多層化したニューラルネットワークによる機械学習手法。",
+      "explanation_jp": "ディープラーニング(深層学習)は、ニューラルネットワークの中間層(隠れ層)を何層も深く重ねた手法です。層を深くすることで、データから特徴を自動的に・段階的に抽出できるようになり、画像認識・音声認識・自然言語処理などで高い性能を発揮します。\n\nニューラルネットワークを多層化した発展形である、という関係が最重要ポイントです。試験では、ディープラーニングがAI・機械学習の代表的手法で、ニューラルネットワークの中間層を多層にしたものであること、人間が特徴を細かく指定しなくても学習できる点が問われます。",
+      "analogy_jp": "情報を受け渡す担当者の階層を何段も増やすことで、最初は線や点、次は形、最後は「猫」と、だんだん高度な見分けができるようになる組織のようなものです。",
+      "memory_hook_jp": "ディープラーニングといえば中間層を多層化したニューラルネットワーク",
+      "inline_quiz": [
+        "2019r01a-q021"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"入力層\"] --> B[\"中間層1\"]; B --> C[\"中間層2\"]; C --> D[\"中間層3\"]; D --> E[\"出力層\"]",
+        "svg_path": "figures/technology-13-35-u05-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "深度学习",
+      "term_en": "Deep Learning",
+      "definition_zh": "采用将中间层多层化的神经网络的机器学习方法。",
+      "definition_en": "A machine learning method that uses neural networks with their middle layers stacked into many layers.",
+      "explanation_zh": "深度学习是把神经网络的中间层（隐藏层）叠加许多层、加深而成的方法。把层加深后，就能从数据中自动、分阶段地提取特征，在图像识别、语音识别、自然语言处理等方面发挥出很高的性能。\n\n它是神经网络多层化的发展形态——这一关系是最重要的要点。考试中常考的是：深度学习是 AI 与机器学习的代表性方法、它是把神经网络的中间层多层化而成，以及无需人来细致指定特征也能学习这一点。",
+      "explanation_en": "Deep learning is a method that stacks the middle layers (hidden layers) of a neural network many layers deep. By making the layers deeper, it can automatically and step by step extract features from data, delivering high performance in image recognition, speech recognition, natural language processing, and more.\n\nThe most important point is the relationship that it is an advanced form of a neural network made multilayered. The exam asks that deep learning is a representative method of AI and machine learning, that it is a neural network with its middle layers made multilayered, and that it can learn without humans having to specify features in detail.",
+      "analogy_zh": "就像把传递信息的负责人层级增加好几级的组织：起初分辨线和点，接着分辨形状，最后能辨认出「猫」，逐步做出越来越高级的判别。",
+      "analogy_en": "Like an organization that adds many more tiers of handlers passing information along: at first it distinguishes lines and dots, then shapes, and finally \"a cat\"—gradually making more and more advanced distinctions.",
+      "memory_hook_zh": "说到深度学习，就是把中间层多层化的神经网络。",
+      "memory_hook_en": "Deep learning → a neural network with its middle layers stacked into many layers."
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "ニューラルネットワーク: ニューラルネットワークといえば脳神経を模した層状の学習モデル",
+      "バックプロパゲーション: バックプロパゲーションといえば誤差を逆向きに伝えて重みを調整",
+      "活性関数: 活性関数といえばニューロンの出力を決める関数",
+      "過学習: 過学習といえば訓練データに適応しすぎて未知データに弱くなる",
+      "ディープラーニング: ディープラーニングといえば中間層を多層化したニューラルネットワーク"
+    ],
+    "key_points_jp": [
+      "ニューラルネットワークは脳神経を模した学習モデルで、入力層・中間層・出力層が重みでつながる。",
+      "学習には誤差を逆向きに伝えて重みを調整するバックプロパゲーション(誤差逆伝播法)が使われる。",
+      "活性関数は各ニューロンの出力を決める構成要素で、ネットワークに複雑な表現力を与える。",
+      "過学習は訓練データに適応しすぎて未知データに対応できなくなる落とし穴で、汎化性能の低下に注意する。",
+      "ディープラーニングはニューラルネットワークの中間層を多層化した発展形で、特徴を自動抽出できる代表的AI手法。"
+    ],
+    "key_points_zh": [
+      "神经网络是模仿脑神经的学习模型，输入层、中间层、输出层通过权重相连。",
+      "学习采用把误差反向传递、调整权重的反向传播（误差反向传播法）。",
+      "激活函数是决定每个神经元输出的构成要素，赋予网络复杂的表现能力。",
+      "过拟合是过度适应训练数据、无法应对未知数据的陷阱，要警惕泛化性能下降。",
+      "深度学习是把神经网络中间层多层化的发展形态，能自动提取特征，是代表性的 AI 方法。"
+    ],
+    "key_points_en": [
+      "A neural network is a learning model that mimics the brain's neurons; the input, middle, and output layers are connected by weights.",
+      "Learning uses backpropagation (the error backpropagation method), which propagates the error backward to adjust the weights.",
+      "The activation function is a component that decides each neuron's output and gives the network complex expressive power.",
+      "Overfitting is a pitfall where the model adapts too much to the training data and can't handle unknown data; watch out for declining generalization performance.",
+      "Deep learning is an advanced form of a neural network with multilayered middle layers; it can automatically extract features and is a representative AI method."
+    ],
+    "memory_hooks_zh": [
+      "神经网络：说到神经网络，就是模仿脑神经的层状学习模型。",
+      "反向传播：说到反向传播，就是把误差反向传递来调整权重。",
+      "激活函数：说到激活函数，就是决定神经元输出的函数。",
+      "过拟合：说到过拟合，就是过度适应训练数据、对未知数据变得脆弱。",
+      "深度学习：说到深度学习，就是把中间层多层化的神经网络。"
+    ],
+    "memory_hooks_en": [
+      "Neural network: Neural network → a layered learning model that mimics the brain's neurons.",
+      "Backpropagation: Backpropagation → propagate the error backward to adjust the weights.",
+      "Activation function: Activation function → the function that decides a neuron's output.",
+      "Overfitting: Overfitting → adapting too much to the training data and becoming weak on unknown data.",
+      "Deep learning: Deep learning → a neural network with its middle layers stacked into many layers."
+    ]
+  },
+  "challenge_questions": [
+    "2022r04-q067",
+    "2023r05-q074",
+    "2024r06-q095",
+    "2025r07-q086"
+  ],
+  "source_figures": [],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "神经网络与深度学习",
+  "title_en": "Neural Networks and Deep Learning",
+  "unit_summary_zh": "学习神经网络的运作机制（学习方法、激活函数、过拟合），以及将其多层化而成的深度学习。",
+  "unit_summary_en": "Learn how neural networks work (learning method, activation function, overfitting) and the deep learning that stacks them into many layers."
+}

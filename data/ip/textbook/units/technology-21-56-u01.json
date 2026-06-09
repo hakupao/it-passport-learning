@@ -1,0 +1,302 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-21-56-u01",
+  "topic_id": "technology-21-56",
+  "category": "technology",
+  "title_jp": "データ操作の基本(挿入・更新と抽出の関係演算)",
+  "unit_summary_jp": "リレーショナルデータベースに対する基本的なデータ操作(行の挿入・更新)と、データ抽出を担う関係演算(選択・射影・結合)を一通り理解する。",
+  "order_in_topic": 1,
+  "prerequisites": [],
+  "overview": {
+    "intro_jp": "本ユニットでは、リレーショナルデータベースに対する基本的なデータ操作を学びます。まず行を書き込む「挿入」「更新」を押さえ、続いて目的のデータを取り出す関係演算「選択」「射影」「結合」を理解します。特に選択・射影・結合は試験で最頻出のテーマで、データ抽出の基礎として確実に区別できることが重要です。",
+    "freq_badge": "標準",
+    "est_minutes": 16,
+    "intro_zh": "在本单元中，我们将学习针对关系数据库的基本数据操作。首先掌握写入行的「插入」和「更新」，接着理解用于取出目标数据的关系运算「选择」「投影」「连接」。其中选择・投影・连接是考试中出现频率最高的主题，作为数据抽取的基础，能够确切地区分它们非常重要。",
+    "intro_en": "In this unit, you will learn the basic data operations performed on a relational database. First, you will master \"insert\" and \"update,\" which write rows; then you will understand the relational operations \"selection,\" \"projection,\" and \"join,\" which retrieve the data you want. Selection, projection, and join in particular are the most frequently tested topics on the exam, and as the foundation of data retrieval, being able to reliably tell them apart is essential."
+  },
+  "terms": [
+    {
+      "term": "挿入",
+      "definition_jp": "テーブルに新しい行(レコード)を1件追加するデータ操作。",
+      "explanation_jp": "挿入は、テーブルに新しい行を1件追加する書き込み操作です。例えば「社員」表に新しく入社した人の行を加えるのが挿入にあたります。SQLでは INSERT 文で行います。\n\nデータ操作の出発点で、まず行を挿入して初めて以降の更新や抽出が成立します。試験では、既存の行を書き換える「更新」や、行を取り出すだけの関係演算との違いが問われます。挿入は『行を新たに増やす』操作だと押さえましょう。",
+      "analogy_jp": "名簿に新しいメンバーの行を1行書き足すようなもの。すでにある行はそのままで、新しい行が下に増えていくイメージです。",
+      "memory_hook_jp": "挿入といえば新しい行を1件追加する",
+      "inline_quiz": [
+        "2013h25h-q061"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "插入",
+      "term_en": "Insert",
+      "definition_zh": "向表中追加一条新行（记录）的数据操作。",
+      "definition_en": "A data operation that adds one new row (record) to a table.",
+      "explanation_zh": "插入是向表中追加一条新行的写入操作。例如，在「员工」表中加入一个新入职者的行，就属于插入。在 SQL 中通过 INSERT 语句完成。\n\n它是数据操作的起点，只有先插入行，之后的更新或抽取才能成立。考试中常考查它与改写已有行的「更新」、以及仅取出行的关系运算之间的区别。请把插入掌握为『新增一行』的操作。",
+      "explanation_en": "Insert is a write operation that adds one new row to a table. For example, adding a row for a newly hired person to an \"Employees\" table is an insert. In SQL, it is done with the INSERT statement.\n\nIt is the starting point of data operations: only after a row has been inserted can subsequent updates or retrievals take place. The exam often asks how it differs from \"update,\" which rewrites an existing row, and from the relational operations that merely retrieve rows. Remember insert as the operation that \"adds a new row.\"",
+      "analogy_zh": "就像在名册里为新成员补写一行。已有的行保持不变，新的行会在下面逐渐增加。",
+      "analogy_en": "Like writing one extra line in a roster for a new member. The existing lines stay as they are, and the new line is added below them.",
+      "memory_hook_zh": "说到插入，就是追加一条新行",
+      "memory_hook_en": "Insert → add one new row"
+    },
+    {
+      "term": "更新",
+      "definition_jp": "テーブルの既存の行の値を別の値に書き換えるデータ操作。",
+      "explanation_jp": "更新は、すでにテーブルにある行の値を書き換える操作です。例えば「社員」表の住所が変わった人の住所欄を新しい値に直すのが更新です。SQLでは UPDATE 文で行います。\n\n挿入と同じ「書き込み系」の操作ですが、挿入が行を増やすのに対し、更新は行数を変えずに中身だけを変える点が違います。試験では、行を追加する挿入、行を取り出す抽出操作との区別が問われます。更新は『既存の値を書き換える』操作だと覚えましょう。",
+      "analogy_jp": "名簿で引っ越した人の住所欄だけを消しゴムで消して書き直すようなもの。行そのものは増えも減りもせず、中身だけが変わります。",
+      "memory_hook_jp": "更新といえば既存の行の値を書き換える",
+      "inline_quiz": [
+        "2013h25h-q067"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "更新",
+      "term_en": "Update",
+      "definition_zh": "把表中已有行的值改写为其他值的数据操作。",
+      "definition_en": "A data operation that rewrites the values of an existing row in a table to different values.",
+      "explanation_zh": "更新是改写表中已有行的值的操作。例如，把「员工」表里搬了家的人的地址栏改成新值，就是更新。在 SQL 中通过 UPDATE 语句完成。\n\n它和插入同属「写入类」操作，但插入是增加行，而更新不改变行数、只改变内容，这一点不同。考试中常考查它与追加行的插入、以及取出行的抽取操作之间的区别。请记住更新是『改写已有值』的操作。",
+      "explanation_en": "Update is the operation that rewrites the values of a row already in a table. For example, changing the address field of a person who has moved in the \"Employees\" table to a new value is an update. In SQL, it is done with the UPDATE statement.\n\nLike insert, it is a \"write\" operation, but whereas insert adds rows, update changes only the contents without changing the number of rows—that is the difference. The exam often asks how it differs from insert, which adds a row, and from the retrieval operations that take rows out. Remember update as the operation that \"rewrites existing values.\"",
+      "analogy_zh": "就像在名册里只把搬家者的地址栏用橡皮擦掉再重写。行本身既不增加也不减少，只有内容发生变化。",
+      "analogy_en": "Like erasing only the address field of someone who has moved in a roster and rewriting it. The row itself neither increases nor decreases; only its contents change.",
+      "memory_hook_zh": "说到更新，就是改写已有行的值",
+      "memory_hook_en": "Update → rewrite the value of an existing row"
+    },
+    {
+      "term": "選択",
+      "definition_jp": "条件に合う行(レコード)だけを取り出す関係演算。",
+      "explanation_jp": "選択は、テーブルから条件に合う行だけを抜き出す関係演算です。例えば「社員」表から『部署=営業』の行だけを取り出すのが選択です。横方向(行)で絞り込むイメージです。\n\n本トピックで最も出題が多い操作で、列を絞る「射影」とよく対比されます。試験では『行を絞る=選択』『列を絞る=射影』の違いが頻出です。SQLでは WHERE 句による絞り込みが選択に対応すると押さえておきましょう。",
+      "analogy_jp": "名簿から「営業部の人だけ」を指でなぞって行ごと抜き出すようなもの。気になる人の行だけを残し、ほかの行は除きます。",
+      "memory_hook_jp": "選択といえば条件に合う行を取り出す",
+      "inline_quiz": [
+        "2011h23tokubetsu-q059",
+        "2011h23tokubetsu-q062"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "选择",
+      "term_en": "Selection",
+      "definition_zh": "只取出符合条件的行（记录）的关系运算。",
+      "definition_en": "A relational operation that retrieves only the rows (records) that match a condition.",
+      "explanation_zh": "选择是从表中抽出符合条件的行的关系运算。例如，从「员工」表中只取出『部门=销售』的行，就是选择。可以想象成在横向（行）上进行筛选。\n\n它是本主题中出题最多的操作，常与缩减列的「投影」相对比。考试中常考『缩减行=选择』『缩减列=投影』的区别。请记住，在 SQL 中用 WHERE 子句进行的筛选对应选择。",
+      "explanation_en": "Selection is the relational operation that picks out only the rows matching a condition from a table. For example, retrieving only the rows where \"Department = Sales\" from the \"Employees\" table is selection. Think of it as narrowing down horizontally (by rows).\n\nIt is the most frequently tested operation in this topic and is often contrasted with \"projection,\" which narrows down columns. The exam frequently tests the distinction \"narrow rows = selection\" vs. \"narrow columns = projection.\" Keep in mind that in SQL, filtering with the WHERE clause corresponds to selection.",
+      "analogy_zh": "就像用手指在名册上顺着「只要销售部的人」整行抽取出来。只留下你关心的人所在的行，去掉其他的行。",
+      "analogy_en": "Like running your finger down a roster and pulling out whole rows for \"only the people in the Sales department.\" You keep the rows of the people you care about and remove the others.",
+      "memory_hook_zh": "说到选择，就是取出符合条件的行",
+      "memory_hook_en": "Selection → pick out the rows that match a condition"
+    },
+    {
+      "term": "射影",
+      "definition_jp": "指定した列(項目)だけを取り出す関係演算。",
+      "explanation_jp": "射影は、テーブルから必要な列だけを抜き出す関係演算です。例えば「社員」表から『氏名』と『部署』の列だけを取り出すのが射影です。縦方向(列)で絞り込むイメージです。\n\n行を絞る「選択」と対になる概念で、試験ではこの対比が頻出です。『選択=行を絞る(横方向)』『射影=列を絞る(縦方向)』とセットで覚えると区別しやすくなります。SQLでは SELECT 句で取り出す列の指定が射影に対応します。",
+      "analogy_jp": "名簿から「氏名と部署の列だけ」を縦に切り取るようなもの。すべての人の行は残しつつ、見たい項目の列だけを抜き出します。",
+      "memory_hook_jp": "射影といえば指定した列を取り出す",
+      "inline_quiz": [
+        "2009h21h-q093",
+        "2012h24h-q058"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "投影",
+      "term_en": "Projection",
+      "definition_zh": "只取出指定列（项目）的关系运算。",
+      "definition_en": "A relational operation that retrieves only the specified columns (fields).",
+      "explanation_zh": "投影是从表中抽出所需列的关系运算。例如，从「员工」表中只取出『姓名』和『部门』这两列，就是投影。可以想象成在纵向（列）上进行筛选。\n\n它与缩减行的「选择」是一对相对的概念，考试中常考查这一对比。把『选择=缩减行（横向）』『投影=缩减列（纵向）』成对记忆，更容易区分。在 SQL 中，用 SELECT 子句指定要取出的列对应投影。",
+      "explanation_en": "Projection is the relational operation that pulls out only the needed columns from a table. For example, retrieving only the \"Name\" and \"Department\" columns from the \"Employees\" table is projection. Think of it as narrowing down vertically (by columns).\n\nIt is the counterpart to \"selection,\" which narrows down rows, and this contrast is frequently tested. Memorizing them as a pair—\"selection = narrow rows (horizontal)\" and \"projection = narrow columns (vertical)\"—makes them easier to distinguish. In SQL, specifying which columns to retrieve in the SELECT clause corresponds to projection.",
+      "analogy_zh": "就像从名册中纵向地把「只要姓名和部门这两列」切下来。保留所有人的行，只抽出想看的项目所在的列。",
+      "analogy_en": "Like cutting out vertically \"only the Name and Department columns\" from a roster. You keep everyone's rows but extract only the columns of the fields you want to see.",
+      "memory_hook_zh": "说到投影，就是取出指定的列",
+      "memory_hook_en": "Projection → pick out the specified columns"
+    },
+    {
+      "term": "結合",
+      "definition_jp": "複数のテーブルを共通の項目でつなぎ1つの表として扱う関係演算。",
+      "explanation_jp": "結合は、複数のテーブルを共通の列(キー)を手がかりにつなぎ合わせ、1つの表のように扱う関係演算です。例えば「社員」表と「部署」表を共通の『部署コード』でつなぐと、社員ごとに部署名まで並べた表が得られます。\n\n単一の表で完結する選択・射影と違い、複数表をまたいでデータを取り出す応用操作です。試験では、選択・射影との役割の違いや、共通の項目をキーにして表をつなぐ点が問われます。結合は『複数の表をつなげる』操作だと押さえましょう。",
+      "analogy_jp": "社員名簿と部署一覧の2冊を、共通する「部署コード」を頼りに突き合わせ、1つの表にまとめるようなもの。別々の表の情報が1行につながります。",
+      "memory_hook_jp": "結合といえば複数の表を共通項目でつなぐ",
+      "inline_quiz": [
+        "2010h22a-q084",
+        "2010h22a-q087"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"社員表\"]; B[\"部署表\"]; A -->|\"部署コードで突き合わせ\"| C[\"結合した表\"]; B -->|\"部署コードで突き合わせ\"| C",
+        "svg_path": "figures/technology-21-56-u01-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "连接",
+      "term_en": "Join",
+      "definition_zh": "通过共同的项目把多张表连起来、当作一张表来处理的关系运算。",
+      "definition_en": "A relational operation that links multiple tables by a common field and treats them as a single table.",
+      "explanation_zh": "连接是以共同的列（键）为线索，把多张表连接起来、当作一张表来处理的关系运算。例如，把「员工」表和「部门」表用共同的『部门代码』连接起来，就能得到为每个员工排列出部门名称的表。\n\n与在单张表内即可完成的选择・投影不同，它是跨多张表取出数据的进阶操作。考试中常考它与选择・投影在作用上的区别，以及以共同项目为键把表连接起来这一点。请把连接掌握为『把多张表连起来』的操作。",
+      "explanation_en": "Join is the relational operation that links multiple tables using a common column (key) as a clue and treats them as a single table. For example, joining the \"Employees\" table and the \"Departments\" table by their common \"Department Code\" yields a table that lists the department name for each employee.\n\nUnlike selection and projection, which are complete within a single table, it is an advanced operation that retrieves data across multiple tables. The exam asks about how its role differs from selection and projection, and about how tables are linked using a common field as the key. Remember join as the operation that \"links multiple tables together.\"",
+      "analogy_zh": "就像把员工名册和部门一览这两本册子，以共同的「部门代码」为线索对照起来，整理成一张表。原本分开的表的信息在同一行里连接到了一起。",
+      "analogy_en": "Like matching up two booklets—the employee roster and the department list—using the common \"Department Code\" as a clue, and consolidating them into one table. Information from separate tables gets linked together in a single row.",
+      "memory_hook_zh": "说到连接，就是用共同项目把多张表连起来",
+      "memory_hook_en": "Join → link multiple tables by a common field"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "挿入: 挿入といえば新しい行を1件追加する",
+      "更新: 更新といえば既存の行の値を書き換える",
+      "選択: 選択といえば条件に合う行を取り出す",
+      "射影: 射影といえば指定した列を取り出す",
+      "結合: 結合といえば複数の表を共通項目でつなぐ"
+    ],
+    "key_points_jp": [
+      "データ操作は、行を書き込む「挿入・更新」と、データを取り出す関係演算「選択・射影・結合」に大別される。",
+      "挿入は行を新たに追加し、更新は既存の行の値を書き換える(行数は変えない)操作で、ともに書き込み系である。",
+      "選択は条件に合う『行』を絞り、射影は必要な『列』を絞る対の概念で、横方向(行)か縦方向(列)かが違い。",
+      "結合は複数のテーブルを共通の項目(キー)でつなぎ、1つの表として扱う応用的な抽出操作である。",
+      "本トピックでは選択・射影・結合の出題が多く、それぞれの違いを区別できることが重要。"
+    ],
+    "key_points_zh": [
+      "数据操作大致分为写入行的「插入・更新」和取出数据的关系运算「选择・投影・连接」两类。",
+      "插入是新增行，更新是改写已有行的值（不改变行数）；两者都属于写入类操作。",
+      "选择缩减符合条件的『行』，投影缩减所需的『列』，二者是一对概念，区别在于是横向（行）还是纵向（列）。",
+      "连接通过共同的项目（键）把多张表连起来、当作一张表来处理，是一种进阶的抽取操作。",
+      "本主题中选择・投影・连接的出题较多，能够区分它们各自的不同非常重要。"
+    ],
+    "key_points_en": [
+      "Data operations are broadly divided into \"insert/update,\" which write rows, and the relational operations \"selection/projection/join,\" which retrieve data.",
+      "Insert adds a new row, while update rewrites the value of an existing row (without changing the number of rows); both are write operations.",
+      "Selection narrows down the 'rows' that match a condition, while projection narrows down the needed 'columns'; they are a pair of concepts, differing in whether they work horizontally (rows) or vertically (columns).",
+      "Join links multiple tables by a common field (key) and treats them as a single table; it is an advanced retrieval operation.",
+      "In this topic, selection, projection, and join are frequently tested, so being able to distinguish what makes each of them different is essential."
+    ],
+    "memory_hooks_zh": [
+      "插入：说到插入，就是追加一条新行",
+      "更新：说到更新，就是改写已有行的值",
+      "选择：说到选择，就是取出符合条件的行",
+      "投影：说到投影，就是取出指定的列",
+      "连接：说到连接，就是用共同项目把多张表连起来"
+    ],
+    "memory_hooks_en": [
+      "Insert: insert → add one new row",
+      "Update: update → rewrite the value of an existing row",
+      "Selection: selection → pick out the rows that match a condition",
+      "Projection: projection → pick out the specified columns",
+      "Join: join → link multiple tables by a common field"
+    ]
+  },
+  "challenge_questions": [
+    "2014h26a-q099",
+    "2015h27a-q064",
+    "2016h28a-q074",
+    "2016h28h-q095",
+    "2017h29a-q060"
+  ],
+  "source_figures": [
+    {
+      "source": "question",
+      "question_id": "2013h25h-q061",
+      "figure_path": "figures/2013h25h-q061.png",
+      "figure_type": "table",
+      "figure_description": "「売上」表（伝票番号・顧客コード・売上金額）：H001-K01-40、H002-K02-80、H003-K03-120、H004-K04-70、H005-K01-20、H006-K02-50。「顧客」表（顧客コード・顧客名）：K01-井上花子、K02-佐藤太郎、K03-鈴木三郎、K04-田中梅子。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2013h25h-q067",
+      "figure_path": "figures/2013h25h-q067.png",
+      "figure_type": "table",
+      "figure_description": "「商品」表（商品番号・商品名・価格(円)）：S001-はさみ-200、S002-鉛筆-80、S003-ノート-120、S004-消しゴム-80、S005-定規-150。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23tokubetsu-q059",
+      "figure_path": "figures/2011h23tokubetsu-q059.png",
+      "figure_type": "table",
+      "figure_description": "社員表：社員番号（A0001〜A0008など）・氏名・部署名・勤務地・勤続年数の列を持つ関係データベースの表形式データ。高橋二郎を含む複数の社員レコードが記載されている。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23tokubetsu-q062",
+      "figure_path": "figures/2011h23tokubetsu-q062.png",
+      "figure_type": "table",
+      "figure_description": "2つの関係データベース表：（1）空港表：空港コード（F/A/K等）・空港名の列。（2）ダイヤ表：便名（IPA101等）・出発空港コード・到着空港コード・出発時刻・到着時刻・予約状況の列。F空港→K空港の最早到着便を求めるクエリに使用する。",
+      "group_id": null
+    },
+    {
+      "source": "group",
+      "question_id": "2009h21h-q093",
+      "figure_path": "figures/_groups/2009h21h-mqB.png",
+      "figure_type": "group_shared",
+      "figure_description": "図2 会員利用分析表のデータ構造 + 表 性別年代別利用者数一覧",
+      "group_id": "2009h21h-mqB"
+    },
+    {
+      "source": "question",
+      "question_id": "2012h24h-q058",
+      "figure_path": "figures/2012h24h-q058.png",
+      "figure_type": "table",
+      "figure_description": "商品コード・商品名・価格（円）・仕入先の4列からなる商品表。チョコレート・ケーキ・カステラ・リンゴ・イチゴ・メロン・ジュース・コーヒー・ビールの9品目が登録されている。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22a-q084",
+      "figure_path": "figures/2010h22a-q084.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22a-q087",
+      "figure_path": "figures/2010h22a-q087.png",
+      "figure_type": "diagram",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2014h26a-q099",
+      "figure_path": "figures/2014h26a-q099.png",
+      "figure_type": null,
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2015h27a-q064",
+      "figure_path": "figures/2015h27a-q064.png",
+      "figure_type": "table",
+      "figure_description": "入館履歴表（社員番号・建物コード・日付）と建物表（建物コード・建物名）の2テーブル。建物コード0001=中央館、0002=東館、0003=西館。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2016h28a-q074",
+      "figure_path": "figures/2016h28a-q074.png",
+      "figure_type": "table",
+      "figure_description": "「気温」テーブルのサンプルデータ（年・月・日・最高気温の列）。2011年1月〜2012年1月のレコードを含む。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2016h28h-q095",
+      "figure_path": "figures/2016h28h-q095.png",
+      "figure_type": "table",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2017h29a-q060",
+      "figure_path": "figures/2017h29a-q060.png",
+      "figure_type": "table",
+      "figure_description": "販売明細表（伝票番号・商品コード・売上数量）と商品表（商品コード・商品名）の二つの関係データベース表。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "数据操作的基础（插入・更新与抽取的关系运算）",
+  "title_en": "Basics of Data Operations (Insert/Update and the Relational Operations for Retrieval)",
+  "unit_summary_zh": "全面理解针对关系数据库的基本数据操作（行的插入・更新），以及负责数据抽取的关系运算（选择・投影・连接）。",
+  "unit_summary_en": "Gain a complete understanding of the basic data operations on a relational database (inserting and updating rows) and the relational operations responsible for data retrieval (selection, projection, and join)."
+}

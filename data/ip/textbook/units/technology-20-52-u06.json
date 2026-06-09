@@ -1,0 +1,268 @@
+{
+  "schema_version": "stage4-unit-v1-trilingual",
+  "unit_id": "technology-20-52-u06",
+  "topic_id": "technology-20-52",
+  "category": "technology",
+  "title_jp": "データ圧縮の方式と特徴",
+  "unit_summary_jp": "可逆/非可逆の区別と圧縮率、代表的な圧縮アルゴリズムを横断的に理解する。",
+  "order_in_topic": 6,
+  "prerequisites": [
+    "technology-20-52-u02",
+    "technology-20-52-u04",
+    "technology-20-52-u05"
+  ],
+  "overview": {
+    "intro_jp": "本ユニットでは、データ量を小さくする「圧縮」を、メディア種別に依存しない抽象概念として横断的に学びます。汎用形式ZIP、効果を測る圧縮率、元に戻せる可逆/戻せない非可逆の区分、代表アルゴリズムのランレングス法・ハフマン法を扱います。圧縮率の計算や可逆/非可逆の使い分けは試験で頻出です。",
+    "freq_badge": "低頻",
+    "est_minutes": 18,
+    "intro_zh": "在本单元中，我们将把缩小数据量的「压缩」作为一个不依赖媒体种类的抽象概念来横向学习。内容包括通用格式 ZIP、用来衡量效果的压缩率、能还原回去的无损压缩与无法还原的有损压缩之分，以及具有代表性的算法——游程编码法和哈夫曼编码法。压缩率的计算以及无损/有损的区分使用在考试中频繁出现。",
+    "intro_en": "In this unit, we study \"compression\"—reducing the amount of data—as an abstract concept that does not depend on the type of media, taking a cross-cutting view. We cover the general-purpose format ZIP, the compression ratio that measures effectiveness, the distinction between lossless compression (which can be restored to the original) and lossy compression (which cannot), and the representative algorithms run-length encoding and Huffman coding. Calculating the compression ratio and choosing between lossless and lossy compression appear frequently on the exam."
+  },
+  "terms": [
+    {
+      "term": "ZIP",
+      "definition_jp": "複数ファイルをまとめて可逆圧縮できる代表的なファイル形式。",
+      "explanation_jp": "ZIPは、文書や画像など複数のファイルを1つにまとめ、サイズを小さく圧縮できる広く普及した形式です。圧縮しても元のデータを完全に復元できる可逆圧縮なので、プログラムや文書など1ビットも欠けてはいけないデータの保存・送信に使われます。\n\n画像・音声・動画のように内容ごとに専用形式を使う圧縮(JPEGやMP3など)と違い、ZIPは中身の種類を問わず使える汎用形式である点が特徴です。試験では、ZIPが可逆圧縮で、ファイルをまとめて小さくする形式だと押さえておけば十分です。",
+      "analogy_jp": "かさばる衣類を圧縮袋に入れて空気を抜き、小さくまとめて運ぶようなもの。袋から出せば元どおりに戻り、中身が衣類でも書類でも種類を問いません。",
+      "memory_hook_jp": "ZIPといえば複数ファイルをまとめる汎用の可逆圧縮形式",
+      "inline_quiz": [
+        "2012h24a-q096"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "ZIP",
+      "term_en": "ZIP",
+      "definition_zh": "能够将多个文件打包并进行无损压缩的具有代表性的文件格式。",
+      "definition_en": "A representative file format that can bundle multiple files together and compress them losslessly.",
+      "explanation_zh": "ZIP 是一种广泛普及的格式，它能把文档、图像等多个文件合并成一个，并将其压缩得更小。由于即使压缩后也能完全还原原始数据，属于无损压缩，因此被用于保存和传输程序、文档等一个比特都不能缺失的数据。\n\n与图像、音频、视频那样针对各自内容使用专用格式的压缩（如 JPEG、MP3 等）不同，ZIP 的特点在于它是一种不限内容种类、通用可用的格式。在考试中，只要记住 ZIP 是无损压缩、是把文件打包并缩小的格式，就足够了。",
+      "explanation_en": "ZIP is a widely used format that can merge multiple files—such as documents and images—into one and compress them to a smaller size. Because the original data can be fully restored even after compression, it is lossless compression, so it is used for storing and sending data where not a single bit may be lost, such as programs and documents.\n\nUnlike compression that uses a dedicated format for each kind of content—such as images, audio, and video (for example JPEG or MP3)—ZIP is characterized by being a general-purpose format usable regardless of the type of content. For the exam, it is enough to remember that ZIP is lossless compression and a format that bundles files together and makes them smaller.",
+      "analogy_zh": "就像把占地方的衣物装进压缩袋抽掉空气、收得小小的再搬运一样。从袋里取出后就能恢复原状，而且不管里面装的是衣物还是文件都一样适用。",
+      "analogy_en": "It is like putting bulky clothes into a vacuum compression bag, sucking out the air, packing them small, and carrying them. Once you take them out of the bag they return to their original state, and it works whether the contents are clothes or documents.",
+      "memory_hook_zh": "说到 ZIP，就是把多个文件打包的通用无损压缩格式",
+      "memory_hook_en": "ZIP → the general-purpose lossless format that bundles multiple files together"
+    },
+    {
+      "term": "圧縮率",
+      "definition_jp": "圧縮によってデータ量がどれだけ小さくなったかを表す指標。",
+      "explanation_jp": "圧縮率は、圧縮の効果を測るものさしです。一般に「圧縮後のサイズ ÷ 圧縮前のサイズ」で表し、例えば100MBが20MBになれば圧縮率20%(=5分の1)となります。値が小さいほどよく縮んだことを意味します。\n\n試験では、圧縮前後のサイズから圧縮率を計算させる問題や、可逆圧縮より非可逆圧縮のほうが高い圧縮効果(より小さくできる)を得やすい、といった比較が問われます。なお「圧縮率」という語は文脈によって縮んだ割合を指す場合もあり、設問の定義に沿って読み取ることが大切です。",
+      "analogy_jp": "旅行カバンに荷物を詰め直して、元の半分の大きさにできたら「半分に縮んだ」と言うようなもの。どれだけコンパクトにできたかの度合いを表します。",
+      "memory_hook_jp": "圧縮率といえば圧縮後÷圧縮前で測る縮み具合",
+      "inline_quiz": [
+        "2012h24a-q094"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "压缩率",
+      "term_en": "Compression ratio",
+      "definition_zh": "表示通过压缩使数据量缩小了多少的指标。",
+      "definition_en": "An indicator that shows how much the amount of data has been reduced through compression.",
+      "explanation_zh": "压缩率是衡量压缩效果的尺子。一般用「压缩后的大小 ÷ 压缩前的大小」来表示，例如 100MB 变成 20MB，则压缩率为 20%（＝五分之一）。数值越小，表示缩得越好。\n\n在考试中，会出现根据压缩前后的大小计算压缩率的题目，或是诸如「有损压缩比无损压缩更容易获得高压缩效果（能缩得更小）」这类比较。需要注意的是，「压缩率」一词在不同语境下有时也指缩小的比例，因此重要的是按照题目给出的定义来理解。",
+      "explanation_en": "The compression ratio is a yardstick for measuring how effective compression is. It is generally expressed as \"size after compression ÷ size before compression\"; for example, if 100MB becomes 20MB, the compression ratio is 20% (= one-fifth). The smaller the value, the more it has shrunk.\n\nOn the exam, you may be asked to calculate the compression ratio from the sizes before and after compression, or to make comparisons such as \"lossy compression tends to achieve a higher compression effect (can make data smaller) than lossless compression.\" Note that the term \"compression ratio\" can, depending on context, also refer to the proportion by which the data shrank, so it is important to read it according to the definition given in the question.",
+      "analogy_zh": "就像把行李重新塞进旅行箱后，体积能缩到原来的一半，就说「缩小了一半」一样。它表示的是能压缩得多紧凑的程度。",
+      "analogy_en": "It is like repacking luggage into a suitcase so that it becomes half its original size and saying \"it shrank to half.\" It expresses the degree to which something could be made compact.",
+      "memory_hook_zh": "说到压缩率，就是用「压缩后÷压缩前」来衡量的缩小程度",
+      "memory_hook_en": "Compression ratio → the degree of shrinkage measured by after ÷ before"
+    },
+    {
+      "term": "可逆圧縮",
+      "definition_jp": "圧縮前のデータを完全に元どおり復元できる圧縮方式。",
+      "explanation_jp": "可逆圧縮は、圧縮したデータを伸長(解凍)すると、1ビットの誤差もなく元のデータへ戻せる方式です。情報を一切捨てないため、プログラム・文書・表計算データなど、欠けると困るデータに使われます。ZIPやPNG、GIFが代表例です。\n\nその代わり、情報を捨てない分だけ圧縮できる限界があり、非可逆圧縮ほど小さくはできません。試験では、非可逆圧縮との対比で「完全に元に戻せるのが可逆」「戻せない代わりに高く縮むのが非可逆」と区別すること、そして用途(可逆=文書・プログラム)を判断できることが重要です。",
+      "analogy_jp": "折り紙をきれいに折りたたんで小さくし、開けば完全に元の一枚に戻るようなもの。折る前と開いた後で、紙はまったく同じ状態です。",
+      "memory_hook_jp": "可逆圧縮といえば完全に元へ戻せる圧縮",
+      "inline_quiz": [
+        "2010h22a-q085"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph TD; A[\"データ圧縮\"]; A --> B[\"可逆圧縮\"]; A --> C[\"非可逆圧縮\"]; B --> D[\"完全に復元できる\"]; B --> E[\"例 ZIP PNG GIF\"]; C --> F[\"一部情報を捨てる\"]; C --> G[\"例 JPEG MP3 MPEG\"]",
+        "svg_path": "figures/technology-20-52-u06-t01.svg",
+        "rendered": true
+      },
+      "term_zh": "无损压缩",
+      "term_en": "Lossless compression",
+      "definition_zh": "能够将压缩前的数据完整无误地还原回去的压缩方式。",
+      "definition_en": "A compression method that can restore the data to exactly its original state before compression.",
+      "explanation_zh": "无损压缩是一种把压缩后的数据进行解压（解压缩）后，能毫无误差地还原成原始数据的方式。由于完全不丢弃任何信息，因此被用于程序、文档、电子表格数据等一旦缺失就会出问题的数据。ZIP、PNG、GIF 是其代表例子。\n\n作为代价，正因为不丢弃信息，它的压缩能力有上限，无法像有损压缩那样缩得很小。在考试中，重要的是要在与有损压缩的对比中区分出「能完全还原的是无损」「不能还原但能高度压缩的是有损」，并且能判断其用途（无损＝文档、程序）。",
+      "explanation_en": "Lossless compression is a method in which, when the compressed data is decompressed (extracted), it can be returned to the original data without a single bit of error. Because it discards no information at all, it is used for data that causes problems when lost, such as programs, documents, and spreadsheet data. ZIP, PNG, and GIF are representative examples.\n\nIn exchange, precisely because it discards no information, there is a limit to how much it can compress, and it cannot make data as small as lossy compression can. On the exam, it is important to distinguish, in contrast with lossy compression, that \"lossless can be restored completely\" while \"lossy cannot be restored but shrinks more,\" and to be able to judge their uses (lossless = documents, programs).",
+      "analogy_zh": "就像把折纸整整齐齐地折小，展开后又能完全恢复成原来的一张纸一样。折之前和展开之后，纸张处于完全相同的状态。",
+      "analogy_en": "It is like folding origami neatly to make it small, then unfolding it to return completely to the original single sheet. Before folding and after unfolding, the paper is in exactly the same state.",
+      "memory_hook_zh": "说到无损压缩，就是能完全还原回去的压缩",
+      "memory_hook_en": "Lossless compression → compression you can restore back completely"
+    },
+    {
+      "term": "非可逆圧縮",
+      "definition_jp": "一部の情報を捨てて圧縮し、完全には元へ戻せない圧縮方式。",
+      "explanation_jp": "非可逆圧縮は、人間が気づきにくい情報を意図的に捨てることで、データを大きく縮める方式です。捨てた情報は復元できないため元データには完全には戻りませんが、その分だけ可逆圧縮より高い圧縮効果が得られます。JPEG(静止画)、MP3(音声)、MPEG(動画)が代表例です。\n\n画像・音声・動画のように多少の劣化が許されるメディアに向く一方、プログラムや文書には使えません。試験では、可逆圧縮との違い(戻せない代わりに小さくできる)と、JPEG・MP3・MPEGが非可逆だと結び付けられることが問われます。",
+      "analogy_jp": "似顔絵を描くとき、細かいしわや産毛を省いて特徴だけを残すようなもの。ぐっと簡潔になりますが、省いた細部は二度と描き戻せません。",
+      "memory_hook_jp": "非可逆圧縮といえば情報を捨てて高く縮めるJPEG・MP3",
+      "inline_quiz": [
+        "2009h21h-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null,
+      "term_zh": "有损压缩",
+      "term_en": "Lossy compression",
+      "definition_zh": "丢弃一部分信息来进行压缩、无法完整还原回去的压缩方式。",
+      "definition_en": "A compression method that discards some information to compress data and cannot restore it completely to the original.",
+      "explanation_zh": "有损压缩是一种通过有意丢弃人类不易察觉的信息，从而大幅缩小数据的方式。被丢弃的信息无法还原，因此无法完全恢复成原始数据，但作为交换，它能获得比无损压缩更高的压缩效果。JPEG（静态图像）、MP3（音频）、MPEG（视频）是其代表例子。\n\n它适合图像、音频、视频这类允许有一定程度劣化的媒体，但无法用于程序或文档。在考试中，会考查它与无损压缩的区别（不能还原但能缩得更小），以及能否将 JPEG、MP3、MPEG 与有损压缩联系起来。",
+      "explanation_en": "Lossy compression is a method that greatly shrinks data by intentionally discarding information that humans are unlikely to notice. The discarded information cannot be restored, so the data cannot be returned completely to the original; in exchange, it achieves a higher compression effect than lossless compression. JPEG (still images), MP3 (audio), and MPEG (video) are representative examples.\n\nIt suits media where some degradation is acceptable—such as images, audio, and video—but it cannot be used for programs or documents. On the exam, you are asked about its difference from lossless compression (it cannot be restored but can be made smaller) and whether you can associate JPEG, MP3, and MPEG with being lossy.",
+      "analogy_zh": "就像画肖像画时，省略掉细小的皱纹和汗毛，只保留特征一样。画面一下子变得简洁，但省略掉的细节再也无法补画回去。",
+      "analogy_en": "It is like drawing a portrait where you omit fine wrinkles and tiny hairs and keep only the features. It becomes much simpler, but the omitted details can never be drawn back in.",
+      "memory_hook_zh": "说到有损压缩，就是丢弃信息来高度压缩的 JPEG、MP3",
+      "memory_hook_en": "Lossy compression → discards information to shrink a lot, like JPEG and MP3"
+    },
+    {
+      "term": "ランレングス法",
+      "definition_jp": "同じ値の連続を「値と連続数」に置き換える可逆圧縮の手法。",
+      "explanation_jp": "ランレングス法は、同じデータが連続して並ぶ部分を「その値が何個続くか」という形にまとめて短くする可逆圧縮の手法です。例えば「AAAAA」を「A5」と表せば、5文字が2文字で済みます。\n\n同じ色が広い面積で続くFAX画像やイラストなどでは大きく縮みますが、値が頻繁に変わるデータでは効果が薄く、かえって増えることもあります。試験では、連続の繰り返しをまとめる仕組みである点、可逆圧縮に分類される点、そして「AAAB」のような短い例を圧縮するとどうなるかが問われます。",
+      "analogy_jp": "出席を取るとき「太郎、太郎、太郎」と3回言う代わりに「太郎が3人」とまとめて言うようなもの。同じものの繰り返しを回数で短く言い換えます。",
+      "memory_hook_jp": "ランレングス法といえば連続を「値と個数」でまとめる",
+      "inline_quiz": [
+        "2012h24a-q095"
+      ],
+      "inline_fallback": false,
+      "figure": {
+        "mermaid": "graph LR; A[\"AAAAABBB\"] --> B[\"連続をまとめる\"]; B --> C[\"A5B3\"]",
+        "svg_path": "figures/technology-20-52-u06-t02.svg",
+        "rendered": true
+      },
+      "term_zh": "游程编码法",
+      "term_en": "Run-length encoding",
+      "definition_zh": "把相同值的连续部分替换为「值和连续个数」的无损压缩手法。",
+      "definition_en": "A lossless compression technique that replaces a run of identical values with \"the value and the number of repetitions.\"",
+      "explanation_zh": "游程编码法是一种无损压缩手法，它把相同数据连续排列的部分，归纳成「该值连续出现了几个」的形式来缩短。例如把「AAAAA」表示为「A5」，原本 5 个字符就只需 2 个字符。\n\n对于像传真图像或插画那样同一种颜色在大面积上连续出现的数据，能大幅缩小；但对于值频繁变化的数据，效果就很弱，甚至可能反而变大。在考试中，会考查它是把连续的重复归纳起来的机制这一点、它被归类为无损压缩这一点，以及压缩像「AAAB」这样的短例子会得到什么结果。",
+      "explanation_en": "Run-length encoding is a lossless compression technique that shortens data by summarizing parts where identical data are lined up consecutively into the form \"how many of that value occur in a row.\" For example, expressing \"AAAAA\" as \"A5\" means 5 characters take only 2 characters.\n\nFor data where the same color continues over a large area—such as fax images or illustrations—it shrinks greatly; but for data whose values change frequently, the effect is weak and it may even grow larger instead. On the exam, you are asked about the point that it is a mechanism for summarizing consecutive repetitions, the point that it is classified as lossless compression, and what result you get when compressing a short example like \"AAAB.\"",
+      "analogy_zh": "就像点名时，不说三遍「太郎、太郎、太郎」，而是归纳成「太郎有 3 个」一样。把相同事物的重复用次数来简短地换个说法。",
+      "analogy_en": "It is like taking attendance and, instead of saying \"Taro, Taro, Taro\" three times, summarizing it as \"three Taros.\" You restate the repetition of the same thing more briefly using a count.",
+      "memory_hook_zh": "说到游程编码法，就是用「值和个数」来归纳连续",
+      "memory_hook_en": "Run-length encoding → summarize a run as \"value and count\""
+    },
+    {
+      "term": "ハフマン法",
+      "definition_jp": "出現頻度の高いデータに短い符号を割り当てる可逆圧縮の手法。",
+      "explanation_jp": "ハフマン法は、よく出てくるデータほど短い符号(ビット列)を、めったに出ないデータほど長い符号を割り当てることで、全体のデータ量を減らす可逆圧縮の手法です。頻度の偏りを利用して効率よく縮めます。\n\nすべての文字を同じ長さで表す方式に比べ、頻度差があるほど圧縮効果が高くなります。ランレングス法と並ぶ代表的な可逆圧縮アルゴリズムで、試験では「出現頻度の高いものに短い符号を割り当てる」という考え方そのものが問われます。",
+      "analogy_jp": "よく使う言葉ほど短い略語にするようなもの。「了解」を「り」と短く、めったに使わない長い言い回しはそのまま残し、全体の手間を減らします。",
+      "memory_hook_jp": "ハフマン法といえば高頻度ほど短い符号を割り当てる",
+      "inline_quiz": [
+        "2011h23a-q089"
+      ],
+      "inline_fallback": true,
+      "figure": null,
+      "term_zh": "哈夫曼编码法",
+      "term_en": "Huffman coding",
+      "definition_zh": "给出现频率高的数据分配较短编码的无损压缩手法。",
+      "definition_en": "A lossless compression technique that assigns shorter codes to data that appear more frequently.",
+      "explanation_zh": "哈夫曼编码法是一种无损压缩手法，它给越常出现的数据分配越短的编码（比特串），给越少出现的数据分配越长的编码，从而减少整体的数据量。它利用频率的不均衡来高效地压缩。\n\n与把所有字符都用相同长度表示的方式相比，频率差异越大，压缩效果越高。它与游程编码法并列，是具有代表性的无损压缩算法。在考试中，会考查「给出现频率高的分配较短编码」这一思路本身。",
+      "explanation_en": "Huffman coding is a lossless compression technique that reduces the overall amount of data by assigning shorter codes (bit strings) to data that appear more often and longer codes to data that appear rarely. It compresses efficiently by exploiting the bias in frequency.\n\nCompared with a method that represents every character with the same length, the greater the difference in frequency, the higher the compression effect. Alongside run-length encoding, it is a representative lossless compression algorithm, and on the exam the very idea of \"assigning shorter codes to those that appear more frequently\" is tested.",
+      "analogy_zh": "就像越常用的词就缩成越短的简称一样。把「了解」简短成「了」，而很少用的冗长说法则原样保留，从而减少整体的工夫。",
+      "analogy_en": "It is like turning words you use often into shorter abbreviations. You shorten \"understood\" to \"OK,\" while leaving long phrasings you rarely use as they are, reducing the overall effort.",
+      "memory_hook_zh": "说到哈夫曼编码法，就是频率越高分配越短的编码",
+      "memory_hook_en": "Huffman coding → the more frequent, the shorter the assigned code"
+    }
+  ],
+  "summary": {
+    "memory_hooks_jp": [
+      "ZIP: ZIPといえば複数ファイルをまとめる汎用の可逆圧縮形式",
+      "圧縮率: 圧縮率といえば圧縮後÷圧縮前で測る縮み具合",
+      "可逆圧縮: 可逆圧縮といえば完全に元へ戻せる圧縮",
+      "非可逆圧縮: 非可逆圧縮といえば情報を捨てて高く縮めるJPEG・MP3",
+      "ランレングス法: ランレングス法といえば連続を「値と個数」でまとめる",
+      "ハフマン法: ハフマン法といえば高頻度ほど短い符号を割り当てる"
+    ],
+    "key_points_jp": [
+      "圧縮はメディア種別に依存しない抽象概念で、ZIPは中身を問わずまとめて縮める汎用の可逆圧縮形式。",
+      "圧縮率は圧縮効果を測る指標で、おおむね「圧縮後÷圧縮前」で表し、圧縮前後のサイズから計算できる。",
+      "圧縮は完全復元できる可逆圧縮(ZIP・PNG・GIF、文書やプログラム向き)と、復元できないが高く縮む非可逆圧縮(JPEG・MP3・MPEG、画像・音声・動画向き)に大別される。",
+      "ランレングス法は同じ値の連続を「値と個数」にまとめる可逆手法で、繰り返しの多いデータに有効。",
+      "ハフマン法は出現頻度の高いデータに短い符号を割り当てる可逆手法で、頻度の偏りが大きいほど効果が高い。"
+    ],
+    "key_points_zh": [
+      "压缩是一个不依赖媒体种类的抽象概念，ZIP 是不限内容、把文件打包缩小的通用无损压缩格式。",
+      "压缩率是衡量压缩效果的指标，大致用「压缩后÷压缩前」来表示，可由压缩前后的大小计算得出。",
+      "压缩大致分为能完全还原的无损压缩（ZIP、PNG、GIF，适合文档和程序）和虽不能还原但能高度压缩的有损压缩（JPEG、MP3、MPEG，适合图像、音频、视频）。",
+      "游程编码法是把相同值的连续部分归纳成「值和个数」的无损手法，对重复较多的数据有效。",
+      "哈夫曼编码法是给出现频率高的数据分配较短编码的无损手法，频率偏差越大效果越高。"
+    ],
+    "key_points_en": [
+      "Compression is an abstract concept that does not depend on the type of media, and ZIP is a general-purpose lossless format that bundles files together and shrinks them regardless of their content.",
+      "The compression ratio is an indicator of how effective compression is, roughly expressed as \"after ÷ before,\" and can be calculated from the sizes before and after compression.",
+      "Compression is broadly divided into lossless compression that can be fully restored (ZIP, PNG, GIF; suited to documents and programs) and lossy compression that cannot be restored but shrinks greatly (JPEG, MP3, MPEG; suited to images, audio, and video).",
+      "Run-length encoding is a lossless technique that summarizes a run of identical values into \"value and count,\" and is effective for data with many repetitions.",
+      "Huffman coding is a lossless technique that assigns shorter codes to data that appear more frequently, and the greater the bias in frequency, the higher its effect."
+    ],
+    "memory_hooks_zh": [
+      "ZIP：说到 ZIP，就是把多个文件打包的通用无损压缩格式",
+      "压缩率：说到压缩率，就是用「压缩后÷压缩前」来衡量的缩小程度",
+      "无损压缩：说到无损压缩，就是能完全还原回去的压缩",
+      "有损压缩：说到有损压缩，就是丢弃信息来高度压缩的 JPEG、MP3",
+      "游程编码法：说到游程编码法，就是用「值和个数」来归纳连续",
+      "哈夫曼编码法：说到哈夫曼编码法，就是频率越高分配越短的编码"
+    ],
+    "memory_hooks_en": [
+      "ZIP: ZIP → the general-purpose lossless format that bundles multiple files together",
+      "Compression ratio: Compression ratio → the degree of shrinkage measured by after ÷ before",
+      "Lossless compression: Lossless compression → compression you can restore back completely",
+      "Lossy compression: Lossy compression → discards information to shrink a lot, like JPEG and MP3",
+      "Run-length encoding: Run-length encoding → summarize a run as \"value and count\"",
+      "Huffman coding: Huffman coding → the more frequent, the shorter the assigned code"
+    ]
+  },
+  "challenge_questions": [
+    "2011h23a-q090",
+    "2011h23a-q092",
+    "2012h24h-q064",
+    "2013h25a-q061",
+    "2013h25h-q079"
+  ],
+  "source_figures": [
+    {
+      "source": "group",
+      "question_id": "2012h24a-q096",
+      "figure_path": "figures/_groups/2012h24a-mqC.png",
+      "figure_type": "group_shared",
+      "figure_description": "図1 8×8画素の白黒の画像例 / 図2 図1の画像データのビット列による表現",
+      "group_id": "2012h24a-mqC"
+    },
+    {
+      "source": "question",
+      "question_id": "2010h22a-q085",
+      "figure_path": "figures/2010h22a-q085.png",
+      "figure_type": "diagram",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23a-q089",
+      "figure_path": "figures/2011h23a-q089.png",
+      "figure_type": "diagram",
+      "figure_description": null,
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23a-q090",
+      "figure_path": "figures/2011h23a-q090.png",
+      "figure_type": "diagram",
+      "figure_description": "図2: 数字の「1」を白黒 7×7 画素で表したディジタル画像。",
+      "group_id": null
+    },
+    {
+      "source": "question",
+      "question_id": "2011h23a-q092",
+      "figure_path": "figures/2011h23a-q092.png",
+      "figure_type": "diagram",
+      "figure_description": "図4: 三つのディジタル画像（画像①②③）。各画像は白黒の7×7マスのパターンで、チェッカーボード状のさまざまなパターンを示す。",
+      "group_id": null
+    }
+  ],
+  "lang_status": {
+    "jp": "generated",
+    "zh": "generated",
+    "en": "generated"
+  },
+  "title_zh": "数据压缩的方式与特点",
+  "title_en": "Data Compression Methods and Characteristics",
+  "unit_summary_zh": "横向理解无损/有损的区别、压缩率以及具有代表性的压缩算法。",
+  "unit_summary_en": "Gain a cross-cutting understanding of the distinction between lossless and lossy compression, the compression ratio, and the representative compression algorithms."
+}
