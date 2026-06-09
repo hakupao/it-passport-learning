@@ -58,3 +58,50 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 
 パイロット品質 = Rule A 100% accurate / Rule D 99% PASS / UI 三語動作 / build・nft・tests green。
 → **残 28 回 / 2800 問のスケールはユーザー GO**。スケール時は各回バッチで同パイプライン + 各回 Rule A N-sample。
+
+---
+
+# スケール バッチ S88 (Session 88, 2026-06-09) — `2026r08` / `2024r06` / `2023r05`
+
+> ユーザー路由「Quiz Phase 1 续批」→ 最新優先 3 回 (既訳 2025r07 除外)。pilot 後の初回スケール。
+> 効率化: translate を 300 問**統合 1 ワークフロー**で実行 (id グローバル一意のため merge は exam スコープで安全)。committed sidecar は per-exam (tested フォーマット維持)。
+
+## 何をしたか
+パイプラインは pilot と同一 (prep → translate.workflow → merge → ruleA-prep → ruleA.workflow)。
+- prep ×3 (figure PNG 存在 fail-fast 検証 → 全存在)、統合 input `input_batch_S88.json` (300 問・id 全一意・整合 0 bad)。
+- translate 統合ワークフロー (`wf_1024ac47-207`): 300 問、writer(general-purpose,opus) → reviewer(code-reviewer,opus) 2R。**658 agent / 16.9M tok**。
+  - 途中ユーザー要請で 200 done 付近 (batch-tr=211) で一旦停止 → `resumeFromRunId` でキャッシュ再利用し残 89 問を完走 (resume の実証)。
+- merge ×3 → committed sidecar `translations/{2026r08,2024r06,2023r05}.json` (各 100/100、missing 0)。
+- ruleA-prep ×3 (各 N=12、層化) → 統合 audit ワークフロー (`wf_cb730e23-47b`、36 critic、independent)。
+
+## 結果
+
+### 翻訳カバレッジ
+- **300/300 翻訳 (0 欠落)**。clean stem: 2026r08=48 / 2024r06=39 / 2023r05=56 (計 143)。
+
+### Rule D (in-pipeline reviewer = code-reviewer, ≠ translator)
+- **298 PASS / 2 CONCERNS** (意味保持、軽微)。多数の CONCERNS→PASS repair (1R)。
+
+### Rule A (独立 critic, N=36 [各回12, 層化 figure21])
+- 原監査: **accurate 35/36**、severity none19 / low16 / **high1**。
+- **high 1 = `2026r08-q072`** (clean_stem_faithful=false): figure 問の `stem_jp_clean` で "口座" 表の実在列「口座種別」脱落+列順改変、zh/en へ伝播。**正解イは不変** (FK 依存鎖保持)。
+  - 修復: writer(general-purpose) を figure crop + **page-35.png (権威源)** で再 dispatch → 正 4 列に是正。独立 critic 再監査 = **ACCEPT** (accurate/none/clean_stem_faithful=true)。
+  - Rule B archive: `failures/quiz_phase1_S88_2026r08-q072_attempt_1{.md,_defective.json}`。
+- **実効 (修復後): accurate 36/36 (100%)、severity none19 / low16 / high0**。
+- low16 = 自然さ (第三方/关系/磁盘镜像 等の本土 zh 微調余地)・figure クロップ観察 (翻訳でなく figure パイプライン側、scope 外)・説明的グロス (累加法/maximin 等の妥当な補足)・FP法 正規化。**いずれも正誤・脱落・捏造なし** (session-87 既知 gap と同型)。
+- 詳細: `rule_a_audit_S88.json` (全 36 audit + `post_fix_reaudit` + `effective`)。
+
+### ビルド / トレース / テスト (全 GREEN・回帰なし)
+- tsc `--noEmit` exit 0 / eslint 0 error (既存 warning 1=quiz 無関係) / **vitest 455 passed** (S87 ベースライン維持) / `pnpm build` exit 0。
+- **nft IPA leak = 0**: quiz route trace = `quiz_index.json` + `questions.json` + `translations/{2023r05,2024r06,2025r07,2026r08}.json` のみ。raw IPA (exams/sources/syllabus/pages/figures/question_bank) は全 .next trace で 0。
+  - 新 3 sidecar が next.config QUIZ_TRACE で正しく trace 済 (確実デプロイ)。
+
+## コード変更
+- **なし** (reader/UI/next.config は S87 Phase 1 で完成済)。本バッチの成果物は **data の sidecar 3 ファイル + q072 修正のみ**。
+
+## UI スクリーンショット (本バッチは省略・根拠)
+- reader/`QuizSet`/`quizReader` は S87 から不変 = pilot で三語描画実証済。新 sidecar は同一 schema (merge 検証通過) + nft trace 済 + build 成功。
+- **意味検証は Rule A 36 独立サンプル** (実際の翻訳内容を JP源/図と照合) が担保 = スクリーンショットより強い。よって本スケールバッチでは新規 screenshot を省略。
+
+## 進捗
+- Phase 1 翻訳済: **4/29 回 (2025r07 pilot + 2026r08/2024r06/2023r05)**。残 25 回。次バッチはユーザー「Quiz Phase 1 续批」で起動。
