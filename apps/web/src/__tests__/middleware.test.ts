@@ -58,9 +58,20 @@ describe("middleware — routing", () => {
 });
 
 describe("config", () => {
-  it("matcher excludes _next/static, _next/image, favicon.ico", () => {
+  it("matcher excludes _next/static, _next/image, favicon.ico, quiz-figures/", () => {
     expect(config.matcher).toBe(
-      "/((?!_next/static|_next/image|favicon.ico).*)",
+      "/((?!_next/static|_next/image|favicon.ico|quiz-figures/).*)",
     );
+  });
+
+  it("matcher boundary: skips /quiz-figures/* but processes app routes (Session 86)", () => {
+    const re = new RegExp(`^${config.matcher}$`);
+    // excluded (middleware skipped → served statically)
+    expect(re.test("/quiz-figures/2009h21a-q012.webp")).toBe(false);
+    // anchored: an unrelated path is NOT bypassed
+    expect(re.test("/quiz-figuresEVIL/x")).toBe(true);
+    // normal routes still go through the i18n handler
+    expect(re.test("/ja/quiz")).toBe(true);
+    expect(re.test("/zh/quiz")).toBe(true);
   });
 });

@@ -14,5 +14,10 @@ export function middleware(req: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: "/((?!_next/static|_next/image|favicon.ico).*)",
+  // Exclude framework internals + static public assets. quiz-figures/ holds the
+  // committed WebP exam figures (D-134) served statically — without this the
+  // i18n middleware would rewrite /quiz-figures/<id>.webp → /ja/quiz-figures/…
+  // (Session 86). The trailing slash anchors it to the real dir so an unrelated
+  // path like /quiz-figuresX is still processed (Rule D LOW, Session 86).
+  matcher: "/((?!_next/static|_next/image|favicon.ico|quiz-figures/).*)",
 };

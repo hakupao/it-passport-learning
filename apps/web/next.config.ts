@@ -30,15 +30,25 @@ const IPA_TRACE_EXCLUDE = [
   "../../data/ip/sources/**/*",
   "../../data/ip/syllabus/**/*",
 ];
+// Quiz 接過去問 (D-134): the derived clean quiz corpus lives at repo-root
+// data/ip/quiz. Only the two runtime JSONs are read server-side (figures are
+// static WebP under apps/web/public/quiz-figures, traced automatically). Narrow
+// the include so the raw gitignored question_bank/pages/figures never get pulled.
+const QUIZ_TRACE = [
+  "../../data/ip/quiz/quiz_index.json",
+  "../../data/ip/quiz/questions.json",
+];
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(process.cwd(), "..", ".."),
   outputFileTracingIncludes: {
     "/[locale]/textbook": TEXTBOOK_TRACE,
     "/[locale]/textbook/[unitId]": TEXTBOOK_TRACE,
+    "/[locale]/quiz": QUIZ_TRACE,
   },
   outputFileTracingExcludes: {
     "/[locale]/textbook": IPA_TRACE_EXCLUDE,
     "/[locale]/textbook/[unitId]": IPA_TRACE_EXCLUDE,
+    "/[locale]/quiz": IPA_TRACE_EXCLUDE,
   },
 };
 
