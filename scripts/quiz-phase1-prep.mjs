@@ -22,9 +22,11 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const QUESTIONS = path.join(ROOT, "data/ip/quiz/questions.json");
+const RAW_BANK = path.join(ROOT, "data/ip/exams/question_bank.json");
 const UNIT_INDEX = path.join(ROOT, "data/ip/textbook/unit_index.json");
 const UNITS_DIR = path.join(ROOT, "data/ip/textbook/units");
 const FIG_DIR = path.join(ROOT, "data/ip/exams/figures");
+const EXAMS_DIR = path.join(ROOT, "data/ip/exams");
 const OUT_DIR = path.join(ROOT, "data/ip/quiz/.phase1");
 
 const GLOSSARY_CAP = 20;
@@ -43,6 +45,15 @@ const examId = process.argv[2] ?? "2025r07";
 const allQuestions = readJson(QUESTIONS).questions;
 const questions = allQuestions.filter((q) => q.exam_id === examId);
 if (!questions.length) fail(`no questions for exam ${examId}`);
+
+// id → full source page PNG (S88 fix-checklist / D-小6: figure crops can clip table
+// headers at the edges, so figure questions also carry the authoritative full page).
+const rawBank = readJson(RAW_BANK);
+const pageById = new Map();
+for (const rq of rawBank.questions ?? rawBank) {
+  const rid = rq.id ?? rq.question_id;
+  if (rid && rq.source?.page_image) pageById.set(rid, path.join(EXAMS_DIR, rq.source.page_image));
+}
 
 // --- build topic_id → [{jp,zh,en}] from textbook units (dedup by jp) ----------
 const unitIndex = readJson(UNIT_INDEX);
@@ -81,6 +92,9 @@ const projected = questions.map((q) => {
   if (hasFigure) withFigure += 1;
   const figurePng = hasFigure ? path.join(FIG_DIR, `${q.figure}.png`) : null;
   if (figurePng && !existsSync(figurePng)) fail(`figure PNG missing for ${q.id}: ${figurePng}`);
+  const figurePagePng = hasFigure ? pageById.get(q.id) ?? null : null;
+  if (hasFigure && !figurePagePng) fail(`source page unknown for figure question ${q.id}`);
+  if (figurePagePng && !existsSync(figurePagePng)) fail(`page PNG missing for ${q.id}: ${figurePagePng}`);
 
   return {
     id: q.id,
@@ -90,6 +104,7 @@ const projected = questions.map((q) => {
     correct_answer: q.correct_answer,
     has_figure: hasFigure,
     figure_png: figurePng,
+    figure_page_png: figurePagePng,
     glossary,
   };
 });

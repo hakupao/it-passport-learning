@@ -60,9 +60,10 @@ function translatorPrompt(inputPath, id, feedback) {
 ${entryRef(inputPath, id)} まずそのファイルを Read し、id="${id}" のエントリ (stem_jp / choices_jp / has_figure / figure_png / glossary) を取得せよ。
 
 ## 図の扱い
-- **has_figure=true の場合**: \`figure_png\` のパスの画像を **Read** して内容を理解せよ。
+- **has_figure=true の場合**: \`figure_png\` (裁剪図) と \`figure_page_png\` (原典フルページ) の**両方**を **Read** して内容を理解せよ。
+  - **フルページが権威**: 裁剪図は端がクロップされ表のヘッダ行・列が欠落していることがある (S88 実証)。表の列構成・ヘッダ・行数は \`figure_page_png\` 上の該当問題の図で必ず確認し、crop と食い違えばフルページを正とする。
   - raw stem_jp には OCR で**図や選択肢・表が stem に混入/破損** (garble) している場合がある (例: 取引表が壊れて発注/入荷など図に無い語が紛れる)。
-  - **stem_jp_clean** を出力せよ = **図を正** として再構成した正しい純粋な stem。問題が必要とする正当なデータ表 (売掛金表・損益表・取引表など markdown \`|\` 表) は図の通りに保持/修正し、stem に混入した重複・破損のみ除去。図は別途画像でも描画される。
+  - **stem_jp_clean** を出力せよ = **図を正** として再構成した正しい純粋な stem。問題が必要とする正当なデータ表 (売掛金表・損益表・取引表など markdown \`|\` 表) は図の通りに保持/修正し (列の脱落・列順改変をしない)、stem に混入した重複・破損のみ除去。図は別途画像でも描画される。
   - zh/en の stem 翻訳は **clean 版**を訳す。
 - **has_figure=false の場合**: stem_jp に OCR ノイズ (例:「a こ c」→「a〜c」、「挙げばた/挙げけた」→「挙げた」、「いわ ゆる」→「いわゆる」等の誤字・余分な空白・記号崩れ) があれば、**意味を変えずに**修正した **stem_jp_clean** を出力せよ。数値・選択肢ラベル・専門用語・問題の論理は厳密に保持し、明白な OCR 誤りのみ直す (推測で内容を足さない)。既に綺麗なら stem_jp_clean は省略。zh/en は綺麗な版を訳す。
 
@@ -80,7 +81,7 @@ ${feedback ? `\n## 前ラウンドの Rule D 指摘 (是正必須)\n${feedback}\
 
 function reviewerPrompt(inputPath, id, hasFigure, tr) {
   const figureNote = hasFigure
-    ? `\n**figure問**: \`figure_png\` の図を Read し、stem_jp_clean が (a) 図を正として OCR garble/破損表を除去・再構成し (b) 図の数値・項目と一致しているか核験 (clean_stem_ok)。`
+    ? `\n**figure問**: \`figure_png\` (裁剪図) と \`figure_page_png\` (原典フルページ=権威、crop は端欠落しうる) の両方を Read し、stem_jp_clean が (a) 図を正として OCR garble/破損表を除去・再構成し (b) フルページ上の図の数値・項目・**表の列構成 (脱落/列順改変なし)** と一致しているか核験 (clean_stem_ok)。`
     : `\nfigure無し問。stem_jp_clean が**有る**場合: OCR 誤字のみ修正し意味・数値・選択肢ラベルを保持しているか核験 (内容の改変・追加があれば clean_stem_ok=false)。**無い**場合: clean_stem_ok=true。`
   return `あなたは独立した翻訳検証者 (Rule D: 翻訳者と別役割) です。過去問 JP→zh/en 翻訳の**忠実度**を批判的に核験します。
 

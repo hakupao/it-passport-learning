@@ -27,7 +27,7 @@ const AUDIT_SCHEMA = {
 
 function auditPrompt(inputPath, sidecarPath, id, hasFigure) {
   const figureNote = hasFigure
-    ? `\nこの問は figure 問。input エントリの \`figure_png\` の図を **Read**。stem_jp_clean が図を正として OCR garble/破損表を除去・再構成し、図の数値・項目と一致しているか核験 (clean_stem_faithful)。`
+    ? `\nこの問は figure 問。input エントリの \`figure_png\` (裁剪図) と \`figure_page_png\` (原典フルページ=権威、crop は端でヘッダ/列が欠落しうる) の**両方**を **Read**。stem_jp_clean が図を正として OCR garble/破損表を除去・再構成し、フルページ上の図の数値・項目・表の列構成 (脱落/列順改変なし) と一致しているか核験 (clean_stem_faithful)。`
     : `\nfigure無し問。translation に stem_jp_clean があれば OCR 誤字のみ修正で意味保持か核験 (無ければ clean_stem_faithful=true)。`
   return `あなたは独立した翻訳監査者 (Rule A 意味抽検) です。過去問 JP→zh/en 翻訳の忠実度を、翻訳者・前段レビュアーとは独立に批判的に核験します。甘く通さない。
 

@@ -105,3 +105,52 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 
 ## 進捗
 - Phase 1 翻訳済: **4/29 回 (2025r07 pilot + 2026r08/2024r06/2023r05)**。残 25 回。次バッチはユーザー「Quiz Phase 1 续批」で起動。
+
+---
+
+# スケール バッチ S89 (Session 89, 2026-06-10) — `2022r04` / `2021r03` / `2020r02o`
+
+> ユーザー路由「Quiz Phase 1 续批」→ 最新優先 3 回 (既訳 4 回除外)。S88 と同じ統合 1 ワークフロー方式 (D-小5)。
+> **D-小6 を本バッチで実装**: S88 の fix-checklist (figure 問は crop だけでなく full page を併読すべき) を prep + 3 prompt に組込み。
+
+## 何をしたか
+- **D-小6**: `quiz-phase1-prep.mjs` が raw bank の `source.page_image` から figure 問に `figure_page_png` (原典フルページ ABS パス) を注入 (存在 fail-fast)。translate workflow の translator/reviewer prompt と ruleA workflow の critic prompt を「crop+フルページ両方 Read、**フルページが権威** (crop は端欠落しうる)、列脱落・列順改変禁止」に更新。
+- prep ×3 (figure 16/8/13、crop+page 全存在) → 統合 input `input_batch_S89.json` (300 問・id 全一意・整合 0 bad)。
+- translate 統合ワークフロー (`wf_f492c4f7-038`): 300 問、writer(general-purpose,opus) → reviewer(code-reviewer,opus) 2R。**658 agent / 18.9M tok**。
+  - ユーザー指示「総量の半分で一時停止」→ 153 done (全 well-formed、2022r04=100/2021r03=53) で TaskStop → ユーザー「継続」→ `resumeFromRunId` でキャッシュ 153 再利用し残 147 完走 (**resume 2 回目の実証**)。
+- merge ×3 → committed sidecar `translations/{2022r04,2021r03,2020r02o}.json` (各 100/100、missing 0)。
+- ruleA-prep ×3 (各 N=12、層化) → 統合 audit ワークフロー (`wf_2d362fb8-b85`、36 critic、independent)。
+
+## 結果
+
+### 翻訳カバレッジ
+- **300/300 翻訳 (0 欠落)**。clean stem: 2022r04=58 / 2021r03=62 / 2020r02o=62 (計 182)。
+
+### Rule D (in-pipeline reviewer = code-reviewer, ≠ translator)
+- **実効 299 PASS / 1 CONCERNS** (raw: 298 PASS / 1 CONCERNS / 1 FAIL)。
+- **FAIL 1 = `2021r03-q067`**: **repair 誘発回帰**。R1 reviewer が distractor「保全性」の訳を low で指摘し「保护性」を誤示唆 → repair が採用 → R2 reviewer (別インスタンス) が捏造語 (保全≠保護) として正しく FAIL。
+  - 修復: writer(general-purpose) ピンポイント是正 zh「保全性」(姉妹問 2020r02o-q087 前例の漢字保持) / en「Preservation」(b 項 保守性=Maintainability との衝突回避) → 独立 code-reviewer 再 review **PASS 6/6 check・回帰 0**。
+  - Rule B archive: `failures/quiz_phase1_S89_2021r03-q067_attempt_1{.md,_defective.json}`。
+  - 教訓: **reviewer の low 任意示唆を repair で機械採用すると語義区別を壊しうる**。repair は指摘欠陥の是正に限定すべき。
+- **CONCERNS 1 = `2020r02o-q011`**: 翻訳は忠実 (2 reviewer 一致)。実体は上流 `choices_jp` の図→テキスト転写と図の矢印方向の不一致 (source 側、S87 q039 型 known gap)。正解エの訳は図 (権威) と整合し正誤判定保持 → 受容+backlog 記録。
+
+### Rule A (独立 critic, N=36 [各回12, 層化 figure23])
+- **accurate 36/36 (100%)、severity none25 / low11 / medium0 / high0** — pilot 以来初の修復不要バッチ (S88 は high1)。
+- q067 (修復済を抽検) = accurate/low (ダミー語の訳語ニュアンスのみ、正誤不変)。q011 = accurate/low (上流転写問題の確認)。
+- **D-小6 の効果が実測で確認**: 生 stem の OCR 誤数値をフルページ併読で正しく clean 化した事例が 3 件 — q050 (移動50秒/C18秒→図の60秒/10秒、検算で正解ア=223秒成立)、q074 (「5を格納」→図の「1を格納」)、q071 (D3=8,000→図の5,000)。**いずれも critic がフルページで検算し忠実確認**。
+- low11 = 本土 zh 自然さ微調 (共通规则/经常利润 等)・表記スタイル (全角コロン)・解釈的グロス (independently/CountIf)・glossary スタレ残骸 (q070「表」, q043 非関連項目)・上流データ品質メモ。**いずれも正誤・脱落・捏造なし**。
+- **scope 外メモ**: `2021r03-q095` で critic が公式 correct_answer=ウ(B,C) と図からの再計算 (エ=C のみ該当に見える) の食い違いを記録。翻訳は全選択肢を忠実訳出済 (訳ミスでの正誤崩れではない)。answer_keys は Stage 2 で 100% 検証済の公式キーであり改変しない。Phase 2 (解析預生成) で自然に再検算される → backlog 記録のみ。
+- 詳細: `rule_a_audit_S89.json` (全 36 audit + context)。
+
+### ビルド / トレース / テスト (全 GREEN・回帰なし)
+- tsc `--noEmit` exit 0 / eslint 0 error (既存 warning 1=quiz 無関係) / **vitest 455 passed** (S88 ベースライン維持) / `pnpm build` exit 0。
+- **nft IPA leak = 0**: 全 .next trace で `data/ip/{exams,sources,syllabus}`・`question_bank` = 0 hits (粗パターン 4 hits は Next.js 内部 `pages/` モジュールと自作 `data/ip/textbook/figures/*.svg` の誤検知と確認)。quiz trace = `quiz_index.json` + `questions.json` + `translations/{7 回}.json`。新 3 sidecar が QUIZ_TRACE で正しく trace 済。
+
+## コード変更
+- **scripts 3 ファイルのみ** (D-小6: prep の page 注入 + translate/ruleA workflow の prompt 増強)。reader/UI/next.config は S87 から不変。成果物 = sidecar 3 ファイル。
+
+## UI スクリーンショット (S88 と同根拠で省略)
+- reader/`QuizSet`/`quizReader` 不変、新 sidecar 同一 schema (merge 検証通過) + nft trace 済 + build 成功。意味検証は Rule A 36 独立サンプルが担保。
+
+## 進捗
+- Phase 1 翻訳済: **7/29 回 (2025r07 + 2026r08/2024r06/2023r05 + 2022r04/2021r03/2020r02o)**。残 22 回。次バッチはユーザー「Quiz Phase 1 续批」で起動。
