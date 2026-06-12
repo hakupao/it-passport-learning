@@ -154,3 +154,49 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 
 ## 進捗
 - Phase 1 翻訳済: **7/29 回 (2025r07 + 2026r08/2024r06/2023r05 + 2022r04/2021r03/2020r02o)**。残 22 回。次バッチはユーザー「Quiz Phase 1 续批」で起動。
+
+---
+
+# スケール バッチ S90 (Session 90, 2026-06-12) — `2019r01a` / `2019h31h` / `2018h30a`
+
+> ユーザー路由「Quiz Phase 1 续批」→ 最新優先 3 回 (既訳 7 回除外)。統合 1 ワークフロー (D-小5) + フルページ併読 (D-小6)。
+> **D-小7 を本バッチで実装**: S89 q067 教訓 (repair の low 示唆機械採用→回帰) を受け、repair プロンプトに「是正は check FAIL + high/medium に限定、low 示唆は語義検証なしに採用しない」を明記。
+
+## 何をしたか
+- prep ×3 (figure 14/19/12、crop+page 全存在) → 統合 input `input_batch_S90.json` (300 問・id 全一意・整合 0 bad)。
+- translate 統合ワークフロー (`wf_d14ac5b6-8b5`): 300 問。**674 agent / 14.4M tok** (S89 比 -24%、D-小7 で無駄 repair 減)。
+  - ユーザー指示「400/602 で一時停止」→ journal 監視で **402 完了時に TaskStop** (翻訳 300/300 は全部落盘済・全 well-formed、停止対象は review 後半) → 「継続」→ `resumeFromRunId` で 402 キャッシュ再利用し完走 (**resume 3 回目の実証**)。
+- merge ×3 → committed sidecar `translations/{2019r01a,2019h31h,2018h30a}.json` (各 100/100、missing 0)。
+- ruleA-prep ×3 (各 N=12、層化) + **修復/関注問 2 件を強制追加** → 統合 audit ワークフロー (`wf_0d978a91-cff`、**38 critic**、independent)。
+
+## 結果
+
+### 翻訳カバレッジ
+- **300/300 翻訳 (0 欠落)**。clean stem: 2019r01a=39 / 2019h31h=57 / 2018h30a=48 (計 144)。
+
+### Rule D (in-pipeline reviewer = code-reviewer, ≠ translator) — **FAIL 0**
+- raw: **291 PASS / 9 CONCERNS / 0 FAIL** (S89 は FAIL1)。q082 は FAIL→repair→PASS (真欠陥の repair は機能維持)。
+- **D-小7 の効果を実測**: `2018h30a-q010` で R1 medium (執行役員→执行董事 誤訳) は repair が正しく是正 (→高级管理人员)、R2 の矛盾する low 示唆 (执行董事に戻せ) は**採用せず** — ガード意図通り。agent 数 -24% (無駄 repair 減)。
+- 9 CONCERNS の triage: **7 = low-only** (本土 zh 自然さ等、S87 既知 gap 同型) → 受容。`2019h31h-q026` = clean_stem_ok 設計指摘 (レンダリング図内 JP ラベルが zh/en 学習者に不可読 — 全 figure 問共通の v1 既定設計、D-135/136) → 受容+backlog。**`2019r01a-q045` = medium 1 件** (distractor エ zh「软件方式设计」日式借词) → 本文 1 フィールドのみ「软件架构设计」へ定点修正 (ISO/IEC 12207: 方式設計=architecture design、en は元から正) → 独立 code-reviewer 再 review **APPROVE** (詳細突合・回帰 0)。
+- **実効: 292 PASS 相当 / 8 CONCERNS (全 low-only/設計層) / FAIL 0**。
+
+### Rule A (独立 critic, N=38 [各回12 + 強制2、層化 figure20])
+- **accurate 38/38 (100%)、severity none26 / low12 / medium0 / high0 — 連続 2 バッチ修復不要**。
+- 強制サンプル: `2019r01a-q045` (修復済) = **accurate/none** (完全確認)。`2018h30a-q010` = accurate/low (同 low 語感のみ、現訳は語義安全)。
+- **D-小6 効果の再実測 2 件**: `2019h31h-q053` (源 stem「59本」「4万円日」→図の「50本」「4万円／日」、critic がフルページで検算し正解ア根拠成立確認)、`2019h31h-q098` (源表 B2=88/C2=空 →図の 80/合格、3 列再構成が図と完全一致)。
+- low12 = 本土 zh 自然さ (市场成长率→增长率 等)・語感ズレ (应收股利/职场→公司)・SEO 注釈の並列性 (q003、正解だけ語釈付き=視覚ヒント、low)・glossary タグ精度メモ・**源データ品質メモ 2 件** (下記 backlog)。正誤・脱落・捏造ゼロ。
+- **新 backlog (figure pipeline 側、翻訳無影響)**: `2019h31h-q061` の **figure crop が隣問 (問62 RAID) を写している** (crop 境界ズレ)。翻訳はテキスト+フルページ照合で無影響と確認済みだが、**アプリ上 q061 に誤った図が表示される** → raw crop + `public/quiz-figures/2019h31h-q061.webp` の再裁剪要 (Stage 2/Phase 0 図管線 scope、ユーザー判断待ち)。
+- 詳細: `rule_a_audit_S90.json` (全 38 audit + context)。
+
+### ビルド / トレース / テスト (全 GREEN・回帰なし)
+- tsc `--noEmit` exit 0 / eslint 0 error (既存 warning 1=quiz 無関係) / **vitest 455 passed** / `pnpm build` exit 0。
+- **nft IPA leak = 0** (精確パターン: `data/ip/{exams,sources,syllabus}`・`question_bank` 全 .next trace で 0 hits)。quiz trace = quiz_index + questions + **translations/{10 回}.json** (新 3 sidecar QUIZ_TRACE 済)。
+
+## コード変更
+- `scripts/quiz-phase1-translate.workflow.mjs` 1 ファイルのみ (D-小7 repair ガード 1 段落)。成果物 = sidecar 3 ファイル + q045 修正。
+
+## UI スクリーンショット (S88/S89 と同根拠で省略)
+- reader/`QuizSet`/`quizReader` 不変、新 sidecar 同一 schema + nft trace 済 + build 成功。意味検証は Rule A 38 独立サンプルが担保。
+
+## 進捗
+- Phase 1 翻訳済: **10/29 回** (2025r07 / 2026r08 / 2024r06 / 2023r05 / 2022r04 / 2021r03 / 2020r02o / 2019r01a / 2019h31h / 2018h30a)。**残 19 回**。次バッチはユーザー「Quiz Phase 1 续批」で起動。

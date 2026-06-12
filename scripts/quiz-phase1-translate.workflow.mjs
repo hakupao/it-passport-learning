@@ -76,7 +76,7 @@ ${entryRef(inputPath, id)} まずそのファイルを Read し、id="${id}" の
 ## 出力
 1. TR_SCHEMA と同形の JSON を \`${outPath(id)}\` に Write (id="${id}"、garble あれば stem_jp_clean 含む、stem={zh,en}、choices=[{letter,zh,en}×4])。
 2. 同じ内容を StructuredOutput で返す。
-${feedback ? `\n## 前ラウンドの Rule D 指摘 (是正必須)\n${feedback}\n` : ''}`
+${feedback ? `\n## 前ラウンドの Rule D 指摘\n${feedback}\n\n**修復方針 (D-小7)**: 是正は check FAIL と high/medium issue に限定せよ。low issue の改善示唆 (訳語の置換案など) は**語義検証なしに採用しない** — 原語の意味区別 (例: 保全≠保護) を壊す回帰の前例あり。迷う場合は現訳を保持。\n` : ''}`
 }
 
 function reviewerPrompt(inputPath, id, hasFigure, tr) {
