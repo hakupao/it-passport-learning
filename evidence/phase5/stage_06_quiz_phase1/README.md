@@ -253,3 +253,57 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 ## 進捗
 - Phase 1 翻訳済: **13/29 回** (S87〜S91)。**残 16 回**。次候補 = `2016h28a` / `2016h28h` / `2015h27a` (最新優先)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
 - **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし)**: `2017h29h-q069` choices_jp イ/ウ 再OCR (Stage 2) / `2019h31h-q061` figure crop 再裁剪 (S90 carryover) / q069 id採番 vs 印刷問番号。
+
+---
+
+# スケール バッチ S92 (Session 92, 2026-06-16) — `2016h28a` / `2016h28h` / `2015h27a`
+
+> ユーザー路由「Quiz Phase 1 续批」(回数未指定) → 最新優先 3 回 (既訳 13 回除外、STATE「次候補」と一致)。統合 1 ワークフロー (D-小5) + フルページ併読 (D-小6) + repair 語義ガード (D-小7) + 統合バッチ combiner `scripts/quiz-phase1-batch.mjs` (D-小8、いずれも scripts 組込済=追加コード無し)。
+
+## 何をしたか
+- prep ×3 (figure 17/17/17=51、crop+page 全存在) → `quiz-phase1-batch.mjs translate S92` で統合 input `input_batch_S92.json` (300 問・id 全一意・figure 51 全てフルページ付)。
+- translate 統合ワークフロー (`wf_eb5953ac-643`): 300 問。**644 agent / 23.5M tok**。pause 指示なし → 全量完走。
+- merge ×3 → committed sidecar `translations/{2016h28a,2016h28h,2015h27a}.json` (各 100/100、missing 0、clean stem 40/56/45=141)。
+- ruleA-prep ×3 (各 N=12、層化) + **CONCERNS 4 + null 1 を強制追加** → `quiz-phase1-batch.mjs ruleA S92` で統合 sidecar/items (40 サンプル、figure 30) → audit ワークフロー (`wf_7f0a3b52-84c`、**40 critic**、independent)。**resume 不要 (40/40 完走)**。
+
+## 結果
+
+### 翻訳カバレッジ
+- **300/300 翻訳 (0 欠落)**。clean stem: 2016h28a=40 / 2016h28h=56 / 2015h27a=45 (計 141)。
+
+### Rule D (in-pipeline reviewer = code-reviewer, ≠ translator) — **FAIL 0**
+- raw: **295 PASS / 4 CONCERNS / 1 null / 0 FAIL**。
+- **null 1 = `2016h28h-q017`**: in-pipeline reviewer が **`API Error: Overloaded`** (瞬時 infra 障害) で失敗し未レビュー。translator 出力は well-formed (merge 構造検査通過)。→ **独立 `oh-my-claudecode:code-reviewer` で当該 1 問のみ再レビュー = PASS (5 check 全 true、artifact ≡ sidecar 一致を実データ照合)**。Rule D 補缺。Rule A でも forced 監査 = accurate/none (二重カバー)。
+- **4 CONCERNS (全 figure) の triage は「verdict ラベル」でなく「repair 後の実落盘訳文 + 独立 Rule A」で判定** (構造検査≠意味検査):
+  - `2016h28a-q096` / `2015h27a-q072` / `2015h27a-q086`: forced Rule A = **accurate / none** (figure 問の stem_jp_clean がフルページと整合)。受容。
+  - `2016h28h-q022`: forced Rule A = accurate / **low** (2 件とも「stem_jp_clean が figure の結合セル『初期費用の15%(運用・保守の合算)』と『記載のない条件』を正しく復元した」という確認 low。欠陥でなく妥当な OCR 修正の追認)。受容。
+- **適用修正 1 = `2016h28a-q020` (PASS だったが Rule A が genuine 用語取り違えを捕捉)**: stem.zh の評価項目「営業力」(=sales) を `营销能力` (营销=marketing) と取り違え。en は元から `Sales capability` で正。低深刻度 (重み1・A社固定値10 で正解ウ=8 不変の非答案セル) だが genuine な zh 用語誤り → **stem.zh 1 フィールドのみ `销售能力` へ定点修正** (唯一一致 assert、en/choices/数値不変)。**独立 critic 再監査 = accurate / none** (取り違え解消・波及なし確認)。
+- **実効: 296 PASS 相当 (q020 修正後) / FAIL 0**。
+
+### Rule A (独立 critic, N=40 [各回12 + 強制5 = 4 CONCERNS + 1 null、層化 figure30]) — **accurate 40/40**
+- **accurate 40/40 (100%)、severity none29 / low11 / medium0 / high0**。not-accurate **0**。**スケール 5 バッチ目で初の medium/high ゼロ**。
+- low11 の内訳 (全て正誤・脱落・捏造ゼロ):
+  - **本土 zh 自然さ / 許容等価** (受容): q048 `件数`、q099 `参照` 保持 (3ビット整合のため意図的)、q001 `経理部`→`财务部`、q020(28h) `居民税/事业税` 借用 + `经常利润` グロス、q042 `部署` の導入/配置区別消失、q088(27a) zh 第1文の説明句前置。
+  - **上流 (Stage 2) raw OCR 欠陥の申し送り** (翻訳は figure/input に忠実、Stage 2 backlog、S89 q011/S90 q061/S91 q069 と同型):
+    - `2016h28h-q001`: raw choices_jp ア `16時間`→figure `10時間` (OCR 16↔10)、イ garble `伝杜/困正用/町正`→figure `伝票/訂正用/訂正`。翻訳は figure 値に一致=忠実。正解ア (可用性) 不変。
+    - `2016h28h-q012`: raw choices_jp イ `13,000`→figure(page-06) `12,000`。翻訳は input の 13,000 を忠実転記 → **input と figure のズレ=上流欠陥** (S91 q069 型、再OCR で是正要)。
+    - `2016h28h-q096`: input JP 自体が garble ((1)stem 表 H004 数学 50→figure 70 (2)choices_jp の LIKE `%` 脱落)。加えて IPA H28春 問96 自体に ウ/エ がともに該当 2 名で単一最大が不成立の official 設問固有論点。翻訳は input に忠実。
+    - `2015h27a-q088`: stem 基準値 3.6 vs 図3 区分線 3.0 の不一致は raw OCR に既存、clean は原典値 3.6 を非改変保持。正解エ (相関係数0.5区分線) は 3.0/3.6 差に非依存=正誤不変。
+  - **glossary 不整合の申し送り** (翻訳は正しく正解根拠保持、textbook glossary 側 backlog): `2016h28a-q025` 正解ウ 職能別組織→訳 `职能制组织/Functional organization` は IPA 標準で正、ただし供給 glossary は `职务制组织/Job-Function Organization` と誤誘導的対訳。訳の修正不要、glossary エントリ再確認を推奨。
+- 強制サンプル: q096(28a)/q072/q086/q017 = accurate/none、q022(28h) = accurate/low (確認 low)。
+- 詳細: `rule_a_audit_S92.json` (全 40 audit + applied_fix + upstream_ocr_backlog + glossary_backlog)。
+
+### ビルド / トレース / テスト (全 GREEN・回帰なし)
+- tsc `--noEmit` exit 0 / eslint 0 error (既存 warning 1=quiz 無関係 `tTerm`) / **vitest 455 passed** (+2 skipped、29 file passed/1 skipped) / `pnpm build` exit 0 (Compiled successfully)。
+- **nft IPA leak = 0** (`.next` 全 .nft.json で `data/ip/{exams,sources,syllabus}` 0 hits)。quiz route trace = quiz_index + questions + **translations/16 回.json** (新 3 sidecar が `translations/*.json` glob で resolve 確認)。
+
+## コード変更
+- **無し** (combiner `quiz-phase1-batch.mjs` は S91 で導入済、translate/ruleA/prep/merge は D-小6/7 組込済で不変)。
+- 成果物 = sidecar 3 ファイル + q020 1 フィールド修正 (`销售能力`) + 証拠 (`rule_a_audit_S92.json` + 本節)。
+
+## UI スクリーンショット (S88〜S91 と同根拠で省略)
+- reader/`QuizSet`/`quizReader` 不変、新 sidecar 同一 schema (merge 検証通過) + nft trace 済 + build 成功。意味検証は Rule A 40 独立サンプル + q017/q020 の独立再核が担保。
+
+## 進捗
+- Phase 1 翻訳済: **16/29 回** (S87〜S92)。**残 13 回**。次候補 = `2015h27h` / `2014h26a` / `2014h26h` (最新優先)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
+- **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし、累積)**: `2016h28h-q001` choices_jp (16→10時間・イ garble) / `2016h28h-q012` choices_jp イ (13,000→12,000) / `2016h28h-q096` stem 表 (H004 50→70)・choices_jp LIKE `%` 脱落・official 設問ウ/エ 二者該当 / `2015h27a-q088` 図3 基準値整合 (Stage 2 図/OCR scope) / `2016h28a-q025` glossary 職能別組織 エントリ再確認 (textbook scope)。S91 以前: `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。
