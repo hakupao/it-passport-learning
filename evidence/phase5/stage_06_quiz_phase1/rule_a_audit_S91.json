@@ -1,0 +1,656 @@
+{
+  "batch": "S91",
+  "session": 91,
+  "date": "2026-06-15",
+  "exams": [
+    "2018h30h",
+    "2017h29a",
+    "2017h29h"
+  ],
+  "n": 37,
+  "accurate": 37,
+  "bySeverity": {
+    "none": 22,
+    "low": 14,
+    "medium": 1
+  },
+  "note": "独立 critic (oh-my-claudecode:critic, writer/in-pipeline reviewer と別 subagent_type)。N=37 層化 (figure24 + forced 4 CONCERNS)。resume 1 回 (session limit で 7 失敗→補完)。",
+  "medium_findings": [
+    {
+      "id": "2017h29h-q069",
+      "accurate": true,
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "【翻訳は忠実。ただし上流(input)OCR欠陥を申し送り】zh/en の選択肢は input の choices_jp を列・列順・項目とも1:1で完全忠実に訳出しており、誤訳・脱落・捏造・正誤逆転は無し(機械照合済)。問題は input.choices_jp 自体が権威フルページ(pages/2017h29h/page-29.png, 問59相当)の選択肢表とズレている点: (1)選択肢イ — 権威では 表1=[社員ID|社員名|生年月日] / 表2=[社員名|試験種別|試験日|合否] だが input は 表1第3列を『試験日』、表2第1列を『社員ID』と誤OCR。(2)選択肢ウ — 権威では 表2=[社員ID|社員名|試験種別|合否] だが input は表2から『社員名』が脱落し [社員ID|試験種別|合否] となっている。翻訳はこの誤った input を忠実に引き継いでいるため zh/en も同じズレを含む。正解『ア』は権威と input で一致しており、ア自体の訳も正確なので現時点で正解の根拠は崩れていないが、誤選択肢イ・ウがそのまま配信されると受験者に提示される選択肢が公式過去問と異なる重大欠陥。翻訳忠実度(本監査scope)としては PASS だが、input段の choices_jp を権威フルページ基準で再OCR・是正することを強く推奨。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "用語自然性(MINOR): 資格固有名の字義訳。『ITパスポート』→zh『IT护照』、『基本情報技術者』→zh『基本信息技术者』は字義としては誤りではなく意味も保持しているが、本土中国語圏では資格固有名としてやや不自然(『IT护照』は通常パスポート文書を指す)。en側(IT Passport / Fundamental IT Engineer)はIPA公式英名に整合し問題なし。glossaryに当該資格名の登録は無く整合性違反ではない。誤訳ではないため terminology_ok は PASS 維持、zh資格名の本土化は将来glossary追補で対応可。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "メタデータ整合(Open Question, 翻訳忠実度には無関係): id は 2017h29h-q069 だが、figure_page_png(pages/2017h29h/page-29.png)上の実際の設問番号は『問59』と表示されている。stem本文は完全一致しており核験対象ページは正しいが、id採番(q069)とページ上問番号(問59)の対応関係は上流で要確認。"
+        }
+      ]
+    }
+  ],
+  "audits": [
+    {
+      "id": "2017h29a-q001",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "監査対象外の情報共有 (翻訳層の欠陥ではない): input の stem_jp は Z 行が「6,7,8」だが、これは OCR 誤り。フルページ図 (page-02.png 権威) の実値は Z 行=「8,7,8」。stem_jp_clean は Z-A セルを 6→8 と図に基づき正しく修正済みで、これにより最大生産額=22=ウ が correct_answer と整合する。仮に未修正の 6,7,8 のままなら最大=21=イ となり正解が崩れていた。clean の図ベース修復は適切。翻訳 (zh/en) も修正後の権威テーブル (Z=8,7,8) に正しく追従しており問題なし。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "用語の言語間微差 (誤訳ではない): JP「技術者」を zh は「技术人员」、en は「engineers」と訳出。どちらも技術者の許容訳で正誤・論理に影響なし。「万円／日」→ zh「万日元／日」/ en「ten-thousand yen / day」は適切。zh は本土自然表現で日式借词なし。選択肢 (20/21/22/23) は三語完全一致。glossary 最適化/最优化/Optimization は整合 (表層語ではなくトピックタグ)。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29a-q002",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "stem の zh が JP 原文「e-ビジネス」を glossary 用語に寄せて「电子商务（EC）」と訳出。意味はほぼ同義 (e-ビジネス≒EC=電子商取引) で正誤判定に影響なく、en は「e-business」を保持しているため許容範囲だが、厳密には原文の「e-ビジネス」と訳語「EC」が完全一致ではない。zh/en 間で対象語が揃っていない点も軽微な不整合。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29a-q003",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "日本語の「〜の部」(貸借対照表の区分見出し) を zh で「资产部／负债部／净资产部／资本金部／利润部」と機械的に「部」を付けて訳出している。中国本土会計の貸借対照表では区分は通常「资产／负债／所有者权益(净资产)」であり、「资产部」は『部署/部門』を連想させやや不自然。ただし全選択肢で一貫しており、図・数値・項目構成は完全一致、正解アの根拠は変わらないため忠実度上の問題ではなく軽微な用語ニュアンス。"
+        },
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "日本語の「〜の部」の区分見出しニュアンスを en では完全に省略し「Assets／Liabilities／Net Assets／Capital／Profit」とだけ訳出。意味は曖昧さなく保持され全選択肢で一貫しているが、見出しの『section/division』ニュアンスは脱落。正誤判定に影響なし、軽微。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29a-q004",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29a-q015",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29a-q020",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "「売上高営業利益率」の「売上高」修飾が zh「营业利润率」/ en「operating profit margin」で明示されていない(脱落気味)。ただし zh の营业利润率・en の operating profit margin はともに『営業利益÷売上高』を指す標準用語であり、設問が問う指標(=最大の社を選ぶ)の意味と正解根拠(A社=ア, 営業利益率30%で最大)は不変。実害なし、low。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "stem_jp_clean は元 stem_jp に無かった第3の（利益）行(10/60/20/20)をフルページ図から正しく復元しており、図の数値・行順・列構成(A社〜D社)・網掛け注記と完全一致。捏造・列改変・脱落なし。参考情報として記録(問題なし)。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29a-q030",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29a-q043",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29a-q049",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢イ「経営者」の訳で zh「经营者（管理层）」/ en「Management (executives)」と括弧の補足が追加されている。これは意味を変えず曖昧さを解消する補助的注釈であり、正誤判定 (正解=イ 経営者=管理層が IT ガバナンス確立の責任者) を一切変えない。忠実性違反ではなく低レベルの様式メモ。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29a-q060",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29a-q069",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29a-q096",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29a-q097",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "stem 第4箇条「正しい位置に表示されている数値の入力が確認できた場合に認証が成功する」の zh 訳「当确认正确位置上所显示数值的输入无误时，认证成功」に「无误」(誤りがない) という語が補われている。JP 原文には「無誤」に相当する明示語はなく「入力が確認できた場合」のみ。ただし「正しい位置の数値の入力が確認できた」という文脈上「無誤」は含意の範囲内で、意味逆転・誤訳ではない。en 訳は「is confirmed」で原文に忠実。軽微な補足にとどまり正誤判定に影響なし。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29h-q002",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "「検討に用いる」を「用于研究」と訳出。検討は本来「考量/検討」に近く「研究」はやや緩い意訳だが、『マーケティングミックスを考える際に用いる枠組み』という原意は保持され、正解判定 (売り手側=4P) には一切影響しない。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "「考え方」を zh=思路 / en=framework と訳出。考え方は本来『考え方/コンセプト』であり framework はやや解釈寄り。ただしマーケティングミックスにおける 4P は実際フレームワークであり、意味の歪曲・正誤の変化はなし。低位スタイル差にとどまる。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29h-q005",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29h-q020",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29h-q021",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "en の設問文「総資産営業利益率は何%か」を「What is the ratio of operating profit to total assets (return on total assets based on operating profit), in percent」と訳しており、括弧内の説明的注記 (return on total assets based on operating profit) は JP 原文に無い補足。指標名を英語読者向けに明確化したもので意味改変・誤訳ではなく正誤判定にも影響しないが、厳密には原文に存在しない追加情報であり、簡潔さの観点で冗長。zh 側 (总资产营业利润率) には同種の補足が無く左右非対称。低深刻度のスタイル指摘。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29h-q027",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29h-q032",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "glossary に登録された「原価」(zh:成本 / en:Cost) は、この設問の stem・選択肢のいずれにも出現しない。誤訳を生んでいるわけではなく無害だが、設問固有でない冗長エントリ。MINOR。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29h-q044",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢エ/イ の「チェック体制の確立」を zh「建立检查机制」/ en「Establishing a checking mechanism」と訳出。意味は等価だが、原語「体制」は機制(mechanism)よりも体制/枠組み(system/framework)寄りで、厳密には「检查体制的建立 / Establishing a checking system」がより忠実。ただし内部統制文脈では実質同義で正誤判定(正解エ)に影響なし。脱落・誤訳・逆転はなく、a=業務プロセスの明確化/b=チェック体制の確立 という正解根拠の対比は zh/en 双方で完全保持。stem の4項目(内部統制の構築/職務分掌=职责分工=segregation of duties/実施ルールの設定/[a][b])も順序・空欄位置とも保持。職務分掌は正しい専門訳で「分工」一般語に弱化していない。stem_jp_clean は不在(figure問だが stem は平文プロセ、表内容は choices 側で訳出済)でスキーマ既定 true 妥当。フルページ page-19 が権威で4行表完全一致、crop は イ で切れているが訳は4行全捕捉。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29h-q048",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29h-q069",
+      "accurate": true,
+      "severity": "medium",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "【翻訳は忠実。ただし上流(input)OCR欠陥を申し送り】zh/en の選択肢は input の choices_jp を列・列順・項目とも1:1で完全忠実に訳出しており、誤訳・脱落・捏造・正誤逆転は無し(機械照合済)。問題は input.choices_jp 自体が権威フルページ(pages/2017h29h/page-29.png, 問59相当)の選択肢表とズレている点: (1)選択肢イ — 権威では 表1=[社員ID|社員名|生年月日] / 表2=[社員名|試験種別|試験日|合否] だが input は 表1第3列を『試験日』、表2第1列を『社員ID』と誤OCR。(2)選択肢ウ — 権威では 表2=[社員ID|社員名|試験種別|合否] だが input は表2から『社員名』が脱落し [社員ID|試験種別|合否] となっている。翻訳はこの誤った input を忠実に引き継いでいるため zh/en も同じズレを含む。正解『ア』は権威と input で一致しており、ア自体の訳も正確なので現時点で正解の根拠は崩れていないが、誤選択肢イ・ウがそのまま配信されると受験者に提示される選択肢が公式過去問と異なる重大欠陥。翻訳忠実度(本監査scope)としては PASS だが、input段の choices_jp を権威フルページ基準で再OCR・是正することを強く推奨。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "用語自然性(MINOR): 資格固有名の字義訳。『ITパスポート』→zh『IT护照』、『基本情報技術者』→zh『基本信息技术者』は字義としては誤りではなく意味も保持しているが、本土中国語圏では資格固有名としてやや不自然(『IT护照』は通常パスポート文書を指す)。en側(IT Passport / Fundamental IT Engineer)はIPA公式英名に整合し問題なし。glossaryに当該資格名の登録は無く整合性違反ではない。誤訳ではないため terminology_ok は PASS 維持、zh資格名の本土化は将来glossary追補で対応可。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "メタデータ整合(Open Question, 翻訳忠実度には無関係): id は 2017h29h-q069 だが、figure_page_png(pages/2017h29h/page-29.png)上の実際の設問番号は『問59』と表示されている。stem本文は完全一致しており核験対象ページは正しいが、id採番(q069)とページ上問番号(問59)の対応関係は上流で要確認。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29h-q083",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29h-q090",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29h-q091",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "input_batch_S91.json の stem_jp 行5 (商品B) は 200,000|200,000|50,000 となっており、権威ソースである図 (figure_png 裁剪・figure_page_png フルページ ともに一致) の 250,000|280,000|300,000 と食い違う。ただし sidecar の stem_jp_clean はこれを図どおり 250,000|280,000|300,000 に正しく再構成しており、zh/en もこの修正後の値に忠実 (晴れ→晴/Sunny 曇り→阴/Cloudy 雨→雨/Rainy、確率 0.5/0.3/0.2、列構成 A〜E 6行すべて一致)。これは clean_stem の OCR/破損表是正機能が設計どおり働いた結果であり、翻訳側の欠陥ではない (clean_stem_faithful=true)。指摘は上流 input ソース行の誤りという情報共有のみ。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢ア〜エは数式文字列のため jp/zh/en が完全一致 (バイト一致確認済)。正解 イ (B$2*B4+C$2*C4+D$2*D4) は E4→E5:E6 への複写で行2を絶対参照固定・商品行を相対参照シフトさせる構造問題であり、セル数値の異同とは無関係に正解根拠は不変。訳ミスによる正誤崩れなし。専門用語は本土 zh (单元格/电子表格软件/工作表/复制) で日式・台湾式借词なし、glossary (表計算ソフト→电子表格软件) 整合。"
+        }
+      ]
+    },
+    {
+      "id": "2018h30h-q001",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "選択肢イの英訳が「starts selling」と『開始』のニュアンスを追加。JP『ビジネススーツを販売する』(現在形・開始の明示なし) および zh『销售』に対し軽微な解釈付加。アンゾフの『新製品開発』象限の読みとして文脈上許容範囲で、意味・正誤判定には影響しない。zh/en 間の微差にとどまる。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢アの『保有技術』を zh『自有技术』/ en『proprietary technology』と訳出。原義は『保有している技術』で、『proprietary(独占的)』へ僅かにニュアンスが寄るが文脈上許容、正解 (エ) の根拠には無関係。"
+        }
+      ]
+    },
+    {
+      "id": "2018h30h-q002",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2018h30h-q005",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "en stem 「an appropriate example of a DFD diagram」は (1) 「DFD diagram」が DFD = Data Flow Diagram のため diagram が冗長 (DFD で十分)、(2) JP の「記述例」(記法/表記の例) のニュアンスが単なる「example」に縮約されている。いずれも意味は保持され正解 イ の根拠は崩れないため低位の文体・ニュアンス指摘にとどまる。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "ア「状態遷移図」を「状态转换图」と訳出。意味は通じ本土中国語として誤りではないが、より標準的な定訳は「状态转移图」。本問では全選択肢が相互に区別され正誤に影響しないため低位。"
+        }
+      ]
+    },
+    {
+      "id": "2018h30h-q019",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2018h30h-q027",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2018h30h-q035",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳が日本語ラベル「事象」をそのまま流用 (「需要事象 A」)。中国語としては「情形 A / 事件 A」がより自然だが、ラベルは A/B/C/D で識別され意味は完全に保持されており、バッチ全体の一貫した命名規約と推測される。正誤判定・忠実度に影響なし。許容範囲。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "参考メモ: JP 源 choices_jp の選択肢エ末尾に OCR ゴミ文字「垢」(「…必要ではない。垢」) が混入しているが、stem_jp_clean は stem のみ対象で choices は対象外。zh/en 訳ではこのゴミ文字を正しく除外しており翻訳側の問題ではない。また stem_jp の OCR 誤り「願客」→ stem_jp_clean で「顧客」に意味保持のまま修正済みで適切。"
+        }
+      ]
+    },
+    {
+      "id": "2018h30h-q043",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "stem_jp_clean は原典 IPA 設問の全角読点「，」を「、」に正規化している。これは表記正規化のみで意味・数値・論理は不変であり問題なし（記録のみ、減点対象外）。OCR garble（末尾の「を 1 工程名 の⑨ ーー」= 凡例「工程名／所要日数」のにじみ込み）は適切に除去され、フルページ問43設問文と一致。"
+        }
+      ]
+    },
+    {
+      "id": "2018h30h-q060",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2018h30h-q066",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2018h30h-q071",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2018h30h-q097",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "選択肢アの中国語訳で「脆弱性」をそのまま日式借词として使用。本土中国語の技術文脈では「漏洞」がより自然(glossary には脆弱性エントリ無し)。意味・正誤判定への影響は無く、「脆弱性」も中国語圏で通用するため軽微。"
+        }
+      ]
+    },
+    {
+      "id": "2018h30h-q100",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "clean_stem 微小ドリフト: 権威フルページ (page-43) の ESSID2「通信制限」セルは『接続した機器から管理画面と…』(過去形「接続した」) だが、stem_jp_clean は『接続している機器から…』(進行形) と記載。input の stem_jp も同様で OCR 段階からの持ち越し。意味はほぼ同一 (ESSID2 に接続された機器を指す) で正誤・論理に影響なし。zh『已连接的设备』/ en『connected devices』はいずれの読みにも忠実。clean は本来図 (権威) を正とすべきなので 1 文字の不一致を記録するが MINOR。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "情報用 (issue でなく確認結果): clean_stem は input の 2 つの実 OCR garble を図に一致するよう正しく修復済み — (1)『発生していり得る』→『発生し得る』、(2) 行ラベル『通信制御』→『通信制限』。両ズーム検証でフルページは『通信制限』と確認。zh『通信限制』/ en『Communication restriction』は修復後と整合。脱落・捏造・列順改変・キー相互参照 (ESSID1↔ESSID2「のものとは異なるキー」) の方向反転なし。正解ウ『互联网接入线路被非法利用 / The Internet connection line is used illegally』の根拠も三語で保持。用語は自然な本土 zh (平板电脑/接入线路/加密方式) で日式借词なし、glossary 整合。"
+        }
+      ]
+    }
+  ]
+}

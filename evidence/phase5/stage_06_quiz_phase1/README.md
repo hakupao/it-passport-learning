@@ -200,3 +200,56 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 
 ## 進捗
 - Phase 1 翻訳済: **10/29 回** (2025r07 / 2026r08 / 2024r06 / 2023r05 / 2022r04 / 2021r03 / 2020r02o / 2019r01a / 2019h31h / 2018h30a)。**残 19 回**。次バッチはユーザー「Quiz Phase 1 续批」で起動。
+
+---
+
+# スケール バッチ S91 (Session 91, 2026-06-15) — `2018h30h` / `2017h29a` / `2017h29h`
+
+> ユーザー路由「Quiz Phase 1 续批」→ 最新優先 3 回 (既訳 10 回除外)。統合 1 ワークフロー (D-小5) + フルページ併読 (D-小6) + repair 語義ガード (D-小7、いずれも scripts 組込済)。
+> **新規ヘルパ `scripts/quiz-phase1-batch.mjs`**: S88〜S90 でインライン構築していた統合バッチファイル (input_batch / items_batch / sidecar_batch / ruleA_items) を決定的スクリプト化 (count・id 一意・forced id を assert)。残バッチの再現性向上。
+
+## 何をしたか
+- prep ×3 (figure 13/12/10=35、crop+page 全存在) → `quiz-phase1-batch.mjs translate S91` で統合 input `input_batch_S91.json` (300 問・id 全一意・figure 35 全てフルページ付)。
+- translate 統合ワークフロー (`wf_0cd70973-55c`): 300 問。**666 agent / 24.3M tok**。pause 指示なし → 全量完走。
+- merge ×3 → committed sidecar `translations/{2018h30h,2017h29a,2017h29h}.json` (各 100/100、missing 0、clean stem 58/46/50)。
+- ruleA-prep ×3 (各 N=12、層化) + **4 CONCERNS を強制追加** → `quiz-phase1-batch.mjs ruleA S91` で統合 sidecar/items → audit ワークフロー (`wf_e5514cf3-523`、**37 critic**、independent)。session limit で 7 失敗→ `resumeFromRunId` で補完 (30 キャッシュ+7 live=37/37、**resume 4 回目の実証**)。
+
+## 結果
+
+### 翻訳カバレッジ
+- **300/300 翻訳 (0 欠落)**。clean stem: 2018h30h=58 / 2017h29a=46 / 2017h29h=50 (計 154)。
+
+### Rule D (in-pipeline reviewer = code-reviewer, ≠ translator) — **FAIL 0**
+- raw: **296 PASS / 4 CONCERNS / 0 FAIL**。29 問が CONCERNS/FAIL→repair→PASS (真欠陥の repair 機能維持)。
+- **4 CONCERNS の triage は「verdict ラベル」でなく「repair 後の実落盘訳文」で判定** (構造検査≠意味検査):
+  - **`2017h29h-q090` (figure)**: R1 medium = zh の `うどんすき`→`什锦乌冬面` 訳が操作c の前方一致 (`うどん%`=`乌冬面%`) を壊し zh 表で c=1 (JP は c=2)。→ **repair が `乌冬面火锅` (前方一致保持) へ是正済**。zh で再計算 a=4>b=3>**c=2**→ア = JP/en と一致。受容 (repair 成功)。Rule A: accurate/**none**。
+  - **`2018h30h-q019` (figure, 損益計算書)**: R1 high = zh の `特別利益/特別損失`→`营业外利得/损失` が既存 `営業外収益/費用` 行と会計区分を混同。→ **repair が `特别利益/特别损失` (营业外と区別) へ是正済**。残 low = `事業税`→`营业税` (营业税=中国で廃止済の別税目、en `enterprise tax` は正) → **本文 stem.zh 1 フィールドのみ `事业税` へ定点修正** (唯一一致を assert、en/choices 不変)。Rule A 独立再監査: accurate/**none** (修正確認)。
+  - **`2017h29a-q003` (figure, 貸借対照表)** / **`2017h29h-q069` (figure, DB正規化)**: in-pipeline は **low-only** (`〜の部`→`资产部` 等の本土自然さ・資格名字義訳)。受容。
+- **実効: 297 PASS 相当 (q019 修正後) / 3 CONCERNS (全 low-only) / FAIL 0**。
+
+### Rule A (独立 critic, N=37 [各回12 + 強制4 CONCERNS、層化 figure24]) — **accurate 37/37**
+- **accurate 37/37 (100%)、severity none22 / low14 / medium1 / high0**。not-accurate **0**。
+- 強制サンプル: q090=accurate/none・q019=accurate/none (修正確認)・q003=accurate/low・q069=accurate/**medium** (下記、翻訳は PASS)。
+- **medium 1 = `2017h29h-q069` = 上流 (Stage 2) OCR 欠陥の申し送り (翻訳忠実度は PASS)**:
+  - zh/en の選択肢は input `choices_jp` を列・列順・項目とも **1:1 で完全忠実訳出** (誤訳・脱落・捏造・正誤逆転なし、機械照合済、accurate=true・4 check 全 true)。
+  - 問題は **input.choices_jp 自体**が権威フルページ `pages/2017h29h/page-29.png` とズレ: 選択肢イ (表1第3列・表2第1列の誤OCR) / 選択肢ウ (表2 から `社員名` 脱落)。翻訳は誤 input を忠実に引き継ぐため zh/en も同ズレ。
+  - **正解ア は権威・input 一致、ア の訳も正確で正解根拠は不変**。ただし誤選択肢イ/ウ が配信されると公式過去問と異なる → **上流 choices_jp の権威フルページ基準 再OCR・是正が必要 = backlog (Stage 2 図/OCR 管線 scope、ユーザー判断待ち、翻訳 backfill scope 外)**。S89 q011 / S90 q061 と同型 (独立 critic のフルページ照合が翻訳層を超え上流欠陥を捕捉=網兜の再実証)。
+- **D-小6 効果の実測**: `2017h29a-q001` (源 stem Z行「6,7,8」→図 page-02 の「8,7,8」、stem_jp_clean がフルページで是正、最大生産額22=ウ 整合。未修正なら21=イ で正解崩壊)・`2017h29a-q020` (利益行 10/60/20/20 をフルページ復元)。源 OCR 破損をフルページ併読が正是正。
+- low14 = 本土 zh 自然さ・説明的グロス (q049 `経営者`→`管理层` 補足注記等)・glossary 冗長エントリ・指標名の補足注記 (q021)。正誤・脱落・捏造ゼロ。
+- **追加 backlog note (q069、翻訳無影響)**: ① zh 資格名字義訳 (`IT护照`/`基本信息技术者`、本土自然さ、glossary 追補で対応可・low) ② **メタデータ OQ 候補**: id `2017h29h-q069` だがフルページ上の印刷問番号は『問59』(stem は完全一致でページ自体は正、id採番 vs 印刷番号の対応は上流要確認)。
+- 詳細: `rule_a_audit_S91.json` (全 37 audit + medium_findings + context)。
+
+### ビルド / トレース / テスト (全 GREEN・回帰なし)
+- tsc `--noEmit` exit 0 / eslint 0 error (既存 warning 1=quiz 無関係) / **vitest 455 passed** (+2 skipped) / `pnpm build` exit 0。
+- **nft IPA leak = 0** (`.next` 全 .nft.json で `data/ip/{exams,sources,syllabus}` 0 hits)。quiz route trace = quiz_index + questions + **translations/13 回.json** (新 3 sidecar が `translations/*.json` glob で resolve 確認)。
+
+## コード変更
+- `scripts/quiz-phase1-batch.mjs` **新規** (統合バッチ combiner、決定的、S88〜S90 のインライン構築を置換)。translate/ruleA/prep/merge は不変 (D-小6/D-小7 組込済)。
+- 成果物 = sidecar 3 ファイル + q019 1 フィールド修正 (`事业税`)。
+
+## UI スクリーンショット (S88〜S90 と同根拠で省略)
+- reader/`QuizSet`/`quizReader` 不変、新 sidecar 同一 schema (merge 検証通過) + nft trace 済 + build 成功。意味検証は Rule A 37 独立サンプルが担保。
+
+## 進捗
+- Phase 1 翻訳済: **13/29 回** (S87〜S91)。**残 16 回**。次候補 = `2016h28a` / `2016h28h` / `2015h27a` (最新優先)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
+- **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし)**: `2017h29h-q069` choices_jp イ/ウ 再OCR (Stage 2) / `2019h31h-q061` figure crop 再裁剪 (S90 carryover) / q069 id採番 vs 印刷問番号。
