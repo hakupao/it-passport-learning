@@ -75,13 +75,15 @@
       "id": "2014h26a-q093",
       "scope": "Stage 2 (choices_jp 再OCR)",
       "detail": "input.choices_jp が別問の内容に汚染 (スクロールバー/チェックボックス/テキストボックス/ラジオボタン=UIウィジェット)。figure(page-43)のオーソリ選択肢は COUNTIF式『条件付個数(B$2~B$36,=A$40)』等4択。翻訳は figure を正として正しく訳出 (accurate)。JP locale 表示が誤選択肢のため input 是正推奨。影響大 (JP表示が全面不一致)。",
-      "translation": "faithful-to-figure (不修正)"
+      "translation": "faithful-to-figure (不修正)",
+      "status": "RESOLVED_IN_CORPUS (S93 同 session フォローアップ、独立再検証 PASS)"
     },
     {
       "id": "2014h26h-q088",
       "scope": "Stage 2 (choices_jp 再OCR)",
       "detail": "input.choices_jp[ウ]=『商品Bと商品D』だが figure(crop+page-37)は ウ=『商品Bと商品C』。最適化検算: 販売可能=min(1日数量,1時間注文×2)、利益 A90/B100/C120/D80万円 → B+C=220 最大=正解ウ。input の D は OCR 破損 (C→D)。翻訳は figure を正として B&C 訳出 (accurate)。input.choices_jp[ウ] 是正推奨。",
-      "translation": "faithful-to-figure (不修正)"
+      "translation": "faithful-to-figure (不修正)",
+      "status": "RESOLVED_IN_CORPUS (S93 同 session フォローアップ、独立再検証 PASS)"
     },
     {
       "id": "2014h26h-q086",
@@ -713,5 +715,17 @@
         }
       ]
     }
-  ]
+  ],
+  "corpus_fix": {
+    "note": "ユーザー指示で S93 の上流 choices_jp 欠陥 2 件を派生 corpus で是正 (figure 已確証・確定的単点改)。raw bank question_bank.json を編集→build-quiz-corpus.mjs 再生成 (idempotent、diff は当該2問のみ 5+/5-)。独立 critic 再検証=両方 PASS (figure 5倍ズーム+コードポイント照合、Rule D verifier≠fixer)。",
+    "q093": {
+      "id": "2014h26a-q093",
+      "change": "choices_jp 全4択 UIウィジェット→figure-exact COUNTIF式 (ア 条件付個数(B$2〜B$36，＝A$40) / イ ...＝$A40 [正解] / ウ 条件付個数($B2〜$B36，＝A$40) / エ ...＝$A40)。zh/en サイドカーの ウ/エ 範囲も $B$2~$B$36→$B2~$B36 へ figure 整合 (ア/イ は既に正)。正解イ・answer_keys 不変。"
+    },
+    "q088": {
+      "id": "2014h26h-q088",
+      "change": "choices_jp[ウ] 商品Bと商品D→商品Bと商品C (figure-exact)。zh/en は既に figure 整合 (商品B与商品C/Product B and Product C) で不変。正解ウ・answer_keys 不変。"
+    },
+    "verification": "tsc/eslint 0err / vitest 455 passed / build exit0 / nft IPA 0。questions.json diff=当該2問のみ。"
+  }
 }

@@ -364,4 +364,14 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 
 ## 進捗
 - Phase 1 翻訳済: **19/29 回** (S87〜S93)。**残 10 回**。次候補 = `2013h25h` / `2013h25a` / `2012h24h` (最新優先)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
-- **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし、累積)**: **S93 新規** = `2014h26a-q093` choices_jp 全面汚染 (UIウィジェット→COUNTIF式、再OCR、影響大) / `2014h26h-q088` choices_jp[ウ] (商品D→商品C 再OCR)。累積 (S92 以前): `2016h28h-q001/q012/q096`・`2015h27a-q088` 再OCR / `2016h28a-q025` glossary / `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。
+- **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし、累積)**: ~~S93 新規 q093/q088~~ → **同 session で corpus 是正済 (下記 §追記)**。累積 (S92 以前、未是正): `2016h28h-q001/q012/q096`・`2015h27a-q088` 再OCR / `2016h28a-q025` glossary / `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。
+
+## 追記 (同 session フォローアップ): 上流 choices_jp 欠陥 2 件を派生 corpus で是正 (ユーザー指示)
+
+> ユーザー「q093/q088 这两个上流 choices_jp 缺陷顺手在派生 corpus 里修掉 (图已确证、确定性单点改)」。
+
+- **方式 (drift-proof)**: `questions.json` は `build-quiz-corpus.mjs` が raw bank `question_bank.json` (gitignored) から決定的 projection するため、**raw bank を正源として編集→ビルド再実行** (corpus 直接編集は次回ビルドで上書きされる)。idempotent・再 garble なし。Stage 2 従来修正と同方式。raw bank は gitignored のため before/after を本節 + `rule_a_audit_S93.json` の `corpus_fix` に記録 (将来の再 OCR 時に再適用要)。
+- **`2014h26a-q093`** (COUNTIF、正解イ): choices_jp 全4択 UIウィジェット→figure-exact: ア `条件付個数(B$2〜B$36，＝A$40)` / イ `…＝$A40` [正解] / ウ `条件付個数($B2〜$B36，＝A$40)` / エ `…＝$A40`。zh/en サイドカー ウ/エ 範囲も `$B$2~$B$36`→`$B2~$B36` へ figure 整合 (ア/イ は既に正、セル参照は言語非依存で三語同一・関数名のみ訳)。
+- **`2014h26h-q088`** (利益最大化、正解ウ): choices_jp[ウ] `商品Bと商品D`→`商品Bと商品C`。zh/en は既に figure 整合で不変。
+- **検証**: build 再生成で questions.json diff = **当該2問のみ (5+/5-)**、quiz_index 不変。**answer_keys/correct_answer 不変** (イ/ウ)。tsc/eslint 0err / vitest 455 / build exit0 / nft IPA 0。**独立 Rule D 再検証 (critic ≠ fixer): 両問 PASS** (figure 5倍ズーム実読 + corpus コードポイント照合 + 算術再計算: q093 全4式 `$` 位置一致・三語同一・正解イ妥当 / q088 ウ=商品Bと商品C・正解ウ=B+C=220万 最大)。
+- **影響**: q093 (JP 表示が誤選択肢→正COUNTIF式) と q088 (ウ 正答テキスト復元) が figure 一致、三語整合確立。コード変更なし。
