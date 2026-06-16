@@ -1,0 +1,706 @@
+{
+  "batch": "S95",
+  "session": 95,
+  "date": "2026-06-17",
+  "exams": [
+    "2012h24a",
+    "2011h23a",
+    "2011h23tokubetsu"
+  ],
+  "decision_frame": "D-136 (+ D-小5 統合WF / D-小6 フルページ併読 / D-小7 repair語義ガード / D-小8 combiner)。triage は Rule A 監査 critic の指摘を fixer(主 context)が figure フルページ高解像度実読で独立確認してから適用 (S94 q052 教訓)。",
+  "translate": {
+    "workflow": "wf_d98c1db4-af8",
+    "agents": 640,
+    "tokens": 23913656,
+    "total": 300,
+    "done": 300,
+    "byVerdict": {
+      "PASS": 296,
+      "CONCERNS": 4
+    },
+    "fail_null": 0,
+    "recovered_r1_not_pass": 16,
+    "fail_to_pass": [
+      "2012h24a-q023",
+      "2011h23a-q069",
+      "2011h23tokubetsu-q094"
+    ],
+    "note": "FAIL/null/直列化問題 0 のクリーンパス。pause 指示なし→全量完走。"
+  },
+  "ruleA": {
+    "workflow": "wf_daf54078-dfb",
+    "n": 37,
+    "accurate": 35,
+    "bySeverity": {
+      "none": 23,
+      "medium": 3,
+      "low": 11
+    },
+    "forced": [
+      "2012h24a-q002",
+      "2012h24a-q010",
+      "2012h24a-q021",
+      "2011h23a-q033"
+    ],
+    "not_accurate": [
+      "2011h23tokubetsu-q073",
+      "2012h24a-q002"
+    ],
+    "note": "not-accurate 2 + medium(accurate) 1 (q033) を triage。全 3 件 figure 実読+独立 critic 再検証 PASS。"
+  },
+  "applied_fix": [
+    {
+      "id": "2011h23a-q033",
+      "figure": false,
+      "correct": "ウ (不変)",
+      "severity": "medium",
+      "type": "zh terminology (日式借词)",
+      "change": "stem.zh 「恰当工程是哪一项」→「恰当过程是哪一项」。JP「工程」=作業段階/process、中文「工程」=engineering でズレ。en は元から process で不変。choices/正解 不変。",
+      "verify": "独立 critic ACCEPT (figureなし、正解ウ=系统需求定义 根拠保持)。"
+    },
+    {
+      "id": "2012h24a-q002",
+      "figure": true,
+      "page": "page-02",
+      "correct": "イ (不変)",
+      "severity": "medium",
+      "type": "drift (源にない注記追加)",
+      "change": "choice イ から独立括弧注記「（处理）/（数据存储）」を除去。zh「（图：由圆和箭头构成的、带数据存储的处理图）」/ en「(Figure: a process diagram with data stores, made of circles and arrows)」。「圆」は維持=figure 正 (主 context が figure_png+page-02 実読し イ=円(プロセス)+横二重線(データストア)+矢印の Yourdon-DeMarco DFD と確認、源 choices_jp.イ「四角形」は上流欠陥)。",
+      "verify": "独立 critic が figure 自己実読し イ=円 を確認、figure-faithful・正解イ判別根拠保持で ACCEPT。q052 教訓: translator 産出値(figure 正)から離れる「四角形」化を回避。"
+    },
+    {
+      "id": "2011h23tokubetsu-q073",
+      "figure": true,
+      "page": "page-26",
+      "correct": "ア (不変)",
+      "severity": "medium",
+      "type": "OCR garble (ε=CR) + 末尾区切り脱落",
+      "change": "区切り記号「ε」(ギリシャ字、OCR 誤読)→「CR」(改行コード) を stem_jp_clean/stem.zh/stem.en/全4選択肢(zh+en)で置換 (ε 計0/CR 計23)。さらに正解ア の末尾に区切り「CR」を補完 (figure は全選択肢の各レコード末尾に CR を持つが ア のみ choices_jp garble で脱落)。",
+      "verify": "主 context が figure_png+page-26 を実読・拡大確認 (区切り=CR字形・全4選択肢末尾CR・ア=行優先カンマ「月,1月,2月 CR 売上高,500,600 CR」)。独立 critic も figure 自己実読+拡大で全項目裏付け ACCEPT。弁別軸(行/列優先×カンマ/スラッシュ)・正解ア 根拠保持。"
+    }
+  ],
+  "upstream_ocr_backlog": [
+    {
+      "id": "2012h24a-q002",
+      "field": "choices_jp.イ",
+      "raw": "（図：四角形と矢印によるデータストア付きプロセス図）",
+      "figure": "page-02 = 円(プロセス)+横二重線(データストア)+矢印 の DFD",
+      "note": "源描写「四角形」が figure「円」と矛盾。zh/en は figure を正として「圆」訳出済。corpus fix で choices_jp.イ「四角形」→「円」すれば三語+JP整合。正解イ不変。"
+    },
+    {
+      "id": "2011h23tokubetsu-q073",
+      "field": "stem_jp + choices_jp(全4)",
+      "raw": "区切り ε(=CR の OCR 誤読)、choices_jp 全4が重度 garble (例 イ「月。売正高1月,500。2月,6005」)",
+      "figure": "page-26 = CR 区切り・各レコード末尾CR・ア=行優先カンマ 等",
+      "note": "zh/en は figure を正として再構成済 (CR・末尾CR)。JP locale は raw choices_jp(garble)を表示するため要 corpus clean。正解ア不変。"
+    }
+  ],
+  "glossary_backlog": [],
+  "upstream_note": "S89 q011 / S90 q061 / S91 q069 / S92 / S93 q093-q088 / S94 q052-q092-q096 に続き、独立 critic + 主 context の figure フルページ照合が上流 (Stage 2) OCR 欠陥を継続捕捉=網兜。翻訳成果物 (zh/en) は figure を正として忠実。",
+  "lesson": "q002/q073 とも figure-faithful 是正で、fixer(主 context)が figure を自分で高解像度実読してから適用 (D-小6 を fixer に適用)。特に q002 は translator 産出値「圆」が figure 正で、Rule A 監査の源テキスト「四角形」基準の not-accurate を鵜呑みにせず figure を正とした (S94 q052 教訓=translator 産出値から AWAY に動く fix は要警戒、の逆=figure に寄せる方向は正)。q073 は ε→CR の図忠実再構成 + ア末尾CR補完。写審分離(Rule D)で fixer≠再検証 critic。",
+  "verification": {
+    "tsc": "exit0",
+    "eslint": "0 error (既存 warning 1=quiz 無関係 tTerm)",
+    "vitest": "455 passed (+2 skipped)",
+    "build": "exit0",
+    "nft": "IPA leak 0 (data/ip/{exams,sources,syllabus}+question_bank=0 hits)。quiz route trace=quiz_index+questions+translations/25回.json (新3 sidecar 2012h24a/2011h23a/2011h23tokubetsu を *.json glob で resolve 確認)。"
+  },
+  "audits": [
+    {
+      "id": "2011h23a-q001",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23a-q005",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23a-q008",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23a-q024",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "issue ではなく好評価メモ。stem_jp 原文は第3手列を「値引きする/広告する」と誤記していたが、stem_jp_clean は figure フルページ(権威源)を正として「広告する/広告しない」に正しく是正済み。figure 実読で確認でき、上流 OCR/転記欠陥を figure 基準で修正した模範的 clean 処理。意味追加・改変なし。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23a-q033",
+      "accurate": true,
+      "severity": "medium",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": false,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "medium",
+          "detail_jp": "stem の「工程」を中文でそのまま「工程」と訳しているが、中文の「工程」は engineering(土木・システム構築事業)の意で、JP原文の「工程=作業段階/プロセス」とはずれる。本問は『どの作業段階(过程/阶段/环节)でこの目標を設定するか』を問う設問であり、自然な本土中文では「设定该目标的恰当过程/阶段/环节是哪一项」が適切。日式借词的な直訳で不自然・terminology 不適。ただし選択肢「系统需求定义」が正解ウとして正しく訳されており、正誤判定の根拠は崩れないため medium。en は『process』で正しい。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23a-q036",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh stem の設問文「只把恰当的全部列举出来的是哪一项？」はやや生硬。JP「適切なものだけを全て挙げたもの」の意味(=適切な記述のみを過不足なく列挙した選択肢)は保持されており誤訳ではないが、自然さの観点で「将所有恰当的描述全部且仅全部列举出来的是哪一项」等の方が読みやすい。意味忠実度には影響なし。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "原文 choices_jp の イ は OCR 欠陥で「a, bc」となっていたが、翻訳 zh/en では正しく「a, b, c」に復元されている。これは捏造ではなく妥当な OCR 復元(3要素選択肢として a/b/c 以外あり得ず、correct_answer=ア=a,b には影響しない)。情報として記録のみ。正解根拠は完全に保持。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23a-q045",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "stem の括弧内に焼き込まれた図の説明 (zh: 「位置 a 在社长之上、b 直接隶属于社长、c 位于会计部内、d 位于信息系统部内」/ en: 同等) は、フルページ図 (page-17.png) の4つの解答位置 (a=社長の上、b=社長直属の独立部署、c=経理部内、d=情報システム部内) を脱落・列順改変なく正確に再構成している。ただし図には部門が3つ (経理部・営業部・情報システム部) あるところ、説明は営業部を省略している。営業部にはラベル付きボックス (a/b/c/d) が無く解答に無関係なため、忠実度の欠陥ではなく経済的な記述として許容範囲。正解 イ=b の根拠 (監査部門は会計部やシステム部の内部ではなく社長直属で独立すべき) は zh/en とも保持されており、正誤判定は崩れない。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "stem_jp_clean フィールドは存在しない (この figure 問では図の説明を stem zh/en の括弧内に統合する方式)。choices は ア/イ/ウ/エ → a/b/c/d で choices_jp と完全一致、correct_answer イ=b に影響なし。用語: システム監査→系统审计 (glossary 整合・本土 zh、日式「监查」でない)、経理部→会计部、情報システム部→信息系统部、社長→社长/president いずれも適切。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23a-q061",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23a-q063",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23a-q067",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23a-q089",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "原典固有の注記 (翻訳欠陥ではない / Open Question 扱い): 図の選択肢グリッドは実際には数字 2/5/6/9 を描画しているが、選択肢テキストは「3」「5」「6」「9」となっており、ア (テキスト「3」vs 図「2」) が不一致。これは IPA 原典の問題設計に由来する特性であり、JP テキストを zh/en が一字一句忠実に保持しているため翻訳の誤訳・脱落ではない。翻訳監査の合否には影響しないが、下流の figure×選択肢対応検証で誤検出の元になりうるため記録。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23a-q093",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "翻訳自体は zh/en とも完全に忠実。stem は『〔A さんが書き出したメモ〕の(1)〜(5)を実施する順番に並べたとき，a に入れる適切なものはどれか』を zh『将〔A 先生记下的备忘录〕中的 (1)～(5) 按实施的先后顺序排列时，填入 a 处最恰当的是哪一项？』/ en『...arranged in the order in which they are carried out, which is the appropriate item to fill in position a?』と正確に訳出。脱落・誤訳・逆転なし。選択肢は記号①②③④をそのまま再現し、正解 ウ=③ の根拠は figure 依存で翻訳の影響を一切受けない。本土中国語で自然、日式借词なし、glossary(受入れテスト/移行)は本 stem では出現せず不整合なし。stem_jp_clean は欠如だが stem は OCR garble/破損表なしの clean prose のため正当(規則『無:true』)。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "翻訳外の上流問題: input の figure_png(裁剪図 /data/ip/exams/figures/2011h23a-q093.png)が本問(問31 メモ順序問題)ではなく問34(作業者・ページ記述、条件(1)-(4)、選択肢ア4/イ5/ウ6/エ7)の内容を表示しており crop ミスアライメント。ただし権威の figure_page_png(page-38)は問31を正しく含み stem と一致するため、翻訳忠実度の判定には影響なし。figure パイプライン側で crop 再生成を要する旨を上流へ申し送り推奨(本監査スコープ外)。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23tokubetsu-q001",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "選択肢ア「流用」を en で \"Diverted\" と訳出。意味(無断で再利用/転用)は保持され正解根拠(他者の実ソースコードの転用→侵害)も崩れないが、\"repurposed\"/\"reused\" の方が自然。文体上の軽微な不自然さのみで誤訳ではない。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "選択肢イ「アイディア」を zh で「创意」と訳出。原義は単なる「考え/アイデア」で、创意 はやや『創造的アイデア』寄り。ただしアイデア vs 表現 の法的区別(アイデアは著作権非保護)は維持され正誤に影響なし。「想法/点子」の方が中立。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23tokubetsu-q002",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23tokubetsu-q004",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23tokubetsu-q018",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23tokubetsu-q029",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "stem の zh で「横幅广告（Banner广告）」と訳語に英語表記を併記しているが、JP 原文には「Banner」のラテン文字併記はなく、glossary も zh=横幅广告 のみ。意味は保持され誤訳ではないが、原文に無い補足表記の追加で、他問との表記統一の観点では冗長。忠実度に実害なし(low)。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "「检索网站」「检索结果页面」は本土 zh として許容範囲だが、Web 検索文脈では「搜索网站／搜索结果」の方が自然。glossary のリスティング広告 zh=关键词检索广告 と整合はしており誤りではない。語感の好みレベル(low)。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23tokubetsu-q045",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "選択肢エ「プロジェクトの目的を周知する。」の zh 訳が「周知项目的目标。」となっており、「目的」を「目标」(goal/目標) と訳している。意味的にはほぼ等価でディストラクタの機能・正誤判定に影響しないが、厳密には「目的」は「目的」とするのがより忠実。低severity。en は「objectives」で許容範囲。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23tokubetsu-q056",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23tokubetsu-q061",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳「英数字符」は JP「英数字 (alphanumeric)」の意味を保持しており誤訳ではないが、本土中国語としてはやや日式の語感。より自然な表現は「字母数字字符」。正誤・意味には影響なし (stylistic な微調整余地のみ)。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23tokubetsu-q069",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23tokubetsu-q073",
+      "accurate": false,
+      "severity": "medium",
+      "checks": {
+        "faithful_zh": false,
+        "faithful_en": false,
+        "terminology_ok": true,
+        "clean_stem_faithful": false
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "medium",
+          "detail_jp": "【clean_stem_faithful 違反 / 根本原因】figure_page_png(page-26, 権威)では stem の区切り記号は CR 制御コード記号(C の右下に R を重ねた標準字形)であり、stem 本文も『レコード間の区切りは改行コード \"CR\" を使用する』と読める。しかし stem_jp(OCR)も stem_jp_clean も区切りを『\"ε\"』(ギリシャ文字エプシロン)としており、stem_jp_clean が figure に対して OCR 誤読(CR→ε)を是正していない。図を正として再構成すべき clean 工程が CR 記号を ε のまま残した脱落=clean_stem_faithful 不成立。問の論理自体は ε を区切り記号として自己完結し正解には影響しないが、権威源の記号と不一致。"
+        },
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "【figure 不一致 / ア 末尾区切り脱落 + 選択肢間の不整合】page-26 では選択肢ア=『月,1月,2月 [CR] 売上高,500,600 [CR]』で、500/600 のレコード末尾にも CR が付く(/tmp の拡大 crop で 600 直後の CR 記号を実読確証)。イ/ウ/エ も同様に各レコード末尾に CR を持つ。だが翻訳の choices.ア は zh『月,1月,2月 ε 销售额,500,600』/ en『Month,January,February ε Sales,500,600』で末尾 ε が無く、一方イ/ウ/エ には末尾 ε が付与されている。よって源には無かった『アだけ末尾区切り欠落』という不整合を翻訳が新たに作り込んでいる。原因は input.choices_jp.ア(OCR garble『月,1月,2月 C。 売上高,500 , 600』)が末尾 CR を取りこぼしており、翻訳が figure ではなく garble OCR に追従したため。なお ア はなお唯一の『行優先・カンマ区切り』選択肢でありイ/ウ/エ と弁別可能なので correct_answer=ア は維持され正誤判定は変化しない。zh/en は両言語ともこの脱落を継承。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "【整合性の確認 / 問題なし、記録のみ】表セル値(A1=月,B1=1月,C1=2月,A2=売上高,B2=500,C2=600)は figure と stem_jp_clean・zh/en すべて一致。専門用語: 売上高→销售额(zh, 本土表現で適切)/ Sales(en) 妥当、CSV は glossary(CSV/CSV/CSV)整合、月/1月/2月→Month/January/February 正確。イ/ウ/エ の構造(イ=転置カンマ, ウ=行優先スラッシュ, エ=転置スラッシュ)も figure と zh/en で一致。terminology_ok は成立。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23tokubetsu-q090",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23tokubetsu-q095",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24a-q002",
+      "accurate": false,
+      "severity": "medium",
+      "checks": {
+        "faithful_zh": false,
+        "faithful_en": false,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "選択肢イ (正解): JP源 choices_jp は『四角形と矢印によるデータストア付きプロセス図』だが、zh『由圆（处理）、横线（数据存储）和箭头构成…』/ en『circles (processes), horizontal lines (data stores), and arrows』と訳されている。(1) 源テキストの『四角形』を『圆/circles』に変更している (源 vs 訳の不一致)。(2) 源にない注記『（处理）/（数据存储）』『(processes)/(data stores)』を追加している (源テキスト未記載の内容追加=捏造)。figure 実読 (crop + page-02 フルページ両方確認) では確かにプロセスノードは『円』でありデータストアは二重横線なので、訳は『図』には忠実だが『JP源 choices_jp テキスト』には不忠実。監査の正は JP源テキストのため faithful_zh/en=false。ただし正解イ (DFD図) の識別根拠は崩れておらず correct_answer='イ' は両言語で保持されるため high ではなく medium。注: 源テキスト自体が figure と矛盾 (四角形 vs 実際は円) しており、上流 choices_jp の欠陥が根本原因。訳はむしろ figure/DFD 意味的には正しい方向の是正だが、源逐語からの逸脱+内容追加という点で fidelity issue として記録。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "stem zh『记述示例』の『记述』は日本語「記述」の直借的表現。本土 zh では『描述』がより自然。意味は通じ正誤に影響なし。低 severity の用語スタイル指摘のみ。choices イ の『记述』系も同様。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢エ: JP源『平行線と斜線による記号図』を訳は忠実に踏襲 (zh『由平行线和斜线（箭头）构成的符号图』/ en『parallel lines and slanted lines (arrows)』)。ただし figure 実体は特性要因図 (fishbone): 1本の背骨線 (spine) に斜線の枝が刺さる形で、厳密には『平行線』ではない。これは JP源 choices_jp 側の図描写不正確を訳が継承したもので、訳自体は源に忠実。源欠陥の継承として low で記録 (正解非該当肢のため正誤影響なし)。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24a-q005",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24a-q010",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "選択肢ウ (正解) の zh 訳「为使经营符合企业活动而对经营进行统治（监督）的机制」に、JP 源「経営を統治する仕組み」には存在しない補足語「（监督）」が追加されている。意味的にはガバナンス＝統治に監督が含意されるため正誤判定や核心義への影響はないが、源にない内容の付加であり厳密な忠実性からは逸脱。en 訳「governing management」には同様の付加がなく整合しているため、zh のみの軽微な addition。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24a-q021",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "選択肢イ「職能別組織」の zh 訳が sidecar では「职能型组织」だが、input の glossary では「职务制组织」と登録されており不一致。ただし「职能型组织」の方が本土中国語として自然・標準的な管理用語であり、意味は完全に保持され正解(ア)の根拠にも影響しない。忠実度上の欠陥ではなく、glossary 側の登録語が弱いだけの軽微な整合性ノート。glossary を「职能型组织」に揃えることを推奨。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24a-q022",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24a-q025",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "「入金遅延」を「入款延迟」と訳出。意味は通じ stem/表で一貫しているが、本土中国語としては「收款延迟」または「逾期未收款」がより自然。誤訳ではなく軽微な訳語選好の指摘。正誤判定・数値・列構成には一切影響なし。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24a-q032",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24a-q062",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24a-q063",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24a-q072",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24a-q080",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "排他制御の zh 主表記が「排他控制」で、本土 zh の標準語は「互斥（控制/锁）」であるため、主表記がやや日式借词寄り。ただし直後に「（互斥控制）」を併記しているため学習者の理解は妨げられず、意味の保持・正誤判定への影響はなし。忠実度は問題なく、純粋に用語ローカライズ上の軽微な好み。理想的には主表記を「互斥控制」、補足を「排他控制」と入れ替える方が本土 zh として自然。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24a-q083",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24a-q098",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "stem は『会員登録をする Web ページの仕組み』の①〜⑤を参照するが, ①〜⑤の実体定義は JP 源 (stem_jp・figure crop・page-47 フルページのいずれ) にも存在しない (前ページ内容と推定)。これは原典データの上流限界であり翻訳欠陥ではない。翻訳は JP 源にある範囲を zh/en とも忠実に再現しており, 利用者が単体で正解根拠を検証できない点のみ留意 (translation 自体は accurate)。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "glossary『安全管理措置』en『Safety Management Measures』に対し stem 訳は『safe management』『necessary and appropriate measures』と分解表現。意味は保持され誤訳ではないが en 用語の表記揺れ。zh は『安全管理』『必要且适当的措施』で整合。実害なし。"
+        }
+      ]
+    }
+  ]
+}

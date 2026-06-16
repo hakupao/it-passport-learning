@@ -443,3 +443,55 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 - **`2013h25h-q096`** (正解イ): `choices_jp.ア` `C14*(D14*0.1)`→`C14+(D14*0.1)` (figure page-44 の ＋=加算、半角正規化) + sidecar zh/en 同期 → 三語整合。
 - **検証**: build 再生成で questions.json diff = **当該3問のみ (3+/3-)**、quiz_index/answer_keys/correct_answer (ア/ア/イ) 不変。tsc/eslint 0err / vitest 455 / build exit0 / **nft IPA 0** (quiz route=data/ip/quiz のみ)。**独立 Rule D 再検証 (critic ≠ fixer) = 3件とも PASS** (critic が page-18/40/44 を高解像度 per-cell crop 実読し、`0.10` vs `0.18`・`20,000` vs `20,800`・`＋` vs `＊` の sub-glyph 区別まで figure 一致・三語整合・正解 key 不変を独立確認)。
 - **影響**: 3 問とも JP/zh/en の三語が figure 一致。**q052/q092/q096 は backlog から除去 (RESOLVED_IN_CORPUS)**。残 S94 backlog = q018 glossary のみ (textbook scope)。
+
+---
+
+# スケール バッチ S95 (Session 95, 2026-06-17) — `2012h24a` / `2011h23a` / `2011h23tokubetsu`
+
+> ユーザー路由「Quiz Phase 1 续批」(回数未指定) → 最新優先 3 回 (既訳 22 回除外、STATE「次候補」と一致)。統合 1 ワークフロー (D-小5) + フルページ併読 (D-小6) + repair 語義ガード (D-小7) + combiner (D-小8、いずれも scripts 組込済=追加コード無し)。**FAIL/null/直列化問題 0 のクリーンな翻訳パス。** 3 是正は全て fixer (主 context) が figure を高解像度実読で確認してから適用 (S94 q052 教訓を予防適用)。
+
+## 何をしたか
+- prep ×3 (figure 17/24/21=62、crop+page 全存在 fail-fast) → `quiz-phase1-batch.mjs translate S95` で統合 input `input_batch_S95.json` (300 問・id 全一意・figure 62 全てフルページ付)。
+- translate 統合ワークフロー (`wf_d98c1db4-af8`): 300 問。**640 agent / 23.9M tok**。pause 指示なし → 全量完走。
+- merge ×3 → committed sidecar `translations/{2012h24a,2011h23a,2011h23tokubetsu}.json` (各 100/100、missing 0、clean stem 37/40/58=135)。
+- ruleA-prep ×3 (各 N=12、層化) + **強制4** (4 CONCERNS) → `quiz-phase1-batch.mjs ruleA S95` で統合 sidecar/items (37 サンプル、figure 22) → audit ワークフロー (`wf_daf54078-dfb`、**37 critic**、independent)。**resume 不要**。
+
+## 結果
+
+### 翻訳カバレッジ
+- **300/300 翻訳 (0 欠落)**。clean stem: 2012h24a=37 / 2011h23a=40 / 2011h23tokubetsu=58 (計 135)。
+
+### Rule D (in-pipeline reviewer = code-reviewer, ≠ translator)
+- raw: **296 PASS / 4 CONCERNS / 0 FAIL / 0 null**。S94 と違い FAIL/null/直列化問題ゼロ。
+- repair 回復 **16 件** (R1 が PASS でない → 最終 PASS)、内 **3 件は FAIL→PASS** (`2012h24a-q023` / `2011h23a-q069` / `2011h23tokubetsu-q094`、いずれも figure 問)。
+- 4 CONCERNS (`2012h24a-q002`/`q010`/`q021`、`2011h23a-q033`) を Rule A 監査に強制追加。
+
+### Rule A (独立 critic, N=37 [各回12 + 強制4、層化 figure22]) — **accurate 35/37**
+- **severity none23 / low11 / medium3 / high0**。not-accurate **2**: q073 (medium)・q002 (medium)。medium(accurate=true) 1 = q033。
+- **low11** = 全て本土 zh 自然さ / 上流データ観察 / 妥当な OCR 復元 (意味・正誤・脱落・捏造ゼロ、受容)。high ゼロ。
+
+### applied_fix (genuine 3 件、全て figure-faithful・正解不変)
+- **`2011h23a-q033`** (medium、zh 用語、正解ウ不変): stem.zh 「工程」(中文=engineering) が JP「工程」(=作業段階/process) とズレ → `恰当工程是哪一项`→`恰当过程是哪一项` (en は元から process)。choices/正解 不変。独立 critic ACCEPT。
+- **`2012h24a-q002`** (medium、drift、正解イ不変): choice イ から源にない注記「（处理）/（数据存储）」除去 → zh `（图：由圆和箭头构成的、带数据存储的处理图）`。**「圆」は維持** = figure 正 (主 context が figure_png+page-02 実読し イ=円(プロセス)+横二重線(データストア)+矢印の Yourdon-DeMarco DFD と確認。源 choices_jp.イ「四角形」は上流欠陥)。**q052 教訓: translator 産出値「圆」(figure 正)から「四角形」へ動かす誤 fix を回避。** 独立 critic が figure 自己実読し ACCEPT。
+- **`2011h23tokubetsu-q073`** (medium、OCR garble + 末尾脱落、正解ア不変): 区切り記号「ε」(ギリシャ字、OCR 誤読)→「CR」(改行コード) を stem_jp_clean/stem.zh/stem.en/全4選択肢(zh+en)で置換 (ε 0/CR 23)。さらに正解ア の末尾に区切り CR を補完 (figure は全選択肢の各レコード末尾に CR を持つが ア のみ choices_jp garble で脱落)。**主 context が figure_png+page-26 を実読・拡大確認** (区切り=CR字形・全4選択肢末尾CR・ア=行優先カンマ「月,1月,2月 CR 売上高,500,600 CR」)。独立 critic も figure 自己実読+拡大で全項目裏付け ACCEPT。
+- **実効: 翻訳欠陥 0** (3 件是正後、全 300 が figure/源に忠実)。Rule B archive 不要 (REGRESSION なし)。
+
+### 上流 (Stage 2) OCR 欠陥の申し送り (主 context が figure 直接実読で確証、翻訳成果物 zh/en に影響なし、要ユーザー判断)
+- **`2012h24a-q002`** `choices_jp.イ`: raw=`四角形と矢印…`、figure(page-02)=`円(プロセス)+横二重線(データストア)+矢印 の DFD`。源描写「四角形」が figure「円」と矛盾。zh/en は figure を正として「圆」訳出済 → corpus fix で choices_jp.イ「四角形」→「円」すれば三語+JP 整合。正解イ不変。
+- **`2011h23tokubetsu-q073`** `stem_jp + choices_jp(全4)`: 区切り ε(=CR の OCR 誤読)、choices_jp 全4が重度 garble (例 イ「月。売正高1月,500。2月,6005」)。zh/en は figure(page-26)を正として再構成済 (CR・末尾CR)。**JP locale は raw choices_jp(garble)を表示するため要 corpus clean** (zh/en は影響なし)。正解ア不変。
+- S89〜S94 に続き独立 critic + 主 context の figure 実読が上流 OCR 欠陥を継続捕捉=網兜。
+
+### ビルド / トレース / テスト (全 GREEN・回帰なし)
+- tsc `--noEmit` exit 0 / eslint 0 error (既存 warning 1=quiz 無関係 tTerm) / **vitest 455 passed** (+2 skipped) / `pnpm build` exit 0。
+- **nft IPA leak = 0** (全 .nft.json で `data/ip/{exams,sources,syllabus}`+question_bank 0 hits)。quiz route trace = quiz_index + questions + **translations/25 回.json** (新 3 sidecar 2012h24a/2011h23a/2011h23tokubetsu を `translations/*.json` glob で resolve 確認、22+3)。
+
+## コード変更
+- **無し** (combiner/translate/ruleA/prep/merge は既存・D-小6/7/8 組込済で不変)。
+- 成果物 = sidecar 3 ファイル (内 q033/q002/q073 是正済) + 証拠 (`rule_a_audit_S95.json` + 本節)。Rule B archive 不要 (REGRESSION なし)。
+
+## UI スクリーンショット (S88〜S94 と同根拠で省略)
+- reader/`QuizSet`/`quizReader` 不変、新 sidecar 同一 schema (merge 検証通過) + nft trace 済 + build 成功。意味検証は Rule A 37 独立サンプル + q033/q002/q073 の独立再検証 (figure 実読) が担保。
+
+## 進捗
+- Phase 1 翻訳済: **25/29 回** (S87〜S95)。**残 4 回**。次候補 = `2010h22a` / `2010h22h` / `2009h21a` / `2009h21h` (最新優先、残=2009h21h/2009h21a/2010h22h/2010h22a)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
+- **要ユーザー判断 backlog (上流データ品質、翻訳成果物 zh/en に影響なし、累積)**: **S95 新規**: `2012h24a-q002` choices_jp.イ (四角形→figure 円) / `2011h23tokubetsu-q073` stem+choices_jp ε→CR + garble clean (JP locale 影響)。累積: `2012h24h-q018`・`2016h28a-q025` glossary 職能別組織 / `2016h28h-q001/q012/q096`・`2015h27a-q088` 再OCR / `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。(S93 q093/q088・S94 q052/q092/q096 は corpus 是正済。)
