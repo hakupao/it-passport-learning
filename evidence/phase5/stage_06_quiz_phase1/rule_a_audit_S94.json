@@ -121,7 +121,8 @@
       "raw": "0.18",
       "figure": "0.10",
       "impact": "JP locale が誤値 0.18 表示 (zh/en は 0.10 で正)。corpus fix で choices_jp.ウ→0.10 すれば三語整合。",
-      "verified_by": "主 context 直接 figure 実読"
+      "verified_by": "主 context 直接 figure 実読",
+      "status": "RESOLVED_IN_CORPUS (同 session フォローアップ、ユーザー指示)"
     },
     {
       "id": "2012h24h-q092",
@@ -129,7 +130,8 @@
       "raw": "大阪幸子 20,800円 / 東京三郎 10,800円",
       "figure": "大阪幸子 20,000円 / 東京三郎 10,000円",
       "impact": "全 locale が誤値 (翻訳は input に忠実)。正解ア不変。corpus fix で choices_jp.イ + zh/en 同期。",
-      "verified_by": "主 context 直接 figure 実読"
+      "verified_by": "主 context 直接 figure 実読",
+      "status": "RESOLVED_IN_CORPUS (同 session フォローアップ、ユーザー指示)"
     },
     {
       "id": "2013h25h-q096",
@@ -137,7 +139,8 @@
       "raw": "C14*(D14*0.1)",
       "figure": "C14＋(D14＊0.1)",
       "impact": "上流 OCR で ＋→* (加算→乗算の意味変化)。distractor のみ、正解イ不変。corpus fix で choices_jp.ア + zh/en 同期。",
-      "verified_by": "主 context 直接 figure 実読"
+      "verified_by": "主 context 直接 figure 実読",
+      "status": "RESOLVED_IN_CORPUS (同 session フォローアップ、ユーザー指示)"
     }
   ],
   "glossary_backlog": [
@@ -845,5 +848,34 @@
         }
       ]
     }
-  ]
+  ],
+  "corpus_fix": {
+    "note": "ユーザー指示「下批开始前帮我做了」→ 上流 choices_jp 欠陥 3 件を派生 corpus で是正 (S93 同方式 drift-proof)。",
+    "method": "raw bank question_bank.json (gitignored) を正源として choices_jp を編集 (id-scoped + before-value assert) → build-quiz-corpus.mjs 再生成 (idempotent) → questions.json 反映 + tr_<id>.json 編集 + merge で sidecar zh/en 同期。",
+    "fixes": [
+      {
+        "id": "2013h25a-q052",
+        "field": "choices_jp.ウ + sidecar zh/en",
+        "before": "0.18 / (zh,en は既に 0.10)",
+        "after": "0.10 (三語整合)",
+        "correct": "ア 不変"
+      },
+      {
+        "id": "2012h24h-q092",
+        "field": "choices_jp.イ + sidecar zh/en",
+        "before": "大阪幸子20,800/東京三郎10,800",
+        "after": "20,000 / 10,000 (三語整合)",
+        "correct": "ア 不変"
+      },
+      {
+        "id": "2013h25h-q096",
+        "field": "choices_jp.ア + sidecar zh/en",
+        "before": "C14*(D14*0.1)",
+        "after": "C14+(D14*0.1) (＋=加算、figure 整合、半角正規化)",
+        "correct": "イ 不変"
+      }
+    ],
+    "verify": "questions.json diff=当該3問のみ (3+/3-)、quiz_index/answer_keys/correct_answer 不変。独立 Rule D 再検証 (critic≠fixer) = 3件とも PASS (critic が page-18/40/44 を高解像度 per-cell crop 実読、＋/＊ glyph 区別含め figure 一致・三語整合・正解 key 不変を確認)。tsc/eslint 0err/vitest 455/build exit0/nft IPA 0。",
+    "drift_note": "raw bank は gitignored のため、将来 Stage 2 再 OCR 時は本是正の再適用が必要 (before/after は本節 + README §追記 に記録)。"
+  }
 }

@@ -431,4 +431,15 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 
 ## 進捗
 - Phase 1 翻訳済: **22/29 回** (S87〜S94)。**残 7 回**。次候補 = `2012h24a` / `2011h23a` / `2011h23tokubetsu` (最新優先、残=2009h21h/2009h21a/2010h22h/2010h22a/2011h23a/2011h23tokubetsu/2012h24a)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
-- **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし、累積)**: S94 新規 `2013h25a-q052` (choices_jp.ウ 0.18→0.10)・`2012h24h-q092` (choices_jp.イ 20,800/10,800→20,000/10,000)・`2013h25h-q096` (choices_jp.ア *→＋) 再OCR / `2012h24h-q018` glossary 職能別組織。累積 (S92 以前): `2016h28h-q001/q012/q096`・`2015h27a-q088` 再OCR / `2016h28a-q025` glossary / `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。(S93 q093/q088 は corpus 是正済。)
+- **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし、累積)**: ~~S94 新規 q052/q092/q096 choices_jp~~ → **同 session で corpus 是正済 (下記 §追記)**。残 `2012h24h-q018` glossary 職能別組織 (textbook scope)。累積 (S92 以前): `2016h28h-q001/q012/q096`・`2015h27a-q088` 再OCR / `2016h28a-q025` glossary / `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。(S93 q093/q088 は corpus 是正済。)
+
+## 追記 (同 session フォローアップ): 上流 choices_jp 欠陥 3 件を派生 corpus で是正 (ユーザー指示「下批开始前帮我做了」)
+
+> S94 で backlog 化した上流 choices_jp OCR 欠陥 3 件を、次バッチ前に S93 と同じ **drift-proof** 方式で是正。主 context は事前に 3 figure を高解像度実読で確証済み。
+
+- **方式 (drift-proof)**: `questions.json` は `build-quiz-corpus.mjs` が raw bank `question_bank.json` (gitignored) から決定的 projection (choices_jp 逐語) するため、**raw bank を正源として choices_jp を編集 (id-scoped + before-value assert) → ビルド再実行**。zh/en は `tr_<id>.json` を編集し merge で sidecar 同期。raw bank は gitignored のため将来の Stage 2 再 OCR 時は再適用要 (before/after を本節 + `rule_a_audit_S94.json` の `corpus_fix` に記録)。
+- **`2013h25a-q052`** (正解ア): `choices_jp.ウ` `0.18`→`0.10` (figure page-18 整合)。sidecar zh/en は既に 0.10 (元訳が figure 正値) → 三語 0.10 整合。
+- **`2012h24h-q092`** (正解ア): `choices_jp.イ` 大阪幸子 `20,800`→`20,000` / 東京三郎 `10,800`→`10,000` (figure page-40) + sidecar zh/en 同期 → 三語整合。
+- **`2013h25h-q096`** (正解イ): `choices_jp.ア` `C14*(D14*0.1)`→`C14+(D14*0.1)` (figure page-44 の ＋=加算、半角正規化) + sidecar zh/en 同期 → 三語整合。
+- **検証**: build 再生成で questions.json diff = **当該3問のみ (3+/3-)**、quiz_index/answer_keys/correct_answer (ア/ア/イ) 不変。tsc/eslint 0err / vitest 455 / build exit0 / **nft IPA 0** (quiz route=data/ip/quiz のみ)。**独立 Rule D 再検証 (critic ≠ fixer) = 3件とも PASS** (critic が page-18/40/44 を高解像度 per-cell crop 実読し、`0.10` vs `0.18`・`20,000` vs `20,800`・`＋` vs `＊` の sub-glyph 区別まで figure 一致・三語整合・正解 key 不変を独立確認)。
+- **影響**: 3 問とも JP/zh/en の三語が figure 一致。**q052/q092/q096 は backlog から除去 (RESOLVED_IN_CORPUS)**。残 S94 backlog = q018 glossary のみ (textbook scope)。
