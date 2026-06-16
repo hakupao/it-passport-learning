@@ -375,3 +375,60 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 - **`2014h26h-q088`** (利益最大化、正解ウ): choices_jp[ウ] `商品Bと商品D`→`商品Bと商品C`。zh/en は既に figure 整合で不変。
 - **検証**: build 再生成で questions.json diff = **当該2問のみ (5+/5-)**、quiz_index 不変。**answer_keys/correct_answer 不変** (イ/ウ)。tsc/eslint 0err / vitest 455 / build exit0 / nft IPA 0。**独立 Rule D 再検証 (critic ≠ fixer): 両問 PASS** (figure 5倍ズーム実読 + corpus コードポイント照合 + 算術再計算: q093 全4式 `$` 位置一致・三語同一・正解イ妥当 / q088 ウ=商品Bと商品C・正解ウ=B+C=220万 最大)。
 - **影響**: q093 (JP 表示が誤選択肢→正COUNTIF式) と q088 (ウ 正答テキスト復元) が figure 一致、三語整合確立。コード変更なし。
+
+---
+
+# スケール バッチ S94 (Session 94, 2026-06-16) — `2013h25h` / `2013h25a` / `2012h24h`
+
+> ユーザー路由「Quiz Phase1 续批」(回数未指定) → 最新優先 3 回 (既訳 19 回除外、STATE「次候補」と一致)。統合 1 ワークフロー (D-小5) + フルページ併読 (D-小6) + repair 語義ガード (D-小7) + combiner (D-小8、いずれも scripts 組込済=追加コード無し)。**本バッチの教訓: Rule A 監査 critic の figure 主張自体が誤りうる (q052 ハルシネーション) → 独立検証 critic + 主 context の figure 直接実読が捕捉し、誤 fix を REVERT。**
+
+## 何をしたか
+- prep ×3 (figure 16/9/16=41、crop+page 全存在 fail-fast) → `quiz-phase1-batch.mjs translate S94` で統合 input `input_batch_S94.json` (300 問・id 全一意・figure 41 全てフルページ付)。
+- translate 統合ワークフロー (`wf_7fdb5ae3-2ed`): 300 問。**648 agent / 23.7M tok / ~69 分**。pause 指示なし → 全量完走。
+- merge ×3 → committed sidecar `translations/{2013h25h,2013h25a,2012h24h}.json` (各 100/100、missing 0、clean stem 37/47/39=123)。
+- ruleA-prep ×3 (各 N=12、層化) + **強制7** (3 CONCERNS + null q028 + 未抽中 recovered 2 + 直列化修復 q091) → `quiz-phase1-batch.mjs ruleA S94` で統合 sidecar/items (43 サンプル、figure 27) → audit ワークフロー (`wf_78495593-73a`、**43 critic**、independent)。**resume 不要**。
+
+## 結果
+
+### 翻訳カバレッジ
+- **300/300 翻訳 (0 欠落)**。clean stem: 2013h25h=37 / 2013h25a=47 / 2012h24h=39 (計 123)。
+
+### Rule D (in-pipeline reviewer = code-reviewer, ≠ translator)
+- raw: **294 PASS / 3 CONCERNS / 2 FAIL / 1 null**。
+- **null 1 = `2013h25h-q028`** (figure 損益問): in-pipeline reviewer のツール呼び出しが**パース失敗** (infra)、translator 出力は well-formed → **独立 `code-reviewer` 再レビュー=PASS** (Rule D 補缺、figure page-11 実読・5行2列損益表 全数値 JP=図=zh=en 一致・正解エ整合 [営業利益 200→200 不変/経常利益 190→210 増]・0 high/medium)。S92 q017 と同型。
+- **直列化修復 `2013h25a-q091`**: translator が zh stem の引用符を**未エスケープ ASCII `"`** で落盤 → JSON 不正で merge 失敗 (en は `\"` で正)。in-pipeline reviewer は schema 検証済み StructuredOutput **返却値**を審査したため PASS (ファイルではない)。→ **最小エスケープ修復** (`\"`、訳文内容 0 改変)、Rule A 強制サンプルで語義再核験。
+- **triage は verdict ラベルでなく repair 後実落盘訳文 + 独立 Rule A + 主 context の figure 高解像度実読で判定**。
+
+### Rule A (独立 critic, N=43 [各回12 + 強制7、層化 figure27]) — **accurate 39/43**
+- **severity none27 / low12 / medium1 / high3**。not-accurate **4**: q018 (high)・q052 (high)・q096 (high)・q092 (medium)。
+- **low12** = 全て本土 zh 自然さ / 上流データ観察 (意味・正誤・脱落・捏造ゼロ、受容)。
+
+### applied_fix (genuine 翻訳欠陥 2 件 + REGRESSION 1 件)
+- **`2012h24h-q018`** (high、用語誤訳、正解イ不変): 正解選択肢「職能別組織」(=functional org) の zh が `职务制组织` (职务=post≠职能=function)、en `Job-function organization`。→ zh `职能制组织` / en `Functional organization` (S92 q025 確証訳一致)。根因=supply glossary の同概念分裂 (機能別→职能制/職能別→职务制)。独立 critic 再検証 PASS。
+- **`2013h25h-q096`** (high、clean stem 忠実度、正解イ不変): translator の clean stem E2 セル設定で**絶対行参照 $14 脱落** (`D2/D14`、複写時 相対化で誤) + 複写範囲 `E3〜E13` (figure は E14)。→ `D2/D$14` / `E3〜E14` (stem_jp_clean/zh/en 3 箇所)。**主 context が page-44 を高解像度 crop 実読**し figure (D2／D$14・E3〜E14・全角演算子) を直接確認。**glyph 決定**: figure は全角だが q096 の D2/F2/全選択肢が半角・選択肢は上流由来で非変更 → 問内一貫性優先で E2 除算も半角 `/` 統一 ($14・E14 の意味修正は保持。corpus に全角/半角の統一規約なし=2026r08 全角・2023r05 半角で混在実測)。独立 critic 再検証 PASS。
+- **`2013h25a-q052` = REGRESSION (誤 fix を REVERT)**: Rule A 監査 critic が「choices.ウ の sidecar 0.10 は figure(crop+page-18)=0.18 に対し捏造」と判定 → 主 context が 0.10→0.18 に「是正」。**しかし独立検証 critic が page-18 を 8x 実読し figure=0.10 と反証** → 主 context が **crop (=選択肢を含まない) と page-18 を高解像度実読**し figure ウ=`0.10` を直接確認 (監査 critic の「crop が 0.18 を示す」はハルシネーション)。→ **0.18→0.10 に REVERT** (元訳が正、figure 整合)。`input.choices_jp.ウ`=0.18 は上流 OCR garble (0→8) → backlog。Rule B archive: `failures/quiz_phase1_S94_2013h25a-q052_regression{.md,_defective.json}`。
+- **実効: 翻訳欠陥 0** (q018/q096 是正 + q052 元訳復帰後、全 300 が figure/源に忠実)。
+
+### 上流 (Stage 2) OCR 欠陥の申し送り (主 context が figure 直接実読で確証、翻訳成果物に影響なし、要ユーザー判断)
+- **`2013h25a-q052`** `choices_jp.ウ`: raw=`0.18`、figure(page-18)=`0.10`。JP locale が誤値 0.18 表示 (zh/en は 0.10 で正)。corpus fix で choices_jp.ウ→0.10 すれば三語整合。
+- **`2012h24h-q092`** `choices_jp.イ`: raw=`大阪幸子 20,800円 / 東京三郎 10,800円`、figure(page-40)=`20,000円 / 10,000円` (0→8 OCR)。全 locale が誤値 (翻訳は input に忠実)、正解ア不変。corpus fix で choices_jp.イ + zh/en 同期。
+- **`2013h25h-q096`** `choices_jp.ア`: raw=`C14*(D14*0.1)`、figure(page-44)=`C14＋(D14＊0.1)` (＋→* で加算→乗算の意味変化)。distractor のみ、正解イ不変。corpus fix で choices_jp.ア + zh/en 同期。
+- S89〜S93 に続き独立 critic + 主 context の figure 実読が上流 OCR 欠陥を継続捕捉。**S94 では加えて Rule A 監査 critic 自身の figure 主張誤り (q052) を多段独立検証が捕捉** = 写審分離 + 独立検証の複利。
+
+### glossary backlog
+- **`2012h24h-q018`**: supply glossary が「機能別組織→职能制组织」と「職能別組織→职务制组织」を分裂 (同概念)。textbook glossary で職能別→职能制 に統一すべき (S92 q025 と同型)。
+
+### ビルド / トレース / テスト (全 GREEN・回帰なし)
+- tsc `--noEmit` exit 0 / eslint 0 error (既存 warning 1) / **vitest 455 passed** (+2 skipped) / `pnpm build` exit 0。
+- **nft IPA leak = 0** (全 .nft.json で `data/ip/{exams,sources,syllabus}` 0 hits)。quiz route trace = quiz_index + questions + **translations/22 回.json** (新 3 sidecar resolve 確認、19+3)。
+
+## コード変更
+- **無し** (combiner/translate/ruleA/prep/merge は既存・D-小6/7/8 組込済で不変)。
+- 成果物 = sidecar 3 ファイル + q018/q096 是正 + q052 revert + q091 エスケープ修復 + Rule B archive 3 + 証拠 (`rule_a_audit_S94.json` + 本節)。
+
+## UI スクリーンショット (S88〜S93 と同根拠で省略)
+- reader/`QuizSet`/`quizReader` 不変、新 sidecar 同一 schema (merge 検証通過) + nft trace 済 + build 成功。意味検証は Rule A 43 独立サンプル + q018/q052/q096 の独立再検証 (figure 実読) が担保。
+
+## 進捗
+- Phase 1 翻訳済: **22/29 回** (S87〜S94)。**残 7 回**。次候補 = `2012h24a` / `2011h23a` / `2011h23tokubetsu` (最新優先、残=2009h21h/2009h21a/2010h22h/2010h22a/2011h23a/2011h23tokubetsu/2012h24a)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
+- **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし、累積)**: S94 新規 `2013h25a-q052` (choices_jp.ウ 0.18→0.10)・`2012h24h-q092` (choices_jp.イ 20,800/10,800→20,000/10,000)・`2013h25h-q096` (choices_jp.ア *→＋) 再OCR / `2012h24h-q018` glossary 職能別組織。累積 (S92 以前): `2016h28h-q001/q012/q096`・`2015h27a-q088` 再OCR / `2016h28a-q025` glossary / `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。(S93 q093/q088 は corpus 是正済。)

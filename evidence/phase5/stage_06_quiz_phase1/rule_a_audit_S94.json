@@ -1,0 +1,849 @@
+{
+  "batch": "S94",
+  "session": 94,
+  "date": "2026-06-16",
+  "exams": [
+    "2013h25h",
+    "2013h25a",
+    "2012h24h"
+  ],
+  "decision_frame": "D-136 (+ D-小5 統合WF / D-小6 フルページ併読 / D-小7 repair語義ガード / D-小8 combiner)。triage は in-pipeline verdict ラベルでなく repair 後実落盘訳文 + 独立 Rule A + 主 context の figure 高解像度実読で判定。",
+  "translate": {
+    "workflow": "wf_7fdb5ae3-2ed",
+    "agents": 648,
+    "tokens": "23.7M",
+    "duration_min": 69,
+    "total": 300,
+    "done": 300,
+    "byVerdict": {
+      "PASS": 294,
+      "CONCERNS": 3,
+      "FAIL": 2,
+      "null": 1
+    },
+    "null_case": {
+      "id": "2013h25h-q028",
+      "reason": "in-pipeline reviewer のツール呼び出しがパース失敗 (infra)。translator 出力は well-formed。",
+      "ruleD_backfill": "独立 code-reviewer 再レビュー=PASS (figure page-11 実読・損益表全数値一致・正解エ整合・0 high/medium)。"
+    },
+    "serialization_fix": {
+      "id": "2013h25a-q091",
+      "reason": "translator が zh stem の引用符を未エスケープの ASCII \" で落盤 → JSON 不正 (en は \\\" で正)。in-pipeline reviewer は schema 検証済み StructuredOutput 返却値を審査したため PASS。",
+      "action": "最小エスケープ修復 (訳文内容 0 改変)。独立 Rule A 強制サンプルで語義再核験。"
+    }
+  },
+  "ruleA": {
+    "workflow": "wf_78495593-73a",
+    "n": 43,
+    "accurate": 39,
+    "bySeverity": {
+      "none": 27,
+      "high": 3,
+      "low": 12,
+      "medium": 1
+    },
+    "forced": [
+      "2013h25h-q001",
+      "2013h25h-q063",
+      "2013h25h-q028",
+      "2013h25a-q054",
+      "2013h25a-q091",
+      "2012h24h-q018",
+      "2012h24h-q015"
+    ],
+    "not_accurate": [
+      "2012h24h-q018",
+      "2013h25a-q052",
+      "2013h25h-q096",
+      "2012h24h-q092"
+    ],
+    "note": "4 not-accurate のうち 2012h24h-q092 は上流 choices_jp OCR (翻訳は input に忠実、正解ア不変)。残 3 (q018/q052/q096) を triage。"
+  },
+  "applied_fix": [
+    {
+      "id": "2012h24h-q018",
+      "severity": "high",
+      "type": "real_terminology_defect",
+      "correct_answer": "イ (不変)",
+      "before": {
+        "choices.イ.zh": "职务制组织",
+        "choices.イ.en": "Job-function organization"
+      },
+      "after": {
+        "choices.イ.zh": "职能制组织",
+        "choices.イ.en": "Functional organization"
+      },
+      "rationale": "正解選択肢「職能別組織」(=functional organization、機能別組織と同義) の zh が「职务制」(职务=post/duty≠职能=function) と取り違え。本土定訳「职能制组织」、en 標準訳「Functional organization」(S92 q025 と一致)。glossary 自体が分裂 (機能別→职能制 / 職能別→职务制) が根因 → glossary backlog。",
+      "verify": "独立 critic 再検証=PASS (源照合・他選択肢/stem 不変・正解イの語義復元)。"
+    },
+    {
+      "id": "2013h25h-q096",
+      "severity": "high",
+      "type": "clean_stem_fidelity_defect",
+      "correct_answer": "イ (不変、E2設定に非依存)",
+      "before": {
+        "E2_formula": "D2/D14",
+        "E2_copy_range": "E3〜E13"
+      },
+      "after": {
+        "E2_formula": "D2/D$14",
+        "E2_copy_range": "E3〜E14"
+      },
+      "applied_to": [
+        "stem_jp_clean",
+        "stem.zh",
+        "stem.en"
+      ],
+      "rationale": "translator の clean stem が E2 セル設定で絶対行参照 $14 を脱落 (D14、複写時に分母が相対化し誤る) + 複写範囲 E13 (figure は E14)。figure page-44 を主 context が高解像度 crop 実読し D2／D$14・E3〜E14 を確認 ($ は複写時のセマンティクスに必須)。",
+      "glyph_decision": "figure は全角演算子 (／＋＊) だが、q096 の D2/F2/全選択肢が半角で、選択肢は上流 choices_jp 由来 (半角) のため非変更。問内一貫性を優先し E2 除算も半角 / に統一 (D2/D$14)。$14 と複写範囲 E14 の意味修正は保持。corpus に全角/半角の統一規約なし (2026r08 全角・2023r05 半角で混在実測)。",
+      "verify": "独立 critic 再検証=PASS (figure 照合・$14/E14 一致・正解イ不変) + 主 context 直接 figure 実読で確認。"
+    },
+    {
+      "id": "2013h25a-q052",
+      "severity": "high_REVERTED",
+      "type": "REGRESSION_caught_and_reverted",
+      "correct_answer": "ア (不変)",
+      "story": "Rule A 監査 critic が「choices.ウ の sidecar 0.10 は figure(crop+page-18)=0.18 に対し捏造値」と判定→主 context が 0.10→0.18 に「是正」。しかし独立検証 critic が page-18 を 8x 実読し figure=0.10 と反証→主 context が crop と page-18 を高解像度実読し figure ウ=0.10 を直接確認 (crop には選択肢が無く、監査 critic の crop 0.18 主張はハルシネーション)。",
+      "resolution": "0.18 → 0.10 に REVERT (元訳が正、figure 整合)。input.choices_jp.ウ=0.18 が上流 OCR garble (0→8) → backlog。",
+      "before_wrong_fix": {
+        "choices.ウ": "0.18"
+      },
+      "final": {
+        "choices.ウ": "0.10"
+      },
+      "verify": "主 context が figures/2013h25a-q052.png (crop=選択肢なし) + pages/2013h25a/page-18.png (高解像度 crop, ア0.07/イ0.09/ウ0.10/エ0.45) を直接実読確認。"
+    }
+  ],
+  "upstream_ocr_backlog": [
+    {
+      "id": "2013h25a-q052",
+      "field": "choices_jp.ウ",
+      "raw": "0.18",
+      "figure": "0.10",
+      "impact": "JP locale が誤値 0.18 表示 (zh/en は 0.10 で正)。corpus fix で choices_jp.ウ→0.10 すれば三語整合。",
+      "verified_by": "主 context 直接 figure 実読"
+    },
+    {
+      "id": "2012h24h-q092",
+      "field": "choices_jp.イ",
+      "raw": "大阪幸子 20,800円 / 東京三郎 10,800円",
+      "figure": "大阪幸子 20,000円 / 東京三郎 10,000円",
+      "impact": "全 locale が誤値 (翻訳は input に忠実)。正解ア不変。corpus fix で choices_jp.イ + zh/en 同期。",
+      "verified_by": "主 context 直接 figure 実読"
+    },
+    {
+      "id": "2013h25h-q096",
+      "field": "choices_jp.ア",
+      "raw": "C14*(D14*0.1)",
+      "figure": "C14＋(D14＊0.1)",
+      "impact": "上流 OCR で ＋→* (加算→乗算の意味変化)。distractor のみ、正解イ不変。corpus fix で choices_jp.ア + zh/en 同期。",
+      "verified_by": "主 context 直接 figure 実読"
+    }
+  ],
+  "glossary_backlog": [
+    {
+      "id": "2012h24h-q018",
+      "note": "supply glossary が「機能別組織→职能制组织」と「職能別組織→职务制组织」を分裂 (同概念)。textbook glossary で職能別→职能制に統一すべき (S92 q025 と同型 backlog)。"
+    }
+  ],
+  "upstream_note": "S89 q011 / S90 q061 / S91 q069 / S92 / S93 q093-q088 に続き、独立 critic + 主 context の figure 実読が上流 OCR 欠陥を継続捕捉。S94 では加えて『Rule A 監査 critic の figure 主張自体が誤り (q052 crop ハルシネーション)』を独立検証 critic + 主 context 実読が捕捉し、誤った fix を REVERT = 写審分離 + 多段独立検証の複利。",
+  "lesson": "figure-value を変える fix は、Rule A critic の figure 主張を鵜呑みにせず fixer が figure フルページを高解像度実読して確認せよ (D-小6 を fixer にも適用)。特に fix が translator 産出値から AWAY に動く時は要警戒 (q052: translator は figure 正値 0.10 を産出済だったが、in-pipeline reviewer・Rule A critic 双方が input 0.18 を正と誤認)。",
+  "verification": {
+    "tsc": "0 err",
+    "eslint": "0 err (1 既存 warning)",
+    "vitest": "455 passed / 2 skipped",
+    "build": "exit 0",
+    "nft": "quiz route trace=24 (quiz_index+questions+translations/22回)、IPA-source leak=0 (exams/sources/syllabus)"
+  },
+  "audits": [
+    {
+      "id": "2012h24h-q003",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24h-q005",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24h-q015",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "情報共有: 上流 input.stem_jp は『製品Xの69台分の部品を発注』だが、これは OCR 誤読。フルページ原典 (page-06.png) を拡大核験した結果、図には明確に『製品Xの60台分の部品を発注』と記載されている。stem_jp_clean は正しく60に是正済みで、図と一致。これは欠陥ではなく是正であり、zh/en とも正しい60台 (zh『相当于 60 台产品 X 所需的部件』/ en『parts equivalent to 60 units of product X』) を反映しているため正解ウ=72 の根拠は崩れていない。表数値 (始業時在庫55/45・製造10/12・出荷可能15/27)・6列の曜日構成 (今週金/翌週月火水木金)・網掛け非表示の注記も図と完全一致、脱落/列順改変なし。記録目的で low として残置。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24h-q018",
+      "accurate": false,
+      "severity": "high",
+      "checks": {
+        "faithful_zh": false,
+        "faithful_en": true,
+        "terminology_ok": false,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "high",
+          "detail_jp": "正解 (correct_answer=イ) の選択肢『職能別組織』の中国語訳が『职务制组织』となっており、専門用語として誤訳。職能別組織は IT パスポート/経営学で言う functional organization (機能別組織と同義) であり、本土中国語の定訳は『职能制组织 / 职能型组织』。『职务』は post/duty (役職) の意で『职能』(機能) と意味が異なるため、中国語学習者は選択肢イを functional organization と認識できず、『規模が小さい/単一事業/安定顧客→機能別組織』という正答根拠が中国語側で繋がらなくなる。決定的証拠: 同一 JP 用語『職能別組織』が同プロジェクトの S92 問 2016h28a-q025 (sidecar_batch_S92.json, 選択肢ウ) では正しく『职能制组织 / Functional organization』と訳されており、本問のみ逸脱・不整合。glossary 自体が『機能別組織→职能制组织』『職能別組織→职务制组织』と分裂させているが、これは欠陥の原因であって正当化にはならない (両者は同概念)。正誤キー (letter) は不変だが、正解選択肢の語義が崩れており学習価値を損なう。修正案: zh を『职能制组织 (按职能划分的组织)』に是正し glossary も統一。"
+        },
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "正解選択肢『職能別組織』の英訳が『Job-function organization』。IPA 公式系の標準英訳は『Functional Organization』であり、同プロジェクト S92 q025 でも『Functional organization』と訳されている。本問の『Job-function』は意味的には近いが定訳から逸脱し、姉妹問と不整合。誤訳とまでは言えず正誤根拠は保たれるため low。是正推奨: 『Functional organization』に統一。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "stem_jp_clean は stem_jp と比較し、OCR 由来の改行アーティファクト『企 業』→『企業』のスペース除去のみで、数値・論理・選択肢ラベル・意味は完全保持。内容の追加・改変なし。clean_stem_faithful=true。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24h-q019",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24h-q040",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24h-q058",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "カステラの訳語が言語間で形式不一致: zh は記述的な「蜂蜜蛋糕」, en は借用語「Castella」。どちらも標準的な妥当訳であり意味・正誤に影響しないため文体上の観察に留まる (low)。en で説明を加えるなら「Castella (sponge cake)」も可だが必須ではない。なお当該行 (S003 カステラ, C社) は正解判定に関与しないため業務影響なし。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24h-q078",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24h-q081",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24h-q085",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2012h24h-q087",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "glossary に RFP エントリが残っているが、本問の stem_jp / choices_jp のどこにも『RFP』は出現しない（topic 由来の未使用残留）。翻訳の忠実度には影響しないが、本問では glossary が宙に浮いている。zh/en 訳自体は正しい。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24h-q089",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "【翻訳の欠陥ではなく上流 input の欠陥に関する報告 / 翻訳側はむしろ是正済み】input_batch_S94.json の stem_jp（源）では表2の第2条件行『同じ月で複数コースの請求がある』が『Y Y N N』となっているが、権威図 page-37.png（フルページ）で確認すると正しくは『Y N Y N』。stem_jp_clean / zh / en はいずれも図に一致する『Y N Y N』へ正しく再構成しており、OCR garble の是正として適切。意味追加・改変なし。この是正は単なる体裁ではなく解答整合性に必須：input の誤った『Y Y N N』だと列1・列2 がともに(Y,Y)、列3・列4 がともに(N,N)となり決定表が縮退し正解が成立しないが、図どおりの『Y N Y N』なら列1=(Y,Y)→20%、列2=(Y,N)→10%、列3=(N,Y)→10%、列4=(N,N)→0% となり受講料割引率 a=『20,10,10,0』=選択肢エ（correct_answer）が一意に成立する。よって翻訳側は figure を正として正しく扱い、正解根拠を保持している。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "数値選択肢の区切り記号：zh は全角『，』、en は半角『,』を使用。input choices_jp は全角『，』。locale 慣例として妥当で数値（0/10/20）の脱落・改変は一切なし。正誤判定に影響しない軽微なスタイル差のみ。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24h-q092",
+      "accurate": false,
+      "severity": "medium",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "選択肢イの金額が figure_page_png (権威=page-40.png) と不一致。フルページの解答候補表を4倍ズームで確認した結果、選択肢イは『大阪幸子=20,000円 / 東京三郎=10,000円』だが、input の choices_jp は『大阪幸子=20,800円 / 東京三郎=10,800円』と転記しており、末尾3桁が誤り(20,000→20,800、10,000→10,800)。この誤りが zh(20,800日元/10,800日元) と en(20,800 yen/10,800 yen) にそのまま伝播している。翻訳自体は JP入力に忠実(訳ドリフトなし)だが、上流 choices_jp の figure 転記欠陥が3言語に存在。なお正解はアで、誤りは distractor イのみに限局するため『正誤判定変化なし』は保持され answerable。図(カレンダ)・正解アの金額(7,200/請求なし/7,200)・ウ・エは figure と完全一致。是正には上流 choices_jp イを 20,000円/10,000円 に修正し、派生 corpus の zh/en も同期する必要あり。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "stem_jp_clean は OCR 誤り『Ｓさんは』を figure 準拠で『Ｂさんは』に正しく是正済(フルページ冒頭が明確に B さん)。また破損カレンダ表(原 OCR は9月1日を土曜配置)を figure 通り 9月1日=月曜・休日網掛け(6,7,13,14,15,20,21,23,27,28)に正しく再構成済。clean は figure と一致し内容追加なし。これは欠陥ではなく正しい clean 操作の確認記録。"
+        }
+      ]
+    },
+    {
+      "id": "2012h24h-q099",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q002",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q012",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "上流 input.stem_jp の生 OCR が figure に対し 2 行で破損 (A 行: 図 0/2/5/7/8 → 生 0/2/5/5/7、B 行: 図 0/1/3/5/7 → 生 0/3/5/5/7)。stem_jp_clean は figure (crop・page-05 フルページ両方で一致) を正として両行を正しく再構成済み (A=0/2/5/7/8, B=0/1/3/5/7, C=0/3/4/6/8) で列順・列構成の改変なし。重要: 破損した生 stem_jp の値で計算すると最大利益 11(エ) となり公式正解 ウ(10) と矛盾するが、clean stem は figure 値に是正されており独立計算でも最大利益=10(A3個+C1個)=ウ で correct_answer と一致。したがって翻訳・clean stem 自体の忠実度は問題なし。本指摘は上流生データ品質の記録のみ (下流は stem_jp_clean を使用するため翻訳成果物への実害なし)。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q036",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q037",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q052",
+      "accurate": false,
+      "severity": "high",
+      "checks": {
+        "faithful_zh": false,
+        "faithful_en": false,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "high",
+          "detail_jp": "選択肢ウの数値が JP 源と不一致。input.choices_jp のウ=「0.18」だが sidecar.choices.ウ は zh/en とも「0.10」に改変されている。図(crop)およびフルページ(page-18)はいずれもウ=0.18 を示しており、0.10 は出典のどこにも存在しない捏造値。両言語で同一に誤っているため転記ミスではなくデータ破損。正解は ア=0.07(独立再計算: 並列A=1-(0.1)^2=0.99, 図1系統=0.99*0.8=0.792, 図2系統=0.9*0.8=0.72, 低下=0.072→四捨五入0.07)で答え自体は崩れないが、学習者に提示される錯誤肢が誤値である重大な忠実度欠陥。要是正: ウ.zh / ウ.en を「0.18」に戻すこと。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "補足(欠陥ではない): フルページ page-18 の OCR では「イ 0.89」と読めるが、これは小フォント描画のアーチファクト。JP 源フィールド choices_jp および crop 図はいずれもイ=0.09 で、sidecar も zh/en とも 0.09 と正しく一致しているためイは問題なし。stem_jp_clean は input 末尾の図 ASCII 記述行([図1]/[図2])を除去したのみで、トポロジ(A×2並列→B直列 / A×1→B直列)は本文散文に保持され実図と一致。数値・論理・選択肢ラベルの改変なし。丸め節「小数第3位を四捨五入」は zh「取小数第3位四舍五入后的值」・en「rounded to two decimal places」とも忠実。用語 稼働率→可用率/Availability は glossary 整合・本土 zh。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q054",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q055",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q064",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q067",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q068",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q091",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "stem の「アイデア」を zh では『方案』と訳出（en は ideas）。BPR 企画文脈では許容範囲だが『主意/想法』より重い語選択で、選択肢が『アイデア』と呼ばれる文脈とは微小なズレ。意味・正解には無影響。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "JP「掲載されている写真が違っている」に対して に対し、zh は『这一问题』、en は『the issue』を補って名詞化。流暢性のための軽微な追加で意味は保持。脱落・誤訳ではない。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "『まとめて』を『集中地』と訳出（やや硬い副詞）、『メモ』を『备忘』と短縮。いずれも理解可能で意味欠落なし。本土 zh として許容、日式借词なし。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q092",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "評価基準の『費用（費用の小ささ）』の zh 訳が『费用（费用的小）』となっており、『小』が裸の形容詞で文法的にやや不完全（自然な訳は『费用之小』『费用的小程度』）。ただし直後の『5（小）～1（大）』で採点方向が明示されるため、意味・正誤判定への影響はなく、自然さの瑕疵にとどまる。en は『Cost (smallness of cost)』で適切。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q097",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "figure_png (裁剪図 2013h25a-q097.png) は本問の図ではなく、隣接する問98 (マネジメント) の図 (『書籍の識別番号: a / 利用者カードの利用者番号: b』+ a/b 組合せ表 ア〜エ) が誤って裁剪されている。crop を figure 正として stem_jp_clean を再構成していたら誤判定になっていた。実際の stem_jp_clean は figure ではなく原典フルページ page-43 の〔要望事項〕(1)〜(4) を逐語採用しており忠実。よって翻訳側は正しく処理済みで実害はないが、パイプライン健全性 (figure 裁剪と問の対応ズレ) として記録に値する low 注記。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "原文 choices_jp はラベルのみ (『(1)』〜『(4)』) で、要望事項本文は stem 末尾に置かれる構造。サイドカーは stem に (1)〜(4) フルリストを含めた上で、choices.{ア〜エ} にも同内容の要約版を重複して付与している。学習表示上は冗長になるが、要約版・フルリストとも原典 page-43 と意味整合し、正解 ア=(1)『バーコードリーダ個別読取で貸出カウンタに行列→手早く処理したい』の根拠も保持。誤訳・脱落・正誤逆転なし。構造上の冗長のみで忠実度には影響しない。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q098",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25h-q001",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢 b の訳に原文 JP「電子メールの送信同意の記録を保管する」に無い補足が加わっている。zh は「收件人…同意…（选择加入）」、en は「the recipient's consent (opt-in)」と、主語「収件人/recipient」および「opt-in/选择加入」概念を明示追加。特定電子メール法は opt-in 方式であり法的に正確な注釈で、意味の逆転・脱落・正誤判定の変化は無い (正解 ア=a,b の根拠は保持)。ただし原文には無い概念の付加であり、厳密には逐語性をやや超える over-specification。忠実度判定には影響しないが記録として低深刻度で指摘。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25h-q004",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25h-q007",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25h-q019",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "EN 訳で作業項目①の「抽出」と③の「見極め」を双方とも「Identifying」に集約しており、原文が動詞を使い分けている語彙ニュアンス(抽出 vs 見極め/評価)が失われている。zh は ①「抽取」③「甄别」と正しく区別。正誤判定(正解 イ=②に入る項目)には一切影響せず意味の脱落・逆転もないため low。改善するなら ③ を 'Assessing/Identifying technologies that contribute to establishing competitive advantage' 等で動詞を差別化すると忠実度が上がる。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25h-q028",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "経常利益 を 经常利润 と訳出。日本会計用語 経常利益 の慣用的・通用な中国語訳であり全選択肢で一貫し本土 zh として許容範囲。ただし厳密な中国本土 GAAP には完全対応する勘定科目名は存在しない (IFRS とは概念差) ため、用語の地域差という観点での軽微な留意点。誤訳ではなく正誤判定に影響なし。"
+        },
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "stem の 売上高 を Sales と訳出。表の文脈上一意で問題ないが、より厳密には Net sales がやや精確。軽微な選好レベルで忠実度・正誤に影響なし。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25h-q032",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25h-q041",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "glossary に「移行/迁移/Migration」が登録されているが, この問の stem_jp・choices_jp のどこにも「移行」は出現しない (本問の語彙は 保守プロセス/納入前後/運用/修正)。翻訳本体への影響はゼロ (誤訳・脱落なし) だが, 無関係な glossary エントリの混入。整合性 (terminology_ok) 自体は崩れていないため low。"
+        },
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "en では JP の「[a] のシステムやソフトウェアを [b] する」を英語の自然語順「to [b] a system or software that is [a]」と [a]/[b] の出現順を入れ替えて訳出。これは JP の文法 ([a]=名詞修飾の状態, [b]=動詞) を忠実に反映した正しい訳で誤りではない (a/b と選択肢列の対応も保持) が, zh は JP 線形語順を維持しており, 監査上 en の語順入替を明示記録 (誤訳ではない)。正解 エ の判定には無影響。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25h-q055",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25h-q059",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25h-q061",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "日本人名「鈴木三郎」を zh で「铃木三郎」と表記 (stem 表・choices ウ ともに「铃」)。中国大陸の規範簡体字変換 (鈴→铃) としては一般的で内部一貫もしているが、日本人名は本来「铃木」ではなく原表記寄りが望ましい揺れ。K03 は非正解のため正誤判定に無影響、severity=low に留める。en は Suzuki Saburo で問題なし。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25h-q063",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "en stem が JP/zh に存在しない 'pairs consists only of' という語を追加し、JP/zh の『どれ (単数疑問・是哪一个)』に対し en だけ『ペアのうちどれが不揮発性のみで構成されるか』と粒度を変えている。ただし選択肢ア〜エが全て『X と Y』のペア構造であることから自明な補正であり、正解エ (ROM と フラッシュメモリ) の根拠は不変、誤訳・正誤反転には該当しない。三語間の stem 粒度不一致という微細な問題に留まる。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25h-q068",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25h-q082",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25h-q092",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25h-q096",
+      "accurate": false,
+      "severity": "high",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": false
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "stem_jp_clean の〔各セルの設定〕E2 行が figure と不一致。clean は『セル E2 に計算式 \"D2/D14\" を入力し、セル E3〜E13に複写する』だが、フルページ figure (page-44.png) は『\"D2／D$14\" を入力し、セル E3〜E14に複写する』。(1) 絶対行参照 $14 が脱落 (D14→D$14)、(2) 複写範囲 E3〜E13 が E3〜E14 と異なる。これは figure の数式セマンティクスと相違する clean_stem の欠陥。raw stem_jp の OCR 誤りが clean でも未是正のまま残存。正解 (イ C14*1.1 = 来年=今年+10%) のロジックは E 列構成比に依存しないため答えは崩れないが、図を正とする clean_stem 忠実性は不合格。"
+        },
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "選択肢 ア が figure と不一致。figure (page-44.png 拡大確認) は『ア C14＋(D14＊0.1)』= C14 に (D14*0.1) を加算。だが input choices_jp.ア は『C14*(D14*0.1)』= 乗算で、＋ が ＊ に化けた OCR 欠陥。sidecar choices.ア (zh/en とも『C14*(D14*0.1)』) はこの誤った source を忠実に踏襲しているため翻訳工程の誤訳ではないが、distractor の数学的意味が図と異なる重大な content 欠陥。correct_answer=イ なので答え key 自体は無事だが、上流 choices_jp の是正が必要。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "E 列ヘッダ: figure は『月の売上構成比』だが stem_jp_clean は『月別売上構成比』(raw の OCR 誤りを未是正)。翻訳 (zh 各月销售构成比 / en Monthly sales ratio) は『月別』『月の』いずれとも意味的にほぼ一致 (どちらも各月の構成比) のため翻訳忠実性への実害は小。ただし clean_stem が figure と字句不一致である点は記録。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "関数名の扱いに zh/en で非対称。en は『SUM(D2:D13)』『SUM(F2:F13)』と英語関数名+コロン記法に正規化。zh は stem・選択肢エとも『合计(D2〜D13)』『合计(F2〜F13)』と日本式の合計+波ダッシュを保持。JP 源が学習者に提示する関数名 \"合計\" を字義保持する方針なら許容範囲だが、本土中文表計算慣行 (SUM/求和、コロン) との整合では一貫性に欠ける。意味は通るため low。"
+        }
+      ]
+    }
+  ]
+}
