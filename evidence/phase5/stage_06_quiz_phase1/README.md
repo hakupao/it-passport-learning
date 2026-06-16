@@ -307,3 +307,61 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 ## 進捗
 - Phase 1 翻訳済: **16/29 回** (S87〜S92)。**残 13 回**。次候補 = `2015h27h` / `2014h26a` / `2014h26h` (最新優先)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
 - **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし、累積)**: `2016h28h-q001` choices_jp (16→10時間・イ garble) / `2016h28h-q012` choices_jp イ (13,000→12,000) / `2016h28h-q096` stem 表 (H004 50→70)・choices_jp LIKE `%` 脱落・official 設問ウ/エ 二者該当 / `2015h27a-q088` 図3 基準値整合 (Stage 2 図/OCR scope) / `2016h28a-q025` glossary 職能別組織 エントリ再確認 (textbook scope)。S91 以前: `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。
+
+---
+
+# スケール バッチ S93 (Session 93, 2026-06-16) — `2015h27h` / `2014h26a` / `2014h26h`
+
+> ユーザー路由「Quiz Phase1 续批」(回数未指定) → 最新優先 3 回 (既訳 16 回除外、STATE「次候補」と一致)。統合 1 ワークフロー (D-小5) + フルページ併読 (D-小6) + repair 語義ガード (D-小7) + 統合バッチ combiner `scripts/quiz-phase1-batch.mjs` (D-小8、いずれも scripts 組込済=追加コード無し)。
+
+## 何をしたか
+- prep ×3 (figure 6/22/14=42、crop+page 全存在 fail-fast) → `quiz-phase1-batch.mjs translate S93` で統合 input `input_batch_S93.json` (300 問・id 全一意・figure 42 全てフルページ付)。
+- translate 統合ワークフロー (`wf_e84fb128-f4b`): 300 問。**660 agent / 24.2M tok**。pause 指示なし → 全量完走。
+- merge ×3 → committed sidecar `translations/{2015h27h,2014h26a,2014h26h}.json` (各 100/100、missing 0、clean stem 46/55/49=150)。
+- ruleA-prep ×3 (各 N=12、層化) + **非PASS 5 を強制追加** (q029/q093/q039/q086/q088、うち q086/q088 は層化で既選) → `quiz-phase1-batch.mjs ruleA S93` で統合 sidecar/items (39 サンプル、figure 23) → audit ワークフロー (`wf_4eaecb3f-f63`、**39 critic**、independent)。
+
+## 結果
+
+### 翻訳カバレッジ
+- **300/300 翻訳 (0 欠落)**。clean stem: 2015h27h=46 / 2014h26a=55 / 2014h26h=49 (計 150)。
+
+### Rule D (in-pipeline reviewer = code-reviewer, ≠ translator)
+- raw: **295 PASS / 4 CONCERNS / 1 FAIL / 0 null**。
+- **triage は verdict ラベルでなく repair 後実落盘訳文 + 独立 Rule A + figure 実読で判定** (S88 q072/S91/S92 教訓):
+  - **FAIL 1 = `2014h26h-q086`** (図1=電話受付ワークシート、表計算): in-pipeline reviewer は 2R とも FAIL (再構成表が raw OCR と大きく異なる点を疑問視、欠陥セルは未特定)。**独立 Rule A critic が pinpoint** → 後述の applied_fix で是正 + 独立再検証 PASS。
+  - **CONCERNS 4** = `2014h26a-q029` (accurate/low)、`2014h26a-q093` (accurate/medium=input汚染)、`2014h26h-q039` (accurate/low)、`2014h26h-q088` (accurate/medium=input汚染)。いずれも翻訳自体は忠実 (figure/源に一致)。
+- **実効: 翻訳欠陥 0 (q086 是正後、全 300 が figure/源に忠実)**。上流データ backlog 2 件は翻訳成果物に影響なし。
+
+### Rule A (独立 critic, N=39 [各回12 + 強制3、層化 figure23]) — **accurate 38/39**
+- **accurate 38/39、severity none22 / low14 / medium3 / high0**。not-accurate **1 = q086** (是正後解消)。
+- **medium3**: q086 (NOT-accurate、是正) / q093 (accurate、input汚染 backlog) / q088 (accurate、input汚染 backlog)。
+- **low14** = 全て本土 zh 自然さ / 文体 (意味・正誤・脱落・捏造ゼロ、受容): 投下资本利润率 (q029 借語、意味正)、实际成绩 (q031)、记述→描述 (q039)、使用区间 (q099)、采用于 (q002) 等。
+
+### applied_fix 1 = `2014h26h-q086` (独立 Rule A critic が footing 分析で捕捉、surgical)
+- **欠陥**: translator が figure から表を**大半正しく再構成**したが、**行12 (17:00〜) の現状 東/西を 1 か所転置** (clean=`88|86`、figure=`86|88`)。zh/en に伝播。merge 構造検査は通過 (構造≠意味)。in-pipeline reviewer は FAIL したが欠陥セルを特定できず、**独立 critic の footing 分析が pinpoint** (写審分離+独立抽検の複利、S88 q072 同系)。
+- **footing 証明**: 行16 表示合計 東804/西808。defective `88|86` では列実セル和=806/806 で footing 破綻。是正後 `86|88` で 804/808 一致 (figure 自己整合)。
+- **正解根拠不変**: 設問は a=I15 (行12非依存)。a=ceil(158×8/60)=ceil(21.06)=22=ウ。選択肢 ア20/イ21/ウ22/エ23 と正解ウ 三語保持。
+- **是正**: `stem_jp_clean`/`stem.zh`/`stem.en` の行12 B|C を `88|86`→`86|88` 転置是正 (他セル/行/選択肢/正解 不変、replace_all で三語同時)。再 merge。
+- **独立再検証 (Rule D, verifier=独立 critic ≠ fixer)**: figure page-35 実読 (5倍ズーム) で全 13行×9列 0 mismatch、footing 三語整合 (東804/西808)、正解ウ=22 三語保持、他転置なし → **PASS**。
+- **Rule B**: `failures/quiz_phase1_S93_2014h26h-q086_attempt_1{.md,_defective.json}`。
+
+### 上流 (Stage 2) OCR 欠陥の申し送り (翻訳は figure を正として忠実、翻訳成果物に影響なし、要ユーザー判断)
+- **`2014h26a-q093`** (medium、影響大): input.`choices_jp` が**別問の内容に汚染** (スクロールバー/チェックボックス/テキストボックス/ラジオボタン=UIウィジェット)。figure(page-43) のオーソリ選択肢は COUNTIF 式『条件付個数(B$2~B$36,=$A40)』等4択 (正解イ)。翻訳は figure を正として正しく COUNTIF 訳出 (accurate)。**JP locale 表示が誤選択肢のため input.choices_jp 再OCR 推奨** (S91 q069 型、ただし全面汚染で影響大)。
+- **`2014h26h-q088`** (medium): input.`choices_jp[ウ]`=『商品Bと商品D』だが figure(crop+page-37) は ウ=『商品Bと商品C』。最適化検算 (利益 A90/B100/C120/D80万円 → B+C=220 最大=正解ウ) で figure が正、input の D が OCR 破損 (C→D)。翻訳は figure を正として B&C 訳出 (accurate)。input.choices_jp[ウ] 是正 (D→C) 推奨。
+- **`2014h26h-q086`**: raw stem_jp は OCR 全面崩壊だが stem_jp_clean で表示は救済済 (上記是正済)。stem 再OCR は Stage 2 scope (表示影響なし)。
+- S89 q011 / S90 q061 / S91 q069 / S92 q001-q096 に続き、独立 critic のフルページ照合が上流 OCR 欠陥を継続捕捉 (翻訳 backfill の Rule A が事実上 Stage 2 データ品質の追加監査として機能)。
+
+### ビルド / トレース / テスト (全 GREEN・回帰なし)
+- tsc `--noEmit` exit 0 / eslint 0 error (既存 warning 1=quiz 無関係) / **vitest 455 passed** (+2 skipped、29 file passed/1 skipped) / `pnpm build` exit 0 (Compiled successfully)。
+- **nft IPA leak = 0** (`.next` 全 .nft.json で `data/ip/{exams,sources,syllabus}` 0 hits)。quiz route trace = quiz_index + questions + **translations/19 回.json** (新 3 sidecar が `translations/*.json` glob で resolve 確認、16 既訳+3 新)。
+
+## コード変更
+- **無し** (combiner/translate/ruleA/prep/merge は既存・D-小6/7/8 組込済で不変)。
+- 成果物 = sidecar 3 ファイル + q086 行12 転置是正 (1 問・3 フィールドの 2 セル) + Rule B archive 2 + 証拠 (`rule_a_audit_S93.json` + 本節)。
+
+## UI スクリーンショット (S88〜S92 と同根拠で省略)
+- reader/`QuizSet`/`quizReader` 不変、新 sidecar 同一 schema (merge 検証通過) + nft trace 済 + build 成功。意味検証は Rule A 39 独立サンプル + q086 の独立再核 (figure 実読) が担保。
+
+## 進捗
+- Phase 1 翻訳済: **19/29 回** (S87〜S93)。**残 10 回**。次候補 = `2013h25h` / `2013h25a` / `2012h24h` (最新優先)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
+- **要ユーザー判断 backlog (上流データ品質、翻訳成果物に影響なし、累積)**: **S93 新規** = `2014h26a-q093` choices_jp 全面汚染 (UIウィジェット→COUNTIF式、再OCR、影響大) / `2014h26h-q088` choices_jp[ウ] (商品D→商品C 再OCR)。累積 (S92 以前): `2016h28h-q001/q012/q096`・`2015h27a-q088` 再OCR / `2016h28a-q025` glossary / `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。
