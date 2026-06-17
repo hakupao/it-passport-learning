@@ -702,5 +702,29 @@
         }
       ]
     }
-  ]
+  ],
+  "corpus_fix": {
+    "note": "ユーザー指示「先修一下」→ S95 で backlog 化した上流 choices_jp/stem OCR 欠陥 2 件を、次バッチ前に S93/S94 と同じ drift-proof 方式で是正。主 context は triage 段で 2 figure (page-02/page-26) を高解像度実読で確証済み。",
+    "method": "questions.json は build-quiz-corpus.mjs が raw bank question_bank.json (gitignored) から choices_jp/stem_jp を逐語 projection するため、raw bank を正源として id-scoped + before-value assert (fail-loud) で編集 → ビルド再実行 (idempotent)。zh/en サイドカーは S95 是正で既に figure-faithful のため変更不要。",
+    "fixes": [
+      {
+        "id": "2012h24a-q002",
+        "field": "choices_jp.イ",
+        "before": "（図：四角形と矢印によるデータストア付きプロセス図）",
+        "after": "（図：円と矢印によるデータストア付きプロセス図）",
+        "figure": "page-02 = 円(プロセス)+データストア(横二重線)+矢印 の Yourdon-DeMarco DFD",
+        "correct": "イ 不変"
+      },
+      {
+        "id": "2011h23tokubetsu-q073",
+        "field": "stem_jp + choices_jp(全4)",
+        "before": "区切り ε(OCR 誤読) / choices_jp garble (例 ア「月,1月,2月 C。 売上高,500 , 600」)",
+        "after": "区切り CR / ア「月,1月,2月 CR 売上高,500,600 CR」・イ「月,売上高 CR 1月,500 CR 2月,600 CR」・ウ「月/1月/2月 CR 売上高/500/600 CR」・エ「月/売上高 CR 1月/500 CR 2月/600 CR」",
+        "figure": "page-26 = CR 区切り(C+小R 改行コード字形)・全選択肢末尾CR・ア=行優先カンマ",
+        "correct": "ア 不変"
+      }
+    ],
+    "verify": "build 再生成で questions.json diff = 当該2問のみ (6+/6-)。quiz_index/correct_answer (イ/ア) 不変。tsc/eslint 0err / vitest 455 / build exit0 / nft IPA 0 (quiz trace 25 sidecars)。三語整合確認 (q002 円/圆/circles・q073 CR-form 全3語)。独立 Rule D 再検証 (critic ≠ fixer=主 context) = 2件 ACCEPT (critic が page-02/page-26 を自己実読し 円・CR/末尾CR・正解不変・三語整合を独立確認)。",
+    "drift_note": "raw bank (gitignored) 編集のため、将来 Stage 2 再 OCR 時は本是正の再適用要 (記録=本 corpus_fix 節 + README §追記 + session-95 §追記)。q002/q073 は backlog から除去 (RESOLVED_IN_CORPUS)。"
+  }
 }

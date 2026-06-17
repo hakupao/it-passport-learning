@@ -494,4 +494,14 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 
 ## 進捗
 - Phase 1 翻訳済: **25/29 回** (S87〜S95)。**残 4 回**。次候補 = `2010h22a` / `2010h22h` / `2009h21a` / `2009h21h` (最新優先、残=2009h21h/2009h21a/2010h22h/2010h22a)。次バッチはユーザー「Quiz Phase 1 续批」で起動。
-- **要ユーザー判断 backlog (上流データ品質、翻訳成果物 zh/en に影響なし、累積)**: **S95 新規**: `2012h24a-q002` choices_jp.イ (四角形→figure 円) / `2011h23tokubetsu-q073` stem+choices_jp ε→CR + garble clean (JP locale 影響)。累積: `2012h24h-q018`・`2016h28a-q025` glossary 職能別組織 / `2016h28h-q001/q012/q096`・`2015h27a-q088` 再OCR / `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。(S93 q093/q088・S94 q052/q092/q096 は corpus 是正済。)
+- **要ユーザー判断 backlog (上流データ品質、翻訳成果物 zh/en に影響なし、累積)**: ~~**S95 新規**: `2012h24a-q002` choices_jp.イ (四角形→figure 円) / `2011h23tokubetsu-q073` stem+choices_jp ε→CR + garble clean~~ → **同 session で corpus 是正済 (下記 §追記、RESOLVED_IN_CORPUS)**。累積: `2012h24h-q018`・`2016h28a-q025` glossary 職能別組織 / `2016h28h-q001/q012/q096`・`2015h27a-q088` 再OCR / `2017h29h-q069` 再OCR / `2019h31h-q061` figure crop。(S93 q093/q088・S94 q052/q092/q096 は corpus 是正済。)
+
+## 追記 (同 session フォローアップ): 上流 choices_jp/stem 欠陥 2 件を派生 corpus で是正 (ユーザー指示「先修一下」)
+
+> S95 で backlog 化した上流 OCR 欠陥 2 件を、次バッチ前に S93/S94 と同じ **drift-proof** 方式で是正。主 context は triage 段で 2 figure (page-02/page-26) を高解像度実読で確証済み。zh/en サイドカーは S95 是正で既に figure-faithful のため変更不要 (今回は JP=raw bank 側のみ是正で三語整合)。
+
+- **方式 (drift-proof)**: `questions.json` は `build-quiz-corpus.mjs` が raw bank `question_bank.json` (gitignored) から choices_jp/stem_jp を逐語 projection するため、**raw bank を正源として id-scoped + before-value assert (fail-loud) で編集 → ビルド再実行** (idempotent)。raw bank は gitignored のため将来の Stage 2 再 OCR 時は再適用要 (before/after を本節 + `rule_a_audit_S95.json` の `corpus_fix` に記録)。
+- **`2012h24a-q002`** (正解イ): `choices_jp.イ` `四角形`→`円` (figure page-02 = 円(プロセス)+データストア(横二重線)+矢印の Yourdon-DeMarco DFD)。sidecar zh/en は既に「圆/circles」(figure 正) → 三語 円/圆/circles 整合。
+- **`2011h23tokubetsu-q073`** (正解ア): `stem_jp` 区切り `ε`(OCR 誤読)→`CR` + `choices_jp` 全4 を garble から figure-faithful 再構成 (ア`月,1月,2月 CR 売上高,500,600 CR`・イ`月,売上高 CR 1月,500 CR 2月,600 CR`・ウ`月/1月/2月 CR 売上高/500/600 CR`・エ`月/売上高 CR 1月/500 CR 2月/600 CR`、figure page-26)。sidecar zh/en は既に CR-form (figure 正) → 三語整合。
+- **検証**: build 再生成で questions.json diff = **当該2問のみ (6+/6-)**、quiz_index/correct_answer (イ/ア) 不変。tsc/eslint 0err / vitest 455 / build exit0 / **nft IPA 0** (quiz trace 25 sidecars)。**独立 Rule D 再検証 (critic ≠ fixer=主 context) = 2件とも PASS** (critic が page-02/page-26 を自己実読し、q002=円(DFD)・q073=CR/全選択肢末尾CR/ア=行優先カンマ・正解不変・三語整合 [形状/区切り記号/弁別軸] を独立確認)。
+- **影響**: 2 問とも JP/zh/en の三語が figure 一致。**q002/q073 は backlog から除去 (RESOLVED_IN_CORPUS)**。残 S95 backlog なし (累積 backlog のみ)。
