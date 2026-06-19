@@ -1,0 +1,970 @@
+{
+  "batch": "S96",
+  "date": "2026-06-19",
+  "exams": [
+    "2010h22a",
+    "2010h22h",
+    "2009h21a",
+    "2009h21h"
+  ],
+  "translate_run": "wf_fc197c18-8ec (週次上限で review 305 失敗 → 同 run を resumeFromRunId で再開、305 review のみ再走、400 訳+95 review は cached)",
+  "ruleA_run": "wf_e141c0ca-ea9",
+  "in_pipeline_ruleD": {
+    "total": 400,
+    "PASS": 396,
+    "CONCERNS": 3,
+    "FAIL": 1,
+    "null": 0,
+    "repaired_rounds_gt1": 27,
+    "note": "translator 400/400 は上限前に成功しディスク確定。null=reviewer の weekly limit 失敗で、resume で解消。"
+  },
+  "ruleA": {
+    "n": 52,
+    "accurate": 50,
+    "bySeverity": {
+      "low": 18,
+      "none": 30,
+      "high": 3,
+      "medium": 1
+    },
+    "forced": [
+      "2010h22a-q100",
+      "2010h22h-q077",
+      "2010h22h-q090",
+      "2010h22h-q092"
+    ]
+  },
+  "applied_fix": [
+    {
+      "id": "2010h22h-q092",
+      "severity": "high",
+      "correct_answer": "イ (不変)",
+      "kind": "clean_stem figure 注記 + 作業3 是正",
+      "detail": "stem_jp_clean が figure 注記「同じ名字の担当はいない」(正解イの根拠=田中同一人物) を破壊→主 context が page-40 実読し復元。作業3「ソフトウェアインタフェース詳細設計」の詳細 復元。jp/zh/en。独立 critic#1 が page-40 実読し ACCEPT。"
+    },
+    {
+      "id": "2010h22h-q077",
+      "severity": "medium",
+      "correct_answer": "イ (不変)",
+      "kind": "en 過剰補足 trim",
+      "detail": "en ア/イ に JP に無い自己矛盾的な幾何補足 (U-shaped bulging downward/opening upward) → (convex downward)/(convex upward) に簡潔化。zh は元から簡潔。独立 critic#1 ACCEPT。"
+    },
+    {
+      "id": "2010h22h-q002",
+      "severity": "high",
+      "correct_answer": "イ (不変)",
+      "kind": "REGRESSION revert + 上流 corpus fix",
+      "detail": "Rule A critic#1 が corrupted corpus 基準で『イ/ウ swap』と指摘→fixer が翻訳を swap (=corpus に合わせ figure から AWAY、REGRESSION)。fixer が page-04 実読: 印刷版 イ=low/high・ウ=both-high、graph A社 +20%<B社 +100% growth・2008 margin 40%>36% → イ。翻訳 REVERT + 上流 choices_jp swap-back (s7x の anti-figure swap を是正、questions.json diff 当該2選択肢のみ)。Rule B archive。独立 critic#2 が page-04 実読し ACCEPT。"
+    }
+  ],
+  "rule_b": [
+    "failures/quiz_phase1_S96_2010h22h-q002_regression.md",
+    "failures/quiz_phase1_S96_2010h22h-q002_regression_defective.json"
+  ],
+  "upstream_backlog": [
+    {
+      "id": "2010h22h-q077",
+      "kind": "choices_jp テキスト↔figure↔answer-key 反転",
+      "note": "figure と choices_jp テキストの上下 (上凸/下凸・高い/低い) が逆。翻訳は JP テキストに忠実。correct_answer イ。Stage 2 で figure↔key 監査+必要なら re-key (要ユーザー判断)。"
+    },
+    {
+      "id": "2010h22h-q055",
+      "kind": "choices_jp[エ] の $ 脱落",
+      "note": "input choices_jp エ=$B$4*(1.0+D2) だが figure=$B$4*(1.0+$D2)。sidecar は figure 忠実。エ は distractor (正解ウ) で答案無影響。corpus fix 候補。"
+    },
+    {
+      "id": "2009h21h-q099",
+      "kind": "stem が源に無い表を参照",
+      "note": "has_figure=false だが作業速度表が源に無く、正解イ=20 が stem 単体から導出不可。翻訳は忠実。Stage 2 データ欠落。"
+    },
+    {
+      "id": "2010h22a-q100",
+      "kind": "stem が源に無いアローダイアグラム表を参照",
+      "note": "has_figure=false、クリティカルパス表が源に無い。翻訳は忠実。Stage 2 データ欠落。"
+    }
+  ],
+  "lesson": [
+    "q002 = S94 q052 教訓の再適用漏れ: 選択肢『取り違え』指摘でも figure 実読は必須。corpus choices_jp 自体が s7x で破損しうるため、translation vs corpus のテキスト一致は corpus が正の保証にならない。",
+    "choices_jp_corrupted_backup は『corrupted』命名でも figure 忠実なことがある (s7x が修復方向を誤った場合)。backup と LIVE が食い違う figure 問は figure 実読で裁定。",
+    "写審分離+多段独立検証の複利: in-pipeline reviewer mis-PASS → Rule A critic#1 (corpus 基準で誤判定) → fixer 誤fix → 独立 critic#2 (figure 実読) で捕捉。",
+    "weekly limit でも translator 出力は disk 確定。resumeFromRunId で review のみ再走でき (305/400)、再翻訳の無駄なし。"
+  ],
+  "verification": {
+    "tsc": 0,
+    "eslint": "0 err (既存 warning 1=tTerm)",
+    "vitest": "455 passed / 2 skipped",
+    "build": "exit 0",
+    "nft_ipa_leak": 0,
+    "quiz_trace": "quiz_index + questions + translations/29回 (4 新 sidecar resolve、exams/sources/syllabus/question_bank=0、粗4hits=除外glob+source-map文字列の誤検知)"
+  },
+  "rule_d_chain": "translator(general-purpose) ≠ in-pipeline reviewer(code-reviewer) ≠ Rule A 監査 critic#1(critic) ≠ fixer(主 context) ≠ 是正再検証 critic#2(critic)",
+  "audits": [
+    {
+      "id": "2009h21a-q001",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "選択肢ウの原文は「仕様」(specification) を使い，他の選択肢ア/イ/エの「規格」(standard) と意図的に語を分けている。デファクトスタンダードは私的な『仕様』が普及して事実上の標準になる過程を表すため，この『仕様 vs 規格』の対比は出題者の含意。zh 訳はウの『仕様』を『规格』と訳し，他選択肢の formal-standard 語と平坦化してしまっている (en は『specification』で正しく区別を保持)。ただし正誤判定の核心句『从而实际上成为了业界标准』(事実上の業界標準になった) は完全に保持されており，ウが正解である根拠は崩れない。理解・正誤に影響しない軽微な用語の平坦化のため low。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21a-q005",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢エ「不正リスク」を zh「舞弊（违规）风险」/ en「Fraud risk」と訳出。文脈上 不正=fraud/不当行為 で妥当だが、zh の括弧補足「违规」は原文にない語を追加しており、わずかに語義を広げている (誤訳ではなく補足過剰)。誤答選択肢のため正誤判定には無影響。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21a-q012",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21a-q029",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "正解選択肢イの zh 訳「系统需求与系统使用部门共同进行评审」は glossary 用語「共同レビュー→联合评审」を採用せず「共同进行评审」と意訳している。意味は完全に同一(共同で=jointly のレビュー)で正誤判定にも影響しないため誤訳ではないが、glossary 用語との表記整合という点では low レベルの不一致。en の「reviewed jointly」も同様に自然で問題なし。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21a-q036",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21a-q048",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "選択肢・stem の「対応費用」をzhで「对应费用」と逐語訳している。意味は stem 内の「修正该缺陷所需对应费用（不具合修正に要する費用）」で明確化されており正誤判定に影響しないが、本土zhとしては「（修复/处理）费用」の方が自然。正解(ア)の弁別根拠『从设计到运行逐渐增加』は保持されており、忠実度の欠陥ではなく軽微な語感の指摘にとどまる。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21a-q061",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21a-q062",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21a-q090",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21a-q093",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "JP「百分率の処理」を zh「百分比换算」/ en「percentage conversion」と訳出。逐語的には『処理(processing)』であり『換算(conversion)』ではないが、本問の趣旨（計算式が100倍などの換算を行わない）と整合し意味は保持されている。許容範囲の解釈的訳で、正誤判定への影響なし。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21a-q097",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "「取引先担当者表」の zh 訳「业务往来方负责人表」は意味は正確に保持されているが、本土 zh としてはやや堅く冗長。より自然な選択肢は「客户联系人表」だが、誤訳ではなく自然さの好みレベル。数値・論理・正解根拠 (ウ=1,800: 180バイト×10,000件=1,800kバイト) は zh/en とも完全保持されており、業務判定に影響なし。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21a-q098",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "stem は『図1の取引先担当者表』を参照するが本問は has_figure=false・figure_png=null。翻訳は zh『图1』/ en『Figure 1』を脱落させず忠実に保持しており訳の欠陥ではない。図1の実体は同一セット q097 の figure (取引先担当者表の構成: 取引先コード/電話番号/部署名/所在地/名前/役職) で確認済み。正解ウ (取引先コード，部署名) の根拠 = 1取引先に複数担当者(部署別)が存在し取引先コード単独では一意でない という論理は zh『客户代码、部门名』/ en『Client code, department name』で完全保持。ランタイムが本問に図1を提示するかは pipeline/UX 課題であり翻訳忠実度の defect ではない。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "取引先担当者表 を zh『客户负责人表』/ en『client contact table』と訳出。担当者=連絡担当者(contact)寄りの自然訳で、原語 (取引先担当者) を両言語で括弧併記して曖昧性を解消しており許容範囲。誤訳ではないが『客户联系人表』等の別案も妥当。意味・正誤判定に影響なし。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21h-q001",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q003",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q007",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q037",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q042",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q061",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q071",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q073",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q082",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳のテーブル見出しが日本語の角括弧表記「处理A 〔处理内容〕」をそのまま残しており、en 訳が「Process A [Process content]」と訳出・括弧正規化しているのと不整合。意味・数値・論理・正誤判定には一切影響しない純粋な体裁上の軽微な揺れ。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21h-q092",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh の開始端子訳「问题的切分（故障定位）」は JP「問題の切分け」に存在しない補足「故障定位」を括弧で追加している。意味は正確で正誤に影響しないが、原文に無い説明的加筆であり、厳密には脱落/捏造なしの忠実訳から逸脱。括弧内補足を削るのが望ましい。"
+        },
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "en の入れ子判断ノード訳「After swapping, on the hub side, cables c and d that connect PC1 and PC2 to the hub, can output be sent from PC2 to the printer?」が文法的に破綻気味（swap の目的語と主節の接続が不自然）。意味（ケーブル c と d をハブ側で差し替えてから PC2→プリンタ出力を再試行）は保持され正誤に影響しないが、読みづらい。語順整序が望ましい。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21h-q097",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q099",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh の「作業」は日本語からの直写しで、文意は正しく保持されているものの、本土中国語としては「工作/任务」の方が自然。意味の誤りではなく軽微な語彙スタイルの指摘。誤訳・脱落・正誤への影響なし。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "翻訳忠実度外の上流データ指摘: figure無し問だが stem 単体に計算根拠となる数値（A/Bの作業速度や総作業量）が一切無く、正解 イ=20 をこの stem だけから導出できない。元の IPA 問題に先行する表/前文があったと推測され、当該 stem は不完全な可能性。ただし zh/en は JP stem の記述を正確に再現しており JP→zh/en 翻訳としての忠実度に欠陥は無い。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "glossary に「最適化/最优化/Optimization」が登録されているが、当該語は stem_jp・choices_jp のいずれにも出現しない孤立エントリ。翻訳本文の忠実度には影響しないが、glossary の妥当性として軽微な不整合。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22a-q001",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢イの「得意先」(=取引先・お得意様) が zh「客户」/ en「a customer」と訳されている。一般的な「顧客」とのニュアンス差はわずかにあるが、設問の正誤判定 (圧縮せず大容量添付が受信者への配慮を欠く誤答) には一切影響せず、許容範囲。脱落・誤訳・正誤逆転ではない。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22a-q002",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "選択肢ア『システム化計画の立案』の en 訳『Drafting the system planning』は『system planning』を名詞句として使う表現がやや不自然。『Drafting the systemization plan』等の方が読みやすい。ただし意味（QCD 目標値を設定する企画段階という正解根拠）は保持されており、正誤判定には影響しない。文体上の指摘のみ。"
+        },
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "選択肢ウ『ソフトウェア導入計画の作成』の en 訳『Creating the software introduction plan』は『導入』を introduction と直訳。IT 文脈では deployment/installation の方が自然だが、意味の逆転・脱落はなく、ア との識別性も保たれている。文体上の指摘のみ。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22a-q008",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22a-q022",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22a-q031",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22a-q058",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22a-q061",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "上流 input の choices_jp(OCR 由来) が ウ・エ で破損している。ウ src=「整数部(A2/100)＋剰余(A2/10, 10)」(外側 剰余(...,10) と内側 整数部 が脱落) / エ src=「整数部(整数部(A2/100)＋整数部(A2/10), 10)／10」(2引数の不正な整数部)。一方 figure_page_png(権威フルページ問61) の正規式は ウ=剰余(整数部(A2/100)＋剰余(整数部(A2/10),10),10) / エ=整数部((整数部(A2/100)＋整数部(A2/10))／10)。sidecar の zh/en 訳は全 4 択とも権威フルページに完全一致しており(正規化後 ア/イ/ウ/エ すべて auth と一致)、破損した crop 源ではなく figure を正として訳出している。figure 問の意図どおりの挙動で翻訳側の欠陥ではないが、上流 corpus の choices_jp が figure と非整合である点を記録する。独立計算で 4 コード(370→0,549→9,538→8,763→3)を検証し、権威式では ウ のみ全件一致 → correct_answer『ウ』は妥当で、訳ミスによる正誤崩れなし。"
+        },
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "en stem では 表計算ソフト を『spreadsheet program』と訳出しているが glossary の en は『Spreadsheet Software』。意味は同一で正誤・忠実度に影響なし。表層の語形ゆれのみ。zh は glossary どおり『电子表格软件』で整合。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22a-q068",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22a-q080",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22a-q087",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "JP 原文 stem は『結合した\"社員\"表はどれか』(結合した = 結合された/結合に用いられた社員表、すなわち結合元の社員表)。zh は『连接前的\"社员\"表是哪一个？』と『前 (=before)』を補って意訳している。これは図(A には既に部署名/都道府県名があり、選択肢には部署コード/都道府県コードがある)から導かれる正解 (エ=結合元の社員表) の意図と一致し、正誤判定は崩れていない。ただし字面の『結合した (=joined)』を『连接前 (=before joining)』へ言い換える解釈的補足であり、字義に対しては微妙なズレ。意味は正しく着地しているため low。"
+        },
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "en は『Which is the original \"Employee\" table that was joined?』で『original』を補足。意図(結合元の社員表)は正しく捉えているが、zh の『连接前(before joining)』と en の『original ... that was joined』で言い回しが不一致(両者とも結合元=source table を指しており正解 エ の根拠は保持)。字面の結合した modifier に対する解釈的補足である点も zh と同様。正誤判定への影響なし。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "用語『社員』→『社员』は理解可能だが、本土 zh では『员工/职员』がより自然。日式借词寄りの軽微な選好問題で、全選択肢で一貫しており正誤・意味への影響はない。downgrade 済 (PREFERENCE 寄り)。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22a-q092",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22a-q097",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "上流 input_batch の stem_jp 表と choices_jp が figure(page-43)と完全に乖離・OCR garble 破損していた(例: stem_jp は ③先行=②/④時間=1/⑤時間=3/⑥⑦先行=⑤⑥/⑧先行=⑦ と figure 不一致、choices_jp は '(② ③' / '③ と (⑬, ⑤ ⑥⑤ぶ)' / '(⑫ ③ と ⑥, @ ⑦' / '(⑥, ⑥, ⑦' と読解不能)。ただし検証対象は sidecar 側であり、stem_jp_clean は figure を正として全数値・先行関係(③←①, ④=3h ②③, ⑤=2h, ⑥←④, ⑦←④, ⑧←⑤⑥⑦)を正しく是正済み、翻訳 choices も figure の正値 ア(②,③)/イ(②,③)と(④,⑤,⑥)/ウ(②,③)と(⑤,⑥,⑦)/エ(⑤,⑥,⑦)に是正済み。情報共有目的の参考記録(翻訳忠実度には影響なし)。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "stem_jp_clean は choices_jp の garble を未是正のまま残しているが、翻訳側 choices は figure-faithful に独立是正されており、zh/en とも figure の正しい選択肢値および正解 ウ=(②,③)と(⑤,⑥,⑦) の根拠(②③は先行①共通で並行可、⑤⑥⑦は先行④共通で並行可)を保持。脱落・誤訳・正誤逆転なし。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22a-q100",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "JP源「Fさん」を zh で「F 同学(学生)」と訳出。原文の「さん」は中立的敬称で、IPAの過去問の登場人物は通常は新人社員/担当者を想定するため「同事/担当者/这位」のほうが無難。学生限定の含意を加えており、わずかに踏み込んだ訳。ただし作業時間短縮問題の正誤判定(正解イ=作業④)には一切影響しない語彙選択レベルの差異。en側は「F」とラベルのみで中立的に処理されており問題なし。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "本問はアローダイアグラム(クリティカルパス)計算問題で、stem が「表に示される全体の作業時間」と各作業の所要時間・先行関係を記した作業表を参照している。しかし JP源(input_batch)に has_figure=false かつ表本体データが一切含まれておらず、図/表データの欠落は上流データ側の欠陥(翻訳監査の責務範囲外)。翻訳としては JP源に存在する stem/choices を忠実に転写しており、訳出由来の脱落ではない。正解イの算定根拠となる表自体が源にないため、語学的忠実度は満たすが下流の利用可否は別途上流是正が必要。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q001",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q002",
+      "accurate": false,
+      "severity": "high",
+      "checks": {
+        "faithful_zh": false,
+        "faithful_en": false,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "high",
+          "detail_jp": "選択肢イとウの zh/en 訳が相互に入れ替わっている (取り違え)。JPイ=「A社はB社より売上高の伸び率が高く，2008年の売上高営業利益率も高い」(高い+高い) だが、訳イは zh「增长率低于B公司，但…利润率较高」/ en「lower sales growth rate…higher…profit margin」(低いが高い) となっており、これは実際には JPウの内容。逆に JPウ=「伸び率が低いが…利益率は高い」(低い+高い) だが、訳ウは zh「都高于B公司」/ en「both a higher…and a higher」(両方高い) で、これは JPイの内容。correct_answer=「イ」なので、学習者は正解選択肢イの訳を「伸び率が低いが利益率が高い」と読むことになり、正解の根拠 (JP原文の意味) と完全に食い違う。正誤判定の根拠を破壊する致命的誤訳。zh・en の両言語で発生。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢ア・エの訳は JP に忠実で問題なし (アは高い/低い、エは両方低い)。stem の zh/en も忠実、stem_jp_clean は figure問として OCR garble を除去し本文を保持した妥当な再構成。誤りは専ら選択肢イ・ウの高低語の取り違えに局在しており、用語選択 (销售营业利润率/operating profit margin on sales、增长率/growth rate) 自体は適切・本土 zh で glossary 整合も問題ない。是正は選択肢イとウの訳を入れ替える (= 各々を対応する JP 原文に再対応させる) ことで足りる。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q007",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q021",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q031",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q051",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "stem の「営業イベント」を en では「sales events」、zh では「营业活动」と訳しており、言語間で語選択がわずかに揺れている。ただし源語「営業イベント」自体が広義(イベント/キャンペーン/活動)であり、どちらも妥当で意味は保持され、正解(ウ=要件定義としてのデータ項目洗い出し)の根拠に影響しない。文体上の微差のみ。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢アの源文「組み込むせマクロ」は OCR 由来の崩れ(本来「組み込むマクロ」)だが、zh「要嵌入的宏」/ en「the macro to be embedded」ともに正しく意図を復元しており誤訳ではない。正解判定(ア=コーディング作業ゆえ不正解)も維持。問題なし。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q055",
+      "accurate": true,
+      "severity": "medium",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "選択肢エの不整合 (上流 choices_jp 欠陥)。figure (crop と figure_page_png フルページの両方を実読・拡大確認) では選択肢エは `$B$4*(1.0+$D2)` で、`D2` の前に `$` が明確に存在する。sidecar 翻訳 (zh/en とも `$B$4*(1.0+$D2)`) はこの figure と一致し figure-faithful で正しい。一方、入力 input_batch の `choices_jp[\"エ\"]` は `$B$4*(1.0+D2)` となっており `$` が脱落した上流 OCR 欠陥。すなわち sidecar の方が原典に忠実で、欠陥は上流 choices_jp 側にある。エは distractor (正解はウ `$B4*(1.0+D$2)`) のため正誤判定には影響しないが、sidecar と choices_jp の文字列不一致はデータ整合性の問題であり、上流 choices_jp[\"エ\"] を `$B$4*(1.0+$D2)` に是正して整合させるべき。翻訳自体は不正確ではない。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "確認事項 (是正不要): stem の表は zh/en とも figure と完全一致 (列順 A〜E 保持、消費税率1/2・税率0.1/0.2・税抜き価格/不含税価格/Pre-tax・税込み価格1/2・商品A/B 500/600・550/600・660/720 すべて正確、列脱落/列順改変なし)。正解ウ `$B4*(1.0+D$2)` は zh/en で逐字保持され、下方複写で行可変=$B4・右方複写で列可変=D$2 の根拠は不変。専門用語 (不含税价格/含税价格/消费税率, Pre-tax/Tax-incl. price/Tax rate) は適切・本土 zh・glossary 整合。仮の→临时/provisional も妥当。stem_jp_clean フィールドは sidecar に存在しないため clean_stem_faithful=true (評価対象なし、入力 stem_jp 表自体が figure 一致)。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q070",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q077",
+      "accurate": true,
+      "severity": "high",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": false,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "上流(input)欠陥: choices_jp の TEXT が FIGURE と取り違え。図ア=曲線が対角線より上(システム稼働率>装置稼働率, 上凸 ∩字)、図イ=曲線が対角線より下(システム稼働率<装置稼働率, 下凸 U字=r²の挙動)。しかし choices_jp テキストは ア='常に低い(下に凸)'、イ='常に高い(上に凸)' と図と逆になっている。正解 correct_answer=イ は図イ(システム稼働率が低い=直列 r² の数学的正解)を指し図としては妥当だが、イ のテキスト '常に高い' は図イ・数学的真実(直列なら必ず低下)と矛盾。翻訳者責任外の上流テキスト⇔図の取り違えで、設問が文章上は破綻。zh/en はこの誤ったテキストを忠実に転写しているため翻訳自体の誤訳ではないが、設問の正誤判定を文章ベースで崩す重大欠陥。フルページ(page-32)実読で図の上下関係を確証済み。上流 corpus 是正(ア/イ テキストの低い/高い・下に凸/上に凸 を図に合わせて入替)を要する。"
+        },
+        {
+          "lang": "en",
+          "severity": "medium",
+          "detail_jp": "翻訳側の content addition: JP 選択肢は括弧内が '(下に凸)' '(上に凸)' '(直線)' '(S字)' のみの簡潔表記。en はこれに原文に無い幾何学的補足を追加 (ア: 'i.e. a U-shaped curve bulging downward / opening upward', イ: 'i.e. an ∩-shaped curve bulging upward / opening downward')。(1) 原文に無い説明の追記で厳密な忠実性を逸脱。(2) ア の補足は 'bulging downward'(下に膨らむ)と 'opening upward'(上に開く)が同一曲線の記述として自己矛盾し、EN 読者を混乱させうる(下に凸=convex downward は標準的には開口上向き U字。'bulging downward' は誤導)。命題の真偽値(低い/高い)は正しく保持されているため正誤反転ではないが、忠実度違反かつ幾何記述の不整合。zh は補足追加なしでクリーン。en の括弧内補足を JP と同じ簡潔表記 '(convex downward)' '(convex upward)' に戻すべき。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q079",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q089",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q090",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "選択肢ア「開発の工程別に作業分割した。」の訳で、zh「按开发的工序（阶段）划分工作。」/ en「Divided the work by development process (phase).」が原文に無い補足「（阶段）/(phase)」を括弧で追加している。これは『工程』を曖昧さなく明確化する補助的な追記であり、意味の改変や正誤判定への影響は無い（正解アの根拠『開発工程ごとの分割』は zh/en とも保持され、誤答イ/ウ/エの不正解理由も全言語で不変）。厳密には逐語訳に対する微小な内容追加に当たるため low として記録するのみ。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "stem_jp_clean は stem_jp と内容完全一致で、OCR の改行スペース2箇所（『サブシ ステム』→『サブシステム』、『行 った』→『行った』）の除去のみ。数値・論理・選択肢ラベル・意味すべて保持され clean_stem_faithful は PASS。参考情報として、本問(問90)の本文が指す『作業分割の図』は figure_page_png(page-39) 上で下段の問91の表と共有されている（担当・工数列を持つ表は問91用）が、これは原典の図版配置の特性であり翻訳忠実度の欠陥ではない。翻訳は JP stem を正確に反映しており翻訳上の issue 無し。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q092",
+      "accurate": false,
+      "severity": "high",
+      "checks": {
+        "faithful_zh": false,
+        "faithful_en": false,
+        "terminology_ok": true,
+        "clean_stem_faithful": false
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "【注記文の破壊 = clean_stem_faithful 失敗】フルページ図(page-40.png)の注記は権威的に「同じ名字の担当はいない。網掛けの部分は，表示していない。」と明記。意味は『同姓の担当者は存在しない(=表中の田中は全て同一人物)』。ところが stem_jp_clean は「同じ名の文字の組合せ、網掛けの部分は、表示していない。」に改変・破損しており、2つの別個の文を混同し、最重要の同定ルール『同じ名字の担当はいない』を完全に消失させている。この注記は本問の論理の鍵であり、正解イ(田中の前作業と重なるため終了日6月19日に設定不可)が成立する唯一の根拠(=3箇所の田中が同一人物であること)を与える。図と不一致かつ意味改変のため high。"
+        },
+        {
+          "lang": "both",
+          "severity": "high",
+          "detail_jp": "【注記文の破壊が zh/en へ伝播】zh「相同名称的文字组合以及灰底（网格底纹）部分未予显示」/ en「Cells with the same combination of names and shaded cells are not displayed」は、いずれも図の正しい注記『同姓の担当者はいない(田中は同一人物)』を欠落させ、破損した clean をそのまま訳出。結果として zh/en 学習者は正解イの根拠(田中=同一人物ゆえタスク重複)を本文から導出できない。正解選択自体はイの文面(田中の作業重複)で辛うじて維持されるが、理由づけが失われるため high。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "【作業3列値の脱落】フルページ図は作業3=「ソフトウェアインタフェース詳細設計」だが、stem_jp_clean は「詳細」を脱落させ「ソフトウェアインタフェース設計」と記載。図と不一致(脱落)だが解答ロジックに影響なし。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "【作業3列値の脱落が zh/en へ伝播】zh「软件接口设计」/ en「Software interface design」も図の「詳細(详细/detailed)」を脱落。解答影響なしのため low。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "【選択肢ウのモダリティずれ】入力 choices_jp(JP正)ウは「終了日を6月18日に設定するべきである(should)」だが、zh「可以将结束日设定为6月18日」/ en「can be set to June 18」は『can』と訳し、指定された源(入力)の『べき』と不一致。なお図実読ではウは「ことができる(can)」であり訳は図に合致(入力源の方が図と乖離)。ウは誤答ディストラクタのため正誤判定に影響なし、low。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "【選択肢イの補足】入力源イは「田中さんと作業が重なる」だが zh「与田中的前序作业发生重叠」/ en「Tanaka's preceding task」は『前作業/preceding』を追加。ただしフルページ図イは「田中さんの前作業が重なる」であり訳は図に合致、解答ロジック(田中の作業重複→6/19不可)も保持。図準拠の補足のため low。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q094",
+      "accurate": true,
+      "severity": "none",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q098",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "faithful_zh": true,
+        "faithful_en": true,
+        "terminology_ok": true,
+        "clean_stem_faithful": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "en stem「which combination is correctly classified as strengths?」は JP「適切な組合せはどれか」の『適切な(組合せ)』を『correctly classified』と訳出し、適切さの係り先が(組合せ選択)から(分類の正しさ)へ僅かに移動している。ただし選ぶべき答え=強みに該当する項目の組合せ、という結論は不変で、correct_answer「ウ」(3)と(8) の根拠は崩れない。意味的に許容範囲・低深刻度。zh「恰当的组合是哪一个？」は原意に忠実。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "本問は stem が外部ブロック「[S社の状況]」内の項目(1)〜(8)を参照する形式だが、当該項目定義はこのエントリに含まれない (has_figure=false, figure_png=null)。これは corpus 固有の制約であり翻訳欠陥ではない。選択肢は純粋な番号参照((3)と(8)等)のため zh/en とも番号・接続詞(と→和/and)を完全保持し、正誤判定に影響なし。"
+        }
+      ]
+    }
+  ]
+}

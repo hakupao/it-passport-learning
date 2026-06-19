@@ -505,3 +505,38 @@ D-135 Phase 1 = 過去問 stem+choices を JP→zh/en 預生成翻訳 (増量 ba
 - **`2011h23tokubetsu-q073`** (正解ア): `stem_jp` 区切り `ε`(OCR 誤読)→`CR` + `choices_jp` 全4 を garble から figure-faithful 再構成 (ア`月,1月,2月 CR 売上高,500,600 CR`・イ`月,売上高 CR 1月,500 CR 2月,600 CR`・ウ`月/1月/2月 CR 売上高/500/600 CR`・エ`月/売上高 CR 1月/500 CR 2月/600 CR`、figure page-26)。sidecar zh/en は既に CR-form (figure 正) → 三語整合。
 - **検証**: build 再生成で questions.json diff = **当該2問のみ (6+/6-)**、quiz_index/correct_answer (イ/ア) 不変。tsc/eslint 0err / vitest 455 / build exit0 / **nft IPA 0** (quiz trace 25 sidecars)。**独立 Rule D 再検証 (critic ≠ fixer=主 context) = 2件とも PASS** (critic が page-02/page-26 を自己実読し、q002=円(DFD)・q073=CR/全選択肢末尾CR/ア=行優先カンマ・正解不変・三語整合 [形状/区切り記号/弁別軸] を独立確認)。
 - **影響**: 2 問とも JP/zh/en の三語が figure 一致。**q002/q073 は backlog から除去 (RESOLVED_IN_CORPUS)**。残 S95 backlog なし (累積 backlog のみ)。
+
+---
+
+# スケール バッチ S96 (Session 96, 2026-06-19) — `2010h22a` / `2010h22h` / `2009h21a` / `2009h21h` 【最終バッチ・Phase 1 完了】
+
+> 残り 4 回 (= 最終) を統合 1 バッチ S96 で実行。完了で **Phase 1 翻訳 29/29 完了**。
+
+## 何をしたか
+- prep×4 → batch combine → translate WF (`wf_fc197c18-8ec`) で **400 問三語翻訳**。
+- **途中 weekly limit 直撃**: translator 400/400 はディスク確定したが、in-pipeline reviewer 305 が `You've hit your weekly limit` で失敗 (null)。**滚动窗口リセット後に同 run を `resumeFromRunId` で再開** → 400 訳+95 review は cached 即返、**305 review のみ再走** (再翻訳の無駄なし)。
+- merge×4 → ruleA-prep×4 + 強制4 (非PASS) → ruleA WF (`wf_e141c0ca-ea9`, N=52)。
+
+## 結果
+- **Rule D in-pipeline**: 400/400 = PASS 396 / CONCERNS 3 / FAIL 1 / null 0、repair (rounds>1) 27 (23→PASS)。
+- **Rule A (独立 critic N=52、48 層化 + 強制4)**: **accurate 50/52**、severity none30/low18/medium1/high3。not-accurate 2 (q002/q092、共に 2010h22h)。
+- **applied_fix 3 件 (全 2010h22h、独立 critic 再検証 ACCEPT)**:
+  - **q092** (high、正解イ不変): stem_jp_clean が figure 注記「同じ名字の担当はいない」(正解イ=田中同一人物の根拠) を破壊 → 主 context が **page-40 実読**し復元 (作業3 詳細 も復元)、jp/zh/en。
+  - **q077** (medium、正解イ不変): en ア/イ の JP に無い自己矛盾的幾何補足を簡潔化。zh は元から清。
+  - **q002** (high、正解イ不変、**REGRESSION → REVERT + 上流 corpus fix**): Rule A critic#1 が corrupted corpus 基準で「イ/ウ swap」と指摘 → fixer が翻訳を swap (= figure から AWAY、REGRESSION)。**fixer が page-04 実読** (印刷版 イ=low/high・ウ=both-high、graph A社 +20% < B社 +100% growth・2008 margin 40% > 36% → イ) → 翻訳 REVERT + 上流 `choices_jp` の s7x anti-figure swap を是正 (questions.json diff 当該2選択肢のみ、correct_answer 不変)。独立 critic#2 が page-04 実読し ACCEPT。**Rule B archive** (`failures/quiz_phase1_S96_2010h22h-q002_regression{.md,_defective.json}`)。
+- **上流 backlog (翻訳忠実・要ユーザー判断)**: q077 choices_jp↔figure↔key 反転 / q055 choices_jp[エ] `$` 脱落 / q099・q100 stem が源に無い表を参照。
+
+## 教訓 (fix-checklist)
+- **q002 = S94 q052 教訓の再適用漏れ**: 選択肢「取り違え」指摘でも figure 実読は必須。corpus choices_jp 自体が s7x で破損しうるため、translation vs corpus のテキスト一致は corpus 正の保証にならない。
+- `choices_jp_corrupted_backup` は「corrupted」命名でも figure 忠実なことがある。LIVE と食い違う figure 問は figure 実読で裁定。
+- 写審分離+多段独立検証の複利が REGRESSION を捕捉 (in-pipeline mis-PASS → critic#1 誤判定 → fixer 誤fix → critic#2 figure 実読で捕捉)。
+
+## 検証 (全 GREEN)
+- tsc 0 / eslint 0err (既存 warning 1=tTerm) / **vitest 455 passed** (+2 skipped) / build exit 0。
+- **nft IPA leak = 0**: quiz route trace = quiz_index + questions + **translations/29回.json** (4 新 sidecar resolve)。exams/sources/syllabus/question_bank = 0 (粗4hits=除外glob + SSR source-map の "question_bank" 文字列の誤検知と確認)。
+
+## コード変更
+- なし (scripts/workflow は S88〜S95 から不変)。成果物 = sidecar 4 (translations/{2010h22a,2010h22h,2009h21a,2009h21h}.json) + questions.json q002 choices_jp 是正 + Rule B archive。
+
+## 進捗
+- **Phase 1 翻訳済: 29/29 回 = 完了**。残 0。次 = Phase 2 (解析預生成)。
