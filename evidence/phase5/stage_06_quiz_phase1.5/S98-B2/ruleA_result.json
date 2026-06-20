@@ -1,0 +1,517 @@
+{
+  "n": 26,
+  "faithful": 24,
+  "bySeverity": {
+    "none": 13,
+    "medium": 2,
+    "high": 3,
+    "low": 8
+  },
+  "leaks": [],
+  "keyMismatch": [
+    "2015h27a-q100",
+    "2015h27h-q086",
+    "2015h27h-q100",
+    "2017h29a-q092"
+  ],
+  "audits": [
+    {
+      "id": "2015h27a-q007",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ア",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2015h27a-q008",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2015h27a-q026",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ア",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2015h27a-q071",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2015h27a-q086",
+      "faithful": false,
+      "severity": "medium",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": false,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "medium",
+          "detail_jp": "設問プロローグに意味ドリフトあり (change_summary 未記載の非強制改変)。権威源 page-37 の原文および stem_corrupted_backup はいずれも『セルK204に質問項目の項目番号を入力すると，<その>質問項目の評価が2以下だったアンケートの内容を<アンケート集計表から>抽出し，アンケート抽出表中の同じ行に複写する。』と記す。reconstructed.stem_jp_clean はこれを『…質問項目の評価が2以下だったアンケートの内容を<行ごとに>抽出し，…』に書き換えており、(1) 指示語『その』を脱落、(2) 抽出元を明示する原文句『アンケート集計表から』を削除、(3) 原文に存在しない『行ごとに』を捏造している。『行ごとに』は後続の『同じ行に複写する』と冗長で、抽出ソース表の明示を失わせる。意味劣化だが答案非依存 (J3 ロジック・表引き軸は不変なので正解ウは導出可能) のため medium。修正案: 原文どおり『その質問項目の評価が2以下だったアンケートの内容をアンケート集計表から抽出し』へ戻し、zh『将该问题项评价为2以下的问卷内容从问卷集计表中抽取』/ en『the contents of questionnaires whose rating for that question item was 2 or lower are extracted from the questionnaire tally table』へ同期する。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "trilingual は stem_jp_clean に忠実だが、上記プロローグ・ドリフトを zh『逐行抽取』/ en『extracted row by row』としてそのまま継承している。stem_jp_clean を原文に戻す際に zh/en も同時に是正のこと (現状 zh/en 単体は本土用語・用語整合・stem_jp_clean 忠実で trilingual_consistent=true)。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "図表再構成は良好 (positive)。左表 (アンケート集計表) は G列=総合評価の単一列ヘッダ、行4 総合評価=4、行202 店舗B=2・総合評価=3、行203 評価平均 2.8/3.5、行204 相関係数 0.60/空 を図と逐セル一致で確認。右表 (アンケート抽出表) は通番1(行3)・通番199(行201) 未抽出=空、通番2(行4)=3,5,2,3,4,4、通番200(行202)=2,3,2,3,3,3 を図と完全一致で確認。change_summary の集計表/抽出表訂正はすべて図に照合して妥当。選択肢一覧表の混入なし、参照データ表のみ。"
+        }
+      ]
+    },
+    {
+      "id": "2015h27a-q100",
+      "faithful": true,
+      "severity": "medium",
+      "independent_answer": "導出不能（NULL）",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": false,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "medium",
+          "detail_jp": "supports_key=false。再構成 stem + choices からは correct_answer=イ(140) を算術導出できない。本文は「内蔵されている全てのHDDの処理に掛かる時間」を問うが、figure(処理速度表)にはデスクトップPC=200M/分・液晶ディスプレイ一体型PC=400M/分の処理速度しかなく、正答140を出すのに必須な各PCのHDD容量(バイト)と台数が欠落している。速度だけでは時間(分)が確定不能。independent_answer は導出不能。これは change_summary_jp が自認する通り上流 figure 源の不完全性(HDD容量・台数表が抽出/OCR段階で欠落, bank s027_severity=ocr_garble_critical 既記録)であり、page-47 フルページ(権威)を精査してもHDD構成表はページ上に存在しない(問100はページ末尾の最終問、隣接ページにも該当表なし)。Rule D 再構成者の責任外で、不足データ補填は捏造になるため補わない判断は妥当だが、stem 単独で正答到達不能=学習者が解けない構造的欠陥であり、figure 源の修復が必要なデータ品質フラグとして残す。severity は medium(正誤反転や値drift等の意味ずれではなく、図が源に逐セル忠実な上での源側欠損のため high には上げない)。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "source_faithful 観点で figure(裁剪)とフルページ page-47(権威)の両方を読み、再構成 stem_jp_clean の本文・マーカー〔テクノロジ〕・問100番号・条件文(専用ソフトの処理以外に掛かる時間は無視する)・処理速度表(2行・行順・値200M/400M・列見出し「処理速度（バイト／分）」)を逐項照合した結果、値drift・行scramble・条件脱落・反転・捏造はゼロで、bank questions.json:28642 の stem_jp とも完全一致。figure に写る範囲については完全忠実(S97 q066 のような再構成者起因の図表腐敗ではない)。これは欠陥ではなく所見記録。"
+        }
+      ]
+    },
+    {
+      "id": "2015h27h-q009",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2015h27h-q027",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "change_summary_jp は raw_stem の garble「解を求めるための」を backup 準拠の「解を求めるのに」へ訂正したと記すが、提供された stem_corrupted_backup フィールド自体は既に「解を求めるのに」となっており garble を含まない。backup と reconstructed.stem_jp_clean は全角/半角読点(, → 、)以外に意味差がなく、条件語「最も」も保持され意味脱落はゼロ。よって意味保持の判定には影響しないが、change_summary の参照対象(raw_stem)と本サンプルに同梱された backup フィールドが別物である点は記録に留める(字面メタの不整合・low)。"
+        }
+      ]
+    },
+    {
+      "id": "2015h27h-q035",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "change_summary_jp の表現「stem_corrupted_backup は ... choices・keyed answer ウ と不整合」はやや不正確。backup は WBS（プロジェクト作業の階層的要素分解）という完全に別問題のテキストで、その自然な解は『WBS』であり四択のいずれにも該当しない（=単なる『ウ との不整合』ではなく問題そのものの混入）。ただしこれは要約文の言い回しの精度問題に過ぎず、再構成された stem_jp_clean の忠実性・正誤には一切影響しない。再構成の判断（破損 backup を復元源に不採用 → topically 正しい raw_stem を採用）は正当。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "補足（指摘ではなく検証記録）: 上流 raw_stem『…技術的な実現性を確認するために有効な作業はどれか。適切なものはどれか。』および production questions.json の stem_jp が再構成 stem と完全一致で源を裏付け。stem_jp_clean は raw_stem 末尾の重複した二重設問末『適切なものはどれか。』のみを除去したもので、条件語『技術的な実現性を確認するために有効な』『検討した』『システム要件定義の段階で』は全て保持、否定・節の改変なし。zh/en も対応する重複末尾文のみ除去で意味保持。除去部は意味を担わない冗長末尾のため脱落ではない。"
+        }
+      ]
+    },
+    {
+      "id": "2015h27h-q086",
+      "faithful": true,
+      "severity": "high",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": false,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "detail_jp": "supports_key 不成立 (回答影響=high)。stem 自体は源 page-34 と逐字一致で忠実だが、本サンプルに格納されている choices_jp の下線注記が源画像と不一致 (4 件中 3 件誤り)。源 page-34 を 8倍拡大で逐行確認した真の下線位置は ア=社員番号 / イ=社員番号+区画番号 / ウ=社員番号+許可区分 / エ=全列(社員番号+区画番号+許可区分)。一方、格納 choices_jp は ア=（下線：社員番号）[一致] / イ=（下線：区画番号）[誤] / ウ=（下線：許可区分）[誤] / エ=（下線：社員番号, 区画番号）[誤]。入退室許可表は社員×区画の多対多ジャンクション表で一意主キーは複合{社員番号,区画番号}。源画像から独立導出すると正解=イ (correct_answer と一致)。しかし格納 choices_jp を字義通り読むと複合{社員番号,区画番号} は『エ』に割当てられ、導出解=エ となり correct_answer=イ と矛盾する。change_summary_jp はこの欠陥と是正方針 (ア=社員番号 / イ=社員番号,区画番号 / ウ=社員番号,許可区分 / エ=社員番号,区画番号,許可区分) を自認しているが、是正がディスク上の choices_jp フィールドに未適用。stem 改修スコープ外との整理だが、現行データのまま配信すると設問が自答キーと矛盾するため answer-affecting。choices_jp を是正方針どおり書き換える必要あり。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "参考: 同 page-34 units ファイル (data/ip/exams/.tmp/s027/units/2015h27h__page-34.json) の stored_choices は『社員番号，入室日時』等のテキスト型で、源画像の表型 choices (社員番号|区画番号|許可区分) と全く異なる別物 OCR。units の stored_choices は信頼できず、源真相は page-34.png の表型である点を後続工程で固定すべき (本サンプル audit の結論には影響なし — 源画像で確定済)。"
+        }
+      ]
+    },
+    {
+      "id": "2015h27h-q087",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "stem 本体は源(フルページ)に完全忠実。change_summary の5訂正(a〜e)を全件逐項照合し確認: (a)『一致しないか社員』→『一致しない社員』(誤挿入「か」削除)正、(b)『確認は』→『確認では』正、(c)『近づくように』→『並ぶように』正(フルページは「並ぶように」)、(d)(2)末尾『表として』復元正、(e)『した値と b』→『した値が b』正。行順・(1)(2)(3)・[a]/[b]空欄・条件語すべて図と一致。脱落/scramble/混入なし。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "scope外の上流参考所見(stem 非依存・答案非依存・非ブロッキング): 選択肢イについて figure(裁剪)とフルページの双方が a 欄を『入退室区分の値を合計』と表示しているが、入力 choices_jp フィールドは『入退室区分を集計』と異なる字句を保持(「の値を」脱落・「合計」→「集計」)。これは choices_jp(選択肢)側の字面ずれで stem 再構成には現れず、no_choice_table_leak も満たす(ア〜エ一覧表は stem に未混入)。正解イ(入退室区分の値の合計が0でない=入退室回数不一致)はいずれの字句でも頑健に導出可能のため supports_key/severity に影響せず。下流の choices 体検で要確認の参考事項として記録。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "[supports_key 検証・欠陥なし] 手順は『同一ICカード+区画ごとに a を適用→結果値が b なら出力』。本文目標は同一区画での入室/退室回数不一致のICカード抽出。入退室区分を符号付きで合計し0でない(=釣り合わない)を抽出するイが目標と整合。ア(区画番号で加算/奇数)・ウ(時刻差合計/24時間超=滞在時間)・エ(レコード数計数/偶数)はいずれも回数不一致判定に不適。独立導出=イ、correct_answer=イ と一致。デフェクトではなく検証ログ。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "[三語整合・欠陥なし] zh は本土中文・用語整合(进出区分/区划号/IC卡号)、(2)に『作为表记录』(復元した「表として」対応)、(3)で a/b 空欄保持。en も忠実で(2)『record the resulting value as a table』・(1)『adjacent』(「並ぶように」対応)と訂正後本文を踏襲。両訳とも腐敗版でなく訂正版を反映しており健全。デフェクトではなく検証ログ。"
+        }
+      ]
+    },
+    {
+      "id": "2015h27h-q092",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "ア",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "change_summary_jp は『raw_stem の garble dさん→Bさん を修復済』と記すが、提供された stem_corrupted_backup には既に「AさんはBさんから」とあり『dさん』garble は当該 backup 文字列に存在しない。summary の記述上の不正確さであり stem そのものの欠陥ではない（正誤無影響）。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "backup の〔Zプロジェクトの状況〕の「Z」接頭辞を除去し〔プロジェクトの状況〕とした。実際の IPA H27 設問では『Ｚ』がプロジェクト名の一部である版が存在しうるため、参照表名との完全一致観点で微小な不確実性が残る。本 stem 内では意味に無関係で除去は無害（正誤無影響・低確信）。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "supports_key: correct_answer=ア=(1) は構造的に妥当だが、最も影響の大きいリスクの判定には外部の〔プロジェクトの状況〕表（各項目のリスク影響度）が必要で当該データはサンプルに含まれないため、(1) が最大であることを独立に再導出することは不可。これは参照表が stem 外という設問構造に起因し、再構成 stem の欠陥ではない（規則上、参照データ表は stem に埋め込まない方針に合致）。"
+        }
+      ]
+    },
+    {
+      "id": "2015h27h-q100",
+      "faithful": true,
+      "severity": "high",
+      "independent_answer": "ア",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": false,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "detail_jp": "stem-key 不一致 (answer-affecting)。再構成 stem_jp_clean の手続 w－x－y＋z は w=件数表示([価格=1]), x=([性能=1]and[価格=1]), y=([価格=1]and[デザイン=1]), z=([性能=1]and[価格=1]and[デザイン=1]) で、包除原理により = 件数表示([性能=0]and[価格=1]and[デザイン=0]) = 選択肢ア に恒等的に一致 (独立検証 200 ランダム宇宙で mismatch=0)。一方 JSON の correct_answer フィールドは『エ』のまま。再構成 stem + choices から導ける正解はアであり、記録された correct_answer『エ』を stem は支持しない (supports_key=false)。change_summary 自身が エ→ア 是正要と明記しているが、データ上の correct_answer は未是正。上流 correct_answer を エ→ア に是正する必要がある。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "stem 質問文に『記述』(命令の記述はどれか) を追加した修復は backup の『得られる命令はどれか』に対し意味付加だが、choices_jp が全て『件数表示(...)』という命令の記述形式であるため整合的であり問題なし。zh『命令的描述』en『command description』も整合済。意味の改変・正誤への影響なし。"
+        }
+      ]
+    },
+    {
+      "id": "2016h28a-q041",
+      "faithful": true,
+      "severity": "low",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "independent_answer": "ウ",
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "change_summary_jp は「raw_stem の末尾を『何人か』から『何名か』に訂正」と記すが、stem_corrupted_backup の末尾は既に『何名か』であり、記述と実際の改変内容に齟齬がある。ただし最終 stem_jp_clean の末尾は図(crop・フルページ問41 双方)通り『何名か』で正しく、source_faithful・supports_key には影響しない字面メタデータの不正確さのみ。"
+        }
+      ]
+    },
+    {
+      "id": "2016h28a-q075",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "[非阻断・観察のみ] 再構成 stem は木構造を散文+インデント箇条書きで記述しており、原図のグラフィカルな木 (左→右展開) を厳密な markdown 表ではなく文章で再構成している。逐ノード照合では全ノード(ルート/上DIRB/DIRA→DIRB＊①/②/下DIRB→DIRB③/④/下DIRA)・行順・＊印・①〜④番号がすべて図と一致しており意味欠落は無い。ただし下側 DIRA(ルート第2子)が葉であることは『DIRB(上)と DIRA(下)の2つ』とだけ記し子無しを明示していない(図でも子無しなので忠実)。可読性上 leaf 明示があるとより親切、という字面レベルの観察に留まる。"
+        }
+      ]
+    },
+    {
+      "id": "2016h28a-q099",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "設定方式(3)の語尾が源(page-38)では「メンバの属性情報が未設定の場合にだけ適用する」(能動)だが、再構成 stem_jp_clean では「…だけ適用される」(受動)になっている。態のみの字面差で、意味(グループ属性はメンバ未設定時のみ適用)・正誤に一切影響なし。"
+        }
+      ]
+    },
+    {
+      "id": "2016h28h-q001",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "ア",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "stem 再構成は図と逐セル一致で問題なし（後述参照）。stem 範囲外の参考指摘: choices_jp の選択肢ア『…合計で 16時間以内であること』は、figure_png / figure_page_png ともに『10時間以内』と読める。選択肢フィールドの数値差異（10 vs 16）であり、再構成 stem の忠実性には無関係。かつアが唯一の非機能要件（可用性制約）である事実は数値に依存しないため supports_key も不変。ただし下流の choices 校正で 16→10 を要確認。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "change_summary_jp の表現『機能要件 2 行目「経理部部長」→「経理部長」』について。current_clean/backup の腐敗から『経理部部長』の重複を是正した旨だが、図は明確に『経理部長』であり、再構成後の stem も『経理部長』で図と一致しているため訂正方向は妥当。意味ずれ・捏造なし。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29a-q035",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29a-q092",
+      "faithful": false,
+      "severity": "high",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": false,
+        "supports_key": false,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "detail_jp": "正解選択肢エの choices_jp が図と不一致。図(page-35 を 3x 拡大して逐セル判読)ではエの『所有者と同じグループの利用者』が R○ W− X○ だが、入力 JSON の choices_jp.エ は『所有者と同じグループの利用者 R:− W:ー X:○』(同グループ R が −)。配布される choices_jp だけからは、エが条件『所有者及び所有者と同じグループの利用者だけが読出しできる』を満たさず(同グループ読出し不可になり)、correct_answer=エ を妥当に導出できない。supports_key 破綻。図ベースでは確かにエが唯一の正解だが、source の選択肢データが腐敗しているため答案非依存でも欠陥(S97 q066 教訓)。"
+        },
+        {
+          "severity": "high",
+          "detail_jp": "誤答選択肢ウの choices_jp も図と不一致。図ではウの『その他の利用者』が R○ W○ X− だが、JSON は『その他の利用者 R:○ W:ー X:○』(W と X が反転)。誤答セルの腐敗。図ベースではどちらでもウは正解にならない(その他R=○で条件違反)ため最終正解は不変だが、source 逐セル一致は破れている。"
+        },
+        {
+          "severity": "medium",
+          "detail_jp": "誤答選択肢イの choices_jp も図と不一致。図ではイの『その他の利用者』が R○ W− X○ だが、JSON は『その他の利用者 R:ー W:ー X:○』(その他R が ○ vs −)。図ベースでも JSON ベースでもイは正解にならない(JSONイは全条件を満たす偽陽性に見えるが、その他R=−なら条件1の実行はXで満たす一方、図のイは『その他の利用者だけ』読出し可になり条件2違反)ため最終正解エは不変。ただし source 選択肢データの逐セル腐敗。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "再構成 stem_jp_clean 本文(アクセス制御方式・優先度・ファイルAの条件・○/−凡例)自体は図ヘッダーと逐行一致しており、stem 単体としては忠実。change_summary_jp は『choices_jp のセル是正は touch 範囲外(stem のみ再構成)』と明記しており、stem 再構成者の作業範囲は適切。ただし監査観点では source 全体(図↔choices_jp)の正解選択肢腐敗が未是正のまま残っており、下流で choices_jp の図準拠是正が必須。no_choice_table_leak は問題なし(○:設定/−:未設定 は図の正当凡例で選択肢表混入ではない)。trilingual(zh/en)は stem_jp_clean に忠実・本土中国語・用語整合で OK。"
+        }
+      ]
+    },
+    {
+      "id": "2017h29a-q097",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2017h29a-q098",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2018h30a-q002",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "reconstructed.stem_jp_clean は stem_corrupted_backup と意味・字句ともに完全一致 (差分は半角カンマ「,」→全角「，」の体裁正規化のみ)。条件節「を表す用語として」は backup に既に存在し、reconstructed でも完全保持されているため、意味脱落・否定/条件語の欠落は皆無で忠実性は最高水準。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "change_summary_jp は『s7x 修復が「を表す用語として」を脱落させ、backup から条件節を復元した』と述べるが、当監査に供された stem_corrupted_backup フィールド自体が既に「を表す用語として」を含む。つまり要約が言及する s7x 中間破損状態は本データに存在せず、独立に witness できない。再構成結果 (backup と意味一致) の忠実性には影響しないが、要約の叙述が監査データに無いアーティファクトを参照している点を申し送り (非ブロッキング)。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "supports_key 独立導出: 設問は『マーケ戦略で自社製品と競合製品を比較し差別化ポイントを明確化することを表す用語』。ウ「ポジショニング」=競合に対する自社製品の差別化された位置づけを顧客の認識上で確立する標準用語で一致。イ「ターゲティング」は標的セグメント選定、ア「インストアプロモーション」は店頭販促、エ「リピート」は反復購入で不一致。correct_answer=ウ を妥当に支持。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "trilingual: zh は本土用語 (市场营销/竞争对手/着眼点) で「を表す用語として」を『表示这一做法的术语』として保持、en は『the appropriate term for ...』として用語選択の体裁を保持。両言語とも条件節を脱落させず stem_jp_clean に忠実で、選択肢表の混入も無し。"
+        }
+      ]
+    },
+    {
+      "id": "2018h30a-q005",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "図キャプションの中国語訳「机器使用时间表」は原文「機械使用スケジュール」に対しやや緩い。スケジュール=調度/排程/时间表のうち、本問は甘特图状のスケジュール棒なので「调度」「排程」の方が精確。意味は通じ正誤非依存のため low。jp/en (Machine usage schedule) は忠実。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "条件語について: change_summary は raw_stem/current_clean が「同じ時間帯に使用できる」と改変していたとし、reconstructed で図の「並行して使用できる」へ復元したと記す。図ページの本文・stem_corrupted_backup ともに既に「並行して使用できる」であり、復元結果は図と一致。記述上の混乱はあるが最終 stem は源忠実。正誤非依存 low。"
+        }
+      ]
+    },
+    {
+      "id": "2018h30a-q080",
+      "faithful": true,
+      "independent_answer": "ウ",
+      "severity": "low",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "change_summary_jp の記述が不正確。「条件語『セル D4 に入力した計算式を，』を脱落から復元」と述べているが、stem_corrupted_backup には既にこの語句が存在しており、脱落していなかった。backup と原典の実際の差異は計算式の表記 $B4*(1+D$2)/$B4*(1+$D$2) → 原典 page-32 の $B4*(1.0＋D$2)/$B4*(1.0＋$D$2)(1→1.0)であり、再構成はこの 1.0 表記の訂正を正しく行っている。つまり実質的な訂正自体は源に忠実だが、change_summary_jp が『何が腐敗していたか』を誤記している(文書の不正確さであり、stem 忠実度・答案には非影響)。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "figure_png(裁剪図)は表上部が切れており行 1・行 2(税率 1/税率 2、税率/0.05/0.1)が欠落している。再構成は figure_page_png(page-32 フルページ=権威)を正しく併読して全 5 行を復元しており逐セル一致。crop 単独依存ではなくフルページ採用が正しく機能していることを確認(MEMORY fix-checklist『figure フルページ併読』遵守)。"
+        }
+      ]
+    },
+    {
+      "id": "2018h30h-q060",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2018h30h-q066",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    }
+  ]
+}
