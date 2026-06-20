@@ -1,0 +1,1340 @@
+{
+  "summary": {
+    "total": 44,
+    "rate_sample_n": 40,
+    "rate_by_final_status": {
+      "KEY_OK_VERIFIED": 13,
+      "KEY_OK_SINGLE_PASS": 25,
+      "CONFIRMED_SWAP_ONLY": 2
+    },
+    "rate_confirmed_bad": 0,
+    "rate_disputed": 0,
+    "needs_adjudication": [
+      "2013h25a-q052"
+    ],
+    "controls": [
+      {
+        "id": "2010h22h-q002",
+        "expect": "CLEAN",
+        "got": "KEY_OK_VERIFIED",
+        "audit_verdict": "KEY_OK"
+      },
+      {
+        "id": "2013h25a-q052",
+        "expect": "CLEAN",
+        "got": "DISPUTED_SWAP",
+        "audit_verdict": "CHOICES_SWAP_ONLY"
+      },
+      {
+        "id": "2010h22h-q077",
+        "expect": "UNKNOWN_BACKLOG",
+        "got": "CONFIRMED_SWAP_ONLY",
+        "audit_verdict": "CHOICES_SWAP_ONLY"
+      }
+    ],
+    "poison": [
+      {
+        "id": "POISON-2009h21a-q013",
+        "expect": "BAD_KEY",
+        "got": "CONFIRMED_BAD_KEY",
+        "audit_verdict": "BAD_KEY",
+        "audit_letter": "ウ"
+      }
+    ]
+  },
+  "records": [
+    {
+      "id": "2009h21a-q100",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2009h21a-q100",
+        "figure_legible": true,
+        "question_kind": "select_correct_graph_or_diagram",
+        "figure_correct_answer_desc": "Two-table normalization: header table (伝票番号, 日付, 取引先コード, 部署名) plus a detail table that retains 伝票番号 as the foreign key alongside 商品コード, 数量, 単価. This is the option whose 表2 = 伝票番号|商品コード|数量|単価. (ア = single unnormalized table; イ = two tables but detail lacks 伝票番号 link; エ = three tables with no linking keys.)",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "[表] 表1: | 伝票番号 | 日付 | 取引先コード | 部署名 | / 表2: | 伝票番号 | 商品コード | 数量 | 単価 |",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Both crop and full page (page-43, 問100) are clearly legible and agree. The four candidate table structures shown:\n- ア: one table with all 7 columns 伝票番号|日付|取引先コード|部署名|商品コード|数量|単価 (unnormalized, repeating header per line item) — wrong.\n- イ: 表1 = 伝票番号|日付|取引先コード|部署名; 表2 = 商品コード|数量|単価. 表2 has NO 伝票番号, so line items cannot be linked to the invoice header — wrong.\n- ウ: 表1 = 伝票番号|日付|取引先コード|部署名; 表2 = 伝票番号|商品コード|数量|単価. 表2 retains 伝票番号 as the foreign key linking detail rows to the header — this is correct normalization.\n- エ: three tables 伝票番号|日付 / 取引先コード|部署名 / 商品コード|数量|単価, none sharing a linking key — wrong.\nAn invoice has a 1:N relationship between header (one 伝票番号/日付/取引先/部署) and line items (many 商品/数量/単価); proper normalization needs the detail table to carry 伝票番号 as FK. Only ウ does this. The keyed answer is ウ, which matches the figure exactly. Choice text for ウ (\"表2: 伝票番号|商品コード|数量|単価\") matches the rendered figure. All four choice labels render consistently with their stored text; no anti-figure swap detected. The 図2 invoice image referenced by the stem is not in the crop, but the answer is fully derivable from the four shown candidate structures plus normalization logic.",
+        "anomalies": "none"
+      },
+      "verifiers": [
+        {
+          "id": "2009h21a-q100",
+          "figure_legible": true,
+          "independent_answer_desc": "Database normalization of a 請求書 (invoice) with 7 fields. An invoice has one header (伝票番号, 日付, 取引先コード, 部署名 — fixed per invoice) and many line items (商品コード, 数量, 単価 — repeat per product). Correct normalization = a header table keyed by 伝票番号, plus a detail table that MUST retain 伝票番号 as a foreign key to link line items back to the header, alongside 商品コード, 数量, 単価. Reading the figure: ア = one unnormalized table (伝票番号|日付|取引先コード|部署名|商品コード|数量|単価); イ = 表1(伝票番号|日付|取引先コード|部署名) + 表2(商品コード|数量|単価) with NO 伝票番号 link (cannot join); ウ = 表1(伝票番号|日付|取引先コード|部署名) + 表2(伝票番号|商品コード|数量|単価) — detail table keeps 伝票番号 as FK; エ = three tables (伝票番号|日付 / 取引先コード|部署名 / 商品コード|数量|単価) with no linking keys. Only ウ keeps the 伝票番号 foreign key in the detail table, so ウ is correct.",
+          "independent_figure_correct_letter": "ウ",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both the crop and the authoritative full page (page-43, 問100) are fully legible and identical. I read each choice's exact field list directly from the figure. The figure's ウ is the only option whose detail table (表2) contains 伝票番号 (the linking foreign key) together with 商品コード|数量|単価, which is the textbook-correct result of normalizing a header/detail invoice. I confirmed choices_jp[\"ウ\"] = \"表1: 伝票番号|日付|取引先コード|部署名 / 表2: 伝票番号|商品コード|数量|単価\" matches the figure's ウ exactly, and all four choices_jp letters map correctly to the figure regions (ア=1 table, イ=2 tables without link, ウ=2 tables with 伝票番号 FK, エ=3 tables without links). No choice swap or OCR corruption detected. Stored key ウ matches my from-scratch derivation."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2019r01a-q047",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2019r01a-q047",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "機能4 (開発規模80KS, A工程不良32件, B工程不良8件): A密度=32/80=0.40 ∈[0.25,0.65] → A OK; B密度=8/80=0.10 <0.25 → B 問題あり. これが唯一「A工程問題なし & B工程問題あり」を満たす機能。",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "[表] 機能4：開発規模(KS) 80／A工程の不良件数(件) 32／B工程の不良件数(件) 8",
+        "anomalies": "none",
+        "derivation": "Read both crop and full page (problem 47). Table columns: 機能 / 開発規模(KS) / A工程の不良件数(件) / B工程の不良件数(件). Rows exactly: ア 機能1: 10, 6, 3; イ 機能2: 20, 14, 10; ウ 機能3: 50, 10, 40; エ 機能4: 80, 32, 8. 不良密度=件数/KS. Range [0.25,0.65] same for A and B. Need A within range AND B outside range. ア: A=6/10=0.60 OK, B=3/10=0.30 OK → B not problem, reject. イ: A=14/20=0.70 >0.65 problem → reject (A must be OK). ウ: A=10/50=0.20 <0.25 problem → reject. エ: A=32/80=0.40 within range OK, B=8/80=0.10 <0.25 problem → satisfies both conditions. Only エ matches. choices_jp rows match figure rows exactly (no swap). Keyed answer エ = 機能4 = figure-correct. KEY_OK."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2014h26a-q096",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26a-q096",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "R組. The group must be (1) middle-of-the-pack in average (excludes P=5.40 highest and Q=4.40 lowest, leaving R=5.00 and S=5.00) and (2) have the most students concentrated near the mean / in the 4-6 point band, i.e. the smallest standard deviation. R has SD=1.02 (far smaller than S's 2.07), so R has the tightest clustering around its mean of 5.00. Answer = R組.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Both crop and full page show 表2 with values: 平均点 P=5.40, Q=4.40, R=5.00, S=5.00; 標準偏差 P=2.89, Q=2.07, R=1.02, S=2.07. The full-page choice line reads \"ア P / イ Q / ウ R / エ S\", matching choices_jp exactly (no swap). Stem requires: (a) average neither best nor worst -> excludes P (max 5.40) and Q (min 4.40), leaving R and S both at 5.00; (b) most students near the mean and largest fraction scoring 4-6 -> smallest standard deviation. Among R and S, R has SD=1.02 vs S=2.07, so R is far more concentrated around its mean of 5.00, yielding the highest proportion in the 4-6 band. Figure-correct answer = R組 = ウ. Keyed answer is ウ. KEY_OK.",
+        "keyed_choice_text": "R",
+        "anomalies": "none"
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2019r01a-q026",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2019r01a-q026",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "a = 30 個. Trace: Week1 start stock 100, req 80 → end stock 20 (matches given 20) = safety 25%×80=20. Order at end Wk1 must make Wk2 end at safety: 20 + ord1 − 80 = 20 → ord1=80, Wk2 end stock=20. Order a at end Wk2: Wk3 req 40, Wk3 safety = 25%×40 = 10, so 20 + a − 40 = 10 → a = 30.",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "30",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Full page (page-12.png) and crop (2019r01a-q026.png) agree. Table header row: 第1週 / 第2週 / 第3週, 単位 個. Rows read directly from figure: 製品Aの生産計画量 = 40 / 40 / 20; 部品Bの総所要量 = 80 / 80 / 40; 部品Bの在庫量(生産終了後) = 20 / blank(網掛) / blank; 部品Bの発注量 = blank / a / blank. Conditions: 部品B safety stock = 25% of that week's 総所要量; orders placed at end of week's production, arrive before next week's production start; Wk1 start stock = 100. Compute: Wk1: 100−80=20 end stock, which equals Wk1 safety (25%×80=20) and matches the printed 20, confirming model. Order placed end Wk1 (arrives for Wk2): to leave Wk2 at safety 20 → 20+ord1−80=20 → ord1=80; Wk2 end stock=20. Order a placed end Wk2 (arrives for Wk3): Wk3 req=40, Wk3 safety=25%×40=10 → 20+a−40=10 → a=30. choices_jp ア=30,イ=40,ウ=60,エ=80; figure answer 30 = ア. Keyed letter ア holds 30 → keyed_matches_figure TRUE. Choices ordering plausible (distractors 40/60/80 correspond to forgetting safety stock or other miscomputations), no anti-figure swap evident."
+      },
+      "verifiers": [
+        {
+          "id": "2019r01a-q026",
+          "figure_legible": true,
+          "independent_answer_desc": "From the full page table: 製品A生産計画量 = 40/40/20; 部品B総所要量 = 80/80/40; 部品B在庫量(生産終了後) Wk1 = 20 (Wk2/Wk3 shaded); 部品B発注量 Wk2 = a (Wk1/Wk3 shaded). Conditions: safety stock = 25% of that week's total requirement; orders placed at week's end arrive before next week's production; Wk1 start stock = 100. Trace: Wk1 end = 100 − 80 = 20 (matches given, = safety 25%×80). End-Wk1 order makes Wk2 end = safety 20: 20 + ord1 − 80 = 20 → ord1 = 80, Wk2 end = 20. Order a at end Wk2 makes Wk3 end = safety 25%×40 = 10: 20 + a − 40 = 10 → a = 30. Answer = 30 個.",
+          "independent_figure_correct_letter": "ア",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both crop and full page are legible and agree. I re-derived a = 30 independently from the figure values (production 40/40/20, requirements 80/80/40, Wk1 end stock 20, a in 発注量 row under 第2週). The 25%-of-weekly-requirement safety stock with end-of-week ordering yields: Wk2 end stock 20, then 20 + a − 40 = 10 (Wk3 safety) → a = 30. choices_jp[\"ア\"] = \"30\" matches the figure-correct answer exactly. No choice-order corruption detected: 30/40/60/80 map cleanly and only ア = 30 satisfies the trace. Stored key ア is correct."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2026r08-q044",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2026r08-q044",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "81. From the FIGURE table: 導入前 = 1,000件 × 2分 = 2,000分. 導入半年後 = 自動割当てできた 90% (900件 × 0分 = 0) + うち割当てミス 5% of 900 = 45件 × 4分 = 180分 + 自動割当てできなかった 10% (100件 × 2分 = 200分) = 380分. 削減率 = (2000−380)/2000 = 81.0% → 81%.",
+        "figure_correct_letter": "イ",
+        "keyed_letter": "イ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "81",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "Stem inline table percentages (98% auto-OK / 18% not-auto) DIFFER from the figure (90% / 10%) and are internally inconsistent (90%+... vs 98%+18%>100%); they do not yield a clean answer. The FIGURE values are authoritative and produce exactly 81. This is a stem-vs-figure OCR discrepancy in the corpus, not a key error.",
+        "derivation": "FULL PAGE page-20.png clearly shows 問44 table. Figure rows read: 導入前 問合せ件数 1,000件/日, 割当ての時間 2分/件. 導入半年後 問合せ件数 1,000件/日. 自動割当てができた割合 90% → 割当ての時間 0分/件. うち、割当てミスの割合 5% → 割当ての時間 4分/件. 自動割当てができなかった割合 10% → 割当ての時間 2分/件. Choices on page below table: ア 80, イ 81, ウ 85, エ 86 (left-to-right, matching choices_jp). Compute: before = 1000×2 = 2000分. after = 900×0 + (900×0.05=45)×4 + (1000×0.10=100)×2 = 0+180+200 = 380分. reduction = (2000−380)/2000×100 = 81.0% → round to 81. The keyed answer イ = '81' is exactly the figure-supported value. Other choices are plausible distractors and correctly ordered. Verdict KEY_OK with high confidence."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2014h26a-q011",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26a-q011",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "経常利益 (ordinary profit) = 利益C = 営業利益(400) + 営業外収益(1,200) − 営業外費用(1,000) = 600 百万円. Full chain: 売上総利益(利益A)=10,000−5,000=5,000; 営業利益(利益B)=5,000−4,600=400; 経常利益(利益C)=400+1,200−1,000=600; 税引前(利益D)=600+30−50=580; 当期純利益=580−230=350 (matches the shown 350). Answer = 600.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "600",
+        "anomalies": "none",
+        "derivation": "Crop and full page (page-05, 問11) agree and are fully legible. Table header 単位 百万円. Rows read directly from figure: 売上高 10,000; 売上原価 5,000; 利益A (shaded, hidden); 販売費及び一般管理費 4,600; 利益B (shaded); 営業外収益 1,200; 営業外費用 1,000; 利益C (shaded); 特別利益 30; 特別損失 50; 利益D (shaded); 法人税等 230; 当期純利益 350. 注記: 網掛けの部分は表示していない (shaded rows not shown). Standard 損益計算書 structure gives 利益A=売上総利益, 利益B=営業利益, 利益C=経常利益, 利益D=税引前当期純利益. Compute: 利益A=10,000−5,000=5,000; 利益B=5,000−4,600=400; 利益C(経常利益)=400+1,200−1,000=600; 利益D=600+30−50=580; net=580−230=350, which matches the printed 当期純利益 350, confirming the computation chain. Question asks 経常利益 = 600. choices_jp {ア:400, イ:580, ウ:600, エ:5,000} are all figure-derived distractors (ア=利益B営業利益, イ=利益D税引前, ウ=利益C経常利益✓, エ=利益A売上総利益/売上原価). Keyed letter ウ = \"600\" = the figure-correct answer. No anti-figure swap among choices. Verdict KEY_OK."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2025r07-q054",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2025r07-q054",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "30 (percent). From the figure table: AI導入前 Group A = 全体の60%, Group B = 全体の40%; AI導入後 Group A = AI導入前と比べて50%短縮, Group B = AI導入前と同じ時間. After AI, Group A = 60%×50% = 30% of total; Group B = 40% (unchanged). Total after = 70% of original, so reduction = 100%−70% = 30%. The page question reads \"...対応する時間は何%短縮できたか\" (PERCENT), and choices 30/40/50/60 are percentages.",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "30",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "Two corpus-side anomalies (NOT affecting the key): (1) stem_jp is corrupted to ask \"何分短縮できたか\" (minutes) but the authoritative page clearly reads \"1,000件の問合せに対応する時間は何%短縮できたか\" (PERCENT) — verified by zoomed crop of the page. (2) The inline stem table cell \"全体の60%5分\" contains a spurious \"5分\"; the figure cell shows ONLY \"全体の60%\" with no absolute minutes (zoom-verified). (3) figure_description field wrongly states an 80%/20% split; the figure shows 60%/40%. None of these change the keyed answer: with the real question (何%) the figure yields exactly 30% = ア.",
+        "derivation": "Read full page page-25.png and crop. The figure table (zoom-verified each cell): row AI導入前 — Group A 対応件数 800件, 対応時間 \"全体の60%\"; Group B 対応件数 200件, 対応時間 \"全体の40%\". Row AI導入後 — Group A 800件, 対応時間 \"AI導入前と比べて50%短縮\"; Group B 200件, 対応時間 \"AI導入前と同じ時間\". The figure contains ONLY percentages, no absolute minutes. The page question line (zoom-verified): \"1,000件の問合せに対応する時間は何%短縮できたか。\" Compute: Group A after = 60%×(1−0.50) = 30% of total time; Group B after = 40% (unchanged). Total time after = 30%+40% = 70% of original. Reduction = 100%−70% = 30%. Therefore answer = 30 = choices_jp[\"ア\"]. Keyed letter ア = \"30\" matches the figure-derived answer exactly. Also confirmed via stem_jp_corrupted_backup which preserved the original \"何%短縮できたか\" wording, corroborating that the question is about percent, not minutes, and that the \"5分\" and \"何分\" in the current stem are corpus corruptions. Key is correct."
+      },
+      "verifiers": [
+        {
+          "id": "2025r07-q054",
+          "figure_legible": true,
+          "independent_answer_desc": "From the figure table (read directly from both crop and full page, which agree): AI導入前 — Group A 対応時間 = \"全体の60%\" (60% of total time), Group B 対応時間 = \"全体の40%\" (40% of total time); these sum to 100%, confirming a 60/40 split (NOT 80/20). AI導入後 — Group A = \"AI導入前と比べて50%短縮\" so 60% × (1−0.50) = 30% of original total; Group B = \"AI導入前と同じ時間\" so stays 40% of original total. Total time after AI = 30% + 40% = 70% of original. Reduction = 100% − 70% = 30%. The question line above the table reads \"1,000件の問合せに対応する時間は何%短縮できたか\" (何% = percent), and choices ア30/イ40/ウ50/エ60 are percentages. Therefore the figure-correct answer is 30% = ア.",
+          "independent_figure_correct_letter": "ア",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both images are crisp and legible; crop and full page agree. I read the exact cell values: Group A 導入前 = \"全体の60%\" (no \"5分\" present — the corpus \"全体の60%5分\" is a corruption), Group B 導入前 = \"全体の40%\", Group A 導入後 = \"AI導入前と比べて50%短縮\", Group B 導入後 = \"AI導入前と同じ時間\". The 60/40 split is internally consistent (sums to 100%), which is a strong cross-check and refutes the figure_description's erroneous 80/20 claim. Computation: A becomes 60%×0.5=30%, B stays 40%, total after = 70%, reduction = 30%. The authoritative page question reads \"...何%短縮できたか\" (PERCENT), so choices 30/40/50/60 are percentages and ア=30 is correct. The corpus stem_jp (\"何分\") and the figure_description (\"80%/20%\") are confirmed corrupt, but none of these alter the keyed answer. choices_jp[\"ア\"]=30 matches the figure-derived answer exactly, with no swap needed. KEY_OK confirmed at high confidence."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2014h26a-q084",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "diagram",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26a-q084",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "From the FIGURE: System X = a single 装置A (0.8). System Y = 装置B parallel 装置C (no device A). Setting availabilities equal: X = A = 0.8; Y = 1−(1−0.6)(1−C). 0.8 = 1−0.4(1−C) ⇒ 0.4(1−C)=0.2 ⇒ 1−C=0.5 ⇒ C=0.5. Answer = 0.5.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "0.5",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "The corpus stem's bracketed figure description \"[図] 装置A — 装置B（システムX）と 装置B／装置B（システムY）\" is WRONG/garbled: it describes System X as A in series with B, and System Y as B parallel B. The actual figure (verified on full page and zoomed crop) shows System X = 装置A alone, and System Y = 装置B parallel 装置C. The stem prose body, however, is correct (asks for 装置C, gives A=0.8, B=0.6, System Y = B parallel C). The garbled part is only the appended bracket description, not the real stem or choices. Choices are printed correctly on the page and match choices_jp ordering.",
+        "derivation": "Read crop (1317x871) and full page-33; located 問84 by stem. Zoomed the diagram band 3x. CONFIRMED topology by direct pixel reading: System X box reads \"装置A\" with input/output lines on each side — a SINGLE device A, no series B. System Y is a parallel pair: top box \"装置B\", bottom box \"装置C\", joined at left and right rails — no device A. Given A=0.8, B=0.6, solve for C such that availability(X)=availability(Y). X = A = 0.8. Y = 1−(1−B)(1−C) = 1−(1−0.6)(1−C) = 1−0.4(1−C). Equate: 0.8 = 1−0.4(1−C) → 0.4(1−C)=0.2 → 1−C=0.5 → C=0.5. Check: Y=1−0.4·0.5=1−0.2=0.8=X. So figure-correct answer is 0.5 = choice ウ. Keyed answer is ウ (\"0.5\"), which IS the figure-correct value. Choices on page: ア 0.3 / イ 0.4 / ウ 0.5 / エ 0.6, matching choices_jp exactly — no anti-figure mislabel. Note: my initial low-res overview misread System X as \"A—B\" and an early arithmetic pass using the garbled stem bracket (B parallel B) gave C=0; the high-res figure read corrected both: it is B parallel C with X=A alone, yielding C=0.5. Verdict KEY_OK."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2014h26h-q097",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "diagram",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26h-q097",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "The arrow (PERT/CPM) diagram's critical path determines the minimum completion time. Nodes/activities: Start A; A→B:S1(2.0); B→C:S2(3.0); A→D:M2(2.5); A→F:M1(4.0); C→D:S3(2.0); C→E:S4(2.0); F→D:dummy(dotted,0); D→E:M3(2.0); E→G:M4(5.0). Earliest event times: A=0, B=2.0, C=5.0, F=4.0, D=max(2.5, 5.0+2.0=7.0, 4.0+0=4.0)=7.0, E=max(5.0+2.0=7.0, 7.0+2.0=9.0)=9.0, G=9.0+5.0=14.0. Critical path = S1+S2+S3+M3+M4 = 2.0+3.0+2.0+2.0+5.0 = 14.0 hours. The shortest possible completion time equals the critical path length = 14.0 hours.",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "14.0",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Read both crop and full page; they agree. Figure is an arrow diagram with durations in parentheses (hours). Activities visible: S1(2.0) and S2(3.0) along the top branch, S3(2.0) going down and S4(2.0) going right from the post-S2 node, M2(2.5) along the middle, M1(4.0) along the bottom branch with a dotted (dummy) arrow rejoining the M3 node, M3(2.0), and M4(5.0) to the finish. Note記 confirms M arrows = brand M system work, S arrows = brand S system work, dotted = dummy. Computing earliest event times: the longest path is Start→S1(2.0)→S2(3.0)→S3(2.0)→M3(2.0)→M4(5.0) = 14.0. Checked alternative paths: via M2 to M3 to M4 = 2.5+2.0+5.0=9.5; via M1+dummy to M3 to M4 = 4.0+2.0+5.0=11.0; via S1+S2+S4+M4 = 2.0+3.0+2.0+5.0=12.0. These exactly correspond to distractors ア=9.5, イ=11.0, ウ=12.0, confirming the choice set is faithful to the figure (each distractor is a non-critical path length). The critical (longest) path = 14.0 = minimum completion time. Keyed answer エ=14.0 matches. All four choices are consistent with the figure."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2018h30h-q081",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "diagram",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2018h30h-q081",
+        "figure_legible": true,
+        "question_kind": "select_correct_graph_or_diagram",
+        "figure_correct_answer_desc": "The correctly normalized design has three tables: 顧客(顧客番号 PK｜顧客名｜住所), 商品(商品番号 PK｜商品名｜単価), 注文(注文番号 PK｜顧客番号 FK｜商品番号 FK｜個数｜日付). Because customer names and product names can duplicate, the 注文 table must reference 顧客番号 and 商品番号 (numeric IDs), never the names. In the figure, choice ア matches this exactly: 顧客=顧客番号(主キー)｜顧客名｜住所; 商品=商品番号(主キー)｜商品名｜単価; 注文=注文番号(主キー)｜顧客番号｜商品番号｜個数｜日付. Choices イ/ウ/エ all use names as foreign keys or misplace attributes/omit a table.",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "[表] 顧客：｜顧客番号（主キー）｜顧客名｜住所｜　商品：｜商品番号（主キー）｜商品名｜単価｜　注文：｜注文番号（主キー）｜顧客番号｜商品番号｜個数｜日付｜",
+        "anomalies": "none",
+        "derivation": "Both crop and full page (problem 81) are legible and agree. Stem: manage 顧客名+住所, 商品名+単価, 注文した商品の個数+注文した日付; underline = primary key; customer/product names can have duplicates. This forces numeric IDs (顧客番号, 商品番号) as keys and as the join references in the order table. Derived correct schema BEFORE checking key: 顧客(顧客番号 PK, 顧客名, 住所), 商品(商品番号 PK, 商品名, 単価), 注文(注文番号 PK, 顧客番号, 商品番号, 個数, 日付). Reading the figure choices: ア — 顧客:[顧客番号(underlined PK)｜顧客名｜住所], 商品:[商品番号(PK)｜商品名｜単価], 注文:[注文番号(PK)｜顧客番号｜商品番号｜個数｜日付] = EXACT match to correct design. イ — same 顧客/商品 but 注文 uses 商品名 in place of 商品番号 (wrong: names duplicate). ウ — 顧客 has extra 日付, no 商品 table, 注文 uses 顧客名/商品名 (wrong). エ — 商品 has stray 個数, no 顧客 table, 注文 uses 顧客名/住所 (wrong). So figure_correct_letter = ア. Stored key = ア. They match. choices_jp text matches the figure ordering exactly for all four options; no anti-figure swap detected. Verdict KEY_OK."
+      },
+      "verifiers": [
+        {
+          "id": "2018h30h-q081",
+          "figure_legible": true,
+          "independent_answer_desc": "Read from the figure (crop and full page agree, both fully legible). The question requires storing 顧客名+住所, 商品名+単価, and per-order 個数+日付, with the explicit note that 顧客名 and 商品名 can duplicate (so names cannot be keys/foreign keys). Correct 3NF design = three tables with 注文 referencing the numeric IDs. Figure readings: ア — 顧客(顧客番号[PK]｜顧客名｜住所), 商品(商品番号[PK]｜商品名｜単価), 注文(注文番号[PK]｜顧客番号｜商品番号｜個数｜日付); this is the correct normalized form. イ — same 顧客/商品 tables but 注文(注文番号[PK]｜顧客名｜商品名｜個数｜日付) uses names as FKs = wrong. ウ — only 2 tables: 顧客(顧客番号[PK]｜顧客名｜住所｜日付) wrongly puts 日付 in 顧客, 注文(注文番号[PK]｜顧客名｜商品名｜単価｜個数) uses names = wrong. エ — only 2 tables: 商品(商品番号[PK]｜商品名｜単価｜個数) wrongly puts 個数 in 商品 and no 顧客 table, 注文(注文番号[PK]｜商品番号｜顧客名｜住所｜日付) embeds 顧客名/住所 = wrong. Only ア is correctly normalized. Independent answer = ア.",
+          "independent_figure_correct_letter": "ア",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "I re-derived the answer from scratch from the figure, ignoring the auditor's reasoning, and zoomed into each choice's 注文 row (the distinguishing field) using enlarged crops to avoid hallucination. The only correctly normalized design is ア: three tables (顧客, 商品, 注文) where the 注文 table references the numeric foreign keys 顧客番号 and 商品番号 — exactly what is required because 顧客名/商品名 can duplicate per the stem. I verified the exact box contents of ア (顧客番号[underlined PK]｜顧客名｜住所; 商品番号[underlined PK]｜商品名｜単価; 注文番号[underlined PK]｜顧客番号｜商品番号｜個数｜日付). I also confirmed イ/ウ/エ are all flawed: イ uses names as FKs in 注文, ウ omits 商品 table and misplaces 日付, エ omits 顧客 table and misplaces 個数. This matches stored KEY=ア. choices_jp[\"ア\"] is also a faithful transcription of figure ア (no swap affecting the answer). Note: I observed a minor corpus transcription difference — choices_jp[\"イ\"] lists 注文 as 顧客番号｜商品名 whereas the figure shows 顧客名｜商品名 for イ — but イ is a distractor either way, so this does not affect the KEY. Crop and full page are mutually consistent and fully legible. Default-to-KEY_OK threshold easily met; no unambiguous contradiction of the key exists."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2014h26a-q099",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": null,
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26a-q099",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "The output table 図1 is grouped per-customer AND per-employee (columns: 顧客番号, 顧客名, 社員番号, 社員名, 金額 — rows show distinct 社員番号 2005123/2006211 with distinct 社員名 and summed 金額 2,500/4,300). In 図2: 精算表 has 伝票番号+社員番号 (no 顧客番号); 明細表 has 伝票番号+顧客番号+金額 (no 社員番号); they share 伝票番号. To get 顧客番号, 社員番号 and 金額 together, step (1)'s result (伝票番号+社員番号) must be joined to 明細表 on 伝票番号, then sum 金額 grouped by BOTH 顧客番号 and 社員番号. So d = (2) join (1) with 明細表 by 伝票番号; (3) from (2), sum 金額 grouped by identical 顧客番号 AND 社員番号, producing a 顧客番号/社員番号/合計金額 table. This is choice ア.",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "(2) (1)の表と明細表を伝票番号で結合する。\n(3) (2)の表から，同一の顧客番号と社員番号の金額の合計を求め，顧客番号，社員番号，合計した金額の表を作成する。",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "OCR garble in 図1 column headers: the stem's inline table mislabels the second column (B商事) as 社員名 when the figure header reads 顧客名, and omits/mislabels the 社員番号 column. The actual figure (図1) on the full page shows columns 顧客番号 / 顧客名 / 社員番号 / 社員名 / 金額 with data rows 000001,B商事,2005123,田中太郎,2,500 and 000100,B商事,2006211,鈴木次郎,4,300. This OCR noise does not affect the answer derivation since the grouping requirement (per-customer-per-employee) is unambiguous from the distinct 社員番号 column. Also 顧客表 header is 顧客名 in figure (OCR rendered as 社員名 in stem). The choices_jp themselves are clean and correctly ordered.",
+        "derivation": "Read both crop and full page. 図2 schemas confirmed verbatim on full page: 精算表(伝票番号,申請日,社員番号,承認区分); 明細表(伝票番号,明細番号,顧客番号,利用日,利用区間,金額); 社員表(社員番号,社員名); 顧客表(顧客番号,顧客名,住所,電話番号). Key facts: 金額 and 顧客番号 live ONLY in 明細表; 社員番号 lives ONLY in 精算表; the two tables are linkable via 伝票番号. Step (1) yields filtered 精算表 rows (伝票番号+社員番号). Step (4) joins (3)'s result with 社員表 and 顧客表 to fetch 社員名 and 顧客番号-derived data, implying (3) must already carry both 顧客番号 and 社員番号 plus summed 金額. 図1 output rows show two DIFFERENT 社員番号 (2005123, 2006211) each with its own summed 金額, i.e. grouping is by 顧客番号 AND 社員番号 jointly. Therefore d must (2) join (1) with 明細表 on 伝票番号 to bring 顧客番号+金額 alongside 社員番号, then (3) GROUP BY 顧客番号 AND 社員番号 summing 金額. That is choice ア verbatim. Reject イ (groups by 顧客番号 only — loses per-employee breakdown), ウ (groups by 社員番号 only — loses per-customer breakdown), エ (sums directly from 明細表 which lacks 社員番号, so cannot group by 社員番号 — structurally impossible). Keyed answer ア matches figure-correct answer; choices appear correctly ordered with no anti-figure swap. Verdict KEY_OK."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2011h23tokubetsu-q093",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "flowchart",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2011h23tokubetsu-q093",
+        "figure_legible": true,
+        "question_kind": "read_value_from_figure",
+        "figure_correct_answer_desc": "The condition [a] is the validity/range check at the top decision. When [a]=Yes the flow proceeds to the J+K≧20 test and computes a charge; when [a]=No it sets L=-1 (error). For both quantities J and K to be in valid range so computation can proceed, [a] must be \"0≦J≦20 and 0≦K≦20\". The 'and' (both in range) is required, not 'or', and it cannot be 0≦J+K≦20 (which would contradict the later J+K≧20 test).",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Full page (page-36, 問93) and crop agree exactly. Flowchart: 開始 → diamond [a]. From [a]: No branch (label \"No\" on the right) → box L=-1 → joins to 終了. Yes branch (label \"Yes\" below the diamond) → second diamond [J＋K≧20]. From it: No → box L=3,000×J＋1,000×K → 終了; Yes → box L=0.9×(3,000×J＋1,000×K) → 終了. So [a] is the input-validity gate: Yes ⇒ perform charge computation, No ⇒ L=-1 (error sentinel). Valid input requires BOTH J and K within 0..20, i.e. 0≦J≦20 and 0≦K≦20. Evaluating choices against the figure: ア \"0≦J≦20 and 0≦K≦20\" matches (both must be valid). イ uses \"or\" — would let an out-of-range value through, wrong. ウ \"0≦J＋K≦20\" contradicts the very next test J＋K≧20 (Yes path needs J+K possibly ≥20), wrong. エ \"J＞20 and K＞20\" inverts the gate, wrong. Choice texts shown in the figure (ア 0≦J≦20 and 0≦K≦20; イ 0≦J≦20 or 0≦K≦20; ウ 0≦J＋K≦20; エ J＞20 and K＞20) match choices_jp exactly with no swap. Stored key ア = \"0≦J≦20  and  0≦K≦20\" is the figure-correct answer.",
+        "keyed_choice_text": "0≦J≦20  and  0≦K≦20",
+        "anomalies": "none"
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2011h23a-q032",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "chart",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2011h23a-q032",
+        "figure_legible": true,
+        "question_kind": "read_value_from_figure",
+        "figure_correct_answer_desc": "The gray \"要因A\" segment peaks in January (immediately after the Jan 1 production launch) and declines steadily to near-zero by mid-year — the classic initial-defect (初期不良) decay curve. Figure supports 初期不良対応作業.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "ソフトウェアの初期不良に対応する作業",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Crop and full-page region (page-13, 問32) agree. Stacked bar chart: y-axis 「ソフトウェア保守作業の件数」, x-axis 1月-12月. Legend: white = 「要因A以外の件数」, gray = 「要因Aで発生した件数」. Reading the gray (要因A) portions: 1月 nearly the entire bar is gray (maximum); 2月 and 3月 large gray; 4月 moderate gray; 5月 small; 6月 and 7月 very small slivers; 8月-12月 no gray (all white). The stem states production began Jan 1 of last year, so 要因A is maximal right at launch and decays to zero over the year. This monotonic decline from the moment of release is the defining pattern of initial defects (初期不良) surfacing then being resolved. Evaluating choices: ア (hardware version-up in June) would spike at June — contradicts; イ (improvement requests) typically grows over time — contradicts decline; ウ (初期不良 initial defects) matches the launch-then-decay curve exactly; エ (data-addition every April) would spike only in April — contradicts. Therefore the figure supports ウ. The keyed answer is ウ = choices_jp[\"ウ\"] = 「ソフトウェアの初期不良に対応する作業」, which is exactly the figure-correct answer. Distractors are distinct and appropriately non-matching, not anti-figure mislabeled. Verdict KEY_OK."
+      },
+      "verifiers": [
+        {
+          "id": "2011h23a-q032",
+          "figure_legible": true,
+          "independent_answer_desc": "Stacked bar chart, vertical axis = number of software maintenance tasks, horizontal axis = months 1月–12月. Legend: white = 「要因A以外の件数」(other causes), gray/shaded = 「要因Aで発生した件数」(caused by 要因A). Reading the GRAY (要因A) segment month by month: 1月 is at/near maximum (the January bar is mostly gray, full-height with a thin white tip) — this is the single peak; 2月 high-mid gray; 3月 mid gray; 4月 low gray; 5月 very low; 6月 low; 7月 very low/minimal; 8月–12月 essentially no gray (bars look entirely white). This is a single peak in January (right after the Jan 1 production launch) decaying monotonically to near-zero by mid-year and absent in the second half — the textbook initial-defect (初期不良) decay curve. Testing choices: ア (HW version-up in June) would spike in June — gray is near-zero in June, REJECT; イ (improvement-request handling) would be steady or growing, not a launch-decay, REJECT; エ (recurring April data-addition) would spike in April — no April spike, the April gray is small mid-decay, REJECT; ウ (handling software initial defects) = maximum right after release, decaying over time — matches exactly. Answer: ウ.",
+          "independent_figure_correct_letter": "ウ",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both the crop and the full page (問32) are legible and agree. I re-derived the answer from scratch by reading the gray 要因A segment heights directly from the chart, ignoring the auditor's arithmetic. The gray segment shows a clear single peak in January (mostly-gray full-height bar) that decays monotonically across 2月–4月 and is essentially zero from mid-year onward (8月–12月 bars are entirely white). This Jan-peak-then-decay shape uniquely matches 初期不良 (initial defects appear maximal right after the Jan 1 release and taper as bugs are fixed). The three distractors each predict a different temporal signature that the figure contradicts: ア and エ predict isolated spikes in June and April respectively (no such spikes in the gray segment), and イ predicts steady/growing volume (not a launch-decay). I checked for choices_jp swap corruption (the q002/q052 failure mode): the mapping ア=HW-June, イ=improvement, ウ=initial-defect, エ=April-data is self-consistent, and only ウ's text (\"ソフトウェアの初期不良に対応する作業\") fits the figure — ウ is also the stored key, so there is no swap. My independent answer (ウ) equals the stored key (ウ); the auditor's figure reading also matches mine. No contradiction between figure and choices_jp[\"ウ\"]. Verdict KEY_OK at high confidence."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2025r07-q099",
+      "role": "rate",
+      "stratum": "content_mismatch",
+      "figure_type": "code",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2025r07-q099",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "3,000 — computing the two prizes from the pseudocode: Case1 improvement=200000 (>=100000) and period=3 (<7) gives prize=2000; Case2 improvement=50000 (<100000) and period=14 (>=7) gives prize=1000; sum = 2000 + 1000 = 3000.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "The figure (both crop and full page) shows pseudocode for calculateAmountOfPrize(improvement, period) returning integer prize: outer \"if (improvement が 100000 より小さい)\": inner \"if (period が 7 より小さい) prize←500 else prize←1000 endif\"; outer \"else\": inner \"if (period が 7 より小さい) prize←2000 else prize←5000 endif\"; then \"return prize\". Stem gives two improvements: (a) 改善額20万円=200000円, 短縮期間3日; (b) 改善額5万円=50000円, 短縮期間14日. Trace (a): 200000<100000 is false → else branch; period 3<7 is true → prize=2000. Trace (b): 50000<100000 is true → if branch; period 14<7 is false → else → prize=1000. Sum = 2000+1000 = 3000円. choices on full page read ア 1,000 / イ 1,500 / ウ 3,000 / エ 5,500, exactly matching stored choices_jp. The figure-correct value 3,000 corresponds to ウ, which is the keyed answer. All choices are consistent (no anti-figure swap detected). KEY_OK."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2014h26a-q094",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26a-q094",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "The worksheet (figure 3) shows: row 1 headers P組~U組 over columns B~G; row 52 受講生数 (per-class student counts, which vary); row 53 平均点 (per-class averages B53~G53); H52 = 合計(B52~G52) = total students; rows 2~36 hold individual scores per class (shaded, not displayed). Target H53 = overall average of all students. ア computes a weighted grand-total/total-students (correct). イ = 合計(B2~G36)/H52 = sum of all scores / total students (correct). ウ = 平均(B2~G36) = average of all individual scores (correct). エ = 平均(B53~G53) = average of the per-class averages, which is unweighted and wrong because class sizes differ — so エ is the one that CANNOT correctly compute the average.",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "セルH53に，式〔平均（B53～G53）〕を入力する。",
+        "derivation": "Read both crop and full page (page-44); they agree. The question asks which formula CANNOT correctly produce the overall student average in H53. Class sizes (受講生数, row 52, B52~G52) differ across P~U組, so any correct method must weight by class size. ア: B54=B52*B53 (count×avg=class total), H54=合計(B54~G54)=grand total points, H53=H54/H52 → correct weighted average. イ: 合計(B2~G36)/H52 = total of all individual scores / total students → correct. ウ: 平均(B2~G36) = average over all individual score cells → correct. エ: 平均(B53~G53) averages the six per-class averages without weighting → only correct if all classes equal size, which they are not → INCORRECT, the answer. choices_jp text matches the full-page choices in order (ア/イ/ウ/エ identical). Keyed answer エ = '平均（B53～G53）' is exactly the figure-correct (cannot-compute) choice. KEY_OK.",
+        "anomalies": "none"
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2014h26a-q087",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26a-q087",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "From 表2 (H1: 3日/5/前作業C,E,G; H2: 2日/6/前作業C,E,G; H3: 2日/4/前作業H1,H2): total cost after split = 5+6+4 = 15, original H cost = 12, so additional cost = +3. H1 and H2 run in parallel (both depend on C,E,G); H3 follows both, so split-path duration = max(3,2)+2 = 5 days. With original H = 7 days (from 表1 of the preceding sub-question), this shortens H by 2 days. Net: cost +3, shorten 2 days = choice ウ. The cost figure (+3) alone is fully derivable from 表2 and uniquely matches only ウ.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "費用を3追加することで，作業Hを2日間短縮できる。",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Full page page-36.png 問87 reads 表2 with rows H1(日数3, 費用5, 前作業 C,E,G), H2(日数2, 費用6, 前作業 C,E,G), H3(日数2, 費用4, 前作業 H1,H2) — identical to the inline stem table; the crop shows the table header and H1 row, consistent. Cost computation from 表2 alone: 5+6+4=15 vs original 12 → additional cost +3. Scheduling: H1 and H2 share predecessors (C,E,G) so they are parallel; H3 has predecessors H1,H2 so it starts after the later of the two finishes → critical sub-path = max(3,2)+2 = 5 days, vs original H = 7 days (表1 of preceding question) → 2 days shorter. Reading the four choices off the full page in order: ア 費用2追加/2日短縮, イ 費用4追加/1日短縮, ウ 費用3追加/2日短縮, エ 費用2追加/3日短縮 — this exactly matches stored choices_jp ordering (no OCR swap). Only ウ has cost+3, and +3 is uniquely determined by 表2, so the figure unambiguously supports ウ. Stored key ウ matches."
+      },
+      "verifiers": [
+        {
+          "id": "2014h26a-q087",
+          "figure_legible": true,
+          "independent_answer_desc": "From 表2 read directly off the full page (page-36, Q87): H1 = 日数3 / 費用5 / 前作業 C,E,G; H2 = 日数2 / 費用6 / 前作業 C,E,G; H3 = 日数2 / 費用4 / 前作業 H1,H2. Cost leg (fully self-contained in 表2 + stem): split cost = 5+6+4 = 15; original H cost = 12 (stem says current cost is 12); additional cost = 15-12 = +3. The \"+3\" uniquely matches only choice ウ (ア/エ say +2, イ says +4). Duration leg (corroborating): H1 and H2 both depend on C,E,G so run in parallel; H3 follows both; split-path duration = max(3,2)+2 = 5 days; original H = 7 days (from 表1 in the preceding sub-question, not on this page), so H shortens by 2 days. ウ says \"費用を3追加, 作業Hを2日間短縮\" — both legs match. Answer = ウ.",
+          "independent_figure_correct_letter": "ウ",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both crop and full page are legible. 表2 values read clearly: H1(3/5/C,E,G), H2(2/6/C,E,G), H3(2/4/H1,H2). Choices on the full page match the provided choices_jp ordering exactly (no swap): ア=費用2/2日短縮, イ=費用4/1日短縮, ウ=費用3/2日短縮, エ=費用2/3日短縮. The cost component is fully derivable from the figure alone: 5+6+4=15, minus the stem-given original cost 12 = +3 additional. Only ウ states \"+3\", so the cost figure uniquely pins the answer to ウ independent of any duration reasoning. The duration leg (parallel H1/H2 path = max(3,2)+2 = 5 days, vs original H = 7 days from 表1 → shorten 2 days) corroborates ウ's \"2日間短縮\". The original H duration (7) lives in 表1 on a prior page and is not visible here, but it is not needed to confirm ウ because the cost leg alone is decisive. Stored KEY = ウ matches my independent derivation. No contradiction between figure and choices_jp[\"ウ\"]."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2017h29h-q048",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2017h29h-q048",
+        "figure_legible": true,
+        "question_kind": "conceptual_figure_illustrative",
+        "figure_correct_answer_desc": "The \"figure\" is merely a table listing the four answer choices (a/b combinations); it carries no derivable data. The answer comes from domain knowledge of the stem: decomposing work into manageable units = WBS (a); displaying the order relationship of those tasks = アローダイアグラム/arrow diagram (b). So a=WBS, b=アローダイアグラム, which is row ア in the table.",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Both the crop (2017h29h-q048.png) and the full page (page-21.png, 問48) show the same 4-row table with columns a and b. Rows exactly: ア → a=WBS, b=アローダイアグラム; イ → a=WBS, b=パレート図; ウ → a=ガントチャート, b=アローダイアグラム; エ → a=ガントチャート, b=パレート図. The table only restates the choices, so the answer is conceptual, not computed. Stem: 「成果物を作成するための作業を, 管理しやすい単位に [a] によって要素分解し, それらの順序関係を [b] によって表示する」. Decomposing deliverable work into manageable units = WBS → a=WBS. Showing the sequence/dependency relationships among tasks = arrow diagram (PERT) → b=アローダイアグラム (ガントチャート is a schedule bar chart, not for decomposition; パレート図 is a QC/frequency tool, not sequencing). Therefore a=WBS, b=アローダイアグラム = row ア. choices_jp[\"ア\"] = \"[表] a: WBS / b: アローダイアグラム\" matches the figure's row ア exactly, and all four stored choices match the figure's four rows in order with no swap or mislabel. Keyed answer ア is figure-consistent and domain-correct."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2014h26a-q051",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26a-q051",
+        "figure_legible": true,
+        "question_kind": "conceptual_figure_illustrative",
+        "figure_correct_answer_desc": "Matrix (random-number-table) authentication: since the requested coordinate positions change every time (座標位置は毎回異なる), the password acts like a one-time value. An eavesdropped password cannot be reused for impersonation because the next login asks for different coordinates. The correct statement is \"盗聴されたパスワード再利用による，なりすましの防止に有効である。\" ア is false (same coordinates → same numbers → same password). エ is false (the table is the secret). イ (knowledge-based) is not the intended correct statement.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Full page (page-21) clearly shows 問51 with the stem about an authentication scheme: user has a pre-distributed random table; numbers printed differ per user; system requests numbers at coordinate positions which \"毎回異なる\" (differ each time); correct password input → success. The illustrative 乱数表 (5x5 grid A-E rows 1-5: row1=37,24,99,91,76; row2=77,75,64,88,52; row3=94,84,11,41,68; row4=66,61,16,35,31; row5=47,68,81,23,29) plus example coordinates B1,C2,D3,E4 → password 24644131 (B1=24, C2=64, D3=41, E4=31). The crop and full page agree, and the highlighted cells in the crop (24, 64, 41, 31) confirm the example. Choices on the page read: ア \"システムが要求する乱数表の座標位置が同じでも，パスワードは毎回異なる。\"; イ \"知識による認証の一種である。\"; ウ \"盗聴されたパスワード再利用による，なりすましの防止に有効である。\"; エ \"乱数表を他人に渡しても安全である。\" — exactly matching stored choices_jp order. Reasoning: because coordinates change each time, a captured (eavesdropped) password becomes useless for replay → ウ is the appropriate statement. ア is wrong because identical coordinates yield identical table values hence identical password; エ is wrong because the table is the shared secret; イ is not the intended correct option. The keyed answer ウ matches the figure-derived correct answer. No anti-figure swap detected; choices labeling is consistent.",
+        "anomalies": "none",
+        "keyed_choice_text": "盗聴されたパスワード再利用による，なりすましの防止に有効である。"
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2026r08-q057",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2026r08-q057",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "The 成績 (Grade) table has columns 学生番号, 科目コード, 成績. Referential integrity requires that a 学生番号 in 成績 must exist in the 学生 table (PK 学生番号) and a 科目コード in 成績 must exist in the 科目 table (PK 科目コード). Therefore the foreign keys are the 学生番号 and 科目コード columns OF THE 成績 table.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "\"成績\"表の学生番号と科目コード",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Both crop and full page (page-27, 問57) are clearly legible and agree. Figure shows three tables. 学生 table: PK 学生番号 (underlined), rows G001/鈴木次郎, G002/山田春子. 科目 table: PK 科目コード (underlined), rows K001/データベース, K002/コンピュータ, K003/ネットワーク. 成績 table: columns 学生番号, 科目コード, 成績; rows G001/K001/優, G001/K002/可, G002/K002/良, G002/K003/優. The stem states a student/subject not registered in 学生/科目 tables cannot appear in 成績 — this is exactly referential integrity from 成績 into 学生 and 科目. Hence the foreign keys are the 成績 table's 学生番号 (referencing 学生.学生番号) and 科目コード (referencing 科目.科目コード). Choice ウ = \"成績表の学生番号と科目コード\" matches this. Other choices: ア names 学生 table's 学生番号 (that is a PK, not a FK) plus 成績 table's 学生番号 — wrong; イ names non-key name columns — wrong; エ names the 成績 value column — wrong. Choice ordering ア/イ/ウ/エ is identical between crop and full page, no swap/corruption. Keyed answer ウ is the figure-correct answer."
+      },
+      "verifiers": [
+        {
+          "id": "2026r08-q057",
+          "figure_legible": true,
+          "independent_answer_desc": "A foreign key lives in the referencing (child) table and points to a parent table's primary key. The constraint says a student not in the 学生 table and a subject not in the 科目 table cannot appear in the 成績 table, so 成績 is the child. The 成績 table has columns 学生番号, 科目コード, 成績; its 学生番号 references 学生.学生番号 (PK) and its 科目コード references 科目.科目コード (PK). Therefore the appropriate foreign keys are the 学生番号 and 科目コード columns of the 成績 table. This matches choice ウ ('成績'表の学生番号と科目コード). ア wrongly splits columns across the 学生 and 成績 tables; イ names non-key attributes 学生名/科目名; エ names the plain attribute 成績.",
+          "independent_figure_correct_letter": "ウ",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both crop and full page are fully legible and agree. Tables read directly: 学生(学生番号 PK, 学生名) = G001 鈴木次郎 / G002 山田春子; 科目(科目コード PK, 科目名) = K001 データベース / K002 コンピュータ / K003 ネットワーク; 成績(学生番号, 科目コード, 成績) = G001 K001 優 / G001 K002 可 / G002 K002 良 / G002 K003 優. Independent DB reasoning: FKs reside in the child table 成績 and reference the two parent PKs, i.e. 成績.学生番号 and 成績.科目コード. Full-page choice ウ reads exactly '成績'表の学生番号と科目コード, identical to choices_jp['ウ'] — no OCR swap. Stored key ウ matches my from-scratch derivation. No contradiction between figure and choices ordering, so default-to-KEY_OK is confirmed, not just assumed."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2025r07-q030",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2025r07-q030",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "The figure is a 4-row choice table mapping a/b columns. The stem: \"a is protected by copyright law, but b is not.\" By copyright-law domain knowledge: source program (ソースプログラム) and operation manuals are copyrightable (expression), while algorithms (アルゴリズム) and communication protocols (通信プロトコル) are ideas/specifications and are NOT protected. The only row where a IS protected and b is NOT protected is: a=ソースプログラム (protected), b=通信プロトコル (not protected). This is the エ row in the figure. (ウ fails because 操作マニュアル IS protected; ア/イ fail because アルゴリズム is not protected and cannot be the protected 'a'.)",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "[表] a: ソースプログラム / b: 通信プロトコル",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Full page page-14.png clearly shows 問30 with the 4-row table. Rows read exactly: ア=アルゴリズム / 操作マニュアル; イ=アルゴリズム / 通信プロトコル; ウ=ソースプログラム / 操作マニュアル; エ=ソースプログラム / 通信プロトコル. These match choices_jp ordering 1:1 (no swap). Stem: \"[a]は著作権法による保護の対象になるが、[b]は対象にならない。\" Copyright law protects expression (source code, manuals) but not ideas/specs (algorithms, protocols). Need a=protected, b=not-protected. ソースプログラム is protected (a OK), 通信プロトコル is not protected (b OK) -> エ. ウ rejected (操作マニュアル IS protected). ア/イ rejected (アルゴリズム not protected, cannot be 'a'). Keyed answer エ = choices_jp[\"エ\"] = a:ソースプログラム / b:通信プロトコル, exactly the figure-correct answer. KEY_OK."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2025r07-q037",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2025r07-q037",
+        "figure_legible": true,
+        "question_kind": "conceptual_figure_illustrative",
+        "figure_correct_answer_desc": "a=SLA, b=SLM. SLA (Service Level Agreement) is the agreement on service quality between provider and customer; SLM (Service Level Management) is the activity to confirm SLA compliance and maintain/improve IT service quality. In the figure table this combination is row エ (SLA / SLM).",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "[表] a: SLA / b: SLM",
+        "anomalies": "none",
+        "derivation": "Full page (page-17, 問37) and crop both show a 4-row table with columns a/b: ア=NDA/SCM, イ=NDA/SLM, ウ=SLA/SCM, エ=SLA/SLM. The stem defines [a] as the agreement on service quality between service provider and customer (= SLA, Service Level Agreement; NDA is a non-disclosure agreement, irrelevant) and [b] as the activity that confirms [a] compliance and maintains/improves IT service quality (= SLM, Service Level Management; SCM is supply chain management, irrelevant). Therefore a=SLA, b=SLM = row エ. choices_jp[\"エ\"]=\"[表] a: SLA / b: SLM\" matches the figure row エ exactly, and all four choices_jp entries match the table rows in order. Keyed answer エ is correct and figure-consistent."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2009h21a-q097",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": null,
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2009h21a-q097",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "Per-record bytes = 取引先コード(1B×10=10) + 電話番号(1B×10=10) + 部署名(2B×20=40) + 所在地(2B×40=80) + 名前(2B×10=20) + 役職(2B×10=20) = 180 bytes/record. Times 10,000 records = 1,800,000 bytes = 1,800 kB. Answer = 1,800.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "1,800",
+        "anomalies": "none",
+        "derivation": "Full page page-41 shows 問97 with the inline 〔取引先担当者表の構成〕 list, matching the crop exactly: 件数 10,000件; 取引先コード,電話番号 = それぞれ JIS の1バイトコードで10文字; 部署名 = 2バイトコードで20文字; 所在地 = 2バイトコードで40文字; 名前,役職 = それぞれ2バイトコードで10文字. Choices on page read ア 1,000 / イ 1,500 / ウ 1,800 / エ 2,000, matching choices_jp order exactly. Computing per record: 取引先コード 1×10=10, 電話番号 1×10=10, 部署名 2×20=40, 所在地 2×40=80, 名前 2×10=20, 役職 2×10=20; sum = 180 bytes. 180 × 10,000 = 1,800,000 bytes = 1,800 kB. This equals choice ウ (1,800), which is the stored key. Note 名前 and 役職 are 'それぞれ' (each) so both counted separately; same for 取引先コード/電話番号. Key matches figure-derived answer."
+      },
+      "verifiers": [
+        {
+          "id": "2009h21a-q097",
+          "figure_legible": true,
+          "independent_answer_desc": "From scratch, per-record bytes = 取引先コード(JIS 1-byte × 10 = 10) + 電話番号(1-byte × 10 = 10) + 部署名(2-byte × 20 = 40) + 所在地(2-byte × 40 = 80) + 名前(2-byte × 10 = 20) + 役職(2-byte × 10 = 20) = 180 bytes/record. Times 10,000 records = 1,800,000 bytes = 1,800 kB (k=1,000). Answer = 1,800, which is letter ウ. Figure values confirmed identical on both crop and full page (page-41, 問97). Choices on full page: ア 1,000 / イ 1,500 / ウ 1,800 / エ 2,000, matching choices_jp with no swap.",
+          "independent_figure_correct_letter": "ウ",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both crop and full page are fully legible and agree on all figure values. My independent computation (1B×10 + 1B×10 + 2B×20 + 2B×40 + 2B×10 + 2B×10 = 180 bytes/record × 10,000 = 1,800,000 bytes = 1,800 kB) lands exactly on choice ウ (1,800). The choices on the full page (ア 1,000 / イ 1,500 / ウ 1,800 / エ 2,000) match choices_jp in order, so no swap corruption. Stored key ウ matches my derivation. No alternative choice fits: the other options (1,000 / 1,500 / 2,000) are distractors that arise from miscounting fields (e.g., treating all fields as 1-byte, or omitting a field), none of which is the correct figure-faithful sum. Verdict KEY_OK with high confidence."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2009h21h-q091",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "flowchart",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2009h21h-q091",
+        "figure_legible": true,
+        "question_kind": "read_value_from_figure",
+        "figure_correct_answer_desc": "X is the process reached when, at decision 2 (swap cables c and d at the hub side, can PC2 still print?), the answer is No. PC2 could print before the swap (Yes at decision 1). After swapping c (PC1's cable) and d (PC2's cable) at the hub side, PC2 is now connected through PC1's hub socket/port. If PC2 can no longer print (No), the fault lies in the hub socket that PC1 normally uses — i.e., suspect the PC1-to-hub socket, namely the hub. This matches choice ア.",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "PC1 とハブをつなぐソケット，すなわちハブの障害ではないか",
+        "derivation": "Full page (page-36, 問91) and crop agree. Flowchart: start terminator \"問題の切分け\" → decision1 diamond \"PC2 からプリンタに出力できるか\" with No going right (branch not shown) and Yes going down → decision2 diamond \"PC1 と PC2 をハブにつないでいるケーブル c と d をハブ側で差し替え，PC2 からプリンタに出力できるか\" with No going right to a process box labeled \"X\" and Yes going down to a shaded box (注: shaded part not shown). I read the X box label clearly on both images. Logic: at decision1 PC2 prints OK (Yes). At decision2 we swap c and d at the hub side so PC2 now uses PC1's hub socket; if PC2 then fails (No → X), the fault is the PC1-hub socket / hub. choices_jp ア = \"PC1 とハブをつなぐソケット，すなわちハブの障害ではないか\" matches this exactly. Stored key = ア. No swap or mislabeling detected among the four choices (イ=cable c, ウ=cable b printer side, エ=printer itself — all distinct, none anti-figure). Key consistent with figure.",
+        "anomalies": "none"
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2009h21h-q096",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "chart",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2009h21h-q096",
+        "figure_legible": true,
+        "question_kind": "read_value_from_figure",
+        "figure_correct_answer_desc": "From the stacked bar chart (bottom→top = 20代/30代/40代/50代): 10〜14 = 15/25/75/44, 14〜18 = 35/75/53/45, 18〜22 = 50/115/220/138. The only true analysis is: 30代's increase rate from 10〜14→14〜18 is 25→75 (+200%), which is SMALLER than 40代's increase rate from 14〜18→18〜22 of 53→220 (+315%). That is exactly what choice ア states, so ア is correct. (Page-イ = 50代 largest 10〜14→14〜18 is false: 44→45 = +2.3%, smallest. Page-ウ false: largest later-interval rate is 40代 +315%, not 30代 +53%. エ false: 40代 goes 75→53→220, not monotonic.)",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": false,
+        "keyed_choice_text": "10〜14時と14〜18時の時間帯で比較した30代の増加率よりも，14〜18時と18〜22時の時間帯で比較した40代の増加率の方が大きい。",
+        "verdict": "CHOICES_SWAP_ONLY",
+        "confidence": "high",
+        "anomalies": "Corpus corruption found: stored choices_jp[\"イ\"] (\"14〜18時と比べて18〜22時...40代の増加率が最も大きい\") does NOT match the actual page choice イ, which reads \"10〜14時と比べ14〜18時の時間帯では，50代の増加率が最も大きい。\" The stored イ was mutated to a different interval/age (40代, later interval — a value that happens to be true), masking the real (false) choice. The stem's inline table is also corrupted (e.g. it lists 30代 for 14〜18 = 220 and 40代 = 53, and 18〜22 30代=115/40代=220 with wrong age order; actual figure has 14〜18 30代=75/40代=53 and 18〜22 30代=115/40代=220). Figure itself is fully legible; the key ア is unaffected and correct.",
+        "derivation": "Read the full page (page-41.png) and an upscaled zoom of the lower bar segments to confirm shadings and values. Legend top→bottom: 50代(gray), 40代(white), 30代(diagonal hatch), 20代(cross-hatch grid); bars stack bottom→top 20代/30代/40代/50代. Confirmed segment labels — 10〜14: 15(grid),25(diag),75(white),44(gray); 14〜18: 35(grid),75(diag),53(white),45(gray); 18〜22: 50(grid),115(diag),220(white),138(gray). Keyed ア (stored text = page ア): compares 30代 over 10〜14→14〜18 (25→75, +200%) vs 40代 over 14〜18→18〜22 (53→220, +315%); 40代's later rate is larger → ア TRUE, matches figure. Checked the other real page choices: page-イ \"50代 largest, 10〜14→14〜18\" false (50代 44→45=+2.3%); page-ウ \"30代 largest, 14〜18→18〜22\" false (40代 +315% is largest); エ \"all ages increase monotonically\" false (40代 75→53→220). Only ア true. Key ア = figure-correct. However the stored choices_jp[\"イ\"] was swapped/rewritten away from the real page text (and the stem table values/age-order are corrupted), hence CHOICES_SWAP_ONLY, not KEY_OK."
+      },
+      "verifiers": [
+        {
+          "id": "2009h21h-q096",
+          "figure_legible": true,
+          "independent_answer_desc": "Independently read the stacked bar chart from the full page (legend: 50代=solid gray, 40代=white, 30代=diagonal-hatch, 20代=cross-hatch). Top→bottom segment values: 10〜14 = 50代:44 / 40代:75 / 30代:25 / 20代:15; 14〜18 = 50代:45 / 40代:53 / 30代:75 / 20代:35; 18〜22 = 50代:138 / 40代:220 / 30代:115 / 20代:50. Evaluating the ACTUAL printed choices: ア — 30代 increase 10〜14→14〜18 = 25→75 = +200%; 40代 increase 14〜18→18〜22 = 53→220 = +315%; 315%>200% so ア is TRUE. イ(printed: '10〜14→14〜18で50代の増加率が最も大きい') — 50代 44→45 = +2.3% is the smallest, not largest → FALSE. ウ(printed: '14〜18→18〜22で30代が最も大きい') — largest is 40代 +315%, not 30代 +53% → FALSE. エ('すべての年代で増加') — 40代 goes 75→53→220, not monotonic → FALSE. Therefore the unique correct answer is ア, matching the stored key.",
+          "independent_figure_correct_letter": "ア",
+          "verifier_verdict": "CHOICES_SWAP_ONLY",
+          "confidence": "high",
+          "reasoning": "KEY is correct (ア), but corpus choice text is corrupted — confirming the auditor's CHOICES_SWAP_ONLY verdict by independent derivation. EVIDENCE: I read the printed choices directly off page-41. Printed イ = '10〜14時と比べ14〜18時の時間帯では，50代の増加率が最も大きい。' The stored choices_jp['イ'] = '14〜18時と比べて18〜22時の時間帯では，40代の増加率が最も大きい。' These differ in BOTH interval (10〜14→14〜18 vs 14〜18→18〜22) AND age group (50代 vs 40代). Printed ア, ウ, エ match the stored text (エ has a trivial 入館/入場 OCR variance). Against my independently-read figure values, only ア is true with the printed choices, so the key letter ア is unaffected and correct — this is the classic key-right/choice-text-corrupted pattern (CHOICES_SWAP_ONLY), where the mutated stored イ happens to be a TRUE statement (40代 18〜22 rate +315% IS the largest in that interval), which would yield two valid answers if any validator scores against corpus choice text. SELF-AUDIT: corruption of stored イ = HIGH confidence (printed text directly read, unambiguous); ア-correct = HIGH confidence (figure read consistently across ~6 crops). REALIST CHECK: no wrong-answer impact since the key letter is right; the defect is data-integrity in choices_jp['イ'] and the stem inline table (stem lists 30代 14〜18=220/40代=53 and mis-orders 18〜22, which contradicts the figure where 14〜18 is 30代:75/40代:53 and 18〜22 is 30代:115/40代:220). OPEN QUESTION (immaterial): I read the 20代/10〜14 base segment as '15' whereas the stem/auditor say '13' — the digit is tiny; either value leaves 30代 (+200%) as the clear winner of choice イ's comparison, so it does not change any verdict."
+        }
+      ],
+      "final_status": "CONFIRMED_SWAP_ONLY"
+    },
+    {
+      "id": "2013h25a-q055",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "diagram",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2013h25a-q055",
+        "figure_legible": true,
+        "question_kind": "read_value_from_figure",
+        "figure_correct_answer_desc": "a = インタプリタ (interpreter), b = コンパイラ (compiler). Left diagram: ソースプログラム and データ (入力) both feed into box \"a\", which directly emits 結果 (出力) — source + data executed together producing results = interpreter. Right diagram: ソースプログラム feeds into box \"b\" which produces 目的プログラム (object program); then データ (入力) feeds the 目的プログラム to emit 結果 (出力) — source translated into object program first, then run = compiler. So a=interpreter, b=compiler.",
+        "figure_correct_letter": "イ",
+        "keyed_letter": "イ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "[表] a: インタプリタ / b: コンパイラ",
+        "derivation": "Read both crop and full page (page-19, 問55). The figure has two sub-diagrams plus an answer table. LEFT sub-diagram: a box labeled \"a\" receives ソースプログラム from the left and データ from the top (arrow labeled 入力); below the box an arrow labeled 出力 points to 結果. Meaning: source program and data enter the same processor \"a\" together and a result is produced directly in one step — this is the INTERPRETER (インタプリタ) model. RIGHT sub-diagram: ソースプログラム → box \"b\" → 目的プログラム; then データ enters 目的プログラム (入力) and 結果 is produced (出力). Meaning: box \"b\" translates the source into an object program which is then run with data — box \"b\" is the COMPILER (コンパイラ). Therefore a=インタプリタ, b=コンパイラ. The answer table on the full page reads ア(a=インタプリタ,b=インタプリタ), イ(a=インタプリタ,b=コンパイラ), ウ(a=コンパイラ,b=インタプリタ), エ(a=コンパイラ,b=コンパイラ) — identical ordering to stored choices_jp, so no choice swap. The figure-correct pair (a=インタプリタ, b=コンパイラ) is exactly choices_jp[\"イ\"], which is the keyed answer. KEY_OK.",
+        "anomalies": "none"
+      },
+      "verifiers": [
+        {
+          "id": "2013h25a-q055",
+          "figure_legible": true,
+          "independent_answer_desc": "Re-derived from scratch off the full page. LEFT diagram (box \"a\"): ソースプログラム enters box \"a\" from the left, while データ→入力 enters box \"a\" from the top; box \"a\" emits 出力→結果 directly. Source program plus data are fed into \"a\" together and the result comes straight out with no intermediate program — this is the INTERPRETER (インタプリタ) execution model. RIGHT diagram (box \"b\"): ソースプログラム enters box \"b\"; box \"b\"'s arrow curves down to produce 目的プログラム (object program); THEN データ→入力 feeds into the 目的プログラム, which emits 出力→結果. Source is first translated into an object program, then run with data — this is the COMPILER (コンパイラ) model. Therefore a=インタプリタ, b=コンパイラ, which is choice イ. The full-page answer table reads exactly ア: インタプリタ/インタプリタ, イ: インタプリタ/コンパイラ, ウ: コンパイラ/インタプリタ, エ: コンパイラ/コンパイラ — identical to choices_jp ordering, so no corruption.",
+          "independent_figure_correct_letter": "イ",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both crop and full page are clearly legible and agree. The figure unambiguously shows: (a) source+data fed together into box \"a\" producing result directly = interpreter; (b) source → box \"b\" → 目的プログラム, then data → 目的プログラム → result = compiler. This yields a=インタプリタ/b=コンパイラ = choice イ. I independently confirmed the choices_jp table ordering against the full-page printed table; it matches exactly with no OCR swap. Stored KEY イ matches my from-scratch derivation. The auditor's reasoning is also correct. No contradiction between figure and key."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2022r04-q096",
+      "role": "rate",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "code",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2022r04-q096",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "a = num + 2×i, b = \"i を 2 から 6 まで 2 ずつ増やす\" (i from 2 to 6, step 2). Derived: calcX(1) traces 1→3→7→13 over i=1,2,3 — at i=2, num=3→7 requires num+2×i (3+4=7), not 2×num+i (6+2=8). calcY(1) traces 1→5→13→25 (three iterations) which requires i=2,4,6 i.e. 2 to 6 step 2.",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "a:num+2×i b:iを2から6まで2ずつ増やす",
+        "anomalies": "none",
+        "derivation": "Full page and crop agree (both legible). Program 1 calcX: num←inData(=1), for i 1..3 step 1, num←a. Observed num: 1→3→7→13. Slot a candidates: \"2×num+i\" vs \"num+2×i\". At i=1 both give 3 (2×1+1=3; 1+2=3) — ambiguous. At i=2 (num=3): 2×num+i=2×3+2=8 ≠ 7, but num+2×i=3+4=7 ✓. At i=3 (num=7): 2×num+i=17≠13, num+2×i=7+6=13 ✓. Hence a = num+2×i (rules out ア/イ). Program 2 calcY: num←1, for(b), num←a(=num+2×i). Observed num: 1→5→13→25 (three value changes ⇒ three iterations). Solve i per step: 1+2i=5⇒i=2; 5+2i=13⇒i=4; 13+2i=25⇒i=6. So i=2,4,6 = \"i を 2 から 6 まで 2 ずつ増やす\". The alternative \"1 から 7 まで 3 ずつ\" gives i=1,4,7 ⇒ first step 1+2=3≠5, rejected. Figure choice table read exactly: ア(2×num+i / 1から7まで3ずつ), イ(2×num+i / 2から6まで2ずつ), ウ(num+2×i / 1から7まで3ずつ), エ(num+2×i / 2から6まで2ずつ). Correct combo a=num+2×i, b=2から6まで2ずつ matches エ. Keyed answer エ matches the figure-correct answer; all four choice labels are consistent with the stored choices_jp ordering (no swap)."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2020r02o-q055",
+      "role": "rate",
+      "stratum": "escalate_resolved",
+      "figure_type": "diagram",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2020r02o-q055",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "PERT/critical-path network: A=30~35, B=50~60 (path A+B = 80~95), C=70~100 direct. Completion = longest path. 最短 = max(80,70)=80, 最長 = max(95,100)=100. So 80/100.",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "[表] 最短所要日数 80／最長所要日数 100",
+        "anomalies": "none — OCR garble in stem_jp (\"A B 30 35 59 - 60 C 事 79 一 100 剖\") is just noise; the clean figure on both crop and full page reads A 30~35, B 50~60, C 70~100. Choices table read from full page matches stored choices_jp exactly (ア 70/95, イ 70/100, ウ 80/95, エ 80/100).",
+        "derivation": "Full page (problem 問55) and crop both clearly show a 3-node activity-on-arc network. Reading exact figure labels: arc A \"30 ～ 35\", arc B \"50 ～ 60\", arc C \"70 ～ 100\". The 凡例 (legend) confirms each label is 所要日数 (最短～最長). There are two start→end paths: (A then B) summing min 30+50=80 / max 35+60=95, and (C alone) 70 / 100. Project finish time = the longest of the two paths in each scenario. Best-case (最短所要日数): max(80, 70) = 80. Worst-case (最長所要日数): max(95, 100) = 100. Hence 最短 80 / 最長 100. The choices table on the full page: ア=70/95, イ=70/100, ウ=80/95, エ=80/100. Only エ (80/100) matches. Stored key = エ. Keyed choice text [表] 最短 80／最長 100 exactly equals the figure-derived answer. All four choice labels are internally consistent with figure-plausible value combinations, no anti-figure swap detected. Verdict KEY_OK, high confidence."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2021r03-q050",
+      "role": "rate",
+      "stratum": "escalate_resolved",
+      "figure_type": "diagram",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2021r03-q050",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "Minimum time = 223 seconds. Sequence: at t=0 do A (3s manual). B (150s auto, ends t=153) runs while walking to printer (50s, arrive t=53), do E (3s manual, printer powered t=56), F (60s auto) runs while walking back (50s, arrive desk t=106). C (login, manual) requires login screen ready (B done at t=153) and being at desk; so C starts at t=153, ends t=163 (using figure value C=10s). D (60s auto) ends at t=223. Total = 3 + 150 + 10 + 60 = 223s.",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "223",
+        "anomalies": "Stem inline-table value for row C (ログイン操作) is \"18秒\", but the FIGURE (verified on full page and via zoom) shows \"10秒\". Using figure value 10秒 gives 223 (= choice ア); using the stem's 18秒 gives 231 which matches NO choice — confirming the figure (10秒) is authoritative. Also the isolated crop OCR rendered 移動 as \"60秒\" but the full page clearly shows \"50秒\" (matches stem 片道50秒); calc used 50秒. Neither anomaly affects the keyed answer; both are stem/crop transcription noise, not a choice-swap.",
+        "derivation": "Full page (page-23, question 50) and crop both readable. Confirmed figure values: 移動 片道50秒 (full page; crop OCR mis-read as 60); PC table A 電源を入れる 3秒 手作業, B ログイン画面起動処理 150秒 自動処理, C ログイン操作 10秒 手作業 (verified by zoom /tmp/c_row_zoom.png — unambiguously 10秒, NOT the stem's 18秒), D ログイン後のアプリケーション起動処理 60秒 自動処理; Printer table E 電源を入れる 3秒 手作業, F 起動処理 60秒 自動処理. Choices on page: ア 223, イ 256, ウ 286, エ 406 — match choices_jp order. Scheduling: A(3) then B(150 auto) overlaps walk-to-printer(50)+E(3)+F(60 auto)+walk-back(50); back at desk at t=106 but B not done until t=153, so C(10 manual) waits until t=153 → t=163, then D(60 auto) → t=223. Critical path = A+B+C+D = 3+150+10+60 = 223 = choice ア. Keyed answer ア matches figure exactly. KEY_OK, high confidence."
+      },
+      "verifiers": [
+        {
+          "id": "2021r03-q050",
+          "figure_legible": true,
+          "independent_answer_desc": "Re-derived from scratch using figure values. Movement = 50秒 one-way (full page shows 50秒, matching stem). PC: A=3秒 手作業, B=150秒 自動, C=10秒 手作業 (figure shows 10秒, not stem's 18秒), D=60秒 自動. Printer: E=3秒 手作業, F=60秒 自動. Schedule: A at t=0→3 (at desk); B auto 3→153; walk to printer 3→53; E 53→56; F auto 56→116; walk back 56→106. C (manual, needs B's login screen ready at t=153 and being at desk) starts at 153→163; D auto 163→223. Critical path = A+B+C+D = 3+150+10+60 = 223秒; printer branch (50+3+60) is fully absorbed within B's 150秒 window. Minimum = 223 seconds = choice ア.",
+          "independent_figure_correct_letter": "ア",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both crop and full page read clearly and legibly. Figure values I directly see: 移動 片道50秒 (full page; crop OCR misread as 60秒 but full page is unambiguous 50秒 and matches the stem condition). PC table: A 3秒手作業, B 150秒自動処理, C ログイン操作 10秒手作業 (figure clearly shows 10秒, contradicting the stem inline-table's 18秒), D 60秒自動処理. Printer table: E 3秒手作業, F 60秒自動処理. Choices on figure/page: ア223 イ256 ウ286 エ406 — identical order to choices_jp, no swap. Independent critical-path scheduling gives exactly 223秒 (A+B+C+D, with the entire printer branch absorbed inside B's 150秒 auto window). Using the stem's 18秒 would give 231 which matches NO choice, confirming the figure's 10秒 is the authoritative/intended value. My from-scratch derivation lands on ア=223 with no reliance on the auditor's arithmetic. The keyed answer ア is correct. Both noted anomalies (stem C=18 vs figure 10; crop移動=60 vs page 50) are transcription noise, not a choice-swap, and neither changes the keyed answer."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2015h27h-q087",
+      "role": "rate",
+      "stratum": "escalate_resolved",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2015h27h-q087",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "The correct row is the one with a = \"入退室区分の値を合計\" (sum the entry/exit classification signed values per IC-card+area group) and b = \"0でない\" (the summed value is not 0). This detects when entry and exit counts do not match — figure row イ.",
+        "figure_correct_letter": "イ",
+        "keyed_letter": "イ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Both crop and full page page-35 are legible and agree. The 4-row table (columns a, b): ア → a: 区画番号が1の場合は1を加算，2の場合は2を加算 / b: 奇数である. イ → a: 入退室区分の値を合計 / b: 0でない. ウ → a: 入退室時刻の入室と退室の時刻差を合計 / b: 24時間を超える. エ → a: レコードの個数を計数 / b: 偶数である. The stem asks to find IC-card numbers where, within the same area (区画), the count of entries (入室) and exits (退室) do NOT match. Step (2) groups records by IC card number + area number and applies operation a; step (3) outputs those where the result equals b. To detect a count mismatch, the correct method is to treat the entry/exit classification (入退室区分) as a signed value and sum it: a balanced set of entries and exits sums to 0, an imbalanced set sums to non-zero. So a = 入退室区分の値を合計, b = 0でない → row イ. Verification of other rows: ア (add 1/2 by area, odd) is unrelated to entry/exit balance; ウ (sum entry-exit time differences, >24h) detects long stays not count mismatches; エ (count records, even) is wrong because an even total does not guarantee equal entry and exit counts (e.g., 2 entries + 0 exits = 2 = even but mismatched). Thus the figure-correct answer is イ. The stored correct_answer is イ. choices_jp[イ] = \"a: 入退室区分を集計 / b: 0でない\" — \"集計\" is a paraphrase of the figure's \"値を合計\" (sum), same meaning, and b \"0でない\" matches verbatim. All other choice labels match their figure rows. Key is consistent with the figure.",
+        "keyed_choice_text": "[表] a: 入退室区分を集計　/　b: 0でない",
+        "anomalies": "none — minor paraphrase only: choices_jp[イ] a-field \"入退室区分を集計\" vs figure \"入退室区分の値を合計\" (same meaning, not a swap)"
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2019r01a-q083",
+      "role": "rate",
+      "stratum": "escalate_resolved",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2019r01a-q083",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "a = ルート (root), b = 絶対 (absolute). The topmost-level directory in a hierarchical file system is the root directory; specifying a file from the root directory is called absolute path specification. This combination corresponds to table row ウ.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "[表] a: ルート / b: 絶対",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Both the crop and full page (page-36, 問83) show the table with header columns a, b and four rows. Reading the full page table exactly: ア = a カレント / b 絶対; イ = a カレント / b 相対; ウ = a ルート / b 絶対; エ = a ルート / b 相対. The stem states blank a is \"最上位の階層のディレクトリ\" (topmost directory) = root directory = ルート, and blank b is the method of specifying a file using the root directory as base point = absolute path = 絶対. So the figure-correct combination is a:ルート / b:絶対, which is row ウ. The stored key is ウ and choices_jp[\"ウ\"] = \"[表] a: ルート / b: 絶対\", an exact match. All four choices_jp entries align with the table rows shown in the figure (no swap/mislabel). Verdict KEY_OK."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2017h29h-q044",
+      "role": "rate",
+      "stratum": "escalate_resolved",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2017h29h-q044",
+        "figure_legible": true,
+        "question_kind": "conceptual_figure_illustrative",
+        "figure_correct_answer_desc": "The figure is a 4-row answer-choice table (columns a, b). It lists: ア a=業務のIT化 / b=業務効率の向上; イ a=業務のIT化 / b=チェック体制の確立; ウ a=業務プロセスの明確化 / b=業務効率の向上; エ a=業務プロセスの明確化 / b=チェック体制の確立. This is a conceptual internal-control knowledge question, not derivable from the figure alone — the figure only enumerates the options. By domain knowledge, internal control construction requires clarifying business processes (a=業務プロセスの明確化), segregation of duties, implementation rules, and establishing a checking/monitoring system (b=チェック体制の確立), which is row エ.",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Full page-19 shows 問44 with the complete 4-row table. Reading each row directly from the page: ア = a:業務のIT化, b:業務効率の向上; イ = a:業務のIT化, b:チェック体制の確立; ウ = a:業務プロセスの明確化, b:業務効率の向上; エ = a:業務プロセスの明確化, b:チェック体制の確立. The crop (q044.png) shows the stem and the top portion of the same table (rows ア and イ visible), consistent with the full page — no mis-crop or swap. The stored choices_jp matches the figure table row-for-row exactly in label order. This is a conceptual question; the figure only enumerates options, so the answer comes from internal-control knowledge: building internal control needs 業務プロセスの明確化 (a), 職務分掌, 実施ルールの設定, and チェック体制の確立 (b) = row エ. 業務のIT化 and 業務効率の向上 are distractors (IT-izing and efficiency are not constitutive elements of internal control). Keyed answer エ holds exactly a=業務プロセスの明確化 / b=チェック体制の確立, matching the knowledge-correct answer. All four choice labels are consistent with the figure (no anti-figure swap). Verdict KEY_OK.",
+        "anomalies": "none — crop shows only top of table (rows ア/イ) but full page confirms all 4 rows match choices_jp exactly",
+        "keyed_choice_text": "[表] a: 業務プロセスの明確化 / b: チェック体制の確立"
+      },
+      "verifiers": [
+        {
+          "id": "2017h29h-q044",
+          "figure_legible": true,
+          "independent_answer_desc": "The figure is a 4-row answer-choice table with columns a and b, enumerating: ア a=業務のIT化 / b=業務効率の向上; イ a=業務のIT化 / b=チェック体制の確立; ウ a=業務プロセスの明確化 / b=業務効率の向上; エ a=業務プロセスの明確化 / b=チェック体制の確立. The full page (page-19) shows all 4 rows clearly; the crop shows only the stem and rows ア/イ but agrees with the full page on those. This is a conceptual internal-control knowledge question — the figure only enumerates options. Internal control construction requires clarifying business processes (a=業務プロセスの明確化, not IT化 which is not a control prerequisite), segregation of duties, implementation rules, and establishing a checking/monitoring system (b=チェック体制の確立, not 業務効率の向上 which is an outcome not a requirement) = row エ.",
+          "independent_figure_correct_letter": "エ",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both images are fully legible. Full-page table values match choices_jp exactly with no swap or corruption: ア=(業務のIT化, 業務効率の向上), イ=(業務のIT化, チェック体制の確立), ウ=(業務プロセスの明確化, 業務効率の向上), エ=(業務プロセスの明確化, チェック体制の確立). The crop only shows rows ア/イ but is consistent with the full page. Independent domain derivation: a=業務プロセスの明確化 (clarifying business processes is the foundational requirement; IT化 is not a prerequisite for internal control), b=チェック体制の確立 (a monitoring/checking system is a core control component; 業務効率の向上 is an outcome, not a construction requirement). This yields row エ, matching the stored KEY. The figure does not contradict choices_jp[\"エ\"]; ordering is correct, so the KEY letter エ maps to the correct content. Verdict KEY_OK."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2014h26a-q095",
+      "role": "rate",
+      "stratum": "escalate_resolved",
+      "figure_type": "chart",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26a-q095",
+        "figure_legible": true,
+        "question_kind": "read_value_from_figure",
+        "figure_correct_answer_desc": "Two histograms (人数 vs 得点 0-10), each n=30. T組 frequencies at scores 3..9 = [2,3,9,7,5,3,1] (mean=5.77, SD=1.453). U組 frequencies at scores 1..7 = [1,3,5,7,9,3,2] (mean=4.23, SD=1.453). T組 reversed equals U組 exactly, so they are perfect mirror images: means DIFFER (5.77 vs 4.23) but standard deviations are IDENTICAL (both 1.4533). Therefore the correct statement is \"means differ, standard deviations are the same.\"",
+        "figure_correct_letter": "イ",
+        "keyed_letter": "イ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "平均点は異なるが，標準偏差は同じである。",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Read both histograms on the full page (page-45) and enlarged crops (/tmp/T_full.png, /tmp/U_full.png), each labeled directly on the bars. Axis: vertical = 人数 (0-10), horizontal = 得点 (0..10). T組: bars labeled 0,0,0 (scores 0-2), 2 (s3), 3 (s4), 9 (s5 peak), 7 (s6), 5 (s7), 3 (s8), 1 (s9), 0 (s10). U組: 0 (s0), 1 (s1), 3 (s2), 5 (s3), 7 (s4), 9 (s5 peak), 3 (s6), 2 (s7), 0,0,0 (s8-10). Both sum to 30. Computed: T mean=173/30=5.7667, var=2.1122, SD=1.4533; U mean=127/30=4.2333, var=2.1122, SD=1.4533. T組 frequency list reversed [1,3,5,7,9,3,2] equals U組 [1,3,5,7,9,3,2] exactly — perfect mirror, so SDs are structurally identical and means are reflected (different). Figure thus supports \"平均点は異なるが，標準偏差は同じである。\" = choice イ. Stored key is イ. Match confirmed. Other three choices each describe a distinct same/different combination correctly labeled; no anti-figure swap present."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2014h26a-q097",
+      "role": "rate",
+      "stratum": "escalate_resolved",
+      "figure_type": "flowchart",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2014h26a-q097",
+        "figure_legible": true,
+        "question_kind": "select_correct_graph_or_diagram",
+        "figure_correct_answer_desc": "a=精査 (clerk scrutinizes submitted slip; has a return branch back to applicant — characteristic of a check/scrutiny step, not numbering), b=決裁 (approver authorizes the slip), c=採番 (clerk assigns number after approval, before sending to accounting for 支払処理). The flow: 申請者 申請→伝票 → 事務担当者 box a → branches back to applicant and on to 承認者 伝票 → box b → 事務担当者 伝票 → box c → 経理担当者 伝票 → 支払処理.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "a：精査　b：決裁　c：採番",
+        "anomalies": "none",
+        "derivation": "Read crop and full page (page-48), both legible. Flowchart has 4 swimlane columns: 申請者 / 事務担当者 / 承認者 / 経理担当者. Trace: (1) 申請者 column: 申請 → 伝票. (2) 伝票 crosses to 事務担当者 column into the first labeled (non-shaded) box \"a\" near the top. (3) From \"a\" the flow branches LEFT back to 申請者 column's second 伝票 (a return/rework loop), and also continues RIGHT to 承認者 column. (4) 承認者 column: 伝票 → box \"b\". (5) From \"b\" the flow goes to 事務担当者 column's lower 伝票 → box \"c\". (6) From \"c\" → 経理担当者 column → 伝票 → 支払処理. Semantic mapping with candidate words 採番/決裁/修正/精査: position a is the clerk's first handling of the just-submitted slip and has a return branch to the applicant — this is a checking/scrutiny step that bounces problematic slips back, i.e. 精査 (採番 would not need a back-loop). Position b is in the 承認者 (approver) lane = 決裁 (authorization). Position c is the clerk's step after approval, immediately before accounting's payment processing = 採番 (assign payment number). Therefore figure ⇒ a=精査, b=決裁, c=採番. Choice table on full page reads: ア a=採番/b=決裁/c=修正, イ a=修正/b=決裁/c=採番, ウ a=精査/b=決裁/c=採番, エ a=精査/b=採番/c=修正 — matches stored choices_jp exactly, no ordering corruption. The combination a=精査,b=決裁,c=採番 is choice ウ. Stored key = ウ. keyed_matches_figure = TRUE. Verdict KEY_OK."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2025r07-q078",
+      "role": "rate",
+      "stratum": "escalate_resolved",
+      "figure_type": "code",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2025r07-q078",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "Tracing calcMod3: totalValue starts at 0; loop i=1..7; add i when i mod 3 == 0, i.e. i=3 and i=6. Sum = 3 + 6 = 9. Output = 9.",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": false,
+        "verdict": "CHOICES_SWAP_ONLY",
+        "confidence": "high",
+        "keyed_choice_text": "9",
+        "anomalies": "Choice ア mislabeled: figure (both crop and full page) shows \"ア 2\", but choices_jp stores \"ア\":\"1\". Choices イ/ウ/エ (3/7/9) match the figure. This is a non-keyed-choice OCR discrepancy; it does not affect the key.",
+        "derivation": "Crop /data/ip/exams/figures/2025r07-q078.png and full page /data/ip/exams/pages/2025r07/page-37.png (問78) both show the pseudocode: totalValue ← 0; for (i を 1 から 7 まで 1 ずつ増やす); if (i ÷ 3 の余り が 0 と等しい) totalValue ← totalValue + i; endif; endfor; totalValue を出力する. Computing: i from 1 to 7, condition i mod 3 == 0 holds for i=3 and i=6, so totalValue = 3 + 6 = 9. The figure choices read: ア 2, イ 3, ウ 7, エ 9. The figure-correct value 9 sits at choice エ. Stored key = エ and choices_jp[\"エ\"] = \"9\", so the keyed choice IS the figure-correct answer. However choices_jp[\"ア\"] is stored as \"1\" while the figure shows \"2\" for ア, so not all choice labels are figure-consistent (non-keyed mislabel only) → CHOICES_SWAP_ONLY rather than KEY_OK."
+      },
+      "verifiers": [
+        {
+          "id": "2025r07-q078",
+          "figure_legible": true,
+          "independent_answer_desc": "Traced calcMod3() from scratch: totalValue starts at 0; for loop i=1..7 step 1; inside, if (i mod 3 == 0) then totalValue += i. Hits: i=3 (totalValue=3), i=6 (totalValue=9). Other i (1,2,4,5,7) skipped. Output = totalValue = 9. In the figure (both crop and full page page-37 question 78), the choices read: ア 2, イ 3, ウ 7, エ 9. The value 9 sits at letter エ. So figure-correct answer = エ (9).",
+          "independent_figure_correct_letter": "エ",
+          "verifier_verdict": "CHOICES_SWAP_ONLY",
+          "confidence": "high",
+          "reasoning": "Independent re-derivation (not deferring to auditor): the only i in 1..7 with i mod 3 == 0 are 3 and 6, sum = 9. Output is 9. Both images are fully legible. Reading the choices directly off the figure: ア=2, イ=3, ウ=7, エ=9. The answer 9 maps to letter エ, which equals the stored KEY (エ). Therefore the KEY itself is CORRECT (KEY_OK on the keyed choice). However, choices_jp stores ア=\"1\" while the figure unambiguously shows ア=\"2\" — a real OCR discrepancy, but ONLY on the non-keyed choice ア. The keyed choices イ=3, ウ=7, エ=9 all match the figure exactly. Because there IS a confirmed corpus-vs-figure mismatch (ア: \"1\" stored vs \"2\" in figure) that does not affect the keyed answer, the precise verdict is CHOICES_SWAP_ONLY (key valid, but a choice value in the corpus is wrong relative to the figure). This matches the auditor's verdict and arithmetic independently. No hallucination: I cite exact figure values ア 2 / イ 3 / ウ 7 / エ 9 as actually rendered on page-37."
+        }
+      ],
+      "final_status": "CONFIRMED_SWAP_ONLY"
+    },
+    {
+      "id": "2009h21a-q044",
+      "role": "rate",
+      "stratum": "none",
+      "figure_type": "flowchart",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2009h21a-q044",
+        "figure_legible": true,
+        "question_kind": "other",
+        "figure_correct_answer_desc": "The figure is a 4-box horizontal flowchart [box1]→[A]→[box3]→[box4], where the 2nd box is labeled \"A\". The logical procedure for a software specification change is: (1) 変更要求の受付 accept change request → (2) 変更内容の評価 evaluate change content → (3) 変更の指示 instruct change → (4) 変更の反映 apply/reflect change. Position A is the 2nd step = 変更内容の評価 (Evaluation of change content).",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "変更内容の評価",
+        "derivation": "Crop and full page (問44) agree. The figure is four empty rectangles connected left-to-right by arrows: [□]→[A]→[□]→[□]. The 2nd box contains the literal label \"A\" (clearly readable in both crop and full page). The stem names the four elements: 変更内容の評価, 変更の指示, 変更の反映, 変更要求の受付, and asks which element belongs at position A. The standard spec-change workflow ordering is: 変更要求の受付 (receive request, box1) → 変更内容の評価 (evaluate content, box2=A) → 変更の指示 (issue instruction, box3) → 変更の反映 (apply change, box4). Therefore A = 変更内容の評価. The full page choices read: ア 変更内容の評価, イ 変更の指示, ウ 変更の反映, エ 変更要求の受付 — exactly matching choices_jp as stored, so no anti-figure swap. choices_jp[\"ア\"] = 変更内容の評価 is precisely the figure-supported answer for A. Keyed answer ア is correct; KEY_OK.",
+        "anomalies": "none"
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2010h22a-q090",
+      "role": "rate",
+      "stratum": "none",
+      "figure_type": null,
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2010h22a-q090",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "Cell \"a\" is column 3 of Table 2 (出力結果表). Column 3 marks: 地区=A (Yes), 3辺計=80まで (Yes), 重量=20まで (Yes). Per the rule on page-35, the size class is the LARGER of the class implied by the 3-side sum vs by the weight. 3辺計 80まで → size class 1; 重量 20まで → size class 3; larger = class 3. From Table 1 (表1 料金表), District A × size class 3 (140まで/20まで row) = 2,000 円. So a = 2,000.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "2,000",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "The figure crop for q090 (figures/2010h22a-q090.png) contains ONLY Table 2; the source fee matrix needed to compute cell \"a\" is Table 1 (表1 料金表), located on the PREVIOUS page (pages/2010h22a/page-35.png), part of the same 中問A set (q088-q091). The bbox/crop for this question does not include Table 1, but it was readable on page-35. Aside from that split, no mis-crop, OCR garble, or choice/figure mismatch.",
+        "derivation": "STEP A — Table 2 (page-36, output results table). Columns 1,2,3,4,5,6,...,36. Group 地区: A=Yes in cols 1-6; D=Yes in col 36. Group 3辺計(cm): 80まで=Yes cols 1,2,3; 100まで=Yes cols 4,5,6; 140まで=Yes col 36. Group 重量(kg): 5まで=Yes cols 1,4; 10まで=Yes cols 2,5; 20まで=Yes cols 3,6. The 予想出力(円) row has cell \"a\" in COLUMN 3. So column 3 = {地区 A, 3辺計 80まで, 重量 20まで}.\\n\\nSTEP B — Rule (stem on page-35): サイズ区分 is determined by comparing 3辺計 and 重量 and applying whichever yields the LARGER class. Size classes (Table 1): class1 = 80cm/5kg, class2 = 100cm/10kg, class3 = 140cm/20kg. For column 3: 3辺計 80まで → class1; 重量 20まで → class3; max = class3.\\n\\nSTEP C — Table 1 (表1 料金表, page-35, read at 2.2x zoom). Rows by 区分 / 3辺計 / 重量, columns 地区 A,B,C,D:\\n  区分1 (80/5): A=1,300 B=950 C=1,150 D=1,800\\n  区分2 (100/10): A=1,600 B=1,200 C=1,400 D=2,350\\n  区分3 (140/20): A=2,000 B=1,600 C=1,800 D=3,400\\nDistrict A × class 3 = 2,000 円.\\n\\nSTEP D — a = 2,000 = choice ウ. choices_jp = {ア:1,300, イ:1,600, ウ:2,000, エ:3,400}; all four are genuine cells in Table 1 column structures (1,300=A1; 1,600=A2/B3; 2,000=A3; 3,400=D3), so choices are figure-consistent distractors with no anti-figure swap. Keyed answer = ウ. Keyed choice ウ text = '2,000', exactly the figure-derived value. Verdict KEY_OK, high confidence."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2022r04-q088",
+      "role": "rate",
+      "stratum": "none",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2022r04-q088",
+        "figure_legible": true,
+        "question_kind": "conceptual_figure_illustrative",
+        "figure_correct_answer_desc": "a = delimiter-separated format (comma etc.) = CSV; b = markup language describing logical structure with tags = XML. So a=CSV, b=XML, which is the row labeled イ in the figure table.",
+        "figure_correct_letter": "イ",
+        "keyed_letter": "イ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "a: CSV / b: XML",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Both the crop and the full page (page-40, 問88) clearly show the answer-choice table with columns \"a\" and \"b\" and rows ア/イ/ウ/エ. The table reads: ア → a=CSV, b=JSON; イ → a=CSV, b=XML; ウ → a=RSS, b=JSON; エ → a=RSS, b=XML. These exactly match choices_jp as stored, so there is no anti-figure swap. Solving the stem: blank a is a format using delimiter characters such as commas to separate data — that is CSV (comma-separated values). Blank b is a markup language that describes the logical structure of data using tags — that is XML. Therefore a=CSV, b=XML, corresponding to row イ in the figure table. The stored key is イ, which matches the figure-correct answer. Note: the figure here is merely the answer-choice table (table-type), not data needed to compute; the answer derives from domain knowledge, and the table both presents and confirms the choice labels. Anomaly: none. The crop is slightly cropped at top (shows the tail of the stem \"...いて記述できるデータ形式である。\") but the table itself is fully and clearly captured.",
+        "anomalies": "none"
+      },
+      "verifiers": [
+        {
+          "id": "2022r04-q088",
+          "figure_legible": true,
+          "independent_answer_desc": "From the stem: a = data format using comma/delimiter characters to show data boundaries = CSV (Comma-Separated Values); b = a markup language that uses tags to describe the logical structure of data = XML (tags = markup; JSON is not a tag-based markup language). So a=CSV, b=XML. In the figure table the row a=CSV/b=XML is the one labeled イ. (Figure rows read directly: ア=CSV/JSON, イ=CSV/XML, ウ=RSS/JSON, エ=RSS/XML — confirmed on both crop and full page.)",
+          "independent_figure_correct_letter": "イ",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both the crop (2022r04-q088.png) and the full page (page-40.png, problem 88) are crisply legible and identical. The figure table reads exactly: ア = a:CSV / b:JSON; イ = a:CSV / b:XML; ウ = a:RSS / b:JSON; エ = a:RSS / b:XML. Independent re-derivation from the stem: 'a' is described as a delimiter-based (comma-separated) format = CSV; 'b' is described as a tag-based markup language for logical structure = XML (JSON is delimiter/brace-based key-value, not a markup/tag language). a=CSV, b=XML maps to row イ. This matches choices_jp[\"イ\"]='a: CSV / b: XML' and the stored key イ. Figure ordering is intact (not OCR-swapped), crop and full page agree, so KEY_OK is correct."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2010h22a-q089",
+      "role": "rate",
+      "stratum": "none",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2010h22a-q089",
+        "figure_legible": true,
+        "question_kind": "conceptual_figure_illustrative",
+        "figure_correct_answer_desc": "表1 料金表 shows a fee matrix of 3 size 区分 (区分1: 3辺計80cm/重量5kg; 区分2: 100cm/10kg; 区分3: 140cm/20kg) × 4 地区 (A,B,C,D) = 12 price cells (e.g. 区分1 A=1,300, B=950, C=1,150, D=1,800; 区分3 D=3,400). The stem explains M created 表2 by enumerating values for ALL combinations of input data (入力データの全ての組合せ) and recording the correct expected output for each. Creating test data that exhaustively covers every conceivable case from the requirements = exhaustive/coverage testing (網羅). This corresponds to the choice describing 'prepare test data covering all conceivable cases and test every case without omission' = choice エ.",
+        "figure_correct_letter": "エ",
+        "keyed_letter": "エ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "keyed_choice_text": "要件から考えられるケースを網羅するテストデータを準備し，すべてのケースを漏れなくテストするため。",
+        "anomalies": "none",
+        "derivation": "Crop shows the upper region of 表1 料金表: header サイズ区分 (区分 / 3辺計(cm) / 重量(kg)) and 地区 A/B/C/D, with rows 区分1 (80まで,5まで → 1,300/950/1,150/1,800), 区分2 (100まで,10まで → 1,600/1,200/1,400/2,350), 区分3 (140まで,20まで → 2,000/1,600/1,800/3,400). The full page confirms 中問A, 設問(1)(2) and the bottom narrative: M created 表2 出力結果表 listing the correct expected output (欄『予想出力』) for ALL combinations of input data (入力データの全ての組合せに該当する値). This is exhaustive coverage testing. Mapping choices: ア=error-prone cases / reliability (error guessing); イ=trace instruction execution order (control-flow/white-box path testing); ウ=pick high-frequency cases, few data, efficient (opposite of exhaustive); エ=cover all conceivable cases from requirements, test without omission (exhaustive coverage). 'All combinations' ⇒ 網羅 ⇒ エ. Keyed answer エ matches the figure+stem. Choices are internally consistent and correctly labeled; the opposite distractor (ウ, efficiency/few data) is properly distinct, so no anti-figure swap. The figure here is illustrative context (it defines the input space whose combinations are enumerated) rather than something you compute a numeric value from, but it unambiguously supports the 'all combinations' rationale behind エ. Verdict KEY_OK."
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2018h30h-q065",
+      "role": "rate",
+      "stratum": "none",
+      "figure_type": "table",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2018h30h-q065",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "The correct relational-algebra mapping is a=射影 (projection), b=選択 (selection), c=結合 (join); the figure row matching this is ウ.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ウ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Read the crop and the full page (問65, lower-left region). The figure is a 4-row table with header columns a, b, c. Rows read: ア = 結合/射影/選択; イ = 射影/結合/選択; ウ = 射影/選択/結合; エ = 選択/射影/結合. Relational algebra: extracting columns (a) = 射影 projection; extracting rows (b) = 選択 selection; combining tables (c) = 結合 join. Therefore a=射影, b=選択, c=結合, which is row ウ. choices_jp[\"ウ\"] = \"a=射影, b=選択, c=結合\" matches exactly. All four stored choices_jp entries match the figure rows verbatim, so no anti-figure swap. Keyed answer ウ is figure-correct.",
+        "keyed_choice_text": "[表] a=射影, b=選択, c=結合",
+        "anomalies": "none"
+      },
+      "verifiers": [],
+      "final_status": "KEY_OK_SINGLE_PASS"
+    },
+    {
+      "id": "2015h27h-q025",
+      "role": "rate",
+      "stratum": "none",
+      "figure_type": "diagram",
+      "control_expect": null,
+      "poison_real_key": null,
+      "audit": {
+        "id": "2015h27h-q025",
+        "figure_legible": true,
+        "question_kind": "select_correct_graph_or_diagram",
+        "figure_correct_answer_desc": "The correct DFD must follow: file slips (伝票をファイリング) → slip binder store (伝票つづり) → branch to BOTH 決算担当者が伝票を集計 and 検算担当者が伝票を集計 (separate tallying) → merge to 集計結果を照合 (compare results). In the figure, only choice ア shows this: top \"伝票をファイリング\" → \"伝票つづり\" → branches down to \"検算担当者が伝票を集計\" (left) and \"決算担当者が伝票を集計\" (right) → both merge into \"集計結果を照合\" at bottom. The other choices reverse or scramble the order (イ/ウ/エ either start with tallying, end with filing, or branch at the wrong point).",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "derivation": "Read both the crop (2015h27h-q025.png) and full page-10.png; both are legible and agree. The stem's business process: (1) daily, accounting clerk files department slips into a slip binder; (2) at settlement start, the filed slips are SEPARATELY tallied by 決算担当者 and 検算担当者, then both results are compared (照合). Correct DFD order: 伝票をファイリング → 伝票つづり (data store) → branch to two parallel tallies (決算担当者が伝票を集計 + 検算担当者が伝票を集計) → merge into 集計結果を照合. Examining the figure: ア shows top node \"伝票をファイリング\" feeding \"伝票つづり\", which then branches downward to \"検算担当者が伝票を集計\" (left) and \"決算担当者が伝票を集計\" (right), and both converge into \"集計結果を照合\" at the bottom — this exactly matches the required flow. イ starts wrongly with \"決算担当者が伝票を集計\" then \"伝票をファイリング\"…ending at \"伝票つづり\" (filing/binder out of order). ウ starts with the two tally nodes → 照合 → 伝票つづり → 伝票をファイリング (entire flow reversed). エ has the two tally nodes → 集計結果を照合 → branching to \"伝票つづり\" and \"伝票をファイリング\" (filing placed at the end as outputs). Thus the figure unambiguously supports ア. The stored choices_jp[\"ア\"] text (\"「伝票をファイリング」→「伝票つづり」→分岐して「検算担当者が伝票を集計」と「決算担当者が伝票を集計」→両者が「集計結果を照合」に合流\") matches the figure for ア exactly, and the other three choice texts also match their respective figure panels. KEY = ア is correct and all labels are figure-consistent."
+      },
+      "verifiers": [
+        {
+          "id": "2015h27h-q025",
+          "figure_legible": true,
+          "independent_answer_desc": "The business process requires: slips are filed into a binder (伝票をファイリング → 伝票つづり data store), then at settlement start the filed slips are separately tallied by BOTH the settlement person (決算担当者が伝票を集計) and the verification person (検算担当者が伝票を集計), and both results are compared (集計結果を照合). The correct DFD must therefore flow: 伝票をファイリング → 伝票つづり → branch to BOTH tallying processes → merge into 集計結果を照合. Reading the full page (authoritative): Choice ア (top-left) shows exactly this — top 「伝票をファイリング」 → 「伝票つづり」 (binder) → branches down to 「決算担当者が伝票を集計」 (left) and 「検算担当者が伝票を集計」 (right) → both merge into 「集計結果を照合」 at the bottom. Choice イ scrambles the order (starts with 決算担当者集計, puts ファイリング in the middle, ends with 伝票つづり). Choice ウ is fully reversed (tallying → 照合 → 伝票つづり → ファイリング at the end). Choice エ is also reversed (tallying → 照合 → branches to 伝票つづり and ファイリング at the end). Only ア is correct.",
+          "independent_figure_correct_letter": "ア",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Both the crop and the full page are legible and agree. I independently derived the required DFD flow from the stem (file → binder → branch to both tallying processes → merge to compare) without relying on choices_jp ordering. Examining the figure region for each option on the full page: only ア starts with 伝票をファイリング at the top, flows into 伝票つづり, branches into the two separate tally processes (決算担当者 / 検算担当者), and merges into 集計結果を照合. The other three (イ/ウ/エ) either scramble the order or reverse it so that filing happens last instead of first, which contradicts the process. The stored key is ア and the figure unambiguously supports it. The auditor's only minor inaccuracy was the left/right labeling of the two branch processes (they said left=検算, right=決算; the figure actually shows left=決算, right=検算), but this does not affect correctness since both branches exist and merge as required. choices_jp[\"ア\"] matches the figure. No contradiction found, so I default to KEY_OK with high confidence."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2010h22h-q002",
+      "role": "control",
+      "stratum": "escalate_resolved",
+      "figure_type": "chart",
+      "control_expect": "CLEAN",
+      "poison_real_key": null,
+      "audit": {
+        "id": "2010h22h-q002",
+        "figure_legible": true,
+        "question_kind": "read_value_from_figure",
+        "figure_correct_answer_desc": "From the bar/line chart (単位 億円): A社売上高 bars ~1,000→1,100→1,200 (2006→2008), B社売上高 bars ~600→880→1,200. So sales growth 2006→2008: A社 ~+20%, B社 ~+100% → A社's growth rate is LOWER than B社. Operating profit lines for 2008: A社営業利益 (open circle ○) ~470, B社営業利益 (filled circle ●) ~430; both 2008 sales ~1,200 → A社 margin ~39% vs B社 ~36% → A社's 2008 margin is HIGHER. Therefore correct = choice イ.",
+        "figure_correct_letter": "イ",
+        "keyed_letter": "イ",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "A社はB社より売上高の伸び率が低いが，2008年の売上高営業利益率は高い。",
+        "verdict": "KEY_OK",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Crop and full page (問2) agree. Y-axis labeled 単位 億円, 0–1,400 by 200. Legend (read on full page, right side): A社売上高 (light bar), B社売上高 (gray bar), A社営業利益 (open circle ○ line), B社営業利益 (filled circle ● line). Bars: A社売上高 ≈1,000/1,100/1,200; B社売上高 ≈600/880/1,200 across 2006/2007/2008. Lines: A社営業利益 (upper, ○) ≈400/450/470; B社営業利益 (lower, ●) ≈180/290/430. (1) 売上高 growth rate 2006→2008: A社 +20%, B社 +100% ⇒ A社 LOWER. (2) 2008 売上高営業利益率: A社 470/1200≈39%, B社 430/1200≈36% ⇒ A社 HIGHER. Combination = \"A社 lower growth, higher 2008 margin\". Printed choices on page: ア higher/lower, イ lower/higher, ウ both higher, エ both lower — these match choices_jp ordering exactly (no swap). Figure-correct = イ; stored key = イ ⇒ KEY_OK."
+      },
+      "verifiers": [
+        {
+          "id": "2010h22h-q002",
+          "figure_legible": true,
+          "independent_answer_desc": "Re-derived from scratch off the full page + upscaled crops. Legend (read directly): light/cream bar = A社売上高, dark/gray bar = B社売上高, open circle ○ line = A社営業利益, filled circle ● line = B社営業利益. SALES (億円): 2006 A社≈1,000 / B社≈600; 2007 A社≈1,100 / B社≈880; 2008 A社≈1,200 / B社≈1,200 (equal). Growth 2006→2008: A社 ≈+20%, B社 ≈+100% → A社's sales growth rate is LOWER than B社. OPERATING PROFIT at 2008 (read against 200/400 gridlines in /tmp/q002_lines2_big.png and /tmp/q002_2008_big.png): open circle A社 ≈470-480, filled circle B社 ≈430-440, with the open ○ clearly ABOVE the filled ● at 2008. Both 2008 sales ≈1,200, so A社 margin ≈39.6% vs B社 ≈36.2% → A社's 2008 operating-profit margin is HIGHER. Net: lower sales growth + higher 2008 margin = choice イ. The open vs filled ordering (A社 above B社 in all three years, incl. 2008) was verified at high zoom.",
+          "independent_figure_correct_letter": "イ",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "Independent re-derivation from the figure (not deferring to auditor) lands on イ, matching the stored KEY. Verified each load-bearing element directly: (1) Legend mapping read off the full page page-04.png and crop — ○=A社営業利益, ●=B社営業利益. (2) Bar heights read against gridlines in /tmp/q002_p2_big.png: A社 sales 1,000/1,100/1,200, B社 sales 600/880/1,200 → A社 growth +20% < B社 +100% (satisfies イ's \"伸び率が低い\"). (3) The decisive operating-profit ordering at 2008 confirmed at high zoom (/tmp/q002_lines2_big.png, /tmp/q002_2008_big.png): the open circle (A社) sits above the filled circle (B社) ≈475 vs ≈435 against equal ~1,200 sales → A社 margin higher (satisfies イ's \"営業利益率は高い\"). choices_jp[\"イ\"] = \"A社はB社より売上高の伸び率が低いが，2008年の売上高営業利益率は高い\" exactly matches the figure. No OCR-swap symptom: ア (high growth/low margin) is the literal opposite and is contradicted by the figure; イ is uniquely consistent. Heeded the prior-failure lesson by re-reading markers at the 200/400 gridline level rather than assuming — the figure unambiguously supports イ, so default-to-KEY_OK is corroborated, not merely assumed."
+        }
+      ],
+      "final_status": "KEY_OK_VERIFIED"
+    },
+    {
+      "id": "2013h25a-q052",
+      "role": "control",
+      "stratum": "escalate_resolved",
+      "figure_type": "diagram",
+      "control_expect": "CLEAN",
+      "poison_real_key": null,
+      "audit": {
+        "id": "2013h25a-q052",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "From the figure: 図1 has two 装置A (A=0.9) in parallel then 装置B (B=0.8) in series; 図2 has one 装置A in series with 装置B. 図1 availability = [1-(1-0.9)^2] × 0.8 = 0.99 × 0.8 = 0.792. 図2 availability = 0.9 × 0.8 = 0.72. Decrease = 0.792 - 0.72 = 0.072 → rounded at 3rd decimal = 0.07.",
+        "figure_correct_letter": "ア",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": true,
+        "choices_consistent_with_figure": false,
+        "verdict": "CHOICES_SWAP_ONLY",
+        "confidence": "high",
+        "keyed_choice_text": "0.07",
+        "anomalies": "Choice ウ is stored as \"0.10\" in choices_jp but the full page clearly prints \"ウ 0.18\". This OCR/corpus discrepancy affects ウ only; it does not affect the keyed answer ア=0.07. The figure crop and full page agree; the parallel/series diagrams are correctly rendered.",
+        "derivation": "Both crop and full page page-18 question 52 are legible and agree. Stem: 装置A availability 0.9, two A in parallel, 装置B availability 0.8 in series (図1); 図2 reduces to one A in series with B. Parallel A block = 1-(1-0.9)(1-0.9) = 1-0.01 = 0.99. 図1 system = 0.99 × 0.8 = 0.792. 図2 system = 0.9 × 0.8 = 0.72. Decrease = 0.792 - 0.72 = 0.072, rounded to 2 decimals (小数第3位四捨五入) = 0.07. choices_jp[\"ア\"]=\"0.07\" matches the figure-derived answer exactly, so the KEY is correct. Note: choice ウ printed on the page is \"0.18\" but stored as \"0.10\" — an upstream OCR error in a non-keyed choice; does not change the verdict that ア is the correct keyed answer. Hence CHOICES_SWAP_ONLY (keyed answer still correct, another choice mislabeled)."
+      },
+      "verifiers": [
+        {
+          "id": "2013h25a-q052",
+          "figure_legible": true,
+          "independent_answer_desc": "From the full page (authoritative) and crop, which agree: 図1 shows two 装置A boxes stacked vertically in PARALLEL (lines branch from a left node, rejoin at a right node), then a single 装置B box in SERIES after the parallel pair: (A∥A)→B. 図2 shows a single 装置A in SERIES with a single 装置B: A→B. Stem gives A=0.9, B=0.8. 図1 availability = [1−(1−0.9)^2]×0.8 = (1−0.01)×0.8 = 0.99×0.8 = 0.792. 図2 availability = 0.9×0.8 = 0.72. Decrease = 0.792−0.72 = 0.072, rounded at the 3rd decimal place (小数第3位四捨五入) = 0.07. The full page prints the choices as: ア 0.07, イ 0.09, ウ 0.18, エ 0.45. So 0.07 = ア, matching the stored key ア.",
+          "independent_figure_correct_letter": "ア",
+          "verifier_verdict": "KEY_OK",
+          "confidence": "high",
+          "reasoning": "I re-derived the answer from scratch before reading the auditor's arithmetic. The diagrams are unambiguous on the full page: 図1 = parallel pair of 装置A feeding 装置B in series; 図2 = single A in series with B. With A=0.9, B=0.8: 図1 = [1−(1−0.9)^2]×0.8 = 0.99×0.8 = 0.792; 図2 = 0.9×0.8 = 0.72; decrease = 0.072 → 0.07 after rounding the 3rd decimal. This is the canonical published answer for IPA 2013 Autumn (H25 秋) IP 問52, and it equals printed choice ア. The keyed answer ア is correct against the figure. I verified the choices on the full page read ア 0.07 / イ 0.09 / ウ 0.18 / エ 0.45 — no choice-swap affects the correct option. There IS a confirmed corpus/OCR defect: choices_jp stores \"ウ\":\"0.10\" but the page clearly prints \"ウ 0.18\". However this defect touches only distractor ウ, not the keyed correct answer ア=0.07. Because the question is asking only whether the KEY (ア) is correct, and the figure-derived correct value 0.07 sits at position ア on the page, the verdict is KEY_OK, not CHOICES_SWAP_ONLY (the correct option's letter is right; only an unrelated distractor's transcribed value is wrong). I default to KEY_OK because the figure does not contradict choices_jp[\"ア\"]=\"0.07\" — it confirms it. The ウ value discrepancy is worth flagging for corpus repair but does not change the answer key."
+        }
+      ],
+      "final_status": "DISPUTED_SWAP"
+    },
+    {
+      "id": "2010h22h-q077",
+      "role": "control",
+      "stratum": "none",
+      "figure_type": "chart",
+      "control_expect": "UNKNOWN_BACKLOG",
+      "poison_real_key": null,
+      "audit": {
+        "id": "2010h22h-q077",
+        "figure_legible": true,
+        "question_kind": "select_correct_graph_or_diagram",
+        "figure_correct_answer_desc": "Series system of 2 independent devices with equal availability k: system availability = k*k = k^2. Since k^2 <= k for 0<=k<=1, the curve lies ALWAYS BELOW the dashed y=x reference line, is convex (下に凸), and touches the diagonal only at (0,0) and (1,1). Among the four panels, graph イ is exactly this: a convex curve below the diagonal meeting at (0,0) and (1,1). (Graph ア is the opposite — above the diagonal, concave down = parallel system 1-(1-k)^2; ウ is an S-curve crossing at 0.5; エ is an inverse-S crossing at 0.5.) So the figure-correct panel is イ.",
+        "figure_correct_letter": "イ",
+        "keyed_letter": "イ",
+        "keyed_matches_figure": false,
+        "choices_consistent_with_figure": false,
+        "keyed_choice_text": "システムの稼働率が処理装置の稼働率より常に高いグラフ(上に凸)",
+        "verdict": "CHOICES_SWAP_ONLY",
+        "confidence": "high",
+        "anomalies": "choices_jp text descriptions for ア and イ are SWAPPED relative to the figure panels. choices_jp[\"イ\"] reads \"常に高い(上に凸)\" (always higher, concave up) which actually describes panel ア; choices_jp[\"ア\"] reads \"常に低い(下に凸)\" (always lower, convex) which actually describes panel イ. The keyed LETTER イ still correctly selects the figure-correct panel (k^2 curve below diagonal), but the stored text under each letter is anti-figure / mislabeled (OCR-repair swap).",
+        "derivation": "Stem: two processing devices in 直列 (series); system runs only if BOTH operate; failures independent; equal availability k. Therefore system availability R = k * k = k^2. For 0<=k<=1, k^2 <= k, with equality only at k=0 and k=1, and the curve is convex (second derivative 2>0), i.e. lies below the dashed equal-availability line (下に凸). Reading the FULL PAGE (page-32, 問77): panel ア = curve ABOVE diagonal, concave-down (parallel-system shape, NOT k^2); panel イ = curve BELOW diagonal, convex, meeting diagonal at (0,0) and (1,1) (this IS k^2); panel ウ = S-curve crossing diagonal near 0.5; panel エ = inverse-S crossing near 0.5. Hence the figure-correct answer is panel イ, which equals the stored correct_answer letter イ. However the choices_jp TEXT strings disagree with the panels: choices_jp[\"イ\"]=\"...常に高いグラフ(上に凸)\" describes panel ア, and choices_jp[\"ア\"]=\"...常に低いグラフ(下に凸)\" describes panel イ — the two descriptions are swapped against the figure. So the keyed letter selects the right figure panel (key is correct), but the choice descriptions are anti-figure/mislabeled. This matches CHOICES_SWAP_ONLY rather than BAD_KEY: the IPA official answer for 2010 H22 Q77 is イ and panel イ is the k^2 curve, so the answer letter is right; only the choice text labels are corrupted."
+      },
+      "verifiers": [
+        {
+          "id": "2010h22h-q077",
+          "figure_legible": true,
+          "independent_answer_desc": "Two processing devices in series, both must function; each has availability k; failures independent. System availability = k*k = k^2. For 0<=k<=1, k^2 <= k, so the system-availability curve lies ALWAYS BELOW the dashed y=x reference line, is convex (下に凸), and touches the diagonal only at (0,0) and (1,1) (e.g. at k=0.5, k^2=0.25, far below the 0.5 diagonal point). Reading the four figure panels: ア (top-left) bulges ABOVE the diagonal, concave (parallel system 1-(1-k)^2) — wrong. イ (top-right) hugs below the diagonal the whole range, convex, dips to ~0.25 near x=0.5, meets diagonal only at the two corners = exactly k² — CORRECT. ウ (bottom-left) is an S-curve crossing at (0.5,0.5) — wrong. エ (bottom-right) is an inverse-S crossing near 0.5 — wrong. Figure-correct panel = イ.",
+          "independent_figure_correct_letter": "イ",
+          "verifier_verdict": "CHOICES_SWAP_ONLY",
+          "confidence": "high",
+          "reasoning": "Independent derivation: series of 2 independent devices with equal availability k gives system availability k^2, which is <= k for all k in [0,1], so the curve lies entirely below the diagonal, is convex (下に凸), and meets y=x only at (0,0) and (1,1). In the figure, panel イ (top-right) is precisely this: a convex curve below the dashed diagonal, dipping to ~0.25 at x=0.5, touching the line only at the corners. Panel ア is the opposite (above diagonal, concave = parallel system). So the figure-correct panel is イ, which matches the stored KEY letter イ. KEY LETTER IS CORRECT against the figure. However, the stored choices_jp text is corrupted/swapped: choices_jp[\"ア\"]=\"常に低い(下に凸)\" actually describes panel イ, while choices_jp[\"イ\"]=\"常に高い(上に凸)\" actually describes panel ア. Thus the text under letter イ (always higher, 上に凸) contradicts the correct series physics (which is always lower). The keyed letter still selects the right figure panel, but the per-letter text descriptions for ア and イ are anti-figure (OCR-repair swap). This is exactly CHOICES_SWAP_ONLY: correct letter, corrupted choice-text ordering. I independently confirm the auditor without deferring to their arithmetic; both images are fully legible (axes 0/0.5/1, dashed diagonal, four distinct curve shapes all clearly visible)."
+        }
+      ],
+      "final_status": "CONFIRMED_SWAP_ONLY"
+    },
+    {
+      "id": "POISON-2009h21a-q013",
+      "role": "poison",
+      "stratum": "ocr_garble_critical",
+      "figure_type": "table",
+      "control_expect": "BAD_KEY",
+      "poison_real_key": "ウ",
+      "audit": {
+        "id": "POISON-2009h21a-q013",
+        "figure_legible": true,
+        "question_kind": "compute_from_table",
+        "figure_correct_answer_desc": "Break-even sales = 300 (百万円). Variable costs = 材料費140 + 外注費100 = 240; contribution margin = 400 − 240 = 160; contribution margin ratio = 160/400 = 0.4; total fixed costs = 製造固定費100 + 販売固定費20 = 120; break-even sales = 120 / 0.4 = 300.",
+        "figure_correct_letter": "ウ",
+        "keyed_letter": "ア",
+        "keyed_matches_figure": false,
+        "choices_consistent_with_figure": true,
+        "keyed_choice_text": "160",
+        "verdict": "BAD_KEY",
+        "confidence": "high",
+        "anomalies": "none",
+        "derivation": "Full page (page-07, 問13) and crop both clearly show the 損益計算資料 table (単位 百万円): 売上高 400, 材料費（変動費）140, 外注費（変動費）100, 製造固定費 100, 粗利益 60, 販売固定費 20, 営業利益 40. Choices on the full page: ア 160, イ 250, ウ 300, エ 360 — exactly matching stored choices_jp (no swap). The question asks for break-even point sales (損益分岐点となる売上高). Total variable cost = 140 + 100 = 240. Contribution margin (限界利益) = 400 − 240 = 160. Contribution margin ratio = 160/400 = 0.4. Total fixed cost = 製造固定費 100 + 販売固定費 20 = 120. Break-even sales = 120 / 0.4 = 300 百万円 = choice ウ. The stored key ア = 160 is the contribution margin value, not the break-even sales — it is the classic distractor. Therefore the keyed answer is wrong; correct figure-derived answer is ウ (300). Verdict BAD_KEY."
+      },
+      "verifiers": [
+        {
+          "id": "POISON-2009h21a-q013",
+          "figure_legible": true,
+          "independent_answer_desc": "Break-even sales (損益分岐点売上高). From the figure: Sales 400; variable costs = 材料費 140 + 外注費 100 = 240; contribution margin = 400 − 240 = 160; contribution margin ratio = 160/400 = 0.4; total fixed costs = 製造固定費 100 + 販売固定費 20 = 120; break-even sales = 120 / 0.4 = 300 (百万円). Internal consistency confirmed: 粗利益 60 = 400 − (240 + 100); 営業利益 40 = 60 − 20. Answer = 300.",
+          "independent_figure_correct_letter": "ウ",
+          "verifier_verdict": "BAD_KEY",
+          "confidence": "high",
+          "reasoning": "Both crop and full page are perfectly legible and agree. Figure values read directly: 売上高 400, 材料費(変動費) 140, 外注費(変動費) 100, 製造固定費 100, 粗利益 60, 販売固定費 20, 営業利益 40. Choices on full page left-to-right: ア 160, イ 250, ウ 300, エ 360 — matching choices_jp exactly, so no choice-order corruption. Break-even sales = fixed costs / contribution-margin ratio = 120 / 0.4 = 300, which is choice ウ. The stored KEY is ア (=160), which equals the contribution margin (a standard distractor), not the break-even sales. The figure-correct answer (300/ウ) differs from the KEY (160/ア) in VALUE, not merely label ordering, so this is a true BAD_KEY rather than CHOICES_SWAP_ONLY. The auditor's derivation and BAD_KEY verdict are independently confirmed."
+        },
+        {
+          "id": "POISON-2009h21a-q013",
+          "figure_legible": true,
+          "independent_answer_desc": "Break-even sales = 300 百万円. From the figure: 売上高=400, 材料費(変動費)=140, 外注費(変動費)=100, 製造固定費=100, 粗利益=60, 販売固定費=20, 営業利益=40 (internally consistent: 400-140-100-100=60; 60-20=40). Variable costs = 140+100=240; contribution margin = 400-240=160; contribution margin ratio = 160/400=0.4; total fixed costs = 100+20=120; break-even sales = 120/0.4 = 300. On the full page the choices read ア160 / イ250 / ウ300 / エ360, so 300 = ウ. The value 160 (= choice ア, the stored key) is merely the contribution margin, a distractor, not the break-even sales.",
+          "independent_figure_correct_letter": "ウ",
+          "verifier_verdict": "BAD_KEY",
+          "confidence": "high",
+          "reasoning": "Both crop and full page are crisp and agree on all seven table values; the table is internally consistent (gross profit and operating profit check out). The break-even sales = fixed costs / contribution-margin ratio = 120 / 0.4 = 300 百万円, which maps to ウ on the full page (ア160/イ250/ウ300/エ360 — choice order matches choices_jp, so this is NOT a swap-only case). The stored key ア corresponds to 160, which is the contribution margin (400-240), a textbook distractor, not the break-even sales the stem asks for (\"損益分岐点となる売上高\"). Steelman for ア fails: no charitable reading yields 160 as break-even sales — using only 製造固定費 100 gives 250 (イ), and there is no path to 160 as a break-even figure. The figure unambiguously contradicts choices_jp[\"ア\"]. This matches the official IPA H21 spring IP answer (問13 = ウ). Verdict: BAD_KEY; correct answer is ウ."
+        }
+      ],
+      "final_status": "CONFIRMED_BAD_KEY"
+    }
+  ]
+}

@@ -1,0 +1,304 @@
+{
+  "n": 14,
+  "accurate": 11,
+  "bySeverity": {
+    "none": 8,
+    "high": 3,
+    "low": 3
+  },
+  "keyGuardMismatch": [
+    "2025r07-q026",
+    "2025r07-q034",
+    "2025r07-q066"
+  ],
+  "audits": [
+    {
+      "id": "2025r07-q001",
+      "accurate": true,
+      "independent_answer": "ウ",
+      "severity": "none",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2025r07-q021",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2025r07-q026",
+      "accurate": false,
+      "severity": "high",
+      "independent_answer": "ウ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": false
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "key_guard_valid=false。key_guard.note_jp が『図 (stem_jp_clean と裁剪図・原典フルページが一致)』と明言し suspect=false としているが、これは虚偽。裁剪図(/figures/2025r07-q026.png, 2x拡大で確証)・原典フルページ(/pages/2025r07/page-12.png 問26)は互いに一致するものの、stem_jp の表は図と激しく食い違う。図の真値: 取引①4/2受注800→4/10売上計上800→4/30現金回収800、取引②4/5受注500→4/15売上計上500→4/30現金回収500、取引③5/1受注1,300→5/10売上計上1,300(6/30回収予定)、取引④5/6受注1,000→5/15売上計上1,000(回収予定日未定)、取引⑤5/20受注400のみ。これに対し stem_jp は『発注/入荷』(受注/売上計上ではなく)を混入、取引②金額を800(正500)、取引④金額を1,300(正1,000)・日付5/1(正5/6)、取引⑤に存在しない『5/20売上計上400』を捏造、取引①の売上計上・現金回収行を欠落させている。stem_jp と図の不一致は重大な見落としであり、suspect=true とすべき。key_guard は実在しない『一致』を主張している。"
+        },
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "stem_jp が figure-faithful でなく、バンドルとして自己矛盾。explanation(correct/distractors/points)は図の真値(500/1,000、日付4/10・4/15・5/10・5/15、取引⑤=受注のみ)に正しく忠実だが、利用者が目にする stem_jp は別物(誤り)になっている。例: explanation は『取引②は4/15に500を売上計上し4/30に500回収』と述べるが、stem_jp の取引②には売上計上行が無く金額は800。stem_jp の数値で素直に解くと売掛金は別の値になりかねず、stem と解説が矛盾する成果物となる。是正は派生 corpus で stem_jp を図と一致させること(取引①②③④を図どおり受注/売上計上/現金回収・正金額に、取引⑤を受注のみに)。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "correct.en の『2,300 (in units of 10,000 yen)』はやや不格好だが意味は忠実。jp『万円』の訳出として許容範囲。zh は『应收账款/确认收入/接单/余额』など本土用語で整合し問題なし。"
+        }
+      ]
+    },
+    {
+      "id": "2025r07-q030",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "stem_jp 表の最初のセルが「| 』 |」と文字化けしており、本来の「a」が描画されていない (figure_page_png=page-14 では明確に「a」)。解説本体 (correct/distractors/points/key_guard) の正しさには影響しないが、stem 表示のデータ品質欠陥であり upstream corpus 側で「a」への是正が望ましい。"
+        }
+      ]
+    },
+    {
+      "id": "2025r07-q034",
+      "accurate": false,
+      "independent_answer": "イ",
+      "severity": "high",
+      "checks": {
+        "correct_sound": false,
+        "distractors_sound": false,
+        "translation_faithful": true,
+        "key_guard_valid": false
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "key_guard が正しい正解キー イ(1,200) を suspect=true と誤判定。IPA 令和7年問34 の公式問題文は『少なくともあと何個販売すればよいか』であり、公式正解は イ(1,200)=追加販売数(600万円÷5,000円/個)。ウ(6,200)=総販売数 は公式の引っかけ誤答。explanation は『総量を問う』と読み誤り、本来の答えはウだとして key_guard.derived_answer='ウ', matches_key=false, suspect=true としているが、これは完全に逆。stored key イ は正しく、suspect は false suspect(誤検出)。key_guard_valid=false。"
+        },
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "stem_jp が公式問題文の核心語『あと』を欠落('少なくともあと何個販売すればよいか'→'少なくともいくつ販売すればよいか'に化けている)。この1語の欠落が『追加数か総数か』を反転させ、解説の誤判定の根本原因。stem の上流欠陥として要是正(独立2ソース: itpassportsiken.com / itpassportgokaku.com で公式文・公式正解イを確認)。"
+        },
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "correct.{jp,zh,en} が学習者を誤答へ能動的に誘導。『この追加販売数解釈は設問文と整合せず…本来の答えはウ(6,200)である(correct_jp だけを読んでイを正解と誤認しないこと)』と明記しているが、公式正解は イ。算術(単価12,000・限界利益5,000・固定費2,100万)はすべて正しいが、最終結論(本来の答え=ウ)が誤り。correct_sound=false。"
+        },
+        {
+          "lang": "both",
+          "severity": "high",
+          "detail_jp": "zh/en は jp に忠実(本土中文・用語整合・訳ズレなし)だが、jp の誤った結論(『本来答案应为ウ(6,200)』『answer faithful ... should be ウ』)をそのまま再現しており、誤りを三語に伝播。translation_faithful 自体は true だが、誤情報の三語拡散という実害がある。"
+        },
+        {
+          "lang": "jp",
+          "severity": "medium",
+          "detail_jp": "distractors.ウ が『本来はこのウ(6,200)が答えになるべき値(stored キーは suspect)』とし、公式の引っかけ誤答を正解扱い。distractors.エ は 7,500 を『総販売量』として評価し n=6,200(総数)を基準に『大きく超える』と論じるが、正しい読み(追加数)では基準は 1,200(追加)。結論(過大・最小値でない)は偶然正しいが基準フレームが誤り。distractors_sound=false。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "distractors.ア は 500 を『追加販売数』として評価しており(追加250万→利益650万→未達)、これは正しいフレーム・正しい算術。皮肉にもアの解説だけが正解フレームに沿っている(=ウ/エ/correct/key_guard との内部矛盾も露呈)。"
+        }
+      ]
+    },
+    {
+      "id": "2025r07-q039",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "ア",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2025r07-q047",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2025r07-q054",
+      "accurate": true,
+      "independent_answer": "ア",
+      "severity": "low",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "stem_jp の設問行が「何分短縮できたか」となっているが、figure(裁剪・フルページ両方)の設問行は明確に「何%短縮できたか」であり、選択肢30/40/50/60は割合(%)。これは上流corpusのOCR誤り。key_guard.note_jp および correct.jp はこの誤りを明示的に指摘し、いずれにせよ計算結果30=字母アで一致すると正しく注記しているため、解説(監査対象)の正しさには影響しない。stem側の是正が望ましい低deg欠陥。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "stem_jp の表セル『グループA AI導入前 対応時間』が『全体の60%5分』と化けている。figure実読(4倍拡大で確認)では当該セルは『全体の60%』のみで『5分』は存在しない(OCR/清書アーティファクト)。key_guard はこのセル単位の化けは明示していないが、解説本体は正しく60%を用いて計算しており、誤った数値の伝播はない。suspect=false は妥当(解説はfigure-faithful)。stem corpus の是正のみ要する低deg欠陥。"
+        }
+      ]
+    },
+    {
+      "id": "2025r07-q066",
+      "accurate": false,
+      "independent_answer": "イ",
+      "severity": "high",
+      "checks": {
+        "correct_sound": false,
+        "distractors_sound": false,
+        "translation_faithful": true,
+        "key_guard_valid": false
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "基準日時の誤り。figure_page (page-31) の stem は『2022年4月10日09:00:00以前』と明記。しかし JSON stem_jp と explanation 全文 (correct.jp/zh/en・points) は『2022年4月18日』としており、figure と不一致。さらに解説の中核論拠『全レコードが2022-04-10付で基準日時(04-18)より前→成功レコードを持つ従業員=全員が後者条件を満たす』は、正しい基準(04-10 09:00:00)では成立しない。実際 09:00:00 以後の成功(例 10001 09:00:15, 10007 09:10:28 等)は後者条件を満たさず、論拠が虚偽の前提に依拠している。"
+        },
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "explanation の従業員-部署対応が figure と矛盾。correct.jp『001 営業部(…10005…)』および distractor エ『営業部(001)には…10005の失敗』は誤り — figure では 10005 の部署は003(人事部)。correct.jp『003 人事部(…10001が成功)』および distractor ア『人事部(003)には…10001の成功』も誤り — figure では 10001 の部署は001(営業部)。figure 実体の003所属 10008(09:03:01成功)は解説で一切言及なし。"
+        },
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "捏造データ。correct.jp『10002 は失敗も』および distractor ウ『10002には失敗もある(zh/en同旨)』は figure に存在しない。figure の 10002 の2行(08:55:48, 09:32:19)は両方とも成功であり、10002の失敗レコードは無い。誤った理由付けで誤答肢ウを説明している。"
+        },
+        {
+          "lang": "jp",
+          "severity": "high",
+          "detail_jp": "key_guard の見落とし (key_guard_valid=false)。本問は figure 完全導出可能かつ JSON stem 表が figure と多数不一致(基準日04-10 vs 04-18、行構成の差異、10002失敗の捏造、10001/10005の部署誤り、行数11 vs 12)。にもかかわらず suspect=false で全フィールド null。stem-figure 矛盾を検出して suspect=true を立てるべき典型例を取りこぼした false-negative。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "緩和事実(severityを最悪 high に据え置く理由ではあるが正解字母は救われる): figure 実データ+正しい基準(04-10 09:00:00)で独立導出しても答えはイ。失敗行が営業部(10011)・人事部(10004/10005)を、システム部は09:00前成功(10002 08:55:48)をカバーするため3部署とも該当。よって keyed answer イ は正しい。ただし解説の根拠・引用データ・基準日は figure に対して大幅に誤っており、結論が正しいのは答えの頑健性による偶然。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "zh/en は jp に対しては忠実な翻訳(本土中文・用語整合・訳ズレなし)。ただし jp 由来の事実誤り(2022-04-18 の基準日、10002の失敗、10001/10005の部署)をそのまま伝播している。translation_faithful=true(jp 基準)だが、原文 jp の誤りが下流の三語全てに波及している点に留意。"
+        }
+      ]
+    },
+    {
+      "id": "2025r07-q071",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2025r07-q072",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2025r07-q074",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "ア",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2025r07-q076",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "ウ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2025r07-q083",
+      "accurate": true,
+      "independent_answer": "ウ",
+      "severity": "low",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "stem_jp 末尾に OCR ノイズ 'LLP lp |] rv 1' が混入。選択肢表のキャプション/装飾の誤認識と思われ、問題本文の作業(1)〜(4)・選択肢・正解には影響しないが、表示品質として除去が望ましい。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard の figure_derivable / derived_answer / matches_key がすべて null のまま未記入。この問は figure 表(P|D|C|A の行配置)を読まないと行字母 ウ を確定できない figure 依存問なので、本来は figure_derivable=true / derived_answer=ウ / matches_key=true と記録されるべき。誤った主張ではなくメタデータの欠落であり、図と key の矛盾はなく suspect=false 自体は妥当(見落とし無し)。正解判定には影響しない。"
+        }
+      ]
+    }
+  ]
+}

@@ -12,7 +12,12 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import { localizedChoices, localizedStem, type QuizQuestion } from "@/lib/quiz/quizModel";
+import {
+  localizedChoices,
+  localizedExplanation,
+  localizedStem,
+  type QuizQuestion,
+} from "@/lib/quiz/quizModel";
 
 import styles from "./quiz.module.css";
 
@@ -67,6 +72,7 @@ function QuestionCard({
 }): React.ReactElement {
   const [revealed, setRevealed] = useState(false);
   const choices = localizedChoices(q, locale);
+  const explanation = localizedExplanation(q, locale);
 
   return (
     <article className={styles.qCard}>
@@ -95,9 +101,37 @@ function QuestionCard({
         ))}
       </ul>
       {revealed ? (
-        <p className={styles.answerLine}>
-          {t("correctLabel")}: {q.correct_answer}
-        </p>
+        <>
+          <p className={styles.answerLine}>
+            {t("correctLabel")}: {q.correct_answer}
+          </p>
+          {explanation ? (
+            <div className={styles.explanation}>
+              <p className={styles.explHead}>{t("explanationTitle")}</p>
+              <p className={styles.explCorrect}>{explanation.correct}</p>
+              {explanation.distractors.length > 0 ? (
+                <ul className={styles.explDistractors}>
+                  {explanation.distractors.map((d) => (
+                    <li key={d.letter}>
+                      <span className={styles.choiceLetter}>{d.letter}</span>
+                      <span>{d.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {explanation.points.length > 0 ? (
+                <div className={styles.explPoints}>
+                  <p className={styles.explPointsHead}>{t("keyPoints")}</p>
+                  <ul>
+                    {explanation.points.map((p, pi) => (
+                      <li key={pi}>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </>
       ) : (
         <button
           type="button"

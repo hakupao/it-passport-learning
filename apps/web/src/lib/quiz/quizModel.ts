@@ -73,6 +73,9 @@ export interface QuizQuestion {
   stem_en?: string;
   choices_zh?: Record<string, string>;
   choices_en?: Record<string, string>;
+  // --- Phase 2 explanation backfill (D-137): merged from the explanation sidecar at
+  //     read time; absent until a question's exam batch is explained. ---
+  explanation?: QuizExplanationEntry;
 }
 
 /**
@@ -117,6 +120,48 @@ export function mergeTranslation(
     choices_zh: pick("zh"),
     choices_en: pick("en"),
   };
+}
+
+/**
+ * One question's explanation (D-137), stored in the per-exam sidecar
+ * `data/ip/quiz/explanations/<exam_id>.json`. JP-authored then translated; `key_guard`
+ * is the writer's self-check (re-derived the answer from the figure/stem) — `suspect`
+ * means the keyed answer could not be confirmed and awaits human adjudication (D-137-C).
+ */
+export interface QuizExplanationEntry {
+  key_guard: {
+    figure_derivable: boolean | null;
+    derived_answer: string | null;
+    matches_key: boolean | null;
+    suspect: boolean;
+    note_jp: string;
+  };
+  /** Why the keyed answer is correct (trilingual). */
+  correct: { jp: string; zh: string; en: string };
+  /** Per non-correct letter: why it is wrong (trilingual). Keyed by ア/イ/ウ/エ. */
+  distractors: Record<string, { jp: string; zh: string; en: string }>;
+  /** 1–2 key concepts (trilingual). */
+  points: { jp: string; zh: string; en: string }[];
+}
+
+/** The on-disk shape of a per-exam explanation sidecar. */
+export interface QuizExplanationFile {
+  schema_version: string;
+  exam_id: string;
+  questions: Record<string, QuizExplanationEntry>;
+}
+
+/**
+ * Fold an explanation sidecar entry into a question (pure). Missing entry → the
+ * question is returned unchanged (no explanation shown = legitimate pre-/partial
+ * backfill, D-137-D).
+ */
+export function mergeExplanation(
+  q: QuizQuestion,
+  entry: QuizExplanationEntry | undefined,
+): QuizQuestion {
+  if (!entry) return q;
+  return { ...q, explanation: entry };
 }
 
 // ---- nav model (pure, testable) -------------------------------------------
@@ -219,6 +264,42 @@ export function localizedChoices(q: QuizQuestion, locale: string): OrderedChoice
       isCorrect: q.correct_answer === letter,
     };
   });
+}
+
+export interface LocalizedExplanation {
+  correct: string;
+  /** Non-correct choices in canonical order, each with its why-wrong text. */
+  distractors: { letter: string; text: string }[];
+  points: string[];
+  /** key-guard could not confirm the keyed answer (D-137-C) — surfaces a caveat. */
+  suspect: boolean;
+}
+
+/**
+ * Resolve a question's explanation to the active locale (per-field JP fallback, so a
+ * partially-translated entry never blanks). Returns null when the question has no
+ * explanation (pre-backfill) — callers render nothing. Distractors are emitted in
+ * canonical ア/イ/ウ/エ order, skipping the correct letter and any missing entry.
+ */
+export function localizedExplanation(
+  q: QuizQuestion,
+  locale: string,
+): LocalizedExplanation | null {
+  const e = q.explanation;
+  if (!e) return null;
+  const distractors: { letter: string; text: string }[] = [];
+  for (const L of CHOICE_LETTERS) {
+    if (L === q.correct_answer) continue;
+    const d = e.distractors[L];
+    if (!d) continue;
+    distractors.push({ letter: L, text: localized(d.jp, d.zh, d.en, locale) });
+  }
+  return {
+    correct: localized(e.correct.jp, e.correct.zh, e.correct.en, locale),
+    distractors,
+    points: e.points.map((p) => localized(p.jp, p.zh, p.en, locale)),
+    suspect: Boolean(e.key_guard?.suspect),
+  };
 }
 
 export type QuizMode = "topic" | "exam";

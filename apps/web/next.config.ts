@@ -32,14 +32,16 @@ const IPA_TRACE_EXCLUDE = [
 ];
 // Quiz 接過去問 (D-134): the derived clean quiz corpus lives at repo-root
 // data/ip/quiz. The runtime reads the two base JSONs + the per-exam translation
-// sidecars under translations/ (Phase 1, D-136-B; figures are static WebP under
-// apps/web/public/quiz-figures, traced automatically). Glob the translations dir
+// sidecars under translations/ (Phase 1, D-136-B) + explanation sidecars under
+// explanations/ (Phase 2, D-137; figures are static WebP under
+// apps/web/public/quiz-figures, traced automatically). Glob the sidecar dirs
 // explicitly so all 29 exam sidecars deploy reliably (don't rely on nft's dynamic
 // readdir tracing). The raw gitignored question_bank/pages/figures stay excluded.
 const QUIZ_TRACE = [
   "../../data/ip/quiz/quiz_index.json",
   "../../data/ip/quiz/questions.json",
   "../../data/ip/quiz/translations/*.json",
+  "../../data/ip/quiz/explanations/*.json",
 ];
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(process.cwd(), "..", ".."),

@@ -21,7 +21,10 @@ import {
   filterByTopic,
   isValidMode,
   localized,
+  mergeExplanation,
   mergeTranslation,
+  type QuizExplanationEntry,
+  type QuizExplanationFile,
   type QuizIndex,
   type QuizMode,
   type QuizQuestion,
@@ -49,6 +52,7 @@ async function readJson<T>(file: string): Promise<T> {
 let indexPromise: Promise<QuizIndex> | null = null;
 let questionsPromise: Promise<QuizQuestion[]> | null = null;
 let translationsPromise: Promise<Map<string, QuizTranslationEntry>> | null = null;
+let explanationsPromise: Promise<Map<string, QuizExplanationEntry>> | null = null;
 
 export function loadQuizIndex(): Promise<QuizIndex> {
   return (indexPromise ??= readJson<QuizIndex>(path.join(quizDataRoot(), "quiz_index.json")));
@@ -84,13 +88,44 @@ export function loadTranslations(): Promise<Map<string, QuizTranslationEntry>> {
   return (translationsPromise ??= loadTranslationMap());
 }
 
+/**
+ * Load every per-exam explanation sidecar (D-137) into one id→entry map. Same
+ * incremental-backfill contract as translations: a MISSING explanations/ directory
+ * → empty map (no explanation rendered); a corrupt sidecar throws loudly.
+ */
+async function loadExplanationMap(): Promise<Map<string, QuizExplanationEntry>> {
+  const dir = path.join(quizDataRoot(), "explanations");
+  let files: string[];
+  try {
+    files = (await fs.readdir(dir)).filter((f) => f.endsWith(".json"));
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return new Map();
+    throw err;
+  }
+  const map = new Map<string, QuizExplanationEntry>();
+  const loaded = await Promise.all(
+    files.map((f) => readJson<QuizExplanationFile>(path.join(dir, f))),
+  );
+  for (const file of loaded) {
+    for (const [id, entry] of Object.entries(file.questions)) map.set(id, entry);
+  }
+  return map;
+}
+
+export function loadExplanations(): Promise<Map<string, QuizExplanationEntry>> {
+  return (explanationsPromise ??= loadExplanationMap());
+}
+
 export function loadAllQuestions(): Promise<QuizQuestion[]> {
   return (questionsPromise ??= Promise.all([
     readJson<{ questions: QuizQuestion[] }>(path.join(quizDataRoot(), "questions.json")).then(
       (d) => d.questions,
     ),
     loadTranslations(),
-  ]).then(([questions, tr]) => questions.map((q) => mergeTranslation(q, tr.get(q.id)))));
+    loadExplanations(),
+  ]).then(([questions, tr, ex]) =>
+    questions.map((q) => mergeExplanation(mergeTranslation(q, tr.get(q.id)), ex.get(q.id))),
+  ));
 }
 
 export interface QuizSet {
