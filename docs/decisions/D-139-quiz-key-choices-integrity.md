@@ -40,3 +40,14 @@ Phase 1.6 (本決定) 完了 → Phase 2 (D-137) を figure-fidelity hardening +
 ## 検証
 - 是正後: questions.json diff = correct_answer 3 件のみ (stem/choices 不変)。tsc/eslint/vitest/build/nft GREEN。
 - 全量審計後: bad key 率を実測し、残りを是正 → Phase 2 へ。
+
+## 執行結果 (Session 99、D-139-B 全量、路由词「Phase 1.6 全量」)
+- **図題 467/467 盲推審計完了** (deriver=general-purpose、stored key 非開示)。compare: bad-key 候補 **5** / choices_faithful=false **28** / underivable **3**。
+- **写審分離 3 層裁決** (deriver ≠ verifier=critic×3 [`wf_491d0f03-4dd`] ≠ 主 context 高倍率実読)。各候補 5 独立パス。
+- **確定 bad key = 2 件 (5/5 一致、ユーザー承認後是正済)**:
+  - `2009h21a-q012`: ア → **ウ** (④ 実行計画策定直前 = 戦略立案; CSF抽出 ア = ③)。
+  - `2010h22a-q091`: ア → **エ** (表2 = 4×3×3 = 36 全組合せ穷举 = 網羅; **全量 net-new**、S97 抽様外)。
+- **deriver 偽陽性 3 件 (key 正、是正回避)**: `2014h26h-q090` (=本 ADR「疑い1」→ ウ 同截距+急傾き正、deriver 低解像度誤読) / `2012h24h-q091` (c=2 正、No.4 コースR 無テキスト代) / `2009h21h-q096` (ア・イ 双方 figure-true の曖昧問)。**疑い1 (q090) は CLEAR — 誤是正回避が写審分離の核心価値**。
+- **是正**: drift-proof (`quiz-keyaudit-fix-S99.mjs` 現値 assert → raw bank → 再生成)。questions.json diff = correct_answer 2 件のみ。**検証 GREEN** (tsc/eslint0err/vitest463/build/nft IPA0)。
+- **D-139-B 完了**。choices 腐敗 28 + underivable 3 = **choices-fidelity track (別 track、ユーザー承認の defer)**。証拠 `evidence/phase5/stage_06_quiz_keyaudit/rule_a_audit_S99_fullsweep.md`。
+- **D-139-C 順序**: Phase 1.6 完了 → 次 = Phase 2 (D-137) 全問 key-guard 込み再 pilot。
