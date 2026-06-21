@@ -56,3 +56,36 @@
 
 ## 是正方式 (ユーザー承認後、D-139-A 同方式 drift-proof)
 raw bank `data/ip/exams/question_bank.json` (gitignored) の correct_answer を現値 assert 付きで編集 → `build-quiz-corpus.mjs` 再生成 → questions.json の correct_answer **2 件のみ** 変更 (stem/choices/quiz_index/translations 不変)。検証 tsc/eslint/vitest/build/nft GREEN。
+
+---
+
+## choices-fidelity track (Session 99、ユーザー「別開 track」→「phase2 前に全部做完」で同 session 実行)
+
+choices_faithful=false 28 件 + underivable 3 件を写審分離で処理。
+
+### パイプライン (写審分離 3 パス: deriver→proposer→critic)
+1. **prep** `quiz-choicesfix-prep.mjs` → 28+3 の blind 入力 (現 choices + figure + deriver_issues 参考のみ)。
+2. **Phase A proposer** `quiz-choicesfix.run.generated.mjs` (general-purpose、原典フルページから ア〜エ を独立逐字転写 → 修正案 + answer-affecting 判定): 31/31。**needs_fix 28 / 偽陽性 0** (key 審計では deriver 偽陽性 3/5 だったが choices flag は全真)。answer-affecting 18。
+3. **Phase B critic verify** `quiz-choicesverify.run.generated.mjs` (oh-my-claudecode:critic、提案を図から独立再読 + key 整合確認): 28/28 = **APPROVE 27 / APPROVE_WITH_EDIT 1 (q087) / DISPUTE 0 / key 破れ 0**。
+4. **主 context spot-check** (q057 swap / q099 別問混入 / q096 LIKE): zh/en も corrected_jp に忠実を確認 (Rule A)。
+
+### jp 是正 (drift-proof)
+`quiz-choicesfix-apply.mjs` (現値 assert、74 letter 変更) → raw bank → `build-quiz-corpus.mjs`。
+**questions.json diff = choices 74 letter のみ (74+/74−)、correct_answer 0 変更 (keys invariant、git diff 確証)**。28 問。代表: 区切り/値腐敗 (1000→1,000・2.000→2,000・13,000→12,000・10−86→10−B6)、選択肢 swap (q057 c/d・q077 グラフ高低)、別問混入 (q099 不等式→サイト構成図)、表構造 (q081/q069/q092/q023)、数値 (q089 3→2・q001 16→10時間)。
+
+### zh/en 再同期 (translations sidecar)
+key 観察: 数値選択肢の zh/en は Phase 1 vision 翻訳で**既に figure 正** (例 q036 jp は OCR で "1000"/"2.000" 腐敗だが zh/en は "1,000"/"2,000")→ jp 修正で三語一致。テキスト/表選択肢の zh/en は**腐敗 jp を訳していた** (例 q057 zh c:快/d:慢) → 要是正。
+`quiz-choicestr.run.generated.mjs` (general-purpose、変更字母のみ corrected_jp から再訳、現訳が正なら踏襲) 28/28 → **43 letter で現訳是正、残は数値/式で踏襲** → `quiz-choicestr-merge.mjs` で 13 sidecar 更新 (84+/84−)。
+
+### underivable 3 件 triage
+- `2010h22a-q094`: answerable=**false** (「形式1」の書式定義が page-40 に無し) → incomplete-source、Phase 2 / 源再OCR backlog。
+- `2012h24h-q087`: answerable=**true** (表4/表5 から a∈{4,5} 導出可、deriver が見落とし)。問題なし。
+- `2015h27a-q100`: answerable=**false** (HDD 容量/台数が page-47 に無く time=容量÷速度 不能、key=イ140 を導く源欠落) → incomplete-source、Phase 2 / 源再OCR backlog。
+
+### 検証 (全 GREEN)
+tsc 0 / eslint 0err (既存 warning 1) / **vitest 463** / build exit 0 / nft IPA leak 0 / 構造 (28 問 jp/zh/en 全非空)。
+
+### 結論
+- **choices 腐敗 28 件 = jp + zh/en 三語是正済** (figure-faithful、key invariant)。
+- **underivable = 2 件が真の incomplete-source** (q094/q100-2015h27a → Phase 2 backlog)、1 件は解答可。
+- choices flag は deriver 偽陽性 0 (key flag と対照的)。Phase 2 の choices 起因「自信のある誤り」リスク解消。
