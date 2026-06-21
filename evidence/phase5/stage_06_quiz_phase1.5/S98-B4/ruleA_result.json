@@ -1,0 +1,514 @@
+{
+  "n": 27,
+  "faithful": 26,
+  "bySeverity": {
+    "none": 14,
+    "high": 2,
+    "low": 8,
+    "medium": 3
+  },
+  "leaks": [],
+  "keyMismatch": [
+    "2009h21a-q091",
+    "2011h23a-q100"
+  ],
+  "audits": [
+    {
+      "id": "2009h21a-q012",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ア",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21a-q022",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21a-q036",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ア",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21a-q091",
+      "faithful": true,
+      "severity": "high",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": false,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "detail_jp": "supports_key 不成立 (answer-affecting=high): 入力エントリの correct_answer は『ウ』(=14) だが、図・引当計算から導ける正答は『イ』(=10)。引当ロジック (前日在庫100、仕入なし、注文80/10/40) を時刻順 FIFO (100-80=20、20-10=10、11:00通常40に対し残10) でも優先注文先取り (100-10=90、90-80=10、11:00に対し残10) でも、引当可能数は10(=イ)。14(ウ)を導く合理的経路は存在しない。change_summary_jp 自身もこの不一致を認識し failures/quiz_phase1.5_S98_2009h21a-q091_answerkey_mismatch.md にアーカイブ済と明記するが、入力エントリの correct_answer フィールドは依然『ウ』のまま。下流投入前に correct_answer を ウ→イ へ是正必須。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "論据・除外の記録 (指摘ではなく監査事実): (1) source_faithful=true — 再構成 stem_jp_clean の本文とデータ表 (ヘッダ 注文時刻/注文種別/注文数、3行: 10:00 通常注文 80 / 10:30 優先注文 10 / 11:00 通常注文 40、条件語仕入なし・前日業務終了時在庫100) はフルページ図(問91)・裁剪図の両方と逐セル・行順一致、crop端の列/行欠落なし、同ページ問92データの混入なし。(2) trilingual_consistent=true — zh は本土用語 (订单/库存/进货/分配) 、en も意味忠実、表3行一致。(3) no_choice_table_leak=true — 選択肢一覧表(ア/イ/ウ/エ)の混入なし、stem 内の表は問題参照の注文記録データで正規。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21a-q093",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q014",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "stem_corrupted_backup は本問と全く別問題（設備投資4,000万・毎年利益2,000万→回収期間=2年、損益分岐点ではなく回収期間問題）の取り違えであり、本問の choices(100/200/400/800)・keyed=ウ・損益分岐点ロジックと一切整合しない。change_summary_jp はこれを正しく『採用不可』と判定しており妥当。ただし結果として標準の『backup 意味保持照合』が実施できず、再構成の妥当性は (a) reconstructed stem の数値自己完結性 (売価20万/売上8000万→400個・固定費4000万・利益-2000万⇒単位貢献利益5万⇒2000/5=400個=ウ) と (b) writer の REJECT 推論にのみ依拠する。本件は数式が完全に閉じており backup が別問であることが算術的に確証できるため正誤に影響しないが、backup 由来の独立照合経路が欠落している点を方法論メモとして記録（low）。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "stem_jp_clean は変動費（単位あたり）を明示せず、解答者が『変動費=売上8000-固定費4000-(-利益2000のうち)…』を逆算して単位貢献利益5万/個を導く必要がある。これは元問題設計に内在する仕様であり再構成欠陥ではない。数値は内部で一意にウを決定するため問題なし（情報メモ）。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21h-q023",
+      "faithful": true,
+      "independent_answer": "イ",
+      "severity": "none",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "源 raw_stem 本体（再構成前の OCR テキスト）はサンプル JSON に同梱されておらず、stem_corrupted_backup と change_summary の記述のみで判断した。backup（『引当可能在庫量を説明したものはどれか。』=定義問）は数値選択肢 20/25/30/45 およびキー答イ=25 と論理的に整合しないため『backup 取り違え』判定は妥当で、backup を復元に使わなかったのは正しい。再構成 stem の MRP 計算（部品B総所要量=3×10=30、正味所要量=30−5=25=イ）は内部整合し keyed 答を妥当に導ける。条件語（『総所要量から引当可能在庫量を差し引いたもの』『ここで…在庫残が5個あり』『ほかの…などは考えないものとする』）も脱落・否定反転なし。ただし raw_stem 原文の逐字照合ができていない点を残課題として記録（答に影響しない low）。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "三語整合は良好。仕掛残→在制品余量(WIP)、注文残→订货余量、引当残→已分配余量、引当可能在庫量→可分配库存量 と本土zh用語で統一され change_summary の統一方針とも一致。en も gross requirement minus allocatable on-hand stock / on-hand stock balance 5 units / not to be considered と意味保持。需要量(demand)/総所要量(gross requirement)の MRP 上の区別は JP 原文に忠実に従っており翻訳側の捏造なし。実質問題なし。"
+        }
+      ]
+    },
+    {
+      "id": "2009h21h-q062",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q080",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2009h21h-q097",
+      "faithful": true,
+      "severity": "none",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "independent_answer": "エ",
+      "issues": []
+    },
+    {
+      "id": "2010h22a-q061",
+      "faithful": true,
+      "severity": "medium",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "medium",
+          "detail_jp": "stem 本体は figure(crop)・フルページ page-23.png の両方に逐セル忠実。表は ヘッダ A=社員コード/B=チェックディジット、データ 4 行(370/549/538/763、行順一致)、B 列空欄まで完全一致。脱落・scramble・混入なし。問題文ナラティブも忠実で、backup 冒頭破損『社員コードの１けたを』は『最下位の１けた』に図どおり是正、末尾 OCR ゴミ行は適切に除去済み。source_faithful=true。"
+        },
+        {
+          "severity": "medium",
+          "detail_jp": "supports_key: 源どおりの選択肢で導出すると ア=(14,9,8,9)/イ=(4,9,8,9)/ウ=(0,9,8,3)/エ=(4,5,5,8)、真値 0/9/8/3 に対し ウ のみ 4 コード全一致 → correct_answer=ウ は妥当。independent_answer=ウ。ただし入力 JSON の choices_jp.ウ『整数部(A2/100)＋剰余(A2/10, 10)』は外側 剰余(…,10) を欠き 10/9/8/13(または 3/14/13/10) となり答案を導けない。choices_jp.エ も源 整数部((整数部(A2／100)＋整数部(A2／10))／10) と括弧構造が崩れ破損。change_summary_jp がこの上流欠陥を正直に申告し zh/en 正本からの復元を指示している点は妥当。stem 担当範囲外だが、日本語選択肢を出荷時のまま使うと key 非導出となるため repair 必須(medium)。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "trilingual_consistent: zh(员工编号/校验位/最低位/高位2位/个位)・en(Employee code/Check digit/lowest digit/upper 2 places/ones place)とも stem_jp_clean に忠実、表は逐セル一致、本土中文。整合。no_choice_table_leak: stem 内は参照データ表(社員コード/チェックディジット)のみで ア/イ/ウ/エ 一覧の混入なし。clean。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22a-q064",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "stem 再構成は源に完全忠実。フルページ (page-24.png) 問64 の設問文と stem_jp_clean は逐語一致 (装置 A/B/C・稼働率 0.90/0.95/0.95・並列=どちらか稼働でよい/直列=すべて稼働が必要、の条件文すべて一致)。scramble・値 drift・条件脱落・成功⇄失敗反転なし。stem は回路図 (選択肢) を参照するが、参照するデータ表は持たないため表逐セル照合の対象外。choice leak なし (ア/イ/ウ/エ の回路図は choices_jp 側で別管理、stem に未混入)。independent_answer=エ: 図から導出 ア=0.90×0.95=0.855, イ=0.90×0.95×0.95=0.81225, ウ=0.90×(1-0.05^2)=0.89775, エ=(1-0.05^2)=0.9975 が最大 → エ。correct_answer=エ と一致。zh/en は stem_jp_clean に忠実 (稼働率→可用率/Availability の glossary 整合、並列/直列条件保持)。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "scope 外の観察 (stem 忠実性に非影響、答案非影響): choices_jp.ウ ラベル「AとB並列後C直列」は図 (A 直列の後に B∥C) の loose な文字記述で字面が図と完全一致しない (図は (A)→(B∥C) であり (A∥B)→C ではない)。choices_jp.エ ラベル「AとB並列後AとC並列の直列」も図 (B∥C のみ、A を含まない) の記述として冗長・不正確。ただし (1) これらは stem ではなく choices_jp に属し stem 再構成監査の対象外、(2) 回路図そのものが権威 (crop と full page で ア=A-B/イ=A-B-C/ウ=A→(B∥C)/エ=(B∥C) が完全一致、crop による行列脱落なし) で答案は図から導出され correct_answer=エ は loose なラベル記述に依らず robust。consumer 向けに低深刻度で surface するが verdict は gate しない。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22a-q077",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22a-q086",
+      "faithful": false,
+      "severity": "medium",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": false,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "medium",
+          "detail_jp": "源不忠実 (本文2箇所の語句改変)。図 (figure_png) と原典フルページ (page-33) を 6x ズームで逐字照合した結果、図の本文は『利用者が処理依頼を行ってから…』『単位時間当たりに処理される仕事の量を…』である。ところが reconstructed.stem_jp_clean は『処理要求』『処理できる』に書き換わっている。change_summary_jp は『OCR 破損 (処理依頼/処理される) を是正し、図に逐字忠実な処理要求/処理できるを復元した』と主張しているが、これは事実が逆。OCR backup の『処理依頼/処理される』こそ図と一致しており、再構成側が figure に対し2箇所の語句逸脱を新規に混入させた。S97 q066 教訓 (図表腐敗は答案非依存でも source_faithful=false) に該当。修正案: stem_jp_clean を『処理依頼』『処理される』に戻し、zh/en も再翻訳 (zh: 处理请求→处理委托/发出处理请求のうち図準拠の語、en: issues a processing request はおおむね可だが b 文を『the amount of work that is processed per unit of time』へ受動態化)。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "trilingual は stem_jp_clean (逸脱後) に対しては忠実・本土zh・用語整合で問題ないが、源 (図) からの逸脱を引き継いでいる。stem_jp 是正後に zh/en を連動再訳する必要あり (独立欠陥ではなく上記 medium の従属)。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22a-q092",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "図では b・c は表の下に置かれた『↑』矢印（列5の真下=b、列6の真下=c）として描かれているが、再構成 markdown では予想出力行の列5/列6 セル内に『↑b』『↑c』マーカーとして内挿している。矢印は markdown に対応物が無いため妥当な表現変換であり、載荷情報（b=列5・c=列6 を指す）は完全保持。ピクセル照合でも矢印中心 x=882（列5中心882）・x=994（列6中心995）、b/c ラベルも同位置に確認、列同定は正しい。捏造・誤指示なし。字面レベルの表現差として low に留める（答案非依存）。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "予想出力行の列5/列6 セルは図では網掛け（非表示）セルであり、本来このセルには可視値が無い。再構成はそこへ『↑b』『↑c』の指示マーカーを置いているため、厳密には『網掛けで非表示のセル』と『矢印マーカー』が同一セルに重畳した表現になっている。意味上は『この列が b/c』という指示として正しく、注記『網掛けの部分は表示していない』とも矛盾しない（網掛けセルの値が非表示なのは a 以外の予想出力全列に共通）。誤読を誘発しない範囲で low。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q061",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q076",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2010h22h-q077",
+      "faithful": true,
+      "severity": "medium",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "medium",
+          "detail_jp": "[stem 忠実性: 問題なし] reconstructed.stem_jp_clean は figure_page_png (page-32 問77) の本文と逐字一致。OCR 化けなし、脱落・scramble・混入なし。グラフ問のためデータ表は存在せず正常。no_choice_table_leak も OK (ア〜エ選択肢一覧は stem に未混入)。"
+        },
+        {
+          "severity": "medium",
+          "detail_jp": "[supports_key: 独立導出=イ で正解一致] 直列・独立・稼働率 r 等しい ⇒ システム稼働率 R=r² < r (r∈(0,1))、破線(y=x)より常に下=下に凸。図では『イ』がこの形状 (破線下・下に凸)。correct_answer='イ' と一致。figure が真の選択肢である figure 問なので正解字母は確定。"
+        },
+        {
+          "severity": "medium",
+          "detail_jp": "[上流 corpus 欠陥・別軸・stem scope 外] choices_jp の ア/イ テキスト記述が figure と入替: 図のイ=破線下・下に凸(=正解 R=r²) だが choices_jp['イ']='...常に高いグラフ(上に凸)'(図のアの記述)、choices_jp['ア']='...常に低いグラフ(下に凸)'(図のイの記述)。figure 位置では正解=イ で維持されるが、stem+choices の **テキストのみ**で導くと『ア』を選ぶ危険があり answer-affecting な上流欠陥。writer も change_summary_jp で『D-138 stem scope 外・上流 corpus 修正案件 (STATE.md 登録済み)』と明示。本ファイル (stem 再構成) の忠実性判定には影響しないが、最終 quiz データ確定前に上流 corpus で ア/イ 記述の入替是正が必須 (要追跡)。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "[trilingual_consistent: 問題なし] zh/en は stem_jp_clean に忠実。直列(串联/series)・両方正常必須・独立・稼働率等しい・破線の意味すべて整合。補足『(即只要其中任意一台发生故障，系统就停止运行)/(that is, if either one of them fails...)』で直列意味を正しく明示し前ラウンドの並列誤読を是正。glossary 稼働率→可用率/Availability 踏襲、本土zh自然。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q082",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "ア",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "源の図は『PC−A ⇄ 中央ファイル(データ1) ⇄ PC−B』を矢印で結ぶ構造図(矢印の交差で並行アクセスを表現)だが、再構成 stem_jp_clean は処理内容①〜④のみを行/列に持つ markdown 表に平坦化し、中央のファイル/データ1ノードと矢印の幾何関係は補足文『2台のPCは中央のファイル内のデータ1を共有しており』で言い換えている。処理4セルの値・順序(①〜④)・足10/引1・書込先データ1はすべて逐セル一致しており答案(ロストアップデートで最終値4=ア)には一切影響しないため、意味抽検上は許容範囲。字面/構造表現の差にとどまる low。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q090",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "ア",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "図差し替えの再構成は正しい。crop (figure_png=2010h22h-q090.png) は問91 のデータ表 (作業1〜5/成果物/担当/工数) であり問90 が参照する図ではない、という change_summary の判定は figure_page_png (page-39) と前ページ page-38 の併読で確証できた。問90 ページ (page-39) 自体には WBS ツリー図は描画されておらず設問プロローグ直後は選択肢のみ。真の参照図『図 WBS によるシステムの作業分割』は page-38 上部に実在し、再構成 stem の WBS ツリーはこの実図に逐ノード忠実 (システム→[システム要件定義/網掛け/サブシステム1/サブシステム2/網掛け/…]→サブシステム1 配下[網掛け/ソフトウェア方式設計/ソフトウェア詳細設計]→ソフトウェア詳細設計 配下[網掛け/ソフトウェアインタフェース詳細設計/データベースの詳細設計/網掛け]→ソフトウェアインタフェース詳細設計 配下[画面設計/帳票設計]→画面設計配下[画面一覧/画面フロー/画面レイアウト/画面入出力項目]・帳票設計配下[帳票一覧/帳票レイアウト/…])。注記『網掛けの部分は、表示していない。』も復元済み。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "L5 (ソフトウェアインタフェース詳細設計の子) で実図は『画面設計 … 帳票設計 …』の順に画面設計と帳票設計の間に省略ノード (網掛け/…) を挟むが、再構成 markdown は画面設計の子を展開後すぐ帳票設計を続けており、画面設計と帳票設計の間の中間省略 (…) が表現されていない。ただし markdown ツリー表現上の軽微な圧縮で、全葉ノード・行順・親子関係・条件語は保持され、答案 (ア) に非依存。scramble・脱落・捏造は無し。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "supports_key 検証: 設問プロローグ『最初の段階で全体にかかわるもの (=システム要件定義) とサブシステムに着目』『サブシステムごとに次の段階で行った作業分割』。実図 L3 の サブシステム1 配下は ソフトウェア方式設計/ソフトウェア詳細設計 等の開発工程 (process) であり、正解 ア『開発の工程別に作業分割した』が再構成 stem+choices から妥当に導出可能。イ (要件定義の項目ごと=L2 既済) / ウ (ソフトウェアごと) / エ (モジュールごと=下位) は不適。独立導出=ア で correct_answer 一致。三語 (zh: 灰底/子系统/软件方式设计/报表/数据库, en: shaded/subsystem/software architecture design 等) は stem_jp_clean に忠実・本土zh・用語整合。choices 一覧表の stem 混入なし (stem 内の表は参照図 WBS ツリーのみ)。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q091",
+      "faithful": true,
+      "independent_answer": "ウ",
+      "severity": "low",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "source_faithful=true: 図(裁剪)とフルページ(page-39)両方を照合。再構成 stem_jp_clean のデータ表はヘッダ(作業1〜工数(人日)の8列)+6データ行を図と逐セル一致 — サブシステム1/ソフトウェア詳細設計/ソフトウェアインタフェース詳細設計(縦結合) | 画面設計×4行(画面一覧→画面一覧表/田中/4, 画面フロー→画面フロー図/田中/6, 画面レイアウト→画面レイアウト図/鈴木/3, 画面入出力項目→画面入出力項目定義書/鈴木/2) | 帳票設計×2行(帳票一覧→帳票一覧表/佐藤/5, 帳票レイアウト→帳票レイアウト図/佐藤・田中/10)。行順・値・担当・工数すべて一致、脱落/scramble/混入なし。最終行担当の図二段表記(佐藤/田中)を佐藤・田中へ整形は change_summary に明記済みで妥当。注『同じ名字の担当はいない』も保持。stem_corrupted_backup の OCR 腐敗表領域(皿中/還押硬レイウト等)とscramble断片は図から正しく復元。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "supports_key=true: アローダイアグラム topology = start→(画面一覧4)→分岐点。分岐点→(画面フロー6)→終点 / 分岐点→(画面レイアウト3)→中間→(画面入出力項目2)→終点。経路A=4+6=10, 経路B=4+3+2=9。クリティカルパス=max(10,9)=10=選択肢ウ。再構成 stem の図プローズ『画面一覧の後に分岐し，一方は画面フローで終点へ，他方は画面レイアウト→画面入出力項目を経て終点へ合流』が図 topology を忠実に保持し、工数値はデータ表から取得可能。independent_answer=ウ で correct_answer と一致。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "trilingual_consistent=true: zh は本土簡体(画面设计/关键路径/工时(人日)/交付物/负责人/佐藤·田中 中点), en は critical path/person-days/Tanaka·Suzuki·Sato で stem_jp_clean に忠実。図プローズの zh/en 訳も JP と topology 整合。用語整合・脱落なし。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "no_choice_table_leak=true: stem_jp_clean 内の表は問題が参照するデータ表(作業1〜工数)のみで、これは混入でなくOK。解答選択肢一覧(ア5/イ9/ウ10/エ15)は stem に含まれず。回帰なし。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "軽微(答案非依存): change_summary_jp 項(1)の自己叙述に不正確あり — 『current_clean が「ステップ5の作業順に…何日か」だったのを「作業5の作業間には…どれか」に訂正』と記すが、実際の stem_corrupted_backup 先頭文は既に『画面設計での作業 5 の作業間には…クリティカルパスの作業日数はどれか』でフルページとも一致。叙述上の pre-state 記述ミスにすぎず、再構成 stem 本体の忠実性・正誤には影響しない。"
+        }
+      ]
+    },
+    {
+      "id": "2010h22h-q093",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "DB構造の記述で、backup は「社員表 文献表 貸出表」という三つの表名の羅列のみ（原問は表構造図/罫線表が存在した可能性が高い）であるところ、reconstructed は『社員表，文献表，貸出表の三つの表からなる』と接続文を補って平坦化している。三表名は backup に存在し各表の列構成を捏造してはいないため意味保持・正誤中立だが、原問にあったであろう各表の属性（列）情報は backup 自体に脱落しており復元されていない。正解イの導出は条件(2)（貸出処理が貸出日=当日を設定＋同一社員・同一文献の同日再貸出なし→文献番号+社員番号+貸出日が一意）から成立するため、列構成の不在は本問では answer-neutral。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "OCR artifact（『^96に答えよ』『間93』、丸数字の重複『①②③』『(②)』等）の除去と番号正規化は適切に行われ、本文の意味節（条件1/2、手続1-3、貸出処理1-4、返却処理1-2）はいずれも脱落・順序入替なく復元されている。answer-critical な条件(2)の否定節『同じ社員に対して返却した同一文献をその日のうちに貸し出すことはない』が backup から忠実に保持されている点を確認。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23a-q042",
+      "faithful": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "low",
+          "detail_jp": "図には階層の展開省略を示す点線記号が複数存在する: (1) 各 Level1 ノード (要件定義/システム設計/プログラミング) 直下の下向き点線, (2) root→結合テスト の右に伸びる水平点線 (- - -, 兄弟省略), (3) テスト実施 直下の下向き点線, (4) テスト計画書作成 の右に伸びる水平点線 (- - -, 兄弟省略)。これらは『本図は WBS の部分図であり実際はさらに下位作業へ分解される』ことを示す補助記号。再構成 ascii ツリーはこの点線情報を転写しておらず、図を『完結した固定ツリー』と誤読させうる。ただしノードのラベル・階層・親子関係・兄弟順序は全て図と逐セル一致しており、脱落・追加・scramble はない。設問の問い (階層的表現手法は何か=WBS) にも答案 (イ) にも影響しないため low に留める。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23a-q045",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23a-q091",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23a-q095",
+      "faithful": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": true,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2011h23a-q100",
+      "faithful": true,
+      "severity": "high",
+      "independent_answer": "ウ",
+      "checks": {
+        "source_faithful": true,
+        "supports_key": false,
+        "trilingual_consistent": true,
+        "no_choice_table_leak": true
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "detail_jp": "supports_key 破綻 (answer-affecting)。再構成 stem の表は figure 逐セル忠実 (商品発表会 7/15/12/6、DM 6/15/10/5、電子メール 3/10/8/5、電話 5/12/10/5) で、確率 0.2/0.5/0.3 も一致。これを用い予想利益=期待値-費用を独立に計算すると 商品発表会=10.8-7=3.8、DM=9.5-6=3.5、電子メール=7.5-3=4.5、電話=8.9-5=3.9 となり最大は電子メール=選択肢『ウ』(利益4.5)。ところが保存済み correct_answer は『イ』(ダイレクトメール、利益3.5) で、忠実な図値から導出不能。change_summary_jp 自身も derived_answer=ウ・図はウを示唆と記録している。図と stem は源忠実だが、保存正解キーが stem+choices から妥当に導けない (correct_answer の是正が必要、もしくは figure 自体の値が現行公開の正答根拠と異なる可能性=要 IPA 原典正答クロスチェック)。"
+        },
+        {
+          "severity": "low",
+          "detail_jp": "stem_jp_clean 冒頭で共通シナリオ参照 (Q97 記載の『S社の売上向上プロジェクト』文脈) を省き『A さんは、会員顧客を対象にした…』から開始。figure 本文・backup と整合し意味は自己完結するため faithfulness 上は許容範囲だが、S 社/プロジェクト文脈が単独設問では失われる点を記録 (答案非依存・low)。"
+        }
+      ]
+    }
+  ]
+}
