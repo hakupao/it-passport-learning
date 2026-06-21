@@ -49,5 +49,13 @@ Phase 1.6 (本決定) 完了 → Phase 2 (D-137) を figure-fidelity hardening +
   - `2010h22a-q091`: ア → **エ** (表2 = 4×3×3 = 36 全組合せ穷举 = 網羅; **全量 net-new**、S97 抽様外)。
 - **deriver 偽陽性 3 件 (key 正、是正回避)**: `2014h26h-q090` (=本 ADR「疑い1」→ ウ 同截距+急傾き正、deriver 低解像度誤読) / `2012h24h-q091` (c=2 正、No.4 コースR 無テキスト代) / `2009h21h-q096` (ア・イ 双方 figure-true の曖昧問)。**疑い1 (q090) は CLEAR — 誤是正回避が写審分離の核心価値**。
 - **是正**: drift-proof (`quiz-keyaudit-fix-S99.mjs` 現値 assert → raw bank → 再生成)。questions.json diff = correct_answer 2 件のみ。**検証 GREEN** (tsc/eslint0err/vitest463/build/nft IPA0)。
-- **D-139-B 完了**。choices 腐敗 28 + underivable 3 = **choices-fidelity track (別 track、ユーザー承認の defer)**。証拠 `evidence/phase5/stage_06_quiz_keyaudit/rule_a_audit_S99_fullsweep.md`。
-- **D-139-C 順序**: Phase 1.6 完了 → 次 = Phase 2 (D-137) 全問 key-guard 込み再 pilot。
+- **D-139-B 完了**。証拠 `evidence/phase5/stage_06_quiz_keyaudit/rule_a_audit_S99_fullsweep.md`。
+
+## choices-fidelity track 完了 (Session 99 同 session、ユーザー「phase2 前に全部做完」)
+- choices_faithful=false **28 件**を写審分離 3 パス (proposer general-purpose → critic verify [APPROVE27/WITH_EDIT1/DISPUTE0/key破れ0] → 主 context spot-check) で **jp 74 letter + zh/en 43 letter 三語是正** (drift-proof、commit `81921f3`)。questions.json diff = choices のみ、**correct_answer 0 変更 (key invariant)**。
+- **choices flag は deriver 偽陽性 0** (key flag の 3/5 と対照): 図描画選択肢の逐字不一致は判断問の答案推論より誤りにくい。
+- **zh/en は jp と独立に腐敗しうる (両方向)**: 数値は Phase1 vision 訳が既正 (jp OCR 腐敗を上書き済)、テキスト/表は腐敗 jp を訳していた → 三語個別検証必須。
+- **underivable 3**: q087 解答可 (deriver 見落とし) / **q094・q100-2015h27a = incomplete-source** (形式定義・HDD容量欠落 → Phase 2 / 源再OCR backlog)。
+
+## D-139-C 順序
+**Phase 1.6 完全完了 (key + choices 三語クリーン)** → 次 = Phase 2 (D-137) を figure-fidelity hardening + 全問 key-guard 込みで再 pilot → scale。残 backlog = incomplete-source 2 件 + 非ブロッキングの figure 表示 track (q061 crop 串題 等)。
