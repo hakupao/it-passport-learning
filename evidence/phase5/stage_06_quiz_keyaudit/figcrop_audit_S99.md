@@ -31,3 +31,30 @@
 4. 検証 (build/nft/figure 解決) + 再 figcrop sweep で 0 確認。
 
 再現: `scripts/quiz-figcrop.workflow.mjs` + `quiz-figcrop.run.generated.mjs`。証拠 `figcrop_raw.txt` / `figcrop_results.json` (gitignored)。
+
+---
+
+## 修正完了 (Session 99 続、ユーザー「A 执行」, vision quota 回復後)
+
+監査の 27 候補 + 3 未検を **写審分離で検証 → 修正 → 再検証** で full 解消。
+
+### Phase B 検証+bbox (`quiz-figfix`, critic ≠ sweep の general-purpose, `wf_06800a73-d2f`, 30/30)
+- **recrop 26 / remove_figure 2 (q095, q097-2013h25a) / 偽陽性 2 (q085, q099-2026r08)**。
+- critic が正しい図領域を全頁%bbox で算出。**cross-page 2 件捕捉**: `2010h22h-q090` (図は page-38、設問頁 page-39 でない) / `2014h26h-q099` (図1 は page-44、設問頁 page-46 でない、隣 q097 と共有)。
+
+### 適用 (`quiz-figfix-apply`, drift-proof, sharp 再裁剪)
+- 25 recrop (page%bbox→px、q090 は page-38 override) + 1 copy (`q099` ← `q097` の既知正 図1 crop) + 2 has_figure=false。原図は `.keyaudit/figfix_backup/` に退避。
+
+### 再検証 (`quiz-figreverify`, critic 独立再読, `wf_0af86bd2-4b9`, 26/26)
+- **22 即 correct**。**4 still-bad**: q073/q078/q087 (初回 bbox がきつく行/ヘッダ欠け) + q061 (recrop でなく remove_figure が正=原 sweep+S90 と一致)。
+- **Round 2**: q073/q078/q087 を critic 精緻化 bbox で再裁剪 + q061 has_figure=false → 再検証 `wf_354f2f56-8ef` 3/3 correct。
+
+### 最終状態
+- **再裁剪 24 + copy 1 (q099) = figure 25 差し替え、has_figure=false 3 (q095/q097-2013h25a/q061)**。
+- questions.json diff = has_figure/figure/figure_type 3 問 (9±9)。webp 25 modified + 3 deleted。**主 context 実読確認** (q090 WBS ツリー全段+caption / q099 図1 アローダイアグラム全ノード+凡例)。
+- **検証 GREEN**: tsc/eslint 0err / vitest 463 / build exit0 / nft IPA leak 0。with_fig 467→464。
+- **既知の軽微 metadata**: q090 の source.page_image=page-39 のまま (図は page-38、設問頁は page-39 で citation 上は正、cross-page 性ゆえ figure_png は page-38 crop で正)。display 影響なし。
+
+### 教訓
+- figcrop sweep (単一 general-purpose) の 27 候補のうち **2 が偽陽性** (q085/q099-2026r08)、さらに re-verify で q061 の fix_type が recrop→remove に訂正 = **多段独立検証 (sweep → critic verify → 再裁剪 → critic 再検証 → round2) が bbox 精度と判定の両方を収束させた**。
+- bbox は downscale 画像からの推定で初回は不正確になりうる (4/26) → **適用後の再検証ループが必須**。
