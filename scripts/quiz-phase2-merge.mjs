@@ -48,7 +48,9 @@ if (!existsSync(resultFile)) {
 }
 const kgById = new Map();
 for (const r of JSON.parse(readFileSync(resultFile, "utf-8")).results ?? []) {
-  if (r?.id && r.key_guard) kgById.set(r.id, r.key_guard);
+  if (r?.id && (r.key_guard || r.key_guard_round1)) {
+    kgById.set(r.id, { final: r.key_guard ?? null, round1: r.key_guard_round1 ?? null });
+  }
 }
 console.log(`  key_guard source: generate_result (${kgById.size} entries)`);
 
@@ -56,6 +58,7 @@ const merged = {};
 const missing = [];
 const errors = [];
 const suspects = [];
+const stemCorruptions = []; // stem_corruption_suspected (answer-affecting OR cosmetic), for inline drift-proof stem fix
 
 for (const q of examQuestions) {
   const jpFile = path.join(PHASE2_DIR, `expl_jp_${q.id}.json`);
@@ -101,19 +104,29 @@ for (const q of examQuestions) {
   const points = jpP.map((p, i) => ({ jp: p, zh: trP[i]?.zh ?? "", en: trP[i]?.en ?? "" }));
   if (points.some((p) => !nonEmpty(p.jp) || !nonEmpty(p.zh) || !nonEmpty(p.en))) errors.push(`${q.id}: empty point`);
 
-  // key_guard (authoritative = workflow result, not the lossy file)
-  const kg = kgById.get(q.id);
-  if (!kg) { errors.push(`${q.id}: no key_guard in generate_result`); continue; }
-  const suspect = kg.matches_key === false || kg.figure_derivable === false;
-  if (suspect) suspects.push({ id: q.id, has_figure: q.has_figure, correct_answer: q.correct_answer, key_guard: kg });
+  // key_guard (authoritative = workflow result, not the lossy file).
+  // Round-1 = the honest blind derivation (pre-repair); final can be papered over by
+  // a masking repair, so suspect = union(round1, final). The sidecar carries round-1
+  // (the blind derivation the key-guard is meant to be). D-小 stem-corruption guard.
+  const kgrec = kgById.get(q.id);
+  if (!kgrec || !kgrec.final) { errors.push(`${q.id}: no key_guard in generate_result`); continue; }
+  const kgFinal = kgrec.final;
+  const kg1 = kgrec.round1 || kgFinal; // fallback for legacy results without round-1
+  const suspect =
+    kg1.matches_key === false || kg1.figure_derivable === false ||
+    kgFinal.matches_key === false || kgFinal.figure_derivable === false;
+  if (suspect) suspects.push({ id: q.id, has_figure: q.has_figure, correct_answer: q.correct_answer, key_guard: kg1, key_guard_final: kgFinal });
+  const stemCorrupt = kg1.stem_corruption_suspected === true || kgFinal.stem_corruption_suspected === true;
+  if (stemCorrupt) stemCorruptions.push({ id: q.id, has_figure: q.has_figure, correct_answer: q.correct_answer, answer_affecting: suspect, note_jp: kg1.note_jp || kgFinal.note_jp || "" });
 
   merged[q.id] = {
     key_guard: {
-      figure_derivable: kg.figure_derivable ?? null,
-      derived_answer: kg.derived_answer ?? null,
-      matches_key: kg.matches_key ?? null,
+      figure_derivable: kg1.figure_derivable ?? null,
+      derived_answer: kg1.derived_answer ?? null,
+      matches_key: kg1.matches_key ?? null,
+      stem_corruption_suspected: stemCorrupt,
       suspect,
-      note_jp: kg.note_jp ?? "",
+      note_jp: kg1.note_jp ?? "",
     },
     correct: { jp: jp.correct_jp, zh: tr.correct?.zh ?? "", en: tr.correct?.en ?? "" },
     distractors,
@@ -134,18 +147,20 @@ const sidecar = {
     "解説 (正解理由+各誤答肢の誤り+要点) を JP 先生成→zh/en 翻訳 (Claude opus, D-137)。key_guard=図から正解を独立導出した自己検査 (suspect=keyed answer と不一致/導出不可、要人手裁決)。出典は IPA 過去問 (改変=解説生成)。",
   count: Object.keys(merged).length,
   suspect_count: suspects.length,
+  stem_corruption_count: stemCorruptions.length,
   questions: merged,
 };
 writeFileSync(outFile, JSON.stringify(sidecar, null, 2) + "\n");
 
-// suspect report (gitignored intermediate, for adjudication)
+// suspect + stem-corruption report (gitignored intermediate, for adjudication)
 const suspectFile = path.join(PHASE2_DIR, `suspects_${examId}.json`);
-writeFileSync(suspectFile, JSON.stringify({ exam_id: examId, count: suspects.length, suspects }, null, 2) + "\n");
+writeFileSync(suspectFile, JSON.stringify({ exam_id: examId, count: suspects.length, suspects, stem_corruption_count: stemCorruptions.length, stem_corruptions: stemCorruptions }, null, 2) + "\n");
 
 console.log(`✓ quiz-phase2-merge ${examId}`);
 console.log(`  exam questions : ${examQuestions.length}`);
 console.log(`  explained      : ${Object.keys(merged).length}`);
 console.log(`  missing        : ${missing.length}${missing.length ? " → " + missing.slice(0, 8).join(", ") + (missing.length > 8 ? " …" : "") : ""}`);
 console.log(`  SUSPECT (key-guard): ${suspects.length}${suspects.length ? " → " + suspects.map((s) => s.id.replace(examId + "-", "")).join(", ") : ""}`);
+console.log(`  STEM-CORRUPTION    : ${stemCorruptions.length}${stemCorruptions.length ? " → " + stemCorruptions.map((s) => s.id.replace(examId + "-", "") + (s.answer_affecting ? "*" : "")).join(", ") : ""}`);
 console.log(`  out            : ${path.relative(ROOT, outFile)}`);
-if (suspects.length) console.log(`  suspects report: ${path.relative(ROOT, suspectFile)}`);
+if (suspects.length || stemCorruptions.length) console.log(`  report         : ${path.relative(ROOT, suspectFile)}  (* = answer-affecting)`);
