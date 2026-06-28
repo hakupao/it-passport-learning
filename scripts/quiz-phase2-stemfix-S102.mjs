@@ -30,10 +30,31 @@ const STEM_FIXES = [
     to: "可能性のあるものだけを，全て挙げたものはどれか。",
     why: "OCR dropped 「だけを，」 and inserted spurious 「どれか。」. Source (page-02) = 「…可能性のあるものだけを，全て挙げたものはどれか。」(standard IPA 'select all' phrasing). cosmetic, key ア unchanged (a only requires permission; b/c are private-use). zh/en already clean.",
   },
+  {
+    id: "2023r05-q023",
+    from: "ISO/IEC 19519",
+    to: "ISO/IEC 19510",
+    why: "OCR 19510→19519 (source page-10 = ISO/IEC 19510, BPMN's actual standard; 19519 does not exist). No stem_jp_clean → raw stem_jp is displayed. cosmetic, key イ (BPMN) unchanged. zh/en ALSO carry 19519 → fixed in trfix-S102.",
+  },
 ];
 
 // CHOICES fixes = {id, letter, from, to}. `from` must occur EXACTLY ONCE in choices_jp[letter].
-const CHOICE_FIXES = [];
+const CHOICE_FIXES = [
+  {
+    id: "2023r05-q021",
+    letter: "ア",
+    from: "もっていればぱば",
+    to: "もっていれば",
+    why: "OCR duplicated 「ぱば」 (source page-10 = 「もっていれば」). distractor cosmetic, key ウ unchanged. zh already clean.",
+  },
+  {
+    id: "2023r05-q056",
+    letter: "イ",
+    from: "クラウドサービス固有の管理策が適切に実施，実施されていることを認証するものを認証する組織はない。",
+    to: "クラウドサービス固有の管理策が適切に実施されていることを認証するものである。",
+    why: "OCR corruption (実施，実施 dup + 末尾「を認証するものを認証する組織はない」破損; literal contradicts key イ). Source page-25 = 「…適切に実施されていることを認証するものである。」. key イ unchanged (still the correct choice). zh/en already clean (translator saw the right meaning).",
+  },
+];
 
 // Trailing OCR-noise strips = {id, letter, anchor}. Keep through the LAST `anchor`, drop the
 // trailing run (must be only whitespace / 　 / ] / ・ OCR junk).

@@ -41,14 +41,32 @@ Batch: **2026r08 / 2024r06 / 2023r05** (latest-first 3, after pilot 2025r07). Wr
 
 ---
 
-## 2024r06 — ⏸ PARTIAL (resume needed after session/daily limit reset 3am JST)
-- generate (`wf_c0923724-9df`): **jp PASS 100** (gen + JP review complete), but **session limit hit
-  3am JST** mid-translate → tr `null 87 / translate_failed 13`, **persist failed**.
-- On disk (gitignored `.phase2/`): expl_jp 100, expl_tr 92, generate_result MISSING.
-- **suspect (round-1 harvested)**: q097 (OSS license concept Q, figure_derivable=false, derived=key=イ → benign).
-- **Resume plan**: `Workflow({scriptPath: quiz-phase2-generate.workflow.mjs, resumeFromRunId: "wf_c0923724-9df"})` after the limit resets — cached 100 gen + JP review reused, re-runs the 8 failed translates + tr-review + persist. Then verify-result → merge → adjudicate → Rule A.
+## 2024r06 — ✅ COMPLETE
+- generate first hit a **session-limit spike (3am JST)** mid-translate (jp PASS 100 done, persist failed).
+  A `resumeFromRunId: wf_c0923724-9df` after the limit recovered finished it: **100/100, jp PASS 100,
+  tr PASS 95 / CONCERNS 5** (only the failed translates/tr-reviews/persist re-ran; cached gen reused).
+- verify-result 100/100 → merge: explained 100/100, missing 0, **suspect 1 (q097), stem-corruption 0** (no fix needed).
+- q097 = benign suspect (figure_derivable=false OSS concept Q, derived=key=イ).
+- **Rule A (N=24: all 14 figures + suspect + 9 plain, `wf_abe0c13e-ba5`): accurate 24/24 · none 18 / low 6 · 0 med/high · key_guard_valid all true · bad key 0.** low 6 = zh-terminology polish (定型业务→常规, 采购周期→提前期, PERT 结合点→节点, cluster 团簇→簇, 漏数→漏数了) + one hedged distractor-explanation nuance (q057). Detail: `ruleA_result_S102_2024r06.json`.
 
-## 2023r05 — ⏳ PENDING (input prepped: 100 q, 14 figures)
+## 2023r05 — ✅ COMPLETE (4 OCR fixes + 1 FP)
+- generate (full run `wf_ab7480bd-696`, limit held): **100/100, jp PASS 100, tr PASS 92 / CONCERNS 8**.
+- verify-result 100/100 → merge: explained 100/100, missing 0, suspect 1 (q056), stem-corruption 5 flagged.
+- **4 real OCR corruptions fixed drift-proof** (all source-read at high mag, q052 protocol):
+  - **q004** (stem number, *answer-consistency*): 利用料 **306→300**万円/年. Source page-03 = 300 (only 300 makes a listed choice consistent: X>1000→イ). Displayed via `stem_jp_clean`; the Phase 1 translator carried 306 into zh/en too → fixed in `stem_jp_clean` + `stem.zh` + `stem.en` (`quiz-phase2-trfix-S102.mjs`). key イ unchanged.
+  - **q021** (choices ア): "もっていれば**ぱば**"→"もっていれば" (source page-10). key ウ unchanged, zh clean.
+  - **q023** (stem number): ISO/IEC **19519→19510** (source page-10 = 19510, BPMN's real standard). No `stem_jp_clean` → raw `stem_jp` fixed; zh/en carried 19519 → fixed in sidecar. key イ unchanged.
+  - **q056** (choices イ, *answer-affecting*): corrupted "…実施，実施…認証するものを認証する組織はない。" → source page-25 "…適切に実施されていることを認証するものである。" key イ unchanged, zh/en clean.
+- **q075 = FALSE POSITIVE** (no fix to displayed text): the generator (single vision pass) misread source condition (1) as "128点以上"; **主 context high-mag crop (page-35, sharp 3×) + Rule A critic 8× zoom both confirm the source is "120点以上"** (round 0). The clean stem + 4 choices are all 120 and internally consistent; answer ウ is threshold-independent. The only blemish was the internal `key_guard.note_jp` falsely claiming 128 (a false-alarm `stem_corruption_suspected`) — never UI-rendered, q075 `suspect=false`. **Resolved**: patched `generate_result` q075 key_guard (stem_corruption_suspected→false, note→corrected) + re-merge. Lesson reconfirmed (S98/S99): single vision pass misreads low-res digits; high-mag source-read is load-bearing.
+- Fix layers: `quiz-phase2-stemfix-S102.mjs` (raw bank: q023 stem + q021/q056 choices) + `quiz-phase2-trfix-S102.mjs` (translation sidecar: q004 + q023 numbers). **questions.json diff = 3 lines (q021/q023/q056), correct_answer 0 changes, quiz_index unchanged. translations/2023r05.json diff = 5 fields (q004×3 + q023×2).**
+- **Rule A (N=24: all 14 figures + suspect q056 + 9 plain incl. fixed q021/q056, `wf_ac09e74e-fd7`): accurate 23/24 · none 16 / low 7 · medium 1 (=q075 FP, now resolved) · bad key 0.** critic independently confirmed q021/q056 choices are now clean. 7 low = zh polish + stale key_guard notes on now-fixed q021/q056 + minor explanation-prose nuances (q013/q037/q059). Detail: `ruleA_result_S102_2023r05.json`.
+
+## Verification (GREEN, whole batch)
+- tsc 0 err · eslint 0 err (pre-existing tTerm warning 1) · vitest **463 passed / 2 skipped** · next build exit 0 (27 routes) · **nft IPA-leak 0** (quiz routes trace `data/ip/quiz` only).
+
+## Cross-batch notes
+- **Benign suspect over-flag** (ships a conservative "key-guard couldn't confirm" caveat on confidently-derived no-figure concept Qs): q058 (2026r08), q097 (2024r06), q056 (2023r05). Key is correct in all. Optional scale refinement (per S100): narrow merge suspect to `figure_derivable=false && has_figure=true`. Left as-is for pilot parity — **user decision**.
+- **zh-terminology polish backlog** (low, no correctness impact, Phase 1 terms established): 课题→任务 / 宽→广 / 差分备份→差异备份 / 上位→上一级 / 定型业务→常规 / 采购周期→提前期 / 团簇→簇 / 导入→部署 / 排他控制→并发控制. Not fixed per-explanation this batch.
 
 ---
 

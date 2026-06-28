@@ -1,0 +1,26 @@
+{
+  "exam_id": "2023r05",
+  "session": "S102",
+  "workflow_run": "wf_ac09e74e-fd7",
+  "n": 24,
+  "accurate": 23,
+  "bySeverity": { "none": 16, "low": 7, "medium": 1 },
+  "keyGuardMismatch": ["2023r05-q075"],
+  "critic_agent": "pr-review-toolkit:code-reviewer",
+  "note": "critic != writer (general-purpose) != in-pipeline reviewer (feature-dev:code-reviewer). Every independent_answer matched the keyed answer (bad key 0). Sample = all 14 figures + 1 suspect (q056) + 9 plain, incl. 2 of the 4 fixed (q021, q056). generate = full run wf_ab7480bd-696 (limit held). 4 OCR fixes applied + re-merge.",
+  "fixes_validated_by_ruleA": {
+    "q021": "critic confirms choices ア is now clean ('もっていれば', no 'ぱば'); only the key_guard note is stale.",
+    "q056": "critic confirms choices イ is now the clean version ('…実施されていることを認証するものである。'); key イ confirmed; only key_guard note stale."
+  },
+  "q075_medium_resolved": "critic independently confirmed (8x zoom of page-35) the source condition is '120点以上' (round 0, not 8) — matching 主 context's high-mag read. The displayed text/answer ウ/explanation are all correct; the ONLY error was the internal key_guard.note_jp falsely claiming source=128 (a false-alarm stem_corruption). note_jp is never UI-rendered and q075 suspect=false → zero user impact. FIXED: patched generate_result q075 key_guard (stem_corruption_suspected→false, note→corrected w/ 120 + provenance) and re-merged. This medium is an internal-metadata FP, now resolved.",
+  "low_issues": [
+    { "id": "2023r05-q013", "lang": "both", "summary": "distractor ア(2,400) wrong-value attribution vague (no source for 貢献利益250); but the 'why wrong' numeric判定 (240,000<600,000) is correct. derived エ matches key." },
+    { "id": "2023r05-q021", "lang": "jp", "summary": "key_guard note stale (claims 'ぱば' garble present; choices ア now clean post-fix). answer/explanation unaffected." },
+    { "id": "2023r05-q037", "lang": "jp", "summary": "figure cell 被監査側 vs corpus 被監査者側 (者 transcription diff); same meaning, no answer impact." },
+    { "id": "2023r05-q043", "lang": "zh", "summary": "导入 → 部署/上线/实施 nuance (borrowed from JP 導入)." },
+    { "id": "2023r05-q056", "lang": "jp+zh", "summary": "key_guard note stale (describes now-fixed choice corruption); + 运行责任→运维/运营 nuance. answer イ confirmed." },
+    { "id": "2023r05-q059", "lang": "both", "summary": "correct.jp/zh/en example framing '同じ会員番号でも' doesn't fit the cited person (午前桜子 has different 会員番号 2 vs 1); cited values (01プラチナ/03一般) match figure; composite-key/lossless-decomposition core logic + answer エ unaffected. zh/en faithfully follow jp (no translation drift)." },
+    { "id": "2023r05-q066", "lang": "zh", "summary": "排他制御 → 排他控制 (slight 借词; '(锁)' clarifies; 排他锁 is usable)." }
+  ],
+  "verdict": "PASS — 23/24 accurate; the 1 medium (q075) was an internal key_guard-note FP, now resolved (source confirmed 120 by both 主 context and critic). bad key 0. The 7 low are zh-terminology polish, stale key_guard notes on now-fixed q021/q056, and minor explanation-prose nuances — none affect correctness/answer/displayed text. 4 OCR corruptions (q004/q021/q023/q056) fixed drift-proof; q075 was a generator vision misread (FP)."
+}
