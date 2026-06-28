@@ -47,11 +47,17 @@ accurate=全体として解説が正しく忠実か。severity=最悪 issue。in
 
 const parsed = typeof args === 'string' ? JSON.parse(args) : args
 const inputPath = parsed?.input_path
-const items = parsed?.items ?? [] // [{id, has_figure}]
-if (!inputPath || !Array.isArray(items) || !items.length) throw new Error('need {input_path, items:[{id,has_figure}]}')
+let items = parsed?.items // [{id, has_figure}]
+// Compact spec (transcription-safe): build items from {exam_id, qnums, figure_nums}.
+// The Rule A sample is a non-contiguous subset, so pass explicit qnums (question numbers).
+if ((!items || !items.length) && parsed?.exam_id && Array.isArray(parsed?.qnums)) {
+  const figSet = new Set(parsed.figure_nums ?? [])
+  items = parsed.qnums.map((n) => ({ id: `${parsed.exam_id}-q${String(n).padStart(3, '0')}`, has_figure: figSet.has(n) }))
+}
+if (!inputPath || !Array.isArray(items) || !items.length) throw new Error('need {input_path, items:[{id,has_figure}]} or {input_path, exam_id, qnums, figure_nums}')
 
 const audits = await parallel(
-  items.map((it) => () => agent(auditPrompt(inputPath, it.id, it.has_figure), { label: `audit:${it.id}`, phase: 'Audit', schema: AUDIT_SCHEMA, model: 'opus', agentType: 'oh-my-claudecode:critic' })),
+  items.map((it) => () => agent(auditPrompt(inputPath, it.id, it.has_figure), { label: `audit:${it.id}`, phase: 'Audit', schema: AUDIT_SCHEMA, model: 'opus', agentType: 'pr-review-toolkit:code-reviewer' })),
 )
 
 const clean = audits.filter(Boolean)

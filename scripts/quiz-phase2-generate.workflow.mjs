@@ -6,12 +6,14 @@ export const meta = {
     { title: 'Review', detail: 'code-reviewer(opus): JP 解析の妥当性+key-guard 誠実性核験 + repair≤2' },
     { title: 'Translate', detail: 'general-purpose(opus): JP 解析→zh/en (既存訳+glossary で用語一致)' },
     { title: 'TR-Review', detail: 'code-reviewer(opus): 訳忠実度核験 + repair≤2' },
+    { title: 'Persist', detail: 'generate_result_<exam>.json を自己書込 (merge の権威 key_guard 源、S100 手動手順を turnkey 化)' },
   ],
 }
 
 const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
 const jpPath = (id) => `${ROOT}/data/ip/quiz/.phase2/expl_jp_${id}.json`
 const trPath = (id) => `${ROOT}/data/ip/quiz/.phase2/expl_tr_${id}.json`
+const resultPath = (exam) => `${ROOT}/data/ip/quiz/.phase2/generate_result_${exam}.json`
 
 const ZH_POLICY = `**zh は中国本土の標準 IT 用語を使い、日式借词を避ける** (成果物→交付物、妥当性確認→确认[验证=verification と対]、稼働→运行、解約→退订 等)。意味だけでなく本土読者に自然な語形を選ぶ。`
 // JSON 直列化の安全策 (S94 q091 / S97 q082 教訓): 文字列値の中で生の ASCII 二重引用符 " を使うと
@@ -191,8 +193,18 @@ verdict = PASS / CONCERNS / FAIL。issues は severity+lang+detail_jp。Structur
 // ---- run ---------------------------------------------------------------------
 const parsed = typeof args === 'string' ? JSON.parse(args) : args
 const inputPath = parsed?.input_path
-const items = parsed?.items ?? [] // [{id, has_figure}]
-if (!inputPath || !Array.isArray(items) || !items.length) throw new Error('need {input_path, items:[{id,has_figure}]}: ' + JSON.stringify(args).slice(0, 200))
+let items = parsed?.items // [{id, has_figure}]
+// Compact spec (preferred at scale, transcription-safe): build items from
+// {exam_id, count, figure_nums}. Requires contiguous zero-padded q001..qNNN ids
+// (verified per-exam before launch). Explicit items[] still works (back-compat).
+if ((!items || !items.length) && parsed?.exam_id && parsed?.count) {
+  const figSet = new Set(parsed.figure_nums ?? [])
+  items = Array.from({ length: parsed.count }, (_, i) => {
+    const n = i + 1
+    return { id: `${parsed.exam_id}-q${String(n).padStart(3, '0')}`, has_figure: figSet.has(n) }
+  })
+}
+if (!inputPath || !Array.isArray(items) || !items.length) throw new Error('need {input_path, items:[{id,has_figure}]} or {input_path, exam_id, count, figure_nums}: ' + JSON.stringify(args).slice(0, 200))
 const MAX_ROUNDS = 2
 
 const fbFromReview = (review) => [
@@ -219,7 +231,7 @@ const results = await pipeline(
     let curJp = jp, jpReview = null
     const jpRounds = []
     for (let round = 1; round <= MAX_ROUNDS; round++) {
-      jpReview = await agent(jpReviewerPrompt(inputPath, it.id, it.has_figure, curJp), { label: `rev:${it.id}#${round}`, phase: 'Review', schema: JP_REVIEW_SCHEMA, model: 'opus', agentType: 'oh-my-claudecode:code-reviewer' })
+      jpReview = await agent(jpReviewerPrompt(inputPath, it.id, it.has_figure, curJp), { label: `rev:${it.id}#${round}`, phase: 'Review', schema: JP_REVIEW_SCHEMA, model: 'opus', agentType: 'feature-dev:code-reviewer' })
       jpRounds.push(jpReview?.verdict ?? 'null')
       if (!jpReview || jpReview.verdict === 'PASS' || round === MAX_ROUNDS) break
       log(`jp-repair ${it.id} round ${round} (${jpReview.verdict})`)
@@ -234,7 +246,7 @@ const results = await pipeline(
     let trReview = null
     const trRounds = []
     for (let round = 1; round <= MAX_ROUNDS; round++) {
-      trReview = await agent(trReviewerPrompt(it.id, curJp, curTr), { label: `trrev:${it.id}#${round}`, phase: 'TR-Review', schema: TR_REVIEW_SCHEMA, model: 'opus', agentType: 'oh-my-claudecode:code-reviewer' })
+      trReview = await agent(trReviewerPrompt(it.id, curJp, curTr), { label: `trrev:${it.id}#${round}`, phase: 'TR-Review', schema: TR_REVIEW_SCHEMA, model: 'opus', agentType: 'feature-dev:code-reviewer' })
       trRounds.push(trReview?.verdict ?? 'null')
       if (!trReview || trReview.verdict === 'PASS' || round === MAX_ROUNDS) break
       log(`tr-repair ${it.id} round ${round} (${trReview.verdict})`)
@@ -252,4 +264,30 @@ const jpV = clean.reduce((m, r) => { const k = r.jp_verdict ?? r.status; m[k] = 
 const trV = clean.reduce((m, r) => { const k = r.tr_verdict ?? r.status; m[k] = (m[k] || 0) + 1; return m }, {})
 const suspects = clean.filter((r) => r.suspect).map((r) => ({ id: r.id, key_guard: r.key_guard }))
 log(`Phase2 生成完了 ${clean.length}/${items.length}: jp ${JSON.stringify(jpV)} | tr ${JSON.stringify(trV)} | suspect ${suspects.length}`)
+
+// ---- Persist generate_result (authoritative key_guard for merge) -------------
+// merge.mjs REQUIRES generate_result_<exam>.json (round-1 + final key_guard for
+// suspect/bad-key/stem-corruption detection). Workflow scripts have no fs, so a
+// dedicated agent writes it verbatim. Payload is compact: flagged questions keep
+// the full key_guard (note_jp needed for adjudication); clean questions are trimmed
+// (note_jp='' — internal-only, never UI-rendered) so the file is small + reliably
+// transcribable. quiz-phase2-verify-result.mjs deterministically validates it after.
+phase('Persist')
+const isFlagged = (r) => Boolean(r.suspect) || r.key_guard?.stem_corruption_suspected === true || r.key_guard_round1?.stem_corruption_suspected === true
+const trimKg = (kg) => kg ? { figure_derivable: kg.figure_derivable ?? null, derived_answer: kg.derived_answer ?? null, matches_key: kg.matches_key ?? null, stem_corruption_suspected: kg.stem_corruption_suspected ?? false, note_jp: '' } : null
+const compactResults = clean.map((r) => isFlagged(r)
+  ? { id: r.id, key_guard: r.key_guard ?? null, key_guard_round1: r.key_guard_round1 ?? null, suspect: Boolean(r.suspect) }
+  : { id: r.id, key_guard: trimKg(r.key_guard), key_guard_round1: trimKg(r.key_guard_round1), suspect: Boolean(r.suspect) })
+const persistPayload = JSON.stringify({ exam_id: parsed.exam_id, total: items.length, done: clean.length, results: compactResults }, null, 2)
+const outPath = resultPath(parsed.exam_id)
+await agent(
+  `あなたはデータ永続化エージェントです。**創作・要約・改変は一切しない**。以下の JSON を**バイト単位でそのまま (verbatim)** ファイル \`${outPath}\` に Write せよ。\n`
+  + `- JSON 文字列を一字一句変えず、キー順・空白・エスケープも保ったまま書き込む。\n`
+  + `- 末尾に改行 1 つを付けてよい。それ以外の追記・コメント・コードフェンスは禁止。\n`
+  + `- 書き込んだら、書いた results の件数 (= ${compactResults.length}) を StructuredOutput で返す。\n\n`
+  + '```json\n' + persistPayload + '\n```',
+  { label: `persist:${parsed.exam_id}`, phase: 'Persist', agentType: 'general-purpose', schema: { type: 'object', required: ['written'], additionalProperties: false, properties: { written: { type: 'integer' }, path: { type: 'string' } } } },
+)
+log(`generate_result persisted → ${outPath} (${compactResults.length} results)`)
+
 return { exam_id: parsed.exam_id, total: items.length, done: clean.length, jpVerdict: jpV, trVerdict: trV, suspects, results: clean }
