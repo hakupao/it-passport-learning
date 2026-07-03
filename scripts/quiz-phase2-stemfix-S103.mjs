@@ -18,7 +18,17 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const RB = path.join(ROOT, "data/ip/exams/question_bank.json");
 
 // STEM fixes = {id, from, to}. `from` must occur EXACTLY ONCE in stem_jp.
-const STEM_FIXES = [];
+const STEM_FIXES = [
+  // 2021r03-q036: three 0→9 OCR corruptions in one stem (ANSWER-AFFECTING as flagged:
+  // literal 19か月/1,900万円/49% is arithmetically broken — EAC=600/0.49≈1,224 < 1,900
+  // means no budget overrun, matching NO choice). Source page-17 at 4x = 10か月 /
+  // 1,000万円 / 40%. Correct values give EAC=600/0.40=1,500, overrun=500万円=エ=stored
+  // key (internally consistent). zh/en/stem_jp_clean ALSO carry 19/1,900(19,000,000)/49
+  // → fixed in trfix-S103. Explanation was already written with correct values.
+  { id: "2021r03-q036", from: "開発期間 19 か月", to: "開発期間 10 か月", why: "source page-17 4x = 10か月" },
+  { id: "2021r03-q036", from: "人件費予算 1,900 万円", to: "人件費予算 1,000 万円", why: "source page-17 4x = 1,000万円" },
+  { id: "2021r03-q036", from: "49%が完成", to: "40%が完成", why: "source page-17 4x = 40%" },
+];
 
 // CHOICES fixes = {id, letter, from, to}. `from` must occur EXACTLY ONCE in choices_jp[letter].
 const CHOICE_FIXES = [
@@ -49,6 +59,13 @@ const CHOICE_FIXES = [
     from: "Bluetooth 3.6以前",
     to: "Bluetooth 3.0以前",
     why: "OCR 3.0→3.6 (source page-42 at 5x = 「Bluetooth 3.0以前」; 3.6 does not exist). distractor cosmetic (ウ stays wrong either way: BLE is not compatible with Classic BT), key イ unchanged. zh/en ALSO carry 3.6 → fixed in trfix-S103.",
+  },
+  {
+    id: "2021r03-q005",
+    letter: "エ",
+    from: "複数馬のコンピュータ",
+    to: "複数台のコンピュータ",
+    why: "OCR 台→馬 (source page-03 = 「複数台のコンピュータ」). distractor cosmetic, key ウ unchanged. zh/en already clean (多台 / multiple computers).",
   },
 ];
 

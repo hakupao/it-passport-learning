@@ -25,6 +25,18 @@ const FIXES = [
   // (stemfix-S103). key イ unchanged.
   { exam: "2022r04", id: "2022r04-q092", field: "choices.ウ.zh", from: "Bluetooth 3.6", to: "Bluetooth 3.0" },
   { exam: "2022r04", id: "2022r04-q092", field: "choices.ウ.en", from: "Bluetooth 3.6", to: "Bluetooth 3.0" },
+  // 2021r03-q036: three 0→9 OCR digit corruptions (source page-17 at 4x = 10か月 /
+  // 1,000万円 / 40%; see stemfix-S103). Phase 1 translator carried all three into
+  // stem_jp_clean + zh + en. Correct values: EAC=600/0.40=1,500万, overrun=500万=エ=key.
+  { exam: "2021r03", id: "2021r03-q036", field: "stem_jp_clean", from: "開発期間 19 か月", to: "開発期間 10 か月" },
+  { exam: "2021r03", id: "2021r03-q036", field: "stem_jp_clean", from: "人件費予算 1,900 万円", to: "人件費予算 1,000 万円" },
+  { exam: "2021r03", id: "2021r03-q036", field: "stem_jp_clean", from: "49% が完成", to: "40% が完成" },
+  { exam: "2021r03", id: "2021r03-q036", field: "stem.zh", from: "开发周期为 19 个月", to: "开发周期为 10 个月" },
+  { exam: "2021r03", id: "2021r03-q036", field: "stem.zh", from: "预算为 1,900 万日元", to: "预算为 1,000 万日元" },
+  { exam: "2021r03", id: "2021r03-q036", field: "stem.zh", from: "已完成整体的 49%", to: "已完成整体的 40%" },
+  { exam: "2021r03", id: "2021r03-q036", field: "stem.en", from: "development period of 19 months", to: "development period of 10 months" },
+  { exam: "2021r03", id: "2021r03-q036", field: "stem.en", from: "budget of 19,000,000 yen", to: "budget of 10,000,000 yen" },
+  { exam: "2021r03", id: "2021r03-q036", field: "stem.en", from: "49% of the total deliverables", to: "40% of the total deliverables" },
 ];
 
 function getField(entry, field) {

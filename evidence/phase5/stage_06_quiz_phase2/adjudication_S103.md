@@ -41,4 +41,44 @@ merge: suspect 1 (q021)・stem-corruption 3 (q039/q091/q092、全て answer_affe
 
 ## 2021r03
 
-(実行後に追記)
+generate `wf_d5a1ff7b-305` (419 agent / 11.9M tok): 100/100, jp PASS 99/CONCERNS 1, tr PASS 98/CONCERNS 2。
+merge: suspect 4 (q036/q038/q039/q049)・stem-corruption 2 (q036* answer-affecting / q095)。
+
+### q036 — ANSWER-AFFECTING 三重 0→9 数字腐敗 (是正、全層伝播)
+- **key-guard が設計意図どおり捕捉**: generator が literal stem (19か月/1,900万円/49%) の算術破綻を検出 — EAC=600÷0.49≈1,224万 < 予算1,900万 で「予算超過はいくらか」が成立せず、全選択肢と不整合 → derived=unsure・matches_key=false で人間裁決へ回付。
+- **主 context 源実読 (page-17 全頁 + 4x crop)**: 源 = 開発期間 **10** か月 / 人件費予算 **1,000** 万円 / 全体の **40**% を確定 (「10」の 0、「1,000」の三つの 0、「40」の 0 いずれも丸い 0 を高倍率で確認)。
+- **検算 (答案整合)**: EAC = 600 ÷ 0.40 = 1,500万、超過 = 1,500 − 1,000 = **500万円 = エ = stored key**。腐敗前の値で問題が内部整合する唯一の読み。
+- **伝播**: raw stem_jp + stem_jp_clean + zh (19 个月/1,900 万日元/49%) + en (19 months/19,000,000 yen/49%) の全層。Phase 1 訳者は腐敗数値を忠実に継承していた (S102 q004 と同型、数値腐敗は訳者が「見穿」できない)。
+- **是正**: stemfix-S103 (raw stem 3 置換) + trfix-S103 (stem_jp_clean 3 + stem.zh 3 + stem.en 3 = 9 フィールド)。key エ 不変。
+- **解説**: generator は正値 (1,000万/40% → 500万=エ) で解説本文を執筆済 → 可視フィールドに stale 参照 0 (プログラム確認)。key_guard.note_jp の腐敗記述は正当な歴史記録として保持。
+
+### q005 エ — OCR 台→馬 (是正)
+- raw: 「複数**馬**のコンピュータ」。源 (page-03 実読): 「複数**台**のコンピュータ」。
+- generator が note_jp で申告 (stem_corruption_suspected=false の distractor cosmetic 扱い) → 主 context が拾って是正。key ウ 不変。zh/en 既正 (多台 / multiple computers)。
+
+### q095 — S89 遺留疑義の解消 (不動)
+- S89 記録「公式 answer key と critic 再計算の食い違い」→ 本 batch key-guard は **derived=ウ=stored key 一致** (5月内絞込 → 商品別合計 A=2,000×9=18,000 / B=4,000×6=24,000 / C=7,000×3=21,000 → ≥20,000 は B・C の 2 つ = ウ)。
+- stem-corruption flag は **raw のみ** (売上番号 200003→Z00003 系 garble)。表示 stem_jp_clean は figure と完全一致で既正 (in-pipeline reviewer PASS も確認) → **不動** (S101 前例: 表示は stem_jp_clean [quizModel:117])。
+
+### q038 / q039 / q049 — benign over-flag (不動)
+- いずれも figure_derivable=false の概念問で derived=stored key 一致 (イ/エ/ウ)。S102 q058/q097 同型。
+- q038: raw stem の選択肢表に行ずれ OCR があるが、stem_jp_clean + choices_jp は IPA 実問と整合済 (上流是正済) → note 記録のみ。
+
+### tr CONCERNS 2 (q005 / q092) — 受容
+- q005: 解説 distractor ア の zh が「管理整个系统的」を追加 — JP 解説には無いが**源選択肢に実在** (page-03 確認) → 源整合 gloss、benign。
+- q092: LPWA の速度帯 (数百 bps〜数十 kbps) を zh/en が追加 — 事実正の説明 gloss、benign。
+
+### invariants (git 確証)
+- questions.json diff = 2 行 (q005 エ choice + q036 stem)。correct_answer 0 変更、quiz_index 不変。
+- translations/2021r03.json = 3 フィールド (q036 stem_jp_clean / stem.zh / stem.en)。
+
+### Rule A
+- N=25 = 全8図 + suspect 4 (q036/q038/q039/q049) + q095 + 是正済 q005 (手動追加) + plain。
+- run `wf_5f0521f3-7f4`: 初回 22/25 (session limit、resets 5pm JST) → probe + resume で 25/25 完走。
+- **結果: accurate 24/25・none21/low3/high1・全 25 independent_answer == stored key (bad key 0)**。
+- q095: critic 独立導出 ウ = key・none → S89 遺留疑義 三方独立一致で解消。
+- high 1 = q036 cache 上の patch 前 audit。post-patch 独立検証 (別 agent、Rule D) = **PASS** (源自読 + 独立検算 エ=key + stale 0) → 実効 25/25。詳細 annotation は `ruleA_result_S103_2021r03.json` 内。
+
+### q036 sidecar key_guard patch (S102 q075 方式)
+- merge は round-1 key_guard を sidecar に書く (repair masking 防止設計)。q036 の round-1 note は round-2 で撤回済みの誤仮説 (「49%→25% に是正せよ」という、正しい stem を破壊しうる誤指示) を含み、歴史記録ではなく誤導情報 → generate_result の round1+final を裁決後確定記録に patch → re-merge。
+- patch 後の note = 0→9×3 の源確証・全層是正済・EAC 検算 (600÷0.40=1,500 → 超過500=エ=key)・旧仮説撤回の履歴。独立 post-patch 検証 agent が源 page-17 自読+検算で PASS を確認。
