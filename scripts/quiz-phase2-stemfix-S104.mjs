@@ -18,7 +18,14 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const RB = path.join(ROOT, "data/ip/exams/question_bank.json");
 
 // STEM fixes = {id, from, to}. `from` must occur EXACTLY ONCE in stem_jp.
-const STEM_FIXES = [];
+const STEM_FIXES = [
+  {
+    id: "2019r01a-q026",
+    from: "製品Aの生産計画書，",
+    to: "製品Aの生産計画量，",
+    why: "OCR 量→書 (source page-12: stem opens 「製品 A の生産計画量，」; table header row also 生産計画量). Caught by Rule A critic wf_5bbc1934-c5e, adjudicated by 主 context page read. Answer ア=30 unaffected (table values 40/40/20 were always correct). zh/en/stem_jp_clean carry it too → trfix-S104.",
+  },
+];
 
 // CHOICES fixes = {id, letter, from, to}. `from` must occur EXACTLY ONCE in choices_jp[letter].
 const CHOICE_FIXES = [

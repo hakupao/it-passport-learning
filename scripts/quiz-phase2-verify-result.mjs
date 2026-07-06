@@ -85,6 +85,19 @@ for (const r of results) {
 
 const missingFromResults = [...examQuestionIds].filter((id) => !seen.has(id));
 
+// Semantic sanity (S104 lesson: a Persist agent once wrote a "compressed" verbatim
+// copy — structurally valid but with every note_jp emptied and verdict fields
+// dropped. Structural checks alone let it through). The notes are the audit trail
+// merge embeds as the sidecar key_guard, so a gutted file must fail here.
+const emptyNotes = results.filter((r) => !(r.key_guard?.note_jp?.trim()) || !(r.key_guard_round1?.note_jp?.trim())).length;
+if (emptyNotes > results.length * 0.2) {
+  problems.push(`lossy persist suspected: ${emptyNotes}/${results.length} results have empty key_guard note_jp (verbatim contract violation — rebuild from workflow task output 'result' field)`);
+}
+const noVerdict = results.filter((r) => !("jp_verdict" in r)).length;
+if (noVerdict > 0) {
+  problems.push(`lossy persist suspected: ${noVerdict}/${results.length} results missing jp_verdict field`);
+}
+
 if (problems.length) {
   fail(`validation problems (${problems.length}):\n  ${problems.slice(0, 30).join("\n  ")}${problems.length > 30 ? "\n  …" : ""}`);
 }
