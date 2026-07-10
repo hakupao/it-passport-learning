@@ -85,4 +85,54 @@ tsc 0 / eslint 0 err (既存 warning 1=tTerm) / **vitest 463** / build exit 0 /
 
 ---
 
-## §2. 2018h30a (平成30年度 秋期) — (進行中 / 追記予定)
+## §2. 2018h30a (平成30年度 秋期) — ✅ 完了
+
+**generate** `wf_daa70b23-6ff`: **100/100 · jp PASS 100 · tr PASS 98 / CONCERNS 2 · suspect 1 (q007)**.
+410 agent / 12.3M tok / ~52 min, error 0, one-shot.
+
+**persist (deterministic) → verify-result 100/100 PASS → merge**: explained 100/100, missing 0,
+**SUSPECT 1 (q007)**, **STEM-CORRUPTION 0**.
+
+### q007 裁決 = benign over-flag (不動)
+著作権法の概念問 (プログラム=保護される / アルゴリズム=保護されない)。図は選択肢の表を示すのみで
+answer-determining data ではない (`figure_derivable=false`)。generator は法知識から独立に ウ を導出
+(=stored key)。**bad key ではなく、figure_derivable=false が suspect フラグを立てた既知の benign
+over-flag** (S104 q024/q025 同型)。Rule A critic も independent_answer=ウ・key_guard_valid=true で確認。
+→ 是正なし。**STEM-CORRUPTION 0 ゆえ stemfix 不要 = questions.json 無変更** (新規 sidecar のみ)。
+
+### Rule A `wf_135eb297-d96` — N=24 (all 12 figures + q007 suspect + tr-CONCERNS 2 + plain 10)
+**accurate 24/24 · severity none 21 / low 3 · 0 medium/high · keyGuardMismatch 0 · independent_answer ==
+stored key 24/24 (bad key 0)**.
+
+- tr-CONCERNS 2 (q048/q096) re-checked = accurate/none → benign 確定。
+- **3 low findings — all non-answer-affecting → backlog / 不動**:
+  - q002 [jp]: `key_guard.note_jp` meta-description references a non-existent stem_jp_clean; internal,
+    non-UI → **不動** (note artifact, 2019h31h q078 同型).
+  - q023 [zh]: 营业部门/营业支持系统 → 本土 prefers 销售部门/销售自动化(SFA) → **zh-polish backlog**.
+  - q085 [both]: 代表者名 = 负责人姓名(zh) / Representative Name(en) cross-language wobble; each
+    internally consistent → **backlog** (nuance).
+
+### 検証 (GREEN)
+tsc 0 / eslint 0 err (既存 warning 1) / **vitest 463** / build exit 0 /
+**nft IPA-source leak 0** (explanations sidecars traced = 10).
+
+**証拠**: `ruleA_result_S105_2018h30a.json`.
+
+---
+
+## §3. S105 累計まとめ
+
+| | 2019h31h | 2018h30a |
+|---|---|---|
+| generate | 100/100, jp PASS100 / tr PASS94 C6 / suspect0 | 100/100, jp PASS100 / tr PASS98 C2 / suspect1 |
+| persist (決定的) | empty-note 0 / jp_verdict 欠 0 | empty-note 0 / jp_verdict 欠 0 |
+| stem-corruption | 1 (q100 ア/エ, source-confirmed fix) | 0 |
+| questions.json diff | 2 lines (q100), correct_answer 0 | 0 (sidecar only) |
+| Rule A | N=28, accurate 28/28, bad key 0 | N=24, accurate 24/24, bad key 0 |
+| low findings | 7 → backlog | 3 → backlog |
+| 検証 | GREEN | GREEN |
+
+- **Persist 恒久硬化 = 2 例連続で S104 有損モード再発ゼロ** (empty-note 0 ×2)。残 19 回を de-risk。
+- **Rule A 実効 = 28/28 + 24/24、bad key 0/52**。
+- **盤面**: S104 終了時 8 回済 → S105 +2 (2019h31h, 2018h30a) = **10 回済 → 残 19 回** (nft explanations sidecar traced = 10 で確証)。
+- **backlog 追加 (zh polish / en 「」括弧 / note artifact / q052 nuance / q085 用語揺れ)**: 非 answer-affecting、別軸。
