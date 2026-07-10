@@ -27,6 +27,9 @@ function fail(m) {
 
 const examId = process.argv[2] ?? "2025r07";
 const N = Number(process.argv[3] ?? 12);
+// Optional trailing args = extra question numbers to FORCE into the sample (e.g. the
+// tr-CONCERNS questions from generate_result the caller wants the critic to re-check).
+const forceNums = process.argv.slice(4).map(Number).filter((n) => Number.isInteger(n));
 
 const examQuestions = JSON.parse(readFileSync(QUESTIONS, "utf-8")).questions
   .filter((q) => q.exam_id === examId)
@@ -55,29 +58,37 @@ for (const rq of rawBank.questions ?? rawBank) {
 const explained = examQuestions.filter((q) => sidecar[q.id]);
 if (!explained.length) fail("no explained questions in sidecar");
 
-// suspects (figure or not) MUST all be audited; then figures, then plain.
+// MUST-audit sets (all forced, deduped): key-guard suspects, stem-corruption flags
+// (e.g. an OCR choice fix like 2019h31h-q100 — flagged but not a suspect), and ALL
+// figures (vision-heavy = most error-prone). N is a FLOOR that tops up with plain
+// questions; it never caps the forced sets. (S105: the old `~N/2` figure budget could
+// silently drop figures when figures > N/2 — e.g. 18 figures at N=24 audited only 12.)
 const suspects = explained.filter((q) => sidecar[q.id].key_guard?.suspect);
+const stemCorrupts = explained.filter((q) => sidecar[q.id].key_guard?.stem_corruption_suspected && !sidecar[q.id].key_guard?.suspect);
 const figures = explained.filter((q) => q.has_figure && !sidecar[q.id].key_guard?.suspect);
-const plain = explained.filter((q) => !q.has_figure && !sidecar[q.id].key_guard?.suspect);
+const plain = explained.filter((q) => !q.has_figure && !sidecar[q.id].key_guard?.suspect && !sidecar[q.id].key_guard?.stem_corruption_suspected);
 
+const N_FLOOR = N;
 const picked = [];
 const seen = new Set();
-const take = (arr, k) => {
-  if (k <= 0 || !arr.length) return;
-  const step = Math.max(1, Math.floor(arr.length / k));
-  for (let i = 0; i < arr.length && picked.length < N; i += step) {
+// `wanted` doubles as the even-spacing divisor; `cap` bounds picked.length.
+const take = (arr, wanted, cap = Infinity) => {
+  if (wanted <= 0 || !arr.length) return;
+  const step = Math.max(1, Math.floor(arr.length / wanted));
+  for (let i = 0; i < arr.length && picked.length < cap; i += step) {
     const q = arr[i];
     if (!seen.has(q.id)) { seen.add(q.id); picked.push(q); }
   }
 };
-// budget: ALL suspects first (forced), then ~half figures, rest plain
+// caller-forced ids (e.g. tr-CONCERNS to re-check), then ALL suspects + ALL
+// stem-corruptions + ALL figures (uncapped).
+const forced = new Set(forceNums.map((n) => `${examId}-q${String(n).padStart(3, "0")}`));
+take(explained.filter((q) => forced.has(q.id)), forced.size || 1);
 take(suspects, suspects.length);
-take(figures, Math.min(figures.length, Math.ceil(N / 2)));
-take(plain, N - picked.length);
-for (const q of explained) {
-  if (picked.length >= N) break;
-  if (!seen.has(q.id)) { seen.add(q.id); picked.push(q); }
-}
+take(stemCorrupts, stemCorrupts.length);
+take(figures, figures.length);
+// top up to the N floor with evenly-spaced plain questions.
+take(plain, Math.max(0, N_FLOOR - picked.length), N_FLOOR);
 picked.sort((a, b) => a.id.localeCompare(b.id));
 
 const samples = picked.map((q) => ({
@@ -95,7 +106,7 @@ const outFile = path.join(OUT_DIR, `ruleA_samples_${examId}.json`);
 writeFileSync(outFile, JSON.stringify({ exam_id: examId, n: samples.length, samples }, null, 2) + "\n");
 
 console.log(`✓ quiz-phase2-ruleA-prep ${examId}`);
-console.log(`  explained : ${explained.length} (figure ${figures.length} / suspect ${suspects.length} / plain ${plain.length})`);
-console.log(`  sampled   : ${samples.length} → fig ${samples.filter((s) => s.has_figure).length}, suspect ${samples.filter((s) => s.explanation.key_guard?.suspect).length}`);
+console.log(`  explained : ${explained.length} (figure ${figures.length} / suspect ${suspects.length} / stem-corrupt ${stemCorrupts.length} / plain ${plain.length})`);
+console.log(`  sampled   : ${samples.length} → fig ${samples.filter((s) => s.has_figure).length}, suspect ${samples.filter((s) => s.explanation.key_guard?.suspect).length}, stem-corrupt ${samples.filter((s) => s.explanation.key_guard?.stem_corruption_suspected && !s.explanation.key_guard?.suspect).length}`);
 console.log(`  ids       : ${samples.map((s) => s.id.replace(examId + "-", "")).join(", ")}`);
 console.log(`  out       : ${path.relative(ROOT, outFile)}`);
