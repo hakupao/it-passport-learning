@@ -108,6 +108,67 @@ choices + q077 stem_jp + q082 ウ choice)、**correct_answer 0 変更**、quiz_i
 
 ---
 
-## §2. 2017h29h (平成29年度 秋期) — _[pending]_
+## §2. 2017h29h (平成29年度 秋期) — ✅ 完了
 
-_[generate → persist → merge → 裁決 → Rule A、完了後に追記]_
+**generate** `wf_a6c4a938-646`: 初回 run が翻訳ステージで **session limit 直撃** (3am Asia/Tokyo リセット、
+tr translate_failed 36 + null 64、jp は 100/100 完成)。**08:13 JST (リセット後) に `resumeFromRunId` で
+resume** (task `ws7ug7l22`): cached JP 100 + tr 69 を replay、失敗 31 翻訳 + review を再走 → **100/100・jp
+PASS 100・tr PASS 96 / CONCERNS 4・suspect 1・resume run error 0** (S103/S104 同型の limit→resume 復旧)。
+
+**persist (deterministic, resume final output)**: empty-note 0 / missing jp_verdict 0。**verify-result 100/100
+PASS**。**merge**: explained 100/100, missing 0, **SUSPECT 1 → q012**, **STEM-CORRUPTION 2 → q017, q095**。
+
+### 裁決 (主 context source read, q052 protocol) + 体系スキャン + git-diff review
+生成の flag (stem_corruption_suspected) + 説明本文の OCR caveat スキャン + git-diff 目視の 3 層で捕捉。
+
+| id | choice | raw (corrupt) | source | fix | key |
+|---|---|---|---|---|---|
+| q007 | エ | 「システムを**和**柔軟に」 | page-04 問7: 「…システムを柔軟に…」 | strip 「和」 | イ 不変 (distractor) |
+| q017 | エ | 「うろこのような**かな**形…棚田の景観**了は**」 | page-07 問17: 「うろこのような形…棚田の景観」 | strip 「かな」+「了は」(2箇所) | ウ 不変 (distractor) |
+| q088 | ア | 「**1**IC カード認証」 | page-35 問88: 「IC カード認証」 | strip 「1」 | イ 不変 (distractor) |
+| **q095** | **イ** | 「同じ**T**ID と…」 | page-38 問95: 「同じ ID と…」 | strip 「T」 | イ 不変 (**正解肢**) |
+| q095 | エ | 「…設定していた。**ふくそう**」 | page-38 問95: 「…設定していた。」 | strip 「ふくそう」 | イ 不変 (distractor) |
+
+- **flag-gap 3 (q088/q095/q007)**: q088-ア「1」/ q095-イ「T」は stem_corruption_suspected=false で merge の
+  STEM-CORRUPTION に載らず、q007-エ「和」も key_guard.note のみ言及。**q088 は説明 caveat スキャンが捕捉**
+  (distractor ア に mid-sentence caveat「(選択肢は「1IC…」と表示されるが…)」→ explfix-S106 で choice 是正後
+  regex 除去)。**q017-かな は git-diff 目視で捕捉** (生成 flag も caveat スキャンもすり抜け、source crop で確認)。
+- **q095-イ = 正解肢の OCR 是正** (「TID」→「ID」)、字母イは正解のまま。zh/en は全問 clean (伝播なし)、choice trfix 不要。
+- **q012 = benign over-flag** (公益通報者保護法、figure_derivable=false、derived ア=key、不動)。q096 correct.jp の
+  「輻輳（ふくそう）」= 正当な専門用語+読み仮名 (スキャン false positive、不動)。
+
+**invariants (git)**: questions.json diff = **5 choice フィールド** (q007 エ / q017 エ / q088 ア / q095 イ / q095 エ、
+q017 の 2 箇所は同一行)、**correct_answer 0 変更**、quiz_index 不変。translations 不変 (choice zh/en 既 clean)。
+explanations sidecar = q088 distractor ア caveat 除去。
+
+### ⚠️ 系統的所見 — 生成 note が明かす choice OCR 腐敗の flag-gap (backlog track)
+generate_result の key_guard.note を全問スキャンした結果、**generator が OCR 腐敗を note に記録しつつ
+stem_corruption_suspected を立てなかった問が多数**判明。大半は **stem 腐敗で stem_jp_clean が権威 (表示は既に
+クリーン)** だが、**一部は user-facing な choice (distractor) の未是正腐敗**:
+- **2017h29h (本 session、未是正=backlog)**: q033-ア「1C タグ」(IC)、q079-エ 末尾「ぜい」、q084-エ「ボネットワーク」
+  (ネットワーク)、q034 選択肢の余分な引用符。
+- **2018h30h (S106 commit `d532f21` 済、未是正=backlog)**: q017-エ「小売店舗綱」(網)、q020「自由奏放」(奔放)、
+  q035-エ 末尾「垢」、q052-エ 末尾「 -」、q064-エ「ipa.9o.jp」、q070-ア「轟威」(脅威)、q091-イ 末尾「こう」、
+  q097-イ「角罪」(犯罪)。
+- **推定**: S105 以前の committed 10 exam も同型の未 flag choice garble を残す。S101 の決定的 detector
+  (0→O 等のパターン) はこの種の**意味的/字形置換 OCR** を捕捉できず、generator の semantic note でのみ露見。
+- **決定 (S106)**: 本 session は S105 と同じ最小スコープ (flag / caveat-scan / git-diff で surface した分のみ是正)
+  を維持し、両 exam を同一水準で扱う。note-only の choice garble は **「semantic choice-OCR cleanup」backlog
+  track** として全 exam 横断の専用 pass に回す (ユーザー判断待ち)。
+
+### Rule A (independent N-sample audit) — 2017h29h
+- **ruleA-prep**: N=28 = 全 10 図 + suspect 1 (q012) + stem-corrupt 2 (q017/q095) + forced flag-gap
+  (q007/q033/q079/q084/q088) + tr-CONCERNS 4 (q029/q031/q039/q072) + plain top-up。note-flagged distractor
+  garble (q020/q033/q035/q079/q084/q091) を多数包含し独立 critic に severity を判定させる。
+- **Rule A** `wf_0e3c596b-f7f` (task `w99l00dez`): **28/28 accurate・severity {none 23, low 5}・
+  keyGuardMismatch=[]・independent_answer == stored key 28/28 (bad key 0)**。
+- **choice-garble backlog 判断の独立裏付け**: note-flagged distractor garble を含む **q020/q033/q035/q079/q084/
+  q091 は全て accurate=true・severity none** → 残存 choice garble は cosmetic で説明品質・解答性に無影響 =
+  backlog track が妥当とデータで確認。
+- **是正 4 問の同 run 内検証**: q017/q088/q095 = severity none、q007 = low (非UI key_guard.note が是正済「和」を
+  参照する artifact のみ) → 別 post-patch 再検証不要 (Rule A が是正後データを実読済)。
+- **low 5 = 全て非 answer-affecting**: 非UI key_guard.note artifact 2 (q007 「和」参照 / q012 benign
+  over-flag、critic が安全側フラグとして妥当と確認) + zh 本土 polish 3 (q018 开发体制→团队 / q032 评价额→计价 /
+  q039 日程→进度)。是正なし。
+
+**実効 Rule A = 28/28 accurate、bad key 0/28。**

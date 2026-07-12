@@ -71,6 +71,51 @@ const CHOICE_FIXES = [
     to: "規格",
     why: "Trailing OCR junk 「ぜい」 = furigana of 「脆」 in the NEXT choice エ 「脆弱性」 (source page-37 問82: choice ウ = 「工業製品や測定方法などの規格」). Distractor cosmetic, key エ unchanged. zh/en already clean.",
   },
+  // ---- 2017h29h (batch 2/2). All adjudicated against source; all cosmetic (key unchanged).
+  // q095-イ / q088-ア were NOT flagged by stem_corruption_suspected (flag-gap); q007-エ noted
+  // only in key_guard.note; all surfaced by 主 context source read + systematic caveat scan.
+  {
+    id: "2017h29h-q007",
+    letter: "エ",
+    from: "を和柔軟に",
+    to: "を柔軟に",
+    why: "OCR junk 「和」 (source page-04 問7: choice エ = 「…システムを柔軟に構築する仕組み」). Distractor cosmetic, key イ unchanged. zh/en already clean (灵活地/flexibly).",
+  },
+  {
+    id: "2017h29h-q017",
+    letter: "エ",
+    from: "景観了は",
+    to: "景観",
+    why: "Trailing OCR junk 「了は」 (source page-07 問17: choice エ ends 「…棚田の景観」). Distractor cosmetic, key ウ unchanged. zh/en already clean.",
+  },
+  {
+    id: "2017h29h-q017",
+    letter: "エ",
+    from: "うろこのようなかな形",
+    to: "うろこのような形",
+    why: "Mid-string OCR junk 「かな」 (source page-07 問17 crop: choice エ = 「魚のうろこのような形の重なりが美しい…」). Distractor cosmetic, key ウ unchanged. zh/en clean (鱼鳞般的形状 / fish-scale-like shape). Not flagged by generator/scan — caught by git-diff review.",
+  },
+  {
+    id: "2017h29h-q088",
+    letter: "ア",
+    from: "1IC カード認証",
+    to: "IC カード認証",
+    why: "Leading OCR junk 「1」 (source page-35 問88: choice ア = 「IC カード認証」). Distractor cosmetic, key イ unchanged. zh/en already clean (IC 卡认证/IC card authentication).",
+  },
+  {
+    id: "2017h29h-q095",
+    letter: "イ",
+    from: "同じTID",
+    to: "同じID",
+    why: "OCR junk 「T」 in 「TID」 (source page-38 問95: choice イ = 「同じ ID と同じパスワードを設定していた。」). THIS IS THE CORRECT choice (key イ) but the fix is cosmetic — the letter イ stays correct. zh/en already say ID.",
+  },
+  {
+    id: "2017h29h-q095",
+    letter: "エ",
+    from: "設定していた。ふくそう",
+    to: "設定していた。",
+    why: "Trailing OCR junk 「ふくそう」 (source page-38 問95: choice エ = 「短いパスワードを設定していた。」). Distractor cosmetic, key イ unchanged. zh/en already clean.",
+  },
 ];
 
 // APPEND fixes (truncation) = {id, letter, endsCorrupt, appendText}. Not substring-safe

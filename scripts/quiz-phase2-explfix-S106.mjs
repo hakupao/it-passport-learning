@@ -105,6 +105,30 @@ for (const f of STRIP_CAVEATS) {
   console.log(`  ✓ ${f.file} ${key}: stripped trailing OCR caveat`);
 }
 
+// ---- Layer 1c: 2017h29h-q088 distractor ア — remove a MID-sentence OCR caveat ---------
+// Unlike the trailing caveats above, q088's caveat is a parenthetical inserted inside the
+// sentence: 「IC カード認証 (選択肢は「1IC カード認証」…) は、…」. The raw choice ア 「1IC カード認証」
+// is fixed in stemfix-S106; the explanation caveat then references garbage the user no
+// longer sees. Regex removal (space-tolerant) reconnects the sentence. q088 was NOT flagged
+// by stem_corruption_suspected (flag-gap) — surfaced by the systematic user-facing scan.
+const Q088_CAVEATS = [
+  { file: "expl_jp_2017h29h-q088.json", locate: (d) => [d.distractors_jp.find((x) => x.letter === "ア"), "why_wrong_jp"], re: /\s*[（(]選択肢は[^（）()]*[）)]\s*/ },
+  { file: "expl_tr_2017h29h-q088.json", locate: (d) => [d.distractors.find((x) => x.letter === "ア"), "zh"], re: /[（(]选项[^（）()]*[）)]/ },
+  { file: "expl_tr_2017h29h-q088.json", locate: (d) => [d.distractors.find((x) => x.letter === "ア"), "en"], re: /\s*\(the choice is displayed[^()]*\)/ },
+];
+
+for (const f of Q088_CAVEATS) {
+  if (!byFile.has(f.file)) byFile.set(f.file, JSON.parse(readFileSync(P2(f.file), "utf-8")));
+  const doc = byFile.get(f.file);
+  const [obj, key] = f.locate(doc);
+  if (!obj || typeof obj[key] !== "string") throw new Error(`${f.file}: q088 locate failed`);
+  const cur = obj[key];
+  if (!f.re.test(cur)) { console.log(`  ~ ${f.file} ${key}: q088 caveat already removed, skip`); continue; }
+  obj[key] = cur.replace(f.re, "");
+  changed++;
+  console.log(`  ✓ ${f.file} ${key}: removed q088 mid-sentence OCR caveat`);
+}
+
 for (const [file, doc] of byFile) writeFileSync(P2(file), JSON.stringify(doc, null, 2) + "\n");
 
 // ---- Layer 2: resolve q077 key_guard in generate_result --------------------------
