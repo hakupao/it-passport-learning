@@ -69,6 +69,28 @@ const CONTENT_FIXES = [
     from: " (note: the correct number of work days in this problem is 20 days)",
     to: "",
   },
+  // --- 2016h28a-q039: strip the stale "IPA true-figure" qualifier inside correct.{jp,zh,en}.
+  //     The body computes with the correct 8本/36万; the qualifier implied the *displayed*
+  //     stem showed otherwise. After stemfix/trfix-S107 the stem shows 8本/36万, so the
+  //     parenthetical just restates the stem values — drop the "真正値" qualifier prefix.
+  {
+    file: "expl_jp_2016h28a-q039.json",
+    locate: (d) => [d, "correct_jp"],
+    from: "(IPA 公開問題の真正値: 10日間で8本、累積コスト36万円)",
+    to: "(10日間で8本、累積コスト36万円)",
+  },
+  {
+    file: "expl_tr_2016h28a-q039.json",
+    locate: (d) => [d.correct, "zh"],
+    from: "(IPA 公开试题的真实数值：10 天内完成 8 个程序、累计成本 36 万日元)",
+    to: "(10 天内完成 8 个程序、累计成本 36 万日元)",
+  },
+  {
+    file: "expl_tr_2016h28a-q039.json",
+    locate: (d) => [d.correct, "en"],
+    from: "(the true figures from the IPA published question: 8 programs completed in 10 days with a cumulative cost of 360,000 yen)",
+    to: "(8 programs completed in 10 days with a cumulative cost of 360,000 yen)",
+  },
 ];
 
 let changed = 0;
@@ -111,25 +133,47 @@ const RESOLVED = {
     figure_derivable: true, derived_answer: "ア", matches_key: true, stem_corruption_suspected: false,
     note_jp: "仕事算。stem 是正後 (S107: source page-17 実読で作業日数20日を確定、raw bank + tr サイドカーの OCR「26日」→「20日」を是正済) は A:B:C=2:1:3, A+B=3で仕事量=3×20=60, A+C=5で60÷5=12=ア で公式キーと一致。round-1 は腐敗値26日で 78÷5=15.6 となり選択肢に一致せず derived=unsure・matches_key=false・stem_corruption_suspected=true を立てた (答えを左右する OCR 腐敗を正しく捕捉) が、源実読で20日を確定し是正したため解決 = suspect=false。",
   },
+  // ===== 2016h28a (batch 6/2) =====
+  "2016h28a-q018": {
+    figure_derivable: true, derived_answer: "エ", matches_key: true, stem_corruption_suspected: false,
+    note_jp: "概念問。POS システムの効果=店舗ごとの品ぞろえ最適化と発注/在庫管理の効率化=エ。stem 是正後 (S107: source page-07 実読、raw stem_jp の閉じ引用符 半角\"→全角” を是正) は表示引用符が整合。key エ 不変。round-1 の stem_corruption_suspected=true は cosmetic な引用符 mismatch を捕捉したもので、是正済のため解決 = suspect=false。",
+  },
+  "2016h28a-q039": {
+    figure_derivable: true, derived_answer: "ウ", matches_key: true, stem_corruption_suspected: false,
+    note_jp: "計算問。stem 是正後 (S107: source page-14 実読で 8本/累積コスト36万円 を確定、raw stem_jp + tr zh/en の OCR「6本」「32万円」を是正済) は 実績単価=36÷8=4.5万/本 → 20本=90万, 見積り=20×4=80万 → 超過=10万=ウ で公式キーと一致。round-1 は腐敗値 (6本/32万) で 32÷6≈5.33→106.7万→26.7万 となり選択肢に一致せず derived=unsure・matches_key=false・stem_corruption_suspected=true を立てた (答えを左右する OCR 腐敗を正しく捕捉) が、源実読で正値を確定し是正したため解決 = suspect=false。",
+  },
+  "2016h28a-q082": {
+    figure_derivable: true, derived_answer: "エ", matches_key: true, stem_corruption_suspected: false,
+    note_jp: "表計算問。IF(B2≧50,合格,IF(C2≧50,合格,不合格)) の OR 判定で 合格=山田(数学50)/佐藤(英語85)/田中(数学55)/山本(数学60)/小林(数学70)=5=エ。stem_jp_clean の表値は源 (page-30) と一致。stem 是正後 (S107: source page-30 実読で成績範囲=「B2～C8」を確定、clean/zh/en の OCR「A2～C8」→「B2～C8」を是正) は範囲表記が正。答え(5=エ)不変ゆえ round-1 は matches_key=true だが cosmetic 腐敗として stem_corruption_suspected=true を立てた → 是正済のため解決 = suspect=false。raw stem_jp の (非表示) 表 OCR (佐藤良子/C6=30/C7=50) は clean が権威表示ゆえ不動。",
+  },
 };
 
-const grPath = P2("generate_result_2017h29a.json");
-const gr = JSON.parse(readFileSync(grPath, "utf-8"));
-let grChanged = false;
+// group RESOLVED by exam so each generate_result_<exam>.json is written once.
+const byExam = new Map();
 for (const [id, kg] of Object.entries(RESOLVED)) {
-  const rec = gr.results.find((r) => r.id === id);
-  if (!rec) throw new Error(`generate_result: ${id} not found`);
-  if (rec.key_guard?.stem_corruption_suspected === false && rec.suspect === false && rec.key_guard?.matches_key === true) {
-    console.log(`  ~ generate_result ${id} key_guard: already resolved, skip`);
-    continue;
-  }
-  rec.key_guard = { ...kg };
-  rec.key_guard_round1 = { ...kg };
-  rec.suspect = false;
-  grChanged = true;
-  changed++;
-  console.log(`  ✓ generate_result ${id}: key_guard + round1 resolved (derived ${kg.derived_answer} / matches_key true / suspect false)`);
+  const exam = id.slice(0, id.indexOf("-q"));
+  if (!byExam.has(exam)) byExam.set(exam, []);
+  byExam.get(exam).push([id, kg]);
 }
-if (grChanged) writeFileSync(grPath, JSON.stringify(gr, null, 2) + "\n");
+for (const [exam, entries] of byExam) {
+  const grPath = P2(`generate_result_${exam}.json`);
+  const gr = JSON.parse(readFileSync(grPath, "utf-8"));
+  let grChanged = false;
+  for (const [id, kg] of entries) {
+    const rec = gr.results.find((r) => r.id === id);
+    if (!rec) throw new Error(`generate_result_${exam}: ${id} not found`);
+    if (rec.key_guard?.stem_corruption_suspected === false && rec.suspect === false && rec.key_guard?.matches_key === true) {
+      console.log(`  ~ generate_result ${id} key_guard: already resolved, skip`);
+      continue;
+    }
+    rec.key_guard = { ...kg };
+    rec.key_guard_round1 = { ...kg };
+    rec.suspect = false;
+    grChanged = true;
+    changed++;
+    console.log(`  ✓ generate_result ${id}: key_guard + round1 resolved (derived ${kg.derived_answer} / matches_key true / suspect false)`);
+  }
+  if (grChanged) writeFileSync(grPath, JSON.stringify(gr, null, 2) + "\n");
+}
 
-console.log(`✓ quiz-phase2-explfix-S107: ${changed} change(s) → re-run verify-result + merge 2017h29a`);
+console.log(`✓ quiz-phase2-explfix-S107: ${changed} change(s) → re-run verify-result + merge (2017h29a / 2016h28a)`);

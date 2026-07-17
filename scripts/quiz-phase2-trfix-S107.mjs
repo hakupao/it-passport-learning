@@ -48,6 +48,21 @@ const FIXES = [
   { exam: "2017h29a", id: "2017h29a-q040", field: "stem_jp_clean", from: "26日掛かる", to: "20日掛かる" },
   { exam: "2017h29a", id: "2017h29a-q040", field: "stem.zh", from: "需要26天", to: "需要20天" },
   { exam: "2017h29a", id: "2017h29a-q040", field: "stem.en", from: "takes 26 days", to: "takes 20 days" },
+
+  // ===== 2016h28a (batch 6/2) =====
+  // q039: 6→8本 / 32→36万 in zh + en (stem_jp_clean is null → JP display is raw, fixed in
+  //   stemfix-S107). source page-14.
+  { exam: "2016h28a", id: "2016h28a-q039", field: "stem.zh", from: "编写了 6 个程序", to: "编写了 8 个程序" },
+  { exam: "2016h28a", id: "2016h28a-q039", field: "stem.zh", from: "累计成本达到了 32 万日元", to: "累计成本达到了 36 万日元" },
+  { exam: "2016h28a", id: "2016h28a-q039", field: "stem.en", from: "6 programs were completed", to: "8 programs were completed" },
+  { exam: "2016h28a", id: "2016h28a-q039", field: "stem.en", from: "cumulative cost had reached 320,000 yen", to: "cumulative cost had reached 360,000 yen" },
+  // q082: grade range 「A2～C8」→「B2～C8」 (columns B=数学/C=英語 hold the grades; A=氏名).
+  //   stem_jp_clean IS the JP display authority (its table values already match source);
+  //   only the range label was OCR-wrong. source page-30. Answer (5=エ) unchanged. The raw
+  //   stem_jp keeps its (non-displayed) table OCR — documented in the key_guard note.
+  { exam: "2016h28a", id: "2016h28a-q082", field: "stem_jp_clean", from: "セルA2～C8", to: "セルB2～C8" },
+  { exam: "2016h28a", id: "2016h28a-q082", field: "stem.zh", from: "单元格 A2～C8", to: "单元格 B2～C8" },
+  { exam: "2016h28a", id: "2016h28a-q082", field: "stem.en", from: "cells A2 through C8", to: "cells B2 through C8" },
 ];
 
 function getField(entry, field) {

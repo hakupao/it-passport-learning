@@ -98,7 +98,71 @@ generator の是正案 (IPA 記憶ベース) が源と一致するか**独立に
 
 ---
 
-## §2. 2016h28a (平成28年度 秋期) — ⏸ pause 中 (ユーザー「継続」待ち)
+## §2. 2016h28a (平成28年度 秋期) — ✅ 完了 (ユーザー「継続」で再開)
 
-prep 済: 100問 / 17図 [20,21,25,28,40,41,43,50,60,74,75,79,82,92,93,96,99] / tr 100/100 / id 連続 ✓。
-ユーザー指示で 2017h29a 完走後に一時停止。「継続」指示で generate → … → commit を実行。
+**generate** `wf_465d1404-113` (task `wysfewmm8`): **100/100 · jp PASS 100 · tr PASS 95 / CONCERNS 5 · suspect 4**.
+414 agent / 13.58M tok / ~58 min, error 0, one-shot (no session-limit hit).
+
+**persist (deterministic)**: task output `.result` → `generate_result_2016h28a.json`, **empty-note 0 /
+missing jp_verdict 0**. **verify-result 100/100 PASS**.
+
+**merge (pre-fix)**: explained 100/100, missing 0, **SUSPECT 4 → q039, q051, q054, q068**,
+**STEM-CORRUPTION 3 → q018, q039*, q082** (* = answer-affecting)。
+
+### 裁決 (主 context source read, 源ページ page-07/14/30)
+
+| id | field | raw/clean (corrupt) | source (実読) | fix | key |
+|---|---|---|---|---|---|
+| **q039** | stem 数値×2 | 10日間で**6**本 / 累積コスト**32**万円 | **page-14 問39**: **8**本 / **36**万円 | 6→8本 / 32→36万 (answer-affecting) | ウ 不変 |
+| **q018** | stem 引用符 | 「**"**POS システムの構築**"**」(開き全角/閉じ半角) | **page-07 問18**: 全角「**"**…**"**」 | 閉じ半角"→全角" (cosmetic) | エ 不変 |
+| **q082** | stem 範囲表記 | セル「**A2**～C8」 | **page-30 問82**: セル「**B2**～C8」(成績は B=数学/C=英語 列、A=氏名) | A2→B2 (non-answer-affecting) | エ 不変 |
+| q051 | — | (腐敗なし) | ITガバナンス定義=ア | **NO-OP** benign over-flag (figure_derivable=false 概念問) | ア 不変 |
+| q054 | — | (腐敗なし) | システム監査基準定義=ア | **NO-OP** benign over-flag | ア 不変 |
+| q068 | — | (腐敗なし) | ESSID 定義=イ | **NO-OP** benign over-flag | イ 不変 |
+
+#### q039 (answer-affecting, S103 q036 型)
+- generate key-guard `derived=unsure` / `matches_key=false` で正しく回付: literal (6本/32万) だと 32÷6≈5.33万/本 →
+  20本=106.7万 → 超過=26.7万 で選択肢 (4/6/10/18) に一致せず。
+- **主 context page-14 実読で 8本/36万 確定**: 実績単価=36÷8=4.5万/本 → 20本=90万, 見積り=20×4=80万 →
+  超過=90−80=**10万=ウ** (公式キー不変)。stem_jp_clean は null ゆえ raw stem_jp が JP 表示 → stemfix で raw 是正。
+
+#### q082 (図題、clean が表示権威、範囲表記のみ OCR)
+- generate が権威フルページ実読で 2 点指摘: ① 表値は **stem_jp_clean が源と一致** (佐藤次郎/C6=45/C7=45)、生 OCR
+  raw stem_jp の表 (佐藤良子/C6=30/C7=50) は誤り。② 設問範囲「A2～C8」は源では「B2～C8」(成績は B/C 列)。
+- **主 context page-30 実読で B2～C8 確定**。答え: OR 判定で合格 5 個 = エ (不変)。**clean/zh/en の「A2」→「B2」を是正**
+  (表示層)。**raw stem_jp の表 OCR は非表示 (clean が権威) ゆえ不動** → 内部 note に記録。
+
+### 体系 caveat スキャン (S106 手順)
+- 全100問の user-facing 説明をスキャン。**q039 correct.{jp,zh,en}** に「(IPA 公開問題の真正値: …)」という stale
+  qualifier を検出 (generator が正値計算しつつ表示腐敗を注記) → stem 是正で冗長化 → **explfix-S107 で qualifier
+  strip** ((IPA…真正値: 8本/36万) → (8本/36万))。q018/q082 は本文 caveat なし。
+- **flag-gap**: 追加 user-facing choice-OCR 0。note-only choice garble は「semantic choice-OCR cleanup track」に合流
+  (What's Next、ユーザー判断待ち)。
+
+### 是正層 (drift-proof)
+- **stemfix-S107** (raw bank): q018 引用符 + q039 ×2 = **3** 置換 (q082 raw は非表示ゆえ不動) → build-quiz-corpus。
+- **trfix-S107** (tr サイドカー): q039 zh/en ×4 + q082 clean/zh/en ×3 = **7** フィールド。
+- **explfix-S107**: q039 correct.{jp,zh,en} qualifier strip (3) + generate_result の q018/q039/q082 key_guard 解決 (3)。
+
+**merge (post-fix)**: **SUSPECT 3 → q051/q054/q068** (benign over-flag), **STEM-CORRUPTION 0**。verify-result 100/100。
+
+### invariants (git 確証)
+- **questions.json diff = 2 stem_jp フィールド** (q018/q039; q082 raw 不動)、**correct_answer 0 変更 (全 2900)**、quiz_index 不変。
+- **translations/2016h28a.json = 5 stem フィールド** (q039 zh/en + q082 clean/zh/en)。
+- explanations/2016h28a.json = 新規 sidecar。**user-facing caveat 残存 0 / 腐敗トークン残存 0**。
+
+### Rule A (independent critic) `wf_7b70bea4-c34`
+- N=28: 全17図 + suspect q051/q054/q068 + 是正3問 (q018/q039/q082 forceNums) + tr-CONCERNS (q014/q040/q081/q091/q100) + plain top-up。
+- 結果: **accurate 28/28 · severity {none 20, low 8} · bad key 0** (全 independent_answer == key)。
+  - **是正3問を critic が独立確認**: q018→エ / q039→ウ / q082→エ (fixed stem から独立導出し key 一致)。
+  - keyGuardMismatch = **q051 のみ** (benign over-flag: 図なし概念問 figure_derivable=false→suspect=true、本文は正確)。
+  - **low 8 = 全て非 answer-affecting → backlog**: ① zh polish 4 (q018 品ぞろえ→品类结构 / q043 実績→实际 / q068
+    手机线路→移动网络 / q075 直下→正下方) ② 非UI note_jp 事実誤認 1 (q041 raw=何人か と誤記、実際は何名か) ③ benign
+    over-flag 1 (q051) ④ 解説明瞭性 2 (q091 points の重み列挙が6桁例と不整合 / q100 correct.jp 冒頭「ア,ウ」併記が
+    紛らわしい、直後にウへ自己修正)。②はUI非露出、④は zh/en に忠実伝播 (訳ズレでなく原文の粗さ)、答えは全て不変。
+  - 証拠 `ruleA_result_S107_2016h28a.json`。
+
+### 検証 GREEN
+- tsc 0err / eslint 0err (既存 warning 1 = tTerm) / **vitest 463 passed | 2 skipped** / build exit 0 /
+  **nft IPA-source leak 0** (19 .nft.json、quiz route trace = questions/quiz_index/translations/explanations のみ)。
+- explanations sidecar = **14** (13 + 2016h28a)。

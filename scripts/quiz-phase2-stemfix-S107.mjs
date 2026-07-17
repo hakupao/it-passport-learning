@@ -40,6 +40,17 @@ const STEM_FIXES = [
   //   A+C rate=5 → 60÷5=12 = ア (key unchanged). Raw OCR 20→26 (literal 26 gives 78÷5=
   //   15.6, matching no choice = answer-affecting).
   { id: "2017h29a-q040", from: "26日掛かる", to: "20日掛かる", why: "OCR 26→20 (作業日数, source page-17)" },
+  // --- 2016h28a (batch 6/2, source pages 07/14) — stem_jp_clean is null for these two,
+  //     so the raw stem_jp IS the displayed JP. ---
+  // 2016h28a-q018 (source page-07 問18): opening quote is full-width 「“」 but the closing
+  //   is a half-width ASCII 「"」 = OCR mismatch. Source has matched full-width 「”」. Cosmetic
+  //   (key エ unchanged). zh/en use their own quotes, no trfix.
+  { id: "2016h28a-q018", from: '構築"', to: "構築”", why: "OCR 閉じ引用符 半角\"→全角” (source page-07)" },
+  // 2016h28a-q039 (source page-14 問39): 8本 / 累積コスト36万円. 実績単価 = 36÷8 = 4.5万/本 →
+  //   20本 = 90万, 見積り = 20×4 = 80万 → 超過 = 10万 = ウ (key unchanged). Raw OCR 8→6本 /
+  //   36→32万 (literal gives 32÷6≈5.33 → 106.7万 → 26.7万, matching no choice = answer-affecting).
+  { id: "2016h28a-q039", from: "10日間で6本", to: "10日間で8本", why: "OCR 6→8本 (source page-14)" },
+  { id: "2016h28a-q039", from: "累積コストは32万円", to: "累積コストは36万円", why: "OCR 32→36万円 (source page-14)" },
 ];
 
 const bank = JSON.parse(readFileSync(RB, "utf-8"));
