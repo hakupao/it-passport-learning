@@ -29,6 +29,12 @@ const STRIP_CAVEATS = [
   { file: "expl_jp_2016h28h-q005.json", locate: (d) => [d.distractors_jp.find((x) => x.letter === "エ"), "why_wrong_jp"], anchor: "なお選択肢末尾の" },
   { file: "expl_tr_2016h28h-q005.json", locate: (d) => [d.distractors.find((x) => x.letter === "エ"), "zh"], anchor: "另外，选项末尾的" },
   { file: "expl_tr_2016h28h-q005.json", locate: (d) => [d.distractors.find((x) => x.letter === "エ"), "en"], anchor: "Note that the" },
+  // 2015h27a-q092 correct.{jp,zh,en}: trailing OCR caveat「なお本入力のstem「56円」は…50円のOCR腐敗」.
+  //   Body already computes with the correct 50円; after stemfix/trfix the displayed stem reads
+  //   50円, so the caveat is stale → strip (anchor→end + trim).
+  { file: "expl_jp_2015h27a-q092.json", locate: (d) => [d, "correct_jp"], anchor: "なお本入力の" },
+  { file: "expl_tr_2015h27a-q092.json", locate: (d) => [d.correct, "zh"], anchor: "另外，本输入" },
+  { file: "expl_tr_2015h27a-q092.json", locate: (d) => [d.correct, "en"], anchor: "Note that the" },
 ];
 
 let changed = 0;
@@ -72,25 +78,42 @@ const RESOLVED = {
     figure_derivable: true, derived_answer: "ア", matches_key: true, stem_corruption_suspected: false,
     note_jp: "概念問。ランサムウェア=ファイルを使用不能にし復旧の金銭要求=ア。stem 是正後 (S108: source page-28、raw choice ウ「人入力」→「入力」の余分な人を除去) は表示クリーン。key ア 不変。round-1 は choice-OCR を捕捉し stem_corruption_suspected=true を立てたが、是正済のため解決 = suspect=false。",
   },
+  // 2015h27a-q092: answer-affecting OCR 56→50円 (source page-41). NOTE: this question ALSO belongs to
+  // the q91–96 shared-figure (図1 ラーメン売上表) linkage-gap cluster, but its explanation is self-
+  // contained (embeds 単価800/原価430/売上数量75) and the OCR fix is confirmed against source, so the
+  // stem-corruption flag is resolved here. The figure-display gap stays a separate backlog (see §adjudication).
+  "2015h27a-q092": {
+    figure_derivable: true, derived_answer: "ウ", matches_key: true, stem_corruption_suspected: false,
+    note_jp: "計算問。stem 是正後 (S108: source page-41 実読で「単価を50円値引き」を確定、raw stem + tr clean/zh/en の OCR「56円」→「50円」を是正) は 値引後1杯粗利=(800−50)−430=320円、値引前粗利=(800−430)×75=27,750円 → 320×N>27,750 の最少 N=87=ウ で公式キーと一致。round-1 は腐敗値56円で 27,750÷314=88.4→89 となり選択肢に無く stem_corruption_suspected=true・answer-affecting を捕捉したが、源実読で50円を確定し是正したため解決 = suspect=false。(図1 ラーメン売上表は q91–96 共有図の linkage-gap = 別 backlog、本解説は表値を内包し自己完結)。",
+  },
 };
 
-const grPath = P2("generate_result_2016h28h.json");
-const gr = JSON.parse(readFileSync(grPath, "utf-8"));
-let grChanged = false;
+// group RESOLVED by exam so each generate_result_<exam>.json is written once.
+const byExam = new Map();
 for (const [id, kg] of Object.entries(RESOLVED)) {
-  const rec = gr.results.find((r) => r.id === id);
-  if (!rec) throw new Error(`generate_result: ${id} not found`);
-  if (rec.key_guard?.stem_corruption_suspected === false && rec.suspect === false && rec.key_guard?.matches_key === true) {
-    console.log(`  ~ generate_result ${id} key_guard: already resolved, skip`);
-    continue;
-  }
-  rec.key_guard = { ...kg };
-  rec.key_guard_round1 = { ...kg };
-  rec.suspect = false;
-  grChanged = true;
-  changed++;
-  console.log(`  ✓ generate_result ${id}: key_guard + round1 resolved (derived ${kg.derived_answer} / suspect false)`);
+  const exam = id.slice(0, id.indexOf("-q"));
+  if (!byExam.has(exam)) byExam.set(exam, []);
+  byExam.get(exam).push([id, kg]);
 }
-if (grChanged) writeFileSync(grPath, JSON.stringify(gr, null, 2) + "\n");
+for (const [exam, entries] of byExam) {
+  const grPath = P2(`generate_result_${exam}.json`);
+  const gr = JSON.parse(readFileSync(grPath, "utf-8"));
+  let grChanged = false;
+  for (const [id, kg] of entries) {
+    const rec = gr.results.find((r) => r.id === id);
+    if (!rec) throw new Error(`generate_result_${exam}: ${id} not found`);
+    if (rec.key_guard?.stem_corruption_suspected === false && rec.suspect === false && rec.key_guard?.matches_key === true) {
+      console.log(`  ~ generate_result ${id} key_guard: already resolved, skip`);
+      continue;
+    }
+    rec.key_guard = { ...kg };
+    rec.key_guard_round1 = { ...kg };
+    rec.suspect = false;
+    grChanged = true;
+    changed++;
+    console.log(`  ✓ generate_result ${id}: key_guard + round1 resolved (derived ${kg.derived_answer} / suspect false)`);
+  }
+  if (grChanged) writeFileSync(grPath, JSON.stringify(gr, null, 2) + "\n");
+}
 
-console.log(`✓ quiz-phase2-explfix-S108: ${changed} change(s) → re-run verify-result + merge 2016h28h`);
+console.log(`✓ quiz-phase2-explfix-S108: ${changed} change(s) → re-run verify-result + merge (2016h28h / 2015h27a)`);

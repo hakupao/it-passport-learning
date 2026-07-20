@@ -25,6 +25,10 @@ const FIXES = [
   { exam: "2016h28h", id: "2016h28h-q016", field: "stem.zh", from: "ISO 9991", to: "ISO 9001" },
   { exam: "2016h28h", id: "2016h28h-q016", field: "stem.en", from: "ISO 9991", to: "ISO 9001" },
   { exam: "2016h28h", id: "2016h28h-q018", field: "stem_jp_clean", from: "組立される製品", to: "組立生産される製品" },
+  // 2015h27a-q092: OCR 56→50円 propagated to clean + zh + en (source page-41). JP raw fixed in stemfix-S108.
+  { exam: "2015h27a", id: "2015h27a-q092", field: "stem_jp_clean", from: "単価を56円値引き", to: "単価を50円値引き" },
+  { exam: "2015h27a", id: "2015h27a-q092", field: "stem.zh", from: "单价下调56日元", to: "单价下调50日元" },
+  { exam: "2015h27a", id: "2015h27a-q092", field: "stem.en", from: "ramen by 56 yen", to: "ramen by 50 yen" },
 ];
 
 function getField(entry, field) {

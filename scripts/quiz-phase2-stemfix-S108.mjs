@@ -24,6 +24,10 @@ const STEM_FIXES = [
   //   gives 「ISO 9991」(存在しない規格). stem_jp_clean is null → raw stem_jp is the JP
   //   display, so fixed here. key エ (品質管理の標準化) unchanged. zh/en fixed in trfix-S108.
   { id: "2016h28h-q016", from: "ISO 9991", to: "ISO 9001", why: "OCR 9991→9001 (source page-08)" },
+  // 2015h27a-q092 (source page-41 問92): 「単価を50円値引きして」. Raw OCR 0→6 gives 「56円」.
+  //   answer-affecting: 50円→(800−50)−430=320, 27,750÷320=86.7→87=ウ (key); 56円→314→88.4→89
+  //   (no choice). stem_jp_clean carries 56 too (fixed in trfix-S108); zh/en also (trfix). key ウ 不変。
+  { id: "2015h27a-q092", from: "単価を56円値引き", to: "単価を50円値引き", why: "OCR 56→50 (source page-41)" },
 ];
 
 // CHOICE substring fixes = {id, letter, from, to}. strip/swap only (from ⊇ to, or
