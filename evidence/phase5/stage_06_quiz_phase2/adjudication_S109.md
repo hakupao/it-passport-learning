@@ -135,11 +135,55 @@ independent_answer = ア / イ / ウ で stored key と全一致。low 3 は英�
 
 ---
 
+## §3b. 2014h26a — Phase 2 (保真是正後のテキストで生成)
+
+| 項目 | 結果 |
+|---|---|
+| generate | **限額 2 回中断 → `resumeFromRunId` 2 回で完走** (初回=session limit で tr 全滅 / resume1=weekly limit)。最終 **100/100・jp PASS 98/CONCERNS 1/FAIL 1・tr PASS 99/CONCERNS 1・error 0** |
+| persist / verify | empty-note 0 / 100 100 |
+| merge (pre-fix) | SUSPECT 6・STEM-CORRUPTION 12 |
+| merge (post-fix) | **SUSPECT 5・STEM-CORRUPTION 5** (残は全て中問 A/B/D の linkage-gap) |
+
+### 裁決 (源実読 page-11/15/18/24/25/51) — 14 フィールド
+
+- **q029 = answer-affecting かつ本 exam 唯一の真の `matches_key=false`**。取得費用 OCR
+  1,000万円→1,906万円 により literal 計算 ROI≒47.7% で **4 肢のいずれにも着地せず、表示上「正解が
+  存在しない」設問**だった。page-11 実読で 1,000万円 を確定 → 100.0% = イ で key と一致回復。
+  raw の式腐敗「利益 + 投下資本 X 160」→「利益 ÷ 投下資本 × 100」も同時是正。
+- **q100 — generator の主張を棄却した例**: 「源の選択肢は単位『時間』付き。推定ではなく確定事項として
+  登記されたい」と要求されたが、**page-51 実読では裸数値 29/44/56/152 で dataset と一致**。choices は
+  不動とし、設問形式 (「求めると何時間になるか」) のみ復元。単位は設問文側が担う。
+- q036 / q045 / q059 / q061 / q062 = 字形・規格番号・衍字・空白の OCR。解説の stale 注記も strip。
+
+### Rule A
+
+`wf_3641c399-ef0` **N=37**: **accurate 36/37・severity {none 8, low 28, medium 1}・bad key 0/37・
+keyGuardMismatch 0**。
+
+- **medium 1 = q097 zh の日中同形異義誤訳**: 「経理担当者」→「**经理**担当者」(大陸 zh の「经理」= manager)。
+  en は正しく accounting staff。translations 2 + 解説 4 の計 6 箇所を「**财务**担当者」に是正。
+- 独立再検証 `wf_1d9c6b38-639` (q097): **accurate 1/1・severity low 1**、independent ウ = key。
+  ⇒ **Rule A 実効 = 37/37、bad key 0/37**。
+
+## §3c. S109 の Rule A 総計
+
+| exam | run | N | accurate | bad key |
+|---|---|---|---|---|
+| 2015h27h | `wf_135c3c19-6a3` + 再検証 `wf_0324e4c5-eb6` | 36 | **36/36 (実効)** | 0/36 |
+| 2014h26a | `wf_3641c399-ef0` + 再検証 `wf_1d9c6b38-639` | 37 | **37/37 (実効)** | 0/37 |
+
+**合計 Rule A 実効 73/73、bad key 0/73。** 初回 accurate は 33/36 と 36/37 で、差分 4 件
+(q087 high / q089 medium / q017 medium / q097 medium) はいずれも実在の欠陥として是正済み。
+
+---
+
 ## §4. invariants (git 確証)
 
-- `questions.json`: 2900 問、**correct_answer 変更 0**、stem_jp 11 問 / choices 45 フィールド (全て本 session の 2 exam)
+- `questions.json`: 2900 問、**correct_answer 変更 0 (全 2900)**、
+  stem_jp **14 問** (2015h27h 8 + 2014h26a 6 = 保真 11 + Phase2 裁決 3) /
+  choices **51 フィールド** (2015h27h 45 + 2014h26a 6)
 - `translations/`: 2015h27h + 2014h26a のみ
-- `explanations/`: 新規 1 (2015h27h) → nft traced = **17**
+- `explanations/`: 新規 **2** (2015h27h / 2014h26a) → nft traced = **18**
 - 検証 GREEN: tsc 0 / eslint 0 err (既存 warning 1) / **vitest 463** / build exit 0 / **nft IPA-source leak 0**
 
 ## §5. 証拠ファイル
