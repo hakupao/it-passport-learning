@@ -106,8 +106,16 @@ for (const q of examQuestions) {
 
   // key_guard (authoritative = workflow result, not the lossy file).
   // Round-1 = the honest blind derivation (pre-repair); final can be papered over by
-  // a masking repair, so suspect = union(round1, final). The sidecar carries round-1
-  // (the blind derivation the key-guard is meant to be). D-小 stem-corruption guard.
+  // a masking repair, so **suspect stays union(round1, final)** — that anti-masking guard
+  // is unchanged. D-小 stem-corruption guard.
+  //
+  // S110: the sidecar used to publish round-1's *narrative* too, which went stale the moment
+  // an adjudicated fix landed. 2014h26h-q100 shipped a note reading 「保存されている「2,900件」は
+  // OCR 誤り」 after the stem had already been corrected to 2,000 — three independent Rule A
+  // critics flagged it as contradicting the record it was attached to. So the sidecar now
+  // publishes the FINAL (post-adjudication) derivation and note, and keeps round-1's blind
+  // derivation alongside it as `round1` whenever the two differ. Nothing is lost: the audit
+  // trail is now explicit in the committed artifact instead of only in gitignored .phase2.
   const kgrec = kgById.get(q.id);
   if (!kgrec || !kgrec.final) { errors.push(`${q.id}: no key_guard in generate_result`); continue; }
   const kgFinal = kgrec.final;
@@ -119,14 +127,34 @@ for (const q of examQuestions) {
   const stemCorrupt = kg1.stem_corruption_suspected === true || kgFinal.stem_corruption_suspected === true;
   if (stemCorrupt) stemCorruptions.push({ id: q.id, has_figure: q.has_figure, correct_answer: q.correct_answer, answer_affecting: suspect, note_jp: kg1.note_jp || kgFinal.note_jp || "" });
 
+  // round-1 is only worth publishing when adjudication actually moved something
+  const round1Differs =
+    kg1 !== kgFinal &&
+    (kg1.figure_derivable !== kgFinal.figure_derivable ||
+      kg1.derived_answer !== kgFinal.derived_answer ||
+      kg1.matches_key !== kgFinal.matches_key ||
+      kg1.stem_corruption_suspected !== kgFinal.stem_corruption_suspected ||
+      kg1.note_jp !== kgFinal.note_jp);
+
   merged[q.id] = {
     key_guard: {
-      figure_derivable: kg1.figure_derivable ?? null,
-      derived_answer: kg1.derived_answer ?? null,
-      matches_key: kg1.matches_key ?? null,
+      figure_derivable: kgFinal.figure_derivable ?? null,
+      derived_answer: kgFinal.derived_answer ?? null,
+      matches_key: kgFinal.matches_key ?? null,
       stem_corruption_suspected: stemCorrupt,
       suspect,
-      note_jp: kg1.note_jp ?? "",
+      note_jp: kgFinal.note_jp ?? "",
+      ...(round1Differs
+        ? {
+            round1: {
+              figure_derivable: kg1.figure_derivable ?? null,
+              derived_answer: kg1.derived_answer ?? null,
+              matches_key: kg1.matches_key ?? null,
+              stem_corruption_suspected: kg1.stem_corruption_suspected ?? null,
+              note_jp: kg1.note_jp ?? "",
+            },
+          }
+        : {}),
     },
     correct: { jp: jp.correct_jp, zh: tr.correct?.zh ?? "", en: tr.correct?.en ?? "" },
     distractors,
