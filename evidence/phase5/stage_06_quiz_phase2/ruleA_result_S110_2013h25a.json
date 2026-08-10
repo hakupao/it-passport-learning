@@ -1,0 +1,706 @@
+{
+  "n": 28,
+  "accurate": 24,
+  "bySeverity": {
+    "low": 21,
+    "none": 3,
+    "medium": 4
+  },
+  "keyGuardMismatch": [],
+  "audits": [
+    {
+      "id": "2013h25a-q001",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "zh/en で根拠条文を「《著作权法》第15条」「Article 15 of the Copyright Act」とだけ表記しており、日本の著作権法である旨の限定がない。jp 側は日本法の文脈が自明だが、zh 読者には中国著作権法第15条（中国法では職務作品は第18条相当）と誤読される余地がわずかにある。「日本《著作权法》第15条」「Article 15 of the Japanese Copyright Act」とするのが安全。内容の法的正しさ自体には影響しないため low。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q010",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "ウ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q012",
+      "accurate": true,
+      "independent_answer": "ウ",
+      "severity": "low",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard の判定自体は妥当だが、raw bank 側の欠陥が backlog に登録されていない。data/ip/quiz/questions.json の 2013h25a-q012 の stem_jp は実際に腐敗している (A=0/2/5/5/7、B=0/3/5/5/7) — この表では (2,1,1)=5+3+3=11 となり答えが エ にずれる answer-affecting 腐敗である。表示は data/ip/quiz/translations/2013h25a.json の stem_jp_clean が上書きする (apps/web/src/lib/quiz/quizModel.ts:117 で stem_jp_clean 優先を確認済) ため user-facing 影響はなく、suspect=false / stem_corruption_suspected=false は防御可能かつ note で完全に開示されている。ただし raw フィールドは未是正のまま残り、scripts/quiz-phase2-stemfix-S110.mjs の FIXES/KEY_FIXES は 2013h25a を含まない (grep で 0 hit)。今後 stem_jp_clean が失われた場合に answer-affecting な誤表示に戻るため、raw stem 是正 backlog への登録が望ましい。解説本体の正しさには影響しない。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "誤答肢 イ の説明がやや不完全 (結論・数値は正しい)。「A の3個目は 5→7 と +2 伸びるので、A を2個で止めるより3個にして残り1個を C に回した (3,0,1)＝10 のほうが上回ります」とあるが、(2,0,2)=9 から (3,0,1)=10 への移行では A が +2 得る一方で C が 2個→1個 で 4→3 と -1 失う。差引 +1 で 10 になるという点が省かれており、A の +2 だけを根拠に読ませる書き方になっている。示された配分 (A=3, C=1) と合計 10、および 10>9 はいずれも図と一致し誤りではないため減点は最小。zh/en も同じ省略を忠実に引き継いでいるので翻訳側の追加問題ではない。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q020",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "ウ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "distractors.イ の zh 「只是对现状（As-Is）的追认」: 中国語の「追认」は主に「事後承認・追認可」の意で、日本語の「現状追認 (現状をそのまま是認する)」のニュアンスをそのまま移した日式借用に近い。意味は文脈から通じるが、本土表現としては「只是对现状（As-Is）的沿袭/固化」がより自然。意味の誤りではないため low。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "distractors.エ の zh 「推迟到运行开始时点」: 「时点」は日本語「時点」に引きずられた表現。中国語では「推迟到开始运行时」「推迟到系统上线时」の方が自然。訳の忠実性・意味に影響はないため low。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q029",
+      "independent_answer": "ウ",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳で「使用者」を多用 (correct.zh / points.zh / distractor エ.zh)。誤りではないが、大陸中国語の IT 文脈では「用户」がより標準的で、「使用者」は台湾寄りの語感。用語統一の観点で「用户」への置換が望ましい (意味への影響なし)。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "correct.jp / key_guard.note_jp がサービスデスクを「ITIL のサービス運用における機能」と断定。ITIL v3 準拠なので 2013年春の出題としては妥当だが、ITIL 4 では「サービスデスク実践 (practice)」に再定義されている。IP レベルでは許容範囲であり是正は必須でないが、版依存の記述である点は留意。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q037",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "correct.zh および points[1].zh で 勧告 を「劝告」と直訳している (「并向相关人员提出建议和劝告的活动」「提出面向改进的建议和劝告」)。大陸中文の監査用語では審査結果に基づく勧告は「建议」「改进建议」が標準で、「劝告」は個人を諭す語感が強く日本語寄りの直訳。意味の誤りではないため low。同様に「经营战略」(経営戦略) も許容範囲だが「企业战略/经营策略」の方が自然。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q039",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "ウ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "用語ゆれ (軽微): correct.zh / points.zh で「整合变更控制」を用いているが、本土 PMBOK の正式プロセス名は「实施整体变更控制」(Perform Integrated Change Control)。知識エリア名「项目整合管理」は本土用語として妥当なので日式借词ではなく、意味も通じるため忠実性の欠陥ではないが、公式訳語に合わせるなら「整体变更控制」がより整合的。en 側は integrated change control で正しい。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q048",
+      "accurate": false,
+      "severity": "medium",
+      "independent_answer": "ウ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": false,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "points[] の jp と zh/en が項目間でずれている。points[0].jp の後半は「『初期設定』『環境整備』『据付け』という語が出たら導入と判断する」というキーワード判別指針だが、points[0].zh/en の後半はそれではなく「開発(含結合)→導入→受入れ→運用→保守」というライフサイクル順序になっている (これは本来 points[1].jp の内容)。さらに points[1].zh/en は「誰がやるか・いつやるかで区別する (結合=開発側/開発中、導入=運用前の環境整備、受入れ=取得者による検収、保守=運用開始後)」という、points[1].jp に存在しない記述に置き換わっている。結果として jp のキーワード判別指針は zh/en から完全に脱落し、逆に zh/en には jp に対応のない内容が入っている。個々の記述内容は事実として妥当だが、項目単位の訳の忠実性が成立していない。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "correct の jp と zh/en に内容ズレ。jp は末尾で「開発工程(結合)でも検収工程(受入れ)でも運用後の変更対応(保守)でもない。よって『ウ』が正しい」と他肢との対比で締めるが、zh/en はこの対比文を落とし、代わりに jp に無い JIS X 0160 (ソフトウェアライフサイクルプロセス) への言及で締めている。また zh/en は jp に無い具体例 (ユーザーアカウント・接続先の設定) を追加している。追加分の内容自体は正しく誤りではないが、jp を正とした忠実性という点では増減が生じている。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q049",
+      "accurate": true,
+      "independent_answer": "エ",
+      "severity": "low",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "誤答肢イ (zh) と points[1] (zh) で「事象」という日本語由来の語がそのまま使われている (「对已发生事象的应对流程」「对象是对事象的应对」)。中国大陆の中国語で「事象」は主に確率論の用語であり、この文脈では「已发生的事态 / 已发生的情况 / 已发生的故障」等が自然。意味は通じるため誤訳ではないが、本土 zh 表現としてはやや日式借词寄り。なお同段落で incident を「事件」と訳しているため語の重複回避で選ばれた可能性がある。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "正解解説 (zh) の「受变电设备」は日本語「受変電設備」の字面をほぼそのまま移した訳。中国大陆の電気設備用語としては「变配电设备」「供配电设备」がより一般的。技術文脈で通じないレベルではないが、本土 zh 表現の観点では改善余地あり。jp/en (substation equipment) との意味整合自体は取れている。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q051",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "外部キーの「複数設定できる」根拠を『参照したい相手の表が複数あれば、その数だけ設定できる』(correct.jp / points[0]) と、参照先の表の数に紐づけて説明している。実際には同一の表を参照する外部キーを 1 つの表に複数持つこと (例: 社員表に 承認者ID / 起票者ID が両方とも社員表を参照) も可能で、外部キー数は参照先の表の数に限定されない。設問の正誤判断には影響しないが、根拠としてはやや狭い一般化。zh/en も同じ狭さをそのまま訳出している (訳としては忠実)。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "誤答肢 ウ / エ の根拠『1 つの表に主キーを 2 つ以上置くと行の一意識別ができなくなる』(distractors.エ.jp, en/zh も同旨) は論理的にやや不正確。候補キーが複数あっても各々で行は一意識別でき、識別が壊れるわけではない。主キーが 1 つなのは『候補キーの中から 1 つを主キーとして選ぶ』という関係モデル上の定義的制約による。結論 (主キーは 1 表 1 つ) は正しいので誤答判定は妥当だが、理由付けは因果が逆向きの簡略化。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard の stem_corruption_suspected=true が是正後も true のまま残っている。note_jp 内に『【S110 是正済】stem_jp の語中スペース「一 つの表」を「一つの表」へ是正』とあり、実際に stem_jp は「一つの表」で腐敗は解消済み。フラグ値と現在の stem 実体が不一致 (note で説明されているため誤導性は低く、suspect=false・答えへの非影響という判定自体は妥当)。フラグの棚卸し時に false 化または『是正済』を示す表現への統一を推奨。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳は用語 (主键/外键/索引/复合主键) とも本土表記で適切だが、日本語の鉤括弧「」をそのまま流用している箇所が複数ある (例: 正确答案是 イ「外键、索引」/ 题目要求的是「只列出可以设置多个的项目并且列全」)。意味の忠実性には影響しないが、本土 zh 組版としては “……” が標準。corpus 横断の表記規約課題。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q052",
+      "independent_answer": "ア",
+      "accurate": false,
+      "severity": "medium",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": false,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "distractors.ウ の zh/en が jp の別物になっている（訳ズレ）。jp は「0.10 = 並列にすれば稼働率が1.00になると誤解した場合の 1.00−0.90」という誤答成因を説明し、末尾に「装置Bの0.8を掛ける操作も抜けており二重に誤っている」と結ぶ。一方 zh/en は「0.10 = 装置A1台の停止確率 1−0.9=0.1 をそのままシステム低下量とみなした値」という別の成因を述べ、さらに jp に存在しない 0.99−0.90＝0.09 の記述を追加している。両者とも内容自体は誤りではないが、jp と zh/en で学習者が受け取る誤答分析が異なる。jp の現行テキストに合わせて zh/en を再訳すべき。"
+        },
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "distractors.エ も jp と zh/en が非対応。jp は「例えば『並列冗長を外すと稼働率が半分になる』と誤解して 0.9×0.5=0.45 と考えるような値」という具体的な誤答成因の括弧書きを持つが、zh/en にはこの記述が一切なく、代わりに jp にない「0.45 は（0.072 の）6倍を超える／more than six times」という比較を述べている。数値評価（0.45/0.072≒6.25）自体は正しいが、jp↔zh/en の内容対応が崩れている。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "points[1] の第2文が不一致。jp は「『幾ら低下するか』と差を問う場合は、両構成の全体稼働率をそれぞれ求めてから引き算する（部分だけの差で答えない）」と具体的な手順注意を述べるのに対し、zh/en は「問われているのが個々の装置の値か システム全体の値かを確認する」という一般論に置き換わっている。関連はするが忠実訳ではない。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "points[0] で jp の記憶術「『どちらか一方でも動けば正常』＝『両方同時に故障する確率を1から引く』と覚える」が、zh/en では「并联的诀窍是先把各自的停机概率相乘 / The trick for the parallel case is to multiply the failure probabilities together first」に置き換わっている。また直列・並列の記述順も jp と逆。実害は小さいが訳ズレ。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "correct の冒頭、jp「両方同時に停止する確率を1から引いて求めます」に対し zh「是用整体减去两台同时停机的概率来求得的」/ en「subtracting ... from the whole」と、1（100%）を『整体 / the whole』と曖昧に訳している。稼働率計算の文脈では『1』または『100%』と明示するほうが正確で自然。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q055",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q061",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "correct.en 内で日本語の隅付き引用符「」が英文中に混入している (\"a list of 「which pixel at which position has which color」\")。意味・正誤には影響しないが、英語ロケール表示としては半角引用符 (\"...\") に統一すべき体裁上の不整合。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q064",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "ウ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "誤答肢アの説明「x AND y ... 表とはちょうど逆で」という表現が厳密には緩い。表の z 列は 1,0,0,0 で、そのビット単位の否定は 0,1,1,1 (=OR) であり、AND の 0,0,0,1 ではない。行順反転 (1,0,0,0 の逆順=0,0,0,1) や「1 になる行が両端で逆」の意味なら成立するが、誤答肢エで「すべての行で逆」という真の補数関係に同じ『逆』を使っているため、読者が否定の意味に取ると誤解しうる。直後の「x=y=0 の行が 0、x=y=1 の行が 1 となり一致しません」で実質的根拠は正しく示されており、誤答判定自体は妥当。zh「这与表正好相反」/ en「exactly the reverse of the table」にも同じ緩さが継承されている (訳自体は jp に忠実)。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q067",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh の「排他控制」(排他制御) は日式借词寄りの訳語。本土 zh の一般的な表現は「互斥控制」ないし文脈により「并发控制」。ただし corpus 全体 (2016h28a / 2020r02o / 2024r06 など複数 exam) で既に「排他控制」が慣用として使われており、内部整合は取れているため非ブロッキング。用語統一方針を決めるなら corpus 横断での是正が必要。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "correct.zh の「结果才不会产生冲突」は jp「結果が矛盾しません」の訳としてやや意訳 (冲突=conflict / 矛盾=inconsistency)。ただし translations/2013h25a.json の stem zh も「不产生冲突」で統一されており、問内・訳文間で整合しているため実害なし。厳密には「不产生矛盾/不一致」がより忠実。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "参考情報 (解説の瑕疵ではない): questions.json:19066 の raw stem_jp は「芝盾」「時点 (@)」「⑧」「時点 (9)」と OCR 破損が残る。key_guard note は「芝盾」のみ言及し、答案ラベルに対応する (@)→(a) / (9)→(d) の破損には触れていない。表示は quizModel.ts:117 で translations 側 stem_jp_clean が上書きするため user-facing 影響はなく、suspect=false の判定自体は妥当。note の網羅性のみの指摘。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q072",
+      "accurate": true,
+      "severity": "none",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": []
+    },
+    {
+      "id": "2013h25a-q081",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "誤答肢ウ (WEP) の zh 訳「WEP 是用于对无线区间的通信进行加密的旧标准」の『无线区间』は日本語『無線区間』の直訳で、本土 zh では『无线链路』『无线传输段』等が自然。意味は通じるため low。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "correct.zh の「48 位固有标识符」は日本語『固有識別子』の直訳寄り。本土 zh の技術文書では MAC アドレスは通常『唯一标识符』と表現される。意味の齟齬は無いため low。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "誤答肢ウ/エの zh 訳で『脆弱性』を用いているが、本土 zh の一般的な IT 用語は『漏洞』(WEP 的加密方式存在漏洞 / 改进了 WEP 漏洞的…)。『脆弱性』も中国語セキュリティ文献で使用例があるため誤りとまでは言えず low。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q083",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard.stem_corruption_suspected=true が陳腐化。当該腐敗 (選択肢エ「見知らぬ差出入」) は S110 で「差出人」へ是正済みで、現行 choices_jp は正しい表記になっている。note_jp に【S110 是正済】と履歴が明記されているため実害はなく suspect=false も妥当だが、フラグ値としては現状の表示テキストと不整合 (是正後は false へ落とすか、是正済みを表す別フィールドで表現するのが整合的)。round1 の同フィールドは履歴として true のままで問題ない。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q086",
+      "accurate": false,
+      "severity": "medium",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": false,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "points[] の jp と zh/en が入れ替わっている。points[0].jp は「守秘義務契約=機密性を契約で担保する仕組み。再委託可否・指揮命令関係・著作権帰属はそれぞれ別の契約条項が扱う」だが、points[0].zh/en は「正式受注前の見積依頼・RFP 段階でも自社情報を渡すなら原則締結し、複数社なら各社と個別に締結する」という内容で、これは points[1].jp の内容。逆に points[1].zh/en は「契約の種類と保護対象を対応させて覚える (再委託可否・成果物著作権=業務委託/請負契約、指揮命令=労働者派遣、守秘義務契約=情報の機密性)」で、points[0].jp の内容にあたる。zh・en 両方で同じ交差が起きており、index 単位で三語を並べる表示では locale 切替時に同じ位置に別の項目が出る。内容自体はいずれも正しいので事実誤りではないが、逐項の訳対応が壊れている。"
+        },
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "distractors.ウ の zh/en が jp と別論法に差し替わっている。jp は「ソフトウェアの著作権が誰に帰属するかは著作権法および契約中の知的財産権 (著作権帰属) 条項で定める事項」+「守秘義務契約が守るのは開示情報の秘密保持であって権利の帰属・利用範囲ではない」+「加えて見積依頼の段階ではまだソフトウェアの開発も行われていない」の三点。これに対し zh は「著作权是在作品被创作出来的时点自动产生的权利，即使不签订合同，法律也会予以保护」、en も同じく \"Copyright is a right that arises automatically at the moment a work is created, and it is protected by law even without any contract\" という、jp に存在しない別の論拠から始まっており、さらに jp の第三文 (見積依頼段階では未開発) が zh/en では完全に脱落している。主張内容自体は法的に誤りではないが jp への忠実性を欠く。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "distractors.イ.zh の「伪装承揽」は日本語「偽装請負」の直訳借用で、本土中国語の一般的表現ではない (本土では「名为承揽实为派遣」「假承揽」等)。同様に「业务委托合同」も日本語「業務委託契約」をそのまま移した語形。意味は通じるため実害は小さいが、本土 zh 用語としてはやや日式。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "distractors.ウ.jp の補助論拠「加えて見積依頼の段階ではまだソフトウェアの開発も行われていない」はやや不正確。選択肢ウは「ソフトウェアに関する N社の著作権」= N社側が既に保有しているソフトウェアの著作権とも読め、その場合は見積依頼時点で既に著作物が存在しうるため、この一文だけではウを排除しきれない。主論拠 (守秘義務契約は情報の秘密保持を守るもので著作権の帰属・保護は別条項) は妥当なので結論に影響はない。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "correct の jp と zh/en で理由付けのニュアンスが微妙にずれる。jp は「依頼先は 1 社ではなく複数社であり、そのうち発注に至らない会社にも情報が渡ったままになる」と、失注企業に情報が残る点を漏えいリスクの根拠にしている。zh は「对方还不是承接方，而且处于多家公司相互竞争的状态」、en も \"the other parties are not yet the contractors, and several companies are competing with each other\" と、競合状態である点に置き換えており、jp の「発注に至らない会社にも情報が残る」という核心の含意が明示されていない。結論・正解根拠は同一で実害は小さい。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q087",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "correct.jp が「B 社は開発工程に要員を追加して作業完了を早めますが、要員追加に伴って一時的に生産性が下がり開発工数が増えます」と、あたかも設問中に与えられた事実であるかのように断定している。これらは 2013h25a 中問A の共通記述 (原典 page-30 の B 社回答) に由来する情報で、本問の stem 単体には一切現れない。したがって stem だけを見る学習者は解説の前提を検証できない。論理としては誤りでなく (一般原則として要員追加→コスト増→契約金額変更は妥当)、key_guard が linkage-gap として suspect=true で開示済みのため深刻度は low だが、「請負では期間短縮に伴う工数増分のコストを発注者が負担するのが通例」という一般論の形にするか、共通記述を紐づける方が保真性が高い。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "zh/en とも jp に忠実で、術語 (承包合同/发包方・承包方/交付期/工时/验收标准、contract-for-work / delivery deadline / deliverables) は translations/2013h25a.json の stem 訳と整合し、本土 zh として自然 (日式借词なし)。ただし jp の断定的前提 (要員追加・生産性低下) をそのまま訳しているため、上記 jp 側 issue が zh/en にも同じ形で伝播している (訳自体の欠陥ではない)。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q088",
+      "independent_answer": "イ",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "correct.jp 冒頭の図説明「各作業について 当初計画 / 変更計画 / 実績 の3段が並んだガントチャート」は原典 page-31 の図1 と一致しない。図1 で 3段 (当初計画/変更計画/実績) を持つのは 流通計画・プロモーション / 外部調達管理 / 受入試験・検収 の 3 作業のみで、製品仕様・販売価格計画・見積・契約 の 3 作業は 当初計画/実績 の 2 段しかない (変更計画行が存在しない)。『各作業について』という全称的な言い回しは図と食い違う。推論・数値・正解導出には一切影響しないが、図の構造説明としては不正確で、同じ誤りが zh (「针对每项作业把 当初计划 / 变更计划 / 实际业绩 三行并排排列」) と en (\"with three rows — original plan / modified plan / actual results — lined up for each activity\") にもそのまま伝播している。『変更計画がある作業では3段』程度に限定するのが正しい。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh の凡例用語 2 点が本土中国語としてやや不自然な日式借词寄り。(1) 実績 → 「实际业绩」。中国語の『业绩』は経営成績/業績の意で、ガントチャートの実施実績 (进度) を指す語としてはズレる。『实际』『实绩』『实际进度』が自然 (en は \"actual results\" で妥当)。(2) 当初計画 → 「当初计划」。中国語の『当初』は副詞用法が主で、名詞修飾の『当初计划』は日本語直写に近い。本土表記なら『原计划』『最初计划』が自然。いずれも correct/distractors 全体で一貫して使われており意味の取り違えは生じないため低深刻度だが、本土 zh 基準では要調整。なお『甘特图』『外部采购管理』『快速跟进 (fast tracking)』『流通计划·促销业务』などの主要用語は本土表記で適切、数値・論理は jp に完全忠実。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q090",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "「事務担当者」の zh 訳が correct.zh・distractors.ウ.zh ともに「事务负责人」となっている。本土中国語の「负责人」は「責任者・長」を指す含意が強く、原文の一般事務スタッフというニュアンスとずれる。en 側は \"office staff members\" と正しく訳しており、zh/en 間で不整合。「事务人员」「事务担当人员」等が適切。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "correct.jp が「誤発送品の回収と正しい商品の再出荷、原因調査といった本来不要な追加作業」と具体的作業内容を列挙しているが、これは入力に収録されていない〔事務担当者へのインタビュー結果メモ〕の中身を推測で補完したもの。因果の向きの一般論としては妥当であり結論には影響しないが、源資料未確認の具体化である点は linkage gap 下の残リスク (zh/en も同様に踏襲)。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "distractors.エ の「3 つの関係がすべて逆向きになっている」(zh「三者的关系全部弄反了方向」) は表現が不正確。矢印は 2 本であり、正しくは「3 事象の順序が正解と完全に逆」。判定内容自体 (エ は イ の完全な逆順) は正しいので誤りではないが、表現の厳密性に難あり。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q092",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳で「費用の小ささ」を「费用的小」と直訳している箇所 (correct.zh、distractors.イ.zh、points[1].zh)。意味は通じるが本土中国語としてはやや不自然で、「费用之低」「费用低」等が自然。用語の一貫性自体は保たれており、答えに影響しない軽微な語感の問題。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q093",
+      "independent_answer": "イ",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "correct の zh/en に jp 原文へ対応記述の無い加筆がある。(a) 末尾の「選択肢の数字と氏名の間の空白は原典の組版上の間隔で、表1 は空白を規定していない」旨の一段落、(b)「月を 9 でなく 09 と書くのが最大の要点」という強調。いずれも原典 p.39 表1 / p.40 の組版と照合して事実としては正しく、誤訳でも矛盾でもないが、jp 側に無い情報が zh/en にのみ存在し三言語の情報量が非対称。また jp は結論を「報告_10092 情報太郎」(空白あり) と書くだけで空白の扱いに触れないのに対し、zh/en は空白無し形 (报告_10092情报太郎 / Hokoku_10092JohoTaro) で結論を書くため、jp 学習者だけがこの注意点を得られない。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "distractors 3肢すべてで zh/en が jp より長く、jp に無い補足を追加している。ア「月の 09 に引きずられて週もゼロ埋めする典型的な誤答」、ウ「正解 10092 と 0 の位置が入れ替わっただけで見分けにくい/桁数は形式中の文字数で機械的に判断せよ」、エ「桁数を揃える目的は名前順ソートで年月週が正しく並ぶこと」。内容はいずれも妥当 (ウ の 10092 と 10902 は 3・4 文字目の 0/9 が入れ替わった関係で記述どおり) だが、jp 側に対応記述が無い加筆であり忠実性の観点では非対称。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard.round1.note_jp が「stem_jp / stem_jp_clean が『ファイ ル名』と半角スペースを残している」と記すが、data/ip/quiz/.phase2/input_2013h25a.json の当該エントリでは stem_jp のみが「ファイ ル名」で、stem_jp_clean は「ファイル名」と既に是正済み。round1 の記述は事実誤認。最終 note_jp では「腐敗は raw の stem_jp のみ / clean は是正済み」と正しく訂正されており実害は無いが、誤った round1 記述が撤回注記なしで explanation オブジェクト内に保存されたままである。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh の一部訳語が本土中国語としてやや不自然。「标记规则」(表記ルール) は大陆では「书写规则/表示规则/记法规则」がより自然。「中问」は日本語の中問をそのまま借用しており、points[0] では括弧内に「(一段共同说明下带多个设问)」と注釈があるため理解可能だが借用語であることは残る。意味の誤りは無く、用語は zh 内で一貫している。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q094",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "イ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳で「个人用文件夹」「业务报告书」という日本語構詞をほぼそのまま残している (本土 zh なら「个人文件夹」「业务报告」がより自然)。ただし設問肢 (d/b) の用語と一対一対応させるための保持と解釈でき、全訳を通じて表記は一貫しているため、意味の齟齬は生じていない。是正は任意。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "distractor ア の最終文「個人用フォルダを一切使っていない点でも手順として不適切である」は、直前に述べたルール (3) 違反の言い換えであり、独立した第二の誤り理由のように読める。誤りではないが冗長。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q095",
+      "accurate": false,
+      "severity": "medium",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": false,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "medium",
+          "detail_jp": "zh/en が jp の決め手をすり替えている。jp は原典 page-39 の〔業務報告書の作成ルール〕(5)「関連資料として保管できるファイル数の上限は一つの業務報告書につき12」を根拠に「1桁の n では10件目以降に付番できない」と論じているが、zh/en は上限12の根拠を一切出さず、「資料が10件以上になると『_関連_10』が『_関連_2』より前に来て順序が崩れる」という別論法に差し替えている。しかも stem は「nの個数は桁数を表す」と明示しており、ウ の n は1桁固定なので『10』という連番自体が書けない。つまり zh/en の論拠は設問の定義と整合しないシナリオを前提にしており、jp より弱いだけでなく厳密には成立しない。correct・distractors.ア・distractors.ウ・points[2] の4箇所で同型の訳ズレが発生している (jp ウ=『1〜9 の9通りしかなく12件に足りない』/ zh・en ウ=『10 が 2 の前に来る』、jp ア=『12件に付番できない』/ zh・en ア=『位数が揃っていない』)。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "correct.zh の「分隔符 + 作成者姓名」が日式借詞。本土中文では「创建者姓名」「编写者姓名」等が適切。また同 zh は連番の例示を「（01、02、…、10、11）」と 11 で止めており、上限12件という原典の要件と噛み合わない（jp は 01〜12 と正しく書いている）。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "ファイル名リテラルを zh は「报告_」「_关联_」、en は「report_」「_related_」と翻訳している。これは実際のファイル名文字列であり、画面に表示される選択肢 (「報告_」「関連_」の日本語リテラル) と字面が一致しないため、学習者が解説と選択肢を突き合わせにくい。ローカライズ方針として意図的なら統一ルールとして明文化が必要。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard の note は「表1 の条文そのものは確認できず figure_derivable=false」と述べているのに、correct.jp は表1 の形式 (『報告_』+ yymm + w + 作成者氏名) と作成ルール(5) の上限12件を具体的に引用している。内容自体は page-39 と照合して正しい (捏造ではない) が、guard の自己申告と本文の根拠水準が不整合。なお linkage-gap 自体は事実で、表1 は data/ip/exams/groups.json の group 2013h25a-mqC に shared_figure (figures/_groups/2013h25a-mqC.png, page-39) として存在するのでレコード紐付けを補えば解消できる。suspect=true の判定と derived_answer=エ は妥当。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard は「語句脱落・設問と選択肢の単位不整合などは無い」と選択肢まで含めて健全と断じているが、保存されている choices_jp は原典 page-41 とアンダースコア位置が相違する。原典は ア/イ が『関連_』+ n(nn) + 『_報告_』+ yymm + w + 作成者氏名、ウ/エ が 『報告_』+ yymm + w + 作成者氏名 + 『_関連_』+ n(nn) で、作成者氏名 の直前に『_』は無い。stored は ア/イ で先頭の『_』が落ち、ウ/エ で w と作成者氏名 の間に『_』が混入している。answer-affecting ではないが表示テキスト保真 (s7x) の観点で是正対象、かつ guard の見落とし。stem 本文自体は原典と一致しており stem_corruption_suspected=false は妥当。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q098",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "ア",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "zh/en が jp に対して系統的に増量されている。同ファイル他サンプル (q001/q010/q012/q020) の zh/jp 文字数比は約 0.85-0.90 なのに対し、本問は correct 1.10、distractors 1.11-1.35、points 1.53-1.59 と突出。実体として points[1] の zh/en 冒頭「RFID是用电波以非接触方式读写信息的机制…可以一次批量读取多个标签，也可以隔着遮挡物读取，因此能提高图书馆借还书和藏书清点的效率」/ en 同旨は jp「RFID はバーコードに代わる自動識別の媒体であり」に対応物が無い純粋な追加。points[0] の「把要变的东西（这里是读取介质）与不变的东西（这里是号码体系）区分开来考虑」、distractor ウ の「给数十万册书全部重新编号这项作业本身，也伴随着标签的重贴与数据转换」も jp に無い。記述内容自体はいずれも事実として正しく jp と矛盾しないため誤訳・捏造ではないが、三言語で学習者に届く情報量が揃わない (訳文というより再構成) 点は保真上の低位ズレ。"
+        },
+        {
+          "lang": "both",
+          "severity": "low",
+          "detail_jp": "jp にあって zh/en で落ちている文がある。(1) correct.jp 末尾の「なお付随的な利点として…これは補足であり、判断の根拠はあくまで上記の 2 前提です」という『補足と本筋の切り分け』宣言が zh/en には無く、zh/en では棚ラベル・利用者告知・他システム連携が本筋の利点として並列に読める。(2) distractor イ の jp「利用者カードを RFID 内蔵の新カードに切り替える場合でも、カードに記録する利用者番号自体は現行のものを引き継ぐのが正しい進め方です」という『正しい進め方』の提示が zh/en では別論 (旧カード・新カード双方の受理) に差し替わっている。いずれも誤りではないが 1:1 対応が崩れている。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "用語「借阅履历」(履历=中国語では経歴/レジュメの意) は日本語『履歴』の借用寄りで、本土 zh なら「借阅记录 / 借阅历史」が自然。ただし phase1.5 で確定済みの stem zh (data/ip/quiz/.phase1.5/stem_2013h25a-q098.json) が既に「管理借阅履历的文件（表）」を採用しており、corpus 内の用語整合は保たれている。単独の是正はむしろ不整合を生むため、corpus 横断の用語方針課題として扱うべき低位事項。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard の flag が生成元 expl_jp から劣化している (答えには無影響)。expl_jp_2013h25a-q098.json では stem_corruption_suspected=true とし、raw stem_jp の腐敗 (空欄 a が「| sa |」と誤読、選択肢組合せ表が行区切りを失って本文末尾に流入、前問 問97 の分野見出し〔ストラテジ〕混入) を列挙、さらに『原典 page-44 で問98 は〔マネジメント〕見出し下だが input JSON の topic_id は strategy-05-14 で分野メタデータ不一致』というデータ backlog を明記していた。sample 側 key_guard は stem_corruption_suspected=false に下げ、topic_id 不一致 backlog を丸ごと落とし、「| sa |」誤読の言及も消えている。表示は stem_jp_clean 優先なので学習者影響は無く note 本文で raw 腐敗自体は開示されているため隠蔽ではないが、同ファイル q093 (腐敗は raw のみ・clean 是正済み) が stem_corruption_suspected=true を維持しているのと運用が割れる。私自身も questions.json の raw stem 末尾に「[ストラテジ〕」と崩れた選択肢表、および topic_id=strategy-05-14 と原典〔マネジメント〕の不一致を実地確認した。derived_answer=ア / matches_key=true / suspect=false 自体は図と整合し妥当なので key_guard_valid は維持。"
+        }
+      ]
+    },
+    {
+      "id": "2013h25a-q099",
+      "accurate": true,
+      "independent_answer": "ウ",
+      "severity": "low",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "en",
+          "severity": "low",
+          "detail_jp": "英訳が JP/zh に存在する丸数字 ①②③ (施策番号) を 10 箇所すべて落とし、施策を \"measure (1)/(2)/(3)\" と括弧数字に置き換えている。本問は「要望事項 (1)〜(4)」と「施策①〜③」の対応付けが論点そのものであり、EN では両者が同一の (n) 表記に衝突する。例: correct.en の \"All of Mr. B's measures (1) to (3) are mechanisms that read RFID tags\" / \"the requirement that measures (1) to (3) cannot fulfill is (3)\"、distractor エ の \"as in measure (3)\" (= 施策③) は直前の \"Requirement (4)\" と併走して読みにくい。各所に requirement / measure の語が付いているため一義には読めるので誤りではないが、JP/zh が保っている記号上の区別が EN だけ失われており、可能なら施策側を circled ①②③ か \"Measure 1/2/3\" 等に統一するのが望ましい。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳が「B さん」を「B 先生」と訳しており、原文にない男性という属性を付与している。IT パスポート過去問の登場人物は性別未指定であり、他問との用語整合の観点からも「B」もしくは性別中立の表現が無難。意味理解には影響しない軽微な点。"
+        }
+      ]
+    }
+  ]
+}

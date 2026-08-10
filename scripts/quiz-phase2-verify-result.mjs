@@ -76,8 +76,33 @@ for (const r of results) {
   const e2 = checkKg(r.key_guard_round1, r.id, "round1"); if (e2) problems.push(e2);
   if (typeof r.suspect !== "boolean") problems.push(`${r.id}: suspect not boolean`);
   // expl files must exist for every persisted question (merge reads them)
-  if (!existsSync(path.join(PHASE2_DIR, `expl_jp_${r.id}.json`))) problems.push(`${r.id}: expl_jp file missing`);
-  if (!existsSync(path.join(PHASE2_DIR, `expl_tr_${r.id}.json`))) problems.push(`${r.id}: expl_tr file missing`);
+  const jpPath = path.join(PHASE2_DIR, `expl_jp_${r.id}.json`);
+  const trPath = path.join(PHASE2_DIR, `expl_tr_${r.id}.json`);
+  if (!existsSync(jpPath)) problems.push(`${r.id}: expl_jp file missing`);
+  if (!existsSync(trPath)) problems.push(`${r.id}: expl_tr file missing`);
+  // S110: the translation must cover the JP element-for-element. 2013h25a-q093 shipped
+  // points with 2 entries against the JP's 3 — a whole point silently dropped — and the
+  // in-pipeline TR-Review still returned completeness=true / PASS. An LLM reviewer cannot
+  // be relied on to count array elements, so count them here.
+  if (existsSync(jpPath) && existsSync(trPath)) {
+    try {
+      const jp = JSON.parse(readFileSync(jpPath, "utf-8"));
+      const tr = JSON.parse(readFileSync(trPath, "utf-8"));
+      const jpPts = (jp.points_jp ?? []).length, trPts = (tr.points ?? []).length;
+      if (jpPts !== trPts) problems.push(`${r.id}: points count mismatch jp=${jpPts} tr=${trPts} (translation dropped/merged an element)`);
+      const jpLetters = (jp.distractors_jp ?? []).map((d) => d.letter).sort().join("");
+      const trLetters = (tr.distractors ?? []).map((d) => d.letter).sort().join("");
+      if (jpLetters !== trLetters) problems.push(`${r.id}: distractor letters differ jp=[${jpLetters}] tr=[${trLetters}]`);
+      const blank = [];
+      if (!tr.correct?.zh?.trim()) blank.push("correct.zh");
+      if (!tr.correct?.en?.trim()) blank.push("correct.en");
+      (tr.points ?? []).forEach((p, i) => { if (!p?.zh?.trim()) blank.push(`points[${i}].zh`); if (!p?.en?.trim()) blank.push(`points[${i}].en`); });
+      (tr.distractors ?? []).forEach((d) => { if (!d?.zh?.trim()) blank.push(`distractors.${d.letter}.zh`); if (!d?.en?.trim()) blank.push(`distractors.${d.letter}.en`); });
+      if (blank.length) problems.push(`${r.id}: empty translation field(s): ${blank.join(", ")}`);
+    } catch (e) {
+      problems.push(`${r.id}: unparseable expl file (${e.message})`);
+    }
+  }
   const kg = r.key_guard, kg1 = r.key_guard_round1;
   if (r.suspect || kg?.stem_corruption_suspected || kg1?.stem_corruption_suspected ||
       kg?.matches_key === false || kg1?.matches_key === false || kg?.figure_derivable === false || kg1?.figure_derivable === false) flagged += 1;
