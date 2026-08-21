@@ -1,0 +1,74 @@
+{
+  "summary": "S112 2012h24a 二轮是正 (q092 陳腐化注記 strip / q023 zh hosting ラベル) の独立再核験 (Rule D)",
+  "agentCount": 2,
+  "logs": [
+    "再核験 2/2: verify-1-2012h24a-q092-stale-caveat-strip=PASS, verify-2-2012h24a-q023-zh-hosting-label=PASS"
+  ],
+  "result": {
+    "results": [
+      {
+        "id": "verify-1-2012h24a-q092-stale-caveat-strip",
+        "verdict": "PASS",
+        "detail_jp": "【結論】PASS。4 項目すべて実測で確認、残存・破損なし。\n\n1) 陳腐化注記の完全消滅 (`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/explanations/2012h24a.json` L4130-4133, questions[\"2012h24a-q092\"].correct)\n- ファイル全体に対する grep `補足 \\(表示上の注意\\)|表示上の注意|显示上的注意|Supplementary note` = 0 件。\n- さらに user-facing フィールドに限定した grep `^\\s*\"(jp|zh|en)\":.*(OCR|表示上の注意|显示上的注意|Supplementary note)` = 0 件。つまり 2012h24a 内の全設問の correct/distractors/points に OCR 系 caveat は一切残っていない (S112b で省いたとされる体系スキャンの穴も、この exam に関しては実測で塞がっている)。\n- 「人金額」「画像データの符号化」「入金金额」の残存は 2012h24a.json の L4121/4127/4223/4229/4274/4280 のみで、いずれも key_guard.note_jp / round1.note_jp = 内部監査メタで学習者には出ない。data/ip/quiz 配下の他ファイル (questions.json / translations/) には 0 件。\n\n2) 本文が壊れていないこと (三語とも自然終止・意味平行)\n- jp 末尾: 「…企画プロセスの基本に沿って、エ を選びます。」\n- zh 末尾: 「…从对所提出的目的贡献最直接的措施开始着手——因此选择 エ。」\n- en 末尾: 「…start with the measure that contributes most directly to the stated purpose — and choose エ.」\n- 三語とも「一般には金額自動化で差戻し減 → 優先順位の原則 → エ を選ぶ」という同一の 3 段構成で閉じており、片言語だけ余分に削られた/残ったという非対称はない。区切り記号「／」や末尾空白の残骸もなし (script L48 の `.replace(/\\s+$/,\"\")` が効いている)。\n- Rule A 原指摘 (`/Users/bojiangzhang/MyProject/IT-Passport-Learning/evidence/phase5/stage_06_quiz_phase2/ruleA_result_S112_2012h24a.json` L636) は「当該補足段落 (jp『／ 補足 (表示上の注意):』以降、zh『／ 补充（显示上的注意）：』以降、en『／ Supplementary note (about the displayed text):』以降) を削除」と明記しており、注記は末尾に付いていた = slice(0, i) 方式で本文が巻き添えになる余地はない。\n\n3) staging と merged の同期\n- `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/expl_jp_2012h24a-q092.json` の correct_jp、`expl_tr_2012h24a-q092.json` の correct.zh/en は、merged 側 explanations/2012h24a.json の該当文と 1 文字単位で一致。merge が strip 後に走っていることを確認 (merge 漏れによる「staging だけ直って配信は旧文」ではない)。\n- 配信経路も確認済: `/Users/bojiangzhang/MyProject/IT-Passport-Learning/apps/web/src/lib/quiz/quizReader.ts` L42/97 が `data/ip/quiz/explanations` を直読みするため、中間コピーの陳腐化リスクはない。\n\n4) 前提の再確認 (注記が不要になったこと)\n- `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/questions.json` L15229 の choices_jp.エ = 「利用区間から金額を設定する機能を導入して, その自動化を図っていくこと」— 指定文字列と完全一致 (「人」混入なし、末尾「画像データの符号化」断片なし)。\n- 三言語整合も確認: `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/translations/2012h24a.json` L2253-2256 の choices.エ は zh「引入根据使用区间设定金额的功能，并推进其自动化。」/ en「Introduce a function that sets the amount based on the route section used, and proceed to automate it.」で、旧「入金金额」「payment amount」は消えている。よって注記が案内していた腐敗は現データ上に存在せず、strip は正当。\n\n【参考・本件のブロッカーではない指摘】\n- q092 の key_guard.stem_corruption_suspected は依然 true のまま (是正済を示す解決フラグがない)。監査証跡としては note_jp の【S112 裁決】で整合しているが、merge スクリプトの STEM-CORRUPTION レポートには今後も載り続けるため、下流の再フラグ運用では誤検知源になる。これは Rule A が q091 に対して low severity で挙げたのと同クラスの既存論点であり、本パッチの範囲外。"
+      },
+      {
+        "id": "verify-2-2012h24a-q023-zh-hosting-label",
+        "verdict": "PASS",
+        "detail_jp": "## 判定: PASS (スコープ内は欠陥ゼロ。ただし同クラスの残留を 3 件検出 — 下記 §5)\n\n### 1. translations/2012h24a.json — questions[\"2012h24a-q023\"]\n- `stem.zh` = 「A 公司向 B 公司提供**机房托管服务（housing/colocation）**。…」→ housing 側ラベル = 机房托管。ラテン語 gloss も併記済で誤読余地なし。\n- `stem_jp_clean` = 「A 社は B 社に対して**ハウジングサービス**を提供している。…」→ jp ハウジング ↔ zh 机房托管 が成立。\n- `choices` ア〜エ の zh は 4 列表 (服务器等设备的所有 / 设备安装设施的所有 / 应用软件的开发 / 系统的运行 × A公司/B公司) のみで、**hosting/housing の語彙を一切含まない**。よって選択肢側での用語断裂は原理的に発生しない (パッチの前提通り)。\n- `git diff` 実測: 本 diff 中に「机房托管」の増減 0 行 = **stem は今回未接触**。パッチは解説側 2 箇所に限定されている。\n\n### 2. explanations/2012h24a.json — questions[\"2012h24a-q023\"]\n- 誤答イ zh: 「…形态是**主机租用服务**（hosting，即租用服务器），而不是**机房托管**。housing 与 hosting 的区别就在于设备的所有者是用户还是服务商」→ hosting = 主机租用 に是正済、識別軸が正立。\n- points[1] zh: 「与**主机租用服务**（hosting）的区分：服务器等设备由服务商所有就是 hosting，由用户所有就是 housing」→ 是正済。\n- **残存確認**: `grep -c 主机托管 data/ip/quiz/explanations/2012h24a.json` → **0**。hosting 意で「主机托管」が残っている箇所はファイル全体でゼロ。\n- パッチスクリプト `scripts/quiz-phase2-explfix2-S112b.mjs` は from/to 完全一致 + 出現回数 1 の assert 付きで、意図外の巻き添え置換は構造的に不可。`.phase2/expl_tr_2012h24a-q023.json` の staging と merge 後の shipped が一致していることも実測確認。\n\n### 3. 設問レコード全体の連鎖 (zh 読者視点)\nhousing = 机房托管 が **5 箇所すべてで一貫**:\nstem.zh 机房托管服务(housing/colocation) → correct.zh 机房托管服务(housing/colocation) → 誤答ア「与用户自己搬入设备的**机房托管**正好相反」→ 誤答イ「而不是**机房托管**」→ 誤答エ「A 公司提供场地这一**机房托管**的本质」→ points[0] 「**机房托管服务**（housing）」。\nhosting = 主机租用 が 2 箇所 (誤答イ / points[1]) で一貫。**机房托管 = 場所貸し(正解側) / 主机租用 = サーバ貸し(誤答イ側)** という対比が、zh 単独読解でも表の「设备的所有」列と矛盾なく接続する。断裂なし。\n\n### 4. jp との 1 対 1\n- ハウジング(サービス) ↔ 机房托管(服务): jp 5 箇所 (stem/correct/ア/エ/points[0]) すべて対応。\n- ホスティングサービス ↔ 主机租用服务: jp 2 箇所 (イ/points[1]) すべて対応。付随する「レンタルサーバ」↔「即租用服务器」も保持。\n- 逆方向の漏れ (zh 側に jp に無い用語が湧く / jp の用語が zh で消える) なし。\n- **横断整合の追加根拠**: 2015h27h-q020 が既に「机房托管（housing）/ 主机租用（hosting）」の同一ペアを採用済。本パッチは既存の多数派規約に合流する方向であり、局所最適で終わっていない。\n\n### 5. スコープ外の残留 (本判定を FAIL にはしないが、横断 D の実弾として登記推奨)\n1. **2012h24a-q100 stem.zh** — 同一 exam 内で jp「ハウジングサービス」を「**主机托管服务**」と訳出。語義自体は大陸慣用で 主机托管 = colocation = housing なので誤りではないが、(a) q023 で確立した 机房托管 と exam 内 1 対 1 が割れ、(b) 直前に 主机租用(hosting) を学んだ読者にとって「主机〜」接頭が hosting 側に見える — パッチが潰した混同を隣の設問が再導入する形。**机房托管服务 への正規化を推奨**。\n2. **2016h28h-q006 (別 exam、未是正)** — 同一レコード内に「**主机托管服务（hosting）**は出租服务商准备好的服务器」と「**机房托管**是出租设备的放置场地」が同居。今回是正した軸反転と**完全同型の欠陥が現役出荷中**。2013h25h-q004・2012h24a-q023 に次ぐ 3 例目。\n3. **2013h25h-q004** — housing を「**服务器托管**」と第 3 の変種で表記。誤りではないが、repo 全体で housing に 机房托管 / 主机托管 / 服务器托管 の 3 変種が併存している状態。\n\n→ 上記より、hosting/housing の zh 見出し語は **exam 横断で 机房托管(housing) / 主机租用(hosting) に固定する D** を立て、全 6 レコード (2012h24a-q023, -q100, 2013h25h-q004, 2015h27a-q005, 2015h27h-q020, 2016h28a-q022, 2016h28h-q006) を一括正規化するのが妥当。本 S112 パッチ自体は当該 D の先取り実装として整合的。"
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Reverify"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "reverify:q092",
+      "phaseIndex": 1,
+      "phaseTitle": "Reverify",
+      "agentId": "a29ab3d84b7793f85",
+      "agentType": "feature-dev:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787346048622,
+      "queuedAt": 1787346046560,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "verify-1-2012h24a-q092-stale-caveat-strip",
+      "promptPreview": "あなたは独立した検証者です (Rule D: パッチ適用者と別役割)。甘く通さない。\n\n## 検証対象 1: 2012h24a-q092 の陳腐化注記 strip\n選択肢エの OCR 腐敗 (「人金額」+ 末尾断片) は既に是正済みだが、解説 correct の末尾に\n「補足 (表示上の注意): 選択肢エの表示には OCR 由来の混入があり…」という注記が jp/zh/en 三語で\n残っており、清書済みの選択肢を読む学習者に実在しない腐敗を案内していた。パッチ = 三語とも注記を strip。\n\n## 手順\n1. `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/explanations/2012h24a.json` の questions[\"2012h24a-q092\"] を Read。\n2. correct…",
+      "lastProgressAt": 1787346194325,
+      "tokens": 41989,
+      "toolCalls": 21,
+      "durationMs": 145702,
+      "resultPreview": "{\"id\":\"verify-1-2012h24a-q092-stale-caveat-strip\",\"verdict\":\"PASS\",\"detail_jp\":\"【結論】PASS。4 項目すべて実測で確認、残存・破損なし。\\n\\n1) 陳腐化注記の完全消滅 (`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/explanations/2012h24a.json` L4130-4133, questions[\\\"2012h24a-q092\\\"].correct)\\n- ファイル全体に対する grep `補足 \\\\(表示上の注意\\\\)|表示上の注意|显示上的注意|Supplementary note` = 0 件。\\n- さらに user-facing フィールドに限定した grep `^\\\\s*\\\"(jp|zh|e…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "reverify:q023",
+      "phaseIndex": 1,
+      "phaseTitle": "Reverify",
+      "agentId": "a419c19b8460074b5",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787346048699,
+      "queuedAt": 1787346046560,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "verify-2-2012h24a-q023-zh-hosting-label",
+      "promptPreview": "あなたは独立した検証者です (Rule D: パッチ適用者と別役割)。甘く通さない。\n\n## 検証対象 2: 2012h24a-q023 の zh hosting ラベル是正\nRule A が medium と判定: 大陸中国語で 主机托管 = colocation (ハウジング側) を指すのに、\nhosting の見出し語が「主机托管服务」になっており識別軸が逆さに読めた。\nパッチ = hosting 側 2 箇所 (誤答イの説明 / points の対比) を「主机租用服务」へ。\nhousing = 机房托管 は stem 訳から解説まで全鎖一貫しているため不動という判断。\n\n## 手順\n1. `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/translations/2012h24a.json` の qu…",
+      "lastProgressAt": 1787346223225,
+      "tokens": 56271,
+      "toolCalls": 13,
+      "durationMs": 174526,
+      "resultPreview": "{\"id\":\"verify-2-2012h24a-q023-zh-hosting-label\",\"verdict\":\"PASS\",\"detail_jp\":\"## 判定: PASS (スコープ内は欠陥ゼロ。ただし同クラスの残留を 3 件検出 — 下記 §5)\\n\\n### 1. translations/2012h24a.json — questions[\\\"2012h24a-q023\\\"]\\n- `stem.zh` = 「A 公司向 B 公司提供**机房托管服务（housing/colocation）**。…」→ housing 側ラベル = 机房托管。ラテン語 gloss も併記済で誤読余地なし。\\n- `stem_jp_clean` = 「A 社は B 社に対して**ハウジングサービス**を提供している。…」→ jp ハウジング ↔ zh 机房托管 が成立。\\n- `choices` …"
+    }
+  ],
+  "totalTokens": 98260,
+  "totalToolCalls": 34
+}
