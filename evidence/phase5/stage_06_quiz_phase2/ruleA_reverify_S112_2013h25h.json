@@ -1,0 +1,74 @@
+{
+  "summary": "S112 二轮是正 (q004 zh 用語 / q019 raw stem) の独立再核験 — 主 context がパッチを当てたため別 agent が検証 (Rule D)",
+  "agentCount": 2,
+  "logs": [
+    "再核験 2/2: 2013h25h-q004=FAIL, 2013h25h-q019=PASS"
+  ],
+  "result": {
+    "results": [
+      {
+        "id": "2013h25h-q004",
+        "verdict": "FAIL",
+        "detail_jp": "【指定3チェックの結果 — 解説ファイル内は合格】\n対象: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/explanations/2013h25h.json\n- L168 distractors エ zh: 「主机租用（hosting 服务，即所谓的租用服务器）」= hosting ラベルは 主机租用 に置換済み (OK)\n- L168 後半: 「housing（服务器托管）」= housing 側は 服务器托管 のまま不変 (OK)\n- L180 points[1] zh: 「主机租用（hosting）/ 服务器托管（housing）= 出租服务器或出租放置场地」(OK)\n- 「主机托管（hosting」型の誤対応は当該ファイル内に残存なし (grep 0 件)\n- 文法・句読点・全角括弧の対応とも健全。文は壊れていない\n- jp (L167/L179) との対応も ホスティング↔主机租用 / ハウジング↔服务器托管 で 1 対 1 を維持\n\n【FAIL 理由 — パッチ伝播漏れによる設問内の不整合 (確信度 90)】\n同一設問 2013h25h-q004 のユーザー可視の選択肢訳が未修正のまま:\n/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/translations/2013h25h.json L98-101\n  \"エ\": { \"zh\": \"主机托管\", \"en\": \"Hosting\" }\n- questions.json L19871 の choices_jp エ = 「ホスティング」。jp 系列は 選択肢ホスティング → 解説冒頭ホスティング で 1 対 1 が保たれるが、zh 系列は 選択肢 主机托管 → 解説冒頭 主机租用 となり連鎖が断裂している。\n- さらに、パッチ自身が採用した用語系 (scripts/quiz-phase2-explfix2-S112.mjs L7 コメント「housing = 主机托管/服务器托管」) に従えば、学習者が選んだ 主机托管 は解説が同一文中で対比している反対概念 (服务器托管 = housing) を指す。すなわち今回是正したはずの hosting=主机托管 の誤対応が、最も学習者の目に触れる選択肢ラベル上にそのまま残っている。\n- パッチ前は選択肢・解説とも 主机托管 で少なくとも内部整合していたため、本パッチは設問単位では整合性を悪化させた形になっている。\n必須是正: translations/2013h25h.json L99 を「主机租用」に揃える (en の Hosting は不変)。\n\n【副次所見 (今回のブロッカーではないが要 backlog 登録)】\n- /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/textbook/units/strategy-06-20-u03.json (L58/L106/L133) は第3の用語系 hosting=主机托管 / housing=机房托管 を採用。q004 の topic_id は strategy-06-20 で同一トピックのため、同一トピック内に 3 通りの訳語が併存している。\n- 同種の 主机托管 は data/ip/quiz/explanations/2016h28h.json (L256/L268)、translations の 2016h28h/2023r05/2012h24a/2011h23a/2009h21a にも存在。\n- hosting/housing の zh 訳語を D-NNN として固定し、explanations / translations / textbook に全面適用する横断是正が必要。\n- 注記: Bash 不可の環境のため JSON パース検証は未実施。構造読解の範囲では引用符・カンマ・括弧に破損は見られない。"
+      },
+      {
+        "id": "2013h25h-q019",
+        "verdict": "PASS",
+        "detail_jp": "## 判定: PASS (指定4条件すべて充足)。ただし後追い1件あり (非ブロッキング)\n\n### 1. 源ページ照合 (page-08.png を直読)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-08.png` の問19 表を読み取り:\n- ヘッダ: 作業順番 / 作業項目\n- ① 経営戦略に関連する社内外の技術の抽出\n- ② a (枠囲み)\n- ③ **競争優位の構築に役立つ技術の見極め**\n- ④ 自社技術力の評価と強化分野の選定\n- ⑤ 開発の優先順位決定と開発ロードマップの作成\n\n「構築」「見極め」を字形レベルで確認。「確保」「発掘」ではない。\n\n### 2-3. raw stem の逐字一致 / 旧文言の残存なし\n- `data/ip/exams/question_bank.json:29306` (パッチ対象の真の raw) → ③行が `| ③ | 競争優位の構築に役立つ技術の見極め |`。源と逐字一致。\n- `data/ip/quiz/questions.json:20202` (派生コーパス) → 同一。**コーパス再ビルド済みで raw と同期している**ことを確認 (パッチ script は bank しか書かないため、ここが未同期なら FAIL だった)。\n- stem 系フィールドでの「確保」「発掘」の残存: **ゼロ**。隠しディレクトリも個別に確認済み (`.phase1/tr_2013h25h-q019.json`、`.phase2/expl_*` — ripgrep は hidden dir を既定でスキップするため直読で補完)。\n\n### 4. 他行の非破壊\n①②④⑤ + ヘッダ行 + 区切り行 + 導入文「技術開発戦略立案の作業を①～⑤の順で行う場合，a に当てはまるものはどれか。」+ 選択肢ア〜エ、いずれも源と一致し無傷。パッチ script (`scripts/quiz-phase2-explfix2-S112.mjs:70-80`) は ③行の1文字列のみを置換し、出現回数≠1 なら throw、TO 既存なら no-op という冪等実装で、範囲外への波及なし。\n\n### 追加で確認した層間整合 (全層が源文言で一致)\n- `stem_jp_clean` (表示権威): `data/ip/quiz/translations/2013h25h.json:446` および `.phase1/tr_2013h25h-q019.json:3` → 構築/見極め\n- zh「甄别有助于确立竞争优势的技术」/ en「Identifying technologies useful for establishing competitive advantage」→ 源義と整合\n- 解説本文 (`explanations/2013h25h.json:839-841, 862`) → 構築/見極め\n- `apps/web` 配下にクイズ本文の同梱コピーは無し (grep 0件)。表示側に旧文言が残るルートは存在しない。\n- `question_bank.json:29340` の `stem_jp_corrupted_backup` は行順が崩れた元 OCR の保全フィールドであり、意図的に未変更のまま。正しい扱い。\n\n---\n\n## 後追い項目 (確信度 80 / 非ブロッキング・今回のパッチ自体の欠陥ではない)\n\n**key_guard.note_jp が本パッチによって陳腐化した (stale)**\n\n- `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/explanations/2013h25h.json:836`\n- `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/expl_jp_2013h25h-q019.json:8` (マージ元。ここを直さないと再マージで復活する)\n\n該当記述:\n「stem_jp 側の「確保に役立つ技術の発掘」は言い換えで、clean が正」\n\nパッチ後は stem_jp 側にこの文言はもう存在しないため、この注記は現データについて**事実と異なる現在形の主張**になっている。fix-checklist の「answer-affecting 是正後は本文注記+key_guard も整合」と同趣旨の不整合。\n\n影響評価 (PASS を維持した根拠):\n- `note_jp` はユーザーに露出しない。`apps/web/src/lib/quiz/quizModel.ts:301` が消費するのは `suspect` のみで、`note_jp` を描画する UI は存在しない (grep で型定義 `quizModel.ts:137` とテスト以外にヒット無し)。\n- 正解 イ・key_guard の判定 (`matches_key: true` / `suspect: false`) は本パッチで変化しない。answer-affecting ではない。\n\n推奨対応: `.phase2/expl_jp_2013h25h-q019.json` の当該括弧部を「S112 で raw stem_jp も源文言に是正済み、全層一致」等の過去形記述に改め、`quiz-phase2-merge.mjs 2013h25h` で再マージする。なお `evidence/phase5/stage_06_quiz_phase2/ruleA_result_S112_2013h25h.json` と script 内のコメント/FROM 定数に旧文言が残るのは監査証跡・移行記録として**正しい**ので、Rule A/B により変更しないこと。"
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Reverify"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "reverify:q004",
+      "phaseIndex": 1,
+      "phaseTitle": "Reverify",
+      "agentId": "a01aee87ae479fb94",
+      "agentType": "feature-dev:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787336797011,
+      "queuedAt": 1787336795175,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q004",
+      "promptPreview": "あなたは独立した検証者です (Rule D: パッチ適用者と別役割)。甘く通さない。\n\n## 検証対象 1: 2013h25h-q004 の zh 解説用語パッチ\nRule A が medium と判定した欠陥: hosting のラベルが「主机托管」になっており、大陸中国語では\n主机托管 = colocation (日本語のハウジング) を指すため、正反対の 2 概念がほぼ同名だった。\nパッチ: hosting のラベルを「主机租用」に置換 (housing 側の「服务器托管」は不変)。\n\n## 手順\n1. `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/explanations/2013h25h.json` を Read し、questions[\"2013h25h-q004\"] を取得。\n2. distr…",
+      "lastProgressAt": 1787336928778,
+      "tokens": 26381,
+      "toolCalls": 12,
+      "durationMs": 131766,
+      "resultPreview": "{\"id\":\"2013h25h-q004\",\"verdict\":\"FAIL\",\"detail_jp\":\"【指定3チェックの結果 — 解説ファイル内は合格】\\n対象: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/explanations/2013h25h.json\\n- L168 distractors エ zh: 「主机租用（hosting 服务，即所谓的租用服务器）」= hosting ラベルは 主机租用 に置換済み (OK)\\n- L168 後半: 「housing（服务器托管）」= housing 側は 服务器托管 のまま不変 (OK)\\n- L180 points[1] zh: 「主机租用（hosting）/ 服务器托管（housing）= 出租服务器或出租放置场地」(OK)\\n- 「主机托管（ho…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "reverify:q019",
+      "phaseIndex": 1,
+      "phaseTitle": "Reverify",
+      "agentId": "a2731cd4150a946f5",
+      "agentType": "feature-dev:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787336797015,
+      "queuedAt": 1787336795175,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q019",
+      "promptPreview": "あなたは独立した検証者です (Rule D: パッチ適用者と別役割)。甘く通さない。\n\n## 検証対象 2: 2013h25h-q019 の raw stem パッチ\nraw bank の表 ③ が s7x の言い換え「競争優位の確保に役立つ技術の発掘」のままで、\n表示権威 stem_jp_clean・zh/en 訳・解説の引用 (いずれも「競争優位の構築に役立つ技術の見極め」)\nと食い違っていた。パッチ: raw を源文言に揃えた。\n\n## 手順\n1. 源ページ `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-08.png` を Read し、問19 の表 ③ を拡大して読む。\n2. `/Users/bojiangzhang/MyProject/IT-Passpor…",
+      "lastProgressAt": 1787336962298,
+      "tokens": 41566,
+      "toolCalls": 18,
+      "durationMs": 164078,
+      "resultPreview": "{\"id\":\"2013h25h-q019\",\"verdict\":\"PASS\",\"detail_jp\":\"## 判定: PASS (指定4条件すべて充足)。ただし後追い1件あり (非ブロッキング)\\n\\n### 1. 源ページ照合 (page-08.png を直読)\\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-08.png` の問19 表を読み取り:\\n- ヘッダ: 作業順番 / 作業項目\\n- ① 経営戦略に関連する社内外の技術の抽出\\n- ② a (枠囲み)\\n- ③ **競争優位の構築に役立つ技術の見極め**\\n- ④ 自社技術力の評価と強化分野の選定\\n- ⑤ 開発の優先順位決定と開発ロードマップの作成\\n\\n「構築」「見極め」を字形レベルで確認。「確保」…"
+    }
+  ],
+  "totalTokens": 67947,
+  "totalToolCalls": 30
+}

@@ -1,0 +1,47 @@
+{
+  "summary": "S112 三轮是正後の q004 最終核験 — 選択肢訳→解説の用語連鎖を独立検証 (Rule D)",
+  "agentCount": 1,
+  "logs": [
+    "最終核験: 2013h25h-q004=PASS"
+  ],
+  "result": {
+    "results": [
+      {
+        "id": "2013h25h-q004",
+        "verdict": "PASS",
+        "detail_jp": "## 判定: PASS (独立検証 / Rule D 準拠、前回 FAIL 指摘は解消済み)\n\n### 1. translations 側 (data/ip/quiz/translations/2013h25h.json)\n- choices エ: zh =「主机租用」/ en =「Hosting」— 是正が正しく載っている。`git diff` でも当該行が `-\"zh\": \"主机托管\"` → `+\"zh\": \"主机租用\"` の 1 行差分として確認でき、en は \"Hosting\" のまま不変。\n- stem zh/en に hosting/housing 系の語は一切登場せず、誤対応の余地なし (stem は「委托给海外的企业或海外的子公司」= オフショアの話に限定)。\n- 他選択肢も汚染なし: ア 离岸外包 / Offshore outsourcing、イ 系统集成 / Systems integration、ウ 设施管理 / Facility management。hosting/housing との取り違えは無い。\n\n### 2. explanations 側 (data/ip/quiz/explanations/2013h25h.json)\n- distractors エ zh 冒頭:「主机租用（hosting 服务，即所谓的租用服务器）是服务商把自己准备好的服务器…出租给用户使用的服务。」→ hosting = 主机租用。\n- 同 zh 末尾:「…只租用线路和电源的 housing（服务器托管）之间的区别」→ housing = 服务器托管。両者が同一文内で明示的に対比され、対応が一貫。\n- points[1] zh:「主机租用（hosting）/ 服务器托管（housing）= 出租服务器或出租放置场地」→ distractors と完全に同一の対応。ブレなし。\n- **「主机托管」の残存はゼロ**: translations / explanations の両ファイルとも grep ヒット 0 件。「主机租用」2 件・「服务器托管」2 件 (それぞれ distractor エ と points[1]) で過不足なし。housing 側の説明として誤って出ることも無い。\n\n### 3. 選択肢→解説の連鎖 (前回 FAIL の核心)\n断裂は解消。zh 学習者が選択肢エ「主机租用」を見た後、解説 distractor エ を開くと**第 1 トークンが同一語「主机租用」**で始まるため、視認的に即接続できる。points[1] の混同語整理でも同語が再出し、選択肢ラベル → 誤答解説 → 要点整理の 3 点が同一語で貫通している。\n\n### 4. jp との 1 対 1 対応\n- distractor エ jp「ホスティング (ホスティングサービス、いわゆるレンタルサーバ)」↔ zh「主机租用（hosting 服务，即所谓的租用服务器）」— 括弧内の補足まで含めて 1 対 1。\n- 同 jp「ハウジング」↔ zh「housing（服务器托管）」— 1 対 1。\n- points[1] jp「ホスティング/ハウジング = サーバや設置場所の貸し出し」↔ zh「主机租用（hosting）/ 服务器托管（housing）= 出租服务器或出租放置场地」— 順序も対応も交叉なし。\n- en 系列も choices「Hosting」→ distractor「Hosting (a hosting service…) …in contrast with housing (colocation)」で同様に整合。\n- 語選択の妥当性についても補足: 中国語圏では「主机托管」がむしろ colocation (= ハウジング) の意で使われることが多いため、hosting=主机租用 / housing=服务器托管 という切り分けは意味論的にも支持できる方向の是正である。\n\n### 5. 追加で潰した観点 (甘く通さないための横断確認)\n- **実行時の真相源確認**: `apps/web/src/lib/quiz/quizModel.ts` / `quizReader.ts` より、Web アプリは `data/ip/quiz/translations/<exam_id>.json` と `explanations/<exam_id>.json` を直接読む構造。旧文字列を抱えたビルド済みコーパスは存在せず (`离岸外包` の grep が apps/web 配下で 0 件)、検証した 2 ファイルがそのままユーザー可視の実体である。\n- **同一試験内の整合**: questions.json を走査した結果、2013h25h でホスティング/ハウジングに触れる設問は q004 のみ。試験内で他所と食い違う余地なし。\n\n### 参考 (今回の判定対象外・PASS を妨げないが backlog 推奨)\n- **他試験との用語不統一**: `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/explanations/2016h28h.json` (L256, L268) は公開ファイルでありながら hosting=「主机托管」/ housing=「机房托管」を使用中で、本問で確定した hosting=主机租用 / housing=服务器托管 と衝突する。今回のスコープ (2013h25h-q004) 外のため FAIL 要因にはしないが、zh 用語の横断統一 track に登録すべき。\n- **パイプライン中間物の巻き戻しリスク**: `.phase1/tr_2013h25h-q004.json`、`.phase1.5/`、`.phase2/input_2013h25h.json`、`.phase2/ruleA_samples_2013h25h.json` には是正前の「主机托管」が残存。ユーザー可視ではないものの、persist を中間物から再導出する経路が走ると本是正が黙って戻る恐れがあるため、再生成時のガードを確認しておくのが安全。\n"
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Reverify"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "reverify2:q004",
+      "phaseIndex": 1,
+      "phaseTitle": "Reverify",
+      "agentId": "af2f7e67de68e2507",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787337039195,
+      "queuedAt": 1787337037267,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q004",
+      "promptPreview": "あなたは独立した検証者です (Rule D: パッチ適用者とも前回検証者とも別 run)。甘く通さない。\n\n## 背景\n2013h25h-q004 (アウトソーシング関連用語問、正解ア) の zh で hosting の訳語を「主机租用」に統一する\n是正を行った。前回検証は「選択肢訳が 主机托管 のまま残り連鎖断裂」と FAIL を出し、その後\n選択肢訳も 主机租用 に是正された。今回はその最終確認。\n\n## 手順\n1. `/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/translations/2013h25h.json` の questions[\"2013h25h-q004\"] を Read:\n   - choices エ zh が「主机租用」/ en が「Hosting」か\n   - stem や他の選択…",
+      "lastProgressAt": 1787337159241,
+      "tokens": 47487,
+      "toolCalls": 11,
+      "durationMs": 120045,
+      "resultPreview": "{\"id\":\"2013h25h-q004\",\"verdict\":\"PASS\",\"detail_jp\":\"## 判定: PASS (独立検証 / Rule D 準拠、前回 FAIL 指摘は解消済み)\\n\\n### 1. translations 側 (data/ip/quiz/translations/2013h25h.json)\\n- choices エ: zh =「主机租用」/ en =「Hosting」— 是正が正しく載っている。`git diff` でも当該行が `-\\\"zh\\\": \\\"主机托管\\\"` → `+\\\"zh\\\": \\\"主机租用\\\"` の 1 行差分として確認でき、en は \\\"Hosting\\\" のまま不変。\\n- stem zh/en に hosting/housing 系の語は一切登場せず、誤対応の余地なし (stem は「委托给海外的企业或海外的子公司」= オフショ…"
+    }
+  ],
+  "totalTokens": 47487,
+  "totalToolCalls": 11
+}

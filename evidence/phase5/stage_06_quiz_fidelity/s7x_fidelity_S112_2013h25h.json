@@ -1,0 +1,434 @@
+{
+  "summary": "Quiz 表示テキスト保真核験: s7x resource 由来の stem/choices を源ページ画像と逐字照合し、意味的に成立するが源と異なる OCR 置換 (key-guard/reviewer/Rule A のいずれにも信号が出ない類) を捕捉する",
+  "agentCount": 10,
+  "logs": [
+    "s7x 保真監査: 10 問中 CLEAN 7 / DISCREPANT 3 / UNREADABLE 0; 差分 7 件 {\"answer_affecting\":2,\"semantic\":5}, 正解肢上 0 件"
+  ],
+  "result": {
+    "exam_id": "2013h25h",
+    "n": 10,
+    "cleanCount": 7,
+    "discrepantCount": 3,
+    "unreadable": [],
+    "bySeverity": {
+      "answer_affecting": 2,
+      "semantic": 5
+    },
+    "onCorrectChoiceCount": 0,
+    "discrepancies": [
+      {
+        "id": "2013h25h-q009",
+        "field": "stem",
+        "current_text": "生産及び販売に必要な固定費は年間3,990万円である",
+        "source_text": "生産及び販売に必要な固定費は年間3,000万円である",
+        "severity": "answer_affecting",
+        "is_correct_choice": false,
+        "detail_jp": "源ページ (page-05.png 問9) を8倍拡大して確認したところ、固定費は「年間3,000万円」であり、dataset の「3,990万円」は数値相違。この改変により損益分岐点計算が破綻し、正解肢イ(2,000)が数式上導出できなくなるため answer_affecting。"
+      },
+      {
+        "id": "2013h25h-q009",
+        "field": "stem",
+        "current_text": "生産及び販売に掛かる1個当たりの変動費が5,999円であるとき",
+        "source_text": "生産及び販売に掛かる1個当たりの変動費が5,000円であるとき",
+        "severity": "answer_affecting",
+        "is_correct_choice": false,
+        "detail_jp": "源は「変動費が5,000円」。dataset の「5,999円」は数値相違。源の数値では (20,000-5,000)=15,000 円/個、30,000,000÷15,000=2,000 個 となり正解肢イと一致するが、dataset の数値では 39,900,000÷(20,000-5,999)=39,900,000÷14,001≒2,850 個 となり、ア〜エのどの肢とも一致しない。よって answer_affecting。"
+      },
+      {
+        "id": "2013h25h-q061",
+        "field": "stem",
+        "current_text": "売上金額の合計を降順に整列する。得られた結果の先頭レコードの顧客名はどれか。",
+        "source_text": "売上金額の合計を降順に整列した。得られた結果の先頭レコードの顧客名はどれか。",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "設問文の述語が源では過去形「整列した。」であるのに対し、dataset 側は「整列する。」と現在形に置換されている。源の原文は一連の操作(結合→グループ化→合計→降順整列)を既に実施した結果を問う体裁(「…求め，…整列した。得られた結果の…」)であり、dataset の「整列する。」は語句レベルの置換にあたる。正解肢の判定(K02=130 が最大 → イ 佐藤太郎)には影響しないが、逐字一致ではない。拡大画像(問61 第2行末尾「降順に整列」+ 第3行冒頭「した。得られた結果の先頭レコードの顧客名はどれか。」)で確認済み。"
+      },
+      {
+        "id": "2013h25h-q096",
+        "field": "stem",
+        "current_text": "また、月ごとに売上目標を設定して目標達成を管理するため、",
+        "source_text": "また，月ごとに売上目標を定めて目標達成を管理するため，",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源は「売上目標を定めて」。dataset は「売上目標を設定して」と語句が置換されている。意味はほぼ同じだが原文の語彙ではなく、表記ゆれ (全半角・句読点) の範囲を超えた語句レベルの相違。"
+      },
+      {
+        "id": "2013h25h-q096",
+        "field": "stem",
+        "current_text": "次の図の各月の売上傾向から",
+        "source_text": "次の図のように，各月の売上傾向から",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源は「次の図のように，各月の売上傾向から」。dataset は「のように，」が脱落し「次の図の各月の売上傾向から」となっている。図が例示であるという原文の係り方 (図のように → 作成した) が、dataset では「図の各月」という図内部への直接修飾に変わっている。"
+      },
+      {
+        "id": "2013h25h-q096",
+        "field": "stem",
+        "current_text": "目標売上高を算出する次のワークシートを作成した。",
+        "source_text": "目標売上高を計算する次のワークシートを作成した。",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源は「計算する」。dataset は「算出する」に語句置換されている。設問全体が「計算式」を問う問題であり、原文の「計算」という語が言い換えられている。"
+      },
+      {
+        "id": "2013h25h-q096",
+        "field": "stem",
+        "current_text": "セル F14 に入力する計算式は、適切なものはどれか。",
+        "source_text": "セル F14に入力する計算式として，適切なものはどれか。",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源は「計算式として，適切なものはどれか。」。dataset は「計算式は、適切なものはどれか。」となっており、「として」→「は」の置換で日本語として非文 (「〜は〜はどれか」の二重ハ) になっている。IPA 定型の問い方 (「…として，適切なものはどれか」) から逸脱。"
+      }
+    ],
+    "audits": [
+      {
+        "id": "2013h25h-q007",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-04.png の「問7」を特定し、拡大 (2.2倍リサンプル) して逐字照合した。\n\n【設問文】源: 「ある部品の生産ラインは二つの工程 A，B の順で構成されており，各工程の機械台数，部品1個の生産に要する作業時間，不良率は表のとおりである。1日の稼働時間を10時間とするとき，この生産ラインの1日の生産能力（良品が生産される数）は何個か。ここで，工程 A での不良品は工程 B には送らないものとする。また，機械の故障時間や段取り時間，工程間の仕掛品在庫は考えないものとし，仕掛中のものは終了時間が来ても最後まで仕上げるものとする。」— dataset と語句レベルで完全一致。差は「部品 1 個」「を 10 時間」等の数字前後の空白のみで、許容範囲の表記揺れ。\n\n【表】源: 見出し行 = 工程 / 機械台数 / 作業時間／個 / 不良率、A 行 = 1台 / 3分 / 5%、B 行 = 1台 / 2分 / 10%。dataset の Markdown 表と列名・値ともに一致 (表を | 列 | 形式に整形した体裁差のみ)。「作業時間／個」の全角スラッシュも一致。\n\n【選択肢】源: ア 171 / イ 180 / ウ 200 / エ 257。dataset と完全一致。\n\n【整合性の傍証】correct_answer=ア(171) は源の数値で検算可能 (600分÷3分=200個 → 良品 200×0.95=190個 → 工程Bへ190個投入、B の能力 600÷2=300個 で余裕あり → 190×0.9=171個)。表の数値がもし改変されていれば正解が合わなくなるが、171 が成立するため表の 3分/2分/5%/10%/1台 はいずれも源どおりであることが裏付けられる。\n\n同ページには問8 (サプライチェーンマネジメント) も存在するが、問番号「問7」を明示的に確認して照合対象を取り違えていない。相違なし。"
+      },
+      {
+        "id": "2013h25h-q009",
+        "verdict": "DISCREPANT",
+        "discrepancies": [
+          {
+            "field": "stem",
+            "current_text": "生産及び販売に必要な固定費は年間3,990万円である",
+            "source_text": "生産及び販売に必要な固定費は年間3,000万円である",
+            "severity": "answer_affecting",
+            "is_correct_choice": false,
+            "detail_jp": "源ページ (page-05.png 問9) を8倍拡大して確認したところ、固定費は「年間3,000万円」であり、dataset の「3,990万円」は数値相違。この改変により損益分岐点計算が破綻し、正解肢イ(2,000)が数式上導出できなくなるため answer_affecting。"
+          },
+          {
+            "field": "stem",
+            "current_text": "生産及び販売に掛かる1個当たりの変動費が5,999円であるとき",
+            "source_text": "生産及び販売に掛かる1個当たりの変動費が5,000円であるとき",
+            "severity": "answer_affecting",
+            "is_correct_choice": false,
+            "detail_jp": "源は「変動費が5,000円」。dataset の「5,999円」は数値相違。源の数値では (20,000-5,000)=15,000 円/個、30,000,000÷15,000=2,000 個 となり正解肢イと一致するが、dataset の数値では 39,900,000÷(20,000-5,999)=39,900,000÷14,001≒2,850 個 となり、ア〜エのどの肢とも一致しない。よって answer_affecting。"
+          }
+        ],
+        "notes_jp": "源ページ: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-05.png の 問9 (同ページには問9〜問12が存在するため問番号を確認済み)。\n\n源の設問文 (逐字書き起こし):\n「問9 製品 A の生産及び販売に必要な固定費は年間3,000万円である。製品 A の単価が2万円，生産及び販売に掛かる1個当たりの変動費が5,000円であるとき，製品 A の損益分岐点における販売個数は何個か。」\n\n選択肢は源と完全一致 (ア 1,500 / イ 2,000 / ウ 4,000 / エ 6,000) — 相違なし。\n\n設問文のその他の語句 (「製品 A の生産及び販売に必要な固定費は年間」「である。製品 A の単価が2万円」「生産及び販売に掛かる1個当たりの変動費が」「であるとき」「製品 A の損益分岐点における販売個数は何個か。」) はすべて源と一致。読点の 「，」/「、」 の差のみで、これは表記揺れとして許容。\n\n判読手順: 数字部分 (固定費・変動費) は原寸のままでは 0/9 の誤読リスクがあるため、該当領域を 8 倍拡大 (LANCZOS) して個別に確認した。拡大画像上で「3,000」「5,000」の 0 は明確にスラッシュ付きゼロ字形であり、9 ではないことを確認済み。\n\n整合性クロスチェック: 源の数値では損益分岐点販売個数 = 固定費 ÷ (単価 − 1個当たり変動費) = 30,000,000 ÷ (20,000 − 5,000) = 2,000 個 で、correct_answer「イ」と厳密に一致する。dataset の数値ではどの肢とも一致せず、correct_answer が正当化できない。これは dataset 側の数値が改変されている決定的な裏付けである。"
+      },
+      {
+        "id": "2013h25h-q010",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-05.png の「問10」を特定 (同ページには問9/問10/問11/問12 が並ぶため問番号を確認済み)。低解像度の一読では誤読の恐れがあるため、設問文帯 (y≈570-750) と選択肢帯 (y≈780-1030) を切り出して 2600px 幅へ拡大し、さらに選択肢エは単独で再拡大して読み直した。\n\n源からの書き起こし:\n設問文=「企業は，売上高の拡大や市場占有率の拡大などのマーケティング目標を達成するために，4P と呼ばれる四つの要素を組み合わせて最適化を図る。四つの要素の組合せとして適切なものはどれか。」\nア=「価格 (price)，製品 (product)，販売促進 (promotion)，利益 (profit)」\nイ=「価格 (price)，製品 (product)，販売促進 (promotion)，流通 (place)」\nウ=「価格 (price)，製品 (product)，利益 (profit)，流通 (place)」\nエ=「製品 (product)，販売促進 (promotion)，利益 (profit)，流通 (place)」\n\n照合結果: dataset 側の displayed_stem_jp / displayed_choices_jp と、語句・語順・英単語 (price/product/promotion/place/profit)・各肢の 4 要素の組合せがすべて一致。相違は「4P」直後の空白の有無のみで、これは全角/半角・空白の表記揺れとして許容範囲。設問文中の「組み合わせて」(送り仮名あり) と「組合せとして」(送り仮名なし) の使い分けも源どおりで dataset も同一。正解肢イ (price/product/promotion/place = マーケティングミックス 4P) の本文にも差分なし。"
+      },
+      {
+        "id": "2013h25h-q019",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-08.png の「問19」。同ページには問19/問20/問21 が並ぶため問番号を確認のうえ問19 のみを照合した。設問行・表・選択肢の 3 領域を個別に切り出して 2〜3 倍拡大し、源を先に書き起こしてから dataset と突き合わせた。\n\n設問文 (源): 「技術開発戦略立案の作業を①～⑤の順で行う場合，a に当てはまるものはどれか。」→ dataset と逐字一致。丸数字は ①～⑤ (源も丸囲み数字)、空欄参照名は小文字ローマ字の「a」で一致。\n\n表 (源): 見出し「作業順番」「作業項目」。① 経営戦略に関連する社内外の技術の抽出 / ② (囲み枠内に) a / ③ 競争優位の構築に役立つ技術の見極め / ④ 自社技術力の評価と強化分野の選定 / ⑤ 開発の優先順位決定と開発ロードマップの作成。すべて dataset の Markdown 表と語句レベルで一致。dataset は罫線表を `| 列 |` 形式に整形しているが、これは体裁差として許容。② の a が源では太枠で囲まれている点も、dataset の空欄表現と参照名が一致しているため相違としない。\n\n選択肢 (源、2 列組み): ア 技術開発推進体制の整備 / イ 技術と環境の変化の予測 / ウ 新製品の売上，利益目標の設定 / エ テストマーケティングの実施。4 肢すべて dataset と一致。ウ のみ源は全角読点「，」、dataset は「, 」(半角カンマ+空白) だが、これは指示された許容範囲 (「，」/「、」および全半角・空白の表記揺れ) に該当するため相違として報告しない。\n\ncorrect_answer = イ (技術と環境の変化の予測) の本文にも相違なし。answer_affecting / semantic な差分はゼロ。"
+      },
+      {
+        "id": "2013h25h-q028",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-11.png に問27と問28が併載されているため、問番号を確認のうえ問28のみを照合した。文字が小さいため PIL で設問文・表・選択肢の3領域を切り出し2倍拡大して読み取り直した。\n\n【設問文】源: 「問28 表に示す A 社の損益の変化に関する記述のうち，適切なものはどれか。」→ dataset と逐字一致。\n\n【表】源: 見出し「単位 億円」、列「前期/当期」、行は 売上高 2,000/2,000、売上原価 850/900、販売費及び一般管理費 950/900、営業外収益 10/20、営業外費用 20/10。dataset の Markdown 表と全数値・全行名が一致（表の Markdown 整形は体裁差として許容）。空欄の左上見出しセルも dataset 側で空セルとして再現されている。\n\n【選択肢】源:\nア 売上総利益が減って，経常利益は増減がなかった。\nイ 売上総利益は増減がなく，営業利益が減った。\nウ 営業利益が減って，経常利益は増減がなかった。\nエ 営業利益は増減がなく，経常利益が増えた。\ndataset との差は読点が源「，」に対し dataset「、」である点のみで、これは許容範囲の表記揺れ。語句・語順・助詞（が/は）・動詞（減って/減った/増えた/なかった）はすべて一致。特に ア/ウ の「〜が減って」と イ/エ の「〜は増減がなく」の対応、および各肢が指す利益名（売上総利益/営業利益/経常利益）の組合せに取り違えがないことを個別に確認した。\n\n【整合性の傍証】表から 売上総利益 1,150→1,100（減）、営業利益 200→200（増減なし）、経常利益 190→210（増）となり、correct_answer「エ」と源の肢エの文面が整合する。dataset の resourced.choices が false であるにもかかわらず、選択肢本文は源と一致していた。"
+      },
+      {
+        "id": "2013h25h-q043",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-18.png の上段が問43 (下段は問44「作業項目の順序関係や依存関係を表すことができ…」) であることを確認。設問文・表・選択肢の3領域をそれぞれ切り出して2000px超に拡大し、1文字ずつ照合した。\n\n設問文: 源「問43 翌年度である X 年4月から開始されるプロジェクトのリスク対応計画を検討している。表に示される四つのリスクが想定されている場合に，対応への優先順位が最も高いと考えられるものはどれか。ここで，優先順位についてはリスクの発生確率と影響度を考慮し，また同じ優先度であるならば対応期限が迫っているリスクをできるだけ早急に対応する，という評価を行うこととする。」— dataset と完全一致。「対応への優先順位」「同じ優先度」(前者は順位、後者は優先度で語が異なる原文どおり) も源のとおりで、dataset 側で統一・平滑化された形跡はない。\n\n表: 源のヘッダは「リスク / 想定される リスク顕在化の時期 / リスクの 発生確率 / リスクが顕在化した 場合の損失」(セル内2行折返し)。dataset は1行に連結しているが、これは表を | 列 | 形式に整形した体裁差であり許容範囲。データ行は源が リスク1: X＋1年4月1日 / 0.6 / 6,000万円、リスク2: X 年7月1日 / 0.4 / 9,000万円、リスク3: X 年7月1日 / 0.1 / 1,000万円、リスク4: X＋1年3月1日 / 0.5 / 7,000万円。数値・日付・年オフセット (X / X+1)、月日 (4月1日 / 7月1日 / 3月1日) すべて拡大確認済みで dataset と一致。「＋」の全角/半角差のみで語句相違なし。\n\n選択肢: 源「ア リスク1  イ リスク2  ウ リスク3  エ リスク4」(1行横並び) — dataset の4肢と字母対応も含めて一致。correct_answer=イ の本文「リスク2」も源どおり。\n\n相違ゼロにつき CLEAN。"
+      },
+      {
+        "id": "2013h25h-q061",
+        "verdict": "DISCREPANT",
+        "discrepancies": [
+          {
+            "field": "stem",
+            "current_text": "売上金額の合計を降順に整列する。得られた結果の先頭レコードの顧客名はどれか。",
+            "source_text": "売上金額の合計を降順に整列した。得られた結果の先頭レコードの顧客名はどれか。",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "設問文の述語が源では過去形「整列した。」であるのに対し、dataset 側は「整列する。」と現在形に置換されている。源の原文は一連の操作(結合→グループ化→合計→降順整列)を既に実施した結果を問う体裁(「…求め，…整列した。得られた結果の…」)であり、dataset の「整列する。」は語句レベルの置換にあたる。正解肢の判定(K02=130 が最大 → イ 佐藤太郎)には影響しないが、逐字一致ではない。拡大画像(問61 第2行末尾「降順に整列」+ 第3行冒頭「した。得られた結果の先頭レコードの顧客名はどれか。」)で確認済み。"
+          }
+        ],
+        "notes_jp": "照合対象: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-26.png の問61 (同ページ下部に問62 ランサムウェアがあるが問番号で分離確認済み)。\n\n一致を確認した箇所:\n- 売上表 6 行すべて逐字一致 (H001/K01/40, H002/K02/80, H003/K03/120, H004/K04/70, H005/K01/20, H006/K02/50)。列見出し「伝票番号」「顧客コード」「売上金額(万円)」も一致。\n- 顧客表 4 行すべて逐字一致 (K01 井上花子, K02 佐藤太郎, K03 鈴木三郎, K04 田中梅子)。列見出し「顧客コード」「顧客名」も一致。\n- 選択肢 ア 井上花子 / イ 佐藤太郎 / ウ 鈴木三郎 / エ 田中梅子 — 源と完全一致。\n- 正解整合性: K01=60, K02=130, K03=120, K04=70 → 降順先頭は K02 の佐藤太郎 = イ。correct_answer と矛盾なし。\n\n表記揺れとして許容し discrepancies に含めなかったもの:\n- 表名の引用符が源では “売上” “顧客” (全角ダブルクォート) だが dataset では 「売上」「顧客」(かぎ括弧)。名称そのものは同一で、句読点系の表記正規化と同種と判断。\n- 源の読点「，」が dataset では「、」。\n- 表を markdown の | 列 | 形式に整形した体裁差、および改行位置。\n\n作業上の注意 (誤読の記録):\n選択肢行を高さ 70px の細帯だけクロップして読んだ 1 回目で「ア リスク1 / イ リスク2 / ウ リスク3 / エ リスク4」という源に存在しない文字列を誤読した。周辺 (売上表末尾を含む y=780-1000) を含む広いクロップで再読し、正しい文言が「ア 井上花子 / イ 佐藤太郎 / ウ 鈴木三郎 / エ 田中梅子」であることを確定。文脈の乏しい狭帯クロップは幻覚を誘発するため、以後の監査でも周辺を含めたクロップで確認すべき。"
+      },
+      {
+        "id": "2013h25h-q067",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-28.png の下段に問67 (上段は問66 = BIOS/OS 起動順) を確認。設問文・表・選択肢を拡大 (設問部 2400px 幅、表部 1600px 幅、選択肢部 2200px 幅) して一字ずつ照合した。\n\n【設問文】源: 「関係データベースの“商品”表から価格が100円以上の商品の行（レコード）だけを全て抽出する操作を何というか。」 dataset と語句レベルで完全一致。唯一の差は表名の引用符が源では欧文二重引用符 “商品”、dataset では鉤括弧 「商品」 である点のみ。参照名そのもの (商品) は同一で、引用符字形の違いは表記揺れ (許容範囲) と判断し discrepancy には計上しない。\n\n【表】表題「商品」、見出し 商品番号 / 商品名 / 価格（円）、データ行 S001 はさみ 200 / S002 鉛筆 50 / S003 ノート 120 / S004 消しゴム 80 / S005 定規 150 — 商品番号・商品名・数値すべて源と一致。dataset は Markdown の | 列 | 形式に整形しているが、これは体裁差として許容。\n\n【選択肢】源は横一列で ア 結合  イ 射影  ウ 選択  エ 和。dataset の ア=結合 / イ=射影 / ウ=選択 / エ=和 と完全一致。correct_answer=ウ (選択) の肢本文にも差分なし。\n\n脱落・追加・数値相違・英単語混入・記号や参照名の相違はいずれも検出されず。"
+      },
+      {
+        "id": "2013h25h-q076",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-32.png を読み、同ページ内の問75・問76・問77 のうち問76 を特定して照合した。\n\n源の設問文 (3行、拡大して逐字書き起こし):\n「問76 共通鍵暗号方式では通信の組合せごとに鍵が1個必要となる。例えば A～D の4人が / 相互に通信を行う場合は，AB，AC，AD，BC，BD，CD の組合せの6個の鍵が必要であ / る。8人が相互に通信を行うためには何個の鍵が必要か。」\n\ndataset の displayed_stem_jp と語句・数値・記号すべて一致。相違は「A～D」「CD」の前後の欧文用スペースの有無と改行位置のみで、これは表記揺れとして許容範囲。数値 (1個 / 4人 / 6個 / 8人)、組合せ列挙 (AB, AC, AD, BC, BD, CD) の順序と綴りもすべて一致を確認した。\n\n選択肢は 8倍拡大で個別に確認:\nア 12 / イ 16 / ウ 28 / エ 32 → dataset と完全一致。数字の誤読が起きやすい 28 (26/29 と紛れる)、32 (82/52 と紛れる) も個別クロップで確認済み。\n\n参考 (相違ではない):\n- 源では設問文と選択肢の間に A/B/C/D 4ノードの完全グラフ図が置かれているが、図には「図1」等のキャプションが一切なく、設問文も図を参照していない。したがって設問文側に図参照名の脱落はない (dataset の resourced.stem=true / choices=false とも矛盾しない)。\n- 正解 ウ=28 は C(8,2)=28 と整合する。"
+      },
+      {
+        "id": "2013h25h-q096",
+        "verdict": "DISCREPANT",
+        "discrepancies": [
+          {
+            "field": "stem",
+            "current_text": "また、月ごとに売上目標を設定して目標達成を管理するため、",
+            "source_text": "また，月ごとに売上目標を定めて目標達成を管理するため，",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源は「売上目標を定めて」。dataset は「売上目標を設定して」と語句が置換されている。意味はほぼ同じだが原文の語彙ではなく、表記ゆれ (全半角・句読点) の範囲を超えた語句レベルの相違。"
+          },
+          {
+            "field": "stem",
+            "current_text": "次の図の各月の売上傾向から",
+            "source_text": "次の図のように，各月の売上傾向から",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源は「次の図のように，各月の売上傾向から」。dataset は「のように，」が脱落し「次の図の各月の売上傾向から」となっている。図が例示であるという原文の係り方 (図のように → 作成した) が、dataset では「図の各月」という図内部への直接修飾に変わっている。"
+          },
+          {
+            "field": "stem",
+            "current_text": "目標売上高を算出する次のワークシートを作成した。",
+            "source_text": "目標売上高を計算する次のワークシートを作成した。",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源は「計算する」。dataset は「算出する」に語句置換されている。設問全体が「計算式」を問う問題であり、原文の「計算」という語が言い換えられている。"
+          },
+          {
+            "field": "stem",
+            "current_text": "セル F14 に入力する計算式は、適切なものはどれか。",
+            "source_text": "セル F14に入力する計算式として，適切なものはどれか。",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源は「計算式として，適切なものはどれか。」。dataset は「計算式は、適切なものはどれか。」となっており、「として」→「は」の置換で日本語として非文 (「〜は〜はどれか」の二重ハ) になっている。IPA 定型の問い方 (「…として，適切なものはどれか」) から逸脱。"
+          }
+        ],
+        "notes_jp": "源ページ: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-44.png の問96 (ページ内は当該1問のみ、〔テクノロジ〕見出しあり) を拡大 (最大 3300px 幅までリサンプル) して逐字照合。\n\n一致を確認した箇所:\n- ワークシート表: 列見出し (月 / 昨年の売上高（単位 千円）/ 今年の売上高（単位 千円）/ 平均（単位 千円）/ 月の売上構成比 / 目標売上高（単位 千円）) および全数値 (3,000 / 3,200 / 3,100、4,100 / 4,400 / 4,250、11,900 / 13,200 / 12,550、7,300 / 7,700 / 7,500、2,700 / 4,100 / 3,400、60,600 / 70,300 / 65,450)、行番号 2/3/4/5/⋮/13/14 すべて源と一致。\n- 注記「網掛けの部分は，表示していない。」一致。\n- 〔各セルの設定〕4 項すべて一致 (D2 \"(B2＋C2)／2\" → D3〜D13 複写、D14 \"合計(D2〜D13)\"、E2 \"D2／D$14\" → E3〜E14 複写、F2 \"F$14＊E2\" → F3〜F13 複写)。$ 記号の位置 (D$14 / F$14) と複写範囲 (E は E14 まで、F は F13 まで) を拡大再確認済み。演算子の全角 ＋／＊ と dataset の半角 +/* は表記ゆれとして不問。\n- 選択肢 4 つすべて逐字一致: ア C14＋(D14＊0.1) / イ C14＊1.1 / ウ C14＊E14 / エ 合計(F2〜F13)。正解肢 イ の本文にも相違なし。\n\n相違は設問文 (stem) の 4 箇所のみで、いずれも語句の置換・脱落。どれも「日本語として自然で内容的にも真」だが源と異なるため報告した。選択肢に相違がないため、どの肢が正解に見えるかは変化せず answer_affecting には該当しない。"
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Fidelity"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "fidelity:2013h25h-q007",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "ace4b08ba5fd24292",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327520213,
+      "queuedAt": 1787327518063,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q007",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q007\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327582986,
+      "tokens": 42186,
+      "toolCalls": 6,
+      "durationMs": 61244,
+      "resultPreview": "{\"id\":\"2013h25h-q007\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-04.png の「問7」を特定し、拡大 (2.2倍リサンプル) して逐字照合した。\\n\\n【設問文】源: 「ある部品の生産ラインは二つの工程 A，B の順で構成されており，各工程の機械台数，部品1個の生産に要する作業時間，不良率は表のとおりである。1日の稼働時間を10時間とするとき，この生産ラインの1日の生産能力（良品が生産される数）は何個か。ここで，工程 A での不良品は工程 B には送らないものとする。また，機械の故障時間や段取り時間，工程間の仕掛品在庫は考えないものと…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "fidelity:2013h25h-q009",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a41a3cfc974405fa2",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327520250,
+      "queuedAt": 1787327518064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q009",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q009\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327622254,
+      "tokens": 44840,
+      "toolCalls": 12,
+      "durationMs": 100512,
+      "resultPreview": "{\"id\":\"2013h25h-q009\",\"verdict\":\"DISCREPANT\",\"discrepancies\":[{\"field\":\"stem\",\"current_text\":\"生産及び販売に必要な固定費は年間3,990万円である\",\"source_text\":\"生産及び販売に必要な固定費は年間3,000万円である\",\"severity\":\"answer_affecting\",\"is_correct_choice\":false,\"detail_jp\":\"源ページ (page-05.png 問9) を8倍拡大して確認したところ、固定費は「年間3,000万円」であり、dataset の「3,990万円」は数値相違。この改変により損益分岐点計算が破綻し、正解肢イ(2,000)が数式上導出できなくなるため answer_affecting。\"},{\"field\":\"stem\",\"curr…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "fidelity:2013h25h-q010",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "aeea63c0c53d49fe2",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327519846,
+      "queuedAt": 1787327518064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q010",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q010\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327598189,
+      "tokens": 43697,
+      "toolCalls": 10,
+      "durationMs": 76448,
+      "resultPreview": "{\"id\":\"2013h25h-q010\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-05.png の「問10」を特定 (同ページには問9/問10/問11/問12 が並ぶため問番号を確認済み)。低解像度の一読では誤読の恐れがあるため、設問文帯 (y≈570-750) と選択肢帯 (y≈780-1030) を切り出して 2600px 幅へ拡大し、さらに選択肢エは単独で再拡大して読み直した。\\n\\n源からの書き起こし:\\n設問文=「企業は，売上高の拡大や市場占有率の拡大などのマーケティング目標を達成するために，4P と呼ばれる四つの要素を組み合わせて最適化を図る。四…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "fidelity:2013h25h-q019",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a0ec9d9157bd32044",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327519962,
+      "queuedAt": 1787327518064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q019",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q019\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327588151,
+      "tokens": 42318,
+      "toolCalls": 8,
+      "durationMs": 66410,
+      "resultPreview": "{\"id\":\"2013h25h-q019\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-08.png の「問19」。同ページには問19/問20/問21 が並ぶため問番号を確認のうえ問19 のみを照合した。設問行・表・選択肢の 3 領域を個別に切り出して 2〜3 倍拡大し、源を先に書き起こしてから dataset と突き合わせた。\\n\\n設問文 (源): 「技術開発戦略立案の作業を①～⑤の順で行う場合，a に当てはまるものはどれか。」→ dataset と逐字一致。丸数字は ①～⑤ (源も丸囲み数字)、空欄参照名は小文字ローマ字の「a」で一致。\\n\\n表 (源): …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "fidelity:2013h25h-q028",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "ac72a6631783d6541",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327519820,
+      "queuedAt": 1787327518064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q028",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q028\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327587383,
+      "tokens": 43383,
+      "toolCalls": 8,
+      "durationMs": 67562,
+      "resultPreview": "{\"id\":\"2013h25h-q028\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-11.png に問27と問28が併載されているため、問番号を確認のうえ問28のみを照合した。文字が小さいため PIL で設問文・表・選択肢の3領域を切り出し2倍拡大して読み取り直した。\\n\\n【設問文】源: 「問28 表に示す A 社の損益の変化に関する記述のうち，適切なものはどれか。」→ dataset と逐字一致。\\n\\n【表】源: 見出し「単位 億円」、列「前期/当期」、行は 売上高 2,000/2,000、売上原価 850/900、販売費及び一般管理費 950/90…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "fidelity:2013h25h-q043",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a009be7f55dfe1ea1",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327519825,
+      "queuedAt": 1787327518064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q043",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q043\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327603117,
+      "tokens": 43686,
+      "toolCalls": 9,
+      "durationMs": 81377,
+      "resultPreview": "{\"id\":\"2013h25h-q043\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-18.png の上段が問43 (下段は問44「作業項目の順序関係や依存関係を表すことができ…」) であることを確認。設問文・表・選択肢の3領域をそれぞれ切り出して2000px超に拡大し、1文字ずつ照合した。\\n\\n設問文: 源「問43 翌年度である X 年4月から開始されるプロジェクトのリスク対応計画を検討している。表に示される四つのリスクが想定されている場合に，対応への優先順位が最も高いと考えられるものはどれか。ここで，優先順位についてはリスクの発生確率と影響度を考慮し，…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "fidelity:2013h25h-q061",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "adf0e125558305576",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327519988,
+      "queuedAt": 1787327518064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q061",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q061\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327665959,
+      "tokens": 50254,
+      "toolCalls": 14,
+      "durationMs": 144218,
+      "resultPreview": "{\"id\":\"2013h25h-q061\",\"verdict\":\"DISCREPANT\",\"discrepancies\":[{\"field\":\"stem\",\"current_text\":\"売上金額の合計を降順に整列する。得られた結果の先頭レコードの顧客名はどれか。\",\"source_text\":\"売上金額の合計を降順に整列した。得られた結果の先頭レコードの顧客名はどれか。\",\"severity\":\"semantic\",\"is_correct_choice\":false,\"detail_jp\":\"設問文の述語が源では過去形「整列した。」であるのに対し、dataset 側は「整列する。」と現在形に置換されている。源の原文は一連の操作(結合→グループ化→合計→降順整列)を既に実施した結果を問う体裁(「…求め，…整列した。得られた結果の…」)であり、dataset の「整列する。」は語句レベルの置…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "fidelity:2013h25h-q067",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a42696cac7f8cf03c",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327519928,
+      "queuedAt": 1787327518064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q067",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q067\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327596214,
+      "tokens": 43735,
+      "toolCalls": 8,
+      "durationMs": 74473,
+      "resultPreview": "{\"id\":\"2013h25h-q067\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-28.png の下段に問67 (上段は問66 = BIOS/OS 起動順) を確認。設問文・表・選択肢を拡大 (設問部 2400px 幅、表部 1600px 幅、選択肢部 2200px 幅) して一字ずつ照合した。\\n\\n【設問文】源: 「関係データベースの“商品”表から価格が100円以上の商品の行（レコード）だけを全て抽出する操作を何というか。」 dataset と語句レベルで完全一致。唯一の差は表名の引用符が源では欧文二重引用符 “商品”、dataset では鉤括弧 「…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "fidelity:2013h25h-q076",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a07c09d41385cd359",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327586250,
+      "queuedAt": 1787327518064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q076",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q076\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327712689,
+      "tokens": 49492,
+      "toolCalls": 20,
+      "durationMs": 126437,
+      "resultPreview": "{\"id\":\"2013h25h-q076\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2013h25h/page-32.png を読み、同ページ内の問75・問76・問77 のうち問76 を特定して照合した。\\n\\n源の設問文 (3行、拡大して逐字書き起こし):\\n「問76 共通鍵暗号方式では通信の組合せごとに鍵が1個必要となる。例えば A～D の4人が / 相互に通信を行う場合は，AB，AC，AD，BC，BD，CD の組合せの6個の鍵が必要であ / る。8人が相互に通信を行うためには何個の鍵が必要か。」\\n\\ndataset の displayed_stem_jp と語句・数値・記号す…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "fidelity:2013h25h-q096",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a6b86a256a88bc68f",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787327590341,
+      "queuedAt": 1787327518064,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2013h25h-q096",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2013h25h.json` を Read し、samples[] の中から id===\"2013h25h-q096\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787327706318,
+      "tokens": 48195,
+      "toolCalls": 12,
+      "durationMs": 115977,
+      "resultPreview": "{\"id\":\"2013h25h-q096\",\"verdict\":\"DISCREPANT\",\"discrepancies\":[{\"field\":\"stem\",\"current_text\":\"また、月ごとに売上目標を設定して目標達成を管理するため、\",\"source_text\":\"また，月ごとに売上目標を定めて目標達成を管理するため，\",\"severity\":\"semantic\",\"is_correct_choice\":false,\"detail_jp\":\"源は「売上目標を定めて」。dataset は「売上目標を設定して」と語句が置換されている。意味はほぼ同じだが原文の語彙ではなく、表記ゆれ (全半角・句読点) の範囲を超えた語句レベルの相違。\"},{\"field\":\"stem\",\"current_text\":\"次の図の各月の売上傾向から\",\"source_text\":\"次の図のように，各月の…"
+    }
+  ],
+  "totalTokens": 451786,
+  "totalToolCalls": 107
+}
