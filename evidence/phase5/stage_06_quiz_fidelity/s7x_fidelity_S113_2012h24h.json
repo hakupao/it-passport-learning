@@ -1,0 +1,520 @@
+{
+  "summary": "Quiz 表示テキスト保真核験: s7x resource 由来の stem/choices を源ページ画像と逐字照合し、意味的に成立するが源と異なる OCR 置換 (key-guard/reviewer/Rule A のいずれにも信号が出ない類) を捕捉する",
+  "agentCount": 10,
+  "logs": [
+    "s7x 保真監査: 10 問中 CLEAN 6 / DISCREPANT 4 / UNREADABLE 0; 差分 12 件 {\"semantic\":10,\"cosmetic\":2}, 正解肢上 0 件"
+  ],
+  "result": {
+    "exam_id": "2012h24h",
+    "n": 10,
+    "cleanCount": 6,
+    "discrepantCount": 4,
+    "unreadable": [],
+    "bySeverity": {
+      "semantic": 10,
+      "cosmetic": 2
+    },
+    "onCorrectChoiceCount": 0,
+    "discrepancies": [
+      {
+        "id": "2012h24h-q052",
+        "field": "stem",
+        "current_text": "数値の範囲を16進数で表したものはどれか。",
+        "source_text": "数値の範囲を10進数で表したものはどれか。",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源 (問52 設問文 1行目末尾〜2行目) は「範囲を10進数で表したものはどれか。」。dataset は「10進数」を「16進数」に置換している。選択肢は源・dataset とも全て 10 進表記の数値 (−256, 255, −128, 127 等) なので、「16進数」だと設問文と選択肢が整合せず設問が不成立になる。ただし 16 進と読んでも一致する肢は存在しないため、正解に見える肢が ウ 以外へ移動することはないと判断し severity=semantic とした。"
+      },
+      {
+        "id": "2012h24h-q052",
+        "field": "choice.イ",
+        "current_text": "－255 ～ 255",
+        "source_text": "－255 ～ 256",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源の肢イは上限が 256 (「－255 ～ 256」)。dataset は上限を 255 に変えており、ア (－256 ～ 255) と非対称の組合せという錯乱肢の設計意図 (256/255 の入れ替え) が失われている。正解 ウ は変わらないので answer_affecting ではないが数値そのものの相違。"
+      },
+      {
+        "id": "2012h24h-q052",
+        "field": "choice.エ",
+        "current_text": "－127 ～ 127",
+        "source_text": "－127 ～ 128",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源の肢エは上限が 128 (「－127 ～ 128」)。dataset は上限を 127 に変えている。源ではエが ウ (－128 ～ 127) の 128/127 を入れ替えた錯乱肢だが、dataset の「－127 ～ 127」は別物の値域になる。正解 ウ は変わらないため severity=semantic。"
+      },
+      {
+        "id": "2012h24h-q092",
+        "field": "stem",
+        "current_text": "適切なものはどれか。なお，Ａ社は，休日以外は営業日となっており",
+        "source_text": "適切なものはどれか。ここで，A社は，休日以外は営業日となっており",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源は接続語が「ここで」（前提条件の提示）。dataset は「なお」（補足の追加）に置換されている。日本語としては自然だが源の語ではない。正解の判定には影響しない。"
+      },
+      {
+        "id": "2012h24h-q092",
+        "field": "stem",
+        "current_text": "コースは営業日に開講する。9月のカレンダは図1のとおりである。",
+        "source_text": "コースは営業日に開講される。9月のカレンダは図1のとおりである。",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源は受動態「開講される」。dataset は能動態「開講する」に書き換えられている。意味はほぼ同じだが語形が源と異なる。"
+      },
+      {
+        "id": "2012h24h-q092",
+        "field": "stem",
+        "current_text": "(2) 3名ともに9月に開講するコースを1コースずつ受講申込みをした。",
+        "source_text": "（2）　3名ともに9月に開講されるコースを1コースずつ受講申込みしている。",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "2箇所の相違。(a)「開講される」→「開講する」（受動態→能動態）。(b) 文末「受講申込みしている」（現在完了的な状態）→「受講申込みをした」（過去の動作）。いずれも源にない言い換え。"
+      },
+      {
+        "id": "2012h24h-q092",
+        "field": "stem",
+        "current_text": "(3) 文京花子さんは，コースＱを9月に申込んでいたが，9月12日に取り消した。",
+        "source_text": "（3）　文京花子さんは，コースQを申し込んでいたが，9月12日に取り消した。",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "源にない「9月に」が追加され、申込み時期という源が述べていない事実が付加されている（源が9月と言っているのは開講月であって申込月ではない）。併せて送り仮名も「申し込んで」→「申込んで」と異なる（こちらは表記差）。料金規定は取消日基準のため正解肢は変わらない。"
+      },
+      {
+        "id": "2012h24h-q092",
+        "field": "stem",
+        "current_text": "(4) 大阪幸子さんは，コースＲを9月に申込んでいたが，9月19日に取り消した。",
+        "source_text": "（4）　大阪幸子さんは，コースRを申し込んでいたが，9月19日に取り消した。",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "(3) と同じく源にない「9月に」が追加。送り仮名も「申し込んで」→「申込んで」。"
+      },
+      {
+        "id": "2012h24h-q092",
+        "field": "stem",
+        "current_text": "(5) 東京三郎さんは，コースＱを9月に申込んでいたが，当日欠席した。",
+        "source_text": "（5）　東京三郎さんは，コースQを申し込んでいたが，当日欠席した。",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "(3)(4) と同じく源にない「9月に」が追加。送り仮名も「申し込んで」→「申込んで」。"
+      },
+      {
+        "id": "2012h24h-q094",
+        "field": "stem",
+        "current_text": "［事務所統合プロジェクトメンバ］",
+        "source_text": "〔事務所統合プロジェクトのメンバ〕",
+        "severity": "cosmetic",
+        "is_correct_choice": false,
+        "detail_jp": "〔…〕内の資料名称の相違。源は「事務所統合プロジェクトのメンバ」で「プロジェクト」と「メンバ」の間に助詞「の」があるが、dataset 側は「事務所統合プロジェクトメンバ」と「の」が脱落している。括弧字形 〔〕→［］ の差は表記揺れとして不報告だが、名称本体の「の」脱落は語句の脱落に当たるため報告する。指し示す対象は変わらないため severity=cosmetic。"
+      },
+      {
+        "id": "2012h24h-q094",
+        "field": "stem",
+        "current_text": "| 事務所統合プロジェクトリーダ | Aさん |",
+        "source_text": "事務所統合のプロジェクトリーダ　：　Aさん",
+        "severity": "cosmetic",
+        "is_correct_choice": false,
+        "detail_jp": "メンバ表 1 行目の役割名の相違。源は「事務所統合のプロジェクトリーダ」で「事務所統合」と「プロジェクトリーダ」の間に助詞「の」があるが、dataset 側は「事務所統合プロジェクトリーダ」と「の」が脱落している。役割の意味自体は変わらないため severity=cosmetic だが、源との逐字一致は崩れている。なお源のこの行だけコロンが役割名の直後に密着して置かれている（他行はコロンが右揃え位置）点は体裁差として不報告。"
+      },
+      {
+        "id": "2012h24h-q099",
+        "field": "stem",
+        "current_text": "| 2 | ISBN コード | 9 | 7 | 8 | 4 | 0 | 0 | 0 | 8 | 1 | 2 | 3 | 4 | |",
+        "source_text": "| 2 | ISBN コード | 9 | 7 | 8 | 4 | 0 | 0 | 0 | 0 | 1 | 2 | 3 | 4 | |",
+        "severity": "semantic",
+        "is_correct_choice": false,
+        "detail_jp": "図2 の行2 (ISBN コード)、列 I の数値。源ページは 0 (スラッシュ付きゼロ字形) で、F〜I 列に 0 が 4 個連続する (ISBN = 978-4-0000-1234)。dataset は列 I を 8 としている。拡大画像で F=0, G=0, H=0, I=0, J=1 を字形レベルで確認済み。加えて算術的にも源が 0 であることが裏付けられる: 重み 1,3,1,3,… で計算すると源の値では 9+21+8+12+0+0+0+0+1+6+3+12 = 72 となり、表の 和(S)=72 と一致するが、dataset の 8 では 8×3=24 が加算され 96 となり表示値 72 と矛盾する。正解肢 (ウ B2*B3) の判定自体は数値に依存しないため answer_affecting ではないが、設問データの値そのものが源と異なるため semantic とした。"
+      }
+    ],
+    "audits": [
+      {
+        "id": "2012h24h-q015",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-06.png の下段が問15。同ページ上段は問14 (コーポレートガバナンス) で、問番号を確認のうえ問15 のみを照合した。設問文・〔条件〕・表・注記・選択肢を 2〜3 倍拡大して 1 文字ずつ突き合わせた結果、語句レベルの相違は無し。\n\n照合の詳細:\n1) 設問文 — 源「A 工場では，製品 X を生産している。今週金曜日に受注した大口注文に対応するために，翌週できるだけ多く生産することにした。次の条件で生産するとき，翌週金曜日の終業時に出荷可能となる製品 X は何台か。ここで，各日の部品在庫数，製品 X の製造台数及び出荷可能台数は表のとおりである。」= dataset と一致。「製造台数及び出荷可能台数」の語順・語彙も一致。\n2) 〔条件〕4 項目 — (a)「製品 X の生産台数は，1日に最大12台である。」(源も dataset も「生産台数」であり「製造台数」ではない、要注意箇所だが一致)、(b)「今週金曜日に製品 X の60台分の部品を発注し，発注した部品は，翌週金曜日の始業時に納品される。」(60 / 翌週金曜日 / 始業時 すべて一致)、(c)「他の注文に対する出荷は無いものとする。」、(d)「製造上の不良品は発生しない。」— 全一致。箇条書き記号は源が中黒、dataset が「・」で表記揺れの範囲。\n3) 表 — 源は 2 段ヘッダ (上段「今週」が金のみを、「翌週」が月火水木金をスパン、下段左端が「曜日」)。dataset は 1 行に平坦化しているが、これは表を `| 列 |` 形式に整形した体裁差として許容範囲。行見出し「始業時の部品在庫数（製品 X の製造台数に換算）」「当日の製品 X の製造台数」「終業時の製品 X の出荷可能台数」は源と一致。数値は源が 55/45、10/12、15/27 で dataset と一致 (拡大確認済み、55 と 45 の取り違えなし)。火〜金の網掛けセルは源で塗り潰され数値表示なし、dataset も空セルで整合。\n4) 注記 —「注記　網掛けの部分は，表示していない。」一致。\n5) 選択肢 — 源 ア 57 / イ 60 / ウ 72 / エ 75。dataset と字母・数値ともに一致。correct_answer=ウ に対応する源の肢も「72」で、答えに影響する差分は存在しない。\n\n作業上の注記: scratchpad ディレクトリが並列エージェントと共有されており、汎用名 (choices.png) で切出したファイルが他エージェントの同名ファイルに上書きされ、一度だけ無関係の設問画像 (氏名・請求額の表) を読み込む事故が発生した。固有名 (q15_choices_v2.png / q15_lower_v2.png) で再切出しし、選択肢行を 3 倍拡大して再確認済み。上記の判定はすべて再確認後の読取りに基づく。"
+      },
+      {
+        "id": "2012h24h-q052",
+        "verdict": "DISCREPANT",
+        "discrepancies": [
+          {
+            "field": "stem",
+            "current_text": "数値の範囲を16進数で表したものはどれか。",
+            "source_text": "数値の範囲を10進数で表したものはどれか。",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源 (問52 設問文 1行目末尾〜2行目) は「範囲を10進数で表したものはどれか。」。dataset は「10進数」を「16進数」に置換している。選択肢は源・dataset とも全て 10 進表記の数値 (−256, 255, −128, 127 等) なので、「16進数」だと設問文と選択肢が整合せず設問が不成立になる。ただし 16 進と読んでも一致する肢は存在しないため、正解に見える肢が ウ 以外へ移動することはないと判断し severity=semantic とした。"
+          },
+          {
+            "field": "choice.イ",
+            "current_text": "－255 ～ 255",
+            "source_text": "－255 ～ 256",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源の肢イは上限が 256 (「－255 ～ 256」)。dataset は上限を 255 に変えており、ア (－256 ～ 255) と非対称の組合せという錯乱肢の設計意図 (256/255 の入れ替え) が失われている。正解 ウ は変わらないので answer_affecting ではないが数値そのものの相違。"
+          },
+          {
+            "field": "choice.エ",
+            "current_text": "－127 ～ 127",
+            "source_text": "－127 ～ 128",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源の肢エは上限が 128 (「－127 ～ 128」)。dataset は上限を 127 に変えている。源ではエが ウ (－128 ～ 127) の 128/127 を入れ替えた錯乱肢だが、dataset の「－127 ～ 127」は別物の値域になる。正解 ウ は変わらないため severity=semantic。"
+          }
+        ],
+        "notes_jp": "源: data/ip/exams/pages/2012h24h/page-18.png の問52 (同ページには問51・問53・問54 も存在。問番号「問52」を確認済み)。設問文・4 肢すべてを 2 段階拡大 (設問文 2 倍、選択肢 3 倍・LANCZOS) して逐字照合した。一致した箇所: 設問文の「負の整数を2の補数で表現するとき，8桁の2進数で表現できる数値の範囲を」まで、肢ア「－256 ～ 255」、正解肢 ウ「－128 ～ 127」。相違は 3 件 (設問文の進数名 1 件、肢イ・肢エの上限値 各 1 件) で、いずれも正解字母 ウ の本文には無いため is_correct_choice は全て false。正解 ウ 自体は源と逐字一致しており、2 の補数 8 ビットの正答 −128〜127 とも整合する。なお設問文の「16進数」は dataset 単独で読むと選択肢が 10 進表記であるため不自然であり、源の「10進数」が正しい。"
+      },
+      {
+        "id": "2012h24h-q070",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-24.png を読み、同一ページ内の問68・問69 と区別したうえで問70 を特定。文字が小さいため、設問行と選択肢行をそれぞれ切り出して 2〜4 倍に拡大再読し、数字を一桁ずつ確認した。\n\n源の逐字読み取り:\n・設問「問70　MTBF が600時間, MTTR が12時間である場合, 稼働率はおおよそ幾らか。」\n・選択肢は 1 行横並び「ア 0.02　イ 0.20　ウ 0.88　エ 0.98」\n\ndataset 側と照合した結果、設問文の語順・語句・数値 (600 / 12)、および 4 肢の数値 (0.02 / 0.20 / 0.88 / 0.98) すべてが一致。「0.88」と「0.98」は誤読しやすいため、ウ・エを個別に高倍率で切り出して十の位の字形 (8 は上下 2 つの閉ループ、9 は上部ループ+下向き直線) を確認済み。全角/半角・読点の字体差のみで、語句レベルの相違は無い。\n\n参考 (整合性チェックのみ、判定には未使用): 600/(600+12) ≒ 0.980 で correct_answer=エ と矛盾しない。"
+      },
+      {
+        "id": "2012h24h-q087",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-34.png (問87、〔ストラテジ〕、ページ番号 34)。ページ全体を一読した後、設問文・表4・表5・選択肢の 4 領域を PIL で切り出して 2 倍拡大し、逐字照合しました。\n\n【設問文】源の書き起こし: 「問87 Fさんは，価格，性能，サービスのそれぞれについて，機種A～Dの2機種ごとに，全ての組合せで優劣を比較し，表4の相対比較表を作成した。Fさんは，完成した相対比較表を基に，評価表の評価値を検討することにした。機種Aと他の機種の性能に関する比較結果が表4の相対比較表のようになったとき，表5の評価表案のaに入る評価値が取り得る値の並びとして，適切なものはどれか。」 — dataset の displayed_stem_jp と語句レベルで完全一致。表番号 (表4 / 表5)、空欄記号 a、機種範囲 A～D、いずれも相違なし。\n\n【表4 相対比較表】源: ヘッダ「評価項目 | 機種 | 比較 | 機種」、価格行は縦点線 (⋮)、性能ブロックは「機種A ＞ 機種B」「機種A ＞ 機種C」「機種A ＜ 機種D」+ 省略行、最後にサービス行。不等号の向き (＞＞＜) を拡大して確認済み、dataset と一致。dataset では 性能 の結合セルを各行に展開し省略行を「性能 | … | … | …」と表記していますが、これは表を `| 列 |` 形式に整形したことによる体裁差であり、判定基準上の許容範囲として報告していません。\n\n【表5 評価表案】源: ヘッダ「評価項目 | 重み | 機種A | 機種B | 機種C | 機種D」、性能行が「a | 3 | 3 | 6」、価格行・サービス行および重み列は網掛け。数字 3 / 3 / 6 を拡大して確認済み (6 が 5 や 8 でないことを含む)。注記「網掛けの部分は，表示していない。」も一致。dataset の空セルは網掛け部の表現であり体裁差として許容。\n\n【選択肢】源: ア 1, 2 / イ 3, 4, 5, 6 / ウ 4, 5 / エ 7, 8, 9。すべての数字を拡大確認し、dataset の「ア 1，2」「イ 3，4，5，6」「ウ 4，5」「エ 7，8，9」と一致 (「,」と「，」の差は表記揺れとして許容)。\n\n【整合性の裏取り】表4 より A>B(=3), A>C(=3), A<D(=6) ゆえ 3<a<6 → a∈{4,5}。correct_answer=ウ「4，5」と源の内容が矛盾なく整合。answer-affecting な差分は存在しません。\n\n【作業上の注意 (親エージェントへ)】共有スクラッチパッドで並列エージェントとファイル名が衝突し、一般名 (stem.png) を読んだ際に別設問 (問92) の画像を掴む事故が発生しました。設問固有 prefix (a87_*) で切り直して再検証済みで、本判定はすべて再検証後の画像に基づいています。同種の監査タスクでは切り出しファイル名に id を含めることを推奨します。"
+      },
+      {
+        "id": "2012h24h-q089",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-37.png (問89 のみが本ページ本文、下部は空白 + ノンブル「37」)。\n\n■ 検証手順\n初回のフルページ読み取りに加え、ページを 4 分割 (1.9x) + 設問文 3 行帯 (2.2x) + 表1 (2.6x) + 表2 (3.0x) + 選択肢 4 箱 (4.0x, autocontrast) に拡大して個別に再読し、数字・Y/N を字形レベルで再確認した。途中 1 回、低品質クロップで全く無関係の文面 (「Bさんが作成し，C，D，E，Fさんは…」) を読み取ってしまう誤読が発生したため、同一領域を 4x + autocontrast で再取得し、実体が数値ボックス (0/10/10/0 等) であることを確定させた。以降の判定は高倍率版に基づく。\n\n■ 逐字照合結果\n1. 設問文: 源「問89　Bさんは，割引適用の機能に関するテストデータを準備するために，表2に示す割引適用表を作成して整理することにした。割引適用表の a に入れる適切な記述はどれか。ここで，割引適用表の上の2行は割引適用の条件であり，真のとき“Y”，偽のとき“N”と記述する。同じ列にある二つの条件の真偽の組合せとなった場合の受講料の割引率を同じ列の3行目に記述する。」— dataset と語句レベルで完全一致。「二つ」(漢数字)、「組合せ」(送り仮名なし)、「2行」「3行目」(算用数字) まで一致を確認。〔テクノロジ〕の分類見出しも源にあり一致。\n2. 表1 研修コース表: 見出し 4 列 (研修コース名/開講日/受講料（円）/テキスト代（円）)、コースP 9月4日 10,000 2,000 / コースQ 9月17日 8,000 2,000 / コースR 9月25日 20,000 請求なし / コースS 10月2日 15,000 1,500 — 全セル一致。日付 17/25/2、金額の桁とカンマ位置も 2.6x で individually 確認。\n3. 表2 割引適用表: 「会員である」= Y Y N N、「同じ月で複数コースの請求がある」= Y N Y N、「受講料の割引率（％）」= a — 一致。\n4. 選択肢 (4x 拡大で確定): ア 0/10/10/0、イ 0/10/10/20、ウ 10/10/10/0、エ 20/10/10/0 — dataset と全数字一致。正解肢 エ の「20，10，10，0」も先頭 20・末尾 0 まで一致。\n\n■ 許容範囲として非報告とした表記差 (いずれも語句・数値の相違ではない)\n- 引用符: 源は欧文ダブルクォート “Y” / “N”、dataset は「Y」/「N」。囲まれた文字自体は同一。\n- 読点: 源「，」、dataset「、」。\n- 表2 第3行: 源では a のボックスが 4 列を横断する結合セル 1 個。dataset は Markdown 表に平坦化した結果 `| a |  |  |  |` (a を先頭列に置き残り 3 列を空欄) となっている。これは結合セルを `| 列 |` 形式へ整形した体裁差であり、a の記入位置が「3行目の 4 列分」であることは設問文と表本体から変わらず読み取れる。\n- 表1 は源ページ上では 〔テクノロジ〕見出しより前 (前問群と共有の表) に置かれているが、dataset は設問文ブロック内に併記している。掲載順の差のみで、表の内容は逐字一致。\n\n結論: 表示テキストは源と逐字一致。answer_affecting / semantic / cosmetic いずれの相違も検出されず。"
+      },
+      {
+        "id": "2012h24h-q092",
+        "verdict": "DISCREPANT",
+        "discrepancies": [
+          {
+            "field": "stem",
+            "current_text": "適切なものはどれか。なお，Ａ社は，休日以外は営業日となっており",
+            "source_text": "適切なものはどれか。ここで，A社は，休日以外は営業日となっており",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源は接続語が「ここで」（前提条件の提示）。dataset は「なお」（補足の追加）に置換されている。日本語としては自然だが源の語ではない。正解の判定には影響しない。"
+          },
+          {
+            "field": "stem",
+            "current_text": "コースは営業日に開講する。9月のカレンダは図1のとおりである。",
+            "source_text": "コースは営業日に開講される。9月のカレンダは図1のとおりである。",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源は受動態「開講される」。dataset は能動態「開講する」に書き換えられている。意味はほぼ同じだが語形が源と異なる。"
+          },
+          {
+            "field": "stem",
+            "current_text": "(2) 3名ともに9月に開講するコースを1コースずつ受講申込みをした。",
+            "source_text": "（2）　3名ともに9月に開講されるコースを1コースずつ受講申込みしている。",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "2箇所の相違。(a)「開講される」→「開講する」（受動態→能動態）。(b) 文末「受講申込みしている」（現在完了的な状態）→「受講申込みをした」（過去の動作）。いずれも源にない言い換え。"
+          },
+          {
+            "field": "stem",
+            "current_text": "(3) 文京花子さんは，コースＱを9月に申込んでいたが，9月12日に取り消した。",
+            "source_text": "（3）　文京花子さんは，コースQを申し込んでいたが，9月12日に取り消した。",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "源にない「9月に」が追加され、申込み時期という源が述べていない事実が付加されている（源が9月と言っているのは開講月であって申込月ではない）。併せて送り仮名も「申し込んで」→「申込んで」と異なる（こちらは表記差）。料金規定は取消日基準のため正解肢は変わらない。"
+          },
+          {
+            "field": "stem",
+            "current_text": "(4) 大阪幸子さんは，コースＲを9月に申込んでいたが，9月19日に取り消した。",
+            "source_text": "（4）　大阪幸子さんは，コースRを申し込んでいたが，9月19日に取り消した。",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "(3) と同じく源にない「9月に」が追加。送り仮名も「申し込んで」→「申込んで」。"
+          },
+          {
+            "field": "stem",
+            "current_text": "(5) 東京三郎さんは，コースＱを9月に申込んでいたが，当日欠席した。",
+            "source_text": "（5）　東京三郎さんは，コースQを申し込んでいたが，当日欠席した。",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "(3)(4) と同じく源にない「9月に」が追加。送り仮名も「申し込んで」→「申込んで」。"
+          }
+        ],
+        "notes_jp": "源: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-40.png の「問92」（〔マネジメント〕分野）。ページ内には問92のみが載っており、問番号は明確に特定できた。文字が小さい箇所（設問文・受入れテストケース・カレンダ・選択肢表）はそれぞれ 2〜3 倍に拡大して逐字照合した。\n\n【選択肢: 全て CLEAN】源の選択肢は 4 行 3 列の表（列 = 文京花子 / 大阪幸子 / 東京三郎）。ア 7,200円・請求なし・7,200円 / イ 9,200円・20,000円・10,000円 / ウ 9,200円・請求なし・9,200円 / エ 請求なし・請求なし・9,200円。dataset の displayed_choices_jp と数値・「請求なし」の配置が完全一致。正解肢アの本文にも相違なし（したがって全差分の is_correct_choice=false）。\n\n【カレンダ図: 一致】源の表（日〜土、1日=月曜開始、30日まで、初週日曜と最終週水曜以降が空欄）と dataset のマークダウン表は一致。網掛けセルは 6, 7, 13, 14, 15, 20, 21, 23, 27, 28 の 10 日で、dataset の注記「（網掛け＝休日：6，7，13，14，15，20，21，23，27，28日）」は網掛け情報の正確な文字化。源の注記本文は「注記　網掛けをしている日が休日である」のみで括弧部分は存在しないが、マークダウン表では網掛け（セル背景）を表現できないための体裁上の補記であり、表整形に伴う差として差分報告から除外した（内容は源と一致することを確認済み）。\n\n【差分の性質】相違は全て設問文側に集中しており、いずれも「源にない言い換え・追加」である。特に (3)(4)(5) の「9月に」は源に存在しない情報の追加で、dataset 側の記述だけ読むと自然かつ内容的にも矛盾しないため見落とされやすい典型例。ただし料金・取消手数料の判定は取消日（9月12日 / 9月19日）と当日欠席で決まるため、どの肢が正解に見えるかは変わらず answer_affecting には該当しない。"
+      },
+      {
+        "id": "2012h24h-q094",
+        "verdict": "DISCREPANT",
+        "discrepancies": [
+          {
+            "field": "stem",
+            "current_text": "［事務所統合プロジェクトメンバ］",
+            "source_text": "〔事務所統合プロジェクトのメンバ〕",
+            "severity": "cosmetic",
+            "is_correct_choice": false,
+            "detail_jp": "〔…〕内の資料名称の相違。源は「事務所統合プロジェクトのメンバ」で「プロジェクト」と「メンバ」の間に助詞「の」があるが、dataset 側は「事務所統合プロジェクトメンバ」と「の」が脱落している。括弧字形 〔〕→［］ の差は表記揺れとして不報告だが、名称本体の「の」脱落は語句の脱落に当たるため報告する。指し示す対象は変わらないため severity=cosmetic。"
+          },
+          {
+            "field": "stem",
+            "current_text": "| 事務所統合プロジェクトリーダ | Aさん |",
+            "source_text": "事務所統合のプロジェクトリーダ　：　Aさん",
+            "severity": "cosmetic",
+            "is_correct_choice": false,
+            "detail_jp": "メンバ表 1 行目の役割名の相違。源は「事務所統合のプロジェクトリーダ」で「事務所統合」と「プロジェクトリーダ」の間に助詞「の」があるが、dataset 側は「事務所統合プロジェクトリーダ」と「の」が脱落している。役割の意味自体は変わらないため severity=cosmetic だが、源との逐字一致は崩れている。なお源のこの行だけコロンが役割名の直後に密着して置かれている（他行はコロンが右揃え位置）点は体裁差として不報告。"
+          }
+        ],
+        "notes_jp": "源ページ (page-42.png) には問93 と問94 が併載されており、下段の「問94」を問番号で確認したうえで照合した。文字が小さいため、設問文・メンバ表・選択肢の 3 領域をそれぞれ 2 倍拡大して再読し、1 文字ずつ突き合わせた。\n\n【一致した箇所】\n- 設問文本体「事務所統合プロジェクトのメンバは，次のとおりである。このとき，予約システムの RFP の作成者に関する記述として，最も適切なものはどれか。」は逐字一致。\n- メンバ表 2〜5 行目「予約システムの導入責任者：Bさん」「プロジェクトメンバ：C，D，Eさん」「情報システム部の支援者：Fさん」「会議室の施工業者の担当者：Gさん」はすべて逐字一致。\n- 選択肢ア〜エの 4 肢すべて逐字一致（ア「Bさんが作成し，C，D，E，Fさんは作成を支援する。」／イ「C，D，Eさんのいずれかが作成し，Fさんは作成を支援する。」／ウ「Fさんが作成し，Gさんは作成を支援する。」／エ「Gさんが作成する。」）。正解肢アの本文に相違はない。\n\n【表記揺れとして報告しなかった差分】\n- 源は「役割　：　担当者」のコロン区切り縦並びリストだが、dataset は Markdown 表に整形し「| 役割 | 担当者 |」というヘッダ行を追加している。源にこの 2 語は存在しないが、表形式への整形に伴う体裁差の範囲と判断して不報告とした（保真上どうしても厳密に扱う方針なら、ヘッダ語の追加として別途扱う余地はある）。\n- 選択肢内の半角カンマ「C, D, E」→全角「C，D，E」、括弧字形 〔〕→［］、改行位置・空白の差。\n\n【結論】相違は 2 件とも設問文側のメンバ資料の名称で、いずれも助詞「の」の脱落。どの肢が正解に見えるかには影響しない（answer_affecting ではない）が、源と逐字一致していないため DISCREPANT と判定した。"
+      },
+      {
+        "id": "2012h24h-q097",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-45.png の上段〔テクノロジ〕問97 を照合。同ページ下段には問98（〔ストラテジ〕ISBN コードにチェック数字が含まれている…）があるが、問番号「問97」を確認して上段のみを対象とした。\n\n設問文（源、逐字）: 「問97 ISBN コードの1桁目から12桁目が次の数字の場合，13桁目に付加されるチェック数字 X はどれか。」→ dataset の displayed_stem_jp と語句レベルで完全一致（読点 ，/, の差のみ、許容範囲）。\n\n表（源を 4 倍拡大して 1 セルずつ判読）: ヘッダ行「桁 | 1 2 3 4 5 6 7 8 9 10 11 12 13」、数値行「9 7 8 4 0 0 0 0 8 6 0 1 X」。dataset の Markdown 表と 13 セルすべて一致。dataset がヘッダ行に「桁」を置き数値行の先頭を空セルにしているのは表を `| 列 |` 形式へ整形した体裁差であり、判定基準により報告対象外。ゼロは源では slashed zero (0) で表示されているが字形の表記差。\n\n選択肢（源、逐字）: ア 1 ／ イ 3 ／ ウ 7 ／ エ 9。dataset の displayed_choices_jp と完全一致。correct_answer=ア（1）は ISBN-13 の重み 1,3 交互計算（合計 79 → 10-9=1）とも整合し、正解肢本文に差分なし。\n\n作業上の注意（監査結果には影響なし）: 最初に共有スクラッチパッド直下へ汎用名（stem.png 等）で切り出した際、並行実行中の別監査が同名ファイルを上書きしたらしく、無関係な設問（問92 の受入れテストケース問題）の画像が返った。q097_a47f/ 配下の固有名で全クロップを取り直し、設問文・表・選択肢をすべて再判読した上での判定である。"
+      },
+      {
+        "id": "2012h24h-q099",
+        "verdict": "DISCREPANT",
+        "discrepancies": [
+          {
+            "field": "stem",
+            "current_text": "| 2 | ISBN コード | 9 | 7 | 8 | 4 | 0 | 0 | 0 | 8 | 1 | 2 | 3 | 4 | |",
+            "source_text": "| 2 | ISBN コード | 9 | 7 | 8 | 4 | 0 | 0 | 0 | 0 | 1 | 2 | 3 | 4 | |",
+            "severity": "semantic",
+            "is_correct_choice": false,
+            "detail_jp": "図2 の行2 (ISBN コード)、列 I の数値。源ページは 0 (スラッシュ付きゼロ字形) で、F〜I 列に 0 が 4 個連続する (ISBN = 978-4-0000-1234)。dataset は列 I を 8 としている。拡大画像で F=0, G=0, H=0, I=0, J=1 を字形レベルで確認済み。加えて算術的にも源が 0 であることが裏付けられる: 重み 1,3,1,3,… で計算すると源の値では 9+21+8+12+0+0+0+0+1+6+3+12 = 72 となり、表の 和(S)=72 と一致するが、dataset の 8 では 8×3=24 が加算され 96 となり表示値 72 と矛盾する。正解肢 (ウ B2*B3) の判定自体は数値に依存しないため answer_affecting ではないが、設問データの値そのものが源と異なるため semantic とした。"
+          }
+        ],
+        "notes_jp": "照合手順: (1) page-46.png を全ページ読み込み、問99 (〔テクノロジ〕欄) を特定。(2) 表領域・設問文・選択肢行をそれぞれ 2〜6 倍に拡大して再読し、逐字照合。\n\n一致を確認した箇所:\n- 設問文冒頭「表計算ソフトを使ってチェック数字を求めることにした。チェック数字を求めるワークシートを，次の手順で作成するとき，a に入れる適切な式はどれか。」— 完全一致。\n- 手順 (1)〜(7) の全文 (セル範囲 B1〜N1 / B2〜M2 / B3〜M3 / B4・C4〜M4 / B5・B4〜M4 / B6・B5・10 / N2、および「1〜12桁」「1桁ずつ」「複写する」「割った余り」) — 完全一致。\n- 図2 の行1 (桁: 1〜13)、行3 (重み: 1,3,1,3,1,3,1,3,1,3,1,3)、行4 (空欄・B4 に太枠)、行5 (和(S) = 72)、行6 (剰余(R) 空欄) — 完全一致。\n- 注記「網掛けの部分は，表示していない。」— 完全一致。\n- 選択肢 4 つ: ア B1＊B2 / イ $B1＊B$3 / ウ B2＊B3 / エ $B2＊B$3 — 乗算記号の字形 (源は ＊) を除き完全一致。表記揺れとして許容。\n\n報告しなかった体裁差:\n- 源はページ上で「表 → 注記 → 図2 キャプション」の順に配置されているが、dataset は「図2 キャプション → 表 → 注記」の順。表を Markdown に整形した際のレイアウト差であり、文言自体は同一のため表記揺れとして扱った。\n\n作業上の注記: 極端なアスペクト比で拡大した中間クロップ 1 枚で選択肢行を誤読しかけたため、等比拡大で再クロップし再確認した (最終判定は等比拡大画像に基づく)。"
+      },
+      {
+        "id": "2012h24h-q100",
+        "verdict": "CLEAN",
+        "discrepancies": [],
+        "notes_jp": "源ページ (data/ip/exams/pages/2012h24h/page-47.png) の問100 を特定し、拡大 (領域切り出し + 2400-2800px 拡大) して逐字照合した。\n\n【設問文】〔テクノロジ〕/「問100　表計算ソフトを使ってチェック数字を求めることにした。チェック数字を求める次のワークシート中のセル N2に入れる適切な式はどれか。このワークシートは，セル B2～M2に数字を入力することで，繰り返し使うものとする。」— 一致。\n\n【手順 (1)〜(6)】\n(1) セル B1～N1に，ISBN コードの桁数を表す数値を入力する。— 一致 (N1 であって M1 でないことを確認)\n(2) セル B2～M2に，ISBN コードの1～12桁を，各セルに1桁ずつ入力する。— 一致\n(3) セル B3～M3に，ISBN コードの各桁に対応した重みを入力する。— 一致\n(4) セル B5に，ISBN コードに各桁の重みを掛けたものの合計を求める。— 一致\n(5) セル B6に，剰余関数を使った次の式を入力する。/ 剰余(B5,10) — 一致 (B5,10 であって B6,10 でないことを確認)\n(6) セル N2に，チェック数字を求める式を入力する。— 一致\n\n【図3 ワークシート】列 A〜N、行 1〜6 をセル単位で照合。\n行1 桁: 1,2,3,4,5,6,7,8,9,10,11,12,13 — 一致\n行2 ISBN コード: 9,7,8,4,0,0,0,0,4,3,2,1 (N2 は網掛け=空欄) — 一致\n行3 重み: 1,3,1,3,1,3,1,3,1,3,1,3 — 一致\n行4 空行 (B〜M 網掛け) — 一致\n行5 和(S): B5=68 — 一致 (検算: 9+21+8+12+0+0+0+0+4+9+2+3=68 で整合)\n行6 剰余(R): B6 網掛け=空欄 — 一致\n注記　網掛けの部分は，表示していない。/ 図3　チェック数字を求めるワークシート — 一致\n\n【選択肢】\nア 10－B6 — 一致\nイ B6－10 — 一致\nウ 10－剰余(B6,10) — 一致\nエ 剰余(10－B6,10) — 一致 (正解肢。括弧の位置が「剰余(10－B6,10)」であり、ウの「10－剰余(B6,10)」と取り違えられていないことを重点確認)\n\n差分は全半角・空白・表の markdown 整形のみで、語句レベルの相違は皆無。"
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Fidelity"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "fidelity:2012h24h-q015",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a445ed2cc1f4c1dfe",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382374970,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q015",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q015\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382504275,
+      "tokens": 54913,
+      "toolCalls": 12,
+      "durationMs": 127437,
+      "resultPreview": "{\"id\":\"2012h24h-q015\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-06.png の下段が問15。同ページ上段は問14 (コーポレートガバナンス) で、問番号を確認のうえ問15 のみを照合した。設問文・〔条件〕・表・注記・選択肢を 2〜3 倍拡大して 1 文字ずつ突き合わせた結果、語句レベルの相違は無し。\\n\\n照合の詳細:\\n1) 設問文 — 源「A 工場では，製品 X を生産している。今週金曜日に受注した大口注文に対応するために，翌週できるだけ多く生産することにした。次の条件で生産するとき，翌週金曜日の終業時に出荷可能となる製品 X は…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "fidelity:2012h24h-q052",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "ac52d802a1062152f",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382375340,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q052",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q052\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382439435,
+      "tokens": 41200,
+      "toolCalls": 6,
+      "durationMs": 62595,
+      "resultPreview": "{\"id\":\"2012h24h-q052\",\"verdict\":\"DISCREPANT\",\"discrepancies\":[{\"field\":\"stem\",\"current_text\":\"数値の範囲を16進数で表したものはどれか。\",\"source_text\":\"数値の範囲を10進数で表したものはどれか。\",\"severity\":\"semantic\",\"is_correct_choice\":false,\"detail_jp\":\"源 (問52 設問文 1行目末尾〜2行目) は「範囲を10進数で表したものはどれか。」。dataset は「10進数」を「16進数」に置換している。選択肢は源・dataset とも全て 10 進表記の数値 (−256, 255, −128, 127 等) なので、「16進数」だと設問文と選択肢が整合せず設問が不成立になる。ただし 16 進と読んでも一致する肢は存在し…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "fidelity:2012h24h-q070",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "afa0d181b5da13e70",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382375156,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q070",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q070\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382464980,
+      "tokens": 44348,
+      "toolCalls": 12,
+      "durationMs": 88141,
+      "resultPreview": "{\"id\":\"2012h24h-q070\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-24.png を読み、同一ページ内の問68・問69 と区別したうえで問70 を特定。文字が小さいため、設問行と選択肢行をそれぞれ切り出して 2〜4 倍に拡大再読し、数字を一桁ずつ確認した。\\n\\n源の逐字読み取り:\\n・設問「問70　MTBF が600時間, MTTR が12時間である場合, 稼働率はおおよそ幾らか。」\\n・選択肢は 1 行横並び「ア 0.02　イ 0.20　ウ 0.88　エ 0.98」\\n\\ndataset 側と照合した結果、設問文の語順・語句・数値 (6…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "fidelity:2012h24h-q087",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a60d06d85bd54d5ea",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382374913,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q087",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q087\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382501356,
+      "tokens": 55968,
+      "toolCalls": 14,
+      "durationMs": 126443,
+      "resultPreview": "{\"id\":\"2012h24h-q087\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-34.png (問87、〔ストラテジ〕、ページ番号 34)。ページ全体を一読した後、設問文・表4・表5・選択肢の 4 領域を PIL で切り出して 2 倍拡大し、逐字照合しました。\\n\\n【設問文】源の書き起こし: 「問87 Fさんは，価格，性能，サービスのそれぞれについて，機種A～Dの2機種ごとに，全ての組合せで優劣を比較し，表4の相対比較表を作成した。Fさんは，完成した相対比較表を基に，評価表の評価値を検討することにした。機種Aと他の機種の性能に関する比較結果が表4の相対比…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "fidelity:2012h24h-q089",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "ae7a06cbdcb13ce0c",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382374992,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q089",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q089\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382581418,
+      "tokens": 61304,
+      "toolCalls": 20,
+      "durationMs": 204579,
+      "resultPreview": "{\"id\":\"2012h24h-q089\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ: /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-37.png (問89 のみが本ページ本文、下部は空白 + ノンブル「37」)。\\n\\n■ 検証手順\\n初回のフルページ読み取りに加え、ページを 4 分割 (1.9x) + 設問文 3 行帯 (2.2x) + 表1 (2.6x) + 表2 (3.0x) + 選択肢 4 箱 (4.0x, autocontrast) に拡大して個別に再読し、数字・Y/N を字形レベルで再確認した。途中 1 回、低品質クロップで全く無関係の文面 (「Bさんが作成し，C，D，E，Fさんは…」) …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "fidelity:2012h24h-q092",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "afb7cb4969a1e8424",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382375223,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q092",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q092\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382516434,
+      "tokens": 51470,
+      "toolCalls": 10,
+      "durationMs": 139594,
+      "resultPreview": "{\"id\":\"2012h24h-q092\",\"verdict\":\"DISCREPANT\",\"discrepancies\":[{\"field\":\"stem\",\"current_text\":\"適切なものはどれか。なお，Ａ社は，休日以外は営業日となっており\",\"source_text\":\"適切なものはどれか。ここで，A社は，休日以外は営業日となっており\",\"severity\":\"semantic\",\"is_correct_choice\":false,\"detail_jp\":\"源は接続語が「ここで」（前提条件の提示）。dataset は「なお」（補足の追加）に置換されている。日本語としては自然だが源の語ではない。正解の判定には影響しない。\"},{\"field\":\"stem\",\"current_text\":\"コースは営業日に開講する。9月のカレンダは図1のとおりである。\",\"source_text\"…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "fidelity:2012h24h-q094",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a18570f2b41b31560",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382375299,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q094",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q094\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382490120,
+      "tokens": 45717,
+      "toolCalls": 11,
+      "durationMs": 113280,
+      "resultPreview": "{\"id\":\"2012h24h-q094\",\"verdict\":\"DISCREPANT\",\"discrepancies\":[{\"field\":\"stem\",\"current_text\":\"［事務所統合プロジェクトメンバ］\",\"source_text\":\"〔事務所統合プロジェクトのメンバ〕\",\"severity\":\"cosmetic\",\"is_correct_choice\":false,\"detail_jp\":\"〔…〕内の資料名称の相違。源は「事務所統合プロジェクトのメンバ」で「プロジェクト」と「メンバ」の間に助詞「の」があるが、dataset 側は「事務所統合プロジェクトメンバ」と「の」が脱落している。括弧字形 〔〕→［］ の差は表記揺れとして不報告だが、名称本体の「の」脱落は語句の脱落に当たるため報告する。指し示す対象は変わらないため severity=cosmetic。\"},{\"fie…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "fidelity:2012h24h-q097",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "a47f7820c3ec2384a",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382374986,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q097",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q097\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382473688,
+      "tokens": 47111,
+      "toolCalls": 12,
+      "durationMs": 96849,
+      "resultPreview": "{\"id\":\"2012h24h-q097\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ /Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/pages/2012h24h/page-45.png の上段〔テクノロジ〕問97 を照合。同ページ下段には問98（〔ストラテジ〕ISBN コードにチェック数字が含まれている…）があるが、問番号「問97」を確認して上段のみを対象とした。\\n\\n設問文（源、逐字）: 「問97 ISBN コードの1桁目から12桁目が次の数字の場合，13桁目に付加されるチェック数字 X はどれか。」→ dataset の displayed_stem_jp と語句レベルで完全一致（読点 ，/, の差のみ、許容範囲）。\\n\\n表（源を 4…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "fidelity:2012h24h-q099",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "ac5df0493bd735790",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382442902,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q099",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q099\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382606648,
+      "tokens": 53581,
+      "toolCalls": 17,
+      "durationMs": 163746,
+      "resultPreview": "{\"id\":\"2012h24h-q099\",\"verdict\":\"DISCREPANT\",\"discrepancies\":[{\"field\":\"stem\",\"current_text\":\"| 2 | ISBN コード | 9 | 7 | 8 | 4 | 0 | 0 | 0 | 8 | 1 | 2 | 3 | 4 | |\",\"source_text\":\"| 2 | ISBN コード | 9 | 7 | 8 | 4 | 0 | 0 | 0 | 0 | 1 | 2 | 3 | 4 | |\",\"severity\":\"semantic\",\"is_correct_choice\":false,\"detail_jp\":\"図2 の行2 (ISBN コード)、列 I の数値。源ページは 0 (スラッシュ付きゼロ字形) で、F〜I 列に 0 が 4 個連続する (ISBN = 978-4-0000-1234)。…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "fidelity:2012h24h-q100",
+      "phaseIndex": 1,
+      "phaseTitle": "Fidelity",
+      "agentId": "ab46dbd6ba63a1d03",
+      "agentType": "general-purpose",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787382468580,
+      "queuedAt": 1787382372385,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q100",
+      "promptPreview": "あなたは独立した**表示テキスト保真監査者**です。学習アプリが表示している過去問の日本語テキストが、IPA 原典ページと逐字一致しているかだけを検証します。解説の良し悪しは対象外です。\n\n## 入力\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/s7x_fidelity_input_2012h24h.json` を Read し、samples[] の中から id===\"2012h24h-q100\" のエントリを取得してください。各エントリ:\n- `source_page_png`: 原典ページ画像の絶対パス (**権威**)\n- `question_number`: このページ内で照合すべき問番号\n- `displayed_stem_jp` / `displayed_choices_jp…",
+      "lastProgressAt": 1787382566739,
+      "tokens": 48003,
+      "toolCalls": 11,
+      "durationMs": 98156,
+      "resultPreview": "{\"id\":\"2012h24h-q100\",\"verdict\":\"CLEAN\",\"discrepancies\":[],\"notes_jp\":\"源ページ (data/ip/exams/pages/2012h24h/page-47.png) の問100 を特定し、拡大 (領域切り出し + 2400-2800px 拡大) して逐字照合した。\\n\\n【設問文】〔テクノロジ〕/「問100　表計算ソフトを使ってチェック数字を求めることにした。チェック数字を求める次のワークシート中のセル N2に入れる適切な式はどれか。このワークシートは，セル B2～M2に数字を入力することで，繰り返し使うものとする。」— 一致。\\n\\n【手順 (1)〜(6)】\\n(1) セル B1～N1に，ISBN コードの桁数を表す数値を入力する。— 一致 (N1 であって M1 でないことを確認)\\n(2) セル B2～M2に，I…"
+    }
+  ],
+  "totalTokens": 503615,
+  "totalToolCalls": 125
+}

@@ -1,0 +1,1404 @@
+{
+  "summary": "Quiz Phase 2 Rule A: 解説サイドカーの N-sample 独立意味抽検 (critic = writer/in-pipeline reviewer と別 subagent_type)。正解理由の妥当性+誤答説明+訳忠実度+key-guard 妥当性を独立核験",
+  "agentCount": 33,
+  "logs": [
+    "Rule A 監査完了: accurate 33/33, severity {\"low\":22,\"none\":11}, key_guard_invalid 0"
+  ],
+  "result": {
+    "n": 33,
+    "accurate": 33,
+    "bySeverity": {
+      "low": 22,
+      "none": 11
+    },
+    "keyGuardMismatch": [],
+    "audits": [
+      {
+        "id": "2012h24h-q001",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "イ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard の suspect=true / stem_corruption_suspected=true が S113 裁決後も立ったまま (stale flag)。note_jp 自身が「A案変動費 1万円→3万円 は page-02 実読で是正済 (stemfix-S113)、literal 導出=イ=stored key が回復」と宣言し、残存課題を一つも挙げていない。実データ (data/ip/quiz/questions.json および ruleA_samples の stem_jp) も既に「3万円」で確定しており、私自身 page-02 を実読して 単位 万円 / A案=1,000・3 / B案=2,000・2 を確認、矛盾は残っていない。同一ファイル内の慣行も、完全是正済で残存なしの q003・q022・q093 は suspect=false、共通前提の欠落など残存課題を抱える q089・q090 のみ suspect=true と一貫しており、q001 だけが例外になっている。round1 に腐敗の記録は保存済みなので、現在状態の suspect は false へ落とすのが整合的 (下流の suspect フィルタが解決済みレコードを人間裁決へ再浮上させる誤検出になる)。なお図/論理と key_guard の実質的判定 (figure_derivable=true, derived_answer=イ, matches_key=true) 自体は正しく、見落としは無いため key_guard_valid は true と判定した。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q002",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ア",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "en",
+            "severity": "low",
+            "detail_jp": "correct.en 末尾の引用句 『value for the organization arises only when personal information is shared』 は、JP 原文「個人の情報を共有することで、はじめて組織としての価値が生まれる」の「個人の情報」= 各メンバーが個々に持つ情報、の意。英語の personal information は PII (個人情報保護の文脈) を強く連想させる定型語であり、プライバシー論に読み違えられる余地がある。an individual's own information / each member's information 等が忠実。意味の骨格は文脈で救われるため severity=low、translation_faithful 自体は維持。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q003",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "イ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard.stem_corruption_suspected が true のままだが、現スナップショットの stem_jp は「ハードウェア設計」と分割空白なしで clean、choices_jp.エ も「リバースエンジニアリング」で末尾 junk「= 2 なーー」は既に除去済み。腐敗が解消されたことは note_jp 末尾の【S113 裁決】自由文でしか開示されておらず、boolean フラグだけを読む下流処理は解決済み項目を再フラグしうる。suspect=false・derived_answer=イ・matches_key=true は妥当で解説内容には影響しないため low。是正するなら stem_corruption_suspected を false に落とすか、resolved を示す別フィールドを持たせる。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q005",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q012",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "エ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard.note_jp の腐敗記述が現データと不整合 (stale)。note 本文は現在形で「選択肢アの末尾が『利用を薦めるの。』となっており…当該文字列は data/ip/quiz/questions.json にそのまま実在し、この選択肢には clean 変種が無いためユーザー表示面に露出する」と述べるが、実測では questions.json の ア は「エコノミークラスのチケットを求めている顧客にビジネスクラスの利用を薦める。」で既にクリーン (stemfix-S113 適用済、本 sample の choices_jp も同一)。衍字「の」が残るのは生成時スナップショットの .phase2/input_2012h24h.json のみ。末尾に付された【S113 裁決】行が supersede しているため実害は無いが、本文を過去形/是正済み表記へ整えるのが望ましい。付随して: D-140 (S100 lock) は『cosmetic も stem_corruption_suspected=true』と規定するのに、note は『D-140 に従い cosmetic かつ choices レベルの腐敗も本フラグで捕捉する』と書きながら boolean は false (round1 も false) で、生成時点では旗の値が D-140 と矛盾していた。現時点のデータは清浄なので suspect=false 自体は結果的に妥当であり、key_guard_valid は true と判定した (見落としでも不要 suspect でもない)。"
+          },
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "誤答肢イの説明が stem を一段踏み込んで断定している。stem は「新しいタイプの車への乗換え」としか言わず上位グレードとは明言していないが、解説 jp は「今使っている車を上位・新型の車に置き換えてもらう働きかけ」と述べ (zh「级别更高、更新款的车」/ en「a higher-grade, newer one」も同様に伝播)、厳密には買い替え (リプレース) 促進であって『上位』は追加の仮定。ただしアップセリング分類自体は通説どおりで、かつ決め手として明示された『「車」に付随する別カテゴリの商品 (カーナビ、タイヤ、任意保険など) を追加で買ってもらう形になっていない』は完全に妥当なため、誤答判定の結論には影響しない。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q015",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "correct.zh の「本周周五下班时的 15 加上周一的制造 12 台正好是周一下班时的 27」は、係り受けが「加 / 上周一 (=先週月曜)」とも読める曖昧さがある。意図は「加上 / 周一 (=下周周一)」で、数値 (15+12=27) も論理も jp に忠実であり正誤・計算には一切影響しない。可読性のみの指摘で、『再加上下周周一制造的 12 台』のように下周を明示すれば解消する。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q017",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "both",
+            "severity": "low",
+            "detail_jp": "correct.jp「しかも資本を統合しないため」および points[0]「資本の統合を伴わずに」という断定は、直前に合弁会社（ジョイントベンチャー）の設立をアライアンスの具体形態として挙げていること、および実務・試験用語として資本提携型アライアンス（相互出資・資本参加）が存在することと比べるとやや一般化が強い。合弁会社は新会社への共同出資を伴うため「資本を一切動かさない」と読める表現は厳密には不正確。ウ の否定条件は『相手企業を取り込まない＝独自性を維持する』であって『資本を一切伴わない』ではないので、たとえば「相手企業を吸収・統合しないため」等に緩めると正確になる。答えの導出には影響しない軽微な一般化で、zh（不进行资本上的合并／不伴随资本合并）・en（because capital is not merged／without merging capital）も jp に忠実に同じ表現を写しているため 3 言語同時の軽微issue。"
+          },
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "correct.zh の「设立合资公司（joint venture，合弁会社）」で、中国語本文の括弧内に日本語表記「合弁会社」がそのまま混入している。原文対照のための意図的なグロスの可能性はあるが、他の箇所（M&A、外包、控股公司）は英語＋中国語のみで統一されており、ここだけ日本語語形が入るのは表記方針の不整合。本土 zh としては「合资公司（joint venture）」で足り、日本語語形を残すなら全用語で方針を揃えるべき。意味理解の妨げにはならない。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q022",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "イ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "zh 訳に日式借詞が残る。correct.zh の「…部门之间无法协同等弊害」の「弊害」は日本語語彙で、本土中文では「弊端」「危害」が自然。また points[1].zh の「企划（系统化构想、系统化计划）」の「企划」も日/台寄りで、大陆では「规划」「策划」が一般的 (jp「企画」の直輸入)。いずれも意味は通り正誤判定には影響しないが、本土 zh 基準では表現の是正余地あり。"
+          },
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard の stem_corruption_suspected=true が stale。note_jp の【S113 裁決】が「設 定」→「設定」を page-08 実読で是正済と明記しており、実際 sample の stem_jp も data/ip/quiz/questions.json / data/ip/exams/question_bank.json の stem_jp もいずれも空白なしの「目標を設定する際に」で一致している (残る半角読点は corpus 一律の正規化差)。是正が反映済である以上、フラグは false に落とすのが整合的。ただし suspect=false・derived_answer=イ・matches_key=true は図無し問として妥当で、見落とし型の false suspect=false ではないため key_guard_valid は true と判定。"
+          },
+          {
+            "lang": "both",
+            "severity": "low",
+            "detail_jp": "correct 本文が「glossary にある EA (エンタープライズアーキテクチャ)」と内部成果物名 (glossary) を学習者向け本文に露出させており、zh「术语表中的 EA」/ en「EA …, listed in the glossary」も忠実に追随している。question_bank.json の syllabus_refs.terms が [\"EA\"] を持つため参照自体は根拠あり (捏造ではない) が、corpus 全体でこの言い回しは 3 箇所のみで、読者視点では不要な内部語。表現統一の観点での指摘であり、正誤・忠実性には影響しない。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q030",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ア",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "イ の zh 訳「这类条款是写在基本合同或保密协议（NDA）中的条款」の「基本合同」は日本語「基本契約書」の直訳寄りで、本土 zh の法務用語としては「主合同」「框架协议」が自然。en 側は「master agreement」と適切に訳しており、zh だけが日式借词気味。意味は通じるため answer-affecting ではない。"
+          },
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "ウ の zh「合同不符责任」(契約不適合責任) は中国法の定着訳ではなく直訳的。また correct/points 全体で「测定指标」「客观测定是否达成」と「测定」を動詞的に多用しているが、本土 zh では「衡量指标」「客观判定/衡量是否达成」がより自然。用語整合は保たれており内容の誤りはない。"
+          },
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "イ の解説 jp が選択肢文「乙は別に定める秘密事項を…」を「乙が知り得た秘密事項」と言い換えており(zh「其获知的」/ en「it comes to know」も同じ言い換えを踏襲)、原文の「別に定める(=別途定義された)」という限定を「知り得た」に置き換えた軽微な訳ズレ。誤答理由(測定指標・目標値がない)自体は妥当で、正誤判定には影響しない。"
+          },
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard 内の統計記述が round1 と外側 note で不一致: round1 は「語中空白はこの回の 100 問中 11 問」、外側 note は「CJK 文字どうしの間に空白が入る stem は 39 問…『どれか』が空白で割れる stem は 3 問」。再測定による更新と読めるが、同一 key_guard 内に旧数値が残っており読者が混乱しうる。suspect 判定(=false)の妥当性そのものには影響しない。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q042",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "correct.jp の「英国政府機関 (CCTA、現在の OGC/AXELOS が継承)」は現況としてやや古い。OGC は 2011 年に廃止 (Cabinet Office に統合)、ITIL の権利は 2013 年に AXELOS、2021 年に PeopleCert へ移っている。「現在の」を OGC にも掛けている読みになる点が不正確。zh (现由 OGC/AXELOS 继承) / en (whose role was later taken over by the OGC and now AXELOS) にも同じ記述が伝播している。正誤判定・弁別点 (ベストプラクティス集 vs 認証用要求事項規格) には一切影響しないため low。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q052",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "zh 訳が「2 的补数」を用いているが、大陸中国語の標準用語は「补码 / 二进制补码」であり、「2 的补数」は日本語「2の補数」寄り（台湾寄り）の言い方。意味は通じ、かつ corpus 全体で統一（grep で「补数」25 件 / 「补码」0 件）されているため本問固有の欠陥ではなく、corpus 規約レベルの用語論点として low に留める。docs/ 側に用語ロック（D-NNN やグロッサリ）も見当たらないため、将来「补码」へ統一するなら全 25 箇所を一括で扱う必要がある。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q054",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "エ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "en",
+            "severity": "low",
+            "detail_jp": "correct.en のみ英文中に日本語の隅付き括弧を使用 (「useful software」/「infection」/「self-propagation」)。distractors の en は括弧を使わない自然な英文になっており、同一問内で表記が不統一。英語としては引用符 (\"...\") か無括弧が適切。意味の忠実性には影響しないため低。"
+          },
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "zh の一部語彙が日本語表現に引きずられ気味。チェーンメール→『连锁邮件』は本土標準では『连锁信』がより一般的、『自我增殖』(自己増殖) も中国語の計算機用語としては『自我复制／自我繁殖』の方が自然。いずれも意味は通じ誤訳ではないため低。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q058",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard.note_jp 末尾の OCR 補足で「原典フルページおよび stem_jp_clean の 260 円 / 290 円が正しい。両者とも 170 円超・C社であるため抽出結果は変わらず」とあるが、S002 ケーキは図では B社 であり C社 ではない (C社 なのは S003 カステラのみ)。除外理由は実際には S002=価格 170 円超 (200 でも 260 でも条件2 を満たさない)、S003=仕入先が C社 で両条件の対象外、と別々である。結論 (OCR 誤読は答えに影響しない) 自体は正しく、suspect=false の判定も妥当なので answer-affecting ではないが、記述が図と矛盾する複合表現になっている。「ケーキは 170 円超で条件2 を満たさず、カステラは C社 でどちらの条件にも該当しないため」と分けて書くのが正確。ユーザー可視の解説本文ではなく内部メタデータのみの瑕疵。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q067",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ア",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "correct.zh の「用 ul/li 标签表示项目列表」および points[0] 周辺の訳語について。jp の「箇条書き」に対し「项目列表」を当てているが、本土中国語の HTML 文脈では ul/li は「无序列表」(または「项目符号列表」) が標準訳。「项目列表」は「项目=プロジェクト」とも読めて曖昧で、日本語「項目」に引きずられた訳語に見える。意味の取り違えには至らないため低深刻度だが、「无序列表（项目符号列表）」に置換するのが望ましい。なお同段の「通信规约」(distractors.ウ.zh) は中国語工学分野で実在する語のため許容範囲内、ただし Web 文脈では「通信协议」の方が自然。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q068",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q080",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "イ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q081",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "both",
+            "severity": "low",
+            "detail_jp": "月曜日～土曜日 を「平日」(zh 工作日 / en weekdays) と要約している箇所が 3 つある (correct.jp (2)「平日に取るのは変更分だけ」、distractor エ「(日曜フル + 平日差分)」、key_guard note「平日は差分バックアップ」)。日本語の「平日」は通常 月～金 を指し土曜日を含まないため、月曜日～土曜日 の言い換えとしては厳密性を欠く。ただし correct.jp (1) と distractor ア/イ では「月曜日～土曜日」と正しく明示されており、正誤判定ロジックや図との整合には影響しない用語上の緩さにとどまる。"
+          },
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard note の主張 (stem_jp 末尾の断片「月曜日一土曜日にはバックアップ | 外部のメディアへ出力して所定の場」が選択肢表からの OCR 混入である) は data/ip/quiz/questions.json の生 stem_jp と照合して事実であることを確認済みで、note の記述は正確。参考情報として、当該断片は questions.json 側にはなお残存しており (clean は下流工程での除去)、解説の欠陥ではないがユーザー可視データとして別途是正対象になりうる。key_guard の suspect=false / stem_corruption_suspected=false 自体は、2 つの要件本文が原典 page-29 と完全一致し断片が answer-affecting でないため妥当。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q083",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "イ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q085",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "en",
+            "severity": "low",
+            "detail_jp": "en 本文で比較記号に全角の ＝ / ＞ を使用している (例: correct.en \"price ＝ performance, price ＞ service\"、distractors ア/イ/エ の en も同様)。意味は正しく忠実だが、英文組版としては半角 = / > が適切であり、コーパス全体でも半角使用が多数派 (ascii 196 サンプル vs 全角 33 サンプル) のため表記揺れ。jp/zh は日本語・中国語の全角文脈なので問題なし。修正は en のみ半角化で足りる (答えに影響なし)。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q086",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q087",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q088",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "ア",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q089",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "エ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "correct.zh の問90 傍証部分で、JP「非会員 (一般) の応用次郎さん」を「非会员（普通用户）应用次郎」と訳している。本問の「一般」は前文 (1) で定義された『非会員である一般企業』というカテゴリ名であり、『用户 (ユーザ)』ではない。en 版は «a non-member (general) applicant» と忠実なので zh だけが drift。「非会员（一般企业）」等が適切。あわせて同文の JP「コースQとコースRの2コースを受講した」を zh は「报名…两门课程」(=申込) としており、受講/申込の語がずれている (q090 原文は『受講した』)。いずれも答えや論理には影響しない軽微な訳ズレ。"
+          },
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard.round1.note_jp の (2) 混入 の根拠が不正確。「stem 冒頭の〔テクノロジ〕と問89 は…同じ中問の q086〜q088 の stem には無い体裁のため」とあるが、q086〜q088 は topic_id=strategy-07-24 の別中問 (中問A) であり、本問と同じ中問B は q090〜q092 (management-08-25)。実際、同一中問の q092 の raw stem には「〔マネジメント〕/問92」が同様に入っており、q090/q091 には無いという抽出規約の不揃いが実態。また〔テクノロジ〕と問89 は原典 page-37 に実際に印字されている見出し/設問番号なので、『本文へ混入した残渣』という表現も精密ではない (源に無いテキストの混入ではなく、stem 抽出範囲の不統一)。最終 note_jp では中問の範囲を q089〜q092 と正しく記しており round1 は上書き済み、かつ answer-affecting でないため影響は限定的。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q090",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "イ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard.note_jp 本文の【腐敗2】記述が現状と食い違う。本文は「収録 choices_jp は ウ 8,900円、エ 15,900円 と下3桁が 000→900 に化けており、tr.choices の zh (8,900日元 / 15,900日元) と en (8,900 yen / 15,900 yen) も同じ誤りを継承している」と現在形で述べるが、監査対象サンプル・data/ip/quiz/questions.json・data/ip/quiz/translations/2012h24h.json の三層はいずれも既に 8,000円 / 15,000円 (zh 8,000日元 / 15,000日元、en 8,000 yen / 15,000 yen) に是正済みである。末尾の【S113 裁決】で「page-38 実読で是正済 (stemfix-S113、zh/en 連帯)」と明記されているため実害は小さいが、本文が旧状態のまま残っているため後続 agent が未修正と誤読しうる。round1 ブロックは履歴なので現在形のままで妥当だが、マージ後の note_jp 本文は「是正済」に書き換えるのが望ましい。"
+          },
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "S113 の選択肢是正が quiz レイヤ止まりで、上流の data/ip/exams/by_year/2012h24h.json の 2012h24h-q090 は依然 ウ「8,900円」/ エ「15,900円」のまま (原典 page-38 は 8,000円 / 15,000円)。key_guard note は「page-38 実読で是正済」と総括しているが、by_year から quiz レイヤを再生成すると 900 化けが復活する退行リスクがある。解説の正しさそのものには影響しない (正解 イ の一意性は 8,000/8,900 いずれでも不変) が、是正範囲の記述としては不完全。"
+          },
+          {
+            "lang": "en",
+            "severity": "low",
+            "detail_jp": "en 訳で割引規定 ①②③ を (1)(2)(3) と訳したため、stem の〔研修受講状況〕(1)(2)(3) と番号が衝突している (correct.en 内で 'From [Training course attendance] (1), Oyo Jiro is in the general category, so rule (1) does not apply to him.' / 'from (3) he took two courses' と 'rule (3) does not apply either' が同一文脈に並ぶ)。'rule' 接頭で一応区別されており誤訳ではないが、zh が ①②③ を維持して衝突を回避しているのと比べ可読性が落ちる。en も ①②③ もしくは 'condition 1/2/3' 等に統一するのが望ましい。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q091",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q092",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ア",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "規定文の境界が zh で緩い。JP「開講日の3営業日前 (開講日を含まない) までに取り消せば「取消扱い」」に対し zh は「在开课日的3个营业日前（不含开课日）之前取消的，按“取消”处理」と訳しており、「までに」(当日を含む) が「之前」(当日を含まない可能性) になっている。本問はまさに 9月19日＝3営業日前ちょうど が取消扱いになるか否かの境界値問題なので、規定文の時点で排他的に読めるのは忠実性上の弱点。ただし同じ zh 段落の後段で「取消期限正好是9月19日，9月19日的取消在期限之内，因此按“取消”处理」と明示的に包含を述べており、誤答肢イの zh でも「9月19日正好是……取消期限……所以按“取消”处理」と補強されているため、読者が誤解する実害はほぼない。英訳は 'cancelled by 3 business days before the start date' で包含が保たれており問題なし。修正するなら「最迟在开课日的3个营业日前（不含开课日）当天取消的」等。"
+          },
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "zh の営業日カウント表現が日本語の直訳調。「16日是第1个营业日前」「12日是第2个营业日前」「24日是第1个营业日前」等は JP「16日が1営業日前」の語順をそのまま写したもので、本土中文としては不自然 (中文なら「往前数第1个营业日是16日」「倒数第2个营业日是12日」等)。意味は文脈から通じ、数値・日付自体は図1と完全に一致しているため事実誤りではないが、表現としては日式借用に近い。なお「营业日」「休息日」「带底纹」「学费」「教材费」の用語選択自体は corpus 内で一貫しており (营业日 114 件、中题 55 件と既定訳語)、問題なし。"
+          },
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard の round1.note_jp が陳腐化しており、実際に納品されている stem_jp と矛盾する。round1 は「raw の stem_jp 側には「Ｓさん」表記とカレンダの曜日ズレ (1日が土曜) が残っている」と現在形で述べるが、サンプル中の stem_jp を原典 page-40 と一行ずつ照合したところ「Ｂさんは，申込みの取消しと欠席の場合の請求額について…」で正しく、カレンダも 1日が月曜 (日曜セルが空、6が土、7が日) で原典と完全一致しており、記述されたような腐敗は存在しない。上位 note_jp 末尾の【S113 裁決】が「fidfix-S113 …生成前に適用」と補足して事実上是正しているため、判定値 (stem_corruption_suspected=false) 自体は図・原典と照らして妥当であり key_guard_valid には影響しない。ただし記録としては後続監査者を誤導しうるので、round1 の当該一文を除去するか「S113 で是正済み」と明記するのが望ましい。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q093",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ア",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": false,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "用語整合の欠陥（非 answer-affecting）: zh 訳で RFI を「信息提供邀请书」と訳している（correct.zh の調達フロー、distractors.ウ.zh、points[1].zh の計3か所）。日本語原文の『情報提供依頼書』の直訳借用であり、コーパス標準は「信息征询书」（data/ip/quiz 配下で161 occurrences、うち RFI 明示 gloss 32件）。しかも同一中問Cの兄弟問 2012h24h-q094 の points[0].zh は「信息征询书」を使っており、同じ中問グループ内で訳語が割れている（grep 実測: 信息提供邀请书 は 2012h24h-q093 の3か所のみ）。意味は伝わり正解判定にも影響しないため severity=low だが、glossary drift として「信息征询书」に統一すべき。副次的に distractors.ウ.zh の「来客登记」は本土表現なら「访客登记」がより自然（原文 来客者登録 の直訳、コーパス内7件はすべて本中問由来）。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q094",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ア",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "誤答肢ウの jp「Gさん は会議室の施工業者の担当者、つまり提案を受ける側の社外ベンダである」および points[1] の jp「提案を受ける側の社外ベンダを RFP の作成や作成支援に関与させてはならない」の表現が字義上逆。「提案を受ける」のは提案書を受け取る発注者側であり、施工業者は提案する側（受注側）。しかも points[1] は同一段落の直後で「発注者（作成する側）と受注候補（提案する側）」と書いており、同じベンダを一文内で「提案を受ける側」「提案する側」と二重に呼ぶ自己矛盾になっている。corpus の他問解説はベンダを一貫して「提案する側にあたる」と表記しており、本問だけが例外。誤答肢エの jp は「RFP を受け取って提案書を出す側（受注側）」と正しく書けているため、ウ／points[1] のみ「提案を求められる側」「提案依頼を受ける側」等に修正すれば整合する。zh（应邀提出提案的一方 / 潜在承包方）・en（the side that is asked to submit a proposal / order-receiving side）は意図どおりの訳になっており翻訳側に瑕疵はなく、正解判定・keyed answer には影響しない表現レベルの欠陥。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q095",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "エ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "key_guard.note_jp の本文 [腐敗 (a)] が現在形で「レコードの choices_jp.エ は『来客用会議室』。賓→客 の字形 OCR 腐敗である」と主張し是正案を出しているが、実レコードの choices_jp.エ は既に「来賓用会議室」であり原典 page-43 と一致している (末尾の【S113 裁決】で是正済と明記)。round1 に旧判定が保存されている以上、本文は現状 (是正完了) に更新すべきで、同一フィールド内に未是正を前提とした記述が残るのは記録衛生上の不整合。suspect 判定自体 (stem_corruption_suspected=true は中問C 前書き欠落で依然正当、suspect=false は答え導出可・key 一致で正当) には影響しない。"
+          },
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "correct.zh の「导入负责人」(導入責任者) が日式借词寄り。本土中文では「实施负责人」「引入负责人」等が自然 (中文の『导入』は主にデータのインポートを指す)。意味は通るため answer-affecting ではない。"
+          },
+          {
+            "lang": "en",
+            "severity": "low",
+            "detail_jp": "選択肢訳 (translations/2012h24h.json) では「来賓用会議室」を \"guest meeting room\" と訳しているのに対し、explanation.correct.en は \"guest (VIP) meeting room\" と表記が揺れている。意味は同一で理解を妨げないが、S113 是正で連帯させた訳語と厳密には不一致。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q097",
+        "accurate": true,
+        "severity": "none",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "independent_answer": "ア",
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q098",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "ア",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      },
+      {
+        "id": "2012h24h-q099",
+        "accurate": true,
+        "severity": "low",
+        "independent_answer": "ウ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": [
+          {
+            "lang": "both",
+            "severity": "low",
+            "detail_jp": "誤答肢 ア の説明で、複写後の式を「C4=C2*C1」と因子順を逆に書いている（原式 B1*B2 を C4 へ複写すれば C4=C1*C2）。しかも直後の数値展開が「=2×7」であり、これは C1×C2 の順（C1=2, C2=7）なので式表記と数値展開が自己矛盾している。積の値 14 も合計 173（9+14+24+16+0+0+0+0+9+20+33+48=173）も正しく、結論（桁番号を重みとして扱うので誤り／図の S=72 と不一致）も妥当なので実害は軽微だが、「C4=C1*C2=2×7=14」に統一すべき。jp/zh/en の3言語すべてに同じ順序で混入している。"
+          },
+          {
+            "lang": "jp",
+            "severity": "low",
+            "detail_jp": "日本語解説内の絶対参照記号が全角「＄」（＄B1*B＄3、＄B2、＄を付けない、＄B なら列 など）で書かれており、choices_jp の選択肢テキスト（$B1*B$3, $B2*B$3）および zh/en 解説の半角 $ と表記が食い違う。意味は変わらないが、同一問内で選択肢と解説の記号が不一致になり、UI 表示・文字列照合上の揺れになるため半角 $ に統一するのが望ましい。"
+          },
+          {
+            "lang": "zh",
+            "severity": "low",
+            "detail_jp": "points[0].zh の「校验数字（检查数字）」の括弧内「检查数字」は、日本語「検査数字」をそのまま漢字移植した非標準表現で、本土中国語の定訳ではない（標準は 校验位／校验码／校验数字）。前段ですでに「校验数字」と正しく訳しているため、括弧内は冗長かつ日式借词になっている。「校验数字（校验位）」等に置き換えるのが適切。理解を妨げるほどではないため軽微。"
+          }
+        ]
+      },
+      {
+        "id": "2012h24h-q100",
+        "accurate": true,
+        "severity": "none",
+        "independent_answer": "エ",
+        "checks": {
+          "correct_sound": true,
+          "distractors_sound": true,
+          "translation_faithful": true,
+          "key_guard_valid": true
+        },
+        "issues": []
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Audit"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "audit:2012h24h-q001",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a191f407674839f33",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391465215,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q001",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q001\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q001\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391641058,
+      "tokens": 59083,
+      "toolCalls": 10,
+      "durationMs": 175811,
+      "resultPreview": "{\"id\":\"2012h24h-q001\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"イ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"jp\",\"severity\":\"low\",\"detail_jp\":\"key_guard の suspect=true / stem_corruption_suspected=true が S113 裁決後も立ったまま (stale flag)。note_jp 自身が「A案変動費 1万円→3万円 は page-02 実読で是正済 (stemfix-S113)、literal 導出=イ=…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "audit:2012h24h-q002",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a8a96045aa4195f1e",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391464190,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q002",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q002\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q002\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391609291,
+      "tokens": 49617,
+      "toolCalls": 14,
+      "durationMs": 144044,
+      "resultPreview": "{\"id\":\"2012h24h-q002\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ア\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"en\",\"severity\":\"low\",\"detail_jp\":\"correct.en 末尾の引用句 『value for the organization arises only when personal information is shared』 は、JP 原文「個人の情報を共有することで、はじめて組織としての価値が生まれる」の「個人の情報」= 各メンバーが個々に持つ情報、…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "audit:2012h24h-q003",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a9e65f1d6f5b42b5c",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391464012,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q003",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q003\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q003\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391537049,
+      "tokens": 39199,
+      "toolCalls": 3,
+      "durationMs": 71803,
+      "resultPreview": "{\"id\":\"2012h24h-q003\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"イ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"jp\",\"severity\":\"low\",\"detail_jp\":\"key_guard.stem_corruption_suspected が true のままだが、現スナップショットの stem_jp は「ハードウェア設計」と分割空白なしで clean、choices_jp.エ も「リバースエンジニアリング」で末尾 junk「= 2 なーー」は既に除去済み。腐敗が解消されたことは …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "audit:2012h24h-q005",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a112ea6ede950879c",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391465727,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q005",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q005\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q005\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391618451,
+      "tokens": 61938,
+      "toolCalls": 15,
+      "durationMs": 152723,
+      "resultPreview": "{\"id\":\"2012h24h-q005\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "audit:2012h24h-q012",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a8ca89075b80d20dd",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391463884,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q012",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q012\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q012\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391661746,
+      "tokens": 52203,
+      "toolCalls": 16,
+      "durationMs": 197861,
+      "resultPreview": "{\"id\":\"2012h24h-q012\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"エ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"jp\",\"severity\":\"low\",\"detail_jp\":\"key_guard.note_jp の腐敗記述が現データと不整合 (stale)。note 本文は現在形で「選択肢アの末尾が『利用を薦めるの。』となっており…当該文字列は data/ip/quiz/questions.json にそのまま実在し、この選択肢には clean 変種が無いためユーザー表示面に露出する」と述…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "audit:2012h24h-q015",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "aae643f00247b5197",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391464991,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q015",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q015\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q015\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391640853,
+      "tokens": 64464,
+      "toolCalls": 15,
+      "durationMs": 175606,
+      "resultPreview": "{\"id\":\"2012h24h-q015\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"zh\",\"severity\":\"low\",\"detail_jp\":\"correct.zh の「本周周五下班时的 15 加上周一的制造 12 台正好是周一下班时的 27」は、係り受けが「加 / 上周一 (=先週月曜)」とも読める曖昧さがある。意図は「加上 / 周一 (=下周周一)」で、数値 (15+12=27) も論理も jp に忠実であり正誤・計算には一切影響しない。可読性のみの指摘…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "audit:2012h24h-q017",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "aa7bc19609fced777",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391465634,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q017",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q017\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q017\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391542540,
+      "tokens": 38256,
+      "toolCalls": 2,
+      "durationMs": 76906,
+      "resultPreview": "{\"id\":\"2012h24h-q017\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"both\",\"severity\":\"low\",\"detail_jp\":\"correct.jp「しかも資本を統合しないため」および points[0]「資本の統合を伴わずに」という断定は、直前に合弁会社（ジョイントベンチャー）の設立をアライアンスの具体形態として挙げていること、および実務・試験用語として資本提携型アライアンス（相互出資・資本参加）が存在することと比べるとやや一般化が強い…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "audit:2012h24h-q022",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a2f5ef1a5de68f97b",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391464568,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q022",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q022\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q022\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391615963,
+      "tokens": 54392,
+      "toolCalls": 15,
+      "durationMs": 150716,
+      "resultPreview": "{\"id\":\"2012h24h-q022\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"イ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"zh\",\"severity\":\"low\",\"detail_jp\":\"zh 訳に日式借詞が残る。correct.zh の「…部门之间无法协同等弊害」の「弊害」は日本語語彙で、本土中文では「弊端」「危害」が自然。また points[1].zh の「企划（系统化构想、系统化计划）」の「企划」も日/台寄りで、大陆では「规划」「策划」が一般的 (jp「企画」の直輸入)。いずれも意味は通り正誤判…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "audit:2012h24h-q030",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "ae58ad52af4f888f3",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391541569,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q030",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q030\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q030\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391606085,
+      "tokens": 38607,
+      "toolCalls": 2,
+      "durationMs": 64515,
+      "resultPreview": "{\"id\":\"2012h24h-q030\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ア\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"zh\",\"severity\":\"low\",\"detail_jp\":\"イ の zh 訳「这类条款是写在基本合同或保密协议（NDA）中的条款」の「基本合同」は日本語「基本契約書」の直訳寄りで、本土 zh の法務用語としては「主合同」「框架协议」が自然。en 側は「master agreement」と適切に訳しており、zh だけが日式借词気味。意味は通じるため answer-affecti…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "audit:2012h24h-q042",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a9689da569d33eb1d",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391545681,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q042",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q042\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q042\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391628099,
+      "tokens": 41724,
+      "toolCalls": 3,
+      "durationMs": 82417,
+      "resultPreview": "{\"id\":\"2012h24h-q042\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"jp\",\"severity\":\"low\",\"detail_jp\":\"correct.jp の「英国政府機関 (CCTA、現在の OGC/AXELOS が継承)」は現況としてやや古い。OGC は 2011 年に廃止 (Cabinet Office に統合)、ITIL の権利は 2013 年に AXELOS、2021 年に PeopleCert へ移っている。「現在の」を OGC にも掛…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 11,
+      "label": "audit:2012h24h-q052",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a102108d1a01e3870",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391609720,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q052",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q052\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q052\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391705153,
+      "tokens": 40892,
+      "toolCalls": 6,
+      "durationMs": 95432,
+      "resultPreview": "{\"id\":\"2012h24h-q052\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"zh\",\"severity\":\"low\",\"detail_jp\":\"zh 訳が「2 的补数」を用いているが、大陸中国語の標準用語は「补码 / 二进制补码」であり、「2 的补数」は日本語「2の補数」寄り（台湾寄り）の言い方。意味は通じ、かつ corpus 全体で統一（grep で「补数」25 件 / 「补码」0 件）されているため本問固有の欠陥ではなく、corpus 規約レベルの用語論…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 12,
+      "label": "audit:2012h24h-q054",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a408fbf670aa4c322",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391614482,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q054",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q054\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q054\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391680784,
+      "tokens": 37687,
+      "toolCalls": 2,
+      "durationMs": 66301,
+      "resultPreview": "{\"id\":\"2012h24h-q054\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"エ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"en\",\"severity\":\"low\",\"detail_jp\":\"correct.en のみ英文中に日本語の隅付き括弧を使用 (「useful software」/「infection」/「self-propagation」)。distractors の en は括弧を使わない自然な英文になっており、同一問内で表記が不統一。英語としては引用符 (\\\"...\\\") か無括弧が適切。意…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 13,
+      "label": "audit:2012h24h-q058",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "aac7c3f2249916584",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391619210,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q058",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q058\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q058\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391772954,
+      "tokens": 57188,
+      "toolCalls": 14,
+      "durationMs": 153743,
+      "resultPreview": "{\"id\":\"2012h24h-q058\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"jp\",\"severity\":\"low\",\"detail_jp\":\"key_guard.note_jp 末尾の OCR 補足で「原典フルページおよび stem_jp_clean の 260 円 / 290 円が正しい。両者とも 170 円超・C社であるため抽出結果は変わらず」とあるが、S002 ケーキは図では B社 であり C社 ではない (C社 なのは S003 カステラのみ)。除…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 14,
+      "label": "audit:2012h24h-q067",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "ad03226992f20d3af",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391621997,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q067",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q067\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q067\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391706633,
+      "tokens": 39931,
+      "toolCalls": 5,
+      "durationMs": 84635,
+      "resultPreview": "{\"id\":\"2012h24h-q067\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ア\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"zh\",\"severity\":\"low\",\"detail_jp\":\"correct.zh の「用 ul/li 标签表示项目列表」および points[0] 周辺の訳語について。jp の「箇条書き」に対し「项目列表」を当てているが、本土中国語の HTML 文脈では ul/li は「无序列表」(または「项目符号列表」) が標準訳。「项目列表」は「项目=プロジェクト」とも読めて曖昧で、日本…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 15,
+      "label": "audit:2012h24h-q068",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a55a33b1b75054bcb",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391631090,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q068",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q068\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q068\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391710653,
+      "tokens": 47009,
+      "toolCalls": 6,
+      "durationMs": 79563,
+      "resultPreview": "{\"id\":\"2012h24h-q068\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 16,
+      "label": "audit:2012h24h-q080",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "ae6b84a128a260d96",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391643931,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q080",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q080\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q080\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391707530,
+      "tokens": 40830,
+      "toolCalls": 3,
+      "durationMs": 63599,
+      "resultPreview": "{\"id\":\"2012h24h-q080\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"イ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 17,
+      "label": "audit:2012h24h-q081",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a17b0efd97094e75a",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391644705,
+      "queuedAt": 1787391462048,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q081",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q081\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q081\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391763377,
+      "tokens": 49703,
+      "toolCalls": 7,
+      "durationMs": 118672,
+      "resultPreview": "{\"id\":\"2012h24h-q081\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"both\",\"severity\":\"low\",\"detail_jp\":\"月曜日～土曜日 を「平日」(zh 工作日 / en weekdays) と要約している箇所が 3 つある (correct.jp (2)「平日に取るのは変更分だけ」、distractor エ「(日曜フル + 平日差分)」、key_guard note「平日は差分バックアップ」)。日本語の「平日」は通常 月～金 を…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 18,
+      "label": "audit:2012h24h-q083",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "aeb3e3672dc06b624",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391664785,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q083",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q083\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q083\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391820903,
+      "tokens": 53921,
+      "toolCalls": 14,
+      "durationMs": 156117,
+      "resultPreview": "{\"id\":\"2012h24h-q083\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"イ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 19,
+      "label": "audit:2012h24h-q085",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a390104e0226596bc",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391683900,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q085",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q085\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q085\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391778909,
+      "tokens": 51478,
+      "toolCalls": 9,
+      "durationMs": 95008,
+      "resultPreview": "{\"id\":\"2012h24h-q085\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"en\",\"severity\":\"low\",\"detail_jp\":\"en 本文で比較記号に全角の ＝ / ＞ を使用している (例: correct.en \\\"price ＝ performance, price ＞ service\\\"、distractors ア/イ/エ の en も同様)。意味は正しく忠実だが、英文組版としては半角 = / > が適切であり、コーパス全体でも半角使…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 20,
+      "label": "audit:2012h24h-q086",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a5534abc422247874",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391708640,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q086",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q086\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q086\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391817988,
+      "tokens": 53848,
+      "toolCalls": 10,
+      "durationMs": 109347,
+      "resultPreview": "{\"id\":\"2012h24h-q086\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 21,
+      "label": "audit:2012h24h-q087",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a7bd9c62e50b77d44",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391710205,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q087",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q087\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q087\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391911625,
+      "tokens": 71262,
+      "toolCalls": 19,
+      "durationMs": 201420,
+      "resultPreview": "{\"id\":\"2012h24h-q087\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 22,
+      "label": "audit:2012h24h-q088",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "acd0219965b3bc60e",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391710767,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q088",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q088\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q088\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391853865,
+      "tokens": 57669,
+      "toolCalls": 11,
+      "durationMs": 143097,
+      "resultPreview": "{\"id\":\"2012h24h-q088\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"ア\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 23,
+      "label": "audit:2012h24h-q089",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a4ae828b609313063",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391713791,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q089",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q089\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q089\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391981172,
+      "tokens": 74381,
+      "toolCalls": 17,
+      "durationMs": 267381,
+      "resultPreview": "{\"id\":\"2012h24h-q089\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"エ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"zh\",\"severity\":\"low\",\"detail_jp\":\"correct.zh の問90 傍証部分で、JP「非会員 (一般) の応用次郎さん」を「非会员（普通用户）应用次郎」と訳している。本問の「一般」は前文 (1) で定義された『非会員である一般企業』というカテゴリ名であり、『用户 (ユーザ)』ではない。en 版は «a non-member (general) appl…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 24,
+      "label": "audit:2012h24h-q090",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "aad10b8d33993f5b7",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391766678,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q090",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q090\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q090\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391953405,
+      "tokens": 72396,
+      "toolCalls": 13,
+      "durationMs": 186727,
+      "resultPreview": "{\"id\":\"2012h24h-q090\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"イ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"jp\",\"severity\":\"low\",\"detail_jp\":\"key_guard.note_jp 本文の【腐敗2】記述が現状と食い違う。本文は「収録 choices_jp は ウ 8,900円、エ 15,900円 と下3桁が 000→900 に化けており、tr.choices の zh (8,900日元 / 15,900日元) と en (8,900 yen / 15,900 …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 25,
+      "label": "audit:2012h24h-q091",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "acb18972d34d8fe4c",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391776459,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q091",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q091\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q091\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391930781,
+      "tokens": 57601,
+      "toolCalls": 7,
+      "durationMs": 154321,
+      "resultPreview": "{\"id\":\"2012h24h-q091\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 26,
+      "label": "audit:2012h24h-q092",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a1ee7464b96028e92",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391781935,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q092",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q092\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q092\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787391947284,
+      "tokens": 61438,
+      "toolCalls": 7,
+      "durationMs": 165349,
+      "resultPreview": "{\"id\":\"2012h24h-q092\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ア\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"zh\",\"severity\":\"low\",\"detail_jp\":\"規定文の境界が zh で緩い。JP「開講日の3営業日前 (開講日を含まない) までに取り消せば「取消扱い」」に対し zh は「在开课日的3个营业日前（不含开课日）之前取消的，按“取消”处理」と訳しており、「までに」(当日を含む) が「之前」(当日を含まない可能性) になっている。本問はまさに 9月19日＝3営業日前ち…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 27,
+      "label": "audit:2012h24h-q093",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "aee19ad3f48c1116e",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391821270,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q093",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q093\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q093\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787392044793,
+      "tokens": 60837,
+      "toolCalls": 13,
+      "durationMs": 223522,
+      "resultPreview": "{\"id\":\"2012h24h-q093\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ア\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":false,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"zh\",\"severity\":\"low\",\"detail_jp\":\"用語整合の欠陥（非 answer-affecting）: zh 訳で RFI を「信息提供邀请书」と訳している（correct.zh の調達フロー、distractors.ウ.zh、points[1].zh の計3か所）。日本語原文の『情報提供依頼書』の直訳借用であり、コーパス標準は「信息征询书」（data/ip/…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 28,
+      "label": "audit:2012h24h-q094",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a76507c51e361072d",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391824287,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q094",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q094\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q094\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787392021235,
+      "tokens": 51275,
+      "toolCalls": 13,
+      "durationMs": 196947,
+      "resultPreview": "{\"id\":\"2012h24h-q094\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ア\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"jp\",\"severity\":\"low\",\"detail_jp\":\"誤答肢ウの jp「Gさん は会議室の施工業者の担当者、つまり提案を受ける側の社外ベンダである」および points[1] の jp「提案を受ける側の社外ベンダを RFP の作成や作成支援に関与させてはならない」の表現が字義上逆。「提案を受ける」のは提案書を受け取る発注者側であり、施工業者は提案する側（受注側）。しかも…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 29,
+      "label": "audit:2012h24h-q095",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "abb011a52fbd0f306",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391856955,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q095",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q095\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q095\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787392016998,
+      "tokens": 55874,
+      "toolCalls": 9,
+      "durationMs": 160042,
+      "resultPreview": "{\"id\":\"2012h24h-q095\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"エ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"jp\",\"severity\":\"low\",\"detail_jp\":\"key_guard.note_jp の本文 [腐敗 (a)] が現在形で「レコードの choices_jp.エ は『来客用会議室』。賓→客 の字形 OCR 腐敗である」と主張し是正案を出しているが、実レコードの choices_jp.エ は既に「来賓用会議室」であり原典 page-43 と一致している (末尾の【S1…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 30,
+      "label": "audit:2012h24h-q097",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a1108625c6202245d",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391914845,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q097",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q097\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q097\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787392083868,
+      "tokens": 50101,
+      "toolCalls": 9,
+      "durationMs": 169022,
+      "resultPreview": "{\"id\":\"2012h24h-q097\",\"accurate\":true,\"severity\":\"none\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"independent_answer\":\"ア\",\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 31,
+      "label": "audit:2012h24h-q098",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "a6966000635ef4f5a",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391933807,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q098",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q098\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q098\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787392126354,
+      "tokens": 61687,
+      "toolCalls": 14,
+      "durationMs": 192546,
+      "resultPreview": "{\"id\":\"2012h24h-q098\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"ア\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 32,
+      "label": "audit:2012h24h-q099",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "ad586ba3ca651312a",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391950326,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q099",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q099\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q099\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787392145653,
+      "tokens": 62087,
+      "toolCalls": 11,
+      "durationMs": 195326,
+      "resultPreview": "{\"id\":\"2012h24h-q099\",\"accurate\":true,\"severity\":\"low\",\"independent_answer\":\"ウ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[{\"lang\":\"both\",\"severity\":\"low\",\"detail_jp\":\"誤答肢 ア の説明で、複写後の式を「C4=C2*C1」と因子順を逆に書いている（原式 B1*B2 を C4 へ複写すれば C4=C1*C2）。しかも直後の数値展開が「=2×7」であり、これは C1×C2 の順（C1=2, C2=7）なので式表記と数値展開が自己矛盾している。積の値 14 も合計 173（9+14+…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 33,
+      "label": "audit:2012h24h-q100",
+      "phaseIndex": 1,
+      "phaseTitle": "Audit",
+      "agentId": "aae73e4862dba8d5d",
+      "agentType": "pr-review-toolkit:code-reviewer",
+      "model": "claude-opus-5[1m]",
+      "state": "done",
+      "startedAt": 1787391956534,
+      "queuedAt": 1787391462049,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "2012h24h-q100",
+      "promptPreview": "あなたは独立した解説監査者 (Rule A 意味抽検) です。過去問**解説**の正しさを、執筆者・前段レビュアーとは独立に批判的に核験します。甘く通さない。\n\n## 入力 (Read して id=\"2012h24h-q100\" のサンプルを取得)\n`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.phase2/ruleA_samples_2012h24h.json` の samples[] 中 id===\"2012h24h-q100\" のエントリ: stem_jp / choices_jp / correct_answer / has_figure / figure_png / figure_page_png / explanation{key_guard, correct{jp,zh,en}, distr…",
+      "lastProgressAt": 1787392117125,
+      "tokens": 55734,
+      "toolCalls": 10,
+      "durationMs": 160591,
+      "resultPreview": "{\"id\":\"2012h24h-q100\",\"accurate\":true,\"severity\":\"none\",\"independent_answer\":\"エ\",\"checks\":{\"correct_sound\":true,\"distractors_sound\":true,\"translation_faithful\":true,\"key_guard_valid\":true},\"issues\":[]}"
+    }
+  ],
+  "totalTokens": 1764312,
+  "totalToolCalls": 324
+}
