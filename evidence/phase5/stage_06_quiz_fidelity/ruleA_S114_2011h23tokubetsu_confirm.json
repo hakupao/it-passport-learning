@@ -1,0 +1,106 @@
+{
+  "n": 4,
+  "accurate": 4,
+  "bySeverity": {
+    "low": 4
+  },
+  "keyGuardMismatch": [],
+  "audits": [
+    {
+      "id": "2011h23tokubetsu-q042",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳の一部が日本語の語形をほぼそのまま移している。「監査報告書」→「系统审计报告书」、「個別監査計画」→「个别审计计划」は意味は通るが、本土の監査実務では「审计报告」「单项(具体)审计计划」がより自然。また「改善劝告」も中国語監査文脈では「整改建议」寄りが自然。誤訳ではなく用語スタイルの問題で答えに影響なし。なお zh 全体の監査用語 (核对/监盘/重新执行/审计工作底稿/后续跟踪) は本土用語として適切で、jp との対応も忠実。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard.stem_corruption_suspected が true のまま残っている。note 末尾の【S114 裁決】に「選択肢イ『履善指導』→『改善指導』を page-16 実読で是正済 (fidfix-S114c)」と記録されており、実際 choices_jp のイも「監査の結果に基づき改善指導を行うことはない。」に修正済。フラグ値と現データの状態が食い違うため、下流が未是正の腐敗が残っていると誤読するおそれがある。suspect=false / matches_key=true / derived_answer=エ は妥当で answer-affecting ではないので low。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23tokubetsu-q046",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "エ",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳が「利用者」を一貫して「使用者」と訳しているが、本土 IT 用語としては「用户」が標準。同一 exam の translations/2011h23tokubetsu.json では q047 が「IT 服务用户」と「用户」を採用しており、解説層と翻訳層で用語が不整合。意味は保たれているため answer-affecting ではないが、用語整合の観点で「用户」に寄せるのが望ましい (correct.zh の「系统或服务的使用者」「成为使用者的单一联系窗口」「使用者不必中断业务」、points[0].zh「受理使用者咨询」など計 5 箇所)。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard.note_jp の本体が「選択肢ウの本文が『失敗yる』と字形崩れ」と現在形で記述しているが、questions.json 実体は既に「失敗することによる」「迅速な回答」に是正済 (S114)。末尾の【S114 裁決】行がこれを打ち消しているため誤導ではないものの、note 本文と現行 choices_jp の乖離が残り、stem_corruption_suspected=true も是正後も立ったままで explanations ファイルの stem_corruption_count に計上され続ける。監査証跡としては妥当な設計だが、是正済フラグ (resolved 等) の分離があると読み手の混乱を避けられる。suspect=false 自体は解答不変のため妥当で、見落とし型の false suspect=false ではない。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23tokubetsu-q050",
+      "accurate": true,
+      "severity": "low",
+      "independent_answer": "ア",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳が並列語の区切りに日本語の中黒由来の「·」(U+00B7) を使用している。該当4箇所: correct.zh「功能追加·修改」「追加·变更所需的成本」、distractors.イ.zh「追加·修改」、points[0].zh「范围·进度」。大陸中国語の規範では並列名詞の区切りは「、」(または「和」「与」) であり、「·」は外国人名の区切りに限られる。本プロジェクト内でも zh correct 2,600 件中 CJK·CJK を含むのは 26 件のみで、支配的な慣行ではない (= 本問固有の日式表記の混入)。意味の忠実性・用語整合には影響せず、表記スタイルのみの逸脱のため translation_faithful は true 維持。是正案: 「功能追加、修改」「追加、变更所需的成本」「范围、进度」。"
+        },
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "correct.jp が a・b・c の適切性のみを個別に論証し、「したがって適切なのは a・b・c の三つであり」と結論する際、d がなぜ不適切かを正解解説の本文では一切述べていない。本問は「適切なものだけをすべて挙げたもの」型で、ア と イ/ウ/エ を分ける唯一の軸が d の可否である以上、正解解説単体で読むと選別根拠が半分欠ける。ただし points[1] に「変更が判明した後に旧仕様のままテストを完了させるのは、手戻りと工数の浪費を招くため避ける」があり、distractors イ/ウ/エ でも d の不適切理由が詳述されているため、解説セット全体としては充足しており誤りではない。correct.jp に一文 (d は変更前仕様に基づくテストであり結果の多くが無効化されるため不適切) を補うと自足性が上がる、という改善提案レベル。"
+        }
+      ]
+    },
+    {
+      "id": "2011h23tokubetsu-q096",
+      "independent_answer": "ウ",
+      "accurate": true,
+      "severity": "low",
+      "checks": {
+        "correct_sound": true,
+        "distractors_sound": true,
+        "translation_faithful": true,
+        "key_guard_valid": true
+      },
+      "issues": [
+        {
+          "lang": "jp",
+          "severity": "low",
+          "detail_jp": "key_guard note_jp の陳腐化 (自己矛盾)。S114 で中問B共有前文を stem に埋め込み済で、現 stem_jp には〔関数の仕様〕と〔処理内容〕(1)(2)(3)(=合計20枚以上で1割引) が実際に含まれている (源 page-35 と一致することを確認)。にもかかわらず note_jp 冒頭 (round1 由来のコピー) が現在形のまま「答えを決定づける『合計20枚以上で1割引』という規則が stem のどこにも書かれていないため、表示されている stem だけを読んだ学習者は 70,000(エ)にしか到達できず」と断じており、同じ note の後段【S114 裁決】「埋め込み済 (合計 20 枚以上で 1 割引の規則が読める)」と正面から矛盾する。加えて final key_guard の figure_derivable が false のまま更新されておらず (scripts/quiz-phase2-explfix-S114.mjs は stem_corruption_suspected のみ false 化)、merge の union (scripts/quiz-phase2-merge.mjs L123-125) により suspect=true が恒久的に残る。是正済にもかかわらず人手裁決キューに残り続ける状態で、S107 (scripts/quiz-phase2-explfix-S107.mjs L163-172 は round1 ごと解決して suspect=false にする) の前例とも運用が割れている。同じ S114 の中問前文是正組 q090/q095/q096/q098 が 4 問とも同じ状態 (fd=false/susp=true) なので単発ミスではなく系統的。なお解説本文 (correct/distractors/points) 側には陳腐化 caveat の残留は無く、学習者表示には影響しない (key_guard 層のみ)。"
+        },
+        {
+          "lang": "zh",
+          "severity": "low",
+          "detail_jp": "zh 訳の用語が日式借词寄り。correct.zh 冒頭「本题建立在中题B（问93～96）的共同前提之上」の『中题B』『问93～96』は日本語「中問B/問93〜96」の字面移植で、本土中文なら『组题B（第93～96题）』が自然。内容自体は jp に忠実で誤訳ではないが、corpus 全体を実測すると 中题(7)/中问(3)/组题(5)/大题(2) と表記が割れており (ruleA_samples_*.json 全走査)、用語整合の観点では統一が望ましい。本問固有の欠陥というより corpus 横断の backlog 項目。en の 'sub-group B (questions 93 to 96)' は問題なし。"
+        }
+      ]
+    }
+  ]
+}
