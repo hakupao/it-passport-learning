@@ -1,0 +1,131 @@
+{
+  "n": 3,
+  "verdicts": {
+    "CONCERNS": 2,
+    "FAIL": 1
+  },
+  "results": [
+    {
+      "id": "2010h22a-q007",
+      "verdict": "CONCERNS",
+      "checks": {
+        "count_matches": true,
+        "item_aligned": true,
+        "meaning_faithful": true,
+        "no_drift": true,
+        "terminology_correct": false
+      },
+      "issues": [
+        {
+          "severity": "MEDIUM",
+          "lang": "zh",
+          "detail_jp": "distractors[ア] 冒頭「说的是利基者（ニッチャ／利基战略）」。JP は「ニッチャ (ニッチ戦略) の説明」で、括弧はニッチャという地位がニッチ戦略の担い手であることを示す概念注記。是正版は括弧内でニッチャ (行為主体の片仮名) と 利基战略 (戦略名) をスラッシュで並置したため、両者が同一指示対象の別名であるかのように読め、主体と戦略の役割取り違えを誘発する。disk 版「说的是利基者（ニッチャ）的利基战略」および同一コーパスの姉妹問 expl_tr_2012h24a-q019「…是利基者的战略(利基战略)」はいずれも主体と戦略名を別の統語位置に置いており、是正版はこの 2 つの先例より後退している。修正案: 「说的是利基者（ニッチャ）的利基战略。」(disk 版に復帰) もしくは「说的是利基者（ニッチャ）的战略，即利基战略。」"
+        },
+        {
+          "severity": "MEDIUM",
+          "lang": "en",
+          "detail_jp": "points[1] の en で 同質化戦略 を \"homogenization (matching) strategy\" と訳したが、本問 input_2010h22a.json の glossary は 同質化戦略 = en \"Imitation (matching) strategy\" と定めており、同一設問内で用語表記が二重化する。glossary は web app 上で解説と同一画面に出る利用者可視面のため、無記録の乖離はそのまま不整合として露出する。調査結果: 同質化戦略 の glossary エントリを持つ input は 2010h22a と 2010h22h の 2 件のみ、expl_tr 2800 件中 homogeniz* は 0 件、同质化战略 への言及も本問 1 件のみで、コーパス側に既存先例は無い (=波及範囲は小さいが、拠り所も glossary だけ)。是正版の主張 (旧 en は『imitation (matching) strategy』を『the follower's imitation strategy』と区別せよという自己矛盾になる) 自体は妥当で、homogenization は 同質化 の語義として正しく、括弧に matching を残した橋渡しも合理的。ただし採用するなら input 2 件の glossary.en を同時に更新するか、乖離を D-NNN として明示記録するかの一方が必須。本文だけ差し替えて glossary を放置するのは不可。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "distractors[ア]「追随者并不是这样缩小市场范围、走专业特化路线」。专业特化 は expl_tr 2800 件中 0 件で、日本語 専門特化 の字面移植。大陸標準は 专业化 / 专门化 であり、disk 版は「走专业化路线」と標準形を採っていたため後退。コーパス内の 特化 4 件はいずれも 特化型 AI (2026r08-q027)・功能特化 (2012h24h-q021) という定着複合語であり、专业特化 の先例にはならない。修正案: 「走专业化路线」に戻す。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "points[1]「「模仿」这个词虽然相似，但实施主体是领导者」。JP は「真似るという語は似ているが」で、同質化戦略 と 模倣戦略 という別名の戦略の間で 真似る という動詞だけが共通する、という構図を作っている。中文では同質化側の記述 (领导者立刻模仿挑战者的差异化) と追随者側 (模仿战略) がどちらも 模仿 の同一語になるため、「「模仿」这个词虽然相似」は『同じ語が似ている』という自己言及的なねじれになり、何と似ているのかが宙に浮く。disk 版「虽然同样带有「模仿」这个词」は『どちらにも 模仿 の語が入る』と述べており中文として整合的で、JP の意図 (語は共通だが主体が違う) も保っている。是正版はこの点で後退。修正案: disk 版の「虽然同样带有「模仿」这个词」を踏襲。なお en 側は copy と imitation で語が分かれるため同種の問題は生じておらず、zh 固有の欠陥。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh/en",
+          "detail_jp": "構造 (採用時の実務上の注意、訳文自体の欠陥ではない): retr_fixed は top-level に note_jp を持ち、points[] の各要素に index フィールドを持つ。一方 disk 上の expl_tr は 2800 件すべて top-level キーが {correct, distractors, id, points} のみで、points[] に index を持つファイルは 0 件。このまま expl_tr_2010h22a-q007.json に置換すると本ファイルだけスキーマが逸脱する。採用時は note_jp と points[].index を除去して既存スキーマに揃えること (note_jp は evidence/ 側に退避するのが Rule A の趣旨に合う)。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "correct.zh「也就是说，领导者企业投入巨额研发费和广告费、已经被市场接受并得到验证的产品，追随者拿来作参考」。前半「领导者企业投入巨额研发费和广告费」が 的 を欠くため 产品 への連体修飾が統語的に成立せず、独立節と連体句が 、 で並ぶ不安定な形になっている。修正案: 「领导者企业投入巨额研发费和广告费打造的、已经被市场接受并得到验证的产品」。なお同一の欠陥は disk 版 (参考领导者企业投入巨额研发费和广告费、已经被市场接受并得到验证的产品) にも存在するため是正版固有の後退ではないが、再訳の機会に併せて解消するのが望ましい。"
+        }
+      ],
+      "recommendation_jp": "採用は保留 (CONCERNS)。件数・項目対応・意味保真・論理順序の 4 検査はゼロから再検証して合格。\n\n【主 context が適用した置換の独立検証 → 妥当と確認】体力→实力 の 3 箇所置換は正当。根拠: expl_tr 2800 件中 体力 0 件・实力 を含むファイル 16 件。決定的なのは姉妹問 expl_tr_2012h24a-q019 が同じフォロワ文脈で「认清自身在市场中的实力, 追随领导者企业」「确保与自身实力相称的利润」と 实力 を採用している点で、コーパス正典と一致する。置換後の 3 箇所 (没有足够的实力靠自身开拓新市场 / 也没有足够的实力正面挑战头部企业 / 实力较弱的追随者) はいずれも助詞・語順の破綻がなく、同段落の 技术实力 (技術力の標準訳、コーパス多数) との共起も、中文では単独の 实力 が企業総合力を指すため誤読を招かない。置換による新規不整合は検出されず。JP の「〜たり〜たりするだけの体力がない」を 2 回に分けて反復した点はやや冗長だが、disk 版が「也无法正面挑战头部企业」と体力帰属を落としていたのに対し是正版はより忠実で、後退ではない。\n\n【disk 版より改善した点】(a) points[0] の 投资 削除は正しい — JP points_jp[0] のリーダの狙いは「市場規模全体の拡大と全方位でのシェア維持」で投資語は無く (投資の言及は distractors ウ 側のみ)、姉妹問の対応点も「领导者 = 以全方位、全线产品扩大整个市场并维持份额」で投資語を持たない。(b) correct の因果順序是正 (相应地把成本降下来 → 以低价提供) は JP「そのぶんコストを下げて」に忠実で、disk の「把由此省下的成本用于降价」(循環気味) より正確。(c) ア の「立場なので」を「处在……的位置上」で保持、ウ の「余力」を spare capacity で保持した点も disk より忠実。なお ウ の「与追随者的立场不相符」は disk の「所处的地位」から変わったが、コーパスで 立场 は 188 件使用され「并不处于…的立场」等 JP 立場 の訳として定着しているため後退ではない (この項目は指摘対象から除外した)。\n\n【残る問題 — 置換が触れなかった箇所に disk 版より悪化した項目が 3 件】(1) ア の「利基者（ニッチャ／利基战略）」が行為主体と戦略名を同一括弧内にスラッシュ並置し役割を混同 (MEDIUM、disk とコーパス姉妹問の両先例に反する)。(2) ア の「专业特化」がコーパス 0/2800 の非標準語で、disk の 专业化 から後退 (LOW)。(3) points[1] の「「模仿」这个词虽然相似」が中文として自己言及的にねじれ、disk の「同样带有」から後退 (LOW)。加えて en の 同質化戦略 訳が本問 glossary の \"Imitation (matching) strategy\" と乖離している (MEDIUM)。\n\n【採用条件 — 以下 4 点を満たせば採用可】(i) 上記 (1)(2)(3) を disk 版の該当表現に戻す局所修正 3 件を入れる。(ii) en の 同質化戦略 の扱いを、input 2 件 (2010h22a / 2010h22h) の glossary.en 更新か、乖離の D-NNN 記録か、いずれかに確定させる (両方とも行わない差し替えは不可)。(iii) 採用時に note_jp と points[].index を除去して expl_tr スキーマに整形する。(iv) 任意だが、disk 版から引き継いだ 的 欠落 (correct.zh の連体修飾) も併せて解消。これらは局所の語句差し替えのみで、意味・件数・項目対応・順序面の再検証は不要 (本検証で合格済み)。"
+    },
+    {
+      "id": "2009h21h-q049",
+      "verdict": "FAIL",
+      "checks": {
+        "count_matches": true,
+        "item_aligned": true,
+        "meaning_faithful": false,
+        "no_drift": true,
+        "terminology_correct": false
+      },
+      "issues": [
+        {
+          "severity": "high",
+          "lang": "zh",
+          "detail_jp": "distractors ア (retr_fixed_2009h21h-q049.json 内 zh): 「编程结束之后的集成测试（集成测试）或系统测试」と同語反復になっている。置換1 (结合测试（集成测试）→集成测试（结合测试）) の結果に対して置換3 (结合测试→集成测试) が再適用された適用順序ミスの産物。JP 源「結合テスト (統合テスト)」が持つ二重呼称の情報が完全に消え、括弧が空情報化している。現行 disk 版「集成测试（也称结合测试）」より明確に劣化。コーパス先例 (expl_tr_2011h23a-q044.json / expl_tr_2020r02o-q036.json / expl_tr_2010h22h-q040.json / expl_tr_2010h22h-q034.json) はいずれも「集成测试（结合测试）」形式で括弧内に結合系を残す。修正案: 「集成测试（结合测试）」。"
+        },
+        {
+          "severity": "high",
+          "lang": "en",
+          "detail_jp": "distractors ア (en): 「describes the integration testing (integration testing) or system testing」と同語反復。zh と同一原因 (置換の適用順序ミス)。JP「結合テスト (統合テスト)」の二重呼称が消滅し、現行 disk 版「integration testing (also called combined testing)」より劣化。コーパスには「integration testing (combined testing)」(expl_tr_2011h23a-q044.json) と「integration testing (also called combined testing)」(expl_tr_2010h22h-q040.json) の先例がある。修正案: 「integration testing (combined testing)」。なお points[0] の裸「combined testing」→「integration testing」置換自体は妥当 (コーパス上、裸の combined testing 単独使用は存在せず常に括弧内グロス)。"
+        },
+        {
+          "severity": "medium",
+          "lang": "both",
+          "detail_jp": "schema 逸脱: points[] に「index」フィールド (0/2800 件の先例)、top-level に「note_jp」(0/2800 件) が付いている。コーパス 2800 件の expl_tr_*.json は例外なく top-level が {correct, distractors, id, points}、points[] が {zh, en} のみ。採用時に両方を除去して正規化しないと corpus の schema 一様性が崩れる。"
+        },
+        {
+          "severity": "medium",
+          "lang": "both",
+          "detail_jp": "note_jp (retr_fixed 内) が置換前の主張のまま残っている。「JP『結合テスト (統合テスト)』の主従どおり zh『结合测试（集成测试）』/ en『combined testing (integration testing)』とし…points[0] の結合テストも同一写像 (zh 结合测试 / en combined testing) で語彙一貫」と記載されているが、実ファイル本文の 结合测试 / combined testing は 0 件。記録と成果物が矛盾しており、Rule A evidence として保存すると誤誘導になる。更新するか evidence には残さないこと。"
+        },
+        {
+          "severity": "low",
+          "lang": "en",
+          "detail_jp": "distractors ア (en): 「the integration testing (…) or system testing that comes after programming has finished」— 工程名に定冠詞 the が付いて不自然、かつ単数 comes が system testing のみに係る読みを許す。JP は「プログラミングが終わった後の結合テストやシステムテスト」で両方に係る。現行 disk 版の「which come after programming has finished」の方が JP の係り先を正確に保っている。この点も是正版が disk 版より劣る。"
+        }
+      ],
+      "recommendation_jp": "採用不可 (FAIL)。ただし欠陥は局所的で、以下 3 点を直せば採用可能になり、その状態なら distractors イ (JP に無い「概要设计」を削除) と correct.zh (JP に無い「（programming）」グロスを削除) の 2 点で現行 disk 版より優れる。(1) 必須 — distractors ア の同語反復を解消: zh「集成测试（集成测试）」→「集成测试（结合测试）」、en「integration testing (integration testing)」→「integration testing (combined testing)」。これで JP「結合テスト (統合テスト)」の二重呼称が復活し、コーパス先例 (expl_tr_2011h23a-q044.json 他 3 件) とも一致する。主 context が適用した置換のうち「主従逆転」の意図自体は正しくコーパス既定に沿うが、その後に裸語の一括置換を走らせたため括弧内まで潰れた点が誤り。今後は括弧内をガードするか、置換順序を「裸語 → 主従逆転」に逆転させること。(2) 必須 — 採用前に points[].index と top-level note_jp を除去し、コーパス schema {correct, distractors, id, points} / points={zh, en} に正規化。(3) 推奨 — distractors ア en の「the integration testing … that comes after」を「integration testing … which come after」に戻し、JP の係り先 (結合テストとシステムテストの両方) を保つ。件数 (points 2 / distractors ア・イ・エ)、項目対応、工程順・対比節・括弧書き・引用文の input.tr.choices 逐語一致は全て問題なく、points[0] の 結合テスト→集成测试 / integration testing 置換は同 exam q036 設問訳と整合しており正しい。"
+    },
+    {
+      "id": "2009h21h-q061",
+      "verdict": "CONCERNS",
+      "checks": {
+        "count_matches": true,
+        "item_aligned": true,
+        "meaning_faithful": true,
+        "no_drift": true,
+        "terminology_correct": false
+      },
+      "issues": [
+        {
+          "severity": "MEDIUM",
+          "lang": "zh",
+          "detail_jp": "points[0] に「MTBF＝运转（正常动作）时间的合计÷故障次数」が残置。同一項目の後半は「先用『总运行时间－故障总时间』求出正常运行时间」となっており、JP 側で同一語である 稼働(正常動作)時間 / 稼働時間 が zh では二系統に割れている。定義語と運用語が食い違う位置が「公式を教える」まさにその項目であるため影響が大きい。コーパスの直系兄弟 expl_tr_2011h23a-q067.json の points は「MTBF（平均故障间隔）= 正常运行时间的合计 ÷ 故障次数」であり、こちらが先例。修正案: 「MTBF＝正常运行（正常动作）时间的合计÷故障次数」。正常运行 と 正常动作 が近義で括弧がやや冗長になるが、JP の gloss 構造を保つため括弧の削除は不可（削除すると omission となり meaning_faithful を落とす）。"
+        },
+        {
+          "severity": "MEDIUM",
+          "lang": "zh",
+          "detail_jp": "correct.zh 第 1 文「所以实际运转的时间是 5,000－2,000＝3,000 小时」で量を導入した直後、第 2 文が「是用正常运行时间除以故障次数」と別語で受けており、先行詞が繋がらない。JP は 実際に動いていた稼働時間 → 稼働時間 と同一語で受けている。かつ disk 現行版 expl_tr_2009h21h-q061.json は zh 全体で 运转 0 件・全て 正常运行时间 で統一されていたため、この 1 点に限れば是正版は disk 版より退行している（今回唯一の実質的な悪化箇所）。修正案: 「所以实际正常运行的时间是 5,000－2,000＝3,000 小时」。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "distractors[ア].zh の「运转着的时间」3,000 小时。JP 側も 稼働時間 ではなく 「動いていた時間」 という口語的な鉤括弧引用で、対になる 「止まっていた時間」／「停着的时间」 との対比を作っているため、口語訳自体は忠実であり単独では欠陥ではない。ただし同ファイルの他 5 箇所が 正常运行 系に揃った以上、ここだけ 运转 系が残ると読者には別概念に見えうる。修正案（任意）: 「运行着的时间」。対語の「停着的时间」はそのままで対比が保たれる。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "both",
+          "detail_jp": "スキーマ差分。是正版は top-level に note_jp を持ち、points[] の各要素に index フィールドを持つが、採用先の expl_tr_2009h21h-q061.json は top-level が id/correct/distractors/points のみ、points[] は zh/en のみ。retr_fixed_2009h21h-q049.json・retr_fixed_2010h22a-q007.json も同じ作業用形状なので作業ファイル規約と思われるが、disk へ反映する際に note_jp と points[].index を除去する工程が必須。除去漏れは後段の trsweep / 整合チェックに未知フィールドとして流れ込む。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "en",
+          "detail_jp": "points[0].en の「Do not use the total operating time as it is as the numerator of MTBF.」で as が連続し読みにくい。意味（JP「全運用時間をそのまま MTBF の分子にしないこと」の『そのまま』＋『MTBF の分子として』の限定）は正しく保持されているので誤訳ではない。推敲案: 「Do not take the total operating time itself as the numerator of MTBF.」。en 側の 稼働時間 訳は uptime で全 6 箇所統一されており、zh のような割れは無い（en は問題なし）。"
+        }
+      ],
+      "recommendation_jp": "結論: CONCERNS。追加 3 置換 + スキーマ整形を施したうえで採用可。現状のままの採用は非推奨。\n\n【まず評価すべき点】主 context が適用した 2 置換自体は妥当。(a) 运转时间→正常运行时间 の方向はコーパス実測で裏付けられる — 可用率/MTBF 系の 5 ファイル (2011h23a-q067, 2014h26h-q041, 2016h28a-q047, 2024r06-q038, および disk の当該 q061) が全て 正常运行时间 を用い、运转时间 は 0 件。运转 を含む 60 ファイルは全て「运转 PDCA」「让业务运转起来」等の動詞用法で、時間項の構成要素としての先例は無い。(b) 「用 正常运行时间÷总运行时间」のスペース除去も正しい（前後とも中文であり半角空白は不要）。置換 5 箇所は語順・助詞との噛み合わせに破綻なく、新たな非文は生じていない。\n\n【問題の本質】欠陥は置換の「破壊」ではなく「不徹底」。完全一致文字列「运转时间」のみを狙ったため、活用形・括弧付きの変異 3 箇所 (实际运转的时间 / 运转着的时间 / 运转（正常动作）时间) が取り残された。結果、置換前は「一貫して非標準」だったものが、置換後は「部分的に標準・内部不整合」に変わった。terminology_correct を false とした理由はこれで、指示された「置換によって新たな不整合が生じていないか」への回答は「生じている」。\n\n【翻訳本体の評価 — ゼロから独立検証、1 回目の核験結果は参照せず突き合わせた】\n- count_matches: distractors 3 件（字母集合 ア/イ/ウ）、points 2 件。JP と完全一致。\n- item_aligned: ア/イ/ウ・points[0]/[1] とも 1 対 1。順序も JP どおり。\n- meaning_faithful: 全 6 項目で JP 原文と文単位に照合。correct は JP の 4 文構成に 4 文で対応し、旧 disk 版が足していた導入文「首先把正常运行的时间和停机的时间分开」・理由付け「可用率是正常运行时间所占的比例」・注釈「（花在修理上的时间）」は正しく削除済み。distractors[イ] は JP の結び「稼働率 60% とも整合しません」を復元し、旧版が差し替えていた別論拠「MTBF 比 MTTR 大」を削除済み。distractors[ウ] は旧版が混入させていた 2,000÷5,000 / 3,000÷5,000＝60% / 150÷250＝60% の 3 つを削除し JP どおり 100÷250 のみ。distractors[ア] は JP の結び「二重に誤った組合せです」を復元。points[1] は旧版が脱落させていた 100÷250＝40% の数値と「この 40% を答えに選ばないよう注意」という誤答回避指示を復元 — これが最大の改善点で、この 1 点だけでも是正版を採る価値がある。JP に無い追加は 6 項目とも検出されず。\n- no_drift: 数値 5,000 / 2,000 / 3,000 / 20 / 150 / 100 / 250 / 0.6 / 60% / 40% / 2,000÷5,000 / 3,000÷5,000 / 100÷250 を全て保持。文順・「なお」→「另外」等の接続、「第一手」→「这是第一步」の強調、ウ の「全運用時間のうち」という限定も保持。ア の括弧 (2,000÷5,000) の挿入位置も JP どおり。\n- 用語の正しい側: 稼働率→可用率、MTBF→MTBF（平均故障间隔）、MTTR→MTTR（平均修复时间）は input の glossary と stem 訳に完全準拠。合計故障時間→故障总时间 は stem 訳「故障总时间为 2,000 小时」と一致、故障回数→故障次数 も stem 訳と一致。en 側は uptime で 6 箇所統一されており割れ無し。\n\n【採用手順（この 3 置換 + 2 除去で PASS 相当になる）】\n1. correct.zh:「所以实际运转的时间是」→「所以实际正常运行的时间是」\n2. points[0].zh:「MTBF＝运转（正常动作）时间的合计」→「MTBF＝正常运行（正常动作）时间的合计」\n3. distractors[ア].zh:「运转着的时间」→「运行着的时间」（任意。JP が口語引用のため据え置きも可だが、揃えるなら実施）\n4. top-level の note_jp を除去\n5. points[] 各要素の index を除去\n6. 反映後に zh 全体を「运转」で再 grep し 0 件（3 を見送る場合は 1 件）を確認したうえで disk へ書き戻す\n\n【FAIL としなかった理由】残存欠陥は用語の一貫性に限られ、解答に影響する誤り・数値の誤り・項目の欠落／追加は無い。読者は文脈から 运转（正常动作）时间 ＝ 正常运行时间 を推測可能であり、意味の破壊には至っていない。一方 PASS としなかったのは、指示された「是正版が disk 版より悪くなっている項目」が correct.zh に実在すること、および terminology_correct が依然 false であることによる。"
+    }
+  ]
+}

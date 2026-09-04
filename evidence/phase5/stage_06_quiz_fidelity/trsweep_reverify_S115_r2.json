@@ -1,0 +1,126 @@
+{
+  "n": 3,
+  "verdicts": {
+    "CONCERNS": 2,
+    "PASS": 1
+  },
+  "results": [
+    {
+      "id": "2010h22a-q007",
+      "verdict": "CONCERNS",
+      "checks": {
+        "count_matches": true,
+        "item_aligned": true,
+        "meaning_faithful": true,
+        "no_drift": false,
+        "terminology_correct": false
+      },
+      "issues": [
+        {
+          "severity": "MEDIUM",
+          "lang": "zh/en",
+          "detail_jp": "[terminology_correct / コーパス不整合・信頼度 HIGH] points[0] 「把科特勒按竞争地位划分的四种类型…」/ en \"Kotler's four competitive-position categories\"。JP は「コトラーの競争地位別戦略の 4 分類」で「戦略」を含むが、訳は zh/en とも「戦略」を落として「类型 / categories」に言い換えている。さらにコーパス既存訳と食い違う: 同じコトラー枠組みを扱う姉妹問 expl_tr_2012h24a-q019.json は zh 「科特勒竞争地位战略的 4 种类型」「科特勒的竞争地位战略中所说的挑战者」、en \"Kotler's four competitive-position types\" / \"Kotler's strategies by competitive position\" と、2 箇所とも「战略 / strategies」を保持している (grep 実測: コーパス 2800 件中 科特勒 は 3 箇所のみで、うち 2 箇所が q019)。是正版は q019 と用語が揃わず、JP にある語を落とす方向にずれている。修正案 zh:「把科特勒竞争地位战略的四种类型，连同各自的目的一起记住：…」 / en: \"Memorize Kotler's four competitive-position strategy types together with the aim of each: …\" (「categories」→「types」で q019 とも一致)。"
+        },
+        {
+          "severity": "MEDIUM",
+          "lang": "en",
+          "detail_jp": "[no_drift / 今回適用した置換自体の欠陥・信頼度 HIGH] points[1] en に追加された \"carried out by the leader\" が過剰。当該一文は行為主体を 3 回述べている: (1) \"the move in which the leader immediately copies a challenger's differentiation…\"、(2) \"…is called an imitation (matching) strategy carried out by the leader\"、(3) \"…the actor here is the leader\"。JP は「リーダがチャレンジャの差別化を…」と「行う主体がリーダである点で」の 2 回のみで、名称節に主体を入れていない。問題は 2 点: (a) 冗長化により JP の強調配分がずれる、(b) 名称節に修飾を足したため \"imitation (matching) strategy carried out by the leader\" が用語名そのものと読まれうる — これは今回の置換が『glossary の \"Imitation (matching) strategy\" を保つ』という目的自体を損なう。加えて zh 側は「叫做同质化战略；」と名称をクリーンに保っており、zh/en の構造が非対称になった。修正案: 名称節から \"carried out by the leader\" を削除し \"…is called an imitation (matching) strategy; the word \\\"imitation\\\" appears on both sides, but the actor here is the leader, and that is what keeps it distinct from the follower's imitation strategy.\" とする。後半の \"the actor here is the leader, and that is what keeps it distinct\" だけで [R2] の狙い (区別の柱を名称から行為主体へ移す) は既に達成されており、削除しても意図は失われない。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "en",
+          "detail_jp": "[no_drift / disk 版より悪化・信頼度 HIGH] points[0] en \"a specific market that large companies are unlikely to enter\"。JP は「大手が来にくい特定市場」で、難易度 (〜にくい) の表現。\"unlikely to enter\" は難易度から確率・意向へモダリティが動いている。同一ファイル内の distractor ア en は「参入しにくい」を \"find hard to enter\" と訳しており不統一、zh は両箇所とも「难以进入 / 不易进入」と難易度で統一されている。disk 版 points[0] en は \"find hard to enter\" だったので、この 1 点は現行 disk 版より悪化している。修正案: \"…that large companies find hard to enter…\"。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "[可読性 / disk 版より悪化・信頼度 MEDIUM] correct zh 「也就是说，领导者企业投入巨额研发费和广告费、已经被市场接受并得到验证的产品，追随者拿来作参考，…」。長い目的語を文頭に topic 化した結果、冒頭の「领导者企业投入巨额研发费和广告费」が独立した完全文として読め、「、已经被市场接受…的产品」に達して初めて連体修飾だと分かる garden-path になっている。disk 版は「参考领导者企业投入…的产品」と動詞を先頭に置いていたためこの再解析が不要だった。なお連体修飾「领导者企业投入巨额研发费和广告费」→「产品」は動詞の受け皿が無く (投入费用 は 产品 を目的語に取らない)、これは disk 版にも共通する既存の粗さ。修正案:「也就是说，领导者企业花费巨额研发费和广告费打造、已经被市场接受并得到验证的产品，追随者拿来作参考，…」と「打造」を補い、連体修飾の係り先を明示する。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "[可読性 / 置換の副作用・信頼度 MEDIUM] correct zh 「由于没有足够的实力靠自身开拓新市场，也没有足够的实力正面挑战头部企业」。JP は「〜たり〜たりするだけの体力がない」と否定を 1 回しか置いていないのに、zh は「没有足够的实力」を 2 回反復して冗長。さらに同一文書内に「技术实力」(技術力)・「品牌实力」(ブランド力) があるため、置換後は「实力」が計 5 回・3 つの語義で出現し語彙的に飽和している。置換語 实力 の選択自体は妥当 (体力 はコーパス 0/2800、q019 が「认清自身在市场中的实力」「与自身实力相称的利润」で 实力 を採用済み) なので語の差し替えは不要だが、反復は解消したい。修正案:「由于既没有足够的实力靠自身开拓新市场，也无力正面挑战头部企业」。なお JP「体力の少ないフォロワ」→ zh「实力较弱的追随者」は消耗戦での持久力ニュアンスがやや薄れる (en は \"with less staying power\" で正しく取れている) が、コーパス整合を優先して可とする。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "[可読性 / disk 版より悪化・信頼度 MEDIUM] distractor ア zh 「而是处在以低成本、低价格追随领导者已经开拓出来的既有市场的位置上」。「…开拓出来的既有市场的位置上」と「的」が連続入れ子になり、長い連体修飾が「位置」に係るまで読み切れない。disk 版「而是以低成本、低价格追随领导者已经开拓出来的既有市场」は「立場」を落とす代わりに平明だった。是正版は JP「〜追随する立場なので」に対する忠実度は上がっている (この点は改善) が、構文負荷は悪化している。両立させる修正案:「而是处在这样的位置上：以低成本、低价格追随领导者已经开拓出来的既有市场，因此不符合。」"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "[置換の根拠検証・信頼度 HIGH] distractor ア の置換「说的是利基者（ニッチャ／利基战略）」→「说的是利基者（ニッチャ）的利基战略」について、出力テキスト自体はスラッシュ並置の役割混同を解消しており妥当なので採用に異論は無い。ただし提示された根拠のうち『姉妹問 2012h24a-q019 の先例に復帰』は事実と異なる。grep 実測では「利基者（ニッチャ」を含むファイルは expl_tr_2010h22a-q007.json (本問の disk 版) の 1 件のみで、q019 は別型の「是利基者的战略(利基战略)」を用いている (en も \"describe the Nicher's strategy (niche strategy)\")。すなわち先例は『本問の disk 版』のみであり、姉妹問との用語統一は達成されていない。JP 原文「ニッチャ (ニッチ戦略) の説明」の構造 (主体が先・戦略名が括弧) に近いのはむしろ q019 型である。今回は disk 版踏襲で可とするが、根拠の記載は訂正されたい。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "[明晰性・信頼度 MEDIUM] points[1] zh 「虽然同样带有「模仿」这个词，但实施主体是领导者，要与追随者的模仿战略区分开。」。置換により自己言及的なねじれ (中文では両側とも同一語 模仿 になるのに「相似」と言う矛盾) は正しく解消されており、この置換は妥当。ただし「同样」の比較対象 (追随者的模仿战略) が文末にしか現れないため後方照応となり、読者は一度戻って解釈する必要がある。en 側は \"the word \\\"imitation\\\" appears on both sides\" と両側を明示して解決している。zh も同型に揃える修正案:「虽然两者都带有「模仿」这个词，但实施主体是领导者，要与追随者的模仿战略区分开。」"
+        }
+      ],
+      "recommendation_jp": "CONCERNS — 現状のままの採用は不可。ただし残る欠陥はいずれも局所的で、下記 3 点を直せば PASS 相当になる。\n\n【構造検証は全て合格】schema は disk 版 expl_tr と完全一致 (top keys = id/correct/distractors/points、distractor entry = letter/zh/en、points entry = zh/en)。note_jp・points[].index の残骸ゼロ。distractors 字母集合 = {ア,ウ,エ} で JP と一致・順序も一致、points 件数 2 = JP 2。置換の取りこぼしもゼロ (体力 0 件、专业特化 0 件、ニッチャ／ 0 件)。zh/JP 字数比 0.79-0.82 は日中の情報密度差の範囲内で、逐文照合しても脱落項目は無し。設問訳との引用整合も全数一致 — zh/en とも選択肢 ア/ウ/エ の引用が input_2010h22a.json の tr.choices と逐字一致する。\n\n【適用された置換の妥当性判定】\n- 体力→实力 (3 箇所): 妥当。コーパス 2800 件中「体力」0 件を実測確認。姉妹問 q019 が同義で「实力」を 2 回使用済みで、コーパス整合も取れる。置換後の助詞・語順の噛み合わせにも破綻なし。\n- 专业特化→专业化: 妥当。「专业特化」0/2800、「专业化」4/2800 を実測確認。周囲の「并不是这样缩小市场范围、走专业化路线」も自然。\n- 「模仿」自己言及の解消: 妥当かつ改善。disk 版が曖昧化で逃げていた矛盾を正面から解消している。\n- 利基者（ニッチャ）的利基战略: 出力は妥当だが根拠に誤りあり (下記 issue 参照。姉妹問先例は実在せず、q019 は別型を使用)。\n- schema 整形: 妥当。\n- en の「行為主体へ柱を移す」置換: 意図は正しいが実装が過剰 (要修正)。\n\n【修正必須 2 件】\n1. points[0] zh/en: 「科特勒按竞争地位划分的四种类型」/ \\\"four competitive-position categories\\\" は JP にある「戦略」を落とし、姉妹問 q019 の確立訳「科特勒竞争地位战略の 4 种类型」/ \\\"four competitive-position types\\\" とも不整合。zh →「把科特勒竞争地位战略的四种类型，连同各自的目的一起记住：…」、en → \\\"Memorize Kotler's four competitive-position strategy types together with the aim of each: …\\\"。\n2. points[1] en: 今回追加した \\\"carried out by the leader\\\" を名称節から削除する。行為主体が 1 文に 3 回現れて JP の強調配分がずれるうえ、glossary 用語 \\\"Imitation (matching) strategy\\\" の語境界を曖昧にし、置換の目的自体を損なっている。後続の \\\"the actor here is the leader, and that is what keeps it distinct\\\" だけで [R2] の狙いは達成済み。削除すれば zh の「叫做同质化战略；」とも構造が揃う。\n\n【disk 版より悪化しており要修正 1 件】\n3. points[0] en \\\"large companies are unlikely to enter\\\" → \\\"large companies find hard to enter\\\"。JP「来にくい」は難易度であり確率ではない。disk 版は正しく \\\"find hard to enter\\\" だった。同ファイル distractor ア en および zh 両箇所とも難易度表現で統一されているため、ここだけが浮いている。\n\n【任意 (LOW、可読性)】correct zh の topic 前置による garden-path、「没有足够的实力」の反復、distractor ア zh の「的」入れ子、points[1] zh の後方照応「同样」。いずれも意味は正しいので、時間が無ければ次回一括でよい。\n\n【是正版が disk 版より優れている点 — 後退させないこと】\n- correct zh/en: 「そのぶんコストを下げて」を「相应地把成本降下来」/ \\\"It lowers its costs by that much\\\" と正訳。disk 版の「把由此省下的成本用于降价」/ \\\"puts the savings into cutting costs\\\" は JP に無い因果 (節約分を値下げ原資に回す) を作っていた実害ある drift で、その是正は本再訳の最大の成果。\n- points[0] zh/en: disk 版が足していた「投资」/ \\\"invest to\\\" を除去。JP points_jp は「市場規模全体の拡大」としか言っておらず、投資は distractor ウ 側の情報だった。\n- distractor エ zh/en: 「在这一点上方向性正好相反」/ \\\"in this respect the direction is exactly the opposite\\\" が JP「〜点で」の限定を保持。disk 版「两者方向完全相反」はこの限定を落としていた。\n- en 全体で選択肢引用に明示的な引用符が付き、JP の「」と対応が取れて追跡性が向上。\n\n以上 3 件を反映後は再核験不要 (いずれも局所的な語句差し替えで、周辺構文への影響なし) と判断する。"
+    },
+    {
+      "id": "2009h21h-q049",
+      "verdict": "CONCERNS",
+      "checks": {
+        "count_matches": true,
+        "item_aligned": true,
+        "meaning_faithful": true,
+        "no_drift": false,
+        "terminology_correct": true
+      },
+      "issues": [
+        {
+          "severity": "medium",
+          "lang": "en",
+          "detail_jp": "distractors[ア].en — 現行 disk 版より悪化。disk は「…or system testing, which come after programming has finished.」だが是正版は「…or system testing which come after programming has finished.」でコンマが脱落している。コンマの無い which 節は制限用法として読まれ、係り先が直近の system testing だけに寄る。JP 源は「プログラミングが終わった後の結合テスト (統合テスト) やシステムテスト」と連体修飾で結合テストとシステムテストの両方にかけており、限定範囲と時点表現のかかり先が disk 版より曖昧化した。複数形 come が辛うじて両方読みを支えているだけで表層は破綻しており、これが no_drift=false の根拠。修正: コンマを戻して「…or system testing, which come after programming has finished.」にするか、より明示的に「…or system testing, both of which come after programming has finished.」とする。主 context の置換根拠 (定冠詞と単数 comes を外す) は retr 版に対しては正しかったが、disk 版が持っていたコンマを復元し損ねている。"
+        },
+        {
+          "severity": "low",
+          "lang": "en",
+          "detail_jp": "distractors[ア].en — disk の「integration testing (also called combined testing)」から also called が脱落し「integration testing (combined testing)」になった。英語では 結合テスト も 統合テスト も共に integration testing であり、combined testing は標準英語用語ではない。also called が無いと別名の提示ではなく技術的な言い換え定義のように読め、EN 学習者には二つの別工程と誤読される余地がある。コーパスには両形が存在する (also called 形 3 件 / 裸形 3 件) ため単独では阻止要因にしないが、明確さは disk 版が上。修正推奨: 「integration testing (also called combined testing)」に戻す。"
+        },
+        {
+          "severity": "low",
+          "lang": "zh+en",
+          "detail_jp": "distractors[ア] 両言語 — JP「結合テスト (統合テスト)」は主称=結合テスト・括弧=統合テストだが、訳は zh「集成测试（结合测试）」/ en「integration testing (combined testing)」で主称と括弧が反転している。ただしこれは妥当な意図的ローカライズと判定: (1) 大陸標準の主称は 集成测试、(2) 同 exam の q036 設問訳が「集成测试工序」で整合、(3) コーパスに「集成测试（结合测试）」が 9 件存在。二重呼称という情報自体は保持されており是正不要。透明性のための記録のみ。同様に points[0] の裸「集成测试」も JP 裸「結合テスト」に対応し、distractors[ア] で二重呼称を導入済みのため file 内で不整合なし。zh 側の置換は周囲の語順・助詞と噛み合っており「说明的是编程结束之后的集成测试（结合测试）或系统测试。」は自然。"
+        }
+      ],
+      "recommendation_jp": "EN 1 箇所の必須修正 (issue 1: distractors[ア].en の system testing 直後にコンマを復活) を入れれば採用可。issue 2 (also called の復活) も併せて入れることを推奨。この 2 点以外は是正版が disk 版より明確に優れており、差し戻す理由はない。\n\n【構造・整合性の核験結果】points 2/2、distractors 字母集合 {ア,イ,エ} が JP と一致し正解ウは正しく除外、順序も JP 通り。JSON shape を disk 版と機械比較して完全一致を確認 (note_jp / points[].index の除去は正しくスキーマ整形になっている)。選択肢の引用文は zh/en 計 8 箇所すべて input_2009h21h.json の tr.choices と完全一致 (correct.en のウ引用の末尾コンマは米式引用符内句読点で問題なし)。工程チェーンは 6 要素・順序とも JP と一致。時点/限定/因果の標識 (終わった後の・より前段の・にすぎず・そのものではない・までを含む・ため) はいずれも保持。JP に無い加筆はゼロ。\n\n【disk 版より改善している点 (差し戻し不可の理由)】(a) distractors[イ].zh から JP に存在しない「概要设计」が除かれ、disk にあった加筆ドリフトが解消。(b) correct.zh が JP「この記述と検証」に合わせて disk の「书写和验证」→「描述与验证」となり、選択肢ウ訳の「描述」と語彙整合。(c) points[0].zh が「处理步骤的图式化」となり JP「処理手順の図式化」の「の」を回復。(d) distractors[エ].en「where flowcharts and the like are drawn」が JP の連体修飾を正しく再現 (disk の such as drawing flowcharts は詳細設計そのものの例示と誤読され得た)。(e) distractors[イ].en「decides the structure of what functions to build and how to divide them」が JP「どう分けて作るかという構造を決める」に disk より忠実。(f) EN の引用符が corpus 優勢の “ ” に統一 (explanations/ 全体で curly 3344 / corner 1480)、zh は corpus 優勢の 「」 を維持 (corner 7910 / curly 742) — 言語別に正しく使い分けている。\n\n【置換自体の妥当性】4 件の置換はいずれも根拠が成立。zh「集成测试（结合测试）」は同語反復を解消しつつ二重呼称を復元し、corpus (9 件) および同 exam q036 訳「集成测试工序」と整合。「软件架构设计」も corpus 優勢語 (99 件 vs 软件方式设计 47 件) で問題なし。置換により zh 側に新たな語順・助詞の破綻は生じていない。唯一、en 側の置換が disk のコンマを巻き添えで落としたのが issue 1。"
+    },
+    {
+      "id": "2009h21h-q061",
+      "verdict": "PASS",
+      "checks": {
+        "count_matches": true,
+        "item_aligned": true,
+        "meaning_faithful": true,
+        "no_drift": true,
+        "terminology_correct": true
+      },
+      "issues": [
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "points[0]「MTBF＝正常运行（正常动作）时间的合计」— JP 原文「稼働(正常動作)時間の合計」の括弧註は、不透明語である「稼働」を「正常動作」で言い換えるためのもの。zh では主語側が既に「正常运行」となったため、括弧註「（正常动作）」がほぼ同義反復になり、読み味が冗長。ただし JP の括弧構造をそのまま保持している点では disk 版（註を丸ごと脱落させている）より保真度は高く、意味の欠落・追加はない。逐語保持を優先するなら現状維持で可、可読性を優先するなら「MTBF＝正常运行时间（正常动作时间）的合计」等に整えられる。置換に起因する副作用だが是正版が disk 版より劣化したとは言えない。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "distractor ア「运行着的时间」「停着的时间」— 両語ともコーパス内出現 0 件（本ファイルのみ）。JP 側も「動いていた時間」「止まっていた時間」という口語的な引用対であり、正式語（稼働時間／故障時間）を意図的に避けているため、口語対で訳すこと自体は忠実。ただし「停着」は中国語技術文脈ではやや口語的・非標準（システムに対しては「停机」が標準。コーパス 140 件）。「-着」の形態的並行性は置換後も保たれており、置換で対比が壊れてはいない。ブロッキングではないが、将来のコーパス統一時には「运行的时间」／「停机的时间」への揃え直しを検討余地あり。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "zh",
+          "detail_jp": "置換の副作用として、distractor ア の「运行着的时间」(＝3,000 小时・稼働時間) と、他所の「总运行时间」(＝5,000 小时・全運用時間) が「运行」形態素を共有することになった。置換前の「运转着的时间」は語彙的に区別されていたため、この点のみは弁別性がわずかに低下している。ただし直後の数値 3,000 と、対語「停着的时间」2,000 との対比で文脈的に一意に判別可能であり、誤読リスクは実質的に低い。[R1] のコーパス実測（正常运行时间 19 件 / 运转时间 0 件）を踏まえると、1 箇所だけ「运转」系を残す方が不整合が大きく、置換判断自体は妥当。"
+        },
+        {
+          "severity": "LOW",
+          "lang": "en",
+          "detail_jp": "points[0].en「Do not use the total operating time as it is as the numerator of MTBF.」— \"as it is as\" の as が連続し読みにくい。JP「そのまま MTBF の分子にしないこと」の意味は正しく保たれており、誤訳ではない。\"Do not use the total operating time itself as the numerator of MTBF.\" 等で解消可。今回の置換とは無関係（en 側は置換対象外）。"
+        }
+      ],
+      "recommendation_jp": "採用可（PASS）。是正版 retr_fixed_2009h21h-q061.json を disk 現行版 expl_tr_2009h21h-q061.json に上書き採用してよい。\n\n【構造】count_matches / item_aligned は完全一致。points 2件（JP 2件）、distractors 字母集合 {ア,イ,ウ}（JP と同一、正答 エ は含まず正しい）、top-level keys は ['id','correct','distractors','points'] で disk 版と同一スキーマ。note_jp・points[].index の除去は完了しており残留なし（機械確認済み）。\n\n【置換の妥当性検証】(1) 「运转」の残留 0 件、「正常运行」7 箇所で統一済み。活用形の取り残し・二系統割れは解消。(2) 置換語はコーパス実測と整合（正常运行时间 19 件 / 运转时间 0 件）、かつ先例 2011h23a-q067 の zh 訳が JP「正常稼働時間」→「正常运行时间」を採っており、コーパス既存訳と一致。(3) 置換によって助詞・語順が壊れた箇所は無し。「所以实际正常运行的时间是…」「MTBF＝正常运行（正常动作）时间的合计÷故障次数」いずれも文法的に成立。(4) 「运行着的时间」／「停着的时间」の対比構造（-着 の形態的並行）は置換後も保持されている。したがって主 context が適用した機械置換は、新たな内部不整合を生じさせていない。\n\n【disk 版との比較 — 劣化箇所なし】むしろ複数点で保真度が向上している。(a) disk 版 correct.zh の冒頭「首先把「正常运行的时间」和「停机的时间」分开。」は JP に対応文が無い追加文だったが、是正版で除去。(b) disk 版 correct.zh の「故障总时间（花在修理上的时间）」の括弧註も JP に無い追加。除去済み。(c) disk 版 distractor ア は末尾に JP に無い「正确的是 MTBF 150、MTTR 100、可用率 60%。」を追加する一方、JP の「二重に誤った組合せです」を脱落させていた。是正版は両方修正。(d) disk 版 distractor イ は JP に無い MTBF/MTTR の定義文を挿入し、JP 末尾2節（「故障停止していた時間の方が長いかのような値」「稼働率 60% とも整合しません」）を「在本题中 MTBF 比 MTTR 大」に圧縮していた。是正版は逐語的に保持。(e) disk 版 distractor ウ は JP の「40% は MTTR÷(MTBF＋MTTR)＝100÷250」を「40% 是 2,000÷5,000」に置き換えており式が JP と異なっていた。是正版は JP の式どおり。(f) disk 版 points[1] は JP の「＝100÷250＝40%」の数値と「この 40% を答えに選ばないよう注意します」の警告を脱落。是正版は復元。(g) disk 版 points[1].en の「which is availability subtracted from 1」は方向が曖昧だったが、是正版は「1 - availability」で JP「1−稼働率」と一致。\n\n【用語】MTBF＝平均故障间隔、MTTR＝平均修复时间、稼働率＝可用率 はいずれも input の tr.stem / glossary と一致。JP が「修理」1語で通す箇所を zh が術語名は「修复」・記述部は「修理」と使い分ける点は、先例 2011h23a-q067（「平均修复时间」＋「修理时间的合计」）と同一パターンでコーパス整合。\n\n【残課題】LOW 4 件のみ（括弧註の同義反復1、口語引用対の非標準性・弁別性2、en の文体1）。いずれも意味の改変・欠落・追加を伴わず、ブロッキングではない。採用後、コーパス全体の口語引用対の統一方針を決める際に「停着的时间」→「停机的时间」系への揃え直しを再検討することを推奨する。"
+    }
+  ]
+}
