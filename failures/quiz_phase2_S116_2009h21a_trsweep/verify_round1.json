@@ -1,0 +1,24 @@
+{
+  "id": "2009h21a-q071",
+  "verdict": "CONCERNS",
+  "checks": {
+    "count_matches": true,
+    "item_aligned": true,
+    "meaning_faithful": true,
+    "no_drift": true,
+    "terminology_correct": false
+  },
+  "issues": [
+    {
+      "severity": "medium",
+      "lang": "zh",
+      "detail_jp": "correct.zh 冒頭と points[0].zh の「垃圾邮件（迷惑邮件）」— JP 源の「スパムメール (迷惑メール)」の括弧内同義語をそのまま漢字移送している。中国語の「迷惑」は『当惑する/惑わす』の意で、迷惑メールの意味にならず、大陸中国語では非標準。input.glossary も 迷惑メール→垃圾邮件 と定義しており、zh では両語とも「垃圾邮件」に収束するため括弧書き自体が無意味。data/ip/quiz 配下の既訳コーパス全体を grep しても「迷惑邮件」は 0 件で、本再訳が初出（用語不整合）。修正案: 「垃圾邮件（spam）」または単に「垃圾邮件」。"
+    },
+    {
+      "severity": "low",
+      "lang": "zh",
+      "detail_jp": "distractors.エ の zh「这是电子公告板（BBS）等、写入消息以…」— 日本語の読点「、」がそのまま使われている。中国語標準では「，」。同文の「等」の後は「，」に直すべき。"
+    }
+  ],
+  "recommendation_jp": "件数 (distractors イ/ウ/エ 3 件、points 2 件) は JP と一致し、points[i] ↔ points_jp[i]、distractors[letter] ↔ distractors_jp[letter] の 1 対 1 照合でも入れ替わり・欠落なし。意味面も忠実で、監査指摘 3 件 (ウ の「不幸の手紙型メール」復元、points[1] の「書き込み型」= post-type、イ の「仕組み」= mechanism) はいずれも解消済み。論理順序・強調・限定・因果・数値/時点表現のドリフトなし。JP に無い規格名・具体例の追加もなし (特定電子メール法の英語正式名 Act on Regulation of Transmission of Specified Electronic Mail は法令名の正規展開であり捏造ではない)。残る問題は zh の用語 1 件のみ: 「垃圾邮件（迷惑邮件）」の括弧内を「（spam）」に置換するか削除し (correct.zh・points[0].zh の 2 箇所)、あわせて distractors.エ の zh の読点「等、」を「等，」に直せば PASS 相当。en は修正不要。"
+}
