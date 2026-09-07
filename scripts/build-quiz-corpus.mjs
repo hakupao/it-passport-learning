@@ -144,7 +144,8 @@ for (const q of questionsRaw) {
       figureIds.push(base);
     }
   }
-  if (hasCompositeFigure && choiceFigures) fail(`question ${q.id} has both figure_path and choice_figure_paths (複合図と選択肢図の二重掛け — 複合図は composite_figure_path_retired に退避すること)`);
+  // 複合図 (4 肢を 1 枚に並べた図) と選択肢図の二重掛けは fail。ただし中問の共有図 (figure_group あり、選択肢とは別の図) は共存してよい (D-144 段 3)
+  if (hasCompositeFigure && choiceFigures && !(q.figure_group && q.figure_type === "shared")) fail(`question ${q.id} has both figure_path and choice_figure_paths (複合図と選択肢図の二重掛け — 複合図は composite_figure_path_retired に退避すること)`);
   const hasFigure = hasCompositeFigure || choiceFigures !== null;
   let figure = null;
   if (hasCompositeFigure) {

@@ -139,7 +139,7 @@ for (const [exam, qs] of byExam) {
       if (!existsSync(path.join(FIGS, `${b}.webp`))) bad("A6", `${q.id}: /quiz-figures/${b}.webp missing (build-quiz-figures 未実行?)`);
       if (q.choices_jp?.[L] !== `図${L}`) bad("A6", `${q.id}: choices_jp.${L}=${JSON.stringify(q.choices_jp?.[L])} — 選択肢が図の問は中立テキスト「図${L}」であること (答えの漏洩防止)`);
     }
-    if (q.figure !== null) bad("A6", `${q.id}: choice_figures があるのに figure=${q.figure} (複合図と二重表示になる)`);
+    if (q.figure !== null && q.figure_type !== "shared") bad("A6", `${q.id}: choice_figures があるのに figure=${q.figure} (複合図と二重表示になる; 中問の共有図 figure_type=shared のみ共存可)`);
     if (q.has_figure !== true) bad("A6", `${q.id}: choice_figures があるのに has_figure=${q.has_figure}`);
     // 訳文も中立ラベルであること (alt に訳文が入る。.phase1 入力層には旧テキスト「RAM（役割分担マトリクス）」等が残っているため、再 merge で退行すると alt から答えが漏れる — Rule D MEDIUM-1)
     const trf = path.join(Q, "translations", `${q.exam_id}.json`);
