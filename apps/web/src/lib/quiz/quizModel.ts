@@ -66,6 +66,9 @@ export interface QuizQuestion {
   /** Figure image basename (=id) served at /quiz-figures/<figure>.webp, or null. */
   figure: string | null;
   figure_type: string | null;
+  /** D-144 段 2: per-choice figure basenames (ア..エ → /quiz-figures/<basename>.webp) for
+   *  questions whose choices ARE figures. When present all 4 letters are set and `figure` is null. */
+  choice_figures?: Record<string, string>;
   terms: string[];
   // --- Phase 1 trilingual backfill (D-136): merged from the translation sidecar at
   //     read time; absent until a question's exam batch is translated (JP fallback). ---

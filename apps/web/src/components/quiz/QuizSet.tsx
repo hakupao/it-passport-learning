@@ -97,7 +97,7 @@ function QuestionCard({
             className={`${styles.choice} ${revealed && c.isCorrect ? styles.choiceCorrect : ""}`}
           >
             <span className={styles.choiceLetter}>{c.letter}</span>
-            <ChoiceBody text={c.text} jpText={q.choices_jp[c.letter]} />
+            <ChoiceBody text={c.text} jpText={q.choices_jp[c.letter]} figure={q.choice_figures?.[c.letter]} />
           </li>
         ))}
       </ul>

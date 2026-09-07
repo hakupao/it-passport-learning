@@ -38,7 +38,7 @@ if (!existsSync(QUESTIONS)) {
   process.exit(1);
 }
 const ids = JSON.parse(readFileSync(QUESTIONS, "utf-8")).questions
-  .map((q) => q.figure)
+  .flatMap((q) => [q.figure, ...Object.values(q.choice_figures ?? {})]) // D-144 段 2: 選択肢単位の図も同じ経路で WebP 化
   .filter(Boolean);
 
 // Idempotent: rebuild the output dir from scratch.

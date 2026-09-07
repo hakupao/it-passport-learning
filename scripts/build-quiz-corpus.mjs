@@ -131,14 +131,28 @@ for (const q of questionsRaw) {
   const cleanChoices = {};
   for (const L of CHOICE_LETTERS) cleanChoices[L] = choices[L];
 
-  const hasFigure = Boolean(q.has_figure && q.figure_path);
+  const hasCompositeFigure = Boolean(q.has_figure && q.figure_path);
+  // D-144 段 2: 選択肢単位の図 (`choice_figure_paths: {ア: "figures/<id>-cA.png", …}`)。4 肢すべて揃っていること。
+  let choiceFigures = null;
+  if (q.choice_figure_paths) {
+    choiceFigures = {};
+    for (const L of CHOICE_LETTERS) {
+      const fp = q.choice_figure_paths[L];
+      if (typeof fp !== "string" || !/^figures\/[^/]+\.png$/.test(fp)) fail(`question ${q.id} choice_figure_paths.${L} invalid: ${JSON.stringify(fp)}`);
+      const base = fp.replace(/^figures\//, "").replace(/\.png$/, "");
+      choiceFigures[L] = base;
+      figureIds.push(base);
+    }
+  }
+  if (hasCompositeFigure && choiceFigures) fail(`question ${q.id} has both figure_path and choice_figure_paths (複合図と選択肢図の二重掛け — 複合図は composite_figure_path_retired に退避すること)`);
+  const hasFigure = hasCompositeFigure || choiceFigures !== null;
   let figure = null;
-  if (hasFigure) {
+  if (hasCompositeFigure) {
     // figure_path is like "figures/<id>.png"; the figure file is named by id.
     figure = q.id;
     figureIds.push(q.id);
-    withFigure += 1;
   }
+  if (hasFigure) withFigure += 1;
 
   const stem = typeof q.stem_jp === "string" ? q.stem_jp : "";
   if (stem.trim() === "") fail(`question ${q.id} empty stem_jp`);
@@ -160,6 +174,7 @@ for (const q of questionsRaw) {
     has_figure: hasFigure,
     figure, // figure image basename (=id) or null; PNG served from /quiz-figures
     figure_type: hasFigure ? (q.figure_type ?? null) : null,
+    ...(choiceFigures ? { choice_figures: choiceFigures } : {}), // D-144 段 2: 選択肢単位の図 (basename)
     terms: Array.isArray(q.syllabus_refs?.terms) ? q.syllabus_refs.terms : [],
   });
 
@@ -211,7 +226,7 @@ if (figFilesMissing.length) {
 // Guard the has_figure/figure_path pairing so a figure is never silently dropped
 // (has_figure:true without figure_path would otherwise project to has_figure:false
 // with no warning — Rule D LOW, Session 86).
-const droppedFigures = questionsRaw.filter((q) => q.has_figure && !q.figure_path);
+const droppedFigures = questionsRaw.filter((q) => q.has_figure && !q.figure_path && !q.choice_figure_paths);
 if (droppedFigures.length) {
   fail(
     `${droppedFigures.length} questions have has_figure but no figure_path ` +

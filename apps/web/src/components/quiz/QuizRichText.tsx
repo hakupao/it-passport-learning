@@ -71,7 +71,22 @@ export function StemBlocks({ stem }: { stem: string }): React.ReactElement {
 }
 
 /** One choice's body: plain text, a key→value strip (組合せ問), or a small table. */
-export function ChoiceBody({ text, jpText }: { text: string; jpText?: string }): React.ReactElement {
+export function ChoiceBody({
+  text,
+  jpText,
+  figure,
+}: {
+  text: string;
+  jpText?: string;
+  /** D-144 段 2: basename of this choice's figure (served from /quiz-figures/<basename>.webp). */
+  figure?: string;
+}): React.ReactElement {
+  if (figure) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- static pre-optimized WebP from /public, dimensions vary
+      <img className={styles.choiceFigure} src={`/quiz-figures/${figure}.webp`} alt={text} loading="lazy" />
+    );
+  }
   const c = parseChoiceWithHint(text, jpText);
   if (c.kind === "text") return <span>{c.text}</span>; // 従来どおり (pre-wrap は付けない: OCR 由来の連続空白を可視化しないため、Rule D MINOR-3)
   if (c.kind === "pairs") {

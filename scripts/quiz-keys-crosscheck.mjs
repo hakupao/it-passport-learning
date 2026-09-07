@@ -11,6 +11,7 @@
 //   A3 translations/<exam>.json: 全問にエントリ・choices の字母集合 == questions の 4 肢
 //   A4 quiz_index.json: stats.questions == 2900・exams 29・各 exam の question_count == 実数
 //   A5 D-142 禁止語: zh (quiz sidecar + textbook units) に 主机托管 / 服务器托管 / 托管（hosting） が無い
+//   A6 D-144 段 2 choice_figures: 4 肢揃う・figure は null・WebP が apps/web/public/quiz-figures に実在・choices_jp は「図L」・訳文も 图L / Figure L
 //   A2 には sidecar top-level の suspect_count / stem_corruption_count と実数の一致も含む
 //
 // ══ Layer B: raw (gitignored) がある時だけ走る (ローカル gate) ══
@@ -24,6 +25,8 @@
 // Run:  node scripts/quiz-keys-crosscheck.mjs [--committed-only] [--require-raw]
 //   B5 stem_jp / choices_jp が questions == question_bank == by_year の 3 層で一致し、かつ by_year に行が存在する (S117: by_year 284 問の
 //      旧 OCR 残存を見逃していた穴。merge-question-bank を再実行すると退行するため、是正は必ず最上流まで入れる)
+//   B6 図メタデータ (has_figure / figure_path / figure_bbox_pct / figure_type / source / choice_figure_paths) が question_bank == by_year
+//      (S117: 2010h22a-q091 の by_year に問89 用の旧 bbox が残り、bbox 再裁断で誤図が戻る状態だった)
 
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import path from "node:path";
@@ -125,6 +128,29 @@ for (const [exam, qs] of byExam) {
   if (existsSync(UNITS)) for (const f of readdirSync(UNITS).filter((x) => x.endsWith(".json"))) walkZh(rj(path.join(UNITS, f)), "", `textbook/${f}`);
 }
 
+// A6 D-144 段 2 — 選択肢単位の図の整合 (committed 層で完結: questions.json + public/quiz-figures)
+{
+  const FIGS = path.join(ROOT, "apps/web/public/quiz-figures");
+  for (const q of questions) {
+    if (!q.choice_figures) continue;
+    for (const L of ["ア", "イ", "ウ", "エ"]) {
+      const b = q.choice_figures[L];
+      if (typeof b !== "string" || !b) { bad("A6", `${q.id}: choice_figures.${L} missing`); continue; }
+      if (!existsSync(path.join(FIGS, `${b}.webp`))) bad("A6", `${q.id}: /quiz-figures/${b}.webp missing (build-quiz-figures 未実行?)`);
+      if (q.choices_jp?.[L] !== `図${L}`) bad("A6", `${q.id}: choices_jp.${L}=${JSON.stringify(q.choices_jp?.[L])} — 選択肢が図の問は中立テキスト「図${L}」であること (答えの漏洩防止)`);
+    }
+    if (q.figure !== null) bad("A6", `${q.id}: choice_figures があるのに figure=${q.figure} (複合図と二重表示になる)`);
+    if (q.has_figure !== true) bad("A6", `${q.id}: choice_figures があるのに has_figure=${q.has_figure}`);
+    // 訳文も中立ラベルであること (alt に訳文が入る。.phase1 入力層には旧テキスト「RAM（役割分担マトリクス）」等が残っているため、再 merge で退行すると alt から答えが漏れる — Rule D MEDIUM-1)
+    const trf = path.join(Q, "translations", `${q.exam_id}.json`);
+    const tr = existsSync(trf) ? rj(trf).questions?.[q.id] : null;
+    for (const L of ["ア", "イ", "ウ", "エ"]) {
+      if (tr?.choices?.[L]?.zh !== undefined && tr.choices[L].zh !== `图${L}`) bad("A6", `${q.id}: translations choices.${L}.zh=${JSON.stringify(tr.choices[L].zh)} — 「图${L}」であること`);
+      if (tr?.choices?.[L]?.en !== undefined && tr.choices[L].en !== `Figure ${L}`) bad("A6", `${q.id}: translations choices.${L}.en=${JSON.stringify(tr.choices[L].en)} — 「Figure ${L}」であること`);
+    }
+  }
+}
+
 // ───────────────────────── Layer B ─────────────────────────
 let rawStatus = "skipped (--committed-only)";
 if (!COMMITTED_ONLY) {
@@ -160,6 +186,10 @@ if (!COMMITTED_ONLY) {
       else if (ans[n] !== q.correct_answer) bad("B2", `${q.id}: questions=${q.correct_answer} answer_keys=${ans[n]}`);
       if (!byYear.has(q.id)) bad("B3", `${q.id}: not in by_year (最上流から行が消えている — merge すると問が消滅する)`);
       else if (byYear.get(q.id) !== q.correct_answer) bad("B3", `${q.id}: questions=${q.correct_answer} by_year=${byYear.get(q.id)}`);
+      // B6 図メタデータ bank == by_year (bbox 再裁断・再抽出の入力は by_year なので、ここがずれると是正済の図が戻る)
+      { const yb = byYearFull.get(q.id), bb = bankFull.get(q.id);
+        if (yb && bb) for (const k of ["has_figure", "figure_path", "figure_bbox_pct", "figure_type", "source", "choice_figure_paths"])
+          if (JSON.stringify(yb[k] ?? null) !== JSON.stringify(bb[k] ?? null)) bad("B6", `${q.id}: ${k} differs between by_year and question_bank`); }
       // B5 表示テキスト 3 層一致 (stem_jp / choices_jp)
       for (const [layer, o] of [["question_bank", bankFull.get(q.id)], ["by_year", byYearFull.get(q.id)]]) {
         if (!o) continue;
@@ -214,4 +244,4 @@ if (problems.length) {
   if (problems.length > 200) console.error(`  … +${problems.length - 200} more`);
   process.exit(1);
 }
-console.log(`✓ all invariants hold (A1–A5${rawStatus === "ran" ? ", B1–B5" : ""})`);
+console.log(`✓ all invariants hold (A1–A6${rawStatus === "ran" ? ", B1–B6" : ""})`);
