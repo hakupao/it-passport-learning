@@ -4,7 +4,7 @@
   "source_note": "解説 (正解理由+各誤答肢の誤り+要点) を JP 先生成→zh/en 翻訳 (Claude opus, D-137)。key_guard=図から正解を独立導出した自己検査 (suspect=keyed answer と不一致/導出不可、要人手裁決)。出典は IPA 過去問 (改変=解説生成)。",
   "count": 100,
   "suspect_count": 3,
-  "stem_corruption_count": 2,
+  "stem_corruption_count": 1,
   "questions": {
     "2021r03-q001": {
       "key_guard": {
@@ -2019,7 +2019,7 @@
           "en": "'The availability rate of the system' is an indicator expressing the proportion of time during a given period that the system operates normally; it is a requirement related to availability and reliability. Its category differs from a performance requirement, which concerns processing speed."
         },
         "エ": {
-          "jp": "「障害の復旧時間」(原文「度回時間」は復旧時間の OCR 腐敗) は、障害発生から復旧までに要する時間で、平均復旧時間 (MTTR) に関わる信頼性・保守性の要件である。処理速度を表す性能要件ではない。",
+          "jp": "「障害の復旧時間」は、障害発生から復旧までに要する時間で、平均復旧時間 (MTTR) に関わる信頼性・保守性の要件である。処理速度を表す性能要件ではない。",
           "zh": "「故障的恢复时间」是指从故障发生到恢复所需的时间，属于与平均修复时间（MTTR）相关的可靠性、可维护性需求，而不是表示处理速度的性能需求。",
           "en": "'The recovery time from a failure' is the time required from the occurrence of a failure until recovery; it is a reliability and maintainability requirement associated with Mean Time To Repair (MTTR), not a performance requirement that expresses processing speed."
         }
@@ -4154,9 +4154,9 @@
         "figure_derivable": true,
         "derived_answer": "ウ",
         "matches_key": true,
-        "stem_corruption_suspected": true,
+        "stem_corruption_suspected": false,
         "suspect": false,
-        "note_jp": "白紙で独立導出。二段の絞り込みで解く。①「売上」表から売上日が5月中の行だけを選ぶ (Z00005/商品C, Z00006/商品A, Z00003/商品B, Z00004/商品A, Z00007/商品B の5行。Z00001・Z00002 は4/30で4月、Z00008 は6/8で6月なので除外)。②商品ごとに単価×個数を集計し20,000円以上か判定する。商品A=2,000×(5+4)=18,000円で未達、商品B=4,000×(3+3)=24,000円で達成、商品C=7,000×3=21,000円で達成、商品D は5月の売上行が無く0円で未達。よって商品B・商品C=ウ、stored key と一致。stem 側: stem_jp_clean は権威図 (figure_page_png) と完全一致 (売上番号 Z00001〜Z00008、Z00003・Z00007 の商品コードは 0002)。raw stem_jp は OCR 崩れ (200003→0003 等) があるが clean が是正済みで表示 stem に腐敗なし。choices 側: 図照合を拡張すると腐敗を検出。権威図 (figure_png と figure_page_png の両方) の選択肢イは「商品A，商品B，商品C，商品D」の4項目だが、配信 JSON の choices_jp.イ と tr.choices.イ(zh/en) は「商品A，商品B，商品D」で商品C が脱落 (OCR/データ欠落ドリフト)。答えの一意性 (正解ウ) には影響しない cosmetic 腐敗だが、配信選択肢が図と矛盾するため stem_corruption_suspected=true とし人間の是正契機とする。正しい文言の推定: choices_jp.イ と tr.choices.イ を図どおり「商品A，商品B，商品C，商品D」に是正すべき。",
+        "note_jp": "白紙で独立導出。二段の絞り込みで解く。①「売上」表から売上日が5月中の行だけを選ぶ (Z00005/商品C, Z00006/商品A, Z00003/商品B, Z00004/商品A, Z00007/商品B の5行。Z00001・Z00002 は4/30で4月、Z00008 は6/8で6月なので除外)。②商品ごとに単価×個数を集計し20,000円以上か判定する。商品A=2,000×(5+4)=18,000円で未達、商品B=4,000×(3+3)=24,000円で達成、商品C=7,000×3=21,000円で達成、商品D は5月の売上行が無く0円で未達。よって商品B・商品C=ウ、stored key と一致。stem 側: stem_jp_clean は権威図 (figure_page_png) と完全一致 (売上番号 Z00001〜Z00008、Z00003・Z00007 の商品コードは 0002)。raw stem_jp は OCR 崩れ (200003→0003 等) があるが clean が是正済みで表示 stem に腐敗なし。選択肢イの「商品C」脱落は S117 に page-43 実読 (双 pass 一致) で jp/zh/en とも是正済 (fidfix-S117-batch3)。",
         "round1": {
           "figure_derivable": true,
           "derived_answer": "ウ",
@@ -4177,9 +4177,9 @@
           "en": "This includes Product A, which is wrong. Product A's May portion is 2,000 yen×(5 units+4 units) = 18,000 yen, which is less than 20,000 yen, so it does not satisfy the condition. If you also count the 4/30 (April) sale, or read the 20,000-yen 「or more」 boundary too loosely, you would mistakenly include it."
         },
         "イ": {
-          "jp": "商品Aと商品Dの両方が誤り。商品Aは5月分18,000円で20,000円未満。商品Dは5月の売上日が無く (唯一の売上は4/30で4月) 集計対象0円。売上日で絞らず、または配達日 (5/2) と取り違えると商品Dを含めてしまう典型的な誤り。",
-          "zh": "商品A和商品D都是错误的。商品A的5月部分为18,000日元，不足20,000日元。商品D没有5月的销售日（唯一的一笔销售是4/30，属于4月），合计对象为0日元。不按销售日筛选，或者把它与送货日（5/2）弄混，就会把商品D包含进来，这是典型的错误。",
-          "en": "Both Product A and Product D are wrong. Product A's May portion is 18,000 yen, less than 20,000 yen. Product D has no sales date in May (its only sale is 4/30, which is April), so its aggregated amount is 0 yen. Not filtering by sales date, or confusing it with the delivery date (5/2), leads to the typical mistake of including Product D."
+          "jp": "商品Bと商品Cは正しいが、商品Aと商品Dを含めている点が誤り。商品Aは5月分18,000円で20,000円未満。商品Dは5月の売上日が無く (唯一の売上は4/30で4月) 集計対象0円。売上日で絞らず、または配達日 (5/2) と取り違えると商品Dを含めてしまう典型的な誤り。",
+          "zh": "商品B和商品C是正确的，但把商品A和商品D也包含进来是错误的。商品A的5月部分为18,000日元，不足20,000日元。商品D没有5月的销售日（唯一的一笔销售是4/30，属于4月），合计对象为0日元。不按销售日筛选，或者把它与送货日（5/2）弄混，就会把商品D包含进来，这是典型的错误。",
+          "en": "Product B and Product C are correct, but including Product A and Product D is wrong. Product A's May portion is 18,000 yen, less than 20,000 yen. Product D has no sales date in May (its only sale is 4/30, which is April), so its aggregated amount is 0 yen. Not filtering by sales date, or confusing it with the delivery date (5/2), leads to the typical mistake of including Product D."
         },
         "エ": {
           "jp": "商品Bを取りこぼしている。商品Bは5/5 (Z00003) と5/30 (Z00007) の2件があり、いずれも3個で 4,000円×(3+3)=24,000円と20,000円以上を満たす。5/30を6月と誤読したり、商品コード0002の行を見落とすと商品Cだけになってしまう。",
@@ -4353,12 +4353,12 @@
           "en": "The framework is wrong. The four terms are a classification of countermeasures in “risk treatment,” not in “risk identification,” and they are not a classification of the purpose of use of owned assets. Introducing anti-malware software is a measure that lowers risk, so classifying it as risk reduction is itself correct, but because the underlying positioning is wrong, this option is inappropriate."
         },
         "ウ": {
-          "jp": "枠組みが誤り。4語は「リスク分析」で評価方法を分類したものではなく、「リスク対応」で対応策を分類したものである。リスク回避は、リスク要因そのものをやめる・排除する対応策を指し、「回避できるかで評価する方法」という説明も本質を外している。",
-          "zh": "框架有误。这四个词不是在「风险分析」中对评价方法所做的分类，而是在「风险应对」中对应对措施所做的分类。风险规避指的是停止或排除风险因素本身的应对措施，「以能否规避来评价的方法」这一说明也偏离了本质。",
-          "en": "The framework is wrong. The four terms are not a classification of evaluation methods in “risk analysis,” but a classification of countermeasures in “risk treatment.” Risk avoidance refers to a countermeasure that stops or eliminates the risk factor itself, and the explanation “a method that evaluates whether it can be avoided” also misses the essence."
+          "jp": "枠組みが誤り。4語は「リスク評価」で評価方法を分類したものではなく、「リスク対応」で対応策を分類したものである。リスク回避は、リスク要因そのものをやめる・排除する対応策を指し、「回避できるかで評価する方法」という説明も本質を外している。",
+          "zh": "框架有误。这四个词不是在「风险评价」中对评价方法所做的分类，而是在「风险应对」中对应对措施所做的分类。风险规避指的是停止或排除风险因素本身的应对措施，「以能否规避来评价的方法」这一说明也偏离了本质。",
+          "en": "The framework is wrong. The four terms are not a classification of evaluation methods in “risk evaluation,” but a classification of countermeasures in “risk treatment.” Risk avoidance refers to a countermeasure that stops or eliminates the risk factor itself, and the explanation “a method that evaluates whether it can be avoided” also misses the essence."
         },
         "エ": {
-          "jp": "枠組みが誤り。4語は「リスク分析」の分析手法の分類ではなく、「リスク対応」の対応策の分類である。また脆弱性を客観的な数値で示す手法は定量的なリスク分析の手法であって、リスクを受容・保有するリスク保有とは無関係。二重に誤り。",
+          "jp": "枠組みが誤り。4語は「リスク分析」の分析手法の分類ではなく、「リスク対応」の対応策の分類である。また脆弱性を客観的な数値で表す手法は定量的なリスク分析の手法であって、リスクを受容・保有するリスク保有とは無関係。二重に誤り。",
           "zh": "框架有误。这四个词不是「风险分析」的分析手法的分类，而是「风险应对」的应对措施的分类。此外，用客观数值来表示脆弱性的手法属于定量风险分析的方法，与接受并保留风险的风险保留无关。属于双重错误。",
           "en": "The framework is wrong. The four terms are not a classification of analysis techniques in “risk analysis,” but a classification of countermeasures in “risk treatment.” Moreover, the technique of expressing a vulnerability with objective numerical values is a quantitative risk analysis method and has nothing to do with risk retention, which accepts and holds a risk. It is wrong on two counts."
         }
