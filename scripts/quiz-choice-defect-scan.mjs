@@ -84,6 +84,21 @@ const spaceHits = (t, re) => {
 };
 const hasTable = (s) => /(^|\n)\s*\|/.test(String(s)) || /^\s*\[表\]/.test(String(s));
 
+// 逐語再現が要る IPA 擬似言語ブロックの開始行。表記ゆれを許容する: `[プログラム]` `〔プログラム〕`
+// `［プログラム1］` `【プログラム】` に加え、OCR が閉じ括弧を化けさせた `[プログラム】〕` や、
+// 題名がコード先頭と同じ行に連結された形、`〔正六角形描画プログラム〕` のような説明付き題名も拾う
+// (開き括弧の後、閉じ括弧を挟まずに 10 字以内で「プログラム」が来る行)。閉じ括弧を除くのは
+// `[表] プログラム：保護される／…` のような表チップ 8 件を誤ってブロック開始と見なさないため。
+// ブロック開始行から field 末尾までは R8 系 (語中の半角空白) の対象外 — 「i を 1 から arrayInput の
+// 要素数 まで 1 ずつ増やす」「stringOutput の末尾 に 「A」 を追加する」の空白は IPA 公式表記の
+// 字句区切りであり、削ると過去問の逐語再現が壊れる (S118 ⑤-4: R8c の実 FP 9 件はすべてこの型)。
+const PROG_MARK = /^\s*[\[〔［【][^\]］】〕\n]{0,10}プログラム/;
+const progOffset = (s) => {
+  const lines = String(s).split("\n");
+  const i = lines.findIndex((l) => PROG_MARK.test(l));
+  return i < 0 ? -1 : lines.slice(0, i).reduce((n, l) => n + l.length + 1, 0);
+};
+
 // ── R1 同形字 ────────────────────────────────────────────────────────────────
 // 漢字 → 片仮名 (OCR が片仮名を字形の似た漢字に読み違えた型)。S117 batch3 で「力→カ」が初出。
 const KANJI2KATA = { "力": "カ", "一": "ー", "二": "ニ", "口": "ロ", "工": "エ", "卜": "ト", "夕": "タ", "八": "ハ", "千": "チ", "才": "オ" };
@@ -293,17 +308,17 @@ export const RULES = [
     },
   },
   {
-    id: "R8a", kind: "field", noTable: true,
+    id: "R8a", kind: "field", noTable: true, noProgram: true,
     why: "片仮名語の途中に入った半角空白 (「テス ト」「シリアルイ ンタフェース」= 行折返し由来)。machdiff の既知盲点",
     run(t) { return spaceHits(t, /[ァ-ヺー][ ]+[ァ-ヺー]/g); },
   },
   {
-    id: "R8b", kind: "field", noTable: true,
+    id: "R8b", kind: "field", noTable: true, noProgram: true,
     why: "漢語の途中に入った半角空白 (「電子商 取引」「検索条 件」)。全角空白は版面上の正当な区切りなので対象外",
     run(t) { return spaceHits(t, /[㐀-鿿][ ]+[㐀-鿿]/g); },
   },
   {
-    id: "R8c", kind: "field", noTable: true,
+    id: "R8c", kind: "field", noTable: true, noProgram: true,
     why: "仮名文の途中に入った半角空白 (「適切なもの はどれか」「作業とし て」)。件数が最大の類型",
     run(t) { return spaceHits(t, /(?:[ぁ-ゖ][ ]+[ぁ-ゖ㐀-鿿]|[㐀-鿿][ ]+[ぁ-ゖ])/g); },
   },
@@ -328,7 +343,12 @@ export function scanQuestion(id, fields, { rules = RULES } = {}) {
       const t = String(text ?? ""); if (!t) continue;
       if (rule.tail && hasTable(t) && isTableRow(lastLine(t))) continue; // 表の最終行は末尾規則の対象外
       if (rule.noTable && hasTable(t)) continue;                          // 表は列揃えの空白があるので対象外
-      for (const h of rule.run(t, { field })) hits.push({ id, field, rule: rule.id, excerpt: h.excerpt, suggestion: h.suggestion });
+      let rhits = rule.run(t, { field });
+      if (rule.noProgram) {                                                // 擬似言語ブロック以降は逐語再現域
+        const off = progOffset(t);
+        if (off >= 0) rhits = rhits.filter((h) => h.index < off);
+      }
+      for (const h of rhits) hits.push({ id, field, rule: rule.id, excerpt: h.excerpt, suggestion: h.suggestion });
     }
   }
   return hits;

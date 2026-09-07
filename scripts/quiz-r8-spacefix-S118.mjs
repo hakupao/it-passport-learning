@@ -67,7 +67,10 @@ for (const id of ["R8a", "R8b", "R8c"]) if (!RULE[id]) throw new Error(`rule ${i
 // 走査器 scanQuestion の noTable 判定と同一 (走査器側は非 export なので同義の 1 行を持つ)。
 const hasTable = (s) => /(^|\n)\s*\|/.test(String(s)) || /^\s*\[表\]/.test(String(s));
 // 逐語再現が要る IPA 擬似言語ブロックの開始行。以降の行は全て保護する。
-const PROG_MARK = /^\s*[\[〔]\s*プログラム\s*[\]〕]/;
+// 判定は走査器 quiz-choice-defect-scan.mjs の PROG_MARK と同一 (表記ゆれ許容: `[プログラム]`
+// `〔プログラム〕` `［プログラム1］` `〔正六角形描画プログラム〕`、OCR 化けの `[プログラム】〕`、
+// 題名がコード先頭と同行の形。`[表] …プログラム…` の表チップは閉じ括弧があるので当たらない)。
+const PROG_MARK = /^\s*[\[〔［【][^\]］】〕\n]{0,10}プログラム/;
 // D-144 段 3 の生成図キャプション行。
 const FIG_CAPTION = /^\s*[（(]図/;
 
