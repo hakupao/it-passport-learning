@@ -19,7 +19,9 @@ const add = (qid, lens, reason) => {
   const q = byId[qid];
   if (!q) return;
   let it = items.get(qid);
-  if (!it) items.set(qid, (it = { qid, page_image: q.source?.page_image || null, page_number: q.source?.page_number ?? null, has_figure: !!q.has_figure, figure_path: q.figure_path || null, correct_answer: q.correct_answer, lenses: new Set(), reasons: [] }));
+  // D-145: 本 worklist は図の作業票 (stage026-fig-prep が page_image を裁断元に使う) なので **図ページ**
+  // = `source.figure_page_image ?? page_image` (欠如 = 設問ページと同じ) を記録する。
+  if (!it) items.set(qid, (it = { qid, page_image: q.source?.figure_page_image ?? q.source?.page_image ?? null, page_number: q.source?.figure_page_number ?? q.source?.page_number ?? null, has_figure: !!q.has_figure, figure_path: q.figure_path || null, correct_answer: q.correct_answer, lenses: new Set(), reasons: [] }));
   it.lenses.add(lens);
   it.reasons.push(reason);
 };

@@ -48,7 +48,8 @@ const sevB = (q) => {
 const hash = (s) => { let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 
 function resolvePaths(q) {
-  const pageRel = q.source?.page_image;          // e.g. pages/2009h21a/page-07.png
+  // D-145: figure_bbox_pct の基準は **図ページ**。`source.figure_page_image ?? page_image` (欠如 = 設問ページと同じ)
+  const pageRel = q.source?.figure_page_image ?? q.source?.page_image; // e.g. pages/2009h21a/page-07.png
   const cropRel = q.figure_path;                 // e.g. figures/2009h21a-q013.png
   const pageAbs = pageRel ? path.join(EXAM_ROOT, pageRel) : null;
   const cropAbs = cropRel ? path.join(EXAM_ROOT, cropRel) : null;

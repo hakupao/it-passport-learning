@@ -21,8 +21,12 @@ const arr = bank.questions ?? bank;
 const byId = new Map(arr.map((q) => [(q.id ?? q.question_id), q]));
 mkdirSync(BK, { recursive: true });
 
-// Cross-page cases (critic: bbox is relative to a DIFFERENT page than source.page_image):
+// Cross-page cases (critic: bbox is relative to a DIFFERENT page than source.page_image).
+// D-145 以降は `source.figure_page_image` が正式な表現。この表は D-145 以前に手当てした 1 件の遺物で、
+// 次に本 script を使うときは quiz-pagefix-apply.mjs で source 側に入れて表を空にすること。
 const PAGE_OVERRIDE = { "2010h22h-q090": "pages/2010h22h/page-38.png" };
+// D-145: sharp に渡す裁断元は **図ページ** = `figure_page_image ?? page_image` (override が最優先)
+const figurePageRel = (q) => q?.source?.figure_page_image ?? q?.source?.page_image;
 // Copy a known-good sibling crop instead of re-cropping (q099 shares 図1 with q097):
 const COPY_FROM = { "2014h26h-q099": "2014h26h-q097" };
 
@@ -51,7 +55,7 @@ for (const r of results) {
   if (r.fix_type === "recrop") {
     const b = r.correct_bbox_pct;
     if (!b || [b.x, b.y, b.w, b.h].some((v) => typeof v !== "number")) { console.error(`✗ ${r.id} recrop without valid bbox — SKIP`); continue; }
-    const pageRel = PAGE_OVERRIDE[r.id] ?? q.source?.page_image;
+    const pageRel = PAGE_OVERRIDE[r.id] ?? figurePageRel(q);
     const page = pageRel ? path.join(EXAMS, pageRel) : null;
     const fig = path.join(FIGDIR, `${r.id}.png`);
     if (!page || !existsSync(page)) { console.error(`✗ ${r.id} page missing — SKIP`); continue; }

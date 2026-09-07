@@ -41,9 +41,15 @@ for (const q of questions) {
   const rq = rawById.get(q.id);
   const figurePng = path.join(FIG_DIR, `${q.figure}.png`);
   if (!existsSync(figurePng)) fail(`figure PNG missing for ${q.id}`);
+  // D-145: 図ページ = `source.figure_page_image ?? page_image` (欠如 = 設問ページと同じ)。
+  // 本 prep は図問だけを扱うので figure_page_png は図ページ。跨ページ問は設問ページも併記する
+  // (題幹はそちらに印刷されているため、盲導出が図ページだけを見て題幹を読み違えないように)。
   const pageRel = rq?.source?.page_image;
-  const figurePagePng = pageRel ? path.join(EXAMS_DIR, pageRel) : null;
+  const figPageRel = rq?.source?.figure_page_image ?? pageRel;
+  const figurePagePng = figPageRel ? path.join(EXAMS_DIR, figPageRel) : null;
   if (!figurePagePng || !existsSync(figurePagePng)) fail(`page PNG missing for ${q.id}`);
+  const questionPagePng = pageRel && figPageRel !== pageRel ? path.join(EXAMS_DIR, pageRel) : null;
+  if (questionPagePng && !existsSync(questionPagePng)) fail(`question page PNG missing for ${q.id}`);
   // displayed stem = Phase 1.5-faithful clean stem if present, else raw stem
   const displayedStem = tr[q.id]?.stem_jp_clean ?? q.stem_jp;
   projected.push({
@@ -53,6 +59,7 @@ for (const q of questions) {
     choices_jp: { ア: q.choices_jp.ア, イ: q.choices_jp.イ, ウ: q.choices_jp.ウ, エ: q.choices_jp.エ },
     figure_png: figurePng,
     figure_page_png: figurePagePng,
+    question_page_png: questionPagePng, // D-145: 図ページ ≠ 設問ページ のときだけ非 null
     // correct_answer intentionally OMITTED (blind audit)
   });
 }

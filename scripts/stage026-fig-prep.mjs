@@ -37,14 +37,15 @@ if (idFilter.length) items = items.filter((x) => idFilter.includes(x.qid));
 
 const manifest = items.map((w) => {
   const q = byId.get(w.qid);
-  const pageRel = q?.source?.page_image || w.page;
+  // D-145: bbox の基準は **図ページ** = `source.figure_page_image ?? page_image` (欠如 = 設問ページと同じ)
+  const pageRel = q?.source?.figure_page_image ?? q?.source?.page_image ?? w.page;
   const pagePath = pageRel ? `${ROOT}/data/ip/exams/${pageRel}` : null;
   return {
     id: w.qid,
     exam: w.qid.split('-')[0],
     page_path: pagePath,
     page_image: pageRel,
-    page_number: q?.source?.page_number ?? null,
+    page_number: q?.source?.figure_page_number ?? q?.source?.page_number ?? null,
     note: w.note,
     old_bbox: priorBbox[w.qid] || q?.figure_bbox_pct || null,
     has_figure: q?.has_figure ?? null,

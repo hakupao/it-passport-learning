@@ -84,11 +84,19 @@ function apply(q) {
     q.figure_repaired = true;
     q.figure_repaired_s73 = true;
     if (q.figure_pending_crop_s72) delete q.figure_pending_crop_s72;
+    // D-145: 設問ページ (`source.page_image`) は潰さず、図ページを `source.figure_page_*` に書く
+    // (旧実装は source を丸ごと上書きして設問ページの記録を失っていた — repair-figures-finalize と同型)
     if (p.page_image) {
-      const cur = q.source?.page_image;
-      if (cur !== p.page_image) {
-        const m = /page-(\d+)\.png/.exec(p.page_image);
-        q.source = { page_image: p.page_image, page_number: m ? parseInt(m[1], 10) : (q.source?.page_number ?? null) };
+      const src = (q.source ??= {});
+      if (src.page_image === p.page_image) {
+        // 図ページ == 設問ページ → 既定 (欠如) に戻す。「跨ページを是正した」印も一緒に降ろす (Rule D LOW-4)
+        delete src.figure_page_image; delete src.figure_page_number;
+        delete q.figure_source_corrected;
+      } else {
+        const m = /page-(\d+)\.png$/.exec(p.page_image);
+        if (!m) throw new Error(`${q.id}: page_image «${p.page_image}» が pages/<exam>/page-NN.png 形でない (D-145 B7)`);
+        src.figure_page_image = p.page_image;
+        src.figure_page_number = parseInt(m[1], 10);
         q.figure_source_corrected = true;
       }
     }

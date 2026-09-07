@@ -37,12 +37,13 @@ if (idFilter.length) items = items.filter(x => idFilter.includes(x.id));
 
 const manifest = items.map(f => {
   const q = byId.get(f.id);
-  const pageRel = q?.source?.page_image; // e.g. pages/2009h21a/page-06.png
+  // D-145: bbox の基準は **図ページ** = `source.figure_page_image ?? page_image` (欠如 = 設問ページと同じ)
+  const pageRel = q?.source?.figure_page_image ?? q?.source?.page_image; // e.g. pages/2009h21a/page-06.png
   return {
     id: f.id,
     exam: f.exam,
     page_path: pageRel ? `${ROOT}/data/ip/exams/${pageRel}` : null,
-    page_number: q?.source?.page_number ?? null,
+    page_number: q?.source?.figure_page_number ?? q?.source?.page_number ?? null,
     old_bbox: priorBbox[f.id] || q?.figure_bbox_pct || f.current_bbox_pct || null,
     figure_type: q?.figure_type || f.figure_type || null,
     figure_description: q?.figure_description || f.figure_description || null,

@@ -106,8 +106,11 @@ const samples = picked.map((e) => {
   const isFig = Boolean(q.has_figure && q.figure);
   const rq = rawById.get(e.id);
   const figurePng = isFig ? path.join(FIG_DIR, `${q.figure}.png`) : null;
+  // D-145: 図ページ = `source.figure_page_image ?? page_image` (欠如 = 設問ページと同じ)
   const pageRel = rq?.source?.page_image;
-  const figurePagePng = isFig && pageRel ? path.join(EXAMS_DIR, pageRel) : null;
+  const figPageRel = rq?.source?.figure_page_image ?? pageRel;
+  const figurePagePng = isFig && figPageRel ? path.join(EXAMS_DIR, figPageRel) : null;
+  const questionPagePng = isFig && pageRel && figPageRel !== pageRel ? path.join(EXAMS_DIR, pageRel) : null;
   const sc = sidecarEntry(e.id);
   if (!sc) fail(`${e.id} not in sidecar (merge first)`);
   return {
@@ -119,6 +122,7 @@ const samples = picked.map((e) => {
     correct_answer: q.correct_answer,
     figure_png: figurePng,
     figure_page_png: figurePagePng,
+    question_page_png: questionPagePng, // D-145: 図ページ ≠ 設問ページ のときだけ非 null
     stem_corrupted_backup: rq?.stem_jp_corrupted_backup ?? null,
     reconstructed: { stem_jp_clean: sc.stem_jp_clean ?? null, stem: sc.stem ?? null },
   };

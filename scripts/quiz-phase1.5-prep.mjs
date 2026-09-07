@@ -78,9 +78,14 @@ for (const q of questions) {
 
   const figurePng = isFig ? path.join(FIG_DIR, `${q.figure}.png`) : null;
   if (figurePng && !existsSync(figurePng)) fail(`figure PNG missing for ${q.id}`);
+  // D-145: 図ページ = `source.figure_page_image ?? page_image` (欠如 = 設問ページと同じ)。
+  // 跨ページ問だけ設問ページを併記する — 本 prep は「図から題幹を復元する」ので、題幹が別ページなら両方要る。
   const pageRel = rq?.source?.page_image;
-  const figurePagePng = isFig && pageRel ? path.join(EXAMS_DIR, pageRel) : null;
+  const figPageRel = rq?.source?.figure_page_image ?? pageRel;
+  const figurePagePng = isFig && figPageRel ? path.join(EXAMS_DIR, figPageRel) : null;
   if (isFig && (!figurePagePng || !existsSync(figurePagePng))) fail(`page PNG missing for figure question ${q.id}`);
+  const questionPagePng = isFig && pageRel && figPageRel !== pageRel ? path.join(EXAMS_DIR, pageRel) : null;
+  if (questionPagePng && !existsSync(questionPagePng)) fail(`question page PNG missing for ${q.id}: ${questionPagePng}`);
 
   const topicTerms = topicGlossary.get(q.topic_id) ?? [];
   const haystack = q.stem_jp + " " + Object.values(q.choices_jp ?? {}).join(" ");
@@ -98,6 +103,7 @@ for (const q of questions) {
     correct_answer: q.correct_answer,
     figure_png: figurePng,
     figure_page_png: figurePagePng,
+    question_page_png: questionPagePng, // D-145: 図ページ ≠ 設問ページ のときだけ非 null (題幹はこちらに載る)
     current_tr: tr[q.id] ? { stem: tr[q.id].stem, choices: tr[q.id].choices } : null,
     glossary,
   });

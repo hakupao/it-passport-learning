@@ -74,11 +74,24 @@ function applyToQuestion(q) {
     q.figure_path = `figures/${q.id}.png`;
     q.figure_bbox_pct = p.bbox;          // store the bbox actually used (padded)
     q.figure_repaired = true;            // provenance flag (Session 71)
-    // cross-page specials: the figure lives on a different page than originally mapped
+    // cross-page specials: the figure lives on a different page than originally mapped.
+    // D-145: 設問ページ (`source.page_image`) は **潰さない**。図ページは `source.figure_page_*` に書く。
+    // (旧実装は source を丸ごと上書きして設問ページの記録と question_bbox_pct を失っていた。
+    //  その経路で書かれた 5 問 = `figure_source_corrected` は D-145 §6 で ⑦-1 の実読定案に回した)
     if (p.page_image) {
-      const m = /page-(\d+)\.png/.exec(p.page_image);
-      q.source = { page_image: p.page_image, page_number: m ? parseInt(m[1], 10) : (q.source?.page_number ?? null) };
-      q.figure_source_corrected = true;
+      const src = (q.source ??= {});
+      if (src.page_image === p.page_image) {
+        // 図ページ == 設問ページ → 既定 (欠如) に戻す。「跨ページを是正した」印も一緒に降ろす
+        // (Rule D LOW-4: フィールドを消して flag だけ残すと、跨ページでない問が跨ページ扱いで名簿に載る)
+        delete src.figure_page_image; delete src.figure_page_number;
+        delete q.figure_source_corrected;
+      } else {
+        const m = /page-(\d+)\.png$/.exec(p.page_image);
+        if (!m) throw new Error(`${q.id}: page_image «${p.page_image}» が pages/<exam>/page-NN.png 形でない (D-145 B7)`);
+        src.figure_page_image = p.page_image;
+        src.figure_page_number = parseInt(m[1], 10);
+        q.figure_source_corrected = true;
+      }
     }
     return 'pass';
   }

@@ -115,6 +115,16 @@ if (cropJobs.length > 0) {
 // Step 3: Update question_bank.json
 console.log('\n=== Updating question JSON ===');
 
+// D-145: `q.source` を丸ごと置き換えてはいけない。`figure_page_image` / `figure_page_number` (図ページの
+// 独立ポインタ、欠如 = page_image と同じ) は本 script のマッピングには存在しないので、上書きすると
+// **静かに全部消える** (欠如が合法な既定値なので crosscheck B7 でも捕まらない)。既存キーを保って上書きする。
+// 設問ページが図ページと同じになったら figure_page_* は既定 (欠如) に戻す — B7(a) の雑音を作らないため。
+function setSource(q, next) {
+  const src = { ...(q.source ?? {}), ...next };
+  if (src.figure_page_image === src.page_image) { delete src.figure_page_image; delete src.figure_page_number; }
+  q.source = src;
+}
+
 const qb = JSON.parse(readFileSync(BANK_FILE, 'utf8'));
 let updated = 0, figUpdated = 0;
 
@@ -122,7 +132,7 @@ for (const q of qb.questions) {
   const src = sourceMap.get(q.id);
   if (!src) continue;
 
-  q.source = { page_image: src.page_image, page_number: src.page_number };
+  setSource(q, { page_image: src.page_image, page_number: src.page_number });
   updated++;
 
   if (src.figure_path) {
@@ -147,7 +157,7 @@ for (const ff of finalFiles) {
   for (const q of exam.questions) {
     const src = sourceMap.get(q.id);
     if (!src) continue;
-    q.source = { page_image: src.page_image, page_number: src.page_number };
+    setSource(q, { page_image: src.page_image, page_number: src.page_number });
     if (src.figure_path) {
       q.figure_path = src.figure_path;
       q.figure_bbox_pct = src.figure_bbox_pct;

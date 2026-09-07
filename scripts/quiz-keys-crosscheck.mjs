@@ -33,6 +33,12 @@
 //      旧 OCR 残存を見逃していた穴。merge-question-bank を再実行すると退行するため、是正は必ず最上流まで入れる)
 //   B6 図メタデータ (has_figure / figure_path / figure_bbox_pct / figure_type / source / choice_figure_paths) が question_bank == by_year
 //      (S117: 2010h22a-q091 の by_year に問89 用の旧 bbox が残り、bbox 再裁断で誤図が戻る状態だった)
+//      D-145: `source.figure_page_image` / `source.figure_page_number` も名指しで比較する (`source` 丸ごと比較に含まれるが、
+//      跨ページ情報のずれは失敗メッセージで指し先が読めることが重要。将来 `source` の比較を絞っても漏れない)
+//   B7 ページポインタの健全性 (D-145)。`source.page_image` は `pages/<exam>/page-NN.png` 形・exam が id と一致・NN == page_number・実在。
+//      `figure_page_image` があれば: page_image と**異なる** (同じなら既定と同義で雑音)・`figure_page_number` と対・同じ形式検査・
+//      かつ図を持つ問であること。`figure_page_number` だけが片肺なのも fail。
+//      根拠: `figure_bbox_pct` は **図ページ相対** (D-145 §1)。図ページを間違えると裁断が黙って壊れる (S115 2009h21h-q097)
 
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import path from "node:path";
@@ -252,8 +258,36 @@ if (!COMMITTED_ONLY) {
       else if (byYear.get(q.id) !== q.correct_answer) bad("B3", `${q.id}: questions=${q.correct_answer} by_year=${byYear.get(q.id)}`);
       // B6 図メタデータ bank == by_year (bbox 再裁断・再抽出の入力は by_year なので、ここがずれると是正済の図が戻る)
       { const yb = byYearFull.get(q.id), bb = bankFull.get(q.id);
-        if (yb && bb) for (const k of ["has_figure", "figure_path", "figure_bbox_pct", "figure_type", "source", "choice_figure_paths"])
-          if (JSON.stringify(yb[k] ?? null) !== JSON.stringify(bb[k] ?? null)) bad("B6", `${q.id}: ${k} differs between by_year and question_bank`); }
+        if (yb && bb) {
+          for (const k of ["has_figure", "figure_path", "figure_bbox_pct", "figure_type", "source", "choice_figure_paths"])
+            if (JSON.stringify(yb[k] ?? null) !== JSON.stringify(bb[k] ?? null)) bad("B6", `${q.id}: ${k} differs between by_year and question_bank`);
+          // D-145: 跨ページ情報は名指しでも比較する (指し先が読める失敗メッセージにする)
+          for (const k of ["figure_page_image", "figure_page_number"])
+            if (JSON.stringify(yb.source?.[k] ?? null) !== JSON.stringify(bb.source?.[k] ?? null))
+              bad("B6", `${q.id}: source.${k} differs — by_year=${JSON.stringify(yb.source?.[k] ?? null)} question_bank=${JSON.stringify(bb.source?.[k] ?? null)} (D-145: 図ページは 2 層同時に書く — quiz-pagefix-apply.mjs)`);
+        } }
+      // B7 ページポインタの健全性 (D-145) — bank を真相源に検査 (bank != by_year は B6 が捕える)
+      { const rec = bankFull.get(q.id), src = rec?.source;
+        if (rec) {
+          const exam = q.id.split("-q")[0];
+          const shape = (rel, num, key) => {
+            const m = /^pages\/([^/]+)\/page-(\d+)\.png$/.exec(rel ?? "");
+            if (!m) { bad("B7", `${q.id}: source.${key} = ${JSON.stringify(rel)} が pages/<exam>/page-NN.png 形でない`); return; }
+            if (m[1] !== exam) bad("B7", `${q.id}: source.${key} の exam が ${m[1]} (id は ${exam})`);
+            if (parseInt(m[2], 10) !== num) bad("B7", `${q.id}: source.${key}=${rel} と ${key.replace("image", "number")}=${JSON.stringify(num)} が不一致`);
+            if (!existsSync(path.join(RAW, rel))) bad("B7", `${q.id}: source.${key}=${rel} の PNG が存在しない`);
+          };
+          if (!src?.page_image) bad("B7", `${q.id}: source.page_image が無い`);
+          else shape(src.page_image, src.page_number, "page_image");
+          const fpi = src?.figure_page_image, fpn = src?.figure_page_number;
+          if (fpi === undefined && fpn !== undefined) bad("B7", `${q.id}: figure_page_number があるのに figure_page_image が無い (対で書くこと)`);
+          if (fpi !== undefined) {
+            if (fpn === undefined) bad("B7", `${q.id}: figure_page_image があるのに figure_page_number が無い (対で書くこと)`);
+            if (fpi === src?.page_image) bad("B7", `${q.id}: source.figure_page_image == page_image (${fpi}) — 既定 (欠如) と同義で雑音。D-145 §1`);
+            if (!rec.has_figure && !rec.figure_bbox_pct) bad("B7", `${q.id}: 図を持たないのに figure_page_image がある (figure_bbox_pct の基準が無い)`);
+            shape(fpi, fpn, "figure_page_image");
+          }
+        } }
       // B5 表示テキスト 3 層一致 (stem_jp / choices_jp)
       for (const [layer, o] of [["question_bank", bankFull.get(q.id)], ["by_year", byYearFull.get(q.id)]]) {
         if (!o) continue;
@@ -308,4 +342,4 @@ if (problems.length) {
   if (problems.length > 200) console.error(`  … +${problems.length - 200} more`);
   process.exit(1);
 }
-console.log(`✓ all invariants hold (A1–A7${rawStatus === "ran" ? ", B1–B6" : ""})`);
+console.log(`✓ all invariants hold (A1–A7${rawStatus === "ran" ? ", B1–B7" : ""})`);

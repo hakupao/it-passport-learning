@@ -48,11 +48,17 @@ if (!questions.length) fail(`no questions for exam ${examId}`);
 
 // id → full source page PNG (S88 fix-checklist / D-小6: figure crops can clip table
 // headers at the edges, so figure questions also carry the authoritative full page).
+// D-145: `source.page_image` = 設問ページ / 図ページ = `source.figure_page_image ?? page_image`
+// (欠如 = 同じページ)。跨ページ問だけ両者が分かれる。
 const rawBank = readJson(RAW_BANK);
-const pageById = new Map();
+const figPageById = new Map();
+const qPageById = new Map();
 for (const rq of rawBank.questions ?? rawBank) {
   const rid = rq.id ?? rq.question_id;
-  if (rid && rq.source?.page_image) pageById.set(rid, path.join(EXAMS_DIR, rq.source.page_image));
+  const s = rq.source;
+  if (!rid || !s?.page_image) continue;
+  qPageById.set(rid, path.join(EXAMS_DIR, s.page_image));
+  figPageById.set(rid, path.join(EXAMS_DIR, s.figure_page_image ?? s.page_image));
 }
 
 // --- build topic_id → [{jp,zh,en}] from textbook units (dedup by jp) ----------
@@ -92,9 +98,13 @@ const projected = questions.map((q) => {
   if (hasFigure) withFigure += 1;
   const figurePng = hasFigure ? path.join(FIG_DIR, `${q.figure}.png`) : null;
   if (figurePng && !existsSync(figurePng)) fail(`figure PNG missing for ${q.id}: ${figurePng}`);
-  const figurePagePng = hasFigure ? pageById.get(q.id) ?? null : null;
+  const figurePagePng = hasFigure ? figPageById.get(q.id) ?? null : null;
   if (hasFigure && !figurePagePng) fail(`source page unknown for figure question ${q.id}`);
   if (figurePagePng && !existsSync(figurePagePng)) fail(`page PNG missing for ${q.id}: ${figurePagePng}`);
+  // D-145: 設問ページが図ページと異なる問だけ併記 (同一なら null)
+  const qPagePng = qPageById.get(q.id) ?? null;
+  const questionPagePng = figurePagePng && qPagePng && qPagePng !== figurePagePng ? qPagePng : null;
+  if (questionPagePng && !existsSync(questionPagePng)) fail(`question page PNG missing for ${q.id}: ${questionPagePng}`);
 
   return {
     id: q.id,
@@ -105,6 +115,7 @@ const projected = questions.map((q) => {
     has_figure: hasFigure,
     figure_png: figurePng,
     figure_page_png: figurePagePng,
+    question_page_png: questionPagePng, // D-145: 図ページ ≠ 設問ページ のときだけ非 null
     glossary,
   };
 });

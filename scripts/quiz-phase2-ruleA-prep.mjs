@@ -48,12 +48,22 @@ const trSidecar = existsSync(trFile) ? JSON.parse(readFileSync(trFile, "utf-8"))
 const displayStem = (q) => trSidecar[q.id]?.stem_jp_clean?.trim() || q.stem_jp;
 
 // id → full source page PNG (for figure full-page authority)
+// D-145: 図ページ = `source.figure_page_image ?? page_image` (欠如 = 設問ページと同じ)。
 const rawBank = JSON.parse(readFileSync(RAW_BANK, "utf-8"));
-const pageById = new Map();
+const figPageById = new Map();
+const qPageById = new Map();
 for (const rq of rawBank.questions ?? rawBank) {
   const rid = rq.id ?? rq.question_id;
-  if (rid && rq.source?.page_image) pageById.set(rid, path.join(EXAMS_DIR, rq.source.page_image));
+  const s = rq.source;
+  if (!rid || !s?.page_image) continue;
+  qPageById.set(rid, path.join(EXAMS_DIR, s.page_image));
+  figPageById.set(rid, path.join(EXAMS_DIR, s.figure_page_image ?? s.page_image));
 }
+// 図ページ ≠ 設問ページ のときだけ設問ページを併記 (同一なら null)
+const questionPagePngOf = (id) => {
+  const f = figPageById.get(id) ?? null, q = qPageById.get(id) ?? null;
+  return f && q && f !== q ? q : null;
+};
 
 const explained = examQuestions.filter((q) => sidecar[q.id]);
 if (!explained.length) fail("no explained questions in sidecar");
@@ -98,7 +108,8 @@ const samples = picked.map((q) => ({
   correct_answer: q.correct_answer,
   has_figure: q.has_figure,
   figure_png: q.has_figure ? path.join(FIG_DIR, `${q.figure}.png`) : null,
-  figure_page_png: q.has_figure ? pageById.get(q.id) ?? null : null,
+  figure_page_png: q.has_figure ? figPageById.get(q.id) ?? null : null,
+  question_page_png: q.has_figure ? questionPagePngOf(q.id) : null, // D-145: 跨ページ問だけ非 null
   explanation: sidecar[q.id],
 }));
 
