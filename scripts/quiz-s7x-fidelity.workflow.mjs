@@ -29,6 +29,16 @@ const AUDIT_SCHEMA = {
         },
       },
     },
+    source_transcript: {
+      type: 'object',
+      required: ['stem', 'choices'],
+      additionalProperties: false,
+      description: 'S117 ⑨: 源ページからの**逐字書き起こし** (dataset を見る前に確定させたもの)。CLEAN / DISCREPANT では必須、UNREADABLE では省略。主 context が正規化して displayed と機械 diff する。表は displayed と同じ形式 (選択肢は「[表] a: X, b: Y」、題幹の表は | 列 | 行) で書く。',
+      properties: {
+        stem: { type: 'string' },
+        choices: { type: 'object', additionalProperties: false, properties: { 'ア': { type: 'string' }, 'イ': { type: 'string' }, 'ウ': { type: 'string' }, 'エ': { type: 'string' } }, description: '源から書き起こした各選択肢 (存在する字母だけ)' },
+      },
+    },
     notes_jp: { type: 'string' },
   },
 }
@@ -44,9 +54,10 @@ function prompt(inputPath, id) {
 - \`correct_answer\`: 正解字母
 
 ## 手順 (必ずこの順で)
+0. **切り出し画像は必ず一意のディレクトリに書く**: \`<scratchpad>/fid_${id}_<乱数6桁>/\` を作り、その配下にだけ書く。並行する他の監査 agent と scratchpad を共有しているため、\`crop.png\` \`stem.png\` のような汎用名を scratchpad 直下に書くと**他問の画像を読んでしまう** (S117 で 9 件発生)。Read した画像の寸法が自分の書き出し寸法と違ったら衝突と見なし、再生成する。
 1. \`source_page_png\` を **Read** し、\`question_number\` の設問を見つける。文字が小さい場合は必ず拡大して読む (低解像度の一読は数字・記号を誤読する)。同じページに複数の設問があるので、問番号を必ず確認すること。
-2. **源を先に読み、頭の中で書き起こしてから** dataset 側の文字列と突き合わせる。dataset の文言に引きずられて「そう書いてあるように見える」読み方をしないこと。これが本監査の核心です。
-3. 設問文と 4 つの選択肢すべてを 1 文字ずつ照合する。
+2. **源を先に読み、設問文と全選択肢を逐字で書き起こし、\`source_transcript\` に確定させる** (dataset を見る前に)。dataset の文言に引きずられて「そう書いてあるように見える」読み方をしないこと。これが本監査の核心です。書き起こしは源の句読点・空白をそのまま写す (正規化は主 context が行う)。
+3. その後で dataset 側の文字列と 1 文字ずつ突き合わせ、**書き起こしと dataset が語句レベルで違う箇所は漏れなく discrepancies に入れる**。S117 で「書き起こしは正しいのに差分に計上しない」漏検が 2 件出た。書き起こしに書いた文言と dataset の文言が違えば、それは必ず差分です。
 
 ## 判定基準
 - **相違として報告するもの**: 語句の置換・脱落・追加、数値の相違、英単語の混入、記号や参照名 (図1 / (A∪B) / 〔…〕内の名称) の相違、下線・記号注記の位置の相違。

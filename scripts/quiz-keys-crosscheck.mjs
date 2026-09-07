@@ -22,6 +22,8 @@
 //   raw が無い環境では Layer B を「skipped (raw absent)」と明示して exit 0 — ただし --require-raw を付けると exit 1。
 //
 // Run:  node scripts/quiz-keys-crosscheck.mjs [--committed-only] [--require-raw]
+//   B5 stem_jp / choices_jp が questions == question_bank == by_year の 3 層で一致し、かつ by_year に行が存在する (S117: by_year 284 問の
+//      旧 OCR 残存を見逃していた穴。merge-question-bank を再実行すると退行するため、是正は必ず最上流まで入れる)
 
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import path from "node:path";
@@ -136,7 +138,9 @@ if (!COMMITTED_ONLY) {
     if (REQUIRE_RAW) bad("B", "raw data absent but --require-raw given");
   } else {
     rawStatus = "ran";
-    const bank = new Map((rj(RB).questions ?? rj(RB)).map((q) => [q.id, q.correct_answer]));
+    const bankFull = new Map((rj(RB).questions ?? rj(RB)).map((q) => [q.id, q]));
+    const bank = new Map([...bankFull].map(([id, q]) => [id, q.correct_answer]));
+    const byYearFull = new Map();
     const ak = rj(AK);
     const byYear = new Map();
     for (const exam of byExam.keys()) {
@@ -144,7 +148,7 @@ if (!COMMITTED_ONLY) {
       if (!existsSync(f)) { bad("B3", `${exam}: by_year file missing`); continue; }
       const d = rj(f);
       const arr = Array.isArray(d) ? d : (d.questions ?? Object.values(d));
-      for (const r of arr) byYear.set(r.id, r.correct_answer);
+      for (const r of arr) { byYear.set(r.id, r.correct_answer); byYearFull.set(r.id, r); }
     }
     for (const q of questions) {
       const [exam] = q.id.split("-q");
@@ -154,7 +158,15 @@ if (!COMMITTED_ONLY) {
       const ans = ak[exam]?.answers ?? ak[exam];
       if (!ans) bad("B2", `${exam}: not in answer_keys`);
       else if (ans[n] !== q.correct_answer) bad("B2", `${q.id}: questions=${q.correct_answer} answer_keys=${ans[n]}`);
-      if (byYear.has(q.id) && byYear.get(q.id) !== q.correct_answer) bad("B3", `${q.id}: questions=${q.correct_answer} by_year=${byYear.get(q.id)}`);
+      if (!byYear.has(q.id)) bad("B3", `${q.id}: not in by_year (最上流から行が消えている — merge すると問が消滅する)`);
+      else if (byYear.get(q.id) !== q.correct_answer) bad("B3", `${q.id}: questions=${q.correct_answer} by_year=${byYear.get(q.id)}`);
+      // B5 表示テキスト 3 層一致 (stem_jp / choices_jp)
+      for (const [layer, o] of [["question_bank", bankFull.get(q.id)], ["by_year", byYearFull.get(q.id)]]) {
+        if (!o) continue;
+        if (o.stem_jp !== q.stem_jp) bad("B5", `${q.id}: stem_jp differs in ${layer} (最上流まで是正が届いていない)`);
+        for (const L of new Set([...Object.keys(q.choices_jp ?? {}), ...Object.keys(o.choices_jp ?? {})]))
+          if (o.choices_jp?.[L] !== q.choices_jp?.[L]) bad("B5", `${q.id}: choices_jp.${L} differs in ${layer}`);
+      }
     }
     // B4 key_guard integrity (D-143) — sidecar の key_guard は generate_result から決定的に導かれるはず。
     //   (i) round1 は「final と異なる時に限り必ず publish、かつ全フィールド一致」(merge の round1Differs 則を再計算)。
@@ -202,4 +214,4 @@ if (problems.length) {
   if (problems.length > 200) console.error(`  … +${problems.length - 200} more`);
   process.exit(1);
 }
-console.log(`✓ all invariants hold (A1–A5${rawStatus === "ran" ? ", B1–B4" : ""})`);
+console.log(`✓ all invariants hold (A1–A5${rawStatus === "ran" ? ", B1–B5" : ""})`);
