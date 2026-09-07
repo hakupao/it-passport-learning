@@ -2,7 +2,7 @@
 //
 // Client component: renders the questions for one topic/exam set with per-question
 // reveal-answer (useState). v1 is JP-first (D-135): stems/choices show the raw IPA
-// Japanese; the figure (lossless WebP at /quiz-figures/<id>.webp) is the
+// Japanese (structured tables rendered via QuizRichText, D-144 段 1); the figure (lossless WebP at /quiz-figures/<id>.webp) is the
 // authoritative visual for figure questions. Each question carries its 出典
 // (IPA attribution, D-134). Trilingual translation + explanations are Phase 1/2.
 
@@ -19,6 +19,7 @@ import {
   type QuizQuestion,
 } from "@/lib/quiz/quizModel";
 
+import { ChoiceBody, StemBlocks } from "./QuizRichText";
 import styles from "./quiz.module.css";
 
 interface Props {
@@ -79,7 +80,7 @@ function QuestionCard({
       <p className={styles.qSource}>
         {index}. {t("sourcePrefix")}: {q.source_label}
       </p>
-      <p className={styles.qStem}>{localizedStem(q, locale)}</p>
+      <StemBlocks stem={localizedStem(q, locale)} />
       {q.figure ? (
         // eslint-disable-next-line @next/next/no-img-element -- static pre-optimized WebP from /public, dimensions vary
         <img
@@ -96,7 +97,7 @@ function QuestionCard({
             className={`${styles.choice} ${revealed && c.isCorrect ? styles.choiceCorrect : ""}`}
           >
             <span className={styles.choiceLetter}>{c.letter}</span>
-            <span>{c.text}</span>
+            <ChoiceBody text={c.text} jpText={q.choices_jp[c.letter]} />
           </li>
         ))}
       </ul>
