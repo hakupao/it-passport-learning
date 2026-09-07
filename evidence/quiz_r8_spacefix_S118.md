@@ -1,0 +1,323 @@
+# evidence — ⑤-4 R8a / R8c 語中半角空白の決定的是正 (S118)
+
+- 器: `scripts/quiz-r8-spacefix-S118.mjs` (新設)
+- 入力: `scripts/quiz-choice-defect-scan.mjs` の **R8a / R8c 規則そのもの** (`RULES` を import。正規表現は一切広げていない)
+- 走査元の報告: `evidence/quiz_choice_defect_scan_S118.md` / `data/ip/quiz/.phase2/choice_defect_S118.json`
+- 実行: `node scripts/quiz-r8-spacefix-S118.mjs` → `node scripts/build-quiz-corpus.mjs`
+- 詳細ログ: `data/ip/quiz/.phase2/r8_spacefix_S118_applied_diff.json` (gitignored) — 162 field の before/after 全文 + 削除位置。
+  退避スナップショットと再生成後の `questions.json` の突き合わせから再構成したもの (器の自己申告ではない独立な実績差分)。
+  器自身のログは `r8_spacefix_S118.json` (適用時) / `r8_spacefix_S118.dryrun.json` (`--dry-run` 時) に分けて出る。
+  ※ 適用直後に冪等確認の `--dry-run` を回した時点ではまだ両者が同名だったため、器側の適用ログは applied 0 で上書きされている。
+  ファイル名の分離はその後に入れた。実績は上記 `_applied_diff.json` と §4 の git 差分で担保する。
+- 抽検 seed: `118` (mulberry32 + Fisher-Yates)
+- **commit していない** (writer lane。審査は別 agent = Rule D)
+
+---
+
+## 0. 先に読むべき結論 — 走査器の校正に 1 件の見落としがあった
+
+`evidence/quiz_choice_defect_scan_S118.md` §b-2 は **R8c を「命中 182 / 抽検 20 / FP 0%」** と記録している。
+本 lane で **182 件を全数実読**したところ、**IPA 擬似言語ブロック内の 9 件は真の FP** だった。
+
+```
+2024r06-q062  「stringOutput の末尾 に 「A」 を追加する」
+2022r04-q078  「for (i を 1 から originalDigit の要素数 まで 1 ずつ増やす)」
+2025r07-q078  「if (i ÷ 3 の余り が 0 と等しい)」
+2026r08-q067  「workArray の全ての要素 を先頭から順にコンマ区切りで出力する」
+```
+
+これらの半角空白は OCR の行折返し残渣ではなく **IPA 公式の擬似言語表記における字句区切り**であり、
+削除すると過去問の逐語再現 (出典明記の前提) を壊す。20 件抽検では 182 件中 9 件 (4.9%) を引き当てる期待値が
+約 1 件しかなく、**「FP 0%」は抽検規模の限界**であって R8c が無欠だったわけではない。
+
+→ 本器はこれを **保護して除外**した。走査器そのものは変更していない (校正済み計器を writer lane が
+無断で書き換えないため)。走査器側に `noProgram` ガードを足すかは lead の判断事項として §7 に登記する。
+
+---
+
+## 1. 何を直したか
+
+OCR の行折返しが語の途中に残した **半角空白 1 個の削除のみ**。置換ではない。
+
+| | 件数 |
+|---|---:|
+| 表示層の R8a/R8c 命中 (走査器と同一の見え方) | 195 |
+| うち保護により除外 (§2) | 10 |
+| **実際に削除した半角空白** | **185** |
+| 対象 field | 162 (stem 150 / 選択肢 12) |
+| 対象設問 | 159 |
+| 対象 exam | 28 / 29 (2013h25a は命中 0) |
+
+規則別: **R8a 13 / R8c 172**。
+
+## 2. 何を直さなかったか (保護)
+
+| 保護 | 判定条件 | 除外した命中 |
+|---|---|---:|
+| IPA 擬似言語ブロック | `〔プログラム〕` / `[プログラム]` 行以降の全行 | 9 |
+| D-144 段 3 の生成図キャプション | 行頭が `（図` / `(図` | 1 |
+| markdown 表 / `[表]` チップ | 走査器の `noTable` と同一判定 | (走査対象外) |
+| 全角空白 U+3000 | 版面上の正当な区切り。個数不変を assert | — |
+| **R8b (漢語中の空白)** | 本器の射程外 | (40 件そのまま) |
+
+R8b を外した理由は lead 指示のとおり: `2015h27a-q097` 型の AND 検索式は空白が構文であり、
+「物理的 人的」「調達 開発,製造」「学術機関 他の企業」型は空白が **読点の脱落を隠している**ので、
+削除ではなく読点補完が要る。R8b は源照合 (⑤-3) の射程。
+
+「同一位置で R8a/R8c と R8b が競合する field を skip」という指示については、**競合位置は 0 件**だった
+(R8b は空白の両隣が漢字、R8a/R8c は少なくとも一方が仮名なので、原理的に同一位置を取れない)。
+R8a/R8c と R8b が **別位置で同居する field は 6 件** (`2021r03-q006` / `2021r03-q033` / `2022r04-q031` /
+`2024r06-q038` / `2025r07-q044` / `2025r07-q052`) あり、いずれも R8a/R8c 側だけを削って R8b 側は残した。
+field ごとに **R8b 命中数が前後で不変**であることを assert している。
+
+除外した 10 件の全量:
+
+```
+2009h21a-q036 stem [R8c] 上の主な対応点は␣見積りコスト 4     ← （図: …） 生成キャプション
+2022r04-q078  stem [R8c] git の要素数␣まで 1 ずつ増         ← 〔プログラム〕
+2024r06-q062  stem [R8c] put の要素数␣まで 1 ずつ増         ← [プログラム]
+2024r06-q062  stem [R8c] tput の末尾␣に 「A」 を追          ← [プログラム]
+2024r06-q062  stem [R8c] tput の末尾␣に 「B」 を追          ← [プログラム]
+2024r06-q085  stem [R8c] Str の文字数␣まで 1 ずつ増         ← 〔プログラム〕
+2025r07-q078  stem [R8c]  ÷ 3 の余り␣が 0 と等しい          ← 〔プログラム〕
+2026r08-q067  stem [R8c] ray の要素数␣まで 1 ずつ増         ← 〔プログラム〕
+2026r08-q067  stem [R8c] y の全ての要素␣を先頭から順にコ     ← 〔プログラム〕
+2026r08-q067  stem [R8c] y の全ての要素␣を先頭から順にコ     ← 〔プログラム〕
+```
+
+## 3. 触った層
+
+| 層 | ファイル | 削除数 |
+|---|---|---:|
+| raw | `data/ip/quiz/questions.json` | 185 |
+| raw | `data/ip/exams/question_bank.json` | 185 |
+| raw | `data/ip/exams/by_year/<exam>.json` (28 本) | 185 |
+| clean | `data/ip/quiz/translations/<exam>.json` (`stem_jp_clean`) | **0** |
+| clean | `data/ip/quiz/.phase1/tr_<id>.json` (`stem_jp_clean`) | **0** |
+
+書き込み延べ 555。clean 層が 0 なのは偶然ではない:
+
+- **JP の選択肢に clean サイドカーは存在しない** (走査器 header の記述どおり。raw がそのまま表示される)。
+- **stem 対象 150 問はいずれも `stem_jp_clean` を持たない** — 持っていれば表示層が clean になり、
+  raw 側の空白は表示されないので走査器が拾わないからである。実測でも sidecar 0 / `.phase1` 0 を確認した。
+- 逆に `stem_jp_clean` を持つ 6 問 (§2 の保護対象と完全に一致) は、clean 側の命中が全て保護対象だったため
+  field ごと対象外になった。清書時に program ブロックや図キャプションが入る問だけが clean を持つ、という
+  データの構造上の対応が出ている。
+
+zh / en は不可触。解説 (`.phase2` の `expl_jp_*` / `expl_tr_*`) の本文も不可触 (§6)。
+
+## 4. 全量不変式 — 半角空白の削除以外は起きていない
+
+`node scripts/build-quiz-corpus.mjs` で `questions.json` を再生成した後、**是正前のスナップショットと全キー比較**した。
+
+```
+node - <<'EOF'   # 是正前 questions.json (退避コピー) と再生成後を突き合わせる
+const A=require("./before/questions.json").questions, B=require("./data/ip/quiz/questions.json").questions;
+const bi=new Map(B.map(q=>[q.id,q]));
+for (const a of A) { const b=bi.get(a.id);
+  // ① stem_jp / choices_jp 以外のキーが 1 つも変わっていない
+  assert(JSON.stringify({...a,stem_jp:null,choices_jp:null})===JSON.stringify({...b,stem_jp:null,choices_jp:null}));
+  // ② 変わった field は半角空白を除去すると完全一致する
+  for (const [x,y] of pairs(a,b)) assert(String(x).replace(/ /g,"")===String(y).replace(/ /g,""));
+}
+EOF
+```
+
+| 検査 | 結果 |
+|---|---|
+| 変化した設問 id | 159 (= 是正器が log した id 集合と**完全一致**) |
+| 変化した field | 162 |
+| 減った文字数 | 185 (= 削除した空白の数) |
+| `old.replace(/ /g,"") === new.replace(/ /g,"")` 違反 | **0** |
+| `stem_jp` / `choices_jp` 以外のキーの差分 | **0** |
+
+器の内部でも field × 層ごとに 5 つの不変式を assert している (全角空白の個数不変 / R8b 命中数不変 /
+削除位置が実際に半角空白 / 連続空白でない / 再走査で収束)。1 つでも破れれば throw して中断する。
+
+さらに `data/ip/quiz/questions.json` は D-134 で **git 管理下**なので、git 自身にも同じことを証明させた:
+
+```
+$ git diff --numstat data/ip/quiz/questions.json
+162     162     data/ip/quiz/questions.json          ← 変化した行 = 変化した field と一致
+
+$ git diff --ignore-all-space --stat data/ip/quiz/questions.json
+(出力なし)                                            ← 空白を無視すると差分が消える
+```
+
+`git diff --ignore-all-space` が空 = **半角空白以外の差分は git 視点でも 1 バイトも無い**。
+`question_bank.json` / `by_year/` / `.phase1/` は gitignored なので、この証明は
+§4 冒頭のスナップショット比較 (全 3 層を退避してから適用) が担う。
+`translations/` は git 管理下だが本 lane では 0 件のため差分なし (= §3 の「clean 層 0」の裏取り)。
+
+## 5. 走査器の前後 (本 lane に帰属する差分のみ)
+
+`data/ip/quiz/.phase2/choice_defect_S118.json` は 17:17 生成で、その後 17:59 に **別 lane (strat53) の是正が着地**
+しているため、そのまま before に使うと他 lane の効果 (R3 52→51 = `2026r08-q013` ウの末尾修復) が混ざる。
+そこで **本 lane 直前の退避コピーに走査器の `RULES` / `scanQuestion` をそのまま当てた** ものを before とした。
+
+| rule | before | after | Δ |
+|---|---:|---:|---:|
+| R1b | 1 | 1 | 0 |
+| R1c | 1 | 1 | 0 |
+| R2a | 1 | 1 | 0 |
+| R2b | 8 | 9 | **+1** |
+| R3 | 51 | 51 | 0 |
+| R6b | 1 | 1 | 0 |
+| R7d | 2 | 2 | 0 |
+| **R8a** | **13** | **0** | **-13** |
+| R8b | 40 | 40 | 0 |
+| **R8c** | **182** | **10** | **-172** |
+| **合計** | **300** | **116** | -184 |
+
+設問 219 → 72 / field 242 → 90。
+
+- **R8a = 0 を達成**。**R8c = 10 は §2 の保護対象そのもの**であり、これ以外の残存は無い。
+  「R8a / R8c = 0」という受入れ条件には R8c で 10 件届いていない。擬似言語の逐語再現を壊す方が
+  害が大きいと判断した上での**意図的な未達**であり、隠していない。
+- **R8b を含む他の全ルールは不変**。唯一 R2b が +1 する:
+
+```
+0 → 1   2009h21a-q018 | choice.エ | R2b | 末尾断片「ここる ーー」
+  before  …経営判断のため .の内部報告書を作成する。ここ る ーー
+  after   …経営判断のため .の内部報告書を作成する。ここる ーー
+```
+
+これは新しい欠陥ではない。この選択肢の末尾は元から OCR の屑 (`.の` / `ここ る` / `ーー`) であり、
+R2b の正規表現が `。` の後ろ **1〜6 字**しか見ないため、7 字だった屑が空白 1 個ぶん縮んで 6 字になり
+**閾値をまたいで可視化された**だけである。むしろ源照合 (⑤-3) に回すべき field が 1 つ表に出た。
+本 field は空白削除だけでは直らないので §7 に登記する。
+
+## 6. 解説側の引用 — 一覧のみ、是正しない
+
+削除した 185 箇所それぞれについて「空白を含む 12 字窓」を作り、`data/ip/quiz/.phase2/` の
+解説ファイル 5,829 本を grep した。
+
+| 出現箇所 | 件数 |
+|---|---:|
+| `expl_jp_<id>.json` → `.key_guard.note_jp` | 12 |
+| `generate_result_<exam>.json` → `.results[i].key_guard.note_jp` | 12 |
+| `generate_result_<exam>.json` → `.results[i].key_guard_round1.note_jp` | 11 |
+| **合計** | **35** (12 設問) |
+| 解説本文 (`correct_jp` / `distractors` / `points`) | **0** |
+| `apps/web/` (i18n JSON / src / e2e) | **0** |
+
+学習者可視の解説本文には 1 件も無く、全て **答えキー導出ノート (key_guard)** が題幹を逐語引用している箇所である。
+指示どおり **是正していない**。うち `2012h24h-q038` は空白そのものを論評していて内容が陳腐化する:
+
+> stem_jp「…5段階のレベルで定義したモデルは どれか。」を唯一の正として literal に解釈した。
+> **「モデルは どれか」の位置に半角空白が入るが**、これは…OCR 由来の空白ノイズと同種であり…腐敗とは判定しない。
+
+該当 12 設問:
+`2010h22a-q007` `2010h22a-q047` `2010h22a-q060` `2010h22h-q007` `2010h22h-q016` `2011h23a-q076`
+`2011h23tokubetsu-q030` `2011h23tokubetsu-q035` `2011h23tokubetsu-q071` `2012h24h-q038` `2013h25h-q003`
+(`2011h23tokubetsu-q035` は 2 箇所)。`key_guard_round1` は D-143 §3 で不可触。
+
+## 7. 残り (backlog)
+
+| # | 内容 | 規模 |
+|---|---|---:|
+| a | 擬似言語ブロック内の R8c を走査器側でも黙らせるか (`noProgram` ガード追加 + §b-2 の FP 率訂正)。lead 判断 | 9 命中 |
+| b | `（図: …）` 生成キャプション内の空白の扱い方針 | 1 命中 |
+| c | R8b 40 命中 / 33 問 — 読点補完が要るので源照合 (⑤-3) 送り | 40 |
+| d | `2009h21a-q018` 選択肢エの末尾屑 (`.の` / `ここる` / `ーー`) — 源読みが要る | 1 field |
+| e | clean サイドカーを持つ設問の **raw `stem_jp` 側に残る R8a/R8c**。表示層は clean なので学習者には見えないが、最上流は汚れたまま | **963 field / 1,498 命中** |
+
+e は「表示層で選ぶ」という本 lane の射程定義から外れる。是正するなら別 pass を立て、
+raw だけを対象に同じ器を回せばよい (器の選定ロジックを raw 固定に差し替えるだけ)。
+
+## 8. ゲート
+
+| ゲート | 結果 |
+|---|---|
+| `node --check scripts/quiz-r8-spacefix-S118.mjs` | OK |
+| `node scripts/build-quiz-corpus.mjs` | ✓ questions 2900 / topics 63 / exams 29 / with_fig 511 |
+| `node scripts/quiz-keys-crosscheck.mjs` | ✓ **all invariants hold (A1–A7, B1–B7)** — B5 の 3 層一致 (`questions` == `question_bank` == `by_year`) 成立 |
+| `cd apps/web && pnpm vitest run` | ✓ **Test Files 33 passed / 1 skipped (34)、Tests 501 passed / 2 skipped (503)** |
+| `node scripts/quiz-r8-spacefix-S118.mjs --dry-run` (2 回目) | ✓ **applied 0, skipped 0** (冪等) |
+
+## 9. 試験回別
+
+| exam | 設問 | field | 削除 | stem | 選択肢 |
+|---|---:|---:|---:|---:|---:|
+| 2009h21a | 4 | 4 | 5 | 3 | 1 |
+| 2009h21h | 4 | 4 | 4 | 4 | 0 |
+| 2010h22a | 4 | 4 | 4 | 4 | 0 |
+| 2010h22h | 7 | 7 | 10 | 7 | 0 |
+| 2011h23a | 4 | 4 | 4 | 4 | 0 |
+| 2011h23tokubetsu | 3 | 3 | 4 | 3 | 0 |
+| 2012h24a | 4 | 4 | 5 | 4 | 0 |
+| 2012h24h | 3 | 3 | 3 | 3 | 0 |
+| 2013h25h | 5 | 5 | 6 | 5 | 0 |
+| 2014h26a | 4 | 4 | 4 | 4 | 0 |
+| 2014h26h | 4 | 4 | 4 | 2 | 2 |
+| 2015h27a | 5 | 5 | 5 | 5 | 0 |
+| 2015h27h | 6 | 8 | 8 | 4 | 4 |
+| 2016h28a | 12 | 12 | 12 | 12 | 0 |
+| 2016h28h | 8 | 8 | 12 | 8 | 0 |
+| 2017h29a | 5 | 5 | 7 | 5 | 0 |
+| 2017h29h | 3 | 3 | 3 | 3 | 0 |
+| 2018h30a | 6 | 6 | 6 | 6 | 0 |
+| 2018h30h | 10 | 11 | 11 | 9 | 2 |
+| 2019h31h | 2 | 2 | 3 | 2 | 0 |
+| 2019r01a | 7 | 7 | 9 | 7 | 0 |
+| 2020r02o | 5 | 5 | 6 | 4 | 1 |
+| 2021r03 | 7 | 7 | 10 | 6 | 1 |
+| 2022r04 | 4 | 4 | 4 | 4 | 0 |
+| 2023r05 | 9 | 9 | 10 | 8 | 1 |
+| 2024r06 | 6 | 6 | 8 | 6 | 0 |
+| 2025r07 | 16 | 16 | 16 | 16 | 0 |
+| 2026r08 | 2 | 2 | 2 | 2 | 0 |
+| **計 (28 exam)** | **159** | **162** | **185** | 150 | 12 |
+
+2013h25a は命中 0 のため対象外。
+
+## 10. 無作為抽検 10 件 (seed 118)
+
+- `2020r02o-q047` **stem**
+  - before `ト管理を担当するサービスデスクの役割 として, 適切なものはどれか。`
+  - after  `ト管理を担当するサービスデスクの役割として, 適切なものはどれか。`
+- `2012h24a-q031` **stem**
+  - before `満たしていることを確認するために行う 作業はどれか。`
+  - after  `満たしていることを確認するために行う作業はどれか。`
+- `2016h28a-q022` **stem**
+  - before `ため, 自社のコンピュータセンタとは 別の地域に自社のバックアップサーバを`
+  - after  `ため, 自社のコンピュータセンタとは別の地域に自社のバックアップサーバを設`
+- `2010h22h-q012` **stem**
+  - before `, 要件定義, 開発, 運用, 保守 に分け, 企画プロセスでシステム化計`
+  - after  `, 要件定義, 開発, 運用, 保守に分け, 企画プロセスでシステム化計画`
+- `2021r03-q092` **stem**
+  - before `用いられる, 数十 km までの範囲 で無線通信が可能な広域性と省電力性を`
+  - after  `用いられる, 数十 km までの範囲で無線通信が可能な広域性と省電力性を備`
+- `2017h29h-q097` **stem**
+  - before `IC カードであり, 携帯電話機など に差し込んで使用するものを何というか`
+  - after  `IC カードであり, 携帯電話機などに差し込んで使用するものを何というか。`
+- `2015h27h-q034` **choice.エ**
+  - before `受入れテストを実施し, 委託先がテス ト結果の合否を判定する。`
+  - after  `受入れテストを実施し, 委託先がテスト結果の合否を判定する。`
+- `2016h28a-q070` **stem**
+  - before `た, PC のインターネット接続に関 する記述のうち, 適切なものはどれか`
+  - after  `た, PC のインターネット接続に関する記述のうち, 適切なものはどれか。`
+- `2020r02o-q008` **stem**
+  - before `用量を遠隔計測するといったことが行わ れている。 この事例のように, 様々`
+  - after  `用量を遠隔計測するといったことが行われている。 この事例のように, 様々な`
+- `2016h28a-q081` **stem**
+  - before `ドを更新するときに, データの整合性 を保つために行う制御として, 適切な`
+  - after  `ドを更新するときに, データの整合性を保つために行う制御として, 適切なも`
+
+10/10 が行折返し由来の語中空白であり、削除後の日本語が正しい。
+
+## 11. 再現手順
+
+```
+node scripts/quiz-r8-spacefix-S118.mjs --dry-run     # 対象 162 field / 削除予定 185 / 除外 10 を表示
+node scripts/quiz-r8-spacefix-S118.mjs               # applied 555 (= 185 × raw 3 層), skipped 0
+node scripts/build-quiz-corpus.mjs
+node scripts/quiz-choice-defect-scan.mjs --all       # R8a 0 / R8c 10 (保護分)
+node scripts/quiz-keys-crosscheck.mjs
+cd apps/web && pnpm vitest run
+node scripts/quiz-r8-spacefix-S118.mjs --dry-run     # applied 0 (冪等)
+```
+
+適用前のデータ退避は必須。`data/ip/quiz/` は D-134 で git 管理下だが、
+**`data/ip/exams/question_bank.json` / `data/ip/exams/by_year/` / `data/ip/quiz/.phase1/` は gitignored** で
+git からは戻せない。本 lane はこの 5 か所を tar で退避してから適用した。
