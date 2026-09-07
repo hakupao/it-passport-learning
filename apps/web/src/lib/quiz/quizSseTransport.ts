@@ -77,7 +77,8 @@ const DEFAULT_ENDPOINT = "/api/quiz/explain";
  *     used during the initial navigation.
  *   - When the page is reached via a credentialed URL like
  *     `https://claude:<pass>@host/quiz`, `document.baseURI` retains the `@`
- *     form even after our defensive `replaceState` strip in <QuizList />.
+ *     form even after our defensive `replaceState` strip in the former quiz
+ *     list surface (deleted in Session 117).
  *     `fetch("/api/quiz/explain")` then throws "Request cannot be constructed
  *     from a URL that includes credentials".
  *   - The fix: resolve to an absolute URL using `window.location.origin`,

@@ -71,3 +71,40 @@ merge (S110 §3(a)) は **final を sidecar に publish** し、round1 が final
 | S114 式 (追記) を正式化 | note 内矛盾が構造的に残り、下流の LLM 掃引が誤読する (S114 §12c 実測) |
 | merge が追記 note を自動整形 | 「本文のどこまでが旧記述か」を機械で切れない。書き手が現状を書くのが唯一確実 |
 | 既存 note を今すぐ全量遡及 | 9 exam・158 問の LLM 書き換え + Rule A で 1 session 以上。学習者非表示の内部メタに対して過剰 |
+
+## §7 retrofit (S118) — STEM-CORRUPTION 名簿に round1/final 識別マーカーを追加
+
+**背景**: S117 §20 の Rule D 審閲 NIT-7。`scripts/quiz-phase2-merge.mjs` の実行時ログが出す
+STEM-CORRUPTION 名簿は `stem_corruption_suspected = union(round1, final)` (§4 の `suspect` union 則、
+§5 の crosscheck B4 が同じ union 則を stem_corruption_suspected にも課している) を表示するため、
+`2023r05-q056` のように **round1 が立てて final が是正で解消した**問と、**final が今も疑っている**問が、
+同じ `*` 付きの id (旧仕様では `*` は別概念の answer-affecting を表す唯一のマーカーだった) で並び、
+人間の裁決者が両者を区別できなかった (実測: `.phase2/generate_result_2023r05.json` で
+`key_guard.stem_corruption_suspected=false` / `key_guard_round1.stem_corruption_suspected=true`)。
+
+**対応**: `stemCorruptions` の各エントリに `final_flagged` (`kgFinal.stem_corruption_suspected === true`)
+と `round1_only` (`!final_flagged && kg1.stem_corruption_suspected === true`) を追加 (集計専用の付加フィールド。
+`stemCorrupt` / `suspect` / union 則の計算は無変更。**変わるのはログ出力用の集計 (`.phase2/suspects_*.json`)
+だけ** — 委託仕様どおり sidecar 本体 `data/ip/quiz/explanations/*.json` の JSON は無変更だが、gitignored
+中間ファイル `.phase2/suspects_<exam>.json` の `stem_corruptions[]` エントリには `final_flagged` /
+`round1_only` の2フィールドが増える。この中間ファイルを読む消費者は現状ゼロ [adjudication 用の人間可読レポート]、
+下流スクリプト・crosscheck・sidecar には影響しない)。旧 `*` の answer-affecting 情報を消さないよう、
+名簿の行頭マーカーを3種に変更:
+
+- `*` = final も `stem_corruption_suspected=true` (現状も要確認)
+- `†` = round1 のみが検出、final は是正済み (union 則により名簿には残存する — §4/§5 の anti-masking)
+- `!` = `answer_affecting` (=`key_guard.suspect`) が true。`*`/`†` のどちらとも併記されうる
+
+に変更し、名簿の直後に上記3種の凡例を印字する。実測 (`.phase2/generate_result_2023r05.json` を読み直して
+名簿ロジックを再現、sidecar は書き換えていない):
+
+```
+STEM-CORRUPTION    : 4 → q004*, q021*, q023*, q056†!
+legend         : * = final も stem_corruption_suspected=true (現状も要確認) / † = round1 のみ検出・final は是正済み
+                 (round1∪final の union 則で名簿には残存 — anti-masking、D-143 §4/§5) / ! = answer_affecting (key_guard.suspect=true)
+```
+
+`q056` が期待どおり `†!` (round1 のみ検出・是正済だが `suspect`=true として残る) で識別され、
+`q004`/`q021`/`q023` は `*` (final も要確認、answer_affecting=false) のまま区別される。
+データ意味論・union 則・sidecar (`data/ip/quiz/explanations/*.json`) の JSON は不変 —
+変更は集計時の付加フィールド (中間レポートのみ) とログ表示のみ。

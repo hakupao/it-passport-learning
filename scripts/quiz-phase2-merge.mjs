@@ -125,7 +125,14 @@ for (const q of examQuestions) {
     kgFinal.matches_key === false || kgFinal.figure_derivable === false;
   if (suspect) suspects.push({ id: q.id, has_figure: q.has_figure, correct_answer: q.correct_answer, key_guard: kg1, key_guard_final: kgFinal });
   const stemCorrupt = kg1.stem_corruption_suspected === true || kgFinal.stem_corruption_suspected === true;
-  if (stemCorrupt) stemCorruptions.push({ id: q.id, has_figure: q.has_figure, correct_answer: q.correct_answer, answer_affecting: suspect, note_jp: kg1.note_jp || kgFinal.note_jp || "" });
+  // D-143 §7 retrofit (S118, NIT-7): the roster below prints stemCorrupt (the round1∪final
+  // union — anti-masking, unchanged), but a bare id can't tell a human adjudicator whether
+  // final STILL suspects corruption or round1 raised it and final already cleared it (是正済).
+  // These two booleans are additive reporting-only fields; stemCorrupt/suspect/union math above
+  // is untouched.
+  const stemFinalFlagged = kgFinal.stem_corruption_suspected === true;
+  const stemRound1Only = !stemFinalFlagged && kg1.stem_corruption_suspected === true;
+  if (stemCorrupt) stemCorruptions.push({ id: q.id, has_figure: q.has_figure, correct_answer: q.correct_answer, answer_affecting: suspect, note_jp: kg1.note_jp || kgFinal.note_jp || "", final_flagged: stemFinalFlagged, round1_only: stemRound1Only });
 
   // round-1 is only worth publishing when adjudication actually moved something
   const round1Differs =
@@ -189,6 +196,12 @@ console.log(`  exam questions : ${examQuestions.length}`);
 console.log(`  explained      : ${Object.keys(merged).length}`);
 console.log(`  missing        : ${missing.length}${missing.length ? " → " + missing.slice(0, 8).join(", ") + (missing.length > 8 ? " …" : "") : ""}`);
 console.log(`  SUSPECT (key-guard): ${suspects.length}${suspects.length ? " → " + suspects.map((s) => s.id.replace(examId + "-", "")).join(", ") : ""}`);
-console.log(`  STEM-CORRUPTION    : ${stemCorruptions.length}${stemCorruptions.length ? " → " + stemCorruptions.map((s) => s.id.replace(examId + "-", "") + (s.answer_affecting ? "*" : "")).join(", ") : ""}`);
+console.log(`  STEM-CORRUPTION    : ${stemCorruptions.length}${stemCorruptions.length ? " → " + stemCorruptions.map((s) => s.id.replace(examId + "-", "") + (s.final_flagged ? "*" : s.round1_only ? "†" : "") + (s.answer_affecting ? "!" : "")).join(", ") : ""}`);
 console.log(`  out            : ${path.relative(ROOT, outFile)}`);
-if (suspects.length || stemCorruptions.length) console.log(`  report         : ${path.relative(ROOT, suspectFile)}  (* = answer-affecting)`);
+if (suspects.length || stemCorruptions.length) console.log(`  report         : ${path.relative(ROOT, suspectFile)}`);
+if (stemCorruptions.length) {
+  console.log(
+    `  legend         : * = final も stem_corruption_suspected=true (現状も要確認) / † = round1 のみ検出・final は是正済み` +
+      ` (round1∪final の union 則で名簿には残存 — anti-masking、D-143 §4/§5) / ! = answer_affecting (key_guard.suspect=true)`
+  );
+}

@@ -12,6 +12,12 @@
 //   A4 quiz_index.json: stats.questions == 2900・exams 29・各 exam の question_count == 実数
 //   A5 D-142 禁止語: zh (quiz sidecar + textbook units) に 主机托管 / 服务器托管 / 托管（hosting） が無い
 //   A6 D-144 段 2 choice_figures: 4 肢揃う・figure は null・WebP が apps/web/public/quiz-figures に実在・choices_jp は「図L」・訳文も 图L / Figure L
+//   A7 D-144 段 3/5 中問の共有前文: registry data/ip/quiz/chumon_groups.json の全組・全メンバーについて、表示 stem
+//      (translations の stem_jp_clean / stem.zh / stem.en) が空白除去後に組の前文 probe (先頭 40 字) を含む。
+//      member は questions.json に実在し exam_id が一致・組をまたいで重複しない・counts が実数と一致。
+//      S117 §28h の教訓: linkage-gap scanner は偽陰性を出す。「登録組の全メンバーに前文が届いているか」が真の不変式。
+//      registry が空/縮んだ時に無条件 GREEN にならないよう組数・member 数の床も持つ。exceptions は reason 必須。
+//      registry の再生成は scripts/quiz-chumon-groups-build.mjs (--check で差分検出。vitest からも走る)。
 //   A2 には sidecar top-level の suspect_count / stem_corruption_count と実数の一致も含む
 //
 // ══ Layer B: raw (gitignored) がある時だけ走る (ローカル gate) ══
@@ -151,6 +157,64 @@ for (const [exam, qs] of byExam) {
   }
 }
 
+// A7 D-144 段 3/5 — 中問の共有前文が組の全メンバー・全 3 言語に届いているか (registry: data/ip/quiz/chumon_groups.json)
+{
+  const REG = path.join(Q, "chumon_groups.json");
+  // 床: レジストリが空 / 削られた状態で A7 が「全部 OK」になるのを防ぐ (中身ゼロなら検査ゼロで GREEN になってしまう)。
+  //     組を増やしたら **この 2 つの数も上げる** こと (S118 時点: 35 組 / 137 問)。
+  const A7_MIN_GROUPS = 35, A7_MIN_MEMBERS = 137;
+  const A7_PROBE_LEN = 40; // = scripts/quiz-chumon-groups-build.mjs の PROBE_LEN。短い probe は誤命中しやすいので下限も 40。
+  if (!existsSync(REG)) bad("A7", "data/ip/quiz/chumon_groups.json が無い (scripts/quiz-chumon-groups-build.mjs で生成する)");
+  else {
+    const reg = rj(REG);
+    const nsp = (s) => s.replace(/\s+/g, "");
+    const qById = new Map(questions.map((q) => [q.id, q]));
+    const trCache = new Map();
+    const trDoc = (exam) => {
+      if (!trCache.has(exam)) {
+        const f = path.join(Q, "translations", `${exam}.json`);
+        trCache.set(exam, existsSync(f) ? rj(f) : null);
+      }
+      return trCache.get(exam);
+    };
+    const owner = new Map();
+    const regGroups = reg.groups ?? [];
+    for (const g of regGroups) {
+      for (const lang of ["jp", "zh", "en"]) {
+        const p = g.probe?.[lang];
+        if (typeof p !== "string" || p.length < A7_PROBE_LEN) bad("A7", `${g.key}: probe.${lang} が ${A7_PROBE_LEN} 字未満/無い (${JSON.stringify(p)})`);
+      }
+      // exceptions は「理由付きの文書化済み例外」だけを免除する。reason 無しの免除は穴になるので受け付けない。
+      const exempt = new Set();
+      for (const e of g.exceptions ?? []) {
+        if (typeof e?.id !== "string" || !e.id) { bad("A7", `${g.key}: exceptions に id の無いエントリ`); continue; }
+        if (typeof e.reason !== "string" || !e.reason.trim()) { bad("A7", `${g.key}/${e.id}: exceptions.reason が空 — 理由の無い免除は禁止`); continue; }
+        exempt.add(e.id);
+      }
+      for (const id of g.member_ids ?? []) {
+        if (owner.has(id)) { bad("A7", `${id}: registry で ${owner.get(id)} と ${g.key} に二重所属`); continue; }
+        owner.set(id, g.key);
+        const q = qById.get(id);
+        if (!q) { bad("A7", `${id}: group ${g.key} のメンバーが questions.json に無い`); continue; }
+        if (q.exam_id !== g.exam_id) bad("A7", `${id}: exam_id=${q.exam_id} but group ${g.key} は ${g.exam_id}`);
+        if (exempt.has(id)) continue; // 文書化済みの例外 (exceptions[].reason)
+        const ent = trDoc(g.exam_id)?.questions?.[id];
+        if (!ent) { bad("A7", `${id}: translations にエントリが無い (group ${g.key})`); continue; }
+        for (const [lang, v] of [["jp", ent.stem_jp_clean], ["zh", ent.stem?.zh], ["en", ent.stem?.en]]) {
+          const p = g.probe?.[lang];
+          if (typeof p !== "string" || p.length < A7_PROBE_LEN) continue; // probe 自体の異常は上で報告済
+          if (typeof v !== "string") { bad("A7", `${id}: ${lang} stem が無い (group ${g.key})`); continue; }
+          if (!nsp(v).includes(p)) bad("A7", `${id}: ${lang} stem lacks group ${g.key} preamble probe (前文欠落 or 訳文ずれ)`);
+        }
+      }
+    }
+    if (reg.counts?.groups !== regGroups.length) bad("A7", `counts.groups=${reg.counts?.groups} vs ${regGroups.length}`);
+    if (reg.counts?.members !== owner.size) bad("A7", `counts.members=${reg.counts?.members} vs ${owner.size}`);
+    if (regGroups.length < A7_MIN_GROUPS) bad("A7", `registry の組が ${regGroups.length} 組しかない (床 ${A7_MIN_GROUPS} — 組が消えている?)`);
+    if (owner.size < A7_MIN_MEMBERS) bad("A7", `registry の member が ${owner.size} 問しかない (床 ${A7_MIN_MEMBERS} — member が消えている?)`);
+  }
+}
+
 // ───────────────────────── Layer B ─────────────────────────
 let rawStatus = "skipped (--committed-only)";
 if (!COMMITTED_ONLY) {
@@ -244,4 +308,4 @@ if (problems.length) {
   if (problems.length > 200) console.error(`  … +${problems.length - 200} more`);
   process.exit(1);
 }
-console.log(`✓ all invariants hold (A1–A6${rawStatus === "ran" ? ", B1–B6" : ""})`);
+console.log(`✓ all invariants hold (A1–A7${rawStatus === "ran" ? ", B1–B6" : ""})`);

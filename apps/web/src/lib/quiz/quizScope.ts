@@ -2,9 +2,10 @@
 //
 // Session 42 4Q-locked design (Q1=a modal / Q2=a skeleton+progress / Q3=a
 // ?qid= URL param / Q4=a new <QuizExplain /> sharing transport pattern only):
-//   - List view drives <QuizList />: enumerate every question entity in the
-//     corpus, ordered by (page, entity_index), with Japanese stem preview +
-//     4 choice labels + answer letter.
+//   - List view drove the former quiz list surface (deleted in Session 117 —
+//     the live quiz surface is now <QuizSet />): enumerate every question
+//     entity in the corpus, ordered by (page, entity_index), with Japanese
+//     stem preview + 4 choice labels + answer letter.
 //   - The question_id used by /api/quiz/explain is the entity_by_id key shape
 //     `page_NNN_entity_M` (matches Step 6 contract). We derive it here from
 //     idx.entity_by_id rather than parsing entity.id, so the surface stays in
@@ -169,8 +170,8 @@ export function parseQuestionId(
 
 /**
  * Cheap predicate: is this question_id well-formed AND present in the index?
- * Used by the server <QuizList /> page to decide whether to pass an initial qid
- * down to the client component.
+ * Used by the former quiz list page (deleted in Session 117) to decide whether
+ * to pass an initial qid down to the client component.
  */
 export function isKnownQuestionId(idx: IndexV2, questionId: string): boolean {
   const ref = idx.entity_by_id[questionId];

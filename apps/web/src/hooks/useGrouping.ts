@@ -1,11 +1,6 @@
 import { useState } from "react";
 import type { GlossarySummary } from "@/lib/glossary/glossaryScope";
 
-export interface GlossaryGroup {
-  letter: string;
-  items: GlossarySummary[];
-}
-
 export interface GlossaryChapterGroup {
   chapterId: string;
   label: string;
@@ -59,50 +54,6 @@ function groupGlossaryByChapterInternal(
     }
   }
   return groups;
-}
-
-/**
- * Group glossary summaries by first kana character (or first char of surfaceJp).
- * Uses the kanaReading if available, otherwise surfaceJp.
- */
-export function groupGlossaryByLetter(summaries: GlossarySummary[]): GlossaryGroup[] {
-  const map = new Map<string, GlossarySummary[]>();
-  for (const s of summaries) {
-    const source = s.kanaReading ?? s.surfaceJp;
-    const firstChar = source.charAt(0);
-    // Map to kana row (あ行, か行, etc.) or keep as-is for Latin/other
-    const letter = getKanaRow(firstChar) ?? firstChar.toUpperCase();
-    if (!map.has(letter)) map.set(letter, []);
-    map.get(letter)!.push(s);
-  }
-  return Array.from(map.entries()).map(([letter, items]) => ({ letter, items }));
-}
-
-function getKanaRow(char: string): string | null {
-  const rows: [string, string][] = [
-    ["あ", "あいうえお"],
-    ["か", "かきくけこがぎぐげご"],
-    ["さ", "さしすせそざじずぜぞ"],
-    ["た", "たちつてとだぢづでど"],
-    ["な", "なにぬねの"],
-    ["は", "はひふへほばびぶべぼぱぴぷぺぽ"],
-    ["ま", "まみむめも"],
-    ["や", "やゆよ"],
-    ["ら", "らりるれろ"],
-    ["わ", "わをん"],
-  ];
-  for (const [label, chars] of rows) {
-    if (chars.includes(char)) return label;
-  }
-  // Check katakana by converting to hiragana
-  const code = char.charCodeAt(0);
-  if (code >= 0x30a0 && code <= 0x30ff) {
-    const hiragana = String.fromCharCode(code - 0x60);
-    for (const [label, chars] of rows) {
-      if (chars.includes(hiragana)) return label;
-    }
-  }
-  return null;
 }
 
 /**
