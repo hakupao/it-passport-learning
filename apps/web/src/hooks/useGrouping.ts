@@ -1,12 +1,5 @@
 import { useState } from "react";
-import type { QuizSummary } from "@/lib/quiz/quizScope";
 import type { GlossarySummary } from "@/lib/glossary/glossaryScope";
-
-export interface QuizGroup {
-  label: string;
-  chapterId: string;
-  items: QuizSummary[];
-}
 
 export interface GlossaryGroup {
   letter: string;
@@ -25,31 +18,6 @@ export interface GlossaryDomainGroup {
 }
 
 type ChapterInfo = { chapter_id: string; title_jp: string; first_page: number; last_page: number };
-
-/**
- * Group quiz summaries by chapter based on page ranges.
- * chapters is an array of { chapter_id, title_jp, first_page, last_page }.
- */
-export function groupQuizByChapter(
-  summaries: QuizSummary[],
-  chapters: Array<{ chapter_id: string; title_jp: string; first_page: number; last_page: number }>,
-): QuizGroup[] {
-  const groups: QuizGroup[] = [];
-  for (const ch of chapters) {
-    const items = summaries.filter(
-      (s) => s.page >= ch.first_page && s.page <= ch.last_page,
-    );
-    if (items.length > 0) {
-      const nn = ch.chapter_id.replace("ch", "");
-      groups.push({
-        label: `Ch.${nn} ${ch.title_jp}`,
-        chapterId: ch.chapter_id,
-        items,
-      });
-    }
-  }
-  return groups;
-}
 
 const DOMAIN_CHAPTERS: Record<GlossaryDomainGroup["domain"], string[]> = {
   strategy: ["ch00", "ch01", "ch02", "ch03", "ch04", "ch05"],

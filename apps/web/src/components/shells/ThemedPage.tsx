@@ -6,25 +6,23 @@ import type React from "react";
 
 import { useTheme, type Theme } from "@/hooks/useTheme";
 
-type PageName = "chat" | "tutor" | "quiz" | "glossary";
+// "quiz" は D-135 (S86) 以降 /quiz が QuizSet を直接描画するため shell 経路が無く、S117 (D-144 段 4) で dead code を削除した
+type PageName = "chat" | "tutor" | "glossary";
 
 const VIEWS: Record<Theme, Record<PageName, React.ComponentType<any>>> = {
   gamified: {
     chat: dynamic(() => import("./gamified/GamifiedChat").then((m) => ({ default: m.GamifiedChat }))),
     tutor: dynamic(() => import("./gamified/GamifiedTutor").then((m) => ({ default: m.GamifiedTutor }))),
-    quiz: dynamic(() => import("./gamified/GamifiedQuiz").then((m) => ({ default: m.GamifiedQuiz }))),
     glossary: dynamic(() => import("./gamified/GamifiedGlossary").then((m) => ({ default: m.GamifiedGlossary }))),
   },
   retro: {
     chat: dynamic(() => import("./retro/RetroChat").then((m) => ({ default: m.RetroChat }))),
     tutor: dynamic(() => import("./retro/RetroTutor").then((m) => ({ default: m.RetroTutor }))),
-    quiz: dynamic(() => import("./retro/RetroQuiz").then((m) => ({ default: m.RetroQuiz }))),
     glossary: dynamic(() => import("./retro/RetroGlossary").then((m) => ({ default: m.RetroGlossary }))),
   },
   terminal: {
     chat: dynamic(() => import("./terminal/TerminalChat").then((m) => ({ default: m.TerminalChat }))),
     tutor: dynamic(() => import("./terminal/TerminalTutor").then((m) => ({ default: m.TerminalTutor }))),
-    quiz: dynamic(() => import("./terminal/TerminalQuiz").then((m) => ({ default: m.TerminalQuiz }))),
     glossary: dynamic(() => import("./terminal/TerminalGlossary").then((m) => ({ default: m.TerminalGlossary }))),
   },
 };
