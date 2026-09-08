@@ -14,6 +14,7 @@
 //   出力: out_path に {exam_id, n, cleanCount, discrepantCount, unreadable, bySeverity,
 //                      onCorrectChoiceCount, discrepancies, audits} (= S118 までと同一の形)
 //   exit 1 = part 欠落 / 壊れた part / id 不一致 / verdict 不正 → machdiff に掛ける前に要対応。
+//   --journal 時: journal に在る id の part 欠落/壊れは**警告表示のみで exit 0** (journal が正)。journal にも無い id だけ exit 1。
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
 import path from "node:path";

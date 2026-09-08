@@ -63,3 +63,4 @@
 - 再検証: `--journal` 68/68 (出力は修正前と byte 同一)、従来経路 68/68、空 parts dir + journal で 68/68 (part 欠落 68 と表示)、引数異常 3 種 exit 2、`wave1.mjs --dry-run` applied 0 / skipped 127 (不変)。
 - NIT-1 現状維持、NIT-2 は N7 (q066 図再裁断) に同梱、NIT-3 は次波 fixer 雛形へ、NIT-4 (`figure_description` の旧文言、学習者不可視) は ⑨ に登録。
 - 復験: reviewer-1 に脚本 diff 2 件の再審のみ依頼 → 下記。
+- 復験 (reviewer-1): MINOR-4/5/6・NIT-5/6/7 **すべて解消** (reviewer が journal 順序・part 削除・引数 4 ケースを実行確認)。新規 NIT-8 = ヘッダ「exit 1 = part 欠落」が journal モードと食い違う → ヘッダに 1 行追記で処置。**波 1 = PASS (処置済)**。
