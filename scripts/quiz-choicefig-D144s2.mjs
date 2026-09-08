@@ -10,23 +10,32 @@
 // raw (question_bank / by_year) に `choice_figure_paths` を追加し、複合図 `figure_path` は外す (重複表示を避ける、has_figure は true のまま)。
 // 選択肢テキストは中立な「図ア」/「图ア」/「Figure ア」に (源は図のみ。旧テキストは答えの漏洩・占位符・記述だった)。
 // 下流: node scripts/build-quiz-corpus.mjs → node scripts/build-quiz-figures.mjs。
-// Run: node scripts/quiz-choicefig-D144s2.mjs [--dry-run]
+//
+// S118 ⑤-2 波 1 追加: **2016h28a-q050** (特性要因図 / パレート図 / 散布図 / フローチャートの 4 図。dataset のテキスト肢が
+//   図の名称そのもので、正解肢イ「パレート図」が答えを書いていた = ②-a 型)。源 page-19 実読で 2×2 配置を確認。
+//   この複合図は **下部に次問「問51 …」の 1 行が残っている** ため `bottomCut` を新設した (topCut と対称、trim 前に落とす)。
+//   既存 3 題の SPEC・産物は不変 (`--only <id>` で対象を絞れる)。
+// Run: node scripts/quiz-choicefig-D144s2.mjs [--dry-run] [--only <question-id>]
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path"; import { fileURLToPath } from "node:url"; import { createRequire } from "node:module";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."); const DRY = process.argv.includes("--dry-run");
+const ONLY = (() => { const i = process.argv.indexOf("--only"); return i >= 0 ? process.argv[i + 1] : null; })();
 const sharp = createRequire(path.join(ROOT, "apps/web/package.json"))("sharp");
 const P = (...s) => path.join(ROOT, ...s); const rj = (f) => JSON.parse(readFileSync(f, "utf-8")); const wj = (f, d) => { if (!DRY) writeFileSync(f, JSON.stringify(d, null, 2) + "\n"); };
 const LETTERS = ["ア", "イ", "ウ", "エ"]; const SUFFIX = { ア: "A", イ: "B", ウ: "C", エ: "D" };
-// topCut = 複合図の上部に残った設問文の高さ (px)。主 context が源画像を実読して決めた。
-const SPEC = { "2014h26a-q046": { topCut: 45 }, "2014h26a-q086": { topCut: 165 }, "2012h24a-q002": { topCut: 0 } };
+// topCut / bottomCut = 複合図の上端・下端に残った設問文の高さ (px)。主 context が源画像を実読して決めた。
+const SPEC = {
+  "2014h26a-q046": { topCut: 45 }, "2014h26a-q086": { topCut: 165 }, "2012h24a-q002": { topCut: 0 },
+  "2016h28a-q050": { topCut: 0, bottomCut: 160 }, // 1289x1094、y=998-1024 に次問「問51 …」の 1 行。図の下端は y=873
+};
 const TXT = { jp: (L) => `図${L}`, zh: (L) => `图${L}`, en: (L) => `Figure ${L}` };
 
 const gap = (arr, lo, hi) => { let best = [0, 0], s = -1; const a = Math.floor(arr.length * lo), b = Math.floor(arr.length * hi); for (let i = a; i < b; i++) { if (arr[i] === 0) { if (s < 0) s = i; } else if (s >= 0) { if (i - s > best[1] - best[0]) best = [s, i]; s = -1; } } if (s >= 0 && b - s > best[1] - best[0]) best = [s, b]; return best; };
 
-async function cropChoices(id, topCut) {
+async function cropChoices(id, topCut, bottomCut = 0) {
   const file = P("data/ip/exams/figures", `${id}.png`); const meta = await sharp(file).metadata();
-  const cut = await sharp(file).extract({ left: 0, top: topCut, width: meta.width, height: meta.height - topCut }).png().toBuffer();
+  const cut = await sharp(file).extract({ left: 0, top: topCut, width: meta.width, height: meta.height - topCut - bottomCut }).png().toBuffer();
   const trimmed = await sharp(cut).trim({ threshold: 40 }).png().toBuffer(); const { width: W, height: H } = await sharp(trimmed).metadata();
   const { data } = await sharp(trimmed).greyscale().raw().toBuffer({ resolveWithObject: true });
   const col = new Array(W).fill(0), row = new Array(H).fill(0);
@@ -49,10 +58,11 @@ async function cropChoices(id, topCut) {
 
 let applied = 0;
 const Bd = rj(P("data/ip/exams/question_bank.json")); const BY = {}; const TR = {};
-for (const [id, { topCut }] of Object.entries(SPEC)) {
+for (const [id, { topCut, bottomCut }] of Object.entries(SPEC)) {
+  if (ONLY && id !== ONLY) continue;
   const exam = id.split("-q")[0];
   BY[exam] ??= rj(P("data/ip/exams/by_year", `${exam}.json`)); TR[exam] ??= rj(P("data/ip/quiz/translations", `${exam}.json`));
-  const paths = await cropChoices(id, topCut);
+  const paths = await cropChoices(id, topCut, bottomCut ?? 0);
   for (const [o, w] of [[Bd.questions.find((q) => q.id === id), "question_bank"], [BY[exam].questions.find((q) => q.id === id), "by_year"]]) {
     if (!o) throw new Error(`${id} missing in ${w}`);
     if (JSON.stringify(o.choice_figure_paths) !== JSON.stringify(paths)) { o.choice_figure_paths = paths; applied++; }
