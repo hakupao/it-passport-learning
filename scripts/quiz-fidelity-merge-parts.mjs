@@ -23,9 +23,14 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
 let journalArg = null;
 const jIdx = argv.indexOf("--journal");
-if (jIdx >= 0) { journalArg = argv[jIdx + 1]; argv.splice(jIdx, 2); }
+if (jIdx >= 0) {
+  journalArg = argv[jIdx + 1];
+  if (!journalArg || journalArg.startsWith("--")) { console.error("✗ --journal には journal.jsonl のパスが必要"); process.exit(2); }
+  argv.splice(jIdx, 2);
+  if (argv.includes("--journal")) { console.error("✗ --journal は 1 回だけ"); process.exit(2); }
+}
 const [partsDirArg, inputPath, examId, outPathArg] = argv;
-if (!partsDirArg || !inputPath || !examId || !outPathArg || (jIdx >= 0 && !journalArg)) {
+if (!partsDirArg || !inputPath || !examId || !outPathArg || argv.length > 4) {
   console.error("usage: quiz-fidelity-merge-parts.mjs <parts_dir> <fidelity_input.json> <exam_id> <out_path> [--journal <journal.jsonl>]");
   process.exit(2);
 }
@@ -48,6 +53,8 @@ if (journalArg) {
     let rec;
     try { rec = JSON.parse(line); } catch { badLines++; continue; }
     if (rec?.type !== "result" || !rec.result || typeof rec.result !== "object") continue;
+    // 失敗行の防御: 現行 journal は失敗を type:"failed" で別行に書くが、result 行に成否印が付く形式にも備える (S121 MINOR-4)
+    if (rec.is_error === true || (rec.subtype && rec.subtype !== "success")) continue;
     const r = rec.result.result && typeof rec.result.result === "object" ? rec.result.result : rec.result;
     if (typeof r.id === "string") journal.set(r.id, r);
   }
@@ -55,12 +62,16 @@ if (journalArg) {
 }
 
 const VERDICTS = new Set(["CLEAN", "DISCREPANT", "UNREADABLE"]);
-let bad = 0, fromJournal = 0, fromPart = 0;
+let bad = 0, fromJournal = 0, fromPart = 0, partMissingUnderJournal = 0;
 const audits = [];
 for (const id of wantIds) {
-  let a;
+  let a, src;
   if (journal.has(id)) {
-    a = journal.get(id); fromJournal++;
+    a = journal.get(id); src = "journal";
+    // journal が正でも、part が無い/壊れているのは agent の Write 失敗なので数えて出す (S121 MINOR-5)
+    const f = path.join(partsDir, `${id}.json`);
+    if (!existsSync(f)) { console.log(`? ${id}: part file 無し (journal を採用)`); partMissingUnderJournal++; }
+    else { try { JSON.parse(readFileSync(f, "utf-8")); } catch { console.log(`? ${id}: part file 壊れ (journal を採用)`); partMissingUnderJournal++; } }
   } else {
     const f = path.join(partsDir, `${id}.json`);
     if (!existsSync(f)) { console.log(`✗ MISSING part ${id}${journalArg ? " (journal にも無し)" : ""}`); bad++; continue; }
@@ -68,13 +79,14 @@ for (const id of wantIds) {
     catch (e) { console.log(`✗ UNPARSEABLE part ${id}: ${e.message}`); bad++; continue; }
     if (a && a.result) a = a.result;                       // agent が {result:…} で包んだ場合の救済
     if (journalArg) console.log(`? ${id}: journal に無いため part file に回退`);
-    fromPart++;
+    src = "part";
   }
   if (!a || typeof a !== "object") { console.log(`✗ BAD part ${id}: not an object`); bad++; continue; }
   if (a.id !== id) { console.log(`✗ ID MISMATCH ${id}: part says "${a.id}"`); bad++; continue; }
   if (!VERDICTS.has(a.verdict)) { console.log(`✗ BAD verdict ${id}: "${a.verdict}"`); bad++; continue; }
   if (!Array.isArray(a.discrepancies)) { console.log(`✗ BAD part ${id}: discrepancies is not an array`); bad++; continue; }
   if (a.verdict !== "UNREADABLE" && !a.source_transcript) console.log(`? ${id}: no source_transcript (machdiff will flag)`);
+  if (src === "journal") fromJournal++; else fromPart++;   // 検証通過後に加算 (S121 NIT-5)
   audits.push(a);
 }
 const extra = readdirSync(partsDir).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).filter((id) => !wantIds.includes(id));
@@ -107,5 +119,5 @@ const out = {
 };
 mkdirSync(path.dirname(outPath), { recursive: true });
 writeFileSync(outPath, JSON.stringify(out, null, 2) + "\n");
-console.log(`✓ merge-parts ${examId}: ${audits.length}/${wantIds.length} audits → ${path.relative(ROOT, outPath)}${journalArg ? ` (journal ${fromJournal} / part ${fromPart})` : ""}`);
+console.log(`✓ merge-parts ${examId}: ${audits.length}/${wantIds.length} audits → ${path.relative(ROOT, outPath)}${journalArg ? ` (journal ${fromJournal} / part ${fromPart}; journal 採用のうち part 欠落/壊れ ${partMissingUnderJournal})` : ""}`);
 console.log(`  CLEAN ${out.cleanCount} / DISCREPANT ${out.discrepantCount} / UNREADABLE ${unreadable.length}; 差分 ${flat.length} 件 ${JSON.stringify(bySeverity)}, 正解肢上 ${onCorrectChoiceCount} 件`);

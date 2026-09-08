@@ -29,7 +29,7 @@
 - **双 pass 一致**: 実欠陥 12 問のうち **10 問で verdict 一致**。片側のみ 2 件 = `2015h27a-q093` (gp のみ。cr は括弧字形を体裁差と判断 → machdiff が cr 側で捕捉) /
   `2016h28a-q043` (cr のみ。gp は結合ヘッダ脱落を markdown 平坦化の帰結として非計上)。
 - **severity 不一致 2 件**: `2015h27a-q044` (gp=semantic / cr=**answer_affecting**)、`2016h28a-q018` (gp=semantic / cr=cosmetic)。§4 で主 context が裁定。
-- **severity 内訳** (裁定後、18 フィールド): answer_affecting 1 / semantic 10 / cosmetic 7。
+- **severity 内訳** (裁定後、20 フィールド): answer_affecting 1 / semantic 11 / cosmetic 8。(S121 Rule D MINOR-1 訂正: 旧記載「18 / 10 / 7」は誤り、§4 の 20 差分と一致させた)
 - **正解肢上 3 問**: `2015h27a-q059` イ / `2015h27a-q097` ウ / `2016h28a-q050` イ。
 - `answer_keys.json` 不変、`correct_answer` 変更 **0**。
 
@@ -176,11 +176,11 @@ assert-once (対象文字列が 2 回以上出たら中断) / 冪等 / `--dry-ru
 
 | 層 | フィールド | 内容 |
 |---|---|---|
-| `data/ip/quiz/questions.json` | 14 | stem 4 (q044 / q093 / q097 / q028) + choices 10 |
+| `data/ip/quiz/questions.json` | 14 | stem 5 (q044 / q093 / q097 / q028 / q098) + choices 9 (S121 MINOR-2 訂正) |
 | `data/ip/exams/question_bank.json` | 14 | 同上 (最上流) |
 | `data/ip/exams/by_year/*.json` | 14 | 同上 (B5 が questions ≡ bank ≡ by_year を強制) |
-| `data/ip/quiz/translations/*.json` | 24 | `stem_jp_clean` 5 + zh/en 19 |
-| `data/ip/quiz/.phase1/tr_*.json` | 20 | 同じ置換を入力層にも (S117 §10a 失敗②: **再 merge せず両方に当てる**) |
+| `data/ip/quiz/translations/*.json` | 24 | `stem_jp_clean` 6 + zh/en 18 (S121 MINOR-2 訂正) |
+| `data/ip/quiz/.phase1/tr_*.json` | 20 | 同じ置換を入力層にも (S117 §10a 失敗②: **再 merge せず両方に当てる**)。**例外 (S121 MINOR-3)**: `2016h28a-q043` の caption は `.phase1` に入っていない (同 .phase1 は表を持たない散文のみでアンカ不在、sub() が無言 skip)。sidecar が出荷源のため学習者影響 0 だが、.phase1→sidecar の再 merge は禁止 (S117 教訓) を維持すること |
 | `data/ip/quiz/.phase2/expl_{jp,tr}_*.json` | 18 | q097 のみ (correct 3 / 誤答肢ア・イ・エ 各 3 / 要点 2 本 × 3) |
 | `.phase2/generate_result_*.json` の `key_guard.note_jp` (**final のみ**) | 10 | q027 / q044 / q059 / q062 / q081 / q097 / q028 / q043 / q050 / q098 |
 | **計** | **114** | |
