@@ -145,6 +145,8 @@ dataset はすべて `「」` に置換されていた。波 2 の `2016h28h-q09
 
 ## 6. 採用した差分 (11 問 / 20 論理差分 / **89 field**)
 
+> S121 Rule D NIT-1: 「20 論理差分」の定義 = jp の置換 17 (q090 の引用符 5 箇所は源字形ごとに個別計上で 18) + 解説書換 2 (q070 ウ + points[1]) = 20。89 field は reviewer 実測で一致。
+
 ### 2017h29h
 
 | id | field | 差分 | severity | 由来 |
@@ -167,7 +169,9 @@ dataset はすべて `「」` に置換されていた。波 2 の `2016h28h-q09
 | q083 (p33) | choice.エ | 「ディジタル放送受信機に**同杜**」→ 源「**同梱**」(梱 にルビ「こん」) | semantic | 双 pass |
 | q100 (p39) | choice.ア | 「各表の**先頭**から数えた」→ 源「各表の**先頭行**から数えた」 | semantic | 双 pass |
 
-### zh / en の追随 (語義が変わった分のみ)
+### zh / en の追随 (語義が変わった分 4 箇所 + cosmetic だが兄弟問 q041/q057 準拠で同期した `2018h30a-q081`)
+
+> S121 Rule D MINOR-2: 旧見出し「語義が変わった分のみ」は q081 (cosmetic、読点字種を jp/zh = U+FF0C / en = ASCII ", " に統一) を含むため不正確。データは正 (reviewer 実測)。
 
 | id | zh | en |
 |---|---|---|
@@ -194,6 +198,7 @@ en "input conditions"、q037 ウ zh「追加了功能」/ en "functionality was 
 
 - **skip 3** = `2017h29h-q043` の raw `stem_jp` ×3 層。raw は**源どおり読点が無い**ので assert-once が n===0 で
   自動 skip した (腐敗は clean 層のみ)。波 1 の `2015h27a-q027` と同じ挙動。
+- **S121 Rule D MINOR-1 訂正: 無言 guard skip は計 7** (潜在 sub 99 − 計上 92)。上記 3 件に加え、`2018h30a-q079` は sidecar・`.phase1` とも `stem_jp_clean` 不在で 2 件 (raw が表示源のため影響 0)、`2017h29h-q090` は `.phase1` に `stem_jp_clean` 不在で 5 件 (sidecar は是正済で表示は正)。**「sidecar と `.phase1` の両方に当てる」は本波では q090 について不成立** → 波 1 q043 / 波 2 q094 と同型。出荷源 = clean 層 + sidecar、`.phase1` / raw からの再 merge は禁止 (S117 §10a) を前提とし、再 merge 前に N5 台帳を是正すること。
 - **key_guard final note の追記対象 6 件** = 語義是正 / answer_affecting のみ (q014 / q070 / q077 / q037 / q083 / q100)。
   括弧・引用符・読点・区切りだけの表記是正 (q043 / q071 / q090 / q079 / q081) は**追記しない** — 波 2 および
   strat53 (q041 / q057 の丸数字区切りに note を付けなかった) と同一方針。
@@ -221,7 +226,7 @@ en "input conditions"、q037 ウ zh「追加了功能」/ en "functionality was 
 是正後の表示層テキストを、**両 pass の `source_transcript` と machdiff 正規化で再照合**した
 (11 問 × 2 pass × stem+4 肢):
 
-- **残差 1 件のみ** = `2018h30a-q043` stem (SOURCE_TYPOS、意図的な非再現)。
+- **残差 1 件のみ** = `2018h30a-q043` stem (SOURCE_TYPOS、意図的な非再現)。(S121 Rule D NIT-2: この残差は machdiff では再現しない [q043 は agent 報告済で patch され差が消える]、是正後表示層 vs 両 pass transcript の直接照合による。reviewer が現データから是正後 manifest を再構成して machdiff 4 本を回した結果は AGENT_MISSED 0/0/0/0。)
 - それ以外の 11 問はすべて **gp / cr 双方の transcript と正規化一致**。
 
 ---
@@ -291,5 +296,4 @@ en "not a string of decimal digits") が反映され、旧論拠 (「機械語�
 
 ## 13. Rule D
 
-Writer = `wave3-fixer` (executor opus)。**Reviewer は別 `subagent_type` の別 agent が後段で担当** (未実施)。
-本ファイルは writer 側の自己申告であり、審閲は含まない。
+Writer = `wave3-fixer` (executor opus)。**Reviewer = `pr-review-toolkit:code-reviewer` (opus、S121 U2) → PASS-with-notes (MAJOR 0 / 誤是正 0)**、原寸抽検 12/12 悉皆。詳細と処置は `evidence/quiz_full52_ruleD_U2_S121.md`。

@@ -121,3 +121,80 @@
 - MINOR-1: §1 表を 2017h29a 採用 9 / 合計 16 (10.1%) に訂正 + 訂正注記。MINOR-2: §2 を「去重 8 題 / 11 field (採用 6 題 / 9 field)」に訂正。MINOR-3: §3 q020 の出所を「両 agent が CLEAN のまま discrepancy 記載 (§44 q079 型、machdiff VERDICT_CONFLICT で検出)」に訂正 → ⑨ 実例として本 evidence に登記。MINOR-4: §5 の見送り理由を「全角 2 字形のいずれかが確定できない」に訂正。MINOR-5: §8 冒頭に「出荷源 = clean 層 + sidecar、raw / .phase1 からの再 merge 禁止 (S117 教訓)、再 merge 前に N5 台帳を是正」を明記。データ変更 0。
 - NIT-1 (q098 解説の空白表記) / NIT-2 (括弧の zh/en) / NIT-3 (節見出しの改行) は ⑨ に登録 (下記 §横断)。
 - evidence 文言のみの訂正のため復験は省略 (波 1 と同扱い)。**波 2 = PASS (処置済)**。
+
+---
+
+## 波 3 (2017h29h / 2018h30a) — reviewer `u2-reviewer-w3` = `pr-review-toolkit:code-reviewer` (opus)
+
+**VERDICT: PASS-with-notes (MAJOR 0 / 誤是正 0 / correct_answer 変更 0 → 出荷可)**
+
+### 再計算 (gp/cr JSON 直読 + machdiff 4 run 再実行、evidence §2 表と全セル照合)
+| 検証項目 | evidence | 実測 |
+|---|---|---|
+| 2017h29h n / gp / cr / 去重 | 85 / 3 / 3 / 3 | 一致 (q014・q070・q077、両 pass 同一 id 同一 field) |
+| 2018h30a n / gp / cr / 去重 | 67 / 4 / 4 / 4 | 一致 (q037・q043・q083・q100) |
+| machdiff AGENT_MISSED (生/去重) | 13 / 7 field 5 題 | 一致。same 422/422/332/331、coverage 85·85·67·67、transcript 欠落 0 |
+| 計上 / 是正 | 6·6 / 6·5、プール 12 (7.9%) / 11 (7.2%) | 一致。率も全一致 |
+| 正解肢上 / answer_affecting | 0 / 1 | 一致 (onCorrectChoiceCount=0 が 4 本とも) |
+| severity 内訳 (裁定後 12 題) | aa1 / sem5 / cos5 / TYPO1 | 一致。sem = q014・q077・q037・q083・q100、cos = 29h-q043・q071・q090・30a-q079・q081 |
+| severity 不一致 2 件 | q077・q037 | 一致 |
+
+### 適用照合
+- 15 の置換対象を questions / question_bank / by_year で全数直読 → 全て是正後の値。二重適用アーティファクト (，，／〔〔／““ 等) 全 2900 問走査 0。`--dry-run` applied 0 / skipped 92 = 冪等。
+- `ce3e31e^..HEAD` questions.json 2900 問機械比較: 変更 35 題、うち波 3 lane は期待の 10 題ちょうど。他 exam・別問混入 0。2017h29h-q043 は不出現 (clean 層のみ = 正)、2018h30a-q043 不変 (正)。id 集合 0 差・総数不変。questions vs bank 0、by_year vs bank (6 exam) 0。
+- 層別 89 field 再構成: raw 48 + sidecar 17 + .phase1 12 + 解説 6 + note 6 = 89 (一致)。D-143: final note MARK 6 件のみ、round1 側 MARK 0。
+- **無言 skip は 3 ではなく 7** (潜在 sub 呼び出し 99 - 計上 92) → MINOR-1。
+
+### 原寸抽検 (12 題全数 = 母集団悉皆、11 ページ実読、2 exam 横断)
+| id | page | 現データ=源 | 所見 |
+|---|---|---|---|
+| 2017h29h-q070 ウ | 29 | ○ | 6 倍で「プログラムを 10 進数の数字列で表現する」を字形確定。16 ではない。是正方向 = 源方向 |
+| 2017h29h-q014 ア | 06 | ○ | 「システムの状態の遷移」。居移は源に不在 |
+| 2017h29h-q043 stem | 19 | ○ | 「スコープにはプロジェクトの」源に読点なし。挿入読点の除去は正 |
+| 2017h29h-q071 stem | 30 | ○ | 〔Aさんの電子メールの宛先設定〕亀甲。To/Cc/Bcc は源 3 行 (§10 見送りどおり) |
+| 2017h29h-q077 ア | 32 | ○ | 「様々な入力条件」。同行の「入力と出力」と同一字形 |
+| 2017h29h-q090 stem | 36 | ○ | “商品” “％” 〔操作〕 ‘有’ ‘％うどん％’ ‘うどん％’ 全数確認。5 箇所とも源方向 |
+| 2018h30a-q037 ウ | 15 | ○ | 折返し行「した。」。追加じた は源に不在 |
+| 2018h30a-q043 stem | 18 | ○ (非再現) | 5 倍で「コストマネンジメント」実在。同文の他 4 箇所は「マネジメント」= IPA 誤植で確定 |
+| 2018h30a-q079 stem | 32 | ○ | 「ここでデータの左方を上位」源に読点なし |
+| 2018h30a-q081 イ/ウ/エ | 33 | ○ | 7 倍で区切りが「，」と確定。①，②，③ / ②，④ / ③，④ |
+| 2018h30a-q083 エ | 33 | ○ | 「同梱」+ ルビ「こん」。同杜 は源に不在 |
+| 2018h30a-q100 ア | 39 | ○ | 「各表の先頭行から数えた」 |
+
+**源と逆方向の是正 (誤是正) 0 件。** 12 題の正解肢を源から独立導出 → 全て stored correct_answer と一致。
+
+### 判断・zh/en・解説
+- SOURCE_TYPO 裁定妥当 (raw 源誤植保持 / clean 正綴り、表示は `stem_jp_clean || stem_jp`)。「非語化の文字置換 = semantic」は波 1 q018 (「の」挿入 = 成語 = cosmetic) と整合、基準は「語として成立するか」で一貫。machdiff +5 題は原寸実読で 5/5 真の欠陥・偽陽性 0。
+- q079 型 (CLEAN なのに discrepancies 非空) は 4 本走査で q079 gp の 1 件のみ、CLEAN audit の notes_jp 走査でも追加 0。是正後 manifest を現データから再構成して machdiff 再実行 → AGENT_MISSED 0/0/0/0。
+- zh/en: q070 ウ・解説ウ + points[1]・q100 ア は同期 ✓。q081 は cosmetic だが同期済 (MINOR-2)。追随不要の 4 件 (q014 / q077 / q037 / q083) は実読で源忠実。cosmetic の 29h-q043 / q071 / q090 / 30a-q079 は zh/en 不触 ✓。
+- 解説 q070: 旧論拠「機械語そのものが16進数で…」は 3 語とも消失、新主論拠「2 進数のビット列であって 10 進数の数字列ではない」、16 進は補足に降格。correct_answer ア と整合。points[1] 3 語同期。
+- ゲート再実行 (reviewer 自身): keys-crosscheck A1–A7/B1–B7 ✓、chumon --check ✓、assert-clean ✓ (50)、tsc 0、vitest 501 passed / 2 skipped。answer_keys vs questions 2900 照合 0 不一致。
+
+### 指摘
+- **[MINOR-1]** evidence §7「skip 3 = 29h-q043 の raw ×3 層」は不完全。無言 guard skip は計 7: `2018h30a-q079` は sidecar・`.phase1` とも `stem_jp_clean` 不在で 2 件、`2017h29h-q090` は `.phase1` に `stem_jp_clean` 不在で 5 件。q079 は raw が表示源で影響 0。q090 は sidecar 是正済で表示は正だが `.phase1`→sidecar 再 merge が走ると `stem_jp_clean` ごと消える。波 1 MINOR-3 / 波 2 MINOR-5 と同型 → §7 記述訂正 + 再 merge 禁止の再明記。
+- **[MINOR-2]** evidence §6 見出し「zh/en の追随 (語義が変わった分のみ)」に cosmetic の `2018h30a-q081` が入っており「4 箇所のみ同期」と矛盾。データ自体は正 (兄弟問 q041/q057 準拠、jp/zh = U+FF0C / en = ASCII ", " を実測)。文言訂正で足りる。
+- **[NIT-1]** evidence §6 / fixer ヘッダ「20 論理差分」がどの数え方でも再現できない (17 / 18 / 19〜20)。89 field は一致。定義を 1 行添える。
+- **[NIT-2]** evidence §8「残差 1 件」は machdiff では再現不能 (q043 は agent 報告済で patch される)。別手法の旨を明記。reviewer 再構成 machdiff は AGENT_MISSED 0/0/0/0。
+- **[NIT-3]** `2017h29h-q090` / `q071` は jp だけ源字形 (“” ‘’ 〔〕) に戻り zh/en は 「」 `[操作]` のまま (⑨-c、波 2 NIT-2 同型)。
+- **[NIT-4]** 同 q090 stem で引用符は源字形へ戻す一方 ％ (源は全角) は ASCII のまま (§10 許容表記揺れ登記済)。方針として了解可能。
+
+### 処置 (主 context、S121)
+- MINOR-1: §7 に無言 skip 7 件の内訳と「両方に当てる」不成立 (q090) を追記、再 merge 禁止前提を再明記。MINOR-2: §6 見出しを訂正 + 注記。NIT-1: 20 論理差分の定義 (jp 17〜18 + 解説 2) を添付。NIT-2: §8 に照合手法と reviewer 再構成 machdiff 0/0/0/0 を注記。NIT-3/4 は ⑨ 登録。データ変更 0。evidence 文言のみのため復験省略。**波 3 = PASS (処置済)**。
+
+---
+
+## 横断 (3 波共通、⑨ 登録)
+1. **raw / `.phase1` の無言 skip** (波 1 q043 `.phase1` / 波 2 q094 raw ×3 / 波 3 q079 ×2・q090 ×5): 出荷源 = clean 層 + sidecar のため学習者影響 0。**再 merge 禁止 (S117 §10a) を継続**、次波 fixer 雛形の sub() に「to が在る」肯定確認を追加 (波 1 NIT-3) して skip を露見させる。
+2. **三語間の括弧字種** (波 2 NIT-2 / 波 3 NIT-3、⑨-c): jp のみ源字形、zh/en は `[…]` 「」のまま。保真規則は jp 対源なので正しいが見た目は割れる → ⑨-c で方針決定待ち。
+3. **節見出しの改行** (波 2 NIT-3): `〔条件〕` `〔事例〕` が後続本文と同一行、源は独立行 → N5 / 空白系列。
+4. **解説と肢の空白表記差** (波 2 NIT-1 q098) / **％ 全角** (波 3 NIT-4) / **figure_description 旧文言** (波 1 NIT-4、quiz 不可視) / **q066 代替段落の全角ラテン** (波 1 NIT-2、N7 同梱)。
+5. **VERDICT_CONFLICT 型の実例** = `2017h29a-q020` (両 pass)、`2018h30a-q079` (gp) → U0 で追加した machdiff 検出が有効。
+
+## 総括
+| 波 | exam | 是正 | 原寸抽検 | MAJOR | 誤是正 | correct_answer 変更 | 判定 |
+|---|---|---|---|---|---|---|---|
+| 1 | 2015h27a / 2016h28a | 13 題 | 13/13 + q066 | 0 | 0 | 0 | PASS-with-notes → 処置済 |
+| 2 | 2016h28h / 2017h29a | 16 題 (訂正、旧 15) | 16/16 | 0 | 0 | 0 | PASS-with-notes → 処置済 |
+| 3 | 2017h29h / 2018h30a | 11 題 (計上 12) | 12/12 | 0 | 0 | 0 | PASS-with-notes → 処置済 |
+
+3 波 462 問 / 是正 40 題 (波 2 訂正で 41 題計上)、reviewer 3 体が **全是正題を原寸で独立実読**、誤是正 0、correct_answer 変更 0。指摘は evidence の計数・記述 (MINOR 11) と ⑨ 級 (NIT 15) のみ、データ修正を要する指摘 0。

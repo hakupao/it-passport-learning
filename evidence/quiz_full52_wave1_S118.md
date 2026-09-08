@@ -314,7 +314,7 @@ node scripts/quiz-phase2-merge.mjs 2016h28a                    # missing 0
   双 pass の判定を検証した (§4)。severity の裁定は 2 件とも agent の一方を**採らなかった**
   (q044: gp の semantic を退けて cr の answer_affecting、q018: gp の semantic を退けて cr の cosmetic)。
   choice_figures 化した 4 枚は WebP を**全数実読**して内容と写り込みなしを確認した (§5a)。
-- **Rule D**: 本ファイルは writer (`wave1-fixer`) の成果物。**別 `subagent_type` の reviewer による独立審査が未了**。
+- **Rule D**: 本ファイルは writer (`wave1-fixer`) の成果物。**Reviewer = `feature-dev:code-reviewer` (opus、S121 U2) → PASS-with-notes (MAJOR 0 / 誤是正 0)**、原寸抽検 13/13 + q066。詳細と処置は `evidence/quiz_full52_ruleD_U2_S121.md`。
   審査の要点として推奨する箇所:
   1. `q044` の severity 裁定 (answer_affecting か semantic か) — 判定軸の妥当性
   2. `q097` の解説書き換えの事実性 (源の語数 3/3/4/4、jp/zh/en 三語の整合)

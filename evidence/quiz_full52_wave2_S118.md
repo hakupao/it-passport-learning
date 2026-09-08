@@ -1,6 +1,7 @@
 # Quiz ⑤-2 全量保真核験 — 波 2 (2016h28h / 2017h29a) — S118
 
 > Rule A 証跡。writer = `wave2-fixer` (executor opus)。reviewer は別 `subagent_type` (Rule D)。
+> **Rule D (S121 U2)**: reviewer = `oh-my-claudecode:code-reviewer` (opus) → PASS-with-notes (MAJOR 0 / 誤是正 0)、原寸抽検 16/16。詳細と処置は `evidence/quiz_full52_ruleD_U2_S121.md`。
 > 波 1 (2015h27a / 2016h28a) は `wave1-fixer` が並行して処置。両 lane は exam が排他で、共有ファイルは
 > `data/ip/quiz/questions.json` と `data/ip/exams/question_bank.json` の 2 本のみ (後述 §8 で無害を実証)。
 
