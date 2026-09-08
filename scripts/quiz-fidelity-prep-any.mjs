@@ -63,6 +63,7 @@ const LEFT_TOL_LO = 14, LEFT_TOL_HI = 18;  // 帯の最左インクが head モ�
 const BAND_PAD_TOP = 8;   // 見出しの少し上から切る
 const FOOTER_FRAC = 0.94; // これより下はノンブル (「− 39 −」) 帯として本文末尾探索から除く
 const TAIL_PAD = 25;      // 最終帯は本文末尾 + これだけ
+const HEAD_PAGE_ROWS_LO = 14, HEAD_PAGE_ROWS_HI = 150;  // S123 (行数、MIN_H [画素高] とは別次元 — Rule D NIT-3): 1 ページ内の見出し bucket 行数がこの範囲なら「見出しが載るページ」として投票 (図枠は 220〜470 行で外れる)
 
 /** ページを greyscale raw で読み、行ごとの最左/最右インク x と画素数を返す。 */
 async function rowProfile(sharp, png, withPixels) {
@@ -141,25 +142,34 @@ async function buildCrops(targetIds) {
 
   // pass 1: exam 全ページから「行の最左インク x」を集めて head/body モードを較正 (ページ単位だと図でモードが壊れる)
   const pool = [];
+  // S123 ⑨: 見出しモードは「行数の多さ」ではなく「載っているページ数」で選ぶ。
+  //   2019h31h では 問N 見出しの左縁が奇数/偶数ページで 140/150 に揺れ (スキャン配準)、
+  //   一方で表・図枠の左縁 170 が 9 ページ × 220〜470 行で行数首位になり head=170 と誤較正 → 87/87 全問 crop 省略。
+  //   見出しは 1 ページ 14〜150 行程度 (2〜4 問 × 1 行) でほぼ全ページに現れ、図枠は少数ページに集中する。
+  //   そこで bucket ごとに「その範囲の行数を持つページ数」を投票し、最多得票を head とする (同票は行数で決める)。
+  const pageVotes = {};
   for (const [rel] of byPage) {
     const png = path.join(ROOT, "data/ip/exams", rel);
     if (!existsSync(png)) continue;
     const { data, info } = await sharp(png).greyscale().raw().toBuffer({ resolveWithObject: true });
     const W = info.width, H = info.height, C = info.channels;
+    const perPage = {};
     for (let y = 0; y < H; y++) {
       let l = -1, c = 0;
       for (let x = 0; x < W && c < 6; x++) if (data[(y * W + x) * C] < INK) { if (l < 0) l = x; c++; }
-      if (c > 5 && l >= 0) pool.push(l);
+      if (c > 5 && l >= 0) { pool.push(l); const b = Math.floor(l / 10) * 10; perPage[b] = (perPage[b] || 0) + 1; }
     }
+    for (const [b, n] of Object.entries(perPage)) if (n >= HEAD_PAGE_ROWS_LO && n <= HEAD_PAGE_ROWS_HI) pageVotes[b] = (pageVotes[b] || 0) + 1;
   }
   const noCalib = (why) => { console.warn(`  ⚠ precrop: ${why} — 全問 crop 省略`); return { crops: new Map(), skip: { pages: pages.length, qPageMismatch: wanted.size, qChumon: 0, qMergedPreamble: 0, qThinBand: 0 } }; };
   if (pool.length < 50) return noCalib("ページのインクが少なすぎて較正できない");
   const modes = bucketModes(pool);
   const bodyMode = modes[0][0];
-  const headCand = modes.filter(([k]) => k <= bodyMode - 20).sort((a, b) => b[1] - a[1]);
+  const headCand = modes.filter(([k]) => k <= bodyMode - 20)
+    .sort((a, b) => (pageVotes[b[0]] || 0) - (pageVotes[a[0]] || 0) || b[1] - a[1]);
   if (!headCand.length) return noCalib("見出しモードを分離できない");
   const headMode = headCand[0][0];
-  console.log(`  precrop calib: head=${headMode} body=${bodyMode} (${pages.length} pages in scope)`);
+  console.log(`  precrop calib: head=${headMode} body=${bodyMode} (${pages.length} pages in scope; head votes ${headCand.slice(0, 3).map(([k, n]) => `${k}=${pageVotes[k] || 0}p/${n}r`).join(" ")})`);
 
   const outDir = path.join(ROOT, "data/ip/quiz/.phase2/precrop", examId);
   mkdirSync(outDir, { recursive: true });

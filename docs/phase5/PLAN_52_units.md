@@ -3,7 +3,7 @@
 > 作成: Session 118 (2026-09-08)。真相源は `docs/STATE.md`、本 PLAN は ⑤-2 残作業の**単位 (unit) 定義・予算・手順・停止条件**を固定する。
 > 1 セッション = 1 unit。unit 開始前に主 context が「agent 数 / 予想 token / 予想時間 / 停止条件」を申告し、ユーザー承認で放つ。叠加禁止 (直列)。
 
-## 0. 現在地 (2026-09-08、S122 U3a 完了)
+## 0. 現在地 (2026-09-08、S123 U3b 完了)
 
 | 区分 | exam | 状態 |
 |---|---|---|
@@ -11,8 +11,9 @@
 | **U0 脚本改修** | — | **完了 (S119、Rule D PASS 3 往復)**: return 縮約 (agents が part file を Write → `quiz-fidelity-merge-parts.mjs` で束ねる、workflow に fs 無しのため) / `--precrop` (chumon ∪ merged_preamble 164 題は除外、2015h27a 90/100) / machdiff VERDICT_CONFLICT / prompt 4 条追記。**U1 初回 run で part 書き出し成功率と crop 優先読みを実証すること** |
 | **U2 波 1〜3 Rule D** | 2015h27a / 2016h28a / 2016h28h / 2017h29a / 2017h29h / 2018h30a | **完了 (S121)**: reviewer 3 体 (別 type、opus) 直列、462 問 / 是正 41 題 (波 2 は 16 に訂正) を**全題原寸独立実読**、MAJOR 0 / 誤是正 0 / correct_answer 変更 0。指摘 = evidence 計数 MINOR 11 + ⑨ 級 NIT 15、データ修正 0。⑨ 脚本改修 2 件 (merge-parts `--journal` / prompt 0b 隔離) も同 unit で実装 + 審査済。`evidence/quiz_full52_ruleD_U2_S121.md` |
 | **U3a Sonnet 単 pass** | 2018h30h | **完了 (S122、Rule D PASS-with-notes)**: run `wf_fb2409c7-386` 70/70、4.25M token / 26 分、UNREADABLE 0、DISCREPANT 8 / 差分 13 / 正解肢上 2、machdiff 実残差 0 (偽陽性 5)。是正 8 題 88 field (q005 = D-144 段 2 choice_figures 化、正解肢「DFD」が答えを書いていた型)、correct_answer 0。MAJOR 0 / MINOR 2 / NIT 3 全処置。`evidence/quiz_full52_u3a_S122.md` |
-| 波 4 残 (U3b) | 2019h31h (S118 Opus gp 14/87, cr 13/87 は再利用不可) | Sonnet 単 pass で全量新規 run (≈ 520 万) |
-| 未着手 | 2019r01a 59 / 2020r02o 73 / 2021r03 64 / 2022r04 78 / 2023r05 79 / 2024r06 58 / 2025r07 76 / 2026r08 66 (母数 = `full52_population_S118.json`) | — |
+| **U3b Sonnet 単 pass** | 2019h31h | **完了 (S123、Rule D PASS-with-notes)**: run `wf_f840c3f7-511` 87/87、5.17M token / 16 分、UNREADABLE 0、DISCREPANT 10 / 差分 18 / 正解肢上 1、machdiff 実残差 1 (q001「問1 」混入) + 偽陽性 17。是正 9 題 / 17 差分 / 65 field (q015 少量→大量 semantic、q062「①〜③」復元 + D-147 初適用)、**D-147 lock + 23 問 294 field 正規化**、correct_answer 0。MAJOR 0 / MINOR 3 / NIT 3 全処置。⑨ precrop 較正をページ投票に修正 (2019h31h 0→83/87、回帰 md5 同一)。`evidence/quiz_full52_u3b_S123.md` |
+| 次 (U4) | 2019r01a 59 問 | Sonnet 単 pass (≈ 350 万)。U4 前に ⑨「解説本文の丸数字引用 vs choices 突合」を要処理 (S123 §7) |
+| 未着手 | 2020r02o 73 / 2021r03 64 / 2022r04 78 / 2023r05 79 / 2024r06 58 / 2025r07 76 / 2026r08 66 (母数 = `full52_population_S118.json`) | — |
 
 ## 1. 実測に基づく予算の目安 (S118)
 
