@@ -3,10 +3,11 @@
 > 作成: Session 118 (2026-09-08)。真相源は `docs/STATE.md`、本 PLAN は ⑤-2 残作業の**単位 (unit) 定義・予算・手順・停止条件**を固定する。
 > 1 セッション = 1 unit。unit 開始前に主 context が「agent 数 / 予想 token / 予想時間 / 停止条件」を申告し、ユーザー承認で放つ。叠加禁止 (直列)。
 
-## 0. 現在地 (2026-09-08、commit ce3e31e)
+## 0. 現在地 (2026-09-08、S119 U0 完了)
 
 | 区分 | exam | 状態 |
 |---|---|---|
+| **U0 脚本改修** | — | **完了 (S119、Rule D PASS 3 往復)**: return 縮約 (agents が part file を Write → `quiz-fidelity-merge-parts.mjs` で束ねる、workflow に fs 無しのため) / `--precrop` (chumon ∪ merged_preamble 164 題は除外、2015h27a 90/100) / machdiff VERDICT_CONFLICT / prompt 4 条追記。**U1 初回 run で part 書き出し成功率と crop 優先読みを実証すること** |
 | 波 1〜3 (是正済・**Rule D 未審**) | 2015h27a / 2016h28a / 2016h28h / 2017h29a / 2017h29h / 2018h30a | 462 問核験、40 題是正 (8.7%)、answer_affecting 2 |
 | 波 4 (途中停止) | 2018h30h (gp 14/70, cr 12/70) / 2019h31h (gp 14/87, cr 13/87) | run id は S118 log §42、resume 可 |
 | 未着手 | 2019r01a 59 / 2020r02o 73 / 2021r03 64 / 2022r04 78 / 2023r05 79 / 2024r06 58 / 2025r07 76 / 2026r08 66 (母数 = `full52_population_S118.json`) | — |
@@ -56,7 +57,7 @@
 ## 3. 各 unit 共通手順 (チェックリスト)
 1. STATE.md「次セッション」と本 PLAN §0 を読む → 対象 unit を確認。
 2. **起動前申告** (agent 数 / 予想 token / 時間 / 停止条件) → ユーザー承認。
-3. 実行は直列: run → machdiff → fixer → reviewer → 復験。
+3. 実行は直列: run → **`merge_cmd` (return に同梱、0 token) で part を束ねる** → machdiff → fixer → reviewer → 復験。prep は `--precrop` 付きで生成 (crop 無し題は従来どおり源ページ読み)。
 4. ゲート: `quiz-keys-crosscheck` full / `derive-groups --assert-clean` / `chumon-groups-build --check` / vitest / tsc (build は unit 末尾のみ)。
 5. 記録: session log (append) / evidence / failures (Rule B、limit 停止も含む) / §0 の表を更新 / STATE.md 同期。
 6. commit + **push** (ユーザー gate) → セッション終了。

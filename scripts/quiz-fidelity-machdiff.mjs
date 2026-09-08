@@ -7,7 +7,8 @@
 // Run: node scripts/quiz-fidelity-machdiff.mjs <fidelity_input.json> <workflow_result.json | tasks/<id>.output>
 //   出力: AGENT_MISSED (正規化後に差があるのに agent が当該箇所の差分を報告していない) を列挙。exit 1 = 要対応。
 // 既知の盲点 (Rule D MINOR-1): 空白の有無は正規化で消えるため「余り が」「導入 期」型の空白腐敗は検出しない (判定基準でも表記揺れ扱い)。
-// 把関としての exit: AGENT_MISSED>0 / audits が input の samples を全数カバーしていない / UNREADABLE 以外で transcript 欠落 → exit 1。
+// 把関としての exit: AGENT_MISSED>0 / audits が input の samples を全数カバーしていない / UNREADABLE 以外で transcript 欠落
+//   / VERDICT_CONFLICT>0 (S119 U0: verdict=CLEAN なのに discrepancies 非空 = S118 §44 q079 型の自己矛盾) → exit 1。
 
 import { readFileSync } from "node:fs";
 const [inputPath, resultPath] = process.argv.slice(2);
@@ -42,9 +43,14 @@ const mdParse = (s) => (s ?? "").split(/\n/).map((l) => l.trim()).filter(Boolean
 const rowsEqual = (A, B) => A.length === B.length && A.every((r, i) => r.length === B[i].length && r.every((c, j) => c === B[i][j]));
 const firstRowDiff = (A, B) => { for (let i = 0; i < Math.max(A.length, B.length); i++) { const a = A[i] ?? [], b = B[i] ?? []; if (a.length !== b.length || a.some((c, j) => c !== b[j])) return `row ${i}: disp ${JSON.stringify(a)} src ${JSON.stringify(b)}`; } return ""; };
 
-let missed = 0, same = 0, noTranscript = 0, unreadable = 0;
+let missed = 0, same = 0, noTranscript = 0, unreadable = 0, conflict = 0;
 for (const a of res.audits ?? []) {
   const smp = samples.get(a.id); if (!smp) continue;
+  // S118 §44 q079 型: verdict=CLEAN なのに discrepancies を挙げている自己矛盾。
+  // 主 context / fixer は verdict で分岐するため、この矛盾は差分の取りこぼしに直結する (→ exit 1)。
+  if (a.verdict === "CLEAN" && (a.discrepancies ?? []).length > 0) {
+    conflict++; console.log(`✗ VERDICT_CONFLICT ${a.id}: CLEAN with ${a.discrepancies.length} discrepancies`);
+  }
   if (a.verdict === "UNREADABLE") { unreadable++; continue; }
   const tr = a.source_transcript; if (!tr || (!tr.stem && !Object.keys(tr.choices ?? {}).length)) { noTranscript++; continue; }
   const reported = new Set((a.discrepancies ?? []).map((d) => d.field));
@@ -77,5 +83,5 @@ const audited = new Set((res.audits ?? []).map((a) => a.id)); const notAudited =
 if (!Array.isArray(res.audits)) { console.log("✗ result has no audits[]"); process.exit(1); }
 if (notAudited.length) console.log(`✗ COVERAGE: ${notAudited.length}/${samples.size} samples have no audit: ${notAudited.join(", ")}`);
 if (noTranscript) console.log(`✗ ${noTranscript} non-UNREADABLE audit(s) lack source_transcript`);
-console.log(`machdiff: fields same=${same} | AGENT_MISSED=${missed} | audits w/o transcript=${noTranscript} | UNREADABLE skipped=${unreadable} | coverage ${audited.size}/${samples.size}`);
-process.exit(missed || notAudited.length || noTranscript ? 1 : 0);
+console.log(`machdiff: fields same=${same} | AGENT_MISSED=${missed} | VERDICT_CONFLICT=${conflict} | audits w/o transcript=${noTranscript} | UNREADABLE skipped=${unreadable} | coverage ${audited.size}/${samples.size}`);
+process.exit(missed || notAudited.length || noTranscript || conflict ? 1 : 0);
