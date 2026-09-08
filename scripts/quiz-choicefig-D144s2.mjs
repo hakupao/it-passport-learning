@@ -15,6 +15,10 @@
 //   図の名称そのもので、正解肢イ「パレート図」が答えを書いていた = ②-a 型)。源 page-19 実読で 2×2 配置を確認。
 //   この複合図は **下部に次問「問51 …」の 1 行が残っている** ため `bottomCut` を新設した (topCut と対称、trim 前に落とす)。
 //   既存 3 題の SPEC・産物は不変 (`--only <id>` で対象を絞れる)。
+// S122 ⑤-2 U3a 追加: **2018h30h-q005** (状態遷移図 / DFD / E-R 図 / フローチャートの記法例 4 図。dataset のテキスト肢が
+//   図の名称そのもので、正解肢イ「DFD」が**設問文と同語**だったため語句一致だけで答えが自明だった = ②-a 型)。
+//   源 page-03 実読で 2×2 配置 (ア=左上 / イ=右上 / ウ=左下 / エ=右下) を確認。複合図は上端に前問 問4 の ウ/エ 行と
+//   本問の題幹が残るため `topCut: 230`、下部残渣は無いため bottomCut 0。既存 4 題の SPEC・産物は不変。
 // Run: node scripts/quiz-choicefig-D144s2.mjs [--dry-run] [--only <question-id>]
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -28,6 +32,7 @@ const LETTERS = ["ア", "イ", "ウ", "エ"]; const SUFFIX = { ア: "A", イ: "B
 const SPEC = {
   "2014h26a-q046": { topCut: 45 }, "2014h26a-q086": { topCut: 165 }, "2012h24a-q002": { topCut: 0 },
   "2016h28a-q050": { topCut: 0, bottomCut: 160 }, // 1289x1094、y=998-1024 に次問「問51 …」の 1 行。図の下端は y=873
+  "2018h30h-q005": { topCut: 230 }, // 1261x1094、y=9-34 に前問「ウ ベンダ提案… / エ 利用者の要求…」、y=167-192 に題幹「問5 DFD の記述例…」。図の下端は y=922 で下部残渣なし → bottomCut 0
 };
 const TXT = { jp: (L) => `図${L}`, zh: (L) => `图${L}`, en: (L) => `Figure ${L}` };
 
