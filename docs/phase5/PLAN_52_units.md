@@ -3,10 +3,11 @@
 > 作成: Session 118 (2026-09-08)。真相源は `docs/STATE.md`、本 PLAN は ⑤-2 残作業の**単位 (unit) 定義・予算・手順・停止条件**を固定する。
 > 1 セッション = 1 unit。unit 開始前に主 context が「agent 数 / 予想 token / 予想時間 / 停止条件」を申告し、ユーザー承認で放つ。叠加禁止 (直列)。
 
-## 0. 現在地 (2026-09-08、S119 U0 完了)
+## 0. 現在地 (2026-09-08、S120 U1 完了)
 
 | 区分 | exam | 状態 |
 |---|---|---|
+| **U1 Sonnet A/B** | 2015h27a | **完了 (S120)**: Sonnet 単 pass 召回 12/12 差分・8/8 問、偽陽性 0、machdiff 残差 1 (q066 既知仕様)、4.03M token / 15 分、画像 Read 2.3 回/問、part 壊れ 2/68 (journal から復元) → **以後の抄写は Sonnet 5 既定** (`evidence/quiz_sonnet_ab_S120.md`)。⑨: merge-parts `--journal` 復元 / prompt に evidence 参照禁止 |
 | **U0 脚本改修** | — | **完了 (S119、Rule D PASS 3 往復)**: return 縮約 (agents が part file を Write → `quiz-fidelity-merge-parts.mjs` で束ねる、workflow に fs 無しのため) / `--precrop` (chumon ∪ merged_preamble 164 題は除外、2015h27a 90/100) / machdiff VERDICT_CONFLICT / prompt 4 条追記。**U1 初回 run で part 書き出し成功率と crop 優先読みを実証すること** |
 | 波 1〜3 (是正済・**Rule D 未審**) | 2015h27a / 2016h28a / 2016h28h / 2017h29a / 2017h29h / 2018h30a | 462 問核験、40 題是正 (8.7%)、answer_affecting 2 |
 | 波 4 (途中停止) | 2018h30h (gp 14/70, cr 12/70) / 2019h31h (gp 14/87, cr 13/87) | run id は S118 log §42、resume 可 |
@@ -34,8 +35,8 @@
 - 停止条件: 改修が波 1〜3 の再現性 (machdiff 残差) を変えたら差し戻し。
 
 ### U1 — Sonnet 5 A/B (agent 68 体 Sonnet + 裁決 Opus ≤ 15 体、≈ Sonnet 400 万 + Opus 100 万、20 分)
-- 対象 2015h27a 68 問 (Opus 双 pass 済、確認済欠陥 13 題 = 基準)。Sonnet 単 pass (U0 の precrop 版) → machdiff → Opus が DISCREPANT 題だけ severity 裁決。
-- 判定指標: **召回 ≥ 12/13 かつ machdiff 後の偽陽性が Opus 以下** → 以後の抄写は Sonnet。未達なら Opus 継続 (precrop で画像 Read は削減済)。
+- 対象 2015h27a 68 問 (Opus 双 pass 済、確認済欠陥 **8 問 / 12 差分** = 基準。S120 訂正: 旧記載「13 題」は波 1 全体 2015h27a 8 + 2016h28a 5 の数)。Sonnet 単 pass (U0 の precrop 版) → machdiff → Opus が DISCREPANT 題だけ severity 裁決。
+- 判定指標: **問召回 ≥ 7/8 かつ差分召回 ≥ 11/12 かつ agent 偽陽性 ≤ 2 (Opus 双 pass = q009)** → 以後の抄写は Sonnet。**S120 結果: 12/12・8/8・FP 0 → PASS、Sonnet 既定**。未達なら Opus 継続 (precrop で画像 Read は削減済)。
 - 産物: `evidence/quiz_sonnet_ab_S119.md` (召回 / FP / token 実測 / 見逃した欠陥の型)。
 - 停止条件: Sonnet の UNREADABLE > 5% なら中止して報告。
 
@@ -44,7 +45,7 @@
 - 完了で **push** (ユーザー gate)。
 
 ### U3 — 波 4 resume (2 unit に分割可: U3a 2018h30h 70 問 / U3b 2019h31h 87 問)
-- U1 の結論に従うモデルで。既存 Opus 完了分 (14+12 / 14+13) は resume で再利用。
+- **抄写 = Sonnet 5 単 pass** (U1 PASS)。既存 Opus 完了分 (14+12 / 14+13) は別モデル・別 prompt のため resume 再利用不可 → Sonnet で全量新規 run (U1 実測 ≈ 6 万 token/問 → 70 問 ≈ 420 万、87 問 ≈ 520 万)。
 - 手順: 核験 → machdiff → fixer (opus) → reviewer (opus、別 type) → gate → commit + push。
 
 ### U4〜U11 — 残 8 exam (1 exam / unit、順序 2019r01a → 2020r02o → 2021r03 → 2022r04 → 2023r05 → 2024r06 → 2025r07 → 2026r08)
