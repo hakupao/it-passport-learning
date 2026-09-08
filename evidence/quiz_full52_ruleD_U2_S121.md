@@ -64,3 +64,60 @@
 - NIT-1 現状維持、NIT-2 は N7 (q066 図再裁断) に同梱、NIT-3 は次波 fixer 雛形へ、NIT-4 (`figure_description` の旧文言、学習者不可視) は ⑨ に登録。
 - 復験: reviewer-1 に脚本 diff 2 件の再審のみ依頼 → 下記。
 - 復験 (reviewer-1): MINOR-4/5/6・NIT-5/6/7 **すべて解消** (reviewer が journal 順序・part 削除・引数 4 ケースを実行確認)。新規 NIT-8 = ヘッダ「exit 1 = part 欠落」が journal モードと食い違う → ヘッダに 1 行追記で処置。**波 1 = PASS (処置済)**。
+
+---
+
+## 波 2 (2016h28h / 2017h29a) — reviewer `u2-reviewer-w2` = `oh-my-claudecode:code-reviewer` (opus)
+
+**VERDICT: PASS-with-notes (MAJOR 0 / 誤是正 0 / correct_answer 変更 0)**
+
+### 再計算 (gp/cr JSON 直読、machdiff 4 run 再実行)
+| 検証 | evidence | 実測 |
+|---|---|---|
+| 2016h28h gp/cr DISCREPANT | 4 / 4 | 一致 |
+| 2017h29a gp/cr DISCREPANT | 5 / 6 | 一致 |
+| union (題) | 5 / 6 | 一致 |
+| machdiff same / MISSED | 325·5 / 323·7 / 456·4 / 457·3 | 全セル一致、coverage 66·66·92·92 |
+| onCorrectChoiceCount | 0 / 2 | 一致 |
+| 正解肢上 | 3 題 | 一致 (q089 エ は双 pass 齊漏、machdiff のみ捕捉) |
+| 採用 (題) | 8 / 合計 15 | **9 / 合計 16** — 不一致 [MINOR-1] |
+
+### 適用照合
+- 是正 16 題すべて出荷層に反映。独立検査 184 件中 181 PASS、残 3 = `2016h28h-q094` raw `stem_jp` (3 層) でアンカ自体が源と異なる崩れ方 → sub() 無言 skip (clean 層は是正済、§5 N5 登記済 → MINOR-5)。二重適用 0、別問・他 exam 混入 0 (`ce3e31e^..HEAD` 2900 問機械比較で波 2 exam の変更は期待の 14 id のみ)。層別 field 数 (stem 7 + choices 16)×3 = 69 / sidecar 31 / 解説 16 / note 10 は evidence と一致。`--dry-run` applied 0 / skipped 210。D-143: round1 は新規追記のみ (in-place 変更 0)、final note 10 件 append-only + MARK 1 回。是正後 machdiff 残差 1/1/2/1 = §7 と一致、post manifest が現データと 158/158 一致。
+
+### 原寸独立抽検 (16 題全件、源 PNG を reviewer が実読)
+| id | page | 現データ=源 | 所見 |
+|---|---|---|---|
+| 2016h28h-q089 ア〜エ | 40 | ○ | 4 肢とも第 1 節後の読点と文末句点が源に実在。正解肢エ 一致 |
+| 2017h29a-q012 ア/イ | 06 | ○ | ア に括弧混入なし (正解肢)、イ は源も「上位10人」 |
+| 2017h29a-q098 ア〜エ | 39 | ○ | `(not A ) and ( B or C )` の空白位置まで源どおり。正解肢イ 一致 |
+| 2016h28h-q009 | 05 | ○ | 「A社」字形明瞭で 4 ではない。エ の「A 社の検査」も一致 |
+| 2016h28h-q040 / q051 | 19 / 24 | ○ | 〔報告ルール〕〔条件〕とも亀甲括弧 |
+| 2016h28h-q060 | 28 + WebP | ○ | 源本文に a/b/c の散文は存在しない。WebP に 3 図・キャプション・肢、`has_figure=true` → 段落削除は正 |
+| 2016h28h-q067 | 31 | ○ | ア「アクセス可能とする。」、ウ「メンテナンス」 |
+| 2016h28h-q094 | 42 | ○ (clean) | 源は “仕入一覧” “仕入” “商品”。clean 層が一致 |
+| 2017h29a-q001 | 02 | ○ | 「単位␣万円／日」コロンなし。結合ヘッダ実在、Z 行は源も 8/7/8 |
+| 2017h29a-q020 | 10 | ○ | 「単位␣百万円」一致。マイナスは源が全角字形 [MINOR-4] |
+| 2017h29a-q022 / q047 | 11 / 20 | ○ | 「曇りや雨」「電話で内容を伝えた」 |
+| 2017h29a-q078 / q079 | 30 | ○ | 「銅線ケーブル」「〔送信先〕」 |
+| 2017h29a-q096 | 37 | ○ | 〔事例〕亀甲 |
+
+**逆方向の是正 (誤是正) 0 件。**
+
+### 判断・zh/en・解説
+- q060 段落削除は波 1 q066 と同規則で妥当。q001 の各セル展開は源の 2 段ヘッダ (技術者/製品) を保存、波 1 q043 (全列横断の表題 → キャプション行) とは構造が別 → ⑨-d は学習者可視の矛盾ではなく方針文書化の課題。括弧 4 題は全件字形確定、線引き遵守。zh/en は語義変化 (q009 / q060 / q012 イ / q022 / q078 / q098) のみ同期、cosmetic では不触。q047 の zh/en は元から忠実。解説 q022 (天候デリバティブ) / q009 (A社 単独親事業者) は correct_answer (イ / ア) と整合。ゲート crosscheck GREEN / chumon --check / assert-clean GREEN を再実行確認。
+
+### 指摘
+- **[MINOR-1]** evidence §1 2017h29a 採用「8」/ 合計「15」は誤り → **9 / 16**。q020 は machdiff 由来項目 (マイナス) 見送りでも「単位：」是正で採用されている。§7 (16 問) / §8 (14 + 2) / fixer FIX キー 16 と自己矛盾。
+- **[MINOR-2]** evidence §2「去重 6 題 / 12 field」は誤り → 4 run 去重 **8 題 / 11 field** (直下の表も 8 行)、うち採用 6 題 / 9 field。
+- **[MINOR-3]** evidence §3 は q020 の出所を「主 context 実読」とするが、gp・cr 両 agent が `verdict=CLEAN` のまま discrepancy 報告済 (現行 machdiff は `VERDICT_CONFLICT` 2 件で検出)。S118 §44 q079 型 → 出所訂正 + ⑨ 実例登記。
+- **[MINOR-4]** evidence §5 マイナス見送り理由「走査画像から判別できない」は過大。原寸で ASCII ハイフンでないことは明確 (U+2212 / U+FF0D の別が付かないだけ)。結論妥当、理由記述を訂正。
+- **[MINOR-5]** `2016h28h-q094` raw `stem_jp` は 3 層とも崩れたまま (`『仕入一覧" 表` / `*仕入” 表`)。学習者影響 0。raw→clean 再 merge が走ると是正が失われる → 波 1 q043 と合わせ「.phase1 / raw を出荷源にしない」前提を evidence に明記。
+- **[NIT-1]** q098 は肢 `(not A ) and ( B or C )`、解説 `(not A) and (B or C)` で空白が異なる (§4(e) 意図どおりだが 2 種の表記が並ぶ)。
+- **[NIT-2]** 括弧是正 4 題の zh/en は `[条件]` `[报告规则]` `[Conditions]` のまま (保真規則は jp 対源、⑨-c 同族)。
+- **[NIT-3]** clean 層で `〔報告ルール〕` (q040) は独立行だが `〔条件〕` (q051) / `〔事例〕` (q096) は後続本文と同一行に連結。源は 3 件とも独立行。本波の是正由来ではなく既存の改行正規化由来 → N5 / 空白系列に並記。
+
+### 処置 (主 context、S121)
+- MINOR-1: §1 表を 2017h29a 採用 9 / 合計 16 (10.1%) に訂正 + 訂正注記。MINOR-2: §2 を「去重 8 題 / 11 field (採用 6 題 / 9 field)」に訂正。MINOR-3: §3 q020 の出所を「両 agent が CLEAN のまま discrepancy 記載 (§44 q079 型、machdiff VERDICT_CONFLICT で検出)」に訂正 → ⑨ 実例として本 evidence に登記。MINOR-4: §5 の見送り理由を「全角 2 字形のいずれかが確定できない」に訂正。MINOR-5: §8 冒頭に「出荷源 = clean 層 + sidecar、raw / .phase1 からの再 merge 禁止 (S117 教訓)、再 merge 前に N5 台帳を是正」を明記。データ変更 0。
+- NIT-1 (q098 解説の空白表記) / NIT-2 (括弧の zh/en) / NIT-3 (節見出しの改行) は ⑨ に登録 (下記 §横断)。
+- evidence 文言のみの訂正のため復験は省略 (波 1 と同扱い)。**波 2 = PASS (処置済)**。
