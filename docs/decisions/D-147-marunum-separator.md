@@ -26,3 +26,13 @@
 | 区切り無し容認 | 源には区切りがあり、「①②③」は判読性が落ちる (脱落は OCR 欠陥) |
 | 全庫の読点を今回まとめて統一 | 594 + 279 問の書換 = Rule A 対象の大規模改写。⑤-2 unit の予算・境界 (D-146) を超える。別件で判断 |
 | 本 unit は q062 だけ、残 22 問は後回し | 23 問・決定的正規表現の範囲なら 1 脚本で終わり、後回しにすると次 unit 以降で毎回同じ議論になる |
+
+## §6 拡張 (Session 124, 2026-09-09) — 解説層にも同じ規則を適用
+- **契機**: S123 §7 ⑨。choices を統一した結果、同じ 23 問の解説 (distractors の「①②」引用 / correct の「①②③のうち」/ key_guard final note) が旧形のまま残り、同一問内で旧新併存 (2019h31h-q062 が実例)。S124 §0 実測: 非 D-147 形 20 問 / 122 field (round1 除外)。**確定適用 (attempt 2): 18 問 / 106 field** (note_jp 12 と節境界 SKIP 4 を除く)。
+- **ユーザー gate (S124)**: 「23 問の解説を決定的正規化」を選択。23 問以外の 34 問 / 75 field (題幹項目の散文引用「①②の説明」型、choice 引用ではない) は **範囲外のまま** (§5 と同じ扱い、⑨)。
+- **決定**: §1 / §3 の字種 (jp「①, ②」/ zh「①、②」/ en「①, ②」、and 形適合) を **解説本文の真相源 `.phase2` (expl_jp_ correct/distractors/points、expl_tr_ の zh/en) に適用**し、`quiz-phase2-merge` で sidecar を再生成する。脚本 `scripts/quiz-marunum-expl-D147.mjs` (dry-run 既定。choices 脚本と同一なのは IDS 23 問と SEP 3 字種、正規表現は run 検出 + 区切り置換の 2 本立て + 節境界ガード)。
+- **key_guard の note_jp (final / round1) は対象外** (attempt 2 で確定)。内部メタで zh/en の引用 (「zh「①、③」」) を含み、字種だけの変更で D-143 の round1 併記を無意味に増やすため (Rule B `failures/quiz_marunum_expl_S124_attempt_1.md` MAJOR-2 / MINOR-2)。q062 note の導出文中「①③」は引用として存置。
+- **節境界ガード** (attempt 2 で追加): 散文では別の節の丸数字が隣接しうる (「④ の先行②③、⑧ の先行」「都是④，④不结束」)。丸数字の連 (run) の区切りが混在、または run 内で丸数字が重複する field は**丸ごと不触**にし SKIP 一覧に出す。該当 4 field (2010h22a-q097 points[1] jp/zh・dist.イ.zh / 2018h30a-q081 dist.ウ.zh) は HEAD のまま (choices 引用ではなく散文、意味は正しい)。**教訓: 正規表現の安全性は入力の形 (choices = 裸の列挙) が担保していたもので、散文に流用できない。** ガードの限界 (reviewer MINOR-4): 区切りが一様な run の節境界 (「②、③、⑧ の先行」型) は検出できない。本 corpus では書換えた一様 run 47 件を reviewer が全数目視し節境界 0 件だったが、34 問や他 unit に流用する際は再燃する。
+- **残課題 (reviewer MINOR-3、⑨ 登録、ユーザー判断待ち)**: SKIP 4 field により 2010h22a-q097 (correct.jp「(②, ③) と…」vs points[1].jp「②③、⑧」、zh dist.ア「（②、③）」vs dist.イ「（④，⑤，⑥）」) と 2018h30a-q081 (dist.イ.zh「①、②、③」vs dist.ウ.zh「②④」) は同一問内の字種不統一が残る。閉じるには文を書き換えて節境界を丸数字の隣接から外す LLM pass (Rule A 対象) が要る。非文法文を出すより字種不統一の方が軽いとして本 unit では受容。
+- **前提検証**: 影響 15 exam について適用前に `quiz-phase2-merge` を再実行し git diff 0 (merge が冪等 = `.phase2` が真相源として stale でない) を確認してから適用。translations sidecar (S117 再 merge 禁止) とは事情が異なる。
+- 却下: (a) 解説を触らず q062 note だけ旧形に戻す → 23 問で不一致が残り、次 unit 以降で毎回同じ議論になる。(b) 34 問の散文引用も統一 → choice 引用ではなく、散文中の「①②」は列挙記号としての用法が混在し、機械規則で一律にできない (Rule A 対象の改写になる)。
