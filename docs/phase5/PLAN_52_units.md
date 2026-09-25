@@ -3,7 +3,7 @@
 > 作成: Session 118 (2026-09-08)。真相源は `docs/STATE.md`、本 PLAN は ⑤-2 残作業の**単位 (unit) 定義・予算・手順・停止条件**を固定する。
 > 1 セッション = 1 unit。unit 開始前に主 context が「agent 数 / 予想 token / 予想時間 / 停止条件」を申告し、ユーザー承認で放つ。叠加禁止 (直列)。
 
-## 0. 現在地 (2026-09-25、S125 U8 完了)
+## 0. 現在地 (2026-09-25、S125 U9 完了)
 
 | 区分 | exam | 状態 |
 |---|---|---|
@@ -17,8 +17,9 @@
 | **U6 Sonnet 単 pass** | 2021r03 | **完了 (S125、Rule D PASS-with-notes)**: 88 問、run `wf_180a2db0-a1b` 88/88、5.57M token / 11.9 分、UNREADABLE 1 (q053 = page 記録ずれ、page-25 実読で CLEAN)、DISCREPANT 11 / 差分 14 + machdiff 実残差 2 (q070 読点 / q100「問100」) = 採用 16 / 13 題、正解肢上 2、correct_answer 0。**page 記録ずれ 2 件 (q051 23→24 / q053 24→25) を D-145 pagefix-apply (MOVE_QUESTION) で是正**。MAJOR 0 / MINOR 0 / NIT 4 全処置。evidence `quiz_full52_u6_S125.md` |
 | **U7 Sonnet 単 pass** | 2022r04 | **完了 (S125、Rule D PASS-with-notes)**: 75 問、run `wf_9220b31c-fa2` 75/75、4.94M token / 13.4 分、UNREADABLE 0、precrop 46/75 (頁パリティ)。採用 36 差分 / 19 題 (agent 32 + machdiff 実残差 4)、正解肢上 9、**aa 3 = q032 選択肢が図 → D-144 段 2 choice_figures 化** (U3a q005 同型)、q066 斜線ゼロ 109/199/190→100 (解説論拠書換)、q073 TIPv*→IPv*、correct_answer 0。MAJOR 0 / MINOR 0 / NIT 4 全処置。evidence `quiz_full52_u7_S125.md` |
 | **U8 Sonnet 単 pass** | 2023r05 | **完了 (S125、Rule D PASS-with-notes)**: 91 問、run `wf_b22ad070-03c` 91/91、5.93M token / 13.7 分、UNREADABLE 0、採用 20 差分 / 16 題、正解肢上 4、machdiff 実残差 0 (偽陽性 3)。**q011 clean「変革」→ 源「刷新」(raw 脱字を clean が推測補完)**、q025 19万円→10万円 (斜線ゼロ 4 exam 連続)、correct_answer 0。MAJOR 0 / MINOR 0 / NIT 5 全処置。evidence `quiz_full52_u8_S125.md` |
-| 次 (U9) | 2024r06 **72 問** (precrop 68/72、S125 内で続行) | Sonnet 単 pass (≈ 470 万) |
-| 未着手 | 2025r07 80 / 2026r08 71 (**S125 で population 実数に訂正** — 旧記載 64/78/79/58/76/66 はいずれも誤り、2021r03 旧 64 → 88) | — |
+| **U9 Sonnet 単 pass** | 2024r06 | **完了 (S125、Rule D PASS-with-notes)**: 72 問、run `wf_35e2fa62-0ea` 72/72、4.64M token / 9.7 分、UNREADABLE 0、machdiff MISSED 0、採用 11 / 5 題 (q012 ア 正解肢 読点、**q059 ア 19cnm→10cm 斜線ゼロ 5 exam 連続**、q062〔プログラム〕・擬似言語リテラル “”、q082、q085)、正解肢上 1、correct_answer 0。fixer 逸脱 4 件すべて reviewer 承認。MAJOR 0 / MINOR 0 / NIT 4 全処置。evidence `quiz_full52_u9_S125.md` |
+| 次 (U10) | 2025r07 **80 問** (population 実数) | Sonnet 単 pass (≈ 80 × 6.5 万 ≈ 520 万) |
+| 未着手 | 2026r08 71 (**S125 で population 実数に訂正** — 旧記載 64/78/79/58/76/66 はいずれも誤り、2021r03 旧 64 → 88) | — |
 
 ## 1. 実測に基づく予算の目安 (S118)
 
