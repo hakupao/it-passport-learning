@@ -3,7 +3,7 @@
 > 作成: Session 118 (2026-09-08)。真相源は `docs/STATE.md`、本 PLAN は ⑤-2 残作業の**単位 (unit) 定義・予算・手順・停止条件**を固定する。
 > 1 セッション = 1 unit。unit 開始前に主 context が「agent 数 / 予想 token / 予想時間 / 停止条件」を申告し、ユーザー承認で放つ。叠加禁止 (直列)。
 
-## 0. 現在地 (2026-09-09、S124 U4 完了)
+## 0. 現在地 (2026-09-25、S125 U5 完了)
 
 | 区分 | exam | 状態 |
 |---|---|---|
@@ -13,8 +13,9 @@
 | **U3a Sonnet 単 pass** | 2018h30h | **完了 (S122、Rule D PASS-with-notes)**: run `wf_fb2409c7-386` 70/70、4.25M token / 26 分、UNREADABLE 0、DISCREPANT 8 / 差分 13 / 正解肢上 2、machdiff 実残差 0 (偽陽性 5)。是正 8 題 88 field (q005 = D-144 段 2 choice_figures 化、正解肢「DFD」が答えを書いていた型)、correct_answer 0。MAJOR 0 / MINOR 2 / NIT 3 全処置。`evidence/quiz_full52_u3a_S122.md` |
 | **U3b Sonnet 単 pass** | 2019h31h | **完了 (S123、Rule D PASS-with-notes)**: run `wf_f840c3f7-511` 87/87、5.17M token / 16 分、UNREADABLE 0、DISCREPANT 10 / 差分 18 / 正解肢上 1、machdiff 実残差 1 (q001「問1 」混入) + 偽陽性 17。是正 9 題 / 17 差分 / 65 field (q015 少量→大量 semantic、q062「①〜③」復元 + D-147 初適用)、**D-147 lock + 23 問 294 field 正規化**、correct_answer 0。MAJOR 0 / MINOR 3 / NIT 3 全処置。⑨ precrop 較正をページ投票に修正 (2019h31h 0→83/87、回帰 md5 同一)。`evidence/quiz_full52_u3b_S123.md` |
 | **U4 Sonnet 単 pass** | 2019r01a | **完了 (S124、Rule D PASS-with-notes)**: 母数 **52 問** (旧記載 59 は算術誤り、population 真相)。run `wf_80761953-9cb` 52/52、3.12M token / 8.8 分、UNREADABLE 0、DISCREPANT 4 / 差分 4 / 正解肢上 1、**machdiff 実残差 0 / 偽陽性 0**。是正 4 題 14 field (q016/q036/q041 読点脱落、q097 減失→滅失 semantic)、correct_answer 0。MAJOR 0 / MINOR 4 / NIT 5 全処置。U4 前に **D-147 §6** (解説層 23 問 → 18 問 / 106 field、attempt 1 FAIL → 節境界ガードで attempt 2 PASS-with-notes、Rule B 記録)。`evidence/quiz_full52_u4_S124.md` / `evidence/quiz_marunum_expl_D147_S124.md` |
-| 次 (U5) | 2020r02o 73 問 (母数は `full52_population_S118.json` で再確認) | Sonnet 単 pass (≈ 73 × 6 万 ≈ 440 万) |
-| 未着手 | 2021r03 64 / 2022r04 78 / 2023r05 79 / 2024r06 58 / 2025r07 76 / 2026r08 66 (母数 = `full52_population_S118.json`) | — |
+| **U5 Sonnet 単 pass** | 2020r02o | **完了 (S125、Rule D PASS-with-notes)**: 母数 **60 問** (旧記載 73 は誤り、population 真相)。run `wf_4c528418-96c` 60/60、3.88M token / 9.3 分、UNREADABLE 0、DISCREPANT 15 / 差分 24 / 正解肢上 4、machdiff MISSED 7 = 偽陽性 7 (q001 表型 4 / q011 DFD 図文章化 3)、実残差 0。是正 15 題 24 差分 127 field (q004 過去19年→10年 ×2・q075 斜線入りゼロ誤読 = semantic 数字、q026 防災品→防炎品、q100 ア 相手方→相手 [正解肢] / イ 読み見→盗み見 ほか)、correct_answer 0。MAJOR 0 / MINOR 0 / NIT 3 全処置。evidence `quiz_full52_u5_S125.md` |
+| 次 (U6) | 2021r03 **88 問** (population 実数) | Sonnet 単 pass (≈ 88 × 6.5 万 ≈ 570 万) |
+| 未着手 | 2022r04 75 / 2023r05 91 / 2024r06 72 / 2025r07 80 / 2026r08 71 (**S125 で population 実数に訂正** — 旧記載 64/78/79/58/76/66 はいずれも誤り、2021r03 旧 64 → 88) | — |
 
 ## 1. 実測に基づく予算の目安 (S118)
 
