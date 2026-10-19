@@ -11,7 +11,8 @@
 //   POST body = `{ surface_jp: "プロセッサ" }` resolved via
 //   IndexV2.glossary_index.surface_jp_to_id → loadGlossary().entries.find(id).
 //
-// D-097 firewall: `/api/glossary/hover` is matcher-covered by middleware Basic Auth.
+// D-148 owner gate: `/api/glossary/hover` POST → 503 unless the `itp_owner`
+// cookie matches OWNER_KEY (the D-097 middleware Basic Auth was never wired).
 // D-095 stable-prefix: glossary entry contextBlock → instruction → fixed prompt.
 // D-085 §2.4: hover model role = `deepseek-chat` (short factual lookup).
 // D-088 §2.3 cache discipline: hover scope yields a DIFFERENT prefix per

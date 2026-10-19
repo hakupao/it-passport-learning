@@ -9,8 +9,8 @@
 //
 // D-085 §2.2 NO localStorage Resume for term hover (ephemeral; close = forget).
 // D-088 §2.4 error surface = locked Chinese fallback via formatUserFacingError.
-// D-097 firewall: browser HTTP auth cache carries Basic Auth from the first
-// list-page load; fetch() inherits it automatically.
+// D-148 owner gate: same-origin fetch() sends the httpOnly `itp_owner` cookie
+// automatically; non-owners get 503 (surfaced via the error path).
 //
 // Session 46 Step 14 a11y polish (Full WCAG 2.1 AA):
 //   - Contrast bumps mirror QuizExplain (text-black/40 → /55, /50 → /60).

@@ -23,8 +23,9 @@
 //     "escalate"?: boolean                                 // optional reasoning bump per D-104 §2.2
 //   }
 //
-// D-097 firewall (middleware Basic Auth) passes through; tutor route is not
-// in the public allowlist so it sits behind the same gate as Phase 2 routes.
+// D-148 owner gate: POST → 503 unless the `itp_owner` cookie matches
+// OWNER_KEY (the D-097 middleware Basic Auth was never wired; middleware
+// passes /api/* through), same as /api/chat and /api/quiz/explain.
 //
 // Runtime = nodejs (Anthropic / DeepSeek SDK + future provider fan-out);
 // maxDuration = 60s (tutor turns are longer than Phase 2 routes — V4 pro
@@ -43,6 +44,7 @@ import { validateTutorRequestBody } from "@/lib/ai/tutorRequest";
 import { STREAM_CONFIG, formatUserFacingError } from "@/lib/ai/retry";
 import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
 import { recordCapEvent } from "@/lib/ai/cap";
+import { isOwnerRequest } from "@/lib/owner";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -55,6 +57,12 @@ function jsonError(status: number, message: string): Response {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // D-148 owner gate: before parsing the body or touching any LLM. Fail-closed
+  // (OWNER_KEY unset ⇒ everyone gets 503).
+  if (!(await isOwnerRequest(request))) {
+    return jsonError(503, "disabled");
+  }
+
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -156,7 +164,7 @@ export async function GET(): Promise<Response> {
       `Active tutor provider (env LLM_PROVIDER_TUTOR): ${provider}\n` +
       `Active tutor model: ${activeModel}\n` +
       `Required env var on this deploy: ${expectedKey}\n` +
-      `D-097 firewall: request must include Basic Auth header.\n` +
+      `D-148 owner gate: POST returns 503 {"error":"disabled"} unless the itp_owner cookie (set via ?owner_key=<OWNER_KEY> on any page) matches.\n` +
       `D-103 §2.4 nested-breakpoint cache layout applied (SYSTEM outer + preamble inner).\n` +
       `D-104 §2.1 3-way env-routable matrix; D-104 §2.5 separate LLM_PROVIDER_TUTOR env.\n`,
     {

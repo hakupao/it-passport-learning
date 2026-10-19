@@ -19,6 +19,7 @@ import {
   type QuizQuestion,
 } from "@/lib/quiz/quizModel";
 
+import { QuizFeedback } from "./QuizFeedback";
 import { ChoiceBody, StemBlocks } from "./QuizRichText";
 import styles from "./quiz.module.css";
 
@@ -27,6 +28,8 @@ interface Props {
   label: string;
   sublabel: string;
   questions: QuizQuestion[];
+  /** D-149: server-resolved owner flag (D-148 cookie); gates the report button. */
+  isOwner?: boolean;
 }
 
 export function QuizSet({
@@ -34,6 +37,7 @@ export function QuizSet({
   label,
   sublabel,
   questions,
+  isOwner = false,
 }: Props): React.ReactElement {
   const t = useTranslations("Quiz");
 
@@ -53,7 +57,14 @@ export function QuizSet({
         <p className={styles.empty}>{t("empty")}</p>
       ) : (
         questions.map((q, i) => (
-          <QuestionCard key={q.id} q={q} index={i + 1} t={t} locale={locale} />
+          <QuestionCard
+            key={q.id}
+            q={q}
+            index={i + 1}
+            t={t}
+            locale={locale}
+            isOwner={isOwner}
+          />
         ))
       )}
     </div>
@@ -65,11 +76,13 @@ function QuestionCard({
   index,
   t,
   locale,
+  isOwner,
 }: {
   q: QuizQuestion;
   index: number;
   t: ReturnType<typeof useTranslations>;
   locale: string;
+  isOwner: boolean;
 }): React.ReactElement {
   const [revealed, setRevealed] = useState(false);
   const choices = localizedChoices(q, locale);
@@ -145,6 +158,7 @@ function QuestionCard({
       {q.terms.length > 0 ? (
         <p className={styles.terms}>{q.terms.join(" · ")}</p>
       ) : null}
+      {isOwner ? <QuizFeedback questionId={q.id} locale={locale} /> : null}
     </article>
   );
 }

@@ -8,7 +8,8 @@
 //   Q3=a SSE response, reusing buildChatSseResponse from chat.ts
 //   Q4=a Step 6 core first; chars/3 calibration + D-098 §2.2 v1.1 amend at close
 //
-// D-097 firewall: `/api/quiz/explain` is matcher-covered by middleware Basic Auth.
+// D-148 owner gate: `/api/quiz/explain` POST → 503 unless the `itp_owner`
+// cookie matches OWNER_KEY (the D-097 middleware Basic Auth was never wired).
 // D-095 stable-prefix: question contextBlock → instruction → fixed user prompt.
 // D-085 §2.4: quiz model role = `deepseek-reasoner` (R1) per provider.ts matrix.
 

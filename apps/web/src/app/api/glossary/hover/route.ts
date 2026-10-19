@@ -6,7 +6,8 @@
 //   Q3=a retro   = Module B 收官 + chars/N decision bundled at Step 7 close
 //   Q4=a pacing  = Batch A-G straight-through; commit + push as close gates
 //
-// D-097 firewall: gated by middleware Basic Auth (curl `-u claude:<pass>`).
+// D-148 owner gate: POST → 503 unless the `itp_owner` cookie matches OWNER_KEY
+// (the D-097 middleware Basic Auth was never wired; middleware passes /api/*).
 // D-095 stable-prefix: glossary contextBlock → HOVER_SYSTEM_INSTRUCTION → fixed prompt.
 // D-088 §2.3 cache discipline: term-hover scope yields a DIFFERENT prefix per
 //   surface_jp (single-entry payload), so cross-surface cache hits are NOT
@@ -35,6 +36,7 @@ import {
 import { STREAM_CONFIG } from "@/lib/ai/retry";
 import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
 import { recordCapEvent } from "@/lib/ai/cap";
+import { isOwnerRequest } from "@/lib/owner";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -47,6 +49,11 @@ function jsonError(status: number, message: string): Response {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // D-148 owner gate: before parsing the body or touching any LLM. Fail-closed
+  // (OWNER_KEY unset ⇒ everyone gets 503).
+  if (!(await isOwnerRequest(request))) {
+    return jsonError(503, "disabled");
+  }
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -152,7 +159,7 @@ export async function GET(): Promise<Response> {
           : "deepseek-v4-flash (thinking disabled)"
       }\n` +
       `Required env var on this deploy: ${expectedKey}\n` +
-      `D-097 firewall: request must include Basic Auth header.\n` +
+      `D-148 owner gate: POST returns 503 {"error":"disabled"} unless the itp_owner cookie (set via ?owner_key=<OWNER_KEY> on any page) matches.\n` +
       `D-095 stable-prefix: corpus (single glossary entry) → instruction → fixed prompt.\n` +
       `D-089 §2.3 scope: 1 glossary entry resolved via glossary_index.surface_jp_to_id.\n` +
       `D-085 §2.4 mode: term-hover (smallest payload ~80-200 tok; target TTFT ≤7s).\n`,

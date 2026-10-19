@@ -9,7 +9,19 @@
 //   - status codes on bad input
 //   - GET health-check response
 
-import { describe, expect, it, vi } from "vitest";
+import { createHash } from "node:crypto";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+// D-148 owner gate: the happy/400 paths run as the owner (OWNER_KEY set +
+// matching hashed cookie); the gate itself is covered in the "D-148" block.
+const OWNER_KEY = "test-owner-key";
+const OWNER_COOKIE_HEADER = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;
+beforeEach(() => {
+  vi.stubEnv("OWNER_KEY", OWNER_KEY);
+});
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 vi.mock("ai", () => {
   async function* deltas(): AsyncGenerator<string> {
@@ -64,12 +76,13 @@ vi.mock("@/lib/data/assembleScope", () => ({
   },
 }));
 
+import { streamText } from "ai";
 import { GET, POST } from "../route";
 
 function jsonRequest(body: unknown): Request {
   return new Request("http://localhost/api/glossary/hover", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", cookie: OWNER_COOKIE_HEADER },
     body: typeof body === "string" ? body : JSON.stringify(body),
   });
 }
@@ -133,7 +146,7 @@ describe("POST /api/glossary/hover — bad input", () => {
   it("returns 400 when body is not valid JSON", async () => {
     const req = new Request("http://localhost/api/glossary/hover", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", cookie: OWNER_COOKIE_HEADER },
       body: "this is not json",
     });
     const res = await POST(req);
@@ -189,9 +202,48 @@ describe("GET /api/glossary/hover — health check", () => {
     const text = await res.text();
     expect(text).toMatch(/surface_jp/);
     expect(text).toMatch(/glossary_index/);
-    expect(text).toMatch(/D-097/);
+    expect(text).toMatch(/D-148/);
+    expect(text).not.toMatch(/Basic Auth/);
     expect(text).toMatch(/D-095/);
     expect(text).toMatch(/D-089/);
     expect(text).toMatch(/D-085/);
+  });
+});
+
+describe("POST /api/glossary/hover — D-148 owner gate (503 before body parse / LLM)", () => {
+  function gatedRequest(cookie?: string, body = JSON.stringify({ surface_jp: "プロセッサ" })): Request {
+    return new Request("http://localhost/api/glossary/hover", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookie ? { cookie } : {}),
+      },
+      body,
+    });
+  }
+
+  async function expectDisabled(res: Response): Promise<void> {
+    expect(res.status).toBe(503);
+    expect(await res.json()).toEqual({ error: "disabled" });
+    expect(vi.mocked(streamText)).not.toHaveBeenCalled();
+  }
+
+  beforeEach(() => {
+    vi.mocked(streamText).mockClear();
+  });
+
+  it("503 without the owner cookie (even with a malformed body)", async () => {
+    await expectDisabled(await POST(gatedRequest()));
+    await expectDisabled(await POST(gatedRequest(undefined, "not json")));
+  });
+
+  it("503 with a wrong cookie value or the plaintext key as cookie", async () => {
+    await expectDisabled(await POST(gatedRequest("itp_owner=deadbeef")));
+    await expectDisabled(await POST(gatedRequest(`itp_owner=${OWNER_KEY}`)));
+  });
+
+  it("503 when OWNER_KEY is unset, even with the previously valid cookie (fail-closed)", async () => {
+    vi.stubEnv("OWNER_KEY", "");
+    await expectDisabled(await POST(gatedRequest(OWNER_COOKIE_HEADER)));
   });
 });

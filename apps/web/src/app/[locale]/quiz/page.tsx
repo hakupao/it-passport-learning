@@ -9,6 +9,7 @@
 // deferred per D-135).
 
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { QuizBrowser } from "@/components/quiz/QuizBrowser";
@@ -19,6 +20,7 @@ import {
   loadQuestionSet,
   loadQuizIndex,
 } from "@/lib/quiz/quizReader";
+import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 
 export const dynamic = "force-dynamic";
 
@@ -47,9 +49,13 @@ export default async function QuizPage({
   const sp = await searchParams;
   const set = await loadQuestionSet(first(sp.mode), first(sp.id), locale);
   if (set) {
+    // D-149: only the owner (D-148 cookie) sees the per-question report button.
+    // Only the boolean crosses to the client — never the key or its hash.
+    const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
     return (
       <QuizSet
         locale={locale}
+        isOwner={owner}
         label={set.label}
         sublabel={set.sublabel}
         questions={set.questions}

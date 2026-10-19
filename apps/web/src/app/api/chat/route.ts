@@ -40,6 +40,7 @@ import {
 import { STREAM_CONFIG, formatUserFacingError } from "@/lib/ai/retry";
 import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
 import { recordCapEvent } from "@/lib/ai/cap";
+import { isOwnerRequest } from "@/lib/owner";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -74,6 +75,12 @@ function validateRequestBody(raw: unknown): ChatRequestBody | null {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // D-148 owner gate: before parsing the body or touching any LLM. Fail-closed
+  // (OWNER_KEY unset ⇒ everyone gets 503).
+  if (!(await isOwnerRequest(request))) {
+    return jsonError(503, "disabled");
+  }
+
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -177,7 +184,7 @@ export async function GET(): Promise<Response> {
       `start, finish frames). Consume via @ai-sdk/react useChat hook.\n` +
       `Active provider (env LLM_PROVIDER): ${provider}\n` +
       `Required env var on this deploy: ${expectedKey}\n` +
-      `D-097 firewall: request must include Basic Auth header.\n` +
+      `D-148 owner gate: POST returns 503 {"error":"disabled"} unless the itp_owner cookie (set via ?owner_key=<OWNER_KEY> on any page) matches.\n` +
       `D-095 stable-prefix layout (corpus → instruction → conversation) is applied.\n`,
     {
       status: 200,

@@ -6,7 +6,8 @@
 //   Q3=a SSE response (reuses buildChatSseResponse from chat.ts)
 //   Q4=a code first; chars/3 calibration + D-098 §2.2 v1.1 amend at Step 6 close
 //
-// D-097 firewall: gated by middleware Basic Auth (curl `-u claude:<pass>`).
+// D-148 owner gate: POST → 503 unless the `itp_owner` cookie matches OWNER_KEY
+// (the D-097 middleware Basic Auth was never wired; middleware passes /api/*).
 // D-095 stable-prefix: question contextBlock → QUIZ_SYSTEM_INSTRUCTION → fixed prompt.
 // D-088 §2.3 cache discipline: question scope yields a DIFFERENT prefix per
 // question_id, so cross-question cache hits are NOT expected (per-question
@@ -34,6 +35,7 @@ import {
 import { STREAM_CONFIG } from "@/lib/ai/retry";
 import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
 import { recordCapEvent } from "@/lib/ai/cap";
+import { isOwnerRequest } from "@/lib/owner";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -46,6 +48,12 @@ function jsonError(status: number, message: string): Response {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // D-148 owner gate: before parsing the body or touching any LLM. Fail-closed
+  // (OWNER_KEY unset ⇒ everyone gets 503).
+  if (!(await isOwnerRequest(request))) {
+    return jsonError(503, "disabled");
+  }
+
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -162,7 +170,7 @@ export async function GET(): Promise<Response> {
           : "deepseek-v4-flash (thinking enabled, reasoningEffort=high)"
       }\n` +
       `Required env var on this deploy: ${expectedKey}\n` +
-      `D-097 firewall: request must include Basic Auth header.\n` +
+      `D-148 owner gate: POST returns 503 {"error":"disabled"} unless the itp_owner cookie (set via ?owner_key=<OWNER_KEY> on any page) matches.\n` +
       `D-095 stable-prefix: corpus (question + page context) → instruction → fixed prompt.\n` +
       `D-089 §2.3 scope: question entity + full page_context (other entities on same page).\n`,
     {

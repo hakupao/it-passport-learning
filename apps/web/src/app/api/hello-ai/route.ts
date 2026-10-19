@@ -14,7 +14,8 @@
 // HARD GATE: this endpoint costs real $ once `DEEPSEEK_API_KEY` (default path)
 // or `ANTHROPIC_API_KEY` (switched path) is set. Until then, POST returns
 // HTTP 500 from the SDK and no money is spent. The endpoint is harmless to
-// deploy without a key.
+// deploy without a key. D-148: POST additionally returns 503 unless the
+// `itp_owner` cookie matches OWNER_KEY (fail-closed when OWNER_KEY is unset).
 //
 // Use Node.js runtime (not Edge) — FsDataSource reads JSON via Node `fs`.
 
@@ -30,6 +31,7 @@ import {
 import { STREAM_CONFIG } from "@/lib/ai/retry";
 import { evaluateCacheTripwire, recordTripwireEvent } from "@/lib/ai/tripwire";
 import { recordCapEvent } from "@/lib/ai/cap";
+import { isOwnerRequest } from "@/lib/owner";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -42,7 +44,20 @@ const SYSTEM_INSTRUCTION = [
   "Otherwise reply in Japanese unless the user writes in English/Chinese.",
 ].join("\n");
 
-export async function POST(): Promise<Response> {
+function jsonError(status: number, message: string): Response {
+  return new Response(JSON.stringify({ error: message }), {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
+}
+
+export async function POST(request: Request): Promise<Response> {
+  // D-148 owner gate: before parsing the body or touching any LLM. Fail-closed
+  // (OWNER_KEY unset ⇒ everyone gets 503).
+  if (!(await isOwnerRequest(request))) {
+    return jsonError(503, "disabled");
+  }
+
   await warmUp();
   const ds = getDataSource();
   const glossary = await ds.loadGlossary();
@@ -114,6 +129,7 @@ export async function GET(): Promise<Response> {
     `POST to this endpoint to send a 'ping' to the active LLM provider.\n` +
       `Active provider (env LLM_PROVIDER): ${provider}\n` +
       `Required env var on this deploy: ${expectedKey}\n` +
+      `D-148 owner gate: POST returns 503 {"error":"disabled"} unless the itp_owner cookie (set via ?owner_key=<OWNER_KEY> on any page) matches.\n` +
       `D-095 stable-prefix message layout is applied (corpus → system → user).\n`,
     {
       status: 200,

@@ -13,7 +13,19 @@
 // assembler so the 4.7 MB fixture isn't read. The mock `streamText` captures
 // the `onFinish` callback so we can confirm it's wired and invoke it manually.
 
-import { describe, expect, it, vi } from "vitest";
+import { createHash } from "node:crypto";
+import { describe, expect, it, vi, afterEach, beforeEach } from "vitest";
+
+// D-148 owner gate: the happy/400 paths run as the owner (OWNER_KEY set +
+// matching hashed cookie); the gate itself is covered in the "D-148" block.
+const OWNER_KEY = "test-owner-key";
+const OWNER_COOKIE_HEADER = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;
+beforeEach(() => {
+  vi.stubEnv("OWNER_KEY", OWNER_KEY);
+});
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 import type { UIMessage } from "ai";
 
 // `vi.hoisted` is the documented escape hatch for sharing state between the
@@ -91,12 +103,13 @@ vi.mock("@/lib/ai/tripwire", async () => {
   };
 });
 
+import { streamText } from "ai";
 import { GET, POST } from "../route";
 
 function jsonRequest(body: unknown): Request {
   return new Request("http://localhost/api/chat", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", cookie: OWNER_COOKIE_HEADER },
     body: typeof body === "string" ? body : JSON.stringify(body),
   });
 }
@@ -164,7 +177,7 @@ describe("POST /api/chat — bad input", () => {
   it("returns 400 when body is not valid JSON", async () => {
     const req = new Request("http://localhost/api/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", cookie: OWNER_COOKIE_HEADER },
       body: "this is not json",
     });
     const res = await POST(req);
@@ -199,8 +212,47 @@ describe("GET /api/chat — health check", () => {
     const text = await res.text();
     expect(text).toMatch(/messages/);
     expect(text).toMatch(/useChat/);
-    expect(text).toMatch(/D-097/);
+    expect(text).toMatch(/D-148/);
+    expect(text).not.toMatch(/Basic Auth/);
     expect(text).toMatch(/D-095/);
     expect(text).toMatch(/stable-prefix/);
+  });
+});
+
+describe("POST /api/chat — D-148 owner gate (503 before body parse / LLM)", () => {
+  function gatedRequest(cookie?: string, body = JSON.stringify({ messages: [{ id: "u1", role: "user", parts: [{ type: "text", text: "hi" }] }] })): Request {
+    return new Request("http://localhost/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookie ? { cookie } : {}),
+      },
+      body,
+    });
+  }
+
+  async function expectDisabled(res: Response): Promise<void> {
+    expect(res.status).toBe(503);
+    expect(await res.json()).toEqual({ error: "disabled" });
+    expect(vi.mocked(streamText)).not.toHaveBeenCalled();
+  }
+
+  beforeEach(() => {
+    vi.mocked(streamText).mockClear();
+  });
+
+  it("503 without the owner cookie (even with a malformed body)", async () => {
+    await expectDisabled(await POST(gatedRequest()));
+    await expectDisabled(await POST(gatedRequest(undefined, "not json")));
+  });
+
+  it("503 with a wrong cookie value or the plaintext key as cookie", async () => {
+    await expectDisabled(await POST(gatedRequest("itp_owner=deadbeef")));
+    await expectDisabled(await POST(gatedRequest(`itp_owner=${OWNER_KEY}`)));
+  });
+
+  it("503 when OWNER_KEY is unset, even with the previously valid cookie (fail-closed)", async () => {
+    vi.stubEnv("OWNER_KEY", "");
+    await expectDisabled(await POST(gatedRequest(OWNER_COOKIE_HEADER)));
   });
 });

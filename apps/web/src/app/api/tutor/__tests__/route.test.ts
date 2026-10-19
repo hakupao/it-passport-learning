@@ -7,7 +7,19 @@
 // rather than the streamed text itself (which is exercised in Module D
 // Playwright e2e + cost-dryrun harness).
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { createHash } from "node:crypto";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
+// D-148 owner gate: the happy/400 paths run as the owner (OWNER_KEY set +
+// matching hashed cookie); the gate itself is covered in the "D-148" block.
+const OWNER_KEY = "test-owner-key";
+const OWNER_COOKIE_HEADER = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;
+beforeEach(() => {
+  vi.stubEnv("OWNER_KEY", OWNER_KEY);
+});
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 import { GET, POST } from "../route";
 import { validateTutorRequestBody } from "@/lib/ai/tutorRequest";
 
@@ -195,7 +207,7 @@ describe("/api/tutor — POST 400 paths (validation rejection)", () => {
     const req = new Request("http://localhost/api/tutor", {
       method: "POST",
       body: "{not json",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", cookie: OWNER_COOKIE_HEADER },
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -207,7 +219,7 @@ describe("/api/tutor — POST 400 paths (validation rejection)", () => {
     const req = new Request("http://localhost/api/tutor", {
       method: "POST",
       body: JSON.stringify({ tutorContext: VALID_CONTEXT }),
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", cookie: OWNER_COOKIE_HEADER },
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -219,7 +231,7 @@ describe("/api/tutor — POST 400 paths (validation rejection)", () => {
     const req = new Request("http://localhost/api/tutor", {
       method: "POST",
       body: JSON.stringify({ messages: VALID_MESSAGES }),
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", cookie: OWNER_COOKIE_HEADER },
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -248,8 +260,47 @@ describe("/api/tutor — OpenAI reserved-stub throws on POST", () => {
         tutorContext: VALID_CONTEXT,
         messages: VALID_MESSAGES,
       }),
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", cookie: OWNER_COOKIE_HEADER },
     });
     await expect(POST(req)).rejects.toThrow(/reserved for Phase 5/i);
+  });
+});
+
+describe("POST /api/tutor — D-148 owner gate (503 before body parse / LLM)", () => {
+  function gatedRequest(cookie?: string, body = JSON.stringify({ tutorContext: VALID_CONTEXT, messages: VALID_MESSAGES })): Request {
+    return new Request("http://localhost/api/tutor", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(cookie ? { cookie } : {}),
+      },
+      body,
+    });
+  }
+
+  async function expectDisabled(res: Response): Promise<void> {
+    expect(res.status).toBe(503);
+    expect(await res.json()).toEqual({ error: "disabled" });
+  }
+
+  // LLM_PROVIDER_TUTOR=openai makes the handler throw if it ever reaches
+  // model selection, so a clean 503 proves the gate ran first.
+  beforeEach(() => {
+    vi.stubEnv("LLM_PROVIDER_TUTOR", "openai");
+  });
+
+  it("503 without the owner cookie (even with a malformed body)", async () => {
+    await expectDisabled(await POST(gatedRequest()));
+    await expectDisabled(await POST(gatedRequest(undefined, "not json")));
+  });
+
+  it("503 with a wrong cookie value or the plaintext key as cookie", async () => {
+    await expectDisabled(await POST(gatedRequest("itp_owner=deadbeef")));
+    await expectDisabled(await POST(gatedRequest(`itp_owner=${OWNER_KEY}`)));
+  });
+
+  it("503 when OWNER_KEY is unset, even with the previously valid cookie (fail-closed)", async () => {
+    vi.stubEnv("OWNER_KEY", "");
+    await expectDisabled(await POST(gatedRequest(OWNER_COOKIE_HEADER)));
   });
 });
