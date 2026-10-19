@@ -113,7 +113,7 @@ const model = parsed?.model ?? 'opus'
 const label = parsed?.label ?? 'S119'
 const pass = parsed?.pass ?? 'gp'
 // Write は絶対パスを要求する。workflow 脚本に cwd/fs は無いので、同類 workflow 4 本と同じく ROOT を直書きする。
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 const absolutize = (p) => (p && p.startsWith('/') ? p : `${ROOT}/${p}`)
 const outPath = absolutize(parsed?.out_path ?? `evidence/phase5/stage_06_quiz_fidelity/full52_fidelity_${label}_${examId}_${pass}.json`)
 const partsDir = absolutize(parsed?.parts_dir ?? `data/ip/quiz/.phase2/fidparts/${label}_${examId}_${pass}`)
