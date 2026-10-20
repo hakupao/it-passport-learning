@@ -21,12 +21,14 @@
 //   3. 題幹の markdown 表は「表の行の順序付き比較 + 表以外の散文の連結比較」(問文の配置差 = 2015h27a-q009 / 2026r08-q074 は一致扱い)。
 //   4. 既知の偽陽性型 (KNOWN_FP 規則、下の FP_RULES) を外して一致すれば KNOWN_FP (exit に影響しない、行は出す)。
 //   5. 截断の許容 (⑨ #25): 計上 field で current_text が field 全文なのに source_text が transcript の一部 (截断引用、2025r07-q005 型)
-//      → REPORTED_TRUNCATED_QUOTE (計上済なので fixer が全文を再読する)。「…」省略記法の引用は両端の「…」を外して当てる。
+//      → REPORTED_TRUNCATED_QUOTE (残差が引用位置だけに局在する場合のみ。引用外に残差があれば MISSED)。「…」省略記法の引用は両端の「…」を外して当てる。
 //      未計上 field で norm(transcript) が norm(displayed) の真の接頭辞かつ文末で終わる = transcript の截断 (2022r04-q006) → TRANSCRIPT_PREFIX。
-//      いずれも exit に影響しないが行は出す。逆向き (displayed の頭に余計な語 = 見出し混入 2022r04-q001 型) と
+//      TRANSCRIPT_PREFIX は裁定済 (TRANSCRIPT_PREFIX_ADJUDICATED) だけ exit に影響せず、それ以外は ✗ で exit 1。逆向き (displayed の頭に余計な語 = 見出し混入 2022r04-q001 型) と
 //      displayed が短い (末尾欠落) は AGENT_MISSED のまま。是正後の q012 型 (source_text が題幹 1 文目だけ) は 1 で same になる。
 //   6. 0b: 表示に ASCII `"` があり transcript は “” / 「」 (normStr が同一視するため 1〜5 では見えない) → QUOTE_ASCII (別判定、exit に影響しない)。
 //      D-151 で “” に揃えた表示は ASCII を含まないので立たない。transcript 側の ASCII `"` も立てない。
+//   7. transcript と displayed が正規化文字列で完全一致なのに agent が差分を計上 (source が表示に無い) = agent が表示を写した疑い
+//      → ✗ REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED (exit 1)。
 
 import { readFileSync } from "node:fs";
 const [inputPath, resultPath] = process.argv.slice(2);
@@ -54,15 +56,20 @@ const kvParse = (s) => {
     const cells = body.split("|").map((c) => c.trim()).filter(Boolean);
     const m = {}; cells.forEach((c, i) => { const mm = c.match(/^([^:：]+)[:：](.*)$/); if (mm) m[normStr(mm[1])] = normStr(mm[2]); else m[String.fromCharCode(97 + i)] = normStr(c); }); return m;
   }
-  const m = {}; for (const part of body.split(/[，,、]|[\s　]+(?=[^\s　,，、:：]{1,16}[:：])/)) { const mm = part.match(/^\s*([^:：]+)[:：](.*)$/); if (mm) m[normStr(mm[1])] = normStr(mm[2]); else if (part.trim()) m[`_${Object.keys(m).length}`] = normStr(part); } return m;
+  // 一行化の区切りはキーが a〜z / ア〜エ / ①〜⑳ の 1 字ラベルのときだけ (S128 Rule D MAJOR-1: 値の中の「R:○ W:○」等で切らない)。
+  // 同じキーが再出現したら上書きせず R#2, R#3 と番号を振る (2017h29a-q092 の R/W/X ×3 組で前 2 組が比較から落ちていた)。
+  const m = {}; const put = (k, v) => { let key = k, i = 1; while (key in m) key = `${k}#${++i}`; m[key] = v; };
+  for (const part of body.split(/[，,、]|[\s　]+(?=(?:[a-z]|[ア-エ]|[①-⑳])\s*[:：])/)) { const mm = part.match(/^\s*([^:：]+)[:：](.*)$/); if (mm) put(normStr(mm[1]), normStr(mm[2])); else if (part.trim()) put(`_${Object.keys(m).length}`, normStr(part)); } return m;
 };
+// 区切り行 = 全セルが `:?-{2,}:?`。「| - | - |」(単独の - = 値なしセルのデータ行) は区切り行ではない (S128 Rule D adv A11)
+const isSepRow = (l) => /^\|.*\|$/.test(l) && l.slice(1, -1).split("|").every((c) => /^\s*:?-{2,}:?\s*$/.test(c));
 // markdown 表 → 行ごとのセル配列 (区切り行 |---| は捨てる)。散文行は 1 セル行として保持 → 順序・行対応を保った比較
 const mdParse = (s) => (s ?? "").split(/\n/).map((l) => l.trim()).filter(Boolean).filter((l) => !/^\|?\s*:?-{2,}/.test(l.replace(/\|/g, "").trim()) || !/-{2,}/.test(l))
-  .filter((l) => !/^\|[\s:|-]+\|$/.test(l)).map((l) => /\|/.test(l) ? l.split("|").map((c) => normStr(c)).filter(Boolean) : [normStr(l)]);
+  .filter((l) => !isSepRow(l)).map((l) => /\|/.test(l) ? l.split("|").map((c) => normStr(c)).filter(Boolean) : [normStr(l)]);
 const rowsEqual = (A, B) => A.length === B.length && A.every((r, i) => r.length === B[i].length && r.every((c, j) => c === B[i][j]));
 const firstRowDiff = (A, B) => { for (let i = 0; i < Math.max(A.length, B.length); i++) { const a = A[i] ?? [], b = B[i] ?? []; if (a.length !== b.length || a.some((c, j) => c !== b[j])) return `row ${i}: disp ${JSON.stringify(a)} src ${JSON.stringify(b)}`; } return ""; };
 // 表ブロック除外の散文連結比較 (⑨ #6 d): 表の行だけを順序付きで比べ、散文は行を連結して比べる → 表の前後どちらに問文があっても同じ
-const mdTableRowsOf = (s) => (s ?? "").split(/\n/).map((l) => l.trim()).filter((l) => /\|/.test(l) && !/^\|[\s:|-]+\|$/.test(l)).map((l) => l.split("|").map((c) => normStr(c)).filter(Boolean));
+const mdTableRowsOf = (s) => (s ?? "").split(/\n/).map((l) => l.trim()).filter((l) => /\|/.test(l) && !isSepRow(l)).map((l) => l.split("|").map((c) => normStr(c)).filter(Boolean));
 const mdProseOf = (s) => normStr((s ?? "").split(/\n/).filter((l) => !/\|/.test(l)).join(""));
 
 /** 2 テキストを比較: { differs, detail, layout } (layout = 散文の配置差だけで一致)。 */
@@ -93,7 +100,8 @@ const FP_RULES = [
   // agent の記法: 肢が図であることを示す「[図]」接頭辞 (U3a q005 / 2022r04-q032、U7 §3)
   { name: "agent記法:[図]", src: /^\s*\[図\]\s*/ },
   // 選択肢の組合せ表を agent が題幹 transcript に「[表] … ア: … / イ: …」で書いた (表示層は選択肢側に保持、2019h31h-q053、U3b §3)
-  { name: "体裁:肢の表を題幹に転記", src: /\n\s*\[表\][^\n]*ア\s*[:：][^\n]*イ\s*[:：][^\n]*/g },
+  // 行全体が「キー: 値, 値 / キー: 値, 値 …」だけで出来ている行に限る (S128 Rule D NIT-1: 同じ行の散文を消さない)
+  { name: "体裁:肢の表を題幹に転記", src: /\n[ \t]*\[表\][ \t]*(?:列|[ア-エ])[ \t]*[:：][ \t]*[^\s/:：,，]+(?:[,，][ \t]*[^\s/:：,，]+)*(?:[ \t]*\/[ \t]*(?:列|[ア-エ])[ \t]*[:：][ \t]*[^\s/:：,，]+(?:[,，][ \t]*[^\s/:：,，]+)*)+[ \t]*(?=\n|$)/g },
 ];
 const applyFp = (disp, src) => {
   let d = disp ?? "", s = src ?? ""; const hit = [];
@@ -119,15 +127,27 @@ const applyPatches = (disp, ds) => {
   }
   return { text: normed ?? raw, normalized: normed !== null, applied, whole };
 };
-// ⑨ #25: current_text が field 全文なのに source_text が transcript の一部 (截断引用) — patch では残差の位置を特定できない
+// ⑨ #25: current_text が field 全文なのに source_text が transcript の一部 (截断引用)。
+// transcript = P + source + Q と分けたとき displayed = P + X + Q (残差が source の位置だけに局在) の場合に限り許容する
+// = displayed の X を source に置き換えると transcript になる (S128 Rule D MAJOR-2: 引用外の残差は MISSED)。
 const truncatedQuote = (disp, src, ds) => ds.some((d) => {
-  const nc = norm(unEllipsis(d.current_text)), nsrc = norm(unEllipsis(d.source_text)), nS = norm(src);
-  return nc === norm(disp) && nsrc.length > 0 && nsrc.length < nS.length && nS.includes(nsrc);
+  const nc = norm(unEllipsis(d.current_text)), nsrc = norm(unEllipsis(d.source_text)), nS = norm(src), nD = norm(disp);
+  if (nc !== nD || !nsrc.length || nsrc.length >= nS.length) return false;
+  for (let i = nS.indexOf(nsrc); i >= 0; i = nS.indexOf(nsrc, i + 1)) {
+    const P = nS.slice(0, i), Q = nS.slice(i + nsrc.length);
+    if (nD.length >= P.length + Q.length && nD.startsWith(P) && nD.endsWith(Q)) return true;
+  }
+  return false;
 });
+// TRANSCRIPT_PREFIX の裁定済許容 (S128 Rule D MINOR-2)。id|field → 裁定出典と displayed の超過字数 (正規化後)。字数が変われば再び exit 1。
+const TRANSCRIPT_PREFIX_ADJUDICATED = {
+  "2022r04-q006|stem": { extra: 96, ref: "U7 §3 transcript 截断の偽陽性、源に a〜c 3 行あり" },
+  "2023r05-q041|stem": { extra: 188, ref: "U8 §3 アローダイアグラムの文本化 = 描画補助、図と一致" },
+};
 const endsSentence = (ns) => /[.?!)"]$/.test(ns);
 
 let missed = 0, same = 0, noTranscript = 0, unreadable = 0, conflict = 0;
-let reported = 0, reportedWhole = 0, sameReported = 0, layout = 0, knownFp = 0, trPrefix = 0, repTrunc = 0, quoteAscii = 0;
+let reported = 0, reportedWhole = 0, sameReported = 0, layout = 0, knownFp = 0, trPrefix = 0, trPrefixAdj = 0, repTrunc = 0, quoteAscii = 0, transcriptCopy = 0;
 for (const a of res.audits ?? []) {
   const smp = samples.get(a.id); if (!smp) continue;
   // S118 §44 q079 型: verdict=CLEAN なのに discrepancies を挙げている自己矛盾。
@@ -150,6 +170,12 @@ for (const a of res.audits ?? []) {
     // 1. patch 無し (replay artifact が出ない)
     let r = compare(disp, src0);
     if (!r.differs) {
+      // S128 Rule D MINOR-1: transcript = displayed なのに agent が差分を計上 (source が表示に無い) = agent が表示を写した疑い
+      // 正規化文字列として完全一致する場合に限る (表の構造比較で一致しただけの 2016h28a-q043 是正後は対象外)
+      for (const d of norm(src0) === norm(disp) ? ds : []) {
+        const nc = norm(unEllipsis(d.current_text)), nsrc = norm(unEllipsis(d.source_text)), nD = norm(disp);
+        if (nc && nc !== nsrc && nD.includes(nc) && !nD.includes(nsrc)) { transcriptCopy++; console.log(`✗ REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED ${a.id} ${field}: agent reported「${nc.slice(0, 20)}」→「${nsrc.slice(0, 20)}」but its transcript matches the displayed text (transcript may be copied from the display)`); break; }
+      }
       if (r.layout) { layout++; console.log(`~ LAYOUT ${a.id} ${field}: prose order differs around table (concatenated prose + table rows equal)`); }
       else { same++; if (ds.length) sameReported++; } // sameReported = agent は計上したが差が正規化で消える型 (引用符・読点字種など)
       quoteCheck(disp); continue;
@@ -172,11 +198,14 @@ for (const a of res.audits ?? []) {
       if (!rf.differs) { knownFp++; console.log(`~ KNOWN_FP ${a.id} ${field} [${f.hit.join(", ")}]`); quoteCheck(shown); continue; }
     }
     // ⑨ #25: 截断引用で patch が field を説明しきれない → 計上済 field として fixer の全文再読に回す (exit に影響しない)
-    if (ds.length && truncatedQuote(disp, src0, ds)) { repTrunc++; console.log(`~ REPORTED_TRUNCATED_QUOTE ${a.id} ${field}: current_text is the whole field but source_text is only part of the transcript — fixer must re-read the whole field (${r.detail})`); continue; }
+    if (ds.length && truncatedQuote(disp, src0, ds)) { repTrunc++; console.log(`~ REPORTED_TRUNCATED_QUOTE ${a.id} ${field}: whole-field current_text, partial source_text; residual is confined to the quoted span — fixer must re-read the whole field`); continue; }
     // 5. transcript の截断 (未計上 field で、transcript が文末で終わり displayed がその先へ続く)。逆向き (見出し混入) と displayed が短い場合は MISSED
     const nd = norm(shown), ns = norm(src0);
     if (!ds.length && ns.length > 0 && nd.length > ns.length && nd.startsWith(ns) && endsSentence(ns)) {
-      trPrefix++; console.log(`~ TRANSCRIPT_PREFIX ${a.id} ${field}: transcript ends at a sentence boundary; displayed continues「${nd.slice(ns.length, ns.length + 24)}…」(+${nd.length - ns.length})`); quoteCheck(shown); continue;
+      const adj = TRANSCRIPT_PREFIX_ADJUDICATED[`${a.id}|${field}`], extra = nd.length - ns.length, tail = `displayed continues「${nd.slice(ns.length, ns.length + 24)}…」(+${extra})`;
+      if (adj && adj.extra === extra) { trPrefixAdj++; console.log(`~ TRANSCRIPT_PREFIX ${a.id} ${field}: adjudicated (${adj.ref}); ${tail}`); }
+      else { trPrefix++; console.log(`✗ TRANSCRIPT_PREFIX ${a.id} ${field} verdict=${a.verdict}: transcript ends at a sentence boundary; ${tail} — unadjudicated (exit 1)`); }
+      quoteCheck(shown); continue;
     }
     missed++; console.log(`✗ AGENT_MISSED ${a.id} ${field} verdict=${a.verdict}: ${r.detail}`);
   }
@@ -186,5 +215,5 @@ if (!Array.isArray(res.audits)) { console.log("✗ result has no audits[]"); pro
 if (notAudited.length) console.log(`✗ COVERAGE: ${notAudited.length}/${samples.size} samples have no audit: ${notAudited.join(", ")}`);
 if (noTranscript) console.log(`✗ ${noTranscript} non-UNREADABLE audit(s) lack source_transcript`);
 console.log(`machdiff: fields same=${same} | AGENT_MISSED=${missed} | VERDICT_CONFLICT=${conflict} | audits w/o transcript=${noTranscript} | UNREADABLE skipped=${unreadable} | coverage ${audited.size}/${samples.size}`
-  + ` | same∩reported=${sameReported} | REPORTED=${reported} (whole-field ${reportedWhole}) | REPORTED_TRUNCATED_QUOTE=${repTrunc} | LAYOUT=${layout} | KNOWN_FP=${knownFp} | TRANSCRIPT_PREFIX=${trPrefix} | QUOTE_ASCII=${quoteAscii}`);
-process.exit(missed || notAudited.length || noTranscript || conflict ? 1 : 0);
+  + ` | same∩reported=${sameReported} | REPORTED=${reported} (whole-field ${reportedWhole}) | REPORTED_TRUNCATED_QUOTE=${repTrunc} | LAYOUT=${layout} | KNOWN_FP=${knownFp} | TRANSCRIPT_PREFIX=${trPrefix} (adjudicated ${trPrefixAdj}) | QUOTE_ASCII=${quoteAscii} | REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED=${transcriptCopy}`);
+process.exit(missed || trPrefix || transcriptCopy || notAudited.length || noTranscript || conflict ? 1 : 0);

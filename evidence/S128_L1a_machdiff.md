@@ -102,3 +102,34 @@ exit 1→0 になった組は 4: `full52post 2016h28h` × cr / gp (q067 replay �
 - テスト: §2 のコマンド (worktree root で実行)。
 - 回帰: scratchpad の `regress.mjs <old> <new> <out>` (78 組) と `regress_cur.mjs` (是正後模擬 73 組)。いずれも main tree を読むだけで、生成物は scratchpad (`cur/`) にのみ書く。prep-any / prep-multi は実行していない。
 - fixture 生成: scratchpad の `genfix.mjs` (main tree read-only → `scripts/quiz-fidelity-machdiff.fixtures.json`)。
+
+## 6. Rule D 指摘への対処 (S128、reviewer FAIL: MAJOR 2 / MINOR 2 / NIT 1 → 本節の commit で対処)
+
+| 指摘 | 対処 | テスト |
+|---|---|---|
+| MAJOR-1 kvParse の重複キー上書き (`2017h29a-q092` ア〜エ の R/W/X ×3 組で前 2 組が比較から落ちる) | 一行化の区切りキーを 1 字ラベル (a〜z / ア〜エ / ①〜⑳) に限定、重複キーは `R#2` `R#3` と番号付けして全組を比較 | q092 ア 変形 (所有者 W:○→W:ー) が MISSED・exit 1 / `a: … a: …` 重複も比較 |
+| MAJOR-2 REPORTED_TRUNCATED_QUOTE が引用外の残差を通す (A4b) | transcript = P + source + Q と分けたとき displayed = P + X + Q (残差が引用位置だけ) の場合に限り許容。それ以外は MISSED | A4b / A4 (正しい→適切な) が MISSED・exit 1、2018h30h-q096 変形は従来どおり許容 |
+| MINOR-1 transcript = displayed なのに agent が差分を計上 (A5) | 正規化文字列で完全一致 かつ norm(current)≠norm(source)・current は表示にある・source は表示に無い → `✗ REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED` (exit 1。coordinator 指示の「adv で A2 以外は MISSED か exit 1」に合わせて ✗ とした) | A5 が exit 1 / 是正後 replay (2021r03-q011) では立たない。構造比較でだけ一致する是正後 `2016h28a-q043` は対象外 (完全一致条件で除外、初回実装で GAINED 1 を出したため追加) |
+| MINOR-2 TRANSCRIPT_PREFIX が exit に効かない | `TRANSCRIPT_PREFIX_ADJUDICATED` (id\|field → 裁定出典 + 正規化後の超過字数) の 2 件だけ `~` で exit 非影響: `2022r04-q006` (+96、U7 §3) / `2023r05-q041` (+188、U8 §3)。それ以外と超過字数が変わった場合は `✗ TRANSCRIPT_PREFIX` で exit 1 | 裁定済 2 件 exit 0 / q006 末尾に文を足すと exit 1 |
+| NIT-1 「肢の表を題幹に転記」規則が同じ行の散文を消す | 行全体が `[表] (列\|ア〜エ): 値, 値 / …` だけで出来ている行に限定 | A6c が MISSED |
+| (adv A11) `\| - \| - \|` を区切り行として捨てていた (旧版から) | 区切り行 = 全セルが `:?-{2,}:?` に限定 | A11 が MISSED |
+
+**テスト**: 新版 `Tests 41 passed (41)`。前 commit (5cdc0a2) の版では新規 11 件が failed (`11 failed | 30 passed`)、HEAD 3c65c3f の旧版では `27 failed | 14 passed`。
+
+**reviewer の adversarial (adv.mjs、本版で実行)**: A2 (配置差のみ、語の差なし = 許容してよい例) 以外の 21 件はすべて MISSED または exit 1。
+
+| case | 旧 exit | 新 exit / 判定 |
+|---|---|---|
+| A1 / A2b / A2c / A2d | 1 | 1 AGENT_MISSED |
+| A2 | 1 | 0 LAYOUT (許容) |
+| A3 / A3b | 1 | 1 ✗ TRANSCRIPT_PREFIX (裁定外) |
+| A4 / A4b | 1 | 1 AGENT_MISSED |
+| A5 | 1 | 1 ✗ REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED |
+| A6 / A6b / A6c / A6d | 1 | 1 AGENT_MISSED |
+| A7 / A7b / A7c / A7d | 1 | 1 AGENT_MISSED |
+| A8 / A9 / A10 | 1 | 1 AGENT_MISSED |
+| A11 | **0** | 1 AGENT_MISSED (旧版の盲点も解消) |
+
+**回帰 (再実行)**: reviewer の 37 組 = MISSED 126→87、GAINED 0。本 lane の 78 組 = 144→92、是正後模擬 73 組 = 81→46、いずれも GAINED 0 (計数は `✗ AGENT_MISSED` / `✗ TRANSCRIPT_PREFIX` / `✗ REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED` を合算)、exit 0→1 になった組 0。実残差 12 件は全件 MISSED のまま。
+
+§4 の 2 (TRANSCRIPT_PREFIX の盲点) と 5 (kvParse の潜在リスク) は本節の対処で解消。

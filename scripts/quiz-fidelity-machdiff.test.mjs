@@ -19,7 +19,8 @@ let n = 0;
 const run = (cases) => {
   const samples = [], audits = [];
   for (const [id, state, mutate] of cases) {
-    const fx = structuredClone(FX[id]); const s = fx[state]; const a = fx.audit;
+    // state === "raw": id は { sample, audit } の直接指定 (fixture に無い合成ケース)
+    const fx = state === "raw" ? { raw: { ...id.sample }, audit: id.audit } : structuredClone(FX[id]); const s = fx[state]; const a = structuredClone(fx.audit);
     if (mutate) mutate(s, a);
     samples.push(s); audits.push(a);
   }
@@ -116,9 +117,30 @@ describe("⑨ #6 (c) 既知偽陽性型の許容リスト", () => {
     const r = run([["2019h31h-q053", "post"]]);
     expect(r.missed).toEqual([]); expect(r.counts.KNOWN_FP).toBe(1);
   });
+  it("Rule D NIT-1 A6c: [表] 行に散文が同居していれば 肢の表 規則で消さない → MISSED", () => {
+    const r = run([[{ sample: { id: "x1", displayed_stem_jp: "次の組合せはどれか。", displayed_choices_jp: {} },
+      audit: { id: "x1", verdict: "CLEAN", discrepancies: [], source_transcript: { stem: "次の組合せはどれか。\n[表] ア: 甲 イ: 乙 正しいのは", choices: {} } } }, "raw"]]);
+    expect(r.missed).toEqual(["x1 stem"]);
+  });
+  it("adv A11: 「| - | - |」は区切り行ではなくデータ行として比較する", () => {
+    const r = run([[{ sample: { id: "x1", displayed_stem_jp: "| a | b |\n|---|---|\n| - | - |\n| 1 | 2 |", displayed_choices_jp: {} },
+      audit: { id: "x1", verdict: "CLEAN", discrepancies: [], source_transcript: { stem: "| a | b |\n|---|---|\n| 1 | 2 |", choices: {} } } }, "raw"]]);
+    expect(r.missed).toEqual(["x1 stem"]);
+  });
   it("2019h31h-q052: 表示層の一行化「a：X　b：Y」と transcript の [表] a: X, b: Y は同一", () => {
     const r = run([["2019h31h-q052", "pre"]]);
     expect(r.missed).toEqual([]);
+  });
+  it("Rule D MAJOR-1: 2017h29a-q092 ア (R/W/X が 3 組) で所有者 W:○→W:ー の 1 箇所違いは MISSED (重複キーで上書きしない)", () => {
+    const disp = "[表] 所有者 R:○ W:○ X:○ ／ 所有者と同じグループの利用者 R:○ W:○ X:○ ／ その他の利用者 R:ー W:ー X:○"; // 2017h29a-q092 ア (s7x manifest)
+    const r = run([[{ sample: { id: "2017h29a-q092", displayed_stem_jp: "x", displayed_choices_jp: { ア: disp } },
+      audit: { id: "2017h29a-q092", verdict: "CLEAN", discrepancies: [], source_transcript: { stem: "x", choices: { ア: disp.replace("所有者 R:○ W:○", "所有者 R:○ W:ー") } } } }, "raw"]]);
+    expect(r.missed).toEqual(["2017h29a-q092 choice.ア"]); expect(r.code).toBe(1);
+  });
+  it("Rule D MAJOR-1: 同じ 1 字キーの再出現 (a: … a: …) も番号付きで両方比較", () => {
+    const r = run([[{ sample: { id: "x1", displayed_stem_jp: "x", displayed_choices_jp: { ア: "[表] a: 甲, b: 乙, a: 丙" } },
+      audit: { id: "x1", verdict: "CLEAN", discrepancies: [], source_transcript: { stem: "x", choices: { ア: "[表] a: 丁, b: 乙, a: 丙" } } } }, "raw"]]);
+    expect(r.missed).toEqual(["x1 choice.ア"]);
   });
   it("2019h31h-q052: 一行化でも a/b の値の入替は MISSED (MAJOR-1 の束縛比較を保つ)", () => {
     const r = run([["2019h31h-q052", "pre", (s) => { s.displayed_choices_jp.ア = "a：信頼性　b：サービスデスク　c：データ管理"; }]]);
@@ -127,13 +149,37 @@ describe("⑨ #6 (c) 既知偽陽性型の許容リスト", () => {
 });
 
 describe("⑨ #25 截断引用 / transcript 截断 (PREFIX 許容)", () => {
-  it("2022r04-q006: transcript が題幹 1 文目で切れている → TRANSCRIPT_PREFIX (MISSED にしない)", () => {
+  it("2022r04-q006: transcript が題幹 1 文目で切れている → 裁定済 TRANSCRIPT_PREFIX (U7 §3)、exit 0", () => {
     const r = run([["2022r04-q006", "pre"]]);
-    expect(r.missed).toEqual([]); expect(r.counts.TRANSCRIPT_PREFIX).toBe(1);
+    expect(r.missed).toEqual([]); expect(r.counts.TRANSCRIPT_PREFIX).toBe(0); expect(r.out).toMatch(/adjudicated 1/); expect(r.code).toBe(0);
   });
-  it("2023r05-q041: 図の文本化が transcript の後ろに続く → TRANSCRIPT_PREFIX", () => {
+  it("2023r05-q041: 図の文本化が transcript の後ろに続く → 裁定済 TRANSCRIPT_PREFIX (U8 §3)", () => {
     const r = run([["2023r05-q041", "pre"]]);
-    expect(r.missed).toEqual([]); expect(r.counts.TRANSCRIPT_PREFIX).toBe(1);
+    expect(r.missed).toEqual([]); expect(r.out).toMatch(/~ TRANSCRIPT_PREFIX 2023r05-q041 stem: adjudicated/); expect(r.code).toBe(0);
+  });
+  it("Rule D MINOR-2: 裁定外の TRANSCRIPT_PREFIX は exit 1 (q006 の超過字数が変われば裁定も外れる)", () => {
+    const r = run([["2022r04-q006", "pre", (s) => { s.displayed_stem_jp += "\n問7 次の記述"; }]]);
+    expect(r.out).toMatch(/✗ TRANSCRIPT_PREFIX 2022r04-q006 stem/); expect(r.counts.TRANSCRIPT_PREFIX).toBe(1); expect(r.code).toBe(1);
+  });
+  it("Rule D MAJOR-2 A4b: 截断引用 source が transcript の一部でも、引用外に残差があれば MISSED", () => {
+    const r = run([[{ sample: { id: "x1", displayed_stem_jp: "ABCDEFGHIJ", displayed_choices_jp: {} },
+      audit: { id: "x1", verdict: "DISCREPANT", source_transcript: { stem: "ABCDEFGHIX", choices: {} }, discrepancies: [{ field: "stem", current_text: "ABCDEFGHIJ", source_text: "ABC" }] } }, "raw"]]);
+    expect(r.missed).toEqual(["x1 stem"]); expect(r.code).toBe(1);
+  });
+  it("Rule D MAJOR-2 A4: 引用 (可用姓→可用性) の外で未計上の 1 語入替 (正しい→適切な) は MISSED", () => {
+    const r = run([[{ sample: { id: "x1", displayed_stem_jp: "情報セキュリティの三要素は機密性、完全性、可用姓である。正しいものはどれか。", displayed_choices_jp: {} },
+      audit: { id: "x1", verdict: "DISCREPANT", source_transcript: { stem: "情報セキュリティの三要素は機密性、完全性、可用性である。適切なものはどれか。", choices: {} },
+        discrepancies: [{ field: "stem", current_text: "情報セキュリティの三要素は機密性、完全性、可用姓である。正しいものはどれか。", source_text: "可用性" }] } }, "raw"]]);
+    expect(r.missed).toEqual(["x1 stem"]); expect(r.code).toBe(1);
+  });
+  it("Rule D MINOR-1 A5: transcript が表示と同一なのに agent が差分を計上 → ✗ REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED、exit 1", () => {
+    const r = run([[{ sample: { id: "x1", displayed_stem_jp: "可用姓である。", displayed_choices_jp: {} },
+      audit: { id: "x1", verdict: "DISCREPANT", source_transcript: { stem: "可用姓である。", choices: {} }, discrepancies: [{ field: "stem", current_text: "可用姓", source_text: "可用性" }] } }, "raw"]]);
+    expect(r.out).toMatch(/✗ REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED x1 stem/); expect(r.code).toBe(1);
+  });
+  it("A5 の判定は是正後 replay (source が表示に入っている) では立たない (2021r03-q011 事後)", () => {
+    const r = run([["2021r03-q011", "post"]]);
+    expect(r.counts.REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED).toBe(0); expect(r.code).toBe(0);
   });
   it("2022r04-q012 事前: source_text が題幹 1 文目だけ → patch で REPORTED / 事後 → same", () => {
     expect(run([["2022r04-q012", "pre"]]).counts.REPORTED).toBe(1);
