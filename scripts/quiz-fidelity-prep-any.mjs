@@ -128,8 +128,10 @@ function findHeadings(prof, headMode, bodyMode) {
 let ocrAvailable = null;
 function hasTesseract() {
   if (ocrAvailable === null) {
-    try { execFileSync("tesseract", ["--version"], { stdio: "ignore" }); ocrAvailable = true; }
-    catch { ocrAvailable = false; console.warn("  ⚠ precrop: tesseract が無い — 見出しの題番号照合を省きます (個数照合のみ)"); }
+    // jpn モデルが無いと全 OCR が失敗し、全頁が qnum_mismatch になる → 本体だけでなく言語の有無も確かめる
+    try { ocrAvailable = /^jpn$/m.test(execFileSync("tesseract", ["--list-langs"], { encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] })); }
+    catch { ocrAvailable = false; }
+    if (!ocrAvailable) console.warn("  ⚠ precrop: tesseract (+ jpn) が無い — 見出しの題番号照合を省きます (個数照合のみ)");
   }
   return ocrAvailable;
 }
@@ -264,7 +266,7 @@ async function buildCrops(targetIds) {
         rp.ocr = reads.map((r) => r.text);
         rp.found = reads.map((r) => r.qnum);
         const chk = checkQnums(rp.found, expected);
-        rp.verified = chk.verified; rp.noise = chk.noise; rp.unconfirmed = chk.unconfirmed;
+        rp.verified = chk.verified; rp.unconfirmed = chk.unconfirmed;
         if (!chk.ok) {
           console.warn(`  ⚠ precrop skip ${rel.split("/").pop()} [qnum_mismatch]: heading 問${rp.found.map((n) => n ?? "?").join("/")}, expected ${expected.join("/")}`);
           rp.status = "qnum_mismatch";

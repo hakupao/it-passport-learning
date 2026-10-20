@@ -71,27 +71,21 @@ export function sameQnum(found, expected) {
 }
 
 /**
- * 誤帯とみなす番号差の上限。誤帯は bank の page_image が隣接頁を指す型で、番号差は隣の頁の問数 (2〜4) 程度になる。
- * これより大きい差は OCR の桁落ち・桁化け (実測: 11→1、10→1) なので不一致に数えず noise として記録する。
- */
-export const OFFSET_MAX = 5;
-
-/**
  * found[i] と expected[i] を照合。
- * verified = 一致 (誤読組も含む)、exact = 完全一致、noise = 問字の後に番号差 > OFFSET_MAX の数字 (桁落ち等。見出しではある)、
- * mismatches = 誤帯の疑い、unconfirmed = 問字 + 数字が読めない (null) = 見出しであること自体が未確認。
+ * verified = 一致 (誤読組も含む)、exact = 完全一致、mismatches = 期待と違う番号 (誤帯の疑い。番号差の大小は問わない:
+ * bank の page_image が 2 頁以上ずれていても個数は一致しうる)、unconfirmed = 先頭に数字が読めない (null) = 見出しであること自体が未確認。
  * ok は mismatches も unconfirmed も 0 のとき (S128 実測: 個数一致のまま 〔ストラテジ系〕 節見出し 2 本を見出しと誤検出した頁 = 2009h21a page-39)。
+ * 桁落ち (「問1」= 問11) も不一致 = 安全側 skip になるが、OCR の 3 段 cascade 後の全 29 exam 実測では 0 件。
  */
 export function checkQnums(found, expected) {
-  if (found.length !== expected.length) return { ok: false, mismatches: [], verified: 0, exact: 0, noise: 0, unconfirmed: 0, reason: "length" };
+  if (found.length !== expected.length) return { ok: false, mismatches: [], verified: 0, exact: 0, unconfirmed: 0, reason: "length" };
   const mismatches = [];
-  let verified = 0, exact = 0, noise = 0, unconfirmed = 0;
+  let verified = 0, exact = 0, unconfirmed = 0;
   found.forEach((f, i) => {
     if (f === null) { unconfirmed++; return; }
     const e = expected[i];
     if (f === e) { verified++; exact++; } else if (sameQnum(f, e)) verified++;
-    else if (Math.abs(f - e) > OFFSET_MAX) noise++;
     else mismatches.push({ i, found: f, expected: e });
   });
-  return { ok: mismatches.length === 0 && unconfirmed === 0, mismatches, verified, exact, noise, unconfirmed };
+  return { ok: mismatches.length === 0 && unconfirmed === 0, mismatches, verified, exact, unconfirmed };
 }

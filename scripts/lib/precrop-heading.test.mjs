@@ -63,7 +63,7 @@ test("checkQnums: U6 page-24 (count matched, band wrong) is rejected", () => {
 });
 
 test("checkQnums: null = heading not confirmed → page rejected", () => {
-  assert.deepEqual(checkQnums([13, null], [13, 14]), { ok: false, mismatches: [], verified: 1, exact: 1, noise: 0, unconfirmed: 1 });
+  assert.deepEqual(checkQnums([13, null], [13, 14]), { ok: false, mismatches: [], verified: 1, exact: 1, unconfirmed: 1 });
   assert.equal(checkQnums([null, null], [95, 96]).ok, false);   // 2009h21a page-39: 〔ストラテジ系〕×2 を見出しと誤検出
   assert.equal(checkQnums([13], [13, 14]).ok, false);
 });
@@ -85,10 +85,9 @@ test("checkQnums: confusable reads verify, U6 offset still rejected", () => {
   assert.equal(checkQnums([51, 52], [52, 53]).ok, false);
 });
 
-test("checkQnums: digit drops (11→1) are noise, adjacent-page offsets are mismatches", () => {
-  const r = checkQnums([1, 12], [11, 12]);   // 2009h21h page-08 実測
-  assert.equal(r.ok, true);
-  assert.equal(r.noise, 1);
+test("checkQnums: any non-confusable number is a mismatch (offsets of any size, digit drops → safe-side skip)", () => {
   assert.equal(checkQnums([49, 50, 51], [52, 53, 54]).ok, false);  // 前頁ぶん (3 問) ずれ
-  assert.equal(checkQnums([16], [15]).ok, false);                  // 差 1 の誤読は安全側 skip
+  assert.equal(checkQnums([60, 61], [52, 53]).ok, false);          // 2 頁以上のずれでも個数一致しうる
+  assert.equal(checkQnums([1, 12], [11, 12]).ok, false);           // 桁落ち (2009h21h page-08 の単発読み) も安全側 skip
+  assert.equal(checkQnums([16], [15]).ok, false);
 });
