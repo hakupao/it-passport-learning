@@ -63,16 +63,18 @@ function prompt(inputPath, id, partPath) {
 - \`question_crop_png\`: **この設問だけを前裁断した画像**の絶対パス (存在しないことがある)
 - \`source_page_png\`: 原典ページ画像の絶対パス (**権威**)
 - \`prev_page_png\`: 直前ページの絶対パス (存在しないことがある。中問の共有前文はここに載る)
+- \`next_page_png\`: 直後ページの絶対パス (存在しないことがある。題幹と選択肢が頁をまたぐ問は選択肢がここに載る)
 - \`question_number\`: このページ内で照合すべき問番号
 - \`displayed_stem_jp\` / \`displayed_choices_jp\`: 現在アプリが表示している本文と選択肢
 - \`correct_answer\`: 正解字母
 
 ## 手順 (必ずこの順で)
 0. **切り出し画像は必ず一意のディレクトリに書く**: \`<scratchpad>/fid_${id}_<乱数6桁>/\` を作り、その配下にだけ書く。並行する他の監査 agent と scratchpad を共有しているため、\`crop.png\` \`stem.png\` のような汎用名を scratchpad 直下に書くと**他問の画像を読んでしまう** (S117 で 9 件発生)。Read した画像の寸法が自分の書き出し寸法と違ったら衝突と見なし、再生成する。
-0b. **隔離 (S121、必読)**: **読んでよいのは次の 3 種だけ** — (i) 上記 manifest、(ii) そのエントリに書かれた画像パス (と \`page-(NN-1).png\`)、(iii) 自分の一意ディレクトリ配下。**それ以外のファイルは、Read / Grep / cat / find / sed / node など手段を問わず一切参照してはならない**。特に禁止: \`evidence/\` 配下の監査結果、\`fidparts/\` 配下の part file (他問のものも自分の問の過去分も)、\`explanations/\`・\`.phase2/generate_result_*.json\` (既判定と正解根拠を含む)、他 agent の出力、\`questions.json\` 等のデータ本体。S120 で先行監査を事前参照した agent と別問の part を読んだ agent が 8 件出た。本監査は原典画像だけを根拠にする独立読取であり、他の判定を見た時点で独立性が失われる。
+0b. **隔離 (S121、必読)**: **読んでよいのは次の 3 種だけ** — (i) 上記 manifest、(ii) そのエントリに書かれた画像パス (と \`page-(NN-1).png\` / \`page-(NN+1).png\`)、(iii) 自分の一意ディレクトリ配下。**それ以外のファイルは、Read / Grep / cat / find / sed / node など手段を問わず一切参照してはならない**。特に禁止: \`evidence/\` 配下の監査結果、\`fidparts/\` 配下の part file (他問のものも自分の問の過去分も)、\`explanations/\`・\`.phase2/generate_result_*.json\` (既判定と正解根拠を含む)、他 agent の出力、\`questions.json\` 等のデータ本体。S120 で先行監査を事前参照した agent と別問の part を読んだ agent が 8 件出た。本監査は原典画像だけを根拠にする独立読取であり、他の判定を見た時点で独立性が失われる。
 1. **まず \`question_crop_png\` を Read** する (エントリに在る場合)。これは当該問だけを切り出した帯なので、通常はこれ 1 枚で設問文と全選択肢が読める。
    次のいずれかに当てはまるときだけ \`source_page_png\` (ページ全体) を Read すること: **判読不能** / 設問文や選択肢が**切れている** (末尾の肢が無い等) / 先頭の**問番号が \`question_number\` と違う**。
    **第 4 条 (必読)**: \`displayed_stem_jp\` に crop 画像内に無い**前文・表・図の記述**が含まれている場合 (中問の共有前文など) は、必ず \`source_page_png\` と \`prev_page_png\` (無ければ \`source_page_png\` と同じディレクトリの \`page-(NN-1).png\`) も Read してから書き起こすこと。
+   同様に、**選択肢 (または題幹の一部) が crop にも \`source_page_png\` にも見えない**場合は、必ず \`next_page_png\` (無ければ \`source_page_png\` と同じディレクトリの \`page-(NN+1).png\`) も Read すること。題幹と選択肢が頁をまたぐ問は、題幹頁が \`source_page_png\`、選択肢は直後ページに在る。
    **crop に無いというだけで「源に無い挿入」と判定してはならない**。前文は前ページに在るのが通常で、crop はその設問の帯しか含まない。この誤判定は正しい前文の削除に直結する。
    \`question_crop_png\` が無いエントリでは \`source_page_png\` を読む。いずれの場合も、文字が小さければ必ず拡大して読む (低解像度の一読は数字・記号を誤読する)。
    ページ全体を読む場合は同じページに複数の設問があるので、**問番号を必ず確認**すること。

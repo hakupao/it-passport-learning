@@ -156,6 +156,16 @@ const pagePart = (src) => {
   return o;
 };
 
+// ── 純関数: source 相 assert-once の figure_page_* 検査 (I/O 無し) ───────────────────────
+// 目標でない前状態は「まだ figure_page_* が無い素の状態」か「既存 figure_page_* が目標と同値で設問ページだけ動く」
+// (S130 2015h27a-q087 / 2012h24a-q088) のみ許す。それ以外は throw。
+export function assertFigurePageOnce(before, target, id) {
+  const hasFig = before.figure_page_image !== undefined || before.figure_page_number !== undefined;
+  const figKept = before.figure_page_number === target.figure_page_number && before.figure_page_image === target.figure_page_image;
+  if (hasFig && !figKept)
+    throw new Error(`${id}: 既に figure_page_* があるが目標と異なる — 中止\n    現在 ${JSON.stringify(before)}\n    目標 ${JSON.stringify(target)}`);
+}
+
 // ── --self-test: 実データに触れずインライン標本で計画関数を検証 ──────────────────────────
 if (SELF_TEST) {
   let pass = 0;
@@ -224,6 +234,15 @@ if (SELF_TEST) {
   throws("BAD だが現在 bbox が無い",
     () => planBbox(null, { id: "x-q001", bbox_check: { verdict: "BAD", proposed_bbox_pct: box(0.1, 0.2, 0.8, 0.9) } }), /現在 figure_bbox_pct が無い/);
 
+  console.log("── assert-once (figure_page_*) ──");
+  const q087before = { page_image: "pages/2015h27a/page-37.png", page_number: 37, figure_page_image: "pages/2015h27a/page-36.png", figure_page_number: 36 };
+  eq("既存 figure_page == 目標 で設問ページだけ動く (2015h27a-q087) は通す",
+    assertFigurePageOnce(q087before, { page_image: "pages/2015h27a/page-38.png", page_number: 38, figure_page_image: "pages/2015h27a/page-36.png", figure_page_number: 36 }, "2015h27a-q087"),
+    undefined);
+  throws("既存 figure_page != 目標 は拒否",
+    () => assertFigurePageOnce(q087before, { page_image: "pages/2015h27a/page-38.png", page_number: 38, figure_page_image: "pages/2015h27a/page-37.png", figure_page_number: 37 }, "2015h27a-q087"),
+    /既に figure_page_\* があるが目標と異なる/);
+
   console.log(`\n${process.exitCode ? "✗" : "✓"} self-test: ${pass} assertions (実データ・実ファイル未参照)`);
   process.exit(process.exitCode ?? 0);
 }
@@ -287,9 +306,8 @@ for (const dec of decisions) {
     const before = pagePart(bankQ.source);
     if (JSON.stringify(before) === JSON.stringify(target)) { srcAlready++; console.log(`  = ${id}: source 既に目標状態`); }
     else {
-      // assert-once: 目標でないなら「まだ figure_page_* が無い素の状態」+ 判定 JSON の観測値と一致
-      if (before.figure_page_image !== undefined || before.figure_page_number !== undefined)
-        throw new Error(`${id}: 既に figure_page_* があるが目標と異なる — 中止\n    現在 ${JSON.stringify(before)}\n    目標 ${JSON.stringify(target)}`);
+      // assert-once: figure_page_* の前状態 + 判定 JSON の観測値と一致
+      assertFigurePageOnce(before, target, id);
       const expectNum = Number.isInteger(dec.expect_page_number) ? dec.expect_page_number
         : Number.isInteger(dec.current_page_number) ? dec.current_page_number : null;
       if (expectNum !== null && before.page_number !== expectNum)

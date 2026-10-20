@@ -327,6 +327,9 @@ const samples = targets.map((q) => {
   // 直前ページ (中問の共有前文はここに載る)。agent が回退第 4 条で読めるよう機械的に導いて渡す。
   const prev = pagePng.replace(/page-(\d+)\.png$/, (_, n) => `page-${String(Number(n) - 1).padStart(n.length, "0")}.png`);
   if (prev !== pagePng && existsSync(prev)) s.prev_page_png = prev;
+  // 直後ページ (題幹と選択肢が頁をまたぐ問は選択肢がここに載る — S130 規約: page_number = 題幹頁)。
+  const next = pagePng.replace(/page-(\d+)\.png$/, (_, n) => `page-${String(Number(n) + 1).padStart(n.length, "0")}.png`);
+  if (next !== pagePng && existsSync(next)) s.next_page_png = next;
   return s;
 });
 const out = path.join(ROOT, "data/ip/quiz/.phase2", `${label}_fidelity_input_${examId}.json`);

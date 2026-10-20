@@ -112,7 +112,12 @@ ${finish}`
 
 const parsed = typeof args === 'string' ? JSON.parse(args) : args
 const inputPath = parsed?.input_path
-const ids = parsed?.ids
+// S130 T1: 全題 exam の ids を args に列挙せずに済むよう、exam_sets [[exam_id, 除外 qnum[]], …] (順序 = prep の ids 順) も受ける。
+// 各 exam は q001〜q100 から除外分を除いた昇順。ids があれば ids を優先する。
+const ids = parsed?.ids ?? (Array.isArray(parsed?.exam_sets)
+  ? parsed.exam_sets.flatMap(([e, skip]) => Array.from({ length: 100 }, (_, i) => i + 1)
+    .filter((n) => !(skip ?? []).includes(n)).map((n) => `${e}-q${String(n).padStart(3, '0')}`))
+  : undefined)
 if (!inputPath || !Array.isArray(ids) || !ids.length) throw new Error('need {input_path, ids:[...]}')
 if (ids.some((id) => typeof id !== 'string' || !/^\d{4}[a-z0-9]+-q\d{3}$/.test(id))) throw new Error('ids must be question ids like "2026r08-q070"')
 const agentType = parsed?.agent_type ?? 'general-purpose'
