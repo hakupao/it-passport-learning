@@ -4,7 +4,7 @@
 - 対象: `evidence/quiz_full52_summary.md` §7.1 の #6 (空虚な一致 / replay artifact / 描画補助・問文配置差の許容 / 表ブロック除外の散文連結比較) と #25 (`source_text` の截断引用)、0b (表示 ASCII `"` vs transcript “”)
 - 変更ファイル:
   - `scripts/quiz-fidelity-machdiff.mjs` (改修)
-  - `scripts/quiz-fidelity-machdiff.test.mjs` (新規、vitest 31 件)
+  - `scripts/quiz-fidelity-machdiff.test.mjs` (新規、vitest 32 件)
   - `scripts/quiz-fidelity-machdiff.fixtures.json` (新規、19 題。main tree の `.phase2` manifest + 現行出荷層 + 結果 JSON の audit から機械抽出した実データ。題文は `evidence/phase5/stage_06_quiz_fidelity/*.json` に既にコミット済の範囲)
 
 ## 1. 判定順の変更 (field ごと)
@@ -18,7 +18,7 @@
 | 5a | 計上 field で current_text = field 全文 かつ source_text が transcript の真部分文字列 → `REPORTED_TRUNCATED_QUOTE` (⑨ #25) | `~ REPORTED_TRUNCATED_QUOTE` | なし |
 | 5b | 未計上 field で norm(transcript) が norm(displayed) の真の接頭辞 かつ文末 (`.?!)"`) で終わる → `TRANSCRIPT_PREFIX` (⑨ #25) | `~ TRANSCRIPT_PREFIX` (続きの 24 字を表示) | なし |
 | 6 | それ以外 → `AGENT_MISSED` (従来どおり) | `✗ AGENT_MISSED` | exit 1 |
-| 0b | 表示に ASCII `"` があり transcript に ASCII `"` が無く “” / 「」 がある → `QUOTE_ASCII` (段 1〜5 と独立の別判定) | `! QUOTE_ASCII` | なし |
+| 0b | 表示に ASCII `"` があり transcript に ASCII `"` が無く “” / 「」 がある → `QUOTE_ASCII` (段 1〜5 と独立の別判定)。agent が当該 field で ASCII `"` を含む current_text を計上済なら立てない (計上済 11 件を初版で重複計上していたのを修正) | `! QUOTE_ASCII` | なし |
 
 - **replay artifact (⑨-b)** は段 1 で原理的に消える: 是正後の表示が transcript と素で一致すれば patch を当てない (旧版は current_text が是正後テキストの接頭辞だと再置換して「。。」「している.している.」を作っていた)。
 - **空虚な一致** は段 2 の `REPORTED (whole-field N)` として `same` から分離。U4 は `same 260 → 256 + REPORTED 4 (whole-field 4)` = U4 §8a が手作業で示した 4 件と一致。U5 は REPORTED 17 (whole-field 14)。
@@ -36,9 +36,9 @@
 
 ```
 node apps/web/node_modules/vitest/vitest.mjs run --root scripts --globals quiz-fidelity-machdiff
-  → Tests 31 passed (31)
+  → Tests 32 passed (32)
 MACHDIFF_SCRIPT=<旧版 (HEAD 3c65c3f) のコピー> 同上
-  → Tests 20 failed | 10 passed (30)   ※旧版で計測した時点の 30 件。31 件目 (q072 事後) は後述の修正時に追加
+  → Tests 22 failed | 10 passed (32)
 ```
 
 - `apps/web/vitest.config.ts` の include は `src/**` 限定で、D-152 により変更不可。worktree root に node_modules が無いため main tree の vitest を `--root scripts --globals` で起動 (テストは `vitest` を import しない)。
@@ -57,14 +57,14 @@ MACHDIFF_SCRIPT=<旧版 (HEAD 3c65c3f) のコピー> 同上
 | u3a 2018h30h | 5→1 | 345→337 | 8 (7) | 0 | 4 | 0 | 0 |
 | u3b 2019h31h | 18→5 | 417→416 | 13 (10) | 0 | 1 | 0 | 4 |
 | u4 2019r01a | 0→0 | 260→256 | 4 (4) | 0 | 0 | 0 | 1 |
-| u5 2020r02o | 7→3 | 293→280 | 17 (14) | 0 | 0 | 0 | 2 |
+| u5 2020r02o | 7→3 | 293→280 | 17 (14) | 0 | 0 | 0 | 0 |
 | u6 2021r03 | 2→2 | 433→419 | 14 (13) | 0 | 0 | 0 | 0 |
 | u7 2022r04 | 9→4 | 366→339 | 27 (26) | 0 | 4 | 1 | 1 |
-| u8 2023r05 | 3→1 | 452→437 | 16 (13) | 0 | 0 | 1 | 1 |
+| u8 2023r05 | 3→1 | 452→437 | 16 (13) | 0 | 0 | 1 | 0 |
 | u9 2024r06 | 0→0 | 360→356 | 4 (3) | 0 | 0 | 0 | 0 |
-| u10 2025r07 | 2→1 | 398→389 | 10 (9) | 0 | 0 | 0 | 2 |
-| u11 2026r08 | 3→1 | 352→338 | 14 (14) | 1 | 1 | 0 | 7 |
-| a2a multi | 6→6 | 410→409 | 1 (0) | 0 | 0 | 0 | 11 |
+| u10 2025r07 | 2→1 | 398→389 | 10 (9) | 0 | 0 | 0 | 1 |
+| u11 2026r08 | 3→1 | 352→338 | 14 (14) | 1 | 1 | 0 | 5 |
+| a2a multi | 6→6 | 410→409 | 1 (0) | 0 | 0 | 0 | 6 |
 | a2c multi | 2→1 | 298→292 | 6 (4) | 1 | 0 | 0 | 0 |
 
 `same` の減少は計上 field が REPORTED に移った分 (想定どおり、退行ではない)。
@@ -73,9 +73,9 @@ MACHDIFF_SCRIPT=<旧版 (HEAD 3c65c3f) のコピー> 同上
 
 | 型 | 件 | id (evidence) |
 |---|---|---|
-| 表型選択肢の一行化 | 16 | `2019h31h-q052/q072/q082` ア〜エ (U3b §3 偽陽性 12) ×2 組 (u3b / u3bpost)、`2020r02o-q001` ア〜エ (U5) |
+| 表型選択肢の一行化 | 28 | `2019h31h-q052/q072/q082` ア〜エ (U3b §3 偽陽性 12) ×2 組 (u3b / u3bpost)、`2020r02o-q001` ア〜エ (U5) |
 | 問文配置差 (LAYOUT) | 4 | `2015h27a-q009` ×3 組 (波 1 §⑨ 3 型目)、`2026r08-q074` (U11 §3c) |
-| KNOWN_FP | 12 | `2026r08-q072` (U11 §3b)、`2018h30h-q005` ×4 (U3a)、`2019h31h-q053` ×2 組 (U3b §3)、`2022r04-q032` ×4 (U7 §3) |
+| KNOWN_FP | 11 | `2026r08-q072` (U11 §3b)、`2018h30h-q005` ×4 (U3a)、`2019h31h-q053` ×2 組 (U3b §3)、`2022r04-q032` ×4 (U7 §3) |
 | TRANSCRIPT_PREFIX | 2 | `2022r04-q006` (U7 §3 transcript 截断)、`2023r05-q041` (U8 §3 図の文本化) |
 | 正規化空間 patch / 「…」引用 | 4 | `2023r05-q092 ウ` (U8 §3 人工物)、`2020r02o-q018 エ` (strat53 gp)、`2026r08-q013 ウ` (strat53 cr / gp) — いずれも agent が当該差分を計上済 |
 | 是正後 manifest の replay | 2 | `2016h28h-q067 ア` (full52post cr / gp) |
@@ -92,9 +92,10 @@ exit 1→0 になった組は 4: `full52post 2016h28h` × cr / gp (q067 replay �
 
 1. **`2019h31h-q034` の markdown 表ヘッダ行** (`| 項目 | | 金額 |` が transcript に無い) は許容していない。事後 MISSED として残る (U3b §8a の既知残差)。ヘッダ行の許容は「表の 1 行目欠落」との区別が要るため見送り。
 2. **TRANSCRIPT_PREFIX の盲点**: displayed の末尾に文単位の混入 (例: 次節見出しの付着) があると、transcript が直前の文末で終わっていれば TRANSCRIPT_PREFIX に入り exit に効かない。行は出すので主 context が読む前提。gate にするかはユーザー判断。
-3. **QUOTE_ASCII は exit に影響させていない** (u4 / u9 など完了 unit の exit が 0→1 に変わるのを避けた)。事前 manifest で延べ 43 件 (a2a 11 / u11 7 / u3b 4 …)、是正後模擬では 0。gate 化は主 context / ユーザー判断。
+3. **QUOTE_ASCII は exit に影響させていない** (u4 / u9 など完了 unit の exit が 0→1 に変わるのを避けた)。事前 manifest で延べ 32 件 (a2a 6 / u11 5 / u3b 4 …)、是正後模擬では 0。gate 化は主 context / ユーザー判断。
 4. a2c の `2019h31h-q082` stem と 2016h28h cr の `q060` stem (⑨-a 散文注記) は agent の source_text 自体が逐字でない型で、旧新とも MISSED。prompt 側で既に対処済 (⑨-a)。
-5. `FP_RULES` は規則ごとに裁定出典を書く運用。新しい描画補助型 (例: U8 q042 組合せ表→選択肢の構造化) は本改修に入れていない。
+5. **`kvParse` の潜在リスク**: 一行化の区切り `[\s　]+(?=[^\s　,，、:：]{1,16}[:：])` は KV 型 (どちらかが `[表]`) の field にだけ効くが、値の中に「語：」「10:30」があると余計に分割する。現行データでは GAINED 0 だが、キーを a/b/c・①〜⑳ に絞るかは今後の判断。
+6. `FP_RULES` は規則ごとに裁定出典を書く運用。新しい描画補助型 (例: U8 q042 組合せ表→選択肢の構造化) は本改修に入れていない。
 
 ## 5. 再現
 

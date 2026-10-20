@@ -143,8 +143,9 @@ for (const a of res.audits ?? []) {
     const disp = disp0 ?? "";
     const ds = (a.discrepancies ?? []).filter((d) => d.field === field);
     // 0b: 表示の ASCII " (transcript は “” / 「」)。patch を当てた後の表示で見る (agent が計上して直す ASCII は除く)
+    const agentQuoted = ds.some((d) => (d.current_text ?? "").includes("\"")); // agent が ASCII " を含む差分を計上済 → 0b に重ねない
     const quoteCheck = (shown) => {
-      if (/"/.test(shown) && !/"/.test(src0) && /[“”「」]/.test(src0)) { quoteAscii++; console.log(`! QUOTE_ASCII ${a.id} ${field}: displayed has ASCII " / transcript has “” or 「」`); }
+      if (!agentQuoted && /"/.test(shown) && !/"/.test(src0) && /[“”「」]/.test(src0)) { quoteAscii++; console.log(`! QUOTE_ASCII ${a.id} ${field}: displayed has ASCII " / transcript has “” or 「」`); }
     };
     // 1. patch 無し (replay artifact が出ない)
     let r = compare(disp, src0);

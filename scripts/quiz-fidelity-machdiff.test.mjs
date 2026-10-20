@@ -174,6 +174,13 @@ describe("0b: 表示 ASCII \" vs transcript “” の別判定 (D-151 を退行
     expect(r.out).toMatch(/! QUOTE_ASCII 2026r08-q025 stem/); expect(r.counts.QUOTE_ASCII).toBe(1);
     expect(r.missed).toEqual([]); expect(r.code).toBe(0);
   });
+  it("agent が ASCII \" を含む差分を計上済の field は (段 1 の same 経路でも) 立てない", () => {
+    const r = run([["2026r08-q025", "pre", (s, a) => {
+      a.verdict = "DISCREPANT";
+      a.discrepancies = [{ field: "stem", current_text: "\"ビッグデータ\"", source_text: "“ビッグデータ”" }];
+    }]]);
+    expect(r.counts.QUOTE_ASCII).toBe(0); expect(r.counts["same∩reported"]).toBe(5 - 4); // stem のみ計上 (choices 4 は未計上の same)
+  });
   it("2026r08-q025 事後 (“” に是正済) → QUOTE_ASCII 0", () => {
     expect(run([["2026r08-q025", "post"]]).counts.QUOTE_ASCII).toBe(0);
   });
