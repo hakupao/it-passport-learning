@@ -47,3 +47,31 @@ critic / verifier が図の照合中に付記。一覧 = `fig_stem_mismatch_S127
 - 主 context 実読: **S126 で発見された既知欠損 2 題が解消** — `2016h28h-q033` (ネットワーク図 + 所要時間表、C 行・Y 列まで完全) / `2017h29a-q015` (選択肢表 ア〜エ 4 行 + 右外枠)。
 - stem 転記表の原典不一致 (再検証 verifier も同見立て): 追加 `2013h25h-q096` (B2 3,000 vs 3,200、B14、E2 式、4月行脱落)。`fig_stem_mismatch_S127.json` 参照。
 - gate (b2 適用後): crosscheck all invariants / assert-clean GREEN / chumon 一致 / tsc 0 / vitest 562 passed / build 0。
+
+## b3 (2017h29h〜2026r08、11 exam、39 題)
+
+| 段 | run | token | 結果 |
+|---|---|---|---|
+| critic | `wf_cdb28490-db1` | 2,524,722 | recrop 39 / remove 0 / 偽陽性 0 |
+| apply | — | — | recrop 39 / webp 39 変更 |
+| 再検証 | `wf_97202deb-ac5` | 2,290,301 | 38/39 correct、**still-bad 1 = `2022r04-q050`** (critic bbox x=44% が表の左端 34.8% を外し左列「工程/設計/製造」欠落) |
+| round 2 | apply (`--backup-dir figfix_backup_S127_r2/`、q050 は round 1 で退避済のため別退避先) → 再検証 `wf_8f50a187-650` | 58,235 | **1/1 correct** (主 context 実読も正: 単位注記 + 2 列表 + 左罫線) |
+
+- gate (b3 + round 2 適用後): crosscheck all invariants / assert-clean GREEN / chumon 一致 / tsc 0 / vitest 562 passed / build 0。
+- stem 転記不一致リスト 17 題に拡大 (b3 critic + verifier 付記: `2018h30a-q005` 作業B 機械X 7分 vs 10分 / `2018h30h-q100` 通信制御 vs 通信制限 / `2019h31h-q053` 59本 vs 50本 / `2019h31h-q078` / `2019h31h-q098` B2 88 vs 80・C2 合格欠落 / `2023r05-q075` ほか)。**`2019h31h` / `2023r05` は ⑤-2 母数内** → stem 内 markdown 表の転記は ⑤-2 machdiff の表ブロック比較が弱い盲点 (⑨(6)) の実例か A track で確認。
+
+## C track 総括 (S127)
+
+| 項目 | 値 |
+|---|---|
+| 縁辺走査 | 配信 webp 530 → 候補 267 (S126 完全再現) |
+| sweep (Sonnet) | 267 / 陽性 111 (partial 104 / extra_neighbor 6 / wrong_question 1)、盲検対照: 既知欠損 2/2 検出、陰性 4 のうち 1 (q078) は実欠損だった |
+| 修復 | **再裁断 111 題** (b1 39 / b2 33 / b3 39)、remove_figure 提案 2 は recrop に変更 (破壊的変更回避)、偽陽性 2 (共有図 group の q099/q100、題ごと判定) |
+| 再検証 (別 type verifier) | round 1: 110/111 correct → round 2: 1/1 correct = **111/111** |
+| token | C1 sweep 15.09M + critic 7.29M + 再検証 6.59M ≈ **28.97M** (+ C0/C2 準備 executor・reviewer)。**申告 1,000〜1,200 万を大幅超過** (sweep の Sonnet 実測 ≈ 56k/項目 が見積 30k の約 2 倍、陽性数 111 が想定より多かった) |
+| commit | b1 `f299488` / b2 `9a02cd8` / b3 (本 commit) |
+
+### 残る空白 (⑨ 登記)
+1. **縁辺走査の盲点**: 縁が白いまま行・列ごと欠ける裁断は検出不能。候補外 263 枚 (選択肢図 24 を含む) は今回 sweep 対象外。陰性対照 q078 が実欠損だった (S126 目視 6 枚中 1 枚の誤判定) ことから、候補外にも欠損が残る可能性は否定できない。
+2. **stem 転記表の原典不一致 17 題** (`fig_stem_mismatch_S127.json`): 13 exam 群は B track fixer に名指し、⑤-2 母数内 (2019h31h / 2023r05 等) は A track で表ブロック比較の盲点として扱う。正解に関わりうる例: `2012h24h-q005` (4,800 vs 4,000) / `q091` / `q092` / `2018h30a-q005` / `2019h31h-q098`。
+3. 選択肢図 (key≠question_id) は figfix-apply 非対応 (C0 N3)。
