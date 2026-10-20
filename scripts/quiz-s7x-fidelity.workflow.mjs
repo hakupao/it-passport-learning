@@ -100,12 +100,19 @@ function prompt(inputPath, id, partPath) {
 
 const parsed = typeof args === 'string' ? JSON.parse(args) : args
 const inputPath = parsed?.input_path
-const examId = parsed?.exam_id
+const examId = parsed?.exam_id ?? (Array.isArray(parsed?.ids) && parsed.ids.length ? 'multi' : undefined)
 const qnums = parsed?.qnums
-if (!inputPath || !examId || !Array.isArray(qnums) || !qnums.length) {
-  throw new Error('need {input_path, exam_id, qnums:[...]}')
+// S127 A2a: 多 exam manifest (quiz-fidelity-prep-multi.mjs) 用に args.ids (exam 接頭辞付き id の配列) を受ける。
+// ids があれば qnums より優先し、exam_id は出力名のラベル (既定 'multi') としてだけ使う。単 exam の呼び出しは従来どおり。
+const idsArg = parsed?.ids
+const hasIds = Array.isArray(idsArg) && idsArg.length > 0
+if (!inputPath || (!hasIds && (!examId || !Array.isArray(qnums) || !qnums.length))) {
+  throw new Error('need {input_path, exam_id, qnums:[...]} or {input_path, ids:[...]}')
 }
-const ids = qnums.map((n) => `${examId}-q${String(n).padStart(3, '0')}`)
+if (hasIds && idsArg.some((id) => typeof id !== 'string' || !/^\d{4}[a-z0-9]+-q\d{3}$/.test(id))) {
+  throw new Error('ids must be question ids like "2021r03-q001"')
+}
+const ids = hasIds ? idsArg : qnums.map((n) => `${examId}-q${String(n).padStart(3, '0')}`)
 // Pass 2 (independent re-read) runs a DIFFERENT agentType than pass 1 so the two readings
 // are not the same reviewer twice (Rule D). Disagreements are adjudicated by 主 context.
 const agentType = parsed?.agent_type ?? 'general-purpose'
