@@ -1,0 +1,28 @@
+{
+  "lane": "S128 L2e (READ-ONLY, D-152)",
+  "inputs_sha256_16": {"questions.json": "73c4414e0e6d6502", "question_bank.json": "2b3e45cc1f78fde4"},
+  "scope": {"units_scanned": 244, "body_strings_scanned": 37550, "svg_files_label_scanned": 409, "excluded_path": "source_figures (not rendered, UnitReader.tsx:8-10)"},
+  "textbook_body_hits": [],
+  "false_positive_regex_hits": [
+    {"id_pattern": "2012h24a-q088 (鸡蛋)", "unit": "strategy-01-03-u01", "path": ".terms.1.analogy_zh", "reason": "cake-ingredient analogy, unrelated"},
+    {"id_pattern": "2012h24a-q088 (鸡蛋)", "unit": "technology-23-62-u02", "path": ".terms.5.explanation_zh", "reason": "'eggs in one basket' idiom, unrelated"}
+  ],
+  "candidate_unit_map": {
+    "2009h21h-q098": [{"unit": "strategy-01-02-u13", "refs": ["terms.2.inline_quiz.0", "source_figures.1"]}],
+    "2012h24a-q086": [{"unit": "technology-17-47-u01", "refs": ["challenge_questions.3", "source_figures.4"]}],
+    "2012h24h-q005": [{"unit": "strategy-01-03-u02", "refs": ["terms.1.inline_quiz.1", "source_figures.1"]}],
+    "2013h25h-q099": [{"unit": "strategy-03-10-u05", "refs": ["challenge_questions.2", "source_figures.1"]}],
+    "2015h27a-q088": [{"unit": "strategy-01-02-u04", "refs": ["challenge_questions.0", "source_figures.1"]}, {"unit": "strategy-01-02-u06", "refs": ["terms.3.inline_quiz.0", "source_figures.3"]}],
+    "2021r03-q050": [{"unit": "strategy-01-02-u03", "refs": ["terms.2.inline_quiz.0", "source_figures.1"]}],
+    "2011h23tokubetsu-q094": [], "2012h24a-q088": [], "2019r01a-q002": [], "2024r06-q093": [], "2025r07-q054": [], "2026r08-q003": []
+  },
+  "source_checks": [
+    {"id": "2012h24h-q005", "page": "data/ip/exams/pages/2012h24h/page-03.png", "fd_value": "売上高4,800", "source": "売上高 4,000", "verdict": "CONFIRMED", "note": "raw stem_jp (bank + questions.json) also 4,800; display layer stem_jp_clean and zh/en = 4,000 (correct). Answer ウ 1,600 = 800/(1-2000/4000) only holds with 4,000."},
+    {"id": "2013h25h-q099", "page": "data/ip/exams/pages/2013h25h/page-48.png", "fd_value": "商品紹介1,800件 / 完了860件", "source": "トップ→商品紹介 1,000件; no 860 anywhere (800件 = キャンペーン→トップ)", "verdict": "CONFIRMED", "note": "fd flow structure is also wrong beyond digit swap: source = 商品紹介→購入手続100, 購入手続→商品紹介50, キャンペーン→購入手続300, 購入手続→キャンペーン20, 購入手続→完了180, 完了→商品紹介100, キャンペーン→商品紹介500, 商品紹介→トップ400, キャンペーン→トップ800. fd's '購入手続400→完了50→完了860' and 'キャンペーン→購入手続500→完了300' do not exist."},
+    {"id": "2012h24a-q086", "page": "data/ip/exams/pages/2012h24a/page-34.png", "fd_value": "牛丼39.9% / カツ丼28.3% / カレー16.6%", "source": "牛丼30.9% / 親子丼14.9% / カツ丼25.8% / カレー28.3%", "verdict": "CONFIRMED (extra, not requested)", "note": "beyond slashed-zero: カツ丼/カレー values shifted, 16.6% not in source"},
+    {"id": "2015h27a-q088", "page": "data/ip/exams/pages/2015h27a/page-38.png", "fd_value": "評価平均3.6の基準線", "source": "stem: 評価平均は3.0を基準値とする線", "verdict": "CONFIRMED by source stem text (extra); graph itself on page-39 not viewed"},
+    {"id": "2019r01a-q002", "verdict": "CONFIRMED by L2b (page-03)"},
+    {"id": "2026r08-q003", "verdict": "CONFIRMED by L2b (page-03)"},
+    {"id": "2021r03-q050", "verdict": "CONFIRMED by L2b / U6 §11 (page-23)"}
+  ]
+}
