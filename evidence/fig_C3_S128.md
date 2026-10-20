@@ -1,7 +1,7 @@
-# C track C3 — 図盲点 22 題の再裁断 提案段 (S128、L2d 後続)
+# C track C3 — 図盲点 22 題の再裁断 (S128、L2d 後続)
 
 前段: `evidence/S128_L2d_figblind.md/.json` (縁辺走査の候補外 263 図を盲検目視 → TRUNCATED 32) と L2d Rule D (l2d-verifier = PASS-with-notes、重大度変更 6 件)。**検証済修復リスト = major 19 + medium 3 = 22 題** (S128 log の L2d Rule D 項)。
-D-152 data lock は A3 が保持している。本段の書込みは staging と本 evidence だけ。`questions.json` / translations / explanations / `question_bank.json` / `data/ip/exams/figures/` / 配信 webp には触れていない (`question_bank.json` md5 `28710d6c3ea88fb408b87e431620a146` は dry-run の前後で同じ)。
+提案段 (§1〜§5) の時点では D-152 data lock を A3 が保持していたので、書き込みは staging と evidence だけだった (`question_bank.json` md5 `28710d6c3ea88fb408b87e431620a146` は dry-run の前後で同じ)。phase 2 (§7) は lock を取得してから実行した。
 
 ## 1. 方法
 
@@ -71,25 +71,44 @@ bbox は `correct_bbox_pct` (x / y / w / h、%)。manifest には、bank の形�
 
 **選択肢 (未実施)**: apply の recrop 分岐に `--write-bbox` (opt-in) を足し、`q.figure_bbox_pct = {x1:b.x/100, y1:b.y/100, x2:(b.x+b.w)/100, y2:(b.y+b.h)/100}` を書く。約 3 行で済む。続けて by_year sync を回す。22 題はいずれも `main` (shared ではない) なので、`quiz-pagefix-derive-groups` の group bbox 一致条件には掛からない。
 
-## 6. phase 2 (lock 解放後) の手順案
+## 6. Rule D (提案段)
 
-```
-node scripts/quiz-figfix-apply.mjs --results data/ip/quiz/.phase2/c3_S128/figfix_results_C3_S128.json --backup-dir data/ip/quiz/.keyaudit/figfix_backup_S128_c3
-# (任意・lead 判断) figure_bbox_pct 回写 → node scripts/quiz-byyear-figmeta-sync-S117.mjs
-node scripts/build-quiz-figures.mjs && node scripts/build-quiz-corpus.mjs
-# gate: quiz-keys-crosscheck.mjs / quiz-pagefix-derive-groups.mjs --assert-clean / quiz-chumon-groups-build.mjs --check / tsc / vitest / build
-```
+c3-verifier (bbox を決めた executor とは別 type) の判定は **PASS、needs_fix 0 / 22** (staging crop 22 枚が対象)。提案段の §7 に書いた stem の受け渡し候補 (stem 転記表の不一致・OCR 残渣) は、verifier が RAW_ONLY (生の stem_jp だけの問題で、表示層の問題ではない) と判定して取り下げた。本 evidence からも削除した。`2013h25h-q055` の schema 表を crop に含めた判断 (§2) はそのまま残す。
 
-- apply の後で、`data/ip/exams/figures/<id>.png` と staging の PNG が一致することを cmp で確かめられる (画素単位で同じになるはず)。
-- **Rule D 再検証**: `quiz-figfix-manifest-S127.mjs --stage reverify` は S127 sweep の陽性だけを拾う。この 22 題は sweep 外なので何も出ない。C3 の再検証入力は本 manifest から作る (figreverify_input_S127 と同じ欄: apply 後の figure_png / 全頁 / stem / 本提案の bbox と範囲)。verifier は bbox を決めた主体 (本 lane = executor) と別 type にする (`oh-my-claudecode:verifier`)。
+## 7. phase 2 apply 結果 (lock 取得後)
 
-## 7. 範囲外の発見 (修正していない。B/A track へ名指し、C2 の前例どおり)
+前提: B2 と A3 は commit 済み。A3 が変えたのは文字だけで、図には触れていない。
 
-stem 転記表が原典と食い違うもの (正解に関わりうる):
-- **`2026r08-q044`**: stem 表の「自動割当てができた割合 **98%**」「できなかった割合 **18%**」に対し、原典は **90% / 10%**。計算問題なので正解に直結する。2026r08 が ⑤-2 母数内かどうか A track で確認が要る。
-- **`2020r02o-q071`**: stem 表の 商品B 3月売上額 **8,000** に対し、原典は **5,000**。条件付個数 (>15000) の答えは変わらないが、転記誤り。
-- **`2014h26h-q086`**: stem 表の行 4〜6 の値 (例: 9:00〜 東 10 / 西 30 / 合計 40 / 東 2 / 西 6 / 合計 8 / 90 / 11) が原典 (40 / 38 / 78 / 6 / 6 / 12 / 82 / 11) と大きく違う。さらに stem の設問文は「a〜d」で、原典は「a」。
-- `2010h22a-q095`: L2d Rule D の判定のとおり、誤りは生の stem_jp だけ (表示層は原典と一致)。本段では追加の所見なし。
-- `2013h25h-q055`: 「社員」「部署」スキーマ表が stem_jp に文字で無い (crop で補う。stem 側の補完は B track)。
+| 段 | 結果 |
+|---|---|
+| dry-run (現行 data で再実行) | `recrop 22 / copy 0 / remove_figure 0 / skip(none) 0`、退避先の衝突なし |
+| apply (`--backup-dir data/ip/quiz/.keyaudit/figfix_backup_S128_c3`) | **recrop 22**。退避 22 枚。`question_bank.json` の md5 は apply の前後で同じ `d2e34c3b6514ce440e6ad40e9b5031e2` (bbox を回写しないので、bank の内容は変わらない) |
+| `data/ip/exams/figures/<id>.png` と staging crop | **22/22 がバイト単位で一致** (`cmp`) |
+| `build-quiz-figures.mjs` | 530/530 を最適化。git 上で変わった webp は **ちょうど 22 枚** (対象 22 題だけ) |
+| `build-quiz-corpus.mjs` | topics 63 (sum 2900) / exams 29 / with_fig 511 (不変) |
+| correct_answer | apply の前と比べて **差分 0 / 2900** |
 
-OCR 残渣・崩れ (表示 stem): `2018h30h-q029` (表の断片 "| 5 | 競合路線…") / `2019h31h-q059` (選択肢表の断片) / `2019r01a-q065` (穴埋め枠 a が崩れている "| 。 |]と[| b |") / `2019r01a-q083` ("| sa |テ ィレクトリ") / `2020r02o-q055` (図の OCR 断片。L2d で既出)。
+### 配信 webp と staging PNG の照合
+
+webp を staging PNG と同じ寸法に合わせ、greyscale の平均絶対差 (MAD) を取った。
+
+- 縦横比の差: 最大 0.0096 (`2026r08-q044`、1067×240 → 900×202)。幅 900 への縮小で高さが整数に丸められたことによる差。それ以外の 21 枚は 0.006 以下。
+- MAD: 最大 2.40 (同じく `2026r08-q044`)。縮小のかからない 12 枚は 0.00。
+
+いずれも内容のずれではなく、縮小と丸めで出る差の範囲に収まっている。
+
+### gate
+
+| gate | 結果 |
+|---|---|
+| `quiz-keys-crosscheck.mjs` | ✅ questions=2900 exams=29 / all invariants hold (A1–A7, B1–B7) |
+| `quiz-pagefix-derive-groups.mjs --assert-clean` | ✅ D-145 (A)(B) GREEN |
+| `quiz-chumon-groups-build.mjs --check` | ✅ 一致 |
+| tsc (`apps/web`, `--noEmit`) | ✅ 0 |
+| vitest | ✅ 562 passed / 2 skipped |
+| build (`next build`) | ✅ 完走 (route 表を出力) |
+
+### 残り
+
+- **bbox 回写 (⑨) は見送った (lead 判断)**。今回の 22 題の bank `figure_bbox_pct` は古い crop の値のまま。新しい値は manifest の `figure_bbox_pct_new` にある。S127 の 111 題と合わせて別途扱う。
+- tracked の変更は `apps/web/public/quiz-figures/*.webp` 22 枚と、本 evidence (`fig_C3_S128_proposal.md` → `fig_C3_S128.md` へ改名) だけ。git add はしていない。
