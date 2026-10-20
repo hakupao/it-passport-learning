@@ -47,8 +47,8 @@ U10 実測 (18 / 11 / 38 = 67) との照合: workflow 18 は一致。generated �
 |---|---|---|---|---|---|---|
 | `scripts/audit-figkey.run.generated.mjs` | generated | L114 `items` | C | 一回限りの compiled snapshot (args/入力を埋込) | - | list only |
 | `scripts/audit-stem.run.generated.mjs` | generated | L102 `items` | C | 一回限りの compiled snapshot (args/入力を埋込) | - | list only |
-| `scripts/patch_empty_choices.js` | node(CJS) | L8 `BASE` | A | 読込で ENOENT (break) | **live data 書換** | fixed |
-| `scripts/patch_empty_choices_2013_2015.js` | node(CJS) | L8 `BASE` | A | 読込で ENOENT (break) | **live data 書換** | fixed |
+| `scripts/patch_empty_choices.js` → `scripts/archive/patch_empty_choices.js` | node(CJS) | L8 `BASE` | A | 読込で ENOENT (break) | **live data 書換** | fixed + **archived (D-154)** |
+| `scripts/patch_empty_choices_2013_2015.js` → `scripts/archive/patch_empty_choices_2013_2015.js` | node(CJS) | L8 `BASE` | A | 読込で ENOENT (break) | **live data 書換** | fixed + **archived (D-154)** |
 | `scripts/quiz-choicesfix.run.generated.mjs` | generated | L66 `inputPath` | C | 一回限りの compiled snapshot (args/入力を埋込) | - | list only |
 | `scripts/quiz-choicestr.run.generated.mjs` | generated | L48 `inputPath` | C | 一回限りの compiled snapshot (args/入力を埋込) | - | list only |
 | `scripts/quiz-choicesverify.run.generated.mjs` | generated | L47 `inputPath` | C | 一回限りの compiled snapshot (args/入力を埋込) | - | list only |
@@ -69,38 +69,38 @@ U10 実測 (18 / 11 / 38 = 67) との照合: workflow 18 は一致。generated �
 | `scripts/quiz-trsweep-reverify-S115.workflow.mjs` | workflow | L37 `ROOT` | A | agent への絶対パス (Read/Write) → 旧 path は ENOENT / 旧 path へ Write | - | fixed |
 | `scripts/repair-collect.mjs` | node(ESM) | L12 `ROOT` | A | 読込で ENOENT (break) | - | fixed |
 | `scripts/repair-figures-crop.mjs` | node(ESM) | L14 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/repair-figures-finalize.mjs` | node(ESM) | L16 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | **live data 書換** | fixed |
+| `scripts/repair-figures-finalize.mjs` → `scripts/archive/repair-figures-finalize.mjs` | node(ESM) | L16 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | **live data 書換** | fixed + **archived (D-154)** |
 | `scripts/repair-figures-prep.mjs` | node(ESM) | L11 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/stage026-apply-figflags.mjs` | node(ESM) | L14 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | **live data 書換** | fixed |
+| `scripts/stage026-apply-figflags.mjs` → `scripts/archive/stage026-apply-figflags.mjs` | node(ESM) | L14 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | **live data 書換** | fixed + **archived (D-154)** |
 | `scripts/stage026-fig-collect.mjs` | node(ESM) | L10 `ROOT` | A | 読込で ENOENT (break) | - | fixed |
 | `scripts/stage026-fig-crop.mjs` | node(ESM) | L15 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/stage026-fig-finalize.mjs` | node(ESM) | L16 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | **live data 書換** | fixed |
+| `scripts/stage026-fig-finalize.mjs` → `scripts/archive/stage026-fig-finalize.mjs` | node(ESM) | L16 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | **live data 書換** | fixed + **archived (D-154)** |
 | `scripts/stage026-fig-prep.mjs` | node(ESM) | L14 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage026-group-crop.mjs` | node(ESM) | L13 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/stage026-group-finalize.mjs` | node(ESM) | L14 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | **live data 書換** | fixed |
+| `scripts/stage026-group-finalize.mjs` → `scripts/archive/stage026-group-finalize.mjs` | node(ESM) | L14 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | **live data 書換** | fixed + **archived (D-154)** |
 | `scripts/stage026-phaseC-ci.mjs` | node(ESM) | L11 `DIR` | A | 読込で ENOENT (break) | - | fixed |
 | `scripts/stage026-phaseC-sample.mjs` | node(ESM) | L13 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/stage027-apply.mjs` | node(ESM) | L18 `ROOT` | A | 読込で ENOENT (break) | **live data 書換** | fixed |
+| `scripts/stage027-apply.mjs` → `scripts/archive/stage027-apply.mjs` | node(ESM) | L18 `ROOT` | A | 読込で ENOENT (break) | **live data 書換** | fixed + **archived (D-154)** |
 | `scripts/stage027-blind-diff.mjs` | node(ESM) | L17 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage027-build-manifest.mjs` | node(ESM) | L17 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage027-harvest.mjs` | node(ESM) | L16 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/stage027-heuristic-garble.mjs` | node(ESM) | L16 `ROOT` | A | 読込で ENOENT (break) | **committed evidence 上書** | fixed |
+| `scripts/stage027-heuristic-garble.mjs` → `scripts/archive/stage027-heuristic-garble.mjs` | node(ESM) | L16 `ROOT` | A | 読込で ENOENT (break) | **committed evidence 上書** | fixed + **archived (D-154)** |
 | `scripts/stage027-reci.mjs` | node(ESM) | L10 `ROOT` | A | 読込で ENOENT (break) | - | fixed |
 | `scripts/stage027-reconcile.mjs` | node(ESM) | L22 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage027-reconcile3.mjs` | node(ESM) | L19 `ROOT` | A | 読込で ENOENT (break) | - | fixed |
 | `scripts/stage027-verify-harvest.mjs` | node(ESM) | L9 `REPAIR` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/stage027b-apply.mjs` | node(ESM) | L22 `ROOT` | A | 読込で ENOENT (break) | **live data 書換** | fixed |
+| `scripts/stage027b-apply.mjs` → `scripts/archive/stage027b-apply.mjs` | node(ESM) | L22 `ROOT` | A | 読込で ENOENT (break) | **live data 書換** | fixed + **archived (D-154)** |
 | `scripts/stage027b-audit-harvest.mjs` | node(ESM) | L10 `OUT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage027b-build-audit.mjs` | node(ESM) | L15 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/stage027b-postaudit.mjs` | node(ESM) | L17 `ROOT` | A | 読込で ENOENT (break) | **live data 書換** | fixed |
+| `scripts/stage027b-postaudit.mjs` → `scripts/archive/stage027b-postaudit.mjs` | node(ESM) | L17 `ROOT` | A | 読込で ENOENT (break) | **live data 書換** | fixed + **archived (D-154)** |
 | `scripts/stage027b-prep.mjs` | node(ESM) | L25 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage027b-reconcile.mjs` | node(ESM) | L26 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/stage03-apply.mjs` | node(ESM) | L24 `ROOT` | A | 読込で ENOENT (break) | **live data 書換** | fixed |
+| `scripts/stage03-apply.mjs` → `scripts/archive/stage03-apply.mjs` | node(ESM) | L24 `ROOT` | A | 読込で ENOENT (break) | **live data 書換** | fixed + **archived (D-154)** |
 | `scripts/stage03-build-audit.mjs` | node(ESM) | L14 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage03-build-batches.mjs` | node(ESM) | L21 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage03-build-index.mjs` | node(ESM) | L18 `ROOT` | A | 読込で ENOENT (break) | - | fixed |
 | `scripts/stage03-build-tiebreak.mjs` | node(ESM) | L14 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
-| `scripts/stage03-coverage.mjs` | node(ESM) | L16 `ROOT` | A | 読込で ENOENT (break) | - | fixed |
+| `scripts/stage03-coverage.mjs` → `scripts/archive/stage03-coverage.mjs` | node(ESM) | L16 `ROOT` | A | 読込で ENOENT (break) | **committed evidence 上書** (`evidence/phase5/stage_03_coverage.md`) | fixed + **archived (D-154)** |
 | `scripts/stage03-harvest.mjs` | node(ESM) | L18 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage03-reconcile.mjs` | node(ESM) | L19 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
 | `scripts/stage03-reconcile3.mjs` | node(ESM) | L17 `ROOT` | A | top-level mkdirSync(recursive) → 旧 path を新規作成して書込 (wrong place) | - | fixed |
@@ -129,7 +129,27 @@ U10 実測 (18 / 11 / 38 = 67) との照合: workflow 18 は一致。generated �
 
 ## 9. 他 lane / main への申し送り
 
-1. **破壊性フラグの 10 本** (`stage03-apply` / `stage027-apply` / `stage027b-apply` / `stage027b-postaudit` / `stage026-fig-finalize` / `stage026-group-finalize` / `stage026-apply-figflags` / `repair-figures-finalize` / `patch_empty_choices.js` / `patch_empty_choices_2013_2015.js`) は、修正前は旧 path で失敗していたが、**修正後は現 live bank を過去の patch で上書きできる**。再実行の予定は無いはず。廃止 (`scripts/archive/` 移動 or 冒頭に「再実行禁止」明記) にするかは main が判断 (本 lane は決めていない)。
-2. `stage027-heuristic-garble.mjs` は `${ROOT}/evidence/phase5/stage_027_heuristic_garble.json` を書く = 再実行すると committed evidence を上書き (Rule A/B 上の注意)。
+1. **破壊性フラグの 10 本** (`stage03-apply` / `stage027-apply` / `stage027b-apply` / `stage027b-postaudit` / `stage026-fig-finalize` / `stage026-group-finalize` / `stage026-apply-figflags` / `repair-figures-finalize` / `patch_empty_choices.js` / `patch_empty_choices_2013_2015.js`) は、修正前は旧 path で失敗していたが、修正後は現 live bank を過去の patch で上書きできる。→ **D-154 で `scripts/archive/` へ移動済** (§10)。
+2. committed evidence を上書きする 2 本 → **同じく D-154 で archive 済**:
+   - `stage027-heuristic-garble.mjs` → `evidence/phase5/stage_027_heuristic_garble.json` を書く。
+   - `stage03-coverage.mjs` → `evidence/phase5/stage_03_coverage.md` を書く (Rule D reviewer の指摘。初版の表では破壊性 `-` としていた見落とし)。
 3. class C の 7 本 `*.run.generated.mjs` は修正していない。再実行するなら元の workflow から生成し直すこと (旧 ROOT のまま実行すると ENOENT)。
-4. ⑨ #9 の行は「67 未仕分け」→「64 = A 57 fixed / B 0 / C 7 list-only」に更新できる。
+4. `stage03-build-index.mjs` は scripts/ に残す: 書込先は `data/ip/syllabus/_mapping_index.json` = git 管理外の中間物で、committed data / evidence は上書きしない。
+5. ⑨ #9 (summary §7.1 row 9) の件数: 「67 未仕分け」→ **64 = A 57 / B 0 / C 7** (A 57 のうち 12 本は D-154 で archive)。
+
+### 範囲外 (scripts/ の外にある旧 ROOT、意図的に不変)
+
+- `data/` の explanations JSON 4 件 (2011h23a / 2013h25a / 2013h25h / 2015h27h) の `key_guard` `note_jp` 文字列に旧 ROOT が含まれる。UI には表示されない内部 note で、本 lane は data/ 不可侵 → 触らない。
+- 過去の evidence / failures / docs の記録 約 95 件に旧 ROOT が残る。歴史記録 (Rule A/B で不変) なので触らない。
+
+## 10. D-154 — 危険脚本の `scripts/archive/` 隔離 (S128、ユーザー決定)
+
+- 決定: live data または committed evidence を古い patch で上書きする脚本 12 本を `git mv scripts/<f> scripts/archive/<f>` で隔離する (削除はしない = 履歴として保持)。
+- 対象 12 本: §9.1 の 10 本 + §9.2 の 2 本。
+- 各ファイルの先頭 (shebang 直後、既存のコメント様式に合わせる: ESM は `/** … */` ブロック内の ` * ` 行、CJS は `//` 行) に追記:
+  `ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.`
+- 1 階層深くなったので ROOT を直した: ESM `path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")`、CJS `path.join(__dirname, '..', '..', 'data/ip/exams/by_year')`。
+- 検証: `node --check scripts/archive/*` 12/12 OK。中で他の脚本を相対 path で呼ぶものは無し (`execFileSync` は `python3 -c` だけ)。
+- 参照の掃引 (`grep -rn`、`node_modules` / `.git` / `data` / `docs/discussion` / `scripts/archive` を除く):
+  - 実行に効く参照 (package.json、他の脚本、`docs/phase5/PLAN.md`) → **0 件**。直すものは無し。
+  - 非実行の言及 (歴史記録なので不変、列挙のみ): `evidence/quiz_pagefix_D145_S118.md` (L40/41/69/328)、`evidence/phase5/stage_03_mapping.md` (L17/19)、`evidence/phase5/stage_027_repair_audit.md:13`、`evidence/phase5/stage_02_figure_repair.md:125`、`evidence/phase5/stage_026_figflag_triage.md:34`、`evidence/phase5/stage_027b_repair.md` (L22/24)、`docs/phase5/STAGE_2.6_REMAINING.md:23`、`docs/decisions/D-145-figure-page-pointer.md` (L36/71/183)。archive 済ファイル内の `Usage: node scripts/<f>` コメントも旧位置のまま (歴史の記述として残す)。

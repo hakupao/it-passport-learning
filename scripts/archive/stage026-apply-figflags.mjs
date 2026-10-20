@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Stage 2.6 — apply has_figure-flag consistency fixes (the "110" + 7 group orphans).
  * Reads merged triage: .tmp/s026/fig/triage_all.json { flag:[...], orphan:[...] }.
  *   genuine_figure + crop_ok=true       → has_figure=true (keep figure_path/bbox), flag has_figure_fixed_s73.
@@ -13,7 +15,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, renam
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const FIG_DIR = `${EXAMS}/.tmp/s026/fig`;
 const FIGURES = `${EXAMS}/figures`;

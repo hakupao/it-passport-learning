@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Stage 2.7b — POST-AUDIT adjudication. The Rule A audit (general-purpose lane) surfaced issues the
  * mechanical reconcile missed (chiefly: the NFKC+strip similarity is punctuation-blind, so comma↔period
  * garble and a choice-set swap on a figure-choice question slipped through). This patch applies ONLY the
@@ -16,7 +18,7 @@ import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'fs';
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const OUT = `${EXAMS}/.tmp/s027b`;
 const COMMIT = process.argv.includes('--commit');

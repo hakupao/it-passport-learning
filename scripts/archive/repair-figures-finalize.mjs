@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Session 71 — Figure repair: finalize (deterministic, main-loop, after verify rounds converge).
  * Applies the converged repair outcome to the real data:
  *   - PASS figures: re-crop (padded bbox) into figures/{id}.png (overwriting), update question_bank + by_year
@@ -15,7 +17,7 @@ import { execFileSync } from 'child_process';
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const FIGURES_DIR = `${ROOT}/data/ip/exams/figures`;
 const REJECTED_DIR = `${FIGURES_DIR}/_rejected`;
 const BY_YEAR_DIR = `${ROOT}/data/ip/exams/by_year`;

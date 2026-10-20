@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Stage 2.7 — apply confirmed stem/choices repairs (D-122/D-123/D-124).
  *
  * Reads .tmp/s027/repair/_reconcile.json (confirmed[]) plus an optional .tmp/s027/repair/_manual.json
@@ -17,7 +19,7 @@ import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'fs';
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const REPAIR = `${EXAMS}/.tmp/s027/repair`;
 const COMMIT = process.argv.includes('--commit');

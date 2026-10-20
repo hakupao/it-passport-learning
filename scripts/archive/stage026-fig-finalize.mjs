@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Stage 2.6 figure phase — finalize SINGLE figures (deterministic, main-loop, after verify converges).
  *   - PASS figures: re-crop (padded bbox, honoring page_image override) into figures/{id}.png,
  *     update question_bank + by_year (has_figure=true, figure_path, figure_bbox_pct,
@@ -15,7 +17,7 @@ import { execFileSync } from 'child_process';
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const FIGURES_DIR = `${EXAMS}/figures`;
 const REJECTED_DIR = `${FIGURES_DIR}/_rejected`;

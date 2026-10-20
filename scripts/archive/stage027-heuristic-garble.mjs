@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Stage 2.7 Step 1 — heuristic garble scorer (free, all 2,900 questions).
  *
  * Scores stem_jp / choices_jp for OCR-garble signals via regex/statistics. This is a TRIAGE +
@@ -15,7 +17,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 
 const qb = JSON.parse(readFileSync(`${EXAMS}/question_bank.json`, 'utf8'));

@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Stage 2.6 F-2 (D-120) — finalize shared-figure groups.
  * Reads group_discover.json + group_verify_results.json (PASS/FAIL). For each PASS group:
  *   - owner_qid set  → shared_figure.path = figures/<owner>.png (existing crop reused).
@@ -13,7 +15,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, renam
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const FIG_DIR = `${EXAMS}/.tmp/s026/fig`;
 const STAGING = `${FIG_DIR}/groups_staging`;
