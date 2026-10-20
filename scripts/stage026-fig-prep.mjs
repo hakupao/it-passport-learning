@@ -10,8 +10,10 @@
  *   round N + ids: carry-over fails, reads round<N-1>_fails.json hints + prior estimate bbox
  */
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const FIG_DIR = `${ROOT}/data/ip/exams/.tmp/s026/fig`;
 mkdirSync(FIG_DIR, { recursive: true });
 

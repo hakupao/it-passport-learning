@@ -7,8 +7,11 @@
  * Usage: node scripts/stage026-phaseC-ci.mjs
  */
 import { readFileSync, existsSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const DIR = '/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/.tmp/s026/phaseC';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const DIR = `${ROOT}/data/ip/exams/.tmp/s026/phaseC`;
 
 function wilson(x, n, z = 1.96) {
   if (n === 0) return { p: 0, lo: 0, hi: 0 };

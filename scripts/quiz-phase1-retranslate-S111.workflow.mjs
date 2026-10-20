@@ -60,7 +60,7 @@ const VERIFY_SCHEMA = {
   },
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 const ID = '2010h22a-q091'
 
 const JP_STEM = `次の表は，テストデータ（地区，3辺計，重量）を用いて実際にテストを行った結果の一部である。この結果の判断として，適切なものはどれか。

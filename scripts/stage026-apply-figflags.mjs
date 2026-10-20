@@ -10,8 +10,10 @@
  * Usage: node scripts/stage026-apply-figflags.mjs [--commit]
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, renameSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const FIG_DIR = `${EXAMS}/.tmp/s026/fig`;
 const FIGURES = `${EXAMS}/figures`;

@@ -86,7 +86,7 @@ const REVIEW_SCHEMA = {
   },
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 const idxPath = `${ROOT}/data/ip/textbook/unit_index.json`
 const contentPath = (u) => `${ROOT}/data/ip/textbook/.planning/content_${u}.json`
 

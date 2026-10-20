@@ -12,8 +12,10 @@
  * Output: evidence/phase5/stage_027_heuristic_garble.json
  */
 import { readFileSync, writeFileSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 
 const qb = JSON.parse(readFileSync(`${EXAMS}/question_bank.json`, 'utf8'));

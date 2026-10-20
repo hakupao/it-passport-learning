@@ -12,8 +12,10 @@
  *         prints class counts + heuristic agreement + the defect list
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SCAN = `${ROOT}/data/ip/exams/.tmp/s027/scan`;
 mkdirSync(SCAN, { recursive: true });
 const MASTER = `${SCAN}/_master.json`;

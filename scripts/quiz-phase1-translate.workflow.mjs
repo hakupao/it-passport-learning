@@ -7,7 +7,7 @@ export const meta = {
   ],
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 const outPath = (id) => `${ROOT}/data/ip/quiz/.phase1/tr_${id}.json`
 
 // Stage 4 (D-129-C) 本土 zh 用語方針。quiz/教科書で訳語一致 (D-136-D)。

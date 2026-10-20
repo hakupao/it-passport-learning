@@ -98,7 +98,7 @@ const VERIFY_SCHEMA = {
   },
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 const P2 = `${ROOT}/data/ip/quiz/.phase2`
 const parsed = typeof args === 'string' ? JSON.parse(args) : args
 const E = parsed?.exam_id

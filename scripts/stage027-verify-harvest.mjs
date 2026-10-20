@@ -6,7 +6,10 @@
  * Output: .tmp/s027/repair/_verify_master.json  { id: {result}, ... }
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-const REPAIR = '/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/.tmp/s027/repair';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const REPAIR = `${ROOT}/data/ip/exams/.tmp/s027/repair`;
 mkdirSync(REPAIR, { recursive: true });
 const MASTER = `${REPAIR}/_verify_master.json`;
 const runDirs = process.argv.slice(2);

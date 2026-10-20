@@ -6,8 +6,10 @@
  * Usage: node scripts/stage026-fig-collect.mjs <round>
  */
 import { readFileSync, writeFileSync, existsSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const FIG_DIR = `${ROOT}/data/ip/exams/.tmp/s026/fig`;
 const round = parseInt(process.argv[2] || '1', 10);
 

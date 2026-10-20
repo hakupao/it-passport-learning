@@ -15,8 +15,10 @@
  * Usage: node scripts/stage027-reconcile3.mjs <third_run_dir> [<third_run_dir> ...]
  */
 import { readFileSync, writeFileSync, existsSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const REPAIR = `${EXAMS}/.tmp/s027/repair`;
 const AGREE = 0.62, STORED_OK = 0.82;

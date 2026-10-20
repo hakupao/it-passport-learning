@@ -50,7 +50,7 @@ const REVIEW_SCHEMA = {
   },
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 const P2 = `${ROOT}/data/ip/quiz/.phase2`
 
 const retranslatePrompt = `あなたは IT パスポート過去問**解説**の翻訳者です。

@@ -14,8 +14,10 @@
  *   node scripts/stage027-apply.mjs --commit   # write backups + apply
  */
 import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const REPAIR = `${EXAMS}/.tmp/s027/repair`;
 const COMMIT = process.argv.includes('--commit');

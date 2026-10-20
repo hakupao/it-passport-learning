@@ -14,8 +14,10 @@
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = process.argv[2];
 const runDirs = process.argv.slice(3);
 if (!OUT || !runDirs.length) { console.error('usage: node stage03-harvest.mjs <out_master.json> <run_dir> [...]'); process.exit(1); }

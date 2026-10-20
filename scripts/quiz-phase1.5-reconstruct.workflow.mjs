@@ -7,7 +7,7 @@ export const meta = {
   ],
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 const outPath = (id) => `${ROOT}/data/ip/quiz/.phase1.5/stem_${id}.json`
 
 const ZH_POLICY = `zh は中国本土の標準 IT 用語 (成果物→交付物、稼働→运行 等)。既存訳 current_tr と用語・言い回しを一致させる (問題文と解説で用語ブレ防止)。`

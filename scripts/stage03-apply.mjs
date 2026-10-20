@@ -20,8 +20,10 @@
  *   --dry : validate + report, do NOT write.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const QB = `${EXAMS}/question_bank.json`;
 const BACKUP = `${EXAMS}/question_bank.json.pre-s03`;

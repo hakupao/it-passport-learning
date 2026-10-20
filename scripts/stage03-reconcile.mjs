@@ -15,8 +15,10 @@
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const MASTER = process.argv[2];
 const OUT = process.argv[3];
 if (!MASTER || !OUT) { console.error('usage: node stage03-reconcile.mjs <master.json> <out_reconcile.json>'); process.exit(1); }

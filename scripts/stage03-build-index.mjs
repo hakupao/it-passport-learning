@@ -14,8 +14,10 @@
  * Deterministic. No agents. Run: node scripts/stage03-build-index.mjs
  */
 import { readFileSync, writeFileSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = `${ROOT}/data/ip/syllabus/knowledge_tree.json`;
 const OUT = `${ROOT}/data/ip/syllabus/_mapping_index.json`;
 

@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const BASE = '/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/by_year';
+const BASE = path.join(__dirname, '..', 'data/ip/exams/by_year');
 
 const patches = {
   '2013h25a': {

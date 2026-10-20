@@ -22,8 +22,10 @@
  * Output: data/ip/exams/.tmp/s027b/_reconcile_b.json  + a printed summary.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const OUT = `${EXAMS}/.tmp/s027b`;
 mkdirSync(OUT, { recursive: true });
