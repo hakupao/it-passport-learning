@@ -3,7 +3,7 @@
 > 作成: Session 118 (2026-09-08)。真相源は `docs/STATE.md`、本 PLAN は ⑤-2 残作業の**単位 (unit) 定義・予算・手順・停止条件**を固定する。
 > 1 セッション = 1 unit。unit 開始前に主 context が「agent 数 / 予想 token / 予想時間 / 停止条件」を申告し、ユーザー承認で放つ。叠加禁止 (直列)。
 
-## 0. 現在地 (2026-10-19、S126 U10 完了)
+## 0. 現在地 (2026-10-20、S127 U11 完了 — U4〜U11 全 8 exam 完了)
 
 | 区分 | exam | 状態 |
 |---|---|---|
@@ -19,7 +19,8 @@
 | **U8 Sonnet 単 pass** | 2023r05 | **完了 (S125、Rule D PASS-with-notes)**: 91 問、run `wf_b22ad070-03c` 91/91、5.93M token / 13.7 分、UNREADABLE 0、採用 20 差分 / 16 題、正解肢上 4、machdiff 実残差 0 (偽陽性 3)。**q011 clean「変革」→ 源「刷新」(raw 脱字を clean が推測補完)**、q025 19万円→10万円 (斜線ゼロ 4 exam 連続)、correct_answer 0。MAJOR 0 / MINOR 0 / NIT 5 全処置。evidence `quiz_full52_u8_S125.md` |
 | **U9 Sonnet 単 pass** | 2024r06 | **完了 (S125、Rule D PASS-with-notes)**: 72 問、run `wf_35e2fa62-0ea` 72/72、4.64M token / 9.7 分、UNREADABLE 0、machdiff MISSED 0、採用 11 / 5 題 (q012 ア 正解肢 読点、**q059 ア 19cnm→10cm 斜線ゼロ 5 exam 連続**、q062〔プログラム〕・擬似言語リテラル “”、q082、q085)、正解肢上 1、correct_answer 0。fixer 逸脱 4 件すべて reviewer 承認。MAJOR 0 / MINOR 0 / NIT 4 全処置。evidence `quiz_full52_u9_S125.md` |
 | **U10 Sonnet 単 pass** | 2025r07 | **完了 (S126、Rule D PASS-with-notes)**: 80 問、run `wf_5a64e0c3-6dc` 80/80、4.32M token / 3.4 分、UNREADABLE 0、precrop 80/80、machdiff MISSED 2 = 既知型偽陽性 (q005 agent 片断錯位 / q072 `[ a ]`)。採用 16 / 14 題 (計上 13)、正解肢上 2 (q091 エ / q095 ウ 項目問→間)、**q085 源 30%/35% vs 出荷層 89%/90% = s975 再構成の推測数字** (正解イは偶然一致、解説 jp/zh/en 書換)、q014「強み」→源「俯瞰」(誤答肢の語が題幹に混入)、q078〔プログラム〕、correct_answer 0。MAJOR 0 / MINOR 0 / NIT 3。evidence `quiz_full52_u10_S126.md` |
-| 次 (U11) | 2026r08 **71 問** (population 実数) | Sonnet 単 pass (≈ 71 × 5.5 万 ≈ 400 万) |
+| **U11 Sonnet 単 pass** | 2026r08 | **完了 (S127、Rule D PASS-with-notes)**: 71 問、run `wf_326d0bb2-9e3` 71/71、3.91M token / 2.3 分、UNREADABLE 0、precrop 61/71 (page_mismatch 9 + merged_preamble 1 は源ページ読み)、machdiff MISSED 3 → 実残差 1 (q078 ウ キャリア(ア)グリゲーション) + 偽陽性 2 (q072 下線の文字化 / q074 問文の配置差 = 新型)。採用 23 / 14 題 (U9 定義 12)、正解肢上 4 (q032 ウ 加エ→加工 / q041 ウ その他理→その倫理 / q082 ア 残渣 / q084 エ 引用符)、**s975 stem 推測補完 0、代わりに訳層の推測訳 3 件 (q070 イ 模僚→zh/en「再発」/ q032 イ C 社脱落 / q066 複雑→源 煩雑) を追随**、correct_answer 0。MAJOR 0 / MINOR 0 / NIT 3。⑨ 新規: **machdiff 引用符盲点** (ASCII " を構造的に検出不能、q025 / q084 / q057 実例)。evidence `quiz_full52_u11_S127.md` |
+| 次 (U12) | — | **収尾**: ⑤-2 総括 evidence + ⑨ 残整理 + RETROSPECTIVE 追記 (Rule C) |
 | 未着手 | — (**S125 で population 実数に訂正** — 旧記載 64/78/79/58/76/66 はいずれも誤り、2021r03 旧 64 → 88) | — |
 
 ## 1. 実測に基づく予算の目安 (S118)
