@@ -54,6 +54,8 @@ const EVIDENCE_FILES = [
   "chumon_preamble_S117_batch1.json",
   "chumon_preamble_S117_batch2.json",
   "chumon_preamble_S117_batch3.json",
+  "chumon_preamble_S128_a4_batch1.json", // S128 A4: 未登録組の源ページ抽出 (2014h26h-mqA は B2 後に同 unit で apply)
+  "chumon_preamble_S128_a4_batch2.json",
 ];
 
 // scripts/quiz-chumon-lightweight-D144s3.mjs の COPY 表の写し (source / cut / section / strip / targets)。
@@ -62,7 +64,7 @@ const COPY = [
   { source: "2011h23a-q093", targets: ["2011h23a-q094", "2011h23a-q095", "2011h23a-q096"],
     cut: { jp: "〔A さんが書き出したメモ〕の(1)〜(5)を実施する順番", zh: "将〔A 先生记下的备忘录〕中的 (1)〜(5)", en: "When items (1) to (5) in [the memo Mr. A wrote out]" },
     strip: { jp: /^〔マネジメント〕\s*/, zh: /^〔管理〕\s*/, en: /^\[Management\]\s*/ } },
-  { source: "2012h24a-q098", targets: ["2012h24a-q097", "2012h24a-q099"],
+  { source: "2012h24a-q098", targets: ["2012h24a-q097", "2012h24a-q099", "2012h24a-q100"],
     cut: { jp: "次に示す〔個人情報の適正管理に関する規程〕", zh: "对于下面所示〔关于个人信息妥善管理的规程〕", en: "For each clause of the following [Regulations" },
     strip: {} },
   { source: "2011h23a-q089", targets: ["2011h23a-q090", "2011h23a-q091", "2011h23a-q092"],
@@ -73,7 +75,7 @@ const COPY = [
     strip: {} },
   { source: "2014h26a-q085", targets: ["2014h26a-q086"],
     cut: { jp: "Xソフトの開発が終了する日は", zh: "X 软件的开发结束日", en: "On which day, counting from the start" }, strip: {} },
-  { source: "2013h25a-q097", targets: ["2013h25a-q099"], section: { jp: "〔要望事項〕", zh: "〔需求事项〕", en: "[Requirements]" }, strip: {} },
+  // 2013h25a-q097 → q099 (section 型) は S128 A4 で退役 — 抽出組 2013h25a-mqD が置き換えた (lightweight 本体と同期)
 ];
 
 const trCache = new Map();

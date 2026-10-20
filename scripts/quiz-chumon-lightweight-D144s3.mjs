@@ -16,7 +16,7 @@ const COPY = [
   { source: "2011h23a-q093", targets: ["2011h23a-q094", "2011h23a-q095", "2011h23a-q096"],
     cut: { jp: "〔A さんが書き出したメモ〕の(1)〜(5)を実施する順番", zh: "将〔A 先生记下的备忘录〕中的 (1)〜(5)", en: "When items (1) to (5) in [the memo Mr. A wrote out]" }, // memo-markers 是正後の表記 (①〜⑤ → (1)〜(5))
     strip: { jp: /^〔マネジメント〕\s*/, zh: /^〔管理〕\s*/, en: /^\[Management\]\s*/ } },
-  { source: "2012h24a-q098", targets: ["2012h24a-q097", "2012h24a-q099"], // q099 は ASCII 括弧 [会員登録をする Web ページの仕組み] で参照 (スキャナが見落とした型)
+  { source: "2012h24a-q098", targets: ["2012h24a-q097", "2012h24a-q099", "2012h24a-q100"], // q100 は S128 A4 で追加 (quiz-chumon-a4-prep-S128.mjs)。q099 は ASCII 括弧 [会員登録をする Web ページの仕組み] で参照 (スキャナが見落とした型)
     cut: { jp: "次に示す〔個人情報の適正管理に関する規程〕", zh: "对于下面所示〔关于个人信息妥善管理的规程〕", en: "For each clause of the following [Regulations" },
     strip: {} },
   // 第 2 弾 (探索 agent の棚卸しで判明した (a) 型、S117 §28)
@@ -29,8 +29,8 @@ const COPY = [
   // apply の probe (前文先頭 40 字) が q086 自身の本文に命中して skip された分 (Rule D 3(ii) ③) → 同組の q085 から複製
   { source: "2014h26a-q085", targets: ["2014h26a-q086"],
     cut: { jp: "Xソフトの開発が終了する日は", zh: "X 软件的开发结束日", en: "On which day, counting from the start" }, strip: {} },
-  // section 型: source の stem の **末尾にある** 〔…〕節 (見出し行〜末尾) を前文として使う (2013h25a-q097 の〔要望事項〕 → q099 が【要望事項】と参照)
-  { source: "2013h25a-q097", targets: ["2013h25a-q099"], section: { jp: "〔要望事項〕", zh: "〔需求事项〕", en: "[Requirements]" }, strip: {} },
+  // (退役 S128 A4) section 型 2013h25a-q097 → q099 の〔要望事項〕複製は、抽出組 2013h25a-mqD の完全前文が置き換えた。
+  //   A4 で q097 末尾の節を除去済みのため、再実行すると q097 の設問文を q099 に複製してしまう (Rule D MINOR-1)。
 ];
 let applied = 0, skipped = 0;
 for (const c of COPY) {
