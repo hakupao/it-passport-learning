@@ -58,6 +58,8 @@ if (journalArg) {
     if (rec.is_error === true || (rec.subtype && rec.subtype !== "success")) continue;
     const r = rec.result.result && typeof rec.result.result === "object" ? rec.result.result : rec.result;
     if (typeof r.id === "string") journal.set(r.id, r);
+    // S127 A2b: batch agent (quiz-tr-fidelity.workflow.mjs batch_size>1) は {audits:[…]} で返す → 題ごとに索引
+    else if (Array.isArray(r.audits)) for (const a of r.audits) if (a && typeof a.id === "string") journal.set(a.id, a);
   }
   console.log(`journal: ${journal.size} result(s) from ${path.relative(ROOT, jp)}${badLines ? ` (${badLines} unparseable line(s) skipped)` : ""}`);
 }
@@ -86,7 +88,8 @@ for (const id of wantIds) {
   if (a.id !== id) { console.log(`✗ ID MISMATCH ${id}: part says "${a.id}"`); bad++; continue; }
   if (!VERDICTS.has(a.verdict)) { console.log(`✗ BAD verdict ${id}: "${a.verdict}"`); bad++; continue; }
   if (!Array.isArray(a.discrepancies)) { console.log(`✗ BAD part ${id}: discrepancies is not an array`); bad++; continue; }
-  if (a.verdict !== "UNREADABLE" && !a.source_transcript) console.log(`? ${id}: no source_transcript (machdiff will flag)`);
+  // 訳層照合 (S127 A2b、quiz-tr-fidelity.workflow.mjs) の結果は源書き起こしを持たない形なので警告しない
+  if (a.verdict !== "UNREADABLE" && !a.source_transcript && input.kind !== "tr_fidelity_input") console.log(`? ${id}: no source_transcript (machdiff will flag)`);
   if (src === "journal") fromJournal++; else fromPart++;   // 検証通過後に加算 (S121 NIT-5)
   audits.push(a);
 }
