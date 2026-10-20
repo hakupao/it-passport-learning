@@ -31,6 +31,7 @@
 //      → ✗ REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED (exit 1)。
 
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 const [inputPath, resultPath] = process.argv.slice(2);
 if (!inputPath || !resultPath) { console.error("usage: quiz-fidelity-machdiff.mjs <input.json> <result.json>"); process.exit(2); }
 const rj = (f) => JSON.parse(readFileSync(f, "utf-8"));
@@ -139,10 +140,11 @@ const truncatedQuote = (disp, src, ds) => ds.some((d) => {
   }
   return false;
 });
-// TRANSCRIPT_PREFIX の裁定済許容 (S128 Rule D MINOR-2)。id|field → 裁定出典と displayed の超過字数 (正規化後)。字数が変われば再び exit 1。
+// TRANSCRIPT_PREFIX の裁定済許容 (S128 Rule D MINOR-2 / round 2 NIT-A)。id|field → 裁定出典と、displayed の超過部分 (正規化後) の
+// 字数・先頭 24 字・sha1。3 つとも一致した場合だけ許容し、超過部分の中身が変われば再び exit 1。
 const TRANSCRIPT_PREFIX_ADJUDICATED = {
-  "2022r04-q006|stem": { extra: 96, ref: "U7 §3 transcript 截断の偽陽性、源に a〜c 3 行あり" },
-  "2023r05-q041|stem": { extra: 188, ref: "U8 §3 アローダイアグラムの文本化 = 描画補助、図と一致" },
+  "2022r04-q006|stem": { extra: 96, head: "a当該技術に関連した他社とのアライアンスの際に,", sha1: "bad9ce0b4675d5788d5f017bcc1fb0572678db13", ref: "U7 §3 transcript 截断の偽陽性、源に a〜c 3 行あり" },
+  "2023r05-q041|stem": { extra: 188, head: "(アロ-ダイアグラム.凡例は矢線の上に\"作業名\"", sha1: "60dbe047c94eb5e5009e3bab53667a09165748f6", ref: "U8 §3 アローダイアグラムの文本化 = 描画補助、図と一致" },
 };
 const endsSentence = (ns) => /[.?!)"]$/.test(ns);
 
@@ -203,7 +205,8 @@ for (const a of res.audits ?? []) {
     const nd = norm(shown), ns = norm(src0);
     if (!ds.length && ns.length > 0 && nd.length > ns.length && nd.startsWith(ns) && endsSentence(ns)) {
       const adj = TRANSCRIPT_PREFIX_ADJUDICATED[`${a.id}|${field}`], extra = nd.length - ns.length, tail = `displayed continues「${nd.slice(ns.length, ns.length + 24)}…」(+${extra})`;
-      if (adj && adj.extra === extra) { trPrefixAdj++; console.log(`~ TRANSCRIPT_PREFIX ${a.id} ${field}: adjudicated (${adj.ref}); ${tail}`); }
+      const over = nd.slice(ns.length);
+      if (adj && adj.extra === extra && adj.head === over.slice(0, 24) && adj.sha1 === createHash("sha1").update(over).digest("hex")) { trPrefixAdj++; console.log(`~ TRANSCRIPT_PREFIX ${a.id} ${field}: adjudicated (${adj.ref}); ${tail}`); }
       else { trPrefix++; console.log(`✗ TRANSCRIPT_PREFIX ${a.id} ${field} verdict=${a.verdict}: transcript ends at a sentence boundary; ${tail} — unadjudicated (exit 1)`); }
       quoteCheck(shown); continue;
     }

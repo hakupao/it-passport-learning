@@ -133,3 +133,8 @@ exit 1→0 になった組は 4: `full52post 2016h28h` × cr / gp (q067 replay �
 **回帰 (再実行)**: reviewer の 37 組 = MISSED 126→87、GAINED 0。本 lane の 78 組 = 144→92、是正後模擬 73 組 = 81→46、いずれも GAINED 0 (計数は `✗ AGENT_MISSED` / `✗ TRANSCRIPT_PREFIX` / `✗ REPORTED_BUT_TRANSCRIPT_EQUALS_DISPLAYED` を合算)、exit 0→1 になった組 0。実残差 12 件は全件 MISSED のまま。
 
 §4 の 2 (TRANSCRIPT_PREFIX の盲点) と 5 (kvParse の潜在リスク) は本節の対処で解消。
+
+## 7. round 2 (PASS-with-notes) の対処
+
+- NIT-A: `TRANSCRIPT_PREFIX_ADJUDICATED` の 2 件は id|field・超過字数に加えて、超過部分 (正規化後) の先頭 24 字と sha1 も照合する。中身が違えば字数が同じでも `✗ TRANSCRIPT_PREFIX` で exit 1 (テスト追加、vitest 42 passed、回帰 78 組 / 是正後 73 組とも GAINED 0)。
+- **運用 (NIT-B は fixer prompt 側で対処)**: `~ REPORTED_TRUNCATED_QUOTE` が出た field は、fixer が agent の截断引用に頼らず、源から**field 全文を再読**して是正すること。

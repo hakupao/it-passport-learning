@@ -161,6 +161,10 @@ describe("⑨ #25 截断引用 / transcript 截断 (PREFIX 許容)", () => {
     const r = run([["2022r04-q006", "pre", (s) => { s.displayed_stem_jp += "\n問7 次の記述"; }]]);
     expect(r.out).toMatch(/✗ TRANSCRIPT_PREFIX 2022r04-q006 stem/); expect(r.counts.TRANSCRIPT_PREFIX).toBe(1); expect(r.code).toBe(1);
   });
+  it("round 2 NIT-A: 超過字数が同じでも超過部分の中身が違えば裁定から外れ exit 1 (先頭 24 字 + sha1 照合)", () => {
+    const r = run([["2022r04-q006", "pre", (s) => { s.displayed_stem_jp = s.displayed_stem_jp.replace("回収できる。", "回避できる。"); }]]);
+    expect(r.out).toMatch(/✗ TRANSCRIPT_PREFIX 2022r04-q006 stem/); expect(r.out).toMatch(/\(\+96\)/); expect(r.code).toBe(1);
+  });
   it("Rule D MAJOR-2 A4b: 截断引用 source が transcript の一部でも、引用外に残差があれば MISSED", () => {
     const r = run([[{ sample: { id: "x1", displayed_stem_jp: "ABCDEFGHIJ", displayed_choices_jp: {} },
       audit: { id: "x1", verdict: "DISCREPANT", source_transcript: { stem: "ABCDEFGHIX", choices: {} }, discrepancies: [{ field: "stem", current_text: "ABCDEFGHIJ", source_text: "ABC" }] } }, "raw"]]);
