@@ -11,7 +11,7 @@
 //   A3 translations/<exam>.json: 全問にエントリ・choices の字母集合 == questions の 4 肢
 //   A4 quiz_index.json: stats.questions == 2900・exams 29・各 exam の question_count == 実数
 //   A5 D-142 禁止語: zh (quiz sidecar + textbook units) に 主机托管 / 服务器托管 / 托管（hosting） が無い
-//   A6 D-144 段 2 choice_figures: 4 肢揃う・figure は null・WebP が apps/web/public/quiz-figures に実在・choices_jp は「図L」・訳文も 图L / Figure L
+//   A6 D-144 段 2 choice_figures: 4 肢揃う・figure は null (共有図 shared / 題幹の例示図 stem を除く)・WebP が apps/web/public/quiz-figures に実在・choices_jp は「図L」・訳文も 图L / Figure L
 //   A7 D-144 段 3/5 中問の共有前文: registry data/ip/quiz/chumon_groups.json の全組・全メンバーについて、表示 stem
 //      (translations の stem_jp_clean / stem.zh / stem.en) が空白除去後に組の前文 probe (先頭 40 字) を含む。
 //      member は questions.json に実在し exam_id が一致・組をまたいで重複しない・counts が実数と一致。
@@ -32,6 +32,7 @@
 //   B5 stem_jp / choices_jp が questions == question_bank == by_year の 3 層で一致し、かつ by_year に行が存在する (S117: by_year 284 問の
 //      旧 OCR 残存を見逃していた穴。merge-question-bank を再実行すると退行するため、是正は必ず最上流まで入れる)
 //   B6 図メタデータ (has_figure / figure_path / figure_bbox_pct / figure_type / source / choice_figure_paths) が question_bank == by_year
+//      + figure_type=stem は choice_figure_paths と実在する composite_figure_path_retired を伴う (S130 Rule D N3)
 //      (S117: 2010h22a-q091 の by_year に問89 用の旧 bbox が残り、bbox 再裁断で誤図が戻る状態だった)
 //      D-145: `source.figure_page_image` / `source.figure_page_number` も名指しで比較する (`source` 丸ごと比較に含まれるが、
 //      跨ページ情報のずれは失敗メッセージで指し先が読めることが重要。将来 `source` の比較を絞っても漏れない)
@@ -151,7 +152,7 @@ for (const [exam, qs] of byExam) {
       if (!existsSync(path.join(FIGS, `${b}.webp`))) bad("A6", `${q.id}: /quiz-figures/${b}.webp missing (build-quiz-figures 未実行?)`);
       if (q.choices_jp?.[L] !== `図${L}`) bad("A6", `${q.id}: choices_jp.${L}=${JSON.stringify(q.choices_jp?.[L])} — 選択肢が図の問は中立テキスト「図${L}」であること (答えの漏洩防止)`);
     }
-    if (q.figure !== null && q.figure_type !== "shared") bad("A6", `${q.id}: choice_figures があるのに figure=${q.figure} (複合図と二重表示になる; 中問の共有図 figure_type=shared のみ共存可)`);
+    if (q.figure !== null && q.figure_type !== "shared" && q.figure_type !== "stem") bad("A6", `${q.id}: choice_figures があるのに figure=${q.figure} (複合図と二重表示になる; 中問の共有図 figure_type=shared と題幹の例示図 figure_type=stem (S130) のみ共存可)`);
     if (q.has_figure !== true) bad("A6", `${q.id}: choice_figures があるのに has_figure=${q.has_figure}`);
     // 訳文も中立ラベルであること (alt に訳文が入る。.phase1 入力層には旧テキスト「RAM（役割分担マトリクス）」等が残っているため、再 merge で退行すると alt から答えが漏れる — Rule D MEDIUM-1)
     const trf = path.join(Q, "translations", `${q.exam_id}.json`);
@@ -265,6 +266,14 @@ if (!COMMITTED_ONLY) {
           for (const k of ["figure_page_image", "figure_page_number"])
             if (JSON.stringify(yb.source?.[k] ?? null) !== JSON.stringify(bb.source?.[k] ?? null))
               bad("B6", `${q.id}: source.${k} differs — by_year=${JSON.stringify(yb.source?.[k] ?? null)} question_bank=${JSON.stringify(bb.source?.[k] ?? null)} (D-145: 図ページは 2 層同時に書く — quiz-pagefix-apply.mjs)`);
+          // S130 Rule D N3: figure_type="stem" (選択肢図と共存する題幹の例示図、A6 の例外) は、複合図から再裁断した証跡として
+          // choice_figure_paths と composite_figure_path_retired (実在する退避ファイル) を必須にする — 複合図をそのまま stem と称して二重表示するのを防ぐ
+          if (bb.figure_type === "stem") {
+            const ret = bb.composite_figure_path_retired;
+            if (!bb.choice_figure_paths) bad("B6", `${q.id}: figure_type=stem なのに choice_figure_paths が無い (stem は選択肢図と共存する題幹図専用)`);
+            if (typeof ret !== "string" || !ret || !existsSync(path.join(RAW, ret))) bad("B6", `${q.id}: figure_type=stem なのに composite_figure_path_retired=${JSON.stringify(ret ?? null)} が無い / 実在しない (旧複合図を退避して例示図だけを再裁断すること)`);
+            else if (ret === bb.figure_path) bad("B6", `${q.id}: figure_type=stem の figure_path が composite_figure_path_retired と同一 (複合図のまま)`);
+          }
         } }
       // B7 ページポインタの健全性 (D-145) — bank を真相源に検査 (bank != by_year は B6 が捕える)
       { const rec = bankFull.get(q.id), src = rec?.source;

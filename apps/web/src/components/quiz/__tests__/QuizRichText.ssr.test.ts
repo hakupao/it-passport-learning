@@ -69,6 +69,17 @@ describe("ChoiceBody (SSR)", () => {
     expect(out).toContain("src=\"/quiz-figures/2014h26a-q046-cA.webp\"");
     expect(out).toContain("alt=\"図ア\"");
   });
+  it("S130: choice figures from the source page; the stem example figure (figure_type=stem) coexists (2010h22h-q088 / 2013h25h-q068)", () => {
+    const q = byId.get("2010h22h-q088")! as (typeof Q)[number] & { figure_type: string | null };
+    expect(q.figure).toBe("2010h22h-q088");
+    expect(q.figure_type).toBe("stem");
+    expect(q.choice_figures?.["イ"]).toBe("2010h22h-q088-cB");
+    const q68 = byId.get("2013h25h-q068")!;
+    expect(q68.figure).toBeNull();
+    const out = html(h(ChoiceBody, { text: "Figure ア", figure: q68.choice_figures!["ア"] }));
+    expect(out).toContain("src=\"/quiz-figures/2013h25h-q068-cA.webp\"");
+    expect(out).toContain("alt=\"Figure ア\"");
+  });
   it("plain choice stays a plain <span> (no pre-wrap class) so the ~2600 ordinary questions are unchanged", () => {
     const out = html(h(ChoiceBody, { text: "リスク分析 → リスク評価 → リスク対応" }));
     expect(out).toBe("<span>リスク分析 → リスク評価 → リスク対応</span>");
