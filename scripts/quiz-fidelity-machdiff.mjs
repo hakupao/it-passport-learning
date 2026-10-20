@@ -150,6 +150,7 @@ const TRANSCRIPT_PREFIX_ADJUDICATED = {
   "2010h22h-q057|stem": { extra: 154, head: "経過時間(横軸・右向き矢印)に沿ったシステムの運", sha1: "559a4449d14debe12d20a78a163f8e137adcd7c3", ref: "S129 B10 図の言語化 = 描画補助、p25 と一致" },
   "2010h22h-q061|stem": { extra: 50, head: "上から下へ3段に分かれた三角形(ピラミッド)があ", sha1: "cfa32a090682cb8f8fcd551ef61b7fa06a45fe63", ref: "S129 B10 図の言語化 = 描画補助、p26 と一致" },
   "2010h22h-q090|stem": { extra: 213, head: "図WBSによるシステムの作業分割-システム-シス", sha1: "3b4eda5009928332778784cf9a045de932158fce", ref: "S129 B10 WBS 図の言語化 = 描画補助、p38" },
+  "2009h21h-q080|stem": { extra: 123, head: "|点数(点)|黒い棒グラフ(人数)|グレ-の棒グ", sha1: "70f34012f6a75cca4bdf31f3769a10da9b62b578", ref: "S129 B12 棒グラフの表化 = 描画補助、p30 と度数一致" },
 };
 const endsSentence = (ns) => /[.?!)"]$/.test(ns);
 
