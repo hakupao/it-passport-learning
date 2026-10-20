@@ -1,11 +1,13 @@
 #!/usr/bin/env node
+// ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+//
 // Patch empty choices_jp for 5 exam JSON files (FY2013a, 2013h, 2014a, 2014h, 2015a)
 // Collected via PDF vision reading
 
 const fs = require('fs');
 const path = require('path');
 
-const BASE = '/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/by_year';
+const BASE = path.join(__dirname, '..', '..', 'data/ip/exams/by_year');
 
 const patches = {
   '2013h25a': {

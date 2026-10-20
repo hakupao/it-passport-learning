@@ -29,7 +29,7 @@ const AUDIT_SCHEMA = {
   },
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 
 function auditPrompt(unitId, term) {
   return `あなたは IT パスポート試験の教材を検証する独立監査者です(執筆者・構造レビュアーとは別の役割・別視点)。1つの用語の日本語解説の**事実正確性**を批判的に核験します。

@@ -7,8 +7,11 @@
  *   round N with ids: only those ids (carry-over FAILs), reading prior verifier feedback
  */
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'fs';
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+// 下で `const path` を top-level に宣言しているため、path の default import は使わない。
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const REPAIR_DIR = `${ROOT}/data/ip/exams/.tmp/repair`;
 mkdirSync(REPAIR_DIR, { recursive: true });
 

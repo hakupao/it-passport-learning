@@ -67,7 +67,7 @@ const VERIFY_SCHEMA = {
   },
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 const P2 = `${ROOT}/data/ip/quiz/.phase2`
 const E = '2013h25a'
 

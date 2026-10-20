@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Stage 3 (G3) — apply final syllabus_refs into question_bank.json + regenerate by_year/*.
  *
  * Replaces each question's empty `syllabus_refs: []` with the resolved object:
@@ -20,8 +22,10 @@
  *   --dry : validate + report, do NOT write.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const QB = `${EXAMS}/question_bank.json`;
 const BACKUP = `${EXAMS}/question_bank.json.pre-s03`;

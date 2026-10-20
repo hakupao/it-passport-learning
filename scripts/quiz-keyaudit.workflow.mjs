@@ -32,7 +32,7 @@ function derivePrompt(inputPath, id) {
 3. **choices↔figure 照合**: 図に選択肢 (ア/イ/ウ/エ) が値・式・表・グラフ・回路図として描かれている問では、choices_jp の各テキストが図の対応選択肢と一致するか逐字照合。値の腐敗・列の取り違え・選択肢間の swap・別問の混入があれば choices_faithful=false とし choices_issues に {choice, detail_jp} で記す。図に選択肢が描かれない (choices が純テキスト) 問は choices_faithful=true (照合対象外)。
 
 ## 出力
-1. DERIVE_SCHEMA と同形の JSON を \`/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.keyaudit/result_${id}.json\` に **Write** (resume + 比対用、id="${id}")。
+1. DERIVE_SCHEMA と同形の JSON を \`/Volumes/DevSSD/Project/IT-Passport-Learning/data/ip/quiz/.keyaudit/result_${id}.json\` に **Write** (resume + 比対用、id="${id}")。
 2. 同じ内容を DERIVE_SCHEMA に従い StructuredOutput で返す。`
 }
 

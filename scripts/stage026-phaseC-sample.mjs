@@ -9,8 +9,10 @@
  * Output: .tmp/s026/phaseC/sample_main.json (N100), sample_L5.json (~30), sample_Lext.json (~30) + manifest
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const OUT = `${EXAMS}/.tmp/s026/phaseC`;
 mkdirSync(OUT, { recursive: true });

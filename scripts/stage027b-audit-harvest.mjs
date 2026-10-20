@@ -6,8 +6,11 @@
  * Output: data/ip/exams/.tmp/s027b/_audit_b.json + printed summary.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const OUT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/exams/.tmp/s027b';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const OUT = `${ROOT}/data/ip/exams/.tmp/s027b`;
 mkdirSync(OUT, { recursive: true });
 const recon = JSON.parse(readFileSync(`${OUT}/_reconcile_b.json`, 'utf8'));
 const disp = new Map();

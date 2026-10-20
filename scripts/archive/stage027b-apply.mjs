@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Stage 2.7b — apply the second-pass dispositions from _reconcile_b.json (+ optional _manual_b.json).
  *
  * Applies to question_bank.json + by_year/<exam>.json with .pre-s027b backups.
@@ -18,8 +20,10 @@
  *   node scripts/stage027b-apply.mjs --commit   # write backups + apply
  */
 import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const OUT = `${EXAMS}/.tmp/s027b`;
 const COMMIT = process.argv.includes('--commit');

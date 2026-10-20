@@ -9,7 +9,7 @@ export const meta = {
   ],
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 const jpPath = (id) => `${ROOT}/data/ip/quiz/.phase2/expl_jp_${id}.json`
 const trPath = (id) => `${ROOT}/data/ip/quiz/.phase2/expl_tr_${id}.json`
 

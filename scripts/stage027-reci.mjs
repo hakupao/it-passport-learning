@@ -7,7 +7,9 @@
  * Usage: node scripts/stage027-reci.mjs <reci_run_dir> [...]
  */
 import { readFileSync, existsSync } from 'fs';
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const STEM_TH = 0.72, CHOICE_TH = 0.70;
 const runDirs = process.argv.slice(2);

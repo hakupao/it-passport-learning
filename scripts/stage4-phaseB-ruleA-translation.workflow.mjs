@@ -29,7 +29,7 @@ const AUDIT_SCHEMA = {
   },
 }
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning'
+const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
 
 function auditPrompt(unitId, term) {
   return `あなたは独立した翻訳監査者(翻訳者・構造レビュアーとは別役割・別視点)です。1用語の **zh/en 翻訳が日本語源に忠実か** を批判的に核験します。

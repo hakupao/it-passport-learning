@@ -11,8 +11,10 @@
  * Output: data/ip/exams/.tmp/s027b/audit_in/<id>.json + _audit_ids.json
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EXAMS = `${ROOT}/data/ip/exams`;
 const OUT = `${EXAMS}/.tmp/s027b`;
 const AUDIT_IN = `${OUT}/audit_in`;

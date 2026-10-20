@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * ARCHIVED S128 (D-154) — DO NOT RE-RUN. Overwrites live data (question_bank.json / by_year / groups.json) or committed evidence with old patches. Kept for history only.
+ *
  * Stage 3 (G3) — coverage analysis (D-126 step 4).
  *
  * Given the final per-question syllabus_refs (from reconcile resolved + adjudicated escalations,
@@ -12,8 +14,10 @@
  * Output: prints per-category coverage + gap list; writes evidence/phase5/stage_03_coverage.md
  */
 import { readFileSync, writeFileSync } from 'fs';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = '/Users/bojiangzhang/MyProject/IT-Passport-Learning';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const index = JSON.parse(readFileSync(`${ROOT}/data/ip/syllabus/_mapping_index.json`, 'utf8'));
 const topics = index.topics;
 const nameById = new Map(topics.map((t) => [t.id, t]));
