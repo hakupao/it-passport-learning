@@ -21,7 +21,7 @@ const COPY = [
     strip: {} },
   // 第 2 弾 (探索 agent の棚卸しで判明した (a) 型、S117 §28)
   { source: "2011h23a-q089", targets: ["2011h23a-q090", "2011h23a-q091", "2011h23a-q092"],
-    cut: { jp: "問 89 画素データを圧縮せずに出力した場合", zh: "问 89 在不压缩像素数据直接输出的情况下", en: "Q89 When the pixel data is output without compression" },
+    cut: { jp: "画素データを圧縮せずに出力した場合", zh: "在不压缩像素数据直接输出的情况下", en: "When the pixel data is output without compression" }, // S129 B9 D-165: stem 途中の見出し「問 89 」を除去したので設問文の開頭に付け替え
     strip: { jp: /^中問A[^\n]*\n\s*/, zh: /^中题A[^\n]*\n\s*/, en: /^Group Question A[^\n]*\n\s*/ } },
   { source: "2014h26h-q089", targets: ["2014h26h-q090", "2014h26h-q091", "2014h26h-q092"],
     cut: { jp: "案Aと案Bのどちらで製品Hの製造原価が低くなるのかは", zh: "对于产品 H，方案 A 与方案 B 中哪一个的制造成本更低", en: "Which of plan A or plan B yields a lower manufacturing cost" },

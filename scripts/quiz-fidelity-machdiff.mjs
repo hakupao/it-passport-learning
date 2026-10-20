@@ -146,6 +146,7 @@ const TRANSCRIPT_PREFIX_ADJUDICATED = {
   "2022r04-q006|stem": { extra: 96, head: "a当該技術に関連した他社とのアライアンスの際に,", sha1: "bad9ce0b4675d5788d5f017bcc1fb0572678db13", ref: "U7 §3 transcript 截断の偽陽性、源に a〜c 3 行あり" },
   "2023r05-q041|stem": { extra: 188, head: "(アロ-ダイアグラム.凡例は矢線の上に\"作業名\"", sha1: "60dbe047c94eb5e5009e3bab53667a09165748f6", ref: "U8 §3 アローダイアグラムの文本化 = 描画補助、図と一致" },
   "2013h25a-q055|stem": { extra: 123, head: "方式aの図:-ソ-スプログラム→(矢印)→[a]", sha1: "f4bf09b985bbf6b95f83cd2f13f09cd9e6035ca3", ref: "S129 B5 §11 図の言語化 = 描画補助、p19 と一致" },
+  "2011h23a-q032|stem": { extra: 148, head: "図:縦軸は\"ソフトウェア保守作業の件数\",横軸は", sha1: "0ac8a31e2b9513f84930fcf627417fb80e617558", ref: "S129 B9 図の言語化 = 描画補助" },
 };
 const endsSentence = (ns) => /[.?!)"]$/.test(ns);
 
