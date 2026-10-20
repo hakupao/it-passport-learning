@@ -1,0 +1,1769 @@
+{
+  "schema": "quiz_B4_named_S128",
+  "exam_id": "2013h25h",
+  "purpose": "B4 fixer / reviewer に名指しで渡す候補 (D-150 §4)。核験 agent の prompt には入れない (源先読みの独立性、B1〜B3 と同じ運用)。いずれも源未照合の候補であり欠陥数ではない。",
+  "sources": {
+    "backlog_scan": "evidence/phase5/stage_06_quiz_fidelity/backlog_scan_A1_S127.json",
+    "l2b": "evidence/S128_L2b_scans.json",
+    "l2c": "evidence/S128_L2c_stemtable.json",
+    "l2d": "evidence/S128_L2d_figblind.json",
+    "l2e": "evidence/S128_L2e_textbook_numbers.json",
+    "l2f": "evidence/S128_L2f_chumon.json",
+    "a3": "evidence/quiz_A3_S128.md",
+    "a4": "evidence/phase5/stage_06_quiz_fidelity/chumon_preamble_S128_a4_batch1.json (commit 5bac5f9)",
+    "c3": "evidence/fig_C3_S128.md",
+    "summary_s7": "evidence/quiz_full52_summary.md §7",
+    "a2a": "evidence/quiz_A2a_S127.md"
+  },
+  "lesson_displayed_layer": {
+    "rule": "stem↔図 / stem↔源 の照合は必ず表示層 (stem_jp_clean || stem_jp) で行う。raw stem_jp だけを見て STEM_WRONG と判定しない",
+    "example": "2013h25h-q096 (L2c): raw stem_jp は表の値が崩れている (3,200 / 3,300 / 60,400、E2 \"D2/D14\"→E3〜E13、4月行欠落、「月別売上構成比」) が、出荷層 stem_jp_clean / zh / en は源 page-44 と一致 (B2=3,000、B14=60,600、4月行 7,300/7,700/7,500、E1「月の売上構成比」、E2 \"D2/D$14\"→E3〜E14)。verdict SOURCE_MATCHES_SHIPPED、route none。A1 の 0a.num / T.num_raw_clean (q096) と 0q.prose (q061 / q067 / q096 jp_raw の \"…\") も raw だけの差で学習者不可視",
+    "manifest_note": "manifest の displayed_stem_jp は既に表示層。fixer / reviewer が questions.json を直接読む時に注意"
+  },
+  "chumon_registered": {
+    "note": "源の中問 4 組すべて registry 登録済 (A4 commit 5bac5f9 で mqC を追加、registry 50 組)。manifest の displayed_stem_jp に probe.jp が 16/16 含まれ、translations の zh / en stem にも probe が 16/16 含まれることを確認",
+    "groups": [
+      {
+        "key": "2013h25h-mqA",
+        "ids": [
+          "2013h25h-q085",
+          "2013h25h-q086",
+          "2013h25h-q087",
+          "2013h25h-q088"
+        ],
+        "origin": "chumon_preamble_S117_batch2.json"
+      },
+      {
+        "key": "2013h25h-mqB",
+        "ids": [
+          "2013h25h-q089",
+          "2013h25h-q090",
+          "2013h25h-q091",
+          "2013h25h-q092"
+        ],
+        "origin": "chumon_preamble_S117_batch2.json"
+      },
+      {
+        "key": "2013h25h-mqC",
+        "ids": [
+          "2013h25h-q093",
+          "2013h25h-q094",
+          "2013h25h-q095",
+          "2013h25h-q096"
+        ],
+        "origin": "chumon_preamble_S128_a4_batch1.json (A4、L2f で旧 unregistered)",
+        "preamble_pages": [
+          "data/ip/exams/pages/2013h25h/page-42.png"
+        ],
+        "preamble_opening_jp": "A さんは，製品 N の売上の動向を分析するため，昨年と今年の売上高の推移を基に，表計算ソフトを用いて図1のワークシートを作成した。"
+      },
+      {
+        "key": "2013h25h-mqD",
+        "ids": [
+          "2013h25h-q097",
+          "2013h25h-q098",
+          "2013h25h-q099",
+          "2013h25h-q100"
+        ],
+        "origin": "chumon_preamble_S117_batch2.json"
+      }
+    ],
+    "fixer_rule": "前文は registry (chumon_groups.json) と stem 冒頭の両方にある。前文の是正が要る場合は B4 fixer が単独で stem 冒頭を変えず、registry probe との整合を lead に上げる。設問文以降の是正は設問文側の部分一致で当て、stem 全体置換をしない",
+    "precrop_note": "16 題とも crop なし (mqA/B/D 12 題 = chumon skip、mqC 4 題 = page-43/44 の page_mismatch skip)。q096 の prev_page_png は page-43 で、前文の page-42 は agent に見えない (前文は表示 stem にあるので、agent は前文を『源に無い』と誤報告しうる → 既知型として fixer が page-42 を実読)"
+  },
+  "l2d_figblind": [
+    {
+      "id": "2013h25h-q007",
+      "kind": "figure_truncated",
+      "severity": "major",
+      "status": "C3 で修復済 (commit 1b74910、rough 15.78/27.3/67.32/8.79、page-04)",
+      "note": "旧 crop は工程表の見出し行 (工程 / 機械台数 / 作業時間／個 / 不良率) と上罫線が外れ、下に問8 が混入していた。B4 は図と figure_path に触らない。stem 側の表 (A1 T.table) を源 page-04 と照合するだけ"
+    },
+    {
+      "id": "2013h25h-q055",
+      "kind": "figure_truncated",
+      "severity": "medium (C3 で major に格上げ)",
+      "status": "C3 で修復済 (commit 1b74910、rough 11.17/25.81/70.25/39.88、page-23)",
+      "note": "旧 crop は選択肢表の見出し行 (主キー / 外部キー) が上縁で切れていた。C3 は「社員」「部署」スキーマ表も crop に含めた (C3 §2)。C3 は『stem に表が文字で無い』として B track へ名指ししたが、現表示 stem_jp_clean には列名だけの 2 表 (行 0、L2b ABOVE_CAPTION nrow 0) がある。B4 は列名を源 page-23 と照合し、図と stem の重複は削らない"
+    },
+    {
+      "id": "2013h25h-q041",
+      "kind": "figure_extra",
+      "note": "情報のみ (下に問42 の設問文 2 行が混入、選択肢表 a/b は完全)"
+    },
+    {
+      "id": "2013h25h-q082",
+      "kind": "figure_extra",
+      "note": "情報のみ (選択肢 ア のみ図内、イ〜エ は text)"
+    },
+    {
+      "id": "2013h25h-q083",
+      "kind": "figure_extra",
+      "note": "情報のみ (選択肢 ア〜ウ が図内、エ は crop 外、text 表示)"
+    }
+  ],
+  "l2c_stemtable": [
+    {
+      "id": "2013h25h-q096",
+      "verdict_shipped": "SOURCE_MATCHES_SHIPPED",
+      "verdict_raw": "STEM_WRONG (raw のみ)",
+      "route": "none",
+      "note": "lesson_displayed_layer の例。answer_affecting false (F14 = C14×1.1 → イ)"
+    },
+    {
+      "id": "2013h25h-q019",
+      "verdict_shipped": "SOURCE_MATCHES_SHIPPED",
+      "route": "none",
+      "note": "crop の選択肢半欠けの付記のみ。stem の不一致なし (源 page-08)"
+    }
+  ],
+  "l2e_a3": {
+    "id": "2013h25h-q099",
+    "field": "figure_description",
+    "status": "A3 D-160 で全面書換え済 (Rule A、源 page-48 の矢印 12/12 一致)",
+    "note": "旧 fd の「商品紹介1,800件」「完了860件」「購入手続400→完了50→完了860」は源に無かった (L2e CONFIRMED)。textbook strategy-03-10-u05 の旧値残存 0 (A3)。B4 は fd を再編集しない。A1 の q099 fig 2.nine_six cross は resolved 扱い"
+  },
+  "l2b": {
+    "brackets_display": {
+      "tort": 10,
+      "sq": 1,
+      "fwsq": 0,
+      "lent": 0,
+      "note": "表示 jp の見出し役は 〔〕 10 件。[ ] 1 件は q074 の図の言語化 (箱ラベル `[ブラウザ] ― [プロキシサーバ] ― [ルータ] ― (インターネット) ― [Webサーバ]`) で節見出しではない。是正候補 0。en の `[Cell settings]` (q096) / `[The two proposals]` (q098) は en の慣行"
+    },
+    "brackets_raw_only": [
+      {
+        "id": "2013h25h-q096",
+        "text": "〔テクノロジ〕 (jp_raw のみ、分野見出しの残渣)"
+      }
+    ],
+    "minus": {
+      "count": 0
+    },
+    "ai_figure_labels": {
+      "count": 0
+    },
+    "figure_description": [
+      {
+        "id": "2013h25h-q043",
+        "flags": [
+          "FIG_ONLY_NUM"
+        ],
+        "note": "fd はリスク1 の損失 5,000万円、表示 stem の表は 6,000万円 (A1 T.num_vs_fig も 表のみ {6000})。源 page-18 で確定。6,000 なら 0.6×6,000 = 0.4×9,000 = 3,600 で同順位 → 対応期限でリスク2 (イ) となり設問の但し書きと整合する。5,000 でもリスク2 で答えは変わらない (answer_affecting は低い見込み)。fd が誤りなら fd を直す"
+      },
+      {
+        "id": "2013h25h-q067",
+        "flags": [
+          "T.num_vs_fig"
+        ],
+        "note": "表示 stem 表 S002 鉛筆 50 円、fd は 80 円 (A1 T.num_vs_fig 表のみ {50})。源 page-28 で確定。どちらも 100 円未満で答え (ウ 選択) に影響しない"
+      },
+      {
+        "id": "2013h25h-q028",
+        "flags": [
+          "UNIT_COLON_DRIFT"
+        ],
+        "note": "fd「（単位：億円）」と stem「単位 億円」の表記差のみ。low"
+      },
+      {
+        "id": "2013h25h-q068",
+        "flags": [
+          "FIG_ONLY_NUM"
+        ],
+        "note": "fd の「4種類」だけ。FP"
+      },
+      {
+        "id": "2013h25h-q099",
+        "flags": [
+          "SLASHED_ZERO_PAIR",
+          "FIG_ONLY_NUM"
+        ],
+        "note": "A3 で解消済 (l2e_a3)"
+      }
+    ],
+    "tables": [
+      {
+        "id": "2013h25h-q082",
+        "flag": "COL0_REPEAT (row-span expanded?)",
+        "note": "⑨ #22、jp/zh/en。真理値表 A 列の 0/0/1/1 は rowspan でなく実値の可能性が高い。源 page-34 で確認"
+      },
+      {
+        "id": "2013h25h-q096",
+        "flag": "SPAN_ROW",
+        "note": "⑨ #22、⋮ の省略行。jp/jp_raw/zh/en"
+      },
+      {
+        "id": "2013h25h-q055",
+        "flag": "ABOVE_CAPTION (nrow 0)",
+        "note": "列名だけの表 ×2 (l2d_figblind q055 参照)"
+      },
+      {
+        "id": "2013h25h-q061",
+        "flag": "ABOVE_CAPTION"
+      },
+      {
+        "id": "2013h25h-q067",
+        "flag": "ABOVE_CAPTION"
+      },
+      {
+        "id": "2013h25h-q028",
+        "flag": "ABOVE_UNIT"
+      },
+      {
+        "id": "2013h25h-q043",
+        "flag": "en COL0_PREFIX_EXPANDED(Risk×4)"
+      },
+      {
+        "id": "2013h25h-q057",
+        "flag": "zh/en COL0_PREFIX_EXPANDED(作业/Job×3)"
+      }
+    ]
+  },
+  "summary_s7": [
+    {
+      "item": "#4 precrop 頁パリティ + 題番号照合",
+      "id": null,
+      "note": "本 prep が L1b 改修版で実行: qnum_mismatch 0、confusable_only 4 頁 (page-08/16/30/40)"
+    },
+    {
+      "item": "#12 13 exam 空白域",
+      "id": null,
+      "note": "B4 の全量再抄写が被覆。A1 7.space: q028 / q069「直接 埋め込む」/ q084「メールプロトコル はどれか」/ q096 表内"
+    },
+    {
+      "item": "#16 括弧字形",
+      "id": null,
+      "note": "§7.1 #16 の残リストに 2013h25h は無い。表示 jp は 〔〕 のみ (q074 は箱ラベル)"
+    },
+    {
+      "item": "#6 「ヘへ」型",
+      "id": null,
+      "note": "2013h25h の questions / translations に 0 件"
+    },
+    {
+      "item": "#22 表の結合セル",
+      "id": null,
+      "note": "q082 COL0_REPEAT / q096 SPAN_ROW (l2b.tables)"
+    }
+  ],
+  "other_context": [
+    {
+      "ids": [
+        "2013h25h-q037"
+      ],
+      "note": "A1 2.nine_six ends96: choice.ウ「上限値を399 kg, 下限値を599 g」— 現 questions.json でも残存。9↔0 誤読の型 (源は 300 / 500 か)。jp・zh・en とも源 page-15 で確定。correct_answer はエ (ウは誤答肢) で答えには影響しない"
+    },
+    {
+      "ids": [
+        "2013h25h-q056"
+      ],
+      "note": "A1 0c.isolated_kanji: choice.イ「電子式や静電式」— jp / zh「电子式」/ en「electronic」とも同じ。源 page-24 で字を確定 (電磁式 等の誤読の疑い)"
+    },
+    {
+      "ids": [
+        "2013h25h-q061"
+      ],
+      "note": "A1 0a.num / T.num_raw_clean: raw「H002 K02 60 / H006 K01 30」→ clean・fd「H002 K02 80 / H006 K02 50」。answer_affecting の可能性あり (clean: K02=130 > K03=120 → 佐藤太郎 = イ = 現 correct_answer。raw なら K03 → 鈴木三郎)。源 page-26 で表の 6 行を全数照合"
+    },
+    {
+      "ids": [
+        "2013h25h-q055"
+      ],
+      "note": "A1 0a.ins: clean が列名だけの「社員」「部署」表を挿入。源 page-23 の列名 (社員コード / 社員名 / 入社年 / 生年月日 / 部署コード、部署コード / 部署名) と照合。en choice ア〜エの \"…\" ×4〜6 (0q.en) は en の引用慣行で low"
+    },
+    {
+      "ids": [
+        "2013h25h-q074"
+      ],
+      "note": "A1 0a.ins: clean が構成図を `[ブラウザ] ― … ― [Webサーバ]` に言語化し「次の」を挿入。図 (figure 有、L2d OK) と重複。源 page-31 で語順と機器名を確定"
+    },
+    {
+      "ids": [
+        "2013h25h-q076"
+      ],
+      "note": "A1 0a.num: raw の「[図] 完全グラフ」記述を clean が削除。図は無い (figure null)。源 page-32 に図があるか確認"
+    },
+    {
+      "ids": [
+        "2013h25h-q018"
+      ],
+      "note": "A1 0a.num: raw の選択肢重複残渣を clean が削除。情報のみ"
+    },
+    {
+      "ids": [
+        "2013h25h-q066",
+        "2013h25h-q052"
+      ],
+      "note": "A1 0a: raw「0S / BI0S」→ clean「OS / BIOS」、「DeniaL」→「Denial」。clean が正しい見込み、情報のみ"
+    },
+    {
+      "ids": [
+        "2013h25h-q089",
+        "2013h25h-q090",
+        "2013h25h-q091",
+        "2013h25h-q092"
+      ],
+      "note": "mqB。A1 2.nine_six ends96 の 9:00〜18:00 / 9:00〜19:00 / 9時間以内 が多数 (前文の重複計上)。源 page-39〜41 で時刻と時間を確定。A2b ⑨: en の \"X Company\" 語順 (q090 / q091)、情報のみ"
+    },
+    {
+      "ids": [
+        "2013h25h-q045",
+        "2013h25h-q059"
+      ],
+      "note": "q045「津波」0c.rare_kanji は FP。q059 zh エ「对等网络（P2P）」は A2a で FP"
+    }
+  ],
+  "backlog_counts": {
+    "candidates": 158,
+    "questions": 39,
+    "high": 86,
+    "high_questions": 26,
+    "high_open": 84,
+    "high_open_questions": 25,
+    "resolved": 2,
+    "by_rule": {
+      "2.nine_six": 62,
+      "7.comma_nospace": 5,
+      "7.space": 8,
+      "0a.num": 28,
+      "0a.char": 2,
+      "0a.ins": 9,
+      "0b.num_extra": 1,
+      "0c.tr_of_anomaly": 4,
+      "0c.rare_kanji": 1,
+      "0c.isolated_kanji": 1,
+      "0q.en": 8,
+      "0q.prose": 14,
+      "T.table": 10,
+      "T.num_vs_fig": 3,
+      "T.num_raw_clean": 2
+    }
+  },
+  "priority_rule": "B2 / B3 と同一: high = 0a.* (prose sub) / 0b.* / 0c.* (rare_kanji 以外) / 0q.prose / 1.mid @jp / 7.* (comma_nospace 以外) / 10.* / 2.nine_six (cross・ends96)。それ以外 low。分類器は 2014h26a に当てて B3 named の priority と 270/270 一致 (high 163) を確認済。resolved は A2a / A3 で処置済",
+  "backlog_candidates": [
+    {
+      "id": "2013h25h-q009",
+      "layer": "jp",
+      "field": "choice.エ",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "6,000｜6,000"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "fig",
+      "field": "figure_description",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "900｜…000→2,000、売上原価850→900、販売費及び一般管理費950→900…"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "fig",
+      "field": "figure_description",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "900｜…900、販売費及び一般管理費950→900、営業外収益10→20、営業外費用2…"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "fig",
+      "field": "figure_description",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "950｜…850→900、販売費及び一般管理費950→900、営業外収益10→20、営業…"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "900｜… |⏎| 売上原価 | 850 | 900 |⏎| 販売費及び一般管理費 | …"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "900｜…売費及び一般管理費 | 950 | 900 |⏎| 営業外収益 | 10 | …"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "950｜… |⏎| 販売費及び一般管理費 | 950 | 900 |⏎| 営業外収益 |…"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "900｜… |⏎| 売上原価 | 850 | 900 |⏎| 販売費及び一般管理費 | …"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "900｜…売費及び一般管理費 | 950 | 900 |⏎| 営業外収益 | 10 | …"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "950｜… |⏎| 販売費及び一般管理費 | 950 | 900 |⏎| 営業外収益 |…"
+    },
+    {
+      "id": "2013h25h-q037",
+      "layer": "jp",
+      "field": "choice.ウ",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "399｜…の体重を入力するテストで, 上限値を399 kg, 下限値を599 g と設定…"
+    },
+    {
+      "id": "2013h25h-q037",
+      "layer": "jp",
+      "field": "choice.ウ",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "599｜…, 上限値を399 kg, 下限値を599 g と設定してテストケースを作成す…"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "fig",
+      "field": "figure_description",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "0.6｜…先度を比較する表。リスク1：発生確率0.6、損失5,000万円、顕在化時期X+…"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "fig",
+      "field": "figure_description",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "9,000｜…1日。リスク2：発生確率0.4、損失9,000万円、顕在化時期X年7月1日。リスク…"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "0.6｜…リスク1 | X+1年4月1日 | 0.6 | 6,000万円 |⏎| リスク…"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "6,000｜… X+1年4月1日 | 0.6 | 6,000万円 |⏎| リスク2 | X 年7…"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "9,000｜…| X 年7月1日 | 0.4 | 9,000万円 |⏎| リスク3 | X 年7…"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "0.6｜…リスク1 | X+1年4月1日 | 0.6 | 6,000万円 |⏎| リスク…"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "6,000｜… X+1年4月1日 | 0.6 | 6,000万円 |⏎| リスク2 | X 年7…"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "9,000｜…| X 年7月1日 | 0.4 | 9,000万円 |⏎| リスク3 | X 年7…"
+    },
+    {
+      "id": "2013h25h-q051",
+      "layer": "jp",
+      "field": "choice.ア",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "9001｜ISO 9001に基づく品質マネジメントシステムを、…"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "fig",
+      "field": "figure_description",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "006｜…4-70、H005-K01-20、H006-K02-50。「顧客」表（顧客コー…"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "006｜…5 | K01 | 20 |⏎| H006 | K02 | 50 |⏎⏎顧客⏎…"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "006｜…5 | K01 | 20 |⏎| H006 | K01 | 30 |⏎⏎顧客⏎…"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "60｜… |⏎| H002 | K02 | 60 |⏎| H003 | K03 | …"
+    },
+    {
+      "id": "2013h25h-q076",
+      "layer": "jp",
+      "field": "choice.イ",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "16｜16"
+    },
+    {
+      "id": "2013h25h-q076",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "6｜…C，AD，BC，BD，CDの組合せの6個の鍵が必要である。8人が相互に通信…"
+    },
+    {
+      "id": "2013h25h-q076",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "6｜…C，AD，BC，BD，CDの組合せの6個の鍵が必要である。8人が相互に通信…"
+    },
+    {
+      "id": "2013h25h-q076",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "6｜…D, B-C, B-D, C-D の6本の線）"
+    },
+    {
+      "id": "2013h25h-q085",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "90｜…る。⏎(3) アンケートは，全社員の90％以上に回答してもらいたいので，期限…"
+    },
+    {
+      "id": "2013h25h-q086",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "90｜…る。⏎(3) アンケートは，全社員の90％以上に回答してもらいたいので，期限…"
+    },
+    {
+      "id": "2013h25h-q087",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "90｜…る。⏎(3) アンケートは，全社員の90％以上に回答してもらいたいので，期限…"
+    },
+    {
+      "id": "2013h25h-q088",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "90｜…る。⏎(3) アンケートは，全社員の90％以上に回答してもらいたいので，期限…"
+    },
+    {
+      "id": "2013h25h-q089",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "19｜…のサービス提供時間は，平日9:00〜19:00とする。⏎(d) 新システムで…"
+    },
+    {
+      "id": "2013h25h-q089",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜… 新システムの使用方法の問合せを平日9:00〜18:00の間，電話と電子メ…"
+    },
+    {
+      "id": "2013h25h-q089",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…) 新システムの通常の利用は，平日の9:00〜18:00としたい。⏎(5)…"
+    },
+    {
+      "id": "2013h25h-q089",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…ステム運用のサービス提供時間は，平日9:00〜19:00とする。⏎(d) …"
+    },
+    {
+      "id": "2013h25h-q089",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…ムで障害が発生した場合は，発生時から9時間以内に復旧を行う。データのバック…"
+    },
+    {
+      "id": "2013h25h-q089",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "6｜F 社が 6G 社に対して, 新システムのサポー…"
+    },
+    {
+      "id": "2013h25h-q090",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "19｜…のサービス提供時間は，平日9:00〜19:00とする。⏎(d) 新システムで…"
+    },
+    {
+      "id": "2013h25h-q090",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜… 新システムの使用方法の問合せを平日9:00〜18:00の間，電話と電子メ…"
+    },
+    {
+      "id": "2013h25h-q090",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…) 新システムの通常の利用は，平日の9:00〜18:00としたい。⏎(5)…"
+    },
+    {
+      "id": "2013h25h-q090",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…ステム運用のサービス提供時間は，平日9:00〜19:00とする。⏎(d) …"
+    },
+    {
+      "id": "2013h25h-q090",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…ムで障害が発生した場合は，発生時から9時間以内に復旧を行う。データのバック…"
+    },
+    {
+      "id": "2013h25h-q091",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "19｜…のサービス提供時間は，平日9:00〜19:00とする。⏎(d) 新システムで…"
+    },
+    {
+      "id": "2013h25h-q091",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜… 新システムの使用方法の問合せを平日9:00〜18:00の間，電話と電子メ…"
+    },
+    {
+      "id": "2013h25h-q091",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…) 新システムの通常の利用は，平日の9:00〜18:00としたい。⏎(5)…"
+    },
+    {
+      "id": "2013h25h-q091",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…ステム運用のサービス提供時間は，平日9:00〜19:00とする。⏎(d) …"
+    },
+    {
+      "id": "2013h25h-q091",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…ムで障害が発生した場合は，発生時から9時間以内に復旧を行う。データのバック…"
+    },
+    {
+      "id": "2013h25h-q092",
+      "layer": "jp",
+      "field": "choice.ウ",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…よって、夜間は22:00まで、休日は9:00から17:00まで新システムを…"
+    },
+    {
+      "id": "2013h25h-q092",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "19｜…のサービス提供時間は，平日9:00〜19:00とする。⏎(d) 新システムで…"
+    },
+    {
+      "id": "2013h25h-q092",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜… 新システムの使用方法の問合せを平日9:00〜18:00の間，電話と電子メ…"
+    },
+    {
+      "id": "2013h25h-q092",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…) 新システムの通常の利用は，平日の9:00〜18:00としたい。⏎(5)…"
+    },
+    {
+      "id": "2013h25h-q092",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…ステム運用のサービス提供時間は，平日9:00〜19:00とする。⏎(d) …"
+    },
+    {
+      "id": "2013h25h-q092",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "ends96",
+      "priority": "high",
+      "excerpt": "9｜…ムで障害が発生した場合は，発生時から9時間以内に復旧を行う。データのバック…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "11,900｜… | | |⏎| 4 | 3月 | 11,900 | 13,200 | 12,550…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "60,600｜…| |⏎| 14 | 年間合計 | 60,600 | 70,300 | 65,450…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "65,450｜…60,600 | 70,300 | 65,450 | | |⏎⏎注記 網掛けの部分は…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "11,900｜… | | |⏎| 4 | 3月 | 11,900 | 13,200 | 12,550…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "60,400｜…| |⏎| 14 | 年間合計 | 60,400 | 70,300 | 65,450…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "2.nine_six",
+      "sub": "-",
+      "priority": "low",
+      "excerpt": "65,450｜…60,400 | 70,300 | 65,450 | | |⏎⏎注記 網掛けの部分は…"
+    },
+    {
+      "id": "2013h25h-q099",
+      "layer": "fig",
+      "field": "figure_description",
+      "rule": "2.nine_six",
+      "sub": "cross",
+      "priority": "high",
+      "excerpt": "860｜…続400件→購入手続完了50件→完了860件。キャンペーン情報から購入手続50…",
+      "resolved": "S128 A3 D-160: fd 全面書換え (源矢印 12/12 一致)、現 fd に 860 / 1,800 は 0 件"
+    },
+    {
+      "id": "2013h25h-q017",
+      "layer": "jp",
+      "field": "choice.イ",
+      "rule": "7.comma_nospace",
+      "sub": "mixed",
+      "priority": "low",
+      "excerpt": "…ーネットを利用した社員向けの福利厚生,教育などのサービスを提供する。"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.space",
+      "sub": "table",
+      "priority": "high",
+      "excerpt": "…のうち，適切なものはどれか。⏎⏎単位 億円⏎⏎| | 前期 | 当期 |⏎…"
+    },
+    {
+      "id": "2013h25h-q030",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.comma_nospace",
+      "sub": "plain",
+      "priority": "low",
+      "excerpt": "…報システムに蓄積されたデータを分析し,業務に活用することを目標としているが…"
+    },
+    {
+      "id": "2013h25h-q030",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.comma_nospace",
+      "sub": "plain",
+      "priority": "low",
+      "excerpt": "…業務に活用することを目標としているが,社員の経験不足のために進んでいない。…"
+    },
+    {
+      "id": "2013h25h-q030",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.comma_nospace",
+      "sub": "plain",
+      "priority": "low",
+      "excerpt": "…現に向けての優先度の高い取組みとして,最も適切なものはどれか。"
+    },
+    {
+      "id": "2013h25h-q048",
+      "layer": "jp",
+      "field": "choice.エ",
+      "rule": "7.comma_nospace",
+      "sub": "plain",
+      "priority": "low",
+      "excerpt": "…業に分割してそれぞれの工数を見積もり,集計することによって全体の工数を見積…"
+    },
+    {
+      "id": "2013h25h-q069",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.space",
+      "sub": "kanji",
+      "priority": "high",
+      "excerpt": "…ト及びサイズなどを指定する記述を直接 埋め込むことができる。このマークアッ…"
+    },
+    {
+      "id": "2013h25h-q084",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.space",
+      "sub": "particle",
+      "priority": "high",
+      "excerpt": "…に見えるようにできるメールプロトコル はどれか。"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.space",
+      "sub": "table",
+      "priority": "high",
+      "excerpt": "…1 | 月 | 昨年の売上高 (単位 千円) | 今年の売上高 (単位 千…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.space",
+      "sub": "table",
+      "priority": "high",
+      "excerpt": "…| 65,450 | | |⏎⏎注記 網掛けの部分は、表示していない。⏎⏎…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.space",
+      "sub": "table",
+      "priority": "high",
+      "excerpt": "…の売上構成比 | 目標売上高 (単位 千円) |⏎| 2 | 1月 | 3…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.space",
+      "sub": "table",
+      "priority": "high",
+      "excerpt": "…位 千円) | 今年の売上高 (単位 千円) | 平均 (単位 千円) |…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "7.space",
+      "sub": "table",
+      "priority": "high",
+      "excerpt": "…高 (単位 千円) | 平均 (単位 千円) | 月の売上構成比 | 目標…"
+    },
+    {
+      "id": "2013h25h-q018",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_garbled",
+      "priority": "low",
+      "excerpt": "「公的機関に申請して取得する.|公的機関に申請して取得する公的機関に申請して取得す…」→「」 raw「なものはどれか.公的機関に申請して取得する.|公的機関に申請して取得する公的機関に申請して取得する.|メ-カが割り当てる…」→ clean「なものはどれか.」"
+    },
+    {
+      "id": "2013h25h-q052",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.char",
+      "sub": "char/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「L」→「l」 raw「oS(DeniaLofServic」→ clean「oS(DenialofServic」"
+    },
+    {
+      "id": "2013h25h-q055",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.ins",
+      "sub": "ins/struct/raw_fluent",
+      "priority": "low",
+      "excerpt": "「」→「社員|社員コ-ド|社員名|入社年|生年月日|部署コ-ド||---|---|---…」 raw「するものとする.」→ clean「するものとする.社員|社員コ-ド|社員名|入社年|生年月日|部署コ-ド||---|---|---|---|---|部署|…」"
+    },
+    {
+      "id": "2013h25h-q057",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_fluent",
+      "priority": "low",
+      "excerpt": "「」→「||CPU時間|出力時間||-------|---------|--------…」 raw「点から何秒後か.」→ clean「点から何秒後か.||CPU時間|出力時間||-------|---------|----------||ジョブ1|35秒…」"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_fluent",
+      "priority": "low",
+      "excerpt": "「1」→「2」 raw「|H006|K01|30|顧客|顧」→ clean「|H006|K02|50|顧客|顧」"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_fluent",
+      "priority": "low",
+      "excerpt": "「3」→「5」 raw「006|K01|30|顧客|顧客コ」→ clean「006|K02|50|顧客|顧客コ」"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_fluent",
+      "priority": "low",
+      "excerpt": "「6」→「8」 raw「002|K02|60||H003|」→ clean「002|K02|80||H003|」"
+    },
+    {
+      "id": "2013h25h-q066",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_garbled",
+      "priority": "high",
+      "excerpt": "「0」→「O」 raw「System),0S,常駐アプリケ」→ clean「System),OS,常駐アプリケ」"
+    },
+    {
+      "id": "2013h25h-q066",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_garbled",
+      "priority": "high",
+      "excerpt": "「0」→「O」 raw「ラムの種類をBI0S(BasicI」→ clean「ラムの種類をBIOS(BasicI」"
+    },
+    {
+      "id": "2013h25h-q074",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.ins",
+      "sub": "ins/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「[ブラウザ]―[プロキシサ-バ]―[ル-タ]―(インタ-ネット)―[Webサ-バ…」 raw「る区間はどれか.」→ clean「る区間はどれか.[ブラウザ]―[プロキシサ-バ]―[ル-タ]―(インタ-ネット)―[Webサ-バ]」"
+    },
+    {
+      "id": "2013h25h-q074",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.ins",
+      "sub": "ins/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「次の」 raw「図の構成で,HT」→ clean「次の図の構成で,HT」"
+    },
+    {
+      "id": "2013h25h-q076",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_garbled",
+      "priority": "low",
+      "excerpt": "「[図]A,B,C,Dの4つのノ-ドが互いに線で結ばれた完全グラフ(A-B,A-C…」→「」 raw「個の鍵が必要か.[図]A,B,C,Dの4つのノ-ドが互いに線で結ばれた完全グラフ(A-B,A-C,A-D,B-C,B-D…」→ clean「個の鍵が必要か.」"
+    },
+    {
+      "id": "2013h25h-q082",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_fluent",
+      "priority": "low",
+      "excerpt": "「」→「|A|B|排他的論理和||---|---|---||0|0|0||0|1|1||…」 raw「Tは否定を表す.」→ clean「Tは否定を表す.|A|B|排他的論理和||---|---|---||0|0|0||0|1|1||1|0|1||1|1|0…」"
+    },
+    {
+      "id": "2013h25h-q085",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「X社の人事部のFさんは,社員の満足度調査を,電子メ-ル(以下,メ-ルという)を利…」 raw「Fさんは,上司か」→ clean「X社の人事部のFさんは,社員の満足度調査を,電子メ-ル(以下,メ-ルという)を利用して実施するように上司から指示された.…」"
+    },
+    {
+      "id": "2013h25h-q086",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「X社の人事部のFさんは,社員の満足度調査を,電子メ-ル(以下,メ-ルという)を利…」 raw「社員からアンケ-」→ clean「X社の人事部のFさんは,社員の満足度調査を,電子メ-ル(以下,メ-ルという)を利用して実施するように上司から指示された.…」"
+    },
+    {
+      "id": "2013h25h-q087",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「X社の人事部のFさんは,社員の満足度調査を,電子メ-ル(以下,メ-ルという)を利…」 raw「Fさんからの指示」→ clean「X社の人事部のFさんは,社員の満足度調査を,電子メ-ル(以下,メ-ルという)を利用して実施するように上司から指示された.…」"
+    },
+    {
+      "id": "2013h25h-q088",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「X社の人事部のFさんは,社員の満足度調査を,電子メ-ル(以下,メ-ルという)を利…」 raw「Fさんは,上司に」→ clean「X社の人事部のFさんは,社員の満足度調査を,電子メ-ル(以下,メ-ルという)を利用して実施するように上司から指示された.…」"
+    },
+    {
+      "id": "2013h25h-q089",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.ins",
+      "sub": "ins/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「の経理部では,ITサ-ビスを行っているG社の会計システム(以下,新システムという…」 raw「F社が6G社に対して」→ clean「F社の経理部では,ITサ-ビスを行っているG社の会計システム(以下,新システムという)の導入を進めている.経理部では,新…」"
+    },
+    {
+      "id": "2013h25h-q089",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「6」→「引き渡された後のサポ-ト内容について,G社と詳細を詰めることにした.保守,運用に…」 raw「F社が6G社に対して,新」→ clean「り,新システムが引き渡された後のサポ-ト内容について,G社と詳細を詰めることにした.保守,運用に関するG社の基本サ-ビス…」"
+    },
+    {
+      "id": "2013h25h-q090",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「F社の経理部では,ITサ-ビスを行っているG社の会計システム(以下,新システムと…」 raw「G社の基本サ-ビ」→ clean「F社の経理部では,ITサ-ビスを行っているG社の会計システム(以下,新システムという)の導入を進めている.経理部では,新…」"
+    },
+    {
+      "id": "2013h25h-q091",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「F社の経理部では,ITサ-ビスを行っているG社の会計システム(以下,新システムと…」 raw「G社の基本サ-ビ」→ clean「F社の経理部では,ITサ-ビスを行っているG社の会計システム(以下,新システムという)の導入を進めている.経理部では,新…」"
+    },
+    {
+      "id": "2013h25h-q092",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「F社の経理部では,ITサ-ビスを行っているG社の会計システム(以下,新システムと…」 raw「保守,運用に関す」→ clean「F社の経理部では,ITサ-ビスを行っているG社の会計システム(以下,新システムという)の導入を進めている.経理部では,新…」"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.char",
+      "sub": "char/struct/raw_garbled",
+      "priority": "low",
+      "excerpt": "「別」→「の」 raw「(単位千円)|月別売上構成比|目標」→ clean「(単位千円)|月の売上構成比|目標」"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_fluent",
+      "priority": "low",
+      "excerpt": "「2」→「0」 raw「|2|1月|3,200|3,300」→ clean「|2|1月|3,000|3,200」"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_fluent",
+      "priority": "low",
+      "excerpt": "「3」→「2」 raw「3,200|3,300|3,100」→ clean「3,000|3,200|3,100」"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「3」→「4」 raw「,セルE3~E13に複写する.・セ」→ clean「,セルE3~E14に複写する.・セ」"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_garbled",
+      "priority": "low",
+      "excerpt": "「4」→「6」 raw「年間合計|60,400|70,30」→ clean「年間合計|60,600|70,30」"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/struct/raw_fluent",
+      "priority": "low",
+      "excerpt": "「」→「5|4月|7,300|7,700|7,500||||」 raw「,550||||⋮|||||||」→ clean「,550||||5|4月|7,300|7,700|7,500||||⋮|||||||」"
+    },
+    {
+      "id": "2013h25h-q097",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「N社はスポ-ツ用品の小売販売業者で,実店舗販売の他,インタ-ネットのショッピング…」 raw「図1の経路図から」→ clean「N社はスポ-ツ用品の小売販売業者で,実店舗販売の他,インタ-ネットのショッピングサイトを利用した通信販売も行っている.シ…」"
+    },
+    {
+      "id": "2013h25h-q098",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「はスポ-ツ用品の小売販売業者で,実店舗販売の他,インタ-ネットのショッピングサイ…」 raw「N社では,広告による」→ clean「N社はスポ-ツ用品の小売販売業者で,実店舗販売の他,インタ-ネットのショッピングサイトを利用した通信販売も行っている.シ…」"
+    },
+    {
+      "id": "2013h25h-q099",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.ins",
+      "sub": "ins/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「,実店舗販売の他,インタ-ネットのショッピングサイトを利用した通信販売も行ってい…」 raw「N社では,先月,サッカ」→ clean「の小売販売業者で,実店舗販売の他,インタ-ネットのショッピングサイトを利用した通信販売も行っている.ショッピングサイトの…」"
+    },
+    {
+      "id": "2013h25h-q099",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.ins",
+      "sub": "ins/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「はスポ-ツ用品の小売販売業者」 raw「N社では,先月,サッ」→ clean「N社はスポ-ツ用品の小売販売業者で,実店舗販売の」"
+    },
+    {
+      "id": "2013h25h-q099",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.ins",
+      "sub": "ins/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「先月,」 raw「N社では,先月,サッカ-用品の特」→ clean「った.N社では,先月,サッカ-用品の特」"
+    },
+    {
+      "id": "2013h25h-q099",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.ins",
+      "sub": "ins/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「外部に委託しており」 raw「N社では,先月,サッカ-」→ clean「のサ-バの運用は外部に委託しており,毎月,委託先か」"
+    },
+    {
+      "id": "2013h25h-q099",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.ins",
+      "sub": "ins/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「毎月,委託」 raw「N社では,先月,サッカ-用」→ clean「に委託しており,毎月,委託先からアクセスロ」"
+    },
+    {
+      "id": "2013h25h-q099",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「からアクセスログの分析結果が報告されるので,この報告に基づき,サイトの運営や改善…」 raw「N社では,先月,サッカ-用品」→ clean「り,毎月,委託先からアクセスログの分析結果が報告されるので,この報告に基づき,サイトの運営や改善に当たっている.ショッピ…」"
+    },
+    {
+      "id": "2013h25h-q099",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「のコンバ-ジョン率は5%であった.N社では」 raw「N社では,先月,サッカ-用品の」→ clean「ン率といい,先月のコンバ-ジョン率は5%であった.N社では,先月,サッカ-」"
+    },
+    {
+      "id": "2013h25h-q099",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「図2C社サイトからのアクセスの追跡(各矢印は\"元のペ-ジ→次のペ-ジ\"へリンクさ…」 raw「の離脱と考える.」→ clean「の離脱と考える.図2C社サイトからのアクセスの追跡(各矢印は\"元のペ-ジ→次のペ-ジ\"へリンクされた件数)-C社サイト→…」"
+    },
+    {
+      "id": "2013h25h-q100",
+      "layer": "jp_raw→jp",
+      "field": "stem",
+      "rule": "0a.num",
+      "sub": "num/prose/raw_fluent",
+      "priority": "high",
+      "excerpt": "「」→「はスポ-ツ用品の小売販売業者で,実店舗販売の他,インタ-ネットのショッピングサイ…」 raw「N社では,ショッピン」→ clean「N社はスポ-ツ用品の小売販売業者で,実店舗販売の他,インタ-ネットのショッピングサイトを利用した通信販売も行っている.シ…」"
+    },
+    {
+      "id": "2013h25h-q059",
+      "layer": "zh",
+      "field": "choice.エ",
+      "rule": "0b.num_extra",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "zh 数字 {2} が jp に無い｜jp「ピアツーピアシステム」｜zh「对等网络（P2P）系统」",
+      "resolved": "S127 A2a: FP (「对等网络（P2P）」は訳注)"
+    },
+    {
+      "id": "2013h25h-q045",
+      "layer": "en",
+      "field": "choice.ア",
+      "rule": "0c.tr_of_anomaly",
+      "sub": "rare_kanji",
+      "priority": "high",
+      "excerpt": "jp「サーバを高層階に配置し, 津波などの浸水からサーバを保護する。」｜en「Place servers on a high floor to protect them from flooding such as tsunamis.」"
+    },
+    {
+      "id": "2013h25h-q045",
+      "layer": "jp",
+      "field": "choice.ア",
+      "rule": "0c.rare_kanji",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "津｜サーバを高層階に配置し, 津波などの浸水からサーバを保護する。"
+    },
+    {
+      "id": "2013h25h-q045",
+      "layer": "zh",
+      "field": "choice.ア",
+      "rule": "0c.tr_of_anomaly",
+      "sub": "rare_kanji",
+      "priority": "high",
+      "excerpt": "jp「サーバを高層階に配置し, 津波などの浸水からサーバを保護する。」｜zh「将服务器配置在高层楼层, 保护服务器免受海啸等水淹的影响。」"
+    },
+    {
+      "id": "2013h25h-q056",
+      "layer": "en",
+      "field": "choice.イ",
+      "rule": "0c.tr_of_anomaly",
+      "sub": "isolated_kanji",
+      "priority": "high",
+      "excerpt": "jp「電子式や静電式などの方式があり, 指などで画面に直接触れることで, コンピュータの操作を行う。」｜en「It comes in types such as the electronic type and the electrostatic (capacitive)…」"
+    },
+    {
+      "id": "2013h25h-q056",
+      "layer": "jp",
+      "field": "choice.イ",
+      "rule": "0c.isolated_kanji",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "電式｜電子式や静電式などの方式があり, 指などで画面に直…"
+    },
+    {
+      "id": "2013h25h-q056",
+      "layer": "zh",
+      "field": "choice.イ",
+      "rule": "0c.tr_of_anomaly",
+      "sub": "isolated_kanji",
+      "priority": "high",
+      "excerpt": "jp「電子式や静電式などの方式があり, 指などで画面に直接触れることで, コンピュータの操作を行う。」｜zh「有电子式、静电式等方式，通过用手指等直接触摸屏幕来进行计算机的操作。」"
+    },
+    {
+      "id": "2013h25h-q055",
+      "layer": "en",
+      "field": "choice.ア",
+      "rule": "0q.en",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "\" ×4｜…loyee code of the \"Employee\" table, d…"
+    },
+    {
+      "id": "2013h25h-q055",
+      "layer": "en",
+      "field": "choice.イ",
+      "rule": "0q.en",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "\" ×6｜…loyee code of the \"Employee\" table, d…"
+    },
+    {
+      "id": "2013h25h-q055",
+      "layer": "en",
+      "field": "choice.ウ",
+      "rule": "0q.en",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "\" ×6｜…tment code of the \"Department\" table;…"
+    },
+    {
+      "id": "2013h25h-q055",
+      "layer": "en",
+      "field": "choice.エ",
+      "rule": "0q.en",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "\" ×6｜…tment code of the \"Employee\" table; f…"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "関係データベースの\"売上\"表と\"顧客\"表を顧客コードで結…"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "関係データベースの\"売上\"表と\"顧客\"表を顧客コードで結合し、…"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "関係データベースの\"売上\"表と\"顧客\"表を顧客コードで結合し、顧客コ…"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "関係データベースの\"売上\"表と\"顧客\"表を顧客コードで結合し、顧客コードで…"
+    },
+    {
+      "id": "2013h25h-q067",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "関係データベースの\"商品\"表から価格が100円以上の商品…"
+    },
+    {
+      "id": "2013h25h-q067",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "関係データベースの\"商品\"表から価格が100円以上の商品の行（…"
+    },
+    {
+      "id": "2013h25h-q087",
+      "layer": "en",
+      "field": "choice.ア",
+      "rule": "0q.en",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "\" ×2｜…to the PC. Select \"Reply to email,\" w…"
+    },
+    {
+      "id": "2013h25h-q087",
+      "layer": "en",
+      "field": "choice.イ",
+      "rule": "0q.en",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "\" ×2｜…to the PC. Select \"Reply to email,\" w…"
+    },
+    {
+      "id": "2013h25h-q087",
+      "layer": "en",
+      "field": "choice.ウ",
+      "rule": "0q.en",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "\" ×2｜…to the PC. Select \"Reply to email,\" a…"
+    },
+    {
+      "id": "2013h25h-q093",
+      "layer": "en",
+      "field": "stem",
+      "rule": "0q.en",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "\" ×2｜…tains the formula \"B14+C2-B2\", and th…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "…14に計算式 \"合計(D2〜D13)\" を入力する。⏎・セル E2 に計算…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "…D2 に計算式 \"(B2+C2)/2\" を入力し、セル D3〜D13に複写…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "…セル E2 に計算式 \"D2/D14\" を入力し、セル E3〜E13に複写…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "…ル F2 に計算式 \"F$14*E2\" を入力し、セル F3〜F13に複写…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "…ルの設定〕⏎・セル D2 に計算式 \"(B2+C2)/2\" を入力し、セル…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "…入力する。⏎・セル E2 に計算式 \"D2/D14\" を入力し、セル E3…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "…複写する。⏎・セル D14に計算式 \"合計(D2〜D13)\" を入力する。…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw",
+      "field": "stem",
+      "rule": "0q.prose",
+      "sub": null,
+      "priority": "high",
+      "excerpt": "…複写する。⏎・セル F2 に計算式 \"F$14*E2\" を入力し、セル F…"
+    },
+    {
+      "id": "2013h25h-q007",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=6",
+      "priority": "low",
+      "excerpt": "| 工程 | 機械台数 | 作業時間／個 | 不良率 | |------|------|------|------| | A | 1 台 | 3 分 | 5％ |"
+    },
+    {
+      "id": "2013h25h-q019",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=5",
+      "priority": "low",
+      "excerpt": "| 作業順番 | 作業項目 | |---|---| | ① | 経営戦略に関連する社内外の技術の抽出 |"
+    },
+    {
+      "id": "2013h25h-q028",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=10",
+      "priority": "low",
+      "excerpt": "| | 前期 | 当期 | |---|---|---| | 売上高 | 2,000 | 2,000 |"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=16",
+      "priority": "low",
+      "excerpt": "| リスク | 想定されるリスク顕在化の時期 | リスクの発生確率 | リスクが顕在化した場合の損失 | |---|---|---|---| | リスク1 | X+1年4月1日 |…"
+    },
+    {
+      "id": "2013h25h-q043",
+      "layer": "jp↔fig",
+      "field": "stem",
+      "rule": "T.num_vs_fig",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "表のみ {6000} (表 13 / fig 13)"
+    },
+    {
+      "id": "2013h25h-q055",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=0",
+      "priority": "low",
+      "excerpt": "| 社員コード | 社員名 | 入社年 | 生年月日 | 部署コード | | --- | --- | --- | --- | --- | | 部署コード | 部署名 |"
+    },
+    {
+      "id": "2013h25h-q057",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=9",
+      "priority": "low",
+      "excerpt": "|       | CPU時間 | 出力時間 | |-------|---------|----------| | ジョブ1 | 35秒    | 10秒     |"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=22",
+      "priority": "low",
+      "excerpt": "| 伝票番号 | 顧客コード | 売上金額(万円) | |---|---|---| | H001 | K01 | 40 |"
+    },
+    {
+      "id": "2013h25h-q061",
+      "layer": "jp_raw↔jp",
+      "field": "stem",
+      "rule": "T.num_raw_clean",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "raw のみ {60,30} / clean のみ {80,50}"
+    },
+    {
+      "id": "2013h25h-q067",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=10",
+      "priority": "low",
+      "excerpt": "| 商品番号 | 商品名 | 価格（円） | |---|---|---| | S001 | はさみ | 200 |"
+    },
+    {
+      "id": "2013h25h-q067",
+      "layer": "jp↔fig",
+      "field": "stem",
+      "rule": "T.num_vs_fig",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "表のみ {50} (表 10 / fig 9)"
+    },
+    {
+      "id": "2013h25h-q082",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=12",
+      "priority": "low",
+      "excerpt": "| A | B | 排他的論理和 | |---|---|---| | 0 | 0 | 0 |"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp",
+      "field": "stem",
+      "rule": "T.table",
+      "sub": "fig=1 num_cells=30",
+      "priority": "low",
+      "excerpt": "| | A | B | C | D | E | F | |---|---|---|---|---|---|---| | 1 | 月 | 昨年の売上高 (単位 千円) | 今年の売上…"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp_raw↔jp",
+      "field": "stem",
+      "rule": "T.num_raw_clean",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "raw のみ {3300,60400} / clean のみ {3000,5,7300,7700,7500,60600}"
+    },
+    {
+      "id": "2013h25h-q096",
+      "layer": "jp↔fig",
+      "field": "stem",
+      "rule": "T.num_vs_fig",
+      "sub": null,
+      "priority": "low",
+      "excerpt": "表のみ {2,3000,3200,3100,3,4100,4400,4250,4,11900,13200,12550,…} (表 25 / fig 1)"
+    }
+  ]
+}
