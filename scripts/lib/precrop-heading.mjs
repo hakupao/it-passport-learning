@@ -89,3 +89,32 @@ export function checkQnums(found, expected) {
   });
   return { ok: mismatches.length === 0 && unconfirmed === 0, mismatches, verified, exact, unconfirmed };
 }
+
+/**
+ * 1 頁分の OCR 読み ({qnum, text}[]) を照合し、_precrop_report.json の頁エントリに載せる形にまとめる (S128 Rule D MINOR-1/3)。
+ * confusable_only = 照合は通ったが、少なくとも 1 本の見出しが完全一致せず誤読組 (0↔9 / 0↔6 / 3↔8) だけで一致した頁。
+ * crop は配るが記録に残す: 誤読組を許す以上、「期待 50 に対し実際は 問59」のような誤帯はこの印でしか見分けられない (既知の限界)。
+ */
+export function summarizeOcrPage(reads, expected) {
+  const found = reads.map((r) => r.qnum);
+  const chk = checkQnums(found, expected);
+  return {
+    ocr: reads.map((r) => r.text), found, verified: chk.verified, unconfirmed: chk.unconfirmed,
+    confusable_only: chk.ok && chk.exact < found.length, ok: chk.ok, mismatches: chk.mismatches,
+  };
+}
+
+/**
+ * tesseract + jpn モデルの有無と、記録用の版 (`--version` の 1 行目) / tessdata の場所 (`--list-langs` の見出し行) を調べる。
+ * exec(args) は stdout 文字列を返し、tesseract が無ければ throw する関数 (テストで差し替える)。
+ * jpn が無いと全 OCR が失敗して全頁が qnum_mismatch になるので、本体だけでなく言語も確かめる。ok=false なら呼び側は個数照合のみに落ちる。
+ */
+export function detectTesseract(exec) {
+  let langs;
+  try { langs = String(exec(["--list-langs"])); } catch { return { ok: false, reason: "tesseract not found", version: null, tessdata: null }; }
+  const tessdata = /"([^"]+)"/.exec(langs)?.[1] ?? null;
+  let version = null;
+  try { version = String(exec(["--version"])).split("\n")[0].trim() || null; } catch { /* 版が取れなくても OCR 自体は使える */ }
+  if (!/^jpn$/m.test(langs)) return { ok: false, reason: "jpn model missing", version, tessdata };
+  return { ok: true, reason: null, version, tessdata };
+}

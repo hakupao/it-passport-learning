@@ -169,3 +169,18 @@ node scripts/quiz-fidelity-prep-any.mjs <exam> <label> all --precrop
 node scripts/quiz-choicefig-D144s2.mjs --dry-run
 ```
 比較用の補助スクリプトと全ログ: `/private/tmp/claude-501/s128-l1b/` (`run.sh`、`diag/compare.cjs`・`ocrstats.cjs`・`totals.cjs`・`mku6.cjs`、`logs-{old,old28,new18,new28,final}/`)。
+
+## 9. Rule D (PASS-with-notes / APPROVE) の MINOR 3 件への対応
+
+1. **誤読組だけで一致した頁の扱い**: OCR の段階的再読 (cascade) は**完全一致**で止める形に変えた。0↔9 などの誤読組での一致は控えておき、残りの 2 倍読みで完全一致を探す。
+   完全一致が出なければ crop はそのまま配り、頁に `confusable_only: true` を記録する (lib `summarizeOcrPage`)。
+2. `_precrop_report.json` に `tesseract: { version, tessdata, reason }` を追加した (lib `detectTesseract`。版は `--version` の 1 行目、tessdata は `--list-langs` の見出し行から取る)。
+   この機械の値は `tesseract 5.5.2` / `/opt/homebrew/share/tessdata/`。
+3. テストを 3 件追加して計 14 件、14/14 pass。追加したもの:
+   - `detectTesseract`: tesseract 本体が無い / jpn モデルが無い場合の fallback と、版・tessdata の記録
+   - 頁レポートの形
+   - **既知の限界を固定するテスト**: 問が 1 つだけの頁で、期待 59 に対し実際が 50 → 照合は通り、`confusable_only` が立つ
+
+回帰 (全 29 exam、変更後に再実行): crop **2,597 / 2,597 が前回 final 版と byte 同一**、増減 0。skip 数も同一。
+`confusable_only` の頁は 118 頁 (292 問) あった。完全一致しなかった見出しは 118 本で、**118 本とも期待番号の末尾が 0** (問10 → `19`、問100 → `109` など)。
+これは書体の「0」が 2 倍に拡大して読み直しても直らない系統的な誤読で、逆向き (期待 59 に対し `50` と読む) は 0 本。今回のデータに誤帯の兆候は無い。

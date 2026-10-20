@@ -1,7 +1,32 @@
 // Run: node --test scripts/lib/
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { pageParity, bucketModes, pickHeadMode, chooseParityCalib, parseHeadingQnum, checkQnums, sameQnum } from "./precrop-heading.mjs";
+import { pageParity, bucketModes, pickHeadMode, chooseParityCalib, parseHeadingQnum, checkQnums, sameQnum, summarizeOcrPage, detectTesseract } from "./precrop-heading.mjs";
+
+test("summarizeOcrPage: report shape (exact page)", () => {
+  const s = summarizeOcrPage([{ qnum: 13, text: "問13 情" }, { qnum: 14, text: "間14 市" }], [13, 14]);
+  assert.deepEqual(s, { ocr: ["問13 情", "間14 市"], found: [13, 14], verified: 2, unconfirmed: 0, confusable_only: false, ok: true, mismatches: [] });
+});
+
+test("summarizeOcrPage: known limit — expected 59, actual 50 on a single-heading page passes but is flagged confusable_only", () => {
+  // 誤読組 0↔9 を許すため、bank が 問59 を期待し実際の見出しが 問50 (= 誤帯) でも照合は通る。印でしか見分けられない。
+  const s = summarizeOcrPage([{ qnum: 50, text: "問50 あ" }], [59]);
+  assert.equal(s.ok, true);
+  assert.equal(s.confusable_only, true);
+  assert.equal(summarizeOcrPage([{ qnum: 79, text: "問79" }, { qnum: 71, text: "問71" }], [70, 71]).confusable_only, true);
+  assert.equal(summarizeOcrPage([{ qnum: 51, text: "問51" }], [52]).ok, false);   // 不一致頁は confusable_only にしない
+  assert.equal(summarizeOcrPage([{ qnum: 51, text: "問51" }], [52]).confusable_only, false);
+});
+
+test("detectTesseract: fallback when binary or jpn model is missing; records version + tessdata", () => {
+  const LANGS = 'List of available languages in "/opt/homebrew/share/tessdata/" (3):\neng\njpn\nosd\n';
+  const fake = (langs, version = "tesseract 5.5.2\n leptonica-1.87.0\n") => (args) => (args[0] === "--list-langs" ? langs : version);
+  assert.deepEqual(detectTesseract(() => { throw new Error("ENOENT"); }), { ok: false, reason: "tesseract not found", version: null, tessdata: null });
+  const noJpn = detectTesseract(fake(LANGS.replace("jpn\n", "")));
+  assert.equal(noJpn.ok, false);
+  assert.equal(noJpn.reason, "jpn model missing");
+  assert.deepEqual(detectTesseract(fake(LANGS)), { ok: true, reason: null, version: "tesseract 5.5.2", tessdata: "/opt/homebrew/share/tessdata/" });
+});
 
 test("pageParity", () => {
   assert.equal(pageParity("pages/2022r04/page-08.png"), "even");

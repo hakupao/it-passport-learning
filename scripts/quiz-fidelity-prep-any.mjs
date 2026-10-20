@@ -35,7 +35,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
-import { pageParity, pickHeadMode, chooseParityCalib, parseHeadingQnum, checkQnums, sameQnum } from "./lib/precrop-heading.mjs";
+import { pageParity, pickHeadMode, chooseParityCalib, parseHeadingQnum, sameQnum, summarizeOcrPage, detectTesseract } from "./lib/precrop-heading.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
@@ -124,29 +124,28 @@ function findHeadings(prof, headMode, bodyMode) {
   return { headings, boundaries };
 }
 
-/** tesseract が使えるか (1 回だけ調べる)。無ければ題番号照合を省いて従来の個数照合のみ。 */
-let ocrAvailable = null;
+/** tesseract (+ jpn) が使えるか (1 回だけ調べる)。無ければ題番号照合を省いて従来の個数照合のみ。判定は lib detectTesseract。 */
+let tesseractInfo = null;
 function hasTesseract() {
-  if (ocrAvailable === null) {
-    // jpn モデルが無いと全 OCR が失敗し、全頁が qnum_mismatch になる → 本体だけでなく言語の有無も確かめる
-    try { ocrAvailable = /^jpn$/m.test(execFileSync("tesseract", ["--list-langs"], { encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] })); }
-    catch { ocrAvailable = false; }
-    if (!ocrAvailable) console.warn("  ⚠ precrop: tesseract (+ jpn) が無い — 見出しの題番号照合を省きます (個数照合のみ)");
+  if (tesseractInfo === null) {
+    tesseractInfo = detectTesseract((args) => execFileSync("tesseract", args, { encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] }));
+    if (!tesseractInfo.ok) console.warn(`  ⚠ precrop: tesseract (+ jpn) が使えない (${tesseractInfo.reason}) — 見出しの題番号照合を省きます (個数照合のみ)`);
   }
-  return ocrAvailable;
+  return tesseractInfo;
 }
 
 /**
  * 見出し行の左端 (最左インク〜body モードの少し右まで = 「問NNN」) を OCR して題番号を返す。読めなければ null。
  * tesseract は同じ鮮明な見出しでも空文字を返すことがある (実測 2013h25a page-12「問34」) ので、等倍 → 2 倍 → 2 倍 2 値化 の順に
- * 試し、期待番号と一致 (sameQnum) した時点で止める。一致しないまま尽きたら最後に数字が読めた結果を返す。
+ * 試し、期待番号と**完全一致**した時点で止める。誤読組 (0↔9 等) だけの一致は控えておき、残りの 2 倍読みで完全一致を探す
+ * (S128 Rule D MINOR-1)。完全一致が出なければ控えた誤読組一致を返す (頁は confusable_only として記録)。どれも一致しなければ最後に数字が読めた結果。
  */
 const OCR_TRIES = [{ scale: 1 }, { scale: 2 }, { scale: 2, threshold: INK }];
 async function ocrHeadingQnum(sharp, png, W, H, hd, bodyMode, expected) {
   const left = Math.max(0, hd.left - OCR_PAD);
   const width = Math.min(W - left, Math.max(80, bodyMode - left + 40));
   const top = Math.max(0, hd.top - 4), height = Math.min(H - top, hd.h + 8);
-  let best = { qnum: null, text: null };
+  let best = { qnum: null, text: null }, confusable = null;
   for (const t of OCR_TRIES) {
     let img = sharp(png).extract({ left, top, width, height });
     if (t.scale > 1) img = img.resize({ width: width * t.scale, kernel: "lanczos3" });
@@ -156,10 +155,11 @@ async function ocrHeadingQnum(sharp, png, W, H, hd, bodyMode, expected) {
     try { out = execFileSync("tesseract", ["-", "-", "-l", "jpn", "--psm", "7"], { input: buf, encoding: "utf-8", stdio: ["pipe", "pipe", "ignore"] }).trim(); }
     catch { continue; }
     const qnum = parseHeadingQnum(out);
-    if (qnum !== null && sameQnum(qnum, expected)) return { qnum, text: out };
+    if (qnum === expected) return { qnum, text: out };
+    if (qnum !== null && sameQnum(qnum, expected)) { confusable ??= { qnum, text: out }; continue; }
     if (qnum !== null || best.text === null) best = { qnum, text: out };
   }
-  return best;
+  return confusable ?? best;
 }
 
 /** 中問 (chumon) の member id 集合。crop 対象から外す (下の理由を参照)。 */
@@ -223,14 +223,14 @@ async function buildCrops(targetIds) {
   console.log(`  precrop calib: head=${calibAll.headMode} body=${calibAll.bodyMode} (${pages.length} pages in scope; head votes ${calibAll.votes})`);
   console.log(`  precrop calib odd:  ${fmt(calib.odd)}`);
   console.log(`  precrop calib even: ${fmt(calib.even)}`);
-  const ocr = hasTesseract();
+  const tess = hasTesseract(), ocr = tess.ok;
 
   const outDir = path.join(ROOT, "data/ip/quiz/.phase2/precrop", examId);
   mkdirSync(outDir, { recursive: true });
   const crops = new Map();
   const chumon = chumonMemberIds();
   const skip = { pages: 0, qPageMismatch: 0, qChumon: 0, qMergedPreamble: 0, qThinBand: 0, qQnumMismatch: 0 };
-  const report = { exam_id: examId, ocr, calib, pages: {} };
+  const report = { exam_id: examId, ocr, tesseract: { version: tess.version, tessdata: tess.tessdata, reason: tess.reason }, calib, pages: {} };
 
   // pass 2: 対象問を含むページだけ帯を切る
   for (const [rel, qs] of pages) {
@@ -263,11 +263,9 @@ async function buildCrops(targetIds) {
       if (ocr) {
         const reads = [];
         for (let i = 0; i < heads.length; i++) reads.push(await ocrHeadingQnum(sharp, png, W, H, heads[i], bodyMode, expected[i]));
-        rp.ocr = reads.map((r) => r.text);
-        rp.found = reads.map((r) => r.qnum);
-        const chk = checkQnums(rp.found, expected);
-        rp.verified = chk.verified; rp.unconfirmed = chk.unconfirmed;
-        if (!chk.ok) {
+        const { ok, mismatches, ...sum } = summarizeOcrPage(reads, expected);
+        Object.assign(rp, sum);
+        if (!ok) {
           console.warn(`  ⚠ precrop skip ${rel.split("/").pop()} [qnum_mismatch]: heading 問${rp.found.map((n) => n ?? "?").join("/")}, expected ${expected.join("/")}`);
           rp.status = "qnum_mismatch";
           skip.pages++; skip.qQnumMismatch += ordered.filter((q) => wanted.has(q.id)).length; continue;
