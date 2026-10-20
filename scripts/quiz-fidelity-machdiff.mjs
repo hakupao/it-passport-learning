@@ -151,6 +151,7 @@ const TRANSCRIPT_PREFIX_ADJUDICATED = {
   "2010h22h-q061|stem": { extra: 50, head: "上から下へ3段に分かれた三角形(ピラミッド)があ", sha1: "cfa32a090682cb8f8fcd551ef61b7fa06a45fe63", ref: "S129 B10 図の言語化 = 描画補助、p26 と一致" },
   "2010h22h-q090|stem": { extra: 213, head: "図WBSによるシステムの作業分割-システム-シス", sha1: "3b4eda5009928332778784cf9a045de932158fce", ref: "S129 B10 WBS 図の言語化 = 描画補助、p38" },
   "2009h21h-q080|stem": { extra: 123, head: "|点数(点)|黒い棒グラフ(人数)|グレ-の棒グ", sha1: "70f34012f6a75cca4bdf31f3769a10da9b62b578", ref: "S129 B12 棒グラフの表化 = 描画補助、p30 と度数一致" },
+  "2016h28h-q078|stem": { extra: 155, head: "-左のル-タと右のル-タが相互に接続されている.", sha1: "1d8c16635f610f576b65ce974ad69f383be82bd2", ref: "S130 X1 ネットワーク図の言語化 = 描画補助、p35 とポート IP 一致" },
 };
 const endsSentence = (ns) => /[.?!)"]$/.test(ns);
 
