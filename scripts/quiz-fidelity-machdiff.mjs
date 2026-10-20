@@ -147,6 +147,9 @@ const TRANSCRIPT_PREFIX_ADJUDICATED = {
   "2023r05-q041|stem": { extra: 188, head: "(アロ-ダイアグラム.凡例は矢線の上に\"作業名\"", sha1: "60dbe047c94eb5e5009e3bab53667a09165748f6", ref: "U8 §3 アローダイアグラムの文本化 = 描画補助、図と一致" },
   "2013h25a-q055|stem": { extra: 123, head: "方式aの図:-ソ-スプログラム→(矢印)→[a]", sha1: "f4bf09b985bbf6b95f83cd2f13f09cd9e6035ca3", ref: "S129 B5 §11 図の言語化 = 描画補助、p19 と一致" },
   "2011h23a-q032|stem": { extra: 148, head: "図:縦軸は\"ソフトウェア保守作業の件数\",横軸は", sha1: "0ac8a31e2b9513f84930fcf627417fb80e617558", ref: "S129 B9 図の言語化 = 描画補助" },
+  "2010h22h-q057|stem": { extra: 154, head: "経過時間(横軸・右向き矢印)に沿ったシステムの運", sha1: "559a4449d14debe12d20a78a163f8e137adcd7c3", ref: "S129 B10 図の言語化 = 描画補助、p25 と一致" },
+  "2010h22h-q061|stem": { extra: 50, head: "上から下へ3段に分かれた三角形(ピラミッド)があ", sha1: "cfa32a090682cb8f8fcd551ef61b7fa06a45fe63", ref: "S129 B10 図の言語化 = 描画補助、p26 と一致" },
+  "2010h22h-q090|stem": { extra: 213, head: "図WBSによるシステムの作業分割-システム-シス", sha1: "3b4eda5009928332778784cf9a045de932158fce", ref: "S129 B10 WBS 図の言語化 = 描画補助、p38" },
 };
 const endsSentence = (ns) => /[.?!)"]$/.test(ns);
 
