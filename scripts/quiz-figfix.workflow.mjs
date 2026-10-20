@@ -26,7 +26,7 @@ function prompt(inputPath, id) {
   return `あなたは IT パスポート過去問のアプリ表示図の独立検証者 (critic) です。別の sweep が「この設問の裁剪図 figure_png が誤り」と疑いを挙げました。**疑いを鵜呑みにせず**、原典全頁から独立に再検証してください。
 
 ## 入力 (Read して id="${id}")
-\`${inputPath}\` の questions[] 中 id==="${id}": stem_jp (設問文) / question_number / figure_png (現在アプリ表示の裁剪図) / figure_page_png (原典全頁=権威) / prior_finding (sweep の指摘=参考、鵜呑み禁止)。
+\`${inputPath}\` の questions[] 中 id==="${id}": stem_jp (設問文) / question_number / figure_png (現在アプリ表示の裁剪図) / figure_page_png (原典全頁=権威) / prior_finding (sweep の指摘=参考、鵜呑み禁止)。group_note (中問の共有図) があればそれに従い、shared_with の題が必要とする範囲も含めて判定する。
 
 ## 手順
 1. **stem_jp を読み、この設問が必要とする図**を把握 (図不要=純テキスト/選択肢のみの設問もある)。
@@ -45,9 +45,11 @@ SCHEMA に従い StructuredOutput で返す (id="${id}")。`
 const parsed = typeof args === 'string' ? JSON.parse(args) : args
 const inputPath = parsed?.input_path
 const items = parsed?.items ?? []
-if (!inputPath || !Array.isArray(items) || !items.length) throw new Error('need {input_path, items:[{id}]}')
+const model = parsed?.model ?? 'opus'
+const agentType = parsed?.agent_type ?? 'oh-my-claudecode:critic'
+if (!inputPath || !Array.isArray(items) || !items.length) throw new Error('need {input_path, items:[{id}], model?, agent_type?}')
 const results = await parallel(
-  items.map((it) => () => agent(prompt(inputPath, it.id), { label: `figfix:${it.id}`, phase: 'VerifyFix', schema: SCHEMA, model: 'opus', agentType: 'oh-my-claudecode:critic' })),
+  items.map((it) => () => agent(prompt(inputPath, it.id), { label: `figfix:${it.id}`, phase: 'VerifyFix', schema: SCHEMA, model, agentType })),
 )
 const clean = results.filter(Boolean)
 const recrop = clean.filter((r) => r.fix_type === 'recrop')

@@ -25,12 +25,14 @@ function prompt(inputPath, id) {
 
 ## 入力 (Read して id="${id}")
 \`${inputPath}\` の questions[] 中 id==="${id}": stem_jp (設問文) / question_number (問番号) / figure_png (アプリ表示の裁剪図、検証対象) / figure_page_png (原典フルページ=権威、複数設問が載る)。
+figure_kind があれば: \`main\`=設問の本図 / \`choice\`=選択肢 \`choice\` (本文 choice_text_jp) の図 1 枚 / \`shared\`=中問の共有図 (shared_with[] の題も同じ図を使う)。choice は全頁の当該選択肢の図と、shared は共有先の題が必要とする範囲も含めて照合する。
 
 ## 手順
 1. **stem_jp を読み、この設問がどんな図を必要とするか**を把握 (例: 問61=稼働率の式、問62=RAID 構成 など)。
 2. **figure_png (裁剪) を Read** し、実際に何が描かれているか (crop_depicts)。
 3. **figure_page_png (全頁) を Read** し、問 ${id} (question_number) の図が頁のどこにあるか確認。裁剪図が問 ${id} の図と一致するか、それとも隣の設問の図・部分欠け・無関係領域かを判定。
-4. matches_question を判定。false なら issue 種別 + correct_region_desc (全頁の正しい図の位置/内容)。**裁剪が正しければ issue="ok"・matches_question=true**。
+4. **図の完全性**: 全頁の当該図と比べ、図・表の外周の罫線/枠が閉じているか、表なら見出し行から最終行・最終列まで、図ならすべての要素とラベル・凡例・注記が crop 内にあるか、四辺のどこかで切断されていないかを確認。1 つでも欠けていれば issue="partial_crop_missing_content" (matches_question=false、correct_region_desc に欠けた部分を含む正しい範囲)。
+5. matches_question を判定。false なら issue 種別 + correct_region_desc (全頁の正しい図の位置/内容)。**裁剪が正しければ issue="ok"・matches_question=true**。
 
 ## 出力
 SCHEMA に従い StructuredOutput で返す (id="${id}")。`
@@ -39,9 +41,11 @@ SCHEMA に従い StructuredOutput で返す (id="${id}")。`
 const parsed = typeof args === 'string' ? JSON.parse(args) : args
 const inputPath = parsed?.input_path
 const items = parsed?.items ?? []
-if (!inputPath || !Array.isArray(items) || !items.length) throw new Error('need {input_path, items:[{id}]}')
+const model = parsed?.model ?? 'opus'
+const agentType = parsed?.agent_type ?? 'general-purpose'
+if (!inputPath || !Array.isArray(items) || !items.length) throw new Error('need {input_path, items:[{id}], model?, agent_type?}')
 const results = await parallel(
-  items.map((it) => () => agent(prompt(inputPath, it.id), { label: `fig:${it.id}`, phase: 'FigCheck', schema: SCHEMA, model: 'opus', agentType: 'general-purpose' })),
+  items.map((it) => () => agent(prompt(inputPath, it.id), { label: `fig:${it.id}`, phase: 'FigCheck', schema: SCHEMA, model, agentType })),
 )
 const clean = results.filter(Boolean)
 const bad = clean.filter((r) => !r.matches_question)

@@ -43,7 +43,7 @@ SCHEMA に従い StructuredOutput で返す (id="${id}")。`
 }
 
 
-const inputPath="/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.keyaudit/input_figreverify2.json"
+const inputPath="/Volumes/DevSSD/Project/IT-Passport-Learning/data/ip/quiz/.keyaudit/input_figreverify2.json"
 const items=[{"id":"2011h23tokubetsu-q073"},{"id":"2011h23tokubetsu-q078"},{"id":"2014h26a-q087"}]
 const results=await parallel(items.map((it)=>()=>agent(prompt(inputPath,it.id),{label:`rv2:${it.id}`,phase:"VerifyFix",schema:SCHEMA,model:"opus",agentType:"oh-my-claudecode:critic"})))
 const clean=results.filter(Boolean)

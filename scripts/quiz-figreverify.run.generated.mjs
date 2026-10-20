@@ -43,7 +43,7 @@ SCHEMA に従い StructuredOutput で返す (id="${id}")。`
 }
 
 
-const inputPath = "/Users/bojiangzhang/MyProject/IT-Passport-Learning/data/ip/quiz/.keyaudit/input_figreverify.json"
+const inputPath = "/Volumes/DevSSD/Project/IT-Passport-Learning/data/ip/quiz/.keyaudit/input_figreverify.json"
 const items = [{"id":"2010h22h-q090"},{"id":"2011h23a-q093"},{"id":"2011h23tokubetsu-q026"},{"id":"2011h23tokubetsu-q070"},{"id":"2011h23tokubetsu-q073"},{"id":"2011h23tokubetsu-q078"},{"id":"2012h24h-q015"},{"id":"2014h26a-q087"},{"id":"2014h26h-q099"},{"id":"2016h28a-q020"},{"id":"2016h28a-q040"},{"id":"2018h30a-q093"},{"id":"2018h30h-q043"},{"id":"2018h30h-q066"},{"id":"2019h31h-q034"},{"id":"2019h31h-q061"},{"id":"2019r01a-q002"},{"id":"2019r01a-q082"},{"id":"2019r01a-q093"},{"id":"2023r05-q047"},{"id":"2025r07-q030"},{"id":"2025r07-q073"},{"id":"2026r08-q003"},{"id":"2026r08-q050"},{"id":"2026r08-q055"},{"id":"2026r08-q072"}]
 const results = await parallel(items.map((it)=>()=>agent(prompt(inputPath,it.id),{label:`reverify:${it.id}`,phase:"VerifyFix",schema:SCHEMA,model:"opus",agentType:"oh-my-claudecode:critic"})))
 const clean=results.filter(Boolean)
