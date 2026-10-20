@@ -34,3 +34,16 @@ critic / verifier が図の照合中に付記。一覧 = `fig_stem_mismatch_S127
 - `2012h24h-q091` No.2 申込日 8月7日 vs 原典 9月2日 / `2012h24h-q092` カレンダの曜日ずれ・休日欠落
 - `2009h21h-q096` グラフ値の列ずれ / `2010h22a-q097` 作業計画表 (中問 C 共有)
 いずれも 13 exam 群 (⑤-2 母数外) → D-150 B track の再抄写で被覆、fixer に名指しする。
+
+## b2 (2012h24h〜2017h29a、9 exam、35 題)
+
+| 段 | run | token | 結果 |
+|---|---|---|---|
+| critic | `wf_4d4e17b1-c9d` | 2,264,771 | recrop 32 / remove_figure 1 (`2012h24h-q068`、medium) / none 2 (`2015h27h-q099` / `q100`) |
+| apply | — | — | **recrop 33** (q068 は b1 q011 と同じ判断で remove → recrop) / skip 2 / webp 33 変更 / with_fig 511 不変 |
+| 再検証 | `wf_75854b41-b8d` | 1,942,538 | **33/33 correct、still-bad 0** |
+
+- **共有図 group (2015h27h-q097/099/100)**: critic は題ごとに必要範囲が異なると判定 (q097 = 図1 レコード形式 + 1/0 の定義段落が必要、q099/q100 = 現 crop の表1 で解答に足りる)。webp は題ごとの別ファイルなので題ごとの判定に従い q097 のみ再裁断。D-145 group ゲート (assert-clean) GREEN。
+- 主 context 実読: **S126 で発見された既知欠損 2 題が解消** — `2016h28h-q033` (ネットワーク図 + 所要時間表、C 行・Y 列まで完全) / `2017h29a-q015` (選択肢表 ア〜エ 4 行 + 右外枠)。
+- stem 転記表の原典不一致 (再検証 verifier も同見立て): 追加 `2013h25h-q096` (B2 3,000 vs 3,200、B14、E2 式、4月行脱落)。`fig_stem_mismatch_S127.json` 参照。
+- gate (b2 適用後): crosscheck all invariants / assert-clean GREEN / chumon 一致 / tsc 0 / vitest 562 passed / build 0。
