@@ -24,6 +24,7 @@
 //   イ・ウの戻りループを「並行」、正解肢エの重複を「縦列」と取り違えていた = ②-a 型)。源 page-15 実読で 2×2 配置
 //   (ア=左上 / イ=右上 / ウ=左下 / エ=右下) を確認。複合図は上端に題幹 3 行、下端に次問 問33 の 2 行が残るため
 //   `topCut: 240` / `bottomCut: 150`。既存 5 題の SPEC・産物は不変。
+// S128 L1b: 切り出し済みの題は再裁断しない guard を追加 (`--only` 無しでも全題 dry-run で冪等確認ができる。下の本体コメント参照)。
 // Run: node scripts/quiz-choicefig-D144s2.mjs [--dry-run] [--only <question-id>]
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -73,11 +74,22 @@ for (const [id, { topCut, bottomCut }] of Object.entries(SPEC)) {
   if (ONLY && id !== ONLY) continue;
   const exam = id.split("-q")[0];
   BY[exam] ??= rj(P("data/ip/exams/by_year", `${exam}.json`)); TR[exam] ??= rj(P("data/ip/quiz/translations", `${exam}.json`));
-  const paths = await cropChoices(id, topCut, bottomCut ?? 0);
+  // S128 L1b (summary §7.1 #23): 切り出し済みの題は再裁断しない。2014h26a-q086 は複合 PNG が S117 の切り出し後に更新されており、
+  // 再裁断すると 2×2 の空白帯検出が throw する → `--only` 無しの全題 dry-run (冪等確認) ができなかった。
+  // 4 枚の -c{A..D}.png が揃い、raw の choice_figure_paths が期待値と一致していれば既存産物を使う (data 側の冪等確認は従来どおり下で行う)。
+  // `--only <id>` で名指しした題は従来どおり裁断する (新規題の追加 / 意図的な作り直しの経路)。
+  const done = Object.fromEntries(LETTERS.map((L) => [L, `figures/${id}-c${SUFFIX[L]}.png`]));
+  const bankRec = Bd.questions.find((q) => q.id === id);
+  const cropped = ONLY !== id && LETTERS.every((L) => existsSync(P("data/ip/exams", done[L])))
+    && JSON.stringify(bankRec?.choice_figure_paths) === JSON.stringify(done);
+  if (cropped) console.log(`  ${id}: 切り出し済み (-c{A..D}.png 4 枚 + choice_figure_paths 一致) — 再裁断せず既存産物を使う (figure_path も不変)`);
+  const paths = cropped ? done : await cropChoices(id, topCut, bottomCut ?? 0);
   for (const [o, w] of [[Bd.questions.find((q) => q.id === id), "question_bank"], [BY[exam].questions.find((q) => q.id === id), "by_year"]]) {
     if (!o) throw new Error(`${id} missing in ${w}`);
     if (JSON.stringify(o.choice_figure_paths) !== JSON.stringify(paths)) { o.choice_figure_paths = paths; applied++; }
-    if (o.figure_path) { o.composite_figure_path_retired = o.figure_path; o.figure_path = null; applied++; console.log(`  ${id} ${w}: figure_path → null (複合図は選択肢図に置換、旧値は composite_figure_path_retired に保持)`); }
+    // 切り出し済みの題の figure_path は触らない: 2014h26a-q086 は D-144 段 3 ii (S117) で共有図 (図1 アローダイアグラム) を
+    // figure_path に戻しており (選択肢図と共存)、guard 無しの再実行はそれを null に戻してしまう。
+    if (o.figure_path && !cropped) { o.composite_figure_path_retired = o.figure_path; o.figure_path = null; applied++; console.log(`  ${id} ${w}: figure_path → null (複合図は選択肢図に置換、旧値は composite_figure_path_retired に保持)`); }
     o.has_figure = true;
     // 旧テキストは raw に退避してから上書き (Rule D NIT-9; 初回実行分は git HEAD の questions.json から補填した)
     if (!o.choices_text_retired && LETTERS.some((L) => o.choices_jp[L] !== TXT.jp(L))) { o.choices_text_retired = { ...o.choices_jp }; applied++; }

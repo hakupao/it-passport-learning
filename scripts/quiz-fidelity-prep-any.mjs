@@ -19,11 +19,23 @@
 //   帯には入らない。crop だけ読んだ agent が前文を「源に無い挿入」と誤報告し、fixer が正しい前文を消す経路になる (S119 U0 Rule D M-1)。
 //   実測 (S119 U0): 2015h27a 40/42 ページ, 2016h28a 38/38, 2017h29h 38/39, 2018h30a 38/38 で一致。
 //   不一致の残りは「bank の page_image がその問の 問N 見出しを含まないページを指す」跨ページ型で、crop 省略が正しい挙動。
+// S128 L1b (summary §7.1 #4):
+//   (1) 較正を**頁パリティ別**に行う (奇数 / 偶数頁で head/body モードを別に求める。片側の頁が少ない、または全体の head bucket が
+//       その側でもほぼ同票 [bucket 境界跨ぎ] なら全体較正に戻す = lib chooseParityCalib)。LEFT_TOL_HI は 18 のまま (28 は全 29 exam で
+//       crop 純減・誤帯 1 件を実測したため不採用。evidence/S128_L1b_precrop.md)。
+//       U7 2022r04 は奇数頁の見出し x≈150、偶数頁 x≈166〜175 (綴じ代) で、全体較正 head=150 だと偶数頁 14 頁が skip していた。
+//   (2) **見出し帯の題番号を OCR (tesseract jpn) で読み、期待 qnum と照合**する。個数一致でも番号が違えばそのページを skip
+//       (`qnum_mismatch`)。U6 2021r03 page-24 は bank 記録 q052/q053 に対し実際は 問51/問52 で、個数一致のため誤帯を切っていた。
+//       「問」字 + 数字が読めない見出しも skip (2009h21a page-39 は 〔ストラテジ系〕 2 本を見出しと誤検出し個数一致していた)。
+//       tesseract が無い環境では警告 1 回で従来どおり個数照合のみ。
+//       照合結果は `<outDir>/_precrop_report.json` に記録する (manifest の sample 形は不変)。
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { execFileSync } from "node:child_process";
+import { pageParity, pickHeadMode, chooseParityCalib, parseHeadingQnum, checkQnums, sameQnum } from "./lib/precrop-heading.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
@@ -64,6 +76,8 @@ const BAND_PAD_TOP = 8;   // 見出しの少し上から切る
 const FOOTER_FRAC = 0.94; // これより下はノンブル (「− 39 −」) 帯として本文末尾探索から除く
 const TAIL_PAD = 25;      // 最終帯は本文末尾 + これだけ
 const HEAD_PAGE_ROWS_LO = 14, HEAD_PAGE_ROWS_HI = 150;  // S123 (行数、MIN_H [画素高] とは別次元 — Rule D NIT-3): 1 ページ内の見出し bucket 行数がこの範囲なら「見出しが載るページ」として投票 (図枠は 220〜470 行で外れる)
+const PARITY_MIN_PAGES = 5;    // S128: パリティ別較正に必要な片側の頁数。これ未満の側は全体較正を使う
+const OCR_PAD = 6;             // S128: 題番号 OCR の切り出しは見出し最左インクの少し左から
 
 /** ページを greyscale raw で読み、行ごとの最左/最右インク x と画素数を返す。 */
 async function rowProfile(sharp, png, withPixels) {
@@ -77,12 +91,6 @@ async function rowProfile(sharp, png, withPixels) {
   }
   return { data: withPixels ? data : null, W, H, C, left, right, cnt };
 }
-
-const bucketModes = (vals) => {
-  const h = {};
-  for (const v of vals) { const b = Math.floor(v / 10) * 10; h[b] = (h[b] || 0) + 1; }
-  return Object.entries(h).map(([k, v]) => [+k, v]).sort((a, b) => b[1] - a[1]);
-};
 
 /**
  * strip 内の行 run を併合・絞り込みして 問N 見出しの y 位置を返す。
@@ -111,9 +119,45 @@ function findHeadings(prof, headMode, bodyMode) {
     for (let y = r.top; y <= r.bot; y++) { if (right[y] > maxRight) maxRight = right[y]; if (left[y] >= 0 && left[y] < minLeft) minLeft = left[y]; }
     if (!(minLeft >= headMode - LEFT_TOL_LO && minLeft <= headMode + LEFT_TOL_HI)) continue;  // 罫線など
     if (maxRight < MIN_RIGHT_FRAC * W) { boundaries.push({ top: r.top, h }); continue; }      // 〔節見出し〕型
-    headings.push({ top: r.top, h });
+    headings.push({ top: r.top, h, left: minLeft });
   }
   return { headings, boundaries };
+}
+
+/** tesseract が使えるか (1 回だけ調べる)。無ければ題番号照合を省いて従来の個数照合のみ。 */
+let ocrAvailable = null;
+function hasTesseract() {
+  if (ocrAvailable === null) {
+    try { execFileSync("tesseract", ["--version"], { stdio: "ignore" }); ocrAvailable = true; }
+    catch { ocrAvailable = false; console.warn("  ⚠ precrop: tesseract が無い — 見出しの題番号照合を省きます (個数照合のみ)"); }
+  }
+  return ocrAvailable;
+}
+
+/**
+ * 見出し行の左端 (最左インク〜body モードの少し右まで = 「問NNN」) を OCR して題番号を返す。読めなければ null。
+ * tesseract は同じ鮮明な見出しでも空文字を返すことがある (実測 2013h25a page-12「問34」) ので、等倍 → 2 倍 → 2 倍 2 値化 の順に
+ * 試し、期待番号と一致 (sameQnum) した時点で止める。一致しないまま尽きたら最後に数字が読めた結果を返す。
+ */
+const OCR_TRIES = [{ scale: 1 }, { scale: 2 }, { scale: 2, threshold: INK }];
+async function ocrHeadingQnum(sharp, png, W, H, hd, bodyMode, expected) {
+  const left = Math.max(0, hd.left - OCR_PAD);
+  const width = Math.min(W - left, Math.max(80, bodyMode - left + 40));
+  const top = Math.max(0, hd.top - 4), height = Math.min(H - top, hd.h + 8);
+  let best = { qnum: null, text: null };
+  for (const t of OCR_TRIES) {
+    let img = sharp(png).extract({ left, top, width, height });
+    if (t.scale > 1) img = img.resize({ width: width * t.scale, kernel: "lanczos3" });
+    if (t.threshold) img = img.greyscale().threshold(t.threshold);
+    const buf = await img.extend({ top: 10, bottom: 10, left: 10, right: 10, background: "#fff" }).png().toBuffer();
+    let out;
+    try { out = execFileSync("tesseract", ["-", "-", "-l", "jpn", "--psm", "7"], { input: buf, encoding: "utf-8", stdio: ["pipe", "pipe", "ignore"] }).trim(); }
+    catch { continue; }
+    const qnum = parseHeadingQnum(out);
+    if (qnum !== null && sameQnum(qnum, expected)) return { qnum, text: out };
+    if (qnum !== null || best.text === null) best = { qnum, text: out };
+  }
+  return best;
 }
 
 /** 中問 (chumon) の member id 集合。crop 対象から外す (下の理由を参照)。 */
@@ -141,44 +185,54 @@ async function buildCrops(targetIds) {
   const pages = [...byPage.entries()].filter(([, qs]) => qs.some((q) => wanted.has(q.id)));
 
   // pass 1: exam 全ページから「行の最左インク x」を集めて head/body モードを較正 (ページ単位だと図でモードが壊れる)
-  const pool = [];
+  // S128: pool / pageVotes は全体 (all) と頁パリティ別 (odd / even) の 3 系統に集める
+  const acc = { all: { pool: [], votes: {}, pages: 0 }, odd: { pool: [], votes: {}, pages: 0 }, even: { pool: [], votes: {}, pages: 0 } };
   // S123 ⑨: 見出しモードは「行数の多さ」ではなく「載っているページ数」で選ぶ。
   //   2019h31h では 問N 見出しの左縁が奇数/偶数ページで 140/150 に揺れ (スキャン配準)、
   //   一方で表・図枠の左縁 170 が 9 ページ × 220〜470 行で行数首位になり head=170 と誤較正 → 87/87 全問 crop 省略。
   //   見出しは 1 ページ 14〜150 行程度 (2〜4 問 × 1 行) でほぼ全ページに現れ、図枠は少数ページに集中する。
   //   そこで bucket ごとに「その範囲の行数を持つページ数」を投票し、最多得票を head とする (同票は行数で決める)。
-  const pageVotes = {};
   for (const [rel] of byPage) {
     const png = path.join(ROOT, "data/ip/exams", rel);
     if (!existsSync(png)) continue;
     const { data, info } = await sharp(png).greyscale().raw().toBuffer({ resolveWithObject: true });
     const W = info.width, H = info.height, C = info.channels;
-    const perPage = {};
+    const perPage = {}, px = [];
     for (let y = 0; y < H; y++) {
       let l = -1, c = 0;
       for (let x = 0; x < W && c < 6; x++) if (data[(y * W + x) * C] < INK) { if (l < 0) l = x; c++; }
-      if (c > 5 && l >= 0) { pool.push(l); const b = Math.floor(l / 10) * 10; perPage[b] = (perPage[b] || 0) + 1; }
+      if (c > 5 && l >= 0) { px.push(l); const b = Math.floor(l / 10) * 10; perPage[b] = (perPage[b] || 0) + 1; }
     }
-    for (const [b, n] of Object.entries(perPage)) if (n >= HEAD_PAGE_ROWS_LO && n <= HEAD_PAGE_ROWS_HI) pageVotes[b] = (pageVotes[b] || 0) + 1;
+    for (const a of [acc.all, acc[pageParity(rel)]].filter(Boolean)) {
+      a.pages++; for (const l of px) a.pool.push(l);
+      for (const [b, n] of Object.entries(perPage)) if (n >= HEAD_PAGE_ROWS_LO && n <= HEAD_PAGE_ROWS_HI) a.votes[b] = (a.votes[b] || 0) + 1;
+    }
   }
-  const noCalib = (why) => { console.warn(`  ⚠ precrop: ${why} — 全問 crop 省略`); return { crops: new Map(), skip: { pages: pages.length, qPageMismatch: wanted.size, qChumon: 0, qMergedPreamble: 0, qThinBand: 0 } }; };
-  if (pool.length < 50) return noCalib("ページのインクが少なすぎて較正できない");
-  const modes = bucketModes(pool);
-  const bodyMode = modes[0][0];
-  const headCand = modes.filter(([k]) => k <= bodyMode - 20)
-    .sort((a, b) => (pageVotes[b[0]] || 0) - (pageVotes[a[0]] || 0) || b[1] - a[1]);
-  if (!headCand.length) return noCalib("見出しモードを分離できない");
-  const headMode = headCand[0][0];
-  console.log(`  precrop calib: head=${headMode} body=${bodyMode} (${pages.length} pages in scope; head votes ${headCand.slice(0, 3).map(([k, n]) => `${k}=${pageVotes[k] || 0}p/${n}r`).join(" ")})`);
+  const noCalib = (why) => { console.warn(`  ⚠ precrop: ${why} — 全問 crop 省略`); return { crops: new Map(), skip: { pages: pages.length, qPageMismatch: wanted.size, qChumon: 0, qMergedPreamble: 0, qThinBand: 0, qQnumMismatch: 0 } }; };
+  const calibAll = pickHeadMode(acc.all.pool, acc.all.votes);
+  if (calibAll.error) return noCalib(calibAll.error);
+  const calib = { all: calibAll };
+  for (const par of ["odd", "even"]) {
+    const c = acc[par].pages >= PARITY_MIN_PAGES ? pickHeadMode(acc[par].pool, acc[par].votes) : { error: `${acc[par].pages} pages` };
+    calib[par] = chooseParityCalib(calibAll, c, acc[par].votes);
+  }
+  const calibOf = (rel) => calib[pageParity(rel)] ?? calibAll;
+  const fmt = (c) => `head=${c.headMode} body=${c.bodyMode}${c.fallback ? ` (fallback: ${c.fallback})` : ` (head votes ${c.votes})`}`;
+  console.log(`  precrop calib: head=${calibAll.headMode} body=${calibAll.bodyMode} (${pages.length} pages in scope; head votes ${calibAll.votes})`);
+  console.log(`  precrop calib odd:  ${fmt(calib.odd)}`);
+  console.log(`  precrop calib even: ${fmt(calib.even)}`);
+  const ocr = hasTesseract();
 
   const outDir = path.join(ROOT, "data/ip/quiz/.phase2/precrop", examId);
   mkdirSync(outDir, { recursive: true });
   const crops = new Map();
   const chumon = chumonMemberIds();
-  const skip = { pages: 0, qPageMismatch: 0, qChumon: 0, qMergedPreamble: 0, qThinBand: 0 };
+  const skip = { pages: 0, qPageMismatch: 0, qChumon: 0, qMergedPreamble: 0, qThinBand: 0, qQnumMismatch: 0 };
+  const report = { exam_id: examId, ocr, calib, pages: {} };
 
   // pass 2: 対象問を含むページだけ帯を切る
   for (const [rel, qs] of pages) {
+    const { headMode, bodyMode } = calibOf(rel);
     const png = path.join(ROOT, "data/ip/exams", rel);
     // pass 1 と同じ存在検査。欠落は crop を静かに省くのではなく、従来どおりの致命エラーにする。
     if (!existsSync(png)) throw new Error(`${qs[0].id}: source page image missing (${rel})`);
@@ -195,10 +249,29 @@ async function buildCrops(targetIds) {
       });
     } else {
       const { headings: heads, boundaries } = findHeadings(prof, headMode, bodyMode);
+      const expected = ordered.map((q) => q.question_number);
+      const rp = report.pages[rel] = { head: headMode, body: bodyMode, expected, detected: heads.map((h) => ({ top: h.top, left: h.left })) };
       if (heads.length !== ordered.length) {
         console.warn(`  ⚠ precrop skip ${rel.split("/").pop()} [page_mismatch]: detected ${heads.length}, expected ${ordered.length}`);
+        rp.status = "page_mismatch";
         skip.pages++; skip.qPageMismatch += ordered.filter((q) => wanted.has(q.id)).length; continue;
       }
+      // S128: 個数が一致しても番号が違えば誤帯 (U6 page-24)。見出しのどれか 1 つでも「問 + 期待番号」と確認できなければページごと省く
+      // (番号が期待と近い別番号 = 誤帯、問字 + 数字が読めない = 見出しの誤検出の疑い。判定は lib/precrop-heading.mjs checkQnums)。
+      if (ocr) {
+        const reads = [];
+        for (let i = 0; i < heads.length; i++) reads.push(await ocrHeadingQnum(sharp, png, W, H, heads[i], bodyMode, expected[i]));
+        rp.ocr = reads.map((r) => r.text);
+        rp.found = reads.map((r) => r.qnum);
+        const chk = checkQnums(rp.found, expected);
+        rp.verified = chk.verified; rp.noise = chk.noise; rp.unconfirmed = chk.unconfirmed;
+        if (!chk.ok) {
+          console.warn(`  ⚠ precrop skip ${rel.split("/").pop()} [qnum_mismatch]: heading 問${rp.found.map((n) => n ?? "?").join("/")}, expected ${expected.join("/")}`);
+          rp.status = "qnum_mismatch";
+          skip.pages++; skip.qQnumMismatch += ordered.filter((q) => wanted.has(q.id)).length; continue;
+        }
+      }
+      rp.status = "ok";
       let lastInk = 0;
       for (let y = 0; y < Math.floor(H * FOOTER_FRAC); y++) if (cnt[y] > 5) lastInk = y;
       const tail = Math.min(H, lastInk + TAIL_PAD);
@@ -227,12 +300,14 @@ async function buildCrops(targetIds) {
       const dest = path.join(outDir, `${q.id}.png`);
       await sharp(png).extract({ left: 0, top, width: W, height }).toFile(dest);
       crops.set(q.id, dest);
+      if (report.pages[rel]) (report.pages[rel].bands ??= {})[q.id] = { top, bot };
     }
   }
+  writeFileSync(path.join(outDir, "_precrop_report.json"), JSON.stringify(report, null, 2) + "\n");
   return { crops, skip };
 }
 
-let crops = new Map(), skip = { pages: 0, qPageMismatch: 0, qChumon: 0, qMergedPreamble: 0, qThinBand: 0 };
+let crops = new Map(), skip = { pages: 0, qPageMismatch: 0, qChumon: 0, qMergedPreamble: 0, qThinBand: 0, qQnumMismatch: 0 };
 if (precrop) {
   const r = await buildCrops(targets.map((q) => q.id));
   crops = r.crops; skip = r.skip;
@@ -258,7 +333,7 @@ const out = path.join(ROOT, "data/ip/quiz/.phase2", `${label}_fidelity_input_${e
 writeFileSync(out, JSON.stringify({ exam_id: examId, label, count: samples.length, samples }, null, 2) + "\n");
 console.log(`✓ quiz-fidelity-prep-any ${examId} [${label}] ${samples.length}/${all.length} → ${path.relative(ROOT, out)}`);
 if (precrop) {
-  const qSkipped = skip.qPageMismatch + skip.qChumon + skip.qMergedPreamble + skip.qThinBand;
-  console.log(`  precrop: ${crops.size}/${samples.length} questions cropped; skipped ${qSkipped} questions (page_mismatch ${skip.qPageMismatch} / chumon ${skip.qChumon} / merged_preamble ${skip.qMergedPreamble} / thin_band ${skip.qThinBand}), ${skip.pages} pages (page_mismatch)`);
+  const qSkipped = skip.qPageMismatch + skip.qQnumMismatch + skip.qChumon + skip.qMergedPreamble + skip.qThinBand;
+  console.log(`  precrop: ${crops.size}/${samples.length} questions cropped; skipped ${qSkipped} questions (page_mismatch ${skip.qPageMismatch} / qnum_mismatch ${skip.qQnumMismatch} / chumon ${skip.qChumon} / merged_preamble ${skip.qMergedPreamble} / thin_band ${skip.qThinBand}), ${skip.pages} pages (page_mismatch + qnum_mismatch)`);
 }
 console.log(`  qnums: ${samples.map((s) => s.question_number).join(",")}`);
