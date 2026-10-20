@@ -1,0 +1,3080 @@
+{
+ "schema": "quiz_B13_named_S129",
+ "exam_id": "2009h21a",
+ "purpose": "B13 fixer / reviewer に名指しで渡す候補 (D-150 §4)。核験 agent の prompt には入れない (源先読みの独立性、B1〜B12 と同じ運用)。いずれも源未照合の候補であり欠陥数ではない (源照合済みのものは note に明記)。",
+ "sources": {
+  "backlog_scan": "evidence/phase5/stage_06_quiz_fidelity/backlog_scan_A1_S127.json",
+  "l2b": "evidence/S128_L2b_scans.json (2009h21a: q013 q017 q039 q048 q054 q060 q062 q069 q089〜q093 q095 q097〜q100 に言及)",
+  "l2d": "evidence/S128_L2d_figblind.json (q093 TRUNCATED top / q094 TRUNCATED bottom / q060 TRUNCATED bottom はいずれも S127 修復前の旧 crop = control。q013 EXTRA (選択肢行が左縁で切断、情報のみ)、q069 EXTRA (下端に次問 問70)、q012 / q017 / q036 / q054 / q089 / q097 / q098 / q099 / q100 は OK。q098 / q099 の共有図 (図1 / 図2) は located page-40)",
+  "l2f": "evidence/S128_L2f_chumon.md (A / B / C すべて R)",
+  "a3": "evidence/quiz_A3_S128.md (NIT: 表記法の除外不統一 2021r03-q070 vs 2009h21a-q099 = q099 の「商品表>販売単価表」は表記法として除外、D-157)",
+  "a5": "evidence/quiz_A5_S129.md (q069 ラベル行削除 (p26)、q099 en “Product table > Unit price table” に揃えた)",
+  "a2b": "evidence/quiz_A2b_S127.md (q062 に言及)",
+  "s116": "evidence/phase5/stage_06_quiz_fidelity/caveat_fidelity_S116_2009h21a*.json (10 題抽出: q006 設罰→設置・末尾「 / q032 ーー / q053「「 / q058「 / q063 デークタ / q070」 / q078 硬故障性・科体 / q085 披認証者・ノンブル / q096 ーー は表示層で全て是正済。q018 / q005 / q073 / q086 は抽出外で未処置 = other_context)"
+ },
+ "lesson_displayed_layer": {
+  "rule": "stem↔図 / stem↔源 の照合は必ず表示層 (translations の stem_jp_clean || questions の stem_jp) で行う。raw stem_jp だけを見て STEM_WRONG と判定しない",
+  "example": "2009h21a: raw q009 職能的資任 / q017 電箇・梨馬 / q029 委件 / q034 考虚 / q041 意章 / q055 ボート / q077 ブァイパ、raw q030 末尾の選択肢 OCR 残骸、raw q036 の図 OCR 残骸、raw q095 先頭〔ストラテジ〕。いずれも表示層は源どおり (0a.* は raw→clean の差)",
+  "manifest_note": "manifest の displayed_stem_jp は表示層 (stem_jp_clean || stem_jp と 100/100 一致を脚本確認)。displayed_choices_jp は bank (question_bank.json) の choices_jp で、questions.json の choices_jp と値は 100/100 一致。キー順の違う 3 題 (q025 ア/ウ/イ/エ、q042 イ/ウ/エ/ア、q051 ア/ウ/エ/イ、bank の 2 段組抽出順) も値はキーごとに源 (page-10 / q042 crop / page-19) と一致。quiz 本体のキー順は ア〜エ で正常 = 学習者表示に影響なし"
+ },
+ "page_pointer": {
+  "verdict": "誤り 1 題 = q093 (B11 §0 型、起動前の阻害要因)",
+  "q093": "bank の source.page_image は page-36 だが、page-36 は中問B の前文 + ワークシート図だけ。問93 の stem と選択肢 ア〜エ は page-37 にある (本 prep で目視)。manifest は source=page-36 / prev=page-35 を渡すので、agent には設問も選択肢も見えない。L2d の bank_page=page-36 は図 (ワークシート) の位置。page-37 を指す sample は 1 つも無く、precrop report にも page-37 の行は無い (page-36: expected [93] / detected 0)",
+  "others": "q093 以外の 99 題は正しい。OCR verified の ok 19 頁 56 見出しで 56 題を確定。skip の小問頁 10 頁 (03 / 05 / 06 / 08 / 10 / 14 / 17 / 19 / 26 / 30) は帯幅を広げた再走査 + tesseract で全 32 題の 問NN 見出しが期待頁にあることを確認し、06 / 08 / 10 / 14 / 19 / 26 は目視でも確認。中問頁 32〜43 は全頁目視 (q089 p33 / q090 p34 / q091・q092 p35 / q094 p38 / q095・q096 p39 / q097・q098 p41 / q099 p42 / q100 p43)。q094 (source 38 / prev 37) は影響なし",
+  "manifest_patch": "要 (q093)。推奨は bank 修正、代替は再生成後の patch (prep md §0)"
+ },
+ "chumon_registered": {
+  "note": "源の中問は A (q089〜q092) / B (q093〜q096) / C (q097〜q100) の 3 組 (page-32 冒頭「中問Aから中問Cまでは，それぞれ四つの問いを解答してください。」)。3 組すべて registry 登録済 (key 2009h21a-mqA/B/C、origin chumon_preamble_S116.json、COPY 組ではない)。manifest の displayed_stem_jp と translations の stem_jp_clean が probe.jp で始まり、stem.zh / stem.en に probe.zh / probe.en が含まれることを 12/12 × 3 層で脚本確認 (probe_rule どおり空白除去後)。working tree の chumon_groups.json 未 commit 差分 (1 行) は 2011h23a-q089-copy で 2009h21a に無関係",
+  "groups": [
+   {
+    "key": "2009h21a-mqA",
+    "ids": [
+     "2009h21a-q089",
+     "2009h21a-q090",
+     "2009h21a-q091",
+     "2009h21a-q092"
+    ],
+    "preamble_pages": [
+     "page-32"
+    ],
+    "common_prefix_jp": 466,
+    "preamble_not_in_manifest_pages": {
+     "2009h21a-q090": [
+      "page-32"
+     ],
+     "2009h21a-q091": [
+      "page-32"
+     ],
+     "2009h21a-q092": [
+      "page-32"
+     ]
+    },
+    "note": "前文は page-32 で完結 (導入 + 〔販売管理業務の概要〕(1)〜(3) + 〔販売管理システムの概要〕)。q089 は source=page-33 / prev=page-32 で見える。q090 は source=34 / prev=33、q091 / q092 は source=35 / prev=34 で page-32 が見えない。q089 DFD と q090 流れ図は表示 jp で箇条書きに言語化 (源と一致)"
+   },
+   {
+    "key": "2009h21a-mqB",
+    "ids": [
+     "2009h21a-q093",
+     "2009h21a-q094",
+     "2009h21a-q095",
+     "2009h21a-q096"
+    ],
+    "preamble_pages": [
+     "page-36"
+    ],
+    "common_prefix_jp": 1006,
+    "preamble_not_in_manifest_pages": {
+     "2009h21a-q094": [
+      "page-36"
+     ],
+     "2009h21a-q095": [
+      "page-36"
+     ],
+     "2009h21a-q096": [
+      "page-36"
+     ]
+    },
+    "note": "前文は page-36 で完結 (導入 2 段落 + 図 商品別販売分析ワークシート、C / D 列と I / J 列は網掛け・空欄)。表示は markdown 表で、値は源と一致。q093 は現 manifest では source=page-36 (前文) / prev=page-35 で設問頁 37 が見えない (§0)。patch 後は source=37 / prev=36 で前文も見える。q094 は source=38 / prev=37、q095 / q096 は source=39 / prev=38 で page-36 が見えない。q094 のバブルチャートは表示 jp で言語化されず図添付のみ"
+   },
+   {
+    "key": "2009h21a-mqC",
+    "ids": [
+     "2009h21a-q097",
+     "2009h21a-q098",
+     "2009h21a-q099",
+     "2009h21a-q100"
+    ],
+    "preamble_pages": [
+     "page-40"
+    ],
+    "common_prefix_jp": 921,
+    "preamble_not_in_manifest_pages": {
+     "2009h21a-q099": [
+      "page-40"
+     ],
+     "2009h21a-q100": [
+      "page-40"
+     ]
+    },
+    "note": "前文は page-40 で完結 (導入 2 段落 + 図1 DB 構造 4 表 + 図2 請求書の様式)。q097 / q098 は source=page-41 / prev=page-40 で見える。q099 は source=42 / prev=41、q100 は source=43 / prev=42。図1 は markdown 見出し行、図2 は箇条書き + 表に言語化 (源と一致)。図2 言語化の地の文に「、」がある (AI の説明文、D-155)"
+   }
+  ],
+  "stray_headings": "表示 jp / zh / en の stem・選択肢に「問 NN」「问 NN」「QNN」「中問」「中问」「Medium question」の残存は 0、〔テクノロジ〕〔ストラテジ〕〔マネジメント〕/ [Technology] 等の分野見出し残存も 0 (脚本で全 100 題を走査)。raw だけに q095 先頭〔ストラテジ〕等が残る (表示不可視)。抽出組なので B9 q089 型の Rule B は該当しない",
+  "probe_coupling": "A probe.jp「S社の販売管理業務は，…」(源「S 社」)、B「N社の営業部では，…」(源「N 社」)、C「I社は，企業に対してPC関連機器の…」(源「I 社」「PC 関連機器」)。空白除去後に一致。全角英字は無い",
+  "fixer_rule": "前文の是正が要る場合でも stem 冒頭を単独で変えない (registry probe と整合を lead に上げる)。設問文以降は設問文側の部分一致で patch を当て、stem 全体は置換しない (B4〜B12 と同じ)"
+ },
+ "precrop_oi1": {
+  "note": "S128 L1b §6 OI-1 の再評価 (本 prep)。calib: 全体 head=160 / body=230、odd head=170 / body=230 (窓 x∈[156,188])、even head=160 / body=230 (窓 x∈[146,178]、fallback: 全体 160 が 9p vs 150=10p で僅差)。ok 19 頁の見出し 56 本はすべて OCR verified、unconfirmed 0、confusable_only 0。ok 頁の見出し x は 146〜188 (even page-28 146〜149 は窓下端 146 ちょうど、odd page-27 186〜188 は窓上端 188 ちょうど)",
+  "skip_causes": {
+   "true_oi1": "2 頁 5 見出し: odd page-03 の 問1 / 問2 / 問3 が x=149〜151 (窓下端 156 の外)、odd page-05 の 問8 / 問9 が x=155 / 154 (下端の 1〜2px 外)。odd 頁なのに見出しが even 側の位置にある (走査配準の揺れ)。page-03 問3 は左余白ノイズ (x=3) も重なる。page-39 問96 は x=144 (左余白の点「.」)",
+   "speck": "左余白の走査ノイズで minLeft が窓外に落ちた型 (B11 page-13 と同型、OI-1 ではない): page-06 問10 (x=109)、page-08 問17 (x=28)、page-10 問24 (x=123) / 問25 (x=66)、page-14 問37 (x=79)、page-17 問45 (x=78)、page-19 問51 (x=23) / 問52 (x=41)、page-26 問70 (x=81)、page-30 問82 (x=21)。いずれも見出しの本体は x=148〜180 で窓内",
+   "short_heading": "B12 型 (MIN_RIGHT_FRAC) で落ちた題は 0。右端 45% 未満の見出し行は無い (最小は page-05 問8 の 47.7%)",
+   "chumon": "中問頁 33〜36 / 38 / 39 / 41〜43: 見出し 問NN が〔分野〕行の下で x≈180〜193 (page-34 193 / page-38 180 / page-41 189〜190) にあり even 窓上端 178 / odd 窓上端 188 の外。page-39 は〔ストラテジ〕行 2 本 (右端 52.9% / 69.8%) を見出しと誤認して qnum_mismatch"
+  },
+  "skips": {
+   "page-03": "期待 q001〜q003、検出 0 (真の OI-1)",
+   "page-05": "期待 q007〜q009、検出 1 (問8 / 問9 が窓下端外、真の OI-1)",
+   "page-06": "期待 q010〜q012、検出 2 (問10 左余白ノイズ)",
+   "page-08": "期待 q016〜q018、検出 2 (問17 ノイズ)",
+   "page-10": "期待 q022〜q025、検出 2 (問24 / 問25 ノイズ)",
+   "page-14": "期待 q036〜q038、検出 2 (問37 ノイズ)",
+   "page-17": "期待 q045〜q047、検出 2 (問45 ノイズ)",
+   "page-19": "期待 q050〜q052、検出 1 (問51 / 問52 ノイズ)",
+   "page-26": "期待 q068〜q070、検出 2 (問70 ノイズ)",
+   "page-30": "期待 q082〜q085、検出 3 (問82 ノイズ)",
+   "page-33〜36 / 38 / 39 / 41〜43": "中問 member (page-36 は前文頁で、q093 の誤 pointer のため期待 [93])"
+  },
+  "counts": "crop 56 / 100 (B12 77%、B11 74%、B10 81%)。skip 44 = page_mismatch 42 + qnum_mismatch 2 (chumon 0 / merged_preamble 0 / thin_band 0)。うち小問 32 題 (OI-1 の 5 見出し (問1〜3・問8・問9) → page-03 / 05 の 6 題、ノイズの 10 見出し → 8 頁 26 題が頁ごと skip)、中問 12 題",
+  "wrong_band": "0。skip 題は manifest の source 頁全体で読める (q093 を除く、§0)",
+  "choices_page_not_in_manifest": "q093 だけ (設問ごと page-37、§0)。他の小問頁の最初の見出しは y≈183〜208 (page-03 / 12 / 21 は区分枠の下で y≈333〜343)、頁頭に前頁からの続きは無い",
+  "pre_existing": "precrop/2009h21a/ は本 prep 前に存在しなかった。本 prep で 56 crop + _precrop_report.json を作成",
+  "visual": "skip 頁 06 / 08 / 10 / 14 / 19 / 26、中問頁 32〜44 (13 頁)、page-03 / 12 / 20 / 21 上端、crop q005 / q042 / q044 / q048 / q054 / q073 / q086 を目視"
+ },
+ "other_context": [
+  {
+   "ids": [
+    "2009h21a-q018"
+   ],
+   "priority": "high",
+   "answer_affecting": false,
+   "correct_choice_affected": true,
+   "note": "源 (page-08 目視) で確定: 表示 jp (questions.json choices_jp) の 4 肢すべてに OCR 残骸。ア「一会肝期間」→ 一会計期間、「貸借対了表」→ 貸借対照表、「の作成が   ーー強制される。 「- .」→ の作成が強制される。/ イ「会計報告を ・行う。 「」→ 会計報告を行う。/ ウ「凡務賭表規則」→ 財務諸表規則、「会計処理 「ーーー を行う」→ 会計処理を行う / エ (正解肢)「経営判断のため .の内部報告書を作成する。ここる ーー」→ 経営判断のための内部報告書を作成する。zh / en は正しい。backlog は 0c / 10.* で検出済。S116 抽出外で未処置。key エ は不変"
+  },
+  {
+   "ids": [
+    "2009h21a-q005"
+   ],
+   "priority": "high",
+   "answer_affecting": false,
+   "note": "源 (crop) で確定: ア「事業投資リスク    '」/ イ「情報漏えいリスク .」の末尾残骸 (源は「事業投資リスク」「情報漏えいリスク」)。正解はア (key 不変だが正解肢に残骸)。backlog は ア だけ 10.tail_residue で検出、イ は未検出"
+  },
+  {
+   "ids": [
+    "2009h21a-q086"
+   ],
+   "priority": "high",
+   "answer_affecting": false,
+   "note": "源 (crop) で確定: イ (正解肢)「2 系続のコンピュータ」→ 源「2 系統のコンピュータ」。zh「两套」/ en「two sets」は正しい。backlog 外で本 prep の走査で発見"
+  },
+  {
+   "ids": [
+    "2009h21a-q073"
+   ],
+   "priority": "high",
+   "answer_affecting": false,
+   "note": "源 (crop) で確定: イ「パックドア」→ 源「バックドア」。zh「后门」/ en「backdoors」は正しい。正解はウ。backlog 外"
+  },
+  {
+   "ids": [
+    "2009h21a-q094"
+   ],
+   "priority": "low",
+   "answer_affecting": false,
+   "note": "源 page-38 の選択肢は “商品え”“商品か”“商品く”“商品こ” と “” 付き。表示 jp / zh / en は引用符なし (商品えは, …)。意味は不変。fixer が D-155 の扱い (“” → 「」) で復元するか判断"
+  },
+  {
+   "ids": [
+    "2009h21a-q093"
+   ],
+   "priority": "low",
+   "answer_affecting": false,
+   "note": "選択肢「C2／B2」「D12／B12＊B2」の全角 ／ ＊ (源も ／ と ＊ 系の字形)。D-162 (式の演算子は ASCII) で fixer 判断。q095〔条件〕(3) の「I2＋H3」も同じ。q039「kステップ／月」は単位で対象外"
+  },
+  {
+   "ids": [
+    "2009h21a-q099"
+   ],
+   "priority": "low",
+   "answer_affecting": false,
+   "note": "stem の「商品表>販売単価表」(源は “商品表＞販売単価表”)。A3 NIT / D-157 の表記法除外で既知・不触 (lead 指定)。選択肢の ＝ ≧ は源どおり"
+  },
+  {
+   "ids": [
+    "2009h21a-q060"
+   ],
+   "priority": "low",
+   "answer_affecting": false,
+   "note": "stem に「、」(源は「，」) と「」(源は “”)。D-155 で fixer 判断。q097〜q100 の「、」は図2 言語化の説明文 (源の文ではない)"
+  },
+  {
+   "ids": [
+    "2009h21a-q048"
+   ],
+   "priority": "low",
+   "answer_affecting": false,
+   "note": "選択肢は源ではグラフ 4 枚 (横軸 設計・製造・テスト・運用、縦軸 対応費用)。表示 jp は「右肩上がりの曲線（設計から運用に向けて対応費用が増加）」等に言語化。形状は源 crop と一致 (ア 指数増 / イ 減少 / ウ V 字 / エ 階段)。判定語は無い。去就は B1〜B12 の図言語化の扱い"
+  },
+  {
+   "ids": [
+    "53 題"
+   ],
+   "priority": "low",
+   "answer_affecting": false,
+   "note": "表示 jp の散文に半角「, 」(源は「，」) が 53 題。B1〜B12 と同じ字形差 (D-155)。fixer は題ごとに判断、核験 agent の cosmetic 報告は既知型。全角数字は 0。q044 の “” は表示で「」"
+  },
+  {
+   "ids": [
+    "2009h21a-q036",
+    "2009h21a-q054",
+    "2009h21a-q069",
+    "2009h21a-q089",
+    "2009h21a-q090",
+    "2009h21a-q097",
+    "2009h21a-q100"
+   ],
+   "priority": "low",
+   "answer_affecting": false,
+   "note": "図・表の言語化は源と一致: q036 (15% / 50% / 80% / 90% と 4,000 / 4,800 / 5,000 / 6,000)、q054 (下から 1,2,2,3,4、選択肢は上から列挙)、q069 (①送信 ②受信 ③転送)、q089 DFD (源では最初のプロセスも網掛け、表示は「処理（プロセス）」とだけ = 情報差のみ)、q090 流れ図、q097 図1 / 図2、q100 表構成。言語化されていない図: q012 (①〜④ 箱)、q094 バブルチャート (agent は添付の図で照合)"
+  }
+ ],
+ "answer_affecting_suspects": {
+  "verdict": "なし。表示層で correct_answer と矛盾する題は 0。答え漏洩も 0 (3 層の stem・選択肢で「正解」「不正解」「正しい図」「错误图」「正确图」「答案」「correct answer」「Correct figure」等を走査。hit 7 件はすべて zh stem の「正确的是哪一项」(=「適切なものはどれか」の訳) で FP。図の言語化された選択肢 q048 / q054 / q060 / q100 にも判定語は無い)",
+  "rederived_on_displayed_layer": {
+   "2009h21a-q007": "(10+5)×50 + 30 − 300 = 480 ウ ✓",
+   "2009h21a-q012": "ビジョン → 環境分析 → 戦略立案 → ④ 重要成功要因の抽出 → 実行計画策定 ア ✓ (源 page-06 の図)",
+   "2009h21a-q013": "変動費率 240/400 = 0.6、固定費 100+20 = 120 → 120/0.4 = 300 ウ ✓ (表は源 crop と一致)",
+   "2009h21a-q017": "施設・機器が A 社、業務アプリが B 社 → ホスティング エ ✓ (表は源 page-08 と一致)",
+   "2009h21a-q030": "3 か月 6 人で 50% → 全体 36 人月、残り 18 人月 − 6×2 = 6、0.7×2×n ≥ 6 → n = 5 エ ✓",
+   "2009h21a-q036": "超過確率 20% = 収まる確率 80% → 5,000 万円、5,000 − 4,000 = 1,000 ア ✓ (源 page-14 の曲線)",
+   "2009h21a-q039": "A 4+4+2=10 / B 3+3+3=9 / C 2+3+6=11 / D 4+3+2.4=9.4 → B イ ✓",
+   "2009h21a-q044": "受付 → ② 評価 (A) → 指示 → 反映 → ア ✓ (源 crop: A は 2 番目の箱)",
+   "2009h21a-q046": "6C2 = 15 ウ ✓",
+   "2009h21a-q048": "後工程ほど修正費用増 → 右肩上がり ア ✓ (源 crop のグラフ ア)",
+   "2009h21a-q054": "下から 1,2,2,3,4 → 操作1 7 → 操作2 3 → 操作3 (3+7+2)/3 = 4 → 操作4 |4−2| = 2 → 上から 2,1 イ ✓ (源 crop)",
+   "2009h21a-q060": "各味覚を別ビット (1,2,4,8,16) → 加減算で合成・分解可 ウ ✓",
+   "2009h21a-q062": "t20 m13 b2 → 19, 11, −1≡25 → s k y エ ✓",
+   "2009h21a-q064": "55₈ = 45 = 2D₁₆ ア ✓",
+   "2009h21a-q069": "送信 SMTP / 受信 POP3 / 転送 SMTP ウ ✓ (源 page-26)",
+   "2009h21a-q070": "P(Y<X) = 1/2 → 300 ウ ✓",
+   "2009h21a-q082": "8×10⁹ bit / (100M×0.2) = 400 秒 ウ ✓",
+   "2009h21a-q089": "顧客 →(注文依頼)→ 受注処理 → a 受注管理ファイル → b 出荷処理 → … ウ ✓ (源 page-33)",
+   "2009h21a-q090": "c 通常注文か Yes → d 注文数>在庫数の70% Yes → (在庫数の70%を引当) / No → 注文数。c No (優先) → 網掛け (注文数≦在庫数) → イ ✓ (源 page-34)",
+   "2009h21a-q091": "在庫 100: 10:00 通常 80 → 70 引当 (残 30)、10:30 優先 10 → 10 (残 20)、11:00 通常 40 → 20×0.7 = 14 ウ ✓ (源 page-35)",
+   "2009h21a-q092": "締め 10/21〜11/20 の出荷: 10/30 20,000 + 11/6 30,000 + 11/15 40,000 = 90,000 イ ✓",
+   "2009h21a-q093": "売上総利益率 = 売上総利益 / 売上高 = D2/B2 イ ✓ (源 page-37 の選択肢)",
+   "2009h21a-q094": "商品く: 回転率 15.3 (最大)、利益率 28.2、売上 610 → ウ ✓ (ア 商品え は利益率高で薄利でない、イ 商品か は最低効率、エ 商品こ は回転率高)",
+   "2009h21a-q095": "累計 ≦0.7 → A、≦0.9 → B、それ以外 C → ア ✓",
+   "2009h21a-q096": "売上順 え 28.8 (累計 28.8、回転 9.2 ≦10) / う 22.5 (51.3、12.0) / あ 14.8 (66.1、14.4) / こ 10.8 (76.9 > 70) → え の 1 品目 ア ✓",
+   "2009h21a-q097": "(10+10 + 20×2 + 40×2 + 10×2×2) = 180 バイト × 10,000 = 1,800 k ウ ✓",
+   "2009h21a-q098": "担当者は取引先ごと部署ごとに 1 人 → 取引先コード + 部署名 ウ ✓",
+   "2009h21a-q099": "販売単価表 = 商品表 (明細行数) ≧ 取引先担当者表 = 取引先表 (各 1) イ ✓",
+   "2009h21a-q100": "伝票ヘッダ (伝票番号・日付・取引先コード・部署名) と明細 (伝票番号・商品コード・数量・単価) ウ ✓ (源 page-43)"
+  }
+ },
+ "backlog_counts": {
+  "candidates": 302,
+  "questions": 40,
+  "high": 168,
+  "high_questions": 32,
+  "high_open": 141,
+  "high_open_questions": 31,
+  "resolved": 27,
+  "resolved_raw_only": 27,
+  "resolved_zh": 0,
+  "by_rule": {
+   "2.nine_six": 128,
+   "7.comma_nospace": 3,
+   "7.space": 11,
+   "10.tail_residue": 3,
+   "10.R2a": 1,
+   "10.R2b": 1,
+   "0a.char": 11,
+   "0a.num": 29,
+   "0a.word": 5,
+   "0a.ins": 21,
+   "0a.region": 1,
+   "0c.tr_of_anomaly": 18,
+   "0c.R3": 3,
+   "0c.isolated_kanji": 7,
+   "0c.rare_kanji": 6,
+   "0q.en": 5,
+   "0q.prose": 27,
+   "T.table": 15,
+   "T.num_vs_fig": 5,
+   "T.num_vs_tr": 1,
+   "T.num_raw_clean": 1
+  },
+  "high_open_by_question": {
+   "2009h21a-q062": 20,
+   "2009h21a-q018": 20,
+   "2009h21a-q094": 13,
+   "2009h21a-q036": 11,
+   "2009h21a-q095": 7,
+   "2009h21a-q096": 7,
+   "2009h21a-q093": 6,
+   "2009h21a-q030": 5,
+   "2009h21a-q098": 5,
+   "2009h21a-q039": 4,
+   "2009h21a-q046": 4,
+   "2009h21a-q060": 4,
+   "2009h21a-q092": 4,
+   "2009h21a-q090": 4,
+   "2009h21a-q091": 4,
+   "2009h21a-q017": 3,
+   "2009h21a-q089": 3,
+   "2009h21a-q064": 2,
+   "2009h21a-q041": 2,
+   "2009h21a-q077": 2,
+   "2009h21a-q082": 1,
+   "2009h21a-q013": 1,
+   "2009h21a-q005": 1,
+   "2009h21a-q009": 1,
+   "2009h21a-q014": 1,
+   "2009h21a-q024": 1,
+   "2009h21a-q029": 1,
+   "2009h21a-q034": 1,
+   "2009h21a-q044": 1,
+   "2009h21a-q055": 1,
+   "2009h21a-q075": 1
+  },
+  "triage_note": "未処置 high の大半は FP: 2.nine_six ends96 (q062 表の文字番号、q093〜q096 ワークシートの値、q030 / q039 / q046 / q060 / q064 / q082 / q092 の数値) は表・本文の正しい値、0a.* は raw→clean の差 (表示は源どおり、lesson_displayed_layer)、0c.isolated_kanji の q062「次表」は正しい語。真の欠陥は q018 (0c / 10.* / 0c.tr_of_anomaly、4 肢の OCR 残骸) と q005 ア (10.tail_residue) で、other_context に源照合済みで載せた。q005 イ・q073 パックドア・q086 系続・q094 引用符脱落は backlog に無く本 prep の走査・目視で発見"
+ },
+ "priority_rule": "B2 / B3 / B5〜B12 と同一: high = 0a.* (prose sub) / 0b.* / 0c.* (rare_kanji 以外、sub=rare_kanji も low) / 0q.prose / 1.mid @jp / 7.* (comma_nospace 以外) / 10.* / 2.nine_six (cross・ends96)。それ以外 low。分類器は B6〜B12 prep の再実装を流用。resolved は (i) raw だけの 0q.prose (表示 jp に ASCII \" 無し = 不可視、処置ではない、B7 規則) と (ii) zh 0q.prose で現 zh に ASCII \" が無いもの (処置済、B8 規則)。D-166: コード片・HTML 属性内の \" は (i)(ii) の対象外だが、2009h21a の該当は 0 (表示 jp に ASCII \" は無い。q095 の 'A' 等は IF 式内の単引用符で backlog 外)。(i) を lead が採らない場合は high_open に戻す",
+ "backlog_candidates": [
+  {
+   "id": "2009h21a-q013",
+   "layer": "fig",
+   "field": "figure_description",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "60｜…注費100，製造固定費100，粗利益60，販売固定費20，営業利益40）"
+  },
+  {
+   "id": "2009h21a-q013",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "160｜160"
+  },
+  {
+   "id": "2009h21a-q013",
+   "layer": "jp",
+   "field": "choice.エ",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "360｜360"
+  },
+  {
+   "id": "2009h21a-q013",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "60｜…費 | 100 |⏎| 粗利益 | 60 |⏎| 販売固定費 | 20 |⏎…"
+  },
+  {
+   "id": "2009h21a-q013",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "60｜…費 | 100 |⏎| 粗利益 | 60 |⏎| 販売固定費 | 20 |⏎…"
+  },
+  {
+   "id": "2009h21a-q030",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…いる要員の 70% とし, 最初の 6 人のグループの作業効率は残り 2 …"
+  },
+  {
+   "id": "2009h21a-q030",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜ある作業を 6 人のグループで開始し, 3 か月経…"
+  },
+  {
+   "id": "2009h21a-q030",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…ている要員の 70%とし, 最初の 6 人のグルー プの作業効率は残り 2…"
+  },
+  {
+   "id": "2009h21a-q030",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜ある作業を 6 人のグループで開始し, 3 か月経…"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp",
+   "field": "choice.エ",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "9,000｜9,000"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "6,000｜…%, 5,000 万円で 80%, 6,000 万円で 90%。）"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "90｜…円で 80%, 6,000 万円で 90%。）"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "6000｜…5 4000 4800 5.000 6000 見積りコスト (万円)"
+  },
+  {
+   "id": "2009h21a-q039",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…--|⏎| A | 3 | 3 | 6 |⏎| B | 4 | 4 | 4…"
+  },
+  {
+   "id": "2009h21a-q039",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…4 | 4 | 4 |⏎| C | 6 | 4 | 2 |⏎| D | 3…"
+  },
+  {
+   "id": "2009h21a-q039",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…--|⏎| A | 3 | 3 | 6 |⏎| B | 4 | 4 | 4…"
+  },
+  {
+   "id": "2009h21a-q039",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…4 | 4 | 4 |⏎| C | 6 | 4 | 2 |⏎| D | 3…"
+  },
+  {
+   "id": "2009h21a-q046",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜6"
+  },
+  {
+   "id": "2009h21a-q046",
+   "layer": "jp",
+   "field": "choice.イ",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜9"
+  },
+  {
+   "id": "2009h21a-q046",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜あるプロジェクトの関係者6人が,それぞれ1対1で情報の伝達を行…"
+  },
+  {
+   "id": "2009h21a-q046",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜あるプロジェクトの関係者 6 人が, それぞれ1 対 1 で情報…"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…」「酸味」「苦味」の5種類の味覚を、6ビット（2進数で6けた）の数値で符号…"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…の5種類の味覚を、6ビット（2進数で6けた）の数値で符号化する。これらを組…"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…\"酸味\"，\"苦味\"の5種類の味覚を，6ビット（2進数で6けた）の数値で符号…"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…の5種類の味覚を，6ビット（2進数で6けた）の数値で符号化する。これらを組…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "fig",
+   "field": "figure_description",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "26｜…（a=1, b=2, ..., z=26）"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "16｜…字番号 | 14 | 15 | 16 | 17 | 18 | 19 | 20…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "19｜… 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "26｜… 23 | 24 | 25 | 26 |⏎| 英字 | n | o | p …"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "26｜…分にはnを加える。それぞれの数を26で割った余りを新たに文字番号とみなし，表…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | …"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…ax → 6, 1, 24 → 6+1, 1+2, 24+3 → 7, 3…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…に変換する。⏎⏎例　fax → 6, 1, 24 → 6+1, 1+2, …"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜…5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "16｜…字番号 | 14 | 15 | 16 | 17 | 18 | 19 | 20…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "19｜… 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "26｜… 23 | 24 | 25 | 26 |⏎| 英字 | n | o | p …"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "26｜…分にはnを加える。それぞれの数を26で割った余りを新たに文字番号とみなし，表…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | …"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…ax → 6, 1, 24 → 6+1, 1+2, 24+3 → 7, 3…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…に変換する。⏎⏎例　fax → 6, 1, 24 → 6+1, 1+2, …"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜…5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13…"
+  },
+  {
+   "id": "2009h21a-q064",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "16｜8進数の55を16進数で表したものはどれか。"
+  },
+  {
+   "id": "2009h21a-q064",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "16｜8進数の55を16 進数で表したものはどれか。    …"
+  },
+  {
+   "id": "2009h21a-q065",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "192.168｜192.168.1.1 のように 4 バイト表記の…"
+  },
+  {
+   "id": "2009h21a-q070",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "600｜…の一様乱数からXとYを取り出すことを600回繰り返す。このときY＜Xを満たす回…"
+  },
+  {
+   "id": "2009h21a-q082",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜…そ何秒か。ここで，1Gバイト＝10^9バイトとする。また，LANの伝送効率…"
+  },
+  {
+   "id": "2009h21a-q092",
+   "layer": "fig",
+   "field": "figure_description",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…00，11/5受注40000，11/6出荷30000，11/10受注350…"
+  },
+  {
+   "id": "2009h21a-q092",
+   "layer": "jp",
+   "field": "choice.イ",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "90,000｜90,000"
+  },
+  {
+   "id": "2009h21a-q092",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…注 | 40,000 |⏎| 11/6 | 出荷 | 30,000 |⏎|…"
+  },
+  {
+   "id": "2009h21a-q092",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜…注 | 40,000 |⏎| 11/6 | 出荷 | 30,000 |⏎|…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "1,260｜… | |⏎| 11 | 商品こ | 1,260 | | | 22.1 | 90 |…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "11,680｜…| | |⏎| 12 | 合計 | 11,680 | | | | | | | | |…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "2,630｜…| | |⏎| 4 | 商品う | 2,630 | | | 22.7 | 220 …"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "2.6｜…18.7 | 35 | 8.6 | 2.6 | | |⏎| 11 | 商品こ …"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "28.6｜…| 商品き | 860 | | | 28.6 | 97 | 8.9 | 7.4 …"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "29｜… 310 | | | 25.2 | 29 | 10.7 | 2.7 | | …"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "3,360｜…| | |⏎| 5 | 商品え | 3,360 | | | 30.7 | 364 …"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "364｜…,360 | | | 30.7 | 364 | 9.2 | 28.8 | | …"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "610｜…| | |⏎| 9 | 商品く | 610 | | | 28.2 | 40 |…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜….2 | 28.8 | | |⏎| 6 | 商品お | 310 | | |…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "8.6｜…| | | 18.7 | 35 | 8.6 | 2.6 | | |⏎| 11 …"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "8.9｜…| | | 28.6 | 97 | 8.9 | 7.4 | | |⏎| 9 |…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "860｜…| | |⏎| 8 | 商品き | 860 | | | 28.6 | 97 |…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9.2｜… | | 30.7 | 364 | 9.2 | 28.8 | | |⏎| 6 …"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "90｜…,260 | | | 22.1 | 90 | 14.0 | 10.8 | |…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "97｜… 860 | | | 28.6 | 97 | 8.9 | 7.4 | | |…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜…8.9 | 7.4 | | |⏎| 9 | 商品く | 610 | | |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "1,260｜… | |⏎| 11 | 商品こ | 1,260 | | | 22.1 | 90 |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "11,680｜…| | |⏎| 12 | 合計 | 11,680 | | | | | | | | |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "2,630｜…| | |⏎| 4 | 商品う | 2,630 | | | 22.7 | 220 …"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "2.6｜…18.7 | 35 | 8.6 | 2.6 | | |⏎| 11 | 商品こ …"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "28.6｜…| 商品き | 860 | | | 28.6 | 97 | 8.9 | 7.4 …"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "29｜… 310 | | | 25.2 | 29 | 10.7 | 2.7 | | …"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "3,360｜…| | |⏎| 5 | 商品え | 3,360 | | | 30.7 | 364 …"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "364｜…,360 | | | 30.7 | 364 | 9.2 | 28.8 | | …"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "610｜…| | |⏎| 9 | 商品く | 610 | | | 28.2 | 40 |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜….2 | 28.8 | | |⏎| 6 | 商品お | 310 | | |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "8.6｜…| | | 18.7 | 35 | 8.6 | 2.6 | | |⏎| 11 …"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "8.9｜…| | | 28.6 | 97 | 8.9 | 7.4 | | |⏎| 9 |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "860｜…| | |⏎| 8 | 商品き | 860 | | | 28.6 | 97 |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9.2｜… | | 30.7 | 364 | 9.2 | 28.8 | | |⏎| 6 …"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "90｜…,260 | | | 22.1 | 90 | 14.0 | 10.8 | |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "97｜… 860 | | | 28.6 | 97 | 8.9 | 7.4 | | |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜…8.9 | 7.4 | | |⏎| 9 | 商品く | 610 | | |…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "8.6｜…バブル（無名）⏎- 約18.5％，約8.6回の小バブル（無名）⏎- 約23.5…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜…バブル（無名）⏎- 約28.5％，約9回の中バブル（無名）"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜…上総利益率 約30％，商品回転率 約9回（最大サイズのバブル）⏎- 商品こ…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "0.9｜…(I2≦0.7,'A',IF(I2≦0.9,'B','C'))"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "choice.イ",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "0.9｜IF(I2≦0.9,'C',IF(I2≦0.7,'A'…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "choice.ウ",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "0.9｜…(I2≧0.7,'A',IF(I2≧0.9,'B','C'))"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "choice.エ",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "0.9｜IF(I2≧0.9,'C',IF(I2≧0.7,'A'…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "1,260｜… | |⏎| 11 | 商品こ | 1,260 | | | 22.1 | 90 |…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "11,680｜…| | |⏎| 12 | 合計 | 11,680 | | | | | | | | |…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "2,630｜…| | |⏎| 4 | 商品う | 2,630 | | | 22.7 | 220 …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "2.6｜…18.7 | 35 | 8.6 | 2.6 | | |⏎| 11 | 商品こ …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "28.6｜…| 商品き | 860 | | | 28.6 | 97 | 8.9 | 7.4 …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "29｜… 310 | | | 25.2 | 29 | 10.7 | 2.7 | | …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "3,360｜…| | |⏎| 5 | 商品え | 3,360 | | | 30.7 | 364 …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "364｜…,360 | | | 30.7 | 364 | 9.2 | 28.8 | | …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "610｜…| | |⏎| 9 | 商品く | 610 | | | 28.2 | 40 |…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜….2 | 28.8 | | |⏎| 6 | 商品お | 310 | | |…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "8.6｜…| | | 18.7 | 35 | 8.6 | 2.6 | | |⏎| 11 …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "8.9｜…| | | 28.6 | 97 | 8.9 | 7.4 | | |⏎| 9 |…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "860｜…| | |⏎| 8 | 商品き | 860 | | | 28.6 | 97 |…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9.2｜… | | 30.7 | 364 | 9.2 | 28.8 | | |⏎| 6 …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "90｜…,260 | | | 22.1 | 90 | 14.0 | 10.8 | |…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "90｜…⏎| B | ランクAではないが上位90％以内に入る商品 |⏎| C | ラ…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "97｜… 860 | | | 28.6 | 97 | 8.9 | 7.4 | | |…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜…8.9 | 7.4 | | |⏎| 9 | 商品く | 610 | | |…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "90｜…⏎| B | ランクAではないが上位90％以内に入る商品 |⏎| C | ラ…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "1,260｜… | |⏎| 11 | 商品こ | 1,260 | | | 22.1 | 90 |…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "11,680｜…| | |⏎| 12 | 合計 | 11,680 | | | | | | | | |…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "2,630｜…| | |⏎| 4 | 商品う | 2,630 | | | 22.7 | 220 …"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "2.6｜…18.7 | 35 | 8.6 | 2.6 | | |⏎| 11 | 商品こ …"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "28.6｜…| 商品き | 860 | | | 28.6 | 97 | 8.9 | 7.4 …"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "29｜… 310 | | | 25.2 | 29 | 10.7 | 2.7 | | …"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "3,360｜…| | |⏎| 5 | 商品え | 3,360 | | | 30.7 | 364 …"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "364｜…,360 | | | 30.7 | 364 | 9.2 | 28.8 | | …"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "610｜…| | |⏎| 9 | 商品く | 610 | | | 28.2 | 40 |…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "6｜….2 | 28.8 | | |⏎| 6 | 商品お | 310 | | |…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "8.6｜…| | | 18.7 | 35 | 8.6 | 2.6 | | |⏎| 11 …"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "8.9｜…| | | 28.6 | 97 | 8.9 | 7.4 | | |⏎| 9 |…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "860｜…| | |⏎| 8 | 商品き | 860 | | | 28.6 | 97 |…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9.2｜… | | 30.7 | 364 | 9.2 | 28.8 | | |⏎| 6 …"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "90｜…,260 | | | 22.1 | 90 | 14.0 | 10.8 | |…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "-",
+   "priority": "low",
+   "excerpt": "97｜… 860 | | | 28.6 | 97 | 8.9 | 7.4 | | |…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "2.nine_six",
+   "sub": "ends96",
+   "priority": "high",
+   "excerpt": "9｜…8.9 | 7.4 | | |⏎| 9 | 商品く | 610 | | |…"
+  },
+  {
+   "id": "2009h21a-q006",
+   "layer": "jp",
+   "field": "choice.イ",
+   "rule": "7.comma_nospace",
+   "sub": "mixed",
+   "priority": "low",
+   "excerpt": "…報システムに関する企画や開発, 運用,管理, 保守業務を行うサービス"
+  },
+  {
+   "id": "2009h21a-q013",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "table",
+   "priority": "high",
+   "excerpt": "…百万円か。⏎⏎〔損益計算資料〕　単位 百万円⏎⏎| 項目 | 金額 |⏎|…"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.エ",
+   "rule": "7.space",
+   "sub": "prose",
+   "priority": "high",
+   "excerpt": "…め .の内部報告書を作成する。ここる ーー"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "prose",
+   "priority": "high",
+   "excerpt": "…の累積確率曲線。曲線上の主な対応点は 見積りコスト 4,000 万円で確率…"
+  },
+  {
+   "id": "2009h21a-q046",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.comma_nospace",
+   "sub": "plain",
+   "priority": "low",
+   "excerpt": "…対1で情報の伝達を行う必要があるとき,情報の伝達を行うために必要な経路の数…"
+  },
+  {
+   "id": "2009h21a-q046",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.comma_nospace",
+   "sub": "plain",
+   "priority": "low",
+   "excerpt": "あるプロジェクトの関係者6人が,それぞれ1対1で情報の伝達を行う必要…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "table",
+   "priority": "high",
+   "excerpt": "…| | | | | | | |⏎⏎注 網掛けの部分は，表示していない。⏎図…"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "table",
+   "priority": "high",
+   "excerpt": "…網掛けの部分は，表示していない。⏎図 商品別販売分析ワークシート⏎⏎図のセ…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "table",
+   "priority": "high",
+   "excerpt": "…| | | | | | | |⏎⏎注 網掛けの部分は，表示していない。⏎図…"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "table",
+   "priority": "high",
+   "excerpt": "…網掛けの部分は，表示していない。⏎図 商品別販売分析ワークシート⏎⏎売上の…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "table",
+   "priority": "high",
+   "excerpt": "…| | | | | | | |⏎⏎注 網掛けの部分は，表示していない。⏎図…"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "table",
+   "priority": "high",
+   "excerpt": "…網掛けの部分は，表示していない。⏎図 商品別販売分析ワークシート⏎⏎N社で…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "table",
+   "priority": "high",
+   "excerpt": "…| | | | | | | |⏎⏎注 網掛けの部分は，表示していない。⏎図…"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "7.space",
+   "sub": "table",
+   "priority": "high",
+   "excerpt": "…網掛けの部分は，表示していない。⏎図 商品別販売分析ワークシート⏎⏎今年度…"
+  },
+  {
+   "id": "2009h21a-q005",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "10.tail_residue",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "事業投資リスク    '"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "10.tail_residue",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…                「-                         ."
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.イ",
+   "rule": "10.tail_residue",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…害関係者に対して会計報告を ・行う。         「"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.エ",
+   "rule": "10.R2a",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "末尾の長音/ハイフン残渣｜…ため .の内部報告書を作成する。ここる ーー"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.エ",
+   "rule": "10.R2b",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "末尾断片「ここる ーー」｜…経営判断のため .の内部報告書を作成する。ここる ーー"
+  },
+  {
+   "id": "2009h21a-q009",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_garbled",
+   "priority": "high",
+   "excerpt": "「資」→「責」 raw「職能部門の職能的資任との調和を図る」→ clean「職能部門の職能的責任との調和を図る」"
+  },
+  {
+   "id": "2009h21a-q012",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_garbled",
+   "priority": "low",
+   "excerpt": "「[図](1)→(2)→(3)→(4)→実行計画策定」→「」 raw「うものはどれか.[図](1)→(2)→(3)→(4)→実行計画策定」→ clean「うものはどれか.」"
+  },
+  {
+   "id": "2009h21a-q014",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「問」→「間」 raw「ィとエンティティ問の関係をE-R図」→ clean「ィとエンティティ間の関係をE-R図」"
+  },
+  {
+   "id": "2009h21a-q017",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「タ」→「ケ」 raw「箇する梨馬アプリタ-ション||O.」→ clean「働する業務アプリケ-ション||〇|」"
+  },
+  {
+   "id": "2009h21a-q017",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「4」→「A」 raw「ビスを行っている4社は,B社に対し」→ clean「ビスを行っているA社は,B社に対し」"
+  },
+  {
+   "id": "2009h21a-q017",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「4」→「」 raw「る情報資産..|4A社|B社||コ」→ clean「となる情報資産|A社|B社||-」"
+  },
+  {
+   "id": "2009h21a-q017",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.word",
+   "sub": "word/prose/raw_garbled",
+   "priority": "high",
+   "excerpt": "「梨馬」→「業務」 raw「-タ上で電箇する梨馬アプリタ-ション」→ clean「-タ上で稼働する業務アプリケ-ション」"
+  },
+  {
+   "id": "2009h21a-q017",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.word",
+   "sub": "word/struct/raw_garbled",
+   "priority": "low",
+   "excerpt": "「負還」→「設置」 raw「施設.|〇|\"|負還するコンピュ-タ」→ clean「る施設|〇|||設置するコンピュ-タ」"
+  },
+  {
+   "id": "2009h21a-q017",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.word",
+   "sub": "word/prose/raw_garbled",
+   "priority": "high",
+   "excerpt": "「電箇」→「稼働」 raw「コンピュ-タ上で電箇する梨馬アプリタ」→ clean「コンピュ-タ上で稼働する業務アプリケ」"
+  },
+  {
+   "id": "2009h21a-q024",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「文」→「又」 raw「によって,経済的文は社会的な格差が」→ clean「によって,経済的又は社会的な格差が」"
+  },
+  {
+   "id": "2009h21a-q029",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_garbled",
+   "priority": "high",
+   "excerpt": "「委」→「要」 raw「と,それに基づく委件定義を行う場合」→ clean「と,それに基づく要件定義を行う場合」"
+  },
+  {
+   "id": "2009h21a-q030",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「--アァュ-イ3ウ4エ5\"」→「」 raw「ないものとする.--アァュ-イ3ウ4エ5\"」→ clean「ないものとする.」"
+  },
+  {
+   "id": "2009h21a-q034",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_garbled",
+   "priority": "high",
+   "excerpt": "「虚」→「慮」 raw「トマネ-ジャが考虚すべき制約条件の」→ clean「トマネ-ジャが考慮すべき制約条件の」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「,縦軸」 raw「%)人見積80\"\"コス.に\"収ま」→ clean「コスト(万円)\",縦軸\"見積りコストに」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「万円で」 raw「400048005.000600」→ clean「5%,4,800万円で50%,5,00」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「見積り」 raw「)人見積80\"\"コス.に\"収ま確」→ clean「万円)\",縦軸\"見積りコストに収まる確」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「.」→「0%,5,0」 raw「00048005.0006000見」→ clean「,800万円で50%,5,000万円で80%」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「15」→「(%)\"の累積確率曲線.曲線上の主な対応点は見積りコスト」 raw「ス.に\"収ま確率1540004800」→ clean「ストに収まる確率(%)\"の累積確率曲線.曲線上の主な対応点は見積りコスト4,000万円で」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「80」→「りコスト(万円)」 raw「か.(%)人見積80\"\"コス.に\"収」→ clean「(図:横軸\"見積りコスト(万円)\",縦軸\"見積り」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「で90%.」 raw「積りコスト(万円)」→ clean「,6,000万円で90%.)」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「万円で8」 raw「48005.0006000見積り」→ clean「0%,5,000万円で80%,6,000」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「万円で確率15%,」 raw「確率15400048005.00」→ clean「コスト4,000万円で確率15%,4,800万円で」"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.word",
+   "sub": "word/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「%)人」→「図:横軸\"」 raw「ことが妥当か.(%)人見積80\"\"コス」→ clean「ことが妥当か.(図:横軸\"見積りコスト(万」"
+  },
+  {
+   "id": "2009h21a-q041",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_garbled",
+   "priority": "high",
+   "excerpt": "「意」→「憲」 raw「る.プロジェクト意章に盛り込むべき」→ clean「る.プロジェクト憲章に盛り込むべき」"
+  },
+  {
+   "id": "2009h21a-q041",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.word",
+   "sub": "word/prose/raw_garbled",
+   "priority": "high",
+   "excerpt": "「意斉」→「憲章」 raw「に,プロジェクト意斉を定める.プロジ」→ clean「に,プロジェクト憲章を定める.プロジ」"
+  },
+  {
+   "id": "2009h21a-q044",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「手順は次の流れになっている.[]→[A]→[]→[]」 raw「るものはどれか.」→ clean「るものはどれか.手順は次の流れになっている.[]→[A]→[]→[]」"
+  },
+  {
+   "id": "2009h21a-q055",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_garbled",
+   "priority": "high",
+   "excerpt": "「ボ」→「ポ」 raw「コルで使用されるボ-ト番号の説明と」→ clean「コルで使用されるポ-ト番号の説明と」"
+  },
+  {
+   "id": "2009h21a-q075",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「プ」→「ブ」 raw「プログやニュ-スサ」→ clean「ブログやニュ-スサ」"
+  },
+  {
+   "id": "2009h21a-q077",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「パ」→「バ」 raw「入者線が光ブァイパケ-ブルであるも」→ clean「入者線が光ファイバケ-ブルであるも」"
+  },
+  {
+   "id": "2009h21a-q077",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.char",
+   "sub": "char/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「ブ」→「フ」 raw「での加入者線が光ブァイパケ-ブルで」→ clean「での加入者線が光ファイバケ-ブルで」"
+  },
+  {
+   "id": "2009h21a-q089",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「.図(DFD):-\"顧客\"→(注文依頼)→処理(プロセス)-その処理→デ-タスト…」 raw「の組合せはどれか.」→ clean「の組合せはどれか.図(DFD):-\"顧客\"→(注文依頼)→処理(プロセス)-その処理→デ-タストア\"[a]\"-デ-タスト…」"
+  },
+  {
+   "id": "2009h21a-q089",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「は,受注処理,出荷処理及び請求処理で構成されており,業務効率の向上」 raw「社の販売管理業務をDFDで表すと」→ clean「社の販売管理業務は,受注処理,出荷処理及び請求処理で構成されており,業務効率の向上を目的として販売」"
+  },
+  {
+   "id": "2009h21a-q089",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「目的として販売管理システムを利用している.販売管理業務の概要と販売管理システムの…」 raw「の販売管理業務をDFDで表すとき」→ clean「業務効率の向上を目的として販売管理システムを利用している.販売管理業務の概要と販売管理システムの概要は,次のとおりである…」"
+  },
+  {
+   "id": "2009h21a-q090",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「.流れ図(網掛けの部分は,表示していない):-\"開始\"から,条件[c]の判定へ進…」 raw「の組合せはどれか.」→ clean「の組合せはどれか.流れ図(網掛けの部分は,表示していない):-\"開始\"から,条件[c]の判定へ進む.-[c]がYesのと…」"
+  },
+  {
+   "id": "2009h21a-q090",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「S社の販売管理業務は,受注処理,」 raw「出荷処理において」→ clean「S社の販売管理業務は,受注処理,出荷処理及び請求」"
+  },
+  {
+   "id": "2009h21a-q090",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「及び請求処理で構成されており,業務効率の向上を目的として販売管理システムを利用し…」 raw「出荷処理において,引当数」→ clean「注処理,出荷処理及び請求処理で構成されており,業務効率の向上を目的として販売管理システムを利用している.販売管理業務の概…」"
+  },
+  {
+   "id": "2009h21a-q090",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「登録する.注文には,通常注文と優先注文の二つの種別がある.(2)出荷処理では,受…」 raw「出荷処理において,引当数の」→ clean「売管理システムに登録する.注文には,通常注文と優先注文の二つの種別がある.(2)出荷処理では,受注デ-タを基に在庫引当を…」"
+  },
+  {
+   "id": "2009h21a-q091",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「S社の販売管理業務は,受注処理,出荷処理及び請求処理で構成されており,業務効率の…」 raw「ある日の商品Tの」→ clean「S社の販売管理業務は,受注処理,出荷処理及び請求処理で構成されており,業務効率の向上を目的として販売管理システムを利用し…」"
+  },
+  {
+   "id": "2009h21a-q091",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「を請求締め日として,そ」 raw「ある日の商品Tの注文状」→ clean「では,毎月20日を請求締め日として,その翌日に経理担当」"
+  },
+  {
+   "id": "2009h21a-q091",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「翌日に経理担当者が出荷済デ-タから顧客ごとに請求書を作成して送付する.〔販売管理…」 raw「ある日の商品Tの注文状況」→ clean「め日として,その翌日に経理担当者が出荷済デ-タから顧客ごとに請求書を作成して送付する.〔販売管理システムの概要〕販売管理…」"
+  },
+  {
+   "id": "2009h21a-q091",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「.〔販売管理業務の概要〕(1)受注処理では,営業担当者が顧客から注文依頼を受ける…」 raw「ある日の商品Tの注文」→ clean「次のとおりである.〔販売管理業務の概要〕(1)受注処理では,営業担当者が顧客から注文依頼を受けると,受注デ-タを販売管理…」"
+  },
+  {
+   "id": "2009h21a-q091",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「|注文時刻|注文種別|注文数||---|---|---||10:00|通常注文|…」 raw「は100とする.」→ clean「は100とする.|注文時刻|注文種別|注文数||---|---|---||10:00|通常注文|80||10:30|優先…」"
+  },
+  {
+   "id": "2009h21a-q092",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「S社の販売管理業務は,受注処理,出荷処理及び請求処理で構成されており,業務効率の…」 raw「請求処理において」→ clean「S社の販売管理業務は,受注処理,出荷処理及び請求処理で構成されており,業務効率の向上を目的として販売管理システムを利用し…」"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「N社の営業部では,今年度の販売戦略立案に向けて,前年度の商品売上実績を売上総利益…」 raw「図のセルE2に入」→ clean「N社の営業部では,今年度の販売戦略立案に向けて,前年度の商品売上実績を売上総利益率,商品回転率及び売上構成比率の視点で分…」"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「N社の営業部では,今年度の販」 raw「売上の分析に当た」→ clean「N社の営業部では,今年度の販売戦略立案に向け」"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「すること」 raw「売上の分析に当たっては,売」→ clean「比率の視点で分析することにした.ここで,」"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「実績を売上総利益率,商品回転率及び売上構成比率」 raw「売上の分析に当たって」→ clean「前年度の商品売上実績を売上総利益率,商品回転率及び売上構成比率の視点で分析する」"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「戦略立案に向けて,前年度の商品売」 raw「売上の分析に当たっ」→ clean「は,今年度の販売戦略立案に向けて,前年度の商品売上実績を売上総利」"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「視点で」 raw「売上の分析に当たっては」→ clean「び売上構成比率の視点で分析することにし」"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_garbled",
+   "priority": "low",
+   "excerpt": "「[図]バブルチャ-ト:横軸=売上総利益率(%)(目盛15.0/20.0/25.0…」→「」 raw「なものはどれか.[図]バブルチャ-ト:横軸=売上総利益率(%)(目盛15.0/20.0/25.0/30.0/35.0),…」→ clean「なものはどれか.」"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「した.ここで,商品回転率は,一定期間の売上高を平均在庫高で割った値である.分析に…」 raw「売上の分析に当たっては,売上」→ clean「で分析することにした.ここで,商品回転率は,一定期間の売上高を平均在庫高で割った値である.分析には表計算ソフトを用いるこ…」"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_garbled",
+   "priority": "low",
+   "excerpt": "「」→「を作成した.ここで,列I,列Jの計算式は,セルA2~H11の範囲を,列Bをキ-と…」 raw「〔ストラテジ〕N社では」→ clean「うなワ-クシ-トを作成した.ここで,列I,列Jの計算式は,セルA2~H11の範囲を,列Bをキ-として降順に整列した後に入…」"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_garbled",
+   "priority": "low",
+   "excerpt": "「テジ〕」→「ンク||2|商品あ|1,730|||30.8|120|14.4|14.8||||…」 raw「〔ストラテジ〕N社では,売上構」→ clean「率累計(%)|ランク||2|商品あ|1,730|||30.8|120|14.4|14.8||||3|商品い|410|||…」"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.region",
+   "sub": "region/prose/raw_garbled",
+   "priority": "high",
+   "excerpt": "「〔ス」→「N社の営業部では,今年度の販売戦略立案に向けて,前年度の商品売上実績を売上総利益…」 raw「〔ストラテジ〕N社で」→ clean「N社の営業部では,今年度の販売戦略立案に向けて,前年度の商品売上実績を売上総利益率,商品回転率及び売上構成比率の視点で分…」"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「N社の営業部では,」 raw「今年度の販売戦略」→ clean「N社の営業部では,今年度の販売戦略」"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「向けて,前年度の商品売上実績を売上総利益率,商品回転率及び売上構成比率の視点で分…」 raw「の販売戦略立案に当たり,売上構成」→ clean「の販売戦略立案に向けて,前年度の商品売上実績を売上総利益率,商品回転率及び売上構成比率の視点で分析することにした.ここで…」"
+  },
+  {
+   "id": "2009h21a-q097",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「企業に対してPC関連機器の販売を行っており,販売管理業務の情報をデ-タベ-スによ…」 raw「I社は,月末に図1の各表」→ clean「I社は,企業に対してPC関連機器の販売を行っており,販売管理業務の情報をデ-タベ-スによって管理している.図1に示すデ-…」"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「I社は,企業に対してPC関連機器の販売を行っており,販売管理業務の情報をデ-タベ…」 raw「1の取引先担当者」→ clean「I社は,企業に対してPC関連機器の販売を行っており,販売管理業務の情報をデ-タベ-スによって管理している.図1に示すデ-…」"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「という)の」 raw「1の取引先担当者表のレコ-」→ clean「業(以下,取引先という)の担当者は原則1人」"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「に示すデ-タベ-スとデ-タベ-ス管理システム」 raw「1の取引先担当者表」→ clean「理している.図1に示すデ-タベ-スとデ-タベ-ス管理システムの印刷機能を使っ」"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.ins",
+   "sub": "ins/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「を行う企業(以下,取引」 raw「1の取引先担当者表のレコ」→ clean「れる.また,取引を行う企業(以下,取引先という)の担当」"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「|商品コ-ド|商品名|分類コ-ド|メ-カコ-ド|仕入先コ-ド||---|---|…」 raw「の取引先担当者表のレコ-ドを一意」→ clean「の構造**商品表|商品コ-ド|商品名|分類コ-ド|メ-カコ-ド|仕入先コ-ド||---|---|---|---|---|…」"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「は原則1人であるが,取引先によっては部署ごとに1人存在することがある.取引先コ-…」 raw「1の取引先担当者表のレコ-ドを一」→ clean「という)の担当者は原則1人であるが,取引先によっては部署ごとに1人存在することがある.取引先コ-ドは,取引先ごとに採番す…」"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/prose/raw_fluent",
+   "priority": "high",
+   "excerpt": "「」→「印刷機能を使って,販売時に図2の請求書を発行する.各商品の販売単価は適宜変更され…」 raw「1の取引先担当者表の」→ clean「ス管理システムの印刷機能を使って,販売時に図2の請求書を発行する.各商品の販売単価は適宜変更され,新たな販売単価とその更…」"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「様式**-表題:請求書-右上:平成YY年MM月DD日-宛先欄(左側):-[取引先…」 raw「取引先担当者表のレコ-ドを一意に」→ clean「**図2請求書の様式**-表題:請求書-右上:平成YY年MM月DD日-宛先欄(左側):-[取引先名][部署名]-[役職]…」"
+  },
+  {
+   "id": "2009h21a-q099",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「I社は,企業に対してPC関連機器の販売を行っており,販売管理業務の情報をデ-タベ…」 raw「図2の請求書を発」→ clean「I社は,企業に対してPC関連機器の販売を行っており,販売管理業務の情報をデ-タベ-スによって管理している.図1に示すデ-…」"
+  },
+  {
+   "id": "2009h21a-q100",
+   "layer": "jp_raw→jp",
+   "field": "stem",
+   "rule": "0a.num",
+   "sub": "num/struct/raw_fluent",
+   "priority": "low",
+   "excerpt": "「」→「I社は,企業に対してPC関連機器の販売を行っており,販売管理業務の情報をデ-タベ…」 raw「図2の請求書を表」→ clean「I社は,企業に対してPC関連機器の販売を行っており,販売管理業務の情報をデ-タベ-スによって管理している.図1に示すデ-…」"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "en",
+   "field": "choice.ア",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "isolated_kanji,R3",
+   "priority": "high",
+   "excerpt": "jp「一会肝期間ごとに決算を行い, 貸借対了表や損益計算書などの財務諸表の作成が   ーー強制される。  …」｜en「Settlement is performed each accounting period, and the preparation of financial…」"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "en",
+   "field": "choice.イ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "R3",
+   "priority": "high",
+   "excerpt": "jp「企業の経営者が, 株主や債権者などの企業外部の利害関係者に対して会計報告を ・行う。        …」｜en「The company's managers report accounting information to external stakeholders su…」"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "en",
+   "field": "choice.ウ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "isolated_kanji,rare_kanji,R3",
+   "priority": "high",
+   "excerpt": "jp「凡務賭表規則や企業会計原則, 各種会計基準などの会計法規に準拠した会計処理 「ーーー     を行う…」｜en「Accounting must be processed in compliance with accounting regulations such as t…」"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "0c.R3",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "「」 が 1/0｜…。                   「-                   …"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "0c.isolated_kanji",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "了表｜一会肝期間ごとに決算を行い, 貸借対了表や損益計算書などの財務諸表の作成が …"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "0c.isolated_kanji",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "会肝｜一会肝期間ごとに決算を行い, 貸借対了表や…"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "0c.isolated_kanji",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "対了｜一会肝期間ごとに決算を行い, 貸借対了表や損益計算書などの財務諸表の作成が…"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.イ",
+   "rule": "0c.R3",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "「」 が 1/0｜…て会計報告を ・行う。         「"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ウ",
+   "rule": "0c.R3",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "「」 が 1/0｜…計基準などの会計法規に準拠した会計処理 「ーーー     を行う必要がある。"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ウ",
+   "rule": "0c.isolated_kanji",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "凡務｜凡務賭表規則や企業会計原則, 各種会計基…"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ウ",
+   "rule": "0c.isolated_kanji",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "務賭｜凡務賭表規則や企業会計原則, 各種会計基準…"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ウ",
+   "rule": "0c.isolated_kanji",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "賭表｜凡務賭表規則や企業会計原則, 各種会計基準な…"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "jp",
+   "field": "choice.ウ",
+   "rule": "0c.rare_kanji",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "賭｜凡務賭表規則や企業会計原則, 各種会計基準…"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "zh",
+   "field": "choice.ア",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "isolated_kanji,R3",
+   "priority": "high",
+   "excerpt": "jp「一会肝期間ごとに決算を行い, 貸借対了表や損益計算書などの財務諸表の作成が   ーー強制される。  …」｜zh「每个会计期间进行结算，被强制要求编制资产负债表、利润表等财务报表。」"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "zh",
+   "field": "choice.イ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "R3",
+   "priority": "high",
+   "excerpt": "jp「企業の経営者が, 株主や債権者などの企業外部の利害関係者に対して会計報告を ・行う。        …」｜zh「企业的经营者向股东、债权人等企业外部的利害关系人进行会计报告。」"
+  },
+  {
+   "id": "2009h21a-q018",
+   "layer": "zh",
+   "field": "choice.ウ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "isolated_kanji,rare_kanji,R3",
+   "priority": "high",
+   "excerpt": "jp「凡務賭表規則や企業会計原則, 各種会計基準などの会計法規に準拠した会計処理 「ーーー     を行う…」｜zh「必须按照财务报表规则、企业会计原则、各类会计准则等会计法规进行会计处理。」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "en",
+   "field": "choice.ア",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「[表] 味覚符号表（行ア）:⏎| | 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| ア |…」｜en「| | Sweetness | Umami | Saltiness | Sourness | Bitterness |⏎| A | 000000 | 00000…」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "en",
+   "field": "choice.イ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「[表] 味覚符号表（行イ）:⏎| | 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| イ |…」｜en「| | Sweetness | Umami | Saltiness | Sourness | Bitterness |⏎| I | 000001 | 00001…」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "en",
+   "field": "choice.ウ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「[表] 味覚符号表（行ウ）:⏎| | 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| ウ |…」｜en「| | Sweetness | Umami | Saltiness | Sourness | Bitterness |⏎| U | 000001 | 00001…」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "en",
+   "field": "choice.エ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「[表] 味覚符号表（行エ）:⏎| | 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| エ |…」｜en「| | Sweetness | Umami | Saltiness | Sourness | Bitterness |⏎| E | 000001 | 00001…」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "en",
+   "field": "stem",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「「甘味」「うま味」「塩味」「酸味」「苦味」の5種類の味覚を、6ビット（2進数で6けた）の数値で符号化…」｜en「The five tastes “sweetness”, “umami”, “saltiness”, “sourness”, and “bitterness” …」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp",
+   "field": "choice.ア",
+   "rule": "0c.rare_kanji",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "酸｜…| 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| ア | 000…"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp",
+   "field": "choice.イ",
+   "rule": "0c.rare_kanji",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "酸｜…| 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| イ | 000…"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp",
+   "field": "choice.ウ",
+   "rule": "0c.rare_kanji",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "酸｜…| 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| ウ | 000…"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp",
+   "field": "choice.エ",
+   "rule": "0c.rare_kanji",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "酸｜…| 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| エ | 000…"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "0c.rare_kanji",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "酸｜「甘味」「うま味」「塩味」「酸味」「苦味」の5種類の味覚を、6ビッ…"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "zh",
+   "field": "choice.ア",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「[表] 味覚符号表（行ア）:⏎| | 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| ア |…」｜zh「| | 甜味 | 鲜味 | 咸味 | 酸味 | 苦味 |⏎| ア | 000000 | 000001 | 000010 | 000011 |…」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "zh",
+   "field": "choice.イ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「[表] 味覚符号表（行イ）:⏎| | 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| イ |…」｜zh「| | 甜味 | 鲜味 | 咸味 | 酸味 | 苦味 |⏎| イ | 000001 | 000010 | 000011 | 000100 |…」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "zh",
+   "field": "choice.ウ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「[表] 味覚符号表（行ウ）:⏎| | 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| ウ |…」｜zh「| | 甜味 | 鲜味 | 咸味 | 酸味 | 苦味 |⏎| ウ | 000001 | 000010 | 000100 | 001000 |…」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "zh",
+   "field": "choice.エ",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「[表] 味覚符号表（行エ）:⏎| | 甘味 | うま味 | 塩味 | 酸味 | 苦味 |⏎| エ |…」｜zh「| | 甜味 | 鲜味 | 咸味 | 酸味 | 苦味 |⏎| エ | 000001 | 000011 | 000111 | 001111 |…」"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "zh",
+   "field": "stem",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "rare_kanji",
+   "priority": "low",
+   "excerpt": "jp「「甘味」「うま味」「塩味」「酸味」「苦味」の5種類の味覚を、6ビット（2進数で6けた）の数値で符号化…」｜zh「将“甜味”“鲜味”“咸味”“酸味”“苦味”这5种味觉，用6比特（二进制6位）的数值进行编码。希望能够通过数值的加减运算来表示由这些味觉组合而…」"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "en",
+   "field": "stem",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "isolated_kanji",
+   "priority": "high",
+   "excerpt": "jp「小文字の英字からなる文字列の暗号化を考える。次表で英字を文字番号に変換し，変換後の文字番号について1…」｜en「Consider encrypting a string consisting of lowercase letters. Using the table be…」"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "0c.isolated_kanji",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "次表｜…英字からなる文字列の暗号化を考える。次表で英字を文字番号に変換し，変換後の文…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "zh",
+   "field": "stem",
+   "rule": "0c.tr_of_anomaly",
+   "sub": "isolated_kanji",
+   "priority": "high",
+   "excerpt": "jp「小文字の英字からなる文字列の暗号化を考える。次表で英字を文字番号に変換し，変換後の文字番号について1…」｜zh「考虑对由小写英文字母组成的字符串进行加密。用下表将英文字母转换为字符编号，然后对转换后的字符编号，第1个字符加1，第2个字符加2，……，第n…」"
+  },
+  {
+   "id": "2009h21a-q008",
+   "layer": "en",
+   "field": "stem",
+   "rule": "0q.en",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "\" ×2｜…llowing describes \"fabless\"?"
+  },
+  {
+   "id": "2009h21a-q036",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…妥当か。⏎(%) 人 見 積 80 \" 「 コ ス 。 に 「 収 ま 確…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "\"甘味\"，\"うま味\"，\"塩味\"，\"酸味\"，\"…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "\"甘味\"，\"うま味\"，\"塩味\"，\"酸味\"，\"苦味\"の5種…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "\"甘味\"，\"うま味\"，\"塩味\"，\"酸味\"，\"苦味\"の5種類の…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "\"甘味\"，\"うま味\"，\"塩味\"，\"酸味\"，\"苦味\"の5種類の味覚を…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "\"甘味\"，\"うま味\"，\"塩味\"，\"酸味\"，\"苦味\"の5種類の味覚を，6…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "\"甘味\"，\"うま味\"，\"塩味\"，\"酸味\"，\"苦味…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "\"甘味\"，\"うま味\"，\"塩味\"，\"酸味…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…\"から\"甘味\"成分を取り除いた\"酸味\"を減算で表現できるようにしたい。味覚…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…\"，\"うま味\"，\"塩味\"，\"酸味\"，\"苦味\"の5種類の味覚を，6ビット（2…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…うにしたい。例えば，\"甘味\"と\"酸味\"を組み合わせた\"甘酸っぱい\"という複…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…うま味\"，\"塩味\"，\"酸味\"，\"苦味\"の5種類の味覚を，6ビット（2進数で…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…きるようにしたい。例えば，\"甘味\"と\"酸味\"を組み合わせた\"甘酸っぱい\"と…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…するとともに，逆に\"甘酸っぱい\"から\"甘味\"成分を取り除いた\"酸味\"を減算…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…っぱい\"から\"甘味\"成分を取り除いた\"酸味\"を減算で表現できるようにしたい…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…て表現するとともに，逆に\"甘酸っぱい\"から\"甘味\"成分を取り除いた\"酸味\"…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…と\"酸味\"を組み合わせた\"甘酸っぱい\"という複合味の符号を，それぞれの数値…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…ともに，逆に\"甘酸っぱい\"から\"甘味\"成分を取り除いた\"酸味\"を減算で表現…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…ば，\"甘味\"と\"酸味\"を組み合わせた\"甘酸っぱい\"という複合味の符号を，そ…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…数値を加算して表現するとともに，逆に\"甘酸っぱい\"から\"甘味\"成分を取り除…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…現できるようにしたい。例えば，\"甘味\"と\"酸味\"を組み合わせた\"甘酸っぱい…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…甘味\"，\"うま味\"，\"塩味\"，\"酸味\"，\"苦味\"の5種類の味覚を，6ビット…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q060",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…算で表現できるようにしたい。例えば，\"甘味\"と\"酸味\"を組み合わせた\"甘酸…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…gca⏎⏎この手続で暗号化した結果が\"tmb\"であるとき，元の文字列はどれ…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…⏎この手続で暗号化した結果が\"tmb\"であるとき，元の文字列はどれか。⏎⏎…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q097",
+   "layer": "en",
+   "field": "stem",
+   "rule": "0q.en",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "\" ×8｜…e-item table. The \"Total\" row carries…"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "en",
+   "field": "stem",
+   "rule": "0q.en",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "\" ×8｜…e-item table. The \"Total\" row carries…"
+  },
+  {
+   "id": "2009h21a-q099",
+   "layer": "en",
+   "field": "stem",
+   "rule": "0q.en",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "\" ×8｜…e-item table. The \"Total\" row carries…"
+  },
+  {
+   "id": "2009h21a-q099",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…と数える。また，\"商品表>販売単価表\"という記述は，商品表の方が販売単価表…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q099",
+   "layer": "jp_raw",
+   "field": "stem",
+   "rule": "0q.prose",
+   "sub": null,
+   "priority": "high",
+   "excerpt": "…を取り出す操作を1回と数える。また，\"商品表>販売単価表\"という記述は，商…",
+   "resolved": "raw だけ (表示層の jp に ASCII \" は無い。学習者不可視、既知型 FP。B7 で新設の規則)"
+  },
+  {
+   "id": "2009h21a-q100",
+   "layer": "en",
+   "field": "stem",
+   "rule": "0q.en",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "\" ×8｜…e-item table. The \"Total\" row carries…"
+  },
+  {
+   "id": "2009h21a-q013",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=7",
+   "priority": "low",
+   "excerpt": "| 項目 | 金額 | |---|---| | 売上高 | 400 |"
+  },
+  {
+   "id": "2009h21a-q017",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=0",
+   "priority": "low",
+   "excerpt": "| 対象となる情報資産 | A社 | B社 | |---|---|---| | コンピュータや通信機器を設置する施設 | 〇 |  |"
+  },
+  {
+   "id": "2009h21a-q039",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=12",
+   "priority": "low",
+   "excerpt": "| 担当者 | 設計 | プログラミング | テスト | |--------|------|----------------|--------| | A | 3 | 3 | 6 |"
+  },
+  {
+   "id": "2009h21a-q054",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=5",
+   "priority": "low",
+   "excerpt": "| 操作名 | 操作の内容 | | --- | --- | | 操作1 | 箱を上から二つ取り出し，取り出した箱に書かれた値を加算した値を書いた箱を新たに一番上に積む。 |"
+  },
+  {
+   "id": "2009h21a-q054",
+   "layer": "jp↔fig",
+   "field": "stem",
+   "rule": "T.num_vs_fig",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "表のみ {2,3} (表 4 / fig 2)"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=26",
+   "priority": "low",
+   "excerpt": "| 文字番号 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | |---|---|---|---|---|---|…"
+  },
+  {
+   "id": "2009h21a-q062",
+   "layer": "jp↔fig",
+   "field": "stem",
+   "rule": "T.num_vs_fig",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "表のみ {3,4,5,6,7,8,9,10,11,12,13,14,…} (表 26 / fig 3)"
+  },
+  {
+   "id": "2009h21a-q091",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=6",
+   "priority": "low",
+   "excerpt": "| 注文時刻 | 注文種別 | 注文数 | |---|---|---| | 10:00 | 通常注文 | 80 |"
+  },
+  {
+   "id": "2009h21a-q091",
+   "layer": "jp↔fig",
+   "field": "stem",
+   "rule": "T.num_vs_fig",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "表のみ {80,11} (表 6 / fig 6)"
+  },
+  {
+   "id": "2009h21a-q091",
+   "layer": "jp↔zh/en",
+   "field": "stem",
+   "rule": "T.num_vs_tr",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "訳に無い {0}"
+  },
+  {
+   "id": "2009h21a-q092",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=21",
+   "priority": "low",
+   "excerpt": "| 日付 | 処理 | 金額（円） | |------|------|------| | 10/18 | 受注 | 20,000 |"
+  },
+  {
+   "id": "2009h21a-q092",
+   "layer": "jp↔fig",
+   "field": "stem",
+   "rule": "T.num_vs_fig",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "表のみ {20000,250000,30000,40000,50000} (表 17 / fig 19)"
+  },
+  {
+   "id": "2009h21a-q093",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=63",
+   "priority": "low",
+   "excerpt": "| | A | B | C | D | E | F | G | H | I | J | |---|---|---|---|---|---|---|---|---|---|---| …"
+  },
+  {
+   "id": "2009h21a-q094",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=63",
+   "priority": "low",
+   "excerpt": "| | A | B | C | D | E | F | G | H | I | J | |---|---|---|---|---|---|---|---|---|---|---| …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=0 num_cells=65",
+   "priority": "low",
+   "excerpt": "| | A | B | C | D | E | F | G | H | I | J | |---|---|---|---|---|---|---|---|---|---|---| …"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp_raw↔jp",
+   "field": "stem",
+   "rule": "T.num_raw_clean",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "raw のみ {} / clean のみ {1,2,1730,30.8,120,14.4,14.8,3,410,23.4,50,8.2,3.5,4,2630,22.7,220,12.0,22.5,5,3360,30.7,364,9.2,28.8,6,310,25.2,29,10.7,2.7,7,210,21.0,30,7.0,1.8,8,860,28.6,97,8.9,7.4,9,610,28.2,40,15.3,5.2,10,300,18.7,35,8.6,2.6,11,1260,22.1,14.0,10.8,12,11680}"
+  },
+  {
+   "id": "2009h21a-q095",
+   "layer": "jp↔fig",
+   "field": "stem",
+   "rule": "T.num_vs_fig",
+   "sub": null,
+   "priority": "low",
+   "excerpt": "表のみ {1,1730,30.8,120,14.4,14.8,3,410,23.4,50,8.2,3.5,…} (表 64 / fig 1)"
+  },
+  {
+   "id": "2009h21a-q096",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=0 num_cells=63",
+   "priority": "low",
+   "excerpt": "| | A | B | C | D | E | F | G | H | I | J | |---|---|---|---|---|---|---|---|---|---|---| …"
+  },
+  {
+   "id": "2009h21a-q097",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=0",
+   "priority": "low",
+   "excerpt": "| 商品コード | 商品名 | 分類コード | メーカコード | 仕入先コード | |---|---|---|---|---| | 商品コード | 販売単価 | 更新日時 |"
+  },
+  {
+   "id": "2009h21a-q098",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=0",
+   "priority": "low",
+   "excerpt": "| 商品コード | 商品名 | 分類コード | メーカコード | 仕入先コード | |---|---|---|---|---| | 商品コード | 販売単価 | 更新日時 |"
+  },
+  {
+   "id": "2009h21a-q099",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=0",
+   "priority": "low",
+   "excerpt": "| 商品コード | 商品名 | 分類コード | メーカコード | 仕入先コード | |---|---|---|---|---| | 商品コード | 販売単価 | 更新日時 |"
+  },
+  {
+   "id": "2009h21a-q100",
+   "layer": "jp",
+   "field": "stem",
+   "rule": "T.table",
+   "sub": "fig=1 num_cells=0",
+   "priority": "low",
+   "excerpt": "| 商品コード | 商品名 | 分類コード | メーカコード | 仕入先コード | |---|---|---|---|---| | 商品コード | 販売単価 | 更新日時 |"
+  }
+ ]
+}
