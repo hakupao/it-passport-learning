@@ -2621,7 +2621,14 @@
         "matches_key": true,
         "stem_corruption_suspected": false,
         "suspect": false,
-        "note_jp": ""
+        "note_jp": "（S130 X2: page-27 実読で 題幹の「」と「、」を源の “” と「，」に是正し、選択肢ア〜エ の先頭の表名ラベル「会員 |」（源の枠に無く、表示では列「会員」になる）を除去。zh / en の選択肢の生 HTML <u></u> も除去（主キーの括弧書きは保持）。エは**正解肢**だが属性集合は不変で、会員番号は店舗ごとに付与 → 主キー {会員番号, 店舗コード}、会員種別コードを持つ = エという導出・correct_answer=エ は不変 — fidfix-S130-x2）（S130 X2 訂正: 上記追記の初版は zh / en の主キー括弧書きを末尾に「保持」としたが、表示では余分な列になるため Rule D MINOR によりセル内の「（主键）」/「(PK)」に移した — fidfix-S130-x2-corr）",
+        "round1": {
+          "figure_derivable": true,
+          "derived_answer": "エ",
+          "matches_key": true,
+          "stem_corruption_suspected": false,
+          "note_jp": ""
+        }
       },
       "correct": {
         "jp": "正規化の鍵は「会員番号は店舗ごとに付与される」という条件です。実際、会員番号=1 は札幌・東京・大阪のいずれにも存在し、会員番号だけでは会員を一意に識別できません。したがって会員表の主キーは「店舗コード+会員番号」の複合キーにする必要があります。次に各列がどのキーに従属するかを見ると、会員名と会員種別コードは「店舗コード+会員番号」の組に対して決まります(例: 午前桜子は東京では会員種別コード01=プラチナ、大阪では03=一般と、同じ会員番号でも店舗ごとに会員種別が異なる)。一方、店舗名は店舗コードだけで、会員種別名は会員種別コードだけで決まるので、それぞれ店舗表・会員種別表へ分離します。結果として会員表は「店舗コード(主キー)・会員番号(主キー)・会員名・会員種別コード(外部キー)」となり、これは元の表を欠落なく復元できる無損失分解です。これがエに一致します。",
@@ -3332,12 +3339,19 @@
         "matches_key": true,
         "stem_corruption_suspected": false,
         "suspect": false,
-        "note_jp": "導出: 合格は (1)X+Y≧120 「または」(2)X/Y の少なくとも一方が100点 のとき → 三条件を束ねるのは論理和(OR)、真側に「合格」を置く ウ が正しい。例 A2=50,B2=80→合計130≧120 真→合格、表 C2「合格」と一致。閾値120は stem_jp_clean・4択・源(page-35 高倍率実読)で一致し腐敗なし(初回 vision が源を128と誤読したが高倍率再読+Rule A critic 独立確認で120と確定)。stored key ウ と一致。"
+        "note_jp": "導出: 合格は (1)X+Y≧120 「または」(2)X/Y の少なくとも一方が100点 のとき → 三条件を束ねるのは論理和(OR)、真側に「合格」を置く ウ が正しい。例 A2=50,B2=80→合計130≧120 真→合格、表 C2「合格」と一致。閾値120は stem_jp_clean・4択・源(page-35 高倍率実読)で一致し腐敗なし(初回 vision が源を128と誤読したが高倍率再読+Rule A critic 独立確認で120と確定)。stored key ウ と一致。（S130 X2: page-35 実読で 題幹の「」と「、」を源の “” と「，」に、選択肢ア〜エ（zh / en・解説も）の >= と \"合格\" を源の ≧ と '合格' に是正（同型 2019h31h-q098 と同じ字形）。ウは**正解肢**だが字形のみの変更で、(1) 又は (2) = 論理和、真側が '合格' = ウという導出・correct_answer=ウ は不変 — fidfix-S130-x2）",
+        "round1": {
+          "figure_derivable": true,
+          "derived_answer": "ウ",
+          "matches_key": true,
+          "stem_corruption_suspected": false,
+          "note_jp": "導出: 合格は (1)X+Y≧120 「または」(2)X/Y の少なくとも一方が100点 のとき → 三条件を束ねるのは論理和(OR)、真側に「合格」を置く ウ が正しい。例 A2=50,B2=80→合計130≧120 真→合格、表 C2「合格」と一致。閾値120は stem_jp_clean・4択・源(page-35 高倍率実読)で一致し腐敗なし(初回 vision が源を128と誤読したが高倍率再読+Rule A critic 独立確認で120と確定)。stored key ウ と一致。"
+        }
       },
       "correct": {
-        "jp": "合格条件は「(1) 科目Xと科目Yの合計が120点以上」または「(2) 科目Xか科目Yの少なくとも一方が100点」で、どちらか一方でも満たせば合格になる。つまり三つの条件 (A2+B2)>=120、A2=100、B2=100 の「いずれかが真」なら合格なので、これらを束ねる論理関数は論理和(OR)である。さらに IF 文は、論理和が真のとき「合格」、偽のとき「不合格」を表示する必要がある。この二点を満たすのが論理和を使い真側に「合格」を置いた ウ である。例として A2=50、B2=80 では合計130が120以上で第1条件が真となり、論理和が真→「合格」と表示され、表の C2「合格」と一致する。",
-        "zh": "合格条件为「(1) 科目 X 与科目 Y 的合计为 120 分以上」或「(2) 科目 X 或科目 Y 中至少有一门为 100 分」，只要满足其中任意一个即为合格。也就是说，三个条件 (A2+B2)>=120、A2=100、B2=100 中「只要有任意一个为真」即合格，因此把它们组合起来的逻辑函数是逻辑或（OR）。此外，IF 语句需要在逻辑或为真时显示「合格」、为假时显示「不合格」。同时满足这两点的是使用逻辑或、并把「合格」放在为真一侧的 ウ。例如 A2=50、B2=80 时，合计 130 大于等于 120，第 1 个条件为真，逻辑或为真→显示「合格」，与表中 C2 的「合格」一致。",
-        "en": "The pass conditions are “(1) the total of subjects X and Y is 120 points or more” or “(2) at least one of subject X or subject Y is 100 points”, and meeting either one is enough to pass. In other words, if any one of the three conditions (A2+B2)>=120, A2=100, B2=100 is true, the result is a pass, so the logical function that bundles them is OR (logical OR). In addition, the IF statement must display “Pass” when the OR is true and “Fail” when it is false. The option that satisfies both points is ウ, which uses OR and places “Pass” on the true side. For example, with A2=50 and B2=80 the total is 130, which is 120 or more, so the first condition is true, the OR is true → “Pass” is displayed, matching “Pass” in cell C2 of the table."
+        "jp": "合格条件は「(1) 科目Xと科目Yの合計が120点以上」または「(2) 科目Xか科目Yの少なくとも一方が100点」で、どちらか一方でも満たせば合格になる。つまり三つの条件 (A2+B2)≧120、A2=100、B2=100 の「いずれかが真」なら合格なので、これらを束ねる論理関数は論理和(OR)である。さらに IF 文は、論理和が真のとき「合格」、偽のとき「不合格」を表示する必要がある。この二点を満たすのが論理和を使い真側に「合格」を置いた ウ である。例として A2=50、B2=80 では合計130が120以上で第1条件が真となり、論理和が真→「合格」と表示され、表の C2「合格」と一致する。",
+        "zh": "合格条件为「(1) 科目 X 与科目 Y 的合计为 120 分以上」或「(2) 科目 X 或科目 Y 中至少有一门为 100 分」，只要满足其中任意一个即为合格。也就是说，三个条件 (A2+B2)≧120、A2=100、B2=100 中「只要有任意一个为真」即合格，因此把它们组合起来的逻辑函数是逻辑或（OR）。此外，IF 语句需要在逻辑或为真时显示「合格」、为假时显示「不合格」。同时满足这两点的是使用逻辑或、并把「合格」放在为真一侧的 ウ。例如 A2=50、B2=80 时，合计 130 大于等于 120，第 1 个条件为真，逻辑或为真→显示「合格」，与表中 C2 的「合格」一致。",
+        "en": "The pass conditions are “(1) the total of subjects X and Y is 120 points or more” or “(2) at least one of subject X or subject Y is 100 points”, and meeting either one is enough to pass. In other words, if any one of the three conditions (A2+B2)≧120, A2=100, B2=100 is true, the result is a pass, so the logical function that bundles them is OR (logical OR). In addition, the IF statement must display “Pass” when the OR is true and “Fail” when it is false. The option that satisfies both points is ウ, which uses OR and places “Pass” on the true side. For example, with A2=50 and B2=80 the total is 130, which is 120 or more, so the first condition is true, the OR is true → “Pass” is displayed, matching “Pass” in cell C2 of the table."
       },
       "distractors": {
         "ア": {
@@ -3816,7 +3830,14 @@
         "matches_key": true,
         "stem_corruption_suspected": false,
         "suspect": false,
-        "note_jp": ""
+        "note_jp": "（S130 X2: page-40 実読で 選択肢ア〜エ（zh / en も）の「共通鍵」「公開鍵」「秘密鍵」を源の表の値「共通」「公開」「秘密」に是正（図の空欄は「[a] 鍵」）。アは**正解肢**だが補われた「鍵」の除去のみで、メッセージは共通鍵、共通鍵は受信者の公開鍵で暗号化 = アという導出・correct_answer=ア は不変 — fidfix-S130-x2）",
+        "round1": {
+          "figure_derivable": true,
+          "derived_answer": "ア",
+          "matches_key": true,
+          "stem_corruption_suspected": false,
+          "note_jp": ""
+        }
       },
       "correct": {
         "jp": "ハイブリッド暗号方式は、データ本体の暗号化に高速な共通鍵暗号方式を使い、その共通鍵だけを公開鍵暗号方式で安全に相手へ届ける方式。図の (1) は「メッセージの暗号化に使用する鍵」なので、a鍵は共通鍵。次に、その共通鍵 (a鍵) を暗号化する (2) は「受信者の b鍵」であり、受信者だけが対応する秘密鍵で取り出せるよう、受信者の公開鍵で暗号化する。したがって b は公開。a：共通鍵、b：公開鍵 となり、正解はア。",
