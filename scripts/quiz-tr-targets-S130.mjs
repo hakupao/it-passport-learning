@@ -5,12 +5,13 @@
 // 対象 (TRACKS):
 //   t1: S128〜S129 の B track で jp 層を源照合した 13 exam の全題。A2b 照合済 (a2b_targets_S127.json) を除く。
 //   t2: ⑤-2 population 16 exam (full52_population_S118.json の excluded 以外)。A2b / T1 照合済を除く。
+//   t3: ⑤-2 excluded 392 題 (X track で源照合)。A2b 照合済でも含める。
 // jp_history: BASE (track の最初の data commit の親) と HEAD の jp 表示層 (stem = stem_jp_clean 優先、choices = choices_jp) を比べ、
 //       field が normStr 非等価に変わった題に付ける (旧 jp → 新 jp は BASE → HEAD の正味の差。間の他 track の
 //       jp 変更も含む)。touched_by = その field を normStr 非等価に変えた BASE..HEAD の data commit (git log、unit 名付き)。
 //       normStr で等しくなる変更 (空白・引用符字種等) は非計上 (件数だけ記録) — A2b と同じ。
 //
-// Run: node scripts/quiz-tr-targets-S130.mjs <t1|t2> [--out <path>]
+// Run: node scripts/quiz-tr-targets-S130.mjs <t1|t2|t3> [--out <path>]
 //   → data/ip/quiz/.phase2/<label>_targets_S130.json
 //   → evidence/phase5/stage_06_quiz_fidelity/<label>_targets_S130.json (同内容の写し)
 //   --out  その 1 path にだけ書く (回帰確認用)
@@ -50,12 +51,23 @@ const TRACKS = {
     decision: "D-150 §4 段 3 (方式 D) T2 — ⑤-2 population 16 exam",
     verified: "⑤-2 population (full52_population_S118 の excluded 以外) の題 (A2b / T1 照合済を除く)",
   },
+  // ⑤-2 の excluded 392 題 (S130 X track X1〜X4 で jp 層を源照合)。BASE = X1 の親。population 側 (T2) は対象外
+  t3: {
+    units: [
+      ["X1", "2015h27a"], ["X1", "2016h28a"], ["X1", "2016h28h"], ["X1", "2017h29a"], ["X1", "2017h29h"],
+      ["X2", "2018h30a"], ["X2", "2018h30h"], ["X2", "2019h31h"], ["X2", "2021r03"], ["X2", "2023r05"],
+      ["X3", "2019r01a"], ["X3", "2020r02o"], ["X4", "2022r04"], ["X4", "2024r06"], ["X4", "2025r07"], ["X4", "2026r08"],
+    ],
+    first: "a34c77a", sector: "excluded", exclude: [], onlyPopExcluded: true, tag: "X",
+    decision: "D-150 §4 段 3 (方式 D) T3 — ⑤-2 excluded 392 題",
+    verified: "⑤-2 excluded (full52_population_S118 の excluded) の題 (X track で源照合。A2b 照合済も含める = X で jp 再照合済)",
+  },
 };
 const argv = process.argv.slice(2);
 const outOpt = argv.indexOf("--out") >= 0 ? argv.splice(argv.indexOf("--out"), 2)[1] : null;
 const LABEL = argv[0] ?? "t1";
 const T = TRACKS[LABEL];
-if (!T || argv.length > 1) { console.error("✗ usage: quiz-tr-targets-S130.mjs [t1|t2] [--out <path>]"); process.exit(2); }
+if (!T || argv.length > 1) { console.error("✗ usage: quiz-tr-targets-S130.mjs [t1|t2|t3] [--out <path>]"); process.exit(2); }
 const OUTS = outOpt ? [outOpt] : [`data/ip/quiz/.phase2/${LABEL}_targets_S130.json`, `evidence/phase5/stage_06_quiz_fidelity/${LABEL}_targets_S130.json`];
 const UNITS = T.units;
 const UNIT_OF = new Map(UNITS.map(([u, e]) => [e, u]));
@@ -101,13 +113,14 @@ function diff(before, after) {
 const exclBufs = T.exclude.map((rel) => [rel, readFileSync(P(rel))]);
 const EXCL = new Map();   // id → 除外理由 (照合済の targets)
 for (const [rel, buf] of exclBufs) for (const q of JSON.parse(buf.toString("utf-8")).questions) if (!EXCL.has(q.id)) EXCL.set(q.id, rel);
-if (T.pop) for (const x of Object.values(JSON.parse(readFileSync(P(POP_REL), "utf-8")).exams)) for (const e of x.excluded) EXCL.set(e.id, "pop_excluded");
+const POP_EXCL = new Set(Object.values(JSON.parse(readFileSync(P(POP_REL), "utf-8")).exams).flatMap((x) => x.excluded.map((e) => e.id)));
+if (T.pop) for (const id of POP_EXCL) EXCL.set(id, "pop_excluded");
 
 // BASE..HEAD の data commit ごとの寄与 (touched_by 用)
 const COMMITS = sh("log", "--reverse", "--format=%h %s", `${BASE}..${HEAD}`, "--", "data/ip/quiz/questions.json", "data/ip/quiz/translations")
   .split("\n").filter(Boolean).map((l) => {
     const [h, ...s] = l.split(" ");
-    const subj = s.join(" "), m = subj.match(/\b(B\d+|A\d+[a-z]?|U\d+[a-z]?)\b/);
+    const subj = s.join(" "), m = subj.match(/\b(B\d+|A\d+[a-z]?|U\d+[a-z]?|X\d+|T\d+)\b/);
     return { commit: h, unit: m ? m[1] : /波 1〜3/.test(subj) ? "wave1-3" : /pagefix/.test(subj) ? "pagefix" : "?" };
   });
 const touched = new Map();   // `${id}|${field}` → [unit@commit]
@@ -124,6 +137,7 @@ const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 const questions = [];
 const excluded = {};
 for (const id of [...after.keys()].sort(cmp)) {
+  if (T.onlyPopExcluded && !POP_EXCL.has(id)) { excluded.population = (excluded.population ?? 0) + 1; continue; }
   if (EXCL.has(id)) { const r = EXCL.get(id); excluded[r] = (excluded[r] ?? 0) + 1; continue; }
   const exam_id = id.replace(/-q\d+$/, ""), unit = UNIT_OF.get(exam_id);
   const jp_history = (net.sem.get(id) ?? []).map((f) => ({
@@ -140,7 +154,7 @@ const out = {
   script: "scripts/quiz-tr-targets-S130.mjs",
   decision: T.decision,
   source: { base: BASE, head: HEAD, first_commit: T.first, units: UNITS.map(([unit, exam_id]) => ({ unit, exam_id })), commits: COMMITS,
-    excluded_from: exclBufs.map(([rel, buf]) => ({ path: rel, sha256_16: createHash("sha256").update(buf).digest("hex").slice(0, 16) })), ...(T.pop ? { population: POP_REL } : {}) },
+    excluded_from: exclBufs.map(([rel, buf]) => ({ path: rel, sha256_16: createHash("sha256").update(buf).digest("hex").slice(0, 16) })), ...(T.pop || T.onlyPopExcluded ? { population: POP_REL } : {}) },
   definition: {
     [`${T.tag}_verified`]: T.verified,
     [`${T.tag}_jp_fix`]: `うち BASE (${T.first} の親) → HEAD で jp 表示層の field が normStr 非等価に変わった題 (jp_history = 正味の 旧 → 新、touched_by = 変えた commit)`,
