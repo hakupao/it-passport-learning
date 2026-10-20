@@ -1,0 +1,34 @@
+{
+  "source": "S130 n9-fixer (⑨ cleanup (a)): S129 B11 / B13 の fixer が gitignore 層 (question_bank.json / by_year) にだけ書いた page pointer 是正の tracked 決定記録。bank 再生成で巻き戻った場合にここから再適用する。2009h21a-q093 は B13 が page_number だけを動かし figure_page_* を書かなかった (図は page-36) ため、本記録の適用で figure_page_number=36 を補い、既存 crop と一致しない figure_bbox_pct も是正する (Rule D MINOR-1) (S130 n9 で適用済)。evidence/quiz_n9_cleanup_S130.md 参照。適用: node scripts/quiz-pagefix-apply.mjs --decisions evidence/phase5/stage_06_quiz_fidelity/pagefix_S129_backfill_decisions.json --no-recrop",
+  "decisions": [
+    {
+      "id": "2010h22a-q062",
+      "verdict": "MOVE_QUESTION",
+      "current_page_number": 23,
+      "question_page_number": 24,
+      "figure_page_number": null,
+      "evidence": "S129 B11 (scripts/quiz-fidfix-S129-b11.mjs PAGE_FIX) で 23→24 を gitignore 層に適用済。S130 n9 で page-24 を目視再確認: 上段に 問62 (シングルサインオンの説明) の題幹と ア〜エ がすべてある。図なし"
+    },
+    {
+      "id": "2010h22a-q063",
+      "verdict": "MOVE_QUESTION",
+      "current_page_number": 23,
+      "question_page_number": 24,
+      "figure_page_number": null,
+      "evidence": "S129 B11 (scripts/quiz-fidfix-S129-b11.mjs PAGE_FIX) で 23→24 を gitignore 層に適用済。S130 n9 で page-24 を目視再確認: 中段に 問63 (データの正規化を行う目的) の題幹と ア〜エ がすべてある。図なし"
+    },
+    {
+      "id": "2009h21a-q093",
+      "verdict": "MOVE_QUESTION",
+      "question_page_number": 37,
+      "figure_page_number": 36,
+      "evidence": "元の記録値は page 36。S129 B13 (scripts/quiz-fidfix-S129-b13.mjs PAGE_FIX [36, 37]) で page_number だけ 37 に移した。S130 n9 で目視再確認: page-36 は 中問B 前文 + 図 (商品別販売分析ワークシート) のみ、page-37 に〔ストラテジ〕問93 (図のセル E2 の計算式) の題幹と ア C2／B2 〜 エ D2／D12 がある。figures/2009h21a-q093.png はワークシート = page-36 の図なので、図ページ 36 を D-145 figure_page_* で保持する (再裁断なし)。Rule D MINOR-1: 記録されていた figure_bbox_pct {x1 0.07, y1 0.362, x2 0.905, y2 0.865} は既存 crop を再現しない (列記号行 A〜J を切り、下に約 0.15 の空白を足す)。既存 crop (1141×782) を page-36 で画素照合すると原点 (146, 667) で平均絶対差 0.000 の完全一致。trunc 式で同じ矩形 (146, 667)-(1287, 1449) を返す proposed_bbox_pct に是正する (この枠で裁断した結果が既存 crop と画素同一であることを確認済、適用は --no-recrop)",
+      "figure_bbox_pct_current": { "x1": 0.07, "y1": 0.362, "x2": 0.905, "y2": 0.865 },
+      "bbox_check": {
+        "verdict": "BAD",
+        "proposed_bbox_pct": { "x1": 0.1019, "y1": 0.3291, "x2": 0.8982, "y2": 0.7149 },
+        "issue": "記録 bbox が既存 crop と不一致 (列記号行を欠き下に空白)。既存 crop の page-36 上の実位置 (146,667)-(1287,1449) に合わせる"
+      }
+    }
+  ]
+}
