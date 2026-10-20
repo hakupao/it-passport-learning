@@ -26,6 +26,12 @@
 // manifests <out-prefix>_batches/batch_NNN.json (K ids each, in id order) and the args for
 // scripts/quiz-expl-audit.workflow.mjs ({input_path, ids, batch_size, batch_dir, parts_dir, model, label}).
 //
+// --targeted (with --exclude-audited) replaces the stratified draw: ALL remaining figure questions
+// (seeded cap at --n if they exceed it), then non-figure questions ranked by calculation / logic /
+// procedure keywords in the displayed stem (distinct keywords desc, occurrences desc, seeded order)
+// until --n. --exclude-s102-figures also drops every has_figure question of the three S102 exams,
+// whose summary-only results record few ids although S102 audited all their figures.
+//
 // Run:  node scripts/quiz-expl-audit-prep-S130.mjs [--n 100] [--seed 130] [--fig-ratio 0.3]
 //         [--exclude-audited] [--out-prefix eaudit_pilot]
 //       node scripts/quiz-expl-audit-prep-S130.mjs --ids-from <args.json> --batch-size 5
@@ -59,6 +65,9 @@ const N = Number(opt("n", 100));
 const SEED = Number(opt("seed", 130));
 const FIG_RATIO = Number(opt("fig-ratio", 0.3));
 const EXCLUDE_AUDITED = argv.includes("--exclude-audited");
+const TARGETED = argv.includes("--targeted");
+const EXCLUDE_S102_FIG = argv.includes("--exclude-s102-figures");
+const S102_EXAMS = ["2023r05", "2024r06", "2026r08"];
 const OUT_PREFIX = opt("out-prefix", "eaudit_pilot");
 const IDS_FROM = opt("ids-from", null);
 const BATCH_SIZE = Number(opt("batch-size", 1));
@@ -123,8 +132,9 @@ for (const f of auditFiles) {
 }
 
 const missingExpl = questions.filter((q) => !explById[q.id]).map((q) => q.id);
+const s102Fig = (q) => EXCLUDE_S102_FIG && q.has_figure && S102_EXAMS.includes(q.exam_id);
 const population = questions
-  .filter((q) => explById[q.id] && !(EXCLUDE_AUDITED && audited.has(q.id)))
+  .filter((q) => explById[q.id] && !(EXCLUDE_AUDITED && audited.has(q.id)) && !s102Fig(q))
   .sort((a, b) => a.id.localeCompare(b.id));
 
 // strata: exam × has_figure
@@ -158,6 +168,22 @@ const figQuota = Math.round(N * FIG_RATIO);
 const figAlloc = allocate("fig", figQuota);
 const plainAlloc = allocate("plain", N - figQuota);
 
+// calculation / logic / procedure cues in the displayed stem. `式` / `セル` skip common
+// non-formula compounds (方式・形式・株式… / キャンセル・セルフ).
+const KEYWORDS = ["求め", "幾つ", "いくら", "幾ら", "何%", "何％", "何円", "何時間", "何日", "何件", "何個", "何ビット", "何バイト", "流れ図", "擬似言語", "関数", "式", "セル", "表計算", "論理式", "真理値", "処理手順", "アルゴリズム", "期待値", "損益", "利益", "原価", "稼働率", "MTBF"];
+const NOISE = { 式: /(方|形|株|様|正|儀|図|書|旧|新|一)式|式典/g, セル: /キャンセル|セルフ|セールス/g };
+function keywordScore(stem) {
+  const matched = [];
+  let hits = 0;
+  for (const k of KEYWORDS) {
+    const text = NOISE[k] ? stem.replace(NOISE[k], "") : stem;
+    const n = text.split(k).length - 1;
+    if (n > 0) { matched.push(k); hits += n; }
+  }
+  return { distinct: matched.length, hits, matched };
+}
+const kwById = new Map();
+let targetedMeta = null;
 let picked = [];
 if (IDS_FROM) {
   const src = JSON.parse(readFileSync(path.resolve(ROOT, IDS_FROM), "utf-8"));
@@ -167,6 +193,19 @@ if (IDS_FROM) {
   picked = wanted.map((id) => byId.get(id) ?? fail(`unknown id ${id} in ${IDS_FROM}`));
   if (new Set(wanted).size !== wanted.length) fail(`duplicate ids in ${IDS_FROM}`);
   if (picked.some((q) => !explById[q.id])) fail(`id without explanation in ${IDS_FROM}`);
+} else if (TARGETED) {
+  const figs = population.filter((q) => q.has_figure);
+  picked = figs.length > N ? shuffle(figs).slice(0, N) : [...figs];
+  const scored = shuffle(population.filter((q) => !q.has_figure))
+    .map((q, order) => ({ q, order, ...keywordScore(displayStem(q)) }))
+    .filter((x) => x.distinct > 0)
+    .sort((a, b) => b.distinct - a.distinct || b.hits - a.hits || a.order - b.order);
+  for (const x of scored.slice(0, Math.max(0, N - picked.length))) {
+    picked.push(x.q);
+    kwById.set(x.q.id, x.matched);
+  }
+  targetedMeta = { fig_pool: figs.length, plain_candidates: scored.length, plain_min_distinct: picked.length > figs.length ? kwById.get(picked.at(-1).id).length : null };
+  picked.sort((a, b) => a.id.localeCompare(b.id));
 } else {
   for (const e of exams) {
     for (const [kind, alloc] of [["fig", figAlloc], ["plain", plainAlloc]]) {
@@ -200,6 +239,7 @@ const samples = picked.map((q) => {
       : null,
     figure_page_png: figPage,
     question_page_png: q.has_figure && figPage && qPage && figPage !== qPage ? qPage : null,
+    ...(TARGETED ? { target_reason: q.has_figure ? "figure" : `keywords:${kwById.get(q.id).join("|")}` } : {}),
     explanation: explById[q.id],
   };
 });
@@ -209,6 +249,8 @@ const argsFile = path.join(OUT_DIR, `${OUT_PREFIX}_workflow_args.json`);
 const meta = {
   generated_by: "scripts/quiz-expl-audit-prep-S130.mjs",
   ids_from: IDS_FROM,
+  targeted: TARGETED ? { ...targetedMeta, keywords: KEYWORDS } : null,
+  exclude_s102_figures: EXCLUDE_S102_FIG,
   n_requested: N,
   seed: SEED,
   prng: "mulberry32",
@@ -220,7 +262,7 @@ const meta = {
   missing_explanation: missingExpl.length,
   population: population.length,
   population_fig: population.filter((q) => q.has_figure).length,
-  alloc: IDS_FROM ? null : Object.fromEntries(exams.map((e) => [e, { fig: figAlloc[e], plain: plainAlloc[e], pop_fig: strata[e].fig.length, pop_plain: strata[e].plain.length }])),
+  alloc: IDS_FROM || TARGETED ? null : Object.fromEntries(exams.map((e) => [e, { fig: figAlloc[e], plain: plainAlloc[e], pop_fig: strata[e].fig.length, pop_plain: strata[e].plain.length }])),
 };
 writeFileSync(inputFile, JSON.stringify({ ...meta, n: samples.length, samples }, null, 2) + "\n");
 let wfArgs = { input_path: path.relative(ROOT, inputFile), items: samples.map((s) => ({ id: s.id, has_figure: s.has_figure })) };
