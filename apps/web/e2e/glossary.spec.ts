@@ -9,6 +9,8 @@
 //     (機能要件 is taught in two units — Review Focus 1).
 //   - The detail page's past-exam links point to
 //     `/quiz?mode=exam&id=<examId>#<questionId>`.
+//   - The detail page's learn-in link lands on `/textbook/<unitId>#<termId>`
+//     with that term's <article> in view.
 //   - Bad ids answer 404: a path-traversal-shaped id and a valid-shaped id that
 //     is not in the dictionary (Review Focus 2).
 //
@@ -92,4 +94,19 @@ test("glossary detail: invalid ids answer 404", async ({ request }) => {
     const res = await request.get(`/ja/glossary/${bad}`);
     expect(res.status(), bad).toBe(404);
   }
+});
+
+test(`glossary detail: ${MULTI_SENSE_TERM} learn-in link lands on the unit's #termId article`, async ({ page }) => {
+  const res = await page.goto(`/ja/glossary/${MULTI_ID}`);
+  expect(res?.status()).toBe(200);
+
+  const learnIn = page.locator(`main a[href^="/ja/textbook/"][href$="#${MULTI_ID}"]`);
+  await expect(learnIn).toHaveCount(2); // one per sense
+  await learnIn.first().click();
+
+  await expect(page).toHaveURL(new RegExp(`/ja/textbook/[^/#]+#${MULTI_ID}$`));
+  const article = page.locator(`article#${MULTI_ID}`);
+  await expect(article).toBeVisible();
+  await expect(article).toBeInViewport();
+  await expect(article.getByRole("heading", { level: 3 })).toContainText(MULTI_SENSE_TERM);
 });

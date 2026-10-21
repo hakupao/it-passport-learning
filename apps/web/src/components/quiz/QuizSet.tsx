@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { TermChip } from "@/components/glossary/TermChip";
@@ -165,8 +165,19 @@ function QuestionCard({
       )}
       {q.terms.length > 0 ? (
         <div className={styles.terms}>
-          {q.terms.map((term) => (
-            <TermChip key={term} card={termCards[term]} label={term} locale={locale} />
+          {q.terms.map((term, i) => (
+            <Fragment key={term}>
+              {/* Two plain-text terms side by side get a visible dot, plus real
+                  spaces so the text does not run together for screen readers
+                  (whitespace-only flex children are not laid out). */}
+              {i > 0 && !termCards[q.terms[i - 1]!] && !termCards[term] ? (
+                <>
+                  {" "}
+                  <span aria-hidden="true">·</span>{" "}
+                </>
+              ) : null}
+              <TermChip card={termCards[term]} label={term} locale={locale} />
+            </Fragment>
           ))}
         </div>
       ) : null}

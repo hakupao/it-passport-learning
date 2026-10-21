@@ -85,19 +85,25 @@ export async function UnitReader({
           // id = anchor for the glossary's /textbook/<unitId>#<termId> link; every
           // textbook term is a dictionary headword, so the glossary link resolves.
           <article key={tm.term} id={termId(tm.term)} className={styles.term}>
-            <h3 className={styles.termHead}>
-              <span className={styles.termJp}>{tm.term}</span>
-              {showGloss ? (
-                <span className={styles.termGloss}>{pickTerm(tm, locale)}</span>
-              ) : null}
+            {/* The link sits beside the h3, not inside it, so the heading's name is
+                just the term; the sr-only term makes each link name unique. */}
+            <div className={styles.termRow}>
+              <h3 className={styles.termHead}>
+                <span className={styles.termJp}>{tm.term}</span>
+                {showGloss ? (
+                  <span className={styles.termGloss}>{pickTerm(tm, locale)}</span>
+                ) : null}
+              </h3>
               <Link
                 href={`/glossary/${termId(tm.term)}`}
                 locale={locale}
                 className={styles.termLink}
               >
-                {tg("openInGlossary")} →
+                {tg("openInGlossary")}
+                <span className="sr-only"> {tm.term}</span>
+                <span aria-hidden="true"> →</span>
               </Link>
-            </h3>
+            </div>
             <p className={styles.def}>{pick(rec(tm), "definition", locale)}</p>
             <p className={styles.prose}>{pick(rec(tm), "explanation", locale)}</p>
             <p className={styles.analogy}>

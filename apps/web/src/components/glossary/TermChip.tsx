@@ -2,7 +2,8 @@
 //
 // With a dictionary card: a disclosure button (aria-expanded / aria-controls)
 // that toggles an inline region with the active-locale gloss, definition, memory
-// hook and a link to /glossary/<termId>. Esc closes and returns focus to the
+// hook, an "other units (n)" hint for multi-sense terms, and a link to
+// /glossary/<termId>. Esc closes and returns focus to the
 // button; a pointer press outside the chip, or focus leaving it (keyboard Tab to
 // another chip), closes it — so at most one card is open. Without a card (term not in the textbook
 // dictionary): plain text. Client component — only `import type` from
@@ -22,12 +23,14 @@ interface Props {
   card: TermCard | undefined;
   label: string;
   locale: string;
+  /** Initial disclosure state (default closed); lets SSR tests render the card. */
+  defaultOpen?: boolean;
 }
 
-export function TermChip({ card, label, locale }: Props): React.ReactElement {
+export function TermChip({ card, label, locale, defaultOpen = false }: Props): React.ReactElement {
   const t = useTranslations("Glossary");
   const popId = `${useId()}-pop`;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const wrapRef = useRef<HTMLSpanElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
 
@@ -86,6 +89,9 @@ export function TermChip({ card, label, locale }: Props): React.ReactElement {
               <span className={styles.fieldLabel}>{t("memoryHook")}</span>
               {card.memoryHook}
             </span>
+          ) : null}
+          {card.senseCount > 1 ? (
+            <span className={styles.chipField}>{t("otherSenses", { n: card.senseCount - 1 })}</span>
           ) : null}
           <Link href={`/glossary/${card.id}`} locale={locale} className={styles.chipLink}>
             {t("openInGlossary")} →

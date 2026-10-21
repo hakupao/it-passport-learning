@@ -16,6 +16,7 @@ import { QuizBrowser } from "@/components/quiz/QuizBrowser";
 import { QuizSet } from "@/components/quiz/QuizSet";
 import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
+import { isValidMode } from "@/lib/quiz/quizModel";
 import {
   buildExamNav,
   buildTopicNav,
@@ -49,17 +50,24 @@ export default async function QuizPage({
   setRequestLocale(locale);
 
   const sp = await searchParams;
-  const set = await loadQuestionSet(first(sp.mode), first(sp.id), locale);
+  const mode = first(sp.mode);
+  const id = first(sp.id);
+  // D-179: only this set's terms cross to the client, as summary cards. Start the
+  // dictionary load alongside the question set when a set is requested (never on
+  // the landing page). If it fails, log it and render the terms as plain text.
+  const dictPromise =
+    isValidMode(mode) && id
+      ? loadDictionary().catch((err: unknown) => {
+          console.error("[quiz] glossary dictionary load failed; term chips fall back to plain text", err);
+          return null;
+        })
+      : null;
+  const set = await loadQuestionSet(mode, id, locale);
   if (set) {
     // D-149: only the owner (D-148 cookie) sees the per-question report button.
     // Only the boolean crosses to the client — never the key or its hash.
     const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
-    // D-179: only this set's terms cross to the client, as summary cards. If the
-    // dictionary fails to load, log it and render the terms as plain text.
-    const dict = await loadDictionary().catch((err: unknown) => {
-      console.error("[quiz] glossary dictionary load failed; term chips fall back to plain text", err);
-      return null;
-    });
+    const dict = await dictPromise;
     const termCards = buildTermCards(dict, set.questions, locale);
     return (
       <QuizSet

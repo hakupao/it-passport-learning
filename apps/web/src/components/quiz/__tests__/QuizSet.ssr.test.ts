@@ -60,6 +60,20 @@ describe("QuizSet anchors + term chips (SSR)", () => {
     expect(out).toContain("販売促進");
   });
 
+  it("adjacent card-less terms are separated by spaces + a visible dot; chips are not", () => {
+    const sep = ' <span aria-hidden="true">·</span> ';
+    const none = render({});
+    expect(none).toContain(`ダイレクトマーケティング</span>${sep}<span`);
+    expect(none).toContain(`販売促進</span>${sep}<span`);
+    expect(none.split(sep).length - 1).toBe(2);
+
+    // RPA has a card: only the pair of plain-text terms gets a separator.
+    const one = render({ RPA: CARD });
+    expect(one.split(sep).length - 1).toBe(1);
+    expect(one).toContain(`ダイレクトマーケティング</span>${sep}<span`);
+    expect(one).not.toMatch(/·<\/span> <span[^>]*><button/);
+  });
+
   it("no cards: every term is plain text", () => {
     const out = render({});
     expect(out).not.toContain("aria-expanded");

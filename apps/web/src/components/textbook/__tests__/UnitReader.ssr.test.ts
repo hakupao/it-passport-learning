@@ -57,6 +57,28 @@ describe("UnitReader term anchors (SSR)", () => {
     expect(out).toContain("用語集で開く");
   });
 
+  it("keeps the glossary link out of the h3; its accessible text names the term", async () => {
+    const id = termId("機能要件");
+    const out = await render("ja");
+    const heads = [...out.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>/g)].map((m) => m[1] ?? "");
+    expect(heads.length).toBeGreaterThan(0);
+    for (const inner of heads) {
+      expect(inner).not.toContain("<a");
+      expect(inner).not.toContain("用語集で開く");
+    }
+    expect(heads.some((inner) => inner.includes("機能要件"))).toBe(true);
+
+    const link = out.match(new RegExp(`<a[^>]*href="/ja/glossary/${id}"[^>]*>([\\s\\S]*?)</a>`));
+    expect(link).not.toBeNull();
+    const inner = link![1] ?? "";
+    expect(inner).toContain("用語集で開く");
+    expect(inner).toMatch(/<span class="sr-only">\s*機能要件<\/span>/);
+    expect(inner).toContain('<span aria-hidden="true"> →</span>');
+    // Accessible text (tags stripped, aria-hidden arrow dropped) = label + term.
+    const name = inner.replace(/<span aria-hidden="true">[^<]*<\/span>/g, "").replace(/<[^>]+>/g, "");
+    expect(name.trim()).toBe("用語集で開く 機能要件");
+  });
+
   it("uses the active locale for the link prefix and label", async () => {
     const id = termId("機能要件");
     const out = await render("zh");
@@ -67,7 +89,7 @@ describe("UnitReader term anchors (SSR)", () => {
   it("anchors and links every term of the unit, ids matching termId(term)", async () => {
     const unit = await loadUnit(UNIT_ID);
     const out = await render("en");
-    const articleIds = [...out.matchAll(/<article[^>]*\bid="([^"]*)"/g)].map((m) => m[1]);
+    const articleIds = [...out.matchAll(/<article[^>]*\bid="([^"]*)"/g)].map((m) => m[1] ?? "");
     const ids = unit.terms.map((tm) => termId(tm.term));
     expect(articleIds).toEqual(ids);
     for (const id of ids) expect(out).toContain(`href="/en/glossary/${id}"`);
