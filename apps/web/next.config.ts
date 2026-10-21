@@ -43,17 +43,24 @@ const QUIZ_TRACE = [
   "../../data/ip/quiz/translations/*.json",
   "../../data/ip/quiz/explanations/*.json",
 ];
+// Glossary (D-179 §9): the dictionary is built from every textbook unit plus the
+// base questions.json (QuizQuestion.terms links); no quiz sidecars are read.
+const GLOSSARY_TRACE = [...TEXTBOOK_TRACE, "../../data/ip/quiz/questions.json"];
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(process.cwd(), "..", ".."),
   outputFileTracingIncludes: {
     "/[locale]/textbook": TEXTBOOK_TRACE,
     "/[locale]/textbook/[unitId]": TEXTBOOK_TRACE,
     "/[locale]/quiz": QUIZ_TRACE,
+    "/[locale]/glossary": GLOSSARY_TRACE,
+    "/[locale]/glossary/[termId]": GLOSSARY_TRACE,
   },
   outputFileTracingExcludes: {
     "/[locale]/textbook": IPA_TRACE_EXCLUDE,
     "/[locale]/textbook/[unitId]": IPA_TRACE_EXCLUDE,
     "/[locale]/quiz": IPA_TRACE_EXCLUDE,
+    "/[locale]/glossary": IPA_TRACE_EXCLUDE,
+    "/[locale]/glossary/[termId]": IPA_TRACE_EXCLUDE,
   },
 };
 

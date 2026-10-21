@@ -21,9 +21,7 @@ export function RetroMenuBar(): React.ReactElement {
       <div className="flex items-center">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-          const label = tNav(
-            item.key as "textbook" | "chat" | "quiz" | "glossary" | "tutor",
-          );
+          const label = tNav(item.key);
           const firstChar = label.charAt(0);
           const rest = label.slice(1);
           return (
