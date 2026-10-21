@@ -135,6 +135,27 @@ export function toTermCard(entry: DictEntry, locale: string): TermCard {
   };
 }
 
+/**
+ * Cards for the given questions' terms, keyed by the term exactly as it appears in
+ * QuizQuestion.terms (looked up NFC). Terms without an entry get no card; a null
+ * dictionary (load failed) yields {} so every term renders as plain text.
+ */
+export function buildTermCards(
+  dict: Dictionary | null,
+  questions: Pick<QuizQuestion, "terms">[],
+  locale: string,
+): Record<string, TermCard> {
+  const cards: Record<string, TermCard> = {};
+  if (!dict) return cards;
+  for (const q of questions) {
+    for (const term of q.terms) {
+      const entry = dict.byTerm.get(term.normalize("NFC"));
+      if (entry) cards[term] = toTermCard(entry, locale);
+    }
+  }
+  return cards;
+}
+
 export interface DictListItem {
   id: string;
   term: string;

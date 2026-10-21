@@ -1,9 +1,10 @@
 // Stage 6 (D-179 / D-180) — glossary term chip on quiz questions.
 //
-// With a dictionary card: a button (aria-expanded) that toggles an inline
-// popover with the active-locale gloss, definition, memory hook and a link to
-// /glossary/<termId>. Esc closes and returns focus to the button; a pointer
-// press outside the chip closes it. Without a card (term not in the textbook
+// With a dictionary card: a disclosure button (aria-expanded / aria-controls)
+// that toggles an inline region with the active-locale gloss, definition, memory
+// hook and a link to /glossary/<termId>. Esc closes and returns focus to the
+// button; a pointer press outside the chip, or focus leaving it (keyboard Tab to
+// another chip), closes it — so at most one card is open. Without a card (term not in the textbook
 // dictionary): plain text. Client component — only `import type` from
 // lib/glossary/dictionary (it pulls in server-only modules).
 
@@ -51,7 +52,15 @@ export function TermChip({ card, label, locale }: Props): React.ReactElement {
   if (!card) return <span className={styles.chipText}>{label}</span>;
 
   return (
-    <span ref={wrapRef} className={styles.chip}>
+    <span
+      ref={wrapRef}
+      className={styles.chip}
+      onBlur={(e) => {
+        // React's onBlur is focusout (bubbles). The region is focusable
+        // (tabIndex -1) so a click on its text keeps focus inside the chip.
+        if (!wrapRef.current?.contains(e.relatedTarget as Node | null)) setOpen(false);
+      }}
+    >
       <button
         ref={btnRef}
         type="button"
@@ -63,7 +72,7 @@ export function TermChip({ card, label, locale }: Props): React.ReactElement {
         {label}
       </button>
       {open ? (
-        <span id={popId} role="dialog" aria-label={card.term} className={styles.chipPop}>
+        <span id={popId} role="region" aria-label={card.term} tabIndex={-1} className={styles.chipPop}>
           <span className={styles.chipHead}>
             {card.term}
             {card.gloss !== card.term ? <span className={styles.gloss}>{card.gloss}</span> : null}

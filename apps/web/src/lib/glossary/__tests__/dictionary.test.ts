@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 
 import type { ReaderIndex } from "../../textbook/reader";
 import type { TextbookUnit, UnitTerm } from "../../textbook/types";
-import { buildDictionary, buildListGroups, toTermCard } from "../dictionary";
+import { buildDictionary, buildListGroups, buildTermCards, toTermCard } from "../dictionary";
 import { termId } from "../termId";
 
 const term = (
@@ -235,6 +235,27 @@ describe("toTermCard", () => {
     expect(card.gloss).toBe("要件定義");
     expect(card.definition).toBe("M-req(jp)");
     expect(card.memoryHook).toBe("M-req-hook(jp)");
+  });
+});
+
+describe("buildTermCards", () => {
+  const dict = buildDictionary(index, units, questions);
+  const qs = [
+    { terms: ["機能要件", "不存在の語"] },
+    // NFD spelling of an NFC headword still resolves; the card is keyed by the raw term.
+    { terms: ["要件定義".normalize("NFD"), "機能要件"] },
+  ];
+
+  it("cards only the given questions' terms that have an entry, keyed by the raw term", () => {
+    const cards = buildTermCards(dict, qs, "zh");
+    expect(Object.keys(cards).sort()).toEqual(["機能要件", "要件定義".normalize("NFD")].sort());
+    expect(cards["機能要件"]).toEqual(toTermCard(dict.byTerm.get("機能要件")!, "zh"));
+    expect(cards["要件定義".normalize("NFD")]!.id).toBe(termId("要件定義"));
+    expect(cards["不存在の語"]).toBeUndefined();
+  });
+
+  it("returns {} when the dictionary is unavailable (terms fall back to plain text)", () => {
+    expect(buildTermCards(null, qs, "ja")).toEqual({});
   });
 });
 

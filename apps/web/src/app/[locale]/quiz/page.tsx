@@ -14,7 +14,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { QuizBrowser } from "@/components/quiz/QuizBrowser";
 import { QuizSet } from "@/components/quiz/QuizSet";
-import { toTermCard, type TermCard } from "@/lib/glossary/dictionary";
+import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import {
   buildExamNav,
@@ -54,15 +54,13 @@ export default async function QuizPage({
     // D-149: only the owner (D-148 cookie) sees the per-question report button.
     // Only the boolean crosses to the client — never the key or its hash.
     const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
-    // D-179: only this set's terms cross to the client, as summary cards.
-    const dict = await loadDictionary();
-    const termCards: Record<string, TermCard> = {};
-    for (const q of set.questions) {
-      for (const term of q.terms) {
-        const entry = dict.byTerm.get(term.normalize("NFC"));
-        if (entry) termCards[term] = toTermCard(entry, locale);
-      }
-    }
+    // D-179: only this set's terms cross to the client, as summary cards. If the
+    // dictionary fails to load, log it and render the terms as plain text.
+    const dict = await loadDictionary().catch((err: unknown) => {
+      console.error("[quiz] glossary dictionary load failed; term chips fall back to plain text", err);
+      return null;
+    });
+    const termCards = buildTermCards(dict, set.questions, locale);
     return (
       <QuizSet
         locale={locale}
