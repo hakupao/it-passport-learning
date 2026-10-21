@@ -51,6 +51,9 @@ interface QuizMessages {
   showAnswer: string;
   correctLabel: string;
   explanationTitle: string;
+  pickChoice: string;
+  resultCorrect: string;
+  resultWrong: string;
 }
 
 interface LocaleFixture {
@@ -242,4 +245,66 @@ test("quiz ja: two open tabs never drop each other's answers", async ({ context 
   await expect(a.getByRole("article")).toHaveCount(TOPIC_QUESTION_COUNT);
   const rec = JSON.parse((await stored())!) as { questions: Record<string, unknown> };
   expect(Object.keys(rec.questions).sort()).toEqual([idA!, idB!].sort());
+});
+
+// Phase 3 fix wave item 1 — table choices (ChoiceBody kind "table"): the table
+// is a sibling of the choice button, not inside it. questions.json →
+// 2022r04-q059 (topic technology-13-34, keyed エ, no figure) has 4 table choices.
+const TABLE_CHOICE_TOPIC = "technology-13-34";
+const TABLE_CHOICE_QID = "2022r04-q059";
+const TABLE_CHOICE_ANSWER = "エ";
+
+test("quiz ja: table choices — table outside the button, answered via the button", async ({
+  page,
+}: { page: Page }) => {
+  const m = ja.Quiz;
+  const stored = () => page.evaluate(() => localStorage.getItem("itp:learn:v1"));
+  await page.goto(`/ja/quiz?mode=topic&id=${TABLE_CHOICE_TOPIC}`);
+  const card = page.locator(`article[id="${TABLE_CHOICE_QID}"]`);
+  await expect(card).toHaveCount(1);
+
+  const items = card.getByRole("list").first().getByRole("listitem");
+  await expect(items).toHaveCount(CHOICE_LETTERS.length);
+  await expect(card.locator("button table")).toHaveCount(0);
+  for (const letter of CHOICE_LETTERS) {
+    const btn = card.getByRole("button", { name: fill(m.pickChoice, { letter }), exact: true });
+    await expect(btn).toHaveCount(1);
+    const describedby = await btn.getAttribute("aria-describedby");
+    expect(describedby).toBe(`${TABLE_CHOICE_QID}-choice-${letter}`);
+    await expect(card.locator(`[id="${describedby}"] table`).first()).toBeVisible();
+  }
+
+  const pick = card.getByRole("button", { name: fill(m.pickChoice, { letter: TABLE_CHOICE_ANSWER }) });
+  await pick.click();
+  await expect(pick).toHaveAttribute("aria-pressed", "true");
+  await expect(pick).toHaveAttribute("aria-disabled", "true");
+  await expect(pick).toContainText("✓");
+  await expect(pick.locator(".sr-only", { hasText: m.resultCorrect })).toHaveCount(1);
+  const answerLine = card.locator('p[aria-live="polite"]');
+  await expect(answerLine).toHaveText(`${m.correctLabel}: ${TABLE_CHOICE_ANSWER}`);
+  await expect.poll(stored).toContain(TABLE_CHOICE_QID);
+  const rec = JSON.parse((await stored())!) as { questions: Record<string, { choice: string; correct: boolean }> };
+  expect(rec.questions[TABLE_CHOICE_QID]).toMatchObject({ choice: TABLE_CHOICE_ANSWER, correct: true });
+
+  // After the answer, clicking another choice's table changes nothing.
+  await card.locator(`[id="${TABLE_CHOICE_QID}-choice-ア"]`).click();
+  await expect(card.getByRole("button", { name: fill(m.pickChoice, { letter: "ア" }) })).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+});
+
+test("quiz ja: clicking a table choice's table answers it once (wrong → ✗)", async ({
+  page,
+}: { page: Page }) => {
+  const m = ja.Quiz;
+  await page.goto(`/ja/quiz?mode=topic&id=${TABLE_CHOICE_TOPIC}`);
+  const card = page.locator(`article[id="${TABLE_CHOICE_QID}"]`);
+  await card.locator(`[id="${TABLE_CHOICE_QID}-choice-ア"] table`).first().click();
+  const btn = card.getByRole("button", { name: fill(m.pickChoice, { letter: "ア" }) });
+  await expect(btn).toHaveAttribute("aria-pressed", "true");
+  await expect(btn).toContainText("✗");
+  await expect(btn.locator(".sr-only", { hasText: m.resultWrong })).toHaveCount(1);
+  await expect(card.locator('p[aria-live="polite"]')).toHaveText(`${m.correctLabel}: ${TABLE_CHOICE_ANSWER}`);
+  await expect(card.locator('[aria-pressed="true"]')).toHaveCount(1);
 });

@@ -5,7 +5,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { NextIntlClientProvider } from "next-intl";
+import { NextIntlClientProvider, useTranslations } from "next-intl";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -14,7 +14,7 @@ vi.mock("@/i18n/navigation", () => ({
     h("a", { href, className }, children),
 }));
 
-import { QuizSet } from "../QuizSet";
+import { ChoiceMark, QuizSet } from "../QuizSet";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
@@ -34,15 +34,17 @@ const CARD: TermCard = {
   questionCount: 1,
 };
 
-function render(termCards: Record<string, TermCard>): string {
-  const messages = JSON.parse(readFileSync(path.resolve(__dirname, "../../../../messages/ja.json"), "utf-8"));
+const messagesFor = (locale: string) =>
+  JSON.parse(readFileSync(path.resolve(__dirname, `../../../../messages/${locale}.json`), "utf-8"));
+
+function render(termCards: Record<string, TermCard>, question: QuizQuestion = QUESTION, locale = "ja"): string {
   return renderToStaticMarkup(
     h(NextIntlClientProvider, {
-      locale: "ja",
-      messages,
+      locale,
+      messages: messagesFor(locale),
       children: h(LearningRecordProvider, {
         isOwner: false,
-        children: h(QuizSet, { locale: "ja", label: "L", sublabel: "S", questions: [QUESTION], termCards }),
+        children: h(QuizSet, { locale, label: "L", sublabel: "S", questions: [question], termCards }),
       }),
     }),
   );
@@ -120,4 +122,82 @@ describe("QuizSet choices are answer buttons (SSR, D-180 §0-5)", () => {
       ),
     ).toThrow(/LearningRecordProvider/);
   });
+});
+
+/** questions.json: choices are "table" (2022r04-q059) / "tables" (2009h21a-q100) kinds — 18 such questions. */
+const TABLE_Q = Q.find((q) => q.id === "2022r04-q059")!;
+const TABLES_Q = Q.find((q) => q.id === "2009h21a-q100")!;
+
+describe("QuizSet table choices: the table is a sibling of the button (SSR)", () => {
+  for (const [question, locale, label] of [
+    [TABLE_Q, "ja", "アを選ぶ"],
+    [TABLES_Q, "ja", "アを選ぶ"],
+    [TABLE_Q, "zh", "选择 ア"],
+    [TABLE_Q, "en", "Choose ア"],
+  ] as const) {
+    it(`${question.id} (${locale}): no <table> inside any <button>; aria-describedby → the table`, () => {
+      const out = render({}, question, locale);
+      const buttons = out.match(/<button[^>]*>[\s\S]*?<\/button>/g) ?? [];
+      expect(buttons.length).toBeGreaterThanOrEqual(5); // 4 choices + 「解答を表示」
+      for (const b of buttons) {
+        expect(b).not.toContain("<table");
+        expect(b).not.toContain("<div");
+      }
+      expect((out.match(/<table/g) ?? []).length).toBeGreaterThanOrEqual(4);
+
+      const items = out.match(/<li class="[^"]*choiceTableItem[^"]*">[\s\S]*?<\/li>/g) ?? [];
+      expect(items).toHaveLength(4);
+      for (const [i, letter] of ["ア", "イ", "ウ", "エ"].entries()) {
+        const li = items[i]!;
+        const describedby = /<button [^>]*aria-describedby="([^"]+)"/.exec(li)?.[1];
+        expect(describedby).toBe(`${question.id}-choice-${letter}`);
+        // the id resolves to exactly one element on the page, and it holds the table(s)
+        expect(out.split(`id="${describedby}"`).length - 1).toBe(1);
+        expect(li).toMatch(new RegExp(`id="${describedby}"[^>]*>[\\s\\S]*<table`));
+        // button first in the <li>: letter (aria-hidden) + sr-only label, nothing else yet
+        expect(li).toMatch(
+          new RegExp(
+            `^<li[^>]*><button type="button"[^>]*aria-pressed="false"[^>]*><span[^>]*aria-hidden="true">${letter}</span>` +
+              `<span class="sr-only">${label.replace("ア", letter)}</span></button>`,
+          ),
+        );
+      }
+    });
+  }
+
+  it("ordinary (non-table) choices are unchanged: body inside the button, no describedby", () => {
+    const out = render({});
+    expect(out).not.toContain("aria-describedby");
+    expect(out).not.toContain("choiceTableItem");
+  });
+});
+
+describe("QuizSet answer feedback is not color-only (SSR)", () => {
+  it("the answer line is an always-mounted aria-live=polite region (empty before reveal)", () => {
+    const out = render({});
+    expect(out).toContain('<p aria-live="polite"></p>');
+    expect((out.match(/aria-live=/g) ?? []).length).toBe(1);
+  });
+
+  for (const [locale, right, wrong] of [
+    ["ja", "正解", "不正解"],
+    ["zh", "正确", "错误"],
+    ["en", "Correct", "Incorrect"],
+  ] as const) {
+    it(`ChoiceMark (${locale}): visible ✓ / ✗ (aria-hidden) + sr-only result text`, () => {
+      function Mark({ correct }: { correct: boolean }): React.ReactElement {
+        return h(ChoiceMark, { correct, t: useTranslations("Quiz") });
+      }
+      const mark = (correct: boolean) =>
+        renderToStaticMarkup(
+          h(NextIntlClientProvider, { locale, messages: messagesFor(locale), children: h(Mark, { correct }) }),
+        );
+      expect(mark(true)).toMatch(
+        new RegExp(`^<span class="[^"]*choiceMark[^"]*"><span aria-hidden="true">✓</span><span class="sr-only">${right}</span></span>$`),
+      );
+      expect(mark(false)).toMatch(
+        new RegExp(`^<span class="[^"]*choiceMark[^"]*"><span aria-hidden="true">✗</span><span class="sr-only">${wrong}</span></span>$`),
+      );
+    });
+  }
 });

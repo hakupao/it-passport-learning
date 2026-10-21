@@ -70,6 +70,15 @@ export function StemBlocks({ stem }: { stem: string }): React.ReactElement {
   );
 }
 
+/**
+ * True when ChoiceBody renders this choice as table(s) (flow content), which
+ * must not sit inside the choice <button> (QuizSet renders it as a sibling).
+ */
+export function isTableChoice(text: string, jpText?: string): boolean {
+  const kind = parseChoiceWithHint(text, jpText).kind;
+  return kind === "table" || kind === "tables";
+}
+
 /** One choice's body: plain text, a key→value strip (組合せ問), or a small table. */
 export function ChoiceBody({
   text,
@@ -103,11 +112,11 @@ export function ChoiceBody({
   }
   if (c.kind === "tables") {
     return (
-      <span className={styles.tablesRow}>
+      <div className={styles.tablesRow}>
         {c.tables.map((t, i) => (
           <DataTable key={i} header={t.header} rows={[]} caption={t.caption} />
         ))}
-      </span>
+      </div>
     );
   }
   return <DataTable header={c.header} rows={c.rows} caption={c.caption} />;

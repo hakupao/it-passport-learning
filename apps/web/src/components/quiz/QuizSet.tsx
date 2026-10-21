@@ -11,6 +11,14 @@
 // it via useLearningActions (needs a LearningRecordProvider above). After reveal
 // the choices are aria-disabled (inert, but they keep focus and stay in the tab
 // order). 「解答を表示」 still reveals without recording.
+//
+// Table choices (ChoiceBody kind "table" / "tables", 18 questions): a table is
+// flow content, so it is not put inside the button (that would flatten the
+// table for assistive tech and hide its scroll container from the keyboard).
+// The <li> holds the button (letter + sr-only 「アを選ぶ」, aria-describedby →
+// the table) and the table as a sibling; clicking the table answers too. The
+// picked choice carries a visible ✓ / ✗ plus sr-only 正解 / 不正解, so the
+// result is not conveyed by color alone; the answer line is an aria-live region.
 
 "use client";
 
@@ -29,7 +37,7 @@ import {
 } from "@/lib/quiz/quizModel";
 
 import { QuizFeedback } from "./QuizFeedback";
-import { ChoiceBody, StemBlocks } from "./QuizRichText";
+import { ChoiceBody, isTableChoice, StemBlocks } from "./QuizRichText";
 import styles from "./quiz.module.css";
 
 interface Props {
@@ -84,6 +92,22 @@ export function QuizSet({
   );
 }
 
+/** The picked choice's result: visible ✓ / ✗ (aria-hidden) + sr-only 正解 / 不正解. */
+export function ChoiceMark({
+  correct,
+  t,
+}: {
+  correct: boolean;
+  t: ReturnType<typeof useTranslations>;
+}): React.ReactElement {
+  return (
+    <span className={styles.choiceMark}>
+      <span aria-hidden="true">{correct ? "✓" : "✗"}</span>
+      <span className="sr-only">{t(correct ? "resultCorrect" : "resultWrong")}</span>
+    </span>
+  );
+}
+
 function QuestionCard({
   q,
   index,
@@ -121,62 +145,91 @@ function QuestionCard({
         />
       ) : null}
       <ul className={styles.choiceList}>
-        {choices.map((c) => (
-          <li key={c.letter}>
-            <button
-              type="button"
-              className={[
-                styles.choice,
-                revealed && c.isCorrect ? styles.choiceCorrect : "",
-                picked === c.letter && !c.isCorrect ? styles.choiceWrong : "",
-              ].join(" ")}
-              aria-pressed={picked === c.letter}
-              aria-disabled={revealed}
-              onClick={() => {
-                if (revealed) return;
-                setPicked(c.letter);
-                setRevealed(true);
-                answer(q.id, c.letter, c.isCorrect);
-              }}
-            >
-              <span className={styles.choiceLetter}>{c.letter}</span>
-              <ChoiceBody text={c.text} jpText={q.choices_jp[c.letter]} figure={q.choice_figures?.[c.letter]} />
-            </button>
-          </li>
-        ))}
+        {choices.map((c) => {
+          const jpText = q.choices_jp[c.letter];
+          const figure = q.choice_figures?.[c.letter];
+          const isPicked = picked === c.letter;
+          const result = [
+            revealed && c.isCorrect ? styles.choiceCorrect : "",
+            isPicked && !c.isCorrect ? styles.choiceWrong : "",
+          ].join(" ");
+          const pick = () => {
+            if (revealed) return;
+            setPicked(c.letter);
+            setRevealed(true);
+            answer(q.id, c.letter, c.isCorrect);
+          };
+          const mark = isPicked ? <ChoiceMark correct={c.isCorrect} t={t} /> : null;
+          if (!figure && isTableChoice(c.text, jpText)) {
+            const bodyId = `${q.id}-choice-${c.letter}`;
+            return (
+              <li key={c.letter} className={`${styles.choiceTableItem} ${result}`}>
+                <button
+                  type="button"
+                  className={styles.choice}
+                  aria-pressed={isPicked}
+                  aria-disabled={revealed}
+                  aria-describedby={bodyId}
+                  onClick={pick}
+                >
+                  <span className={styles.choiceLetter} aria-hidden="true">{c.letter}</span>
+                  <span className="sr-only">{t("pickChoice", { letter: c.letter })}</span>
+                  {mark}
+                </button>
+                {/* Pointer convenience only; the button above is the keyboard / AT control. */}
+                <div id={bodyId} className={styles.choiceTableBody} onClick={pick}>
+                  <ChoiceBody text={c.text} jpText={jpText} />
+                </div>
+              </li>
+            );
+          }
+          return (
+            <li key={c.letter}>
+              <button
+                type="button"
+                className={`${styles.choice} ${result}`}
+                aria-pressed={isPicked}
+                aria-disabled={revealed}
+                onClick={pick}
+              >
+                <span className={styles.choiceLetter}>{c.letter}</span>
+                <ChoiceBody text={c.text} jpText={jpText} figure={figure} />
+                {mark}
+              </button>
+            </li>
+          );
+        })}
       </ul>
+      <p className={revealed ? styles.answerLine : undefined} aria-live="polite">
+        {revealed ? `${t("correctLabel")}: ${q.correct_answer}` : null}
+      </p>
       {revealed ? (
-        <>
-          <p className={styles.answerLine}>
-            {t("correctLabel")}: {q.correct_answer}
-          </p>
-          {explanation ? (
-            <div className={styles.explanation}>
-              <p className={styles.explHead}>{t("explanationTitle")}</p>
-              <p className={styles.explCorrect}>{explanation.correct}</p>
-              {explanation.distractors.length > 0 ? (
-                <ul className={styles.explDistractors}>
-                  {explanation.distractors.map((d) => (
-                    <li key={d.letter}>
-                      <span className={styles.choiceLetter}>{d.letter}</span>
-                      <span>{d.text}</span>
-                    </li>
+        explanation ? (
+          <div className={styles.explanation}>
+            <p className={styles.explHead}>{t("explanationTitle")}</p>
+            <p className={styles.explCorrect}>{explanation.correct}</p>
+            {explanation.distractors.length > 0 ? (
+              <ul className={styles.explDistractors}>
+                {explanation.distractors.map((d) => (
+                  <li key={d.letter}>
+                    <span className={styles.choiceLetter}>{d.letter}</span>
+                    <span>{d.text}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {explanation.points.length > 0 ? (
+              <div className={styles.explPoints}>
+                <p className={styles.explPointsHead}>{t("keyPoints")}</p>
+                <ul>
+                  {explanation.points.map((p, pi) => (
+                    <li key={pi}>{p}</li>
                   ))}
                 </ul>
-              ) : null}
-              {explanation.points.length > 0 ? (
-                <div className={styles.explPoints}>
-                  <p className={styles.explPointsHead}>{t("keyPoints")}</p>
-                  <ul>
-                    {explanation.points.map((p, pi) => (
-                      <li key={pi}>{p}</li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </>
+              </div>
+            ) : null}
+          </div>
+        ) : null
       ) : (
         <button
           type="button"
