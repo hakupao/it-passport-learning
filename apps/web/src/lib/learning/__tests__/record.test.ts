@@ -89,6 +89,20 @@ describe("markUnitRead", () => {
   });
 });
 
+describe("non-finite at is a caller bug", () => {
+  it("recordAnswer and markUnitRead throw RangeError for NaN / ±Infinity", () => {
+    for (const at of [NaN, Infinity, -Infinity]) {
+      expect(() => recordAnswer(emptyRecord(), "q1", "ア", true, at)).toThrow(RangeError);
+      expect(() => markUnitRead(emptyRecord(), "u1", at)).toThrow(RangeError);
+    }
+  });
+
+  it("markUnitRead rejects a non-finite at even when the unit is already read", () => {
+    const r = markUnitRead(emptyRecord(), "u1", 100);
+    expect(() => markUnitRead(r, "u1", NaN)).toThrow(RangeError);
+  });
+});
+
 describe("mergeRecords", () => {
   it("is commutative", () => {
     expect(mergeRecords(a, b)).toEqual(mergeRecords(b, a));
@@ -143,6 +157,22 @@ describe("mergeRecords", () => {
     mergeRecords(a, b);
     expect(a).toEqual(sa);
     expect(b).toEqual(sb);
+  });
+
+  it("produces canonical output: same JSON regardless of argument or insertion order", () => {
+    const x = rec(
+      { q9: { choice: "ア", correct: true, at: 1 }, q1: { choice: "イ", correct: false, at: 2 } },
+      { u9: 1, u1: 2 },
+    );
+    const y = rec(
+      { q5: { choice: "ウ", correct: true, at: 3 }, q0: { choice: "エ", correct: true, at: 4 } },
+      { u5: 3, u0: 4 },
+    );
+    expect(JSON.stringify(mergeRecords(x, y))).toBe(JSON.stringify(mergeRecords(y, x)));
+    expect(JSON.stringify(mergeRecords(a, b))).toBe(JSON.stringify(mergeRecords(b, a)));
+    const m = mergeRecords(x, y);
+    expect(Object.keys(m.questions)).toEqual(["q0", "q1", "q5", "q9"]);
+    expect(Object.keys(m.unitsRead)).toEqual(["u0", "u1", "u5", "u9"]);
   });
 });
 

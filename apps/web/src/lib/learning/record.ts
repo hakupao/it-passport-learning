@@ -8,6 +8,9 @@
 //     `choice`; equal `choice` too → correct=false (conservative for corrupt data).
 //   - unitsRead: the smaller (earliest first-read) value wins.
 //
+// Merge output is canonical: `questions` / `unitsRead` keys are sorted, so
+// JSON.stringify(merge(a, b)) === JSON.stringify(merge(b, a)).
+//
 // Maps are always built with spread / Object.fromEntries (CreateDataProperty),
 // so a "__proto__" key stays ordinary data and never touches the prototype.
 
@@ -38,11 +41,19 @@ export const LEARNING_STORAGE_KEY = "itp:learn:v1";
 
 const hasOwn = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.call(o, k);
 
+/** `at` must be finite epoch ms; anything else is a caller bug, never data. */
+function assertFiniteAt(at: number): void {
+  if (!Number.isFinite(at)) throw new RangeError(`learning record: at must be finite epoch ms, got ${at}`);
+}
+
 export function emptyRecord(): LearningRecord {
   return { v: 1, questions: {}, unitsRead: {} };
 }
 
-/** Store the latest result for `qid`. Returns a new record; `r` is untouched. */
+/**
+ * Store the latest result for `qid`. Returns a new record; `r` is untouched.
+ * `at` is finite epoch ms — a non-finite value throws RangeError.
+ */
 export function recordAnswer(
   r: LearningRecord,
   qid: string,
@@ -50,11 +61,16 @@ export function recordAnswer(
   correct: boolean,
   at: number,
 ): LearningRecord {
+  assertFiniteAt(at);
   return { ...r, questions: { ...r.questions, [qid]: { choice, correct, at } } };
 }
 
-/** Record the first read of `unitId`; an existing value is kept (returns `r` as-is). */
+/**
+ * Record the first read of `unitId`; an existing value is kept (returns `r` as-is).
+ * `at` is finite epoch ms — a non-finite value throws RangeError.
+ */
 export function markUnitRead(r: LearningRecord, unitId: string, at: number): LearningRecord {
+  assertFiniteAt(at);
   if (hasOwn(r.unitsRead, unitId)) return r;
   return { ...r, unitsRead: { ...r.unitsRead, [unitId]: at } };
 }
@@ -65,6 +81,9 @@ function wins(x: QuestionResult, y: QuestionResult): boolean {
   if (x.choice !== y.choice) return x.choice > y.choice;
   return !x.correct && y.correct;
 }
+
+const sortedObject = <T>(m: Map<string, T>): Record<string, T> =>
+  Object.fromEntries([...m].sort(([x], [y]) => (x < y ? -1 : x > y ? 1 : 0)));
 
 export function mergeRecords(a: LearningRecord, b: LearningRecord): LearningRecord {
   const questions = new Map(Object.entries(a.questions));
@@ -77,7 +96,7 @@ export function mergeRecords(a: LearningRecord, b: LearningRecord): LearningReco
     const x = unitsRead.get(k);
     if (x === undefined || y < x) unitsRead.set(k, y);
   }
-  return { v: 1, questions: Object.fromEntries(questions), unitsRead: Object.fromEntries(unitsRead) };
+  return { v: 1, questions: sortedObject(questions), unitsRead: sortedObject(unitsRead) };
 }
 
 const isMap = (x: unknown): x is Record<string, unknown> =>
