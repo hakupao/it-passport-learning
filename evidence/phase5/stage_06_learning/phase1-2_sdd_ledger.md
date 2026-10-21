@@ -70,3 +70,37 @@ Final fix wave: 6aec7a4 (items 1-4,6-9) + 2715c88 (item 5). Finding: next build 
 Ruling: accept quiz sidecars in glossary traces (committed public D-134 data, not IPA) and revert 2715c88 (inert config would mislead); record turbopack finding as ⑨ in session log; D-179 §9 "add per-route trace" is effectively moot under turbopack — cost if wrong: slightly larger lambda bundle
 Final re-review: all 9 findings addressed (5 by ruling). Residual Minor: next.config.ts comments claim per-route tracing works — Ruling: parked; fold a comment-only correction into Phase 2 Task 7 (which edits next.config.ts) and record in session log ⑨ — cost if wrong: misleading comments for one more phase
 Residual: DictListItem.termZh/termEn unused on client (RSC payload) — parked for Phase 2
+Phase 1 complete (main 1bec412 + docs 7c98e85). Phase 2 = Task 7–8 starts ONLY after the D-176 pre-report to the user — do not auto-dispatch Task 7 on resume. Plan Global Constraints + Task 7 next.config line rewritten for the turbopack finding (S131).
+
+## Phase 2 run (user said 执行 = D-176 go; pre-report given)
+Branch: stage6-phase2 from main 685263b.
+Pre-flight (Phase 2):
+| Pair / task | Produces → consumes | Finding |
+|---|---|---|
+| T7 ↔ T8 | both use termId(); T7 adds TermChip (client, `import type` TermCard only), T8 only adds anchors/links in UnitReader | consistent |
+| T7 ↔ Phase 1 | quiz page loads loadDictionary + toTermCard (server) → QuizSet prop termCards | consistent with Phase 1 server/client ruling |
+| T7 self | Files line for next.config is comment-only (S131 改訂) | ok |
+| T8 self | Step 5 says Phase 2 收尾 (gates, Rule D, push, STATE) inside T8 | Ruling: T8 implementer does code + local gates; controller does final review, merge, push, STATE — same as Phase 1 T6 — cost if wrong: none |
+Ruling: fold parked Phase 1 residual "DictListItem.termZh/termEn unused on client" into Task 7 (remove fields if unused; payload smaller) — cost if wrong: trivial
+Task 7: dispatched (BASE 685263b)
+Task 7: implementer DONE (7dc341d, cdf3fef)
+Task 7 review: Approved w/ 1 Important (quiz set page hard-depends on loadDictionary; memo caches rejection) + 4 Minor.
+Ruling: enter fix loop for the Important: quiz page catches a loadDictionary failure, logs it with console.error (not silent) and renders with termCards = {} (spec's plain-text fallback); dictionaryReader resets its memo on rejection so later requests retry — quiz must not break because of the glossary — cost if wrong: a glossary data failure shows as plain-text terms + a log line instead of a 500
+Ruling: fold Minors 1 (drop role="dialog", plain disclosure) and 2 (close on focus leaving the chip, so only one popover is open) into the same round; Minor 3 (popover anchored at row left) accepted as the mobile trade-off; Minor 4 (DictEntry.termZh/termEn test-only) parked
+Task 7: fix round 1 dispatched (FIX_BASE cdf3fef)
+Task 7: fix round 1/5 (3 addressed, 0 open — dictionary failure fallback + memo reset, drop role=dialog, close on focus leave; commits cdf3fef..505bab8)
+Task 7: minor (deferred): sub-loader memos (reader.ts readerIndex/allUnits, quizReader.ts all) still cache rejections, so dictionary retry only helps for buildDictionary throws — Ruling: parked as ⑨ (pre-existing pattern across routes; quiz page already falls back to plain text) — cost if wrong: a transient fs failure sticks per lambda
+Task 7: minor (deferred): no injected-failure test at route level; focus leaving window closes chip — parked
+Task 7: complete (commits 685263b..505bab8, 1 fix round)
+Task 8: dispatched (BASE 505bab8)
+Task 8: implementer DONE (66a1bd1); worktree clean after accidental prettier run was reverted
+Task 8: minor (deferred): glossary link inside <h3> pollutes heading name + N identical link texts — Ruling: fix in the Phase 2 final fix wave (move link out of h3 or aria-label with term) — cost if wrong: screen-reader noise
+Task 8: minor (deferred): explicit locale on new Link vs none on siblings — parked, harmless
+Task 8: complete (commits 505bab8..66a1bd1, review clean)
+Final review (Phase 2): dispatched (685263b..66a1bd1, pr-review-toolkit:code-reviewer opus = Phase 2 Rule D)
+Final review (Phase 2): With fixes — 0 Critical, 2 Important (textbook link inside <h3>; quiz cold-start TTFB not yet measured per Step 3b = controller post-deploy), 6 Minor.
+Ruling: one fix wave = Important 1 + Minors 1 (start loadDictionary in parallel with loadQuestionSet), 2 (chip min-height 1.75rem), 3 (comment: retry only covers buildDictionary throws), 5 (show otherSenses hint when senseCount>1), 6 (separator between plain-text terms) + e2e: glossary 「在哪学」 → textbook #termId visible; Minor 4 (CSS.escape note) carried to Phase 3 dispatch — cost if wrong: small
+Final fix wave (Phase 2): dispatched (FIX_BASE 66a1bd1)
+Final fix wave (Phase 2): cb5d45a; note TermChip gained test-only defaultOpen prop
+Final re-review (Phase 2): 7/7 addressed; minors: test-only defaultOpen prop (accepted), dictionary loaded for valid-mode/unknown-id (memoized, accepted), mixed-language link name (intentional) — parked
+Phase 2 complete (main cb5d45a). Phase 3 = Task 9–12 starts ONLY after the D-176 pre-report — do not auto-dispatch Task 9 on resume. Carry to Phase 3: question ids start with a digit → use getElementById / CSS.escape; QuizSet termCards is a required prop; StorageLike duplicate in lib/chat/historyStore.ts (Task 9).
