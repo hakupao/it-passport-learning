@@ -16,7 +16,7 @@
 - 现在是设计阶段；计划经用户批准后才写代码。每个 Phase 走 TDD。
 - 显示辞典时不调用 LLM（D-179 §2）。服务器不持有、不接收 LLM key（D-179 §4）。
 - 学习记录只有 owner（D-148 cookie `itp_owner`）同步；API key 永不同步（D-179 §5）。
-- 新的读 fs 的 route 必须加进 `apps/web/next.config.ts` 的 `outputFileTracingIncludes` / `outputFileTracingExcludes`（D-179 §9）。
+- ~~新的读 fs 的 route 必须加进 `outputFileTracingIncludes` / `outputFileTracingExcludes`（D-179 §9）~~ → **S131 改訂**：`next build --turbopack`（Next 15.5.18）不应用 per-route tracing 配置（turbopack-build 不返回 buildTraceContext），不要再往 `next.config.ts` 加 trace 条目；打包内容由 turbopack 自己追踪，IPA 防护 = Gates 里的 nft IPA leak 检查。
 - locale `ja` 对应数据后缀 `_jp`：一律通过 `toDataLang()` / `pick()` / `pickTerm()`（`src/lib/textbook/reader.ts`），不自己拼。
 - 小分類名只有 JP（OQ-03），所有 locale 都显示 JP。
 - 每个 Task 结束 commit；每个 Phase 结束：gates 全绿 → Rule D（与 writer 不同 subagent_type）PASS → push。
@@ -200,7 +200,7 @@
 
 **Files:**
 - Create: `src/components/glossary/TermChip.tsx`
-- Modify: `next.config.ts`（`/[locale]/quiz` 的 trace 追加 `TEXTBOOK_TRACE`，辞典要读 units）
+- Modify: `next.config.ts`（**只改注释**：在 `nextConfig` 上方写明 per-route tracing 在 turbopack 下不生效、IPA 防护靠 nft leak gate，并修正第 12-14 / 17-19 / 25-27 / 37-38 / 45-46 行把 tracing 写成有效的措辞；不加任何 trace 条目）
 - Modify: `src/app/[locale]/quiz/page.tsx`（为当前题组收集 `terms` → `Record<string, TermCard>` 传给 QuizSet）、`src/components/quiz/QuizSet.tsx`（`<article id={q.id}>`；`q.terms` 每个渲染为 `TermChip`）
 - Test: `src/components/glossary/__tests__/TermChip.ssr.test.ts`、`src/components/quiz/__tests__/QuizSet.ssr.test.ts`（新建）
 
