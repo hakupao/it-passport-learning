@@ -1,11 +1,13 @@
 // D-180 §0-6 — localStorage persistence of the learning record (key itp:learn:v1).
 // An unparseable stored value is never silently dropped: its raw string is kept
 // under itp:learn:v1:corrupt (first bad copy wins). Storage that throws (private
-// mode / quota) behaves as no storage and never crashes.
+// mode / quota) behaves as no storage and never crashes. Writes merge with the
+// stored value and other tabs' writes merge in via the storage event, so two
+// open tabs never drop each other's answers.
 import { describe, expect, it } from "vitest";
 
-import { LEARNING_CORRUPT_KEY, loadLocal, saveLocal } from "../localStore";
-import { emptyRecord, LEARNING_STORAGE_KEY, type LearningRecord } from "../record";
+import { applyStorageEvent, LEARNING_CORRUPT_KEY, loadLocal, saveLocal } from "../localStore";
+import { emptyRecord, LEARNING_STORAGE_KEY, mergeRecords, type LearningRecord } from "../record";
 import type { StorageLike } from "@/lib/storage";
 
 function memStorage(seed: Record<string, string> = {}): StorageLike & { map: Map<string, string> } {
@@ -94,5 +96,44 @@ describe("localStore", () => {
       throw new Error("QuotaExceededError");
     };
     expect(loadLocal(s)).toEqual(emptyRecord());
+  });
+});
+
+describe("multi-tab safety (merge on write + storage event)", () => {
+  const Q1: LearningRecord = { v: 1, questions: { q1: { choice: "ア", correct: true, at: 10 } }, unitsRead: {} };
+  const Q2: LearningRecord = { v: 1, questions: { q2: { choice: "イ", correct: false, at: 20 } }, unitsRead: { u: 5 } };
+
+  it("saveLocal merges with what is stored: another tab's q1 survives this tab's q2", () => {
+    const s = memStorage({ "itp:learn:v1": JSON.stringify(Q1) });
+    const written = saveLocal(s, Q2);
+    const stored = loadLocal(s);
+    expect(Object.keys(stored.questions).sort()).toEqual(["q1", "q2"]);
+    expect(stored).toEqual(mergeRecords(Q1, Q2));
+    expect(written).toEqual(stored);
+    // canonical string, so an identical re-save does not change the stored value
+    expect(s.map.get("itp:learn:v1")).toBe(JSON.stringify(mergeRecords(Q1, Q2)));
+  });
+
+  it("saveLocal over a corrupt stored value keeps the backup and writes the in-memory record", () => {
+    const s = memStorage({ "itp:learn:v1": "{bad" });
+    saveLocal(s, Q2);
+    expect(s.map.get("itp:learn:v1:corrupt")).toBe("{bad");
+    expect(loadLocal(s)).toEqual(Q2);
+  });
+
+  it("applyStorageEvent merges another tab's itp:learn:v1 value into state", () => {
+    const next = applyStorageEvent(Q2, { key: "itp:learn:v1", newValue: JSON.stringify(Q1) });
+    expect(next).toEqual(mergeRecords(Q1, Q2));
+  });
+
+  it("applyStorageEvent returns prev unchanged for other keys, clear(), removal, bad values, or no news", () => {
+    expect(applyStorageEvent(Q2, { key: "itp:theme:v1", newValue: JSON.stringify(Q1) })).toBe(Q2);
+    expect(applyStorageEvent(Q2, { key: null, newValue: null })).toBe(Q2);
+    expect(applyStorageEvent(Q2, { key: "itp:learn:v1", newValue: null })).toBe(Q2);
+    expect(applyStorageEvent(Q2, { key: "itp:learn:v1", newValue: "{bad" })).toBe(Q2);
+    expect(applyStorageEvent(Q2, { key: "itp:learn:v1", newValue: '{"v":2}' })).toBe(Q2);
+    // the other tab's value adds nothing new → same object (no re-render / re-save)
+    const merged = mergeRecords(Q1, Q2);
+    expect(applyStorageEvent(merged, { key: "itp:learn:v1", newValue: JSON.stringify(Q1) })).toBe(merged);
   });
 });

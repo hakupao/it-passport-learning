@@ -174,10 +174,16 @@ test("quiz ja: clicking a choice answers, marks it and saves it locally", async 
   for (let i = 1; i < CHOICE_LETTERS.length; i += 1) {
     await expect(choiceButtons.nth(i)).toHaveAttribute("aria-pressed", "false");
   }
-  // After the answer every choice is inert.
+  // After the answer every choice is inert via aria-disabled: focus stays on the
+  // pick (not dropped to <body>) and a further click changes nothing.
+  await expect(pick).toBeFocused();
   for (let i = 0; i < CHOICE_LETTERS.length; i += 1) {
-    await expect(choiceButtons.nth(i)).toBeDisabled();
+    await expect(choiceButtons.nth(i)).toHaveAttribute("aria-disabled", "true");
   }
+  // Playwright treats aria-disabled as not actionable; force the click to hit the guard.
+  await choiceButtons.nth(2).click({ force: true });
+  await expect(choiceButtons.nth(2)).toHaveAttribute("aria-pressed", "false");
+  await expect(pick).toHaveAttribute("aria-pressed", "true");
 
   // 「解答を表示」 on another card reveals without recording.
   const secondCard = cards.nth(1);
@@ -186,8 +192,20 @@ test("quiz ja: clicking a choice answers, marks it and saves it locally", async 
   await secondCard.getByRole("button", { name: m.showAnswer }).click();
   await expect(secondCard.getByText(`${m.correctLabel}:`, { exact: false })).toBeVisible();
 
+  // Keyboard: Enter on a focused choice of the third card answers it.
+  const thirdCard = cards.nth(2);
+  const thirdId = await thirdCard.getAttribute("id");
+  const kbPick = thirdCard.getByRole("listitem").getByRole("button").nth(1);
+  await kbPick.focus();
+  await page.keyboard.press("Enter");
+  await expect(kbPick).toHaveAttribute("aria-pressed", "true");
+  await expect(kbPick).toHaveAttribute("aria-disabled", "true");
+  await expect(kbPick).toBeFocused();
+  await expect(thirdCard.getByText(`${m.correctLabel}:`, { exact: false })).toBeVisible();
+
   // Saved in a passive effect after paint — poll rather than read once.
   await expect.poll(stored).toContain(TABLE_QUESTION_ID);
+  await expect.poll(stored).toContain(thirdId!);
 
   await page.reload();
   await expect(page.getByRole("article")).toHaveCount(TOPIC_QUESTION_COUNT);
@@ -197,5 +215,31 @@ test("quiz ja: clicking a choice answers, marks it and saves it locally", async 
   expect(rec.v).toBe(1);
   expect(rec.questions[TABLE_QUESTION_ID]).toMatchObject({ choice: "ア", correct: false });
   expect(rec.questions[secondId!]).toBeUndefined();
+  expect(rec.questions[thirdId!]).toMatchObject({ choice: "イ" });
   expect(learningRequests).toEqual([]);
+});
+
+test("quiz ja: two open tabs never drop each other's answers", async ({ context }) => {
+  const url = `/ja/quiz?mode=topic&id=${TOPIC_ID}`;
+  const a = await context.newPage();
+  const b = await context.newPage();
+  await a.goto(url);
+  await b.goto(url); // both tabs loaded before any answer
+  await expect(a.getByRole("article")).toHaveCount(TOPIC_QUESTION_COUNT);
+  await expect(b.getByRole("article")).toHaveCount(TOPIC_QUESTION_COUNT);
+  const stored = () => a.evaluate(() => localStorage.getItem("itp:learn:v1"));
+
+  const idA = await a.getByRole("article").nth(0).getAttribute("id");
+  const idB = await b.getByRole("article").nth(1).getAttribute("id");
+  await a.getByRole("article").nth(0).getByRole("listitem").getByRole("button").first().click();
+  await expect.poll(stored).toContain(idA!);
+  await b.getByRole("article").nth(1).getByRole("listitem").getByRole("button").first().click();
+  await expect.poll(stored).toContain(idB!);
+  // B saved after A: A's answer must still be there.
+  expect(await stored()).toContain(idA!);
+
+  await a.reload();
+  await expect(a.getByRole("article")).toHaveCount(TOPIC_QUESTION_COUNT);
+  const rec = JSON.parse((await stored())!) as { questions: Record<string, unknown> };
+  expect(Object.keys(rec.questions).sort()).toEqual([idA!, idB!].sort());
 });

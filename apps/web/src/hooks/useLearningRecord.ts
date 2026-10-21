@@ -3,19 +3,23 @@
 // `LearningRecordProvider` is mounted per page (quiz set today; Task 12 adds
 // the landing / textbook TOC), never in the locale layout: the owner flag comes
 // from cookies, and reading cookies in the layout would make every page dynamic.
-// Small client islands read the record through `useLearningRecord()`.
+// Two contexts: the record (changes on every answer) and the actions (stable
+// identities). Write-only islands use `useLearningActions()` and do not
+// re-render when the record changes; readers use `useLearningRecord()`.
 //
 // Lifecycle:
 //   1. First render uses emptyRecord() on server and client (no hydration
 //      mismatch); after mount the localStorage record is merged in.
 //   2. Owner only: GET /api/learning once and merge the server copy in.
-//   3. Every change after (1) is saved to localStorage.
-//   4. Owner only: 2000 ms after the last change, PUT the merged record when it
-//      differs from what the server last returned, then merge the response back.
-//      The response itself equals `lastSynced`, so merging it schedules no new
-//      PUT unless something changed meanwhile (no ping-pong); answers the
-//      server has not seen yet (e.g. a PUT lost to navigation) go up on the next
-//      page load, right after the GET.
+//   3. Every change after (1) is saved with saveLocal, which merges with what
+//      is stored (another tab may have written since); other tabs' writes are
+//      merged in through the window "storage" event.
+//   4. Owner only, once the GET has settled (success or failure): 2000 ms after
+//      the last change, PUT the merged record when it differs from what the
+//      server last returned, then merge the response back. The response equals
+//      `lastSynced`, so merging it schedules no new PUT unless something changed
+//      meanwhile (no ping-pong); answers the server has not seen yet (e.g. a PUT
+//      lost to navigation) go up on the next page load, right after the GET.
 // Network failure → console.warn only (syncClient); local keeps working.
 
 "use client";
@@ -23,7 +27,6 @@
 import {
   createContext,
   createElement,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -31,7 +34,7 @@ import {
   useState,
 } from "react";
 
-import { loadLocal, saveLocal } from "@/lib/learning/localStore";
+import { applyStorageEvent, loadLocal, saveLocal } from "@/lib/learning/localStore";
 import {
   emptyRecord,
   markUnitRead,
@@ -44,13 +47,17 @@ import type { StorageLike } from "@/lib/storage";
 
 export const PUT_DEBOUNCE_MS = 2000;
 
-export interface LearningRecordValue {
-  record: LearningRecord;
+export interface LearningActions {
   answer(qid: string, choice: string, correct: boolean): void;
   readUnit(unitId: string): void;
 }
 
-const LearningRecordContext = createContext<LearningRecordValue | null>(null);
+export interface LearningRecordValue extends LearningActions {
+  record: LearningRecord;
+}
+
+const RecordContext = createContext<LearningRecord | null>(null);
+const ActionsContext = createContext<LearningActions | null>(null);
 
 /** window.localStorage, or null where it is unavailable (SSR, blocked storage). */
 function browserStorage(): StorageLike | null {
@@ -75,6 +82,8 @@ export function LearningRecordProvider({
 }): React.ReactElement {
   const [record, setRecord] = useState<LearningRecord>(emptyRecord);
   const [loaded, setLoaded] = useState(false);
+  /** Owner: the initial GET has finished (either way); PUTs wait for it. */
+  const [remoteSettled, setRemoteSettled] = useState(false);
   /** Canonical JSON of the record the server last returned; null = not synced yet. */
   const lastSynced = useRef<string | null>(null);
 
@@ -87,25 +96,37 @@ export function LearningRecordProvider({
     if (!isOwner) return;
     const ac = new AbortController();
     void pullRemote(browserFetch, ac.signal).then((remote) => {
-      if (!remote) return;
-      lastSynced.current = canonical(remote);
-      setRecord((prev) => mergeRecords(prev, remote));
+      if (ac.signal.aborted) return;
+      if (remote) {
+        lastSynced.current = canonical(remote);
+        setRecord((prev) => mergeRecords(prev, remote));
+      }
+      setRemoteSettled(true);
     });
     return () => ac.abort();
   }, [isOwner]);
 
-  // (3) save every change once the local record has been read.
+  // (3a) other tabs' writes.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.storageArea !== browserStorage()) return;
+      setRecord((prev) => applyStorageEvent(prev, e));
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  // (3b) save every change once the local record has been read.
   useEffect(() => {
     if (!loaded) return;
     const storage = browserStorage();
     if (storage) saveLocal(storage, record);
   }, [loaded, record]);
 
-  // (4) owner: debounced PUT of the merged record.
+  // (4) owner: debounced PUT of the merged record, after the initial GET.
   useEffect(() => {
-    if (!loaded || !isOwner) return;
-    const body = canonical(record);
-    if (body === lastSynced.current) return;
+    if (!loaded || !isOwner || !remoteSettled) return;
+    if (canonical(record) === lastSynced.current) return;
     const timer = setTimeout(() => {
       void pushRemote(browserFetch, record).then((merged) => {
         if (!merged) return;
@@ -114,24 +135,37 @@ export function LearningRecordProvider({
       });
     }, PUT_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [loaded, isOwner, record]);
+  }, [loaded, isOwner, remoteSettled, record]);
 
-  const answer = useCallback((qid: string, choice: string, correct: boolean) => {
-    setRecord((prev) => recordAnswer(prev, qid, choice, correct, Date.now()));
-  }, []);
-  const readUnit = useCallback((unitId: string) => {
-    setRecord((prev) => markUnitRead(prev, unitId, Date.now()));
-  }, []);
+  const actions = useMemo<LearningActions>(
+    () => ({
+      answer: (qid, choice, correct) =>
+        setRecord((prev) => recordAnswer(prev, qid, choice, correct, Date.now())),
+      readUnit: (unitId) => setRecord((prev) => markUnitRead(prev, unitId, Date.now())),
+    }),
+    [],
+  );
 
-  const value = useMemo(() => ({ record, answer, readUnit }), [record, answer, readUnit]);
-  return createElement(LearningRecordContext.Provider, { value }, children);
+  return createElement(
+    ActionsContext.Provider,
+    { value: actions },
+    createElement(RecordContext.Provider, { value: record }, children),
+  );
 }
 
-/** The page's learning record. Throws outside a LearningRecordProvider. */
+const OUTSIDE = "must be used inside <LearningRecordProvider>";
+
+/** Stable answer / readUnit; does not re-render on record changes. Throws outside the provider. */
+export function useLearningActions(): LearningActions {
+  const actions = useContext(ActionsContext);
+  if (!actions) throw new Error(`useLearningActions ${OUTSIDE}`);
+  return actions;
+}
+
+/** The page's learning record plus the actions. Throws outside a LearningRecordProvider. */
 export function useLearningRecord(): LearningRecordValue {
-  const value = useContext(LearningRecordContext);
-  if (!value) {
-    throw new Error("useLearningRecord must be used inside <LearningRecordProvider>");
-  }
-  return value;
+  const record = useContext(RecordContext);
+  const actions = useContext(ActionsContext);
+  if (!record || !actions) throw new Error(`useLearningRecord ${OUTSIDE}`);
+  return { record, ...actions };
 }

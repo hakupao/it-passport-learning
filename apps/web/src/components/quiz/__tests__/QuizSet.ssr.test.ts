@@ -91,7 +91,11 @@ describe("QuizSet choices are answer buttons (SSR, D-180 §0-5)", () => {
     const out = render({});
     const choiceButtons = out.match(/<li><button type="button"[^>]*aria-pressed="false"[^>]*>/g) ?? [];
     expect(choiceButtons).toHaveLength(4);
-    for (const b of choiceButtons) expect(b).not.toContain("disabled");
+    for (const b of choiceButtons) {
+      // aria-disabled (not the disabled attribute) after reveal keeps focus + tab order
+      expect(b).toContain('aria-disabled="false"');
+      expect(b).not.toMatch(/\sdisabled(=|\s|>)/);
+    }
     for (const letter of ["ア", "イ", "ウ", "エ"]) {
       expect(out).toMatch(new RegExp(`aria-pressed="false"[^>]*><span[^>]*>${letter}</span>`));
     }

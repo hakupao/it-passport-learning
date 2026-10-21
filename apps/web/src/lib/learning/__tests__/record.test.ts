@@ -106,15 +106,6 @@ describe("non-finite at is a caller bug", () => {
     expect(markUnitRead(emptyRecord(), "u1", 0).unitsRead.u1).toBe(0);
   });
 
-  it("recordAnswer and markUnitRead throw RangeError for a negative at (parseRecord rejects it too)", () => {
-    for (const at of [-1, -0.5]) {
-      expect(() => recordAnswer(emptyRecord(), "q1", "ア", true, at)).toThrow(RangeError);
-      expect(() => markUnitRead(emptyRecord(), "u1", at)).toThrow(RangeError);
-    }
-    expect(recordAnswer(emptyRecord(), "q1", "ア", true, 0).questions.q1!.at).toBe(0);
-    expect(markUnitRead(emptyRecord(), "u1", 0).unitsRead.u1).toBe(0);
-  });
-
   it("markUnitRead rejects a non-finite at even when the unit is already read", () => {
     const r = markUnitRead(emptyRecord(), "u1", 100);
     expect(() => markUnitRead(r, "u1", NaN)).toThrow(RangeError);

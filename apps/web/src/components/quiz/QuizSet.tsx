@@ -8,8 +8,9 @@
 //
 // D-180 §0-5 (Task 11): choices are buttons. Clicking one before reveal answers
 // the question — it reveals, marks the pick (correct / wrong style) and records
-// it via useLearningRecord (needs a LearningRecordProvider above). After reveal
-// the choices are disabled. 「解答を表示」 still reveals without recording.
+// it via useLearningActions (needs a LearningRecordProvider above). After reveal
+// the choices are aria-disabled (inert, but they keep focus and stay in the tab
+// order). 「解答を表示」 still reveals without recording.
 
 "use client";
 
@@ -17,7 +18,7 @@ import { Fragment, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { TermChip } from "@/components/glossary/TermChip";
-import { useLearningRecord } from "@/hooks/useLearningRecord";
+import { useLearningActions } from "@/hooks/useLearningRecord";
 import { Link } from "@/i18n/navigation";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import {
@@ -100,7 +101,7 @@ function QuestionCard({
 }): React.ReactElement {
   const [revealed, setRevealed] = useState(false);
   const [picked, setPicked] = useState<string | null>(null);
-  const { answer } = useLearningRecord();
+  const { answer } = useLearningActions();
   const choices = localizedChoices(q, locale);
   const explanation = localizedExplanation(q, locale);
 
@@ -130,7 +131,7 @@ function QuestionCard({
                 picked === c.letter && !c.isCorrect ? styles.choiceWrong : "",
               ].join(" ")}
               aria-pressed={picked === c.letter}
-              disabled={revealed}
+              aria-disabled={revealed}
               onClick={() => {
                 if (revealed) return;
                 setPicked(c.letter);

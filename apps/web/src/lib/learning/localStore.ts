@@ -6,10 +6,22 @@
 // `itp:learn:v1:corrupt` (only when that key is empty, so the first bad copy is
 // kept) before an empty record is returned — the next save then replaces the
 // main key.
+//
+// Multi-tab: saveLocal merges with whatever is stored (re-read at write time),
+// so a tab that loaded before another tab's answer never drops it; the stored
+// string is canonical (mergeRecords output), so re-saving the same content
+// leaves the value unchanged and fires no storage event. Other tabs' writes
+// reach this tab through the window "storage" event → applyStorageEvent.
 
 import type { StorageLike } from "@/lib/storage";
 
-import { emptyRecord, LEARNING_STORAGE_KEY, parseRecord, type LearningRecord } from "./record";
+import {
+  emptyRecord,
+  LEARNING_STORAGE_KEY,
+  mergeRecords,
+  parseRecord,
+  type LearningRecord,
+} from "./record";
 
 export const LEARNING_CORRUPT_KEY = `${LEARNING_STORAGE_KEY}:corrupt`;
 
@@ -29,21 +41,51 @@ export function loadLocal(storage: StorageLike): LearningRecord {
     return emptyRecord();
   }
   if (raw === null) return emptyRecord();
-  let record: LearningRecord | null = null;
-  try {
-    record = parseRecord(JSON.parse(raw));
-  } catch {
-    record = null;
-  }
+  const record = parseStored(raw);
   if (record) return record;
   keepCorruptCopy(storage, raw);
   return emptyRecord();
 }
 
-export function saveLocal(storage: StorageLike, r: LearningRecord): void {
+/** The parsed record in a raw stored string, or null when it is missing or invalid. */
+function parseStored(raw: string | null): LearningRecord | null {
+  if (raw === null) return null;
   try {
-    storage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(r));
+    return parseRecord(JSON.parse(raw));
   } catch {
-    // quota exceeded / private mode — the in-memory record still works
+    return null;
   }
+}
+
+/**
+ * Write mergeRecords(stored, r) and return it. Re-reading through loadLocal keeps
+ * its corrupt-value backup. Storage failure is swallowed (the in-memory record
+ * still works); the merged record is returned either way.
+ */
+export function saveLocal(storage: StorageLike, r: LearningRecord): LearningRecord {
+  const merged = mergeRecords(loadLocal(storage), r);
+  try {
+    storage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(merged));
+  } catch {
+    // quota exceeded / private mode
+  }
+  return merged;
+}
+
+const canonical = (r: LearningRecord): string => JSON.stringify(mergeRecords(r, emptyRecord()));
+
+/**
+ * Fold another tab's write (a StorageEvent) into `prev`. Returns `prev` itself
+ * for other keys, clear()/removal, an invalid value, or when nothing is new — so
+ * the caller does not re-render or re-save.
+ */
+export function applyStorageEvent(
+  prev: LearningRecord,
+  e: { key: string | null; newValue: string | null },
+): LearningRecord {
+  if (e.key !== LEARNING_STORAGE_KEY) return prev;
+  const other = parseStored(e.newValue);
+  if (!other) return prev;
+  const merged = mergeRecords(prev, other);
+  return canonical(merged) === canonical(prev) ? prev : merged;
 }
