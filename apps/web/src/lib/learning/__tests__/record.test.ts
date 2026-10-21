@@ -10,8 +10,11 @@ import { describe, expect, it } from "vitest";
 
 import {
   LEARNING_STORAGE_KEY,
+  canonicalJson,
+  deltaSince,
   emptyRecord,
   markUnitRead,
+  mergeIfChanged,
   mergeRecords,
   parseRecord,
   recordAnswer,
@@ -75,6 +78,117 @@ describe("recordAnswer", () => {
     const r = recordAnswer(emptyRecord(), "__proto__", "ア", true, 1);
     expect(Object.keys(r.questions)).toEqual(["__proto__"]);
     expect(Object.getPrototypeOf(r.questions)).toBe(Object.prototype);
+  });
+});
+
+describe("recordAnswer on a skewed clock (re-answer on this device wins)", () => {
+  it("a re-answer with an earlier clock still gets at = previous at + 1", () => {
+    const r1 = recordAnswer(emptyRecord(), "q1", "ア", false, 5000);
+    const r2 = recordAnswer(r1, "q1", "イ", true, 1000); // clock went back 4 s
+    expect(r2.questions.q1).toEqual({ choice: "イ", correct: true, at: 5001 });
+    // ...so merging it with the previous answer (e.g. the server's copy) keeps the re-answer.
+    expect(mergeRecords(r1, r2).questions.q1).toEqual(r2.questions.q1);
+    expect(mergeRecords(r2, r1).questions.q1).toEqual(r2.questions.q1);
+  });
+
+  it("an equal clock reading also moves forward by 1; a later clock is kept as-is", () => {
+    const r1 = recordAnswer(emptyRecord(), "q1", "ア", false, 5000);
+    expect(recordAnswer(r1, "q1", "ア", false, 5000).questions.q1!.at).toBe(5001);
+    expect(recordAnswer(r1, "q1", "ウ", false, 9000).questions.q1!.at).toBe(9000);
+    // other questions do not affect each other
+    expect(recordAnswer(r1, "q2", "ウ", false, 10).questions.q2!.at).toBe(10);
+  });
+
+  it("an inherited key name (__proto__) has no previous answer", () => {
+    expect(recordAnswer(emptyRecord(), "__proto__", "ア", true, 0).questions["__proto__"]!.at).toBe(0);
+    expect(recordAnswer(emptyRecord(), "toString", "ア", true, 7).questions["toString"]!.at).toBe(7);
+  });
+});
+
+describe("mergeIfChanged", () => {
+  it("returns prev itself when the other record adds nothing", () => {
+    const merged = mergeRecords(a, b);
+    expect(mergeIfChanged(merged, b)).toBe(merged);
+    expect(mergeIfChanged(merged, a)).toBe(merged);
+    expect(mergeIfChanged(merged, emptyRecord())).toBe(merged);
+    // same content, different key order / object identity → still prev
+    const shuffled = rec(Object.fromEntries(Object.entries(merged.questions).reverse()), merged.unitsRead);
+    expect(mergeIfChanged(shuffled, merged)).toBe(shuffled);
+  });
+
+  it("returns the merged record when the other record has something new", () => {
+    const out = mergeIfChanged(a, b);
+    expect(out).not.toBe(a);
+    expect(out).toEqual(mergeRecords(a, b));
+  });
+});
+
+describe("canonicalJson", () => {
+  it("is independent of key order", () => {
+    expect(canonicalJson(rec({ y: a.questions.q1!, x: a.questions.q2! }, { u2: 1, u1: 2 }))).toBe(
+      canonicalJson(rec({ x: a.questions.q2!, y: a.questions.q1! }, { u1: 2, u2: 1 })),
+    );
+  });
+});
+
+describe("deltaSince", () => {
+  const synced = rec(
+    { q1: { choice: "ア", correct: false, at: 100 }, q2: { choice: "イ", correct: true, at: 300 } },
+    { u1: 10, u2: 40 },
+  );
+
+  it("keeps only entries that are new or differ from the synced record", () => {
+    const current = rec(
+      {
+        q1: { choice: "ア", correct: false, at: 100 }, // unchanged
+        q2: { choice: "ウ", correct: false, at: 400 }, // re-answered
+        q3: { choice: "エ", correct: true, at: 500 }, // new
+      },
+      { u1: 10, u2: 30, u3: 50 }, // u1 unchanged, u2 earlier, u3 new
+    );
+    expect(deltaSince(current, synced)).toEqual(
+      rec(
+        { q2: { choice: "ウ", correct: false, at: 400 }, q3: { choice: "エ", correct: true, at: 500 } },
+        { u2: 30, u3: 50 },
+      ),
+    );
+  });
+
+  it("a field-level difference (choice / correct / at) counts as a change", () => {
+    for (const q1 of [
+      { choice: "イ", correct: false, at: 100 },
+      { choice: "ア", correct: true, at: 100 },
+      { choice: "ア", correct: false, at: 101 },
+    ]) {
+      expect(Object.keys(deltaSince(rec({ ...synced.questions, q1 }, synced.unitsRead), synced).questions)).toEqual([
+        "q1",
+      ]);
+    }
+  });
+
+  it("is empty when nothing changed, and the whole record (canonical) when nothing is synced", () => {
+    expect(deltaSince(synced, synced)).toEqual(emptyRecord());
+    expect(deltaSince(mergeRecords(synced, emptyRecord()), structuredClone(synced))).toEqual(emptyRecord());
+    expect(deltaSince(b, null)).toEqual(mergeRecords(b, emptyRecord()));
+  });
+
+  it("server merge of the delta equals the server merge of the full record", () => {
+    for (const [current, base] of [
+      [mergeRecords(a, b), a],
+      [mergeRecords(a, c), b],
+      [mergeRecords(mergeRecords(a, b), c), c],
+      [a, mergeRecords(a, b)],
+    ] as const) {
+      expect(mergeRecords(base, deltaSince(current, base))).toEqual(mergeRecords(base, current));
+    }
+  });
+
+  it("never mutates its inputs", () => {
+    const cur = structuredClone(a);
+    const base = structuredClone(b);
+    deltaSince(cur, base);
+    expect(cur).toEqual(a);
+    expect(base).toEqual(b);
   });
 });
 

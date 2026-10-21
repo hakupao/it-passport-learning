@@ -18,6 +18,7 @@ import type { StorageLike } from "@/lib/storage";
 import {
   emptyRecord,
   LEARNING_STORAGE_KEY,
+  mergeIfChanged,
   mergeRecords,
   parseRecord,
   type LearningRecord,
@@ -72,8 +73,6 @@ export function saveLocal(storage: StorageLike, r: LearningRecord): LearningReco
   return merged;
 }
 
-const canonical = (r: LearningRecord): string => JSON.stringify(mergeRecords(r, emptyRecord()));
-
 /**
  * Fold another tab's write (a StorageEvent) into `prev`. Returns `prev` itself
  * for other keys, clear()/removal, an invalid value, or when nothing is new — so
@@ -85,7 +84,5 @@ export function applyStorageEvent(
 ): LearningRecord {
   if (e.key !== LEARNING_STORAGE_KEY) return prev;
   const other = parseStored(e.newValue);
-  if (!other) return prev;
-  const merged = mergeRecords(prev, other);
-  return canonical(merged) === canonical(prev) ? prev : merged;
+  return other ? mergeIfChanged(prev, other) : prev;
 }

@@ -55,6 +55,8 @@ export function emptyRecord(): LearningRecord {
 /**
  * Store the latest result for `qid`. Returns a new record; `r` is untouched.
  * `at` is finite, non-negative epoch ms — anything else throws RangeError.
+ * A re-answer always wins over this record's previous answer for `qid`, even
+ * when the clock went backwards: the stored `at` is at least the previous `at` + 1.
  */
 export function recordAnswer(
   r: LearningRecord,
@@ -64,7 +66,9 @@ export function recordAnswer(
   at: number,
 ): LearningRecord {
   assertFiniteAt(at);
-  return { ...r, questions: { ...r.questions, [qid]: { choice, correct, at } } };
+  const existing = hasOwn(r.questions, qid) ? r.questions[qid] : undefined;
+  const stamped = Math.max(at, (existing?.at ?? -1) + 1);
+  return { ...r, questions: { ...r.questions, [qid]: { choice, correct, at: stamped } } };
 }
 
 /**
@@ -97,6 +101,40 @@ export function mergeRecords(a: LearningRecord, b: LearningRecord): LearningReco
   for (const [k, y] of Object.entries(b.unitsRead)) {
     const x = unitsRead.get(k);
     if (x === undefined || y < x) unitsRead.set(k, y);
+  }
+  return { v: 1, questions: sortedObject(questions), unitsRead: sortedObject(unitsRead) };
+}
+
+/** Key-sorted JSON of `r` (mergeRecords output is canonical), for "did anything change" checks. */
+export const canonicalJson = (r: LearningRecord): string => JSON.stringify(mergeRecords(r, emptyRecord()));
+
+/**
+ * mergeRecords(prev, other), or `prev` itself when `other` adds nothing — so a
+ * React state update with the result is a no-op (no re-render) when nothing is new.
+ */
+export function mergeIfChanged(prev: LearningRecord, other: LearningRecord): LearningRecord {
+  const merged = mergeRecords(prev, other);
+  return canonicalJson(merged) === canonicalJson(prev) ? prev : merged;
+}
+
+/**
+ * The part of `current` that `synced` does not already hold: questions whose
+ * result differs from (or is missing in) `synced`, and unitsRead entries whose
+ * value differs from (or is missing in) `synced`. `synced` null → all of `current`.
+ * mergeRecords(synced, deltaSince(current, synced)) equals
+ * mergeRecords(synced, current), so the server (which merges every PUT with
+ * its copy) can take the delta in place of the full record.
+ */
+export function deltaSince(current: LearningRecord, synced: LearningRecord | null): LearningRecord {
+  if (!synced) return mergeRecords(current, emptyRecord());
+  const questions = new Map<string, QuestionResult>();
+  for (const [k, x] of Object.entries(current.questions)) {
+    const y = hasOwn(synced.questions, k) ? synced.questions[k] : undefined;
+    if (!y || y.at !== x.at || y.choice !== x.choice || y.correct !== x.correct) questions.set(k, x);
+  }
+  const unitsRead = new Map<string, number>();
+  for (const [k, t] of Object.entries(current.unitsRead)) {
+    if (!hasOwn(synced.unitsRead, k) || synced.unitsRead[k] !== t) unitsRead.set(k, t);
   }
   return { v: 1, questions: sortedObject(questions), unitsRead: sortedObject(unitsRead) };
 }

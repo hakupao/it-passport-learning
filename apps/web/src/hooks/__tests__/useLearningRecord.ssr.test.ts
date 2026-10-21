@@ -5,7 +5,12 @@ import { describe, expect, it } from "vitest";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { LearningRecordProvider, useLearningActions, useLearningRecord } from "../useLearningRecord";
+import {
+  exposedLoaded,
+  LearningRecordProvider,
+  useLearningActions,
+  useLearningRecord,
+} from "../useLearningRecord";
 
 function ReadsRecord(): React.ReactElement {
   const { record, answer, readUnit } = useLearningRecord();
@@ -30,8 +35,21 @@ describe("LearningRecordProvider (SSR)", () => {
       const { loaded } = useLearningRecord();
       return h("b", null, String(loaded));
     }
-    const out = renderToStaticMarkup(h(LearningRecordProvider, { isOwner: false, children: h(ReadsLoaded) }));
-    expect(out).toBe("<b>false</b>");
+    for (const isOwner of [false, true]) {
+      const out = renderToStaticMarkup(h(LearningRecordProvider, { isOwner, children: h(ReadsLoaded) }));
+      expect(out).toBe("<b>false</b>");
+    }
+  });
+
+  it("exposedLoaded: an owner's readers also wait for the initial GET to settle (no local-only flash)", () => {
+    // non-owner: only the local load matters
+    expect(exposedLoaded(false, false, false)).toBe(false);
+    expect(exposedLoaded(true, false, false)).toBe(true);
+    expect(exposedLoaded(true, false, true)).toBe(true);
+    // owner: local load AND remote settled
+    expect(exposedLoaded(true, true, false)).toBe(false);
+    expect(exposedLoaded(false, true, true)).toBe(false);
+    expect(exposedLoaded(true, true, true)).toBe(true);
   });
 
   it("useLearningActions() exposes only answer + readUnit", () => {
