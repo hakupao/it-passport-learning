@@ -18,15 +18,9 @@
 
 import type { UIMessage } from "ai";
 
-/**
- * Storage subset we depend on. Avoids pulling in `lib: ["DOM"]` for the unit
- * tests (which run in node env per vitest.config.ts).
- */
-export interface StorageLike {
-  getItem(key: string): string | null;
-  setItem(key: string, value: string): void;
-  removeItem(key: string): void;
-}
+import type { StorageLike } from "@/lib/storage";
+
+export type { StorageLike } from "@/lib/storage";
 
 interface PersistedShape {
   version: 1;
