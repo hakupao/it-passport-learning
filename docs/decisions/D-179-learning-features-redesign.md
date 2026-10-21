@@ -45,3 +45,7 @@
 - ブラウザ直結の実 POST / streaming (決定 6 の spike)。両 provider のどちらかで不可なら、その provider の扱いを新しい D で決め直す。
 - 正規 term id 規則、辞典の URL 構造、学習記録の schema、Upstash の key 設計 → 実装計画で決める。
 - 現在の STATE は設計阶段。実装に入るのは実装計画のユーザー承認後。
+
+## 改訂 (S131、同日) — D-180 で §7 を修正
+- 計画 `docs/phase5/PLAN_stage6_learning.md` §0 の細化決定をユーザー承認で **D-180** として lock。
+- §7 の「保持」のうち `lib/ai/provider.ts`・`lib/ai/tutorPrompt.ts`・3 shell の Chat / Tutor 視図・`useChatSession`・`useTutorSession` は **Phase 1 で削除** (削除済みの route を呼ぶか死語料の型を import しており、呼び出し元のないまま compile を維持することになる。Phase 4 のブラウザ直結で書き直す。必要なら Task 1 の commit message に記す hash から git 履歴で取り回す)。保持は `lib/tutor/escalation.ts`・`lib/chat/historyStore.ts`・`lib/tutor/tutorHistoryStore.ts` (`StorageLike` は `src/lib/storage.ts` へ移す) のみ。
