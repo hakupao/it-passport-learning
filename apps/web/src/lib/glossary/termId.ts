@@ -24,3 +24,10 @@ export function termId(term: string): string {
   const n = term.normalize("NFC");
   return "t" + fnv1a32hex(n) + fnv1a32hex(n + "#");
 }
+
+const TERM_ID_RE = /^t[0-9a-f]{16}$/;
+
+/** True iff `id` has the termId() shape — guards the [termId] route param. */
+export function isValidTermId(id: string): boolean {
+  return TERM_ID_RE.test(id);
+}
