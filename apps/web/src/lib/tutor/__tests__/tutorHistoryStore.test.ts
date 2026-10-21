@@ -3,7 +3,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { UIMessage } from "ai";
 
-import type { StorageLike } from "@/lib/data/progressStore";
+import type { StorageLike } from "@/lib/storage";
 import {
   TUTOR_HISTORY_STORAGE_KEY,
   MAX_PERSISTED_MESSAGES,

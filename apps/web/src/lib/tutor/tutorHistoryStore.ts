@@ -2,7 +2,7 @@
 
 import type { UIMessage } from "ai";
 
-import type { StorageLike } from "@/lib/data/progressStore";
+import type { StorageLike } from "@/lib/storage";
 
 interface PersistedShape {
   version: 1;
