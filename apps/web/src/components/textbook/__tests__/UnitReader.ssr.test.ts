@@ -36,6 +36,7 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 import { UnitReader } from "../UnitReader";
+import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { termId } from "@/lib/glossary/termId";
 import { loadAllUnits, loadReaderIndex, loadUnit, neighbors } from "@/lib/textbook/reader";
@@ -43,10 +44,23 @@ import { loadAllUnits, loadReaderIndex, loadUnit, neighbors } from "@/lib/textbo
 // A real unit whose terms include 機能要件 (committed corpus).
 const UNIT_ID = "management-08-25-u01";
 
-async function render(locale: "ja" | "zh" | "en"): Promise<string> {
+// Task 12: UnitReader mounts MarkUnitRead (readUnit on mount), so it renders
+// inside the LearningRecordProvider the unit page mounts.
+async function element(locale: "ja" | "zh" | "en"): Promise<React.ReactElement> {
   const [unit, index] = await Promise.all([loadUnit(UNIT_ID), loadReaderIndex()]);
-  return renderToStaticMarkup(await UnitReader({ unit, neighbors: neighbors(index, UNIT_ID), locale }));
+  return UnitReader({ unit, neighbors: neighbors(index, UNIT_ID), locale });
 }
+
+async function render(locale: "ja" | "zh" | "en"): Promise<string> {
+  return renderToStaticMarkup(h(LearningRecordProvider, { isOwner: false, children: await element(locale) }));
+}
+
+describe("UnitReader read mark (SSR)", () => {
+  it("mounts the MarkUnitRead island, which needs a LearningRecordProvider", async () => {
+    const el = await element("ja");
+    expect(() => renderToStaticMarkup(el)).toThrow(/LearningRecordProvider/);
+  });
+});
 
 describe("UnitReader term anchors (SSR)", () => {
   it("gives the 機能要件 article id=termId and links it to /<locale>/glossary/<same id>", async () => {

@@ -8,6 +8,8 @@
 // Deferred to the later Quiz sub-stage (D-133): inline_quiz / challenge_questions
 // (resolve against the IPA past-exam corpus, not shipped) and source_figures
 // (IPA exam PNGs, not shipped). A note stands in where practice will appear.
+// D-180 Task 12: the MarkUnitRead island records the unit as read on mount (the
+// page mounts the LearningRecordProvider).
 
 import { getTranslations } from "next-intl/server";
 
@@ -23,6 +25,7 @@ import {
   type UnitNeighbors,
 } from "@/lib/textbook/reader";
 
+import { MarkUnitRead } from "./MarkUnitRead";
 import styles from "./reader.module.css";
 
 /** Typed objects → indexable record, for the trilingual `pick*` helpers. */
@@ -57,6 +60,7 @@ export async function UnitReader({
 
   return (
     <main className={styles.page}>
+      <MarkUnitRead unitId={unit.unit_id} />
       <Link href="/textbook" className={styles.back}>
         ← {t("back")}
       </Link>

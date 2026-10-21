@@ -1,7 +1,7 @@
 // D-180 §0-6/§0-7 — learning-record state for one page.
 //
-// `LearningRecordProvider` is mounted per page (quiz set today; Task 12 adds
-// the landing / textbook TOC), never in the locale layout: the owner flag comes
+// `LearningRecordProvider` is mounted per page (quiz set + landing, textbook
+// TOC + unit reader), never in the locale layout: the owner flag comes
 // from cookies, and reading cookies in the layout would make every page dynamic.
 // Two contexts: the record (changes on every answer) and the actions (stable
 // identities). Write-only islands use `useLearningActions()` and do not
@@ -54,9 +54,16 @@ export interface LearningActions {
 
 export interface LearningRecordValue extends LearningActions {
   record: LearningRecord;
+  /** False until the localStorage record has been merged in (always false during SSR). */
+  loaded: boolean;
 }
 
-const RecordContext = createContext<LearningRecord | null>(null);
+interface RecordState {
+  record: LearningRecord;
+  loaded: boolean;
+}
+
+const RecordContext = createContext<RecordState | null>(null);
 const ActionsContext = createContext<LearningActions | null>(null);
 
 /** window.localStorage, or null where it is unavailable (SSR, blocked storage). */
@@ -146,10 +153,12 @@ export function LearningRecordProvider({
     [],
   );
 
+  const state = useMemo<RecordState>(() => ({ record, loaded }), [record, loaded]);
+
   return createElement(
     ActionsContext.Provider,
     { value: actions },
-    createElement(RecordContext.Provider, { value: record }, children),
+    createElement(RecordContext.Provider, { value: state }, children),
   );
 }
 
@@ -162,10 +171,10 @@ export function useLearningActions(): LearningActions {
   return actions;
 }
 
-/** The page's learning record plus the actions. Throws outside a LearningRecordProvider. */
+/** The page's learning record, its loaded flag and the actions. Throws outside a LearningRecordProvider. */
 export function useLearningRecord(): LearningRecordValue {
-  const record = useContext(RecordContext);
+  const state = useContext(RecordContext);
   const actions = useContext(ActionsContext);
-  if (!record || !actions) throw new Error(`useLearningRecord ${OUTSIDE}`);
-  return { record, ...actions };
+  if (!state || !actions) throw new Error(`useLearningRecord ${OUTSIDE}`);
+  return { ...state, ...actions };
 }

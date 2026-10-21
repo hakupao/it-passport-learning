@@ -21,6 +21,7 @@ import { isValidMode } from "@/lib/quiz/quizModel";
 import {
   buildExamNav,
   buildTopicNav,
+  loadBaseQuestions,
   loadQuestionSet,
   loadQuizIndex,
 } from "@/lib/quiz/quizReader";
@@ -64,11 +65,11 @@ export default async function QuizPage({
         })
       : null;
   const set = await loadQuestionSet(mode, id, locale);
+  // D-149: only the owner (D-148 cookie) sees the per-question report button.
+  // D-180 §0-7: the same flag gates the learning-record server sync (set view
+  // and landing). Only the boolean crosses to the client — never the key or its hash.
+  const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
   if (set) {
-    // D-149: only the owner (D-148 cookie) sees the per-question report button.
-    // D-180 §0-7: the same flag gates the learning-record server sync.
-    // Only the boolean crosses to the client — never the key or its hash.
-    const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
     const dict = await dictPromise;
     const termCards = buildTermCards(dict, set.questions, locale);
     return (
@@ -85,13 +86,20 @@ export default async function QuizPage({
     );
   }
 
-  const index = await loadQuizIndex();
+  // D-180 Task 12: each topic's question ids for the progress islands
+  // (~48 KB JSON / ~8 KB gzip over the 2900-question corpus).
+  const [index, questions] = await Promise.all([loadQuizIndex(), loadBaseQuestions()]);
+  const topicQuestionIds: Record<string, string[]> = {};
+  for (const q of questions) (topicQuestionIds[q.topic_id] ??= []).push(q.id);
   return (
-    <QuizBrowser
-      locale={locale}
-      stats={index.stats}
-      topicNav={buildTopicNav(index, locale)}
-      exams={buildExamNav(index)}
-    />
+    <LearningRecordProvider isOwner={owner}>
+      <QuizBrowser
+        locale={locale}
+        stats={index.stats}
+        topicNav={buildTopicNav(index, locale)}
+        exams={buildExamNav(index)}
+        topicQuestionIds={topicQuestionIds}
+      />
+    </LearningRecordProvider>
   );
 }

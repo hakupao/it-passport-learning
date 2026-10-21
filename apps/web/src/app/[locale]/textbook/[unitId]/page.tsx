@@ -2,12 +2,17 @@
 //
 // loadUnit() allowlists the unitId slug (path-traversal guard retained from the
 // harness loader). The index is read once for in-topic prev/next + breadcrumb.
+// D-180 Task 12: wrapped in LearningRecordProvider so the reader can mark the
+// unit read on mount (owner flag from the D-148 cookie gates the server sync).
 
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
 import { UnitReader } from "@/components/textbook/UnitReader";
+import { LearningRecordProvider } from "@/hooks/useLearningRecord";
+import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import {
   loadReaderIndex,
   loadUnit,
@@ -45,6 +50,11 @@ export default async function UnitPage({
 
   const index = await loadReaderIndex();
   const nb = neighbors(index, unitId);
+  const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
 
-  return <UnitReader unit={unit} neighbors={nb} locale={locale} />;
+  return (
+    <LearningRecordProvider isOwner={owner}>
+      <UnitReader unit={unit} neighbors={nb} locale={locale} />
+    </LearningRecordProvider>
+  );
 }

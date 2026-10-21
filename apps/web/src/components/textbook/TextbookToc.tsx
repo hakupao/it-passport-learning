@@ -5,12 +5,15 @@
 // resolves per-locale labels from the enriched index (Session 85): the clickable
 // unit titles + major/medium group headings localize; the 小分類 topic name stays
 // JP (no translation exists in the corpus or the IPA syllabus — OQ-03).
+// D-180 Task 12: each unit row carries a UnitReadMark client island; the page
+// mounts the LearningRecordProvider.
 
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import type { NavCategory } from "@/lib/textbook/reader";
 
+import { UnitReadMark } from "./UnitReadMark";
 import styles from "./reader.module.css";
 
 const CAT_KEY = {
@@ -70,6 +73,7 @@ export async function TextbookToc({
                       <span className={styles.terms}>
                         {t("termCount", { n: u.term_count })}
                       </span>
+                      <UnitReadMark unitId={u.unit_id} />
                     </Link>
                   </li>
                 ))}

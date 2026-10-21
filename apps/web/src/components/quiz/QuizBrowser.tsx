@@ -5,12 +5,16 @@
 //   ② 年度別 (by exam, 29, chronological)
 // Each entry links to /quiz?mode=…&id=… (the same route renders the set).
 // Mirrors TextbookToc (server + getTranslations + Link).
+// D-180 Task 12: each topic row carries a TopicProgress client island (answered /
+// total + accuracy from the learning record); the page passes each topic's
+// question ids (topicQuestionIds) and mounts the LearningRecordProvider.
 
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import type { QuizExamRef, QuizNavCategory } from "@/lib/quiz/quizModel";
 
+import { TopicProgress } from "./TopicProgress";
 import styles from "./quiz.module.css";
 
 interface Props {
@@ -18,6 +22,8 @@ interface Props {
   stats: { questions: number; topics: number; exams: number; with_figure: number };
   topicNav: QuizNavCategory[];
   exams: QuizExamRef[];
+  /** topic_id → that topic's question ids (for the progress islands). */
+  topicQuestionIds: Record<string, string[]>;
 }
 
 export async function QuizBrowser({
@@ -25,6 +31,7 @@ export async function QuizBrowser({
   stats,
   topicNav,
   exams,
+  topicQuestionIds,
 }: Props): Promise<React.ReactElement> {
   const t = await getTranslations({ locale, namespace: "Quiz" });
 
@@ -62,8 +69,14 @@ export async function QuizBrowser({
                         {topic.major} › {topic.medium}
                       </span>
                     </span>
-                    <span className={styles.rowCount}>
-                      {t("count", { n: topic.question_count })}
+                    <span className={styles.rowRight}>
+                      <span className={styles.rowCount}>
+                        {t("count", { n: topic.question_count })}
+                      </span>
+                      <TopicProgress
+                        topicId={topic.topic_id}
+                        ids={topicQuestionIds[topic.topic_id] ?? []}
+                      />
                     </span>
                   </Link>
                 </li>

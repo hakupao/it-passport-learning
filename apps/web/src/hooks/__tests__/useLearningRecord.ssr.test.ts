@@ -25,6 +25,15 @@ describe("LearningRecordProvider (SSR)", () => {
     );
   });
 
+  it("loaded is false on the server (the local record is merged in after mount)", () => {
+    function ReadsLoaded(): React.ReactElement {
+      const { loaded } = useLearningRecord();
+      return h("b", null, String(loaded));
+    }
+    const out = renderToStaticMarkup(h(LearningRecordProvider, { isOwner: false, children: h(ReadsLoaded) }));
+    expect(out).toBe("<b>false</b>");
+  });
+
   it("useLearningActions() exposes only answer + readUnit", () => {
     const out = renderToStaticMarkup(h(LearningRecordProvider, { isOwner: false, children: h(WritesOnly) }));
     expect(out).toBe("<i>answer,readUnit</i>");

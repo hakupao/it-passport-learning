@@ -3,11 +3,16 @@
 // Replaces the Session-81 schema-verification harness. Loads the full
 // unit_index.json (in-repo per D-133), groups it (D-114 path order), and renders
 // the reader ToC.
+// D-180 Task 12: wrapped in LearningRecordProvider for the per-unit read marks
+// (owner flag from the D-148 cookie gates the server sync).
 
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { TextbookToc } from "@/components/textbook/TextbookToc";
+import { LearningRecordProvider } from "@/hooks/useLearningRecord";
+import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { buildNav, loadReaderIndex } from "@/lib/textbook/reader";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +33,11 @@ export default async function TextbookIndexPage({
 
   const index = await loadReaderIndex();
   const nav = buildNav(index, locale);
+  const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
 
-  return <TextbookToc nav={nav} stats={index.stats} locale={locale} />;
+  return (
+    <LearningRecordProvider isOwner={owner}>
+      <TextbookToc nav={nav} stats={index.stats} locale={locale} />
+    </LearningRecordProvider>
+  );
 }
