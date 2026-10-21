@@ -44,8 +44,26 @@ const QUIZ_TRACE = [
   "../../data/ip/quiz/explanations/*.json",
 ];
 // Glossary (D-179 §9): the dictionary is built from every textbook unit plus the
-// base questions.json (QuizQuestion.terms links); no quiz sidecars are read.
+// base questions.json (QuizQuestion.terms links, via quizReader.loadBaseQuestions).
+// Importing quizReader makes nft also trace the rest of data/ip/quiz that its
+// dynamic path.join reads resolve to (quiz_index.json, chumon_groups.json, the
+// translations/ + explanations/ sidecars); the glossary never loads them, so the
+// exclude list below drops them. Next applies excludes after includes, so they
+// name the four quiz paths exactly and questions.json stays traced.
+// NOTE: next build --turbopack (Next 15.5.x, our build script) skips the per-route
+// outputFileTracingIncludes/Excludes pass entirely (turbopack-build returns no
+// buildTraceContext, so collect-build-traces applies nothing; verified: an extra
+// "./README.md" include produced 0 trace hits). Every route entry in this file
+// therefore only takes effect under a webpack build; with turbopack the traces are
+// whatever turbopack resolves itself, and the nft IPA leak gate is the real guard.
 const GLOSSARY_TRACE = [...TEXTBOOK_TRACE, "../../data/ip/quiz/questions.json"];
+const GLOSSARY_TRACE_EXCLUDE = [
+  ...IPA_TRACE_EXCLUDE,
+  "../../data/ip/quiz/quiz_index.json",
+  "../../data/ip/quiz/chumon_groups.json",
+  "../../data/ip/quiz/translations/**/*",
+  "../../data/ip/quiz/explanations/**/*",
+];
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(process.cwd(), "..", ".."),
   outputFileTracingIncludes: {
@@ -59,8 +77,8 @@ const nextConfig: NextConfig = {
     "/[locale]/textbook": IPA_TRACE_EXCLUDE,
     "/[locale]/textbook/[unitId]": IPA_TRACE_EXCLUDE,
     "/[locale]/quiz": IPA_TRACE_EXCLUDE,
-    "/[locale]/glossary": IPA_TRACE_EXCLUDE,
-    "/[locale]/glossary/[termId]": IPA_TRACE_EXCLUDE,
+    "/[locale]/glossary": GLOSSARY_TRACE_EXCLUDE,
+    "/[locale]/glossary/[termId]": GLOSSARY_TRACE_EXCLUDE,
   },
 };
 
