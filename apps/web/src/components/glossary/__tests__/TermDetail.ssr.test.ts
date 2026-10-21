@@ -118,6 +118,16 @@ describe("TermDetail (SSR)", () => {
     expect(out).toContain("機能要件-zh");
     expect(out).toContain("機能要件");
   });
+
+  it("falls back to the JP text when an active-locale sense field is empty (same as the list card)", () => {
+    const sense = { ...ENTRY.senses[0]!, term: { ...unitTerm("機能要件", "A"), definition_zh: "", analogy_zh: "  " } };
+    const out = render("zh", { ...ENTRY, senses: [sense] }, TITLES, [null]);
+    expect(out).toContain("定義-A");
+    expect(out).toContain("たとえ-A");
+    expect(out).toContain("解说-A");
+    expect(out).toContain("口诀-A");
+    expect(out).not.toContain("解説-A");
+  });
 });
 
 describe("isValidTermId", () => {

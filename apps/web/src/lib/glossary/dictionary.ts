@@ -105,8 +105,8 @@ function gloss(t: UnitTerm, locale: string): string {
   return v.trim() !== "" ? v : t.term;
 }
 
-/** Active-locale `{base}_{lang}` field, JP when the translation is empty. */
-function field(t: UnitTerm, base: string, locale: string): string {
+/** Active-locale `{base}_{lang}` field, JP when the translation is empty (list card + detail page). */
+export function field(t: UnitTerm, base: string, locale: string): string {
   const v = pick(rec(t), base, locale);
   return v.trim() !== "" ? v : pick(rec(t), base, "ja");
 }

@@ -10,12 +10,10 @@
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import type { DictEntry } from "@/lib/glossary/dictionary";
-import { pick, pickTerm } from "@/lib/textbook/reader";
+import { field, type DictEntry } from "@/lib/glossary/dictionary";
+import { pickTerm } from "@/lib/textbook/reader";
 
 import styles from "./glossary.module.css";
-
-const rec = (o: object) => o as unknown as Record<string, unknown>;
 
 interface Props {
   locale: string;
@@ -53,19 +51,19 @@ export function TermDetail({ locale, entry, unitTitles, svgs }: Props): React.Re
             </p>
             <p className={styles.def}>
               <span className={styles.fieldLabel}>{t("definition")}</span>
-              {pick(rec(s.term), "definition", locale)}
+              {field(s.term, "definition", locale)}
             </p>
             <p className={styles.prose}>
               <span className={styles.fieldLabel}>{t("explanation")}</span>
-              {pick(rec(s.term), "explanation", locale)}
+              {field(s.term, "explanation", locale)}
             </p>
             <p className={styles.note}>
               <span className={styles.fieldLabel}>{t("analogy")}</span>
-              {pick(rec(s.term), "analogy", locale)}
+              {field(s.term, "analogy", locale)}
             </p>
             <p className={styles.note}>
               <span className={styles.fieldLabel}>{t("memoryHook")}</span>
-              {pick(rec(s.term), "memory_hook", locale)}
+              {field(s.term, "memory_hook", locale)}
             </p>
             {svgs[i] ? (
               <figure
