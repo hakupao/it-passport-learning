@@ -12,6 +12,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
+import { termId } from "@/lib/glossary/termId";
 import {
   loadGeneratedSvg,
   pick,
@@ -41,6 +42,7 @@ export async function UnitReader({
   locale,
 }: Props): Promise<React.ReactElement> {
   const t = await getTranslations({ locale, namespace: "Textbook" });
+  const tg = await getTranslations({ locale, namespace: "Glossary" });
   const showGloss = toDataLang(locale) !== "jp";
 
   // Preload generated SVGs (parallel) before rendering.
@@ -80,12 +82,21 @@ export async function UnitReader({
           {t("terms")}（{unit.terms.length}）
         </h2>
         {unit.terms.map((tm, i) => (
-          <article key={tm.term} className={styles.term}>
+          // id = anchor for the glossary's /textbook/<unitId>#<termId> link; every
+          // textbook term is a dictionary headword, so the glossary link resolves.
+          <article key={tm.term} id={termId(tm.term)} className={styles.term}>
             <h3 className={styles.termHead}>
               <span className={styles.termJp}>{tm.term}</span>
               {showGloss ? (
                 <span className={styles.termGloss}>{pickTerm(tm, locale)}</span>
               ) : null}
+              <Link
+                href={`/glossary/${termId(tm.term)}`}
+                locale={locale}
+                className={styles.termLink}
+              >
+                {tg("openInGlossary")} →
+              </Link>
             </h3>
             <p className={styles.def}>{pick(rec(tm), "definition", locale)}</p>
             <p className={styles.prose}>{pick(rec(tm), "explanation", locale)}</p>
