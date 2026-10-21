@@ -67,6 +67,11 @@ if ((!items || !items.length) && parsed?.exam_id && Array.isArray(parsed?.qnums)
   const figSet = new Set(parsed.figure_nums ?? [])
   items = parsed.qnums.map((n) => ({ id: `${parsed.exam_id}-q${String(n).padStart(3, '0')}`, has_figure: figSet.has(n) }))
 }
+// S131: {input_path, ids, figure_ids} 形 (多 exam・全量 chunk 用。has_figure は figure_ids に含まれる id のみ true)
+if ((!items || !items.length) && Array.isArray(parsed?.ids)) {
+  const figIds = new Set(parsed.figure_ids ?? [])
+  items = parsed.ids.map((id) => ({ id, has_figure: figIds.has(id) }))
+}
 if (!inputPath || !Array.isArray(items) || !items.length) throw new Error('need {input_path, items:[{id,has_figure}]} or {input_path, exam_id, qnums, figure_nums}')
 
 const audits = await parallel(
