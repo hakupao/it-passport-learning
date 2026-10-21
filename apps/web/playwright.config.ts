@@ -49,6 +49,9 @@ const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? PROD_CANONICAL;
 
 export default defineConfig({
   testDir: "./e2e",
+  // The owner-sync spec needs the local server's OWNER_KEY and refuses non-local
+  // base URLs; without E2E_OWNER_KEY it is left out so a plain run still passes.
+  testIgnore: process.env.E2E_OWNER_KEY ? [] : ["**/learning-owner.spec.ts"],
   fullyParallel: false,
   workers: 1, // serial — gentle on prod LLM cost envelope; total LLM calls ≤9.
   retries: 1,

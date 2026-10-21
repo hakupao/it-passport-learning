@@ -11,6 +11,8 @@
 //   E2E_OWNER_KEY=k PLAYWRIGHT_BASE_URL=http://localhost:3100 \
 //     npx playwright test e2e/learning-owner.spec.ts
 //
+// playwright.config.ts ignores this spec unless E2E_OWNER_KEY is set, and the
+// spec refuses any base URL that is not localhost / 127.0.0.1.
 // `E2E_OWNER_KEY` must equal the server's OWNER_KEY: each test first opens
 // `/ja/glossary?owner_key=<key>` once so the middleware sets the itp_owner cookie.
 //
@@ -78,6 +80,16 @@ async function mockServer(page: Page, remote: LearningRecord, holdGet: boolean):
   });
   return sync;
 }
+
+// Never send the owner key anywhere but a local server (prod traces / retries would capture it).
+test.beforeEach(({ baseURL }) => {
+  const host = baseURL ? new URL(baseURL).hostname : "";
+  if (host !== "localhost" && host !== "127.0.0.1") {
+    throw new Error(
+      `learning-owner.spec.ts runs only against a local server (PLAYWRIGHT_BASE_URL=http://localhost:<port>), got "${baseURL ?? ""}".`,
+    );
+  }
+});
 
 async function becomeOwner(page: Page): Promise<void> {
   if (!OWNER_KEY) {

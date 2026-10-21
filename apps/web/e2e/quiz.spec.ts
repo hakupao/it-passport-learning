@@ -307,4 +307,12 @@ test("quiz ja: clicking a table choice's table answers it once (wrong → ✗)",
   await expect(btn.locator(".sr-only", { hasText: m.resultWrong })).toHaveCount(1);
   await expect(card.locator('p[aria-live="polite"]')).toHaveText(`${m.correctLabel}: ${TABLE_CHOICE_ANSWER}`);
   await expect(card.locator('[aria-pressed="true"]')).toHaveCount(1);
+  // The table-choice <li> is the box: the pick turns red, the keyed choice green
+  // (quiz.module.css .choiceWrong / .choiceCorrect must beat .choiceTableItem).
+  const box = (letter: string) => card.locator(`li:has(> [id="${TABLE_CHOICE_QID}-choice-${letter}"])`);
+  await expect(box("ア")).toHaveCSS("background-color", "rgb(253, 236, 238)");
+  await expect(box("ア")).toHaveCSS("border-top-color", "rgb(229, 72, 77)");
+  await expect(box(TABLE_CHOICE_ANSWER)).toHaveCSS("background-color", "rgb(234, 250, 240)");
+  await expect(box(TABLE_CHOICE_ANSWER)).toHaveCSS("border-top-color", "rgb(52, 199, 89)");
+  await expect(box("イ")).toHaveCSS("background-color", "rgb(255, 255, 255)");
 });
