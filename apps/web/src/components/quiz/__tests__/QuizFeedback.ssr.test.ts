@@ -31,7 +31,7 @@ function render(locale: "ja" | "zh" | "en", isOwner?: boolean): string {
     h(NextIntlClientProvider, {
       locale,
       messages,
-      children: h(QuizSet, { locale, label: "L", sublabel: "S", questions: QUESTIONS, isOwner }),
+      children: h(QuizSet, { locale, label: "L", sublabel: "S", questions: QUESTIONS, termCards: {}, isOwner }),
     }),
   );
 }

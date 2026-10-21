@@ -11,7 +11,9 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
+import { TermChip } from "@/components/glossary/TermChip";
 import { Link } from "@/i18n/navigation";
+import type { TermCard } from "@/lib/glossary/dictionary";
 import {
   localizedChoices,
   localizedExplanation,
@@ -28,6 +30,8 @@ interface Props {
   label: string;
   sublabel: string;
   questions: QuizQuestion[];
+  /** D-179: dictionary cards for this set's terms, keyed by JP term (as in QuizQuestion.terms). */
+  termCards: Record<string, TermCard>;
   /** D-149: server-resolved owner flag (D-148 cookie); gates the report button. */
   isOwner?: boolean;
 }
@@ -37,6 +41,7 @@ export function QuizSet({
   label,
   sublabel,
   questions,
+  termCards,
   isOwner = false,
 }: Props): React.ReactElement {
   const t = useTranslations("Quiz");
@@ -64,6 +69,7 @@ export function QuizSet({
             t={t}
             locale={locale}
             isOwner={isOwner}
+            termCards={termCards}
           />
         ))
       )}
@@ -77,19 +83,21 @@ function QuestionCard({
   t,
   locale,
   isOwner,
+  termCards,
 }: {
   q: QuizQuestion;
   index: number;
   t: ReturnType<typeof useTranslations>;
   locale: string;
   isOwner: boolean;
+  termCards: Record<string, TermCard>;
 }): React.ReactElement {
   const [revealed, setRevealed] = useState(false);
   const choices = localizedChoices(q, locale);
   const explanation = localizedExplanation(q, locale);
 
   return (
-    <article className={styles.qCard}>
+    <article id={q.id} className={styles.qCard}>
       <p className={styles.qSource}>
         {index}. {t("sourcePrefix")}: {q.source_label}
       </p>
@@ -156,7 +164,11 @@ function QuestionCard({
         </button>
       )}
       {q.terms.length > 0 ? (
-        <p className={styles.terms}>{q.terms.join(" · ")}</p>
+        <div className={styles.terms}>
+          {q.terms.map((term) => (
+            <TermChip key={term} card={termCards[term]} label={term} locale={locale} />
+          ))}
+        </div>
       ) : null}
       {isOwner ? <QuizFeedback questionId={q.id} locale={locale} /> : null}
     </article>

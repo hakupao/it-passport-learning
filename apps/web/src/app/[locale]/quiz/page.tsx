@@ -14,6 +14,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { QuizBrowser } from "@/components/quiz/QuizBrowser";
 import { QuizSet } from "@/components/quiz/QuizSet";
+import { toTermCard, type TermCard } from "@/lib/glossary/dictionary";
+import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import {
   buildExamNav,
   buildTopicNav,
@@ -52,6 +54,15 @@ export default async function QuizPage({
     // D-149: only the owner (D-148 cookie) sees the per-question report button.
     // Only the boolean crosses to the client — never the key or its hash.
     const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
+    // D-179: only this set's terms cross to the client, as summary cards.
+    const dict = await loadDictionary();
+    const termCards: Record<string, TermCard> = {};
+    for (const q of set.questions) {
+      for (const term of q.terms) {
+        const entry = dict.byTerm.get(term.normalize("NFC"));
+        if (entry) termCards[term] = toTermCard(entry, locale);
+      }
+    }
     return (
       <QuizSet
         locale={locale}
@@ -59,6 +70,7 @@ export default async function QuizPage({
         label={set.label}
         sublabel={set.sublabel}
         questions={set.questions}
+        termCards={termCards}
       />
     );
   }

@@ -9,22 +9,24 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 // Stage 6 (D-133) — the self-authored textbook corpus lives at repo-root
-// data/ip/textbook (outside apps/web). Set the tracing root to the monorepo
-// root and explicitly include the corpus so the textbook routes' server-side
-// fs reads resolve in the production (serverless) bundle, not just in dev.
-// Keys are route paths; include globs resolve from the project root (apps/web).
+// data/ip/textbook (outside apps/web). The tracing root is the monorepo root.
+// The per-route include lists below were written to pull the corpus into the
+// production (serverless) bundle; see the note above `nextConfig` — under
+// `next build --turbopack` they are not applied. Keys are route paths; include
+// globs would resolve from the project root (apps/web).
 //
 // Globs are narrowed to exactly what the reader reads (the unit index + unit
-// JSONs + generated SVGs) so build traces don't drag in gitignored *.pilot.json
-// residue or the unused figure_index.json (Rule D LOW, Session 85).
+// JSONs + generated SVGs), recording the intended scope: no gitignored
+// *.pilot.json residue, no unused figure_index.json (Rule D LOW, Session 85).
 const TEXTBOOK_TRACE = [
   "../../data/ip/textbook/unit_index.json",
   "../../data/ip/textbook/units/**/*.json",
   "../../data/ip/textbook/figures/**/*.svg",
 ];
-// Belt-and-suspenders: explicitly keep the gitignored, IPA-copyrighted sibling
-// trees (exams 1.2 GB / sources / syllabus) out of the textbook route trace, in
-// case nft ever resolves a broader base dir than data/ip/textbook.
+// Intended belt-and-suspenders exclude for the gitignored, IPA-copyrighted
+// sibling trees (exams 1.2 GB / sources / syllabus). Not applied under
+// turbopack (see the note above `nextConfig`); the effective guard is the nft
+// IPA leak gate run against the build output.
 const IPA_TRACE_EXCLUDE = [
   "../../data/ip/exams/**/*",
   "../../data/ip/sources/**/*",
@@ -34,9 +36,13 @@ const IPA_TRACE_EXCLUDE = [
 // data/ip/quiz. The runtime reads the two base JSONs + the per-exam translation
 // sidecars under translations/ (Phase 1, D-136-B) + explanation sidecars under
 // explanations/ (Phase 2, D-137; figures are static WebP under
-// apps/web/public/quiz-figures, traced automatically). Glob the sidecar dirs
-// explicitly so all 29 exam sidecars deploy reliably (don't rely on nft's dynamic
-// readdir tracing). The raw gitignored question_bank/pages/figures stay excluded.
+// apps/web/public/quiz-figures). The sidecar dirs were globbed explicitly so all
+// 29 exam sidecars would deploy without relying on nft's dynamic readdir
+// tracing — but under turbopack this list is not applied (see the note above
+// `nextConfig`); turbopack's own tracing decides what ships. The quiz route
+// also builds the glossary dictionary (term chips, D-179), so it reads the
+// textbook corpus too. The raw gitignored question_bank/pages/figures are
+// guarded by the nft IPA leak gate.
 const QUIZ_TRACE = [
   "../../data/ip/quiz/quiz_index.json",
   "../../data/ip/quiz/questions.json",
@@ -45,7 +51,16 @@ const QUIZ_TRACE = [
 ];
 // Glossary (D-179 §9): the dictionary is built from every textbook unit plus the
 // base questions.json (QuizQuestion.terms links); no quiz sidecars are read.
+// Kept as documentation of the intended scope; not applied under turbopack.
 const GLOSSARY_TRACE = [...TEXTBOOK_TRACE, "../../data/ip/quiz/questions.json"];
+
+// S131 (D-179 §9 改訂): `next build --turbopack` (Next 15.5.18) does NOT apply
+// outputFileTracingIncludes / outputFileTracingExcludes — the turbopack build
+// returns no buildTraceContext, so these per-route entries are inert. What ships
+// is whatever turbopack's own tracing of the fs reads picks up. IPA protection
+// therefore rests on the Phase gate: `find .next -name '*.nft.json' -exec grep
+// -lE 'data/ip/(exams|sources|syllabus)/' {} + | wc -l` must print 0. Do not
+// add new trace entries here; the existing ones are left untouched.
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(process.cwd(), "..", ".."),
   outputFileTracingIncludes: {

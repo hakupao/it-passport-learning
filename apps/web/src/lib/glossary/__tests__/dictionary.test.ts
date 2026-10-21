@@ -268,14 +268,12 @@ describe("buildListGroups", () => {
     }
   });
 
-  it("carries id / gloss / zh / en for search", () => {
+  it("carries id / gloss / search", () => {
     const item = buildListGroups(dict, index, "en")[0]!.items.find((i) => i.term === "機能要件")!;
     expect(item).toEqual({
       id: termId("機能要件"),
       term: "機能要件",
       gloss: "Functional requirement",
-      termZh: "功能需求",
-      termEn: "Functional requirement",
       search: "機能要件\n功能需求\nfunctional requirement\n功能性需求\nfunctional requirements",
     });
   });
@@ -290,7 +288,6 @@ describe("buildListGroups", () => {
       [],
     );
     const item = buildListGroups(d, index, "ja")[0]!.items[0]!;
-    expect(item.termEn).toBe("RFID");
     expect(item.search).toContain("radio frequency id");
     expect(item.search).toContain("电子标签");
     // NFKC folds the full-width JP headword so an ASCII query can hit it.

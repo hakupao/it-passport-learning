@@ -139,8 +139,6 @@ export interface DictListItem {
   id: string;
   term: string;
   gloss: string;
-  termZh: string;
-  termEn: string;
   /** NFKC-lowercased JP headword + every sense's term_zh / term_en, newline-joined (list search). */
   search: string;
 }
@@ -187,8 +185,6 @@ export function buildListGroups(dict: Dictionary, index: ReaderIndex, locale: st
             id: e.id,
             term: e.term,
             gloss: gloss(first(e).term, locale),
-            termZh: e.termZh,
-            termEn: e.termEn,
             search: searchNorm([e.term, ...e.senses.flatMap((s) => [s.term.term_zh, s.term.term_en])].join("\n")),
           }))
           .sort((a, b) => a.term.localeCompare(b.term, "ja")),

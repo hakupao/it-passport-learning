@@ -43,16 +43,12 @@ const GROUPS: DictListGroup[] = [
         id: "t0123456789abcdef",
         term: "PDCA",
         gloss: "PDCA",
-        termZh: "PDCA循环",
-        termEn: "PDCA cycle",
         search: "pdca\npdca循环\npdca cycle",
       },
       {
         id: "t1111111111111111",
         term: "ガントチャート",
         gloss: "ガントチャート",
-        termZh: "甘特图",
-        termEn: "Gantt chart",
         // second sense carries a different en headword
         search: "ガントチャート\n甘特图\ngantt chart\n甘特图\nbar chart (schedule)",
       },
@@ -69,8 +65,6 @@ const GROUPS: DictListGroup[] = [
         id: "t2222222222222222",
         term: "ISO/IEC 27000",
         gloss: "ISO/IEC 27000",
-        termZh: "ISO/IEC 27000",
-        termEn: "ISO/IEC 27000",
         search: "iso/iec 27000\niso/iec 27000\niso/iec 27000",
       },
     ],
@@ -114,7 +108,7 @@ describe("filterItems", () => {
     expect(r[0]!.items.map((i) => i.term)).toEqual(["PDCA"]);
   });
 
-  it("matches termZh and termEn substrings", () => {
+  it("matches zh / en headword substrings via the search field", () => {
     expect(filterItems(GROUPS, "甘特").flatMap((g) => g.items.map((i) => i.term))).toEqual(["ガントチャート"]);
     expect(filterItems(GROUPS, "GANTT").flatMap((g) => g.items.map((i) => i.term))).toEqual(["ガントチャート"]);
   });
