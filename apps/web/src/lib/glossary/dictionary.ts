@@ -5,7 +5,7 @@
 // management → strategy, topic index order, unit_order); the representative topic
 // is the first sense's. Past-exam questions link in via QuizQuestion.terms.
 // Entries are keyed by the JP headword's termId, so zh/en homonyms never merge.
-// Disk loaders live elsewhere (Task 3); this module is unit-tested with fixtures.
+// The disk loader is ./dictionaryReader; this module is unit-tested with fixtures.
 
 import type { QuizQuestion } from "../quiz/quizModel";
 import { buildNav, pick, pickTerm, type ReaderIndex } from "../textbook/reader";
@@ -74,7 +74,7 @@ export function buildDictionary(
         if (clash) {
           throw new Error(`termId collision: ${JSON.stringify(clash.term)} vs ${JSON.stringify(t.term)} → ${id}`);
         }
-        entry = { id, term: t.term, termZh: t.term_zh, termEn: t.term_en, senses: [], questions: [] };
+        entry = { id, term: key, termZh: t.term_zh, termEn: t.term_en, senses: [], questions: [] };
         entries.push(entry);
         byId.set(id, entry);
         byTerm.set(key, entry);

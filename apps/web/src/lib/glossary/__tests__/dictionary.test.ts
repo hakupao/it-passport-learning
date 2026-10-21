@@ -200,6 +200,8 @@ describe("buildDictionary", () => {
     expect(d.entries).toHaveLength(1);
     expect(d.entries[0]!.senses).toHaveLength(2);
     expect(d.byTerm.get("ガ")).toBe(d.entries[0]);
+    expect(d.entries[0]!.term).toBe("ガ"); // NFC key, though the NFD spelling is seen first
+    expect(d.entries[0]!.id).toBe(termId("ガ"));
     expect(d.entries[0]!.questions.map((q) => q.id)).toEqual(["q"]);
   });
 });

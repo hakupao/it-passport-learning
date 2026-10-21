@@ -23,6 +23,8 @@ describe("termId", () => {
     expect(termId("")).toBe("t811c9dc5" + fnv("#"));
     expect(fnv("a")).toBe("e40c292c"); // published FNV-1a 32 test vector
     expect(termId("a")).toBe("te40c292c" + fnv("a#"));
+    // multibyte UTF-8 (3 bytes per kana/kanji) against the independent reference
+    expect(termId("機能要件")).toBe("t" + fnv("機能要件") + fnv("機能要件#"));
   });
 
   it("normalizes to NFC (composed ガ === decomposed カ + ゙)", () => {

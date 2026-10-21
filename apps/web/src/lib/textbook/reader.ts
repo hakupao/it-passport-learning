@@ -267,4 +267,15 @@ export async function loadReaderIndex(): Promise<ReaderIndex> {
   return readJson<ReaderIndex>(path.join(textbookRoot(), "unit_index.json"));
 }
 
+// Module-level memo: the corpus is immutable, so read all 244 units once per
+// lambda lifetime (the glossary builds its dictionary from every unit).
+let allUnitsPromise: Promise<TextbookUnit[]> | null = null;
+
+/** Every unit listed in unit_index.json (index order), loaded via loadUnit. */
+export function loadAllUnits(): Promise<TextbookUnit[]> {
+  return (allUnitsPromise ??= loadReaderIndex().then((index) =>
+    Promise.all(index.topics.flatMap((t) => (t.units ?? []).map((u) => loadUnit(u.unit_id)))),
+  ));
+}
+
 export type { TextbookUnit };

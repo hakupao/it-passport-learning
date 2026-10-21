@@ -50,6 +50,7 @@ async function readJson<T>(file: string): Promise<T> {
 // rather than per request (questions.json is ~2.8 MB — avoid re-parsing it on
 // every force-dynamic render).
 let indexPromise: Promise<QuizIndex> | null = null;
+let baseQuestionsPromise: Promise<QuizQuestion[]> | null = null;
 let questionsPromise: Promise<QuizQuestion[]> | null = null;
 let translationsPromise: Promise<Map<string, QuizTranslationEntry>> | null = null;
 let explanationsPromise: Promise<Map<string, QuizExplanationEntry>> | null = null;
@@ -116,11 +117,16 @@ export function loadExplanations(): Promise<Map<string, QuizExplanationEntry>> {
   return (explanationsPromise ??= loadExplanationMap());
 }
 
+/** questions.json only (JP base, no translation / explanation sidecars merged). */
+export function loadBaseQuestions(): Promise<QuizQuestion[]> {
+  return (baseQuestionsPromise ??= readJson<{ questions: QuizQuestion[] }>(
+    path.join(quizDataRoot(), "questions.json"),
+  ).then((d) => d.questions));
+}
+
 export function loadAllQuestions(): Promise<QuizQuestion[]> {
   return (questionsPromise ??= Promise.all([
-    readJson<{ questions: QuizQuestion[] }>(path.join(quizDataRoot(), "questions.json")).then(
-      (d) => d.questions,
-    ),
+    loadBaseQuestions(),
     loadTranslations(),
     loadExplanations(),
   ]).then(([questions, tr, ex]) =>
