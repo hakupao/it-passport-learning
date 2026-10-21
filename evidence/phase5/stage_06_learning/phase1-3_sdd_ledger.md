@@ -104,3 +104,56 @@ Final fix wave (Phase 2): dispatched (FIX_BASE 66a1bd1)
 Final fix wave (Phase 2): cb5d45a; note TermChip gained test-only defaultOpen prop
 Final re-review (Phase 2): 7/7 addressed; minors: test-only defaultOpen prop (accepted), dictionary loaded for valid-mode/unknown-id (memoized, accepted), mixed-language link name (intentional) — parked
 Phase 2 complete (main cb5d45a). Phase 3 = Task 9–12 starts ONLY after the D-176 pre-report — do not auto-dispatch Task 9 on resume. Carry to Phase 3: question ids start with a digit → use getElementById / CSS.escape; QuizSet termCards is a required prop; StorageLike duplicate in lib/chat/historyStore.ts (Task 9).
+
+## Phase 3 run (user said 继续 = D-176 go; pre-report given)
+Branch: stage6-phase3 from main 66bb3b1.
+Pre-flight (Phase 3):
+| Pair / task | Produces → consumes | Finding |
+|---|---|---|
+| T9 → T10/T11/T12 | LearningRecord, mergeRecords, parseRecord, topicStats, recordAnswer, markUnitRead, LEARNING_STORAGE_KEY | consistent |
+| T10 → T11 | /api/learning GET/PUT contract (§0-7) | consistent |
+| T11 → T12 | plan's `useLearningRecord({isOwner})` hook | DEFECT: QuizBrowser, TextbookToc, UnitReader are server components; T12 would need many client islands, each instance doing its own localStorage read + owner GET (TOC = 244 units) |
+| T11 self | QuizSet is client; isOwner already a prop | ok |
+| T12 self | QuizBrowser needs qid→topic map on client (2900 pairs) | ok (~100 KB; measure) |
+Ruling (plan defect): Task 11 delivers `LearningRecordProvider({ isOwner, children })` (client context: one localStorage load, one owner GET, debounced PUT) + `useLearningRecord(): { record, answer(qid, choice, correct), readUnit(unitId) }` consumer; pages wrap their content once; Task 12 islands read the context — the spec's behavior (§0-6/§0-7) is unchanged, only the hook's shape — cost if wrong: a provider refactor
+Ruling: fold Phase 1 parked "duplicate StorageLike in lib/chat/historyStore.ts" into Task 9 (re-export from @/lib/storage)
+Carry: question ids start with a digit → getElementById / CSS.escape, never `#2024r06-…` selectors.
+Task 9: dispatched (BASE 66bb3b1)
+Task 9: implementer DONE (714ff35); note parseRecord is all-or-nothing → Task 11 must not silently overwrite an unparseable local record (carry)
+Task 9: complete (commits 66bb3b1..714ff35, review clean)
+Task 9: minor (deferred): `at` must be finite (NaN breaks commutativity) — Ruling: fold into Task 10 (guard/JSDoc in recordAnswer/markUnitRead)
+Task 9: minor (deferred): merge output key order follows arg order — Ruling: fold into Task 10 (sort keys → canonical form) so string compares can't trigger PUT ping-pong
+Ruling (plan defect, data-loss risk): plan Task 10 says readStored "无或非法 → emptyRecord()". A present-but-invalid stored doc must FAIL CLOSED: GET/PUT return 500 and nothing is written (only a missing key = empty record) — otherwise one bad doc or a future v2 writer wipes the owner's history — cost if wrong: sync unavailable until the doc is fixed by hand
+Ruling (carry to Task 11): an unparseable localStorage value is copied to `itp:learn:v1:corrupt` before starting from an empty record — never silently overwritten — cost if wrong: one extra localStorage key
+Task 10: dispatched (BASE 714ff35)
+Task 10: implementer DONE (49fb02f)
+Task 10: complete (commits 714ff35..49fb02f, review clean)
+Task 10: minor (deferred): recordAnswer/markUnitRead accept negative `at` while parseRecord rejects it (write-able, not readable) — Ruling: fold into Task 11 (assert at >= 0)
+Task 10: minor (deferred): fake redis get doesn't auto-deserialize like real Upstash; 403 test doesn't assert get() untouched — Ruling: fold into Task 11
+Task 10: minor (deferred): concurrent PUT lost update (no CAS) — Ruling: accepted for a single owner with 2 s debounce; the device re-sends its full record on next PUT; record as known limitation in session log
+Task 10: minor (deferred): loadLearningRedis outside try (framework default 500) — parked, same as feedback route
+Ruling: LearningRecordProvider is mounted per page that needs it (quiz set page in Task 11; quiz landing, textbook TOC, unit page in Task 12) with isOwner from that page's cookies — NOT in [locale]/layout.tsx, because reading cookies there would make every page dynamic (glossary list must stay static) — cost if wrong: a few extra provider mounts
+Task 11: dispatched (BASE 49fb02f)
+Task 11: implementer DONE (bf7d266); owner sync path untested against real Redis (controller verifies on prod)
+Task 11 review: Needs fixes — Important: save effect writes the in-memory record without re-reading storage → multi-tab overwrite loses answers (permanent for non-owners). Minors: focus loss on disabled, <table> in <button>, duplicate test, context re-render fan-out, first PUT before GET settles.
+Ruling: fix round 1 = Important (merge-on-save + `storage` event merge) + Minors 1 (aria-disabled instead of disabled), 3 (dup test), 4 (split actions/record contexts — Task 12 islands benefit), 5 (no PUT until the initial GET settles); Minor 2 (<table> in <button>) parked to the Phase 3 final review — restructuring the choice click target is a UX change — cost if wrong: table-choice a11y name is a cell soup until then
+Task 11: fix round 1 dispatched (FIX_BASE bf7d266)
+Task 11: fix round 1/5 (5 addressed, 0 open — merge-on-save + storage listener, aria-disabled, dup test, split contexts, PUT after GET settles; commits bf7d266..6f740a3)
+Task 11: minor (deferred): storage-listener wiring not asserted end-to-end (only pure applyStorageEvent tested) — Ruling: fold into Task 12 (once the quiz landing shows progress, assert tab A's display updates after tab B answers, without reload)
+Task 11: minor (deferred): if writing the :corrupt backup itself fails (quota), the main key is overwritten — pre-existing, parked
+Task 11: complete (commits 49fb02f..6f740a3, 1 fix round)
+Task 12: dispatched (BASE 6f740a3)
+Task 12: implementer DONE (9077750); qid→topic map 47.9 KB / 8.3 KB gz; landing now parses questions.json
+Task 12: complete (commits 6f740a3..9077750, review clean)
+Task 12: minor (deferred): owner on a new device briefly sees local-only counts before GET settles — for final review triage (fix = islands show when loaded && (!isOwner || remoteSettled))
+Task 12: minor (deferred): redundant spread in learning.spec.ts:68; progress/read text inside <Link> changes accessible name — for final review triage
+Final review (Phase 3): dispatched (66bb3b1..9077750, pr-review-toolkit:code-reviewer opus = Phase 3 Rule D)
+Final review (Phase 3): With fixes — 0 Critical, 3 Important (<table> inside <button> a11y regression on 18 table-choice questions; no flush on page hide; owner sync state machine has no automated test), 4 Minor.
+Ruling: one fix wave = Important 1–3 + Minors 1 (monotonic `at` on re-answer), 2 (return prev when merge result is equal), 3 (aria-live on the answer line + visually-hidden 正解/不正解 on the picked choice) + T12 deferred (islands wait for remoteSettled when owner); Minor 4 (aria-pressed vs radiogroup) parked; Phase 4 notes (recompute correctness from choice vs current correct_answer; reveal-only not recorded; unitsRead = opened; v:1 forward-compat) recorded in session log, not fixed now — cost if wrong: landing accuracy would go stale only if an answer key is corrected later
+Final fix wave (Phase 3): dispatched (FIX_BASE 9077750)
+Final fix wave (Phase 3): bf3612c + d4c7c04; learning-owner.spec needs E2E_OWNER_KEY (throws otherwise)
+Final re-review (Phase 3): 7/7 addressed; new I-1 (table-choice li never turns green/red — .choiceTableItem cascades after .choiceCorrect/.choiceWrong), M-1 (owner spec breaks default prod run; would put prod key in traces), M-2 (two keepalive flushes may exceed 64 KiB budget; parked).
+Ruling: deviate from the skill's "no second fix wave" for I-1 + M-1 only — I-1 is a visual regression introduced by the fix wave on the 18 table-choice questions (shipping it breaks the answer feedback the phase exists for), M-1 is config-only; one tiny dispatch + scoped re-review — cost if wrong: one extra review seat
+Residual fix (Phase 3): dispatched (FIX_BASE d4c7c04)
+Residual fix (Phase 3): ffa2cce; re-review I-1/M-1 addressed, no new issues
+Phase 3 complete (main ffa2cce). Prod: anon /api/learning GET/PUT 403, default e2e 16/16, landing TTFB 0.55 s. Owner real-Redis two-device check pending on the user. Phase 4 = Task 13–14 starts ONLY after the D-176 pre-report.
