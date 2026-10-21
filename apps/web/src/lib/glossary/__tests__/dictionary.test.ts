@@ -276,7 +276,25 @@ describe("buildListGroups", () => {
       gloss: "Functional requirement",
       termZh: "功能需求",
       termEn: "Functional requirement",
+      search: "機能要件\n功能需求\nfunctional requirement\n功能性需求\nfunctional requirements",
     });
+  });
+
+  it("search covers every sense's zh/en, not just senses[0]", () => {
+    const d = buildDictionary(
+      index,
+      [
+        unit("management-08-25-u01", "management-08-25", "management", [term("ＲＦＩＤ", "射频识别", "RFID", "M")]),
+        unit("strategy-07-23-u01", "strategy-07-23", "strategy", [term("ＲＦＩＤ", "电子标签", "Radio Frequency ID", "S")]),
+      ],
+      [],
+    );
+    const item = buildListGroups(d, index, "ja")[0]!.items[0]!;
+    expect(item.termEn).toBe("RFID");
+    expect(item.search).toContain("radio frequency id");
+    expect(item.search).toContain("电子标签");
+    // NFKC folds the full-width JP headword so an ASCII query can hit it.
+    expect(item.search.startsWith("rfid\n")).toBe(true);
   });
 
   it("omits topics that own no entries", () => {

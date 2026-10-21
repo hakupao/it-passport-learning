@@ -141,7 +141,13 @@ export interface DictListItem {
   gloss: string;
   termZh: string;
   termEn: string;
+  /** NFKC-lowercased JP headword + every sense's term_zh / term_en, newline-joined (list search). */
+  search: string;
 }
+
+// Same normalization as the query side in GlossaryList.tsx (a client module, which
+// may only `import type` from here, so the one-liner is mirrored there).
+const searchNorm = (s: string): string => s.normalize("NFKC").toLowerCase();
 
 export interface DictListGroup {
   category: string;
@@ -183,6 +189,7 @@ export function buildListGroups(dict: Dictionary, index: ReaderIndex, locale: st
             gloss: gloss(first(e).term, locale),
             termZh: e.termZh,
             termEn: e.termEn,
+            search: searchNorm([e.term, ...e.senses.flatMap((s) => [s.term.term_zh, s.term.term_en])].join("\n")),
           }))
           .sort((a, b) => a.term.localeCompare(b.term, "ja")),
       });

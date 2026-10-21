@@ -39,8 +39,23 @@ const GROUPS: DictListGroup[] = [
     medium: "プロジェクトマネジメント",
     nameJp: "プロジェクトの管理",
     items: [
-      { id: "t0123456789abcdef", term: "PDCA", gloss: "PDCA", termZh: "PDCA循环", termEn: "PDCA cycle" },
-      { id: "t1111111111111111", term: "ガントチャート", gloss: "ガントチャート", termZh: "甘特图", termEn: "Gantt chart" },
+      {
+        id: "t0123456789abcdef",
+        term: "PDCA",
+        gloss: "PDCA",
+        termZh: "PDCA循环",
+        termEn: "PDCA cycle",
+        search: "pdca\npdca循环\npdca cycle",
+      },
+      {
+        id: "t1111111111111111",
+        term: "ガントチャート",
+        gloss: "ガントチャート",
+        termZh: "甘特图",
+        termEn: "Gantt chart",
+        // second sense carries a different en headword
+        search: "ガントチャート\n甘特图\ngantt chart\n甘特图\nbar chart (schedule)",
+      },
     ],
   },
   {
@@ -50,7 +65,14 @@ const GROUPS: DictListGroup[] = [
     medium: "情報セキュリティ",
     nameJp: "情報セキュリティ管理",
     items: [
-      { id: "t2222222222222222", term: "ISO/IEC 27000", gloss: "ISO/IEC 27000", termZh: "ISO/IEC 27000", termEn: "ISO/IEC 27000" },
+      {
+        id: "t2222222222222222",
+        term: "ISO/IEC 27000",
+        gloss: "ISO/IEC 27000",
+        termZh: "ISO/IEC 27000",
+        termEn: "ISO/IEC 27000",
+        search: "iso/iec 27000\niso/iec 27000\niso/iec 27000",
+      },
     ],
   },
 ];
@@ -97,6 +119,10 @@ describe("filterItems", () => {
     expect(filterItems(GROUPS, "GANTT").flatMap((g) => g.items.map((i) => i.term))).toEqual(["ガントチャート"]);
   });
 
+  it("matches a later sense's en headword via the search field", () => {
+    expect(filterItems(GROUPS, "Bar Chart").flatMap((g) => g.items.map((i) => i.term))).toEqual(["ガントチャート"]);
+  });
+
   it("returns every group for a blank query and none for a miss", () => {
     expect(filterItems(GROUPS, "")).toEqual(GROUPS);
     expect(filterItems(GROUPS, "   ")).toEqual(GROUPS);
@@ -110,6 +136,13 @@ describe("GlossaryList on the real corpus", () => {
     const groups = buildListGroups(dict, index, "ja");
     const hit = filterItems(groups, "ISO").flatMap((g) => g.items);
     expect(hit.map((i) => i.term)).toContain("ISO/IEC 27000");
+
+    // Second-sense-only headwords (senses[0] has neither): RFID's 2nd en, MBO's 2nd zh.
+    const ids = (q: string) => filterItems(groups, q).flatMap((g) => g.items.map((i) => i.id));
+    expect(dict.byTerm.get("RFID")!.senses[0]!.term.term_en).not.toContain("Radio Frequency");
+    expect(ids("Radio Frequency Identification")).toContain(dict.byTerm.get("RFID")!.id);
+    expect(dict.byTerm.get("MBO")!.senses[0]!.term.term_zh).not.toContain("管理层收购");
+    expect(ids("管理层收购")).toContain(dict.byTerm.get("MBO")!.id);
 
     const links = hrefs(render("ja", groups));
     expect(links).toHaveLength(dict.entries.length);

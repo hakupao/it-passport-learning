@@ -4,7 +4,7 @@
 // server request time. No copy into apps/web; no public/ static assets. Only this
 // harness code is committed — the data stays gitignored (Release model intact).
 //
-// Root resolution mirrors the existing FsDataSource DATA_PATH pattern:
+// Root resolution (dataRoot() below):
 //   TEXTBOOK_DATA_ROOT env  →  <cwd=apps/web>/../../data/ip  (default)
 // textbook content lives under <root>/textbook, exam-origin assets under <root>/exams.
 

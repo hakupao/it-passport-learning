@@ -61,6 +61,7 @@ for (const f of LOCALES) {
     await expect(isoLink).toContainText(ISO_TERM);
     expect(await allItems.count()).toBeLessThan(total);
 
+    await expect(isoLink).toBeVisible();
     await isoLink.click();
     await expect(page).toHaveURL(new RegExp(`/${f.locale}/glossary/${ISO_ID}$`));
     await expect(page.getByRole("heading", { level: 1 })).toContainText(ISO_TERM);

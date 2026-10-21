@@ -16,16 +16,17 @@ import type { DictListGroup } from "@/lib/glossary/dictionary";
 
 import styles from "./glossary.module.css";
 
+// Mirrors searchNorm in lib/glossary/dictionary (DictListItem.search is pre-normalized).
 const norm = (s: string): string => s.normalize("NFKC").toLowerCase();
 
-/** Case-insensitive substring match on term / termZh / termEn; empty groups are dropped. */
+/** Case-insensitive substring match on the item's search field (JP headword + every sense's zh/en); empty groups are dropped. */
 export function filterItems(groups: DictListGroup[], q: string): DictListGroup[] {
   const needle = norm(q.trim());
   if (needle === "") return groups;
   return groups
     .map((g) => ({
       ...g,
-      items: g.items.filter((i) => [i.term, i.termZh, i.termEn].some((s) => norm(s).includes(needle))),
+      items: g.items.filter((i) => i.search.includes(needle)),
     }))
     .filter((g) => g.items.length > 0);
 }

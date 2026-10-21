@@ -3,6 +3,8 @@
 // Builds the dictionary from the committed corpus (no LLM, D-179 §2), groups it by
 // representative topic in buildNav order, and hands the groups to the client list
 // (search filters in the browser). Self-contained surface, no ThemedPage.
+// Statically prerendered per locale (the [locale] layout supplies generateStaticParams;
+// the corpus is immutable), so the 1395 links are not re-rendered per request.
 
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -11,8 +13,6 @@ import { GlossaryList } from "@/components/glossary/GlossaryList";
 import { buildListGroups } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { loadReaderIndex } from "@/lib/textbook/reader";
-
-export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ locale: string }> };
 

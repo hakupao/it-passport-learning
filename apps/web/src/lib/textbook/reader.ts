@@ -263,12 +263,15 @@ export async function loadGeneratedSvg(svgPath: string): Promise<string | null> 
   }
 }
 
-export async function loadReaderIndex(): Promise<ReaderIndex> {
-  return readJson<ReaderIndex>(path.join(textbookRoot(), "unit_index.json"));
+// Module-level memos: the corpus is immutable, so read unit_index.json and all
+// 244 units once per lambda lifetime (the glossary builds its dictionary from
+// every unit).
+let readerIndexPromise: Promise<ReaderIndex> | null = null;
+
+export function loadReaderIndex(): Promise<ReaderIndex> {
+  return (readerIndexPromise ??= readJson<ReaderIndex>(path.join(textbookRoot(), "unit_index.json")));
 }
 
-// Module-level memo: the corpus is immutable, so read all 244 units once per
-// lambda lifetime (the glossary builds its dictionary from every unit).
 let allUnitsPromise: Promise<TextbookUnit[]> | null = null;
 
 /** Every unit listed in unit_index.json (index order), loaded via loadUnit. */

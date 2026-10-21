@@ -128,6 +128,15 @@ describe("TermDetail (SSR)", () => {
     expect(out).toContain("口诀-A");
     expect(out).not.toContain("解説-A");
   });
+
+  it("pluralizes the en question count (1 question / 2 questions)", () => {
+    const one = render("en", ENTRY, TITLES, [null, null]);
+    expect(one).toContain("1 question");
+    expect(one).not.toContain("1 questions");
+    const q2 = { id: "2024r06-q002", examId: "2024r06", sourceLabel: "令和6年度 問2" };
+    const two = render("en", { ...ENTRY, questions: [...ENTRY.questions, q2] }, TITLES, [null, null]);
+    expect(two).toContain("2 questions");
+  });
 });
 
 describe("isValidTermId", () => {

@@ -32,6 +32,12 @@ describe("glossary dictionary on the real corpus", () => {
     expect(dict.entries.filter((e) => e.senses.length >= 2)).toHaveLength(22);
   });
 
+  it("never lists the same unit twice within an entry's senses", async () => {
+    const dict = await loadDictionary();
+    const dup = dict.entries.filter((e) => new Set(e.senses.map((s) => s.unitId)).size !== e.senses.length);
+    expect(dup.map((e) => e.term)).toEqual([]);
+  });
+
   it("stores the NFC headword so term, id and byTerm key agree", async () => {
     const dict = await loadDictionary();
     for (const e of dict.entries) {

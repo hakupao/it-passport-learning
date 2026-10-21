@@ -2,8 +2,8 @@
 //
 // Switches locale via `router.replace(pathname, {locale})` from next-intl so
 // the active route stays the same and only the [locale] prefix changes
-// (/ja/chat → /zh/chat). useSearchParams() preserves the query string
-// (?qid=, ?term=) across the switch.
+// (/ja/glossary → /zh/glossary). useSearchParams() preserves the query string
+// (e.g. /ja/quiz?mode=exam&id=… → /zh/quiz?mode=exam&id=…) across the switch.
 //
 // Renders as a native <select> for a11y + zero-CSS dropdown styling work; the
 // learning-tool audience is small and a richer combobox is Step 14 polish.
