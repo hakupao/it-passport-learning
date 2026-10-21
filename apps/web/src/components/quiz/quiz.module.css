@@ -177,13 +177,34 @@
   margin: 0 0 0.8rem;
   padding: 0;
 }
+/* D-180 §0-5: each choice is a <button> (click = answer); disabled after reveal. */
 .choice {
+  appearance: none;
   display: flex;
   gap: 0.55rem;
+  width: 100%;
   padding: 0.45rem 0.6rem;
   border: 1px solid #ececf2;
   border-radius: 6px;
   margin-bottom: 0.4rem;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.choice:not(:disabled):hover {
+  border-color: #e94560;
+}
+.choice:focus-visible {
+  outline: 2px solid #e94560;
+  outline-offset: 2px;
+}
+/* Browsers grey out disabled buttons; keep the revealed colours legible. */
+.choice:disabled {
+  color: inherit;
+  cursor: default;
+  opacity: 1;
 }
 .choiceLetter {
   font-weight: 700;
@@ -196,6 +217,13 @@
 }
 .choiceCorrect .choiceLetter {
   color: #1c8a3f;
+}
+.choiceWrong {
+  background: #fdecee;
+  border-color: #e5484d;
+}
+.choiceWrong .choiceLetter {
+  color: #c4282d;
 }
 .revealBtn {
   appearance: none;

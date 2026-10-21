@@ -96,11 +96,23 @@ describe("readStored", () => {
     expect(await readStored(redisHolder.current!)).toEqual(emptyRecord());
   });
 
+  it("the fake's get() auto-deserializes a stored JSON string like @upstash/redis", async () => {
+    const fake = redisHolder.current!;
+    fake.kv.set(LEARNING_REDIS_KEY, JSON.stringify(deviceA));
+    expect(await fake.get(LEARNING_REDIS_KEY)).toEqual(deviceA);
+    fake.kv.set(LEARNING_REDIS_KEY, "{not json");
+    expect(await fake.get(LEARNING_REDIS_KEY)).toBe("{not json");
+    expect(fake.gets).toBe(2);
+  });
+
   it("object and JSON-string shapes from get() give the same record", async () => {
     const fake = redisHolder.current!;
     fake.kv.set(LEARNING_REDIS_KEY, structuredClone(deviceA));
     const fromObject = await readStored(fake);
+    // deserialization off: get() hands back the raw JSON string
+    fake.autoDeserialize = false;
     fake.kv.set(LEARNING_REDIS_KEY, JSON.stringify(deviceA));
+    expect(typeof (await fake.get(LEARNING_REDIS_KEY))).toBe("string");
     const fromString = await readStored(fake);
     expect(fromObject).toEqual(deviceA);
     expect(fromString).toEqual(fromObject);
@@ -133,12 +145,15 @@ describe("owner gate (403) and Redis config (503)", () => {
     expect((await GET(get())).status).toBe(403);
     expect((await PUT(put(deviceA))).status).toBe(403);
     expect(redisHolder.current!.sets).toBe(0);
+    expect(redisHolder.current!.gets).toBe(0);
     expect(redisHolder.current!.kv.size).toBe(0);
   });
 
   it("403 takes precedence over a malformed or oversized body", async () => {
     expect((await PUT(put("not json", null))).status).toBe(403);
     expect((await PUT(put("x".repeat(600 * 1024), null))).status).toBe(403);
+    expect(redisHolder.current!.gets).toBe(0);
+    expect(redisHolder.current!.sets).toBe(0);
   });
 
   it("redis null → 503 for GET and PUT", async () => {

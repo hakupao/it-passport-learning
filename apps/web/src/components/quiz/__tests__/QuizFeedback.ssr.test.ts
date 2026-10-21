@@ -16,6 +16,7 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 import { QuizSet } from "../QuizSet";
+import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 const ROOT = path.resolve(__dirname, "../../../../../..");
@@ -31,7 +32,10 @@ function render(locale: "ja" | "zh" | "en", isOwner?: boolean): string {
     h(NextIntlClientProvider, {
       locale,
       messages,
-      children: h(QuizSet, { locale, label: "L", sublabel: "S", questions: QUESTIONS, termCards: {}, isOwner }),
+      children: h(LearningRecordProvider, {
+        isOwner: isOwner ?? false,
+        children: h(QuizSet, { locale, label: "L", sublabel: "S", questions: QUESTIONS, termCards: {}, isOwner }),
+      }),
     }),
   );
 }

@@ -5,6 +5,11 @@
 // Japanese (structured tables rendered via QuizRichText, D-144 段 1); the figure (lossless WebP at /quiz-figures/<id>.webp) is the
 // authoritative visual for figure questions. Each question carries its 出典
 // (IPA attribution, D-134). Trilingual translation + explanations are Phase 1/2.
+//
+// D-180 §0-5 (Task 11): choices are buttons. Clicking one before reveal answers
+// the question — it reveals, marks the pick (correct / wrong style) and records
+// it via useLearningRecord (needs a LearningRecordProvider above). After reveal
+// the choices are disabled. 「解答を表示」 still reveals without recording.
 
 "use client";
 
@@ -12,6 +17,7 @@ import { Fragment, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { TermChip } from "@/components/glossary/TermChip";
+import { useLearningRecord } from "@/hooks/useLearningRecord";
 import { Link } from "@/i18n/navigation";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import {
@@ -93,6 +99,8 @@ function QuestionCard({
   termCards: Record<string, TermCard>;
 }): React.ReactElement {
   const [revealed, setRevealed] = useState(false);
+  const [picked, setPicked] = useState<string | null>(null);
+  const { answer } = useLearningRecord();
   const choices = localizedChoices(q, locale);
   const explanation = localizedExplanation(q, locale);
 
@@ -113,12 +121,26 @@ function QuestionCard({
       ) : null}
       <ul className={styles.choiceList}>
         {choices.map((c) => (
-          <li
-            key={c.letter}
-            className={`${styles.choice} ${revealed && c.isCorrect ? styles.choiceCorrect : ""}`}
-          >
-            <span className={styles.choiceLetter}>{c.letter}</span>
-            <ChoiceBody text={c.text} jpText={q.choices_jp[c.letter]} figure={q.choice_figures?.[c.letter]} />
+          <li key={c.letter}>
+            <button
+              type="button"
+              className={[
+                styles.choice,
+                revealed && c.isCorrect ? styles.choiceCorrect : "",
+                picked === c.letter && !c.isCorrect ? styles.choiceWrong : "",
+              ].join(" ")}
+              aria-pressed={picked === c.letter}
+              disabled={revealed}
+              onClick={() => {
+                if (revealed) return;
+                setPicked(c.letter);
+                setRevealed(true);
+                answer(q.id, c.letter, c.isCorrect);
+              }}
+            >
+              <span className={styles.choiceLetter}>{c.letter}</span>
+              <ChoiceBody text={c.text} jpText={q.choices_jp[c.letter]} figure={q.choice_figures?.[c.letter]} />
+            </button>
           </li>
         ))}
       </ul>

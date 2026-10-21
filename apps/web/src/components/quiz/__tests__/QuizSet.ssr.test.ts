@@ -1,4 +1,5 @@
 // Stage 6 (D-179 / D-180 §0-3) Task 7 — question anchors + term chips on QuizSet.
+// Task 11 (D-180 §0-5): choices are buttons (click = answer); QuizSet needs a LearningRecordProvider.
 // Same SSR approach as QuizFeedback.ssr.test.ts (node env, renderToStaticMarkup,
 // createElement instead of JSX, real questions.json + message catalogs).
 import { describe, expect, it, vi } from "vitest";
@@ -14,6 +15,7 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 import { QuizSet } from "../QuizSet";
+import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
@@ -38,7 +40,10 @@ function render(termCards: Record<string, TermCard>): string {
     h(NextIntlClientProvider, {
       locale: "ja",
       messages,
-      children: h(QuizSet, { locale: "ja", label: "L", sublabel: "S", questions: [QUESTION], termCards }),
+      children: h(LearningRecordProvider, {
+        isOwner: false,
+        children: h(QuizSet, { locale: "ja", label: "L", sublabel: "S", questions: [QUESTION], termCards }),
+      }),
     }),
   );
 }
@@ -78,5 +83,37 @@ describe("QuizSet anchors + term chips (SSR)", () => {
     const out = render({});
     expect(out).not.toContain("aria-expanded");
     expect(out).toContain("RPA");
+  });
+});
+
+describe("QuizSet choices are answer buttons (SSR, D-180 §0-5)", () => {
+  it("each of the 4 choices is an enabled <button type=button aria-pressed=false> inside its <li>", () => {
+    const out = render({});
+    const choiceButtons = out.match(/<li><button type="button"[^>]*aria-pressed="false"[^>]*>/g) ?? [];
+    expect(choiceButtons).toHaveLength(4);
+    for (const b of choiceButtons) expect(b).not.toContain("disabled");
+    for (const letter of ["ア", "イ", "ウ", "エ"]) {
+      expect(out).toMatch(new RegExp(`aria-pressed="false"[^>]*><span[^>]*>${letter}</span>`));
+    }
+  });
+
+  it("before any answer nothing is marked correct and the reveal button is still there", () => {
+    const out = render({});
+    expect(out).not.toContain(`aria-pressed="true"`);
+    expect(out).toContain("解答を表示");
+    expect(out).not.toContain("正解:");
+  });
+
+  it("throws a clear error when rendered outside LearningRecordProvider", () => {
+    const messages = JSON.parse(readFileSync(path.resolve(__dirname, "../../../../messages/ja.json"), "utf-8"));
+    expect(() =>
+      renderToStaticMarkup(
+        h(NextIntlClientProvider, {
+          locale: "ja",
+          messages,
+          children: h(QuizSet, { locale: "ja", label: "L", sublabel: "S", questions: [QUESTION], termCards: {} }),
+        }),
+      ),
+    ).toThrow(/LearningRecordProvider/);
   });
 });

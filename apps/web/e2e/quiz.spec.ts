@@ -17,10 +17,13 @@
 //   - Reveal: clicking `Quiz.showAnswer` swaps the button for the answer line
 //     (`Quiz.correctLabel` + the keyed letter) plus the D-137 explanation block.
 //
-// There is no per-choice selection on this surface: choices are static <li>s and
-// reveal is local `useState`. No LLM call fires here, so — unlike the Session 48
-// version, which streamed deepseek-reasoner on modal mount — this spec costs
-// nothing per run and is safe to repeat.
+// D-180 §0-5 (Task 11): each choice is a <button> inside its <li>. Clicking one
+// answers the question (reveal + aria-pressed on the pick + saved to localStorage
+// `itp:learn:v1`); 「解答を表示」 only reveals and records nothing. The answer
+// test runs as a non-owner (it never visits `?owner_key=`), so no
+// /api/learning request may fire. No LLM call fires here, so — unlike the
+// Session 48 version, which streamed deepseek-reasoner on modal mount — this
+// spec costs nothing per run and is safe to repeat.
 //
 // Fixture set: `technology-14-36` (データ構造, 7 問) — the smallest topic that
 // still contains a table-stem question, and its first card (`2009h21a-q054`,
@@ -67,6 +70,7 @@ const TOPIC_NAME_JP = "データ構造"; // name_jp — stays JP in every locale
 const TOPIC_QUESTION_COUNT = 7;
 
 /** questions.json → 2009h21a-q054: first card of that topic, markdown 表 in the stem. */
+const TABLE_QUESTION_ID = "2009h21a-q054";
 const TABLE_HEADER_CELLS = 2;
 const TABLE_BODY_ROWS = 4;
 const TABLE_ANSWER_LETTER = "イ";
@@ -135,3 +139,63 @@ for (const f of LOCALES) {
     await expect(revealBtn).toHaveCount(0);
   });
 }
+
+test("quiz ja: clicking a choice answers, marks it and saves it locally", async ({
+  page,
+}: { page: Page }) => {
+  const m = ja.Quiz;
+  const learningRequests: string[] = [];
+  page.on("request", (r) => {
+    if (new URL(r.url()).pathname.startsWith("/api/learning")) learningRequests.push(r.url());
+  });
+  const stored = () => page.evaluate(() => localStorage.getItem("itp:learn:v1"));
+
+  await page.goto(`/ja/quiz?mode=topic&id=${TOPIC_ID}`);
+  const cards = page.getByRole("article");
+  await expect(cards).toHaveCount(TOPIC_QUESTION_COUNT);
+  const firstCard = page.locator(`article[id="${TABLE_QUESTION_ID}"]`);
+  await expect(firstCard).toHaveCount(1);
+
+  const choiceButtons = firstCard.getByRole("listitem").getByRole("button");
+  await expect(choiceButtons).toHaveCount(CHOICE_LETTERS.length);
+  for (let i = 0; i < CHOICE_LETTERS.length; i += 1) {
+    await expect(choiceButtons.nth(i)).toHaveAttribute("aria-pressed", "false");
+    await expect(choiceButtons.nth(i)).toBeEnabled();
+  }
+
+  // ア is wrong (keyed イ): click it → answer line + explanation, ア marked.
+  const pick = choiceButtons.nth(0);
+  await expect(pick).toContainText("ア");
+  await pick.click();
+  await expect(firstCard.getByText(`${m.correctLabel}: ${TABLE_ANSWER_LETTER}`)).toBeVisible();
+  await expect(firstCard.getByText(m.explanationTitle).first()).toBeVisible();
+  await expect(firstCard.getByRole("button", { name: m.showAnswer })).toHaveCount(0);
+  await expect(pick).toHaveAttribute("aria-pressed", "true");
+  for (let i = 1; i < CHOICE_LETTERS.length; i += 1) {
+    await expect(choiceButtons.nth(i)).toHaveAttribute("aria-pressed", "false");
+  }
+  // After the answer every choice is inert.
+  for (let i = 0; i < CHOICE_LETTERS.length; i += 1) {
+    await expect(choiceButtons.nth(i)).toBeDisabled();
+  }
+
+  // 「解答を表示」 on another card reveals without recording.
+  const secondCard = cards.nth(1);
+  const secondId = await secondCard.getAttribute("id");
+  expect(secondId).toBeTruthy();
+  await secondCard.getByRole("button", { name: m.showAnswer }).click();
+  await expect(secondCard.getByText(`${m.correctLabel}:`, { exact: false })).toBeVisible();
+
+  // Saved in a passive effect after paint — poll rather than read once.
+  await expect.poll(stored).toContain(TABLE_QUESTION_ID);
+
+  await page.reload();
+  await expect(page.getByRole("article")).toHaveCount(TOPIC_QUESTION_COUNT);
+  const raw = await stored();
+  expect(raw).not.toBeNull();
+  const rec = JSON.parse(raw!) as { v: number; questions: Record<string, { choice: string; correct: boolean; at: number }> };
+  expect(rec.v).toBe(1);
+  expect(rec.questions[TABLE_QUESTION_ID]).toMatchObject({ choice: "ア", correct: false });
+  expect(rec.questions[secondId!]).toBeUndefined();
+  expect(learningRequests).toEqual([]);
+});

@@ -41,9 +41,11 @@ export const LEARNING_STORAGE_KEY = "itp:learn:v1";
 
 const hasOwn = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.call(o, k);
 
-/** `at` must be finite epoch ms; anything else is a caller bug, never data. */
+/** `at` must be finite, non-negative epoch ms (what parseRecord accepts); anything else is a caller bug. */
 function assertFiniteAt(at: number): void {
-  if (!Number.isFinite(at)) throw new RangeError(`learning record: at must be finite epoch ms, got ${at}`);
+  if (!Number.isFinite(at) || at < 0) {
+    throw new RangeError(`learning record: at must be finite non-negative epoch ms, got ${at}`);
+  }
 }
 
 export function emptyRecord(): LearningRecord {
@@ -52,7 +54,7 @@ export function emptyRecord(): LearningRecord {
 
 /**
  * Store the latest result for `qid`. Returns a new record; `r` is untouched.
- * `at` is finite epoch ms — a non-finite value throws RangeError.
+ * `at` is finite, non-negative epoch ms — anything else throws RangeError.
  */
 export function recordAnswer(
   r: LearningRecord,
@@ -67,7 +69,7 @@ export function recordAnswer(
 
 /**
  * Record the first read of `unitId`; an existing value is kept (returns `r` as-is).
- * `at` is finite epoch ms — a non-finite value throws RangeError.
+ * `at` is finite, non-negative epoch ms — anything else throws RangeError.
  */
 export function markUnitRead(r: LearningRecord, unitId: string, at: number): LearningRecord {
   assertFiniteAt(at);

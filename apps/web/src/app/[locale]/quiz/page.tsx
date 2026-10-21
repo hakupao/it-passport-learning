@@ -14,6 +14,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { QuizBrowser } from "@/components/quiz/QuizBrowser";
 import { QuizSet } from "@/components/quiz/QuizSet";
+import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { isValidMode } from "@/lib/quiz/quizModel";
@@ -65,19 +66,22 @@ export default async function QuizPage({
   const set = await loadQuestionSet(mode, id, locale);
   if (set) {
     // D-149: only the owner (D-148 cookie) sees the per-question report button.
+    // D-180 §0-7: the same flag gates the learning-record server sync.
     // Only the boolean crosses to the client — never the key or its hash.
     const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
     const dict = await dictPromise;
     const termCards = buildTermCards(dict, set.questions, locale);
     return (
-      <QuizSet
-        locale={locale}
-        isOwner={owner}
-        label={set.label}
-        sublabel={set.sublabel}
-        questions={set.questions}
-        termCards={termCards}
-      />
+      <LearningRecordProvider isOwner={owner}>
+        <QuizSet
+          locale={locale}
+          isOwner={owner}
+          label={set.label}
+          sublabel={set.sublabel}
+          questions={set.questions}
+          termCards={termCards}
+        />
+      </LearningRecordProvider>
     );
   }
 
