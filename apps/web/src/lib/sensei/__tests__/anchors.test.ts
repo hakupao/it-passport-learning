@@ -4,7 +4,7 @@ import type { TermCard } from "@/lib/glossary/dictionary";
 import type { LearningRecord } from "@/lib/learning/record";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
-import { questionAnchor, reviewAnchor } from "../anchors";
+import { examRecency, questionAnchor, reviewAnchor } from "../anchors";
 
 // choices_* keys deliberately permuted: the anchor must not follow object key order.
 const q: QuizQuestion = {
@@ -216,20 +216,72 @@ describe("reviewAnchor", () => {
     expect(a).not.toMatch(/ZH|EN/);
   });
 
-  it("lists not-yet-answered ids in set order and the review task lines", () => {
+  it("lists not-yet-answered ids (same exam, no shared terms → id order) and the review task lines", () => {
     const a = reviewAnchor(topic, r, "en", {}, "データ構造");
     expect(a).toContain("回答言語: 英語");
     expect(a).toContain("分野: データ構造");
     const unanswered = a.slice(a.indexOf("## まだ解いていない過去問"));
-    expect(unanswered).toContain("- #2024r06-q003（令和6年度 問3）");
+    expect(unanswered).toContain("- #2024r06-q003（令和6年度 問3）\n");
+    expect(unanswered).not.toContain("用語:"); // q3 / q5 have no terms → no 用語 part
     expect(unanswered.indexOf("#2024r06-q003")).toBeLessThan(unanswered.indexOf("#2024r06-q005"));
-    expect(a).not.toContain("JP問題文3"); // only the id + source of an unanswered question
+    expect(a).not.toContain("JP問題文3"); // only the id, source and terms of an unanswered question
     expect(a).toContain("[問題を開く](#問題ID)");
     expect(a).toContain("一覧にない問題 ID");
     expect(a).toContain("2〜3 問");
+    // the no-guessing task line lives in the anchor (the system instruction stays byte-stable)
+    const task = a.slice(0, a.indexOf("## 分野"));
+    expect(task).toContain("まだ解いていない過去問は内容が載っていないので、内容を推測して説明しない。用語の重なりを手掛かりに選ぶ");
   });
 
-  it("caps wrong questions at the 5 newest and unanswered ids at the first 10", () => {
+  it("ranks not-yet-answered questions by terms shared with the wrong ones, then exam recency, then id", () => {
+    const at = (n: number, exam: string, terms: string[]): QuizQuestion => ({
+      ...tq(n, "ア", terms),
+      id: `${exam}-q${String(n).padStart(3, "0")}`,
+      exam_id: exam,
+      source_label: `${exam} 問${n}`,
+    });
+    const wrong1 = at(1, "2024r06", ["スタック", "キュー"]);
+    const wrong2 = at(2, "2023r05", ["キュー", "リスト"]);
+    const set = [
+      wrong1,
+      wrong2,
+      at(10, "2009h21a", ["スタック", "キュー", "リスト"]), // 3 shared, oldest exam
+      at(11, "2024r06", ["スタック"]), // 1 shared, newest
+      at(12, "2019h31h", ["キュー", "木"]), // 1 shared, H31 spring
+      at(13, "2019r01a", ["リスト"]), // 1 shared, R01 autumn (same year, later)
+      at(14, "2011h23tokubetsu", ["スタック", "キュー"]), // 2 shared
+      at(15, "2011h23a", ["キュー", "スタック"]), // 2 shared, autumn after the July 特別
+      at(16, "2026r08", []), // 0 shared, newest exam
+      at(17, "2020r02o", ["木"]), // 0 shared
+      at(18, "2020r02o", ["木"]), // 0 shared, same exam → id order
+    ];
+    const rec = record({
+      [wrong1.id]: { choice: "イ", correct: false, at: 2 },
+      [wrong2.id]: { choice: "イ", correct: false, at: 1 },
+    });
+    const a = reviewAnchor(set, rec, "ja", {}, "T");
+    const restPart = a.slice(a.indexOf("## まだ解いていない過去問"));
+    const restIds = [...restPart.matchAll(/^- #(\S+)（/gm)].map((m) => m[1]);
+    expect(restIds).toEqual([
+      "2009h21a-q010",
+      "2011h23a-q015",
+      "2011h23tokubetsu-q014",
+      "2024r06-q011",
+      "2019r01a-q013",
+      "2019h31h-q012",
+      "2026r08-q016",
+      "2020r02o-q017",
+      "2020r02o-q018",
+    ]);
+    // each line carries its own terms (JP, q.terms order); none → no 用語 part
+    expect(restPart).toContain("- #2009h21a-q010（2009h21a 問10）用語: スタック, キュー, リスト\n");
+    expect(restPart).toContain("- #2019h31h-q012（2019h31h 問12）用語: キュー, 木\n");
+    expect(restPart).toContain("- #2026r08-q016（2026r08 問16）\n");
+    // deterministic regardless of the set's order
+    expect(reviewAnchor([...set].reverse(), rec, "ja", {}, "T")).toBe(a);
+  });
+
+  it("caps wrong questions at the 5 newest and unanswered ids at 10 (ties → id order)", () => {
     const many = Array.from({ length: 25 }, (_, i) => tq(i + 1, "ア"));
     const results: Record<string, { choice: string; correct: boolean; at: number }> = {};
     for (let i = 0; i < 12; i++) results[many[i]!.id] = { choice: "イ", correct: false, at: 1000 + i };
@@ -259,5 +311,27 @@ describe("reviewAnchor", () => {
     expect(a).toContain("間違えた過去問はありません");
     expect(a).toContain("この分野の過去問はすべて解答済みです");
     expect(a).not.toContain("## 関連用語");
+  });
+});
+
+describe("examRecency", () => {
+  // every exam_id in data/ip/quiz/questions.json, oldest first (h = spring, tokubetsu =
+  // the July 2011 special exam, a / o = autumn / October, CBT years have no session)
+  const chronological = [
+    "2009h21h", "2009h21a", "2010h22h", "2010h22a", "2011h23tokubetsu", "2011h23a",
+    "2012h24h", "2012h24a", "2013h25h", "2013h25a", "2014h26h", "2014h26a",
+    "2015h27h", "2015h27a", "2016h28h", "2016h28a", "2017h29h", "2017h29a",
+    "2018h30h", "2018h30a", "2019h31h", "2019r01a", "2020r02o", "2021r03",
+    "2022r04", "2023r05", "2024r06", "2025r07", "2026r08",
+  ];
+
+  it("orders every real exam id chronologically", () => {
+    const keys = chronological.map(examRecency);
+    for (const k of keys) expect(k).toBeGreaterThan(0);
+    for (let i = 1; i < keys.length; i++) expect(keys[i], chronological[i]).toBeGreaterThan(keys[i - 1]!);
+  });
+
+  it("is -1 for an unknown shape", () => {
+    for (const bad of ["", "2024", "2024r06x", "R06", "2024-r06"]) expect(examRecency(bad), bad).toBe(-1);
   });
 });

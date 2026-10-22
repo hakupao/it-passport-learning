@@ -116,11 +116,23 @@ const REVIEW_TASK = [
   "1. 誤りの傾向：下の「間違えた過去問」から、どんな取り違えが多いかを短くまとめる。",
   "2. 重要な用語：傾向にかかわる用語を、下の「関連用語」の定義に沿って説明する。",
   "3. 次に解く過去問：実際の過去問を 2〜3 問勧める。勧めてよいのは、この教材ブロックに問題 ID が載っている問題（「間違えた過去問」と「まだ解いていない過去問」）だけです。各問題は [問題を開く](#問題ID) の形の Markdown リンクで示し、問題 ID は一覧のとおりに書いてください。一覧にない問題 ID を作ったり推測したりしてはいけません。",
+  "まだ解いていない過去問は内容が載っていないので、内容を推測して説明しない。用語の重なりを手掛かりに選ぶ。",
   "間違えた過去問がないときはそのことを伝え、まだ解いていない過去問を勧めてください。",
   "この依頼への回答は 600 字（英語なら 300 words）以内を目安にしてください。",
 ];
 
 const byId = (x: QuizQuestion, y: QuizQuestion): number => (x.id < y.id ? -1 : x.id > y.id ? 1 : 0);
+
+// Exam ids in data/ip/quiz/questions.json: <year><era><NN><session>, e.g. 2009h21h
+// (spring), 2011h23tokubetsu (the July 2011 special exam), 2009h21a (autumn),
+// 2019h31h, 2019r01a, 2020r02o (October), 2021r03 … 2026r08 (CBT, one per year).
+const SESSION_RANK: Record<string, number> = { h: 1, tokubetsu: 2, a: 3, o: 3, "": 3 };
+
+/** Sortable recency of an exam id (bigger = newer); -1 for an unknown shape. */
+export function examRecency(examId: string): number {
+  const m = /^(\d{4})[hr]\d{2}(h|tokubetsu|a|o|)$/.exec(examId);
+  return m ? Number(m[1]) * 10 + SESSION_RANK[m[2]!]! : -1;
+}
 
 function wrongQuestionLines(q: QuizQuestion, choice: string, locale: AppLocale): string[] {
   const dl = toDataLang(locale);
@@ -156,9 +168,11 @@ function wrongQuestionLines(q: QuizQuestion, choice: string, locale: AppLocale):
 /**
  * The topic-review anchor: the learner's wrong answers in this topic (re-judged
  * against the current correct_answer, the REVIEW_MAX_WRONG = 5 most recent), each with its
- * explanation, the related term definitions, and the first 10 not-yet-answered
- * question ids (the only other ids the AI may recommend). `questions` are the
- * topic's questions in set order; `topicLabel` names the topic.
+ * explanation, the related term definitions, and REVIEW_MAX_UNANSWERED = 10
+ * not-yet-answered questions (the only other ids the AI may recommend), each with
+ * its id, source and JP terms only: ranked by the number of terms shared with the
+ * listed wrong questions (desc), then exam recency (newest first), then id.
+ * `questions` are the topic's questions; `topicLabel` names the topic.
  * Deterministic: no clock, wrong answers ordered by `at` then id.
  */
 export function reviewAnchor(
@@ -200,11 +214,6 @@ export function reviewAnchor(
   if (recent.length === 0) out.push("間違えた過去問はありません（現在の正解で判定）。");
   for (const { q, res } of recent) out.push(...wrongQuestionLines(q, res.choice, locale));
 
-  out.push("", `## まだ解いていない過去問（最大 ${REVIEW_MAX_UNANSWERED} 問）`);
-  const rest = unanswered.slice(0, REVIEW_MAX_UNANSWERED);
-  if (rest.length === 0) out.push("（この分野の過去問はすべて解答済みです）");
-  for (const q of rest) out.push(`- #${q.id}（${q.source_label}）`);
-
   const seen = new Set<string>();
   const terms: string[] = [];
   for (const { q } of recent) {
@@ -214,6 +223,18 @@ export function reviewAnchor(
       terms.push(term);
     }
   }
+
+  out.push("", `## まだ解いていない過去問（用語の重なりが多い順・新しい試験順、最大 ${REVIEW_MAX_UNANSWERED} 問）`);
+  const shared = (q: QuizQuestion): number => new Set(q.terms.filter((term) => seen.has(term))).size;
+  const rest = unanswered
+    .map((q) => ({ q, shared: shared(q), recency: examRecency(q.exam_id) }))
+    .sort((x, y) => y.shared - x.shared || y.recency - x.recency || byId(x.q, y.q))
+    .slice(0, REVIEW_MAX_UNANSWERED);
+  if (rest.length === 0) out.push("（この分野の過去問はすべて解答済みです）");
+  for (const { q } of rest) {
+    out.push(`- #${q.id}（${q.source_label}）${q.terms.length > 0 ? `用語: ${q.terms.join(", ")}` : ""}`);
+  }
+
   const termText = termLines(terms, termCards);
   if (termText.length > 0) out.push("", `## 関連用語（定義は${LANGUAGE_NAME[dl]}）`, ...termText);
 
