@@ -61,7 +61,38 @@ const GLOSSARY_TRACE = [...TEXTBOOK_TRACE, "../../data/ip/quiz/questions.json"];
 // therefore rests on the Phase gate: `find .next -name '*.nft.json' -exec grep
 // -lE 'data/ip/(exams|sources|syllabus)/' {} + | wc -l` must print 0. Do not
 // add new trace entries here; the existing ones are left untouched.
+
+// D-181 §0-8 — static CSP, production only (dev needs the HMR websocket and
+// va.vercel-scripts.com). A static header keeps every page's rendering mode
+// (the glossary list stays prerendered); a nonce would need a per-request
+// header and make every page dynamic. Residual risk, accepted: script-src
+// keeps 'unsafe-inline' for Next's inline flight scripts (self.__next_f.push);
+// the key is guarded by connect-src (only self + api.anthropic.com).
+// style-src 'unsafe-inline' is for next/font and component style={{}}.
+// Vercel Analytics / Speed Insights are same-origin in production.
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self'",
+  "connect-src 'self' https://api.anthropic.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join("; ");
+
 const nextConfig: NextConfig = {
+  async headers() {
+    if (process.env.NODE_ENV !== "production") return [];
+    return [
+      {
+        source: "/:path*",
+        headers: [{ key: "Content-Security-Policy", value: CONTENT_SECURITY_POLICY }],
+      },
+    ];
+  },
   outputFileTracingRoot: path.join(process.cwd(), "..", ".."),
   outputFileTracingIncludes: {
     "/[locale]/textbook": TEXTBOOK_TRACE,
