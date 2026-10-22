@@ -1,7 +1,7 @@
 // D-181 Task A5 / §0-10 — the /[locale]/sensei page body: key settings (with how
 // to get a key while none is saved), the saved threads of this browser (newest
-// first, each linking back to its source — a review thread to its topic set,
-// without `review=1` — each deletable) and the free-question
+// first, each linking back to its source — a review thread to its topic set with
+// its date, `&thread=<YYYY-MM-DD>`, never `review=1` — each deletable) and the free-question
 // input, disabled until Phase C (「近日公開」).
 //
 // Phase A loads no AI SDK here: nothing on this page sends a message, and the SDK

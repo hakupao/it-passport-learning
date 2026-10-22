@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { emptyRecord, type LearningRecord, type QuestionResult } from "@/lib/learning/record";
 
-import { weakTopics } from "../weakness";
+import { hasQualifyingTopic, weakTopics } from "../weakness";
 
 /** A record holding `[qid, correct]` results (choice / at are irrelevant to weakTopics). */
 function rec(results: [string, boolean][]): LearningRecord {
@@ -74,5 +74,27 @@ describe("weakTopics", () => {
     const r = rec([...answers("a", 3, 0), ...answers("b", 5, 1), ...answers("c", 5, 2)]);
     expect(weakTopics(r, TOPICS, { minAnswered: 3 }).map((w) => w.topicId)).toEqual(["a", "b", "c"]);
     expect(weakTopics(r, TOPICS, { minAnswered: 3, limit: 1 }).map((w) => w.topicId)).toEqual(["a"]);
+  });
+});
+
+describe("hasQualifyingTopic", () => {
+  it("is false until some topic has 5 answers", () => {
+    expect(hasQualifyingTopic(emptyRecord(), TOPICS)).toBe(false);
+    expect(hasQualifyingTopic(rec([...answers("a", 4, 0), ...answers("b", 4, 4)]), TOPICS)).toBe(false);
+    // 5 answers spread over two topics do not qualify either
+    expect(hasQualifyingTopic(rec([...answers("a", 3, 0), ...answers("b", 2, 0)]), TOPICS)).toBe(false);
+  });
+
+  it("is true once a topic has 5 answers, also when all of them are correct", () => {
+    const allCorrect = rec(answers("a", 5, 5));
+    expect(weakTopics(allCorrect, TOPICS)).toEqual([]);
+    expect(hasQualifyingTopic(allCorrect, TOPICS)).toBe(true);
+    expect(hasQualifyingTopic(rec(answers("b", 6, 1)), TOPICS)).toBe(true);
+  });
+
+  it("ignores answers outside the given topics and honours minAnswered", () => {
+    const r = rec([["zz-q001", true], ["zz-q002", true], ["zz-q003", true], ["zz-q004", true], ["zz-q005", true], ...answers("a", 3, 3)]);
+    expect(hasQualifyingTopic(r, TOPICS)).toBe(false);
+    expect(hasQualifyingTopic(r, TOPICS, 3)).toBe(true);
   });
 });

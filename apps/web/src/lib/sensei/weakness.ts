@@ -22,6 +22,21 @@ export interface WeakTopic {
 export const WEAK_MIN_ANSWERED = 5;
 export const WEAK_LIMIT = 3;
 
+function stats(record: LearningRecord, topicIds: Record<string, string[]>) {
+  const questions = Object.entries(topicIds).flatMap(([topic_id, ids]) => ids.map((id) => ({ id, topic_id })));
+  return [...topicStats(record, questions).values()];
+}
+
+/** Whether any topic has at least `minAnswered` answers (the card then says "all correct"
+ *  rather than "answer 5 in a topic" when no topic is weak). */
+export function hasQualifyingTopic(
+  record: LearningRecord,
+  topicIds: Record<string, string[]>,
+  minAnswered: number = WEAK_MIN_ANSWERED,
+): boolean {
+  return stats(record, topicIds).some((s) => s.answered >= minAnswered);
+}
+
 export function weakTopics(
   record: LearningRecord,
   topicIds: Record<string, string[]>,
@@ -29,9 +44,8 @@ export function weakTopics(
 ): WeakTopic[] {
   const minAnswered = opts.minAnswered ?? WEAK_MIN_ANSWERED;
   const limit = opts.limit ?? WEAK_LIMIT;
-  const questions = Object.entries(topicIds).flatMap(([topic_id, ids]) => ids.map((id) => ({ id, topic_id })));
   const weak: WeakTopic[] = [];
-  for (const s of topicStats(record, questions).values()) {
+  for (const s of stats(record, topicIds)) {
     if (s.answered < minAnswered || s.correct >= s.answered) continue;
     weak.push({ topicId: s.topicId, answered: s.answered, correct: s.correct, rate: s.correct / s.answered });
   }

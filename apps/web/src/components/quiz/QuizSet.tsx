@@ -26,7 +26,9 @@
 // choice = another thread).
 //
 // D-181 Phase B: a topic set (topicId given) also gets the review launcher in its
-// header (components/sensei/ReviewLauncher: the button, `?review=1`, the anchor).
+// header (components/sensei/ReviewLauncher: the button, `?review=1`, `&thread=`,
+// the anchor). Each question <article> is focusable from script (tabIndex -1) for
+// the review's in-reply `#<question_id>` links.
 
 "use client";
 
@@ -152,7 +154,8 @@ function QuestionCard({
   const explanation = localizedExplanation(q, locale);
 
   return (
-    <article id={q.id} className={styles.qCard}>
+    // tabIndex -1: the AI 先生 review's `#<question_id>` link moves focus here (SenseiPanel)
+    <article id={q.id} className={styles.qCard} tabIndex={-1}>
       <p className={styles.qSource}>
         {index}. {t("sourcePrefix")}: {q.source_label}
       </p>

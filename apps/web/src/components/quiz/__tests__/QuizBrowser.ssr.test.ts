@@ -132,19 +132,38 @@ describe("QuizBrowser AI 先生 review card (SSR)", () => {
     for (let i = 0; i < answered; i++) state.record.questions[ids[i]!] = { choice: "ア", correct: i < correct, at: at + i };
   }
 
-  it("before the record has loaded: the title, but neither rows nor the hint", async () => {
+  const HINT = "1 つの分野で 5 題以上解くと弱点を分析します";
+  const ALL_CORRECT = "5 題以上解いた分野はすべて全問正解です";
+  const INTRO = "解答記録から正答率の低い分野を選びました";
+
+  it("before the record has loaded: the title, but neither rows, the intro nor a hint", async () => {
     const card = reviewCard(await render("ja"));
     expect(card).toContain("AI 先生の復習");
     expect(card).not.toContain("review-topic");
-    expect(card).not.toContain("5 題以上解くと弱点を分析します");
+    expect(card).not.toContain(HINT);
+    expect(card).not.toContain(ALL_CORRECT);
+    expect(card).not.toContain(INTRO);
   });
 
-  it("no qualifying topic: the 5-題 hint (fewer than 5 answers, or all correct)", async () => {
+  it("no topic with 5 answers (even 5 spread over topics): the per-topic hint, no intro", async () => {
     state.loaded = true;
     await answer("technology-14-36", 4, 0);
+    await answer("technology-21-54", 4, 0);
+    const card = reviewCard(await render("ja"));
+    expect(card).toContain(HINT);
+    expect(card).not.toContain(ALL_CORRECT);
+    expect(card).not.toContain(INTRO);
+    expect(card).not.toContain("review-topic");
+  });
+
+  it("topics with 5 answers exist but all are correct: the all-correct line, no intro", async () => {
+    state.loaded = true;
+    await answer("technology-14-36", 4, 0); // fewer than 5: never counts
     await answer("technology-21-54", 5, 5);
     const card = reviewCard(await render("ja"));
-    expect(card).toContain("5 題以上解くと弱点を分析します");
+    expect(card).toContain(ALL_CORRECT);
+    expect(card).not.toContain(HINT);
+    expect(card).not.toContain(INTRO);
     expect(card).not.toContain("review-topic");
   });
 
@@ -156,7 +175,9 @@ describe("QuizBrowser AI 先生 review card (SSR)", () => {
     await answer("technology-13-33", 10, 9); // 90% — 4th, not shown
     await answer("technology-19-50", 7, 7); // all correct — never shown
     const card = reviewCard(await render("ja"));
-    const rows = [...card.matchAll(/<a href="([^"]*)"[^>]*><span[^>]*>([^<]*)<\/span><span[^>]*>([^<]*)<\/span><\/a>/g)].map(
+    expect(card).toContain(INTRO);
+    // name and stat are separated by a real space (the link's text reads 「データ構造 正答率 …」)
+    const rows = [...card.matchAll(/<a href="([^"]*)"[^>]*><span[^>]*>([^<]*)<\/span> <span[^>]*>([^<]*)<\/span><\/a>/g)].map(
       (m) => [m[1], m[2], m[3]],
     );
     const index = await loadQuizIndex();
@@ -177,5 +198,14 @@ describe("QuizBrowser AI 先生 review card (SSR)", () => {
     const zh = reviewCard(await render("zh"));
     expect(zh).toContain("AI 老师的复习");
     expect(zh).toContain("正确率 20% · 已答 5 题");
+  });
+
+  it("zh / en hints name the per-topic rule and the all-correct case", async () => {
+    state.loaded = true;
+    expect(reviewCard(await render("zh"))).toContain("在同一领域答满 5 题后会分析你的薄弱点");
+    expect(reviewCard(await render("en"))).toContain("Answer 5 or more questions in a topic");
+    await answer("technology-21-54", 5, 5);
+    expect(reviewCard(await render("zh"))).toContain("已答 5 题以上的领域全部答对了");
+    expect(reviewCard(await render("en"))).toContain("Every topic where you have answered 5 or more questions is all correct");
   });
 });

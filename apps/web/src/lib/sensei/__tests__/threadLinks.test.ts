@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { questionThreadHref, reviewAnchorId, reviewThreadHref, splitQuestionAnchor } from "../threadLinks";
+import {
+  questionThreadHref,
+  REVIEW_THREAD_PARAM,
+  reviewAnchorId,
+  reviewThreadDate,
+  reviewThreadHref,
+  splitQuestionAnchor,
+} from "../threadLinks";
 
 describe("splitQuestionAnchor", () => {
   // the six question_id shapes in data/ip/quiz/questions.json (exam_id = id before "-q<NNN>")
@@ -44,14 +51,54 @@ describe("review anchors (D-181 Phase B)", () => {
     expect(reviewAnchorId("strategy-02-08", new Date(2026, 10, 22, 0, 0))).toBe("strategy-02-08:2026-11-22");
   });
 
-  it("reviewThreadHref links to the topic set without the review flag", () => {
-    expect(reviewThreadHref("technology-14-36:2026-10-22")).toBe("/quiz?mode=topic&id=technology-14-36");
-    expect(reviewThreadHref("management-10-27:2026-01-05")).toBe("/quiz?mode=topic&id=management-10-27");
+  it("reviewThreadHref links to the topic set with the thread date, without the review flag", () => {
+    expect(REVIEW_THREAD_PARAM).toBe("thread");
+    expect(reviewThreadHref("technology-14-36:2026-10-22")).toBe("/quiz?mode=topic&id=technology-14-36&thread=2026-10-22");
+    expect(reviewThreadHref("management-10-27:2026-01-05")).toBe("/quiz?mode=topic&id=management-10-27&thread=2026-01-05");
   });
 
   it("reviewThreadHref is null for an anchor it cannot parse", () => {
-    for (const bad of ["", "technology-14-36", "technology-14-36:", "technology-14-36:2026-1-5", "2009h21a-q054:イ", "Tech-14-36:2026-10-22", "a/b-14-36:2026-10-22"]) {
+    for (const bad of [
+      "",
+      "technology-14-36",
+      "technology-14-36:",
+      "technology-14-36:2026-1-5",
+      "technology-14-36:2026-02-30",
+      "2009h21a-q054:イ",
+      "Tech-14-36:2026-10-22",
+      "a/b-14-36:2026-10-22",
+    ]) {
       expect(reviewThreadHref(bad), bad).toBeNull();
     }
+  });
+
+  it("reviewThreadDate accepts a real calendar date only", () => {
+    for (const ok of ["2026-10-22", "2026-01-05", "2024-02-29", "2026-12-31"]) expect(reviewThreadDate(ok), ok).toBe(ok);
+    for (const bad of [
+      null,
+      undefined,
+      "",
+      "2026-1-5",
+      "2026-13-01",
+      "2026-00-10",
+      "2026-02-29", // not a leap year
+      "2026-04-31",
+      "2026-10-00",
+      "2026-10-22x",
+      " 2026-10-22",
+      "2026-10-22T00:00",
+      "２０２６-10-22",
+      "0000-01-01",
+    ]) {
+      expect(reviewThreadDate(bad), String(bad)).toBeNull();
+    }
+  });
+
+  it("the date reviewAnchorId writes round-trips through the href and the parser", () => {
+    const anchorId = reviewAnchorId("technology-14-36", new Date(2026, 1, 28, 12));
+    const href = reviewThreadHref(anchorId)!;
+    const date = new URLSearchParams(href.slice(href.indexOf("?"))).get(REVIEW_THREAD_PARAM);
+    expect(reviewThreadDate(date)).toBe("2026-02-28");
+    expect(`technology-14-36:${date}`).toBe(anchorId);
   });
 });

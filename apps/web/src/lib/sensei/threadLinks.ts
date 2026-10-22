@@ -7,7 +7,9 @@
 // Phase B: a review thread's anchorId is `<topic_id>:<YYYY-MM-DD>` (the learner's
 // local date: one review thread per topic per day); a topic_id is
 // `<category>-<NN>-<NN>` (quiz_index.json, e.g. technology-14-36). Its row links
-// back to the topic set without `review=1` (opening it never auto-sends).
+// back to the topic set with the thread's date (`&thread=<YYYY-MM-DD>`, never
+// `review=1`): the set page opens that dated thread without sending anything, so a
+// past day's review stays reachable.
 
 const QUESTION_ID = /^([0-9a-z]+)-q\d+$/;
 
@@ -28,7 +30,10 @@ export function questionThreadHref(anchorId: string): string | null {
 
 
 const TOPIC_ID = /^[a-z]+-\d{2}-\d{2}$/;
-const LOCAL_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const LOCAL_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/** The topic set's query parameter naming a review thread's date. */
+export const REVIEW_THREAD_PARAM = "thread";
 
 /** `<topic_id>:<YYYY-MM-DD>` in the local time zone of `now`. */
 export function reviewAnchorId(topicId: string, now: Date): string {
@@ -36,11 +41,22 @@ export function reviewAnchorId(topicId: string, now: Date): string {
   return `${topicId}:${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
-/** `/quiz?mode=topic&id=<topic_id>` (locale-less, for the i18n Link), or null. */
+/** `value` when it is a real calendar date `YYYY-MM-DD` (year ≥ 1), else null. */
+export function reviewThreadDate(value: string | null | undefined): string | null {
+  const m = value ? LOCAL_DATE.exec(value) : null;
+  if (!m) return null;
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const date = new Date(Date.UTC(2000, mo - 1, d));
+  date.setUTCFullYear(y);
+  return y >= 1 && date.getUTCFullYear() === y && date.getUTCMonth() === mo - 1 && date.getUTCDate() === d ? value! : null;
+}
+
+/** `/quiz?mode=topic&id=<topic_id>&thread=<YYYY-MM-DD>` (locale-less, for the i18n Link), or null. */
 export function reviewThreadHref(anchorId: string): string | null {
   const colon = anchorId.lastIndexOf(":");
   if (colon <= 0) return null;
   const topicId = anchorId.slice(0, colon);
-  if (!TOPIC_ID.test(topicId) || !LOCAL_DATE.test(anchorId.slice(colon + 1))) return null;
-  return `/quiz?mode=topic&id=${encodeURIComponent(topicId)}`;
+  const date = reviewThreadDate(anchorId.slice(colon + 1));
+  if (!TOPIC_ID.test(topicId) || !date) return null;
+  return `/quiz?mode=topic&id=${encodeURIComponent(topicId)}&${REVIEW_THREAD_PARAM}=${date}`;
 }

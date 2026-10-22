@@ -18,8 +18,10 @@
 //   thread has been read and a key exists (without a key it waits for the key
 //   to be saved). The guard is the anchor object itself: each click on the card
 //   makes a new anchor, so effect re-runs never send twice.
-// - An in-page `#<question_id>` link in a reply (the review's recommendations)
-//   closes the panel, then scrolls to that question and focuses its first button.
+// - An in-page `#<question_id>` link in a reply (the review's recommendations; only
+//   targets shaped like a question id, so an in-dialog `#sensei-input` is left
+//   alone) closes the panel, then scrolls to that question and focuses its
+//   <article> (tabIndex -1) — not a choice button, where Enter would answer it.
 
 "use client";
 
@@ -45,6 +47,9 @@ export interface SenseiAnchor {
   /** Sent once as the first user turn when the thread is empty (Phase B review). */
   opener?: string;
 }
+
+/** A question id as in data/ip/quiz/questions.json (the `<article id>` of a quiz card). */
+const QUESTION_ID = /^[0-9a-z]+-q\d+$/;
 
 function textOf(m: UIMessage): string {
   return m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");
@@ -114,7 +119,7 @@ export function SenseiPanel({
     void sendMessage({ text: opener });
   }, [anchor, open, loadedEmpty, s.messages.length, hasKey, sendMessage]);
 
-  /** A click on an in-page `#<id>` link whose target is on the page: close, then jump. */
+  /** A click on an in-page `#<question_id>` link whose question is on the page: close, then jump. */
   function onLogClick(e: React.MouseEvent<HTMLElement>): void {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const href = (e.target as Element).closest("a")?.getAttribute("href");
@@ -125,7 +130,7 @@ export function SenseiPanel({
     } catch {
       return;
     }
-    if (!document.getElementById(id)) return;
+    if (!QUESTION_ID.test(id) || !document.getElementById(id)) return;
     e.preventDefault();
     jumpTo.current = id;
     onOpenChange(false);
@@ -185,7 +190,7 @@ export function SenseiPanel({
               const target = document.getElementById(id);
               if (!target) return;
               target.scrollIntoView({ block: "start" });
-              target.querySelector<HTMLElement>("button")?.focus({ preventScroll: true });
+              target.focus({ preventScroll: true });
             });
           }}
         >

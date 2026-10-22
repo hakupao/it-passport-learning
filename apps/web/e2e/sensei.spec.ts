@@ -610,17 +610,23 @@ if (OWNER_KEY) {
 //
 //  12. Landing card: the weakest topics (≥ 5 answers, not all correct; lowest stored
 //      accuracy first; top 3) from a seeded record; the landing loads no AI SDK chunk.
-//      Clicking a row opens the topic set with ?review=1 → the flag is removed from
-//      the URL, the panel opens and sends the opener exactly once; the request's anchor
-//      holds only that topic's question ids, re-judged answers and the learner's
-//      distractor notes; a `#<question_id>` link in the reply closes the panel and
-//      scrolls to that question. A reload and a second click on the same card (same
-//      day → same thread, not empty) send nothing; /sensei links the review thread
-//      back to the topic set without the flag.
+//      Clicking a row (click intent in sessionStorage) opens the topic set with
+//      ?review=1 → the flag is removed from the URL, the panel opens and sends the
+//      opener exactly once; the request's anchor holds only that topic's question ids,
+//      re-judged answers, the learner's distractor notes and the not-yet-answered
+//      questions with their terms; an in-dialog `#sensei-input` link leaves the panel
+//      open, a `#<question_id>` link closes it, scrolls to that question and focuses
+//      its <article>. A reload and a second click on the same card (same day → same
+//      thread, not empty) send nothing; /sensei links the review thread back to the
+//      topic set with its date (`&thread=`), never the flag.
 //  13. Arriving without a key: nothing is sent until the key is saved, then the opener
 //      goes out once; closing / reopening / toggling settings never re-sends.
-//  14. Empty record: the 「5 題以上…」 hint; the set page's launcher opens the review
-//      thread without sending anything.
+//  14. Empty record: the per-topic 「1 つの分野で 5 題以上…」 hint and no intro; the set
+//      page's launcher opens the review thread without sending anything.
+//  15. `?review=1` without a click intent (bookmark / copied link): the panel opens
+//      with the opener as a suggestion chip, 0 requests.
+//  16. A past day's review thread: its /sensei row (`&thread=<date>`) opens that thread
+//      on the set page with its history, the parameter removed, 0 requests.
 
 const REVIEW_TOPIC = "technology-14-36"; // データ構造, 7 問
 const REVIEW_TOPIC_IDS = [
@@ -700,7 +706,11 @@ const reviewRows = (page: Page) => page.getByTestId("review-card").getByTestId("
 
 test("review: weakest topics on the landing; the card opens the set and AI 先生 speaks first, once", async ({ page }) => {
   fake = await fakeAnthropic(page, { mode: "ok" });
-  fake.reply = ["**誤りの傾向**: スタックとキューの取り違えが多いです。", `\n\n- [問題を開く](#${REVIEW_TARGET})`];
+  fake.reply = [
+    "**誤りの傾向**: スタックとキューの取り違えが多いです。",
+    `\n\n- [問題を開く](#${REVIEW_TARGET})`,
+    "\n- [質問を書く](#sensei-input)",
+  ];
   await presetKey(page);
   await seedRecord(page);
   const scripts = trackScripts(page);
@@ -716,9 +726,11 @@ test("review: weakest topics on the landing; the card opens the set and AI 先�
 
   await page.goto("/ja/quiz");
   await expect(reviewRows(page)).toHaveCount(3);
-  await expect(reviewRows(page).nth(0)).toHaveText(/^データ構造正答率 20% · 5 題解答$/);
-  await expect(reviewRows(page).nth(1)).toHaveText(/^データベース方式正答率 50% · 6 題解答$/);
-  await expect(reviewRows(page).nth(2)).toHaveText(/^その他の言語正答率 80% · 5 題解答$/);
+  await expect(reviewRows(page).nth(0)).toHaveText(/^データ構造 正答率 20% · 5 題解答$/);
+  await expect(reviewRows(page).nth(1)).toHaveText(/^データベース方式 正答率 50% · 6 題解答$/);
+  await expect(reviewRows(page).nth(2)).toHaveText(/^その他の言語 正答率 80% · 5 題解答$/);
+  await expect(reviewRows(page).nth(0).getByRole("link")).toHaveAccessibleName("データ構造 正答率 20% · 5 題解答");
+  await expect(page.getByTestId("review-intro")).toBeVisible();
   await expect(reviewRows(page).nth(0).getByRole("link")).toHaveAttribute(
     "href",
     `/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&review=1`,
@@ -761,12 +773,20 @@ test("review: weakest topics on the landing; the card opens the set and AI 先�
   expect(q054).not.toMatch(/[ウエ] が誤りの理由/);
   expect(system).toContain(`- #${REVIEW_TARGET}（`);
   expect(system).toContain("一覧にない問題 ID");
+  expect(system).toContain("内容を推測して説明しない");
+  // not-yet-answered lines carry their terms (2018h30h-q096: キュー)
+  expect(system).toMatch(new RegExp(`^- #${REVIEW_TARGET}（[^）]+）用語: キュー$`, "m"));
 
-  // the recommended #id link: the panel closes and the question is scrolled into view
+  // an in-dialog #id that is not a question id is left alone: the panel stays open
+  await log(page).getByRole("link", { name: "質問を書く" }).click();
+  await expect(panel(page)).toBeVisible();
+
+  // the recommended #id link: the panel closes, the question is scrolled into view and
+  // its article (not choice ア, where Enter would answer) has the focus
   await log(page).getByRole("link", { name: "問題を開く" }).click();
   await expect(panel(page)).toHaveCount(0);
   await expect(card(page, REVIEW_TARGET)).toBeInViewport();
-  await expect(card(page, REVIEW_TARGET).getByRole("button").first()).toBeFocused();
+  await expect(card(page, REVIEW_TARGET)).toBeFocused();
 
   // a reload never re-sends
   await page.reload();
@@ -775,11 +795,18 @@ test("review: weakest topics on the landing; the card opens the set and AI 先�
   await expect(panel(page)).toHaveCount(0);
   expect(fake.requests).toHaveLength(1);
 
-  // /sensei: the review thread links back to the topic set, without the flag
+  // /sensei: the review thread links back to the topic set with its date, without the flag
   await page.goto(SENSEI_URL);
   const row = page.getByTestId("sensei-thread").filter({ hasText: S.kind_review });
   await expect(row).toHaveCount(1);
-  await expect(row.getByRole("link", { name: "データ構造" })).toHaveAttribute("href", `/ja/quiz?mode=topic&id=${REVIEW_TOPIC}`);
+  const today = await page.evaluate(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  });
+  await expect(row.getByRole("link", { name: "データ構造" })).toHaveAttribute(
+    "href",
+    `/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&thread=${today}`,
+  );
 
   // the same card again (same day → same thread, not empty): the history, no new request
   await page.goto("/ja/quiz");
@@ -825,8 +852,9 @@ test("review with an empty record: the hint on the landing; the set's launcher s
   fake = await fakeAnthropic(page, { mode: "ok" });
   await presetKey(page);
   await page.goto("/ja/quiz");
-  await expect(page.getByTestId("review-empty")).toHaveText("5 題以上解くと弱点を分析します");
+  await expect(page.getByTestId("review-empty")).toHaveText("1 つの分野で 5 題以上解くと弱点を分析します");
   await expect(reviewRows(page)).toHaveCount(0);
+  await expect(page.getByTestId("review-intro")).toHaveCount(0);
 
   await page.goto(`/ja/quiz?mode=topic&id=${REVIEW_TOPIC}`);
   await page.getByTestId("review-launcher").click();
@@ -834,5 +862,83 @@ test("review with an empty record: the hint on the landing; the set's launcher s
   await expect(log(page)).toContainText(S.reviewEmptyHint);
   await expect(panel(page).getByRole("button", { name: S.reviewOpener })).toBeVisible(); // a suggestion, not sent
   await page.waitForTimeout(1000);
+  expect(fake.requests).toHaveLength(0);
+});
+
+test("review: ?review=1 without a click intent (bookmark, copied link) opens the panel but sends nothing", async ({ page }) => {
+  fake = await fakeAnthropic(page, { mode: "ok" });
+  await presetKey(page);
+  await seedRecord(page);
+  await page.goto(`/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&review=1`);
+  await expect(panel(page)).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/ja/quiz\\?mode=topic&id=${REVIEW_TOPIC}$`)); // flag removed
+  await expect(log(page)).toContainText(S.reviewEmptyHint);
+  await expect(panel(page).getByRole("button", { name: S.reviewOpener })).toBeVisible(); // a suggestion chip
+  await page.waitForTimeout(1500);
+  expect(fake.requests).toHaveLength(0);
+
+  // a stale intent (> 30 s) for this topic does not count either
+  await page.keyboard.press("Escape");
+  await page.evaluate((topicId) => {
+    sessionStorage.setItem("itp:sensei:review-intent", JSON.stringify({ topicId, at: Date.now() - 31_000 }));
+  }, REVIEW_TOPIC);
+  await page.goto(`/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&review=1`);
+  await expect(panel(page)).toBeVisible();
+  await page.waitForTimeout(1500);
+  expect(fake.requests).toHaveLength(0);
+  expect(await page.evaluate(() => sessionStorage.getItem("itp:sensei:review-intent"))).toBeNull(); // consumed
+
+  // the card click (a fresh intent) sends exactly one request
+  await page.goto("/ja/quiz");
+  await reviewRows(page).nth(0).getByRole("link").click();
+  await expect(log(page)).toContainText(REPLY_MARK);
+  await page.waitForTimeout(1000);
+  expect(fake.requests).toHaveLength(1);
+});
+
+test("review: a past day's thread is reachable from its /sensei row, without sending", async ({ page }) => {
+  fake = await fakeAnthropic(page, { mode: "ok" });
+  await presetKey(page);
+  await seedRecord(page);
+  const PAST = "2026-01-05";
+  const anchorId = `${REVIEW_TOPIC}:${PAST}`;
+  const id = `review.${encodeURIComponent(anchorId)}`;
+  await page.addInitScript(
+    ({ id, anchorId }) => {
+      if (localStorage.getItem("itp:sensei:index:v1") !== null) return;
+      localStorage.setItem(
+        "itp:sensei:index:v1",
+        JSON.stringify({ v: 1, threads: [{ id, kind: "review", anchorId, title: "データ構造", updatedAt: "2026-01-05T09:00:00.000Z" }] }),
+      );
+      localStorage.setItem(
+        `itp:sensei:thread:${id}:v1`,
+        JSON.stringify({
+          version: 1,
+          updatedAt: "2026-01-05T09:00:00.000Z",
+          messages: [
+            { id: "u1", role: "user", parts: [{ type: "text", text: "この分野の弱点を復習したい" }] },
+            { id: "a1", role: "assistant", parts: [{ type: "text", text: "過去の復習の返答です。" }] },
+          ],
+        }),
+      );
+    },
+    { id, anchorId },
+  );
+
+  await page.goto(SENSEI_URL);
+  const link = page.getByTestId("sensei-thread").getByRole("link", { name: "データ構造" });
+  await expect(link).toHaveAttribute("href", `/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&thread=${PAST}`);
+  await link.click();
+  await expect(panel(page)).toBeVisible();
+  await expect(log(page)).toContainText("過去の復習の返答です。");
+  await expect(page).toHaveURL(new RegExp(`/ja/quiz\\?mode=topic&id=${REVIEW_TOPIC}$`)); // parameter removed
+  await page.waitForTimeout(1500);
+  expect(fake.requests).toHaveLength(0);
+
+  // a malformed date opens nothing
+  await page.goto(`/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&thread=2026-02-30`);
+  await expect(page.getByTestId("review-launcher")).toBeEnabled();
+  await page.waitForTimeout(1000);
+  await expect(panel(page)).toHaveCount(0);
   expect(fake.requests).toHaveLength(0);
 });

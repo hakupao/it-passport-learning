@@ -8,10 +8,19 @@
 //
 // Arriving from the quiz landing's review card (`?review=1`): once the learning
 // record has loaded, the flag is removed from the URL (history.replaceState: no
-// RSC refetch of the set, and a reload never sees it again) and the panel opens
-// with the opener text, which SenseiPanel sends once into an empty thread. The
-// flag is read with useSearchParams, so it is false again after the replace (also
-// on a back / forward to this entry); `consumed` guards effect re-runs before that.
+// RSC refetch of the set, and a reload never sees it again) and the panel opens.
+// The opener text (which SenseiPanel sends once into an empty thread) is passed
+// only when the card's click intent (lib/sensei/reviewIntent: this topic, ≤ 30 s
+// old) is taken too; a bookmark or a copied `?review=1` link opens the panel with
+// the opener offered as a suggestion chip, nothing sent.
+// Arriving from a /sensei thread row (`&thread=<YYYY-MM-DD>`, strictly validated):
+// the panel opens that dated thread (a past day's review stays reachable), never
+// sends, and its anchor is a fresh snapshot of today's record. Both parameters are
+// removed in the same replaceState. They are read with useSearchParams, so they
+// are gone again after the replace (also on a back / forward to this entry);
+// `consumed` guards effect re-runs before that.
+// The button stays disabled until the record has loaded (an earlier click would
+// freeze an empty-record anchor into the snapshot).
 
 "use client";
 
@@ -25,7 +34,8 @@ import { routing } from "@/i18n/routing";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 import { reviewAnchor } from "@/lib/sensei/anchors";
-import { reviewAnchorId } from "@/lib/sensei/threadLinks";
+import { reviewIntentStorage, takeReviewIntent } from "@/lib/sensei/reviewIntent";
+import { REVIEW_THREAD_PARAM, reviewAnchorId, reviewThreadDate } from "@/lib/sensei/threadLinks";
 
 import { useSenseiHost } from "./AskSensei";
 
@@ -48,18 +58,21 @@ export function ReviewLauncher({
   const t = useTranslations("Sensei");
   const openFor = useSenseiHost();
   const { record, loaded } = useLearningRecord();
-  const arrivedForReview = useSearchParams()?.get(REVIEW_PARAM) === "1";
+  const params = useSearchParams();
+  const arrivedForReview = params?.get(REVIEW_PARAM) === "1";
+  const threadDate = reviewThreadDate(params?.get(REVIEW_THREAD_PARAM));
   const buttonRef = useRef<HTMLButtonElement>(null);
   const consumed = useRef(false);
   const appLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
 
-  function openReview(opener?: string): void {
+  /** Open the review thread of `date` (default: today), sending `opener` into an empty one. */
+  function openReview({ opener, date }: { opener?: string; date?: string } = {}): void {
     const trigger = buttonRef.current;
     if (!openFor || !trigger) return;
     openFor(
       {
         kind: "review",
-        anchorId: reviewAnchorId(topicId, new Date()),
+        anchorId: date ? `${topicId}:${date}` : reviewAnchorId(topicId, new Date()),
         title,
         anchorText: reviewAnchor(questions, record, appLocale, termCards, title),
         opener,
@@ -67,20 +80,23 @@ export function ReviewLauncher({
       trigger,
     );
   }
-  // the effect below must see this render's record
+  // The effect below must see this render's record. Effects run in declaration
+  // order, so this openRef update has to stay above the consume effect.
   const openRef = useRef(openReview);
   useEffect(() => {
     openRef.current = openReview;
   });
 
   useEffect(() => {
-    if (!arrivedForReview || !loaded || consumed.current) return;
+    if ((!arrivedForReview && !threadDate) || !loaded || consumed.current) return;
     consumed.current = true;
     const url = new URL(window.location.href);
     url.searchParams.delete(REVIEW_PARAM);
+    url.searchParams.delete(REVIEW_THREAD_PARAM);
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
-    openRef.current(t("reviewOpener"));
-  }, [arrivedForReview, loaded, t]);
+    const intended = arrivedForReview && takeReviewIntent(reviewIntentStorage(), topicId, Date.now());
+    openRef.current({ opener: intended ? t("reviewOpener") : undefined, date: threadDate ?? undefined });
+  }, [arrivedForReview, threadDate, loaded, topicId, t]);
 
   if (!openFor) return null;
   return (
@@ -91,6 +107,7 @@ export function ReviewLauncher({
       size="sm"
       aria-haspopup="dialog"
       data-testid="review-launcher"
+      disabled={!loaded}
       onClick={() => openReview()}
     >
       {t("reviewButton")}
