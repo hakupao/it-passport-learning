@@ -50,3 +50,8 @@
 - 計画 `docs/phase5/PLAN_stage6_learning.md` §0 の細化決定をユーザー承認で **D-180** として lock。
 - §7 の「保持」のうち `lib/ai/provider.ts`・`lib/ai/tutorPrompt.ts`・3 shell の Chat / Tutor 視図・`useChatSession`・`useTutorSession` は **Phase 1 で削除** (削除済みの route を呼ぶか死語料の型を import しており、呼び出し元のないまま compile を維持することになる。Phase 4 のブラウザ直結で書き直す。必要なら Task 1 の commit message に記す hash から git 履歴で取り回す)。保持は `lib/tutor/escalation.ts`・`lib/chat/historyStore.ts`・`lib/tutor/tutorHistoryStore.ts` (`StorageLike` は `src/lib/storage.ts` へ移す) のみ。
 - **§9 の改訂 (S131 Phase 1 で判明)**: `next build --turbopack` (Next 15.5.18) は `outputFileTracingIncludes/Excludes` を適用しない (turbopack-build が buildTraceContext を返さず collect-build-traces が何もしない。試験的に追加した include は trace に 0 件)。§9 の「route ごとの追加が要る」は turbopack 下では不要。配信内容は turbopack 自身の追跡に任せ、IPA 防護は `.next/*.nft.json` の leak gate (exams / sources / syllabus = 0) で担保する。
+
+## 改訂 (S131、2026-10-22) — D-181 で決定 4 を Anthropic のみに縮小
+- Task 13 spike (`evidence/phase5/stage_06_ai_sensei/spike_S131.md`): Anthropic はブラウザ直結で streaming と prompt cache が成立。DeepSeek は CORS と実 POST のみ確認 (有効 key の streaming は未検証、ユーザー判断で skip)。
+- ユーザーは Sonnet を選択。AI 先生 v1 は **Anthropic `claude-sonnet-5-5` のみ** に接続し、決定 4 の「DeepSeek / Anthropic」は Anthropic に縮める。DeepSeek を後で接続する場合は新しい D で決める。詳細は `docs/phase5/PLAN_stage6_ai_sensei.md` §0 (= D-181)。
+- 決定 4 の「CSP 必須」の具体値は同計画 §0-8 (本番のみ、`connect-src 'self' https://api.anthropic.com`、`script-src 'unsafe-inline'` は辞典一覧の静的化を守るための残留リスクとして受容)。
