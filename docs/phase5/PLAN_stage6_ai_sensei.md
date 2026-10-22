@@ -6,7 +6,7 @@
 
 **Architecture:** 全部 LLM 调用发生在浏览器：自定义的 `ChatTransport` 在 `sendMessages` 里调 AI SDK `streamText`，返回 `result.toUIMessageStream()`，所以 UI 继续用 `useChat` / `UIMessage`，保留下来的 `escalation.ts` 和 `historyStore.ts` 不用改。服务器不碰 key，只负责把已经在页面上的审定内容整理成「锚点上下文」文本交给客户端组件。key 和对话只存在本浏览器的 localStorage。生产环境加一条静态 CSP，`connect-src` 只放行自身和 `api.anthropic.com`。
 
-**Tech Stack:** Next.js 15 App Router、next-intl、TypeScript、`ai@6.0.184`、`@ai-sdk/anthropic@3.0.78`、`@ai-sdk/react@3`、`react-markdown`（Phase A 重新加回）、vitest、Playwright（Anthropic 请求一律用 `page.route` 拦截成假流，测试绝不调用真 API）。
+**Tech Stack:** Next.js 15 App Router、next-intl、TypeScript、`ai@6.0.185`、`@ai-sdk/anthropic@3.0.78`、`@ai-sdk/react@3`、`react-markdown`（Phase A 重新加回）、vitest、Playwright（Anthropic 请求一律用 `page.route` 拦截成假流，测试绝不调用真 API）。
 
 **Spec:** `docs/decisions/D-179-learning-features-redesign.md` 决定 3・4・7 + Task 13 spike 证据 `evidence/phase5/stage_06_ai_sensei/spike_S131.md` + 用户 S131 回答（入口 4 个都要、顺序由 Claude 定；可以主动出击；模型用 Sonnet；对话要保存）。本计划的 §0 在批准时锁为 **D-181**。
 
@@ -57,6 +57,15 @@
 9. **术语 / unit / 自由提问的上下文（Phase C）**：术语详情页和 unit 页由 server component 拼好锚点文本（每个术语：日文 + UI 语言的定义・解说・记忆钩子；unit 再加概要），作为 prop 传给客户端的「AI 先生に聞く」按钮；不新增路由。自由提问在 `/sensei` 页：浏览器拿到全部术语标题的轻量索引（id + 三语标题，约 1395 条），按最长匹配找出问题里出现的术语（最多 8 个），再 `GET /api/sensei/terms?ids=…`（新增的只读路由，读现有辞典 reader，返回卡片 JSON，最多 8 个 id，不调用 LLM、不需要 owner）取定义。这是唯一的新 fs 路由，nft gate 守住 IPA 目录。
 10. **路由与导航**：`/[locale]/sensei`（AI 先生页：key 设定、线程列表、自由提问）。三个 shell 的导航各自硬编码三项 → 抽出一份共享的导航列表 `src/components/shells/navItems.ts`，加第四项。i18n 新增 `Sensei` 命名空间（ja / zh / en）。旧 `/tutor`、`/chat` 继续 404，不做重定向（没有外部链接指向它们）。
 11. **拒答与错误**：AI SDK 3.0.78 不支持服务端 `fallbacks`。Anthropic 返回 `stop_reason: "refusal"` 时（AI SDK 映射后的 finish reason 在 Task A3 用假流确认，预期 `content-filter`）显示「この質問には答えられませんでした」类提示；401 → 「key が無効です」并打开设定面板；429 / 529 → 「混雑しています、少し待って再試行」；网络错误 → 「接続できません」。用户刚输入的问题保留在输入框。
+
+### §0 改訂（Phase A 执行中，主 context 裁定，ledger = `evidence/phase5/stage_06_ai_sensei/phaseA_sdd_ledger.md`）
+
+- **§0-1**：每个线程的**第一轮用户发言固定 effort `"low"`**；从第二轮起才由 `shouldEscalate` 决定 `"high"`（「なぜ」入口本身含「なぜ」，否则首轮必升 high，与 A1 费用前提矛盾）。
+- **§0-4**：题目入口的 anchorId = `<question_id>:<choice>`（作答后）/ `<question_id>:reveal`（只看答案），改选 = 新线程。对话尾部再加第 3 个 ephemeral 断点（追问时历史走缓存）。
+- **§0-6**：出错（`isError`）和被拒答（finishReason `content-filter`）的那一轮**不保存**（问题退回输入框）；中止（abort）照常保存。线程标题在线程创建时固定（不在完成时读取）。`openThread` 写索引失败时淘汰最旧线程后重试一次。
+- **§0-7 / Global Constraints 依赖**：新增运行时依赖 = `react-markdown` + `remark-gfm`（表格）+ `zod`（直接依赖，版本与 AI SDK 解析到的同一实例一致）。
+- **§0-8**：AI SDK 内部 zod 的 `new Function` 探测会在生产 CSP 下触发 `script-src eval` 违规 → 加载 AI SDK 前调用公开 API `z.config({ jitless: true })`（`src/lib/sensei/zodJitless.ts`，`useSensei.ts` 的第一个 import）。残留风险的准确表述：`connect-src` 只限制 fetch / XHR / WebSocket / beacon 的去向，顶层导航和 `window.open` 外带不在 CSP 范围内，所以任何 XSS 仍等于 key 泄漏；模型输出经 react-markdown 默认设定（不渲染原始 HTML）+ `urlTransform` 白名单渲染。
+- **§0-10**：英文名称统一为 "AI Tutor"（ja「AI 先生」、zh「AI 老师」）。Phase A 的 `/sensei` 页**不加载 AI SDK**（线程行链接回题目来源；自由提问在 Phase C）。
 
 ## File Structure
 
