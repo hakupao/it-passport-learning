@@ -4,7 +4,7 @@ import type { TermCard } from "@/lib/glossary/dictionary";
 import type { LearningRecord } from "@/lib/learning/record";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
-import { examRecency, questionAnchor, reviewAnchor } from "../anchors";
+import { examRecency, FREE_NO_MATCH, freeAnchor, questionAnchor, reviewAnchor } from "../anchors";
 
 // choices_* keys deliberately permuted: the anchor must not follow object key order.
 const q: QuizQuestion = {
@@ -333,5 +333,59 @@ describe("examRecency", () => {
 
   it("is -1 for an unknown shape", () => {
     for (const bad of ["", "2024", "2024r06x", "R06", "2024-r06"]) expect(examRecency(bad), bad).toBe(-1);
+  });
+});
+
+describe("freeAnchor (Phase C free question)", () => {
+  const oss = card("OSS", "开源软件", "ZH OSS 定义", "ZH OSS 覚え方");
+  const lic = card("ライセンス", "许可证", "ZH ライセンス定義", "");
+
+  it("lists the matched terms' cards in the given order, definitions in the UI locale", () => {
+    expect(freeAnchor([oss, lic], "zh")).toBe(
+      [
+        "# 教材",
+        "回答言語: 簡体字中国語",
+        "",
+        "## 自由質問",
+        "学習者は AI 先生のページから、特定の過去問・用語・単元を開かずに質問しています。",
+        "下の用語は、学習者の最初の質問に出てきた語を教科書の辞典から機械的に照合したものです。質問と関係のない語が含まれることがあります。",
+        "",
+        "### 関連用語（定義は簡体字中国語）",
+        "- OSS（开源软件）: ZH OSS 定义",
+        "  覚え方: ZH OSS 覚え方",
+        "- ライセンス（许可证）: ZH ライセンス定義",
+      ].join("\n"),
+    );
+  });
+
+  it("no match: 「該当する教材の項目なし」 with the general-knowledge allowance and disclaimer", () => {
+    expect(FREE_NO_MATCH).toBe("該当する教材の項目なし");
+    expect(freeAnchor([], "en")).toBe(
+      [
+        "# 教材",
+        "回答言語: 英語",
+        "",
+        "## 自由質問",
+        "学習者は AI 先生のページから、特定の過去問・用語・単元を開かずに質問しています。",
+        "",
+        "### 関連用語",
+        "該当する教材の項目なし",
+        "学習者の最初の質問に出てくる語は、教科書の辞典に見つかりませんでした。",
+        "この会話に限り、一般的な知識で答えてかまいません。その場合は回答の冒頭で、教材にない一般的な説明であることを明記してください。",
+        "ITパスポート試験の学習と関係がなさそうな質問には、そのことも伝えてください。",
+      ].join("\n"),
+    );
+  });
+
+  it("ja: a gloss equal to the headword is not repeated", () => {
+    const ja = card("OSS", "OSS", "JP OSS 定義", "JP 覚え方");
+    const text = freeAnchor([ja], "ja");
+    expect(text).toContain("### 関連用語（定義は日本語）\n- OSS: JP OSS 定義\n  覚え方: JP 覚え方");
+    expect(text).not.toContain(FREE_NO_MATCH);
+  });
+
+  it("is deterministic: equal cards (keys in any order) give byte-equal text", () => {
+    const reordered = Object.fromEntries(Object.entries(oss).reverse()) as unknown as TermCard;
+    expect(freeAnchor([reordered, lic], "zh")).toBe(freeAnchor([oss, lic], "zh"));
   });
 });

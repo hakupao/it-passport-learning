@@ -156,6 +156,20 @@ export function buildTermCards(
   return cards;
 }
 
+/** D-181 §0-9 — one row of the light index the /sensei page ships for free-question
+ *  term matching (lib/sensei/termMatch): the id and the entry's JP / zh / en headwords. */
+export interface TermIndexEntry {
+  id: string;
+  jp: string;
+  zh: string;
+  en: string;
+}
+
+/** Every entry in dictionary order; zh / en are the entry's own headwords (senses[0]). */
+export function buildTermIndex(dict: Dictionary): TermIndexEntry[] {
+  return dict.entries.map((e) => ({ id: e.id, jp: e.term, zh: e.termZh, en: e.termEn }));
+}
+
 export interface DictListItem {
   id: string;
   term: string;

@@ -8,9 +8,10 @@ import { describe, expect, it } from "vitest";
 
 import { loadBaseQuestions } from "../../quiz/quizReader";
 import { loadAllUnits, loadReaderIndex } from "../../textbook/reader";
-import { buildListGroups } from "../dictionary";
+import { matchTerms } from "../../sensei/termMatch";
+import { buildListGroups, buildTermIndex } from "../dictionary";
 import { loadDictionary } from "../dictionaryReader";
-import { termId } from "../termId";
+import { isValidTermId, termId } from "../termId";
 
 describe("glossary dictionary on the real corpus", () => {
   it("loads every unit listed in unit_index", async () => {
@@ -65,5 +66,25 @@ describe("glossary dictionary on the real corpus", () => {
     const items = buildListGroups(dict, index, "ja").flatMap((g) => g.items);
     expect(items).toHaveLength(dict.entries.length);
     expect(new Set(items.map((i) => i.id)).size).toBe(dict.entries.length);
+  });
+
+  // D-181 §0-9 — the light index shipped to /sensei, and free-question matching on it.
+  it("builds the light term index: every entry once, valid ids, three headwords each", async () => {
+    const dict = await loadDictionary();
+    const idx = buildTermIndex(dict);
+    expect(idx).toHaveLength(1395);
+    expect(idx.every((e) => isValidTermId(e.id) && e.id === termId(e.jp))).toBe(true);
+    expect(idx.every((e) => e.jp !== "" && e.zh !== "" && e.en !== "")).toBe(true);
+  });
+
+  it("matches free questions on the real index (longest match, acronym case rule)", async () => {
+    const idx = buildTermIndex(await loadDictionary());
+    expect(matchTerms("機能要件と非機能要件の違いは？", idx)).toEqual([termId("機能要件"), termId("非機能要件")]);
+    expect(matchTerms("ＩＳＯ／ＩＥＣ　２７０００とは", idx)).toEqual([termId("ISO/IEC 27000")]);
+    expect(matchTerms("LAN と WAN の違い", idx)).toEqual([termId("LAN"), termId("WAN")]);
+    // OR, ITS and ETC are headwords; English prose words in lower case do not hit them.
+    for (const h of ["OR", "ITS", "ETC"]) expect(idx.some((e) => e.jp === h)).toBe(true);
+    expect(matchTerms("this or that, its, etc.", idx)).toEqual([]);
+    expect(matchTerms("こんにちは", idx)).toEqual([]);
   });
 });

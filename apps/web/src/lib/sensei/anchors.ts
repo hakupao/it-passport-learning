@@ -11,6 +11,10 @@
 // reviewAnchor (Phase B) is the topic-review anchor; its review task lines live in
 // the anchor block, so SENSEI_SYSTEM_INSTRUCTION stays one byte-stable constant.
 //
+// freeAnchor (Phase C) is the /sensei free-question anchor: the cards of the terms
+// matched in the thread's first question (lib/sensei/freeQuestion), or the
+// 「該当する教材の項目なし」 notice with the general-knowledge allowance.
+//
 // The term / unit anchors (Phase C) live in ./textbookAnchors: they read textbook
 // fields through lib/textbook/reader, which imports node:fs, and this module is in
 // the quiz page's client bundle.
@@ -48,14 +52,18 @@ function explanationLines(e: LocalizedExplanation, correct: string): string[] {
   return lines;
 }
 
+function cardLines(c: TermCard): string[] {
+  const head = c.gloss && c.gloss !== c.term ? `${c.term}（${c.gloss}）` : c.term;
+  const lines = [`- ${head}: ${c.definition}`];
+  if (c.memoryHook) lines.push(`  覚え方: ${c.memoryHook}`);
+  return lines;
+}
+
 function termLines(terms: readonly string[], termCards: Record<string, TermCard>): string[] {
   const lines: string[] = [];
   for (const term of terms) {
     const c = termCards[term];
-    if (!c) continue;
-    const head = c.gloss && c.gloss !== c.term ? `${c.term}（${c.gloss}）` : c.term;
-    lines.push(`- ${head}: ${c.definition}`);
-    if (c.memoryHook) lines.push(`  覚え方: ${c.memoryHook}`);
+    if (c) lines.push(...cardLines(c));
   }
   return lines;
 }
@@ -242,5 +250,43 @@ export function reviewAnchor(
   const termText = termLines(terms, termCards);
   if (termText.length > 0) out.push("", `## 関連用語（定義は${LANGUAGE_NAME[dl]}）`, ...termText);
 
+  return out.join("\n");
+}
+
+
+// ── Phase C: free question ──────────────────────────────────────────────────
+
+export const FREE_NO_MATCH = "該当する教材の項目なし";
+
+/**
+ * The free-question anchor. `cards` are the terms matched in the thread's first
+ * question, in match order (definitions in the UI locale, as on the quiz page); none →
+ * FREE_NO_MATCH, and this thread may be answered from general knowledge, marked as such.
+ */
+export function freeAnchor(cards: readonly TermCard[], locale: AppLocale): string {
+  const out: string[] = [
+    "# 教材",
+    answerLanguageLine(locale),
+    "",
+    "## 自由質問",
+    "学習者は AI 先生のページから、特定の過去問・用語・単元を開かずに質問しています。",
+  ];
+  if (cards.length === 0) {
+    out.push(
+      "",
+      "### 関連用語",
+      FREE_NO_MATCH,
+      "学習者の最初の質問に出てくる語は、教科書の辞典に見つかりませんでした。",
+      "この会話に限り、一般的な知識で答えてかまいません。その場合は回答の冒頭で、教材にない一般的な説明であることを明記してください。",
+      "ITパスポート試験の学習と関係がなさそうな質問には、そのことも伝えてください。",
+    );
+  } else {
+    out.push(
+      "下の用語は、学習者の最初の質問に出てきた語を教科書の辞典から機械的に照合したものです。質問と関係のない語が含まれることがあります。",
+      "",
+      `### 関連用語（定義は${LANGUAGE_NAME[toDataLang(locale)]}）`,
+      ...cards.flatMap(cardLines),
+    );
+  }
   return out.join("\n");
 }

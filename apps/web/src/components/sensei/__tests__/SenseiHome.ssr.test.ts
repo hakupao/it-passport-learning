@@ -1,6 +1,7 @@
 // D-181 Task A5 — /sensei body, first render (node env, renderToStaticMarkup, as
 // KeySettings.ssr.test.ts). Effects do not run in SSR: no key and no thread list
-// yet, so the how-to-get-a-key note is shown. Interaction is covered in e2e.
+// yet, so the how-to-get-a-key note is shown and the free question cannot be sent
+// yet. The AI SDK is not rendered here (the panel is lazy). Interaction is covered in e2e.
 import { describe, expect, it, vi } from "vitest";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -18,11 +19,15 @@ import { MAX_THREADS } from "@/lib/sensei/threadStore";
 
 import { SenseiHome } from "../SenseiHome";
 
+const TERM_INDEX = [{ id: "t0000000000000001", jp: "機能要件", zh: "功能需求", en: "Functional requirement" }];
+
 function render(locale: "ja" | "zh" | "en"): { html: string; s: Record<string, string> } {
   const messages = JSON.parse(
     readFileSync(path.resolve(__dirname, `../../../../messages/${locale}.json`), "utf-8"),
   );
-  const html = renderToStaticMarkup(h(NextIntlClientProvider, { locale, messages, children: h(SenseiHome) }));
+  const html = renderToStaticMarkup(
+    h(NextIntlClientProvider, { locale, messages, children: h(SenseiHome, { termIndex: TERM_INDEX }) }),
+  );
   return { html, s: messages.Sensei };
 }
 
@@ -30,15 +35,20 @@ const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/'/g, "&#x27;").repl
 
 describe("SenseiHome SSR", () => {
   for (const locale of ["ja", "zh", "en"] as const) {
-    it(`${locale}: key settings, the console link, the disabled free-question input (coming soon)`, () => {
+    it(`${locale}: key settings, the console link, the free-question input (enabled; send disabled until a key is read)`, () => {
       const { html, s } = render(locale);
       expect(html).toContain('data-testid="sensei-key-settings"');
       expect(html).toMatch(
         /<a href="https:\/\/console\.anthropic\.com\/settings\/keys" target="_blank" rel="noopener noreferrer"/,
       );
       expect(html).toContain(esc(s.keyHowToLink!));
-      expect(html).toContain(esc(s.comingSoon!));
-      expect(html).toMatch(/<textarea[^>]*disabled=""/);
+      expect(s.comingSoon).toBeUndefined();
+      expect(html).not.toContain("sensei-coming-soon");
+      expect(html).toContain(esc(s.freeHint!));
+      expect(html).toMatch(/<textarea[^>]*data-testid="sensei-free-input"/);
+      expect(html).not.toMatch(/<textarea[^>]*disabled=""/);
+      const send = /<button[^>]*data-testid="sensei-free-send"[^>]*>/.exec(html)?.[0] ?? "";
+      expect(send).toContain('disabled=""');
       expect(html).toContain(esc(s.threadsTitle!));
     });
   }

@@ -8,8 +8,9 @@
 // (the glossary term page, the textbook unit page — Phase C) cannot pass a
 // function and hands over the built text as anchorText. On close, focus returns to
 // the button that opened the panel.
-// useSenseiHost() hands other entry points (the Phase B ReviewLauncher) the same
-// open function; it is null outside a SenseiHost.
+// useSenseiHost() hands other entry points (the Phase B ReviewLauncher, the Phase C
+// /sensei free question and its free-thread rows) the same open function; it is
+// null outside a SenseiHost. `onClose` lets the /sensei page refresh its thread list.
 
 "use client";
 
@@ -28,7 +29,14 @@ type OpenFor = (anchor: SenseiAnchor, trigger: HTMLElement) => void;
 
 const HostContext = createContext<OpenFor | null>(null);
 
-export function SenseiHost({ children }: { children: React.ReactNode }): React.ReactElement {
+export function SenseiHost({
+  children,
+  onClose,
+}: {
+  children: React.ReactNode;
+  /** Called when the panel closes (the /sensei page re-reads its thread list). */
+  onClose?: () => void;
+}): React.ReactElement {
   const [anchor, setAnchor] = useState<SenseiAnchor | null>(null);
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -39,10 +47,18 @@ export function SenseiHost({ children }: { children: React.ReactNode }): React.R
     setOpen(true);
   }, []);
 
+  const onOpenChange = useCallback(
+    (next: boolean) => {
+      setOpen(next);
+      if (!next) onClose?.();
+    },
+    [onClose],
+  );
+
   return (
     <HostContext.Provider value={openFor}>
       {children}
-      {anchor ? <SenseiPanel anchor={anchor} open={open} onOpenChange={setOpen} returnFocusTo={triggerRef} /> : null}
+      {anchor ? <SenseiPanel anchor={anchor} open={open} onOpenChange={onOpenChange} returnFocusTo={triggerRef} /> : null}
     </HostContext.Provider>
   );
 }

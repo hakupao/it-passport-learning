@@ -22,6 +22,9 @@
 //   targets shaped like a question id, so an in-dialog `#sensei-input` is left
 //   alone) closes the panel, then scrolls to that question and focuses its
 //   <article> (tabIndex -1) — not a choice button, where Enter would answer it.
+// - Phase C: a free-question thread (/sensei) arrives with its question as the
+//   `opener`; its hint and placeholder are the free-question ones and it shows no
+//   「なぜ」 suggestion.
 
 "use client";
 
@@ -76,6 +79,7 @@ export function SenseiPanel({
   const openerSentFor = useRef<SenseiAnchor | null>(null);
   const jumpTo = useRef<string | null>(null);
   const review = anchor.kind === "review";
+  const free = anchor.kind === "free";
 
   // A new thread starts with an empty composer.
   const threadKey = `${anchor.kind}:${anchor.anchorId}`;
@@ -248,7 +252,7 @@ export function SenseiPanel({
               onClick={onLogClick}
             >
               {s.messages.length === 0 && !generating ? (
-                <p className="text-sm opacity-70">{t(review ? "reviewEmptyHint" : "emptyHint")}</p>
+                <p className="text-sm opacity-70">{t(review ? "reviewEmptyHint" : free ? "freeEmptyHint" : "emptyHint")}</p>
               ) : null}
               {s.messages.map((m) => {
                 const text = textOf(m);
@@ -292,7 +296,7 @@ export function SenseiPanel({
               send();
             }}
           >
-            {s.messages.length === 0 && input === "" ? (
+            {s.messages.length === 0 && input === "" && !free ? (
               <Button
                 type="button"
                 variant="outline"
@@ -310,7 +314,7 @@ export function SenseiPanel({
               ref={inputRef}
               rows={3}
               className="w-full resize-none rounded-md border bg-transparent p-2 text-sm"
-              placeholder={t(review ? "reviewPlaceholder" : "inputPlaceholder")}
+              placeholder={t(review ? "reviewPlaceholder" : free ? "freeFollowUpPlaceholder" : "inputPlaceholder")}
               aria-describedby="sensei-input-hint"
               value={input}
               onChange={(e) => setInput(e.target.value)}

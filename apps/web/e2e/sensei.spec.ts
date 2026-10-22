@@ -33,7 +33,8 @@
 //   8. /sensei key settings: how to get a key (console link) while none is saved;
 //      save shows only "…" + the last 4 ("…" alone for a short key), survives a
 //      reload, delete clears it; a refused storage write keeps the typed key and
-//      shows the failure notice; the free-question input is disabled (近日公開).
+//      shows the failure notice; the free-question input is enabled, its Send
+//      disabled until a key is saved.
 //   9. /sensei thread list: threads made on the quiz page, newest first, each
 //      linking to /quiz?mode=exam&id=<exam_id>#<question_id>; delete removes the
 //      row and its storage; the empty state once none is left.
@@ -395,8 +396,8 @@ test("/sensei key settings: how to get a key, masked display, reload persists, d
   await expect(consoleLink).toHaveAttribute("target", "_blank");
   await expect(consoleLink).toHaveAttribute("rel", "noopener noreferrer");
   await expect(page.getByTestId("sensei-threads-empty")).toHaveText(S.threadsEmpty);
-  await expect(page.getByTestId("sensei-coming-soon")).toHaveText(S.comingSoon);
-  await expect(page.getByLabel(S.freeLabel)).toBeDisabled();
+  await expect(page.getByLabel(S.freeLabel)).toBeEnabled();
+  await page.getByLabel(S.freeLabel).fill("機能要件とは？");
   await expect(page.getByRole("button", { name: S.send })).toBeDisabled();
 
   await page.getByLabel(S.keyLabel).fill(KEY);
@@ -404,6 +405,7 @@ test("/sensei key settings: how to get a key, masked display, reload persists, d
   await expect(keyStatus(page)).toHaveText(savedAs("…wxyz"));
   await expect(page.getByLabel(S.keyLabel)).toHaveValue("");
   await expect(howto).toHaveCount(0);
+  await expect(page.getByRole("button", { name: S.send })).toBeEnabled();
   expect(await page.getByTestId("sensei-key-settings").textContent()).not.toContain(KEY.slice(0, -4));
 
   await page.reload();
@@ -1108,4 +1110,158 @@ test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary a
   await expect(row.getByRole("link")).toHaveAttribute("href", `/en/textbook/${UNIT}`);
   await expect(row.getByRole("link")).toHaveText(unit.title_en);
   expect(fake.requests).toHaveLength(1);
+});
+
+
+// ── D-181 Phase C (Task C2): the free question on /sensei ──
+//
+//  19. No AI SDK chunk on /sensei until the free-question input is focused. A question
+//      naming dictionary terms → one GET /api/sensei/terms with their ids (order of
+//      appearance) → the panel opens and sends the question once; the anchor holds
+//      those terms' definitions; the thread is kind "free", anchorId free:<base36>,
+//      title = the question. Reopened from its /sensei row (a button, no link) after
+//      a reload: the stored conversation shows, the anchor is derived again from the
+//      first question, and the follow-up request's system text equals the first's.
+//  20. A question naming no term: no card request, the anchor says
+//      「該当する教材の項目なし」 with the general-knowledge allowance; a second
+//      question is a second free thread.
+//  21. The card request fails: a notice, the question stays, nothing is sent.
+
+const ISO_TERM = "ISO/IEC 27000";
+const freeInput = (page: Page) => page.getByLabel(S.freeLabel);
+const freeSend = (page: Page) => page.getByTestId("sensei-free-send");
+
+/** URLs of the /api/sensei/terms requests the page makes. */
+function trackTermRequests(page: Page): string[] {
+  const urls: string[] = [];
+  page.on("request", (r) => {
+    if (new URL(r.url()).pathname === "/api/sensei/terms") urls.push(r.url());
+  });
+  return urls;
+}
+
+async function senseiIndex(page: Page): Promise<{ kind: string; anchorId: string; title: string }[]> {
+  const raw = await page.evaluate(() => localStorage.getItem("itp:sensei:index:v1"));
+  const index = JSON.parse(raw ?? "null") as { threads: { kind: string; anchorId: string; title: string }[] };
+  return index.threads.map(({ kind, anchorId, title }) => ({ kind, anchorId, title }));
+}
+
+test("free question: no AI SDK before focus; matched definitions in the anchor; reopening sends the same anchor", async ({
+  page,
+}) => {
+  fake = await fakeAnthropic(page);
+  await presetKey(page);
+  const scripts = trackScripts(page);
+  const termRequests = trackTermRequests(page);
+
+  await page.goto(SENSEI_URL);
+  await expect(freeSend(page)).toBeDisabled(); // nothing typed yet
+  await page.waitForLoadState("networkidle");
+  expect(await sdkChunks(scripts), "AI SDK loaded before focus").toEqual([]);
+  await freeInput(page).focus();
+  await expect.poll(async () => (await sdkChunks(scripts)).length, "AI SDK chunk after focus").toBeGreaterThan(0);
+
+  const question = `${TERM}と ${ISO_TERM} の関係は？`;
+  await freeInput(page).fill(question);
+  await freeSend(page).click();
+  await expect(panel(page)).toBeVisible();
+  await expect(log(page)).toContainText(REPLY_MARK);
+  await expect(log(page).locator('[data-role="user"]')).toHaveText([`${S.you}: ${question}`]);
+
+  expect(termRequests).toHaveLength(1);
+  const params = new URL(termRequests[0]!).searchParams;
+  expect(params.get("ids")).toBe([TERM_ID, termId(ISO_TERM)].join(","));
+  expect(params.get("locale")).toBe("ja");
+
+  expect(fake.requests).toHaveLength(1);
+  const first = systemText(fake.requests[0]!);
+  expect(first).toContain("回答言語: 日本語");
+  expect(first).toContain("## 自由質問");
+  expect(first).toContain("### 関連用語（定義は日本語）");
+  expect(corpusSenses(TERM).some((s) => first.includes(`- ${TERM}: ${s.definition_jp}`))).toBe(true);
+  const iso = corpusSenses(ISO_TERM);
+  expect(iso).toHaveLength(1);
+  expect(first).toContain(`- ${ISO_TERM}: ${iso[0]!.definition_jp}`);
+  expect(first).not.toContain("該当する教材の項目なし");
+
+  await page.keyboard.press("Escape");
+  await expect(panel(page)).toHaveCount(0);
+  await expect(freeInput(page)).toBeFocused();
+  await expect(freeInput(page)).toHaveValue("");
+  const threads = await senseiIndex(page);
+  expect(threads).toHaveLength(1);
+  expect(threads[0]!.kind).toBe("free");
+  expect(threads[0]!.anchorId).toMatch(/^free:[0-9a-z]+$/);
+  expect(threads[0]!.title).toBe(question);
+  // the list was re-read on close
+  await expect(page.getByTestId("sensei-thread")).toHaveCount(1);
+
+  // reopen after a reload: in place, from the row's button
+  await page.reload();
+  const row = page.getByTestId("sensei-thread");
+  await expect(row).toHaveCount(1);
+  await expect(row).toContainText(S.kind_free);
+  await expect(row.getByRole("link")).toHaveCount(0);
+  await row.getByTestId("sensei-thread-open").click();
+  await expect(panel(page)).toBeVisible();
+  await expect(log(page)).toContainText(question);
+  await expect(log(page)).toContainText(REPLY_MARK);
+  expect(termRequests).toHaveLength(2);
+  expect(termRequests[1]).toBe(termRequests[0]);
+
+  await ask(page, "もう少し詳しく教えてください");
+  await expect(log(page).locator('[data-role="assistant"]')).toHaveCount(2);
+  expect(fake.requests).toHaveLength(2);
+  expect(systemText(fake.requests[1]!)).toBe(first);
+  expect(fake.requests[1]!.body.messages?.map((m) => m.role)).toEqual(["user", "assistant", "user"]);
+
+  await page.keyboard.press("Escape");
+  await expect(row.getByTestId("sensei-thread-open")).toBeFocused();
+  expect((await senseiIndex(page)).map((t) => t.anchorId)).toEqual([threads[0]!.anchorId]);
+});
+
+test("free question without a dictionary term: 「該当する教材の項目なし」 anchor, no card request; each question is a new thread", async ({
+  page,
+}) => {
+  fake = await fakeAnthropic(page);
+  await presetKey(page);
+  const termRequests = trackTermRequests(page);
+
+  await page.goto(SENSEI_URL);
+  await freeInput(page).fill("今日はいい天気ですね");
+  await freeSend(page).click();
+  await expect(log(page)).toContainText(REPLY_MARK);
+  expect(termRequests).toEqual([]);
+  expect(fake.requests).toHaveLength(1);
+  const system = systemText(fake.requests[0]!);
+  expect(system).toContain("## 自由質問");
+  expect(system).toContain("該当する教材の項目なし");
+  expect(system).toContain("一般的な知識で答えてかまいません");
+  expect(system).not.toContain("### 関連用語（定義は");
+
+  await page.keyboard.press("Escape");
+  await freeInput(page).fill("こんにちは");
+  await freeSend(page).click();
+  await expect(log(page).locator('[data-role="user"]')).toHaveText([`${S.you}: こんにちは`]);
+  await expect(log(page)).toContainText(REPLY_MARK);
+  await page.keyboard.press("Escape");
+  const threads = await senseiIndex(page);
+  expect(threads.map((t) => t.title)).toEqual(["こんにちは", "今日はいい天気ですね"]);
+  expect(new Set(threads.map((t) => t.anchorId)).size).toBe(2);
+  expect(fake.requests).toHaveLength(2);
+});
+
+test("free question: a failed card request shows a notice, keeps the question and sends nothing", async ({ page }) => {
+  fake = await fakeAnthropic(page);
+  await presetKey(page);
+  await page.route("**/api/sensei/terms?**", (route) => route.fulfill({ status: 500, body: "{}" }));
+
+  await page.goto(SENSEI_URL);
+  await freeInput(page).fill(`${TERM}とは？`);
+  await freeSend(page).click();
+  await expect(page.getByTestId("sensei-free-failed")).toHaveText(S.freeTermsFailed);
+  await expect(freeInput(page)).toHaveValue(`${TERM}とは？`);
+  await expect(panel(page)).toHaveCount(0);
+  expect(fake.requests).toEqual([]);
+  expect(await page.evaluate(() => localStorage.getItem("itp:sensei:index:v1"))).toBeNull();
 });

@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 
 import type { ReaderIndex } from "../../textbook/reader";
 import type { TextbookUnit, UnitTerm } from "../../textbook/types";
-import { buildDictionary, buildListGroups, buildTermCards, toTermCard } from "../dictionary";
+import { buildDictionary, buildListGroups, buildTermCards, buildTermIndex, toTermCard } from "../dictionary";
 import { termId } from "../termId";
 
 const term = (
@@ -256,6 +256,19 @@ describe("buildTermCards", () => {
 
   it("returns {} when the dictionary is unavailable (terms fall back to plain text)", () => {
     expect(buildTermCards(null, qs, "ja")).toEqual({});
+  });
+});
+
+describe("buildTermIndex", () => {
+  const dict = buildDictionary(index, units, questions);
+
+  it("lists every entry in dictionary order with its JP / zh / en headwords (the entry's own, from senses[0])", () => {
+    expect(buildTermIndex(dict)).toEqual([
+      { id: termId("機能要件"), jp: "機能要件", zh: "功能需求", en: "Functional requirement" },
+      { id: termId("要件定義"), jp: "要件定義", zh: "需求定义", en: "" },
+      { id: termId("非機能要件"), jp: "非機能要件", zh: "非功能性需求", en: "Non-functional requirements" },
+      { id: termId("業務要件定義"), jp: "業務要件定義", zh: "需求定义", en: "Business requirements definition" },
+    ]);
   });
 });
 
