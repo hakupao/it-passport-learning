@@ -135,6 +135,49 @@ describe("threadStore", () => {
     expect(s.data.has(threadStorageKey(ids[0]!))).toBe(true);
   });
 
+  it("at the cap, the oldest review thread is evicted first, even when a question thread is older", () => {
+    const s = memoryStorage();
+    const opened: { id: string; anchorId: string }[] = [];
+    for (let i = 1; i <= MAX_THREADS; i++) {
+      // threads 5 and 9 are daily review threads; thread 1 (a question) is the oldest
+      const kind = i === 5 || i === 9 ? "review" : "question";
+      const anchorId = kind === "review" ? `technology-14-36:2026-10-0${i === 5 ? 1 : 2}` : `q${i}`;
+      const t = openThread(s, { kind, anchorId, title: `T${i}` });
+      saveThreadMessages(s, t.id, [msg(`m${i}`, `質問${i}`)]);
+      opened.push({ id: t.id, anchorId });
+      tick();
+    }
+    openThread(s, { kind: "question", anchorId: "q31", title: "問31" });
+    let anchors = listThreads(s).map((t) => t.anchorId);
+    expect(anchors).toHaveLength(MAX_THREADS);
+    expect(anchors).not.toContain("technology-14-36:2026-10-01"); // the oldest review thread
+    expect(anchors).toContain("technology-14-36:2026-10-02");
+    expect(anchors).toContain("q1"); // older, but not a review thread
+    expect(s.data.has(threadStorageKey(opened[4]!.id))).toBe(false);
+    tick();
+
+    // a new review thread evicts the other review thread, never itself
+    openThread(s, { kind: "review", anchorId: "technology-14-36:2026-10-03", title: "R" });
+    anchors = listThreads(s).map((t) => t.anchorId);
+    expect(anchors).toHaveLength(MAX_THREADS);
+    expect(anchors).not.toContain("technology-14-36:2026-10-02");
+    expect(anchors).toContain("technology-14-36:2026-10-03");
+    expect(anchors).toContain("q1");
+    tick();
+
+    // no review thread left other than the new one → the oldest thread of any kind
+    openThread(s, { kind: "question", anchorId: "q32", title: "問32" });
+    anchors = listThreads(s).map((t) => t.anchorId);
+    expect(anchors).not.toContain("technology-14-36:2026-10-03"); // the only review thread goes first
+    tick();
+    openThread(s, { kind: "question", anchorId: "q33", title: "問33" });
+    anchors = listThreads(s).map((t) => t.anchorId);
+    expect(anchors).toHaveLength(MAX_THREADS);
+    expect(anchors).not.toContain("q1"); // no review thread left → the oldest one
+    expect(anchors).toContain("q2");
+    expect(s.data.has(threadStorageKey(opened[0]!.id))).toBe(false);
+  });
+
   it("on QuotaExceeded evicts the oldest other thread and retries once", () => {
     const s = quotaStorage(0);
     const old = openThread(s, { kind: "question", anchorId: "old", title: "old" });

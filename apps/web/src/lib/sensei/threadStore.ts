@@ -3,10 +3,12 @@
 //   index    `itp:sensei:index:v1` = { v: 1, threads: ThreadMeta[] }
 //   messages `itp:sensei:thread:<id>:v1`, written through lib/chat/historyStore
 //            (≤ MAX_PERSISTED_MESSAGES = 200 per thread)
-// At most MAX_THREADS threads; the one with the oldest updatedAt is evicted
-// together with its message key. A QuotaExceeded write evicts the oldest other
-// thread and retries once (messages and the index alike); a second failure
-// returns false (never throws).
+// At most MAX_THREADS threads; an evicted thread goes together with its message
+// key. Eviction takes the oldest (updatedAt) review thread if there is one (Phase B:
+// one review thread per topic per day would otherwise crowd out question threads),
+// else the oldest thread of any kind. A QuotaExceeded write evicts the same way and
+// retries once (messages and the index alike); a second failure returns false
+// (never throws).
 // A corrupt index reads as empty and no other key is touched.
 
 import type { UIMessage } from "ai";
@@ -81,15 +83,15 @@ function writeIndex(storage: StorageLike, threads: ThreadMeta[]): boolean {
   }
 }
 
-/** Drop the oldest thread other than `keepId` (and its messages); null if none. */
+/** Drop the oldest review thread other than `keepId`, else the oldest other thread
+ *  (and its messages); null if none. `threads` is newest first. */
 function evictOldest(storage: StorageLike, threads: ThreadMeta[], keepId: string): ThreadMeta[] | null {
-  for (let i = threads.length - 1; i >= 0; i--) {
-    const t = threads[i]!;
-    if (t.id === keepId) continue;
-    clearChatHistory(storage, threadStorageKey(t.id));
-    return threads.filter((_, j) => j !== i);
-  }
-  return null;
+  const evictable = (t: ThreadMeta) => t.id !== keepId;
+  let i = threads.findLastIndex((t) => evictable(t) && t.kind === "review");
+  if (i < 0) i = threads.findLastIndex(evictable);
+  if (i < 0) return null;
+  clearChatHistory(storage, threadStorageKey(threads[i]!.id));
+  return threads.filter((_, j) => j !== i);
 }
 
 export function listThreads(storage: StorageLike): ThreadMeta[] {
