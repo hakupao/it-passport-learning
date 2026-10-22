@@ -16,7 +16,7 @@
 // by the key-missing reason). While the terms load the input is read-only and the form
 // aria-busy. If the terms cannot be fetched nothing is sent, the question stays and a
 // notice is shown. A free thread whose first question cannot be read back (no stored
-// user message, or storage unavailable) does not open: the thread notice is shown.
+// user message, or storage unavailable) does not open: its own notice is shown.
 //
 // The AI SDK is not in this page's first load: the panel (and through useSensei the
 // SDK, after lib/sensei/zodJitless) is loaded via next/dynamic in SenseiHost when it
@@ -115,7 +115,9 @@ function SenseiHomeBody({
   const [hasKey, setHasKey] = useState(false);
   const [question, setQuestion] = useState("");
   const [pending, setPending] = useState(false);
-  const [failedAt, setFailedAt] = useState<"free" | "threads" | null>(null);
+  // "free": the free question's terms failed to load; "threads": a reopened free thread's
+  // terms failed to load; "threadMissing": its first question could not be read back
+  const [failedAt, setFailedAt] = useState<"free" | "threads" | "threadMissing" | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   function remove(id: string): void {
@@ -155,7 +157,7 @@ function SenseiHomeBody({
     const storage = browserStorage();
     const first = storage ? firstUserText(loadThreadMessages(storage, th.id)) : "";
     if (first.trim() === "") {
-      setFailedAt("threads");
+      setFailedAt("threadMissing");
       return;
     }
     setPending(true);
@@ -199,6 +201,11 @@ function SenseiHomeBody({
         {failedAt === "threads" ? (
           <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800" data-testid="sensei-reopen-failed">
             {t("freeTermsFailed")}
+          </p>
+        ) : null}
+        {failedAt === "threadMissing" ? (
+          <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800" data-testid="sensei-thread-missing">
+            {t("threadMissing")}
           </p>
         ) : null}
         {threads !== null && threads.length === 0 && (

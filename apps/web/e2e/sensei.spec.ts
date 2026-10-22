@@ -1133,7 +1133,8 @@ test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary a
 //      question is a second free thread.
 //  21. The term request fails: while it is pending the input is read-only and the form
 //      aria-busy; then a notice, the question stays, nothing is sent.
-//  21b. A free thread row whose first question is not stored: a notice, no panel, no request.
+//  21b. A free thread row whose first question is not stored: its own notice (not the
+//      terms-load one), no panel, no request.
 //  22. /zh: a zh spelling found only in E-R図's second dictionary sense (the strategy
 //      unit's 「E-R 图」; technology senses come first) matches; the request carries locale=zh and the anchor holds both senses, each
 //      with its JP original and zh definition, explanation and memory hook.
@@ -1321,7 +1322,8 @@ test("free thread without a stored first question: the notice, no panel, no requ
 
   await page.goto(SENSEI_URL);
   await page.getByTestId("sensei-thread-open").click();
-  await expect(page.getByTestId("sensei-reopen-failed")).toHaveText(S.freeTermsFailed);
+  await expect(page.getByTestId("sensei-thread-missing")).toHaveText(S.threadMissing);
+  await expect(page.getByTestId("sensei-reopen-failed")).toHaveCount(0);
   await expect(panel(page)).toHaveCount(0);
   expect(termRequests).toEqual([]);
   expect(fake.requests).toEqual([]);

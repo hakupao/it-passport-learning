@@ -92,7 +92,16 @@ describe("SenseiHome SSR", () => {
     }
   });
 
-  it("renders no thread rows and no empty state before the index is read", () => {
+  it("has a dedicated notice for a free thread that cannot be reopened (C2 M3), distinct from the terms-load failure", () => {
+    for (const locale of ["ja", "zh", "en"] as const) {
+      const { s } = render(locale);
+      expect(s.threadMissing, locale).toBeTruthy();
+      expect(s.threadMissing).not.toBe(s.freeTermsFailed);
+    }
+    expect(render("ja").s.threadMissing).toContain("最初の質問が見つからない");
+  });
+
+    it("renders no thread rows and no empty state before the index is read", () => {
     const { html } = render("ja");
     expect(html).not.toContain('data-testid="sensei-thread"');
     expect(html).not.toContain('data-testid="sensei-threads-empty"');
