@@ -26,8 +26,11 @@
 //     is a lowercase "s" only ("APIs", "LANs"; not "apis", "APIS"). Other ASCII
 //     headwords are case-insensitive.
 //   - A stoplisted headword (termMatchWords STOPLIST_HEADWORDS: single ordinary English
-//     words such as Value, Cost, Mode, Table) counts only when the matched text is in
-//     all caps or touches Japanese / Chinese text on either side (「Valueとは」).
+//     words such as Value, Cost, Mode, Table) always counts when the matched text is in
+//     all caps or touches Japanese / Chinese text on either side, directly or across one
+//     ASCII space (「Valueとは」, "Value とは"). Written otherwise (English prose) it
+//     counts only when no headword that is not stoplisted matched at all
+//     ("what is an index?" → Index; "the value of a router" → Router only).
 //   - Ids come back each once, in order of first appearance. When more than `limit`
 //     terms match, the most specific are kept: class 1 = all-caps / ≤ 3-character
 //     acronyms, multi-word headwords and non-ASCII headwords of ≥ 3 characters; class
@@ -47,6 +50,13 @@ const ASCII_ONLY = /^[\x20-\x7e]+$/;
 const ASCII_ALNUM = /[A-Za-z0-9]/;
 /** Japanese / Chinese text: Han, kana, the prolonged sound mark and CJK punctuation (「」、。). */
 const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}、-〿・ー]/u;
+
+/** Japanese / Chinese text right before `start` or right after `end`, directly or across one ASCII space. */
+function touchesCjk(text: string, start: number, end: number): boolean {
+  const before = text[start - 1] === " " ? text[start - 2] : text[start - 1];
+  const after = text[end] === " " ? text[end + 1] : text[end];
+  return CJK.test(before ?? "") || CJK.test(after ?? "");
+}
 
 interface Pattern {
   key: string;
@@ -114,31 +124,44 @@ function asciiEnd(p: Pattern, exact: string, folded: string, start: number): num
 export function matchTerms(text: string, index: readonly TermIndexEntry[], limit = MAX_MATCHED_TERMS): string[] {
   const exact = text.normalize("NFKC");
   const folded = foldAscii(exact);
-  const found: { start: number; end: number; inflected: boolean; specific: boolean; ids: string[] }[] = [];
+  // `prose`: a stoplisted headword neither in all caps nor next to CJK text
+  const found: {
+    start: number;
+    end: number;
+    inflected: boolean;
+    specific: boolean;
+    stop: boolean;
+    prose: boolean;
+    ids: string[];
+  }[] = [];
   for (const p of patternsOf(index)) {
     const hay = p.caseSensitive ? exact : folded;
     for (let i = hay.indexOf(p.key); i >= 0; i = hay.indexOf(p.key, i + 1)) {
       let end = i + p.key.length;
+      let prose = false;
       if (p.ascii) {
         if (ASCII_ALNUM.test(hay[i - 1] ?? "")) continue;
         end = asciiEnd(p, exact, folded, i);
         if (end < 0) continue;
-        if (p.stop && !isAllCaps(exact.slice(i, end)) && !CJK.test(exact[i - 1] ?? "") && !CJK.test(exact[end] ?? "")) {
-          continue;
-        }
+        prose = p.stop && !isAllCaps(exact.slice(i, end)) && !touchesCjk(exact, i, end);
       }
-      found.push({ start: i, end, inflected: end !== i + p.key.length, specific: p.specific, ids: p.ids });
+      found.push({ start: i, end, inflected: end !== i + p.key.length, specific: p.specific, stop: p.stop, prose, ids: p.ids });
     }
   }
 
   found.sort(
     (a, b) => b.end - b.start - (a.end - a.start) || a.start - b.start || Number(a.inflected) - Number(b.inflected),
   );
-  const kept: typeof found = [];
-  for (const m of found) {
-    if (kept.every((k) => m.end <= k.start || m.start >= k.end)) kept.push(m);
-  }
-  kept.sort((a, b) => a.start - b.start);
+  const resolve = (candidates: typeof found): typeof found => {
+    const kept: typeof found = [];
+    for (const m of candidates) {
+      if (kept.every((k) => m.end <= k.start || m.start >= k.end)) kept.push(m);
+    }
+    return kept.sort((a, b) => a.start - b.start);
+  };
+  // stoplisted prose words count only when no headword that is not stoplisted matched
+  let kept = resolve(found.filter((m) => !m.prose));
+  if (!kept.some((m) => !m.stop)) kept = resolve(found);
 
   // id → its order of first appearance and its best class (Map keeps appearance order)
   const terms = new Map<string, { seq: number; specific: boolean }>();

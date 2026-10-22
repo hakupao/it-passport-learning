@@ -10,8 +10,9 @@
 // English words (Router, Firewall, Database, Server, Switch, Queue, Stack, Backup,
 // Password, Integrity, Availability, Compliance, Median, Variance, Probability, …),
 // and ordinary words that rarely appear in passing (Destruction, Leakage, Pinch, …).
-// A stoplisted headword matches only when written in all caps or right next to
-// Japanese / Chinese text (「Valueとは」), so English prose keeps it out of the anchor.
+// A stoplisted headword always matches in all caps or next to Japanese / Chinese text
+// (「Valueとは」, also across one space); in English prose it matches only when no other
+// headword did, so it never crowds real terms out of the anchor.
 //
 // CASE_SENSITIVE_HEADWORDS — the all-caps headwords of 4+ characters that are also
 // common English words (from the 222 all-caps single-word headwords): they match only

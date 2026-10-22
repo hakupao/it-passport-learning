@@ -16,8 +16,9 @@
 //     so do the all-caps English words of CASE_SENSITIVE_HEADWORDS (CASE);
 //   - an ASCII headword may carry a plural s / es (case-sensitive ones: lowercase s only);
 //     on the same span the exact headword beats an inflected shorter one;
-//   - a stoplisted headword (STOPLIST_HEADWORDS: Value, Cost, Window, …) counts only in
-//     all caps or right next to Japanese / Chinese text;
+//   - a stoplisted headword (STOPLIST_HEADWORDS: Value, Cost, Window, …) always counts in
+//     all caps or next to Japanese / Chinese text (also across one ASCII space); in
+//     English prose only when no headword that is not stoplisted matched;
 //   - over the limit, class 1 (acronyms, multi-word, CJK ≥ 3 characters) is kept before
 //     class 2 (the rest), earlier first; the kept ids come back in order of appearance.
 
@@ -127,7 +128,7 @@ describe("matchTerms", () => {
   });
 
   it("matches ASCII headwords of ≤ 3 characters only in their own case", () => {
-    expect(matchTerms("this or that, its cost, etc.", INDEX)).toEqual([]);
+    expect(matchTerms("this or that, its price, etc.", INDEX)).toEqual([]);
     expect(matchTerms("Is it AND or OR?", INDEX)).toEqual(ids("t12"));
     expect(matchTerms("ITS と ETC の違い", INDEX)).toEqual(ids("t13", "t14"));
     expect(matchTerms("iot devices", INDEX)).toEqual([]);
@@ -185,16 +186,28 @@ describe("matchTerms", () => {
     expect(matchTerms("HTTPs", INDEX)).toEqual(ids("t31"));
   });
 
-  it("matches a stoplisted headword only in all caps or next to Japanese / Chinese text", () => {
-    expect(matchTerms("the value and the cost of a window", INDEX)).toEqual([]);
-    expect(matchTerms("What is the Value? And the Cost?", INDEX)).toEqual([]);
-    expect(matchTerms("VALUE and COST", INDEX)).toEqual(ids("t25", "t26"));
+  it("a stoplisted headword in English prose counts only when no other term matched", () => {
+    // another term matched: the stoplisted prose words drop out
+    expect(matchTerms("the value and the cost of a database", INDEX)).toEqual(ids("t23"));
+    expect(matchTerms("What is the Value of a switch? And the Cost?", INDEX)).toEqual(ids("t24"));
+    expect(matchTerms("COSTs of a database", INDEX)).toEqual(ids("t23"));
+    // nothing else matched: the stoplisted words count, by the usual rules (plural, boundary)
+    expect(matchTerms("the value and the cost of a window", INDEX)).toEqual(ids("t25", "t26", "t29"));
+    expect(matchTerms("what are costs?", INDEX)).toEqual(ids("t26"));
+    expect(matchTerms("COSTs", INDEX)).toEqual(ids("t26"));
+    expect(matchTerms("valued, costly", INDEX)).toEqual([]);
+  });
+
+  it("a stoplisted headword in all caps or next to Japanese / Chinese text (one ASCII space allowed) always counts", () => {
+    expect(matchTerms("VALUE and COST of a database", INDEX)).toEqual(ids("t25", "t26", "t23"));
     expect(matchTerms("COSTS and VALUES", INDEX)).toEqual(ids("t26", "t25"));
-    expect(matchTerms("COSTs", INDEX)).toEqual([]);
     expect(matchTerms("Valueとは", INDEX)).toEqual(ids("t25"));
     expect(matchTerms("「Cost」の意味", INDEX)).toEqual(ids("t26"));
     expect(matchTerms("Cost与Value的区别", INDEX)).toEqual(ids("t26", "t25"));
-    expect(matchTerms("Value とは", INDEX)).toEqual([]); // a space is not adjacency
+    expect(matchTerms("Value とは database", INDEX)).toEqual(ids("t25", "t23"));
+    expect(matchTerms("データベースの Cost", INDEX)).toEqual(ids("t23", "t26"));
+    // two spaces are not adjacency: with another term matched, the word drops out
+    expect(matchTerms("Value  とは database", INDEX)).toEqual(ids("t23"));
     // the JP / zh headwords of a stoplisted entry match as usual
     expect(matchTerms("バリューと原価", INDEX)).toEqual(ids("t25", "t26"));
     // Windows is not stoplisted (Window is)

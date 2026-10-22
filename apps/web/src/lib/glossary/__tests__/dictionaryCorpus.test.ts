@@ -123,10 +123,13 @@ describe("glossary dictionary on the real corpus", () => {
     expect(matchTerms(q, idx)).toEqual([termId("ルーター"), termId("スイッチ"), termId("LAN")]);
   });
 
-  it("probe: \"in this case\" is not CASE; value / cost in prose are not terms", async () => {
+  it("probe: \"in this case\" is not CASE (value / cost: the stoplist fallback, nothing else matched)", async () => {
     const idx = buildTermIndex(await loadDictionary());
     expect(idx.some((row) => row[0] === "CASE")).toBe(true);
-    expect(matchTerms("What is the value of a project and how do I estimate its cost in this case?", idx)).toEqual([]);
+    expect(matchTerms("What is the value of a project and how do I estimate its cost in this case?", idx)).toEqual([
+      termId("バリュー"),
+      termId("原価"),
+    ]);
     expect(matchTerms("CASE ツールとは", idx)).toEqual([termId("CASE")]);
   });
 
@@ -139,11 +142,21 @@ describe("glossary dictionary on the real corpus", () => {
     expect(matchTerms("explain apis and lans", idx)).toEqual([]);
   });
 
-  it("probe: a sentence of stopwords matches nothing", async () => {
+  it("probe: stopwords do not dominate; alone, they are the fallback", async () => {
     const idx = buildTermIndex(await loadDictionary());
-    expect(matchTerms("what mode should I record each field in the table", idx)).toEqual([]);
-    // the same words next to Japanese text, or in all caps, still match
+    expect(matchTerms("what mode should I record each field in the table of a database", idx)).toEqual([
+      termId("データベース"),
+    ]);
+    // nothing else matched: the stoplisted words are the terms (Mode is two entries)
+    expect(matchTerms("what mode should I record each field in the table", idx)).toEqual(
+      ["最頻値", "モード", "レコード", "フィールド", "テーブル"].map(termId),
+    );
+    expect(matchTerms("what is an index?", idx)).toEqual([termId("インデックス")]);
+    expect(matchTerms("what is the value of a router?", idx)).toEqual([termId("ルーター")]);
+    // next to Japanese text (also across one ASCII space), or in all caps, they always match
     expect(matchTerms("Tableとは", idx)).toEqual([termId("テーブル")]);
+    expect(matchTerms("Value とは", idx)).toEqual([termId("バリュー")]);
+    expect(matchTerms("ルーターの VALUE", idx)).toEqual([termId("ルーター"), termId("バリュー")]);
   });
 
   it("probe: over the cap, a ≥ 3-character term outranks 2-character words (入力 / 出力 / 更新 …)", async () => {
