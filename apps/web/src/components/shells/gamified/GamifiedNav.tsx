@@ -5,12 +5,7 @@ import { Suspense } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ThemeSwitcher } from "../ThemeSwitcher";
-
-const NAV_ITEMS = [
-  { href: "/textbook", key: "textbook" },
-  { href: "/quiz", key: "quiz" },
-  { href: "/glossary", key: "glossary" },
-] as const;
+import { NAV_ITEMS } from "../navItems";
 
 export function GamifiedNav(): React.ReactElement {
   const pathname = usePathname();

@@ -248,18 +248,27 @@ describe("threadStore", () => {
     expect(saveThreadMessages(s, fresh.id, [msg("m3", "z")])).toBe(true);
   });
 
-  it("openThread: index refused twice → returns the meta, never throws, writes nothing new", () => {
+  it("openThread: index refused twice → returns the meta without throwing; the new thread stays unindexed and the evicted thread's messages are gone while its (stale) index entry remains", () => {
     const s = memoryStorage();
     const oldest = openThread(s, { kind: "question", anchorId: "q1", title: "問1" });
+    expect(saveThreadMessages(s, oldest.id, [msg("m1", "x")])).toBe(true);
     tick();
     const set = s.setItem;
     s.setItem = (k, v) => {
       if (k === SENSEI_INDEX_STORAGE) throw quotaError();
       set(k, v);
     };
-    const fresh = openThread(s, { kind: "question", anchorId: "q2", title: "問2" });
-    expect(fresh.anchorId).toBe("q2");
+    let fresh: ReturnType<typeof openThread> | undefined;
+    expect(() => {
+      fresh = openThread(s, { kind: "question", anchorId: "q2", title: "問2" });
+    }).not.toThrow();
+    expect(fresh?.anchorId).toBe("q2");
+    // the retry evicted the oldest thread's message key before its index write was refused
+    expect(s.data.has(threadStorageKey(oldest.id))).toBe(false);
+    expect(loadThreadMessages(s, oldest.id)).toEqual([]);
+    // the index on disk is unchanged: the old entry is still listed, the new one is not
     expect(listThreads(s).map((t) => t.id)).toEqual([oldest.id]);
+    expect(s.data.has(threadStorageKey(fresh!.id))).toBe(false);
   });
 
   it("keeps anchorIds with a choice suffix as distinct threads (A4: <question_id>:<choice|reveal>)", () => {

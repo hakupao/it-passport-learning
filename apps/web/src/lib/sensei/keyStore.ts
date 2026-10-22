@@ -37,16 +37,24 @@ export function loadSenseiKey(storage: StorageLike): string | null {
   return apiKey;
 }
 
-/** Save the trimmed key. A blank key is not saved (an existing key stays). */
-export function saveSenseiKey(storage: StorageLike, apiKey: string): void {
+/** Save the trimmed key; true when it was written. A blank key is not saved (an
+ *  existing key stays) and returns false, as does a refused write (quota / private mode). */
+export function saveSenseiKey(storage: StorageLike, apiKey: string): boolean {
   const trimmed = apiKey.trim();
-  if (trimmed === "") return;
+  if (trimmed === "") return false;
   const value: StoredKey = { provider: "anthropic", apiKey: trimmed, savedAt: new Date().toISOString() };
   try {
     storage.setItem(SENSEI_KEY_STORAGE, JSON.stringify(value));
+    return true;
   } catch {
-    // quota exceeded / private mode
+    return false;
   }
+}
+
+/** How a saved key is shown: "…" + its last 4 characters; a key shorter than 8 as "…" only
+ *  (its last 4 would be half of it). */
+export function maskSenseiKey(apiKey: string): string {
+  return apiKey.length < 8 ? "…" : `…${apiKey.slice(-4)}`;
 }
 
 export function clearSenseiKey(storage: StorageLike): void {

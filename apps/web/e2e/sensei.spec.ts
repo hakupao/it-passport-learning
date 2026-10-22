@@ -15,13 +15,27 @@
 //      made (non-owner); no CSP violation with the panel open.
 //   2. Layout: full-screen drawer at phone width, right drawer when wide.
 //   3. 401 → 「key が無効です」, settings open, the question back in the input;
-//      re-sending after a fix sends that question once (the failed turn is dropped).
+//      re-sending after a fix sends that question once (the failed turn is dropped);
+//      a later 401 turn is not persisted (after a reload the thread holds only the
+//      successful turn).
 //   4. Refusal → the refusal notice, the question back in the input.
-//   5. Clear while a reply is in flight → reload → the thread is empty.
+//   5. Clear while a reply is in flight → reload → the thread is empty. This checks
+//      the visible result only: the fake holds the whole response (see
+//      helpers/fakeAnthropic.ts), so the clear lands before any chunk. The race of a
+//      chunk arriving after the clear is proven by the threadChat unit test
+//      ("clearThread() while streaming …"), not here.
 //   6. Switch to another question's panel while the first reply is in flight →
 //      each thread keeps only its own messages.
 //   7. (only with E2E_OWNER_KEY, local server — see learning-owner.spec.ts) the
 //      owner's /api/learning PUT bodies never contain the key.
+//   8. /sensei key settings: how to get a key (console link) while none is saved;
+//      save shows only "…" + the last 4 ("…" alone for a short key), survives a
+//      reload, delete clears it; a refused storage write keeps the typed key and
+//      shows the failure notice; the free-question input is disabled (近日公開).
+//   9. /sensei thread list: threads made on the quiz page, newest first, each
+//      linking to /quiz?mode=exam&id=<exam_id>#<question_id>; delete removes the
+//      row and its storage; the empty state once none is left.
+//  10. Navigation: each of the three shells shows the AI 先生 item → /ja/sensei.
 //
 // Runs against a local prod build (the production CSP is then active, so a
 // request to api.anthropic.com also proves connect-src allows it):
@@ -91,10 +105,16 @@ async function storedTexts(page: Page, anchorId: string): Promise<string[] | nul
   });
 }
 
-let fake: FakeAnthropic;
+/** Set by each test that installs the fake; reset before every test so a test
+ *  without one never reads the previous test's fake. */
+let fake: FakeAnthropic | undefined;
+
+test.beforeEach(() => {
+  fake = undefined;
+});
 
 test.afterEach(() => {
-  expect(fake.unhandled, "requests to api.anthropic.com not answered by the fake").toEqual([]);
+  expect(fake?.unhandled ?? [], "requests to api.anthropic.com not answered by the fake").toEqual([]);
 });
 
 test("ask about an answered question: key setup, streamed reply, anchor in system, thread kept per choice", async ({
@@ -231,6 +251,19 @@ test("401: 「key が無効です」, settings open, the question stays; the ret
   expect(fake.requests).toHaveLength(2);
   const users = (fake.requests[1]!.body.messages ?? []).filter((m) => m.role === "user");
   expect(users).toHaveLength(1);
+  const okTurn = ["user:401 のときの質問", `assistant:${fake.reply.join("")}`];
+  expect(await storedTexts(page, `${Q1}:ア`)).toEqual(okTurn);
+
+  // a failed turn is not persisted: after a reload the thread holds only the successful turn
+  fake.mode = "401";
+  await ask(page, "保存されない質問");
+  await expect(panel(page).getByTestId("sensei-error")).toHaveText(S.errorAuth);
+  await page.reload();
+  expect(await storedTexts(page, `${Q1}:ア`)).toEqual(okTurn);
+  await openPanel(page, Q1, 0);
+  await expect(log(page)).toContainText("401 のときの質問");
+  await expect(log(page)).not.toContainText("保存されない質問");
+  expect(fake.requests).toHaveLength(3);
 });
 
 test("refusal: the refusal notice, the question back in the input", async ({ page }) => {
@@ -303,6 +336,132 @@ test("switch to another question while the first reply is in flight: each thread
   await expect(log(page)).not.toContainText("問2 の質問");
   await expect(log(page)).not.toContainText(REPLY_MARK);
 });
+
+const SENSEI_URL = "/ja/sensei";
+const keyStatus = (page: Page) => page.getByTestId("sensei-key-status");
+const savedAs = (masked: string) => S.keySaved.replace("{masked}", masked);
+
+test("/sensei key settings: how to get a key, masked display, reload persists, delete clears", async ({ page }) => {
+  fake = await fakeAnthropic(page);
+  await page.goto(SENSEI_URL);
+  await expect(page.getByRole("heading", { level: 1, name: S.panelTitle })).toBeVisible();
+  await expect(keyStatus(page)).toHaveText(S.keyNone);
+  const howto = page.getByTestId("sensei-key-howto");
+  await expect(howto).toBeVisible();
+  const consoleLink = howto.getByRole("link", { name: S.keyHowToLink });
+  await expect(consoleLink).toHaveAttribute("href", "https://console.anthropic.com/settings/keys");
+  await expect(consoleLink).toHaveAttribute("target", "_blank");
+  await expect(consoleLink).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(page.getByTestId("sensei-threads-empty")).toHaveText(S.threadsEmpty);
+  await expect(page.getByTestId("sensei-coming-soon")).toHaveText(S.comingSoon);
+  await expect(page.getByLabel(S.freeLabel)).toBeDisabled();
+  await expect(page.getByRole("button", { name: S.send })).toBeDisabled();
+
+  await page.getByLabel(S.keyLabel).fill(KEY);
+  await page.getByRole("button", { name: S.keySave }).click();
+  await expect(keyStatus(page)).toHaveText(savedAs("…wxyz"));
+  await expect(page.getByLabel(S.keyLabel)).toHaveValue("");
+  await expect(howto).toHaveCount(0);
+  expect(await page.getByTestId("sensei-key-settings").textContent()).not.toContain(KEY.slice(0, -4));
+
+  await page.reload();
+  await expect(keyStatus(page)).toHaveText(savedAs("…wxyz"));
+
+  await page.getByRole("button", { name: S.keyDelete }).click();
+  await expect(keyStatus(page)).toHaveText(S.keyNone);
+  await expect(page.getByTestId("sensei-key-howto")).toBeVisible();
+  expect(await page.evaluate((k) => localStorage.getItem(k), KEY_STORAGE)).toBeNull();
+
+  // a key shorter than 8 characters is shown as "…" only
+  await page.getByLabel(S.keyLabel).fill("abc12");
+  await page.getByRole("button", { name: S.keySave }).click();
+  await expect(keyStatus(page)).toHaveText(savedAs("…"));
+  expect(fake.requests).toEqual([]);
+});
+
+test("/sensei key settings: a refused storage write keeps the typed key and shows the notice", async ({ page }) => {
+  fake = await fakeAnthropic(page);
+  await page.addInitScript((k) => {
+    const set = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key: string, value: string) {
+      if (key === k) throw new DOMException("The quota has been exceeded.", "QuotaExceededError");
+      return set.call(this, key, value);
+    };
+  }, KEY_STORAGE);
+  await page.goto(SENSEI_URL);
+  await page.getByLabel(S.keyLabel).fill(KEY);
+  await page.getByRole("button", { name: S.keySave }).click();
+  await expect(page.getByTestId("sensei-key-save-failed")).toHaveText(S.keySaveFailed);
+  await expect(page.getByLabel(S.keyLabel)).toHaveValue(KEY);
+  await expect(keyStatus(page)).toHaveText(S.keyNone);
+});
+
+test("/sensei thread list: newest first, links back to the question, delete removes it", async ({ page }) => {
+  fake = await fakeAnthropic(page);
+  await presetKey(page);
+  await page.goto(SET_URL);
+  await openPanel(page, Q1, 1);
+  await ask(page, "問1 の質問");
+  await expect(log(page)).toContainText(REPLY_MARK);
+  await page.keyboard.press("Escape");
+  await openPanel(page, Q2, 0);
+  await ask(page, "問2 の質問");
+  await expect(log(page)).toContainText(REPLY_MARK);
+  await page.keyboard.press("Escape");
+
+  await page.goto(SENSEI_URL);
+  const rows = page.getByTestId("sensei-thread");
+  await expect(rows).toHaveCount(2);
+  const q2Href = "/ja/quiz?mode=exam&id=2011h23tokubetsu#2011h23tokubetsu-q058";
+  const q1Href = "/ja/quiz?mode=exam&id=2009h21a#2009h21a-q054";
+  await expect(rows.nth(0).getByRole("link")).toHaveAttribute("href", q2Href); // newest first
+  await expect(rows.nth(1).getByRole("link")).toHaveAttribute("href", q1Href);
+  for (const row of [rows.nth(0), rows.nth(1)]) {
+    await expect(row).toContainText(S.kind_question);
+    await expect(row.locator("time")).toHaveAttribute("datetime", /^\d{4}-\d{2}-\d{2}T/);
+  }
+
+  // the link lands on the question in its exam set
+  await rows.nth(1).getByRole("link").click();
+  await expect(page).toHaveURL(new RegExp(`${q1Href.replace(/[?#]/g, "\\$&")}$`));
+  await expect(card(page, Q1)).toBeInViewport();
+
+  await page.goto(SENSEI_URL);
+  await expect(rows).toHaveCount(2);
+  const title = (await rows.nth(0).getByRole("link").textContent()) ?? "";
+  await rows.nth(0).getByRole("button", { name: S.threadDeleteLabel.replace("{title}", title) }).click();
+  await expect(rows).toHaveCount(1);
+  await expect(rows.nth(0).getByRole("link")).toHaveAttribute("href", q1Href);
+  expect(await storedTexts(page, `${Q2}:ア`)).toBeNull();
+
+  await page.reload();
+  await expect(rows).toHaveCount(1);
+  await rows.nth(0).getByRole("button", { name: S.threadDelete }).click();
+  await expect(page.getByTestId("sensei-threads-empty")).toBeVisible();
+  expect(await storedTexts(page, `${Q1}:イ`)).toBeNull();
+  const index = await page.evaluate(() => localStorage.getItem("itp:sensei:index:v1"));
+  expect(JSON.parse(index ?? "null")).toEqual({ v: 1, threads: [] });
+  expect(fake.requests).toHaveLength(2);
+});
+
+for (const theme of ["gamified", "retro", "terminal"] as const) {
+  test(`nav (${theme} shell): the AI 先生 item links to /ja/sensei`, async ({ page }) => {
+    await page.addInitScript((t) => localStorage.setItem("itp:theme:v1", t), theme);
+    await page.goto("/ja/glossary");
+    const shell = page.locator(`[data-shell="${theme}"]`);
+    await expect(shell).toBeVisible();
+    // by href + text: Retro underlines the first character in its own span, so its
+    // accessible name reads "A I 先生" while the text content is the label
+    const items = shell.locator("nav a");
+    await expect(items).toHaveCount(4);
+    const item = items.nth(3);
+    await expect(item).toHaveAttribute("href", SENSEI_URL);
+    await expect(item).toHaveText(ja.Nav.sensei);
+    await item.click();
+    await expect(page).toHaveURL(new RegExp(`${SENSEI_URL}$`));
+    await expect(page.locator(`[data-shell="${theme}"] nav a[href="${SENSEI_URL}"]`)).toHaveAttribute("aria-current", "page");
+  });
+}
 
 // Owner sync is only reachable on a local server with OWNER_KEY (see learning-owner.spec.ts);
 // without E2E_OWNER_KEY this test is not registered, as playwright.config ignores that spec.

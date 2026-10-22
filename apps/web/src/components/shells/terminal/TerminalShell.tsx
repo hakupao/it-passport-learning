@@ -6,12 +6,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ThemeSwitcher } from "@/components/shells/ThemeSwitcher";
-
-const NAV_ITEMS = [
-  { href: "/textbook", key: "textbook" },
-  { href: "/quiz", key: "quiz" },
-  { href: "/glossary", key: "glossary" },
-] as const;
+import { NAV_ITEMS } from "@/components/shells/navItems";
 
 export function TerminalShell({ children }: { children: ReactNode }): React.ReactElement {
   const pathname = usePathname();

@@ -1,6 +1,8 @@
 // D-181 §0-6 / D-179 §4 — AI 先生 API key settings: input, where the key is
-// stored ("this browser only"), delete button. A saved key is shown only as its
-// last 4 characters and is never rendered back into the input.
+// stored ("this browser only"), delete button. A saved key is shown only as
+// "…" + its last 4 characters ("…" alone for a key shorter than 8) and is never
+// rendered back into the input. A refused save keeps the typed key in the input
+// and shows a notice.
 //
 // First render (server and client) shows no key, so there is no hydration
 // mismatch; the stored key is read after mount. `onChange(hasKey)` fires after
@@ -13,7 +15,7 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { clearSenseiKey, loadSenseiKey, saveSenseiKey } from "@/lib/sensei/keyStore";
+import { clearSenseiKey, loadSenseiKey, maskSenseiKey, saveSenseiKey } from "@/lib/sensei/keyStore";
 import type { StorageLike } from "@/lib/storage";
 
 /** window.localStorage, or null where reading the property itself throws (blocked storage). */
@@ -28,13 +30,14 @@ function browserStorage(): StorageLike | null {
 export function KeySettings({ onChange }: { onChange?: (hasKey: boolean) => void }): React.ReactElement {
   const t = useTranslations("Sensei");
   const inputId = useId();
-  const [last4, setLast4] = useState<string | null>(null);
+  const [masked, setMasked] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [saveFailed, setSaveFailed] = useState(false);
 
   function refresh(): void {
     const storage = browserStorage();
     const key = storage ? loadSenseiKey(storage) : null;
-    setLast4(key === null ? null : key.slice(-4));
+    setMasked(key === null ? null : maskSenseiKey(key));
     onChange?.(key !== null);
   }
 
@@ -42,17 +45,19 @@ export function KeySettings({ onChange }: { onChange?: (hasKey: boolean) => void
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(refresh, []);
 
-  function save(e: React.FormEvent): void {
+  function save(e: React.SyntheticEvent<HTMLFormElement>): void {
     e.preventDefault();
     const storage = browserStorage();
-    if (storage) saveSenseiKey(storage, draft);
-    setDraft("");
+    const saved = storage !== null && saveSenseiKey(storage, draft);
+    setSaveFailed(!saved);
+    if (saved) setDraft("");
     refresh();
   }
 
   function remove(): void {
     const storage = browserStorage();
     if (storage) clearSenseiKey(storage);
+    setSaveFailed(false);
     refresh();
   }
 
@@ -76,12 +81,17 @@ export function KeySettings({ onChange }: { onChange?: (hasKey: boolean) => void
           {t("keySave")}
         </Button>
       </form>
+      {saveFailed && (
+        <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800" data-testid="sensei-key-save-failed">
+          {t("keySaveFailed")}
+        </p>
+      )}
       <p className="text-sm text-muted-foreground">{t("keyStorageNote")}</p>
       <div className="flex items-center gap-2 text-sm">
         <span data-testid="sensei-key-status">
-          {last4 === null ? t("keyNone") : t("keySaved", { masked: `…${last4}` })}
+          {masked === null ? t("keyNone") : t("keySaved", { masked })}
         </span>
-        {last4 !== null && (
+        {masked !== null && (
           <Button type="button" variant="outline" size="sm" onClick={remove}>
             {t("keyDelete")}
           </Button>

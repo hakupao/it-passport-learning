@@ -8,7 +8,7 @@
 //
 // Needs a production build (`next build` + `next start`, or the deployed app):
 // next.config.ts only sets the header when NODE_ENV === "production".
-// Task A5 appends /sensei. No LLM call fires on these pages.
+// No LLM call fires on these pages (/sensei loads no AI SDK in Phase A).
 //
 // Base URL: prod canonical by default; `PLAYWRIGHT_BASE_URL` overrides it for a
 // local run (see playwright.config.ts).
@@ -25,6 +25,7 @@ const PAGES = [
   "/ja/quiz?mode=exam&id=2024r06",
   "/ja/glossary",
   `/ja/glossary/${termId("ISO/IEC 27000")}`,
+  "/ja/sensei",
 ];
 
 declare global {

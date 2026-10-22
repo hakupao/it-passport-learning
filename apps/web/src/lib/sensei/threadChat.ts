@@ -7,6 +7,9 @@
 // was in flight at that moment is aborted, but its onFinish still fires later
 // (and a chunk already queued may still be written): that one finish is
 // discarded, so the cleared thread is not recreated with the aborted reply.
+//
+// A turn that ends in an error is not saved (the stored thread keeps its earlier
+// turns); a stopped (aborted) turn is saved with what it has.
 
 import { Chat } from "@ai-sdk/react";
 import type { ChatTransport, UIMessage } from "ai";
@@ -34,13 +37,16 @@ export function createThreadChat(opts: {
   const chat: Chat<UIMessage> = new Chat<UIMessage>({
     id: threadIdFor(kind, anchorId),
     transport: opts.transport,
-    onFinish: ({ message, messages, finishReason }) => {
+    onFinish: ({ message, messages, finishReason, isError }) => {
       if (discardInFlight) {
         discardInFlight = false;
         // drop the aborted reply if a late chunk pushed it back into the list
         chat.messages = chat.messages.filter((m) => m.id !== message.id);
         return;
       }
+      // An errored turn (401 / 429 / network) is not persisted: the stored thread keeps
+      // its earlier turns and the question is re-sent from the input. Aborts still save.
+      if (isError) return;
       if (finishReason === "content-filter") opts.onRefusal(toSenseiError({ finishReason }));
       const storage = opts.getStorage();
       if (!storage || messages.length === 0) return;

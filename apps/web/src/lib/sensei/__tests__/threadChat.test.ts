@@ -196,6 +196,50 @@ describe("createThreadChat (one Chat per thread)", () => {
     ]);
   });
 
+  it("an errored turn is not persisted: a new thread stays unsaved, an existing one keeps its earlier turns", async () => {
+    const storage = memoryStorage();
+    const state = { fail: true };
+    const transport: ChatTransport<UIMessage> = {
+      sendMessages: async () =>
+        new ReadableStream<UIMessageChunk>({
+          start(c) {
+            c.enqueue({ type: "start" });
+            if (state.fail) {
+              c.enqueue({ type: "error", errorText: "invalid x-api-key" });
+            } else {
+              c.enqueue({ type: "text-start", id: "t" });
+              c.enqueue({ type: "text-delta", id: "t", delta: "回答" });
+              c.enqueue({ type: "text-end", id: "t" });
+              c.enqueue({ type: "finish", finishReason: "stop" });
+            }
+            c.close();
+          },
+        }),
+      reconnectToStream: async () => null,
+    };
+    const onSaved = vi.fn();
+    const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onRefusal: () => {}, onSaved });
+    const idA = threadIdFor(A.kind, A.anchorId);
+
+    // first turn fails: nothing is written (no index entry, no message key)
+    await chatA.sendMessage({ text: "失敗する質問" });
+    expect(chatA.status).toBe("error");
+    expect(listThreads(storage)).toEqual([]);
+    expect(storage.data.has(threadStorageKey(idA))).toBe(false);
+    expect(onSaved).not.toHaveBeenCalled();
+
+    // a successful turn is saved; a later failed turn leaves the stored turns as they were
+    state.fail = false;
+    chatA.messages = [];
+    await chatA.sendMessage({ text: "成功する質問" });
+    expect(texts(loadThreadMessages(storage, idA))).toEqual(["user:成功する質問", "assistant:回答"]);
+    state.fail = true;
+    await chatA.sendMessage({ text: "二度目の失敗" });
+    expect(chatA.status).toBe("error");
+    expect(texts(loadThreadMessages(storage, idA))).toEqual(["user:成功する質問", "assistant:回答"]);
+    expect(onSaved).toHaveBeenCalledTimes(1);
+  });
+
   it("reports a refused save through onSaved(false)", async () => {
     const storage = memoryStorage();
     storage.setItem = () => {

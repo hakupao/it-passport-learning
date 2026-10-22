@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { StorageLike } from "@/lib/storage";
 
-import { clearSenseiKey, loadSenseiKey, saveSenseiKey, SENSEI_KEY_STORAGE } from "../keyStore";
+import { clearSenseiKey, loadSenseiKey, maskSenseiKey, saveSenseiKey, SENSEI_KEY_STORAGE } from "../keyStore";
 
 function memoryStorage(): StorageLike & { data: Map<string, string> } {
   const data = new Map<string, string>();
@@ -35,7 +35,7 @@ describe("keyStore", () => {
 
   it("reads back a saved key, stored in the §0-6 envelope", () => {
     const s = memoryStorage();
-    saveSenseiKey(s, KEY);
+    expect(saveSenseiKey(s, KEY)).toBe(true);
     expect(loadSenseiKey(s)).toBe(KEY);
     const stored = JSON.parse(s.data.get("itp:sensei:key:v1") ?? "null");
     expect(stored.provider).toBe("anthropic");
@@ -78,8 +78,8 @@ describe("keyStore", () => {
 
   it("does not save an empty or whitespace-only key", () => {
     const s = memoryStorage();
-    saveSenseiKey(s, "");
-    saveSenseiKey(s, "   \n\t");
+    expect(saveSenseiKey(s, "")).toBe(false);
+    expect(saveSenseiKey(s, "   \n\t")).toBe(false);
     expect(s.data.size).toBe(0);
     expect(loadSenseiKey(s)).toBeNull();
   });
@@ -94,6 +94,24 @@ describe("keyStore", () => {
   it("never throws when the storage throws; load returns null", () => {
     expect(loadSenseiKey(throwingStorage)).toBeNull();
     expect(() => saveSenseiKey(throwingStorage, KEY)).not.toThrow();
+    expect(saveSenseiKey(throwingStorage, KEY)).toBe(false);
     expect(() => clearSenseiKey(throwingStorage)).not.toThrow();
+  });
+
+  it("a refused write (quota) returns false and leaves the previous key in place", () => {
+    const s = memoryStorage();
+    saveSenseiKey(s, KEY);
+    s.setItem = () => {
+      throw new Error("QuotaExceededError");
+    };
+    expect(saveSenseiKey(s, "sk-ant-api03-other-9999")).toBe(false);
+    expect(loadSenseiKey(s)).toBe(KEY);
+  });
+
+  it("masks a key as … + its last 4 characters; a key shorter than 8 as … only", () => {
+    expect(maskSenseiKey(KEY)).toBe("…abcd");
+    expect(maskSenseiKey("12345678")).toBe("…5678");
+    expect(maskSenseiKey("1234567")).toBe("…");
+    expect(maskSenseiKey("abc")).toBe("…");
   });
 });
