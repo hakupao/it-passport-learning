@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import { loadBaseQuestions } from "../../quiz/quizReader";
 import { loadAllUnits, loadReaderIndex } from "../../textbook/reader";
 import { matchTerms } from "../../sensei/termMatch";
+import { CASE_SENSITIVE_HEADWORDS, STOPLIST_HEADWORDS } from "../../sensei/termMatchWords";
 import { buildListGroups, buildTermIndex } from "../dictionary";
 import { loadDictionary } from "../dictionaryReader";
 import { termId } from "../termId";
@@ -94,5 +95,62 @@ describe("glossary dictionary on the real corpus", () => {
     for (const h of ["OR", "ITS", "ETC"]) expect(idx.some((row) => row[0] === h)).toBe(true);
     expect(matchTerms("this or that, its, etc.", idx)).toEqual([]);
     expect(matchTerms("こんにちは", idx)).toEqual([]);
+  });
+
+  // Phase C fix wave (M1 plurals + I1 stoplist / cap ranking + I2 case-sensitive words):
+  // the whole-branch review probes, on the real index.
+  it("every stoplisted / case-sensitive word is a headword of the corpus, spelled as there", async () => {
+    const idx = buildTermIndex(await loadDictionary());
+    const heads = new Set(idx.flat().map((h) => h.normalize("NFKC").trim()));
+    const fold = (h: string) => h.replace(/[A-Z]/g, (c) => c.toLowerCase());
+    const folded = new Set([...heads].map(fold));
+    for (const w of STOPLIST_HEADWORDS) {
+      expect(heads.has(w), w).toBe(true);
+      expect(/^[\x21-\x7e]+$/.test(w) && /[a-z]/.test(w), `${w}: one ASCII word, not all caps`).toBe(true);
+    }
+    for (const w of CASE_SENSITIVE_HEADWORDS) {
+      expect(heads.has(w), w).toBe(true);
+      expect(/^[A-Z]{4,}$/.test(w), `${w}: all caps, 4+ letters`).toBe(true);
+    }
+    expect(new Set(STOPLIST_HEADWORDS.map(fold)).size).toBe(STOPLIST_HEADWORDS.length);
+    expect(folded.has("value") && folded.has("cost")).toBe(true);
+  });
+
+  it("probe: English stopwords no longer fill the 8 cap (router, switch and LAN stay)", async () => {
+    const idx = buildTermIndex(await loadDictionary());
+    const q =
+      "What is the difference between a router and a switch, what about the cost, the value, the scope, the edge, the node, and the frame, and the LAN?";
+    expect(matchTerms(q, idx)).toEqual([termId("ルーター"), termId("スイッチ"), termId("LAN")]);
+  });
+
+  it("probe: \"in this case\" is not CASE; value / cost in prose are not terms", async () => {
+    const idx = buildTermIndex(await loadDictionary());
+    expect(idx.some((row) => row[0] === "CASE")).toBe(true);
+    expect(matchTerms("What is the value of a project and how do I estimate its cost in this case?", idx)).toEqual([]);
+    expect(matchTerms("CASE ツールとは", idx)).toEqual([termId("CASE")]);
+  });
+
+  it("probe: English plurals (databases, APIs, LANs)", async () => {
+    const idx = buildTermIndex(await loadDictionary());
+    expect(matchTerms("What are databases and networks?", idx)).toEqual([termId("データベース")]);
+    // the corpus has no standalone network headword (only Network Interface Card / Network layer)
+    expect(idx.some((row) => row.some((h) => /^network$/i.test(h)))).toBe(false);
+    expect(matchTerms("Explain APIs and LANs", idx)).toEqual([termId("API"), termId("LAN")]);
+    expect(matchTerms("explain apis and lans", idx)).toEqual([]);
+  });
+
+  it("probe: a sentence of stopwords matches nothing", async () => {
+    const idx = buildTermIndex(await loadDictionary());
+    expect(matchTerms("what mode should I record each field in the table", idx)).toEqual([]);
+    // the same words next to Japanese text, or in all caps, still match
+    expect(matchTerms("Tableとは", idx)).toEqual([termId("テーブル")]);
+  });
+
+  it("probe: over the cap, a ≥ 3-character term outranks 2-character words (入力 / 出力 / 更新 …)", async () => {
+    const idx = buildTermIndex(await loadDictionary());
+    expect(matchTerms("入力と出力と更新の違いは？", idx)).toEqual([termId("入力"), termId("出力"), termId("更新")]);
+    expect(matchTerms("入力と出力と更新と挿入と結合と選択と射影と加算と減算、そしてデータベース", idx)).toEqual(
+      ["入力", "出力", "更新", "挿入", "結合", "選択", "射影", "データベース"].map(termId),
+    );
   });
 });
