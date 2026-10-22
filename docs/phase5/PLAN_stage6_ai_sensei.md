@@ -37,7 +37,7 @@
 ## §0 设计决定（批准时锁为 D-181）
 
 1. **只接 Anthropic，模型 `claude-sonnet-5-5`**（用户选 Sonnet）。DeepSeek 在 v1 不接（它的有效 key 流式未验证，用户也不用），D-179 决定 4 中的「DeepSeek / Anthropic」相应缩为 Anthropic。将来要接时另开 D。调用：`createAnthropic({ apiKey, headers: { "anthropic-dangerous-direct-browser-access": "true" } })("claude-sonnet-5-5")`。Sonnet 5.5 不能关 thinking，所以不传 `thinking`，用 `providerOptions.anthropic.effort` 控制：平时 `"low"`，`shouldEscalate()` 为真时 `"high"`（沿用 `escalation.ts`，旧版是换 Opus，现在只提 effort）。`maxOutputTokens: 4000`（thinking 也算在输出里，spike 中 haiku 就有 43 token thinking；篇幅靠 prompt 控制，不靠截断）。`maxRetries: 1`。
-2. **费用估算**（Sonnet 5.5：输入 $2 / 输出 $10 / 缓存读 $0.20 / 5 分钟缓存写 $2.5，每百万 token）：一次「なぜ」首轮 ≈ 系统指示 1.5k + 题目锚点 3k token 写缓存 ≈ $0.011，输出 ≈ 600 token ≈ $0.006，合计约 **2 美分**；同一题追问约 **1 美分**（缓存读 ≈ $0.001）。一天问 30 轮 ≈ $0.3。Task A1 用真实 Sonnet 校正这组数字。
+2. **费用估算**（Sonnet 5.5：输入 $2 / 输出 $10 / 缓存读 $0.20 / 5 分钟缓存写 $2.5，每百万 token）：一次「なぜ」首轮 ≈ 系统指示 1.5k + 题目锚点 3k token 写缓存 ≈ $0.011，输出 ≈ 600 token ≈ $0.006，合计约 **2 美分**；同一题追问约 **1 美分**（缓存读 ≈ $0.001）。一天问 30 轮 ≈ $0.3。**Task A1 实测修正**（spike §3）：题目锚点实为 ≈1.6k token，费用以输出为主，首轮 ≈ $0.005〜0.009（缓存冷时较高）、追问 ≈ $0.006；首字 2.3〜4.2 s，UI 必须显示生成中状态。
 3. **入口顺序**（用户交给 Claude 定）：按「数据是否已经在浏览器里」排。
    - Phase A：**quiz 题目的「なぜ」**。题干、选项、`correct_answer`、三语解说、`termCards` 已经是客户端 props，不需要新的数据通路，价值最高。
    - Phase B：**主动复习**。quiz 首页根据学习记录给出薄弱 topic，点进去后 AI 先生先开口。
