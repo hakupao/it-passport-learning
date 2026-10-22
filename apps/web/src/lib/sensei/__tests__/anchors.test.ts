@@ -229,14 +229,16 @@ describe("reviewAnchor", () => {
     expect(a).toContain("2〜3 問");
   });
 
-  it("caps wrong questions at the 10 newest and unanswered ids at the first 10", () => {
+  it("caps wrong questions at the 5 newest and unanswered ids at the first 10", () => {
     const many = Array.from({ length: 25 }, (_, i) => tq(i + 1, "ア"));
     const results: Record<string, { choice: string; correct: boolean; at: number }> = {};
     for (let i = 0; i < 12; i++) results[many[i]!.id] = { choice: "イ", correct: false, at: 1000 + i };
     const a = reviewAnchor(many, record(results), "ja", {}, "T");
     const wrongPart = a.slice(a.indexOf("## 間違えた過去問"), a.indexOf("## まだ解いていない過去問"));
     const wrongIds = [...wrongPart.matchAll(/### 問題 ID: #(\S+)/g)].map((m) => m[1]);
-    expect(wrongIds).toEqual(many.slice(2, 12).map((x) => x.id).reverse()); // q012 … q003
+    expect(wrongIds).toEqual(many.slice(7, 12).map((x) => x.id).reverse()); // q012 … q008, newest first
+    expect(wrongPart).toContain("最大 5 問");
+    for (const old of many.slice(0, 7)) expect(a).not.toContain(`#${old.id}`); // older wrong ones are dropped
     const restPart = a.slice(a.indexOf("## まだ解いていない過去問"));
     const restIds = [...restPart.matchAll(/^- #(\S+)（/gm)].map((m) => m[1]);
     expect(restIds).toEqual(many.slice(12, 22).map((x) => x.id)); // q013 … q022

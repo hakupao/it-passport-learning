@@ -107,7 +107,7 @@ export function questionAnchor(
 
 // ── Phase B: topic review ────────────────────────────────────────────────────
 
-export const REVIEW_MAX_WRONG = 10;
+export const REVIEW_MAX_WRONG = 5;
 export const REVIEW_MAX_UNANSWERED = 10;
 
 const REVIEW_TASK = [
@@ -155,7 +155,7 @@ function wrongQuestionLines(q: QuizQuestion, choice: string, locale: AppLocale):
 
 /**
  * The topic-review anchor: the learner's wrong answers in this topic (re-judged
- * against the current correct_answer, the 10 most recent), each with its
+ * against the current correct_answer, the REVIEW_MAX_WRONG = 5 most recent), each with its
  * explanation, the related term definitions, and the first 10 not-yet-answered
  * question ids (the only other ids the AI may recommend). `questions` are the
  * topic's questions in set order; `topicLabel` names the topic.
