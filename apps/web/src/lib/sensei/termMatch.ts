@@ -26,11 +26,11 @@
 //     is a lowercase "s" only ("APIs", "LANs"; not "apis", "APIS"). Other ASCII
 //     headwords are case-insensitive.
 //   - A stoplisted headword (termMatchWords STOPLIST_HEADWORDS: single ordinary English
-//     words such as Value, Cost, Mode, Table) always counts when the matched text is in
+//     words such as Value, Cost, Mode, List) always counts when the matched text is in
 //     all caps or touches Japanese / Chinese text on either side, directly or across one
 //     ASCII space (「Valueとは」, "Value とは"). Written otherwise (English prose) it
 //     counts only when no headword that is not stoplisted matched at all
-//     ("what is an index?" → Index; "the value of a router" → Router only).
+//     ("what is the mode?" → Mode; "the value of a router" → Router only).
 //   - Ids come back each once, in order of first appearance. When more than `limit`
 //     terms match, the most specific are kept: class 1 = all-caps / ≤ 3-character
 //     acronyms, multi-word headwords and non-ASCII headwords of ≥ 3 characters; class

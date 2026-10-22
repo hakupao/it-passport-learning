@@ -120,7 +120,29 @@ describe("glossary dictionary on the real corpus", () => {
     const idx = buildTermIndex(await loadDictionary());
     const q =
       "What is the difference between a router and a switch, what about the cost, the value, the scope, the edge, the node, and the frame, and the LAN?";
-    expect(matchTerms(q, idx)).toEqual([termId("ルーター"), termId("スイッチ"), termId("LAN")]);
+    // node (ノード, graph theory) is not stoplisted; cost / value / scope / edge / frame are
+    expect(matchTerms(q, idx)).toEqual(["ルーター", "スイッチ", "ノード", "LAN"].map(termId));
+  });
+
+  // S131 follow-up: the relational-database / data-structure / graph words left the
+  // stoplist (termMatchWords header), so they hold next to another term in English prose.
+  it("probe: database and graph words count next to another term in English prose", async () => {
+    const idx = buildTermIndex(await loadDictionary());
+    // 選択 is one entry (two senses: control structure, relational operation)
+    expect(matchTerms("selection and projection in a relational database", idx)).toEqual(
+      ["選択", "射影", "データベース"].map(termId),
+    );
+    expect(matchTerms("an index in a database", idx)).toEqual(["インデックス", "データベース"].map(termId));
+    expect(matchTerms("a table and a record in a relational database", idx)).toEqual(
+      ["テーブル", "レコード", "データベース"].map(termId),
+    );
+    expect(matchTerms("a node in a blockchain", idx)).toEqual(["ノード", "ブロックチェーン"].map(termId));
+    expect(matchTerms("join, insert and field in a database", idx)).toEqual(
+      ["結合", "挿入", "フィールド", "データベース"].map(termId),
+    );
+    // still stoplisted (another IT sense in exam questions): update (software update), edge (IoT edge)
+    expect(matchTerms("how do I update the router?", idx)).toEqual([termId("ルーター")]);
+    expect(matchTerms("edge devices and a router", idx)).toEqual([termId("ルーター")]);
   });
 
   it("probe: \"in this case\" is not CASE (value / cost: the stoplist fallback, nothing else matched)", async () => {
@@ -142,15 +164,20 @@ describe("glossary dictionary on the real corpus", () => {
     expect(matchTerms("explain apis and lans", idx)).toEqual([]);
   });
 
-  it("probe: stopwords do not dominate; alone, they are the fallback", async () => {
+  it("probe: stopwords do not dominate; alone, they are the fallback (database words always hold)", async () => {
     const idx = buildTermIndex(await loadDictionary());
-    expect(matchTerms("what mode should I record each field in the table of a database", idx)).toEqual([
-      termId("データベース"),
-    ]);
-    // nothing else matched: the stoplisted words are the terms (Mode is two entries)
-    expect(matchTerms("what mode should I record each field in the table", idx)).toEqual(
-      ["最頻値", "モード", "レコード", "フィールド", "テーブル"].map(termId),
+    // record / field / table are not stoplisted (database words): only mode drops out
+    expect(matchTerms("what mode should I record each field in the table of a database", idx)).toEqual(
+      ["レコード", "フィールド", "テーブル", "データベース"].map(termId),
     );
+    expect(matchTerms("what mode should I record each field in the table", idx)).toEqual(
+      ["レコード", "フィールド", "テーブル"].map(termId),
+    );
+    // nothing else matched: the stoplisted words are the terms (Mode is two entries)
+    expect(matchTerms("what mode should I use for the value and the cost", idx)).toEqual(
+      ["最頻値", "モード", "バリュー", "原価"].map(termId),
+    );
+    // Index is not stoplisted; Value is (the router wins)
     expect(matchTerms("what is an index?", idx)).toEqual([termId("インデックス")]);
     expect(matchTerms("what is the value of a router?", idx)).toEqual([termId("ルーター")]);
     // next to Japanese text (also across one ASCII space), or in all caps, they always match

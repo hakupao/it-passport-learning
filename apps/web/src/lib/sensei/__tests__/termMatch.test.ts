@@ -196,6 +196,10 @@ describe("matchTerms", () => {
     expect(matchTerms("what are costs?", INDEX)).toEqual(ids("t26"));
     expect(matchTerms("COSTs", INDEX)).toEqual(ids("t26"));
     expect(matchTerms("valued, costly", INDEX)).toEqual([]);
+    // relational-operation words are not stoplisted: they hold next to another term
+    expect(matchTerms("selection, projection and join in a database", INDEX)).toEqual(ids("t37", "t38", "t36", "t23"));
+    // update stays stoplisted
+    expect(matchTerms("update a database", INDEX)).toEqual(ids("t23"));
   });
 
   it("a stoplisted headword in all caps or next to Japanese / Chinese text (one ASCII space allowed) always counts", () => {

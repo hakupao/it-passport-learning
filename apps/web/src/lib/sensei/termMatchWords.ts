@@ -5,7 +5,7 @@
 // STOPLIST_HEADWORDS — derived (S131, Phase C fix wave) from the real light index:
 // every single-word ASCII headword (no space) that is not all caps (331 words), of
 // which those kept here are ordinary English words likely to turn up in a question
-// without being its subject ("the value of", "what does X mean", "in the table",
+// without being its subject ("the value of", "what does X mean", "a list of",
 // "a bit"). Left out on purpose: IT / exam domain terms even when they are also
 // English words (Router, Firewall, Database, Server, Switch, Queue, Stack, Backup,
 // Password, Integrity, Availability, Compliance, Median, Variance, Probability, …),
@@ -13,6 +13,20 @@
 // A stoplisted headword always matches in all caps or next to Japanese / Chinese text
 // (「Valueとは」, also across one space); in English prose it matches only when no other
 // headword did, so it never crowds real terms out of the anchor.
+//
+// S131 follow-up (84 → 75 words): taken off, because every sense is a database / graph term
+// and that is what the bare English word most likely means in an IT-exam question —
+// Table, Record, Field (テーブル / レコード / フィールド, technology-21-55-u01 データ構造の
+// 基本単位), Index (インデックス, technology-21-55-u02 E-R図・キー設計), Insert, Join,
+// Projection (挿入 / 結合 / 射影, technology-21-56-u01 関係演算), Selection (選択: two
+// senses, technology-14-37-u01 制御構造 and technology-21-56-u01 関係演算), Node (ノード,
+// technology-13-34-u06 グラフ理論). Kept on purpose, though their only sense is in such a
+// unit: Update (更新 = the SQL operation, but "update" in a question is mostly a software /
+// OS update), Edge (辺 = graph edge, but "edge" is mostly the IoT edge; Edge computing is
+// its own headword), File (ファイル = a set of records, but "file" is mostly any computer
+// file), List / Set / Sequence / Iteration / Function / Procedure / Expression /
+// Assignment / Operator / Argument / Comment (data-structure / programming / set units, but
+// mostly generic English: "a list of", "a set of", agile iterations, "the function of").
 //
 // CASE_SENSITIVE_HEADWORDS — the all-caps headwords of 4+ characters that are also
 // common English words (from the 222 all-caps single-word headwords): they match only
@@ -45,7 +59,6 @@ export const STOPLIST_HEADWORDS: readonly string[] = [
   "Estimation",
   "Expression",
   "Feature",
-  "Field",
   "File",
   "Filtering",
   "Follow-up",
@@ -53,13 +66,10 @@ export const STOPLIST_HEADWORDS: readonly string[] = [
   "Function",
   "Game",
   "Icon",
-  "Index",
   "Innovation",
   "Input",
-  "Insert",
   "Interview",
   "Iteration",
-  "Join",
   "Keyboard",
   "Library",
   "List",
@@ -69,7 +79,6 @@ export const STOPLIST_HEADWORDS: readonly string[] = [
   "Modeling",
   "Monitoring",
   "Mouse",
-  "Node",
   "Operator",
   "Opportunity",
   "Optimization",
@@ -80,11 +89,9 @@ export const STOPLIST_HEADWORDS: readonly string[] = [
   "Printer",
   "Procedure",
   "Profit",
-  "Projection",
   "Proximity",
   "Ranking",
   "Recommendation",
-  "Record",
   "Repetition",
   "Retention",
   "Robot",
@@ -92,13 +99,11 @@ export const STOPLIST_HEADWORDS: readonly string[] = [
   "Sampling",
   "Schedule",
   "Scope",
-  "Selection",
   "Sequence",
   "Service",
   "Set",
   "Simulation",
   "Smartphone",
-  "Table",
   "Tap",
   "Transfer",
   "Update",
