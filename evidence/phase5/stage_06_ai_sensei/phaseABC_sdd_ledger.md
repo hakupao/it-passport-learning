@@ -100,3 +100,40 @@ Parked M1–M5 included. Final fix wave dispatched (fresh executor).
 Phase B fix wave: 45ab5af (I1), ce69ea7 (m4), 67b2ba8 (m1–m3, M1–M5); unit 533, local e2e 53/53. Ruling: accept (a) quota path also evicts review first, (b) thread= removed from URL, (c) zh 同一领域, (e) unparseable exam ids last. Scoped re-review dispatched (95fd865..67b2ba8).
 Phase B re-review: All addressed (13/13). New Minors accepted: intro now appears after load (extra ~2-line layout shift on the landing card); `thread=` accepts future dates (opens an empty thread; no send, no security impact). OOS: review-first eviction may evict a live review thread when another tab creates question threads at the cap (save then shows the failure notice) — accepted, revisit if seen.
 Phase B code complete (HEAD 67b2ba8).
+
+## Phase C (branch stage6-sensei-c from main 47f2079) — user go-ahead「继续」 after the D-176 pre-report
+Pre-flight scan:
+| pair / task | finding | ruling |
+|---|---|---|
+| C1 term/unit pages | server components; need a client island + a panel host on those pages; AI SDK only via useSensei (zodJitless first), lazily loaded | Ruling: reuse AskSensei/SenseiHost pattern from QuizSet (next/dynamic ssr:false); glossary list page untouched and must stay static |
+| C1 anchor size | unit JSON ~28 KB trilingual | Ruling: unitAnchor = unit title + summary + each term's definition / explanation / memory hook (JP + UI locale; no analogy, no inline quiz); measure tokens for the largest unit in the report |
+| C1 thread identity | kinds term/unit | Ruling: anchorId = termId / unitId; /sensei rows link back to `/[locale]/glossary/<termId>` and `/[locale]/textbook/<unitId>` |
+| C2 index delivery | §0-9 light index (id + 3 headwords, 1395) to the browser | Ruling: built server-side at build/prerender into the `/sensei` page props (page stays static; no new fs route for the index); measure payload size |
+| C2 `/api/sensei/terms` | the one new fs route | Ruling: GET, ≤8 ids, invalid ids skipped (isValidTermId), returns TermCard shape, no owner gate, no LLM; nft IPA gate must stay 0 |
+| C2 thread identity / reopen | each free question = new thread | Ruling: anchorId `free:<epoch-ms base36>`; anchor fixed from the FIRST question of the thread; reopening a free thread on /sensei re-derives the anchor from its stored first user message (deterministic); free threads open in place on /sensei, other kinds keep linking back |
+| C2 no-match | anchor says 「該当する教材の項目なし」 | Ruling: the general-knowledge allowance + disclaimer lives in the anchor block, system instruction unchanged |
+| C2 /sensei loads AI SDK now | must keep zodJitless-first + lazy | Ruling: panel loaded via next/dynamic on first focus/send; csp.spec must exercise a send on /sensei with the fake |
+| C3 | gates, Rule D, push, prod e2e, real-key check, RETROSPECTIVE (Rule C) | RETRO written by main context after Phase C ships |
+Task C1: dispatched (BASE 47f2079).
+Task C1: implementer DONE_WITH_CONCERNS 7aca87c (local e2e 48/48; largest unit anchor ≈2.8k ja / 4.9k en tokens). Ruling: accept textbookAnchors.ts server-only file (anchors.ts is in the quiz client bundle; reader pick imports node:fs); no exam ids in term anchor; +11 kB first-load JS; titles as built. Task review dispatched.
+Task C1: review Approved (0 C / 0 I / 2 Minor cosmetic). Task C1: complete (7aca87c). Task C2: dispatched (BASE 7aca87c).
+Task C2: implementer DONE_WITH_CONCERNS 79d1580 (local e2e 58/58; index +133 KB raw / ~54 KB gzip per locale RSC).
+Ruling: multi-sense — index carries all senses' zh/en headwords; /api/sensei/terms returns a sensei context shape with all senses (amends §0-9 "TermCard shape"), locale param — why: grounding must not silently drop senses (22 headwords) — cost: one new response type.
+Ruling: free anchor in zh/en includes the JP original definition (Global Constraint).
+Ruling: drop ids from the index, derive with isomorphic termId() from the JP headword, corpus-wide equality test — saves ~11 KB gzip.
+Ruling: accept edit-after-failure / clear-then-ask anchor drift (cache miss only) and csp.spec prod-after-deploy.
+C2 rulings follow-up dispatched (resume implementer).
+Task C2: follow-up 45decb4 (all senses, JP original, ids derived; index 74 KB raw / ~32 KB gzip). Task review dispatched (7aca87c..45decb4).
+Task C2: review Approved (0 C / 0 I / 6 Minor). Task C2: complete (79d1580, 45decb4).
+Ruling: park for the Phase C fix wave — M1 English plurals (allow trailing s/es on ASCII headwords; ≤3-char acronyms only lowercase s) — fix before ship since the matching rule shapes reopened anchors; M2 textarea readOnly + aria-busy while terms load; M3 reopen with no first user message → failure notice, don't open; M5 filter empty id segments before the 8 cap; M6 aria-describedby for the disabled-send reason. M4 (refresh before abort-save on close) accepted (same class as A→B→A).
+Task C3: main-context gates + Phase C whole-branch Rule D (47f2079..45decb4).
+Task C3: main-context gates PASS (tsc 0 / lint 0 / vitest 593 / build 0 / nft 0 / glossary + sensei ● ×3, terms route ƒ).
+Phase C Rule D (pr-review-toolkit:code-reviewer, verified on a real build incl. IPA sentinel dirs): With fixes — I1 ordinary English headwords fill the 8 cap and push out real terms (LAN dropped), I2 CASE matches "in this case"; m1 stale /sensei copy, m2 eviction hurts review users, m3 free anchor definitions only. IPA/key/CSP/render modes/determinism hold.
+Ruling: one matching-rule change for M1+I1+I2 before ship — stoplist of ordinary English single-word headwords (match only all-caps or CJK-adjacent) + explicit case-sensitive list (CASE, LATCH, PERT, …) + cap ranking by specificity class then first appearance, emitted in appearance order; probes pinned — why: matching rule shapes reopened free-thread anchors, so change it only once, before ship — cost: some recall for stoplisted words in prose.
+Ruling: m2 eviction order free → review → any. m3 free anchor adds explanation + memory hook when ≤3 terms. Route Cache-Control public s-maxage=86400 (data changes only on deploy). Parked C2 M2/M3(+storage null)/M5/M6 included.
+Final fix wave dispatched (fresh executor).
+Phase C fix wave: 3afc7cc (matching rule: plurals, 84-word stoplist + cap ranking, 8 case-sensitive words), 22279df (eviction free→review→any, free anchor + explanation/hook when ≤3, Cache-Control, M5), 22fb113 (copy, M2/M3/M6). unit 614, local e2e 60/60.
+Ruling (same wave, before re-review): stoplisted words match only when no non-stoplisted term matched (recall for "what is an index?"); CJK adjacency across one ASCII space; dedicated notice for an unreopenable free thread — cost: small. Accepted: no standalone "network" headword; IPv6/SaaS/NoSQL class 2; edge-cache scoping to be checked on prod.
+Phase C fix wave follow-up: d5e0b88 (stoplist fallback, CJK-adjacent across one space), 1ee8736 (threadMissing notice). unit 616, local e2e 60/60. Scoped re-review dispatched (45decb4..1ee8736).
+Phase C re-review: All addressed. Known limitation (accepted, follow-up candidate): relational-DB / graph headwords in the stoplist (Selection, Projection, Join, Table, Record, Field, Index, Insert, Update, Node, Edge) give no grounding in English prose when another term also matches (fallback covers them when alone; JP/zh/all-caps forms match). Vercel CDN cache keys include the deployment URL → no cross-deploy staleness; errors never cached.
+Phase C code complete (HEAD 1ee8736).
