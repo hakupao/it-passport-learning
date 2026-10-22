@@ -18,7 +18,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { questionThreadHref } from "@/lib/sensei/threadLinks";
-import { deleteThread, listThreads, type ThreadMeta } from "@/lib/sensei/threadStore";
+import { deleteThread, listThreads, MAX_THREADS, type ThreadMeta } from "@/lib/sensei/threadStore";
 import type { StorageLike } from "@/lib/storage";
 
 import { KeySettings } from "./KeySettings";
@@ -83,7 +83,7 @@ export function SenseiHome(): React.ReactElement {
         <h2 id="sensei-threads-title" className="text-base font-semibold">
           {t("threadsTitle")}
         </h2>
-        <p className="text-xs opacity-70">{t("threadsNote")}</p>
+        <p className="text-xs opacity-70">{t("threadsNote", { max: MAX_THREADS })}</p>
         {threads !== null && threads.length === 0 && (
           <p className="text-sm opacity-70" data-testid="sensei-threads-empty">
             {t("threadsEmpty")}

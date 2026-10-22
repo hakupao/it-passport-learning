@@ -20,9 +20,10 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
       {/* Sticky header */}
       <header className="sticky top-0 z-30 bg-[#2d2d2d] border-b border-[#444]">
         <div className="mx-auto max-w-5xl flex items-center justify-between gap-2 px-3 sm:px-4 h-12 sm:h-10">
-          {/* Left: macOS traffic lights */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-1.5">
+          {/* Left: macOS traffic lights (from sm) + tab bar. min-w-0 lets the tabs
+              scroll inside the header on a phone instead of pushing the switchers off-screen. */}
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="hidden sm:flex items-center gap-1.5">
               <span
                 className="w-3 h-3 rounded-full bg-[#ff5f56] inline-block"
                 aria-hidden="true"
@@ -37,7 +38,7 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
               />
             </div>
             {/* Tab bar */}
-            <nav className="flex items-center gap-0 ml-3">
+            <nav className="flex items-center gap-0 sm:ml-3 min-w-0 overflow-x-auto scrollbar-hide">
               {NAV_ITEMS.map((item) => {
                 const isActive =
                   pathname === item.href ||

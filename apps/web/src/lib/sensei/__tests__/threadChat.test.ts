@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { StorageLike } from "@/lib/storage";
 
-import { createThreadChat, dropFailedTurn } from "../threadChat";
+import { createThreadChat, dropFailedTurn, isEmptyLengthCutoff } from "../threadChat";
 import { listThreads, loadThreadMessages, threadIdFor, threadStorageKey } from "../threadStore";
 
 function memoryStorage(): StorageLike & { data: Map<string, string> } {
@@ -76,21 +76,21 @@ function texts(messages: UIMessage[]): string[] {
   return messages.flatMap((m) => m.parts.flatMap((p) => (p.type === "text" ? [`${m.role}:${p.text}`] : [])));
 }
 
-const A = { kind: "question" as const, anchorId: "qA:イ", getTitle: () => "問A" };
-const B = { kind: "question" as const, anchorId: "qB:reveal", getTitle: () => "問B" };
+const A = { kind: "question" as const, anchorId: "qA:イ", title: "問A" };
+const B = { kind: "question" as const, anchorId: "qB:reveal", title: "問B" };
 
 describe("createThreadChat (one Chat per thread)", () => {
   it("a response that finishes after an anchor switch is saved only into its own thread", async () => {
     const storage = memoryStorage();
     const a = heldTransport("A の回答");
-    const onRefusal = vi.fn();
-    const chatA = createThreadChat({ ...A, transport: a.transport, getStorage: () => storage, onRefusal });
+    const onUnanswered = vi.fn();
+    const chatA = createThreadChat({ ...A, transport: a.transport, getStorage: () => storage, onUnanswered });
     const sendingA = chatA.sendMessage({ text: "A の質問" });
     await until(() => chatA.status === "streaming");
 
     // the learner switches to anchor B while A is still streaming
     const b = heldTransport("B の回答");
-    const chatB = createThreadChat({ ...B, transport: b.transport, getStorage: () => storage, onRefusal });
+    const chatB = createThreadChat({ ...B, transport: b.transport, getStorage: () => storage, onUnanswered });
     const sendingB = chatB.sendMessage({ text: "B の質問" });
     await until(() => chatB.status === "streaming");
     b.state.finish();
@@ -106,17 +106,30 @@ describe("createThreadChat (one Chat per thread)", () => {
       "user:B の質問",
       "assistant:B の回答",
     ]);
-    expect(onRefusal).not.toHaveBeenCalled();
+    expect(onUnanswered).not.toHaveBeenCalled();
+  });
+
+  it("a reply aborted by an anchor switch keeps its own thread's title (I1)", async () => {
+    // as the hook does on a switch: B's chat is created with B's title, then A is stopped
+    const storage = memoryStorage();
+    const a = heldTransport("A の途中");
+    const chatA = createThreadChat({ ...A, transport: a.transport, getStorage: () => storage, onUnanswered: () => {} });
+    const sendingA = chatA.sendMessage({ text: "A の質問" });
+    await until(() => chatA.status === "streaming");
+    createThreadChat({ ...B, transport: heldTransport("B").transport, getStorage: () => storage, onUnanswered: () => {} });
+    await chatA.stop();
+    await sendingA;
+    expect(listThreads(storage).map((t) => [t.anchorId, t.title])).toEqual([[A.anchorId, "問A"]]);
   });
 
   it("stop() on the old chat (the hook's cleanup on anchor switch) aborts its stream; B stays untouched", async () => {
     const storage = memoryStorage();
     const a = heldTransport("A の途中");
-    const chatA = createThreadChat({ ...A, transport: a.transport, getStorage: () => storage, onRefusal: () => {} });
+    const chatA = createThreadChat({ ...A, transport: a.transport, getStorage: () => storage, onUnanswered: () => {} });
     const sendingA = chatA.sendMessage({ text: "A の質問" });
     await until(() => chatA.status === "streaming");
 
-    createThreadChat({ ...B, transport: heldTransport("B").transport, getStorage: () => storage, onRefusal: () => {} });
+    createThreadChat({ ...B, transport: heldTransport("B").transport, getStorage: () => storage, onUnanswered: () => {} });
     await chatA.stop();
     await sendingA;
 
@@ -126,7 +139,7 @@ describe("createThreadChat (one Chat per thread)", () => {
     expect(listThreads(storage).map((t) => t.anchorId)).toEqual([A.anchorId]);
   });
 
-  it("reports a content-filter finish through onRefusal of that chat only", async () => {
+  it("reports a content-filter finish through onUnanswered of that chat only", async () => {
     const storage = memoryStorage();
     const transport: ChatTransport<UIMessage> = {
       sendMessages: async () =>
@@ -139,10 +152,10 @@ describe("createThreadChat (one Chat per thread)", () => {
         }),
       reconnectToStream: async () => null,
     };
-    const onRefusalA = vi.fn();
-    const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onRefusal: onRefusalA });
+    const onUnansweredA = vi.fn();
+    const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onUnanswered: onUnansweredA });
     await chatA.sendMessage({ text: "?" });
-    expect(onRefusalA).toHaveBeenCalledWith({ kind: "refusal", message: "" });
+    expect(onUnansweredA).toHaveBeenCalledWith({ kind: "refusal", message: "" });
   });
 
   it("a refused turn is not persisted: a new thread stays unsaved, an existing one keeps its earlier turns", async () => {
@@ -162,13 +175,13 @@ describe("createThreadChat (one Chat per thread)", () => {
         }),
       reconnectToStream: async () => null,
     };
-    const onRefusal = vi.fn();
+    const onUnanswered = vi.fn();
     const onSaved = vi.fn();
-    const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onRefusal, onSaved });
+    const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onUnanswered, onSaved });
     const idA = threadIdFor(A.kind, A.anchorId);
 
     await chatA.sendMessage({ text: "拒否される質問" });
-    expect(onRefusal).toHaveBeenCalledTimes(1);
+    expect(onUnanswered).toHaveBeenCalledTimes(1);
     expect(listThreads(storage)).toEqual([]);
     expect(storage.data.has(threadStorageKey(idA))).toBe(false);
     expect(onSaved).not.toHaveBeenCalled();
@@ -179,16 +192,55 @@ describe("createThreadChat (one Chat per thread)", () => {
     expect(texts(loadThreadMessages(storage, idA))).toEqual(["user:普通の質問", "assistant:回答"]);
     state.refuse = true;
     await chatA.sendMessage({ text: "二度目の拒否" });
-    expect(onRefusal).toHaveBeenCalledTimes(2);
+    expect(onUnanswered).toHaveBeenCalledTimes(2);
     expect(texts(loadThreadMessages(storage, idA))).toEqual(["user:普通の質問", "assistant:回答"]);
     expect(onSaved).toHaveBeenCalledTimes(1);
+  });
+
+  it("a length finish with no visible text is reported as kind length and not persisted (M5)", async () => {
+    const storage = memoryStorage();
+    const state = { text: "" };
+    const transport: ChatTransport<UIMessage> = {
+      sendMessages: async () =>
+        new ReadableStream<UIMessageChunk>({
+          start(c) {
+            c.enqueue({ type: "start" });
+            c.enqueue({ type: "reasoning-start", id: "r" });
+            c.enqueue({ type: "reasoning-delta", id: "r", delta: "考えている…" });
+            c.enqueue({ type: "reasoning-end", id: "r" });
+            if (state.text !== "") {
+              c.enqueue({ type: "text-start", id: "t" });
+              c.enqueue({ type: "text-delta", id: "t", delta: state.text });
+              c.enqueue({ type: "text-end", id: "t" });
+            }
+            c.enqueue({ type: "finish", finishReason: "length" });
+            c.close();
+          },
+        }),
+      reconnectToStream: async () => null,
+    };
+    const onUnanswered = vi.fn();
+    const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onUnanswered });
+    await chatA.sendMessage({ text: "長すぎる質問" });
+    expect(onUnanswered).toHaveBeenCalledWith({ kind: "length", message: "" });
+    expect(listThreads(storage)).toEqual([]);
+
+    // a length finish that did produce text is an (incomplete) answer: saved, no notice
+    state.text = "途中までの回答";
+    chatA.messages = [];
+    await chatA.sendMessage({ text: "質問" });
+    expect(onUnanswered).toHaveBeenCalledTimes(1);
+    expect(texts(loadThreadMessages(storage, threadIdFor(A.kind, A.anchorId)))).toEqual([
+      "user:質問",
+      "assistant:途中までの回答",
+    ]);
   });
 
   it("clearThread() while streaming: the aborted response finishing later does not recreate the thread", async () => {
     const storage = memoryStorage();
     const deaf = deafTransport("A の途中");
     const onSaved = vi.fn();
-    const chatA = createThreadChat({ ...A, transport: deaf.transport, getStorage: () => storage, onRefusal: () => {}, onSaved });
+    const chatA = createThreadChat({ ...A, transport: deaf.transport, getStorage: () => storage, onUnanswered: () => {}, onSaved });
     const idA = threadIdFor(A.kind, A.anchorId);
 
     // a finished first turn is saved and reported
@@ -223,7 +275,7 @@ describe("createThreadChat (one Chat per thread)", () => {
   it("clearThread() when idle does not swallow the next save", async () => {
     const storage = memoryStorage();
     const deaf = deafTransport("回答");
-    const chatA = createThreadChat({ ...A, transport: deaf.transport, getStorage: () => storage, onRefusal: () => {} });
+    const chatA = createThreadChat({ ...A, transport: deaf.transport, getStorage: () => storage, onUnanswered: () => {} });
     chatA.clearThread();
     const sending = chatA.sendMessage({ text: "質問" });
     await until(() => chatA.status === "streaming");
@@ -257,7 +309,7 @@ describe("createThreadChat (one Chat per thread)", () => {
       reconnectToStream: async () => null,
     };
     const onSaved = vi.fn();
-    const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onRefusal: () => {}, onSaved });
+    const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onUnanswered: () => {}, onSaved });
     const idA = threadIdFor(A.kind, A.anchorId);
 
     // first turn fails: nothing is written (no index entry, no message key)
@@ -286,12 +338,25 @@ describe("createThreadChat (one Chat per thread)", () => {
     };
     const deaf = deafTransport("回答");
     const onSaved = vi.fn();
-    const chatA = createThreadChat({ ...A, transport: deaf.transport, getStorage: () => storage, onRefusal: () => {}, onSaved });
+    const chatA = createThreadChat({ ...A, transport: deaf.transport, getStorage: () => storage, onUnanswered: () => {}, onSaved });
     const sending = chatA.sendMessage({ text: "質問" });
     await until(() => chatA.status === "streaming");
     deaf.state.finish();
     await sending;
     expect(onSaved).toHaveBeenCalledWith(false);
+  });
+});
+
+describe("isEmptyLengthCutoff (M5)", () => {
+  const msg = (...parts: UIMessage["parts"]): UIMessage => ({ id: "a", role: "assistant", parts });
+
+  it("is true only for a length finish without visible text", () => {
+    expect(isEmptyLengthCutoff(msg(), "length")).toBe(true);
+    expect(isEmptyLengthCutoff(msg({ type: "reasoning", text: "thinking" }), "length")).toBe(true);
+    expect(isEmptyLengthCutoff(msg({ type: "text", text: " \n " }), "length")).toBe(true);
+    expect(isEmptyLengthCutoff(msg({ type: "text", text: "回答" }), "length")).toBe(false);
+    expect(isEmptyLengthCutoff(msg(), "stop")).toBe(false);
+    expect(isEmptyLengthCutoff(msg(), undefined)).toBe(false);
   });
 });
 

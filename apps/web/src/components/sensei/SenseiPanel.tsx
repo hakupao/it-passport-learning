@@ -8,7 +8,8 @@
 //
 // - No key → KeySettings is shown and sending is disabled (the typed question
 //   stays). An invalid key (401) → 「key が無効です」 and the settings open.
-// - Errors and refusals (§0-11) put the question that failed back into the input.
+// - Errors, refusals (§0-11) and a length cutoff with no visible text put the
+//   question that failed back into the input.
 // - Before the first token: a visible 「考え中…」 (first token is 2–4 s on Sonnet).
 // - The conversation is an aria-live="polite" log; Stop while generating.
 // - A refused save (quota) shows a non-blocking notice (§0-6).
@@ -109,6 +110,8 @@ export function SenseiPanel({
         return t("errorRefusal");
       case "network":
         return t("errorNetwork");
+      case "length":
+        return t("errorLength");
       default:
         return t("errorOther", { message: err.message });
     }

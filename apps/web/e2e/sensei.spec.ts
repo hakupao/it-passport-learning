@@ -1,7 +1,8 @@
 // D-181 Task A4 — the quiz 「AI 先生に聞く」 entry and the AI 先生 panel, against a
 // fake Anthropic API (helpers/fakeAnthropic.ts). No test reaches the real API:
-// every request to api.anthropic.com is answered by the fake or recorded as
-// unhandled, and each test ends by asserting the unhandled list is empty.
+// a beforeEach guard routes every request to api.anthropic.com in EVERY test; a
+// request the fake does not answer (or any request in a test without the fake)
+// is recorded and aborted, and each test ends by asserting that list is empty.
 //
 // Covered:
 //   1. The button appears only after answering; no key → KeySettings in the
@@ -26,7 +27,7 @@
 //      chunk arriving after the clear is proven by the threadChat unit test
 //      ("clearThread() while streaming …"), not here.
 //   6. Switch to another question's panel while the first reply is in flight →
-//      each thread keeps only its own messages.
+//      each thread keeps only its own messages and its own title in the index.
 //   7. (only with E2E_OWNER_KEY, local server — see learning-owner.spec.ts) the
 //      owner's /api/learning PUT bodies never contain the key.
 //   8. /sensei key settings: how to get a key (console link) while none is saved;
@@ -37,6 +38,8 @@
 //      linking to /quiz?mode=exam&id=<exam_id>#<question_id>; delete removes the
 //      row and its storage; the empty state once none is left.
 //  10. Navigation: each of the three shells shows the AI 先生 item → /ja/sensei.
+//  11. Phone width (390×844), each shell × each locale: no horizontal page scroll
+//      and both switchers (theme, locale) inside the viewport.
 //
 // Runs against a local prod build (the production CSP is then active, so a
 // request to api.anthropic.com also proves connect-src allows it):
@@ -45,8 +48,10 @@
 
 import { test, expect, type Page } from "@playwright/test";
 
+import en from "../messages/en.json";
 import ja from "../messages/ja.json";
-import { fakeAnthropic, type FakeAnthropic } from "./helpers/fakeAnthropic";
+import zh from "../messages/zh.json";
+import { fakeAnthropic, guardAnthropic, type FakeAnthropic } from "./helpers/fakeAnthropic";
 
 const S = ja.Sensei;
 const KEY = "sk-ant-test-0000000000000000wxyz";
@@ -57,6 +62,9 @@ const OWNER_KEY = process.env.E2E_OWNER_KEY ?? "";
 const SET_URL = "/ja/quiz?mode=topic&id=technology-14-36";
 const Q1 = "2009h21a-q054";
 const Q2 = "2011h23tokubetsu-q058";
+/** questions.json source_label (the thread title in the index). */
+const Q1_LABEL = "平成21年度 秋期 ITパスポート試験 問54";
+const Q2_LABEL = "平成23年度 特別試験 ITパスポート試験 問58";
 const REPLY_MARK = "後入れ先出し（LIFO）です。";
 
 const threadKey = (anchorId: string) => `itp:sensei:thread:question.${encodeURIComponent(anchorId)}:v1`;
@@ -106,22 +114,24 @@ async function storedTexts(page: Page, anchorId: string): Promise<string[] | nul
   });
 }
 
-/** Set by each test that installs the fake; reset before every test so a test
- *  without one never reads the previous test's fake. */
+/** Set by each test that installs the fake. */
 let fake: FakeAnthropic | undefined;
+/** Requests to api.anthropic.com that reached the guard (fresh per test). */
+let unhandled: string[] = [];
 
-test.beforeEach(() => {
+test.beforeEach(async ({ page }) => {
   fake = undefined;
+  unhandled = await guardAnthropic(page);
 });
 
 test.afterEach(() => {
-  expect(fake?.unhandled ?? [], "requests to api.anthropic.com not answered by the fake").toEqual([]);
+  expect(unhandled, "requests to api.anthropic.com not answered by the fake").toEqual([]);
 });
 
 test("ask about an answered question: key setup, streamed reply, anchor in system, thread kept per choice", async ({
   page,
 }) => {
-  fake = await fakeAnthropic(page, { mode: "ok", delayMs: 800 });
+  fake = await fakeAnthropic(page, { mode: "ok", delayMs: 1500 });
   await page.addInitScript(() => {
     window.__cspViolations = [];
     document.addEventListener("securitypolicyviolation", (e) => {
@@ -345,6 +355,14 @@ test("switch to another question while the first reply is in flight: each thread
     `assistant:${fake.reply.join("")}`,
   ]);
   await expect(log(page)).not.toContainText("問1 の質問");
+  // each thread keeps its own title: Q1's reply finished (aborted) after Q2 was opened (I1)
+  const index = JSON.parse((await page.evaluate(() => localStorage.getItem("itp:sensei:index:v1"))) ?? "null") as {
+    threads: { anchorId: string; title: string }[];
+  };
+  expect(Object.fromEntries(index.threads.map((t) => [t.anchorId, t.title]))).toEqual({
+    [`${Q1}:イ`]: Q1_LABEL,
+    [`${Q2}:ア`]: Q2_LABEL,
+  });
 
   await page.keyboard.press("Escape");
   await page.reload();
@@ -478,6 +496,31 @@ for (const theme of ["gamified", "retro", "terminal"] as const) {
     await expect(page).toHaveURL(new RegExp(`${SENSEI_URL}$`));
     await expect(page.locator(`[data-shell="${theme}"] nav a[href="${SENSEI_URL}"]`)).toHaveAttribute("aria-current", "page");
   });
+}
+
+const LOCALE_MESSAGES = { ja, zh, en } as const;
+
+for (const theme of ["gamified", "retro", "terminal"] as const) {
+  for (const locale of ["ja", "zh", "en"] as const) {
+    test(`phone width (${theme} shell, ${locale}): no horizontal scroll, switchers on screen`, async ({ page }) => {
+      await page.addInitScript((t) => localStorage.setItem("itp:theme:v1", t), theme);
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(`/${locale}/glossary`);
+      const shell = page.locator(`[data-shell="${theme}"]`);
+      await expect(shell).toBeVisible();
+      const switchers = [
+        shell.getByRole("combobox", { name: "Switch theme" }),
+        shell.getByRole("combobox", { name: LOCALE_MESSAGES[locale].Locale.switcherLabel }),
+      ];
+      for (const sw of switchers) {
+        await expect(sw).toBeVisible();
+        const box = (await sw.boundingBox())!;
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(390);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    });
+  }
 }
 
 // Owner sync is only reachable on a local server with OWNER_KEY (see learning-owner.spec.ts);

@@ -8,7 +8,8 @@
 //
 // Needs a production build (`next build` + `next start`, or the deployed app):
 // next.config.ts only sets the header when NODE_ENV === "production".
-// No LLM call fires on these pages (/sensei loads no AI SDK in Phase A).
+// No LLM call fires on these pages (/sensei loads no AI SDK in Phase A); a guard
+// routes api.anthropic.com in every test, so one that did would fail.
 //
 // Base URL: prod canonical by default; `PLAYWRIGHT_BASE_URL` overrides it for a
 // local run (see playwright.config.ts).
@@ -16,6 +17,7 @@
 import { test, expect } from "@playwright/test";
 
 import { termId } from "../src/lib/glossary/termId";
+import { guardAnthropic } from "./helpers/fakeAnthropic";
 
 const PAGES = [
   "/ja",
@@ -33,6 +35,16 @@ declare global {
     __cspViolations?: string[];
   }
 }
+
+let unhandled: string[] = [];
+
+test.beforeEach(async ({ page }) => {
+  unhandled = await guardAnthropic(page);
+});
+
+test.afterEach(() => {
+  expect(unhandled, "requests to api.anthropic.com").toEqual([]);
+});
 
 for (const path of PAGES) {
   test(`csp: no violation on ${path}`, async ({ page }) => {

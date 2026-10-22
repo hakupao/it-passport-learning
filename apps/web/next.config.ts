@@ -65,9 +65,12 @@ const GLOSSARY_TRACE = [...TEXTBOOK_TRACE, "../../data/ip/quiz/questions.json"];
 // D-181 §0-8 — static CSP, production only (dev needs the HMR websocket and
 // va.vercel-scripts.com). A static header keeps every page's rendering mode
 // (the glossary list stays prerendered); a nonce would need a per-request
-// header and make every page dynamic. Residual risk, accepted: script-src
-// keeps 'unsafe-inline' for Next's inline flight scripts (self.__next_f.push);
-// the key is guarded by connect-src (only self + api.anthropic.com).
+// header and make every page dynamic. script-src therefore keeps 'unsafe-inline'
+// for Next's inline flight scripts (self.__next_f.push), to keep static rendering.
+// Residual risk, accepted: connect-src (only self + api.anthropic.com) limits
+// where fetch / XHR / WebSocket / sendBeacon can send data, but top-level
+// navigation and window.open are outside CSP, so an injected script can still
+// carry the key out that way: any XSS still means key exposure.
 // style-src 'unsafe-inline' is for next/font and component style={{}}.
 // Vercel Analytics / Speed Insights are same-origin in production.
 const CONTENT_SECURITY_POLICY = [

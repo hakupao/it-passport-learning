@@ -14,6 +14,8 @@ vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, children }: { href: string; children: React.ReactNode }) => h("a", { href }, children),
 }));
 
+import { MAX_THREADS } from "@/lib/sensei/threadStore";
+
 import { SenseiHome } from "../SenseiHome";
 
 function render(locale: "ja" | "zh" | "en"): { html: string; s: Record<string, string> } {
@@ -38,6 +40,16 @@ describe("SenseiHome SSR", () => {
       expect(html).toContain(esc(s.comingSoon!));
       expect(html).toMatch(/<textarea[^>]*disabled=""/);
       expect(html).toContain(esc(s.threadsTitle!));
+    });
+  }
+
+  for (const locale of ["ja", "zh", "en"] as const) {
+    it(`${locale}: the thread note shows MAX_THREADS through the {max} param (M3)`, () => {
+      const { html, s } = render(locale);
+      expect(s.threadsNote).toContain("{max}");
+      const note = esc(s.threadsNote!.replace("{max}", String(MAX_THREADS)));
+      expect(html).toContain(note);
+      expect(html).not.toContain("{max}");
     });
   }
 

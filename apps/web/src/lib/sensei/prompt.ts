@@ -1,6 +1,8 @@
 // D-181 §0-4 / §0-5 — the AI 先生 prompt layout (same cache layout as the old
 // tutorPrompt): messages[0] = the fixed instruction, messages[1] = the anchor
-// context, each with an ephemeral cache breakpoint, then the conversation.
+// context, each with an ephemeral cache breakpoint, then the conversation. The
+// last conversation message carries a third breakpoint, so a follow-up turn
+// reads the earlier turns from the cache (3 of Anthropic's 4 per request).
 // The instruction is one byte-stable constant shared by every locale (the
 // answer language is named inside the anchor block), so its cache entry is
 // reused across locales and threads. Mid-conversation system messages are not
@@ -39,11 +41,21 @@ export const SENSEI_SYSTEM_INSTRUCTION = `あなたは「AI 先生」です。IT
 - 単元の「読んだ」記録は、その単元を開いたことを示すだけで、最後まで読んだとは限りません。
 - 解答数が 5 問未満の分野の正答率は、標本が少なく当てにならないことを添えてください。`;
 
-/** [instruction (cached), anchor (cached), ...conversation] — §0-4 layout. */
+/** The message with an ephemeral breakpoint merged into its providerOptions (a copy). */
+function withBreakpoint(message: ModelMessage): ModelMessage {
+  const options = message.providerOptions;
+  return {
+    ...message,
+    providerOptions: { ...options, anthropic: { ...options?.anthropic, ...EPHEMERAL.anthropic } },
+  };
+}
+
+/** [instruction (cached), anchor (cached), ...conversation (last one cached)] — §0-4 layout. */
 export function buildSenseiMessages(anchorText: string, conversation: ModelMessage[]): ModelMessage[] {
+  const history = conversation.length > 0 ? [...conversation.slice(0, -1), withBreakpoint(conversation.at(-1)!)] : [];
   return [
     { role: "system", content: SENSEI_SYSTEM_INSTRUCTION, providerOptions: EPHEMERAL },
     { role: "system", content: anchorText, providerOptions: EPHEMERAL },
-    ...conversation,
+    ...history,
   ];
 }

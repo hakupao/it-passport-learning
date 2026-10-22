@@ -46,8 +46,10 @@ describe("toSenseiError", () => {
     expect(toSenseiError(wrapped).kind).toBe("network");
   });
 
-  it("maps the content-filter finish reason (Anthropic refusal) to refusal", () => {
+  it("maps the content-filter finish reason (Anthropic refusal) to refusal, and length to length", () => {
     expect(toSenseiError({ finishReason: "content-filter" }).kind).toBe("refusal");
+    expect(toSenseiError({ finishReason: "length" })).toEqual({ kind: "length", message: "" });
+    expect(toSenseiError(new Error(formatSenseiError({ kind: "length", message: "" }))).kind).toBe("length");
   });
 
   it("maps anything else to other", () => {

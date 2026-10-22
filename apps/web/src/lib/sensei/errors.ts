@@ -1,6 +1,7 @@
 // D-181 §0-11 — map a failed AI 先生 call to a kind the panel can explain
 // (auth → key が無効 + open settings; rate → 混雑; refusal → 答えられません;
-// network → 接続できません). Only the error's message text is kept: an
+// network → 接続できません; length → the reply hit the output limit before any
+// visible text). Only the error's message text is kept: an
 // APICallError carries the request data, so the error object itself is never
 // stored, logged or returned. Any occurrence of the key (or of an `sk-ant-…`
 // token) in the message is masked to `…` + its last 4 characters.
@@ -11,14 +12,14 @@
 
 import { APICallError, RetryError } from "ai";
 
-export type SenseiErrorKind = "auth" | "rate" | "refusal" | "network" | "other";
+export type SenseiErrorKind = "auth" | "rate" | "refusal" | "network" | "length" | "other";
 
 export interface SenseiError {
   kind: SenseiErrorKind;
   message: string;
 }
 
-const TAGGED = /^\[sensei:(auth|rate|refusal|network|other)\] ([\s\S]*)$/;
+const TAGGED = /^\[sensei:(auth|rate|refusal|network|length|other)\] ([\s\S]*)$/;
 const NETWORK_MESSAGE = /failed to fetch|load failed|networkerror|fetch failed|network request failed/i;
 const KEY_TOKEN = /sk-ant-[A-Za-z0-9_-]+/g;
 
@@ -46,8 +47,10 @@ function messageOf(e: unknown): string {
 
 function kindOf(e: unknown): SenseiErrorKind {
   if (RetryError.isInstance(e)) return kindOf(e.lastError);
-  if (e !== null && typeof e === "object" && (e as { finishReason?: unknown }).finishReason === "content-filter") {
-    return "refusal";
+  if (e !== null && typeof e === "object") {
+    const finishReason = (e as { finishReason?: unknown }).finishReason;
+    if (finishReason === "content-filter") return "refusal";
+    if (finishReason === "length") return "length";
   }
   if (APICallError.isInstance(e)) {
     const status = e.statusCode;

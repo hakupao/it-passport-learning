@@ -8,7 +8,8 @@
 // the stored thread and key are read after mount. Messages are saved when a
 // response finishes (not per token). `error` is the mapped SenseiError only —
 // stream / API errors via toSenseiError, an Anthropic refusal (finishReason
-// "content-filter") via the thread Chat's onFinish; the error object is never logged or stored.
+// "content-filter") or an empty length cutoff via the thread Chat's onFinish; the
+// error object is never logged or stored.
 // `saveFailed` is true when the last save of the active thread was refused (quota;
 // §0-6 shows a notice). `refreshKey()` re-reads the key after a same-tab save /
 // delete (KeySettings onChange). Re-sending after a failed or refused turn first
@@ -69,13 +70,11 @@ export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOption
   const [refusal, setRefusal] = useState<SenseiError | null>(null);
   const [saveFailed, setSaveFailed] = useState(false);
 
-  // Read at send / save time, so the transport stays one stable object.
+  // Read at send time, so the transport stays one stable object.
   const anchorRef = useRef(anchorText);
-  const titleRef = useRef(title);
   useEffect(() => {
     anchorRef.current = anchorText;
-    titleRef.current = title;
-  }, [anchorText, title]);
+  }, [anchorText]);
 
   const transport = useMemo(
     () =>
@@ -100,17 +99,17 @@ export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOption
     return createThreadChat({
       kind,
       anchorId,
-      getTitle: () => titleRef.current,
+      title,
       transport,
       getStorage: browserStorage,
-      onRefusal: (err) => {
+      onUnanswered: (err) => {
         if (activeThreadRef.current === id) setRefusal(err);
       },
       onSaved: (ok) => {
         if (activeThreadRef.current === id) setSaveFailed(!ok);
       },
     });
-  }, [kind, anchorId, transport]);
+  }, [kind, anchorId, title, transport]);
 
   const chat = useChat({ chat: threadChat });
   const { setMessages, sendMessage: chatSend, stop } = chat;
@@ -156,7 +155,12 @@ export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOption
 
   const refreshKey = useCallback(() => setHasKey(readHasKey()), []);
 
-  const error = useMemo(() => (chat.error ? toSenseiError(chat.error) : refusal), [chat.error, refusal]);
+  // The key is read only when there is an error, to mask it in the message (M2).
+  const error = useMemo(() => {
+    if (!chat.error) return refusal;
+    const storage = browserStorage();
+    return toSenseiError(chat.error, (storage && loadSenseiKey(storage)) ?? undefined);
+  }, [chat.error, refusal]);
 
   return {
     messages: chat.messages,

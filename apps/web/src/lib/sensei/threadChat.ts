@@ -1,6 +1,7 @@
 // D-181 — one useChat `Chat` per AI 先生 thread. Its onFinish is bound to THIS
-// thread (kind + anchorId fixed at creation), so a response that finishes after
-// the learner switched anchors is saved into its own thread, never the new one.
+// thread (kind + anchorId + title fixed at creation), so a response that finishes
+// after the learner switched anchors is saved into its own thread under its own
+// title, never the new one's.
 // useSensei creates one per threadId and stop()s the previous one on switch.
 //
 // clearThread() empties the chat and deletes the stored thread. A response that
@@ -8,11 +9,12 @@
 // (and a chunk already queued may still be written): that one finish is
 // discarded, so the cleared thread is not recreated with the aborted reply.
 //
-// A turn that ends in an error or a refusal is not saved (the stored thread keeps
-// its earlier turns); a stopped (aborted) turn is saved with what it has.
+// A turn that ends in an error, a refusal, or a length cutoff with no visible text
+// is not saved (the stored thread keeps its earlier turns); a stopped (aborted)
+// turn is saved with what it has.
 
 import { Chat } from "@ai-sdk/react";
-import type { ChatTransport, UIMessage } from "ai";
+import type { ChatTransport, FinishReason, UIMessage } from "ai";
 
 import type { StorageLike } from "@/lib/storage";
 
@@ -24,14 +26,15 @@ export type ThreadChat = Chat<UIMessage> & { clearThread(): void };
 export function createThreadChat(opts: {
   kind: ThreadKind;
   anchorId: string;
-  getTitle(): string;
+  title: string;
   transport: ChatTransport<UIMessage>;
   getStorage(): StorageLike | null;
-  onRefusal(err: SenseiError): void;
+  /** A finished turn with no answer: a refusal, or a length cutoff before any text. */
+  onUnanswered(err: SenseiError): void;
   /** After each save attempt: false when storage refused it (§0-6 notice). */
   onSaved?(ok: boolean): void;
 }): ThreadChat {
-  const { kind, anchorId } = opts;
+  const { kind, anchorId, title } = opts;
   let discardInFlight = false;
 
   const chat: Chat<UIMessage> = new Chat<UIMessage>({
@@ -44,17 +47,17 @@ export function createThreadChat(opts: {
         chat.messages = chat.messages.filter((m) => m.id !== message.id);
         return;
       }
-      // An errored or refused turn (401 / 429 / network / content-filter) is not
-      // persisted: the stored thread keeps its earlier turns and the question is back
-      // in the input. Aborts still save.
+      // An errored, refused or empty length-cut turn (401 / 429 / network /
+      // content-filter / length) is not persisted: the stored thread keeps its earlier
+      // turns and the question is back in the input. Aborts still save.
       if (isError) return;
-      if (finishReason === "content-filter") {
-        opts.onRefusal(toSenseiError({ finishReason }));
+      if (finishReason === "content-filter" || isEmptyLengthCutoff(message, finishReason)) {
+        opts.onUnanswered(toSenseiError({ finishReason }));
         return;
       }
       const storage = opts.getStorage();
       if (!storage || messages.length === 0) return;
-      const meta = openThread(storage, { kind, anchorId, title: opts.getTitle() });
+      const meta = openThread(storage, { kind, anchorId, title });
       // evaluated first: `onSaved?.(save())` would skip the save when onSaved is absent
       const saved = saveThreadMessages(storage, meta.id, messages);
       opts.onSaved?.(saved);
@@ -71,6 +74,13 @@ export function createThreadChat(opts: {
       if (storage) deleteThread(storage, chat.id);
     },
   });
+}
+
+/** The reply hit maxOutputTokens before any visible text (thinking counts toward the
+ *  limit): the panel asks the learner to narrow the question (M5). */
+export function isEmptyLengthCutoff(message: UIMessage, finishReason: FinishReason | undefined): boolean {
+  if (finishReason !== "length") return false;
+  return message.parts.every((p) => p.type !== "text" || p.text.trim() === "");
 }
 
 /** The messages before the last user turn: used before re-sending a question whose

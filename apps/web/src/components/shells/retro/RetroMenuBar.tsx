@@ -12,8 +12,9 @@ export function RetroMenuBar(): React.ReactElement {
   const tNav = useTranslations("Nav");
 
   return (
-    <nav className="bg-[#c0c0c0] border-b border-[#808080] flex items-center justify-between px-1 overflow-x-auto scrollbar-hide">
-      <div className="flex items-center">
+    <nav className="bg-[#c0c0c0] border-b border-[#808080] flex items-center justify-between px-1">
+      {/* Only the menu items scroll on a phone; the switchers stay pinned on screen. */}
+      <div className="flex items-center min-w-0 overflow-x-auto scrollbar-hide">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const label = tNav(item.key);
@@ -37,7 +38,7 @@ export function RetroMenuBar(): React.ReactElement {
           );
         })}
       </div>
-      <div className="flex items-center gap-2 pr-1">
+      <div className="flex items-center gap-2 pr-1 shrink-0">
         <ThemeSwitcher />
         <Suspense fallback={null}>
           <LocaleSwitcher />

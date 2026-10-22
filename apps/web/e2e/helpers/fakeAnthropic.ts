@@ -1,7 +1,10 @@
 // D-181 Task A4 — a fake Anthropic Messages API for e2e. Tests never reach the
-// real API: a catch-all route for the whole api.anthropic.com host records any
-// request the fake did not answer and aborts it (the spec asserts the list is
-// empty), and POST /v1/messages is answered here.
+// real API: guardAnthropic() (installed in a beforeEach for every test of a spec)
+// routes the whole api.anthropic.com host, records each request and aborts it
+// (the spec's afterEach asserts the list is empty), so a test that forgets the
+// fake fails instead of silently passing. fakeAnthropic() answers POST
+// /v1/messages (and its CORS preflight) on top of the guard; anything else falls
+// back to the guard.
 //
 // The browser calls Anthropic cross-origin, so the fake answers the CORS
 // preflight (OPTIONS) and puts the CORS headers on every response, allowing the
@@ -37,8 +40,6 @@ export interface FakeAnthropic {
   /** Text deltas of the next "ok" reply. */
   reply: string[];
   readonly requests: FakeRequest[];
-  /** Requests to api.anthropic.com the fake did not answer (must stay empty). */
-  readonly unhandled: string[];
 }
 
 const ALLOW_HEADERS = [
@@ -97,6 +98,18 @@ export const DEFAULT_REPLY = [
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/** Route all of api.anthropic.com: every request reaching this route is recorded and
+ *  aborted. Install it before fakeAnthropic() (a later route is matched first, so
+ *  the fake takes /v1/messages and falls back here for anything else). */
+export async function guardAnthropic(page: Page): Promise<string[]> {
+  const unhandled: string[] = [];
+  await page.route("https://api.anthropic.com/**", async (route) => {
+    unhandled.push(`${route.request().method()} ${route.request().url()}`);
+    await route.abort();
+  });
+  return unhandled;
+}
+
 export async function fakeAnthropic(
   page: Page,
   init: { mode?: FakeMode; delayMs?: number } = {},
@@ -106,14 +119,7 @@ export async function fakeAnthropic(
     delayMs: init.delayMs ?? 0,
     reply: [...DEFAULT_REPLY],
     requests: [],
-    unhandled: [],
   };
-
-  // Registered first = matched last: anything the handler below does not take.
-  await page.route("https://api.anthropic.com/**", async (route) => {
-    fake.unhandled.push(`${route.request().method()} ${route.request().url()}`);
-    await route.abort();
-  });
 
   await page.route("https://api.anthropic.com/v1/messages", async (route) => {
     const req = route.request();
@@ -122,8 +128,7 @@ export async function fakeAnthropic(
       return;
     }
     if (req.method() !== "POST") {
-      fake.unhandled.push(`${req.method()} ${req.url()}`);
-      await route.abort();
+      await route.fallback(); // recorded and aborted by guardAnthropic
       return;
     }
     const headers = await req.allHeaders();
