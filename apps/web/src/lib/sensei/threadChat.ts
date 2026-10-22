@@ -8,8 +8,8 @@
 // (and a chunk already queued may still be written): that one finish is
 // discarded, so the cleared thread is not recreated with the aborted reply.
 //
-// A turn that ends in an error is not saved (the stored thread keeps its earlier
-// turns); a stopped (aborted) turn is saved with what it has.
+// A turn that ends in an error or a refusal is not saved (the stored thread keeps
+// its earlier turns); a stopped (aborted) turn is saved with what it has.
 
 import { Chat } from "@ai-sdk/react";
 import type { ChatTransport, UIMessage } from "ai";
@@ -44,10 +44,14 @@ export function createThreadChat(opts: {
         chat.messages = chat.messages.filter((m) => m.id !== message.id);
         return;
       }
-      // An errored turn (401 / 429 / network) is not persisted: the stored thread keeps
-      // its earlier turns and the question is re-sent from the input. Aborts still save.
+      // An errored or refused turn (401 / 429 / network / content-filter) is not
+      // persisted: the stored thread keeps its earlier turns and the question is back
+      // in the input. Aborts still save.
       if (isError) return;
-      if (finishReason === "content-filter") opts.onRefusal(toSenseiError({ finishReason }));
+      if (finishReason === "content-filter") {
+        opts.onRefusal(toSenseiError({ finishReason }));
+        return;
+      }
       const storage = opts.getStorage();
       if (!storage || messages.length === 0) return;
       const meta = openThread(storage, { kind, anchorId, title: opts.getTitle() });

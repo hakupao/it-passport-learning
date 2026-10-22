@@ -18,7 +18,8 @@
 //      re-sending after a fix sends that question once (the failed turn is dropped);
 //      a later 401 turn is not persisted (after a reload the thread holds only the
 //      successful turn).
-//   4. Refusal → the refusal notice, the question back in the input.
+//   4. Refusal → the refusal notice, the question back in the input; a refused turn
+//      is not persisted (after a reload the thread holds only the successful turn).
 //   5. Clear while a reply is in flight → reload → the thread is empty. This checks
 //      the visible result only: the fake holds the whole response (see
 //      helpers/fakeAnthropic.ts), so the clear lands before any chunk. The race of a
@@ -274,6 +275,22 @@ test("refusal: the refusal notice, the question back in the input", async ({ pag
   await ask(page, "答えられない質問");
   await expect(panel(page).getByTestId("sensei-error")).toHaveText(S.errorRefusal);
   await expect(input(page)).toHaveValue("答えられない質問");
+  expect(await storedTexts(page, `${Q1}:reveal`)).toBeNull(); // the refused turn is not saved
+
+  // after a successful turn, a later refusal leaves the stored thread as it was
+  fake.mode = "ok";
+  await panel(page).getByRole("button", { name: S.send }).click();
+  await expect(log(page)).toContainText(REPLY_MARK);
+  const okTurn = ["user:答えられない質問", `assistant:${fake.reply.join("")}`];
+  expect(await storedTexts(page, `${Q1}:reveal`)).toEqual(okTurn);
+  fake.mode = "refusal";
+  await ask(page, "拒否される二つ目の質問");
+  await expect(panel(page).getByTestId("sensei-error")).toHaveText(S.errorRefusal);
+  await page.reload();
+  expect(await storedTexts(page, `${Q1}:reveal`)).toEqual(okTurn);
+  await openPanel(page, Q1, "reveal");
+  await expect(log(page)).toContainText("答えられない質問");
+  await expect(log(page)).not.toContainText("拒否される二つ目の質問");
 });
 
 test("clear while a reply is in flight: after a reload the thread is empty", async ({ page }) => {

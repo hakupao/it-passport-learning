@@ -145,6 +145,45 @@ describe("createThreadChat (one Chat per thread)", () => {
     expect(onRefusalA).toHaveBeenCalledWith({ kind: "refusal", message: "" });
   });
 
+  it("a refused turn is not persisted: a new thread stays unsaved, an existing one keeps its earlier turns", async () => {
+    const storage = memoryStorage();
+    const state = { refuse: true };
+    const transport: ChatTransport<UIMessage> = {
+      sendMessages: async () =>
+        new ReadableStream<UIMessageChunk>({
+          start(c) {
+            c.enqueue({ type: "start" });
+            c.enqueue({ type: "text-start", id: "t" });
+            c.enqueue({ type: "text-delta", id: "t", delta: state.refuse ? "" : "回答" });
+            c.enqueue({ type: "text-end", id: "t" });
+            c.enqueue({ type: "finish", finishReason: state.refuse ? "content-filter" : "stop" });
+            c.close();
+          },
+        }),
+      reconnectToStream: async () => null,
+    };
+    const onRefusal = vi.fn();
+    const onSaved = vi.fn();
+    const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onRefusal, onSaved });
+    const idA = threadIdFor(A.kind, A.anchorId);
+
+    await chatA.sendMessage({ text: "拒否される質問" });
+    expect(onRefusal).toHaveBeenCalledTimes(1);
+    expect(listThreads(storage)).toEqual([]);
+    expect(storage.data.has(threadStorageKey(idA))).toBe(false);
+    expect(onSaved).not.toHaveBeenCalled();
+
+    state.refuse = false;
+    chatA.messages = [];
+    await chatA.sendMessage({ text: "普通の質問" });
+    expect(texts(loadThreadMessages(storage, idA))).toEqual(["user:普通の質問", "assistant:回答"]);
+    state.refuse = true;
+    await chatA.sendMessage({ text: "二度目の拒否" });
+    expect(onRefusal).toHaveBeenCalledTimes(2);
+    expect(texts(loadThreadMessages(storage, idA))).toEqual(["user:普通の質問", "assistant:回答"]);
+    expect(onSaved).toHaveBeenCalledTimes(1);
+  });
+
   it("clearThread() while streaming: the aborted response finishing later does not recreate the thread", async () => {
     const storage = memoryStorage();
     const deaf = deafTransport("A の途中");
