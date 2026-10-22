@@ -49,11 +49,15 @@
 //   npm run build && npx next start -p 3200
 //   PLAYWRIGHT_BASE_URL=http://localhost:3200 npx playwright test e2e/sensei.spec.ts --retries=0
 
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 import en from "../messages/en.json";
 import ja from "../messages/ja.json";
 import zh from "../messages/zh.json";
+import { termId } from "../src/lib/glossary/termId";
 import { fakeAnthropic, guardAnthropic, type FakeAnthropic, type FakeRequest } from "./helpers/fakeAnthropic";
 
 const S = ja.Sensei;
@@ -941,4 +945,167 @@ test("review: a past day's thread is reachable from its /sensei row, without sen
   await page.waitForTimeout(1000);
   await expect(panel(page)).toHaveCount(0);
   expect(fake.requests).toHaveLength(0);
+});
+
+
+// ── D-181 Phase C: 「AI 先生に聞く」 on the glossary term page and the textbook unit page ──
+//
+//  17. Term page (/ja, 機能要件 — taught in 2 units): no AI SDK chunk until the button
+//      is clicked; the request's anchor holds the JP definition / explanation / memory
+//      hook of BOTH senses and no analogy; the thread is kind "term" with anchorId =
+//      termId; Esc returns focus to the button; its /sensei row links back to
+//      /ja/glossary/<termId>.
+//  18. Unit page (/en, management-08-25-u01): no AI SDK chunk until the click; the
+//      anchor holds the JP + English title, summary and every term's definition (JP +
+//      English) and no analogy / zh text; the thread is kind "unit" with anchorId =
+//      unitId; its /sensei row (title = the English unit title) links back to
+//      /en/textbook/<unitId>.
+// The expected strings are read from the committed corpus (data/ip/textbook/units).
+
+const UNITS_DIR = path.resolve(__dirname, "../../../data/ip/textbook/units");
+
+interface CorpusTerm {
+  term: string;
+  definition_jp: string;
+  explanation_jp: string;
+  memory_hook_jp: string;
+  analogy_jp: string;
+  definition_en: string;
+  analogy_en: string;
+  definition_zh: string;
+}
+interface CorpusUnit {
+  unit_id: string;
+  title_jp: string;
+  title_en: string;
+  title_zh: string;
+  unit_summary_jp: string;
+  unit_summary_en: string;
+  terms: CorpusTerm[];
+}
+
+function corpusUnit(unitId: string): CorpusUnit {
+  return JSON.parse(readFileSync(path.join(UNITS_DIR, `${unitId}.json`), "utf-8")) as CorpusUnit;
+}
+
+/** Every unit's sense of `term` (the corpus files in name order). */
+function corpusSenses(term: string): CorpusTerm[] {
+  return readdirSync(UNITS_DIR)
+    .filter((f) => f.endsWith(".json"))
+    .sort()
+    .flatMap((f) => corpusUnit(f.slice(0, -".json".length)).terms.filter((t) => t.term === term));
+}
+
+const TERM = "機能要件";
+const TERM_ID = termId(TERM);
+const UNIT = "management-08-25-u01";
+
+test("term page: 「AI 先生に聞く」 sends every sense of the term; no AI SDK before the click; /sensei links back", async ({
+  page,
+}) => {
+  fake = await fakeAnthropic(page);
+  await presetKey(page);
+  const scripts = trackScripts(page);
+
+  await page.goto(`/ja/glossary/${TERM_ID}`);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(TERM);
+  await page.waitForLoadState("networkidle");
+  expect(await sdkChunks(scripts), "AI SDK loaded before the click").toEqual([]);
+
+  const button = page.getByTestId("ask-sensei");
+  await expect(button).toHaveText(S.askButton);
+  await button.click();
+  await expect(panel(page)).toBeVisible();
+  await ask(page, "二つの単元での意味の違いは？");
+  await expect(log(page)).toContainText(REPLY_MARK);
+  expect((await sdkChunks(scripts)).length, "AI SDK chunk after the click").toBeGreaterThan(0);
+
+  expect(fake.requests).toHaveLength(1);
+  const system = systemText(fake.requests[0]!);
+  const senses = corpusSenses(TERM);
+  expect(senses).toHaveLength(2);
+  expect(system).toContain("回答言語: 日本語");
+  expect(system).toContain(`用語: ${TERM}`);
+  for (const s of senses) {
+    expect(system).toContain(s.definition_jp);
+    expect(system).toContain(s.explanation_jp);
+    expect(system).toContain(s.memory_hook_jp);
+    expect(system).not.toContain(s.analogy_jp);
+    expect(system).not.toContain(s.definition_en);
+  }
+
+  await page.keyboard.press("Escape");
+  await expect(panel(page)).toHaveCount(0);
+  await expect(button).toBeFocused();
+  const index = JSON.parse((await page.evaluate(() => localStorage.getItem("itp:sensei:index:v1"))) ?? "null") as {
+    threads: { kind: string; anchorId: string; title: string }[];
+  };
+  expect(index.threads.map(({ kind, anchorId, title }) => ({ kind, anchorId, title }))).toEqual([
+    { kind: "term", anchorId: TERM_ID, title: TERM },
+  ]);
+
+  await page.goto(SENSEI_URL);
+  const row = page.getByTestId("sensei-thread");
+  await expect(row).toHaveCount(1);
+  await expect(row).toContainText(S.kind_term);
+  await expect(row.getByRole("link")).toHaveAttribute("href", `/ja/glossary/${TERM_ID}`);
+  await row.getByRole("link").click();
+  await expect(page).toHaveURL(new RegExp(`/ja/glossary/${TERM_ID}$`));
+  expect(fake.requests).toHaveLength(1);
+});
+
+test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary and terms; no AI SDK before the click; /sensei links back", async ({
+  page,
+}) => {
+  fake = await fakeAnthropic(page);
+  await presetKey(page);
+  const scripts = trackScripts(page);
+  const unit = corpusUnit(UNIT);
+
+  await page.goto(`/en/textbook/${UNIT}`);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(unit.title_en);
+  await page.waitForLoadState("networkidle");
+  expect(await sdkChunks(scripts), "AI SDK loaded before the click").toEqual([]);
+
+  const button = page.getByTestId("ask-sensei");
+  await expect(button).toHaveText(en.Sensei.askButton);
+  await button.click();
+  const p = panel(page);
+  await expect(p).toBeVisible();
+  await p.getByLabel(en.Sensei.inputLabel).fill("What is the difference between the two kinds of requirements?");
+  await p.getByRole("button", { name: en.Sensei.send }).click();
+  await expect(log(page)).toContainText(REPLY_MARK);
+  expect((await sdkChunks(scripts)).length, "AI SDK chunk after the click").toBeGreaterThan(0);
+
+  expect(fake.requests).toHaveLength(1);
+  const system = systemText(fake.requests[0]!);
+  expect(system).toContain("回答言語: 英語");
+  expect(system).toContain(`単元 ID: ${UNIT}`);
+  for (const s of [unit.title_jp, unit.title_en, unit.unit_summary_jp, unit.unit_summary_en]) expect(system).toContain(s);
+  expect(system).not.toContain(unit.title_zh);
+  expect(unit.terms.length).toBeGreaterThan(0);
+  for (const t of unit.terms) {
+    expect(system).toContain(t.definition_jp);
+    expect(system).toContain(t.definition_en);
+    expect(system).not.toContain(t.analogy_jp);
+    expect(system).not.toContain(t.analogy_en);
+    expect(system).not.toContain(t.definition_zh);
+  }
+
+  await page.keyboard.press("Escape");
+  await expect(button).toBeFocused();
+  const index = JSON.parse((await page.evaluate(() => localStorage.getItem("itp:sensei:index:v1"))) ?? "null") as {
+    threads: { kind: string; anchorId: string; title: string }[];
+  };
+  expect(index.threads.map(({ kind, anchorId, title }) => ({ kind, anchorId, title }))).toEqual([
+    { kind: "unit", anchorId: UNIT, title: unit.title_en },
+  ]);
+
+  await page.goto("/en/sensei");
+  const row = page.getByTestId("sensei-thread");
+  await expect(row).toHaveCount(1);
+  await expect(row).toContainText(en.Sensei.kind_unit);
+  await expect(row.getByRole("link")).toHaveAttribute("href", `/en/textbook/${UNIT}`);
+  await expect(row.getByRole("link")).toHaveText(unit.title_en);
+  expect(fake.requests).toHaveLength(1);
 });

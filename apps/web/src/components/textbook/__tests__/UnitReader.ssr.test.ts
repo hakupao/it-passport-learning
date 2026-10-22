@@ -6,7 +6,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createElement as h } from "react";
-import { createTranslator } from "next-intl";
+import { createTranslator, NextIntlClientProvider } from "next-intl";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -48,17 +48,36 @@ const UNIT_ID = "management-08-25-u01";
 // inside the LearningRecordProvider the unit page mounts.
 async function element(locale: "ja" | "zh" | "en"): Promise<React.ReactElement> {
   const [unit, index] = await Promise.all([loadUnit(UNIT_ID), loadReaderIndex()]);
-  return UnitReader({ unit, neighbors: neighbors(index, UNIT_ID), locale });
+  return UnitReader({ unit, neighbors: neighbors(index, UNIT_ID), locale, senseiAnchorText: "ANCHOR" });
 }
 
+// D-181 Phase C: the 「AI 先生に聞く」 client island reads the Sensei messages.
 async function render(locale: "ja" | "zh" | "en"): Promise<string> {
-  return renderToStaticMarkup(h(LearningRecordProvider, { isOwner: false, children: await element(locale) }));
+  return renderToStaticMarkup(
+    h(NextIntlClientProvider, {
+      locale,
+      messages: messages(locale),
+      children: h(LearningRecordProvider, { isOwner: false, children: await element(locale) }),
+    }),
+  );
 }
 
 describe("UnitReader read mark (SSR)", () => {
   it("mounts the MarkUnitRead island, which needs a LearningRecordProvider", async () => {
     const el = await element("ja");
     expect(() => renderToStaticMarkup(el)).toThrow(/LearningRecordProvider/);
+  });
+});
+
+describe("UnitReader AI 先生 entry (SSR, D-181 Phase C)", () => {
+  it("renders the 「AI 先生に聞く」 button under the title; no panel before a click", async () => {
+    const out = await render("en");
+    const button = out.match(/<button[^>]*data-testid="ask-sensei"[^>]*>([^<]*)<\/button>/);
+    expect(button?.[1]).toBe((messages("en").Sensei as Record<string, string>).askButton);
+    expect(out.indexOf("data-testid=\"ask-sensei\"")).toBeGreaterThan(out.indexOf("</h1>"));
+    expect(out.indexOf("data-testid=\"ask-sensei\"")).toBeLessThan(out.indexOf("<article"));
+    expect(out).not.toContain("role=\"dialog\"");
+    expect(out).not.toContain("ANCHOR");
   });
 });
 

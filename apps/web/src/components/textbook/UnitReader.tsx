@@ -10,9 +10,12 @@
 // (IPA exam PNGs, not shipped). A note stands in where practice will appear.
 // D-180 Task 12: the MarkUnitRead island records the unit as read on mount (the
 // page mounts the LearningRecordProvider).
+// D-181 Phase C: under the title, 「AI 先生に聞く」 (a client island; the panel and
+// the AI SDK load on the first click) with the unit anchor the page built.
 
 import { getTranslations } from "next-intl/server";
 
+import { AskSensei, SenseiHost } from "@/components/sensei/AskSensei";
 import { Link } from "@/i18n/navigation";
 import { termId } from "@/lib/glossary/termId";
 import {
@@ -37,12 +40,15 @@ interface Props {
   unit: TextbookUnit;
   neighbors: UnitNeighbors;
   locale: string;
+  /** The AI 先生 unit anchor (lib/sensei/textbookAnchors unitAnchor). */
+  senseiAnchorText: string;
 }
 
 export async function UnitReader({
   unit,
   neighbors,
   locale,
+  senseiAnchorText,
 }: Props): Promise<React.ReactElement> {
   const t = await getTranslations({ locale, namespace: "Textbook" });
   const tg = await getTranslations({ locale, namespace: "Glossary" });
@@ -55,6 +61,7 @@ export async function UnitReader({
     ),
   );
 
+  const title = pick(rec(unit), "title", locale);
   const keyPoints = pickList(rec(unit.summary), "key_points", locale);
   const memoryHooks = pickList(rec(unit.summary), "memory_hooks", locale);
 
@@ -65,7 +72,7 @@ export async function UnitReader({
         ← {t("back")}
       </Link>
 
-      <h1 className={styles.h1}>{pick(rec(unit), "title", locale)}</h1>
+      <h1 className={styles.h1}>{title}</h1>
       <p className={styles.meta}>
         <span className={styles.badge}>{unit.overview.freq_badge}</span>
         <span>{t("minutes", { n: unit.overview.est_minutes })}</span>
@@ -73,6 +80,11 @@ export async function UnitReader({
           <span className={styles.metaTopic}>{neighbors.topicName}</span>
         ) : null}
       </p>
+      <SenseiHost>
+        <div className={styles.askSensei}>
+          <AskSensei kind="unit" anchorId={unit.unit_id} title={title} anchorText={senseiAnchorText} />
+        </div>
+      </SenseiHost>
 
       {/* ① overview */}
       <section className={styles.section}>

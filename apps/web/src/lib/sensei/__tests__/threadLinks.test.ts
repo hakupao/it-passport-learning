@@ -7,7 +7,10 @@ import {
   reviewThreadDate,
   reviewThreadHref,
   splitQuestionAnchor,
+  termThreadHref,
+  unitThreadHref,
 } from "../threadLinks";
+import { termId } from "@/lib/glossary/termId";
 
 describe("splitQuestionAnchor", () => {
   // the six question_id shapes in data/ip/quiz/questions.json (exam_id = id before "-q<NNN>")
@@ -100,5 +103,30 @@ describe("review anchors (D-181 Phase B)", () => {
     const date = new URLSearchParams(href.slice(href.indexOf("?"))).get(REVIEW_THREAD_PARAM);
     expect(reviewThreadDate(date)).toBe("2026-02-28");
     expect(`technology-14-36:${date}`).toBe(anchorId);
+  });
+});
+
+describe("termThreadHref / unitThreadHref (Phase C)", () => {
+  it("a term thread links back to its glossary page", () => {
+    const id = termId("機能要件");
+    expect(termThreadHref(id)).toBe(`/glossary/${id}`);
+  });
+
+  it("a term anchor not shaped like termId() has no link", () => {
+    for (const bad of ["", "t0123", "T0123456789abcdef", "t0123456789abcdeg", "t0123456789abcdef0", "../t0123456789abcdef", "t0123456789abcdef#x"]) {
+      expect(termThreadHref(bad), bad).toBeNull();
+    }
+  });
+
+  it("a unit thread links back to its textbook page", () => {
+    for (const id of ["management-08-25-u01", "technology-23-63-u10", "strategy-01-02-u08"]) {
+      expect(unitThreadHref(id)).toBe(`/textbook/${id}`);
+    }
+  });
+
+  it("a unit anchor not shaped like a unit id has no link", () => {
+    for (const bad of ["", "management-08-25", "management-08-25-u1", "Management-08-25-u01", "../management-08-25-u01", "management-08-25-u01/x", "management-08-25-u01:2026-10-22"]) {
+      expect(unitThreadHref(bad), bad).toBeNull();
+    }
   });
 });

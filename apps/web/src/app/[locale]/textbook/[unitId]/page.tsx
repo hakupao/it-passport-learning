@@ -4,15 +4,20 @@
 // harness loader). The index is read once for in-topic prev/next + breadcrumb.
 // D-180 Task 12: wrapped in LearningRecordProvider so the reader can mark the
 // unit read on mount (owner flag from the D-148 cookie gates the server sync).
+// D-181 Phase C: also builds the AI 先生 unit anchor (title, summary, each term's
+// definition / explanation / memory hook) for the 「AI 先生に聞く」 button.
 
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 
 import { UnitReader } from "@/components/textbook/UnitReader";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
+import { routing } from "@/i18n/routing";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner";
+import { unitAnchor } from "@/lib/sensei/textbookAnchors";
 import {
   loadReaderIndex,
   loadUnit,
@@ -51,10 +56,11 @@ export default async function UnitPage({
   const index = await loadReaderIndex();
   const nb = neighbors(index, unitId);
   const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
+  const appLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
 
   return (
     <LearningRecordProvider isOwner={owner}>
-      <UnitReader unit={unit} neighbors={nb} locale={locale} />
+      <UnitReader unit={unit} neighbors={nb} locale={locale} senseiAnchorText={unitAnchor(unit, appLocale)} />
     </LearningRecordProvider>
   );
 }

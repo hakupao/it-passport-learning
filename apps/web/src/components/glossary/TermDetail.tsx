@@ -6,9 +6,12 @@
 // explanation / analogy / memory hook / figure plus a "learn in" link to
 // /textbook/<unitId>#<termId>; past-exam questions link to
 // /quiz?mode=exam&id=<examId>#<questionId>. The JP term is always the headword.
+// D-181 Phase C: under the headword, 「AI 先生に聞く」 (a client island; the panel
+// and the AI SDK load on the first click) with the term anchor the page built.
 
 import { useTranslations } from "next-intl";
 
+import { AskSensei, SenseiHost } from "@/components/sensei/AskSensei";
 import { Link } from "@/i18n/navigation";
 import { field, type DictEntry } from "@/lib/glossary/dictionary";
 import { pickTerm } from "@/lib/textbook/reader";
@@ -22,9 +25,11 @@ interface Props {
   unitTitles: Record<string, string>;
   /** Inlined figure SVG per sense (aligned with entry.senses), null when none. */
   svgs: (string | null)[];
+  /** The AI 先生 term anchor (lib/sensei/textbookAnchors termAnchor). */
+  senseiAnchorText: string;
 }
 
-export function TermDetail({ locale, entry, unitTitles, svgs }: Props): React.ReactElement {
+export function TermDetail({ locale, entry, unitTitles, svgs, senseiAnchorText }: Props): React.ReactElement {
   const t = useTranslations("Glossary");
   const gloss = pickTerm(entry.senses[0]!.term, locale);
 
@@ -38,6 +43,12 @@ export function TermDetail({ locale, entry, unitTitles, svgs }: Props): React.Re
         <span>{entry.term}</span>
         {gloss.trim() !== "" && gloss !== entry.term && <span className={styles.gloss}>{gloss}</span>}
       </h1>
+
+      <SenseiHost>
+        <div className={styles.askSensei}>
+          <AskSensei kind="term" anchorId={entry.id} title={entry.term} anchorText={senseiAnchorText} />
+        </div>
+      </SenseiHost>
 
       {entry.senses.map((s, i) => (
         <div key={`${s.unitId}-${i}`}>

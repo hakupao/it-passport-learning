@@ -10,6 +10,10 @@
 //
 // reviewAnchor (Phase B) is the topic-review anchor; its review task lines live in
 // the anchor block, so SENSEI_SYSTEM_INSTRUCTION stays one byte-stable constant.
+//
+// The term / unit anchors (Phase C) live in ./textbookAnchors: they read textbook
+// fields through lib/textbook/reader, which imports node:fs, and this module is in
+// the quiz page's client bundle.
 
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { AppLocale } from "@/i18n/routing";
@@ -24,9 +28,9 @@ import {
   type QuizQuestion,
 } from "@/lib/quiz/quizModel";
 
-const LANGUAGE_NAME = { jp: "日本語", zh: "簡体字中国語", en: "英語" } as const;
+export const LANGUAGE_NAME = { jp: "日本語", zh: "簡体字中国語", en: "英語" } as const;
 
-function answerLanguageLine(locale: AppLocale): string {
+export function answerLanguageLine(locale: AppLocale): string {
   return `回答言語: ${LANGUAGE_NAME[toDataLang(locale)]}`;
 }
 

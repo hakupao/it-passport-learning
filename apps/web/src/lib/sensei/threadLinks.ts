@@ -11,6 +11,8 @@
 // `review=1`): the set page opens that dated thread without sending anything, so a
 // past day's review stays reachable.
 
+import { isValidTermId } from "@/lib/glossary/termId";
+
 const QUESTION_ID = /^([0-9a-z]+)-q\d+$/;
 
 export function splitQuestionAnchor(anchorId: string): { questionId: string; examId: string } | null {
@@ -59,4 +61,21 @@ export function reviewThreadHref(anchorId: string): string | null {
   const date = reviewThreadDate(anchorId.slice(colon + 1));
   if (!TOPIC_ID.test(topicId) || !date) return null;
   return `/quiz?mode=topic&id=${encodeURIComponent(topicId)}&${REVIEW_THREAD_PARAM}=${date}`;
+}
+
+
+// Phase C: a term thread's anchorId is the termId (`t` + 16 hex, termId.ts); a unit
+// thread's is the unit id (`<category>-<NN>-<NN>-u<NN>`, data/ip/textbook/units).
+// Their rows link back to the glossary term page and the textbook unit page.
+
+const UNIT_ID = /^[a-z]+-\d{2}-\d{2}-u\d{2}$/;
+
+/** `/glossary/<termId>` (locale-less, for the i18n Link), or null. */
+export function termThreadHref(anchorId: string): string | null {
+  return isValidTermId(anchorId) ? `/glossary/${anchorId}` : null;
+}
+
+/** `/textbook/<unitId>` (locale-less, for the i18n Link), or null. */
+export function unitThreadHref(anchorId: string): string | null {
+  return UNIT_ID.test(anchorId) ? `/textbook/${anchorId}` : null;
 }

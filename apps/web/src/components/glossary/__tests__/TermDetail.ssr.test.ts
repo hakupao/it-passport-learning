@@ -80,7 +80,7 @@ function render(
     h(NextIntlClientProvider, {
       locale,
       messages,
-      children: h(TermDetail, { locale, entry, unitTitles, svgs }),
+      children: h(TermDetail, { locale, entry, unitTitles, svgs, senseiAnchorText: "ANCHOR" }),
     }),
   );
 }
@@ -127,6 +127,17 @@ describe("TermDetail (SSR)", () => {
     expect(out).toContain("解说-A");
     expect(out).toContain("口诀-A");
     expect(out).not.toContain("解説-A");
+  });
+
+  it("renders the 「AI 先生に聞く」 button under the headword (D-181 Phase C); no panel before a click", () => {
+    const messages = JSON.parse(readFileSync(path.resolve(__dirname, "../../../../messages/ja.json"), "utf-8"));
+    const out = render("ja", ENTRY, TITLES, [null, null]);
+    const button = out.match(/<button[^>]*data-testid="ask-sensei"[^>]*>([^<]*)<\/button>/);
+    expect(button?.[1]).toBe(messages.Sensei.askButton);
+    expect(out.indexOf("data-testid=\"ask-sensei\"")).toBeGreaterThan(out.indexOf("</h1>"));
+    expect(out.indexOf("data-testid=\"ask-sensei\"")).toBeLessThan(out.indexOf("<article"));
+    expect(out).not.toContain("role=\"dialog\"");
+    expect(out).not.toContain("ANCHOR"); // the anchor text is a prop, not markup
   });
 
   it("pluralizes the en question count (1 question / 2 questions)", () => {
