@@ -62,3 +62,21 @@ system message (長い参照文) に `providerOptions.anthropic.cacheControl = {
 
 - D-179 決定 4 (BYOK ブラウザ直結) は Anthropic で成立を確認。失敗した provider はないため `failures/` への記録はなし (Rule B 対象外)。DeepSeek は「未検証」のまま Phase 4 計画に持ち越す。
 - 後片付け: 一時ページ削除、dev server (port 3100) 停止、`git status` に残骸なし (下記コマンドで確認)。
+
+## 3. Task A1 (D-181) — `claude-sonnet-5-5` 実測 (2026-10-22、主 context が Playwright で駆動)
+
+- key: ユーザーが `~/.config/itp-sensei/anthropic_key` (repo 外、chmod 600、`pbpaste` で作成) に置いた。会話には出ていない。駆動 script (scratchpad の `run-sonnet-spike.mjs`) がファイルを読み、ヘッドレス Chromium の password 欄に入れ、出力前に key 文字列を `[REDACTED]` に置換する。
+- 一時ページ: server component が `2024r06-q001` (MA の題) の錨点テキスト (題文・選択肢・正解・日本語監査済み解説 + 中文解説・関連用語・受験者の誤答 ア) を作り、client に渡す。system 指示 (5 行) + 錨点の 2 block に `cacheControl: ephemeral`、`effort: "low"`、`maxOutputTokens: 4000`。2 turn (「为什么答案是エ？我选错了」→ 追問「生活中的例子」)。
+
+| turn | 最初の text | 合計 | chunk | input (noCache / cache read / write) | output (うち thinking) | finish | 概算費用 |
+|---|---|---|---|---|---|---|---|
+| #1 | 2337 ms | 5601 ms | 96 | 22 / 1625 / 0 | 448 (0) | stop | $0.0049 |
+| #2 | 4168 ms | 6706 ms | 76 | 490 / 1625 / 0 | 524 (223) | stop | $0.0065 |
+
+所見:
+- `@ai-sdk/anthropic@3.0.78` は `claude-sonnet-5-5` と `providerOptions.anthropic.effort: "low"` をそのまま受けた (エラー 0)。→ D-181 §0-1 は修正不要。
+- #1 で既に cache read 1625 / write 0 = 5 分以内に同じ prefix の書き込みがあった (ユーザーが手元で一度実行したと推定。主 context の dummy key 試行は 401 で書き込みなし)。cache read は確認、write はこの run では未観測 (Task 13 の haiku で write → read は確認済み)。
+- 錨点は見積り 3k に対し実測 ≈1.6k token。費用は出力が支配的: 1 turn ≈ $0.005〜0.007 (cache が冷えている初回は +$0.004)。§0-2 の「首轮約 2 美分・追問約 1 美分」は過大 → 実測は **初回 ≈1 美分、追問 ≈0.6 美分**。
+- 首字遅延 2.3〜4.2 s (#2 は thinking 223 token)。5 s 判定閾値内。UI は生成中の表示 (「考え中…」) を必須にする。
+- 内容: 正解エ (MA) の理由、受験者の誤答ア (= BI) がなぜ誤りか、イ (POS)・ウ (RPA) の区別、練習の推薦を出した。追問の類比は「教材にない類比」と明示した (system 指示の「教材にないことは明言」が効いている)。自作問題なし。
+- 判定: Task A1 PASS。Rule B 対象なし。一時ページ削除・dev server 停止済み。
