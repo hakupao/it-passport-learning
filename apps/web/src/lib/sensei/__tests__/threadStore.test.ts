@@ -178,6 +178,46 @@ describe("threadStore", () => {
     expect(s.data.has(threadStorageKey(opened[0]!.id))).toBe(false);
   });
 
+  it("at the cap, the oldest free thread goes first, then the oldest review thread, then the oldest of any kind", () => {
+    const s = memoryStorage();
+    for (let i = 1; i <= MAX_THREADS; i++) {
+      // thread 1 (a question) is the oldest; 3 is a review thread; 6 and 8 are free threads
+      const kind = i === 3 ? "review" : i === 6 || i === 8 ? "free" : "question";
+      const t = openThread(s, { kind, anchorId: `a${i}`, title: `T${i}` });
+      saveThreadMessages(s, t.id, [msg(`m${i}`, `質問${i}`)]);
+      tick();
+    }
+    const anchors = () => listThreads(s).map((t) => t.anchorId);
+
+    openThread(s, { kind: "question", anchorId: "a31", title: "T31" });
+    expect(anchors()).toHaveLength(MAX_THREADS);
+    expect(anchors()).not.toContain("a6"); // the oldest free thread, though review a3 and question a1 are older
+    expect(anchors()).toEqual(expect.arrayContaining(["a1", "a3", "a8"]));
+    expect(s.data.has(threadStorageKey("free.a6"))).toBe(false);
+    tick();
+
+    // a new free thread evicts the other free thread, never itself
+    openThread(s, { kind: "free", anchorId: "a32", title: "T32" });
+    expect(anchors()).not.toContain("a8");
+    expect(anchors()).toEqual(expect.arrayContaining(["a1", "a3", "a32"]));
+    tick();
+
+    // a question thread: the one free thread left (a32) goes; then, with no free thread, the review thread
+    openThread(s, { kind: "question", anchorId: "a33", title: "T33" });
+    expect(anchors()).not.toContain("a32");
+    tick();
+    openThread(s, { kind: "question", anchorId: "a34", title: "T34" });
+    expect(anchors()).not.toContain("a3");
+    expect(anchors()).toContain("a1");
+    tick();
+
+    // neither free nor review left → the oldest thread of any kind
+    openThread(s, { kind: "question", anchorId: "a35", title: "T35" });
+    expect(anchors()).toHaveLength(MAX_THREADS);
+    expect(anchors()).not.toContain("a1");
+    expect(anchors()).toContain("a2");
+  });
+
   it("on QuotaExceeded evicts the oldest other thread and retries once", () => {
     const s = quotaStorage(0);
     const old = openThread(s, { kind: "question", anchorId: "old", title: "old" });

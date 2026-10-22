@@ -4,7 +4,7 @@ import type { TermCard } from "@/lib/glossary/dictionary";
 import type { LearningRecord } from "@/lib/learning/record";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
-import { examRecency, FREE_NO_MATCH, freeAnchor, questionAnchor, reviewAnchor, type SenseiTermContext } from "../anchors";
+import { examRecency, FREE_DETAIL_MAX, FREE_NO_MATCH, freeAnchor, questionAnchor, reviewAnchor, type SenseiTermContext } from "../anchors";
 
 // choices_* keys deliberately permuted: the anchor must not follow object key order.
 const q: QuizQuestion = {
@@ -407,9 +407,79 @@ describe("freeAnchor (Phase C free question)", () => {
     );
   });
 
+  // m3 (Phase C fix wave): with ≤ FREE_DETAIL_MAX (3) terms, each sense also carries its
+  // explanation and memory hook (JP original + the UI locale); with more, definitions only.
+  const detailed: SenseiTermContext = {
+    id: "t-db",
+    term: "データベース",
+    senses: [
+      {
+        unitTitleJp: "データベース",
+        definitionJp: "JP DB 定義",
+        definitionLocale: "EN DB def",
+        explanationJp: "JP DB 解説",
+        explanationLocale: "EN DB explanation",
+        memoryHookJp: "JP DB 覚え方",
+        memoryHookLocale: "EN DB hook",
+      },
+    ],
+  };
+  const hookOnly: SenseiTermContext = {
+    id: "t-lan",
+    term: "LAN",
+    senses: [{ unitTitleJp: "ネットワーク", definitionJp: "JP LAN 定義", memoryHookJp: "JP LAN 覚え方" }],
+  };
+
+  it("≤ 3 terms (en): definition, explanation and memory hook per sense, JP original then English, empty fields left out", () => {
+    expect(FREE_DETAIL_MAX).toBe(3);
+    expect(freeAnchor([detailed, hookOnly], "en")).toBe(
+      [
+        "# 教材",
+        "回答言語: 英語",
+        "",
+        "## 自由質問",
+        "学習者は AI 先生のページから、特定の過去問・用語・単元を開かずに質問しています。",
+        "下の用語は、学習者の最初の質問に出てきた語を教科書の辞典から機械的に照合したものです。質問と関係のない語が含まれることがあります。",
+        "",
+        "### 関連用語（2 語、質問に出てきた順）",
+        "",
+        "#### 1. データベース",
+        "##### 意味 1: 単元「データベース」",
+        "定義（日本語原文）: JP DB 定義",
+        "定義（英語）: EN DB def",
+        "解説（日本語原文）: JP DB 解説",
+        "解説（英語）: EN DB explanation",
+        "覚え方（日本語原文）: JP DB 覚え方",
+        "覚え方（英語）: EN DB hook",
+        "",
+        "#### 2. LAN",
+        "##### 意味 1: 単元「ネットワーク」",
+        "定義（日本語原文）: JP LAN 定義",
+        "覚え方（日本語原文）: JP LAN 覚え方",
+      ].join("\n"),
+    );
+  });
+
+  it("≤ 3 terms (ja): explanation and memory hook in JP only", () => {
+    const text = freeAnchor([detailed, multi, single], "ja");
+    expect(text).toContain("定義（日本語原文）: JP DB 定義\n解説（日本語原文）: JP DB 解説\n覚え方（日本語原文）: JP DB 覚え方");
+    expect(text).not.toContain("EN DB");
+    expect(text).not.toContain("定義だけを示します");
+  });
+
+  it("4 or more terms: definitions only, and the anchor says so", () => {
+    const text = freeAnchor([detailed, hookOnly, multi, single], "en");
+    expect(text).toContain("### 関連用語（4 語、質問に出てきた順）");
+    expect(text).toContain("用語が 4 語以上あるため、各意味の定義だけを示します。");
+    expect(text).toContain("定義（日本語原文）: JP DB 定義\n定義（英語）: EN DB def\n");
+    expect(text).not.toContain("解説");
+    expect(text).not.toContain("覚え方");
+  });
+
   it("is deterministic: equal contexts (keys in any order) give byte-equal text", () => {
     const reverse = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).reverse()) as T;
     const reordered: SenseiTermContext = { ...reverse(multi), senses: multi.senses.map(reverse) };
     expect(freeAnchor([reordered, single], "zh")).toBe(freeAnchor([multi, single], "zh"));
+    expect(freeAnchor([{ ...reverse(detailed), senses: detailed.senses.map(reverse) }], "en")).toBe(freeAnchor([detailed], "en"));
   });
 });

@@ -4,9 +4,10 @@
 //   messages `itp:sensei:thread:<id>:v1`, written through lib/chat/historyStore
 //            (≤ MAX_PERSISTED_MESSAGES = 200 per thread)
 // At most MAX_THREADS threads; an evicted thread goes together with its message
-// key. Eviction takes the oldest (updatedAt) review thread if there is one (Phase B:
-// one review thread per topic per day would otherwise crowd out question threads),
-// else the oldest thread of any kind. A QuotaExceeded write evicts the same way and
+// key. Eviction takes the oldest (updatedAt) free thread if there is one (Phase C:
+// every free question is a new thread), else the oldest review thread (Phase B: one
+// review thread per topic per day), else the oldest thread of any kind — so question,
+// term and unit threads, one per anchor, go last. A QuotaExceeded write evicts the same way and
 // retries once (messages and the index alike); a second failure returns false
 // (never throws).
 // A corrupt index reads as empty and no other key is touched.
@@ -83,11 +84,13 @@ function writeIndex(storage: StorageLike, threads: ThreadMeta[]): boolean {
   }
 }
 
-/** Drop the oldest review thread other than `keepId`, else the oldest other thread
- *  (and its messages); null if none. `threads` is newest first. */
+/** Drop the oldest free thread other than `keepId`, else the oldest such review
+ *  thread, else the oldest other thread (and its messages); null if none.
+ *  `threads` is newest first. */
 function evictOldest(storage: StorageLike, threads: ThreadMeta[], keepId: string): ThreadMeta[] | null {
   const evictable = (t: ThreadMeta) => t.id !== keepId;
-  let i = threads.findLastIndex((t) => evictable(t) && t.kind === "review");
+  let i = threads.findLastIndex((t) => evictable(t) && t.kind === "free");
+  if (i < 0) i = threads.findLastIndex((t) => evictable(t) && t.kind === "review");
   if (i < 0) i = threads.findLastIndex(evictable);
   if (i < 0) return null;
   clearChatHistory(storage, threadStorageKey(threads[i]!.id));

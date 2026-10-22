@@ -85,9 +85,12 @@ const unit = (unit_id: string, topic_id: string, category: string, terms: UnitTe
 
 const UNITS: TextbookUnit[] = [
   unit("management-08-25-u01", "management-08-25", "management", [
-    term("機能要件", "功能需求", "Functional requirement", "func"),
+    term("機能要件", "功能需求", "Functional requirement", "func", {
+      explanation_jp: "func-expl(jp)",
+      explanation_en: "func-expl(en)",
+    }),
     term("非機能要件", "非功能需求", "Non-functional requirement", "nonfunc"),
-    term("要件定義", "需求定义", "Requirements definition", "req", { definition_en: "" }),
+    term("要件定義", "需求定义", "Requirements definition", "req", { definition_en: "", memory_hook_en: " " }),
   ]),
   unit("strategy-07-23-u01", "strategy-07-23", "strategy", [
     term("機能要件", "功能性需求", "Functional requirements", "S-func"),
@@ -155,33 +158,89 @@ describe("GET /api/sensei/terms", () => {
       {
         id: NONFUNC,
         term: "非機能要件",
-        senses: [{ unitTitleJp: "開発プロセスの単元", definitionJp: "nonfunc(jp)", definitionLocale: "nonfunc(en)" }],
+        senses: [
+          {
+            unitTitleJp: "開発プロセスの単元",
+            definitionJp: "nonfunc(jp)",
+            definitionLocale: "nonfunc(en)",
+            memoryHookJp: "nonfunc-hook(jp)",
+            memoryHookLocale: "nonfunc-hook(en)",
+          },
+        ],
       },
       {
         // two units teach it: both senses, in dictionary (buildNav) order — management before strategy
         id: FUNC,
         term: "機能要件",
         senses: [
-          { unitTitleJp: "開発プロセスの単元", definitionJp: "func(jp)", definitionLocale: "func(en)" },
-          { unitTitleJp: "要件定義の単元", definitionJp: "S-func(jp)", definitionLocale: "S-func(en)" },
+          {
+            unitTitleJp: "開発プロセスの単元",
+            definitionJp: "func(jp)",
+            definitionLocale: "func(en)",
+            explanationJp: "func-expl(jp)",
+            explanationLocale: "func-expl(en)",
+            memoryHookJp: "func-hook(jp)",
+            memoryHookLocale: "func-hook(en)",
+          },
+          {
+            unitTitleJp: "要件定義の単元",
+            definitionJp: "S-func(jp)",
+            definitionLocale: "S-func(en)",
+            memoryHookJp: "S-func-hook(jp)",
+            memoryHookLocale: "S-func-hook(en)",
+          },
         ],
       },
     ]);
   });
 
-  it("zh: the zh definition; ja: JP only (no definitionLocale)", async () => {
+  it("zh: the zh fields (an empty zh explanation is left out); ja: JP only (no *Locale)", async () => {
     const zh = (await (await get(q([FUNC], "zh"))).json()) as Body;
     expect(zh.terms[0]!.senses.map((s) => s.definitionLocale)).toEqual(["func(zh)", "S-func(zh)"]);
+    expect(zh.terms[0]!.senses[0]).toEqual({
+      unitTitleJp: "開発プロセスの単元",
+      definitionJp: "func(jp)",
+      definitionLocale: "func(zh)",
+      explanationJp: "func-expl(jp)",
+      memoryHookJp: "func-hook(jp)",
+      memoryHookLocale: "func-hook(zh)",
+    });
     const ja = (await (await get(q([FUNC], "ja"))).json()) as Body;
     expect(ja.terms[0]!.senses).toEqual([
-      { unitTitleJp: "開発プロセスの単元", definitionJp: "func(jp)" },
-      { unitTitleJp: "要件定義の単元", definitionJp: "S-func(jp)" },
+      { unitTitleJp: "開発プロセスの単元", definitionJp: "func(jp)", explanationJp: "func-expl(jp)", memoryHookJp: "func-hook(jp)" },
+      { unitTitleJp: "要件定義の単元", definitionJp: "S-func(jp)", memoryHookJp: "S-func-hook(jp)" },
     ]);
   });
 
-  it("omits an empty locale definition (no JP repeated as the translation)", async () => {
+  it("omits an empty (or blank) locale field (no JP repeated as the translation)", async () => {
     const body = (await (await get(q([REQ], "en"))).json()) as Body;
-    expect(body.terms[0]!.senses).toEqual([{ unitTitleJp: "開発プロセスの単元", definitionJp: "req(jp)" }]);
+    expect(body.terms[0]!.senses).toEqual([
+      { unitTitleJp: "開発プロセスの単元", definitionJp: "req(jp)", memoryHookJp: "req-hook(jp)" },
+    ]);
+  });
+
+  it("200: cacheable at the edge (the data only changes on deploy); errors: no-store", async () => {
+    const ok = await get(q([FUNC]));
+    expect(ok.status).toBe(200);
+    expect(ok.headers.get("cache-control")).toBe("public, s-maxage=86400, stale-while-revalidate=604800");
+    const empty = await get(q(["nope"]));
+    expect(empty.status).toBe(200);
+    expect(empty.headers.get("cache-control")).toBe("public, s-maxage=86400, stale-while-revalidate=604800");
+    expect((await get("?locale=ja")).headers.get("cache-control")).toBe("no-store");
+    expect((await get(q([FUNC], "fr"))).headers.get("cache-control")).toBe("no-store");
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    dictHolder.current = Promise.reject(new TypeError("x"));
+    expect((await get(q([FUNC]))).headers.get("cache-control")).toBe("no-store");
+    log.mockRestore();
+  });
+
+  it("drops empty id segments before the 8-id cap; only empty segments → 400", async () => {
+    const res = await get(`?ids=${FUNC},,,,,,,,,${REQ},&locale=ja`);
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as Body).terms.map((t) => t.id)).toEqual([FUNC, REQ]);
+    const commas = await get("?ids=,,,&locale=ja");
+    expect(commas.status).toBe(400);
+    expect(await commas.json()).toEqual({ error: "ids required" });
   });
 
   it("accepts 8 ids and rejects 9 with 400", async () => {

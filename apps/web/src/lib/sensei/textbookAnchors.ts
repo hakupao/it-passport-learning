@@ -110,7 +110,8 @@ export function unitAnchor(unit: TextbookUnit, locale: AppLocale): string {
 /**
  * A term for the free question (GET /api/sensei/terms): every sense in dictionary
  * order, under its unit's JP title (`unitTitlesJp`; the unit id when absent), with the
- * JP definition and — zh / en, when not empty — the UI-locale one.
+ * JP definition (always), JP explanation and memory hook, and — zh / en — the UI-locale
+ * ones; a blank field is left out (freeAnchor decides how much of it to show).
  */
 export function termContext(entry: DictEntry, locale: AppLocale, unitTitlesJp: Record<string, string>): SenseiTermContext {
   const translated = toDataLang(locale) !== "jp";
@@ -119,9 +120,17 @@ export function termContext(entry: DictEntry, locale: AppLocale, unitTitlesJp: R
     term: entry.term,
     senses: entry.senses.map((s) => {
       const title = Object.prototype.hasOwnProperty.call(unitTitlesJp, s.unitId) ? unitTitlesJp[s.unitId] : undefined;
-      const sense: SenseiTermSense = { unitTitleJp: title ?? s.unitId, definitionJp: pick(rec(s.term), "definition", "ja") };
-      const tr = translated ? pick(rec(s.term), "definition", locale) : "";
-      if (tr.trim() !== "") sense.definitionLocale = tr;
+      const t = rec(s.term);
+      const sense: SenseiTermSense = { unitTitleJp: title ?? s.unitId, definitionJp: pick(t, "definition", "ja") };
+      const set = (key: Exclude<keyof SenseiTermSense, "unitTitleJp" | "definitionJp">, field: string, lang: string) => {
+        const v = pick(t, field, lang);
+        if (v.trim() !== "") sense[key] = v;
+      };
+      if (translated) set("definitionLocale", "definition", locale);
+      set("explanationJp", "explanation", "ja");
+      if (translated) set("explanationLocale", "explanation", locale);
+      set("memoryHookJp", "memory_hook", "ja");
+      if (translated) set("memoryHookLocale", "memory_hook", locale);
       return sense;
     }),
   };

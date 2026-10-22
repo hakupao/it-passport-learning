@@ -976,6 +976,8 @@ interface CorpusTerm {
   definition_en: string;
   analogy_en: string;
   definition_zh: string;
+  explanation_zh: string;
+  memory_hook_zh: string;
 }
 interface CorpusUnit {
   unit_id: string;
@@ -1119,7 +1121,8 @@ test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary a
 //  19. No AI SDK chunk on /sensei until the free-question input is focused. A question
 //      naming dictionary terms → one GET /api/sensei/terms with their ids (order of
 //      appearance) → the panel opens and sends the question once; the anchor holds
-//      every sense of those terms (JP definitions, unit titles); the thread is kind "free", anchorId free:<base36>,
+//      every sense of those terms (JP definition, explanation and memory hook — ≤ 3
+//      terms — under the unit titles); the thread is kind "free", anchorId free:<base36>,
 //      title = the question. Reopened from its /sensei row (a button, no link) after
 //      a reload: the stored conversation shows, the anchor is derived again from the
 //      first question, and the follow-up request's system text equals the first's.
@@ -1129,7 +1132,7 @@ test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary a
 //  21. The term request fails: a notice, the question stays, nothing is sent.
 //  22. /zh: a zh spelling found only in E-R図's second dictionary sense (the strategy
 //      unit's 「E-R 图」; technology senses come first) matches; the request carries locale=zh and the anchor holds both senses, each
-//      with its JP original and zh definition.
+//      with its JP original and zh definition, explanation and memory hook.
 
 const ISO_TERM = "ISO/IEC 27000";
 
@@ -1198,13 +1201,15 @@ test("free question: no AI SDK before focus; matched definitions in the anchor; 
   // 機能要件 is taught in 2 units: both senses, each under its unit's JP title
   const senses = corpusSenseUnits(TERM);
   expect(senses).toHaveLength(2);
-  for (const { titleJp, t } of senses) {
-    expect(first).toContain(`単元「${titleJp}」\n定義（日本語原文）: ${t.definition_jp}`);
-  }
+  // 2 terms (≤ 3): each sense carries its explanation and memory hook too
+  const jpSense = ({ titleJp, t }: { titleJp: string; t: CorpusTerm }) =>
+    `単元「${titleJp}」\n定義（日本語原文）: ${t.definition_jp}\n解説（日本語原文）: ${t.explanation_jp}\n覚え方（日本語原文）: ${t.memory_hook_jp}`;
+  for (const sense of senses) expect(first).toContain(jpSense(sense));
   const iso = corpusSenseUnits(ISO_TERM);
   expect(iso).toHaveLength(1);
-  expect(first).toContain(`単元「${iso[0]!.titleJp}」\n定義（日本語原文）: ${iso[0]!.t.definition_jp}`);
+  expect(first).toContain(jpSense(iso[0]!));
   expect(first).not.toContain("定義（英語）");
+  expect(first).not.toContain("定義だけを示します");
   expect(first).not.toContain("該当する教材の項目なし");
 
   await page.keyboard.press("Escape");
@@ -1314,6 +1319,16 @@ test("free question (zh): a later sense's zh spelling matches; every sense with 
   expect(system).toContain(`#### 1. ${ER}`);
   expect(system).toContain("この用語は 2 つの単元で扱われています。");
   for (const { titleJp, t } of senses) {
-    expect(system).toContain(`単元「${titleJp}」\n定義（日本語原文）: ${t.definition_jp}\n定義（簡体字中国語）: ${t.definition_zh}`);
+    expect(system).toContain(
+      [
+        `単元「${titleJp}」`,
+        `定義（日本語原文）: ${t.definition_jp}`,
+        `定義（簡体字中国語）: ${t.definition_zh}`,
+        `解説（日本語原文）: ${t.explanation_jp}`,
+        `解説（簡体字中国語）: ${t.explanation_zh}`,
+        `覚え方（日本語原文）: ${t.memory_hook_jp}`,
+        `覚え方（簡体字中国語）: ${t.memory_hook_zh}`,
+      ].join("\n"),
+    );
   }
 });

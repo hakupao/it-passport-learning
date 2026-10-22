@@ -255,12 +255,21 @@ export function reviewAnchor(
 
 export const FREE_NO_MATCH = "該当する教材の項目なし";
 
-/** One textbook unit's sense of a term: its unit's JP title, the JP definition and
- *  (zh / en only, when not empty) the UI-locale definition. */
+/** With at most this many matched terms, the free anchor also carries each sense's
+ *  explanation and memory hook; with more, definitions only (anchor size). */
+export const FREE_DETAIL_MAX = 3;
+
+/** One textbook unit's sense of a term: its unit's JP title, the JP definition,
+ *  explanation and memory hook, and (zh / en only) the UI-locale ones. A field whose
+ *  text is empty is left out. */
 export interface SenseiTermSense {
   unitTitleJp: string;
   definitionJp: string;
   definitionLocale?: string;
+  explanationJp?: string;
+  explanationLocale?: string;
+  memoryHookJp?: string;
+  memoryHookLocale?: string;
 }
 
 /** A dictionary term as GET /api/sensei/terms returns it: every sense, in dictionary order. */
@@ -272,9 +281,10 @@ export interface SenseiTermContext {
 
 /**
  * The free-question anchor. `terms` are the terms matched in the thread's first
- * question, in match order, each with every sense under its unit's JP title (JP
- * definition + the UI-locale one); none → FREE_NO_MATCH, and this thread may be
- * answered from general knowledge, marked as such.
+ * question, in match order, each with every sense under its unit's JP title: the JP
+ * definition + the UI-locale one, and — with ≤ FREE_DETAIL_MAX terms — the
+ * explanation and memory hook likewise (JP, then UI locale, field by field); none →
+ * FREE_NO_MATCH, and this thread may be answered from general knowledge, marked as such.
  */
 export function freeAnchor(terms: readonly SenseiTermContext[], locale: AppLocale): string {
   const dl = toDataLang(locale);
@@ -296,18 +306,27 @@ export function freeAnchor(terms: readonly SenseiTermContext[], locale: AppLocal
     );
     return out.join("\n");
   }
+  const detail = terms.length <= FREE_DETAIL_MAX;
   out.push(
     "下の用語は、学習者の最初の質問に出てきた語を教科書の辞典から機械的に照合したものです。質問と関係のない語が含まれることがあります。",
-    "",
-    `### 関連用語（${terms.length} 語、質問に出てきた順）`,
   );
+  if (!detail) out.push(`用語が ${FREE_DETAIL_MAX + 1} 語以上あるため、各意味の定義だけを示します。`);
+  out.push("", `### 関連用語（${terms.length} 語、質問に出てきた順）`);
+  const field = (label: string, jp: string | undefined, tr: string | undefined): string[] => {
+    const lines: string[] = [];
+    if (jp !== undefined) lines.push(`${label}（日本語原文）: ${jp}`);
+    if (dl !== "jp" && tr) lines.push(`${label}（${LANGUAGE_NAME[dl]}）: ${tr}`);
+    return lines;
+  };
   terms.forEach((t, i) => {
     out.push("", `#### ${i + 1}. ${t.term}`);
     const n = t.senses.length;
     if (n > 1) out.push(`この用語は ${n} つの単元で扱われています。各単元での意味をすべて示します。`);
     t.senses.forEach((s, j) => {
-      out.push(`##### 意味 ${j + 1}: 単元「${s.unitTitleJp}」`, `定義（日本語原文）: ${s.definitionJp}`);
-      if (dl !== "jp" && s.definitionLocale) out.push(`定義（${LANGUAGE_NAME[dl]}）: ${s.definitionLocale}`);
+      out.push(`##### 意味 ${j + 1}: 単元「${s.unitTitleJp}」`, ...field("定義", s.definitionJp, s.definitionLocale));
+      if (detail) {
+        out.push(...field("解説", s.explanationJp, s.explanationLocale), ...field("覚え方", s.memoryHookJp, s.memoryHookLocale));
+      }
     });
   });
   return out.join("\n");

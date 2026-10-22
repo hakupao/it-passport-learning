@@ -2,13 +2,17 @@
 // route of Stage 6).
 //
 //   GET ?ids=<termId>,…&locale=<ja|zh|en>
-//     → 200 { terms: { id, term, senses: { unitTitleJp, definitionJp, definitionLocale? }[] }[] }
+//     → 200 { terms: { id, term, senses: { unitTitleJp, definitionJp, definitionLocale?,
+//               explanationJp?, explanationLocale?, memoryHookJp?, memoryHookLocale? }[] }[] }
 //
 // Every sense of each term, in dictionary order, under its unit's JP title; the JP
-// definition always, the `locale` one for zh / en (JP only for ja). At most 8 ids
-// (else 400). Ids that are not termId-shaped (isValidTermId) or not in the dictionary
+// definition always, the JP explanation / memory hook and the `locale` fields for
+// zh / en (JP only for ja) when not blank. Empty id segments are dropped, then at most
+// 8 ids (else 400). Ids that are not termId-shaped (isValidTermId) or not in the dictionary
 // are skipped, a repeated id is returned once, and the terms follow the requested
-// order. A missing / unknown locale or no ids → 400. Read-only: the committed
+// order. A missing / unknown locale or no ids → 400. A 200 is cacheable at the edge
+// (`public, s-maxage=86400, stale-while-revalidate=604800`: the committed data only
+// changes on deploy, and a deploy starts a fresh cache); errors are `no-store`. Read-only: the committed
 // dictionary and unit index (memoized loaders) and nothing else — no LLM, no owner
 // gate, no cookies. A failed load → 500; the log names the error type only.
 
@@ -26,12 +30,14 @@ export const dynamic = "force-dynamic";
 
 const MAX_IDS = 8;
 
+const CACHE_OK = "public, s-maxage=86400, stale-while-revalidate=604800";
+
 function json(status: number, data: unknown): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
+      "Cache-Control": status === 200 ? CACHE_OK : "no-store",
     },
   });
 }
@@ -40,9 +46,8 @@ export async function GET(request: Request): Promise<Response> {
   const params = new URL(request.url).searchParams;
   const locale = params.get("locale");
   if (!locale || !hasLocale(routing.locales, locale)) return json(400, { error: "invalid locale" });
-  const raw = params.get("ids");
-  if (!raw) return json(400, { error: "ids required" });
-  const ids = raw.split(",");
+  const ids = (params.get("ids") ?? "").split(",").filter((id) => id !== "");
+  if (ids.length === 0) return json(400, { error: "ids required" });
   if (ids.length > MAX_IDS) return json(400, { error: `at most ${MAX_IDS} ids` });
 
   let dict, index;
