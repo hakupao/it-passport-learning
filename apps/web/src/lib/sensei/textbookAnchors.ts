@@ -13,13 +13,17 @@
 // analogy, no inline quiz, no past-exam list (a `#<question_id>` link only resolves
 // on a quiz page). An empty translation drops that line rather than repeating the
 // JP text.
+//
+// termContext (Phase C, §0-9) is not an anchor: it is the per-term data that
+// GET /api/sensei/terms returns for the /sensei free question (./anchors freeAnchor
+// renders it in the browser).
 
 import type { AppLocale } from "@/i18n/routing";
 import type { DictEntry } from "@/lib/glossary/dictionary";
 import { pick, pickTerm, toDataLang } from "@/lib/textbook/reader";
 import type { TextbookUnit, UnitTerm } from "@/lib/textbook/types";
 
-import { answerLanguageLine, LANGUAGE_NAME } from "./anchors";
+import { answerLanguageLine, LANGUAGE_NAME, type SenseiTermContext, type SenseiTermSense } from "./anchors";
 
 const rec = (o: object) => o as unknown as Record<string, unknown>;
 
@@ -101,4 +105,24 @@ export function unitAnchor(unit: TextbookUnit, locale: AppLocale): string {
     out.push("", `### ${i + 1}. ${t.term}`, ...termBody(t, locale));
   });
   return out.join("\n");
+}
+
+/**
+ * A term for the free question (GET /api/sensei/terms): every sense in dictionary
+ * order, under its unit's JP title (`unitTitlesJp`; the unit id when absent), with the
+ * JP definition and — zh / en, when not empty — the UI-locale one.
+ */
+export function termContext(entry: DictEntry, locale: AppLocale, unitTitlesJp: Record<string, string>): SenseiTermContext {
+  const translated = toDataLang(locale) !== "jp";
+  return {
+    id: entry.id,
+    term: entry.term,
+    senses: entry.senses.map((s) => {
+      const title = Object.prototype.hasOwnProperty.call(unitTitlesJp, s.unitId) ? unitTitlesJp[s.unitId] : undefined;
+      const sense: SenseiTermSense = { unitTitleJp: title ?? s.unitId, definitionJp: pick(rec(s.term), "definition", "ja") };
+      const tr = translated ? pick(rec(s.term), "definition", locale) : "";
+      if (tr.trim() !== "") sense.definitionLocale = tr;
+      return sense;
+    }),
+  };
 }

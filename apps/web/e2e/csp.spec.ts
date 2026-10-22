@@ -93,7 +93,7 @@ for (const path of PAGES) {
       await page.getByTestId("sensei-free-send").click();
       await expect(page.getByRole("dialog").getByTestId("sensei-log")).toContainText(REPLY_MARK);
       expect(fake.requests).toHaveLength(1);
-      expect(JSON.stringify(fake.requests[0]!.body.system)).toContain("- ISO/IEC 27000: "); // the card came from /api/sensei/terms
+      expect(JSON.stringify(fake.requests[0]!.body.system)).toContain("#### 1. ISO/IEC 27000"); // the term came from /api/sensei/terms
     }
     if (fake && ask) {
       await page.getByTestId("ask-sensei").click();

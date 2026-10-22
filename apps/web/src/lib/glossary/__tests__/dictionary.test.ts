@@ -262,13 +262,20 @@ describe("buildTermCards", () => {
 describe("buildTermIndex", () => {
   const dict = buildDictionary(index, units, questions);
 
-  it("lists every entry in dictionary order with its JP / zh / en headwords (the entry's own, from senses[0])", () => {
+  it("lists every entry in dictionary order: the JP headword, then each sense's distinct zh / en headwords", () => {
     expect(buildTermIndex(dict)).toEqual([
-      { id: termId("機能要件"), jp: "機能要件", zh: "功能需求", en: "Functional requirement" },
-      { id: termId("要件定義"), jp: "要件定義", zh: "需求定义", en: "" },
-      { id: termId("非機能要件"), jp: "非機能要件", zh: "非功能性需求", en: "Non-functional requirements" },
-      { id: termId("業務要件定義"), jp: "業務要件定義", zh: "需求定义", en: "Business requirements definition" },
+      // two senses (management first, by buildNav): both spellings of each language
+      ["機能要件", "功能需求", "Functional requirement", "功能性需求", "Functional requirements"],
+      // empty term_en dropped
+      ["要件定義", "需求定义"],
+      ["非機能要件", "非功能性需求", "Non-functional requirements"],
+      ["業務要件定義", "需求定义", "Business requirements definition"],
     ]);
+  });
+
+  it("carries no id (the browser derives it with termId of the JP headword)", () => {
+    const idx = buildTermIndex(dict);
+    expect(idx.map((row) => termId(row[0]!))).toEqual(dict.entries.map((e) => e.id));
   });
 });
 

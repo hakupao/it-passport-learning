@@ -11,7 +11,7 @@ import { loadAllUnits, loadReaderIndex } from "../../textbook/reader";
 import { matchTerms } from "../../sensei/termMatch";
 import { buildListGroups, buildTermIndex } from "../dictionary";
 import { loadDictionary } from "../dictionaryReader";
-import { isValidTermId, termId } from "../termId";
+import { termId } from "../termId";
 
 describe("glossary dictionary on the real corpus", () => {
   it("loads every unit listed in unit_index", async () => {
@@ -69,12 +69,20 @@ describe("glossary dictionary on the real corpus", () => {
   });
 
   // D-181 §0-9 — the light index shipped to /sensei, and free-question matching on it.
-  it("builds the light term index: every entry once, valid ids, three headwords each", async () => {
+  it("builds the light term index: every entry once, JP headword first, termId(jp) = the server's id", async () => {
     const dict = await loadDictionary();
     const idx = buildTermIndex(dict);
     expect(idx).toHaveLength(1395);
-    expect(idx.every((e) => isValidTermId(e.id) && e.id === termId(e.jp))).toBe(true);
-    expect(idx.every((e) => e.jp !== "" && e.zh !== "" && e.en !== "")).toBe(true);
+    idx.forEach((row, i) => {
+      expect(row[0]).toBe(dict.entries[i]!.term);
+      expect(termId(row[0]!)).toBe(dict.entries[i]!.id);
+      expect(new Set(row).size).toBe(row.length);
+      expect(row.every((h) => h.trim() !== "")).toBe(true);
+    });
+    // every sense's zh / en headword is in its entry's row (the 22 multi-sense headwords included)
+    for (const [i, e] of dict.entries.entries()) {
+      for (const s of e.senses) expect(idx[i]).toEqual(expect.arrayContaining([s.term.term_zh, s.term.term_en]));
+    }
   });
 
   it("matches free questions on the real index (longest match, acronym case rule)", async () => {
@@ -83,7 +91,7 @@ describe("glossary dictionary on the real corpus", () => {
     expect(matchTerms("ＩＳＯ／ＩＥＣ　２７０００とは", idx)).toEqual([termId("ISO/IEC 27000")]);
     expect(matchTerms("LAN と WAN の違い", idx)).toEqual([termId("LAN"), termId("WAN")]);
     // OR, ITS and ETC are headwords; English prose words in lower case do not hit them.
-    for (const h of ["OR", "ITS", "ETC"]) expect(idx.some((e) => e.jp === h)).toBe(true);
+    for (const h of ["OR", "ITS", "ETC"]) expect(idx.some((row) => row[0] === h)).toBe(true);
     expect(matchTerms("this or that, its, etc.", idx)).toEqual([]);
     expect(matchTerms("こんにちは", idx)).toEqual([]);
   });

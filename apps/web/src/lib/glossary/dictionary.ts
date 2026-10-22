@@ -157,17 +157,22 @@ export function buildTermCards(
 }
 
 /** D-181 §0-9 — one row of the light index the /sensei page ships for free-question
- *  term matching (lib/sensei/termMatch): the id and the entry's JP / zh / en headwords. */
-export interface TermIndexEntry {
-  id: string;
-  jp: string;
-  zh: string;
-  en: string;
-}
+ *  term matching (lib/sensei/termMatch): the JP headword first, then the distinct zh /
+ *  en headwords of every sense. No id: the browser derives it with termId(jp). */
+export type TermIndexEntry = readonly string[];
 
-/** Every entry in dictionary order; zh / en are the entry's own headwords (senses[0]). */
+/** Every entry in dictionary order: [JP headword, ...zh / en of each sense in sense
+ *  order], exact duplicates and empty strings dropped. */
 export function buildTermIndex(dict: Dictionary): TermIndexEntry[] {
-  return dict.entries.map((e) => ({ id: e.id, jp: e.term, zh: e.termZh, en: e.termEn }));
+  return dict.entries.map((e) => {
+    const heads = [e.term];
+    for (const s of e.senses) {
+      for (const h of [s.term.term_zh, s.term.term_en]) {
+        if (h.trim() !== "" && !heads.includes(h)) heads.push(h);
+      }
+    }
+    return heads;
+  });
 }
 
 export interface DictListItem {

@@ -1,6 +1,8 @@
 // D-181 Phase C (§0-9) — the terms of a free question: longest match of the light
-// dictionary index (JP / zh / en headwords, built into the /sensei page props) over
-// the question text. Pure and client-safe (type-only import from the dictionary).
+// dictionary index (per entry: the JP headword, then the zh / en headwords of every
+// sense; built into the /sensei page props) over the question text. An entry's id is
+// termId(JP headword), computed here (termId is isomorphic), so the index ships no ids.
+// Pure and client-safe (type-only import from the dictionary).
 //
 // Rules (pinned in __tests__/termMatch.test.ts):
 //   - text and headwords are NFKC-normalized (full-width ⇄ half-width); English is
@@ -19,6 +21,7 @@
 //     ("or" → OR, "its" → ITS, "etc." → ETC); longer ones are case-insensitive.
 
 import type { TermIndexEntry } from "@/lib/glossary/dictionary";
+import { termId } from "@/lib/glossary/termId";
 
 export const MAX_MATCHED_TERMS = 8;
 export const CASE_SENSITIVE_MAX = 3;
@@ -42,7 +45,9 @@ function patternsOf(index: readonly TermIndexEntry[]): Pattern[] {
   if (cached) return cached;
   const byKey = new Map<string, Pattern>();
   for (const entry of index) {
-    for (const headword of [entry.jp, entry.zh, entry.en]) {
+    if (entry.length === 0) continue;
+    const id = termId(entry[0]!);
+    for (const headword of entry) {
       const n = headword.normalize("NFKC").trim();
       if ([...n].length < 2) continue;
       const ascii = ASCII_ONLY.test(n);
@@ -51,7 +56,7 @@ function patternsOf(index: readonly TermIndexEntry[]): Pattern[] {
       const mapKey = `${caseSensitive ? "c" : "i"}:${key}`;
       let p = byKey.get(mapKey);
       if (!p) byKey.set(mapKey, (p = { key, ascii, caseSensitive, ids: [] }));
-      if (!p.ids.includes(entry.id)) p.ids.push(entry.id);
+      if (!p.ids.includes(id)) p.ids.push(id);
     }
   }
   const patterns = [...byKey.values()];

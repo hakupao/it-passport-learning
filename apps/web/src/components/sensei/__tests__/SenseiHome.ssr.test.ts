@@ -19,7 +19,7 @@ import { MAX_THREADS } from "@/lib/sensei/threadStore";
 
 import { SenseiHome } from "../SenseiHome";
 
-const TERM_INDEX = [{ id: "t0000000000000001", jp: "機能要件", zh: "功能需求", en: "Functional requirement" }];
+const TERM_INDEX = [["機能要件", "功能需求", "Functional requirement"]];
 
 function render(locale: "ja" | "zh" | "en"): { html: string; s: Record<string, string> } {
   const messages = JSON.parse(

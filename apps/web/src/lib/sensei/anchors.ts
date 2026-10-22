@@ -11,8 +11,9 @@
 // reviewAnchor (Phase B) is the topic-review anchor; its review task lines live in
 // the anchor block, so SENSEI_SYSTEM_INSTRUCTION stays one byte-stable constant.
 //
-// freeAnchor (Phase C) is the /sensei free-question anchor: the cards of the terms
-// matched in the thread's first question (lib/sensei/freeQuestion), or the
+// freeAnchor (Phase C) is the /sensei free-question anchor: every sense of the terms
+// matched in the thread's first question (lib/sensei/freeQuestion; the contexts come
+// from /api/sensei/terms, built by textbookAnchors.termContext), or the
 // 「該当する教材の項目なし」 notice with the general-knowledge allowance.
 //
 // The term / unit anchors (Phase C) live in ./textbookAnchors: they read textbook
@@ -52,18 +53,14 @@ function explanationLines(e: LocalizedExplanation, correct: string): string[] {
   return lines;
 }
 
-function cardLines(c: TermCard): string[] {
-  const head = c.gloss && c.gloss !== c.term ? `${c.term}（${c.gloss}）` : c.term;
-  const lines = [`- ${head}: ${c.definition}`];
-  if (c.memoryHook) lines.push(`  覚え方: ${c.memoryHook}`);
-  return lines;
-}
-
 function termLines(terms: readonly string[], termCards: Record<string, TermCard>): string[] {
   const lines: string[] = [];
   for (const term of terms) {
     const c = termCards[term];
-    if (c) lines.push(...cardLines(c));
+    if (!c) continue;
+    const head = c.gloss && c.gloss !== c.term ? `${c.term}（${c.gloss}）` : c.term;
+    lines.push(`- ${head}: ${c.definition}`);
+    if (c.memoryHook) lines.push(`  覚え方: ${c.memoryHook}`);
   }
   return lines;
 }
@@ -258,12 +255,29 @@ export function reviewAnchor(
 
 export const FREE_NO_MATCH = "該当する教材の項目なし";
 
+/** One textbook unit's sense of a term: its unit's JP title, the JP definition and
+ *  (zh / en only, when not empty) the UI-locale definition. */
+export interface SenseiTermSense {
+  unitTitleJp: string;
+  definitionJp: string;
+  definitionLocale?: string;
+}
+
+/** A dictionary term as GET /api/sensei/terms returns it: every sense, in dictionary order. */
+export interface SenseiTermContext {
+  id: string;
+  term: string;
+  senses: SenseiTermSense[];
+}
+
 /**
- * The free-question anchor. `cards` are the terms matched in the thread's first
- * question, in match order (definitions in the UI locale, as on the quiz page); none →
- * FREE_NO_MATCH, and this thread may be answered from general knowledge, marked as such.
+ * The free-question anchor. `terms` are the terms matched in the thread's first
+ * question, in match order, each with every sense under its unit's JP title (JP
+ * definition + the UI-locale one); none → FREE_NO_MATCH, and this thread may be
+ * answered from general knowledge, marked as such.
  */
-export function freeAnchor(cards: readonly TermCard[], locale: AppLocale): string {
+export function freeAnchor(terms: readonly SenseiTermContext[], locale: AppLocale): string {
+  const dl = toDataLang(locale);
   const out: string[] = [
     "# 教材",
     answerLanguageLine(locale),
@@ -271,7 +285,7 @@ export function freeAnchor(cards: readonly TermCard[], locale: AppLocale): strin
     "## 自由質問",
     "学習者は AI 先生のページから、特定の過去問・用語・単元を開かずに質問しています。",
   ];
-  if (cards.length === 0) {
+  if (terms.length === 0) {
     out.push(
       "",
       "### 関連用語",
@@ -280,13 +294,21 @@ export function freeAnchor(cards: readonly TermCard[], locale: AppLocale): strin
       "この会話に限り、一般的な知識で答えてかまいません。その場合は回答の冒頭で、教材にない一般的な説明であることを明記してください。",
       "ITパスポート試験の学習と関係がなさそうな質問には、そのことも伝えてください。",
     );
-  } else {
-    out.push(
-      "下の用語は、学習者の最初の質問に出てきた語を教科書の辞典から機械的に照合したものです。質問と関係のない語が含まれることがあります。",
-      "",
-      `### 関連用語（定義は${LANGUAGE_NAME[toDataLang(locale)]}）`,
-      ...cards.flatMap(cardLines),
-    );
+    return out.join("\n");
   }
+  out.push(
+    "下の用語は、学習者の最初の質問に出てきた語を教科書の辞典から機械的に照合したものです。質問と関係のない語が含まれることがあります。",
+    "",
+    `### 関連用語（${terms.length} 語、質問に出てきた順）`,
+  );
+  terms.forEach((t, i) => {
+    out.push("", `#### ${i + 1}. ${t.term}`);
+    const n = t.senses.length;
+    if (n > 1) out.push(`この用語は ${n} つの単元で扱われています。各単元での意味をすべて示します。`);
+    t.senses.forEach((s, j) => {
+      out.push(`##### 意味 ${j + 1}: 単元「${s.unitTitleJp}」`, `定義（日本語原文）: ${s.definitionJp}`);
+      if (dl !== "jp" && s.definitionLocale) out.push(`定義（${LANGUAGE_NAME[dl]}）: ${s.definitionLocale}`);
+    });
+  });
   return out.join("\n");
 }

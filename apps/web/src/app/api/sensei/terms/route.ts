@@ -1,21 +1,25 @@
-// D-181 §0-9 — /api/sensei/terms (the free question's term cards; the one new
-// fs-reading route of Stage 6).
+// D-181 §0-9 — /api/sensei/terms (the free question's terms; the one new fs-reading
+// route of Stage 6).
 //
-//   GET ?ids=<termId>,…&locale=<ja|zh|en>  → 200 { cards: TermCard[] }
+//   GET ?ids=<termId>,…&locale=<ja|zh|en>
+//     → 200 { terms: { id, term, senses: { unitTitleJp, definitionJp, definitionLocale? }[] }[] }
 //
-// At most 8 ids (else 400). Ids that are not termId-shaped (isValidTermId) or not in
-// the dictionary are skipped, a repeated id is returned once, and the cards follow the
-// requested order. A missing / unknown locale or no ids → 400. Read-only: the
-// committed dictionary (lib/glossary/dictionaryReader, memoized) and nothing else —
-// no LLM, no owner gate, no cookies. A failed dictionary load → 500; the log names the
-// error type only.
+// Every sense of each term, in dictionary order, under its unit's JP title; the JP
+// definition always, the `locale` one for zh / en (JP only for ja). At most 8 ids
+// (else 400). Ids that are not termId-shaped (isValidTermId) or not in the dictionary
+// are skipped, a repeated id is returned once, and the terms follow the requested
+// order. A missing / unknown locale or no ids → 400. Read-only: the committed
+// dictionary and unit index (memoized loaders) and nothing else — no LLM, no owner
+// gate, no cookies. A failed load → 500; the log names the error type only.
 
 import { hasLocale } from "next-intl";
 
 import { routing } from "@/i18n/routing";
-import { toTermCard, type TermCard } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { isValidTermId } from "@/lib/glossary/termId";
+import type { SenseiTermContext } from "@/lib/sensei/anchors";
+import { termContext } from "@/lib/sensei/textbookAnchors";
+import { loadReaderIndex } from "@/lib/textbook/reader";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,21 +45,24 @@ export async function GET(request: Request): Promise<Response> {
   const ids = raw.split(",");
   if (ids.length > MAX_IDS) return json(400, { error: `at most ${MAX_IDS} ids` });
 
-  let dict;
+  let dict, index;
   try {
-    dict = await loadDictionary();
+    [dict, index] = await Promise.all([loadDictionary(), loadReaderIndex()]);
   } catch (err) {
     console.error("[sensei-terms-error]", JSON.stringify({ error: err instanceof Error ? err.name : typeof err }));
     return json(500, { error: "dictionary unavailable" });
   }
 
-  const cards: TermCard[] = [];
+  const unitTitlesJp: Record<string, string> = {};
+  for (const u of index.topics.flatMap((t) => t.units ?? [])) unitTitlesJp[u.unit_id] = u.title_jp;
+
+  const terms: SenseiTermContext[] = [];
   const seen = new Set<string>();
   for (const id of ids) {
     if (!isValidTermId(id) || seen.has(id)) continue;
     seen.add(id);
     const entry = dict.byId.get(id);
-    if (entry) cards.push(toTermCard(entry, locale));
+    if (entry) terms.push(termContext(entry, locale, unitTitlesJp));
   }
-  return json(200, { cards });
+  return json(200, { terms });
 }

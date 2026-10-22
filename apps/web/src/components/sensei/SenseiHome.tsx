@@ -10,9 +10,9 @@
 //
 // Free question: each send is a new thread (`free:<epoch ms base 36>`). The terms of
 // the question are matched against `termIndex` (the light dictionary index the page
-// builds at prerender), their cards are fetched from /api/sensei/terms, and the panel
+// builds at prerender), their senses are fetched from /api/sensei/terms, and the panel
 // opens with the question as its opener (sent once into the empty thread); on close,
-// focus returns to the input. Sending needs a saved key. If the cards cannot be fetched nothing is sent, the question
+// focus returns to the input. Sending needs a saved key. If the terms cannot be fetched nothing is sent, the question
 // stays and a notice is shown.
 //
 // The AI SDK is not in this page's first load: the panel (and through useSensei the
@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
 import type { TermIndexEntry } from "@/lib/glossary/dictionary";
-import { deriveFreeAnchor, fetchTermCards, firstUserText, freeAnchorId, freeThreadTitle } from "@/lib/sensei/freeQuestion";
+import { deriveFreeAnchor, fetchTermContexts, firstUserText, freeAnchorId, freeThreadTitle } from "@/lib/sensei/freeQuestion";
 import { questionThreadHref, reviewThreadHref, termThreadHref, unitThreadHref } from "@/lib/sensei/threadLinks";
 import {
   deleteThread,
@@ -122,7 +122,7 @@ function SenseiHomeBody({
   }
 
   const anchorFor = (q: string): Promise<string> =>
-    deriveFreeAnchor(q, termIndex, locale, (ids) => fetchTermCards(ids, locale));
+    deriveFreeAnchor(q, termIndex, locale, (ids) => fetchTermContexts(ids, locale));
 
   async function sendFree(): Promise<void> {
     const q = question.trim();

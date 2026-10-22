@@ -968,6 +968,7 @@ const UNITS_DIR = path.resolve(__dirname, "../../../data/ip/textbook/units");
 
 interface CorpusTerm {
   term: string;
+  term_zh: string;
   definition_jp: string;
   explanation_jp: string;
   memory_hook_jp: string;
@@ -1118,16 +1119,30 @@ test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary a
 //  19. No AI SDK chunk on /sensei until the free-question input is focused. A question
 //      naming dictionary terms → one GET /api/sensei/terms with their ids (order of
 //      appearance) → the panel opens and sends the question once; the anchor holds
-//      those terms' definitions; the thread is kind "free", anchorId free:<base36>,
+//      every sense of those terms (JP definitions, unit titles); the thread is kind "free", anchorId free:<base36>,
 //      title = the question. Reopened from its /sensei row (a button, no link) after
 //      a reload: the stored conversation shows, the anchor is derived again from the
 //      first question, and the follow-up request's system text equals the first's.
-//  20. A question naming no term: no card request, the anchor says
+//  20. A question naming no term: no term request, the anchor says
 //      「該当する教材の項目なし」 with the general-knowledge allowance; a second
 //      question is a second free thread.
-//  21. The card request fails: a notice, the question stays, nothing is sent.
+//  21. The term request fails: a notice, the question stays, nothing is sent.
+//  22. /zh: a zh spelling found only in E-R図's second dictionary sense (the strategy
+//      unit's 「E-R 图」; technology senses come first) matches; the request carries locale=zh and the anchor holds both senses, each
+//      with its JP original and zh definition.
 
 const ISO_TERM = "ISO/IEC 27000";
+
+/** Every unit's sense of `term` with that unit's JP title (corpus files in name order). */
+function corpusSenseUnits(term: string): { titleJp: string; t: CorpusTerm }[] {
+  return readdirSync(UNITS_DIR)
+    .filter((f) => f.endsWith(".json"))
+    .sort()
+    .flatMap((f) => {
+      const u = corpusUnit(f.slice(0, -".json".length));
+      return u.terms.filter((t) => t.term === term).map((t) => ({ titleJp: u.title_jp, t }));
+    });
+}
 const freeInput = (page: Page) => page.getByLabel(S.freeLabel);
 const freeSend = (page: Page) => page.getByTestId("sensei-free-send");
 
@@ -1177,11 +1192,19 @@ test("free question: no AI SDK before focus; matched definitions in the anchor; 
   const first = systemText(fake.requests[0]!);
   expect(first).toContain("回答言語: 日本語");
   expect(first).toContain("## 自由質問");
-  expect(first).toContain("### 関連用語（定義は日本語）");
-  expect(corpusSenses(TERM).some((s) => first.includes(`- ${TERM}: ${s.definition_jp}`))).toBe(true);
-  const iso = corpusSenses(ISO_TERM);
+  expect(first).toContain("### 関連用語（2 語、質問に出てきた順）");
+  expect(first).toContain(`#### 1. ${TERM}`);
+  expect(first).toContain(`#### 2. ${ISO_TERM}`);
+  // 機能要件 is taught in 2 units: both senses, each under its unit's JP title
+  const senses = corpusSenseUnits(TERM);
+  expect(senses).toHaveLength(2);
+  for (const { titleJp, t } of senses) {
+    expect(first).toContain(`単元「${titleJp}」\n定義（日本語原文）: ${t.definition_jp}`);
+  }
+  const iso = corpusSenseUnits(ISO_TERM);
   expect(iso).toHaveLength(1);
-  expect(first).toContain(`- ${ISO_TERM}: ${iso[0]!.definition_jp}`);
+  expect(first).toContain(`単元「${iso[0]!.titleJp}」\n定義（日本語原文）: ${iso[0]!.t.definition_jp}`);
+  expect(first).not.toContain("定義（英語）");
   expect(first).not.toContain("該当する教材の項目なし");
 
   await page.keyboard.press("Escape");
@@ -1220,7 +1243,7 @@ test("free question: no AI SDK before focus; matched definitions in the anchor; 
   expect((await senseiIndex(page)).map((t) => t.anchorId)).toEqual([threads[0]!.anchorId]);
 });
 
-test("free question without a dictionary term: 「該当する教材の項目なし」 anchor, no card request; each question is a new thread", async ({
+test("free question without a dictionary term: 「該当する教材の項目なし」 anchor, no term request; each question is a new thread", async ({
   page,
 }) => {
   fake = await fakeAnthropic(page);
@@ -1237,7 +1260,7 @@ test("free question without a dictionary term: 「該当する教材の項目な
   expect(system).toContain("## 自由質問");
   expect(system).toContain("該当する教材の項目なし");
   expect(system).toContain("一般的な知識で答えてかまいません");
-  expect(system).not.toContain("### 関連用語（定義は");
+  expect(system).not.toContain("#### 1.");
 
   await page.keyboard.press("Escape");
   await freeInput(page).fill("こんにちは");
@@ -1251,7 +1274,7 @@ test("free question without a dictionary term: 「該当する教材の項目な
   expect(fake.requests).toHaveLength(2);
 });
 
-test("free question: a failed card request shows a notice, keeps the question and sends nothing", async ({ page }) => {
+test("free question: a failed term request shows a notice, keeps the question and sends nothing", async ({ page }) => {
   fake = await fakeAnthropic(page);
   await presetKey(page);
   await page.route("**/api/sensei/terms?**", (route) => route.fulfill({ status: 500, body: "{}" }));
@@ -1264,4 +1287,33 @@ test("free question: a failed card request shows a notice, keeps the question an
   await expect(panel(page)).toHaveCount(0);
   expect(fake.requests).toEqual([]);
   expect(await page.evaluate(() => localStorage.getItem("itp:sensei:index:v1"))).toBeNull();
+});
+
+test("free question (zh): a later sense's zh spelling matches; every sense with its JP original and zh definition", async ({
+  page,
+}) => {
+  fake = await fakeAnthropic(page);
+  await presetKey(page);
+  const termRequests = trackTermRequests(page);
+  const ER = "E-R図";
+  const senses = corpusSenseUnits(ER);
+  // corpus file order (strategy first); the dictionary puts the technology sense first
+  expect(senses.map((s) => s.t.term_zh)).toEqual(["E-R 图", "E-R图（实体-关联图）"]);
+
+  await page.goto("/zh/sensei");
+  await page.getByLabel(zh.Sensei.freeLabel).fill("E-R 图是什么？");
+  await freeSend(page).click();
+  await expect(log(page)).toContainText(REPLY_MARK);
+
+  expect(termRequests).toHaveLength(1);
+  const params = new URL(termRequests[0]!).searchParams;
+  expect(params.get("ids")).toBe(termId(ER));
+  expect(params.get("locale")).toBe("zh");
+  const system = systemText(fake.requests[0]!);
+  expect(system).toContain("回答言語: 簡体字中国語");
+  expect(system).toContain(`#### 1. ${ER}`);
+  expect(system).toContain("この用語は 2 つの単元で扱われています。");
+  for (const { titleJp, t } of senses) {
+    expect(system).toContain(`単元「${titleJp}」\n定義（日本語原文）: ${t.definition_jp}\n定義（簡体字中国語）: ${t.definition_zh}`);
+  }
 });

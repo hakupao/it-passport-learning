@@ -4,7 +4,7 @@ import type { TermCard } from "@/lib/glossary/dictionary";
 import type { LearningRecord } from "@/lib/learning/record";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
-import { examRecency, FREE_NO_MATCH, freeAnchor, questionAnchor, reviewAnchor } from "../anchors";
+import { examRecency, FREE_NO_MATCH, freeAnchor, questionAnchor, reviewAnchor, type SenseiTermContext } from "../anchors";
 
 // choices_* keys deliberately permuted: the anchor must not follow object key order.
 const q: QuizQuestion = {
@@ -337,11 +337,22 @@ describe("examRecency", () => {
 });
 
 describe("freeAnchor (Phase C free question)", () => {
-  const oss = card("OSS", "开源软件", "ZH OSS 定义", "ZH OSS 覚え方");
-  const lic = card("ライセンス", "许可证", "ZH ライセンス定義", "");
+  const multi: SenseiTermContext = {
+    id: "t-func",
+    term: "機能要件",
+    senses: [
+      { unitTitleJp: "システム開発のプロセス", definitionJp: "JP 定義 1", definitionLocale: "ZH 定义 1" },
+      { unitTitleJp: "要件定義", definitionJp: "JP 定義 2", definitionLocale: "ZH 定义 2" },
+    ],
+  };
+  const single: SenseiTermContext = {
+    id: "t-oss",
+    term: "OSS",
+    senses: [{ unitTitleJp: "ソフトウェア", definitionJp: "JP OSS 定義" }],
+  };
 
-  it("lists the matched terms' cards in the given order, definitions in the UI locale", () => {
-    expect(freeAnchor([oss, lic], "zh")).toBe(
+  it("zh: every sense of each matched term under its unit title, JP original + the zh definition", () => {
+    expect(freeAnchor([multi, single], "zh")).toBe(
       [
         "# 教材",
         "回答言語: 簡体字中国語",
@@ -350,12 +361,31 @@ describe("freeAnchor (Phase C free question)", () => {
         "学習者は AI 先生のページから、特定の過去問・用語・単元を開かずに質問しています。",
         "下の用語は、学習者の最初の質問に出てきた語を教科書の辞典から機械的に照合したものです。質問と関係のない語が含まれることがあります。",
         "",
-        "### 関連用語（定義は簡体字中国語）",
-        "- OSS（开源软件）: ZH OSS 定义",
-        "  覚え方: ZH OSS 覚え方",
-        "- ライセンス（许可证）: ZH ライセンス定義",
+        "### 関連用語（2 語、質問に出てきた順）",
+        "",
+        "#### 1. 機能要件",
+        "この用語は 2 つの単元で扱われています。各単元での意味をすべて示します。",
+        "##### 意味 1: 単元「システム開発のプロセス」",
+        "定義（日本語原文）: JP 定義 1",
+        "定義（簡体字中国語）: ZH 定义 1",
+        "##### 意味 2: 単元「要件定義」",
+        "定義（日本語原文）: JP 定義 2",
+        "定義（簡体字中国語）: ZH 定义 2",
+        "",
+        "#### 2. OSS",
+        "##### 意味 1: 単元「ソフトウェア」",
+        "定義（日本語原文）: JP OSS 定義",
       ].join("\n"),
     );
+  });
+
+  it("ja: JP definitions only, even if a locale definition is present", () => {
+    const text = freeAnchor([multi], "ja");
+    expect(text).toContain("回答言語: 日本語");
+    expect(text).toContain("定義（日本語原文）: JP 定義 1");
+    expect(text).toContain("定義（日本語原文）: JP 定義 2");
+    expect(text).not.toContain("ZH 定义");
+    expect(text).not.toContain(FREE_NO_MATCH);
   });
 
   it("no match: 「該当する教材の項目なし」 with the general-knowledge allowance and disclaimer", () => {
@@ -377,15 +407,9 @@ describe("freeAnchor (Phase C free question)", () => {
     );
   });
 
-  it("ja: a gloss equal to the headword is not repeated", () => {
-    const ja = card("OSS", "OSS", "JP OSS 定義", "JP 覚え方");
-    const text = freeAnchor([ja], "ja");
-    expect(text).toContain("### 関連用語（定義は日本語）\n- OSS: JP OSS 定義\n  覚え方: JP 覚え方");
-    expect(text).not.toContain(FREE_NO_MATCH);
-  });
-
-  it("is deterministic: equal cards (keys in any order) give byte-equal text", () => {
-    const reordered = Object.fromEntries(Object.entries(oss).reverse()) as unknown as TermCard;
-    expect(freeAnchor([reordered, lic], "zh")).toBe(freeAnchor([oss, lic], "zh"));
+  it("is deterministic: equal contexts (keys in any order) give byte-equal text", () => {
+    const reverse = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).reverse()) as T;
+    const reordered: SenseiTermContext = { ...reverse(multi), senses: multi.senses.map(reverse) };
+    expect(freeAnchor([reordered, single], "zh")).toBe(freeAnchor([multi, single], "zh"));
   });
 });
