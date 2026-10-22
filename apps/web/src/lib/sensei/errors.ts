@@ -31,9 +31,17 @@ function scrub(text: string, apiKey?: string): string {
   return withoutKey.replace(KEY_TOKEN, mask);
 }
 
+/** A streamed Anthropic SSE `error` event arrives as a plain `{ type, message }` object. */
+function plainField(e: unknown, field: "type" | "message"): string | undefined {
+  if (e === null || typeof e !== "object" || e instanceof Error) return undefined;
+  const v = (e as Record<string, unknown>)[field];
+  return typeof v === "string" ? v : undefined;
+}
+
 function messageOf(e: unknown): string {
   if (e instanceof Error) return e.message;
-  return typeof e === "string" ? e : "";
+  if (typeof e === "string") return e;
+  return plainField(e, "message") ?? "";
 }
 
 function kindOf(e: unknown): SenseiErrorKind {
@@ -49,6 +57,9 @@ function kindOf(e: unknown): SenseiErrorKind {
     return "other";
   }
   if (e instanceof TypeError && NETWORK_MESSAGE.test(e.message)) return "network";
+  const type = plainField(e, "type");
+  if (type === "authentication_error" || type === "permission_error") return "auth";
+  if (type === "rate_limit_error" || type === "overloaded_error") return "rate";
   return "other";
 }
 

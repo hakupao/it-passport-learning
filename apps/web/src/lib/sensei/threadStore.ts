@@ -120,8 +120,13 @@ export function loadThreadMessages(storage: StorageLike, id: string): UIMessage[
   return loadChatHistory(storage, threadStorageKey(id));
 }
 
-/** Save a thread's messages and mark it newest. False when storage refused the write. */
+/** Save an indexed thread's messages and mark it newest. False when the thread is not
+ *  in the index or storage refused the write. */
 export function saveThreadMessages(storage: StorageLike, id: string, messages: UIMessage[]): boolean {
+  // Only threads in the index are written: an unindexed message key could never be evicted.
+  let threads = readIndex(storage);
+  if (!threads.some((t) => t.id === id)) return false;
+
   // historyStore swallows setItem failures; observe them through a pass-through wrapper.
   let failed = false;
   const observed: StorageLike = {
@@ -142,7 +147,6 @@ export function saveThreadMessages(storage: StorageLike, id: string, messages: U
     return !failed;
   };
 
-  let threads = readIndex(storage);
   let saved = attempt();
   if (!saved) {
     const evicted = evictOldest(storage, threads, id);
@@ -153,7 +157,7 @@ export function saveThreadMessages(storage: StorageLike, id: string, messages: U
   }
 
   const i = threads.findIndex((t) => t.id === id);
-  if (saved && i >= 0) {
+  if (saved) {
     const touched = { ...threads[i]!, updatedAt: new Date().toISOString() };
     threads = [touched, ...threads.filter((_, j) => j !== i)];
   }

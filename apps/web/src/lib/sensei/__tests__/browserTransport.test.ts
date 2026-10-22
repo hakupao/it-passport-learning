@@ -13,6 +13,10 @@ function user(id: string, text: string): UIMessage {
   return { id, role: "user", parts: [{ type: "text", text }] };
 }
 
+function assistant(id: string, text: string): UIMessage {
+  return { id, role: "assistant", parts: [{ type: "text", text }] };
+}
+
 function send(transport: ReturnType<typeof createBrowserTransport>, messages: UIMessage[], abortSignal?: AbortSignal) {
   return transport.sendMessages({
     trigger: "submit-message",
@@ -131,7 +135,7 @@ describe("createBrowserTransport", () => {
     expect(JSON.stringify(messages[2])).toContain("こんにちは");
   });
 
-  it("raises effort to high when shouldEscalate fires", async () => {
+  it("keeps effort low on the first user turn even when shouldEscalate would fire (ruling 7)", async () => {
     const st = fakeStreamText();
     const transport = createBrowserTransport({
       getKey: () => KEY,
@@ -139,8 +143,23 @@ describe("createBrowserTransport", () => {
       onMissingKey: () => {},
       deps: { streamText: st.fn, createModel: () => fakeModel },
     });
-    await send(transport, [user("u1", "もっと詳しく教えて")]);
+    await send(transport, [user("u1", "なぜアが正解？")]);
+    expect(st.calls[0]!.providerOptions).toEqual({ anthropic: { effort: "low" } });
+  });
+
+  it("from the second user turn on, shouldEscalate decides (high / low)", async () => {
+    const st = fakeStreamText();
+    const transport = createBrowserTransport({
+      getKey: () => KEY,
+      getAnchor: () => ANCHOR,
+      onMissingKey: () => {},
+      deps: { streamText: st.fn, createModel: () => fakeModel },
+    });
+    const first = [user("u1", "なぜアが正解？"), assistant("a1", "結論：アは OSS の定義そのものだからです。".repeat(5))];
+    await send(transport, [...first, user("u2", "まだわからない")]);
     expect(st.calls[0]!.providerOptions).toEqual({ anthropic: { effort: "high" } });
+    await send(transport, [...first, user("u2", "ありがとう")]);
+    expect(st.calls[1]!.providerOptions).toEqual({ anthropic: { effort: "low" } });
   });
 
   it("reads the anchor at send time", async () => {
@@ -187,7 +206,7 @@ describe("createBrowserTransport with the real streamText + Anthropic provider (
     const b = body!;
     expect(b.model).toBe(MODEL_ID);
     expect(b.max_tokens).toBe(4000);
-    expect(JSON.stringify(b)).toContain('"effort":"high"');
+    expect(JSON.stringify(b)).toContain('"effort":"low"');
     const system = b.system as { text: string; cache_control?: unknown }[];
     expect(system.map((s) => s.text)).toEqual([SENSEI_SYSTEM_INSTRUCTION, ANCHOR]);
     expect(system.every((s) => JSON.stringify(s.cache_control) === '{"type":"ephemeral"}')).toBe(true);
@@ -217,16 +236,38 @@ describe("createBrowserTransport with the real streamText + Anthropic provider (
     expect(consoleError).not.toHaveBeenCalled();
   });
 
-  it("a 429 maps to rate", async () => {
+  it("a 429 maps to rate after one retry (fake timers: no real backoff wait)", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    const fakeFetch = (async () =>
-      new Response(JSON.stringify({ type: "error", error: { type: "rate_limit_error", message: "slow down" } }), {
+    vi.useFakeTimers();
+    let calls = 0;
+    const fakeFetch = (async () => {
+      calls++;
+      return new Response(JSON.stringify({ type: "error", error: { type: "rate_limit_error", message: "slow down" } }), {
         status: 429,
         headers: { "content-type": "application/json" },
-      })) as typeof fetch;
+      });
+    }) as typeof fetch;
+    try {
+      const pending = send(realTransport(fakeFetch), [user("u1", "hi")]).then(readAll);
+      await vi.runAllTimersAsync();
+      const chunks = await pending;
+      const err = chunks.find((c) => c.type === "error") as { errorText: string };
+      expect(toSenseiError(new Error(err.errorText)).kind).toBe("rate");
+      expect(calls).toBe(2); // maxRetries: 1
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("a streamed Anthropic error event (overloaded_error) maps to rate", async () => {
+    const fakeFetch = (async () =>
+      sse([
+        anthropicStream("end_turn")[0]!,
+        { type: "error", error: { type: "overloaded_error", message: "Overloaded" } },
+      ])) as typeof fetch;
     const chunks = await readAll(await send(realTransport(fakeFetch), [user("u1", "hi")]));
     const err = chunks.find((c) => c.type === "error") as { errorText: string };
-    expect(toSenseiError(new Error(err.errorText)).kind).toBe("rate");
+    expect(toSenseiError(new Error(err.errorText))).toEqual({ kind: "rate", message: "Overloaded" });
   });
 
   it("stop() before the first token ends with an abort chunk, not an error", async () => {

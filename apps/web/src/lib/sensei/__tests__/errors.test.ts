@@ -80,3 +80,20 @@ describe("toSenseiError", () => {
     expect(toSenseiError(new Error(text))).toEqual(first);
   });
 });
+
+describe("toSenseiError on a streamed Anthropic error event (plain object)", () => {
+  it("maps overloaded_error / rate_limit_error to rate", () => {
+    expect(toSenseiError({ type: "overloaded_error", message: "Overloaded" })).toEqual({ kind: "rate", message: "Overloaded" });
+    expect(toSenseiError({ type: "rate_limit_error", message: "slow" }).kind).toBe("rate");
+  });
+
+  it("maps authentication_error / permission_error to auth, with the message scrubbed", () => {
+    const out = toSenseiError({ type: "authentication_error", message: `invalid x-api-key ${KEY}` }, KEY);
+    expect(out).toEqual({ kind: "auth", message: "invalid x-api-key …9f3Q" });
+    expect(toSenseiError({ type: "permission_error", message: "no" }).kind).toBe("auth");
+  });
+
+  it("maps other error types to other but keeps the message", () => {
+    expect(toSenseiError({ type: "api_error", message: "Internal" })).toEqual({ kind: "other", message: "Internal" });
+  });
+});

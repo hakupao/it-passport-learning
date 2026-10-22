@@ -205,6 +205,32 @@ describe("threadStore", () => {
     expect(s.data.has(SENSEI_KEY_STORAGE)).toBe(true);
   });
 
+  it("does not write messages for a thread that is not in the index (no orphan keys)", () => {
+    const s = memoryStorage();
+    expect(saveThreadMessages(s, "question.never-opened", [msg("m", "x")])).toBe(false);
+    expect(s.data.has(threadStorageKey("question.never-opened"))).toBe(false);
+    // index unwritable at open time → the save is skipped too
+    const failingIndex = memoryStorage();
+    const set = failingIndex.setItem;
+    failingIndex.setItem = (k, v) => {
+      if (k === SENSEI_INDEX_STORAGE) throw quotaError();
+      set(k, v);
+    };
+    const t = openThread(failingIndex, { kind: "question", anchorId: "q1", title: "問1" });
+    expect(saveThreadMessages(failingIndex, t.id, [msg("m", "x")])).toBe(false);
+    expect([...failingIndex.data.keys()].some((k) => k.startsWith("itp:sensei:thread:"))).toBe(false);
+  });
+
+  it("keeps anchorIds with a choice suffix as distinct threads (A4: <question_id>:<choice|reveal>)", () => {
+    const s = memoryStorage();
+    const a = openThread(s, { kind: "question", anchorId: "2024r06_q01:イ", title: "問1" });
+    const b = openThread(s, { kind: "question", anchorId: "2024r06_q01:reveal", title: "問1" });
+    expect(a.id).not.toBe(b.id);
+    expect(saveThreadMessages(s, a.id, [msg("m", "x")])).toBe(true);
+    expect(loadThreadMessages(s, b.id)).toEqual([]);
+    expect(listThreads(s).map((t) => t.anchorId).sort()).toEqual(["2024r06_q01:reveal", "2024r06_q01:イ"]);
+  });
+
   it("deleteThread removes the index entry and the messages", () => {
     const s = memoryStorage();
     const t = openThread(s, { kind: "question", anchorId: "q1", title: "問1" });

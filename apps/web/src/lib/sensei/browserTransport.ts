@@ -32,7 +32,10 @@ export function createBrowserTransport(opts: {
         opts.onMissingKey();
         throw new Error(formatSenseiError({ kind: "auth", message: "API key is not set" }));
       }
-      const effort = shouldEscalate(messages) ? EFFORT_ESCALATED : EFFORT_DEFAULT;
+      // The first user turn is always "low" (a 「なぜ」 entry would otherwise escalate
+      // every new thread); from the second user turn on, shouldEscalate decides.
+      const userTurns = messages.filter((m) => m.role === "user").length;
+      const effort = userTurns > 1 && shouldEscalate(messages) ? EFFORT_ESCALATED : EFFORT_DEFAULT;
       const conversation = await convertToModelMessages(messages);
       const result = run({
         model: createModel(apiKey),
