@@ -12,8 +12,11 @@
 // the question are matched against `termIndex` (the light dictionary index the page
 // builds at prerender), their senses are fetched from /api/sensei/terms, and the panel
 // opens with the question as its opener (sent once into the empty thread); on close,
-// focus returns to the input. Sending needs a saved key. If the terms cannot be fetched nothing is sent, the question
-// stays and a notice is shown.
+// focus returns to the input. Sending needs a saved key (the disabled Send is described
+// by the key-missing reason). While the terms load the input is read-only and the form
+// aria-busy. If the terms cannot be fetched nothing is sent, the question stays and a
+// notice is shown. A free thread whose first question cannot be read back (no stored
+// user message, or storage unavailable) does not open: the thread notice is shown.
 //
 // The AI SDK is not in this page's first load: the panel (and through useSensei the
 // SDK, after lib/sensei/zodJitless) is loaded via next/dynamic in SenseiHost when it
@@ -146,12 +149,18 @@ function SenseiHomeBody({
 
   async function reopen(th: ThreadMeta, trigger: HTMLElement): Promise<void> {
     if (pending || !openFor) return;
-    setPending(true);
     setFailedAt(null);
+    // The anchor is derived from the first question; without it the thread would open
+    // on a different (no-match) anchor than it was asked with.
+    const storage = browserStorage();
+    const first = storage ? firstUserText(loadThreadMessages(storage, th.id)) : "";
+    if (first.trim() === "") {
+      setFailedAt("threads");
+      return;
+    }
+    setPending(true);
     preloadPanel();
     try {
-      const storage = browserStorage();
-      const first = storage ? firstUserText(loadThreadMessages(storage, th.id)) : "";
       const anchorText = await anchorFor(first);
       openFor({ kind: "free", anchorId: th.anchorId, title: th.title, anchorText }, trigger);
     } catch {
@@ -253,6 +262,7 @@ function SenseiHomeBody({
         </p>
         <form
           className="space-y-2"
+          aria-busy={pending}
           onSubmit={(e) => {
             e.preventDefault();
             void sendFree();
@@ -269,6 +279,7 @@ function SenseiHomeBody({
             placeholder={t("freePlaceholder")}
             aria-describedby={`${freeId}-hint`}
             className="w-full resize-none rounded-md border bg-transparent p-2 text-sm"
+            readOnly={pending}
             value={question}
             onFocus={preloadPanel}
             onChange={(e) => setQuestion(e.target.value)}
@@ -285,8 +296,15 @@ function SenseiHomeBody({
             </p>
           ) : null}
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs opacity-70">{hasKey ? t("sendHint") : t("keyMissing")}</span>
-            <Button type="submit" disabled={!canSend} data-testid="sensei-free-send">
+            <span id={`${freeId}-send-note`} className="text-xs opacity-70">
+              {hasKey ? t("sendHint") : t("keyMissing")}
+            </span>
+            <Button
+              type="submit"
+              disabled={!canSend}
+              aria-describedby={hasKey ? undefined : `${freeId}-send-note`}
+              data-testid="sensei-free-send"
+            >
               {t("send")}
             </Button>
           </div>

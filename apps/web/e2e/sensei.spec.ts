@@ -399,6 +399,7 @@ test("/sensei key settings: how to get a key, masked display, reload persists, d
   await expect(page.getByLabel(S.freeLabel)).toBeEnabled();
   await page.getByLabel(S.freeLabel).fill("機能要件とは？");
   await expect(page.getByRole("button", { name: S.send })).toBeDisabled();
+  await expect(page.getByRole("button", { name: S.send })).toHaveAccessibleDescription(S.keyMissing);
 
   await page.getByLabel(S.keyLabel).fill(KEY);
   await page.getByRole("button", { name: S.keySave }).click();
@@ -406,6 +407,7 @@ test("/sensei key settings: how to get a key, masked display, reload persists, d
   await expect(page.getByLabel(S.keyLabel)).toHaveValue("");
   await expect(howto).toHaveCount(0);
   await expect(page.getByRole("button", { name: S.send })).toBeEnabled();
+  await expect(page.getByRole("button", { name: S.send })).not.toHaveAttribute("aria-describedby");
   expect(await page.getByTestId("sensei-key-settings").textContent()).not.toContain(KEY.slice(0, -4));
 
   await page.reload();
@@ -1129,7 +1131,9 @@ test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary a
 //  20. A question naming no term: no term request, the anchor says
 //      「該当する教材の項目なし」 with the general-knowledge allowance; a second
 //      question is a second free thread.
-//  21. The term request fails: a notice, the question stays, nothing is sent.
+//  21. The term request fails: while it is pending the input is read-only and the form
+//      aria-busy; then a notice, the question stays, nothing is sent.
+//  21b. A free thread row whose first question is not stored: a notice, no panel, no request.
 //  22. /zh: a zh spelling found only in E-R図's second dictionary sense (the strategy
 //      unit's 「E-R 图」; technology senses come first) matches; the request carries locale=zh and the anchor holds both senses, each
 //      with its JP original and zh definition, explanation and memory hook.
@@ -1282,16 +1286,45 @@ test("free question without a dictionary term: 「該当する教材の項目な
 test("free question: a failed term request shows a notice, keeps the question and sends nothing", async ({ page }) => {
   fake = await fakeAnthropic(page);
   await presetKey(page);
-  await page.route("**/api/sensei/terms?**", (route) => route.fulfill({ status: 500, body: "{}" }));
+  let release!: () => void;
+  const held = new Promise<void>((resolve) => (release = resolve));
+  await page.route("**/api/sensei/terms?**", async (route) => {
+    await held;
+    await route.fulfill({ status: 500, body: "{}" });
+  });
 
   await page.goto(SENSEI_URL);
   await freeInput(page).fill(`${TERM}とは？`);
   await freeSend(page).click();
+  // while the terms load: read-only input, busy form (C2 M2)
+  await expect(freeInput(page)).toHaveAttribute("readonly", "");
+  await expect(page.locator("form").filter({ has: freeInput(page) })).toHaveAttribute("aria-busy", "true");
+  release();
   await expect(page.getByTestId("sensei-free-failed")).toHaveText(S.freeTermsFailed);
+  await expect(freeInput(page)).not.toHaveAttribute("readonly");
+  await expect(page.locator("form").filter({ has: freeInput(page) })).toHaveAttribute("aria-busy", "false");
   await expect(freeInput(page)).toHaveValue(`${TERM}とは？`);
   await expect(panel(page)).toHaveCount(0);
   expect(fake.requests).toEqual([]);
   expect(await page.evaluate(() => localStorage.getItem("itp:sensei:index:v1"))).toBeNull();
+});
+
+test("free thread without a stored first question: the notice, no panel, no request (C2 M3)", async ({ page }) => {
+  fake = await fakeAnthropic(page);
+  await presetKey(page);
+  const termRequests = trackTermRequests(page);
+  await page.addInitScript(() => {
+    if (localStorage.getItem("itp:sensei:index:v1") !== null) return;
+    const thread = { id: "free.free%3Alost", kind: "free", anchorId: "free:lost", title: "失われた質問", updatedAt: "2026-10-01T00:00:00.000Z" };
+    localStorage.setItem("itp:sensei:index:v1", JSON.stringify({ v: 1, threads: [thread] }));
+  });
+
+  await page.goto(SENSEI_URL);
+  await page.getByTestId("sensei-thread-open").click();
+  await expect(page.getByTestId("sensei-reopen-failed")).toHaveText(S.freeTermsFailed);
+  await expect(panel(page)).toHaveCount(0);
+  expect(termRequests).toEqual([]);
+  expect(fake.requests).toEqual([]);
 });
 
 test("free question (zh): a later sense's zh spelling matches; every sense with its JP original and zh definition", async ({

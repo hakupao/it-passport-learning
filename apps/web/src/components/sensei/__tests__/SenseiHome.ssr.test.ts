@@ -63,6 +63,35 @@ describe("SenseiHome SSR", () => {
     });
   }
 
+  for (const locale of ["ja", "zh", "en"] as const) {
+    it(`${locale}: the intro and the empty state name every entry point (m1)`, () => {
+      const { s } = render(locale);
+      const messages = JSON.parse(readFileSync(path.resolve(__dirname, `../../../../messages/${locale}.json`), "utf-8"));
+      for (const key of ["pageIntro", "threadsEmpty"]) {
+        // question / term / unit share the 「AI 先生に聞く」 button; review; the free question
+        expect(s[key], key).toContain(messages.Sensei.askButton);
+        expect(s[key], key).toContain(s.reviewTitle);
+        expect(s[key], key).toContain(s.freeTitle);
+      }
+      expect(s.threadsEmpty).not.toMatch(/答えたあと|答题后|After answering/);
+    });
+  }
+
+  it("the disabled Send is described by the key-missing reason (C2 M6); the form is not busy", () => {
+    for (const locale of ["ja", "zh", "en"] as const) {
+      const { html, s } = render(locale);
+      const send = /<button[^>]*data-testid="sensei-free-send"[^>]*>/.exec(html)?.[0] ?? "";
+      const describedBy = /aria-describedby="([^"]+)"/.exec(send)?.[1];
+      expect(describedBy, locale).toBeTruthy();
+      expect(html).toContain(`id="${describedBy}"`);
+      const at = html.indexOf(`id="${describedBy}"`);
+      const reason = html.slice(html.indexOf(">", at) + 1, html.indexOf("<", at));
+      expect(reason, locale).toBe(esc(s.keyMissing!));
+      expect(html).toMatch(/<form[^>]*aria-busy="false"/);
+      expect(html).not.toMatch(/<textarea[^>]*readonly/i);
+    }
+  });
+
   it("renders no thread rows and no empty state before the index is read", () => {
     const { html } = render("ja");
     expect(html).not.toContain('data-testid="sensei-thread"');
