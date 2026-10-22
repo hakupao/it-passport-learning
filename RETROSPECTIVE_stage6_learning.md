@@ -55,7 +55,7 @@ Phase 3（表形式選択肢の結果色が消えた）と Phase A（nav 溢れ�
 Phase B の推薦候補は file 順（= 2009〜2010 年の古い題）で、AI は題の中身も知らなかった。spec は「実過去問だけを勧める」とは書いたが「どれを」を書いていなかった。Rule D が「学習者が期待するのは自分の誤りに関係する新しい題」として Important にした。対策: 推薦・並べ替えを含む機能は、計画の Review Focus に「並び順の根拠」を 1 行入れる。
 
 ### 2.4 自由質問の照合には既知の穴が残っている
-英文で他の用語と同時に出ると、stoplist にある関係 DB・グラフ系の語（Selection / Join / Table / Index / Node 等）が根拠に入らない。後続で stoplist から外す候補として ledger と session log に残した。照合規則を変えると既存 free thread の再開時の錨点が変わる（cache miss のみ）ので、まとめて 1 回で変える。
+英文で他の用語と同時に出ると、stoplist にある関係 DB・グラフ系の語（Selection / Join / Table / Index / Node 等）が根拠に入らない。後続で stoplist から外す候補として ledger と session log に残した。→ **同 session で対応済**（7 語を除外。Field・Record は英文で一般語義が大半のため残した。review が Field の除外を誤りと指摘し、戻した）。照合規則を変えると既存 free thread の再開時の錨点が変わる（cache miss のみ）ので、まとめて 1 回で変える。
 
 ### 2.5 owner の 2 端末同期（Phase 3）が未確認のまま
 owner cookie はユーザーのブラウザにしかないため、実 Redis での 2 端末同期はユーザーの確認待ちのまま Stage を閉じる。STATE の次セッション行に残す。
