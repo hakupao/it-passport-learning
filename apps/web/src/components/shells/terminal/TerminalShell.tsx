@@ -7,10 +7,12 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ThemeSwitcher } from "@/components/shells/ThemeSwitcher";
 import { NAV_ITEMS } from "@/components/shells/navItems";
+import { useNavScroll } from "@/components/shells/useNavScroll";
 
 export function TerminalShell({ children }: { children: ReactNode }): React.ReactElement {
   const pathname = usePathname();
   const tNav = useTranslations("Nav");
+  const navRef = useNavScroll<HTMLElement>();
 
   return (
     <div
@@ -38,7 +40,7 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
               />
             </div>
             {/* Tab bar */}
-            <nav className="flex items-center gap-0 sm:ml-3 min-w-0 overflow-x-auto scrollbar-hide">
+            <nav ref={navRef} className="flex items-center gap-0 sm:ml-3 min-w-0 overflow-x-auto scrollbar-hide nav-fade">
               {NAV_ITEMS.map((item) => {
                 const isActive =
                   pathname === item.href ||
@@ -50,8 +52,8 @@ export function TerminalShell({ children }: { children: ReactNode }): React.Reac
                     aria-current={isActive ? "page" : undefined}
                     className={
                       isActive
-                        ? "min-h-[36px] px-3 py-2 sm:py-1 text-xs text-[#4ec9b0] border-b border-[#4ec9b0] transition-colors inline-flex items-center whitespace-nowrap"
-                        : "min-h-[36px] px-3 py-2 sm:py-1 text-xs text-[#888] hover:text-[#ccc] active:text-[#ccc] transition-colors inline-flex items-center whitespace-nowrap"
+                        ? "min-h-[36px] px-3 py-2 sm:py-1 text-xs text-[#4ec9b0] border-b border-[#4ec9b0] transition-colors inline-flex items-center whitespace-nowrap focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-current"
+                        : "min-h-[36px] px-3 py-2 sm:py-1 text-xs text-[#888] hover:text-[#ccc] active:text-[#ccc] transition-colors inline-flex items-center whitespace-nowrap focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-current"
                     }
                   >
                     {tNav(item.key)}

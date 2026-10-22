@@ -6,17 +6,19 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ThemeSwitcher } from "../ThemeSwitcher";
 import { NAV_ITEMS } from "../navItems";
+import { useNavScroll } from "../useNavScroll";
 
 export function GamifiedNav(): React.ReactElement {
   const pathname = usePathname();
   const tNav = useTranslations("Nav");
+  const navRef = useNavScroll<HTMLDivElement>();
 
   return (
     <nav className="sticky top-0 z-30 bg-[#1a1a2e]/95 backdrop-blur-sm border-b border-white/[.06]">
       <div className="mx-auto max-w-5xl flex items-center justify-between gap-2 px-3 sm:px-4 h-14">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
           <div className="w-8 h-8 bg-[#e94560] rounded-md flex items-center justify-center text-white text-[11px] font-extrabold shrink-0">IP</div>
-          <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide -mx-1 px-1">
+          <div ref={navRef} className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-hide nav-fade -mx-1 px-1">
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
@@ -26,8 +28,8 @@ export function GamifiedNav(): React.ReactElement {
                   aria-current={isActive ? "page" : undefined}
                   className={
                     isActive
-                      ? "min-h-[36px] px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-[#e94560] text-white transition-colors inline-flex items-center whitespace-nowrap"
-                      : "min-h-[36px] px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm text-white/60 hover:text-white/90 hover:bg-white/[.06] active:bg-white/[.1] transition-colors inline-flex items-center whitespace-nowrap"
+                      ? "min-h-[36px] px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-[#e94560] text-white transition-colors inline-flex items-center whitespace-nowrap focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-current"
+                      : "min-h-[36px] px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm text-white/60 hover:text-white/90 hover:bg-white/[.06] active:bg-white/[.1] transition-colors inline-flex items-center whitespace-nowrap focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-current"
                   }
                 >
                   {tNav(item.key)}

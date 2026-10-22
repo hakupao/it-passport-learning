@@ -38,15 +38,18 @@
 //      linking to /quiz?mode=exam&id=<exam_id>#<question_id>; delete removes the
 //      row and its storage; the empty state once none is left.
 //  10. Navigation: each of the three shells shows the AI 先生 item → /ja/sensei.
-//  11. Phone width (390×844), each shell × each locale: no horizontal page scroll
-//      and both switchers (theme, locale) inside the viewport.
+//  11. Phone width (390×844), each shell × each locale × each nav page: no
+//      horizontal page scroll, both switchers (theme, locale) inside the viewport,
+//      the current page's tab scrolled into view inside its nav row (page not
+//      scrolled), an overflowing row marked for the edge fade; Tab onto the last
+//      nav item keeps it inside the row with its focus ring drawn inside its box.
 //
 // Runs against a local prod build (the production CSP is then active, so a
 // request to api.anthropic.com also proves connect-src allows it):
 //   npm run build && npx next start -p 3200
 //   PLAYWRIGHT_BASE_URL=http://localhost:3200 npx playwright test e2e/sensei.spec.ts --retries=0
 
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 import en from "../messages/en.json";
 import ja from "../messages/ja.json";
@@ -500,27 +503,76 @@ for (const theme of ["gamified", "retro", "terminal"] as const) {
 
 const LOCALE_MESSAGES = { ja, zh, en } as const;
 
+/** "inside" when `inner`'s box lies within `outer`'s (1px tolerance), else both boxes. */
+async function insideOf(inner: Locator, outer: Locator): Promise<string> {
+  const a = await inner.boundingBox();
+  const b = await outer.boundingBox();
+  if (!a || !b) return `no box: ${JSON.stringify({ a, b })}`;
+  const ok =
+    a.x >= b.x - 1 && a.x + a.width <= b.x + b.width + 1 && a.y >= b.y - 1 && a.y + a.height <= b.y + b.height + 1;
+  return ok ? "inside" : JSON.stringify({ item: a, container: b });
+}
+
+const NAV_PAGES = ["/textbook", "/quiz", "/glossary", "/sensei"] as const;
+
 for (const theme of ["gamified", "retro", "terminal"] as const) {
   for (const locale of ["ja", "zh", "en"] as const) {
-    test(`phone width (${theme} shell, ${locale}): no horizontal scroll, switchers on screen`, async ({ page }) => {
+    test(`phone width (${theme} shell, ${locale}): no horizontal scroll, switchers on screen, current tab in view`, async ({
+      page,
+    }) => {
       await page.addInitScript((t) => localStorage.setItem("itp:theme:v1", t), theme);
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(`/${locale}/glossary`);
-      const shell = page.locator(`[data-shell="${theme}"]`);
-      await expect(shell).toBeVisible();
-      const switchers = [
-        shell.getByRole("combobox", { name: "Switch theme" }),
-        shell.getByRole("combobox", { name: LOCALE_MESSAGES[locale].Locale.switcherLabel }),
-      ];
-      for (const sw of switchers) {
-        await expect(sw).toBeVisible();
-        const box = (await sw.boundingBox())!;
-        expect(box.x).toBeGreaterThanOrEqual(0);
-        expect(box.x + box.width).toBeLessThanOrEqual(390);
+      for (const path of NAV_PAGES) {
+        await page.goto(`/${locale}${path}`);
+        const shell = page.locator(`[data-shell="${theme}"]`);
+        await expect(shell).toBeVisible();
+        const switchers = [
+          shell.getByRole("combobox", { name: "Switch theme" }),
+          shell.getByRole("combobox", { name: LOCALE_MESSAGES[locale].Locale.switcherLabel }),
+        ];
+        for (const sw of switchers) {
+          await expect(sw).toBeVisible();
+          const box = (await sw.boundingBox())!;
+          expect(box.x, path).toBeGreaterThanOrEqual(0);
+          expect(box.x + box.width, path).toBeLessThanOrEqual(390);
+        }
+        expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(390);
+
+        // the current page's tab is scrolled into view inside its nav row, without scrolling the page
+        const current = shell.locator('nav a[aria-current="page"]');
+        const row = current.locator(".."); // the scrolling nav row in each shell
+        await expect(current).toHaveAttribute("href", `/${locale}${path}`);
+        await expect.poll(() => insideOf(current, row), { message: path }).toBe("inside");
+        expect(await page.evaluate(() => window.scrollY), path).toBe(0);
+        // an overflowing row marks the side(s) with more items (edge fade)
+        const overflows = await row.evaluate((el) => el.scrollWidth > el.clientWidth + 1);
+        if (overflows) await expect(row, path).toHaveAttribute("data-fade", /^(left|right|both)$/);
       }
-      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
     });
   }
+
+  test(`phone width (${theme} shell): Tab onto the last nav item keeps it and its focus ring inside the row`, async ({
+    page,
+  }) => {
+    await page.addInitScript((t) => localStorage.setItem("itp:theme:v1", t), theme);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/en/glossary");
+    const items = page.locator(`[data-shell="${theme}"] nav a`);
+    const row = items.first().locator(".."); // the scrolling nav row
+    await expect(items).toHaveCount(NAV_PAGES.length);
+    await items.nth(NAV_PAGES.length - 2).focus();
+    await page.keyboard.press("Tab");
+    const last = items.nth(NAV_PAGES.length - 1);
+    await expect(last).toBeFocused();
+    await expect.poll(() => insideOf(last, row)).toBe("inside");
+    // the ring is drawn inside the item's own box, so the row's overflow cannot clip it
+    const ring = await last.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { style: cs.outlineStyle, offset: parseFloat(cs.outlineOffset), width: parseFloat(cs.outlineWidth) };
+    });
+    expect(ring.style).not.toBe("none");
+    expect(ring.offset + ring.width).toBeLessThanOrEqual(0);
+  });
 }
 
 // Owner sync is only reachable on a local server with OWNER_KEY (see learning-owner.spec.ts);
