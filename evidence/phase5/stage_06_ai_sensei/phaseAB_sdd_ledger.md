@@ -66,3 +66,37 @@ Scoped re-review dispatched (b2e89d3..e9afae0).
 Phase A re-review: All 9 addressed; NEW Important from the I2 CSS — at 390px terminal/retro nav hides the active tab (and later tabs) with no scroll hint; focus ring clipped. Retro regressed.
 Ruling (deviation from the skill's one-fix-wave rule, same as Phase 3): one more small fix (scroll active link into view, scroll hint below sm, inset focus ring, e2e on active-link containment) by the same fixer; verified by main-context 390px measurement + the new e2e instead of another full re-review — why: mechanical CSS/DOM fix with its own e2e — cost if wrong: a phone-only nav glitch in non-default themes.
 Main-context check 88f267e @390: 3 themes × (/en/sensei,/ja/glossary,/zh/quiz) active tab inside nav, page scrollWidth 390. Phase A code complete.
+
+## Phase B (branch stage6-sensei-b from main fb1a420) — user go-ahead「继续」 after the D-176 pre-report
+Pre-flight scan:
+| pair / task | finding | ruling |
+|---|---|---|
+| B1 → B2 | weakTopics consumed by ReviewCard; B1 is a ~30-line pure fn | Ruling: dispatch B1+B2 to ONE implementer (two commits), one task review — why: B1 has no independent review surface — cost: none |
+| B2 anchor size | 10 wrong questions × full trilingual explanation ≈ 16k tokens/anchor | Ruling: per wrong question include stem, choices, current correct answer, learner's choice (re-judged), explanation.correct + the distractor note for the learner's choice + points only (JP + UI locale) ≈ 7k tokens — cost: less detail on unrelated distractors |
+| B2 anchor stability | set page record changes as the learner answers → anchor text drifts mid-thread | Ruling: review anchor is snapshotted once when the review panel opens (component state); a reopened thread later gets a fresh snapshot — cost: cache miss on reopen only |
+| B2 review-specific instructions | system instruction must stay byte-stable (§0-4/5) | Ruling: review task lines (summarise tendencies, explain key terms, recommend 2–3 ONLY from listed ids with `#qid` links) live in the anchor block |
+| B2 thread identity | kind "review" | Ruling: anchorId `<topic_id>:<YYYY-MM-DD local>` (one review thread per topic per day) — cost: same-day re-reviews share a thread |
+| B2 auto-send once | `?review=1` | Ruling: consume the flag, then `router.replace` without it so reload never re-sends; auto-send only when the thread is empty |
+| B2 topic set URL | `/[locale]/quiz?mode=topic&id=<topic_id>` | verified in quiz/page.tsx |
+| B2 /sensei rows | review threads need a link back | Ruling: threadLinks gains review → topic set URL (without `review=1`) |
+| B3 | gates + Rule D + push + prod e2e + real-key prod check (D-182) | — |
+Task B1+B2: dispatched (BASE fb1a420).
+Task B1+B2: implementer DONE_WITH_CONCERNS 48c8c8b (B1) + 5d80438 (B2); local e2e 44/44, 1 POST per click, landing loads no AI SDK.
+Ruling: accept history.replaceState over router.replace (force-dynamic set page would refetch up to 217 questions).
+Ruling: review anchor wrong questions capped at 5 most recent (measured ~20k tokens / ~$0.05 first turn with 10 on technology-23-63 en) — cost: fewer error patterns visible to the AI.
+Ruling: accept extras (topic-set header 「AI 先生と復習する」 button w/o auto-send; in-panel #id links close panel; topicLabel param). 600 vs 300 字 → judged in the B3 real-key check.
+Rulings follow-up dispatched (resume implementer).
+Task B1+B2: follow-up 95fd865 (cap 5; technology-23-63 ≈8.6k ja / ≈14.8k en tokens worst case, typical 4–6k). Ruling: accept worst case (~$0.04 first turn). Task review dispatched (fb1a420..95fd865).
+Task B1+B2: review Approved (0 C / 0 I / 6 Minor). Task B1+B2: complete (48c8c8b, 5d80438, 95fd865).
+Ruling: park for the Phase B fix wave — M1 ReviewCard link text separator ({" "} + e2e/SSR regex), M2 ReviewLauncher disabled until `loaded`, M3 past-day review thread unreachable from its /sensei row (row link carries the thread date, e.g. `&thread=<YYYY-MM-DD>`, set page opens that thread without auto-send), M4 panel #id interception limited to question-id shape, M5 comment pinning effect order. M6 (cross-tab edge cases) documented, not fixed.
+Task B3: main-context gates + Phase B whole-branch Rule D (fb1a420..95fd865).
+Task B3: main-context gates PASS (tsc 0 / lint 0 / vitest 518 / build 0 / nft 0 / prerender glossary+sensei ×3).
+Phase B Rule D (pr-review-toolkit:code-reviewer): With fixes — I1 unanswered pool = oldest exams by file order, id+source only (AI recommends 2009–2010 questions it knows nothing about); m1 ?review=1 auto-sends on any arrival (bookmark/copied link); m2 landing empty/intro copy misleading (ja/zh lack "per topic"; all-correct case); m3 focus after #qid lands on choice ア (accidental answer); m4 daily review threads crowd the 30 cap.
+Ruling I1: rank unanswered by shared terms with the wrong questions desc → exam recency desc → id; each line carries its terms; anchor task line forbids guessing unseen content — cost: none (deterministic).
+Ruling m1: click intent in sessionStorage (≤30 s) required for auto-send; without it the opener is only a suggestion chip — cost: small code.
+Ruling m2: ja reviewEmpty → 「1 つの分野で 5 題以上…」 (amends the plan's verbatim string), separate all-correct string, hide intro when empty.
+Ruling m3: focus the question article (tabIndex -1). Ruling m4: eviction prefers the oldest review thread.
+Parked M1–M5 included. Final fix wave dispatched (fresh executor).
+Phase B fix wave: 45ab5af (I1), ce69ea7 (m4), 67b2ba8 (m1–m3, M1–M5); unit 533, local e2e 53/53. Ruling: accept (a) quota path also evicts review first, (b) thread= removed from URL, (c) zh 同一领域, (e) unparseable exam ids last. Scoped re-review dispatched (95fd865..67b2ba8).
+Phase B re-review: All addressed (13/13). New Minors accepted: intro now appears after load (extra ~2-line layout shift on the landing card); `thread=` accepts future dates (opens an empty thread; no send, no security impact). OOS: review-first eviction may evict a live review thread when another tab creates question threads at the cap (save then shows the failure notice) — accepted, revisit if seen.
+Phase B code complete (HEAD 67b2ba8).
