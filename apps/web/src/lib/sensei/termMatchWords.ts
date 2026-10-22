@@ -14,14 +14,16 @@
 // (「Valueとは」, also across one space); in English prose it matches only when no other
 // headword did, so it never crowds real terms out of the anchor.
 //
-// S131 follow-up (84 → 75 words): taken off, because every sense is a database / graph term
+// S131 follow-up (84 → 77 words): taken off, because every sense is a database / graph term
 // and that is what the bare English word most likely means in an IT-exam question —
-// Table, Record, Field (テーブル / レコード / フィールド, technology-21-55-u01 データ構造の
-// 基本単位), Index (インデックス, technology-21-55-u02 E-R図・キー設計), Insert, Join,
+// Table (テーブル, technology-21-55-u01 データ構造の基本単位), Index (インデックス, technology-21-55-u02 E-R図・キー設計), Insert, Join,
 // Projection (挿入 / 結合 / 射影, technology-21-56-u01 関係演算), Selection (選択: two
 // senses, technology-14-37-u01 制御構造 and technology-21-56-u01 関係演算), Node (ノード,
 // technology-13-34-u06 グラフ理論). Kept on purpose, though their only sense is in such a
-// unit: Update (更新 = the SQL operation, but "update" in a question is mostly a software /
+// unit: Field / Record (フィールド / レコード, technology-21-55-u01, but outside the
+// technology-21-* units the corpus' English uses them some 250 / 230 times otherwise:
+// "field of view" (13× in strategy-05-17-u02), "the IT field"; audit / medical records,
+// the verb "record"), Update (更新 = the SQL operation, but "update" in a question is mostly a software /
 // OS update), Edge (辺 = graph edge, but "edge" is mostly the IoT edge; Edge computing is
 // its own headword), File (ファイル = a set of records, but "file" is mostly any computer
 // file), List / Set / Sequence / Iteration / Function / Procedure / Expression /
@@ -59,6 +61,7 @@ export const STOPLIST_HEADWORDS: readonly string[] = [
   "Estimation",
   "Expression",
   "Feature",
+  "Field",
   "File",
   "Filtering",
   "Follow-up",
@@ -92,6 +95,7 @@ export const STOPLIST_HEADWORDS: readonly string[] = [
   "Proximity",
   "Ranking",
   "Recommendation",
+  "Record",
   "Repetition",
   "Retention",
   "Robot",

@@ -134,13 +134,14 @@ describe("glossary dictionary on the real corpus", () => {
     );
     expect(matchTerms("an index in a database", idx)).toEqual(["インデックス", "データベース"].map(termId));
     expect(matchTerms("a table and a record in a relational database", idx)).toEqual(
-      ["テーブル", "レコード", "データベース"].map(termId),
+      ["テーブル", "データベース"].map(termId),
     );
     expect(matchTerms("a node in a blockchain", idx)).toEqual(["ノード", "ブロックチェーン"].map(termId));
-    expect(matchTerms("join, insert and field in a database", idx)).toEqual(
-      ["結合", "挿入", "フィールド", "データベース"].map(termId),
-    );
-    // still stoplisted (another IT sense in exam questions): update (software update), edge (IoT edge)
+    expect(matchTerms("join, insert and field in a database", idx)).toEqual(["結合", "挿入", "データベース"].map(termId));
+    // still stoplisted (mostly another sense in IT-exam English): field (field of view, the IT
+    // field), record (audit records, the verb), update (software update), edge (IoT edge)
+    expect(matchTerms("the field of view of a VR headset", idx)).toEqual([termId("VR")]);
+    expect(matchTerms("record the result in a database", idx)).toEqual([termId("データベース")]);
     expect(matchTerms("how do I update the router?", idx)).toEqual([termId("ルーター")]);
     expect(matchTerms("edge devices and a router", idx)).toEqual([termId("ルーター")]);
   });
@@ -164,24 +165,23 @@ describe("glossary dictionary on the real corpus", () => {
     expect(matchTerms("explain apis and lans", idx)).toEqual([]);
   });
 
-  it("probe: stopwords do not dominate; alone, they are the fallback (database words always hold)", async () => {
+  it("probe: stopwords do not dominate; alone, they are the fallback (table / index always hold)", async () => {
     const idx = buildTermIndex(await loadDictionary());
-    // record / field / table are not stoplisted (database words): only mode drops out
+    // table is not stoplisted (a database word): mode, record and field drop out
     expect(matchTerms("what mode should I record each field in the table of a database", idx)).toEqual(
-      ["レコード", "フィールド", "テーブル", "データベース"].map(termId),
+      ["テーブル", "データベース"].map(termId),
     );
-    expect(matchTerms("what mode should I record each field in the table", idx)).toEqual(
-      ["レコード", "フィールド", "テーブル"].map(termId),
-    );
+    expect(matchTerms("what mode should I record each field in the table", idx)).toEqual([termId("テーブル")]);
     // nothing else matched: the stoplisted words are the terms (Mode is two entries)
     expect(matchTerms("what mode should I use for the value and the cost", idx)).toEqual(
       ["最頻値", "モード", "バリュー", "原価"].map(termId),
     );
-    // Index is not stoplisted; Value is (the router wins)
+    // Index is not stoplisted: it matches as an ordinary headword (no fallback involved)
     expect(matchTerms("what is an index?", idx)).toEqual([termId("インデックス")]);
+    // Value is stoplisted: the router wins
     expect(matchTerms("what is the value of a router?", idx)).toEqual([termId("ルーター")]);
     // next to Japanese text (also across one ASCII space), or in all caps, they always match
-    expect(matchTerms("Tableとは", idx)).toEqual([termId("テーブル")]);
+    expect(matchTerms("Costとは", idx)).toEqual([termId("原価")]);
     expect(matchTerms("Value とは", idx)).toEqual([termId("バリュー")]);
     expect(matchTerms("ルーターの VALUE", idx)).toEqual([termId("ルーター"), termId("バリュー")]);
   });
