@@ -8,9 +8,11 @@
 // D-180 Task 12: each topic row carries a TopicProgress client island (answered /
 // total + accuracy from the learning record); the page passes each topic's
 // question ids (topicQuestionIds) and mounts the LearningRecordProvider.
+// D-181 Phase B: the 「AI 先生の復習」 card (ReviewCard island) under the header.
 
 import { getTranslations } from "next-intl/server";
 
+import { ReviewCard } from "@/components/sensei/ReviewCard";
 import { Link } from "@/i18n/navigation";
 import type { QuizExamRef, QuizNavCategory } from "@/lib/quiz/quizModel";
 
@@ -34,6 +36,8 @@ export async function QuizBrowser({
   topicQuestionIds,
 }: Props): Promise<React.ReactElement> {
   const t = await getTranslations({ locale, namespace: "Quiz" });
+  const topicNames: Record<string, string> = {};
+  for (const cat of topicNav) for (const topic of cat.topics) topicNames[topic.topic_id] = topic.name_jp;
 
   return (
     <div className={styles.page}>
@@ -49,6 +53,8 @@ export async function QuizBrowser({
         </p>
         <p className={styles.attribution}>{t("attribution")}</p>
       </header>
+
+      <ReviewCard locale={locale} topicQuestionIds={topicQuestionIds} topicNames={topicNames} />
 
       <section className={styles.modeSection}>
         <h2 className={styles.modeTitle}>{t("byTopicTitle")}</h2>

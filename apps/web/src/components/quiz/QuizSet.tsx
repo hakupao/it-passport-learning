@@ -24,6 +24,9 @@
 // the page's one AI 先生 panel (SenseiHost) on this question. Its thread anchor
 // is `<question_id>:<picked choice>` or `<question_id>:reveal` (§0-4: another
 // choice = another thread).
+//
+// D-181 Phase B: a topic set (topicId given) also gets the review launcher in its
+// header (components/sensei/ReviewLauncher: the button, `?review=1`, the anchor).
 
 "use client";
 
@@ -32,6 +35,7 @@ import { hasLocale, useTranslations } from "next-intl";
 
 import { TermChip } from "@/components/glossary/TermChip";
 import { AskSensei, SenseiHost } from "@/components/sensei/AskSensei";
+import { ReviewLauncher } from "@/components/sensei/ReviewLauncher";
 import { useLearningActions } from "@/hooks/useLearningRecord";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -57,6 +61,8 @@ interface Props {
   termCards: Record<string, TermCard>;
   /** D-149: server-resolved owner flag (D-148 cookie); gates the report button. */
   isOwner?: boolean;
+  /** D-181 Phase B: the topic of a topic set (enables the AI 先生 review). */
+  topicId?: string;
 }
 
 export function QuizSet({
@@ -66,6 +72,7 @@ export function QuizSet({
   questions,
   termCards,
   isOwner = false,
+  topicId,
 }: Props): React.ReactElement {
   const t = useTranslations("Quiz");
 
@@ -80,6 +87,11 @@ export function QuizSet({
           <p className={styles.setSub}>
             {sublabel} · {t("count", { n: questions.length })}
           </p>
+          {topicId ? (
+            <div className={styles.askSensei}>
+              <ReviewLauncher topicId={topicId} title={label} questions={questions} termCards={termCards} locale={locale} />
+            </div>
+          ) : null}
         </header>
 
         {questions.length === 0 ? (

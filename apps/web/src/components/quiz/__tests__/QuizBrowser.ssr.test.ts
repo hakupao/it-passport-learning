@@ -118,3 +118,64 @@ describe("QuizBrowser per-topic progress (SSR)", () => {
     expect(slots.length).toBe(index.topics.length);
   });
 });
+
+// D-181 Phase B — the 「AI 先生の復習」 card (components/sensei/ReviewCard).
+describe("QuizBrowser AI 先生 review card (SSR)", () => {
+  /** The card's markup. */
+  const reviewCard = (out: string): string => {
+    const m = out.match(/<section[^>]*data-testid="review-card"[^>]*>([\s\S]*?)<\/section>/);
+    expect(m).not.toBeNull();
+    return m![1] ?? "";
+  };
+  async function answer(topicId: string, answered: number, correct: number, at = 1): Promise<void> {
+    const ids = (await loadBaseQuestions()).filter((q) => q.topic_id === topicId).map((q) => q.id);
+    for (let i = 0; i < answered; i++) state.record.questions[ids[i]!] = { choice: "ア", correct: i < correct, at: at + i };
+  }
+
+  it("before the record has loaded: the title, but neither rows nor the hint", async () => {
+    const card = reviewCard(await render("ja"));
+    expect(card).toContain("AI 先生の復習");
+    expect(card).not.toContain("review-topic");
+    expect(card).not.toContain("5 題以上解くと弱点を分析します");
+  });
+
+  it("no qualifying topic: the 5-題 hint (fewer than 5 answers, or all correct)", async () => {
+    state.loaded = true;
+    await answer("technology-14-36", 4, 0);
+    await answer("technology-21-54", 5, 5);
+    const card = reviewCard(await render("ja"));
+    expect(card).toContain("5 題以上解くと弱点を分析します");
+    expect(card).not.toContain("review-topic");
+  });
+
+  it("lists the weakest topics, lowest accuracy first, linking to the set with review=1", async () => {
+    state.loaded = true;
+    await answer("technology-14-36", 5, 1); // 20%
+    await answer("technology-21-54", 6, 3); // 50%
+    await answer("technology-14-39", 5, 4); // 80%
+    await answer("technology-13-33", 10, 9); // 90% — 4th, not shown
+    await answer("technology-19-50", 7, 7); // all correct — never shown
+    const card = reviewCard(await render("ja"));
+    const rows = [...card.matchAll(/<a href="([^"]*)"[^>]*><span[^>]*>([^<]*)<\/span><span[^>]*>([^<]*)<\/span><\/a>/g)].map(
+      (m) => [m[1], m[2], m[3]],
+    );
+    const index = await loadQuizIndex();
+    const name = (id: string) => index.topics.find((x) => x.topic_id === id)!.name_jp;
+    expect(rows).toEqual([
+      ["/ja/quiz?mode=topic&amp;id=technology-14-36&amp;review=1", name("technology-14-36"), "正答率 20% · 5 題解答"],
+      ["/ja/quiz?mode=topic&amp;id=technology-21-54&amp;review=1", name("technology-21-54"), "正答率 50% · 6 題解答"],
+      ["/ja/quiz?mode=topic&amp;id=technology-14-39&amp;review=1", name("technology-14-39"), "正答率 80% · 5 題解答"],
+    ]);
+  });
+
+  it("zh / en strings (en: AI Tutor)", async () => {
+    state.loaded = true;
+    await answer("technology-14-36", 5, 1);
+    const en = reviewCard(await render("en"));
+    expect(en).toContain("AI Tutor review");
+    expect(en).toContain("20% correct · 5 answered");
+    const zh = reviewCard(await render("zh"));
+    expect(zh).toContain("AI 老师的复习");
+    expect(zh).toContain("正确率 20% · 已答 5 题");
+  });
+});

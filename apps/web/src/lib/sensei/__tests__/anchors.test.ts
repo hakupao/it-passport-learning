@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import type { TermCard } from "@/lib/glossary/dictionary";
+import type { LearningRecord } from "@/lib/learning/record";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
-import { questionAnchor } from "../anchors";
+import { questionAnchor, reviewAnchor } from "../anchors";
 
 // choices_* keys deliberately permuted: the anchor must not follow object key order.
 const q: QuizQuestion = {
@@ -124,5 +125,137 @@ describe("questionAnchor", () => {
     const a = questionAnchor(bare, "zh", { termCards: {} });
     expect(a).toContain("JP問題文");
     expect(a).not.toContain("JP正解理由");
+  });
+});
+
+// ── reviewAnchor (D-181 Phase B) ─────────────────────────────────────────────
+
+/** Topic t-01 question `n` (keyed `key`), with per-question explanation text. */
+function tq(n: number, key: string, terms: string[] = []): QuizQuestion {
+  const id = `2024r06-q${String(n).padStart(3, "0")}`;
+  const distractors: NonNullable<QuizQuestion["explanation"]>["distractors"] = {};
+  for (const L of ["ア", "イ", "ウ", "エ"]) {
+    if (L !== key) distractors[L] = { jp: `JP${n}${L}誤り`, zh: `ZH${n}${L}错误`, en: `EN${n}${L} wrong` };
+  }
+  return {
+    ...q,
+    id,
+    source_label: `令和6年度 問${n}`,
+    stem_jp: `JP問題文${n}`,
+    stem_zh: `ZH题干${n}`,
+    stem_en: `EN stem ${n}`,
+    choices_jp: { ア: `JP${n}ア`, イ: `JP${n}イ`, ウ: `JP${n}ウ`, エ: `JP${n}エ` },
+    choices_zh: { ア: `ZH${n}甲`, イ: `ZH${n}乙`, ウ: `ZH${n}丙`, エ: `ZH${n}丁` },
+    choices_en: { ア: `EN${n}a`, イ: `EN${n}b`, ウ: `EN${n}c`, エ: `EN${n}d` },
+    correct_answer: key,
+    terms,
+    explanation: {
+      key_guard: { figure_derivable: null, derived_answer: key, matches_key: true, suspect: false, note_jp: "" },
+      correct: { jp: `JP${n}正解理由`, zh: `ZH${n}正确理由`, en: `EN${n} why correct` },
+      distractors,
+      points: [{ jp: `JP${n}要点`, zh: `ZH${n}要点`, en: `EN${n} point` }],
+    },
+  };
+}
+
+function record(results: Record<string, { choice: string; correct: boolean; at: number }>): LearningRecord {
+  return { v: 1, questions: results, unitsRead: {} };
+}
+
+describe("reviewAnchor", () => {
+  const topic = [tq(1, "ア", ["OSS"]), tq(2, "ウ", ["ライセンス", "OSS"]), tq(3, "イ"), tq(4, "エ"), tq(5, "ア")];
+  // q1 wrong (イ); q2 recorded correct=true but the key is now ウ → wrong; q4 recorded
+  // correct=false but the key is now エ → right; q3 / q5 unanswered.
+  const r = record({
+    "2024r06-q001": { choice: "イ", correct: false, at: 100 },
+    "2024r06-q002": { choice: "ア", correct: true, at: 300 },
+    "2024r06-q004": { choice: "エ", correct: false, at: 200 },
+  });
+
+  it("is deterministic and carries no timestamp", () => {
+    const a = reviewAnchor(topic, r, "zh", zhCards, "データ構造");
+    const b = reviewAnchor(structuredClone(topic), structuredClone(r), "zh", { ...zhCards }, "データ構造");
+    expect(a).toBe(b);
+    expect(a).not.toMatch(/\d{4}-\d{2}-\d{2}/);
+    expect(a).not.toMatch(/\d{2}:\d{2}/);
+  });
+
+  it("does not depend on record key order", () => {
+    const reversed = record(Object.fromEntries(Object.entries(r.questions).reverse()));
+    expect(reviewAnchor(topic, reversed, "ja", {}, "T")).toBe(reviewAnchor(topic, r, "ja", {}, "T"));
+  });
+
+  it("re-judges every answer with the current correct_answer, newest wrong answer first", () => {
+    const a = reviewAnchor(topic, r, "ja", {}, "T");
+    expect(a).toContain("学習記録: この分野の過去問 5 問のうち 3 問に解答、現在の正解で判定すると 1 問正解・2 問不正解");
+    expect(a.indexOf("#2024r06-q002")).toBeGreaterThan(0);
+    expect(a.indexOf("#2024r06-q002")).toBeLessThan(a.indexOf("#2024r06-q001")); // at 300 before at 100
+    expect(a).toContain("学習者の解答: ア（不正解）");
+    expect(a).toContain("学習者の解答: イ（不正解）");
+    // q4 (now right) is neither a wrong question nor unanswered
+    expect(a).not.toContain("#2024r06-q004");
+    expect(a).not.toContain("JP問題文4");
+  });
+
+  it("keeps per wrong question: stem, choices, key, the learner's distractor note and the points only", () => {
+    const a = reviewAnchor(topic, r, "zh", zhCards, "T");
+    for (const s of ["JP問題文1", "ZH题干1", "JP1ア", "ZH1丁", "正解: ア", "JP1正解理由", "ZH1正确理由", "JP1要点", "ZH1要点"]) {
+      expect(a).toContain(s);
+    }
+    expect(a).toContain("JP1イ誤り"); // the learner picked イ
+    expect(a).toContain("ZH1イ错误");
+    for (const s of ["JP1ウ誤り", "JP1エ誤り", "ZH1丙错误", "ZH1丁错误", "EN"]) expect(a).not.toContain(s);
+    expect(a).toContain("JP2ア誤り");
+    expect(a).not.toContain("JP2イ誤り");
+    expect(a).not.toContain("JP2エ誤り");
+  });
+
+  it("ja: Japanese only", () => {
+    const a = reviewAnchor(topic, r, "ja", {}, "T");
+    expect(a).toContain("JP問題文1");
+    expect(a).not.toMatch(/ZH|EN/);
+  });
+
+  it("lists not-yet-answered ids in set order and the review task lines", () => {
+    const a = reviewAnchor(topic, r, "en", {}, "データ構造");
+    expect(a).toContain("回答言語: 英語");
+    expect(a).toContain("分野: データ構造");
+    const unanswered = a.slice(a.indexOf("## まだ解いていない過去問"));
+    expect(unanswered).toContain("- #2024r06-q003（令和6年度 問3）");
+    expect(unanswered.indexOf("#2024r06-q003")).toBeLessThan(unanswered.indexOf("#2024r06-q005"));
+    expect(a).not.toContain("JP問題文3"); // only the id + source of an unanswered question
+    expect(a).toContain("[問題を開く](#問題ID)");
+    expect(a).toContain("一覧にない問題 ID");
+    expect(a).toContain("2〜3 問");
+  });
+
+  it("caps wrong questions at the 10 newest and unanswered ids at the first 10", () => {
+    const many = Array.from({ length: 25 }, (_, i) => tq(i + 1, "ア"));
+    const results: Record<string, { choice: string; correct: boolean; at: number }> = {};
+    for (let i = 0; i < 12; i++) results[many[i]!.id] = { choice: "イ", correct: false, at: 1000 + i };
+    const a = reviewAnchor(many, record(results), "ja", {}, "T");
+    const wrongPart = a.slice(a.indexOf("## 間違えた過去問"), a.indexOf("## まだ解いていない過去問"));
+    const wrongIds = [...wrongPart.matchAll(/### 問題 ID: #(\S+)/g)].map((m) => m[1]);
+    expect(wrongIds).toEqual(many.slice(2, 12).map((x) => x.id).reverse()); // q012 … q003
+    const restPart = a.slice(a.indexOf("## まだ解いていない過去問"));
+    const restIds = [...restPart.matchAll(/^- #(\S+)（/gm)].map((m) => m[1]);
+    expect(restIds).toEqual(many.slice(12, 22).map((x) => x.id)); // q013 … q022
+  });
+
+  it("collects the wrong questions' terms once each, in order", () => {
+    const a = reviewAnchor(topic, r, "zh", zhCards, "T");
+    const terms = a.slice(a.indexOf("## 関連用語"));
+    // q002 (newest wrong) lists ライセンス, OSS; q001 lists OSS again
+    expect(terms.indexOf("ZH许可证定义")).toBeGreaterThan(0);
+    expect(terms.indexOf("ZH许可证定义")).toBeLessThan(terms.indexOf("ZH开源定义"));
+    expect(terms.split("ZH开源定义").length).toBe(2);
+  });
+
+  it("says so when nothing is wrong or everything is answered", () => {
+    const allRight = record({ "2024r06-q001": { choice: "ア", correct: true, at: 1 } });
+    const a = reviewAnchor([tq(1, "ア")], allRight, "ja", {}, "T");
+    expect(a).toContain("間違えた過去問はありません");
+    expect(a).toContain("この分野の過去問はすべて解答済みです");
+    expect(a).not.toContain("## 関連用語");
   });
 });

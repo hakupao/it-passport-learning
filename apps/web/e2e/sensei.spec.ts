@@ -54,7 +54,7 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import en from "../messages/en.json";
 import ja from "../messages/ja.json";
 import zh from "../messages/zh.json";
-import { fakeAnthropic, guardAnthropic, type FakeAnthropic } from "./helpers/fakeAnthropic";
+import { fakeAnthropic, guardAnthropic, type FakeAnthropic, type FakeRequest } from "./helpers/fakeAnthropic";
 
 const S = ja.Sensei;
 const KEY = "sk-ant-test-0000000000000000wxyz";
@@ -605,3 +605,234 @@ if (OWNER_KEY) {
   });
 }
 
+
+// ── D-181 Phase B: weak-topic review (quiz landing card → topic set, AI 先生 opens) ──
+//
+//  12. Landing card: the weakest topics (≥ 5 answers, not all correct; lowest stored
+//      accuracy first; top 3) from a seeded record; the landing loads no AI SDK chunk.
+//      Clicking a row opens the topic set with ?review=1 → the flag is removed from
+//      the URL, the panel opens and sends the opener exactly once; the request's anchor
+//      holds only that topic's question ids, re-judged answers and the learner's
+//      distractor notes; a `#<question_id>` link in the reply closes the panel and
+//      scrolls to that question. A reload and a second click on the same card (same
+//      day → same thread, not empty) send nothing; /sensei links the review thread
+//      back to the topic set without the flag.
+//  13. Arriving without a key: nothing is sent until the key is saved, then the opener
+//      goes out once; closing / reopening / toggling settings never re-sends.
+//  14. Empty record: the 「5 題以上…」 hint; the set page's launcher opens the review
+//      thread without sending anything.
+
+const REVIEW_TOPIC = "technology-14-36"; // データ構造, 7 問
+const REVIEW_TOPIC_IDS = [
+  "2009h21a-q054",
+  "2010h22h-q085",
+  "2011h23tokubetsu-q058",
+  "2016h28a-q092",
+  "2018h30a-q076",
+  "2018h30h-q096",
+  "2019r01a-q062",
+];
+const REVIEW_TARGET = "2018h30h-q096"; // not yet answered in the seed
+const QUESTION_ID_RE = /#(\d{4}[0-9a-z]+-q\d{3})/g;
+
+/** [qid, choice, stored correct] — `correct` is what the record holds, not the current key. */
+const SEED: [string, string, boolean][] = [
+  // technology-14-36 データ構造: stored 1/5 = 20 %; re-judged 0/5 (q085 keyed ウ, stored as correct)
+  ["2009h21a-q054", "ア", false], // keyed イ
+  ["2010h22h-q085", "ア", true], // keyed ウ — a stale "correct"
+  ["2011h23tokubetsu-q058", "ウ", false], // keyed イ
+  ["2016h28a-q092", "ア", false], // keyed エ
+  ["2018h30a-q076", "エ", false], // keyed イ
+  // technology-21-54 データベース方式: 3/6 = 50 %
+  ["2009h21h-q058", "ア", true],
+  ["2011h23a-q053", "エ", true],
+  ["2014h26a-q074", "エ", true],
+  ["2016h28a-q077", "ア", false],
+  ["2020r02o-q064", "ウ", false],
+  ["2021r03-q075", "イ", false],
+  // technology-14-39 その他の言語: 4/5 = 80 %
+  ["2009h21h-q083", "ウ", true],
+  ["2010h22a-q056", "エ", true],
+  ["2010h22h-q063", "ウ", true],
+  ["2012h24a-q059", "イ", true],
+  ["2012h24h-q067", "イ", false],
+  // technology-19-50: 4/5 = 80 %, same rate and count as 14-39 → after it by topic id (4th, hidden)
+  ["2010h22a-q071", "エ", true],
+  ["2011h23a-q062", "ウ", true],
+  ["2015h27a-q061", "エ", true],
+  ["2022r04-q033", "ア", true],
+  ["2024r06-q068", "ア", false],
+  // technology-20-53: 0/4 — fewer than 5 answers, never listed
+  ["2011h23tokubetsu-q098", "ア", false],
+  ["2012h24h-q072", "ア", false],
+  ["2012h24h-q084", "ア", false],
+  ["2013h25h-q054", "イ", false],
+];
+
+/** Seed `itp:learn:v1` once (an init script runs on every load: only when absent). */
+async function seedRecord(page: Page): Promise<void> {
+  const questions = Object.fromEntries(SEED.map(([id, choice, correct], i) => [id, { choice, correct, at: 1_700_000_000_000 + i }]));
+  await page.addInitScript((value) => {
+    if (localStorage.getItem("itp:learn:v1") === null) localStorage.setItem("itp:learn:v1", value);
+  }, JSON.stringify({ v: 1, questions, unitsRead: {} }));
+}
+
+/** Every same-origin JS chunk the page loads, with its body. */
+function trackScripts(page: Page): { url: string; body: Promise<string> }[] {
+  const scripts: { url: string; body: Promise<string> }[] = [];
+  page.on("response", (r) => {
+    if (/\/_next\/static\/.+\.js(\?|$)/.test(r.url())) scripts.push({ url: r.url(), body: r.text().catch(() => "") });
+  });
+  return scripts;
+}
+
+/** Chunks among `scripts` that carry the AI SDK's Anthropic provider. */
+async function sdkChunks(scripts: { url: string; body: Promise<string> }[]): Promise<string[]> {
+  const out: string[] = [];
+  for (const s of scripts) if ((await s.body).includes("anthropic-dangerous-direct-browser-access")) out.push(s.url);
+  return out;
+}
+
+const systemText = (req: FakeRequest): string =>
+  ((req.body.system as { text?: string }[] | undefined) ?? []).map((b) => b.text ?? "").join("\n");
+
+const reviewRows = (page: Page) => page.getByTestId("review-card").getByTestId("review-topic");
+
+test("review: weakest topics on the landing; the card opens the set and AI 先生 speaks first, once", async ({ page }) => {
+  fake = await fakeAnthropic(page, { mode: "ok" });
+  fake.reply = ["**誤りの傾向**: スタックとキューの取り違えが多いです。", `\n\n- [問題を開く](#${REVIEW_TARGET})`];
+  await presetKey(page);
+  await seedRecord(page);
+  const scripts = trackScripts(page);
+  // RSC fetches of the topic set that are not prefetches: the card's navigation only
+  // (removing ?review=1 uses history.replaceState, which refetches nothing)
+  const setFetches: string[] = [];
+  page.on("request", (r) => {
+    const u = new URL(r.url());
+    if (u.pathname === "/ja/quiz" && u.searchParams.get("mode") === "topic" && r.headers()["rsc"] === "1" && !r.headers()["next-router-prefetch"]) {
+      setFetches.push(r.url());
+    }
+  });
+
+  await page.goto("/ja/quiz");
+  await expect(reviewRows(page)).toHaveCount(3);
+  await expect(reviewRows(page).nth(0)).toHaveText(/^データ構造正答率 20% · 5 題解答$/);
+  await expect(reviewRows(page).nth(1)).toHaveText(/^データベース方式正答率 50% · 6 題解答$/);
+  await expect(reviewRows(page).nth(2)).toHaveText(/^その他の言語正答率 80% · 5 題解答$/);
+  await expect(reviewRows(page).nth(0).getByRole("link")).toHaveAttribute(
+    "href",
+    `/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&review=1`,
+  );
+  await page.waitForLoadState("networkidle");
+  expect(scripts.length).toBeGreaterThan(0);
+  expect(await sdkChunks(scripts), "AI SDK chunk loaded on the quiz landing").toEqual([]);
+
+  await reviewRows(page).nth(0).getByRole("link").click();
+  await expect(panel(page)).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/ja/quiz\\?mode=topic&id=${REVIEW_TOPIC}$`)); // flag removed
+  await expect(log(page).locator('[data-role="user"]')).toHaveText(`${S.you}: ${S.reviewOpener}`);
+  await expect(log(page)).toContainText("スタックとキューの取り違えが多いです。");
+  expect((await sdkChunks(scripts)).length, "positive control: the panel loads the SDK").toBeGreaterThan(0);
+
+  // exactly one request, even after the dust settles
+  await page.waitForTimeout(1500);
+  expect(fake.requests).toHaveLength(1);
+  expect(setFetches, "RSC fetches of the set").toHaveLength(1);
+  const req = fake.requests[0]!;
+  const users = (req.body.messages ?? []).filter((m) => m.role === "user");
+  expect(users).toHaveLength(1);
+  expect(JSON.stringify(users[0]!.content)).toContain(S.reviewOpener);
+
+  // the anchor: only this topic's questions, re-judged, the learner's distractor notes only
+  const system = systemText(req);
+  expect(system).toContain("分野: データ構造");
+  expect(system).toContain("この分野の過去問 7 問のうち 5 問に解答、現在の正解で判定すると 0 問正解・5 問不正解");
+  const ids = [...new Set([...system.matchAll(QUESTION_ID_RE)].map((m) => m[1]!))];
+  expect(ids.length).toBe(7); // 5 wrong + 2 not yet answered
+  for (const id of ids) expect(REVIEW_TOPIC_IDS, id).toContain(id);
+  const block = (id: string) => system.slice(system.indexOf(`### 問題 ID: #${id}`)).split("\n### ")[0]!;
+  const q085 = block("2010h22h-q085");
+  expect(q085).toContain("正解: ウ");
+  expect(q085).toContain("学習者の解答: ア（不正解）"); // stored correct=true, re-judged
+  expect(q085).toContain("ア が誤りの理由");
+  expect(q085).not.toMatch(/[イエ] が誤りの理由/);
+  const q054 = block("2009h21a-q054");
+  expect(q054).toContain("ア が誤りの理由");
+  expect(q054).not.toMatch(/[ウエ] が誤りの理由/);
+  expect(system).toContain(`- #${REVIEW_TARGET}（`);
+  expect(system).toContain("一覧にない問題 ID");
+
+  // the recommended #id link: the panel closes and the question is scrolled into view
+  await log(page).getByRole("link", { name: "問題を開く" }).click();
+  await expect(panel(page)).toHaveCount(0);
+  await expect(card(page, REVIEW_TARGET)).toBeInViewport();
+  await expect(card(page, REVIEW_TARGET).getByRole("button").first()).toBeFocused();
+
+  // a reload never re-sends
+  await page.reload();
+  await expect(card(page, REVIEW_TARGET)).toBeVisible();
+  await page.waitForTimeout(1500);
+  await expect(panel(page)).toHaveCount(0);
+  expect(fake.requests).toHaveLength(1);
+
+  // /sensei: the review thread links back to the topic set, without the flag
+  await page.goto(SENSEI_URL);
+  const row = page.getByTestId("sensei-thread").filter({ hasText: S.kind_review });
+  await expect(row).toHaveCount(1);
+  await expect(row.getByRole("link", { name: "データ構造" })).toHaveAttribute("href", `/ja/quiz?mode=topic&id=${REVIEW_TOPIC}`);
+
+  // the same card again (same day → same thread, not empty): the history, no new request
+  await page.goto("/ja/quiz");
+  await reviewRows(page).nth(0).getByRole("link").click();
+  await expect(panel(page)).toBeVisible();
+  await expect(log(page)).toContainText("スタックとキューの取り違えが多いです。");
+  await expect(page).toHaveURL(new RegExp(`id=${REVIEW_TOPIC}$`));
+  await page.waitForTimeout(1500);
+  expect(fake.requests).toHaveLength(1);
+});
+
+test("review without a key: nothing is sent until the key is saved, then the opener once", async ({ page }) => {
+  fake = await fakeAnthropic(page, { mode: "ok" });
+  await seedRecord(page);
+  await page.goto("/ja/quiz");
+  await reviewRows(page).nth(0).getByRole("link").click();
+  const p = panel(page);
+  await expect(p.getByTestId("sensei-key-missing")).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`id=${REVIEW_TOPIC}$`));
+  await expect(log(page)).toContainText(S.reviewEmptyHint);
+  await page.waitForTimeout(500);
+  expect(fake.requests).toHaveLength(0);
+
+  await p.getByLabel(S.keyLabel).fill(KEY);
+  await p.getByRole("button", { name: S.keySave }).click();
+  await expect(log(page)).toContainText(REPLY_MARK);
+  expect(fake.requests).toHaveLength(1);
+
+  // effect re-runs (settings toggled, key status re-read, close + reopen) never re-send
+  await p.getByRole("button", { name: S.settings }).click();
+  await p.getByRole("button", { name: S.settings }).click();
+  await page.keyboard.press("Escape");
+  await expect(panel(page)).toHaveCount(0);
+  await expect(page.getByTestId("review-launcher")).toBeFocused();
+  await page.getByTestId("review-launcher").click();
+  await expect(log(page)).toContainText(REPLY_MARK);
+  await page.waitForTimeout(1000);
+  expect(fake.requests).toHaveLength(1);
+  expect(JSON.stringify(fake.requests[0]!.body.messages)).toContain(S.reviewOpener);
+});
+
+test("review with an empty record: the hint on the landing; the set's launcher sends nothing", async ({ page }) => {
+  fake = await fakeAnthropic(page, { mode: "ok" });
+  await presetKey(page);
+  await page.goto("/ja/quiz");
+  await expect(page.getByTestId("review-empty")).toHaveText("5 題以上解くと弱点を分析します");
+  await expect(reviewRows(page)).toHaveCount(0);
+
+  await page.goto(`/ja/quiz?mode=topic&id=${REVIEW_TOPIC}`);
+  await page.getByTestId("review-launcher").click();
+  await expect(panel(page)).toBeVisible();
+  await expect(log(page)).toContainText(S.reviewEmptyHint);
+  await expect(panel(page).getByRole("button", { name: S.reviewOpener })).toBeVisible(); // a suggestion, not sent
+  await page.waitForTimeout(1000);
+  expect(fake.requests).toHaveLength(0);
+});

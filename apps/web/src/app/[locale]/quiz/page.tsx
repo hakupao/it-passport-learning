@@ -77,6 +77,7 @@ export default async function QuizPage({
         <QuizSet
           locale={locale}
           isOwner={owner}
+          topicId={set.mode === "topic" ? set.id : undefined}
           label={set.label}
           sublabel={set.sublabel}
           questions={set.questions}

@@ -201,3 +201,29 @@ describe("QuizSet answer feedback is not color-only (SSR)", () => {
     });
   }
 });
+
+// D-181 Phase B — the review launcher appears on topic sets only.
+describe("QuizSet AI 先生 review launcher (SSR)", () => {
+  const renderSet = (topicId: string | undefined, locale = "ja") =>
+    renderToStaticMarkup(
+      h(NextIntlClientProvider, {
+        locale,
+        messages: messagesFor(locale),
+        children: h(LearningRecordProvider, {
+          isOwner: false,
+          children: h(QuizSet, { locale, label: "L", sublabel: "S", questions: [QUESTION], termCards: {}, topicId }),
+        }),
+      }),
+    );
+
+  it("a topic set shows the 「AI 先生と復習する」 button in its header", () => {
+    const out = renderSet(QUESTION.topic_id);
+    expect(out).toMatch(/<header[\s\S]*data-testid="review-launcher"[\s\S]*<\/header>/);
+    expect(out).toContain("AI 先生と復習する");
+    expect(renderSet(QUESTION.topic_id, "en")).toContain("Review with AI Tutor");
+  });
+
+  it("an exam set (no topicId) has no launcher", () => {
+    expect(renderSet(undefined)).not.toContain("review-launcher");
+  });
+});

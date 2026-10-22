@@ -13,6 +13,13 @@
 // - Before the first token: a visible 「考え中…」 (first token is 2–4 s on Sonnet).
 // - The conversation is an aria-live="polite" log; Stop while generating.
 // - A refused save (quota) shows a non-blocking notice (§0-6).
+// - Phase B: an anchor with an `opener` (the quiz review card) sends that text as
+//   the first user turn once — only into an empty thread, only once the stored
+//   thread has been read and a key exists (without a key it waits for the key
+//   to be saved). The guard is the anchor object itself: each click on the card
+//   makes a new anchor, so effect re-runs never send twice.
+// - An in-page `#<question_id>` link in a reply (the review's recommendations)
+//   closes the panel, then scrolls to that question and focuses its first button.
 
 "use client";
 
@@ -35,6 +42,8 @@ export interface SenseiAnchor {
   anchorId: string;
   title: string;
   anchorText: string;
+  /** Sent once as the first user turn when the thread is empty (Phase B review). */
+  opener?: string;
 }
 
 function textOf(m: UIMessage): string {
@@ -59,6 +68,9 @@ export function SenseiPanel({
   const lastSent = useRef<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const openerSentFor = useRef<SenseiAnchor | null>(null);
+  const jumpTo = useRef<string | null>(null);
+  const review = anchor.kind === "review";
 
   // A new thread starts with an empty composer.
   const threadKey = `${anchor.kind}:${anchor.anchorId}`;
@@ -86,6 +98,38 @@ export function SenseiPanel({
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
   }, [s.messages]);
+
+  // The review opener: once per anchor object, into an empty thread only.
+  const { loadedEmpty, sendMessage } = s;
+  useEffect(() => {
+    const opener = anchor.opener;
+    if (!opener || !open || openerSentFor.current === anchor || loadedEmpty === null) return;
+    if (!loadedEmpty || s.messages.length > 0) {
+      openerSentFor.current = anchor; // an existing thread is shown as it is
+      return;
+    }
+    if (!hasKey) return; // KeySettings is shown; sent once the key is saved
+    openerSentFor.current = anchor;
+    lastSent.current = opener;
+    void sendMessage({ text: opener });
+  }, [anchor, open, loadedEmpty, s.messages.length, hasKey, sendMessage]);
+
+  /** A click on an in-page `#<id>` link whose target is on the page: close, then jump. */
+  function onLogClick(e: React.MouseEvent<HTMLElement>): void {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const href = (e.target as Element).closest("a")?.getAttribute("href");
+    if (!href?.startsWith("#") || href.length < 2) return;
+    let id: string;
+    try {
+      id = decodeURIComponent(href.slice(1));
+    } catch {
+      return;
+    }
+    if (!document.getElementById(id)) return;
+    e.preventDefault();
+    jumpTo.current = id;
+    onOpenChange(false);
+  }
 
   const generating = s.status === "submitted" || s.status === "streaming";
   const last = s.messages.at(-1);
@@ -130,7 +174,19 @@ export function SenseiPanel({
           }}
           onCloseAutoFocus={(e) => {
             e.preventDefault();
-            returnFocusTo.current?.focus();
+            const id = jumpTo.current;
+            jumpTo.current = null;
+            if (!id) {
+              returnFocusTo.current?.focus();
+              return;
+            }
+            // after the dialog (and its scroll lock) is gone
+            requestAnimationFrame(() => {
+              const target = document.getElementById(id);
+              if (!target) return;
+              target.scrollIntoView({ block: "start" });
+              target.querySelector<HTMLElement>("button")?.focus({ preventScroll: true });
+            });
           }}
         >
           <header className="flex shrink-0 items-start gap-2 border-b p-3">
@@ -178,8 +234,17 @@ export function SenseiPanel({
               </div>
             ) : null}
 
-            <div role="log" aria-live="polite" aria-label={t("panelTitle")} className="space-y-3" data-testid="sensei-log">
-              {s.messages.length === 0 && !generating ? <p className="text-sm opacity-70">{t("emptyHint")}</p> : null}
+            <div
+              role="log"
+              aria-live="polite"
+              aria-label={t("panelTitle")}
+              className="space-y-3"
+              data-testid="sensei-log"
+              onClick={onLogClick}
+            >
+              {s.messages.length === 0 && !generating ? (
+                <p className="text-sm opacity-70">{t(review ? "reviewEmptyHint" : "emptyHint")}</p>
+              ) : null}
               {s.messages.map((m) => {
                 const text = textOf(m);
                 if (text === "") return null;
@@ -223,8 +288,13 @@ export function SenseiPanel({
             }}
           >
             {s.messages.length === 0 && input === "" ? (
-              <Button type="button" variant="outline" size="sm" onClick={() => setInput(t("suggestWhy"))}>
-                {t("suggestWhy")}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setInput(t(review ? "reviewOpener" : "suggestWhy"))}
+              >
+                {t(review ? "reviewOpener" : "suggestWhy")}
               </Button>
             ) : null}
             <label htmlFor="sensei-input" className="sr-only">
@@ -235,7 +305,7 @@ export function SenseiPanel({
               ref={inputRef}
               rows={3}
               className="w-full resize-none rounded-md border bg-transparent p-2 text-sm"
-              placeholder={t("inputPlaceholder")}
+              placeholder={t(review ? "reviewPlaceholder" : "inputPlaceholder")}
               aria-describedby="sensei-input-hint"
               value={input}
               onChange={(e) => setInput(e.target.value)}

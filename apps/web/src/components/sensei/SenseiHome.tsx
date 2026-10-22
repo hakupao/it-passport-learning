@@ -1,6 +1,7 @@
 // D-181 Task A5 / §0-10 — the /[locale]/sensei page body: key settings (with how
 // to get a key while none is saved), the saved threads of this browser (newest
-// first, each linking back to its source, each deletable) and the free-question
+// first, each linking back to its source — a review thread to its topic set,
+// without `review=1` — each deletable) and the free-question
 // input, disabled until Phase C (「近日公開」).
 //
 // Phase A loads no AI SDK here: nothing on this page sends a message, and the SDK
@@ -17,7 +18,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { questionThreadHref } from "@/lib/sensei/threadLinks";
+import { questionThreadHref, reviewThreadHref } from "@/lib/sensei/threadLinks";
 import { deleteThread, listThreads, MAX_THREADS, type ThreadMeta } from "@/lib/sensei/threadStore";
 import type { StorageLike } from "@/lib/storage";
 
@@ -92,7 +93,12 @@ export function SenseiHome(): React.ReactElement {
         {threads !== null && threads.length > 0 && (
           <ul className="divide-y rounded-md border" data-testid="sensei-threads">
             {threads.map((th) => {
-              const href = th.kind === "question" ? questionThreadHref(th.anchorId) : null;
+              const href =
+                th.kind === "question"
+                  ? questionThreadHref(th.anchorId)
+                  : th.kind === "review"
+                    ? reviewThreadHref(th.anchorId)
+                    : null;
               return (
                 <li key={th.id} className="flex items-center gap-3 p-3" data-testid="sensei-thread">
                   <div className="min-w-0 flex-1">

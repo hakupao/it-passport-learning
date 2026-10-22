@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { questionThreadHref, splitQuestionAnchor } from "../threadLinks";
+import { questionThreadHref, reviewAnchorId, reviewThreadHref, splitQuestionAnchor } from "../threadLinks";
 
 describe("splitQuestionAnchor", () => {
   // the six question_id shapes in data/ip/quiz/questions.json (exam_id = id before "-q<NNN>")
@@ -35,5 +35,23 @@ describe("questionThreadHref", () => {
 
   it("is null for an anchor it cannot parse", () => {
     expect(questionThreadHref("garbage")).toBeNull();
+  });
+});
+
+describe("review anchors (D-181 Phase B)", () => {
+  it("reviewAnchorId is <topic_id>:<local YYYY-MM-DD>", () => {
+    expect(reviewAnchorId("technology-14-36", new Date(2026, 0, 5, 23, 59))).toBe("technology-14-36:2026-01-05");
+    expect(reviewAnchorId("strategy-02-08", new Date(2026, 10, 22, 0, 0))).toBe("strategy-02-08:2026-11-22");
+  });
+
+  it("reviewThreadHref links to the topic set without the review flag", () => {
+    expect(reviewThreadHref("technology-14-36:2026-10-22")).toBe("/quiz?mode=topic&id=technology-14-36");
+    expect(reviewThreadHref("management-10-27:2026-01-05")).toBe("/quiz?mode=topic&id=management-10-27");
+  });
+
+  it("reviewThreadHref is null for an anchor it cannot parse", () => {
+    for (const bad of ["", "technology-14-36", "technology-14-36:", "technology-14-36:2026-1-5", "2009h21a-q054:イ", "Tech-14-36:2026-10-22", "a/b-14-36:2026-10-22"]) {
+      expect(reviewThreadHref(bad), bad).toBeNull();
+    }
   });
 });

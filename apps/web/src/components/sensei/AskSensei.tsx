@@ -6,6 +6,8 @@
 // thread instead of mounting a second chat. The anchor text is built only when
 // the button is clicked (getAnchorText). On close, focus returns to the button
 // that opened the panel.
+// useSenseiHost() hands other entry points (the Phase B ReviewLauncher) the same
+// open function; it is null outside a SenseiHost.
 
 "use client";
 
@@ -41,6 +43,11 @@ export function SenseiHost({ children }: { children: React.ReactNode }): React.R
       {anchor ? <SenseiPanel anchor={anchor} open={open} onOpenChange={setOpen} returnFocusTo={triggerRef} /> : null}
     </HostContext.Provider>
   );
+}
+
+/** The page's open-the-panel function, or null outside a SenseiHost. */
+export function useSenseiHost(): OpenFor | null {
+  return useContext(HostContext);
 }
 
 export function AskSensei({

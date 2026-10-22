@@ -15,6 +15,9 @@
 // delete (KeySettings onChange). Re-sending after a failed or refused turn first
 // drops that turn (the panel puts its text back into the input), and `clear()`
 // discards a reply still in flight (threadChat.clearThread).
+// `loadedEmpty` is null until the active thread's stored messages have been read,
+// then whether that thread was empty (Phase B: the review opener is sent only into
+// an empty thread, and never before the stored thread is known).
 
 "use client";
 
@@ -63,12 +66,14 @@ export interface UseSenseiResult {
   hasKey: boolean;
   saveFailed: boolean;
   refreshKey: () => void;
+  loadedEmpty: boolean | null;
 }
 
 export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOptions): UseSenseiResult {
   const [hasKey, setHasKey] = useState(false);
   const [refusal, setRefusal] = useState<SenseiError | null>(null);
   const [saveFailed, setSaveFailed] = useState(false);
+  const [loaded, setLoaded] = useState<{ threadId: string; empty: boolean } | null>(null);
 
   // Read at send time, so the transport stays one stable object.
   const anchorRef = useRef(anchorText);
@@ -119,7 +124,9 @@ export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOption
   useEffect(() => {
     activeThreadRef.current = threadChat.id;
     const storage = browserStorage();
-    setMessages(storage ? loadThreadMessages(storage, threadChat.id) : []);
+    const stored = storage ? loadThreadMessages(storage, threadChat.id) : [];
+    setMessages(stored);
+    setLoaded({ threadId: threadChat.id, empty: stored.length === 0 });
     setRefusal(null);
     setSaveFailed(false);
     setHasKey(readHasKey());
@@ -172,5 +179,6 @@ export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOption
     hasKey,
     saveFailed,
     refreshKey,
+    loadedEmpty: loaded?.threadId === threadChat.id ? loaded.empty : null,
   };
 }
