@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { StorageLike } from "@/lib/storage";
 
-import { createThreadChat } from "../threadChat";
+import { createThreadChat, dropFailedTurn } from "../threadChat";
 import { listThreads, loadThreadMessages, threadIdFor, threadStorageKey } from "../threadStore";
 
 function memoryStorage(): StorageLike & { data: Map<string, string> } {
@@ -42,6 +42,31 @@ function heldTransport(reply: string) {
   return { transport, state };
 }
 
+/** A transport that ignores the abort signal: its stream keeps going until finish(). */
+function deafTransport(reply: string) {
+  const state = { finish: () => {}, calls: 0 };
+  const transport: ChatTransport<UIMessage> = {
+    sendMessages: async () => {
+      state.calls++;
+      return new ReadableStream<UIMessageChunk>({
+        start(c) {
+          c.enqueue({ type: "start" });
+          c.enqueue({ type: "text-start", id: "t" });
+          c.enqueue({ type: "text-delta", id: "t", delta: reply });
+          state.finish = () => {
+            c.enqueue({ type: "text-delta", id: "t", delta: "（続き）" });
+            c.enqueue({ type: "text-end", id: "t" });
+            c.enqueue({ type: "finish", finishReason: "stop" });
+            c.close();
+          };
+        },
+      });
+    },
+    reconnectToStream: async () => null,
+  };
+  return { transport, state };
+}
+
 async function until(cond: () => boolean): Promise<void> {
   for (let i = 0; i < 200 && !cond(); i++) await new Promise((r) => setTimeout(r, 0));
   expect(cond()).toBe(true);
@@ -73,7 +98,6 @@ describe("createThreadChat (one Chat per thread)", () => {
 
     a.state.finish(); // A's reply completes late
     await sendingA;
-
     expect(texts(loadThreadMessages(storage, threadIdFor(A.kind, A.anchorId)))).toEqual([
       "user:A の質問",
       "assistant:A の回答",
@@ -119,5 +143,88 @@ describe("createThreadChat (one Chat per thread)", () => {
     const chatA = createThreadChat({ ...A, transport, getStorage: () => storage, onRefusal: onRefusalA });
     await chatA.sendMessage({ text: "?" });
     expect(onRefusalA).toHaveBeenCalledWith({ kind: "refusal", message: "" });
+  });
+
+  it("clearThread() while streaming: the aborted response finishing later does not recreate the thread", async () => {
+    const storage = memoryStorage();
+    const deaf = deafTransport("A の途中");
+    const onSaved = vi.fn();
+    const chatA = createThreadChat({ ...A, transport: deaf.transport, getStorage: () => storage, onRefusal: () => {}, onSaved });
+    const idA = threadIdFor(A.kind, A.anchorId);
+
+    // a finished first turn is saved and reported
+    const first = chatA.sendMessage({ text: "最初の質問" });
+    await until(() => chatA.status === "streaming");
+    deaf.state.finish();
+    await first;
+    expect(onSaved).toHaveBeenLastCalledWith(true);
+    expect(texts(loadThreadMessages(storage, idA))).toHaveLength(2);
+
+    // second turn: cleared mid-stream; the stream ignores the abort and still finishes
+    const second = chatA.sendMessage({ text: "二つ目の質問" });
+    await until(() => chatA.status === "streaming");
+    chatA.clearThread();
+    expect(chatA.messages).toEqual([]);
+    deaf.state.finish();
+    await second;
+
+    expect(listThreads(storage)).toEqual([]);
+    expect(storage.data.has(threadStorageKey(idA))).toBe(false);
+    expect(chatA.messages).toEqual([]); // the late partial reply is not shown either
+    expect(onSaved).toHaveBeenCalledTimes(1);
+
+    // the guard is spent: the next turn is saved normally
+    const third = chatA.sendMessage({ text: "三つ目の質問" });
+    await until(() => chatA.status === "streaming");
+    deaf.state.finish();
+    await third;
+    expect(texts(loadThreadMessages(storage, idA))).toEqual(["user:三つ目の質問", "assistant:A の途中（続き）"]);
+  });
+
+  it("clearThread() when idle does not swallow the next save", async () => {
+    const storage = memoryStorage();
+    const deaf = deafTransport("回答");
+    const chatA = createThreadChat({ ...A, transport: deaf.transport, getStorage: () => storage, onRefusal: () => {} });
+    chatA.clearThread();
+    const sending = chatA.sendMessage({ text: "質問" });
+    await until(() => chatA.status === "streaming");
+    deaf.state.finish();
+    await sending;
+    expect(texts(loadThreadMessages(storage, threadIdFor(A.kind, A.anchorId)))).toEqual([
+      "user:質問",
+      "assistant:回答（続き）",
+    ]);
+  });
+
+  it("reports a refused save through onSaved(false)", async () => {
+    const storage = memoryStorage();
+    storage.setItem = () => {
+      throw new Error("QuotaExceededError");
+    };
+    const deaf = deafTransport("回答");
+    const onSaved = vi.fn();
+    const chatA = createThreadChat({ ...A, transport: deaf.transport, getStorage: () => storage, onRefusal: () => {}, onSaved });
+    const sending = chatA.sendMessage({ text: "質問" });
+    await until(() => chatA.status === "streaming");
+    deaf.state.finish();
+    await sending;
+    expect(onSaved).toHaveBeenCalledWith(false);
+  });
+});
+
+describe("dropFailedTurn", () => {
+  const u = (id: string): UIMessage => ({ id, role: "user", parts: [{ type: "text", text: id }] });
+  const a = (id: string, text = id): UIMessage => ({ id, role: "assistant", parts: [{ type: "text", text }] });
+
+  it("drops the last user message and everything after it", () => {
+    expect(dropFailedTurn([u("u1"), a("a1"), u("u2"), a("a2", "")])).toEqual([u("u1"), a("a1")]);
+    expect(dropFailedTurn([u("u1"), a("a1"), u("u2")])).toEqual([u("u1"), a("a1")]);
+    expect(dropFailedTurn([u("u1"), a("a1"), u("u2"), a("a2", "途中")])).toEqual([u("u1"), a("a1")]);
+  });
+
+  it("returns the list unchanged when there is no user message", () => {
+    const only = [a("a1")];
+    expect(dropFailedTurn(only)).toEqual(only);
+    expect(dropFailedTurn([])).toEqual([]);
   });
 });

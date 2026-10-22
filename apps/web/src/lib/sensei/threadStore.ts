@@ -5,7 +5,8 @@
 //            (≤ MAX_PERSISTED_MESSAGES = 200 per thread)
 // At most MAX_THREADS threads; the one with the oldest updatedAt is evicted
 // together with its message key. A QuotaExceeded write evicts the oldest other
-// thread and retries once; a second failure returns false (never throws).
+// thread and retries once (messages and the index alike); a second failure
+// returns false (never throws).
 // A corrupt index reads as empty and no other key is touched.
 
 import type { UIMessage } from "ai";
@@ -112,7 +113,12 @@ export function openThread(
     if (!evicted) break;
     next = evicted;
   }
-  writeIndex(storage, next);
+  // A refused index write (quota) evicts the oldest other thread and retries once;
+  // if that fails too, the thread stays unindexed and saveThreadMessages reports false.
+  if (!writeIndex(storage, next)) {
+    const evicted = evictOldest(storage, next, id);
+    if (evicted) writeIndex(storage, evicted);
+  }
   return meta;
 }
 

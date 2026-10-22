@@ -9,8 +9,16 @@
 // response finishes (not per token). `error` is the mapped SenseiError only —
 // stream / API errors via toSenseiError, an Anthropic refusal (finishReason
 // "content-filter") via the thread Chat's onFinish; the error object is never logged or stored.
+// `saveFailed` is true when the last save of the active thread was refused (quota;
+// §0-6 shows a notice). `refreshKey()` re-reads the key after a same-tab save /
+// delete (KeySettings onChange). Re-sending after a failed or refused turn first
+// drops that turn (the panel puts its text back into the input), and `clear()`
+// discards a reply still in flight (threadChat.clearThread).
 
 "use client";
+
+// Must stay first: sets zod's jitless flag before the AI SDK loads (CSP, see the module).
+import "@/lib/sensei/zodJitless";
 
 import { useChat, type UseChatHelpers } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
@@ -19,8 +27,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createBrowserTransport } from "@/lib/sensei/browserTransport";
 import { toSenseiError, type SenseiError } from "@/lib/sensei/errors";
 import { loadSenseiKey, SENSEI_KEY_STORAGE } from "@/lib/sensei/keyStore";
-import { createThreadChat } from "@/lib/sensei/threadChat";
-import { deleteThread, loadThreadMessages, threadIdFor, type ThreadKind } from "@/lib/sensei/threadStore";
+import { createThreadChat, dropFailedTurn } from "@/lib/sensei/threadChat";
+import { loadThreadMessages, threadIdFor, type ThreadKind } from "@/lib/sensei/threadStore";
 import type { StorageLike } from "@/lib/storage";
 
 /** window.localStorage, or null where it is unavailable (SSR, blocked storage). */
@@ -52,11 +60,14 @@ export interface UseSenseiResult {
   stop: () => void;
   clear: () => void;
   hasKey: boolean;
+  saveFailed: boolean;
+  refreshKey: () => void;
 }
 
 export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOptions): UseSenseiResult {
   const [hasKey, setHasKey] = useState(false);
   const [refusal, setRefusal] = useState<SenseiError | null>(null);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   // Read at send / save time, so the transport stays one stable object.
   const anchorRef = useRef(anchorText);
@@ -95,11 +106,14 @@ export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOption
       onRefusal: (err) => {
         if (activeThreadRef.current === id) setRefusal(err);
       },
+      onSaved: (ok) => {
+        if (activeThreadRef.current === id) setSaveFailed(!ok);
+      },
     });
   }, [kind, anchorId, transport]);
 
   const chat = useChat({ chat: threadChat });
-  const { setMessages, sendMessage: chatSend, stop, clearError } = chat;
+  const { setMessages, sendMessage: chatSend, stop } = chat;
 
   // After mount / on anchor change: the stored thread and whether a key exists.
   // On switch (or unmount) the previous thread's in-flight response is stopped.
@@ -108,6 +122,7 @@ export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOption
     const storage = browserStorage();
     setMessages(storage ? loadThreadMessages(storage, threadChat.id) : []);
     setRefusal(null);
+    setSaveFailed(false);
     setHasKey(readHasKey());
     return () => {
       void threadChat.stop();
@@ -123,22 +138,23 @@ export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOption
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
+  const lastTurnFailed = chat.error !== undefined || refusal !== null;
   const sendMessage = useCallback<UseSenseiResult["sendMessage"]>(
     (...args) => {
+      if (lastTurnFailed) setMessages(dropFailedTurn(threadChat.messages));
       setRefusal(null);
       return chatSend(...args);
     },
-    [chatSend],
+    [chatSend, lastTurnFailed, setMessages, threadChat],
   );
 
   const clear = useCallback(() => {
-    void stop();
-    setMessages([]);
-    clearError();
+    threadChat.clearThread();
     setRefusal(null);
-    const storage = browserStorage();
-    if (storage) deleteThread(storage, threadChat.id);
-  }, [stop, setMessages, clearError, threadChat]);
+    setSaveFailed(false);
+  }, [threadChat]);
+
+  const refreshKey = useCallback(() => setHasKey(readHasKey()), []);
 
   const error = useMemo(() => (chat.error ? toSenseiError(chat.error) : refusal), [chat.error, refusal]);
 
@@ -150,5 +166,7 @@ export function useSensei({ kind, anchorId, title, anchorText }: UseSenseiOption
     stop,
     clear,
     hasKey,
+    saveFailed,
+    refreshKey,
   };
 }

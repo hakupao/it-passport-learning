@@ -19,15 +19,22 @@
 // the table) and the table as a sibling; clicking the table answers too. The
 // picked choice carries a visible ✓ / ✗ plus sr-only 正解 / 不正解, so the
 // result is not conveyed by color alone; the answer line is an aria-live region.
+//
+// D-181 Task A4: after answering or 「解答を表示」, a 「AI 先生に聞く」 button opens
+// the page's one AI 先生 panel (SenseiHost) on this question. Its thread anchor
+// is `<question_id>:<picked choice>` or `<question_id>:reveal` (§0-4: another
+// choice = another thread).
 
 "use client";
 
 import { Fragment, useState } from "react";
-import { useTranslations } from "next-intl";
+import { hasLocale, useTranslations } from "next-intl";
 
 import { TermChip } from "@/components/glossary/TermChip";
+import { AskSensei, SenseiHost } from "@/components/sensei/AskSensei";
 import { useLearningActions } from "@/hooks/useLearningRecord";
 import { Link } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import {
   localizedChoices,
@@ -35,6 +42,7 @@ import {
   localizedStem,
   type QuizQuestion,
 } from "@/lib/quiz/quizModel";
+import { questionAnchor } from "@/lib/sensei/anchors";
 
 import { QuizFeedback } from "./QuizFeedback";
 import { ChoiceBody, isTableChoice, StemBlocks } from "./QuizRichText";
@@ -62,33 +70,35 @@ export function QuizSet({
   const t = useTranslations("Quiz");
 
   return (
-    <div className={styles.page}>
-      <header className={styles.setHead}>
-        <Link href="/quiz" locale={locale} className={styles.backLink}>
-          ← {t("backToList")}
-        </Link>
-        <h1 className={styles.setTitle}>{label}</h1>
-        <p className={styles.setSub}>
-          {sublabel} · {t("count", { n: questions.length })}
-        </p>
-      </header>
+    <SenseiHost>
+      <div className={styles.page}>
+        <header className={styles.setHead}>
+          <Link href="/quiz" locale={locale} className={styles.backLink}>
+            ← {t("backToList")}
+          </Link>
+          <h1 className={styles.setTitle}>{label}</h1>
+          <p className={styles.setSub}>
+            {sublabel} · {t("count", { n: questions.length })}
+          </p>
+        </header>
 
-      {questions.length === 0 ? (
-        <p className={styles.empty}>{t("empty")}</p>
-      ) : (
-        questions.map((q, i) => (
-          <QuestionCard
-            key={q.id}
-            q={q}
-            index={i + 1}
-            t={t}
-            locale={locale}
-            isOwner={isOwner}
-            termCards={termCards}
-          />
-        ))
-      )}
-    </div>
+        {questions.length === 0 ? (
+          <p className={styles.empty}>{t("empty")}</p>
+        ) : (
+          questions.map((q, i) => (
+            <QuestionCard
+              key={q.id}
+              q={q}
+              index={i + 1}
+              t={t}
+              locale={locale}
+              isOwner={isOwner}
+              termCards={termCards}
+            />
+          ))
+        )}
+      </div>
+    </SenseiHost>
   );
 }
 
@@ -239,6 +249,21 @@ function QuestionCard({
           {t("showAnswer")}
         </button>
       )}
+      {revealed ? (
+        <div className={styles.askSensei}>
+          <AskSensei
+            kind="question"
+            anchorId={`${q.id}:${picked ?? "reveal"}`}
+            title={q.source_label}
+            getAnchorText={() =>
+              questionAnchor(q, hasLocale(routing.locales, locale) ? locale : routing.defaultLocale, {
+                choice: picked ?? undefined,
+                termCards,
+              })
+            }
+          />
+        </div>
+      ) : null}
       {q.terms.length > 0 ? (
         <div className={styles.terms}>
           {q.terms.map((term, i) => (

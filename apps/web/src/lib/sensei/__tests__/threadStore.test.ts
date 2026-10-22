@@ -221,6 +221,47 @@ describe("threadStore", () => {
     expect([...failingIndex.data.keys()].some((k) => k.startsWith("itp:sensei:thread:"))).toBe(false);
   });
 
+  it("openThread: an index write refused once evicts the oldest thread and retries (the new thread is kept)", () => {
+    const s = memoryStorage();
+    const oldest = openThread(s, { kind: "question", anchorId: "q1", title: "問1" });
+    saveThreadMessages(s, oldest.id, [msg("m1", "x")]);
+    tick();
+    const newer = openThread(s, { kind: "question", anchorId: "q2", title: "問2" });
+    saveThreadMessages(s, newer.id, [msg("m2", "y")]);
+    tick();
+
+    let refusals = 1;
+    const set = s.setItem;
+    s.setItem = (k, v) => {
+      if (k === SENSEI_INDEX_STORAGE && refusals > 0) {
+        refusals--;
+        throw quotaError();
+      }
+      set(k, v);
+    };
+    const fresh = openThread(s, { kind: "question", anchorId: "q3", title: "問3" });
+
+    expect(listThreads(s).map((t) => t.id)).toEqual([fresh.id, newer.id]);
+    expect(s.data.has(threadStorageKey(oldest.id))).toBe(false);
+    expect(loadThreadMessages(s, newer.id)).toEqual([msg("m2", "y")]);
+    // the new thread is indexed, so its first save goes through
+    expect(saveThreadMessages(s, fresh.id, [msg("m3", "z")])).toBe(true);
+  });
+
+  it("openThread: index refused twice → returns the meta, never throws, writes nothing new", () => {
+    const s = memoryStorage();
+    const oldest = openThread(s, { kind: "question", anchorId: "q1", title: "問1" });
+    tick();
+    const set = s.setItem;
+    s.setItem = (k, v) => {
+      if (k === SENSEI_INDEX_STORAGE) throw quotaError();
+      set(k, v);
+    };
+    const fresh = openThread(s, { kind: "question", anchorId: "q2", title: "問2" });
+    expect(fresh.anchorId).toBe("q2");
+    expect(listThreads(s).map((t) => t.id)).toEqual([oldest.id]);
+  });
+
   it("keeps anchorIds with a choice suffix as distinct threads (A4: <question_id>:<choice|reveal>)", () => {
     const s = memoryStorage();
     const a = openThread(s, { kind: "question", anchorId: "2024r06_q01:イ", title: "問1" });
