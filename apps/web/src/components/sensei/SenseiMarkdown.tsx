@@ -3,9 +3,11 @@
 // URLs survive `urlTransform` (anything else loses its href); https links open
 // in a new tab with rel="noopener noreferrer". Images are shown as their alt
 // text: the CSP's img-src would block a remote image anyway, and a model-chosen
-// image URL should not be fetched. CommonMark only (no remark-gfm, so no tables).
+// image URL should not be fetched. remark-gfm adds tables / autolinks / strikethrough
+// (autolinks pass through the same urlTransform and link component).
 
 import Markdown, { type Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 /** https: or site-relative (no scheme, not protocol-relative); null for anything else. */
 export function safeUrl(url: string): string | null {
@@ -30,11 +32,19 @@ const components: Components = {
       <a href={href}>{children}</a>
     ),
   img: ({ alt }) => <span>{alt}</span>,
+  // a wide table scrolls inside the panel instead of widening it (phone drawer)
+  table: ({ children }) => (
+    <div className="overflow-x-auto">
+      <table>{children}</table>
+    </div>
+  ),
 };
+
+const REMARK_PLUGINS = [remarkGfm];
 
 export function SenseiMarkdown({ text }: { text: string }): React.ReactElement {
   return (
-    <Markdown urlTransform={(url) => safeUrl(url)} components={components}>
+    <Markdown remarkPlugins={REMARK_PLUGINS} urlTransform={(url) => safeUrl(url)} components={components}>
       {text}
     </Markdown>
   );

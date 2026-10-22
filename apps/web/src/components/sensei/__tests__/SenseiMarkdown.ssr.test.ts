@@ -77,4 +77,29 @@ describe("SenseiMarkdown", () => {
     expect(out).not.toContain("<img");
     expect(out).toContain("図の説明");
   });
+
+  it("renders a GFM table as <table> (remark-gfm)", () => {
+    const out = render("| 方式 | 取出し順 |\n| --- | --- |\n| スタック | LIFO |\n| キュー | FIFO |");
+    expect(out).toMatch(/<table>[\s\S]*<th>方式<\/th>[\s\S]*<th>取出し順<\/th>/);
+    expect((out.match(/<tr>/g) ?? []).length).toBe(3);
+    expect(out).toContain("<td>スタック</td>");
+  });
+
+  it("with GFM: raw HTML (also inside a table) is still not rendered, a javascript: link is still neutralised", () => {
+    const out = render(
+      "| a | b |\n| --- | --- |\n| <script>alert(1)</script> | [x](javascript:alert(1)) |\n\n<iframe src=\"https://example.com\"></iframe>",
+    );
+    expect(out).toContain("<table>");
+    expect(out).not.toContain("<script");
+    expect(out).not.toContain("<iframe");
+    expect(out).toContain("&lt;script&gt;");
+    expect(out).toMatch(/<a>x<\/a>/);
+    expect(out).not.toContain("javascript:");
+  });
+
+  it("with GFM: a bare autolinked URL follows the same link rules", () => {
+    expect(render("参照 https://example.com/b")).toContain(
+      '<a href="https://example.com/b" target="_blank" rel="noopener noreferrer">https://example.com/b</a>',
+    );
+  });
 });

@@ -159,6 +159,7 @@ test("ask about an answered question: key setup, streamed reply, anchor in syste
   expect(await log(page).locator("a", { hasText: "危険なリンク" }).getAttribute("href")).toBeNull();
   await expect(log(page).locator("a", { hasText: "辞典" })).toHaveAttribute("href", "/ja/glossary");
   await expect(log(page).locator("strong", { hasText: "結論" })).toBeVisible();
+  await expect(log(page).locator("table td", { hasText: "LIFO" })).toBeVisible(); // GFM table
 
   // Esc closes; focus returns to the button
   await page.keyboard.press("Escape");

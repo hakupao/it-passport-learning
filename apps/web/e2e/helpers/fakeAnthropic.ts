@@ -92,6 +92,7 @@ export const DEFAULT_REPLY = [
   "\n\n- 理由: スタックは",
   "後入れ先出し（LIFO）です。",
   "\n\n[外部資料](https://example.com/a) [危険なリンク](javascript:alert(1)) [辞典](/ja/glossary)",
+  "\n\n| 方式 | 取出し順 |\n| --- | --- |\n| スタック | LIFO |",
 ];
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
