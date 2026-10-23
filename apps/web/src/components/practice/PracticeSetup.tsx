@@ -69,6 +69,7 @@ type Problem = "needTopic" | "needExam" | "emptyScope" | null;
 
 export function PracticeSetup({ index, exams, initial, prefilled }: PracticeSetupProps): React.ReactElement {
   const t = useTranslations("Practice");
+  const tm = useTranslations("Mistakes");
   const router = useRouter();
   const { record, loaded } = useLearningRecord();
   const [s, setS] = useState<SetupSettings>(initial);
@@ -191,6 +192,11 @@ export function PracticeSetup({ index, exams, initial, prefilled }: PracticeSetu
                   <span className={styles.muted} data-scope-count={k}>
                     {scopeCount(k)}
                   </span>
+                ) : null}
+                {k === "mistakes" && counts !== null && counts.mistakes > 0 ? (
+                  <Link href="/practice/mistakes" className={`${styles.link} ${styles.small}`} data-mistakes-list="">
+                    {tm("viewList")}
+                  </Link>
                 ) : null}
               </li>
             ))}

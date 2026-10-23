@@ -69,6 +69,7 @@ function Detail({ task, t, tp }: { task: TodayTask; t: T; tp: T }): React.ReactN
 export function TaskList({ view }: { view: TaskListView | null }): React.ReactElement {
   const t = useTranslations("Today");
   const tp = useTranslations("Practice");
+  const tm = useTranslations("Mistakes");
 
   if (view === null) {
     return (
@@ -107,6 +108,11 @@ export function TaskList({ view }: { view: TaskListView | null }): React.ReactEl
                     </Link>
                   )}
                   {task.done ? <span className="sr-only">（{t("doneMark")}）</span> : null}
+                  {task.kind === "mistakes" && !task.done ? (
+                    <Link href="/practice/mistakes" className={`${styles.link} ${styles.listLink}`} data-mistakes-list="">
+                      {tm("viewList")}
+                    </Link>
+                  ) : null}
                 </div>
                 <div className={styles.detail}>
                   <Detail task={task} t={t} tp={tp} />

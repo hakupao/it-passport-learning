@@ -13,6 +13,8 @@
 //     day; isLeech + the topic's first unit (units[0], unit_order) for 「读单元」, null when it has none.
 //   - href (「做全部错题」): `/practice?ids=…` of the mistakes by (due, qid), the first MAX_SCOPE_IDS
 //     (= 100); null when there is none. total = every mistake (the button's N).
+//   - A payload id without `-qNNN` (never in the corpus) is skipped with a console.warn: not listed,
+//     not counted, not in the URL (fix round 1 M5).
 
 import type { LearningRecord } from "../learning/record";
 import { reviewState, type ToDay } from "../learning/schedule";
@@ -63,9 +65,9 @@ function topicOfIds(index: TodayIndex): Map<string, string> {
   return m;
 }
 
-function labelOf(qid: string, index: TodayIndex, topicOf: Map<string, string>): RowLabel {
+function labelOf(qid: string, index: TodayIndex, topicOf: Map<string, string>): RowLabel | null {
   const m = QID_RE.exec(qid);
-  if (!m) throw new Error(`question id without a question number: ${qid}`);
+  if (!m) return null;
   const examId = m[1]!;
   const topicId = topicOf.get(qid) ?? null;
   const topic = topicId === null ? undefined : index.topics.find((t) => t.id === topicId);
@@ -77,8 +79,8 @@ function labelOf(qid: string, index: TodayIndex, topicOf: Map<string, string>): 
   };
 }
 
-/** The §0-20 row label of `qid`: exam label_jp + 問 N + topic name (JP). */
-export function rowLabel(qid: string, index: TodayIndex): RowLabel {
+/** The §0-20 row label of `qid`: exam label_jp + 問 N + topic name (JP); null for an id without `-qNNN`. */
+export function rowLabel(qid: string, index: TodayIndex): RowLabel | null {
   return labelOf(qid, index, topicOfIds(index));
 }
 
@@ -92,10 +94,15 @@ export function mistakesBook(r: LearningRecord, index: TodayIndex, today: number
   const topicOf = topicOfIds(index);
   const meta = new Map(index.topics.map((t, i) => [t.id, { t, i }]));
   const groups = new Map<string, MistakeGroup>();
+  const listed: string[] = [];
   for (const qid of ids) {
-    const s = reviewState(r.attempts[qid]!, r.v2Since, qid, toDay)!;
+    const s = reviewState(r.attempts[qid] ?? [], r.v2Since, qid, toDay);
     const label = labelOf(qid, index, topicOf);
-    const topicId = label.topicId!; // mistakeIds keeps only ids of the payload's topics
+    if (label === null) console.warn(`[mistakes] skipping a question id without -qNNN: ${qid}`);
+    // mistakeIds keeps only answered ids of the payload's topics, so the other guards never fire
+    if (s === null || label === null || label.topicId === null) continue;
+    const topicId = label.topicId;
+    listed.push(qid);
     const topic = meta.get(topicId)?.t;
     let g = groups.get(topicId);
     if (!g) {
@@ -116,5 +123,5 @@ export function mistakesBook(r: LearningRecord, index: TodayIndex, today: number
     const [a, b] = [order(x), order(y)];
     return a[0] - b[0] || a[1] - b[1];
   });
-  return { total: ids.length, groups: sorted, href: idsHref(ids, "all", "seq", 0) };
+  return { total: listed.length, groups: sorted, href: idsHref(listed, "all", "seq", 0) };
 }

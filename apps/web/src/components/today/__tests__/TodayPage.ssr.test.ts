@@ -144,6 +144,21 @@ describe("TodayPage — header", () => {
 });
 
 describe("TodayPage — tasks", () => {
+  it("fix round 1 (Task 12 I-1): the open mistakes row links to the mistakes book (一覧 / 查看全部 / View list)", () => {
+    const words = { ja: "一覧", zh: "查看全部", en: "View list" } as const;
+    for (const l of LOCALES) {
+      state.record = seeded(idx(l));
+      const html = render(l);
+      const row = /<li[^>]*data-task="mistakes"[^>]*>([\s\S]*?)<\/li>/.exec(html)![1]!;
+      expect(row, l).toMatch(new RegExp(`<a href="/practice/mistakes"[^>]*data-mistakes-list=""[^>]*>${words[l]}</a>`));
+      // only on the mistakes row
+      expect(count(html, /data-mistakes-list=""/g), l).toBe(1);
+    }
+    // a new user has no task rows → no link
+    state.record = emptyRecord();
+    expect(render("zh")).not.toContain("data-mistakes-list");
+  });
+
   it("主按钮「从第 1 项开始」 links to the first task", () => {
     const index = idx("zh");
     const r = seeded(index);

@@ -1,7 +1,7 @@
 // Stage 7 Phase 1 Task 12 (DESIGN §5.4 / §6.3, D-190 §0-20) — the mistakes book's pure model.
 // Synthetic corpus (4 topics, two exams); `toDay` is the UTC day so results do not depend on the
 // machine's time zone.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { emptyRecord, recordAttempt, type LearningRecord } from "../../learning/record";
 import type { TodayIndex, TopicMeta } from "../practiceIndex";
@@ -43,6 +43,9 @@ describe("rowLabel", () => {
     expect(rowLabel("2009h21a-q040", INDEX)).toEqual({ exam: "平成21年度春期", number: 40, topicId: "management-05-01", topic: "マネジメント領域" });
     // an exam without a label falls back to the exam id; an unknown topic to ""
     expect(rowLabel("2030r12-q100", INDEX)).toEqual({ exam: "2030r12", number: 100, topicId: null, topic: "" });
+  });
+  it("an id without -qNNN → null (no throw)", () => {
+    expect(rowLabel("not-a-question", INDEX)).toBeNull();
   });
 });
 
@@ -117,6 +120,26 @@ describe("mistakesBook", () => {
     expect(ids.slice(0, 20)).toEqual(Array.from({ length: 20 }, (_, k) => Q("2025r07", 101 + k)));
     expect(ids.slice(20)).toEqual(Array.from({ length: 80 }, (_, k) => Q("2025r07", 1 + k)));
     expect(book.href).not.toContain("&");
+  });
+
+  it("fix round 1 (M5): a payload id without -qNNN is skipped with a warning (not counted, not in the URL)", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const index: TodayIndex = {
+        ...INDEX,
+        topicQuestionIds: { ...INDEX.topicQuestionIds, "management-05-01": ["broken-id", Q("2009h21a", 40)] },
+      };
+      let r = wrong(emptyRecord(), "broken-id", D0 - 1);
+      r = wrong(r, Q("2009h21a", 40), D0 - 1);
+      const book = mistakesBook(r, index, D0, toDay);
+      expect(book.total).toBe(1);
+      expect(book.groups.flatMap((g) => g.rows.map((x) => x.qid))).toEqual([Q("2009h21a", 40)]);
+      expect(book.href).toBe(`/practice?ids=${Q("2009h21a", 40)}`);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(String(warn.mock.calls[0]![0])).toContain("broken-id");
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it("record ids outside the payload are skipped", () => {

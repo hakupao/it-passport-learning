@@ -107,6 +107,25 @@ describe("PracticeSetup", () => {
     expect(html).toMatch(new RegExp(`<option value="${pick}" selected=""`));
   });
 
+  it("fix round 1 (Task 12 I-1): the 間違えた問題 scope links to the mistakes book once it has questions", () => {
+    const render = (locale: string) =>
+      withIntl(locale, h(PracticeSetup, { index: TODAY, exams: EXAMS(), initial: DEFAULT_SETTINGS, prefilled: false }));
+    const link = /<a href="\/practice\/mistakes"[^>]*data-mistakes-list=""[^>]*>([^<]*)<\/a>/;
+    // loading, or no mistake → no link
+    expect(render("ja")).not.toContain("data-mistakes-list");
+    state.loaded = true;
+    expect(render("ja")).not.toContain("data-mistakes-list");
+    const id = Object.values(TODAY.topicQuestionIds)[0]![0]!;
+    state.record = recordAttempt(emptyRecord(), id, "ア", false, Date.now() - 86_400_000);
+    const ja = render("ja");
+    expect(link.exec(ja)?.[1]).toBe("一覧");
+    // next to the scope's count, inside the mistakes option
+    const option = /<li[^>]*>(?:(?!<\/li>)[\s\S])*data-scope-count="mistakes"(?:(?!<\/li>)[\s\S])*<\/li>/.exec(ja)![0];
+    expect(option).toMatch(link);
+    expect(link.exec(render("zh"))?.[1]).toBe("查看全部");
+    expect(link.exec(render("en"))?.[1]).toBe("View list");
+  });
+
   it("record-based scope: 始める disabled with the waiting hint until the record has loaded", () => {
     const render = () =>
       withIntl(

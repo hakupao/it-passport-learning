@@ -5,11 +5,14 @@
 //     target (number inputs, bounds from SETTING_RANGES), question translation default (hidden /
 //     shown radios). One 「保存」 submits; the form uses noValidate so an out-of-range number is
 //     clamped (record.setSetting) instead of blocked, and the clamped values are shown after saving
-//     (settingsForm.submitSettings). The role=status line says 「已保存」, plus a hint when a cleared
-//     exam date was kept (the record cannot unset a setting). Editing a field clears the line.
+//     (settingsForm.submitSettings). Only fields the user changed are written (fix round 1 I-2). The
+//     role=status line says 「已保存」 (cleared, then set again on the next tick, so a repeated save is
+//     announced again), plus a hint when a cleared exam date or an empty / non-numeric number was
+//     kept (the record cannot unset a setting). Editing a field clears the line.
 //   - The fields mount once the record has loaded, with its values as their initial state (the
 //     server render and the first client frame show a reserved block, no values — no 30 → 50 jump).
-//     A later merge (another tab) does not reset fields being edited.
+//     When the record changes later (another tab, the owner's sync), fields the user has not touched
+//     follow it (resyncUntouched); edited fields are kept.
 //   - Interface language: the 日 / 中 / EN links to this page in the other locale (LocaleSwitcherLinks;
 //     no query string here, so no useSearchParams / Suspense).
 //   - 「AI 老师：对话记录与自由提问」 → /sensei: the page's fixed entry since the theme shells went
@@ -18,7 +21,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { LocaleSwitcherLinks } from "@/components/LocaleSwitcher";
@@ -27,6 +30,7 @@ import { Link } from "@/i18n/navigation";
 import { SETTING_RANGES, type LearningRecord } from "@/lib/learning/record";
 import {
   formValuesOf,
+  resyncUntouched,
   submitSettings,
   type SetSetting,
   type SettingsFormValues,
@@ -48,7 +52,24 @@ function Fields({
 }): React.ReactElement {
   const t = useTranslations("Settings");
   const [values, setValues] = useState(initial);
+  // what the fields were last filled from (mount / resync / save): a field equal to it is untouched
+  const [baseline, setBaseline] = useState(initial);
+  const [seen, setSeen] = useState(record);
   const [status, setStatus] = useState("");
+  const announce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (announce.current !== null) clearTimeout(announce.current);
+    },
+    [],
+  );
+  // the record changed (another tab, the owner's sync, our own save): untouched fields follow it
+  if (record !== seen) {
+    const fresh = formValuesOf(record);
+    setSeen(record);
+    setValues(resyncUntouched(values, baseline, fresh));
+    setBaseline(fresh);
+  }
   const edit = <K extends keyof SettingsFormValues>(key: K, value: SettingsFormValues[K]): void => {
     setValues((v) => ({ ...v, [key]: value }));
     setStatus("");
@@ -62,9 +83,18 @@ function Fields({
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
-        const res = submitSettings(values, record, set);
+        const res = submitSettings(values, baseline, record, set);
         setValues(res.values);
-        setStatus(res.examDateKept ? `${t("saved")} ${t("examDateKept", { date: res.values.examDate })}` : t("saved"));
+        setBaseline(res.values);
+        const message = [
+          t("saved"),
+          ...(res.examDateKept ? [t("examDateKept", { date: res.values.examDate })] : []),
+          ...(res.numberKept ? [t("numberKept")] : []),
+        ].join(" ");
+        // clear, then set on the next tick: a repeated save with the same text is announced again
+        setStatus("");
+        if (announce.current !== null) clearTimeout(announce.current);
+        announce.current = setTimeout(() => setStatus(message), 50);
       }}
     >
       <div className={styles.field}>
