@@ -9,13 +9,13 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-ink text-paper hover:bg-ink/90",
+        default: "bg-ink text-paper hover:underline hover:underline-offset-4 disabled:opacity-100 disabled:bg-rule disabled:text-ink-muted",
         destructive:
-          "bg-destructive text-primary-foreground hover:bg-destructive/90",
+          "bg-spot text-paper hover:underline hover:underline-offset-4",
         outline:
-          "border-[1.5px] border-ink bg-paper text-ink hover:bg-tint",
+          "border-[1.5px] border-ink bg-paper text-ink hover:bg-tint disabled:opacity-100 disabled:border-rule disabled:text-ink-muted",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-tint text-ink hover:underline hover:underline-offset-4",
         ghost:
           "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",

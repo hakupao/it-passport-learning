@@ -86,7 +86,7 @@ export function KeySettings({ onChange }: { onChange?: (hasKey: boolean) => void
           {t("keySaveFailed")}
         </p>
       )}
-      <p className="text-sm text-muted-foreground">{t("keyStorageNote")}</p>
+      <p className="text-sm text-ink-muted">{t("keyStorageNote")}</p>
       <div className="flex items-center gap-2 text-sm">
         <span data-testid="sensei-key-status">
           {masked === null ? t("keyNone") : t("keySaved", { masked })}
