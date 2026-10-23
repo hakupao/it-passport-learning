@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<title>A4 今日</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&amp;family=Noto+Sans+SC:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#1B2A4A;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9AA3B5}a:hover{text-decoration-color:#1B2A4A}
+button{font:inherit;cursor:pointer}
+th,td{text-align:left;font-weight:400}
+</style>
+</helmet>
+<div style="min-height: 1100px; background: #FFFFFF; color: #1B2A4A; font-family: 'BIZ UDPGothic', 'Noto Sans SC', sans-serif; font-size: 15px; line-height: 1.75; border-top: 4px solid #1B2A4A">
+
+  <header style="border-bottom: 1px solid #D5DAE3">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 12px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 28px">
+      <div style="font-weight: 700; font-size: 16px">ITパスポート 過去問ノート</div>
+      <nav aria-label="主导航" style="display: flex; gap: 22px; font-size: 14px">
+        <a href="#" aria-current="page" style="text-decoration: none; font-weight: 700; color: #1B2A4A; border-bottom: 2px solid {{spot}}; padding-bottom: 2px">今日</a>
+        <a href="#" style="text-decoration: none; color: #5A6680">练习</a>
+        <a href="#" style="text-decoration: none; color: #5A6680">教科书</a>
+        <a href="#" style="text-decoration: none; color: #5A6680">辞典</a>
+        <a href="#" style="text-decoration: none; color: #5A6680">记录</a>
+      </nav>
+      <div style="margin-left: auto; font-size: 13px; color: #5A6680">日 / <strong style="color: #1B2A4A">中</strong> / EN</div>
+    </div>
+  </header>
+
+  <main style="max-width: 1240px; margin: 0 auto; padding: 32px 32px 56px; display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start">
+
+    <div style="flex: 999 1 600px; min-width: 0">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <span style="background: #1B2A4A; color: #FFFFFF; font-size: 13px; font-weight: 700; padding: 1px 10px">10月23日（五）</span>
+        <span style="font-size: 13px; color: #5A6680">考试 11月30日</span>
+      </div>
+      <h1 style="margin: 12px 0 0; font-size: 28px; font-weight: 700; padding-bottom: 8px; border-bottom: 2px dotted {{spot}}">今天的学习</h1>
+
+      <ol style="margin: 18px 0 0; padding: 0; list-style: none">
+        <sc-for list="{{tasks}}" as="t" hint-placeholder-count="3">
+          <li style="display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid #E6E9EF">
+            <span aria-hidden="true" style="width: 18px; height: 18px; border: 1.5px solid #1B2A4A; box-sizing: border-box"></span>
+            <span style="background: {{spot}}; color: #FFFFFF; font-size: 12px; font-weight: 700; padding: 0 8px">{{t.tag}}</span>
+            <div style="flex: 1; min-width: 0"><div style="font-weight: 700">{{t.title}}</div><div style="font-size: 13px; color: #5A6680">{{t.sub}}</div></div>
+            <span style="font-size: 13px; color: #5A6680">{{t.time}}</span>
+          </li>
+        </sc-for>
+      </ol>
+      <div style="margin-top: 20px; display: flex; align-items: center; gap: 16px">
+        <button type="button" style="height: 50px; padding: 0 36px; border: 0; border-radius: 0; background: #1B2A4A; color: #FFFFFF; font-size: 16px; font-weight: 700">从第 1 项开始</button>
+        <a href="#" style="font-size: 14px">自己选范围练习</a>
+        <a href="#" style="font-size: 14px">模拟考试（100 题 / 120 分钟）</a>
+      </div>
+
+      <div style="margin-top: 40px; display: flex; align-items: baseline; gap: 10px; padding-bottom: 6px; border-bottom: 2px dotted {{spot}}">
+        <h2 style="margin: 0; font-size: 17px; font-weight: 700">薄弱领域</h2>
+        <span style="font-size: 12px; color: #5A6680">正答率低 × 出题多 的领域优先</span>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px">
+        <thead><tr style="color: #5A6680; font-size: 12px"><th style="padding: 8px 0">领域</th><th>分野</th><th>頻出度</th><th style="text-align: right">正答率</th><th></th></tr></thead>
+        <tbody>
+          <sc-for list="{{weak}}" as="w" hint-placeholder-count="5">
+            <tr style="border-top: 1px solid #E6E9EF">
+              <td lang="ja" style="padding: 10px 0; font-weight: 700">{{w.name}}</td>
+              <td><span style="background: #1B2A4A; color: #FFFFFF; font-size: 11px; padding: 0 6px">{{w.area}}</span></td>
+              <td style="color: {{spot}}; letter-spacing: 1px">{{w.freq}}</td>
+              <td style="text-align: right; font-variant-numeric: tabular-nums">{{w.rate}}%</td>
+              <td style="text-align: right"><a href="#">练 10 题</a></td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+
+    <aside style="flex: 1 1 320px; max-width: 380px; display: flex; flex-direction: column; gap: 22px">
+      <div style="border: 1.5px solid #1B2A4A; border-radius: 6px; overflow: hidden">
+        <div style="background: #1B2A4A; color: #FFFFFF; font-size: 13px; font-weight: 700; padding: 2px 12px">距离考试</div>
+        <div style="padding: 10px 16px; display: flex; align-items: baseline; gap: 6px"><span style="font-size: 40px; font-weight: 700; line-height: 1.1">38</span><span>天</span><span style="margin-left: auto; font-size: 13px; color: #5A6680">过去问 412 / 2,900 题</span></div>
+      </div>
+
+      <div>
+        <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px">三个分野的正答率</div>
+        <sc-for list="{{areas}}" as="a" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px">
+            <span lang="ja" style="width: 96px; background: #1B2A4A; color: #FFFFFF; font-size: 12px; font-weight: 700; padding: 1px 8px">{{a.name}}</span>
+            <div style="flex: 1; height: 10px; background: #F1E3D8"><div style="{{a.bar}}"></div></div>
+            <span style="width: 36px; text-align: right; font-size: 13px; font-variant-numeric: tabular-nums">{{a.pct}}%</span>
+          </div>
+        </sc-for>
+        <div style="font-size: 12px; color: #5A6680">合格线：总分 600/1000，且每个分野 300/1000 以上</div>
+      </div>
+
+      <div style="border: 1.5px solid {{spot}}; border-radius: 6px; overflow: hidden">
+        <div style="background: {{spot}}; color: #FFFFFF; font-size: 13px; font-weight: 700; padding: 2px 12px">今天的 3 个用语</div>
+        <ul lang="ja" style="margin: 0; padding: 8px 14px 10px; list-style: none; font-size: 14px; line-height: 1.7">
+          <li style="padding: 5px 0; border-bottom: 1px dotted #E4D3C6"><strong>偽装請負</strong> → 請負契約なのに発注者が指揮命令</li>
+          <li style="padding: 5px 0; border-bottom: 1px dotted #E4D3C6"><strong>PoC</strong> → 新しい概念・アイディアの実証</li>
+          <li style="padding: 5px 0"><strong>RFM 分析</strong> → 最終購買日・頻度・金額で顧客を分類</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"spot":{"editor":"color","default":"#B8501A","options":["#B8501A","#C2185B","#1F6F5C","#2B5AA8"]},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const spot = this.props.spot ?? '#B8501A';
+    const tasks = [
+      { tag: '错题', title: '错题本 15 题', sub: '知的財産権 4 · データベース設計 3 · 其他 8', time: '约 12 分钟' },
+      { tag: '复习', title: '到期复习 8 题', sub: '上周答对、今天再确认一次', time: '约 6 分钟' },
+      { tag: '教科书', title: '关系数据库与正规化', sub: 'テクノロジ系 · データベース · 读完有 4 道确认题', time: '约 9 分钟' }
+    ];
+    const weak = [
+      { name: '知的財産権', area: 'ストラテジ', freq: '★★★', rate: 48 },
+      { name: 'データベース設計', area: 'テクノロジ', freq: '★★☆', rate: 53 },
+      { name: 'ネットワーク方式', area: 'テクノロジ', freq: '★★★', rate: 56 },
+      { name: '会計・財務', area: 'ストラテジ', freq: '★★☆', rate: 57 },
+      { name: 'プロジェクトマネジメント', area: 'マネジメント', freq: '★★★', rate: 60 }
+    ];
+    const areas = [
+      { name: 'ストラテジ系', pct: 64 },
+      { name: 'マネジメント系', pct: 78 },
+      { name: 'テクノロジ系', pct: 69 }
+    ].map(a => ({ ...a, bar: 'height: 10px; width: ' + a.pct + '%; background: ' + spot }));
+    return { spot, tasks, weak, areas };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<title>C 今日</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=Noto+Sans+JP:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0F1419}
+a{color:#5EEAD4;text-decoration:none}a:hover{color:#99F6E4}
+button{font:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="min-height: 1100px; background: #0F1419; color: #E6EAEF; font-family: 'IBM Plex Sans', 'Noto Sans SC', 'Noto Sans JP', sans-serif; font-size: 14px; line-height: 1.5">
+
+  <header style="border-bottom: 1px solid #222B35; background: #12181E">
+    <div style="max-width: 1320px; margin: 0 auto; padding: 12px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 28px">
+      <div style="display: flex; align-items: center; gap: 10px; font-weight: 700"><span style="width: 26px; height: 26px; border-radius: 6px; background: {{accent}}; color: #0F1419; font-size: 12px; display: flex; align-items: center; justify-content: center">IP</span>IT Passport</div>
+      <nav aria-label="主导航" style="display: flex; gap: 4px">
+        <a href="#" aria-current="page" style="padding: 6px 12px; border-radius: 6px; background: #1E2730; color: #E6EAEF; font-weight: 600">今日</a>
+        <a href="#" style="padding: 6px 12px; border-radius: 6px; color: #93A0AE">练习</a>
+        <a href="#" style="padding: 6px 12px; border-radius: 6px; color: #93A0AE">教科书</a>
+        <a href="#" style="padding: 6px 12px; border-radius: 6px; color: #93A0AE">辞典</a>
+        <a href="#" style="padding: 6px 12px; border-radius: 6px; color: #93A0AE">记录</a>
+      </nav>
+      <div style="margin-left: auto; display: flex; align-items: center; gap: 12px; color: #93A0AE; font-size: 13px">
+        <span style="border: 1px solid #2A3540; border-radius: 6px; padding: 4px 10px">搜索 <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px">⌘K</span></span>
+        <span>日 / <strong style="color: #E6EAEF">中</strong> / EN</span>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width: 1320px; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 16px">
+
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+      <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+        <div style="background: #171D24; border: 1px solid #222B35; border-radius: 10px; padding: 16px 20px">
+          <div style="font-size: 12px; color: #93A0AE">{{k.label}}</div>
+          <div style="margin-top: 6px; font-family: 'JetBrains Mono', monospace; font-size: 30px; font-weight: 700; line-height: 1.1">{{k.value}}<span style="font-size: 14px; color: #93A0AE; font-weight: 500"> {{k.unit}}</span></div>
+          <div style="margin-top: 6px; font-size: 12px; color: #93A0AE">{{k.note}}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px">
+      <section aria-label="领域掌握度" style="flex: 999 1 640px; min-width: 0; background: #171D24; border: 1px solid #222B35; border-radius: 10px; padding: 18px 20px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <h2 style="margin: 0; font-size: 14px; font-weight: 600">63 个领域的掌握度</h2>
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #93A0AE">低<sc-for list="{{legend}}" as="l" hint-placeholder-count="5"><span style="{{l}}"></span></sc-for>高 · 灰 = 未做</div>
+        </div>
+        <sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+          <div style="margin-top: 16px">
+            <div style="font-size: 12px; color: #93A0AE; margin-bottom: 8px">{{g.name}} · {{g.count}} 个领域</div>
+            <div style="display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 4px">
+              <sc-for list="{{g.cells}}" as="c" hint-placeholder-count="16"><div title="{{c.title}}" style="{{c.style}}"></div></sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <div style="margin-top: 16px; font-size: 12px; color: #93A0AE">点格子直接练这个领域 · 悬停看名称和正答率</div>
+      </section>
+
+      <section aria-label="今日复习" style="flex: 1 1 320px; background: #171D24; border: 1px solid #222B35; border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 600">复习预报</h2>
+        <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: end; height: 140px">
+          <sc-for list="{{forecast}}" as="d" hint-placeholder-count="7">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; height: 140px">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px">{{d.n}}</span>
+              <div style="{{d.bar}}"></div>
+              <span style="font-size: 11px; color: #93A0AE">{{d.day}}</span>
+            </div>
+          </sc-for>
+        </div>
+        <button type="button" style="margin-top: auto; height: 46px; border-radius: 8px; border: 0; background: {{accent}}; color: #0F1419; font-weight: 700; font-size: 15px">开始今日复习 · 23 题</button>
+        <a href="#" style="margin-top: 10px; text-align: center; font-size: 13px">自定义练习 / 模拟考试</a>
+      </section>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px">
+      <section aria-label="薄弱领域" style="flex: 999 1 640px; min-width: 0; background: #171D24; border: 1px solid #222B35; border-radius: 10px; padding: 18px 20px">
+        <h2 style="margin: 0 0 10px; font-size: 14px; font-weight: 600">薄弱领域 Top 5</h2>
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px">
+            <thead><tr style="color: #93A0AE; text-align: left">
+              <th style="font-weight: 500; padding: 6px 0">领域</th><th style="font-weight: 500">分类</th><th style="font-weight: 500; text-align: right">已做</th><th style="font-weight: 500; text-align: right">正答率</th><th style="font-weight: 500; text-align: right">近 7 天</th><th></th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{weak}}" as="w" hint-placeholder-count="5">
+                <tr style="border-top: 1px solid #222B35">
+                  <td lang="ja" style="padding: 10px 0; font-family: 'Noto Sans JP', sans-serif">{{w.name}}</td>
+                  <td style="color: #93A0AE">{{w.group}}</td>
+                  <td style="text-align: right; font-family: 'JetBrains Mono', monospace">{{w.done}}</td>
+                  <td style="text-align: right; font-family: 'JetBrains Mono', monospace; color: #FCA5A5">{{w.rate}}%</td>
+                  <td style="text-align: right; font-family: 'JetBrains Mono', monospace; color: {{w.trendColor}}">{{w.trend}}</td>
+                  <td style="text-align: right"><a href="#">练习</a></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section aria-label="本周" style="flex: 1 1 320px; background: #171D24; border: 1px solid #222B35; border-radius: 10px; padding: 18px 20px">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 600">最近 5 周</h2>
+        <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+          <sc-for list="{{streak}}" as="s" hint-placeholder-count="35"><div style="{{s}}"></div></sc-for>
+        </div>
+        <div style="margin-top: 12px; font-size: 12px; color: #93A0AE">连续 12 天 · 每周可休息 1 天不断档</div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2DD4BF","options":["#2DD4BF","#60A5FA","#A78BFA","#FBBF24"]},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#2DD4BF';
+    const scale = ['#123B3A', '#14605A', '#16887E', '#2DB6A6', '#7EE6D6'];
+    const cell = (v) => 'aspect-ratio: 1; border-radius: 3px; background: ' + (v < 0 ? '#232C36' : scale[Math.min(4, Math.floor(v / 20))]);
+    const mk = (n, seed) => Array.from({ length: n }, (_, i) => {
+      const r = (i * 37 + seed * 11) % 113;
+      const v = r > 100 ? -1 : r;
+      return { style: cell(v), title: v < 0 ? '未做' : '正答率 ' + v + '%' };
+    });
+    const groups = [
+      { name: '战略系', count: 23, cells: mk(23, 1) },
+      { name: '管理系', count: 8, cells: mk(8, 2) },
+      { name: '技术系', count: 32, cells: mk(32, 3) }
+    ];
+    const legend = scale.map(c => 'width: 12px; height: 12px; border-radius: 2px; background: ' + c);
+    const days = [['今', 23], ['六', 18], ['日', 9], ['一', 31], ['二', 14], ['三', 12], ['四', 20]];
+    const forecast = days.map(([day, n], i) => ({ day, n, bar: 'width: 100%; max-width: 30px; border-radius: 3px 3px 0 0; height: ' + Math.round(n / 31 * 92) + 'px; background: ' + (i === 0 ? accent : '#2A3A46') }));
+    const kpis = [
+      { label: '距离考试', value: '38', unit: '天', note: '11月30日' },
+      { label: '今日待复习', value: '23', unit: '题', note: '错题 15 · 到期 8' },
+      { label: '累计正答率', value: '71', unit: '%', note: '本周 +3 个百分点' },
+      { label: '已做过去问', value: '412', unit: '/ 2900', note: '教科书 37 / 244 单元' }
+    ];
+    const weak = [
+      { name: '知的財産権', group: '战略 · 法务', done: 21, rate: 48, trend: '+6', trendColor: '#5EEAD4' },
+      { name: 'データベース設計', group: '技术 · 数据库', done: 17, rate: 53, trend: '−2', trendColor: '#FCA5A5' },
+      { name: 'ネットワーク方式', group: '技术 · 网络', done: 25, rate: 56, trend: '+1', trendColor: '#5EEAD4' },
+      { name: '会計・財務', group: '战略 · 企业活动', done: 14, rate: 57, trend: '±0', trendColor: '#93A0AE' },
+      { name: 'プロジェクトマネジメント', group: '管理 · 项目', done: 30, rate: 60, trend: '+4', trendColor: '#5EEAD4' }
+    ];
+    const streak = Array.from({ length: 35 }, (_, i) => {
+      const v = i < 22 ? (i * 7) % 5 : (i > 33 ? -1 : (i * 3) % 5);
+      return 'aspect-ratio: 1; border-radius: 3px; background: ' + (v <= 0 ? '#232C36' : scale[v]);
+    });
+    return { accent, groups, legend, forecast, kpis, weak, streak };
+  }
+}
+</script>
+</body>
+</html>
