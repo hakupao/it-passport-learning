@@ -29,8 +29,7 @@ import type { ChoiceLetter } from "@/lib/learning/record";
 import { CHOICE_LETTERS, localizedExplanation, type QuizQuestion } from "@/lib/quiz/quizModel";
 import { questionAnchor } from "@/lib/sensei/anchors";
 
-import { explanationTitle, sourceNumber } from "./choiceLayout";
-import { LANG_TAG } from "./PracticeQuestion";
+import { explanationTitle, LANG_TAG, sourceNumber } from "./choiceLayout";
 import styles from "./practice.module.css";
 import { splitTerms } from "./termHighlight";
 
@@ -175,8 +174,10 @@ function Answered({
               <details open={mine}>
                 <summary>
                   <span className={mine ? styles.vMarkSpot : styles.vMark} aria-hidden="true">×</span>
+                  <span className="sr-only">{t("markWrong")}</span>
                   {letter}
                   {mine ? yours : null}
+                  <span className={styles.disclosure} aria-hidden="true" />
                 </summary>
                 {text !== undefined ? (
                   <p className={styles.vBody} data-fid={`expl-${i}`}>

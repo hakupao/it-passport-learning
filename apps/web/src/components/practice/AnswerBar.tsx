@@ -8,10 +8,12 @@ import { useTranslations } from "next-intl";
 
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
+import { sourceNumber } from "./choiceLayout";
 import styles from "./practice.module.css";
 
-export function AnswerBar({ q, number }: { q: QuizQuestion; number: number }): React.ReactElement {
+export function AnswerBar({ q }: { q: QuizQuestion }): React.ReactElement {
   const t = useTranslations("Practice");
+  const number = sourceNumber(q);
   return (
     <div className={styles.answerBar}>
       <span className={styles.answerTag}>{t("answerTag")}</span>

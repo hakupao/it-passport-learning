@@ -11,6 +11,9 @@
 import { isTableChoice } from "@/components/quiz/QuizRichText";
 import { CHOICE_LETTERS, type QuizQuestion } from "@/lib/quiz/quizModel";
 
+/** BCP 47 tag of a UI locale's text (lang attributes of the face and the explanation) */
+export const LANG_TAG: Record<string, string> = { ja: "ja", zh: "zh-Hans", en: "en" };
+
 export type ChoiceLayout = "row4" | "grid2" | "list";
 
 const SHORT_MAX = 12;

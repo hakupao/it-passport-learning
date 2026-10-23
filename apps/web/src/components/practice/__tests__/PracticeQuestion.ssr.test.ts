@@ -36,11 +36,15 @@ function choiceItem(html: string, letter: string): string {
 }
 
 describe("PracticeQuestion — 問 N, layout, choices", () => {
-  it("問 N uses the source question number", () => {
+  it("問 N uses the source question number (sourceNumber(q); no number prop), 問 in every locale", () => {
     const q = QS.find((x) => x.id.endsWith("-q087"))!;
-    const out = renderFace(q, "ja");
-    expect(out).toMatch(/data-qno="87"/);
-    expect(out).toMatch(/<span[^>]*>問<\/span><span[^>]*>87<\/span>/);
+    for (const locale of ["ja", "zh", "en"]) {
+      const out = renderFace(q, locale);
+      expect(out).toMatch(/data-qno="87"/);
+      expect(out).toMatch(/<span[^>]*>問<\/span><span[^>]*>87<\/span>/);
+      expect(out).toContain("頻出度");
+      expect(out).toMatch(/>出典　</);
+    }
   });
 
   it("row4 renders 4 columns class", () => {
@@ -163,6 +167,7 @@ describe("PracticeQuestion — 复习三格 / 頻出度 / figure / 中問", () =
     const n = g.preambleChars.jp!;
     const out = renderFace(q, "ja", { preambleChars: n, foldPreamble: true });
     expect(out).toMatch(/<details class="[^"]*"><summary[^>]*>共通前文 ▸<\/summary><div[^>]*data-fid="stem-preamble"/);
+    expect(renderFace(q, "en", { preambleChars: n, foldPreamble: true })).toContain(">共通前文 ▸</summary>");
     expect(out).not.toMatch(/<details[^>]*\sopen/);
     expect(fidAll(out, "stem-preamble")).toHaveLength(1);
     expect(fidAll(out, "stem")).toHaveLength(1);

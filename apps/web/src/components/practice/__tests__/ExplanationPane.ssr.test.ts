@@ -11,6 +11,7 @@ import type { TermCard } from "@/lib/glossary/dictionary";
 import type { ChoiceLetter } from "@/lib/learning/record";
 import { CHOICE_LETTERS, loadAllQuestions, type QuizQuestion } from "@/lib/quiz/quizReader";
 
+import { sourceNumber } from "../choiceLayout";
 import { splitTerms } from "../termHighlight";
 import { fidAll, fidOne, renderAnswerBar, renderPane, textOf } from "./practiceRender";
 
@@ -42,7 +43,7 @@ describe("ExplanationPane — unanswered", () => {
     const q = byId("2024r06-q001");
     for (const [locale, text] of [
       ["ja", "解答すると解説が表示されます"],
-      ["zh", "作答后显示解说"],
+      ["zh", "作答后显示解析"],
       ["en", "The explanation appears after you answer."],
     ] as const) {
       const out = renderPane(q, locale, null);
@@ -83,6 +84,15 @@ describe("ExplanationPane — verdict list (× / ○)", () => {
     expect(out).toMatch(new RegExp(`data-letter="${mine}"[^>]*data-mine="true"`));
     expect(out).toContain("← あなたの答え");
     expect((out.match(/data-mine="true"/g) ?? []).length).toBe(1);
+    // each × row: visible × is aria-hidden, the result is in sr-only text; a ▸/▾ disclosure hint (CSS)
+    const summaries = out.match(/<summary>[\s\S]*?<\/summary>/g) ?? [];
+    expect(summaries).toHaveLength(3);
+    for (const sm of summaries) {
+      expect(sm).toMatch(/aria-hidden="true">×<\/span><span class="sr-only">不正解<\/span>/);
+      expect(sm).toMatch(/class="[^"]*disclosure[^"]*" aria-hidden="true"/);
+    }
+    expect(renderPane(q, "zh", mine)).toContain('<span class="sr-only">错误</span>');
+    expect(renderPane(q, "en", mine)).toContain('<span class="sr-only">Incorrect</span>');
   });
 
   it("picked correct: the ○ row is yours; all × rows closed", () => {
@@ -105,7 +115,7 @@ describe("ExplanationPane — title, points, suspect, language", () => {
     const n = Number(/-q(\d+)$/.exec(withTitle.id)![1]);
     expect(out).toMatch(new RegExp(`<h2[^>]*><span[^>]*>問 ${n}</span><span[^>]*>${p0.slice(0, p0.indexOf("。")).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span></h2>`));
     const en = renderPane(withTitle, "en", wrongOf(withTitle));
-    expect(en).toMatch(new RegExp(`<h2[^>]*><span[^>]*>Q ${n}</span></h2>`));
+    expect(en).toMatch(new RegExp(`<h2[^>]*><span[^>]*>問 ${n}</span></h2>`));
   });
 
   it("points render 1–3 items", () => {
@@ -158,6 +168,26 @@ describe("ExplanationPane — title, points, suspect, language", () => {
   });
 });
 
+describe("book labels stay Japanese in every locale (A4 mockup)", () => {
+  it("zh / en render 問 / 解説 / 解答 / ここがポイント / 正解 / 用語; your-answer and the placeholder are localized", () => {
+    const q = QS.find((x) => x.explanation?.points.length === 2 && x.terms.length > 0)!;
+    for (const [locale, yours] of [
+      ["ja", "← あなたの答え"],
+      ["zh", "← 你的答案"],
+      ["en", "← your answer"],
+    ] as const) {
+      const out = renderPane(q, locale, wrongOf(q));
+      expect(out).toMatch(/>解説</);
+      expect(out).toContain(`>問 ${sourceNumber(q)}<`);
+      expect(out).toContain(">ここがポイント<");
+      expect(out).toContain("<strong>正解</strong>");
+      expect(out).toContain(">用語<");
+      expect(out).toContain(yours);
+      expect(renderAnswerBar(q, locale)).toContain(">解答<");
+    }
+  });
+});
+
 describe("key-term highlight (§0-25)", () => {
   it("splitTerms marks occurrences, longest first, and never changes the text", () => {
     const parts = splitTerms("RPA と RPAツール と XRPA", ["RPA", "RPAツール"]);
@@ -192,6 +222,6 @@ describe("AnswerBar — 解答栏「解答 問N [X]」", () => {
     expect(out).toContain(">解答<");
     expect(out).toMatch(/問1/);
     expect(fidOne(out, "answer")!.inner).toBe(q.correct_answer);
-    expect(renderAnswerBar(q, "en")).toContain(">Answer<");
+    expect(renderAnswerBar(q, "en")).toContain(">解答<");
   });
 });

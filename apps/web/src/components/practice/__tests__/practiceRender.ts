@@ -15,7 +15,6 @@ import type { QuizQuestion } from "@/lib/quiz/quizModel";
 import { AnswerBar } from "../AnswerBar";
 import { ExplanationPane } from "../ExplanationPane";
 import { PracticeQuestion, type PracticeQuestionProps } from "../PracticeQuestion";
-import { sourceNumber } from "../choiceLayout";
 import { fieldText } from "./fidelityBaseline";
 
 export type Messages = Record<string, unknown>;
@@ -39,7 +38,6 @@ export function renderFace(q: QuizQuestion, locale: string, over: Partial<Practi
   const props: PracticeQuestionProps = {
     q,
     locale,
-    number: sourceNumber(q),
     picked: null,
     onPick: () => {},
     recent: [],
@@ -64,7 +62,7 @@ export function renderPane(
 }
 
 export function renderAnswerBar(q: QuizQuestion, locale: string): string {
-  return withIntl(locale, h(AnswerBar, { q, number: sourceNumber(q) }));
+  return withIntl(locale, h(AnswerBar, { q }));
 }
 
 const VOID = new Set(["img", "br", "hr", "input", "meta", "link", "source", "wbr", "area", "col", "embed"]);

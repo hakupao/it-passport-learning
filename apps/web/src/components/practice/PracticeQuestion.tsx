@@ -1,11 +1,11 @@
 // Stage 7 Phase 1 Task 8 (D-189 §6.2 / D-190 §0-15) — the practice question face, mockup A4-Practice.
 //
 // Props-only client component (the session / record wiring is Task 9). Left column: 「問 N」 spot block
-// (N = the source question number), 复习三格 (the last 3 results, newest first: ○ = correct on paper,
-// × = wrong as an ink block), 頻出度 ★. Right column, hanging off it: the JP stem (default, D-186),
-// the figure (under the stem, above the choices; click → <dialog>, Esc closes natively), the choices
-// in ア〜エ order (layout from choiceLayout, §0-15), the 出典 line and — zh / en only — the translation
-// toggle. With the translation shown, the translated stem and choices are added under the JP ones.
+// (N = sourceNumber(q), the source question number; no prop, so face / explanation / 解答栏 agree),
+// 复习三格 (the last 3 results, newest first: ○ = correct on paper, × = wrong as an ink block), 頻出度 ★.
+// Right column, hanging off it: the JP stem (default, D-186), the figure (under the stem, above the
+// choices; click → <dialog>, Esc closes natively), the choices in ア〜エ order (layout from
+// choiceLayout, §0-15; one ChoiceItem each), the 出典 line and — zh / en only — the translation toggle. With the translation shown, the translated stem and choices are added under the JP ones.
 //
 // Display fidelity (D-189 §7 / §9): the JP stem and every choice go through the same QuizRichText
 // components as the old QuizSet (StemBlocks / ChoiceBody), translated ones too, and every compared
@@ -33,14 +33,12 @@ import type { ChoiceLetter } from "@/lib/learning/record";
 import type { Stars } from "@/lib/practice/practiceIndex";
 import { localizedChoices, localizedStem, type QuizQuestion } from "@/lib/quiz/quizModel";
 
-import { choiceLayout } from "./choiceLayout";
+import { choiceLayout, LANG_TAG, sourceNumber } from "./choiceLayout";
 import styles from "./practice.module.css";
 
 export interface PracticeQuestionProps {
   q: QuizQuestion;
   locale: string;
-  /** 問 N — the source question number (sourceNumber(q)) */
-  number: number;
   picked: ChoiceLetter | null;
   onPick: (choice: ChoiceLetter) => void;
   /** the last ≤ 3 results of this question, newest first (true = correct) */
@@ -53,13 +51,11 @@ export interface PracticeQuestionProps {
   foldPreamble: boolean;
 }
 
-/** BCP 47 tag of a UI locale's text */
-export const LANG_TAG: Record<string, string> = { ja: "ja", zh: "zh-Hans", en: "en" };
+type T = ReturnType<typeof useTranslations>;
 
 export function PracticeQuestion({
   q,
   locale,
-  number,
   picked,
   onPick,
   recent,
@@ -70,12 +66,11 @@ export function PracticeQuestion({
   foldPreamble,
 }: PracticeQuestionProps): React.ReactElement {
   const t = useTranslations("Practice");
+  const number = sourceNumber(q);
   const hasTr = locale !== "ja";
   const showTr = hasTr && showTranslation;
   const trLang = LANG_TAG[locale] ?? locale;
   const layout = choiceLayout(q);
-  const trChoices = localizedChoices(q, locale);
-  const answered = picked !== null;
   const fold = foldPreamble && preambleChars !== null && preambleChars > 0 && preambleChars < q.stem_jp.length;
 
   return (
@@ -124,91 +119,20 @@ export function PracticeQuestion({
           {q.figure ? <Figure basename={q.figure} t={t} /> : null}
 
           <ul className={`${styles.choices} ${styles[layout]}`} data-layout={layout} aria-label={t("choices")}>
-            {trChoices.map((c, i) => {
-              const L = c.letter as ChoiceLetter;
-              const jp = q.choices_jp[L] ?? "";
-              const figure = q.choice_figures?.[L];
-              const isPicked = picked === L;
-              const state = !answered ? "idle" : c.isCorrect ? "correct" : isPicked ? "picked-wrong" : "other";
-              const pick = (): void => {
-                if (!answered) onPick(L);
-              };
-              const mark = !answered ? null : c.isCorrect ? (
-                <span className={styles.mark}>
-                  <span className={styles.ring} aria-hidden="true">○</span>
-                  <span className="sr-only">{t(isPicked ? "markYourCorrect" : "markCorrect")}</span>
-                </span>
-              ) : isPicked ? (
-                <span className={styles.mark}>
-                  <span aria-hidden="true">×</span>
-                  <span className="sr-only">{t("markYourWrong")}</span>
-                </span>
-              ) : null;
-
-              if (figure) {
-                // one image per choice; alt (= the choice text) follows the shown language
-                const fids = `choice-${i}${showTr ? ` choice-tr-${i}` : ""} choice-figure-${i}`;
-                return (
-                  <li key={L} data-letter={L} data-state={state}>
-                    <button type="button" className={styles.choice} aria-pressed={isPicked} aria-disabled={answered} onClick={pick}>
-                      <span className={styles.letter}>{L}</span>
-                      <span className={styles.choiceText} data-fid={fids}>
-                        <ChoiceBody text={showTr ? c.text : jp} jpText={jp} figure={figure} />
-                      </span>
-                      {mark}
-                    </button>
-                  </li>
-                );
-              }
-
-              const jpBody = <ChoiceBody text={jp} jpText={jp} />;
-              const trBody = showTr ? <ChoiceBody text={c.text} jpText={jp} /> : null;
-              if (isTableChoice(jp, jp) || (showTr && isTableChoice(c.text, jp))) {
-                const bodyId = `${q.id}-choice-${L}`;
-                return (
-                  <li key={L} className={styles.tableItem} data-letter={L} data-state={state}>
-                    <button
-                      type="button"
-                      className={styles.choice}
-                      aria-pressed={isPicked}
-                      aria-disabled={answered}
-                      aria-describedby={bodyId}
-                      onClick={pick}
-                    >
-                      <span className={styles.letter} aria-hidden="true">{L}</span>
-                      <span className="sr-only">{t("pickChoice", { letter: L })}</span>
-                      {mark}
-                    </button>
-                    {/* Pointer convenience only; the button above is the keyboard / AT control. */}
-                    <div id={bodyId} className={styles.choiceTableBody} onClick={pick}>
-                      <div lang="ja" data-fid={`choice-${i}`}>{jpBody}</div>
-                      {trBody ? (
-                        <div className={styles.choiceTr} lang={trLang} data-fid={`choice-tr-${i}`}>
-                          {trBody}
-                        </div>
-                      ) : null}
-                    </div>
-                  </li>
-                );
-              }
-
-              return (
-                <li key={L} data-letter={L} data-state={state}>
-                  <button type="button" className={styles.choice} aria-pressed={isPicked} aria-disabled={answered} onClick={pick}>
-                    <span className={styles.letter}>{L}</span>
-                    <span className={styles.choiceText}>
-                      <span lang="ja" data-fid={`choice-${i}`}>{jpBody}</span>
-                      {trBody ? (
-                        <span className={styles.choiceTr} lang={trLang} data-fid={`choice-tr-${i}`}>
-                          {trBody}
-                        </span>
-                      ) : null}
-                    </span>
-                    {mark}
-                  </button>
-                </li>
-              );
-            })}
+            {localizedChoices(q, locale).map((c, i) => (
+              <ChoiceItem
+                key={c.letter}
+                q={q}
+                index={i}
+                letter={c.letter as ChoiceLetter}
+                trText={c.text}
+                picked={picked}
+                onPick={onPick}
+                showTr={showTr}
+                trLang={trLang}
+                t={t}
+              />
+            ))}
           </ul>
 
           <div className={styles.meta}>
@@ -233,12 +157,121 @@ export function PracticeQuestion({
   );
 }
 
+/** One choice <li>: plain / pairs inside the button, a choice figure inside it, a table beside it. */
+function ChoiceItem({
+  q,
+  index: i,
+  letter: L,
+  trText,
+  picked,
+  onPick,
+  showTr,
+  trLang,
+  t,
+}: {
+  q: QuizQuestion;
+  index: number;
+  letter: ChoiceLetter;
+  /** the locale's text of this choice (JP fallback) */
+  trText: string;
+  picked: ChoiceLetter | null;
+  onPick: (choice: ChoiceLetter) => void;
+  showTr: boolean;
+  trLang: string;
+  t: T;
+}): React.ReactElement {
+  const jp = q.choices_jp[L] ?? "";
+  const figure = q.choice_figures?.[L];
+  const answered = picked !== null;
+  const isPicked = picked === L;
+  const isCorrect = q.correct_answer === L;
+  const state = !answered ? "idle" : isCorrect ? "correct" : isPicked ? "picked-wrong" : "other";
+  const pick = (): void => {
+    if (!answered) onPick(L);
+  };
+  const mark = !answered ? null : isCorrect ? (
+    <span className={styles.mark}>
+      <span className={styles.ring} aria-hidden="true">○</span>
+      <span className="sr-only">{t(isPicked ? "markYourCorrect" : "markCorrect")}</span>
+    </span>
+  ) : isPicked ? (
+    <span className={styles.mark}>
+      <span aria-hidden="true">×</span>
+      <span className="sr-only">{t("markYourWrong")}</span>
+    </span>
+  ) : null;
+
+  if (figure) {
+    // one image per choice; alt (= the choice text) follows the shown language
+    const fids = `choice-${i}${showTr ? ` choice-tr-${i}` : ""} choice-figure-${i}`;
+    return (
+      <li data-letter={L} data-state={state}>
+        <button type="button" className={styles.choice} aria-pressed={isPicked} aria-disabled={answered} onClick={pick}>
+          <span className={styles.letter}>{L}</span>
+          <span className={styles.choiceText} data-fid={fids}>
+            <ChoiceBody text={showTr ? trText : jp} jpText={jp} figure={figure} />
+          </span>
+          {mark}
+        </button>
+      </li>
+    );
+  }
+
+  const jpBody = <ChoiceBody text={jp} jpText={jp} />;
+  const trBody = showTr ? <ChoiceBody text={trText} jpText={jp} /> : null;
+  if (isTableChoice(jp, jp) || (showTr && isTableChoice(trText, jp))) {
+    const bodyId = `${q.id}-choice-${L}`;
+    return (
+      <li className={styles.tableItem} data-letter={L} data-state={state}>
+        <button
+          type="button"
+          className={styles.choice}
+          aria-pressed={isPicked}
+          aria-disabled={answered}
+          aria-describedby={bodyId}
+          onClick={pick}
+        >
+          <span className={styles.letter} aria-hidden="true">{L}</span>
+          <span className="sr-only">{t("pickChoice", { letter: L })}</span>
+          {mark}
+        </button>
+        {/* Pointer convenience only; the button above is the keyboard / AT control. */}
+        <div id={bodyId} className={styles.choiceTableBody} onClick={pick}>
+          <div lang="ja" data-fid={`choice-${i}`}>{jpBody}</div>
+          {trBody ? (
+            <div className={styles.choiceTr} lang={trLang} data-fid={`choice-tr-${i}`}>
+              {trBody}
+            </div>
+          ) : null}
+        </div>
+      </li>
+    );
+  }
+
+  return (
+    <li data-letter={L} data-state={state}>
+      <button type="button" className={styles.choice} aria-pressed={isPicked} aria-disabled={answered} onClick={pick}>
+        <span className={styles.letter}>{L}</span>
+        <span className={styles.choiceText}>
+          <span lang="ja" data-fid={`choice-${i}`}>{jpBody}</span>
+          {trBody ? (
+            <span className={styles.choiceTr} lang={trLang} data-fid={`choice-tr-${i}`}>
+              {trBody}
+            </span>
+          ) : null}
+        </span>
+        {mark}
+      </button>
+    </li>
+  );
+}
+
 function RecentCells({
   recent,
   t,
 }: {
   recent: boolean[];
-  t: ReturnType<typeof useTranslations>;
+  t: T;
 }): React.ReactElement {
   const cells = [0, 1, 2].map((i) => (i < recent.length ? (recent[i] ? "right" : "wrong") : "none"));
   const marks = recent.slice(0, 3).map((r) => t(r ? "recentRight" : "recentWrong")).join(" ");
@@ -253,7 +286,7 @@ function RecentCells({
   );
 }
 
-function Figure({ basename, t }: { basename: string; t: ReturnType<typeof useTranslations> }): React.ReactElement {
+function Figure({ basename, t }: { basename: string; t: T }): React.ReactElement {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [zoomed, setZoomed] = useState(false);
   const src = `/quiz-figures/${basename}.webp`;
