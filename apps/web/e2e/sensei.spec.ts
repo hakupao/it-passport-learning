@@ -32,9 +32,8 @@
 //      ("clearThread() while streaming …"), not here.
 //   6. Move to another question of the group while the first reply is in flight and
 //      ask there → each thread keeps only its own messages and its own title in the index.
-//      Digits / arrows typed in the panel input reach the input, never the group (§0-14). The
-//      ask button exists only once the question is answered, so the check is that no second
-//      attempt is stored and ← / → did not move the group.
+//      → then digits typed in the panel input reach the input, never the group (§0-14): a leak
+//      would move to the unanswered Q2 and answer it, so Q2 must stay without an attempt.
 //   7. (only with E2E_OWNER_KEY, local server — see learning-owner.spec.ts) the
 //      owner's /api/learning PUT bodies never contain the key.
 //   8. /sensei key settings: how to get a key (console link) while none is saved;
@@ -419,11 +418,12 @@ test("keys typed in the panel input never act on the practice group", async ({ p
   await page.goto(SET_URL);
   await openPanel(page, Q1, 1); // イ
   await input(page).focus();
-  for (const k of ["1", "4", "ArrowRight", "ArrowLeft"]) await page.keyboard.press(k);
-  await expect(input(page)).toHaveValue("14"); // the digits reached the input
+  // A leak would move the group to Q2 (unanswered, the panel stays mounted) and answer it with ア / エ.
+  for (const k of ["ArrowRight", "1", "4"]) await page.keyboard.press(k);
+  await expect(input(page)).toHaveValue(/14$/); // the digits reached the input
   await page.keyboard.press("Escape");
   await expect(panel(page)).toHaveCount(0);
-  await expect(face(page)).toHaveAttribute("id", Q1); // → / ← did not move the group
+  await expect(face(page)).toHaveAttribute("id", Q1); // → did not move the group
   await expect(choiceButton(page, 1)).toHaveAttribute("aria-pressed", "true");
   for (const i of [0, 2, 3]) await expect(choiceButton(page, i)).toHaveAttribute("aria-pressed", "false");
   const answers = await page.evaluate(() => {
