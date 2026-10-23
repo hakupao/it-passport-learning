@@ -1,5 +1,6 @@
 // D-180 §0-7 / D-190 — owner sync state machine (Phase 3 fix wave items 2 / 3 / 5 / 7),
-// on record v2: the client GETs /api/learning?v=2 and PUTs v2 wire.
+// on record v2: the client GETs /api/learning?v=2 and PUTs v2 wire. Stage 7 Task 15: on the new
+// pages (the practice group /ja/practice?ids=…, the topic page /ja/practice/browse/<topic>).
 //
 // Hermetic: every /api/learning request is answered by `page.route` from an
 // in-test "server" (a fixed remote record, merged with each v2 PUT body and
@@ -24,8 +25,12 @@
 //   (c) debounced PUT body = merge(local, remote); on page hide the PUT is sent
 //       at once and carries only the delta since the last synced record;
 //   (d) once the PUT response is merged back, no further PUT;
-//   item 7: while the GET is pending an owner's quiz-landing progress stays
+//   item 7: while the GET is pending an owner's topic-page accuracy stays
 //       empty (no local-only flash), then shows counts including the remote record.
+//   v1 (Review Focus 1): an `itp:learn:v1` an old tab left on the owner's device is upgraded and
+//       goes up in the v2 PUT (src "1"); the v1 key is untouched. A v1 *client's* own GET / PUT
+//       against the real route is pinned by src/app/api/learning/__tests__/v1ClientCompat.test.ts —
+//       this spec stays hermetic (the local server has no Redis, so the real route would answer 503).
 
 import { test, expect, type Page, type Route } from "@playwright/test";
 
@@ -43,7 +48,8 @@ const OWNER_KEY = process.env.E2E_OWNER_KEY ?? "";
 /** quiz_index.json → technology-14-36 (データ構造, 7 問); 2009h21a-q054 is in it, keyed イ. */
 const TOPIC_ID = "technology-14-36";
 const QUESTION_ID = "2009h21a-q054";
-const SET_URL = `/ja/quiz?mode=topic&id=${TOPIC_ID}`;
+const SET_URL = `/ja/practice?ids=${QUESTION_ID}`;
+const TOPIC_URL = `/ja/practice/browse/${TOPIC_ID}`;
 
 /** The fixed "server copy": one answer outside the topic + one unit read. */
 const REMOTE: LearningRecord = {
@@ -119,16 +125,26 @@ async function becomeOwner(page: Page): Promise<void> {
   if (!OWNER_KEY) {
     throw new Error("E2E_OWNER_KEY is not set — it must equal the local server's OWNER_KEY (see the header).");
   }
-  // The glossary mounts no LearningRecordProvider (`/ja` redirects to the quiz
-  // landing, which does), so this visit issues no /api/learning request.
+  // The glossary mounts no LearningRecordProvider (the today page `/ja` does), so this
+  // visit issues no /api/learning request.
   await page.goto(`/ja/glossary?owner_key=${encodeURIComponent(OWNER_KEY)}`);
   await expect(page).toHaveURL(/\/ja\/glossary$/);
   const cookies = await page.context().cookies();
   expect(cookies.map((c) => c.name)).toContain("itp_owner");
 }
 
-const answerFirstChoice = (page: Page) =>
-  page.locator(`article[id="${QUESTION_ID}"]`).getByRole("listitem").getByRole("button").first().click(); // ア — wrong
+const choice = (page: Page, letter: string) =>
+  page.locator(`main[data-session] article[id="${QUESTION_ID}"] li[data-letter="${letter}"]`);
+
+/** ア — wrong (keyed イ); retried until the session has hydrated and restored. */
+async function answerFirstChoice(page: Page): Promise<void> {
+  const btn = choice(page, "ア").locator("button");
+  await expect(async () => {
+    await btn.click();
+    await expect(btn).toHaveAttribute("aria-pressed", "true", { timeout: 500 });
+  }).toPass();
+  await expect(choice(page, "イ")).toHaveAttribute("data-state", "correct");
+}
 
 /** Simulate the tab being hidden / the page being unloaded. */
 const hidePage = (page: Page) =>
@@ -138,7 +154,7 @@ const hidePage = (page: Page) =>
     window.dispatchEvent(new Event("pagehide"));
   });
 
-test("owner quiz landing: progress waits for the GET, then includes the remote record", async ({ page }) => {
+test("owner topic page: accuracy waits for the GET, then includes the remote record", async ({ page }) => {
   const remote: LearningRecord = {
     ...REMOTE,
     attempts: { ...REMOTE.attempts, [QUESTION_ID]: [{ at: 2_000, choice: "ア", correct: false, src: "practice" }] },
@@ -146,23 +162,28 @@ test("owner quiz landing: progress waits for the GET, then includes the remote r
   const sync = await mockServer(page, remote, true);
   await becomeOwner(page);
 
-  await page.goto("/ja/quiz");
-  const row = page.locator(`a[href*="id=${TOPIC_ID}"]`);
-  await expect(row).toHaveCount(1);
+  await page.goto(TOPIC_URL);
+  const acc = page.locator("[data-accuracy]");
+  const row = page.locator(`[data-question-row="${QUESTION_ID}"] [data-result]`);
+  await expect(acc).toHaveCount(1);
   await expect.poll(() => sync.gets).toBe(1); // issued after the local record was loaded
   expectAllGetsV2(sync);
   await page.waitForTimeout(500);
-  await expect(row).not.toContainText("/7"); // no local-only "0/7 解答" while the GET is pending
+  await expect(acc).toHaveAttribute("data-accuracy", ""); // no local-only "0/0" while the GET is pending
+  await expect(row).toHaveAttribute("data-result", "");
+  await expect(page.getByTestId("review-launcher")).toBeDisabled();
 
   sync.releaseGet();
-  await expect(row).toContainText("1/7 解答 · 正答率 0%");
+  await expect(acc).toHaveAttribute("data-accuracy", "0/1");
+  await expect(row).toHaveAttribute("data-result", "wrong");
+  await expect(page.getByTestId("review-launcher")).toBeEnabled();
   // The GET response equals the merged record, so nothing goes back up.
   await page.waitForTimeout(2 * 2000 + 500);
   expect(sync.gets).toBe(1);
   expect(sync.puts).toEqual([]);
 });
 
-test("owner quiz set: no PUT before the GET; debounced PUT = merge(local, remote); no second PUT", async ({
+test("owner practice: no PUT before the GET; debounced PUT = merge(local, remote); no second PUT", async ({
   page,
 }) => {
   const sync = await mockServer(page, REMOTE, true);
@@ -172,7 +193,6 @@ test("owner quiz set: no PUT before the GET; debounced PUT = merge(local, remote
   expectAllGetsV2(sync);
 
   await answerFirstChoice(page); // while the GET is held
-  await expect(page.locator(`article[id="${QUESTION_ID}"]`).getByText(`正解: イ`)).toBeVisible();
   await page.waitForTimeout(2000 + 1000); // past the debounce
   expect(sync.puts).toEqual([]);
 
@@ -193,7 +213,7 @@ test("owner quiz set: no PUT before the GET; debounced PUT = merge(local, remote
   expect(sync.gets).toBe(1);
 });
 
-test("owner quiz set: page hide sends the delta at once; the debounce is cancelled", async ({ page }) => {
+test("owner practice: page hide sends the delta at once; the debounce is cancelled", async ({ page }) => {
   const sync = await mockServer(page, REMOTE, false);
   await becomeOwner(page);
   await page.goto(SET_URL);
@@ -217,6 +237,35 @@ test("owner quiz set: page hide sends the delta at once; the debounce is cancell
 
   // visibilitychange + pagehide sent one PUT; the pending debounced PUT was
   // cancelled and the merged-back response schedules none.
+  await page.waitForTimeout(2 * 2000 + 500);
+  expect(sync.puts).toHaveLength(1);
+  expect(sync.gets).toBe(1);
+});
+
+test("owner + an old tab's itp:learn:v1: the upgraded answers go up in the v2 PUT; the v1 key is untouched", async ({
+  page,
+}) => {
+  const V1_QID = "2024r06-q002";
+  const v1 = JSON.stringify({ v: 1, questions: { [V1_QID]: { choice: "ウ", correct: false, at: 3_000 } }, unitsRead: {} });
+  await page.addInitScript((value) => {
+    if (localStorage.getItem("itp:learn:v1") === null) localStorage.setItem("itp:learn:v1", value);
+  }, v1);
+  const sync = await mockServer(page, REMOTE, false);
+  await becomeOwner(page);
+  await page.goto(SET_URL);
+  await expect.poll(() => sync.gets).toBe(1);
+  expectAllGetsV2(sync);
+
+  // local (v1 upgraded) differs from the server copy → one debounced PUT, then quiet
+  await expect.poll(() => sync.puts.length, { timeout: 6000 }).toBe(1);
+  const body = sync.puts[0]!;
+  expect(body.v).toBe(2);
+  expect(body.a[V1_QID]).toEqual([[3_000, 2, 0, "1"]]); // ウ, wrong, src v1
+  const merged = parseRecord(body)!;
+  expect(merged.attempts["2024r06-q001"]).toEqual(REMOTE.attempts["2024r06-q001"]); // the server's own entry kept
+  expect(merged.v2Since).toEqual(expect.any(Number));
+  expect(await page.evaluate(() => localStorage.getItem("itp:learn:v1"))).toBe(v1);
+
   await page.waitForTimeout(2 * 2000 + 500);
   expect(sync.puts).toHaveLength(1);
   expect(sync.gets).toBe(1);

@@ -1,8 +1,12 @@
-// D-181 Task A4 — the quiz 「AI 先生に聞く」 entry and the AI 先生 panel, against a
-// fake Anthropic API (helpers/fakeAnthropic.ts). No test reaches the real API:
-// a beforeEach guard routes every request to api.anthropic.com in EVERY test; a
-// request the fake does not answer (or any request in a test without the fake)
-// is recorded and aborted, and each test ends by asserting that list is empty.
+// D-181 Task A4 — the 「AI 先生に聞く」 entry and the AI 先生 panel, against a fake Anthropic API
+// (helpers/fakeAnthropic.ts). Stage 7 Task 15: on the new pages — the practice group
+// (/ja/practice?ids=…, one question per screen; the button sits in the explanation pane), the
+// single-question page (/ja/practice/q/<qid>, the reference view: anchor `<qid>:reveal`), the topic
+// page (/ja/practice/browse/<topic>, the review) and the today page (「AI 分析」). The three theme
+// shells are gone, and with them their nav / phone-width tests.
+// No test reaches the real API: a beforeEach guard routes every request to api.anthropic.com in
+// EVERY test; a request the fake does not answer (or any request in a test without the fake) is
+// recorded and aborted, and each test ends by asserting that list is empty.
 //
 // Covered:
 //   1. The button appears only after answering; no key → KeySettings in the
@@ -10,10 +14,10 @@
 //      ask → 「考え中…」 then the reply; the request carries the key header, the
 //      browser-access header and the question anchor (#id, 正解, the learner's
 //      choice) in `system`; markdown links obey §0-7; Esc closes and focus
-//      returns to the button; after a reload the same choice reopens the same
-//      thread, another choice opens a fresh one (§0-4); the key is in no
-//      localStorage value but its own key and no /api/learning request is
-//      made (non-owner); no CSP violation with the panel open.
+//      returns to the button; after a reload (the group restored) the same choice
+//      reopens the same thread, another choice (a new group, `&run=`) opens a fresh
+//      one (§0-4); the key is in no localStorage value but its own key and no
+//      /api/learning request is made (non-owner); no CSP violation with the panel open.
 //   2. Layout: full-screen drawer at phone width, right drawer when wide.
 //   3. 401 → 「key が無効です」, settings open, the question back in the input;
 //      re-sending after a fix sends that question once (the failed turn is dropped);
@@ -26,8 +30,8 @@
 //      helpers/fakeAnthropic.ts), so the clear lands before any chunk. The race of a
 //      chunk arriving after the clear is proven by the threadChat unit test
 //      ("clearThread() while streaming …"), not here.
-//   6. Switch to another question's panel while the first reply is in flight →
-//      each thread keeps only its own messages and its own title in the index.
+//   6. Move to another question of the group while the first reply is in flight and
+//      ask there → each thread keeps only its own messages and its own title in the index.
 //   7. (only with E2E_OWNER_KEY, local server — see learning-owner.spec.ts) the
 //      owner's /api/learning PUT bodies never contain the key.
 //   8. /sensei key settings: how to get a key (console link) while none is saved;
@@ -35,52 +39,53 @@
 //      reload, delete clears it; a refused storage write keeps the typed key and
 //      shows the failure notice; the free-question input is enabled, its Send
 //      disabled until a key is saved.
-//   9. /sensei thread list: threads made on the quiz page, newest first, each
-//      linking to /quiz?mode=exam&id=<exam_id>#<question_id>; delete removes the
-//      row and its storage; the empty state once none is left.
-//  10. Navigation: each of the three shells shows the AI 先生 item → /ja/sensei.
-//  11. Phone width (390×844), each shell × each locale × each nav page: no
-//      horizontal page scroll, both switchers (theme, locale) inside the viewport,
-//      the current page's tab scrolled into view inside its nav row (page not
-//      scrolled), an overflowing row marked for the edge fade; Tab onto the last
-//      nav item keeps it inside the row with its focus ring drawn inside its box.
+//   9. /sensei thread list: threads made on the practice page, newest first, each
+//      linking to /practice/q/<question_id>; delete removes the row and its storage;
+//      the empty state once none is left.
 //
 // Runs against a local prod build (the production CSP is then active, so a
 // request to api.anthropic.com also proves connect-src allows it):
-//   npm run build && npx next start -p 3200
-//   PLAYWRIGHT_BASE_URL=http://localhost:3200 npx playwright test e2e/sensei.spec.ts --retries=0
+//   npm run build && npx next start -p 3015
+//   PLAYWRIGHT_BASE_URL=http://localhost:3015 npx playwright test e2e/sensei.spec.ts --retries=0
 
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
-import { test, expect, type Locator, type Page } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 import en from "../messages/en.json";
 import ja from "../messages/ja.json";
 import zh from "../messages/zh.json";
+import { encodeRecord, emptyRecord } from "../src/lib/learning/record";
 import { termId } from "../src/lib/glossary/termId";
 import { fakeAnthropic, guardAnthropic, type FakeAnthropic, type FakeRequest } from "./helpers/fakeAnthropic";
+import { attemptsOf, localDate, recordWith, seedV2, waitForRecord } from "./helpers/learning";
 
 const S = ja.Sensei;
 const KEY = "sk-ant-test-0000000000000000wxyz";
 const KEY_STORAGE = "itp:sensei:key:v1";
 const OWNER_KEY = process.env.E2E_OWNER_KEY ?? "";
 
-/** quiz_index.json → technology-14-36 (データ構造, 7 問): 2009h21a-q054 keyed イ, 2011h23tokubetsu-q058 keyed イ. */
-const SET_URL = "/ja/quiz?mode=topic&id=technology-14-36";
+/** technology-14-36 (データ構造): 2009h21a-q054 keyed イ, 2011h23tokubetsu-q058 keyed イ; neither in a 中問 group. */
 const Q1 = "2009h21a-q054";
 const Q2 = "2011h23tokubetsu-q058";
+const GROUP = [Q1, Q2];
+const SET_URL = `/ja/practice?ids=${GROUP.join(",")}`;
+/** the single-question page: the explanation unanswered, anchor `<qid>:reveal` */
+const Q1_PAGE = `/ja/practice/q/${Q1}`;
 /** questions.json source_label (the thread title in the index). */
 const Q1_LABEL = "平成21年度 秋期 ITパスポート試験 問54";
 const Q2_LABEL = "平成23年度 特別試験 ITパスポート試験 問58";
 const REPLY_MARK = "後入れ先出し（LIFO）です。";
 
 const threadKey = (anchorId: string) => `itp:sensei:thread:question.${encodeURIComponent(anchorId)}:v1`;
-const card = (page: Page, id: string) => page.locator(`article[id="${id}"]`);
+/** the question on screen */
+const face = (page: Page) => page.locator("main article[id]").first();
 /** ア = 0, イ = 1, … */
-const choice = (page: Page, id: string, i: number) =>
-  card(page, id).getByRole("listitem").getByRole("button").nth(i);
-const askButton = (page: Page, id: string) => card(page, id).getByRole("button", { name: S.askButton });
+const LETTERS = ["ア", "イ", "ウ", "エ"] as const;
+const choiceButton = (page: Page, i: number) => face(page).locator(`li[data-letter="${LETTERS[i]}"] button`);
+/** the explanation pane's 「AI 先生に聞く」 (one question on screen → one button) */
+const askButton = (page: Page) => page.getByTestId("ask-sensei");
 const panel = (page: Page) => page.getByRole("dialog");
 const log = (page: Page) => panel(page).getByTestId("sensei-log");
 const input = (page: Page) => panel(page).getByLabel(S.inputLabel);
@@ -99,10 +104,25 @@ async function presetKey(page: Page): Promise<void> {
   );
 }
 
+/** Practice group: move to `id` (←/→), answer it with choice `i` unless the restored group already
+ *  did, then open the panel. "reveal": the single-question page is on screen, just open the panel. */
 async function openPanel(page: Page, id: string, choiceIndex: number | "reveal"): Promise<void> {
-  if (choiceIndex === "reveal") await card(page, id).getByRole("button", { name: "解答を表示" }).click();
-  else await choice(page, id, choiceIndex).click();
-  await askButton(page, id).click();
+  if (choiceIndex !== "reveal") {
+    await expect(async () => {
+      const at = GROUP.indexOf((await face(page).getAttribute("id")) ?? "");
+      const want = GROUP.indexOf(id);
+      if (at !== want) await page.keyboard.press(at < want ? "ArrowRight" : "ArrowLeft");
+      await expect(face(page)).toHaveAttribute("id", id, { timeout: 500 });
+    }).toPass();
+    const btn = choiceButton(page, choiceIndex);
+    if ((await btn.getAttribute("aria-pressed")) !== "true") {
+      await expect(async () => {
+        await btn.click();
+        await expect(btn).toHaveAttribute("aria-pressed", "true", { timeout: 500 });
+      }).toPass();
+    }
+  }
+  await askButton(page).click();
   await expect(panel(page)).toBeVisible();
 }
 
@@ -156,8 +176,8 @@ test("ask about an answered question: key setup, streamed reply, anchor in syste
   });
 
   await page.goto(SET_URL);
-  await expect(card(page, Q1)).toBeVisible();
-  await expect(askButton(page, Q1)).toHaveCount(0); // not before answering
+  await expect(face(page)).toHaveAttribute("id", Q1);
+  await expect(askButton(page)).toHaveCount(0); // not before answering
 
   await openPanel(page, Q1, 1); // イ — correct
   const p = panel(page);
@@ -203,11 +223,12 @@ test("ask about an answered question: key setup, streamed reply, anchor in syste
   // Esc closes; focus returns to the button
   await page.keyboard.press("Escape");
   await expect(panel(page)).toHaveCount(0);
-  await expect(askButton(page, Q1)).toBeFocused();
+  await expect(askButton(page)).toBeFocused();
+  await expect(face(page)).toHaveAttribute("id", Q1); // Esc / the panel's keys never moved the group
   expect(await page.evaluate(() => window.__cspViolations)).toEqual([]);
   expect(consoleCsp).toEqual([]);
 
-  // reload: the same choice reopens the same thread
+  // reload: the group is restored (イ still picked) and reopens the same thread
   await page.reload();
   await openPanel(page, Q1, 1);
   await expect(log(page)).toContainText("なぜイが正解なのですか？");
@@ -217,15 +238,17 @@ test("ask about an answered question: key setup, streamed reply, anchor in syste
   const stored = await page.evaluate(() =>
     Object.fromEntries(Object.keys(localStorage).map((k) => [k, localStorage.getItem(k) ?? ""])),
   );
-  expect(Object.keys(stored)).toEqual(expect.arrayContaining([KEY_STORAGE, "itp:sensei:index:v1", threadKey(`${Q1}:イ`)]));
+  expect(Object.keys(stored)).toEqual(
+    expect.arrayContaining([KEY_STORAGE, "itp:sensei:index:v1", threadKey(`${Q1}:イ`), "itp:learn:v2"]),
+  );
   for (const [k, v] of Object.entries(stored)) {
     if (k !== KEY_STORAGE) expect(v, k).not.toContain(KEY);
   }
   expect(learning).toEqual([]);
 
-  // another choice (ア) is another thread (§0-4)
+  // another choice (ア, in a new group) is another thread (§0-4)
   await page.keyboard.press("Escape");
-  await page.reload();
+  await page.goto(`${SET_URL}&run=1`);
   await openPanel(page, Q1, 0);
   await expect(log(page)).toContainText(S.emptyHint);
   await expect(log(page)).not.toContainText("なぜイが正解なのですか？");
@@ -236,14 +259,14 @@ test("panel layout: full-screen drawer on a phone, right drawer when wide", asyn
   fake = await fakeAnthropic(page);
   await presetKey(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(SET_URL);
+  await page.goto(Q1_PAGE);
   await openPanel(page, Q1, "reveal");
   const phone = await panel(page).boundingBox();
   expect(phone).toEqual({ x: 0, y: 0, width: 390, height: 844 });
 
   await page.keyboard.press("Escape");
   await page.setViewportSize({ width: 1280, height: 800 });
-  await askButton(page, Q1).click();
+  await askButton(page).click();
   const wide = (await panel(page).boundingBox())!;
   expect(wide.height).toBe(800);
   expect(wide.width).toBeLessThan(500);
@@ -288,7 +311,7 @@ test("401: 「key が無効です」, settings open, the question stays; the ret
 test("refusal: the refusal notice, the question back in the input", async ({ page }) => {
   fake = await fakeAnthropic(page, { mode: "refusal" });
   await presetKey(page);
-  await page.goto(SET_URL);
+  await page.goto(Q1_PAGE);
   await openPanel(page, Q1, "reveal");
   await ask(page, "答えられない質問");
   await expect(panel(page).getByTestId("sensei-error")).toHaveText(S.errorRefusal);
@@ -338,7 +361,7 @@ test("clear while a reply is in flight: after a reload the thread is empty", asy
   await expect(log(page)).not.toContainText("消える質問");
 });
 
-test("switch to another question while the first reply is in flight: each thread keeps its own messages", async ({
+test("move to another question while the first reply is in flight: each thread keeps its own messages", async ({
   page,
 }) => {
   fake = await fakeAnthropic(page, { mode: "ok", delayMs: 2000 });
@@ -351,7 +374,7 @@ test("switch to another question while the first reply is in flight: each thread
   await page.keyboard.press("Escape");
 
   fake.delayMs = 0;
-  await openPanel(page, Q2, 0);
+  await openPanel(page, Q2, 0); // → moves the group to Q2, answers ア
   await expect(log(page)).toContainText(S.emptyHint); // Q2's own (empty) thread
   await ask(page, "問2 の質問");
   await expect(log(page)).toContainText(REPLY_MARK);
@@ -374,7 +397,7 @@ test("switch to another question while the first reply is in flight: each thread
 
   await page.keyboard.press("Escape");
   await page.reload();
-  await openPanel(page, Q1, 1);
+  await openPanel(page, Q1, 1); // the restored group is on Q2: ← back to Q1
   await expect(log(page)).toContainText("問1 の質問");
   await expect(log(page)).not.toContainText("問2 の質問");
   await expect(log(page)).not.toContainText(REPLY_MARK);
@@ -458,8 +481,8 @@ test("/sensei thread list: newest first, links back to the question, delete remo
   await page.goto(SENSEI_URL);
   const rows = page.getByTestId("sensei-thread");
   await expect(rows).toHaveCount(2);
-  const q2Href = "/ja/quiz?mode=exam&id=2011h23tokubetsu#2011h23tokubetsu-q058";
-  const q1Href = "/ja/quiz?mode=exam&id=2009h21a#2009h21a-q054";
+  const q2Href = `/ja/practice/q/${Q2}`;
+  const q1Href = `/ja/practice/q/${Q1}`;
   await expect(rows.nth(0).getByRole("link")).toHaveAttribute("href", q2Href); // newest first
   await expect(rows.nth(1).getByRole("link")).toHaveAttribute("href", q1Href);
   for (const row of [rows.nth(0), rows.nth(1)]) {
@@ -467,10 +490,10 @@ test("/sensei thread list: newest first, links back to the question, delete remo
     await expect(row.locator("time")).toHaveAttribute("datetime", /^\d{4}-\d{2}-\d{2}T/);
   }
 
-  // the link lands on the question in its exam set
+  // the link lands on the question's own page
   await rows.nth(1).getByRole("link").click();
-  await expect(page).toHaveURL(new RegExp(`${q1Href.replace(/[?#]/g, "\\$&")}$`));
-  await expect(card(page, Q1)).toBeInViewport();
+  await expect(page).toHaveURL(new RegExp(`${q1Href}$`));
+  await expect(page.locator(`article[id="${Q1}"]`)).toBeInViewport();
 
   await page.goto(SENSEI_URL);
   await expect(rows).toHaveCount(2);
@@ -490,111 +513,20 @@ test("/sensei thread list: newest first, links back to the question, delete remo
   expect(fake.requests).toHaveLength(2);
 });
 
-for (const theme of ["gamified", "retro", "terminal"] as const) {
-  test(`nav (${theme} shell): the AI 先生 item links to /ja/sensei`, async ({ page }) => {
-    await page.addInitScript((t) => localStorage.setItem("itp:theme:v1", t), theme);
-    await page.goto("/ja/glossary");
-    const shell = page.locator(`[data-shell="${theme}"]`);
-    await expect(shell).toBeVisible();
-    // by href + text: Retro underlines the first character in its own span, so its
-    // accessible name reads "A I 先生" while the text content is the label
-    const items = shell.locator("nav a");
-    await expect(items).toHaveCount(4);
-    const item = items.nth(3);
-    await expect(item).toHaveAttribute("href", SENSEI_URL);
-    await expect(item).toHaveText("AI 先生");
-    await item.click();
-    await expect(page).toHaveURL(new RegExp(`${SENSEI_URL}$`));
-    await expect(page.locator(`[data-shell="${theme}"] nav a[href="${SENSEI_URL}"]`)).toHaveAttribute("aria-current", "page");
-  });
-}
-
-const LOCALE_MESSAGES = { ja, zh, en } as const;
-
-/** "inside" when `inner`'s box lies within `outer`'s (1px tolerance), else both boxes. */
-async function insideOf(inner: Locator, outer: Locator): Promise<string> {
-  const a = await inner.boundingBox();
-  const b = await outer.boundingBox();
-  if (!a || !b) return `no box: ${JSON.stringify({ a, b })}`;
-  const ok =
-    a.x >= b.x - 1 && a.x + a.width <= b.x + b.width + 1 && a.y >= b.y - 1 && a.y + a.height <= b.y + b.height + 1;
-  return ok ? "inside" : JSON.stringify({ item: a, container: b });
-}
-
-const NAV_PAGES = ["/textbook", "/quiz", "/glossary", "/sensei"] as const;
-
-for (const theme of ["gamified", "retro", "terminal"] as const) {
-  for (const locale of ["ja", "zh", "en"] as const) {
-    test(`phone width (${theme} shell, ${locale}): no horizontal scroll, switchers on screen, current tab in view`, async ({
-      page,
-    }) => {
-      await page.addInitScript((t) => localStorage.setItem("itp:theme:v1", t), theme);
-      await page.setViewportSize({ width: 390, height: 844 });
-      for (const path of NAV_PAGES) {
-        await page.goto(`/${locale}${path}`);
-        const shell = page.locator(`[data-shell="${theme}"]`);
-        await expect(shell).toBeVisible();
-        const switchers = [
-          shell.getByRole("combobox", { name: "Switch theme" }),
-          shell.getByRole("combobox", { name: LOCALE_MESSAGES[locale].Locale.switcherLabel }),
-        ];
-        for (const sw of switchers) {
-          await expect(sw).toBeVisible();
-          const box = (await sw.boundingBox())!;
-          expect(box.x, path).toBeGreaterThanOrEqual(0);
-          expect(box.x + box.width, path).toBeLessThanOrEqual(390);
-        }
-        expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(390);
-
-        // the current page's tab is scrolled into view inside its nav row, without scrolling the page
-        const current = shell.locator('nav a[aria-current="page"]');
-        const row = current.locator(".."); // the scrolling nav row in each shell
-        await expect(current).toHaveAttribute("href", `/${locale}${path}`);
-        await expect.poll(() => insideOf(current, row), { message: path }).toBe("inside");
-        expect(await page.evaluate(() => window.scrollY), path).toBe(0);
-        // an overflowing row marks the side(s) with more items (edge fade)
-        const overflows = await row.evaluate((el) => el.scrollWidth > el.clientWidth + 1);
-        if (overflows) await expect(row, path).toHaveAttribute("data-fade", /^(left|right|both)$/);
-      }
-    });
-  }
-
-  test(`phone width (${theme} shell): Tab onto the last nav item keeps it and its focus ring inside the row`, async ({
-    page,
-  }) => {
-    await page.addInitScript((t) => localStorage.setItem("itp:theme:v1", t), theme);
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/en/glossary");
-    const items = page.locator(`[data-shell="${theme}"] nav a`);
-    const row = items.first().locator(".."); // the scrolling nav row
-    await expect(items).toHaveCount(NAV_PAGES.length);
-    await items.nth(NAV_PAGES.length - 2).focus();
-    await page.keyboard.press("Tab");
-    const last = items.nth(NAV_PAGES.length - 1);
-    await expect(last).toBeFocused();
-    await expect.poll(() => insideOf(last, row)).toBe("inside");
-    // the ring is drawn inside the item's own box, so the row's overflow cannot clip it
-    const ring = await last.evaluate((el) => {
-      const cs = getComputedStyle(el);
-      return { style: cs.outlineStyle, offset: parseFloat(cs.outlineOffset), width: parseFloat(cs.outlineWidth) };
-    });
-    expect(ring.style).not.toBe("none");
-    expect(ring.offset + ring.width).toBeLessThanOrEqual(0);
-  });
-}
 
 // Owner sync is only reachable on a local server with OWNER_KEY (see learning-owner.spec.ts);
-// without E2E_OWNER_KEY this test is not registered, as playwright.config ignores that spec.
+// without E2E_OWNER_KEY this test is not registered (a plain run never sets the owner cookie).
 if (OWNER_KEY) {
   test("owner: /api/learning PUT bodies never contain the key", async ({ page, baseURL }) => {
     const host = baseURL ? new URL(baseURL).hostname : "";
     expect(["localhost", "127.0.0.1"]).toContain(host);
     fake = await fakeAnthropic(page);
     const bodies: string[] = [];
-    await page.route("**/api/learning", async (route) => {
+    // a predicate, not "**/api/learning": the v2 client's GET is /api/learning?v=2
+    await page.route((url) => url.pathname === "/api/learning", async (route) => {
       const req = route.request();
       if (req.method() === "PUT") bodies.push(req.postData() ?? "");
-      await route.fulfill({ status: 200, json: req.method() === "PUT" ? req.postDataJSON() : { v: 1, questions: {}, unitsRead: {} } });
+      await route.fulfill({ status: 200, json: req.method() === "PUT" ? req.postDataJSON() : encodeRecord(emptyRecord()) });
     });
     await page.goto(`/ja/glossary?owner_key=${encodeURIComponent(OWNER_KEY)}`);
     await presetKey(page);
@@ -614,29 +546,29 @@ if (OWNER_KEY) {
 }
 
 
-// ── D-181 Phase B: weak-topic review (quiz landing card → topic set, AI 先生 opens) ──
+// ── D-181 Phase B: weak-topic review (today 「AI 分析」 → topic page, AI 先生 opens) ──
 //
-//  12. Landing card: the weakest topics (≥ 5 answers, not all correct; lowest stored
-//      accuracy first; top 3) from a seeded record; the landing loads no AI SDK chunk.
-//      Clicking a row (click intent in sessionStorage) opens the topic set with
-//      ?review=1 → the flag is removed from the URL, the panel opens and sends the
-//      opener exactly once; the request's anchor holds only that topic's question ids,
-//      re-judged answers, the learner's distractor notes and the not-yet-answered
-//      questions with their terms; an in-dialog `#sensei-input` link leaves the panel
-//      open, a `#<question_id>` link closes it, scrolls to that question and focuses
-//      its <article>. A reload and a second click on the same card (same day → same
-//      thread, not empty) send nothing; /sensei links the review thread back to the
-//      topic set with its date (`&thread=`), never the flag.
-//  13. Arriving without a key: nothing is sent until the key is saved, then the opener
-//      goes out once; closing / reopening / toggling settings never re-sends.
-//  14. Empty record: the per-topic 「1 つの分野で 5 題以上…」 hint and no intro; the set
-//      page's launcher opens the review thread without sending anything.
-//  15. `?review=1` without a click intent (bookmark / copied link): the panel opens
-//      with the opener as a suggestion chip, 0 requests.
-//  16. A past day's review thread: its /sensei row (`&thread=<date>`) opens that thread
-//      on the set page with its history, the parameter removed, 0 requests.
+//  10. Today page: the weak-topic row of a seeded record (≥ 5 answers, not all correct) with its
+//      「AI 分析」 link; the today page loads no AI SDK chunk. Clicking it (click intent in
+//      sessionStorage) opens the topic page /practice/browse/<topic>?review=1 → the flag is removed
+//      from the URL (no RSC refetch), the panel opens and sends the opener exactly once; the
+//      request's anchor holds only that topic's question ids, re-judged answers, the learner's
+//      distractor notes and the not-yet-answered questions with their terms; an in-dialog
+//      `#sensei-input` link leaves the panel open, a `#<question_id>` link closes it, scrolls to that
+//      question's row and focuses it. A reload and a second 「AI 分析」 click (same day → same thread,
+//      not empty) send nothing; /sensei links the review thread back to the topic page with its date
+//      (`?thread=`), never the flag.
+//  11. Arriving without a key: nothing is sent until the key is saved, then the opener goes out
+//      once; closing / reopening / toggling settings never re-sends.
+//  12. Empty record: the today page's weak-topic empty line; the topic page's launcher opens the
+//      review thread without sending anything.
+//  13. `?review=1` without a click intent (bookmark / copied link / a legacy /quiz review link): the
+//      panel opens with the opener as a suggestion chip, 0 requests.
+//  14. A past day's review thread: its /sensei row (`?thread=<date>`) opens that thread on the topic
+//      page with its history, the parameter removed, 0 requests.
 
 const REVIEW_TOPIC = "technology-14-36"; // データ構造, 7 問
+const REVIEW_URL = `/ja/practice/browse/${REVIEW_TOPIC}`;
 const REVIEW_TOPIC_IDS = [
   "2009h21a-q054",
   "2010h22h-q085",
@@ -650,7 +582,7 @@ const REVIEW_TARGET = "2018h30h-q096"; // not yet answered in the seed
 const QUESTION_ID_RE = /#(\d{4}[0-9a-z]+-q\d{3})/g;
 
 /** [qid, choice, stored correct] — `correct` is what the record holds, not the current key. */
-const SEED: [string, string, boolean][] = [
+const SEED: [string, (typeof LETTERS)[number], boolean][] = [
   // technology-14-36 データ構造: stored 1/5 = 20 %; re-judged 0/5 (q085 keyed ウ, stored as correct)
   ["2009h21a-q054", "ア", false], // keyed イ
   ["2010h22h-q085", "ア", true], // keyed ウ — a stale "correct"
@@ -670,26 +602,16 @@ const SEED: [string, string, boolean][] = [
   ["2010h22h-q063", "ウ", true],
   ["2012h24a-q059", "イ", true],
   ["2012h24h-q067", "イ", false],
-  // technology-19-50: 4/5 = 80 %, same rate and count as 14-39 → after it by topic id (4th, hidden)
-  ["2010h22a-q071", "エ", true],
-  ["2011h23a-q062", "ウ", true],
-  ["2015h27a-q061", "エ", true],
-  ["2022r04-q033", "ア", true],
-  ["2024r06-q068", "ア", false],
-  // technology-20-53: 0/4 — fewer than 5 answers, never listed
+  // technology-20-53: 0/4 — fewer than 5 answers, never a weak topic
   ["2011h23tokubetsu-q098", "ア", false],
   ["2012h24h-q072", "ア", false],
   ["2012h24h-q084", "ア", false],
   ["2013h25h-q054", "イ", false],
 ];
 
-/** Seed `itp:learn:v1` once (an init script runs on every load: only when absent). */
-async function seedRecord(page: Page): Promise<void> {
-  const questions = Object.fromEntries(SEED.map(([id, choice, correct], i) => [id, { choice, correct, at: 1_700_000_000_000 + i }]));
-  await page.addInitScript((value) => {
-    if (localStorage.getItem("itp:learn:v1") === null) localStorage.setItem("itp:learn:v1", value);
-  }, JSON.stringify({ v: 1, questions, unitsRead: {} }));
-}
+/** Seed `itp:learn:v2` with SEED (answered in 2023), once. */
+const seedRecord = (page: Page): Promise<void> =>
+  seedV2(page, recordWith({ attempts: attemptsOf(SEED, 1_700_000_000_000) }));
 
 /** Every same-origin JS chunk the page loads, with its body. */
 function trackScripts(page: Page): { url: string; body: Promise<string> }[] {
@@ -710,9 +632,11 @@ async function sdkChunks(scripts: { url: string; body: Promise<string> }[]): Pro
 const systemText = (req: FakeRequest): string =>
   ((req.body.system as { text?: string }[] | undefined) ?? []).map((b) => b.text ?? "").join("\n");
 
-const reviewRows = (page: Page) => page.getByTestId("review-card").getByTestId("review-topic");
+const weakRow = (page: Page) => page.locator(`[data-weak-row="${REVIEW_TOPIC}"]`);
+const aiReview = (page: Page) => weakRow(page).getByRole("link", { name: ja.Today.aiReview });
+const launcher = (page: Page) => page.getByTestId("review-launcher");
 
-test("review: weakest topics on the landing; the card opens the set and AI 先生 speaks first, once", async ({ page }) => {
+test("review: today's 「AI 分析」 opens the topic page and AI 先生 speaks first, once", async ({ page }) => {
   fake = await fakeAnthropic(page, { mode: "ok" });
   fake.reply = [
     "**誤りの傾向**: スタックとキューの取り違えが多いです。",
@@ -722,34 +646,29 @@ test("review: weakest topics on the landing; the card opens the set and AI 先�
   await presetKey(page);
   await seedRecord(page);
   const scripts = trackScripts(page);
-  // RSC fetches of the topic set that are not prefetches: the card's navigation only
+  // RSC fetches of the topic page that are not prefetches: the link's navigation only
   // (removing ?review=1 uses history.replaceState, which refetches nothing)
-  const setFetches: string[] = [];
+  const topicFetches: string[] = [];
   page.on("request", (r) => {
     const u = new URL(r.url());
-    if (u.pathname === "/ja/quiz" && u.searchParams.get("mode") === "topic" && r.headers()["rsc"] === "1" && !r.headers()["next-router-prefetch"]) {
-      setFetches.push(r.url());
+    if (u.pathname === REVIEW_URL && r.headers()["rsc"] === "1" && !r.headers()["next-router-prefetch"]) {
+      topicFetches.push(r.url());
     }
   });
 
-  await page.goto("/ja/quiz");
-  await expect(reviewRows(page)).toHaveCount(3);
-  await expect(reviewRows(page).nth(0)).toHaveText(/^データ構造 正答率 20% · 5 題解答$/);
-  await expect(reviewRows(page).nth(1)).toHaveText(/^データベース方式 正答率 50% · 6 題解答$/);
-  await expect(reviewRows(page).nth(2)).toHaveText(/^その他の言語 正答率 80% · 5 題解答$/);
-  await expect(reviewRows(page).nth(0).getByRole("link")).toHaveAccessibleName("データ構造 正答率 20% · 5 題解答");
-  await expect(page.getByTestId("review-intro")).toBeVisible();
-  await expect(reviewRows(page).nth(0).getByRole("link")).toHaveAttribute(
-    "href",
-    `/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&review=1`,
-  );
+  await page.goto("/ja");
+  await waitForRecord(page);
+  await expect(weakRow(page)).toContainText("データ構造");
+  await expect(weakRow(page)).toContainText("20%");
+  await expect(page.locator('[data-weak-row="technology-20-53"]')).toHaveCount(0); // < 5 answers
+  await expect(aiReview(page)).toHaveAttribute("href", `${REVIEW_URL}?review=1`);
   await page.waitForLoadState("networkidle");
   expect(scripts.length).toBeGreaterThan(0);
-  expect(await sdkChunks(scripts), "AI SDK chunk loaded on the quiz landing").toEqual([]);
+  expect(await sdkChunks(scripts), "AI SDK chunk loaded on the today page").toEqual([]);
 
-  await reviewRows(page).nth(0).getByRole("link").click();
+  await aiReview(page).click();
   await expect(panel(page)).toBeVisible();
-  await expect(page).toHaveURL(new RegExp(`/ja/quiz\\?mode=topic&id=${REVIEW_TOPIC}$`)); // flag removed
+  await expect(page).toHaveURL(new RegExp(`${REVIEW_URL}$`)); // flag removed
   await expect(log(page).locator('[data-role="user"]')).toHaveText(`${S.you}: ${S.reviewOpener}`);
   await expect(log(page)).toContainText("スタックとキューの取り違えが多いです。");
   expect((await sdkChunks(scripts)).length, "positive control: the panel loads the SDK").toBeGreaterThan(0);
@@ -757,7 +676,7 @@ test("review: weakest topics on the landing; the card opens the set and AI 先�
   // exactly one request, even after the dust settles
   await page.waitForTimeout(1500);
   expect(fake.requests).toHaveLength(1);
-  expect(setFetches, "RSC fetches of the set").toHaveLength(1);
+  expect(topicFetches, "RSC fetches of the topic page").toHaveLength(1);
   const req = fake.requests[0]!;
   const users = (req.body.messages ?? []).filter((m) => m.role === "user");
   expect(users).toHaveLength(1);
@@ -789,39 +708,34 @@ test("review: weakest topics on the landing; the card opens the set and AI 先�
   await log(page).getByRole("link", { name: "質問を書く" }).click();
   await expect(panel(page)).toBeVisible();
 
-  // the recommended #id link: the panel closes, the question is scrolled into view and
-  // its article (not choice ア, where Enter would answer) has the focus
+  // the recommended #id link: the panel closes, that question's row is scrolled into view and focused
   await log(page).getByRole("link", { name: "問題を開く" }).click();
   await expect(panel(page)).toHaveCount(0);
-  await expect(card(page, REVIEW_TARGET)).toBeInViewport();
-  await expect(card(page, REVIEW_TARGET)).toBeFocused();
+  const targetRow = page.locator(`tr[id="${REVIEW_TARGET}"]`);
+  await expect(targetRow).toBeInViewport();
+  await expect(targetRow).toBeFocused();
 
   // a reload never re-sends
   await page.reload();
-  await expect(card(page, REVIEW_TARGET)).toBeVisible();
+  await expect(targetRow).toBeVisible();
   await page.waitForTimeout(1500);
   await expect(panel(page)).toHaveCount(0);
   expect(fake.requests).toHaveLength(1);
 
-  // /sensei: the review thread links back to the topic set with its date, without the flag
+  // /sensei: the review thread links back to the topic page with its date, without the flag
   await page.goto(SENSEI_URL);
   const row = page.getByTestId("sensei-thread").filter({ hasText: S.kind_review });
   await expect(row).toHaveCount(1);
-  const today = await page.evaluate(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  });
-  await expect(row.getByRole("link", { name: "データ構造" })).toHaveAttribute(
-    "href",
-    `/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&thread=${today}`,
-  );
+  const today = localDate(await page.evaluate(() => Date.now()));
+  await expect(row.getByRole("link", { name: "データ構造" })).toHaveAttribute("href", `${REVIEW_URL}?thread=${today}`);
 
-  // the same card again (same day → same thread, not empty): the history, no new request
-  await page.goto("/ja/quiz");
-  await reviewRows(page).nth(0).getByRole("link").click();
+  // 「AI 分析」 again (same day → same thread, not empty): the history, no new request
+  await page.goto("/ja");
+  await waitForRecord(page);
+  await aiReview(page).click();
   await expect(panel(page)).toBeVisible();
   await expect(log(page)).toContainText("スタックとキューの取り違えが多いです。");
-  await expect(page).toHaveURL(new RegExp(`id=${REVIEW_TOPIC}$`));
+  await expect(page).toHaveURL(new RegExp(`${REVIEW_URL}$`));
   await page.waitForTimeout(1500);
   expect(fake.requests).toHaveLength(1);
 });
@@ -829,11 +743,12 @@ test("review: weakest topics on the landing; the card opens the set and AI 先�
 test("review without a key: nothing is sent until the key is saved, then the opener once", async ({ page }) => {
   fake = await fakeAnthropic(page, { mode: "ok" });
   await seedRecord(page);
-  await page.goto("/ja/quiz");
-  await reviewRows(page).nth(0).getByRole("link").click();
+  await page.goto("/ja");
+  await waitForRecord(page);
+  await aiReview(page).click();
   const p = panel(page);
   await expect(p.getByTestId("sensei-key-missing")).toBeVisible();
-  await expect(page).toHaveURL(new RegExp(`id=${REVIEW_TOPIC}$`));
+  await expect(page).toHaveURL(new RegExp(`${REVIEW_URL}$`));
   await expect(log(page)).toContainText(S.reviewEmptyHint);
   await page.waitForTimeout(500);
   expect(fake.requests).toHaveLength(0);
@@ -848,24 +763,27 @@ test("review without a key: nothing is sent until the key is saved, then the ope
   await p.getByRole("button", { name: S.settings }).click();
   await page.keyboard.press("Escape");
   await expect(panel(page)).toHaveCount(0);
-  await expect(page.getByTestId("review-launcher")).toBeFocused();
-  await page.getByTestId("review-launcher").click();
+  await expect(launcher(page)).toBeFocused();
+  await launcher(page).click();
   await expect(log(page)).toContainText(REPLY_MARK);
   await page.waitForTimeout(1000);
   expect(fake.requests).toHaveLength(1);
   expect(JSON.stringify(fake.requests[0]!.body.messages)).toContain(S.reviewOpener);
 });
 
-test("review with an empty record: the hint on the landing; the set's launcher sends nothing", async ({ page }) => {
+test("review with an empty record: the today page's empty line; the topic page's launcher sends nothing", async ({
+  page,
+}) => {
   fake = await fakeAnthropic(page, { mode: "ok" });
   await presetKey(page);
-  await page.goto("/ja/quiz");
-  await expect(page.getByTestId("review-empty")).toHaveText("1 つの分野で 5 題以上解くと弱点を分析します");
-  await expect(reviewRows(page)).toHaveCount(0);
-  await expect(page.getByTestId("review-intro")).toHaveCount(0);
+  await page.goto("/ja");
+  await waitForRecord(page);
+  await expect(page.locator('[data-empty="weak"]')).toHaveText(ja.Today.weakEmpty);
+  await expect(page.locator("[data-weak-row]")).toHaveCount(0);
 
-  await page.goto(`/ja/quiz?mode=topic&id=${REVIEW_TOPIC}`);
-  await page.getByTestId("review-launcher").click();
+  await page.goto(REVIEW_URL);
+  await expect(launcher(page)).toBeEnabled(); // disabled until the record has loaded
+  await launcher(page).click();
   await expect(panel(page)).toBeVisible();
   await expect(log(page)).toContainText(S.reviewEmptyHint);
   await expect(panel(page).getByRole("button", { name: S.reviewOpener })).toBeVisible(); // a suggestion, not sent
@@ -877,9 +795,9 @@ test("review: ?review=1 without a click intent (bookmark, copied link) opens the
   fake = await fakeAnthropic(page, { mode: "ok" });
   await presetKey(page);
   await seedRecord(page);
-  await page.goto(`/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&review=1`);
+  await page.goto(`${REVIEW_URL}?review=1`);
   await expect(panel(page)).toBeVisible();
-  await expect(page).toHaveURL(new RegExp(`/ja/quiz\\?mode=topic&id=${REVIEW_TOPIC}$`)); // flag removed
+  await expect(page).toHaveURL(new RegExp(`${REVIEW_URL}$`)); // flag removed
   await expect(log(page)).toContainText(S.reviewEmptyHint);
   await expect(panel(page).getByRole("button", { name: S.reviewOpener })).toBeVisible(); // a suggestion chip
   await page.waitForTimeout(1500);
@@ -890,15 +808,16 @@ test("review: ?review=1 without a click intent (bookmark, copied link) opens the
   await page.evaluate((topicId) => {
     sessionStorage.setItem("itp:sensei:review-intent", JSON.stringify({ topicId, at: Date.now() - 31_000 }));
   }, REVIEW_TOPIC);
-  await page.goto(`/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&review=1`);
+  await page.goto(`${REVIEW_URL}?review=1`);
   await expect(panel(page)).toBeVisible();
   await page.waitForTimeout(1500);
   expect(fake.requests).toHaveLength(0);
   expect(await page.evaluate(() => sessionStorage.getItem("itp:sensei:review-intent"))).toBeNull(); // consumed
 
-  // the card click (a fresh intent) sends exactly one request
-  await page.goto("/ja/quiz");
-  await reviewRows(page).nth(0).getByRole("link").click();
+  // today's 「AI 分析」 (a fresh intent) sends exactly one request
+  await page.goto("/ja");
+  await waitForRecord(page);
+  await aiReview(page).click();
   await expect(log(page)).toContainText(REPLY_MARK);
   await page.waitForTimeout(1000);
   expect(fake.requests).toHaveLength(1);
@@ -935,17 +854,17 @@ test("review: a past day's thread is reachable from its /sensei row, without sen
 
   await page.goto(SENSEI_URL);
   const link = page.getByTestId("sensei-thread").getByRole("link", { name: "データ構造" });
-  await expect(link).toHaveAttribute("href", `/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&thread=${PAST}`);
+  await expect(link).toHaveAttribute("href", `${REVIEW_URL}?thread=${PAST}`);
   await link.click();
   await expect(panel(page)).toBeVisible();
   await expect(log(page)).toContainText("過去の復習の返答です。");
-  await expect(page).toHaveURL(new RegExp(`/ja/quiz\\?mode=topic&id=${REVIEW_TOPIC}$`)); // parameter removed
+  await expect(page).toHaveURL(new RegExp(`${REVIEW_URL}$`)); // parameter removed
   await page.waitForTimeout(1500);
   expect(fake.requests).toHaveLength(0);
 
   // a malformed date opens nothing
-  await page.goto(`/ja/quiz?mode=topic&id=${REVIEW_TOPIC}&thread=2026-02-30`);
-  await expect(page.getByTestId("review-launcher")).toBeEnabled();
+  await page.goto(`${REVIEW_URL}?thread=2026-02-30`);
+  await expect(launcher(page)).toBeEnabled();
   await page.waitForTimeout(1000);
   await expect(panel(page)).toHaveCount(0);
   expect(fake.requests).toHaveLength(0);

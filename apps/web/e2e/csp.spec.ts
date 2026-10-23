@@ -1,6 +1,7 @@
 // D-181 §0-8 / Review Focus 1 — the production CSP must not break any page.
 //
-// Opens each page, collects every `securitypolicyviolation` event (listener
+// Opens each page (Stage 7: today, the practice pages, settings and the legacy /quiz redirect
+// included), collects every `securitypolicyviolation` event (listener
 // installed by addInitScript, so it is in place before any page script runs)
 // and every console message mentioning Content Security Policy, and asserts
 // none. Each response must carry the CSP header, so a run against a build
@@ -10,8 +11,8 @@
 // next.config.ts only sets the header when NODE_ENV === "production".
 // No LLM call fires on these pages by themselves; a guard routes api.anthropic.com
 // in every test, so one that did would fail.
-// D-181 Phase C: on the glossary term page and the textbook unit page the test also
-// opens the 「AI 先生に聞く」 panel and sends one question to the fake Anthropic API
+// D-181 Phase C: on the glossary term page, the textbook unit page and (Stage 7) the
+// single-question page the test also opens the 「AI 先生に聞く」 panel and sends one question to the fake Anthropic API
 // (helpers/fakeAnthropic.ts), so the lazily loaded AI SDK and the rendered reply are
 // checked under the CSP too. On /sensei (Task C2) it sends one free question
 // naming a dictionary term (so /api/sensei/terms is fetched too) and waits for the
@@ -28,15 +29,25 @@ import { fakeAnthropic, guardAnthropic } from "./helpers/fakeAnthropic";
 
 const TERM_PAGE = `/ja/glossary/${termId("ISO/IEC 27000")}`;
 const UNIT_PAGE = "/ja/textbook/management-08-25-u01";
+const QUESTION_PAGE = "/ja/practice/q/2009h21a-q054"; // the explanation is shown unanswered (reference view)
 /** Pages with a 「AI 先生に聞く」 button: the panel is opened and a fake reply rendered. */
-const ASK_PAGES = new Set([TERM_PAGE, UNIT_PAGE]);
+const ASK_PAGES = new Set([TERM_PAGE, UNIT_PAGE, QUESTION_PAGE]);
 const FREE_PAGE = "/ja/sensei";
 const REPLY_MARK = "後入れ先出し（LIFO）です。"; // helpers/fakeAnthropic DEFAULT_REPLY
 
 const PAGES = [
   "/ja",
+  "/ja/practice",
+  "/ja/practice?ids=2009h21a-q054",
+  "/ja/practice/browse",
+  "/ja/practice/browse/technology-14-36",
+  QUESTION_PAGE,
+  "/ja/practice/mistakes",
+  "/ja/settings",
+  "/zh/practice?ids=2009h21a-q054",
   "/ja/textbook",
   UNIT_PAGE,
+  // legacy client redirect pages (Stage 7 Task 13): the first response is the static redirect page
   "/ja/quiz",
   "/ja/quiz?mode=exam&id=2024r06",
   "/ja/glossary",

@@ -7,8 +7,9 @@
 //     detail page with the JP headword in the <h1>.
 //   - `/ja/glossary/<termId(機能要件)>` answers 200 and shows 2 sense blocks
 //     (機能要件 is taught in two units — Review Focus 1).
-//   - The detail page's past-exam links point to
-//     `/quiz?mode=exam&id=<examId>#<questionId>`.
+//   - The detail page's past-exam links point to the single-question page
+//     `/practice/q/<questionId>` (Stage 7 Task 13; the old `/quiz?mode=exam&id=…#<id>` shape is a
+//     legacy redirect now, see legacy-links.spec.ts), and one of them opens that question.
 //   - The detail page's learn-in link lands on `/textbook/<unitId>#<termId>`
 //     with that term's <article> in view.
 //   - Bad ids answer 404: a path-traversal-shaped id and a valid-shaped id that
@@ -77,16 +78,21 @@ test(`glossary detail: ${MULTI_SENSE_TERM} shows 2 sense blocks`, async ({ page 
   await expect(page.locator("main article")).toHaveCount(2);
 });
 
-test("glossary detail: question links carry exam id + #questionId", async ({ page }) => {
+test("glossary detail: question links point to /practice/q/<questionId>", async ({ page }) => {
   const res = await page.goto(`/ja/glossary/${ISO_ID}`);
   expect(res?.status()).toBe(200);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(ISO_TERM);
 
-  const qLinks = page.locator('a[href*="/quiz?mode=exam&id="]');
+  const qLinks = page.locator('main a[href*="/practice/q/"]');
   expect(await qLinks.count()).toBeGreaterThan(0);
-  for (const href of await qLinks.evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""))) {
-    expect(href).toMatch(/^\/ja\/quiz\?mode=exam&id=[^#&]+#.+$/);
-  }
+  const hrefs = await qLinks.evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+  for (const href of hrefs) expect(href).toMatch(/^\/ja\/practice\/q\/\d{4}[0-9a-z]+-q\d{3}$/);
+  await expect(page.locator('main a[href*="/quiz"]')).toHaveCount(0);
+
+  await qLinks.first().click();
+  const qid = hrefs[0]!.split("/").pop()!;
+  await expect(page).toHaveURL(new RegExp(`/ja/practice/q/${qid}$`));
+  await expect(page.locator(`article[id="${qid}"]`)).toBeVisible();
 });
 
 test("glossary detail: invalid ids answer 404", async ({ request }) => {
