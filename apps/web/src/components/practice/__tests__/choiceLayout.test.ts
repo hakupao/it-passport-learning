@@ -4,7 +4,16 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { isTableChoice } from "@/components/quiz/QuizRichText";
 import { CHOICE_LETTERS, loadAllQuestions, type QuizQuestion } from "@/lib/quiz/quizReader";
 
-import { choiceLayout, explanationTitle, longestUnbreakableRun, sourceNumber, UNBREAKABLE_MIN } from "../choiceLayout";
+import {
+  charEm,
+  choiceLayout,
+  choiceMinEm,
+  explanationTitle,
+  KEY_EM,
+  ROW4_LIMIT_EM,
+  segmentWidths,
+  sourceNumber,
+} from "../choiceLayout";
 
 let QS: QuizQuestion[] = [];
 beforeAll(async () => {
@@ -31,11 +40,11 @@ function fake(choices: string[], extra: Partial<QuizQuestion> = {}): QuizQuestio
 }
 
 describe("choiceLayout (§0-15) on the real corpus", () => {
-  it("counts row4 / grid2 / list (measured S132 Task 8; Rule A attempt 2 adds the unbreakable-run rule)", () => {
+  it("counts row4 / grid2 / list (measured S132 Task 8; Rule A attempt 3 width estimate)", () => {
     const counts = { row4: 0, grid2: 0, list: 0 };
     for (const q of QS) counts[choiceLayout(q)]++;
     expect(QS).toHaveLength(2900);
-    expect(counts).toEqual({ row4: 1140, grid2: 10, list: 1750 });
+    expect(counts).toEqual({ row4: 1101, grid2: 10, list: 1789 });
   });
 
   it("grid2 is exactly the choice_figures questions", () => {
@@ -46,38 +55,72 @@ describe("choiceLayout (§0-15) on the real corpus", () => {
   });
 });
 
-describe("unbreakable runs (Rule A audit attempt 1: 2011h23tokubetsu-q059 overflowed its row4 cells)", () => {
-  it("q059 「①and②and③」-type choices → list", () => {
-    const q = QS.find((x) => x.id === "2011h23tokubetsu-q059")!;
-    expect(longestUnbreakableRun(q.choices_jp["ア"]!)).toBeGreaterThanOrEqual(UNBREAKABLE_MIN);
-    expect(choiceLayout(q)).toBe("list");
+/** round to 1/100 em so float sums compare exactly */
+const r = (a: number[]): number[] => a.map((x) => Math.round(x * 100) / 100);
+
+describe("row4 by estimated width (Rule A attempts 1–3)", () => {
+  const FAILED = [
+    "2011h23tokubetsu-q059", // attempt 1: 「①and②and③」
+    "2014h26h-q068", // attempt 2: ￥A￥B￥B
+    "2014h26h-q083", // a→b→c
+    "2018h30a-q005", // A→B→C
+    "2015h27a-q007", // pairs a:BCP b:BCM
+    "2019r01a-q095", // pairs a：GPU，b：暗号化
+    "2022r04-q088", // pairs a: CSV / b: JSON
+    "2025r07-q071", // pairs a：高い，b：GHz
+  ];
+
+  it("the questions that overflowed (attempts 1 and 2) → list", () => {
+    for (const id of FAILED) expect([id, choiceLayout(QS.find((x) => x.id === id)!)]).toEqual([id, "list"]);
     expect(choiceLayout(fake(["①and②and③", "(①and②)or③", "①or(②and③)", "①or②or③"]))).toBe("list");
   });
 
   it("a normal short Japanese row4 question stays row4", () => {
     expect(choiceLayout(fake(["請負契約", "準委任契約", "派遣契約", "雇用契約"]))).toBe("row4");
     expect(choiceLayout(fake(["a，b", "a，c", "b，c", "a，b，c"]))).toBe("row4");
-    expect(choiceLayout(fake(["ＡＢＣＤＥＦＧ", "（１）と（５）", "ア", "イ"]))).toBe("row4"); // full-width forms break
+    expect(choiceLayout(fake(["（１）と（５）", "ＡＢＣＤＥＦＧ", "ア", "イ"]))).toBe("row4"); // full-width forms break
+    expect(choiceLayout(fake(["IPv4", "DNS", "TCP", "UDP"]))).toBe("row4"); // short ASCII words fit
   });
 
-  it("the CJK class: Han / kana / ー・ / CJK punctuation / full-width forms break a run; ASCII, ①, → do not", () => {
-    expect(longestUnbreakableRun("abcde")).toBe(5);
-    expect(longestUnbreakableRun("abcdef")).toBe(6);
-    expect(longestUnbreakableRun("abc def")).toBe(3); // whitespace breaks
-    expect(longestUnbreakableRun("abc　def")).toBe(3); // U+3000
-    expect(longestUnbreakableRun("abc漢def")).toBe(3);
-    expect(longestUnbreakableRun("abcあdefカghiー123・456")).toBe(3);
-    expect(longestUnbreakableRun("abc、def。ghi「jk」")).toBe(3);
-    expect(longestUnbreakableRun("abc，def（ghi）ｶ")).toBe(3);
-    expect(longestUnbreakableRun("①②③④⑤⑥")).toBe(6);
-    expect(longestUnbreakableRun("a→b→c→d")).toBe(7);
-    expect(longestUnbreakableRun("𠀋𠀋𠀋")).toBe(0); // astral Han
-    expect(longestUnbreakableRun("")).toBe(0);
+  it("charEm: measured BIZ UDPGothic advances (rounded up)", () => {
+    expect(charEm("a")).toBe(0.65);
+    expect(charEm("m")).toBe(0.95);
+    expect(charEm("A")).toBe(0.8);
+    expect(charEm("W")).toBe(1.0);
+    expect(charEm("7")).toBe(0.76);
+    expect(charEm(":")).toBe(0.35);
+    expect(charEm("/")).toBe(0.6);
+    expect(charEm("ｱ")).toBe(0.5);
+    for (const ch of ["漢", "あ", "→", "①", "×", "−", "￥", "，"]) expect(charEm(ch)).toBe(1.0);
   });
 
-  it("5 ASCII characters fit row4, 6 do not", () => {
-    expect(choiceLayout(fake(["IPv4a", "a", "b", "c"]))).toBe("row4");
-    expect(choiceLayout(fake(["IPv6ab", "a", "b", "c"]))).toBe("list");
+  it("segmentWidths: whitespace and CJK break; non-CJK runs stick (→ ① ￥ included)", () => {
+    expect(r(segmentWidths("abc def"))).toEqual(r([0.65 * 3, 0.65 * 3]));
+    expect(r(segmentWidths("漢字"))).toEqual(r([1, 1]));
+    expect(r(segmentWidths("A→B"))).toEqual(r([2.6]));
+    expect(r(segmentWidths("￥A￥B"))).toEqual(r([3.6])); // U+FFE5 is not in the CJK class
+    expect(r(segmentWidths("①and②"))).toEqual(r([1 + 0.65 * 3 + 1]));
+    expect(r(segmentWidths("abc漢def"))).toEqual(r([0.65 * 3, 1, 0.65 * 3]));
+    expect(r(segmentWidths(""))).toEqual(r([]));
+  });
+
+  it("kinsoku: closing punctuation / small kana / ー join the run before, opening brackets the run after", () => {
+    expect(r(segmentWidths("高い，"))).toEqual(r([1, 2])); // 高 | い，
+    expect(r(segmentWidths("データ"))).toEqual(r([2, 1])); // デー | タ
+    expect(r(segmentWidths("コーヒー"))).toEqual(r([2, 2])); // コー | ヒー
+    expect(r(segmentWidths("ちょっと"))).toEqual(r([3, 1])); // ちょっ | と
+    expect(r(segmentWidths("「暗号」化"))).toEqual(r([2, 2, 1])); // 「暗 | 号」 | 化
+    expect(r(segmentWidths("a：GPU，"))).toEqual(r([0.65 + 1, 0.8 * 3 + 1])); // a： | GPU，
+  });
+
+  it("pairs: key badge + the widest segment of each value", () => {
+    expect(choiceMinEm("a: CSV / b: JSON")).toBeCloseTo(KEY_EM + 0.8 * 4, 5); // b + JSON
+    expect(choiceMinEm("a：高い，b：GHz")).toBeCloseTo(KEY_EM + 0.8 + 0.8 + 0.65, 5); // b + GHz
+    expect(choiceMinEm("abc")).toBeCloseTo(0.65 * 3, 5); // not pairs: plain segments
+  });
+
+  it("the limit is the measured row4 text column (58px / 15px) minus a 0.3em margin", () => {
+    expect(ROW4_LIMIT_EM).toBeCloseTo(58 / 15 - 0.3, 1);
   });
 });
 

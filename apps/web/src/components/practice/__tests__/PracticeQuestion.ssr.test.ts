@@ -57,6 +57,16 @@ describe("PracticeQuestion — 問 N, layout, choices", () => {
     );
   });
 
+  it("a shown translation turns row4 into list (grid2 stays grid2); hidden or ja keeps row4", () => {
+    const q = QS.find((x) => choiceLayout(x) === "row4")!;
+    expect(renderFace(q, "zh", { showTranslation: true })).toMatch(/data-layout="list"/);
+    expect(renderFace(q, "en", { showTranslation: true })).toMatch(/data-layout="list"/);
+    expect(renderFace(q, "zh", { showTranslation: false })).toMatch(/data-layout="row4"/);
+    expect(renderFace(q, "ja", { showTranslation: true })).toMatch(/data-layout="row4"/);
+    const grid = QS.find((x) => choiceLayout(x) === "grid2")!;
+    expect(renderFace(grid, "en", { showTranslation: true })).toMatch(/data-layout="grid2"/);
+  });
+
   it("row4 renders 4 columns class", () => {
     const q = QS.find((x) => choiceLayout(x) === "row4")!;
     const out = renderFace(q, "ja");

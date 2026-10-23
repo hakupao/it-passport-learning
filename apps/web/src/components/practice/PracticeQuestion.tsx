@@ -77,7 +77,9 @@ export function PracticeQuestion({
   const hasTr = locale !== "ja";
   const showTr = hasTr && showTranslation;
   const trLang = LANG_TAG[locale] ?? locale;
-  const layout = choiceLayout(q);
+  // a shown translation adds a line under each choice that a 4-column cell cannot hold (Rule A attempt 3)
+  const base = choiceLayout(q);
+  const layout = showTr && base === "row4" ? "list" : base;
   const fold = foldPreamble && preambleChars !== null && preambleChars > 0 && preambleChars < q.stem_jp.length;
 
   return (
