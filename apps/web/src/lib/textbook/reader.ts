@@ -214,7 +214,7 @@ export function pickTerm(
 // file tracing (nft) latches onto the resolvable base dir, so pointing at the
 // textbook dir directly keeps the sibling exams/ + sources/ IPA trees out of the
 // route bundle. TEXTBOOK_DATA_ROOT (pointing at data/ip) stays supported.
-function textbookRoot(): string {
+export function textbookRoot(): string {
   const env = process.env.TEXTBOOK_DATA_ROOT;
   return env
     ? path.join(env, "textbook")

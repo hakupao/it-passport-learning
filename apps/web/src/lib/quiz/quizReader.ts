@@ -37,7 +37,7 @@ export * from "./quizModel";
 // Resolve straight to data/ip/quiz (sibling of data/ip/textbook). Pointing at the
 // quiz dir directly keeps the gitignored IPA exams/sources/syllabus trees out of
 // the route bundle (same nft reasoning as the textbook reader, Session 85).
-function quizDataRoot(): string {
+export function quizDataRoot(): string {
   const env = process.env.QUIZ_DATA_ROOT;
   return env ? path.join(env, "quiz") : path.resolve(process.cwd(), "../../data/ip/quiz");
 }
