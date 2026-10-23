@@ -30,7 +30,8 @@ export function questionThreadHref(anchorId: string): string | null {
 }
 
 
-const TOPIC_ID = /^[a-z]+-\d{2}-\d{2}$/;
+/** A well-shaped topic id (`<category>-NN-NN`); shared with lib/practice/legacyLinks. */
+export const TOPIC_ID = /^[a-z]+-\d{2}-\d{2}$/;
 const LOCAL_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 /** The topic page's query parameter naming a review thread's date. */

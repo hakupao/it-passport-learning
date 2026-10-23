@@ -87,6 +87,13 @@ export async function readStored(redis: LearningRedis, now: number): Promise<Lea
   return parsed.record;
 }
 
+/**
+ * Stored-size observability: after a successful write, a document over this many UTF-8 bytes
+ * (768 KiB, 3/4 of the 1 MiB PUT body cap) logs `[learning-sync-size] {"bytes":N}` — the byte
+ * count only, never the record.
+ */
+export const LEARNING_SYNC_WARN_BYTES = 786432;
+
 /** Merge `incoming` into the stored record, write it to the v2 key (v2 wire), return the merged record. */
 export async function mergeAndStore(
   redis: LearningRedis,
@@ -94,6 +101,9 @@ export async function mergeAndStore(
   now: number,
 ): Promise<LearningRecord> {
   const merged = mergeRecords(await readStored(redis, now), incoming);
-  await redis.set(LEARNING_REDIS_KEY, JSON.stringify(encodeRecord(merged)));
+  const json = JSON.stringify(encodeRecord(merged));
+  await redis.set(LEARNING_REDIS_KEY, json);
+  const bytes = new TextEncoder().encode(json).byteLength;
+  if (bytes > LEARNING_SYNC_WARN_BYTES) console.warn("[learning-sync-size]", JSON.stringify({ bytes }));
   return merged;
 }

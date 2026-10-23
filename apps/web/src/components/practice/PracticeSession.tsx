@@ -27,8 +27,9 @@
 //   - Focus: a new question → its <article>; the group ending (not a restore) → the summary <h1>.
 //   - from=today: the top bar names the today task — the URL's `kind=` (kindParam, Task 11) from the
 //     first frame, else inferred once the record is loaded (todayKind, fixed once known) — and the
-//     summary offers 「继续下一项」 (nextTodayGroup → /practice?ids=…&from=today&kind=…, or "/" when
-//     the day is done).
+//     summary offers 「继续下一项」 (summaryNextHref: nextTodayGroup → /practice?ids=…&from=today&kind=…,
+//     or "/" when the day is done) — only once the record is loaded (no link while an owner's GET is
+//     pending or right after a reload, which would plan from an empty record).
 //   - AI 先生 (§0-18): SenseiHost.onQuestionLink jumps to a question of this group (true).
 
 "use client";
@@ -42,6 +43,7 @@ import type { TermCard } from "@/lib/glossary/dictionary";
 import { settingValue, type LearningRecord } from "@/lib/learning/record";
 import { toLocalDay } from "@/lib/learning/schedule";
 import { poolFromIndex, type TodayIndex } from "@/lib/practice/practiceIndex";
+import { PRACTICE_CATEGORY_LABEL_KEYS } from "@/lib/practice/practiceLabels";
 import {
   applyAction,
   clearSession,
@@ -50,11 +52,10 @@ import {
   loadSession,
   localDateKey,
   newSession,
-  nextTodayGroup,
   recentResults,
   saveSession,
   statusLine,
-  todayHref,
+  summaryNextHref,
   todayKind,
   type SessionAction,
   type SessionState,
@@ -91,12 +92,6 @@ export interface PracticeSessionProps {
   /** tests: start from this state and skip the sessionStorage restore */
   initialState?: SessionState;
 }
-
-const CATEGORY_KEYS: Record<string, "cat_strategy" | "cat_management" | "cat_technology"> = {
-  strategy: "cat_strategy",
-  management: "cat_management",
-  technology: "cat_technology",
-};
 
 const hasOwn = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.call(o, k);
 
@@ -234,12 +229,17 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
     [act],
   );
 
-  let nextHref: string | null = null;
-  if (state.finished && fromToday && today) {
-    const at = Date.now();
-    const next = nextTodayGroup(record, poolFromIndex(today), toLocalDay(at), toLocalDay, localDateKey(new Date(at)));
-    nextHref = next ? `${todayHref(next.kind, next.ids)}&run=${state.endedAt ?? at}` : "/";
-  }
+  const at = Date.now();
+  const nextHref = summaryNextHref(
+    state,
+    fromToday,
+    loaded,
+    record,
+    today ? poolFromIndex(today) : null,
+    at,
+    toLocalDay,
+    localDateKey(new Date(at)),
+  );
 
   const showTranslation = trOverride ?? settingValue(record, "transDefault") === "shown";
 
@@ -343,7 +343,7 @@ export function SessionView({
   const fold = hasOwn(folds, q.id) ? folds[q.id]! : null;
   const total = state.ids.length;
   const isLast = state.pos === total - 1;
-  const catKey = topic ? CATEGORY_KEYS[topic.category] : undefined;
+  const catKey = topic ? PRACTICE_CATEGORY_LABEL_KEYS[topic.category] : undefined;
 
   let status: StatusLine | null = null;
   if (picked !== null && recordLoaded) {

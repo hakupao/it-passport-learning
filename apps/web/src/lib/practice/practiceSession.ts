@@ -446,3 +446,24 @@ export function nextTodayIds(
 ): string[] | null {
   return nextTodayGroup(r, pool, today, toDay, dateKey)?.ids ?? null;
 }
+
+/**
+ * The summary's 「继续下一项」 target (from=today): null unless the group is finished, came from
+ * today, has the today index AND the learning record is loaded (an owner's GET pending or a fresh
+ * reload would plan from an empty record); then the next today group with the group's endedAt as
+ * its run nonce, or "/" when the day is done.
+ */
+export function summaryNextHref(
+  s: Pick<SessionState, "finished" | "endedAt">,
+  fromToday: boolean,
+  loaded: boolean,
+  r: LearningRecord,
+  pool: QuestionPool | null,
+  now: number,
+  toDay: ToDay,
+  dateKey: string,
+): string | null {
+  if (!s.finished || !fromToday || !pool || !loaded) return null;
+  const next = nextTodayGroup(r, pool, toDay(now), toDay, dateKey);
+  return next ? `${todayHref(next.kind, next.ids)}&run=${s.endedAt ?? now}` : "/";
+}

@@ -10,7 +10,8 @@
 //     breaks Japanese text — whitespace breaks; between two CJK characters, and between CJK and
 //     non-CJK, a break is allowed; non-CJK characters stick together (「A→B→C」, 「￥A￥B」,
 //     「①and②」); kinsoku: closing punctuation / small kana / ー・ stick to the character before,
-//     opening brackets to the character after. A segment's width is the sum of per-character em
+//     opening brackets to the character after — the ASCII ones too (final fix: , . ) ] } ! ? % :
+//     stick to the run before, ( [ { to the run after, so 「可用性, 完全性」 has the piece 「性,」). A segment's width is the sum of per-character em
 //     widths measured in BIZ UDPGothic (CHAR_EM). A pairs choice (組合せ問, ChoiceBody "pairs") is
 //     judged per cell: key badge (KEY_EM) + the widest segment of the value. The widest segment must
 //     be ≤ ROW4_LIMIT_EM.
@@ -46,10 +47,10 @@ export const KEY_EM = 1.75;
  * after it). Everything else is non-CJK and sticks to its non-CJK neighbours.
  */
 const CJK = /[\p{Script=Han}\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF\u3000-\u303F\uFF00-\uFFDF\uFFEF]/u;
-/** no break before (kinsoku: closing punctuation, small kana, iteration / prolonged marks) */
-const CLOSE = new Set([..."、。，．：；！？）〕］｝〉》」』】〙〗・ー゛゜ゝゞヽヾ々〻ぁぃぅぇぉっゃゅょゎゕゖァィゥェォッャュョヮヵヶㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ‐–〜～…‥％"]);
-/** no break after (kinsoku: opening brackets) */
-const OPEN = new Set([..."（〔［｛〈《「『【〘〖"]);
+/** no break before (kinsoku: closing punctuation, small kana, iteration / prolonged marks; ASCII , . ) ] } ! ? % : = UAX #14 IS / CL / CP / PO / EX) */
+const CLOSE = new Set([..."、。，．：；！？）〕］｝〉》」』】〙〗・ー゛゜ゝゞヽヾ々〻ぁぃぅぇぉっゃゅょゎゕゖァィゥェォッャュョヮヵヶㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ‐–〜～…‥％,.)]}!?%:"]);
+/** no break after (kinsoku: opening brackets; ASCII ( [ { = UAX #14 OP) */
+const OPEN = new Set([..."（〔［｛〈《「『【〘〖([{"]);
 const SPACE = /\s/u;
 
 /** Estimated advance of one character in em (BIZ UDPGothic, measured S132 attempt 3; rounded up). */

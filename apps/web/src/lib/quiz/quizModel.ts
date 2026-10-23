@@ -13,8 +13,6 @@ export function toDataLang(locale: string): DataLang {
 }
 
 export const CHOICE_LETTERS = ["ア", "イ", "ウ", "エ"] as const;
-/** D-114 recommended learning path (matches textbook reader CATEGORY_ORDER). */
-export const CATEGORY_ORDER: readonly string[] = ["technology", "management", "strategy"] as const;
 
 // ---- corpus schema (subset we consume) ------------------------------------
 

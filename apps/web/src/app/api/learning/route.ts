@@ -16,6 +16,8 @@
 // corrupt stored doc (500, nothing written) → Redis failure (502). Logs name
 // the failure only — never the record, the cookie, or an error message (Upstash
 // parse errors embed the response body).
+// A successful PUT whose stored document is over 768 KiB also logs
+// `[learning-sync-size] {"bytes":N}` (mergeAndStore; the byte count only).
 
 import { isOwnerRequest } from "@/lib/owner";
 import { encodeRecord, type LearningRecord } from "@/lib/learning/record";

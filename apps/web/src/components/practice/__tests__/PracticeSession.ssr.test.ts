@@ -16,7 +16,7 @@ import { SenseiHost } from "@/components/sensei/AskSensei";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { emptyRecord, recordAttempt, setSetting, type ChoiceLetter, type LearningRecord } from "@/lib/learning/record";
 import { topicStars, type ChumonGroup } from "@/lib/practice/practiceIndex";
-import { loadChumonGroups } from "@/lib/practice/practiceReader";
+import { loadChumonGroups, loadTodayIndex } from "@/lib/practice/practiceReader";
 import {
   applyAction,
   foldPlan,
@@ -417,6 +417,31 @@ describe("fix round 1: reload on the summary, start over, run nonce, status afte
     // the retry link carries &run=<endedAt>: same ids, another storage key → a new group
     expect(out).toContain(`href="/practice?ids=${qs[0]!.id}&amp;run=70000"`);
     expect(sessionKey([qs[0]!.id], "70000")).not.toBe(sessionKey([qs[0]!.id]));
+  });
+
+  it("final fix 1: the summary's continue link waits for the learning record to load", async () => {
+    const qs = three();
+    const today = await loadTodayIndex("ja");
+    // the server frame: the record is not loaded (owner GET pending / fresh reload) → no continue link
+    const out = withIntl(
+      "ja",
+      h(LearningRecordProvider, {
+        isOwner: false,
+        children: h(PracticeSession, {
+          questions: qs,
+          locale: "ja",
+          isOwner: false,
+          termCards: {},
+          topics: TOPICS,
+          folds: {},
+          fromToday: true,
+          today,
+          initialState: finishedState(qs),
+        }),
+      }),
+    );
+    expect(out).toContain("data-summary");
+    expect(out).not.toContain('data-action="continue"');
   });
 
   it("the status line waits for the learning record to load", () => {

@@ -39,6 +39,7 @@ import {
   CorruptStoredRecordError,
   LEARNING_REDIS_KEY,
   LEARNING_REDIS_V1_KEY,
+  LEARNING_SYNC_WARN_BYTES,
   mergeAndStore,
   readStored,
 } from "@/lib/learning/syncStore";
@@ -555,5 +556,76 @@ describe("PUT /api/learning", () => {
     expect(logged).toContain("[learning-sync-error]");
     expect(logged).not.toContain("secret-choice");
     expect(logged).not.toContain("ECONNRESET");
+  });
+});
+
+describe("final fix 7: stored size observability", () => {
+  /** `exams` × 999 question ids, ATTEMPTS_K (10) attempts each — 26-ish bytes per attempt on the wire */
+  function bigRecord(exams: number): LearningRecord {
+    const attempts: LearningRecord["attempts"] = {};
+    for (let e = 0; e < exams; e++) {
+      for (let n = 1; n <= 999; n++) {
+        attempts[`2099x${String(e).padStart(2, "0")}-q${String(n).padStart(3, "0")}`] = Array.from(
+          { length: 10 },
+          (_, k) => ({ at: 1_700_000_000_000 + n * 1000 + k * 86_400_000, choice: "ア" as const, correct: k % 2 === 0, src: "practice" as const }),
+        );
+      }
+    }
+    return { ...emptyRecord(), attempts };
+  }
+  const bytesOf = (r: LearningRecord) => new TextEncoder().encode(JSON.stringify(encodeRecord(r))).byteLength;
+
+  it("a merge that leaves the stored JSON over 768 KiB warns with the byte count only", async () => {
+    const big = bigRecord(4);
+    redisHolder.current!.kv.set(LEARNING_REDIS_KEY, JSON.stringify(encodeRecord(big)));
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const res = await PUT(put(deviceA));
+      expect(res.status).toBe(200);
+      const stored = redisHolder.current!.kv.get(LEARNING_REDIS_KEY) as string;
+      const bytes = new TextEncoder().encode(stored).byteLength;
+      expect(bytes).toBeGreaterThan(786432);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy.mock.calls[0]).toEqual(["[learning-sync-size]", JSON.stringify({ bytes })]);
+      const logged = warnSpy.mock.calls.flat().join(" ");
+      expect(logged).not.toContain("2099x00");
+      expect(logged).not.toContain("2016h28h");
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("at or under 768 KiB, or when the write fails, nothing is warned", async () => {
+    const small = bigRecord(2);
+    expect(bytesOf(small)).toBeLessThan(786432);
+    redisHolder.current!.kv.set(LEARNING_REDIS_KEY, JSON.stringify(encodeRecord(small)));
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      expect((await PUT(put(deviceA))).status).toBe(200);
+      expect(warnSpy).not.toHaveBeenCalled();
+      // a big merge whose write fails: 502, no size line (only after a successful write)
+      redisHolder.current!.kv.set(LEARNING_REDIS_KEY, JSON.stringify(encodeRecord(bigRecord(4))));
+      redisHolder.current!.set = async () => {
+        throw new Error("ECONNRESET");
+      };
+      expect((await PUT(put(deviceA))).status).toBe(502);
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it("mergeAndStore itself warns (the threshold constant is 768 KiB)", async () => {
+    expect(LEARNING_SYNC_WARN_BYTES).toBe(786432);
+    const redis = makeFakeLearningRedis();
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      await mergeAndStore(redis, bigRecord(4), NOW);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy.mock.calls[0]![0]).toBe("[learning-sync-size]");
+      expect(Object.keys(JSON.parse(warnSpy.mock.calls[0]![1] as string))).toEqual(["bytes"]);
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 });

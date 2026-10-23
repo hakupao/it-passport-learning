@@ -149,7 +149,8 @@ export interface DailyPlan {
   newTarget: number;
 }
 
-const byDueThenId = (x: { id: string; due: number }, y: { id: string; due: number }): number =>
+/** due ascending, then id (code-unit order) — the review queues here and the setup panel's review list */
+export const byDueThenId = (x: { id: string; due: number }, y: { id: string; due: number }): number =>
   x.due !== y.due ? x.due - y.due : x.id < y.id ? -1 : x.id > y.id ? 1 : 0;
 
 /** Today's review queue and new questions (§0-6 / §0-7 / §5.4 每日量). `dateKey` = local YYYY-MM-DD. */

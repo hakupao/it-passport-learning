@@ -31,6 +31,7 @@ import {
   sessionKey,
   statusLine,
   summarize,
+  summaryNextHref,
   todayHref,
   todayKind,
   type SessionState,
@@ -513,6 +514,25 @@ describe("today chain (§0-26)", () => {
 
   it("todayHref: /practice?ids=…&from=today&kind=<kind>", () => {
     expect(todayHref("due", [T(1), T(2)])).toBe(`/practice?ids=${T(1)},${T(2)}&from=today&kind=due`);
+  });
+
+  it('summaryNextHref (final fix 1): null until the record is loaded; then the next today group or "/"', () => {
+    let r = base();
+    for (let i = 1; i <= 3; i++) r = wrongOn(r, T(i), D0 - 1);
+    const ended: SessionState = { ...newSession([T(1)], at(D0)), finished: true, endedAt: at(D0, 11) };
+    const now = at(D0, 12);
+    // owner GET pending / fresh reload: the record is not loaded → no continue link
+    expect(summaryNextHref(ended, true, false, r, pool, now, toDay, dk)).toBeNull();
+    // loaded → the next today group, the group's endedAt as the run nonce
+    expect(summaryNextHref(ended, true, true, r, pool, now, toDay, dk)).toBe(
+      `${todayHref("mistakes", [T(1), T(2), T(3)])}&run=${at(D0, 11)}`,
+    );
+    // loaded, nothing left today → home
+    expect(summaryNextHref(ended, true, true, setTargetZero(base()), pool, now, toDay, dk)).toBe("/");
+    // not from today / no today index / still running → null
+    expect(summaryNextHref(ended, false, true, r, pool, now, toDay, dk)).toBeNull();
+    expect(summaryNextHref(ended, true, true, r, null, now, toDay, dk)).toBeNull();
+    expect(summaryNextHref({ ...ended, finished: false }, true, true, r, pool, now, toDay, dk)).toBeNull();
   });
 
   it("parseKind: mistakes | due | fresh, anything else → null", () => {

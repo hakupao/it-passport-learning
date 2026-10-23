@@ -67,7 +67,9 @@ test("today, new user: no numbers before the record loads; then the 20-question 
   request,
 }) => {
   // the server render: every record block waits, no count is in the markup
-  const html = await (await request.get("/ja")).text();
+  const res = await request.get("/ja");
+  expect(res.status()).toBe(200);
+  const html = await res.text();
   expect(html).toContain("data-pending");
   expect(html).not.toContain("data-answered");
   expect(html).not.toContain("data-primary");

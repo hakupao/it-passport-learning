@@ -113,6 +113,21 @@ describe("row4 by estimated width (Rule A attempts 1–3)", () => {
     expect(r(segmentWidths("a：GPU，"))).toEqual(r([0.65 + 1, 0.8 * 3 + 1])); // a： | GPU，
   });
 
+  it("ASCII kinsoku (final fix 2, UAX #14 IS/CL/CP/PO/EX and OP): , . ) ] } ! ? % : join the run before, ( [ { the run after", () => {
+    // 「可用性, 完全性」: the ASCII comma cannot start a line → 性, is one piece
+    expect(r(segmentWidths("可用性, 完全性"))).toEqual(r([1, 1, 1 + 0.35, 1, 1, 1]));
+    for (const p of [",", ".", ")", "]", "}", "!", "?", "%", ":"]) {
+      expect([p, r(segmentWidths(`漢${p}字`))]).toEqual([p, r([1 + charEm(p), 1])]);
+    }
+    for (const p of ["(", "[", "{"]) {
+      expect([p, r(segmentWidths(`漢${p}字`))]).toEqual([p, r([1, charEm(p) + 1])]);
+    }
+    // 2018h30h-q080 style 「10%上がる。」: 10% stays one piece (PO after NU), る。 joins
+    expect(r(segmentWidths("10%上がる。"))).toEqual(r([0.76 * 2 + 0.6, 1, 1, 2]));
+    // a non-listed ASCII symbol still breaks from CJK
+    expect(r(segmentWidths("漢/字"))).toEqual(r([1, 0.6, 1]));
+  });
+
   it("pairs: key badge + the widest segment of each value", () => {
     expect(choiceMinEm("a: CSV / b: JSON")).toBeCloseTo(KEY_EM + 0.8 * 4, 5); // b + JSON
     expect(choiceMinEm("a：高い，b：GHz")).toBeCloseTo(KEY_EM + 0.8 + 0.8 + 0.65, 5); // b + GHz
@@ -121,6 +136,7 @@ describe("row4 by estimated width (Rule A attempts 1–3)", () => {
 
   it("the limit is the measured row4 text column (58px / 15px) minus a 0.3em margin", () => {
     expect(ROW4_LIMIT_EM).toBeCloseTo(58 / 15 - 0.3, 1);
+    expect(ROW4_LIMIT_EM).toBe(3.55);
   });
 });
 

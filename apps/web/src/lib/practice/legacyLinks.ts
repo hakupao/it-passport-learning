@@ -13,9 +13,8 @@
 //   anything else                       → /practice/browse
 
 import { QUESTION_ID } from "@/lib/quiz/questionId";
-import { REVIEW_THREAD_PARAM, reviewThreadDate } from "@/lib/sensei/threadLinks";
+import { REVIEW_THREAD_PARAM, reviewThreadDate, TOPIC_ID } from "@/lib/sensei/threadLinks";
 
-const TOPIC_ID = /^[a-z]+-\d{2}-\d{2}$/;
 const EXAM_ID = /^[0-9a-z]{4,16}$/;
 
 const BROWSE = "/practice/browse";

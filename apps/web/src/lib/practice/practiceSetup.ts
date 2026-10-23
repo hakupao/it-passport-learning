@@ -25,7 +25,7 @@
 
 import { mulberry32 } from "../hash";
 import type { LearningRecord } from "../learning/record";
-import { classify, pickNew, reviewState, type QuestionPool, type ToDay } from "../learning/schedule";
+import { byDueThenId, classify, pickNew, reviewState, type QuestionPool, type ToDay } from "../learning/schedule";
 import type { StorageLike } from "../storage";
 import { MAX_SCOPE_IDS, type SearchParams } from "./practiceSession";
 
@@ -50,9 +50,6 @@ export interface SetupSettings {
 }
 
 export const DEFAULT_SETTINGS: SetupSettings = { kind: "topic", topics: [], exam: null, n: 20, order: "seq" };
-
-const byDueThenId = (x: { id: string; due: number }, y: { id: string; due: number }): number =>
-  x.due !== y.due ? x.due - y.due : x.id < y.id ? -1 : x.id > y.id ? 1 : 0;
 
 function classified(
   r: LearningRecord,
