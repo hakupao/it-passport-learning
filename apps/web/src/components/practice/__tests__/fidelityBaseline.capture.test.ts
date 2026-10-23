@@ -10,10 +10,34 @@ import path from "node:path";
 
 import { BASELINE_PATH, baselineRows, fieldText, imageHash, textHash } from "./fidelityBaseline";
 
+const SIG0 = "#sig pre=0 table=0 tr=0 th=0 td=0 img=0 br=0 ul=0 li=0";
+
 describe("fieldText / hashes", () => {
-  it("strips tags, keeps <br> and block boundaries as line breaks, appends a tag signature", () => {
+  it("strips tags, keeps text nodes verbatim, <br> and block boundaries as line breaks, appends a tag signature", () => {
     expect(fieldText("<p>a  b<br/>c</p><p> d </p>")).toBe(
-      "a b\nc\nd\n#sig pre=0 table=0 tr=0 th=0 td=0 img=0 br=1 ul=0 li=0",
+      "a  b\nc\n d\n#sig pre=0 table=0 tr=0 th=0 td=0 img=0 br=1 ul=0 li=0",
+    );
+  });
+
+  it("indentation inside <pre> survives (and losing it changes the hash)", () => {
+    const pre = "<pre>if x\n  y\n    z</pre>";
+    expect(fieldText(pre)).toBe("if x\n  y\n    z\n#sig pre=1 table=0 tr=0 th=0 td=0 img=0 br=0 ul=0 li=0");
+    expect(textHash(pre)).not.toBe(textHash("<pre>if x\ny\nz</pre>"));
+  });
+
+  it("a blank line inside a text node survives", () => {
+    expect(fieldText("<p>a\n\nb</p>")).toBe(`a\n\nb\n${SIG0}`);
+    expect(textHash("<p>a\n\nb</p>")).not.toBe(textHash("<p>a\nb</p>"));
+  });
+
+  it("boundary newlines never stack: an extra wrapper <div> does not change the result", () => {
+    const plain = "<p>a</p><p>b</p>";
+    const wrapped = "<div><div><p>a</p></div><div><p>b</p></div></div>";
+    expect(fieldText(plain)).toBe(`a\nb\n${SIG0}`);
+    expect(fieldText(wrapped)).toBe(fieldText(plain));
+    // a text node ending in "\n" before a block boundary gets no second newline
+    expect(fieldText("<pre>x\n</pre><p>y</p>")).toBe(
+      "x\ny\n#sig pre=1 table=0 tr=0 th=0 td=0 img=0 br=0 ul=0 li=0",
     );
   });
 
@@ -30,9 +54,12 @@ describe("fieldText / hashes", () => {
     expect(textHash(table)).toMatch(/^[0-9a-f]{16}$/);
   });
 
-  it("imageHash uses the src basename + alt", () => {
+  it("imageHash uses the src basename (+ alt when given: choice figures)", () => {
     expect(imageHash("/quiz-figures/x.webp", "Figure")).toBe(imageHash("x.webp", "Figure"));
     expect(imageHash("/quiz-figures/x.webp", "Figure")).not.toBe(imageHash("/quiz-figures/x.webp", "图"));
+    expect(imageHash("/quiz-figures/x.webp")).toBe(imageHash("x.webp"));
+    expect(imageHash("/quiz-figures/x.webp")).not.toBe(imageHash("/quiz-figures/y.webp"));
+    expect(imageHash("/quiz-figures/x.webp")).not.toBe(imageHash("/quiz-figures/x.webp", ""));
   });
 });
 

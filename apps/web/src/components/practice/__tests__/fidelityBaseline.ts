@@ -7,7 +7,6 @@
 // Imports only QuizRichText + quizModel/quizReader (QuizSet is deleted by a later task).
 
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
 import path from "node:path";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -43,7 +42,7 @@ export interface BaselineRow {
   stemTr: string | null;
   /** ChoiceBody(localizedChoices) per ア..エ; all null on ja rows */
   choicesTr: Four<string | null>;
-  /** imageHash of the question figure (alt = Quiz.figureAlt of the row locale), or null */
+  /** imageHash(src) of the question figure (basename only), or null */
   figure: string | null;
   /** imageHash of each choice's <img> as rendered for the row locale, or null */
   choiceFigures: Four<string | null>;
@@ -78,30 +77,36 @@ function decodeEntities(s: string): string {
 }
 
 /**
- * Normalized visible text of rendered HTML + a tag signature.
- * Tags stripped, `<br>` and block boundaries → `\n`, th/td boundaries → space, entities decoded,
- * runs of non-newline whitespace → one space, each line trimmed, empty lines dropped; then
- * `\n#sig pre=N table=N tr=N th=N td=N img=N br=N ul=N li=N` (opening-tag counts).
+ * Visible text of rendered HTML + a tag signature.
+ * Text nodes are kept verbatim (entities decoded; no whitespace collapse, so <pre> indentation and
+ * blank lines count). `<br>` → `\n`. A block boundary (open or close) adds `\n` only when the text
+ * so far does not already end with `\n`; a th/td boundary adds a space only when it does not already
+ * end with whitespace — synthetic separators never stack, so extra wrapper elements change nothing.
+ * The whole field is trimmed, then `\n#sig pre=N table=N tr=N th=N td=N img=N br=N ul=N li=N`
+ * (opening-tag counts) is appended.
  */
 export function fieldText(html: string): string {
   const counts = Object.fromEntries(SIG_TAGS.map((t) => [t, 0])) as Record<string, number>;
-  const stripped = html
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/<(\/?)([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g, (_m, close: string, name: string) => {
-      const tag = name.toLowerCase();
-      if (!close && tag in counts) counts[tag]! += 1;
-      if (tag === "br" || BLOCK_TAGS.has(tag)) return "\n";
-      if (CELL_TAGS.has(tag)) return " ";
-      return "";
-    });
-  const text = decodeEntities(stripped)
-    .replace(/\r\n?/g, "\n")
-    .split("\n")
-    .map((line) => line.replace(/[^\S\n]+/g, " ").trim())
-    .filter((line) => line !== "")
-    .join("\n");
+  let out = "";
+  const tagRe = /<!--[\s\S]*?-->|<(\/?)([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g;
+  let last = 0;
+  for (let m = tagRe.exec(html); m; m = tagRe.exec(html)) {
+    out += decodeEntities(html.slice(last, m.index));
+    last = tagRe.lastIndex;
+    const name = m[2];
+    if (!name) continue; // comment
+    const tag = name.toLowerCase();
+    if (!m[1] && tag in counts) counts[tag]! += 1;
+    if (tag === "br") out += "\n";
+    else if (BLOCK_TAGS.has(tag)) {
+      if (!out.endsWith("\n")) out += "\n";
+    } else if (CELL_TAGS.has(tag)) {
+      if (!/\s$/.test(out)) out += " ";
+    }
+  }
+  out += decodeEntities(html.slice(last));
   const sig = SIG_TAGS.map((t) => `${t}=${counts[t]}`).join(" ");
-  return `${text}\n#sig ${sig}`;
+  return `${out.trim()}\n#sig ${sig}`;
 }
 
 function sha16(s: string): string {
@@ -113,9 +118,14 @@ export function textHash(html: string): string {
   return sha16(fieldText(html));
 }
 
-/** sha256(basename(src) + "|" + alt), first 16 hex. The basename keeps its extension (x.webp). */
-export function imageHash(src: string, alt: string): string {
-  return sha16(`${path.posix.basename(src)}|${alt}`);
+/**
+ * Image field, first 16 hex of sha256. The basename keeps its extension (x.webp).
+ * With `alt` (choice figures — the alt carries the choice text): sha256(basename + "|" + alt).
+ * Without (question figure — its alt is a generic i18n label): sha256(basename).
+ */
+export function imageHash(src: string, alt?: string): string {
+  const base = path.posix.basename(src);
+  return sha16(alt === undefined ? base : `${base}|${alt}`);
 }
 
 /** A plain string (source label, explanation text) hashed as React would render it as text. */
@@ -131,15 +141,10 @@ function renderedImageHash(html: string): string | null {
   return imageHash(attr("src"), attr("alt"));
 }
 
-function figureAlt(locale: BaselineLocale): string {
-  const file = path.join(ROOT, `apps/web/messages/${locale}.json`);
-  return (JSON.parse(readFileSync(file, "utf-8")) as { Quiz: { figureAlt: string } }).Quiz.figureAlt;
-}
-
 const four = <T>(f: (letter: string, i: number) => T): Four<T> =>
   CHOICE_LETTERS.map((L, i) => f(L, i)) as Four<T>;
 
-function rowsFor(q: QuizQuestion, alts: Record<BaselineLocale, string>): BaselineRow[] {
+function rowsFor(q: QuizQuestion): BaselineRow[] {
   const stemJp = textHash(renderToStaticMarkup(h(StemBlocks, { stem: q.stem_jp })));
   const choiceHtml = (text: string, letter: string) =>
     renderToStaticMarkup(
@@ -160,7 +165,7 @@ function rowsFor(q: QuizQuestion, alts: Record<BaselineLocale, string>): Baselin
       choicesJp: four((_L, i) => textHash(jpHtml[i]!)),
       stemTr: isJa ? null : textHash(renderToStaticMarkup(h(StemBlocks, { stem: localizedStem(q, locale) }))),
       choicesTr: four((_L, i) => (trHtml ? textHash(trHtml[i]!) : null)),
-      figure: q.figure ? imageHash(`/quiz-figures/${q.figure}.webp`, alts[locale]) : null,
+      figure: q.figure ? imageHash(`/quiz-figures/${q.figure}.webp`) : null,
       choiceFigures: four((_L, i) => renderedImageHash(shownHtml[i]!)),
       explCorrect: ex ? plainHash(ex.correct) : null,
       explDistractors: ex
@@ -177,7 +182,5 @@ function rowsFor(q: QuizQuestion, alts: Record<BaselineLocale, string>): Baselin
 
 /** Baseline rows for every question (loader order) × ja/zh/en, from the current renderer. */
 export async function baselineRows(): Promise<BaselineRow[]> {
-  const questions = await loadAllQuestions();
-  const alts = { ja: figureAlt("ja"), zh: figureAlt("zh"), en: figureAlt("en") };
-  return questions.flatMap((q) => rowsFor(q, alts));
+  return (await loadAllQuestions()).flatMap(rowsFor);
 }
