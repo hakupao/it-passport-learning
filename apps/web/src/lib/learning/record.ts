@@ -119,9 +119,20 @@ const own = (m: Record<string, Attempt[]>, k: string): Attempt[] => (hasOwn(m, k
 
 const isMap = (x: unknown): x is Record<string, unknown> => typeof x === "object" && x !== null && !Array.isArray(x);
 
-const isTime = (x: unknown): x is number => typeof x === "number" && Number.isFinite(x) && x >= 0;
+/** Largest valid Date value (ms). Times above it are rejected: at >= 2^53 would make `max + 1 === max`. */
+const MAX_TIME = 8.64e15;
+
+const isTime = (x: unknown): x is number =>
+  typeof x === "number" && Number.isFinite(x) && x >= 0 && x <= MAX_TIME;
 
 const EXAM_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** YYYY-MM-DD naming a real calendar date (2026-02-30 is rejected). Never throws. */
+function isCalendarDate(v: string): boolean {
+  if (!EXAM_DATE_RE.test(v)) return false;
+  const d = new Date(`${v}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === v;
+}
 
 export const isChoiceLetter = (x: unknown): x is ChoiceLetter =>
   typeof x === "string" && (CHOICE_LETTERS as readonly string[]).includes(x);
@@ -129,7 +140,7 @@ export const isChoiceLetter = (x: unknown): x is ChoiceLetter =>
 function isSettingValue(key: SettingKey, v: unknown): boolean {
   switch (key) {
     case "examDate":
-      return typeof v === "string" && EXAM_DATE_RE.test(v);
+      return typeof v === "string" && isCalendarDate(v);
     case "dailyReviewCap":
     case "dailyNewTarget":
       return typeof v === "number" && Number.isFinite(v);
@@ -138,20 +149,20 @@ function isSettingValue(key: SettingKey, v: unknown): boolean {
   }
 }
 
-/** Numeric settings are clamped into SETTING_RANGES; other values pass through. */
+/** Numeric settings are rounded to an integer, then clamped into SETTING_RANGES; other values pass through. */
 function clampSetting<K extends SettingKey>(key: K, v: SettingValue<K>): SettingValue<K> {
   const k: SettingKey = key;
   if ((k === "dailyReviewCap" || k === "dailyNewTarget") && typeof v === "number") {
     const [min, max] = SETTING_RANGES[k];
-    return Math.min(max, Math.max(min, v)) as SettingValue<K>;
+    return Math.min(max, Math.max(min, Math.round(v))) as SettingValue<K>;
   }
   return v;
 }
 
-/** `at` must be finite, non-negative epoch ms (what parseRecord accepts); anything else is a caller bug. */
+/** `at` must be finite epoch ms in [0, 8.64e15] (what parseRecord accepts); anything else is a caller bug. */
 function assertFiniteAt(at: number): void {
-  if (!Number.isFinite(at) || at < 0) {
-    throw new RangeError(`learning record: at must be finite non-negative epoch ms, got ${at}`);
+  if (!isTime(at)) {
+    throw new RangeError(`learning record: at must be finite epoch ms in [0, ${MAX_TIME}], got ${at}`);
   }
 }
 
@@ -189,11 +200,12 @@ export function latestResult(r: LearningRecord, qid: string): Attempt | undefine
 }
 
 /**
- * Add an attempt for `qid` (src defaults to "practice"). Returns a new record;
- * `r` is untouched. `at` is finite, non-negative epoch ms and `choice` one of
- * ア/イ/ウ/エ — anything else throws RangeError. The new attempt always ranks
- * first for `qid`, even when the clock went backwards: the stored `at` is at
- * least the question's previous max `at` + 1. Same-day repeats are all stored.
+ * Add an attempt for `qid` (src "practice" (default) or "mock"). Returns a new
+ * record; `r` is untouched. `at` is finite epoch ms in [0, 8.64e15], `choice`
+ * one of ア/イ/ウ/エ and `src` practice/mock — anything else throws RangeError.
+ * The new attempt always ranks first for `qid`, even when the clock went
+ * backwards: the stored `at` is at least the question's previous max `at` + 1.
+ * Same-day repeats are all stored.
  */
 export function recordAttempt(
   r: LearningRecord,
@@ -205,6 +217,7 @@ export function recordAttempt(
 ): LearningRecord {
   assertFiniteAt(at);
   if (!isChoiceLetter(choice)) throw new RangeError(`learning record: choice must be ア/イ/ウ/エ, got ${choice}`);
+  if (src !== "practice" && src !== "mock") throw new RangeError(`learning record: src must be practice/mock, got ${src}`);
   const prev = own(r.attempts, qid);
   const stamped = Math.max(at, prev.reduce((m, x) => Math.max(m, x.at), -1) + 1);
   const list = normalizeAttempts([{ at: stamped, choice, correct, src }, ...prev]);
@@ -222,11 +235,12 @@ export function markUnitRead(r: LearningRecord, unitId: string, at: number): Lea
 }
 
 /**
- * Set a setting (last-writer-wins). Numeric values are clamped into
- * SETTING_RANGES; a value outside the schema (non-finite number, examDate not
- * YYYY-MM-DD, unknown transDefault) or a bad `at` throws RangeError. Like
- * recordAttempt, a re-set on this device wins over this record's previous value
- * even on a skewed clock: the stored `at` is at least the previous `at` + 1.
+ * Set a setting (last-writer-wins). Numeric values are rounded to an integer and
+ * clamped into SETTING_RANGES; a value outside the schema (non-finite number,
+ * examDate not a real YYYY-MM-DD date, unknown transDefault) or a bad `at`
+ * throws RangeError. Like recordAttempt, a re-set on this device wins over this
+ * record's previous value even on a skewed clock: the stored `at` is at least
+ * the previous `at` + 1.
  */
 export function setSetting<K extends SettingKey>(
   r: LearningRecord,
@@ -391,7 +405,8 @@ function parseWireAttempt(e: unknown): Attempt | null {
 
 /**
  * Trust boundary for localStorage / network data: accepts only the v2 wire
- * form. Returns a fresh record in canonical form (unknown fields and unknown
+ * form (times in [0, 8.64e15], examDate a real calendar date, numeric settings
+ * integers). Returns a fresh record in canonical form (unknown fields and unknown
  * settings dropped; attempt lists sorted, deduped and cut to ATTEMPTS_K), or
  * null when anything does not match the schema. Never throws.
  */
@@ -419,6 +434,7 @@ export function parseRecord(x: unknown): LearningRecord | null {
     if (!hasOwn(x.s, k)) continue;
     const t = x.s[k];
     if (!Array.isArray(t) || t.length !== 2 || !isTime(t[1]) || !isSettingValue(k, t[0])) return null;
+    if (typeof t[0] === "number" && !Number.isInteger(t[0])) return null; // numeric settings are integers
     settings[k] = { value: t[0], at: t[1] };
   }
   const record: LearningRecord = {

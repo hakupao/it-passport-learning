@@ -25,6 +25,7 @@ import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 import {
   emptyRecord as emptyRecordV2,
+  encodeRecord as encodeRecordV2,
   isChoiceLetter,
   latestResult,
   mergeRecords as mergeRecordsV2,
@@ -256,11 +257,16 @@ export function downgradeToV1(r: LearningRecordV2): LearningRecord {
 
 /**
  * Parse either a v2 wire record or a v1 record (upgraded with v2Since = `now`),
- * reporting which one it was; null when it is neither. Never throws on `x`.
+ * reporting which one it was; null when it is neither. A v1 record whose
+ * upgrade is not itself a valid v2 record (v1 accepts any finite time, v2 caps
+ * times at 8.64e15) is null too — otherwise it would be stored and then fail
+ * every later read as corrupt. Never throws on `x`.
  */
 export function parseAnyRecord(x: unknown, now: number): { record: LearningRecordV2; version: 1 | 2 } | null {
   const r2 = parseRecordV2(x);
   if (r2) return { record: r2, version: 2 };
   const r1 = parseRecord(x);
-  return r1 ? { record: upgradeV1(r1, now), version: 1 } : null;
+  if (!r1) return null;
+  const up = parseRecordV2(encodeRecordV2(upgradeV1(r1, now)));
+  return up ? { record: up, version: 1 } : null;
 }

@@ -3,6 +3,7 @@
 // simulate what is stored. Like @upstash/redis (automaticDeserialization on),
 // `get` JSON.parses a stored string and hands back the raw string when it does
 // not parse; set `autoDeserialize = false` to get the stored string as-is.
+// `readKeys` / `writtenKeys` list every key passed to get / set, in call order.
 
 import type { LearningRedis } from "../syncStore";
 
@@ -10,6 +11,8 @@ export function makeFakeLearningRedis(): LearningRedis & {
   kv: Map<string, unknown>;
   gets: number;
   sets: number;
+  readKeys: string[];
+  writtenKeys: string[];
   autoDeserialize: boolean;
 } {
   const kv = new Map<string, unknown>();
@@ -17,9 +20,12 @@ export function makeFakeLearningRedis(): LearningRedis & {
     kv,
     gets: 0,
     sets: 0,
+    readKeys: [] as string[],
+    writtenKeys: [] as string[],
     autoDeserialize: true,
     async get(key: string) {
       fake.gets++;
+      fake.readKeys.push(key);
       if (!kv.has(key)) return null;
       const value = structuredClone(kv.get(key));
       if (fake.autoDeserialize && typeof value === "string") {
@@ -33,6 +39,7 @@ export function makeFakeLearningRedis(): LearningRedis & {
     },
     async set(key: string, value: string) {
       fake.sets++;
+      fake.writtenKeys.push(key);
       kv.set(key, value);
       return "OK";
     },

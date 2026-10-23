@@ -525,4 +525,18 @@ describe("parseAnyRecord", () => {
       expect(parseAnyRecord(x, NOW)).toBeNull();
     }
   });
+  it("a v1 record whose upgrade is not a valid v2 record (time > 8.64e15) is rejected", () => {
+    const tooBig = [8.64e15 + 1, 2 ** 53, 1e300];
+    for (const t of tooBig) {
+      const q = { v: 1, questions: { q: { choice: "ア", correct: true, at: t } }, unitsRead: {} };
+      const u = { v: 1, questions: {}, unitsRead: { u: t } };
+      expect(parseAnyRecord(q, NOW)).toBeNull();
+      expect(parseAnyRecord(u, NOW)).toBeNull();
+    }
+    // a non-letter answer is dropped on upgrade, so its time does not matter
+    const dropped = { v: 1, questions: { q: { choice: "x", correct: true, at: 1e300 } }, unitsRead: {} };
+    expect(parseAnyRecord(dropped, NOW)).toEqual({ record: upgradeV1(emptyRecord(), NOW), version: 1 });
+    const edge = { v: 1, questions: { q: { choice: "ア", correct: true, at: 8.64e15 } }, unitsRead: {} };
+    expect(parseAnyRecord(edge, NOW)?.version).toBe(1);
+  });
 });

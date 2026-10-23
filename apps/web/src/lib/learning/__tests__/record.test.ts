@@ -604,3 +604,49 @@ describe("latestResult / topicStats", () => {
     expect([...stats.keys()]).toEqual(["T1", "T2", "T3"]);
   });
 });
+
+describe("trust-boundary hardening (Task 3)", () => {
+  const MAX_T = 8.64e15; // max Date value
+  const wire = (extra: Record<string, unknown> = {}) => ({ v: 2, a: {}, u: {}, s: {}, ...extra });
+
+  it("time values are capped at 8.64e15 (an at >= 2^53 would make max + 1 === max)", () => {
+    for (const t of [MAX_T + 1, 2 ** 53, 1e300]) {
+      expect(parseRecord(wire({ a: { q: [[t, 0, 1, "p"]] } }))).toBeNull();
+      expect(parseRecord(wire({ u: { u: t } }))).toBeNull();
+      expect(parseRecord(wire({ since: t }))).toBeNull();
+      expect(parseRecord(wire({ s: { dailyReviewCap: [30, t] } }))).toBeNull();
+      expect(() => recordAttempt(emptyRecord(), "q", "ア", true, t)).toThrow(RangeError);
+      expect(() => markUnitRead(emptyRecord(), "u", t)).toThrow(RangeError);
+      expect(() => setSetting(emptyRecord(), "dailyReviewCap", 30, t)).toThrow(RangeError);
+    }
+    expect(parseRecord(wire({ a: { q: [[MAX_T, 0, 1, "p"]] }, u: { u: MAX_T }, since: MAX_T }))).not.toBeNull();
+    expect(recordAttempt(emptyRecord(), "q", "ア", true, MAX_T).attempts.q![0]!.at).toBe(MAX_T);
+  });
+
+  it("examDate must be a real calendar date", () => {
+    for (const bad of ["2026-02-30", "2026-13-01", "2026-00-10", "2025-02-29", "2026-04-31"]) {
+      expect(() => setSetting(emptyRecord(), "examDate", bad, 1)).toThrow(RangeError);
+      expect(parseRecord(wire({ s: { examDate: [bad, 1] } }))).toBeNull();
+    }
+    for (const ok of ["2026-12-15", "2028-02-29", "2027-01-01"]) {
+      expect(setSetting(emptyRecord(), "examDate", ok, 1).settings.examDate).toEqual({ value: ok, at: 1 });
+      expect(parseRecord(wire({ s: { examDate: [ok, 1] } }))!.settings.examDate).toEqual({ value: ok, at: 1 });
+    }
+  });
+
+  it("numeric settings are integers: setSetting / settingValue round, parseRecord rejects fractions", () => {
+    expect(setSetting(emptyRecord(), "dailyReviewCap", 30.6, 1).settings.dailyReviewCap).toEqual({ value: 31, at: 1 });
+    expect(setSetting(emptyRecord(), "dailyNewTarget", 12.4, 1).settings.dailyNewTarget).toEqual({ value: 12, at: 1 });
+    expect(setSetting(emptyRecord(), "dailyReviewCap", 100.4, 1).settings.dailyReviewCap).toEqual({ value: 100, at: 1 });
+    expect(settingValue(rec({}, {}, { dailyReviewCap: { value: 30.4, at: 1 } }), "dailyReviewCap")).toBe(30);
+    expect(parseRecord(wire({ s: { dailyReviewCap: [30.5, 1] } }))).toBeNull();
+    expect(parseRecord(wire({ s: { dailyNewTarget: [0.1, 1] } }))).toBeNull();
+    expect(parseRecord(wire({ s: { dailyNewTarget: [12, 1] } }))!.settings.dailyNewTarget).toEqual({ value: 12, at: 1 });
+  });
+
+  it('recordAttempt throws RangeError for a src other than "practice" | "mock"', () => {
+    for (const src of ["v1", "x", ""]) {
+      expect(() => recordAttempt(emptyRecord(), "q", "ア", true, 1, src as "practice")).toThrow(RangeError);
+    }
+  });
+});
