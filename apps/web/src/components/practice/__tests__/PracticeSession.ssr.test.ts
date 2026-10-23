@@ -257,6 +257,32 @@ describe("PracticeSession — one question per screen", () => {
     expect(withIntl("ja", h(SessionTimer, { startedAt: 1000, endedAt: null }))).toContain(">00:00<");
   });
 
+  it("from=today with kind= in the URL: the first frame already names the task (no inference needed)", () => {
+    const qs = three();
+    const render = (kindParam: "mistakes" | "due" | "fresh" | null) =>
+      withIntl(
+        "zh",
+        h(LearningRecordProvider, {
+          isOwner: false,
+          children: h(PracticeSession, {
+            questions: qs,
+            locale: "zh",
+            isOwner: false,
+            termCards: {},
+            topics: TOPICS,
+            folds: {},
+            fromToday: true,
+            today: null,
+            kindParam,
+          }),
+        }),
+      );
+    expect(render("mistakes")).toContain("错题　<strong>1</strong>");
+    expect(render("due")).toContain("到期复习　<strong>1</strong>");
+    // without the param the label waits for the record (inference runs in an effect)
+    expect(render(null)).not.toMatch(/(错题|到期复习|新题)　<strong>/);
+  });
+
   it("中問: the 2nd member folds the shared preamble, the 1st shows the full stem", () => {
     const g = GROUPS.find((x) => x.preambleChars.jp !== null)!;
     const members = g.memberIds.map(byId);

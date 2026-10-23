@@ -25,8 +25,10 @@
 //   - The status line waits for the learning record to be loaded (no "first time" from an empty
 //     record); its day is Date.now() at render.
 //   - Focus: a new question → its <article>; the group ending (not a restore) → the summary <h1>.
-//   - from=today: the top bar names the today task (todayKind, fixed once known) and the summary
-//     offers 「继续下一项」 (nextTodayIds → /practice?ids=…&from=today, or "/" when the day is done).
+//   - from=today: the top bar names the today task — the URL's `kind=` (kindParam, Task 11) from the
+//     first frame, else inferred once the record is loaded (todayKind, fixed once known) — and the
+//     summary offers 「继续下一项」 (nextTodayGroup → /practice?ids=…&from=today&kind=…, or "/" when
+//     the day is done).
 //   - AI 先生 (§0-18): SenseiHost.onQuestionLink jumps to a question of this group (true).
 
 "use client";
@@ -48,10 +50,11 @@ import {
   loadSession,
   localDateKey,
   newSession,
-  nextTodayIds,
+  nextTodayGroup,
   recentResults,
   saveSession,
   statusLine,
+  todayHref,
   todayKind,
   type SessionAction,
   type SessionState,
@@ -83,6 +86,8 @@ export interface PracticeSessionProps {
   today: TodayIndex | null;
   /** the URL's run nonce (parseRun); part of the storage key */
   run?: string | null;
+  /** from=today: the URL's `kind=` (parseKind); null / absent = infer it from the record */
+  kindParam?: TodayKind | null;
   /** tests: start from this state and skip the sessionStorage restore */
   initialState?: SessionState;
 }
@@ -129,7 +134,7 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
   const [ready, setReady] = useState(initialState !== undefined);
   const [trOverride, setTrOverride] = useState<boolean | null>(null);
   /** undefined = not worked out yet */
-  const [kind, setKind] = useState<TodayKind | null | undefined>(undefined);
+  const [kind, setKind] = useState<TodayKind | null | undefined>(() => props.kindParam ?? undefined);
   /** the position on screen (a change scrolls up and focuses the new question) */
   const shownPos = useRef(state.pos);
   /** whether the summary is on screen (the group ending moves the focus to its heading) */
@@ -232,8 +237,8 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
   let nextHref: string | null = null;
   if (state.finished && fromToday && today) {
     const at = Date.now();
-    const next = nextTodayIds(record, poolFromIndex(today), toLocalDay(at), toLocalDay, localDateKey(new Date(at)));
-    nextHref = next ? `/practice?ids=${next.join(",")}&from=today&run=${state.endedAt ?? at}` : "/";
+    const next = nextTodayGroup(record, poolFromIndex(today), toLocalDay(at), toLocalDay, localDateKey(new Date(at)));
+    nextHref = next ? `${todayHref(next.kind, next.ids)}&run=${state.endedAt ?? at}` : "/";
   }
 
   const showTranslation = trOverride ?? settingValue(record, "transDefault") === "shown";
@@ -256,7 +261,7 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
   );
 }
 
-export interface SessionViewProps extends Omit<PracticeSessionProps, "initialState" | "run"> {
+export interface SessionViewProps extends Omit<PracticeSessionProps, "initialState" | "run" | "kindParam"> {
   state: SessionState;
   record: LearningRecord;
   /** the record has been read (localStorage, and the server for the owner) */

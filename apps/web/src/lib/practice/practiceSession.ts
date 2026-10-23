@@ -35,13 +35,18 @@
 //     the 2nd member on); the first member — or one reached without its group before it — shows
 //     its full stem. A group without a clean fold point (null) never folds.
 //   - statusLine: the footer sentence after an answer (wrong / first-ever right / next due / mastered).
-//   - todayKind / nextTodayIds (§0-26): the today task a from=today group belongs to (majority
-//     of its ids in the start-of-day plan, so it survives answering and reloading) and the next
-//     today group (first non-empty of mistakes → due → fresh, first ≤ 20, 中問 groups kept whole).
+//   - todayKind / nextTodayGroup / nextTodayIds (§0-26): the today task a from=today group belongs
+//     to (majority of its ids in the start-of-day plan, so it survives answering and reloading) and
+//     the next today group (first non-empty of mistakes → due → fresh, todayChunk: first ≤ 20, 中問
+//     groups kept whole). Today links carry `kind=<mistakes|due|fresh>` (todayHref, Task 11); the
+//     page reads it with parseKind and the session prefers it — todayKind is only the fallback for a
+//     link without it (it cannot recognise e.g. the new user's 20-question baseline, which is not the
+//     start-of-day plan's new list). startOfDayPlan = dailyPlan over the record as it stood at the
+//     start of today (the today page's "done" check).
 
 import { fnv1a32 } from "../hash";
 import { isChoiceLetter, type Attempt, type ChoiceLetter, type LearningRecord } from "../learning/record";
-import { dailyPlan, expandGroups, reviewState, type QuestionPool, type ToDay } from "../learning/schedule";
+import { dailyPlan, expandGroups, reviewState, type DailyPlan, type QuestionPool, type ToDay } from "../learning/schedule";
 import type { StorageLike } from "../storage";
 import type { ChumonGroup, PracticeScope } from "./practiceIndex";
 
@@ -91,6 +96,12 @@ export function parseScope(
 /** `from=today`: the group is a today task (the summary offers 「继续下一项」). */
 export function isFromToday(sp: SearchParams): boolean {
   return first(sp.from) === "today";
+}
+
+/** `kind=<mistakes|due|fresh>` of a from=today link (see header); anything else → null. */
+export function parseKind(sp: SearchParams): TodayKind | null {
+  const k = first(sp.kind);
+  return (KINDS as readonly (string | undefined)[]).includes(k) ? (k as TodayKind) : null;
 }
 
 /** `run=<1–16 digits>`: the group nonce (see header); anything else → null. */
@@ -366,6 +377,27 @@ function startOfDay(r: LearningRecord, today: number, toDay: ToDay): LearningRec
   return { ...r, attempts };
 }
 
+/** dailyPlan over the record as it stood at the start of `today`. */
+export function startOfDayPlan(
+  r: LearningRecord,
+  pool: QuestionPool,
+  today: number,
+  toDay: ToDay,
+  dateKey: string,
+): DailyPlan {
+  return dailyPlan(startOfDay(r, today, toDay), pool, today, toDay, dateKey);
+}
+
+/** One today group of a task's list: its first ≤ TODAY_CHUNK ids, 中問 groups kept whole (may run past 20). */
+export function todayChunk(ids: readonly string[], groups: Record<string, string[]>): string[] {
+  return expandGroups(ids.slice(0, TODAY_CHUNK), groups);
+}
+
+/** The practice URL of a today group (add `&run=` for a fresh group). */
+export function todayHref(kind: TodayKind, ids: readonly string[]): string {
+  return `/practice?ids=${ids.join(",")}&from=today&kind=${kind}`;
+}
+
 /** The today task most of `ids` belonged to at the start of today (ties: mistakes → due → fresh); null = none. */
 export function todayKind(
   r: LearningRecord,
@@ -375,7 +407,7 @@ export function todayKind(
   toDay: ToDay,
   dateKey: string,
 ): TodayKind | null {
-  const plan = dailyPlan(startOfDay(r, today, toDay), pool, today, toDay, dateKey);
+  const plan = startOfDayPlan(r, pool, today, toDay, dateKey);
   let best: TodayKind | null = null;
   let bestCount = 0;
   for (const k of KINDS) {
@@ -389,7 +421,22 @@ export function todayKind(
   return best;
 }
 
-/** The next today group: first non-empty of mistakes → due → fresh, first ≤ 20, groups whole; null = done. */
+/** The next today group and its task: first non-empty of mistakes → due → fresh, todayChunk; null = done. */
+export function nextTodayGroup(
+  r: LearningRecord,
+  pool: QuestionPool,
+  today: number,
+  toDay: ToDay,
+  dateKey: string,
+): { kind: TodayKind; ids: string[] } | null {
+  const plan = dailyPlan(r, pool, today, toDay, dateKey);
+  for (const k of KINDS) {
+    if (plan[k].length > 0) return { kind: k, ids: todayChunk(plan[k], pool.groups) };
+  }
+  return null;
+}
+
+/** nextTodayGroup's ids. */
 export function nextTodayIds(
   r: LearningRecord,
   pool: QuestionPool,
@@ -397,9 +444,5 @@ export function nextTodayIds(
   toDay: ToDay,
   dateKey: string,
 ): string[] | null {
-  const plan = dailyPlan(r, pool, today, toDay, dateKey);
-  for (const k of KINDS) {
-    if (plan[k].length > 0) return expandGroups(plan[k].slice(0, TODAY_CHUNK), pool.groups);
-  }
-  return null;
+  return nextTodayGroup(r, pool, today, toDay, dateKey)?.ids ?? null;
 }

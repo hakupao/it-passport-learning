@@ -91,6 +91,24 @@ describe("/practice → setup panel", () => {
   });
 });
 
+describe("/practice?…&from=today&kind=", () => {
+  const ids = "2009h21a-q001,2009h21a-q002";
+  it("kind=<mistakes|due|fresh> reaches the session (preferred over inference); invalid / absent → null", async () => {
+    const PracticeSession = (await import("@/components/practice/PracticeSession")).PracticeSession;
+    const session = async (sp: Record<string, string>) => {
+      const el = childOf(await practice(sp));
+      expect(el.type).toBe(PracticeSession);
+      return el.props as Record<string, unknown>;
+    };
+    expect((await session({ ids, from: "today", kind: "due" })).kindParam).toBe("due");
+    expect((await session({ ids, from: "today", kind: "fresh" })).kindParam).toBe("fresh");
+    expect((await session({ ids, from: "today", kind: "unit" })).kindParam).toBeNull();
+    expect((await session({ ids, from: "today" })).kindParam).toBeNull();
+    // the kind only names a today group
+    expect((await session({ ids, kind: "mistakes" })).kindParam).toBeNull();
+  });
+});
+
 describe("/practice/browse", () => {
   it("renders the browse list (topics + exams newest first)", async () => {
     const el = (await BrowsePage({ params: Promise.resolve({ locale: "zh" }) })) as El;

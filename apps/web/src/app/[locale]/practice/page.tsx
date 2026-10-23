@@ -8,6 +8,7 @@
 //     dictionary (loadSetupIndex: topics, ★, question ids, chumon groups — a glossary failure cannot
 //     500 the panel) and the exams newest first (examsNewestFirst). The panel is keyed by the
 //     pre-selection, so a soft navigation to another pre-selection starts a fresh form.
+// A from=today link's `kind=` (Task 11) names the today task; the session prefers it over inferring.
 // order=rand without a seed is redirected to the same URL with a fresh seed, so a reload resolves
 // the same list (the sessionStorage key is the list's hash, §0-13).
 //
@@ -35,6 +36,7 @@ import { loadChumonGroups, loadQuestionsByIds, loadSetupIndex, loadTodayIndex } 
 import {
   foldPlan,
   isFromToday,
+  parseKind,
   parseRun,
   parseScope,
   sessionKey,
@@ -146,6 +148,7 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
         fromToday={fromToday}
         today={today}
         run={run}
+        kindParam={fromToday ? parseKind(sp) : null}
       />
     </LearningRecordProvider>
   );

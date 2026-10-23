@@ -21,7 +21,9 @@ import {
   loadSession,
   localDateKey,
   newSession,
+  nextTodayGroup,
   nextTodayIds,
+  parseKind,
   parseScope,
   practiceReducer,
   recentResults,
@@ -29,6 +31,7 @@ import {
   sessionKey,
   statusLine,
   summarize,
+  todayHref,
   todayKind,
   type SessionState,
 } from "../practiceSession";
@@ -493,6 +496,33 @@ describe("today chain (§0-26)", () => {
     expect(nextTodayIds(r, pool, D0, toDay, dk)).toBeNull();
     r = wrongOn(r, T(1), D0);
     expect(nextTodayIds(r, pool, D0, toDay, dk)).toBeNull(); // wrong today → due tomorrow
+  });
+
+  it("nextTodayGroup: the kind travels with the ids (nextTodayIds = its ids)", () => {
+    let r = base();
+    for (let i = 1; i <= 3; i++) r = wrongOn(r, T(i), D0 - 1);
+    expect(nextTodayGroup(r, pool, D0, toDay, dk)).toEqual({ kind: "mistakes", ids: [T(1), T(2), T(3)] });
+    let d = base();
+    for (let i = 10; i <= 12; i++) d = rightOn(d, T(i), D0 - 8);
+    expect(nextTodayGroup(setTargetZero(d), pool, D0, toDay, dk)).toEqual({ kind: "due", ids: [T(10), T(11), T(12)] });
+    const fresh = nextTodayGroup(base(), pool, D0, toDay, dk)!;
+    expect(fresh.kind).toBe("fresh");
+    expect(fresh.ids).toEqual(nextTodayIds(base(), pool, D0, toDay, dk));
+    expect(nextTodayGroup(setTargetZero(base()), pool, D0, toDay, dk)).toBeNull();
+  });
+
+  it("todayHref: /practice?ids=…&from=today&kind=<kind>", () => {
+    expect(todayHref("due", [T(1), T(2)])).toBe(`/practice?ids=${T(1)},${T(2)}&from=today&kind=due`);
+  });
+
+  it("parseKind: mistakes | due | fresh, anything else → null", () => {
+    expect(parseKind({ kind: "mistakes" })).toBe("mistakes");
+    expect(parseKind({ kind: "due" })).toBe("due");
+    expect(parseKind({ kind: ["fresh", "due"] })).toBe("fresh");
+    expect(parseKind({ kind: "new" })).toBeNull();
+    expect(parseKind({ kind: "unit" })).toBeNull();
+    expect(parseKind({ kind: "__proto__" })).toBeNull();
+    expect(parseKind({})).toBeNull();
   });
 
   it("todayKind: the kind most of the session's ids had at the start of today", () => {

@@ -9,7 +9,8 @@
 //
 // Static rendering enabled via setRequestLocale per next-intl docs — without
 // this the build would degrade to dynamic rendering for any RSC that calls
-// useTranslations(), losing the static optimization on /[locale]/page.tsx.
+// useTranslations(), losing the static optimization of the static pages (the home page
+// /[locale] itself is force-dynamic since Stage 7 Task 11: it reads the owner cookie).
 
 import type { Metadata, Viewport } from "next";
 import { BIZ_UDPGothic, Noto_Sans_SC } from "next/font/google";
@@ -52,7 +53,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "IT パスポート 三語学習",
+  title: "ITパスポート 過去問ノート",
   description:
     "Trilingual (jp/zh/en) study companion for the Japanese IT Passport exam — α private build.",
 };
