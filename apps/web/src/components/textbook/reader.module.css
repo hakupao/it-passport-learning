@@ -1,97 +1,99 @@
-/* Stage 6 (Session 85) — production textbook reader styles.
- *
- * A self-contained light reading surface (D-019 Q3 lean v1): the themed shell
- * still owns the nav chrome, but the reading content is one consistent, legible
- * column regardless of the active theme. */
+/* Stage 6 (Session 85) — production textbook reader styles; Stage 7 Phase 1 Task 14 (D-189 §3 / §6.4):
+ * re-skinned in the A4 参考書改 look, structure unchanged (the Phase 3 redesign — 38em column, side
+ * rail — comes later). Book vocabulary: headings on the 2px dotted spot rule, rows on 1px rule lines,
+ * square spot / ink reverse labels, plain bordered figures. The 7 tokens only (globals.css :root);
+ * radius ≤ 6px; no shadow, no gradient, no pills. Reading text stays 15px / 1.75. */
 
 .page {
   max-width: 760px;
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 4rem;
-  background: #ffffff;
-  color: #1a1a2e;
-  min-height: 100dvh;
+  padding: 32px 0 56px;
+  color: var(--ink);
   line-height: 1.75;
   font-size: 15px;
 }
 
 /* ---- ToC ---- */
 .tocHead {
-  border-bottom: 2px solid #e94560;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 32px;
 }
 .tocTitle {
-  font-size: 1.6rem;
-  font-weight: 800;
   margin: 0;
+  padding-bottom: 8px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.4;
+  border-bottom: 2px dotted var(--spot);
 }
 .tocSub {
-  color: #555;
-  margin: 0.35rem 0 0;
+  margin: 12px 0 0;
 }
 .stats {
-  color: #999;
-  font-size: 0.78rem;
-  margin: 0.5rem 0 0;
+  margin: 4px 0 0;
+  color: var(--ink-muted);
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 .cat {
-  margin: 2rem 0;
+  margin: 40px 0;
 }
+/* the 分野 as a spot reverse label (「ストラテジ系」, DESIGN §3.3) */
 .catTitle {
-  font-size: 1.15rem;
+  display: inline-block;
+  margin: 0 0 18px;
+  padding: 1px 12px;
+  background: var(--spot);
+  color: var(--paper);
+  font-size: 15px;
   font-weight: 700;
-  color: #e94560;
-  border-left: 4px solid #e94560;
-  padding-left: 0.6rem;
-  margin: 0 0 1rem;
+  line-height: 1.6;
 }
 .topic {
-  margin: 0 0 1.5rem;
+  margin: 0 0 28px;
 }
 .topicName {
-  font-size: 1rem;
+  margin: 0;
+  font-size: 16px;
   font-weight: 700;
-  margin: 0 0 0.15rem;
 }
 .topicMeta {
-  font-size: 0.74rem;
-  color: #aaa;
-  margin: 0 0 0.5rem;
+  margin: 0;
+  padding-bottom: 6px;
+  border-bottom: 2px dotted var(--spot);
+  color: var(--ink-muted);
+  font-size: 12px;
 }
 .units {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
 }
 .unitLink {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.55rem 0.75rem;
-  border: 1px solid #eee;
-  border-radius: 8px;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
   text-decoration: none;
-  color: #1a1a2e;
-  transition:
-    background 0.12s,
-    border-color 0.12s;
 }
-.unitLink:hover {
-  background: #fafafc;
-  border-color: #e94560;
+.unitLink:hover .unitTitle {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--spot);
+}
+.unitLink:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 .unitTitle {
   flex: 1;
-  font-weight: 600;
+  min-width: 0;
+  font-weight: 700;
 }
 .terms {
-  color: #bbb;
-  font-size: 0.72rem;
+  color: var(--ink-muted);
+  font-size: 12px;
   white-space: nowrap;
 }
 /* D-180 Task 12: reserved width, so the mark appearing after load does not
@@ -99,75 +101,85 @@
 .readMark {
   min-width: 4.5em;
   text-align: right;
-  color: #2a7a4b;
-  font-size: 0.72rem;
-  font-weight: 600;
+  color: var(--ink-muted);
+  font-size: 12px;
+  font-weight: 700;
   white-space: nowrap;
 }
+/* 頻出 / 標準 / 低頻: a square spot-ruled tag (not a pill) */
 .badge {
   display: inline-block;
-  font-size: 0.68rem;
+  padding: 0 6px;
+  border: 1px solid var(--rule-spot);
+  color: var(--spot);
+  font-size: 12px;
   font-weight: 700;
-  padding: 0.12rem 0.5rem;
-  border-radius: 999px;
-  background: #fdeef1;
-  color: #e94560;
+  line-height: 1.6;
   white-space: nowrap;
 }
 
 /* ---- unit ---- */
 .back {
   display: inline-block;
-  color: #e94560;
+  margin-bottom: 12px;
+  color: var(--ink-muted);
+  font-size: 13px;
   text-decoration: none;
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
 }
 .back:hover {
+  color: var(--ink);
   text-decoration: underline;
 }
+.back:focus-visible,
+.termLink:focus-visible,
+.pagerBtn:focus-visible,
+.practiceLink a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
 .h1 {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin: 0 0 0.5rem;
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  font-size: 26px;
+  font-weight: 700;
   line-height: 1.45;
+  border-bottom: 2px dotted var(--spot);
 }
 .meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 6px 14px;
   margin: 0 0 1.5rem;
-  font-size: 0.78rem;
-  color: #888;
+  font-size: 13px;
+  color: var(--ink-muted);
 }
 /* D-181 Phase C: the 「AI 先生に聞く」 button under the title. */
 .askSensei {
   margin: -0.75rem 0 1.5rem;
 }
 .metaTopic {
-  color: #bbb;
+  color: var(--ink-muted);
 }
 .section {
-  margin: 2rem 0;
+  margin: 40px 0 0;
 }
 .sectionTitle {
-  font-size: 1.1rem;
+  margin: 0 0 16px;
+  padding-bottom: 6px;
+  font-size: 17px;
   font-weight: 700;
-  color: #e94560;
-  border-bottom: 1px solid #f0d4da;
-  padding-bottom: 0.3rem;
-  margin: 0 0 1rem;
+  border-bottom: 2px dotted var(--spot);
 }
 .intro {
   margin: 0;
 }
 .term {
-  /* clears the sticky 57px top nav when landing on #<term id> */
-  scroll-margin-top: 4.5rem;
-  margin: 0 0 1.5rem;
-  padding: 0 0 1.25rem;
-  border-bottom: 1px dashed #eee;
+  /* a little air above the term when landing on #<term id> (the glossary's link) */
+  scroll-margin-top: 1.5rem;
+  margin: 0 0 20px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid var(--rule);
 }
 .term:last-child {
   border-bottom: none;
@@ -188,27 +200,28 @@
   margin: 0;
 }
 .termJp {
-  font-size: 1.05rem;
-  font-weight: 800;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--spot);
 }
 .termGloss {
-  font-size: 0.9rem;
-  color: #888;
-  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-muted);
 }
 .termLink {
   margin-left: auto;
-  color: #e94560;
-  text-decoration: none;
-  font-size: 0.75rem;
-  font-weight: 600;
+  color: var(--ink);
+  font-size: 13px;
   white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--ink-muted);
 }
 .termLink:hover {
-  text-decoration: underline;
+  text-decoration-color: var(--ink);
 }
 .def {
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 0.6rem;
 }
 .prose {
@@ -217,23 +230,25 @@
 .analogy,
 .hook {
   margin: 0 0 0.5rem;
-  background: #faf7f8;
-  border-radius: 6px;
-  padding: 0.5rem 0.7rem;
+  padding: 2px 0 2px 12px;
+  border-left: 2px solid var(--rule-spot);
 }
+/* たとえ / 記憶フック: a small spot reverse label */
 .fieldLabel {
   display: inline-block;
-  font-size: 0.68rem;
+  margin-right: 8px;
+  padding: 0 6px;
+  background: var(--spot);
+  color: var(--paper);
+  font-size: 12px;
   font-weight: 700;
-  color: #e94560;
-  margin-right: 0.5rem;
+  line-height: 1.6;
 }
 .figure {
   margin: 1rem 0 0;
-  padding: 1rem;
-  background: #fcfcfd;
-  border: 1px solid #eee;
-  border-radius: 8px;
+  padding: 16px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
   overflow-x: auto;
   text-align: center;
 }
@@ -242,10 +257,9 @@
   height: auto;
 }
 .subhead {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #555;
   margin: 1rem 0 0.4rem;
+  font-size: 14px;
+  font-weight: 700;
 }
 .list {
   margin: 0;
@@ -275,16 +289,14 @@
 .pagerBtn {
   flex: 1;
   max-width: 48%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #eee;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  font-size: 13px;
   text-decoration: none;
-  color: #1a1a2e;
-  font-size: 0.82rem;
 }
 .pagerBtn:hover {
-  border-color: #e94560;
-  background: #fafafc;
+  border-color: var(--ink);
 }
 .pagerNext {
   text-align: right;

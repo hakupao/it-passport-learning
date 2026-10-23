@@ -63,7 +63,7 @@ export function KeySettings({ onChange }: { onChange?: (hasKey: boolean) => void
 
   return (
     <section className="space-y-2" data-testid="sensei-key-settings">
-      <h2 className="text-base font-semibold">{t("keyTitle")}</h2>
+      <h2 className="text-base font-bold">{t("keyTitle")}</h2>
       <form onSubmit={save} className="flex gap-2">
         <label htmlFor={inputId} className="sr-only">
           {t("keyLabel")}
@@ -82,7 +82,7 @@ export function KeySettings({ onChange }: { onChange?: (hasKey: boolean) => void
         </Button>
       </form>
       {saveFailed && (
-        <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800" data-testid="sensei-key-save-failed">
+        <p role="alert" className="border border-spot bg-tint p-2 text-sm text-ink" data-testid="sensei-key-save-failed">
           {t("keySaveFailed")}
         </p>
       )}

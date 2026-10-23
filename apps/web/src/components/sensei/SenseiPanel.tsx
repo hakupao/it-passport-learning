@@ -188,7 +188,7 @@ export function SenseiPanel({
         <DialogOverlay />
         <DialogPrimitive.Content
           data-testid="sensei-panel"
-          className="fixed inset-0 z-50 flex flex-col bg-background text-foreground shadow-lg outline-none sm:inset-y-0 sm:right-0 sm:left-auto sm:w-[28rem] sm:max-w-full sm:border-l"
+          className="fixed inset-0 z-50 flex flex-col border-t-4 border-t-ink bg-paper text-ink outline-none sm:inset-y-0 sm:right-0 sm:left-auto sm:w-[28rem] sm:max-w-full sm:border-l sm:border-l-rule"
           onOpenAutoFocus={(e) => {
             e.preventDefault();
             inputRef.current?.focus();
@@ -210,10 +210,10 @@ export function SenseiPanel({
             });
           }}
         >
-          <header className="flex shrink-0 items-start gap-2 border-b p-3">
+          <header className="flex shrink-0 items-start gap-2 border-b border-rule p-3">
             <div className="min-w-0 flex-1">
-              <DialogTitle className="text-base">{t("panelTitle")}</DialogTitle>
-              <DialogDescription className="truncate text-xs opacity-70">{anchor.title}</DialogDescription>
+              <DialogTitle className="text-base font-bold">{t("panelTitle")}</DialogTitle>
+              <DialogDescription className="truncate text-xs text-ink-muted">{anchor.title}</DialogDescription>
             </div>
             <Button
               type="button"
@@ -245,7 +245,7 @@ export function SenseiPanel({
 
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3">
             {!s.hasKey || settingsOpen ? (
-              <div className="rounded-md border p-3">
+              <div className="border border-rule p-3">
                 {!s.hasKey ? (
                   <p className="mb-2 text-sm font-semibold" data-testid="sensei-key-missing">
                     {t("keyMissing")}
@@ -264,7 +264,7 @@ export function SenseiPanel({
               onClick={onLogClick}
             >
               {s.messages.length === 0 && !generating ? (
-                <p className="text-sm opacity-70">
+                <p className="text-sm text-ink-muted">
                   {t(review ? "reviewEmptyHint" : free ? "freeEmptyHint" : "emptyHint")}
                 </p>
               ) : null}
@@ -272,7 +272,7 @@ export function SenseiPanel({
                 const text = textOf(m);
                 if (text === "") return null;
                 return m.role === "user" ? (
-                  <div key={m.id} data-role="user" className="ml-8 rounded-md bg-black/5 p-2 text-sm dark:bg-white/10">
+                  <div key={m.id} data-role="user" className="ml-8 bg-tint p-2 text-sm">
                     <span className="sr-only">{t("you")}: </span>
                     <p className="whitespace-pre-wrap">{text}</p>
                   </div>
@@ -284,7 +284,7 @@ export function SenseiPanel({
                 );
               })}
               {thinking ? (
-                <p className="text-sm opacity-70" data-testid="sensei-thinking">
+                <p className="text-sm text-ink-muted" data-testid="sensei-thinking">
                   {t("thinking")}
                 </p>
               ) : null}
@@ -293,14 +293,14 @@ export function SenseiPanel({
             {s.error ? (
               <p
                 role="alert"
-                className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800"
+                className="border border-spot bg-tint p-2 text-sm text-ink"
                 data-testid="sensei-error"
               >
                 {errorText(s.error)}
               </p>
             ) : null}
             {s.saveFailed ? (
-              <p role="status" className="text-xs opacity-70" data-testid="sensei-save-failed">
+              <p role="status" className="text-xs text-ink-muted" data-testid="sensei-save-failed">
                 {t("saveFailed")}
               </p>
             ) : null}
@@ -308,7 +308,7 @@ export function SenseiPanel({
           </div>
 
           <form
-            className="shrink-0 space-y-2 border-t p-3"
+            className="shrink-0 space-y-2 border-t border-rule p-3"
             onSubmit={(e) => {
               e.preventDefault();
               send();
@@ -331,7 +331,7 @@ export function SenseiPanel({
               id="sensei-input"
               ref={inputRef}
               rows={3}
-              className="w-full resize-none rounded-md border bg-transparent p-2 text-sm"
+              className="w-full resize-none rounded-none border-[1.5px] border-ink bg-paper p-2 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
               placeholder={t(review ? "reviewPlaceholder" : free ? "freeFollowUpPlaceholder" : "inputPlaceholder")}
               aria-describedby="sensei-input-hint"
               value={input}
@@ -344,7 +344,7 @@ export function SenseiPanel({
               }}
             />
             <div className="flex items-center justify-between gap-2">
-              <span id="sensei-input-hint" className="text-xs opacity-70">
+              <span id="sensei-input-hint" className="text-xs text-ink-muted">
                 {t("sendHint")}
               </span>
               {generating ? (

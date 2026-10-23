@@ -111,3 +111,10 @@ describe("SenseiHome SSR", () => {
     expect(html).not.toContain('data-testid="sensei-threads-empty"');
   });
 });
+
+describe("SenseiHome landmark (Task 14)", () => {
+  it("owns exactly one <main> (AppShell's content frame is a plain div)", () => {
+    const { html } = render("ja");
+    expect(html.match(/<main[\s>]/g) ?? []).toHaveLength(1);
+  });
+});

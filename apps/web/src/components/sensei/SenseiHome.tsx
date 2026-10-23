@@ -175,10 +175,10 @@ function SenseiHomeBody({
   const canSend = hasKey && !pending && question.trim() !== "";
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8 px-4 py-6">
-      <header className="space-y-1">
-        <h1 className="text-xl font-bold">{t("panelTitle")}</h1>
-        <p className="text-sm opacity-70">{t("pageIntro")}</p>
+    <main className="mx-auto max-w-3xl space-y-10 pt-8 pb-14 text-ink">
+      <header>
+        <h1 className="border-b-2 border-dotted border-spot pb-2 text-[28px] leading-snug font-bold">{t("panelTitle")}</h1>
+        <p className="mt-3 text-sm">{t("pageIntro")}</p>
       </header>
 
       <div className="space-y-2">
@@ -186,7 +186,7 @@ function SenseiHomeBody({
         {!hasKey && (
           <p className="text-sm" data-testid="sensei-key-howto">
             {t("keyHowTo")}{" "}
-            <a href={KEYS_URL} target="_blank" rel="noopener noreferrer" className="underline">
+            <a href={KEYS_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-[3px] decoration-ink-muted hover:decoration-ink">
               {t("keyHowToLink")}
             </a>
           </p>
@@ -194,42 +194,42 @@ function SenseiHomeBody({
       </div>
 
       <section className="space-y-2" aria-labelledby="sensei-threads-title">
-        <h2 id="sensei-threads-title" className="text-base font-semibold">
+        <h2 id="sensei-threads-title" className="border-b-2 border-dotted border-spot pb-1.5 text-[17px] font-bold">
           {t("threadsTitle")}
         </h2>
-        <p className="text-xs opacity-70">{t("threadsNote", { max: MAX_THREADS })}</p>
+        <p className="text-xs text-ink-muted">{t("threadsNote", { max: MAX_THREADS })}</p>
         {failedAt === "threads" ? (
-          <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800" data-testid="sensei-reopen-failed">
+          <p role="alert" className="border border-spot bg-tint p-2 text-sm text-ink" data-testid="sensei-reopen-failed">
             {t("freeTermsFailed")}
           </p>
         ) : null}
         {failedAt === "threadMissing" ? (
-          <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800" data-testid="sensei-thread-missing">
+          <p role="alert" className="border border-spot bg-tint p-2 text-sm text-ink" data-testid="sensei-thread-missing">
             {t("threadMissing")}
           </p>
         ) : null}
         {threads !== null && threads.length === 0 && (
-          <p className="text-sm opacity-70" data-testid="sensei-threads-empty">
+          <p className="text-sm text-ink-muted" data-testid="sensei-threads-empty">
             {t("threadsEmpty")}
           </p>
         )}
         {threads !== null && threads.length > 0 && (
-          <ul className="divide-y rounded-md border" data-testid="sensei-threads">
+          <ul className="divide-y divide-rule border-b border-rule" data-testid="sensei-threads">
             {threads.map((th) => {
               const href = THREAD_HREF[th.kind](th.anchorId);
               return (
-                <li key={th.id} className="flex items-center gap-3 p-3" data-testid="sensei-thread">
+                <li key={th.id} className="flex items-center gap-3 py-3" data-testid="sensei-thread">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
+                    <p className="truncate text-sm font-bold">
                       {href ? (
-                        <Link href={href} className="underline">
+                        <Link href={href} className="underline underline-offset-[3px] decoration-ink-muted hover:decoration-ink">
                           {th.title}
                         </Link>
                       ) : th.kind === "free" ? (
                         <button
                           type="button"
                           aria-haspopup="dialog"
-                          className="max-w-full truncate text-left underline"
+                          className="max-w-full truncate text-left underline underline-offset-[3px] decoration-ink-muted hover:decoration-ink"
                           data-testid="sensei-thread-open"
                           onClick={(e) => void reopen(th, e.currentTarget)}
                         >
@@ -239,7 +239,7 @@ function SenseiHomeBody({
                         th.title
                       )}
                     </p>
-                    <p className="text-xs opacity-70">
+                    <p className="text-xs text-ink-muted">
                       <span>{t(`kind_${th.kind}`)}</span>
                       {" · "}
                       <time dateTime={th.updatedAt}>{formatTime(th.updatedAt, locale)}</time>
@@ -261,10 +261,10 @@ function SenseiHomeBody({
         )}
       </section>
       <section className="space-y-2" aria-labelledby="sensei-free-title">
-        <h2 id="sensei-free-title" className="text-base font-semibold">
+        <h2 id="sensei-free-title" className="border-b-2 border-dotted border-spot pb-1.5 text-[17px] font-bold">
           {t("freeTitle")}
         </h2>
-        <p id={`${freeId}-hint`} className="text-xs opacity-70">
+        <p id={`${freeId}-hint`} className="text-xs text-ink-muted">
           {t("freeHint")}
         </p>
         <form
@@ -285,7 +285,7 @@ function SenseiHomeBody({
             data-testid="sensei-free-input"
             placeholder={t("freePlaceholder")}
             aria-describedby={`${freeId}-hint`}
-            className="w-full resize-none rounded-md border bg-transparent p-2 text-sm"
+            className="w-full resize-none rounded-none border-[1.5px] border-ink bg-paper p-2 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
             readOnly={pending}
             value={question}
             onFocus={preloadPanel}
@@ -298,12 +298,12 @@ function SenseiHomeBody({
             }}
           />
           {failedAt === "free" ? (
-            <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800" data-testid="sensei-free-failed">
+            <p role="alert" className="border border-spot bg-tint p-2 text-sm text-ink" data-testid="sensei-free-failed">
               {t("freeTermsFailed")}
             </p>
           ) : null}
           <div className="flex items-center justify-between gap-2">
-            <span id={`${freeId}-send-note`} className="text-xs opacity-70">
+            <span id={`${freeId}-send-note`} className="text-xs text-ink-muted">
               {hasKey ? t("sendHint") : t("keyMissing")}
             </span>
             <Button
@@ -317,7 +317,6 @@ function SenseiHomeBody({
           </div>
         </form>
       </section>
-
-    </div>
+    </main>
   );
 }
