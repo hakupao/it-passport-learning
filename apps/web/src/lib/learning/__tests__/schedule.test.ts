@@ -195,6 +195,20 @@ describe("reviewState / classify (DESIGN §5.4)", () => {
     expect(s.dueDay).toBe(D0 + (fnv1a32(QID) % 14));
   });
 
+  it("v1 spread never makes a v1 answer from today due today: due = max(day(v2Since) + hash % 14, firstDay + 1)", () => {
+    const ids = Array.from({ length: 200 }, (_, n) => `2009h21a-q${String(n + 1).padStart(3, "0")}`);
+    const zero = ids.find((id) => fnv1a32(id) % 14 === 0)!;
+    const five = ids.find((id) => fnv1a32(id) % 14 === 5)!;
+    const since = at(D0, 12);
+    // v1 answer made this morning, migration at noon the same day
+    const s0 = st([att(at(D0, 8), true, "v1")], since, zero);
+    expect(s0.dueDay).toBe(D0 + 1);
+    expect(classify(s0, D0)).toBe("scheduled");
+    expect(st([att(at(D0, 8), true, "v1")], since, five).dueDay).toBe(D0 + 5);
+    // an older v1 answer keeps the plain spread (day 0 of the 14)
+    expect(st([att(at(D0 - 3, 8), true, "v1")], since, zero).dueDay).toBe(D0);
+  });
+
   it("v1 wrong → normal: box 0, due the next day (already past → in the mistake queue)", () => {
     const s = st([att(at(D0, 8), false, "v1")], at(D0 + 30));
     expect(s.box).toBe(0);
@@ -397,12 +411,63 @@ describe("dailyPlan (§0-6 / §0-7, DESIGN §5.4 每日量)", () => {
     expect(plan.reviewedToday).toBe(0);
     expect(plan.fresh).toHaveLength(6);
     for (const id of plan.fresh) expect(r.attempts[id]).toBeUndefined();
-    expect(plan.fresh).toEqual(pickNew(r, pool, 6, key));
+    // the start-of-day pick (all 4 count as unanswered then), shortened by the new answers made outside it
+    const base = pickNew(emptyRecord(), pool, 10, key);
+    const inBase = base.filter((id) => r.attempts[id] !== undefined).length;
+    expect(plan.fresh).toEqual(base.slice(0, 10 - (4 - inBase)).filter((id) => r.attempts[id] === undefined));
     // target reached → no fresh; target 0 → no fresh
     const done = withAttempts(r, ids.slice(4, 12).map((id): [string, Attempt[]] => [id, [att(at(today, 11), true)]]));
     expect(dailyPlan(done, pool, today, toDay, key).fresh).toEqual([]);
     const zero = setSetting(emptyRecord(), "dailyNewTarget", 0, at(today));
     expect(dailyPlan(zero, pool, today, toDay, key).fresh).toEqual([]);
+  });
+
+  it("fresh after answering 3 of today's picks = the original list minus those 3, same order", () => {
+    // 63 topics × 46 = 2898 questions, 20 chumon groups of 4, ~400 answered before today
+    const big0 = balancedPool(21, 46);
+    const groups: Record<string, string[]> = {};
+    Object.values(big0.topicQuestionIds)
+      .slice(0, 20)
+      .forEach((qs) => (groups[qs[0]!] = qs.slice(0, 4)));
+    const big: QuestionPool = { ...big0, groups };
+    const all = Object.values(big.topicQuestionIds).flat();
+    const rand = mulberry32(11);
+    const before = new Set<string>();
+    while (before.size < 400) before.add(all[Math.floor(rand() * all.length)]!);
+    const r0 = withAttempts(
+      emptyRecord(),
+      [...before].map((id): [string, Attempt[]] => [id, [att(at(today - 1 - Math.floor(rand() * 60)), rand() < 0.7)]]),
+    );
+    const plan0 = dailyPlan(r0, big, today, toDay, key);
+    expect(plan0.fresh.length).toBeGreaterThanOrEqual(10);
+    const unanswered = plan0.fresh.filter((id) => r0.attempts[id] === undefined);
+    const done = [unanswered[0]!, unanswered[2]!, unanswered[4]!];
+    const r1 = withAttempts(
+      r0,
+      done.map((id, i): [string, Attempt[]] => [id, [att(at(today, 9, i), i !== 1)]]),
+    );
+    const plan1 = dailyPlan(r1, big, today, toDay, key);
+    expect(plan1.newToday).toBe(3);
+    expect(plan1.fresh).toEqual(plan0.fresh.filter((id) => !done.includes(id)));
+    // refreshing again the same day gives the same list
+    expect(dailyPlan(r1, big, today, toDay, key).fresh).toEqual(plan1.fresh);
+  });
+
+  it("record ids outside the pool are skipped (never occupy the cap or the counts)", () => {
+    const ghosts = Array.from({ length: 40 }, (_, i) => `1999x99-q${String(i + 1).padStart(3, "0")}`);
+    const r = withAttempts(emptyRecord(), [
+      ...ghosts.map((id, i): [string, Attempt[]] => [id, [att(at(today - 2 - i), false)]]),
+      [ghosts[0]!.replace("q001", "q900"), [att(at(today, 9), true)]],
+      [`${ghosts[1]!}x`, [att(at(today - 5), false), att(at(today, 9), true)]],
+      [ids[0]!, [att(at(today - 3), false)]],
+      [ids[1]!, [att(at(today - 9), true)]],
+    ]);
+    const plan = dailyPlan(r, pool, today, toDay, key);
+    expect(plan.mistakes).toEqual([ids[0]]);
+    expect(plan.due).toEqual([ids[1]]);
+    expect(plan.newToday).toBe(0);
+    expect(plan.reviewedToday).toBe(0);
+    expect(plan.fresh).toHaveLength(10);
   });
 
   it("lists are disjoint and contain only due / mistake questions", () => {

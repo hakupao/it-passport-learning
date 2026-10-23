@@ -12,8 +12,9 @@
 //     box 5 = mastered, dueDay null.
 //   - v1 spread (§0-6 / §5.5): when the earliest attempt is `src:"v1"`, correct
 //     and `at < v2Since` (or v2Since absent), its due = toDay(v2Since ?? at) +
-//     fnv1a32(qid) % 14 instead of +7, so old correct answers spread over the two
-//     weeks after migration. Any later counted day schedules normally.
+//     fnv1a32(qid) % 14 (but at least the day after that answer) instead of +7,
+//     so old correct answers spread over the two weeks after migration. Any
+//     later counted day schedules normally.
 //   - mistake = some counted day was wrong and fewer than 2 counted correct days
 //     follow the last wrong day. leech = >= LEECH_WRONG wrong attempts among the
 //     stored window (all of them, same-day repeats included) — a flag, not a class.
@@ -23,6 +24,12 @@
 // attempt before today; newToday = questions whose first attempt is today.
 // Today's review queue = mistakes due <= today, then due reviews, each by
 // (dueDay asc, qid asc), together capped at max(0, cap − reviewedToday).
+// Only questions in the pool count (record ids outside the corpus are skipped).
+// New questions = pickNew over the record as of the start of today (questions
+// first answered today count as unanswered) with n = target, minus the ones
+// answered today — the list stays the same all day and only shrinks as it is
+// worked through (§0-9); new answers made outside it shorten it from the end
+// (whole groups), so it never exceeds the remaining quota.
 // Chumon groups are not expanded in the review lists (the task-row href does
 // that, §0-26); new questions come from pickNew, which does expand (§0-8).
 //
@@ -94,7 +101,10 @@ export function reviewState(
     }
     lastDay = day;
     if (box === MASTERED_BOX) dueDay = null;
-    else if (a === first && v1Spread) dueDay = toDay(v2Since ?? a.at) + (fnv1a32(qid) % V1_SPREAD_DAYS);
+    else if (a === first && v1Spread) {
+      // never due on the day of the v1 answer itself (a v1 answer made on the migration day)
+      dueDay = Math.max(toDay(v2Since ?? a.at) + (fnv1a32(qid) % V1_SPREAD_DAYS), day + 1);
+    }
     else dueDay = day + BOX_INTERVALS[box];
   }
   const wrongInWindow = attempts.reduce((n, a) => (a.correct ? n : n + 1), 0);
@@ -114,8 +124,8 @@ export type ReviewClass = "mistake" | "due" | "scheduled" | "mastered";
 /** The one class of an answered question on `today` (DESIGN §5.4 table). */
 export function classify(s: ReviewState, today: number): ReviewClass {
   if (s.isMistake) return "mistake";
-  if (s.box === MASTERED_BOX || s.dueDay === null) return "mastered";
-  return s.dueDay <= today ? "due" : "scheduled";
+  if (s.box === MASTERED_BOX) return "mastered";
+  return s.dueDay! <= today ? "due" : "scheduled"; // dueDay is set below box 5
 }
 
 export interface QuestionPool {
@@ -154,12 +164,14 @@ export function dailyPlan(
   const newTarget = settingValue(r, "dailyNewTarget");
   const mistakes: { id: string; due: number }[] = [];
   const due: { id: string; due: number }[] = [];
+  const inPool = new Set(Object.values(pool.topicQuestionIds).flat());
+  const newTodayIds = new Set<string>();
   let reviewedToday = 0;
-  let newToday = 0;
   for (const [qid, list] of Object.entries(r.attempts)) {
+    if (!inPool.has(qid)) continue;
     const s = reviewState(list, r.v2Since, qid, toDay);
     if (s === null) continue;
-    if (s.firstDay === today) newToday++;
+    if (s.firstDay === today) newTodayIds.add(qid);
     else if (list.some((a) => toDay(a.at) === today)) reviewedToday++;
     const cls = classify(s, today);
     if (s.dueDay === null || s.dueDay > today) continue;
@@ -171,15 +183,47 @@ export function dailyPlan(
   const room = Math.max(0, reviewCap - reviewedToday);
   const takenMistakes = mistakes.slice(0, room).map((x) => x.id);
   const takenDue = due.slice(0, room - takenMistakes.length).map((x) => x.id);
+  const newToday = newTodayIds.size;
   return {
     mistakes: takenMistakes,
     due: takenDue,
-    fresh: pickNew(r, pool, Math.max(0, newTarget - newToday), dateKey),
+    fresh: freshToday(r, pool, newTarget, newTodayIds, dateKey),
     reviewedToday,
     newToday,
     reviewCap,
     newTarget,
   };
+}
+
+/** Today's new questions: the start-of-day pick minus what was answered from it (see header). */
+function freshToday(
+  r: LearningRecord,
+  pool: QuestionPool,
+  target: number,
+  newTodayIds: ReadonlySet<string>,
+  dateKey: string,
+): string[] {
+  if (target - newTodayIds.size <= 0) return [];
+  const startOfDay: LearningRecord = {
+    ...r,
+    attempts: Object.fromEntries(Object.entries(r.attempts).filter(([qid]) => !newTodayIds.has(qid))),
+  };
+  const base = pickNew(startOfDay, pool, target, dateKey);
+  // new answers made outside the start-of-day list use up quota too
+  const quota = target - (newTodayIds.size - base.filter((id) => newTodayIds.has(id)).length);
+  const byId = groupIndex(pool.groups);
+  const out: string[] = [];
+  let consumed = 0;
+  for (let i = 0; i < base.length && consumed < quota; ) {
+    // one unit = a run of members of the same group (pickNew takes groups whole), else one id
+    const group = byId.get(base[i]!);
+    let j = i + 1;
+    while (j < base.length && group !== undefined && byId.get(base[j]!) === group) j++;
+    for (const id of base.slice(i, j)) if (!newTodayIds.has(id)) out.push(id);
+    consumed += j - i;
+    i = j;
+  }
+  return out;
 }
 
 const groupIndex = (groups: Record<string, string[]>): Map<string, string[]> => {
