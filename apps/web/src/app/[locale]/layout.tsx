@@ -1,6 +1,7 @@
 // Phase 2 Step 12 — [locale] segment layout (D-099 §2.5 LD-7).
-// Stage 10 update — wraps children in ShellProvider; NavTabs/SkipLink
-// removed (navigation is now owned by each shell chrome).
+// Stage 7 Task 7 (D-189 §3.4) — wraps children in the single server-rendered
+// AppShell (replaces Stage 10's ShellProvider + three theme shells). No cookies
+// are read here: the layout must stay static.
 //
 // Owns the <html> + <body> + NextIntlClientProvider chain so client components
 // nested under /ja /zh /en have a locale context. The root app/layout.tsx is
@@ -11,7 +12,7 @@
 // useTranslations(), losing the static optimization on /[locale]/page.tsx.
 
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
+import { BIZ_UDPGothic, Noto_Sans_SC } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -19,24 +20,26 @@ import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-import { ShellProvider } from "@/components/shells/ShellProvider";
+import { AppShell } from "@/components/app/AppShell";
 import { routing } from "@/i18n/routing";
 
 import "../globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// D-189 §3.2: BIZ UDPGothic site-wide; Noto Sans SC covers the simplified-Chinese
+// glyphs BIZ UD lacks. CJK files are large and Google serves them in unicode-range
+// slices, so no preload (preload: false also lifts the subsets requirement).
+const bizUDPGothic = BIZ_UDPGothic({
+  weight: ["400", "700"],
+  variable: "--font-biz",
+  display: "swap",
+  preload: false,
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  subsets: ["latin"],
+const notoSansSC = Noto_Sans_SC({
+  weight: ["400", "700"],
+  variable: "--font-sc",
+  display: "swap",
+  preload: false,
 });
 
 export const viewport: Viewport = {
@@ -73,13 +76,9 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} antialiased`}
-      >
+      <body className={`${bizUDPGothic.variable} ${notoSansSC.variable} antialiased`}>
         <NextIntlClientProvider>
-          <ShellProvider>
-            {children}
-          </ShellProvider>
+          <AppShell locale={locale}>{children}</AppShell>
           <Analytics />
           <SpeedInsights />
         </NextIntlClientProvider>

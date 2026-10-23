@@ -1,35 +1,60 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@layer base {
-  :root {
-    --radius: 0.5rem;
-  }
-}
-
+/* D-189 §3.1 (A4 参考書改): the only colours. Every component references these
+   tokens (directly, or through the Tailwind / shadcn names mapped below).
+   One theme only; no dark mode in this round. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #1B2A4A;
+  --ink-muted: #5A6680;
+  --spot: #B8501A;
+  --tint: #FBF0E8;
+  --paper: #FFFFFF;
+  --rule: #D5DAE3;
+  --rule-spot: #E4D3C6;
+  /* radius stays within 0〜6px */
+  --radius: 4px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-spot: var(--spot);
+  --color-tint: var(--tint);
+  --color-paper: var(--paper);
+  --color-rule: var(--rule);
+  --color-rule-spot: var(--rule-spot);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* shadcn names used by src/components/ui/* and a few page components */
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --color-primary: var(--ink);
+  --color-primary-foreground: var(--paper);
+  --color-secondary: var(--tint);
+  --color-secondary-foreground: var(--ink);
+  --color-accent: var(--tint);
+  --color-accent-foreground: var(--ink);
+  --color-muted: var(--tint);
+  --color-muted-foreground: var(--ink-muted);
+  --color-destructive: var(--spot);
+  --color-popover: var(--paper);
+  --color-popover-foreground: var(--ink);
+  --color-card: var(--paper);
+  --color-card-foreground: var(--ink);
+  --color-border: var(--rule);
+  --color-input: var(--rule);
+  --color-ring: var(--ink);
+
+  /* D-189 §3.2: BIZ UDPGothic, simplified-Chinese fallback Noto Sans SC, then system */
+  --font-sans: var(--font-biz), var(--font-sc), system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.75;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
 }
@@ -42,41 +67,4 @@ body {
   --tw-prose-code: currentColor;
   --tw-prose-counters: currentColor;
   --tw-prose-bullets: currentColor;
-}
-
-@layer utilities {
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  /* Shell nav rows (useNavScroll): fade the edge that has more items. */
-  .nav-fade[data-fade="right"] {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
-  }
-  .nav-fade[data-fade="left"] {
-    -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 1.5rem), transparent);
-    mask-image: linear-gradient(to left, #000 calc(100% - 1.5rem), transparent);
-  }
-  .nav-fade[data-fade="both"] {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 1.5rem, #000 calc(100% - 1.5rem), transparent);
-    mask-image: linear-gradient(to right, transparent, #000 1.5rem, #000 calc(100% - 1.5rem), transparent);
-  }
-  .border-outset-retro {
-    border-style: solid;
-    border-color: #ffffff #808080 #808080 #ffffff;
-  }
-  .border-inset-retro {
-    border-style: solid;
-    border-color: #808080 #ffffff #ffffff #808080;
-  }
-  .shadow-retro {
-    box-shadow: 1px 1px 0 0 #000;
-  }
 }

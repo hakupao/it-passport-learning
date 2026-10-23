@@ -502,7 +502,7 @@ for (const theme of ["gamified", "retro", "terminal"] as const) {
     await expect(items).toHaveCount(4);
     const item = items.nth(3);
     await expect(item).toHaveAttribute("href", SENSEI_URL);
-    await expect(item).toHaveText(ja.Nav.sensei);
+    await expect(item).toHaveText("AI 先生");
     await item.click();
     await expect(page).toHaveURL(new RegExp(`${SENSEI_URL}$`));
     await expect(page.locator(`[data-shell="${theme}"] nav a[href="${SENSEI_URL}"]`)).toHaveAttribute("aria-current", "page");

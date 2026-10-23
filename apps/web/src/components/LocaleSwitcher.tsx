@@ -1,61 +1,62 @@
-// Phase 2 Step 12 — <LocaleSwitcher /> dropdown (D-099 §2.5 LD-3).
+// UI-language switch, rendered as text links `日 / 中 / EN` (Stage 7 Task 7,
+// D-189 §3.4; was a <select> dropdown, D-099 §2.5 LD-3).
 //
-// Switches locale via `router.replace(pathname, {locale})` from next-intl so
-// the active route stays the same and only the [locale] prefix changes
-// (/ja/glossary → /zh/glossary). useSearchParams() preserves the query string
-// (e.g. /ja/quiz?mode=exam&id=… → /zh/quiz?mode=exam&id=…) across the switch.
+// Same mechanics as before: a `replace` navigation to the same route in the other
+// locale (/ja/glossary → /zh/glossary) with the query string kept
+// (/ja/quiz?mode=exam&id=… → /zh/quiz?mode=exam&id=…). next-intl's <Link locale>
+// does the locale-prefix rewrite; the links also work without JS.
 //
-// Renders as a native <select> for a11y + zero-CSS dropdown styling work; the
-// learning-tool audience is small and a richer combobox is Step 14 polish.
-//
-// Session 46 Step 14 a11y polish:
-//   - Replaced focus:border-black/40 (2.85:1, fails 1.4.11) with uniform
-//     focus-visible ring (LD-4) on the <select> control.
+// useSearchParams() needs a Suspense boundary on static pages: render
+// <LocaleSwitcher /> inside <Suspense fallback={<LocaleSwitcherLinks />}> — the
+// fallback is the same links without the query string.
 
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { type ChangeEvent, useTransition } from "react";
+import { Fragment } from "react";
 
+import styles from "@/components/app/app.module.css";
+import { Link, usePathname } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
-import { usePathname, useRouter } from "@/i18n/navigation";
+
+const SHORT_LABEL: Record<AppLocale, string> = { ja: "日", zh: "中", en: "EN" };
 
 export function LocaleSwitcher(): React.ReactElement {
-  const currentLocale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const tLocale = useTranslations("Locale");
-  const [isPending, startTransition] = useTransition();
+  return <LocaleSwitcherLinks query={searchParams.toString()} />;
+}
 
-  const handleChange = (event: ChangeEvent<HTMLSelectElement>): void => {
-    const nextLocale = event.target.value as AppLocale;
-    if (nextLocale === currentLocale) return;
-    const qs = searchParams.toString();
-    const target = qs ? `${pathname}?${qs}` : pathname;
-    startTransition(() => {
-      router.replace(target, { locale: nextLocale });
-    });
-  };
+export function LocaleSwitcherLinks({ query = "" }: { query?: string }): React.ReactElement {
+  const currentLocale = useLocale();
+  const pathname = usePathname();
+  const tLocale = useTranslations("Locale");
+  const target = query ? `${pathname}?${query}` : pathname;
 
   return (
-    <label className="flex items-center gap-1.5 text-xs sm:text-sm">
-      <span className="sr-only">{tLocale("switcherLabel")}</span>
-      <span aria-hidden="true">🌐</span>
-      <select
-        value={currentLocale}
-        onChange={handleChange}
-        disabled={isPending}
-        aria-label={tLocale("switcherLabel")}
-        className="bg-transparent border border-current/20 rounded-md px-1.5 py-1 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current/40 disabled:opacity-60"
-      >
-        {routing.locales.map((l) => (
-          <option key={l} value={l} className="text-black bg-white">
-            {tLocale(l)}
-          </option>
-        ))}
-      </select>
-    </label>
+    <div role="group" aria-label={tLocale("switcherLabel")} className={styles.locales}>
+      {routing.locales.map((l, i) => (
+        <Fragment key={l}>
+          {i > 0 && <span aria-hidden="true"> / </span>}
+          {l === currentLocale ? (
+            <strong aria-current="true" lang={l} className={styles.localeCurrent}>
+              {SHORT_LABEL[l]}
+            </strong>
+          ) : (
+            <Link
+              href={target}
+              locale={l}
+              replace
+              lang={l}
+              hrefLang={l}
+              aria-label={tLocale(l)}
+              className={styles.localeLink}
+            >
+              {SHORT_LABEL[l]}
+            </Link>
+          )}
+        </Fragment>
+      ))}
+    </div>
   );
 }
