@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { isTableChoice } from "@/components/quiz/QuizRichText";
 import { CHOICE_LETTERS, loadAllQuestions, type QuizQuestion } from "@/lib/quiz/quizReader";
 
-import { choiceLayout, explanationTitle, sourceNumber } from "../choiceLayout";
+import { choiceLayout, explanationTitle, longestUnbreakableRun, sourceNumber, UNBREAKABLE_MIN } from "../choiceLayout";
 
 let QS: QuizQuestion[] = [];
 beforeAll(async () => {
@@ -31,11 +31,11 @@ function fake(choices: string[], extra: Partial<QuizQuestion> = {}): QuizQuestio
 }
 
 describe("choiceLayout (§0-15) on the real corpus", () => {
-  it("counts row4 / grid2 / list (measured S132 Task 8)", () => {
+  it("counts row4 / grid2 / list (measured S132 Task 8; Rule A attempt 2 adds the unbreakable-run rule)", () => {
     const counts = { row4: 0, grid2: 0, list: 0 };
     for (const q of QS) counts[choiceLayout(q)]++;
     expect(QS).toHaveLength(2900);
-    expect(counts).toEqual({ row4: 1225, grid2: 10, list: 1665 });
+    expect(counts).toEqual({ row4: 1140, grid2: 10, list: 1750 });
   });
 
   it("grid2 is exactly the choice_figures questions", () => {
@@ -43,6 +43,41 @@ describe("choiceLayout (§0-15) on the real corpus", () => {
     const figs = QS.filter((q) => q.choice_figures).map((q) => q.id);
     expect(grid).toEqual(figs);
     expect(figs).toHaveLength(10);
+  });
+});
+
+describe("unbreakable runs (Rule A audit attempt 1: 2011h23tokubetsu-q059 overflowed its row4 cells)", () => {
+  it("q059 「①and②and③」-type choices → list", () => {
+    const q = QS.find((x) => x.id === "2011h23tokubetsu-q059")!;
+    expect(longestUnbreakableRun(q.choices_jp["ア"]!)).toBeGreaterThanOrEqual(UNBREAKABLE_MIN);
+    expect(choiceLayout(q)).toBe("list");
+    expect(choiceLayout(fake(["①and②and③", "(①and②)or③", "①or(②and③)", "①or②or③"]))).toBe("list");
+  });
+
+  it("a normal short Japanese row4 question stays row4", () => {
+    expect(choiceLayout(fake(["請負契約", "準委任契約", "派遣契約", "雇用契約"]))).toBe("row4");
+    expect(choiceLayout(fake(["a，b", "a，c", "b，c", "a，b，c"]))).toBe("row4");
+    expect(choiceLayout(fake(["ＡＢＣＤＥＦＧ", "（１）と（５）", "ア", "イ"]))).toBe("row4"); // full-width forms break
+  });
+
+  it("the CJK class: Han / kana / ー・ / CJK punctuation / full-width forms break a run; ASCII, ①, → do not", () => {
+    expect(longestUnbreakableRun("abcde")).toBe(5);
+    expect(longestUnbreakableRun("abcdef")).toBe(6);
+    expect(longestUnbreakableRun("abc def")).toBe(3); // whitespace breaks
+    expect(longestUnbreakableRun("abc　def")).toBe(3); // U+3000
+    expect(longestUnbreakableRun("abc漢def")).toBe(3);
+    expect(longestUnbreakableRun("abcあdefカghiー123・456")).toBe(3);
+    expect(longestUnbreakableRun("abc、def。ghi「jk」")).toBe(3);
+    expect(longestUnbreakableRun("abc，def（ghi）ｶ")).toBe(3);
+    expect(longestUnbreakableRun("①②③④⑤⑥")).toBe(6);
+    expect(longestUnbreakableRun("a→b→c→d")).toBe(7);
+    expect(longestUnbreakableRun("𠀋𠀋𠀋")).toBe(0); // astral Han
+    expect(longestUnbreakableRun("")).toBe(0);
+  });
+
+  it("5 ASCII characters fit row4, 6 do not", () => {
+    expect(choiceLayout(fake(["IPv4a", "a", "b", "c"]))).toBe("row4");
+    expect(choiceLayout(fake(["IPv6ab", "a", "b", "c"]))).toBe("list");
   });
 });
 

@@ -244,14 +244,21 @@
   font-weight: 700;
   line-height: 1;
 }
+/* safety net (Rule A attempt 1): choice text can always wrap inside its cell, in every layout */
+.choices > li {
+  min-width: 0;
+}
 .choiceText {
   flex: 1;
   min-width: 0;
+  overflow-wrap: anywhere;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 .choiceTr {
+  min-width: 0;
+  overflow-wrap: anywhere;
   font-size: 13px;
   color: var(--ink-muted);
 }
@@ -309,7 +316,7 @@
 }
 .choiceTableBody {
   flex: 1;
-  min-width: 0;
+  min-width: 0; /* a table choice scrolls inside its own .tableWrap instead of breaking cells */
   cursor: pointer;
 }
 
