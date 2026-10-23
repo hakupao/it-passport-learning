@@ -1,0 +1,564 @@
+/* Stage 7 Phase 1 Task 8 (D-189 §3 / §6.2) — practice question face + explanation, mockup A4-Practice.
+ * Colours are the 7 tokens only (globals.css :root). Radius ≤ 6px, no shadow, no gradient.
+ * The stem / table / code text keeps QuizRichText's own white-space rules (quiz.module.css):
+ * nothing here may set white-space (pinned by fidelity.test.ts). */
+
+/* ---- question face (tint 平网) ---- */
+.face {
+  background: var(--tint);
+  border-radius: 6px;
+  padding: 26px 28px 30px;
+  min-width: 0;
+  color: var(--ink);
+}
+.face:focus {
+  outline: none;
+}
+.hang {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.qNo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--spot);
+  color: var(--paper);
+  padding: 4px 10px 6px;
+  line-height: 1.15;
+  min-width: 44px;
+}
+.qNoLabel {
+  font-size: 11px;
+}
+.qNoNum {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.recent {
+  display: flex;
+  gap: 2px;
+}
+.cell {
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--spot);
+  background: var(--paper);
+  color: var(--spot);
+  font-size: 10px;
+  line-height: 10px;
+  text-align: center;
+}
+.cell[data-recent="wrong"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.stars {
+  font-size: 11px;
+  color: var(--ink-muted);
+  text-align: center;
+  line-height: 1.3;
+}
+.starMarks {
+  display: block;
+  color: var(--spot);
+}
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* stem: QuizRichText blocks inside; size / leading only */
+.stem p,
+.stemTr p {
+  font-family: inherit;
+  margin: 0 0 0.7em;
+}
+.stem p {
+  font-size: 17px;
+  line-height: 1.95;
+}
+.stem table th,
+.stem table td,
+.stemTr table th,
+.stemTr table td,
+.choiceTableBody table th,
+.choiceTableBody table td {
+  border-color: var(--rule);
+  min-width: 3em; /* narrow face: keep short headers from breaking per character (the wrap scrolls) */
+}
+.stem table th,
+.stemTr table th,
+.choiceTableBody table th {
+  background: var(--paper);
+}
+.stem pre,
+.stemTr pre {
+  background: var(--paper);
+  border-color: var(--rule);
+}
+.preamble {
+  margin: 0 0 10px;
+  border-left: 2px solid var(--rule-spot);
+  padding-left: 10px;
+}
+.preamble > summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+.preamble > summary::-webkit-details-marker {
+  display: none;
+}
+.preamble[open] > summary {
+  margin-bottom: 6px;
+}
+.stemTr {
+  margin: 4px 0 0;
+  padding: 8px 0 0 12px;
+  border-left: 2px solid var(--rule-spot);
+  font-size: 14.5px;
+  line-height: 1.85;
+}
+.stemTr p {
+  font-size: 14.5px;
+  line-height: 1.85;
+}
+
+/* figure: question-face width; click opens the dialog */
+.figure {
+  margin: 14px 0 0;
+}
+.figureBtn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  cursor: zoom-in;
+}
+.figureBtn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.figureImg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+.zoom {
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  padding: 12px;
+  max-width: 96vw;
+  max-height: 94vh;
+  background: var(--paper);
+  color: var(--ink);
+}
+.zoom::backdrop {
+  background: var(--ink);
+  opacity: 0.6;
+}
+.zoomImg {
+  display: block;
+  max-width: 92vw;
+  max-height: 80vh;
+  height: auto;
+}
+.zoomClose {
+  display: block;
+  margin: 10px 0 0 auto;
+  height: 36px;
+  padding: 0 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ---- choices ---- */
+.choices {
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.row4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.grid2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.list {
+  grid-template-columns: minmax(0, 1fr);
+}
+.choice {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--rule-spot);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.choice:hover:not([aria-disabled="true"]) {
+  border-color: var(--spot);
+}
+.choice:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.choice[aria-disabled="true"] {
+  cursor: default;
+}
+.letter {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--spot);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+.choiceText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.choiceTr {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+/* the ○ / × sits on the cell's top-right corner (a stamp), so a short 4-column choice keeps its width */
+.mark {
+  position: absolute;
+  top: -11px;
+  right: -7px;
+  padding: 0 2px;
+  background: var(--paper);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--spot);
+}
+.ring {
+  font-size: 22px;
+  line-height: 1;
+}
+[data-state="picked-wrong"] .choice,
+.choice[data-state="picked-wrong"] {
+  border: 1.5px solid var(--ink);
+}
+[data-state="picked-wrong"] .letter {
+  background: var(--ink);
+}
+[data-state="correct"] .choice,
+.choice[data-state="correct"] {
+  border: 1.5px solid var(--spot);
+}
+/* table choices: the table sits beside the button (flow content is not put in a button) */
+.tableItem {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--rule-spot);
+  background: var(--paper);
+}
+.tableItem[data-state="picked-wrong"] {
+  border: 1.5px solid var(--ink);
+}
+.tableItem[data-state="correct"] {
+  border: 1.5px solid var(--spot);
+}
+.tableItem .choice {
+  position: static;
+  flex: 0 0 auto;
+  width: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.choiceTableBody {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+/* source + translation toggle */
+.meta {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.toggle {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--ink-muted);
+  cursor: pointer;
+}
+.toggle:hover {
+  text-decoration-color: var(--ink);
+}
+
+/* ---- explanation pane ---- */
+.expl {
+  min-width: 0;
+  color: var(--ink);
+}
+.tabRow {
+  text-align: center;
+}
+.tab {
+  display: inline-block;
+  background: var(--spot);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0 16px;
+  border-radius: 0 0 6px 6px;
+}
+.await {
+  margin: 18px 0 0;
+  font-size: 14px;
+  color: var(--ink-muted);
+  text-align: center;
+}
+.explHead {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px dotted var(--spot);
+}
+.explTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  min-width: 0;
+}
+.tagInk {
+  flex: 0 0 auto;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0 8px;
+}
+.langSwitch {
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+.langBtn {
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.langBtn[aria-pressed="true"] {
+  color: var(--ink);
+  font-weight: 700;
+}
+.langBtn:focus-visible {
+  outline: 2px solid var(--ink);
+}
+.suspect {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--ink-muted);
+}
+.verdicts {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.75;
+}
+.verdict {
+  padding: 4px 10px;
+}
+.verdict[data-mine="true"] {
+  background: var(--tint);
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.verdictRow,
+.verdict summary {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.verdict summary {
+  cursor: pointer;
+  list-style: none;
+}
+.verdict summary::-webkit-details-marker {
+  display: none;
+}
+.vMark {
+  flex: 0 0 14px;
+  color: var(--ink-muted);
+}
+.vMarkSpot {
+  flex: 0 0 14px;
+  color: var(--spot);
+  font-weight: 700;
+}
+.vLetter {
+  flex: 0 0 20px;
+  height: 20px;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--spot);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+.verdict[data-mine="true"][data-verdict="wrong"] .vLetter {
+  background: var(--ink);
+}
+.vText {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.vBody {
+  margin: 4px 0 0 44px;
+}
+.yours {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--spot);
+}
+.term {
+  color: var(--spot);
+  font-weight: 700;
+}
+.points {
+  margin-top: 18px;
+  border: 1.5px solid var(--spot);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.pointsHead {
+  background: var(--spot);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 12px;
+}
+.pointsList {
+  margin: 0;
+  padding: 10px 14px 10px 30px;
+  line-height: 1.8;
+}
+.pointsList li + li {
+  margin-top: 4px;
+}
+.termsRow {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  font-size: 14px;
+}
+.termsLabel {
+  color: var(--ink-muted);
+}
+.ask {
+  margin-left: auto;
+}
+
+/* ---- 解答栏 ---- */
+.answerBar {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid var(--spot);
+  border-radius: 6px;
+  overflow: hidden;
+  color: var(--ink);
+}
+.answerTag {
+  background: var(--spot);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+}
+.answerBody {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+.answerLetter {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  background: var(--spot);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+}

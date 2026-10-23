@@ -129,12 +129,12 @@ export function imageHash(src: string, alt?: string): string {
 }
 
 /** A plain string (source label, explanation text) hashed as React would render it as text. */
-function plainHash(text: string): string {
+export function plainHash(text: string): string {
   return textHash(renderToStaticMarkup(h("span", null, text)));
 }
 
 /** The <img> ChoiceBody rendered (choice_figures questions), as imageHash, or null. */
-function renderedImageHash(html: string): string | null {
+export function renderedImageHash(html: string): string | null {
   const img = /<img\b[^>]*>/.exec(html)?.[0];
   if (!img) return null;
   const attr = (name: string) => decodeEntities(new RegExp(`\\s${name}="([^"]*)"`).exec(img)?.[1] ?? "");
