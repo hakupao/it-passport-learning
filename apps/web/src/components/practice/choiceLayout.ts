@@ -15,9 +15,14 @@
 //     widths measured in BIZ UDPGothic (CHAR_EM). A pairs choice (組合せ問, ChoiceBody "pairs") is
 //     judged per cell: key badge (KEY_EM) + the widest segment of the value. The widest segment must
 //     be ≤ ROW4_LIMIT_EM.
+//   - Total width (OQ-09): the widest-segment rule alone let long CJK choices into the narrow row4
+//     column, where they fold to 3–4 lines with orphans. row4 also needs every choice's estimated
+//     TOTAL width (choiceTotalEm: the sum of its segments, whitespace not counted; a pairs choice:
+//     per cell badge + the value's segments, summed over the cells — each cell takes its own line
+//     there) ≤ ROW4_TOTAL_EM = 2 × ROW4_LIMIT_EM = 7.1em, i.e. about two lines of the column.
 //   - ROW4_LIMIT_EM: measured on the built practice page (1440 × 1000 viewport, content capped at
 //     1240px): a row4 cell is 112px, its text column 58px, choice font 15px → 3.87em; minus a
-//     0.3em margin → 3.55em.
+//     0.3em margin → 3.55em. Two such lines → ROW4_TOTAL_EM 7.1em.
 //   - explanationTitle (§0-16): the part of points[0] before the first 「。」 (the whole point when it
 //     has none), shown when it is 1–30 code points; otherwise null (the title is only 「問 N」).
 //   - sourceNumber: the question number of the source exam (the NNN of `<exam_id>-qNNN`, which is the
@@ -36,6 +41,8 @@ const SHORT_MAX = 12;
 
 /** row4 text column 58px / 15px = 3.87em, minus a 0.3em margin (see header) */
 export const ROW4_LIMIT_EM = 3.55;
+/** OQ-09: about two lines of the row4 text column (58px / 15px = 3.87em each, minus the 0.3em margin) */
+export const ROW4_TOTAL_EM = 2 * ROW4_LIMIT_EM;
 /** pair key badge + its gap, 1-character key (measured 1.71em at 15px); +0.55em per extra key character */
 export const KEY_EM = 1.75;
 
@@ -108,6 +115,21 @@ export function choiceMinEm(text: string): number {
   return widest(text);
 }
 
+const sum = (xs: number[]): number => xs.reduce((a, b) => a + b, 0);
+
+/** Estimated total width of a choice as ChoiceBody lays it out (OQ-09; see header). */
+export function choiceTotalEm(text: string): number {
+  const c = parseChoiceWithHint(text, text);
+  if (c.kind === "pairs") {
+    return sum(
+      c.cells.map((cell) =>
+        (cell.key ? KEY_EM + 0.55 * ([...cell.key].length - 1) : 0) + sum(segmentWidths(cell.value)),
+      ),
+    );
+  }
+  return sum(segmentWidths(text));
+}
+
 const TITLE_MAX = 30;
 
 const codePoints = (s: string): number => [...s].length;
@@ -120,7 +142,8 @@ export function choiceLayout(q: QuizQuestion): ChoiceLayout {
       !t.includes("\n") &&
       codePoints(t.replace(/\s/g, "")) <= SHORT_MAX &&
       !isTableChoice(t, t) &&
-      choiceMinEm(t) <= ROW4_LIMIT_EM
+      choiceMinEm(t) <= ROW4_LIMIT_EM &&
+      choiceTotalEm(t) <= ROW4_TOTAL_EM
     );
   });
   return short ? "row4" : "list";

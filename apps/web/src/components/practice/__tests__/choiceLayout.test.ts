@@ -8,9 +8,11 @@ import {
   charEm,
   choiceLayout,
   choiceMinEm,
+  choiceTotalEm,
   explanationTitle,
   KEY_EM,
   ROW4_LIMIT_EM,
+  ROW4_TOTAL_EM,
   segmentWidths,
   sourceNumber,
 } from "../choiceLayout";
@@ -44,7 +46,8 @@ describe("choiceLayout (§0-15) on the real corpus", () => {
     const counts = { row4: 0, grid2: 0, list: 0 };
     for (const q of QS) counts[choiceLayout(q)]++;
     expect(QS).toHaveLength(2900);
-    expect(counts).toEqual({ row4: 1101, grid2: 10, list: 1789 });
+    // OQ-09 total-width rule: row4 1101 → 751 (350 moved to list, none elsewhere)
+    expect(counts).toEqual({ row4: 751, grid2: 10, list: 2139 });
   });
 
   it("grid2 is exactly the choice_figures questions", () => {
@@ -134,6 +137,28 @@ describe("row4 by estimated width (Rule A attempts 1–3)", () => {
     expect(choiceMinEm("abc")).toBeCloseTo(0.65 * 3, 5); // not pairs: plain segments
   });
 
+  it("OQ-09: a choice must also fit about two lines of the column in total (ROW4_TOTAL_EM = 2 × 3.55 = 7.1em)", () => {
+    expect(ROW4_TOTAL_EM).toBe(7.1);
+    expect(ROW4_TOTAL_EM).toBe(2 * ROW4_LIMIT_EM);
+    // a 12-code-point CJK choice (12em) folds to 3–4 lines in the 3.87em column → list
+    expect(choiceLayout(fake(["あいうえおかきくけこさし", "a", "b", "c"]))).toBe("list");
+    expect(choiceLayout(fake(["情報セキュリティ方針の策定", "a", "b", "c"]))).toBe("list");
+    // 7 CJK characters = 7em fits, 8 = 8em does not
+    expect(choiceLayout(fake(["あいうえおかき", "a", "b", "c"]))).toBe("row4");
+    expect(choiceLayout(fake(["あいうえおかきく", "a", "b", "c"]))).toBe("list");
+    // a 4–6 character CJK choice set stays row4
+    expect(choiceLayout(fake(["請負契約", "準委任契約", "派遣契約", "雇用契約"]))).toBe("row4");
+    expect(choiceLayout(fake(["機密性", "完全性", "可用性", "真正性の確保"]))).toBe("row4");
+  });
+
+  it("choiceTotalEm: the sum of the segments (whitespace not counted); pairs: per cell badge + value, summed", () => {
+    expect(choiceTotalEm("漢字 かな")).toBeCloseTo(4, 5);
+    expect(choiceTotalEm("可用性, 完全性")).toBeCloseTo(6.35, 5);
+    expect(choiceTotalEm("IPv4")).toBeCloseTo(0.8 * 2 + 0.65 + 0.76, 5);
+    expect(choiceTotalEm("a: CSV / b: JSON")).toBeCloseTo(KEY_EM + 0.8 * 3 + KEY_EM + 0.8 * 4, 5); // a + CSV, b + JSON (the " / " separator is not a cell)
+    expect(choiceTotalEm("")).toBe(0);
+  });
+
   it("the limit is the measured row4 text column (58px / 15px) minus a 0.3em margin", () => {
     expect(ROW4_LIMIT_EM).toBeCloseTo(58 / 15 - 0.3, 1);
     expect(ROW4_LIMIT_EM).toBe(3.55);
@@ -146,15 +171,17 @@ describe("choiceLayout (§0-15) rules", () => {
   });
 
   it("12 code points after removing whitespace still fits; whitespace does not count", () => {
-    expect(choiceLayout(fake(["あいうえおかきくけこさし", "a b c", "x　y", "z"]))).toBe("row4");
+    // half-width katakana (0.5em, breakable): 12 → 6em total, inside the OQ-09 two-line limit
+    expect(choiceLayout(fake(["ｱｲｳｴｵｶｷｸｹｺｻｼ", "a b c", "x　y", "z"]))).toBe("row4");
   });
 
   it("a choice with 13 code points → list", () => {
+    expect(choiceLayout(fake(["ｱｲｳｴｵｶｷｸｹｺｻｼｽ", "a", "b", "c"]))).toBe("list"); // 6.5em: the code-point rule decides
     expect(choiceLayout(fake(["あいうえおかきくけこさしす", "a", "b", "c"]))).toBe("list");
   });
 
-  it("code points, not UTF-16 units: 12 astral characters stay row4", () => {
-    expect(choiceLayout(fake(["𠀋".repeat(12), "a", "b", "c"]))).toBe("row4");
+  it("code points, not UTF-16 units: 7 astral characters (14 UTF-16 units) stay row4", () => {
+    expect(choiceLayout(fake(["𠀋".repeat(7), "a", "b", "c"]))).toBe("row4");
   });
 
   it("a newline → list", () => {
