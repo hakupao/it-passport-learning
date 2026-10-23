@@ -129,9 +129,23 @@ describe("mistakeIds / dueIds", () => {
   });
   it("setupHref for mistakes / due uses the ids form", () => {
     const ctx = { record: r, pool: POOL, today: D0, toDay, seed: 3 };
-    expect(setupHref(s({ kind: "mistakes" }), ctx)).toBe(`/practice?ids=${S[1]},${S[0]},${T[0]}`);
+    // order=seq: question-number (qid) order
+    expect(setupHref(s({ kind: "mistakes" }), ctx)).toBe(`/practice?ids=${S[0]},${S[1]},${T[0]}`);
     expect(setupHref(s({ kind: "due", n: 10 }), ctx)).toBe(`/practice?ids=${S[2]}`);
     expect(setupHref(s({ kind: "due" }), { ...ctx, record: emptyRecord() })).toBeNull();
+  });
+  it("order=seq keeps the most urgent n, shown in qid order; order=rand is a seeded shuffle of all", () => {
+    // 15 mistakes: T[k] wrong on day D0-1-k → due D0-k; most urgent = largest k
+    let m = emptyRecord();
+    for (let k = 0; k < 15; k++) m = answer(m, T[k]!, false, D0 - 1 - k);
+    const ctx = { record: m, pool: POOL, today: D0, toDay, seed: 4 };
+    const seq = setupHref(s({ kind: "mistakes", n: 10 }), ctx)!.slice("/practice?ids=".length).split(",");
+    expect(seq).toEqual(T.slice(5, 15));
+    const rand = setupHref(s({ kind: "mistakes", n: 10, order: "rand" }), ctx)!.slice("/practice?ids=".length).split(",");
+    expect(rand).toHaveLength(10);
+    expect(rand).toEqual(setupHref(s({ kind: "mistakes", n: 10, order: "rand" }), ctx)!.slice("/practice?ids=".length).split(","));
+    expect(rand).not.toEqual([...rand].sort());
+    expect(rand.every((id) => T.slice(0, 15).includes(id))).toBe(true);
   });
 });
 

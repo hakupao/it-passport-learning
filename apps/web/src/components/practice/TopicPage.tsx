@@ -24,17 +24,16 @@ import { Link } from "@/i18n/navigation";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import { toLocalDay } from "@/lib/learning/schedule";
 import type { Stars } from "@/lib/practice/practiceIndex";
+import { PRACTICE_CATEGORY_LABEL_KEYS, starText } from "@/lib/practice/practiceLabels";
 import { dayLabel, questionRowState, topicAccuracy, type QuestionRowState } from "@/lib/practice/practiceRows";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
-import { CATEGORY_KEYS, starText } from "./BrowseList";
 import { sourceNumber } from "./choiceLayout";
 import styles from "./browse.module.css";
 import { FreshLink } from "./FreshLink";
 
 export interface TopicPageProps {
   locale: string;
-  isOwner: boolean;
   topic: {
     id: string;
     category: string;
@@ -85,7 +84,7 @@ export function TopicPage({ locale, topic, questions, termCards, exams }: TopicP
   const { record, loaded } = useLearningRecord();
   const today = loaded ? toLocalDay(Date.now()) : 0;
   const acc = loaded ? topicAccuracy(record, questions.map((q) => q.id)) : null;
-  const catKey = CATEGORY_KEYS[topic.category];
+  const catKey = PRACTICE_CATEGORY_LABEL_KEYS[topic.category];
 
   return (
     <SenseiHost>

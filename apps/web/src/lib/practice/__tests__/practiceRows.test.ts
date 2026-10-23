@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 
 import { emptyRecord, recordAttempt, type LearningRecord } from "../../learning/record";
-import { attemptHistory, dayLabel, examOf, questionRowState, topicAccuracy } from "../practiceRows";
+import { attemptHistory, dayLabel, questionRowState, topicAccuracy } from "../practiceRows";
 
 const DAY = 86_400_000;
 const toDay = (at: number): number => Math.floor(at / DAY);
@@ -59,12 +59,5 @@ describe("attemptHistory", () => {
     expect(h.map((a) => a.at)).toEqual([...h.map((a) => a.at)].sort((x, y) => y - x));
     expect(h[0]!.at).toBe(at(D0 - 1));
     expect(attemptHistory(r, "none")).toEqual([]);
-  });
-});
-
-describe("examOf", () => {
-  it("the exam id of a question id", () => {
-    expect(examOf("2009h21a-q012")).toBe("2009h21a");
-    expect(examOf("2026r08-q100")).toBe("2026r08");
   });
 });

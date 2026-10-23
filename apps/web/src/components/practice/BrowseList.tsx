@@ -12,17 +12,16 @@ import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { topicStars, type Stars } from "@/lib/practice/practiceIndex";
+import {
+  PRACTICE_CATEGORY_LABEL_KEYS,
+  PRACTICE_CATEGORY_ORDER,
+  examsNewestFirst,
+  starText,
+} from "@/lib/practice/practiceLabels";
 import { localized, type QuizIndex } from "@/lib/quiz/quizModel";
 
 import styles from "./browse.module.css";
 import { FreshLink } from "./FreshLink";
-
-export const CATEGORY_ORDER = ["strategy", "management", "technology"] as const;
-export const CATEGORY_KEYS: Record<string, "cat_strategy" | "cat_management" | "cat_technology"> = {
-  strategy: "cat_strategy",
-  management: "cat_management",
-  technology: "cat_technology",
-};
 
 export interface BrowseTopic {
   id: string;
@@ -39,12 +38,10 @@ export interface BrowseModel {
   exams: { id: string; label: string; count: number }[];
 }
 
-export const starText = (n: Stars): string => "★".repeat(n) + "☆".repeat(3 - n);
-
 /** quiz_index → the browse lists (categories in IPA order, index order inside; exams newest first). */
 export function browseModel(index: Pick<QuizIndex, "topics" | "exams">, locale: string): BrowseModel {
   const stars = topicStars(index);
-  const categories = CATEGORY_ORDER.map((category) => ({
+  const categories = PRACTICE_CATEGORY_ORDER.map((category) => ({
     category,
     topics: index.topics
       .filter((t) => t.category === category)
@@ -56,10 +53,7 @@ export function browseModel(index: Pick<QuizIndex, "topics" | "exams">, locale: 
         count: t.question_count,
       })),
   })).filter((c) => c.topics.length > 0);
-  const exams = [...index.exams]
-    .map((e, i) => ({ e, i }))
-    .sort((a, b) => b.e.gregorian - a.e.gregorian || b.i - a.i)
-    .map(({ e }) => ({ id: e.exam_id, label: e.label_jp, count: e.question_count }));
+  const exams = examsNewestFirst(index.exams).map((e) => ({ id: e.exam_id, label: e.label_jp, count: e.question_count }));
   return { categories, exams };
 }
 
@@ -83,7 +77,7 @@ export function BrowseList({ categories, exams }: BrowseModel): React.ReactEleme
           <div key={c.category} data-cat={c.category}>
             <h3 className={styles.catHead}>
               <span className={styles.catTag} lang="ja">
-                {CATEGORY_KEYS[c.category] ? t(CATEGORY_KEYS[c.category]!) : c.category}
+                {PRACTICE_CATEGORY_LABEL_KEYS[c.category] ? t(PRACTICE_CATEGORY_LABEL_KEYS[c.category]!) : c.category}
               </span>
             </h3>
             <table className={`${styles.table} ${styles.fixed}`}>

@@ -4,8 +4,10 @@
 //     from=today) → the practice group: one question per screen, then the summary.
 //   - No (valid) scope, a scope that resolves to no question, or prefill=1 → the setup panel
 //     (PracticeSetup, Task 10) with the URL's valid topic / exam pre-selected (prefillOf: a legacy
-//     /quiz?mode=topic&id=X link arrives as ?topic=X&prefill=1). It gets the today payload (§0-20:
-//     topics, ★, question ids, chumon groups, exam labels) for the record-based scopes.
+//     /quiz?mode=topic&id=X link arrives as ?topic=X&prefill=1). It gets the today payload without the
+//     dictionary (loadSetupIndex: topics, ★, question ids, chumon groups — a glossary failure cannot
+//     500 the panel) and the exams newest first (examsNewestFirst). The panel is keyed by the
+//     pre-selection, so a soft navigation to another pre-selection starts a fresh form.
 // order=rand without a seed is redirected to the same URL with a fresh seed, so a reload resolves
 // the same list (the sessionStorage key is the list's hash, §0-13).
 //
@@ -28,7 +30,8 @@ import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { groupMap, resolveScope, topicStars } from "@/lib/practice/practiceIndex";
-import { loadChumonGroups, loadQuestionsByIds, loadTodayIndex } from "@/lib/practice/practiceReader";
+import { examsNewestFirst } from "@/lib/practice/practiceLabels";
+import { loadChumonGroups, loadQuestionsByIds, loadSetupIndex, loadTodayIndex } from "@/lib/practice/practiceReader";
 import {
   foldPlan,
   isFromToday,
@@ -38,7 +41,7 @@ import {
   type SearchParams,
 } from "@/lib/practice/practiceSession";
 import { prefillOf, settingsFromPrefill } from "@/lib/practice/practiceSetup";
-import { loadBaseQuestions, loadQuizIndex } from "@/lib/quiz/quizReader";
+import { loadBaseQuestions, loadQuizIndex, type QuizIndex } from "@/lib/quiz/quizReader";
 
 export const dynamic = "force-dynamic";
 
@@ -58,15 +61,18 @@ const ownerFlag = (): Promise<boolean> => cookies().then((c) => isOwner(c.get(OW
 async function setupPanel(
   locale: string,
   sp: SearchParams,
+  quizIndex: QuizIndex,
   validTopics: ReadonlySet<string>,
   validExams: ReadonlySet<string>,
 ): Promise<React.ReactElement> {
-  const [today, owner] = await Promise.all([loadTodayIndex(locale), ownerFlag()]);
+  const [index, owner] = await Promise.all([loadSetupIndex(locale), ownerFlag()]);
   const prefill = prefillOf(sp, validTopics, validExams);
   return (
     <LearningRecordProvider isOwner={owner}>
       <PracticeSetup
-        index={today}
+        key={`${prefill.topics.join(",")}|${prefill.exam ?? ""}`}
+        index={index}
+        exams={examsNewestFirst(quizIndex.exams).map((e) => ({ id: e.exam_id, label: e.label_jp }))}
         initial={settingsFromPrefill(prefill)}
         prefilled={prefill.topics.length > 0 || prefill.exam !== null}
       />
@@ -83,7 +89,7 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   const validTopics = new Set(index.topics.map((t) => t.topic_id));
   const validExams = new Set(index.exams.map((e) => e.exam_id));
   const scope = parseScope(sp, new Set(base.map((q) => q.id)), validTopics, validExams);
-  if (!scope) return setupPanel(locale, sp, validTopics, validExams);
+  if (!scope) return setupPanel(locale, sp, index, validTopics, validExams);
 
   if (scope.kind === "filter" && scope.order === "rand" && sp.seed === undefined) {
     const query: Record<string, string> = {};
@@ -101,7 +107,7 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   });
   const groups = await loadChumonGroups();
   const questions = await loadQuestionsByIds(resolveScope(scope, base, groupMap(groups)));
-  if (questions.length === 0) return setupPanel(locale, sp, validTopics, validExams);
+  if (questions.length === 0) return setupPanel(locale, sp, index, validTopics, validExams);
   const ids = questions.map((q) => q.id);
 
   const fromToday = isFromToday(sp);

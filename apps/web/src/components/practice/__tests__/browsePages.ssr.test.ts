@@ -23,6 +23,7 @@ import { emptyRecord, recordAttempt, type LearningRecord } from "@/lib/learning/
 import { toLocalDay } from "@/lib/learning/schedule";
 import { topicStars, type TodayIndex } from "@/lib/practice/practiceIndex";
 import { loadTodayIndex } from "@/lib/practice/practiceReader";
+import { examsNewestFirst } from "@/lib/practice/practiceLabels";
 import { DEFAULT_SETTINGS } from "@/lib/practice/practiceSetup";
 import { CHOICE_LETTERS, loadAllQuestions, loadQuizIndex, type QuizIndex, type QuizQuestion } from "@/lib/quiz/quizReader";
 
@@ -35,6 +36,7 @@ import { messagesFor, textOf } from "./practiceRender";
 let QS: QuizQuestion[] = [];
 let INDEX: QuizIndex;
 let TODAY: TodayIndex;
+const EXAMS = () => examsNewestFirst(INDEX.exams).map((e) => ({ id: e.exam_id, label: e.label_jp }));
 
 beforeAll(async () => {
   [QS, INDEX, TODAY] = await Promise.all([loadAllQuestions(), loadQuizIndex(), loadTodayIndex("ja")]);
@@ -56,7 +58,7 @@ const inputs = (html: string, ...frags: string[]): string[] =>
 
 describe("PracticeSetup", () => {
   it("setup lists 3 categories → topics with ★", () => {
-    const html = withIntl("ja", h(PracticeSetup, { index: TODAY, initial: DEFAULT_SETTINGS, prefilled: false }));
+    const html = withIntl("ja", h(PracticeSetup, { index: TODAY, exams: EXAMS(), initial: DEFAULT_SETTINGS, prefilled: false }));
     expect(html).toContain("data-setup");
     const cats = [...html.matchAll(/data-cat="([a-z]+)"/g)].map((m) => m[1]);
     expect(cats).toEqual(["strategy", "management", "technology"]);
@@ -78,7 +80,7 @@ describe("PracticeSetup", () => {
     const X = "technology-14-36";
     const html = withIntl(
       "zh",
-      h(PracticeSetup, { index: TODAY, initial: { ...DEFAULT_SETTINGS, topics: [X] }, prefilled: true }),
+      h(PracticeSetup, { index: TODAY, exams: EXAMS(), initial: { ...DEFAULT_SETTINGS, topics: [X] }, prefilled: true }),
     );
     const checked = [...html.matchAll(/<input[^>]*data-topic-input="([^"]+)"[^>]*>/g)]
       .filter((m) => / checked=""/.test(m[0]))
@@ -87,19 +89,45 @@ describe("PracticeSetup", () => {
     expect(inputs(html, 'name="scope"', 'value="topic"', 'checked=""')).toHaveLength(1);
   });
 
-  it("exam scope: the exam select lists every exam, newest first, preselected", () => {
-    const exams = Object.keys(TODAY.exams);
+  it("exam scope: the exam select lists the given exams in order (newest first), preselected", () => {
+    const exams = EXAMS();
+    expect(exams[0]!.id).toBe("2026r08");
+    const pick = exams.at(-1)!.id;
     const html = withIntl(
       "en",
       h(PracticeSetup, {
         index: TODAY,
-        initial: { ...DEFAULT_SETTINGS, kind: "exam", exam: exams[0]!, n: "all" },
+        exams,
+        initial: { ...DEFAULT_SETTINGS, kind: "exam", exam: pick, n: "all" },
         prefilled: true,
       }),
     );
     const opts = [...html.matchAll(/<option value="([^"]+)"/g)].map((m) => m[1]);
-    expect(opts).toEqual([...exams].reverse());
-    expect(html).toMatch(new RegExp(`<option value="${exams[0]}" selected=""`));
+    expect(opts).toEqual(exams.map((e) => e.id));
+    expect(html).toMatch(new RegExp(`<option value="${pick}" selected=""`));
+  });
+
+  it("record-based scope: 始める disabled with the waiting hint until the record has loaded", () => {
+    const render = () =>
+      withIntl(
+        "ja",
+        h(PracticeSetup, { index: TODAY, exams: EXAMS(), initial: { ...DEFAULT_SETTINGS, kind: "mistakes" }, prefilled: false }),
+      );
+    const start = (html: string) => /<button[^>]*data-start=""[^>]*>/.exec(html)![0];
+    state.loaded = false;
+    const waiting = render();
+    expect(start(waiting)).toContain('disabled=""');
+    expect(waiting).toContain('data-problem="waitRecord"');
+    expect(waiting).toContain("学習記録を読み込んでいます");
+    state.loaded = true;
+    const ready = render();
+    expect(start(ready)).not.toContain("disabled");
+    expect(ready).toContain('data-problem=""');
+    expect(ready).not.toContain("学習記録を読み込んでいます");
+    // a topic scope never waits for the record
+    state.loaded = false;
+    const topic = withIntl("ja", h(PracticeSetup, { index: TODAY, exams: EXAMS(), initial: DEFAULT_SETTINGS, prefilled: false }));
+    expect(start(topic)).not.toContain("disabled");
   });
 });
 
@@ -129,7 +157,6 @@ describe("TopicPage", () => {
     const t = INDEX.topics.find((x) => x.topic_id === TOPIC)!;
     return {
       locale: "ja",
-      isOwner: false,
       topic: { id: TOPIC, category: t.category, name_jp: t.name_jp, path: `${t.major_jp} › ${t.medium_jp}`, stars: topicStars(INDEX)[TOPIC]! },
       questions: topicQs(),
       termCards: {},

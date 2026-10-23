@@ -59,7 +59,6 @@ export default async function TopicRoute({ params }: Props): Promise<React.React
     <LearningRecordProvider isOwner={owner}>
       <TopicPage
         locale={locale}
-        isOwner={owner}
         topic={{
           id: topic.topic_id,
           category: topic.category,

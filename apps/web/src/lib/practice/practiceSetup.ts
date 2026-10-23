@@ -6,8 +6,9 @@
 //   - setupHref: the §0-12 URL of the settings. topic / exam → the filter form
 //     `/practice?topic=a,b&n=20&order=seq` (`exam=<id>` likewise; order=rand adds `&seed=<uint32>`,
 //     the server resolves the list). mistakes / due / random → the ids form `/practice?ids=…`
-//     computed here from the browser's record (≤ MAX_SCOPE_IDS; 全部 = MAX_SCOPE_IDS; order=rand
-//     shuffles the list with mulberry32(seed) first). `run` (the click time) is appended so starting
+//     computed here from the browser's record (≤ MAX_SCOPE_IDS; 全部 = MAX_SCOPE_IDS). For mistakes /
+//     due, order=seq keeps the n most urgent (dueDay, qid) and lists them by question id (= exam /
+//     question-number order); order=rand shuffles the whole list with mulberry32(seed), then takes n. `run` (the click time) is appended so starting
 //     the same list again is a new group, not the finished summary stored in this tab (Task 9 §0-13).
 //     null = nothing to practise (no topic / exam chosen, or an empty list).
 //   - mistakeIds: every current mistake (reviewState + classify = "mistake", not only those due
@@ -129,6 +130,14 @@ export function filterHref(s: SetupSettings, seed: number, run?: number | null):
   return `/practice?${scope}&n=${s.n}&order=${s.order}${seedPart}${runPart(run)}`;
 }
 
+const byId = (x: string, y: string): number => (x < y ? -1 : x > y ? 1 : 0);
+
+/** mistakes / due (urgent first): seq → the n most urgent in qid order; rand → a seeded sample. */
+function reviewHref(urgent: readonly string[], s: SetupSettings, seed: number, run?: number | null): string | null {
+  if (s.order === "rand") return idsHref(urgent, s.n, "rand", seed, run);
+  return idsHref(urgent.slice(0, idsCount(s.n)).sort(byId), "all", "seq", seed, run);
+}
+
 export interface SetupContext {
   record: LearningRecord;
   pool: QuestionPool;
@@ -148,9 +157,9 @@ export function setupHref(s: SetupSettings, ctx: SetupContext): string | null {
     case "exam":
       return filterHref(s, seed, run);
     case "mistakes":
-      return idsHref(mistakeIds(record, pool, today, toDay), s.n, s.order, seed, run);
+      return reviewHref(mistakeIds(record, pool, today, toDay), s, seed, run);
     case "due":
-      return idsHref(dueIds(record, pool, today, toDay), s.n, s.order, seed, run);
+      return reviewHref(dueIds(record, pool, today, toDay), s, seed, run);
     case "random":
       // already in random order; whole chumon groups may run past n (§0-8) — the URL cap still holds
       return idsHref(randomIds(record, pool, idsCount(s.n), seed), "all", "seq", seed, run);

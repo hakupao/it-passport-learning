@@ -66,10 +66,9 @@ export const loadUnitMinutes: () => Promise<Record<string, number>> = memo(async
 
 const todayLoaders = new Map<string, () => Promise<TodayIndex>>();
 
-/** The today-page payload for `locale` (§0-20). A dictionary load failure propagates. */
-export function loadTodayIndex(locale: string): Promise<TodayIndex> {
-  const lang = toDataLang(locale);
-  let load = todayLoaders.get(lang);
+function todayIndexLoader(locale: string, withTerms: boolean): Promise<TodayIndex> {
+  const key = `${toDataLang(locale)}:${withTerms ? "terms" : "noterms"}`;
+  let load = todayLoaders.get(key);
   if (!load) {
     load = memo(async () => {
       const [quizIndex, questions, readerIndex, unitMinutes, groups, dict] = await Promise.all([
@@ -78,7 +77,7 @@ export function loadTodayIndex(locale: string): Promise<TodayIndex> {
         loadReaderIndex(),
         loadUnitMinutes(),
         loadChumonRegistry(),
-        loadDictionary(),
+        withTerms ? loadDictionary() : Promise.resolve(null),
       ]);
       return buildTodayIndex({
         quizIndex,
@@ -90,9 +89,22 @@ export function loadTodayIndex(locale: string): Promise<TodayIndex> {
         locale,
       });
     });
-    todayLoaders.set(lang, load);
+    todayLoaders.set(key, load);
   }
   return load();
+}
+
+/** The today-page payload for `locale` (§0-20). A dictionary load failure propagates. */
+export function loadTodayIndex(locale: string): Promise<TodayIndex> {
+  return todayIndexLoader(locale, true);
+}
+
+/**
+ * The today payload without the dictionary (topicTerms all empty) — what the practice setup panel
+ * needs (topics, ★, question ids, chumon groups, exam labels); a glossary failure cannot break it.
+ */
+export function loadSetupIndex(locale: string): Promise<TodayIndex> {
+  return todayIndexLoader(locale, false);
 }
 
 const loadById = memo(async () => new Map((await loadAllQuestions()).map((q) => [q.id, q])));

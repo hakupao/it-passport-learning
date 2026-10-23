@@ -4,13 +4,16 @@
 //   - Scope (one of): 分野・領域 (the three fields → their topics, multi-select; a field's 「すべて」
 //     box selects / clears all its topics) | 年度 (one exam, newest first) | 間違えた問題 | 今日の復習
 //     | ランダム. The last three come from the browser's record (practiceSetup: mistakeIds / dueIds /
-//     randomIds), so their counts appear and they can start only once the record has loaded.
+//     randomIds), so their counts appear only once the record has loaded, and until then 「始める」
+//     (and 「前回の条件で続ける」 for such last settings) is disabled with a waiting hint, which goes
+//     away by itself when the record arrives.
 //   - Count 10 / 20 / 50 / 全部 (全部 = the whole topic / exam; at most 100 for the record-based
 //     scopes, MAX_SCOPE_IDS), order 問題番号順 / ランダム (random draws are random already: the order
 //     is fixed to 番号順 and disabled for ランダム).
 //   - Start (the form's submit) → setupHref with a fresh seed and run nonce → router.push; the
 //     settings are saved as the last ones (localStorage itp:practice:last:v1). Nothing to practise →
-//     a status line says why, no navigation.
+//     a status line says why, no navigation. Exams come in newest first from the page
+//     (examsNewestFirst, shared with the browse page).
 //   - 「前回の条件で続ける」 (when last settings are stored): starts them in one click. The last
 //     settings are read after mount (never in the first render: no hydration mismatch); without a
 //     URL pre-selection they also pre-fill the form.
@@ -26,6 +29,7 @@ import { useLearningRecord } from "@/hooks/useLearningRecord";
 import { Link, useRouter } from "@/i18n/navigation";
 import { toLocalDay } from "@/lib/learning/schedule";
 import { poolFromIndex, type TodayIndex } from "@/lib/practice/practiceIndex";
+import { PRACTICE_CATEGORY_LABEL_KEYS, PRACTICE_CATEGORY_ORDER, starText } from "@/lib/practice/practiceLabels";
 import {
   SETUP_COUNTS,
   dueIds,
@@ -38,12 +42,13 @@ import {
 } from "@/lib/practice/practiceSetup";
 import type { StorageLike } from "@/lib/storage";
 
-import { CATEGORY_KEYS, CATEGORY_ORDER, starText } from "./BrowseList";
 import styles from "./browse.module.css";
 
 export interface PracticeSetupProps {
-  /** the today payload (§0-20): topics, ★, question ids, chumon groups, exam labels */
+  /** the today payload (§0-20; topicTerms unused): topics, ★, question ids, chumon groups, exam labels */
   index: TodayIndex;
+  /** every exam, newest first (examsNewestFirst) */
+  exams: { id: string; label: string }[];
   /** the settings the form opens with (settingsFromPrefill) */
   initial: SetupSettings;
   /** the URL pre-selected a topic / exam (the last settings then do not replace the form) */
@@ -60,9 +65,9 @@ function browserLocal(): StorageLike | null {
   }
 }
 
-type Problem = "needTopic" | "needExam" | "emptyScope" | "waitRecord" | null;
+type Problem = "needTopic" | "needExam" | "emptyScope" | null;
 
-export function PracticeSetup({ index, initial, prefilled }: PracticeSetupProps): React.ReactElement {
+export function PracticeSetup({ index, exams, initial, prefilled }: PracticeSetupProps): React.ReactElement {
   const t = useTranslations("Practice");
   const router = useRouter();
   const { record, loaded } = useLearningRecord();
@@ -73,10 +78,9 @@ export function PracticeSetup({ index, initial, prefilled }: PracticeSetupProps)
   const pool = useMemo(() => poolFromIndex(index), [index]);
   const validTopics = useMemo(() => new Set(index.topics.map((x) => x.id)), [index]);
   const validExams = useMemo(() => new Set(Object.keys(index.exams)), [index]);
-  const exams = useMemo(() => Object.entries(index.exams).reverse(), [index]); // newest first
   const byCategory = useMemo(
     () =>
-      CATEGORY_ORDER.map((category) => ({ category, topics: index.topics.filter((x) => x.category === category) })).filter(
+      PRACTICE_CATEGORY_ORDER.map((category) => ({ category, topics: index.topics.filter((x) => x.category === category) })).filter(
         (c) => c.topics.length > 0,
       ),
     [index],
@@ -102,8 +106,11 @@ export function PracticeSetup({ index, initial, prefilled }: PracticeSetupProps)
     setS((prev) => ({ ...prev, ...patch }));
   };
 
+  /** a record-based scope cannot start before the record has loaded */
+  const waits = (x: SetupSettings): boolean => RECORD_KINDS.has(x.kind) && !loaded;
+
   function start(settings: SetupSettings): void {
-    if (RECORD_KINDS.has(settings.kind) && !loaded) return setProblem("waitRecord");
+    if (waits(settings)) return;
     if (settings.kind === "topic" && settings.topics.length === 0) return setProblem("needTopic");
     if (settings.kind === "exam" && settings.exam === null) return setProblem("needExam");
     const now = Date.now();
@@ -140,7 +147,13 @@ export function PracticeSetup({ index, initial, prefilled }: PracticeSetupProps)
 
       {last ? (
         <div className={styles.last} data-last="">
-          <button type="button" className={styles.btnPrimary} onClick={() => start(last)} data-continue-last="">
+          <button
+            type="button"
+            className={styles.btnPrimary}
+            disabled={waits(last)}
+            onClick={() => start(last)}
+            data-continue-last=""
+          >
             {t("continueLast")}
           </button>
           <span>
@@ -188,7 +201,7 @@ export function PracticeSetup({ index, initial, prefilled }: PracticeSetupProps)
               {byCategory.map((c) => {
                 const ids = c.topics.map((x) => x.id);
                 const all = ids.every((id) => s.topics.includes(id));
-                const label = CATEGORY_KEYS[c.category] ? t(CATEGORY_KEYS[c.category]!) : c.category;
+                const label = PRACTICE_CATEGORY_LABEL_KEYS[c.category] ? t(PRACTICE_CATEGORY_LABEL_KEYS[c.category]!) : c.category;
                 return (
                   <div key={c.category} data-cat={c.category}>
                     <div className={styles.catHead}>
@@ -251,7 +264,7 @@ export function PracticeSetup({ index, initial, prefilled }: PracticeSetupProps)
               lang="ja"
             >
               {s.exam === null ? <option value="">{t("examPick")}</option> : null}
-              {exams.map(([id, label]) => (
+              {exams.map(({ id, label }) => (
                 <option key={id} value={id}>
                   {label}
                 </option>
@@ -293,15 +306,15 @@ export function PracticeSetup({ index, initial, prefilled }: PracticeSetupProps)
         </fieldset>
 
         <div className={styles.actions}>
-          <button type="submit" className={styles.btnPrimary} data-start="">
+          <button type="submit" className={styles.btnPrimary} disabled={waits(s)} data-start="">
             {t("start")}
           </button>
           <Link href="/practice/browse" className={styles.link}>
             {t("browseLink")}
           </Link>
         </div>
-        <p className={styles.message} role="status" data-problem={problem ?? ""}>
-          {problem ? t(problem) : null}
+        <p className={styles.message} role="status" data-problem={waits(s) ? "waitRecord" : (problem ?? "")}>
+          {waits(s) ? t("waitRecord") : problem ? t(problem) : null}
         </p>
       </form>
     </main>

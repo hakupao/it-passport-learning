@@ -23,12 +23,12 @@ import { Link } from "@/i18n/navigation";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import { latestResult, settingValue } from "@/lib/learning/record";
 import type { Stars } from "@/lib/practice/practiceIndex";
+import { PRACTICE_CATEGORY_LABEL_KEYS } from "@/lib/practice/practiceLabels";
 import { attemptHistory } from "@/lib/practice/practiceRows";
 import { localDateKey, recentResults } from "@/lib/practice/practiceSession";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 import { AnswerBar } from "./AnswerBar";
-import { CATEGORY_KEYS } from "./BrowseList";
 import styles from "./browse.module.css";
 import { ExplanationPane } from "./ExplanationPane";
 import { FreshLink } from "./FreshLink";
@@ -52,7 +52,7 @@ export function SingleQuestion({ q, locale, isOwner, termCards, stars, topic }: 
   const picked = latest?.choice ?? null;
   const history = loaded ? attemptHistory(record, q.id) : [];
   const showTranslation = trOverride ?? settingValue(record, "transDefault") === "shown";
-  const catKey = CATEGORY_KEYS[topic.category];
+  const catKey = PRACTICE_CATEGORY_LABEL_KEYS[topic.category];
 
   return (
     <SenseiHost>

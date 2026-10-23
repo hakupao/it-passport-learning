@@ -21,6 +21,15 @@ vi.mock("@/i18n/navigation", () => ({
   },
   useRouter: () => ({ push: () => {} }),
 }));
+// fix round 1 (1): the glossary dictionary can fail; /practice's setup panel must not depend on it
+const dict = vi.hoisted(() => ({ fail: false }));
+vi.mock("@/lib/glossary/dictionaryReader", async (importOriginal) => {
+  const real = await importOriginal<typeof import("@/lib/glossary/dictionaryReader")>();
+  return {
+    ...real,
+    loadDictionary: () => (dict.fail ? Promise.reject(new Error("dictionary down (test)")) : real.loadDictionary()),
+  };
+});
 
 import { BrowseList } from "@/components/practice/BrowseList";
 import { PracticeSetup, type PracticeSetupProps } from "@/components/practice/PracticeSetup";
@@ -33,7 +42,7 @@ import BrowsePage from "../browse/page";
 import TopicRoute from "../browse/[topicId]/page";
 import QuestionRoute from "../q/[qid]/page";
 
-type El = { type: unknown; props: { children?: El } & Record<string, unknown> };
+type El = { type: unknown; key?: string | null; props: { children?: El } & Record<string, unknown> };
 const childOf = (el: El): El => el.props.children as El;
 
 const practice = (sp: Record<string, string>) =>
@@ -48,6 +57,27 @@ describe("/practice → setup panel", () => {
     const p = setup.props as unknown as PracticeSetupProps;
     expect(p.initial).toMatchObject({ kind: "topic", topics: ["technology-14-36"] });
     expect(p.prefilled).toBe(true);
+    // a soft navigation with another pre-selection remounts the panel (fresh form state)
+    const other = childOf(await practice({ topic: "strategy-01-01", prefill: "1" }));
+    expect(setup.key).not.toBeNull();
+    expect(other.key).not.toBe(setup.key);
+  });
+  it("exams reach the panel newest first (by gregorian)", async () => {
+    const p = childOf(await practice({})).props as unknown as PracticeSetupProps;
+    expect(p.exams[0]!.id).toBe("2026r08");
+    expect(p.exams.at(-1)!.id).toBe("2009h21h");
+  });
+  it("a dictionary failure does not break the setup panel", async () => {
+    dict.fail = true;
+    try {
+      const setup = childOf(await practice({ topic: "technology-14-36", prefill: "1" }));
+      expect(setup.type).toBe(PracticeSetup);
+      const p = setup.props as unknown as PracticeSetupProps;
+      expect(p.index.topics).toHaveLength(63);
+      expect(Object.values(p.index.topicTerms).every((cards) => cards.length === 0)).toBe(true);
+    } finally {
+      dict.fail = false;
+    }
   });
   it("no params → setup with defaults; ?exam=Y&prefill=1 → that exam", async () => {
     const none = childOf(await practice({}));

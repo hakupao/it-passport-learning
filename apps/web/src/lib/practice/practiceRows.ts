@@ -8,7 +8,6 @@
 //     read with UTC getters so the label is that calendar day in every time zone.
 //   - topicAccuracy: answered / correct over the latest attempt of each of the ids.
 //   - attemptHistory: the stored attempts (≤ ATTEMPTS_K = 10), newest first (compareAttempts).
-//   - examOf: `<exam_id>-q<NNN>` → exam_id (the row's exam label comes from the exams map).
 
 import { ATTEMPTS_K, compareAttempts, latestResult, type Attempt, type LearningRecord } from "../learning/record";
 import { reviewState, type ToDay } from "../learning/schedule";
@@ -54,9 +53,4 @@ export function topicAccuracy(r: LearningRecord, ids: readonly string[]): { answ
 
 export function attemptHistory(r: LearningRecord, qid: string): Attempt[] {
   return [...own(r, qid)].sort(compareAttempts).slice(0, ATTEMPTS_K);
-}
-
-export function examOf(qid: string): string {
-  const i = qid.lastIndexOf("-q");
-  return i < 0 ? qid : qid.slice(0, i);
 }
