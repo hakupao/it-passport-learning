@@ -63,7 +63,7 @@ const ENTRY: DictEntry = {
     { unitId: "t-01-u01", topicId: "t-01", category: "technology", term: unitTerm("機能要件", "A") },
     { unitId: "m-02-u03", topicId: "m-02", category: "management", term: unitTerm("機能要件", "B") },
   ],
-  questions: [{ id: "2024r06-q001", examId: "2024r06", sourceLabel: "令和6年度 問1" }],
+  questions: [{ id: "2024r06-q001", sourceLabel: "令和6年度 問1" }],
 };
 const TITLES = { "t-01-u01": "要件定義の基礎", "m-02-u03": "システム開発の管理" };
 
@@ -145,7 +145,7 @@ describe("TermDetail (SSR)", () => {
     const one = render("en", ENTRY, TITLES, [null, null]);
     expect(one).toContain("1 question");
     expect(one).not.toContain("1 questions");
-    const q2 = { id: "2024r06-q002", examId: "2024r06", sourceLabel: "令和6年度 問2" };
+    const q2 = { id: "2024r06-q002", sourceLabel: "令和6年度 問2" };
     const two = render("en", { ...ENTRY, questions: [...ENTRY.questions, q2] }, TITLES, [null, null]);
     expect(two).toContain("2 questions");
   });

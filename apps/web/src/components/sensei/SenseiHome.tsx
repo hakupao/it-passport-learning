@@ -3,7 +3,7 @@
 // first; each deletable) and the free question (Phase C, §0-9).
 //
 // Thread rows: a question / review / term / unit thread links back to its source —
-// a review thread to its topic set with its date, `&thread=<YYYY-MM-DD>`, never
+// a review thread to its topic page with its date, `?thread=<YYYY-MM-DD>`, never
 // `review=1`; a term / unit thread to its glossary term / textbook unit page. A free
 // thread opens in place, in the AI 先生 panel on this page, with its anchor derived
 // again from its stored first question (lib/sensei/freeQuestion).
@@ -49,7 +49,7 @@ import type { StorageLike } from "@/lib/storage";
 import { SenseiHost, useSenseiHost } from "./AskSensei";
 import { KeySettings } from "./KeySettings";
 
-/** Where a saved thread links back to: its question, topic set, glossary term or textbook unit
+/** Where a saved thread links back to: its question, topic page, glossary term or textbook unit
  *  (null: a free thread, which opens in place). */
 const THREAD_HREF: Record<ThreadKind, (anchorId: string) => string | null> = {
   question: questionThreadHref,

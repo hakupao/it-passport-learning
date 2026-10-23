@@ -10,23 +10,20 @@
 // SELF-CONTAINED filesystem layer (deliberately does NOT import the dead
 // lib/data/FsDataSource, whose _fixtures/v1.0.3 corpus was removed in S63) —
 // mirrors the textbook reader.ts pattern (Session 85). The pure types/helpers
-// live in ./quizModel (bundler-safe; imported by the client QuizSet) and are
-// re-exported here for server-side consumers.
+// live in ./quizModel (bundler-safe; imported by client components such as the
+// practice question face) and are re-exported here for server-side consumers.
+// The per-question loaders the practice pages use sit on top of these in
+// lib/practice/practiceReader.
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
 import {
-  filterByExam,
-  filterByTopic,
-  isValidMode,
-  localized,
   mergeExplanation,
   mergeTranslation,
   type QuizExplanationEntry,
   type QuizExplanationFile,
   type QuizIndex,
-  type QuizMode,
   type QuizQuestion,
   type QuizTranslationEntry,
   type QuizTranslationFile,
@@ -132,48 +129,4 @@ export function loadAllQuestions(): Promise<QuizQuestion[]> {
   ]).then(([questions, tr, ex]) =>
     questions.map((q) => mergeExplanation(mergeTranslation(q, tr.get(q.id)), ex.get(q.id))),
   ));
-}
-
-export interface QuizSet {
-  mode: QuizMode;
-  id: string;
-  /** Localized heading for the set (topic: name_jp; exam: label_jp). */
-  label: string;
-  sublabel: string;
-  questions: QuizQuestion[];
-}
-
-/**
- * Load the question set for a (mode,id) pair. Returns null if mode is invalid or
- * the id is not present in the index (membership allowlist — no user input ever
- * reaches a filesystem path, since questions live in one file we filter in memory).
- */
-export async function loadQuestionSet(
-  mode: string | undefined,
-  id: string | undefined,
-  locale: string,
-): Promise<QuizSet | null> {
-  if (!isValidMode(mode) || !id) return null;
-  const [index, all] = await Promise.all([loadQuizIndex(), loadAllQuestions()]);
-
-  if (mode === "topic") {
-    const t = index.topics.find((x) => x.topic_id === id);
-    if (!t) return null;
-    return {
-      mode,
-      id,
-      label: t.name_jp,
-      sublabel: `${localized(t.major_jp, t.major_zh, t.major_en, locale)} › ${localized(t.medium_jp, t.medium_zh, t.medium_en, locale)}`,
-      questions: filterByTopic(all, id),
-    };
-  }
-  const e = index.exams.find((x) => x.exam_id === id);
-  if (!e) return null;
-  return {
-    mode,
-    id,
-    label: e.label_jp,
-    sublabel: "ITパスポート試験",
-    questions: filterByExam(all, id),
-  };
 }

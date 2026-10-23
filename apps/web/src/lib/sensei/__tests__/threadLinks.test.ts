@@ -13,18 +13,18 @@ import {
 import { termId } from "@/lib/glossary/termId";
 
 describe("splitQuestionAnchor", () => {
-  // the six question_id shapes in data/ip/quiz/questions.json (exam_id = id before "-q<NNN>")
-  const cases: [string, string, string][] = [
-    ["2009h21a-q054:イ", "2009h21a-q054", "2009h21a"],
-    ["2010h22h-q100:reveal", "2010h22h-q100", "2010h22h"],
-    ["2011h23tokubetsu-q058:ア", "2011h23tokubetsu-q058", "2011h23tokubetsu"],
-    ["2019r01a-q001:エ", "2019r01a-q001", "2019r01a"],
-    ["2020r02o-q012:ウ", "2020r02o-q012", "2020r02o"],
-    ["2021r03-q099:reveal", "2021r03-q099", "2021r03"],
+  // the six question_id shapes in data/ip/quiz/questions.json
+  const cases: [string, string][] = [
+    ["2009h21a-q054:イ", "2009h21a-q054"],
+    ["2010h22h-q100:reveal", "2010h22h-q100"],
+    ["2011h23tokubetsu-q058:ア", "2011h23tokubetsu-q058"],
+    ["2019r01a-q001:エ", "2019r01a-q001"],
+    ["2020r02o-q012:ウ", "2020r02o-q012"],
+    ["2021r03-q099:reveal", "2021r03-q099"],
   ];
-  for (const [anchorId, questionId, examId] of cases) {
-    it(`${anchorId} → ${questionId} in ${examId}`, () => {
-      expect(splitQuestionAnchor(anchorId)).toEqual({ questionId, examId });
+  for (const [anchorId, questionId] of cases) {
+    it(`${anchorId} → ${questionId}`, () => {
+      expect(splitQuestionAnchor(anchorId)).toBe(questionId);
     });
   }
 

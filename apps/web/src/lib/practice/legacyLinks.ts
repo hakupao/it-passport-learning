@@ -12,9 +12,9 @@
 //   ?mode=exam&id=Y                     → /practice?exam=Y&prefill=1
 //   anything else                       → /practice/browse
 
-import { REVIEW_THREAD_PARAM, reviewThreadDate } from "../sensei/threadLinks";
+import { QUESTION_ID } from "@/lib/quiz/questionId";
+import { REVIEW_THREAD_PARAM, reviewThreadDate } from "@/lib/sensei/threadLinks";
 
-const QUESTION_ID = /^[0-9a-z]{4,16}-q\d{3}$/;
 const TOPIC_ID = /^[a-z]+-\d{2}-\d{2}$/;
 const EXAM_ID = /^[0-9a-z]{4,16}$/;
 

@@ -168,7 +168,7 @@ describe("buildDictionary", () => {
   it("reverse-links questions and ignores unknown terms without throwing", () => {
     const e = dict.byTerm.get("機能要件")!;
     expect(e.questions).toEqual([
-      { id: "2024r06-q001", examId: "2024r06", sourceLabel: "令和6年度 ITパスポート試験 問1" },
+      { id: "2024r06-q001", sourceLabel: "令和6年度 ITパスポート試験 問1" },
     ]);
     expect(dict.byTerm.get("非機能要件")!.questions).toEqual([]);
     expect(dict.byTerm.has("不存在の語")).toBe(false);
@@ -178,7 +178,7 @@ describe("buildDictionary", () => {
     const d = buildDictionary(index, units, [
       { ...q1, terms: ["機能要件", "機能要件"] },
       { ...q1 },
-      { id: "x", exam_id: "e", source_label: "s", terms: undefined as unknown as string[] },
+      { id: "x", source_label: "s", terms: undefined as unknown as string[] },
     ]);
     expect(d.byTerm.get("機能要件")!.questions.map((q) => q.id)).toEqual(["2024r06-q001"]);
   });
@@ -196,7 +196,7 @@ describe("buildDictionary", () => {
     const d = buildDictionary(index, [
       unit("strategy-07-23-u01", "strategy-07-23", "strategy", [term("ガ", "", "", "nfc")]),
       unit("management-08-25-u01", "management-08-25", "management", [term("ガ", "", "", "nfd")]),
-    ], [{ id: "q", exam_id: "e", source_label: "s", terms: ["ガ"] }]);
+    ], [{ id: "q", source_label: "s", terms: ["ガ"] }]);
     expect(d.entries).toHaveLength(1);
     expect(d.entries[0]!.senses).toHaveLength(2);
     expect(d.byTerm.get("ガ")).toBe(d.entries[0]);

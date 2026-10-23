@@ -1,8 +1,8 @@
 // D-181 Task A5 — where a saved AI 先生 thread links back to on /sensei.
 // A question thread's anchorId is `<question_id>:<choice|reveal>` (the practice
-// ExplanationPane; the old QuizSet used the same shape); a question_id is `<exam_id>-q<NNN>` (data/ip/quiz/questions.json: lowercase
-// letters and digits, e.g. 2009h21a, 2011h23tokubetsu, 2021r03). Anything else
-// parses as null and the row is shown without a link. The row links to the
+// ExplanationPane; threads saved by the old quiz page have the same shape); a question_id
+// is `<exam_id>-q<NNN>` (lib/quiz/questionId QUESTION_ID). Anything else parses as null
+// and the row is shown without a link. The row links to the
 // single-question page /practice/q/<question_id> (Stage 7 Task 13).
 //
 // Phase B: a review thread's anchorId is `<topic_id>:<YYYY-MM-DD>` (the learner's
@@ -13,22 +13,20 @@
 // dated thread without sending anything, so a past day's review stays reachable.
 
 import { isValidTermId } from "@/lib/glossary/termId";
+import { QUESTION_ID } from "@/lib/quiz/questionId";
 
-const QUESTION_ID = /^([0-9a-z]+)-q\d+$/;
-
-export function splitQuestionAnchor(anchorId: string): { questionId: string; examId: string } | null {
+/** The question id of a question thread's `<question_id>:<choice|reveal>` anchor, or null. */
+export function splitQuestionAnchor(anchorId: string): string | null {
   const colon = anchorId.lastIndexOf(":");
   if (colon <= 0 || colon === anchorId.length - 1) return null;
   const questionId = anchorId.slice(0, colon);
-  const m = QUESTION_ID.exec(questionId);
-  return m ? { questionId, examId: m[1]! } : null;
+  return QUESTION_ID.test(questionId) ? questionId : null;
 }
 
 /** `/practice/q/<question_id>` (locale-less, for the i18n Link), or null. */
 export function questionThreadHref(anchorId: string): string | null {
-  const parsed = splitQuestionAnchor(anchorId);
-  if (!parsed) return null;
-  return `/practice/q/${parsed.questionId}`;
+  const questionId = splitQuestionAnchor(anchorId);
+  return questionId ? `/practice/q/${questionId}` : null;
 }
 
 

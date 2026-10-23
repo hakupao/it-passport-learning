@@ -1,8 +1,9 @@
 // Stage 6 / Quiz Phase 0 (Session 86) — pure quiz model (types + helpers).
 //
-// NO Node APIs here: this module is imported by the client QuizSet component, so
-// it must stay bundler-safe. The filesystem layer (loaders) lives in quizReader.ts
-// and imports from here. Pure helpers are unit-tested in __tests__/quizReader.test.ts.
+// NO Node APIs here: this module is imported by client components (the practice
+// question face, explanation pane, AI 先生 anchors), so it must stay bundler-safe.
+// The filesystem layer (loaders) lives in quizReader.ts and imports from here. Pure
+// helpers are unit-tested in __tests__/quizReader.test.ts.
 
 export type DataLang = "jp" | "zh" | "en";
 
@@ -167,65 +168,11 @@ export function mergeExplanation(
   return { ...q, explanation: entry };
 }
 
-// ---- nav model (pure, testable) -------------------------------------------
-
-export interface QuizNavTopic {
-  topic_id: string;
-  /** major / medium in the active locale; name_jp is JP-only (OQ-03). */
-  major: string;
-  medium: string;
-  name_jp: string;
-  question_count: number;
-}
-export interface QuizNavCategory {
-  category: string;
-  topics: QuizNavTopic[];
-}
-
 /** Pick the active-locale member of a `{jp,zh,en}` triple (jp as the fallback). */
 export function localized(jp: string, zh: string, en: string, locale: string): string {
   const dl = toDataLang(locale);
   const v = dl === "zh" ? zh : dl === "en" ? en : jp;
   return v && v.trim() !== "" ? v : jp;
-}
-
-/**
- * Group topics by category (CATEGORY_ORDER first, unknowns appended in encounter
- * order), preserving index order within a category, and resolving major/medium to
- * `locale` (name_jp stays JP). Pure (no I/O).
- */
-export function buildTopicNav(index: QuizIndex, locale: string): QuizNavCategory[] {
-  const byCat = new Map<string, QuizNavTopic[]>();
-  for (const t of index.topics) {
-    const nt: QuizNavTopic = {
-      topic_id: t.topic_id,
-      major: localized(t.major_jp, t.major_zh, t.major_en, locale),
-      medium: localized(t.medium_jp, t.medium_zh, t.medium_en, locale),
-      name_jp: t.name_jp,
-      question_count: t.question_count,
-    };
-    const arr = byCat.get(t.category) ?? [];
-    arr.push(nt);
-    byCat.set(t.category, arr);
-  }
-  const ordered: QuizNavCategory[] = [];
-  const seen = new Set<string>();
-  for (const cat of CATEGORY_ORDER) {
-    const topics = byCat.get(cat);
-    if (topics) {
-      ordered.push({ category: cat, topics });
-      seen.add(cat);
-    }
-  }
-  for (const [cat, topics] of byCat) {
-    if (!seen.has(cat)) ordered.push({ category: cat, topics });
-  }
-  return ordered;
-}
-
-/** Exams oldest-first (defensive re-sort; the corpus is already chronological). */
-export function buildExamNav(index: QuizIndex): QuizExamRef[] {
-  return [...index.exams].sort((a, b) => a.gregorian - b.gregorian);
 }
 
 // ---- question helpers (pure) ----------------------------------------------
@@ -303,16 +250,4 @@ export function localizedExplanation(
     points: e.points.map((p) => localized(p.jp, p.zh, p.en, locale)),
     suspect: Boolean(e.key_guard?.suspect),
   };
-}
-
-export type QuizMode = "topic" | "exam";
-export function isValidMode(mode: string | undefined | null): mode is QuizMode {
-  return mode === "topic" || mode === "exam";
-}
-
-export function filterByTopic(questions: QuizQuestion[], topicId: string): QuizQuestion[] {
-  return questions.filter((q) => q.topic_id === topicId);
-}
-export function filterByExam(questions: QuizQuestion[], examId: string): QuizQuestion[] {
-  return questions.filter((q) => q.exam_id === examId);
 }

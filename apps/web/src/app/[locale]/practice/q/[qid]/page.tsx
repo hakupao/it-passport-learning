@@ -19,11 +19,10 @@ import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { topicStars } from "@/lib/practice/practiceIndex";
 import { loadQuestionsByIds } from "@/lib/practice/practiceReader";
+import { QUESTION_ID } from "@/lib/quiz/questionId";
 import { loadQuizIndex } from "@/lib/quiz/quizReader";
 
 export const dynamic = "force-dynamic";
-
-const QUESTION_ID = /^[0-9a-z]{4,16}-q\d{3}$/;
 
 type Props = { params: Promise<{ locale: string; qid: string }> };
 

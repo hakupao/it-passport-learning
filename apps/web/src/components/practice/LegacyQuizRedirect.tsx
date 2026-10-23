@@ -13,7 +13,7 @@ import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { legacyQuizTarget } from "@/lib/practice/legacyLinks";
 
-import styles from "./practice.module.css";
+import styles from "./legacy.module.css";
 
 export function LegacyQuizRedirect({ locale }: { locale: string }): React.ReactElement {
   const t = useTranslations("Practice");

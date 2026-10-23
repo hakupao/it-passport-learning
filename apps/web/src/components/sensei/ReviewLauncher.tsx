@@ -1,16 +1,17 @@
-// D-181 Phase B Task B2 — the AI 先生 topic review on a topic set page.
+// D-181 Phase B Task B2 — the AI 先生 topic review on a topic page (/practice/browse/<topic_id>,
+// Stage 7 TopicPage).
 //
-// A 「AI 先生と復習する」 button in the set header opens the page's panel
+// A 「AI 先生と復習する」 button in the topic page header opens the page's panel
 // (SenseiHost) on this topic's review thread: kind "review", anchorId
 // `<topic_id>:<local YYYY-MM-DD>` (one thread per topic per day). The anchor text
 // is a snapshot of the learning record taken when the panel opens (reviewAnchor),
 // so answering more questions while the thread is open does not change it.
 //
-// Arriving from the quiz landing's review card (`?review=1`): once the learning
-// record has loaded, the flag is removed from the URL (history.replaceState: no
-// RSC refetch of the set, and a reload never sees it again) and the panel opens.
+// Arriving from the today page's 「AI 分析」 link (WeakTopics, `?review=1`): once the
+// learning record has loaded, the flag is removed from the URL (history.replaceState:
+// no RSC refetch of the page, and a reload never sees it again) and the panel opens.
 // The opener text (which SenseiPanel sends once into an empty thread) is passed
-// only when the card's click intent (lib/sensei/reviewIntent: this topic, ≤ 30 s
+// only when that link's click intent (lib/sensei/reviewIntent: this topic, ≤ 30 s
 // old) is taken too; a bookmark or a copied `?review=1` link opens the panel with
 // the opener offered as a suggestion chip, nothing sent.
 // Arriving from a /sensei thread row (`&thread=<YYYY-MM-DD>`, strictly validated):

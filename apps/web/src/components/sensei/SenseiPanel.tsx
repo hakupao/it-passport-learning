@@ -13,13 +13,14 @@
 // - Before the first token: a visible 「考え中…」 (first token is 2–4 s on Sonnet).
 // - The conversation is an aria-live="polite" log; Stop while generating.
 // - A refused save (quota) shows a non-blocking notice (§0-6).
-// - Phase B: an anchor with an `opener` (the quiz review card) sends that text as
-//   the first user turn once — only into an empty thread, only once the stored
-//   thread has been read and a key exists (without a key it waits for the key
-//   to be saved). The guard is the anchor object itself: each click on the card
-//   makes a new anchor, so effect re-runs never send twice.
+// - Phase B: an anchor with an `opener` (the topic review opened from the today
+//   page's 「AI 分析」) sends that text as the first user turn once — only into an
+//   empty thread, only once the stored thread has been read and a key exists
+//   (without a key it waits for the key to be saved). The guard is the anchor object
+//   itself: each opening makes a new anchor, so effect re-runs never send twice.
 // - A `#<question_id>` link in a reply (the review's recommendations; only targets
-//   shaped like a question id, so an in-dialog `#sensei-input` is left alone),
+//   shaped like a question id — lib/quiz/questionId — so an in-dialog `#sensei-input`
+//   is left alone),
 //   D-190 §0-18: the host's onQuestionLink is asked first (the practice group: true =
 //   it moved to that question of the group); else, when that question is on the page,
 //   as before. Either way the panel closes, then scrolls to the question and focuses
@@ -40,6 +41,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from "@/components/ui/dialog";
 import { useSensei } from "@/hooks/useSensei";
 import { useRouter } from "@/i18n/navigation";
+import { QUESTION_ID } from "@/lib/quiz/questionId";
 import type { SenseiError } from "@/lib/sensei/errors";
 import type { ThreadKind } from "@/lib/sensei/threadStore";
 
@@ -54,9 +56,6 @@ export interface SenseiAnchor {
   /** Sent once as the first user turn when the thread is empty (Phase B review). */
   opener?: string;
 }
-
-/** A question id as in data/ip/quiz/questions.json (the `<article id>` of a quiz card). */
-const QUESTION_ID = /^[0-9a-z]+-q\d+$/;
 
 function textOf(m: UIMessage): string {
   return m.parts.map((p) => (p.type === "text" ? p.text : "")).join("");

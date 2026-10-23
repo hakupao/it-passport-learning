@@ -21,7 +21,6 @@ export interface DictSense {
 
 export interface DictQuestionRef {
   id: string;
-  examId: string;
   sourceLabel: string;
 }
 
@@ -49,7 +48,7 @@ export interface Dictionary {
 export function buildDictionary(
   index: ReaderIndex,
   units: TextbookUnit[],
-  questions: Pick<QuizQuestion, "id" | "exam_id" | "source_label" | "terms">[],
+  questions: Pick<QuizQuestion, "id" | "source_label" | "terms">[],
 ): Dictionary {
   const navPos = new Map<string, number>();
   for (const cat of buildNav(index, "ja")) {
@@ -87,7 +86,7 @@ export function buildDictionary(
     for (const name of q.terms ?? []) {
       const entry = byTerm.get(name.normalize("NFC"));
       if (!entry || entry.questions.some((r) => r.id === q.id)) continue;
-      entry.questions.push({ id: q.id, examId: q.exam_id, sourceLabel: q.source_label });
+      entry.questions.push({ id: q.id, sourceLabel: q.source_label });
     }
   }
 

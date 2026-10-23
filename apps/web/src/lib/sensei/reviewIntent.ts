@@ -1,9 +1,9 @@
 // D-181 Phase B (review m1) — the click intent behind `?review=1`.
 //
-// The quiz landing's review card writes sessionStorage `itp:sensei:review-intent`
-// = { topicId, at } when a row is clicked; the topic set's ReviewLauncher sends the
-// review opener only when it arrives with `?review=1` AND takes a matching intent no
-// older than 30 s. A bookmark or a copied link carries the flag but no intent, so it
+// The today page's 「AI 分析」 link (WeakTopics) writes sessionStorage
+// `itp:sensei:review-intent` = { topicId, at } when it is clicked; the topic page's
+// ReviewLauncher sends the review opener only when it arrives with `?review=1` AND
+// takes a matching intent no older than 30 s. A bookmark or a copied link carries the flag but no intent, so it
 // only opens the panel (the opener is offered as a suggestion, not sent).
 // takeReviewIntent always removes the key (consumed once). Never throws.
 
@@ -25,7 +25,7 @@ export function writeReviewIntent(storage: StorageLike | null, topicId: string, 
   try {
     storage?.setItem(REVIEW_INTENT_STORAGE, JSON.stringify({ topicId, at: now }));
   } catch {
-    // blocked storage: the set page then only opens the panel
+    // blocked storage: the topic page then only opens the panel
   }
 }
 

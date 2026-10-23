@@ -47,7 +47,7 @@ const ENTRY: DictEntry = {
     { unitId: "strategy-03-12-u02", topicId: "strategy-03-12", category: "strategy", term: unitTerm("機能要件", "b") },
     { unitId: "technology-14-36-u03", topicId: "technology-14-36", category: "technology", term: unitTerm("機能要件", "c") },
   ],
-  questions: [{ id: "2009h21a-q054", examId: "2009h21a", sourceLabel: "平成21年度 秋期 問54" }],
+  questions: [{ id: "2009h21a-q054", sourceLabel: "平成21年度 秋期 問54" }],
 };
 
 const UNIT_TITLES_JP: Record<string, string> = {
