@@ -8,7 +8,7 @@ import { NextIntlClientProvider, createTranslator } from "next-intl";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import type { LearningRecord } from "@/lib/learning/record";
+import type { LearningRecord } from "@/lib/learning/recordV1";
 
 function messages(locale: string): Record<string, unknown> {
   return JSON.parse(readFileSync(path.resolve(__dirname, `../../../../messages/${locale}.json`), "utf-8"));

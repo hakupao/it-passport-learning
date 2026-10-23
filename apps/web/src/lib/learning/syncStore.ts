@@ -10,7 +10,7 @@
 // not parse is CorruptStoredRecordError — never silently replaced by an empty
 // record (a following merge-and-write would wipe the stored history).
 
-import { emptyRecord, mergeRecords, parseRecord, type LearningRecord } from "./record";
+import { emptyRecord, mergeRecords, parseRecord, type LearningRecord } from "./recordV1";
 
 export const LEARNING_REDIS_KEY = "learn:owner:v1";
 

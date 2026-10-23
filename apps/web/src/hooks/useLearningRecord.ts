@@ -53,7 +53,7 @@ import {
   mergeRecords,
   recordAnswer,
   type LearningRecord,
-} from "@/lib/learning/record";
+} from "@/lib/learning/recordV1";
 import {
   hideFlushPlan,
   onPageHide,

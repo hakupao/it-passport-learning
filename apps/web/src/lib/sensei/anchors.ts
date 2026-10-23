@@ -22,7 +22,7 @@
 
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { AppLocale } from "@/i18n/routing";
-import type { LearningRecord, QuestionResult } from "@/lib/learning/record";
+import type { LearningRecord, QuestionResult } from "@/lib/learning/recordV1";
 import {
   CHOICE_LETTERS,
   localizedChoices,

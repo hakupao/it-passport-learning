@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { emptyRecord, type LearningRecord, type QuestionResult } from "@/lib/learning/record";
+import { emptyRecord, type LearningRecord, type QuestionResult } from "@/lib/learning/recordV1";
 
 import { hasQualifyingTopic, weakTopics } from "../weakness";
 

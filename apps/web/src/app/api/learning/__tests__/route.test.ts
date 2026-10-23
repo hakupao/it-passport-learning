@@ -6,7 +6,7 @@
 import { createHash } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { emptyRecord, mergeRecords, type LearningRecord } from "@/lib/learning/record";
+import { emptyRecord, mergeRecords, type LearningRecord } from "@/lib/learning/recordV1";
 import { makeFakeLearningRedis } from "@/lib/learning/__tests__/fakeLearningRedis";
 
 const { redisHolder } = vi.hoisted(() => ({

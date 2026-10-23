@@ -10,7 +10,7 @@
 // the response body).
 
 import { isOwnerRequest } from "@/lib/owner";
-import { parseRecord, type LearningRecord } from "@/lib/learning/record";
+import { parseRecord, type LearningRecord } from "@/lib/learning/recordV1";
 import {
   CorruptStoredRecordError,
   loadLearningRedis,

@@ -9,7 +9,7 @@
 // wrong one. Order: rate ascending, then answered descending (more evidence
 // first), then topicId — independent of record / topic key order.
 
-import { topicStats, type LearningRecord } from "@/lib/learning/record";
+import { topicStats, type LearningRecord } from "@/lib/learning/recordV1";
 
 export interface WeakTopic {
   topicId: string;

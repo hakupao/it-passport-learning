@@ -6,7 +6,7 @@
 // record); the caller keeps working from localStorage. An aborted request
 // (component unmounted) returns null without a warning.
 
-import { deltaSince, parseRecord, type LearningRecord } from "./record";
+import { deltaSince, parseRecord, type LearningRecord } from "./recordV1";
 
 export const LEARNING_API_PATH = "/api/learning";
 

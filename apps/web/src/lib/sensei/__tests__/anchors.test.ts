@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { TermCard } from "@/lib/glossary/dictionary";
-import type { LearningRecord } from "@/lib/learning/record";
+import type { LearningRecord } from "@/lib/learning/recordV1";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 import { examRecency, FREE_DETAIL_MAX, FREE_NO_MATCH, freeAnchor, questionAnchor, reviewAnchor, type SenseiTermContext } from "../anchors";

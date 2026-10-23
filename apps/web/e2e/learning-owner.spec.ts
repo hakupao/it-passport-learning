@@ -28,7 +28,7 @@
 import { test, expect, type Page, type Route } from "@playwright/test";
 
 import ja from "../messages/ja.json";
-import { mergeRecords, type LearningRecord } from "../src/lib/learning/record";
+import { mergeRecords, type LearningRecord } from "../src/lib/learning/recordV1";
 
 const OWNER_KEY = process.env.E2E_OWNER_KEY ?? "";
 

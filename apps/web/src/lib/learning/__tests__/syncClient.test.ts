@@ -3,7 +3,7 @@
 // never logs the record). Uses a fake fetch; nothing leaves the process.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { deltaSince, emptyRecord, mergeRecords, type LearningRecord } from "../record";
+import { deltaSince, emptyRecord, mergeRecords, type LearningRecord } from "../recordV1";
 import { hideFlushPlan, KEEPALIVE_MAX_BYTES, onPageHide, pullRemote, pushRemote } from "../syncClient";
 
 const REC: LearningRecord = {

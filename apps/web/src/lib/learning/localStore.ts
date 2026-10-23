@@ -22,7 +22,7 @@ import {
   mergeRecords,
   parseRecord,
   type LearningRecord,
-} from "./record";
+} from "./recordV1";
 
 export const LEARNING_CORRUPT_KEY = `${LEARNING_STORAGE_KEY}:corrupt`;
 

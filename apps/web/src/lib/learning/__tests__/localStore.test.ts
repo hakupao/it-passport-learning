@@ -7,7 +7,7 @@
 import { describe, expect, it } from "vitest";
 
 import { applyStorageEvent, LEARNING_CORRUPT_KEY, loadLocal, saveLocal } from "../localStore";
-import { emptyRecord, LEARNING_STORAGE_KEY, mergeRecords, type LearningRecord } from "../record";
+import { emptyRecord, LEARNING_STORAGE_KEY, mergeRecords, type LearningRecord } from "../recordV1";
 import type { StorageLike } from "@/lib/storage";
 
 function memStorage(seed: Record<string, string> = {}): StorageLike & { map: Map<string, string> } {

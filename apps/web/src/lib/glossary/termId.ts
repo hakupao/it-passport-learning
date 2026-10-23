@@ -5,19 +5,13 @@
 // Headwords contain `/ & ? space .` (e.g. "ISO/IEC 27000", "M&A"), so the raw
 // text cannot be a path segment; a hash needs no extra mapping file.
 //
-// Synchronous, pure, isomorphic (browser + server): TextEncoder + Math.imul only,
-// no node:crypto and no other imports.
+// Synchronous, pure, isomorphic (browser + server). The hash lives in ../hash
+// (relative import: e2e specs import this module by relative path, where `@/`
+// does not resolve).
 
-const encoder = new TextEncoder();
+import { fnv1a32 } from "../hash";
 
-function fnv1a32hex(s: string): string {
-  let h = 0x811c9dc5;
-  for (const b of encoder.encode(s)) {
-    h ^= b;
-    h = Math.imul(h, 0x01000193) >>> 0;
-  }
-  return h.toString(16).padStart(8, "0");
-}
+const fnv1a32hex = (s: string): string => fnv1a32(s).toString(16).padStart(8, "0");
 
 /** Stable id for a JP headword: `t` + 16 lowercase hex digits (/^t[0-9a-f]{16}$/). */
 export function termId(term: string): string {
