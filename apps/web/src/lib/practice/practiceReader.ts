@@ -6,6 +6,12 @@
 // Paths resolve through quizDataRoot() / textbookRoot() (straight to
 // data/ip/quiz and data/ip/textbook) so nft never traces the IPA exams /
 // sources / syllabus trees into a route bundle.
+//
+// The today payload reads only the base questions (questions.json) and the
+// chumon registry: the translation / explanation sidecars (~30 MB) are parsed
+// only by the practice page loaders (loadChumonGroups, loadQuestionsByIds).
+
+import "server-only";
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -35,12 +41,17 @@ interface ChumonRegistry {
   groups: { key: string; exam_id: string; member_ids: string[] }[];
 }
 
-/** data/ip/quiz/chumon_groups.json with per-language preamble fold points. */
+const loadRegistryFile = memo(() => readJson<ChumonRegistry>(path.join(quizDataRoot(), "chumon_groups.json")));
+
+/** chumon group key → member ids in question-number order; reads only chumon_groups.json. */
+export const loadChumonRegistry: () => Promise<Record<string, string[]>> = memo(async () => {
+  const registry = await loadRegistryFile();
+  return Object.fromEntries(registry.groups.map((g) => [g.key, [...g.member_ids].sort()]));
+});
+
+/** data/ip/quiz/chumon_groups.json with per-language preamble fold points (merged stems: loads the sidecars). */
 export const loadChumonGroups: () => Promise<ChumonGroup[]> = memo(async () => {
-  const [registry, questions] = await Promise.all([
-    readJson<ChumonRegistry>(path.join(quizDataRoot(), "chumon_groups.json")),
-    loadAllQuestions(),
-  ]);
+  const [registry, questions] = await Promise.all([loadRegistryFile(), loadAllQuestions()]);
   return buildChumonGroups(registry.groups, questions);
 });
 
@@ -66,7 +77,7 @@ export function loadTodayIndex(locale: string): Promise<TodayIndex> {
         loadBaseQuestions(),
         loadReaderIndex(),
         loadUnitMinutes(),
-        loadChumonGroups(),
+        loadChumonRegistry(),
         loadDictionary(),
       ]);
       return buildTodayIndex({

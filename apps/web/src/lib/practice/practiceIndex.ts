@@ -12,20 +12,22 @@
 //     paragraph break "\n\n" inside it; the returned count INCLUDES that "\n\n",
 //     so stem.slice(0, n) + stem.slice(n) === stem and stem.slice(0, n) is the
 //     same string for every member. No "\n\n" inside the prefix, fewer than two
-//     stems, a missing stem, or a fold that would swallow a whole stem → null
-//     (show the stem unfolded). Stems are the displayed ones (localizedStem:
-//     jp = stem_jp after the stem_jp_clean merge, zh/en with JP fallback).
+//     stems, a missing stem, a whitespace-only preamble, or a fold that would
+//     swallow a whole stem → null (show the stem unfolded). Stems are the
+//     displayed ones (localizedStem: jp = stem_jp after the stem_jp_clean
+//     merge, zh/en with JP fallback).
 //   - resolveScope (§0-12): the server-side question list of a practice URL.
 //     "ids": input order, unknown ids dropped. "filter": topics are any-of, exam
 //     narrows them (both empty → the whole corpus; the URL parser never sends
-//     that); "seq" = corpus order (questions.json is id = exam / question-number
-//     order), "rand" = Fisher–Yates driven by mulberry32(seed). Take n, then
-//     expandGroups — a group member pulls its whole group in, so the list may
-//     run past n (§0-8 overflow).
+//     that); n is clamped to max(0, trunc(n)); "seq" = corpus order
+//     (questions.json is id = exam / question-number order), "rand" =
+//     Fisher–Yates driven by mulberry32(seed). Take n, then expandGroups — a
+//     group member pulls its whole group in, so the list may run past n (§0-8 overflow).
 //   - buildTodayIndex (§0-20): the browser payload of the today page.
 //     topicTerms = per topic, the terms that occur in the most of that topic's
 //     questions (counted once per question) among those with a dictionary card,
-//     top 3, ties by first appearance in corpus order.
+//     top 3, ties by first appearance in corpus order. Cards are narrowed to
+//     TodayTermCard (id / term / gloss / definition) to keep the payload small.
 //   - poolFromIndex: TodayIndex → schedule.ts QuestionPool.
 //
 // Bundler-safe: no node:* and only type imports from server-side modules
@@ -80,6 +82,7 @@ export function lcpPreamble(stems: readonly (string | null | undefined)[]): numb
   const k = first.slice(0, n).lastIndexOf("\n\n");
   if (k < 0) return null;
   const fold = k + 2;
+  if (first.slice(0, fold).trim() === "") return null; // nothing but whitespace to fold
   return ss.every((s) => s.length > fold) ? fold : null;
 }
 
@@ -147,7 +150,7 @@ export function resolveScope(
       [ids[i], ids[j]] = [ids[j]!, ids[i]!];
     }
   }
-  return expandGroups(scope.n === "all" ? ids : ids.slice(0, scope.n), groups);
+  return expandGroups(scope.n === "all" ? ids : ids.slice(0, Math.max(0, Math.trunc(scope.n))), groups);
 }
 
 export interface TopicMeta {
@@ -161,6 +164,9 @@ export interface TopicMeta {
   units: { id: string; title: string; minutes: number }[];
 }
 
+/** What the today page shows per term: headword → one-line definition, linked to the glossary. */
+export type TodayTermCard = Pick<TermCard, "id" | "term" | "gloss" | "definition">;
+
 export interface TodayIndex {
   /** quiz_index order */
   topics: TopicMeta[];
@@ -169,7 +175,7 @@ export interface TodayIndex {
   /** chumon group key → member ids in question-number order */
   groups: Record<string, string[]>;
   /** topicId → up to 3 cards (§0-20 「今天的 3 个用语」) */
-  topicTerms: Record<string, TermCard[]>;
+  topicTerms: Record<string, TodayTermCard[]>;
   /** examId → label_jp */
   exams: Record<string, string>;
 }
@@ -181,7 +187,8 @@ export interface TodayIndexInput {
   readerIndex: Pick<ReaderIndex, "topics">;
   /** unit_id → minutes (data/ip/textbook/unit_minutes.json) */
   unitMinutes: Record<string, number>;
-  groups: readonly ChumonGroup[];
+  /** chumon group key → member ids in question-number order (loadChumonRegistry) */
+  groups: Record<string, string[]>;
   /** buildTermCards(dict, questions, locale): cards keyed by the term as written in QuizQuestion.terms */
   termCards: Record<string, TermCard>;
   locale: string;
@@ -228,18 +235,18 @@ export function buildTodayIndex(input: TodayIndexInput): TodayIndex {
     };
   });
 
-  const topicTerms: Record<string, TermCard[]> = {};
+  const topicTerms: Record<string, TodayTermCard[]> = {};
   for (const t of quizIndex.topics) {
     const ranked = [...(termCount.get(t.topic_id) ?? new Map<string, number>())]
       .map(([term, count], order) => ({ term, count, order }))
       .sort((a, b) => b.count - a.count || a.order - b.order);
-    const cards: TermCard[] = [];
+    const cards: TodayTermCard[] = [];
     const seen = new Set<string>();
     for (const { term } of ranked) {
       const card = termCards[term]!;
       if (seen.has(card.id)) continue; // two spellings of one headword (NFC)
       seen.add(card.id);
-      cards.push(card);
+      cards.push({ id: card.id, term: card.term, gloss: card.gloss, definition: card.definition });
       if (cards.length === TOPIC_TERMS) break;
     }
     topicTerms[t.topic_id] = cards;
@@ -248,7 +255,7 @@ export function buildTodayIndex(input: TodayIndexInput): TodayIndex {
   return {
     topics,
     topicQuestionIds,
-    groups: groupMap(groups),
+    groups: Object.fromEntries(Object.entries(groups).map(([k, ids]) => [k, [...ids]])),
     topicTerms,
     exams: Object.fromEntries(quizIndex.exams.map((e) => [e.exam_id, e.label_jp])),
   };

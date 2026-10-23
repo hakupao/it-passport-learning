@@ -14,6 +14,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      // Next aliases `server-only` to its compiled marker (empty in server code, throws in client code);
+      // vitest runs server modules, so resolve it to the empty side like Next does for the server.
+      "server-only": fileURLToPath(new URL("./node_modules/next/dist/compiled/server-only/empty.js", import.meta.url)),
     },
   },
 });

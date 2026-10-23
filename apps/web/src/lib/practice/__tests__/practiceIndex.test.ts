@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { loadDictionary } from "../../glossary/dictionaryReader";
 import { loadAllQuestions, loadQuizIndex } from "../../quiz/quizReader";
 import { localizedStem, type QuizQuestion } from "../../quiz/quizModel";
+import { loadReaderIndex } from "../../textbook/reader";
 import {
   buildTodayIndex,
   groupMap,
@@ -129,6 +130,8 @@ describe("chumon groups + lcpPreamble (§0-8, Review Focus 4)", () => {
     expect(lcpPreamble(["P\n\nQ"])).toBeNull(); // a lone stem has nothing in common to fold
     expect(lcpPreamble(["P\n\n", "P\n\nQ"])).toBeNull(); // would fold away a whole stem
     expect(lcpPreamble(["P\n\nQ", undefined])).toBeNull(); // missing language
+    expect(lcpPreamble(["\n\nA", "\n\nB"])).toBeNull(); // "\n\n" at position 0: nothing to fold
+    expect(lcpPreamble([" \u3000\n\nA", " \u3000\n\nB"])).toBeNull(); // whitespace-only preamble
   });
 });
 
@@ -151,6 +154,9 @@ describe("resolveScope (§0-12)", () => {
     expect(resolveScope({ ...base, topics: ["ta"], exam: "e2" }, corpus, {})).toEqual(["e2-q001", "e2-q003"]);
     expect(resolveScope({ ...base, topics: [], exam: "e1", n: 2 }, corpus, {})).toEqual(["e1-q001", "e1-q002"]);
     expect(resolveScope({ ...base, topics: ["nope"] }, corpus, {})).toEqual([]);
+    // n is clamped to max(0, trunc(n))
+    expect(resolveScope({ ...base, topics: [], exam: "e1", n: 2.7 }, corpus, {})).toEqual(["e1-q001", "e1-q002"]);
+    expect(resolveScope({ ...base, topics: [], exam: "e1", n: -3 }, corpus, {})).toEqual([]);
   });
 
   it("rand is a deterministic mulberry32(seed) Fisher–Yates shuffle", () => {
@@ -227,7 +233,7 @@ describe("buildTodayIndex (fixture)", () => {
     ],
     readerIndex,
     unitMinutes: { u1: 10, u2: 12 },
-    groups: [{ key: "G", memberIds: ["e1-q003", "e1-q004"], preambleChars: { jp: 4, zh: null, en: null } }],
+    groups: { G: ["e1-q003", "e1-q004"] },
     // x and x2 are two spellings of one headword (same card id)
     termCards: { x: card("cx"), x2: card("cx"), y: card("cy"), z: card("cz"), w: card("cw") },
     locale: "en",
@@ -283,6 +289,7 @@ describe("TodayIndex (§0-20)", () => {
       expect(cards.length, topic).toBeLessThanOrEqual(3);
       expect(new Set(cards.map((c) => c.id)).size, topic).toBe(cards.length);
       for (const c of cards) expect(dict.byId.has(c.id), `${topic} ${c.id}`).toBe(true);
+      for (const c of cards) expect(Object.keys(c).sort(), c.id).toEqual(["definition", "gloss", "id", "term"]);
       total += cards.length;
     }
     expect(total).toBeGreaterThan(150); // nearly every topic has 3
@@ -292,6 +299,10 @@ describe("TodayIndex (§0-20)", () => {
     const [today, index, all] = await Promise.all([loadTodayIndex("en"), loadQuizIndex(), loadAllQuestions()]);
     expect(today.topics.map((t) => t.id)).toEqual(index.topics.map((t) => t.topic_id));
     expect(Object.keys(today.exams)).toHaveLength(index.exams.length);
+    // every quiz topic has textbook units (same topic set as unit_index)
+    const reader = await loadReaderIndex();
+    expect(today.topics.map((t) => t.id).sort()).toEqual(reader.topics.map((t) => t.topic_id).sort());
+    for (const t of today.topics) expect(t.units.length, t.id).toBeGreaterThan(0);
     const pool = poolFromIndex(today);
     const ids = Object.values(pool.topicQuestionIds).flat();
     expect(ids).toHaveLength(all.length);
