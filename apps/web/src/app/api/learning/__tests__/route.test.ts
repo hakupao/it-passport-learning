@@ -55,7 +55,7 @@ const OWNER_KEY = "test-owner-key";
 const OWNER_COOKIE_HEADER = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;
 const URL_BASE = "http://localhost/api/learning";
 const CAP = 1048576;
-/** Server clock during each test (vi.setSystemTime): the `now` of every v1 upgrade. */
+/** Server clock during each test (fake Date + setSystemTime): the `now` of every v1 upgrade. */
 const NOW = Date.UTC(2026, 9, 23, 5, 0, 0);
 
 function put(
@@ -129,7 +129,8 @@ function recordOfBytes(bytes: number): string {
 let errSpy: ReturnType<typeof vi.spyOn>;
 
 beforeEach(() => {
-  vi.setSystemTime(NOW); // Date only (no fake timers): upgradeV1's `now` is deterministic
+  vi.useFakeTimers({ toFake: ["Date"] }); // Date only: stream reads still run on real timers
+  vi.setSystemTime(NOW); // upgradeV1's `now` is deterministic
   vi.stubEnv("OWNER_KEY", OWNER_KEY);
   redisHolder.current = makeFakeLearningRedis();
   errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
