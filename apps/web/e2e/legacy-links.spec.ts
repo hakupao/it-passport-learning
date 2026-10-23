@@ -5,7 +5,9 @@
 //   /quiz#<qid>                         → /practice/q/<qid>            (also with ?mode=exam&id=…, the old
 //                                                                         glossary / /sensei link shape)
 //   /quiz?mode=topic&id=X&review=1      → /practice/browse/X, the AI 先生 review panel opens; nothing is
-//                                          sent (a bookmark writes no click intent; no key is saved either)
+//                                          sent (a bookmark writes no click intent — a sessionStorage spy
+//                                          checks the redirect never writes one; a key is saved and the
+//                                          fake API counts requests, so "nothing sent" is not vacuous)
 //   /quiz?mode=topic&id=X&thread=<date> → /practice/browse/X, that dated review thread opens, nothing sent
 //                                          (wins over review=1)
 //   /quiz?mode=topic&id=X               → /practice?topic=X&prefill=1  (setup panel, topic pre-selected)
@@ -18,7 +20,7 @@
 import { test, expect, type Page } from "@playwright/test";
 
 import ja from "../messages/ja.json";
-import { guardAnthropic } from "./helpers/fakeAnthropic";
+import { fakeAnthropic, guardAnthropic, type FakeAnthropic } from "./helpers/fakeAnthropic";
 import { trackLearningRequests } from "./helpers/learning";
 
 const QID = "2009h21a-q054";
@@ -40,6 +42,42 @@ test.afterEach(() => {
 });
 
 const panel = (page: Page) => page.getByRole("dialog");
+const INTENT_KEY = "itp:sensei:review-intent";
+
+declare global {
+  interface Window {
+    __intentWrites?: string[];
+  }
+}
+
+/** A saved key + the fake API (so a send would really go out and be counted), and a spy on every
+ *  sessionStorage write of the review intent, installed before any page script runs. The legacy
+ *  redirect is a client-side navigation, so the window (and the spy's list) survives it. */
+async function armReview(page: Page): Promise<FakeAnthropic> {
+  const fake = await fakeAnthropic(page);
+  await page.addInitScript(
+    ([intentKey, key]) => {
+      localStorage.setItem(
+        "itp:sensei:key:v1",
+        JSON.stringify({ provider: "anthropic", apiKey: key, savedAt: "2026-10-01T00:00:00.000Z" }),
+      );
+      window.__intentWrites = [];
+      const set = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k: string, v: string) {
+        if (this === window.sessionStorage && k === intentKey) window.__intentWrites!.push(v);
+        return set.call(this, k, v);
+      };
+    },
+    [INTENT_KEY, "sk-ant-test-0000000000000000wxyz"] as const,
+  );
+  return fake;
+}
+
+/** The topic page has settled: the launcher is enabled (record loaded) and a held send would have gone out. */
+async function settle(page: Page): Promise<void> {
+  await expect(page.getByTestId("review-launcher")).toBeEnabled();
+  await page.waitForTimeout(1500);
+}
 
 for (const [label, from, locale] of [
   ["#qid", `/ja/quiz#${QID}`, "ja"],
@@ -55,12 +93,16 @@ for (const [label, from, locale] of [
 }
 
 test("legacy ?mode=topic&id=X&review=1 → the topic page with the review panel open, nothing sent", async ({ page }) => {
+  const fake = await armReview(page);
   await page.goto(`/ja/quiz?mode=topic&id=${TOPIC}&review=1`);
   await expect(panel(page)).toBeVisible();
   await expect(page).toHaveURL(new RegExp(`/ja/practice/browse/${TOPIC}$`));
   await expect(page.locator(`main[data-topic="${TOPIC}"]`)).toBeVisible();
+  await expect(panel(page).getByTestId("sensei-key-missing")).toHaveCount(0); // the key is there: a send could go out
   await expect(panel(page).getByRole("button", { name: ja.Sensei.reviewOpener })).toBeVisible(); // a suggestion
-  expect(await page.evaluate(() => sessionStorage.getItem("itp:sensei:review-intent"))).toBeNull();
+  await settle(page);
+  expect(fake.requests).toHaveLength(0);
+  expect(await page.evaluate(() => window.__intentWrites)).toEqual([]); // the redirect never wrote an intent
 });
 
 test("legacy ?mode=topic&id=X&thread=<date> → the topic page with that dated thread open (wins over review=1)", async ({
@@ -89,10 +131,14 @@ test("legacy ?mode=topic&id=X&thread=<date> → the topic page with that dated t
     },
     { id, anchorId },
   );
+  const fake = await armReview(page);
   await page.goto(`/ja/quiz?mode=topic&id=${TOPIC}&review=1&thread=${PAST}`);
   await expect(panel(page)).toBeVisible();
   await expect(panel(page).getByTestId("sensei-log")).toContainText("過去の復習の返答です。");
   await expect(page).toHaveURL(new RegExp(`/ja/practice/browse/${TOPIC}$`));
+  await settle(page);
+  expect(fake.requests).toHaveLength(0);
+  expect(await page.evaluate(() => window.__intentWrites)).toEqual([]);
 });
 
 test("legacy ?mode=topic&id=X → the setup panel with the topic pre-selected", async ({ page }) => {

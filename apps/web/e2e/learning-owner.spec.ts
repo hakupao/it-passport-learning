@@ -42,6 +42,8 @@ import {
   type LearningRecord,
   type WireRecordV2,
 } from "../src/lib/learning/record";
+import { guardAnthropic } from "./helpers/fakeAnthropic";
+import { answerChoice } from "./helpers/learning";
 
 const OWNER_KEY = process.env.E2E_OWNER_KEY ?? "";
 
@@ -111,8 +113,15 @@ function expectAllGetsV2(sync: Sync): void {
   for (const u of sync.getUrls) expect(new URL(u).searchParams.get("v")).toBe("2");
 }
 
+let unhandled: string[] = [];
+
+test.afterEach(() => {
+  expect(unhandled, "requests to api.anthropic.com").toEqual([]);
+});
+
 // Never send the owner key anywhere but a local server (prod traces / retries would capture it).
-test.beforeEach(({ baseURL }) => {
+test.beforeEach(async ({ baseURL, page }) => {
+  unhandled = await guardAnthropic(page);
   const host = baseURL ? new URL(baseURL).hostname : "";
   if (host !== "localhost" && host !== "127.0.0.1") {
     throw new Error(
@@ -138,11 +147,8 @@ const choice = (page: Page, letter: string) =>
 
 /** ア — wrong (keyed イ); retried until the session has hydrated and restored. */
 async function answerFirstChoice(page: Page): Promise<void> {
-  const btn = choice(page, "ア").locator("button");
-  await expect(async () => {
-    await btn.click();
-    await expect(btn).toHaveAttribute("aria-pressed", "true", { timeout: 500 });
-  }).toPass();
+  await expect(choice(page, "ア")).toHaveCount(1);
+  await answerChoice(page, "ア");
   await expect(choice(page, "イ")).toHaveAttribute("data-state", "correct");
 }
 

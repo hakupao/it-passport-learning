@@ -32,6 +32,9 @@
 //      ("clearThread() while streaming …"), not here.
 //   6. Move to another question of the group while the first reply is in flight and
 //      ask there → each thread keeps only its own messages and its own title in the index.
+//      Digits / arrows typed in the panel input reach the input, never the group (§0-14). The
+//      ask button exists only once the question is answered, so the check is that no second
+//      attempt is stored and ← / → did not move the group.
 //   7. (only with E2E_OWNER_KEY, local server — see learning-owner.spec.ts) the
 //      owner's /api/learning PUT bodies never contain the key.
 //   8. /sensei key settings: how to get a key (console link) while none is saved;
@@ -59,7 +62,15 @@ import zh from "../messages/zh.json";
 import { encodeRecord, emptyRecord } from "../src/lib/learning/record";
 import { termId } from "../src/lib/glossary/termId";
 import { fakeAnthropic, guardAnthropic, type FakeAnthropic, type FakeRequest } from "./helpers/fakeAnthropic";
-import { attemptsOf, localDate, recordWith, seedV2, waitForRecord } from "./helpers/learning";
+import {
+  attemptsOf,
+  choiceButton as letterButton,
+  LETTERS,
+  localDate,
+  recordWith,
+  seedV2,
+  waitForRecord,
+} from "./helpers/learning";
 
 const S = ja.Sensei;
 const KEY = "sk-ant-test-0000000000000000wxyz";
@@ -82,8 +93,7 @@ const threadKey = (anchorId: string) => `itp:sensei:thread:question.${encodeURIC
 /** the question on screen */
 const face = (page: Page) => page.locator("main article[id]").first();
 /** ア = 0, イ = 1, … */
-const LETTERS = ["ア", "イ", "ウ", "エ"] as const;
-const choiceButton = (page: Page, i: number) => face(page).locator(`li[data-letter="${LETTERS[i]}"] button`);
+const choiceButton = (page: Page, i: number) => letterButton(page, LETTERS[i]!);
 /** the explanation pane's 「AI 先生に聞く」 (one question on screen → one button) */
 const askButton = (page: Page) => page.getByTestId("ask-sensei");
 const panel = (page: Page) => page.getByRole("dialog");
@@ -401,6 +411,28 @@ test("move to another question while the first reply is in flight: each thread k
   await expect(log(page)).toContainText("問1 の質問");
   await expect(log(page)).not.toContainText("問2 の質問");
   await expect(log(page)).not.toContainText(REPLY_MARK);
+});
+
+test("keys typed in the panel input never act on the practice group", async ({ page }) => {
+  fake = await fakeAnthropic(page);
+  await presetKey(page);
+  await page.goto(SET_URL);
+  await openPanel(page, Q1, 1); // イ
+  await input(page).focus();
+  for (const k of ["1", "4", "ArrowRight", "ArrowLeft"]) await page.keyboard.press(k);
+  await expect(input(page)).toHaveValue("14"); // the digits reached the input
+  await page.keyboard.press("Escape");
+  await expect(panel(page)).toHaveCount(0);
+  await expect(face(page)).toHaveAttribute("id", Q1); // → / ← did not move the group
+  await expect(choiceButton(page, 1)).toHaveAttribute("aria-pressed", "true");
+  for (const i of [0, 2, 3]) await expect(choiceButton(page, i)).toHaveAttribute("aria-pressed", "false");
+  const answers = await page.evaluate(() => {
+    const raw = localStorage.getItem("itp:learn:v2");
+    return raw ? (JSON.parse(raw) as { a: Record<string, unknown[]> }).a : {};
+  });
+  expect(answers[Q1]).toHaveLength(1); // only the one click
+  expect(answers[Q2]).toBeUndefined();
+  expect(fake.requests).toEqual([]);
 });
 
 const SENSEI_URL = "/ja/sensei";

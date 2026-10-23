@@ -10,7 +10,7 @@
 //
 // record.ts has relative imports only, so it is safe to import from a spec.
 
-import type { Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 import {
   emptyRecord,
@@ -99,4 +99,24 @@ export function localDate(at: number): string {
 export async function waitForRecord(page: Page): Promise<void> {
   await page.locator("main").first().waitFor();
   await page.waitForFunction(() => document.querySelector("[data-pending]") === null);
+}
+
+/** The four choice letters, in ア〜エ order (key "1" = ア … "4" = エ). */
+export const LETTERS = ["ア", "イ", "ウ", "エ"] as const;
+export type Letter = (typeof LETTERS)[number];
+
+/** `s` with every RegExp metacharacter escaped. */
+export const escapeRe = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** The choice button of `letter` on the question on screen (practice group or single-question page). */
+export const choiceButton = (page: Page, letter: string): Locator =>
+  page.locator(`main article[id] li[data-letter="${letter}"] button`).first();
+
+/** Click a practice-group choice until it is taken (clicks are ignored until hydration + the session restore). */
+export async function answerChoice(page: Page, letter: string): Promise<void> {
+  const btn = choiceButton(page, letter);
+  await expect(async () => {
+    await btn.click();
+    await expect(btn).toHaveAttribute("aria-pressed", "true", { timeout: 500 });
+  }).toPass();
 }

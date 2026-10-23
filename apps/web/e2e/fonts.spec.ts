@@ -6,6 +6,18 @@
 // loaded font faces in the browser.
 import { expect, test } from "@playwright/test";
 
+import { guardAnthropic } from "./helpers/fakeAnthropic";
+
+let unhandled: string[] = [];
+
+test.beforeEach(async ({ page }) => {
+  unhandled = await guardAnthropic(page);
+});
+
+test.afterEach(() => {
+  expect(unhandled, "requests to api.anthropic.com").toEqual([]);
+});
+
 async function fontState(page: import("@playwright/test").Page): Promise<{ body: string; loaded: string[] }> {
   return page.evaluate(async () => {
     await document.fonts.ready;

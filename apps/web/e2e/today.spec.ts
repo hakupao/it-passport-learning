@@ -22,7 +22,9 @@ import { test, expect, type Page } from "@playwright/test";
 import ja from "../messages/ja.json";
 import { guardAnthropic } from "./helpers/fakeAnthropic";
 import {
+  answerChoice,
   attemptsOf,
+  escapeRe as escape,
   fill,
   recordWith,
   seedV2,
@@ -49,7 +51,6 @@ const KEY: Record<string, "イ" | "ウ"> = { "2009h21a-q054": "イ", "2010h22h-q
 
 const task = (page: Page, kind: string) => page.locator(`[data-task="${kind}"]`);
 const primary = (page: Page) => page.locator("[data-primary]");
-const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 let unhandled: string[] = [];
 
@@ -151,11 +152,7 @@ test("today, seeded record: mistakes row + primary button target, 一覧 → mis
   await expect(bar).toContainText(P.kind_mistakes);
   for (const [i, id] of WRONG.entries()) {
     await expect(page.locator("main[data-session] article")).toHaveAttribute("id", id);
-    const key = page.locator(`main[data-session] article li[data-letter="${KEY[id]}"] button`);
-    await expect(async () => {
-      await key.click();
-      await expect(key).toHaveAttribute("aria-pressed", "true", { timeout: 500 });
-    }).toPass();
+    await answerChoice(page, KEY[id]!);
     await page.locator('[data-nav="next"]').click();
     if (i < WRONG.length - 1) await expect(bar).toHaveAttribute("data-progress", `${i + 2}/${WRONG.length}`);
   }
@@ -184,11 +181,7 @@ test("mistakes: a wrong answer is in the book at once and in today's mistakes ro
   await page.clock.setFixedTime(t0);
 
   await page.goto(`/ja/practice?ids=${qid}`);
-  const wrong = page.locator('main[data-session] article li[data-letter="ア"] button');
-  await expect(async () => {
-    await wrong.click();
-    await expect(wrong).toHaveAttribute("aria-pressed", "true", { timeout: 500 });
-  }).toPass();
+  await answerChoice(page, "ア");
   await expect(page.locator("[data-status]")).toHaveText(P.statusWrong);
 
   // in the book at once, due tomorrow

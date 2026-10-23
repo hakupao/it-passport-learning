@@ -1,7 +1,7 @@
 // Stage 7 Phase 1 Task 15 — the practice group (/[locale]/practice?ids=…, D-187 / D-189 §6.2).
 // Supersedes quiz.spec.ts (the old QuizSet / QuizBrowser views are gone, Task 13).
 //
-//   1. One question per screen, answered by keyboard (1–4) and by click; Enter moves on (also with
+//   1. One question per screen, answered by keyboard (1 / 3 / 4) and by click; Enter moves on (also with
 //      the focus still on the clicked choice: an answered choice is aria-disabled, so Enter is not its
 //      own activation); ← / → move; a reload restores the position and the answers without recording
 //      them twice; 終了 / the last 「結果を見る」 → the summary (score, wrong list → /practice/q/<id>),
@@ -16,6 +16,8 @@
 //      shows its stem whole, a later one folds the common preamble into a closed 「共通前文 ▸」 that opens.
 //   5. zh: the translation toggle adds / removes the translated stem; settings.transDefault "shown" shows it
 //      from the start.
+//   6. en smoke: the face and the explanation render with the book labels (問 / 解説 / 解答) in Japanese.
+//   7. The single-question page /practice/q/<qid> is a reference view: clicks and keys record nothing.
 //
 // Fixture ids / keys come from data/ip/quiz/questions.json; strings from messages/*.json.
 // No LLM call fires here (a guard routes api.anthropic.com and the afterEach asserts it stayed unused).
@@ -25,7 +27,9 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import ja from "../messages/ja.json";
 import zh from "../messages/zh.json";
 import { guardAnthropic } from "./helpers/fakeAnthropic";
+import en from "../messages/en.json";
 import {
+  choiceButton,
   fill,
   rawStored,
   recordWith,
@@ -33,15 +37,17 @@ import {
   storedAttempts,
   trackLearningRequests,
   V1_KEY,
+  waitForRecord,
 } from "./helpers/learning";
 
 const P = ja.Practice;
 
-/** technology-14-36: keyed イ / ウ / イ; none is in a 中問 group. */
+/** technology-14-36: keyed イ / ウ / イ / エ; none is in a 中問 group. */
 const A = "2009h21a-q054";
 const B = "2010h22h-q085";
 const C = "2011h23tokubetsu-q058";
-const GROUP_URL = `/ja/practice?ids=${A},${B},${C}`;
+const D = "2016h28a-q092";
+const GROUP_URL = `/ja/practice?ids=${A},${B},${C},${D}`;
 
 const TABLE_CHOICE_QID = "2022r04-q059"; // keyed エ, 4 table choices, no figure
 const CHUMON = ["2010h22h-q089", "2010h22h-q090", "2010h22h-q091", "2010h22h-q092"];
@@ -50,7 +56,6 @@ const session = (page: Page) => page.locator("main[data-session]");
 const face = (page: Page) => session(page).locator("article");
 const progress = (page: Page) => page.locator("[data-progress]");
 const choiceItem = (page: Page, letter: string) => face(page).locator(`li[data-letter="${letter}"]`);
-const choiceButton = (page: Page, letter: string) => choiceItem(page, letter).locator("button").first();
 
 /** Press a digit until it is taken: keys are ignored until hydration + the session restore. */
 async function pressToAnswer(page: Page, key: "1" | "2" | "3" | "4", letter: string): Promise<void> {
@@ -78,13 +83,13 @@ test.afterEach(() => {
   expect(unhandled, "requests to api.anthropic.com").toEqual([]);
 });
 
-test("practice ja: keys 1–4 and clicks answer, Enter / ← / → move, reload restores, summary, retry wrong", async ({
+test("practice ja: keys 1 / 3 / 4 and clicks answer, Enter / ← / → move, reload restores, summary, retry wrong", async ({
   page,
 }) => {
   const learning = trackLearningRequests(page);
   await page.goto(GROUP_URL);
   await expect(face(page)).toHaveAttribute("id", A);
-  await expect(progress(page)).toHaveAttribute("data-progress", "1/3");
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/4");
   await expect(session(page).locator('[data-fid="answer"]')).toHaveCount(0); // no 解答栏 before answering
 
   // A (keyed イ): key 1 = ア, wrong
@@ -98,7 +103,7 @@ test("practice ja: keys 1–4 and clicks answer, Enter / ← / → move, reload 
   // Enter → B, focus on its article
   await page.keyboard.press("Enter");
   await expect(face(page)).toHaveAttribute("id", B);
-  await expect(progress(page)).toHaveAttribute("data-progress", "2/3");
+  await expect(progress(page)).toHaveAttribute("data-progress", "2/4");
   await expect(face(page)).toBeFocused();
 
   // B (keyed ウ): click ウ, correct; Enter with the focus on the clicked (now aria-disabled) choice moves on
@@ -121,7 +126,7 @@ test("practice ja: keys 1–4 and clicks answer, Enter / ← / → move, reload 
   // reload on C: position and answers restored, nothing recorded twice
   await page.reload();
   await expect(face(page)).toHaveAttribute("id", C);
-  await expect(progress(page)).toHaveAttribute("data-progress", "3/3");
+  await expect(progress(page)).toHaveAttribute("data-progress", "3/4");
   await expect(async () => {
     await page.keyboard.press("ArrowLeft");
     await expect(face(page)).toHaveAttribute("id", B, { timeout: 500 });
@@ -134,9 +139,17 @@ test("practice ja: keys 1–4 and clicks answer, Enter / ← / → move, reload 
   await page.keyboard.press("ArrowRight");
   await expect(face(page)).toHaveAttribute("id", C);
 
-  // C (keyed イ): key 4 = エ, wrong; Enter on the last question → the summary
+  // C (keyed イ): key 4 = エ, wrong; Enter → D
   await pressToAnswer(page, "4", "エ");
   await expectAnswered(page, "エ", "イ");
+  await expect(session(page).locator('[data-nav="next"]')).toHaveText(P.next);
+  await page.keyboard.press("Enter");
+  await expect(face(page)).toHaveAttribute("id", D);
+  await expect(progress(page)).toHaveAttribute("data-progress", "4/4");
+
+  // D (keyed エ): key 3 = ウ, wrong; Enter on the last question → the summary
+  await pressToAnswer(page, "3", "ウ");
+  await expectAnswered(page, "ウ", "エ");
   await expect(session(page).locator('[data-nav="next"]')).toHaveText(P.seeResults);
   await page.keyboard.press("Enter");
 
@@ -144,12 +157,13 @@ test("practice ja: keys 1–4 and clicks answer, Enter / ← / → move, reload 
   await expect(summary).toBeVisible();
   await expect(summary.getByRole("heading", { level: 1 })).toHaveText(P.summaryTitle);
   await expect(summary.getByRole("heading", { level: 1 })).toBeFocused();
-  await expect(summary.locator("[data-score]")).toHaveAttribute("data-score", "1/3");
-  await expect(summary.locator("[data-score]")).toHaveText(fill(P.score, { correct: 1, answered: 3 }));
+  await expect(summary.locator("[data-score]")).toHaveAttribute("data-score", "1/4");
+  await expect(summary.locator("[data-score]")).toHaveText(fill(P.score, { correct: 1, answered: 4 }));
   const wrongRows = summary.locator("[data-wrong]");
-  await expect(wrongRows).toHaveCount(2);
+  await expect(wrongRows).toHaveCount(3);
   await expect(wrongRows.nth(0)).toHaveAttribute("data-wrong", A);
   await expect(wrongRows.nth(1)).toHaveAttribute("data-wrong", C);
+  await expect(wrongRows.nth(2)).toHaveAttribute("data-wrong", D);
   await expect(wrongRows.nth(0).getByRole("link")).toHaveAttribute("href", `/ja/practice/q/${A}`);
   await expect(summary.locator('[data-action="today"]')).toHaveAttribute("href", "/ja");
   await expect(summary.locator('[data-action="continue"]')).toHaveCount(0); // not from=today
@@ -159,6 +173,7 @@ test("practice ja: keys 1–4 and clicks answer, Enter / ← / → move, reload 
     [A, "ア", false],
     [B, "ウ", true],
     [C, "エ", false],
+    [D, "ウ", false],
   ] as const) {
     const list = await storedAttempts(page, qid);
     expect(list, qid).toHaveLength(1);
@@ -168,16 +183,16 @@ test("practice ja: keys 1–4 and clicks answer, Enter / ← / → move, reload 
 
   // the summary survives a reload
   await page.reload();
-  await expect(page.locator("main[data-summary] [data-score]")).toHaveAttribute("data-score", "1/3");
+  await expect(page.locator("main[data-summary] [data-score]")).toHaveAttribute("data-score", "1/4");
 
-  // 「間違えた問題だけもう一度」 → a new group of A and C only
+  // 「間違えた問題だけもう一度」 → a new group of A, C and D only
   const retry = page.locator('[data-action="retry"]');
   await expect(retry).toHaveText(P.retryWrong);
-  await expect(retry).toHaveAttribute("href", new RegExp(`^/ja/practice\\?ids=${A},${C}&run=\\d+$`));
+  await expect(retry).toHaveAttribute("href", new RegExp(`^/ja/practice\\?ids=${A},${C},${D}&run=\\d+$`));
   await retry.click();
-  await expect(page).toHaveURL(new RegExp(`/ja/practice\\?ids=${A},${C}&run=\\d+$`));
+  await expect(page).toHaveURL(new RegExp(`/ja/practice\\?ids=${A},${C},${D}&run=\\d+$`));
   await expect(face(page)).toHaveAttribute("id", A);
-  await expect(progress(page)).toHaveAttribute("data-progress", "1/2");
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/3");
   await expect(choiceButton(page, "ア")).toHaveAttribute("aria-pressed", "false"); // a fresh group
 
   // 終了 at once → the summary of nothing answered; 「もう一度」 restarts the same group
@@ -188,7 +203,7 @@ test("practice ja: keys 1–4 and clicks answer, Enter / ← / → move, reload 
   await expect(page.locator("[data-score]")).toHaveText(P.noneAnswered);
   await page.locator('[data-action="restart"]').click();
   await expect(face(page)).toHaveAttribute("id", A);
-  await expect(progress(page)).toHaveAttribute("data-progress", "1/2");
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/3");
 
   // 「今日に戻る」 from a summary
   await session(page).locator("[data-finish]").click();
@@ -322,4 +337,37 @@ test("practice zh: settings.transDefault 'shown' shows the translation from the 
   const toggle = await translationToggle(page);
   await expect(toggle).toHaveAttribute("aria-pressed", "true");
   await expect(face(page).locator('[data-fid="stem-tr"]')).toBeVisible();
+});
+
+test("practice en: the face and the explanation render; book labels stay Japanese", async ({ page }) => {
+  await page.goto(`/en/practice?ids=${B}`);
+  await expect(face(page)).toHaveAttribute("id", B);
+  await expect(face(page).locator('[data-fid="stem"]')).toHaveAttribute("lang", "ja");
+  await expect(face(page).locator("[data-qno]")).toContainText(ja.Practice.qLabel); // 問 N
+  const pane = page.getByRole("region", { name: en.Practice.explanationAria });
+  await expect(pane).toContainText(en.Practice.awaitAnswer);
+  await pressToAnswer(page, "3", "ウ"); // keyed ウ
+  await expectAnswered(page, "ウ", "ウ");
+  await expect(pane.getByText(ja.Practice.explanationTab, { exact: true })).toBeVisible(); // 解説 tab
+  await expect(pane.getByRole("heading", { level: 2 })).toContainText(`${ja.Practice.qLabel} `); // 問 N
+  await expect(pane.locator('[data-verdict="correct"]')).toHaveAttribute("data-letter", "ウ");
+  await expect(pane.locator('[data-expl-lang="en"]')).toHaveAttribute("aria-pressed", "true"); // the UI locale
+  await expect(session(page).getByText(ja.Practice.answerTag, { exact: true })).toBeVisible(); // 解答栏
+  expect((await storedAttempts(page, B))[0]).toMatchObject({ choice: "ウ", correct: true });
+});
+
+test("single-question page: a reference view — clicks and keys record nothing", async ({ page }) => {
+  await page.goto(`/ja/practice/q/${C}`);
+  await waitForRecord(page);
+  const ref = page.locator(`main article[id="${C}"]`); // no session here: the reference view
+  await expect(ref).toBeVisible();
+  await expect(page.locator("main[data-session]")).toHaveCount(0);
+  await expect(ref.locator('li[data-letter="イ"]')).toHaveAttribute("data-state", "correct"); // the key, nothing "yours"
+  await choiceButton(page, "ア").click({ force: true }); // aria-disabled: force the click to hit the guard
+  await ref.focus();
+  await page.keyboard.press("2");
+  await page.waitForTimeout(500);
+  await expect(ref.locator('[aria-pressed="true"]')).toHaveCount(0);
+  expect(await storedAttempts(page, C)).toEqual([]);
+  expect((await rawStored(page, "itp:learn:v2")) ?? "").not.toContain(C);
 });

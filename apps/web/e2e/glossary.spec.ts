@@ -29,6 +29,7 @@ import en from "../messages/en.json";
 import ja from "../messages/ja.json";
 import zh from "../messages/zh.json";
 import { termId } from "../src/lib/glossary/termId";
+import { guardAnthropic } from "./helpers/fakeAnthropic";
 
 const LOCALES = [
   { locale: "ja", title: ja.Glossary.title },
@@ -42,6 +43,16 @@ const ISO_ID = termId(ISO_TERM);
 const MULTI_ID = termId(MULTI_SENSE_TERM);
 
 const termLink = (page: Page, id: string) => page.locator(`a[href$="/glossary/${id}"]`);
+
+let unhandled: string[] = [];
+
+test.beforeEach(async ({ page }) => {
+  unhandled = await guardAnthropic(page);
+});
+
+test.afterEach(() => {
+  expect(unhandled, "requests to api.anthropic.com").toEqual([]);
+});
 
 for (const f of LOCALES) {
   test(`glossary ${f.locale}: list 200 + search narrows + open detail`, async ({ page }) => {

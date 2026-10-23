@@ -19,7 +19,9 @@ import { test, expect, type Page } from "@playwright/test";
 
 import ja from "../messages/ja.json";
 import { encodeRecord, emptyRecord } from "../src/lib/learning/record";
+import { guardAnthropic } from "./helpers/fakeAnthropic";
 import {
+  answerChoice as answer,
   fill,
   rawStored,
   seedV1,
@@ -40,13 +42,15 @@ const QB = "2010h22h-q085";
 
 const article = (page: Page) => page.locator("main[data-session] article");
 
-async function answer(page: Page, letter: string): Promise<void> {
-  const btn = article(page).locator(`li[data-letter="${letter}"] button`);
-  await expect(async () => {
-    await btn.click();
-    await expect(btn).toHaveAttribute("aria-pressed", "true", { timeout: 500 });
-  }).toPass();
-}
+let unhandled: string[] = [];
+
+test.beforeEach(async ({ page }) => {
+  unhandled = await guardAnthropic(page);
+});
+
+test.afterEach(() => {
+  expect(unhandled, "requests to api.anthropic.com").toEqual([]);
+});
 
 test("textbook: opening a unit marks it read in the TOC", async ({ page }) => {
   const requests = trackLearningRequests(page);

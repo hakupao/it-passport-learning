@@ -16,6 +16,7 @@ import { guardAnthropic } from "./helpers/fakeAnthropic";
 import {
   attemptsOf,
   fill,
+  LETTERS,
   localDate,
   recordWith,
   seedV2,
@@ -46,7 +47,6 @@ const KEYED: [string, "ア" | "イ" | "ウ" | "エ"][] = [
   ["2009h21a-q016", "ア"],
   ["2009h21a-q018", "エ"],
 ];
-const LETTERS = ["ア", "イ", "ウ", "エ"] as const;
 const wrongOf = (key: string) => LETTERS[(LETTERS.indexOf(key as (typeof LETTERS)[number]) + 1) % 4]!;
 const WRONG_ROWS = KEYED.map(([id, key]) => [id, wrongOf(key), false] as const);
 
