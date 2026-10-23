@@ -13,21 +13,19 @@ import { Suspense } from "react";
 
 import { LocaleSwitcher, LocaleSwitcherLinks } from "@/components/LocaleSwitcher";
 import { Link } from "@/i18n/navigation";
-import type { AppLocale } from "@/i18n/routing";
 
 import { AppNav } from "./AppNav";
 import styles from "./app.module.css";
 
 type Props = {
-  locale: AppLocale;
   children: React.ReactNode;
 };
 
-export function AppShell({ locale, children }: Props): React.ReactElement {
+export function AppShell({ children }: Props): React.ReactElement {
   const t = useTranslations("App");
 
   return (
-    <div className={styles.frame} data-locale={locale}>
+    <div className={styles.frame}>
       <a href="#main-content" className={styles.skipLink}>
         {t("skipToContent")}
       </a>

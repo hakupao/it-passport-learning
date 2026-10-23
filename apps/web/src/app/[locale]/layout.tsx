@@ -28,6 +28,8 @@ import "../globals.css";
 // D-189 §3.2: BIZ UDPGothic site-wide; Noto Sans SC covers the simplified-Chinese
 // glyphs BIZ UD lacks. CJK files are large and Google serves them in unicode-range
 // slices, so no preload (preload: false also lifts the subsets requirement).
+// The .variable classes go on <html>: Tailwind resolves --font-sans and
+// --default-font-family on :root, so --font-biz / --font-sc must exist there.
 const bizUDPGothic = BIZ_UDPGothic({
   weight: ["400", "700"],
   variable: "--font-biz",
@@ -75,10 +77,10 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale}>
-      <body className={`${bizUDPGothic.variable} ${notoSansSC.variable} antialiased`}>
+    <html lang={locale} className={`${bizUDPGothic.variable} ${notoSansSC.variable}`}>
+      <body className="antialiased">
         <NextIntlClientProvider>
-          <AppShell locale={locale}>{children}</AppShell>
+          <AppShell>{children}</AppShell>
           <Analytics />
           <SpeedInsights />
         </NextIntlClientProvider>

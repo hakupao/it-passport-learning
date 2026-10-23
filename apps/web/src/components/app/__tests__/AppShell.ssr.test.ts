@@ -49,7 +49,7 @@ function render(locale: Locale, pathname = "/"): string {
     h(NextIntlClientProvider, {
       locale,
       messages: messages(locale),
-      children: h(AppShell, { locale, children: h("p", { id: "page-body" }, "BODY") }),
+      children: h(AppShell, { children: h("p", { id: "page-body" }, "BODY") }),
     }),
   );
 }
