@@ -13,6 +13,7 @@ import {
   baselineIds,
   BASELINE_N,
   daysUntil,
+  isAnswered,
   isNewUser,
   primaryHref,
   todayTasks,
@@ -151,6 +152,8 @@ describe("todayTasks", () => {
       ["new", plan.fresh.length, false],
     ]);
     expect(tasks[0]!.startCount).toBe(3);
+    // a done row links nowhere (no empty /practice?ids=&… URL)
+    expect(tasks[0]!.href).toBe("");
     // due and the new questions too
     for (let k = 3; k < 5; k++) r = rightOn(r, qOf(0, k), D0);
     for (const id of plan.fresh) r = rightOn(r, id, D0);
@@ -161,6 +164,7 @@ describe("todayTasks", () => {
       ["new", 0, true],
     ]);
     expect(primaryHref(tasks)).toBeNull();
+    expect(tasks.map((t) => t.href)).toEqual(["", "", ""]);
     // a row that was empty this morning is omitted, not shown as done
     let q: LearningRecord = { ...base(), settings: { dailyNewTarget: { value: 1, at: 1 } } };
     q = rightOn(q, qOf(0, 3), D0 - 8);
@@ -331,6 +335,28 @@ describe("todayTerms", () => {
     expect(todayTerms(INDEX, [qOf(7, 0)], TOPIC_IDS[4]!).map((c) => c.id)).toEqual(["t4-1", "t4-2", "t4-3"]);
     expect(todayTerms(INDEX, null, null)).toEqual([]);
     expect(todayTerms(INDEX, [qOf(7, 0)], null)).toEqual([]);
+  });
+});
+
+describe("isAnswered (one helper for the today model)", () => {
+  it("an id with a non-empty attempt list; an empty list (malformed record) is not answered", () => {
+    const r: LearningRecord = { ...base(), attempts: { [qOf(0, 0)]: [], [qOf(0, 1)]: rightOn(base(), qOf(0, 1), D0).attempts[qOf(0, 1)]! } };
+    expect(isAnswered(r, qOf(0, 0))).toBe(false);
+    expect(isAnswered(r, qOf(0, 1))).toBe(true);
+    expect(isAnswered(r, "__proto__")).toBe(false);
+    expect(isNewUser({ ...base(), attempts: { [qOf(0, 0)]: [] } })).toBe(true);
+    expect(answeredCount(r, INDEX)).toEqual({ answered: 1, total: 320 });
+  });
+
+  it("an id listed under two topics counts once (answeredCount, areaRates)", () => {
+    const dup: TodayIndex = {
+      ...INDEX,
+      topicQuestionIds: { ...INDEX.topicQuestionIds, [TOPIC_IDS[3]!]: [...INDEX.topicQuestionIds[TOPIC_IDS[3]!]!, qOf(0, 0)] },
+    };
+    let r = rightOn(base(), qOf(0, 0), D0 - 1); // strategy (topic 0, also listed under topic 3 = strategy)
+    r = wrongOn(r, qOf(3, 0), D0 - 1);
+    expect(answeredCount(r, dup)).toEqual({ answered: 2, total: 320 });
+    expect(areaRates(r, dup).strategy).toBe(0.5);
   });
 });
 

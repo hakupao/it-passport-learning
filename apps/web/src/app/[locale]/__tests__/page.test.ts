@@ -49,12 +49,18 @@ describe("/[locale] → the today page", () => {
 
   it("a dictionary failure → the payload without terms (the page still renders)", async () => {
     dict.fail = true;
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
     try {
       const p = (await home("ja")).props.children!.props as unknown as TodayPageProps;
+      // the catch covers the whole payload load, so the log does not claim it was the dictionary
+      expect(err).toHaveBeenCalledTimes(1);
+      expect(String(err.mock.calls[0]![0])).toContain("today payload");
+      expect(String(err.mock.calls[0]![0])).not.toMatch(/dictionary/i);
       expect(p.index.topics).toHaveLength(63);
       expect(Object.values(p.index.topicTerms).every((cards) => cards.length === 0)).toBe(true);
     } finally {
       dict.fail = false;
+      err.mockRestore();
     }
   });
 

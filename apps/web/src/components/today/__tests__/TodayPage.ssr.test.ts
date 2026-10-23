@@ -128,6 +128,8 @@ describe("TodayPage — header", () => {
     expect(none).not.toContain("data-exam-date");
     // 已做 x / 2900 stays
     expect(none).toMatch(/data-answered="15\/2900"/);
+    expect(textOf(/<div id="today-countdown-title"[^>]*>([\s\S]*?)<\/div>/.exec(none)![1]!)).toBe("学习进度");
+    expect(none).toMatch(/<div[^>]*data-progress-only=""/);
 
     state.record = seeded(idx("zh"));
     const set = render("zh");
@@ -318,6 +320,8 @@ describe("TodayPage — before the record loads", () => {
       expect(html).not.toContain("data-countdown");
       expect(html).not.toContain("data-answered");
       expect(html).not.toMatch(/\d+%/);
+      // the countdown box has no title yet (no 「距离考试」 → 「学习进度」 flash once the record loads)
+      expect(textOf(/<div id="today-countdown-title"[^>]*>([\s\S]*?)<\/div>/.exec(html)![1]!)).toBe("");
     }
   });
 });

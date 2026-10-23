@@ -4,9 +4,10 @@
 // The tasks come from the learning record, which lives in the browser, so the server sends the today
 // payload (loadTodayIndex: topics, ★, question ids, chumon groups, 3 terms per topic, exam labels) and
 // TodayPage computes the rest. LearningRecordProvider is mounted here (never in the locale layout) and
-// the owner flag reads a cookie, so the route is force-dynamic. A glossary dictionary failure falls
-// back to the dictionary-free payload (loadSetupIndex: topicTerms empty → no 「今天的 3 个用语」 box),
-// as the practice setup panel does, so the page never 500s on it.
+// the owner flag reads a cookie, so the route is force-dynamic. A failed payload load (in practice the
+// glossary dictionary, the only part the fallback skips) falls back to the dictionary-free payload
+// (loadSetupIndex: topicTerms empty → no 「今天的 3 个用语」 box), as the practice setup panel does, so
+// the page never 500s on it; if the fallback fails too, the error propagates.
 
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -34,7 +35,7 @@ export default async function HomePage({ params }: Props): Promise<React.ReactEl
   setRequestLocale(locale);
   const [index, owner] = await Promise.all([
     loadTodayIndex(locale).catch((err: unknown) => {
-      console.error("[today] glossary dictionary load failed; the page renders without 今天的 3 个用语", err);
+      console.error("[today] today payload failed to load; falling back to the payload without terms", err);
       return loadSetupIndex(locale);
     }),
     cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value)),

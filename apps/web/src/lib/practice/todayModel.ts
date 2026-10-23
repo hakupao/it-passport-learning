@@ -26,9 +26,12 @@
 //     pickNew(r, pool, 20, dateKey, { fillWeakTopics: false }) (§0-9: by category ratio only).
 //   - todayTerms (§0-20): the topic of the first question of the first today group → its cards
 //     (≤ 3); no group or no cards → the weakest topic's; none → [].
-//   - answeredCount: questions in the payload with ≥ 1 attempt / all questions in the payload.
+//   - answeredCount: questions in the payload with ≥ 1 attempt / all questions in the payload
+//     (ids deduped, like areaRates').
+//   - isAnswered: the one "answered" test of this model (an own, non-empty attempt list) — used by
+//     isNewUser, the new row's < 5 check and answeredCount. A done row's href is "" (no link).
 
-import { latestResult, type LearningRecord } from "../learning/record";
+import type { LearningRecord } from "../learning/record";
 import { pickNew, type DailyPlan } from "../learning/schedule";
 import { poolFromIndex, type Stars, type TodayIndex, type TodayTermCard } from "./practiceIndex";
 import { PRACTICE_CATEGORY_ORDER } from "./practiceLabels";
@@ -42,6 +45,7 @@ export interface TodayTask {
   /** remaining questions (practice rows); 1 for the unit */
   count: number;
   done: boolean;
+  /** "" for a done row (nothing to open) */
   href: string;
   minutes: number;
   detail: string[];
@@ -81,8 +85,15 @@ function topicIndex(index: TodayIndex): Map<string, string> {
   return m;
 }
 
+/** `qid` has at least one stored attempt (an own key with a non-empty list). */
+export function isAnswered(r: LearningRecord, qid: string): boolean {
+  return Object.prototype.hasOwnProperty.call(r.attempts, qid) && r.attempts[qid]!.length > 0;
+}
+
 const answeredIn = (r: LearningRecord, ids: readonly string[]): number =>
-  ids.reduce((n, id) => (Object.prototype.hasOwnProperty.call(r.attempts, id) && r.attempts[id]!.length > 0 ? n + 1 : n), 0);
+  ids.reduce((n, id) => (isAnswered(r, id) ? n + 1 : n), 0);
+
+const uniqueIds = (lists: readonly (readonly string[])[]): string[] => [...new Set(lists.flat())];
 
 export function todayTasks(
   plan: DailyPlan,
@@ -107,7 +118,7 @@ export function todayTasks(
       kind,
       count: ids.length,
       done,
-      href: todayHref(key, todayChunk(ids, index.groups)),
+      href: done ? "" : todayHref(key, todayChunk(ids, index.groups)),
       minutes: ids.length,
       detail: [],
       startCount: start,
@@ -195,7 +206,7 @@ export function weakTopicRows(r: LearningRecord, index: TodayIndex): WeakTopicRo
 export function areaRates(r: LearningRecord, index: TodayIndex): AreaRates {
   const out = {} as AreaRates;
   for (const c of PRACTICE_CATEGORY_ORDER) {
-    const ids = index.topics.filter((t) => t.category === c).flatMap((t) => index.topicQuestionIds[t.id] ?? []);
+    const ids = uniqueIds(index.topics.filter((t) => t.category === c).map((t) => index.topicQuestionIds[t.id] ?? []));
     const { answered, correct } = topicAccuracy(r, ids);
     out[c] = answered === 0 ? null : correct / answered;
   }
@@ -210,7 +221,7 @@ export function daysUntil(examDate: string | undefined, today: number): number |
 }
 
 export function isNewUser(r: LearningRecord): boolean {
-  return Object.values(r.attempts).every((list) => list.length === 0);
+  return !Object.keys(r.attempts).some((qid) => isAnswered(r, qid));
 }
 
 /** The new user's first group (DESIGN §6.1 「先做 20 题摸底」). */
@@ -231,6 +242,6 @@ export function todayTerms(
 }
 
 export function answeredCount(r: LearningRecord, index: TodayIndex): { answered: number; total: number } {
-  const all = Object.values(index.topicQuestionIds).flat();
-  return { answered: all.reduce((n, id) => (latestResult(r, id) ? n + 1 : n), 0), total: all.length };
+  const all = uniqueIds(Object.values(index.topicQuestionIds));
+  return { answered: answeredIn(r, all), total: all.length };
 }
