@@ -7,7 +7,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/i18n/navigation", () => ({
-  Link: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => h("a", { href, ...rest }, children),
+  Link: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) =>
+    h("a", { href, ...rest }, children),
   useRouter: () => ({ push: () => {} }),
 }));
 
@@ -17,8 +18,12 @@ import { emptyRecord, recordAttempt, setSetting, type ChoiceLetter, type Learnin
 import { topicStars, type ChumonGroup } from "@/lib/practice/practiceIndex";
 import { loadChumonGroups } from "@/lib/practice/practiceReader";
 import {
+  applyAction,
   foldPlan,
+  loadSession,
   newSession,
+  saveSession,
+  sessionKey,
   parseScope,
   practiceReducer,
   type SessionAction,
@@ -26,7 +31,12 @@ import {
 } from "@/lib/practice/practiceSession";
 import { CHOICE_LETTERS, loadAllQuestions, loadQuizIndex, type QuizQuestion } from "@/lib/quiz/quizReader";
 
-import { PracticeSession, SessionView, type SessionViewProps } from "../PracticeSession";
+import { PracticeSession, SessionTimer, SessionView, type SessionViewProps } from "../PracticeSession";
+
+// I-2: the 1 s clock lives in SessionTimer only — SessionView (face + explanation) has no time prop,
+// so a tick cannot re-render it (compile-time check: tsc fails if one is added back).
+const noTimeProps: "now" | "endedAt" extends keyof SessionViewProps ? never : true = true;
+void noTimeProps;
 import type { SessionTopic } from "../SessionSummary";
 import { sourceNumber } from "../choiceLayout";
 import { fidOne, messagesFor, textOf } from "./practiceRender";
@@ -42,12 +52,16 @@ beforeAll(async () => {
   GROUPS = groups;
   const stars = topicStars(index);
   TOPICS = Object.fromEntries(
-    index.topics.map((t) => [t.topic_id, { category: t.category, path: `${t.medium_jp} › ${t.name_jp}`, stars: stars[t.topic_id]! }]),
+    index.topics.map((t) => [
+      t.topic_id,
+      { category: t.category, path: `${t.medium_jp} › ${t.name_jp}`, stars: stars[t.topic_id]! },
+    ]),
   );
 });
 
 /** three strategy questions without figures, in corpus order */
-const three = (): QuizQuestion[] => QS.filter((q) => q.category === "strategy" && !q.figure && q.explanation).slice(0, 3);
+const three = (): QuizQuestion[] =>
+  QS.filter((q) => q.category === "strategy" && !q.figure && q.explanation).slice(0, 3);
 const wrongOf = (q: QuizQuestion): ChoiceLetter => CHOICE_LETTERS.find((L) => L !== q.correct_answer)!;
 const run = (s: SessionState, ...as: SessionAction[]): SessionState => as.reduce(practiceReducer, s);
 
@@ -98,8 +112,7 @@ function renderView(questions: QuizQuestion[], locale: string, over: Partial<Ses
       0,
     ),
     record: emptyRecord(),
-    now: null,
-    endedAt: null,
+    recordLoaded: true,
     kind: null,
     nextHref: null,
     showTranslation: false,
@@ -143,7 +156,11 @@ describe("PracticeSession — one question per screen", () => {
     ] as const) {
       expect(renderSession(qs, locale)).toMatch(new RegExp(`<button[^>]*data-finish=""[^>]*>${label}</button>`));
     }
-    const s = run(newSession(ids, 0), { type: "pick", choice: qs[0]!.correct_answer as ChoiceLetter }, { type: "finish" });
+    const s = run(
+      newSession(ids, 0),
+      { type: "pick", choice: qs[0]!.correct_answer as ChoiceLetter },
+      { type: "finish" },
+    );
     const out = renderSession(qs, "zh", s);
     expect(out).toContain("data-summary");
     expect(out).toContain('data-score="1/1"');
@@ -155,11 +172,22 @@ describe("PracticeSession — one question per screen", () => {
   it("after a wrong pick: 解答栏「解答 問N [正解]」+ 状态句「已记入错题本，明天再出」", () => {
     const qs = three();
     const q = qs[0]!;
-    const s = run(newSession(qs.map((x) => x.id), 0), { type: "pick", choice: wrongOf(q) });
+    const s = run(
+      newSession(
+        qs.map((x) => x.id),
+        0,
+      ),
+      { type: "pick", choice: wrongOf(q) },
+    );
     const out = renderSession(qs, "zh", s);
     expect(out).toMatch(/<span[^>]*lang="ja"[^>]*>解答<\/span>/);
     expect(out).toMatch(new RegExp(`問${sourceNumber(q)}<span[^>]*data-fid="answer"[^>]*>${q.correct_answer}</span>`));
-    expect(out).toMatch(/<p[^>]*role="status"[^>]*data-status="wrong"[^>]*>已记入错题本，明天再出<\/p>/);
+    // the provider's first frame has not loaded the record yet: the status line waits (M-8) …
+    expect(out).toMatch(/<p[^>]*role="status"[^>]*data-status=""[^>]*><\/p>/);
+    // … and once it is loaded it says where the question went
+    expect(renderView(qs, "zh", { state: s })).toMatch(
+      /<p[^>]*role="status"[^>]*data-status="wrong"[^>]*>已记入错题本，明天再出<\/p>/,
+    );
     // the answer card marks the first cell ×, the explanation is open, the choice is stamped
     expect(out).toMatch(/<li[^>]*data-cell="wrong"[^>]*data-current="true"[^>]*><span aria-hidden="true">×<\/span>/);
     expect(out).toContain("data-verdicts");
@@ -168,25 +196,31 @@ describe("PracticeSession — one question per screen", () => {
       ["ja", "間違えた問題に入りました。明日もう一度出ます"],
       ["en", "Added to your mistakes — it comes back tomorrow"],
     ] as const) {
-      expect(renderSession(qs, locale, s)).toContain(text);
+      expect(renderView(qs, locale, { state: s })).toContain(text);
     }
   });
 
   it("right answers: first ever → 7 days; later → next due (plural); mastered", () => {
     const qs = three();
     const q = qs[0]!;
-    const state = run(newSession(qs.map((x) => x.id), 0), { type: "pick", choice: q.correct_answer as ChoiceLetter });
+    const state = run(
+      newSession(
+        qs.map((x) => x.id),
+        0,
+      ),
+      { type: "pick", choice: q.correct_answer as ChoiceLetter },
+    );
     const now = Date.now();
     const first = recordAttempt(emptyRecord(), q.id, q.correct_answer as ChoiceLetter, true, now);
-    expect(renderView(qs, "zh", { state, record: first, now })).toContain("答对了，7 天后再确认");
-    expect(renderView(qs, "en", { state, record: first, now })).toContain("Correct — you&#x27;ll see it again in 7 days");
-    expect(renderView(qs, "ja", { state, record: first, now })).toContain("正解。次は 7 日後に確認します");
+    expect(renderView(qs, "zh", { state, record: first })).toContain("答对了，7 天后再确认");
+    expect(renderView(qs, "en", { state, record: first })).toContain("Correct — you&#x27;ll see it again in 7 days");
+    expect(renderView(qs, "ja", { state, record: first })).toContain("正解。次は 7 日後に確認します");
     // wrong 2 days ago, right now → box 1 → 3 days
     let again = recordAttempt(emptyRecord(), q.id, wrongOf(q), false, now - 2 * 86_400_000);
     again = recordAttempt(again, q.id, q.correct_answer as ChoiceLetter, true, now);
-    expect(renderView(qs, "en", { state, record: again, now })).toContain("Next in 3 days");
-    expect(renderView(qs, "zh", { state, record: again, now })).toContain("3 天后再出");
-    expect(renderView(qs, "ja", { state, record: again, now })).toContain("次は 3 日後");
+    expect(renderView(qs, "en", { state, record: again })).toContain("Next in 3 days");
+    expect(renderView(qs, "zh", { state, record: again })).toContain("3 天后再出");
+    expect(renderView(qs, "ja", { state, record: again })).toContain("次は 3 日後");
   });
 
   it("translation default follows settings.transDefault", () => {
@@ -218,9 +252,9 @@ describe("PracticeSession — one question per screen", () => {
     expect(textOf(/<span aria-hidden="true">([\s\S]*?)<\/span><\/span>/.exec(today)![0])).toBe("错题　1 / 3");
     expect(renderView(qs, "ja", { fromToday: true, kind: "due" })).toContain("今日の復習　");
     expect(renderView(qs, "en", { fromToday: true, kind: "fresh" })).toContain("New questions　");
-    // the timer counts from startedAt (mm:ss)
-    const ids = qs.map((q) => q.id);
-    expect(renderView(qs, "ja", { state: newSession(ids, 1000), now: 1000 + 522_000 })).toContain(">08:42<");
+    // the timer counts from startedAt (mm:ss), frozen at endedAt; 00:00 before mount
+    expect(withIntl("ja", h(SessionTimer, { startedAt: 1000, endedAt: 1000 + 522_000 }))).toContain(">08:42<");
+    expect(withIntl("ja", h(SessionTimer, { startedAt: 1000, endedAt: null }))).toContain(">00:00<");
   });
 
   it("中問: the 2nd member folds the shared preamble, the 1st shows the full stem", () => {
@@ -253,7 +287,7 @@ describe("SessionSummary", () => {
       { type: "next" },
     );
     expect(s.finished).toBe(true);
-    const out = renderView(qs, "ja", { state: s, endedAt: 125_000 });
+    const out = renderView(qs, "ja", { state: { ...s, endedAt: 125_000 } });
     expect(out).toContain('data-score="1/3"');
     expect(out).toContain("1 / 3 問正解");
     expect(out).not.toContain("問を解答"); // all answered: no partial line
@@ -267,7 +301,7 @@ describe("SessionSummary", () => {
       expect(row).toContain('<span lang="ja">正解</span>');
     }
     expect(out).not.toContain(`data-wrong="${qs[0]!.id}"`);
-    expect(out).toContain(`href="/practice?ids=${qs[1]!.id},${qs[2]!.id}"`);
+    expect(out).toContain(`href="/practice?ids=${qs[1]!.id},${qs[2]!.id}&amp;run=125000"`);
     expect(out).toContain('href="/"');
     expect(out).toContain("間違えた問題だけもう一度");
     expect(out).toContain("今日に戻る");
@@ -279,12 +313,20 @@ describe("SessionSummary", () => {
     expect(today).toMatch(/data-action="continue"[^>]*>继续下一项</);
     expect(today).toContain("只做错题再来一遍");
     expect(today).toContain("回今日");
-    expect(renderView(qs, "en", { state: s, fromToday: true, nextHref: "/" })).toMatch(/href="\/"[^>]*>Continue to the next task</);
+    expect(renderView(qs, "en", { state: s, fromToday: true, nextHref: "/" })).toMatch(
+      /href="\/"[^>]*>Continue to the next task</,
+    );
   });
 
   it("nothing answered: no score, no retry", () => {
     const qs = three();
-    const s = run(newSession(qs.map((q) => q.id), 0), { type: "finish" });
+    const s = run(
+      newSession(
+        qs.map((q) => q.id),
+        0,
+      ),
+      { type: "finish" },
+    );
     const out = renderView(qs, "en", { state: s });
     expect(out).toContain("Nothing answered in this set");
     expect(out).toContain("0 of 3 answered");
@@ -301,13 +343,66 @@ describe("record wiring", () => {
     r = recordAttempt(r, q.id, wrongOf(q), false, now - 5 * 86_400_000);
     r = recordAttempt(r, q.id, q.correct_answer as ChoiceLetter, true, now);
     const ids = qs.map((x) => x.id);
-    const before = renderView(qs, "ja", { record: r, now });
+    const before = renderView(qs, "ja", { record: r });
     expect(before).toMatch(/data-recent="right"[\s\S]*?data-recent="wrong"/);
     const after = renderView(qs, "ja", {
       record: r,
-      now,
       state: run(newSession(ids, 0), { type: "pick", choice: q.correct_answer as ChoiceLetter }),
     });
     expect(after).toMatch(/<span[^>]*data-recent="wrong"[^>]*>×<\/span><span[^>]*data-recent="none"/);
+  });
+});
+
+describe("fix round 1: reload on the summary, start over, run nonce, status after load", () => {
+  const finishedState = (qs: QuizQuestion[]): SessionState => {
+    const ids = qs.map((q) => q.id);
+    let st = newSession(ids, 10_000);
+    st = applyAction(st, { type: "pick", choice: wrongOf(qs[0]!) }, KEY(qs), 20_000).next;
+    return applyAction(st, { type: "finish" }, KEY(qs), 70_000).next;
+  };
+  const KEY = (qs: QuizQuestion[]) => new Map(qs.map((q) => [q.id, q.correct_answer]));
+
+  it("finished session survives reload (summary + frozen elapsed)", () => {
+    const qs = three();
+    const stored = new Map<string, string>();
+    const storage = {
+      getItem: (k: string) => stored.get(k) ?? null,
+      setItem: (k: string, v: string) => void stored.set(k, v),
+      removeItem: (k: string) => void stored.delete(k),
+    };
+    const ended = finishedState(qs);
+    saveSession(storage, ended);
+    // what the mount effect restores, rendered: the summary with 01:00 however late the reload is
+    const restored = loadSession(storage, ended.ids, 10_000_000);
+    const out = renderSession(qs, "ja", restored);
+    expect(out).toContain("data-summary");
+    expect(out).toContain('data-score="0/1"');
+    expect(out).toContain(">01:00<");
+    expect(out).toMatch(/<h1 id="practice-summary"[^>]*tabindex="-1"/);
+  });
+
+  it("start over: the summary offers it; retry link with run nonce gets a fresh session", () => {
+    const qs = three();
+    const ended = finishedState(qs);
+    const out = renderSession(qs, "zh", ended);
+    expect(out).toMatch(/<button[^>]*data-action="restart"[^>]*>再做一遍<\/button>/);
+    expect(renderSession(qs, "ja", ended)).toContain(">もう一度</button>");
+    expect(renderSession(qs, "en", ended)).toContain(">Start over</button>");
+    // the retry link carries &run=<endedAt>: same ids, another storage key → a new group
+    expect(out).toContain(`href="/practice?ids=${qs[0]!.id}&amp;run=70000"`);
+    expect(sessionKey([qs[0]!.id], "70000")).not.toBe(sessionKey([qs[0]!.id]));
+  });
+
+  it("the status line waits for the learning record to load", () => {
+    const qs = three();
+    const state = run(
+      newSession(
+        qs.map((x) => x.id),
+        0,
+      ),
+      { type: "pick", choice: wrongOf(qs[0]!) },
+    );
+    expect(renderView(qs, "zh", { state, recordLoaded: false })).toMatch(/data-status=""[^>]*><\/p>/);
+    expect(renderView(qs, "zh", { state, recordLoaded: true })).toContain("已记入错题本，明天再出");
   });
 });

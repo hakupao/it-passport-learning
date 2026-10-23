@@ -3,12 +3,13 @@
 //
 // PracticeSession owns the wiring; SessionView is the pure render of (state, record), so the SSR
 // tests can render any state without a DOM.
-//   - State: practiceReducer over SessionState. The first render (server and client) is the fresh
-//     state; after mount the sessionStorage copy is merged in (loadSession), and every change after
-//     that is saved (saveSession). Actions go through `act`, which runs the reducer on a ref of the
-//     committed state and calls answer() only when a pick was accepted — once per question per
-//     group, also after a reload (the restored answers reject the repeat). Nothing is dispatched
-//     before the restore.
+//   - State: SessionState. The first render (server and client) is the fresh state; after mount
+//     the sessionStorage copy (key = ids + the URL's run nonce) replaces it (loadSession, a finished
+//     group included: a reload on the summary shows the summary), and every change after that is
+//     saved (saveSession). Actions go through `act` → applyAction on a ref of the committed state;
+//     answer() is called only for its `record` (an accepted pick) — once per question per group,
+//     also after a reload. Nothing is dispatched before the restore. The summary's 「もう一度」
+//     clears the stored group and starts it again.
 //   - Keyboard (§0-14): one window keydown listener → keyToAction; editable targets, open dialogs
 //     (the figure <dialog>, the AI 先生 panel), IME composition, auto-repeat and modifier chords are left alone;
 //     Enter on an enabled button / link / summary keeps its own activation. A handled key is
@@ -18,8 +19,12 @@
 //     the top and focuses the question <article>.
 //   - Translation: shown by default when settings.transDefault = "shown" (hidden otherwise); the
 //     toggle holds for this group only and is not saved.
-//   - Timer: elapsed since startedAt, mm:ss, every second; frozen when the group ends. "00:00" until
-//     mounted (no hydration mismatch).
+//   - Timer: SessionTimer owns its clock (its own state + interval), so the 1 s tick re-renders only
+//     that span — SessionView takes no time prop and the face / explanation do not re-render per
+//     tick. Elapsed since startedAt, mm:ss; frozen at endedAt. "00:00" until mounted.
+//   - The status line waits for the learning record to be loaded (no "first time" from an empty
+//     record); its day is Date.now() at render.
+//   - Focus: a new question → its <article>; the group ending (not a restore) → the summary <h1>.
 //   - from=today: the top bar names the today task (todayKind, fixed once known) and the summary
 //     offers 「继续下一项」 (nextTodayIds → /practice?ids=…&from=today, or "/" when the day is done).
 //   - AI 先生 (§0-18): SenseiHost.onQuestionLink jumps to a question of this group (true).
@@ -36,13 +41,14 @@ import { settingValue, type LearningRecord } from "@/lib/learning/record";
 import { toLocalDay } from "@/lib/learning/schedule";
 import { poolFromIndex, type TodayIndex } from "@/lib/practice/practiceIndex";
 import {
+  applyAction,
+  clearSession,
   formatElapsed,
   keyToAction,
   loadSession,
   localDateKey,
   newSession,
   nextTodayIds,
-  practiceReducer,
   recentResults,
   saveSession,
   statusLine,
@@ -59,7 +65,7 @@ import { AnswerBar } from "./AnswerBar";
 import { AnswerCard } from "./AnswerCard";
 import { ExplanationPane } from "./ExplanationPane";
 import { PracticeQuestion } from "./PracticeQuestion";
-import { SessionSummary, type SessionTopic } from "./SessionSummary";
+import { SESSION_SUMMARY_HEADING_ID as SUMMARY_HEADING_ID, SessionSummary, type SessionTopic } from "./SessionSummary";
 import styles from "./session.module.css";
 
 export interface PracticeSessionProps {
@@ -75,6 +81,8 @@ export interface PracticeSessionProps {
   fromToday: boolean;
   /** the today payload (from=today only; null when it failed to load) */
   today: TodayIndex | null;
+  /** the URL's run nonce (parseRun); part of the storage key */
+  run?: string | null;
   /** tests: start from this state and skip the sessionStorage restore */
   initialState?: SessionState;
 }
@@ -111,30 +119,32 @@ function dialogOpen(): boolean {
 
 export function PracticeSession(props: PracticeSessionProps): React.ReactElement {
   const { questions, initialState, fromToday, today } = props;
+  const run = props.run ?? null;
   const { record, loaded, answer } = useLearningRecord();
   const ids = useMemo(() => questions.map((q) => q.id), [questions]);
   const keyOf = useMemo(() => new Map(questions.map((q) => [q.id, q.correct_answer])), [questions]);
 
-  const [state, setState] = useState<SessionState>(() => initialState ?? newSession(ids, 0));
+  const [state, setState] = useState<SessionState>(() => initialState ?? newSession(ids, 0, run));
   const stateRef = useRef(state);
   const [ready, setReady] = useState(initialState !== undefined);
-  const [now, setNow] = useState<number | null>(null);
-  const [endedAt, setEndedAt] = useState<number | null>(null);
   const [trOverride, setTrOverride] = useState<boolean | null>(null);
   /** undefined = not worked out yet */
   const [kind, setKind] = useState<TodayKind | null | undefined>(undefined);
   /** the position on screen (a change scrolls up and focuses the new question) */
   const shownPos = useRef(state.pos);
+  /** whether the summary is on screen (the group ending moves the focus to its heading) */
+  const shownFinished = useRef(state.finished);
 
   // restore (once per group; the page keys this component by the group)
   useEffect(() => {
     if (initialState !== undefined) return;
-    const restored = loadSession(browserSession(), ids, Date.now());
+    const restored = loadSession(browserSession(), ids, Date.now(), run);
     stateRef.current = restored;
     shownPos.current = restored.pos;
+    shownFinished.current = restored.finished;
     setState(restored);
     setReady(true);
-  }, [ids, initialState]);
+  }, [ids, initialState, run]);
 
   useEffect(() => {
     if (ready) saveSession(browserSession(), state);
@@ -144,26 +154,22 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
     (a: SessionAction) => {
       if (!ready) return;
       const prev = stateRef.current;
-      const next = practiceReducer(prev, a);
+      const { next, record: attempt } = applyAction(prev, a, keyOf, Date.now());
       if (next === prev) return;
-      if (a.type === "pick") {
-        const qid = prev.ids[prev.pos]!;
-        answer(qid, a.choice, a.choice === keyOf.get(qid));
-      }
-      if (next.finished) setEndedAt(Date.now());
+      if (attempt) answer(...attempt);
       stateRef.current = next;
       setState(next);
     },
     [ready, answer, keyOf],
   );
 
-  // timer
-  useEffect(() => {
-    if (state.finished) return;
-    setNow(Date.now());
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [state.finished]);
+  const startOver = useCallback(() => {
+    clearSession(browserSession(), ids, run);
+    const fresh = newSession(ids, Date.now(), run);
+    stateRef.current = fresh;
+    shownPos.current = -1; // focus the first question
+    setState(fresh);
+  }, [ids, run]);
 
   // keyboard (§0-14)
   useEffect(() => {
@@ -188,13 +194,23 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
     return () => window.removeEventListener("keydown", onKey);
   }, [act]);
 
-  // a new question: top of the page, focus on its <article>
+  // a new question: top of the page, focus on its <article>; the group ended: the summary heading
   useEffect(() => {
-    if (shownPos.current === state.pos || state.finished) return;
+    if (!ready) return; // the mount frame still shows the pre-restore state
+    if (state.finished) {
+      if (!shownFinished.current) {
+        shownFinished.current = true;
+        window.scrollTo({ top: 0 });
+        document.getElementById(SUMMARY_HEADING_ID)?.focus({ preventScroll: true });
+      }
+      return;
+    }
+    shownFinished.current = false;
+    if (shownPos.current === state.pos) return;
     shownPos.current = state.pos;
     window.scrollTo({ top: 0 });
     document.getElementById(state.ids[state.pos]!)?.focus({ preventScroll: true });
-  }, [state.pos, state.ids, state.finished]);
+  }, [ready, state.pos, state.ids, state.finished]);
 
   // from=today: the task kind, fixed once the record is loaded
   useEffect(() => {
@@ -215,9 +231,9 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
 
   let nextHref: string | null = null;
   if (state.finished && fromToday && today) {
-    const at = endedAt ?? Date.now();
+    const at = Date.now();
     const next = nextTodayIds(record, poolFromIndex(today), toLocalDay(at), toLocalDay, localDateKey(new Date(at)));
-    nextHref = next ? `/practice?ids=${next.join(",")}&from=today` : "/";
+    nextHref = next ? `/practice?ids=${next.join(",")}&from=today&run=${state.endedAt ?? at}` : "/";
   }
 
   const showTranslation = trOverride ?? settingValue(record, "transDefault") === "shown";
@@ -228,30 +244,53 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
         {...props}
         state={state}
         record={record}
-        now={now}
-        endedAt={endedAt}
+        recordLoaded={loaded}
         kind={kind ?? null}
         nextHref={nextHref}
         showTranslation={showTranslation}
         onToggleTranslation={() => setTrOverride(!showTranslation)}
         act={act}
+        onStartOver={startOver}
       />
     </SenseiHost>
   );
 }
 
-export interface SessionViewProps extends Omit<PracticeSessionProps, "initialState"> {
+export interface SessionViewProps extends Omit<PracticeSessionProps, "initialState" | "run"> {
   state: SessionState;
   record: LearningRecord;
-  /** clock of the last tick; null before mount */
-  now: number | null;
-  /** when the group ended (frozen elapsed time) */
-  endedAt: number | null;
+  /** the record has been read (localStorage, and the server for the owner) */
+  recordLoaded: boolean;
   kind: TodayKind | null;
   nextHref: string | null;
   showTranslation: boolean;
   onToggleTranslation: () => void;
   act: (a: SessionAction) => void;
+  onStartOver?: () => void;
+}
+
+/** Elapsed time of the group, mm:ss: its own 1 s clock, frozen at endedAt; "00:00" until mounted. */
+export function SessionTimer({
+  startedAt,
+  endedAt,
+}: {
+  startedAt: number;
+  endedAt: number | null;
+}): React.ReactElement {
+  const t = useTranslations("Practice");
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    if (endedAt !== null) return;
+    setNow(Date.now());
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [endedAt]);
+  const end = endedAt ?? now ?? startedAt;
+  return (
+    <span className={styles.timer} role="timer" aria-label={t("timer")} data-timer="">
+      {formatElapsed(end - startedAt)}
+    </span>
+  );
 }
 
 /** The session screen (or the summary) for a given state — no effects, no storage. */
@@ -265,17 +304,16 @@ export function SessionView({
   fromToday,
   state,
   record,
-  now,
-  endedAt,
+  recordLoaded,
   kind,
   nextHref,
   showTranslation,
   onToggleTranslation,
   act,
+  onStartOver,
 }: SessionViewProps): React.ReactElement {
   const t = useTranslations("Practice");
   const keyOf = useMemo(() => new Map(questions.map((q) => [q.id, q.correct_answer])), [questions]);
-  const elapsed = Math.max(0, (endedAt ?? now ?? state.startedAt) - state.startedAt);
 
   if (state.finished) {
     return (
@@ -283,10 +321,12 @@ export function SessionView({
         ids={state.ids}
         answers={state.answers}
         questions={questions}
-        elapsedMs={elapsed}
+        elapsedMs={Math.max(0, (state.endedAt ?? state.startedAt) - state.startedAt)}
         from={fromToday ? "today" : null}
         nextHref={nextHref}
         topics={topics}
+        runNonce={state.endedAt}
+        onStartOver={onStartOver}
       />
     );
   }
@@ -301,8 +341,8 @@ export function SessionView({
   const catKey = topic ? CATEGORY_KEYS[topic.category] : undefined;
 
   let status: StatusLine | null = null;
-  if (picked !== null) {
-    const day = toLocalDay(now ?? Date.now());
+  if (picked !== null && recordLoaded) {
+    const day = toLocalDay(Date.now());
     status = statusLine(attempts ?? [], record.v2Since, q.id, picked === q.correct_answer, day, toLocalDay);
   }
 
@@ -328,9 +368,7 @@ export function SessionView({
           </span>
         </span>
         <AnswerCard ids={state.ids} answers={state.answers} keyOf={keyOf} pos={state.pos} />
-        <span className={styles.timer} role="timer" aria-label={t("timer")} data-timer="">
-          {formatElapsed(elapsed)}
-        </span>
+        <SessionTimer startedAt={state.startedAt} endedAt={state.endedAt} />
         <button type="button" className={styles.finishBtn} data-finish="" onClick={() => act({ type: "finish" })}>
           {t("finish")}
         </button>

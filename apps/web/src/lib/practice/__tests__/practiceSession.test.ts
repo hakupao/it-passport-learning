@@ -11,6 +11,9 @@ import { emptyRecord, recordAttempt, type LearningRecord } from "../../learning/
 import type { StorageLike } from "../../storage";
 import {
   MAX_SCOPE_IDS,
+  applyAction,
+  clearSession,
+  parseRun,
   foldPlan,
   formatElapsed,
   isFromToday,
@@ -237,7 +240,15 @@ describe("session storage (§0-13, Review Focus 5)", () => {
     saveSession(st, s);
     expect(JSON.parse(st.getItem(sessionKey(ids))!)).toEqual({ pos: 1, answers: { "a-q001": "エ" }, startedAt: 5000 });
     const r = loadSession(st, ids, 9999);
-    expect(r).toEqual({ ids, pos: 1, answers: { "a-q001": "エ" }, startedAt: 5000, finished: false });
+    expect(r).toEqual({
+      ids,
+      pos: 1,
+      answers: { "a-q001": "エ" },
+      startedAt: 5000,
+      finished: false,
+      endedAt: null,
+      run: null,
+    });
   });
 
   it("loadSession with throwing storage → fresh state", () => {
@@ -255,26 +266,77 @@ describe("session storage (§0-13, Review Focus 5)", () => {
       sessionKey(ids),
       `{"pos":9,"answers":{"a-q002":"イ","x-q009":"ア","a-q003":"オ","__proto__":"ア"},"startedAt":99}`,
     );
-    expect(loadSession(st, ids, 50)).toEqual({ ids, pos: 0, answers: { "a-q002": "イ" }, startedAt: 50, finished: false });
+    expect(loadSession(st, ids, 50)).toEqual({ ...newSession(ids, 50), answers: { "a-q002": "イ" } });
     st.setItem(sessionKey(ids), JSON.stringify([1, 2]));
     expect(loadSession(st, ids, 7)).toEqual(newSession(ids, 7));
   });
 
-  it("a finished session clears its key (the same ids in this tab start over)", () => {
+  const KEY = new Map([
+    ["a-q001", "ア"],
+    ["a-q002", "イ"],
+    ["a-q003", "ウ"],
+  ]);
+
+  it("finished session survives reload (summary + frozen elapsed)", () => {
     const st = new MemStorage();
-    const s = practiceReducer(newSession(ids, 1), { type: "pick", choice: "ア" });
+    let s = applyAction(newSession(ids, 1000), { type: "pick", choice: "ア" }, KEY, 2000).next;
     saveSession(st, s);
-    saveSession(st, practiceReducer(s, { type: "finish" }));
+    s = applyAction(s, { type: "finish" }, KEY, 61_000).next;
+    expect(s).toMatchObject({ finished: true, endedAt: 61_000 });
+    saveSession(st, s);
+    expect(JSON.parse(st.getItem(sessionKey(ids))!)).toEqual({
+      pos: 0,
+      answers: { "a-q001": "ア" },
+      startedAt: 1000,
+      finished: true,
+      endedAt: 61_000,
+    });
+    // reload much later: still the summary, elapsed = endedAt − startedAt (60 s), not now − startedAt
+    const r = loadSession(st, ids, 999_000);
+    expect(r).toMatchObject({ finished: true, endedAt: 61_000, startedAt: 1000, answers: { "a-q001": "ア" } });
+    // a stored finished flag without a usable endedAt is not trusted
+    st.setItem(
+      sessionKey(ids),
+      JSON.stringify({ pos: 0, answers: {}, startedAt: 1000, finished: true, endedAt: 5e15 }),
+    );
+    expect(loadSession(st, ids, 9000)).toMatchObject({ finished: false, endedAt: null });
+  });
+
+  it("start over clears it", () => {
+    const st = new MemStorage();
+    const s = applyAction(newSession(ids, 1), { type: "finish" }, KEY, 5).next;
+    saveSession(st, s);
+    clearSession(st, ids);
     expect(st.getItem(sessionKey(ids))).toBeNull();
+    expect(loadSession(st, ids, 9)).toEqual(newSession(ids, 9));
+    expect(() => clearSession(throwing, ids)).not.toThrow();
+    expect(() => clearSession(null, ids)).not.toThrow();
+  });
+
+  it("retry link with run nonce gets a fresh session", () => {
+    const st = new MemStorage();
+    // the first run of these ids ended (stored summary)
+    saveSession(st, applyAction(newSession(ids, 1), { type: "finish" }, KEY, 5).next);
+    // 「只做错题再来一遍」 → same ids + &run=<endedAt>: another key, a new group
+    expect(parseRun({ run: "5" })).toBe("5");
+    expect(parseRun({ run: ["17", "x"] })).toBe("17");
+    for (const bad of ["", "x5", "-1", "12345678901234567"]) expect(parseRun({ run: bad })).toBeNull();
+    expect(parseRun({})).toBeNull();
+    expect(sessionKey(ids, "5")).toBe(`${sessionKey(ids)}:5`);
+    const again = loadSession(st, ids, 10, "5");
+    expect(again).toEqual(newSession(ids, 10, "5"));
+    saveSession(st, applyAction(again, { type: "pick", choice: "イ" }, KEY, 11).next);
+    expect(loadSession(st, ids, 12, "5").answers).toEqual({ "a-q001": "イ" });
+    expect(loadSession(st, ids, 12).finished).toBe(true); // the first run is untouched
   });
 
   it("duplicate pick after restore is rejected, so answer() is called once per question per group", () => {
-    // the component calls answer() only when practiceReducer accepts the pick (returns a new state)
+    // the component calls answer() only for applyAction's `record` (an accepted pick)
     const st = new MemStorage();
     const calls: string[] = [];
     const act = (s: SessionState, a: Parameters<typeof practiceReducer>[1]): SessionState => {
-      const next = practiceReducer(s, a);
-      if (next !== s && a.type === "pick") calls.push(s.ids[s.pos]!);
+      const { next, record } = applyAction(s, a, KEY, 100);
+      if (record) calls.push(record.join(" "));
       saveSession(st, next);
       return next;
     };
@@ -290,7 +352,24 @@ describe("session storage (§0-13, Review Focus 5)", () => {
     s = loadSession(st, ids, 3);
     s = act(s, { type: "pick", choice: "エ" });
     expect(s.pos).toBe(1);
-    expect(calls).toEqual(["a-q001", "a-q002"]);
+    expect(calls).toEqual(["a-q001 ア true", "a-q002 エ false"]);
+  });
+
+  it("applyAction: double pick, goto then pick, endedAt stamped once", () => {
+    const s0 = newSession(ids, 1);
+    const a = applyAction(s0, { type: "pick", choice: "ウ" }, KEY, 2);
+    expect(a.record).toEqual(["a-q001", "ウ", false]);
+    const b = applyAction(a.next, { type: "pick", choice: "ア" }, KEY, 3);
+    expect(b.next).toBe(a.next);
+    expect(b.record).toBeUndefined();
+    const g = applyAction(a.next, { type: "goto", pos: 2 }, KEY, 4);
+    expect(g.record).toBeUndefined();
+    expect(g.next.pos).toBe(2);
+    expect(applyAction(g.next, { type: "pick", choice: "ウ" }, KEY, 5).record).toEqual(["a-q003", "ウ", true]);
+    const end = applyAction(g.next, { type: "next" }, KEY, 77);
+    expect(end.next).toMatchObject({ finished: true, endedAt: 77 });
+    expect(applyAction(end.next, { type: "finish" }, KEY, 99).next).toBe(end.next);
+    expect(applyAction(s0, { type: "prev" }, KEY, 5).next).toBe(s0);
   });
 });
 

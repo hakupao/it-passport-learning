@@ -159,7 +159,9 @@ function Answered({
             return (
               <li key={L} className={styles.verdict} data-verdict="correct" data-letter={L} data-mine={mine}>
                 <div className={styles.verdictRow}>
-                  <span className={styles.vMarkSpot} aria-hidden="true">○</span>
+                  <span className={styles.vMarkSpot} aria-hidden="true">
+                    ○
+                  </span>
                   {letter}
                   <p className={styles.vText}>
                     <strong lang="ja">{t("correct")}</strong>{" "}
@@ -175,7 +177,9 @@ function Answered({
             <li key={L} className={styles.verdict} data-verdict="wrong" data-letter={L} data-mine={mine}>
               <details open={mine}>
                 <summary>
-                  <span className={mine ? styles.vMarkSpot : styles.vMark} aria-hidden="true">×</span>
+                  <span className={mine ? styles.vMarkSpot : styles.vMark} aria-hidden="true">
+                    ×
+                  </span>
                   <span className="sr-only">{t("markWrong")}</span>
                   {letter}
                   {mine ? yours : null}
@@ -208,9 +212,11 @@ function Answered({
       ) : null}
 
       <div className={styles.termsRow}>
-        {q.terms.length > 0 ? <span className={styles.termsLabel} lang="ja">
+        {q.terms.length > 0 ? (
+          <span className={styles.termsLabel} lang="ja">
             {t("terms")}
-          </span> : null}
+          </span>
+        ) : null}
         {q.terms.map((term, i) => (
           <Fragment key={term}>
             {/* two plain-text terms side by side: a visible dot + real spaces (as in QuizSet) */}

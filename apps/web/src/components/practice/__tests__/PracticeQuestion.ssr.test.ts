@@ -26,7 +26,8 @@ beforeAll(async () => {
 
 const CSS = readFileSync(path.resolve(__dirname, "../practice.module.css"), "utf-8");
 /** red / green colour values that must never encode right / wrong (DESIGN §3.1) */
-const RED_GREEN = /#(?:f00|0f0|ff0000|00ff00|e53935|43a047|dc2626|16a34a|ef4444|22c55e)\b|\b(?:red|green|lime|crimson)\b/i;
+const RED_GREEN =
+  /#(?:f00|0f0|ff0000|00ff00|e53935|43a047|dc2626|16a34a|ef4444|22c55e)\b|\b(?:red|green|lime|crimson)\b/i;
 
 /** the <li> of one choice letter */
 function choiceItem(html: string, letter: string): string {
@@ -189,8 +190,8 @@ describe("PracticeQuestion — 复习三格 / 頻出度 / figure / 中問", () =
   });
 
   it("table choices keep the table outside the button (sibling body, aria-describedby)", () => {
-    const q = QS.find((x) =>
-      x.choices_jp["ア"]?.startsWith("[表]") && /\n\s*\|/.test(x.choices_jp["ア"] ?? "") && !x.choice_figures,
+    const q = QS.find(
+      (x) => x.choices_jp["ア"]?.startsWith("[表]") && /\n\s*\|/.test(x.choices_jp["ア"] ?? "") && !x.choice_figures,
     );
     if (!q) throw new Error("fixture: no table-choice question");
     const out = renderFace(q, "ja");

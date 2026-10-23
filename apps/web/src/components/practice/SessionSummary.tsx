@@ -2,7 +2,10 @@
 // the answered part only). Score over the answered questions, elapsed time, the wrong list (each
 // row → /practice/q/<id>, the question's own page), then 「只做错题再来一遍」 (/practice?ids=<wrong>),
 // 「继续下一项」 (from=today only; nextHref is computed by the session from dailyPlan, §0-26) and
-// 「回今日」. Book parts (出典 label, 正解) stay Japanese in every locale.
+// 「回今日」, plus 「もう一度」 (the same group afresh: the stored one is cleared). The retry link
+// carries `&run=<runNonce>` (the group's endedAt) so the same ids (all wrong) start a new group
+// instead of reopening this stored summary. The heading takes the focus when the group ends
+// (tabIndex -1). Book parts (出典 label, 正解) stay Japanese in every locale.
 
 "use client";
 
@@ -14,6 +17,8 @@ import { formatElapsed, summarize } from "@/lib/practice/practiceSession";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 import styles from "./session.module.css";
+
+export const SESSION_SUMMARY_HEADING_ID = "practice-summary";
 
 export interface SessionTopic {
   category: string;
@@ -30,6 +35,8 @@ export function SessionSummary({
   from,
   nextHref,
   topics,
+  runNonce,
+  onStartOver,
 }: {
   ids: readonly string[];
   answers: Readonly<Record<string, ChoiceLetter>>;
@@ -39,6 +46,10 @@ export function SessionSummary({
   /** from=today: the next today group (or "/" when the day is done); null = not offered */
   nextHref: string | null;
   topics: Readonly<Record<string, SessionTopic>>;
+  /** appended to the retry link as `&run=` (null: no nonce) */
+  runNonce?: number | null;
+  /** 「もう一度」: clear the stored group and start it again (absent: no button) */
+  onStartOver?: () => void;
 }): React.ReactElement {
   const t = useTranslations("Practice");
   const score = summarize(ids, answers, questions);
@@ -46,12 +57,16 @@ export function SessionSummary({
 
   return (
     <main className={`${styles.session} ${styles.summary}`} data-summary="">
-      <h1 className={styles.summaryTitle}>{t("summaryTitle")}</h1>
+      <h1 id={SESSION_SUMMARY_HEADING_ID} className={styles.summaryTitle} tabIndex={-1}>
+        {t("summaryTitle")}
+      </h1>
       <p className={styles.score} data-score={`${score.correct}/${score.answered}`}>
         {score.answered > 0 ? t("score", { correct: score.correct, answered: score.answered }) : t("noneAnswered")}
       </p>
       <p className={styles.facts}>
-        {score.answered < score.total ? <span>{t("partial", { total: score.total, answered: score.answered })}</span> : null}
+        {score.answered < score.total ? (
+          <span>{t("partial", { total: score.total, answered: score.answered })}</span>
+        ) : null}
         <span>
           {t("elapsed")} <strong data-elapsed="">{formatElapsed(elapsedMs)}</strong>
         </span>
@@ -91,7 +106,11 @@ export function SessionSummary({
 
       <div className={styles.actions}>
         {score.wrong.length > 0 ? (
-          <Link href={`/practice?ids=${score.wrong.join(",")}`} className={styles.action} data-action="retry">
+          <Link
+            href={`/practice?ids=${score.wrong.join(",")}${runNonce != null ? `&run=${runNonce}` : ""}`}
+            className={styles.action}
+            data-action="retry"
+          >
             {t("retryWrong")}
           </Link>
         ) : null}
@@ -99,6 +118,11 @@ export function SessionSummary({
           <Link href={nextHref} className={styles.actionPrimary} data-action="continue">
             {t("continueNext")}
           </Link>
+        ) : null}
+        {onStartOver ? (
+          <button type="button" className={styles.action} data-action="restart" onClick={onStartOver}>
+            {t("startOver")}
+          </button>
         ) : null}
         <Link href="/" className={styles.action} data-action="today">
           {t("backToday")}

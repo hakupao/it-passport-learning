@@ -264,7 +264,9 @@ export function SenseiPanel({
               onClick={onLogClick}
             >
               {s.messages.length === 0 && !generating ? (
-                <p className="text-sm opacity-70">{t(review ? "reviewEmptyHint" : free ? "freeEmptyHint" : "emptyHint")}</p>
+                <p className="text-sm opacity-70">
+                  {t(review ? "reviewEmptyHint" : free ? "freeEmptyHint" : "emptyHint")}
+                </p>
               ) : null}
               {s.messages.map((m) => {
                 const text = textOf(m);
@@ -289,7 +291,11 @@ export function SenseiPanel({
             </div>
 
             {s.error ? (
-              <p role="alert" className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800" data-testid="sensei-error">
+              <p
+                role="alert"
+                className="rounded-md border border-red-300 bg-red-50 p-2 text-sm text-red-800"
+                data-testid="sensei-error"
+              >
                 {errorText(s.error)}
               </p>
             ) : null}

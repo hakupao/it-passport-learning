@@ -139,7 +139,11 @@ export function PracticeQuestion({
 
           <div className={styles.meta}>
             <span lang="ja">
-              {t("sourcePrefix")}　<span lang="ja" data-fid="source">{q.source_label}</span>
+              {t("sourcePrefix")}
+              {"　"}
+              <span lang="ja" data-fid="source">
+                {q.source_label}
+              </span>
             </span>
             {hasTr ? (
               <button
@@ -193,7 +197,9 @@ function ChoiceItem({
   };
   const mark = !answered ? null : isCorrect ? (
     <span className={styles.mark}>
-      <span className={styles.ring} aria-hidden="true">○</span>
+      <span className={styles.ring} aria-hidden="true">
+        ○
+      </span>
       <span className="sr-only">{t(isPicked ? "markYourCorrect" : "markCorrect")}</span>
     </span>
   ) : isPicked ? (
@@ -233,13 +239,17 @@ function ChoiceItem({
           aria-describedby={bodyId}
           onClick={pick}
         >
-          <span className={styles.letter} aria-hidden="true">{L}</span>
+          <span className={styles.letter} aria-hidden="true">
+            {L}
+          </span>
           <span className="sr-only">{t("pickChoice", { letter: L })}</span>
           {mark}
         </button>
         {/* Pointer convenience only; the button above is the keyboard / AT control. */}
         <div id={bodyId} className={styles.choiceTableBody} onClick={pick}>
-          <div lang="ja" data-fid={`choice-${i}`}>{jpBody}</div>
+          <div lang="ja" data-fid={`choice-${i}`}>
+            {jpBody}
+          </div>
           {trBody ? (
             <div className={styles.choiceTr} lang={trLang} data-fid={`choice-tr-${i}`}>
               {trBody}
@@ -255,7 +265,9 @@ function ChoiceItem({
       <button type="button" className={styles.choice} aria-pressed={isPicked} aria-disabled={answered} onClick={pick}>
         <span className={styles.letter}>{L}</span>
         <span className={styles.choiceText}>
-          <span lang="ja" data-fid={`choice-${i}`}>{jpBody}</span>
+          <span lang="ja" data-fid={`choice-${i}`}>
+            {jpBody}
+          </span>
           {trBody ? (
             <span className={styles.choiceTr} lang={trLang} data-fid={`choice-tr-${i}`}>
               {trBody}
@@ -268,17 +280,18 @@ function ChoiceItem({
   );
 }
 
-function RecentCells({
-  recent,
-  t,
-}: {
-  recent: boolean[];
-  t: T;
-}): React.ReactElement {
+function RecentCells({ recent, t }: { recent: boolean[]; t: T }): React.ReactElement {
   const cells = [0, 1, 2].map((i) => (i < recent.length ? (recent[i] ? "right" : "wrong") : "none"));
-  const marks = recent.slice(0, 3).map((r) => t(r ? "recentRight" : "recentWrong")).join(" ");
+  const marks = recent
+    .slice(0, 3)
+    .map((r) => t(r ? "recentRight" : "recentWrong"))
+    .join(" ");
   return (
-    <div className={styles.recent} role="img" aria-label={recent.length ? t("recentLabel", { marks }) : t("recentNone")}>
+    <div
+      className={styles.recent}
+      role="img"
+      aria-label={recent.length ? t("recentLabel", { marks }) : t("recentNone")}
+    >
       {cells.map((c, i) => (
         <span key={i} className={styles.cell} data-recent={c}>
           {c === "right" ? "○" : c === "wrong" ? "×" : ""}

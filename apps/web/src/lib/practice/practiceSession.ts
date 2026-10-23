@@ -10,19 +10,26 @@
 //     the whole corpus). null = show the setup panel. `prefill=1` (a legacy /quiz redirect asking
 //     the setup panel to pre-fill the scope; Task 10 / 13) → null as well.
 //   - practiceReducer (§0-13): pick (only an unanswered question; a repeat returns the same state
-//     object — the component calls answer() only when the state changed, so a question is recorded
-//     once per group, also after a reload), next (past the last → finished), prev (stops at 0),
-//     finish (summary of the answered part), goto (a question of this group: the AI 先生 reply's
-//     `#<question_id>` link, §0-18). A finished session ignores every action.
+//     object), next (past the last → finished), prev (stops at 0), finish (summary of the answered
+//     part), goto (a question of this group: the AI 先生 reply's `#<question_id>` link, §0-18).
+//     A finished session ignores every action.
+//   - applyAction: the component's accept-and-record step — the reducer plus, when a pick was
+//     accepted, the attempt to record ([qid, choice, correct]); when the group just ended, endedAt
+//     = now. The component calls answer() only for a returned `record`, so a question is recorded
+//     once per group, also after a reload (the restored answers reject the repeat).
 //   - keyToAction (§0-14): 1–4 → ア〜エ while unanswered, ← / → prev / next, Enter → next once
 //     answered. Nothing from an editable target, while a dialog is open, with a modifier chord
 //     (Alt+← is history back), and no Enter on a control that activates itself (a focused enabled
 //     button / link / summary — otherwise Enter on 「次へ」 would advance twice).
-//   - sessionKey / loadSession / saveSession (§0-13): sessionStorage
-//     `itp:practice:v1:<fnv1a32(ids.join(",")) hex>` → { pos, answers, startedAt }. Storage per tab:
-//     a new tab is a new group. Never throws; unusable storage → in-memory only. What does not fit
-//     the ids is dropped on load. A finished session removes its key, so the same ids in this tab
-//     (「只做错题再来一遍」 twice) start over instead of reopening an answered group.
+//   - sessionKey / loadSession / saveSession / clearSession (§0-13): sessionStorage
+//     `itp:practice:v1:<fnv1a32(ids.join(",")) hex>[:<run>]` → { pos, answers, startedAt } while the
+//     group runs, plus { finished: true, endedAt } once it ended — a deliberate extension of §0-13
+//     (fix round 1): a reload on the summary shows the summary again with the elapsed time frozen.
+//     `run` (URL `&run=<digits>`, parseRun) is a nonce the summary's links carry (the group's
+//     endedAt), so 「只做错题再来一遍」 with the same ids (all wrong) is a new group, not the stored
+//     summary; the summary's 「もう一度」 clears the key and starts the same group afresh. Storage
+//     per tab: a new tab is a new group. Never throws; unusable storage → in-memory only. What does
+//     not fit the ids is dropped on load.
 //   - foldPlan (§0-8 / §6.2): qid → JP fold point (ChumonGroup.preambleChars.jp) for each 中問 member
 //     that directly follows a member of its own group (expandGroups keeps a group consecutive, so:
 //     the 2nd member on); the first member — or one reached without its group before it — shows
@@ -86,6 +93,12 @@ export function isFromToday(sp: SearchParams): boolean {
   return first(sp.from) === "today";
 }
 
+/** `run=<1–16 digits>`: the group nonce (see header); anything else → null. */
+export function parseRun(sp: SearchParams): string | null {
+  const r = first(sp.run);
+  return r !== undefined && /^\d{1,16}$/.test(r) ? r : null;
+}
+
 // ---- session state ----
 
 export interface SessionState {
@@ -94,6 +107,10 @@ export interface SessionState {
   answers: Record<string, ChoiceLetter>;
   startedAt: number;
   finished: boolean;
+  /** when the group ended (finish / next past the last); null while it runs */
+  endedAt: number | null;
+  /** the URL's run nonce (part of the storage key); null = none */
+  run: string | null;
 }
 
 export type SessionAction =
@@ -103,8 +120,8 @@ export type SessionAction =
   | { type: "finish" }
   | { type: "goto"; pos: number };
 
-export function newSession(ids: readonly string[], now: number): SessionState {
-  return { ids: [...ids], pos: 0, answers: {}, startedAt: now, finished: false };
+export function newSession(ids: readonly string[], now: number, run: string | null = null): SessionState {
+  return { ids: [...ids], pos: 0, answers: {}, startedAt: now, finished: false, endedAt: null, run };
 }
 
 const hasOwn = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.call(o, k);
@@ -124,8 +141,32 @@ export function practiceReducer(s: SessionState, a: SessionAction): SessionState
     case "finish":
       return { ...s, finished: true };
     case "goto":
-      return Number.isInteger(a.pos) && a.pos >= 0 && a.pos < s.ids.length && a.pos !== s.pos ? { ...s, pos: a.pos } : s;
+      return Number.isInteger(a.pos) && a.pos >= 0 && a.pos < s.ids.length && a.pos !== s.pos
+        ? { ...s, pos: a.pos }
+        : s;
   }
+}
+
+export interface Applied {
+  /** the new state (=== prev when the action changed nothing) */
+  next: SessionState;
+  /** an accepted pick: the attempt to record */
+  record?: [qid: string, choice: ChoiceLetter, correct: boolean];
+}
+
+/** practiceReducer + what the component must do: record an accepted pick, stamp endedAt. */
+export function applyAction(
+  prev: SessionState,
+  a: SessionAction,
+  keyOf: ReadonlyMap<string, string>,
+  now: number,
+): Applied {
+  let next = practiceReducer(prev, a);
+  if (next === prev) return { next };
+  if (next.finished && !prev.finished) next = { ...next, endedAt: now };
+  if (a.type !== "pick") return { next };
+  const qid = prev.ids[prev.pos]!;
+  return { next, record: [qid, a.choice, a.choice === keyOf.get(qid)] };
 }
 
 // ---- keyboard ----
@@ -156,19 +197,25 @@ export function keyToAction(key: string, ctx: KeyContext): SessionAction | null 
 
 // ---- sessionStorage ----
 
-export function sessionKey(ids: readonly string[]): string {
-  return `itp:practice:v1:${fnv1a32(ids.join(",")).toString(16)}`;
+export function sessionKey(ids: readonly string[], run: string | null = null): string {
+  const base = `itp:practice:v1:${fnv1a32(ids.join(",")).toString(16)}`;
+  return run === null ? base : `${base}:${run}`;
 }
 
 const isRecord = (x: unknown): x is Record<string, unknown> => typeof x === "object" && x !== null && !Array.isArray(x);
 
-/** The stored session for these ids, or a fresh one (startedAt = now). Never throws. */
-export function loadSession(storage: StorageLike | null, ids: readonly string[], now: number): SessionState {
-  const fresh = newSession(ids, now);
+/** The stored session for these ids (and run), or a fresh one (startedAt = now). Never throws. */
+export function loadSession(
+  storage: StorageLike | null,
+  ids: readonly string[],
+  now: number,
+  run: string | null = null,
+): SessionState {
+  const fresh = newSession(ids, now, run);
   if (!storage) return fresh;
   let doc: unknown;
   try {
-    const raw = storage.getItem(sessionKey(ids));
+    const raw = storage.getItem(sessionKey(ids, run));
     if (raw === null) return fresh;
     doc = JSON.parse(raw);
   } catch {
@@ -180,21 +227,34 @@ export function loadSession(storage: StorageLike | null, ids: readonly string[],
   if (isRecord(doc.answers)) {
     for (const [qid, c] of Object.entries(doc.answers)) if (inGroup.has(qid) && isChoiceLetter(c)) answers[qid] = c;
   }
-  const pos = typeof doc.pos === "number" && Number.isInteger(doc.pos) && doc.pos >= 0 && doc.pos < ids.length ? doc.pos : 0;
+  const pos =
+    typeof doc.pos === "number" && Number.isInteger(doc.pos) && doc.pos >= 0 && doc.pos < ids.length ? doc.pos : 0;
   const t = doc.startedAt;
   const startedAt = typeof t === "number" && Number.isFinite(t) && t >= 0 && t <= now ? t : now;
-  return { ...fresh, pos, answers, startedAt };
+  const e = doc.endedAt;
+  const ended = doc.finished === true && typeof e === "number" && Number.isFinite(e) && e >= startedAt && e <= now;
+  return { ...fresh, pos, answers, startedAt, finished: ended, endedAt: ended ? e : null };
 }
 
-/** Store { pos, answers, startedAt }; a finished session removes its key. Never throws. */
+/** Store { pos, answers, startedAt } (+ { finished, endedAt } once ended). Never throws. */
 export function saveSession(storage: StorageLike | null, s: SessionState): void {
   if (!storage) return;
+  const doc = s.finished
+    ? { pos: s.pos, answers: s.answers, startedAt: s.startedAt, finished: true, endedAt: s.endedAt }
+    : { pos: s.pos, answers: s.answers, startedAt: s.startedAt };
   try {
-    const key = sessionKey(s.ids);
-    if (s.finished) storage.removeItem(key);
-    else storage.setItem(key, JSON.stringify({ pos: s.pos, answers: s.answers, startedAt: s.startedAt }));
+    storage.setItem(sessionKey(s.ids, s.run), JSON.stringify(doc));
   } catch {
     // quota / blocked storage: the session keeps running in memory
+  }
+}
+
+/** Forget the stored group (the summary's 「もう一度」). Never throws. */
+export function clearSession(storage: StorageLike | null, ids: readonly string[], run: string | null = null): void {
+  try {
+    storage?.removeItem(sessionKey(ids, run));
+  } catch {
+    // blocked storage: nothing stored anyway
   }
 }
 

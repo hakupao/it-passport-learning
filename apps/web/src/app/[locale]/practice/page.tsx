@@ -27,7 +27,14 @@ import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { groupMap, resolveScope, topicStars } from "@/lib/practice/practiceIndex";
 import { loadChumonGroups, loadQuestionsByIds, loadTodayIndex } from "@/lib/practice/practiceReader";
-import { foldPlan, isFromToday, parseScope, sessionKey, type SearchParams } from "@/lib/practice/practiceSession";
+import {
+  foldPlan,
+  isFromToday,
+  parseRun,
+  parseScope,
+  sessionKey,
+  type SearchParams,
+} from "@/lib/practice/practiceSession";
 import { loadBaseQuestions, loadQuizIndex } from "@/lib/quiz/quizReader";
 
 export const dynamic = "force-dynamic";
@@ -87,6 +94,7 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   const ids = questions.map((q) => q.id);
 
   const fromToday = isFromToday(sp);
+  const run = parseRun(sp);
   const [dict, owner, today] = await Promise.all([
     dictPromise,
     cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value)),
@@ -109,9 +117,9 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   return (
     <LearningRecordProvider isOwner={owner}>
       <PracticeSession
-        // a fresh instance per request: the summary's 「只做错题再来一遍」 can lead to the same ids
-        // (all wrong), which must start over (the finished group already cleared its storage)
-        key={`${sessionKey(ids)}:${Date.now()}`}
+        // one instance per group (ids + run nonce): the summary's links carry a new run, so the
+        // same ids again (all wrong) mount a new group
+        key={sessionKey(ids, run)}
         questions={questions}
         locale={locale}
         isOwner={owner}
@@ -120,6 +128,7 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
         folds={foldPlan(ids, groups)}
         fromToday={fromToday}
         today={today}
+        run={run}
       />
     </LearningRecordProvider>
   );

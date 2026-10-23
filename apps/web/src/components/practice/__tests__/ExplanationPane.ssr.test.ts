@@ -59,7 +59,10 @@ describe("ExplanationPane — verdict list (× / ○)", () => {
   it("explanation lists ×/○ for all 4 letters in ア〜エ order", () => {
     const q = byId("2024r06-q001");
     const out = renderPane(q, "ja", wrongOf(q));
-    const rows = [...out.matchAll(/<li[^>]*data-verdict="(correct|wrong)"[^>]*data-letter="(.)"/g)].map((m) => [m[2], m[1]]);
+    const rows = [...out.matchAll(/<li[^>]*data-verdict="(correct|wrong)"[^>]*data-letter="(.)"/g)].map((m) => [
+      m[2],
+      m[1],
+    ]);
     expect(rows).toEqual(CHOICE_LETTERS.map((L) => [L, L === q.correct_answer ? "correct" : "wrong"]));
     expect((out.match(/aria-hidden="true">○</g) ?? []).length).toBe(1);
     expect((out.match(/aria-hidden="true">×</g) ?? []).length).toBe(3);
@@ -78,7 +81,10 @@ describe("ExplanationPane — verdict list (× / ○)", () => {
     const q = byId("2024r06-q001");
     const mine = wrongOf(q);
     const out = renderPane(q, "ja", mine);
-    const details = [...out.matchAll(/<li[^>]*data-letter="(.)"[^>]*><details([^>]*)>/g)].map((m) => [m[1], /\sopen/.test(m[2]!)]);
+    const details = [...out.matchAll(/<li[^>]*data-letter="(.)"[^>]*><details([^>]*)>/g)].map((m) => [
+      m[1],
+      /\sopen/.test(m[2]!),
+    ]);
     expect(details).toHaveLength(3);
     for (const [L, open] of details) expect(open).toBe(L === mine);
     expect(out).toMatch(new RegExp(`data-letter="${mine}"[^>]*data-mine="true"`));
@@ -113,7 +119,11 @@ describe("ExplanationPane — title, points, suspect, language", () => {
     const out = renderPane(withTitle, "ja", wrongOf(withTitle));
     const p0 = withTitle.explanation!.points[0]!.jp;
     const n = Number(/-q(\d+)$/.exec(withTitle.id)![1]);
-    expect(out).toMatch(new RegExp(`<h2[^>]*><span[^>]*>問 ${n}</span><span[^>]*>${p0.slice(0, p0.indexOf("。")).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span></h2>`));
+    expect(out).toMatch(
+      new RegExp(
+        `<h2[^>]*><span[^>]*>問 ${n}</span><span[^>]*>${p0.slice(0, p0.indexOf("。")).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span></h2>`,
+      ),
+    );
     const en = renderPane(withTitle, "en", wrongOf(withTitle));
     expect(en).toMatch(new RegExp(`<h2[^>]*><span[^>]*>問 ${n}</span></h2>`));
   });
@@ -152,7 +162,9 @@ describe("ExplanationPane — title, points, suspect, language", () => {
       ["en", "en", "en"],
     ] as const) {
       const out = renderPane(q, locale, wrongOf(q));
-      const pressed = [...out.matchAll(/<button type="button"[^>]*aria-pressed="(true|false)"[^>]*data-expl-lang="(\w+)"/g)];
+      const pressed = [
+        ...out.matchAll(/<button type="button"[^>]*aria-pressed="(true|false)"[^>]*data-expl-lang="(\w+)"/g),
+      ];
       expect(pressed.map((m) => m[2])).toEqual(["ja", "zh", "en"]);
       expect(pressed.filter((m) => m[1] === "true").map((m) => m[2])).toEqual([locale]);
       expect(textOf(fidOne(out, "expl-correct")!.inner)).toBe(q.explanation!.correct[field]);
@@ -208,7 +220,11 @@ describe("key-term highlight (§0-25)", () => {
   });
 
   it("ASCII needles need word boundaries; CJK needles do not", () => {
-    expect(splitTerms("SHIP IP", ["IP"]).filter((p) => p.term).map((p) => p.text)).toEqual(["IP"]);
+    expect(
+      splitTerms("SHIP IP", ["IP"])
+        .filter((p) => p.term)
+        .map((p) => p.text),
+    ).toEqual(["IP"]);
     expect(splitTerms("販売促進策", ["販売促進"]).filter((p) => p.term)).toHaveLength(1);
   });
 
@@ -217,7 +233,9 @@ describe("key-term highlight (§0-25)", () => {
     const term = q.terms.find((t) => q.explanation!.correct.jp.includes(t))!;
     const out = renderPane(q, "ja", wrongOf(q), { [term]: card(term) });
     const inner = fidOne(out, "expl-correct")!.inner;
-    expect(inner).toMatch(new RegExp(`<strong class="[^"]*term[^"]*">${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</strong>`));
+    expect(inner).toMatch(
+      new RegExp(`<strong class="[^"]*term[^"]*">${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</strong>`),
+    );
     expect(textOf(inner)).toBe(q.explanation!.correct.jp.trim());
     // a term without a dictionary card is not highlighted
     const plain = renderPane(q, "ja", wrongOf(q), {});
