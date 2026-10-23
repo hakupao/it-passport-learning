@@ -14,6 +14,9 @@
 // Key terms (§0-25): the question's terms that have a dictionary card are spot bold where they occur
 // in the explanation (splitTerms; style only, the text is unchanged). No wavy underline this phase.
 // Every compared text sits alone in its data-fid element (fidelity.test.ts).
+// `reveal` (Task 10, the single-question page /practice/q/<qid>: a reference view): the explanation
+// is shown also while unanswered — no row is "yours", every × row starts closed, and the AI 先生
+// thread anchor is `<question_id>:reveal` (the QuizSet convention for an unanswered reveal).
 
 "use client";
 
@@ -46,9 +49,11 @@ interface Props {
   /** dictionary cards keyed by JP term (as in QuizQuestion.terms) */
   termCards: Record<string, TermCard>;
   isOwner: boolean;
+  /** show the explanation while unanswered too (reference view; default false) */
+  reveal?: boolean;
 }
 
-export function ExplanationPane({ q, locale, picked, termCards, isOwner }: Props): React.ReactElement {
+export function ExplanationPane({ q, locale, picked, termCards, isOwner, reveal = false }: Props): React.ReactElement {
   const t = useTranslations("Practice");
   const [explLocale, setExplLocale] = useState(locale);
 
@@ -59,7 +64,7 @@ export function ExplanationPane({ q, locale, picked, termCards, isOwner }: Props
           {t("explanationTab")}
         </span>
       </div>
-      {picked === null ? (
+      {picked === null && !reveal ? (
         <p className={styles.await}>{t("awaitAnswer")}</p>
       ) : (
         <Answered
@@ -86,8 +91,8 @@ function Answered({
   explLocale,
   setExplLocale,
   t,
-}: Omit<Props, "picked"> & {
-  picked: ChoiceLetter;
+}: Omit<Props, "picked" | "reveal"> & {
+  picked: ChoiceLetter | null;
   explLocale: string;
   setExplLocale: (l: string) => void;
   t: ReturnType<typeof useTranslations>;
@@ -234,9 +239,9 @@ function Answered({
         <span className={styles.ask}>
           <AskSensei
             kind="question"
-            anchorId={`${q.id}:${picked}`}
+            anchorId={`${q.id}:${picked ?? "reveal"}`}
             title={q.source_label}
-            getAnchorText={() => questionAnchor(q, appLocale, { choice: picked, termCards })}
+            getAnchorText={() => questionAnchor(q, appLocale, { choice: picked ?? undefined, termCards })}
           />
         </span>
       </div>

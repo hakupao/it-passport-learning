@@ -2,8 +2,10 @@
 //
 //   - A scope in the URL (§0-12: ?ids=… | ?topic=…/?exam=… + n / order / seed, optional
 //     from=today) → the practice group: one question per screen, then the summary.
-//   - No (valid) scope, or prefill=1 → the setup panel. Task 10 builds it; this task renders a
-//     placeholder.
+//   - No (valid) scope, a scope that resolves to no question, or prefill=1 → the setup panel
+//     (PracticeSetup, Task 10) with the URL's valid topic / exam pre-selected (prefillOf: a legacy
+//     /quiz?mode=topic&id=X link arrives as ?topic=X&prefill=1). It gets the today payload (§0-20:
+//     topics, ★, question ids, chumon groups, exam labels) for the record-based scopes.
 // order=rand without a seed is redirected to the same URL with a fresh seed, so a reload resolves
 // the same list (the sessionStorage key is the list's hash, §0-13).
 //
@@ -19,7 +21,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { PracticeSession } from "@/components/practice/PracticeSession";
 import type { SessionTopic } from "@/components/practice/SessionSummary";
-import styles from "@/components/practice/session.module.css";
+import { PracticeSetup } from "@/components/practice/PracticeSetup";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { redirect } from "@/i18n/navigation";
 import { buildTermCards } from "@/lib/glossary/dictionary";
@@ -35,6 +37,7 @@ import {
   sessionKey,
   type SearchParams,
 } from "@/lib/practice/practiceSession";
+import { prefillOf, settingsFromPrefill } from "@/lib/practice/practiceSetup";
 import { loadBaseQuestions, loadQuizIndex } from "@/lib/quiz/quizReader";
 
 export const dynamic = "force-dynamic";
@@ -50,13 +53,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t("title") };
 }
 
-async function SetupPlaceholder({ locale }: { locale: string }): Promise<React.ReactElement> {
-  const t = await getTranslations({ locale, namespace: "Practice" });
+const ownerFlag = (): Promise<boolean> => cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value));
+
+async function setupPanel(
+  locale: string,
+  sp: SearchParams,
+  validTopics: ReadonlySet<string>,
+  validExams: ReadonlySet<string>,
+): Promise<React.ReactElement> {
+  const [today, owner] = await Promise.all([loadTodayIndex(locale), ownerFlag()]);
+  const prefill = prefillOf(sp, validTopics, validExams);
   return (
-    <main className={`${styles.session} ${styles.stub}`} data-setup="">
-      <h1 className={styles.summaryTitle}>{t("setupTitle")}</h1>
-      <p>{t("setupStub")}</p>
-    </main>
+    <LearningRecordProvider isOwner={owner}>
+      <PracticeSetup
+        index={today}
+        initial={settingsFromPrefill(prefill)}
+        prefilled={prefill.topics.length > 0 || prefill.exam !== null}
+      />
+    </LearningRecordProvider>
   );
 }
 
@@ -66,13 +80,10 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   const sp = await searchParams;
 
   const [index, base] = await Promise.all([loadQuizIndex(), loadBaseQuestions()]);
-  const scope = parseScope(
-    sp,
-    new Set(base.map((q) => q.id)),
-    new Set(index.topics.map((t) => t.topic_id)),
-    new Set(index.exams.map((e) => e.exam_id)),
-  );
-  if (!scope) return <SetupPlaceholder locale={locale} />;
+  const validTopics = new Set(index.topics.map((t) => t.topic_id));
+  const validExams = new Set(index.exams.map((e) => e.exam_id));
+  const scope = parseScope(sp, new Set(base.map((q) => q.id)), validTopics, validExams);
+  if (!scope) return setupPanel(locale, sp, validTopics, validExams);
 
   if (scope.kind === "filter" && scope.order === "rand" && sp.seed === undefined) {
     const query: Record<string, string> = {};
@@ -90,14 +101,14 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   });
   const groups = await loadChumonGroups();
   const questions = await loadQuestionsByIds(resolveScope(scope, base, groupMap(groups)));
-  if (questions.length === 0) return <SetupPlaceholder locale={locale} />;
+  if (questions.length === 0) return setupPanel(locale, sp, validTopics, validExams);
   const ids = questions.map((q) => q.id);
 
   const fromToday = isFromToday(sp);
   const run = parseRun(sp);
   const [dict, owner, today] = await Promise.all([
     dictPromise,
-    cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value)),
+    ownerFlag(),
     fromToday
       ? loadTodayIndex(locale).catch((err: unknown) => {
           console.error("[practice] today payload failed; the summary offers no 「继续下一项」", err);

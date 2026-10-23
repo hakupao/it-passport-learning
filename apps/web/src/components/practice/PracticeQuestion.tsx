@@ -22,6 +22,10 @@
 // <li> holds the button (letter + sr-only 「アを選ぶ」, aria-describedby → the table) and the table
 // as a sibling that also answers on click. After an answer the buttons are aria-disabled (they keep
 // focus and stay in the tab order); the result is a visible ○ / × plus sr-only text, never colour.
+//
+// `readOnly` (Task 10, the single-question page: a reference view): picking does nothing and the
+// choices are aria-disabled; unanswered, the keyed answer carries its ○ (as on the explanation and the
+// 解答栏 beside it), no choice is "yours".
 
 "use client";
 
@@ -49,6 +53,8 @@ export interface PracticeQuestionProps {
   /** JP fold point (ChumonGroup.preambleChars.jp), trailing "\n\n" included; null = never fold */
   preambleChars: number | null;
   foldPreamble: boolean;
+  /** reference view: no picking, the keyed answer marked (default false) */
+  readOnly?: boolean;
 }
 
 type T = ReturnType<typeof useTranslations>;
@@ -64,6 +70,7 @@ export function PracticeQuestion({
   onToggleTranslation,
   preambleChars,
   foldPreamble,
+  readOnly = false,
 }: PracticeQuestionProps): React.ReactElement {
   const t = useTranslations("Practice");
   const number = sourceNumber(q);
@@ -130,6 +137,7 @@ export function PracticeQuestion({
                 trText={c.text}
                 picked={picked}
                 onPick={onPick}
+                readOnly={readOnly}
                 showTr={showTr}
                 trLang={trLang}
                 t={t}
@@ -171,6 +179,7 @@ function ChoiceItem({
   trText,
   picked,
   onPick,
+  readOnly,
   showTr,
   trLang,
   t,
@@ -182,13 +191,14 @@ function ChoiceItem({
   trText: string;
   picked: ChoiceLetter | null;
   onPick: (choice: ChoiceLetter) => void;
+  readOnly: boolean;
   showTr: boolean;
   trLang: string;
   t: T;
 }): React.ReactElement {
   const jp = q.choices_jp[L] ?? "";
   const figure = q.choice_figures?.[L];
-  const answered = picked !== null;
+  const answered = picked !== null || readOnly;
   const isPicked = picked === L;
   const isCorrect = q.correct_answer === L;
   const state = !answered ? "idle" : isCorrect ? "correct" : isPicked ? "picked-wrong" : "other";
