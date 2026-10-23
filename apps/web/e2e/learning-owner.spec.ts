@@ -29,7 +29,6 @@
 
 import { test, expect, type Page, type Route } from "@playwright/test";
 
-import ja from "../messages/ja.json";
 import {
   emptyRecord,
   encodeRecord,
@@ -173,7 +172,7 @@ test("owner quiz set: no PUT before the GET; debounced PUT = merge(local, remote
   expectAllGetsV2(sync);
 
   await answerFirstChoice(page); // while the GET is held
-  await expect(page.locator(`article[id="${QUESTION_ID}"]`).getByText(`${ja.Quiz.correctLabel}: イ`)).toBeVisible();
+  await expect(page.locator(`article[id="${QUESTION_ID}"]`).getByText(`正解: イ`)).toBeVisible();
   await page.waitForTimeout(2000 + 1000); // past the debounce
   expect(sync.puts).toEqual([]);
 

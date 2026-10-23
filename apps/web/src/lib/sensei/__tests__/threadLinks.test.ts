@@ -36,11 +36,9 @@ describe("splitQuestionAnchor", () => {
 });
 
 describe("questionThreadHref", () => {
-  it("links to the exam set with the question as the hash", () => {
-    expect(questionThreadHref("2009h21a-q054:イ")).toBe("/quiz?mode=exam&id=2009h21a#2009h21a-q054");
-    expect(questionThreadHref("2011h23tokubetsu-q058:reveal")).toBe(
-      "/quiz?mode=exam&id=2011h23tokubetsu#2011h23tokubetsu-q058",
-    );
+  it("links to the single-question page", () => {
+    expect(questionThreadHref("2009h21a-q054:イ")).toBe("/practice/q/2009h21a-q054");
+    expect(questionThreadHref("2011h23tokubetsu-q058:reveal")).toBe("/practice/q/2011h23tokubetsu-q058");
   });
 
   it("is null for an anchor it cannot parse", () => {
@@ -54,10 +52,10 @@ describe("review anchors (D-181 Phase B)", () => {
     expect(reviewAnchorId("strategy-02-08", new Date(2026, 10, 22, 0, 0))).toBe("strategy-02-08:2026-11-22");
   });
 
-  it("reviewThreadHref links to the topic set with the thread date, without the review flag", () => {
+  it("reviewThreadHref links to the topic page with the thread date, without the review flag", () => {
     expect(REVIEW_THREAD_PARAM).toBe("thread");
-    expect(reviewThreadHref("technology-14-36:2026-10-22")).toBe("/quiz?mode=topic&id=technology-14-36&thread=2026-10-22");
-    expect(reviewThreadHref("management-10-27:2026-01-05")).toBe("/quiz?mode=topic&id=management-10-27&thread=2026-01-05");
+    expect(reviewThreadHref("technology-14-36:2026-10-22")).toBe("/practice/browse/technology-14-36?thread=2026-10-22");
+    expect(reviewThreadHref("management-10-27:2026-01-05")).toBe("/practice/browse/management-10-27?thread=2026-01-05");
   });
 
   it("reviewThreadHref is null for an anchor it cannot parse", () => {

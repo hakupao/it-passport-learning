@@ -18,7 +18,8 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 import glossaryStyles from "@/components/glossary/glossary.module.css";
-import quizStyles from "@/components/quiz/quiz.module.css";
+import feedbackStyles from "@/components/quiz/feedback.module.css";
+import richTextStyles from "@/components/quiz/richText.module.css";
 import type { ChoiceLetter } from "@/lib/learning/record";
 import { loadChumonGroups } from "@/lib/practice/practiceReader";
 import type { ChumonGroup } from "@/lib/practice/practiceIndex";
@@ -80,7 +81,8 @@ function page(s: Sample, body: string): string {
     ? readdirSync(built).filter((f) => f.endsWith(".css")).map((f) => `<link rel="stylesheet" href="/apps/web/.next/static/css/${f}">`)
     : [];
   const css = [
-    moduleCss(path.join(WEB, "src/components/quiz/quiz.module.css"), quizStyles as Record<string, string>),
+    moduleCss(path.join(WEB, "src/components/quiz/richText.module.css"), richTextStyles as Record<string, string>),
+    moduleCss(path.join(WEB, "src/components/quiz/feedback.module.css"), feedbackStyles as Record<string, string>),
     moduleCss(path.join(WEB, "src/components/glossary/glossary.module.css"), glossaryStyles as Record<string, string>),
     moduleCss(path.join(WEB, "src/components/practice/practice.module.css"), practiceStyles as Record<string, string>),
   ].join("\n");

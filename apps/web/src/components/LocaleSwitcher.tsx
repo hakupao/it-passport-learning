@@ -3,7 +3,7 @@
 //
 // Same mechanics as before: a `replace` navigation to the same route in the other
 // locale (/ja/glossary → /zh/glossary) with the query string kept
-// (/ja/quiz?mode=exam&id=… → /zh/quiz?mode=exam&id=…). next-intl's <Link locale>
+// (/ja/practice?topic=… → /zh/practice?topic=…). next-intl's <Link locale>
 // does the locale-prefix rewrite; the links also work without JS.
 //
 // useSearchParams() needs a Suspense boundary on static pages: render

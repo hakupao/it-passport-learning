@@ -68,10 +68,14 @@ describe("SenseiHome SSR", () => {
       const { s } = render(locale);
       const messages = JSON.parse(readFileSync(path.resolve(__dirname, `../../../../messages/${locale}.json`), "utf-8"));
       for (const key of ["pageIntro", "threadsEmpty"]) {
-        // question / term / unit share the 「AI 先生に聞く」 button; review; the free question
+        // question / term / unit share the 「AI 先生に聞く」 button; the review (today's 「AI 分析」 and
+        // the topic page's button, Stage 7 Task 13); the free question
         expect(s[key], key).toContain(messages.Sensei.askButton);
-        expect(s[key], key).toContain(s.reviewTitle);
+        expect(s[key], key).toContain(messages.Today.aiReview);
+        expect(s[key], key).toContain(s.reviewButton);
         expect(s[key], key).toContain(s.freeTitle);
+        // the old quiz pages are gone (DESIGN §6.9 stale copy)
+        expect(s[key], key).not.toMatch(/quiz/i);
       }
       expect(s.threadsEmpty).not.toMatch(/答えたあと|答题后|After answering/);
     });

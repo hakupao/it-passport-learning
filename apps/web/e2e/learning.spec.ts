@@ -45,7 +45,7 @@ test("quiz landing: progress updates from another tab without a reload", async (
   await b.goto(`/ja/quiz?mode=topic&id=${TOPIC_ID}`);
   const card = b.locator(`article[id="${QUESTION_ID}"]`);
   await card.getByRole("listitem").getByRole("button").first().click(); // ア — wrong
-  await expect(card.getByText(`${ja.Quiz.correctLabel}: イ`)).toBeVisible();
+  await expect(card.getByText(`正解: イ`)).toBeVisible();
 
   await expect(row).toContainText("1/7 解答 · 正答率 0%");
   expect(await a.evaluate(() => (window as unknown as { __noReload?: number }).__noReload)).toBe(1);

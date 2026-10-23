@@ -55,6 +55,9 @@ interface QuizMessages {
   resultCorrect: string;
   resultWrong: string;
 }
+// Stage 7 Task 13: the Quiz namespace is gone with the old views (type-only fix; Task 15 rewrites
+// this spec against the practice pages).
+const quizOf = (m: unknown): QuizMessages => (m as { Quiz: QuizMessages }).Quiz;
 
 interface LocaleFixture {
   locale: "ja" | "zh" | "en";
@@ -62,9 +65,9 @@ interface LocaleFixture {
 }
 
 const LOCALES: readonly LocaleFixture[] = [
-  { locale: "ja", m: ja.Quiz },
-  { locale: "zh", m: zh.Quiz },
-  { locale: "en", m: en.Quiz },
+  { locale: "ja", m: quizOf(ja) },
+  { locale: "zh", m: quizOf(zh) },
+  { locale: "en", m: quizOf(en) },
 ];
 
 /** quiz_index.json → topics[topic_id="technology-14-36"] */
@@ -146,7 +149,7 @@ for (const f of LOCALES) {
 test("quiz ja: clicking a choice answers, marks it and saves it locally", async ({
   page,
 }: { page: Page }) => {
-  const m = ja.Quiz;
+  const m = quizOf(ja);
   const learningRequests: string[] = [];
   page.on("request", (r) => {
     if (new URL(r.url()).pathname.startsWith("/api/learning")) learningRequests.push(r.url());
@@ -257,7 +260,7 @@ const TABLE_CHOICE_ANSWER = "エ";
 test("quiz ja: table choices — table outside the button, answered via the button", async ({
   page,
 }: { page: Page }) => {
-  const m = ja.Quiz;
+  const m = quizOf(ja);
   const stored = () => page.evaluate(() => localStorage.getItem("itp:learn:v1"));
   await page.goto(`/ja/quiz?mode=topic&id=${TABLE_CHOICE_TOPIC}`);
   const card = page.locator(`article[id="${TABLE_CHOICE_QID}"]`);
@@ -297,7 +300,7 @@ test("quiz ja: table choices — table outside the button, answered via the butt
 test("quiz ja: clicking a table choice's table answers it once (wrong → ✗)", async ({
   page,
 }: { page: Page }) => {
-  const m = ja.Quiz;
+  const m = quizOf(ja);
   await page.goto(`/ja/quiz?mode=topic&id=${TABLE_CHOICE_TOPIC}`);
   const card = page.locator(`article[id="${TABLE_CHOICE_QID}"]`);
   await card.locator(`[id="${TABLE_CHOICE_QID}-choice-ア"] table`).first().click();

@@ -4,8 +4,8 @@
 // the localized unit titles and the per-sense SVGs and passes them in. Every
 // sense (one per textbook unit teaching the headword) shows definition /
 // explanation / analogy / memory hook / figure plus a "learn in" link to
-// /textbook/<unitId>#<termId>; past-exam questions link to
-// /quiz?mode=exam&id=<examId>#<questionId>. The JP term is always the headword.
+// /textbook/<unitId>#<termId>; past-exam questions link to the single-question
+// page /practice/q/<questionId> (Stage 7 Task 13). The JP term is always the headword.
 // D-181 Phase C: under the headword, 「AI 先生に聞く」 (a client island; the panel
 // and the AI SDK load on the first click) with the term anchor the page built.
 
@@ -95,7 +95,7 @@ export function TermDetail({ locale, entry, unitTitles, svgs, senseiAnchorText }
           <ul className={styles.qList}>
             {entry.questions.map((q) => (
               <li key={q.id}>
-                <Link href={`/quiz?mode=exam&id=${q.examId}#${q.id}`} locale={locale}>
+                <Link href={`/practice/q/${q.id}`} locale={locale}>
                   {q.sourceLabel}
                 </Link>
               </li>

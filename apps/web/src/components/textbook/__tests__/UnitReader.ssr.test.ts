@@ -129,6 +129,23 @@ describe("UnitReader term anchors (SSR)", () => {
   });
 });
 
+describe("UnitReader past-questions link (Stage 7 Task 13)", () => {
+  const label = { ja: "この単元の過去問", zh: "本单元的过去问", en: "Past questions for this unit" } as const;
+  for (const locale of ["ja", "zh", "en"] as const) {
+    it(`${locale}: links 「${label[locale]}」 to the unit's topic page; the deferred note is gone`, async () => {
+      const unit = await loadUnit(UNIT_ID);
+      expect(unit.topic_id).toBe("management-08-25");
+      const out = await render(locale);
+      const link = out.match(new RegExp(`<a[^>]*href="/${locale}/practice/browse/${unit.topic_id}"[^>]*>([^<]*)</a>`));
+      expect(link?.[1]).toBe(label[locale]);
+      expect(out).not.toMatch(/\/quiz(?!-figures)/);
+      const textbook = messages(locale).Textbook as Record<string, string>;
+      expect(textbook.quizDeferred).toBeUndefined();
+      expect(textbook.pastQuestions).toBe(label[locale]);
+    });
+  }
+});
+
 describe("textbook terms on the real corpus", () => {
   it("every term is a dictionary headword whose senses include its unit, unique per unit", async () => {
     const [dict, units] = await Promise.all([loadDictionary(), loadAllUnits()]);

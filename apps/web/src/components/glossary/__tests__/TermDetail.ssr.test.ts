@@ -102,10 +102,11 @@ describe("TermDetail (SSR)", () => {
     expect(out).toContain("システム開発の管理");
   });
 
-  it("links each question to its exam set with a #questionId anchor, labelled by sourceLabel", () => {
+  it("links each question to its single-question page, labelled by sourceLabel", () => {
     const out = render("ja", ENTRY, TITLES, [null, null]);
-    const quiz = hrefs(out).filter((l) => l.startsWith("/ja/quiz"));
-    expect(quiz).toEqual(["/ja/quiz?mode=exam&id=2024r06#2024r06-q001"]);
+    const practice = hrefs(out).filter((l) => l.startsWith("/ja/practice"));
+    expect(practice).toEqual(["/ja/practice/q/2024r06-q001"]);
+    expect(hrefs(out).filter((l) => /\/quiz\b/.test(l))).toEqual([]);
     expect(out).toContain("令和6年度 問1");
   });
 

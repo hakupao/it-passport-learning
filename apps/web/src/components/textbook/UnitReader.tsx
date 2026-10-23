@@ -5,9 +5,10 @@
 // inlined self-generated SVG) → summary, with in-topic prev/next. The JP term is
 // always the headword (exam vocabulary); zh/en show a gloss beside it.
 //
-// Deferred to the later Quiz sub-stage (D-133): inline_quiz / challenge_questions
+// Deferred (D-133; DESIGN §7 Phase 3): inline_quiz / challenge_questions
 // (resolve against the IPA past-exam corpus, not shipped) and source_figures
-// (IPA exam PNGs, not shipped). A note stands in where practice will appear.
+// (IPA exam PNGs, not shipped). Stage 7 Task 13: after the summary, a link to the
+// past questions of the unit's topic (/practice/browse/<topic_id>).
 // D-180 Task 12: the MarkUnitRead island records the unit as read on mount (the
 // page mounts the LearningRecordProvider).
 // D-181 Phase C: under the title, 「AI 先生に聞く」 (a client island; the panel and
@@ -166,8 +167,12 @@ export async function UnitReader({
         ) : null}
       </section>
 
-      {/* ④ practice — deferred to the Quiz sub-stage */}
-      <p className={styles.deferNote}>{t("quizDeferred")}</p>
+      {/* ④ practice — the past questions of this unit's topic */}
+      <p className={styles.practiceLink}>
+        <Link href={`/practice/browse/${unit.topic_id}`} locale={locale}>
+          {t("pastQuestions")}
+        </Link>
+      </p>
 
       <nav className={styles.pager}>
         {neighbors.prev ? (

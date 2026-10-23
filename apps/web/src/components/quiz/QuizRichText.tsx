@@ -6,7 +6,7 @@
 
 import { parseChoiceWithHint, parseStemBlocks } from "@/lib/quiz/quizRichText";
 
-import styles from "./quiz.module.css";
+import styles from "./richText.module.css";
 
 function DataTable({
   header,
@@ -72,7 +72,7 @@ export function StemBlocks({ stem }: { stem: string }): React.ReactElement {
 
 /**
  * True when ChoiceBody renders this choice as table(s) (flow content), which
- * must not sit inside the choice <button> (QuizSet renders it as a sibling).
+ * must not sit inside the choice <button> (PracticeQuestion renders it as a sibling).
  */
 export function isTableChoice(text: string, jpText?: string): boolean {
   const kind = parseChoiceWithHint(text, jpText).kind;

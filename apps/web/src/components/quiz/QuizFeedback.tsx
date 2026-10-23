@@ -1,6 +1,6 @@
 // D-149 (Session 126) — owner-only per-question problem report.
 //
-// Rendered by QuizSet only when the server page resolved the D-148 owner cookie
+// Rendered by the practice ExplanationPane only when the server page resolved the D-148 owner cookie
 // (`isOwner` prop), so non-owners never see it; the API also re-checks (403).
 // Inline disclosure panel (no modal): trigger has aria-expanded/aria-controls,
 // first category radio receives focus on open, Esc closes and returns focus to
@@ -18,7 +18,7 @@ import {
   type FeedbackRecord,
 } from "@/lib/quiz/feedbackModel";
 
-import styles from "./quiz.module.css";
+import styles from "./feedback.module.css";
 
 type ListState = "loading" | "ready" | "error";
 type SubmitState = "idle" | "submitting" | "success" | "error" | "unavailable";
@@ -30,7 +30,7 @@ export function QuizFeedback({
   questionId: string;
   locale: string;
 }): React.ReactElement {
-  const t = useTranslations("Quiz");
+  const t = useTranslations("Practice");
   const baseId = useId();
   const panelId = `${baseId}-panel`;
   const titleId = `${baseId}-title`;
@@ -168,7 +168,7 @@ export function QuizFeedback({
             <div className={styles.fbActions}>
               <button
                 type="submit"
-                className={styles.revealBtn}
+                className={styles.fbSubmit}
                 disabled={!category || submitState === "submitting"}
               >
                 {submitState === "submitting" ? t("fbSubmitting") : t("fbSubmit")}

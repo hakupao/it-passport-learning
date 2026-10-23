@@ -100,7 +100,7 @@ async function presetKey(page: Page): Promise<void> {
 }
 
 async function openPanel(page: Page, id: string, choiceIndex: number | "reveal"): Promise<void> {
-  if (choiceIndex === "reveal") await card(page, id).getByRole("button", { name: ja.Quiz.showAnswer }).click();
+  if (choiceIndex === "reveal") await card(page, id).getByRole("button", { name: "解答を表示" }).click();
   else await choice(page, id, choiceIndex).click();
   await askButton(page, id).click();
   await expect(panel(page)).toBeVisible();
