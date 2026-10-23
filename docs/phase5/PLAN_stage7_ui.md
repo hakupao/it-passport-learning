@@ -22,7 +22,7 @@
 - `LearningRecordProvider` 永远不放进 `[locale]/layout.tsx`（读 cookie 会让全站变 dynamic）；需要记录的页面各自挂 provider 并 `force-dynamic`。
 - 不往 `next.config.ts` 加 trace 条目（S131 改訂：turbopack build 不用 per-route tracing）。CSP 不变（`connect-src 'self' https://api.anthropic.com`）。
 - Gates（`apps/web` 下，每个 Checkpoint 必须全绿）：`npx tsc --noEmit` 0 error / `npm run lint` 0 error / `npm test` 全 pass / `npm run build` exit 0 / nft IPA leak `find .next -name '*.nft.json' -exec grep -lE 'data/ip/(exams|sources|syllabus)/' {} + | wc -l` 输出 `0`。
-- e2e：部署前一律跑本地：`npm run build && npm start`（另一终端）后 `PLAYWRIGHT_BASE_URL=http://localhost:3000 npx playwright test`；owner 同步 spec 另加 `E2E_OWNER_KEY=<本地 .env.local 的 OWNER_KEY>`。默认 base URL 是本番，**部署前不要不带 `PLAYWRIGHT_BASE_URL` 跑**。
+- e2e：部署前一律跑本地，**端口 ≥ 3100（3000 是用户自己的开发端口）、Redis env 置空**：`KV_REST_API_URL= KV_REST_API_TOKEN= UPSTASH_REDIS_REST_URL= UPSTASH_REDIS_REST_TOKEN= npx next start -p 3150` 后 `PLAYWRIGHT_BASE_URL=http://localhost:3150 npx playwright test --retries=0`；owner 同步 spec 另起 `OWNER_KEY=e2e-local-k`（同样置空 Redis env）的 server，并加 `E2E_OWNER_KEY=e2e-local-k`。**绝不让本地 server 读 `.env.local` 的 Redis（= 本番存储）**；server 记 PID、按 PID 停、确认端口已空（S132 修正，原文写 `npm start`/:3000/`.env.local`）。默认 base URL 是本番，**部署前不要不带 `PLAYWRIGHT_BASE_URL` 跑**。
 - **push = 本番部署，是对外动作**：每次 push 前停下来请用户明确同意（Checkpoint 1A、1C 各一次）。不 force-push，不 rebase。
 - 每个 Task 结束 commit（信息结尾带会话要求的 attribution 行）；subagent 一律 `model: opus`；Rule D 审查者与执行者用不同 `subagent_type`。
 - 证据目录：`evidence/phase5/stage_07_ui/`（Rule A）；失败 attempt 归档 `failures/phase5/stage_07_ui/`（Rule B，不删）。

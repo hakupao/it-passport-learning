@@ -108,7 +108,7 @@
 **旧链接必须继续可用** (来源: 书签、辞典条目的出题链接 `TermDetail.tsx:98`、AI 对话的回链 `threadLinks.ts:30,56-63`、复习卡 `ReviewCard.tsx:68`)：
 - `/quiz` (无参数) → `/practice/browse`。
 - `/quiz?mode=topic|exam&id=X` → `/practice?topic=X` / `?exam=X` (进入设置面板并预填范围)。
-- `/quiz?...&review=1` → 今日页并打开该领域的 AI 复习 (§6.5)。`/quiz?...&thread=<key>` → 打开对应已保存对话的 AI 面板。
+- `/quiz?...&review=1` → ~~今日页并打开该领域的 AI 复习 (§6.5)~~ **领域页 `/practice/browse/<topicId>?review=1`**（D-190 偏离 (a)：今日页没有建 reviewAnchor 所需的题目全文；见 `docs/phase5/PLAN_stage7_ui.md` §0）。`/quiz?...&thread=<key>` → 打开对应已保存对话的 AI 面板。
 - 片段 `#<question_id>` (无 `q-` 前缀) 不会发到服务器 → `/quiz` 保留为一个客户端跳转页：有片段时去 `/practice/q/<question_id>`，否则按上面的规则。
 - 教科书目前没有链到题目 (只有占位文案 `UnitReader.tsx:170` / messages `quizDeferred`)，Phase 3 新增。
 

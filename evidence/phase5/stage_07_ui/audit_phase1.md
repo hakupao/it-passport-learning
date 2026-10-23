@@ -1,5 +1,7 @@
 # Stage 7 Phase 1 — 練習画面 Rule A 語義抽検 (目視)
 
+> **口径 (S132 追記)**: 本ファイル前半は attempt 1 (HEAD f20ad17、N=30 × ja/zh の目視) の記録。最終判定 **PASS は attempt 3 (commit 30d65ca)** によるもので、その根拠は 30 題の再撮影ではなく、全 2900 題 × 4 モード (ja / zh / zh 訳 / en 訳) の兜底 OFF 機械走査 (独立審査、負対照 8/8) + 失敗題 8 題と通常 row4 題の目視。文字の不変は表示保真テスト (2900 × 3、diff 0) が保証し、attempt 2/3 の修正は row4/list の再分類のみ。末尾「attempt 2 → 不採用 / attempt 3 → PASS」節を参照。
+
 - 日付: 2026-10-23
 - HEAD: `f20ad1756ef1e6128babf2d30b9eb82c7c997f9a` (branch `stage7-ui`)
 - 抽出規則: `.superpowers/sdd/PLAN_stage7_ui/audit_ids.json` (seed 20261023, mulberry32 shuffle, 1 類 5 題・重複なし; figure / table / chumon / choice_figures / suspect / points3)
