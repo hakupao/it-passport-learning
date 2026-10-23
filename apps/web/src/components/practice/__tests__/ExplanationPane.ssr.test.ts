@@ -177,14 +177,24 @@ describe("book labels stay Japanese in every locale (A4 mockup)", () => {
       ["en", "← your answer"],
     ] as const) {
       const out = renderPane(q, locale, wrongOf(q));
-      expect(out).toMatch(/>解説</);
-      expect(out).toContain(`>問 ${sourceNumber(q)}<`);
-      expect(out).toContain(">ここがポイント<");
-      expect(out).toContain("<strong>正解</strong>");
-      expect(out).toContain(">用語<");
+      // lang="ja" on each Japanese book label, so zh / en screen readers pronounce it as Japanese
+      expect(out).toMatch(/<span[^>]*lang="ja"[^>]*>解説</);
+      expect(out).toMatch(new RegExp(`<span[^>]*lang="ja"[^>]*>問 ${sourceNumber(q)}<`));
+      expect(out).toMatch(/<div[^>]*lang="ja"[^>]*>ここがポイント</);
+      expect(out).toContain('<strong lang="ja">正解</strong>');
+      expect(out).toMatch(/<span[^>]*lang="ja"[^>]*>用語</);
       expect(out).toContain(yours);
-      expect(renderAnswerBar(q, locale)).toContain(">解答<");
+      const bar = renderAnswerBar(q, locale);
+      expect(bar).toMatch(/<span[^>]*lang="ja"[^>]*>解答</);
+      expect(bar).toMatch(new RegExp(`<span[^>]*lang="ja"[^>]*>問${sourceNumber(q)}<`));
     }
+  });
+
+  it("the explanation region's name is localized (explanationAria)", () => {
+    const q = QS.find((x) => x.explanation)!;
+    expect(renderPane(q, "ja", null)).toMatch(/<section[^>]*aria-label="解説"/);
+    expect(renderPane(q, "zh", null)).toMatch(/<section[^>]*aria-label="解析"/);
+    expect(renderPane(q, "en", null)).toMatch(/<section[^>]*aria-label="Explanation"/);
   });
 });
 

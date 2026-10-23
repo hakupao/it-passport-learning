@@ -44,7 +44,16 @@ describe("PracticeQuestion — 問 N, layout, choices", () => {
       expect(out).toMatch(/<span[^>]*>問<\/span><span[^>]*>87<\/span>/);
       expect(out).toContain("頻出度");
       expect(out).toMatch(/>出典　</);
+      // Japanese book labels carry lang="ja" (zh / en screen readers)
+      expect(out).toMatch(/<span[^>]*lang="ja"[^>]*>問<\/span>/);
+      expect(out).toMatch(/<span lang="ja">頻出度<\/span>/);
+      expect(out).toMatch(/<span lang="ja">出典　</);
     }
+    const g = GROUPS.find((x) => x.preambleChars.jp !== null)!;
+    const member = byId(g.memberIds[1]!);
+    expect(renderFace(member, "en", { preambleChars: g.preambleChars.jp, foldPreamble: true })).toContain(
+      '<summary lang="ja">共通前文 ▸</summary>',
+    );
   });
 
   it("row4 renders 4 columns class", () => {

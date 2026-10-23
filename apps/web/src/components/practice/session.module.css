@@ -1,0 +1,281 @@
+/* Stage 7 Phase 1 Task 9 (D-189 §3 / §6.2) — the practice session frame: top bar (分野 tag, topic
+ * path, progress, 答题卡, timer, 終了), the two columns (question face | explanation), the footer
+ * (解答栏, status line, prev / next) and the summary. Mockup A4-Practice.
+ * The 7 tokens only; radius ≤ 6px; no shadow, no gradient; right / wrong never by colour. */
+
+.session {
+  color: var(--ink);
+}
+
+/* ---- top bar ---- */
+.topBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 14px 0 0;
+}
+.catTag {
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 1px 10px;
+}
+.path {
+  font-size: 13px;
+  color: var(--ink-muted);
+  min-width: 0;
+}
+.progress {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.progress strong {
+  color: var(--ink);
+}
+.timer {
+  font-size: 13px;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.finishBtn {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.finishBtn:hover {
+  border-color: var(--ink);
+}
+.finishBtn:focus-visible,
+.navBtn:focus-visible,
+.navBtnPrimary:focus-visible,
+.action:focus-visible,
+.actionPrimary:focus-visible,
+.wrongLink:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ---- 答题卡: one cell per question, ○ / ×, current = ink ---- */
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 100%;
+}
+.cell {
+  width: 16px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--spot);
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+}
+.cell[data-current="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+/* ---- columns ---- */
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: flex-start;
+  padding: 16px 0 40px;
+}
+.faceCol {
+  flex: 1 1 520px;
+  min-width: 0;
+}
+.explCol {
+  flex: 1 1 460px;
+  min-width: 0;
+}
+
+/* ---- footer ---- */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0 24px;
+  border-top: 1px solid var(--rule);
+}
+.status {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.nav {
+  margin-left: auto;
+  display: flex;
+  gap: 14px;
+}
+.navBtn {
+  height: 44px;
+  padding: 0 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.navBtn:disabled {
+  border-color: var(--rule);
+  color: var(--ink-muted);
+  cursor: default;
+}
+.navBtnPrimary {
+  height: 44px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ---- summary ---- */
+.summary {
+  padding: 24px 0 48px;
+  max-width: 760px;
+}
+.summaryTitle {
+  margin: 0;
+  padding-bottom: 6px;
+  font-size: 22px;
+  font-weight: 700;
+  border-bottom: 2px dotted var(--spot);
+}
+.score {
+  margin: 18px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.facts {
+  margin: 6px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+.facts strong {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.sectionTitle {
+  margin: 28px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.wrongList {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+.wrongRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 14px;
+}
+.wrongLink {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--ink-muted);
+}
+.wrongTopic {
+  color: var(--ink-muted);
+}
+.wrongAnswers {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.letterInk,
+.letterSpot {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+}
+.letterInk {
+  background: var(--ink);
+}
+.letterSpot {
+  background: var(--spot);
+}
+.empty {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+.actions {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 14px;
+}
+.action,
+.actionPrimary {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  font-size: 15px;
+  text-decoration: none;
+}
+.action {
+  background: var(--paper);
+  color: var(--ink);
+}
+.actionPrimary {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+}
+
+/* ---- setup placeholder (Task 10 replaces it) ---- */
+.stub {
+  padding: 24px 0 48px;
+}
+.stub p {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--ink-muted);
+}

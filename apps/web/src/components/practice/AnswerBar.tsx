@@ -16,8 +16,10 @@ export function AnswerBar({ q }: { q: QuizQuestion }): React.ReactElement {
   const number = sourceNumber(q);
   return (
     <div className={styles.answerBar}>
-      <span className={styles.answerTag}>{t("answerTag")}</span>
-      <span className={styles.answerBody}>
+      <span className={styles.answerTag} lang="ja">
+        {t("answerTag")}
+      </span>
+      <span className={styles.answerBody} lang="ja">
         {t("qLabel")}
         {number}
         <span className={styles.answerLetter} lang="ja" data-fid="answer">

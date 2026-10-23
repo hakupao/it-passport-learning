@@ -18,10 +18,13 @@
 //   thread has been read and a key exists (without a key it waits for the key
 //   to be saved). The guard is the anchor object itself: each click on the card
 //   makes a new anchor, so effect re-runs never send twice.
-// - An in-page `#<question_id>` link in a reply (the review's recommendations; only
-//   targets shaped like a question id, so an in-dialog `#sensei-input` is left
-//   alone) closes the panel, then scrolls to that question and focuses its
-//   <article> (tabIndex -1) — not a choice button, where Enter would answer it.
+// - A `#<question_id>` link in a reply (the review's recommendations; only targets
+//   shaped like a question id, so an in-dialog `#sensei-input` is left alone),
+//   D-190 §0-18: the host's onQuestionLink is asked first (the practice group: true =
+//   it moved to that question of the group); else, when that question is on the page,
+//   as before. Either way the panel closes, then scrolls to the question and focuses
+//   its <article> (tabIndex -1) — not a choice button, where Enter would answer it.
+//   Otherwise the link opens the question's own page, /practice/q/<id>.
 // - Phase C: a free-question thread (/sensei) arrives with its question as the
 //   `opener`; its hint and placeholder are the free-question ones and it shows no
 //   「なぜ」 suggestion.
@@ -36,6 +39,7 @@ import type { UIMessage } from "ai";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from "@/components/ui/dialog";
 import { useSensei } from "@/hooks/useSensei";
+import { useRouter } from "@/i18n/navigation";
 import type { SenseiError } from "@/lib/sensei/errors";
 import type { ThreadKind } from "@/lib/sensei/threadStore";
 
@@ -63,13 +67,17 @@ export function SenseiPanel({
   open,
   onOpenChange,
   returnFocusTo,
+  onQuestionLink,
 }: {
   anchor: SenseiAnchor;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   returnFocusTo: RefObject<HTMLElement | null>;
+  /** SenseiHost's onQuestionLink: true = the page moved to that question */
+  onQuestionLink?: (id: string) => boolean;
 }): React.ReactElement {
   const t = useTranslations("Sensei");
+  const router = useRouter();
   const s = useSensei(anchor);
   const [input, setInput] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -123,7 +131,7 @@ export function SenseiPanel({
     void sendMessage({ text: opener });
   }, [anchor, open, loadedEmpty, s.messages.length, hasKey, sendMessage]);
 
-  /** A click on an in-page `#<question_id>` link whose question is on the page: close, then jump. */
+  /** A click on a `#<question_id>` link: the host's question, or one on the page → close, then jump; else its page. */
   function onLogClick(e: React.MouseEvent<HTMLElement>): void {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const href = (e.target as Element).closest("a")?.getAttribute("href");
@@ -134,10 +142,14 @@ export function SenseiPanel({
     } catch {
       return;
     }
-    if (!QUESTION_ID.test(id) || !document.getElementById(id)) return;
+    if (!QUESTION_ID.test(id)) return;
     e.preventDefault();
-    jumpTo.current = id;
-    onOpenChange(false);
+    if (onQuestionLink?.(id) || document.getElementById(id)) {
+      jumpTo.current = id;
+      onOpenChange(false);
+      return;
+    }
+    router.push(`/practice/q/${id}`);
   }
 
   const generating = s.status === "submitted" || s.status === "streaming";

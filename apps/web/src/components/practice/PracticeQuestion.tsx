@@ -78,12 +78,14 @@ export function PracticeQuestion({
       <div className={styles.hang}>
         <div className={styles.side}>
           <div className={styles.qNo} data-qno={number}>
-            <span className={styles.qNoLabel}>{t("qLabel")}</span>
+            <span className={styles.qNoLabel} lang="ja">
+              {t("qLabel")}
+            </span>
             <span className={styles.qNoNum}>{number}</span>
           </div>
           <RecentCells recent={recent} t={t} />
           <div className={styles.stars}>
-            {t("starsLabel")}
+            <span lang="ja">{t("starsLabel")}</span>
             <span className={styles.starMarks} role="img" aria-label={t("starsAria", { n: stars })}>
               {"★".repeat(stars) + "☆".repeat(3 - stars)}
             </span>
@@ -95,7 +97,7 @@ export function PracticeQuestion({
             {fold ? (
               <>
                 <details className={styles.preamble}>
-                  <summary>{t("preamble")}</summary>
+                  <summary lang="ja">{t("preamble")}</summary>
                   <div lang="ja" data-fid="stem-preamble">
                     <StemBlocks stem={q.stem_jp.slice(0, preambleChars)} />
                   </div>
@@ -136,7 +138,7 @@ export function PracticeQuestion({
           </ul>
 
           <div className={styles.meta}>
-            <span>
+            <span lang="ja">
               {t("sourcePrefix")}　<span lang="ja" data-fid="source">{q.source_label}</span>
             </span>
             {hasTr ? (

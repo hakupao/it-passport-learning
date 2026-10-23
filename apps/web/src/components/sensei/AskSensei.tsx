@@ -11,6 +11,8 @@
 // useSenseiHost() hands other entry points (the Phase B ReviewLauncher, the Phase C
 // /sensei free question and its free-thread rows) the same open function; it is
 // null outside a SenseiHost. `onClose` lets the /sensei page refresh its thread list.
+// `onQuestionLink` (D-190 §0-18): a page that shows one question at a time (the practice group)
+// gets first say on a reply's `#<question_id>` link — true = it moved to that question.
 
 "use client";
 
@@ -32,10 +34,13 @@ const HostContext = createContext<OpenFor | null>(null);
 export function SenseiHost({
   children,
   onClose,
+  onQuestionLink,
 }: {
   children: React.ReactNode;
   /** Called when the panel closes (the /sensei page re-reads its thread list). */
   onClose?: () => void;
+  /** A reply's `#<question_id>` link: true = the page has moved to that question (the panel closes). */
+  onQuestionLink?: (id: string) => boolean;
 }): React.ReactElement {
   const [anchor, setAnchor] = useState<SenseiAnchor | null>(null);
   const [open, setOpen] = useState(false);
@@ -58,7 +63,15 @@ export function SenseiHost({
   return (
     <HostContext.Provider value={openFor}>
       {children}
-      {anchor ? <SenseiPanel anchor={anchor} open={open} onOpenChange={onOpenChange} returnFocusTo={triggerRef} /> : null}
+      {anchor ? (
+        <SenseiPanel
+          anchor={anchor}
+          open={open}
+          onOpenChange={onOpenChange}
+          returnFocusTo={triggerRef}
+          onQuestionLink={onQuestionLink}
+        />
+      ) : null}
     </HostContext.Provider>
   );
 }

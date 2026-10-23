@@ -53,9 +53,11 @@ export function ExplanationPane({ q, locale, picked, termCards, isOwner }: Props
   const [explLocale, setExplLocale] = useState(locale);
 
   return (
-    <section className={styles.expl} aria-label={t("explanation")}>
+    <section className={styles.expl} aria-label={t("explanationAria")}>
       <div className={styles.tabRow}>
-        <span className={styles.tab}>{t("explanationTab")}</span>
+        <span className={styles.tab} lang="ja">
+          {t("explanationTab")}
+        </span>
       </div>
       {picked === null ? (
         <p className={styles.await}>{t("awaitAnswer")}</p>
@@ -115,7 +117,7 @@ function Answered({
     <>
       <div className={styles.explHead}>
         <h2 className={styles.explTitle}>
-          <span className={styles.tagInk}>
+          <span className={styles.tagInk} lang="ja">
             {t("qLabel")} {sourceNumber(q)}
           </span>
           {title ? <span lang={lang}>{title}</span> : null}
@@ -160,7 +162,7 @@ function Answered({
                   <span className={styles.vMarkSpot} aria-hidden="true">○</span>
                   {letter}
                   <p className={styles.vText}>
-                    <strong>{t("correct")}</strong>{" "}
+                    <strong lang="ja">{t("correct")}</strong>{" "}
                     {ex ? <span data-fid="expl-correct">{marked(ex.correct)}</span> : null}
                     {mine ? yours : null}
                   </p>
@@ -192,7 +194,9 @@ function Answered({
 
       {ex && ex.points.length > 0 ? (
         <div className={styles.points}>
-          <div className={styles.pointsHead}>{t("pointsTitle")}</div>
+          <div className={styles.pointsHead} lang="ja">
+            {t("pointsTitle")}
+          </div>
           <ul className={styles.pointsList} lang={lang}>
             {ex.points.map((p, i) => (
               <li key={i} data-fid={`point-${i}`}>
@@ -204,7 +208,9 @@ function Answered({
       ) : null}
 
       <div className={styles.termsRow}>
-        {q.terms.length > 0 ? <span className={styles.termsLabel}>{t("terms")}</span> : null}
+        {q.terms.length > 0 ? <span className={styles.termsLabel} lang="ja">
+            {t("terms")}
+          </span> : null}
         {q.terms.map((term, i) => (
           <Fragment key={term}>
             {/* two plain-text terms side by side: a visible dot + real spaces (as in QuizSet) */}
