@@ -1,7 +1,8 @@
 // D-181 Phase B Task B1 — weak-topic detection for the AI 先生 review card on the
 // quiz landing. Pure: record + each topic's question ids → the weakest topics.
 //
-// The landing has no correct_answer, so this uses the record's stored `correct`
+// Each question counts once, by its latest attempt (record v2 topicStats). The
+// landing has no correct_answer, so this uses that attempt's stored `correct`
 // (the verdict at answer time) as an approximation; the review anchor built on the
 // topic set page re-judges every answer against the current correct_answer.
 //
@@ -9,7 +10,7 @@
 // wrong one. Order: rate ascending, then answered descending (more evidence
 // first), then topicId — independent of record / topic key order.
 
-import { topicStats, type LearningRecord } from "@/lib/learning/recordV1";
+import { topicStats, type LearningRecord } from "@/lib/learning/record";
 
 export interface WeakTopic {
   topicId: string;

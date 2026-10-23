@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-import { emptyRecord, type LearningRecord, type QuestionResult } from "@/lib/learning/recordV1";
+import { emptyRecord, type Attempt, type LearningRecord } from "@/lib/learning/record";
 
 import { hasQualifyingTopic, weakTopics } from "../weakness";
 
-/** A record holding `[qid, correct]` results (choice / at are irrelevant to weakTopics). */
+/** A v2 record holding one attempt per `[qid, correct]` (choice / at are irrelevant to weakTopics). */
 function rec(results: [string, boolean][]): LearningRecord {
-  const questions: Record<string, QuestionResult> = {};
+  const attempts: Record<string, Attempt[]> = {};
   results.forEach(([qid, correct], i) => {
-    questions[qid] = { choice: "ア", correct, at: 1000 + i };
+    attempts[qid] = [{ at: 1000 + i, choice: "ア", correct, src: "practice" }];
   });
-  return { v: 1, questions, unitsRead: {} };
+  return { ...emptyRecord(), attempts };
 }
 
 const ids = (prefix: string, n: number) => Array.from({ length: n }, (_, i) => `${prefix}-q${String(i + 1).padStart(3, "0")}`);
@@ -68,6 +68,18 @@ describe("weakTopics", () => {
   it("uses the stored `correct` verdict and ignores answers outside the given topics", () => {
     const r = rec([...answers("a", 5, 2), ["zz-q001", false], ["zz-q002", false]]);
     expect(weakTopics(r, TOPICS)).toEqual([{ topicId: "a", answered: 5, correct: 2, rate: 0.4 }]);
+  });
+
+  it("counts each question once, by its latest attempt", () => {
+    // a: 5 questions, each answered wrong then right → all correct now → not weak
+    const r = rec(answers("a", 5, 0));
+    for (const id of ids("a", 5)) r.attempts[id] = [{ at: 5000, choice: "イ", correct: true, src: "practice" }, ...r.attempts[id]!];
+    expect(weakTopics(r, TOPICS)).toEqual([]);
+    expect(hasQualifyingTopic(r, TOPICS)).toBe(true);
+    // the last one re-answered wrong again → 4/5
+    const id5 = ids("a", 5)[4]!;
+    r.attempts[id5] = [{ at: 6000, choice: "ウ", correct: false, src: "practice" }, ...r.attempts[id5]!];
+    expect(weakTopics(r, TOPICS)).toEqual([{ topicId: "a", answered: 5, correct: 4, rate: 0.8 }]);
   });
 
   it("honours minAnswered and limit", () => {

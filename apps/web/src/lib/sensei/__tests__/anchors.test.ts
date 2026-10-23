@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { TermCard } from "@/lib/glossary/dictionary";
-import type { LearningRecord } from "@/lib/learning/recordV1";
+import type { ChoiceLetter, LearningRecord } from "@/lib/learning/record";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 import { examRecency, FREE_DETAIL_MAX, FREE_NO_MATCH, freeAnchor, questionAnchor, reviewAnchor, type SenseiTermContext } from "../anchors";
@@ -158,8 +158,14 @@ function tq(n: number, key: string, terms: string[] = []): QuizQuestion {
   };
 }
 
-function record(results: Record<string, { choice: string; correct: boolean; at: number }>): LearningRecord {
-  return { v: 1, questions: results, unitsRead: {} };
+type Result = { choice: ChoiceLetter; correct: boolean; at: number };
+
+/** A v2 record holding one practice attempt per question. */
+function record(results: Record<string, Result>): LearningRecord {
+  const attempts = Object.fromEntries(
+    Object.entries(results).map(([qid, x]) => [qid, [{ ...x, src: "practice" as const }]]),
+  );
+  return { v: 2, attempts, unitsRead: {}, settings: {} };
 }
 
 describe("reviewAnchor", () => {
@@ -181,7 +187,7 @@ describe("reviewAnchor", () => {
   });
 
   it("does not depend on record key order", () => {
-    const reversed = record(Object.fromEntries(Object.entries(r.questions).reverse()));
+    const reversed: LearningRecord = { ...r, attempts: Object.fromEntries(Object.entries(r.attempts).reverse()) };
     expect(reviewAnchor(topic, reversed, "ja", {}, "T")).toBe(reviewAnchor(topic, r, "ja", {}, "T"));
   });
 
@@ -283,7 +289,7 @@ describe("reviewAnchor", () => {
 
   it("caps wrong questions at the 5 newest and unanswered ids at 10 (ties → id order)", () => {
     const many = Array.from({ length: 25 }, (_, i) => tq(i + 1, "ア"));
-    const results: Record<string, { choice: string; correct: boolean; at: number }> = {};
+    const results: Record<string, Result> = {};
     for (let i = 0; i < 12; i++) results[many[i]!.id] = { choice: "イ", correct: false, at: 1000 + i };
     const a = reviewAnchor(many, record(results), "ja", {}, "T");
     const wrongPart = a.slice(a.indexOf("## 間違えた過去問"), a.indexOf("## まだ解いていない過去問"));
@@ -303,6 +309,44 @@ describe("reviewAnchor", () => {
     expect(terms.indexOf("ZH许可证定义")).toBeGreaterThan(0);
     expect(terms.indexOf("ZH许可证定义")).toBeLessThan(terms.indexOf("ZH开源定义"));
     expect(terms.split("ZH开源定义").length).toBe(2);
+  });
+
+  it("reviewAnchor uses the latest attempt", () => {
+    const set = [tq(1, "ア"), tq(2, "ウ")];
+    // q1: wrong before, right now → not a wrong question; q2: right before, wrong now → wrong,
+    // shown with the latest choice. Attempt lists stored out of order on purpose.
+    const r: LearningRecord = {
+      v: 2,
+      attempts: {
+        "2024r06-q001": [
+          { at: 100, choice: "イ", correct: false, src: "practice" },
+          { at: 500, choice: "ア", correct: true, src: "practice" },
+        ],
+        "2024r06-q002": [
+          { at: 200, choice: "ウ", correct: true, src: "v1" },
+          { at: 400, choice: "エ", correct: false, src: "mock" },
+          { at: 300, choice: "ア", correct: false, src: "practice" },
+        ],
+      },
+      unitsRead: {},
+      settings: {},
+    };
+    const a = reviewAnchor(set, r, "ja", {}, "T");
+    expect(a).toContain("学習記録: この分野の過去問 2 問のうち 2 問に解答、現在の正解で判定すると 1 問正解・1 問不正解");
+    expect(a).not.toContain("#2024r06-q001");
+    expect(a).toContain("### 問題 ID: #2024r06-q002");
+    expect(a).toContain("学習者の解答: エ（不正解）");
+    expect(a).not.toContain("学習者の解答: ア");
+    expect(a).toContain("JP2エ誤り");
+    expect(a).not.toContain("JP2ア誤り");
+    // the newest wrong answer orders the list: q3 wrong at 450 (latest) comes before q2 (at 400)
+    const three = [...set, tq(3, "イ")];
+    const r3: LearningRecord = {
+      ...r,
+      attempts: { ...r.attempts, "2024r06-q003": [{ at: 450, choice: "ア", correct: false, src: "practice" }] },
+    };
+    const b = reviewAnchor(three, r3, "ja", {}, "T");
+    expect(b.indexOf("#2024r06-q003")).toBeLessThan(b.indexOf("#2024r06-q002"));
   });
 
   it("says so when nothing is wrong or everything is answered", () => {

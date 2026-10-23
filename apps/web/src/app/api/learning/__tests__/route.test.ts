@@ -20,15 +20,9 @@ import {
   recordAttempt,
   type LearningRecord,
 } from "@/lib/learning/record";
-import {
-  downgradeToV1,
-  emptyRecord as emptyRecordV1,
-  mergeRecords as mergeRecordsV1,
-  parseRecordV1,
-  upgradeV1,
-  type LearningRecord as LearningRecordV1,
-} from "@/lib/learning/recordV1";
+import { downgradeToV1, parseRecordV1, upgradeV1, type LearningRecordV1 } from "@/lib/learning/recordV1";
 import { makeFakeLearningRedis } from "@/lib/learning/__tests__/fakeLearningRedis";
+import { emptyRecordV1, mergeRecordsV1 } from "@/lib/learning/__tests__/v1Client";
 
 const { redisHolder } = vi.hoisted(() => ({
   redisHolder: { current: null as ReturnType<typeof makeFakeLearningRedis> | null },

@@ -8,7 +8,7 @@
 import { useTranslations } from "next-intl";
 
 import { useLearningRecord } from "@/hooks/useLearningRecord";
-import { topicStats } from "@/lib/learning/recordV1";
+import { topicStats } from "@/lib/learning/record";
 
 import styles from "./quiz.module.css";
 

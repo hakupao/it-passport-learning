@@ -1,8 +1,10 @@
-// D-180 §0-7 — owner sync state machine (Phase 3 fix wave items 2 / 3 / 5 / 7).
+// D-180 §0-7 / D-190 — owner sync state machine (Phase 3 fix wave items 2 / 3 / 5 / 7),
+// on record v2: the client GETs /api/learning?v=2 and PUTs v2 wire.
 //
 // Hermetic: every /api/learning request is answered by `page.route` from an
-// in-test "server" (a fixed remote record, merged with each PUT body exactly as
-// the real route does), so no Redis is touched. Run it against a LOCAL prod
+// in-test "server" (a fixed remote record, merged with each v2 PUT body and
+// answered in v2 wire exactly as the real route's v2 path does), so no Redis
+// is touched. Run it against a LOCAL prod
 // build whose `next start` has OWNER_KEY set and every KV_* / UPSTASH_* var set
 // to the empty string (empty, not unset: .env.local may define them), e.g.
 //
@@ -28,7 +30,14 @@
 import { test, expect, type Page, type Route } from "@playwright/test";
 
 import ja from "../messages/ja.json";
-import { mergeRecords, type LearningRecord } from "../src/lib/learning/recordV1";
+import {
+  emptyRecord,
+  encodeRecord,
+  mergeRecords,
+  parseRecord,
+  type LearningRecord,
+  type WireRecordV2,
+} from "../src/lib/learning/record";
 
 const OWNER_KEY = process.env.E2E_OWNER_KEY ?? "";
 
@@ -39,41 +48,50 @@ const SET_URL = `/ja/quiz?mode=topic&id=${TOPIC_ID}`;
 
 /** The fixed "server copy": one answer outside the topic + one unit read. */
 const REMOTE: LearningRecord = {
-  v: 1,
-  questions: { "2024r06-q001": { choice: "イ", correct: true, at: 1_000 } },
+  ...emptyRecord(),
+  attempts: { "2024r06-q001": [{ at: 1_000, choice: "イ", correct: true, src: "practice" }] },
   unitsRead: { "management-08-25-u01": 500 },
 };
 
 interface Sync {
   gets: number;
-  puts: LearningRecord[];
+  /** PUT bodies as sent (v2 wire). */
+  puts: WireRecordV2[];
   /** PUTs that arrived while the GET was still held. */
   putsBeforeGetSettled: number;
   releaseGet(): void;
 }
 
-/** Serve /api/learning from memory. The GET is held until releaseGet() unless `holdGet` is false. */
+/** Serve /api/learning (any query) from memory. The GET is held until releaseGet() unless `holdGet` is false. */
 async function mockServer(page: Page, remote: LearningRecord, holdGet: boolean): Promise<Sync> {
-  let server = remote;
+  let server = mergeRecords(remote, emptyRecord());
   let getSettled = false;
   let release!: () => void;
   const gate = holdGet ? new Promise<void>((r) => (release = r)) : Promise.resolve();
   const sync: Sync = { gets: 0, puts: [], putsBeforeGetSettled: 0, releaseGet: () => release?.() };
-  await page.route("**/api/learning", async (route: Route) => {
+  // a predicate, not "**/api/learning": globs match the query too, and the GET is ?v=2
+  await page.route((url) => url.pathname === "/api/learning", async (route: Route) => {
     const req = route.request();
     if (req.method() === "GET") {
       sync.gets++;
+      // the v2 client always asks for v2 (without ?v=2 the real route answers v1)
+      expect(new URL(req.url()).searchParams.get("v")).toBe("2");
       await gate;
       getSettled = true;
-      await route.fulfill({ status: 200, json: server });
+      await route.fulfill({ status: 200, json: encodeRecord(server) });
       return;
     }
     if (req.method() === "PUT") {
-      const body = req.postDataJSON() as LearningRecord;
+      const body = req.postDataJSON() as WireRecordV2;
       sync.puts.push(body);
       if (!getSettled) sync.putsBeforeGetSettled++;
-      server = mergeRecords(server, body);
-      await route.fulfill({ status: 200, json: server });
+      const incoming = parseRecord(body);
+      if (!incoming) {
+        await route.fulfill({ status: 400, json: { error: "invalid learning record" } });
+        return;
+      }
+      server = mergeRecords(server, incoming);
+      await route.fulfill({ status: 200, json: encodeRecord(server) });
       return;
     }
     await route.fulfill({ status: 405, json: { error: "unexpected method" } });
@@ -117,7 +135,7 @@ const hidePage = (page: Page) =>
 test("owner quiz landing: progress waits for the GET, then includes the remote record", async ({ page }) => {
   const remote: LearningRecord = {
     ...REMOTE,
-    questions: { ...REMOTE.questions, [QUESTION_ID]: { choice: "ア", correct: false, at: 2_000 } },
+    attempts: { ...REMOTE.attempts, [QUESTION_ID]: [{ at: 2_000, choice: "ア", correct: false, src: "practice" }] },
   };
   const sync = await mockServer(page, remote, true);
   await becomeOwner(page);
@@ -153,10 +171,12 @@ test("owner quiz set: no PUT before the GET; debounced PUT = merge(local, remote
   sync.releaseGet();
   await expect.poll(() => sync.puts.length, { timeout: 6000 }).toBe(1);
   expect(sync.putsBeforeGetSettled).toBe(0);
-  const body = sync.puts[0]!;
-  const answer = body.questions[QUESTION_ID]!;
-  expect(answer).toMatchObject({ choice: "ア", correct: false });
-  const local: LearningRecord = { v: 1, questions: { [QUESTION_ID]: answer }, unitsRead: {} };
+  const body = parseRecord(sync.puts[0]);
+  expect(body).not.toBeNull();
+  const answer = body!.attempts[QUESTION_ID]!;
+  expect(answer).toHaveLength(1);
+  expect(answer[0]).toMatchObject({ choice: "ア", correct: false, src: "practice" });
+  const local: LearningRecord = { ...emptyRecord(), attempts: { [QUESTION_ID]: answer } };
   expect(body).toEqual(mergeRecords(local, REMOTE));
 
   // The response (= merged record) is merged back: no ping-pong.
@@ -173,15 +193,18 @@ test("owner quiz set: page hide sends the delta at once; the debounce is cancell
   await page.waitForTimeout(300); // let the GET response merge in (remoteSettled)
 
   await answerFirstChoice(page);
-  await expect.poll(() => page.evaluate(() => localStorage.getItem("itp:learn:v1"))).toContain(QUESTION_ID);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("itp:learn:v2"))).toContain(QUESTION_ID);
+  expect(await page.evaluate(() => localStorage.getItem("itp:learn:v1"))).toBeNull(); // the v1 key is never written
   await hidePage(page); // well inside the 2000 ms debounce
   await expect.poll(() => sync.puts.length, { timeout: 1500 }).toBe(1);
 
   // Only what the server has not seen: the new answer, none of REMOTE's entries.
   const body = sync.puts[0]!;
-  expect(Object.keys(body.questions)).toEqual([QUESTION_ID]);
-  expect(body.questions[QUESTION_ID]).toMatchObject({ choice: "ア", correct: false });
-  expect(body.unitsRead).toEqual({});
+  expect(body.v).toBe(2);
+  expect(Object.keys(body.a)).toEqual([QUESTION_ID]);
+  expect(body.a[QUESTION_ID]).toHaveLength(1);
+  expect(body.a[QUESTION_ID]![0]!.slice(1)).toEqual([0, 0, "p"]); // ア, wrong, practice
+  expect(body.u).toEqual({});
 
   // visibilitychange + pagehide sent one PUT; the pending debounced PUT was
   // cancelled and the merged-back response schedules none.

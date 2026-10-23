@@ -10,7 +10,7 @@ import { NextIntlClientProvider, createTranslator } from "next-intl";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import type { LearningRecord } from "@/lib/learning/recordV1";
+import { emptyRecord, type LearningRecord } from "@/lib/learning/record";
 
 function messages(locale: string): Record<string, unknown> {
   return JSON.parse(readFileSync(path.resolve(__dirname, `../../../../messages/${locale}.json`), "utf-8"));
@@ -36,12 +36,12 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 const state: { record: LearningRecord; loaded: boolean } = {
-  record: { v: 1, questions: {}, unitsRead: {} },
+  record: emptyRecord(),
   loaded: false,
 };
 
 vi.mock("@/hooks/useLearningRecord", () => ({
-  useLearningRecord: () => ({ ...state, answer: () => {}, readUnit: () => {} }),
+  useLearningRecord: () => ({ ...state, answer: () => {}, readUnit: () => {}, setSetting: () => {} }),
 }));
 
 import { QuizBrowser } from "../QuizBrowser";
@@ -78,14 +78,14 @@ async function otherTopicId(): Promise<string> {
 }
 
 beforeEach(() => {
-  state.record = { v: 1, questions: {}, unitsRead: {} };
+  state.record = emptyRecord();
   state.loaded = false;
 });
 
 describe("QuizBrowser per-topic progress (SSR)", () => {
   it("a loaded record with one correct answer shows 1/7 and 100% on that topic only", async () => {
     state.loaded = true;
-    state.record.questions[IN_TOPIC] = { choice: "イ", correct: true, at: 1 };
+    state.record.attempts[IN_TOPIC] = [{ at: 1, choice: "イ", correct: true, src: "practice" }];
     const out = await render("ja");
     expect(row(out, TOPIC)).toContain("1/7 解答 · 正答率 100%");
     expect(out.match(/1\/7 解答/g)?.length).toBe(1);
@@ -96,21 +96,21 @@ describe("QuizBrowser per-topic progress (SSR)", () => {
 
   it("answers in another topic do not count toward this one", async () => {
     state.loaded = true;
-    state.record.questions[await otherTopicId()] = { choice: "ア", correct: false, at: 1 };
+    state.record.attempts[await otherTopicId()] = [{ at: 1, choice: "ア", correct: false, src: "practice" }];
     expect(row(await render("ja"), TOPIC)).toContain("0/7 解答");
   });
 
   it("formats zh / en with the accuracy as a percentage", async () => {
     state.loaded = true;
     const ids = (await loadBaseQuestions()).filter((q) => q.topic_id === TOPIC).map((q) => q.id);
-    state.record.questions[ids[0]!] = { choice: "ア", correct: true, at: 1 };
-    state.record.questions[ids[1]!] = { choice: "ア", correct: false, at: 2 };
+    state.record.attempts[ids[0]!] = [{ at: 1, choice: "ア", correct: true, src: "practice" }];
+    state.record.attempts[ids[1]!] = [{ at: 2, choice: "ア", correct: false, src: "practice" }];
     expect(row(await render("en"), TOPIC)).toContain("2/7 answered · 50% correct");
     expect(row(await render("zh"), TOPIC)).toContain("已答 2/7 · 正确率 50%");
   });
 
   it("before the record has loaded: no 0/N, one reserved empty slot per topic", async () => {
-    state.record.questions[IN_TOPIC] = { choice: "イ", correct: true, at: 1 };
+    state.record.attempts[IN_TOPIC] = [{ at: 1, choice: "イ", correct: true, src: "practice" }];
     const out = await render("ja");
     expect(out).not.toMatch(/\d+\/\d+ 解答/);
     const index = await loadQuizIndex();
@@ -129,7 +129,7 @@ describe("QuizBrowser AI 先生 review card (SSR)", () => {
   };
   async function answer(topicId: string, answered: number, correct: number, at = 1): Promise<void> {
     const ids = (await loadBaseQuestions()).filter((q) => q.topic_id === topicId).map((q) => q.id);
-    for (let i = 0; i < answered; i++) state.record.questions[ids[i]!] = { choice: "ア", correct: i < correct, at: at + i };
+    for (let i = 0; i < answered; i++) state.record.attempts[ids[i]!] = [{ at: at + i, choice: "ア", correct: i < correct, src: "practice" }];
   }
 
   const HINT = "1 つの分野で 5 題以上解くと弱点を分析します";

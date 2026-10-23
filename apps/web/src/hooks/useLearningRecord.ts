@@ -1,4 +1,4 @@
-// D-180 §0-6/§0-7 — learning-record state for one page.
+// D-180 §0-6/§0-7 / D-190 — learning-record (v2) state for one page.
 //
 // `LearningRecordProvider` is mounted per page (quiz set + landing, textbook
 // TOC + unit reader), never in the locale layout: the owner flag comes
@@ -9,17 +9,24 @@
 //
 // Lifecycle:
 //   1. First render uses emptyRecord() on server and client (no hydration
-//      mismatch); after mount the localStorage record is merged in.
-//   2. Owner only: GET /api/learning once and merge the server copy in.
-//   3. Every change after (1) is saved with saveLocal, which merges with what
-//      is stored (another tab may have written since); other tabs' writes are
-//      merged in through the window "storage" event.
+//      mismatch); after mount the localStorage record is merged in
+//      (itp:learn:v2 plus, read-only, the itp:learn:v1 an old tab may still
+//      write, upgraded with now = Date.now()).
+//   2. Owner only: GET /api/learning?v=2 once and merge the server copy in.
+//   3. Every change after (1) is saved with saveLocal (v2 key only), which
+//      merges with what is stored (another tab may have written since); other
+//      tabs' writes (v2 key, or an old tab's v1 key) are merged in through the
+//      window "storage" event.
 //   4. Owner only, once the GET has settled (success or failure): 2000 ms after
 //      the last change, PUT the merged record when it differs from what the
 //      server last returned, then merge the response back. The response equals
 //      `lastSynced`, so merging it schedules no new PUT unless something changed
 //      meanwhile (no ping-pong). Merging a GET / PUT response that adds nothing
 //      keeps the same record object (mergeIfChanged), so readers do not re-render.
+//      While the server still holds only the old v1 doc, each GET upgrades it
+//      with the request time (a later v2Since than the local one); merging keeps
+//      the earliest, so that costs one PUT, which moves the doc to v2 — after
+//      that the response equals the record (pinned in v2ClientCompat.test.ts).
 //   5. Owner only, same gate as (4): when the page is hidden (visibilitychange →
 //      hidden, or pagehide) and the record differs from `lastSynced`, the pending
 //      debounce is cancelled and the change is sent at once — only the delta since
@@ -51,9 +58,13 @@ import {
   markUnitRead,
   mergeIfChanged,
   mergeRecords,
-  recordAnswer,
+  recordAttempt,
+  setSetting,
+  type ChoiceLetter,
   type LearningRecord,
-} from "@/lib/learning/recordV1";
+  type SettingKey,
+  type SettingValue,
+} from "@/lib/learning/record";
 import {
   hideFlushPlan,
   onPageHide,
@@ -66,8 +77,28 @@ import type { StorageLike } from "@/lib/storage";
 export const PUT_DEBOUNCE_MS = 2000;
 
 export interface LearningActions {
-  answer(qid: string, choice: string, correct: boolean): void;
+  /** Store an attempt at Date.now() (src "practice" unless given). */
+  answer(qid: string, choice: ChoiceLetter, correct: boolean, src?: "practice" | "mock"): void;
+  /** Record the first read of a unit (an existing value is kept). */
   readUnit(unitId: string): void;
+  /** Set a setting, last-writer-wins (numbers clamped; see record.setSetting). */
+  setSetting<K extends SettingKey>(key: K, value: SettingValue<K>): void;
+}
+
+/**
+ * The provider's actions over a state updater and a clock (the provider passes
+ * its setRecord and Date.now). Every action is one functional update.
+ */
+export function makeLearningActions(
+  update: (fn: (prev: LearningRecord) => LearningRecord) => void,
+  now: () => number,
+): LearningActions {
+  return {
+    answer: (qid, choice, correct, src = "practice") =>
+      update((prev) => recordAttempt(prev, qid, choice, correct, now(), src)),
+    readUnit: (unitId) => update((prev) => markUnitRead(prev, unitId, now())),
+    setSetting: (key, value) => update((prev) => setSetting(prev, key, value, now())),
+  };
 }
 
 export interface LearningRecordValue extends LearningActions {
@@ -138,7 +169,7 @@ export function LearningRecordProvider({
   // (1) + (2): local load, then the owner's server copy.
   useEffect(() => {
     const storage = browserStorage();
-    const local = storage ? loadLocal(storage) : emptyRecord();
+    const local = storage ? loadLocal(storage, Date.now()) : emptyRecord();
     setRecord((prev) => mergeRecords(prev, local));
     setLoaded(true);
     if (!isOwner) return;
@@ -155,7 +186,8 @@ export function LearningRecordProvider({
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.storageArea !== browserStorage()) return;
-      setRecord((prev) => applyStorageEvent(prev, e));
+      const now = Date.now();
+      setRecord((prev) => applyStorageEvent(prev, e, now));
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
@@ -202,14 +234,7 @@ export function LearningRecordProvider({
     });
   }, [loaded, isOwner, remoteSettled, applyRemote]);
 
-  const actions = useMemo<LearningActions>(
-    () => ({
-      answer: (qid, choice, correct) =>
-        setRecord((prev) => recordAnswer(prev, qid, choice, correct, Date.now())),
-      readUnit: (unitId) => setRecord((prev) => markUnitRead(prev, unitId, Date.now())),
-    }),
-    [],
-  );
+  const actions = useMemo<LearningActions>(() => makeLearningActions(setRecord, () => Date.now()), []);
 
   const readersLoaded = exposedLoaded(loaded, isOwner, remoteSettled);
   const state = useMemo<RecordState>(
@@ -226,7 +251,7 @@ export function LearningRecordProvider({
 
 const OUTSIDE = "must be used inside <LearningRecordProvider>";
 
-/** Stable answer / readUnit; does not re-render on record changes. Throws outside the provider. */
+/** Stable answer / readUnit / setSetting; does not re-render on record changes. Throws outside the provider. */
 export function useLearningActions(): LearningActions {
   const actions = useContext(ActionsContext);
   if (!actions) throw new Error(`useLearningActions ${OUTSIDE}`);

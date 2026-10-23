@@ -8,7 +8,7 @@ import { NextIntlClientProvider, createTranslator } from "next-intl";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-import type { LearningRecord } from "@/lib/learning/recordV1";
+import { emptyRecord, type LearningRecord } from "@/lib/learning/record";
 
 function messages(locale: string): Record<string, unknown> {
   return JSON.parse(readFileSync(path.resolve(__dirname, `../../../../messages/${locale}.json`), "utf-8"));
@@ -25,12 +25,12 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 const state: { record: LearningRecord; loaded: boolean } = {
-  record: { v: 1, questions: {}, unitsRead: {} },
+  record: emptyRecord(),
   loaded: false,
 };
 
 vi.mock("@/hooks/useLearningRecord", () => ({
-  useLearningRecord: () => ({ ...state, answer: () => {}, readUnit: () => {} }),
+  useLearningRecord: () => ({ ...state, answer: () => {}, readUnit: () => {}, setSetting: () => {} }),
 }));
 
 import { TextbookToc } from "../TextbookToc";
@@ -54,7 +54,7 @@ const marks = (out: string): string[] =>
   out.match(/<span class="[^"]*readMark[^"]*">[^<]*<span aria-hidden="true">✓<\/span>/g) ?? [];
 
 beforeEach(() => {
-  state.record = { v: 1, questions: {}, unitsRead: {} };
+  state.record = emptyRecord();
   state.loaded = false;
 });
 

@@ -42,6 +42,7 @@ import { useLearningActions } from "@/hooks/useLearningRecord";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import type { TermCard } from "@/lib/glossary/dictionary";
+import type { ChoiceLetter } from "@/lib/learning/record";
 import {
   localizedChoices,
   localizedExplanation,
@@ -182,7 +183,7 @@ function QuestionCard({
             if (revealed) return;
             setPicked(c.letter);
             setRevealed(true);
-            answer(q.id, c.letter, c.isCorrect);
+            answer(q.id, c.letter as ChoiceLetter, c.isCorrect); // CHOICE_LETTERS → always ア〜エ
           };
           const mark = isPicked ? <ChoiceMark correct={c.isCorrect} t={t} /> : null;
           if (!figure && isTableChoice(c.text, jpText)) {

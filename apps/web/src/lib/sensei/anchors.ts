@@ -22,7 +22,7 @@
 
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { AppLocale } from "@/i18n/routing";
-import type { LearningRecord, QuestionResult } from "@/lib/learning/recordV1";
+import { latestResult, type Attempt, type LearningRecord } from "@/lib/learning/record";
 import {
   CHOICE_LETTERS,
   localizedChoices,
@@ -182,7 +182,8 @@ function wrongQuestionLines(q: QuizQuestion, choice: string, locale: AppLocale):
  * its id, source and JP terms only: ranked by the number of terms shared with the
  * listed wrong questions (desc), then exam recency (newest first), then id.
  * `questions` are the topic's questions; `topicLabel` names the topic.
- * Deterministic: no clock, wrong answers ordered by `at` then id.
+ * Each question is judged by its latest attempt (record v2 latestResult).
+ * Deterministic: no clock, wrong answers ordered by that attempt's `at` then id.
  */
 export function reviewAnchor(
   questions: QuizQuestion[],
@@ -192,11 +193,11 @@ export function reviewAnchor(
   topicLabel: string,
 ): string {
   const dl = toDataLang(locale);
-  const wrong: { q: QuizQuestion; res: QuestionResult }[] = [];
+  const wrong: { q: QuizQuestion; res: Attempt }[] = [];
   const unanswered: QuizQuestion[] = [];
   let answered = 0;
   for (const q of questions) {
-    const res = Object.prototype.hasOwnProperty.call(record.questions, q.id) ? record.questions[q.id] : undefined;
+    const res = latestResult(record, q.id);
     if (!res) {
       unanswered.push(q);
       continue;

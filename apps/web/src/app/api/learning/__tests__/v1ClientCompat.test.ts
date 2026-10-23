@@ -1,29 +1,33 @@
 // D-190 §0-3 (server first) — the OLD v1 client against the NEW route, end to
-// end in-process: recordV1 + syncClient's pullRemote / pushRemote /
-// hideFlushPlan (which still import recordV1) talk to route.ts GET / PUT
-// through a FetchLike shim (owner cookie set, Redis = the in-memory fake).
-// `V1Device` reproduces the sync cycle of src/hooks/useLearningRecord.ts:
+// end in-process: the frozen copy of the pre-Stage-7 client
+// (lib/learning/__tests__/v1Client.ts — v1 model + GET without ?v / PUT v1
+// body, parsed with parseRecordV1) talks to route.ts GET / PUT through a
+// FetchLike shim (owner cookie set, Redis = the in-memory fake).
+// `V1Device` reproduces the sync cycle of the pre-Stage-7 useLearningRecord.ts:
 // GET once → applyRemote (lastSynced + mergeIfChanged); a change → PUT the
 // full record when canonicalJson differs from lastSynced → applyRemote; page
 // hide → hideFlushPlan(current, lastSynced) delta PUT with keepalive.
 // e2e/learning-owner.spec.ts mocks /api/learning, so this is the check that an
-// old tab keeps working after the server deploy.
+// old tab keeps working after the server deploy (and after the v2 client ships:
+// both kinds of tab share the server).
 
 import { createHash } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { encodeRecord, recordAttempt, emptyRecord as emptyRecordV2 } from "@/lib/learning/record";
-import {
-  canonicalJson,
-  emptyRecord,
-  mergeIfChanged,
-  mergeRecords,
-  parseRecord,
-  recordAnswer,
-  type LearningRecord,
-} from "@/lib/learning/recordV1";
-import { hideFlushPlan, pullRemote, pushRemote, type FetchLike } from "@/lib/learning/syncClient";
+import { parseRecordV1 as parseRecord, type LearningRecordV1 as LearningRecord } from "@/lib/learning/recordV1";
+import type { FetchLike } from "@/lib/learning/syncClient";
 import { makeFakeLearningRedis } from "@/lib/learning/__tests__/fakeLearningRedis";
+import {
+  canonicalJsonV1 as canonicalJson,
+  emptyRecordV1 as emptyRecord,
+  hideFlushPlanV1 as hideFlushPlan,
+  mergeIfChangedV1 as mergeIfChanged,
+  mergeRecordsV1 as mergeRecords,
+  pullRemoteV1 as pullRemote,
+  pushRemoteV1 as pushRemote,
+  recordAnswerV1 as recordAnswer,
+} from "@/lib/learning/__tests__/v1Client";
 
 const { redisHolder } = vi.hoisted(() => ({
   redisHolder: { current: null as ReturnType<typeof makeFakeLearningRedis> | null },
@@ -56,6 +60,8 @@ function routeFetch(calls: Call[]): FetchLike {
   return async (input, init) => {
     const method = init.method ?? "GET";
     const body = typeof init.body === "string" ? init.body : undefined;
+    // the old client never asks for v2
+    expect(input).toBe("/api/learning");
     calls.push({ method, keepalive: init.keepalive === true, body: body === undefined ? undefined : JSON.parse(body) });
     const headers = new Headers(init.headers);
     headers.set("cookie", OWNER_COOKIE);

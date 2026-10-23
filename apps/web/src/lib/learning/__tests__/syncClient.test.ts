@@ -1,15 +1,27 @@
-// D-180 §0-7 — client side of the owner sync. Network failure, a non-2xx status
-// or a body that fails parseRecord → null + console.warn only (never throws,
-// never logs the record). Uses a fake fetch; nothing leaves the process.
+// D-180 §0-7 / D-190 — client side of the owner sync, on record v2: GET
+// /api/learning?v=2 (the route's v2 wire answer), PUT an encodeRecord body.
+// Network failure, a non-2xx status or a body that fails parseRecord → null +
+// console.warn only (never throws, never logs the record). Uses a fake fetch;
+// nothing leaves the process.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { deltaSince, emptyRecord, mergeRecords, type LearningRecord } from "../recordV1";
+import {
+  deltaSince,
+  emptyRecord,
+  encodeRecord,
+  mergeRecords,
+  recordAttempt,
+  type LearningRecord,
+} from "../record";
 import { hideFlushPlan, KEEPALIVE_MAX_BYTES, onPageHide, pullRemote, pushRemote } from "../syncClient";
 
+/** The question id doubles as the "never log the record" canary. */
+const SECRET_QID = "secret-qid-2009h21a-q054";
 const REC: LearningRecord = {
-  v: 1,
-  questions: { "2009h21a-q054": { choice: "secret-choice", correct: false, at: 5 } },
-  unitsRead: {},
+  ...recordAttempt(emptyRecord(), SECRET_QID, "ウ", false, 5),
+  unitsRead: { "secret-unit": 7 },
+  settings: { examDate: { value: "2026-12-01", at: 3 } },
+  v2Since: 1,
 };
 
 const ok = (body: unknown): Response =>
@@ -22,12 +34,12 @@ beforeEach(() => {
 afterEach(() => warn.mockRestore());
 
 describe("pullRemote", () => {
-  it("GETs /api/learning without caching and returns the parsed record", async () => {
-    const f = vi.fn(async () => ok(REC));
+  it("pullRemote requests ?v=2 and parses v2 (no caching)", async () => {
+    const f = vi.fn(async () => ok(encodeRecord(REC)));
     expect(await pullRemote(f)).toEqual(REC);
     expect(f).toHaveBeenCalledTimes(1);
     const [url, init] = f.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toBe("/api/learning");
+    expect(url).toBe("/api/learning?v=2");
     expect(init.method ?? "GET").toBe("GET");
     expect(init.cache).toBe("no-store");
     expect(warn).not.toHaveBeenCalled();
@@ -42,6 +54,8 @@ describe("pullRemote", () => {
       async () => new Response("{}", { status: 403 }),
       async () => ok("{not json"),
       async () => ok({ v: 2 }),
+      // a v1 answer (what GET without ?v returns) is not accepted as v2
+      async () => ok({ v: 1, questions: {}, unitsRead: {} }),
     ];
     for (const c of cases) expect(await pullRemote(c)).toBeNull();
     expect(warn).toHaveBeenCalledTimes(cases.length);
@@ -60,20 +74,27 @@ describe("pullRemote", () => {
 });
 
 describe("pushRemote", () => {
-  it("PUTs the record as JSON and returns the merged record from the response", async () => {
-    const merged: LearningRecord = { ...REC, unitsRead: { u: 1 } };
-    const f = vi.fn(async () => ok(merged));
+  it("pushRemote body is v2 wire; returns the merged record parsed from the v2 response", async () => {
+    const merged: LearningRecord = mergeRecords(REC, { ...emptyRecord(), unitsRead: { u: 1 } });
+    const f = vi.fn(async () => ok(encodeRecord(merged)));
     expect(await pushRemote(f, REC)).toEqual(merged);
     const [url, init] = f.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe("/api/learning");
     expect(init.method).toBe("PUT");
     expect(new Headers(init.headers).get("Content-Type")).toBe("application/json");
-    expect(JSON.parse(init.body as string)).toEqual(REC);
+    expect(JSON.parse(init.body as string)).toEqual(encodeRecord(REC));
+    expect(JSON.parse(init.body as string)).toEqual({
+      v: 2,
+      a: { [SECRET_QID]: [[5, 2, 0, "p"]] },
+      u: { "secret-unit": 7 },
+      s: { examDate: ["2026-12-01", 3] },
+      since: 1,
+    });
     expect(init.keepalive).toBe(false);
   });
 
   it("keepalive: true is passed through to fetch (page-hide flush)", async () => {
-    const f = vi.fn(async () => ok(REC));
+    const f = vi.fn(async () => ok(encodeRecord(REC)));
     expect(await pushRemote(f, REC, { keepalive: true })).toEqual(REC);
     const [, init] = f.mock.calls[0] as unknown as [string, RequestInit];
     expect(init.method).toBe("PUT");
@@ -88,38 +109,73 @@ describe("pushRemote", () => {
       }, REC),
     ).toBeNull();
     expect(await pushRemote(async () => ok([]), emptyRecord())).toBeNull();
-    expect(warn).toHaveBeenCalledTimes(3);
-    expect(JSON.stringify(warn.mock.calls)).not.toContain("secret-choice");
+    // a v1 response (an old route) is rejected too
+    expect(await pushRemote(async () => ok({ v: 1, questions: {}, unitsRead: {} }), REC)).toBeNull();
+    expect(warn).toHaveBeenCalledTimes(4);
+    expect(JSON.stringify(warn.mock.calls)).not.toContain("secret");
   });
 });
 
-/** `n` answered questions with ids long enough that the record grows past the keepalive cap. */
-function bigRecord(n: number, at = 1_700_000_000_000): LearningRecord {
-  const questions: LearningRecord["questions"] = {};
-  for (let i = 0; i < n; i++) questions[`2009h21a-q${String(i).padStart(4, "0")}`] = { choice: "ア", correct: true, at: at + i };
-  return { v: 1, questions, unitsRead: {} };
+/** `n` answered questions, `k` attempts each — enough to grow the record past the keepalive cap. */
+function bigRecord(n: number, at = 1_700_000_000_000, k = 1): LearningRecord {
+  const attempts: LearningRecord["attempts"] = {};
+  for (let i = 0; i < n; i++) {
+    attempts[`2009h21a-q${String(i).padStart(4, "0")}`] = Array.from({ length: k }, (_, j) => ({
+      at: at + i * 100 + j,
+      choice: "ア" as const,
+      correct: j % 2 === 0,
+      src: "practice" as const,
+    }));
+  }
+  return mergeRecords({ ...emptyRecord(), attempts }, emptyRecord());
 }
 
-const bytes = (r: LearningRecord) => new TextEncoder().encode(JSON.stringify(r)).byteLength;
+/** Bytes on the wire (what pushRemote sends). */
+const bytes = (r: LearningRecord) => new TextEncoder().encode(JSON.stringify(encodeRecord(r))).byteLength;
 
 describe("hideFlushPlan (what the page-hide flush sends)", () => {
   it("small delta → only the delta since lastSynced, with keepalive", () => {
-    const synced = bigRecord(2900); // ~200 KB, like a fully answered corpus
+    const synced = bigRecord(2900); // a fully answered corpus
     expect(bytes(synced)).toBeGreaterThan(KEEPALIVE_MAX_BYTES);
     const current: LearningRecord = {
-      ...synced,
-      questions: { ...synced.questions, "2024r06-q001": { choice: "イ", correct: false, at: 9 } },
+      ...recordAttempt(synced, "2024r06-q001", "イ", false, 9),
       unitsRead: { "management-08-25-u01": 5 },
     };
     const plan = hideFlushPlan(current, synced);
     expect(plan.keepalive).toBe(true);
     expect(plan.record).toEqual({
-      v: 1,
-      questions: { "2024r06-q001": { choice: "イ", correct: false, at: 9 } },
+      v: 2,
+      attempts: { "2024r06-q001": [{ at: 9, choice: "イ", correct: false, src: "practice" }] },
       unitsRead: { "management-08-25-u01": 5 },
+      settings: {},
     });
     // the server merge of the delta is the same as of the full record
     expect(mergeRecords(synced, plan.record)).toEqual(mergeRecords(synced, current));
+  });
+
+  it("hideFlushPlan delta of a 50-attempt change stays under KEEPALIVE_MAX_BYTES", () => {
+    // every question of a full-history record (K = 10 attempts each) is already synced;
+    // a session then answers 50 of them again — each changed list is sent whole
+    const synced = bigRecord(2900, 1_700_000_000_000, 10);
+    const current: LearningRecord = { ...synced, attempts: { ...synced.attempts } };
+    for (let i = 0; i < 50; i++) {
+      const qid = `2009h21a-q${String(i).padStart(4, "0")}`;
+      current.attempts[qid] = recordAttempt(synced, qid, "エ", false, 1_800_000_000_000 + i).attempts[qid]!;
+    }
+    const plan = hideFlushPlan(current, synced);
+    expect(plan.keepalive).toBe(true);
+    expect(Object.keys(plan.record.attempts)).toHaveLength(50);
+    expect(Object.values(plan.record.attempts).every((l) => l.length === 10)).toBe(true);
+    expect(bytes(plan.record)).toBeLessThanOrEqual(KEEPALIVE_MAX_BYTES);
+    expect(mergeRecords(synced, plan.record)).toEqual(mergeRecords(synced, current));
+  });
+
+  it("the size check is on the wire form (encodeRecord), not the in-memory shape", () => {
+    // a record whose wire form fits while its in-memory JSON does not → keepalive
+    const mid = bigRecord(900);
+    expect(new TextEncoder().encode(JSON.stringify(mid)).byteLength).toBeGreaterThan(KEEPALIVE_MAX_BYTES);
+    expect(bytes(mid)).toBeLessThanOrEqual(KEEPALIVE_MAX_BYTES);
+    expect(hideFlushPlan(mid, null).keepalive).toBe(true);
   });
 
   it("nothing synced yet → the whole record is the delta (keepalive while it fits)", () => {

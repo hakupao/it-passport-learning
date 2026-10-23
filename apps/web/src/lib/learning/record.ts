@@ -24,8 +24,7 @@
 // Maps are always built with spread / Object.fromEntries (CreateDataProperty),
 // so a "__proto__" key stays ordinary data and never touches the prototype.
 //
-// Imports are relative (not `@/`): e2e specs import ./recordV1, and with it this
-// module, by relative path.
+// Imports are relative (not `@/`): e2e specs import this module by relative path.
 
 import { CHOICE_LETTERS, type QuizQuestion } from "../quiz/quizModel";
 
