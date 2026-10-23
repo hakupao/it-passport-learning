@@ -121,3 +121,17 @@
 
 - screenshot: `.playwright-mcp/ui/phase1/audit/` (gitignored, 205 枚)
 - 監査スクリプトは scratchpad (非コミット)。
+
+---
+
+## attempt 2 → 不採用 / attempt 3 → **PASS** (2026-10-23)
+
+- attempt 1 FAIL: `failures/phase5/stage_07_ui/task16_audit_attempt_1.md` (q059 row4 溢出)。
+- attempt 2 不採用: `failures/phase5/stage_07_ui/task16_audit_attempt_2.md` (兜底 ON 走査で検出力なし、row4 の 7 题が語中折れ、中問非先頭成员未描画)。
+- attempt 3 = commit `30d65ca`: row4 を推定幅で判定 (BIZ UDPGothic 実測 em 幅、U+FFE0–FFEE 非 CJK、禁則句読点を連続串に算入、pairs 键徽标 1.75em、閾値 3.55em = 実測 row4 文字列 58px/15px − 0.3em)、訳文表示中は list。版面: row4 1101 / list 1789 / grid2 10 (訳文表示時 list 2890 / grid2 10)。
+- 走査 (兜底 OFF = `overflow-wrap:normal` 注入、中問は「次の問題」で翻页し実描画 article id で重複除去、1440×1000):
+  - 実装側 (`rule_a_attempt3/implementer_scan.mjs` / `implementer_scan_summary.json`): ja / zh / zh 訳 / en 訳 各 2900 面、溢出 0。
+  - **独立審査側** (oh-my-claudecode:code-reviewer、自作 `rule_a_attempt3/reviewer_scan.mjs`、全新 build): 各モード 2900 面・実描画 distinct id 2900・missing 0。検出器 A (scrollWidth) 溢出 0 / 検出器 B (text node 矩形) 溢出 0 (en 訳の 2012h24a-q098 で `pre-wrap` 行末空白の 2px 懸垂 1 件 = 誤報、目視問題なし)。負対照 (attempt 1/2 の 8 题を強制 row4 + 兜底 OFF) は A・B とも 8/8 検出。row4 最小余量 7px (`reviewer_row4_slack_1440.json`)。
+  - 目視: 8 题 (attempt 1/2 の失敗題) は list で可読、通常の短い日本語選択肢 6 题は row4 で正常、訳文表示時は list に切替。
+- 判定: **PASS** (独立審査の判定)。残課題 (非阻塞): 推定器の ASCII 禁則 (`, . ) ! ? %` 等) 未対応で理論上の上界でない (本語料は余量内) / 閾値テストの精度が緩い → 最終審査の修正波で対応。row4 列幅が狭く CJK 選択肢に孤字折れ → OQ-09。
+- 証拠ファイルには問題文を含めない (選択肢字母とボタン文言のみ)。負対照の詳細 JSON は問題文を含むため未入库。
