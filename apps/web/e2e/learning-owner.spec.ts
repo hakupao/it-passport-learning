@@ -55,6 +55,8 @@ const REMOTE: LearningRecord = {
 
 interface Sync {
   gets: number;
+  /** URL of every GET (asserted after the fact — an expect inside the route handler would only hang). */
+  getUrls: string[];
   /** PUT bodies as sent (v2 wire). */
   puts: WireRecordV2[];
   /** PUTs that arrived while the GET was still held. */
@@ -68,14 +70,13 @@ async function mockServer(page: Page, remote: LearningRecord, holdGet: boolean):
   let getSettled = false;
   let release!: () => void;
   const gate = holdGet ? new Promise<void>((r) => (release = r)) : Promise.resolve();
-  const sync: Sync = { gets: 0, puts: [], putsBeforeGetSettled: 0, releaseGet: () => release?.() };
+  const sync: Sync = { gets: 0, getUrls: [], puts: [], putsBeforeGetSettled: 0, releaseGet: () => release?.() };
   // a predicate, not "**/api/learning": globs match the query too, and the GET is ?v=2
   await page.route((url) => url.pathname === "/api/learning", async (route: Route) => {
     const req = route.request();
     if (req.method() === "GET") {
       sync.gets++;
-      // the v2 client always asks for v2 (without ?v=2 the real route answers v1)
-      expect(new URL(req.url()).searchParams.get("v")).toBe("2");
+      sync.getUrls.push(req.url());
       await gate;
       getSettled = true;
       await route.fulfill({ status: 200, json: encodeRecord(server) });
@@ -97,6 +98,12 @@ async function mockServer(page: Page, remote: LearningRecord, holdGet: boolean):
     await route.fulfill({ status: 405, json: { error: "unexpected method" } });
   });
   return sync;
+}
+
+/** The v2 client always asks for v2 (without ?v=2 the real route answers v1). */
+function expectAllGetsV2(sync: Sync): void {
+  expect(sync.getUrls.length).toBeGreaterThan(0);
+  for (const u of sync.getUrls) expect(new URL(u).searchParams.get("v")).toBe("2");
 }
 
 // Never send the owner key anywhere but a local server (prod traces / retries would capture it).
@@ -144,6 +151,7 @@ test("owner quiz landing: progress waits for the GET, then includes the remote r
   const row = page.locator(`a[href*="id=${TOPIC_ID}"]`);
   await expect(row).toHaveCount(1);
   await expect.poll(() => sync.gets).toBe(1); // issued after the local record was loaded
+  expectAllGetsV2(sync);
   await page.waitForTimeout(500);
   await expect(row).not.toContainText("/7"); // no local-only "0/7 解答" while the GET is pending
 
@@ -162,6 +170,7 @@ test("owner quiz set: no PUT before the GET; debounced PUT = merge(local, remote
   await becomeOwner(page);
   await page.goto(SET_URL);
   await expect.poll(() => sync.gets).toBe(1);
+  expectAllGetsV2(sync);
 
   await answerFirstChoice(page); // while the GET is held
   await expect(page.locator(`article[id="${QUESTION_ID}"]`).getByText(`${ja.Quiz.correctLabel}: イ`)).toBeVisible();
@@ -190,6 +199,7 @@ test("owner quiz set: page hide sends the delta at once; the debounce is cancell
   await becomeOwner(page);
   await page.goto(SET_URL);
   await expect.poll(() => sync.gets).toBe(1);
+  expectAllGetsV2(sync);
   await page.waitForTimeout(300); // let the GET response merge in (remoteSettled)
 
   await answerFirstChoice(page);

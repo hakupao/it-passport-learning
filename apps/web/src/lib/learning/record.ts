@@ -327,8 +327,10 @@ const sameList = (x: readonly Attempt[], y: readonly Attempt[]): boolean =>
 /**
  * The part of `current` that `synced` does not already hold (canonical form):
  * per question the whole attempt list when it differs from (or is missing in)
- * `synced`; unitsRead entries and settings whose value differs; v2Since when it
- * differs. `synced` null → all of `current`. mergeRecords(synced,
+ * `synced`; unitsRead entries and settings whose value differs; and always
+ * `current.v2Since` (when defined) — `synced` may carry a since the server never
+ * stored (a v1-only server upgrades at request time on every GET), so the
+ * delta must not drop it as "already synced". `synced` null → all of `current`. mergeRecords(synced,
  * deltaSince(current, synced)) equals mergeRecords(synced, current), so the
  * server (which merges every PUT with its copy) can take the delta in place of
  * the full record.
@@ -351,7 +353,7 @@ export function deltaSince(current: LearningRecord, synced: LearningRecord | nul
       settings[k] = x;
     }
   }
-  const since = current.v2Since !== synced.v2Since ? current.v2Since : undefined;
+  const since = current.v2Since;
   const delta: LearningRecord = {
     v: 2,
     attempts: Object.fromEntries(attempts),

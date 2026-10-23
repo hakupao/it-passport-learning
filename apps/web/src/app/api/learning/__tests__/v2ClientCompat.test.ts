@@ -14,7 +14,7 @@
 import { createHash } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { loadLocal, saveLocal } from "@/lib/learning/localStore";
+import { applyStorageEvent, loadLocal, saveLocal } from "@/lib/learning/localStore";
 import {
   canonicalJson,
   emptyRecord,
@@ -25,7 +25,7 @@ import {
   type LearningRecord,
 } from "@/lib/learning/record";
 import { LEARNING_V1_STORAGE_KEY, type LearningRecordV1 } from "@/lib/learning/recordV1";
-import { pullRemote, pushRemote, type FetchLike } from "@/lib/learning/syncClient";
+import { hideFlushPlan, pullRemote, pushRemote, type FetchLike } from "@/lib/learning/syncClient";
 import { makeFakeLearningRedis } from "@/lib/learning/__tests__/fakeLearningRedis";
 import type { StorageLike } from "@/lib/storage";
 
@@ -52,12 +52,15 @@ const T0 = Date.UTC(2026, 9, 23, 5, 0, 0);
 interface Call {
   method: string;
   url: string;
+  keepalive?: boolean;
+  body?: unknown;
 }
 
 function routeFetch(calls: Call[]): FetchLike {
   return async (input, init) => {
     const method = init.method ?? "GET";
-    calls.push({ method, url: input });
+    const sent = typeof init.body === "string" ? (JSON.parse(init.body) as unknown) : undefined;
+    calls.push({ method, url: input, ...(init.keepalive ? { keepalive: true } : {}), ...(sent ? { body: sent } : {}) });
     const headers = new Headers(init.headers);
     headers.set("cookie", OWNER_COOKIE);
     const body = typeof init.body === "string" ? init.body : undefined;
@@ -81,9 +84,10 @@ function memStorage(seed: Record<string, string> = {}): StorageLike & { map: Map
 /** Advance the fake clock so every server request upgrades the v1 doc with a new `now`. */
 const tick = (ms = 1000) => vi.setSystemTime(Date.now() + ms);
 
-/** One page load of the owner provider (useLearningRecord.ts steps 1, 2, 3b, 4), without React. */
+/** One page load of the owner provider (useLearningRecord.ts steps 1–5), without React. */
 class V2Device {
   record: LearningRecord = emptyRecord();
+  lastSynced: LearningRecord | null = null;
   lastSyncedJson: string | null = null;
   readonly calls: Call[] = [];
   private readonly fetch = routeFetch(this.calls);
@@ -98,6 +102,7 @@ class V2Device {
   }
 
   private applyRemote(remote: LearningRecord): void {
+    this.lastSynced = remote;
     this.lastSyncedJson = canonicalJson(remote);
     this.set(mergeIfChanged(this.record, remote));
   }
@@ -114,6 +119,20 @@ class V2Device {
 
   answer(qid: string, choice: "ア" | "イ" | "ウ" | "エ", correct: boolean): void {
     this.set(recordAttempt(this.record, qid, choice, correct, Date.now()));
+  }
+
+  /** (3a) another tab's write reached this one (window "storage" event, now = Date.now()). */
+  onStorage(key: string, newValue: string | null): void {
+    this.set(applyStorageEvent(this.record, { key, newValue }, Date.now()));
+  }
+
+  /** (5) the page-hide flush: delta since lastSynced (keepalive while it fits). */
+  async hideFlush(): Promise<{ sent: LearningRecord; keepalive: boolean; response: LearningRecord }> {
+    const plan = hideFlushPlan(this.record, this.lastSynced);
+    const response = await pushRemote(this.fetch, plan.record, { keepalive: plan.keepalive });
+    expect(response).not.toBeNull();
+    this.applyRemote(response!);
+    return { sent: plan.record, keepalive: plan.keepalive, response: response! };
   }
 
   /** (4) the debounced PUT; null when the record equals lastSynced. */
@@ -170,7 +189,7 @@ describe("v2 client × route", () => {
     tick();
     d.answer("2020r02o-q010", "ウ", true);
     expect(await d.settle()).toBe(1);
-    expect(d.calls).toEqual([
+    expect(d.calls.map(({ method, url }) => ({ method, url }))).toEqual([
       { method: "GET", url: "/api/learning?v=2" },
       { method: "PUT", url: "/api/learning" },
     ]);
@@ -244,5 +263,60 @@ describe("v2 client × route", () => {
     expect(await d.settle()).toBe(1);
     expect(d.calls.map((c) => c.method)).toEqual(["GET", "PUT", "PUT"]);
     expect(storage.map.get(LEARNING_V1_STORAGE_KEY)).toBe(JSON.stringify(oldTab)); // v1 key untouched
+  });
+
+  it("v1-only server, nothing local: a hide-flush delta PUT stores the since the client got from its GET", async () => {
+    const fake = redisHolder.current!;
+    fake.kv.set(LEARNING_REDIS_V1_KEY, JSON.stringify(LEGACY));
+    const d = new V2Device(memStorage());
+    const getSince = (await d.load()).v2Since!; // upgraded at the GET's request time
+    expect(getSince).toBe(T0 + 1000);
+    tick();
+    d.answer("2021r03h-q077", "エ", false);
+    tick(60_000); // the page is hidden much later: the server would upgrade with a later now
+    const flush = await d.hideFlush();
+    expect(flush.keepalive).toBe(true);
+    expect(Object.keys(flush.sent.attempts)).toEqual(["2021r03h-q077"]); // a delta
+    expect(flush.sent.v2Since).toBe(getSince); // ...that still carries since
+    expect(d.calls.at(-1)).toMatchObject({ method: "PUT", keepalive: true });
+    const stored = parseRecord(JSON.parse(fake.kv.get(LEARNING_REDIS_KEY) as string))!;
+    expect(stored.v2Since).toBe(getSince);
+    expect(Object.keys(stored.attempts).sort()).toEqual(["2016h28h-q033", "2021r03h-q077"]);
+    // the response equals the record: nothing more to send
+    expect(await d.settle()).toBe(0);
+    expect(d.calls.map((c) => c.method)).toEqual(["GET", "PUT"]);
+  });
+
+  it("an old v1 tab writes itp:learn:v1 after load: the answer reaches learn:owner:v2 with exactly one PUT", async () => {
+    const fake = redisHolder.current!;
+    fake.kv.set(LEARNING_REDIS_V1_KEY, JSON.stringify(LEGACY));
+    const storage = memStorage();
+    const d = new V2Device(storage);
+    await d.load();
+    expect(await d.settle()).toBe(0);
+
+    // the old tab (pre-Stage-7 bundle) answers and writes its v1 record
+    tick();
+    const oldTab: LearningRecordV1 = {
+      v: 1,
+      questions: { "2018h30a-q050": { choice: "ウ", correct: true, at: Date.now() } },
+      unitsRead: {},
+    };
+    const v1Raw = JSON.stringify(oldTab);
+    storage.map.set(LEARNING_V1_STORAGE_KEY, v1Raw);
+    d.onStorage(LEARNING_V1_STORAGE_KEY, v1Raw);
+    expect(d.record.attempts["2018h30a-q050"]).toEqual([
+      { at: oldTab.questions["2018h30a-q050"]!.at, choice: "ウ", correct: true, src: "v1" },
+    ]);
+
+    expect(await d.settle()).toBe(1);
+    expect(d.calls.map((c) => c.method)).toEqual(["GET", "PUT"]);
+    const stored = parseRecord(JSON.parse(fake.kv.get(LEARNING_REDIS_KEY) as string))!;
+    expect(Object.keys(stored.attempts).sort()).toEqual(["2016h28h-q033", "2018h30a-q050"]);
+    expect(fake.writtenKeys).toEqual([LEARNING_REDIS_KEY]);
+    // the same v1 value arriving again (another event / reload of the old tab) sends nothing
+    d.onStorage(LEARNING_V1_STORAGE_KEY, v1Raw);
+    expect(await d.settle()).toBe(0);
+    expect(storage.map.get(LEARNING_V1_STORAGE_KEY)).toBe(v1Raw); // never rewritten
   });
 });

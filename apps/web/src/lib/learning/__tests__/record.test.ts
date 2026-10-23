@@ -417,7 +417,7 @@ describe("deltaSince", () => {
       500,
     );
     expect(deltaSince(current, synced)).toEqual(
-      rec({ q2: [att(400, "ウ", false), att(300, "イ", true)], q3: [att(500, "エ", true)] }, { u3: 60 }),
+      rec({ q2: [att(400, "ウ", false), att(300, "イ", true)], q3: [att(500, "エ", true)] }, { u3: 60 }, {}, 50),
     );
   });
 
@@ -426,8 +426,18 @@ describe("deltaSince", () => {
     expect(deltaSince(current, synced)).toEqual(rec({}, {}, { dailyReviewCap: { value: 40, at: 2 } }, 20));
   });
 
-  it("empty when nothing changed; the whole record (canonical) when nothing is synced", () => {
-    expect(deltaSince(synced, structuredClone(synced))).toEqual(emptyRecord());
+  it("current's v2Since is always carried, even when synced has the same value", () => {
+    // the synced copy's since may be a server's per-request upgrade that was never stored
+    // (v1-only server), so the delta must not rely on it
+    expect(deltaSince(synced, synced).v2Since).toBe(50);
+    expect(deltaSince({ ...synced, v2Since: 70 }, synced).v2Since).toBe(70);
+    const noSince: LearningRecord = { ...synced };
+    delete noSince.v2Since;
+    expect("v2Since" in deltaSince(noSince, synced)).toBe(false);
+  });
+
+  it("nothing else when nothing changed; the whole record (canonical) when nothing is synced", () => {
+    expect(deltaSince(synced, structuredClone(synced))).toEqual(rec({}, {}, {}, 50));
     expect(deltaSince(synced, null)).toEqual(mergeRecords(synced, emptyRecord()));
   });
 });

@@ -5,10 +5,15 @@
 // tabs keep running this code until they reload, so the route tests drive the
 // server with it to prove an old tab still works (Review Focus 1). Copied
 // verbatim from src/lib/learning/recordV1.ts / syncClient.ts as of 7f32a45 —
-// do not "fix" it: it must behave like the deployed v1 bundle.
+// do not "fix" it: it must behave like the deployed v1 bundle. The path and
+// the keepalive cap are inlined (not imported from the live syncClient) so a
+// later change there cannot silently change what the "old tab" does.
 
 import { parseRecordV1, type LearningRecordV1, type QuestionResultV1 } from "../recordV1";
-import { KEEPALIVE_MAX_BYTES, LEARNING_API_PATH, type FetchLike } from "../syncClient";
+import type { FetchLike } from "../syncClient";
+
+const LEARNING_API_PATH = "/api/learning";
+const KEEPALIVE_MAX_BYTES = 60 * 1024;
 
 const hasOwn = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.call(o, k);
 
