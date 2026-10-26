@@ -214,19 +214,35 @@ export function recordAttempt(
   at: number,
   src: "practice" | "mock" = "practice",
 ): LearningRecord {
+  return insertAttempt(r, qid, choice, correct, at, src, true);
+}
+
+/** Validate, then store one attempt; `bump` = stamp at least the previous max `at` + 1 (live answers only). */
+function insertAttempt(
+  r: LearningRecord,
+  qid: string,
+  choice: ChoiceLetter,
+  correct: boolean,
+  at: number,
+  src: "practice" | "mock",
+  bump: boolean,
+): LearningRecord {
   assertFiniteAt(at);
   if (!isChoiceLetter(choice)) throw new RangeError(`learning record: choice must be ア/イ/ウ/エ, got ${choice}`);
   if (src !== "practice" && src !== "mock") throw new RangeError(`learning record: src must be practice/mock, got ${src}`);
   const prev = own(r.attempts, qid);
-  const stamped = Math.max(at, prev.reduce((m, x) => Math.max(m, x.at), -1) + 1);
+  const stamped = bump ? Math.max(at, prev.reduce((m, x) => Math.max(m, x.at), -1) + 1) : at;
   const list = normalizeAttempts([{ at: stamped, choice, correct, src }, ...prev]);
   return { ...r, attempts: { ...r.attempts, [qid]: list } };
 }
 
 /**
  * Store a batch of attempts, all at `at` with `src` (e.g. a finished mock's
- * answers): recordAttempt folded over `items`, so the same validation and
- * stamping apply. An empty batch returns `r` as-is.
+ * answers, at = its endedAt). Same validation as recordAttempt, but no +1
+ * stamping: `at` is a historical time, so a batch recorded late never ranks
+ * above newer attempts (lists are kept in compareAttempts order, so position
+ * does not matter), and the same batch recorded twice dedupes on
+ * (at, choice, correct). An empty batch returns `r` as-is.
  */
 export function recordAttempts(
   r: LearningRecord,
@@ -234,7 +250,7 @@ export function recordAttempts(
   at: number,
   src: "practice" | "mock",
 ): LearningRecord {
-  return items.reduce((acc, [qid, choice, correct]) => recordAttempt(acc, qid, choice, correct, at, src), r);
+  return items.reduce((acc, [qid, choice, correct]) => insertAttempt(acc, qid, choice, correct, at, src, false), r);
 }
 
 /**

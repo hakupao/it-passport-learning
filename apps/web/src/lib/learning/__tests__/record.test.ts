@@ -697,4 +697,31 @@ describe("recordAttempts (Stage 7 Phase 2 Task 3: one batch, e.g. a finished moc
     const base = recordAttempt(emptyRecord(), "q1", "イ", true, 100);
     expect(recordAttempts(base, [], 5_000, "mock")).toEqual(base);
   });
+
+  it("stores the batch at its real at: a newer practice attempt stays the latest result (I-1)", () => {
+    const deadline = 5_000;
+    const base = recordAttempt(emptyRecord(), "q1", "イ", true, 9_000, "practice");
+    const out = recordAttempts(base, [["q1", "ア", false]], deadline, "mock");
+    expect(out.attempts["q1"]).toEqual([
+      { at: 9_000, choice: "イ", correct: true, src: "practice" },
+      { at: deadline, choice: "ア", correct: false, src: "mock" },
+    ]);
+    expect(latestResult(out, "q1")).toEqual({ at: 9_000, choice: "イ", correct: true, src: "practice" });
+  });
+
+  it("recording the same batch twice keeps one copy (dedupe on at, choice, correct)", () => {
+    const base = recordAttempt(emptyRecord(), "q1", "イ", true, 9_000, "practice");
+    const items = [
+      ["q1", "ア", false],
+      ["q2", "ウ", true],
+    ] as const;
+    const once = recordAttempts(base, items, 5_000, "mock");
+    expect(recordAttempts(once, items, 5_000, "mock")).toEqual(once);
+    expect(once.attempts["q2"]).toEqual([{ at: 5_000, choice: "ウ", correct: true, src: "mock" }]);
+  });
+
+  it("validates like recordAttempt", () => {
+    expect(() => recordAttempts(emptyRecord(), [["q1", "ア", true]], Number.NaN, "mock")).toThrow(RangeError);
+    expect(() => recordAttempts(emptyRecord(), [["q1", "オ" as ChoiceLetter, true]], 1, "mock")).toThrow(RangeError);
+  });
 });
