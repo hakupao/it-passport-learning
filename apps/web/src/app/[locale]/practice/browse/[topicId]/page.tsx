@@ -2,8 +2,9 @@
 // (TopicPage) with the AI 先生 topic review (the existing ReviewLauncher: `?review=1` / `&thread=`
 // arrive here — the today page's 「AI 分析」 and the legacy /quiz review links). Unknown topic → 404.
 //
-// The topic's questions cross to the client with explanations merged (the review anchor needs them,
-// as on the old quiz set page) plus only this topic's terms as cards and the exam labels it uses.
+// Only the topic's light rows cross to the client (D-193 §0-1: id / exam / source / key / terms; the
+// review fetches its wrong questions' full text on open, GET /api/quiz/questions) plus only this
+// topic's terms as cards and the exam labels it uses.
 // The owner flag (cookie) gates the record sync; LearningRecordProvider is mounted here (never in the
 // locale layout), so force-dynamic.
 
@@ -18,8 +19,8 @@ import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { topicStars } from "@/lib/practice/practiceIndex";
-import { loadQuestionsByIds } from "@/lib/practice/practiceReader";
 import type { SearchParams } from "@/lib/practice/practiceSession";
+import { toTopicRow } from "@/lib/practice/topicRows";
 import { loadBaseQuestions, loadQuizIndex } from "@/lib/quiz/quizReader";
 
 export const dynamic = "force-dynamic";
@@ -46,9 +47,8 @@ export default async function TopicRoute({ params }: Props): Promise<React.React
     console.error("[practice/browse] glossary dictionary load failed; term chips fall back to plain text", err);
     return null;
   });
-  const base = await loadBaseQuestions();
-  const [questions, dict, owner] = await Promise.all([
-    loadQuestionsByIds(base.filter((q) => q.topic_id === topicId).map((q) => q.id)),
+  const questions = (await loadBaseQuestions()).filter((q) => q.topic_id === topicId);
+  const [dict, owner] = await Promise.all([
     dictPromise,
     cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value)),
   ]);
@@ -66,7 +66,7 @@ export default async function TopicRoute({ params }: Props): Promise<React.React
           path: `${topic.major_jp} › ${topic.medium_jp}`,
           stars: topicStars(index)[topic.topic_id]!,
         }}
-        questions={questions}
+        rows={questions.map(toTopicRow)}
         termCards={buildTermCards(dict, questions, locale)}
         exams={exams}
       />

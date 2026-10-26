@@ -22,6 +22,7 @@
 
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { AppLocale } from "@/i18n/routing";
+import type { TopicRow } from "@/lib/practice/topicRows";
 import { latestResult, type Attempt, type LearningRecord } from "@/lib/learning/record";
 import {
   CHOICE_LETTERS,
@@ -130,7 +131,7 @@ const REVIEW_TASK = [
   "この依頼への回答は 600 字（英語なら 300 words）以内を目安にしてください。",
 ];
 
-const byId = (x: QuizQuestion, y: QuizQuestion): number => (x.id < y.id ? -1 : x.id > y.id ? 1 : 0);
+const byId = (x: { id: string }, y: { id: string }): number => (x.id < y.id ? -1 : x.id > y.id ? 1 : 0);
 
 // Exam ids in data/ip/quiz/questions.json: <year><era><NN><session>, e.g. 2009h21h
 // (spring), 2011h23tokubetsu (the July 2011 special exam), 2009h21a (autumn),
@@ -174,29 +175,16 @@ function wrongQuestionLines(q: QuizQuestion, choice: string, locale: AppLocale):
   return out;
 }
 
-/**
- * The topic-review anchor: the learner's wrong answers in this topic (re-judged
- * against the current correct_answer, the REVIEW_MAX_WRONG = 5 most recent), each with its
- * explanation, the related term definitions, and REVIEW_MAX_UNANSWERED = 10
- * not-yet-answered questions (the only other ids the AI may recommend), each with
- * its id, source and JP terms only: ranked by the number of terms shared with the
- * listed wrong questions (desc), then exam recency (newest first), then id.
- * `questions` are the topic's questions; `topicLabel` names the topic.
- * Each question is judged by its latest attempt (record v2 latestResult).
- * Deterministic: no clock, wrong answers ordered by that attempt's `at` then id.
- */
-export function reviewAnchor(
-  questions: QuizQuestion[],
+/** The topic's rows judged by the latest attempt against the current correct_answer: the wrong
+ *  ones newest attempt first (then id), the not-yet-answered ones, and the answered count. */
+function judgeRows(
+  rows: readonly TopicRow[],
   record: LearningRecord,
-  locale: AppLocale,
-  termCards: Record<string, TermCard>,
-  topicLabel: string,
-): string {
-  const dl = toDataLang(locale);
-  const wrong: { q: QuizQuestion; res: Attempt }[] = [];
-  const unanswered: QuizQuestion[] = [];
+): { wrong: { q: TopicRow; res: Attempt }[]; unanswered: TopicRow[]; answered: number } {
+  const wrong: { q: TopicRow; res: Attempt }[] = [];
+  const unanswered: TopicRow[] = [];
   let answered = 0;
-  for (const q of questions) {
+  for (const q of rows) {
     const res = latestResult(record, q.id);
     if (!res) {
       unanswered.push(q);
@@ -205,8 +193,42 @@ export function reviewAnchor(
     answered++;
     if (res.choice !== q.correct_answer) wrong.push({ q, res });
   }
-  const correct = answered - wrong.length;
   wrong.sort((x, y) => y.res.at - x.res.at || byId(x.q, y.q));
+  return { wrong, unanswered, answered };
+}
+
+/** The ids of the ≤ REVIEW_MAX_WRONG wrong questions reviewAnchor lists in full (the ones the
+ *  review fetches on open): newest attempt first, then id. */
+export function reviewWrongIds(rows: readonly TopicRow[], record: LearningRecord): string[] {
+  return judgeRows(rows, record)
+    .wrong.slice(0, REVIEW_MAX_WRONG)
+    .map(({ q }) => q.id);
+}
+
+/**
+ * The topic-review anchor: the learner's wrong answers in this topic (re-judged
+ * against the current correct_answer, the REVIEW_MAX_WRONG = 5 most recent), each with its
+ * explanation, the related term definitions, and REVIEW_MAX_UNANSWERED = 10
+ * not-yet-answered questions (the only other ids the AI may recommend), each with
+ * its id, source and JP terms only: ranked by the number of terms shared with the
+ * listed wrong questions (desc), then exam recency (newest first), then id.
+ * `rows` are the topic's light rows (D-193 §0-1); `full` holds the full text (explanations
+ * merged) of the wrong questions fetched on open — a wrong question missing from it (the fetch
+ * failed) is listed as its `- #id（出典）` line only. `topicLabel` names the topic.
+ * Each question is judged by its latest attempt (record v2 latestResult).
+ * Deterministic: no clock, wrong answers ordered by that attempt's `at` then id.
+ */
+export function reviewAnchor(
+  rows: readonly TopicRow[],
+  full: ReadonlyMap<string, QuizQuestion>,
+  record: LearningRecord,
+  locale: AppLocale,
+  termCards: Record<string, TermCard>,
+  topicLabel: string,
+): string {
+  const dl = toDataLang(locale);
+  const { wrong, unanswered, answered } = judgeRows(rows, record);
+  const correct = answered - wrong.length;
   const recent = wrong.slice(0, REVIEW_MAX_WRONG);
 
   const out: string[] = [
@@ -217,12 +239,15 @@ export function reviewAnchor(
     "",
     "## 分野",
     `分野: ${topicLabel}`,
-    `学習記録: この分野の過去問 ${questions.length} 問のうち ${answered} 問に解答、現在の正解で判定すると ${correct} 問正解・${wrong.length} 問不正解。`,
+    `学習記録: この分野の過去問 ${rows.length} 問のうち ${answered} 問に解答、現在の正解で判定すると ${correct} 問正解・${wrong.length} 問不正解。`,
     "",
     `## 間違えた過去問（新しい順、最大 ${REVIEW_MAX_WRONG} 問）`,
   ];
   if (recent.length === 0) out.push("間違えた過去問はありません（現在の正解で判定）。");
-  for (const { q, res } of recent) out.push(...wrongQuestionLines(q, res.choice, locale));
+  for (const { q: row, res } of recent) {
+    const q = full.get(row.id);
+    out.push(...(q ? wrongQuestionLines(q, res.choice, locale) : ["", `- #${row.id}（${row.source_label}）`]));
+  }
 
   const seen = new Set<string>();
   const terms: string[] = [];
@@ -235,7 +260,7 @@ export function reviewAnchor(
   }
 
   out.push("", `## まだ解いていない過去問（用語の重なりが多い順・新しい試験順、最大 ${REVIEW_MAX_UNANSWERED} 問）`);
-  const shared = (q: QuizQuestion): number => new Set(q.terms.filter((term) => seen.has(term))).size;
+  const shared = (q: TopicRow): number => new Set(q.terms.filter((term) => seen.has(term))).size;
   const rest = unanswered
     .map((q) => ({ q, shared: shared(q), recency: examRecency(q.exam_id) }))
     .sort((x, y) => y.shared - x.shared || y.recency - x.recency || byId(x.q, y.q))

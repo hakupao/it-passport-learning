@@ -25,6 +25,7 @@ import { topicStars, type TodayIndex } from "@/lib/practice/practiceIndex";
 import { loadTodayIndex } from "@/lib/practice/practiceReader";
 import { examsNewestFirst } from "@/lib/practice/practiceLabels";
 import { DEFAULT_SETTINGS } from "@/lib/practice/practiceSetup";
+import { toTopicRow } from "@/lib/practice/topicRows";
 import { CHOICE_LETTERS, loadAllQuestions, loadQuizIndex, type QuizIndex, type QuizQuestion } from "@/lib/quiz/quizReader";
 
 import { BrowseList, browseModel } from "../BrowseList";
@@ -177,7 +178,7 @@ describe("TopicPage", () => {
     return {
       locale: "ja",
       topic: { id: TOPIC, category: t.category, name_jp: t.name_jp, path: `${t.major_jp} › ${t.medium_jp}`, stars: topicStars(INDEX)[TOPIC]! },
-      questions: topicQs(),
+      rows: topicQs().map(toTopicRow),
       termCards: {},
       exams: TODAY.exams,
     };

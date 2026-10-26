@@ -124,15 +124,15 @@ describe("/practice/browse/<topicId>", () => {
   it("unknown topic → notFound()", async () => {
     await expect(call("nope-01-01")).rejects.toBe(NOT_FOUND);
   });
-  it("a topic → TopicPage with its questions (explanations merged) under the record provider", async () => {
+  it("a topic → TopicPage with its light rows (D-193 §0-1) under the record provider", async () => {
     const el = await call("technology-14-36");
     expect(el.type).toBe(LearningRecordProvider);
     const page = childOf(el);
     expect(page.type).toBe(TopicPage);
     const p = page.props as unknown as TopicPageProps;
-    expect(p.questions.map((q) => q.topic_id).every((t) => t === "technology-14-36")).toBe(true);
-    expect(p.questions.length).toBe(7);
-    expect(p.questions.some((q) => q.explanation)).toBe(true);
+    expect(p.rows.length).toBe(7);
+    expect(p.rows.every((r) => r.id.startsWith(r.exam_id))).toBe(true);
+    expect(Object.keys(p.rows[0]!).sort()).toEqual(["correct_answer", "exam_id", "id", "source_label", "terms"]);
     expect(p.exams["2009h21a"]).toBe("平成21年度 秋期");
   });
 });

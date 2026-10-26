@@ -26,7 +26,7 @@ import { toLocalDay } from "@/lib/learning/schedule";
 import type { Stars } from "@/lib/practice/practiceIndex";
 import { PRACTICE_CATEGORY_LABEL_KEYS, starText } from "@/lib/practice/practiceLabels";
 import { dayLabel, questionRowState, topicAccuracy, type QuestionRowState } from "@/lib/practice/practiceRows";
-import type { QuizQuestion } from "@/lib/quiz/quizModel";
+import type { TopicRow } from "@/lib/practice/topicRows";
 
 import { sourceNumber } from "./choiceLayout";
 import styles from "./browse.module.css";
@@ -42,8 +42,8 @@ export interface TopicPageProps {
     path: string;
     stars: Stars;
   };
-  /** the topic's questions in corpus order, explanations merged (the review anchor needs them) */
-  questions: QuizQuestion[];
+  /** the topic's questions in corpus order, light rows only (D-193 §0-1; the review fetches the full text) */
+  rows: TopicRow[];
   termCards: Record<string, TermCard>;
   /** exam id → label_jp */
   exams: Record<string, string>;
@@ -79,11 +79,11 @@ function nextText(state: QuestionRowState | null, t: T): string {
   return dayLabel(n.day);
 }
 
-export function TopicPage({ locale, topic, questions, termCards, exams }: TopicPageProps): React.ReactElement {
+export function TopicPage({ locale, topic, rows, termCards, exams }: TopicPageProps): React.ReactElement {
   const t = useTranslations("Practice");
   const { record, loaded } = useLearningRecord();
   const today = loaded ? toLocalDay(Date.now()) : 0;
-  const acc = loaded ? topicAccuracy(record, questions.map((q) => q.id)) : null;
+  const acc = loaded ? topicAccuracy(record, rows.map((q) => q.id)) : null;
   const catKey = PRACTICE_CATEGORY_LABEL_KEYS[topic.category];
 
   return (
@@ -114,7 +114,7 @@ export function TopicPage({ locale, topic, questions, termCards, exams }: TopicP
               {starText(topic.stars)}
             </span>
           </span>
-          <span>{t("questionsN", { n: questions.length })}</span>
+          <span>{t("questionsN", { n: rows.length })}</span>
           <span data-accuracy={acc ? `${acc.correct}/${acc.answered}` : ""}>
             {acc === null
               ? " "
@@ -133,7 +133,7 @@ export function TopicPage({ locale, topic, questions, termCards, exams }: TopicP
           <ReviewLauncher
             topicId={topic.id}
             title={topic.name_jp}
-            questions={questions}
+            rows={rows}
             termCards={termCards}
             locale={locale}
           />
@@ -150,7 +150,7 @@ export function TopicPage({ locale, topic, questions, termCards, exams }: TopicP
             </tr>
           </thead>
           <tbody>
-            {questions.map((q) => {
+            {rows.map((q) => {
               const state = loaded ? questionRowState(record, q.id, today, toLocalDay) : null;
               return (
                 <tr key={q.id} id={q.id} tabIndex={-1} data-question-row={q.id}>

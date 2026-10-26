@@ -22,10 +22,14 @@
 // `consumed` guards effect re-runs before that.
 // The button stays disabled until the record has loaded (an earlier click would
 // freeze an empty-record anchor into the snapshot).
+// The page sends light rows only (D-193 §0-1): opening first takes the ≤ 5 wrong ids
+// (reviewWrongIds) of the record snapshot and, when there are any, fetches their full
+// text from GET /api/quiz/questions (the button is aria-busy and disabled meanwhile);
+// a failed fetch leaves each of them as its `- #id（出典）` line in the anchor.
 
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hasLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 
@@ -33,8 +37,9 @@ import { Button } from "@/components/ui/button";
 import { useLearningRecord } from "@/hooks/useLearningRecord";
 import { routing } from "@/i18n/routing";
 import type { TermCard } from "@/lib/glossary/dictionary";
+import type { TopicRow } from "@/lib/practice/topicRows";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
-import { reviewAnchor } from "@/lib/sensei/anchors";
+import { reviewAnchor, reviewWrongIds } from "@/lib/sensei/anchors";
 import { reviewIntentStorage, takeReviewIntent } from "@/lib/sensei/reviewIntent";
 import { REVIEW_THREAD_PARAM, reviewAnchorId, reviewThreadDate } from "@/lib/sensei/threadLinks";
 
@@ -45,14 +50,15 @@ export const REVIEW_PARAM = "review";
 export function ReviewLauncher({
   topicId,
   title,
-  questions,
+  rows,
   termCards,
   locale,
 }: {
   topicId: string;
   /** The topic name: the thread title and the anchor's 分野 line. */
   title: string;
-  questions: QuizQuestion[];
+  /** The topic's light rows (D-193 §0-1). */
+  rows: TopicRow[];
   termCards: Record<string, TermCard>;
   locale: string;
 }): React.ReactElement | null {
@@ -64,18 +70,36 @@ export function ReviewLauncher({
   const threadDate = reviewThreadDate(params?.get(REVIEW_THREAD_PARAM));
   const buttonRef = useRef<HTMLButtonElement>(null);
   const consumed = useRef(false);
+  const [busy, setBusy] = useState(false);
   const appLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
 
   /** Open the review thread of `date` (default: today), sending `opener` into an empty one. */
-  function openReview({ opener, date }: { opener?: string; date?: string } = {}): void {
+  async function openReview({ opener, date }: { opener?: string; date?: string } = {}): Promise<void> {
     const trigger = buttonRef.current;
-    if (!openFor || !trigger) return;
+    if (!openFor || !trigger || busy) return;
+    const snapshot = record;
+    const ids = reviewWrongIds(rows, snapshot);
+    const full = new Map<string, QuizQuestion>();
+    if (ids.length > 0) {
+      setBusy(true);
+      try {
+        const res = await fetch(`/api/quiz/questions?${new URLSearchParams({ topic: topicId, ids: ids.join(",") })}`);
+        if (!res.ok) throw new Error(`questions ${res.status}`);
+        const body = (await res.json()) as { questions?: unknown };
+        if (!Array.isArray(body?.questions)) throw new Error("questions: unexpected body");
+        for (const q of body.questions as QuizQuestion[]) full.set(q.id, q);
+      } catch (err) {
+        console.error("[review] wrong questions fetch failed; the anchor lists their ids only", err);
+      } finally {
+        setBusy(false);
+      }
+    }
     openFor(
       {
         kind: "review",
         anchorId: date ? `${topicId}:${date}` : reviewAnchorId(topicId, new Date()),
         title,
-        anchorText: reviewAnchor(questions, record, appLocale, termCards, title),
+        anchorText: reviewAnchor(rows, full, snapshot, appLocale, termCards, title),
         opener,
       },
       trigger,
@@ -96,7 +120,7 @@ export function ReviewLauncher({
     url.searchParams.delete(REVIEW_THREAD_PARAM);
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
     const intended = arrivedForReview && takeReviewIntent(reviewIntentStorage(), topicId, Date.now());
-    openRef.current({ opener: intended ? t("reviewOpener") : undefined, date: threadDate ?? undefined });
+    void openRef.current({ opener: intended ? t("reviewOpener") : undefined, date: threadDate ?? undefined });
   }, [arrivedForReview, threadDate, loaded, topicId, t]);
 
   if (!openFor) return null;
@@ -108,8 +132,9 @@ export function ReviewLauncher({
       size="sm"
       aria-haspopup="dialog"
       data-testid="review-launcher"
-      disabled={!loaded}
-      onClick={() => openReview()}
+      disabled={!loaded || busy}
+      aria-busy={busy}
+      onClick={() => void openReview()}
     >
       {t("reviewButton")}
     </Button>
