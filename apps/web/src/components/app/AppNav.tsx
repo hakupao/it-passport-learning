@@ -1,6 +1,7 @@
 // Stage 7 Task 7 (D-189 §3.4, plan item 22) — the top nav of the single AppShell.
 // Client component only for the active state (usePathname). Phase 1 items =
-// 今日 / 练习 / 教科书 / 辞典; 「记录」/「模拟考试」 arrive with their pages in Phase 2.
+// 今日 / 练习 / 教科书 / 辞典; Phase 2 adds 「记录」 (§0-10). 「模拟考试」 is not a nav item:
+// it is linked from 今日 and the practice setup page.
 
 "use client";
 
@@ -16,6 +17,7 @@ export const APP_NAV = [
   { href: "/practice", key: "practice" },
   { href: "/textbook", key: "textbook" },
   { href: "/glossary", key: "glossary" },
+  { href: "/record", key: "record" },
 ] as const;
 
 const LOCALE_PREFIX = new RegExp(`^/(?:${routing.locales.join("|")})(?=/|$)`);

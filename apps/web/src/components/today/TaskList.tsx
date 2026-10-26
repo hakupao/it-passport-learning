@@ -1,5 +1,5 @@
 // Stage 7 Phase 1 Task 11 (D-189 §6.1, mockup A4-Home) — the task rows, the primary button and the
-// secondary link. Presentational: TodayPage passes the computed view (null = the record is still
+// secondary links. Presentational: TodayPage passes the computed view (null = the record is still
 // loading: the block keeps its height and shows no numbers).
 //
 // Row: checkbox (checked when done; the state is also in sr-only text) · spot tag · title (a link
@@ -70,6 +70,7 @@ export function TaskList({ view }: { view: TaskListView | null }): React.ReactEl
   const t = useTranslations("Today");
   const tp = useTranslations("Practice");
   const tm = useTranslations("Mistakes");
+  const tmock = useTranslations("Mock");
 
   if (view === null) {
     return (
@@ -135,6 +136,9 @@ export function TaskList({ view }: { view: TaskListView | null }): React.ReactEl
         )}
         <Link href="/practice" className={styles.link}>
           {t("toSetup")}
+        </Link>
+        <Link href="/mock" className={styles.link}>
+          {tmock("title")}
         </Link>
       </div>
     </>

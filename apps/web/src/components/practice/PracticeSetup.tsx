@@ -70,6 +70,7 @@ type Problem = "needTopic" | "needExam" | "emptyScope" | null;
 export function PracticeSetup({ index, exams, initial, prefilled }: PracticeSetupProps): React.ReactElement {
   const t = useTranslations("Practice");
   const tm = useTranslations("Mistakes");
+  const tmock = useTranslations("Mock");
   const router = useRouter();
   const { record, loaded } = useLearningRecord();
   const [s, setS] = useState<SetupSettings>(initial);
@@ -317,6 +318,9 @@ export function PracticeSetup({ index, exams, initial, prefilled }: PracticeSetu
           </button>
           <Link href="/practice/browse" className={styles.link}>
             {t("browseLink")}
+          </Link>
+          <Link href="/mock" className={styles.link}>
+            {tmock("title")}
           </Link>
         </div>
         <p className={styles.message} role="status" data-problem={waits(s) ? "waitRecord" : (problem ?? "")}>

@@ -218,3 +218,27 @@ test("mistakes: a wrong answer is in the book at once and in today's mistakes ro
   await expect(page.locator(`[data-mistake-row="${qid}"]`)).toContainText(ja.Mistakes.nextToday);
   expect(learning).toEqual([]);
 });
+
+test("entry points (§0-10): 模擬試験 on today and on the practice setup → /mock; 記録 in the nav → /record", async ({
+  page,
+}) => {
+  const learning = trackLearningRequests(page);
+  await page.goto("/ja");
+  await waitForRecord(page);
+  await page.getByRole("link", { name: ja.Mock.title, exact: true }).click();
+  await expect(page).toHaveURL(/\/ja\/mock$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(ja.Mock.title);
+  // /mock is not a nav section
+  await expect(page.locator('nav [aria-current="page"]')).toHaveCount(0);
+
+  await page.goto("/ja/practice");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(P.setupTitle);
+  await page.getByRole("link", { name: ja.Mock.title, exact: true }).click();
+  await expect(page).toHaveURL(/\/ja\/mock$/);
+
+  const nav = page.getByRole("navigation", { name: ja.App.navLabel });
+  await nav.getByRole("link", { name: ja.App.nav.record, exact: true }).click();
+  await expect(page).toHaveURL(/\/ja\/record$/);
+  await expect(nav.locator('[aria-current="page"]')).toHaveText(ja.App.nav.record);
+  expect(learning).toEqual([]);
+});

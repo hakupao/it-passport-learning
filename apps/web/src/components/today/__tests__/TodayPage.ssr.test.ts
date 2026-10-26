@@ -181,18 +181,19 @@ describe("TodayPage — tasks", () => {
     expect(textOf(rows[1]![2]!)).toContain("到期复习 11 题");
     expect(textOf(rows[3]![2]!)).toContain(tasks[3]!.unit!.title);
     expect(rows[3]![2]).toContain(`href="/textbook/${tasks[3]!.unit!.id}"`);
-    // the secondary link; no 模拟考试 in Phase 1
+    // the secondary links (DESIGN §6.1): 自己选范围练习 / 模拟考试
     expect(html).toMatch(/<a href="\/practice"[^>]*>自己选范围练习<\/a>/);
+    expect(html).toMatch(/<a href="\/mock"[^>]*>模拟考试<\/a>/);
   });
 
-  it("模拟考试 link hidden in Phase 1", () => {
+  it("模拟考试 link → /mock in every locale, for a seeded and a new user (Phase 2, §0-10)", () => {
+    const label: Record<string, string> = { ja: "模擬試験", zh: "模拟考试", en: "Mock exam" };
     for (const l of LOCALES) {
+      const mock = new RegExp(`<a href="/mock"[^>]*>${label[l]}</a>`);
       state.record = seeded(idx(l));
-      const html = render(l);
-      expect(html).not.toMatch(/模拟考试|模擬試験|mock exam/i);
-      expect(html).not.toMatch(/href="\/mock/);
+      expect(render(l)).toMatch(mock);
       state.record = emptyRecord();
-      expect(render(l)).not.toMatch(/模拟考试|模擬試験|mock exam/i);
+      expect(render(l)).toMatch(mock);
     }
   });
 

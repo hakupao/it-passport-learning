@@ -69,12 +69,13 @@ beforeEach(() => {
 });
 
 describe("APP_NAV / isNavActive", () => {
-  it("Phase 1 nav = today / practice / textbook / glossary", () => {
+  it("Phase 2 nav = today / practice / textbook / glossary / record", () => {
     expect(APP_NAV).toEqual([
       { href: "/", key: "today" },
       { href: "/practice", key: "practice" },
       { href: "/textbook", key: "textbook" },
       { href: "/glossary", key: "glossary" },
+      { href: "/record", key: "record" },
     ]);
   });
 
@@ -98,17 +99,29 @@ describe("APP_NAV / isNavActive", () => {
     // a path segment that merely starts with a locale code is not a locale prefix
     expect(isNavActive("/japan", "/")).toBe(false);
   });
+
+  it("isNavActive: /record is its own section; /mock activates no nav item", () => {
+    expect(isNavActive("/record", "/record")).toBe(true);
+    expect(isNavActive("/ja/record", "/record")).toBe(true);
+    expect(isNavActive("/en/record/", "/record")).toBe(true);
+    expect(isNavActive("/record", "/")).toBe(false);
+    expect(isNavActive("/records", "/record")).toBe(false);
+    for (const item of APP_NAV) {
+      expect(isNavActive("/mock", item.href)).toBe(false);
+      expect(isNavActive("/zh/mock", item.href)).toBe(false);
+    }
+  });
 });
 
 describe("AppShell SSR", () => {
   const EXPECTED: Record<Locale, string[]> = {
-    ja: ["今日", "練習", "教科書", "辞典"],
-    zh: ["今日", "练习", "教科书", "辞典"],
-    en: ["Today", "Practice", "Textbook", "Glossary"],
+    ja: ["今日", "練習", "教科書", "辞典", "記録"],
+    zh: ["今日", "练习", "教科书", "辞典", "记录"],
+    en: ["Today", "Practice", "Textbook", "Glossary", "Record"],
   };
 
   for (const locale of ["ja", "zh", "en"] as const) {
-    it(`${locale}: renders 4 nav links in order ${EXPECTED[locale].join("/")}`, () => {
+    it(`${locale}: renders 5 nav links in order ${EXPECTED[locale].join("/")}`, () => {
       const links = navLinks(render(locale));
       expect(links.map((l) => l.text)).toEqual(EXPECTED[locale]);
       expect(links.map((l) => /href="([^"]*)"/.exec(l.tag)?.[1])).toEqual([
@@ -116,6 +129,7 @@ describe("AppShell SSR", () => {
         `/${locale}/practice`,
         `/${locale}/textbook`,
         `/${locale}/glossary`,
+        `/${locale}/record`,
       ]);
     });
   }
@@ -137,14 +151,21 @@ describe("AppShell SSR", () => {
 
     const sensei = navLinks(render("ja", "/sensei")).filter((l) => l.tag.includes('aria-current="page"'));
     expect(sensei).toEqual([]);
+
+    const record = navLinks(render("ja", "/record")).filter((l) => l.tag.includes('aria-current="page"'));
+    expect(record.map((l) => l.text)).toEqual(["記録"]);
+
+    const mock = navLinks(render("ja", "/mock")).filter((l) => l.tag.includes('aria-current="page"'));
+    expect(mock).toEqual([]);
   });
 
-  it("no 记录 link in Phase 1 (and no mock-exam / sensei entry in the top nav)", () => {
+  it("记录 is in the top nav; no mock-exam / sensei entry there (Phase 2, §0-10)", () => {
     for (const locale of ["ja", "zh", "en"] as const) {
       const html = render(locale);
-      expect(html).not.toMatch(/记录|記録|Records?\b|History|模拟|模試/);
-      expect(html).not.toMatch(/href="\/[a-z]{2}\/(record|records|history|exam|mock|sensei)\b/);
-      expect(navLinks(html)).toHaveLength(4);
+      expect(html).toMatch(new RegExp(`<a[^>]*href="/${locale}/record"`));
+      expect(html).not.toMatch(/History|模拟|模擬|模試|Mock/);
+      expect(html).not.toMatch(/href="\/[a-z]{2}\/(records|history|exam|mock|sensei)\b/);
+      expect(navLinks(html)).toHaveLength(5);
     }
   });
 
