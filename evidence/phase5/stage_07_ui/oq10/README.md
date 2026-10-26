@@ -13,3 +13,11 @@
 - `oq10_390.json`: 修正後 390、row4 693 題 2772 選択肢すべて 1 行、孤字 0・不正改行 0・溢出 0。
 - `oq10_1440.json`: 修正後 1440、OQ-09 修正直後 (`../oq09/after_oq09_1440.json`) と全 2772 選択肢の行分割が完全一致 (差分 0)。
 - e2e 本地 81/81 (`--retries=0`、:3123)。
+
+## Rule D (S133、`oh-my-claudecode:code-reviewer` opus、自前 scan) = PASS-with-notes → 修正波
+- `ruleD_review_result.json` = 審査結果。独立再測: ja / zh 1440 孤字 1・3 行超 0・溢出 0、390 / 360 / 560 溢出 0、負対照 (balance 除去 87 題 / strict 除去 9 例) で検出器と CSS の効果を確認。
+- M1: 「row4 → list only」は誤り — 実際は 64 row4 → list + **6 list → row4** (pairs、各セル 1 行) → commit 文 (`2eea5ea` は push 前に修正せず、本 README と test 注釈で訂正) + pairs の test 追加。
+- M2: 1440 の列幅の揺れは scrollbar ではなく **問 N の桁数** (1 / 2 / 3 桁 → body 486 / 476.5 / 462.7px)。3 桁 = q100 の 4 題が 2 列になっていた → 閾値 470 → **460px** (4 列の本文 ≥ 53.5px = choiceLayout が許す最大の分割不可片 3.55em)。`q100_1440.json`: q100 群 4 列・全 1 行。
+- M3: 視口 ≈ 1080〜1220px (2 段組、body ≈ 383〜466px) では row4 が 2 列。修正前の 4 列はここで本文 ≈ 37〜55px (推定器の前提 58px 未満) だったので改善側。CSS 注釈に明記。
+- M4: CSS 注釈の算術を訂正。N1 (`2012h24h-q052`「−256 / ～ 255」= 源の空白での合法改行、旧来) / N2 (U+3000 を 0.3em 扱い、row4 に出現 0) / T1 (容器 query の描画 e2e なし) は未処置で記録。
+- 範囲外: 図拡大 `<dialog>` が左上 (0,0) に貼り付き中央寄せされない (container-type と無関係、既存) → OQ-11 として登録。

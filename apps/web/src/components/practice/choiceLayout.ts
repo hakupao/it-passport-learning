@@ -23,8 +23,8 @@
 //     still let 7 CJK characters through (3 + 3 + 1 lines). A 2-line choice is balanced by CSS
 //     (text-wrap: balance + line-break: strict on the row4 text), so 3 + 1 renders 2 + 2 without
 //     starting a line with ー or a small kana.
-//   - ROW4_LINE_EM 3.87em: the row4 text column is 57.6–60px at 1440px (60px without a page
-//     scrollbar), 15px font → 3.84–4.0em; the narrow end holds 3 CJK characters. Checked S133 against
+//   - ROW4_LINE_EM 3.87em: the row4 text column at 1440px is 60 / 57.6 / 54.2px for a 1- / 2- / 3-digit
+//     問 N box (15px font → 4.0 / 3.84 / 3.6em); each holds 3 CJK characters. Checked S133 against
 //     the rendered line count of 2940 row4 choices: never fewer lines than rendered.
 //   - ROW4_LIMIT_EM: measured on the built practice page (1440 × 1000 viewport, content capped at
 //     1240px): a row4 cell is 112px, its text column 58px, choice font 15px → 3.87em; minus a

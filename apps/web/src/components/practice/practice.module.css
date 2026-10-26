@@ -200,11 +200,14 @@
 .row4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
-/* OQ-10: a row4 text column must stay ≥ 58px (the 3.87em choiceLayout assumes). A cell spends 54px on
-   padding, border, letter and gap, so 4 columns need 4 × 112 + 3 × 10 gaps ≈ 478px of body (470: the
-   1440 page is 476.5–486px; 470 still leaves 55px ≥ 3 CJK characters) and 2 columns need 234px;
-   narrower, one column (a 390px phone body is 210px: 4 columns left the text 0px wide). */
-@container (max-width: 469.98px) {
+/* OQ-10: a cell spends 54px on padding, border, letter and gap besides its text, and the row4 gaps
+   are 3 × 10px, so the text column is (body − 30) / 4 − 54. At 1440 the body is 486 / 476.5 / 462.7px
+   for a 1- / 2- / 3-digit 問 N box (text 60 / 57.6 / 54.2px; only the four q100 have 3 digits). Below a
+   460px body 4 columns would leave < 53.5px (the widest unbreakable piece choiceLayout lets in, 3.55em)
+   → 2 columns; below 234px 2 columns would leave < 58px → 1 column (a 390px phone body is 210px:
+   4 columns left the text 0px wide). Viewports ≈ 1080–1220px (two-pane layout, body ≈ 383–466px)
+   also get 2 columns. */
+@container (max-width: 459.98px) {
   .row4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

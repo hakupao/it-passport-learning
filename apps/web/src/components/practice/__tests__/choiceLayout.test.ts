@@ -49,7 +49,8 @@ describe("choiceLayout (§0-15) on the real corpus", () => {
     const counts = { row4: 0, grid2: 0, list: 0 };
     for (const q of QS) counts[choiceLayout(q)]++;
     expect(QS).toHaveLength(2900);
-    // OQ-09 total-width rule (S132): row4 1101 → 751; S133 ≤ 2 packed lines: 751 → 693 (row4 → list only)
+    // OQ-09 total-width rule (S132): row4 1101 → 751; S133 ≤ 2 packed lines: 751 → 693
+    // (64 row4 → list; 6 list → row4: pairs choices whose cells take one line each, e.g. 「a：共通，b：公開」)
     expect(counts).toEqual({ row4: 693, grid2: 10, list: 2197 });
   });
 
@@ -169,6 +170,8 @@ describe("row4 by estimated width (Rule A attempts 1–3)", () => {
 
   it("choiceLines: pairs take a line per cell (badge + value packed)", () => {
     expect(choiceLines("a：高い，b：低い")).toBe(2);
+    // 2023r05-q086: the S132 total width (7.5em > 7.1em) kept this pairs set out of row4; two one-line cells fit
+    expect(choiceLayout(fake(["a：共通，b：公開", "a：共通，b：秘密", "a：公開，b：共通", "a：公開，b：秘密"]))).toBe("row4");
     expect(choiceLines("あいうえおか")).toBe(2);
   });
 
