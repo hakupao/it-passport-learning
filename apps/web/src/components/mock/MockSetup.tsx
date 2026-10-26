@@ -13,6 +13,9 @@
 //   - 過去の 1 回分: every exam, newest first → /mock/run?exam=….
 //   Starting removes whatever mock is stored (a finished one would otherwise come back as the
 //   result of the same URL).
+//   Every click that removes (start, both discards) re-reads storage first (final fix I-2): when it
+//   no longer holds what this view was built for — another tab started a mock, or the save changed
+//   from running to owed — the view switches to what is there and nothing is removed.
 
 "use client";
 
@@ -23,7 +26,7 @@ import { useLearningRecord } from "@/hooks/useLearningRecord";
 import { Link, useRouter } from "@/i18n/navigation";
 import { drawRandomMock, MOCK_N, remainingMs, type MockCategory } from "@/lib/mock/mockModel";
 import { mockRunHref, scopeOfMock } from "@/lib/mock/mockScope";
-import { MOCK_STORAGE_KEY, owesRecord, parseMock, type MockState } from "@/lib/mock/mockStore";
+import { MOCK_STORAGE_KEY, owesRecord, parseMock, sameSave, type MockState } from "@/lib/mock/mockStore";
 import { poolFromIndex, type TodayIndex } from "@/lib/practice/practiceIndex";
 
 import { MockDiscard } from "./MockDiscard";
@@ -46,6 +49,12 @@ function storage(): Storage | null {
 
 const readNow = (): MockState | null => parseMock(storage()?.getItem(MOCK_STORAGE_KEY) ?? null);
 
+/** The stored mock this page offers (finished + recorded counts as nothing stored). */
+const pendingNow = (): MockState | null => {
+  const s = readNow();
+  return s && !(s.endedAt !== null && s.recorded) ? s : null;
+};
+
 export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement {
   const t = useTranslations("Mock");
   const router = useRouter();
@@ -65,11 +74,12 @@ export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement 
   }, [index]);
 
   useEffect(() => {
-    const s = readNow();
-    setStored(s && !(s.endedAt !== null && s.recorded) ? s : null);
+    setStored(pendingNow());
   }, []);
 
   const start = (href: string): void => {
+    const s = pendingNow();
+    if (s) return setStored(s); // a mock was saved meanwhile (another tab): offer it, never remove it
     try {
       storage()?.removeItem(MOCK_STORAGE_KEY);
     } catch {
@@ -85,14 +95,13 @@ export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement 
     start(mockRunHref({ kind: "random", ids }));
   };
 
-  /** 破棄 of a running mock; one that owes its record by now goes to the owed view instead. */
-  const discardRunning = (): void => {
-    const s = readNow();
-    if (s && owesRecord(s, Date.now())) return setStored(s);
-    discard();
-  };
-
-  const discard = (): void => {
+  /**
+   * Remove `seen` (shown as owed or as running) — only if storage still holds it in that state;
+   * otherwise (it ran out, another tab replaced or recorded it) the view switches to what is there.
+   */
+  const discardSeen = (seen: MockState, owed: boolean): void => {
+    const s = pendingNow();
+    if (!s || !sameSave(s, seen) || owesRecord(s, Date.now()) !== owed) return setStored(s);
     try {
       storage()?.removeItem(MOCK_STORAGE_KEY);
     } catch {
@@ -125,9 +134,14 @@ export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement 
               {owes ? t("resumeResult") : t("resume", { min: Math.ceil(left / 60_000) })}
             </Link>
             {owes ? (
-              <MockDiscard onDiscard={discard} />
+              <MockDiscard key={stored.startedAt} onDiscard={() => discardSeen(stored, true)} />
             ) : (
-              <button type="button" className={styles.btn} onClick={discardRunning} data-discard-running="">
+              <button
+                type="button"
+                className={styles.btn}
+                onClick={() => discardSeen(stored, false)}
+                data-discard-running=""
+              >
                 {t("abandon")}
               </button>
             )}

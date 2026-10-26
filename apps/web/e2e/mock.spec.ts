@@ -446,3 +446,94 @@ test("mock setup: 破棄 of a running mock that ran out while /mock sat open goe
   await expect(page.locator("[data-discard-running]")).toHaveCount(0);
   expect(await storedMock(page)).not.toBeNull(); // not discarded
 });
+
+// ---- final fix I-2: a different mock still in progress is never overwritten silently ----
+
+/** Write itp:mock:v1 behind the page's back (another tab; no storage event in this page). */
+async function writeMock(page: Page, s: MockState): Promise<void> {
+  await page.evaluate(([k, v]) => localStorage.setItem(k, v), [MOCK_STORAGE_KEY, JSON.stringify(s)] as const);
+}
+
+const running = (examId: string, ids: string[]): MockState => ({
+  v: 1,
+  kind: "exam",
+  examId,
+  ids,
+  answers: { [ids[0]!]: "イ" },
+  flagged: [],
+  pos: 0,
+  startedAt: Date.now(),
+  endedAt: null,
+  recorded: false,
+});
+
+test("mock: opening another mock while one is in progress shows a notice; resume returns; confirmed discard starts it", async ({
+  page,
+}) => {
+  await page.goto(RUN);
+  await answerChoice(page, "ア");
+  const a = (await storedMock(page))!;
+
+  await page.goto("/ja/mock/run?exam=2024r06");
+  await expect(page.locator("[data-busy]")).toContainText(M.busy);
+  await expect(run(page)).toHaveCount(0);
+  await page.waitForTimeout(500);
+  expect(await storedMock(page)).toEqual(a); // A's answers intact
+
+  await page.locator("[data-busy-resume]").click();
+  await expect(page).toHaveURL(new RegExp(`exam=${EXAM}$`));
+  await expect(run(page)).toBeVisible();
+  await expect(choiceButton(page, "ア")).toHaveAttribute("aria-pressed", "true");
+
+  await page.goto("/ja/mock/run?exam=2024r06");
+  await expect(page.locator("[data-busy]")).toBeVisible();
+  await page.locator("[data-discard]").click();
+  await expect(page.locator("[data-discard-confirm]")).toContainText(M.discardWarn);
+  await page.locator("[data-discard-yes]").click();
+  await expect(run(page)).toBeVisible();
+  const b = (await storedMock(page))!;
+  expect(b.examId).toBe("2024r06");
+  expect(b.answers).toEqual({});
+  expect(await mockAttempts(page)).toEqual([]);
+});
+
+test("mock: the in-progress notice's discard re-reads storage — a newer mock there is not removed", async ({ page }) => {
+  await page.goto(RUN);
+  await answerChoice(page, "ア");
+  await page.goto("/ja/mock/run?exam=2024r06");
+  await expect(page.locator("[data-busy]")).toBeVisible();
+  await page.locator("[data-discard]").click();
+  const c = running("2023r05", ["2023r05-q001", "2023r05-q002"]);
+  await writeMock(page, c); // another tab started mock C meanwhile
+  await page.locator("[data-discard-yes]").click();
+  await expect(page.locator("[data-busy]")).toBeVisible();
+  await expect(page.locator("[data-busy-resume]")).toHaveAttribute("href", /exam=2023r05$/);
+  expect(await storedMock(page)).toEqual(c);
+});
+
+test("mock setup: start re-reads storage — a mock started meanwhile in another tab is offered, not removed", async ({
+  page,
+}) => {
+  await page.goto("/ja/mock");
+  await expect(page.locator(`[data-start-exam="${EXAM}"]`)).toBeVisible();
+  const c = running("2023r05", ["2023r05-q001", "2023r05-q002"]);
+  await writeMock(page, c);
+  await page.locator(`[data-start-exam="${EXAM}"]`).click();
+  await expect(page.locator("[data-resume-link]")).toHaveText(fill(M.resume, { min: 120 }));
+  await expect(page).toHaveURL(/\/ja\/mock$/);
+  expect(await storedMock(page)).toEqual(c);
+});
+
+test("mock setup: the owed save's confirmed discard re-reads storage — a different mock there is not removed", async ({
+  page,
+}) => {
+  await seedOwed(page, "exam", "1999h11a", ["1999h11a-q001", "1999h11a-q002"]);
+  await page.goto("/ja/mock");
+  await page.locator("[data-discard]").click();
+  const c = running("2023r05", ["2023r05-q001", "2023r05-q002"]);
+  await writeMock(page, c);
+  await page.locator("[data-discard-yes]").click();
+  await expect(page.locator("[data-discard-running]")).toBeVisible();
+  await expect(page.locator("[data-resume-link]")).toHaveText(fill(M.resume, { min: 120 }));
+  expect(await storedMock(page)).toEqual(c);
+});

@@ -14,6 +14,7 @@ import {
   mockReducer,
   newMock,
   owesRecord,
+  sameSave,
   parseMock,
   sameMock,
   serializeMock,
@@ -241,5 +242,17 @@ describe("owesRecord", () => {
     const ended = mockReducer(s, { type: "finish", now: T0 + 1000 });
     expect(owesRecord(ended, T0 + 2000)).toBe(true);
     expect(owesRecord(mockReducer(ended, { type: "recorded" }), T0 + 2000)).toBe(false);
+  });
+});
+
+describe("sameSave (final fix I-2: is the stored mock still the one a view was built for?)", () => {
+  it("same scope and startedAt → true, whatever the answers / pos / end; otherwise false", () => {
+    const s = newMock("exam", "2025r07", ["a", "b"], T0);
+    const later = mockReducer(mockReducer(s, { type: "pick", qid: "a", choice: "ア" }), { type: "finish", now: T0 + 5 });
+    expect(sameSave(later, s)).toBe(true);
+    expect(sameSave(newMock("exam", "2025r07", ["a", "b"], T0 + 1), s)).toBe(false);
+    expect(sameSave(newMock("exam", "2024r06", ["a", "b"], T0), s)).toBe(false);
+    expect(sameSave(newMock("random", null, ["a", "b"], T0), s)).toBe(false);
+    expect(sameSave(newMock("exam", "2025r07", ["b", "a"], T0), s)).toBe(false);
   });
 });

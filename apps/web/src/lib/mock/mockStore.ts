@@ -14,6 +14,7 @@
 // parseMock (the trust boundary: another tab, an older build) also checks the
 // consistency with the id list: pos inside it, times ≥ 0; answers / flags for ids
 // outside it are dropped (Task 4 hardening).
+// sameSave: the same saved mock (scope + startedAt) — a click re-checks storage against the view.
 // owesRecord: a mock that still owes its answers to the record (finished, or running past its
 // deadline, and not recorded) — it must be opened (which records it) or explicitly discarded.
 // mockRecordPlan: what a finished, not yet recorded mock writes to the learning
@@ -149,6 +150,11 @@ export function sameMock(s: MockState, kind: MockState["kind"], examId: string |
   return (
     s.kind === kind && s.examId === examId && s.ids.length === ids.length && s.ids.every((id, i) => id === ids[i])
   );
+}
+
+/** The same saved mock (scope and startedAt): what a view was built for is still what storage holds. */
+export function sameSave(a: MockState, b: MockState): boolean {
+  return sameMock(a, b.kind, b.examId, b.ids) && a.startedAt === b.startedAt;
 }
 
 export interface MockRecordPlan {

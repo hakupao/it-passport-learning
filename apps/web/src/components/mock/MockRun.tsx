@@ -17,6 +17,13 @@
 //     page (same scope, but the ids it now resolves to differ, e.g. after a data update): then the
 //     save cannot be opened, and an in-page notice offers 「記録せずに破棄」 behind a confirmation
 //     (MockDiscard; fix round 2: never redirect to itself, never loop).
+//   - Mount with another mock in storage that is still running in time (final fix I-2): never
+//     overwritten silently (back button, session restore, a bookmark) — an in-page notice
+//     (data-busy) links back to it (its own run URL) and offers 「記録せずに破棄」 behind the
+//     MockDiscard confirmation, which then starts this page's mock.
+//   - Every discard confirmation re-reads storage at the click: when it no longer holds the save
+//     the notice was built for in the same state (owed / running) — another tab started or ended
+//     a mock meanwhile — the page re-runs the mount decision on what is there instead of removing.
 //   - Timer: derived from startedAt and the real clock (remainingMs), never a counter. The tick
 //     (1 s) is a no-op until the deadline, then the reducer's finish (endedAt = deadline).
 //   - Recording (§0-6, dispatch rulings R1 / R4): one effect, gated on the learning record being
@@ -55,6 +62,7 @@ import {
   owesRecord,
   parseMock,
   sameMock,
+  sameSave,
   serializeMock,
   type MockAction,
   type MockState,
@@ -141,7 +149,9 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
   const own = useRef(false);
   const [superseded, setSuperseded] = useState(false);
   /** a stored mock owes its record but resolves to this very URL with other ids (cannot be opened) */
-  const [unopenable, setUnopenable] = useState(false);
+  const [unopenable, setUnopenable] = useState<MockState | null>(null);
+  /** another mock is stored and still running in time: not overwritten without a confirmed discard */
+  const [busy, setBusy] = useState<MockState | null>(null);
   const supersededRef = useRef(false);
   const [reviewing, setReviewing] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -201,30 +211,57 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
     [isThisMock, kind, examId, ids, show],
   );
 
+  const here = useMemo(
+    () => mockRunHref(kind === "exam" && examId !== null ? { kind, examId } : { kind: "random", ids }),
+    [kind, examId, ids],
+  );
+
+  /** The mount decision on what storage holds (also re-run when a discard finds storage changed). */
+  const resolve = useCallback(
+    (stored: MockState | null) => {
+      setUnopenable(null);
+      setBusy(null);
+      if (stored && !isThisMock(stored)) {
+        if (owesRecord(stored, Date.now())) {
+          // another mock still owes its answers to the record: open it (it records there) first —
+          // unless its URL is this page, which now resolves to other ids (never redirect to itself)
+          const target = mockRunHref(scopeOfMock(stored));
+          if (target === here) setUnopenable(stored);
+          else router.replace(target);
+          return;
+        }
+        if (stored.endedAt === null) {
+          setBusy(stored); // another mock still running in time: ask first (I-2)
+          return;
+        }
+      }
+      begin(stored);
+    },
+    [isThisMock, here, begin, router],
+  );
+
   // mount
   useEffect(() => {
-    const stored = readStored();
-    if (stored && !isThisMock(stored) && owesRecord(stored, Date.now())) {
-      // another mock still owes its answers to the record: open it (it records there) first —
-      // unless its URL is this page, which now resolves to other ids (never redirect to itself)
-      const target = mockRunHref(scopeOfMock(stored));
-      const here = mockRunHref(kind === "exam" && examId !== null ? { kind, examId } : { kind: "random", ids });
-      if (target === here) setUnopenable(true);
-      else router.replace(target);
-      return;
-    }
-    begin(stored);
-  }, [isThisMock, kind, examId, ids, begin, router]);
+    resolve(readStored());
+  }, [resolve]);
 
-  const discardOwed = useCallback(() => {
-    try {
-      window.localStorage.removeItem(MOCK_STORAGE_KEY);
-    } catch {
-      // storage unavailable: nothing stored
-    }
-    setUnopenable(false);
-    begin(null);
-  }, [begin]);
+  /** Confirmed 「記録せずに破棄」 of `seen` (owed or running when the notice was built). */
+  const discardOther = useCallback(
+    (seen: MockState, owed: boolean) => {
+      const stored = readStored();
+      if (stored && !(sameSave(stored, seen) && owesRecord(stored, Date.now()) === owed)) {
+        resolve(stored); // storage changed since the notice: decide again, remove nothing
+        return;
+      }
+      try {
+        window.localStorage.removeItem(MOCK_STORAGE_KEY);
+      } catch {
+        // storage unavailable: nothing stored
+      }
+      resolve(null);
+    },
+    [resolve],
+  );
 
   // the tick (real time; a no-op until the deadline)
   const running = state !== null && state.endedAt === null;
@@ -309,13 +346,31 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
     );
   }
 
+  if (busy) {
+    const target = mockRunHref(scopeOfMock(busy));
+    return (
+      <main className={styles.page} data-busy="">
+        <h1 className={styles.title}>{t("title")}</h1>
+        <p className={styles.lead}>{t("busy")}</p>
+        <div className={styles.actions}>
+          {target !== here ? (
+            <Link href={target} className={styles.btnPrimary} data-busy-resume="">
+              {t("busyResume")}
+            </Link>
+          ) : null}
+          <MockDiscard key={busy.startedAt} onDiscard={() => discardOther(busy, false)} />
+        </div>
+      </main>
+    );
+  }
+
   if (unopenable) {
     return (
       <main className={styles.page} data-unopenable="">
         <h1 className={styles.title}>{t("title")}</h1>
         <p className={styles.lead}>{t("unopenable")}</p>
         <div className={styles.actions}>
-          <MockDiscard onDiscard={discardOwed} />
+          <MockDiscard key={unopenable.startedAt} onDiscard={() => discardOther(unopenable, true)} />
           <Link href="/" className={styles.btn}>
             {t("backToday")}
           </Link>

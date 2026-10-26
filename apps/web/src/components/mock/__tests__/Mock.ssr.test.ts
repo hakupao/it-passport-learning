@@ -118,6 +118,8 @@ describe("MockResult", () => {
     // 回答見直し: 10 columns, 5 at ≤ 560px (§0-8)
     expect(css).toMatch(/\.grid\s*\{[^}]*grid-template-columns:\s*repeat\(10,/);
     expect(css).toMatch(/@media \(max-width: 560px\)\s*\{[^@]*\.grid\s*\{[^}]*grid-template-columns:\s*repeat\(5,/);
+    // the current cell: not by tint alone — an ink bar under the number (final fix M-3)
+    expect(css).toMatch(/\.cellBtn\[aria-current="true"\]::after\s*\{[^}]*background:\s*var\(--ink\)/);
   });
 });
 
