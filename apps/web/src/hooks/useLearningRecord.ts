@@ -59,6 +59,7 @@ import {
   mergeIfChanged,
   mergeRecords,
   recordAttempt,
+  recordAttempts,
   setSetting,
   type ChoiceLetter,
   type LearningRecord,
@@ -79,6 +80,8 @@ export const PUT_DEBOUNCE_MS = 2000;
 export interface LearningActions {
   /** Store an attempt at Date.now() (src "practice" unless given). */
   answer(qid: string, choice: ChoiceLetter, correct: boolean, src?: "practice" | "mock"): void;
+  /** Store a batch of attempts, all at `at` (a finished mock's answered questions), in one update. */
+  answerBatch(items: readonly (readonly [string, ChoiceLetter, boolean])[], at: number, src: "mock"): void;
   /** Record the first read of a unit (an existing value is kept). */
   readUnit(unitId: string): void;
   /** Set a setting, last-writer-wins (numbers clamped; see record.setSetting). */
@@ -96,6 +99,7 @@ export function makeLearningActions(
   return {
     answer: (qid, choice, correct, src = "practice") =>
       update((prev) => recordAttempt(prev, qid, choice, correct, now(), src)),
+    answerBatch: (items, at, src) => update((prev) => recordAttempts(prev, items, at, src)),
     readUnit: (unitId) => update((prev) => markUnitRead(prev, unitId, now())),
     setSetting: (key, value) => update((prev) => setSetting(prev, key, value, now())),
   };
@@ -251,7 +255,7 @@ export function LearningRecordProvider({
 
 const OUTSIDE = "must be used inside <LearningRecordProvider>";
 
-/** Stable answer / readUnit / setSetting; does not re-render on record changes. Throws outside the provider. */
+/** Stable answer / answerBatch / readUnit / setSetting; does not re-render on record changes. Throws outside the provider. */
 export function useLearningActions(): LearningActions {
   const actions = useContext(ActionsContext);
   if (!actions) throw new Error(`useLearningActions ${OUTSIDE}`);

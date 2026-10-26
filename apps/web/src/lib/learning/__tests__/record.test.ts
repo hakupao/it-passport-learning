@@ -27,6 +27,7 @@ import {
   mergeRecords,
   parseRecord,
   recordAttempt,
+  recordAttempts,
   setSetting,
   settingValue,
   topicStats,
@@ -658,5 +659,42 @@ describe("trust-boundary hardening (Task 3)", () => {
     for (const src of ["v1", "x", ""]) {
       expect(() => recordAttempt(emptyRecord(), "q", "ア", true, 1, src as "practice")).toThrow(RangeError);
     }
+  });
+});
+
+describe("recordAttempts (Stage 7 Phase 2 Task 3: one batch, e.g. a finished mock)", () => {
+  it("adds one attempt per item, all with the same at and src", () => {
+    const base = recordAttempt(emptyRecord(), "q1", "イ", true, 100, "practice");
+    const out = recordAttempts(
+      base,
+      [
+        ["q1", "ア", false],
+        ["q2", "ウ", true],
+        ["q3", "エ", false],
+      ],
+      5_000,
+      "mock",
+    );
+    expect(out.attempts["q1"]).toEqual([
+      { at: 5_000, choice: "ア", correct: false, src: "mock" },
+      { at: 100, choice: "イ", correct: true, src: "practice" },
+    ]);
+    expect(out.attempts["q2"]).toEqual([{ at: 5_000, choice: "ウ", correct: true, src: "mock" }]);
+    expect(out.attempts["q3"]).toEqual([{ at: 5_000, choice: "エ", correct: false, src: "mock" }]);
+    expect(Object.keys(out.attempts).sort()).toEqual(["q1", "q2", "q3"]);
+  });
+
+  it("equals folding recordAttempt over the items", () => {
+    const items = [
+      ["q1", "ア", true],
+      ["q2", "イ", false],
+    ] as const;
+    const folded = items.reduce((r, [q, c, ok]) => recordAttempt(r, q, c, ok, 7, "mock"), emptyRecord());
+    expect(recordAttempts(emptyRecord(), items, 7, "mock")).toEqual(folded);
+  });
+
+  it("an empty batch leaves the record unchanged", () => {
+    const base = recordAttempt(emptyRecord(), "q1", "イ", true, 100);
+    expect(recordAttempts(base, [], 5_000, "mock")).toEqual(base);
   });
 });

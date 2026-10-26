@@ -224,6 +224,20 @@ export function recordAttempt(
 }
 
 /**
+ * Store a batch of attempts, all at `at` with `src` (e.g. a finished mock's
+ * answers): recordAttempt folded over `items`, so the same validation and
+ * stamping apply. An empty batch returns `r` as-is.
+ */
+export function recordAttempts(
+  r: LearningRecord,
+  items: readonly (readonly [qid: string, choice: ChoiceLetter, correct: boolean])[],
+  at: number,
+  src: "practice" | "mock",
+): LearningRecord {
+  return items.reduce((acc, [qid, choice, correct]) => recordAttempt(acc, qid, choice, correct, at, src), r);
+}
+
+/**
  * Record the first read of `unitId`; an existing value is kept (returns `r` as-is).
  * `at` is finite, non-negative epoch ms — anything else throws RangeError.
  */

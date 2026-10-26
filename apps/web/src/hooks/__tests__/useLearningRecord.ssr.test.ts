@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { emptyRecord, type LearningRecord } from "@/lib/learning/record";
+import { emptyRecord, recordAttempt, recordAttempts, type LearningRecord } from "@/lib/learning/record";
 
 import {
   exposedLoaded,
@@ -57,9 +57,9 @@ describe("LearningRecordProvider (SSR)", () => {
     expect(exposedLoaded(true, true, true)).toBe(true);
   });
 
-  it("useLearningActions() exposes only answer + readUnit + setSetting", () => {
+  it("useLearningActions() exposes only answer + answerBatch + readUnit + setSetting", () => {
     const out = renderToStaticMarkup(h(LearningRecordProvider, { isOwner: false, children: h(WritesOnly) }));
-    expect(out).toBe("<i>answer,readUnit,setSetting</i>");
+    expect(out).toBe("<i>answer,answerBatch,readUnit,setSetting</i>");
   });
 
   it("both hooks throw outside the provider", () => {
@@ -117,5 +117,24 @@ describe("makeLearningActions (what the provider's actions do)", () => {
       examDate: { value: "2026-12-20", at: 20_000 },
       transDefault: { value: "shown", at: 20_000 },
     });
+  });
+
+  it("answerBatch is one functional update equal to recordAttempts at the given time", () => {
+    const base = recordAttempt(emptyRecord(), "q1", "イ", true, 100);
+    const box = { record: base, calls: 0 };
+    const actions = makeLearningActions(
+      (fn) => {
+        box.calls += 1;
+        box.record = fn(box.record);
+      },
+      () => 999_999,
+    );
+    const items = [
+      ["q1", "ア", false],
+      ["q2", "ウ", true],
+    ] as const;
+    actions.answerBatch(items, 5_000, "mock");
+    expect(box.calls).toBe(1);
+    expect(box.record).toEqual(recordAttempts(base, items, 5_000, "mock"));
   });
 });
