@@ -26,6 +26,8 @@
 // (reviewWrongIds) of the record snapshot and, when there are any, fetches their full
 // text from GET /api/quiz/questions (the button is aria-busy and disabled meanwhile);
 // a failed fetch leaves each of them as its `- #id（出典）` line in the anchor.
+// That degraded anchor (id lines only, no question text) is accepted as is — documented, not
+// retried (Stage 7 Phase 2 final review M-2).
 
 "use client";
 

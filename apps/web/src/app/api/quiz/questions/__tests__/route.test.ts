@@ -39,6 +39,14 @@ describe("GET /api/quiz/questions", () => {
     expect(res.headers.get("Cache-Control")).toBe("no-store");
   });
 
+  it("duplicate ids are deduped, first occurrence order kept (M-5)", async () => {
+    const [a, b] = await idsOf(TOPIC);
+    const res = await get(`?topic=${TOPIC}&ids=${b},${a},${b},${a},${b},${a}`);
+    expect(res.status).toBe(200); // 6 segments, 2 distinct: not over the limit
+    const body = (await res.json()) as { questions: { id: string }[] };
+    expect(body.questions.map((q) => q.id)).toEqual([b, a]);
+  });
+
   it("an id of another topic → 400", async () => {
     const [mine] = await idsOf(TOPIC);
     const [theirs] = await idsOf(OTHER);

@@ -1,5 +1,7 @@
 // D-181 §0-4 — anchor context: deterministic plain text built from audited
-// content already on the page. JP original + the UI-locale translation only
+// content: what the page already holds, and for the topic review's wrong questions
+// their full text fetched when the review opens (D-193 §0-1; the topic page sends
+// light rows only — see ReviewLauncher). JP original + the UI-locale translation only
 // (ja → JP only). Same input → byte-identical output: no timestamps, no random
 // values, no object-key-order dependence (choices follow ア/イ/ウ/エ, terms follow
 // the q.terms array), so the Anthropic prompt cache keeps hitting.

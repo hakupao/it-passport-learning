@@ -4,7 +4,7 @@
 //   GET ?topic=<topic_id>&ids=<question_id>,…
 //     → 200 { questions: QuizQuestion[] } (translations + explanations merged, request order)
 //
-// Empty id segments are dropped; then 0 ids or more than REVIEW_MAX_WRONG, an id that is not
+// Empty id segments are dropped and repeats deduped (first occurrence kept); then 0 ids or more than REVIEW_MAX_WRONG, an id that is not
 // QUESTION_ID_RE-shaped or not a question of `topic`, or an unknown topic → 400. Always
 // `no-store` (the review is opened rarely and per learner). Read-only: the committed corpus
 // (memoized loaders) — no LLM, no owner gate, no cookies. A failed load → 500; the log names
@@ -28,7 +28,7 @@ function json(status: number, data: unknown): Response {
 export async function GET(request: Request): Promise<Response> {
   const params = new URL(request.url).searchParams;
   const topic = params.get("topic") ?? "";
-  const ids = (params.get("ids") ?? "").split(",").filter((id) => id !== "");
+  const ids = [...new Set((params.get("ids") ?? "").split(",").filter((id) => id !== ""))];
   if (ids.length === 0) return json(400, { error: "ids required" });
   if (ids.length > REVIEW_MAX_WRONG) return json(400, { error: `at most ${REVIEW_MAX_WRONG} ids` });
   if (!ids.every((id) => QUESTION_ID_RE.test(id))) return json(400, { error: "invalid id" });

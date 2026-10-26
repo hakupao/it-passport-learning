@@ -4,7 +4,8 @@
 //     accuracy over each question's latest attempt (once the record has loaded; "—" before).
 //   - 「10 問解く」 → /practice?topic=<id>&n=10&order=rand (a fresh seed on click; a new tab gets one
 //     from the page's redirect) and 「全問を番号順に」 → /practice?topic=<id>&n=all&order=seq.
-//   - The AI 先生 topic review: the existing ReviewLauncher, unchanged (D-181 Phase B) — it handles
+//   - The AI 先生 topic review: ReviewLauncher (D-181 Phase B; since D-193 §0-1 it fetches the wrong
+//     questions' full text when the review opens, as this page passes light TopicRows) — it handles
 //     `?review=1` (the today page's 「AI 分析」, the legacy /quiz review links) and `&thread=<date>`
 //     (a /sensei thread row). It needs this SenseiHost and the page's LearningRecordProvider.
 //   - One row per question (corpus order = 全問を番号順に): 問 N → /practice/q/<id>, the exam label,
