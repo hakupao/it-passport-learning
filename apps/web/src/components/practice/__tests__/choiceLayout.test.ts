@@ -7,14 +7,17 @@ import { CHOICE_LETTERS, loadAllQuestions, type QuizQuestion } from "@/lib/quiz/
 import {
   charEm,
   choiceLayout,
+  choiceLines,
   choiceMinEm,
-  choiceTotalEm,
   explanationTitle,
   KEY_EM,
+  packLines,
   ROW4_LIMIT_EM,
-  ROW4_TOTAL_EM,
+  ROW4_LINE_EM,
+  ROW4_MAX_LINES,
   segmentWidths,
   sourceNumber,
+  SPACE_EM,
 } from "../choiceLayout";
 
 let QS: QuizQuestion[] = [];
@@ -46,8 +49,8 @@ describe("choiceLayout (§0-15) on the real corpus", () => {
     const counts = { row4: 0, grid2: 0, list: 0 };
     for (const q of QS) counts[choiceLayout(q)]++;
     expect(QS).toHaveLength(2900);
-    // OQ-09 total-width rule: row4 1101 → 751 (350 moved to list, none elsewhere)
-    expect(counts).toEqual({ row4: 751, grid2: 10, list: 2139 });
+    // OQ-09 total-width rule (S132): row4 1101 → 751; S133 ≤ 2 packed lines: 751 → 693 (row4 → list only)
+    expect(counts).toEqual({ row4: 693, grid2: 10, list: 2197 });
   });
 
   it("grid2 is exactly the choice_figures questions", () => {
@@ -81,7 +84,7 @@ describe("row4 by estimated width (Rule A attempts 1–3)", () => {
   it("a normal short Japanese row4 question stays row4", () => {
     expect(choiceLayout(fake(["請負契約", "準委任契約", "派遣契約", "雇用契約"]))).toBe("row4");
     expect(choiceLayout(fake(["a，b", "a，c", "b，c", "a，b，c"]))).toBe("row4");
-    expect(choiceLayout(fake(["（１）と（５）", "ＡＢＣＤＥＦＧ", "ア", "イ"]))).toBe("row4"); // full-width forms break
+    expect(choiceLayout(fake(["（１）（５）", "ＡＢＣＤＥＦ", "ア", "イ"]))).toBe("row4"); // full-width forms break (6 = 2 lines)
     expect(choiceLayout(fake(["IPv4", "DNS", "TCP", "UDP"]))).toBe("row4"); // short ASCII words fit
   });
 
@@ -137,26 +140,36 @@ describe("row4 by estimated width (Rule A attempts 1–3)", () => {
     expect(choiceMinEm("abc")).toBeCloseTo(0.65 * 3, 5); // not pairs: plain segments
   });
 
-  it("OQ-09: a choice must also fit about two lines of the column in total (ROW4_TOTAL_EM = 2 × 3.55 = 7.1em)", () => {
-    expect(ROW4_TOTAL_EM).toBe(7.1);
-    expect(ROW4_TOTAL_EM).toBe(2 * ROW4_LIMIT_EM);
-    // a 12-code-point CJK choice (12em) folds to 3–4 lines in the 3.87em column → list
+  it("OQ-09: every choice must take ≤ 2 lines of the 3.87em column (3 CJK characters a line)", () => {
+    expect(ROW4_LINE_EM).toBeCloseTo(58 / 15, 2);
+    expect(ROW4_MAX_LINES).toBe(2);
+    // a 12-code-point CJK choice folds to 4 lines → list
     expect(choiceLayout(fake(["あいうえおかきくけこさし", "a", "b", "c"]))).toBe("list");
     expect(choiceLayout(fake(["情報セキュリティ方針の策定", "a", "b", "c"]))).toBe("list");
-    // 7 CJK characters = 7em fits, 8 = 8em does not
-    expect(choiceLayout(fake(["あいうえおかき", "a", "b", "c"]))).toBe("row4");
-    expect(choiceLayout(fake(["あいうえおかきく", "a", "b", "c"]))).toBe("list");
+    // 6 CJK characters = 2 lines fit; 7 = 3 + 3 + 1 (the S132 7.1em total let it through) does not
+    expect(choiceLayout(fake(["あいうえおか", "a", "b", "c"]))).toBe("row4");
+    expect(choiceLayout(fake(["あいうえおかき", "a", "b", "c"]))).toBe("list");
     // a 4–6 character CJK choice set stays row4
     expect(choiceLayout(fake(["請負契約", "準委任契約", "派遣契約", "雇用契約"]))).toBe("row4");
     expect(choiceLayout(fake(["機密性", "完全性", "可用性", "真正性の確保"]))).toBe("row4");
   });
 
-  it("choiceTotalEm: the sum of the segments (whitespace not counted); pairs: per cell badge + value, summed", () => {
-    expect(choiceTotalEm("漢字 かな")).toBeCloseTo(4, 5);
-    expect(choiceTotalEm("可用性, 完全性")).toBeCloseTo(6.35, 5);
-    expect(choiceTotalEm("IPv4")).toBeCloseTo(0.8 * 2 + 0.65 + 0.76, 5);
-    expect(choiceTotalEm("a: CSV / b: JSON")).toBeCloseTo(KEY_EM + 0.8 * 3 + KEY_EM + 0.8 * 4, 5); // a + CSV, b + JSON (the " / " separator is not a cell)
-    expect(choiceTotalEm("")).toBe(0);
+  it("packLines: greedy line filling of the unbreakable segments (OQ-09 follow-up)", () => {
+    expect(packLines("", 3.87)).toBe(0);
+    expect(packLines("あいう", 3.87)).toBe(1);
+    expect(packLines("あいうえ", 3.87)).toBe(2);
+    expect(packLines("あいうえおか", 3.87)).toBe(2);
+    expect(packLines("あいうえおかき", 3.87)).toBe(3); // 3 + 3 + 1: the orphan the 7.1em total let through
+    // a non-CJK run is not split: 「IPv4」 (3.01em) takes a line of its own after 「の」
+    expect(packLines("のIPv4", 3.87)).toBe(2);
+    // whitespace between segments costs SPACE_EM
+    expect(packLines("ab cd", 3.87)).toBe(1);
+    expect(packLines("ab cd", 0.65 * 4 + SPACE_EM - 0.01)).toBe(2);
+  });
+
+  it("choiceLines: pairs take a line per cell (badge + value packed)", () => {
+    expect(choiceLines("a：高い，b：低い")).toBe(2);
+    expect(choiceLines("あいうえおか")).toBe(2);
   });
 
   it("the limit is the measured row4 text column (58px / 15px) minus a 0.3em margin", () => {
@@ -180,8 +193,9 @@ describe("choiceLayout (§0-15) rules", () => {
     expect(choiceLayout(fake(["あいうえおかきくけこさしす", "a", "b", "c"]))).toBe("list");
   });
 
-  it("code points, not UTF-16 units: 7 astral characters (14 UTF-16 units) stay row4", () => {
-    expect(choiceLayout(fake(["𠀋".repeat(7), "a", "b", "c"]))).toBe("row4");
+  it("code points, not UTF-16 units: 6 astral characters (12 UTF-16 units) pack as 6 characters → row4", () => {
+    expect(choiceLayout(fake(["𠀋".repeat(6), "a", "b", "c"]))).toBe("row4");
+    expect(choiceLayout(fake(["𠀋".repeat(7), "a", "b", "c"]))).toBe("list"); // 3 + 3 + 1 lines (OQ-09)
   });
 
   it("a newline → list", () => {

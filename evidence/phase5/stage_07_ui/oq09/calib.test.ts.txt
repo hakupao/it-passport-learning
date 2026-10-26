@@ -1,0 +1,29 @@
+// TEMPORARY OQ-09 calibration (S133) — delete before commit.
+import { readFileSync } from "node:fs";
+import { it } from "vitest";
+
+import { parseChoiceWithHint } from "@/lib/quiz/quizRichText";
+
+import { choiceLines, packLines } from "../choiceLayout";
+
+it("calib", () => {
+  const scan = JSON.parse(readFileSync(process.env.SCAN!, "utf8"));
+  for (const W of (process.env.WS ?? "3.87").split(",").map(Number)) {
+    let n = 0, ok = 0, under = 0, over = 0;
+    const miss: string[] = [];
+    for (const q of scan.row4)
+      for (const c of q.choices) {
+        const pairs = parseChoiceWithHint(c.text, c.text).kind === "pairs";
+        n++;
+        const p = pairs ? choiceLines(c.text, W) : packLines(c.text, W);
+        const a = c.lines.length;
+        if (p === a) ok++;
+        else {
+          if (p < a) under++;
+          else over++;
+          if (miss.length < 30) miss.push(`${q.id} ${c.L} pred ${p} act ${a} ${JSON.stringify(c.lines)}`);
+        }
+      }
+    console.log(`W ${W}: choices ${n}, exact ${ok}, under ${under}, over ${over}\n${miss.join("\n")}`);
+  }
+});

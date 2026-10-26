@@ -15,14 +15,20 @@
 //     widths measured in BIZ UDPGothic (CHAR_EM). A pairs choice (組合せ問, ChoiceBody "pairs") is
 //     judged per cell: key badge (KEY_EM) + the widest segment of the value. The widest segment must
 //     be ≤ ROW4_LIMIT_EM.
-//   - Total width (OQ-09): the widest-segment rule alone let long CJK choices into the narrow row4
-//     column, where they fold to 3–4 lines with orphans. row4 also needs every choice's estimated
-//     TOTAL width (choiceTotalEm: the sum of its segments, whitespace not counted; a pairs choice:
-//     per cell badge + the value's segments, summed over the cells — each cell takes its own line
-//     there) ≤ ROW4_TOTAL_EM = 2 × ROW4_LIMIT_EM = 7.1em, i.e. about two lines of the column.
+//   - Lines (OQ-09): the widest-segment rule alone let long CJK choices into the narrow row4 column,
+//     where they folded to 3–4 lines with a lone last character. row4 also needs every choice to take
+//     ≤ 2 lines of the column (choiceLines): its segments are filled greedily into lines of
+//     ROW4_LINE_EM (packLines; whitespace between segments costs SPACE_EM; a pairs choice: each cell
+//     on its own lines, its badge taken off the line). The S132 total-width rule (sum ≤ 2 × 3.55em)
+//     still let 7 CJK characters through (3 + 3 + 1 lines). A 2-line choice is balanced by CSS
+//     (text-wrap: balance + line-break: strict on the row4 text), so 3 + 1 renders 2 + 2 without
+//     starting a line with ー or a small kana.
+//   - ROW4_LINE_EM 3.87em: the row4 text column is 57.6–60px at 1440px (60px without a page
+//     scrollbar), 15px font → 3.84–4.0em; the narrow end holds 3 CJK characters. Checked S133 against
+//     the rendered line count of 2940 row4 choices: never fewer lines than rendered.
 //   - ROW4_LIMIT_EM: measured on the built practice page (1440 × 1000 viewport, content capped at
 //     1240px): a row4 cell is 112px, its text column 58px, choice font 15px → 3.87em; minus a
-//     0.3em margin → 3.55em. Two such lines → ROW4_TOTAL_EM 7.1em.
+//     0.3em margin → 3.55em.
 //   - explanationTitle (§0-16): the part of points[0] before the first 「。」 (the whole point when it
 //     has none), shown when it is 1–30 code points; otherwise null (the title is only 「問 N」).
 //   - sourceNumber: the question number of the source exam (the NNN of `<exam_id>-qNNN`, which is the
@@ -41,8 +47,10 @@ const SHORT_MAX = 12;
 
 /** row4 text column 58px / 15px = 3.87em, minus a 0.3em margin (see header) */
 export const ROW4_LIMIT_EM = 3.55;
-/** OQ-09: about two lines of the row4 text column (58px / 15px = 3.87em each, minus the 0.3em margin) */
-export const ROW4_TOTAL_EM = 2 * ROW4_LIMIT_EM;
+/** OQ-09: the row4 text column (58px / 15px) as the line capacity of packLines */
+export const ROW4_LINE_EM = 3.87;
+/** OQ-09: most lines a row4 choice may take */
+export const ROW4_MAX_LINES = 2;
 /** pair key badge + its gap, 1-character key (measured 1.71em at 15px); +0.55em per extra key character */
 export const KEY_EM = 1.75;
 
@@ -70,17 +78,20 @@ export function charEm(ch: string): number {
   return 1.0; // CJK, full-width forms, and every other non-ASCII glyph (→ ① × − ￥ …)
 }
 
-/** Widths (em) of the unbreakable segments of a text (see header). */
-export function segmentWidths(text: string): number[] {
-  const out: number[] = [];
+type Segment = { w: number; space: boolean }; // space: whitespace precedes it
+
+function segments(text: string): Segment[] {
+  const out: Segment[] = [];
   let cur = 0;
   let open = false; // a segment is being built
+  let space = false; // whitespace seen since the last segment
   let prev: string | null = null;
   for (const ch of text) {
     if (SPACE.test(ch)) {
-      if (open) out.push(cur);
+      if (open) out.push({ w: cur, space });
       cur = 0;
       open = false;
+      space = out.length > 0;
       prev = null;
       continue;
     }
@@ -88,15 +99,38 @@ export function segmentWidths(text: string): number[] {
       prev !== null &&
       (CLOSE.has(ch) || OPEN.has(prev) || (!CJK.test(prev) && !CJK.test(ch)));
     if (open && !glue) {
-      out.push(cur);
+      out.push({ w: cur, space });
       cur = 0;
+      space = false;
     }
     cur += charEm(ch);
     open = true;
     prev = ch;
   }
-  if (open) out.push(cur);
+  if (open) out.push({ w: cur, space });
   return out;
+}
+
+/** Widths (em) of the unbreakable segments of a text (see header). */
+export function segmentWidths(text: string): number[] {
+  return segments(text).map((s) => s.w);
+}
+
+/** advance of a space between two segments (em) */
+export const SPACE_EM = 0.3;
+
+/** Lines a text takes in a column of lineEm when its segments are filled greedily (OQ-09; see header). */
+export function packLines(text: string, lineEm: number): number {
+  let lines = 0;
+  let cur = 0;
+  for (const s of segments(text)) {
+    const add = lines > 0 && s.space ? SPACE_EM + s.w : s.w;
+    if (lines === 0 || cur + add > lineEm) {
+      lines++;
+      cur = s.w;
+    } else cur += add;
+  }
+  return lines;
 }
 
 const widest = (text: string): number => Math.max(0, ...segmentWidths(text));
@@ -117,17 +151,18 @@ export function choiceMinEm(text: string): number {
 
 const sum = (xs: number[]): number => xs.reduce((a, b) => a + b, 0);
 
-/** Estimated total width of a choice as ChoiceBody lays it out (OQ-09; see header). */
-export function choiceTotalEm(text: string): number {
+/** Estimated lines of a choice in the row4 text column (OQ-09; pairs: each cell takes its own lines). */
+export function choiceLines(text: string, lineEm: number = ROW4_LINE_EM): number {
   const c = parseChoiceWithHint(text, text);
   if (c.kind === "pairs") {
     return sum(
-      c.cells.map((cell) =>
-        (cell.key ? KEY_EM + 0.55 * ([...cell.key].length - 1) : 0) + sum(segmentWidths(cell.value)),
-      ),
+      c.cells.map((cell) => {
+        const badge = cell.key ? KEY_EM + 0.55 * ([...cell.key].length - 1) : 0;
+        return Math.max(1, packLines(cell.value, lineEm - badge));
+      }),
     );
   }
-  return sum(segmentWidths(text));
+  return packLines(text, lineEm);
 }
 
 const TITLE_MAX = 30;
@@ -143,7 +178,7 @@ export function choiceLayout(q: QuizQuestion): ChoiceLayout {
       codePoints(t.replace(/\s/g, "")) <= SHORT_MAX &&
       !isTableChoice(t, t) &&
       choiceMinEm(t) <= ROW4_LIMIT_EM &&
-      choiceTotalEm(t) <= ROW4_TOTAL_EM
+      choiceLines(t) <= ROW4_MAX_LINES
     );
   });
   return short ? "row4" : "list";
