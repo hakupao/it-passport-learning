@@ -82,6 +82,33 @@ describe("drawRandomMock", () => {
     expect(groupsSeen).toBeGreaterThan(0);
   });
 
+  it("every corpus group can be drawn (200 seeds, no area starves a cross-area group)", () => {
+    const hit = new Set<string>();
+    for (let seed = 1; seed <= 200; seed++) {
+      const ids = new Set(drawRandomMock(emptyRecord(), POOL, CAT, seed, false));
+      for (const [k, members] of Object.entries(POOL.groups)) if (ids.has(members[0]!)) hit.add(k);
+    }
+    expect(Object.keys(POOL.groups)).toHaveLength(50);
+    expect(Object.keys(POOL.groups).filter((k) => !hit.has(k))).toEqual([]);
+  });
+
+  it("overlapping groups never repeat an id", () => {
+    const ids = Array.from({ length: 120 }, (_, i) => `x-q${String(i).padStart(3, "0")}`);
+    const cat = new Map<string, MockCategory>(
+      ids.map((id, i) => [id, i < 40 ? "strategy" : i < 70 ? "management" : "technology"]),
+    );
+    const pool: QuestionPool = {
+      topicQuestionIds: { t: ids },
+      // g2 shares x-q001 with g1
+      groups: { g1: [ids[0]!, ids[1]!], g2: [ids[1]!, ids[2]!] },
+      topicStars: {},
+    };
+    for (let seed = 1; seed <= 50; seed++) {
+      const out = drawRandomMock(emptyRecord(), pool, cat, seed, false);
+      expect(new Set(out).size).toBe(out.length);
+    }
+  });
+
   it("preferUnanswered draws unanswered first", () => {
     const keep = drawRandomMock(emptyRecord(), POOL, CAT, 7, false);
     const keepSet = new Set(keep);

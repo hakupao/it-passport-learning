@@ -3,16 +3,21 @@
 //
 // Random draw (drawRandomMock): exactly OFFICIAL_RATIO per area (35 / 20 / 45 = 100).
 //   - Units = single questions or whole chumon groups (members in `pool.groups`
-//     order). A unit counts each member by that member's own category; it lives
-//     in the bucket of its first member's category.
-//   - Each bucket is shuffled once (Fisher–Yates, mulberry32(fnv1a32(String(seed))),
-//     the PRNG of pickNew), then walked in order: a unit is taken only when it
-//     fits every area's remaining quota (a group that would overrun any area is
-//     skipped).
-//   - preferUnanswered: a first round walks only the units whose members are all
-//     unanswered (no key in `r.attempts`), a second round the rest.
-//   - Output order: strategy → management → technology, inside a bucket in draw
-//     order, group members adjacent. A pool too small to fill the quotas yields
+//     order). A unit counts each member by that member's own category. A unit
+//     sharing an id with an earlier unit is skipped (overlapping groups never
+//     repeat an id).
+//   - All units of all three areas go into ONE list, shuffled once (Fisher–Yates,
+//     mulberry32(fnv1a32(String(seed))), the PRNG of pickNew), walked once: a unit
+//     is taken iff it fits every area's remaining quota (a group that would
+//     overrun any area is skipped). One mixed walk — not one walk per area —
+//     so a group spanning areas is never starved by an earlier area's quota
+//     filling up first. This supersedes plan Step 3's per-area walk (controller
+//     ruling, review round 1; D-193 §0 note).
+//   - preferUnanswered: the walk first takes only units whose members are all
+//     unanswered (no key in `r.attempts`), then walks again over the rest.
+//   - Output order: by the area of each unit's first member, strategy →
+//     management → technology, inside an area in pick order, group members
+//     contiguous in group order. A pool too small to fill the quotas yields
 //     fewer than MOCK_N ids (the caller treats that as invalid).
 // Scoring (§0-5): 1 point each, total = round(correct / n × 1000), area =
 // round(area correct / area size × 1000) (0 for an empty area); unanswered =
@@ -52,25 +57,26 @@ export function drawRandomMock(
 ): string[] {
   const rand = mulberry32(fnv1a32(String(seed)));
   const byId = groupIndex(pool.groups);
-  const buckets: Record<MockCategory, Unit[]> = { strategy: [], management: [], technology: [] };
+  const units: Unit[] = [];
   const seen = new Set<string>();
   for (const t of Object.keys(pool.topicQuestionIds).sort()) {
     for (const id of pool.topicQuestionIds[t]!) {
       if (seen.has(id)) continue;
       const ids = byId.get(id) ?? [id];
+      if (ids.some((x) => seen.has(x))) {
+        seen.add(id); // overlaps an earlier unit: skip rather than repeat an id
+        continue;
+      }
       for (const x of ids) seen.add(x);
       if (!ids.every((x) => categoryOf.has(x))) continue;
       const need = zeroAreas();
       for (const x of ids) need[categoryOf.get(x)!]++;
-      buckets[categoryOf.get(ids[0]!)!].push({ ids, need });
+      units.push({ ids, need });
     }
   }
-  for (const area of AREAS) {
-    const b = buckets[area];
-    for (let i = b.length - 1; i > 0; i--) {
-      const j = Math.floor(rand() * (i + 1));
-      [b[i], b[j]] = [b[j]!, b[i]!];
-    }
+  for (let i = units.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [units[i], units[j]] = [units[j]!, units[i]!];
   }
 
   const left: Record<MockCategory, number> = { ...OFFICIAL_RATIO };
@@ -80,13 +86,11 @@ export function drawRandomMock(
     u.ids.every((x) => !Object.prototype.hasOwnProperty.call(r.attempts, x));
   const rounds: ((u: Unit) => boolean)[] = preferUnanswered ? [unanswered, () => true] : [() => true];
   for (const eligible of rounds) {
-    for (const area of AREAS) {
-      for (const u of buckets[area]) {
-        if (taken.has(u) || !eligible(u) || AREAS.some((a) => u.need[a] > left[a])) continue;
-        taken.add(u);
-        picked[area].push(u);
-        for (const a of AREAS) left[a] -= u.need[a];
-      }
+    for (const u of units) {
+      if (taken.has(u) || !eligible(u) || AREAS.some((a) => u.need[a] > left[a])) continue;
+      taken.add(u);
+      picked[categoryOf.get(u.ids[0]!)!].push(u);
+      for (const a of AREAS) left[a] -= u.need[a];
     }
   }
   return AREAS.flatMap((a) => picked[a].flatMap((u) => u.ids));
