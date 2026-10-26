@@ -210,6 +210,16 @@ describe("PracticeQuestion — 复习三格 / 頻出度 / figure / 中問", () =
     expect(li).not.toMatch(/<button[^>]*>(?:(?!<\/button>)[\s\S])*<table/);
   });
 
+  it("OQ-10: row4 drops to 2 columns below 470px and 1 column below 234px of the face body (container query)", () => {
+    expect(CSS).toMatch(/\.body\s*\{[^}]*container-type:\s*inline-size;/);
+    expect(CSS).toMatch(
+      /@container\s*\(max-width:\s*469\.98px\)\s*\{\s*\.row4\s*\{\s*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/,
+    );
+    expect(CSS).toMatch(
+      /@container\s*\(max-width:\s*233\.98px\)\s*\{\s*\.row4\s*\{\s*grid-template-columns:\s*minmax\(0,\s*1fr\);/,
+    );
+  });
+
   it("practice.module.css: tokens only — no hex, no shadow, no gradient, radius ≤ 6px, no white-space override", () => {
     expect(CSS).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
     expect(CSS).not.toMatch(/box-shadow|text-shadow|gradient\(/);

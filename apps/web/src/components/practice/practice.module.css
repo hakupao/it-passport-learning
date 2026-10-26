@@ -77,6 +77,8 @@
 .body {
   flex: 1;
   min-width: 0;
+  /* OQ-10: the choices' column count follows this width (see .row4 below) */
+  container-type: inline-size;
 }
 
 /* stem: QuizRichText blocks inside; size / leading only */
@@ -197,6 +199,20 @@
 }
 .row4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+/* OQ-10: a row4 text column must stay ≥ 58px (the 3.87em choiceLayout assumes). A cell spends 54px on
+   padding, border, letter and gap, so 4 columns need 4 × 112 + 3 × 10 gaps ≈ 478px of body (470: the
+   1440 page is 476.5–486px; 470 still leaves 55px ≥ 3 CJK characters) and 2 columns need 234px;
+   narrower, one column (a 390px phone body is 210px: 4 columns left the text 0px wide). */
+@container (max-width: 469.98px) {
+  .row4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container (max-width: 233.98px) {
+  .row4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 /* OQ-09: a row4 choice takes ≤ 2 lines (choiceLayout); balance turns a 3 + 1 fold into 2 + 2, and
    strict keeps it from starting a line with ー or a small kana (「パレ/ート図」 → 「パレー/ト図」),
