@@ -15,7 +15,7 @@ import type { ChumonGroup } from "@/lib/practice/practiceIndex";
 import { CHOICE_LETTERS, loadAllQuestions, type QuizQuestion } from "@/lib/quiz/quizReader";
 
 import { choiceLayout } from "../choiceLayout";
-import { fidAll, fidOne, renderFace } from "./practiceRender";
+import { fidAll, fidOne, messagesFor, renderFace } from "./practiceRender";
 
 let QS: QuizQuestion[] = [];
 let GROUPS: ChumonGroup[] = [];
@@ -240,5 +240,43 @@ describe("PracticeQuestion — 复习三格 / 頻出度 / figure / 中問", () =
       }
     }
     expect(CSS).not.toMatch(/white-space\s*:/);
+  });
+});
+
+// Stage 7 Phase 2 Task 4 (D-193 §0-7): the mock exam's face — picking only marks 「選択中」 (re-pick
+// allowed), nothing tells right from wrong, the number is the mock's own 第 N 問 / 100.
+describe("PracticeQuestion — mode exam (mock)", () => {
+  it("picked イ: that <li> is data-state picked; no ○ / ×, no lock, no explanation / AI / report", () => {
+    const q = QS.find((x) => x.correct_answer !== "イ" && choiceLayout(x) === "list" && !x.figure && !x.choice_figures)!;
+    for (const locale of ["ja", "zh", "en"]) {
+      const out = renderFace(q, locale, {
+        mode: "exam",
+        picked: "イ",
+        recent: [true, false],
+        examNo: { n: 7, total: 100 },
+      });
+      expect(choiceItem(out, "イ")).toMatch(/data-state="picked"/);
+      expect(choiceItem(out, "イ")).toMatch(/aria-pressed="true"/);
+      for (const l of ["ア", "ウ", "エ"]) expect(choiceItem(out, l)).toMatch(/data-state="idle"/);
+      expect(out).not.toMatch(/aria-disabled="true"/);
+      expect(out).not.toMatch(/data-state="(correct|picked-wrong|other)"/);
+      expect(out).not.toMatch(/[○×]/); // neither the choice marks nor the recent cells
+      const P = messagesFor(locale).Practice as Record<string, string>;
+      for (const k of ["markCorrect", "markYourWrong", "markYourCorrect", "explanationTab", "fbReport"]) {
+        expect(out, k).not.toContain(P[k]!);
+      }
+      expect(out).not.toContain((messagesFor(locale).Sensei as Record<string, string>).askButton);
+      // the mock's own number, 出典 kept
+      expect(out).toMatch(/data-qno="7"/);
+      expect(out).toContain("/ 100");
+      expect(out).toContain(q.source_label);
+    }
+  });
+
+  it("practice mode (default) is unchanged: a pick still shows ○ / × and locks the choices", () => {
+    const q = QS.find((x) => x.correct_answer !== "イ" && choiceLayout(x) === "list" && !x.figure && !x.choice_figures)!;
+    const out = renderFace(q, "ja", { picked: "イ" });
+    expect(choiceItem(out, "イ")).toMatch(/data-state="picked-wrong"/);
+    expect(out).toMatch(/aria-disabled="true"/);
   });
 });

@@ -4,12 +4,18 @@
 //
 // Reducer rules:
 //   - pick / flag only act on ids of this mock and only before the finish.
-//   - go clamps to the question list.
+//   - go clamps to the question list (a non-finite position is ignored).
 //   - finish: endedAt = min(now, deadline(startedAt)); an ended mock is kept as-is
 //     (the first endedAt and the recorded flag survive a second tab's finish).
 //   - tick: at or past the deadline it is a finish (a mock that ran out while
 //     the tab was closed ends at the deadline, not when the user came back).
-//   - recorded: the answers have been written to the learning record.
+//   - recorded: the answers have been written to the learning record (the exam page
+//     dispatches it only after finish + answerBatch).
+// parseMock (the trust boundary: another tab, an older build) also checks the
+// consistency with the id list: pos inside it, times ≥ 0; answers / flags for ids
+// outside it are dropped (Task 4 hardening).
+// mockRecordPlan: what a finished, not yet recorded mock writes to the learning
+// record — the answered questions only (D-193 §0-6), all at endedAt.
 // An action that changes nothing returns the same object.
 //
 // Imports are relative (not `@/`): e2e specs import learning modules by relative path.
@@ -68,7 +74,7 @@ export function serializeMock(s: MockState): string {
 
 const isMap = (x: unknown): x is Record<string, unknown> => typeof x === "object" && x !== null && !Array.isArray(x);
 const isStringArray = (x: unknown): x is string[] => Array.isArray(x) && x.every((e) => typeof e === "string");
-const isTime = (x: unknown): x is number => typeof x === "number" && Number.isFinite(x);
+const isTime = (x: unknown): x is number => typeof x === "number" && Number.isFinite(x) && x >= 0;
 
 /** The stored mock, or null when `raw` is missing or not a well-formed MockState. Never throws. */
 export function parseMock(raw: string | null): MockState | null {
@@ -85,17 +91,20 @@ export function parseMock(raw: string | null): MockState | null {
   if (examId !== null && typeof examId !== "string") return null;
   if (!isStringArray(ids) || !isStringArray(flagged)) return null;
   if (!isMap(answers) || !Object.values(answers).every(isChoiceLetter)) return null;
-  if (typeof pos !== "number" || !Number.isInteger(pos) || pos < 0) return null;
+  if (typeof pos !== "number" || !Number.isInteger(pos) || pos < 0 || pos >= ids.length) return null;
   if (!isTime(startedAt) || (endedAt !== null && !isTime(endedAt))) return null;
   if (typeof recorded !== "boolean") return null;
+  const inMock = new Set(ids);
   return {
     v: 1,
     kind,
     examId,
     ids: [...ids],
     // Object.fromEntries: a "__proto__" key stays ordinary data
-    answers: Object.fromEntries(Object.entries(answers as Record<string, ChoiceLetter>)),
-    flagged: [...flagged],
+    answers: Object.fromEntries(
+      Object.entries(answers as Record<string, ChoiceLetter>).filter(([id]) => inMock.has(id)),
+    ),
+    flagged: [...new Set(flagged.filter((id) => inMock.has(id)))],
     pos,
     startedAt,
     endedAt,
@@ -120,6 +129,7 @@ export function mockReducer(s: MockState, a: MockAction): MockState {
         flagged: s.flagged.includes(a.qid) ? s.flagged.filter((q) => q !== a.qid) : [...s.flagged, a.qid],
       };
     case "go": {
+      if (!Number.isFinite(a.pos)) return s;
       const pos = Math.min(Math.max(0, Math.trunc(a.pos)), Math.max(0, s.ids.length - 1));
       return pos === s.pos ? s : { ...s, pos };
     }
@@ -137,4 +147,30 @@ export function sameMock(s: MockState, kind: MockState["kind"], examId: string |
   return (
     s.kind === kind && s.examId === examId && s.ids.length === ids.length && s.ids.every((id, i) => id === ids[i])
   );
+}
+
+export interface MockRecordPlan {
+  /** [qid, choice, correct] of each answered question, in mock order */
+  items: [string, ChoiceLetter, boolean][];
+  /** = endedAt */
+  at: number;
+}
+
+/**
+ * The learning-record write a finished mock still owes (see header): null while it runs or
+ * once recorded. Only answered ids of this mock that have a key are included.
+ */
+export function mockRecordPlan(
+  s: MockState,
+  keyOf: ReadonlyMap<string, { correct: ChoiceLetter }>,
+): MockRecordPlan | null {
+  if (s.endedAt === null || s.recorded) return null;
+  const items: [string, ChoiceLetter, boolean][] = [];
+  for (const id of s.ids) {
+    const choice = Object.prototype.hasOwnProperty.call(s.answers, id) ? s.answers[id] : undefined;
+    const k = keyOf.get(id);
+    if (choice === undefined || k === undefined) continue;
+    items.push([id, choice, choice === k.correct]);
+  }
+  return { items, at: s.endedAt };
 }

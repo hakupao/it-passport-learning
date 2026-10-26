@@ -195,3 +195,35 @@ describe("parseMock (trust boundary)", () => {
     expect(s!.answers["__proto__"]).toBe("ア");
   });
 });
+
+// Task 4 hardening (Task 3 review, carried as dispatch ruling R2): the exam page is the
+// first consumer that reads storage written by another tab or an older build.
+describe("hardening (R2)", () => {
+  it("go ignores a non-finite position", () => {
+    const s = run(newMock("random", null, IDS, T0), { type: "go", pos: 1 });
+    for (const pos of [NaN, Infinity, -Infinity]) expect(mockReducer(s, { type: "go", pos })).toBe(s);
+  });
+
+  it("parseMock rejects negative times and a pos outside the id list", () => {
+    const good = (): MockState => newMock("random", null, IDS, T0);
+    const bad = [
+      { ...good(), startedAt: -1 },
+      { ...good(), endedAt: -5 },
+      { ...good(), pos: IDS.length },
+      { ...good(), ids: [], pos: 0 },
+    ];
+    for (const x of bad) expect(parseMock(JSON.stringify(x)), JSON.stringify(x)).toBeNull();
+    expect(parseMock(JSON.stringify({ ...good(), pos: IDS.length - 1 }))?.pos).toBe(IDS.length - 1);
+  });
+
+  it("parseMock drops answers / flags for ids not in the mock (and repeated flags)", () => {
+    const raw = JSON.stringify({
+      ...newMock("random", null, IDS, T0),
+      answers: { [IDS[0]!]: "ア", "2000x-q999": "イ" },
+      flagged: [IDS[1]!, "2000x-q999", IDS[1]!],
+    });
+    const s = parseMock(raw)!;
+    expect(s.answers).toEqual({ [IDS[0]!]: "ア" });
+    expect(s.flagged).toEqual([IDS[1]!]);
+  });
+});

@@ -26,6 +26,12 @@
 // `readOnly` (Task 10, the single-question page: a reference view): picking does nothing and the
 // choices are aria-disabled; unanswered, the keyed answer carries its ○ (as on the explanation and the
 // 解答栏 beside it), no choice is "yours".
+//
+// `mode="exam"` (Stage 7 Phase 2 Task 4, D-193 §0-7, the mock exam): a pick only marks the choice
+// 「選択中」 (data-state "picked", aria-pressed) and another pick replaces it; nothing tells right
+// from wrong — no ○ / ×, no lock, no 复习三格 (its cells are ○ / ×). `examNo` puts the mock's own
+// number in the 問 block (「問 N / 100」); the 出典 line stays. The face never had the explanation,
+// the AI 先生 entry or the report button — those live in the practice session around it.
 
 "use client";
 
@@ -55,6 +61,10 @@ export interface PracticeQuestionProps {
   foldPreamble: boolean;
   /** reference view: no picking, the keyed answer marked (default false) */
   readOnly?: boolean;
+  /** "exam" = the mock exam: re-pickable, no right / wrong anywhere (default "practice") */
+  mode?: "practice" | "exam";
+  /** the mock's own numbering (exam mode): question n of total */
+  examNo?: { n: number; total: number };
 }
 
 type T = ReturnType<typeof useTranslations>;
@@ -71,9 +81,12 @@ export function PracticeQuestion({
   preambleChars,
   foldPreamble,
   readOnly = false,
+  mode = "practice",
+  examNo,
 }: PracticeQuestionProps): React.ReactElement {
   const t = useTranslations("Practice");
-  const number = sourceNumber(q);
+  const exam = mode === "exam";
+  const number = examNo ? examNo.n : sourceNumber(q);
   const hasTr = locale !== "ja";
   const showTr = hasTr && showTranslation;
   const trLang = LANG_TAG[locale] ?? locale;
@@ -91,8 +104,9 @@ export function PracticeQuestion({
               {t("qLabel")}
             </span>
             <span className={styles.qNoNum}>{number}</span>
+            {examNo ? <span className={styles.qNoLabel}>/ {examNo.total}</span> : null}
           </div>
-          <RecentCells recent={recent} t={t} />
+          {exam ? null : <RecentCells recent={recent} t={t} />}
           <div className={styles.stars}>
             <span lang="ja">{t("starsLabel")}</span>
             <span className={styles.starMarks} role="img" aria-label={t("starsAria", { n: stars })}>
@@ -140,6 +154,7 @@ export function PracticeQuestion({
                 picked={picked}
                 onPick={onPick}
                 readOnly={readOnly}
+                exam={exam}
                 showTr={showTr}
                 trLang={trLang}
                 t={t}
@@ -182,6 +197,7 @@ function ChoiceItem({
   picked,
   onPick,
   readOnly,
+  exam,
   showTr,
   trLang,
   t,
@@ -194,18 +210,30 @@ function ChoiceItem({
   picked: ChoiceLetter | null;
   onPick: (choice: ChoiceLetter) => void;
   readOnly: boolean;
+  exam: boolean;
   showTr: boolean;
   trLang: string;
   t: T;
 }): React.ReactElement {
   const jp = q.choices_jp[L] ?? "";
   const figure = q.choice_figures?.[L];
-  const answered = picked !== null || readOnly;
+  // exam: never locked, never judged (a pick of another letter replaces the answer)
+  const answered = !exam && (picked !== null || readOnly);
   const isPicked = picked === L;
   const isCorrect = q.correct_answer === L;
-  const state = !answered ? "idle" : isCorrect ? "correct" : isPicked ? "picked-wrong" : "other";
+  const state = exam
+    ? isPicked
+      ? "picked"
+      : "idle"
+    : !answered
+      ? "idle"
+      : isCorrect
+        ? "correct"
+        : isPicked
+          ? "picked-wrong"
+          : "other";
   const pick = (): void => {
-    if (!answered) onPick(L);
+    if (exam ? !isPicked : !answered) onPick(L);
   };
   const mark = !answered ? null : isCorrect ? (
     <span className={styles.mark}>
