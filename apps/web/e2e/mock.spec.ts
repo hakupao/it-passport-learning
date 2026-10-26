@@ -210,7 +210,7 @@ test("mock setup: an unfinished mock is offered (continue / discard)", async ({ 
   await expect(choiceButton(page, "ア")).toHaveAttribute("aria-pressed", "true");
 
   await page.goto("/ja/mock");
-  await page.locator("[data-discard]").click();
+  await page.locator("[data-discard-running]").click();
   await expect(page.locator("[data-start-random]")).toBeVisible();
   await expect(page.locator(`[data-start-exam="${EXAM}"]`)).toBeVisible();
   expect(await rawStored(page, MOCK_STORAGE_KEY)).toBeNull();
@@ -332,7 +332,9 @@ test("mock closed and reopened after the deadline: /mock offers only the result;
   await page.goto("/ja/mock");
   const link = page.locator("[data-resume-link]");
   await expect(link).toHaveText(M.resumeResult);
-  await expect(page.locator("[data-discard]")).toHaveCount(0); // its answers must reach the record
+  // its answers must reach the record: 結果を見る first, discard only behind a confirmation
+  await expect(page.locator("[data-discard-running]")).toHaveCount(0);
+  await expect(page.locator("[data-discard-confirm]")).toHaveCount(0);
   await expect(page.locator("[data-start-random]")).toHaveCount(0);
   await link.click();
   await expect(result(page)).toBeVisible();
@@ -362,4 +364,85 @@ test("mock: opening another mock while one owes its record goes to that one firs
   await page.goto("/ja/mock/run?exam=2024r06"); // recorded now: the new mock starts
   await expect(run(page)).toBeVisible();
   expect((await storedMock(page))!.examId).toBe("2024r06");
+});
+
+// ---- fix round 2: an owed save that cannot be opened any more ----
+
+const HOUR = 3_600_000;
+
+/** Seed itp:mock:v1 (only while absent) with a mock that started 3 h ago and was never recorded. */
+async function seedOwed(page: Page, kind: "exam" | "random", examId: string | null, ids: string[]): Promise<void> {
+  const s: MockState = {
+    v: 1,
+    kind,
+    examId,
+    ids,
+    answers: { [ids[0]!]: "ア" },
+    flagged: [],
+    pos: 0,
+    startedAt: Date.now() - 3 * HOUR,
+    endedAt: null,
+    recorded: false,
+  };
+  await page.addInitScript(
+    ([k, v]) => {
+      if (localStorage.getItem(k) === null) localStorage.setItem(k, v);
+    },
+    [MOCK_STORAGE_KEY, JSON.stringify(s)] as const,
+  );
+}
+
+test("mock owed save whose ids no longer match its exam: no redirect loop; confirmed discard starts the mock", async ({
+  page,
+}) => {
+  const stale = Array.from({ length: 100 }, (_, i) => Q(100 - i)); // 2025r07 in reverse: not examMockIds' order
+  await seedOwed(page, "exam", EXAM, stale);
+  await page.goto("/ja/mock/run?exam=2024r06"); // another mock → goes to the owed one's URL once
+  await expect(page).toHaveURL(new RegExp(`exam=${EXAM}$`));
+  await expect(page.locator("[data-unopenable]")).toBeVisible();
+  const url = page.url();
+  await page.waitForTimeout(3_000);
+  expect(page.url()).toBe(url); // stable: never redirects to itself
+  await expect(page.locator("[data-unopenable]")).toBeVisible();
+
+  await page.locator("[data-discard]").click();
+  await expect(page.locator("[data-discard-confirm]")).toContainText(M.discardWarn);
+  await expect(page.locator('dialog[open], [role="dialog"], [role="alertdialog"]')).toHaveCount(0);
+  await page.locator("[data-discard-yes]").click();
+  await expect(run(page)).toBeVisible();
+  await expect(qno(page)).toHaveAttribute("data-qno", "1");
+  const s = (await storedMock(page))!;
+  expect(s.examId).toBe(EXAM);
+  expect(s.ids[0]).toBe(Q(1));
+  expect(s.answers).toEqual({});
+  expect(await mockAttempts(page)).toEqual([]);
+});
+
+test("mock owed save of an unknown exam: /mock offers 結果を見る and a confirmed discard that works", async ({ page }) => {
+  await seedOwed(page, "exam", "1999h11a", ["1999h11a-q001", "1999h11a-q002"]);
+  await page.goto("/ja/mock");
+  await expect(page.locator("[data-resume-link]")).toHaveText(M.resumeResult);
+  await expect(page.locator("[data-start-random]")).toHaveCount(0);
+  await page.locator("[data-discard]").click();
+  await expect(page.locator("[data-discard-confirm]")).toContainText(M.discardWarn);
+  await page.getByRole("button", { name: M.discardNo }).click(); // cancel keeps it
+  await expect(page.locator("[data-discard-confirm]")).toHaveCount(0);
+  expect(await rawStored(page, MOCK_STORAGE_KEY)).not.toBeNull();
+  await page.locator("[data-discard]").click();
+  await page.locator("[data-discard-yes]").click();
+  await expect(page.locator("[data-start-random]")).toBeVisible();
+  expect(await rawStored(page, MOCK_STORAGE_KEY)).toBeNull();
+});
+
+test("mock setup: 破棄 of a running mock that ran out while /mock sat open goes to the owed view", async ({ page }) => {
+  await page.clock.install();
+  await page.goto(RUN);
+  await answerChoice(page, "ア");
+  await page.goto("/ja/mock");
+  await expect(page.locator("[data-discard-running]")).toBeVisible();
+  await page.clock.fastForward(121 * 60_000);
+  await page.locator("[data-discard-running]").click();
+  await expect(page.locator("[data-resume-link]")).toHaveText(M.resumeResult);
+  await expect(page.locator("[data-discard-running]")).toHaveCount(0);
+  expect(await storedMock(page)).not.toBeNull(); // not discarded
 });

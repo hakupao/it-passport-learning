@@ -12,9 +12,11 @@
 //     recorded — a local change (a pick, this tab's own finish or deadline tick) adopts the stored
 //     state instead of writing (fix round 1: a tab that missed the other tab's storage event must
 //     not overwrite its finished + recorded state with an unrecorded one and record again).
-//   - Mount with another mock in storage that still owes the record (finished, or running past its
-//     deadline, and not recorded): go to that mock's URL first (it is recorded there, D-192 ①)
-//     instead of overwriting it.
+//   - Mount with another mock in storage that still owes the record (owesRecord): go to that mock's
+//     URL first (it is recorded there, D-192 ①) instead of overwriting it — unless that URL is this
+//     page (same scope, but the ids it now resolves to differ, e.g. after a data update): then the
+//     save cannot be opened, and an in-page notice offers 「記録せずに破棄」 behind a confirmation
+//     (MockDiscard; fix round 2: never redirect to itself, never loop).
 //   - Timer: derived from startedAt and the real clock (remainingMs), never a counter. The tick
 //     (1 s) is a no-op until the deadline, then the reducer's finish (endedAt = deadline).
 //   - Recording (§0-6, dispatch rulings R1 / R4): one effect, gated on the learning record being
@@ -44,12 +46,13 @@ import { useLearningRecord } from "@/hooks/useLearningRecord";
 import { Link, useRouter } from "@/i18n/navigation";
 import { settingValue, type ChoiceLetter } from "@/lib/learning/record";
 import { remainingMs, scoreMock, type MockCategory } from "@/lib/mock/mockModel";
-import { mockRunHref, type MockScope } from "@/lib/mock/mockScope";
+import { mockRunHref, scopeOfMock } from "@/lib/mock/mockScope";
 import {
   MOCK_STORAGE_KEY,
   mockRecordPlan,
   mockReducer,
   newMock,
+  owesRecord,
   parseMock,
   sameMock,
   serializeMock,
@@ -61,6 +64,7 @@ import { formatElapsed } from "@/lib/practice/practiceSession";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 import { MOCK_RESULT_HEADING_ID, MockResult } from "./MockResult";
+import { MockDiscard } from "./MockDiscard";
 import { MockReview } from "./MockReview";
 import styles from "./mock.module.css";
 
@@ -95,10 +99,6 @@ function writeStored(s: MockState): void {
     // storage unavailable: the mock runs in memory only
   }
 }
-
-/** Finished (or running past its deadline) and not yet written to the learning record. */
-export const owesRecord = (s: MockState, now: number): boolean =>
-  !s.recorded && (s.endedAt !== null || remainingMs(s.startedAt, now) === 0);
 
 /** mm:ss left (rounded up: 120:00 at the start, 00:00 at the deadline). */
 const formatLeft = (ms: number): string => formatElapsed(Math.ceil(ms / 1000) * 1000);
@@ -140,6 +140,8 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
   /** the finish of the current state was produced in this tab (it records it) */
   const own = useRef(false);
   const [superseded, setSuperseded] = useState(false);
+  /** a stored mock owes its record but resolves to this very URL with other ids (cannot be opened) */
+  const [unopenable, setUnopenable] = useState(false);
   const supersededRef = useRef(false);
   const [reviewing, setReviewing] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -186,25 +188,43 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
     [commit],
   );
 
-  // mount: resume this URL's mock (ticked to now) or start a new one
+  /** Resume this URL's mock (ticked to now) or start a new one. */
+  const begin = useCallback(
+    (stored: MockState | null) => {
+      const now = Date.now();
+      const s =
+        stored && isThisMock(stored) ? mockReducer(stored, { type: "tick", now }) : newMock(kind, examId, ids, now);
+      own.current = true; // a mock found ended (or ending now) on mount is this tab's to record
+      writeStored(s);
+      show(s);
+    },
+    [isThisMock, kind, examId, ids, show],
+  );
+
+  // mount
   useEffect(() => {
-    const now = Date.now();
     const stored = readStored();
-    if (stored && !isThisMock(stored) && owesRecord(stored, now)) {
-      // another mock still owes its answers to the record: open it (it records there) first
-      const scope: MockScope =
-        stored.kind === "exam" && stored.examId !== null
-          ? { kind: "exam", examId: stored.examId }
-          : { kind: "random", ids: stored.ids };
-      router.replace(mockRunHref(scope));
+    if (stored && !isThisMock(stored) && owesRecord(stored, Date.now())) {
+      // another mock still owes its answers to the record: open it (it records there) first —
+      // unless its URL is this page, which now resolves to other ids (never redirect to itself)
+      const target = mockRunHref(scopeOfMock(stored));
+      const here = mockRunHref(kind === "exam" && examId !== null ? { kind, examId } : { kind: "random", ids });
+      if (target === here) setUnopenable(true);
+      else router.replace(target);
       return;
     }
-    const s =
-      stored && isThisMock(stored) ? mockReducer(stored, { type: "tick", now }) : newMock(kind, examId, ids, now);
-    own.current = true; // a mock found ended (or ending now) on mount is this tab's to record
-    writeStored(s);
-    show(s);
-  }, [isThisMock, kind, examId, ids, show, router]);
+    begin(stored);
+  }, [isThisMock, kind, examId, ids, begin, router]);
+
+  const discardOwed = useCallback(() => {
+    try {
+      window.localStorage.removeItem(MOCK_STORAGE_KEY);
+    } catch {
+      // storage unavailable: nothing stored
+    }
+    setUnopenable(false);
+    begin(null);
+  }, [begin]);
 
   // the tick (real time; a no-op until the deadline)
   const running = state !== null && state.endedAt === null;
@@ -283,6 +303,21 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
         <div className={styles.actions}>
           <Link href="/mock" className={styles.btn}>
             {t("toSetup")}
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  if (unopenable) {
+    return (
+      <main className={styles.page} data-unopenable="">
+        <h1 className={styles.title}>{t("title")}</h1>
+        <p className={styles.lead}>{t("unopenable")}</p>
+        <div className={styles.actions}>
+          <MockDiscard onDiscard={discardOwed} />
+          <Link href="/" className={styles.btn}>
+            {t("backToday")}
           </Link>
         </div>
       </main>

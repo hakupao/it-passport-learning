@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 
 import { MOCK_N } from "../mockModel";
-import { mockRunHref, parseMockScope } from "../mockScope";
+import { mockRunHref, parseMockScope, scopeOfMock } from "../mockScope";
 
 const ID = (i: number): string => `2024r06-q${String(i).padStart(3, "0")}`;
 const VALID = new Set(Array.from({ length: 200 }, (_, i) => ID(i + 1)));
@@ -62,5 +62,12 @@ describe("mockRunHref", () => {
     expect(href).toBe(`/mock/run?ids=${ids.join(",")}`);
     const sp = Object.fromEntries(new URL(href, "http://x").searchParams);
     expect(parseMockScope(sp, VALID, EXAMS)).toEqual({ kind: "random", ids });
+  });
+});
+
+describe("scopeOfMock", () => {
+  it("an exam mock → its exam; a random one → its ids", () => {
+    expect(scopeOfMock({ kind: "exam", examId: "2025r07", ids: ["x"] })).toEqual({ kind: "exam", examId: "2025r07" });
+    expect(scopeOfMock({ kind: "random", examId: null, ids: range(1, 3) })).toEqual({ kind: "random", ids: range(1, 3) });
   });
 });

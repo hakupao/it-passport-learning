@@ -14,6 +14,8 @@
 // parseMock (the trust boundary: another tab, an older build) also checks the
 // consistency with the id list: pos inside it, times ≥ 0; answers / flags for ids
 // outside it are dropped (Task 4 hardening).
+// owesRecord: a mock that still owes its answers to the record (finished, or running past its
+// deadline, and not recorded) — it must be opened (which records it) or explicitly discarded.
 // mockRecordPlan: what a finished, not yet recorded mock writes to the learning
 // record — the answered questions only (D-193 §0-6), all at endedAt.
 // An action that changes nothing returns the same object.
@@ -173,4 +175,9 @@ export function mockRecordPlan(
     items.push([id, choice, choice === k.correct]);
   }
   return { items, at: s.endedAt };
+}
+
+/** Finished (or running past its deadline) and not yet written to the learning record. */
+export function owesRecord(s: MockState, now: number): boolean {
+  return !s.recorded && (s.endedAt !== null || now >= deadline(s.startedAt));
 }

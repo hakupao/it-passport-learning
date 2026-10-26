@@ -40,7 +40,6 @@ import { mockReducer, mockRecordPlan, newMock, type MockState } from "@/lib/mock
 import { loadBaseQuestions, type QuizQuestion } from "@/lib/quiz/quizReader";
 
 import { MockResult } from "../MockResult";
-import { owesRecord } from "../MockRun";
 import { MockReview } from "../MockReview";
 
 type Messages = Record<string, Record<string, string>>;
@@ -186,17 +185,3 @@ describe("mockRecordPlan (the finish → answerBatch step)", () => {
   });
 });
 
-// fix round 1 (D-192 ①): a stored mock that still owes its answers to the record — the setup page
-// offers only 「結果を見る」 for it, and the exam page opens it before starting another mock.
-describe("owesRecord", () => {
-  const T0 = 1_700_000_000_000;
-  const MS = 120 * 60_000;
-  it("running in time: no; running past the deadline / finished unrecorded: yes; recorded: no", () => {
-    const s = newMock("exam", EXAM, ["a", "b"], T0);
-    expect(owesRecord(s, T0 + MS - 1)).toBe(false);
-    expect(owesRecord(s, T0 + MS)).toBe(true);
-    const ended = mockReducer(s, { type: "finish", now: T0 + 1000 });
-    expect(owesRecord(ended, T0 + 2000)).toBe(true);
-    expect(owesRecord(mockReducer(ended, { type: "recorded" }), T0 + 2000)).toBe(false);
-  });
-});

@@ -2,9 +2,11 @@
 //
 //   - An unfinished mock in this browser (localStorage MOCK_STORAGE_KEY, read after mount — never in
 //     the first render): 「続ける（残り N 分）」 → its exam page; one that ran out or ended without
-//     being written to the record: only 「結果を見る」 (opening it records it, D-192 ①: no discard,
-//     its answers must reach the record). A running one also offers 「破棄して新しく始める」; until
-//     it is gone the new-mock choices are not shown (one mock at a time).
+//     being written to the record (owesRecord): 「結果を見る」 first (opening it records it, D-192 ①);
+//     「記録せずに破棄」 only behind an in-page confirmation (MockDiscard — the escape when the save
+//     cannot be opened any more, fix round 2). A running one offers 「破棄して新しく始める」 at once —
+//     re-checked at the click: one that ran out while the page sat open goes to the owed view. Until
+//     the save is gone the new-mock choices are not shown (one mock at a time).
 //   - ランダム 100 問: drawRandomMock(record, pool, categoryOf, seed = Date.now(), preferUnanswered) in
 //     the browser (it reads the record, so the button waits for it to load) → /mock/run?ids=….
 //     Fewer than 100 drawn → a status line, no navigation.
@@ -20,11 +22,11 @@ import { useTranslations } from "next-intl";
 import { useLearningRecord } from "@/hooks/useLearningRecord";
 import { Link, useRouter } from "@/i18n/navigation";
 import { drawRandomMock, MOCK_N, remainingMs, type MockCategory } from "@/lib/mock/mockModel";
-import { mockRunHref, type MockScope } from "@/lib/mock/mockScope";
-import { MOCK_STORAGE_KEY, parseMock, type MockState } from "@/lib/mock/mockStore";
-import { owesRecord } from "./MockRun";
+import { mockRunHref, scopeOfMock } from "@/lib/mock/mockScope";
+import { MOCK_STORAGE_KEY, owesRecord, parseMock, type MockState } from "@/lib/mock/mockStore";
 import { poolFromIndex, type TodayIndex } from "@/lib/practice/practiceIndex";
 
+import { MockDiscard } from "./MockDiscard";
 import styles from "./mock.module.css";
 
 export interface MockSetupProps {
@@ -42,8 +44,7 @@ function storage(): Storage | null {
   }
 }
 
-const scopeOf = (s: MockState): MockScope =>
-  s.kind === "exam" && s.examId !== null ? { kind: "exam", examId: s.examId } : { kind: "random", ids: s.ids };
+const readNow = (): MockState | null => parseMock(storage()?.getItem(MOCK_STORAGE_KEY) ?? null);
 
 export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement {
   const t = useTranslations("Mock");
@@ -64,7 +65,7 @@ export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement 
   }, [index]);
 
   useEffect(() => {
-    const s = parseMock(storage()?.getItem(MOCK_STORAGE_KEY) ?? null);
+    const s = readNow();
     setStored(s && !(s.endedAt !== null && s.recorded) ? s : null);
   }, []);
 
@@ -82,6 +83,13 @@ export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement 
     const ids = drawRandomMock(record, pool, categoryOf, Date.now(), preferUnanswered);
     if (ids.length !== MOCK_N) return setFailed(true);
     start(mockRunHref({ kind: "random", ids }));
+  };
+
+  /** 破棄 of a running mock; one that owes its record by now goes to the owed view instead. */
+  const discardRunning = (): void => {
+    const s = readNow();
+    if (s && owesRecord(s, Date.now())) return setStored(s);
+    discard();
   };
 
   const discard = (): void => {
@@ -113,11 +121,13 @@ export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement 
             {t("resumeTitle")}
           </h2>
           <div className={styles.actions}>
-            <Link href={mockRunHref(scopeOf(stored))} className={styles.btnPrimary} data-resume-link="">
+            <Link href={mockRunHref(scopeOfMock(stored))} className={styles.btnPrimary} data-resume-link="">
               {owes ? t("resumeResult") : t("resume", { min: Math.ceil(left / 60_000) })}
             </Link>
-            {owes ? null : (
-              <button type="button" className={styles.btn} onClick={discard} data-discard="">
+            {owes ? (
+              <MockDiscard onDiscard={discard} />
+            ) : (
+              <button type="button" className={styles.btn} onClick={discardRunning} data-discard-running="">
                 {t("abandon")}
               </button>
             )}

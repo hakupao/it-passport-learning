@@ -10,6 +10,7 @@
 
 import type { SearchParams } from "../practice/practiceSession";
 import { MOCK_N } from "./mockModel";
+import type { MockState } from "./mockStore";
 
 export type MockScope = { kind: "exam"; examId: string } | { kind: "random"; ids: string[] };
 
@@ -39,4 +40,9 @@ export function mockRunHref(scope: MockScope): string {
   return scope.kind === "exam"
     ? `/mock/run?exam=${encodeURIComponent(scope.examId)}`
     : `/mock/run?ids=${scope.ids.join(",")}`;
+}
+
+/** The scope (and so the URL) a stored mock was started from. */
+export function scopeOfMock(s: Pick<MockState, "kind" | "examId" | "ids">): MockScope {
+  return s.kind === "exam" && s.examId !== null ? { kind: "exam", examId: s.examId } : { kind: "random", ids: [...s.ids] };
 }

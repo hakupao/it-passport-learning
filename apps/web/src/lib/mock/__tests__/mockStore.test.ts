@@ -13,6 +13,7 @@ import {
   MOCK_STORAGE_KEY,
   mockReducer,
   newMock,
+  owesRecord,
   parseMock,
   sameMock,
   serializeMock,
@@ -225,5 +226,20 @@ describe("hardening (R2)", () => {
     const s = parseMock(raw)!;
     expect(s.answers).toEqual({ [IDS[0]!]: "ア" });
     expect(s.flagged).toEqual([IDS[1]!]);
+  });
+});
+
+// Task 4 fix rounds 1–2 (D-192 ①): a stored mock that still owes its answers to the record — the
+// setup page offers 「結果を見る」 first (discard only behind a confirmation), the exam page opens it
+// before starting another mock.
+describe("owesRecord", () => {
+  const MS = 120 * 60_000;
+  it("running in time: no; running past the deadline / finished unrecorded: yes; recorded: no", () => {
+    const s = newMock("exam", "2024r06", ["a", "b"], T0);
+    expect(owesRecord(s, T0 + MS - 1)).toBe(false);
+    expect(owesRecord(s, T0 + MS)).toBe(true);
+    const ended = mockReducer(s, { type: "finish", now: T0 + 1000 });
+    expect(owesRecord(ended, T0 + 2000)).toBe(true);
+    expect(owesRecord(mockReducer(ended, { type: "recorded" }), T0 + 2000)).toBe(false);
   });
 });
