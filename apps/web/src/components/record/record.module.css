@@ -1,0 +1,253 @@
+/* Stage 7 Phase 2 Task 5 (DESIGN §6.6) — the learning record page.
+ * Book look as the today page: headings on the 2px dotted spot rule, plain tables on 1px rule lines,
+ * thin bars (spot on rule-spot). Numbers, tables and thin bars only. The 7 tokens only; no radius
+ * above 6px, no shadow, no gradient; right / wrong never by colour. */
+
+.page {
+  color: var(--ink);
+  padding: 32px 0 56px;
+  max-width: 760px;
+  min-width: 0;
+}
+.title {
+  margin: 0;
+  padding-bottom: 8px;
+  font-size: 28px;
+  font-weight: 700;
+  border-bottom: 2px dotted var(--spot);
+}
+.empty {
+  margin: 14px 0 0;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+.h2,
+.h2Row {
+  margin: 36px 0 0;
+  padding-bottom: 6px;
+  border-bottom: 2px dotted var(--spot);
+}
+.h2,
+.h2Bare {
+  font-size: 17px;
+  font-weight: 700;
+}
+.h2Bare {
+  margin: 0;
+}
+.h2Row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.h3 {
+  margin: 20px 0 0;
+  font-size: 13px;
+  font-weight: 400;
+}
+.link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule);
+}
+.link:hover {
+  text-decoration-color: var(--ink);
+}
+.link:focus-visible,
+.sortOn:focus-visible,
+.sortOff:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ---- pending placeholders: keep each block's height until the record loads ---- */
+.totalsPending {
+  min-height: 72px;
+}
+.forecastPending {
+  min-height: 196px;
+}
+.dailyPending {
+  min-height: 190px;
+}
+.topicsPending {
+  min-height: 320px;
+}
+
+/* ---- ① totals ---- */
+.totals {
+  margin: 14px 0 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 20px;
+}
+.total dt {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+.total dd {
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---- ② forecast: date · thin bar · count ---- */
+.forecast {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fRow {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 14px;
+}
+.fDay {
+  white-space: nowrap;
+}
+.track {
+  display: block;
+  height: 6px;
+  background: var(--rule-spot);
+}
+.fill {
+  display: block;
+  height: 6px;
+  background: var(--spot);
+}
+.fNum {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---- ③ 5 weeks × 7 days ---- */
+.daily {
+  margin-top: 12px;
+  width: 100%;
+  max-width: 420px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.daily th {
+  padding: 4px 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-muted);
+  text-align: center;
+}
+.daily td {
+  height: 30px;
+  text-align: center;
+  border-top: 1px solid var(--rule);
+}
+.daily tbody tr:last-child td {
+  border-bottom: 1px solid var(--rule);
+}
+.todayCell {
+  font-weight: 700;
+  outline: 1.5px solid var(--ink);
+  outline-offset: -3px;
+}
+
+/* ---- ④ topic table ---- */
+.sort {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: 13px;
+}
+.sortLabel {
+  color: var(--ink-muted);
+}
+.sortOn {
+  color: var(--paper);
+  background: var(--ink);
+  padding: 1px 8px;
+  text-decoration: none;
+}
+.sortOff {
+  color: var(--ink);
+  padding: 1px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule);
+}
+.catTag {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 11px;
+  padding: 1px 6px;
+}
+.table {
+  margin-top: 8px;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.colStars {
+  width: 52px;
+}
+.colAnswered {
+  width: 72px;
+}
+.colRate {
+  width: 64px;
+}
+.table th {
+  padding: 6px 8px 4px 0;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+}
+.table td {
+  padding: 8px 8px 8px 0;
+  border-top: 1px solid var(--rule);
+  vertical-align: baseline;
+  overflow-wrap: anywhere;
+}
+.table tbody tr:last-child td {
+  border-bottom: 1px solid var(--rule);
+}
+.table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.table th.num {
+  white-space: normal;
+}
+.stars {
+  color: var(--spot);
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding-top: 20px;
+  }
+  .totals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fRow {
+    grid-template-columns: 84px minmax(0, 1fr) 48px;
+    gap: 8px;
+  }
+}
