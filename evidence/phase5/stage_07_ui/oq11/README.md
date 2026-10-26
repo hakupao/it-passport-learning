@@ -11,3 +11,7 @@
 - 診断・修正は正しいと確認。指摘 Low-1 / Low-2 (既存): 狭い画面で拡大画像が横溢出、横向きスマホで閉じるボタンがスクロール外。
 - `dialog_probe_full.mjs` (6 図 × 1440×900 / 1280×600 / 390×844 / 360×800 / 844×390) で実測確認: 修正前 横溢出 12/30 (390・360 全部)、閉じるボタン不可視 5/30 (844×390)。
 - 修正: `.zoomImg` の上限を dialog の content box に合わせる (`max-width: calc(96vw - 27px)`、`max-height: calc(94dvh - 73px)` [vh fallback]、dialog も 94dvh)。修正後 30/30: 居中・横溢出 0・縦スクロール 0・閉じるボタン可視・Esc / 背景クリックで閉じる・縦横比保持 (誤差 < 2%)。vitest 986 / tsc 0 / build 0 / e2e 81/81。
+
+## Rule D 2 回目 (`oh-my-claudecode:verifier` opus、自前 Playwright) = PASS-with-notes、blocker 0
+- 12 図 (最広比 `2017h29a-q030` 900×137 / 最高 `2018h30h-q081` 900×1242 / 最狭比 `2024r06-q093` / 最小 `2018h30a-q024` ほか) × 7 viewport (1440×900 / 1280×600 / 1024×768 / 390×844 / 360×800 / 844×390 / 320×568) + zh 2 題 = **98/98 PASS** (居中誤差 ≤ 0.1px、dialog 内スクロール 0、閉じるボタン可視、縦横比 < 1%、原寸超え拡大なし、縮小率 = min(1, (0.96vw−27)/w, (0.94vh−73)/h) と一致、Esc / 背景 / 閉じるボタンで閉じる・画像クリックでは閉じない)。手機模擬 (isMobile、DPR 3) 6/6。vitest practice 108/108。結果 `ruleD2_verifier_results.json`。
+- 注記 (低、未処置): dialog 自身の padding 12px のクリックでも閉じる (既存、`e.target === e.currentTarget`) / 矮い横向きスマホで高い図は小さく表示 (設計どおり) / 古典スクロールバー環境・実機 dvh は未検証。
