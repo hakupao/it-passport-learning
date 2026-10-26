@@ -210,6 +210,10 @@ describe("PracticeQuestion — 复习三格 / 頻出度 / figure / 中問", () =
     expect(li).not.toMatch(/<button[^>]*>(?:(?!<\/button>)[\s\S])*<table/);
   });
 
+  it("OQ-11: the figure dialog restores margin: auto (Tailwind preflight sets margin 0 on every element)", () => {
+    expect(CSS).toMatch(/\.zoom\s*\{[^}]*margin:\s*auto;/);
+  });
+
   it("OQ-10: row4 drops to 2 columns below 460px and 1 column below 234px of the face body (container query)", () => {
     expect(CSS).toMatch(/\.body\s*\{[^}]*container-type:\s*inline-size;/);
     expect(CSS).toMatch(
