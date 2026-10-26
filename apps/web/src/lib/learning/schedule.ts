@@ -227,7 +227,8 @@ function freshToday(
   return out;
 }
 
-const groupIndex = (groups: Record<string, string[]>): Map<string, string[]> => {
+/** member id → its whole chumon group (member order); the first group wins for an id in several. */
+export const groupIndex = (groups: Record<string, string[]>): Map<string, string[]> => {
   const m = new Map<string, string[]>();
   for (const members of Object.values(groups)) for (const id of members) if (!m.has(id)) m.set(id, members);
   return m;
