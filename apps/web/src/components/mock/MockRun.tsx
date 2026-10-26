@@ -7,8 +7,14 @@
 //     Date.now(), so a mock that ran out while the tab was closed ends at its deadline — otherwise a
 //     new one starts and replaces it (one mock at a time, §0-4).
 //   - Writes: only local actions write storage (commit), never an effect on [state] — a state
-//     adopted from another tab is not echoed back. A finished state is sticky: a local change that
-//     would put a running state over a finished one in storage adopts the stored one instead.
+//     adopted from another tab is not echoed back. A finished state is sticky: when storage already
+//     holds this mock finished — and this tab's state was still running, or the stored one is
+//     recorded — a local change (a pick, this tab's own finish or deadline tick) adopts the stored
+//     state instead of writing (fix round 1: a tab that missed the other tab's storage event must
+//     not overwrite its finished + recorded state with an unrecorded one and record again).
+//   - Mount with another mock in storage that still owes the record (finished, or running past its
+//     deadline, and not recorded): go to that mock's URL first (it is recorded there, D-192 ①)
+//     instead of overwriting it.
 //   - Timer: derived from startedAt and the real clock (remainingMs), never a counter. The tick
 //     (1 s) is a no-op until the deadline, then the reducer's finish (endedAt = deadline).
 //   - Recording (§0-6, dispatch rulings R1 / R4): one effect, gated on the learning record being
@@ -35,9 +41,10 @@ import { useTranslations } from "next-intl";
 
 import { PracticeQuestion } from "@/components/practice/PracticeQuestion";
 import { useLearningRecord } from "@/hooks/useLearningRecord";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { settingValue, type ChoiceLetter } from "@/lib/learning/record";
 import { remainingMs, scoreMock, type MockCategory } from "@/lib/mock/mockModel";
+import { mockRunHref, type MockScope } from "@/lib/mock/mockScope";
 import {
   MOCK_STORAGE_KEY,
   mockRecordPlan,
@@ -89,6 +96,10 @@ function writeStored(s: MockState): void {
   }
 }
 
+/** Finished (or running past its deadline) and not yet written to the learning record. */
+export const owesRecord = (s: MockState, now: number): boolean =>
+  !s.recorded && (s.endedAt !== null || remainingMs(s.startedAt, now) === 0);
+
 /** mm:ss left (rounded up: 120:00 at the start, 00:00 at the deadline). */
 const formatLeft = (ms: number): string => formatElapsed(Math.ceil(ms / 1000) * 1000);
 
@@ -113,6 +124,7 @@ function MockTimer({ startedAt }: { startedAt: number }): React.ReactElement {
 
 export function MockRun({ kind, examId, examLabel, questions, locale, folds, stars }: MockRunProps): React.ReactElement {
   const t = useTranslations("Mock");
+  const router = useRouter();
   const { record, loaded, answerBatch } = useLearningRecord();
   const ids = useMemo(() => questions.map((q) => q.id), [questions]);
   const keyOf = useMemo(
@@ -142,11 +154,16 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
     setState(s);
   }, []);
 
-  /** A local change: written to storage, unless another tab already ended this mock there. */
+  /** A local change prev → next: written to storage, unless another tab already ended this mock there. */
   const commit = useCallback(
-    (next: MockState) => {
+    (prev: MockState, next: MockState) => {
       const stored = readStored();
-      if (stored && isThisMock(stored) && stored.endedAt !== null && next.endedAt === null) {
+      if (
+        stored &&
+        isThisMock(stored) &&
+        stored.endedAt !== null &&
+        (prev.endedAt === null || (stored.recorded && !next.recorded))
+      ) {
         own.current = false;
         show(stored);
         return;
@@ -164,7 +181,7 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
       const next = mockReducer(prev, a);
       if (next === prev) return;
       if (prev.endedAt === null && next.endedAt !== null) own.current = true;
-      commit(next);
+      commit(prev, next);
     },
     [commit],
   );
@@ -173,12 +190,21 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
   useEffect(() => {
     const now = Date.now();
     const stored = readStored();
+    if (stored && !isThisMock(stored) && owesRecord(stored, now)) {
+      // another mock still owes its answers to the record: open it (it records there) first
+      const scope: MockScope =
+        stored.kind === "exam" && stored.examId !== null
+          ? { kind: "exam", examId: stored.examId }
+          : { kind: "random", ids: stored.ids };
+      router.replace(mockRunHref(scope));
+      return;
+    }
     const s =
       stored && isThisMock(stored) ? mockReducer(stored, { type: "tick", now }) : newMock(kind, examId, ids, now);
     own.current = true; // a mock found ended (or ending now) on mount is this tab's to record
     writeStored(s);
     show(s);
-  }, [isThisMock, kind, examId, ids, show]);
+  }, [isThisMock, kind, examId, ids, show, router]);
 
   // the tick (real time; a no-op until the deadline)
   const running = state !== null && state.endedAt === null;

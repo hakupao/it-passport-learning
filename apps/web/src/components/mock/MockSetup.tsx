@@ -2,8 +2,9 @@
 //
 //   - An unfinished mock in this browser (localStorage MOCK_STORAGE_KEY, read after mount — never in
 //     the first render): 「続ける（残り N 分）」 → its exam page; one that ran out or ended without
-//     being written to the record: 「結果を見る」 (opening it records it). Either way 「破棄して
-//     新しく始める」 removes it; until then the new-mock choices are not shown (one mock at a time).
+//     being written to the record: only 「結果を見る」 (opening it records it, D-192 ①: no discard,
+//     its answers must reach the record). A running one also offers 「破棄して新しく始める」; until
+//     it is gone the new-mock choices are not shown (one mock at a time).
 //   - ランダム 100 問: drawRandomMock(record, pool, categoryOf, seed = Date.now(), preferUnanswered) in
 //     the browser (it reads the record, so the button waits for it to load) → /mock/run?ids=….
 //     Fewer than 100 drawn → a status line, no navigation.
@@ -21,6 +22,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { drawRandomMock, MOCK_N, remainingMs, type MockCategory } from "@/lib/mock/mockModel";
 import { mockRunHref, type MockScope } from "@/lib/mock/mockScope";
 import { MOCK_STORAGE_KEY, parseMock, type MockState } from "@/lib/mock/mockStore";
+import { owesRecord } from "./MockRun";
 import { poolFromIndex, type TodayIndex } from "@/lib/practice/practiceIndex";
 
 import styles from "./mock.module.css";
@@ -91,7 +93,10 @@ export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement 
     setStored(null);
   };
 
-  const left = stored && stored.endedAt === null ? remainingMs(stored.startedAt, Date.now()) : 0;
+  const now = Date.now();
+  const left = stored && stored.endedAt === null ? remainingMs(stored.startedAt, now) : 0;
+  /** finished / past its deadline but not recorded: only 「結果を見る」 (opening it records), no discard */
+  const owes = stored ? owesRecord(stored, now) : false;
 
   return (
     <main className={styles.page} data-mock-setup="">
@@ -109,11 +114,13 @@ export function MockSetup({ index, exams }: MockSetupProps): React.ReactElement 
           </h2>
           <div className={styles.actions}>
             <Link href={mockRunHref(scopeOf(stored))} className={styles.btnPrimary} data-resume-link="">
-              {left > 0 ? t("resume", { min: Math.ceil(left / 60_000) }) : t("resumeResult")}
+              {owes ? t("resumeResult") : t("resume", { min: Math.ceil(left / 60_000) })}
             </Link>
-            <button type="button" className={styles.btn} onClick={discard} data-discard="">
-              {t("abandon")}
-            </button>
+            {owes ? null : (
+              <button type="button" className={styles.btn} onClick={discard} data-discard="">
+                {t("abandon")}
+              </button>
+            )}
           </div>
         </section>
       ) : (

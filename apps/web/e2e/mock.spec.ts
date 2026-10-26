@@ -286,3 +286,80 @@ for (const width of [360, 390]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
   });
 }
+
+// ---- fix round 1 ----
+
+/** Write the other tab's finished + recorded state of this page's mock behind its back (no storage event here). */
+async function writeOtherTabsFinish(page: Page): Promise<MockState> {
+  const mine = (await storedMock(page))!;
+  const other: MockState = { ...mine, answers: { [Q(1)]: "ウ" }, endedAt: mine.startedAt + 60_000, recorded: true };
+  await page.evaluate(([k, v]) => localStorage.setItem(k, v), [MOCK_STORAGE_KEY, JSON.stringify(other)] as const);
+  return other;
+}
+
+test("mock missed event: the deadline tick does not overwrite another tab's finished + recorded state", async ({ page }) => {
+  await page.clock.install();
+  await page.goto(RUN);
+  await answerChoice(page, "ア");
+  const other = await writeOtherTabsFinish(page);
+  await page.clock.fastForward(121 * 60_000);
+  await expect(result(page)).toBeVisible();
+  await page.waitForTimeout(500);
+  expect(await storedMock(page)).toEqual(other); // adopted, not overwritten
+  expect(await mockAttempts(page)).toEqual([]); // the other tab's batch is its own; this tab writes none
+});
+
+test("mock missed event: a manual finish adopts another tab's finished + recorded state", async ({ page }) => {
+  await page.goto(RUN);
+  await answerChoice(page, "ア");
+  const other = await writeOtherTabsFinish(page);
+  await finish(page);
+  await page.waitForTimeout(500);
+  expect(await storedMock(page)).toEqual(other);
+  expect(await mockAttempts(page)).toEqual([]);
+});
+
+test("mock closed and reopened after the deadline: /mock offers only the result; recorded once at the deadline", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.goto(RUN);
+  await answerChoice(page, "ウ"); // q001 keyed ウ
+  const started = (await storedMock(page))!.startedAt;
+  await page.goto("/ja/settings"); // the exam page is gone
+  await page.clock.fastForward(121 * 60_000);
+
+  await page.goto("/ja/mock");
+  const link = page.locator("[data-resume-link]");
+  await expect(link).toHaveText(M.resumeResult);
+  await expect(page.locator("[data-discard]")).toHaveCount(0); // its answers must reach the record
+  await expect(page.locator("[data-start-random]")).toHaveCount(0);
+  await link.click();
+  await expect(result(page)).toBeVisible();
+  await expect.poll(async () => (await storedMock(page))?.recorded).toBe(true);
+  expect(await mockAttempts(page)).toEqual([[Q(1), started + MOCK_MS]]);
+
+  await page.goto(RUN); // the run URL again: the result, still recorded once
+  await expect(result(page)).toBeVisible();
+  await page.waitForTimeout(500);
+  expect(await mockAttempts(page)).toEqual([[Q(1), started + MOCK_MS]]);
+});
+
+test("mock: opening another mock while one owes its record goes to that one first", async ({ page }) => {
+  await page.clock.install();
+  await page.goto(RUN);
+  await answerChoice(page, "ウ");
+  const started = (await storedMock(page))!.startedAt;
+  await page.goto("/ja/settings");
+  await page.clock.fastForward(121 * 60_000);
+
+  await page.goto("/ja/mock/run?exam=2024r06");
+  await expect(page).toHaveURL(new RegExp(`exam=${EXAM}$`));
+  await expect(result(page)).toBeVisible();
+  await expect.poll(async () => (await storedMock(page))?.recorded).toBe(true);
+  expect(await mockAttempts(page)).toEqual([[Q(1), started + MOCK_MS]]);
+
+  await page.goto("/ja/mock/run?exam=2024r06"); // recorded now: the new mock starts
+  await expect(run(page)).toBeVisible();
+  expect((await storedMock(page))!.examId).toBe("2024r06");
+});
