@@ -214,6 +214,12 @@ describe("PracticeQuestion — 复习三格 / 頻出度 / figure / 中問", () =
     expect(CSS).toMatch(/\.zoom\s*\{[^}]*margin:\s*auto;/);
   });
 
+  it("OQ-11 review: the zoomed image fits the dialog's content box (no sideways scroll on a phone, close button in view)", () => {
+    // dialog box 96vw × 94vh (border-box) − padding 2 × 12 − border 2 × 1.5 = 27px; close button 10 + 36 = 46px
+    expect(CSS).toMatch(/\.zoomImg\s*\{[^}]*max-width:\s*calc\(96vw - 27px\);/);
+    expect(CSS).toMatch(/\.zoomImg\s*\{[^}]*max-height:\s*calc\(94dvh - 73px\);/);
+  });
+
   it("OQ-10: row4 drops to 2 columns below 460px and 1 column below 234px of the face body (container query)", () => {
     expect(CSS).toMatch(/\.body\s*\{[^}]*container-type:\s*inline-size;/);
     expect(CSS).toMatch(

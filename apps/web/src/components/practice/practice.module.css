@@ -166,6 +166,7 @@
   padding: 12px;
   max-width: 96vw;
   max-height: 94vh;
+  max-height: 94dvh;
   background: var(--paper);
   color: var(--ink);
 }
@@ -173,10 +174,14 @@
   background: var(--ink);
   opacity: 0.6;
 }
+/* the image fits the dialog's content box: 96vw × 94dvh (border-box, preflight) − padding 2 × 12 −
+   border 2 × 1.5 = 27px, and the height also leaves the close button (10 + 36 = 46px) in view.
+   92vw / 80vh overflowed sideways on a phone and pushed the close button out on a landscape phone. */
 .zoomImg {
   display: block;
-  max-width: 92vw;
-  max-height: 80vh;
+  max-width: calc(96vw - 27px);
+  max-height: calc(94vh - 73px);
+  max-height: calc(94dvh - 73px);
   height: auto;
 }
 .zoomClose {
