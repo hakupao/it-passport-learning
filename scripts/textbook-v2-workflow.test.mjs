@@ -282,3 +282,14 @@ test("loc seed args: all three or none, not with a JP seed, one unit, a loc part
   await assert.rejects(runWf({ jp: [], loc: [] }, { ...SEED_LOC_ARGS, seed_loc_part: SEED_PART }), /loc part of/);
   await assert.rejects(runWf({ jp: [], loc: [] }, { ...SEED_LOC_ARGS, ...SEED_ARGS }), /not both/);
 });
+
+test("B6: the localiser and the translation reviewer get the zh term table", async () => {
+  const { calls } = await runWf({ jp: ["PASS"], loc: ["REVISE", "PASS"] });
+  for (const label of [/^localize:/, /^relocalize:/, /^tr-review:/]) {
+    const p = calls.find((x) => label.test(x.opts.label)).prompt;
+    assert.ok(p.includes("/Volumes/DevSSD/Project/IT-Passport-Learning/data/ip/textbook/zh_terms.json"), String(label));
+    assert.match(p, /warn zh-term/);
+  }
+  const { calls: seeded } = await runWf({ jp: [], loc: ["PASS"] }, SEED_LOC_ARGS);
+  assert.ok(seeded[0].prompt.includes("zh_terms.json"));
+});

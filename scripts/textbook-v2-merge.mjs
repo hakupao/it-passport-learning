@@ -58,7 +58,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { assemble, canon, dataPaths, jsonText, REPO, loadKit, locVsJp, parityDiff, parseArgs, partCounts, readJournal, readJson, RUN_TAG_RE, sha256File, V1_SCHEMA } from "./lib/textbook-v2.mjs";
+import { assemble, canon, dataPaths, jsonText, REPO, zhTermWarnings, loadKit, locVsJp, parityDiff, parseArgs, partCounts, readJournal, readJson, RUN_TAG_RE, sha256File, V1_SCHEMA } from "./lib/textbook-v2.mjs";
 import { applyPatches, applyUnitPatches, BATCH_DIR, PatchError, readFrozen, readPatches, v1Sha256 } from "./textbook-v2-patch.mjs";
 import { validateUnit } from "./textbook-v2-validate.mjs";
 
@@ -193,6 +193,8 @@ export async function merge({ unit, journals, runTag, write, paths, batchDir = B
     parity_diff: diff,
     merged: out,
     patches,
+    // B6: printed, never blocking (not an issue for D-199 / --write)
+    zh_warnings: existsSync(paths.zhTerms) ? zhTermWarnings(unitDoc, readJson(paths.zhTerms)) : [],
     written: false,
     // a seeded run (workflow args.seed_* / seed_loc_*): provenance only — approval above is of the final part's own sha256; (JP seed: its jp#0 row; B5 loc seed: its loc#0 row) — the latest journal's
     seed: rows?.filter((r) => r.unit_id === unit && typeof r.seed_sha256 === "string").sort((a, b) => a._journal - b._journal).at(-1) ?? null,
@@ -269,6 +271,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     console.log(`  reviews: jp ${r.approved.jp ? "PASS" : "not PASS"} / loc ${r.approved.loc ? "PASS" : "not PASS"}; validate ${r.issues.length} issue(s); parity ${r.parity_diff.length} diff`);
     for (const i of r.issues) console.log(`  ${i.code.padEnd(13)} ${i.field}  ${i.message}`);
     for (const [loc, c] of r.parity_diff) console.log(`  parity ${loc}  jp=${c.jp} zh=${c.zh} en=${c.en}`);
+    for (const w of r.zh_warnings) console.log(`  warn  ${w.code}  ${w.field}  ${w.message}`);
     if (r.v1terms_added) console.log(`  added ${r.unit}'s v1 glosses to ${path.relative(process.cwd(), opt["v1terms-fixture"] ?? V1TERMS_FIXTURE)}`);
     console.log(r.written ? `✓ wrote ${path.relative(process.cwd(), paths.unit(r.unit))} (v1 archived at ${path.relative(process.cwd(), paths.v1Original(r.unit))})` : "  dry-run: units/ not touched (--write to replace)");
     process.exit(r.issues.length + r.parity_diff.length === 0 ? 0 : 1);

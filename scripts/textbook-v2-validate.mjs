@@ -20,6 +20,8 @@
 //   [--data-root <dir>]           default <repo>/data/ip
 //   With --part, `counts {...}` (lib partCounts) and `sha256 <hex>` (the part file) are printed first,
 //   with --jp also `jp_sha256 <hex>`: the workflow agents return them, merge recomputes and compares.
+// WARN (batch B6, never an issue, exit code unaffected): with <data-root>/textbook/zh_terms.json present, a unit / loc
+// part whose jp text names a table term without its mapped zh in the same field's zh prints `warn  zh-term  field  message`.
 // Exit: 0 = no issues, 1 = issues (printed one per line as `code  field  message`), 2 = usage / input error.
 
 import { existsSync } from "node:fs";
@@ -40,6 +42,7 @@ import {
   readJson,
   sha256File,
   svgProblems,
+  zhTermWarnings,
 } from "./lib/textbook-v2.mjs";
 
 /** Issues of a full v2 unit (validateV2 + svg files + copy guard). */
@@ -101,6 +104,11 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     ? await validatePart(doc, manifest, paths, opt.jp ? readJson(path.resolve(opt.jp)) : null)
     : await validateUnit(doc, manifest, paths);
   const what = opt.part ? `part ${doc.stage}#${doc.round}` : "unit";
+  // B6: zh term WARN lines (a JP-only part has no zh yet)
+  const warns = doc.stage !== "jp" && existsSync(paths.zhTerms) ? zhTermWarnings(doc, readJson(paths.zhTerms)) : [];
+  const printWarns = () => {
+    for (const w of warns) console.log(`  warn  ${w.code}  ${w.field}  ${w.message}`);
+  };
   // the workflow agents copy this line into their StructuredOutput; merge cross-checks it
   if (opt.part) {
     console.log(`counts ${JSON.stringify(partCounts(doc))}`);
@@ -108,10 +116,12 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     if (opt.jp) console.log(`jp_sha256 ${sha256File(path.resolve(opt.jp))}`);
   }
   if (issues.length === 0) {
-    console.log(`✓ ${unitId} ${what}: 0 issues (${path.relative(process.cwd(), file)})`);
+    console.log(`✓ ${unitId} ${what}: 0 issues (${path.relative(process.cwd(), file)})${warns.length ? `, ${warns.length} zh-term warning(s)` : ""}`);
+    printWarns();
     process.exit(0);
   }
   console.log(`✗ ${unitId} ${what}: ${issues.length} issue(s) (${path.relative(process.cwd(), file)})`);
   for (const i of issues) console.log(`  ${fmt(i)}`);
+  printWarns();
   process.exit(1);
 }

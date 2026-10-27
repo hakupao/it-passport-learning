@@ -1,0 +1,120 @@
+// Stage 7 Phase 3 batch B6 (D-201 plan Task B6) — the zh term table: v1 term_zh conflicts over the corpus,
+// the seeded data/ip/textbook/zh_terms.json, and the non-blocking WARN check (jp text names a table term →
+// the zh text of the same field carries its mapped zh), in validate and over the committed v2 units.
+import assert from "node:assert/strict";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { test } from "node:test";
+
+import { dataPaths, readJson, zhTermWarnings } from "./lib/textbook-v2.mjs";
+import { fixture, run, tempRoot, writeJson } from "./lib/textbook-v2-testkit.mjs";
+import { PILOT_WORDS, seedTable, termZhConflicts } from "./textbook-v2-zh-terms.mjs";
+
+const P = dataPaths();
+const units = () => readJson(P.index).topics.flatMap((t) => t.units.map((u) => readJson(P.unit(u.unit_id))));
+
+test("conflicts: exactly MBO / E-R図 / デュアルシステム / デュプレックスシステム, recomputed from the unit files", () => {
+  const c = termZhConflicts(units());
+  assert.deepEqual(Object.keys(c).sort(), ["E-R図", "MBO", "デュアルシステム", "デュプレックスシステム"].sort());
+  assert.deepEqual(c["MBO"].map((x) => x.unit_id), ["strategy-01-01-u06", "strategy-03-09-u04"]);
+  // the swap (OQ-15): each system has both translations, crosswise in the two units
+  const z = (t, u) => c[t].find((x) => x.unit_id === u).term_zh;
+  assert.equal(z("デュアルシステム", "technology-16-43-u02"), z("デュプレックスシステム", "technology-16-44-u03"));
+  assert.equal(z("デュプレックスシステム", "technology-16-43-u02"), z("デュアルシステム", "technology-16-44-u03"));
+});
+
+test("seed: conflict-free v1 term_zh + per-unit MBO + unified E-R図 + pilot words; the swapped pair excluded (OQ-15); deterministic", () => {
+  const all = units();
+  const t = seedTable(all);
+  const headwords = new Map();
+  for (const u of all) for (const x of u.terms) headwords.set(x.term, x.term_zh);
+  // every conflict-free headword with its v1 term_zh
+  for (const [jp, zh] of headwords) {
+    if (["E-R図", "MBO", "デュアルシステム", "デュプレックスシステム"].includes(jp)) continue;
+    assert.equal(t.terms[jp], zh, jp);
+  }
+  assert.equal(t.terms["E-R図"], "E-R图");
+  assert.deepEqual(t.per_unit["MBO"], { "strategy-01-01-u06": "MBO(目标管理)", "strategy-03-09-u04": "管理层收购（MBO）" });
+  for (const jp of ["MBO", "デュアルシステム", "デュプレックスシステム"]) assert.equal(t.terms[jp], undefined, jp);
+  for (const jp of ["デュアルシステム", "デュプレックスシステム"]) assert.match(t.excluded[jp], /OQ-15/);
+  // pilot words: added where they are not headwords; a headword keeps its v1 term_zh
+  assert.equal(t.terms["変更管理"], "变更管理");
+  for (const [jp, zh] of Object.entries(PILOT_WORDS.global)) if (!headwords.has(jp)) assert.equal(t.terms[jp], zh, jp);
+  for (const [jp, byUnit] of Object.entries(PILOT_WORDS.per_unit)) assert.deepEqual(t.per_unit[jp], byUnit, jp);
+  assert.deepEqual(Object.keys(t.terms), Object.keys(t.terms).sort(), "sorted keys");
+  assert.equal(JSON.stringify(seedTable(units())), JSON.stringify(t));
+});
+
+test("the committed data/ip/textbook/zh_terms.json is the seed (until edited by hand); --seed never overwrites a different table", () => {
+  assert.deepEqual(readJson(P.zhTerms), seedTable(units()));
+  const dir = mkdtempSync(path.join(tmpdir(), "tbv2-zh-"));
+  const out = path.join(dir, "zh_terms.json");
+  assert.equal(run("textbook-v2-zh-terms.mjs", ["--seed", "--out", out]).code, 0);
+  const a = readFileSync(out, "utf-8");
+  assert.equal(run("textbook-v2-zh-terms.mjs", ["--seed", "--out", out]).code, 0, "identical: ok");
+  writeFileSync(out, a.replace("变更管理", "变更控制"));
+  const r = run("textbook-v2-zh-terms.mjs", ["--seed", "--out", out]);
+  assert.equal(r.code, 1, r.out);
+  assert.match(r.out, /hand-maintained/);
+});
+
+test("--conflicts prints the four conflicts as a markdown table", () => {
+  const r = run("textbook-v2-zh-terms.mjs", ["--conflicts"]);
+  assert.equal(r.code, 0, r.out);
+  for (const jp of ["MBO", "E-R図", "デュアルシステム", "デュプレックスシステム"]) assert.match(r.out, new RegExp(`^\\| ${jp} \\|`, "m"));
+  assert.match(r.out, /OQ-15/);
+});
+
+const TABLE = {
+  terms: { 変更管理: "变更管理", "E-R図": "E-R图", リスク: "风险", プロジェクトリスクマネジメント: "项目风险管理", 結合点: "节点（结合点）" },
+  per_unit: { MBO: { "x-01-01-u01": "MBO(目标管理)" } },
+  excluded: { デュアルシステム: "OQ-15" },
+};
+
+test("zhTermWarnings: a table term in jp needs its zh in the same field's zh (whitespace / markup ignored, longest term first)", () => {
+  const u = {
+    unit_id: "x-01-01-u01",
+    goals_jp: ["**変更管理**の手順を言える。", "E-R図を読める。"],
+    goals_zh: ["能说出变更控制的步骤。", "能读懂 E-R 图。"],
+    terms: [
+      { term: "a", one_jp: "プロジェクトリスクマネジメントを行う。", one_zh: "开展**项目风险管理**（[[jp:プロジェクトリスクマネジメント]]）。", detail_jp: "MBO とデュアルシステム。", detail_zh: "目标管理与双重系统。" },
+      { term: "b", fig: { data: { root: { label: { jp: "結合点", zh: "节点", en: "Node" } } } } },
+    ],
+  };
+  const w = zhTermWarnings(u, TABLE);
+  assert.deepEqual(
+    w.map((x) => [x.field, x.term]),
+    [["goals_zh[0]", "変更管理"]],
+    JSON.stringify(w),
+  );
+  assert.equal(w[0].code, "zh-term");
+  assert.match(w[0].message, /変更管理 → 变更管理/);
+  // the (…) of a table value are alternatives; a per-unit entry only for its unit
+  assert.deepEqual(zhTermWarnings({ ...u, unit_id: "y-01-01-u01" }, TABLE).map((x) => x.term), ["変更管理"]);
+  const v = structuredClone(u);
+  v.terms[0].detail_zh = "这一单元不提。";
+  assert.deepEqual(zhTermWarnings(v, TABLE).map((x) => x.term), ["変更管理", "MBO"]);
+  assert.deepEqual(zhTermWarnings(u, { terms: {} }), []);
+});
+
+test("validate prints zh-term WARN lines, not issues: exit 0, and merge / --write are not blocked", () => {
+  const root = tempRoot();
+  assert.equal(run("textbook-v2-prep.mjs", ["--unit", "management-10-27-u03", "--data-root", root]).code, 0);
+  const u = fixture();
+  writeJson(path.join(root, "textbook/zh_terms.json"), { terms: { [u.terms[2].term]: "完全不同的译名" }, per_unit: {}, excluded: {} });
+  const r = run("textbook-v2-validate.mjs", ["--file", writeJson(path.join(root, "u.json"), u), "--data-root", root]);
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /0 issues/);
+  assert.match(r.out, /^\s*warn\s+zh-term\s+\S+\s+回避 → 完全不同的译名/m);
+});
+
+test("--check-units: every committed v2 unit (or --unit …) checked, warnings listed per unit", () => {
+  const r = run("textbook-v2-zh-terms.mjs", ["--check-units"]);
+  assert.ok(r.code === 0 || r.code === 1, r.out);
+  for (const id of ["management-10-27-u01", "management-10-27-u02", "management-10-27-u03"]) assert.match(r.out, new RegExp(id));
+  assert.doesNotMatch(r.out, /strategy-01-01-u01/, "v1 units are not checked");
+  const one = run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "management-10-27-u02"]);
+  assert.doesNotMatch(one.out, /management-10-27-u01/);
+  assert.equal(run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "strategy-01-01-u01"]).code, 2, "a v1 unit is a usage error");
+});

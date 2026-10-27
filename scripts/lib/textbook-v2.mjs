@@ -64,6 +64,7 @@ export function dataPaths(dataRoot = path.join(REPO, "data/ip")) {
     manifest: (unit) => path.join(planning(unit), "manifest.json"),
     parts: (unit, tag) => path.join(planning(unit), "parts", tag),
     merged: (unit) => path.join(planning(unit), "merged.json"),
+    zhTerms: path.join(tb, "zh_terms.json"),
     v1Original: (unit) => path.join(planning(unit), "v1-original.json"),
   };
 }
@@ -532,4 +533,83 @@ export function readJournal(file) {
     results.push(isObj(rec.result.result) ? rec.result.result : rec.result);
   }
   return { results, bad };
+}
+
+// ---- zh term table (batch B6) ---------------------------------------------------------
+
+/** v1-compat copies (derived from the new fields) and v1-carried text: not the localiser's, not checked. */
+const ZH_SKIP = new Set(["definition_jp", "explanation_jp", "memory_hook_jp", "title_jp", "unit_summary_jp", "summary", "overview", "figure"]);
+/**
+ * Pairs of same-field Japanese / Chinese text in a unit or part: X_jp ↔ X_zh (strings, or arrays index by
+ * index) and the jp ↔ zh of Text3 labels, with the zh field's location. Compat / v1-carried fields skipped.
+ */
+export function zhPairs(u) {
+  const out = [];
+  const walk = (v, at) => {
+    if (Array.isArray(v)) return v.forEach((x, i) => walk(x, `${at}[${i}]`));
+    if (!isObj(v)) return;
+    if (typeof v.jp === "string" && typeof v.zh === "string") out.push([`${at}.zh`, v.jp, v.zh]);
+    for (const [k, x] of Object.entries(v)) {
+      if (ZH_SKIP.has(k)) continue;
+      const where = at ? `${at}.${k}` : k;
+      if (k.endsWith("_jp")) {
+        const z = v[`${k.slice(0, -3)}_zh`];
+        const zf = `${where.slice(0, -3)}_zh`;
+        if (typeof x === "string" && typeof z === "string") out.push([zf, x, z]);
+        else if (Array.isArray(x) && Array.isArray(z)) x.forEach((s, i) => typeof s === "string" && typeof z[i] === "string" && out.push([`${zf}[${i}]`, s, z[i]]));
+      } else if (typeof x === "object") walk(x, where);
+    }
+  };
+  walk(u, "");
+  return out.map(([f, jp, zh]) => [f.replace(/^terms\[(\d+)\]/, (m, i) => `${m}(${u.terms?.[Number(i)]?.term})`), jp, zh]);
+}
+
+const zhNorm = (s) => s.replace(/\[\[jp:[^\]]*\]\]/g, "").replace(/\*\*/g, "").replace(/\s/g, "");
+/** Accepted zh forms of a table value: the whole value and, around a (…) / （…）, the part outside and inside. */
+export function zhAccepted(value) {
+  const v = zhNorm(value);
+  const m = /^(.*?)[（(](.*)[）)](.*)$/.exec(v);
+  return [...new Set([v, ...(m ? [`${m[1]}${m[3]}`, m[2]] : [])])].filter((x) => x !== "");
+}
+
+/**
+ * B6 WARN (non-blocking, never an issue): for each jp / zh field pair, every table term found in the jp text
+ * (longest first, non-overlapping; a katakana term only as a whole katakana run; terms of one character not
+ * checked; per_unit entry for this unit before the global one; excluded terms skipped)
+ * must appear in the zh text as one of its accepted forms (whitespace, ** and [[jp:…]] ignored).
+ * → [{unitId, code: "zh-term", field, term, message}]
+ */
+export function zhTermWarnings(u, table) {
+  const unit = u.unit_id;
+  const map = new Map();
+  for (const [jp, zh] of Object.entries(table?.terms ?? {})) map.set(jp, zh);
+  for (const [jp, byUnit] of Object.entries(table?.per_unit ?? {})) {
+    if (byUnit?.[unit] !== undefined) map.set(jp, byUnit[unit]);
+    else map.delete(jp);
+  }
+  for (const jp of Object.keys(table?.excluded ?? {})) map.delete(jp);
+  // single-character terms (式, 表 …) match everywhere: not checked
+  const keys = [...map.keys()].filter((k) => [...k].length >= 2).sort((a, b) => b.length - a.length || (a < b ? -1 : 1));
+  const KATA = /^[\u30A0-\u30FF\uFF66-\uFF9F]+$/;
+  const kataAt = (t, i) => i >= 0 && i < t.length && KATA.test(t[i]);
+  // a katakana term matches a whole katakana run only (リスト is not in リストア, キュー not in セキュリティ)
+  const at = (text, k, i) => text.startsWith(k, i) && (!KATA.test(k) || (!kataAt(text, i - 1) && !kataAt(text, i + k.length)));
+  const out = [];
+  for (const [field, jp, zh] of zhPairs(u)) {
+    const text = jp.replace(/\*\*/g, "");
+    const found = [];
+    for (let i = 0; i < text.length; ) {
+      const k = keys.find((x) => at(text, x, i));
+      if (k) {
+        if (!found.includes(k)) found.push(k);
+        i += k.length;
+      } else i++;
+    }
+    const z = zhNorm(zh);
+    for (const k of found) {
+      const acc = zhAccepted(map.get(k));
+      if (!acc.some((a) => z.includes(a))) out.push({ unitId: unit, code: "zh-term", field, term: k, message: `${k} → ${map.get(k)} not in the zh text (data/ip/textbook/zh_terms.json)` });
+    }
+  }
+  return out;
 }
