@@ -7,13 +7,17 @@ import { describe, expect, it } from "vitest";
 import { termId } from "../../glossary/termId";
 import { loadChumonMembers, type ChumonMembers } from "../../practice/chumonMembers";
 import { loadAllUnits, normalizeUnit, UNIT_ID_RE } from "../reader";
-import type { TextbookUnitV2 } from "../types";
+import { V2_SCHEMA, type TextbookUnitV2 } from "../types";
 
 describe("normalizeUnit (v1)", () => {
   it("maps every unit of the corpus by §0-6", async () => {
     const [units, members] = await Promise.all([loadAllUnits(), loadChumonMembers()]);
     expect(units).toHaveLength(244);
-    for (const raw of units) {
+    // the pilot (Task 9) replaces some units with v2 files: those must normalize as v2
+    for (const raw of units.filter((x) => x.schema_version === V2_SCHEMA)) {
+      expect(normalizeUnit(raw, members).schema, raw.unit_id).toBe("v2");
+    }
+    for (const raw of units.filter((x) => x.schema_version !== V2_SCHEMA)) {
       const u = normalizeUnit(raw, members);
       expect(u.schema).toBe("v1");
       expect(u.id).toBe(raw.unit_id);

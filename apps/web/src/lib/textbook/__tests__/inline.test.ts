@@ -61,7 +61,7 @@ describe("inlineErrors", () => {
   });
 
   it("reports unclosed, nested and stray markers", () => {
-    for (const bad of ["a **b", "**a [[jp:b]]**", "[[jp:a **b**]]", "x ]] y", "[[jp:]]", "[[en:x]]"]) {
+    for (const bad of ["a **b", "**a [[jp:b]]**", "[[jp:a **b**]]", "x ]] y", "[[jp:]]", "[[en:x]]", "***x***", "**x***", "a ***b** c"]) {
       expect(inlineErrors(bad).length, bad).toBeGreaterThan(0);
     }
   });

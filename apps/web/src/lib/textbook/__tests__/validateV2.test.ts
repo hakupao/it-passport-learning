@@ -10,7 +10,21 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { loadBaseQuestions } from "../../quiz/quizReader";
 import { loadReaderIndex, loadUnit } from "../reader";
 import type { TextbookUnitV2 } from "../types";
-import { BANNED_PHRASES, hookLines, introOf, v2Context, validateV2, type V2Context, type V2Issue } from "../validateV2";
+import { loadChumonMembers } from "../../practice/chumonMembers";
+import { pickConfirm } from "../confirm";
+import { loadAllUnits, normalizeUnit } from "../reader";
+import {
+  BANNED_PHRASES,
+  confirmIds,
+  hookLines,
+  introOf,
+  listingRun,
+  sentences,
+  v2Context,
+  validateV2,
+  type V2Context,
+  type V2Issue,
+} from "../validateV2";
 
 const SAMPLE = JSON.parse(
   readFileSync(path.join(__dirname, "..", "__fixtures__", "v2-sample.json"), "utf-8"),
@@ -49,7 +63,7 @@ describe("v2Context", () => {
 
   it("is null for a unit missing from the index", async () => {
     const [index, questions] = await Promise.all([loadReaderIndex(), loadBaseQuestions()]);
-    expect(v2Context(index as never, questions, "nope-00-00-u01")).toBeNull();
+    expect(v2Context(index as never, questions, "nope-00-00-u01", [])).toBeNull();
   });
 });
 
@@ -227,10 +241,10 @@ describe("validateV2 — one broken thing → one error", () => {
     }, "banned");
   });
 
-  it("D-195 §9: three or more of the unit's headwords listed in one sentence", () => {
+  it("D-195 §3 / §9: a goal that lists three or more headwords joined by ・、,", () => {
     expectOne((u) => {
-      u.key_points_jp[1] = "回避・軽減・転嫁はどれもリスクに働きかける。";
-      u.summary.key_points_jp[1] = u.key_points_jp[1];
+      u.goals_jp[1] = "回避・軽減・転嫁を区別できる。";
+      u.overview.intro_jp = introOf(u.goals_jp, "jp");
     }, "listing");
   });
 
@@ -251,5 +265,123 @@ describe("validateV2 — one broken thing → one error", () => {
   it("lang_status and overview metadata", () => {
     expectOne((u) => void (u.lang_status.zh = "pending"), "meta");
     expectOne((u) => void (u.overview.est_minutes = 0), "meta");
+  });
+});
+
+// Task 6 Rule D review (MAJOR-1 / MAJOR-2 / MINOR): legal text that a naive check would reject,
+// the confirm count, and malformed JSON that must become issues instead of exceptions.
+describe("validateV2 — review fixes", () => {
+  it("exam points may use exam framing (試験では…問われる / 考试常考 / the exam often asks)", () => {
+    const issues = issuesAfter((u) => {
+      const p = term(u, "受容").points[0]!;
+      p.text_jp = "試験では、発生確率も影響も小さいリスクに何を選ぶかが問われる。";
+      p.text_zh = "考试常考：发生概率和影响都小的风险选哪种应对。";
+      p.text_en = "The exam often asks which response fits a risk with small probability and impact.";
+    });
+    expect(issues).toEqual([]);
+  });
+
+  it("exam framing is still banned in the body text", () => {
+    expectOne((u) => {
+      const t = term(u, "回避");
+      t.detail_jp = "計画や方式を変えて、リスクが起きる状況そのものを作らないようにします。試験ではこの点が問われます。";
+      t.explanation_jp = t.detail_jp;
+    }, "banned");
+  });
+
+  it("listing: key points and body text may enumerate; and/と comparisons are not a listing", () => {
+    const issues = issuesAfter((u) => {
+      u.key_points_jp[1] = "リスクの対応策には回避・軽減・受容・転嫁の4つがある。";
+      u.summary.key_points_jp[1] = u.key_points_jp[1];
+      u.goals_jp[1] = "軽減は回避と違い、受容とも違うことを説明できる。";
+      u.overview.intro_jp = introOf(u.goals_jp, "jp");
+    });
+    expect(issues).toEqual([]);
+  });
+
+  it("listingRun: longest-match, non-overlapping headwords, joined by a separator", () => {
+    const hw = ["プロジェクトリスクマネジメント", "リスクマネジメント", "リスク", "回避", "軽減", "転嫁"];
+    expect(listingRun("プロジェクトリスクマネジメントの手順", hw)).toBe(1);
+    expect(listingRun("回避・軽減・転嫁", hw)).toBe(3);
+    expect(listingRun("回避、軽減, 転嫁", hw)).toBe(3);
+    expect(listingRun("回避と軽減と転嫁", hw)).toBe(1);
+    expect(listingRun("回避・軽減は違う。転嫁", hw)).toBe(2);
+    expect(listingRun("プロジェクトリスクマネジメント・リスク", hw)).toBe(2);
+  });
+
+  it("sentences: brackets and abbreviations do not split", () => {
+    expect(sentences("中止する（例：中止。）。次の文。", "jp")).toHaveLength(2);
+    expect(sentences("「止める。」と言う。次。", "jp")).toHaveLength(2);
+    expect(sentences("Use a spare, e.g. an old PC. Then go on, i.e. keep working. A vs. B differ.", "en")).toHaveLength(3);
+    expect(sentences("First. ... Second.", "en")).toHaveLength(2);
+  });
+
+  it("challenge_questions: 3〜5 confirm questions after chumon members are removed (topped up from the terms)", () => {
+    const withMembers = (ids: string[]): V2Context => ({ ...ctx, members: new Set(ids) });
+    // 5 challenge ids, 4 of them members → 1 left + top-up from the terms' quiz → still ≥ 3
+    const ch = SAMPLE.challenge_questions;
+    expect(validateV2(clone(), withMembers(ch.slice(0, 4)))).toEqual([]);
+    // every challenge id and every term question a member → 0
+    const all = [...ch, ...SAMPLE.terms.flatMap((t) => t.quiz)];
+    const issues = validateV2(clone(), withMembers(all));
+    expect(issues.map((i) => i.code)).toEqual(["challenge"]);
+    // more than 5 challenge ids
+    expectOne((u) => void u.challenge_questions.push("2011h23a-q038"), "challenge");
+  });
+
+  it("confirmIds mirrors pickConfirm on every corpus unit", async () => {
+    const [units, members] = await Promise.all([loadAllUnits(), loadChumonMembers()]);
+    for (const raw of units) {
+      const ru = normalizeUnit(raw, members);
+      const terms = raw.terms.map((t) => (t.inline_fallback ? [] : t.inline_quiz));
+      expect(confirmIds(raw.challenge_questions, terms, (id) => members.has(id)), raw.unit_id).toEqual(pickConfirm(ru, members));
+    }
+  });
+
+  it("v1Terms is required (the term_zh / term_en invariant needs the pre-rewrite glosses)", () => {
+    const issues = validateV2(clone(), { ...ctx, v1Terms: undefined as never });
+    expect(issues.map((i) => i.code)).toEqual(["invariant"]);
+  });
+
+  it("figure labels and step captions are plain text", () => {
+    expectOne((u) => void ((term(u, "受容").fig as { data: { cols: { jp: string }[] } }).data.cols[1]!.jp = "**低**"), "fig");
+    expectOne((u) => void ((term(u, "回避").fig as { steps: { caption_zh: string }[] }).steps[0]!.caption_zh = "先[[jp:要因]]"), "fig");
+  });
+
+  it("network: no duplicate activity, exactly one source and one sink", () => {
+    expectOne((u) => void (term(u, "軽減").fig as { data: { acts: unknown[] } }).data.acts.push({ from: "1", to: "2", days: 1 }), "fig");
+    expectOne((u) => {
+      const d = (term(u, "軽減").fig as { data: { nodes: string[]; acts: unknown[] } }).data;
+      d.nodes.push("5");
+      d.acts.push({ from: "5", to: "3", days: 1 }); // a second source
+    }, "fig");
+    expectOne((u) => {
+      const d = (term(u, "軽減").fig as { data: { nodes: string[]; acts: unknown[] } }).data;
+      d.nodes.push("5");
+      d.acts.push({ from: "2", to: "5", days: 1 }); // a second sink
+    }, "fig");
+  });
+
+  it("malformed JSON never throws: null in place of any array element → issues", () => {
+    const paths: (string | number)[][] = [];
+    const walk = (v: unknown, at: (string | number)[]) => {
+      if (Array.isArray(v)) v.forEach((x, i) => (paths.push([...at, i]), walk(x, [...at, i])));
+      else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) walk(x, [...at, k]);
+    };
+    walk(SAMPLE, []);
+    expect(paths.length).toBeGreaterThan(100);
+    for (const p of paths) {
+      const u = clone() as unknown as Record<string | number, unknown>;
+      let o = u;
+      for (const k of p.slice(0, -1)) o = o[k] as Record<string | number, unknown>;
+      o[p[p.length - 1]!] = null;
+      let issues: V2Issue[] = [];
+      expect(() => (issues = validateV2(u as unknown as TextbookUnitV2, ctx)), p.join(".")).not.toThrow();
+      expect(issues.length, p.join(".")).toBeGreaterThan(0);
+    }
+    for (const bad of [null, 1, "x", [], { schema_version: "textbook-unit-v2" }]) {
+      expect(() => validateV2(bad as never, ctx)).not.toThrow();
+      expect(validateV2(bad as never, ctx).length).toBeGreaterThan(0);
+    }
   });
 });

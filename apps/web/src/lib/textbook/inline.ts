@@ -76,11 +76,18 @@ export function stripInline(src: string): string {
 /** Problems that parseInline would print as raw markers (empty = well-formed). */
 export function inlineErrors(src: string): string[] {
   const errors: string[] = [];
-  for (const tok of tokenize(src)) {
-    if (tok.t !== "text") continue;
+  const toks = tokenize(src);
+  toks.forEach((tok, i) => {
+    // `***x***` tokenizes as key "*x" + text "*": more than two asterisks at a keyword edge is not markup
+    if (tok.t === "key") {
+      const edge =
+        tok.s.startsWith("*") || tok.s.endsWith("*") || toks[i - 1]?.s.endsWith("*") === true || toks[i + 1]?.s.startsWith("*") === true;
+      if (edge) errors.push(`stray "*" at a keyword edge: ${JSON.stringify(tok.s.slice(0, 40))}`);
+    }
+    if (tok.t !== "text") return;
     for (const m of [KEY, "[[", CLOSE]) {
       if (tok.s.includes(m)) errors.push(`stray or unclosed ${JSON.stringify(m)} in ${JSON.stringify(tok.s.slice(0, 40))}`);
     }
-  }
+  });
   return errors;
 }

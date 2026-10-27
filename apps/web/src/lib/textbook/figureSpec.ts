@@ -32,7 +32,11 @@ const ID_RE = /^[A-Za-z0-9_-]{1,32}$/;
 
 type Rec = Record<string, unknown>;
 const isRec = (v: unknown): v is Rec => typeof v === "object" && v !== null && !Array.isArray(v);
-const nonEmpty = (v: unknown): v is string => typeof v === "string" && v.trim() !== "";
+// Figure labels and step captions are plain text: no inline markup (§0-12 markers
+// are for prose), so a marker character pair here is an error, not literal text.
+const MARKUP_RE = /\*\*|\[\[|\]\]/;
+const nonEmpty = (v: unknown): v is string => typeof v === "string" && v.trim() !== "" && !MARKUP_RE.test(v);
+/** jp / zh / en, each non-empty plain text. */
 const isText3 = (v: unknown): v is Text3 => isRec(v) && nonEmpty(v.jp) && nonEmpty(v.zh) && nonEmpty(v.en);
 const isInt = (v: unknown, min: number, max = Number.MAX_SAFE_INTEGER): v is number =>
   typeof v === "number" && Number.isInteger(v) && v >= min && v <= max;
@@ -44,7 +48,7 @@ function walkTree(n: unknown, at: string, ids: string[], errs: string[]): number
     return 0;
   }
   ids.push(n.id);
-  if (!isText3(n.label)) errs.push(`${at}(${n.id}).label: needs jp / zh / en`);
+  if (!isText3(n.label)) errs.push(`${at}(${n.id}).label: needs jp / zh / en plain text`);
   if (n.children === undefined) return 1;
   if (!Array.isArray(n.children) || n.children.length === 0) {
     errs.push(`${at}(${n.id}).children: non-empty array or absent`);
@@ -53,7 +57,10 @@ function walkTree(n: unknown, at: string, ids: string[], errs: string[]): number
   return 1 + Math.max(...(n.children as TreeNode[]).map((c, i) => walkTree(c, `${at}.children[${i}]`, ids, errs)));
 }
 
-/** Arrow diagram: activities join known nodes, the graph is acyclic and (weakly) connected. */
+/**
+ * Arrow diagram: activities join known nodes, no two activities share from → to (parallel
+ * work goes through a dummy), one start node and one end node, acyclic, (weakly) connected.
+ */
 function networkErrors(d: Rec): string[] {
   const errs: string[] = [];
   const nodes = d.nodes;
@@ -65,6 +72,8 @@ function networkErrors(d: Rec): string[] {
   const known = new Set<string>(nodes);
   const out = new Map<string, string[]>(nodes.map((n) => [n, []]));
   const und = new Map<string, string[]>(nodes.map((n) => [n, []]));
+  const indeg = new Map<string, number>(nodes.map((n) => [n, 0]));
+  const pairs = new Set<string>();
   d.acts.forEach((a: unknown, i) => {
     const at = `data.acts[${i}]`;
     if (!isRec(a) || typeof a.from !== "string" || typeof a.to !== "string" || !known.has(a.from) || !known.has(a.to)) {
@@ -76,11 +85,20 @@ function networkErrors(d: Rec): string[] {
     if (a.dummy !== undefined && typeof a.dummy !== "boolean") errs.push(`${at}.dummy: boolean`);
     if (a.dummy === true && a.days !== 0) errs.push(`${at}: a dummy activity takes 0 days`);
     if (a.name !== undefined && !nonEmpty(a.name)) errs.push(`${at}.name: non-empty when present`);
+    const key = `${a.from}\u0000${a.to}`;
+    if (pairs.has(key)) errs.push(`${at}: a second activity ${a.from} → ${a.to} (use a dummy)`);
+    pairs.add(key);
+    indeg.set(a.to, indeg.get(a.to)! + 1);
     out.get(a.from)!.push(a.to);
     und.get(a.from)!.push(a.to);
     und.get(a.to)!.push(a.from);
   });
   if (errs.length > 0) return errs;
+
+  const sources = nodes.filter((n) => indeg.get(n) === 0);
+  const sinks = nodes.filter((n) => out.get(n)!.length === 0);
+  if (sources.length !== 1) errs.push(`data: exactly one start node (no incoming activity), got ${sources.join(", ") || "none"}`);
+  if (sinks.length !== 1) errs.push(`data: exactly one end node (no outgoing activity), got ${sinks.join(", ") || "none"}`);
 
   // cycle: DFS colouring
   const state = new Map<string, 1 | 2>();
@@ -135,24 +153,24 @@ export function figErrors(fig: unknown): string[] {
     case "table": {
       const cols = d.cols;
       if (!Array.isArray(cols) || cols.length < 2 || !cols.every(isText3)) {
-        errs.push("data.cols: ≥ 2 headers with jp / zh / en");
+        errs.push("data.cols: ≥ 2 headers with jp / zh / en plain text");
         break;
       }
       if (!Array.isArray(d.rows) || d.rows.length === 0) errs.push("data.rows: non-empty array");
       else
         d.rows.forEach((r: unknown, i) => {
           if (!isRec(r) || !Array.isArray(r.cells) || r.cells.length !== cols.length || !r.cells.every(isText3)) {
-            errs.push(`data.rows[${i}].cells: ${cols.length} cells with jp / zh / en`);
+            errs.push(`data.rows[${i}].cells: ${cols.length} cells with jp / zh / en plain text`);
           } else if (r.key !== undefined && typeof r.key !== "boolean") errs.push(`data.rows[${i}].key: boolean`);
         });
       break;
     }
     case "compare":
-      if (!isText3(d.a) || !isText3(d.b)) errs.push("data.a / data.b: jp / zh / en");
+      if (!isText3(d.a) || !isText3(d.b)) errs.push("data.a / data.b: jp / zh / en plain text");
       if (!Array.isArray(d.rows) || d.rows.length < 2) errs.push("data.rows: ≥ 2 rows");
       else
         d.rows.forEach((r: unknown, i) => {
-          if (!isRec(r) || !isText3(r.label) || !isText3(r.a) || !isText3(r.b)) errs.push(`data.rows[${i}]: label / a / b with jp / zh / en`);
+          if (!isRec(r) || !isText3(r.label) || !isText3(r.a) || !isText3(r.b)) errs.push(`data.rows[${i}]: label / a / b with jp / zh / en plain text`);
           else if (r.key !== undefined && typeof r.key !== "boolean") errs.push(`data.rows[${i}].key: boolean`);
         });
       break;
@@ -163,7 +181,7 @@ export function figErrors(fig: unknown): string[] {
         break;
       }
       ns.forEach((n: unknown, i) => {
-        if (!isRec(n) || typeof n.id !== "string" || !ID_RE.test(n.id) || !isText3(n.label)) errs.push(`data.nodes[${i}]: id + label (jp / zh / en)`);
+        if (!isRec(n) || typeof n.id !== "string" || !ID_RE.test(n.id) || !isText3(n.label)) errs.push(`data.nodes[${i}]: id + label (jp / zh / en plain text)`);
       });
       if (new Set(ns.map((n: Rec) => n?.id)).size !== ns.length) errs.push("data.nodes: duplicate id");
       flowLen = ns.length;
@@ -192,7 +210,7 @@ export function figErrors(fig: unknown): string[] {
       errs.push(`${at}: object`);
       return;
     }
-    for (const l of ["jp", "zh", "en"]) if (!nonEmpty(s[`caption_${l}`])) errs.push(`${at}.caption_${l}: missing/empty`);
+    for (const l of ["jp", "zh", "en"]) if (!nonEmpty(s[`caption_${l}`])) errs.push(`${at}.caption_${l}: missing/empty or has markup`);
     const st = s.state;
     if (kind === "flow" && !(isRec(st) && isInt(st.show, 1, flowLen))) errs.push(`${at}.state.show: integer 1〜${flowLen}`);
     if (kind === "tree" && !(isRec(st) && isInt(st.depth, 1, treeDepth))) errs.push(`${at}.state.depth: integer 1〜${treeDepth}`);
