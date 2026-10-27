@@ -5,8 +5,10 @@
 //
 // Run: node scripts/textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <more.jsonl> …] | --run-tag <tag>)
 //        [--write] [--data-root <dir>] [--batch-dir <dir>] [--v1terms-fixture <file>]
-//   Several --journal (a resumed / continued run): rows are read in order, one per unit / stage / round,
-//   a later row replacing an earlier one.
+//   Several --journal (a resumed / continued run, or a loc-seed run — B5: --journal <original run>
+//   --journal <loc-seed run>, the JP row and its PASS review being in the original): rows are read in order,
+//   one per unit / stage / round, a later row replacing an earlier one; "the highest round" below is taken
+//   in the latest journal that has the stage (a later run supersedes an earlier run's higher rounds).
 //
 // Which parts are final — the journal is the record (S121): textbook-v2.workflow.mjs agents return
 // {unit_id, stage, round, part, sha256, counts, …} as StructuredOutput, the runtime logs it to journal.jsonl.
@@ -69,10 +71,15 @@ export const V1TERMS_FIXTURE = path.join(REPO, "apps/web/src/lib/textbook/__fixt
 export const gatePass = (review) => !!review && Array.isArray(review.issues) && !review.issues.some((i) => i?.severity === "high" || i?.severity === "medium");
 const blockers = (review) => (review ? `${review.issues?.filter((i) => i?.severity === "high" || i?.severity === "medium").length ?? "?"} high/medium issue(s)` : "none");
 
-/** Journal rows of all runs (journals in order), one per stage / round: a later row replaces an earlier one (resume). */
+/**
+ * Journal rows of all runs (journals in order), one per stage / round: a later row replaces an earlier one
+ * (resume). Each row carries `_journal` = the index of the journal it came from (pickFinal orders by it first).
+ */
 export function journalRows(files) {
   const byKey = new Map();
-  for (const f of files) for (const r of readJournal(f).results) if (r && typeof r.stage === "string") byKey.set(`${r.unit_id}|${r.stage}|${r.round}`, r);
+  files.forEach((f, j) => {
+    for (const r of readJournal(f).results) if (r && typeof r.stage === "string") byKey.set(`${r.unit_id}|${r.stage}|${r.round}`, { ...r, _journal: j });
+  });
   return [...byKey.values()];
 }
 
@@ -80,7 +87,9 @@ export function journalRows(files) {
 export function pickFinal(unit, rows, partsDir) {
   if (rows) {
     const mine = rows.filter((r) => r.unit_id === unit);
-    const last = (stage, pred = () => true) => mine.filter((r) => r.stage === stage && pred(r)).sort((a, b) => a.round - b.round).at(-1) ?? null;
+    // latest journal first, then the highest round (B5: a loc-seed run's loc#0 supersedes the original run's loc#1)
+    const last = (stage, pred = () => true) =>
+      mine.filter((r) => r.stage === stage && pred(r)).sort((a, b) => (a._journal ?? 0) - (b._journal ?? 0) || a.round - b.round).at(-1) ?? null;
     const loc = last("loc");
     if (!loc) throw new Refuse(`${unit}: no "loc" result in the journal`);
     // the JP part = the one the localiser hashed (validate --part … --jp prints jp_sha256)
@@ -166,8 +175,8 @@ export async function merge({ unit, journals, runTag, write, paths, batchDir = B
     merged: out,
     patches,
     written: false,
-    // a seeded run (workflow args.seed_*): provenance only — approval above is of the final part's own sha256
-    seed: rows?.find((r) => r.unit_id === unit && r.stage === "jp" && typeof r.seed_sha256 === "string") ?? null,
+    // a seeded run (workflow args.seed_* / seed_loc_*): provenance only — approval above is of the final part's own sha256; (JP seed: its jp#0 row; B5 loc seed: its loc#0 row) — the latest journal's
+    seed: rows?.filter((r) => r.unit_id === unit && typeof r.seed_sha256 === "string").sort((a, b) => a._journal - b._journal).at(-1) ?? null,
   };
   if (!write) return report;
 
@@ -238,7 +247,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     const r = await merge({ unit: opt.unit, journals: (opt.journal ?? []).map((j) => path.resolve(j)), runTag: opt["run-tag"], write: !!opt.write, paths, batchDir: path.resolve(opt["batch-dir"] ?? BATCH_DIR), v1termsFile: path.resolve(opt["v1terms-fixture"] ?? V1TERMS_FIXTURE) });
     if (!r.from_journal) console.log(`? no --journal: newest part files of run ${opt["run-tag"]} used, reviews unknown (dry-run only)`);
     console.log(`${r.issues.length + r.parity_diff.length === 0 ? "✓" : "✗"} ${r.unit}: jp#${r.jp_round} + loc#${r.loc_round} → ${path.relative(process.cwd(), r.merged)}`);
-    if (r.seed) console.log(`  seed: ${r.seed.seed_part} (sha256 ${String(r.seed.seed_sha256).slice(0, 12)}…, jp-review #${r.seed.seed_review_round}) — provenance only`);
+    if (r.seed) console.log(`  seed: ${r.seed.seed_part} (sha256 ${String(r.seed.seed_sha256).slice(0, 12)}…, ${r.seed.stage}-review #${r.seed.seed_review_round}) — provenance only`);
     for (const p of r.patches) console.log(`  patch ${p.id} ${p.outcome} (${p.field})`);
     console.log(`  reviews: jp ${r.approved.jp ? "PASS" : "not PASS"} / loc ${r.approved.loc ? "PASS" : "not PASS"}; validate ${r.issues.length} issue(s); parity ${r.parity_diff.length} diff`);
     for (const i of r.issues) console.log(`  ${i.code.padEnd(13)} ${i.field}  ${i.message}`);

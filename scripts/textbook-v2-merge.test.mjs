@@ -281,3 +281,51 @@ test("the committed v1terms fixture: the pilot entries equal their manifests' v1
   const s = setup();
   assert.deepEqual(doc[UNIT], readJson(s.P.manifest(UNIT)).v1_terms);
 });
+
+test("loc seed (B5): --journal <original run> --journal <loc-seed run> merges the original JP part with the new loc part", () => {
+  // original run: JP r0 PASS, loc r0 and r1 both rejected by the translation review
+  const s = setup();
+  const P = s.P;
+  const jpSha = sha256File(s.jpFile);
+  const counts = partCounts(readJson(s.jpFile));
+  const loc1 = readJson(s.locFile);
+  loc1.round = 1;
+  loc1.terms[0].detail_en = `${loc1.terms[0].detail_en} (draft)`;
+  const loc1File = writeJson(path.join(P.parts(UNIT, TAG), `${UNIT}.loc.r1.json`), loc1);
+  const orig = path.join(s.root, "orig.jsonl");
+  writeFileSync(
+    orig,
+    journalText([
+      { unit_id: UNIT, stage: "jp", round: 0, part: s.jpFile, sha256: jpSha, counts, validate_issues: 0 },
+      { unit_id: UNIT, stage: "jp-review", round: 1, reviewed_round: 0, reviewed_sha256: jpSha, verdict: "PASS", issues: [] },
+      { unit_id: UNIT, stage: "loc", round: 0, jp_round: 0, part: s.locFile, sha256: sha256File(s.locFile), jp_sha256: jpSha, counts, validate_issues: 0, parity_diff: 0 },
+      { unit_id: UNIT, stage: "loc-review", round: 1, reviewed_round: 0, reviewed_sha256: sha256File(s.locFile), verdict: "REVISE", issues: MEDIUM },
+      { unit_id: UNIT, stage: "loc", round: 1, jp_round: 0, part: loc1File, sha256: sha256File(loc1File), jp_sha256: jpSha, counts, validate_issues: 0, parity_diff: 0 },
+      { unit_id: UNIT, stage: "loc-review", round: 2, reviewed_round: 1, reviewed_sha256: sha256File(loc1File), verdict: "REVISE", issues: MEDIUM },
+    ]),
+  );
+  assert.equal(merge(s, ["--journal", orig, "--write"]).code, 1, "the original run alone is loc-rejected");
+  // loc-seed run (new tag): loc r0 from the seed loc#1, made from the same JP part (by sha), PASS
+  const seeded = locPartOf(fixture());
+  const newLoc = writeJson(path.join(P.parts(UNIT, "t2"), `${UNIT}.loc.r0.json`), seeded);
+  const newSha = sha256File(newLoc);
+  const seedRun = path.join(s.root, "seedloc.jsonl");
+  writeFileSync(
+    seedRun,
+    journalText([
+      { unit_id: UNIT, stage: "loc", round: 0, jp_round: 0, part: newLoc, sha256: newSha, jp_sha256: jpSha, counts, validate_issues: 0, parity_diff: 0, jp_part: s.jpFile, seed_part: loc1File, seed_sha256: sha256File(loc1File), seed_review_round: 2 },
+      { unit_id: UNIT, stage: "loc-review", round: 1, reviewed_round: 0, reviewed_sha256: newSha, verdict: "PASS", issues: [] },
+    ]),
+  );
+  // the seed run alone has no JP row
+  const alone = merge(s, ["--journal", seedRun]);
+  assert.equal(alone.code, 1, alone.out);
+  assert.match(alone.out, /not a "jp" row/);
+  // both: the loc-seed run's loc#0 wins over the original's loc#1 (a later journal supersedes)
+  const r = merge(s, ["--journal", orig, "--journal", seedRun, "--write"]);
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /jp#0 \+ loc#0/);
+  assert.match(r.out, /reviews: jp PASS \/ loc PASS/);
+  assert.match(r.out, /seed: .*loc\.r1\.json .*loc-review #2\) — provenance only/);
+  assert.equal(readJson(P.unit(UNIT)).terms[0].detail_en, fixture().terms[0].detail_en);
+});

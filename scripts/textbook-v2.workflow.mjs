@@ -1,7 +1,7 @@
 export const meta = {
   name: 'textbook-v2',
   description: 'Stage 7 Phase 3 教科書 v2 生成 (D-196 §0-13): JP 執筆 → JP 審査 (≤2 輪) → zh/en 意訳・現地化 → 訳審査 (≤2 輪)。各 agent は part file を書き、計数だけを返す',
-  whenToUse: 'scripts/textbook-v2-prep.mjs --unit <id> の後。args = {unit: "<unit_id>", run_tag: "<新しい tag>"} (または units: [...])。前回の草稿から始めるなら + seed_part / seed_journal / seed_review_round。終了後 textbook-v2-merge.mjs --unit <id> --journal <journal.jsonl>',
+  whenToUse: 'scripts/textbook-v2-prep.mjs --unit <id> の後。args = {unit: "<unit_id>", run_tag: "<新しい tag>"} (または units: [...])。前回の草稿から始めるなら + seed_part / seed_journal / seed_review_round、JP はそのままで訳だけ改稿するなら + seed_loc_part / seed_loc_journal / seed_loc_review_round (B5)。終了後 textbook-v2-merge.mjs --unit <id> --journal <journal.jsonl>',
   phases: [
     { title: 'Write', detail: 'general-purpose (opus): manifest から JP part を書き、validate --part を 0 issue まで自分で回す', model: 'opus' },
     { title: 'Review', detail: 'oh-my-claudecode:critic (opus): D-195 清單 + 事実 (objective_jp・過去問正解)、REVISE なら執筆者が改稿、最大 2 輪', model: 'opus' },
@@ -51,6 +51,7 @@ const PART_RESULT = (stage, seeded = false) => ({
   type: 'object',
   required: ['unit_id', 'stage', 'round', 'part', 'sha256', 'counts', 'validate_issues']
     .concat(stage === 'loc' ? ['jp_round', 'jp_sha256', 'parity_diff'] : [])
+    .concat(seeded && stage === 'loc' ? ['jp_part'] : [])
     .concat(seeded ? ['seed_part', 'seed_sha256', 'seed_review_round'] : []),
   additionalProperties: false,
   properties: {
@@ -63,9 +64,10 @@ const PART_RESULT = (stage, seeded = false) => ({
     validate_issues: { type: 'integer', minimum: 0, description: '最後の validate --part の issue 数 (0 が目標)' },
     ...(seeded
       ? {
-          seed_part: { type: 'string', description: '種にした前回 run の JP part' },
+          ...(stage === 'loc' ? { jp_part: { type: 'string', description: 'textbook-v2-seed.mjs が出力した jp_part 行のパス (そのまま再利用した JP part)' } } : {}),
+          seed_part: { type: 'string', description: `種にした前回 run の ${stage === 'loc' ? '訳' : 'JP'} part` },
           seed_sha256: { type: 'string', description: 'textbook-v2-seed.mjs が出力した seed_sha256 行の hex (種のバイト列)' },
-          seed_review_round: { type: 'integer', minimum: 1, description: '使った jp-review の round' },
+          seed_review_round: { type: 'integer', minimum: 1, description: `使った ${stage === 'loc' ? 'loc-review' : 'jp-review'} の round` },
         }
       : {}),
     ...(stage === 'loc'
@@ -178,19 +180,22 @@ function reviewPrompt(unit, round, part, partRound) {
 - StructuredOutput で {unit_id:"${unit}", stage:"jp-review", round:${round}, reviewed_round:${partRound}, reviewed_sha256: (validate の sha256 行の hex), verdict, issues} を返す。ファイルは書かない。`
 }
 
-function localizePrompt(unit, round, jpPart, jpRound, prev, review) {
+function localizePrompt(unit, round, jpPart, jpRound, prev, review, seedLoc) {
   const part = partOf(unit, 'loc', round)
-  const revise = prev
+  const jpRef = seedLoc ? '(seed コマンドの `jp_part` 行のパス)' : jpPart
+  const revise = seedLoc
+    ? `\n## 改訳 (round ${round}: 前回 run の訳を種にする。JP part は審査済みのものをそのまま使う)\n1. まず \`${seedCmd(seedLoc)}\` を実行する。種 \`${seedLoc.part}\` の sha256 (\`seed_sha256 <hex>\` 行)、その訳が作られた JP part (\`jp_part <path>\` 行、sha256 照合済み)、その訳そのものを審査した loc-review #${seedLoc.reviewRound} の指摘 (JSON) が出る。**exit が 0 でなければ** part を書かずに StructuredOutput で part:"${SEED_ERROR}" を返して終わる (seed_part / seed_review_round は指定値、他の数値は 0、文字列は空)。\n2. 以下「原文」は jp_part の JP part。種を Read し、その指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。JP part は**書き換えない**、訳 part の日本語は**1 文字も変えない**。\n`
+    : prev
     ? `\n## 改訳 (round ${round})\n前訳 \`${prev}\` を Read し、下の訳審査の指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。日本語は変えない。\n\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
     : ''
   return `あなたは IT パスポート教科書の訳者です。審査済みの日本語 part を中国語 (簡体・中国大陸) と英語に**意訳 + 現地化**します (直訳しない: 各言語の学習者が自然に読める文に。D-195 §8)。
 
 ## 入力
 - ${READ_MANIFEST(unit)} 特に d195 と v1_terms (見出し語の zh / en 訳 = term_zh / term_en。本文の訳語もこれに揃える)。
-- 原文: \`${jpPart}\` (JP part, round ${jpRound})。
+- 原文: \`${jpRef}\` (JP part, round ${seedLoc ? '= 種の jp_round' : jpRound})。
 ${revise}
 ## 書くもの = 訳 part
-- 原文 JSON を**そのまま写し**、次だけを足す: \`stage\`="loc"、\`round\`=${round}、\`jp_round\`=${jpRound}; 各 \`X_jp\` の隣に \`X_zh\` / \`X_en\` (goals / overview_cols / key_points の配列は同じ要素数)、図ラベル \`{"jp": …}\` に \`"zh"\` / \`"en"\`、caption_jp の隣に caption_zh / caption_en。
+- 原文 JSON を**そのまま写し**、次だけを足す: \`stage\`="loc"、\`round\`=${round}、\`jp_round\`=${seedLoc ? '(種と同じ値)' : jpRound}; 各 \`X_jp\` の隣に \`X_zh\` / \`X_en\` (goals / overview_cols / key_points の配列は同じ要素数)、図ラベル \`{"jp": …}\` に \`"zh"\` / \`"en"\`、caption_jp の隣に caption_zh / caption_en。
 - 日本語・id・kind・mode・qids・quiz・key・数値・配列の要素数と順序は**1 文字も変えない** (merge が「訳 part から zh / en を除くと JP part と一致」を検査する)。
 - 行内標記: 原文で **語** の箇所は訳文でも **訳語**。zh / en 本文中で試験の日本語表記を示すところは [[jp:日本語]] を併記 (D-195 §5 日本語原語の明示: 見出し語や試験用語の初出など、多用しない)。analogy・総表 extra・図ラベル・caption は平文。
 - 文数: detail は各言語でも 2〜3 文 (en は ". " で区切って数えられる)。D-195 §9 の禁止 (定型の締め句、"make sure to understand"、"非常重要"、羅列、誇張) は zh / en にも適用。
@@ -198,8 +203,8 @@ ${revise}
 
 ## 手順
 1. 訳 part を \`${part}\` に Write。
-2. \`${validateCmd(part, jpPart)}\` と \`${parityCmd(part)}\` を実行し、**両方 0** になるまで直して再実行 (validate の最後の \`counts {...}\`・\`sha256 <hex>\`・\`jp_sha256 <hex>\` 行を控える。part を書き換えたら必ず再実行し最後の値を使う)。原文 JP part は**書き換えない**。
-3. StructuredOutput で {unit_id, stage:"loc", round:${round}, jp_round:${jpRound}, part:"${part}", sha256, jp_sha256, counts, validate_issues, parity_diff} を返す。本文は返さない。`
+2. \`${validateCmd(part, seedLoc ? '<jp_part>' : jpPart)}\`${seedLoc ? ' (<jp_part> = seed コマンドの jp_part 行のパス)' : ''} と \`${parityCmd(part)}\` を実行し、**両方 0** になるまで直して再実行 (validate の最後の \`counts {...}\`・\`sha256 <hex>\`・\`jp_sha256 <hex>\` 行を控える。part を書き換えたら必ず再実行し最後の値を使う)。原文 JP part は**書き換えない**。
+3. StructuredOutput で {unit_id, stage:"loc", round:${round}, jp_round:${seedLoc ? '(種の jp_round)' : jpRound}, part:"${part}", sha256, jp_sha256, counts, validate_issues, parity_diff${seedLoc ? `, jp_part: (seed コマンドの jp_part 行のパス), seed_part:"${seedLoc.part}", seed_sha256: (seed コマンドの seed_sha256 行の hex), seed_review_round:${seedLoc.reviewRound}` : ''}} を返す。本文は返さない。`
 }
 
 function trReviewPrompt(unit, round, part, partRound, jpPart) {
@@ -243,7 +248,14 @@ async function runUnit(unit, maxRounds) {
       return null
     }
     if (seeded && (res.part === SEED_ERROR || !/^[0-9a-f]{64}$/.test(res.seed_sha256 ?? ''))) {
-      log(`${unit}: the seed did not verify (no jp-review #${SEED.reviewRound} of ${SEED.part} in ${SEED.journal}) — stop`)
+      const s = stage === 'loc' ? SEED_LOC : SEED
+      log(`${unit}: the seed did not verify (no ${stage}-review #${s.reviewRound} of ${s.part} in ${s.journal}, or its JP part changed) — stop`)
+      out.status = 'seed-invalid'
+      return null
+    }
+    // B5: the reused JP part must be the one next to the seed (same run), at the seed's jp_round
+    if (seeded && stage === 'loc' && res.jp_part !== `${SEED_LOC.part.slice(0, SEED_LOC.part.lastIndexOf('/'))}/${unit}.jp.r${res.jp_round}.json`) {
+      log(`${unit}: the loc seed reported JP part ${res.jp_part}, not the seed run's ${unit}.jp.r${res.jp_round}.json — stop`)
       out.status = 'seed-invalid'
       return null
     }
@@ -256,6 +268,9 @@ async function runUnit(unit, maxRounds) {
     out.parts.push(res.part)
     return res
   }
+
+  // ---- B5 loc seed: the seed run's reviewed JP part as-is, only zh / en revised ----
+  if (SEED_LOC) return locStage(unit, maxRounds, out, write, null)
 
   // ---- JP: write (or revise the seed), review, revise ----
   let jp = await write(writerPrompt(unit, 0, null, null, SEED), `${SEED ? 'seed-rewrite' : 'write'}:${unit}#0`, 'Write', 'jp', 0, AGENT.write, !!SEED)
@@ -281,9 +296,20 @@ async function runUnit(unit, maxRounds) {
     return { ...out, status: 'jp-rejected' }
   }
 
-  // ---- zh / en: localize, review, revise ----
-  let loc = await write(localizePrompt(unit, 0, jp.part, jp.round, null, null), `localize:${unit}#0`, 'Localize', 'loc', 0, AGENT.localize)
+  return locStage(unit, maxRounds, out, write, jp)
+}
+
+/** zh / en: localize (or re-localize the loc seed), translation review, revise. jp = null → from SEED_LOC. */
+async function locStage(unit, maxRounds, out, write, jp) {
+  let loc = jp
+    ? await write(localizePrompt(unit, 0, jp.part, jp.round, null, null), `localize:${unit}#0`, 'Localize', 'loc', 0, AGENT.localize)
+    : await write(localizePrompt(unit, 0, null, null, null, null, SEED_LOC), `seed-relocalize:${unit}#0`, 'Localize', 'loc', 0, AGENT.localize, true)
   if (!loc) return out
+  if (!jp) {
+    jp = { part: loc.jp_part, round: loc.jp_round, validate_issues: null }
+    out.jp_verdict = 'reused'
+    out.seed_loc = { part: SEED_LOC.part, sha256: loc.seed_sha256, review_round: SEED_LOC.reviewRound, jp_part: loc.jp_part }
+  }
   out.loc_rounds = 1
   let tr = null
   for (let r = 1; r <= maxRounds; r++) {
@@ -300,8 +326,9 @@ async function runUnit(unit, maxRounds) {
   }
   out.validate_issues = loc.validate_issues
   out.parity_diff = loc.parity_diff
-  // S135 L1: a PASS with machine issues left is not mergeable (merge --write would refuse anyway)
-  const clean = jp.validate_issues === 0 && loc.validate_issues === 0 && loc.parity_diff === 0
+  // S135 L1: a PASS with machine issues left is not mergeable (merge --write would refuse anyway).
+  // A reused JP part (B5) has no JP-only check in this run: the loc validate covers the whole unit.
+  const clean = (jp.validate_issues === 0 || jp.validate_issues === null) && loc.validate_issues === 0 && loc.parity_diff === 0
   out.status = out.loc_verdict !== 'PASS' ? 'loc-rejected' : clean ? 'ready-to-merge' : 'needs-fix'
   return out
 }
@@ -324,6 +351,17 @@ if (SEED && (!Number.isInteger(SEED.reviewRound) || SEED.reviewRound < 1)) throw
 if (SEED && units.length !== 1) throw new Error('a seeded run takes one unit')
 if (SEED && !SEED.part.includes(`/${units[0]}.jp.r`)) throw new Error(`seed_part must be a JP part of ${units[0]}`)
 if (SEED && SEED.part.includes(`/parts/${RUN_TAG}/`)) throw new Error('seed_part is from this run_tag: use a new run_tag')
+// B5 loc seed (D-201 §0-2 loc-rejected): the JP part of the seed's run is reused as-is (the seed script checks its sha256
+// against the seed's journal row); round 0 re-localises the seed with the translation review of exactly that part.
+// merge then takes --journal <seed run> --journal <this run> (JP row + its PASS review are in the seed run).
+const seedLocKeys = ['seed_loc_part', 'seed_loc_journal', 'seed_loc_review_round'].filter((k) => parsed?.[k] !== undefined)
+if (seedLocKeys.length !== 0 && seedLocKeys.length !== 3) throw new Error('seed_loc_part, seed_loc_journal and seed_loc_review_round go together')
+const SEED_LOC = seedLocKeys.length === 3 ? { part: absolutize(parsed.seed_loc_part), journal: absolutize(parsed.seed_loc_journal), reviewRound: Number(parsed.seed_loc_review_round) } : null
+if (SEED && SEED_LOC) throw new Error('a JP seed or a loc seed, not both')
+if (SEED_LOC && (!Number.isInteger(SEED_LOC.reviewRound) || SEED_LOC.reviewRound < 1)) throw new Error('seed_loc_review_round: an integer ≥ 1')
+if (SEED_LOC && units.length !== 1) throw new Error('a seeded run takes one unit')
+if (SEED_LOC && !SEED_LOC.part.includes(`/${units[0]}.loc.r`)) throw new Error(`seed_loc_part must be a loc part of ${units[0]}`)
+if (SEED_LOC && SEED_LOC.part.includes(`/parts/${RUN_TAG}/`)) throw new Error('seed_loc_part is from this run_tag: use a new run_tag')
 
 const results = await pipeline(units, (unit) => runUnit(unit, maxRounds))
 const summary = results.map((r, i) => r ?? { unit: units[i], status: 'crashed' })
