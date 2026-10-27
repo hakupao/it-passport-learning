@@ -18,3 +18,7 @@
 - MINOR-3 (e2e (b) は width/height だけでも green、待機層の単独回帰保護なし) → **受容**: (b) は寸法 + 待機の組合せ覆蓋。根本対策は寸法 (a で red→green 証明済)、待機は兜底。
 - NIT ×2 (JSON の unknown cast / 残る error listener) → 受容 (drift test が型を担保、挙動影響なし)。
 - 修正後 Gates: tsc 0 / eslint 0 / vitest 1110 / build 0 / local e2e **120/120** (:3150、PID 停止・解放確認)。
+
+## 本番
+- main `eecaa34` push → 本番 HTML で `2023r05-q086` 題図 `width="900" height="809"` を確認 (デプロイ反映)。
+- 本番 e2e 全量 (`--retries=0`) = **120/120** (4.4m)。S134 で失敗した `practice.spec.ts` OQ-13 1 カラム test を含め PASS。
