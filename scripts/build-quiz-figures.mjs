@@ -78,3 +78,6 @@ if (failures.length) {
   console.error(`  ✗ ${failures.length} failures, e.g.`, failures.slice(0, 3));
   process.exit(1);
 }
+
+// OQ-14 (S135): refresh the <img width height> manifest from the figures just written.
+await import("./build-quiz-figure-dims.mjs");

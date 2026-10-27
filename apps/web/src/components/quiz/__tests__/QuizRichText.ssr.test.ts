@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import { ChoiceBody, StemBlocks } from "../QuizRichText";
+import { figureDims } from "@/lib/quiz/figureDims";
 
 const ROOT = path.resolve(__dirname, "../../../../../..");
 const Q = JSON.parse(readFileSync(path.join(ROOT, "data/ip/quiz/questions.json"), "utf-8")).questions as {
@@ -68,6 +69,12 @@ describe("ChoiceBody (SSR)", () => {
     const out = html(h(ChoiceBody, { text: "図ア", figure: q.choice_figures!["ア"] }));
     expect(out).toContain("src=\"/quiz-figures/2014h26a-q046-cA.webp\"");
     expect(out).toContain("alt=\"図ア\"");
+  });
+  it("OQ-14: a choice figure <img> carries its intrinsic width / height", () => {
+    const [w, ht] = figureDims("2014h26a-q046-cA")!;
+    const out = html(h(ChoiceBody, { text: "図ア", figure: "2014h26a-q046-cA" }));
+    expect(out).toContain(`width="${w}"`);
+    expect(out).toContain(`height="${ht}"`);
   });
   it("S130: choice figures from the source page; the stem example figure (figure_type=stem) coexists (2010h22h-q088 / 2013h25h-q068)", () => {
     const q = byId.get("2010h22h-q088")! as (typeof Q)[number] & { figure_type: string | null };

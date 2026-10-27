@@ -41,6 +41,7 @@ import { useTranslations } from "next-intl";
 import { ChoiceBody, isTableChoice, StemBlocks } from "@/components/quiz/QuizRichText";
 import type { ChoiceLetter } from "@/lib/learning/record";
 import type { Stars } from "@/lib/practice/practiceIndex";
+import { figureDims } from "@/lib/quiz/figureDims";
 import { localizedChoices, localizedStem, type QuizQuestion } from "@/lib/quiz/quizModel";
 
 import { choiceLayout, LANG_TAG, sourceNumber } from "./choiceLayout";
@@ -343,6 +344,7 @@ function Figure({ basename, t }: { basename: string; t: T }): React.ReactElement
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [zoomed, setZoomed] = useState(false);
   const src = `/quiz-figures/${basename}.webp`;
+  const dims = figureDims(basename); // OQ-14: its space is kept before it loads
   return (
     <figure className={styles.figure}>
       <button
@@ -355,7 +357,15 @@ function Figure({ basename, t }: { basename: string; t: T }): React.ReactElement
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- static pre-optimized WebP from /public, dimensions vary */}
-        <img className={styles.figureImg} src={src} alt={t("figureAlt")} loading="lazy" data-fid="figure" />
+        <img
+          className={styles.figureImg}
+          src={src}
+          alt={t("figureAlt")}
+          width={dims?.[0]}
+          height={dims?.[1]}
+          loading="lazy"
+          data-fid="figure"
+        />
       </button>
       <dialog
         ref={dialogRef}

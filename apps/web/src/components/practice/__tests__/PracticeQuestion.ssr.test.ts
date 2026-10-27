@@ -12,6 +12,7 @@ vi.mock("@/i18n/navigation", () => ({
 
 import { loadChumonGroups } from "@/lib/practice/practiceReader";
 import type { ChumonGroup } from "@/lib/practice/practiceIndex";
+import { figureDims } from "@/lib/quiz/figureDims";
 import { CHOICE_LETTERS, loadAllQuestions, type QuizQuestion } from "@/lib/quiz/quizReader";
 
 import { choiceLayout } from "../choiceLayout";
@@ -176,6 +177,14 @@ describe("PracticeQuestion — 复习三格 / 頻出度 / figure / 中問", () =
     expect(fig.at).toBeLessThan(out.indexOf('data-letter="ア"'));
     expect(out).toMatch(/<button type="button"[^>]*aria-label="図を拡大"[^>]*><img/);
     expect(out).toMatch(/<dialog[^>]*><\/dialog>/);
+  });
+
+  it("OQ-14: the figure <img> carries its intrinsic width / height (its space is kept before it loads)", () => {
+    const q = QS.find((x) => x.figure)!;
+    const [w, h] = figureDims(q.figure!)!;
+    const fig = fidOne(renderFace(q, "ja"), "figure")!;
+    expect(fig.open).toContain(`width="${w}"`);
+    expect(fig.open).toContain(`height="${h}"`);
   });
 
   it("chumon member: preamble folded into a closed <details> 「共通前文 ▸」, the rest as the stem", () => {

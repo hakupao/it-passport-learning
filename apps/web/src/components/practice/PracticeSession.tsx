@@ -106,6 +106,22 @@ export interface PracticeSessionProps {
 
 /** where the explanation's heading lands after an answer: this fraction of the viewport from its top */
 const EXPLANATION_VIEW_AT = 0.45;
+/** OQ-14: the longest the answer scroll waits for the face's figures (a lazy one off-screen may never load) */
+const FIGURE_WAIT_MS = 1000;
+
+/** Resolves once every <img> inside `root` has loaded (or failed), or after `ms` at most. */
+function imagesSettled(root: Element | null, ms: number): Promise<void> {
+  const pending = Array.from(root?.querySelectorAll("img") ?? []).filter((img) => !img.complete);
+  if (pending.length === 0) return Promise.resolve();
+  const loaded = pending.map(
+    (img) =>
+      new Promise<void>((resolve) => {
+        img.addEventListener("load", () => resolve(), { once: true });
+        img.addEventListener("error", () => resolve(), { once: true });
+      }),
+  );
+  return Promise.race([Promise.all(loaded).then(() => undefined), new Promise<void>((r) => setTimeout(r, ms))]);
+}
 
 const hasOwn = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.call(o, k);
 
@@ -236,14 +252,21 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
   useEffect(() => {
     if (!scrollToExplanation.current) return;
     scrollToExplanation.current = false;
-    const el = document.getElementById(EXPLANATION_ID);
-    if (!el || state.finished) return;
-    const heading = el.querySelector("h2") ?? el;
-    const r = heading.getBoundingClientRect();
-    if (r.top >= 0 && r.bottom <= window.innerHeight) return; // already in view
-    const top = Math.max(window.scrollY, window.scrollY + r.top - window.innerHeight * EXPLANATION_VIEW_AT);
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
+    if (state.finished) return;
+    const pos = state.pos;
+    // OQ-14: measure once the face's figures have loaded — a figure still loading pushes the explanation down later
+    void imagesSettled(document.getElementById(state.ids[pos]!), FIGURE_WAIT_MS).then(() => {
+      const now = stateRef.current;
+      if (now.pos !== pos || now.finished) return; // moved on meanwhile
+      const el = document.getElementById(EXPLANATION_ID);
+      if (!el) return;
+      const heading = el.querySelector("h2") ?? el;
+      const r = heading.getBoundingClientRect();
+      if (r.top >= 0 && r.bottom <= window.innerHeight) return; // already in view
+      const top = Math.max(window.scrollY, window.scrollY + r.top - window.innerHeight * EXPLANATION_VIEW_AT);
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
+    });
   }, [state]);
 
   // from=today: the task kind, fixed once the record is loaded

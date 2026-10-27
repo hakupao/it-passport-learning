@@ -420,6 +420,34 @@ test("practice ja: with prefers-reduced-motion the answer scroll is instant, sam
   await expectAnswerScroll(page);
 });
 
+test("practice ja: a slow figure keeps its space and the answer still scrolls to the explanation (OQ-14)", async ({
+  page,
+}) => {
+  // prod: the figure arrived after the answer scroll had measured, then pushed the page down
+  let release!: () => void;
+  const held = new Promise<void>((r) => (release = r));
+  await page.route("**/quiz-figures/*.webp", async (route) => {
+    await held;
+    await route.continue();
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/ja/practice?ids=2023r05-q086");
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/1");
+  await page.evaluate(() => document.fonts.ready);
+
+  // (a) not loaded yet, yet the figure already has its height
+  const img = face(page).locator('img[data-fid="figure"]');
+  expect(await img.evaluate((el: HTMLImageElement) => el.complete)).toBe(false);
+  expect((await img.boundingBox())!.height).toBeGreaterThan(100);
+
+  // (b) answered while the figure is still loading; it lands shortly after
+  await pressToAnswer(page, "1", "ア");
+  setTimeout(release, 300);
+  await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
+  await expectAnswerScroll(page);
+});
+
 /** After an answer: once the scroll has settled, the choice list ends in the viewport above the
  *  explanation, whose heading is in the viewport; the explanation spans the face's width. */
 async function expectAnswerScroll(page: Page): Promise<void> {

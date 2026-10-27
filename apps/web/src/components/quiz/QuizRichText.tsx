@@ -4,6 +4,7 @@
 // text ブロックは従来どおり white-space: pre-wrap (擬似言語のインデント・改行を保持)。
 // table は <table> に、`[表] a: X, b: Y` は <dl> 風の 2 列に。データは一切変換しない。
 
+import { figureDims } from "@/lib/quiz/figureDims";
 import { parseChoiceWithHint, parseStemBlocks } from "@/lib/quiz/quizRichText";
 
 import styles from "./richText.module.css";
@@ -91,9 +92,17 @@ export function ChoiceBody({
   figure?: string;
 }): React.ReactElement {
   if (figure) {
+    const dims = figureDims(figure); // OQ-14: its space is kept before it loads
     return (
       // eslint-disable-next-line @next/next/no-img-element -- static pre-optimized WebP from /public, dimensions vary
-      <img className={styles.choiceFigure} src={`/quiz-figures/${figure}.webp`} alt={text} loading="lazy" />
+      <img
+        className={styles.choiceFigure}
+        src={`/quiz-figures/${figure}.webp`}
+        alt={text}
+        width={dims?.[0]}
+        height={dims?.[1]}
+        loading="lazy"
+      />
     );
   }
   const c = parseChoiceWithHint(text, jpText);
