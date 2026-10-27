@@ -8,7 +8,7 @@ import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { loadBaseQuestions } from "../../quiz/quizReader";
-import { loadReaderIndex, loadUnit } from "../reader";
+import { loadReaderIndex } from "../reader";
 import type { TextbookUnitV2 } from "../types";
 import { loadChumonMembers } from "../../practice/chumonMembers";
 import { pickConfirm } from "../confirm";
@@ -26,14 +26,19 @@ import {
   type V2Issue,
 } from "../validateV2";
 
+// the sample's pre-rewrite v1 glosses (copied once from the v1 u03), as the Task 9 manifest keeps them
+const V1_TERMS = JSON.parse(
+  readFileSync(path.join(__dirname, "..", "__fixtures__", "v2-sample.v1terms.json"), "utf-8"),
+) as { term: string; term_zh: string; term_en: string }[];
+
 const SAMPLE = JSON.parse(
   readFileSync(path.join(__dirname, "..", "__fixtures__", "v2-sample.json"), "utf-8"),
 ) as TextbookUnitV2;
 
 let ctx: V2Context;
 beforeAll(async () => {
-  const [index, questions, v1] = await Promise.all([loadReaderIndex(), loadBaseQuestions(), loadUnit(SAMPLE.unit_id)]);
-  ctx = v2Context(index as never, questions, SAMPLE.unit_id, v1.terms)!;
+  const [index, questions, members] = await Promise.all([loadReaderIndex(), loadBaseQuestions(), loadChumonMembers()]);
+  ctx = v2Context(index as never, questions, SAMPLE.unit_id, V1_TERMS, members)!;
 });
 
 const clone = (): TextbookUnitV2 => structuredClone(SAMPLE);
@@ -63,7 +68,7 @@ describe("v2Context", () => {
 
   it("is null for a unit missing from the index", async () => {
     const [index, questions] = await Promise.all([loadReaderIndex(), loadBaseQuestions()]);
-    expect(v2Context(index as never, questions, "nope-00-00-u01", [])).toBeNull();
+    expect(v2Context(index as never, questions, "nope-00-00-u01", [], new Set())).toBeNull();
   });
 });
 
@@ -289,7 +294,9 @@ describe("validateV2 — review fixes", () => {
     }, "banned");
   });
 
-  it("listing: key points and body text may enumerate; and/と comparisons are not a listing", () => {
+  // D-197: 羅列 = ≥ 3 headwords joined by ・、,， in one sentence of any JP prose, except a
+  // sentence that states the count of a classification.
+  it("listing: a classification with its count passes; と comparisons are not a listing", () => {
     const issues = issuesAfter((u) => {
       u.key_points_jp[1] = "リスクの対応策には回避・軽減・受容・転嫁の4つがある。";
       u.summary.key_points_jp[1] = u.key_points_jp[1];
@@ -297,6 +304,19 @@ describe("validateV2 — review fixes", () => {
       u.overview.intro_jp = introOf(u.goals_jp, "jp");
     });
     expect(issues).toEqual([]);
+  });
+
+  it("listing (D-197) applies to all JP prose: detail and key points without a count", () => {
+    expectOne((u) => {
+      const t = term(u, "回避");
+      t.detail_jp = "回避・軽減・転嫁を比べると、リスクへの働きかけ方が違います。計画を変えるのは回避だけです。";
+      t.explanation_jp = t.detail_jp;
+    }, "listing");
+    expectOne((u) => {
+      u.key_points_jp[1] = "回避・軽減・転嫁はどれもリスクに働きかける。";
+      u.summary.key_points_jp[1] = u.key_points_jp[1];
+    }, "listing");
+    expectOne((u) => void (term(u, "受容").points[0]!.text_jp = "回避、軽減、転嫁より費用が小さい。"), "listing");
   });
 
   it("listingRun: longest-match, non-overlapping headwords, joined by a separator", () => {
@@ -314,6 +334,8 @@ describe("validateV2 — review fixes", () => {
     expect(sentences("「止める。」と言う。次。", "jp")).toHaveLength(2);
     expect(sentences("Use a spare, e.g. an old PC. Then go on, i.e. keep working. A vs. B differ.", "en")).toHaveLength(3);
     expect(sentences("First. ... Second.", "en")).toHaveLength(2);
+    // unbalanced bracket: fall back to plain splitting instead of one giant sentence
+    expect(sentences("A（Bの略。C。D。E。F。", "jp")).toHaveLength(5);
   });
 
   it("challenge_questions: 3〜5 confirm questions after chumon members are removed (topped up from the terms)", () => {
@@ -340,6 +362,17 @@ describe("validateV2 — review fixes", () => {
 
   it("v1Terms is required (the term_zh / term_en invariant needs the pre-rewrite glosses)", () => {
     const issues = validateV2(clone(), { ...ctx, v1Terms: undefined as never });
+    expect(issues.map((i) => i.code)).toEqual(["invariant"]);
+  });
+
+  it("v1Terms must be this unit's headwords in order (another unit's glosses fail)", async () => {
+    const u01 = (await loadAllUnits()).find((x) => x.unit_id === "management-10-27-u01")!;
+    expect(validateV2(clone(), { ...ctx, v1Terms: u01.terms }).map((i) => i.code)).toEqual(["invariant"]);
+    expect(validateV2(clone(), { ...ctx, v1Terms: [...V1_TERMS].reverse() }).map((i) => i.code)).toEqual(["invariant"]);
+  });
+
+  it("members is required", () => {
+    const issues = validateV2(clone(), { ...ctx, members: undefined as never });
     expect(issues.map((i) => i.code)).toEqual(["invariant"]);
   });
 
@@ -378,6 +411,8 @@ describe("validateV2 — review fixes", () => {
       let issues: V2Issue[] = [];
       expect(() => (issues = validateV2(u as unknown as TextbookUnitV2, ctx)), p.join(".")).not.toThrow();
       expect(issues.length, p.join(".")).toBeGreaterThan(0);
+      // no check may throw on near-valid input: the catch-all backstop must stay unused
+      expect(issues.filter((i) => i.field === "(unit)"), p.join(".")).toEqual([]);
     }
     for (const bad of [null, 1, "x", [], { schema_version: "textbook-unit-v2" }]) {
       expect(() => validateV2(bad as never, ctx)).not.toThrow();

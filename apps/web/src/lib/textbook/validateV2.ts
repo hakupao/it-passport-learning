@@ -12,8 +12,9 @@
 //     introOf, hookLines; the merge script writes them with the same functions),
 //   - D-195: 展開 2〜3 sentences, 要点 3〜5, banned phrasing (§9 → BANNED_PHRASES
 //     everywhere; EXAM_FRAMING everywhere but the 考点 box, whose job is to say
-//     what the exam asks), a goal listing three or more headwords (§3 / §9 羅列 →
-//     listingRun), a memory hook that restates the definition (§6),
+//     what the exam asks), three or more headwords listed in one sentence of any
+//     JP prose (§9 羅列 → listingRun, scope D-197), a memory hook that restates
+//     the definition (§6),
 //   - figures against the closed registry (figureSpec.ts), 易混 pairs, 考点
 //     (`exam` cites its questions), past questions (resolvable, same topic; the
 //     per-term ones must list the term), 3〜5 confirm questions once chumon
@@ -76,8 +77,8 @@ export interface V2Context {
   v1Terms: readonly { term: string; term_zh: string; term_en: string }[];
   /** data/ip/quiz/questions.json by id. */
   questions: ReadonlyMap<string, V2QuestionRef>;
-  /** Chumon group member ids (data/ip/quiz/chumon_groups.json); none when absent. */
-  members?: ReadonlySet<string>;
+  /** Chumon group member ids (data/ip/quiz/chumon_groups.json): the confirm count (§0-1) needs them. */
+  members: ReadonlySet<string>;
 }
 
 /** The parts of unit_index.json that v2Context reads. */
@@ -101,7 +102,7 @@ export function v2Context(
   questions: readonly ({ id: string } & V2QuestionRef)[],
   unitId: string,
   v1Terms: V2Context["v1Terms"],
-  members?: ReadonlySet<string>,
+  members: ReadonlySet<string>,
 ): V2Context | null {
   for (const t of index.topics) {
     const u = (t.units ?? []).find((x) => x.unit_id === unitId);
@@ -118,7 +119,7 @@ export function v2Context(
       },
       v1Terms,
       questions: new Map(questions.map((q) => [q.id, { topic_id: q.topic_id, terms: q.terms }])),
-      ...(members ? { members } : {}),
+      members,
     };
   }
   return null;
@@ -200,6 +201,8 @@ export function sentences(s: string, lang: Lang): string[] {
       }
     }
     parts.push(cur);
+    // brackets that never close (「（」 typo) would swallow every later sentence: split plainly instead
+    if (depth !== 0) return s.split(/(?<=[。！？])/).map((p) => p.trim()).filter(hasWord);
   }
   return parts.map((p) => p.trim()).filter(hasWord);
 }
@@ -232,8 +235,14 @@ export function listingRun(text: string, headwords: readonly string[]): number {
 export const DETAIL_SENTENCES = { min: 2, max: 3 } as const;
 /** 要点 count (D-195 §7). */
 export const KEY_POINTS = { min: 3, max: 5 } as const;
-/** D-195 §3 / §9 羅列: longest allowed listingRun in a goal. */
+/**
+ * D-195 §9 羅列 (scope locked as D-197): longest allowed listingRun in one sentence of any
+ * JP prose (goals / one / detail / analogy / hook / points / key_points / pairs), except a
+ * sentence that states the count of a classification (COUNTED_CLASSIFICATION).
+ */
 export const LISTING_MAX = 2;
+/** D-197 exception: 「〜には A・B・C・D の 4 つがある」「N 種類」 — the classification is the content. */
+export const COUNTED_CLASSIFICATION = /の\s*[0-9０-９一二三四五六七八九十]+\s*(つ|種類|種)/;
 /** Confirm questions per unit (D-196 §0-1; = confirm.ts CONFIRM_MIN / CONFIRM_MAX). */
 export const CONFIRM = { min: 3, max: 5 } as const;
 
@@ -329,8 +338,11 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
   if (!sameList(names, ix.terms)) {
     push("invariant", "terms[].term", `headwords ${JSON.stringify(names)} ≠ index ${JSON.stringify(ix.terms)}`);
   }
+  if (!(ctx.members instanceof Set)) push("invariant", "ctx.members", "pass the chumon member ids (confirm count, §0-1)");
   if (!Array.isArray(ctx.v1Terms) || ctx.v1Terms.length === 0) {
     push("invariant", "ctx.v1Terms", "pass the pre-rewrite v1 glosses (prep manifest) to check term_zh / term_en");
+  } else if (!sameList(ctx.v1Terms.map((t) => rec(t).term), ix.terms)) {
+    push("invariant", "ctx.v1Terms", "the v1 glosses are not this unit's headwords in index order");
   } else {
     const v1 = new Map(ctx.v1Terms.map((t) => [t.term, t]));
     terms.forEach((t, i) => {
@@ -351,15 +363,19 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
     return errs.length === 0;
   };
 
-  type StyleOpts = { examTalk?: boolean; listing?: boolean };
-  /** D-195 §9 banned phrasing (+ exam talk unless allowed) and, for goals, the JP 羅列. */
+  type StyleOpts = { examTalk?: boolean; noListing?: boolean };
+  /** D-195 §9 banned phrasing (+ exam talk unless allowed) and the JP 羅列 (D-197). */
   const style = (field: string, plain: string, lang: Lang, opts: StyleOpts = {}): void => {
     const rules = opts.examTalk ? BANNED_PHRASES[lang] : [...BANNED_PHRASES[lang], ...EXAM_FRAMING[lang]];
     const hit = rules.find((re) => re.test(plain));
     if (hit) push("banned", field, `D-195 §9 banned phrasing ${hit}`);
-    if (opts.listing && lang === "jp") {
-      const n = listingRun(plain, ix.terms);
-      if (n > LISTING_MAX) push("listing", field, `D-195 §3 / §9: ${n} headwords listed in a row`);
+    if (!opts.noListing && lang === "jp") {
+      for (const sen of sentences(plain, "jp")) {
+        const n = listingRun(sen, ix.terms);
+        if (n > LISTING_MAX && !COUNTED_CLASSIFICATION.test(sen)) {
+          push("listing", field, `D-195 §9 / D-197: ${n} headwords listed in one sentence without stating the count`);
+        }
+      }
     }
   };
 
@@ -421,7 +437,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
   for (const l of LANGS) if (!nonEmpty(ur[`unit_summary_${l}`])) push("missing", `unit_summary_${l}`, "missing/empty");
 
   // ---- goals / key points (→ overview.intro_*, summary.key_points_*) ----
-  const goals = proseList(ur, "goals", "unit", { listing: true });
+  const goals = proseList(ur, "goals", "unit");
   if (goals) for (const l of LANGS) compat(`overview.intro_${l}`, ov[`intro_${l}`], introOf(u[`goals_${l}`], l));
   const keys = proseList(ur, "key_points", "unit");
   const sum = rec(u.summary);
@@ -442,7 +458,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
     }
     rows.forEach((r, i) => {
       const where = `overview_rows[${i}]`;
-      prose(rec(r), "one_line", where);
+      prose(rec(r), "one_line", where, { noListing: true }); // the 総表 is outside D-197's scope
       const bad = LANGS.filter((l, li) => {
         const e = rec(r)[`extra_${l}`];
         return !strList(e) || e.length !== (cols[li] as string[]).length || !e.every(nonEmpty) || !e.every((s) => inlineErrors(s).length === 0);
@@ -600,7 +616,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
       if (why) push("challenge", "challenge_questions", `${id}: ${why}`);
     }
     // §0-1: what the unit page will show as confirm questions (counted once every id is valid)
-    const isMember = (q: string) => ctx.members?.has(q) ?? false;
+    const isMember = (q: string) => ctx.members.has(q);
     const kept = ch.filter((q) => !isMember(q));
     const picked = confirmIds(ch, terms.map((t) => (strList(t.quiz) ? t.quiz : [])), isMember);
     if (issues.length > before) return issues;
