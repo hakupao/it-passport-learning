@@ -177,9 +177,9 @@
 - `criticalPath(nodes: string[], acts: { from: string; to: string; days: number; dummy?: boolean }[]): { total: number; critical: number[]; es: Record<string, number>; lf: Record<string, number> }`（有环 / 不连通 → `RangeError`）
 - `StepStage`：「前へ / 次へ / もう一度」、进度点、`aria-live` 说明、首次进入视口自动播一遍、reduced-motion 直接末状态。
 
-- [ ] **Step 1: 写失败测试**：`criticalPath` 手算 3 例 + 改工期切换关键路径；`stepState` 边界（第 1 步不能后退、末步「もう一度」回到第 1 步、reduced-motion 初始 = 末步）；每个图种 SSR：样例数据渲染、非法数据返回 null 不抛、除 `svg` 外无 `dangerouslySetInnerHTML`。
-- [ ] **Step 2〜4**：FAIL → 实现 → PASS。（浏览器交互的 e2e 放到 Task 9 Step 4 之后，针对真实试点单元 `management-10-27-u02`，不用 fixture 根目录。）
-- [ ] **Step 5: Commit** `feat(textbook): figure registry — svg / table / compare / flow / tree / network, step stage (Phase 3 §0-11)`
+- [x] **Step 1: 写失败测试**：`criticalPath` 手算 3 例 + 改工期切换关键路径；`stepState` 边界（第 1 步不能后退、末步「もう一度」回到第 1 步、reduced-motion 初始 = 末步）；每个图种 SSR：样例数据渲染、非法数据返回 null 不抛、除 `svg` 外无 `dangerouslySetInnerHTML`。
+- [x] **Step 2〜4**：FAIL → 实现 → PASS。（浏览器交互的 e2e 放到 Task 9 Step 4 之后，针对真实试点单元 `management-10-27-u02`，不用 fixture 根目录。）
+- [x] **Step 5: Commit** `feat(textbook): figure registry — svg / table / compare / flow / tree / network, step stage (Phase 3 §0-11)`
 
 ### Task 8: 阅读页渲染 v2
 
