@@ -68,14 +68,19 @@ export function TermDetail({ locale, entry, unitTitles, svgs, senseiAnchorText }
               <span className={styles.fieldLabel}>{t("explanation")}</span>
               {field(s.term, "explanation", locale)}
             </p>
-            <p className={styles.note}>
-              <span className={styles.fieldLabel}>{t("analogy")}</span>
-              {field(s.term, "analogy", locale)}
-            </p>
-            <p className={styles.note}>
-              <span className={styles.fieldLabel}>{t("memoryHook")}</span>
-              {field(s.term, "memory_hook", locale)}
-            </p>
+            {/* a v2 term may have no analogy / memory hook ("" in every language, D-196 §0-9) */}
+            {field(s.term, "analogy", locale).trim() !== "" && (
+              <p className={styles.note}>
+                <span className={styles.fieldLabel}>{t("analogy")}</span>
+                {field(s.term, "analogy", locale)}
+              </p>
+            )}
+            {field(s.term, "memory_hook", locale).trim() !== "" && (
+              <p className={styles.note}>
+                <span className={styles.fieldLabel}>{t("memoryHook")}</span>
+                {field(s.term, "memory_hook", locale)}
+              </p>
+            )}
             {svgs[i] ? (
               <figure
                 className={styles.figure}

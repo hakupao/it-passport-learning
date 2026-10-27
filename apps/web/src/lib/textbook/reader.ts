@@ -25,7 +25,7 @@ import { cache } from "react";
 import { termId } from "../glossary/termId";
 import type { ChumonMembers } from "../practice/chumonMembers";
 
-import type { FigSpec, TextbookUnit } from "./types";
+import { V2_SCHEMA, type FigSpec, type TextbookUnit, type TextbookUnitV2 } from "./types";
 
 export type DataLang = "jp" | "zh" | "en";
 
@@ -237,7 +237,9 @@ export function pickTerm(
 //
 // One shape for the unit page whatever the stored schema. v1 (§0-6): one =
 // definition, detail = explanation, analogy / hook (null when empty), no
-// points / pairs / goals / overview rows, fig = the v1 SVG. Chumon group
+// points / pairs / goals / overview rows, fig = the v1 SVG. v2 (§0-9): the new
+// fields as stored (inline markup kept — the reader parses it with
+// inline.parseInline; the v1 compat fields are for the other consumers). Chumon group
 // members are dropped from the per-term quiz and the challenge list (the
 // practice page would expand them to their whole group, §0-1); the caller
 // passes the member set (practice/chumonMembers.loadChumonMembers, branded so
@@ -293,6 +295,8 @@ export interface ReaderUnit {
   category: string;
   title: Tri;
   goals: Tri<string[]> | null;
+  /** 用語総表 extra column headers (v2) */
+  overviewCols: Tri<string[]> | null;
   overviewRows: OverviewRow[] | null;
   terms: ReaderTerm[];
   pairs: ReaderPair[];
@@ -322,18 +326,61 @@ const optTri = <B extends string>(o: { [K in `${NoInfer<B>}_${DataLang}`]: strin
   return v.jp.trim() === "" ? null : v;
 };
 
+const triList = <B extends string>(o: { [K in `${NoInfer<B>}_${DataLang}`]: string[] }, base: B): Tri<string[]> => ({
+  jp: o[`${base}_jp`],
+  zh: o[`${base}_zh`],
+  en: o[`${base}_en`],
+});
+
+/** v2 (§0-9): the new fields. Validated upstream by validateV2 (pipeline + tests). */
+function normalizeV2(raw: TextbookUnitV2, keep: (id: string) => boolean): ReaderUnit {
+  return {
+    id: raw.unit_id,
+    topicId: raw.topic_id,
+    category: raw.category,
+    title: tri(raw, "title"),
+    goals: triList(raw, "goals"),
+    overviewCols: triList(raw, "overview_cols"),
+    overviewRows: raw.overview_rows.map((r) => ({ term: r.term, one: tri(r, "one_line"), extra: triList(r, "extra") })),
+    terms: raw.terms.map((t) => ({
+      id: termId(t.term),
+      term: t.term,
+      gloss: { jp: t.term, zh: t.term_zh, en: t.term_en },
+      one: tri(t, "one"),
+      detail: tri(t, "detail"),
+      analogy: optTri(t, "analogy"),
+      hook: t.hook_jp ? { jp: t.hook_jp, zh: t.hook_zh ?? "", en: t.hook_en ?? "" } : null,
+      points: t.points.map((p) => ({ kind: p.kind, text: tri(p, "text"), ...(p.qids ? { qids: p.qids } : {}) })),
+      fig: t.fig,
+      quiz: t.quiz.filter(keep),
+    })),
+    pairs: raw.pairs.map((p) => ({
+      a: p.a,
+      b: p.b,
+      rows: p.rows.map((r) => ({ label: tri(r, "label"), a: tri(r, "a"), b: tri(r, "b"), key: r.key })),
+    })),
+    keyPoints: triList(raw, "key_points"),
+    challenge: raw.challenge_questions.filter(keep),
+    minutes: raw.overview.est_minutes,
+    freqBadge: raw.overview.freq_badge,
+    schema: "v2",
+  };
+}
+
 /** A stored unit → the reader model. Throws on an unknown schema_version. */
-export function normalizeUnit(raw: TextbookUnit, members: ChumonMembers): ReaderUnit {
+export function normalizeUnit(raw: TextbookUnit | TextbookUnitV2, members: ChumonMembers): ReaderUnit {
+  const keep = (id: string) => !members.has(id);
+  if (raw.schema_version === V2_SCHEMA) return normalizeV2(raw as TextbookUnitV2, keep);
   if (raw.schema_version !== V1_SCHEMA) {
     throw new Error(`normalizeUnit: unknown schema_version ${JSON.stringify(raw.schema_version)} (${raw.unit_id})`);
   }
-  const keep = (id: string) => !members.has(id);
   return {
     id: raw.unit_id,
     topicId: raw.topic_id,
     category: raw.category,
     title: tri(raw, "title"),
     goals: null,
+    overviewCols: null,
     overviewRows: null,
     terms: raw.terms.map((t) => ({
       id: termId(t.term),

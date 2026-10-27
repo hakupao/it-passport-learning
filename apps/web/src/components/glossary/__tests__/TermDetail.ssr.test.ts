@@ -130,6 +130,23 @@ describe("TermDetail (SSR)", () => {
     expect(out).not.toContain("解説-A");
   });
 
+  // D-196 §0-9: a v2 term without an analogy / memory hook stores "" in all three languages.
+  it("hides the analogy and memory-hook labels when the field is empty in every language", () => {
+    const empty = { analogy_jp: "", analogy_zh: "", analogy_en: "", memory_hook_jp: "", memory_hook_zh: "", memory_hook_en: "" };
+    const sense = { ...ENTRY.senses[0]!, term: { ...unitTerm("機能要件", "A"), ...empty } };
+    for (const [locale, labels] of [
+      ["ja", ["たとえ", "記憶フック"]],
+      ["en", ["Analogy", "Memory hook"]],
+    ] as const) {
+      const out = render(locale, { ...ENTRY, senses: [sense] }, TITLES, [null]);
+      for (const label of labels) expect(out).not.toContain(`>${label}</span>`);
+      expect(out).toContain(locale === "ja" ? "定義-A" : "def-A");
+    }
+    const full = render("ja", ENTRY, TITLES, [null, null]);
+    expect(full).toContain(">たとえ</span>");
+    expect(full).toContain(">記憶フック</span>");
+  });
+
   it("renders the 「AI 先生に聞く」 button under the headword (D-181 Phase C); no panel before a click", () => {
     const messages = JSON.parse(readFileSync(path.resolve(__dirname, "../../../../messages/ja.json"), "utf-8"));
     const out = render("ja", ENTRY, TITLES, [null, null]);

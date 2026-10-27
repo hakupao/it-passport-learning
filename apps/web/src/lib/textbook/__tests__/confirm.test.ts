@@ -34,6 +34,7 @@ function unit(challenge: string[], quizzes: string[][]): ReaderUnit {
     category: "x",
     title: l,
     goals: null,
+    overviewCols: null,
     overviewRows: null,
     terms,
     pairs: [],
