@@ -38,13 +38,15 @@ describe("stepState", () => {
 describe("stage controller", () => {
   const run = (s: StageState, ...events: Parameters<typeof stageReduce>[1][]) => events.reduce(stageReduce, s);
 
-  it("starts on the last step, not announcing, not playing", () => {
-    expect(stageInit(4)).toEqual({ step: 3, count: 4, auto: false, played: false, touched: false, live: false });
+  // N2: the caption region is polite from the start; the first render (SSR = hydration) shows
+  // this state, so nothing changes — and nothing is announced — until the first `visible` / press.
+  it("starts on the last step, not playing", () => {
+    expect(stageInit(4)).toEqual({ step: 3, count: 4, auto: false, played: false, touched: false });
   });
 
   it("first time in view: back to step 1, playing, announcing; ticks walk to the end and stop", () => {
     const s = run(stageInit(3), { type: "visible" });
-    expect(s).toMatchObject({ step: 0, auto: true, live: true, played: true });
+    expect(s).toMatchObject({ step: 0, auto: true, played: true });
     const t = run(s, { type: "tick" }, { type: "tick" });
     expect(t).toMatchObject({ step: 2, auto: false });
     expect(run(t, { type: "tick" }).step).toBe(2);
@@ -54,7 +56,7 @@ describe("stage controller", () => {
 
   it("a press before the figure is in view cancels the autoplay for good", () => {
     const s = run(stageInit(3), { type: "go", step: 1 }, { type: "visible" }, { type: "tick" });
-    expect(s).toMatchObject({ step: 1, auto: false, touched: true, live: true });
+    expect(s).toMatchObject({ step: 1, auto: false, touched: true });
   });
 
   it("a press during playback stops it where the reader put it", () => {

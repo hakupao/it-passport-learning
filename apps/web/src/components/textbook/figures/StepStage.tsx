@@ -3,9 +3,11 @@
 // 「もう一度」 on the last step, and progress dots.
 //
 // State = lib/textbook/stepState stageReduce (unit-tested): first paint (SSR / no JS / reduced
-// motion / not yet in view) shows the last step with a silent caption (aria-live off, so a
-// page load announces nothing). The first time the stage is half in view (IntersectionObserver;
-// none → no playback) it jumps to step 1 and plays through once, announcing. A press stops the
+// motion / not yet in view) shows the last step. The caption is aria-live polite from the
+// first render (a region that turns live together with its first change is missed by some
+// screen readers); the first client render equals the SSR one, so a page load announces
+// nothing. The first time the stage is half in view (IntersectionObserver;
+// none → no playback) it jumps to step 1 and plays through once. A press stops the
 // playback for good and disconnects the observer.
 
 "use client";
@@ -22,8 +24,6 @@ const AUTO_MS = 1800;
 
 interface ViewProps {
   step: number;
-  /** captions are announced */
-  live: boolean;
   frames: React.ReactNode[];
   captions: string[];
   label: string;
@@ -32,7 +32,7 @@ interface ViewProps {
 }
 
 /** The stage at one step (stateless). 前へ on step 1 is aria-disabled, not disabled, so focus stays on it. */
-export function StageView({ step, live, frames, captions, label, onGo, rootRef }: ViewProps): React.ReactElement {
+export function StageView({ step, frames, captions, label, onGo, rootRef }: ViewProps): React.ReactElement {
   const t = useTranslations("Figure");
   const count = frames.length;
   const first = step === 0;
@@ -41,7 +41,7 @@ export function StageView({ step, live, frames, captions, label, onGo, rootRef }
   return (
     <div ref={rootRef} role="group" aria-label={label} className={styles.stage}>
       <div className={styles.frame}>{frames[step]}</div>
-      <p className={styles.caption} aria-live={live ? "polite" : "off"}>
+      <p className={styles.caption} aria-live="polite">
         {captions[step]}
       </p>
       <div className={styles.controls}>
@@ -115,5 +115,5 @@ export function StepStage({ frames, captions, label }: Props): React.ReactElemen
     dispatch({ type: "go", step });
   };
 
-  return <StageView step={s.step} live={s.live} frames={frames} captions={captions} label={label} onGo={go} rootRef={ref} />;
+  return <StageView step={s.step} frames={frames} captions={captions} label={label} onGo={go} rootRef={ref} />;
 }

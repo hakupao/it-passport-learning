@@ -242,8 +242,8 @@ export const KEY_POINTS = { min: 3, max: 5 } as const;
  */
 export const LISTING_MAX = 2;
 /** D-197 exception: 「〜には A・B・C・D の 4 つがある」「対応策は 4 種類あり…」 — the classification is the content. */
-// a count of 2 or more (2〜9, 10〜19, 二〜九, 十…); 「一種」「一つ」「〜つ目」 are not a count of the classification
-export const COUNTED_CLASSIFICATION = /(?:の\s*)?(?:[2-9２-９二三四五六七八九]|[1１][0-9０-９]|十)\s*(?:つ|種類|種)(?!目)/;
+// a count of 2 or more (2〜9, 10〜99, 二〜九, 十…); 「一種」「一つ」「〜つ目」 are not a count of the classification
+export const COUNTED_CLASSIFICATION = /(?:の\s*)?(?:[1-9１-９][0-9０-９]|[2-9２-９二三四五六七八九]|十)\s*(?:つ|種類|種)(?!目)/;
 /** Confirm questions per unit (D-196 §0-1; = confirm.ts CONFIRM_MIN / CONFIRM_MAX). */
 export const CONFIRM = { min: 3, max: 5 } as const;
 

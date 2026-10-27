@@ -328,7 +328,7 @@ describe("validateV2 — review fixes", () => {
       }, "listing");
     }
     // 10 and above, kanji counts
-    for (const s of ["対応策は十種類あり、回避・軽減・転嫁などがある。", "回避・軽減・転嫁など12種の対応がある。", "回避・軽減・受容・転嫁の四つがある。"]) {
+    for (const s of ["対応策は20種類あり、回避・軽減・転嫁などがある。", "対応策は十種類あり、回避・軽減・転嫁などがある。", "回避・軽減・転嫁など12種の対応がある。", "回避・軽減・受容・転嫁の四つがある。"]) {
       expect(issuesAfter((u) => {
         u.key_points_jp[1] = s;
         u.summary.key_points_jp[1] = s;

@@ -95,8 +95,8 @@ describe("each kind (SSR)", () => {
     const out = render("ja", FIG.flow);
     for (const label of ["要因を見つける", "計画・方式を変える", "発生しなくなる"]) expect(out).toContain(label);
     expect(out).not.toContain('data-off="true"');
-    // silent on load (review: no announcement of every step figure on page load)
-    expect(out).toMatch(/aria-live="off"[^>]*>[^<]*要因がないので、リスクは起きない。/);
+    // polite from the first render; load announces nothing because the step does not change until in view / pressed
+    expect(out).toMatch(/aria-live="polite"[^>]*>[^<]*要因がないので、リスクは起きない。/);
     const m = fm("ja");
     expect(out).toContain(`>${m.prev}</button>`);
     expect(out).toContain(`>${m.replay}</button>`);
@@ -250,6 +250,32 @@ describe("network geometry", () => {
     expect(g.pos["3"]!.x).toBeLessThan(g.pos["4"]!.x);
   });
 
+  it("two activities skipping columns (1→3, 1→4 over the chain 1→2→3→4): labels stay apart and clear of nodes", () => {
+    const d = {
+      nodes: ["1", "2", "3", "4"],
+      acts: [
+        { from: "1", to: "2", days: 1 },
+        { from: "2", to: "3", days: 1 },
+        { from: "3", to: "4", days: 1 },
+        { from: "1", to: "3", days: 3 },
+        { from: "1", to: "4", days: 4 },
+      ],
+    };
+    const g = networkGeometry(d.nodes, d.acts);
+    const pts = d.nodes.map((n) => g.pos[n]!);
+    const TEXT_H = 16; // 13px labels + leading
+    g.edges.forEach((e, i) => {
+      for (const p of pts) expect(Math.hypot(e.label.x - p.x, e.label.y - p.y), `edge ${i} vs node`).toBeGreaterThan(NODE_R + 8);
+      expect(e.label.y).toBeGreaterThan(0);
+      expect(e.label.y).toBeLessThan(g.height);
+      g.edges.forEach((f, j) => {
+        if (j > i) expect(Math.hypot(e.label.x - f.label.x, e.label.y - f.label.y), `labels ${i} / ${j}`).toBeGreaterThan(TEXT_H);
+      });
+    });
+    expect(g.edges[3]!.d).toMatch(/ Q /);
+    expect(g.edges[4]!.d).toMatch(/ Q /);
+  });
+
   it("parallel: the 1→4 activity spanning two columns is a curve, not a straight line through the middle column", () => {
     const g = networkGeometry(shapes.parallel!.nodes, shapes.parallel!.acts);
     expect(g.edges[4]!.d).toMatch(/ Q /);
@@ -268,13 +294,16 @@ describe("widget accessibility", () => {
     expect(ok).not.toContain("f1-err");
   });
 
-  it("step 1: 前へ stays focusable (aria-disabled, not disabled); the caption is silent until the reader acts", () => {
-    const view = (step: number, live: boolean) =>
-      html("ja", h(StageView, { step, live, frames: ["a", "b", "c"], captions: ["c1", "c2", "c3"], label: "L", onGo: () => {} }));
-    const first = view(0, false);
+  it("step 1: 前へ stays focusable (aria-disabled, not disabled); the caption region is always polite", () => {
+    const view = (step: number) =>
+      html("ja", h(StageView, { step, frames: ["a", "b", "c"], captions: ["c1", "c2", "c3"], label: "L", onGo: () => {} }));
+    const first = view(0);
     expect(first).toMatch(/<button[^>]*aria-disabled="true"[^>]*>前へ<\/button>/);
     expect(first).not.toMatch(/<button[^>]*disabled=""/);
-    expect(first).toContain('aria-live="off"');
-    expect(view(1, true)).toContain('aria-live="polite"');
+    expect(first).toContain('aria-live="polite"');
+    expect(view(2)).toContain('aria-live="polite"');
+    // the aria-disabled 前へ looks disabled too (N1)
+    const css = readFileSync(path.resolve(__dirname, "../figures.module.css"), "utf-8");
+    expect(css).toMatch(/\.btn\[aria-disabled="true"\][^{]*\{[^}]*cursor:\s*default/);
   });
 });
