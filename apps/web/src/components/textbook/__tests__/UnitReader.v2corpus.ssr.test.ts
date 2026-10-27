@@ -39,6 +39,8 @@ import { V2_SCHEMA, type TextbookUnitV2 } from "@/lib/textbook/types";
 
 const LOCALES = ["ja", "zh", "en"] as const;
 const MARKUP = ["**", "[[jp:", "]]"];
+// the whole corpus once rewritten: 241 units × 3 locales and ~1400 headwords × 3 (≈ 80× the pilot's ~0.2 s)
+const CORPUS_TIMEOUT = 300_000;
 const BLOCKS = ['data-part="goals"', 'data-part="overview"', "<article", 'data-part="key-points"', 'id="confirm"', 'data-part="read"'];
 
 let units: TextbookUnitV2[] = [];
@@ -93,7 +95,7 @@ describe("every committed v2 unit (SSR)", () => {
       }
     }
     expect(bad).toEqual([]);
-  });
+  }, CORPUS_TIMEOUT);
 
   it("glossary term page of every v2 headword: renders in ja / zh / en, links its v2 unit, no raw markup", async () => {
     const bad: string[] = [];
@@ -120,5 +122,5 @@ describe("every committed v2 unit (SSR)", () => {
       }
     }
     expect(bad).toEqual([]);
-  });
+  }, CORPUS_TIMEOUT);
 });
