@@ -188,9 +188,9 @@
 - Create: `PairBlock.tsx`
 - Test: `UnitReader.ssr.test.ts`（以 v2 样例单元直接传入组件做 SSR）
 
-- [ ] **Step 1: 写失败测试**：顺序 = 目标 → 总表 → 用语（一句话 → 图 → 展開 → 比方 / 记法 → 考点 → 用语内过去问）→ 易混组在较后用语之后 → 要点 → 确认题 → 読了；关键词与日文原词用对应元素；三语切换后结构相同。
-- [ ] **Step 2〜4**：FAIL → 实现 → PASS。
-- [ ] **Step 5: Commit** `feat(textbook): render v2 units (Phase 3 §0-9)`
+- [x] **Step 1: 写失败测试**：顺序 = 目标 → 总表 → 用语（一句话 → 图 → 展開 → 比方 / 记法 → 考点 → 用语内过去问）→ 易混组在较后用语之后 → 要点 → 确认题 → 読了；关键词与日文原词用对应元素；三语切换后结构相同。
+- [x] **Step 2〜4**：FAIL → 实现 → PASS。
+- [x] **Step 5: Commit** `feat(textbook): render v2 units (Phase 3 §0-9)`
 
 ### Task 9: 生成流水线 + 试点生成
 
