@@ -143,3 +143,13 @@ export interface TextbookUnit {
   source_figures: SourceFigure[];
   lang_status: { jp: string; zh: string; en: string };
 }
+
+// ---- reader figure spec (Stage 7 Phase 3, D-196 §0-11) ----------------------
+
+/** A figure in the reader model. Phase 3a carries only the v1 SVG; the v2 kinds join in Task 6. */
+export interface FigSpec {
+  kind: "svg";
+  mode: "static";
+  /** path relative to data/ip/textbook/ (v1 `figure.svg_path`) */
+  data: { path: string };
+}

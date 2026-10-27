@@ -22,7 +22,9 @@ import path from "node:path";
 
 import { cache } from "react";
 
-import type { TextbookUnit } from "./types";
+import { termId } from "../glossary/termId";
+
+import type { FigSpec, TextbookUnit } from "./types";
 
 export type DataLang = "jp" | "zh" | "en";
 
@@ -208,6 +210,125 @@ export function pickTerm(
   return dl === "jp" ? t.term : dl === "zh" ? t.term_zh : t.term_en;
 }
 
+// ---- reader model (Stage 7 Phase 3, D-196 §0-6 / §0-9) ---------------------
+//
+// One shape for the unit page whatever the stored schema. v1 (§0-6): one =
+// definition, detail = explanation, analogy / hook (null when empty), no
+// points / pairs / goals / overview rows, fig = the v1 SVG. Chumon group
+// members are dropped from the per-term quiz and the challenge list (the
+// practice page would expand them to their whole group, §0-1); the caller
+// passes the member set (practiceReader.loadChumonMembers) so this file keeps
+// its fs footprint to data/ip/textbook.
+
+type Tri<T = string> = Record<DataLang, T>;
+
+/** v2 「考点」 box (§0-9); `exam` points carry the questions they rest on. */
+export interface ReaderPoint {
+  kind: "exam" | "mix";
+  text: Tri;
+  qids?: string[];
+}
+
+/** v2 易混 comparison of terms `a` / `b` (§0-9). */
+export interface ReaderPair {
+  a: string;
+  b: string;
+  rows: { label: Tri; a: Tri; b: Tri; key: boolean }[];
+}
+
+/** v2 用语总表 row (§0-9). */
+export interface OverviewRow {
+  term: string;
+  one: Tri;
+  extra: Tri<string[]>;
+}
+
+export interface ReaderTerm {
+  /** termId(term) — the article anchor */
+  id: string;
+  /** JP headword */
+  term: string;
+  /** headword per language (jp = term) */
+  gloss: Tri;
+  one: Tri;
+  detail: Tri;
+  analogy: Tri | null;
+  hook: Tri | null;
+  points: ReaderPoint[];
+  fig: FigSpec | null;
+  /** this term's past questions (non-fallback, no chumon group members) */
+  quiz: string[];
+}
+
+export interface ReaderUnit {
+  id: string;
+  topicId: string;
+  category: string;
+  title: Tri;
+  goals: Tri<string[]> | null;
+  overviewRows: OverviewRow[] | null;
+  terms: ReaderTerm[];
+  pairs: ReaderPair[];
+  keyPoints: Tri<string[]>;
+  /** the unit's challenge_questions without chumon group members */
+  challenge: string[];
+  minutes: number;
+  freqBadge: string;
+  schema: "v1" | "v2";
+}
+
+const V1_SCHEMA = "stage4-unit-v1-trilingual";
+
+const tri = (o: object, base: string): Tri => {
+  const r = o as Record<string, unknown>;
+  const s = (k: string) => (typeof r[k] === "string" ? (r[k] as string) : "");
+  return { jp: s(`${base}_jp`), zh: s(`${base}_zh`), en: s(`${base}_en`) };
+};
+
+/** null when the JP text is empty (no such section for this term). */
+const optTri = (o: object, base: string): Tri | null => {
+  const v = tri(o, base);
+  return v.jp.trim() === "" ? null : v;
+};
+
+/** A stored unit → the reader model. Throws on an unknown schema_version. */
+export function normalizeUnit(raw: TextbookUnit, members: ReadonlySet<string>): ReaderUnit {
+  if (raw.schema_version !== V1_SCHEMA) {
+    throw new Error(`normalizeUnit: unknown schema_version ${JSON.stringify(raw.schema_version)} (${raw.unit_id})`);
+  }
+  const keep = (id: string) => !members.has(id);
+  return {
+    id: raw.unit_id,
+    topicId: raw.topic_id,
+    category: raw.category,
+    title: tri(raw, "title"),
+    goals: null,
+    overviewRows: null,
+    terms: raw.terms.map((t) => ({
+      id: termId(t.term),
+      term: t.term,
+      gloss: { jp: t.term, zh: t.term_zh, en: t.term_en },
+      one: tri(t, "definition"),
+      detail: tri(t, "explanation"),
+      analogy: optTri(t, "analogy"),
+      hook: optTri(t, "memory_hook"),
+      points: [],
+      fig: t.figure ? { kind: "svg", mode: "static", data: { path: t.figure.svg_path } } : null,
+      quiz: t.inline_fallback ? [] : t.inline_quiz.filter(keep),
+    })),
+    pairs: [],
+    keyPoints: {
+      jp: raw.summary.key_points_jp,
+      zh: raw.summary.key_points_zh,
+      en: raw.summary.key_points_en,
+    },
+    challenge: raw.challenge_questions.filter(keep),
+    minutes: raw.overview.est_minutes,
+    freqBadge: raw.overview.freq_badge,
+    schema: "v1",
+  };
+}
+
 // ---- textbook-only filesystem layer (self-contained) ----------------------
 
 // Resolve straight to data/ip/textbook (no data/ip intermediate): build-time
@@ -223,7 +344,7 @@ export function textbookRoot(): string {
 
 // `unitId` arrives from the [unitId] URL route param (user-controlled): allowlist
 // it to the strict unit-id slug shape so no `.`, `/`, or NUL can reach a path join.
-const UNIT_ID_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
+export const UNIT_ID_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
 
 /** Confine a (pipeline-controlled) relative path to its root; null on escape. */
 function confineToRoot(root: string, rel: string): string | null {

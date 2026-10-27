@@ -49,6 +49,12 @@ export const loadChumonRegistry: () => Promise<Record<string, string[]>> = memo(
   return Object.fromEntries(registry.groups.map((g) => [g.key, [...g.member_ids].sort()]));
 });
 
+/** Every chumon group member id (textbook confirm / per-term quiz drop them, D-196 §0-1 / §0-6); reads only chumon_groups.json. */
+export const loadChumonMembers: () => Promise<ReadonlySet<string>> = memo(async () => {
+  const registry = await loadRegistryFile();
+  return new Set(registry.groups.flatMap((g) => g.member_ids));
+});
+
 /** data/ip/quiz/chumon_groups.json with per-language preamble fold points (merged stems: loads the sidecars). */
 export const loadChumonGroups: () => Promise<ChumonGroup[]> = memo(async () => {
   const [registry, questions] = await Promise.all([loadRegistryFile(), loadAllQuestions()]);
