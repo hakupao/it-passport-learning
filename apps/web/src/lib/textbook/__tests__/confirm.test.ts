@@ -84,9 +84,9 @@ describe("pickConfirm", () => {
       );
       expect(pastCount(u), u.id).toBe(rawPast.size);
     }
-    // Measured on the corpus (D-196 §0-1): v1 was { 3: 26, 4: 45, 5: 173 }; S135 pilot u02 (v2) has 5
-    // challenge questions (v1: 3). Update when the data changes (u01 / u03 next).
-    expect(dist).toEqual({ 3: 25, 4: 45, 5: 174 });
+    // Measured on the corpus (D-196 §0-1): v1 was { 3: 26, 4: 45, 5: 173 }; S135 pilot v2: u02 3 → 5,
+    // u03 5 → 3 challenge questions. Update when the data changes (u01 next).
+    expect(dist).toEqual({ 3: 26, 4: 45, 5: 173 });
   });
 
   it("anchors: technology-21-54-u01 (no challenge_questions) / management-10-27-u02 past count", async () => {
