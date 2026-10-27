@@ -1,240 +1,1091 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-63-u04",
   "topic_id": "technology-23-63",
   "category": "technology",
   "title_jp": "セキュリティ検査・IoT/ハードウェアの保護",
+  "title_zh": "安全检测与 IoT／硬件防护",
+  "title_en": "Security Testing and IoT / Hardware Protection",
   "unit_summary_jp": "電子透かし・フォレンジックス・ペネトレーションテストと、ブロックチェーン・耐タンパ性・セキュアブート・TPMによる機器の保護技術を学ぶ。",
+  "unit_summary_zh": "学习数字水印、数字取证、渗透测试，以及通过区块链、防篡改性、安全启动、TPM 实现的设备防护技术。",
+  "unit_summary_en": "Learn about digital watermarking, forensics, and penetration testing, along with device protection technologies based on blockchain, tamper resistance, secure boot, and TPM.",
   "order_in_topic": 4,
   "prerequisites": [
     "technology-23-63-u02"
   ],
-  "overview": {
-    "intro_jp": "本単元では、システムの安全性を確かめる検査技術(電子透かし・フォレンジックス・ペネトレーションテスト)と、IoT機器やハードウェア自体を守る保護技術(ブロックチェーン・耐タンパ性・セキュアブート・TPM)を学びます。親トピックは「頻出」で、用語の役割の違いを問う問題が多く、確実に得点したい領域です。",
-    "freq_badge": "頻出",
-    "est_minutes": 21,
-    "intro_zh": "在本单元中，我们将学习用于确认系统安全性的检测技术（数字水印、数字取证、渗透测试），以及保护 IoT 设备和硬件本身的防护技术（区块链、防篡改性、安全启动、TPM）。母主题为「高频」，常出现考查各术语作用差异的题目，是务必拿下分数的领域。",
-    "intro_en": "In this unit, you will learn about testing technologies that verify a system's safety (digital watermarking, forensics, penetration testing), and protection technologies that defend IoT devices and hardware itself (blockchain, tamper resistance, secure boot, TPM). The parent topic is high-frequency, with many questions asking about the differences in the roles of these terms, so it is an area where you want to reliably score points."
-  },
+  "goals_jp": [
+    "**電子透かし**が情報を埋め込む目的と、**ブロックチェーン**が記録を改ざんしにくくする仕組みを説明できる。",
+    "**デジタルフォレンジックス**（事後の証拠保全）と**ペネトレーションテスト**（事前の侵入検査）を、行う時期と目的で区別できる。",
+    "IoT 機器を守る**耐タンパ性**と、それを高める **TPM**、起動時に働く**セキュアブート**の役割を説明できる。"
+  ],
+  "goals_zh": [
+    "能够说明**数字水印**嵌入信息的目的，以及**区块链**让记录难以被篡改的原理。",
+    "能够按照实施时机和目的，区分**数字取证**（事后保全证据）与**渗透测试**（事前检查能否入侵）。",
+    "能够说明保护 IoT（物联网）设备的**防篡改性**，以及提升防篡改性的 **TPM** 和在启动时发挥作用的**安全启动**各自的作用。"
+  ],
+  "goals_en": [
+    "Explain why a **digital watermark** embeds information, and how a **blockchain** makes records hard to tamper with.",
+    "Tell **digital forensics** (preserving evidence after the fact) apart from **penetration testing** (probing for a way in beforehand) by when and why each is done.",
+    "Explain **tamper resistance**, which protects IoT devices, along with the roles of the **TPM** that strengthens it and **secure boot**, which works at startup."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "いつ働くか"
+  ],
+  "overview_cols_zh": [
+    "类型",
+    "何时起作用"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "When it applies"
+  ],
+  "overview_rows": [
+    {
+      "term": "電子透かし",
+      "one_line_jp": "コンテンツに目立たない形で権利者などの情報を埋め込む技術",
+      "one_line_zh": "以不显眼的方式在内容中嵌入权利人等信息的技术",
+      "one_line_en": "A technique that inconspicuously embeds information such as the rights holder into content",
+      "extra_jp": [
+        "技術（情報の埋め込み）",
+        "配布前に埋め込み、後で取り出す"
+      ],
+      "extra_zh": [
+        "技术（嵌入信息）",
+        "发布前嵌入，事后读取"
+      ],
+      "extra_en": [
+        "Technique (embedding information)",
+        "Embedded before distribution, read out later"
+      ]
+    },
+    {
+      "term": "デジタルフォレンジックス",
+      "one_line_jp": "事件の後に電子的な証拠を集めて保全し、分析する技術や手続き",
+      "one_line_zh": "在事件发生后收集、保全并分析电子证据的技术与程序",
+      "one_line_en": "Techniques and procedures for gathering, preserving and analyzing electronic evidence after an incident",
+      "extra_jp": [
+        "技術（事後の調査）",
+        "インシデントの後"
+      ],
+      "extra_zh": [
+        "技术（事后调查）",
+        "安全事件发生后"
+      ],
+      "extra_en": [
+        "Technique (after-the-fact investigation)",
+        "After an incident"
+      ]
+    },
+    {
+      "term": "ペネトレーションテスト",
+      "one_line_jp": "攻撃者と同じ手口で侵入を試して弱点を見つける検査",
+      "one_line_zh": "用与攻击者相同的手法尝试入侵、找出弱点的检查",
+      "one_line_en": "A test that tries to break in with an attacker's own methods to find weaknesses",
+      "extra_jp": [
+        "技術（事前の検査）",
+        "攻撃を受ける前"
+      ],
+      "extra_zh": [
+        "技术（事前检查）",
+        "遭受攻击之前"
+      ],
+      "extra_en": [
+        "Technique (advance testing)",
+        "Before an attack happens"
+      ]
+    },
+    {
+      "term": "ブロックチェーン",
+      "one_line_jp": "直前のブロックから計算した値で記録をつないだ、多数のコンピュータが共有する台帳",
+      "one_line_zh": "用由前一个区块算出的值把记录串联起来、由众多计算机共享的账本",
+      "one_line_en": "A ledger shared by many computers, with records linked by a value calculated from the previous block",
+      "extra_jp": [
+        "技術（記録の連結）",
+        "記録を追加するたび"
+      ],
+      "extra_zh": [
+        "技术（记录的串联）",
+        "每次追加记录时"
+      ],
+      "extra_en": [
+        "Technique (linking records)",
+        "Each time a record is added"
+      ]
+    },
+    {
+      "term": "耐タンパ性",
+      "one_line_jp": "機器の中の鍵やデータを、こじ開けや解析から守る性質",
+      "one_line_zh": "保护设备内的密钥和数据不被撬开或解析的性质",
+      "one_line_en": "The property of protecting the keys and data inside a device from being pried open or analyzed",
+      "extra_jp": [
+        "性質",
+        "機器が人の手に渡ったとき"
+      ],
+      "extra_zh": [
+        "性质",
+        "设备落入他人之手时"
+      ],
+      "extra_en": [
+        "Property",
+        "When the device falls into someone's hands"
+      ]
+    },
+    {
+      "term": "セキュアブート",
+      "one_line_jp": "起動するソフトウェアの署名を確かめ、正当なものだけを動かす仕組み",
+      "one_line_zh": "确认要启动的软件的签名，只运行合法软件的机制",
+      "one_line_en": "A mechanism that checks the signature of the software being started and runs only legitimate software",
+      "extra_jp": [
+        "技術（起動時の検証）",
+        "電源を入れたとき"
+      ],
+      "extra_zh": [
+        "技术（启动时验证）",
+        "接通电源时"
+      ],
+      "extra_en": [
+        "Technique (verification at startup)",
+        "When the power is turned on"
+      ]
+    },
+    {
+      "term": "TPM",
+      "one_line_jp": "暗号鍵を内部に保管して暗号処理を行うセキュリティチップ",
+      "one_line_zh": "在内部保管加密密钥并执行加密处理的安全芯片",
+      "one_line_en": "A security chip that stores encryption keys internally and performs cryptographic processing",
+      "extra_jp": [
+        "部品（チップ）",
+        "暗号化・復号のたび"
+      ],
+      "extra_zh": [
+        "部件（芯片）",
+        "每次加密、解密时"
+      ],
+      "extra_en": [
+        "Component (chip)",
+        "Each time data is encrypted or decrypted"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "電子透かし",
-      "definition_jp": "画像や音声などに、目立たない形で著作権や識別情報を埋め込む技術。",
-      "explanation_jp": "電子透かし(デジタルウォーターマーク)は、写真・動画・音声といったデジタルコンテンツに、人には気づきにくい形で作成者情報や識別データを埋め込む技術です。コピーされても情報が残るため、不正利用の発見や著作権の主張に役立ちます。\n試験では「コンテンツに情報を埋め込んで証跡を残す技術」という目的を押さえます。データを暗号化して隠す暗号化とは異なり、見た目はそのまま使える点が特徴です。流出元の特定など、追跡用途で問われます。",
-      "analogy_jp": "紙幣の透かしのように、光にかざすと見える隠し模様をデジタルデータにも仕込むイメージ。普段は見えないが、調べれば「誰のものか」が分かります。",
-      "memory_hook_jp": "電子透かしといえばコンテンツに見えない情報を埋め込む",
+      "term_zh": "数字水印",
+      "term_en": "Digital watermark",
+      "one_jp": "**電子透かし**は、画像・音声・動画などのデジタルコンテンツに、見た目や聞こえ方をほとんど変えずに著作権者や識別番号などの情報を**埋め込む**技術である。",
+      "one_zh": "**数字水印**（[[jp:電子透かし]]）是一种在图像、音频、视频等数字内容中，几乎不改变观感和听感地**嵌入**著作权人或识别编号等信息的技术。",
+      "one_en": "A **digital watermark** ([[jp:電子透かし]]) is a technique for **embedding** information such as the copyright holder or an identification number into digital content like images, audio and video, with almost no change to how it looks or sounds.",
+      "detail_jp": "埋め込んだ情報はコピーされたデータにも残るので、無断利用を見つけたときに権利者や流出元を確かめる手がかりになる。暗号化とは違い、データは誰でもそのまま見たり聞いたりできる。",
+      "detail_zh": "嵌入的信息在复制出的数据中依然保留，因此发现未经许可的使用时，可以借此追查权利人或泄露源头。与加密不同，任何人都能照常查看或收听这些数据。",
+      "detail_en": "The embedded information survives in copied data, so when unauthorized use turns up it gives a lead on the rights holder or the source of the leak. Unlike encryption, the data itself stays open for anyone to view or listen to.",
+      "analogy_jp": "服の内側に縫い付けた名札のように、ふだんは目に触れないが、確かめれば持ち主が分かる印。",
+      "analogy_zh": "就像缝在衣服内侧的名牌，平时看不到，但一查就知道主人是谁。",
+      "analogy_en": "Like a name tag sewn inside a garment: out of sight normally, but it tells you the owner when you check.",
+      "hook_jp": "英語は watermark（water＋mark）。紙がまだ濡れているうちに付ける印が語源で、その印をデータの中に移したもの。",
+      "hook_zh": "英文是 watermark（water＋mark），原指趁纸张还湿时压出的印记；数字水印就是把这种印记搬进了数据里。",
+      "hook_en": "The English word watermark (water + mark) comes from a mark pressed into paper while it is still wet; a digital watermark moves that mark into the data.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "電子透かしは、一見して変化が分からない形で情報を埋め込む。透けて見える画像を重ねて表示するものではない。",
+          "text_zh": "数字水印以一眼看不出变化的方式嵌入信息，并不是把透明可见的图像叠加显示在内容上。",
+          "text_en": "A digital watermark embeds information so that the change cannot be spotted at a glance; it is not a see-through image overlaid on the content.",
+          "qids": [
+            "2010h22h-q074"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "プログラムを配る側が本物であり、途中で中身が書き換えられていないと確認させる仕組みはコード署名で、電子透かしではない。",
+          "text_zh": "让用户确认程序的发布者是真实的、且内容在途中未被改写的机制是代码签名（[[jp:コード署名]]），而不是数字水印。",
+          "text_en": "The mechanism that lets users confirm a program comes from its genuine distributor and was not altered along the way is code signing ([[jp:コード署名]]), not a digital watermark.",
+          "qids": [
+            "2017h29a-q072"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "orig",
+              "label": {
+                "jp": "元の写真",
+                "zh": "原始照片",
+                "en": "Original photo"
+              }
+            },
+            {
+              "id": "embed",
+              "label": {
+                "jp": "権利者の番号を埋め込む",
+                "zh": "嵌入权利人编号",
+                "en": "Embed the rights holder's number"
+              }
+            },
+            {
+              "id": "copy",
+              "label": {
+                "jp": "コピーされて出回る",
+                "zh": "被复制并流传",
+                "en": "Copied and circulated"
+              }
+            },
+            {
+              "id": "detect",
+              "label": {
+                "jp": "専用ソフトで番号を読み出す",
+                "zh": "用专用软件读出编号",
+                "en": "Read the number with dedicated software"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "配布する写真を用意する。",
+            "caption_zh": "准备要发布的照片。",
+            "caption_en": "Prepare the photo to be distributed.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "見た目を変えずに、権利者を示す番号をデータの中に埋め込む。",
+            "caption_zh": "在不改变外观的情况下，把表示权利人的编号嵌入数据之中。",
+            "caption_en": "Embed a number identifying the rights holder inside the data, without changing how the photo looks.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "写真が無断でコピーされても、埋め込んだ番号は一緒に移る。",
+            "caption_zh": "即使照片被擅自复制，嵌入的编号也会随之一起转移。",
+            "caption_en": "Even if the photo is copied without permission, the embedded number travels with it.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "見つけた写真から番号を読み出し、誰の写真かを確かめる。",
+            "caption_zh": "从发现的照片中读出编号，确认这是谁的照片。",
+            "caption_en": "Read the number from a photo you come across to confirm whose photo it is.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2010h22h-q074"
+      ],
+      "definition_jp": "電子透かしは、画像・音声・動画などのデジタルコンテンツに、見た目や聞こえ方をほとんど変えずに著作権者や識別番号などの情報を埋め込む技術である。",
+      "definition_zh": "数字水印（電子透かし）是一种在图像、音频、视频等数字内容中，几乎不改变观感和听感地嵌入著作权人或识别编号等信息的技术。",
+      "definition_en": "A digital watermark (電子透かし) is a technique for embedding information such as the copyright holder or an identification number into digital content like images, audio and video, with almost no change to how it looks or sounds.",
+      "explanation_jp": "埋め込んだ情報はコピーされたデータにも残るので、無断利用を見つけたときに権利者や流出元を確かめる手がかりになる。暗号化とは違い、データは誰でもそのまま見たり聞いたりできる。",
+      "explanation_zh": "嵌入的信息在复制出的数据中依然保留，因此发现未经许可的使用时，可以借此追查权利人或泄露源头。与加密不同，任何人都能照常查看或收听这些数据。",
+      "explanation_en": "The embedded information survives in copied data, so when unauthorized use turns up it gives a lead on the rights holder or the source of the leak. Unlike encryption, the data itself stays open for anyone to view or listen to.",
+      "memory_hook_jp": "英語は watermark（water＋mark）。紙がまだ濡れているうちに付ける印が語源で、その印をデータの中に移したもの。",
+      "memory_hook_zh": "英文是 watermark（water＋mark），原指趁纸张还湿时压出的印记；数字水印就是把这种印记搬进了数据里。",
+      "memory_hook_en": "The English word watermark (water + mark) comes from a mark pressed into paper while it is still wet; a digital watermark moves that mark into the data.",
       "inline_quiz": [
         "2010h22h-q074"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "数字水印",
-      "term_en": "Digital watermark",
-      "definition_zh": "以不显眼的方式将版权或识别信息嵌入图像、音频等内容中的技术。",
-      "definition_en": "A technology that embeds copyright or identification information into images, audio, and other content in an inconspicuous way.",
-      "explanation_zh": "数字水印（digital watermark）是一种将创作者信息或识别数据，以人难以察觉的方式嵌入照片、视频、音频等数字内容中的技术。即使内容被复制，信息仍会保留，因此有助于发现非法使用、主张版权。\n考试中要把握「把信息嵌入内容以留下证据痕迹的技术」这一目的。它与把数据加密隐藏的加密不同，特点在于外观保持原样、仍可正常使用。常以追踪用途（如确定泄露源）出题。",
-      "explanation_en": "A digital watermark is a technology that embeds creator information or identification data into digital content such as photos, videos, and audio in a way that is hard for people to notice. Because the information remains even after copying, it helps detect unauthorized use and assert copyright.\nIn exams, grasp the purpose: \"a technology that embeds information into content to leave a trace of evidence.\" Unlike encryption, which hides data by scrambling it, its feature is that the appearance stays the same and the content remains usable. It is asked about in tracking contexts, such as identifying the source of a leak.",
-      "analogy_zh": "就像纸币的水印那样，把一种对着光才能看到的隐藏图案也藏进数字数据里。平时看不见，但一查就能知道「这是谁的」。",
-      "analogy_en": "Like the watermark on a banknote, picture embedding a hidden pattern into digital data that only shows when held up to the light. It is normally invisible, but on inspection it reveals \"whose it is.\"",
-      "memory_hook_zh": "说到数字水印，就是把看不见的信息嵌入内容",
-      "memory_hook_en": "Digital watermark → embed invisible information into content"
+      "figure": null
     },
     {
       "term": "デジタルフォレンジックス",
-      "definition_jp": "不正やインシデントの証拠を保全・分析する、事後調査の技術や手続き。",
-      "explanation_jp": "デジタルフォレンジックスは、不正アクセスや情報漏えいなどが起きた後に、PCやサーバのログ・データを改変せずに保全し、原因や犯人を法的に通用する形で分析する技術です。\n試験では「事後の証拠保全・分析」という点が重要です。事前に脆弱性を探すペネトレーションテストと逆方向で、起きてしまった事件を調べる役割。証拠が裁判で使えるよう、原本を変えないことが鉄則です。",
-      "analogy_jp": "事件現場の鑑識のように、指紋(ログ)を消さないよう慎重に証拠を集めて分析し、何が起きたかを突き止める作業のデジタル版です。",
-      "memory_hook_jp": "デジタルフォレンジックスといえば事後の証拠保全と分析",
-      "inline_quiz": [
-        "2017h29h-q061"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"インシデント発生\"] --> B[\"証拠の保全\"]; B --> C[\"データの分析\"]; C --> D[\"報告・法的対応\"]",
-        "svg_path": "figures/technology-23-63-u04-t01.svg",
-        "rendered": true
-      },
       "term_zh": "数字取证",
       "term_en": "Digital forensics",
-      "definition_zh": "对违规行为或安全事件的证据进行保全、分析的事后调查技术与流程。",
-      "definition_en": "Post-incident investigation techniques and procedures that preserve and analyze evidence of misconduct or incidents.",
-      "explanation_zh": "数字取证是指在发生非法访问、信息泄露等事件之后，对 PC、服务器的日志和数据进行不加改动的保全，并以在法律上可被采信的形式分析原因或确定作案者的技术。\n考试中重要的是「事后的证据保全与分析」这一点。它与事先寻找漏洞的渗透测试方向相反，其作用是调查已经发生的事件。为了使证据能在法庭上使用，不改动原件是铁律。",
-      "explanation_en": "Digital forensics is the technology of preserving logs and data on PCs and servers without alteration after an incident such as unauthorized access or information leakage occurs, and analyzing the cause or identifying the culprit in a form that holds up legally.\nIn exams, the key point is \"post-incident evidence preservation and analysis.\" It runs in the opposite direction from penetration testing, which searches for vulnerabilities in advance; its role is to investigate an incident that has already happened. So that the evidence can be used in court, keeping the original unchanged is the ironclad rule.",
-      "analogy_zh": "就像案发现场的刑侦鉴识那样，小心地采集证据、不抹去指纹（日志），加以分析，查明到底发生了什么——这是它的数字版。",
-      "analogy_en": "Like crime-scene forensics, it is the digital version of carefully collecting evidence without erasing fingerprints (logs), analyzing it, and pinning down what happened.",
-      "memory_hook_zh": "说到数字取证，就是事后的证据保全与分析",
-      "memory_hook_en": "Digital forensics → post-incident evidence preservation and analysis"
+      "one_jp": "**デジタルフォレンジックス**は、不正アクセスや情報漏えいなどが起きた後に、コンピュータに残る記録を**証拠として集めて保全し、分析する**技術や手続きの総称である。",
+      "one_zh": "**数字取证**（[[jp:デジタルフォレンジックス]]）是在非法访问、信息泄露等事件发生后，把计算机中残留的记录**作为证据收集、保全并加以分析**的技术和程序的总称。",
+      "one_en": "**Digital forensics** ([[jp:デジタルフォレンジックス]]) is the umbrella term for techniques and procedures that **collect records left on computers as evidence, preserve them and analyze them** after an incident such as unauthorized access or a data leak.",
+      "detail_jp": "集めたデータが途中で書き換えられていないことを示せなければ、裁判などで証拠として認められにくい。そのため、原本はそのまま保管し、調べるときは複製を使うのが基本である。",
+      "detail_zh": "如果无法证明收集到的数据在过程中未被改写，就很难在法庭等场合被认可为证据。因此，基本做法是原件原样保管，调查时使用副本。",
+      "detail_en": "If you cannot show that the collected data was left unaltered, a court is unlikely to accept it as evidence. The standard practice is therefore to keep the originals as they are and work on copies.",
+      "analogy_jp": "事件現場の鑑識が、指紋を消さないように手袋をして証拠を集め、持ち帰って調べる作業のデジタル版。",
+      "analogy_zh": "相当于数字版的现场勘查：鉴识人员戴着手套收集证据以免抹掉指纹，再带回去检验。",
+      "analogy_en": "The digital version of crime-scene investigators wearing gloves so they do not smudge fingerprints, then taking the evidence back to the lab.",
+      "hook_jp": "forensic は「法廷の」という意味の英語で、法医学（forensic medicine）と同じ語。「法廷に出す証拠を扱う」と覚える。",
+      "hook_zh": "forensic 在英语中意为“法庭的”，与法医学（forensic medicine）是同一个词。可以记作“处理要提交给法庭的证据”。",
+      "hook_en": "Forensic means \"relating to courts of law,\" the same word as in forensic medicine. Think of it as handling evidence meant for court.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "目的は、犯罪や法的紛争で証拠になるデータを集め、改変されない状態で守ることである。",
+          "text_zh": "其目的是收集可在犯罪或法律纠纷中作为证据的数据，并使其保持未被改动的状态。",
+          "text_en": "The goal is to collect data that can serve as evidence in a crime or legal dispute and keep it in an unaltered state.",
+          "qids": [
+            "2018h30h-q097",
+            "2025r07-q074",
+            "2017h29h-q061"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "犯罪の疑いが出た段階で記録を集めて調べ、裁判で通用する証拠かどうかをはっきりさせる技術全体を、デジタルフォレンジックスと呼ぶ。",
+          "text_zh": "在出现犯罪嫌疑的阶段收集并调查记录、弄清其能否成为法庭上站得住的证据，这一整套技术统称为数字取证。",
+          "text_en": "The whole set of techniques that, once a crime is suspected, gather and examine records and establish whether they will hold up as evidence in court is called digital forensics.",
+          "qids": [
+            "2019h31h-q099"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "自社のシステムを攻撃して弱点を探すのはペネトレーションテストである。フォレンジックスは事件が起きた後の調査である。",
+          "text_zh": "攻击自家系统来寻找弱点的是渗透测试。数字取证则是事件发生之后的调查。",
+          "text_en": "Attacking your own system to find weaknesses is penetration testing. Forensics is the investigation after an incident has happened.",
+          "qids": [
+            "2018h30h-q097",
+            "2025r07-q074"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "incident",
+              "label": {
+                "jp": "インシデント発生",
+                "zh": "发生安全事件",
+                "en": "Incident occurs"
+              }
+            },
+            {
+              "id": "collect",
+              "label": {
+                "jp": "機器・ログを収集",
+                "zh": "收集设备和日志",
+                "en": "Collect devices and logs"
+              }
+            },
+            {
+              "id": "preserve",
+              "label": {
+                "jp": "複製を取り原本を保全",
+                "zh": "制作副本，保全原件",
+                "en": "Make copies, preserve the originals"
+              }
+            },
+            {
+              "id": "analyze",
+              "label": {
+                "jp": "複製を分析して報告",
+                "zh": "分析副本并报告",
+                "en": "Analyze the copies and report"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "疑いが生じたら、関係する機器やログを集める。",
+            "caption_zh": "一旦出现可疑情况，就收集相关的设备和日志。",
+            "caption_en": "Once something looks suspicious, gather the devices and logs involved.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "原本は書き換えずに保管し、分析には複製を使う。",
+            "caption_zh": "原件不做任何改动地保管，分析时使用副本。",
+            "caption_en": "Store the originals untouched and use copies for the analysis.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "複製を調べて何が起きたかを明らかにし、裁判などに出せる形でまとめる。",
+            "caption_zh": "检查副本，查明发生了什么，并整理成可以提交给法庭等场合的形式。",
+            "caption_en": "Examine the copies to establish what happened, and compile the findings in a form that can be submitted to a court.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2017h29h-q061",
+        "2025r07-q074"
+      ],
+      "definition_jp": "デジタルフォレンジックスは、不正アクセスや情報漏えいなどが起きた後に、コンピュータに残る記録を証拠として集めて保全し、分析する技術や手続きの総称である。",
+      "definition_zh": "数字取证（デジタルフォレンジックス）是在非法访问、信息泄露等事件发生后，把计算机中残留的记录作为证据收集、保全并加以分析的技术和程序的总称。",
+      "definition_en": "Digital forensics (デジタルフォレンジックス) is the umbrella term for techniques and procedures that collect records left on computers as evidence, preserve them and analyze them after an incident such as unauthorized access or a data leak.",
+      "explanation_jp": "集めたデータが途中で書き換えられていないことを示せなければ、裁判などで証拠として認められにくい。そのため、原本はそのまま保管し、調べるときは複製を使うのが基本である。",
+      "explanation_zh": "如果无法证明收集到的数据在过程中未被改写，就很难在法庭等场合被认可为证据。因此，基本做法是原件原样保管，调查时使用副本。",
+      "explanation_en": "If you cannot show that the collected data was left unaltered, a court is unlikely to accept it as evidence. The standard practice is therefore to keep the originals as they are and work on copies.",
+      "memory_hook_jp": "forensic は「法廷の」という意味の英語で、法医学（forensic medicine）と同じ語。「法廷に出す証拠を扱う」と覚える。",
+      "memory_hook_zh": "forensic 在英语中意为“法庭的”，与法医学（forensic medicine）是同一个词。可以记作“处理要提交给法庭的证据”。",
+      "memory_hook_en": "Forensic means \"relating to courts of law,\" the same word as in forensic medicine. Think of it as handling evidence meant for court.",
+      "inline_quiz": [
+        "2017h29h-q061",
+        "2025r07-q074"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ペネトレーションテスト",
-      "definition_jp": "実際に攻撃を試みてシステムの脆弱性を確かめる、能動的な侵入テスト。",
-      "explanation_jp": "ペネトレーションテスト(侵入テスト)は、攻撃者の立場で実際にシステムへ侵入を試み、突破できる弱点がないかを確認する検査です。机上のチェックではなく、本物の攻撃手法を使って安全性を実証します。\n試験では「能動的に攻撃して脆弱性を発見する」点が問われます。起きた後を調べるフォレンジックスと違い、事前に弱点をつぶす目的。許可を得て行う正規の検査である点も押さえましょう。",
-      "analogy_jp": "防犯のために、わざと泥棒役を雇って家に侵入させ、入れてしまう隙がないかを試すようなものです。本気で攻めて初めて弱点が見えます。",
-      "memory_hook_jp": "ペネトレーションテストといえば実際に攻撃して脆弱性を確認",
+      "term_zh": "渗透测试",
+      "term_en": "Penetration testing",
+      "one_jp": "**ペネトレーションテスト**は、攻撃者と同じ手口で**実際にシステムへの侵入を試し**、突破できるセキュリティ上の弱点が残っていないかを確かめる検査である。",
+      "one_zh": "**渗透测试**（[[jp:ペネトレーションテスト]]）是用与攻击者相同的手法**实际尝试入侵系统**，确认是否还残留可被突破的安全弱点的检查。",
+      "one_en": "**Penetration testing** ([[jp:ペネトレーションテスト]]) is a check that **actually tries to break into a system** with an attacker's own methods, to see whether any security weaknesses that could be broken through remain.",
+      "detail_jp": "設計書や設定を読むだけの点検と違い、本物の攻撃手法で守りが破れるかどうかを確かめる。システムの持ち主の許可を得て、攻撃を受ける前に弱点を見つけて直すために行う。",
+      "detail_zh": "它不同于只阅读设计文档或配置的检查，而是用真实的攻击手法确认防御能否被攻破。这种测试在取得系统所有者许可的前提下进行，目的是在遭受攻击之前发现并修补弱点。",
+      "detail_en": "Unlike a review that only reads design documents or settings, it uses real attack techniques to see whether the defenses give way. It is carried out with the system owner's permission, so that weaknesses can be found and fixed before a real attack.",
+      "analogy_jp": "防犯のプロに頼んで、本気で家に忍び込めるか試してもらい、鍵の甘い窓を見つけてもらうこと。",
+      "analogy_zh": "请防盗专家真的试着潜入你家，帮你找出锁得不严的窗户。",
+      "analogy_en": "Hiring a security professional to genuinely try sneaking into your house and point out the window with the weak lock.",
+      "hook_jp": "penetrate は「貫く・入り込む」。日本語では「侵入テスト」とも呼ぶ。",
+      "hook_zh": "penetrate 意为“穿透、进入”。日语里也叫 [[jp:侵入テスト]]（入侵测试）。",
+      "hook_en": "Penetrate means \"to pierce or get inside.\" In Japanese it is also called [[jp:侵入テスト]] (intrusion test).",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ペネトレーションテストは、攻撃して侵入を試すことで弱点を見つける検査である。高い負荷をかける試験や、変更の影響を調べる試験とは別物である。",
+          "text_zh": "渗透测试是通过发动攻击、尝试入侵来发现弱点的检查，与施加高负载的测试、调查变更影响的测试不同。",
+          "text_en": "Penetration testing finds weaknesses by attacking and attempting to break in. It is different from tests that apply heavy load or check the impact of changes.",
+          "qids": [
+            "2014h26a-q062"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "インターネットから試す場合に見つかるのは、外から公開サーバへ入り込める経路のようなネットワーク越しの弱点である。内部の人による不正や物理的な侵入経路は、ネットワーク越しに試すだけでは見つからない。",
+          "text_zh": "从互联网实施时，能发现的是从外部进入公开服务器的路径这类经由网络的弱点。内部人员的不正当行为或物理入侵路径，仅靠经由网络的测试是发现不了的。",
+          "text_en": "When run from the internet, it uncovers weaknesses reachable over the network, such as a route from outside into a public server. Misconduct by insiders or physical ways in cannot be found by testing over the network alone.",
+          "qids": [
+            "2016h28a-q073"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2014h26a-q062"
+      ],
+      "definition_jp": "ペネトレーションテストは、攻撃者と同じ手口で実際にシステムへの侵入を試し、突破できるセキュリティ上の弱点が残っていないかを確かめる検査である。",
+      "definition_zh": "渗透测试（ペネトレーションテスト）是用与攻击者相同的手法实际尝试入侵系统，确认是否还残留可被突破的安全弱点的检查。",
+      "definition_en": "Penetration testing (ペネトレーションテスト) is a check that actually tries to break into a system with an attacker's own methods, to see whether any security weaknesses that could be broken through remain.",
+      "explanation_jp": "設計書や設定を読むだけの点検と違い、本物の攻撃手法で守りが破れるかどうかを確かめる。システムの持ち主の許可を得て、攻撃を受ける前に弱点を見つけて直すために行う。",
+      "explanation_zh": "它不同于只阅读设计文档或配置的检查，而是用真实的攻击手法确认防御能否被攻破。这种测试在取得系统所有者许可的前提下进行，目的是在遭受攻击之前发现并修补弱点。",
+      "explanation_en": "Unlike a review that only reads design documents or settings, it uses real attack techniques to see whether the defenses give way. It is carried out with the system owner's permission, so that weaknesses can be found and fixed before a real attack.",
+      "memory_hook_jp": "penetrate は「貫く・入り込む」。日本語では「侵入テスト」とも呼ぶ。",
+      "memory_hook_zh": "penetrate 意为“穿透、进入”。日语里也叫 侵入テスト（入侵测试）。",
+      "memory_hook_en": "Penetrate means \"to pierce or get inside.\" In Japanese it is also called 侵入テスト (intrusion test).",
       "inline_quiz": [
         "2014h26a-q062"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "渗透测试",
-      "term_en": "Penetration testing",
-      "definition_zh": "实际尝试发起攻击以确认系统漏洞的主动式入侵测试。",
-      "definition_en": "An active intrusion test that actually attempts attacks to verify a system's vulnerabilities.",
-      "explanation_zh": "渗透测试（入侵测试）是站在攻击者的立场，实际尝试入侵系统，确认是否存在可被攻破的弱点的检测。它不是纸面上的检查，而是使用真实的攻击手法来实证安全性。\n考试中考查「主动发起攻击以发现漏洞」这一点。它与调查事后情况的取证不同，目的是事先消除弱点。还要把握一点：它是在获得授权后进行的正规检测。",
-      "explanation_en": "Penetration testing (intrusion testing) is a test in which, taking the attacker's standpoint, you actually attempt to break into a system and check whether there are weak points that can be breached. It is not a desk-based check; it demonstrates safety using real attack techniques.\nIn exams, the point asked about is \"actively attacking to discover vulnerabilities.\" Unlike forensics, which investigates the aftermath, its purpose is to eliminate weaknesses in advance. Also note that it is an authorized, legitimate test conducted with permission.",
-      "analogy_zh": "就像为了防盗，特意雇一个扮演小偷的人去闯入房子，试试有没有让人能钻进来的破绽。只有动真格地攻一次，弱点才会显现。",
-      "analogy_en": "Like hiring someone to play a burglar and break into a house for security testing, to see whether there is any gap that lets them in. Only by attacking for real do the weak points become visible.",
-      "memory_hook_zh": "说到渗透测试，就是实际发起攻击来确认漏洞",
-      "memory_hook_en": "Penetration testing → actually attack to confirm vulnerabilities"
+      "figure": null
     },
     {
       "term": "ブロックチェーン",
-      "definition_jp": "取引記録をブロックで鎖状につなぎ、分散管理する改ざん困難な台帳技術。",
-      "explanation_jp": "ブロックチェーンは、取引データを「ブロック」にまとめ、前のブロックの情報を引き継ぎながら鎖のように連結していく技術です。多数の参加者が同じ台帳を分散して持つため、一部を書き換えても他と矛盾し、改ざんが極めて困難になります。\n試験では「改ざんが難しい分散台帳」「暗号資産の基盤技術」として問われます。中央の管理者がいなくても信頼を保てる点が特徴で、ハッシュ値で前後のブロックを結びつけている点も要点です。",
-      "analogy_jp": "全員が同じ取引ノートを持ち寄って常に照合し合う仕組み。1人が勝手に1ページ書き換えても、他全員のノートと食い違うのですぐバレます。",
-      "memory_hook_jp": "ブロックチェーンといえば改ざん困難な分散台帳",
-      "inline_quiz": [
-        "2019r01a-q059"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"ブロック1\"] --> B[\"ブロック2\"]; B --> C[\"ブロック3\"]; C --> D[\"ブロック4\"]",
-        "svg_path": "figures/technology-23-63-u04-t02.svg",
-        "rendered": true
-      },
       "term_zh": "区块链",
       "term_en": "Blockchain",
-      "definition_zh": "将交易记录以区块链式串联、分布式管理、难以篡改的账本技术。",
-      "definition_en": "A ledger technology that links transaction records into a chain of blocks, manages them in a distributed manner, and makes tampering difficult.",
-      "explanation_zh": "区块链是把交易数据归集到「区块」中，在继承前一区块信息的同时，像链条一样依次串联起来的技术。由于众多参与者分布式地持有同一份账本，即使改写其中一部分也会与其他副本产生矛盾，使篡改变得极其困难。\n考试中以「难以篡改的分布式账本」「加密资产的基础技术」出题。其特点是即使没有中央管理者也能保持信任，并且用哈希值把前后区块连接起来，这一点也是要点。",
-      "explanation_en": "Blockchain is a technology that gathers transaction data into \"blocks\" and links them one after another like a chain, while each block carries over information from the previous one. Because many participants hold the same ledger in a distributed way, rewriting one part contradicts the others, making tampering extremely difficult.\nIn exams, it is asked about as a \"hard-to-tamper distributed ledger\" and \"the foundational technology of crypto assets.\" Its feature is that trust can be maintained even without a central administrator, and a key point is that consecutive blocks are linked together by hash values.",
-      "analogy_zh": "就像所有人都带来同一本交易笔记本、时刻互相核对的机制。一个人擅自改了一页，就会和其他所有人的笔记本对不上，马上就会被发现。",
-      "analogy_en": "Like a system where everyone brings the same transaction notebook and constantly cross-checks each other. If one person secretly rewrites a page, it no longer matches everyone else's notebooks, so it is caught immediately.",
-      "memory_hook_zh": "说到区块链，就是难以篡改的分布式账本",
-      "memory_hook_en": "Blockchain → a hard-to-tamper distributed ledger"
+      "one_jp": "**ブロックチェーン**は、取引記録をまとめた「ブロック」に、直前のブロックの中身から計算した値（**ハッシュ値**）を含めて鎖のようにつなぎ、その台帳を多数のコンピュータで共有する技術である。",
+      "one_zh": "**区块链**（[[jp:ブロックチェーン]]）是把汇总了交易记录的“区块”连同由前一个区块内容算出的值（**散列值**）像链条一样串联起来，并由众多计算机共享这本账本的技术。",
+      "one_en": "A **blockchain** ([[jp:ブロックチェーン]]) is a technology that bundles transaction records into \"blocks,\" puts into each block a value calculated from the contents of the previous one (a **hash value**) so they link like a chain, and shares the resulting ledger among many computers.",
+      "detail_jp": "過去のブロックを書き換えるとそのハッシュ値が変わり、後ろのブロックが持つ値と合わなくなる。さらに同じ台帳を持つ多数の参加者の記録とも食い違うため、気づかれずに改ざんすることは難しい。暗号資産の基盤として生まれ、ほかの取引記録の管理にも使われている。",
+      "detail_zh": "一旦改写过去的区块，它的散列值就会变化，与后面区块所持有的值对不上。再加上还会与持有同一账本的众多参与者的记录产生矛盾，因此很难在不被察觉的情况下篡改。区块链最初是作为加密资产的基础技术而诞生的，如今也用于管理其他交易记录。",
+      "detail_en": "Rewriting a past block changes its hash value, which then no longer matches the value stored in the block after it. The altered copy would also conflict with the records held by the many other participants, so tampering without being noticed is difficult. Blockchain began as the foundation of crypto assets and is now used to manage other kinds of transaction records too.",
+      "analogy_jp": "クラス全員が同じ出納帳を持ち、各ページの最後に前のページの合計を書き写しておく仕組み。誰か一人が昔のページを書き換えても、次のページや他の人の帳面と合わずにすぐ分かる。",
+      "analogy_zh": "就像全班每人都持有同一本收支账，每页末尾都抄上前一页的合计。哪怕有人改了以前的某页，也会和下一页或别人的账本对不上，马上露馅。",
+      "analogy_en": "Like everyone in a class keeping the same cashbook, with each page ending in a copy of the previous page's total. If one person rewrites an old page, it no longer matches the next page or anyone else's book, and the change shows at once.",
+      "hook_jp": "名前どおり block（かたまり）を chain（鎖）でつないだもの。鎖の輪にあたるのがハッシュ値。",
+      "hook_zh": "顾名思义，就是用 chain（链）把 block（块）串起来。链条上的每一环就是散列值。",
+      "hook_en": "Just as the name says: blocks joined into a chain. The links of the chain are the hash values.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "各ブロックに直前のハッシュ値を入れてつなぐため、記録を矛盾なく書き換えることが難しい。",
+          "text_zh": "每个区块都放入前一个区块的散列值并相互串联，因此很难在不产生矛盾的情况下改写记录。",
+          "text_en": "Because each block carries the previous block's hash value, records are hard to rewrite without creating inconsistencies.",
+          "qids": [
+            "2019r01a-q059"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "多くのコンピュータが同じ台帳を持ち合い、各自が内容の正しさを確かめる分散型台帳で、暗号資産の土台になっている。",
+          "text_zh": "它是由许多计算机共同持有同一账本、各自确认内容正确性的分布式账本，也是加密资产的基础。",
+          "text_en": "It is a distributed ledger in which many computers hold the same ledger and each checks that its contents are correct, and it underpins crypto assets.",
+          "qids": [
+            "2021r03-q097"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "使われるハッシュ関数は、同じ入力からはいつも同じ値を出し、値から元のデータには戻せない。",
+          "text_zh": "其中使用的散列函数对相同的输入总是输出相同的值，且无法从该值还原出原始数据。",
+          "text_en": "The hash function it uses always produces the same value for the same input, and the original data cannot be recovered from that value.",
+          "qids": [
+            "2019r01a-q093",
+            "2026r08-q091"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "b1",
+              "label": {
+                "jp": "ブロック1（取引記録）",
+                "zh": "区块1（交易记录）",
+                "en": "Block 1 (transaction records)"
+              }
+            },
+            {
+              "id": "b2",
+              "label": {
+                "jp": "ブロック2（ブロック1から計算した値＋取引記録）",
+                "zh": "区块2（由区块1算出的值＋交易记录）",
+                "en": "Block 2 (value from Block 1 + transaction records)"
+              }
+            },
+            {
+              "id": "b3",
+              "label": {
+                "jp": "ブロック3（ブロック2から計算した値＋取引記録）",
+                "zh": "区块3（由区块2算出的值＋交易记录）",
+                "en": "Block 3 (value from Block 2 + transaction records)"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "最初のブロックに取引記録をまとめる。",
+            "caption_zh": "把交易记录汇总到第一个区块中。",
+            "caption_en": "Gather transaction records into the first block.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "次のブロックは、前のブロックの中身から計算した値（ハッシュ値。中身が少しでも変わると別の値になる）を持つ。",
+            "caption_zh": "下一个区块持有由前一个区块内容算出的值（散列值；内容哪怕只变一点，值也会完全不同）。",
+            "caption_en": "The next block holds a value calculated from the previous block's contents (a hash value, which changes entirely if the contents change even slightly).",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "ブロック3 もブロック2 から計算した値を持ち、鎖が順に延びていく。",
+            "caption_zh": "区块3 同样持有由区块2 算出的值，链条就这样依次延伸。",
+            "caption_en": "Block 3 likewise holds a value calculated from Block 2, and the chain keeps growing in order.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2019r01a-q059",
+        "2025r07-q025",
+        "2026r08-q091"
+      ],
+      "definition_jp": "ブロックチェーンは、取引記録をまとめた「ブロック」に、直前のブロックの中身から計算した値（ハッシュ値）を含めて鎖のようにつなぎ、その台帳を多数のコンピュータで共有する技術である。",
+      "definition_zh": "区块链（ブロックチェーン）是把汇总了交易记录的“区块”连同由前一个区块内容算出的值（散列值）像链条一样串联起来，并由众多计算机共享这本账本的技术。",
+      "definition_en": "A blockchain (ブロックチェーン) is a technology that bundles transaction records into \"blocks,\" puts into each block a value calculated from the contents of the previous one (a hash value) so they link like a chain, and shares the resulting ledger among many computers.",
+      "explanation_jp": "過去のブロックを書き換えるとそのハッシュ値が変わり、後ろのブロックが持つ値と合わなくなる。さらに同じ台帳を持つ多数の参加者の記録とも食い違うため、気づかれずに改ざんすることは難しい。暗号資産の基盤として生まれ、ほかの取引記録の管理にも使われている。",
+      "explanation_zh": "一旦改写过去的区块，它的散列值就会变化，与后面区块所持有的值对不上。再加上还会与持有同一账本的众多参与者的记录产生矛盾，因此很难在不被察觉的情况下篡改。区块链最初是作为加密资产的基础技术而诞生的，如今也用于管理其他交易记录。",
+      "explanation_en": "Rewriting a past block changes its hash value, which then no longer matches the value stored in the block after it. The altered copy would also conflict with the records held by the many other participants, so tampering without being noticed is difficult. Blockchain began as the foundation of crypto assets and is now used to manage other kinds of transaction records too.",
+      "memory_hook_jp": "名前どおり block（かたまり）を chain（鎖）でつないだもの。鎖の輪にあたるのがハッシュ値。",
+      "memory_hook_zh": "顾名思义，就是用 chain（链）把 block（块）串起来。链条上的每一环就是散列值。",
+      "memory_hook_en": "Just as the name says: blocks joined into a chain. The links of the chain are the hash values.",
+      "inline_quiz": [
+        "2019r01a-q059",
+        "2025r07-q025",
+        "2026r08-q091"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "耐タンパ性",
-      "definition_jp": "機器内部の情報を不正に解析・改変されにくくする物理的な堅牢性。",
-      "explanation_jp": "耐タンパ性とは、ICカードやセキュリティチップなどの内部に保存された鍵やプログラムを、分解・解析・改ざんから守る能力のことです。「タンパ(tamper)」は改ざん・いじるという意味です。\n試験では「物理的な解析や攻撃への耐性」という意味を押さえます。例えば、カバーをこじ開けようとすると内部データが自動消去される仕組みなどが該当します。IoT機器やTPMなど、ハードウェア保護の土台となる概念です。",
-      "analogy_jp": "金庫をこじ開けようとすると中身が燃えて消える仕掛けのように、無理に中を覗こうとすると秘密が守られて読めなくなる頑丈さです。",
-      "memory_hook_jp": "耐タンパ性といえば物理的な解析・改ざんへの耐性",
-      "inline_quiz": [
-        "2020r02o-q090"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "防篡改性",
       "term_en": "Tamper resistance",
-      "definition_zh": "使设备内部信息难以被非法解析、改动的物理坚固性。",
-      "definition_en": "Physical robustness that makes the information inside a device hard to illegally analyze or alter.",
-      "explanation_zh": "防篡改性是指保护 IC 卡、安全芯片等内部所保存的密钥或程序，使其免遭拆解、解析、篡改的能力。「tamper」一词意为篡改、动手脚。\n考试中要把握「对物理解析或攻击的抵抗力」这一含义。例如，当有人试图撬开外壳时，内部数据会自动清除等机制即属此类。它是 IoT 设备、TPM 等硬件防护的基础概念。",
-      "explanation_en": "Tamper resistance is the ability to protect keys and programs stored inside devices such as IC cards and security chips from disassembly, analysis, and alteration. The word \"tamper\" means to falsify or meddle with.\nIn exams, grasp the meaning \"resistance to physical analysis or attack.\" For example, a mechanism in which the internal data is automatically erased when someone tries to pry open the cover falls under this. It is a foundational concept for hardware protection in IoT devices, TPM, and the like.",
-      "analogy_zh": "就像保险柜一旦被撬就让里面的东西烧毁消失的装置——强行窥看内部时，秘密就被保护起来、读不出来的那种坚固。",
-      "analogy_en": "Like a safe rigged so that its contents burn up and vanish the moment someone tries to pry it open: a sturdiness where, if you force your way in to peek, the secret is protected and can no longer be read.",
-      "memory_hook_zh": "说到防篡改性，就是对物理解析、篡改的抵抗力",
-      "memory_hook_en": "Tamper resistance → resistance to physical analysis and tampering"
+      "one_jp": "**耐タンパ性**は、機器を分解したり信号を測ったりして中の鍵やデータを**読み出す・書き換える攻撃に耐える性質**である。",
+      "one_zh": "**防篡改性**（[[jp:耐タンパ性]]）是指**能够抵御通过拆开设备、测量信号等手段读取或改写内部密钥和数据之类攻击的性质**。",
+      "one_en": "**Tamper resistance** ([[jp:耐タンパ性]]) is **the ability to withstand attacks that read or rewrite the keys and data inside a device** by taking it apart or measuring its signals.",
+      "detail_jp": "タンパとは、機器に勝手に手を加えて中身を探ったりいじったりすることを指す。IoT 機器は人の手が届く場所に置かれ、盗まれることもあるため、手元で解析されても秘密が漏れにくいことが求められる。",
+      "detail_zh": "所谓篡改（tamper），是指擅自对设备动手脚，窥探或摆弄其内部。IoT（物联网）设备被放置在人手可及的地方，还可能被盗，因此要求即使落到他人手中被解析，秘密也不易泄露。",
+      "detail_en": "To tamper is to meddle with a device without permission in order to probe or alter what is inside. IoT devices sit where people can reach them and may even be stolen, so they need to keep their secrets even when someone analyzes them in hand.",
+      "analogy_jp": "無理にこじ開けると中の書類が読めなくなる仕掛けの金庫。",
+      "analogy_zh": "一种保险箱：硬撬的话，里面的文件就会变得无法阅读。",
+      "analogy_en": "A safe built so that forcing it open leaves the papers inside unreadable.",
+      "hook_jp": "tamper は英語で「勝手にいじる」。食品の「タンパーエビデント包装」（一度開けると跡が残る包装）と同じ語。",
+      "hook_zh": "tamper 在英语中意为“擅自摆弄”。与食品的“防拆封包装”（tamper-evident，一旦打开就会留下痕迹）用的是同一个词。",
+      "hook_en": "Tamper means \"to meddle with\" in English. It is the same word as in tamper-evident food packaging, which shows a trace once it has been opened.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ハードウェアなどの内部データを外から解読・改ざん・取出しされにくい性質が耐タンパ性で、可用性や信頼性とは別の言葉である。",
+          "text_zh": "硬件等内部数据难以被从外部破解、篡改或取出的性质就是防篡改性，它与可用性、可靠性是不同的概念。",
+          "text_en": "The property that keeps internal data in hardware and similar devices hard to decipher, alter or extract from outside is tamper resistance, a different term from availability or reliability.",
+          "qids": [
+            "2020r02o-q090"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "高める対策の例は、鍵を内蔵したセキュリティチップでデータを暗号化することや、内蔵ソフトウェアを難読化することである。",
+          "text_zh": "提升防篡改性的措施示例，包括用内置密钥的安全芯片加密数据，以及对内置软件进行混淆。",
+          "text_en": "Examples of measures that raise it include encrypting data with a security chip that holds a built-in key, and obfuscating the embedded software.",
+          "qids": [
+            "2021r03-q073",
+            "2023r05-q057"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "通信路の暗号化やソフトウェアの更新は、盗聴や既知の脆弱性への対策で、機器を手元で解析されにくくするものではない。",
+          "text_zh": "通信线路的加密和软件更新，是针对窃听或已知漏洞的对策，并不能让设备在他人手中更难被解析。",
+          "text_en": "Encrypting the communication path and updating software counter eavesdropping and known vulnerabilities; they do not make a device harder to analyze once it is in someone's hands.",
+          "qids": [
+            "2021r03-q073",
+            "2023r05-q057"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "root",
+            "label": {
+              "jp": "耐タンパ性を高める工夫（例）",
+              "zh": "提升防篡改性的措施（示例）",
+              "en": "Ways to raise tamper resistance (examples)"
+            },
+            "children": [
+              {
+                "id": "hw",
+                "label": {
+                  "jp": "ハードウェアの工夫",
+                  "zh": "硬件方面的措施",
+                  "en": "Hardware measures"
+                },
+                "children": [
+                  {
+                    "id": "chip",
+                    "label": {
+                      "jp": "鍵をセキュリティチップの中に閉じ込める",
+                      "zh": "把密钥封存在安全芯片内部",
+                      "en": "Keep keys sealed inside a security chip"
+                    }
+                  },
+                  {
+                    "id": "erase",
+                    "label": {
+                      "jp": "ケースを開けると記憶内容を消す",
+                      "zh": "一旦打开外壳就清除存储内容",
+                      "en": "Erase stored data when the case is opened"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "sw",
+                "label": {
+                  "jp": "ソフトウェアの工夫",
+                  "zh": "软件方面的措施",
+                  "en": "Software measures"
+                },
+                "children": [
+                  {
+                    "id": "obf",
+                    "label": {
+                      "jp": "プログラムを読みにくく変換する（難読化）",
+                      "zh": "把程序转换成难以读懂的形式（混淆）",
+                      "en": "Transform the program so it is hard to read (obfuscation)"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2020r02o-q090",
+        "2023r05-q057"
+      ],
+      "definition_jp": "耐タンパ性は、機器を分解したり信号を測ったりして中の鍵やデータを読み出す・書き換える攻撃に耐える性質である。",
+      "definition_zh": "防篡改性（耐タンパ性）是指能够抵御通过拆开设备、测量信号等手段读取或改写内部密钥和数据之类攻击的性质。",
+      "definition_en": "Tamper resistance (耐タンパ性) is the ability to withstand attacks that read or rewrite the keys and data inside a device by taking it apart or measuring its signals.",
+      "explanation_jp": "タンパとは、機器に勝手に手を加えて中身を探ったりいじったりすることを指す。IoT 機器は人の手が届く場所に置かれ、盗まれることもあるため、手元で解析されても秘密が漏れにくいことが求められる。",
+      "explanation_zh": "所谓篡改（tamper），是指擅自对设备动手脚，窥探或摆弄其内部。IoT（物联网）设备被放置在人手可及的地方，还可能被盗，因此要求即使落到他人手中被解析，秘密也不易泄露。",
+      "explanation_en": "To tamper is to meddle with a device without permission in order to probe or alter what is inside. IoT devices sit where people can reach them and may even be stolen, so they need to keep their secrets even when someone analyzes them in hand.",
+      "memory_hook_jp": "tamper は英語で「勝手にいじる」。食品の「タンパーエビデント包装」（一度開けると跡が残る包装）と同じ語。",
+      "memory_hook_zh": "tamper 在英语中意为“擅自摆弄”。与食品的“防拆封包装”（tamper-evident，一旦打开就会留下痕迹）用的是同一个词。",
+      "memory_hook_en": "Tamper means \"to meddle with\" in English. It is the same word as in tamper-evident food packaging, which shows a trace once it has been opened.",
+      "inline_quiz": [
+        "2020r02o-q090",
+        "2023r05-q057"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "セキュアブート",
-      "definition_jp": "起動時にOSやプログラムが正規のものか検証してから動かす仕組み。",
-      "explanation_jp": "セキュアブートは、機器の起動(ブート)時に、読み込むOSやファームウェアが改ざんされていないか、正規の署名があるかを検証する機構です。検証に通ったソフトウェアだけを実行します。\n試験では「起動時の正当性検証」が要点です。不正なプログラムやマルウェアが起動段階で混入するのを防ぎ、安全な状態でシステムを立ち上げます。後述のTPMが鍵の管理を担い、この検証を支えることが多い点も関連づけて覚えましょう。",
-      "analogy_jp": "建物に入る前に、入口で全員の身分証(署名)を確認し、本物だけを通す入館チェック。怪しい者は起動の段階で締め出します。",
-      "memory_hook_jp": "セキュアブートといえば起動時に正規ソフトを検証",
+      "term_zh": "安全启动",
+      "term_en": "Secure boot",
+      "one_jp": "**セキュアブート**は、機器の起動時に OS やファームウェアの**デジタル署名を検証**し、正当と確認できたソフトウェアだけを実行する技術である。",
+      "one_zh": "**安全启动**（[[jp:セキュアブート]]）是在设备启动时对操作系统和固件**验证数字签名**、只运行经确认合法的软件的技术。",
+      "one_en": "**Secure boot** ([[jp:セキュアブート]]) is a technology that **verifies the digital signatures** of the OS and firmware when a device starts up and runs only software confirmed to be legitimate.",
+      "detail_jp": "デジタル署名は作成者だけが持つ鍵で付ける印で、作成者が本物か、内容が書き換えられていないかを確かめられる。起動の途中に改ざんされたプログラムが入り込むと、後から動く対策ソフトでは見つけにくいため、起動の段階で止める。IoT 機器のソフトウェア改ざん対策にも使われる。",
+      "detail_zh": "数字签名是用只有作者持有的密钥附加的标记，可以确认作者是否真实、内容是否被改写。被篡改的程序一旦在启动过程中混入，之后才运行的安全软件很难发现它，所以要在启动阶段就拦住。IoT（物联网）设备也用它来防止软件被篡改。",
+      "detail_en": "A digital signature is a mark applied with a key that only the author holds, letting you confirm that the author is genuine and the contents have not been changed. If a tampered program slips in during startup, security software that runs later struggles to detect it, so the check stops it at the boot stage. IoT devices also use it to guard their software against tampering.",
+      "analogy_jp": "ビルの入口で一人ずつ社員証を確かめ、本物の社員だけを中に入れる受付。",
+      "analogy_zh": "就像大楼入口的前台逐一核对工牌，只放真正的员工进去。",
+      "analogy_en": "Like a front desk at a building entrance that checks each person's staff ID and lets only real employees in.",
+      "hook_jp": "boot は bootstrap（ブーツのつまみ革）から来た語で、電源を入れて OS が立ち上がるまでの流れを指す。そこを secure（安全）にするのがセキュアブート。",
+      "hook_zh": "boot 源自 bootstrap（靴子后跟的提带），指从接通电源到操作系统启动完毕的过程。让这一过程变得 secure（安全），就是安全启动。",
+      "hook_en": "Boot comes from bootstrap, the loop at the back of a boot, and refers to the process from power-on until the OS is up and running. Making that process secure gives you secure boot.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "セキュアブートは起動時にデジタル署名を検証し、正当なものだけを実行する。単に再起動することを指すリブートとは違う。",
+          "text_zh": "安全启动在启动时验证数字签名，只运行合法的软件。它不同于单纯指重新启动的 reboot（重启，[[jp:リブート]]）。",
+          "text_en": "Secure boot verifies digital signatures at startup and runs only legitimate software. It is not the same as a reboot ([[jp:リブート]]), which simply means restarting.",
+          "qids": [
+            "2023r05-q085"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "企画や設計の段階からセキュリティを作り込む考え方はセキュリティバイデザインである。起動時の検証技術であるセキュアブートと取り違えない。",
+          "text_zh": "从规划、设计阶段就把安全性融入其中的理念是安全内建（Security by Design，[[jp:セキュリティバイデザイン]]）。不要把它与启动时的验证技术——安全启动混淆。",
+          "text_en": "Building security in from the planning and design stages is the idea of security by design ([[jp:セキュリティバイデザイン]]). Do not confuse it with secure boot, a verification technique used at startup.",
+          "qids": [
+            "2023r05-q061"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "power",
+              "label": {
+                "jp": "電源オン",
+                "zh": "接通电源",
+                "en": "Power on"
+              }
+            },
+            {
+              "id": "fw",
+              "label": {
+                "jp": "ファームウェアの署名を検証",
+                "zh": "验证固件的签名",
+                "en": "Verify the firmware signature"
+              }
+            },
+            {
+              "id": "os",
+              "label": {
+                "jp": "OS の署名を検証",
+                "zh": "验证操作系统的签名",
+                "en": "Verify the OS signature"
+              }
+            },
+            {
+              "id": "run",
+              "label": {
+                "jp": "検証に通れば起動",
+                "zh": "验证通过即启动",
+                "en": "Boot if verification passes"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "電源が入ると、最初に読み込むファームウェアの署名（作成者が本物か・書き換えがないかを示す印）を確かめる。",
+            "caption_zh": "接通电源后，先确认最先加载的固件的签名（用于表明作者是否真实、内容有无被改写的标记）。",
+            "caption_en": "When the power comes on, first check the signature of the firmware that loads first (a mark showing whether the author is genuine and the contents are unaltered).",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "続いて、次に読み込む OS の署名を確かめる。",
+            "caption_zh": "接着，确认下一个要加载的操作系统的签名。",
+            "caption_en": "Next, check the signature of the OS that loads after it.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "署名が正当なら起動を続け、合わなければそこで止める。",
+            "caption_zh": "签名合法就继续启动，不符则在此停止。",
+            "caption_en": "If the signature is valid, startup continues; if not, it stops there.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2023r05-q085",
+        "2023r05-q061"
+      ],
+      "definition_jp": "セキュアブートは、機器の起動時に OS やファームウェアのデジタル署名を検証し、正当と確認できたソフトウェアだけを実行する技術である。",
+      "definition_zh": "安全启动（セキュアブート）是在设备启动时对操作系统和固件验证数字签名、只运行经确认合法的软件的技术。",
+      "definition_en": "Secure boot (セキュアブート) is a technology that verifies the digital signatures of the OS and firmware when a device starts up and runs only software confirmed to be legitimate.",
+      "explanation_jp": "デジタル署名は作成者だけが持つ鍵で付ける印で、作成者が本物か、内容が書き換えられていないかを確かめられる。起動の途中に改ざんされたプログラムが入り込むと、後から動く対策ソフトでは見つけにくいため、起動の段階で止める。IoT 機器のソフトウェア改ざん対策にも使われる。",
+      "explanation_zh": "数字签名是用只有作者持有的密钥附加的标记，可以确认作者是否真实、内容是否被改写。被篡改的程序一旦在启动过程中混入，之后才运行的安全软件很难发现它，所以要在启动阶段就拦住。IoT（物联网）设备也用它来防止软件被篡改。",
+      "explanation_en": "A digital signature is a mark applied with a key that only the author holds, letting you confirm that the author is genuine and the contents have not been changed. If a tampered program slips in during startup, security software that runs later struggles to detect it, so the check stops it at the boot stage. IoT devices also use it to guard their software against tampering.",
+      "memory_hook_jp": "boot は bootstrap（ブーツのつまみ革）から来た語で、電源を入れて OS が立ち上がるまでの流れを指す。そこを secure（安全）にするのがセキュアブート。",
+      "memory_hook_zh": "boot 源自 bootstrap（靴子后跟的提带），指从接通电源到操作系统启动完毕的过程。让这一过程变得 secure（安全），就是安全启动。",
+      "memory_hook_en": "Boot comes from bootstrap, the loop at the back of a boot, and refers to the process from power-on until the OS is up and running. Making that process secure gives you secure boot.",
       "inline_quiz": [
+        "2023r05-q085",
         "2023r05-q061"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "安全启动",
-      "term_en": "Secure boot",
-      "definition_zh": "启动时先验证 OS 或程序是否为正规版本，再让其运行的机制。",
-      "definition_en": "A mechanism that verifies whether the OS or programs are legitimate at startup before allowing them to run.",
-      "explanation_zh": "安全启动是在设备启动（boot）时，验证所加载的 OS 或固件是否被篡改、是否带有正规签名的机制。只有通过验证的软件才会被执行。\n考试中的要点是「启动时的正当性验证」。它防止非法程序或恶意软件在启动阶段混入，使系统在安全的状态下启动。后文的 TPM 常负责密钥管理、支撑这一验证过程，这一点也要关联起来记忆。",
-      "explanation_en": "Secure boot is a mechanism that, when a device starts up (boots), verifies whether the OS or firmware being loaded has been tampered with and whether it carries a legitimate signature. Only software that passes verification is executed.\nThe key point in exams is \"legitimacy verification at startup.\" It prevents illegitimate programs or malware from slipping in during the startup phase, bringing the system up in a safe state. Often the TPM described later handles key management and supports this verification, so remember them in association.",
-      "analogy_zh": "就像进楼前在入口核对每个人的身份证（签名）、只放真品通过的入门检查。可疑者在启动阶段就被挡在门外。",
-      "analogy_en": "Like an entry check that verifies everyone's ID (signature) at the door before they enter the building and only lets the genuine ones through. Suspicious parties are shut out at the startup stage.",
-      "memory_hook_zh": "说到安全启动，就是启动时验证正规软件",
-      "memory_hook_en": "Secure boot → verify legitimate software at startup"
+      "figure": null
     },
     {
       "term": "TPM",
-      "definition_jp": "暗号鍵などを安全に保管・処理する専用のセキュリティチップ。",
-      "explanation_jp": "TPM(Trusted Platform Module)は、PCなどに搭載される暗号処理専用のチップで、暗号鍵やパスワード、証明書などを内部に安全に保管します。耐タンパ性を備え、外部から鍵を取り出されにくい構造です。\n試験では「鍵を保管する専用ハードウェア」として問われます。ソフトウェアで鍵を持つより安全で、セキュアブートやディスク暗号化(BitLockerなど)の基盤として使われます。チップという物理部品である点が、ソフト的な対策との違いです。",
-      "analogy_jp": "家の大事な鍵だけを、頑丈な専用の貸金庫に預けておくイメージ。鍵そのものは外に出さず、必要な処理は金庫の中だけで行います。",
-      "memory_hook_jp": "TPMといえば鍵を安全に保管する専用チップ",
+      "term_zh": "TPM（可信平台模块）",
+      "term_en": "TPM (Trusted Platform Module)",
+      "one_jp": "**TPM**（Trusted Platform Module）は、PC や IoT 機器に載せる**セキュリティチップ**で、暗号化に使う鍵を内部に記憶し、暗号処理をチップの中で行う。",
+      "one_zh": "**TPM**（可信平台模块，Trusted Platform Module）是装在 PC（个人计算机）或 IoT（物联网）设备上的**安全芯片**，在内部存储加密所用的密钥，并在芯片内完成加密处理。",
+      "one_en": "A **TPM** (Trusted Platform Module) is a **security chip** built into PCs and IoT devices that stores encryption keys internally and carries out cryptographic processing inside the chip.",
+      "detail_jp": "鍵をチップの外に出さずに処理し、チップ自体も外から中身を読み出しにくい作りになっているため、鍵をソフトウェアで保存するより盗まれにくい。例えば、ディスク全体の暗号化の鍵を守る用途で使われる。",
+      "detail_zh": "密钥不离开芯片就能完成处理，芯片本身也被设计得难以从外部读取内容，因此比用软件保存密钥更不容易被盗。例如，它被用于保护全磁盘加密的密钥。",
+      "detail_en": "Because the key never leaves the chip during processing, and the chip itself is built to resist reading from outside, the key is harder to steal than one stored by software. One use is protecting the key for full-disk encryption.",
+      "analogy_jp": "大事な印鑑を銀行の貸金庫に預け、押印も金庫室の中でだけ行ってもらうようなもの。印鑑そのものは外に出てこない。",
+      "analogy_zh": "就像把重要的印章寄存在银行保险库里，盖章也只请人在金库里完成。印章本身从不被拿出来。",
+      "analogy_en": "Like leaving an important seal in a bank's safe-deposit vault and having documents stamped only inside the vault room. The seal itself never comes out.",
+      "hook_jp": "Trusted Platform Module ＝ 機器（Platform）に載せる、信頼（Trusted）の拠り所となる部品。「TPM チップ」と呼ばれることが多い。",
+      "hook_zh": "Trusted Platform Module＝装在设备（Platform）上、作为信任（Trusted）基础的部件。常被称为“TPM 芯片”。",
+      "hook_en": "Trusted Platform Module: a module mounted on the device (platform) that serves as the anchor of trust (trusted). It is often just called a TPM chip.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "TPM は、データ暗号化の鍵を内部に記憶し、外から中身を取り出しにくいセキュリティチップである。",
+          "text_zh": "TPM（可信平台模块）是在内部存储数据加密用的密钥、难以从外部取出其中内容的安全芯片。",
+          "text_en": "A TPM is a security chip that stores data-encryption keys internally and resists having its contents extracted from outside.",
+          "qids": [
+            "2019r01a-q073"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "TLS は通信路を暗号化する手順、GPU は画像処理用のプロセッサで、どちらも鍵を保管するチップではない。",
+          "text_zh": "TLS 是加密通信线路的协议，GPU（图形处理器）是用于图像处理的处理器，二者都不是保管密钥的芯片。",
+          "text_en": "TLS is a protocol for encrypting the communication path and a GPU is a processor for graphics; neither is a chip that stores keys.",
+          "qids": [
+            "2019r01a-q073"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2019r01a-q073"
+      ],
+      "definition_jp": "TPM（Trusted Platform Module）は、PC や IoT 機器に載せるセキュリティチップで、暗号化に使う鍵を内部に記憶し、暗号処理をチップの中で行う。",
+      "definition_zh": "TPM（可信平台模块，Trusted Platform Module）是装在 PC（个人计算机）或 IoT（物联网）设备上的安全芯片，在内部存储加密所用的密钥，并在芯片内完成加密处理。",
+      "definition_en": "A TPM (Trusted Platform Module) is a security chip built into PCs and IoT devices that stores encryption keys internally and carries out cryptographic processing inside the chip.",
+      "explanation_jp": "鍵をチップの外に出さずに処理し、チップ自体も外から中身を読み出しにくい作りになっているため、鍵をソフトウェアで保存するより盗まれにくい。例えば、ディスク全体の暗号化の鍵を守る用途で使われる。",
+      "explanation_zh": "密钥不离开芯片就能完成处理，芯片本身也被设计得难以从外部读取内容，因此比用软件保存密钥更不容易被盗。例如，它被用于保护全磁盘加密的密钥。",
+      "explanation_en": "Because the key never leaves the chip during processing, and the chip itself is built to resist reading from outside, the key is harder to steal than one stored by software. One use is protecting the key for full-disk encryption.",
+      "memory_hook_jp": "Trusted Platform Module ＝ 機器（Platform）に載せる、信頼（Trusted）の拠り所となる部品。「TPM チップ」と呼ばれることが多い。",
+      "memory_hook_zh": "Trusted Platform Module＝装在设备（Platform）上、作为信任（Trusted）基础的部件。常被称为“TPM 芯片”。",
+      "memory_hook_en": "Trusted Platform Module: a module mounted on the device (platform) that serves as the anchor of trust (trusted). It is often just called a TPM chip.",
       "inline_quiz": [
         "2019r01a-q073"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "TPM（可信平台模块）",
-      "term_en": "TPM (Trusted Platform Module)",
-      "definition_zh": "用于安全保存、处理加密密钥等的专用安全芯片。",
-      "definition_en": "A dedicated security chip that securely stores and processes encryption keys and similar data.",
-      "explanation_zh": "TPM（Trusted Platform Module，可信平台模块）是搭载于 PC 等设备上的加密处理专用芯片，将加密密钥、密码、证书等安全地保存在内部。它具备防篡改性，结构上使密钥难以被外部取出。\n考试中以「保存密钥的专用硬件」出题。它比用软件持有密钥更安全，被用作安全启动、磁盘加密（如 BitLocker）的基础。它是芯片这种物理部件，这一点是与软件层面对策的区别。",
-      "explanation_en": "A TPM (Trusted Platform Module) is a chip dedicated to cryptographic processing, mounted on devices such as PCs, that securely stores encryption keys, passwords, certificates, and the like internally. It has tamper resistance and is structured so that keys are hard to extract from the outside.\nIn exams, it is asked about as \"dedicated hardware that stores keys.\" It is safer than holding keys in software, and is used as the foundation for secure boot and disk encryption (such as BitLocker). The fact that it is a physical component—a chip—is what distinguishes it from software-based measures.",
-      "analogy_zh": "就像把家里最重要的钥匙单独存进一个坚固的专用保险箱。钥匙本身不拿到外面，需要的处理都只在保险箱内完成。",
-      "analogy_en": "Picture depositing only your home's most important key into a sturdy, dedicated safe-deposit box. The key itself never leaves; any processing it needs is done entirely inside the box.",
-      "memory_hook_zh": "说到 TPM，就是安全保存密钥的专用芯片",
-      "memory_hook_en": "TPM → a dedicated chip that securely stores keys"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "デジタルフォレンジックス",
+      "b": "ペネトレーションテスト",
+      "rows": [
+        {
+          "label_jp": "行う時期",
+          "label_zh": "实施时机",
+          "label_en": "When it is done",
+          "a_jp": "インシデントが起きた後",
+          "a_zh": "安全事件发生之后",
+          "a_en": "After an incident",
+          "b_jp": "攻撃を受ける前",
+          "b_zh": "遭受攻击之前",
+          "b_en": "Before an attack",
+          "key": true
+        },
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "何が起きたかを調べ、証拠を残す",
+          "a_zh": "查明发生了什么，并留存证据",
+          "a_en": "Find out what happened and keep evidence",
+          "b_jp": "弱点を見つけて直す",
+          "b_zh": "找出弱点并修补",
+          "b_en": "Find weaknesses and fix them",
+          "key": false
+        },
+        {
+          "label_jp": "やること",
+          "label_zh": "做什么",
+          "label_en": "What is done",
+          "a_jp": "機器やログを集めて保全し、複製を分析する",
+          "a_zh": "收集并保全设备和日志，分析副本",
+          "a_en": "Collect and preserve devices and logs, then analyze copies",
+          "b_jp": "許可を得てシステムに侵入を試す",
+          "b_zh": "在获得许可后尝试入侵系统",
+          "b_en": "Attempt to break into the system with permission",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "耐タンパ性",
+      "b": "TPM",
+      "rows": [
+        {
+          "label_jp": "何を指すか",
+          "label_zh": "指什么",
+          "label_en": "What it refers to",
+          "a_jp": "機器がもつ性質",
+          "a_zh": "设备具备的性质",
+          "a_en": "A property of a device",
+          "b_jp": "具体的な部品（チップ）",
+          "b_zh": "具体的部件（芯片）",
+          "b_en": "A specific component (chip)",
+          "key": true
+        },
+        {
+          "label_jp": "関係",
+          "label_zh": "关系",
+          "label_en": "Relationship",
+          "a_jp": "高めたい目標",
+          "a_zh": "想要提升的目标",
+          "a_en": "The goal to improve",
+          "b_jp": "耐タンパ性を高める手段の一つ",
+          "b_zh": "提升防篡改性的手段之一",
+          "b_en": "One way to raise tamper resistance",
+          "key": false
+        },
+        {
+          "label_jp": "守るもの",
+          "label_zh": "保护对象",
+          "label_en": "What it protects",
+          "a_jp": "機器の中の鍵やデータ全般",
+          "a_zh": "设备内的密钥和数据整体",
+          "a_en": "Keys and data inside the device in general",
+          "b_jp": "主に暗号化に使う鍵",
+          "b_zh": "主要是加密用的密钥",
+          "b_en": "Mainly keys used for encryption",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**電子透かし**は見た目を変えずに情報を埋め込む技術で、ソフトウェアの改ざん確認に使うコード署名とは目的が違う。",
+    "**デジタルフォレンジックス**は事件の後に証拠を集めて保全・分析し、**ペネトレーションテスト**は事前に侵入を試して弱点を探す。",
+    "**ブロックチェーン**は直前のブロックのハッシュ値でつながり、多数のコンピュータで共有されるため、改ざんが難しい。",
+    "**耐タンパ性**は機器の中身を解析されにくい性質で、鍵を内蔵する **TPM** はそれを高める手段の一つである。",
+    "**セキュアブート**は起動時に署名を検証し、正当なソフトウェアだけを動かす。"
+  ],
+  "key_points_zh": [
+    "**数字水印**是在不改变外观的情况下嵌入信息的技术，与用于确认软件是否被篡改的代码签名目的不同。",
+    "**数字取证**在事件发生后收集、保全并分析证据，**渗透测试**则在事前尝试入侵以寻找弱点。",
+    "**区块链**通过前一个区块的散列值相互串联，并由众多计算机共享，因此难以篡改。",
+    "**防篡改性**是设备内部不易被解析的性质，内置密钥的 **TPM** 是提升它的手段之一。",
+    "**安全启动**在启动时验证签名，只运行合法的软件。"
+  ],
+  "key_points_en": [
+    "A **digital watermark** embeds information without changing how content looks, a different purpose from code signing, which checks whether software has been altered.",
+    "**Digital forensics** gathers, preserves and analyzes evidence after an incident, while **penetration testing** tries to break in beforehand to find weaknesses.",
+    "A **blockchain** is hard to tamper with because its blocks are linked by the previous block's hash value and shared among many computers.",
+    "**Tamper resistance** is the property of a device whose insides are hard to analyze, and a **TPM** with built-in keys is one way to raise it.",
+    "**Secure boot** verifies signatures at startup and runs only legitimate software."
+  ],
+  "overview": {
+    "intro_jp": "電子透かしが情報を埋め込む目的と、ブロックチェーンが記録を改ざんしにくくする仕組みを説明できる。デジタルフォレンジックス（事後の証拠保全）とペネトレーションテスト（事前の侵入検査）を、行う時期と目的で区別できる。IoT 機器を守る耐タンパ性と、それを高める TPM、起動時に働くセキュアブートの役割を説明できる。",
+    "intro_zh": "能够说明数字水印嵌入信息的目的，以及区块链让记录难以被篡改的原理。能够按照实施时机和目的，区分数字取证（事后保全证据）与渗透测试（事前检查能否入侵）。能够说明保护 IoT（物联网）设备的防篡改性，以及提升防篡改性的 TPM 和在启动时发挥作用的安全启动各自的作用。",
+    "intro_en": "Explain why a digital watermark embeds information, and how a blockchain makes records hard to tamper with. Tell digital forensics (preserving evidence after the fact) apart from penetration testing (probing for a way in beforehand) by when and why each is done. Explain tamper resistance, which protects IoT devices, along with the roles of the TPM that strengthens it and secure boot, which works at startup.",
+    "freq_badge": "頻出",
+    "est_minutes": 44
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "電子透かし: 電子透かしといえばコンテンツに見えない情報を埋め込む",
-      "デジタルフォレンジックス: デジタルフォレンジックスといえば事後の証拠保全と分析",
-      "ペネトレーションテスト: ペネトレーションテストといえば実際に攻撃して脆弱性を確認",
-      "ブロックチェーン: ブロックチェーンといえば改ざん困難な分散台帳",
-      "耐タンパ性: 耐タンパ性といえば物理的な解析・改ざんへの耐性",
-      "セキュアブート: セキュアブートといえば起動時に正規ソフトを検証",
-      "TPM: TPMといえば鍵を安全に保管する専用チップ"
-    ],
     "key_points_jp": [
-      "検査・証跡系の3技術は方向で区別する。電子透かしは埋め込みによる証跡、フォレンジックスは事後の証拠保全・分析、ペネトレーションテストは事前の能動的な侵入検査。",
-      "ペネトレーションテスト(事前に弱点を探す)とデジタルフォレンジックス(事後に原因を調べる)は対になる概念として狙われやすい。",
-      "ブロックチェーンは前後のブロックを連結し分散管理することで、改ざんを極めて困難にする台帳技術で、暗号資産の基盤。",
-      "耐タンパ性は物理的な解析・改ざんへの耐性という基礎概念で、TPMやIoT機器の保護を支える土台。",
-      "セキュアブートは起動時の正当性を検証し、TPMは鍵を保管する専用チップ。両者は連携してハードウェアの安全な起動を実現する。"
+      "電子透かしは見た目を変えずに情報を埋め込む技術で、ソフトウェアの改ざん確認に使うコード署名とは目的が違う。",
+      "デジタルフォレンジックスは事件の後に証拠を集めて保全・分析し、ペネトレーションテストは事前に侵入を試して弱点を探す。",
+      "ブロックチェーンは直前のブロックのハッシュ値でつながり、多数のコンピュータで共有されるため、改ざんが難しい。",
+      "耐タンパ性は機器の中身を解析されにくい性質で、鍵を内蔵する TPM はそれを高める手段の一つである。",
+      "セキュアブートは起動時に署名を検証し、正当なソフトウェアだけを動かす。"
     ],
     "key_points_zh": [
-      "检测与证据痕迹类的三项技术要按方向来区分：数字水印是靠嵌入留下证据痕迹，取证是事后的证据保全与分析，渗透测试是事先的主动式入侵检测。",
-      "渗透测试（事先寻找弱点）与数字取证（事后调查原因）作为一对相对的概念，容易被拿来出题。",
-      "区块链通过把前后区块串联并分布式管理，使篡改变得极其困难，是一种账本技术，也是加密资产的基础。",
-      "防篡改性是「对物理解析、篡改的抵抗力」这一基础概念，是支撑 TPM 和 IoT 设备防护的根基。",
-      "安全启动验证启动时的正当性，TPM 是保存密钥的专用芯片。两者相互配合，实现硬件的安全启动。"
+      "数字水印是在不改变外观的情况下嵌入信息的技术，与用于确认软件是否被篡改的代码签名目的不同。",
+      "数字取证在事件发生后收集、保全并分析证据，渗透测试则在事前尝试入侵以寻找弱点。",
+      "区块链通过前一个区块的散列值相互串联，并由众多计算机共享，因此难以篡改。",
+      "防篡改性是设备内部不易被解析的性质，内置密钥的 TPM 是提升它的手段之一。",
+      "安全启动在启动时验证签名，只运行合法的软件。"
     ],
     "key_points_en": [
-      "Distinguish the three testing/evidence technologies by direction: digital watermarking leaves a trace of evidence via embedding, forensics is post-incident evidence preservation and analysis, and penetration testing is proactive intrusion testing done in advance.",
-      "Penetration testing (finding weaknesses in advance) and digital forensics (investigating causes after the fact) are easily targeted as a pair of contrasting concepts.",
-      "Blockchain links consecutive blocks and manages them in a distributed way, making tampering extremely difficult; it is a ledger technology and the foundation of crypto assets.",
-      "Tamper resistance is the foundational concept of \"resistance to physical analysis and tampering,\" and it is the basis that supports the protection of TPM and IoT devices.",
-      "Secure boot verifies legitimacy at startup, and the TPM is a dedicated chip that stores keys. The two work together to achieve a secure startup of the hardware."
+      "A digital watermark embeds information without changing how content looks, a different purpose from code signing, which checks whether software has been altered.",
+      "Digital forensics gathers, preserves and analyzes evidence after an incident, while penetration testing tries to break in beforehand to find weaknesses.",
+      "A blockchain is hard to tamper with because its blocks are linked by the previous block's hash value and shared among many computers.",
+      "Tamper resistance is the property of a device whose insides are hard to analyze, and a TPM with built-in keys is one way to raise it.",
+      "Secure boot verifies signatures at startup and runs only legitimate software."
+    ],
+    "memory_hooks_jp": [
+      "電子透かし: 英語は watermark（water＋mark）。紙がまだ濡れているうちに付ける印が語源で、その印をデータの中に移したもの。",
+      "デジタルフォレンジックス: forensic は「法廷の」という意味の英語で、法医学（forensic medicine）と同じ語。「法廷に出す証拠を扱う」と覚える。",
+      "ペネトレーションテスト: penetrate は「貫く・入り込む」。日本語では「侵入テスト」とも呼ぶ。",
+      "ブロックチェーン: 名前どおり block（かたまり）を chain（鎖）でつないだもの。鎖の輪にあたるのがハッシュ値。",
+      "耐タンパ性: tamper は英語で「勝手にいじる」。食品の「タンパーエビデント包装」（一度開けると跡が残る包装）と同じ語。",
+      "セキュアブート: boot は bootstrap（ブーツのつまみ革）から来た語で、電源を入れて OS が立ち上がるまでの流れを指す。そこを secure（安全）にするのがセキュアブート。",
+      "TPM: Trusted Platform Module ＝ 機器（Platform）に載せる、信頼（Trusted）の拠り所となる部品。「TPM チップ」と呼ばれることが多い。"
     ],
     "memory_hooks_zh": [
-      "数字水印：说到数字水印，就是把看不见的信息嵌入内容",
-      "数字取证：说到数字取证，就是事后的证据保全与分析",
-      "渗透测试：说到渗透测试，就是实际发起攻击来确认漏洞",
-      "区块链：说到区块链，就是难以篡改的分布式账本",
-      "防篡改性：说到防篡改性，就是对物理解析、篡改的抵抗力",
-      "安全启动：说到安全启动，就是启动时验证正规软件",
-      "TPM：说到 TPM，就是安全保存密钥的专用芯片"
+      "数字水印：英文是 watermark（water＋mark），原指趁纸张还湿时压出的印记；数字水印就是把这种印记搬进了数据里。",
+      "数字取证：forensic 在英语中意为“法庭的”，与法医学（forensic medicine）是同一个词。可以记作“处理要提交给法庭的证据”。",
+      "渗透测试：penetrate 意为“穿透、进入”。日语里也叫 侵入テスト（入侵测试）。",
+      "区块链：顾名思义，就是用 chain（链）把 block（块）串起来。链条上的每一环就是散列值。",
+      "防篡改性：tamper 在英语中意为“擅自摆弄”。与食品的“防拆封包装”（tamper-evident，一旦打开就会留下痕迹）用的是同一个词。",
+      "安全启动：boot 源自 bootstrap（靴子后跟的提带），指从接通电源到操作系统启动完毕的过程。让这一过程变得 secure（安全），就是安全启动。",
+      "TPM（可信平台模块）：Trusted Platform Module＝装在设备（Platform）上、作为信任（Trusted）基础的部件。常被称为“TPM 芯片”。"
     ],
     "memory_hooks_en": [
-      "Digital watermark: Digital watermark → embed invisible information into content",
-      "Digital forensics: Digital forensics → post-incident evidence preservation and analysis",
-      "Penetration testing: Penetration testing → actually attack to confirm vulnerabilities",
-      "Blockchain: Blockchain → a hard-to-tamper distributed ledger",
-      "Tamper resistance: Tamper resistance → resistance to physical analysis and tampering",
-      "Secure boot: Secure boot → verify legitimate software at startup",
-      "TPM: TPM → a dedicated chip that securely stores keys"
+      "Digital watermark: The English word watermark (water + mark) comes from a mark pressed into paper while it is still wet; a digital watermark moves that mark into the data.",
+      "Digital forensics: Forensic means \"relating to courts of law,\" the same word as in forensic medicine. Think of it as handling evidence meant for court.",
+      "Penetration testing: Penetrate means \"to pierce or get inside.\" In Japanese it is also called 侵入テスト (intrusion test).",
+      "Blockchain: Just as the name says: blocks joined into a chain. The links of the chain are the hash values.",
+      "Tamper resistance: Tamper means \"to meddle with\" in English. It is the same word as in tamper-evident food packaging, which shows a trace once it has been opened.",
+      "Secure boot: Boot comes from bootstrap, the loop at the back of a boot, and refers to the process from power-on until the OS is up and running. Making that process secure gives you secure boot.",
+      "TPM (Trusted Platform Module): Trusted Platform Module: a module mounted on the device (platform) that serves as the anchor of trust (trusted). It is often just called a TPM chip."
     ]
   },
   "challenge_questions": [
-    "2016h28a-q073",
     "2017h29a-q072",
     "2018h30h-q097",
-    "2019r01a-q093",
+    "2016h28a-q073",
+    "2021r03-q097",
     "2021r03-q073"
   ],
   "source_figures": [
@@ -251,9 +1102,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "安全检测与 IoT／硬件防护",
-  "title_en": "Security Testing and IoT / Hardware Protection",
-  "unit_summary_zh": "学习数字水印、数字取证、渗透测试，以及通过区块链、防篡改性、安全启动、TPM 实现的设备防护技术。",
-  "unit_summary_en": "Learn about digital watermarking, forensics, and penetration testing, along with device protection technologies based on blockchain, tamper resistance, secure boot, and TPM."
+  }
 }

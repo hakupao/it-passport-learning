@@ -1,269 +1,1461 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-63-u03",
   "topic_id": "technology-23-63",
   "category": "technology",
   "title_jp": "高度な脅威対策とネットワーク構成・通信保護",
+  "title_zh": "高级威胁防护与网络架构、通信保护",
+  "title_en": "Advanced Threat Protection and Network Architecture / Communication Security",
   "unit_summary_jp": "EDR/DLP/SIEMによる検知・統制、検疫ネットワーク/DMZの構成、SSL/TLS・VPN・MDMによる通信と端末の保護を学ぶ。",
+  "unit_summary_zh": "学习借助 EDR/DLP/SIEM 进行检测与管控、隔离网络/DMZ 的架构，以及通过 SSL/TLS、VPN、MDM 实现通信与终端的保护。",
+  "unit_summary_en": "Learn detection and control via EDR/DLP/SIEM, the architecture of quarantine networks and DMZ, and protection of communications and devices through SSL/TLS, VPN, and MDM.",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-23-63-u02"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、EDR・DLP・SIEMといった高度なセキュリティ対策と、検疫ネットワークやDMZによるネットワーク分離、SSL/TLS・VPN・MDMによる通信と端末の保護を学びます。情報セキュリティ対策は試験の頻出分野で、各技術が「何を守るか」を区別できることが重要です。",
-    "freq_badge": "頻出",
-    "est_minutes": 23,
-    "intro_zh": "本单元学习 EDR、DLP、SIEM 等高级安全措施，借助隔离网络与 DMZ 实现网络隔离，以及通过 SSL/TLS、VPN、MDM 保护通信与终端。信息安全措施是考试的高频领域，能够区分各项技术「保护什么」十分重要。",
-    "intro_en": "This unit covers advanced security measures such as EDR, DLP, and SIEM, network segmentation using quarantine networks and DMZ, and the protection of communications and devices through SSL/TLS, VPN, and MDM. Information security measures are a frequently tested area on the exam, and it is important to be able to distinguish what each technology protects."
-  },
+  "goals_jp": [
+    "**EDR**と**SIEM**を見張る範囲(1台の端末か、複数機器のログか)で区別し、**DLP**がデータの中身に着目する点を説明できる。",
+    "**検疫ネットワーク**と**DMZ**を、そこに置かれるもの(社内につなぐ前の端末か、外部に公開するサーバか)で見分けられる。",
+    "**SSL/TLS**と**VPN**がそれぞれ守る通信の範囲を説明でき、**MDM**で紛失した端末に管理者が取れる対処を挙げられる。"
+  ],
+  "goals_zh": [
+    "能按监视的范围（单台终端，还是多台设备的日志）区分**EDR**和**SIEM**，并能说明**DLP**着眼于数据内容这一特点。",
+    "能根据放在其中的对象（接入公司内部之前的终端，还是对外公开的服务器）区分**隔离网络**（[[jp:検疫ネットワーク]]）和**DMZ**。",
+    "能说明**SSL/TLS**和**VPN**各自保护的通信范围，并能列举终端丢失时管理员可借助**MDM**采取的措施。"
+  ],
+  "goals_en": [
+    "Tell **EDR** from **SIEM** by what each watches (a single device, or logs from many devices), and explain that **DLP** looks at the content of the data itself.",
+    "Distinguish a **quarantine network** ([[jp:検疫ネットワーク]]) from a **DMZ** by what sits there: devices not yet let into the company network, or servers published to the outside.",
+    "Explain which part of the communication path **SSL/TLS** and a **VPN** each protect, and list what an administrator can do with **MDM** when a device is lost."
+  ],
+  "overview_cols_jp": [
+    "守る対象",
+    "主な動作"
+  ],
+  "overview_cols_zh": [
+    "保护对象",
+    "主要动作"
+  ],
+  "overview_cols_en": [
+    "What it protects",
+    "Main action"
+  ],
+  "overview_rows": [
+    {
+      "term": "EDR",
+      "one_line_jp": "端末の動きを見張り、侵入後の検知と対応を助ける",
+      "one_line_zh": "监视终端的行为，帮助在入侵后进行检测和响应",
+      "one_line_en": "Watches device activity and helps detect and respond after an intrusion",
+      "extra_jp": [
+        "PCやサーバなどの端末",
+        "不審な動きを検知し、隔離や調査を行う"
+      ],
+      "extra_zh": [
+        "PC、服务器等终端",
+        "检测可疑行为，并进行隔离和调查"
+      ],
+      "extra_en": [
+        "Devices such as PCs and servers",
+        "Detects suspicious activity, then isolates and investigates"
+      ]
+    },
+    {
+      "term": "DLP",
+      "one_line_jp": "守るべきデータの中身を見て、社外への持ち出しを止める",
+      "one_line_zh": "查看需保护数据的内容，阻止其被带出公司",
+      "one_line_en": "Checks the content of data that must be protected and stops it leaving the company",
+      "extra_jp": [
+        "機密情報などのデータそのもの",
+        "条件に合う送信やコピーを遮断・警告する"
+      ],
+      "extra_zh": [
+        "机密信息等数据本身",
+        "对符合条件的发送或复制进行拦截或警告"
+      ],
+      "extra_en": [
+        "The data itself, such as confidential information",
+        "Blocks or warns on sending or copying that matches the rules"
+      ]
+    },
+    {
+      "term": "SIEM",
+      "one_line_jp": "複数の機器のログを集めて相関分析する",
+      "one_line_zh": "收集多台设备的日志并进行相关分析",
+      "one_line_en": "Collects logs from many devices and correlates them",
+      "extra_jp": [
+        "ログを出す機器群の全体",
+        "ログを突き合わせ、攻撃の兆候を通知する"
+      ],
+      "extra_zh": [
+        "输出日志的所有设备",
+        "比对日志，通报攻击迹象"
+      ],
+      "extra_en": [
+        "The whole set of devices that produce logs",
+        "Cross-checks logs and reports signs of attack"
+      ]
+    },
+    {
+      "term": "検疫ネットワーク",
+      "one_line_jp": "社内につなぐ前の端末を検査用の区画で調べる",
+      "one_line_zh": "在接入公司内部之前，先在检查专用区域里检查终端",
+      "one_line_en": "Checks devices in a separate inspection segment before they join the company network",
+      "extra_jp": [
+        "社内LAN",
+        "基準を満たさない端末を区画に留める"
+      ],
+      "extra_zh": [
+        "公司内部局域网（LAN）",
+        "把不符合标准的终端留在检查区域"
+      ],
+      "extra_en": [
+        "Internal LAN",
+        "Keeps devices that fail the checks inside the segment"
+      ]
+    },
+    {
+      "term": "DMZ",
+      "one_line_jp": "外部と内部LANの間に置く、公開サーバ用の領域",
+      "one_line_zh": "位于外部与内部局域网之间、用于放置公开服务器的区域",
+      "one_line_en": "A zone between the outside and the internal LAN for public-facing servers",
+      "extra_jp": [
+        "内部LAN",
+        "DMZから内部LANへの接続を止める"
+      ],
+      "extra_zh": [
+        "内部局域网",
+        "阻止从DMZ到内部局域网的连接"
+      ],
+      "extra_en": [
+        "Internal LAN",
+        "Blocks connections from the DMZ to the internal LAN"
+      ]
+    },
+    {
+      "term": "SSL/TLS",
+      "one_line_jp": "ブラウザとWebサーバの間を暗号化し、相手を確かめる",
+      "one_line_zh": "加密浏览器与Web服务器之间的通信，并确认对方身份",
+      "one_line_en": "Encrypts traffic between browser and web server and verifies the server",
+      "extra_jp": [
+        "やりとりする通信の内容",
+        "サーバ証明書で相手を確認し、暗号化する"
+      ],
+      "extra_zh": [
+        "往来通信的内容",
+        "用服务器证书确认对方，再进行加密"
+      ],
+      "extra_en": [
+        "The content being exchanged",
+        "Verifies the server with its certificate, then encrypts"
+      ]
+    },
+    {
+      "term": "VPN",
+      "one_line_jp": "共用のネットワーク上に、専用線のように使える仮想の網を作る",
+      "one_line_zh": "在共用网络上构建可像专线一样使用的虚拟网络",
+      "one_line_en": "Builds a virtual network over a shared one that can be used like a leased line",
+      "extra_jp": [
+        "拠点間や社外と社内の通信",
+        "インターネットVPNは認証と暗号化、IP-VPNは閉じた網で守る"
+      ],
+      "extra_zh": [
+        "各办公地点之间，以及公司外部与内部之间的通信",
+        "互联网VPN靠认证和加密保护，IP-VPN靠封闭网络保护"
+      ],
+      "extra_en": [
+        "Traffic between sites, or between outside and inside the company",
+        "Internet VPNs rely on authentication and encryption; IP-VPNs rely on a closed network"
+      ]
+    },
+    {
+      "term": "MDM",
+      "one_line_jp": "業務用のモバイル端末を管理者が遠隔で一括管理する",
+      "one_line_zh": "由管理员远程统一管理业务用移动终端",
+      "one_line_en": "Lets administrators manage work mobile devices remotely, all at once",
+      "extra_jp": [
+        "スマートフォンなどの業務用端末",
+        "設定の配布、紛失時の遠隔ロックや消去"
+      ],
+      "extra_zh": [
+        "智能手机等业务用终端",
+        "分发设置，丢失时远程锁定或擦除"
+      ],
+      "extra_en": [
+        "Work devices such as smartphones",
+        "Pushing settings; remote lock or wipe if lost"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "EDR",
-      "definition_jp": "端末の不審な挙動を検知・記録し対処を支援する仕組み。",
-      "explanation_jp": "EDR(Endpoint Detection and Response)は、PCやサーバなどのエンドポイント(端末)の動作を常時監視し、マルウェア感染や不審な操作を検知して、記録・隔離・調査などの事後対応を支援する仕組みです。\n\n従来のウイルス対策ソフトが「侵入を防ぐ(入口対策)」のに対し、EDRは「侵入された後に素早く気づいて対処する(事後対応)」点が特徴です。試験では、防ぐだけでなく検知と対応に重点を置く対策である点や、対象が端末(エンドポイント)である点が問われます。",
-      "analogy_jp": "各部屋に付けた防犯カメラと警備員のようなもの。泥棒の侵入を防ぐ鍵とは別に、入られた後すぐ気づいて記録し、駆けつけて対処します。",
-      "memory_hook_jp": "EDRといえば端末の不審な挙動を検知して事後対応",
+      "term_zh": "EDR",
+      "term_en": "EDR",
+      "one_jp": "**EDR**は、PCやサーバなどの**エンドポイント**(ネットワークの末端につながる機器)の動きを常に記録・監視し、侵入後の不審な動きを**検知**して**対応**を助ける仕組みである。",
+      "one_zh": "**EDR**是持续记录并监视PC、服务器等**端点**（[[jp:エンドポイント]]，即连接在网络末端的设备）的行为，在入侵后**检测**可疑行为并协助**响应**的机制。",
+      "one_en": "**EDR** continuously records and monitors activity on **endpoints** ([[jp:エンドポイント]]), meaning the PCs, servers and other devices at the edges of a network, and after an intrusion it **detects** suspicious behavior and helps with the **response**.",
+      "detail_jp": "従来のウイルス対策ソフトは、既知のマルウェアの特徴と照合して侵入を防ぐことが中心である。EDRは侵入される可能性を前提に、プログラムの動きそのものを見張る**振る舞い検知**を使い、特徴がまだ知られていない攻撃にも早く気づいて被害を抑えることを重視する。不審な動きを見つけると、端末をネットワークから切り離し、記録をもとに原因や影響の範囲を調べる。",
+      "detail_zh": "传统的杀毒软件主要通过与已知恶意软件的特征进行比对来阻止入侵。EDR则以可能被入侵为前提，采用监视程序行为本身的**行为检测**（[[jp:振る舞い検知]]），即使面对特征尚未被掌握的攻击也能尽早察觉，重在控制损害。一旦发现可疑行为，就把终端从网络中隔离，并根据记录调查原因和影响范围。",
+      "detail_en": "Traditional antivirus software mainly blocks intrusions by matching files against the signatures of known malware. EDR assumes a breach may happen anyway and uses **behavior-based detection** ([[jp:振る舞い検知]]), which watches what programs actually do, so it can notice attacks whose signatures are not yet known and limit the damage early. When it finds suspicious activity, the device is cut off from the network and the records are used to investigate the cause and scope.",
+      "analogy_jp": "建物の中を見回る警備員のようなもの。鍵で入口を守るのとは別に、中で怪しい動きに気づいたら部屋を閉め、防犯カメラの記録をさかのぼって調べる。",
+      "analogy_zh": "就像在楼内巡逻的保安。除了用门锁守住入口之外，一旦在楼里发现可疑举动，就关上房门，再调出监控录像倒查。",
+      "analogy_en": "Think of a security guard patrolling inside a building. Apart from the locks on the entrance, when the guard notices something odd inside, they shut the room and rewind the camera footage to investigate.",
+      "hook_jp": "Endpoint Detection and Response の頭文字。後ろの D(検知)と R(対応)が、防ぐより「見つけて対処する」側の仕組みであることを示している。",
+      "hook_zh": "Endpoint Detection and Response 的首字母缩写。后面的 D（检测）和 R（响应）表明，它属于“发现并处置”而非“拦在门外”一侧的机制。",
+      "hook_en": "Short for Endpoint Detection and Response. The D (detection) and R (response) show that it is about finding and dealing with threats rather than keeping them out.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**振る舞い検知**は、プログラムの動きを見張り、予定にない外部への送信などの怪しい動作を見つけて止める技術で、未知の攻撃への備えになる。",
+          "text_zh": "**行为检测**监视程序的行为，发现并阻止计划外的对外发送等可疑操作，可用来防范未知攻击。",
+          "text_en": "**Behavior-based detection** watches what programs do and stops suspicious actions such as unplanned outbound transmissions, which makes it a defense against unknown attacks.",
+          "qids": [
+            "2017h29a-q070"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "既知の特徴との照合で入口を守るのが従来のウイルス対策、侵入後の動きを見て検知と対応を行うのが**EDR**である。",
+          "text_zh": "传统杀毒软件靠与已知特征比对守住入口，**EDR**则观察入侵后的行为来进行检测和响应。",
+          "text_en": "Traditional antivirus guards the entrance by matching known signatures, whereas **EDR** watches behavior after an intrusion in order to detect and respond."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "log",
+              "label": {
+                "jp": "端末の動きを記録し続ける",
+                "zh": "持续记录终端行为",
+                "en": "Keep recording device activity"
+              }
+            },
+            {
+              "id": "detect",
+              "label": {
+                "jp": "不審な動きを検知",
+                "zh": "检测可疑行为",
+                "en": "Detect suspicious activity"
+              }
+            },
+            {
+              "id": "isolate",
+              "label": {
+                "jp": "端末をネットワークから切り離す",
+                "zh": "将终端从网络中隔离",
+                "en": "Cut the device off the network"
+              }
+            },
+            {
+              "id": "investigate",
+              "label": {
+                "jp": "記録をもとに原因と範囲を調べる",
+                "zh": "根据记录调查原因和范围",
+                "en": "Use the records to trace cause and scope"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "端末上でどのプログラムが何をしたかを、ふだんから記録しておく。",
+            "caption_zh": "平时就记录终端上哪个程序做了什么。",
+            "caption_en": "Routinely record which program did what on the device.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "記録された動きの中から、ふだんと違う怪しい動きを見つける。",
+            "caption_zh": "从记录下的行为中找出与平时不同的可疑行为。",
+            "caption_en": "Spot unusual, suspicious behavior among the recorded activity.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "被害が広がらないよう、その端末をネットワークから切り離す。",
+            "caption_zh": "为防止损害扩大，将该终端从网络中隔离。",
+            "caption_en": "Cut that device off the network so the damage does not spread.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "残っている記録をたどり、侵入の経路と影響の範囲を調べる。",
+            "caption_zh": "沿着留下的记录，调查入侵途径和影响范围。",
+            "caption_en": "Follow the remaining records to find how the attacker got in and how far the impact reaches.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2017h29a-q070"
+      ],
+      "definition_jp": "EDRは、PCやサーバなどのエンドポイント(ネットワークの末端につながる機器)の動きを常に記録・監視し、侵入後の不審な動きを検知して対応を助ける仕組みである。",
+      "definition_zh": "EDR是持续记录并监视PC、服务器等端点（エンドポイント，即连接在网络末端的设备）的行为，在入侵后检测可疑行为并协助响应的机制。",
+      "definition_en": "EDR continuously records and monitors activity on endpoints (エンドポイント), meaning the PCs, servers and other devices at the edges of a network, and after an intrusion it detects suspicious behavior and helps with the response.",
+      "explanation_jp": "従来のウイルス対策ソフトは、既知のマルウェアの特徴と照合して侵入を防ぐことが中心である。EDRは侵入される可能性を前提に、プログラムの動きそのものを見張る振る舞い検知を使い、特徴がまだ知られていない攻撃にも早く気づいて被害を抑えることを重視する。不審な動きを見つけると、端末をネットワークから切り離し、記録をもとに原因や影響の範囲を調べる。",
+      "explanation_zh": "传统的杀毒软件主要通过与已知恶意软件的特征进行比对来阻止入侵。EDR则以可能被入侵为前提，采用监视程序行为本身的行为检测（振る舞い検知），即使面对特征尚未被掌握的攻击也能尽早察觉，重在控制损害。一旦发现可疑行为，就把终端从网络中隔离，并根据记录调查原因和影响范围。",
+      "explanation_en": "Traditional antivirus software mainly blocks intrusions by matching files against the signatures of known malware. EDR assumes a breach may happen anyway and uses behavior-based detection (振る舞い検知), which watches what programs actually do, so it can notice attacks whose signatures are not yet known and limit the damage early. When it finds suspicious activity, the device is cut off from the network and the records are used to investigate the cause and scope.",
+      "memory_hook_jp": "Endpoint Detection and Response の頭文字。後ろの D(検知)と R(対応)が、防ぐより「見つけて対処する」側の仕組みであることを示している。",
+      "memory_hook_zh": "Endpoint Detection and Response 的首字母缩写。后面的 D（检测）和 R（响应）表明，它属于“发现并处置”而非“拦在门外”一侧的机制。",
+      "memory_hook_en": "Short for Endpoint Detection and Response. The D (detection) and R (response) show that it is about finding and dealing with threats rather than keeping them out.",
       "inline_quiz": [
         "2017h29a-q070"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "EDR",
-      "term_en": "EDR",
-      "definition_zh": "检测并记录终端的可疑行为并协助应对的机制。",
-      "definition_en": "A mechanism that detects and records suspicious behavior on devices and supports response.",
-      "explanation_zh": "EDR（Endpoint Detection and Response，端点检测与响应）是持续监控 PC、服务器等端点（终端）的运行状况，检测恶意软件感染或可疑操作，并协助进行记录、隔离、调查等事后处置的机制。\n\n传统杀毒软件侧重「阻止入侵（入口防护）」，而 EDR 的特点是「在被入侵之后迅速察觉并处置（事后响应）」。考试中会考查它不只是阻止、而是把重点放在检测与响应上的措施这一点，以及其对象是终端（端点）这一点。",
-      "explanation_en": "EDR (Endpoint Detection and Response) is a mechanism that continuously monitors the behavior of endpoints (devices) such as PCs and servers, detects malware infections or suspicious operations, and supports post-incident response such as recording, isolation, and investigation.\n\nWhereas traditional antivirus software focuses on \"preventing intrusion (perimeter defense),\" EDR is characterized by \"quickly noticing and responding after an intrusion has occurred (post-incident response).\" The exam asks about the point that it is a measure focused on detection and response rather than just prevention, and that its target is the endpoint (device).",
-      "analogy_zh": "就像装在每个房间里的监控摄像头加保安。它有别于防止小偷入侵的门锁，而是在被闯入后立刻察觉并记录，再赶到现场处置。",
-      "analogy_en": "Like security cameras and guards placed in each room. Separate from the lock that prevents a burglar from entering, it notices the moment someone gets in, records it, and rushes over to deal with it.",
-      "memory_hook_zh": "说到 EDR，就是检测终端可疑行为并做事后响应",
-      "memory_hook_en": "EDR → detect suspicious device behavior and respond after the fact"
+      "figure": null
     },
     {
       "term": "DLP",
-      "definition_jp": "機密情報の外部への持ち出しや漏えいを監視・防止する仕組み。",
-      "explanation_jp": "DLP(Data Loss Prevention)は、機密情報や個人情報といった重要なデータそのものを監視し、外部への送信・コピー・持ち出しを検知して、ブロックや警告を行う仕組みです。\n\n他の対策が「不正な人や通信」を見るのに対し、DLPは「守るべきデータの中身」に着目し、許可されていない場所へ流れようとした時点で止める点が特徴です。試験では、情報漏えい対策として「データの内容を見て持ち出しを防ぐ」仕組みである点が問われます。",
-      "analogy_jp": "重要書類に貼った無断持ち出し防止タグのようなもの。許可なくゲートを通ろうとするとブザーが鳴り、社外への持ち出しを止めます。",
-      "memory_hook_jp": "DLPといえば機密データの持ち出し・漏えいを防止",
-      "inline_quiz": [
-        "2011h23a-q071"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "DLP",
       "term_en": "DLP",
-      "definition_zh": "监控并防止机密信息被外带或泄露的机制。",
-      "definition_en": "A mechanism that monitors and prevents confidential information from being taken outside or leaked.",
-      "explanation_zh": "DLP（Data Loss Prevention，数据泄露防护）是直接监控机密信息、个人信息等重要数据本身，检测向外部发送、复制、外带等行为，并进行拦截或告警的机制。\n\n其他措施关注的是「非法的人或通信」，而 DLP 的特点是着眼于「需要保护的数据内容」，在数据试图流向未经许可的位置时予以阻止。考试中会考查它作为信息泄露防护措施，是「查看数据内容来防止外带」的机制这一点。",
-      "explanation_en": "DLP (Data Loss Prevention) is a mechanism that monitors important data itself, such as confidential information and personal information, detects its transmission, copying, or removal to the outside, and blocks it or issues a warning.\n\nWhereas other measures look at \"unauthorized people or communications,\" DLP is characterized by focusing on \"the content of the data to be protected\" and stopping it the moment it tries to flow to an unauthorized location. The exam asks about the point that, as a data leak prevention measure, it is a mechanism that \"looks at the content of the data to prevent it from being taken out.\"",
-      "analogy_zh": "就像贴在重要文件上的防擅自带出标签。一旦未经许可试图通过门禁，蜂鸣器就会响起，阻止文件被带出公司。",
-      "analogy_en": "Like an anti-theft tag attached to important documents. If you try to pass through the gate without permission, a buzzer sounds and stops the documents from being taken outside the company.",
-      "memory_hook_zh": "说到 DLP，就是防止机密数据被外带或泄露",
-      "memory_hook_en": "DLP → prevent confidential data from being taken out or leaked"
+      "one_jp": "**DLP**は、機密情報や個人情報などの守るべき**データの中身**を識別し、それが社外へ出ようとしたときに**遮断**や警告を行う仕組みである。",
+      "one_zh": "**DLP**是识别机密信息、个人信息等需要保护的**数据内容**，并在这些数据要流出公司时进行**拦截**或警告的机制。",
+      "one_en": "**DLP** identifies the **content of data** that must be protected, such as confidential or personal information, and **blocks** it or issues a warning when it is about to leave the organization.",
+      "detail_jp": "あらかじめ「機密」とみなす条件(含まれる語句や書類の種類など)を登録しておき、メールの送信、外部記憶媒体へのコピー、印刷などで条件に合うデータが動いたときだけ止める。利用者ではなくデータそのものを見張るので、正規の権限をもつ社員の誤送信や持ち出しにも対応できる。",
+      "detail_zh": "预先登记“机密”的判定条件（包含的词语、文件种类等），只有在发送邮件、复制到外部存储介质、打印等操作中出现符合条件的数据流动时才加以阻止。由于监视的是数据本身而非使用者，即使是拥有正当权限的员工误发或带出数据，也能应对。",
+      "detail_en": "Rules defining what counts as confidential, such as keywords it contains or the type of document, are registered in advance, and data is stopped only when matching content moves through email, copying to external storage or printing. Because DLP watches the data itself rather than the user, it can also catch mistaken sends or removals by employees who hold legitimate access rights.",
+      "analogy_jp": "社屋の出口で荷物を確かめる係のようなもの。誰が運んでいるかに関係なく、持ち出し禁止の書類が入っていれば外へは出さない。",
+      "analogy_zh": "就像在公司大楼出口检查随身物品的工作人员。不管是谁在搬运，只要里面有禁止带出的文件，就不放行。",
+      "analogy_en": "It is like the staff at a building exit who check bags. No matter who is carrying them, documents that must not leave are kept inside.",
+      "hook_jp": "Data Loss Prevention の略。ここでの Loss はデータが壊れることではなく、組織の外へ失われる(漏れ出す)ことを指す。",
+      "hook_zh": "Data Loss Prevention 的缩写。这里的 Loss 不是指数据损坏，而是指数据流失（外泄）到组织之外。",
+      "hook_en": "Short for Data Loss Prevention. Here, loss does not mean data getting corrupted; it means data slipping out of the organization.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "ファイアウォールは主に通信の送信元や宛先で通すかを判断し、**DLP**は送られるデータの中身が機密かどうかで判断する。",
+          "text_zh": "防火墙主要按通信的发送方和目的地决定是否放行，**DLP**则按所发送数据的内容是否属于机密来判断。",
+          "text_en": "A firewall mainly decides what to let through by the sender and destination of the traffic, while **DLP** decides by whether the content being sent is confidential."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "define",
+              "label": {
+                "jp": "守るデータの条件を登録",
+                "zh": "登记需保护数据的条件",
+                "en": "Register rules for protected data"
+              }
+            },
+            {
+              "id": "watch",
+              "label": {
+                "jp": "送信やコピーを監視",
+                "zh": "监视发送和复制",
+                "en": "Watch sending and copying"
+              }
+            },
+            {
+              "id": "block",
+              "label": {
+                "jp": "条件に合えば遮断・警告",
+                "zh": "符合条件即拦截或警告",
+                "en": "Block or warn on a match"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "何を機密とみなすか、含まれる語句や書類の種類などの条件を登録する。",
+            "caption_zh": "登记把什么视为机密的条件，例如包含的词语或文件的种类。",
+            "caption_en": "Register what counts as confidential, using conditions such as the keywords it contains or the type of document.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "メールの送信や外部媒体へのコピー、印刷でデータが動くのを見張る。",
+            "caption_zh": "监视数据通过发送邮件、复制到外部介质或打印而发生的流动。",
+            "caption_en": "Watch data as it moves through sent emails, copies to external media and printing.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "登録した条件に合うデータが出ていこうとしたときだけ止めるか、警告する。",
+            "caption_zh": "只在符合登记条件的数据要流出时才拦截或发出警告。",
+            "caption_en": "Block or warn only when data matching the registered conditions is about to leave.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "DLPは、機密情報や個人情報などの守るべきデータの中身を識別し、それが社外へ出ようとしたときに遮断や警告を行う仕組みである。",
+      "definition_zh": "DLP是识别机密信息、个人信息等需要保护的数据内容，并在这些数据要流出公司时进行拦截或警告的机制。",
+      "definition_en": "DLP identifies the content of data that must be protected, such as confidential or personal information, and blocks it or issues a warning when it is about to leave the organization.",
+      "explanation_jp": "あらかじめ「機密」とみなす条件(含まれる語句や書類の種類など)を登録しておき、メールの送信、外部記憶媒体へのコピー、印刷などで条件に合うデータが動いたときだけ止める。利用者ではなくデータそのものを見張るので、正規の権限をもつ社員の誤送信や持ち出しにも対応できる。",
+      "explanation_zh": "预先登记“机密”的判定条件（包含的词语、文件种类等），只有在发送邮件、复制到外部存储介质、打印等操作中出现符合条件的数据流动时才加以阻止。由于监视的是数据本身而非使用者，即使是拥有正当权限的员工误发或带出数据，也能应对。",
+      "explanation_en": "Rules defining what counts as confidential, such as keywords it contains or the type of document, are registered in advance, and data is stopped only when matching content moves through email, copying to external storage or printing. Because DLP watches the data itself rather than the user, it can also catch mistaken sends or removals by employees who hold legitimate access rights.",
+      "memory_hook_jp": "Data Loss Prevention の略。ここでの Loss はデータが壊れることではなく、組織の外へ失われる(漏れ出す)ことを指す。",
+      "memory_hook_zh": "Data Loss Prevention 的缩写。这里的 Loss 不是指数据损坏，而是指数据流失（外泄）到组织之外。",
+      "memory_hook_en": "Short for Data Loss Prevention. Here, loss does not mean data getting corrupted; it means data slipping out of the organization.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "SIEM",
-      "definition_jp": "各機器のログを集約・相関分析して脅威を検知する仕組み。",
-      "explanation_jp": "SIEM(Security Information and Event Management)は、サーバ・ネットワーク機器・各種セキュリティ製品が出力するログを一か所に集約し、相関分析することで、単独のログでは気づけない攻撃の兆候をリアルタイムに検知する仕組みです。\n\nEDRやファイアウォールなど個々の機器が「点」で守るのに対し、SIEMは複数のログをつなぎ合わせて全体を俯瞰する上位の集約・分析の役割を担います。試験では、ログを統合管理して脅威を検知・分析する仕組みである点が問われます。",
-      "analogy_jp": "ビル全体の監視カメラ映像を一つの管理室に集めて見る警備センターのようなもの。各所の小さな異変をつなぎ合わせ、全体の異常を見抜きます。",
-      "memory_hook_jp": "SIEMといえば各機器のログを集約・分析して脅威検知",
-      "inline_quiz": [
-        "2011h23tokubetsu-q055"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"サーバのログ\"] --> S[\"SIEM\"]; B[\"FWのログ\"] --> S; C[\"EDRのログ\"] --> S; S --> D[\"相関分析・脅威検知\"]",
-        "svg_path": "figures/technology-23-63-u03-t01.svg",
-        "rendered": true
-      },
       "term_zh": "SIEM",
       "term_en": "SIEM",
-      "definition_zh": "汇总各设备日志并做关联分析以检测威胁的机制。",
-      "definition_en": "A mechanism that aggregates logs from various devices and performs correlation analysis to detect threats.",
-      "explanation_zh": "SIEM（Security Information and Event Management，安全信息与事件管理）是把服务器、网络设备、各类安全产品输出的日志集中汇总到一处，通过关联分析，实时检测单条日志无法发现的攻击征兆的机制。\n\nEDR、防火墙等单个设备以「点」进行防护，而 SIEM 承担把多份日志串联起来、俯瞰全局的上层汇总与分析角色。考试中会考查它是统一管理日志来检测、分析威胁的机制这一点。",
-      "explanation_en": "SIEM (Security Information and Event Management) is a mechanism that aggregates logs output by servers, network devices, and various security products into one place, and through correlation analysis detects, in real time, signs of attacks that cannot be noticed from a single log alone.\n\nWhereas individual devices such as EDR and firewalls protect at \"points,\" SIEM plays the higher-level role of aggregation and analysis, connecting multiple logs to give an overall view. The exam asks about the point that it is a mechanism for centrally managing logs to detect and analyze threats.",
-      "analogy_zh": "就像把整栋大楼的监控摄像头画面汇集到一个管理室查看的安保中心。它把各处的细微异常串联起来，识破整体的异常。",
-      "analogy_en": "Like a security center that gathers surveillance camera footage from across an entire building into a single control room. It connects small anomalies from each location to spot an overall abnormality.",
-      "memory_hook_zh": "说到 SIEM，就是汇总分析各设备日志来检测威胁",
-      "memory_hook_en": "SIEM → aggregate and analyze logs from all devices to detect threats"
+      "one_jp": "**SIEM**は、サーバやネットワーク機器、セキュリティ製品が出す**ログ**を1か所に集め、**相関分析**して攻撃の兆候を見つける仕組みである。",
+      "one_zh": "**SIEM**是把服务器、网络设备和安全产品输出的**日志**集中到一处，通过**相关分析**发现攻击迹象的机制。",
+      "one_en": "**SIEM** gathers the **logs** produced by servers, network devices and security products in one place and uses **correlation analysis** ([[jp:相関分析]]) to find signs of attack.",
+      "detail_jp": "相関分析とは、別々の機器のログを時刻や送信元などで突き合わせ、関連する出来事として結び付けることである。1台の機器のログだけでは目立たない動きも、つなげると攻撃の流れとして見えることがある。集めたログは、事故の後に経緯をたどる材料にもなる。",
+      "detail_zh": "相关分析是指把不同设备的日志按时间、发送方等进行比对，关联为彼此相关的事件。仅看一台设备的日志并不显眼的行为，串联起来后可能就显现为一次攻击的过程。收集到的日志也能在事故发生后作为追溯经过的材料。",
+      "detail_en": "Correlation analysis means matching logs from different devices by time, source and similar fields, and linking them as related events. Activity that looks harmless in one device's log can reveal the course of an attack once the pieces are connected. The collected logs also serve as material for tracing what happened after an incident.",
+      "analogy_jp": "建物中の防犯カメラの映像を一室に並べて見る警備センターのようなもの。1台の映像では気づかない人の動きも、つなげると不審な経路が分かる。",
+      "analogy_zh": "就像把整栋楼的监控画面排在一个房间里查看的安保中心。单看一路画面注意不到的人员动向，连起来就能看出可疑的路线。",
+      "analogy_en": "It is like a security center that shows every camera feed in the building side by side. Movements you would miss on a single screen reveal a suspicious route once the feeds are put together.",
+      "hook_jp": "セキュリティ情報の管理(SIM)とセキュリティイベントの管理(SEM)を合わせた名前で、読みは「シーム」。",
+      "hook_zh": "由安全信息管理（SIM）和安全事件管理（SEM）组合而成的名称，日语读作 [[jp:シーム]]。",
+      "hook_en": "The name combines security information management (SIM) and security event management (SEM), and in Japanese it is read [[jp:シーム]], like \"seem.\"",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "IDSは通信を監視して不正を見つける機器であり、**SIEM**はIDSを含む複数の機器のログを集めて横断的に分析する仕組みである。",
+          "text_zh": "IDS是监视通信、发现非法行为的设备，**SIEM**则是收集包括IDS在内的多台设备的日志并进行横向分析的机制。",
+          "text_en": "An IDS is a device that watches network traffic to find intrusions, while **SIEM** collects logs from many devices, IDSs included, and analyzes them across the board."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "emit",
+              "label": {
+                "jp": "各機器がログを出す",
+                "zh": "各设备输出日志",
+                "en": "Each device emits logs"
+              }
+            },
+            {
+              "id": "collect",
+              "label": {
+                "jp": "SIEMに集める",
+                "zh": "汇集到SIEM",
+                "en": "Collect them in SIEM"
+              }
+            },
+            {
+              "id": "correlate",
+              "label": {
+                "jp": "相関分析で結び付ける",
+                "zh": "通过相关分析关联起来",
+                "en": "Link them by correlation"
+              }
+            },
+            {
+              "id": "alert",
+              "label": {
+                "jp": "攻撃の兆候を通知",
+                "zh": "通报攻击迹象",
+                "en": "Alert on signs of attack"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "サーバ、ファイアウォール、EDRなどが、それぞれ自分の記録をログとして出す。",
+            "caption_zh": "服务器、防火墙、EDR等各自把自己的记录作为日志输出。",
+            "caption_en": "Servers, firewalls, EDR tools and other devices each output their own records as logs.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "ばらばらの場所にあるログを、SIEMが1か所に集める。",
+            "caption_zh": "SIEM把分散在各处的日志集中到一处。",
+            "caption_en": "SIEM gathers logs scattered across many places into one.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "時刻や送信元をもとに、別々の機器のログを関連する出来事として結び付ける。",
+            "caption_zh": "根据时间和发送方，把不同设备的日志关联为相关的事件。",
+            "caption_en": "Using timestamps and sources, it links logs from separate devices into related events.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "つながった流れが攻撃らしいと判断したら、担当者に知らせる。",
+            "caption_zh": "若判断串联起来的过程像是攻击，就通知负责人。",
+            "caption_en": "If the linked sequence looks like an attack, it alerts the staff in charge.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "SIEMは、サーバやネットワーク機器、セキュリティ製品が出すログを1か所に集め、相関分析して攻撃の兆候を見つける仕組みである。",
+      "definition_zh": "SIEM是把服务器、网络设备和安全产品输出的日志集中到一处，通过相关分析发现攻击迹象的机制。",
+      "definition_en": "SIEM gathers the logs produced by servers, network devices and security products in one place and uses correlation analysis (相関分析) to find signs of attack.",
+      "explanation_jp": "相関分析とは、別々の機器のログを時刻や送信元などで突き合わせ、関連する出来事として結び付けることである。1台の機器のログだけでは目立たない動きも、つなげると攻撃の流れとして見えることがある。集めたログは、事故の後に経緯をたどる材料にもなる。",
+      "explanation_zh": "相关分析是指把不同设备的日志按时间、发送方等进行比对，关联为彼此相关的事件。仅看一台设备的日志并不显眼的行为，串联起来后可能就显现为一次攻击的过程。收集到的日志也能在事故发生后作为追溯经过的材料。",
+      "explanation_en": "Correlation analysis means matching logs from different devices by time, source and similar fields, and linking them as related events. Activity that looks harmless in one device's log can reveal the course of an attack once the pieces are connected. The collected logs also serve as material for tracing what happened after an incident.",
+      "memory_hook_jp": "セキュリティ情報の管理(SIM)とセキュリティイベントの管理(SEM)を合わせた名前で、読みは「シーム」。",
+      "memory_hook_zh": "由安全信息管理（SIM）和安全事件管理（SEM）组合而成的名称，日语读作 シーム。",
+      "memory_hook_en": "The name combines security information management (SIM) and security event management (SEM), and in Japanese it is read シーム, like \"seem.\"",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "検疫ネットワーク",
-      "definition_jp": "安全性を確認するまで端末を隔離する一時的なネットワーク。",
-      "explanation_jp": "検疫ネットワーク(quarantine network)は、社内ネットワークに接続しようとする端末を、まず隔離された専用のネットワークにつなぎ、ウイルス対策やOS更新の状態を確認してから、問題がなければ社内ネットへの接続を許可する仕組みです。\n\nセキュリティ基準を満たさない端末をそのまま社内に入れない「入口での健康診断」にあたり、感染端末の持ち込みによる被害拡大を防ぎます。試験では、接続前に安全性を検査して隔離・許可を判断する仕組みである点が問われます。",
-      "analogy_jp": "入国時の検疫所のようなもの。到着した人をいったん隔離区域で健康チェックし、問題がなければ国内への入国を許可します。",
-      "memory_hook_jp": "検疫ネットワークといえば接続前に隔離して安全確認",
+      "term_zh": "隔离网络（检疫网络）",
+      "term_en": "Quarantine Network",
+      "one_jp": "**検疫ネットワーク**は、社内LANにつなごうとする端末をいったん**検査用の区画**に接続し、安全を確かめてから社内LANへの接続を許す仕組みである。",
+      "one_zh": "**隔离网络**（[[jp:検疫ネットワーク]]）是先把想接入公司内部局域网的终端连到**检查专用区域**，确认安全后才允许其接入内部局域网的机制。",
+      "one_en": "A **quarantine network** ([[jp:検疫ネットワーク]]) first connects a device that wants to join the internal LAN to a separate **inspection segment**, and lets it onto the internal LAN only after confirming it is safe.",
+      "detail_jp": "検査では、OSの修正プログラム(パッチ)が適用されているか、ウイルス対策ソフトが最新かといった端末の状態を確かめる。基準を満たさない端末は社内LANに入れず、修正を終えるまで検査用の区画に留める。どこで何に接続してきたか分からない端末から、社内へ感染が広がるのを防ぐのがねらいである。",
+      "detail_zh": "检查的是终端的状态，例如操作系统的修复程序（补丁）是否已安装、杀毒软件是否为最新。不符合标准的终端不能进入内部局域网，在修复完成前一直留在检查专用区域。其目的是防止那些不知在何处接入过什么网络的终端把感染扩散到公司内部。",
+      "detail_en": "The inspection checks the state of the device, such as whether operating system patches have been applied and whether antivirus software is up to date. Devices that fall short are kept off the internal LAN and held in the inspection segment until the fixes are done. The aim is to stop infections from spreading inside the company through devices that may have been connected to unknown networks elsewhere.",
+      "analogy_jp": "海外から戻った人を空港の検疫所で調べ、問題がなければ入国させるのと同じ流れ。",
+      "analogy_zh": "就像从国外回来的人先在机场检疫站接受检查，没有问题才准许入境。",
+      "analogy_en": "It follows the same flow as an airport quarantine station, where travelers returning from abroad are checked and let into the country only if nothing is wrong.",
+      "hook_jp": "「検」は調べる、「疫」は疫病の疫。字のとおり、感染していないかを調べてから中へ通す。",
+      "hook_zh": "日语名称里的“検疫”就是中文的“检疫”：“检”是检查，“疫”是疫病。正如字面所示，先查清是否被感染，再放行进入。",
+      "hook_en": "The Japanese name uses 検疫, meaning quarantine inspection: 検 is \"to examine\" and 疫 is \"epidemic.\" As the characters say, a device is checked for infection before it is let in.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**検疫ネットワーク**の目的は、セキュリティに問題のある端末を社内LANに入れないことである。境界で外部からの通信を選別するファイアウォールとは役割が違う。",
+          "text_zh": "**隔离网络**的目的是不让存在安全问题的终端进入公司内部局域网。它与在边界筛选外部通信的防火墙作用不同。",
+          "text_en": "The purpose of a **quarantine network** is to keep devices with security problems off the internal LAN. That role differs from a firewall, which filters outside traffic at the network boundary.",
+          "qids": [
+            "2014h26a-q054"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "request",
+              "label": {
+                "jp": "端末が接続を求める",
+                "zh": "终端请求接入",
+                "en": "Device asks to connect"
+              }
+            },
+            {
+              "id": "hold",
+              "label": {
+                "jp": "検査用の区画につなぐ",
+                "zh": "连到检查专用区域",
+                "en": "Connect to the inspection segment"
+              }
+            },
+            {
+              "id": "check",
+              "label": {
+                "jp": "端末の状態を検査",
+                "zh": "检查终端状态",
+                "en": "Inspect the device"
+              }
+            },
+            {
+              "id": "admit",
+              "label": {
+                "jp": "合格なら社内LANへ",
+                "zh": "合格则接入内部局域网",
+                "en": "If it passes, join the internal LAN"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "端末が社内LANにつなごうとする。この時点ではまだ社内LANには入れない。",
+            "caption_zh": "终端想要接入公司内部局域网。此时它还进不了内部局域网。",
+            "caption_en": "A device tries to connect to the internal LAN. At this point it cannot get onto the internal LAN yet.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "まず社内LANから切り離された検査用の区画につなぐ。",
+            "caption_zh": "先把它连到与内部局域网隔开的检查专用区域。",
+            "caption_en": "It is first connected to an inspection segment kept apart from the internal LAN.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "修正プログラムの適用やウイルス対策ソフトの更新状況を調べる。問題があれば、直すまで区画に留める。",
+            "caption_zh": "检查补丁是否已安装、杀毒软件是否已更新。若有问题，在修复之前一直留在该区域。",
+            "caption_en": "The checks look at whether patches are applied and antivirus software is up to date. If there is a problem, the device stays in the segment until it is fixed.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "基準を満たした端末だけが社内LANへの接続を許される。",
+            "caption_zh": "只有达到标准的终端才被允许接入内部局域网。",
+            "caption_en": "Only devices that meet the standard are allowed onto the internal LAN.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2014h26a-q054"
+      ],
+      "definition_jp": "検疫ネットワークは、社内LANにつなごうとする端末をいったん検査用の区画に接続し、安全を確かめてから社内LANへの接続を許す仕組みである。",
+      "definition_zh": "隔离网络（検疫ネットワーク）是先把想接入公司内部局域网的终端连到检查专用区域，确认安全后才允许其接入内部局域网的机制。",
+      "definition_en": "A quarantine network (検疫ネットワーク) first connects a device that wants to join the internal LAN to a separate inspection segment, and lets it onto the internal LAN only after confirming it is safe.",
+      "explanation_jp": "検査では、OSの修正プログラム(パッチ)が適用されているか、ウイルス対策ソフトが最新かといった端末の状態を確かめる。基準を満たさない端末は社内LANに入れず、修正を終えるまで検査用の区画に留める。どこで何に接続してきたか分からない端末から、社内へ感染が広がるのを防ぐのがねらいである。",
+      "explanation_zh": "检查的是终端的状态，例如操作系统的修复程序（补丁）是否已安装、杀毒软件是否为最新。不符合标准的终端不能进入内部局域网，在修复完成前一直留在检查专用区域。其目的是防止那些不知在何处接入过什么网络的终端把感染扩散到公司内部。",
+      "explanation_en": "The inspection checks the state of the device, such as whether operating system patches have been applied and whether antivirus software is up to date. Devices that fall short are kept off the internal LAN and held in the inspection segment until the fixes are done. The aim is to stop infections from spreading inside the company through devices that may have been connected to unknown networks elsewhere.",
+      "memory_hook_jp": "「検」は調べる、「疫」は疫病の疫。字のとおり、感染していないかを調べてから中へ通す。",
+      "memory_hook_zh": "日语名称里的“検疫”就是中文的“检疫”：“检”是检查，“疫”是疫病。正如字面所示，先查清是否被感染，再放行进入。",
+      "memory_hook_en": "The Japanese name uses 検疫, meaning quarantine inspection: 検 is \"to examine\" and 疫 is \"epidemic.\" As the characters say, a device is checked for infection before it is let in.",
       "inline_quiz": [
         "2014h26a-q054"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "隔离网络（检疫网络）",
-      "term_en": "Quarantine Network",
-      "definition_zh": "在确认安全性之前先隔离终端的临时网络。",
-      "definition_en": "A temporary network that isolates a device until its safety is confirmed.",
-      "explanation_zh": "隔离网络（quarantine network）是把试图接入公司内网的终端先接入一个隔离的专用网络，确认杀毒软件、操作系统更新等状态，确认没有问题后再允许其接入公司内网的机制。\n\n它相当于在入口处的「健康检查」，不让不满足安全标准的终端直接进入公司内部，从而防止因带入受感染终端而导致危害扩散。考试中会考查它是在接入前检查安全性、判断隔离或放行的机制这一点。",
-      "explanation_en": "A quarantine network is a mechanism that first connects a device attempting to join the internal corporate network to an isolated, dedicated network, checks the status of antivirus and OS updates, and then permits connection to the internal network only if there are no problems.\n\nIt corresponds to a \"health check at the entrance,\" preventing devices that do not meet security standards from entering the internal network as-is, and thereby preventing the spread of damage from bringing in an infected device. The exam asks about the point that it is a mechanism that inspects safety before connection and decides whether to isolate or permit.",
-      "analogy_zh": "就像入境时的检疫站。先把到达的人留在隔离区做健康检查，确认没问题后才允许其入境。",
-      "analogy_en": "Like a quarantine station upon entry to a country. Arriving people are first kept in an isolation area for a health check, and only allowed in once there are no problems.",
-      "memory_hook_zh": "说到隔离网络，就是接入前先隔离并确认安全",
-      "memory_hook_en": "Quarantine network → isolate before connecting and confirm safety"
+      "figure": null
     },
     {
       "term": "DMZ",
-      "definition_jp": "外部と内部の中間に置く緩衝地帯のネットワーク領域。",
-      "explanation_jp": "DMZ(DeMilitarized Zone:非武装地帯)は、インターネット(外部)と社内LAN(内部)の間に設ける中間のネットワーク領域です。Webサーバやメールサーバなど外部に公開する必要があるサーバを置き、ファイアウォールで内部ネットと隔てます。\n\n外部から直接アクセスを受けるサーバをDMZに置くことで、万一そのサーバが攻撃されても、内部の重要なネットワークまで侵入が及ばないようにします。試験では、外部公開サーバを置く「外部と内部の緩衝地帯」である点が頻出で、内部LANと分離する目的が問われます。",
-      "analogy_jp": "店舗の「受付ロビー」のようなもの。来客はロビーまでは入れますが、社員専用の事務所にはロビーを越えて勝手に入れない構造です。",
-      "memory_hook_jp": "DMZといえば外部と内部の間の緩衝地帯に公開サーバ",
-      "inline_quiz": [
-        "2009h21a-q079",
-        "2010h22h-q068"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"インターネット(外部)\"] --> B[\"DMZ(公開サーバ)\"]; B --> C[\"内部LAN\"]",
-        "svg_path": "figures/technology-23-63-u03-t02.svg",
-        "rendered": true
-      },
       "term_zh": "DMZ（隔离区）",
       "term_en": "DMZ",
-      "definition_zh": "置于外部与内部之间、作为缓冲地带的网络区域。",
-      "definition_en": "A network area placed between the outside and the inside as a buffer zone.",
-      "explanation_zh": "DMZ（DeMilitarized Zone，非军事区/隔离区）是设在互联网（外部）与公司局域网（内部）之间的中间网络区域。其中放置 Web 服务器、邮件服务器等需要对外公开的服务器，并用防火墙与内部网络隔开。\n\n把直接接受外部访问的服务器放在 DMZ，这样即使该服务器万一被攻击，入侵也不会波及内部的重要网络。考试中常考它是放置对外公开服务器的「外部与内部之间的缓冲地带」这一点，并会考查与内部局域网隔离的目的。",
-      "explanation_en": "A DMZ (DeMilitarized Zone) is an intermediate network area placed between the internet (outside) and the corporate LAN (inside). Servers that need to be made public, such as web servers and mail servers, are placed there and separated from the internal network by a firewall.\n\nBy placing servers that receive direct access from the outside in the DMZ, even if such a server is attacked, the intrusion does not reach the important internal network. The exam frequently asks that it is a \"buffer zone between the outside and the inside\" where public-facing servers are placed, and asks about the purpose of separating it from the internal LAN.",
-      "analogy_zh": "就像店铺的「接待大堂」。访客可以进到大堂为止，但无法越过大堂随意进入员工专用的办公室。",
-      "analogy_en": "Like a store's \"reception lobby.\" Visitors can enter as far as the lobby, but cannot go beyond it freely into the staff-only office.",
-      "memory_hook_zh": "说到 DMZ，就是外部与内部之间的缓冲地带放公开服务器",
-      "memory_hook_en": "DMZ → public servers in the buffer zone between outside and inside"
+      "one_jp": "**DMZ**は、外部(インターネット)と内部LANの両方からファイアウォールで切り離した**中間の領域**で、外部に公開するサーバを置く場所である。",
+      "one_zh": "**DMZ**是用防火墙同时与外部（互联网）和内部局域网隔开的**中间区域**，用于放置对外公开的服务器。",
+      "one_en": "A **DMZ** is an **intermediate zone** separated by firewalls from both the outside (the internet) and the internal LAN, and it is where servers open to the public are placed.",
+      "detail_jp": "外部の利用者はDMZのサーバまでは接続できるが、DMZから内部LANへの通信はファイアウォールで止める。公開サーバを内部LANにそのまま置くと、乗っ取られたときに社内へ直接入り込む入口になってしまう。DMZに分けておけば、公開サーバが乗っ取られても、そこを足がかり(**踏み台**)にして内部LANへ入られにくい。",
+      "detail_zh": "外部用户可以连接到DMZ中的服务器，但从DMZ到内部局域网的通信会被防火墙阻止。如果把公开服务器直接放在内部局域网里，一旦被攻陷，它就会成为直接进入公司内部的入口。把它划到DMZ中，即使公开服务器被攻陷，攻击者也难以把它当作**跳板**（[[jp:踏み台]]）侵入内部局域网。",
+      "detail_en": "Outside users can reach the servers in the DMZ, but traffic from the DMZ to the internal LAN is stopped by a firewall. A public server placed directly on the internal LAN would, if taken over, become a doorway straight into the company. Keeping it in the DMZ means that even if the public server is compromised, attackers find it hard to use it as a **stepping stone** ([[jp:踏み台]]) into the internal LAN.",
+      "analogy_jp": "会社の受付ロビーのようなもの。来客はロビーまでは入れるが、その奥の執務室との間には鍵のかかった扉があり、ロビーで騒ぎが起きても執務室までは入れない。",
+      "analogy_zh": "就像公司的接待大厅。来客可以进到大厅，但大厅与里面的办公区之间隔着一道上锁的门，即使大厅里出了乱子，也进不了办公区。",
+      "analogy_en": "It is like a company's reception lobby. Visitors can enter the lobby, but a locked door stands between it and the offices behind, so trouble in the lobby cannot reach the offices.",
+      "hook_jp": "DeMilitarized Zone(非武装地帯)の略。対立する2つの側の間に置く緩衝地帯という軍事用語から来ている。",
+      "hook_zh": "DeMilitarized Zone（非军事区）的缩写，源自在对立双方之间设置缓冲地带的军事用语。",
+      "hook_en": "Short for DeMilitarized Zone, a military term for a buffer area placed between two opposing sides.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "公開サーバを**DMZ**に置く目的は、そのサーバが攻撃されても内部LANまで被害を広げないことである。メールサーバも、外部から内部へ入り込む踏み台にさせないためにDMZに置く。",
+          "text_zh": "把公开服务器放在**DMZ**的目的，是即使该服务器受到攻击，也不让损害扩大到内部局域网。邮件服务器也放在DMZ中，以免被当作从外部侵入内部的跳板。",
+          "text_en": "Public servers go in the **DMZ** so that an attack on one of them does not spread damage to the internal LAN. Mail servers are placed there too, so they cannot be used as a stepping stone from the outside into the internal network.",
+          "qids": [
+            "2011h23tokubetsu-q055",
+            "2013h25a-q079",
+            "2019r01a-q092"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "サーバの置き場所は、外部に公開する必要があるかで決める。公開するサーバは**DMZ**に、社外秘のデータをもつサーバは内部LANに置く。",
+          "text_zh": "服务器放在哪里，取决于是否需要对外公开。公开的服务器放在**DMZ**，持有公司机密数据的服务器放在内部局域网。",
+          "text_en": "Where a server goes depends on whether it must be open to the outside. Public servers belong in the **DMZ**, and servers holding confidential company data belong on the internal LAN.",
+          "qids": [
+            "2018h30h-q068"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**DMZ**はファイアウォールの設定によって作る領域である。外部からも内部LANからも接続できるが、DMZから内部LANへの接続は許さない。",
+          "text_zh": "**DMZ**是通过防火墙的设置构建的区域。外部和内部局域网都可以连接到它，但不允许从DMZ连接到内部局域网。",
+          "text_en": "A **DMZ** is a zone created through firewall settings. It accepts connections from both the outside and the internal LAN, but connections from the DMZ to the internal LAN are not allowed.",
+          "qids": [
+            "2009h21a-q079",
+            "2022r04-q064"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "領域",
+              "zh": "区域",
+              "en": "Zone"
+            },
+            {
+              "jp": "置くもの",
+              "zh": "放置的对象",
+              "en": "What is placed there"
+            },
+            {
+              "jp": "外部からの接続",
+              "zh": "来自外部的连接",
+              "en": "Connections from outside"
+            },
+            {
+              "jp": "内部LANへの接続",
+              "zh": "到内部局域网的连接",
+              "en": "Connections to the internal LAN"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "インターネット(外部)",
+                  "zh": "互联网（外部）",
+                  "en": "Internet (outside)"
+                },
+                {
+                  "jp": "不特定の利用者",
+                  "zh": "不特定的用户",
+                  "en": "Anyone"
+                },
+                {
+                  "jp": "―",
+                  "zh": "―",
+                  "en": "―"
+                },
+                {
+                  "jp": "通さない",
+                  "zh": "不放行",
+                  "en": "Blocked"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "DMZ",
+                  "zh": "DMZ",
+                  "en": "DMZ"
+                },
+                {
+                  "jp": "公開するサーバ(Web、メールなど)",
+                  "zh": "公开的服务器（Web、邮件等）",
+                  "en": "Public servers (web, mail and so on)"
+                },
+                {
+                  "jp": "公開しているサービスだけ通す",
+                  "zh": "只放行公开的服务",
+                  "en": "Only the published services"
+                },
+                {
+                  "jp": "通さない",
+                  "zh": "不放行",
+                  "en": "Blocked"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "内部LAN",
+                  "zh": "内部局域网",
+                  "en": "Internal LAN"
+                },
+                {
+                  "jp": "社員のPC、機密情報を保管するサーバ",
+                  "zh": "员工的PC、保存机密信息的服务器",
+                  "en": "Staff PCs, servers holding confidential data"
+                },
+                {
+                  "jp": "通さない",
+                  "zh": "不放行",
+                  "en": "Blocked"
+                },
+                {
+                  "jp": "―",
+                  "zh": "―",
+                  "en": "―"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2013h25a-q079",
+        "2018h30h-q068",
+        "2019r01a-q092"
+      ],
+      "definition_jp": "DMZは、外部(インターネット)と内部LANの両方からファイアウォールで切り離した中間の領域で、外部に公開するサーバを置く場所である。",
+      "definition_zh": "DMZ是用防火墙同时与外部（互联网）和内部局域网隔开的中间区域，用于放置对外公开的服务器。",
+      "definition_en": "A DMZ is an intermediate zone separated by firewalls from both the outside (the internet) and the internal LAN, and it is where servers open to the public are placed.",
+      "explanation_jp": "外部の利用者はDMZのサーバまでは接続できるが、DMZから内部LANへの通信はファイアウォールで止める。公開サーバを内部LANにそのまま置くと、乗っ取られたときに社内へ直接入り込む入口になってしまう。DMZに分けておけば、公開サーバが乗っ取られても、そこを足がかり(踏み台)にして内部LANへ入られにくい。",
+      "explanation_zh": "外部用户可以连接到DMZ中的服务器，但从DMZ到内部局域网的通信会被防火墙阻止。如果把公开服务器直接放在内部局域网里，一旦被攻陷，它就会成为直接进入公司内部的入口。把它划到DMZ中，即使公开服务器被攻陷，攻击者也难以把它当作跳板（踏み台）侵入内部局域网。",
+      "explanation_en": "Outside users can reach the servers in the DMZ, but traffic from the DMZ to the internal LAN is stopped by a firewall. A public server placed directly on the internal LAN would, if taken over, become a doorway straight into the company. Keeping it in the DMZ means that even if the public server is compromised, attackers find it hard to use it as a stepping stone (踏み台) into the internal LAN.",
+      "memory_hook_jp": "DeMilitarized Zone(非武装地帯)の略。対立する2つの側の間に置く緩衝地帯という軍事用語から来ている。",
+      "memory_hook_zh": "DeMilitarized Zone（非军事区）的缩写，源自在对立双方之间设置缓冲地带的军事用语。",
+      "memory_hook_en": "Short for DeMilitarized Zone, a military term for a buffer area placed between two opposing sides.",
+      "inline_quiz": [
+        "2013h25a-q079",
+        "2018h30h-q068",
+        "2019r01a-q092"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "SSL/TLS",
-      "definition_jp": "通信を暗号化し盗聴・改ざんを防ぐ標準的なプロトコル。",
-      "explanation_jp": "SSL/TLSは、インターネット上の通信を暗号化して、盗聴・改ざん・なりすましを防ぐためのプロトコルです。現在はTLSが正式名で、SSLはその旧称ですが、まとめてSSL/TLSと呼ばれます。Webでは「https」として使われ、ブラウザの鍵マークで利用が確認できます。\n\n暗号化に加え、サーバ証明書による通信相手の確認も行えます。試験では、通信経路を暗号化する代表的な仕組みである点や、httpsやVPNなど他技術の基盤として使われる点が頻出です。",
-      "analogy_jp": "中身が見えない封かんされた書留郵便のようなもの。送る相手を確認したうえで封をし、途中で誰かに中を読まれたりすり替えられたりしません。",
-      "memory_hook_jp": "SSL/TLSといえば通信を暗号化して盗聴・改ざん防止",
-      "inline_quiz": [
-        "2010h22a-q080",
-        "2010h22h-q071"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "SSL/TLS",
       "term_en": "SSL/TLS",
-      "definition_zh": "对通信加密、防止窃听与篡改的标准协议。",
-      "definition_en": "A standard protocol that encrypts communications to prevent eavesdropping and tampering.",
-      "explanation_zh": "SSL/TLS 是对互联网上的通信进行加密，以防止窃听、篡改、冒充的协议。如今 TLS 是正式名称，SSL 是它的旧称，二者合称为 SSL/TLS。在 Web 中以「https」的形式使用，可通过浏览器的锁形标记确认其启用。\n\n除加密外，还能借助服务器证书确认通信对端。考试中常考它是对通信路径加密的代表性机制这一点，以及它被用作 https、VPN 等其他技术基础这一点。",
-      "explanation_en": "SSL/TLS is a protocol for encrypting communications over the internet to prevent eavesdropping, tampering, and impersonation. Today TLS is the official name and SSL is its former name, but they are collectively called SSL/TLS. On the Web it is used as \"https,\" and its use can be confirmed by the lock icon in the browser.\n\nIn addition to encryption, it can also verify the communication partner using a server certificate. The exam frequently asks that it is a representative mechanism for encrypting the communication path, and that it serves as the foundation for other technologies such as https and VPN.",
-      "analogy_zh": "就像看不到内容、密封好的挂号邮件。先确认收件对象再封口，途中不会被任何人读取内容或调包。",
-      "analogy_en": "Like a sealed registered letter whose contents cannot be seen. You confirm the recipient before sealing it, and no one can read or swap the contents along the way.",
-      "memory_hook_zh": "说到 SSL/TLS，就是给通信加密防窃听与篡改",
-      "memory_hook_en": "SSL/TLS → encrypt communications to prevent eavesdropping and tampering"
+      "one_jp": "**SSL/TLS**は、ブラウザとWebサーバの間などの通信を**暗号化**し、**サーバ証明書**で通信相手のサーバが本物かを確かめるプロトコルである。",
+      "one_zh": "**SSL/TLS**是对浏览器与Web服务器之间等的通信进行**加密**，并用**服务器证书**（[[jp:サーバ証明書]]）确认通信对方服务器是否真实的协议。",
+      "one_en": "**SSL/TLS** is a protocol that **encrypts** communication, for example between a browser and a web server, and uses a **server certificate** ([[jp:サーバ証明書]]) to confirm that the server on the other end is genuine.",
+      "detail_jp": "サーバ証明書は、信頼できる第三者機関(認証局)がサーバの持ち主を証明する電子的な証明書である。Webでは、SSL/TLSを使ったHTTPの通信を**HTTPS**といい、URLは https:// で始まる。SSLは前身にあたる古い方式で、現在は改良版のTLSが使われているが、まとめてSSL/TLSと呼ばれる。",
+      "detail_zh": "服务器证书是由可信的第三方机构（认证中心）证明服务器所有者身份的电子证书。在Web上，使用SSL/TLS的HTTP通信称为**HTTPS**，其URL以 https:// 开头。SSL是较早的前身方式，现在使用的是其改进版TLS，但两者通常合称为SSL/TLS。",
+      "detail_en": "A server certificate is an electronic certificate in which a trusted third party, a certificate authority, vouches for who owns the server. On the web, HTTP communication over SSL/TLS is called **HTTPS**, and its URLs begin with https://. SSL is the older predecessor and today its improved successor TLS is used, but the two are commonly referred to together as SSL/TLS.",
+      "analogy_jp": "相手の身分証を確かめてから、中身の見えない封筒で手紙をやりとりするようなもの。配達の途中で誰が触れても中は読めない。",
+      "analogy_zh": "就像先核对对方的身份证件，再用看不到内容的信封往来书信。即使投递途中有人碰到，也读不到里面的内容。",
+      "analogy_en": "It is like checking the other person's ID and then exchanging letters in envelopes no one can see through. Whoever handles them along the way cannot read what is inside.",
+      "hook_jp": "https の最後の s は secure(安全な)の s。この s が付いていれば SSL/TLS で守られた通信である。",
+      "hook_zh": "https 最后的 s 是 secure（安全）的 s。带有这个 s，就表示通信受到 SSL/TLS 保护。",
+      "hook_en": "The final s in https stands for secure. If the s is there, the communication is protected by SSL/TLS.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**HTTPS**の暗号化はブラウザからWebサーバまでの全区間に及ぶ。無線LANの暗号化(WPA2)が守るのは端末とアクセスポイント(無線LANの親機)の間だけで、その有無はHTTPSの暗号化を左右しない。",
+          "text_zh": "**HTTPS**的加密覆盖从浏览器到Web服务器的全程。无线局域网（WLAN，也写作无线LAN）的加密（WPA2）只保护终端与接入点（无线局域网的基站）之间，有没有这层加密并不影响HTTPS的加密。",
+          "text_en": "**HTTPS** encryption covers the entire path from the browser to the web server. Wireless LAN encryption (WPA2) protects only the link between the device and the access point (the wireless base station), so whether it is on has no effect on HTTPS encryption.",
+          "qids": [
+            "2013h25h-q074",
+            "2021r03-q063",
+            "2016h28a-q079"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "サーバ証明書を確かめたSSL/TLS通信で分かるのは、相手が偽のサイトでないことと、経路の途中で中身を読まれないことである。サイト運営者の信用度までは保証しない。",
+          "text_zh": "经服务器证书验证的SSL/TLS通信能确认的是：对方不是假冒网站，并且内容在传输途中不会被读取。它并不保证网站运营者的可信程度。",
+          "text_en": "What a certificate-verified SSL/TLS connection tells you is that the site is not a fake and that the content cannot be read in transit. It does not vouch for how trustworthy the site's operator is.",
+          "qids": [
+            "2010h22a-q080",
+            "2010h22h-q071",
+            "2011h23a-q071"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "SSL/TLSで暗号化を始めるには、サーバが**サーバ証明書**を用意してブラウザに示す。HTTPSは、このSSL/TLSでWebの通信を守る方式である。",
+          "text_zh": "要用SSL/TLS开始加密，服务器需要准备**服务器证书**并出示给浏览器。HTTPS就是用SSL/TLS来保护Web通信的方式。",
+          "text_en": "To start encryption with SSL/TLS, the server prepares a **server certificate** and presents it to the browser. HTTPS is the way web communication is protected with SSL/TLS.",
+          "qids": [
+            "2018h30h-q057",
+            "2018h30a-q071"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "hello",
+              "label": {
+                "jp": "ブラウザが接続を求める",
+                "zh": "浏览器请求连接",
+                "en": "Browser asks to connect"
+              }
+            },
+            {
+              "id": "cert",
+              "label": {
+                "jp": "サーバが証明書を送る",
+                "zh": "服务器发送证书",
+                "en": "Server sends its certificate"
+              }
+            },
+            {
+              "id": "verify",
+              "label": {
+                "jp": "証明書を確かめ鍵を共有",
+                "zh": "验证证书并共享密钥",
+                "en": "Verify certificate, share key"
+              }
+            },
+            {
+              "id": "secure",
+              "label": {
+                "jp": "暗号化した通信",
+                "zh": "加密通信",
+                "en": "Encrypted communication"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ブラウザがWebサーバに、暗号化した通信を始めたいと伝える。",
+            "caption_zh": "浏览器告诉Web服务器，希望开始加密通信。",
+            "caption_en": "The browser tells the web server it wants to start encrypted communication.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "Webサーバが、信頼できる第三者機関の発行したサーバ証明書をブラウザに送る。",
+            "caption_zh": "Web服务器把由可信第三方机构签发的服务器证书发给浏览器。",
+            "caption_en": "The web server sends the browser a server certificate issued by a trusted third party.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "ブラウザは証明書で相手が本物のサーバかを確かめ、暗号化に使う鍵をサーバと共有する。",
+            "caption_zh": "浏览器用证书确认对方是否为真正的服务器，并与服务器共享用于加密的密钥。",
+            "caption_en": "The browser uses the certificate to check that the server is genuine, then shares an encryption key with it.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "以後のやりとりは、ブラウザからWebサーバまで暗号化されたまま届く。",
+            "caption_zh": "此后往来的数据从浏览器到Web服务器全程保持加密送达。",
+            "caption_en": "From then on, everything exchanged stays encrypted all the way from the browser to the web server.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2013h25h-q074",
+        "2021r03-q063",
+        "2010h22a-q080"
+      ],
+      "definition_jp": "SSL/TLSは、ブラウザとWebサーバの間などの通信を暗号化し、サーバ証明書で通信相手のサーバが本物かを確かめるプロトコルである。",
+      "definition_zh": "SSL/TLS是对浏览器与Web服务器之间等的通信进行加密，并用服务器证书（サーバ証明書）确认通信对方服务器是否真实的协议。",
+      "definition_en": "SSL/TLS is a protocol that encrypts communication, for example between a browser and a web server, and uses a server certificate (サーバ証明書) to confirm that the server on the other end is genuine.",
+      "explanation_jp": "サーバ証明書は、信頼できる第三者機関(認証局)がサーバの持ち主を証明する電子的な証明書である。Webでは、SSL/TLSを使ったHTTPの通信をHTTPSといい、URLは https:// で始まる。SSLは前身にあたる古い方式で、現在は改良版のTLSが使われているが、まとめてSSL/TLSと呼ばれる。",
+      "explanation_zh": "服务器证书是由可信的第三方机构（认证中心）证明服务器所有者身份的电子证书。在Web上，使用SSL/TLS的HTTP通信称为HTTPS，其URL以 https:// 开头。SSL是较早的前身方式，现在使用的是其改进版TLS，但两者通常合称为SSL/TLS。",
+      "explanation_en": "A server certificate is an electronic certificate in which a trusted third party, a certificate authority, vouches for who owns the server. On the web, HTTP communication over SSL/TLS is called HTTPS, and its URLs begin with https://. SSL is the older predecessor and today its improved successor TLS is used, but the two are commonly referred to together as SSL/TLS.",
+      "memory_hook_jp": "https の最後の s は secure(安全な)の s。この s が付いていれば SSL/TLS で守られた通信である。",
+      "memory_hook_zh": "https 最后的 s 是 secure（安全）的 s。带有这个 s，就表示通信受到 SSL/TLS 保护。",
+      "memory_hook_en": "The final s in https stands for secure. If the s is there, the communication is protected by SSL/TLS.",
+      "inline_quiz": [
+        "2013h25h-q074",
+        "2021r03-q063",
+        "2010h22a-q080"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "VPN",
-      "definition_jp": "公衆回線上に暗号化した仮想的な専用線を作る技術。",
-      "explanation_jp": "VPN(Virtual Private Network)は、インターネットなどの公衆回線上に暗号化された仮想的な専用線を構築し、あたかも自社専用の安全な通信路を使っているかのように通信できる技術です。\n\n通信内容を暗号化するため、外出先や自宅から社内ネットへ安全に接続するテレワークなどで使われます。暗号化にはIPsecやSSL/TLSといった技術が用いられます。試験では、公衆回線を使いながら専用線並みの安全性を得る仕組みである点が問われます。",
-      "analogy_jp": "公道の中に作った、自分たちだけが通れる目隠し付きの秘密のトンネルのようなもの。みんなと同じ道を使いながら、中の様子は外から見えません。",
-      "memory_hook_jp": "VPNといえば公衆回線上の暗号化した仮想専用線",
-      "inline_quiz": [
-        "2011h23a-q070",
-        "2012h24a-q100"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "VPN（虚拟专用网络）",
       "term_en": "VPN",
-      "definition_zh": "在公用线路上构建加密的虚拟专用线路的技术。",
-      "definition_en": "A technology that creates an encrypted virtual private line over a public line.",
-      "explanation_zh": "VPN（Virtual Private Network，虚拟专用网络）是在互联网等公用线路上构建加密的虚拟专用线路，让通信看起来就像在使用本公司专属的安全通信通道一样的技术。\n\n由于会对通信内容加密，因此被用于从外出地点或家中安全接入公司内网的远程办公等场景。加密会采用 IPsec、SSL/TLS 等技术。考试中会考查它是利用公用线路却能获得专用线路级安全性的机制这一点。",
-      "explanation_en": "VPN (Virtual Private Network) is a technology that builds an encrypted virtual private line over a public line such as the internet, allowing communication as if using a secure communication path dedicated to one's own company.\n\nBecause it encrypts the communication content, it is used for telework and similar scenarios where one securely connects to the corporate network from an external location or home. Technologies such as IPsec and SSL/TLS are used for encryption. The exam asks about the point that it is a mechanism that obtains security comparable to a dedicated line while using a public line.",
-      "analogy_zh": "就像在公共道路中开出的、只有自己人能通行且加了遮挡的秘密隧道。虽然走的是和大家一样的路，但里面的情况从外面看不到。",
-      "analogy_en": "Like a secret, screened-off tunnel built within a public road that only your own group can pass through. You use the same road as everyone else, but no one outside can see what is inside.",
-      "memory_hook_zh": "说到 VPN，就是公用线路上加密的虚拟专用线",
-      "memory_hook_en": "VPN → an encrypted virtual private line over a public line"
+      "one_jp": "**VPN**は、多くの利用者が共有するネットワークの上に、契約者や社員だけが使える**仮想的な専用網**を作り、専用線のように使えるようにする技術である。",
+      "one_zh": "**VPN**是在众多用户共用的网络之上，构建只有签约用户或员工才能使用的**虚拟专用网络**，使其能像专线一样使用的技术。",
+      "one_en": "A **VPN** builds a **virtual private network** that only subscribers or employees can use on top of a network shared by many users, so that it can be used much like a leased line.",
+      "detail_jp": "社外から社内LANにつなぐテレワークや、離れた拠点どうしを結ぶ用途で使われる。代表的な形として、インターネットを通る**インターネットVPN**と、通信事業者が契約者だけに提供する閉じた網を使う**IP-VPN**がある。",
+      "detail_zh": "VPN用于从公司外部接入公司内部局域网的远程办公，以及连接相距较远的各个办公地点。代表性的形式有经由互联网的**互联网VPN**（[[jp:インターネットVPN]]），以及使用通信运营商只向签约用户提供的封闭网络的**IP-VPN**。",
+      "detail_en": "VPNs are used for remote work, where staff connect to the internal LAN from outside, and for linking distant offices. Two common forms are the **Internet VPN** ([[jp:インターネットVPN]]), which runs over the internet, and the **IP-VPN**, which uses a closed network that a carrier provides only to its subscribers.",
+      "analogy_jp": "皆が通る一般道路の中に、自分たちだけが通れる目隠し付きのトンネルを掘るようなもの。同じ道を使いながら、中の様子は外から見えない。",
+      "analogy_zh": "就像在人人都走的普通道路中，挖一条只有自己人能通过、带遮挡的隧道。虽然走的是同一条路，外面却看不到里面的情形。",
+      "analogy_en": "It is like digging a screened tunnel, open only to your own group, through a public road everyone travels. You share the same road, yet no one outside can see what goes on inside.",
+      "hook_jp": "Virtual Private Network。本物の専用線ではない(Virtual)が、自分たち専用(Private)のように使える網、と名前が中身を表している。",
+      "hook_zh": "Virtual Private Network。并非真正的专线（Virtual，虚拟），却能像自己专用（Private）的网络一样使用，名称本身就说明了它的内容。",
+      "hook_en": "Virtual Private Network: not a real dedicated line (virtual), yet usable as if it were your own (private). The name describes exactly what it is.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "インターネットを通る**インターネットVPN**は、だれでも使える網を通るため、接続相手を確かめる認証と、通信の中身の暗号化を組み合わせて安全を確保する。",
+          "text_zh": "经由互联网的**互联网VPN**走的是人人都能使用的网络，因此要把确认连接对象的认证与通信内容的加密组合起来以确保安全。",
+          "text_en": "An **Internet VPN** runs over a network anyone can use, so it secures traffic by combining authentication, which confirms who is connecting, with encryption of the content.",
+          "qids": [
+            "2011h23a-q070",
+            "2015h27a-q045"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**IP-VPN**は通信事業者の閉じた網を使うため、帯域などの通信品質を保証できる。インターネットVPNではこの保証ができない。",
+          "text_zh": "**IP-VPN**使用通信运营商的封闭网络，因此能保证带宽等通信质量。互联网VPN则无法提供这种保证。",
+          "text_en": "An **IP-VPN** uses a carrier's closed network, so it can guarantee communication quality such as bandwidth. An Internet VPN cannot offer this guarantee.",
+          "qids": [
+            "2016h28a-q057",
+            "2020r02o-q078"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "端末を社内につなぐ前にセキュリティの状態を調べるのは**検疫ネットワーク**の役割で、**VPN**の特徴ではない。",
+          "text_zh": "在终端接入公司内部之前检查其安全状态，是**隔离网络**的作用，而不是**VPN**的特点。",
+          "text_en": "Checking a device's security status before it joins the company network is the job of a **quarantine network**, not a feature of a **VPN**.",
+          "qids": [
+            "2017h29a-q085",
+            "2019h31h-q079"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "インターネットVPN(インターネット経由)",
+            "zh": "互联网VPN（经由互联网）",
+            "en": "Internet VPN (over the internet)"
+          },
+          "b": {
+            "jp": "IP-VPN(事業者の閉じた網)",
+            "zh": "IP-VPN（运营商的封闭网络）",
+            "en": "IP-VPN (a carrier's closed network)"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "通る網",
+                "zh": "经过的网络",
+                "en": "Network used"
+              },
+              "a": {
+                "jp": "インターネット",
+                "zh": "互联网",
+                "en": "The internet"
+              },
+              "b": {
+                "jp": "通信事業者が契約者に提供する閉じた網",
+                "zh": "通信运营商向签约用户提供的封闭网络",
+                "en": "A closed network a carrier provides to its subscribers"
+              }
+            },
+            {
+              "label": {
+                "jp": "安全を守る方法",
+                "zh": "保障安全的方式",
+                "en": "How it stays secure"
+              },
+              "a": {
+                "jp": "認証と暗号化で通信路を守る",
+                "zh": "用认证和加密保护通信线路",
+                "en": "Authentication and encryption protect the channel"
+              },
+              "b": {
+                "jp": "契約者以外が入れない網を使う",
+                "zh": "使用签约用户以外无法进入的网络",
+                "en": "Uses a network only subscribers can enter"
+              }
+            },
+            {
+              "label": {
+                "jp": "帯域などの品質保証",
+                "zh": "带宽等质量保证",
+                "en": "Guaranteed quality such as bandwidth"
+              },
+              "a": {
+                "jp": "できない",
+                "zh": "不能",
+                "en": "No"
+              },
+              "b": {
+                "jp": "できる",
+                "zh": "能",
+                "en": "Yes"
+              },
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2014h26h-q055",
+        "2017h29a-q085",
+        "2020r02o-q078"
+      ],
+      "definition_jp": "VPNは、多くの利用者が共有するネットワークの上に、契約者や社員だけが使える仮想的な専用網を作り、専用線のように使えるようにする技術である。",
+      "definition_zh": "VPN是在众多用户共用的网络之上，构建只有签约用户或员工才能使用的虚拟专用网络，使其能像专线一样使用的技术。",
+      "definition_en": "A VPN builds a virtual private network that only subscribers or employees can use on top of a network shared by many users, so that it can be used much like a leased line.",
+      "explanation_jp": "社外から社内LANにつなぐテレワークや、離れた拠点どうしを結ぶ用途で使われる。代表的な形として、インターネットを通るインターネットVPNと、通信事業者が契約者だけに提供する閉じた網を使うIP-VPNがある。",
+      "explanation_zh": "VPN用于从公司外部接入公司内部局域网的远程办公，以及连接相距较远的各个办公地点。代表性的形式有经由互联网的互联网VPN（インターネットVPN），以及使用通信运营商只向签约用户提供的封闭网络的IP-VPN。",
+      "explanation_en": "VPNs are used for remote work, where staff connect to the internal LAN from outside, and for linking distant offices. Two common forms are the Internet VPN (インターネットVPN), which runs over the internet, and the IP-VPN, which uses a closed network that a carrier provides only to its subscribers.",
+      "memory_hook_jp": "Virtual Private Network。本物の専用線ではない(Virtual)が、自分たち専用(Private)のように使える網、と名前が中身を表している。",
+      "memory_hook_zh": "Virtual Private Network。并非真正的专线（Virtual，虚拟），却能像自己专用（Private）的网络一样使用，名称本身就说明了它的内容。",
+      "memory_hook_en": "Virtual Private Network: not a real dedicated line (virtual), yet usable as if it were your own (private). The name describes exactly what it is.",
+      "inline_quiz": [
+        "2014h26h-q055",
+        "2017h29a-q085",
+        "2020r02o-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "MDM",
-      "definition_jp": "業務用モバイル端末を一元管理する仕組み。",
-      "explanation_jp": "MDM(Mobile Device Management)は、業務で使うスマートフォンやタブレットなどのモバイル端末を、管理者が一元的に管理する仕組みです。アプリの配布・制限、セキュリティ設定の強制、紛失時の遠隔ロックやデータ消去などができます。\n\n社外に持ち出される端末の安全を管理者側でまとめて統制できる点が特徴で、特に紛失・盗難時の情報漏えい対策として有効です。試験では、モバイル端末を統一的に管理し、遠隔ロックやデータ消去を行える仕組みである点が問われます。",
-      "analogy_jp": "社用車をまとめて管理する配車センターのようなもの。各車の設定をそろえ、盗難時には遠隔でエンジンを止めて中の荷物を守れます。",
-      "memory_hook_jp": "MDMといえばモバイル端末を一元管理し遠隔ロック",
+      "term_zh": "MDM（移动设备管理）",
+      "term_en": "MDM",
+      "one_jp": "**MDM**は、会社が業務用に配るスマートフォンなどの端末を、管理者が**遠隔**でまとめて管理する仕組みである。",
+      "one_zh": "**MDM**是由管理员**远程**统一管理公司为业务配发的智能手机等终端的机制。",
+      "one_en": "**MDM** lets administrators **remotely** manage, all in one place, the smartphones and other devices a company issues for work.",
+      "detail_jp": "端末に管理用のソフト(エージェント)を入れておき、管理者は手元から各端末の状態を監視したり、使えるアプリを制限したりする。紛失や盗難のときは、遠隔で端末をロックしたりデータを消去したりして、情報漏えいを防ぐ。",
+      "detail_zh": "预先在终端上安装管理用软件（代理程序），管理员就能在自己手边监视各终端的状态，或限制可使用的应用。终端丢失或被盗时，可远程锁定终端或擦除数据，防止信息泄露。",
+      "detail_en": "A management program (an agent) is installed on each device in advance, letting administrators monitor device status from their own desks and restrict which apps can be used. If a device is lost or stolen, they can lock it or erase its data remotely to prevent information leaks.",
+      "analogy_jp": "会社の車をまとめて管理する管理センターのようなもの。全車の設定をそろえ、盗まれたときは遠くからエンジンを止められる。",
+      "analogy_zh": "就像统一管理公司车辆的调度中心。所有车辆的设置保持一致，车被盗时还能从远处让发动机熄火。",
+      "analogy_en": "It is like a control center for a company's fleet of cars. It keeps every car's settings the same and can shut off the engine remotely if one is stolen.",
+      "hook_jp": "Mobile Device Management の略。字面の似たDMZは Zone(領域)で終わるネットワークの話、MDMは Mobile(携帯できる)で始まる端末の話。",
+      "hook_zh": "Mobile Device Management 的缩写。字面相似的DMZ以 Zone（区域）结尾，讲的是网络；MDM以 Mobile（可携带的）开头，讲的是终端。",
+      "hook_en": "Short for Mobile Device Management. The similar-looking DMZ ends in Zone and is about networks, while MDM starts with Mobile and is about devices.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "紛失や盗難に備え、管理者が遠隔で端末をロックしたり、データを消去・初期化したりできることが**MDM**の代表的な機能である。",
+          "text_zh": "为应对丢失或被盗，管理员能远程锁定终端，或擦除数据、恢复出厂设置，这是**MDM**的代表性功能。",
+          "text_en": "A typical **MDM** feature is that administrators can remotely lock a device, or erase and reset its data, in case it is lost or stolen.",
+          "qids": [
+            "2018h30a-q072",
+            "2020r02o-q076"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "私物の端末を業務に持ち込んで使うことは**BYOD**と呼び、**MDM**とは別の用語である。MDMは端末を管理する仕組みを指す。",
+          "text_zh": "把私人终端带来用于工作称为**BYOD**，与**MDM**是不同的术语。MDM指的是管理终端的机制。",
+          "text_en": "Bringing your own device into work use is called **BYOD**, which is a different term from **MDM**. MDM refers to the system for managing devices.",
+          "qids": [
+            "2018h30a-q072"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**MDM**では、画面ロックの強制などのセキュリティ設定を、管理者がすべての業務用端末にそろえて配布できる。",
+          "text_zh": "利用**MDM**，管理员可以把强制屏幕锁定等安全设置统一分发到所有业务用终端。",
+          "text_en": "With **MDM**, administrators can push security settings such as a mandatory screen lock uniformly to every work device.",
+          "qids": [
+            "2020r02o-q076"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "mdm",
+            "label": {
+              "jp": "MDMで管理者ができること",
+              "zh": "管理员借助MDM能做的事",
+              "en": "What admins can do with MDM"
+            },
+            "children": [
+              {
+                "id": "monitor",
+                "label": {
+                  "jp": "端末の状態の監視",
+                  "zh": "监视终端状态",
+                  "en": "Monitor device status"
+                }
+              },
+              {
+                "id": "config",
+                "label": {
+                  "jp": "設定の配布",
+                  "zh": "分发设置",
+                  "en": "Push settings"
+                },
+                "children": [
+                  {
+                    "id": "lock",
+                    "label": {
+                      "jp": "画面ロックの強制",
+                      "zh": "强制屏幕锁定",
+                      "en": "Enforce screen lock"
+                    }
+                  },
+                  {
+                    "id": "apps",
+                    "label": {
+                      "jp": "使えるアプリの制限",
+                      "zh": "限制可用的应用",
+                      "en": "Restrict usable apps"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "lost",
+                "label": {
+                  "jp": "紛失・盗難時の対応",
+                  "zh": "丢失或被盗时的应对",
+                  "en": "Response to loss or theft"
+                },
+                "children": [
+                  {
+                    "id": "rlock",
+                    "label": {
+                      "jp": "遠隔ロック",
+                      "zh": "远程锁定",
+                      "en": "Remote lock"
+                    }
+                  },
+                  {
+                    "id": "wipe",
+                    "label": {
+                      "jp": "データの消去・初期化",
+                      "zh": "擦除数据或恢复出厂设置",
+                      "en": "Wipe or factory-reset data"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2020r02o-q076",
+        "2018h30a-q072"
+      ],
+      "definition_jp": "MDMは、会社が業務用に配るスマートフォンなどの端末を、管理者が遠隔でまとめて管理する仕組みである。",
+      "definition_zh": "MDM是由管理员远程统一管理公司为业务配发的智能手机等终端的机制。",
+      "definition_en": "MDM lets administrators remotely manage, all in one place, the smartphones and other devices a company issues for work.",
+      "explanation_jp": "端末に管理用のソフト(エージェント)を入れておき、管理者は手元から各端末の状態を監視したり、使えるアプリを制限したりする。紛失や盗難のときは、遠隔で端末をロックしたりデータを消去したりして、情報漏えいを防ぐ。",
+      "explanation_zh": "预先在终端上安装管理用软件（代理程序），管理员就能在自己手边监视各终端的状态，或限制可使用的应用。终端丢失或被盗时，可远程锁定终端或擦除数据，防止信息泄露。",
+      "explanation_en": "A management program (an agent) is installed on each device in advance, letting administrators monitor device status from their own desks and restrict which apps can be used. If a device is lost or stolen, they can lock it or erase its data remotely to prevent information leaks.",
+      "memory_hook_jp": "Mobile Device Management の略。字面の似たDMZは Zone(領域)で終わるネットワークの話、MDMは Mobile(携帯できる)で始まる端末の話。",
+      "memory_hook_zh": "Mobile Device Management 的缩写。字面相似的DMZ以 Zone（区域）结尾，讲的是网络；MDM以 Mobile（可携带的）开头，讲的是终端。",
+      "memory_hook_en": "Short for Mobile Device Management. The similar-looking DMZ ends in Zone and is about networks, while MDM starts with Mobile and is about devices.",
       "inline_quiz": [
+        "2020r02o-q076",
         "2018h30a-q072"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "MDM（移动设备管理）",
-      "term_en": "MDM",
-      "definition_zh": "对业务用移动终端进行统一管理的机制。",
-      "definition_en": "A mechanism for centrally managing business mobile devices.",
-      "explanation_zh": "MDM（Mobile Device Management，移动设备管理）是由管理员对业务中使用的智能手机、平板电脑等移动终端进行统一管理的机制。可以进行应用的分发与限制、强制实施安全设置、丢失时的远程锁定与数据擦除等。\n\n其特点是能由管理员一侧统一管控被带到公司外部的终端的安全，尤其在丢失、被盗时作为信息泄露防护措施十分有效。考试中会考查它是统一管理移动终端、可进行远程锁定与数据擦除的机制这一点。",
-      "explanation_en": "MDM (Mobile Device Management) is a mechanism by which an administrator centrally manages mobile devices used for work, such as smartphones and tablets. It can distribute and restrict apps, enforce security settings, and perform remote locking and data wiping when a device is lost.\n\nIt is characterized by allowing the administrator side to collectively control the security of devices taken outside the company, and is especially effective as a data leak prevention measure when a device is lost or stolen. The exam asks about the point that it is a mechanism that uniformly manages mobile devices and can perform remote locking and data wiping.",
-      "analogy_zh": "就像统一管理公司车辆的调度中心。它统一各车的设置，被盗时还能远程熄火以保护车内的货物。",
-      "analogy_en": "Like a dispatch center that collectively manages company vehicles. It standardizes the settings of each vehicle, and when one is stolen, it can remotely shut off the engine to protect the cargo inside.",
-      "memory_hook_zh": "说到 MDM，就是统一管理移动终端并远程锁定",
-      "memory_hook_en": "MDM → centrally manage mobile devices and lock them remotely"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "EDR",
+      "b": "SIEM",
+      "rows": [
+        {
+          "label_jp": "見張る範囲",
+          "label_zh": "监视范围",
+          "label_en": "What it watches",
+          "a_jp": "1台ごとの端末(PCやサーバ)の動き",
+          "a_zh": "每台终端（PC或服务器）的行为",
+          "a_en": "Activity on each individual device (PC or server)",
+          "b_jp": "複数の機器から集めたログ全体",
+          "b_zh": "从多台设备收集的全部日志",
+          "b_en": "All the logs collected from many devices",
+          "key": true
+        },
+        {
+          "label_jp": "主な働き",
+          "label_zh": "主要作用",
+          "label_en": "Main role",
+          "a_jp": "不審な動きを検知し、隔離や調査を助ける",
+          "a_zh": "检测可疑行为，协助隔离和调查",
+          "a_en": "Detects suspicious activity and helps isolate and investigate",
+          "b_jp": "ログを相関分析して攻撃の兆候を見つける",
+          "b_zh": "对日志进行相关分析，发现攻击迹象",
+          "b_en": "Correlates logs to find signs of attack",
+          "key": false
+        },
+        {
+          "label_jp": "両者の関係",
+          "label_zh": "两者的关系",
+          "label_en": "How they relate",
+          "a_jp": "SIEMにログを渡す機器の一つになる",
+          "a_zh": "是向SIEM提供日志的设备之一",
+          "a_en": "One of the sources that feeds logs to SIEM",
+          "b_jp": "EDRなどの記録を集めて横断的に見る",
+          "b_zh": "收集EDR等的记录，进行横向查看",
+          "b_en": "Gathers records from EDR and others to view them together",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "検疫ネットワーク",
+      "b": "DMZ",
+      "rows": [
+        {
+          "label_jp": "そこに置かれるもの",
+          "label_zh": "放在其中的对象",
+          "label_en": "What sits there",
+          "a_jp": "社内LANにつなぐ前の端末",
+          "a_zh": "接入公司内部局域网之前的终端",
+          "a_en": "Devices not yet connected to the internal LAN",
+          "b_jp": "外部に公開するサーバ",
+          "b_zh": "对外公开的服务器",
+          "b_en": "Servers published to the outside",
+          "key": true
+        },
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "問題のある端末を社内LANに入れない",
+          "a_zh": "不让有问题的终端进入内部局域网",
+          "a_en": "Keep problem devices off the internal LAN",
+          "b_jp": "公開サーバが攻撃されても内部LANに被害を広げない",
+          "b_zh": "即使公开服务器遭到攻击，也不让损害扩大到内部局域网",
+          "b_en": "Stop an attack on a public server from spreading to the internal LAN",
+          "key": false
+        },
+        {
+          "label_jp": "置かれる期間",
+          "label_zh": "停留期间",
+          "label_en": "How long it stays",
+          "a_jp": "検査に合格すれば社内LANへ移る",
+          "a_zh": "检查合格后即转入内部局域网",
+          "a_en": "Moves to the internal LAN once it passes inspection",
+          "b_jp": "公開している間はずっとそこに置く",
+          "b_zh": "在公开期间一直放在那里",
+          "b_en": "Stays there for as long as it is public",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "SSL/TLS",
+      "b": "VPN",
+      "rows": [
+        {
+          "label_jp": "守る範囲",
+          "label_zh": "保护范围",
+          "label_en": "What it protects",
+          "a_jp": "ブラウザとWebサーバの間など、アプリの通信",
+          "a_zh": "浏览器与Web服务器之间等应用层面的通信",
+          "a_en": "Application traffic, such as between a browser and a web server",
+          "b_jp": "拠点間や、社外の端末と社内LANの間の通信路",
+          "b_zh": "各办公地点之间，或公司外部终端与内部局域网之间的通信线路",
+          "b_en": "The channel between sites, or between an outside device and the internal LAN",
+          "key": true
+        },
+        {
+          "label_jp": "見分け方",
+          "label_zh": "辨别方法",
+          "label_en": "How to tell",
+          "a_jp": "URLが https:// で始まる",
+          "a_zh": "URL以 https:// 开头",
+          "a_en": "The URL starts with https://",
+          "b_jp": "VPN用の装置やソフトで接続してから通信する",
+          "b_zh": "先通过VPN专用设备或软件建立连接，再进行通信",
+          "b_en": "You connect through VPN equipment or software before communicating",
+          "key": false
+        },
+        {
+          "label_jp": "両者の関係",
+          "label_zh": "两者的关系",
+          "label_en": "How they relate",
+          "a_jp": "VPNの暗号化に使われることがある",
+          "a_zh": "有时用于VPN的加密",
+          "a_en": "Sometimes used to encrypt a VPN",
+          "b_jp": "インターネットVPNでは、SSL/TLSなどで通信路を暗号化することがある",
+          "b_zh": "互联网VPN有时用SSL/TLS等对通信线路加密",
+          "b_en": "An Internet VPN may encrypt its channel with SSL/TLS or similar",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**EDR**は端末の動きを常に見張り、不審な動きを見つけたら隔離や調査で対応する。振る舞い検知により、未知の攻撃にも反応できる。",
+    "**DLP**は守るべきデータの中身に着目して社外への持ち出しを止め、**SIEM**は複数の機器のログを集めて相関分析する。",
+    "**検疫ネットワーク**は社内LANにつなぐ前の端末を検査し、**DMZ**は公開サーバを内部LANから切り離して置く領域である。",
+    "**SSL/TLS**はブラウザとWebサーバの間を全区間で暗号化し、サーバ証明書で相手が本物かを確かめる。",
+    "**VPN**は共用のネットワーク上に専用線のように使える仮想の網を作る技術で、インターネットVPNでは認証と暗号化で安全を確保する。**MDM**は業務用のモバイル端末を遠隔で管理し、紛失時にロックや消去を行う仕組みである。"
+  ],
+  "key_points_zh": [
+    "**EDR**持续监视终端的行为，发现可疑行为后通过隔离和调查加以应对。借助行为检测，它也能对未知攻击作出反应。",
+    "**DLP**着眼于需保护数据的内容，阻止其被带出公司；**SIEM**收集多台设备的日志并进行相关分析。",
+    "**隔离网络**在终端接入公司内部局域网之前进行检查，**DMZ**则是把公开服务器与内部局域网隔开放置的区域。",
+    "**SSL/TLS**对浏览器与Web服务器之间进行全程加密，并用服务器证书确认对方是否真实。",
+    "**VPN**是在共用网络上构建可像专线一样使用的虚拟网络的技术，互联网VPN通过认证和加密确保安全。**MDM**是远程管理业务用移动终端、在丢失时进行锁定或擦除的机制。"
+  ],
+  "key_points_en": [
+    "**EDR** constantly watches device activity and responds to anything suspicious by isolating and investigating. Behavior-based detection lets it react to unknown attacks as well.",
+    "**DLP** focuses on the content of protected data and stops it from leaving the company, while **SIEM** collects logs from many devices and correlates them.",
+    "A **quarantine network** inspects devices before they join the internal LAN, and a **DMZ** is a zone that keeps public servers separated from the internal LAN.",
+    "**SSL/TLS** encrypts the whole path between browser and web server and uses a server certificate to confirm the server is genuine.",
+    "A **VPN** builds a virtual network over a shared one that works like a leased line, and an Internet VPN keeps it secure through authentication and encryption. **MDM** manages work mobile devices remotely and can lock or wipe them when they are lost."
+  ],
+  "overview": {
+    "intro_jp": "EDRとSIEMを見張る範囲(1台の端末か、複数機器のログか)で区別し、DLPがデータの中身に着目する点を説明できる。検疫ネットワークとDMZを、そこに置かれるもの(社内につなぐ前の端末か、外部に公開するサーバか)で見分けられる。SSL/TLSとVPNがそれぞれ守る通信の範囲を説明でき、MDMで紛失した端末に管理者が取れる対処を挙げられる。",
+    "intro_zh": "能按监视的范围（单台终端，还是多台设备的日志）区分EDR和SIEM，并能说明DLP着眼于数据内容这一特点。能根据放在其中的对象（接入公司内部之前的终端，还是对外公开的服务器）区分隔离网络（検疫ネットワーク）和DMZ。能说明SSL/TLS和VPN各自保护的通信范围，并能列举终端丢失时管理员可借助MDM采取的措施。",
+    "intro_en": "Tell EDR from SIEM by what each watches (a single device, or logs from many devices), and explain that DLP looks at the content of the data itself. Distinguish a quarantine network (検疫ネットワーク) from a DMZ by what sits there: devices not yet let into the company network, or servers published to the outside. Explain which part of the communication path SSL/TLS and a VPN each protect, and list what an administrator can do with MDM when a device is lost.",
+    "freq_badge": "頻出",
+    "est_minutes": 58
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "EDR: EDRといえば端末の不審な挙動を検知して事後対応",
-      "DLP: DLPといえば機密データの持ち出し・漏えいを防止",
-      "SIEM: SIEMといえば各機器のログを集約・分析して脅威検知",
-      "検疫ネットワーク: 検疫ネットワークといえば接続前に隔離して安全確認",
-      "DMZ: DMZといえば外部と内部の間の緩衝地帯に公開サーバ",
-      "SSL/TLS: SSL/TLSといえば通信を暗号化して盗聴・改ざん防止",
-      "VPN: VPNといえば公衆回線上の暗号化した仮想専用線",
-      "MDM: MDMといえばモバイル端末を一元管理し遠隔ロック"
-    ],
     "key_points_jp": [
-      "EDRは端末(エンドポイント)の不審な挙動を検知し、侵入後の事後対応を支援する。入口対策中心の従来型ウイルス対策との違いが問われる。",
-      "DLPは守るべきデータの中身に着目して持ち出し・漏えいを防ぎ、SIEMは各機器のログを集約・相関分析して脅威を検知する。",
-      "検疫ネットワークは接続前の端末を隔離して安全性を確認し、DMZは外部と内部の緩衝地帯として外部公開サーバを置く分離構成である。",
-      "SSL/TLSは通信経路を暗号化する代表的なプロトコルで、httpsやVPNなど他技術の基盤にもなる(高頻出)。",
-      "VPNは公衆回線上に暗号化した仮想専用線を作る技術、MDMはモバイル端末を一元管理し遠隔ロック・消去ができる仕組みである。"
+      "EDRは端末の動きを常に見張り、不審な動きを見つけたら隔離や調査で対応する。振る舞い検知により、未知の攻撃にも反応できる。",
+      "DLPは守るべきデータの中身に着目して社外への持ち出しを止め、SIEMは複数の機器のログを集めて相関分析する。",
+      "検疫ネットワークは社内LANにつなぐ前の端末を検査し、DMZは公開サーバを内部LANから切り離して置く領域である。",
+      "SSL/TLSはブラウザとWebサーバの間を全区間で暗号化し、サーバ証明書で相手が本物かを確かめる。",
+      "VPNは共用のネットワーク上に専用線のように使える仮想の網を作る技術で、インターネットVPNでは認証と暗号化で安全を確保する。MDMは業務用のモバイル端末を遠隔で管理し、紛失時にロックや消去を行う仕組みである。"
     ],
     "key_points_zh": [
-      "EDR 检测终端（端点）的可疑行为，协助入侵后的事后响应。会考查它与以入口防护为主的传统杀毒软件的区别。",
-      "DLP 着眼于需要保护的数据内容来防止外带与泄露；SIEM 汇总各设备日志并做关联分析以检测威胁。",
-      "隔离网络在接入前隔离终端以确认安全性；DMZ 作为外部与内部的缓冲地带、放置对外公开服务器，是一种隔离架构。",
-      "SSL/TLS 是对通信路径加密的代表性协议，也成为 https、VPN 等其他技术的基础（高频）。",
-      "VPN 是在公用线路上构建加密虚拟专用线的技术；MDM 是统一管理移动终端、可远程锁定与擦除的机制。"
+      "EDR持续监视终端的行为，发现可疑行为后通过隔离和调查加以应对。借助行为检测，它也能对未知攻击作出反应。",
+      "DLP着眼于需保护数据的内容，阻止其被带出公司；SIEM收集多台设备的日志并进行相关分析。",
+      "隔离网络在终端接入公司内部局域网之前进行检查，DMZ则是把公开服务器与内部局域网隔开放置的区域。",
+      "SSL/TLS对浏览器与Web服务器之间进行全程加密，并用服务器证书确认对方是否真实。",
+      "VPN是在共用网络上构建可像专线一样使用的虚拟网络的技术，互联网VPN通过认证和加密确保安全。MDM是远程管理业务用移动终端、在丢失时进行锁定或擦除的机制。"
     ],
     "key_points_en": [
-      "EDR detects suspicious behavior on devices (endpoints) and supports post-intrusion response. The difference from traditional perimeter-focused antivirus software is tested.",
-      "DLP focuses on the content of the data to be protected to prevent removal and leakage; SIEM aggregates logs from various devices and performs correlation analysis to detect threats.",
-      "A quarantine network isolates a device before connection to confirm its safety; a DMZ is a segmentation architecture that places public-facing servers as a buffer zone between outside and inside.",
-      "SSL/TLS is a representative protocol for encrypting the communication path and also serves as the foundation for other technologies such as https and VPN (high frequency).",
-      "VPN is a technology that builds an encrypted virtual private line over a public line; MDM is a mechanism that centrally manages mobile devices and can remotely lock and wipe them."
+      "EDR constantly watches device activity and responds to anything suspicious by isolating and investigating. Behavior-based detection lets it react to unknown attacks as well.",
+      "DLP focuses on the content of protected data and stops it from leaving the company, while SIEM collects logs from many devices and correlates them.",
+      "A quarantine network inspects devices before they join the internal LAN, and a DMZ is a zone that keeps public servers separated from the internal LAN.",
+      "SSL/TLS encrypts the whole path between browser and web server and uses a server certificate to confirm the server is genuine.",
+      "A VPN builds a virtual network over a shared one that works like a leased line, and an Internet VPN keeps it secure through authentication and encryption. MDM manages work mobile devices remotely and can lock or wipe them when they are lost."
+    ],
+    "memory_hooks_jp": [
+      "EDR: Endpoint Detection and Response の頭文字。後ろの D(検知)と R(対応)が、防ぐより「見つけて対処する」側の仕組みであることを示している。",
+      "DLP: Data Loss Prevention の略。ここでの Loss はデータが壊れることではなく、組織の外へ失われる(漏れ出す)ことを指す。",
+      "SIEM: セキュリティ情報の管理(SIM)とセキュリティイベントの管理(SEM)を合わせた名前で、読みは「シーム」。",
+      "検疫ネットワーク: 「検」は調べる、「疫」は疫病の疫。字のとおり、感染していないかを調べてから中へ通す。",
+      "DMZ: DeMilitarized Zone(非武装地帯)の略。対立する2つの側の間に置く緩衝地帯という軍事用語から来ている。",
+      "SSL/TLS: https の最後の s は secure(安全な)の s。この s が付いていれば SSL/TLS で守られた通信である。",
+      "VPN: Virtual Private Network。本物の専用線ではない(Virtual)が、自分たち専用(Private)のように使える網、と名前が中身を表している。",
+      "MDM: Mobile Device Management の略。字面の似たDMZは Zone(領域)で終わるネットワークの話、MDMは Mobile(携帯できる)で始まる端末の話。"
     ],
     "memory_hooks_zh": [
-      "EDR：说到 EDR，就是检测终端可疑行为并做事后响应",
-      "DLP：说到 DLP，就是防止机密数据被外带或泄露",
-      "SIEM：说到 SIEM，就是汇总分析各设备日志来检测威胁",
-      "隔离网络：说到隔离网络，就是接入前先隔离并确认安全",
-      "DMZ：说到 DMZ，就是外部与内部之间的缓冲地带放公开服务器",
-      "SSL/TLS：说到 SSL/TLS，就是给通信加密防窃听与篡改",
-      "VPN：说到 VPN，就是公用线路上加密的虚拟专用线",
-      "MDM：说到 MDM，就是统一管理移动终端并远程锁定"
+      "EDR：Endpoint Detection and Response 的首字母缩写。后面的 D（检测）和 R（响应）表明，它属于“发现并处置”而非“拦在门外”一侧的机制。",
+      "DLP：Data Loss Prevention 的缩写。这里的 Loss 不是指数据损坏，而是指数据流失（外泄）到组织之外。",
+      "SIEM：由安全信息管理（SIM）和安全事件管理（SEM）组合而成的名称，日语读作 シーム。",
+      "隔离网络（检疫网络）：日语名称里的“検疫”就是中文的“检疫”：“检”是检查，“疫”是疫病。正如字面所示，先查清是否被感染，再放行进入。",
+      "DMZ（隔离区）：DeMilitarized Zone（非军事区）的缩写，源自在对立双方之间设置缓冲地带的军事用语。",
+      "SSL/TLS：https 最后的 s 是 secure（安全）的 s。带有这个 s，就表示通信受到 SSL/TLS 保护。",
+      "VPN（虚拟专用网络）：Virtual Private Network。并非真正的专线（Virtual，虚拟），却能像自己专用（Private）的网络一样使用，名称本身就说明了它的内容。",
+      "MDM（移动设备管理）：Mobile Device Management 的缩写。字面相似的DMZ以 Zone（区域）结尾，讲的是网络；MDM以 Mobile（可携带的）开头，讲的是终端。"
     ],
     "memory_hooks_en": [
-      "EDR: EDR → detect suspicious device behavior and respond after the fact",
-      "DLP: DLP → prevent confidential data from being taken out or leaked",
-      "SIEM: SIEM → aggregate and analyze logs from all devices to detect threats",
-      "Quarantine network: Quarantine network → isolate before connecting and confirm safety",
-      "DMZ: DMZ → public servers in the buffer zone between outside and inside",
-      "SSL/TLS: SSL/TLS → encrypt communications to prevent eavesdropping and tampering",
-      "VPN: VPN → an encrypted virtual private line over a public line",
-      "MDM: MDM → centrally manage mobile devices and lock them remotely"
+      "EDR: Short for Endpoint Detection and Response. The D (detection) and R (response) show that it is about finding and dealing with threats rather than keeping them out.",
+      "DLP: Short for Data Loss Prevention. Here, loss does not mean data getting corrupted; it means data slipping out of the organization.",
+      "SIEM: The name combines security information management (SIM) and security event management (SEM), and in Japanese it is read シーム, like \"seem.\"",
+      "Quarantine Network: The Japanese name uses 検疫, meaning quarantine inspection: 検 is \"to examine\" and 疫 is \"epidemic.\" As the characters say, a device is checked for infection before it is let in.",
+      "DMZ: Short for DeMilitarized Zone, a military term for a buffer area placed between two opposing sides.",
+      "SSL/TLS: The final s in https stands for secure. If the s is there, the communication is protected by SSL/TLS.",
+      "VPN: Virtual Private Network: not a real dedicated line (virtual), yet usable as if it were your own (private). The name describes exactly what it is.",
+      "MDM: Short for Mobile Device Management. The similar-looking DMZ ends in Zone and is about networks, while MDM starts with Mobile and is about devices."
     ]
   },
   "challenge_questions": [
-    "2011h23tokubetsu-q079",
-    "2013h25a-q079",
-    "2014h26h-q055",
-    "2020r02o-q076",
-    "2012h24a-q099"
+    "2016h28a-q057",
+    "2022r04-q064",
+    "2011h23a-q071",
+    "2019h31h-q079",
+    "2014h26a-q050"
   ],
   "source_figures": [
     {
@@ -279,9 +1471,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "高级威胁防护与网络架构、通信保护",
-  "title_en": "Advanced Threat Protection and Network Architecture / Communication Security",
-  "unit_summary_zh": "学习借助 EDR/DLP/SIEM 进行检测与管控、隔离网络/DMZ 的架构，以及通过 SSL/TLS、VPN、MDM 实现通信与终端的保护。",
-  "unit_summary_en": "Learn detection and control via EDR/DLP/SIEM, the architecture of quarantine networks and DMZ, and protection of communications and devices through SSL/TLS, VPN, and MDM."
+  }
 }
