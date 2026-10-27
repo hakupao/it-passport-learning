@@ -109,9 +109,12 @@ const EXPLANATION_VIEW_AT = 0.45;
 /** OQ-14: the longest the answer scroll waits for the face's figures (a lazy one off-screen may never load) */
 const FIGURE_WAIT_MS = 1000;
 
-/** Resolves once every <img> inside `root` has loaded (or failed), or after `ms` at most. */
+/** Resolves once every <img> inside `root` that starts above the viewport's bottom has loaded (or failed), or
+ *  after `ms` at most. Ones further down are left out: lazy, they are not fetched until scrolled near. */
 function imagesSettled(root: Element | null, ms: number): Promise<void> {
-  const pending = Array.from(root?.querySelectorAll("img") ?? []).filter((img) => !img.complete);
+  const pending = Array.from(root?.querySelectorAll("img") ?? []).filter(
+    (img) => !img.complete && img.getBoundingClientRect().top < window.innerHeight,
+  );
   if (pending.length === 0) return Promise.resolve();
   const loaded = pending.map(
     (img) =>
@@ -167,6 +170,8 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
   const shownFinished = useRef(state.finished);
   /** an accepted pick waits for its explanation to render, then scrolls to it */
   const scrollToExplanation = useRef(false);
+  /** bumped on every move to another question / the summary: a waiting answer scroll is then dropped (OQ-14) */
+  const navSeq = useRef(0);
 
   // restore (once per group; the page keys this component by the group)
   useEffect(() => {
@@ -236,6 +241,7 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
     if (state.finished) {
       if (!shownFinished.current) {
         shownFinished.current = true;
+        navSeq.current++;
         window.scrollTo({ top: 0 });
         document.getElementById(SUMMARY_HEADING_ID)?.focus({ preventScroll: true });
       }
@@ -244,6 +250,7 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
     shownFinished.current = false;
     if (shownPos.current === state.pos) return;
     shownPos.current = state.pos;
+    navSeq.current++;
     window.scrollTo({ top: 0 });
     document.getElementById(state.ids[state.pos]!)?.focus({ preventScroll: true });
   }, [ready, state.pos, state.ids, state.finished]);
@@ -253,11 +260,13 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
     if (!scrollToExplanation.current) return;
     scrollToExplanation.current = false;
     if (state.finished) return;
-    const pos = state.pos;
+    const qid = state.ids[state.pos]!;
+    const seq = navSeq.current;
     // OQ-14: measure once the face's figures have loaded — a figure still loading pushes the explanation down later
-    void imagesSettled(document.getElementById(state.ids[pos]!), FIGURE_WAIT_MS).then(() => {
+    void imagesSettled(document.getElementById(qid), FIGURE_WAIT_MS).then(() => {
       const now = stateRef.current;
-      if (now.pos !== pos || now.finished) return; // moved on meanwhile
+      // moved on meanwhile (also away and back), or started over (the answer is gone)
+      if (navSeq.current !== seq || now.finished || now.ids[now.pos] !== qid || !hasOwn(now.answers, qid)) return;
       const el = document.getElementById(EXPLANATION_ID);
       if (!el) return;
       const heading = el.querySelector("h2") ?? el;
