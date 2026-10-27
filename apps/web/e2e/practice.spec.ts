@@ -18,6 +18,9 @@
 //      from the start.
 //   6. en smoke: the face and the explanation render with the book labels (問 / 解説 / 解答) in Japanese.
 //   7. The single-question page /practice/q/<qid> is a reference view: clicks and keys record nothing.
+//   8. OQ-13 / D-194 one column (1440 × 1000): a text-choice question (2023r05-q086, keyed ア, a former
+//      row4 set) has its choices one per line; answering brings the explanation into view under the
+//      choices at the face's width; a choice_figures question (2022r04-q032) keeps 2 × 2.
 //
 // Fixture ids / keys come from data/ip/quiz/questions.json; strings from messages/*.json.
 // No LLM call fires here (a guard routes api.anthropic.com and the afterEach asserts it stayed unused).
@@ -370,4 +373,44 @@ test("single-question page: a reference view — clicks and keys record nothing"
   await expect(ref.locator('[aria-pressed="true"]')).toHaveCount(0);
   expect(await storedAttempts(page, C)).toEqual([]);
   expect((await rawStored(page, "itp:learn:v2")) ?? "").not.toContain(C);
+});
+
+test("practice ja: one column — choices one per line, explanation under them at the face's width (OQ-13)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/ja/practice?ids=2023r05-q086,2022r04-q032");
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/2");
+  await page.evaluate(() => document.fonts.ready);
+
+  // (b) a text-choice question: one choice per line (each top strictly below the one before)
+  const list = face(page).locator("ul[data-layout]");
+  await expect(list).toHaveAttribute("data-layout", "list");
+  const tops: number[] = [];
+  for (const l of ["ア", "イ", "ウ", "エ"]) tops.push((await choiceItem(page, l).boundingBox())!.y);
+  for (let i = 1; i < tops.length; i++) expect(tops[i]!).toBeGreaterThan(tops[i - 1]!);
+
+  // (a) answered: the explanation is under the choices, as wide as the face, and scrolled into view
+  await pressToAnswer(page, "1", "ア");
+  const expl = page.locator("#practice-explanation");
+  await expect(expl.locator("h2")).toBeVisible();
+  await expect(expl.locator("h2")).toBeInViewport();
+  const listBox = (await list.boundingBox())!;
+  const explBox = (await expl.boundingBox())!;
+  const faceBox = (await face(page).boundingBox())!;
+  expect(explBox.y).toBeGreaterThanOrEqual(listBox.y + listBox.height);
+  expect(Math.abs(explBox.width - faceBox.width)).toBeLessThanOrEqual(2);
+  expect(Math.abs(explBox.x - faceBox.x)).toBeLessThanOrEqual(2);
+
+  // (c) a choice_figures question keeps 2 × 2
+  await page.locator('[data-nav="next"]').click();
+  await expect(progress(page)).toHaveAttribute("data-progress", "2/2");
+  await expect(face(page).locator("ul[data-layout]")).toHaveAttribute("data-layout", "grid2");
+  const box = async (l: string) => (await choiceItem(page, l).boundingBox())!;
+  const [a, i, u, e] = [await box("ア"), await box("イ"), await box("ウ"), await box("エ")];
+  expect(Math.abs(a.y - i.y)).toBeLessThanOrEqual(1);
+  expect(Math.abs(u.y - e.y)).toBeLessThanOrEqual(1);
+  expect(u.y).toBeGreaterThan(a.y);
+  expect(i.x).toBeGreaterThan(a.x);
+  expect(Math.abs(a.x - u.x)).toBeLessThanOrEqual(1);
 });

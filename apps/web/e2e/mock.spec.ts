@@ -12,6 +12,7 @@
 //      (Review Focus 2).
 //   6. bad URLs: unknown exam → 404; 99 valid ids → back to /mock (Review Focus 5).
 //   7. phone 360 / 390: no horizontal scroll on the exam and the result; 回答見直し has 5 columns.
+//   8. OQ-13 / D-194: the exam face has the full content width and its text choices stack one per line.
 //
 // Fixture keys from data/ip/quiz/questions.json (2025r07: q001 ウ, q002 ウ, q003 イ). Non-owner (no
 // /api/learning request); no LLM call (guarded).
@@ -286,6 +287,21 @@ for (const width of [360, 390]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
   });
 }
+
+test("mock exam 1440px: the face spans the content width, text choices one per line (OQ-13)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(RUN);
+  await expect(qno(page)).toHaveAttribute("data-qno", "1");
+  const faceBox = (await page.locator("main article").boundingBox())!;
+  const barBox = (await page.locator("main[data-mock-run] > div").first().boundingBox())!; // the top bar
+  expect(Math.abs(faceBox.width - barBox.width)).toBeLessThanOrEqual(2);
+  await expect(page.locator("main article ul[data-layout]")).toHaveAttribute("data-layout", "list");
+  const tops: number[] = [];
+  for (const l of ["ア", "イ", "ウ", "エ"]) {
+    tops.push((await page.locator(`main article li[data-letter="${l}"]`).boundingBox())!.y);
+  }
+  for (let i = 1; i < tops.length; i++) expect(tops[i]!).toBeGreaterThan(tops[i - 1]!);
+});
 
 // ---- fix round 1 ----
 
