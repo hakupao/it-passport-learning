@@ -1,0 +1,277 @@
+/* Stage 7 Phase 3 (D-196 §0-11) — figure registry styles. Same book vocabulary as reader.module.css:
+ * the 7 tokens only (globals.css :root), radius ≤ 6px (4px, as --radius), no shadow, no gradient.
+ * Emphasis = spot ink / tint fill / weight — never red-green (Phase 1 global constraint). */
+
+.fig {
+  margin: 0 0 0.75rem;
+  padding: 16px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  overflow-x: auto;
+}
+
+/* ---- table / compare ---- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.table th,
+.table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: top;
+}
+.table thead th {
+  border-bottom: 2px dotted var(--spot);
+  font-weight: 700;
+}
+.table tbody th {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.compare thead th {
+  width: 40%;
+}
+.keyRow th,
+.keyRow td {
+  background: var(--tint);
+  font-weight: 700;
+}
+.keyRow td {
+  color: var(--spot);
+}
+
+/* ---- flow ---- */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.flowNode {
+  position: relative;
+  padding: 6px 12px;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: var(--paper);
+  font-size: 14px;
+}
+/* the arrow belongs to the node it points at, so a hidden step hides its arrow too */
+.flowNode + .flowNode {
+  margin-left: 30px;
+}
+.flowNode + .flowNode::before {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  left: -24px;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
+}
+@media (max-width: 640px) {
+  .flow {
+    flex-direction: column;
+  }
+  .flowNode + .flowNode {
+    margin: 26px 0 0;
+  }
+  .flowNode + .flowNode::before {
+    content: "↓";
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* ---- tree ---- */
+.tree,
+.treeKids {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.treeKids {
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1px solid var(--rule);
+}
+.tree li,
+.treeKids li {
+  margin: 6px 0;
+}
+.treeNode {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: var(--paper);
+  font-size: 14px;
+}
+
+/* ---- step emphasis (flow / tree) ---- */
+.focus {
+  border-color: var(--spot);
+  background: var(--tint);
+  color: var(--spot);
+  font-weight: 700;
+}
+.off {
+  visibility: hidden;
+}
+
+/* ---- step stage ---- */
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.frame {
+  min-height: 3em;
+}
+.caption {
+  margin: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule);
+  font-size: 14px;
+  min-height: 1.75em;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn {
+  padding: 4px 14px;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn:disabled {
+  border-color: var(--rule);
+  color: var(--ink-muted);
+  cursor: default;
+}
+.btnMain {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--spot);
+  outline-offset: 2px;
+}
+.dots {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  margin: 0 0 0 auto;
+  padding: 0;
+}
+.dot,
+.dotOn {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--ink-muted);
+  border-radius: 2px;
+}
+.dotOn {
+  border-color: var(--spot);
+  background: var(--spot);
+}
+.stepNo {
+  color: var(--ink-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- network widget ---- */
+.netScroll {
+  overflow-x: auto;
+  text-align: center;
+}
+.net {
+  max-width: 100%;
+  height: auto;
+}
+.edge {
+  stroke: var(--ink-muted);
+  stroke-width: 1.5;
+}
+.edgeCrit {
+  stroke: var(--spot);
+  stroke-width: 3;
+}
+.edgeDummy {
+  stroke-dasharray: 5 4;
+}
+.arrowHead {
+  fill: var(--ink-muted);
+}
+.arrowHeadCrit {
+  fill: var(--spot);
+}
+.edgeLabel,
+.edgeLabelCrit {
+  font-size: 13px;
+  fill: var(--ink);
+}
+.edgeLabelCrit {
+  fill: var(--spot);
+  font-weight: 700;
+}
+.node {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.nodeLabel {
+  font-size: 13px;
+  fill: var(--ink);
+}
+.netHint {
+  margin: 8px 0;
+  color: var(--ink-muted);
+  font-size: 12px;
+}
+.netForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: 13px;
+}
+.netField {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.netInput {
+  width: 4em;
+  padding: 2px 6px;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.netInput[aria-invalid="true"] {
+  border: 2px dotted var(--spot);
+}
+.netResult {
+  margin: 10px 0;
+}
+.netResult p {
+  margin: 0;
+}
+.netTotal {
+  font-weight: 700;
+  color: var(--spot);
+}

@@ -1,18 +1,17 @@
 // Stage 7 Phase 3 (D-196 §0-6) — one term in the D-195 order: headword (+ glossary link) →
 // 一句話 → figure → 展開 → たとえ / 覚え方 → this term's past questions (from=unit, click-time run). `article id` =
-// termId(term) (the glossary's /textbook/<unitId>#<termId> target). The figure is the v1
-// self-generated Mermaid SVG (trusted pipeline output, inlined).
+// termId(term) (the glossary's /textbook/<unitId>#<termId> target). The figure goes through the
+// figure registry (§0-11): the v1 Mermaid SVG renders exactly as before (SvgFig); a v2 fig
+// renders its kind, or nothing when its params are invalid.
 
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import { svgNaturalWidth, toDataLang, type ReaderTerm } from "@/lib/textbook/reader";
+import { toDataLang, type ReaderTerm } from "@/lib/textbook/reader";
 
+import { renderFig } from "./figures/registry";
 import styles from "./reader.module.css";
 import { UnitPracticeLink } from "./UnitPracticeLink";
-
-/** natural width above which a figure may scroll sideways on a phone (the hint shows, ≤ 640px only) */
-const FIG_HINT_MIN = 300;
 
 interface Props {
   term: ReaderTerm;
@@ -27,7 +26,6 @@ export function TermBlock({ term, unitId, svg, locale }: Props): React.ReactElem
   const tg = useTranslations("Glossary");
   const dl = toDataLang(locale);
   const pick = (v: Record<"jp" | "zh" | "en", string>) => v[dl] || v.jp;
-  const figW = svg ? svgNaturalWidth(svg) : null;
   return (
     <article id={term.id} className={styles.term}>
       {/* The link sits beside the h3, not inside it, so the heading's name is just the term;
@@ -46,24 +44,7 @@ export function TermBlock({ term, unitId, svg, locale }: Props): React.ReactElem
       <p data-part="one" className={styles.def}>
         {pick(term.one)}
       </p>
-      {term.fig && svg ? (
-        <>
-          {/* On a phone the SVG keeps min(560px, its natural width) and scrolls inside the figure
-              box instead of shrinking to unreadable text (--fig-w, reader.module.css). */}
-          <figure
-            data-part="fig"
-            className={styles.figure}
-            style={figW !== null ? ({ "--fig-w": `${figW}px` } as React.CSSProperties) : undefined}
-            // Trusted, self-generated Mermaid SVG from our own pipeline.
-            dangerouslySetInnerHTML={{ __html: svg }}
-          />
-          {figW !== null && figW > FIG_HINT_MIN ? (
-            <p data-part="fig-hint" className={styles.figHint} aria-hidden="true">
-              {t("figScroll")}
-            </p>
-          ) : null}
-        </>
-      ) : null}
+      {term.fig ? renderFig(term.fig, { locale, svg }) : null}
       <p data-part="detail" className={styles.prose}>
         {pick(term.detail)}
       </p>

@@ -1,0 +1,206 @@
+// Stage 7 Phase 3 Task 7 (D-196 §0-11, Review Focus 5) — every figure kind SSR-renders the v2
+// sample's data in all three locales; invalid params render nothing (null, no throw); only the
+// v1 svg kind injects markup. Same SSR approach as the textbook *.ssr.test.ts files.
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+
+import { createElement as h } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { NextIntlClientProvider } from "next-intl";
+import { describe, expect, it } from "vitest";
+
+import type { FigSpec, TextbookUnitV2 } from "@/lib/textbook/types";
+
+import { CompareFig } from "../CompareFig";
+import { FlowFig } from "../FlowFig";
+import { NetworkFig } from "../NetworkFig";
+import { FIG_COMPONENTS, renderFig } from "../registry";
+import { TableFig } from "../TableFig";
+import { TreeFig } from "../TreeFig";
+import { SvgFig } from "../SvgFig";
+
+const LOCALES = ["ja", "zh", "en"] as const;
+type Locale = (typeof LOCALES)[number];
+
+const SAMPLE = JSON.parse(
+  readFileSync(path.resolve(__dirname, "../../../../lib/textbook/__fixtures__/v2-sample.json"), "utf-8"),
+) as TextbookUnitV2;
+const figOf = (term: string): FigSpec => structuredClone(SAMPLE.terms.find((t) => t.term === term)!.fig!);
+const FIG = {
+  svg: figOf("プロジェクトリスクマネジメント"),
+  tree: figOf("リスクの対応策"),
+  flow: figOf("回避"),
+  network: figOf("軽減"),
+  table: figOf("受容"),
+  compare: figOf("転嫁"),
+};
+const SVG = '<svg id="v1-fig" viewBox="0 0 320 100"></svg>';
+
+function messages(locale: Locale): Record<string, unknown> {
+  return JSON.parse(readFileSync(path.resolve(__dirname, `../../../../../messages/${locale}.json`), "utf-8"));
+}
+const fm = (locale: Locale) => messages(locale).Figure as Record<string, string>;
+
+function html(locale: Locale, el: React.ReactElement | null): string {
+  return renderToStaticMarkup(h(NextIntlClientProvider, { locale, messages: messages(locale), children: el }));
+}
+const render = (locale: Locale, fig: FigSpec, svg: string | null = SVG) => html(locale, renderFig(fig, { locale, svg }));
+
+describe("figure registry", () => {
+  it("has exactly the FIGURE_KINDS kinds", async () => {
+    const { FIGURE_KINDS } = await import("@/lib/textbook/figureSpec");
+    expect(Object.keys(FIG_COMPONENTS).sort()).toEqual(Object.keys(FIGURE_KINDS).sort());
+  });
+
+  it("renders every kind of the sample in every locale", () => {
+    for (const locale of LOCALES) {
+      for (const [kind, fig] of Object.entries(FIG)) {
+        const out = render(locale, fig);
+        expect(out, `${kind} ${locale}`).toContain('data-part="fig"');
+        // the svg kind keeps the v1 markup byte-for-byte (no data-fig); the others name their kind
+        if (kind !== "svg") expect(out, `${kind} ${locale}`).toContain(`data-fig="${kind}"`);
+      }
+    }
+  });
+});
+
+describe("each kind (SSR)", () => {
+  it("svg: the v1 SVG inlined; nothing without the SVG text", () => {
+    const out = render("ja", FIG.svg);
+    expect(out).toContain(SVG);
+    expect(out).toMatch(/<figure data-part="fig" class="[^"]*" style="--fig-w:320px"/);
+    expect(html("ja", h(SvgFig, { fig: FIG.svg as Extract<FigSpec, { kind: "svg" }>, svg: null }))).toBe("");
+  });
+
+  it("table: headers and cells in the active locale, the key row marked", () => {
+    const zh = render("zh", FIG.table);
+    expect(zh).toContain("<table");
+    expect(zh).toContain("影响 ＼ 概率");
+    expect(zh).toContain("接受");
+    expect(zh).not.toContain("受容");
+    expect((zh.match(/<tr[^>]*data-key="true"/g) ?? []).length).toBe(1);
+  });
+
+  it("compare: a / b columns and the decisive row marked", () => {
+    const en = render("en", FIG.compare);
+    expect(en).toContain("Before transfer");
+    expect(en).toContain("After transfer");
+    expect(en).toContain("Still yes");
+    expect((en.match(/<tr[^>]*data-key="true"/g) ?? []).length).toBe(1);
+  });
+
+  it("flow (steps): SSR shows the final step — every node, the last caption, 前へ / もう一度, one dot per step", () => {
+    const out = render("ja", FIG.flow);
+    for (const label of ["要因を見つける", "計画・方式を変える", "発生しなくなる"]) expect(out).toContain(label);
+    expect(out).not.toContain('data-off="true"');
+    expect(out).toMatch(/aria-live="polite"[^>]*>[^<]*要因がないので、リスクは起きない。/);
+    const m = fm("ja");
+    expect(out).toContain(`>${m.prev}</button>`);
+    expect(out).toContain(`>${m.replay}</button>`);
+    expect(out).not.toContain(`>${m.next}</button>`);
+    expect((out.match(/data-dot=/g) ?? []).length).toBe(3);
+  });
+
+  it("flow (static): every node, no stage controls", () => {
+    const fig = structuredClone(FIG.flow) as Extract<FigSpec, { kind: "flow" }>;
+    fig.mode = "static";
+    delete fig.steps;
+    const out = render("en", fig);
+    expect(out).toContain("Change the plan");
+    expect(out).not.toContain("<button");
+  });
+
+  it("tree (steps): SSR shows every level", () => {
+    const out = render("zh", FIG.tree);
+    for (const label of ["对负面风险的应对", "规避", "减轻", "移交第三方"]) expect(out).toContain(label);
+    expect(out).not.toContain('data-off="true"');
+    expect((out.match(/data-dot=/g) ?? []).length).toBe(3);
+  });
+
+  it("network (widget): a labelled duration input per real activity, the total and the critical path", () => {
+    for (const locale of LOCALES) {
+      const out = render(locale, FIG.network);
+      const m = fm(locale);
+      expect((out.match(/<input[^>]*type="number"/g) ?? []).length, locale).toBe(4);
+      for (const name of ["A", "B", "C", "D"]) {
+        expect(out).toContain(m.actDays!.replace("{name}", name));
+      }
+      expect(out).toContain(m.total!.replace("{n}", "7"));
+      expect((out.match(/data-critical="true"/g) ?? []).length).toBe(4); // A, C, D, the dummy
+    }
+  });
+});
+
+describe("invalid params render nothing and never throw", () => {
+  const broken: Record<string, FigSpec> = {
+    svg: { ...FIG.svg, data: { path: "../../etc/passwd" } } as FigSpec,
+    table: (() => {
+      const f = structuredClone(FIG.table) as Extract<FigSpec, { kind: "table" }>;
+      f.data.rows[0]!.cells.pop();
+      return f;
+    })(),
+    compare: (() => {
+      const f = structuredClone(FIG.compare) as Extract<FigSpec, { kind: "compare" }>;
+      f.data.rows = f.data.rows.slice(0, 1);
+      return f;
+    })(),
+    flow: (() => {
+      const f = structuredClone(FIG.flow) as Extract<FigSpec, { kind: "flow" }>;
+      f.steps![2]!.state.show = 9;
+      return f;
+    })(),
+    tree: (() => {
+      const f = structuredClone(FIG.tree) as Extract<FigSpec, { kind: "tree" }>;
+      (f.data.root as { label: unknown }).label = null;
+      return f;
+    })(),
+    network: (() => {
+      const f = structuredClone(FIG.network) as Extract<FigSpec, { kind: "network" }>;
+      f.data.acts.push({ from: "4", to: "1", days: 1 });
+      return f;
+    })(),
+  };
+
+  it("through the registry", () => {
+    for (const [kind, fig] of Object.entries(broken)) {
+      expect(() => renderFig(fig, { locale: "ja", svg: SVG }), kind).not.toThrow();
+      expect(renderFig(fig, { locale: "ja", svg: SVG }), kind).toBeNull();
+    }
+    expect(renderFig({ kind: "pie", mode: "static", data: {} } as unknown as FigSpec, { locale: "ja", svg: null })).toBeNull();
+    expect(renderFig(null as unknown as FigSpec, { locale: "ja", svg: null })).toBeNull();
+  });
+
+  it("each component on its own (a backstop when called directly)", () => {
+    type AnyFig = React.FC<{ fig: FigSpec; locale: string }>;
+    const direct: [AnyFig, FigSpec][] = [
+      [TableFig as AnyFig, broken.table!],
+      [CompareFig as AnyFig, broken.compare!],
+      [FlowFig as AnyFig, broken.flow!],
+      [TreeFig as AnyFig, broken.tree!],
+      [NetworkFig as AnyFig, broken.network!],
+    ];
+    for (const [C, fig] of direct) {
+      expect(() => html("ja", h(C, { fig, locale: "ja" }))).not.toThrow();
+      expect(html("ja", h(C, { fig, locale: "ja" }))).toBe("");
+    }
+    expect(html("ja", h(SvgFig, { fig: broken.svg as Extract<FigSpec, { kind: "svg" }>, svg: SVG }))).toBe("");
+  });
+});
+
+describe("Review Focus 5: figure params are data", () => {
+  it("only SvgFig uses dangerouslySetInnerHTML", () => {
+    const dir = path.resolve(__dirname, "..");
+    const users = readdirSync(dir)
+      .filter((f) => /\.tsx?$/.test(f))
+      .filter((f) => readFileSync(path.join(dir, f), "utf-8").includes("dangerouslySetInnerHTML"));
+    expect(users).toEqual(["SvgFig.tsx"]);
+  });
+
+  it("markup in a label is escaped text, not HTML", () => {
+    const f = structuredClone(FIG.compare) as Extract<FigSpec, { kind: "compare" }>;
+    f.data.a.jp = "<img src=x onerror=alert(1)>";
+    const out = render("ja", f);
+    expect(out).not.toContain("<img");
+    expect(out).toContain("&lt;img");
+  });
+});
