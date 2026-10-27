@@ -241,7 +241,9 @@ test("a set not from a unit shows no link back after a wrong answer", async ({ p
 
 test("phone width: a wide figure keeps a readable width and scrolls inside its box, not the page", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/ja/textbook/management-10-27-u02"); // WBS figure: natural width 918px
+  // a v1 unit whose first figure is a wide SVG (ITIL, natural width 980px); the pilot units are v2
+  // (no SVG) and are covered at phone width in textbook-v2.spec.ts
+  await page.goto("/ja/textbook/management-11-28-u01");
   await waitForRecord(page);
   await page.evaluate(() => document.fonts.ready);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
