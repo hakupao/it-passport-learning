@@ -14,7 +14,8 @@
 //     sha256 = loc.jp_sha256 (the bytes the localiser worked from). Each part file must hash to its
 //     row's sha256 and match its unit / stage / round / structure counts — a part rewritten after
 //     the agent returned, or a journal from another run, is refused (S135 M1).
-//   - approved = a "jp-review" PASS whose reviewed_sha256 = that JP part's sha256 and a "loc-review"
+//   - approved (D-199: no high / medium issue in the review's issues; low only is a pass, whatever
+//     verdict word it returned) = a "jp-review" PASS whose reviewed_sha256 = that JP part's sha256 and a "loc-review"
 //     PASS whose reviewed_sha256 = the loc part's sha256 (a review approves exactly what it hashed).
 //   A seeded run's round-0 row carries seed_part / seed_sha256 / seed_review_round: printed as provenance,
 //   never used for approval (the seed's own review was of other bytes).
@@ -48,6 +49,13 @@ import { assemble, canon, dataPaths, jsonText, loadKit, locVsJp, parityDiff, par
 import { validateUnit } from "./textbook-v2-validate.mjs";
 
 class Refuse extends Error {}
+
+/**
+ * D-199: a review approves iff it has an issues array with no high / medium issue (low issues are
+ * reported, never blocking). The reviewer's verdict word is not consulted — the workflow logs any mismatch.
+ */
+export const gatePass = (review) => !!review && Array.isArray(review.issues) && !review.issues.some((i) => i?.severity === "high" || i?.severity === "medium");
+const blockers = (review) => (review ? `${review.issues?.filter((i) => i?.severity === "high" || i?.severity === "medium").length ?? "?"} high/medium issue(s)` : "none");
 
 /** Journal rows of all runs (journals in order), one per stage / round: a later row replaces an earlier one (resume). */
 export function journalRows(files) {
@@ -124,8 +132,8 @@ export async function merge({ unit, journals, runTag, write, paths }) {
   writeFileSync(out, jsonText(unitDoc));
 
   const approved = {
-    jp: fin.jpReview?.verdict === "PASS",
-    loc: fin.locReview?.verdict === "PASS",
+    jp: gatePass(fin.jpReview),
+    loc: gatePass(fin.locReview),
   };
   const report = {
     unit,
@@ -144,8 +152,8 @@ export async function merge({ unit, journals, runTag, write, paths }) {
 
   const why = [];
   if (!fin.fromJournal) why.push("--write needs --journal (the journal is the record of the final parts)");
-  if (!approved.jp) why.push(`JP review of jp#${jpPart.round}: ${fin.jpReview?.verdict ?? "none"}`);
-  if (!approved.loc) why.push(`translation review of loc#${locPart.round}: ${fin.locReview?.verdict ?? "none"}`);
+  if (!approved.jp) why.push(`JP review of jp#${jpPart.round}: ${blockers(fin.jpReview)}`);
+  if (!approved.loc) why.push(`translation review of loc#${locPart.round}: ${blockers(fin.locReview)}`);
   if (issues.length > 0) why.push(`${issues.length} validate issue(s):`, ...issues.map((i) => `  ${i.code.padEnd(13)} ${i.field}  ${i.message}`));
   if (diff.length > 0) why.push(`${diff.length} parity difference(s)`);
   if (why.length > 0) throw new Refuse(`not written:\n  ${why.join("\n  ")}`);

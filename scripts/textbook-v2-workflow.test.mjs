@@ -36,8 +36,12 @@ async function runWf(verdicts, args = { unit: UNIT, run_tag: TAG }, fake = {}) {
     }
     if (kind === "write" || kind === "rewrite") return { unit_id: unit, stage: "jp", round, part: part("jp"), sha256: `jp${round}`, counts: COUNTS, validate_issues: fake.jpIssues ?? 0 };
     if (kind === "localize" || kind === "relocalize") return { unit_id: unit, stage: "loc", round, jp_round: 0, part: part("loc"), sha256: `loc${round}`, jp_sha256: "jp0", counts: COUNTS, validate_issues: fake.locIssues ?? 0, parity_diff: fake.parity ?? 0 };
-    const v = (kind === "review" ? verdicts.jp : verdicts.loc)[round - 1];
-    return { unit_id: unit, stage: kind === "review" ? "jp-review" : "loc-review", round, reviewed_round: round - 1, reviewed_sha256: "h", verdict: v, issues: v === "PASS" ? [] : [{ severity: "high", where: "terms[0].detail_jp", rule: "D-195 §1", detail_jp: "x", fix_jp: "y" }] };
+    // a verdict is "PASS" / "REVISE" (issues [] / one high) or { verdict, sev: [...] } (issues of those severities)
+    const e = (kind === "review" ? verdicts.jp : verdicts.loc)[round - 1];
+    const v = typeof e === "string" ? e : e.verdict;
+    const sevs = typeof e === "string" ? (e === "PASS" ? [] : ["high"]) : e.sev;
+    const issues = sevs.map((severity) => ({ severity, where: "terms[0].detail_jp", rule: "D-195 §1", detail_jp: "x", fix_jp: "y" }));
+    return { unit_id: unit, stage: kind === "review" ? "jp-review" : "loc-review", round, reviewed_round: round - 1, reviewed_sha256: "h", verdict: v, issues };
   };
   const pipeline = async (items, ...stages) => Promise.all(items.map(async (it, i) => { let v = it; for (const s of stages) v = await s(v, it, i); return v; }));
   const parallel = async (thunks) => Promise.all(thunks.map((t) => t()));
@@ -189,4 +193,33 @@ test("seed args: all three or none, one unit, a seed from another run_tag", asyn
   await assert.rejects(runWf({ jp: [], loc: [] }, { ...SEED_ARGS, seed_review_round: 0 }), /integer ≥ 1/);
   await assert.rejects(runWf({ jp: [], loc: [] }, { ...SEED_ARGS, run_tag: "s135u02a" }), /new run_tag/);
   await assert.rejects(runWf({ jp: [], loc: [] }, { ...SEED_ARGS, unit: "management-10-27-u01" }), /JP part of/);
+});
+
+test("D-199 gate: low-only issues pass (whatever word the reviewer returned); one medium blocks", async () => {
+  const lowOnly = { verdict: "REVISE", sev: ["low", "low"] };
+  const a = await runWf({ jp: [lowOnly], loc: [{ verdict: "PASS", sev: ["low"] }] });
+  assert.equal(a.ret.units[0].status, "ready-to-merge");
+  assert.equal(a.ret.units[0].jp_verdict, "PASS");
+  assert.deepEqual(a.ret.units[0].jp_issues, { low: 2 });
+  assert.ok(a.logs.some((l) => /verdict REVISE .*D-199.*PASS/.test(l)), "the mismatch is logged");
+  const med = { verdict: "PASS", sev: ["medium", "low"] };
+  const b = await runWf({ jp: [med, med], loc: [] });
+  assert.equal(b.ret.units[0].status, "jp-rejected");
+  assert.equal(b.ret.units[0].jp_verdict, "REVISE");
+  assert.equal(b.calls.filter((c) => c.opts.label.startsWith("rewrite")).length, 1, "a medium triggers the revision");
+  const c = await runWf({ jp: ["PASS"], loc: [med, med] });
+  assert.equal(c.ret.units[0].status, "loc-rejected");
+});
+
+test("D-199 in the prompts: reviewers return PASS with only low issues; revisers may leave lows but add no high / medium", async () => {
+  const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["REVISE", "PASS"] });
+  const byLabel = (re) => calls.find((x) => re.test(x.opts.label)).prompt;
+  for (const p of [byLabel(/^review:/), byLabel(/^tr-review:/)]) {
+    assert.match(p, /D-199/);
+    assert.match(p, /low だけなら PASS/);
+  }
+  for (const p of [byLabel(/^rewrite:/), byLabel(/^relocalize:/)]) {
+    assert.match(p, /low は直さなくてもよい/);
+    assert.match(p, /新しい high \/ medium を生まない/);
+  }
 });

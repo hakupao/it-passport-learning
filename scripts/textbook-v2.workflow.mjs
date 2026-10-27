@@ -87,7 +87,7 @@ const REVIEW_RESULT = (stage) => ({
     round: { type: 'integer', minimum: 1, description: '審査の回 (1 or 2)' },
     reviewed_round: { type: 'integer', minimum: 0, description: '審査した part の round' },
     reviewed_sha256: { type: 'string', description: '審査に使った validate --part の `sha256 <hex>` 行の hex (= 審査した part のバイト列)' },
-    verdict: { type: 'string', enum: ['PASS', 'REVISE'], description: 'PASS = high / medium の issue が 0' },
+    verdict: { type: 'string', enum: ['PASS', 'REVISE'], description: 'D-199: PASS = high / medium の issue が 0 (low だけなら PASS)' },
     issues: {
       type: 'array',
       items: {
@@ -121,9 +121,9 @@ const QUESTIONS_JSON = `${ROOT}/data/ip/quiz/questions.json`
 function writerPrompt(unit, round, prev, review, seed) {
   const part = partOf(unit, 'jp', round)
   const revise = seed
-    ? `\n## 改稿 (round ${round}: 前回 run の草稿を種にする)\n1. まず \`${seedCmd(seed)}\` を実行する。種 \`${seed.part}\` の sha256 (\`seed_sha256 <hex>\` 行) と、その草稿そのものを審査した jp-review #${seed.reviewRound} の指摘 (JSON) が出る。**exit が 0 でなければ** part を書かずに StructuredOutput で part:"${SEED_ERROR}" を返して終わる (seed_part / seed_review_round は指定値、他の数値は 0、文字列は空)。\n2. 種を Read し、その指摘を**全部**直した版を書く。指摘されていない箇所も、下の「書き方」に反していれば直す。\n`
+    ? `\n## 改稿 (round ${round}: 前回 run の草稿を種にする)\n1. まず \`${seedCmd(seed)}\` を実行する。種 \`${seed.part}\` の sha256 (\`seed_sha256 <hex>\` 行) と、その草稿そのものを審査した jp-review #${seed.reviewRound} の指摘 (JSON) が出る。**exit が 0 でなければ** part を書かずに StructuredOutput で part:"${SEED_ERROR}" を返して終わる (seed_part / seed_review_round は指定値、他の数値は 0、文字列は空)。\n2. 種を Read し、その指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。指摘されていない箇所も、下の「書き方」に反していれば直す。\n`
     : prev
-      ? `\n## 改稿 (round ${round})\n前稿 \`${prev}\` を Read し、下の審査指摘を**全部**直した版を書く。指摘されていない箇所も、下の「書き方」に反していれば直す。\n\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
+      ? `\n## 改稿 (round ${round})\n前稿 \`${prev}\` を Read し、下の審査指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。指摘されていない箇所も、下の「書き方」に反していれば直す。\n\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
       : ''
   return `あなたは IT パスポート試験の教科書執筆者です。単元 \`${unit}\` を D-195 の規則で**日本語で**書き直します (zh / en は後工程で意訳する。あなたは日本語だけ)。
 
@@ -172,7 +172,7 @@ function reviewPrompt(unit, round, part, partRound) {
 6. **標記**: 日本語の本文に [[jp:…]] (zh / en 専用) があれば指摘する。
 
 ## 判定
-- verdict: high / medium の issue が 0 なら PASS、1 つでもあれば REVISE。
+- verdict (D-199): high / medium の issue が 0 なら PASS、1 つでもあれば REVISE。low だけなら PASS を返す (low も issues に全部書く。記録され、改稿は任意)。workflow も issues の severity から同じ規則で判定する。
 - issues: 1 件ずつ severity・where (JSON 位置)・rule (根拠)・detail_jp・fix_jp (具体的な直し方)。
 - StructuredOutput で {unit_id:"${unit}", stage:"jp-review", round:${round}, reviewed_round:${partRound}, reviewed_sha256: (validate の sha256 行の hex), verdict, issues} を返す。ファイルは書かない。`
 }
@@ -180,7 +180,7 @@ function reviewPrompt(unit, round, part, partRound) {
 function localizePrompt(unit, round, jpPart, jpRound, prev, review) {
   const part = partOf(unit, 'loc', round)
   const revise = prev
-    ? `\n## 改訳 (round ${round})\n前訳 \`${prev}\` を Read し、下の訳審査の指摘を**全部**直した版を書く。日本語は変えない。\n\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
+    ? `\n## 改訳 (round ${round})\n前訳 \`${prev}\` を Read し、下の訳審査の指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。日本語は変えない。\n\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
     : ''
   return `あなたは IT パスポート教科書の訳者です。審査済みの日本語 part を中国語 (簡体・中国大陸) と英語に**意訳 + 現地化**します (直訳しない: 各言語の学習者が自然に読める文に。D-195 §8)。
 
@@ -216,11 +216,19 @@ function trReviewPrompt(unit, round, part, partRound, jpPart) {
 4. **構造**: 三語で文数・項目数・順序が揃うか (parity)。D-195 §9 の禁止事項が zh / en に出ていないか。
 
 ## 判定
-- verdict: high / medium の issue が 0 なら PASS、1 つでもあれば REVISE。
+- verdict (D-199): high / medium の issue が 0 なら PASS、1 つでもあれば REVISE。low だけなら PASS を返す (low も issues に全部書く。記録され、改稿は任意)。workflow も issues の severity から同じ規則で判定する。
 - issues: severity・where (例 terms[1].detail_en)・rule・detail_jp・fix_jp。
 - StructuredOutput で {unit_id:"${unit}", stage:"loc-review", round:${round}, reviewed_round:${partRound}, reviewed_sha256: (validate の sha256 行の hex), verdict, issues} を返す。ファイルは書かない。`
 }
 
+/** D-199: a review passes iff none of its issues is high or medium (low issues are reported, not blocking). */
+const gatePass = (review) => !(review.issues || []).some((i) => i.severity === 'high' || i.severity === 'medium')
+/** The gate's verdict; a reviewer word that disagrees with its own issues is logged, the issues decide. */
+function gate(unit, label, review) {
+  const v = gatePass(review) ? 'PASS' : 'REVISE'
+  if (review.verdict !== v) log(`${unit}: ${label} returned verdict ${review.verdict} but its issues give ${v} under D-199 (high/medium block, low reported) — using ${v}`)
+  return v
+}
 const sev = (issues) => (issues || []).reduce((m, i) => { m[i.severity] = (m[i.severity] || 0) + 1; return m }, {})
 
 /** One unit through write → review (≤ maxRounds) → localize → translation review (≤ maxRounds). */
@@ -257,9 +265,9 @@ async function runUnit(unit, maxRounds) {
   for (let r = 1; r <= maxRounds; r++) {
     review = await agent(reviewPrompt(unit, r, jp.part, jp.round), { label: `review:${unit}#${r}`, phase: 'Review', schema: REVIEW_RESULT('jp-review'), model: MODEL, agentType: AGENT.review })
     if (!review) return { ...out, status: 'jp-review-failed' }
-    out.jp_verdict = review.verdict
+    out.jp_verdict = gate(unit, `JP review #${r}`, review)
     out.jp_issues = sev(review.issues)
-    if (review.verdict === 'PASS' || r === maxRounds) break
+    if (out.jp_verdict === 'PASS' || r === maxRounds) break
     log(`${unit}: JP review #${r} REVISE ${JSON.stringify(out.jp_issues)} → rewrite #${r}`)
     const next = await write(writerPrompt(unit, r, jp.part, review), `rewrite:${unit}#${r}`, 'Write', 'jp', r, AGENT.write)
     if (!next) return out
@@ -267,7 +275,7 @@ async function runUnit(unit, maxRounds) {
     out.jp_rounds += 1
   }
   out.jp_validate_issues = jp.validate_issues
-  if (review.verdict !== 'PASS') {
+  if (out.jp_verdict !== 'PASS') {
     log(`${unit}: JP review still REVISE after ${maxRounds} round(s) — stop (Rule B archive)`)
     return { ...out, status: 'jp-rejected' }
   }
@@ -280,9 +288,9 @@ async function runUnit(unit, maxRounds) {
   for (let r = 1; r <= maxRounds; r++) {
     tr = await agent(trReviewPrompt(unit, r, loc.part, loc.round, jp.part), { label: `tr-review:${unit}#${r}`, phase: 'TrReview', schema: REVIEW_RESULT('loc-review'), model: MODEL, agentType: AGENT.trReview })
     if (!tr) return { ...out, status: 'loc-review-failed' }
-    out.loc_verdict = tr.verdict
+    out.loc_verdict = gate(unit, `translation review #${r}`, tr)
     out.loc_issues = sev(tr.issues)
-    if (tr.verdict === 'PASS' || r === maxRounds) break
+    if (out.loc_verdict === 'PASS' || r === maxRounds) break
     log(`${unit}: translation review #${r} REVISE ${JSON.stringify(out.loc_issues)} → re-localize #${r}`)
     const next = await write(localizePrompt(unit, r, jp.part, jp.round, loc.part, tr), `relocalize:${unit}#${r}`, 'Localize', 'loc', r, AGENT.localize)
     if (!next) return out
@@ -293,7 +301,7 @@ async function runUnit(unit, maxRounds) {
   out.parity_diff = loc.parity_diff
   // S135 L1: a PASS with machine issues left is not mergeable (merge --write would refuse anyway)
   const clean = jp.validate_issues === 0 && loc.validate_issues === 0 && loc.parity_diff === 0
-  out.status = tr.verdict !== 'PASS' ? 'loc-rejected' : clean ? 'ready-to-merge' : 'needs-fix'
+  out.status = out.loc_verdict !== 'PASS' ? 'loc-rejected' : clean ? 'ready-to-merge' : 'needs-fix'
   return out
 }
 

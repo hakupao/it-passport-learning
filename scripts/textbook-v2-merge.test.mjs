@@ -12,6 +12,9 @@ import { dataPaths, LANGS, partCounts, readJson, sha256File } from "./lib/textbo
 import { fixture, journalText, jpPartOf, locPartOf, run, tempRoot, UNIT, writeJson } from "./lib/textbook-v2-testkit.mjs";
 
 const TAG = "t1";
+const MEDIUM = [{ severity: "medium", where: "terms[0].detail_jp", rule: "D-195 §1", detail_jp: "d", fix_jp: "f" }];
+/** A review row's issues for a verdict word (D-199: REVISE = at least one medium). */
+const issuesOf = (v) => (v === "REVISE" ? MEDIUM : []);
 
 /** The four journal rows of a run whose parts are on disk now. */
 function rowsFor(jpFile, locFile, opts = {}) {
@@ -20,9 +23,9 @@ function rowsFor(jpFile, locFile, opts = {}) {
   const counts = partCounts(readJson(jpFile));
   return [
     { unit_id: UNIT, stage: "jp", round: 0, part: jpFile, sha256: jpSha, counts, validate_issues: 0 },
-    { unit_id: UNIT, stage: "jp-review", round: 1, reviewed_round: 0, reviewed_sha256: jpSha, verdict: opts.jpVerdict ?? "PASS", issues: [] },
+    { unit_id: UNIT, stage: "jp-review", round: 1, reviewed_round: 0, reviewed_sha256: jpSha, verdict: opts.jpVerdict ?? "PASS", issues: issuesOf(opts.jpVerdict) },
     { unit_id: UNIT, stage: "loc", round: 0, jp_round: 0, part: locFile, sha256: locSha, jp_sha256: jpSha, counts: opts.badCounts ? { ...counts, steps: 99 } : counts, validate_issues: 0, parity_diff: 0 },
-    { unit_id: UNIT, stage: "loc-review", round: 1, reviewed_round: 0, reviewed_sha256: locSha, verdict: opts.locVerdict ?? "PASS", issues: [] },
+    { unit_id: UNIT, stage: "loc-review", round: 1, reviewed_round: 0, reviewed_sha256: locSha, verdict: opts.locVerdict ?? "PASS", issues: issuesOf(opts.locVerdict) },
   ];
 }
 
@@ -152,7 +155,7 @@ test("several --journal files (resume): rows merged, a later row replaces an ear
   const rows = rowsFor(s.jpFile, s.locFile);
   const j1 = path.join(s.root, "j1.jsonl");
   const j2 = path.join(s.root, "j2.jsonl");
-  writeFileSync(j1, journalText([...rows.slice(0, 3), { ...rows[3], verdict: "REVISE" }]));
+  writeFileSync(j1, journalText([...rows.slice(0, 3), { ...rows[3], verdict: "REVISE", issues: MEDIUM }]));
   writeFileSync(j2, journalText([rows[3]])); // the resumed run re-did the translation review: PASS
   assert.equal(merge(s, ["--journal", j1, "--write"]).code, 1);
   const r = merge(s, ["--journal", j1, "--journal", j2, "--write"]);
@@ -222,4 +225,21 @@ test("seeded run: the seed is printed as provenance only; approval needs a PASS 
   const r = merge(s, ["--journal", s.journal, "--write"]);
   assert.equal(r.code, 1, r.out);
   assert.match(r.out, /JP review of jp#0: none/);
+});
+
+test("D-199 approval: a review with only low issues approves (even if it said REVISE); a medium does not (even if it said PASS)", () => {
+  const s = setup();
+  const rows = rowsFor(s.jpFile, s.locFile);
+  const low = [{ severity: "low", where: "x", rule: "r", detail_jp: "d", fix_jp: "f" }];
+  rows[1] = { ...rows[1], verdict: "REVISE", issues: low };
+  rows[3] = { ...rows[3], verdict: "PASS", issues: low };
+  writeFileSync(s.journal, journalText(rows));
+  const ok = merge(s, ["--journal", s.journal]);
+  assert.equal(ok.code, 0, ok.out);
+  assert.match(ok.out, /reviews: jp PASS \/ loc PASS/);
+  rows[3] = { ...rows[3], verdict: "PASS", issues: [{ ...low[0], severity: "medium" }] };
+  writeFileSync(s.journal, journalText(rows));
+  const r = merge(s, ["--journal", s.journal, "--write"]);
+  assert.equal(r.code, 1, r.out);
+  assert.match(r.out, /translation review of loc#0: 1 high\/medium/);
 });
