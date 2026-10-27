@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-> **修订记录**：v1 草案（S134）→ 独立 critic（`oh-my-claudecode:critic` opus）判 REVISE（Critical 1 / Major 5 / Minor 12）→ 本 v2 全部吸收：v2 图字段改名 `fig` 并写全兼容字段（C1）、确认题排除中問组员（M1）、快照测试改口径（M2）、组件 e2e 改到真实试点单元（M3）、锁定用语集合不变（M4）、保留用语内过去问（M5）、Minor 1〜12 写进各 Task。
+> **修订记录**：v1 草案（S134）→ 独立 critic（`oh-my-claudecode:critic` opus）判 REVISE（Critical 1 / Major 5 / Minor 12）→ 本 v2 全部吸收：v2 图字段改名 `fig` 并写全兼容字段（C1）、确认题排除中問组员（M1）、快照测试改口径（M2）、组件 e2e 改到真实试点单元（M3）、锁定用语集合不变（M4）、保留用语内过去问（M5）、Minor 1〜12 写进各 Task。 → 范围限定复审 OKAY，余下 Minor 3 条（用语内过去问去组员、tsconfig + 纯 .ts 的 figureSpec、v2 的 analogy/hook 可缺省由 validateV2 校验 + 不变量补全）已写入。
 
 **Goal:** 分两段上线教科书：
 - **3a**：新阅读界面（单栏、按 D-195 骨架排现有内容）+ 单元末确认题（错题自动进复习）+「読了」按钮（取代打开即已读）。套用现有内容先上线。
@@ -20,7 +20,7 @@
 
 1. **确认题用单元自带的题单**，不按 DESIGN 写的「按 topic 抽」；**中問（几道题共用一段前文的题组）不放进确认题**，不够 3 题时用本单元各用语的相关过去问补。实测：244 个单元全部有 3〜5 题（5 题 173 个、4 题 45 个、3 题 26 个）。→ §0-1
 2. **不做右侧窄栏**（DESIGN §6.4 原有），单元位置・过去问数・用语一览都放进单元开头。理由：你在 OQ-13 说过不喜欢文字并排。→ §0-5
-3. **确认题第一次做也算进「今日新题」的配额**（每天默认 10 题）：读完一个单元做了 5 道确认题，今日页的新题会少 5 道（最多 5 道，因为确认题 ≤ 5）。→ §0-7
+3. **确认题和用语内过去问第一次做也算进「今日新题」的配额**（每天默认 10 题）：读完一个单元做了 5 道确认题，今日页的新题会少 5 道（确认题 ≤ 5；另外每点开一个用语的过去问，再少 1〜2 道）。→ §0-7
 4. **试点 topic = プロジェクトマネジメント**（3 单元，出题 172 道，安全以外最多；WBS 分解的分步图、风险应对的分步图、关键路径可调的小部件都用得上）。→ §0-10
 
 ---
@@ -57,10 +57,10 @@
 | 0-3 | 错题进复习：不改代码（`schedule.ts`：当天第一次作答答错 → 盒 0，明天出现）。 | 闭环已存在。 |
 | 0-4 | 「読了」= 单元末明确按钮，调用现有 `readUnit(unitId)`；删除 `MarkUnitRead`。按钮单向，已读显示「✓ 読了 M/D」。旧的「打开过」标记保留不迁移（显示的日期是当时打开的日期）。今日页「读一个单元」的含义随之变为「点了読了」。 | S134 用户选择「显式按钮」。**偏离 DESIGN §6.4 ①**（原为滚到底 / 停留时长静默记录）。却下：清空旧标记（无法区分，已有进度会消失）。 |
 | 0-5 | 版式：单栏，正文最大宽 44em、居中；**无右侧窄栏**。单元头 = 面包屑（分野 › 中分类 › topic › 単元 n / N，中分类与 n / N 从 `ReaderIndex` 取）+ 标题 + 頻出度・分钟数・用语数・本单元过去问数（`pastCount` = 确认题 ∪ 非 fallback 的用语内题，去重）+ 用语一览（v1：用语名横排可跳转；v2：D-195 总表，可折叠）。 | 用户在 OQ-13 拒绝文字并排。**偏离 DESIGN §6.4 ②**（右侧窄栏）**③**（行宽 ≈ 38em → 44em：日中混排加日文原词标签，38em 换行过密）。 |
-| 0-6 | 3a 用 v1 内容套 D-195 骨架：一句话 = `definition`；图 = 现有 SVG；展開 = `explanation`；打个比方 = `analogy`；记法 = `memory_hook`；用语内过去问 = 非 fallback 的 `inline_quiz`，显示为「この用語の過去問 N 題 →」（链到 `/practice?ids=…&from=unit&unit=…&run=…`，点击生成 run）；**无考点框**（v1 无数据）；单元末 = `summary.key_points` → 确认题 → 読了。**不显示**：`overview.intro`（D-195 §3 废止的长罗列句）、`summary.memory_hooks`（与各用语记法重复）、fallback 的 `inline_quiz`（477 个，与用语未必相关）。 | 先让结构上线，内容在 3b 替换。D-195 第 1〜3 轮「用语内小测」保留。 |
+| 0-6 | 3a 用 v1 内容套 D-195 骨架：一句话 = `definition`；图 = 现有 SVG；展開 = `explanation`；打个比方 = `analogy`；记法 = `memory_hook`；用语内过去问 = 非 fallback 的 `inline_quiz` **去掉中問组员**（57 条组员会被练习页整组展开），显示为「この用語の過去問 N 題 →」（链到 `/practice?ids=…&from=unit&unit=…&run=…`，点击生成 run）；**无考点框**（v1 无数据）；单元末 = `summary.key_points` → 确认题 → 読了。**不显示**：`overview.intro`（D-195 §3 废止的长罗列句）、`summary.memory_hooks`（与各用语记法重复）、fallback 的 `inline_quiz`（477 个，与用语未必相关）。 | 先让结构上线，内容在 3b 替换。D-195 第 1〜3 轮「用语内小测」保留。 |
 | 0-7 | 确认题与用语内过去问第一次作答计入 `dailyNewTarget`。不改 `dailyPlan`。 | 它们确实是新做的题；单独计数需要新 src 或新字段（违反格式锁定）。 |
 | 0-8 | 解说里的「単元に戻る：<单元名>」只在 `from=unit` 的练习组里、答错时出现；单元标题与用语由 practice 页按 URL 的 `unit` 调 `loadUnit` 取；题的 `terms` 与单元用语有交集时链接带第一个交集用语的锚点。 | 题 → 单元没有现成映射（548 道题出现在 2〜10 个单元）。却下（推迟）：全局反查表——试点后视需要。 |
-| 0-9 | **单元 schema v2**（`schema_version: "textbook-unit-v2"`），同一 `unit_id`、同一路径覆盖 v1 文件。**不变量**：`unit_id`、`topic_id`、`title_jp`、用语标题词 `terms[].term` 的集合与顺序与 `unit_index.json` 一致（改标题或增删用语 = 另立任务并重建 index）。**新字段**：`goals_{jp,zh,en}[]`、`overview_rows[]`（用语总表：`term` + 三语 `one_line` + 三语附加列）、每个用语 `one_{lang}`（含行内标记）/ `detail_{lang}` / `analogy_{lang}?` / `hook_{lang}?` / `points[]`（`{ kind: "exam" \| "mix", text_{lang}, qids?: string[] }`，`exam` 必须带 `qids` 作出题依据）/ `fig`（见 0-11，**不用 `figure` 这个名字**）/ `quiz[]`（该用语的过去问：可解析、同 topic、题的 `terms` 含该用语）、`pairs[]`（易混组：`{ a, b, rows[{ label_{lang}, a_{lang}, b_{lang}, key }] }`，放在 a、b 中**用语顺序较后者**之后）、`key_points_{lang}[]`、`challenge_questions[]`（沿用 v1 名字）。**兼容字段（合并脚本确定性生成，纯文本、无标记、非空）**：`definition_*` = 去标记的 `one_*`；`explanation_*` = 去标记的 `detail_*`；`analogy_*` = `analogy_*` 去标记，缺省时为空串并由 `TermDetail` 隐藏空标签；`memory_hook_*` = `hook_*` 去标记，缺省同上；`figure` = `null`（v1 的 SVG 由 `fig.kind:"svg"` 承载时，`figure` 保持 v1 形状 `{svg_path, mermaid, rendered}`）；`inline_quiz` = `quiz`、`inline_fallback` = false；`overview.intro_*` = `goals_*` 连成一段；`overview.freq_badge` / `est_minutes`；`summary.key_points_*` = `key_points_*`；`summary.memory_hooks_*` = 各用语「用语: hook」（无 hook 的用语省略，至少 1 条）；`unit_summary_*`；`lang_status` 全 `"generated"`。v2 校验断言「去标记(新字段) == 兼容字段」。 | 新旧共存期内辞典（1,395 条）・AI 先生・今日页・`validateContent` 不需要任何分支；`figure.svg_path` 被辞典条目页直接读取（`glossary/[termId]/page.tsx:48`），换形会 500。却下：两个阅读器；v2 去掉旧字段（要同时改辞典・anchor・测试，试点风险大）。 |
+| 0-9 | **单元 schema v2**（`schema_version: "textbook-unit-v2"`），同一 `unit_id`、同一路径覆盖 v1 文件。**不变量**：`unit_id`、`topic_id`、`category`、`title_{jp,zh,en}`、用语标题词 `terms[].term` 的集合与顺序、`term_zh` / `term_en` 与 v1 / `unit_index.json` 一致（改标题或增删用语 = 另立任务并重建 index）。**新字段**：`goals_{jp,zh,en}[]`、`overview_rows[]`（用语总表：`term` + 三语 `one_line` + 三语附加列）、每个用语 `one_{lang}`（含行内标记）/ `detail_{lang}` / `analogy_{lang}?` / `hook_{lang}?` / `points[]`（`{ kind: "exam" \| "mix", text_{lang}, qids?: string[] }`，`exam` 必须带 `qids` 作出题依据）/ `fig`（见 0-11，**不用 `figure` 这个名字**）/ `quiz[]`（该用语的过去问：可解析、同 topic、题的 `terms` 含该用语）、`pairs[]`（易混组：`{ a, b, rows[{ label_{lang}, a_{lang}, b_{lang}, key }] }`，放在 a、b 中**用语顺序较后者**之后）、`key_points_{lang}[]`、`challenge_questions[]`（沿用 v1 名字）。**兼容字段（合并脚本确定性生成，纯文本、无标记、非空）**：`definition_*` = 去标记的 `one_*`；`explanation_*` = 去标记的 `detail_*`；`analogy_*` = `analogy_*` 去标记，缺省时为空串并由 `TermDetail` 隐藏空标签；`memory_hook_*` = `hook_*` 去标记，缺省同上；`figure` = `null`（v1 的 SVG 由 `fig.kind:"svg"` 承载时，`figure` 保持 v1 形状 `{svg_path, mermaid, rendered}`）；`inline_quiz` = `quiz`、`inline_fallback` = false；`overview.intro_*` = `goals_*` 连成一段；`overview.freq_badge` / `est_minutes`；`summary.key_points_*` = `key_points_*`；`summary.memory_hooks_*` = 各用语「用语: hook」（无 hook 的用语省略，至少 1 条）；`unit_summary_*`；`lang_status` 全 `"generated"`。v2 校验断言「去标记(新字段) == 兼容字段」。`validateContent`（要求 analogy / hook 非空）**只对 v1 单元运行**，v2 单元由 `validateV2` 校验（analogy / hook 可缺省——不给假比喻凑数）。 | 新旧共存期内辞典（1,395 条）・AI 先生・今日页・`validateContent` 不需要任何分支；`figure.svg_path` 被辞典条目页直接读取（`glossary/[termId]/page.tsx:48`），换形会 500。却下：两个阅读器；v2 去掉旧字段（要同时改辞典・anchor・测试，试点风险大）。 |
 | 0-10 | 试点 topic = `management-10-27`（u01 体制と登場人物 5 用语 / u02 スコープとスケジュール 4 / u03 リスクマネジメント 6）。预定图：WBS 分解（`tree` 分步）、アローダイアグラム → クリティカルパス（`network` 小部件）、ガントチャート vs アローダイアグラム（`compare` 易混）、リスク対応 4 种（`compare` 易混 + `flow` 分步）。最终用哪种图由写作者按 D-195 判断，不得超出注册表。 | 出题最多（安全以外）、规模小、三种图都用得上。却下：システムの評価指標（u01/u02 用语不足 5）；システム開発技術（回帰テスト / リグレッションテスト 拆在两单元，需先改目录）。 |
 | 0-11 | 图解 = 封闭注册表 `FIGURE_KINDS`。`fig = { kind, mode: "static" \| "steps" \| "widget", data, steps?: [{ caption_{lang}, state }] }`。试点实现：`svg`（v1 SVG 原样）、`table`、`compare`、`flow`（steps：逐步高亮 / 出现）、`tree`（steps：逐层展开）、`network`（widget：改工期 → 关键路径与总工期实时重算）。分步 3〜4 步；手动「次へ / 前へ」，首次进入视口自动播一遍；`prefers-reduced-motion` 直接末状态。**参数校验的主防线在 validate**（含 `network` 的环与连通检查）；渲染层遇到非法参数返回 null 作为保险。新图种 = 新代码任务（组件 + 测试），生成不能直接引入。 | 「动图・动画」有边界、可测试、三语标签在数据里。却下：每单元手写组件；数据里放 SVG / HTML；mermaid 动画。 |
 | 0-12 | 行内标记只有两种：`**词**` = 关键词、`[[jp:用语]]` = 日文原词标签；纯函数 `parseInline` 解析成 React 节点，不用 HTML。`stripInline` 给兼容字段去标记。 | D-195 强调 4 种中的行内两种；「考点」「易混」是块级。 |
@@ -152,11 +152,13 @@
 - Modify: `apps/web/src/lib/textbook/types.ts`（`TextbookUnitV2`、`FigSpec`）、`reader.ts`（`normalizeUnit` 加 v2 分支）
 - Create: `apps/web/src/lib/textbook/inline.ts`（`parseInline`、`stripInline`）
 - Create: `apps/web/src/lib/textbook/validateV2.ts`（纯函数，无 fs，import 带 `.ts`；Node 脚本可直接 import）
+- Create: `apps/web/src/lib/textbook/figureSpec.ts`（`FIGURE_KINDS` 与各图种参数 schema；**纯 `.ts`、不含 JSX**，validateV2 只从这里引入，不从 `components/` 的 registry 引入；`criticalPath.ts`、`inline.ts` 同样以 `.ts` 扩展名被引用）
+- Modify: `apps/web/tsconfig.json`（加 `allowImportingTsExtensions: true`，已有 `noEmit`，否则 `tsc` 报 TS5097）
 - Modify: `apps/web/src/components/glossary/TermDetail.tsx`（比喩 / 覚え方为空串时不显示标签）
 - Create: `apps/web/src/lib/textbook/__fixtures__/v2-sample.json`（手写合规样例，三语，含每种图）
 - Test: `inline.test.ts`、`validateV2.test.ts`、`normalize.test.ts`（v2）、`v2-compat.test.ts`（新）、`v1-snapshot.test.ts`（新）
 
-- [ ] **Step 1: 先写 v1 快照**（改动前）：只对**当前全部 v1 单元 id** 记录 `buildDictionary` 的条目与每单元 `unitAnchor` 输出的哈希（文件小）；测试按 `schema_version === "stage4-unit-v1-trilingual"` 过滤，v2 单元自动排除。commit。
+- [ ] **Step 1: 先写 v1 快照**（改动前）：只对**当前全部 v1 单元 id** 记录 `buildDictionary` 的条目与每单元 `unitAnchor` 输出的哈希（文件小）；测试按 `schema_version === "stage4-unit-v1-trilingual"` 过滤，v2 单元自动排除；辞典按**义项**粒度过滤（ステークホルダ、アローダイアグラム 等跨单元词条同时含 v1 / v2 义项）。commit。
 - [ ] **Step 2: 写失败测试**
   - `parseInline` / `stripInline`：两种标记、未闭合 / 嵌套原样输出、不产生 HTML 字符串。
   - `validateV2`：不变量（与 index 的 `title_jp` / 用语集合与顺序一致）、三语齐全、标记可解析、去标记(新字段) == 兼容字段、`pairs` 放在较后用语之后、`exam` 考点带 `qids`、`fig.kind` 在注册表内、分步 3〜4 步且三语 caption 齐全、`network` 无环且连通、展開 2〜3 句（按 `。` / `.` 计）、`quiz` / `challenge_questions` 可解析且同 topic、D-195 §9 禁用句式（清单写在模块里）。样例单元 0 error；逐项改坏各报 1 error。
