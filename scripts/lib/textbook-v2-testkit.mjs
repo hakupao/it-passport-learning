@@ -14,6 +14,14 @@ export const FIXTURE_V1TERMS = path.join(REPO, "apps/web/src/lib/textbook/__fixt
 export const UNIT = "management-10-27-u03"; // the fixture's unit
 const REAL = path.join(REPO, "data/ip");
 
+/** The fixture unit's v1 file: the live one while it is v1, the merge's archive once the pilot made it v2. */
+function v1Source() {
+  const live = path.join(REAL, `textbook/units/${UNIT}.json`);
+  return readJson(live).schema_version === "textbook-unit-v2"
+    ? path.join(REAL, `textbook/.planning/v2/${UNIT}/v1-original.json`)
+    : live;
+}
+
 /** A temp data root: index / figures / quiz symlinked, units/<UNIT>.json copied (v1). */
 export function tempRoot() {
   const root = mkdtempSync(path.join(tmpdir(), "tbv2-"));
@@ -21,7 +29,7 @@ export function tempRoot() {
   symlinkSync(path.join(REAL, "textbook/unit_index.json"), path.join(root, "textbook/unit_index.json"));
   symlinkSync(path.join(REAL, "textbook/figures"), path.join(root, "textbook/figures"));
   symlinkSync(path.join(REAL, "quiz"), path.join(root, "quiz"));
-  copyFileSync(path.join(REAL, `textbook/units/${UNIT}.json`), path.join(root, `textbook/units/${UNIT}.json`));
+  copyFileSync(v1Source(), path.join(root, `textbook/units/${UNIT}.json`));
   return root;
 }
 
