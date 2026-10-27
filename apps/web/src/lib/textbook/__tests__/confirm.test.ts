@@ -85,7 +85,7 @@ describe("pickConfirm", () => {
       expect(pastCount(u), u.id).toBe(rawPast.size);
     }
     // Measured on the corpus (D-196 §0-1): v1 was { 3: 26, 4: 45, 5: 173 }; S135 pilot v2: u02 3 → 5,
-    // u03 5 → 3 challenge questions. Update when the data changes (u01 next).
+    // u03 5 → 3, u01 5 → 5 challenge questions. Update when the data changes.
     expect(dist).toEqual({ 3: 26, 4: 45, 5: 173 });
   });
 
