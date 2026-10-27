@@ -18,10 +18,11 @@ import path from "node:path";
 
 import { buildTermCards } from "../glossary/dictionary";
 import { loadDictionary } from "../glossary/dictionaryReader";
-import { loadAllQuestions, loadBaseQuestions, loadQuizIndex, quizDataRoot } from "../quiz/quizReader";
+import { loadAllQuestions, loadBaseQuestions, loadQuizIndex } from "../quiz/quizReader";
 import { toDataLang, type QuizQuestion } from "../quiz/quizModel";
 import { loadReaderIndex, textbookRoot } from "../textbook/reader";
 import { buildChumonGroups, buildTodayIndex, type ChumonGroup, type TodayIndex } from "./practiceIndex";
+import { loadChumonRegistryFile } from "./chumonMembers";
 
 async function readJson<T>(file: string): Promise<T> {
   return JSON.parse(await fs.readFile(file, "utf-8")) as T;
@@ -37,27 +38,15 @@ function memo<T>(load: () => Promise<T>): () => Promise<T> {
     }));
 }
 
-interface ChumonRegistry {
-  groups: { key: string; exam_id: string; member_ids: string[] }[];
-}
-
-const loadRegistryFile = memo(() => readJson<ChumonRegistry>(path.join(quizDataRoot(), "chumon_groups.json")));
-
 /** chumon group key → member ids in question-number order; reads only chumon_groups.json. */
 export const loadChumonRegistry: () => Promise<Record<string, string[]>> = memo(async () => {
-  const registry = await loadRegistryFile();
+  const registry = await loadChumonRegistryFile();
   return Object.fromEntries(registry.groups.map((g) => [g.key, [...g.member_ids].sort()]));
-});
-
-/** Every chumon group member id (textbook confirm / per-term quiz drop them, D-196 §0-1 / §0-6); reads only chumon_groups.json. */
-export const loadChumonMembers: () => Promise<ReadonlySet<string>> = memo(async () => {
-  const registry = await loadRegistryFile();
-  return new Set(registry.groups.flatMap((g) => g.member_ids));
 });
 
 /** data/ip/quiz/chumon_groups.json with per-language preamble fold points (merged stems: loads the sidecars). */
 export const loadChumonGroups: () => Promise<ChumonGroup[]> = memo(async () => {
-  const [registry, questions] = await Promise.all([loadRegistryFile(), loadAllQuestions()]);
+  const [registry, questions] = await Promise.all([loadChumonRegistryFile(), loadAllQuestions()]);
   return buildChumonGroups(registry.groups, questions);
 });
 

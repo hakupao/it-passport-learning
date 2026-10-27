@@ -3,12 +3,16 @@ import { describe, expect, it } from "vitest";
 
 import { emptyRecord, recordAttempt } from "../../learning/record";
 import { resolveScope } from "../../practice/practiceIndex";
-import { loadChumonMembers, loadChumonRegistry } from "../../practice/practiceReader";
+import { loadChumonMembers, type ChumonMembers } from "../../practice/chumonMembers";
+import { loadChumonRegistry } from "../../practice/practiceReader";
 import { loadBaseQuestions } from "../../quiz/quizReader";
 import { orderConfirm, pastCount, pickConfirm } from "../confirm";
 import { loadAllUnits, normalizeUnit, type ReaderTerm, type ReaderUnit } from "../reader";
 
 const DAY = 86_400_000;
+
+/** Synthetic member set for hand-made units (production code only gets one from loadChumonMembers). */
+const fakeMembers = (...ids: string[]): ChumonMembers => new Set(ids) as ReadonlySet<string> as ChumonMembers;
 
 function unit(challenge: string[], quizzes: string[][]): ReaderUnit {
   const l = { jp: "", zh: "", en: "" };
@@ -43,7 +47,7 @@ function unit(challenge: string[], quizzes: string[][]): ReaderUnit {
 
 describe("pickConfirm", () => {
   it("drops group members, tops up to 3 in term order (deduped), caps at 5", () => {
-    const m = new Set(["g1", "g2"]);
+    const m = fakeMembers("g1", "g2");
     expect(pickConfirm(unit(["a", "g1", "b"], [["b", "g2", "c"], ["d"]]), m)).toEqual(["a", "b", "c"]);
     expect(pickConfirm(unit([], [["a"], ["a", "b"], ["c", "d"]]), m)).toEqual(["a", "b", "c"]);
     expect(pickConfirm(unit(["a", "b", "c", "d", "e", "f"], []), m)).toEqual(["a", "b", "c", "d", "e"]);
@@ -71,9 +75,28 @@ describe("pickConfirm", () => {
         expect(byId.get(id)?.topic_id, `${u.id} ${id}`).toBe(u.topicId);
       }
       expect(resolveScope({ kind: "ids", ids }, questions, groups), u.id).toEqual(ids);
-      expect(pastCount(u)).toBe(new Set([...ids, ...u.terms.flatMap((t) => t.quiz)]).size);
+      // independent of the reader model: raw challenge_questions + raw non-fallback inline_quiz, members dropped
+      const rawPast = new Set(
+        [...raw.challenge_questions, ...raw.terms.flatMap((t) => (t.inline_fallback ? [] : t.inline_quiz))].filter(
+          (id) => !members.has(id),
+        ),
+      );
+      expect(pastCount(u), u.id).toBe(rawPast.size);
     }
+    // Measured on the v1 corpus (D-196 §0-1). Update when the data changes: Task 9's v2
+    // units (management-10-27-u01〜u03) bring new challenge_questions and change it.
     expect(dist).toEqual({ 3: 26, 4: 45, 5: 173 });
+  });
+
+  it("anchors: technology-21-54-u01 (no challenge_questions) / management-10-27-u02 past count", async () => {
+    const [units, members] = await Promise.all([loadAllUnits(), loadChumonMembers()]);
+    const norm = (id: string) => normalizeUnit(units.find((u) => u.unit_id === id)!, members);
+    expect(pickConfirm(norm("technology-21-54-u01"), members)).toEqual([
+      "2009h21h-q058",
+      "2011h23a-q053",
+      "2014h26a-q074",
+    ]);
+    expect(pastCount(norm("management-10-27-u02"))).toBe(11);
   });
 });
 

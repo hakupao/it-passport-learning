@@ -23,6 +23,7 @@ import path from "node:path";
 import { cache } from "react";
 
 import { termId } from "../glossary/termId";
+import type { ChumonMembers } from "../practice/chumonMembers";
 
 import type { FigSpec, TextbookUnit } from "./types";
 
@@ -217,8 +218,9 @@ export function pickTerm(
 // points / pairs / goals / overview rows, fig = the v1 SVG. Chumon group
 // members are dropped from the per-term quiz and the challenge list (the
 // practice page would expand them to their whole group, §0-1); the caller
-// passes the member set (practiceReader.loadChumonMembers) so this file keeps
-// its fs footprint to data/ip/textbook.
+// passes the member set (practice/chumonMembers.loadChumonMembers, branded so
+// only the real registry can be passed) so this file keeps its fs footprint to
+// data/ip/textbook.
 
 type Tri<T = string> = Record<DataLang, T>;
 
@@ -256,7 +258,10 @@ export interface ReaderTerm {
   hook: Tri | null;
   points: ReaderPoint[];
   fig: FigSpec | null;
-  /** this term's past questions (non-fallback, no chumon group members) */
+  /**
+   * This term's past questions. Invariant: non-fallback `inline_quiz` with every
+   * chumon group member removed (normalizeUnit), so a practice link never expands.
+   */
   quiz: string[];
 }
 
@@ -270,7 +275,10 @@ export interface ReaderUnit {
   terms: ReaderTerm[];
   pairs: ReaderPair[];
   keyPoints: Tri<string[]>;
-  /** the unit's challenge_questions without chumon group members */
+  /**
+   * The unit's `challenge_questions`. Invariant: every chumon group member removed
+   * (normalizeUnit); pastCount relies on it.
+   */
   challenge: string[];
   minutes: number;
   freqBadge: string;
@@ -279,20 +287,21 @@ export interface ReaderUnit {
 
 const V1_SCHEMA = "stage4-unit-v1-trilingual";
 
-const tri = (o: object, base: string): Tri => {
-  const r = o as Record<string, unknown>;
-  const s = (k: string) => (typeof r[k] === "string" ? (r[k] as string) : "");
-  return { jp: s(`${base}_jp`), zh: s(`${base}_zh`), en: s(`${base}_en`) };
-};
+/** `{base}_{jp,zh,en}` of `o`; `o` must have all three string keys, so a typo in `base` fails tsc. */
+const tri = <B extends string>(o: { [K in `${NoInfer<B>}_${DataLang}`]: string }, base: B): Tri => ({
+  jp: o[`${base}_jp`],
+  zh: o[`${base}_zh`],
+  en: o[`${base}_en`],
+});
 
 /** null when the JP text is empty (no such section for this term). */
-const optTri = (o: object, base: string): Tri | null => {
+const optTri = <B extends string>(o: { [K in `${NoInfer<B>}_${DataLang}`]: string }, base: B): Tri | null => {
   const v = tri(o, base);
   return v.jp.trim() === "" ? null : v;
 };
 
 /** A stored unit → the reader model. Throws on an unknown schema_version. */
-export function normalizeUnit(raw: TextbookUnit, members: ReadonlySet<string>): ReaderUnit {
+export function normalizeUnit(raw: TextbookUnit, members: ChumonMembers): ReaderUnit {
   if (raw.schema_version !== V1_SCHEMA) {
     throw new Error(`normalizeUnit: unknown schema_version ${JSON.stringify(raw.schema_version)} (${raw.unit_id})`);
   }

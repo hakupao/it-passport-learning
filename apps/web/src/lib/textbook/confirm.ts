@@ -13,16 +13,21 @@
 
 import type { LearningRecord } from "../learning/record";
 import { classify, reviewState, toLocalDay } from "../learning/schedule";
+import type { ChumonMembers } from "../practice/chumonMembers";
 import type { ReaderUnit } from "./reader";
 
 const CONFIRM_MIN = 3;
 const CONFIRM_MAX = 5;
 
 /** The unit's confirmation question ids (§0-1). */
-export function pickConfirm(unit: ReaderUnit, members: ReadonlySet<string>): string[] {
+export function pickConfirm(unit: ReaderUnit, members: ChumonMembers): string[] {
+  return select(unit, (id) => members.has(id));
+}
+
+function select(unit: ReaderUnit, isMember: (id: string) => boolean): string[] {
   const out: string[] = [];
   const add = (id: string) => {
-    if (!members.has(id) && !out.includes(id)) out.push(id);
+    if (!isMember(id) && !out.includes(id)) out.push(id);
   };
   unit.challenge.forEach(add);
   for (const t of unit.terms) {
@@ -34,7 +39,11 @@ export function pickConfirm(unit: ReaderUnit, members: ReadonlySet<string>): str
   return out.slice(0, CONFIRM_MAX);
 }
 
-/** Display order of the confirmation questions at `now` (§0-1). */
+/**
+ * Display order of the confirmation questions at `now` (§0-1). Browser only: the
+ * mistake / never-answered split uses the browser-local day (toLocalDay) and the
+ * local learning record, so call it after mount, never during SSR.
+ */
 export function orderConfirm(ids: readonly string[], record: LearningRecord, now: number): string[] {
   const today = toLocalDay(now);
   const fresh: string[] = [];
@@ -52,5 +61,7 @@ export function orderConfirm(ids: readonly string[], record: LearningRecord, now
 
 /** Distinct past questions shown in the unit (§0-5): confirm ∪ per-term quiz. */
 export function pastCount(unit: ReaderUnit): number {
-  return new Set([...pickConfirm(unit, new Set()), ...unit.terms.flatMap((t) => t.quiz)]).size;
+  // No member filter here: normalizeUnit already dropped every chumon group member from
+  // `challenge` and each term's `quiz` (ReaderUnit invariant), so select() needs none.
+  return new Set([...select(unit, () => false), ...unit.terms.flatMap((t) => t.quiz)]).size;
 }
