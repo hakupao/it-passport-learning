@@ -17,7 +17,7 @@
 // `reveal` (Task 10, the single-question page /practice/q/<qid>: a reference view): the explanation
 // is shown also while unanswered — no row is "yours", every × row starts closed, and the AI 先生
 // thread anchor is `<question_id>:reveal` (the QuizSet convention for an unanswered reveal).
-// The section carries EXPLANATION_ID: PracticeSession scrolls it into view on an answer (OQ-13 / D-194).
+// The section carries EXPLANATION_ID: PracticeSession scrolls its heading into view on an answer (OQ-13 / D-194).
 
 "use client";
 

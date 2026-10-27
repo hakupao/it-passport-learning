@@ -26,8 +26,11 @@
 //     record); its day is Date.now() at render.
 //   - Focus: a new question → its <article>; the group ending (not a restore) → the summary <h1>.
 //   - Answering (OQ-13 / D-194): the explanation sits under the face; an accepted pick (applyAction
-//     returned an attempt — never the restore, a revisit or a re-pick) scrolls its section into view
-//     (smooth; instant with prefers-reduced-motion), unless its heading is already in the viewport.
+//     returned an attempt — never the restore, a revisit or a re-pick) scrolls down until the
+//     explanation's heading sits about 45% down the viewport, so the end of the question (the choices
+//     with ○ / ×) stays in view above it (the user's pick: 「解析标题刚好可见，题目仍部分可见」).
+//     Never up; no move when the heading is already fully in view; smooth, instant with
+//     prefers-reduced-motion.
 //   - from=today: the top bar names the today task — the URL's `kind=` (kindParam, Task 11) from the
 //     first frame, else inferred once the record is loaded (todayKind, fixed once known) — and the
 //     summary offers 「继续下一项」 (summaryNextHref: nextTodayGroup → /practice?ids=…&from=today&kind=…,
@@ -95,6 +98,9 @@ export interface PracticeSessionProps {
   /** tests: start from this state and skip the sessionStorage restore */
   initialState?: SessionState;
 }
+
+/** where the explanation's heading lands after an answer: this fraction of the viewport from its top */
+const EXPLANATION_VIEW_AT = 0.45;
 
 const hasOwn = (o: object, k: string): boolean => Object.prototype.hasOwnProperty.call(o, k);
 
@@ -229,8 +235,9 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
     const heading = el.querySelector("h2") ?? el;
     const r = heading.getBoundingClientRect();
     if (r.top >= 0 && r.bottom <= window.innerHeight) return; // already in view
+    const top = Math.max(window.scrollY, window.scrollY + r.top - window.innerHeight * EXPLANATION_VIEW_AT);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    window.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
   }, [state]);
 
   // from=today: the task kind, fixed once the record is loaded

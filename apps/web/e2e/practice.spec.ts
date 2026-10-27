@@ -20,7 +20,8 @@
 //   7. The single-question page /practice/q/<qid> is a reference view: clicks and keys record nothing.
 //   8. OQ-13 / D-194 one column (1440 × 1000): a text-choice question (2023r05-q086, keyed ア, a former
 //      row4 set) has its choices one per line; answering brings the explanation into view under the
-//      choices at the face's width; a choice_figures question (2022r04-q032) keeps 2 × 2.
+//      choices at the face's width — the heading about mid-viewport, the choices still in view above it
+//      (also instant with prefers-reduced-motion); a choice_figures question (2022r04-q032) keeps 2 × 2.
 //
 // Fixture ids / keys come from data/ip/quiz/questions.json; strings from messages/*.json.
 // No LLM call fires here (a guard routes api.anthropic.com and the afterEach asserts it stayed unused).
@@ -390,17 +391,10 @@ test("practice ja: one column — choices one per line, explanation under them a
   for (const l of ["ア", "イ", "ウ", "エ"]) tops.push((await choiceItem(page, l).boundingBox())!.y);
   for (let i = 1; i < tops.length; i++) expect(tops[i]!).toBeGreaterThan(tops[i - 1]!);
 
-  // (a) answered: the explanation is under the choices, as wide as the face, and scrolled into view
+  // (a) answered: the explanation is under the choices, as wide as the face; the scroll leaves the
+  // choices (○ / ×) in view above the explanation's heading
   await pressToAnswer(page, "1", "ア");
-  const expl = page.locator("#practice-explanation");
-  await expect(expl.locator("h2")).toBeVisible();
-  await expect(expl.locator("h2")).toBeInViewport();
-  const listBox = (await list.boundingBox())!;
-  const explBox = (await expl.boundingBox())!;
-  const faceBox = (await face(page).boundingBox())!;
-  expect(explBox.y).toBeGreaterThanOrEqual(listBox.y + listBox.height);
-  expect(Math.abs(explBox.width - faceBox.width)).toBeLessThanOrEqual(2);
-  expect(Math.abs(explBox.x - faceBox.x)).toBeLessThanOrEqual(2);
+  await expectAnswerScroll(page);
 
   // (c) a choice_figures question keeps 2 × 2
   await page.locator('[data-nav="next"]').click();
@@ -414,3 +408,41 @@ test("practice ja: one column — choices one per line, explanation under them a
   expect(i.x).toBeGreaterThan(a.x);
   expect(Math.abs(a.x - u.x)).toBeLessThanOrEqual(1);
 });
+
+test("practice ja: with prefers-reduced-motion the answer scroll is instant, same place (OQ-13)", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/ja/practice?ids=2023r05-q086");
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/1");
+  await page.evaluate(() => document.fonts.ready);
+  await pressToAnswer(page, "1", "ア");
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
+  await expectAnswerScroll(page);
+});
+
+/** After an answer: once the scroll has settled, the choice list ends in the viewport above the
+ *  explanation, whose heading is in the viewport; the explanation spans the face's width. */
+async function expectAnswerScroll(page: Page): Promise<void> {
+  await expect(page.locator("#practice-explanation h2")).toBeVisible();
+  // settled: two reads 200ms apart agree
+  await expect(async () => {
+    const a = await page.evaluate(() => scrollY);
+    await page.waitForTimeout(200);
+    expect(await page.evaluate(() => scrollY)).toBe(a);
+  }).toPass();
+  const m = await page.evaluate(() => {
+    const rect = (sel: string) => document.querySelector(sel)!.getBoundingClientRect();
+    const list = rect("main[data-session] article ul[data-layout]");
+    const face = rect("main[data-session] article");
+    const expl = rect("#practice-explanation");
+    const h2 = rect("#practice-explanation h2");
+    return { list, face, expl, h2, vh: innerHeight };
+  });
+  expect(m.expl.top).toBeGreaterThanOrEqual(m.list.bottom);
+  expect(Math.abs(m.expl.width - m.face.width)).toBeLessThanOrEqual(2);
+  expect(Math.abs(m.expl.left - m.face.left)).toBeLessThanOrEqual(2);
+  expect(m.list.bottom).toBeGreaterThan(0);
+  expect(m.list.bottom).toBeLessThanOrEqual(m.vh);
+  expect(m.h2.top).toBeGreaterThanOrEqual(0);
+  expect(m.h2.bottom).toBeLessThanOrEqual(m.vh);
+}
