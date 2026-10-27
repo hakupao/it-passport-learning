@@ -63,29 +63,29 @@
 ## Tasks（前置）
 
 ### Task B1: 顺序表
-- [ ] `scripts/textbook-v2-batch-order.mjs` → `docs/phase5/batch_order.md`；测试：排序、拆批（>5 才拆、每批 ≤5）、合计 62 / 241 / 78 与重算一致。
+- [x] `scripts/textbook-v2-batch-order.mjs` → `docs/phase5/batch_order.md`；测试：排序、拆批（>5 才拆、每批 ≤5）、合计 62 / 241 / 78 与重算一致。
 
 ### Task B2: unit_summary 审计（一次性）
-- [ ] 规则扫描 + agent 判定 241 单元 `unit_summary_*` 的制作メモ → 命中列表 → 走 B3 补丁（三语同改）。不改 prep / merge。（critic 实测规则命中 ≈ 0。）
+- [x] 规则扫描 + agent 判定 241 单元 `unit_summary_*` 的制作メモ → 命中列表 → 走 B3 补丁（三语同改）。不改 prep / merge。（critic 实测规则命中 ≈ 0。）
 
 ### Task B3: merge 内的正式补丁工序（按 0-4）
-- [ ] `scripts/textbook-v2-patch.mjs`（登记 / 列出 / retire）+ merge 在 assemble 前重放；补丁存 `evidence/phase5/stage_07_ui/phase3/batch/patches/<unit>.json`。测试：before 不一致拒绝、after 已在跳过、base_sha256 不符拒绝、兼容字段与 est 随补丁变化、validate 通过。
-- [ ] 试点 3 单元登记为**冻结基线**（merge 后另经 lowfix `7de5fb5` 与 D-200 削减 `1cb8080`，journal 无法复现）：merge 对其 `--write` 拒绝并提示「冻结基线」；删除 merge.mjs 的 NOTE。测试：重 merge 试点 → 被拒绝。字符串补丁不表达数组元素删除；结构变更一律走 0-2 重生成。
+- [x] `scripts/textbook-v2-patch.mjs`（登记 / 列出 / retire）+ merge 在 assemble 前重放；补丁存 `evidence/phase5/stage_07_ui/phase3/batch/patches/<unit>.json`。测试：before 不一致拒绝、after 已在跳过、base_sha256 不符拒绝、兼容字段与 est 随补丁变化、validate 通过。
+- [x] 试点 3 单元登记为**冻结基线**（merge 后另经 lowfix `7de5fb5` 与 D-200 削减 `1cb8080`，journal 无法复现）：merge 对其 `--write` 拒绝并提示「冻结基线」；删除 merge.mjs 的 NOTE。测试：重 merge 试点 → 被拒绝。字符串补丁不表达数组元素删除；结构变更一律走 0-2 重生成。
 
 ### Task B4: 测试规模与钉点
-- [ ] 盘点钉在待重写单元上的测试（已知：`confirm.test.ts:89` 分布与 `:94` 锚点、`UnitReader.ssr.test.ts:56`、`normalize.test.ts` 的 strategy-01-02-u14、e2e `textbook.spec.ts` 的 management-11-28-u01 等）→ 改钉冻结 fixture 或改为独立重算。
-- [ ] 全语料 v2「顺序 / 无标记 / 辞典无标记」vitest SSR；e2e `textbook-v2.spec.ts` 的遍历改为 env `TEXTBOOK_E2E_UNITS`（默认 = 试点）。
-- [ ] merge `--write` 自动追加 v1 glosses 到 `__fixtures__/v2-units.v1terms.json`（已有则校验一致）。
-- [ ] v1 路径的最终去留（全部 v2 后）记为 B9 的决定项。
+- [x] 盘点钉在待重写单元上的测试（已知：`confirm.test.ts:89` 分布与 `:94` 锚点、`UnitReader.ssr.test.ts:56`、`normalize.test.ts` 的 strategy-01-02-u14、e2e `textbook.spec.ts` 的 management-11-28-u01 等）→ 改钉冻结 fixture 或改为独立重算。
+- [x] 全语料 v2「顺序 / 无标记 / 辞典无标记」vitest SSR；e2e `textbook-v2.spec.ts` 的遍历改为 env `TEXTBOOK_E2E_UNITS`（默认 = 试点）。
+- [x] merge `--write` 自动追加 v1 glosses 到 `__fixtures__/v2-units.v1terms.json`（已有则校验一致）。
+- [x] v1 路径的最终去留（全部 v2 后）记为 B9 的决定项。
 
 ### Task B5: loc 种子改稿
-- [ ] workflow 支持 `seed_loc_part` + 其审查轮：只重写 zh/en，JP part 按 sha 原样复用；merge 用两个 journal（原 run + loc-seed run）识别。假 runtime 测试 + merge 双 journal 测试。
+- [x] workflow 支持 `seed_loc_part` + 其审查轮：只重写 zh/en，JP part 按 sha 原样复用；merge 用两个 journal（原 run + loc-seed run）识别。假 runtime 测试 + merge 双 journal 测试。
 
 ### Task B6: zh 译语表
-- [ ] 先输出 v1 `term_zh` 冲突清单（实测 4 个：MBO 同形异义 → 按单元区分；E-R図 写法差异 → 统一写法；デュアルシステム / デュプレックスシステム 在不同单元译法对调 = v1 误译 → 另立 OQ，因 `term_zh` 不变量要求等于 v1，修正需放宽不变量并重建 fixture）。`data/ip/textbook/zh_terms.json` 种子 = 无冲突的 v1 `term_zh` + 试点统一词（变更管理 等）；写入 localiser prompt；validate 增加 warn：jp 字段出现表中词时 zh 字段须含映射；表变更时对已上线单元跑该检查，命中走 B3。
+- [x] 先输出 v1 `term_zh` 冲突清单（实测 4 个：MBO 同形异义 → 按单元区分；E-R図 写法差异 → 统一写法；デュアルシステム / デュプレックスシステム 在不同单元译法对调 = v1 误译 → 另立 OQ，因 `term_zh` 不变量要求等于 v1，修正需放宽不变量并重建 fixture）。`data/ip/textbook/zh_terms.json` 种子 = 无冲突的 v1 `term_zh` + 试点统一词（变更管理 等）；写入 localiser prompt；validate 增加 warn：jp 字段出现表中词时 zh 字段须含映射；表变更时对已上线单元跑该检查，命中走 B3。
 
 ### Task B7: copy 检查覆盖图与表
-- [ ] `copyIssues` 扩展到 fig label / caption / overview extra / pairs 的 JP 文字；测试。
+- [x] `copyIssues` 扩展到 fig label / caption / overview extra / pairs 的 JP 文字；测试。
 
 ### Task B8: 批量循环
 - [ ] 按 §1 / §2 逐批；第 1 批后报告每单元实测用量与日历。strategy-01-02 前提议图表图种任务（0-8）。
