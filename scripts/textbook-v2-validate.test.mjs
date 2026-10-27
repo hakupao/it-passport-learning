@@ -100,6 +100,8 @@ test("copy guard D-198 (ii): 12+ normalised consecutive characters of a stem / c
       const n = norm(text);
       for (let i = 0; i + 14 <= n.length; i += 7) {
         const w = n.slice(i, i + 14);
+        // no glossary term and no katakana / alphanumerics (masked as term-like, D-198 clarification)
+        if (/[\u30A0-\u30FF\uFF66-\uFF9FA-Za-z0-9\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A]/.test(w)) continue;
         if (!terms.some((t) => w.includes(norm(t)) || norm(t).includes(w.slice(0, 4)))) runs.push([id, kind, w]);
       }
     }
@@ -165,4 +167,18 @@ test("usage errors exit 2", () => {
   assert.equal(run("textbook-v2-validate.mjs", ["--data-root", root]).code, 2);
   assert.equal(run("textbook-v2-validate.mjs", ["--unit", UNIT, "--file", "x", "--data-root", root]).code, 2);
   assert.equal(run("textbook-v2-validate.mjs", ["--file", "/nope.json", "--data-root", root]).code, 2);
+});
+
+test("D-198 masking: katakana runs of 4+ and alphanumeric tokens are terms, not expression", async () => {
+  const { stripInline } = await loadKit();
+  const q = (stem, choices = {}) => ({ unit_id: UNIT, terms: [], questions: { "2012h24a-q049": { topic_id: "x", terms: [], stem_jp: [stem], choices_jp: choices, correct_answer: "ア" } } });
+  const hits = (m, text) => copyIssues({ unit_id: UNIT, goals_jp: [text] }, m, stripInline);
+  // s135u02b-type hits: a term name + a particle / a short verb no longer counts
+  assert.deepEqual(hits(q("クリティカルパスを見つけるための手法として，適切なものはどれか。"), "**クリティカルパス**を見つけると工期の短縮先が分かる。"), []);
+  assert.deepEqual(hits(q("変更の管理はプロジェクト統合マネジメントの活動である。"), "変更の扱いはプロジェクト統合マネジメントで決める。"), []);
+  assert.deepEqual(hits(q("ＷＢＳを作成する目的はどれか。", { ア: "PERT図で日程を計算する" }), "ＷＢＳを作成する前に PERT 図で日程を見る。"), []);
+  assert.deepEqual(hits(q("ｸﾘﾃｨｶﾙﾊﾟｽを見つける手法"), "クリティカル・パスを見つける手法"), []);
+  // genuine prose overlaps still fire, also across a short (< 4) katakana word
+  assert.equal(hits(q("作業の前後関係と所要日数から全体の日程を求める図はどれか。"), "まず前後関係と所要日数から全体の日程を出す。").length, 1);
+  assert.equal(hits(q("大きな作業をバラして細かい単位へ順に分けていく。"), "作業をバラして細かい単位へ順に並べる。").length, 1);
 });

@@ -207,7 +207,8 @@ export function estMinutes(p, stripInline) {
 /**
  * Copy guard (S135 M3, D-198 (i)(ii)): past-question text must not be reproduced. Normalised = markers,
  * whitespace, punctuation and symbols removed; glossary terms (the unit's headwords, every manifest
- * question's `terms`) are masked first, so naming a term is never a copy and no run crosses one.
+ * question's `terms`) and term-like runs (TERMLIKE_RE: 4+ katakana, alphanumeric tokens) are masked
+ * first, so naming a term is never a copy and no run crosses one.
  *   (ii) COPY_MIN_QUESTION (12) consecutive normalised characters shared with a question's stem or choices,
  *   (i)  COPY_MIN (20) shared with any other question text the manifest still carries (an older
  *        manifest's explanations; the D-198 thin manifest has none).
@@ -228,8 +229,16 @@ export function questionTexts(manifest) {
   }
   return out;
 }
-/** Normalised text split at glossary-term occurrences (longest term first): the runs between terms. */
+/**
+ * D-198 clarification (S135): term names are not expression. Masked like glossary terms: runs of 4+
+ * katakana (ー・ and half-width forms included) and ASCII / full-width alphanumeric tokens (WBS, PERT, 5日).
+ */
+export const TERMLIKE_RE = /[\u30A0-\u30FF\uFF66-\uFF9F]{4,}|[A-Za-z0-9\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A]+/g;
+/** Normalised text split at term-like runs and glossary-term occurrences (longest term first): the runs between. */
 function unmasked(n, terms) {
+  return n.split(TERMLIKE_RE).flatMap((part) => splitTerms(part, terms));
+}
+function splitTerms(n, terms) {
   const segs = [];
   let cur = "";
   for (let i = 0; i < n.length; ) {
