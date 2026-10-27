@@ -177,6 +177,22 @@ describe("validateV2 — one broken thing → one error", () => {
     expectOne((u) => void (term(u, "受容").points[0]!.qids = ["0000x-q999"]), "point");
   });
 
+  it("D-200: at most 3 考点 per term, each JP ≤ 2 sentences and ≤ 100 characters (markup / whitespace excluded)", () => {
+    const pt = (text_jp: string) => ({ kind: "mix" as const, text_jp, text_zh: "要点。", text_en: "A point." });
+    // 4th point → one `points` issue
+    expectOne((u) => void term(u, "受容").points.push(pt("一つ目。"), pt("二つ目。"), pt("三つ目。")), "points");
+    // exactly 3 is fine
+    expect(issuesAfter((u) => void term(u, "受容").points.push(pt("一つ目。"), pt("二つ目。")))).toEqual([]);
+    // 3 sentences
+    expectOne((u) => void (term(u, "受容").points[0]!.text_jp = "受容は対策をしない。費用が見合わないときに選ぶ。記録は残す。"), "points");
+    // 101 characters (markup and spaces do not count: 100 + markers + spaces is fine)
+    const c100 = `${"あ".repeat(99)}。`;
+    expect(issuesAfter((u) => void (term(u, "受容").points[0]!.text_jp = `**${c100.slice(0, 10)}** ${c100.slice(10)}`))).toEqual([]);
+    expectOne((u) => void (term(u, "受容").points[0]!.text_jp = `い${c100}`), "points");
+    // zh / en are not limited by D-200 (JP is the measure)
+    expect(issuesAfter((u) => void (term(u, "受容").points[0]!.text_en = "One. Two. Three sentences here."))).toEqual([]);
+  });
+
   it("fig: closed registry, allowed mode, data shape", () => {
     expectOne((u) => void ((term(u, "受容").fig as { kind: string }).kind = "pie"), "fig");
     expectOne((u) => void ((term(u, "受容").fig as { mode: string }).mode = "steps"), "fig");

@@ -223,3 +223,12 @@ test("D-199 in the prompts: reviewers return PASS with only low issues; revisers
     assert.match(p, /新しい high \/ medium を生まない/);
   }
 });
+
+test("D-200 in the writer and critic prompts: ≤ 3 考点 per term, JP ≤ 2 sentences / ≤ 100 characters", async () => {
+  const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
+  for (const label of [/^write:/, /^review:/, /^rewrite:/]) {
+    const p = calls.find((x) => label.test(x.opts.label)).prompt;
+    assert.match(p, /D-200/);
+    assert.match(p, /考点は 1 用語 3 個まで、各考点の日本語は 2 文以内・100 字以内/);
+  }
+});

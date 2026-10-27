@@ -116,6 +116,7 @@ const SEED_ERROR = 'SEED-ERROR'
 
 const READ_MANIFEST = (unit) => `\`${manifestOf(unit)}\` を**全部** Read する (数千行: offset で分けて最後まで)。中身: d195_lines (D-195 全文)、topic.objective_jp (シラバス)、terms (見出し語、順序固定)、v1 (現行版)、questions / term_questions (関連過去問: 題文 [行の配列]・選択肢・正解記号のみ。解説は渡さない = D-198)、chumon_members (中問組員)、figures (図種 kinds・types_ts_lines = v2 の型定義・svg_available)、rules (validateV2 の上限と禁止句)、output_schema (JP part の JSON Schema)。加えて原本を直接 Read する: \`${ROOT}/docs/decisions/D-195-textbook-writing-and-figure-rules.md\`、\`${ROOT}/apps/web/src/lib/textbook/types.ts\`、\`${ROOT}/apps/web/src/lib/textbook/figureSpec.ts\`。`
 const D198 = '写しの基準 (D-198): 写し = (i) 正規化 (標記・空白・句読点・記号を除去) して 20 字以上の一致、(ii) 題文・選択肢との正規化 12 字以上の連続一致、(iii) 特定の題の具体例の流用 (数値・場面設定・例の列挙とその順序)。写しでない = 標準的な定義・計算規則・原則を一般的な表現で述べること (正解選択肢が同じ原則を述べていても可)。(i)(ii) は validate が `copy` issue として機械検出する (見出し語・用語そのものは数えない)。'
+const D200 = 'D-200: 考点は 1 用語 3 個まで、各考点の日本語は 2 文以内・100 字以内 (標記・空白を除く)。validate が `points` issue として検査する。'
 const QUESTIONS_JSON = `${ROOT}/data/ip/quiz/questions.json`
 
 function writerPrompt(unit, round, prev, review, seed) {
@@ -132,7 +133,7 @@ ${READ_MANIFEST(unit)}
 ${revise}
 ## 書くもの = JP part (manifest.output_schema に従う JSON)
 - \`unit_id\`="${unit}", \`stage\`="jp", \`round\`=${round}。
-- terms: manifest.terms と**同じ見出し語・同じ順** (増減・改名禁止)。各用語: one_jp (一句話 1 文、キーワードは **語**) → fig (図: D-195 §2 で選ぶ。不要なら null) → detail_jp (展開 2〜3 文) → analogy_jp (比喩、平文。無理なら "") / hook_jp (記法: 定義の言い換え禁止、語源・字形・対比など別の手がかり。無ければ省略) → points (考点: kind "exam" は根拠の過去問 id を qids に必ず入れる、"mix" は易混) → quiz (この用語の過去問 id: manifest.term_questions[用語] から 1〜3 題、manifest.chumon_members の題 (中問組員) は避ける)。
+- terms: manifest.terms と**同じ見出し語・同じ順** (増減・改名禁止)。各用語: one_jp (一句話 1 文、キーワードは **語**) → fig (図: D-195 §2 で選ぶ。不要なら null) → detail_jp (展開 2〜3 文) → analogy_jp (比喩、平文。無理なら "") / hook_jp (記法: 定義の言い換え禁止、語源・字形・対比など別の手がかり。無ければ省略) → points (考点: kind "exam" は根拠の過去問 id を qids に必ず入れる、"mix" は易混。${D200}) → quiz (この用語の過去問 id: manifest.term_questions[用語] から 1〜3 題、manifest.chumon_members の題 (中問組員) は避ける)。
 - goals_jp (学習目標 3 前後)、overview_cols_jp + overview_rows (用語総表: 用語ごと 1 行、one_line_jp + 列ごとのセル extra_jp)、pairs (易混組: a が b より用語順で前、決め手の行に key:true)、key_points_jp (要点 3〜5)、challenge_questions (確認題: 本 topic の過去問 id、中問組員を除いて 3〜5 題。v1.challenge_questions を基に見直してよい)。
 - 図: kind / mode は figures.kinds の組合せだけ (svg / table / compare / flow / tree / network)。型は figures.types_ts_lines (原本 apps/web/src/lib/textbook/types.ts) の FigSpec。ラベルは \`{"jp": "…"}\` だけ、分段の caption は \`caption_jp\` だけ書く (zh / en は後工程)。flow / tree の段階図は ${'`'}mode:"steps"${'`'} で 3〜4 step。network (アローダイアグラム等) は mode "widget"、工期は 0〜99 の整数、始点・終点は 1 つずつ、並行作業はダミーで。svg を使うなら figures.svg_available のパスだけ。
 - 行内標記は **語** だけ。[[jp:…]] は zh / en 専用なので**日本語の本文には使わない** (validate が markup issue にする)。analogy・総表 extra・図ラベル・caption は平文。
@@ -165,7 +166,7 @@ function reviewPrompt(unit, round, part, partRound) {
 
 ## 審査観点
 1. **事実**: 定義・説明・考点・図 (数値、工期、因果、分類) が topic.objective_jp と関連過去問の正解に照らして正しいか。網羅的な言い切り (「〜は A と B である」「必ず〜」) が引用題すべてに支持されているか。図の caption が考点・本文と一致するか。exam 考点の qids の題が本当にその点を問うているか。quiz / challenge_questions の題がその用語・単元に合っているか。
-2. **D-195 清單**: §1 一句話 1 文 + 太字キーワード / 展開 2〜3 文 / §2 図の選び方 (過程→段階図、量・計算→操作部品、その他→静的、別名だけの用語は図なし、飾りの図は不可) / §3 学習目標 + 総表 / §4 易混対比は 2 つ目の直後 / §5 強調 4 種 / §6 比喩・記法が定義の言い換えでない / §7 要点 3〜5 / §9 禁止事項 (定型の締め句、言い換えの反復、羅列、誇張)。
+2. **D-195 清單**: §1 一句話 1 文 + 太字キーワード / 展開 2〜3 文 / §2 図の選び方 (過程→段階図、量・計算→操作部品、その他→静的、別名だけの用語は図なし、飾りの図は不可) / §3 学習目標 + 総表 / §4 易混対比は 2 つ目の直後 / §5 強調 4 種 / §6 比喩・記法が定義の言い換えでない / §7 要点 3〜5 / §9 禁止事項 (定型の締め句、言い換えの反復、羅列、誇張) / ${D200} 超過は medium。
 3. **初学者に分かるか**: 結論先行、図と文が噛み合うか。**定義してから使う**: 専門語 (例: 結合点・矢線・最遅結合点時刻) が、それを定義する文より前に考点・図・易混表で使われていたら指摘する。
 4. **写していないか**: ${D198} (i)(ii)(iii) に当たれば high。標準的な定義・計算規則・原則を一般的な表現で述べた文は、正解選択肢が同じ原則を述べていても写しとして指摘しない。
 5. **考点と引用題の正解**: 各 exam 考点の qids の題だけを \`${QUESTIONS_JSON}\` から Read し (id で検索、題文・選択肢・correct_answer)、主張がその題の正解と一致するか、データが支持しない規則を作っていないかを確かめる。矛盾は high。

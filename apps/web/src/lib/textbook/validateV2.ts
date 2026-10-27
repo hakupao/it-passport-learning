@@ -10,6 +10,7 @@
 //   - three-language completeness, well-formed inline markup (§0-12),
 //     compat field == the value derived from the new fields (stripInline,
 //     introOf, hookLines; the merge script writes them with the same functions),
+//   - D-200: ≤ 3 考点 per term, each JP ≤ 2 sentences / ≤ 100 characters (POINT_LIMITS),
 //   - D-195: 展開 2〜3 sentences, 要点 3〜5, banned phrasing (§9 → BANNED_PHRASES
 //     everywhere; EXAM_FRAMING everywhere but the 考点 box, whose job is to say
 //     what the exam asks), three or more headwords listed in one sentence of any
@@ -38,6 +39,7 @@ export type V2IssueCode =
   | "overview"
   | "pair"
   | "point"
+  | "points"
   | "fig"
   | "quiz"
   | "challenge"
@@ -244,6 +246,11 @@ export const LISTING_MAX = 2;
 /** D-197 exception: 「〜には A・B・C・D の 4 つがある」「対応策は 4 種類あり…」 — the classification is the content. */
 // a count of 2 or more (2〜9, 10〜99, 二〜九, 十…); 「一種」「一つ」「〜つ目」 are not a count of the classification
 export const COUNTED_CLASSIFICATION = /(?:の\s*)?(?:[1-9１-９][0-9０-９]|[2-9２-９二三四五六七八九]|十)\s*(?:つ|種類|種)(?!目)/;
+/**
+ * D-200 考点 limits: at most `perTerm` points per term; each point's JP text (markup stripped,
+ * whitespace not counted) at most `sentences` sentences and `chars` characters. zh / en follow the JP.
+ */
+export const POINT_LIMITS = { perTerm: 3, sentences: 2, chars: 100 } as const;
 /** Confirm questions per unit (D-196 §0-1; = confirm.ts CONFIRM_MIN / CONFIRM_MAX). */
 export const CONFIRM = { min: 3, max: 5 } as const;
 
@@ -536,11 +543,21 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
     // 考点
     const points = Array.isArray(t.points) ? t.points : null;
     if (!points) push("point", `${where}.points`, "array");
+    else if (points.length > POINT_LIMITS.perTerm) {
+      push("points", `${where}.points`, `${points.length} 考点 (D-200: at most ${POINT_LIMITS.perTerm} per term)`);
+    }
     points?.forEach((p, pi) => {
       const pw = `${where}.points[${pi}]`;
       const pr = rec(p);
       if (pr.kind !== "exam" && pr.kind !== "mix") push("point", `${pw}.kind`, `${JSON.stringify(pr.kind)}: exam / mix`);
-      prose(pr, "text", pw, { examTalk: true });
+      const txt = prose(pr, "text", pw, { examTalk: true });
+      if (txt) {
+        const n = sentences(txt.jp, "jp").length;
+        const chars = txt.jp.replace(/\s/g, "").length;
+        if (n > POINT_LIMITS.sentences || chars > POINT_LIMITS.chars) {
+          push("points", `${pw}.text_jp`, `${n} sentence(s), ${chars} characters (D-200: ≤ ${POINT_LIMITS.sentences} sentences, ≤ ${POINT_LIMITS.chars} characters)`);
+        }
+      }
       if (pr.kind === "exam") {
         const q = pr.qids;
         if (!strList(q) || q.length === 0) push("point", `${pw}.qids`, "an exam point cites the questions it rests on");
