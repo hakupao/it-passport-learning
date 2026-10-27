@@ -190,6 +190,31 @@ export function jpProse(p) {
 }
 
 /**
+ * Every JP text of the figures (batch B7, copy guard only — not reading prose, so not in est_minutes):
+ * each Text3 label's `jp` anywhere in fig.data (tree / flow nodes, table cols / cells, compare a / b / rows)
+ * and each step's caption_jp, with its location (terms[i](term).fig.data.root.label.jp / .fig.steps[k].caption_jp).
+ */
+export function jpFigText(p) {
+  const out = [];
+  (Array.isArray(p.terms) ? p.terms : []).forEach((t, i) => {
+    const at = `terms[${i}](${t?.term}).fig`;
+    const walk = (v, where) => {
+      if (Array.isArray(v)) v.forEach((x, k) => walk(x, `${where}[${k}]`));
+      else if (isObj(v)) {
+        if (typeof v.jp === "string") {
+          if (v.jp !== "") out.push([`${where}.jp`, v.jp]);
+        } else for (const [k, x] of Object.entries(v)) walk(x, `${where}.${k}`);
+      }
+    };
+    walk(t?.fig?.data, `${at}.data`);
+    (Array.isArray(t?.fig?.steps) ? t.fig.steps : []).forEach((st, k) => {
+      if (typeof st?.caption_jp === "string" && st.caption_jp !== "") out.push([`${at}.steps[${k}].caption_jp`, st.caption_jp]);
+    });
+  });
+  return out;
+}
+
+/**
  * est_minutes (§0-13, coordinator decision S135 M4): all stored JP prose except the 総表 (one + detail
  * + analogy + hook + 考点 + 易混 rows + key points + goals), markers and whitespace removed, at the
  * v1 measured pace of 80 字/分 (v1 p50 ≈ 85), rounded up, at least 3:
@@ -212,7 +237,9 @@ export function estMinutes(p, stripInline) {
  *   (ii) COPY_MIN_QUESTION (12) consecutive normalised characters shared with a question's stem or choices,
  *   (i)  COPY_MIN (20) shared with any other question text the manifest still carries (an older
  *        manifest's explanations; the D-198 thin manifest has none).
- * → one `copy` issue per prose string (the first hit, with the question id).
+ * Checked: every jpProse string (goals, 総表 one_line + extra cells, term prose, 考点, 易混 rows, key points)
+ * and every figure text (jpFigText: labels, step captions; batch B7).
+ * → one `copy` issue per string (the first hit, with the question id).
  */
 export const COPY_MIN = 20;
 export const COPY_MIN_QUESTION = 12;
@@ -263,7 +290,8 @@ export function copyIssues(p, manifest, stripInline, unitId = p.unit_id) {
     }
   }
   const out = [];
-  for (const [field, s] of jpProse(p)) {
+  // B7: figure labels / step captions too (総表 extra cells and 易混 rows are already in jpProse)
+  for (const [field, s] of [...jpProse(p), ...jpFigText(p)]) {
     const hit = (() => {
       for (const seg of unmasked(normCopy(s, stripInline), terms)) {
         for (const kind of ["question", "other"]) {

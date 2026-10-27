@@ -2,9 +2,9 @@
 // Stage 7 Phase 3 Task 9 (D-196 §0-13) — run validateV2 (apps/web/src/lib/textbook/validateV2.ts, the
 // same module the web tests use) on a v2 unit or on a writer part, with the prep manifest's
 // v1Terms + chumon members, plus the checks validateV2 cannot do without fs / the manifest:
-// svg files exist (code svg-file), and the copy guard (code copy, lib copyIssues: no run of 20+
-// normalised characters of stored JP prose may occur in a manifest question's stem / choices /
-// explanation — use the facts, write your own sentences).
+// svg files exist (code svg-file), and the copy guard (code copy, lib copyIssues, D-198: no run of 12+
+// normalised characters of stored JP prose or figure text [labels, step captions — batch B7] may occur in a
+// manifest question's stem / choices, 20+ in any other question text — use the facts, write your own sentences).
 //
 // Run (exactly one of --unit / --file / --part):
 //   node scripts/textbook-v2-validate.mjs --unit <id>          data/ip/textbook/units/<id>.json

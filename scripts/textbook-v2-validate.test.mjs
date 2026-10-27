@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { test } from "node:test";
 
-import { copyIssues, dataPaths, jpOnlyIssues, loadKit, readJson, sha256File } from "./lib/textbook-v2.mjs";
+import { copyIssues, dataPaths, estMinutes, jpOnlyIssues, loadKit, readJson, sha256File } from "./lib/textbook-v2.mjs";
 import { fixture, jpPartOf, locPartOf, run, tempRoot, UNIT, writeJson } from "./lib/textbook-v2-testkit.mjs";
 
 const root = tempRoot();
@@ -181,4 +181,34 @@ test("D-198 masking: katakana runs of 4+ and alphanumeric tokens are terms, not 
   // genuine prose overlaps still fire, also across a short (< 4) katakana word
   assert.equal(hits(q("作業の前後関係と所要日数から全体の日程を求める図はどれか。"), "まず前後関係と所要日数から全体の日程を出す。").length, 1);
   assert.equal(hits(q("大きな作業をバラして細かい単位へ順に分けていく。"), "作業をバラして細かい単位へ順に並べる。").length, 1);
+});
+
+test("copy guard B7: figure labels, step captions, 総表 extra cells and 易混 rows are checked too; est_minutes ignores figure text", async () => {
+  const { stripInline } = await loadKit();
+  const stem = "作業の前後関係と所要日数から全体の日程を求める図はどれか。";
+  const manifest = { unit_id: UNIT, terms: [], questions: { "2012h24a-q049": { topic_id: "x", terms: [], stem_jp: [stem], choices_jp: {}, correct_answer: "ア" } } };
+  const copied = "前後関係と所要日数から全体の日程"; // 16 normalised characters of the stem
+  const fields = (p) => copyIssues(p, manifest, stripInline).map((i) => i.field);
+  const base = () => jpPartOf(locPartOf(fixture()));
+  assert.deepEqual(fields(base()), [], "the fixture itself has no copy");
+  const tree = (p) => p.terms.findIndex((t) => t.fig?.kind === "tree");
+  const table = (p) => p.terms.findIndex((t) => t.fig?.kind === "table");
+  const cases = [
+    [(p) => (p.terms[tree(p)].fig.data.root.label.jp = copied), (p) => `terms[${tree(p)}](${p.terms[tree(p)].term}).fig.data.root.label.jp`],
+    [(p) => (p.terms[tree(p)].fig.steps[1].caption_jp = `まず${copied}を出す。`), (p) => `terms[${tree(p)}](${p.terms[tree(p)].term}).fig.steps[1].caption_jp`],
+    [(p) => (p.terms[table(p)].fig.data.rows[0].cells[1].jp = copied), (p) => `terms[${table(p)}](${p.terms[table(p)].term}).fig.data.rows[0].cells[1].jp`],
+    [(p) => (p.overview_rows[1].extra_jp[0] = copied), () => "overview_rows[1].extra_jp[0]"],
+    [(p) => (p.pairs[0].rows[1].label_jp = copied), () => "pairs[0].rows[1].label_jp"],
+    [(p) => (p.pairs[0].rows[0].b_jp = copied), () => "pairs[0].rows[0].b_jp"],
+  ];
+  for (const [put, where] of cases) {
+    const p = base();
+    put(p);
+    assert.deepEqual(fields(p), [where(p)]);
+  }
+  // figure text is not reading prose: est_minutes does not count it
+  const p = base();
+  const before = estMinutes(p, stripInline);
+  p.terms[tree(p)].fig.steps[1].caption_jp = "長".repeat(400);
+  assert.equal(estMinutes(p, stripInline), before);
 });
