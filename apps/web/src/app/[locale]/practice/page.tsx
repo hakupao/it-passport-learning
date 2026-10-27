@@ -21,7 +21,8 @@
 // match UNIT_ID_RE and be in the reader index, else the group has no `from`; the unit's title (active
 // locale) and terms go to the session (the summary's 「単元に戻る」, the explanation's link back);
 // a unit failing to load leaves the set without `from` (resolveSessionFrom). A from=unit URL without
-// `run` is redirected to one with run=<now>, so every entry is a new round.
+// `run` is redirected to one with run=<now> (the other params, `at` included, kept), so every entry
+// is a new round. from=unit counts only for an ids scope.
 
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -113,7 +114,9 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
     redirect({ href: { pathname: "/practice", query }, locale });
   }
 
-  const from = await resolveSessionFrom(sp, locale);
+  // a unit's set is always an ids list (its confirm / term links): a filter scope with from=unit is
+  // not a unit set, so the textbook is not touched for it
+  const from = scope.kind === "ids" || sp.from !== "unit" ? await resolveSessionFrom(sp, locale) : null;
   // a unit's set always runs as a new round (§0-2): an entry without a run nonce (a click before
   // hydration, a middle click, a copied link) gets one here
   if (from?.kind === "unit" && parseRun(sp) === null) {

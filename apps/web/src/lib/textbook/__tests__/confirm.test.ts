@@ -144,6 +144,9 @@ describe("confirmHref / nextRun (§0-2)", () => {
       "/practice?ids=a-q001,b-q002&from=unit&unit=x-00-00-u01&run=1730000000000",
     );
     expect(confirmHref(["a-q001"], "x-00-00-u01", null)).toBe("/practice?ids=a-q001&from=unit&unit=x-00-00-u01");
+    expect(confirmHref(["a-q001"], "x-00-00-u01", "7", "t0123456789abcdef")).toBe(
+      "/practice?ids=a-q001&from=unit&unit=x-00-00-u01&at=t0123456789abcdef&run=7",
+    );
   });
 
   it("every click gets a new run, even within the same millisecond; run fits /^\\d{1,16}$/", () => {

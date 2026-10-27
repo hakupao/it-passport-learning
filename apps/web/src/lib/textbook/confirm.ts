@@ -69,10 +69,12 @@ export function pastCount(unit: ReaderUnit): number {
 
 /**
  * The practice link of a unit's question set (§0-2): `from=unit&unit=<id>` (the summary returns
- * to the unit) and, when given, the click-time `run` nonce (a new group each time).
+ * to the unit), `at=<termId>` for a term's past questions (the summary returns to that term, not
+ * to #confirm) and, when given, the click-time `run` nonce (a new group each time).
  */
-export function confirmHref(ids: readonly string[], unitId: string, run: string | null): string {
-  return `/practice?ids=${ids.join(",")}&from=unit&unit=${unitId}${run !== null ? `&run=${run}` : ""}`;
+export function confirmHref(ids: readonly string[], unitId: string, run: string | null, at: string | null = null): string {
+  const atPart = at !== null ? `&at=${at}` : "";
+  return `/practice?ids=${ids.join(",")}&from=unit&unit=${unitId}${atPart}${run !== null ? `&run=${run}` : ""}`;
 }
 
 /** The run nonce of a click at `now` (epoch ms): strictly above the previous one, so two clicks never share it. */

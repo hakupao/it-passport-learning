@@ -102,7 +102,14 @@ export type FromParam = { kind: "today" } | { kind: "unit"; unitId: string };
 /** What the session knows about its origin: a today task, or a textbook unit (title + terms for its links). */
 export type SessionFrom =
   | { kind: "today" }
-  | { kind: "unit"; unitId: string; title: string; terms: { id: string; term: string }[] };
+  | {
+      kind: "unit";
+      unitId: string;
+      title: string;
+      terms: { id: string; term: string }[];
+      /** a term's past questions (`at=<termId>`, one of `terms`): the summary returns to it; null = #confirm */
+      at: string | null;
+    };
 
 /**
  * 「単元に戻る」 after a wrong answer in a unit's set (§0-8): the unit page at the article of the first

@@ -127,7 +127,12 @@
 }
 /* 分野 › 中分類 › topic › 単元 n / N */
 .crumbs {
-  margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.35em;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
   color: var(--ink-muted);
   font-size: 13px;
 }
@@ -284,6 +289,26 @@
 .figure :global(svg) {
   max-width: 100%;
   height: auto;
+}
+/* Phones: a wide figure keeps min(560px, its natural width --fig-w) and scrolls inside this box
+ * (overflow-x above), with a hint line, instead of shrinking its text to a few px. */
+.figHint {
+  display: none;
+}
+@media (max-width: 640px) {
+  .figure {
+    padding: 12px;
+  }
+  .figure :global(svg) {
+    min-width: min(560px, var(--fig-w, 0px));
+  }
+  .figHint {
+    display: block;
+    margin: -0.5rem 0 0.75rem;
+    color: var(--ink-muted);
+    font-size: 12px;
+    text-align: center;
+  }
 }
 .list {
   margin: 0;

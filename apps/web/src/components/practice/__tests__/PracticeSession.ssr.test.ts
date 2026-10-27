@@ -359,7 +359,7 @@ describe("SessionSummary", () => {
       ),
       endedAt: 5000,
     };
-    const unit = { kind: "unit" as const, unitId: "management-08-25-u01", title: "要件定義と設計", terms: [] };
+    const unit = { kind: "unit" as const, unitId: "management-08-25-u01", title: "要件定義と設計", terms: [], at: null };
     const out = renderView(qs, "ja", { state: s, from: unit });
     expect(out).toMatch(/<a href="\/textbook\/management-08-25-u01#confirm" class="[^"]*" data-action="unit">単元に戻る<\/a>/);
     expect(out).toContain(`href="/practice?ids=${qs[1]!.id}&amp;from=unit&amp;unit=management-08-25-u01&amp;run=5000"`);
@@ -367,6 +367,12 @@ describe("SessionSummary", () => {
     expect(renderView(qs, "en", { state: s, from: unit })).toMatch(/data-action="unit">Back to the unit</);
     // not from a unit: no 「単元に戻る」
     expect(renderView(qs, "ja", { state: s })).not.toContain('data-action="unit"');
+    // a term's past questions (at=<termId>): back to that term; the retry keeps at
+    const term = renderView(qs, "ja", { state: s, from: { ...unit, at: "t0123456789abcdef" } });
+    expect(term).toMatch(/<a href="\/textbook\/management-08-25-u01#t0123456789abcdef" class="[^"]*" data-action="unit">/);
+    expect(term).toContain(
+      `href="/practice?ids=${qs[1]!.id}&amp;from=unit&amp;unit=management-08-25-u01&amp;at=t0123456789abcdef&amp;run=5000"`,
+    );
   });
 
   it("from=unit, a wrong answer: 「単元に戻る：<title>」 under the explanation; a right one: none", () => {
@@ -377,6 +383,7 @@ describe("SessionSummary", () => {
       unitId: "management-08-25-u01",
       title: "要件定義と設計",
       terms: q.terms.length > 0 ? [{ id: "tshared", term: q.terms[0]! }] : [],
+      at: null,
     };
     const ids = qs.map((x) => x.id);
     const wrong = run(newSession(ids, 0), { type: "pick", choice: wrongOf(q) });

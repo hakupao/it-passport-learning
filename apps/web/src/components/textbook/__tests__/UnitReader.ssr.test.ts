@@ -117,6 +117,10 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
       from = i + p.length;
     }
     expect(nav).toContain('href="/_/textbook#management"');
+    // an ordered list; the unit itself is the current page
+    expect(nav).toMatch(/^<ol[^>]*>/);
+    expect(nav).toMatch(new RegExp(`<li aria-current="page">[\\s\\S]*?単元 ${place.n} / ${place.total}</li>`));
+    expect(out).toMatch(new RegExp(`<nav aria-label="${tb("ja").pager}"`));
   });
 
   it("meta shows badge, minutes, term count and the unit's past-question count", async () => {
@@ -150,9 +154,15 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
       expect(order, t.term).toEqual([...order].sort((x, y) => x - y));
       expect(a).toContain(tb("ja").termPast!.replace("{n}", String(t.quiz.length)));
       // from=unit link without a run (the run is made at click time, §0-2)
-      expect(a).toContain(`href="/_/practice?ids=${t.quiz.join(",")}&amp;from=unit&amp;unit=${UNIT_ID}"`);
+      expect(a).toContain(`href="/_/practice?ids=${t.quiz.join(",")}&amp;from=unit&amp;unit=${UNIT_ID}&amp;at=${t.id}"`);
+      // the link's accessible text names the term (as 用語集で開く does)
+      expect(a).toMatch(new RegExp(`data-part="term-past"[\\s\\S]*?<span class="sr-only"> ${t.term}</span>`));
     });
     expect(articles.some((a) => a.includes('data-part="fig"'))).toBe(true);
+    // a figure carries its natural width for the phone-width minimum (reader.module.css --fig-w)
+    for (const a of articles.filter((x) => x.includes('data-part="fig"'))) {
+      expect(a).toMatch(/<figure data-part="fig" class="[^"]*" style="--fig-w:\d+px"/);
+    }
   });
 
   it("drops the overview intro, the memory-hook list and the on-mount read marker", async () => {

@@ -25,20 +25,30 @@ export function UnitHeader({ unit, place, locale, pastCount, children }: Props):
   const title = unit.title[dl] || unit.title.jp;
   return (
     <header>
-      <nav aria-label={t("breadcrumb")} data-part="breadcrumb" className={styles.crumbs}>
-        <Link href={`/textbook#${place?.category ?? unit.category}`} className={styles.crumbLink}>
-          {t(catKey(place?.category ?? unit.category))}
-        </Link>
-        {place ? (
-          <>
-            <span aria-hidden="true"> › </span>
-            <span>{place.medium}</span>
-            <span aria-hidden="true"> › </span>
-            <span>{place.topicName}</span>
-            <span aria-hidden="true"> › </span>
-            <span>{t("unitOf", { n: place.n, total: place.total })}</span>
-          </>
-        ) : null}
+      <nav aria-label={t("breadcrumb")} data-part="breadcrumb">
+        <ol className={styles.crumbs}>
+          <li>
+            <Link href={`/textbook#${place?.category ?? unit.category}`} className={styles.crumbLink}>
+              {t(catKey(place?.category ?? unit.category))}
+            </Link>
+          </li>
+          {place ? (
+            <>
+              <li>
+                <span aria-hidden="true">› </span>
+                {place.medium}
+              </li>
+              <li>
+                <span aria-hidden="true">› </span>
+                {place.topicName}
+              </li>
+              <li aria-current="page">
+                <span aria-hidden="true">› </span>
+                {t("unitOf", { n: place.n, total: place.total })}
+              </li>
+            </>
+          ) : null}
+        </ol>
       </nav>
       <h1 className={styles.h1}>{title}</h1>
       <p data-part="meta" className={styles.meta}>
@@ -48,6 +58,8 @@ export function UnitHeader({ unit, place, locale, pastCount, children }: Props):
         <span>{t("pastCount", { n: pastCount })}</span>
       </p>
       {children}
+      {/* Headwords stay JP in every locale: they are the exam's vocabulary (the article headings
+          show the zh / en gloss beside them). */}
       <nav aria-label={t("termIndex")} data-part="term-index" className={styles.termIndex}>
         <ul>
           {unit.terms.map((tm) => (

@@ -14,10 +14,13 @@ vi.mock("next/navigation", () => ({
 }));
 vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock("next-intl/server", () => ({ setRequestLocale: () => {}, getTranslations: async () => (k: string) => k }));
+const nav = vi.hoisted(() => ({ redirects: [] as unknown[], allow: false }));
 vi.mock("@/i18n/navigation", () => ({
   Link: () => null,
-  redirect: () => {
-    throw new Error("unexpected redirect");
+  redirect: (arg: unknown) => {
+    if (!nav.allow) throw new Error("unexpected redirect");
+    nav.redirects.push(arg);
+    throw new Error("NEXT_REDIRECT (test sentinel)");
   },
   useRouter: () => ({ push: () => {} }),
 }));
@@ -106,6 +109,40 @@ describe("/practice?…&from=today&kind=", () => {
     expect((await session({ ids, from: "today" })).kindParam).toBeNull();
     // the kind only names a today group
     expect((await session({ ids, kind: "mistakes" })).kindParam).toBeNull();
+  });
+});
+
+describe("/practice?…&from=unit (Phase 3 §0-2)", () => {
+  const UNIT = "management-08-25-u01";
+  const ids = "2012h24h-q032,2013h25a-q035";
+  const sessionProps = async (sp: Record<string, string>) => childOf(await practice(sp)).props as Record<string, unknown>;
+
+  it("an ids set with a known unit and a run → from carries the unit (and a valid at)", async () => {
+    const { termId } = await import("@/lib/glossary/termId");
+    const from = (await sessionProps({ ids, from: "unit", unit: UNIT, run: "1" })).from as Record<string, unknown>;
+    expect(from).toMatchObject({ kind: "unit", unitId: UNIT, at: null });
+    const at = termId("機能要件");
+    const withAt = (await sessionProps({ ids, from: "unit", unit: UNIT, at, run: "1" })).from as Record<string, unknown>;
+    expect(withAt).toMatchObject({ kind: "unit", at });
+  });
+
+  it("no run → redirected to the same URL plus run, at kept", async () => {
+    nav.allow = true;
+    nav.redirects = [];
+    try {
+      await expect(practice({ ids, from: "unit", unit: UNIT, at: "t0123456789abcdef" })).rejects.toThrow(/NEXT_REDIRECT/);
+      const arg = nav.redirects[0] as { href: { pathname: string; query: Record<string, string> } };
+      expect(arg.href.pathname).toBe("/practice");
+      expect(arg.href.query).toMatchObject({ ids, from: "unit", unit: UNIT, at: "t0123456789abcdef" });
+      expect(arg.href.query.run).toMatch(/^\d{1,16}$/);
+    } finally {
+      nav.allow = false;
+    }
+  });
+
+  it("a filter scope or an unknown unit is not a unit set (no from, no redirect)", async () => {
+    expect((await sessionProps({ topic: "management-08-25", from: "unit", unit: UNIT })).from).toBeNull();
+    expect((await sessionProps({ ids, from: "unit", unit: "management-08-25-u99" })).from).toBeNull();
   });
 });
 

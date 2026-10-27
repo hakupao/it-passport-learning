@@ -162,14 +162,24 @@ test("confirm: a wrong answer lands in the mistakes book", async ({ page }) => {
   await expect(page.locator(`[data-mistake-row="${qid}"]`)).toHaveCount(1);
 });
 
-test("a term's past-question link opens a from=unit group with a run", async ({ page }) => {
+test("a term's past-question link opens a from=unit group with a run; its summary returns to the term", async ({
+  page,
+}) => {
   await page.goto(`/ja/textbook/${UNIT_ID}`);
   await waitForUnitReady(page);
-  const link = page.locator('[data-part="term-past"] a').first();
-  await expect(link).toHaveAttribute("href", new RegExp(`&from=unit&unit=${UNIT_ID}$`));
+  const term = page.locator("main article").first();
+  const tid = (await term.getAttribute("id"))!;
+  const link = term.locator('[data-part="term-past"] a');
+  await expect(link).toHaveAttribute("href", new RegExp(`&from=unit&unit=${UNIT_ID}&at=${tid}$`));
   await link.click();
-  await expect(page).toHaveURL(new RegExp(`&from=unit&unit=${UNIT_ID}&run=\\d{1,16}$`));
+  await expect(page).toHaveURL(new RegExp(`&from=unit&unit=${UNIT_ID}&at=${tid}&run=\\d{1,16}$`));
   await expect(progress(page)).toHaveAttribute("data-progress", /^1\//);
+  const total = Number((await progress(page).getAttribute("data-progress"))!.split("/")[1]);
+  for (let i = 0; i < total; i++) await answerAndNext(page, true);
+  const back = page.locator('main[data-summary] [data-action="unit"]');
+  await expect(back).toHaveAttribute("href", `/ja/textbook/${UNIT_ID}#${tid}`);
+  await back.click();
+  await expect(page.locator(`article#${tid}`)).toBeInViewport();
 });
 
 test("a from=unit link without a run (copied, middle-clicked, pre-hydration) is redirected to a fresh run", async ({
@@ -227,4 +237,25 @@ test("a set not from a unit shows no link back after a wrong answer", async ({ p
   await answerChoice(page, LETTERS.find((l) => l !== QUESTIONS.get("2009h21a-q054"))!);
   await expect(page.locator("main[data-session] [data-status]")).toHaveAttribute("data-status", "wrong");
   await expect(page.locator("main[data-session] [data-unit-back]")).toHaveCount(0);
+});
+
+test("phone width: a wide figure keeps a readable width and scrolls inside its box, not the page", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ja/textbook/management-10-27-u02"); // WBS figure: natural width 918px
+  await waitForRecord(page);
+  await page.evaluate(() => document.fonts.ready);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  const fig = page.locator('figure[data-part="fig"]').first();
+  const m = await fig.evaluate((el) => ({
+    svgW: el.querySelector("svg")!.getBoundingClientRect().width,
+    scroll: el.scrollWidth,
+    client: el.clientWidth,
+  }));
+  expect(m.svgW).toBeGreaterThanOrEqual(559);
+  expect(m.scroll).toBeGreaterThan(m.client); // the scroll is inside the figure box
+  await expect(page.locator('[data-part="fig-hint"]').first()).toBeVisible();
+
+  // desktop: the figure fits its box, no hint
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page.locator('[data-part="fig-hint"]').first()).toBeHidden();
 });

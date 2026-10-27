@@ -25,7 +25,21 @@ describe("resolveSessionFrom", () => {
       unitId: UNIT,
       title: raw.title_en,
       terms: raw.terms.map((t) => ({ id: termId(t.term), term: t.term })),
+      at: null,
     });
+  });
+
+  it("at=<termId> is kept only for one of the unit's terms", async () => {
+    const raw = await loadUnit(UNIT);
+    const own = termId(raw.terms[1]!.term);
+    const at = async (v: string) => {
+      const f = await resolveSessionFrom({ from: "unit", unit: UNIT, at: v }, "ja");
+      return f?.kind === "unit" ? f.at : "no unit";
+    };
+    expect(await at(own)).toBe(own);
+    expect(await at(termId("WBS"))).toBeNull(); // well-formed, not in this unit
+    expect(await at("../x")).toBeNull();
+    expect(await at("confirm")).toBeNull();
   });
 
   it("an unknown or malformed unit → null", async () => {

@@ -15,6 +15,7 @@ import {
   pickTerm,
   toDataLang,
   type ReaderIndex,
+  svgNaturalWidth,
   unitPlace,
 } from "../reader";
 
@@ -260,5 +261,14 @@ describe("loadReaderIndex memo", () => {
     else process.env.TEXTBOOK_DATA_ROOT = prev;
     const index = await fresh.loadReaderIndex();
     expect(index.topics.length).toBeGreaterThan(0);
+  });
+});
+
+describe("svgNaturalWidth", () => {
+  it("reads the root max-width, else the viewBox width", () => {
+    expect(svgNaturalWidth('<svg width="100%" style="max-width: 918px; background-color: white;" viewBox="0 0 918 300"><g/></svg>')).toBe(918);
+    expect(svgNaturalWidth('<svg style="max-width: 463.016px;" viewBox="0 0 463.016 90">')).toBe(463);
+    expect(svgNaturalWidth('<svg viewBox="-8 -8 640 200"><g style="max-width: 9px"/></svg>')).toBe(640);
+    expect(svgNaturalWidth("<svg><g/></svg>")).toBeNull();
   });
 });

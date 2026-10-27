@@ -21,8 +21,9 @@ export type ChumonMembers = ReadonlySet<string> & { readonly __brand: "ChumonMem
 
 // Keep in sync with quiz/quizReader.ts quizDataRoot() (QUIZ_DATA_ROOT → <root>/quiz, else
 // <cwd>/../../data/ip/quiz). Not shared on purpose: resolving straight to the file (not the
-// quiz dir) keeps nft from latching onto data/ip/quiz and tracing the ~30 MB sidecars.
-function registryFile(): string {
+// quiz dir) keeps nft from latching onto data/ip/quiz and tracing the ~30 MB sidecars. Exported only
+// for the test that pins it to quizDataRoot() (__tests__/chumonMembers.test.ts).
+export function registryFile(): string {
   const env = process.env.QUIZ_DATA_ROOT;
   return env
     ? path.join(env, "quiz", "chumon_groups.json")

@@ -96,7 +96,7 @@ export async function UnitReader({
         <ReadButton unitId={unit.id} />
       </div>
 
-      <nav className={styles.pager}>
+      <nav aria-label={t("pager")} className={styles.pager}>
         {neighbors.prev ? (
           <Link href={`/textbook/${neighbors.prev.unit_id}`} className={styles.pagerBtn}>
             ← {neighbors.prev.title_jp}

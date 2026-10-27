@@ -589,6 +589,7 @@ describe("unitReturnHref (Phase 3 §0-8)", () => {
       { id: "t2", term: "非機能要件" },
       { id: "t3", term: "品質特性" },
     ],
+    at: null,
   };
 
   it("anchors the first unit term (unit order) the question shares", () => {

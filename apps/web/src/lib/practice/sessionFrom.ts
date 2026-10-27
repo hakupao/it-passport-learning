@@ -2,13 +2,14 @@
 //
 // from=today needs nothing else. from=unit&unit=<id> touches the textbook only then: the id must
 // match UNIT_ID_RE and be in the reader index, and the unit is loaded for its title (active locale)
-// and terms (the summary's 「単元に戻る」, the explanation's link back, §0-8). Any failure there
+// and terms (the summary's 「単元に戻る」, the explanation's link back, §0-8); `at=<termId>` (a term's
+// past questions) is kept only when it is one of the unit's terms. Any failure there
 // (index or unit unreadable) is logged and the set runs without a `from` — the practice itself
 // never depends on the textbook.
 
 import "server-only";
 
-import { termId } from "../glossary/termId";
+import { isValidTermId, termId } from "../glossary/termId";
 import { loadReaderIndex, loadUnit, toDataLang, UNIT_ID_RE, type ReaderIndex, type TextbookUnit } from "../textbook/reader";
 import { parseFrom, type SearchParams, type SessionFrom } from "./practiceSession";
 
@@ -32,11 +33,15 @@ export async function resolveSessionFrom(
     if (from?.kind !== "unit") return null;
     const unit = await deps.loadUnit(from.unitId);
     const dl = toDataLang(locale);
+    const terms = unit.terms.map((t) => ({ id: termId(t.term), term: t.term }));
+    const at = first(sp.at);
     return {
       kind: "unit",
       unitId: from.unitId,
       title: unit[`title_${dl}`] || unit.title_jp,
-      terms: unit.terms.map((t) => ({ id: termId(t.term), term: t.term })),
+      terms,
+      // only a termId-shaped id of one of this unit's terms; anything else → back to #confirm
+      at: at !== undefined && isValidTermId(at) && terms.some((t) => t.id === at) ? at : null,
     };
   } catch (err) {
     console.error("[practice] from=unit: the textbook index or unit could not be loaded; the set runs without it", err);

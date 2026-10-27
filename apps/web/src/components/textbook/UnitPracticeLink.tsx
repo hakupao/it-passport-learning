@@ -18,12 +18,14 @@ import { confirmHref, nextRun, orderConfirm } from "@/lib/textbook/confirm";
 interface Props {
   ids: readonly string[];
   unitId: string;
+  /** a term's past questions: its termId (the summary returns to the term) */
+  at?: string | null;
   order?: boolean;
   className?: string;
   children: React.ReactNode;
 }
 
-export function UnitPracticeLink({ ids, unitId, order = false, className, children }: Props): React.ReactElement {
+export function UnitPracticeLink({ ids, unitId, at = null, order = false, className, children }: Props): React.ReactElement {
   const { record, loaded } = useLearningRecord();
   const router = useRouter();
   const lastRun = useRef<string | null>(null);
@@ -33,7 +35,7 @@ export function UnitPracticeLink({ ids, unitId, order = false, className, childr
   );
   return (
     <Link
-      href={confirmHref(list, unitId, null)}
+      href={confirmHref(list, unitId, null, at)}
       prefetch={false}
       className={className}
       onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -41,7 +43,7 @@ export function UnitPracticeLink({ ids, unitId, order = false, className, childr
         e.preventDefault();
         const run = nextRun(lastRun.current, Date.now());
         lastRun.current = run;
-        router.push(confirmHref(list, unitId, run));
+        router.push(confirmHref(list, unitId, run, at));
       }}
     >
       {children}

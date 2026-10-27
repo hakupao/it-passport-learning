@@ -360,6 +360,19 @@ export function normalizeUnit(raw: TextbookUnit, members: ChumonMembers): Reader
   };
 }
 
+/**
+ * The natural width (px) of a generated Mermaid SVG: its root `style="max-width: Npx"`, else the
+ * viewBox width; null when neither is there. The reader keeps narrow-screen figures at a readable
+ * minimum width from it (TermBlock).
+ */
+export function svgNaturalWidth(svg: string): number | null {
+  const end = svg.indexOf(">");
+  const root = end === -1 ? svg : svg.slice(0, end + 1);
+  const m = /max-width:\s*([\d.]+)px/.exec(root) ?? /viewBox="[-\d.]+[ ,]+[-\d.]+[ ,]+([\d.]+)[ ,]/.exec(root);
+  const w = m ? Math.round(Number(m[1])) : NaN;
+  return Number.isFinite(w) && w > 0 ? w : null;
+}
+
 // ---- textbook-only filesystem layer (self-contained) ----------------------
 
 // Resolve straight to data/ip/textbook (no data/ip intermediate): build-time

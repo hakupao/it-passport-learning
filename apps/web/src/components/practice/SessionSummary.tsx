@@ -5,8 +5,8 @@
 // 「回今日」, plus 「もう一度」 (the same group afresh: the stored one is cleared). The retry link
 // carries `&run=<runNonce>` (the group's endedAt) so the same ids (all wrong) start a new group
 // instead of reopening this stored summary. From a textbook unit (from=unit, Phase 3 §0-2) the
-// primary action is 「単元に戻る」 → /textbook/<id>#confirm and the retry link keeps
-// `from=unit&unit=<id>`. The heading takes the focus when the group ends
+// primary action is 「単元に戻る」 → /textbook/<id>#confirm (#<termId> for a term's past questions,
+// `at`) and the retry link keeps `from=unit&unit=<id>[&at=<termId>]`. The heading takes the focus when the group ends
 // (tabIndex -1). Book parts (出典 label, 正解) stay Japanese in every locale.
 
 "use client";
@@ -56,7 +56,8 @@ export function SessionSummary({
   const t = useTranslations("Practice");
   const score = summarize(ids, answers, questions);
   const byId = new Map(questions.map((q) => [q.id, q]));
-  const fromUnit = from?.kind === "unit" ? `&from=unit&unit=${from.unitId}` : "";
+  const fromUnit =
+    from?.kind === "unit" ? `&from=unit&unit=${from.unitId}${from.at !== null ? `&at=${from.at}` : ""}` : "";
 
   return (
     <main className={`${styles.session} ${styles.summary}`} data-summary="">
@@ -118,7 +119,7 @@ export function SessionSummary({
           </Link>
         ) : null}
         {from?.kind === "unit" ? (
-          <Link href={`/textbook/${from.unitId}#confirm`} className={styles.actionPrimary} data-action="unit">
+          <Link href={`/textbook/${from.unitId}#${from.at ?? "confirm"}`} className={styles.actionPrimary} data-action="unit">
             {t("backToUnit")}
           </Link>
         ) : null}

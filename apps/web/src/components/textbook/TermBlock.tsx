@@ -6,10 +6,13 @@
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
-import { toDataLang, type ReaderTerm } from "@/lib/textbook/reader";
+import { svgNaturalWidth, toDataLang, type ReaderTerm } from "@/lib/textbook/reader";
 
 import styles from "./reader.module.css";
 import { UnitPracticeLink } from "./UnitPracticeLink";
+
+/** natural width above which a figure may scroll sideways on a phone (the hint shows, ≤ 640px only) */
+const FIG_HINT_MIN = 300;
 
 interface Props {
   term: ReaderTerm;
@@ -24,6 +27,7 @@ export function TermBlock({ term, unitId, svg, locale }: Props): React.ReactElem
   const tg = useTranslations("Glossary");
   const dl = toDataLang(locale);
   const pick = (v: Record<"jp" | "zh" | "en", string>) => v[dl] || v.jp;
+  const figW = svg ? svgNaturalWidth(svg) : null;
   return (
     <article id={term.id} className={styles.term}>
       {/* The link sits beside the h3, not inside it, so the heading's name is just the term;
@@ -43,12 +47,22 @@ export function TermBlock({ term, unitId, svg, locale }: Props): React.ReactElem
         {pick(term.one)}
       </p>
       {term.fig && svg ? (
-        <figure
-          data-part="fig"
-          className={styles.figure}
-          // Trusted, self-generated Mermaid SVG from our own pipeline.
-          dangerouslySetInnerHTML={{ __html: svg }}
-        />
+        <>
+          {/* On a phone the SVG keeps min(560px, its natural width) and scrolls inside the figure
+              box instead of shrinking to unreadable text (--fig-w, reader.module.css). */}
+          <figure
+            data-part="fig"
+            className={styles.figure}
+            style={figW !== null ? ({ "--fig-w": `${figW}px` } as React.CSSProperties) : undefined}
+            // Trusted, self-generated Mermaid SVG from our own pipeline.
+            dangerouslySetInnerHTML={{ __html: svg }}
+          />
+          {figW !== null && figW > FIG_HINT_MIN ? (
+            <p data-part="fig-hint" className={styles.figHint} aria-hidden="true">
+              {t("figScroll")}
+            </p>
+          ) : null}
+        </>
       ) : null}
       <p data-part="detail" className={styles.prose}>
         {pick(term.detail)}
@@ -67,8 +81,9 @@ export function TermBlock({ term, unitId, svg, locale }: Props): React.ReactElem
       ) : null}
       {term.quiz.length > 0 ? (
         <p data-part="term-past" className={styles.termPast}>
-          <UnitPracticeLink ids={term.quiz} unitId={unitId}>
+          <UnitPracticeLink ids={term.quiz} unitId={unitId} at={term.id}>
             {t("termPast", { n: term.quiz.length })}
+            <span className="sr-only"> {term.term}</span>
             <span aria-hidden="true"> →</span>
           </UnitPracticeLink>
         </p>
