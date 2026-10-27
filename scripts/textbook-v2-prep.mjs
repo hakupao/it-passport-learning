@@ -21,8 +21,11 @@
 //   - chumon_members member ids among those questions (validateV2 members; confirm count §0-1)
 //   - figures        FIGURE_KINDS, step / network limits, the v2 type definitions (types.ts), the
 //                    unit's existing svg files
+// Long texts (d195, types.ts, stems, explanations) are arrays of lines (lib toLines: newline, then
+// after 。 past 200 chars) so a Read of the pretty-printed manifest never truncates a line (S135 M2);
+// the workflow prompts also point every role at the original D-195 / types.ts / figureSpec.ts files.
 //   - rules          validateV2 limits and banned-phrase patterns (as source text)
-//   - d195           docs/decisions/D-195-textbook-writing-and-figure-rules.md, full text
+//   - d195_lines     docs/decisions/D-195-textbook-writing-and-figure-rules.md, full text
 //   - output_schema  JSON Schema of the JP part (the localised part = the same + _zh / _en, {zh, en})
 // Determinism: no timestamps, ids sorted, fixed key order → two runs give identical bytes.
 
@@ -30,7 +33,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { dataPaths, jsonText, loadV2, MANIFEST_SCHEMA, parseArgs, readJson, REPO, UNIT_ID_RE, V1_SCHEMA } from "./lib/textbook-v2.mjs";
+import { dataPaths, jsonText, loadV2, MANIFEST_SCHEMA, parseArgs, readJson, REPO, toLines, UNIT_ID_RE, V1_SCHEMA } from "./lib/textbook-v2.mjs";
 
 const D195 = path.join(REPO, "docs/decisions/D-195-textbook-writing-and-figure-rules.md");
 const TYPES = path.join(REPO, "apps/web/src/lib/textbook/types.ts");
@@ -78,7 +81,7 @@ export const JP_PART_SCHEMA = {
               properties: { kind: { enum: ["exam", "mix"] }, text_jp: { type: "string" }, qids: { type: "array", items: { type: "string" } } },
             },
           },
-          fig: { type: ["object", "null"], description: "FigSpec (figures.types)、ラベルは {jp} のみ、caption は caption_jp のみ" },
+          fig: { type: ["object", "null"], description: "FigSpec (figures.types_ts_lines)、ラベルは {jp} のみ、caption は caption_jp のみ" },
           quiz: { type: "array", items: { type: "string" }, description: "この用語の過去問 id (同 topic・題の terms にこの用語を含む)" },
         },
       },
@@ -155,13 +158,13 @@ export async function buildManifest(unitId, paths) {
     questions[q.id] = {
       source_label: q.source_label,
       terms: q.terms,
-      stem_jp: tr.stem_jp_clean ?? q.stem_jp,
+      stem_jp: toLines(tr.stem_jp_clean ?? q.stem_jp),
       choices_jp: q.choices_jp,
       correct_answer: q.correct_answer,
       has_figure: q.has_figure,
       chumon_group: groupOf.get(q.id) ?? null,
-      expl_correct_jp: ex.correct?.jp ?? null,
-      expl_points_jp: (ex.points ?? []).map((p) => p.jp),
+      expl_correct_jp: ex.correct?.jp ? toLines(ex.correct.jp) : null,
+      expl_points_jp: (ex.points ?? []).map((p) => toLines(p.jp)),
       v1_use: {
         challenge: (v1.challenge_questions ?? []).includes(q.id),
         inline_of: v1.terms.filter((t) => (t.inline_quiz ?? []).includes(q.id)).map((t) => t.term),
@@ -207,7 +210,7 @@ export async function buildManifest(unitId, paths) {
       steps: { min: figSpec.STEPS_MIN, max: figSpec.STEPS_MAX },
       network_days_max: figSpec.NETWORK_DAYS_MAX,
       svg_available: svgs,
-      types_ts: typesFrom >= 0 ? types.slice(typesFrom) : types,
+      types_ts_lines: toLines(typesFrom >= 0 ? types.slice(typesFrom) : types),
     },
     rules: {
       detail_sentences: v2.DETAIL_SENTENCES,
@@ -219,7 +222,7 @@ export async function buildManifest(unitId, paths) {
       exam_framing_outside_points: Object.fromEntries(Object.entries(v2.EXAM_FRAMING).map(([l, rs]) => [l, rs.map(src)])),
       inline_markup: "**語** = キーワード / [[jp:用語]] = zh・en 本文中の日本語原語。analogy・総表 extra 以外の本文で使用可、図ラベル・caption は平文",
     },
-    d195: readFileSync(D195, "utf-8"),
+    d195_lines: toLines(readFileSync(D195, "utf-8")),
     output_schema: JP_PART_SCHEMA,
     v1,
   };

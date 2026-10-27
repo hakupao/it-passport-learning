@@ -6,7 +6,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 
-import { dataPaths, readJson } from "./lib/textbook-v2.mjs";
+import { dataPaths, readJson, REPO } from "./lib/textbook-v2.mjs";
 import { FIXTURE_V1TERMS, fixture, run, tempRoot, UNIT } from "./lib/textbook-v2-testkit.mjs";
 
 test("prep is deterministic: two runs write identical bytes", () => {
@@ -33,9 +33,13 @@ test("manifest carries the pre-rewrite glosses, headwords, questions, rules and 
   assert.deepEqual(m.terms, fixture().terms.map((t) => t.term));
   assert.equal(m.v1.schema_version, "stage4-unit-v1-trilingual");
   assert.match(m.topic.objective_jp, /プロジェクトマネジメント/);
-  assert.match(m.d195, /^# D-195/);
+  assert.match(m.d195_lines.join("\n"), /^# D-195/);
+  assert.equal(`${m.d195_lines.join("\n")}`, readFileSync(path.join(REPO, "docs/decisions/D-195-textbook-writing-and-figure-rules.md"), "utf-8"));
   assert.deepEqual(Object.keys(m.figures.kinds).sort(), ["compare", "flow", "network", "svg", "table", "tree"]);
-  assert.match(m.figures.types_ts, /export type FigSpec/);
+  assert.match(m.figures.types_ts_lines.join("\n"), /export type FigSpec/);
+  // S135 M2: long texts are line arrays, so no line of the pretty-printed manifest is long (Read truncates)
+  const longest = Math.max(...readFileSync(dataPaths(root).manifest(UNIT), "utf-8").split("\n").map((l) => l.length));
+  assert.ok(longest < 1000, `longest manifest line ${longest}`);
   assert.equal(m.output_schema.properties.stage.const, "jp");
   // every per-term question is a same-topic question listing the term; ids sorted
   const ids = Object.keys(m.questions);

@@ -1,7 +1,7 @@
 export const meta = {
   name: 'textbook-v2',
   description: 'Stage 7 Phase 3 教科書 v2 生成 (D-196 §0-13): JP 執筆 → JP 審査 (≤2 輪) → zh/en 意訳・現地化 → 訳審査 (≤2 輪)。各 agent は part file を書き、計数だけを返す',
-  whenToUse: 'scripts/textbook-v2-prep.mjs --unit <id> の後。args = {unit: "<unit_id>"} (または {units: [...]})。終了後 textbook-v2-merge.mjs --unit <id> --journal <journal.jsonl>',
+  whenToUse: 'scripts/textbook-v2-prep.mjs --unit <id> の後。args = {unit: "<unit_id>", run_tag: "<新しい tag>"} (または units: [...])。終了後 textbook-v2-merge.mjs --unit <id> --journal <journal.jsonl>',
   phases: [
     { title: 'Write', detail: 'general-purpose (opus): manifest から JP part を書き、validate --part を 0 issue まで自分で回す', model: 'opus' },
     { title: 'Review', detail: 'oh-my-claudecode:critic (opus): D-195 清單 + 事実 (objective_jp・過去問正解)、REVISE なら執筆者が改稿、最大 2 輪', model: 'opus' },
@@ -17,11 +17,15 @@ export const meta = {
 //   translation review = oh-my-claudecode:code-reviewer.
 // Files (all under data/ip/textbook/.planning/v2/<unit>/, gitignored):
 //   manifest.json                  prep output (input of every agent)
-//   parts/<unit>.jp.r<N>.json      JP part, N = 0 first draft, N = k revision after review k
-//   parts/<unit>.loc.r<N>.json     localised part (= the JP part + _zh / _en, label zh / en; jp_round)
-// Every agent returns only {unit_id, stage, round, part?, counts / verdict, issues…} as StructuredOutput;
-// the runtime logs it to journal.jsonl, which scripts/textbook-v2-merge.mjs reads to pick the final
-// parts (S121: the journal is the record; the part's structure counts are cross-checked against it).
+//   parts/<run_tag>/<unit>.jp.r<N>.json   JP part, N = 0 first draft, N = k revision after review k
+//   parts/<run_tag>/<unit>.loc.r<N>.json  localised part (= the JP part + _zh / _en, label zh / en; jp_round)
+// args.run_tag is required and must be new for every run (the script cannot read a clock): parts are
+// run-scoped, so a rerun never overwrites a part an earlier run's review approved (S135 M1).
+// Every agent returns only {unit_id, stage, round, part?, sha256 / reviewed_sha256, counts / verdict,
+// issues…} as StructuredOutput; the runtime logs it to journal.jsonl, which
+// scripts/textbook-v2-merge.mjs reads to pick the final parts (S121: the journal is the record). The
+// sha256 of each part file comes from `validate --part`; merge recomputes it, so the merged bytes are
+// exactly the reviewed bytes. An agent reporting a part path other than the expected one stops the unit.
 // Reviewers (critic / code-reviewer have no Write tool) return their findings in the StructuredOutput
 // only; the revise prompt passes them on. The workflow's own return is counts + verdicts only.
 // No fs / Date.now / Math.random here (resume): ROOT is hard-coded like quiz-expl-audit.workflow.mjs.
@@ -44,18 +48,20 @@ const COUNTS = {
 }
 const PART_RESULT = (stage) => ({
   type: 'object',
-  required: ['unit_id', 'stage', 'round', 'part', 'counts', 'validate_issues'].concat(stage === 'loc' ? ['jp_round', 'parity_diff'] : []),
+  required: ['unit_id', 'stage', 'round', 'part', 'sha256', 'counts', 'validate_issues'].concat(stage === 'loc' ? ['jp_round', 'jp_sha256', 'parity_diff'] : []),
   additionalProperties: false,
   properties: {
     unit_id: { type: 'string' },
     stage: { type: "string", enum: [stage] },
     round: { type: 'integer', minimum: 0 },
     part: { type: 'string', description: '書いた part file の絶対パス' },
+    sha256: { type: 'string', description: '最後の validate --part が出力した `sha256 <hex>` 行の hex (最後に Write した後の値)' },
     counts: { ...COUNTS, description: 'validate --part が最後に出力した `counts {...}` 行の JSON をそのまま' },
     validate_issues: { type: 'integer', minimum: 0, description: '最後の validate --part の issue 数 (0 が目標)' },
     ...(stage === 'loc'
       ? {
           jp_round: { type: 'integer', minimum: 0 },
+          jp_sha256: { type: 'string', description: 'validate --part … --jp が出力した `jp_sha256 <hex>` 行の hex' },
           parity_diff: { type: 'integer', minimum: 0, description: '最後の parity --part の差分箇所数' },
         }
       : {}),
@@ -63,13 +69,14 @@ const PART_RESULT = (stage) => ({
 })
 const REVIEW_RESULT = (stage) => ({
   type: 'object',
-  required: ['unit_id', 'stage', 'round', 'reviewed_round', 'verdict', 'issues'],
+  required: ['unit_id', 'stage', 'round', 'reviewed_round', 'reviewed_sha256', 'verdict', 'issues'],
   additionalProperties: false,
   properties: {
     unit_id: { type: 'string' },
     stage: { type: "string", enum: [stage] },
     round: { type: 'integer', minimum: 1, description: '審査の回 (1 or 2)' },
     reviewed_round: { type: 'integer', minimum: 0, description: '審査した part の round' },
+    reviewed_sha256: { type: 'string', description: '審査に使った validate --part の `sha256 <hex>` 行の hex (= 審査した part のバイト列)' },
     verdict: { type: 'string', enum: ['PASS', 'REVISE'], description: 'PASS = high / medium の issue が 0' },
     issues: {
       type: 'array',
@@ -91,11 +98,12 @@ const REVIEW_RESULT = (stage) => ({
 
 const dirOf = (unit) => `${ROOT}/data/ip/textbook/.planning/v2/${unit}`
 const manifestOf = (unit) => `${dirOf(unit)}/manifest.json`
-const partOf = (unit, stage, round) => `${dirOf(unit)}/parts/${unit}.${stage}.r${round}.json`
+const partOf = (unit, stage, round) => `${dirOf(unit)}/parts/${RUN_TAG}/${unit}.${stage}.r${round}.json`
 const validateCmd = (part, jp) => `node ${ROOT}/scripts/textbook-v2-validate.mjs --part ${part}${jp ? ` --jp ${jp}` : ''}`
 const parityCmd = (part) => `node ${ROOT}/scripts/textbook-v2-parity.mjs --part ${part}`
 
-const READ_MANIFEST = (unit) => `\`${manifestOf(unit)}\` を**全部** Read する (約 3,500 行: offset で分けて最後まで)。中身: d195 (D-195 全文 = 文体・構成・図の規則)、topic.objective_jp (シラバス)、terms (見出し語、順序固定)、v1 (現行版)、questions / term_questions (関連過去問: 題文・正解・解説要約・中問組 chumon_group)、figures (図種 kinds・types_ts = v2 の型定義・svg_available)、rules (validateV2 の上限と禁止句)、output_schema (JP part の JSON Schema)。`
+const READ_MANIFEST = (unit) => `\`${manifestOf(unit)}\` を**全部** Read する (数千行: offset で分けて最後まで)。中身: d195_lines (D-195 全文)、topic.objective_jp (シラバス)、terms (見出し語、順序固定)、v1 (現行版)、questions / term_questions (関連過去問: 題文・正解・解説要約 [長文は行の配列]・中問組 chumon_group)、figures (図種 kinds・types_ts_lines = v2 の型定義・svg_available)、rules (validateV2 の上限と禁止句)、output_schema (JP part の JSON Schema)。加えて原本を直接 Read する: \`${ROOT}/docs/decisions/D-195-textbook-writing-and-figure-rules.md\`、\`${ROOT}/apps/web/src/lib/textbook/types.ts\`、\`${ROOT}/apps/web/src/lib/textbook/figureSpec.ts\`。`
+const NO_COPY = '**過去問の題文・選択肢・解説を文として写さない** (事実と数値だけを使い、文は自分で書く)。validate が「正規化 (標記・空白・句読点・記号を除去) した 20 字以上の一致」を `copy` issue として検出する。'
 
 function writerPrompt(unit, round, prev, review) {
   const part = partOf(unit, 'jp', round)
@@ -111,16 +119,17 @@ ${revise}
 - \`unit_id\`="${unit}", \`stage\`="jp", \`round\`=${round}。
 - terms: manifest.terms と**同じ見出し語・同じ順** (増減・改名禁止)。各用語: one_jp (一句話 1 文、キーワードは **語**) → fig (図: D-195 §2 で選ぶ。不要なら null) → detail_jp (展開 2〜3 文) → analogy_jp (比喩、平文。無理なら "") / hook_jp (記法: 定義の言い換え禁止、語源・字形・対比など別の手がかり。無ければ省略) → points (考点: kind "exam" は根拠の過去問 id を qids に必ず入れる、"mix" は易混) → quiz (この用語の過去問 id: manifest.term_questions[用語] から 1〜3 題、中問組員 chumon_group≠null は避ける)。
 - goals_jp (学習目標 3 前後)、overview_cols_jp + overview_rows (用語総表: 用語ごと 1 行、one_line_jp + 列ごとのセル extra_jp)、pairs (易混組: a が b より用語順で前、決め手の行に key:true)、key_points_jp (要点 3〜5)、challenge_questions (確認題: 本 topic の過去問 id、中問組員を除いて 3〜5 題。v1.challenge_questions を基に見直してよい)。
-- 図: kind / mode は figures.kinds の組合せだけ (svg / table / compare / flow / tree / network)。型は figures.types_ts の FigSpec。ラベルは \`{"jp": "…"}\` だけ、分段の caption は \`caption_jp\` だけ書く (zh / en は後工程)。flow / tree の段階図は ${'`'}mode:"steps"${'`'} で 3〜4 step。network (アローダイアグラム等) は mode "widget"、工期は 0〜99 の整数、始点・終点は 1 つずつ、並行作業はダミーで。svg を使うなら figures.svg_available のパスだけ。
+- 図: kind / mode は figures.kinds の組合せだけ (svg / table / compare / flow / tree / network)。型は figures.types_ts_lines (原本 apps/web/src/lib/textbook/types.ts) の FigSpec。ラベルは \`{"jp": "…"}\` だけ、分段の caption は \`caption_jp\` だけ書く (zh / en は後工程)。flow / tree の段階図は ${'`'}mode:"steps"${'`'} で 3〜4 step。network (アローダイアグラム等) は mode "widget"、工期は 0〜99 の整数、始点・終点は 1 つずつ、並行作業はダミーで。svg を使うなら figures.svg_available のパスだけ。
 - 行内標記は **語** と [[jp:語]] の 2 種のみ (analogy・総表 extra・図ラベル・caption は平文)。
 - 事実: topic.objective_jp と関連過去問の正解・解説要約に反することを書かない。数値・用語の定義は過去問の解説と照合する。捏造しない。
+- ${NO_COPY}
 - D-195 §9 禁止: 定型の締め句 (「〜と理解しておきましょう」「試験では〜が問われます」の常用 → 試験の話は考点枠でだけ)、同義の言い換えの反復、1 文に見出し語を 3 つ以上「・、」で羅列 (分類の数を明示する 1 文「〜には A・B・C・D の 4 つがある」だけ例外 = D-197)、根拠のない誇張語。
 
 ## 手順
 1. manifest を全部読む。関連過去問で、各用語が実際にどう問われるかを把握する。
 2. JP part を \`${part}\` に Write (親ディレクトリが無ければ作る)。
-3. \`${validateCmd(part)}\` を実行。issue が出たら part を直して再実行、**0 issue になるまで**繰り返す (最後の出力の \`counts {...}\` 行を控える)。0 にできない issue があれば残数をそのまま返す。
-4. StructuredOutput で {unit_id, stage:"jp", round:${round}, part:"${part}", counts: (最後の counts 行の JSON), validate_issues: (最後の issue 数)} を返す。本文は返さない。`
+3. \`${validateCmd(part)}\` を実行。issue が出たら part を直して再実行、**0 issue になるまで**繰り返す (最後の出力の \`counts {...}\` 行と \`sha256 <hex>\` 行を控える。part を書き換えたら必ず validate を再実行し、最後の値を使う)。0 にできない issue があれば残数をそのまま返す。
+4. StructuredOutput で {unit_id, stage:"jp", round:${round}, part:"${part}", sha256: (最後の sha256 行の hex), counts: (最後の counts 行の JSON), validate_issues: (最後の issue 数)} を返す。本文は返さない。`
 }
 
 function reviewPrompt(unit, round, part, partRound) {
@@ -129,17 +138,18 @@ function reviewPrompt(unit, round, part, partRound) {
 ## 入力
 - ${READ_MANIFEST(unit)}
 - 審査対象: \`${part}\` (JP part, round ${partRound})。
-- 機械検査: \`${validateCmd(part)}\` を実行し結果も見る (0 issue でも内容の審査は別)。
+- 機械検査: \`${validateCmd(part)}\` を実行し結果も見る (0 issue でも内容の審査は別)。出力の \`sha256 <hex>\` が審査したバイト列の印 (reviewed_sha256)。
 
 ## 審査観点
 1. **事実**: 定義・説明・考点・図 (数値、工期、因果、分類) が topic.objective_jp と関連過去問の正解・解説要約に照らして正しいか。exam 考点の qids の題が本当にその点を問うているか。quiz / challenge_questions の題がその用語・単元に合っているか。
 2. **D-195 清單**: §1 一句話 1 文 + 太字キーワード / 展開 2〜3 文 / §2 図の選び方 (過程→段階図、量・計算→操作部品、その他→静的、別名だけの用語は図なし、飾りの図は不可) / §3 学習目標 + 総表 / §4 易混対比は 2 つ目の直後 / §5 強調 4 種 / §6 比喩・記法が定義の言い換えでない / §7 要点 3〜5 / §9 禁止事項 (定型の締め句、言い換えの反復、羅列、誇張)。
 3. **初学者に分かるか**: 結論先行、用語の前提が先に説明されているか、図と文が噛み合うか。
+4. **転載していないか**: 過去問の題文・選択肢・解説を言い回しごと写した文 (20 字未満の一致でも、語順と言い回しがほぼ同じなら) は high。事実と数値の利用は可。${NO_COPY}
 
 ## 判定
 - verdict: high / medium の issue が 0 なら PASS、1 つでもあれば REVISE。
 - issues: 1 件ずつ severity・where (JSON 位置)・rule (根拠)・detail_jp・fix_jp (具体的な直し方)。
-- StructuredOutput で {unit_id:"${unit}", stage:"jp-review", round:${round}, reviewed_round:${partRound}, verdict, issues} を返す。ファイルは書かない。`
+- StructuredOutput で {unit_id:"${unit}", stage:"jp-review", round:${round}, reviewed_round:${partRound}, reviewed_sha256: (validate の sha256 行の hex), verdict, issues} を返す。ファイルは書かない。`
 }
 
 function localizePrompt(unit, round, jpPart, jpRound, prev, review) {
@@ -158,11 +168,12 @@ ${revise}
 - 日本語・id・kind・mode・qids・quiz・key・数値・配列の要素数と順序は**1 文字も変えない** (merge が「訳 part から zh / en を除くと JP part と一致」を検査する)。
 - 行内標記: 原文で **語** の箇所は訳文でも **訳語**。zh / en 本文中で試験の日本語表記を示すところは [[jp:日本語]] を併記 (D-195 §5 日本語原語の明示: 見出し語や試験用語の初出など、多用しない)。analogy・総表 extra・図ラベル・caption は平文。
 - 文数: detail は各言語でも 2〜3 文 (en は ". " で区切って数えられる)。D-195 §9 の禁止 (定型の締め句、"make sure to understand"、"非常重要"、羅列、誇張) は zh / en にも適用。
+- 訳文も過去問 (questions の題文・選択肢・解説、translations の既存訳) の文を写さない。事実と数値だけを使い、文は自分で書く。
 
 ## 手順
 1. 訳 part を \`${part}\` に Write。
-2. \`${validateCmd(part, jpPart)}\` と \`${parityCmd(part)}\` を実行し、**両方 0** になるまで直して再実行 (validate の最後の \`counts {...}\` 行を控える)。
-3. StructuredOutput で {unit_id, stage:"loc", round:${round}, jp_round:${jpRound}, part:"${part}", counts, validate_issues, parity_diff} を返す。本文は返さない。`
+2. \`${validateCmd(part, jpPart)}\` と \`${parityCmd(part)}\` を実行し、**両方 0** になるまで直して再実行 (validate の最後の \`counts {...}\`・\`sha256 <hex>\`・\`jp_sha256 <hex>\` 行を控える。part を書き換えたら必ず再実行し最後の値を使う)。原文 JP part は**書き換えない**。
+3. StructuredOutput で {unit_id, stage:"loc", round:${round}, jp_round:${jpRound}, part:"${part}", sha256, jp_sha256, counts, validate_issues, parity_diff} を返す。本文は返さない。`
 }
 
 function trReviewPrompt(unit, round, part, partRound, jpPart) {
@@ -171,7 +182,7 @@ function trReviewPrompt(unit, round, part, partRound, jpPart) {
 ## 入力
 - ${READ_MANIFEST(unit)}
 - 原文 JP part: \`${jpPart}\` / 訳 part: \`${part}\` (round ${partRound})。
-- 機械検査: \`${validateCmd(part, jpPart)}\` と \`${parityCmd(part)}\` を実行し結果も見る。
+- 機械検査: \`${validateCmd(part, jpPart)}\` と \`${parityCmd(part)}\` を実行し結果も見る。出力の \`sha256 <hex>\` が審査したバイト列の印 (reviewed_sha256)。
 
 ## 審査観点
 1. **意味の一致**: 各 zh / en が jp と同じ事実・同じ主張か (欠落・付加・数値ずれ・因果の逆転・考点の意味変化)。図ラベル・caption・総表・易混表も含む。
@@ -182,19 +193,34 @@ function trReviewPrompt(unit, round, part, partRound, jpPart) {
 ## 判定
 - verdict: high / medium の issue が 0 なら PASS、1 つでもあれば REVISE。
 - issues: severity・where (例 terms[1].detail_en)・rule・detail_jp・fix_jp。
-- StructuredOutput で {unit_id:"${unit}", stage:"loc-review", round:${round}, reviewed_round:${partRound}, verdict, issues} を返す。ファイルは書かない。`
+- StructuredOutput で {unit_id:"${unit}", stage:"loc-review", round:${round}, reviewed_round:${partRound}, reviewed_sha256: (validate の sha256 行の hex), verdict, issues} を返す。ファイルは書かない。`
 }
 
 const sev = (issues) => (issues || []).reduce((m, i) => { m[i.severity] = (m[i.severity] || 0) + 1; return m }, {})
 
 /** One unit through write → review (≤ maxRounds) → localize → translation review (≤ maxRounds). */
 async function runUnit(unit, maxRounds) {
-  const out = { unit, status: 'running', jp_rounds: 0, jp_verdict: null, jp_issues: {}, loc_rounds: 0, loc_verdict: null, loc_issues: {}, parts: [], validate_issues: null, parity_diff: null }
+  const out = { unit, run_tag: RUN_TAG, status: 'running', jp_rounds: 0, jp_verdict: null, jp_issues: {}, jp_validate_issues: null, loc_rounds: 0, loc_verdict: null, loc_issues: {}, parts: [], validate_issues: null, parity_diff: null }
+  /** A writing agent; null + out.status set when it died or wrote somewhere else than told (S135 L4). */
+  const write = async (prompt, label, phase, stage, round, agentType) => {
+    const res = await agent(prompt, { label, phase, schema: PART_RESULT(stage), model: MODEL, agentType })
+    if (!res) {
+      out.status = `${stage}-write-failed`
+      return null
+    }
+    const want = partOf(unit, stage, round)
+    if (res.part !== want) {
+      log(`${unit}: ${label} reported part ${res.part}, expected ${want} — stop`)
+      out.status = 'part-path-mismatch'
+      return null
+    }
+    out.parts.push(res.part)
+    return res
+  }
 
   // ---- JP: write, review, revise ----
-  let jp = await agent(writerPrompt(unit, 0, null, null), { label: `write:${unit}#0`, phase: 'Write', schema: PART_RESULT('jp'), model: MODEL, agentType: AGENT.write })
-  if (!jp) return { ...out, status: 'jp-write-failed' }
-  out.parts.push(jp.part)
+  let jp = await write(writerPrompt(unit, 0, null, null), `write:${unit}#0`, 'Write', 'jp', 0, AGENT.write)
+  if (!jp) return out
   out.jp_rounds = 1
   let review = null
   for (let r = 1; r <= maxRounds; r++) {
@@ -204,21 +230,20 @@ async function runUnit(unit, maxRounds) {
     out.jp_issues = sev(review.issues)
     if (review.verdict === 'PASS' || r === maxRounds) break
     log(`${unit}: JP review #${r} REVISE ${JSON.stringify(out.jp_issues)} → rewrite #${r}`)
-    const next = await agent(writerPrompt(unit, r, jp.part, review), { label: `rewrite:${unit}#${r}`, phase: 'Write', schema: PART_RESULT('jp'), model: MODEL, agentType: AGENT.write })
-    if (!next) return { ...out, status: 'jp-write-failed' }
+    const next = await write(writerPrompt(unit, r, jp.part, review), `rewrite:${unit}#${r}`, 'Write', 'jp', r, AGENT.write)
+    if (!next) return out
     jp = next
-    out.parts.push(jp.part)
     out.jp_rounds += 1
   }
+  out.jp_validate_issues = jp.validate_issues
   if (review.verdict !== 'PASS') {
     log(`${unit}: JP review still REVISE after ${maxRounds} round(s) — stop (Rule B archive)`)
     return { ...out, status: 'jp-rejected' }
   }
 
   // ---- zh / en: localize, review, revise ----
-  let loc = await agent(localizePrompt(unit, 0, jp.part, jp.round, null, null), { label: `localize:${unit}#0`, phase: 'Localize', schema: PART_RESULT('loc'), model: MODEL, agentType: AGENT.localize })
-  if (!loc) return { ...out, status: 'loc-write-failed' }
-  out.parts.push(loc.part)
+  let loc = await write(localizePrompt(unit, 0, jp.part, jp.round, null, null), `localize:${unit}#0`, 'Localize', 'loc', 0, AGENT.localize)
+  if (!loc) return out
   out.loc_rounds = 1
   let tr = null
   for (let r = 1; r <= maxRounds; r++) {
@@ -228,28 +253,32 @@ async function runUnit(unit, maxRounds) {
     out.loc_issues = sev(tr.issues)
     if (tr.verdict === 'PASS' || r === maxRounds) break
     log(`${unit}: translation review #${r} REVISE ${JSON.stringify(out.loc_issues)} → re-localize #${r}`)
-    const next = await agent(localizePrompt(unit, r, jp.part, jp.round, loc.part, tr), { label: `relocalize:${unit}#${r}`, phase: 'Localize', schema: PART_RESULT('loc'), model: MODEL, agentType: AGENT.localize })
-    if (!next) return { ...out, status: 'loc-write-failed' }
+    const next = await write(localizePrompt(unit, r, jp.part, jp.round, loc.part, tr), `relocalize:${unit}#${r}`, 'Localize', 'loc', r, AGENT.localize)
+    if (!next) return out
     loc = next
-    out.parts.push(loc.part)
     out.loc_rounds += 1
   }
   out.validate_issues = loc.validate_issues
   out.parity_diff = loc.parity_diff
-  out.status = tr.verdict === 'PASS' ? 'ready-to-merge' : 'loc-rejected'
+  // S135 L1: a PASS with machine issues left is not mergeable (merge --write would refuse anyway)
+  const clean = jp.validate_issues === 0 && loc.validate_issues === 0 && loc.parity_diff === 0
+  out.status = tr.verdict !== 'PASS' ? 'loc-rejected' : clean ? 'ready-to-merge' : 'needs-fix'
   return out
 }
 
 const parsed = typeof args === 'string' ? JSON.parse(args) : args
 const units = Array.isArray(parsed?.units) ? parsed.units : parsed?.unit ? [parsed.unit] : []
-if (!units.length) throw new Error('need args {unit: "<unit_id>"} or {units: [...]}')
+if (!units.length) throw new Error('need args {unit: "<unit_id>", run_tag: "<tag>"} or {units: [...], run_tag}')
 if (units.some((u) => typeof u !== 'string' || !/^[a-z]+-\d{2}-\d{2}-u\d{2}$/.test(u))) throw new Error('unit ids look like "management-10-27-u02"')
+// required: no clock in a workflow script, and a default tag would let a rerun overwrite reviewed parts
+const RUN_TAG = parsed?.run_tag
+if (typeof RUN_TAG !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(RUN_TAG)) throw new Error('need args.run_tag (new per run, [A-Za-z0-9_-]{1,40}, e.g. "20261027a")')
 const maxRounds = Math.min(2, Math.max(1, Number(parsed?.max_rounds ?? 2)))
 
 const results = await pipeline(units, (unit) => runUnit(unit, maxRounds))
 const summary = results.map((r, i) => r ?? { unit: units[i], status: 'crashed' })
 for (const s of summary) {
-  log(`${s.unit}: ${s.status} — JP ${s.jp_rounds} draft(s) ${s.jp_verdict ?? '-'} ${JSON.stringify(s.jp_issues ?? {})}, loc ${s.loc_rounds ?? 0} ${s.loc_verdict ?? '-'} ${JSON.stringify(s.loc_issues ?? {})}`)
+  log(`${s.unit}: ${s.status} — JP ${s.jp_rounds} draft(s) ${s.jp_verdict ?? '-'} ${JSON.stringify(s.jp_issues ?? {})}, loc ${s.loc_rounds ?? 0} ${s.loc_verdict ?? '-'} ${JSON.stringify(s.loc_issues ?? {})}, validate jp ${s.jp_validate_issues ?? '-'} / loc ${s.validate_issues ?? '-'}, parity ${s.parity_diff ?? '-'}`)
   if (s.status === 'ready-to-merge') log(`next: node scripts/textbook-v2-merge.mjs --unit ${s.unit} --journal <this run's journal.jsonl>`)
 }
 return { units: summary }

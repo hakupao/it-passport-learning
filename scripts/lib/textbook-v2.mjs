@@ -11,6 +11,7 @@
 //   - counts per-language structure for the parity script,
 //   - reads the workflow journal.jsonl (S121: the journal is the record of what each agent returned).
 
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -22,9 +23,13 @@ export const MANIFEST_SCHEMA = "textbook-v2-manifest-1";
 export const UNIT_ID_RE = /^[a-z]+-\d{2}-\d{2}-u\d{2}$/;
 
 export const readJson = (f) => JSON.parse(readFileSync(f, "utf-8"));
+/** sha256 (hex) of a file's bytes: the identity of a part across journal rows, reviews and merge. */
+export const sha256File = (f) => createHash("sha256").update(readFileSync(f)).digest("hex");
+/** Workflow run tag (parts/<tag>/…): a rerun with a new tag never overwrites a reviewed part. */
+export const RUN_TAG_RE = /^[A-Za-z0-9_-]{1,40}$/;
 export const jsonText = (o) => `${JSON.stringify(o, null, 2)}\n`;
 
-/** `--name value` / `--flag` parser; unknown flags throw. spec = { name: "string" | "bool" }. */
+/** `--name value` / `--flag` parser; unknown flags throw. spec = { name: "string" | "bool" | "list" } (list = repeatable). */
 export function parseArgs(argv, spec) {
   const out = {};
   for (let i = 0; i < argv.length; i++) {
@@ -36,7 +41,8 @@ export function parseArgs(argv, spec) {
     else {
       const v = argv[++i];
       if (v === undefined || v.startsWith("--")) throw new Error(`${a} needs a value`);
-      out[k] = v;
+      if (spec[k] === "list") (out[k] ??= []).push(v);
+      else out[k] = v;
     }
   }
   return out;
@@ -57,7 +63,7 @@ export function dataPaths(dataRoot = path.join(REPO, "data/ip")) {
     translations: (exam) => path.join(dataRoot, "quiz/translations", `${exam}.json`),
     planning,
     manifest: (unit) => path.join(planning(unit), "manifest.json"),
-    parts: (unit) => path.join(planning(unit), "parts"),
+    parts: (unit, tag) => path.join(planning(unit), "parts", tag),
     merged: (unit) => path.join(planning(unit), "merged.json"),
     v1Original: (unit) => path.join(planning(unit), "v1-original.json"),
   };
@@ -155,15 +161,105 @@ export function locVsJp(loc, jp) {
 // ---- assembly (merge + validate --part) ------------------------------------------
 
 /**
- * est_minutes (§0-13): reading time of the JP 一句話 + 展開 at a study pace of 80 字/分
- * (markers stripped, whitespace ignored), rounded up, at least 3:
- *   est_minutes = max(3, ceil(Σ_terms len(strip(one_jp) + strip(detail_jp)) / 80))
+ * Every stored JP prose string of a part / unit, with its location: goals, 総表 (one_line, extra),
+ * per term one / detail / analogy / hook / 考点, 易混 rows (label / a / b), key points.
+ * (Figure labels / captions are not prose: they are left out.)
+ */
+export function jpProse(p) {
+  const out = [];
+  const add = (field, v) => {
+    if (typeof v === "string" && v !== "") out.push([field, v]);
+  };
+  const list = (field, v) => (Array.isArray(v) ? v.forEach((x, i) => add(`${field}[${i}]`, x)) : undefined);
+  list("goals_jp", p.goals_jp);
+  (Array.isArray(p.overview_rows) ? p.overview_rows : []).forEach((r, i) => {
+    add(`overview_rows[${i}].one_line_jp`, r?.one_line_jp);
+    list(`overview_rows[${i}].extra_jp`, r?.extra_jp);
+  });
+  (Array.isArray(p.terms) ? p.terms : []).forEach((t, i) => {
+    const at = `terms[${i}](${t?.term})`;
+    for (const b of ["one", "detail", "analogy", "hook"]) add(`${at}.${b}_jp`, t?.[`${b}_jp`]);
+    (Array.isArray(t?.points) ? t.points : []).forEach((x, k) => add(`${at}.points[${k}].text_jp`, x?.text_jp));
+  });
+  (Array.isArray(p.pairs) ? p.pairs : []).forEach((pr, i) =>
+    (Array.isArray(pr?.rows) ? pr.rows : []).forEach((r, k) => {
+      for (const b of ["label", "a", "b"]) add(`pairs[${i}].rows[${k}].${b}_jp`, r?.[`${b}_jp`]);
+    }),
+  );
+  list("key_points_jp", p.key_points_jp);
+  return out;
+}
+
+/**
+ * est_minutes (§0-13, coordinator decision S135 M4): all stored JP prose except the 総表 (one + detail
+ * + analogy + hook + 考点 + 易混 rows + key points + goals), markers and whitespace removed, at the
+ * v1 measured pace of 80 字/分 (v1 p50 ≈ 85), rounded up, at least 3:
+ *   est_minutes = max(3, ceil(n / 80))
  */
 export const EST_CHARS_PER_MIN = 80;
 export const EST_MIN = 3;
-export function estMinutes(terms, stripInline) {
-  const n = terms.reduce((a, t) => a + `${stripInline(t.one_jp ?? "")}${stripInline(t.detail_jp ?? "")}`.replace(/\s/g, "").length, 0);
+export function estMinutes(p, stripInline) {
+  const n = jpProse(p)
+    .filter(([f]) => !f.startsWith("overview_rows"))
+    .reduce((a, [, s]) => a + stripInline(s).replace(/\s/g, "").length, 0);
   return Math.max(EST_MIN, Math.ceil(n / EST_CHARS_PER_MIN));
+}
+
+/**
+ * Copy guard (S135 M3): past-question text must not be reproduced. Normalised = markers, whitespace,
+ * punctuation and symbols removed. Any run of COPY_MIN normalised characters of a stored JP prose
+ * string that also occurs in a manifest question's stem / choices / explanation → one `copy` issue
+ * per prose string (the first hit, with the question id).
+ */
+export const COPY_MIN = 20;
+export const normCopy = (s, stripInline) => stripInline(s).replace(/[\s\p{P}\p{S}]/gu, "");
+/** The manifest question texts (stem / choices / explanation), joined back from their line arrays. */
+export function questionTexts(manifest) {
+  const out = [];
+  for (const [id, q] of Object.entries(manifest.questions ?? {})) {
+    const join = (v) => (Array.isArray(v) ? v.join("") : typeof v === "string" ? v : "");
+    out.push([id, join(q.stem_jp)], [id, join(q.expl_correct_jp)]);
+    for (const c of Object.values(q.choices_jp ?? {})) out.push([id, join(c)]);
+    for (const p of q.expl_points_jp ?? []) out.push([id, join(p)]);
+  }
+  return out;
+}
+export function copyIssues(p, manifest, stripInline, unitId = p.unit_id) {
+  const grams = new Map();
+  for (const [id, text] of questionTexts(manifest)) {
+    const n = normCopy(text, stripInline);
+    for (let i = 0; i + COPY_MIN <= n.length; i++) if (!grams.has(n.slice(i, i + COPY_MIN))) grams.set(n.slice(i, i + COPY_MIN), id);
+  }
+  const out = [];
+  for (const [field, s] of jpProse(p)) {
+    const n = normCopy(s, stripInline);
+    for (let i = 0; i + COPY_MIN <= n.length; i++) {
+      const id = grams.get(n.slice(i, i + COPY_MIN));
+      if (id) {
+        out.push({ unitId, code: "copy", field, message: `${COPY_MIN}+ characters copied from ${id}: 「${n.slice(i, i + COPY_MIN)}…」 — write your own sentence` });
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+/** Long text → lines for the manifest (Read truncates long lines): split at newlines, then after 。 beyond 200 chars. */
+export function toLines(s) {
+  if (typeof s !== "string") return s;
+  const out = [];
+  for (const line of s.split("\n")) {
+    let cur = "";
+    for (const ch of line) {
+      cur += ch;
+      if (cur.length >= 200 && ch === "。") {
+        out.push(cur);
+        cur = "";
+      }
+    }
+    if (cur !== "" || line === "") out.push(cur);
+  }
+  return out;
 }
 
 /** v1 `figure` object for an svg path, from the v1 unit (any term), else a minimal v1-shaped one. */
@@ -187,6 +283,8 @@ export function assemble(part, manifest, { stripInline, introOf, hookLines, V2_S
     for (const base of ["one", "detail", "analogy", "hook"]) {
       for (const l of LANGS) if (t[`${base}_${l}`] !== undefined && t[`${base}_${l}`] !== null) out[`${base}_${l}`] = t[`${base}_${l}`];
     }
+    // analogy_* is shared with the v1 compat field: always plain (markup a writer added is dropped)
+    for (const l of LANGS) if (typeof out[`analogy_${l}`] === "string") out[`analogy_${l}`] = stripInline(out[`analogy_${l}`]);
     out.points = t.points;
     out.fig = t.fig ?? null;
     out.quiz = t.quiz;
@@ -221,7 +319,7 @@ export function assemble(part, manifest, { stripInline, introOf, hookLines, V2_S
   const ov = {};
   for (const l of LANGS) ov[`intro_${l}`] = Array.isArray(part[`goals_${l}`]) ? introOf(part[`goals_${l}`], l) : "";
   ov.freq_badge = v1.overview?.freq_badge;
-  ov.est_minutes = estMinutes(terms, stripInline);
+  ov.est_minutes = estMinutes(part, stripInline);
   u.overview = ov;
   const sum = {};
   for (const l of LANGS) sum[`key_points_${l}`] = Array.isArray(part[`key_points_${l}`]) ? part[`key_points_${l}`].map(stripInline) : [];

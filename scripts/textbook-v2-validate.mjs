@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 // Stage 7 Phase 3 Task 9 (D-196 §0-13) — run validateV2 (apps/web/src/lib/textbook/validateV2.ts, the
 // same module the web tests use) on a v2 unit or on a writer part, with the prep manifest's
-// v1Terms + chumon members, plus the one check validateV2 cannot do without fs (svg files exist).
+// v1Terms + chumon members, plus the checks validateV2 cannot do without fs / the manifest:
+// svg files exist (code svg-file), and the copy guard (code copy, lib copyIssues: no run of 20+
+// normalised characters of stored JP prose may occur in a manifest question's stem / choices /
+// explanation — use the facts, write your own sentences).
 //
 // Run (exactly one of --unit / --file / --part):
 //   node scripts/textbook-v2-validate.mjs --unit <id>          data/ip/textbook/units/<id>.json
@@ -15,7 +18,8 @@
 //          part is the JP part plus zh / en only (structure, ids, Japanese untouched).
 //   [--manifest <manifest.json>]  default <data-root>/textbook/.planning/v2/<unit>/manifest.json
 //   [--data-root <dir>]           default <repo>/data/ip
-//   With --part, a `counts {...}` line (lib partCounts) is printed first: the workflow agents return it.
+//   With --part, `counts {...}` (lib partCounts) and `sha256 <hex>` (the part file) are printed first,
+//   with --jp also `jp_sha256 <hex>`: the workflow agents return them, merge recomputes and compares.
 // Exit: 0 = no issues, 1 = issues (printed one per line as `code  field  message`), 2 = usage / input error.
 
 import { existsSync } from "node:fs";
@@ -25,22 +29,27 @@ import { pathToFileURL } from "node:url";
 import {
   assemble,
   contextFor,
+  copyIssues,
   dataPaths,
   jpOnlyIssues,
   loadKit,
-  loadV2,
   locVsJp,
   mirrorJp,
   parseArgs,
   partCounts,
   readJson,
+  sha256File,
   svgProblems,
 } from "./lib/textbook-v2.mjs";
 
-/** Issues of a full v2 unit (validateV2 + svg files). */
+/** Issues of a full v2 unit (validateV2 + svg files + copy guard). */
 export async function validateUnit(unit, manifest, paths) {
-  const v2 = await loadV2();
-  return [...v2.validateV2(unit, contextFor(v2, paths, manifest)), ...svgProblems(unit, paths.tb)];
+  const kit = await loadKit();
+  return [
+    ...kit.v2.validateV2(unit, contextFor(kit.v2, paths, manifest)),
+    ...svgProblems(unit, paths.tb),
+    ...copyIssues(unit, manifest, kit.stripInline, unit.unit_id),
+  ];
 }
 
 /** The unit a part assembles to (mirrored when JP-only). */
@@ -93,7 +102,11 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     : await validateUnit(doc, manifest, paths);
   const what = opt.part ? `part ${doc.stage}#${doc.round}` : "unit";
   // the workflow agents copy this line into their StructuredOutput; merge cross-checks it
-  if (opt.part) console.log(`counts ${JSON.stringify(partCounts(doc))}`);
+  if (opt.part) {
+    console.log(`counts ${JSON.stringify(partCounts(doc))}`);
+    console.log(`sha256 ${sha256File(file)}`);
+    if (opt.jp) console.log(`jp_sha256 ${sha256File(path.resolve(opt.jp))}`);
+  }
   if (issues.length === 0) {
     console.log(`✓ ${unitId} ${what}: 0 issues (${path.relative(process.cwd(), file)})`);
     process.exit(0);

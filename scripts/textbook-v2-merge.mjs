@@ -3,15 +3,20 @@
 // final parts, write every v1-compat field deterministically, validate, and (with --write) replace
 // data/ip/textbook/units/<id>.json.
 //
-// Run: node scripts/textbook-v2-merge.mjs --unit <id> [--journal <journal.jsonl>] [--write] [--data-root <dir>]
+// Run: node scripts/textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <more.jsonl> …] | --run-tag <tag>)
+//        [--write] [--data-root <dir>]
+//   Several --journal (a resumed / continued run): rows are read in order, one per unit / stage / round,
+//   a later row replacing an earlier one.
 //
 // Which parts are final — the journal is the record (S121): textbook-v2.workflow.mjs agents return
-// {unit_id, stage, round, part, counts, …} as StructuredOutput, the runtime logs it to journal.jsonl.
-//   - final localised part = the "loc" result with the highest round; its JP part = the "jp" result
-//     whose round = loc.jp_round. Each part file is checked against its journal row (unit, stage,
-//     round, structure counts: a part rewritten after the agent returned is refused).
-//   - approved = a "jp-review" PASS for that JP round and a "loc-review" PASS for that loc round.
-//   Without --journal (dry-run only) the newest parts/<unit>.{jp,loc}.r<N>.json are used, unapproved.
+// {unit_id, stage, round, part, sha256, counts, …} as StructuredOutput, the runtime logs it to journal.jsonl.
+//   - final localised part = the "loc" row with the highest round; its JP part = the "jp" row whose
+//     sha256 = loc.jp_sha256 (the bytes the localiser worked from). Each part file must hash to its
+//     row's sha256 and match its unit / stage / round / structure counts — a part rewritten after
+//     the agent returned, or a journal from another run, is refused (S135 M1).
+//   - approved = a "jp-review" PASS whose reviewed_sha256 = that JP part's sha256 and a "loc-review"
+//     PASS whose reviewed_sha256 = the loc part's sha256 (a review approves exactly what it hashed).
+//   Without --journal (dry-run only) the newest parts/<run-tag>/<unit>.{jp,loc}.r<N>.json are used, unapproved.
 // The localised part must be the JP part plus zh / en only (lib locVsJp: structure, ids, Japanese).
 //
 // Assembly (lib assemble, the same as validate --part): new fields from the localised part; from the
@@ -21,11 +26,12 @@
 // explanation_* = stripInline(detail_*), memory_hook_* = stripInline(hook_*) or "", inline_quiz =
 // quiz, inline_fallback = false, figure = null unless fig.kind = svg, overview.intro_* =
 // introOf(goals_*), summary.key_points_* = stripInline(key_points_*), summary.memory_hooks_* =
-// hookLines(), lang_status = generated ×3, overview.est_minutes = max(3, ceil(JP chars of
-// 一句話 + 展開 / 80)) (lib estMinutes).
+// hookLines(), lang_status = generated ×3, analogy_* stripped, overview.est_minutes = max(3,
+// ceil(n / 80)), n = JP characters of one + detail + analogy + hook + 考点 + 易混 rows + key points +
+// goals without markers / whitespace (lib estMinutes, S135 M4).
 //
 // Output: always <planning>/<id>/merged.json (dry-run). --write additionally, only when the journal
-// is given, both reviews PASS, validate (validateV2 + svg files) has 0 issues and parity 0 diff:
+// is given, both reviews PASS, validate (validateV2 + svg files + copy guard) has 0 issues and parity 0 diff:
 //   1. archive the v1 original to <planning>/<id>/v1-original.json (never overwritten; must equal
 //      manifest.v1; a units file that is v1 but ≠ manifest.v1 means a stale manifest → refuse),
 //   2. write data/ip/textbook/units/<id>.json.
@@ -36,24 +42,34 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { assemble, canon, dataPaths, jsonText, loadKit, locVsJp, parityDiff, parseArgs, partCounts, readJournal, readJson, V1_SCHEMA } from "./lib/textbook-v2.mjs";
+import { assemble, canon, dataPaths, jsonText, loadKit, locVsJp, parityDiff, parseArgs, partCounts, readJournal, readJson, RUN_TAG_RE, sha256File, V1_SCHEMA } from "./lib/textbook-v2.mjs";
 import { validateUnit } from "./textbook-v2-validate.mjs";
 
 class Refuse extends Error {}
 
-/** Final parts + approvals for `unit` from journal results (or the parts dir when results is null). */
-export function pickFinal(unit, results, partsDir) {
-  if (results) {
-    const mine = results.filter((r) => r && r.unit_id === unit);
+/** Journal rows of all runs (journals in order), one per stage / round: a later row replaces an earlier one (resume). */
+export function journalRows(files) {
+  const byKey = new Map();
+  for (const f of files) for (const r of readJournal(f).results) if (r && typeof r.stage === "string") byKey.set(`${r.unit_id}|${r.stage}|${r.round}`, r);
+  return [...byKey.values()];
+}
+
+/** Final parts + approvals for `unit` from journal rows (or the run's parts dir when rows is null). */
+export function pickFinal(unit, rows, partsDir) {
+  if (rows) {
+    const mine = rows.filter((r) => r.unit_id === unit);
     const last = (stage, pred = () => true) => mine.filter((r) => r.stage === stage && pred(r)).sort((a, b) => a.round - b.round).at(-1) ?? null;
     const loc = last("loc");
     if (!loc) throw new Refuse(`${unit}: no "loc" result in the journal`);
-    const jp = last("jp", (r) => r.round === loc.jp_round);
-    if (!jp) throw new Refuse(`${unit}: loc#${loc.round} was made from jp#${loc.jp_round}, which is not in the journal`);
-    const jpReview = last("jp-review", (r) => r.reviewed_round === jp.round);
-    const locReview = last("loc-review", (r) => r.reviewed_round === loc.round);
+    // the JP part = the one the localiser hashed (validate --part … --jp prints jp_sha256)
+    const jp = last("jp", (r) => typeof r.sha256 === "string" && r.sha256 === loc.jp_sha256);
+    if (!jp) throw new Refuse(`${unit}: loc#${loc.round} was made from a JP part (sha256 ${loc.jp_sha256}) that is not a "jp" row of the journal`);
+    // a review approves exactly the bytes it hashed
+    const jpReview = last("jp-review", (r) => r.reviewed_sha256 === jp.sha256);
+    const locReview = last("loc-review", (r) => r.reviewed_sha256 === loc.sha256);
     return { jp, loc, jpReview, locReview, fromJournal: true };
   }
+  if (!partsDir) throw new Refuse(`${unit}: without --journal, name the run with --run-tag`);
   const files = existsSync(partsDir) ? readdirSync(partsDir) : [];
   const newest = (stage) => {
     const re = new RegExp(`^${unit}\\.${stage}\\.r(\\d+)\\.json$`);
@@ -65,12 +81,15 @@ export function pickFinal(unit, results, partsDir) {
   const locDoc = readJson(loc.part);
   const jpFile = path.join(partsDir, `${unit}.jp.r${locDoc.jp_round ?? 0}.json`);
   if (!existsSync(jpFile)) throw new Refuse(`${unit}: ${path.basename(jpFile)} (loc.jp_round) not found`);
-  return { jp: { stage: "jp", round: locDoc.jp_round ?? 0, part: jpFile }, loc: { ...loc, jp_round: locDoc.jp_round ?? 0 }, jpReview: null, locReview: null, fromJournal: false };
+  return { jp: { stage: "jp", round: locDoc.jp_round ?? 0, part: jpFile }, loc, jpReview: null, locReview: null, fromJournal: false };
 }
 
-/** Read a part named by a journal row / parts-dir pick, checking it is the row's part. */
+/** Read a part named by a journal row / parts-dir pick, checking it is the row's part (sha256, ids, counts). */
 function readPart(row, unit) {
   if (typeof row.part !== "string" || !existsSync(row.part)) throw new Refuse(`${row.stage}#${row.round}: part file ${row.part} not found`);
+  if (row.sha256 !== undefined && sha256File(row.part) !== row.sha256) {
+    throw new Refuse(`${row.part}: sha256 ${sha256File(row.part)} ≠ journal ${row.sha256} (the part changed after the agent returned, or the journal is from another run)`);
+  }
   const p = readJson(row.part);
   if (p.unit_id !== unit || p.stage !== row.stage || p.round !== row.round) {
     throw new Refuse(`${row.part}: unit/stage/round ${p.unit_id}/${p.stage}/${p.round} ≠ journal ${unit}/${row.stage}/${row.round}`);
@@ -81,22 +100,21 @@ function readPart(row, unit) {
   return p;
 }
 
-export async function merge({ unit, journal, write, paths }) {
+export async function merge({ unit, journals, runTag, write, paths }) {
   const mf = paths.manifest(unit);
   if (!existsSync(mf)) throw new Refuse(`manifest not found: ${mf} (run textbook-v2-prep.mjs --unit ${unit})`);
   const manifest = readJson(mf);
-  const results = journal ? readJournal(journal).results : null;
-  const fin = pickFinal(unit, results, paths.parts(unit));
+  const rows = journals?.length ? journalRows(journals) : null;
+  const fin = pickFinal(unit, rows, runTag ? paths.parts(unit, runTag) : null);
   const jpPart = readPart(fin.jp, unit);
   const locPart = readPart(fin.loc, unit);
-  if (locPart.jp_round !== undefined && locPart.jp_round !== jpPart.round) throw new Refuse(`loc part says jp_round ${locPart.jp_round}, journal ${jpPart.round}`);
+  if (locPart.jp_round !== undefined && locPart.jp_round !== jpPart.round) throw new Refuse(`loc part says jp_round ${locPart.jp_round}, its JP part is round ${jpPart.round}`);
+  // the localiser may add zh / en only: compared with the JP part it hashed (= the reviewed one when approved)
   const structure = locVsJp(locPart, jpPart);
   if (structure.length > 0) throw new Refuse(`localised part ≠ JP part + zh/en:\n  ${structure.join("\n  ")}`);
 
   const kit = await loadKit();
-  const body = { ...locPart };
-  delete body.jp_round;
-  const unitDoc = assemble(body, manifest, kit);
+  const unitDoc = assemble(locPart, manifest, kit);
   const issues = await validateUnit(unitDoc, manifest, paths);
   const diff = parityDiff(unitDoc);
   const out = paths.merged(unit);
@@ -124,7 +142,7 @@ export async function merge({ unit, journal, write, paths }) {
   if (!fin.fromJournal) why.push("--write needs --journal (the journal is the record of the final parts)");
   if (!approved.jp) why.push(`JP review of jp#${jpPart.round}: ${fin.jpReview?.verdict ?? "none"}`);
   if (!approved.loc) why.push(`translation review of loc#${locPart.round}: ${fin.locReview?.verdict ?? "none"}`);
-  if (issues.length > 0) why.push(`${issues.length} validate issue(s)`);
+  if (issues.length > 0) why.push(`${issues.length} validate issue(s):`, ...issues.map((i) => `  ${i.code.padEnd(13)} ${i.field}  ${i.message}`));
   if (diff.length > 0) why.push(`${diff.length} parity difference(s)`);
   if (why.length > 0) throw new Refuse(`not written:\n  ${why.join("\n  ")}`);
 
@@ -150,23 +168,29 @@ export async function merge({ unit, journal, write, paths }) {
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   let opt;
   try {
-    opt = parseArgs(process.argv.slice(2), { unit: "string", journal: "string", write: "bool", "data-root": "string" });
+    opt = parseArgs(process.argv.slice(2), { unit: "string", journal: "list", "run-tag": "string", write: "bool", "data-root": "string" });
   } catch (e) {
     console.error(`✗ ${e.message}`);
     process.exit(2);
   }
   if (!opt.unit) {
-    console.error("usage: textbook-v2-merge.mjs --unit <id> [--journal <journal.jsonl>] [--write] [--data-root <dir>]");
+    console.error("usage: textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <resumed run's journal.jsonl> …] | --run-tag <tag>) [--write] [--data-root <dir>]");
     process.exit(2);
   }
-  if (opt.journal && !existsSync(opt.journal)) {
-    console.error(`✗ journal not found: ${opt.journal}`);
+  for (const j of opt.journal ?? []) {
+    if (!existsSync(j)) {
+      console.error(`✗ journal not found: ${j}`);
+      process.exit(2);
+    }
+  }
+  if (opt["run-tag"] && !RUN_TAG_RE.test(opt["run-tag"])) {
+    console.error(`✗ --run-tag must match ${RUN_TAG_RE}`);
     process.exit(2);
   }
   const paths = dataPaths(opt["data-root"]);
   try {
-    const r = await merge({ unit: opt.unit, journal: opt.journal ? path.resolve(opt.journal) : null, write: !!opt.write, paths });
-    if (!r.from_journal) console.log("? no --journal: newest part files used, reviews unknown (dry-run only)");
+    const r = await merge({ unit: opt.unit, journals: (opt.journal ?? []).map((j) => path.resolve(j)), runTag: opt["run-tag"], write: !!opt.write, paths });
+    if (!r.from_journal) console.log(`? no --journal: newest part files of run ${opt["run-tag"]} used, reviews unknown (dry-run only)`);
     console.log(`${r.issues.length + r.parity_diff.length === 0 ? "✓" : "✗"} ${r.unit}: jp#${r.jp_round} + loc#${r.loc_round} → ${path.relative(process.cwd(), r.merged)}`);
     console.log(`  reviews: jp ${r.approved.jp ? "PASS" : "not PASS"} / loc ${r.approved.loc ? "PASS" : "not PASS"}; validate ${r.issues.length} issue(s); parity ${r.parity_diff.length} diff`);
     for (const i of r.issues) console.log(`  ${i.code.padEnd(13)} ${i.field}  ${i.message}`);

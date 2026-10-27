@@ -31,7 +31,15 @@ export function run(script, args) {
   return { code: p.status, out: `${p.stdout}${p.stderr}` };
 }
 
-export const fixture = () => readJson(FIXTURE);
+/**
+ * The v2 sample unit. One 考点 of the shared web fixture reproduces 20+ characters of a choice of
+ * 2011h23a-q038 (the copy guard, S135 M3, catches it); the pipeline tests use an own-words version.
+ */
+export const fixture = () => {
+  const u = readJson(FIXTURE);
+  u.terms[0].points[0].text_jp = "過去の案件の記録を一覧にしておくと、リスクを特定するときの見落としが減る。";
+  return u;
+};
 
 /** The localised part a workflow would produce for the fixture (all three languages). */
 export function locPartOf(u, round = 0, jpRound = 0) {
