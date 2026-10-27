@@ -39,7 +39,7 @@ export async function resolveSessionFrom(
       terms: unit.terms.map((t) => ({ id: termId(t.term), term: t.term })),
     };
   } catch (err) {
-    console.error("[practice] from=unit: the unit could not be loaded; the set runs without it", err);
+    console.error("[practice] from=unit: the textbook index or unit could not be loaded; the set runs without it", err);
     return null;
   }
 }

@@ -31,10 +31,15 @@ const progress = (page: Page) => page.locator("[data-progress]");
 const confirmLink = (page: Page) => page.locator("section#confirm a");
 const runOf = (url: string): string | null => new URL(url).searchParams.get("run");
 
-/** The unit page is hydrated and its learning record loaded (the 読了 button turns enabled). */
+/**
+ * The unit page is hydrated and its learning record loaded: the 読了 slot is then either an enabled
+ * button (unread) or the read status <p> (already read) — before that it is a disabled button.
+ */
 async function waitForUnitReady(page: Page): Promise<void> {
   await waitForRecord(page);
-  await expect(page.locator('main button[data-part="read"]')).toBeEnabled();
+  await expect(
+    page.locator('main button[data-part="read"]:enabled, main p[role="status"][data-part="read"]'),
+  ).toHaveCount(1);
 }
 
 /** Answer the question on screen (right or wrong) and move on (the last one → the summary). */
