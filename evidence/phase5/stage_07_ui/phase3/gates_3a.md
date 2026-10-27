@@ -25,3 +25,27 @@
 - e2e 後 `kill 17592 17694` → `lsof -iTCP:3150 -sTCP:LISTEN` 空を確認。:3000 は使っていない。
 
 ## 判定: **PASS**（6 項目すべて緑）
+
+---
+
+## Re-run after whole-branch fix wave
+
+- 日付: 2026-10-27 / HEAD `f49b83a`（branch `stage7-ui`, working tree clean）— whole-branch Rule D の Minor 修正波（term 集合の戻り先 `at=`、breadcrumb `<ol>` + pager label、`from=unit` は ids scope のみ、chumonMembers の path 固定テスト、狭幅の図の最小幅 + 図内スクロール）。
+- 実行者: 実装 agent（`oh-my-claudecode:executor`）。
+- ログ: `/private/tmp/claude-501/-Volumes-DevSSD-Project-IT-Passport-Learning/977a122a-02e4-4287-a82a-156bea9c1433/scratchpad/gates_3a_rerun/`（scratchpad、未入库）
+- build と e2e は commit 直前の同一内容の working tree で実行（その後の差分なし: commit 後 `git status` 空）、tsc / eslint / vitest は commit 後の HEAD で再実行。
+
+| # | Gate | コマンド | exit | 結果 |
+|---|---|---|---|---|
+| 1 | 型 | `npx tsc --noEmit` | 0 | 0 error |
+| 2 | lint | `npx eslint .` | 0 | 0 error / 0 warning |
+| 3 | unit | `npx vitest run` | 0 | Test Files **98 passed (98)** / Tests **1105 passed (1105)**, 7.67s |
+| 4 | build | `npm run build`（`next build --turbopack`） | 0 | 成功 |
+| 5 | nft IPA leak | `find .next -name '*.nft.json' -exec grep -lE 'data/ip/(exams\|sources\|syllabus)/' {} + \| wc -l` | 0 | `0`（対象 nft 27 本） |
+| 6 | 本地 e2e 全量 | `PLAYWRIGHT_BASE_URL=http://localhost:3150 npx playwright test --retries=0 --reporter=list` | 0 | **119 passed**, 0 failed, 0 flaky, 0 skipped（1.7 min, 1 worker; `learning-owner.spec.ts` は従来どおり testIgnore）（`e2e_full.log`） |
+
+- 単元ページ nft: 全 **799**、`data/ip/` **659** = `data/ip/textbook/*` **658** + `data/ip/quiz/chumon_groups.json` **1**（前回と同じ）。
+- e2e サーバ: `UPSTASH_REDIS_REST_URL= UPSTASH_REDIS_REST_TOKEN= KV_REST_API_URL= KV_REST_API_TOKEN= npx next start -p 3150`（npx PID 83217 / listen PID 83238）→ e2e と 390px 截图の後 kill → `lsof -iTCP:3150 -sTCP:LISTEN` 空を確認。:3000 不使用。
+- 390px 截图（WBS 図、`management-10-27-u02`）: scratchpad `p3fix/`。
+
+## 判定（re-run）: **PASS**（6 項目すべて緑）
