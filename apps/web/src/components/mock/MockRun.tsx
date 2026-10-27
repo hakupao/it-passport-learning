@@ -31,10 +31,10 @@
 //     recorded → adopt that state), then answerBatch(answered items, endedAt, "mock") — skipped for
 //     an empty plan; it writes the batch to localStorage synchronously, OQ-12 — and only then the
 //     `recorded` action, written to storage (not when the batch did not reach storage: the mock
-//     stays owed and the next open records it; the result still shows). A tab records only a finish it produced itself (own:
-//     its finish / tick, or what it found on mount); a finished state adopted from another tab's
-//     storage event is that tab's to record. So with two tabs, the finishing tab writes the batch
-//     once and the other just shows the result.
+//     stays owed and the next open records it; the result still shows). A tab records only a
+//     finish it produced itself (own: its finish / tick, or what it found on mount); a finished
+//     state adopted from another tab's storage event is that tab's to record. So with two tabs, the
+//     finishing tab writes the batch once and the other just shows the result.
 //   - Other tabs (storage event): the same mock → adopt (except over our own finished state, which
 //     is written back; and a finished + recorded result is never replaced). Another mock or the key
 //     removed (the setup page's 「破棄」 or a new mock) → this tab stops with a note (superseded).
