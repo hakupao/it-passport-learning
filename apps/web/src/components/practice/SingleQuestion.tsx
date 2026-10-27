@@ -88,7 +88,15 @@ export function SingleQuestion({ q, locale, isOwner, termCards, stars, topic }: 
             preambleChars={null}
             foldPreamble={false}
           />
-          <ExplanationPane key={q.id} q={q} locale={locale} picked={picked} termCards={termCards} isOwner={isOwner} reveal />
+          <ExplanationPane
+            key={`${q.id}:explanation`}
+            q={q}
+            locale={locale}
+            picked={picked}
+            termCards={termCards}
+            isOwner={isOwner}
+            reveal
+          />
           <div>
             <div className={styles.singleFooter}>
               <AnswerBar q={q} />

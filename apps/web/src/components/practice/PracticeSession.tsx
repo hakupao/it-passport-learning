@@ -414,7 +414,14 @@ export function SessionView({
           preambleChars={fold}
           foldPreamble={fold !== null}
         />
-        <ExplanationPane key={q.id} q={q} locale={locale} picked={picked} termCards={termCards} isOwner={isOwner} />
+        <ExplanationPane
+          key={`${q.id}:explanation`}
+          q={q}
+          locale={locale}
+          picked={picked}
+          termCards={termCards}
+          isOwner={isOwner}
+        />
       </div>
 
       <div className={styles.footer}>
