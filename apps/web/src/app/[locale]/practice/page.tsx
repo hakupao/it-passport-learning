@@ -19,7 +19,9 @@
 // today payload (§0-20) only for from=today (the summary's 「继续下一项」).
 // Stage 7 Phase 3 (D-196 §0-2): `from=unit&unit=<id>` (a textbook unit's questions) — the id must
 // match UNIT_ID_RE and be in the reader index, else the group has no `from`; the unit's title (active
-// locale) and terms go to the session (the summary's 「単元に戻る」, the explanation's link back).
+// locale) and terms go to the session (the summary's 「単元に戻る」, the explanation's link back);
+// a unit failing to load leaves the set without `from` (resolveSessionFrom). A from=unit URL without
+// `run` is redirected to one with run=<now>, so every entry is a new round.
 
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -31,7 +33,6 @@ import { PracticeSetup } from "@/components/practice/PracticeSetup";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { redirect } from "@/i18n/navigation";
 import { buildTermCards } from "@/lib/glossary/dictionary";
-import { termId } from "@/lib/glossary/termId";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { groupMap, resolveScope, topicStars } from "@/lib/practice/practiceIndex";
@@ -39,17 +40,15 @@ import { examsNewestFirst } from "@/lib/practice/practiceLabels";
 import { loadChumonGroups, loadQuestionsByIds, loadSetupIndex, loadTodayIndex } from "@/lib/practice/practiceReader";
 import {
   foldPlan,
-  parseFrom,
   parseKind,
   parseRun,
   parseScope,
   sessionKey,
   type SearchParams,
-  type SessionFrom,
 } from "@/lib/practice/practiceSession";
 import { prefillOf, settingsFromPrefill } from "@/lib/practice/practiceSetup";
+import { resolveSessionFrom } from "@/lib/practice/sessionFrom";
 import { loadBaseQuestions, loadQuizIndex, type QuizIndex } from "@/lib/quiz/quizReader";
-import { loadReaderIndex, loadUnit, toDataLang, UNIT_ID_RE } from "@/lib/textbook/reader";
 
 export const dynamic = "force-dynamic";
 
@@ -64,20 +63,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t("title") };
 }
 
-/** parseFrom against the reader index; a unit also gets its title (active locale) and terms. */
-async function sessionFrom(sp: SearchParams, locale: string): Promise<SessionFrom | null> {
-  const index = await loadReaderIndex(); // memoized; the unit must be in it
-  const known = new Set(index.topics.flatMap((t) => t.unit_order));
-  const from = parseFrom(sp, (id) => UNIT_ID_RE.test(id) && known.has(id));
-  if (from?.kind !== "unit") return from;
-  const unit = await loadUnit(from.unitId);
-  const dl = toDataLang(locale);
-  return {
-    kind: "unit",
-    unitId: from.unitId,
-    title: unit[`title_${dl}`] || unit.title_jp,
-    terms: unit.terms.map((t) => ({ id: termId(t.term), term: t.term })),
-  };
+/** The URL's search params as a flat query (first value of each). */
+function queryOf(sp: SearchParams): Record<string, string> {
+  const query: Record<string, string> = {};
+  for (const [k, v] of Object.entries(sp)) {
+    const s = Array.isArray(v) ? v[0] : v;
+    if (s !== undefined) query[k] = s;
+  }
+  return query;
 }
 
 const ownerFlag = (): Promise<boolean> => cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value));
@@ -116,13 +109,15 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   if (!scope) return setupPanel(locale, sp, index, validTopics, validExams);
 
   if (scope.kind === "filter" && scope.order === "rand" && sp.seed === undefined) {
-    const query: Record<string, string> = {};
-    for (const [k, v] of Object.entries(sp)) {
-      const s = Array.isArray(v) ? v[0] : v;
-      if (s !== undefined) query[k] = s;
-    }
-    query.seed = String(Math.floor(Math.random() * 2 ** 32));
+    const query = { ...queryOf(sp), seed: String(Math.floor(Math.random() * 2 ** 32)) };
     redirect({ href: { pathname: "/practice", query }, locale });
+  }
+
+  const from = await resolveSessionFrom(sp, locale);
+  // a unit's set always runs as a new round (§0-2): an entry without a run nonce (a click before
+  // hydration, a middle click, a copied link) gets one here
+  if (from?.kind === "unit" && parseRun(sp) === null) {
+    redirect({ href: { pathname: "/practice", query: { ...queryOf(sp), run: String(Date.now()) } }, locale });
   }
 
   const dictPromise = loadDictionary().catch((err: unknown) => {
@@ -134,7 +129,6 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   if (questions.length === 0) return setupPanel(locale, sp, index, validTopics, validExams);
   const ids = questions.map((q) => q.id);
 
-  const from = await sessionFrom(sp, locale);
   const fromToday = from?.kind === "today";
   const run = parseRun(sp);
   const [dict, owner, today] = await Promise.all([

@@ -421,16 +421,25 @@ export async function loadGeneratedSvg(svgPath: string): Promise<string | null> 
 let readerIndexPromise: Promise<ReaderIndex> | null = null;
 
 export function loadReaderIndex(): Promise<ReaderIndex> {
-  return (readerIndexPromise ??= readJson<ReaderIndex>(path.join(textbookRoot(), "unit_index.json")));
+  // a rejection is not memoized (the next call retries), like practiceReader's memo
+  return (readerIndexPromise ??= readJson<ReaderIndex>(path.join(textbookRoot(), "unit_index.json")).catch(
+    (err: unknown) => {
+      readerIndexPromise = null;
+      throw err;
+    },
+  ));
 }
 
 let allUnitsPromise: Promise<TextbookUnit[]> | null = null;
 
 /** Every unit listed in unit_index.json (index order), loaded via loadUnit. */
 export function loadAllUnits(): Promise<TextbookUnit[]> {
-  return (allUnitsPromise ??= loadReaderIndex().then((index) =>
-    Promise.all(index.topics.flatMap((t) => (t.units ?? []).map((u) => loadUnit(u.unit_id)))),
-  ));
+  return (allUnitsPromise ??= loadReaderIndex()
+    .then((index) => Promise.all(index.topics.flatMap((t) => (t.units ?? []).map((u) => loadUnit(u.unit_id)))))
+    .catch((err: unknown) => {
+      allUnitsPromise = null;
+      throw err;
+    }));
 }
 
 export type { TextbookUnit };

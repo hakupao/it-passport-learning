@@ -27,6 +27,12 @@ const progress = (page: Page) => page.locator("[data-progress]");
 const confirmLink = (page: Page) => page.locator("section#confirm a");
 const runOf = (url: string): string | null => new URL(url).searchParams.get("run");
 
+/** The unit page is hydrated and its learning record loaded (the 読了 button turns enabled). */
+async function waitForUnitReady(page: Page): Promise<void> {
+  await waitForRecord(page);
+  await expect(page.locator('main button[data-part="read"]')).toBeEnabled();
+}
+
 /** Answer the question on screen (right or wrong) and move on (the last one → the summary). */
 async function answerAndNext(page: Page, right: boolean): Promise<string> {
   const qid = (await face(page).getAttribute("id"))!;
@@ -91,7 +97,7 @@ test("unit page: term index → articles → 要点 → 確認問題 → 読了"
 
 test("confirm: a round all right → 単元に戻る → the confirm block again is a new round (new run)", async ({ page }) => {
   await page.goto(`/ja/textbook/${UNIT_ID}`);
-  await waitForRecord(page);
+  await waitForUnitReady(page);
   await confirmLink(page).click();
   await expect(page).toHaveURL(new RegExp(`/ja/practice\\?ids=[^&]+&from=unit&unit=${UNIT_ID}&run=\\d{1,16}$`));
   const run1 = runOf(page.url());
@@ -109,7 +115,7 @@ test("confirm: a round all right → 単元に戻る → the confirm block again
   await expect(page).toHaveURL(new RegExp(`/ja/textbook/${UNIT_ID}#confirm$`));
   await expect(page.locator("section#confirm")).toBeInViewport();
 
-  await waitForRecord(page);
+  await waitForUnitReady(page);
   await confirmLink(page).click();
   await expect(page).toHaveURL(/&run=\d{1,16}$/);
   const run2 = runOf(page.url());
@@ -120,13 +126,13 @@ test("confirm: a round all right → 単元に戻る → the confirm block again
 
 test("confirm: two clicks on the same unit page get different runs", async ({ page }) => {
   await page.goto(`/ja/textbook/${UNIT_ID}`);
-  await waitForRecord(page);
+  await waitForUnitReady(page);
   await confirmLink(page).click();
   await expect(page).toHaveURL(/&run=\d{1,16}$/);
   const run1 = runOf(page.url());
   await page.goBack();
   await expect(page).toHaveURL(new RegExp(`/ja/textbook/${UNIT_ID}$`));
-  await waitForRecord(page);
+  await waitForUnitReady(page);
   await confirmLink(page).click();
   await expect(page).toHaveURL(/&run=\d{1,16}$/);
   expect(runOf(page.url())).not.toBe(run1);
@@ -135,8 +141,9 @@ test("confirm: two clicks on the same unit page get different runs", async ({ pa
 
 test("confirm: a wrong answer lands in the mistakes book", async ({ page }) => {
   await page.goto(`/ja/textbook/${UNIT_ID}`);
-  await waitForRecord(page);
+  await waitForUnitReady(page);
   await confirmLink(page).click();
+  await expect(page).toHaveURL(new RegExp(`&from=unit&unit=${UNIT_ID}&run=\\d{1,16}$`));
   await expect(progress(page)).toHaveAttribute("data-progress", /^1\//);
   const qid = await answerAndNext(page, false);
   await expect.poll(async () => (await storedAttempts(page, qid)).map((a) => a.correct)).toEqual([false]);
@@ -148,10 +155,26 @@ test("confirm: a wrong answer lands in the mistakes book", async ({ page }) => {
 
 test("a term's past-question link opens a from=unit group with a run", async ({ page }) => {
   await page.goto(`/ja/textbook/${UNIT_ID}`);
-  await waitForRecord(page);
+  await waitForUnitReady(page);
   const link = page.locator('[data-part="term-past"] a').first();
   await expect(link).toHaveAttribute("href", new RegExp(`&from=unit&unit=${UNIT_ID}$`));
   await link.click();
   await expect(page).toHaveURL(new RegExp(`&from=unit&unit=${UNIT_ID}&run=\\d{1,16}$`));
   await expect(progress(page)).toHaveAttribute("data-progress", /^1\//);
+});
+
+test("a from=unit link without a run (copied, middle-clicked, pre-hydration) is redirected to a fresh run", async ({
+  page,
+}) => {
+  await page.goto(`/ja/textbook/${UNIT_ID}`);
+  const href = (await confirmLink(page).getAttribute("href"))!;
+  expect(href).not.toContain("run=");
+  const before = Date.now();
+  await page.goto(href);
+  await expect(page).toHaveURL(/&run=\d{1,16}$/);
+  expect(Number(runOf(page.url()))).toBeGreaterThanOrEqual(before - 60_000); // server clock ≈ ours
+  await expect(progress(page)).toHaveAttribute("data-progress", /^1\//);
+  // an invalid unit is not a unit set: no redirect, no from
+  await page.goto("/ja/practice?ids=2009h21a-q054&from=unit&unit=nope-00-00-u01");
+  await expect(page).toHaveURL(/unit=nope-00-00-u01$/);
 });

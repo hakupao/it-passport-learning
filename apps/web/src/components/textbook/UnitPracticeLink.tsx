@@ -34,6 +34,7 @@ export function UnitPracticeLink({ ids, unitId, order = false, className, childr
   return (
     <Link
       href={confirmHref(list, unitId, null)}
+      prefetch={false}
       className={className}
       onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
         if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;

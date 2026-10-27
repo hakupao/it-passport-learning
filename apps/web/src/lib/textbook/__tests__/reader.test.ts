@@ -4,7 +4,7 @@
 // depends on: category ordering (D-114 path), unit_order preservation, the
 // ja→jp suffix bridge, and per-locale field pickers.
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   buildNav,
@@ -246,5 +246,19 @@ describe("unitPlace", () => {
       total: 1,
     });
     expect(unitPlace(idx, "nope", "ja")).toBeNull();
+  });
+});
+
+describe("loadReaderIndex memo", () => {
+  it("a failed read is not memoized: the next call reads again", async () => {
+    const prev = process.env.TEXTBOOK_DATA_ROOT;
+    vi.resetModules();
+    process.env.TEXTBOOK_DATA_ROOT = "/nonexistent-itp-root";
+    const fresh = await import("../reader");
+    await expect(fresh.loadReaderIndex()).rejects.toThrow();
+    if (prev === undefined) delete process.env.TEXTBOOK_DATA_ROOT;
+    else process.env.TEXTBOOK_DATA_ROOT = prev;
+    const index = await fresh.loadReaderIndex();
+    expect(index.topics.length).toBeGreaterThan(0);
   });
 });
