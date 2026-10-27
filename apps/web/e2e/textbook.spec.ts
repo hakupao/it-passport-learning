@@ -12,15 +12,19 @@ import { test, expect, type Page } from "@playwright/test";
 
 import ja from "../messages/ja.json";
 import { guardAnthropic } from "./helpers/fakeAnthropic";
+import { termId } from "../src/lib/glossary/termId";
 import { answerChoice, LETTERS, storedAttempts, waitForRecord } from "./helpers/learning";
 
-const QUESTIONS: Map<string, string> = new Map(
-  (
-    JSON.parse(readFileSync(path.resolve(__dirname, "../../../data/ip/quiz/questions.json"), "utf-8")) as {
-      questions: { id: string; correct_answer: string }[];
-    }
-  ).questions.map((q) => [q.id, q.correct_answer]),
-);
+const CORPUS = (
+  JSON.parse(readFileSync(path.resolve(__dirname, "../../../data/ip/quiz/questions.json"), "utf-8")) as {
+    questions: { id: string; correct_answer: string; terms: string[] }[];
+  }
+).questions;
+const QUESTIONS: Map<string, string> = new Map(CORPUS.map((q) => [q.id, q.correct_answer]));
+const TERMS: Map<string, string[]> = new Map(CORPUS.map((q) => [q.id, q.terms]));
+const UNIT = JSON.parse(
+  readFileSync(path.resolve(__dirname, `../../../data/ip/textbook/units/management-08-25-u01.json`), "utf-8"),
+) as { title_jp: string; terms: { term: string }[] };
 
 const face = (page: Page) => page.locator("main[data-session] article[id]");
 const progress = (page: Page) => page.locator("[data-progress]");
@@ -177,4 +181,45 @@ test("a from=unit link without a run (copied, middle-clicked, pre-hydration) is 
   // an invalid unit is not a unit set: no redirect, no from
   await page.goto("/ja/practice?ids=2009h21a-q054&from=unit&unit=nope-00-00-u01");
   await expect(page).toHaveURL(/unit=nope-00-00-u01$/);
+});
+
+test("a wrong answer in the unit's set links back to the unit (at a shared term); a right one does not", async ({
+  page,
+}) => {
+  await page.goto(`/ja/textbook/${UNIT_ID}`);
+  await waitForUnitReady(page);
+  await confirmLink(page).click();
+  await expect(progress(page)).toHaveAttribute("data-progress", /^1\//);
+
+  // question 1 wrong → 「単元に戻る：<単元名>」 under the explanation
+  const qid = (await face(page).getAttribute("id"))!;
+  const key = QUESTIONS.get(qid)!;
+  await answerChoice(page, LETTERS.find((l) => l !== key)!);
+  const back = page.locator("main[data-session] [data-unit-back] a");
+  await expect(back).toHaveText(`${ja.Practice.backToUnitNamed.replace("{title}", UNIT.title_jp)} →`);
+  const shared = UNIT.terms.find((t) => TERMS.get(qid)!.includes(t.term));
+  const want = `/ja/textbook/${UNIT_ID}${shared ? `#${termId(shared.term)}` : ""}`;
+  await expect(back).toHaveAttribute("href", want);
+
+  // question 2 right → no link
+  await page.locator('main[data-session] [data-nav="next"]').click();
+  await expect(progress(page)).toHaveAttribute("data-progress", /^2\//);
+  const qid2 = (await face(page).getAttribute("id"))!;
+  await answerChoice(page, QUESTIONS.get(qid2)!);
+  await expect(page.locator("main[data-session] [data-status]")).toHaveAttribute("data-status", /.+/);
+  await expect(page.locator("main[data-session] [data-unit-back]")).toHaveCount(0);
+
+  // back on question 1, the link leads to the unit
+  await page.locator('main[data-session] [data-nav="prev"]').click();
+  await expect(face(page)).toHaveAttribute("id", qid);
+  await back.click();
+  await expect(page).toHaveURL(new RegExp(`${want.replace(/[?#]/g, "\\$&")}$`));
+  if (shared) await expect(page.locator(`article#${termId(shared.term)}`)).toBeInViewport();
+});
+
+test("a set not from a unit shows no link back after a wrong answer", async ({ page }) => {
+  await page.goto("/ja/practice?ids=2009h21a-q054");
+  await answerChoice(page, LETTERS.find((l) => l !== QUESTIONS.get("2009h21a-q054"))!);
+  await expect(page.locator("main[data-session] [data-status]")).toHaveAttribute("data-status", "wrong");
+  await expect(page.locator("main[data-session] [data-unit-back]")).toHaveCount(0);
 });

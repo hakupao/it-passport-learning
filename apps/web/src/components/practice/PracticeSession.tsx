@@ -36,6 +36,8 @@
 //     summary offers 「继续下一项」 (summaryNextHref: nextTodayGroup → /practice?ids=…&from=today&kind=…,
 //     or "/" when the day is done) — only once the record is loaded (no link while an owner's GET is
 //     pending or right after a reload, which would plan from an empty record).
+//   - from=unit (Phase 3 §0-2 / §0-8): the summary's 「単元に戻る」, and a wrong answer's link back to
+//     the unit under the explanation (unitReturnHref).
 //   - AI 先生 (§0-18): SenseiHost.onQuestionLink jumps to a question of this group (true).
 
 "use client";
@@ -63,6 +65,7 @@ import {
   statusLine,
   summaryNextHref,
   todayKind,
+  unitReturnHref,
   type SessionAction,
   type SessionFrom,
   type SessionState,
@@ -431,6 +434,7 @@ export function SessionView({
           picked={picked}
           termCards={termCards}
           isOwner={isOwner}
+          unitBack={from?.kind === "unit" ? { href: unitReturnHref(from, q.terms), title: from.title } : null}
         />
       </div>
 

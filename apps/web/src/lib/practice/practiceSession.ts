@@ -11,6 +11,7 @@
 //     the setup panel to pre-fill the scope; Task 10 / 13) → null as well.
 //   - parseFrom (Phase 3 §0-2): `from=today` or `from=unit&unit=<id>` (a textbook unit's set; the
 //     page validates the id) → FromParam; the page widens a unit to SessionFrom (title + terms).
+//     unitReturnHref (§0-8): a wrong answer's link back to the unit (#<termId> of a shared term).
 //   - practiceReducer (§0-13): pick (only an unanswered question; a repeat returns the same state
 //     object), next (past the last → finished), prev (stops at 0), finish (summary of the answered
 //     part), goto (a question of this group: the AI 先生 reply's `#<question_id>` link, §0-18).
@@ -102,6 +103,18 @@ export type FromParam = { kind: "today" } | { kind: "unit"; unitId: string };
 export type SessionFrom =
   | { kind: "today" }
   | { kind: "unit"; unitId: string; title: string; terms: { id: string; term: string }[] };
+
+/**
+ * 「単元に戻る」 after a wrong answer in a unit's set (§0-8): the unit page at the article of the first
+ * unit term (unit order) the question's `terms` share, else the unit page itself.
+ */
+export function unitReturnHref(
+  from: Extract<SessionFrom, { kind: "unit" }>,
+  questionTerms: readonly string[],
+): string {
+  const shared = from.terms.find((t) => questionTerms.includes(t.term));
+  return `/textbook/${from.unitId}${shared ? `#${shared.id}` : ""}`;
+}
 
 /**
  * `from=today` (a today task: the summary offers 「继续下一项」) or `from=unit&unit=<id>` (a textbook

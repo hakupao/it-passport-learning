@@ -369,6 +369,26 @@ describe("SessionSummary", () => {
     expect(renderView(qs, "ja", { state: s })).not.toContain('data-action="unit"');
   });
 
+  it("from=unit, a wrong answer: 「単元に戻る：<title>」 under the explanation; a right one: none", () => {
+    const qs = three();
+    const q = qs[0]!;
+    const unit = {
+      kind: "unit" as const,
+      unitId: "management-08-25-u01",
+      title: "要件定義と設計",
+      terms: q.terms.length > 0 ? [{ id: "tshared", term: q.terms[0]! }] : [],
+    };
+    const ids = qs.map((x) => x.id);
+    const wrong = run(newSession(ids, 0), { type: "pick", choice: wrongOf(q) });
+    const out = renderView(qs, "ja", { state: wrong, from: unit });
+    const anchor = q.terms.length > 0 ? "#tshared" : "";
+    expect(out).toContain(`href="/textbook/management-08-25-u01${anchor}"`);
+    expect(out).toContain("単元に戻る：要件定義と設計");
+    const right = run(newSession(ids, 0), { type: "pick", choice: q.correct_answer as ChoiceLetter });
+    expect(renderView(qs, "ja", { state: right, from: unit })).not.toContain("data-unit-back");
+    expect(renderView(qs, "ja", { state: wrong })).not.toContain("data-unit-back");
+  });
+
   it("nothing answered: no score, no retry", () => {
     const qs = three();
     const s = run(

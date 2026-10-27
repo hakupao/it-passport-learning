@@ -17,6 +17,8 @@
 // `reveal` (Task 10, the single-question page /practice/q/<qid>: a reference view): the explanation
 // is shown also while unanswered — no row is "yours", every × row starts closed, and the AI 先生
 // thread anchor is `<question_id>:reveal` (the QuizSet convention for an unanswered reveal).
+// `unitBack` (Phase 3 §0-8, a textbook unit's set): a wrong answer gets 「単元に戻る：<単元名>」 under
+// the explanation (unitReturnHref: the unit, at a term the question shares); nothing for a right answer.
 // The section carries EXPLANATION_ID: PracticeSession scrolls its heading into view on an answer (OQ-13 / D-194).
 
 "use client";
@@ -27,6 +29,7 @@ import { hasLocale, useTranslations } from "next-intl";
 import { TermChip } from "@/components/glossary/TermChip";
 import { QuizFeedback } from "@/components/quiz/QuizFeedback";
 import { AskSensei } from "@/components/sensei/AskSensei";
+import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { ChoiceLetter } from "@/lib/learning/record";
@@ -55,9 +58,19 @@ interface Props {
   isOwner: boolean;
   /** show the explanation while unanswered too (reference view; default false) */
   reveal?: boolean;
+  /** a textbook unit's set: where a wrong answer links back to (§0-8); null / absent = no link */
+  unitBack?: { href: string; title: string } | null;
 }
 
-export function ExplanationPane({ q, locale, picked, termCards, isOwner, reveal = false }: Props): React.ReactElement {
+export function ExplanationPane({
+  q,
+  locale,
+  picked,
+  termCards,
+  isOwner,
+  reveal = false,
+  unitBack = null,
+}: Props): React.ReactElement {
   const t = useTranslations("Practice");
   const [explLocale, setExplLocale] = useState(locale);
 
@@ -82,6 +95,14 @@ export function ExplanationPane({ q, locale, picked, termCards, isOwner, reveal 
           t={t}
         />
       )}
+      {unitBack && picked !== null && picked !== q.correct_answer ? (
+        <p className={styles.unitBack} data-unit-back="">
+          <Link href={unitBack.href}>
+            {t("backToUnitNamed", { title: unitBack.title })}
+            <span aria-hidden="true"> →</span>
+          </Link>
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -95,7 +116,7 @@ function Answered({
   explLocale,
   setExplLocale,
   t,
-}: Omit<Props, "picked" | "reveal"> & {
+}: Omit<Props, "picked" | "reveal" | "unitBack"> & {
   picked: ChoiceLetter | null;
   explLocale: string;
   setExplLocale: (l: string) => void;

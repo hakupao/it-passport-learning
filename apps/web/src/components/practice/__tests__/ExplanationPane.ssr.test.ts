@@ -253,3 +253,29 @@ describe("AnswerBar — 解答栏「解答 問N [X]」", () => {
     expect(renderAnswerBar(q, "en")).toContain(">解答<");
   });
 });
+
+describe("ExplanationPane — 「単元に戻る：<単元名>」 (Phase 3 §0-8)", () => {
+  const back = { href: "/textbook/management-08-25-u01#t0123456789abcdef", title: "要件定義と設計" };
+
+  it("a wrong answer in a unit set links back to the unit, under the explanation", () => {
+    const q = byId("2024r06-q001");
+    for (const [locale, label] of [
+      ["ja", "単元に戻る：要件定義と設計"],
+      ["zh", "回到单元：要件定義と設計"],
+      ["en", "Back to the unit: 要件定義と設計"],
+    ] as const) {
+      const out = renderPane(q, locale, wrongOf(q), {}, false, back);
+      const link = out.match(/<p[^>]*data-unit-back=""[^>]*><a href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/);
+      expect(link?.[1], locale).toBe(back.href);
+      expect(link![2]!.replace(/<[^>]+>/g, "")).toBe(`${label} →`);
+      expect(out.indexOf("data-unit-back")).toBeGreaterThan(out.indexOf("data-verdicts"));
+    }
+  });
+
+  it("nothing for a right answer, an unanswered pane or a set not from a unit", () => {
+    const q = byId("2024r06-q001");
+    expect(renderPane(q, "ja", q.correct_answer as ChoiceLetter, {}, false, back)).not.toContain("data-unit-back");
+    expect(renderPane(q, "ja", null, {}, false, back)).not.toContain("data-unit-back");
+    expect(renderPane(q, "ja", wrongOf(q), {}, false, null)).not.toContain("data-unit-back");
+  });
+});

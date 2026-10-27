@@ -24,6 +24,7 @@ import {
   nextTodayGroup,
   nextTodayIds,
   parseFrom,
+  unitReturnHref,
   parseKind,
   parseScope,
   practiceReducer,
@@ -577,3 +578,26 @@ describe("today chain (§0-26)", () => {
 function setTargetZero(r: LearningRecord): LearningRecord {
   return { ...r, settings: { ...r.settings, dailyNewTarget: { value: 0, at: 1 } } };
 }
+
+describe("unitReturnHref (Phase 3 §0-8)", () => {
+  const from = {
+    kind: "unit" as const,
+    unitId: "management-08-25-u01",
+    title: "要件定義と設計",
+    terms: [
+      { id: "t1", term: "機能要件" },
+      { id: "t2", term: "非機能要件" },
+      { id: "t3", term: "品質特性" },
+    ],
+  };
+
+  it("anchors the first unit term (unit order) the question shares", () => {
+    expect(unitReturnHref(from, ["品質特性", "非機能要件"])).toBe("/textbook/management-08-25-u01#t2");
+    expect(unitReturnHref(from, ["品質特性"])).toBe("/textbook/management-08-25-u01#t3");
+  });
+
+  it("no shared term → the unit page itself", () => {
+    expect(unitReturnHref(from, ["WBS"])).toBe("/textbook/management-08-25-u01");
+    expect(unitReturnHref(from, [])).toBe("/textbook/management-08-25-u01");
+  });
+});
