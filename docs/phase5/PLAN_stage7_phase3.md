@@ -207,9 +207,9 @@
 
 ### Task 10: 试点 Rule A 全数抽检
 
-- [ ] **Step 1**：`oh-my-claudecode:verifier` opus 对 15 个用语逐项判定（事实、D-195 清单、三语一致）+ 证据位置 → `evidence/phase5/stage_07_ui/phase3/pilot_audit.md`。
-- [ ] **Step 2**：有 HIGH → 脚本化修正（before/after，原稿归档 Rule B）→ 该用语复审。
-- [ ] **Step 3**：controller 再跑 validate + parity，结果写入同一 evidence。
+- [x] **Step 1**：`oh-my-claudecode:verifier` opus 对 15 个用语逐项判定（事实、D-195 清单、三语一致）+ 证据位置 → `evidence/phase5/stage_07_ui/phase3/pilot_audit.md`。
+- [x] **Step 2**：有 HIGH → 脚本化修正（before/after，原稿归档 Rule B）→ 该用语复审。
+- [x] **Step 3**：controller 再跑 validate + parity，结果写入同一 evidence。
 
 ### Task 11: 3b 收尾
 

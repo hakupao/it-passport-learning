@@ -129,3 +129,34 @@ exit=0
 - 未適用 (LOW、記録のみ): L2 L3 L8 L9 L10 L11 L12 L13 L14 L15、O2、O3。
 - Step 3 再検証: validate 3 単元 0 issue、parity u01 27 / u02 25 / u03 28 箇所 0 diff、script テスト 50/50、vitest 1229/1229。
 - 一括生成への申し送り: merge は v1 の `unit_summary_*` をそのまま引き継ぐ → 他単元にも制作メモが残っている可能性 (prep/merge で除去か要確認)。zh 訳語表に「変更管理 = 变更管理」等を登録。
+
+## §8 再検証 (verifier、Task 10 Step 2「該用語複審」)
+
+対象は commit `7de5fb5` の単元 JSON 差分だけ (`git show HEAD -- data/ip/textbook/units`)。それ以外の箇所は §2〜§5 の判定のまま。
+
+| ID | 箇所 | 判定 | 根拠 |
+|---|---|---|---|
+| L1 | u01 `terms[2].points[0].text_{jp,zh,en}` 末文 | **解消** | jp「ここまで作業した人の生産性がそろっていれば」、zh「到目前为止参与工作的人员生产率一致」、en "everyone who has worked so far has the same productivity"。三語とも同じ意味。2009h21a-q030 (途中参加者 70%) も字面上この条件に入る (既存の 6 人の投入 18 人月 ÷ 50% = 36)。ほかの文は変わっていない |
+| L4 | u02 `terms[0].points[3].text_zh`・`key_points_zh[1]`・互換 `summary.key_points_zh[1]` | **解消** | 3 箇所とも「变更管理」になり、u01 の 3 箇所と揃った。3 単元で「变更控制」の残りは 0 件。`[[jp:変更管理]]` もそのまま |
+| L5 | u01 `terms[1].detail_zh` + 互換 `explanation_zh` | **解消** | 「可交付成果」に変わり、u02 の訳語と揃った。新しい欄と互換欄は記法 (`**`・`[[jp:]]`) を除けば同じ文。「改变工作或成果物」の残りは 0 件 |
+| L7 | u03 `terms[1].points[2].text_en` | **解消** | 追加句を削除し、jp / zh と同じ内容になった。太字と `[[jp:低減/移転/保有]]` もそのまま |
+| O1 | u03 `unit_summary_{jp,zh,en}` | **解消** | 2 文目の制作メモを三語とも削除。1 文目は前と同じ文で、三語とも同じ意味。「正準な概念順」の残りは 0 件。同じ文が `apps/web/src/lib/textbook/__fixtures__/v2-sample.json` に残るが、これはテスト用データで範囲外 (§7 の申し送りどおり、一括のときに v1 の `unit_summary_*` を点検する) |
+
+- **新しく入った問題**: なし。単元 JSON の差分は上の各欄 (互換欄を含む) だけで、ほかの欄は変わっていない。事実・D-195・D-198・三語の判定は変わらない。
+- **機械ゲート (verifier が再実行)**:
+```
+✓ management-10-27-u01 unit: 0 issues (data/ip/textbook/units/management-10-27-u01.json)
+exit=0
+✓ management-10-27-u01 parity: 27 locations, 0 diff
+exit=0
+✓ management-10-27-u02 unit: 0 issues (data/ip/textbook/units/management-10-27-u02.json)
+exit=0
+✓ management-10-27-u02 parity: 25 locations, 0 diff
+exit=0
+✓ management-10-27-u03 unit: 0 issues (data/ip/textbook/units/management-10-27-u03.json)
+exit=0
+✓ management-10-27-u03 parity: 28 locations, 0 diff
+exit=0
+```
+  加えて `node --no-warnings scripts/textbook-unit-minutes-build.mjs --check` も実行した。`data/ip/textbook/unit_minutes.json` が生成結果と一致し、exit 0。L1 で字数が変わっても所要分は変わらない。
+- **判定**: 3 単元とも **PASS** のまま。件数は HIGH 0 / MEDIUM 0 / LOW 10 (未適用の L2 L3 L8 L9 L10 L11 L12 L13 L14 L15)。範囲外の観察は O2・O3 が残る。
