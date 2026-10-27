@@ -2,12 +2,12 @@
 // the fixture unit has 0 issues; breaks are reported with their codes and exit 1; JP-only parts are
 // checked on the Japanese only; a localised part must be its JP part + zh / en; svg files must exist;
 // a unit without goals / 総表 is rejected (UnitHeader would silently fall back to the v1 term list);
-// the copy guard (S135 M3) flags past-question text reproduced in JP prose.
+// the copy guard (S135 M3, D-198) flags past-question text reproduced in JP prose.
 import assert from "node:assert/strict";
 import path from "node:path";
 import { test } from "node:test";
 
-import { dataPaths, jpOnlyIssues, readJson, sha256File } from "./lib/textbook-v2.mjs";
+import { copyIssues, dataPaths, jpOnlyIssues, loadKit, readJson, sha256File } from "./lib/textbook-v2.mjs";
 import { fixture, jpPartOf, locPartOf, run, tempRoot, UNIT, writeJson } from "./lib/textbook-v2-testkit.mjs";
 
 const root = tempRoot();
@@ -89,32 +89,55 @@ test("--part on a localised part with --jp: 0 issues + jp_sha256; touching the J
   assert.match(bad.out, /loc-structure\s+part\.terms\[1\]\.one_jp/);
 });
 
-test("copy guard: 20+ normalised characters of a question stem / choice / explanation in JP prose → copy issue", () => {
+test("copy guard D-198 (ii): 12+ normalised consecutive characters of a stem / choice → copy issue; 11 is not", () => {
   const m = readJson(dataPaths(root).manifest(UNIT));
-  const q = m.questions[m.term_questions["転嫁"][0]];
-  const norm = (s) => s.replace(/[\s\p{P}\p{S}]/gu, "");
-  const stem = norm(q.stem_jp.join(""));
-  const expl = norm(q.expl_correct_jp.join(""));
-  const choice = norm(Object.values(q.choices_jp).sort((a, b) => b.length - a.length)[0]);
+  const norm = (x) => x.replace(/[\s\p{P}\p{S}]/gu, "");
+  // a stem / choice run of 14 normalised characters that contains no glossary term
+  const terms = [...new Set([...m.terms, ...Object.values(m.questions).flatMap((q) => q.terms)])];
+  const runs = [];
+  for (const [id, q] of Object.entries(m.questions)) {
+    for (const [kind, text] of [["stem", q.stem_jp.join("")], ...Object.values(q.choices_jp).map((c) => ["choice", c])]) {
+      const n = norm(text);
+      for (let i = 0; i + 14 <= n.length; i += 7) {
+        const w = n.slice(i, i + 14);
+        if (!terms.some((t) => w.includes(norm(t)) || norm(t).includes(w.slice(0, 4)))) runs.push([id, kind, w]);
+      }
+    }
+  }
+  const stemRun = runs.find(([, k]) => k === "stem")[2];
+  const choiceRun = runs.find(([, k, w]) => k === "choice" && w.length === 14)?.[2] ?? runs[1][2];
   const cases = [
-    ["key_points_jp[0]", (u, t) => (u.key_points_jp[0] = t), stem],
-    ["goals_jp[1]", (u, t) => (u.goals_jp[1] = t), expl],
-    ["pairs[0].rows[0].a_jp", (u, t) => (u.pairs[0].rows[0].a_jp = t), choice.length >= 22 ? choice : expl.slice(30)],
+    ["key_points_jp[0]", (u, t) => (u.key_points_jp[0] = t), stemRun.slice(0, 12)],
+    ["pairs[0].rows[0].a_jp", (u, t) => (u.pairs[0].rows[0].a_jp = t), choiceRun.slice(0, 12)],
   ];
-  for (const [where, put, src0] of cases) {
-    const src = src0.slice(0, 22);
-    assert.equal(src.length, 22, where);
+  for (const [where, put, src] of cases) {
     const jp = jpPartOf(locPartOf(fixture()));
     // markup, spaces and punctuation inserted do not hide the copy
-    put(jp, `**${src.slice(0, 6)}** ${src.slice(6, 12)}、${src.slice(12)}。`);
+    put(jp, `ここで **${src.slice(0, 4)}** ${src.slice(4, 8)}、${src.slice(8)}。`);
     const r = validate(jp, "--part");
     assert.equal(r.code, 1, r.out);
-    assert.match(r.out, new RegExp(`copy\\s+${reEsc(where)}\\s+20\\+ characters copied from `), r.out);
+    assert.match(r.out, new RegExp(`copy\\s+${reEsc(where)}\\s+12\\+ characters copied from the stem / choices of `), r.out);
   }
-  // 19 characters is not a copy
+  // 11 characters is not a copy
   const jp = jpPartOf(locPartOf(fixture()));
-  jp.key_points_jp[0] = `${expl.slice(0, 19)}。`;
+  jp.key_points_jp[0] = `ここで${stemRun.slice(0, 11)}。`;
   assert.doesNotMatch(validate(jp, "--part").out, /copy\s/);
+});
+
+test("copy guard D-198 (i): any other question text still available (e.g. an explanation in an older manifest) needs 20+", async () => {
+  const { stripInline } = await loadKit();
+  const expl = "あいうえおかきくけこさしすせそたちつてとなにぬねの";
+  const manifest = { unit_id: UNIT, terms: [], questions: { "2009h21a-q001": { topic_id: "x", terms: [], stem_jp: ["無関係"], choices_jp: {}, correct_answer: "ア", expl_correct_jp: [expl] } } };
+  const at = (n) => copyIssues({ unit_id: UNIT, goals_jp: [`前置き${expl.slice(0, n)}後書き`] }, manifest, stripInline);
+  assert.equal(at(19).length, 0);
+  assert.equal(at(20).length, 1);
+  assert.match(at(20)[0].message, /^20\+ characters copied from 2009h21a-q001/);
+});
+
+test("copy guard: a glossary term itself is not a copy (masked before matching)", async () => {
+  const { stripInline } = await loadKit();
+  const manifest = { unit_id: UNIT, terms: ["プロジェクトコミュニケーションマネジメント"], questions: { q: { topic_id: "x", terms: [], stem_jp: ["プロジェクトコミュニケーションマネジメントの説明として適切なものはどれか。"], choices_jp: {}, correct_answer: "ア" } } };
+  assert.deepEqual(copyIssues({ unit_id: UNIT, goals_jp: ["**プロジェクトコミュニケーションマネジメント**の役割を言える。"] }, manifest, stripInline), []);
 });
 
 test("jpOnlyIssues: drops issues that only concern zh / en, keeps jp and language-neutral ones", () => {

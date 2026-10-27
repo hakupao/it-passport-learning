@@ -14,14 +14,14 @@
 //   - topic          topic_id / category / name_jp / objective_jp / badge; index_unit = the unit's
 //                    unit_index entry (title, summary, terms with freq / order_reason)
 //   - questions      every same-topic question that lists one of the unit's terms, plus the v1
-//                    challenge / inline ids: stem (translations sidecar stem_jp_clean first), choices,
-//                    answer, explanation summary (correct.jp + points jp), chumon group, v1 usage.
-//                    WRITER-ONLY reference: never merged into the unit.
+//                    challenge / inline ids — D-198 thin form: {topic_id, terms, stem_jp (translations
+//                    sidecar stem_jp_clean first, as lines), choices_jp, correct_answer}. No
+//                    explanations (S135 u02 attempt 3). WRITER-ONLY reference: never merged into the unit.
 //   - term_questions headword → its question ids (sorted)
 //   - chumon_members member ids among those questions (validateV2 members; confirm count §0-1)
 //   - figures        FIGURE_KINDS, step / network limits, the v2 type definitions (types.ts), the
 //                    unit's existing svg files
-// Long texts (d195, types.ts, stems, explanations) are arrays of lines (lib toLines: newline, then
+// Long texts (d195, types.ts, stems) are arrays of lines (lib toLines: newline, then
 // after 。 past 200 chars) so a Read of the pretty-printed manifest never truncates a line (S135 M2);
 // the workflow prompts also point every role at the original D-195 / types.ts / figureSpec.ts files.
 //   - rules          validateV2 limits and banned-phrase patterns (as source text)
@@ -142,34 +142,20 @@ export async function buildManifest(unitId, paths) {
   const groupOf = new Map();
   for (const g of readJson(paths.chumon).groups) for (const m of g.member_ids) groupOf.set(m, g.key);
 
-  const sidecar = new Map();
-  const side = (kind, exam) => {
-    const k = `${kind}:${exam}`;
-    if (!sidecar.has(k)) {
-      const f = kind === "e" ? paths.explanations(exam) : paths.translations(exam);
-      sidecar.set(k, existsSync(f) ? readJson(f).questions ?? {} : {});
+  // D-198 thin manifest (u02 attempt 3): per question only the stem (translations sidecar
+  // stem_jp_clean first = the display layer), the choices and the keyed letter. No explanations:
+  // writer and critic holding 解説 texts made every standard sentence "match" some explanation.
+  const stems = new Map();
+  const stemOf = (q) => {
+    if (!stems.has(q.exam_id)) {
+      const f = paths.translations(q.exam_id);
+      stems.set(q.exam_id, existsSync(f) ? readJson(f).questions ?? {} : {});
     }
-    return sidecar.get(k);
+    return stems.get(q.exam_id)[q.id]?.stem_jp_clean ?? q.stem_jp;
   };
   const questions = {};
   for (const q of picked) {
-    const tr = side("t", q.exam_id)[q.id] ?? {};
-    const ex = side("e", q.exam_id)[q.id] ?? {};
-    questions[q.id] = {
-      source_label: q.source_label,
-      terms: q.terms,
-      stem_jp: toLines(tr.stem_jp_clean ?? q.stem_jp),
-      choices_jp: q.choices_jp,
-      correct_answer: q.correct_answer,
-      has_figure: q.has_figure,
-      chumon_group: groupOf.get(q.id) ?? null,
-      expl_correct_jp: ex.correct?.jp ? toLines(ex.correct.jp) : null,
-      expl_points_jp: (ex.points ?? []).map((p) => toLines(p.jp)),
-      v1_use: {
-        challenge: (v1.challenge_questions ?? []).includes(q.id),
-        inline_of: v1.terms.filter((t) => (t.inline_quiz ?? []).includes(q.id)).map((t) => t.term),
-      },
-    };
+    questions[q.id] = { topic_id: q.topic_id, terms: q.terms, stem_jp: toLines(stemOf(q)), choices_jp: q.choices_jp, correct_answer: q.correct_answer };
   }
   const term_questions = Object.fromEntries(terms.map((t) => [t, picked.filter((q) => q.terms.includes(t)).map((q) => q.id)]));
   // every same-topic member (not only the picked ones): challenge_questions may cite any same-topic

@@ -72,8 +72,8 @@ test("happy path: write → critic PASS → localize → code-reviewer PASS; fou
   assert.ok(tr.includes(loc0) && tr.includes("reviewed_sha256"));
   // every role reads the original rule / type files (S135 M2); writer / critic / localiser get the copy ban (M3)
   for (const p of [w, rv, lz, tr]) for (const f of ["docs/decisions/D-195-textbook-writing-and-figure-rules.md", "apps/web/src/lib/textbook/types.ts", "apps/web/src/lib/textbook/figureSpec.ts"]) assert.ok(p.includes(f), f);
-  for (const p of [w, rv, lz]) assert.match(p, /写さない/);
-  assert.match(rv, /転載/);
+  for (const p of [w, lz]) assert.match(p, /写さない/);
+  assert.match(rv, /写していないか/);
   const u = ret.units[0];
   assert.equal(u.status, "ready-to-merge");
   assert.equal(u.jp_rounds, 1);
@@ -143,12 +143,20 @@ test("writer prompts carry the attempt-1 hardening; the critic checks it (S135 u
   for (const p of [w, rw]) {
     assert.match(p, /二段階で書く/);
     assert.match(p, /questions \/ term_questions を\*\*開かない\*\*/);
-    assert.match(p, /同義語に入れ替えたものも転載/);
+    assert.match(p, /写しの基準 \(D-198\)/);
+    assert.match(p, /正規化 12 字以上の連続一致/);
+    assert.match(p, /写しでない = 標準的な定義・計算規則・原則を一般的な表現で述べること/);
+    assert.doesNotMatch(p, /同義語に入れ替え|骨格/);
+    assert.match(p, /「例えば」/);
+    assert.match(p, /図の caption/);
     assert.match(p, /exam 考点は引用題と突き合わせる/);
     assert.match(p, /定義してから使う/);
     assert.match(p, /\[\[jp:…\]\] は zh \/ en 専用なので\*\*日本語の本文には使わない\*\*/);
   }
-  assert.match(rv, /同義語に入れ替えた文も転載/);
+  assert.match(rv, /写しの基準 \(D-198\)/);
+  assert.doesNotMatch(rv, /同義語に入れ替え|骨格/);
+  assert.ok(rv.includes("/Volumes/DevSSD/Project/IT-Passport-Learning/data/ip/quiz/questions.json"), "the critic reads the cited qids from questions.json");
+  for (const p of [w, rv, rw]) assert.doesNotMatch(p, /解説要約/);
   assert.match(rv, /考点と引用題の正解/);
   assert.match(rv, /定義してから使う/);
   assert.match(rv, /\[\[jp:…\]\]/);

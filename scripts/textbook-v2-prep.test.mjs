@@ -50,15 +50,22 @@ test("manifest carries the pre-rewrite glosses, headwords, questions, rules and 
   }
   // v1 challenge questions are included even when they list no unit term
   for (const id of m.v1.challenge_questions) assert.ok(m.questions[id], id);
-  for (const id of m.chumon_members) if (m.questions[id]) assert.ok(m.questions[id].chumon_group, id);
   // members = the topic's whole registry, including members outside `questions`
   const reg = readJson(path.join(root, "quiz/chumon_groups.json")).groups.flatMap((g) => g.member_ids);
   const qs = readJson(path.join(root, "quiz/questions.json")).questions;
   const want = qs.filter((x) => x.topic_id === m.topic.topic_id && reg.includes(x.id)).map((x) => x.id).sort();
   assert.deepEqual(m.chumon_members, want);
   assert.ok(want.some((id) => !m.questions[id]), "some topic member lies outside the unit's questions");
-  const q = m.questions[ids[0]];
-  for (const k of ["stem_jp", "choices_jp", "correct_answer", "expl_correct_jp", "expl_points_jp"]) assert.ok(k in q, k);
+  // D-198 thin manifest: per question only the stem, the choices, the keyed letter, topic and terms
+  for (const q of Object.values(m.questions)) assert.deepEqual(Object.keys(q), ["topic_id", "terms", "stem_jp", "choices_jp", "correct_answer"]);
+  // no explanation anywhere (writer and critic must not hold 解説 texts)
+  const keys = [];
+  const walk = (v) => (Array.isArray(v) ? v.forEach(walk) : v && typeof v === "object" ? Object.entries(v).forEach(([k, x]) => (keys.push(k), walk(x))) : null);
+  const { v1, ...rest } = m;
+  walk(rest);
+  assert.deepEqual(keys.filter((k) => /expl|解説/.test(k)), []);
+  assert.doesNotMatch(JSON.stringify(Object.values(m.questions)), /expl_/);
+  assert.ok(v1.terms.length > 0, "the v1 snapshot is kept verbatim");
 });
 
 test("prep refuses a units file that is already v2 (its v1 content would be lost)", () => {

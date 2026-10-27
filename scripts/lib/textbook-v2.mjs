@@ -59,7 +59,6 @@ export function dataPaths(dataRoot = path.join(REPO, "data/ip")) {
     unit: (unit) => path.join(tb, "units", `${unit}.json`),
     questions: path.join(dataRoot, "quiz/questions.json"),
     chumon: path.join(dataRoot, "quiz/chumon_groups.json"),
-    explanations: (exam) => path.join(dataRoot, "quiz/explanations", `${exam}.json`),
     translations: (exam) => path.join(dataRoot, "quiz/translations", `${exam}.json`),
     planning,
     manifest: (unit) => path.join(planning(unit), "manifest.json"),
@@ -206,39 +205,70 @@ export function estMinutes(p, stripInline) {
 }
 
 /**
- * Copy guard (S135 M3): past-question text must not be reproduced. Normalised = markers, whitespace,
- * punctuation and symbols removed. Any run of COPY_MIN normalised characters of a stored JP prose
- * string that also occurs in a manifest question's stem / choices / explanation → one `copy` issue
- * per prose string (the first hit, with the question id).
+ * Copy guard (S135 M3, D-198 (i)(ii)): past-question text must not be reproduced. Normalised = markers,
+ * whitespace, punctuation and symbols removed; glossary terms (the unit's headwords, every manifest
+ * question's `terms`) are masked first, so naming a term is never a copy and no run crosses one.
+ *   (ii) COPY_MIN_QUESTION (12) consecutive normalised characters shared with a question's stem or choices,
+ *   (i)  COPY_MIN (20) shared with any other question text the manifest still carries (an older
+ *        manifest's explanations; the D-198 thin manifest has none).
+ * → one `copy` issue per prose string (the first hit, with the question id).
  */
 export const COPY_MIN = 20;
+export const COPY_MIN_QUESTION = 12;
 export const normCopy = (s, stripInline) => stripInline(s).replace(/[\s\p{P}\p{S}]/gu, "");
-/** The manifest question texts (stem / choices / explanation), joined back from their line arrays. */
+const joinLines = (v) => (Array.isArray(v) ? v.join("") : typeof v === "string" ? v : "");
+/** The manifest question texts as [id, "question" (stem / choices) | "other", text]. */
 export function questionTexts(manifest) {
   const out = [];
   for (const [id, q] of Object.entries(manifest.questions ?? {})) {
-    const join = (v) => (Array.isArray(v) ? v.join("") : typeof v === "string" ? v : "");
-    out.push([id, join(q.stem_jp)], [id, join(q.expl_correct_jp)]);
-    for (const c of Object.values(q.choices_jp ?? {})) out.push([id, join(c)]);
-    for (const p of q.expl_points_jp ?? []) out.push([id, join(p)]);
+    out.push([id, "question", joinLines(q.stem_jp)]);
+    for (const c of Object.values(q.choices_jp ?? {})) out.push([id, "question", joinLines(c)]);
+    if (q.expl_correct_jp) out.push([id, "other", joinLines(q.expl_correct_jp)]);
+    for (const p of q.expl_points_jp ?? []) out.push([id, "other", joinLines(p)]);
   }
   return out;
 }
+/** Normalised text split at glossary-term occurrences (longest term first): the runs between terms. */
+function unmasked(n, terms) {
+  const segs = [];
+  let cur = "";
+  for (let i = 0; i < n.length; ) {
+    const t = terms.find((x) => n.startsWith(x, i));
+    if (t) {
+      segs.push(cur);
+      cur = "";
+      i += t.length;
+    } else cur += n[i++];
+  }
+  segs.push(cur);
+  return segs;
+}
 export function copyIssues(p, manifest, stripInline, unitId = p.unit_id) {
-  const grams = new Map();
-  for (const [id, text] of questionTexts(manifest)) {
-    const n = normCopy(text, stripInline);
-    for (let i = 0; i + COPY_MIN <= n.length; i++) if (!grams.has(n.slice(i, i + COPY_MIN))) grams.set(n.slice(i, i + COPY_MIN), id);
+  const termSet = new Set([...(manifest.terms ?? []), ...(manifest.v1_terms ?? []).map((t) => t.term), ...Object.values(manifest.questions ?? {}).flatMap((q) => q.terms ?? [])]);
+  const terms = [...termSet].map((t) => normCopy(t, stripInline)).filter((t) => t.length >= 2).sort((x, y) => y.length - x.length);
+  const grams = { question: new Map(), other: new Map() };
+  const size = { question: COPY_MIN_QUESTION, other: COPY_MIN };
+  for (const [id, kind, text] of questionTexts(manifest)) {
+    for (const seg of unmasked(normCopy(text, stripInline), terms)) {
+      for (let i = 0; i + size[kind] <= seg.length; i++) if (!grams[kind].has(seg.slice(i, i + size[kind]))) grams[kind].set(seg.slice(i, i + size[kind]), id);
+    }
   }
   const out = [];
   for (const [field, s] of jpProse(p)) {
-    const n = normCopy(s, stripInline);
-    for (let i = 0; i + COPY_MIN <= n.length; i++) {
-      const id = grams.get(n.slice(i, i + COPY_MIN));
-      if (id) {
-        out.push({ unitId, code: "copy", field, message: `${COPY_MIN}+ characters copied from ${id}: 「${n.slice(i, i + COPY_MIN)}…」 — write your own sentence` });
-        break;
+    const hit = (() => {
+      for (const seg of unmasked(normCopy(s, stripInline), terms)) {
+        for (const kind of ["question", "other"]) {
+          for (let i = 0; i + size[kind] <= seg.length; i++) {
+            const id = grams[kind].get(seg.slice(i, i + size[kind]));
+            if (id) return { id, kind, run: seg.slice(i, i + size[kind]) };
+          }
+        }
       }
+      return null;
+    })();
+    if (hit) {
+      const from = hit.kind === "question" ? `the stem / choices of ${hit.id}` : hit.id;
+      out.push({ unitId, code: "copy", field, message: `${size[hit.kind]}+ characters copied from ${from}: 「${hit.run}…」 — D-198: state the fact in your own words` });
     }
   }
   return out;
