@@ -39,7 +39,8 @@ function setup() {
   return { root, P, journal, locFile, locSha, batch };
 }
 const patch = (s, args) => run("textbook-v2-patch.mjs", ["--unit", UNIT, "--batch-dir", s.batch, ...args]);
-const merge = (s, extra = []) => run("textbook-v2-merge.mjs", ["--unit", UNIT, "--data-root", s.root, "--journal", s.journal, "--batch-dir", s.batch, ...extra]);
+const merge = (s, extra = []) =>
+  run("textbook-v2-merge.mjs", ["--unit", UNIT, "--data-root", s.root, "--journal", s.journal, "--batch-dir", s.batch, "--v1terms-fixture", path.join(s.root, "v1terms.json"), ...extra]);
 const patchFile = (s) => path.join(s.batch, "patches", `${UNIT}.json`);
 const reg = (s, field, before, after, part = s.locFile) => patch(s, ["--register", "--part", part, "--field", field, "--before", before, "--after", after, "--reason", "Rule A L1: wording"]);
 
@@ -156,7 +157,7 @@ test("frozen baseline: the pilot units are listed; merge --write refuses them, a
   assert.deepEqual(Object.keys(frozen).sort(), ["management-10-27-u01", "management-10-27-u02", "management-10-27-u03"]);
   const s = setup();
   // the real batch dir (default): UNIT = management-10-27-u03 is frozen
-  const real = run("textbook-v2-merge.mjs", ["--unit", UNIT, "--data-root", s.root, "--journal", s.journal, "--write"]);
+  const real = run("textbook-v2-merge.mjs", ["--unit", UNIT, "--data-root", s.root, "--journal", s.journal, "--write", "--v1terms-fixture", path.join(s.root, "v1terms.json")]);
   assert.equal(real.code, 1, real.out);
   assert.match(real.out, /frozen baseline/);
   assert.equal(readJson(s.P.unit(UNIT)).schema_version, "stage4-unit-v1-trilingual", "units/ untouched");

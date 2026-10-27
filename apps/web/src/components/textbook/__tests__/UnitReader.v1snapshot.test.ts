@@ -38,20 +38,22 @@ import { loadChumonMembers } from "@/lib/practice/chumonMembers";
 import { pickConfirm } from "@/lib/textbook/confirm";
 import { loadAllUnits, loadReaderIndex, neighbors, normalizeUnit, unitPlace, type TextbookUnit } from "@/lib/textbook/reader";
 import { V2_SCHEMA } from "@/lib/textbook/types";
+import { frozenV1 } from "@/lib/textbook/__tests__/v1Frozen";
 
 const PER_CATEGORY = 14;
 
 /** 14 evenly spaced units per 分野 (unit_id order over all 244, so the pick doesn't move when a unit
- *  turns v2; those are skipped by the caller) + a synthetic one without analogy / hook. */
+ *  turns v2; those are skipped by the caller) + a synthetic one without analogy / hook, built on the
+ *  frozen v1 copy of management-08-25-u01 (batch B4: the first management v1 unit with ≥ 2 terms when
+ *  the snapshot was recorded; frozen so the batch rewrite cannot move it). */
 function sample(units: TextbookUnit[]): TextbookUnit[] {
   const all = [...units].sort((a, b) => a.unit_id.localeCompare(b.unit_id));
-  const v1 = all.filter((u) => u.schema_version !== V2_SCHEMA);
   const out: TextbookUnit[] = [];
   for (const cat of ["technology", "management", "strategy"]) {
     const list = all.filter((u) => u.category === cat);
     for (let i = 0; i < PER_CATEGORY; i++) out.push(list[Math.floor((i * list.length) / PER_CATEGORY)]!);
   }
-  const base = v1.find((u) => u.category === "management" && u.terms.length >= 2)!;
+  const base = frozenV1("management-08-25-u01");
   const blank = { analogy_jp: "", analogy_zh: "", analogy_en: "" };
   const noHook = { memory_hook_jp: "", memory_hook_zh: "", memory_hook_en: "" };
   out.push({
@@ -98,7 +100,8 @@ describe("UnitReader v1 output is unchanged", () => {
       }
     }
     expect(Object.keys(now)).toHaveLength(v1Picked.length * 3);
-    expect(v1Picked.length).toBeGreaterThan(3 * PER_CATEGORY - 6); // the pilot rewrites ≤ 3 units per topic
+    // the batch rewrite removes sampled units one by one (B4): the synthetic frozen-v1 unit always stays
+    expect(v1Picked.map((u) => u.unit_id)).toContain("management-08-25-u01-nohook");
     if (process.env.UNIT_READER_V1_WRITE === "1") writeFileSync(FILE, `${JSON.stringify(now, null, 1)}\n`);
     expect(existsSync(FILE)).toBe(true);
     const saved = JSON.parse(readFileSync(FILE, "utf-8")) as Record<string, string>;

@@ -4,7 +4,7 @@
 // data/ip/textbook/units/<id>.json.
 //
 // Run: node scripts/textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <more.jsonl> …] | --run-tag <tag>)
-//        [--write] [--data-root <dir>] [--batch-dir <dir>]
+//        [--write] [--data-root <dir>] [--batch-dir <dir>] [--v1terms-fixture <file>]
 //   Several --journal (a resumed / continued run): rows are read in order, one per unit / stage / round,
 //   a later row replacing an earlier one.
 //
@@ -37,7 +37,10 @@
 // is given, both reviews PASS, validate (validateV2 + svg files + copy guard) has 0 issues and parity 0 diff:
 //   1. archive the v1 original to <planning>/<id>/v1-original.json (never overwritten; must equal
 //      manifest.v1; a units file that is v1 but ≠ manifest.v1 means a stale manifest → refuse),
-//   2. write data/ip/textbook/units/<id>.json.
+//   2. write data/ip/textbook/units/<id>.json,
+//   3. record the unit's v1 glosses (manifest.v1_terms) in apps/web/src/lib/textbook/__fixtures__/v2-units.v1terms.json
+//      (--v1terms-fixture; the v2 corpus tests' v1Terms): added when missing, and an existing entry must be
+//      equal (checked before anything is written; batch B4).
 //   Then run scripts/textbook-unit-minutes-build.mjs (copy-only) and its --check.
 // Patches (D-201 §0-4, scripts/textbook-v2-patch.mjs): <batch-dir>/patches/<id>.json is replayed on the
 // in-memory localised part after the loc-vs-JP check and before assembly, so compat fields and est_minutes
@@ -51,11 +54,13 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { assemble, canon, dataPaths, jsonText, loadKit, locVsJp, parityDiff, parseArgs, partCounts, readJournal, readJson, RUN_TAG_RE, sha256File, V1_SCHEMA } from "./lib/textbook-v2.mjs";
+import { assemble, canon, dataPaths, jsonText, REPO, loadKit, locVsJp, parityDiff, parseArgs, partCounts, readJournal, readJson, RUN_TAG_RE, sha256File, V1_SCHEMA } from "./lib/textbook-v2.mjs";
 import { applyPatches, BATCH_DIR, PatchError, readFrozen, readPatches } from "./textbook-v2-patch.mjs";
 import { validateUnit } from "./textbook-v2-validate.mjs";
 
 class Refuse extends Error {}
+
+export const V1TERMS_FIXTURE = path.join(REPO, "apps/web/src/lib/textbook/__fixtures__/v2-units.v1terms.json");
 
 /**
  * D-199: a review approves iff it has an issues array with no high / medium issue (low issues are
@@ -117,7 +122,7 @@ function readPart(row, unit) {
   return p;
 }
 
-export async function merge({ unit, journals, runTag, write, paths, batchDir = BATCH_DIR }) {
+export async function merge({ unit, journals, runTag, write, paths, batchDir = BATCH_DIR, v1termsFile = V1TERMS_FIXTURE }) {
   const mf = paths.manifest(unit);
   if (!existsSync(mf)) throw new Refuse(`manifest not found: ${mf} (run textbook-v2-prep.mjs --unit ${unit})`);
   const manifest = readJson(mf);
@@ -175,6 +180,11 @@ export async function merge({ unit, journals, runTag, write, paths, batchDir = B
   if (issues.length > 0) why.push(`${issues.length} validate issue(s):`, ...issues.map((i) => `  ${i.code.padEnd(13)} ${i.field}  ${i.message}`));
   if (diff.length > 0) why.push(`${diff.length} parity difference(s)`);
   if (why.length > 0) throw new Refuse(`not written:\n  ${why.join("\n  ")}`);
+  // the v2 corpus tests' v1 glosses: an existing entry must be this manifest's (checked before any write)
+  const v1terms = existsSync(v1termsFile) ? readJson(v1termsFile) : {};
+  if (v1terms[unit] !== undefined && canon(v1terms[unit]) !== canon(manifest.v1_terms)) {
+    throw new Refuse(`${v1termsFile} has v1 glosses for ${unit} that differ from manifest.v1_terms — not written`);
+  }
 
   // 1. archive the v1 original (never overwritten)
   const unitFile = paths.unit(unit);
@@ -191,6 +201,12 @@ export async function merge({ unit, journals, runTag, write, paths, batchDir = B
   }
   // 2. replace the unit
   writeFileSync(unitFile, jsonText(unitDoc));
+  // 3. the v1 glosses fixture (sorted by unit id)
+  if (v1terms[unit] === undefined) {
+    v1terms[unit] = manifest.v1_terms;
+    writeFileSync(v1termsFile, jsonText(Object.fromEntries(Object.keys(v1terms).sort().map((k) => [k, v1terms[k]]))));
+    report.v1terms_added = true;
+  }
   report.written = true;
   return report;
 }
@@ -198,13 +214,13 @@ export async function merge({ unit, journals, runTag, write, paths, batchDir = B
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   let opt;
   try {
-    opt = parseArgs(process.argv.slice(2), { unit: "string", journal: "list", "run-tag": "string", write: "bool", "data-root": "string", "batch-dir": "string" });
+    opt = parseArgs(process.argv.slice(2), { unit: "string", journal: "list", "run-tag": "string", write: "bool", "data-root": "string", "batch-dir": "string", "v1terms-fixture": "string" });
   } catch (e) {
     console.error(`✗ ${e.message}`);
     process.exit(2);
   }
   if (!opt.unit) {
-    console.error("usage: textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <resumed run's journal.jsonl> …] | --run-tag <tag>) [--write] [--data-root <dir>] [--batch-dir <dir>]");
+    console.error("usage: textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <resumed run's journal.jsonl> …] | --run-tag <tag>) [--write] [--data-root <dir>] [--batch-dir <dir>] [--v1terms-fixture <file>]");
     process.exit(2);
   }
   for (const j of opt.journal ?? []) {
@@ -219,7 +235,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   }
   const paths = dataPaths(opt["data-root"]);
   try {
-    const r = await merge({ unit: opt.unit, journals: (opt.journal ?? []).map((j) => path.resolve(j)), runTag: opt["run-tag"], write: !!opt.write, paths, batchDir: path.resolve(opt["batch-dir"] ?? BATCH_DIR) });
+    const r = await merge({ unit: opt.unit, journals: (opt.journal ?? []).map((j) => path.resolve(j)), runTag: opt["run-tag"], write: !!opt.write, paths, batchDir: path.resolve(opt["batch-dir"] ?? BATCH_DIR), v1termsFile: path.resolve(opt["v1terms-fixture"] ?? V1TERMS_FIXTURE) });
     if (!r.from_journal) console.log(`? no --journal: newest part files of run ${opt["run-tag"]} used, reviews unknown (dry-run only)`);
     console.log(`${r.issues.length + r.parity_diff.length === 0 ? "✓" : "✗"} ${r.unit}: jp#${r.jp_round} + loc#${r.loc_round} → ${path.relative(process.cwd(), r.merged)}`);
     if (r.seed) console.log(`  seed: ${r.seed.seed_part} (sha256 ${String(r.seed.seed_sha256).slice(0, 12)}…, jp-review #${r.seed.seed_review_round}) — provenance only`);
@@ -227,6 +243,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     console.log(`  reviews: jp ${r.approved.jp ? "PASS" : "not PASS"} / loc ${r.approved.loc ? "PASS" : "not PASS"}; validate ${r.issues.length} issue(s); parity ${r.parity_diff.length} diff`);
     for (const i of r.issues) console.log(`  ${i.code.padEnd(13)} ${i.field}  ${i.message}`);
     for (const [loc, c] of r.parity_diff) console.log(`  parity ${loc}  jp=${c.jp} zh=${c.zh} en=${c.en}`);
+    if (r.v1terms_added) console.log(`  added ${r.unit}'s v1 glosses to ${path.relative(process.cwd(), opt["v1terms-fixture"] ?? V1TERMS_FIXTURE)}`);
     console.log(r.written ? `✓ wrote ${path.relative(process.cwd(), paths.unit(r.unit))} (v1 archived at ${path.relative(process.cwd(), paths.v1Original(r.unit))})` : "  dry-run: units/ not touched (--write to replace)");
     process.exit(r.issues.length + r.parity_diff.length === 0 ? 0 : 1);
   } catch (e) {

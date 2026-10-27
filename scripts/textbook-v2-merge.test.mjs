@@ -8,7 +8,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 
-import { dataPaths, LANGS, partCounts, readJson, sha256File } from "./lib/textbook-v2.mjs";
+import { dataPaths, LANGS, partCounts, readJson, REPO, sha256File } from "./lib/textbook-v2.mjs";
 import { fixture, journalText, jpPartOf, locPartOf, run, tempRoot, UNIT, writeJson } from "./lib/textbook-v2-testkit.mjs";
 
 const TAG = "t1";
@@ -44,7 +44,9 @@ function setup(opts = {}) {
   return { root, P, journal, jpFile, locFile };
 }
 // an empty batch dir: no patches, and the fixture unit (pilot u03, a frozen baseline in the real batch dir) is writable
-const merge = (s, extra = []) => run("textbook-v2-merge.mjs", ["--unit", UNIT, "--data-root", s.root, "--batch-dir", s.root, ...extra]);
+// and a temp v1 glosses fixture (never the committed one)
+const merge = (s, extra = []) =>
+  run("textbook-v2-merge.mjs", ["--unit", UNIT, "--data-root", s.root, "--batch-dir", s.root, "--v1terms-fixture", path.join(s.root, "v1terms.json"), ...extra]);
 
 test("dry-run: merged unit == fixture except est_minutes; units/ untouched", () => {
   const s = setup();
@@ -243,4 +245,39 @@ test("D-199 approval: a review with only low issues approves (even if it said RE
   const r = merge(s, ["--journal", s.journal, "--write"]);
   assert.equal(r.code, 1, r.out);
   assert.match(r.out, /translation review of loc#0: 1 high\/medium/);
+});
+
+test("--write records the unit's v1 glosses in the v1terms fixture: added when missing, an equal entry kept, a different one refused", () => {
+  const s = setup();
+  const fx = path.join(s.root, "v1terms.json");
+  writeJson(fx, { "strategy-01-01-u01": [{ term: "x", term_zh: "x", term_en: "x" }] });
+  const v1Terms = readJson(s.P.manifest(UNIT)).v1_terms;
+  const r = merge(s, ["--journal", s.journal, "--write"]);
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /added management-10-27-u03's v1 glosses/);
+  const doc = readJson(fx);
+  assert.deepEqual(Object.keys(doc), [UNIT, "strategy-01-01-u01"], "sorted by unit id");
+  assert.deepEqual(doc[UNIT], v1Terms);
+  assert.deepEqual(v1Terms.map((t) => t.term), fixture().terms.map((t) => t.term));
+  // equal entry: written again, fixture bytes unchanged
+  const bytes = readFileSync(fx, "utf-8");
+  const again = merge(s, ["--journal", s.journal, "--write"]);
+  assert.equal(again.code, 0, again.out);
+  assert.doesNotMatch(again.out, /added/);
+  assert.equal(readFileSync(fx, "utf-8"), bytes);
+  // a different entry: refused before anything is written
+  doc[UNIT][0].term_zh = "别的";
+  writeJson(fx, doc);
+  writeFileSync(s.P.unit(UNIT), readFileSync(s.P.v1Original(UNIT)));
+  const before = readFileSync(s.P.unit(UNIT));
+  const bad = merge(s, ["--journal", s.journal, "--write"]);
+  assert.equal(bad.code, 1, bad.out);
+  assert.match(bad.out, /differ from manifest\.v1_terms/);
+  assert.ok(before.equals(readFileSync(s.P.unit(UNIT))), "units/ untouched");
+});
+
+test("the committed v1terms fixture: the pilot entries equal their manifests' v1 glosses (from the archived v1 files)", () => {
+  const doc = readJson(path.join(REPO, "apps/web/src/lib/textbook/__fixtures__/v2-units.v1terms.json"));
+  const s = setup();
+  assert.deepEqual(doc[UNIT], readJson(s.P.manifest(UNIT)).v1_terms);
 });

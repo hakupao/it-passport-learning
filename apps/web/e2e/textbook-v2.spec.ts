@@ -9,9 +9,11 @@
 //   - reduced motion: the figure shows its last step and stays there after scrolling into view.
 //   - network: a new duration changes the total and the critical path; 100 / "x" are flagged
 //     (aria-invalid + visible error) and the total keeps the last valid numbers.
-//   - every pilot unit × ja / zh / en: 200, block order goals → overview → articles → key points →
-//     #confirm → 読了, no raw inline markup in the page text; each pilot term's dictionary page is
-//     200 and markup-free.
+//   - every unit of TEXTBOOK_E2E_UNITS (comma list of v2 unit ids; default = the three pilot units;
+//     batch B4: a batch sets it to its own units) × ja / zh / en: 200, block order goals → overview →
+//     articles → key points → #confirm → 読了, no raw inline markup in the page text, no horizontal page
+//     scroll at 390px; each of their terms' dictionary pages is 200 and markup-free.
+//   The steps / network interaction tests always use the pilot units.
 // No LLM call (guarded), non-owner.
 
 import { readFileSync } from "node:fs";
@@ -45,6 +47,20 @@ const PILOTS: PilotUnit[] = PILOT_IDS.map(
       readFileSync(path.resolve(__dirname, `../../../data/ip/textbook/units/${id}.json`), "utf-8"),
     ) as PilotUnit,
 );
+
+/** Units of the per-unit loops: env TEXTBOOK_E2E_UNITS (comma-separated v2 unit ids), default the pilot. */
+const E2E_IDS = (process.env.TEXTBOOK_E2E_UNITS ?? PILOT_IDS.join(","))
+  .split(",")
+  .map((s) => s.trim())
+  .filter((s) => s !== "");
+const E2E_UNITS: PilotUnit[] = E2E_IDS.map((id) => {
+  if (!/^[a-z]+-\d{2}-\d{2}-u\d{2}$/.test(id)) throw new Error(`TEXTBOOK_E2E_UNITS: bad unit id ${JSON.stringify(id)}`);
+  const u = JSON.parse(readFileSync(path.resolve(__dirname, `../../../data/ip/textbook/units/${id}.json`), "utf-8")) as PilotUnit & {
+    schema_version: string;
+  };
+  if (u.schema_version !== "textbook-unit-v2") throw new Error(`TEXTBOOK_E2E_UNITS: ${id} is not a v2 unit`);
+  return u;
+});
 
 /** The first term (unit order, then term order) whose figure matches. */
 function findFig(match: (f: PilotFig) => boolean): { unitId: string; term: string; fig: PilotFig } {
@@ -234,9 +250,9 @@ test(`network widget (${NETWORK.unitId} / ${NETWORK.term}): a new duration recom
   await expect(input).not.toHaveAttribute("aria-invalid", "true");
 });
 
-test("pilot units at 390px: no horizontal page scroll", async ({ page }) => {
+test("v2 units at 390px: no horizontal page scroll", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const unit of PILOTS) {
+  for (const unit of E2E_UNITS) {
     await page.goto(`/ja/textbook/${unit.unit_id}`);
     await waitForRecord(page);
     await page.evaluate(() => document.fonts.ready);
@@ -248,7 +264,7 @@ function expectNoMarkup(text: string, where: string): void {
   for (const m of MARKUP) expect(text.includes(m), `${where}: raw ${JSON.stringify(m)} in the page text`).toBe(false);
 }
 
-for (const unit of PILOTS) {
+for (const unit of E2E_UNITS) {
   for (const locale of ["ja", "zh", "en"] as const) {
     test(`${unit.unit_id} /${locale}: 200, goals → overview → articles → key points → #confirm → 読了, no raw markup`, async ({
       page,

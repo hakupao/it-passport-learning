@@ -5,7 +5,7 @@
 // run) and return to the unit; every click is a new round; a wrong answer lands in the mistakes book.
 // No LLM call (guarded), non-owner.
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { test, expect, type Page } from "@playwright/test";
@@ -22,9 +22,35 @@ const CORPUS = (
 ).questions;
 const QUESTIONS: Map<string, string> = new Map(CORPUS.map((q) => [q.id, q.correct_answer]));
 const TERMS: Map<string, string[]> = new Map(CORPUS.map((q) => [q.id, q.terms]));
-const UNIT = JSON.parse(
-  readFileSync(path.resolve(__dirname, `../../../data/ip/textbook/units/management-08-25-u01.json`), "utf-8"),
-) as { title_jp: string; terms: { term: string }[] };
+const TB = path.resolve(__dirname, "../../../data/ip/textbook");
+interface CorpusUnit {
+  unit_id: string;
+  schema_version: string;
+  title_jp: string;
+  terms: { term: string; figure?: { svg_path: string } | null }[];
+}
+const readUnit = (id: string): CorpusUnit => JSON.parse(readFileSync(path.join(TB, "units", `${id}.json`), "utf-8")) as CorpusUnit;
+const UNIT = readUnit("management-08-25-u01");
+const V1 = "stage4-unit-v1-trilingual";
+/** Live units, preferred id first then unit_id order (batch B4: the rewrite turns units v2 one batch at a time). */
+function liveUnits(prefer: string): CorpusUnit[] {
+  const ids = readdirSync(path.join(TB, "units")).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort();
+  return [prefer, ...ids.filter((id) => id !== prefer)].map(readUnit);
+}
+/** Natural width of an svg as the reader reads it (reader.ts svgWidth: max-width px, else the viewBox width). */
+function svgWidth(svgPath: string): number {
+  const root = /<svg[^>]*>/.exec(readFileSync(path.join(TB, svgPath), "utf-8"))?.[0] ?? "";
+  const m = /max-width:\s*([\d.]+)px/.exec(root) ?? /viewBox="[-\d.]+[ ,]+[-\d.]+[ ,]+([\d.]+)[ ,]/.exec(root);
+  return m ? Number(m[1]) : 0;
+}
+/** A v1 unit for the v1-only layout (term index): management-08-25-u01 while it is v1. */
+const V1_LAYOUT_UNIT = liveUnits("management-08-25-u01").find((u) => u.schema_version === V1)?.unit_id ?? null;
+/** A v1 unit whose first figure is a wide SVG (≥ 700px natural): management-11-28-u01 (ITIL, 980px) while it is v1. */
+const WIDE_FIG_UNIT =
+  liveUnits("management-11-28-u01").find((u) => {
+    const f = u.schema_version === V1 ? u.terms.find((t) => t.figure)?.figure : null;
+    return !!f && svgWidth(f.svg_path) >= 700;
+  })?.unit_id ?? null;
 
 const face = (page: Page) => page.locator("main[data-session] article[id]");
 const progress = (page: Page) => page.locator("[data-progress]");
@@ -80,7 +106,9 @@ for (const width of [1440, 390]) {
   });
 }
 
-test("unit page: term index → articles → 要点 → 確認問題 → 読了", async ({ page }) => {
+test("unit page (v1): term index → articles → 要点 → 確認問題 → 読了", async ({ page }) => {
+  test.skip(V1_LAYOUT_UNIT === null, "no v1 unit left (the v2 layout is covered by textbook-v2.spec.ts)");
+  const UNIT_ID = V1_LAYOUT_UNIT!;
   await page.goto(`/ja/textbook/${UNIT_ID}`);
   const main = page.locator("main:has(article)");
   const index = main.locator('[data-part="term-index"] a');
@@ -167,7 +195,8 @@ test("a term's past-question link opens a from=unit group with a run; its summar
 }) => {
   await page.goto(`/ja/textbook/${UNIT_ID}`);
   await waitForUnitReady(page);
-  const term = page.locator("main article").first();
+  // the first term with past questions (a v2 term may have none)
+  const term = page.locator("main article").filter({ has: page.locator('[data-part="term-past"] a') }).first();
   const tid = (await term.getAttribute("id"))!;
   const link = term.locator('[data-part="term-past"] a');
   await expect(link).toHaveAttribute("href", new RegExp(`&from=unit&unit=${UNIT_ID}&at=${tid}$`));
@@ -240,10 +269,11 @@ test("a set not from a unit shows no link back after a wrong answer", async ({ p
 });
 
 test("phone width: a wide figure keeps a readable width and scrolls inside its box, not the page", async ({ page }) => {
+  test.skip(WIDE_FIG_UNIT === null, "no v1 unit with a wide first SVG left");
   await page.setViewportSize({ width: 390, height: 844 });
-  // a v1 unit whose first figure is a wide SVG (ITIL, natural width 980px); the pilot units are v2
-  // (no SVG) and are covered at phone width in textbook-v2.spec.ts
-  await page.goto("/ja/textbook/management-11-28-u01");
+  // a v1 unit whose first figure is a wide SVG (picked from the live corpus, B4); v2 units are
+  // covered at phone width in textbook-v2.spec.ts
+  await page.goto(`/ja/textbook/${WIDE_FIG_UNIT}`);
   await waitForRecord(page);
   await page.evaluate(() => document.fonts.ready);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);

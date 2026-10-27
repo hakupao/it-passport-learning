@@ -8,6 +8,7 @@ import { termId } from "../../glossary/termId";
 import { loadChumonMembers, type ChumonMembers } from "../../practice/chumonMembers";
 import { loadAllUnits, normalizeUnit, UNIT_ID_RE } from "../reader";
 import { V2_SCHEMA, type TextbookUnitV2 } from "../types";
+import { frozenV1 } from "./v1Frozen";
 
 describe("normalizeUnit (v1)", () => {
   it("maps every unit of the corpus by §0-6", async () => {
@@ -52,16 +53,16 @@ describe("normalizeUnit (v1)", () => {
     }
   });
 
-  it("drops a chumon group member from a term's quiz (strategy-01-02-u14 最適化)", async () => {
-    const [units, members] = await Promise.all([loadAllUnits(), loadChumonMembers()]);
-    const raw = units.find((u) => u.unit_id === "strategy-01-02-u14")!;
+  it("drops a chumon group member from a term's quiz (strategy-01-02-u14 最適化, frozen v1 copy)", async () => {
+    const members = await loadChumonMembers();
+    const raw = frozenV1("strategy-01-02-u14");
     expect(raw.terms[2]!.term).toBe("最適化");
     expect(raw.terms[2]!.inline_quiz).toEqual(["2009h21h-q097", "2011h23a-q024"]);
     expect(normalizeUnit(raw, members).terms[2]!.quiz).toEqual(["2011h23a-q024"]);
   });
 
   it("analogy / hook are null when absent", async () => {
-    const [[raw], members] = await Promise.all([loadAllUnits(), loadChumonMembers()]);
+    const [raw, members] = [frozenV1("management-08-25-u01"), await loadChumonMembers()];
     const t = { ...raw!.terms[0]!, analogy_jp: "", analogy_zh: "", analogy_en: "", memory_hook_jp: "", memory_hook_zh: "", memory_hook_en: "" };
     const u = normalizeUnit({ ...raw!, terms: [t] }, members);
     expect(u.terms[0]!.analogy).toBeNull();
@@ -69,7 +70,7 @@ describe("normalizeUnit (v1)", () => {
   });
 
   it("rejects an unknown schema_version", async () => {
-    const [[raw], members] = await Promise.all([loadAllUnits(), loadChumonMembers()]);
+    const [raw, members] = [frozenV1("management-08-25-u01"), await loadChumonMembers()];
     expect(() => normalizeUnit({ ...raw!, schema_version: "nope" }, members)).toThrow(/schema_version/);
   });
 });

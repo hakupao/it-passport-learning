@@ -8,6 +8,7 @@ import { loadChumonRegistry } from "../../practice/practiceReader";
 import { loadBaseQuestions } from "../../quiz/quizReader";
 import { confirmHref, nextRun, orderConfirm, pastCount, pickConfirm } from "../confirm";
 import { loadAllUnits, normalizeUnit, type ReaderTerm, type ReaderUnit } from "../reader";
+import { frozenV1 } from "./v1Frozen";
 
 const DAY = 86_400_000;
 
@@ -63,11 +64,19 @@ describe("pickConfirm", () => {
       loadBaseQuestions(),
     ]);
     const byId = new Map(questions.map((q) => [q.id, q]));
-    const dist: Record<number, number> = {};
     for (const raw of units) {
       const u = normalizeUnit(raw, members);
       const ids = pickConfirm(u, members);
-      dist[ids.length] = (dist[ids.length] ?? 0) + 1;
+      // independent of the reader model (B4: the batch rewrite changes the corpus distribution, so it is
+      // recomputed per unit from the raw fields instead of pinned): raw challenge_questions, then raw
+      // non-fallback inline_quiz in term order up to 3, members dropped, deduped, at most 5
+      const want: string[] = [];
+      const take = (id: string) => {
+        if (!members.has(id) && !want.includes(id)) want.push(id);
+      };
+      raw.challenge_questions.forEach(take);
+      for (const t of raw.terms) for (const id of t.inline_fallback ? [] : t.inline_quiz) if (want.length < 3) take(id);
+      expect(ids, u.id).toEqual(want.slice(0, 5));
       expect(ids.length, u.id).toBeGreaterThanOrEqual(3);
       expect(ids.length, u.id).toBeLessThanOrEqual(5);
       expect(new Set(ids).size, u.id).toBe(ids.length);
@@ -84,19 +93,20 @@ describe("pickConfirm", () => {
       );
       expect(pastCount(u), u.id).toBe(rawPast.size);
     }
-    // Measured on the corpus (D-196 §0-1): v1 was { 3: 26, 4: 45, 5: 173 }; S135 pilot v2: u02 3 → 5,
-    // u03 5 → 3, u01 5 → 5 challenge questions. Update when the data changes.
-    expect(dist).toEqual({ 3: 26, 4: 45, 5: 173 });
+    // (history: the all-v1 corpus measured { 3: 26, 4: 45, 5: 173 } at D-196 §0-1; no longer pinned, B4)
   });
 
-  it("anchors: technology-21-54-u01 (no challenge_questions) / management-10-27-u02 past count", async () => {
+  it("anchors: technology-21-54-u01 (v1, frozen copy: no challenge_questions) / management-10-27-u02 past count", async () => {
     const [units, members] = await Promise.all([loadAllUnits(), loadChumonMembers()]);
     const norm = (id: string) => normalizeUnit(units.find((u) => u.unit_id === id)!, members);
-    expect(pickConfirm(norm("technology-21-54-u01"), members)).toEqual([
+    const v1 = frozenV1("technology-21-54-u01");
+    expect(v1.challenge_questions).toEqual([]);
+    expect(pickConfirm(normalizeUnit(v1, members), members)).toEqual([
       "2009h21h-q058",
       "2011h23a-q053",
       "2014h26a-q074",
     ]);
+    // the pilot is a frozen baseline (D-201 §0-4), so its live file is stable
     expect(pastCount(norm("management-10-27-u02"))).toBe(17); // v2 (S135): 5 confirm ∪ 12 term quiz, no members (v1: 11)
   });
 });

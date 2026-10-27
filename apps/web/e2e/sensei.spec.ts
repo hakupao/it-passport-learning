@@ -988,7 +988,7 @@ test("term page: 「AI 先生に聞く」 sends every sense of the term; no AI S
     expect(system).toContain(s.definition_jp);
     expect(system).toContain(s.explanation_jp);
     expect(system).toContain(s.memory_hook_jp);
-    expect(system).not.toContain(s.analogy_jp);
+    if (s.analogy_jp) expect(system).not.toContain(s.analogy_jp); // a v2 term may have no analogy ("")
     expect(system).not.toContain(s.definition_en);
   }
 
@@ -1045,8 +1045,8 @@ test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary a
   for (const t of unit.terms) {
     expect(system).toContain(t.definition_jp);
     expect(system).toContain(t.definition_en);
-    expect(system).not.toContain(t.analogy_jp);
-    expect(system).not.toContain(t.analogy_en);
+    if (t.analogy_jp) expect(system).not.toContain(t.analogy_jp); // a v2 term may have no analogy ("")
+    if (t.analogy_en) expect(system).not.toContain(t.analogy_en);
     expect(system).not.toContain(t.definition_zh);
   }
 

@@ -46,18 +46,23 @@ import { pastCount, pickConfirm } from "@/lib/textbook/confirm";
 import {
   loadAllUnits,
   loadReaderIndex,
-  loadUnit,
   neighbors,
   normalizeUnit,
   unitPlace,
 } from "@/lib/textbook/reader";
 import type { TextbookUnitV2 } from "@/lib/textbook/types";
 
-// A real unit whose terms include 機能要件 (committed corpus); terms 3 and 4 carry a figure.
+import { frozenV1 } from "@/lib/textbook/__tests__/v1Frozen";
+
+// A real v1 unit whose terms include 機能要件; terms 3 and 4 carry a figure. Its v1 content is read
+// from the frozen copy (__fixtures__/v1-frozen, batch B4): the batch rewrite will turn the live file
+// v2, while ids / titles / headwords (what place, neighbors and the glossary links use) stay the same.
 const UNIT_ID = "management-08-25-u01";
+const V1_RAW = frozenV1(UNIT_ID);
+const loadV1 = async () => V1_RAW;
 
 async function element(locale: "ja" | "zh" | "en"): Promise<React.ReactElement> {
-  const [raw, index, members] = await Promise.all([loadUnit(UNIT_ID), loadReaderIndex(), loadChumonMembers()]);
+  const [raw, index, members] = await Promise.all([loadV1(), loadReaderIndex(), loadChumonMembers()]);
   const unit = normalizeUnit(raw, members);
   return UnitReader({
     unit,
@@ -125,7 +130,7 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
   });
 
   it("meta shows badge, minutes, term count and the unit's past-question count", async () => {
-    const [raw, members, out] = await Promise.all([loadUnit(UNIT_ID), loadChumonMembers(), render("ja")]);
+    const [raw, members, out] = await Promise.all([loadV1(), loadChumonMembers(), render("ja")]);
     const n = pastCount(normalizeUnit(raw, members));
     const meta = out.match(/<p[^>]*data-part="meta"[^>]*>([\s\S]*?)<\/p>/)![1]!;
     expect(meta).toContain(raw.overview.freq_badge);
@@ -135,14 +140,14 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
   });
 
   it("term index links every term to its article, in order", async () => {
-    const [raw, out] = await Promise.all([loadUnit(UNIT_ID), render("ja")]);
+    const [raw, out] = await Promise.all([loadV1(), render("ja")]);
     const idx = out.match(/data-part="term-index"[\s\S]*?<\/ul>/)![0];
     const hrefs = [...idx.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
     expect(hrefs).toEqual(raw.terms.map((t) => termId(t.term)));
   });
 
   it("each article: one → fig → detail → analogy / hook → the term's past questions", async () => {
-    const [raw, members, out] = await Promise.all([loadUnit(UNIT_ID), loadChumonMembers(), render("ja")]);
+    const [raw, members, out] = await Promise.all([loadV1(), loadChumonMembers(), render("ja")]);
     const unit = normalizeUnit(raw, members);
     const articles = [...out.matchAll(/<article[\s\S]*?<\/article>/g)].map((m) => m[0]);
     expect(articles).toHaveLength(unit.terms.length);
@@ -167,7 +172,7 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
   });
 
   it("drops the overview intro, the memory-hook list and the on-mount read marker", async () => {
-    const raw = await loadUnit(UNIT_ID);
+    const raw = await loadV1();
     const out = await render("ja");
     expect(out).not.toContain(raw.overview.intro_jp);
     for (const hook of raw.summary.memory_hooks_jp) expect(out).not.toContain(hook);
@@ -183,7 +188,7 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
   });
 
   it("the confirm section lists pickConfirm's questions", async () => {
-    const [raw, members, out] = await Promise.all([loadUnit(UNIT_ID), loadChumonMembers(), render("ja")]);
+    const [raw, members, out] = await Promise.all([loadV1(), loadChumonMembers(), render("ja")]);
     const ids = pickConfirm(normalizeUnit(raw, members), members);
     const sec = out.match(/<section[^>]*id="confirm"[\s\S]*?<\/section>/)![0];
     expect(sec).toContain(tb("ja").confirmCount!.replace("{n}", String(ids.length)));
@@ -242,7 +247,7 @@ describe("UnitReader term anchors (SSR)", () => {
   });
 
   it("anchors and links every term of the unit, ids matching termId(term)", async () => {
-    const unit = await loadUnit(UNIT_ID);
+    const unit = await loadV1();
     const out = await render("en");
     const articleIds = [...out.matchAll(/<article[^>]*\bid="([^"]*)"/g)].map((m) => m[1] ?? "");
     const ids = unit.terms.map((tm) => termId(tm.term));
