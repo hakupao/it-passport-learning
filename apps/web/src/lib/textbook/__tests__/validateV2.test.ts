@@ -19,7 +19,6 @@ import {
   hookLines,
   introOf,
   listingRun,
-  POINT_FRAMING,
   POINT_FRAMING_MAX,
   pointFraming,
   sentences,
@@ -508,7 +507,7 @@ describe("exam framing in the 考点 (batch 1 lesson)", () => {
       "For this term the answer is anti-passback.",
       "The watermark in exam questions is invisible.",
       "It may appear among the choices.",
-      "The correct description is a test that attacks.",
+      "In the choices, the correct description is a test that attacks.",
     ]) expect(hits("en", s), s).toBe(1);
   });
 
@@ -544,5 +543,30 @@ describe("exam framing in the 考点 (batch 1 lesson)", () => {
         u.summary.key_points_jp[0] = u.key_points_jp[0];
       }),
     ).toEqual([]);
+  });
+});
+
+// 04ba3e5 Rule D notes (F1 / F2): word boundaries and the domain senses of exam words must not count.
+describe("exam framing — boundaries and domain words (Rule D on 04ba3e5)", () => {
+  const n = (lang: "jp" | "zh" | "en", s: string) => pointFraming(lang, s);
+  it("試験 only as a standalone word: 結合試験 / 受入れ試験 are tests, not the exam", () => {
+    for (const s of ["結合試験で問題が見つかる。", "受入れ試験では利用者が確認する。"]) expect(n("jp", s), s).toBe(0);
+    for (const s of ["試験では名前で答える。", "この点は、試験で問われる。"]) expect(n("jp", s), s).toBe(1);
+  });
+  it("domain senses of 正解 / 選択肢 / 挙がる / 出題範囲 (jp), 正确答案 / 选项 / 考到 (zh), right answer / correct option / asked to / appears as (en) do not count", () => {
+    for (const s of ["正解と予測の差を損失とする。", "ラジオボタンは複数の選択肢から一つを選ぶ部品である。", "利益が挙がる。", "成果が挙がった。", "シラバスの出題範囲に含まれる。"]) expect(n("jp", s), s).toBe(0);
+    for (const s of ["用正确答案标注数据。", "在配置选项中设置。", "从多个选项中选一个。", "思考到这一点。", "参考到其他资料。"]) expect(n("zh", s), s).toBe(0);
+    for (const s of [
+      "The data is labelled with the right answer.",
+      "The correct option is saved.",
+      "Users are asked to enter a password.",
+      "The drive appears as a single disk.",
+      "The icon appears as a padlock.",
+    ]) expect(n("en", s), s).toBe(0);
+  });
+  it("the exam-context forms still count", () => {
+    for (const s of ["説明の選択肢は誤りになる。", "名前としてはアンチパスバックが挙がる。", "正解は侵入を試す検査である。"]) expect(n("jp", s), s).toBe(1);
+    for (const s of ["错误选项。", "正确答案是防尾随。", "这道题的正确答案在选项里。", "常被考到。"]) expect(n("zh", s), s).toBe(1);
+    for (const s of ["The correct answer among the choices is anti-passback.", "Asked to name a countermeasure, pick it.", "It appears as the name for the technique.", "Users are asked which term fits."]) expect(n("en", s), s).toBe(1);
   });
 });

@@ -242,39 +242,62 @@ export const KEY_POINTS = { min: 3, max: 5 } as const;
  * Batch 1 lesson (D-195 §9): the 考点 box may speak of the exam, but not all over it — u04 grew six
  * 「〜として問われる」 and u05 swapped them for 「〜が適切とされる」「…が挙がる」 (zh 被视为恰当 / en "is considered
  * appropriate", "Asked to name…, the answer is"). Exam-framing patterns, by type rather than word, counted per
- * language over all of a unit's points (sentences with a hit): more than POINT_FRAMING_MAX → a `framing` issue for that language.
- * False-positive guards: とされる only after a correctness judgement (適切 / 不適切 / 妥当 / 正しい / 誤り / 正解),
- * not 「有効とされる」-type definitions; 試験 only as 試験では / 試験で問 (a 負荷試験 is a test); en "considered" only
- * with a correctness word, "asked" only as "asked to / about / which / what" or "is / are asked", "choice" only in
- * "among the choices" / "answer choice" / "correct choice". zh 选项 except in 候选项 (candidates), 出题 always.
+ * language over all of a unit's points (sentences with a hit): more than POINT_FRAMING_MAX → a `framing` issue for
+ * that language. The cap is fixed by design, not proportional to the number of 考点: b01 showed the pattern
+ * spreading to every point once allowed, and a unit needs at most a couple of "how the exam puts it" sentences.
+ * A pattern is a RegExp, or [pattern, context] when the word also has an ordinary / domain sense: then it counts
+ * only when the same sentence also matches the exam context (Rule D on 04ba3e5, F2).
+ * False-positive guards (each has a test):
+ *   jp — とされる only after a correctness judgement (not 「有効とされる」 definitions); 試験 only standalone (not
+ *        after kanji / kana / katakana: 結合試験, 受入れ試験 are tests; so 「この試験では」 is not counted either);
+ *        が挙が only in a 「として(は)…が挙が」 form (利益が挙がる); 選択肢 only with 正解 / 誤り / 問わ / 問題 / 出題 /
+ *        試験 in the sentence (a UI's 選択肢); 出題 not in 出題範囲 (the syllabus term); 正解 only as 正解は / 正解に /
+ *        正解となる (正解と予測の差 = a label in ML).
+ *   zh — 考到 not in 思考到 / 参考到; 选项 (not 候选项) only with 正确 / 错误 / 题 / 考 / 答案 (配置选项, 多个选项);
+ *        正确答案 only with 选 / 题 in the sentence (用正确答案标注数据), 答案是 always.
+ *   en — "asked to" not before enter / provide / input / confirm / verify / type / sign; "appears as" only before
+ *        the name / a choice / an answer / the correct; "considered" only with a correctness word; correct / right /
+ *        wrong answer|option|choice|description only with exam / question(s) / choices / among in the sentence.
  */
 export const POINT_FRAMING_MAX = 2;
-export const POINT_FRAMING: Record<Lang, readonly RegExp[]> = {
+type FramingPattern = RegExp | readonly [RegExp, RegExp];
+const ASK_NOT = "(?!(?:enter|provide|input|confirm|verify|type|sign)\\b)";
+export const POINT_FRAMING: Record<Lang, readonly FramingPattern[]> = {
   jp: [
-    /問われ/g,
-    /(?:不適切|適切|妥当|正しい|誤り|不正解|正解)(?:だ|である)?とされ/g,
-    /が挙が[るりっ]/g,
-    /選択肢/g,
-    /出題/g,
-    /試験(?:では|で問|に出)/g,
-    /として選ぶ/g,
-    /正解(?:は|と|に)/g,
+    /問われ/,
+    /(?:不適切|適切|妥当|正しい|誤り|不正解|正解)(?:だ|である)?とされ/,
+    /として(?:は)?[^。]*?が挙が[るりっ]/,
+    [/選択肢/, /正解|誤り|問わ|問題|出題|試験/],
+    /出題(?!範囲)/,
+    /(?<![\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー])試験(?:では|で問わ|に出)/u,
+    /として選ぶ/,
+    /正解(?:は|に|とな)/,
   ],
-  zh: [/被问到/g, /考到/g, /被视为[^。，；]{0,15}?(?:恰当|适当|妥当|正确|错误)/g, /考试(?:所说|中|里|时|题)/g, /(?<!候)选项/g, /出题/g, /正确答案|答案是/g],
+  zh: [
+    /被问到/,
+    /(?<![思参])考到/,
+    /被视为[^。，；]{0,15}?(?:恰当|适当|妥当|正确|错误)/,
+    /考试(?:所说|中|里|时|题)/,
+    [/(?<!候)选项/, /正确|错误|题|考|答案/],
+    /出题/,
+    [/正确答案/, /选|题/],
+    /答案是/,
+  ],
   en: [
-    /\basked (?:to|about|which|what|whether)\b|\b(?:is|are|be|being|gets?) asked\b/gi,
-    /\bappears? as\b/gi,
-    /\b(?:is|are) considered (?:an? )?(?:appropriate|inappropriate|proper|improper|correct|incorrect|right|wrong)\b/gi,
-    /\bthe answer is\b/gi,
-    /\bexam questions?\b|\b(?:in|on) the exam\b/gi,
-    /\bamong the (?:answer )?choices\b|\banswer choices?\b/gi,
-    /\b(?:correct|right|wrong|incorrect) (?:description|answer|choice|option)\b/gi,
+    new RegExp(`\\basked (?:to ${ASK_NOT}|about\\b|which\\b|what\\b|whether\\b)|\\b(?:is|are|be|being|gets?) asked\\b(?! to ${ASK_NOT.slice(3, -1)})`, "i"),
+    /\bappears? as (?:the name|a choice|an answer|the correct)\b/i,
+    /\b(?:is|are) considered (?:an? )?(?:appropriate|inappropriate|proper|improper|correct|incorrect|right|wrong)\b/i,
+    /\bthe answer is\b/i,
+    /\bexam questions?\b|\b(?:in|on) the exam\b/i,
+    /\bamong the (?:answer )?choices\b|\banswer choices?\b/i,
+    [/\b(?:correct|right|wrong|incorrect) (?:description|answer|choice|option)\b/i, /\bexam|\bquestions?\b|\bchoices\b|\bamong\b/i],
   ],
 };
+const framingHit = (sen: string) => (p: FramingPattern): boolean => (p instanceof RegExp ? p.test(sen) : p[0].test(sen) && p[1].test(sen));
 /** Exam-framing occurrences in one plain text: sentences with at least one POINT_FRAMING pattern
  *  (「試験では…が問われる」 is one phrase, not two). */
 export function pointFraming(lang: Lang, plain: string): number {
-  return sentences(plain, lang).filter((sen) => POINT_FRAMING[lang].some((re) => new RegExp(re.source, re.flags).test(sen))).length;
+  return sentences(plain, lang).filter((sen) => POINT_FRAMING[lang].some(framingHit(sen))).length;
 }
 
 /**

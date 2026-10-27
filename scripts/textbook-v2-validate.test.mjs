@@ -212,3 +212,17 @@ test("copy guard B7: figure labels, step captions, 総表 extra cells and 易混
   p.terms[tree(p)].fig.steps[1].caption_jp = "長".repeat(400);
   assert.equal(estMinutes(p, stripInline), before);
 });
+
+test("framing (batch 1 lesson) on a JP-only part: 3 jp exam-framing sentences → `framing points_jp`; zh / en issues dropped", () => {
+  const jp = jpPartOf(locPartOf(fixture()));
+  // the fixture already has one (転嫁: 「代表例として出題される」)
+  jp.terms[0].points[0].text_jp = "以前の案件の一覧は、洗い出しの方法として問われる。";
+  jp.terms[1].points[0].text_jp = "優先順位の決め方が適切とされる。";
+  const r = validate(jp, "--part");
+  assert.equal(r.code, 1, r.out);
+  assert.match(r.out, /framing\s+points_jp\s+3 exam-framing/);
+  assert.doesNotMatch(r.out, /points_(zh|en)/);
+  // jpOnlyIssues itself
+  const i = (field) => ({ unitId: UNIT, code: "framing", field, message: "x" });
+  assert.deepEqual(jpOnlyIssues([i("points_jp"), i("points_zh"), i("points_en")]), [i("points_jp")]);
+});
