@@ -120,6 +120,8 @@ const READ_MANIFEST = (unit) => `\`${manifestOf(unit)}\` を**全部** Read す�
 const D198 = '写しの基準 (D-198): 写し = (i) 正規化 (標記・空白・句読点・記号を除去) して 20 字以上の一致、(ii) 題文・選択肢との正規化 12 字以上の連続一致、(iii) 特定の題の具体例の流用 (数値・場面設定・例の列挙とその順序)。写しでない = 標準的な定義・計算規則・原則を一般的な表現で述べること (正解選択肢が同じ原則を述べていても可)。(i)(ii) は validate が `copy` issue として機械検出する (見出し語・用語そのものは数えない)。'
 const D200 = 'D-200: 考点は 1 用語 3 個まで、各考点の日本語は 2 文以内・100 字以内 (標記・空白を除く)。validate が `points` issue として検査する。'
 const QUESTIONS_JSON = `${ROOT}/data/ip/quiz/questions.json`
+// batch 1 lesson (validateV2 POINT_FRAMING): the 考点 may speak of the exam, but at most 2 sentences per unit per language
+const FRAMING = '考点の試験枠表現の上限 (第 1 批の教訓): 考点で「試験でどう問われるか」を言う文は、単元全体の考点で各言語 **2 文まで** (validate が `framing` issue として機械検査し、超えると不合格)。数えるのは語でなく型: 「〜として問われる」「試験では」「出題」「選択肢」「として選ぶ」「正解は」、正誤判断の「適切とされる / 不適切とされる」、「〜が挙がる」、zh 被问到・考到・被视为恰当・考试所说・选项・答案是、en "asked to"・"appears as"・"is considered appropriate"・"the answer is"・"exam questions"・"among the choices"・"correct description"。第 1 批の実例: 「〜の名前として問われる」を 6 考点に繰り返した単元と、それを避けて「〜が適切とされる」「〜としては〜が挙がる」に言い換えただけの単元 — どちらも同じ違反。考点は事実そのものを言い切る (例: 「〜は〜する技術である」「〜は〜とは別物である」)。'
 // batch B6: the unit's zh term entries (prep writes them from data/ip/textbook/zh_terms.json, the single source of the
 // check); validate prints `warn zh-term` lines (never an issue)
 const zhTermsOf = (unit) => `${dirOf(unit)}/zh_terms.unit.json`
@@ -145,6 +147,7 @@ ${revise}
 - 行内標記は **語** だけ。[[jp:…]] は zh / en 専用なので**日本語の本文には使わない** (validate が markup issue にする)。analogy・総表 extra・図ラベル・caption は平文。
 - 事実: topic.objective_jp と関連過去問の正解に反することを書かない。捏造しない。
 - ${D198}
+- ${FRAMING}
 
 ## 書き方 (attempt 1・2 の不合格理由 = 過去問の文・具体例への寄りかかり・考点と正解の矛盾・未定義語・言い切り過ぎ。必ず守る)
 1. **二段階で書く**: 用語ごとに、まず topic.objective_jp と見出し語と D-195 だけを見て草稿を書く (この段階では questions / term_questions を**開かない**)。草稿ができてから過去問を開き、事実の確認と qids の付与にだけ使う。
@@ -172,7 +175,7 @@ function reviewPrompt(unit, round, part, partRound) {
 
 ## 審査観点
 1. **事実**: 定義・説明・考点・図 (数値、工期、因果、分類) が topic.objective_jp と関連過去問の正解に照らして正しいか。網羅的な言い切り (「〜は A と B である」「必ず〜」) が引用題すべてに支持されているか。図の caption が考点・本文と一致するか。exam 考点の qids の題が本当にその点を問うているか。quiz / challenge_questions の題がその用語・単元に合っているか。
-2. **D-195 清單**: §1 一句話 1 文 + 太字キーワード / 展開 2〜3 文 / §2 図の選び方 (過程→段階図、量・計算→操作部品、その他→静的、別名だけの用語は図なし、飾りの図は不可) / §3 学習目標 + 総表 / §4 易混対比は 2 つ目の直後 / §5 強調 4 種 / §6 比喩・記法が定義の言い換えでない / §7 要点 3〜5 / §9 禁止事項 (定型の締め句、言い換えの反復、羅列、誇張) / ${D200} 超過は medium。
+2. **D-195 清單**: §1 一句話 1 文 + 太字キーワード / 展開 2〜3 文 / §2 図の選び方 (過程→段階図、量・計算→操作部品、その他→静的、別名だけの用語は図なし、飾りの図は不可) / §3 学習目標 + 総表 / §4 易混対比は 2 つ目の直後 / §5 強調 4 種 / §6 比喩・記法が定義の言い換えでない / §7 要点 3〜5 / §9 禁止事項 (定型の締め句、言い換えの反復、羅列、誇張) / ${D200} 超過は medium。/ ${FRAMING} 上限内でも、事実を言わず出題のされ方だけを述べる考点は medium。
 3. **初学者に分かるか**: 結論先行、図と文が噛み合うか。**定義してから使う**: 専門語 (例: 結合点・矢線・最遅結合点時刻) が、それを定義する文より前に考点・図・易混表で使われていたら指摘する。
 4. **写していないか**: ${D198} (i)(ii)(iii) に当たれば high。標準的な定義・計算規則・原則を一般的な表現で述べた文は、正解選択肢が同じ原則を述べていても写しとして指摘しない。
 5. **考点と引用題の正解**: 各 exam 考点の qids の題だけを \`${QUESTIONS_JSON}\` から Read し (id で検索、題文・選択肢・correct_answer)、主張がその題の正解と一致するか、データが支持しない規則を作っていないかを確かめる。矛盾は high。
@@ -204,6 +207,7 @@ ${revise}
 - 行内標記: 原文で **語** の箇所は訳文でも **訳語**。zh / en 本文中で試験の日本語表記を示すところは [[jp:日本語]] を併記 (D-195 §5 日本語原語の明示: 見出し語や試験用語の初出など、多用しない)。analogy・総表 extra・図ラベル・caption は平文。
 - 文数: detail は各言語でも 2〜3 文 (en は ". " で区切って数えられる)。D-195 §9 の禁止 (定型の締め句、"make sure to understand"、"非常重要"、羅列、誇張) は zh / en にも適用。
 - ${ZH_TERMS(unit)}
+- 考点の zh / en でも試験枠表現を足さない (各言語 2 文まで、validate の \`framing\`): 原文が事実を言い切っていれば訳も言い切る。
 - 訳文も過去問 (questions の題文・選択肢・解説、translations の既存訳) の文を写さない。事実と数値だけを使い、文は自分で書く。
 
 ## 手順

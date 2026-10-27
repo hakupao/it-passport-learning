@@ -19,6 +19,9 @@ import {
   hookLines,
   introOf,
   listingRun,
+  POINT_FRAMING,
+  POINT_FRAMING_MAX,
+  pointFraming,
   sentences,
   v2Context,
   validateV2,
@@ -475,5 +478,71 @@ describe("validateV2 — review fixes", () => {
       expect(() => validateV2(bad as never, ctx)).not.toThrow();
       expect(validateV2(bad as never, ctx).length).toBeGreaterThan(0);
     }
+  });
+});
+
+// Batch 1 lesson (b01 教訓): the 考点 box may talk about the exam (EXAM_FRAMING is exempt there), but u04 grew
+// six 「〜として問われる」 and u05 rewrote the same pattern as 「〜が適切とされる」「…が挙がる」. Exam-framing
+// patterns (types, not single words) are counted per language over all of a unit's points: more than
+// POINT_FRAMING_MAX → one `framing` issue for that language.
+describe("exam framing in the 考点 (batch 1 lesson)", () => {
+  const hits = (lang: "jp" | "zh" | "en", s: string) => pointFraming(lang, s);
+  it("counts each pattern type, in each language", () => {
+    expect(POINT_FRAMING_MAX).toBe(2);
+    for (const s of [
+      "鍵を記憶するチップの名前として問われる。",
+      "見張る対策が適切とされる。",
+      "常時ロックしない運用は不適切とされる。",
+      "共連れ対策の名前としてはアンチパスバックが挙がる。",
+      "画像を重ねる説明の選択肢は誤りになる。",
+      "代表例として出題される。",
+      "試験では名前で答える。",
+      "説明として選ぶのは侵入を試す検査である。",
+    ]) expect(hits("jp", s), s).toBe(1);
+    for (const s of ["它会作为一个名称被问到。", "这一点常被考到。", "这种做法被视为恰当。", "被视为防止泄露的恰当做法。", "考试所说的数字水印。", "错误选项。"]) expect(hits("zh", s), s).toBe(1);
+    for (const s of [
+      "Asked to name a countermeasure, pick anti-passback.",
+      "It appears as the name for the technique.",
+      "Using a gate is considered appropriate.",
+      "It is considered a proper workplace practice.",
+      "For this term the answer is anti-passback.",
+      "The watermark in exam questions is invisible.",
+      "It may appear among the choices.",
+      "The correct description is a test that attacks.",
+    ]) expect(hits("en", s), s).toBe(1);
+  });
+
+  it("ordinary wording is not framing (definitions with とされる, a 試験 that is a test, 'considered' as a classification)", () => {
+    for (const s of ["一般に有効とされる手法である。", "高い負荷をかける試験とは別物である。", "個人情報とされる情報を扱う。", "利用者が選ぶパスワード。"]) expect(hits("jp", s), s).toBe(0);
+    for (const s of ["这被视为个人信息。", "用户可以选择密码。", "考虑成本后再决定。", "通过头脑风暴广泛列出候选项。"]) expect(hits("zh", s), s).toBe(0);
+    for (const s of ["It is considered personal information.", "A user asked for help.", "Tests that apply heavy load are different.", "The choice of key length matters."]) expect(hits("en", s), s).toBe(0);
+  });
+
+  it("> 2 framing phrases over a unit's points → one framing issue per language; 2 pass; prose outside points is not counted", () => {
+    const put = (u: TextbookUnitV2, i: number, jp: string) => {
+      const p = u.terms[i]!.points[0]!;
+      p.text_jp = jp;
+    };
+    // the sample already has one (転嫁: 「代表例として出題される」)
+    expect(issuesAfter((u) => put(u, 0, "前の案件の一覧が抜けを減らす点が適切とされる。"))).toEqual([]);
+    const three = issuesAfter((u) => {
+      put(u, 0, "前の案件の一覧が抜けを減らす点が適切とされる。");
+      put(u, 1, "優先順位の決め方として問われる。");
+    });
+    expect(three, JSON.stringify(three)).toHaveLength(1);
+    expect(three[0]).toMatchObject({ code: "framing", field: "points_jp" });
+    expect(three[0]!.message).toMatch(/3 exam-framing phrase/);
+    // zh / en counted separately
+    const en = issuesAfter((u) => {
+      for (const i of [0, 1, 3]) u.terms[i]!.points[0]!.text_en = `${u.terms[i]!.points[0]!.text_en} It appears as the name.`;
+    });
+    expect(en.map((i) => [i.code, i.field])).toEqual([["framing", "points_en"]]);
+    // a key point / detail is not a 考点 (its own banned rules apply)
+    expect(
+      issuesAfter((u) => {
+        u.key_points_jp[0] = `${u.key_points_jp[0]!.replace(/。$/, "")}、その選択肢を選ぶ。`;
+        u.summary.key_points_jp[0] = u.key_points_jp[0];
+      }),
+    ).toEqual([]);
   });
 });

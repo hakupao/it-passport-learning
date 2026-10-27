@@ -29,6 +29,7 @@ import { LANGS, V2_SCHEMA, type Lang, type TextbookUnitV2, type UnitTermV2 } fro
 
 export type V2IssueCode =
   | "schema"
+  | "framing"
   | "invariant"
   | "meta"
   | "missing"
@@ -237,6 +238,45 @@ export function listingRun(text: string, headwords: readonly string[]): number {
 export const DETAIL_SENTENCES = { min: 2, max: 3 } as const;
 /** 要点 count (D-195 §7). */
 export const KEY_POINTS = { min: 3, max: 5 } as const;
+/**
+ * Batch 1 lesson (D-195 §9): the 考点 box may speak of the exam, but not all over it — u04 grew six
+ * 「〜として問われる」 and u05 swapped them for 「〜が適切とされる」「…が挙がる」 (zh 被视为恰当 / en "is considered
+ * appropriate", "Asked to name…, the answer is"). Exam-framing patterns, by type rather than word, counted per
+ * language over all of a unit's points (sentences with a hit): more than POINT_FRAMING_MAX → a `framing` issue for that language.
+ * False-positive guards: とされる only after a correctness judgement (適切 / 不適切 / 妥当 / 正しい / 誤り / 正解),
+ * not 「有効とされる」-type definitions; 試験 only as 試験では / 試験で問 (a 負荷試験 is a test); en "considered" only
+ * with a correctness word, "asked" only as "asked to / about / which / what" or "is / are asked", "choice" only in
+ * "among the choices" / "answer choice" / "correct choice". zh 选项 except in 候选项 (candidates), 出题 always.
+ */
+export const POINT_FRAMING_MAX = 2;
+export const POINT_FRAMING: Record<Lang, readonly RegExp[]> = {
+  jp: [
+    /問われ/g,
+    /(?:不適切|適切|妥当|正しい|誤り|不正解|正解)(?:だ|である)?とされ/g,
+    /が挙が[るりっ]/g,
+    /選択肢/g,
+    /出題/g,
+    /試験(?:では|で問|に出)/g,
+    /として選ぶ/g,
+    /正解(?:は|と|に)/g,
+  ],
+  zh: [/被问到/g, /考到/g, /被视为[^。，；]{0,15}?(?:恰当|适当|妥当|正确|错误)/g, /考试(?:所说|中|里|时|题)/g, /(?<!候)选项/g, /出题/g, /正确答案|答案是/g],
+  en: [
+    /\basked (?:to|about|which|what|whether)\b|\b(?:is|are|be|being|gets?) asked\b/gi,
+    /\bappears? as\b/gi,
+    /\b(?:is|are) considered (?:an? )?(?:appropriate|inappropriate|proper|improper|correct|incorrect|right|wrong)\b/gi,
+    /\bthe answer is\b/gi,
+    /\bexam questions?\b|\b(?:in|on) the exam\b/gi,
+    /\bamong the (?:answer )?choices\b|\banswer choices?\b/gi,
+    /\b(?:correct|right|wrong|incorrect) (?:description|answer|choice|option)\b/gi,
+  ],
+};
+/** Exam-framing occurrences in one plain text: sentences with at least one POINT_FRAMING pattern
+ *  (「試験では…が問われる」 is one phrase, not two). */
+export function pointFraming(lang: Lang, plain: string): number {
+  return sentences(plain, lang).filter((sen) => POINT_FRAMING[lang].some((re) => new RegExp(re.source, re.flags).test(sen))).length;
+}
+
 /**
  * D-195 §9 羅列 (scope locked as D-197): longest allowed listingRun in one sentence of any
  * JP prose (goals / one / detail / analogy / hook / points / key_points / pairs), except a
@@ -486,6 +526,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
   }
 
   // ---- terms ----
+  const framing: Record<Lang, number> = { jp: 0, zh: 0, en: 0 };
   terms.forEach((t, i) => {
     const tr = rec(t);
     const where = `terms[${i}](${t.term})`;
@@ -551,6 +592,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
       const pr = rec(p);
       if (pr.kind !== "exam" && pr.kind !== "mix") push("point", `${pw}.kind`, `${JSON.stringify(pr.kind)}: exam / mix`);
       const txt = prose(pr, "text", pw, { examTalk: true });
+      if (txt) for (const l of LANGS) framing[l] += pointFraming(l, txt[l]);
       if (txt) {
         const n = sentences(txt.jp, "jp").length;
         const chars = txt.jp.replace(/\s/g, "").length;
@@ -609,6 +651,12 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
     }
     if (tr.inline_fallback !== false) push("compat", `${where}.inline_fallback`, "false in v2");
   });
+
+  for (const l of LANGS) {
+    if (framing[l] > POINT_FRAMING_MAX) {
+      push("framing", `points_${l}`, `${framing[l]} exam-framing phrase(s) across the unit's 考点 (D-195 §9, batch 1 lesson: at most ${POINT_FRAMING_MAX}; state the fact, not how the exam asks it)`);
+    }
+  }
 
   // ---- summary.memory_hooks (≥ 1 line) ----
   if (hookLines(u, "jp").length === 0) push("missing", "terms[].hook", "no term has a memory hook (summary.memory_hooks needs ≥ 1 line)");

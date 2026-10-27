@@ -295,3 +295,14 @@ test("B6: the localiser and the translation reviewer read the unit's zh term ent
   const { calls: seeded } = await runWf({ jp: [], loc: ["PASS"] }, SEED_LOC_ARGS);
   assert.ok(seeded[0].prompt.includes("zh_terms.unit.json"));
 });
+
+test("batch 1 lesson: writer, critic and localiser prompts state the 考点 exam-framing limit with the b01 patterns", async () => {
+  const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
+  for (const label of [/^write:/, /^review:/, /^rewrite:/]) {
+    const p = calls.find((x) => label.test(x.opts.label)).prompt;
+    assert.match(p, /\*\*2 文まで\*\*/, String(label));
+    assert.match(p, /framing/);
+    for (const w of ["として問われる", "適切とされる", "が挙がる", "is considered appropriate", "the answer is"]) assert.ok(p.includes(w), `${label} ${w}`);
+  }
+  assert.match(calls.find((x) => /^localize:/.test(x.opts.label)).prompt, /試験枠表現を足さない/);
+});
