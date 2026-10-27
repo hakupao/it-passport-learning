@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import { fnv1a32 } from "../../hash";
 import { emptyRecord, recordAttempt, type LearningRecord } from "../../learning/record";
 import type { StorageLike } from "../../storage";
+import { UNIT_ID_RE } from "../../textbook/reader";
 import {
   MAX_SCOPE_IDS,
   applyAction,
@@ -16,13 +17,13 @@ import {
   parseRun,
   foldPlan,
   formatElapsed,
-  isFromToday,
   keyToAction,
   loadSession,
   localDateKey,
   newSession,
   nextTodayGroup,
   nextTodayIds,
+  parseFrom,
   parseKind,
   parseScope,
   practiceReducer,
@@ -141,11 +142,20 @@ describe("parseScope (§0-12)", () => {
     expect(parse({ ids: "2009h21a-q001", prefill: "1" })).toBeNull();
   });
 
-  it("from=today", () => {
-    expect(isFromToday({ from: "today" })).toBe(true);
-    expect(isFromToday({ from: ["today"] })).toBe(true);
-    expect(isFromToday({ from: "x" })).toBe(false);
-    expect(isFromToday({})).toBe(false);
+  it("parseFrom: today / a known unit / an unknown unit / a malformed unit", () => {
+    const known = new Set(["management-08-25-u01"]);
+    const isUnit = (id: string) => UNIT_ID_RE.test(id) && known.has(id);
+    expect(parseFrom({ from: "today" }, isUnit)).toEqual({ kind: "today" });
+    expect(parseFrom({ from: ["today"] }, isUnit)).toEqual({ kind: "today" });
+    expect(parseFrom({ from: "unit", unit: "management-08-25-u01" }, isUnit)).toEqual({
+      kind: "unit",
+      unitId: "management-08-25-u01",
+    });
+    expect(parseFrom({ from: "unit", unit: "management-08-25-u99" }, isUnit)).toBeNull();
+    expect(parseFrom({ from: "unit", unit: "../etc/passwd" }, isUnit)).toBeNull();
+    expect(parseFrom({ from: "unit" }, isUnit)).toBeNull();
+    expect(parseFrom({ from: "x" }, isUnit)).toBeNull();
+    expect(parseFrom({}, isUnit)).toBeNull();
   });
 });
 

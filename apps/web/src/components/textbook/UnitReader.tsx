@@ -69,7 +69,7 @@ export async function UnitReader({
       </UnitHeader>
 
       {unit.terms.map((tm, i) => (
-        <TermBlock key={tm.id} term={tm} svg={svgs[i] ?? null} locale={locale} />
+        <TermBlock key={tm.id} term={tm} unitId={unit.id} svg={svgs[i] ?? null} locale={locale} />
       ))}
 
       {keyPoints.length > 0 ? (
@@ -83,7 +83,7 @@ export async function UnitReader({
         </section>
       ) : null}
 
-      <ConfirmBlock ids={confirm} />
+      <ConfirmBlock ids={confirm} unitId={unit.id} />
       {/* Stage 7 Task 13: every past question of the topic (the confirm set is only 3〜5 of them) */}
       <p data-part="topic-past" className={styles.topicPast}>
         <Link href={`/practice/browse/${unit.topicId}`}>

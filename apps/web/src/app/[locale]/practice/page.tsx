@@ -17,6 +17,9 @@
 // button; LearningRecordProvider is mounted here (never in the locale layout), so force-dynamic.
 // Only this group's questions, their topics' labels and fold points cross to the client; the
 // today payload (§0-20) only for from=today (the summary's 「继续下一项」).
+// Stage 7 Phase 3 (D-196 §0-2): `from=unit&unit=<id>` (a textbook unit's questions) — the id must
+// match UNIT_ID_RE and be in the reader index, else the group has no `from`; the unit's title (active
+// locale) and terms go to the session (the summary's 「単元に戻る」, the explanation's link back).
 
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -28,6 +31,7 @@ import { PracticeSetup } from "@/components/practice/PracticeSetup";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { redirect } from "@/i18n/navigation";
 import { buildTermCards } from "@/lib/glossary/dictionary";
+import { termId } from "@/lib/glossary/termId";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { groupMap, resolveScope, topicStars } from "@/lib/practice/practiceIndex";
@@ -35,15 +39,17 @@ import { examsNewestFirst } from "@/lib/practice/practiceLabels";
 import { loadChumonGroups, loadQuestionsByIds, loadSetupIndex, loadTodayIndex } from "@/lib/practice/practiceReader";
 import {
   foldPlan,
-  isFromToday,
+  parseFrom,
   parseKind,
   parseRun,
   parseScope,
   sessionKey,
   type SearchParams,
+  type SessionFrom,
 } from "@/lib/practice/practiceSession";
 import { prefillOf, settingsFromPrefill } from "@/lib/practice/practiceSetup";
 import { loadBaseQuestions, loadQuizIndex, type QuizIndex } from "@/lib/quiz/quizReader";
+import { loadReaderIndex, loadUnit, toDataLang, UNIT_ID_RE } from "@/lib/textbook/reader";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +62,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Practice" });
   return { title: t("title") };
+}
+
+/** parseFrom against the reader index; a unit also gets its title (active locale) and terms. */
+async function sessionFrom(sp: SearchParams, locale: string): Promise<SessionFrom | null> {
+  const index = await loadReaderIndex(); // memoized; the unit must be in it
+  const known = new Set(index.topics.flatMap((t) => t.unit_order));
+  const from = parseFrom(sp, (id) => UNIT_ID_RE.test(id) && known.has(id));
+  if (from?.kind !== "unit") return from;
+  const unit = await loadUnit(from.unitId);
+  const dl = toDataLang(locale);
+  return {
+    kind: "unit",
+    unitId: from.unitId,
+    title: unit[`title_${dl}`] || unit.title_jp,
+    terms: unit.terms.map((t) => ({ id: termId(t.term), term: t.term })),
+  };
 }
 
 const ownerFlag = (): Promise<boolean> => cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value));
@@ -112,7 +134,8 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   if (questions.length === 0) return setupPanel(locale, sp, index, validTopics, validExams);
   const ids = questions.map((q) => q.id);
 
-  const fromToday = isFromToday(sp);
+  const from = await sessionFrom(sp, locale);
+  const fromToday = from?.kind === "today";
   const run = parseRun(sp);
   const [dict, owner, today] = await Promise.all([
     dictPromise,
@@ -145,7 +168,7 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
         termCards={buildTermCards(dict, questions, locale)}
         topics={topics}
         folds={foldPlan(ids, groups)}
-        fromToday={fromToday}
+        from={from}
         today={today}
         run={run}
         kindParam={fromToday ? parseKind(sp) : null}

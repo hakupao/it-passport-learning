@@ -10,6 +10,7 @@
 //     classify = "mistake", as the mistakes page) → the rest; given order kept
 //     within each.
 //   - pastCount: distinct past questions of the unit = confirm ∪ per-term quiz.
+//   - confirmHref / nextRun (§0-2): the from=unit practice link and its click-time run nonce.
 
 import type { LearningRecord } from "../learning/record";
 import { classify, reviewState, toLocalDay } from "../learning/schedule";
@@ -64,4 +65,17 @@ export function pastCount(unit: ReaderUnit): number {
   // No member filter here: normalizeUnit already dropped every chumon group member from
   // `challenge` and each term's `quiz` (ReaderUnit invariant), so select() needs none.
   return new Set([...select(unit, () => false), ...unit.terms.flatMap((t) => t.quiz)]).size;
+}
+
+/**
+ * The practice link of a unit's question set (§0-2): `from=unit&unit=<id>` (the summary returns
+ * to the unit) and, when given, the click-time `run` nonce (a new group each time).
+ */
+export function confirmHref(ids: readonly string[], unitId: string, run: string | null): string {
+  return `/practice?ids=${ids.join(",")}&from=unit&unit=${unitId}${run !== null ? `&run=${run}` : ""}`;
+}
+
+/** The run nonce of a click at `now` (epoch ms): strictly above the previous one, so two clicks never share it. */
+export function nextRun(prev: string | null, now: number): string {
+  return String(prev !== null ? Math.max(now, Number(prev) + 1) : now);
 }

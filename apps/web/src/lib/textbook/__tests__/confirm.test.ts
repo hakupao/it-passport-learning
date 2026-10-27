@@ -6,7 +6,7 @@ import { resolveScope } from "../../practice/practiceIndex";
 import { loadChumonMembers, type ChumonMembers } from "../../practice/chumonMembers";
 import { loadChumonRegistry } from "../../practice/practiceReader";
 import { loadBaseQuestions } from "../../quiz/quizReader";
-import { orderConfirm, pastCount, pickConfirm } from "../confirm";
+import { confirmHref, nextRun, orderConfirm, pastCount, pickConfirm } from "../confirm";
 import { loadAllUnits, normalizeUnit, type ReaderTerm, type ReaderUnit } from "../reader";
 
 const DAY = 86_400_000;
@@ -135,5 +135,22 @@ describe("orderConfirm", () => {
     r = recordAttempt(r, "a", "ア", true, now - DAY);
     r = recordAttempt(r, "b", "ア", false, now - DAY);
     expect(orderConfirm(["a", "b"], r, now)).toEqual(["b", "a"]);
+  });
+});
+
+describe("confirmHref / nextRun (§0-2)", () => {
+  it("builds the from=unit practice link with the given run", () => {
+    expect(confirmHref(["a-q001", "b-q002"], "x-00-00-u01", "1730000000000")).toBe(
+      "/practice?ids=a-q001,b-q002&from=unit&unit=x-00-00-u01&run=1730000000000",
+    );
+    expect(confirmHref(["a-q001"], "x-00-00-u01", null)).toBe("/practice?ids=a-q001&from=unit&unit=x-00-00-u01");
+  });
+
+  it("every click gets a new run, even within the same millisecond; run fits /^\\d{1,16}$/", () => {
+    const a = nextRun(null, 1_730_000_000_000);
+    const b = nextRun(a, 1_730_000_000_000);
+    const c = nextRun(b, 1_730_000_000_500);
+    expect([a, b, c]).toEqual(["1730000000000", "1730000000001", "1730000000500"]);
+    for (const r of [a, b, c]) expect(r).toMatch(/^\d{1,16}$/);
   });
 });

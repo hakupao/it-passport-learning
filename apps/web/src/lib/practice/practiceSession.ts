@@ -9,6 +9,8 @@
 //     list). A filter with neither a valid topic nor a valid exam → null (resolveScope would take
 //     the whole corpus). null = show the setup panel. `prefill=1` (a legacy /quiz redirect asking
 //     the setup panel to pre-fill the scope; Task 10 / 13) → null as well.
+//   - parseFrom (Phase 3 §0-2): `from=today` or `from=unit&unit=<id>` (a textbook unit's set; the
+//     page validates the id) → FromParam; the page widens a unit to SessionFrom (title + terms).
 //   - practiceReducer (§0-13): pick (only an unanswered question; a repeat returns the same state
 //     object), next (past the last → finished), prev (stops at 0), finish (summary of the answered
 //     part), goto (a question of this group: the AI 先生 reply's `#<question_id>` link, §0-18).
@@ -93,9 +95,25 @@ export function parseScope(
   return { kind: "filter", topics, exam, n, order, seed };
 }
 
-/** `from=today`: the group is a today task (the summary offers 「继续下一项」). */
-export function isFromToday(sp: SearchParams): boolean {
-  return first(sp.from) === "today";
+/** Where a group was opened from, as the URL says (§0-2). */
+export type FromParam = { kind: "today" } | { kind: "unit"; unitId: string };
+
+/** What the session knows about its origin: a today task, or a textbook unit (title + terms for its links). */
+export type SessionFrom =
+  | { kind: "today" }
+  | { kind: "unit"; unitId: string; title: string; terms: { id: string; term: string }[] };
+
+/**
+ * `from=today` (a today task: the summary offers 「继续下一项」) or `from=unit&unit=<id>` (a textbook
+ * unit's questions: the summary returns to the unit) — the unit only when `isUnit(id)` (the page
+ * checks the id shape with UNIT_ID_RE and that the index has it); anything else → null.
+ */
+export function parseFrom(sp: SearchParams, isUnit: (id: string) => boolean): FromParam | null {
+  const from = first(sp.from);
+  if (from === "today") return { kind: "today" };
+  if (from !== "unit") return null;
+  const unitId = first(sp.unit);
+  return unitId !== undefined && isUnit(unitId) ? { kind: "unit", unitId } : null;
 }
 
 /** `kind=<mistakes|due|fresh>` of a from=today link (see header); anything else → null. */

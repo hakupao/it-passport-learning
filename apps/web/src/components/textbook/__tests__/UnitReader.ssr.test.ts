@@ -34,6 +34,7 @@ vi.mock("@/i18n/navigation", () => ({
     children: React.ReactNode;
     className?: string;
   }) => h("a", { href: `/${locale ?? "_"}${href}`, className }, children),
+  useRouter: () => ({ push: () => {} }),
 }));
 
 import { UnitReader } from "../UnitReader";
@@ -148,7 +149,8 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
       );
       expect(order, t.term).toEqual([...order].sort((x, y) => x - y));
       expect(a).toContain(tb("ja").termPast!.replace("{n}", String(t.quiz.length)));
-      expect(a).toContain(`href="/_/practice?ids=${t.quiz.join(",")}"`);
+      // from=unit link without a run (the run is made at click time, §0-2)
+      expect(a).toContain(`href="/_/practice?ids=${t.quiz.join(",")}&amp;from=unit&amp;unit=${UNIT_ID}"`);
     });
     expect(articles.some((a) => a.includes('data-part="fig"'))).toBe(true);
   });
@@ -174,7 +176,7 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
     const ids = pickConfirm(normalizeUnit(raw, members), members);
     const sec = out.match(/<section[^>]*id="confirm"[\s\S]*?<\/section>/)![0];
     expect(sec).toContain(tb("ja").confirmCount!.replace("{n}", String(ids.length)));
-    expect(sec).toContain(`href="/_/practice?ids=${ids.join(",")}"`);
+    expect(sec).toContain(`href="/_/practice?ids=${ids.join(",")}&amp;from=unit&amp;unit=${UNIT_ID}"`);
   });
 });
 

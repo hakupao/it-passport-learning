@@ -64,6 +64,7 @@ import {
   summaryNextHref,
   todayKind,
   type SessionAction,
+  type SessionFrom,
   type SessionState,
   type StatusLine,
   type TodayKind,
@@ -88,7 +89,8 @@ export interface PracticeSessionProps {
   topics: Record<string, SessionTopic>;
   /** qid → JP fold point (foldPlan) */
   folds: Record<string, number>;
-  fromToday: boolean;
+  /** where the group was opened from (parseFrom; a unit carries its title and terms) */
+  from: SessionFrom | null;
   /** the today payload (from=today only; null when it failed to load) */
   today: TodayIndex | null;
   /** the URL's run nonce (parseRun); part of the storage key */
@@ -127,7 +129,8 @@ function dialogOpen(): boolean {
 }
 
 export function PracticeSession(props: PracticeSessionProps): React.ReactElement {
-  const { questions, initialState, fromToday, today } = props;
+  const { questions, initialState, from, today } = props;
+  const fromToday = from?.kind === "today";
   const run = props.run ?? null;
   const { record, loaded, answer } = useLearningRecord();
   const ids = useMemo(() => questions.map((q) => q.id), [questions]);
@@ -334,7 +337,7 @@ export function SessionView({
   termCards,
   topics,
   folds,
-  fromToday,
+  from,
   state,
   record,
   recordLoaded,
@@ -355,7 +358,7 @@ export function SessionView({
         answers={state.answers}
         questions={questions}
         elapsedMs={Math.max(0, (state.endedAt ?? state.startedAt) - state.startedAt)}
-        from={fromToday ? "today" : null}
+        from={from}
         nextHref={nextHref}
         topics={topics}
         runNonce={state.endedAt}

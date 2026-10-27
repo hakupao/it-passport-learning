@@ -1,5 +1,5 @@
 // Stage 7 Phase 3 (D-196 §0-6) — one term in the D-195 order: headword (+ glossary link) →
-// 一句話 → figure → 展開 → たとえ / 覚え方 → this term's past questions. `article id` =
+// 一句話 → figure → 展開 → たとえ / 覚え方 → this term's past questions (from=unit, click-time run). `article id` =
 // termId(term) (the glossary's /textbook/<unitId>#<termId> target). The figure is the v1
 // self-generated Mermaid SVG (trusted pipeline output, inlined).
 
@@ -9,15 +9,17 @@ import { Link } from "@/i18n/navigation";
 import { toDataLang, type ReaderTerm } from "@/lib/textbook/reader";
 
 import styles from "./reader.module.css";
+import { UnitPracticeLink } from "./UnitPracticeLink";
 
 interface Props {
   term: ReaderTerm;
+  unitId: string;
   /** the inlined SVG of `term.fig`; null when there is none or it could not be read */
   svg: string | null;
   locale: string;
 }
 
-export function TermBlock({ term, svg, locale }: Props): React.ReactElement {
+export function TermBlock({ term, unitId, svg, locale }: Props): React.ReactElement {
   const t = useTranslations("Textbook");
   const tg = useTranslations("Glossary");
   const dl = toDataLang(locale);
@@ -65,10 +67,10 @@ export function TermBlock({ term, svg, locale }: Props): React.ReactElement {
       ) : null}
       {term.quiz.length > 0 ? (
         <p data-part="term-past" className={styles.termPast}>
-          <Link href={`/practice?ids=${term.quiz.join(",")}`}>
+          <UnitPracticeLink ids={term.quiz} unitId={unitId}>
             {t("termPast", { n: term.quiz.length })}
             <span aria-hidden="true"> →</span>
-          </Link>
+          </UnitPracticeLink>
         </p>
       ) : null}
     </article>

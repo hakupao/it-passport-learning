@@ -4,7 +4,9 @@
 // 「继续下一项」 (from=today only; nextHref is computed by the session from dailyPlan, §0-26) and
 // 「回今日」, plus 「もう一度」 (the same group afresh: the stored one is cleared). The retry link
 // carries `&run=<runNonce>` (the group's endedAt) so the same ids (all wrong) start a new group
-// instead of reopening this stored summary. The heading takes the focus when the group ends
+// instead of reopening this stored summary. From a textbook unit (from=unit, Phase 3 §0-2) the
+// primary action is 「単元に戻る」 → /textbook/<id>#confirm and the retry link keeps
+// `from=unit&unit=<id>`. The heading takes the focus when the group ends
 // (tabIndex -1). Book parts (出典 label, 正解) stay Japanese in every locale.
 
 "use client";
@@ -13,7 +15,7 @@ import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import type { ChoiceLetter } from "@/lib/learning/record";
-import { formatElapsed, summarize } from "@/lib/practice/practiceSession";
+import { formatElapsed, summarize, type SessionFrom } from "@/lib/practice/practiceSession";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 import styles from "./session.module.css";
@@ -42,7 +44,7 @@ export function SessionSummary({
   answers: Readonly<Record<string, ChoiceLetter>>;
   questions: readonly QuizQuestion[];
   elapsedMs: number;
-  from: "today" | null;
+  from: SessionFrom | null;
   /** from=today: the next today group (or "/" when the day is done); null = not offered */
   nextHref: string | null;
   topics: Readonly<Record<string, SessionTopic>>;
@@ -54,6 +56,7 @@ export function SessionSummary({
   const t = useTranslations("Practice");
   const score = summarize(ids, answers, questions);
   const byId = new Map(questions.map((q) => [q.id, q]));
+  const fromUnit = from?.kind === "unit" ? `&from=unit&unit=${from.unitId}` : "";
 
   return (
     <main className={`${styles.session} ${styles.summary}`} data-summary="">
@@ -107,14 +110,19 @@ export function SessionSummary({
       <div className={styles.actions}>
         {score.wrong.length > 0 ? (
           <Link
-            href={`/practice?ids=${score.wrong.join(",")}${runNonce != null ? `&run=${runNonce}` : ""}`}
+            href={`/practice?ids=${score.wrong.join(",")}${fromUnit}${runNonce != null ? `&run=${runNonce}` : ""}`}
             className={styles.action}
             data-action="retry"
           >
             {t("retryWrong")}
           </Link>
         ) : null}
-        {from === "today" && nextHref !== null ? (
+        {from?.kind === "unit" ? (
+          <Link href={`/textbook/${from.unitId}#confirm`} className={styles.actionPrimary} data-action="unit">
+            {t("backToUnit")}
+          </Link>
+        ) : null}
+        {from?.kind === "today" && nextHref !== null ? (
           <Link href={nextHref} className={styles.actionPrimary} data-action="continue">
             {t("continueNext")}
           </Link>

@@ -86,7 +86,7 @@ function renderSession(questions: QuizQuestion[], locale: string, initialState?:
           questions.map((q) => q.id),
           GROUPS,
         ),
-        fromToday: false,
+        from: null,
         today: null,
         initialState,
       }),
@@ -105,7 +105,7 @@ function renderView(questions: QuizQuestion[], locale: string, over: Partial<Ses
       questions.map((q) => q.id),
       GROUPS,
     ),
-    fromToday: false,
+    from: null,
     today: null,
     state: newSession(
       questions.map((q) => q.id),
@@ -248,10 +248,10 @@ describe("PracticeSession — one question per screen", () => {
       expect(out).toMatch(/<span[^>]*role="timer"[^>]*data-timer=""[^>]*>00:00<\/span>/);
     }
     // from=today: the task kind in front of pos / total
-    const today = renderView(qs, "zh", { fromToday: true, kind: "mistakes" });
+    const today = renderView(qs, "zh", { from: { kind: "today" }, kind: "mistakes" });
     expect(textOf(/<span aria-hidden="true">([\s\S]*?)<\/span><\/span>/.exec(today)![0])).toBe("错题　1 / 3");
-    expect(renderView(qs, "ja", { fromToday: true, kind: "due" })).toContain("今日の復習　");
-    expect(renderView(qs, "en", { fromToday: true, kind: "fresh" })).toContain("New questions　");
+    expect(renderView(qs, "ja", { from: { kind: "today" }, kind: "due" })).toContain("今日の復習　");
+    expect(renderView(qs, "en", { from: { kind: "today" }, kind: "fresh" })).toContain("New questions　");
     // the timer counts from startedAt (mm:ss), frozen at endedAt; 00:00 before mount
     expect(withIntl("ja", h(SessionTimer, { startedAt: 1000, endedAt: 1000 + 522_000 }))).toContain(">08:42<");
     expect(withIntl("ja", h(SessionTimer, { startedAt: 1000, endedAt: null }))).toContain(">00:00<");
@@ -271,7 +271,7 @@ describe("PracticeSession — one question per screen", () => {
             termCards: {},
             topics: TOPICS,
             folds: {},
-            fromToday: true,
+            from: { kind: "today" },
             today: null,
             kindParam,
           }),
@@ -334,14 +334,39 @@ describe("SessionSummary", () => {
     // 「继续下一项」 only for from=today
     expect(out).not.toContain('data-action="continue"');
     const next = `/practice?ids=${qs[0]!.id}&from=today`;
-    const today = renderView(qs, "zh", { state: s, fromToday: true, nextHref: next });
+    const today = renderView(qs, "zh", { state: s, from: { kind: "today" }, nextHref: next });
     expect(today).toContain(`href="${next.replace("&", "&amp;")}" class=`);
     expect(today).toMatch(/data-action="continue"[^>]*>继续下一项</);
     expect(today).toContain("只做错题再来一遍");
     expect(today).toContain("回今日");
-    expect(renderView(qs, "en", { state: s, fromToday: true, nextHref: "/" })).toMatch(
+    expect(renderView(qs, "en", { state: s, from: { kind: "today" }, nextHref: "/" })).toMatch(
       /href="\/"[^>]*>Continue to the next task</,
     );
+  });
+
+  it("from=unit: 「単元に戻る」 is the primary action → /textbook/<id>#confirm; the retry keeps from=unit&unit=", () => {
+    const qs = three();
+    const s = {
+      ...run(
+        newSession(
+          qs.map((q) => q.id),
+          0,
+        ),
+        { type: "pick", choice: qs[0]!.correct_answer as ChoiceLetter },
+        { type: "next" },
+        { type: "pick", choice: wrongOf(qs[1]!) },
+        { type: "finish" },
+      ),
+      endedAt: 5000,
+    };
+    const unit = { kind: "unit" as const, unitId: "management-08-25-u01", title: "要件定義と設計", terms: [] };
+    const out = renderView(qs, "ja", { state: s, from: unit });
+    expect(out).toMatch(/<a href="\/textbook\/management-08-25-u01#confirm" class="[^"]*" data-action="unit">単元に戻る<\/a>/);
+    expect(out).toContain(`href="/practice?ids=${qs[1]!.id}&amp;from=unit&amp;unit=management-08-25-u01&amp;run=5000"`);
+    expect(out).not.toContain('data-action="continue"');
+    expect(renderView(qs, "en", { state: s, from: unit })).toMatch(/data-action="unit">Back to the unit</);
+    // not from a unit: no 「単元に戻る」
+    expect(renderView(qs, "ja", { state: s })).not.toContain('data-action="unit"');
   });
 
   it("nothing answered: no score, no retry", () => {
@@ -434,7 +459,7 @@ describe("fix round 1: reload on the summary, start over, run nonce, status afte
           termCards: {},
           topics: TOPICS,
           folds: {},
-          fromToday: true,
+          from: { kind: "today" },
           today,
           initialState: finishedState(qs),
         }),
