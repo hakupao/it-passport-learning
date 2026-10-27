@@ -3,12 +3,13 @@
 // renders nothing for bad data, so a broken figure never takes the term's text down with it; each
 // component also returns null on bad data when used directly. A new kind = a new code task
 // (component + tests + figureSpec entry), never something the generator can add.
-// Imports figureSpec / types with the `.ts` suffix like the Node-imported modules (D-196 §0-13).
+// Web code imports lib modules without the `.ts` suffix (one module instance per bundle); the
+// suffix is only for the Node-importable chain itself (validateV2 → figureSpec → types, §0-13).
 
 import { createElement, type ReactElement } from "react";
 
-import { figErrors, type FigureKind } from "@/lib/textbook/figureSpec.ts";
-import type { FigSpec } from "@/lib/textbook/types.ts";
+import { figErrors, type FigureKind } from "@/lib/textbook/figureSpec";
+import type { FigSpec } from "@/lib/textbook/types";
 
 import { CompareFig } from "./CompareFig";
 import { FlowFig } from "./FlowFig";

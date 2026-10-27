@@ -14,7 +14,9 @@ import type { FigSpec, TextbookUnitV2 } from "@/lib/textbook/types";
 import { CompareFig } from "../CompareFig";
 import { FlowFig } from "../FlowFig";
 import { NetworkFig } from "../NetworkFig";
+import { DaysField, networkGeometry, NODE_R } from "../NetworkFig";
 import { FIG_COMPONENTS, renderFig } from "../registry";
+import { StageView } from "../StepStage";
 import { TableFig } from "../TableFig";
 import { TreeFig } from "../TreeFig";
 import { SvgFig } from "../SvgFig";
@@ -89,11 +91,12 @@ describe("each kind (SSR)", () => {
     expect((en.match(/<tr[^>]*data-key="true"/g) ?? []).length).toBe(1);
   });
 
-  it("flow (steps): SSR shows the final step — every node, the last caption, 前へ / もう一度, one dot per step", () => {
+  it("flow (steps): SSR shows the final step — every node, the last caption (silent), 前へ / もう一度, one dot per step", () => {
     const out = render("ja", FIG.flow);
     for (const label of ["要因を見つける", "計画・方式を変える", "発生しなくなる"]) expect(out).toContain(label);
     expect(out).not.toContain('data-off="true"');
-    expect(out).toMatch(/aria-live="polite"[^>]*>[^<]*要因がないので、リスクは起きない。/);
+    // silent on load (review: no announcement of every step figure on page load)
+    expect(out).toMatch(/aria-live="off"[^>]*>[^<]*要因がないので、リスクは起きない。/);
     const m = fm("ja");
     expect(out).toContain(`>${m.prev}</button>`);
     expect(out).toContain(`>${m.replay}</button>`);
@@ -202,5 +205,76 @@ describe("Review Focus 5: figure params are data", () => {
     const out = render("ja", f);
     expect(out).not.toContain("<img");
     expect(out).toContain("&lt;img");
+  });
+});
+
+// Task 7 review: the network drawing must keep every label readable, and the widgets accessible.
+describe("network geometry", () => {
+  const shapes: Record<string, { nodes: string[]; acts: { from: string; to: string; days: number; dummy?: boolean; name?: string }[] }> = {
+    sample: (FIG.network as Extract<FigSpec, { kind: "network" }>).data,
+    chain: { nodes: ["1", "2", "3", "4"], acts: [{ from: "1", to: "2", days: 3 }, { from: "2", to: "3", days: 4 }, { from: "3", to: "4", days: 2 }] },
+    parallel: {
+      nodes: ["1", "2", "3", "4"],
+      acts: [
+        { from: "1", to: "2", days: 2 },
+        { from: "1", to: "3", days: 3 },
+        { from: "2", to: "4", days: 4 },
+        { from: "3", to: "4", days: 3 },
+        { from: "1", to: "4", days: 5 },
+      ],
+    },
+  };
+
+  for (const [name, d] of Object.entries(shapes)) {
+    it(`${name}: distinct node centres, no label inside a node, everything inside the canvas`, () => {
+      const g = networkGeometry(d.nodes, d.acts);
+      const pts = d.nodes.map((n) => g.pos[n]!);
+      expect(new Set(pts.map((p) => `${p.x},${p.y}`)).size).toBe(d.nodes.length);
+      g.edges.forEach((e, i) => {
+        if (d.acts[i]!.dummy) return;
+        for (const p of pts) {
+          expect(Math.hypot(e.label.x - p.x, e.label.y - p.y), `${name} edge ${i} label vs node`).toBeGreaterThan(NODE_R + 8);
+        }
+        expect(e.label.x).toBeGreaterThan(0);
+        expect(e.label.y).toBeGreaterThan(0);
+        expect(e.label.x).toBeLessThan(g.width);
+        expect(e.label.y).toBeLessThan(g.height);
+      });
+    });
+  }
+
+  it("sample: the dummy does not push node 3 a column right (1 | 2, 3 | 4); the dummy is vertical", () => {
+    const g = networkGeometry(shapes.sample!.nodes, shapes.sample!.acts);
+    expect(g.pos["2"]!.x).toBe(g.pos["3"]!.x);
+    expect(g.pos["1"]!.x).toBeLessThan(g.pos["2"]!.x);
+    expect(g.pos["3"]!.x).toBeLessThan(g.pos["4"]!.x);
+  });
+
+  it("parallel: the 1→4 activity spanning two columns is a curve, not a straight line through the middle column", () => {
+    const g = networkGeometry(shapes.parallel!.nodes, shapes.parallel!.acts);
+    expect(g.edges[4]!.d).toMatch(/ Q /);
+    expect(g.edges[0]!.d).not.toMatch(/ Q /);
+  });
+});
+
+describe("widget accessibility", () => {
+  it("an invalid duration shows a visible error tied to the input", () => {
+    const out = html("ja", h(DaysField, { id: "f1", label: "A の所要日数（日）", value: "abc", error: "0〜99 の整数で入力してください", onChange: () => {} }));
+    expect(out).toContain('aria-invalid="true"');
+    expect(out).toMatch(/aria-describedby="f1-err"/);
+    expect(out).toMatch(/<p[^>]*id="f1-err"[^>]*>0〜99 の整数で入力してください<\/p>/);
+    const ok = html("ja", h(DaysField, { id: "f1", label: "A", value: "3", error: "x", onChange: () => {} }));
+    expect(ok).not.toContain("aria-invalid");
+    expect(ok).not.toContain("f1-err");
+  });
+
+  it("step 1: 前へ stays focusable (aria-disabled, not disabled); the caption is silent until the reader acts", () => {
+    const view = (step: number, live: boolean) =>
+      html("ja", h(StageView, { step, live, frames: ["a", "b", "c"], captions: ["c1", "c2", "c3"], label: "L", onGo: () => {} }));
+    const first = view(0, false);
+    expect(first).toMatch(/<button[^>]*aria-disabled="true"[^>]*>前へ<\/button>/);
+    expect(first).not.toMatch(/<button[^>]*disabled=""/);
+    expect(first).toContain('aria-live="off"');
+    expect(view(1, true)).toContain('aria-live="polite"');
   });
 });

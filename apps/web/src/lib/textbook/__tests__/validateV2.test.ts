@@ -187,6 +187,8 @@ describe("validateV2 — one broken thing → one error", () => {
     expectOne((u) => void (term(u, "軽減").fig as { data: { acts: unknown[] } }).data.acts.push({ from: "4", to: "1", days: 1 }), "fig");
     expectOne((u) => void (term(u, "軽減").fig as { data: { nodes: string[] } }).data.nodes.push("5"), "fig");
     expectOne((u) => void ((term(u, "軽減").fig as { data: { acts: { days: number }[] } }).data.acts[0]!.days = -1), "fig");
+    // the widget's range (0〜99, IT パスポート scale) is the data's range
+    expectOne((u) => void ((term(u, "軽減").fig as { data: { acts: { days: number }[] } }).data.acts[0]!.days = 100), "fig");
   });
 
   it("展開 is 2〜3 sentences", () => {
@@ -312,6 +314,26 @@ describe("validateV2 — review fixes", () => {
       u.summary.key_points_jp[1] = u.key_points_jp[1];
     });
     expect(issues).toEqual([]);
+  });
+
+  it("listing: 一種 / 一つ / 〜つ目 are not a stated count (D-197)", () => {
+    for (const s of [
+      "リスク対応の一種で、回避・軽減・転嫁と並ぶ。",
+      "対応の一つとして、回避・軽減・転嫁がある。",
+      "2つ目は回避・軽減・転嫁の比較である。",
+    ]) {
+      expectOne((u) => {
+        u.key_points_jp[1] = s;
+        u.summary.key_points_jp[1] = s;
+      }, "listing");
+    }
+    // 10 and above, kanji counts
+    for (const s of ["対応策は十種類あり、回避・軽減・転嫁などがある。", "回避・軽減・転嫁など12種の対応がある。", "回避・軽減・受容・転嫁の四つがある。"]) {
+      expect(issuesAfter((u) => {
+        u.key_points_jp[1] = s;
+        u.summary.key_points_jp[1] = s;
+      }), s).toEqual([]);
+    }
   });
 
   it("listing (D-197) applies to all JP prose: detail and key points without a count", () => {

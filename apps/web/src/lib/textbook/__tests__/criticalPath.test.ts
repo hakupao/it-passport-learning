@@ -87,6 +87,11 @@ describe("criticalPath — invalid networks throw RangeError", () => {
     expect(() => criticalPath(["1", "2", "3"], [{ from: "1", to: "2", days: 1 }])).toThrow(RangeError);
   });
 
+  it("no nodes, fractional days", () => {
+    expect(() => criticalPath([], [])).toThrow(RangeError);
+    expect(() => criticalPath(["1", "2"], [{ from: "1", to: "2", days: 1.5 }])).toThrow(RangeError);
+  });
+
   it("unknown node, negative days", () => {
     expect(() => criticalPath(["1", "2"], [{ from: "1", to: "9", days: 1 }])).toThrow(RangeError);
     expect(() => criticalPath(["1", "2"], [{ from: "1", to: "2", days: -1 }])).toThrow(RangeError);

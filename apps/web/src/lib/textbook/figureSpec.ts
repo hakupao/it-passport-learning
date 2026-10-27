@@ -22,6 +22,9 @@ export const FIGURE_KINDS = {
 
 export type FigureKind = keyof typeof FIGURE_KINDS;
 
+/** Activity duration range of a `network` figure (IT パスポート scale; the widget's input range too). */
+export const NETWORK_DAYS_MAX = 99;
+
 /** Steps per `mode: "steps"` figure (§0-11). */
 export const STEPS_MIN = 3;
 export const STEPS_MAX = 4;
@@ -81,7 +84,7 @@ function networkErrors(d: Rec): string[] {
       return;
     }
     if (a.from === a.to) errs.push(`${at}: self loop`);
-    if (!isInt(a.days, 0, 999)) errs.push(`${at}.days: integer 0〜999`);
+    if (!isInt(a.days, 0, NETWORK_DAYS_MAX)) errs.push(`${at}.days: integer 0〜${NETWORK_DAYS_MAX}`);
     if (a.dummy !== undefined && typeof a.dummy !== "boolean") errs.push(`${at}.dummy: boolean`);
     if (a.dummy === true && a.days !== 0) errs.push(`${at}: a dummy activity takes 0 days`);
     if (a.name !== undefined && !nonEmpty(a.name)) errs.push(`${at}.name: non-empty when present`);

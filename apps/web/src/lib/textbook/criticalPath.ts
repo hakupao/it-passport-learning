@@ -25,13 +25,14 @@ export interface CpResult {
 }
 
 export function criticalPath(nodes: string[], acts: CpAct[]): CpResult {
+  if (nodes.length === 0) throw new RangeError("network has no nodes");
   const known = new Set(nodes);
   const out = new Map<string, number[]>(nodes.map((n) => [n, []]));
   const indeg = new Map<string, number>(nodes.map((n) => [n, 0]));
   const und = new Map<string, string[]>(nodes.map((n) => [n, []]));
   acts.forEach((a, i) => {
     if (!known.has(a.from) || !known.has(a.to)) throw new RangeError(`activity ${i}: unknown node`);
-    if (!Number.isFinite(a.days) || a.days < 0) throw new RangeError(`activity ${i}: days must be ≥ 0`);
+    if (!Number.isInteger(a.days) || a.days < 0) throw new RangeError(`activity ${i}: days must be an integer ≥ 0`);
     out.get(a.from)!.push(i);
     indeg.set(a.to, indeg.get(a.to)! + 1);
     und.get(a.from)!.push(a.to);

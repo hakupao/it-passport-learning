@@ -26,3 +26,45 @@ export function stepReplay(): number {
 export function isLastStep(step: number, count: number): boolean {
   return step >= count - 1;
 }
+
+// ---- the StepStage controller (useReducer) ----------------------------------------------
+//
+// First paint (SSR, no JS, reduced motion, not yet in view) = the last step, silent: the
+// whole figure is readable and the aria-live caption announces nothing on load. The first
+// time the stage comes into view — unless the reader has already pressed a button or
+// prefers reduced motion — it jumps to step 1 and plays through once, announcing. Any press
+// stops the playback for good and turns announcements on.
+
+export interface StageState {
+  step: number;
+  count: number;
+  /** the playback timer should run */
+  auto: boolean;
+  /** the one playback has started (never again) */
+  played: boolean;
+  /** the reader pressed a control */
+  touched: boolean;
+  /** captions are announced (aria-live polite) */
+  live: boolean;
+}
+
+export type StageEvent = { type: "visible"; reduced?: boolean } | { type: "tick" } | { type: "go"; step: number };
+
+export function stageInit(count: number): StageState {
+  return { step: stepInitial(count, true), count, auto: false, played: false, touched: false, live: false };
+}
+
+export function stageReduce(s: StageState, e: StageEvent): StageState {
+  switch (e.type) {
+    case "visible":
+      if (s.played || s.touched || e.reduced) return s;
+      return { ...s, step: stepInitial(s.count, false), auto: true, played: true, live: true };
+    case "tick": {
+      if (!s.auto) return s;
+      const step = stepNext(s.step, s.count);
+      return { ...s, step, auto: !isLastStep(step, s.count) };
+    }
+    case "go":
+      return { ...s, step: Math.min(Math.max(e.step, 0), s.count - 1), auto: false, touched: true, live: true };
+  }
+}
