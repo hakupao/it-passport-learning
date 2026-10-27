@@ -158,13 +158,13 @@
 - Create: `apps/web/src/lib/textbook/__fixtures__/v2-sample.json`（手写合规样例，三语，含每种图）
 - Test: `inline.test.ts`、`validateV2.test.ts`、`normalize.test.ts`（v2）、`v2-compat.test.ts`（新）、`v1-snapshot.test.ts`（新）
 
-- [ ] **Step 1: 先写 v1 快照**（改动前）：只对**当前全部 v1 单元 id** 记录 `buildDictionary` 的条目与每单元 `unitAnchor` 输出的哈希（文件小）；测试按 `schema_version === "stage4-unit-v1-trilingual"` 过滤，v2 单元自动排除；辞典按**义项**粒度过滤（ステークホルダ、アローダイアグラム 等跨单元词条同时含 v1 / v2 义项）。commit。
-- [ ] **Step 2: 写失败测试**
+- [x] **Step 1: 先写 v1 快照**（改动前）：只对**当前全部 v1 单元 id** 记录 `buildDictionary` 的条目与每单元 `unitAnchor` 输出的哈希（文件小）；测试按 `schema_version === "stage4-unit-v1-trilingual"` 过滤，v2 单元自动排除；辞典按**义项**粒度过滤（ステークホルダ、アローダイアグラム 等跨单元词条同时含 v1 / v2 义项）。commit。
+- [x] **Step 2: 写失败测试**
   - `parseInline` / `stripInline`：两种标记、未闭合 / 嵌套原样输出、不产生 HTML 字符串。
   - `validateV2`：不变量（与 index 的 `title_jp` / 用语集合与顺序一致）、三语齐全、标记可解析、去标记(新字段) == 兼容字段、`pairs` 放在较后用语之后、`exam` 考点带 `qids`、`fig.kind` 在注册表内、分步 3〜4 步且三语 caption 齐全、`network` 无环且连通、展開 2〜3 句（按 `。` / `.` 计）、`quiz` / `challenge_questions` 可解析且同 topic、D-195 §9 禁用句式（清单写在模块里）。样例单元 0 error；逐项改坏各报 1 error。
   - `v2-compat`：样例单元进 `buildDictionary` / 辞典条目页 SSR / `unitAnchor`：不抛、字段非空、无标记字符。
-- [ ] **Step 3〜4**：FAIL → 实现 → PASS（含 v1 快照）。
-- [ ] **Step 5: Commit** `feat(textbook): unit schema v2 with v1 compatibility fields, inline markup, shared validator (Phase 3 §0-9, §0-12)`
+- [x] **Step 3〜4**：FAIL → 实现 → PASS（含 v1 快照）。
+- [x] **Step 5: Commit** `feat(textbook): unit schema v2 with v1 compatibility fields, inline markup, shared validator (Phase 3 §0-9, §0-12)`
 
 ### Task 7: 图解注册表与部件
 
