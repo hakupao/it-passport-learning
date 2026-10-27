@@ -7,12 +7,14 @@ import { describe, expect, it } from "vitest";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { emptyRecord, recordAttempt, recordAttempts, type LearningRecord } from "@/lib/learning/record";
+import { loadLocal } from "@/lib/learning/localStore";
+import { emptyRecord, mergeRecords, recordAttempt, recordAttempts, type LearningRecord } from "@/lib/learning/record";
 
 import {
   exposedLoaded,
   LearningRecordProvider,
   makeLearningActions,
+  persistNow,
   useLearningActions,
   useLearningRecord,
 } from "../useLearningRecord";
@@ -136,5 +138,43 @@ describe("makeLearningActions (what the provider's actions do)", () => {
     actions.answerBatch(items, 5_000, "mock");
     expect(box.calls).toBe(1);
     expect(box.record).toEqual(recordAttempts(base, items, 5_000, "mock"));
+  });
+
+  it("answerBatch hands the batch to persist before the state update (OQ-12: on disk before `recorded`)", () => {
+    const order: string[] = [];
+    const persisted: LearningRecord[] = [];
+    const actions = makeLearningActions(
+      () => order.push("update"),
+      () => 999_999,
+      (r) => {
+        order.push("persist");
+        persisted.push(r);
+      },
+    );
+    const items = [["q2", "ウ", true]] as const;
+    actions.answerBatch(items, 5_000, "mock");
+    expect(order).toEqual(["persist", "update"]);
+    expect(persisted).toEqual([recordAttempts(emptyRecord(), items, 5_000, "mock")]);
+    // only the batch goes through persist; live answers stay on the save effect
+    actions.answer("q3", "ア", false);
+    actions.readUnit("t-01-01");
+    actions.setSetting("dailyReviewCap", 40);
+    expect(persisted).toHaveLength(1);
+  });
+
+  it("persistNow merges the batch into what is stored, synchronously (other tabs' answers kept)", () => {
+    const map = new Map<string, string>();
+    const storage = {
+      getItem: (k: string) => map.get(k) ?? null,
+      setItem: (k: string, v: string) => void map.set(k, v),
+      removeItem: (k: string) => void map.delete(k),
+    };
+    const stored = recordAttempt(emptyRecord(), "q1", "イ", true, 100);
+    persistNow(storage, stored);
+    const batch = recordAttempts(emptyRecord(), [["q1", "ア", false]], 5_000, "mock");
+    persistNow(storage, batch);
+    expect(loadLocal(storage, 0)).toEqual(mergeRecords(stored, batch));
+    // no storage (SSR / blocked): a no-op, never throws
+    expect(() => persistNow(null, batch)).not.toThrow();
   });
 });

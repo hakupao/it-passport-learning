@@ -16,7 +16,11 @@
 //   3. Every change after (1) is saved with saveLocal (v2 key only), which
 //      merges with what is stored (another tab may have written since); other
 //      tabs' writes (v2 key, or an old tab's v1 key) are merged in through the
-//      window "storage" event.
+//      window "storage" event. answerBatch is also written synchronously
+//      (persistNow) before its state update: the mock page marks the mock
+//      `recorded` right after the call, and that flag must never reach storage
+//      before the answers it stands for (OQ-12). The save effect then re-saves
+//      the same content (merge dedupes; the stored string is unchanged).
 //   4. Owner only, once the GET has settled (success or failure): 2000 ms after
 //      the last change, PUT the merged record when it differs from what the
 //      server last returned, then merge the response back. The response equals
@@ -89,17 +93,23 @@ export interface LearningActions {
 }
 
 /**
- * The provider's actions over a state updater and a clock (the provider passes
- * its setRecord and Date.now). Every action is one functional update.
+ * The provider's actions over a state updater, a clock and a synchronous
+ * persist (the provider passes its setRecord, Date.now and persistNow on
+ * localStorage). Every action is one functional update; answerBatch first
+ * hands the batch alone (recordAttempts on an empty record) to `persist`.
  */
 export function makeLearningActions(
   update: (fn: (prev: LearningRecord) => LearningRecord) => void,
   now: () => number,
+  persist: (r: LearningRecord) => void = () => {},
 ): LearningActions {
   return {
     answer: (qid, choice, correct, src = "practice") =>
       update((prev) => recordAttempt(prev, qid, choice, correct, now(), src)),
-    answerBatch: (items, at, src) => update((prev) => recordAttempts(prev, items, at, src)),
+    answerBatch: (items, at, src) => {
+      persist(recordAttempts(emptyRecord(), items, at, src));
+      update((prev) => recordAttempts(prev, items, at, src));
+    },
     readUnit: (unitId) => update((prev) => markUnitRead(prev, unitId, now())),
     setSetting: (key, value) => update((prev) => setSetting(prev, key, value, now())),
   };
@@ -129,6 +139,11 @@ function browserStorage(): StorageLike | null {
   } catch {
     return null;
   }
+}
+
+/** Merge `r` into the stored v2 record now (saveLocal); no storage = no-op. */
+export function persistNow(storage: StorageLike | null, r: LearningRecord): void {
+  if (storage) saveLocal(storage, r);
 }
 
 const browserFetch: FetchLike = (input, init) => fetch(input, init);
@@ -238,7 +253,10 @@ export function LearningRecordProvider({
     });
   }, [loaded, isOwner, remoteSettled, applyRemote]);
 
-  const actions = useMemo<LearningActions>(() => makeLearningActions(setRecord, () => Date.now()), []);
+  const actions = useMemo<LearningActions>(
+    () => makeLearningActions(setRecord, () => Date.now(), (r) => persistNow(browserStorage(), r)),
+    [],
+  );
 
   const readersLoaded = exposedLoaded(loaded, isOwner, remoteSettled);
   const state = useMemo<RecordState>(
