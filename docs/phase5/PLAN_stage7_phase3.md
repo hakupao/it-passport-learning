@@ -201,6 +201,7 @@
 - [ ] **Step 1: prep**（确定性）：每单元 manifest = 现有内容、用语（标题词与顺序不可改）、topic `objective_jp`、每用语相关过去问（题干 / 正解 / 解说摘要，仅给写作者看，不入库）、图种注册表与参数 schema、D-195 全文、输出 JSON schema。
 - [ ] **Step 2: workflow**（§0-13 四个角色；每个 agent 写 `parts/<unit>.<stage>.json` 并只返回计数；日文审查 ≤ 2 轮）。
 - [ ] **Step 3: merge / validate / parity + 测试**：用样例单元：validate 0 error、parity 0 diff；改坏一种语言的步骤数 → parity 报出；merge 写出的兼容字段 = 去标记的新字段。
+- **前提**：Task 6 / Task 8 已合入（`normalizeUnit` 对非 v1 `schema_version` 会抛错，v2 文件先落盘会让单元页 500 — Task 1 审查 M-4）。
 - [ ] **Step 4: 先跑 1 个单元 `management-10-27-u02`** → merge → validate + parity 通过 → `textbook-unit-minutes-build.mjs` 重建并 `--check` → 本地 :3150 截图（ja / zh / en × 1440 / 390）给你看；**写 e2e**：该单元分步「次へ」推进 caption、reduced-motion 初始即末状态、`network` 改工期后总工期变化、该单元用语的辞典条目页 200 且无标记字符。你同意文风与图 → 跑 u01、u03；不同意 → Rule B 归档后改 D-195 或提示词重跑。
 - [ ] **Step 5: Commit**：脚本、v2 单元文件、`unit_minutes.json` 分开 commit（`feat(scripts): textbook v2 generation pipeline (Phase 3 §0-13)` / `content(textbook): management-10-27 rewritten under D-195 (pilot)`）。v1 快照测试因按 schema 过滤，无需重新生成。
 
