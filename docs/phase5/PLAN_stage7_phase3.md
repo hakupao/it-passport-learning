@@ -87,11 +87,11 @@
 - `orderConfirm(ids: readonly string[], record: LearningRecord, now: number): string[]`
 - `pastCount(unit: ReaderUnit): number`
 
-- [ ] **Step 1: 写失败测试**：全部 244 个 v1 单元：`terms.length` 与原文件相同、`id` = `termId(term)`、`one.jp === definition_jp`、`detail.jp === explanation_jp`；`pickConfirm` 全部 3〜5 题、无组员（读 `chumon_groups.json` 的 `member_ids`）、全部可解析、同 topic，并且 `resolveScope` 展开后题数不变；`orderConfirm` 空记录 / 有错题 / 已答各一例。
-- [ ] **Step 2: 运行** `cd apps/web && npx vitest run src/lib/textbook` → FAIL。
-- [ ] **Step 3: 实现**。
-- [ ] **Step 4: 运行** → PASS；`npx tsc --noEmit` 0。
-- [ ] **Step 5: Commit** `feat(textbook): reader model, v1 normalizer, confirmation picker (Phase 3 §0-1, §0-6)`
+- [x] **Step 1: 写失败测试**：全部 244 个 v1 单元：`terms.length` 与原文件相同、`id` = `termId(term)`、`one.jp === definition_jp`、`detail.jp === explanation_jp`；`pickConfirm` 全部 3〜5 题、无组员（读 `chumon_groups.json` 的 `member_ids`）、全部可解析、同 topic，并且 `resolveScope` 展开后题数不变；`orderConfirm` 空记录 / 有错题 / 已答各一例。
+- [x] **Step 2: 运行** `cd apps/web && npx vitest run src/lib/textbook` → FAIL。
+- [x] **Step 3: 实现**。
+- [x] **Step 4: 运行** → PASS；`npx tsc --noEmit` 0。
+- [x] **Step 5: Commit** `feat(textbook): reader model, v1 normalizer, confirmation picker (Phase 3 §0-1, §0-6)`
 
 ### Task 2: 阅读页重排 + 読了按钮
 
@@ -103,15 +103,15 @@
 - Modify: `apps/web/messages/{ja,zh,en}.json`（`Textbook`：`readDone`、`readDoneOn`、`confirmTitle`、`confirmStart`、`termPast`、`pastCount`、`keyPoints`、`analogy`、`hook`、`breadcrumb`；删除不再使用的键）
 - Test: `UnitReader.ssr.test.ts`（改）、`ReadButton.ssr.test.ts`、`ConfirmBlock.ssr.test.ts`（新）；`e2e/learning.spec.ts:55-75`（**改写**）、新 `e2e/textbook.spec.ts`
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
   - SSR：顺序 = 面包屑 → h1 → meta（含过去问数）→ 用语一览 → 每个 `article#termId`（一句话 → 图 → 展開 → 比方 / 记法 → 用语内过去问链接）→ 要点 → `#confirm` 确认题区 → 読了；无 `MarkUnitRead`、无 intro、无 memory_hooks 列表；AI 先生按钮仍在 h1 之后、第一个 article 之前。
   - `ReadButton`：未读 → 「読了」；已读 → 「✓ 読了 M/D」且 `disabled`。
   - e2e `learning.spec`：打开单元 → `unitsRead` 空；点「読了」→ `[UNIT_ID]`；目录该行 ✓；刷新仍已读。
   - e2e `textbook.spec`：1440 / 390 无横向溢出；正文列宽 ≤ 44em。
-- [ ] **Step 2: 运行** → FAIL。
-- [ ] **Step 3: 实现**（§0-4〜§0-6）。
-- [ ] **Step 4: 运行** vitest 全量 + `e2e/learning.spec.ts e2e/textbook.spec.ts e2e/glossary.spec.ts e2e/sensei.spec.ts e2e/csp.spec.ts e2e/today.spec.ts`（`PLAYWRIGHT_BASE_URL=http://localhost:3150`）→ PASS。
-- [ ] **Step 5: Commit** `feat(textbook): single-column reader in the D-195 skeleton, explicit 読了 button (Phase 3 §0-4–§0-6)`
+- [x] **Step 2: 运行** → FAIL。
+- [x] **Step 3: 实现**（§0-4〜§0-6）。
+- [x] **Step 4: 运行** vitest 全量 + `e2e/learning.spec.ts e2e/textbook.spec.ts e2e/glossary.spec.ts e2e/sensei.spec.ts e2e/csp.spec.ts e2e/today.spec.ts`（`PLAYWRIGHT_BASE_URL=http://localhost:3150`）→ PASS。
+- [x] **Step 5: Commit** `feat(textbook): single-column reader in the D-195 skeleton, explicit 読了 button (Phase 3 §0-4–§0-6)`
 
 ### Task 3: 确认题 → 练习组 → 回到单元
 
@@ -121,9 +121,9 @@
 - Modify: `ConfirmBlock.tsx`、`TermBlock.tsx`（点击生成 `run`）
 - Test: `practiceSession.test.ts`、`SessionSummary.ssr.test.ts`、`ConfirmBlock` 交互（纯函数 `confirmHref(ids, unitId, run)`）、e2e `textbook.spec.ts`
 
-- [ ] **Step 1: 写失败测试**：`parseFrom` 四例（today / 合法 unit / 未知 unit / 非法格式）；`confirmHref` 含 `from=unit&unit=` 与给定 `run`；ConfirmBlock 连点两次生成的 `run` 不同；总结页 `from=unit` → 主按钮「単元に戻る」链 `/textbook/<id>#confirm`，「只做错题」链接保留 `from=unit&unit=`。e2e ①：单元 → 确认题全部答对 → 単元に戻る → 再点 → 进度 1/N（新一轮）；e2e ②：答错 1 题 → 错题本里有该题。
-- [ ] **Step 2〜4**：FAIL → 实现（§0-1、§0-2、§0-7）→ PASS（含 `e2e/practice.spec.ts e2e/today.spec.ts` 回归）。
-- [ ] **Step 5: Commit** `feat(textbook): confirmation questions run as a practice set and return to the unit (Phase 3 §0-2)`
+- [x] **Step 1: 写失败测试**：`parseFrom` 四例（today / 合法 unit / 未知 unit / 非法格式）；`confirmHref` 含 `from=unit&unit=` 与给定 `run`；ConfirmBlock 连点两次生成的 `run` 不同；总结页 `from=unit` → 主按钮「単元に戻る」链 `/textbook/<id>#confirm`，「只做错题」链接保留 `from=unit&unit=`。e2e ①：单元 → 确认题全部答对 → 単元に戻る → 再点 → 进度 1/N（新一轮）；e2e ②：答错 1 题 → 错题本里有该题。
+- [x] **Step 2〜4**：FAIL → 实现（§0-1、§0-2、§0-7）→ PASS（含 `e2e/practice.spec.ts e2e/today.spec.ts` 回归）。
+- [x] **Step 5: Commit** `feat(textbook): confirmation questions run as a practice set and return to the unit (Phase 3 §0-2)`
 
 ### Task 4: 解说里的「単元に戻る」
 
@@ -131,16 +131,16 @@
 - Modify: `apps/web/src/components/practice/ExplanationPane.tsx`、`PracticeSession.tsx`
 - Test: `ExplanationPane.ssr.test.ts`、e2e `textbook.spec.ts`
 
-- [ ] **Step 1: 写失败测试**：`from=unit` 组里答错 → 解说下方「単元に戻る：<单元名>」，有交集用语时带锚点；答对 / 非 `from=unit` 不出现。
-- [ ] **Step 2〜4**：FAIL → 实现（§0-8）→ PASS。
-- [ ] **Step 5: Commit** `feat(practice): wrong answers in a unit's set link back to the unit (Phase 3 §0-8)`
+- [x] **Step 1: 写失败测试**：`from=unit` 组里答错 → 解说下方「単元に戻る：<单元名>」，有交集用语时带锚点；答对 / 非 `from=unit` 不出现。
+- [x] **Step 2〜4**：FAIL → 实现（§0-8）→ PASS。
+- [x] **Step 5: Commit** `feat(practice): wrong answers in a unit's set link back to the unit (Phase 3 §0-8)`
 
 ### Task 5: 3a 收尾
 
-- [ ] **Step 1: Gates**（五项 + IPA 泄漏闸 + 本地 e2e 全量 :3150 `--retries=0`，完整日志）→ `evidence/phase5/stage_07_ui/phase3/gates_3a.md`。
-- [ ] **Step 2: 截图抽检**（`general-purpose` opus）：6 个单元（三分野各 2，含原 0 题单元与用语最多的单元）× ja / zh × 1440 / 390，对照 JSON：用语数与顺序、文字齐全、确认题数 = `pickConfirm` 结果、无溢出 → `audit_3a.md`；FAIL → `failures/phase5/stage_07_ui/phase3a_audit_attempt_N.md`。
-- [ ] **Step 3: Rule D 整分支审查** + 修正波 ≤ 1 轮 + 复审。
-- [ ] **Step 4: 你试用（本地 :3150）→ 同意 push** → main fast-forward + push → 本番 e2e 全量（完整日志）→ 会话日志 + STATE。
+- [x] **Step 1: Gates**（五项 + IPA 泄漏闸 + 本地 e2e 全量 :3150 `--retries=0`，完整日志）→ `evidence/phase5/stage_07_ui/phase3/gates_3a.md`。
+- [x] **Step 2: 截图抽检**（`general-purpose` opus）：6 个单元（三分野各 2，含原 0 题单元与用语最多的单元）× ja / zh × 1440 / 390，对照 JSON：用语数与顺序、文字齐全、确认题数 = `pickConfirm` 结果、无溢出 → `audit_3a.md`；FAIL → `failures/phase5/stage_07_ui/phase3a_audit_attempt_N.md`。
+- [x] **Step 3: Rule D 整分支审查** + 修正波 ≤ 1 轮 + 复审。
+- [x] **Step 4: 你试用（本地 :3150）→ 同意 push** → main fast-forward + push → 本番 e2e 全量（完整日志）→ 会话日志 + STATE。
 
 ---
 
