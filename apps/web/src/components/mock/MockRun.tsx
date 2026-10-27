@@ -30,7 +30,8 @@
 //     loaded, calls mockRecordPlan and, for a plan, re-reads storage first (another tab already
 //     recorded → adopt that state), then answerBatch(answered items, endedAt, "mock") — skipped for
 //     an empty plan; it writes the batch to localStorage synchronously, OQ-12 — and only then the
-//     `recorded` action, written to storage. A tab records only a finish it produced itself (own:
+//     `recorded` action, written to storage (not when the batch did not reach storage: the mock
+//     stays owed and the next open records it; the result still shows). A tab records only a finish it produced itself (own:
 //     its finish / tick, or what it found on mount); a finished state adopted from another tab's
 //     storage event is that tab's to record. So with two tabs, the finishing tab writes the batch
 //     once and the other just shows the result.
@@ -310,7 +311,8 @@ export function MockRun({ kind, examId, examLabel, questions, locale, folds, sta
       show(stored);
       return;
     }
-    if (plan.items.length > 0) answerBatch(plan.items, plan.at, "mock");
+    // not on disk (storage full / blocked): stay unrecorded, the next open records it (OQ-12 M-1)
+    if (plan.items.length > 0 && !answerBatch(plan.items, plan.at, "mock")) return;
     const next = mockReducer(state, { type: "recorded" });
     writeStored(next);
     show(next);

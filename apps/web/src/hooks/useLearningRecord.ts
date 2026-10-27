@@ -19,8 +19,10 @@
 //      window "storage" event. answerBatch is also written synchronously
 //      (persistNow) before its state update: the mock page marks the mock
 //      `recorded` right after the call, and that flag must never reach storage
-//      before the answers it stands for (OQ-12). The save effect then re-saves
-//      the same content (merge dedupes; the stored string is unchanged).
+//      before the answers it stands for (OQ-12). It returns whether the batch is
+//      on disk; on false (storage full or blocked) the mock page leaves the mock
+//      unrecorded, so the next open records it again (OQ-12 M-1). The save
+//      effect then re-saves the merged record (merge dedupes the batch).
 //   4. Owner only, once the GET has settled (success or failure): 2000 ms after
 //      the last change, PUT the merged record when it differs from what the
 //      server last returned, then merge the response back. The response equals
@@ -59,6 +61,8 @@ import { applyStorageEvent, loadLocal, saveLocal } from "@/lib/learning/localSto
 import {
   canonicalJson,
   emptyRecord,
+  encodeRecord,
+  LEARNING_STORAGE_KEY,
   markUnitRead,
   mergeIfChanged,
   mergeRecords,
@@ -84,8 +88,11 @@ export const PUT_DEBOUNCE_MS = 2000;
 export interface LearningActions {
   /** Store an attempt at Date.now() (src "practice" unless given). */
   answer(qid: string, choice: ChoiceLetter, correct: boolean, src?: "practice" | "mock"): void;
-  /** Store a batch of attempts, all at `at` (a finished mock's answered questions), in one update. */
-  answerBatch(items: readonly (readonly [string, ChoiceLetter, boolean])[], at: number, src: "mock"): void;
+  /**
+   * Store a batch of attempts, all at `at` (a finished mock's answered questions), in one update;
+   * true when the batch is also in localStorage already.
+   */
+  answerBatch(items: readonly (readonly [string, ChoiceLetter, boolean])[], at: number, src: "mock"): boolean;
   /** Record the first read of a unit (an existing value is kept). */
   readUnit(unitId: string): void;
   /** Set a setting, last-writer-wins (numbers clamped; see record.setSetting). */
@@ -96,19 +103,21 @@ export interface LearningActions {
  * The provider's actions over a state updater, a clock and a synchronous
  * persist (the provider passes its setRecord, Date.now and persistNow on
  * localStorage). Every action is one functional update; answerBatch first
- * hands the batch alone (recordAttempts on an empty record) to `persist`.
+ * hands the batch alone (recordAttempts on an empty record) to `persist` and
+ * returns its result.
  */
 export function makeLearningActions(
   update: (fn: (prev: LearningRecord) => LearningRecord) => void,
   now: () => number,
-  persist: (r: LearningRecord) => void,
+  persist: (r: LearningRecord) => boolean,
 ): LearningActions {
   return {
     answer: (qid, choice, correct, src = "practice") =>
       update((prev) => recordAttempt(prev, qid, choice, correct, now(), src)),
     answerBatch: (items, at, src) => {
-      persist(recordAttempts(emptyRecord(), items, at, src));
+      const persisted = persist(recordAttempts(emptyRecord(), items, at, src));
       update((prev) => recordAttempts(prev, items, at, src));
+      return persisted;
     },
     readUnit: (unitId) => update((prev) => markUnitRead(prev, unitId, now())),
     setSetting: (key, value) => update((prev) => setSetting(prev, key, value, now())),
@@ -141,9 +150,18 @@ function browserStorage(): StorageLike | null {
   }
 }
 
-/** Merge `r` into the stored v2 record now (saveLocal); no storage = no-op. */
-export function persistNow(storage: StorageLike | null, r: LearningRecord): void {
-  if (storage) saveLocal(storage, r);
+/**
+ * Merge `r` into the stored v2 record now (saveLocal) and read it back: true when the stored value
+ * is the merged record. No storage, or a write saveLocal swallowed (quota / private mode) → false.
+ */
+export function persistNow(storage: StorageLike | null, r: LearningRecord): boolean {
+  if (!storage) return false;
+  const merged = saveLocal(storage, r);
+  try {
+    return storage.getItem(LEARNING_STORAGE_KEY) === JSON.stringify(encodeRecord(merged));
+  } catch {
+    return false;
+  }
 }
 
 const browserFetch: FetchLike = (input, init) => fetch(input, init);

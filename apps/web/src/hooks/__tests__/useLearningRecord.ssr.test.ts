@@ -79,7 +79,7 @@ describe("makeLearningActions (what the provider's actions do)", () => {
         box.record = fn(box.record);
       },
       () => box.now,
-      () => {},
+      () => true,
     );
     return { box, actions };
   }
@@ -131,7 +131,7 @@ describe("makeLearningActions (what the provider's actions do)", () => {
         box.record = fn(box.record);
       },
       () => 999_999,
-      () => {},
+      () => true,
     );
     const items = [
       ["q1", "ア", false],
@@ -151,10 +151,12 @@ describe("makeLearningActions (what the provider's actions do)", () => {
       (r) => {
         order.push("persist");
         persisted.push(r);
+        return persisted.length === 1;
       },
     );
     const items = [["q2", "ウ", true]] as const;
-    actions.answerBatch(items, 5_000, "mock");
+    // the return value is persist's (the mock page writes `recorded` only on true; OQ-12 M-1)
+    expect(actions.answerBatch(items, 5_000, "mock")).toBe(true);
     expect(order).toEqual(["persist", "update"]);
     expect(persisted).toEqual([recordAttempts(emptyRecord(), items, 5_000, "mock")]);
     // only the batch goes through persist; live answers stay on the save effect
@@ -162,6 +164,7 @@ describe("makeLearningActions (what the provider's actions do)", () => {
     actions.readUnit("t-01-01");
     actions.setSetting("dailyReviewCap", 40);
     expect(persisted).toHaveLength(1);
+    expect(actions.answerBatch(items, 6_000, "mock")).toBe(false);
   });
 
   it("persistNow merges the batch into what is stored, synchronously (other tabs' answers kept)", () => {
@@ -172,11 +175,20 @@ describe("makeLearningActions (what the provider's actions do)", () => {
       removeItem: (k: string) => void map.delete(k),
     };
     const stored = recordAttempt(emptyRecord(), "q1", "イ", true, 100);
-    persistNow(storage, stored);
+    expect(persistNow(storage, stored)).toBe(true);
     const batch = recordAttempts(emptyRecord(), [["q1", "ア", false]], 5_000, "mock");
-    persistNow(storage, batch);
+    expect(persistNow(storage, batch)).toBe(true);
     expect(loadLocal(storage, 0)).toEqual(mergeRecords(stored, batch));
-    // no storage (SSR / blocked): a no-op, never throws
-    expect(() => persistNow(null, batch)).not.toThrow();
+    // no storage (SSR / blocked) or a failed write (quota): false, never throws (OQ-12 M-1)
+    expect(persistNow(null, batch)).toBe(false);
+    const full = {
+      ...storage,
+      setItem: () => {
+        throw new DOMException("full", "QuotaExceededError");
+      },
+    };
+    const more = recordAttempts(emptyRecord(), [["q9", "エ", true]], 7_000, "mock");
+    expect(persistNow(full, more)).toBe(false);
+    expect(loadLocal(storage, 0)).toEqual(mergeRecords(stored, batch));
   });
 });

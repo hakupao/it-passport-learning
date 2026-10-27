@@ -347,6 +347,36 @@ test("mock closed and reopened after the deadline: /mock offers only the result;
   expect(await mockAttempts(page)).toEqual([[Q(1), started + MOCK_MS]]);
 });
 
+test("mock record write fails (storage full): not marked recorded; the next open records it once (OQ-12 M-1)", async ({
+  page,
+}) => {
+  // setItem on the learning key throws while the flag is set (the mock key still writes)
+  await page.addInitScript(() => {
+    const set = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key: string, value: string) {
+      if (key === "itp:learn:v2" && this.getItem("e2e:block-learn") === "1") {
+        throw new DOMException("full", "QuotaExceededError");
+      }
+      return set.call(this, key, value);
+    };
+  });
+  await page.goto(RUN);
+  await page.evaluate(() => localStorage.setItem("e2e:block-learn", "1"));
+  await answerChoice(page, "ウ"); // q001 keyed ウ
+  await finish(page);
+  await page.waitForTimeout(500);
+  const ended = (await storedMock(page))!;
+  expect(ended.endedAt).not.toBeNull();
+  expect(ended.recorded).toBe(false);
+  expect(await mockAttempts(page)).toEqual([]);
+
+  await page.evaluate(() => localStorage.removeItem("e2e:block-learn"));
+  await page.reload();
+  await expect(result(page)).toBeVisible();
+  await expect.poll(async () => (await storedMock(page))?.recorded).toBe(true);
+  expect(await mockAttempts(page)).toEqual([[Q(1), ended.endedAt]]);
+});
+
 test("mock: opening another mock while one owes its record goes to that one first", async ({ page }) => {
   await page.clock.install();
   await page.goto(RUN);
