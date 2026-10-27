@@ -84,9 +84,9 @@ describe("pickConfirm", () => {
       );
       expect(pastCount(u), u.id).toBe(rawPast.size);
     }
-    // Measured on the v1 corpus (D-196 §0-1). Update when the data changes: Task 9's v2
-    // units (management-10-27-u01〜u03) bring new challenge_questions and change it.
-    expect(dist).toEqual({ 3: 26, 4: 45, 5: 173 });
+    // Measured on the corpus (D-196 §0-1): v1 was { 3: 26, 4: 45, 5: 173 }; S135 pilot u02 (v2) has 5
+    // challenge questions (v1: 3). Update when the data changes (u01 / u03 next).
+    expect(dist).toEqual({ 3: 25, 4: 45, 5: 174 });
   });
 
   it("anchors: technology-21-54-u01 (no challenge_questions) / management-10-27-u02 past count", async () => {
@@ -97,7 +97,7 @@ describe("pickConfirm", () => {
       "2011h23a-q053",
       "2014h26a-q074",
     ]);
-    expect(pastCount(norm("management-10-27-u02"))).toBe(11);
+    expect(pastCount(norm("management-10-27-u02"))).toBe(17); // v2 (S135): 5 confirm ∪ 12 term quiz, no members (v1: 11)
   });
 });
 

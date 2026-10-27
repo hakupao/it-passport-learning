@@ -41,12 +41,14 @@ import { V2_SCHEMA } from "@/lib/textbook/types";
 
 const PER_CATEGORY = 14;
 
-/** 14 evenly spaced v1 units per 分野 (unit_id order) + a synthetic one without analogy / hook. */
+/** 14 evenly spaced units per 分野 (unit_id order over all 244, so the pick doesn't move when a unit
+ *  turns v2; those are skipped by the caller) + a synthetic one without analogy / hook. */
 function sample(units: TextbookUnit[]): TextbookUnit[] {
-  const v1 = units.filter((u) => u.schema_version !== V2_SCHEMA).sort((a, b) => a.unit_id.localeCompare(b.unit_id));
+  const all = [...units].sort((a, b) => a.unit_id.localeCompare(b.unit_id));
+  const v1 = all.filter((u) => u.schema_version !== V2_SCHEMA);
   const out: TextbookUnit[] = [];
   for (const cat of ["technology", "management", "strategy"]) {
-    const list = v1.filter((u) => u.category === cat);
+    const list = all.filter((u) => u.category === cat);
     for (let i = 0; i < PER_CATEGORY; i++) out.push(list[Math.floor((i * list.length) / PER_CATEGORY)]!);
   }
   const base = v1.find((u) => u.category === "management" && u.terms.length >= 2)!;
@@ -77,7 +79,8 @@ describe("UnitReader v1 output is unchanged", () => {
     const picked = sample(units);
     expect(new Set(picked.map((u) => u.unit_id)).size).toBe(3 * PER_CATEGORY + 1);
     const now: Record<string, string> = {};
-    for (const raw of picked) {
+    const v1Picked = picked.filter((u) => u.schema_version !== V2_SCHEMA); // rewritten units leave the v1 check
+    for (const raw of v1Picked) {
       const unit = normalizeUnit(raw, members);
       for (const locale of LOCALES) {
         const el = await UnitReader({
@@ -94,7 +97,8 @@ describe("UnitReader v1 output is unchanged", () => {
         now[`${raw.unit_id}:${locale}`] = createHash("sha256").update(parts(out)).digest("hex").slice(0, 16);
       }
     }
-    expect(Object.keys(now)).toHaveLength((3 * PER_CATEGORY + 1) * 3);
+    expect(Object.keys(now)).toHaveLength(v1Picked.length * 3);
+    expect(v1Picked.length).toBeGreaterThan(3 * PER_CATEGORY - 6); // the pilot rewrites ≤ 3 units per topic
     if (process.env.UNIT_READER_V1_WRITE === "1") writeFileSync(FILE, `${JSON.stringify(now, null, 1)}\n`);
     expect(existsSync(FILE)).toBe(true);
     const saved = JSON.parse(readFileSync(FILE, "utf-8")) as Record<string, string>;
