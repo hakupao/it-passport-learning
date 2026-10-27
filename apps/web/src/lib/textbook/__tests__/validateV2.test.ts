@@ -306,6 +306,14 @@ describe("validateV2 — review fixes", () => {
     expect(issues).toEqual([]);
   });
 
+  it("listing: the counted-classification exception does not need 「の」 (D-197)", () => {
+    const issues = issuesAfter((u) => {
+      u.key_points_jp[1] = "対応策は4種類あり、回避・軽減・受容・転嫁である。";
+      u.summary.key_points_jp[1] = u.key_points_jp[1];
+    });
+    expect(issues).toEqual([]);
+  });
+
   it("listing (D-197) applies to all JP prose: detail and key points without a count", () => {
     expectOne((u) => {
       const t = term(u, "回避");
