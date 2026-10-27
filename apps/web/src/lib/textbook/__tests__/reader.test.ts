@@ -188,15 +188,14 @@ describe("buildNav", () => {
 });
 
 describe("neighbors", () => {
-  it("returns prev/next by unit_order with topic name", () => {
+  it("returns prev/next by unit_order", () => {
     const n = neighbors(idx, "strategy-01-01-u01");
     // unit_order = [u02, u01] → u01 is last: prev=u02, next=null
-    expect(n.topicName).toBe("経営・組織論");
     expect(n.prev).toEqual({ unit_id: "strategy-01-01-u02", title_jp: "S2" });
     expect(n.next).toBeNull();
   });
   it("returns nulls for an unknown unit", () => {
-    expect(neighbors(idx, "nope")).toEqual({ topicName: "", prev: null, next: null });
+    expect(neighbors(idx, "nope")).toEqual({ prev: null, next: null });
   });
 });
 

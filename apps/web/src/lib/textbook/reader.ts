@@ -157,7 +157,6 @@ export function buildNav(index: ReaderIndex, locale: string): NavCategory[] {
 
 /** Prev/next unit within a topic, by unit_order. null at the ends or if absent. */
 export interface UnitNeighbors {
-  topicName: string;
   prev: { unit_id: string; title_jp: string } | null;
   next: { unit_id: string; title_jp: string } | null;
 }
@@ -172,12 +171,11 @@ export function neighbors(index: ReaderIndex, unitId: string): UnitNeighbors {
       return u ? { unit_id: u.unit_id, title_jp: u.title_jp } : null;
     };
     return {
-      topicName: t.name_jp,
       prev: ref(order[i - 1]),
       next: ref(order[i + 1]),
     };
   }
-  return { topicName: "", prev: null, next: null };
+  return { prev: null, next: null };
 }
 
 /** Where a unit sits in the syllabus, for the unit header breadcrumb (D-196 §0-5). */

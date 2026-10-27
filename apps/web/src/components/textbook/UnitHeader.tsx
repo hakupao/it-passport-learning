@@ -26,7 +26,7 @@ export function UnitHeader({ unit, place, locale, pastCount, children }: Props):
   return (
     <header>
       <nav aria-label={t("breadcrumb")} data-part="breadcrumb" className={styles.crumbs}>
-        <Link href="/textbook" className={styles.crumbLink}>
+        <Link href={`/textbook#${place?.category ?? unit.category}`} className={styles.crumbLink}>
           {t(catKey(place?.category ?? unit.category))}
         </Link>
         {place ? (

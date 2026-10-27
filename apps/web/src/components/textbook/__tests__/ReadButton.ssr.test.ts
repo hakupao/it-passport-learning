@@ -29,12 +29,13 @@ describe("ReadButtonView", () => {
     expect(out).toMatch(/<button[^>]*disabled[^>]*>読了<\/button>/);
   });
 
-  it("read → 「✓ 読了 M/D」 and disabled (no undo)", () => {
+  it("read → a focusable status 「✓ 読了 M/D」, no button (no undo)", () => {
     const at = new Date(2026, 9, 7, 12).getTime(); // local Oct 7
     const out = render("ja", { readAt: at, ready: true, onRead: noop });
-    expect(out).toMatch(/<button[^>]*disabled[^>]*>/);
+    expect(out).not.toContain("<button");
+    expect(out).toMatch(/^<p[^>]*role="status"[^>]*tabindex="-1"[^>]*data-part="read"/);
     expect(out).toContain('<span aria-hidden="true">✓</span> 読了 10/7');
-    const zh = render("zh", { readAt: at, ready: true, onRead: noop });
-    expect(zh).toContain("已读完 10/7");
+    expect(render("zh", { readAt: at, ready: true, onRead: noop })).toContain("已读完 10/7");
+    expect(render("en", { readAt: at, ready: true, onRead: noop })).toContain("Read Oct 7");
   });
 });

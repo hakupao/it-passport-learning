@@ -84,3 +84,10 @@ describe("TextbookToc read marks (SSR)", () => {
     expect(slots.length).toBe(index.stats.units);
   });
 });
+
+describe("TextbookToc category anchors (Stage 7 Phase 3: the unit breadcrumb links /textbook#<category>)", () => {
+  it("gives each category section id=<category>", async () => {
+    const out = await render("ja");
+    for (const c of ["technology", "management", "strategy"]) expect(out).toMatch(new RegExp(`<section id="${c}"`));
+  });
+});

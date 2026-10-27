@@ -57,6 +57,7 @@ test("textbook: the 読了 button marks the unit read; the TOC shows it and a re
   const requests = trackLearningRequests(page);
   const unitRow = (id: string) => page.locator(`a[href="/ja/textbook/${id}"]`);
   const readButton = page.locator('main button[data-part="read"]');
+  const readStatus = page.locator('main [role="status"][data-part="read"]');
 
   await page.goto("/ja/textbook");
   await expect(unitRow(UNIT_ID)).toHaveCount(1);
@@ -66,12 +67,16 @@ test("textbook: the 読了 button marks the unit read; the TOC shows it and a re
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(readButton).toBeEnabled(); // the record has loaded
   await expect(readButton).toHaveText(ja.Textbook.readDone);
-  expect(Object.keys((await storedV2(page))?.unitsRead ?? {})).toEqual([]); // opening is not reading
+  // opening is not reading: a reload (any on-mount write would have landed by then) still shows it unread
+  await page.reload();
+  await expect(readButton).toBeEnabled();
+  expect(Object.keys((await storedV2(page))?.unitsRead ?? {})).toEqual([]);
 
   await readButton.click();
   await expect.poll(async () => Object.keys((await storedV2(page))?.unitsRead ?? {})).toEqual([UNIT_ID]);
-  await expect(readButton).toBeDisabled();
-  await expect(readButton).toContainText(/^✓ 読了 \d{1,2}\/\d{1,2}$/);
+  await expect(readButton).toHaveCount(0);
+  await expect(readStatus).toHaveText(/^✓ 読了 \d{1,2}\/\d{1,2}$/);
+  await expect(readStatus).toBeFocused();
   expect(await rawStored(page, V1_KEY)).toBeNull();
 
   await page.goto("/ja/textbook");
@@ -81,9 +86,8 @@ test("textbook: the 読了 button marks the unit read; the TOC shows it and a re
   await expect(page.locator("a", { hasText: ja.Textbook.read })).toHaveCount(1);
 
   await page.goto(`/ja/textbook/${UNIT_ID}`);
-  await page.reload();
-  await expect(readButton).toBeDisabled();
-  await expect(readButton).toContainText("✓ 読了");
+  await expect(readStatus).toContainText("✓ 読了");
+  await expect(readButton).toHaveCount(0);
   expect(Object.keys((await storedV2(page))?.unitsRead ?? {})).toEqual([UNIT_ID]);
   expect(requests).toEqual([]);
 });

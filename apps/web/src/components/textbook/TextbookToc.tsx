@@ -56,7 +56,7 @@ export async function TextbookToc({
       </header>
 
       {nav.map((cat) => (
-        <section key={cat.category} className={styles.cat}>
+        <section key={cat.category} id={cat.category} className={styles.cat}>
           <h2 className={styles.catTitle}>{t(catKey(cat.category))}</h2>
           {cat.topics.map((topic) => (
             <div key={topic.topic_id} className={styles.topic}>

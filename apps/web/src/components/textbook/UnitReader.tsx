@@ -3,7 +3,8 @@
 //
 // Async server component, single-language per the active locale. Order: header
 // (breadcrumb → h1 → meta → 「AI 先生に聞く」 → term index) → each term (TermBlock) →
-// 要点 (summary.key_points) → 確認問題 (#confirm, pickConfirm's ids) → 「読了」 → in-topic
+// 要点 (summary.key_points) → 確認問題 (#confirm, pickConfirm's ids) → the topic's past
+// questions (secondary link) → 「読了」 → in-topic
 // prev/next. Not shown (§0-6): overview.intro, summary.memory_hooks, fallback inline_quiz.
 // The unit is marked read only by the 読了 button (§0-4; the page mounts the
 // LearningRecordProvider).
@@ -83,10 +84,17 @@ export async function UnitReader({
       ) : null}
 
       <ConfirmBlock ids={confirm} />
-
-      <p className={styles.readRow}>
-        <ReadButton unitId={unit.id} />
+      {/* Stage 7 Task 13: every past question of the topic (the confirm set is only 3〜5 of them) */}
+      <p data-part="topic-past" className={styles.topicPast}>
+        <Link href={`/practice/browse/${unit.topicId}`}>
+          {t("topicPast")}
+          <span aria-hidden="true"> →</span>
+        </Link>
       </p>
+
+      <div className={styles.readRow}>
+        <ReadButton unitId={unit.id} />
+      </div>
 
       <nav className={styles.pager}>
         {neighbors.prev ? (

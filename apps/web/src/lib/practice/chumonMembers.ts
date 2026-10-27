@@ -19,6 +19,9 @@ export interface ChumonRegistry {
 /** Every chumon group member id. Branded: only loadChumonMembers produces one (§0-1 invariant). */
 export type ChumonMembers = ReadonlySet<string> & { readonly __brand: "ChumonMembers" };
 
+// Keep in sync with quiz/quizReader.ts quizDataRoot() (QUIZ_DATA_ROOT → <root>/quiz, else
+// <cwd>/../../data/ip/quiz). Not shared on purpose: resolving straight to the file (not the
+// quiz dir) keeps nft from latching onto data/ip/quiz and tracing the ~30 MB sidecars.
 function registryFile(): string {
   const env = process.env.QUIZ_DATA_ROOT;
   return env

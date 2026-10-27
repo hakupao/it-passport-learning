@@ -96,6 +96,7 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
       "<article",
       'data-part="key-points"',
       'id="confirm"',
+      'data-part="topic-past"',
       'data-part="read"',
     ].map((m) => at(out, m));
     expect(marks).toEqual([...marks].sort((a, b) => a - b));
@@ -114,7 +115,7 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
       expect(i, p).toBeGreaterThanOrEqual(from);
       from = i + p.length;
     }
-    expect(nav).toContain('href="/_/textbook"');
+    expect(nav).toContain('href="/_/textbook#management"');
   });
 
   it("meta shows badge, minutes, term count and the unit's past-question count", async () => {
@@ -159,6 +160,13 @@ describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
     for (const hook of raw.summary.memory_hooks_jp) expect(out).not.toContain(hook);
     for (const kp of raw.summary.key_points_jp) expect(out).toContain(kp);
     for (const k of ["memoryHooks", "overview", "summary", "back", "pastQuestions"]) expect(tb("ja")[k]).toBeUndefined();
+  });
+
+  it("keeps a secondary link to every past question of the topic under #confirm", async () => {
+    const out = await render("ja");
+    const link = out.match(/data-part="topic-past"[^>]*><a href="([^"]*)"[^>]*>([^<]*)</);
+    expect(link?.[1]).toBe("/_/practice/browse/management-08-25");
+    expect(link?.[2]).toBe(tb("ja").topicPast);
   });
 
   it("the confirm section lists pickConfirm's questions", async () => {
