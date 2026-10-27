@@ -1,5 +1,7 @@
-// Stage 7 Phase 3 (D-196 §0-6) — one term in the D-195 order: headword (+ glossary link) →
-// 一句話 → figure → 展開 → たとえ / 覚え方 → this term's past questions (from=unit, click-time run). `article id` =
+// Stage 7 Phase 3 (D-196 §0-6 / §0-9) — one term in the D-195 order: headword (+ glossary link) →
+// 一句話 → figure → 展開 → たとえ / 覚え方 → 考点 (v2) → this term's past questions (from=unit,
+// click-time run). v2 text goes through parseInline (keywords <strong>, JP originals lang=ja);
+// v1 text is printed as stored (its markup must stay byte-identical). `article id` =
 // termId(term) (the glossary's /textbook/<unitId>#<termId> target). The figure goes through the
 // figure registry (§0-11): the v1 Mermaid SVG renders exactly as before (SvgFig); a v2 fig
 // renders its kind, or nothing when its params are invalid.
@@ -7,6 +9,7 @@
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { parseInline } from "@/lib/textbook/inline";
 import { toDataLang, type ReaderTerm } from "@/lib/textbook/reader";
 
 import { renderFig } from "./figures/registry";
@@ -19,13 +22,16 @@ interface Props {
   /** the inlined SVG of `term.fig`; null when there is none or it could not be read */
   svg: string | null;
   locale: string;
+  /** the unit is v2: text carries inline markup, the 考点 box shows */
+  v2?: boolean;
 }
 
-export function TermBlock({ term, unitId, svg, locale }: Props): React.ReactElement {
+export function TermBlock({ term, unitId, svg, locale, v2 = false }: Props): React.ReactElement {
   const t = useTranslations("Textbook");
   const tg = useTranslations("Glossary");
   const dl = toDataLang(locale);
   const pick = (v: Record<"jp" | "zh" | "en", string>) => v[dl] || v.jp;
+  const rich = (v: Record<"jp" | "zh" | "en", string>) => (v2 ? parseInline(pick(v), { key: styles.kw, jp: styles.jpWord }) : pick(v));
   return (
     <article id={term.id} className={styles.term}>
       {/* The link sits beside the h3, not inside it, so the heading's name is just the term;
@@ -42,11 +48,11 @@ export function TermBlock({ term, unitId, svg, locale }: Props): React.ReactElem
         </Link>
       </div>
       <p data-part="one" className={styles.def}>
-        {pick(term.one)}
+        {rich(term.one)}
       </p>
       {term.fig ? renderFig(term.fig, { locale, svg }) : null}
       <p data-part="detail" className={styles.prose}>
-        {pick(term.detail)}
+        {rich(term.detail)}
       </p>
       {term.analogy ? (
         <p data-part="analogy" className={styles.analogy}>
@@ -57,8 +63,22 @@ export function TermBlock({ term, unitId, svg, locale }: Props): React.ReactElem
       {term.hook ? (
         <p data-part="hook" className={styles.hook}>
           <span className={styles.fieldLabel}>{t("hook")}</span>
-          {pick(term.hook)}
+          {rich(term.hook)}
         </p>
+      ) : null}
+      {v2 && term.points.length > 0 ? (
+        <aside data-part="points" aria-label={t("points")} className={styles.points}>
+          <ul>
+            {term.points.map((p, i) => (
+              <li key={i} data-point={p.kind}>
+                <span className={p.kind === "exam" ? styles.pointExam : styles.pointMix}>
+                  {t(p.kind === "exam" ? "pointExam" : "pointMix")}
+                </span>
+                {rich(p.text)}
+              </li>
+            ))}
+          </ul>
+        </aside>
       ) : null}
       {term.quiz.length > 0 ? (
         <p data-part="term-past" className={styles.termPast}>

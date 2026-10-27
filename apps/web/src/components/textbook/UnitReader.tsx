@@ -2,7 +2,8 @@
 // single column in the D-195 skeleton over the reader model (normalizeUnit).
 //
 // Async server component, single-language per the active locale. Order: header
-// (breadcrumb → h1 → meta → 「AI 先生に聞く」 → term index) → each term (TermBlock) →
+// (breadcrumb → h1 → meta → 「AI 先生に聞く」 → term index; v2: 学習目標 → 用語総表) → each term
+// (TermBlock; v2: each 易混 pair right after the later of its two terms, D-195 §4) →
 // 要点 (summary.key_points) → 確認問題 (#confirm, pickConfirm's ids) → the topic's past
 // questions (secondary link) → 「読了」 → in-topic
 // prev/next. Not shown (§0-6): overview.intro, summary.memory_hooks, fallback inline_quiz.
@@ -10,10 +11,12 @@
 // LearningRecordProvider).
 
 import { getTranslations } from "next-intl/server";
+import { Fragment } from "react";
 
 import { AskSensei, SenseiHost } from "@/components/sensei/AskSensei";
 import { Link } from "@/i18n/navigation";
 import { pastCount } from "@/lib/textbook/confirm";
+import { parseInline } from "@/lib/textbook/inline";
 import {
   loadGeneratedSvg,
   toDataLang,
@@ -23,6 +26,7 @@ import {
 } from "@/lib/textbook/reader";
 
 import { ConfirmBlock } from "./ConfirmBlock";
+import { PairBlock } from "./PairBlock";
 import { ReadButton } from "./ReadButton";
 import { TermBlock } from "./TermBlock";
 import { UnitHeader } from "./UnitHeader";
@@ -57,6 +61,10 @@ export async function UnitReader({
 
   const title = unit.title[dl] || unit.title.jp;
   const keyPoints = unit.keyPoints[dl].length > 0 ? unit.keyPoints[dl] : unit.keyPoints.jp;
+  const v2 = unit.schema === "v2";
+  // a pair goes after the later of its two terms (validateV2 keeps a before b; max() is the safe reading)
+  const pairsAfter = (i: number) =>
+    unit.pairs.filter((p) => Math.max(unit.terms.findIndex((x) => x.term === p.a), unit.terms.findIndex((x) => x.term === p.b)) === i);
 
   return (
     <main className={`${styles.page} ${styles.unitPage}`}>
@@ -68,16 +76,25 @@ export async function UnitReader({
         </SenseiHost>
       </UnitHeader>
 
-      {unit.terms.map((tm, i) => (
-        <TermBlock key={tm.id} term={tm} unitId={unit.id} svg={svgs[i] ?? null} locale={locale} />
-      ))}
+      {unit.terms.map((tm, i) =>
+        v2 ? (
+          <Fragment key={tm.id}>
+            <TermBlock term={tm} unitId={unit.id} svg={svgs[i] ?? null} locale={locale} v2 />
+            {pairsAfter(i).map((p) => (
+              <PairBlock key={`${p.a}|${p.b}`} pair={p} terms={unit.terms} locale={locale} />
+            ))}
+          </Fragment>
+        ) : (
+          <TermBlock key={tm.id} term={tm} unitId={unit.id} svg={svgs[i] ?? null} locale={locale} />
+        ),
+      )}
 
       {keyPoints.length > 0 ? (
         <section data-part="key-points" className={styles.section}>
           <h2 className={styles.sectionTitle}>{t("keyPoints")}</h2>
           <ul className={styles.list}>
             {keyPoints.map((p, i) => (
-              <li key={i}>{p}</li>
+              <li key={i}>{v2 ? parseInline(p, { key: styles.kw, jp: styles.jpWord }) : p}</li>
             ))}
           </ul>
         </section>

@@ -51,6 +51,7 @@ import {
   normalizeUnit,
   unitPlace,
 } from "@/lib/textbook/reader";
+import type { TextbookUnitV2 } from "@/lib/textbook/types";
 
 // A real unit whose terms include 機能要件 (committed corpus); terms 3 and 4 carry a figure.
 const UNIT_ID = "management-08-25-u01";
@@ -262,5 +263,153 @@ describe("textbook terms on the real corpus", () => {
         expect(entry!.senses.map((s) => s.unitId)).toContain(unit.unit_id);
       }
     }
+  });
+});
+
+// ---- Stage 7 Phase 3 Task 8 (D-196 §0-9, D-195 §3〜§8): a v2 unit -------------------------
+// The hand-written v2 sample (management-10-27-u03, every figure kind) fed straight into the
+// reader: 目標 → 総表 → terms (一句話 → 図 → 展開 → たとえ / 覚え方 → 考点 → この用語の過去問)
+// → each 易混 pair after its later term → 要点 → 確認問題 → 読了.
+
+const V2 = JSON.parse(
+  readFileSync(path.resolve(__dirname, "../../../lib/textbook/__fixtures__/v2-sample.json"), "utf-8"),
+) as TextbookUnitV2;
+
+async function renderV2(locale: "ja" | "zh" | "en"): Promise<string> {
+  const [index, members] = await Promise.all([loadReaderIndex(), loadChumonMembers()]);
+  const unit = normalizeUnit(V2, members);
+  const el = await UnitReader({
+    unit,
+    place: unitPlace(index, V2.unit_id, locale),
+    neighbors: neighbors(index, V2.unit_id),
+    locale,
+    senseiAnchorText: "ANCHOR",
+    confirm: pickConfirm(unit, members),
+  });
+  return renderToStaticMarkup(
+    h(NextIntlClientProvider, {
+      locale,
+      messages: messages(locale),
+      children: h(LearningRecordProvider, { isOwner: false, children: el }),
+    }),
+  );
+}
+
+const articlesOf = (out: string) => [...out.matchAll(/<article[\s\S]*?<\/article>/g)].map((m) => m[0]);
+const count = (s: string, re: RegExp) => (s.match(re) ?? []).length;
+
+describe("UnitReader v2 (SSR, D-196 §0-9 / D-195)", () => {
+  it("orders goals → term table → articles → key points → #confirm → 読了; no v1 term index", async () => {
+    const out = await renderV2("ja");
+    const marks = ['data-part="goals"', 'data-part="overview"', "<article", 'data-part="key-points"', 'id="confirm"', 'data-part="read"'].map((m) =>
+      at(out, m),
+    );
+    expect(marks).toEqual([...marks].sort((a, b) => a - b));
+    expect(out).not.toContain('data-part="term-index"');
+    expect(at(out, 'data-part="goals"')).toBeGreaterThan(at(out, "</h1>"));
+  });
+
+  it("goals: one item per goal, keywords as <strong>", async () => {
+    const out = await renderV2("ja");
+    const goals = out.match(/<section[^>]*data-part="goals"[\s\S]*?<\/section>/)![0];
+    expect(count(goals, /<li/g)).toBe(V2.goals_jp.length);
+    expect(goals).toContain("<strong");
+    expect(goals).toMatch(/<strong[^>]*>回避<\/strong>/);
+    expect(goals).toContain(tb("ja").goals);
+  });
+
+  it("term table: collapsible (open), the column headers, one row per term linking to its article", async () => {
+    const out = await renderV2("zh");
+    const table = out.match(/<details[^>]*data-part="overview"[\s\S]*?<\/details>/)![0];
+    expect(table).toMatch(/<details[^>]*\bopen=""/);
+    expect(table).toMatch(/<summary[^>]*>[\s\S]*?<\/summary>/);
+    expect(table).toContain(tb("zh").overviewTable!.replace("{n}", String(V2.terms.length)));
+    expect(table).toContain("定位");
+    const hrefs = [...table.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
+    expect(hrefs).toEqual(V2.terms.map((t) => termId(t.term)));
+    expect(table).toContain("降低概率或影响");
+    expect(count(table, /<tbody[\s\S]*?<\/tbody>/g)).toBe(1);
+    expect(count(table.match(/<tbody[\s\S]*?<\/tbody>/)![0], /<tr/g)).toBe(V2.terms.length);
+  });
+
+  it("each article: one → fig → detail → analogy / hook → points → this term's past questions; id = termId", async () => {
+    const out = await renderV2("ja");
+    const arts = articlesOf(out);
+    expect(arts).toHaveLength(V2.terms.length);
+    arts.forEach((a, i) => {
+      const t = V2.terms[i]!;
+      expect(a).toMatch(new RegExp(`^<article[^>]*\\bid="${termId(t.term)}"`));
+      const parts = [
+        "one",
+        "fig",
+        "detail",
+        ...(t.analogy_jp ? ["analogy"] : []),
+        ...(t.hook_jp ? ["hook"] : []),
+        "points",
+        "term-past",
+      ];
+      const order = parts.map((p) => at(a, `data-part="${p}"`));
+      expect(order, t.term).toEqual([...order].sort((x, y) => x - y));
+      if (!t.analogy_jp) expect(a).not.toContain('data-part="analogy"');
+      if (!t.hook_jp) expect(a).not.toContain('data-part="hook"');
+      if (t.fig?.kind !== "svg") expect(a).toContain(`data-fig="${t.fig!.kind}"`);
+    });
+  });
+
+  it("考点: one item per point with its 常考 / 易混 label", async () => {
+    for (const locale of ["ja", "zh", "en"] as const) {
+      const arts = articlesOf(await renderV2(locale));
+      arts.forEach((a, i) => {
+        const pts = V2.terms[i]!.points;
+        const box = a.match(/<aside[^>]*data-part="points"[\s\S]*?<\/aside>/)![0];
+        expect(count(box, /data-point=/g)).toBe(pts.length);
+        for (const p of pts) {
+          expect(box).toContain(`data-point="${p.kind}"`);
+          expect(box).toContain(tb(locale)[p.kind === "exam" ? "pointExam" : "pointMix"]);
+        }
+      });
+    }
+  });
+
+  it("inline markup: keywords <strong>, JP originals lang=ja, no raw markers anywhere", async () => {
+    const ja = await renderV2("ja");
+    expect(articlesOf(ja)[0]).toMatch(/data-part="one"[^>]*>[\s\S]*?<strong[^>]*>不確実な事象<\/strong>/);
+    const zh = await renderV2("zh");
+    expect(articlesOf(zh)[0]).toMatch(/<span lang="ja" data-inline="jp"[^>]*>プロジェクトリスクマネジメント<\/span>/);
+    for (const out of [ja, zh, await renderV2("en")]) {
+      expect(out).not.toContain("**");
+      expect(out).not.toContain("[[jp:");
+      expect(out).not.toContain("]]");
+    }
+  });
+
+  it("the 回避 / 軽減 pair comes right after 軽減 (the later term), before the next article", async () => {
+    const out = await renderV2("ja");
+    const pairAt = at(out, 'data-part="pair"');
+    const genAt = at(out, `id="${termId("軽減")}"`);
+    const nextAt = at(out, `id="${termId("受容")}"`);
+    expect(pairAt).toBeGreaterThan(out.indexOf("</article>", genAt));
+    expect(pairAt).toBeLessThan(nextAt);
+    const pair = out.match(/<section[^>]*data-part="pair"[\s\S]*?<\/section>/)![0];
+    expect(count(pair, /<tbody[\s\S]*?<tr/g)).toBeGreaterThan(0);
+    expect(count(pair, /<tr[^>]*data-key="true"/g)).toBe(V2.pairs[0]!.rows.filter((r) => r.key).length);
+    expect(pair).toContain("小さくなって残る");
+    expect(count(out, /data-part="pair"/g)).toBe(V2.pairs.length);
+  });
+
+  it("ja / zh / en have the same structure (terms, figures, steps, points, pairs, key points, goals)", async () => {
+    const shape = (out: string) => ({
+      articles: count(out, /<article/g),
+      figs: count(out, /data-part="fig"/g),
+      dots: count(out, /data-dot=/g),
+      points: count(out, /data-point=/g),
+      pairs: count(out, /data-part="pair"/g),
+      keyPoints: count(out.match(/data-part="key-points"[\s\S]*?<\/section>/)![0], /<li/g),
+      goals: count(out.match(/data-part="goals"[\s\S]*?<\/section>/)![0], /<li/g),
+    });
+    const [ja, zh, en] = await Promise.all([renderV2("ja"), renderV2("zh"), renderV2("en")]);
+    expect(shape(zh)).toEqual(shape(ja));
+    expect(shape(en)).toEqual(shape(ja));
+    expect(shape(ja)).toMatchObject({ articles: 6, figs: 6, pairs: 1, keyPoints: 4, goals: 3 });
   });
 });
