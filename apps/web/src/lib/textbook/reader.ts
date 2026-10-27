@@ -180,6 +180,30 @@ export function neighbors(index: ReaderIndex, unitId: string): UnitNeighbors {
   return { topicName: "", prev: null, next: null };
 }
 
+/** Where a unit sits in the syllabus, for the unit header breadcrumb (D-196 §0-5). */
+export interface UnitPlace {
+  category: string;
+  /** 中分類 in the active locale */
+  medium: string;
+  /** 小分類, JP-only (OQ-03) */
+  topicName: string;
+  /** 1-based position in the topic's unit_order */
+  n: number;
+  total: number;
+}
+
+/** The unit's place in the index; null when it is in no topic. */
+export function unitPlace(index: ReaderIndex, unitId: string, locale: string): UnitPlace | null {
+  for (const cat of buildNav(index, locale)) {
+    for (const t of cat.topics) {
+      const i = t.units.findIndex((u) => u.unit_id === unitId);
+      if (i === -1) continue;
+      return { category: cat.category, medium: t.medium, topicName: t.name_jp, n: i + 1, total: t.units.length };
+    }
+  }
+  return null;
+}
+
 // ---- per-locale field pickers (pure) --------------------------------------
 
 /** Pick a trilingual `{base}_{jp|zh|en}` string field for the active locale. */

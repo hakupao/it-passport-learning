@@ -24,7 +24,7 @@ const CAT_KEY = {
 
 type CatLabelKey = (typeof CAT_KEY)[keyof typeof CAT_KEY] | "cat_other";
 
-function catKey(category: string): CatLabelKey {
+export function catKey(category: string): CatLabelKey {
   return (CAT_KEY as Record<string, CatLabelKey>)[category] ?? "cat_other";
 }
 

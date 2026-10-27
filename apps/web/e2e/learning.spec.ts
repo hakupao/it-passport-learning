@@ -2,8 +2,9 @@
 // record in the browser, as a non-owner (no /api/learning request may fire, and the route answers a
 // non-owner 403 before it touches any store).
 //
-//   1. Textbook: opening a unit marks it read (itp:learn:v2 unitsRead) and the TOC shows the mark on
-//      that unit's row only.
+//   1. Textbook (Stage 7 Phase 3, D-196 §0-4): opening a unit does not mark it read; its 「読了」
+//      button does (itp:learn:v2 unitsRead), one-way; the TOC shows the mark on that unit's row only
+//      and a reload keeps it.
 //   2. Two tabs of one browser on the practice page, both loaded before any answer, answer different
 //      questions: both attempts land in itp:learn:v2 (saveLocal merges with what is stored).
 //   3. A topic page open in tab A follows an answer made in tab B through the "storage" event, without
@@ -52,9 +53,10 @@ test.afterEach(() => {
   expect(unhandled, "requests to api.anthropic.com").toEqual([]);
 });
 
-test("textbook: opening a unit marks it read in the TOC", async ({ page }) => {
+test("textbook: the 読了 button marks the unit read; the TOC shows it and a reload keeps it", async ({ page }) => {
   const requests = trackLearningRequests(page);
   const unitRow = (id: string) => page.locator(`a[href="/ja/textbook/${id}"]`);
+  const readButton = page.locator('main button[data-part="read"]');
 
   await page.goto("/ja/textbook");
   await expect(unitRow(UNIT_ID)).toHaveCount(1);
@@ -62,7 +64,14 @@ test("textbook: opening a unit marks it read in the TOC", async ({ page }) => {
 
   await page.goto(`/ja/textbook/${UNIT_ID}`);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(readButton).toBeEnabled(); // the record has loaded
+  await expect(readButton).toHaveText(ja.Textbook.readDone);
+  expect(Object.keys((await storedV2(page))?.unitsRead ?? {})).toEqual([]); // opening is not reading
+
+  await readButton.click();
   await expect.poll(async () => Object.keys((await storedV2(page))?.unitsRead ?? {})).toEqual([UNIT_ID]);
+  await expect(readButton).toBeDisabled();
+  await expect(readButton).toContainText(/^✓ 読了 \d{1,2}\/\d{1,2}$/);
   expect(await rawStored(page, V1_KEY)).toBeNull();
 
   await page.goto("/ja/textbook");
@@ -70,6 +79,12 @@ test("textbook: opening a unit marks it read in the TOC", async ({ page }) => {
   await expect(unitRow(OTHER_UNIT_ID)).toHaveCount(1);
   await expect(unitRow(OTHER_UNIT_ID)).not.toContainText(ja.Textbook.read);
   await expect(page.locator("a", { hasText: ja.Textbook.read })).toHaveCount(1);
+
+  await page.goto(`/ja/textbook/${UNIT_ID}`);
+  await page.reload();
+  await expect(readButton).toBeDisabled();
+  await expect(readButton).toContainText("✓ 読了");
+  expect(Object.keys((await storedV2(page))?.unitsRead ?? {})).toEqual([UNIT_ID]);
   expect(requests).toEqual([]);
 });
 

@@ -1,6 +1,6 @@
 /* Stage 6 (Session 85) — production textbook reader styles; Stage 7 Phase 1 Task 14 (D-189 §3 / §6.4):
- * re-skinned in the A4 参考書改 look, structure unchanged (the Phase 3 redesign — 38em column, side
- * rail — comes later). Book vocabulary: headings on the 2px dotted spot rule, rows on 1px rule lines,
+ * re-skinned in the A4 参考書改 look. Stage 7 Phase 3 (D-196 §0-5): the unit page is one centred
+ * 44em column, no side rail. Book vocabulary: headings on the 2px dotted spot rule, rows on 1px rule lines,
  * square spot / ink reverse labels, plain bordered figures. The 7 tokens only (globals.css :root);
  * radius ≤ 6px; no shadow, no gradient, no pills. Reading text stays 15px / 1.75. */
 
@@ -119,21 +119,31 @@
 }
 
 /* ---- unit ---- */
-.back {
-  display: inline-block;
+/* one centred reading column (§0-5: 44em, wider than DESIGN's 38em for JP labels in zh / en text) */
+.unitPage {
+  max-width: 44em;
+}
+/* 分野 › 中分類 › topic › 単元 n / N */
+.crumbs {
   margin-bottom: 12px;
   color: var(--ink-muted);
   font-size: 13px;
+}
+.crumbLink {
+  color: var(--ink-muted);
   text-decoration: none;
 }
-.back:hover {
+.crumbLink:hover {
   color: var(--ink);
   text-decoration: underline;
 }
-.back:focus-visible,
+.crumbLink:focus-visible,
+.termIndex a:focus-visible,
 .termLink:focus-visible,
-.pagerBtn:focus-visible,
-.practiceLink a:focus-visible {
+.termPast a:focus-visible,
+.confirmStart:focus-visible,
+.readBtn:focus-visible,
+.pagerBtn:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
@@ -158,8 +168,31 @@
 .askSensei {
   margin: -0.75rem 0 1.5rem;
 }
-.metaTopic {
-  color: var(--ink-muted);
+/* the unit's terms in a row, each jumping to its article */
+.termIndex {
+  margin: 0 0 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.termIndex ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.termIndex a {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.termIndex a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--spot);
 }
 .section {
   margin: 40px 0 0;
@@ -171,18 +204,12 @@
   font-weight: 700;
   border-bottom: 2px dotted var(--spot);
 }
-.intro {
-  margin: 0;
-}
 .term {
   /* a little air above the term when landing on #<term id> (the glossary's link) */
   scroll-margin-top: 1.5rem;
-  margin: 0 0 20px;
+  margin: 32px 0 0;
   padding: 0 0 20px;
   border-bottom: 1px solid var(--rule);
-}
-.term:last-child {
-  border-bottom: none;
 }
 /* h3 + 「用語集で開く」 link side by side (link right-aligned via .termLink) */
 .termRow {
@@ -245,7 +272,7 @@
   line-height: 1.6;
 }
 .figure {
-  margin: 1rem 0 0;
+  margin: 0 0 0.75rem;
   padding: 16px;
   background: var(--paper);
   border: 1px solid var(--rule);
@@ -256,11 +283,6 @@
   max-width: 100%;
   height: auto;
 }
-.subhead {
-  margin: 1rem 0 0.4rem;
-  font-size: 14px;
-  font-weight: 700;
-}
 .list {
   margin: 0;
   padding-left: 1.2rem;
@@ -268,17 +290,56 @@
 .list li {
   margin: 0 0 0.3rem;
 }
-.practiceLink {
-  margin: 2rem 0 0;
-  padding: 0.75rem 0 0;
-  border-top: 1px solid var(--rule);
+/* 「この用語の過去問 N 題 →」 */
+.termPast {
+  margin: 0.75rem 0 0;
+  font-size: 14px;
   font-weight: 700;
 }
-.practiceLink a {
+.termPast a,
+.confirmStart {
   color: var(--spot);
 }
-.practiceLink a:hover {
+.termPast a:hover,
+.confirmStart:hover {
   text-decoration: underline;
+}
+.confirmCount {
+  margin: 0 0 0.5rem;
+}
+.confirmStart {
+  font-weight: 700;
+}
+/* 「読了」: a plain ruled button; once read it reads 「✓ 読了 M/D」 and is disabled */
+.readRow {
+  margin: 2rem 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+}
+.readBtn {
+  min-width: 10em;
+  padding: 8px 20px;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.readBtn:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--paper);
+}
+.readBtn:disabled {
+  cursor: default;
+  color: var(--ink-muted);
+  border-color: var(--rule);
+}
+.readBtnDone:disabled {
+  color: var(--spot);
+  border-color: var(--rule-spot);
 }
 .pager {
   display: flex;

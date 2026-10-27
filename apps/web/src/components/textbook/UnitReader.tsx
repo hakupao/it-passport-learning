@@ -1,195 +1,103 @@
-// Stage 6 (Session 85) — production single-unit reader.
+// Stage 6 (Session 85) — production single-unit reader; Stage 7 Phase 3 (D-196 §0-4〜§0-6):
+// single column in the D-195 skeleton over the reader model (normalizeUnit).
 //
-// Async server component, single-language per the active locale (D-019 Q3 lean).
-// Renders overview → terms (definition / explanation / analogy / memory hook +
-// inlined self-generated SVG) → summary, with in-topic prev/next. The JP term is
-// always the headword (exam vocabulary); zh/en show a gloss beside it.
-//
-// Deferred (D-133; DESIGN §7 Phase 3): inline_quiz / challenge_questions
-// (resolve against the IPA past-exam corpus, not shipped) and source_figures
-// (IPA exam PNGs, not shipped). Stage 7 Task 13: after the summary, a link to the
-// past questions of the unit's topic (/practice/browse/<topic_id>).
-// D-180 Task 12: the MarkUnitRead island records the unit as read on mount (the
-// page mounts the LearningRecordProvider).
-// D-181 Phase C: under the title, 「AI 先生に聞く」 (a client island; the panel and
-// the AI SDK load on the first click) with the unit anchor the page built.
+// Async server component, single-language per the active locale. Order: header
+// (breadcrumb → h1 → meta → 「AI 先生に聞く」 → term index) → each term (TermBlock) →
+// 要点 (summary.key_points) → 確認問題 (#confirm, pickConfirm's ids) → 「読了」 → in-topic
+// prev/next. Not shown (§0-6): overview.intro, summary.memory_hooks, fallback inline_quiz.
+// The unit is marked read only by the 読了 button (§0-4; the page mounts the
+// LearningRecordProvider).
 
 import { getTranslations } from "next-intl/server";
 
 import { AskSensei, SenseiHost } from "@/components/sensei/AskSensei";
 import { Link } from "@/i18n/navigation";
-import { termId } from "@/lib/glossary/termId";
+import { pastCount } from "@/lib/textbook/confirm";
 import {
   loadGeneratedSvg,
-  pick,
-  pickList,
-  pickTerm,
   toDataLang,
-  type TextbookUnit,
+  type ReaderUnit,
   type UnitNeighbors,
+  type UnitPlace,
 } from "@/lib/textbook/reader";
 
-import { MarkUnitRead } from "./MarkUnitRead";
+import { ConfirmBlock } from "./ConfirmBlock";
+import { ReadButton } from "./ReadButton";
+import { TermBlock } from "./TermBlock";
+import { UnitHeader } from "./UnitHeader";
 import styles from "./reader.module.css";
 
-/** Typed objects → indexable record, for the trilingual `pick*` helpers. */
-function rec(o: object): Record<string, unknown> {
-  return o as Record<string, unknown>;
-}
-
 interface Props {
-  unit: TextbookUnit;
+  unit: ReaderUnit;
+  place: UnitPlace | null;
   neighbors: UnitNeighbors;
   locale: string;
   /** The AI 先生 unit anchor (lib/sensei/textbookAnchors unitAnchor). */
   senseiAnchorText: string;
+  /** pickConfirm(unit, members) */
+  confirm: string[];
 }
 
 export async function UnitReader({
   unit,
+  place,
   neighbors,
   locale,
   senseiAnchorText,
+  confirm,
 }: Props): Promise<React.ReactElement> {
   const t = await getTranslations({ locale, namespace: "Textbook" });
-  const tg = await getTranslations({ locale, namespace: "Glossary" });
-  const showGloss = toDataLang(locale) !== "jp";
+  const dl = toDataLang(locale);
 
-  // Preload generated SVGs (parallel) before rendering.
-  const termSvgs = await Promise.all(
-    unit.terms.map((tm) =>
-      tm.figure ? loadGeneratedSvg(tm.figure.svg_path) : Promise.resolve(null),
-    ),
+  // Preload the v1 SVGs (parallel) before rendering.
+  const svgs = await Promise.all(
+    unit.terms.map((tm) => (tm.fig?.kind === "svg" ? loadGeneratedSvg(tm.fig.data.path) : Promise.resolve(null))),
   );
 
-  const title = pick(rec(unit), "title", locale);
-  const keyPoints = pickList(rec(unit.summary), "key_points", locale);
-  const memoryHooks = pickList(rec(unit.summary), "memory_hooks", locale);
+  const title = unit.title[dl] || unit.title.jp;
+  const keyPoints = unit.keyPoints[dl].length > 0 ? unit.keyPoints[dl] : unit.keyPoints.jp;
 
   return (
-    <main className={styles.page}>
-      <MarkUnitRead unitId={unit.unit_id} />
-      <Link href="/textbook" className={styles.back}>
-        ← {t("back")}
-      </Link>
+    <main className={`${styles.page} ${styles.unitPage}`}>
+      <UnitHeader unit={unit} place={place} locale={locale} pastCount={pastCount(unit)}>
+        <SenseiHost>
+          <div className={styles.askSensei}>
+            <AskSensei kind="unit" anchorId={unit.id} title={title} anchorText={senseiAnchorText} />
+          </div>
+        </SenseiHost>
+      </UnitHeader>
 
-      <h1 className={styles.h1}>{title}</h1>
-      <p className={styles.meta}>
-        <span className={styles.badge}>{unit.overview.freq_badge}</span>
-        <span>{t("minutes", { n: unit.overview.est_minutes })}</span>
-        {neighbors.topicName ? (
-          <span className={styles.metaTopic}>{neighbors.topicName}</span>
-        ) : null}
-      </p>
-      <SenseiHost>
-        <div className={styles.askSensei}>
-          <AskSensei kind="unit" anchorId={unit.unit_id} title={title} anchorText={senseiAnchorText} />
-        </div>
-      </SenseiHost>
+      {unit.terms.map((tm, i) => (
+        <TermBlock key={tm.id} term={tm} svg={svgs[i] ?? null} locale={locale} />
+      ))}
 
-      {/* ① overview */}
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("overview")}</h2>
-        <p className={styles.intro}>{pick(rec(unit.overview), "intro", locale)}</p>
-      </section>
+      {keyPoints.length > 0 ? (
+        <section data-part="key-points" className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t("keyPoints")}</h2>
+          <ul className={styles.list}>
+            {keyPoints.map((p, i) => (
+              <li key={i}>{p}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
-      {/* ② terms */}
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>
-          {t("terms")}（{unit.terms.length}）
-        </h2>
-        {unit.terms.map((tm, i) => (
-          // id = anchor for the glossary's /textbook/<unitId>#<termId> link; every
-          // textbook term is a dictionary headword, so the glossary link resolves.
-          <article key={tm.term} id={termId(tm.term)} className={styles.term}>
-            {/* The link sits beside the h3, not inside it, so the heading's name is
-                just the term; the sr-only term makes each link name unique. */}
-            <div className={styles.termRow}>
-              <h3 className={styles.termHead}>
-                <span className={styles.termJp}>{tm.term}</span>
-                {showGloss ? (
-                  <span className={styles.termGloss}>{pickTerm(tm, locale)}</span>
-                ) : null}
-              </h3>
-              <Link
-                href={`/glossary/${termId(tm.term)}`}
-                locale={locale}
-                className={styles.termLink}
-              >
-                {tg("openInGlossary")}
-                <span className="sr-only"> {tm.term}</span>
-                <span aria-hidden="true"> →</span>
-              </Link>
-            </div>
-            <p className={styles.def}>{pick(rec(tm), "definition", locale)}</p>
-            <p className={styles.prose}>{pick(rec(tm), "explanation", locale)}</p>
-            <p className={styles.analogy}>
-              <span className={styles.fieldLabel}>{t("analogy")}</span>
-              {pick(rec(tm), "analogy", locale)}
-            </p>
-            <p className={styles.hook}>
-              <span className={styles.fieldLabel}>{t("memoryHook")}</span>
-              {pick(rec(tm), "memory_hook", locale)}
-            </p>
-            {tm.figure && termSvgs[i] ? (
-              <figure
-                className={styles.figure}
-                // Trusted, self-generated Mermaid SVG from our own pipeline.
-                dangerouslySetInnerHTML={{ __html: termSvgs[i] as string }}
-              />
-            ) : null}
-          </article>
-        ))}
-      </section>
+      <ConfirmBlock ids={confirm} />
 
-      {/* ③ summary */}
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("summary")}</h2>
-        {keyPoints.length > 0 ? (
-          <>
-            <h3 className={styles.subhead}>{t("keyPoints")}</h3>
-            <ul className={styles.list}>
-              {keyPoints.map((p, i) => (
-                <li key={i}>{p}</li>
-              ))}
-            </ul>
-          </>
-        ) : null}
-        {memoryHooks.length > 0 ? (
-          <>
-            <h3 className={styles.subhead}>{t("memoryHooks")}</h3>
-            <ul className={styles.list}>
-              {memoryHooks.map((p, i) => (
-                <li key={i}>{p}</li>
-              ))}
-            </ul>
-          </>
-        ) : null}
-      </section>
-
-      {/* ④ practice — the past questions of this unit's topic */}
-      <p className={styles.practiceLink}>
-        <Link href={`/practice/browse/${unit.topic_id}`} locale={locale}>
-          {t("pastQuestions")}
-        </Link>
+      <p className={styles.readRow}>
+        <ReadButton unitId={unit.id} />
       </p>
 
       <nav className={styles.pager}>
         {neighbors.prev ? (
-          <Link
-            href={`/textbook/${neighbors.prev.unit_id}`}
-            className={styles.pagerBtn}
-          >
+          <Link href={`/textbook/${neighbors.prev.unit_id}`} className={styles.pagerBtn}>
             ← {neighbors.prev.title_jp}
           </Link>
         ) : (
           <span />
         )}
         {neighbors.next ? (
-          <Link
-            href={`/textbook/${neighbors.next.unit_id}`}
-            className={`${styles.pagerBtn} ${styles.pagerNext}`}
-          >
+          <Link href={`/textbook/${neighbors.next.unit_id}`} className={`${styles.pagerBtn} ${styles.pagerNext}`}>
             {neighbors.next.title_jp} →
           </Link>
         ) : (

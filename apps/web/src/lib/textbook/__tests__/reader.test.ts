@@ -15,6 +15,7 @@ import {
   pickTerm,
   toDataLang,
   type ReaderIndex,
+  unitPlace,
 } from "../reader";
 
 const u = (
@@ -226,5 +227,25 @@ describe("per-locale pickers", () => {
     expect(pickTerm(term, "ja")).toBe("在庫");
     expect(pickTerm(term, "zh")).toBe("库存");
     expect(pickTerm(term, "en")).toBe("Inventory");
+  });
+});
+
+describe("unitPlace", () => {
+  it("gives category, localized 中分類, JP topic name and n / N in unit_order", () => {
+    expect(unitPlace(idx, "strategy-01-01-u01", "zh")).toEqual({
+      category: "strategy",
+      medium: "企业活动",
+      topicName: "経営・組織論",
+      n: 2,
+      total: 2,
+    });
+    expect(unitPlace(idx, "tech-u1", "ja")).toEqual({
+      category: "technology",
+      medium: "離散数学",
+      topicName: "離散数学",
+      n: 1,
+      total: 1,
+    });
+    expect(unitPlace(idx, "nope", "ja")).toBeNull();
   });
 });

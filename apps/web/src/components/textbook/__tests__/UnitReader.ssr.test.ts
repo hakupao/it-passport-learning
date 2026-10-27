@@ -1,4 +1,5 @@
 // Stage 6 (D-179 / D-180 §0-3) Task 8 — textbook term anchors + link to the glossary.
+// Stage 7 Phase 3 Task 2 (D-196 §0-4〜§0-6): the D-195 skeleton order on a v1 unit.
 // Same SSR approach as the glossary *.ssr.test.ts files (node env,
 // renderToStaticMarkup, createElement instead of JSX, real message catalogs).
 // UnitReader is an async server component: it is awaited to an element first,
@@ -39,19 +40,34 @@ import { UnitReader } from "../UnitReader";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { termId } from "@/lib/glossary/termId";
-import { loadAllUnits, loadReaderIndex, loadUnit, neighbors } from "@/lib/textbook/reader";
+import { loadChumonMembers } from "@/lib/practice/chumonMembers";
+import { pastCount, pickConfirm } from "@/lib/textbook/confirm";
+import {
+  loadAllUnits,
+  loadReaderIndex,
+  loadUnit,
+  neighbors,
+  normalizeUnit,
+  unitPlace,
+} from "@/lib/textbook/reader";
 
-// A real unit whose terms include 機能要件 (committed corpus).
+// A real unit whose terms include 機能要件 (committed corpus); terms 3 and 4 carry a figure.
 const UNIT_ID = "management-08-25-u01";
 
-// Task 12: UnitReader mounts MarkUnitRead (readUnit on mount), so it renders
-// inside the LearningRecordProvider the unit page mounts.
 async function element(locale: "ja" | "zh" | "en"): Promise<React.ReactElement> {
-  const [unit, index] = await Promise.all([loadUnit(UNIT_ID), loadReaderIndex()]);
-  return UnitReader({ unit, neighbors: neighbors(index, UNIT_ID), locale, senseiAnchorText: "ANCHOR" });
+  const [raw, index, members] = await Promise.all([loadUnit(UNIT_ID), loadReaderIndex(), loadChumonMembers()]);
+  const unit = normalizeUnit(raw, members);
+  return UnitReader({
+    unit,
+    place: unitPlace(index, UNIT_ID, locale),
+    neighbors: neighbors(index, UNIT_ID),
+    locale,
+    senseiAnchorText: "ANCHOR",
+    confirm: pickConfirm(unit, members),
+  });
 }
 
-// D-181 Phase C: the 「AI 先生に聞く」 client island reads the Sensei messages.
+// The 読了 button and 「AI 先生に聞く」 are client islands: the page mounts the provider + messages.
 async function render(locale: "ja" | "zh" | "en"): Promise<string> {
   return renderToStaticMarkup(
     h(NextIntlClientProvider, {
@@ -62,10 +78,95 @@ async function render(locale: "ja" | "zh" | "en"): Promise<string> {
   );
 }
 
-describe("UnitReader read mark (SSR)", () => {
-  it("mounts the MarkUnitRead island, which needs a LearningRecordProvider", async () => {
-    const el = await element("ja");
-    expect(() => renderToStaticMarkup(el)).toThrow(/LearningRecordProvider/);
+const tb = (locale: string) => messages(locale).Textbook as Record<string, string>;
+const at = (out: string, needle: string): number => {
+  const i = out.indexOf(needle);
+  expect(i, needle).toBeGreaterThanOrEqual(0);
+  return i;
+};
+
+describe("UnitReader layout (SSR, D-196 §0-5 / §0-6)", () => {
+  it("orders breadcrumb → h1 → meta → term index → articles → key points → #confirm → 読了", async () => {
+    const out = await render("ja");
+    const marks = [
+      'data-part="breadcrumb"',
+      "<h1",
+      'data-part="meta"',
+      'data-part="term-index"',
+      "<article",
+      'data-part="key-points"',
+      'id="confirm"',
+      'data-part="read"',
+    ].map((m) => at(out, m));
+    expect(marks).toEqual([...marks].sort((a, b) => a - b));
+    expect(out.lastIndexOf("</article>")).toBeLessThan(at(out, 'data-part="key-points"'));
+  });
+
+  it("breadcrumb: 分野 › 中分類 › topic › 単元 n / N", async () => {
+    const [index, out] = await Promise.all([loadReaderIndex(), render("ja")]);
+    const place = unitPlace(index, UNIT_ID, "ja")!;
+    const nav = out.match(/<nav[^>]*data-part="breadcrumb"[^>]*>([\s\S]*?)<\/nav>/)![1]!;
+    const text = nav.replace(/<[^>]+>/g, "");
+    const parts = [tb("ja").cat_management!, place.medium, place.topicName, `単元 ${place.n} / ${place.total}`];
+    let from = 0;
+    for (const p of parts) {
+      const i = text.indexOf(p, from);
+      expect(i, p).toBeGreaterThanOrEqual(from);
+      from = i + p.length;
+    }
+    expect(nav).toContain('href="/_/textbook"');
+  });
+
+  it("meta shows badge, minutes, term count and the unit's past-question count", async () => {
+    const [raw, members, out] = await Promise.all([loadUnit(UNIT_ID), loadChumonMembers(), render("ja")]);
+    const n = pastCount(normalizeUnit(raw, members));
+    const meta = out.match(/<p[^>]*data-part="meta"[^>]*>([\s\S]*?)<\/p>/)![1]!;
+    expect(meta).toContain(raw.overview.freq_badge);
+    expect(meta).toContain(`約 ${raw.overview.est_minutes} 分`);
+    expect(meta).toContain(`${raw.terms.length} 用語`);
+    expect(meta).toContain(`過去問 ${n} 題`);
+  });
+
+  it("term index links every term to its article, in order", async () => {
+    const [raw, out] = await Promise.all([loadUnit(UNIT_ID), render("ja")]);
+    const idx = out.match(/data-part="term-index"[\s\S]*?<\/ul>/)![0];
+    const hrefs = [...idx.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
+    expect(hrefs).toEqual(raw.terms.map((t) => termId(t.term)));
+  });
+
+  it("each article: one → fig → detail → analogy / hook → the term's past questions", async () => {
+    const [raw, members, out] = await Promise.all([loadUnit(UNIT_ID), loadChumonMembers(), render("ja")]);
+    const unit = normalizeUnit(raw, members);
+    const articles = [...out.matchAll(/<article[\s\S]*?<\/article>/g)].map((m) => m[0]);
+    expect(articles).toHaveLength(unit.terms.length);
+    articles.forEach((a, i) => {
+      const t = unit.terms[i]!;
+      expect(t.quiz.length, t.term).toBeGreaterThan(0); // every term of this unit has past questions
+      const order = ["one", ...(t.fig ? ["fig"] : []), "detail", "analogy", "hook", "term-past"].map((p) =>
+        at(a, `data-part="${p}"`),
+      );
+      expect(order, t.term).toEqual([...order].sort((x, y) => x - y));
+      expect(a).toContain(tb("ja").termPast!.replace("{n}", String(t.quiz.length)));
+      expect(a).toContain(`href="/_/practice?ids=${t.quiz.join(",")}"`);
+    });
+    expect(articles.some((a) => a.includes('data-part="fig"'))).toBe(true);
+  });
+
+  it("drops the overview intro, the memory-hook list and the on-mount read marker", async () => {
+    const raw = await loadUnit(UNIT_ID);
+    const out = await render("ja");
+    expect(out).not.toContain(raw.overview.intro_jp);
+    for (const hook of raw.summary.memory_hooks_jp) expect(out).not.toContain(hook);
+    for (const kp of raw.summary.key_points_jp) expect(out).toContain(kp);
+    for (const k of ["memoryHooks", "overview", "summary", "back", "pastQuestions"]) expect(tb("ja")[k]).toBeUndefined();
+  });
+
+  it("the confirm section lists pickConfirm's questions", async () => {
+    const [raw, members, out] = await Promise.all([loadUnit(UNIT_ID), loadChumonMembers(), render("ja")]);
+    const ids = pickConfirm(normalizeUnit(raw, members), members);
+    const sec = out.match(/<section[^>]*id="confirm"[\s\S]*?<\/section>/)![0];
+    expect(sec).toContain(tb("ja").confirmCount!.replace("{n}", String(ids.length)));
+    expect(sec).toContain(`href="/_/practice?ids=${ids.join(",")}"`);
   });
 });
 
@@ -127,23 +228,6 @@ describe("UnitReader term anchors (SSR)", () => {
     expect(articleIds).toEqual(ids);
     for (const id of ids) expect(out).toContain(`href="/en/glossary/${id}"`);
   });
-});
-
-describe("UnitReader past-questions link (Stage 7 Task 13)", () => {
-  const label = { ja: "この単元の過去問", zh: "本单元的过去问", en: "Past questions for this unit" } as const;
-  for (const locale of ["ja", "zh", "en"] as const) {
-    it(`${locale}: links 「${label[locale]}」 to the unit's topic page; the deferred note is gone`, async () => {
-      const unit = await loadUnit(UNIT_ID);
-      expect(unit.topic_id).toBe("management-08-25");
-      const out = await render(locale);
-      const link = out.match(new RegExp(`<a[^>]*href="/${locale}/practice/browse/${unit.topic_id}"[^>]*>([^<]*)</a>`));
-      expect(link?.[1]).toBe(label[locale]);
-      expect(out).not.toMatch(/\/quiz(?!-figures)/);
-      const textbook = messages(locale).Textbook as Record<string, string>;
-      expect(textbook.quizDeferred).toBeUndefined();
-      expect(textbook.pastQuestions).toBe(label[locale]);
-    });
-  }
 });
 
 describe("textbook terms on the real corpus", () => {
