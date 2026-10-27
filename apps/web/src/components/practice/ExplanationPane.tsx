@@ -17,6 +17,7 @@
 // `reveal` (Task 10, the single-question page /practice/q/<qid>: a reference view): the explanation
 // is shown also while unanswered — no row is "yours", every × row starts closed, and the AI 先生
 // thread anchor is `<question_id>:reveal` (the QuizSet convention for an unanswered reveal).
+// The section carries EXPLANATION_ID: PracticeSession scrolls it into view on an answer (OQ-13 / D-194).
 
 "use client";
 
@@ -42,6 +43,9 @@ const EXPL_LOCALES = [
   ["en", "EN"],
 ] as const;
 
+/** id of the explanation <section> (one per page) */
+export const EXPLANATION_ID = "practice-explanation";
+
 interface Props {
   q: QuizQuestion;
   locale: string;
@@ -58,7 +62,7 @@ export function ExplanationPane({ q, locale, picked, termCards, isOwner, reveal 
   const [explLocale, setExplLocale] = useState(locale);
 
   return (
-    <section className={styles.expl} aria-label={t("explanationAria")}>
+    <section id={EXPLANATION_ID} className={styles.expl} aria-label={t("explanationAria")}>
       <div className={styles.tabRow}>
         <span className={styles.tab} lang="ja">
           {t("explanationTab")}

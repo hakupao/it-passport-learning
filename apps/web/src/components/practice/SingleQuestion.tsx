@@ -7,7 +7,8 @@
 //     Picking does nothing here — 「この問題を練習する」 (/practice?ids=<qid>; a 中問 member brings its
 //     whole group, the practice page expands it) is the way to answer again.
 //   - The explanation always (ExplanationPane reveal): "← あなたの答え" only on the latest choice; the
-//     「AI 先生に聞く」 anchor is `<qid>:<choice>` or `<qid>:reveal`. The 解答栏 under the face.
+//     「AI 先生に聞く」 anchor is `<qid>:<choice>` or `<qid>:reveal`.
+//   - One column (OQ-13 / D-194): face → explanation → 解答栏 + 「この問題を練習する」 → 解答の記録.
 //   - 解答の記録: the stored attempts (≤ 10), newest first, ○ / ×, the choice and the local date —
 //     after the record has loaded (the list keeps a minimum height before).
 //   - Translation: shown by default when settings.transDefault = "shown"; the toggle is not saved.
@@ -72,22 +73,23 @@ export function SingleQuestion({ q, locale, isOwner, termCards, stars, topic }: 
         </div>
         <p className={styles.lead}>{t("singleLead")}</p>
 
-        <div className={session.columns}>
-          <div className={session.faceCol}>
-            <PracticeQuestion
-              key={q.id}
-              q={q}
-              locale={locale}
-              picked={picked}
-              onPick={() => {}}
-              readOnly
-              recent={recentResults(loaded ? record.attempts[q.id] : undefined, picked !== null)}
-              stars={stars}
-              showTranslation={showTranslation}
-              onToggleTranslation={() => setTrOverride(!showTranslation)}
-              preambleChars={null}
-              foldPreamble={false}
-            />
+        <div className={session.stack}>
+          <PracticeQuestion
+            key={q.id}
+            q={q}
+            locale={locale}
+            picked={picked}
+            onPick={() => {}}
+            readOnly
+            recent={recentResults(loaded ? record.attempts[q.id] : undefined, picked !== null)}
+            stars={stars}
+            showTranslation={showTranslation}
+            onToggleTranslation={() => setTrOverride(!showTranslation)}
+            preambleChars={null}
+            foldPreamble={false}
+          />
+          <ExplanationPane key={q.id} q={q} locale={locale} picked={picked} termCards={termCards} isOwner={isOwner} reveal />
+          <div>
             <div className={styles.singleFooter}>
               <AnswerBar q={q} />
               <FreshLink href={`/practice?ids=${q.id}`} className={styles.btnPrimary}>
@@ -119,17 +121,6 @@ export function SingleQuestion({ q, locale, isOwner, termCards, stars, topic }: 
                 ))}
               </ol>
             )}
-          </div>
-          <div className={session.explCol}>
-            <ExplanationPane
-              key={q.id}
-              q={q}
-              locale={locale}
-              picked={picked}
-              termCards={termCards}
-              isOwner={isOwner}
-              reveal
-            />
           </div>
         </div>
       </main>

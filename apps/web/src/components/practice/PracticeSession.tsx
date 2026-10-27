@@ -25,6 +25,9 @@
 //   - The status line waits for the learning record to be loaded (no "first time" from an empty
 //     record); its day is Date.now() at render.
 //   - Focus: a new question → its <article>; the group ending (not a restore) → the summary <h1>.
+//   - Answering (OQ-13 / D-194): the explanation sits under the face; an accepted pick (applyAction
+//     returned an attempt — never the restore, a revisit or a re-pick) scrolls its section into view
+//     (smooth; instant with prefers-reduced-motion), unless its heading is already in the viewport.
 //   - from=today: the top bar names the today task — the URL's `kind=` (kindParam, Task 11) from the
 //     first frame, else inferred once the record is loaded (todayKind, fixed once known) — and the
 //     summary offers 「继续下一项」 (summaryNextHref: nextTodayGroup → /practice?ids=…&from=today&kind=…,
@@ -67,7 +70,7 @@ import type { StorageLike } from "@/lib/storage";
 
 import { AnswerBar } from "./AnswerBar";
 import { AnswerCard } from "./AnswerCard";
-import { ExplanationPane } from "./ExplanationPane";
+import { EXPLANATION_ID, ExplanationPane } from "./ExplanationPane";
 import { PracticeQuestion } from "./PracticeQuestion";
 import { SESSION_SUMMARY_HEADING_ID as SUMMARY_HEADING_ID, SessionSummary, type SessionTopic } from "./SessionSummary";
 import styles from "./session.module.css";
@@ -134,6 +137,8 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
   const shownPos = useRef(state.pos);
   /** whether the summary is on screen (the group ending moves the focus to its heading) */
   const shownFinished = useRef(state.finished);
+  /** an accepted pick waits for its explanation to render, then scrolls to it */
+  const scrollToExplanation = useRef(false);
 
   // restore (once per group; the page keys this component by the group)
   useEffect(() => {
@@ -156,7 +161,10 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
       const prev = stateRef.current;
       const { next, record: attempt } = applyAction(prev, a, keyOf, Date.now());
       if (next === prev) return;
-      if (attempt) answer(...attempt);
+      if (attempt) {
+        answer(...attempt);
+        scrollToExplanation.current = true;
+      }
       stateRef.current = next;
       setState(next);
     },
@@ -211,6 +219,19 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
     window.scrollTo({ top: 0 });
     document.getElementById(state.ids[state.pos]!)?.focus({ preventScroll: true });
   }, [ready, state.pos, state.ids, state.finished]);
+
+  // an accepted pick: bring the explanation's heading into view (OQ-13 / D-194)
+  useEffect(() => {
+    if (!scrollToExplanation.current) return;
+    scrollToExplanation.current = false;
+    const el = document.getElementById(EXPLANATION_ID);
+    if (!el || state.finished) return;
+    const heading = el.querySelector("h2") ?? el;
+    const r = heading.getBoundingClientRect();
+    if (r.top >= 0 && r.bottom <= window.innerHeight) return; // already in view
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+  }, [state]);
 
   // from=today: the task kind, fixed once the record is loaded
   useEffect(() => {
@@ -379,25 +400,21 @@ export function SessionView({
         </button>
       </div>
 
-      <div className={styles.columns}>
-        <div className={styles.faceCol}>
-          <PracticeQuestion
-            key={q.id}
-            q={q}
-            locale={locale}
-            picked={picked}
-            onPick={(choice) => act({ type: "pick", choice })}
-            recent={recentResults(attempts, picked !== null)}
-            stars={topic?.stars ?? 1}
-            showTranslation={showTranslation}
-            onToggleTranslation={onToggleTranslation}
-            preambleChars={fold}
-            foldPreamble={fold !== null}
-          />
-        </div>
-        <div className={styles.explCol}>
-          <ExplanationPane key={q.id} q={q} locale={locale} picked={picked} termCards={termCards} isOwner={isOwner} />
-        </div>
+      <div className={styles.stack}>
+        <PracticeQuestion
+          key={q.id}
+          q={q}
+          locale={locale}
+          picked={picked}
+          onPick={(choice) => act({ type: "pick", choice })}
+          recent={recentResults(attempts, picked !== null)}
+          stars={topic?.stars ?? 1}
+          showTranslation={showTranslation}
+          onToggleTranslation={onToggleTranslation}
+          preambleChars={fold}
+          foldPreamble={fold !== null}
+        />
+        <ExplanationPane key={q.id} q={q} locale={locale} picked={picked} termCards={termCards} isOwner={isOwner} />
       </div>
 
       <div className={styles.footer}>
