@@ -99,9 +99,11 @@ function V2Overview({ unit, locale }: { unit: ReaderUnit; locale: string }): Rea
         </ul>
       </section>
       <details data-part="overview" className={styles.overview} open>
-        <summary className={styles.overviewSummary}>{t("overviewTable", { n: unit.terms.length })}</summary>
+        <summary id={`${unit.id}-overview`} className={styles.overviewSummary}>
+          {t("overviewTable", { n: unit.terms.length })}
+        </summary>
         <div className={styles.overviewScroll}>
-          <table className={styles.overviewTable}>
+          <table aria-labelledby={`${unit.id}-overview`} className={styles.overviewTable}>
             <thead>
               <tr>
                 <th scope="col">{t("overviewTerm")}</th>

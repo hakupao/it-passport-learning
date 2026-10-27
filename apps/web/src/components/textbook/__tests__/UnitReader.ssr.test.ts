@@ -275,9 +275,9 @@ const V2 = JSON.parse(
   readFileSync(path.resolve(__dirname, "../../../lib/textbook/__fixtures__/v2-sample.json"), "utf-8"),
 ) as TextbookUnitV2;
 
-async function renderV2(locale: "ja" | "zh" | "en"): Promise<string> {
+async function renderV2(locale: "ja" | "zh" | "en", raw: TextbookUnitV2 = V2): Promise<string> {
   const [index, members] = await Promise.all([loadReaderIndex(), loadChumonMembers()]);
-  const unit = normalizeUnit(V2, members);
+  const unit = normalizeUnit(raw, members);
   const el = await UnitReader({
     unit,
     place: unitPlace(index, V2.unit_id, locale),
@@ -356,12 +356,12 @@ describe("UnitReader v2 (SSR, D-196 §0-9 / D-195)", () => {
     });
   });
 
-  it("考点: one item per point with its 常考 / 易混 label", async () => {
+  it("考点: one item per point with its exam / mix label (出題 · 混同注意 / 常考 · 易混 / Exam · Mix-up)", async () => {
     for (const locale of ["ja", "zh", "en"] as const) {
       const arts = articlesOf(await renderV2(locale));
       arts.forEach((a, i) => {
         const pts = V2.terms[i]!.points;
-        const box = a.match(/<aside[^>]*data-part="points"[\s\S]*?<\/aside>/)![0];
+        const box = a.match(/<div[^>]*data-part="points"[\s\S]*?<\/ul><\/div>/)![0];
         expect(count(box, /data-point=/g)).toBe(pts.length);
         for (const p of pts) {
           expect(box).toContain(`data-point="${p.kind}"`);
@@ -411,5 +411,71 @@ describe("UnitReader v2 (SSR, D-196 §0-9 / D-195)", () => {
     expect(shape(zh)).toEqual(shape(ja));
     expect(shape(en)).toEqual(shape(ja));
     expect(shape(ja)).toMatchObject({ articles: 6, figs: 6, pairs: 1, keyPoints: 4, goals: 3 });
+  });
+});
+
+// Task 8 review: landmarks, headings, table names, and fixture variants.
+describe("UnitReader v2 — accessibility and variants", () => {
+  it("each 考点 box is a labelled note (no complementary landmarks), its label visible text", async () => {
+    const out = await renderV2("ja");
+    expect(out).not.toContain("<aside");
+    const notes = [...out.matchAll(/<div[^>]*data-part="points"[^>]*>/g)].map((m) => m[0]);
+    expect(notes).toHaveLength(V2.terms.filter((t) => t.points.length > 0).length);
+    const ids = notes.map((n) => {
+      expect(n).toContain('role="note"');
+      return n.match(/aria-labelledby="([^"]+)"/)![1]!;
+    });
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) expect(out).toMatch(new RegExp(`<p[^>]*id="${id}"[^>]*>${tb("ja").points}</p>`));
+  });
+
+  it("an sr-only 「用語」 h2 between the term table and the first article (v2 only)", async () => {
+    const out = await renderV2("en");
+    const h2 = out.match(/<h2 class="sr-only"[^>]*>([^<]*)<\/h2>/);
+    expect(h2?.[1]).toBe(tb("en").termsHeading);
+    const i = out.indexOf(h2![0]);
+    expect(i).toBeGreaterThan(at(out, 'data-part="overview"'));
+    expect(i).toBeLessThan(at(out, "<article"));
+    expect(await render("en")).not.toContain(h2![0]);
+  });
+
+  it("the term table is named by its summary", async () => {
+    const out = await renderV2("zh");
+    const id = out.match(/<summary[^>]*id="([^"]+)"/)![1]!;
+    expect(out).toMatch(new RegExp(`<table[^>]*aria-labelledby="${id}"`));
+  });
+
+  it("the pair's decisive row carries an sr-only marker", async () => {
+    for (const locale of ["ja", "zh", "en"] as const) {
+      const pair = (await renderV2(locale)).match(/<section[^>]*data-part="pair"[\s\S]*?<\/section>/)![0];
+      const key = pair.match(/<tr[^>]*data-key="true"[\s\S]*?<\/tr>/)![0];
+      expect(key).toContain(`<span class="sr-only">${tb(locale).pairKey}</span>`);
+      expect(count(pair, /class="sr-only"/g)).toBe(V2.pairs[0]!.rows.filter((r) => r.key).length);
+    }
+  });
+
+  it("analogy goes through the inline renderer too (plain text unchanged)", async () => {
+    const t = structuredClone(V2);
+    t.terms[0]!.analogy_jp = "山登りの**前に**確かめる。";
+    const a = articlesOf(await renderV2("ja", t))[0]!;
+    expect(a).toMatch(/data-part="analogy"[\s\S]*?<strong[^>]*>前に<\/strong>/);
+  });
+
+  it("variants: no points → no box; two points → two items; bad extra columns → jp; empty zh goals → jp", async () => {
+    const u = structuredClone(V2);
+    u.terms[0]!.points = [];
+    u.terms[1]!.points.push({ kind: "mix", text_jp: "二つ目。", text_zh: "第二条。", text_en: "Second." });
+    u.overview_rows[0]!.extra_zh = ["甲", "乙"];
+    u.goals_zh = [];
+    const out = await renderV2("zh", u);
+    const arts = articlesOf(out);
+    expect(arts[0]).not.toContain('data-part="points"');
+    expect(count(arts[1]!, /data-point=/g)).toBe(2);
+    const row0 = out.match(/<details[^>]*data-part="overview"[\s\S]*?<tbody>[\s\S]*?<\/tr>/)![0];
+    expect(row0).toContain(V2.overview_rows[0]!.extra_jp[0]);
+    expect(row0).not.toContain("甲");
+    const goals = out.match(/<section[^>]*data-part="goals"[\s\S]*?<\/section>/)![0];
+    expect(count(goals, /<li/g)).toBe(V2.goals_jp.length);
+    expect(goals).toContain("リスク管理の4つの手順を順に言える。");
   });
 });

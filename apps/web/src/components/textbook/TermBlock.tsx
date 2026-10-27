@@ -57,7 +57,7 @@ export function TermBlock({ term, unitId, svg, locale, v2 = false }: Props): Rea
       {term.analogy ? (
         <p data-part="analogy" className={styles.analogy}>
           <span className={styles.fieldLabel}>{t("analogy")}</span>
-          {pick(term.analogy)}
+          {rich(term.analogy)}
         </p>
       ) : null}
       {term.hook ? (
@@ -67,7 +67,11 @@ export function TermBlock({ term, unitId, svg, locale, v2 = false }: Props): Rea
         </p>
       ) : null}
       {v2 && term.points.length > 0 ? (
-        <aside data-part="points" aria-label={t("points")} className={styles.points}>
+        // a note, not an <aside>: one complementary landmark per term would flood the landmark list
+        <div data-part="points" role="note" aria-labelledby={`${term.id}-points`} className={styles.points}>
+          <p id={`${term.id}-points`} className={styles.pointsTitle}>
+            {t("points")}
+          </p>
           <ul>
             {term.points.map((p, i) => (
               <li key={i} data-point={p.kind}>
@@ -78,7 +82,7 @@ export function TermBlock({ term, unitId, svg, locale, v2 = false }: Props): Rea
               </li>
             ))}
           </ul>
-        </aside>
+        </div>
       ) : null}
       {term.quiz.length > 0 ? (
         <p data-part="term-past" className={styles.termPast}>

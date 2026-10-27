@@ -1,6 +1,7 @@
 // Stage 7 Phase 3 (D-196 §0-9, D-195 §4) — a 易混 pair: a side-by-side table of terms a / b, placed
 // right after the later of the two terms (UnitReader), one row per aspect; the decisive row
-// (`key`) is emphasised (tint fill + spot text, never red / green). v2 only.
+// (`key`) is emphasised (tint fill + spot text, never red / green) and named for screen readers
+// by an sr-only 「決め手」 before its label. v2 only.
 
 import { useTranslations } from "next-intl";
 
@@ -41,7 +42,10 @@ export function PairBlock({ pair, terms, locale }: Props): React.ReactElement {
           <tbody>
             {pair.rows.map((r, i) => (
               <tr key={i} data-key={r.key ? "true" : undefined} className={r.key ? styles.pairKey : undefined}>
-                <th scope="row">{rich(r.label)}</th>
+                <th scope="row">
+                  {r.key ? <span className="sr-only">{t("pairKey")}</span> : null}
+                  {rich(r.label)}
+                </th>
                 <td>{rich(r.a)}</td>
                 <td>{rich(r.b)}</td>
               </tr>

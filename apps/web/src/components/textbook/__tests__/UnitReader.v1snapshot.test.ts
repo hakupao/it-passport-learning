@@ -1,7 +1,13 @@
 // Stage 7 Phase 3 Task 8 (D-196 §0-9) — v1 units render byte-identically through the v2 reader
-// work: for 40 units with a figure × ja / zh / en, a hash of the term index, every <article>
-// and the key-points section (the parts TermBlock / UnitHeader render; the AI 先生 slot and the
-// client islands are left out). Recorded before Task 8; re-record only on purpose:
+// work: a hash of the term index, every <article> and the key-points section (the parts
+// TermBlock / UnitHeader render; the AI 先生 slot and the client islands are left out), in
+// ja / zh / en, for a stratified sample: 14 units of each 分野 (evenly spaced in unit_id order)
+// plus one synthetic v1 unit whose terms lack an analogy / a memory hook (no corpus unit does).
+//
+// How the snapshot was recorded: from the pre-Task-8 code — a temporary git worktree at 7ebc950
+// (outside the repo), this same test file copied in, TEXTBOOK_DATA_ROOT / QUIZ_DATA_ROOT pointed
+// at the main checkout's data/ip, UNIT_READER_V1_WRITE=1; the JSON was copied back and then
+// verified on HEAD. Re-record only on purpose:
 //   UNIT_READER_V1_WRITE=1 pnpm exec vitest run src/components/textbook/__tests__/UnitReader.v1snapshot.test.ts
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -30,8 +36,29 @@ import { UnitReader } from "../UnitReader";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { loadChumonMembers } from "@/lib/practice/chumonMembers";
 import { pickConfirm } from "@/lib/textbook/confirm";
-import { loadAllUnits, loadReaderIndex, neighbors, normalizeUnit, unitPlace } from "@/lib/textbook/reader";
+import { loadAllUnits, loadReaderIndex, neighbors, normalizeUnit, unitPlace, type TextbookUnit } from "@/lib/textbook/reader";
 import { V2_SCHEMA } from "@/lib/textbook/types";
+
+const PER_CATEGORY = 14;
+
+/** 14 evenly spaced v1 units per 分野 (unit_id order) + a synthetic one without analogy / hook. */
+function sample(units: TextbookUnit[]): TextbookUnit[] {
+  const v1 = units.filter((u) => u.schema_version !== V2_SCHEMA).sort((a, b) => a.unit_id.localeCompare(b.unit_id));
+  const out: TextbookUnit[] = [];
+  for (const cat of ["technology", "management", "strategy"]) {
+    const list = v1.filter((u) => u.category === cat);
+    for (let i = 0; i < PER_CATEGORY; i++) out.push(list[Math.floor((i * list.length) / PER_CATEGORY)]!);
+  }
+  const base = v1.find((u) => u.category === "management" && u.terms.length >= 2)!;
+  const blank = { analogy_jp: "", analogy_zh: "", analogy_en: "" };
+  const noHook = { memory_hook_jp: "", memory_hook_zh: "", memory_hook_en: "" };
+  out.push({
+    ...base,
+    unit_id: `${base.unit_id}-nohook`,
+    terms: base.terms.map((t, i) => (i === 0 ? { ...t, ...blank } : i === 1 ? { ...t, ...noHook } : t)),
+  });
+  return out;
+}
 
 const FILE = path.join(__dirname, "__snapshots__", "unit-reader-v1.json");
 const LOCALES = ["ja", "zh", "en"] as const;
@@ -45,17 +72,18 @@ function parts(out: string): string {
 }
 
 describe("UnitReader v1 output is unchanged", () => {
-  it("40 figure-bearing v1 units × 3 locales match the recorded hashes", async () => {
+  it("a stratified v1 sample × 3 locales matches the hashes recorded on the pre-Task-8 code", async () => {
     const [index, members, units] = await Promise.all([loadReaderIndex(), loadChumonMembers(), loadAllUnits()]);
-    const picked = units.filter((u) => u.schema_version !== V2_SCHEMA && u.terms.some((t) => t.figure)).slice(0, 40);
+    const picked = sample(units);
+    expect(new Set(picked.map((u) => u.unit_id)).size).toBe(3 * PER_CATEGORY + 1);
     const now: Record<string, string> = {};
     for (const raw of picked) {
       const unit = normalizeUnit(raw, members);
       for (const locale of LOCALES) {
         const el = await UnitReader({
           unit,
-          place: unitPlace(index, raw.unit_id, locale),
-          neighbors: neighbors(index, raw.unit_id),
+          place: unitPlace(index, unit.id, locale),
+          neighbors: neighbors(index, unit.id),
           locale,
           senseiAnchorText: "A",
           confirm: pickConfirm(unit, members),
@@ -66,7 +94,7 @@ describe("UnitReader v1 output is unchanged", () => {
         now[`${raw.unit_id}:${locale}`] = createHash("sha256").update(parts(out)).digest("hex").slice(0, 16);
       }
     }
-    expect(Object.keys(now)).toHaveLength(120);
+    expect(Object.keys(now)).toHaveLength((3 * PER_CATEGORY + 1) * 3);
     if (process.env.UNIT_READER_V1_WRITE === "1") writeFileSync(FILE, `${JSON.stringify(now, null, 1)}\n`);
     expect(existsSync(FILE)).toBe(true);
     const saved = JSON.parse(readFileSync(FILE, "utf-8")) as Record<string, string>;

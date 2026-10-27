@@ -76,6 +76,8 @@ export async function UnitReader({
         </SenseiHost>
       </UnitHeader>
 
+      {/* v2: the term articles' h3s would otherwise sit under 「この単元の目標」 in the outline */}
+      {v2 ? <h2 className="sr-only">{t("termsHeading")}</h2> : null}
       {unit.terms.map((tm, i) =>
         v2 ? (
           <Fragment key={tm.id}>
