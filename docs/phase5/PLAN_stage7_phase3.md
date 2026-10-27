@@ -213,10 +213,10 @@
 
 ### Task 11: 3b 收尾
 
-- [ ] **Step 1: Gates**（五项 + IPA 泄漏闸 + e2e 全量，完整日志）→ `gates_3b.md`。
-- [ ] **Step 2: Rule D 整分支审查** + 修正波。
-- [ ] **Step 3: 你审阅 3 个试点单元**（本地 :3150，ja / zh / en）→ 同意后 push → 本番 e2e → 会话日志 + STATE。
-- [ ] **Step 4: Rule C**：`RETROSPECTIVE_stage7_ui.md` 追加 Phase 3 小结；试点得到的规则修订写回 D-195，作为批量计划的输入（含：用语集合不变、兼容字段生成规则、中問规则、批量 Rule A 的 N）。
+- [x] **Step 1: Gates**（五项 + IPA 泄漏闸 + e2e 全量，完整日志）→ `gates_3b.md`。
+- [x] **Step 2: Rule D 整分支审查** + 修正波。
+- [x] **Step 3: 你审阅 3 个试点单元**（本地 :3150，ja / zh / en）→ 同意后 push → 本番 e2e → 会话日志 + STATE。
+- [x] **Step 4: Rule C**：`RETROSPECTIVE_stage7_ui.md` 追加 Phase 3 小结；试点得到的规则修订写回 D-195，作为批量计划的输入（含：用语集合不变、兼容字段生成规则、中問规则、批量 Rule A 的 N）。
 
 ---
 
