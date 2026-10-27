@@ -193,6 +193,9 @@ export function jpProse(p) {
  * Every JP text of the figures (batch B7, copy guard only — not reading prose, so not in est_minutes):
  * each Text3 label's `jp` anywhere in fig.data (tree / flow nodes, table cols / cells, compare a / b / rows)
  * and each step's caption_jp, with its location (terms[i](term).fig.data.root.label.jp / .fig.steps[k].caption_jp).
+ * Scope limit (Rule D review L7): each label / caption is matched on its own, so a question run split across
+ * several short labels (e.g. table cells that read as one sentence) is not detected — the Rule A verifier
+ * reads the figures for that.
  */
 export function jpFigText(p) {
   const out = [];

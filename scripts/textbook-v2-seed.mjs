@@ -13,6 +13,8 @@
 // The workflow's seeded round-0 writer runs this, revises the seed with these issues and returns
 // seed_sha256 / seed_review_round (journal provenance; merge approval still needs a PASS review of the
 // final part's own sha256).
+// A loc part written by a loc-seed run cannot be a seed (its JP part is in the original run's dir, not next to it):
+// after a loc-seed run is rejected the next attempt is a full regeneration (D-201 §0-3), never a chained loc seed.
 // Exit: 0 = seed + review found, 1 = no matching review / JP part changed / not a jp or loc part, 2 = usage / missing file.
 
 import { existsSync } from "node:fs";

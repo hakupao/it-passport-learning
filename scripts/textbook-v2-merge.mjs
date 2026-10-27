@@ -39,14 +39,16 @@
 // is given, both reviews PASS, validate (validateV2 + svg files + copy guard) has 0 issues and parity 0 diff:
 //   1. archive the v1 original to <planning>/<id>/v1-original.json (never overwritten; must equal
 //      manifest.v1; a units file that is v1 but ≠ manifest.v1 means a stale manifest → refuse),
-//   2. write data/ip/textbook/units/<id>.json,
-//   3. record the unit's v1 glosses (manifest.v1_terms) in apps/web/src/lib/textbook/__fixtures__/v2-units.v1terms.json
+//   2. record the unit's v1 glosses (manifest.v1_terms) in apps/web/src/lib/textbook/__fixtures__/v2-units.v1terms.json
 //      (--v1terms-fixture; the v2 corpus tests' v1Terms): added when missing, and an existing entry must be
-//      equal (checked before anything is written; batch B4).
+//      equal (checked before anything is written; batch B4); written before the unit (L6),
+//   3. write data/ip/textbook/units/<id>.json.
 //   Then run scripts/textbook-unit-minutes-build.mjs (copy-only) and its --check.
 // Patches (D-201 §0-4, scripts/textbook-v2-patch.mjs): <batch-dir>/patches/<id>.json is replayed on the
-// in-memory localised part after the loc-vs-JP check and before assembly, so compat fields and est_minutes
-// follow; a patch whose base_sha256 ≠ the final loc part refuses the merge (retire it). Part files are never rewritten.
+// in-memory localised part after the loc-vs-JP check (so a patch may change the Japanese: the structure check
+// has already compared the reviewed bytes) and before assembly, so compat fields and est_minutes follow; a patch
+// whose base_sha256 ≠ the final loc part refuses the merge (retire it). Unit-level patches (unit.unit_summary_*,
+// base = canon sha256 of manifest.v1) are replayed on the assembled unit before validate. Part files are never rewritten.
 // Frozen baseline (§0-4 N1): units listed in <batch-dir>/frozen_baseline.json (the S135 pilot, whose units/
 // files carry post-merge fixes no journal reproduces) are refused by --write; a dry-run still works.
 // <batch-dir> default = evidence/phase5/stage_07_ui/phase3/batch.
@@ -57,7 +59,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { assemble, canon, dataPaths, jsonText, REPO, loadKit, locVsJp, parityDiff, parseArgs, partCounts, readJournal, readJson, RUN_TAG_RE, sha256File, V1_SCHEMA } from "./lib/textbook-v2.mjs";
-import { applyPatches, BATCH_DIR, PatchError, readFrozen, readPatches } from "./textbook-v2-patch.mjs";
+import { applyPatches, applyUnitPatches, BATCH_DIR, PatchError, readFrozen, readPatches, v1Sha256 } from "./textbook-v2-patch.mjs";
 import { validateUnit } from "./textbook-v2-validate.mjs";
 
 class Refuse extends Error {}
@@ -132,6 +134,13 @@ function readPart(row, unit) {
 }
 
 export async function merge({ unit, journals, runTag, write, paths, batchDir = BATCH_DIR, v1termsFile = V1TERMS_FIXTURE }) {
+  // frozen baseline first (nothing read or written for a frozen unit's --write). L1: into the real data root, the
+  // repo's list always applies on top of --batch-dir's (a temp batch dir cannot unfreeze the pilot)
+  if (write) {
+    const real = path.resolve(paths.root) === path.resolve(dataPaths().root);
+    const frozen = { ...(real ? readFrozen(BATCH_DIR) : {}), ...readFrozen(batchDir) }[unit];
+    if (frozen) throw new Refuse(`frozen baseline (${frozen}) — its units/ file is not reproducible from the journal; --write refused (remove it from frozen_baseline.json only for a full regeneration)`);
+  }
   const mf = paths.manifest(unit);
   if (!existsSync(mf)) throw new Refuse(`manifest not found: ${mf} (run textbook-v2-prep.mjs --unit ${unit})`);
   const manifest = readJson(mf);
@@ -144,16 +153,26 @@ export async function merge({ unit, journals, runTag, write, paths, batchDir = B
   const structure = locVsJp(locPart, jpPart);
   if (structure.length > 0) throw new Refuse(`localised part ≠ JP part + zh/en:\n  ${structure.join("\n  ")}`);
   // §0-4: wording patches on the in-memory loc part (the reviewed file stays as it is)
+  // (unit-level patches — unit.unit_summary_*, carried from v1 — go on the assembled unit below)
+  const patchList = (() => {
+    try {
+      return readPatches(batchDir, unit).patches;
+    } catch (e) {
+      if (e instanceof PatchError) throw new Refuse(`patch: ${e.message}`);
+      throw e;
+    }
+  })();
+  const kit = await loadKit();
+  let unitDoc;
   let patches;
   try {
-    patches = applyPatches(locPart, readPatches(batchDir, unit).patches, sha256File(fin.loc.part)).results;
+    patches = applyPatches(locPart, patchList, sha256File(fin.loc.part)).results;
+    unitDoc = assemble(locPart, manifest, kit);
+    patches = [...patches, ...applyUnitPatches(unitDoc, patchList, v1Sha256(manifest)).results];
   } catch (e) {
     if (e instanceof PatchError) throw new Refuse(`patch: ${e.message}`);
     throw e;
   }
-
-  const kit = await loadKit();
-  const unitDoc = assemble(locPart, manifest, kit);
   const issues = await validateUnit(unitDoc, manifest, paths);
   const diff = parityDiff(unitDoc);
   const out = paths.merged(unit);
@@ -180,8 +199,6 @@ export async function merge({ unit, journals, runTag, write, paths, batchDir = B
   };
   if (!write) return report;
 
-  const frozen = readFrozen(batchDir)[unit];
-  if (frozen) throw new Refuse(`frozen baseline (${frozen}) — its units/ file is not reproducible from the journal; --write refused (remove it from ${path.join(batchDir, "frozen_baseline.json")} only for a full regeneration)`);
   const why = [];
   if (!fin.fromJournal) why.push("--write needs --journal (the journal is the record of the final parts)");
   if (!approved.jp) why.push(`JP review of jp#${jpPart.round}: ${blockers(fin.jpReview)}`);
@@ -208,14 +225,14 @@ export async function merge({ unit, journals, runTag, write, paths, batchDir = B
     if (cur.schema_version !== V1_SCHEMA) throw new Refuse(`${unitFile} is not v1 and no v1-original.json exists — nothing safe to archive`);
     writeFileSync(arch, readFileSync(unitFile, "utf-8"));
   }
-  // 2. replace the unit
-  writeFileSync(unitFile, jsonText(unitDoc));
-  // 3. the v1 glosses fixture (sorted by unit id)
+  // 2. the v1 glosses fixture (sorted by unit id) — before the unit (L6): a v2 unit never lands without its glosses
   if (v1terms[unit] === undefined) {
     v1terms[unit] = manifest.v1_terms;
     writeFileSync(v1termsFile, jsonText(Object.fromEntries(Object.keys(v1terms).sort().map((k) => [k, v1terms[k]]))));
     report.v1terms_added = true;
   }
+  // 3. replace the unit
+  writeFileSync(unitFile, jsonText(unitDoc));
   report.written = true;
   return report;
 }

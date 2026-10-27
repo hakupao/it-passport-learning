@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 
-import { applyPatches, FROZEN_FILE, parseField, readFrozen } from "./textbook-v2-patch.mjs";
+import { applyPatches, applyUnitPatches, checkField, FROZEN_FILE, parseField, readFrozen, v1Sha256 } from "./textbook-v2-patch.mjs";
 import { dataPaths, partCounts, readJson, REPO, sha256File } from "./lib/textbook-v2.mjs";
 import { fixture, journalText, jpPartOf, locPartOf, run, tempRoot, UNIT, writeJson } from "./lib/textbook-v2-testkit.mjs";
 
@@ -169,4 +169,94 @@ test("merge.mjs no longer carries the lowfix re-apply NOTE", () => {
   const src = readFileSync(path.join(REPO, "scripts/textbook-v2-merge.mjs"), "utf-8");
   assert.doesNotMatch(src, /reapply them|must reapply/);
   assert.ok(existsSync(FROZEN_FILE));
+});
+
+// ---- Rule D review fixes (M1 / M2 / L1 / L3 / L6) ---------------------------------------------
+
+test("M2 field whitelist: only language text — *_jp / *_zh / *_en keys or the jp / zh / en of a Text3 label", () => {
+  for (const ok of ["terms[2](回避).detail_zh", "goals_en[1]", "terms[0].fig.data.root.label.jp", "terms[1].fig.steps[0].caption_en", "pairs[0].rows[1].a_jp", "overview_rows[0].extra_zh[1]", "unit.unit_summary_jp"]) {
+    assert.doesNotThrow(() => checkField(ok), ok);
+  }
+  for (const bad of ["terms[0].term", "terms[0].fig.kind", "terms[0].fig.mode", "terms[0].fig.data.path", "terms[0].points[0].qids[0]", "terms[0].points[0].kind", "pairs[0].rows[0].key", "challenge_questions[0]", "terms[0].quiz[0]", "unit.title_jp", "unit.unit_id", "unit.terms[0].detail_jp", "jp"]) {
+    assert.throws(() => checkField(bad), /field/, bad);
+  }
+  // applyPatches refuses a hand-written non-text patch too
+  const part = { unit_id: UNIT, terms: [{ term: "回避", fig: { kind: "tree" } }] };
+  assert.throws(() => applyPatches(part, [{ id: "p01", status: "active", base_sha256: "x", field: "terms[0].fig.kind", before: "tree", after: "flow", reason: "r" }], "x"), /field/);
+  // a Text3 jp key only when its parent really is a label ({jp: string})
+  assert.throws(() => applyPatches({ unit_id: UNIT, jp: "x" }, [{ id: "p01", status: "active", base_sha256: "x", field: "jp", before: "x", after: "y", reason: "r" }], "x"), /field/);
+});
+
+test("M1 unit-level patch: unit.unit_summary_* on the assembled unit, base = canon sha of manifest.v1; hit / already / neither / base mismatch", () => {
+  const v1 = { unit_id: UNIT, unit_summary_jp: "甲乙丙", unit_summary_zh: "甲乙丙" };
+  const base = v1Sha256({ v1 });
+  assert.match(base, /^[0-9a-f]{64}$/);
+  assert.equal(base, v1Sha256({ v1: JSON.parse(JSON.stringify({ unit_summary_zh: "甲乙丙", unit_id: UNIT, unit_summary_jp: "甲乙丙" })) }), "key order does not matter");
+  const p = (o) => ({ id: "p01", status: "active", base_sha256: base, field: "unit.unit_summary_jp", reason: "r", ...o });
+  const doc = () => ({ unit_id: UNIT, unit_summary_jp: "甲乙丙" });
+  const a = applyUnitPatches(doc(), [p({ before: "乙", after: "丁" })], base);
+  assert.equal(a.unit.unit_summary_jp, "甲丁丙");
+  assert.deepEqual(a.results.map((r) => r.outcome), ["applied"]);
+  assert.deepEqual(applyUnitPatches(doc(), [p({ before: "戊", after: "乙" })], base).results.map((r) => r.outcome), ["skipped"]);
+  assert.throws(() => applyUnitPatches(doc(), [p({ before: "戊", after: "己" })], base), /neither/);
+  assert.throws(() => applyUnitPatches(doc(), [p({ before: "乙", after: "丁", base_sha256: "1".repeat(64) })], base), /manifest\.v1/);
+  // the two kinds never mix: loc replay ignores unit patches, unit replay ignores loc patches
+  assert.deepEqual(applyPatches({ unit_id: UNIT }, [p({ before: "乙", after: "丁" })], "other").results, []);
+  assert.deepEqual(applyUnitPatches(doc(), [{ ...p({ before: "乙", after: "丁" }), field: "goals_jp[0]", base_sha256: "z" }], base).results, []);
+});
+
+test("M1 merge: a registered unit_summary patch changes merged unit_summary_*, survives a loc regeneration, validate 0, --write ok", () => {
+  const s = setup();
+  const mf = s.P.manifest(UNIT);
+  const v1 = readJson(mf).v1;
+  const w = v1.unit_summary_zh.slice(0, 3);
+  const r = patch(s, ["--register", "--manifest", mf, "--field", "unit.unit_summary_zh", "--before", w, "--after", `${w}（改）`, "--reason", "B2: wording"]);
+  assert.equal(r.code, 0, r.out);
+  const f = readJson(patchFile(s));
+  assert.equal(f.patches[0].base_sha256, v1Sha256(readJson(mf)));
+  assert.match(f.patches[0].reason, /unit_index\.json summary_jp not patched/, "the known non-sync is recorded");
+  // a loc-part patch needs --part, a unit patch needs --manifest
+  assert.equal(patch(s, ["--register", "--part", s.locFile, "--field", "unit.unit_summary_jp", "--before", "x", "--after", "y", "--reason", "r"]).code, 1);
+  assert.equal(patch(s, ["--register", "--manifest", mf, "--field", "goals_jp[0]", "--before", "x", "--after", "y", "--reason", "r"]).code, 1);
+  // not in the field → refused at registration
+  assert.equal(patch(s, ["--register", "--manifest", mf, "--field", "unit.unit_summary_jp", "--before", "存在しない文字列", "--after", "y", "--reason", "r"]).code, 1);
+  const m = merge(s, ["--write"]);
+  assert.equal(m.code, 0, m.out);
+  assert.match(m.out, /patch p01 applied \(unit\.unit_summary_zh\)/);
+  assert.equal(readJson(s.P.merged(UNIT)).unit_summary_zh, v1.unit_summary_zh.replace(w, `${w}（改）`));
+  assert.equal(readJson(s.P.unit(UNIT)).unit_summary_zh, v1.unit_summary_zh.replace(w, `${w}（改）`));
+  // a regenerated loc part (other sha) does not retire a unit patch
+  const loc = readJson(s.locFile);
+  loc.terms[0].detail_en += " ";
+  writeJson(s.locFile, loc);
+  const jl = readFileSync(s.journal, "utf-8").replaceAll(s.locSha, sha256File(s.locFile));
+  writeFileSync(s.journal, jl);
+  const again = merge(s);
+  assert.equal(again.code, 0, again.out);
+  assert.match(again.out, /patch p01 applied/);
+});
+
+test("L3: registering a patch that overlaps an earlier active patch's text in the same field is refused", () => {
+  const s = setup();
+  const t = readJson(s.locFile).terms[2].detail_zh;
+  const w = t.slice(2, 6);
+  assert.equal(reg(s, "terms[2](回避).detail_zh", w, "ABCD").code, 0);
+  // overlapping the replaced region ("ABCD" sits where w was)
+  const o = reg(s, "terms[2](回避).detail_zh", `${t.slice(0, 2)}AB`, "Z");
+  assert.equal(o.code, 1, o.out);
+  assert.match(o.out, /overlaps p01/);
+  // a disjoint later range is fine
+  assert.equal(reg(s, "terms[2](回避).detail_zh", t.slice(8, 11), "Y").code, 0);
+});
+
+test("L1: the repo's frozen baseline always applies to the real data root, whatever --batch-dir says", async () => {
+  const { merge: mergeFn } = await import("./textbook-v2-merge.mjs");
+  const empty = mkdtempSync(path.join(tmpdir(), "tbv2-empty-"));
+  await assert.rejects(mergeFn({ unit: UNIT, journals: [], write: true, paths: dataPaths(), batchDir: empty }), /frozen baseline/);
+});
+
+test("L6: the v1terms fixture is written before the units file", () => {
+  const src = readFileSync(path.join(REPO, "scripts/textbook-v2-merge.mjs"), "utf-8");
+  const body = src.slice(src.indexOf("export async function merge"));
+  assert.ok(body.indexOf("writeFileSync(v1termsFile") < body.indexOf("writeFileSync(unitFile"), "v1terms first");
 });

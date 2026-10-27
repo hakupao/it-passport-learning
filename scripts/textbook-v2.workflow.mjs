@@ -351,6 +351,9 @@ if (SEED && (!Number.isInteger(SEED.reviewRound) || SEED.reviewRound < 1)) throw
 if (SEED && units.length !== 1) throw new Error('a seeded run takes one unit')
 if (SEED && !SEED.part.includes(`/${units[0]}.jp.r`)) throw new Error(`seed_part must be a JP part of ${units[0]}`)
 if (SEED && SEED.part.includes(`/parts/${RUN_TAG}/`)) throw new Error('seed_part is from this run_tag: use a new run_tag')
+// A loc-seed run cannot itself seed another loc-seed run: its JP part lives in the original run's parts dir, not next to
+// its own loc part, so textbook-v2-seed.mjs finds no <seed dir>/<unit>.jp.r<N>.json. A loc-seed that is rejected again is
+// the unit's 2nd failed attempt → stop and ask (D-201 §0-3); a 3rd attempt is a full regeneration, not a loc seed.
 // B5 loc seed (D-201 §0-2 loc-rejected): the JP part of the seed's run is reused as-is (the seed script checks its sha256
 // against the seed's journal row); round 0 re-localises the seed with the translation review of exactly that part.
 // merge then takes --journal <seed run> --journal <this run> (JP row + its PASS review are in the seed run).
