@@ -120,9 +120,10 @@ const READ_MANIFEST = (unit) => `\`${manifestOf(unit)}\` を**全部** Read す�
 const D198 = '写しの基準 (D-198): 写し = (i) 正規化 (標記・空白・句読点・記号を除去) して 20 字以上の一致、(ii) 題文・選択肢との正規化 12 字以上の連続一致、(iii) 特定の題の具体例の流用 (数値・場面設定・例の列挙とその順序)。写しでない = 標準的な定義・計算規則・原則を一般的な表現で述べること (正解選択肢が同じ原則を述べていても可)。(i)(ii) は validate が `copy` issue として機械検出する (見出し語・用語そのものは数えない)。'
 const D200 = 'D-200: 考点は 1 用語 3 個まで、各考点の日本語は 2 文以内・100 字以内 (標記・空白を除く)。validate が `points` issue として検査する。'
 const QUESTIONS_JSON = `${ROOT}/data/ip/quiz/questions.json`
-// batch B6: the zh term table (scripts/textbook-v2-zh-terms.mjs); validate prints `warn zh-term` lines (never an issue)
-const ZH_TERMS_JSON = `${ROOT}/data/ip/textbook/zh_terms.json`
-const ZH_TERMS = `zh 訳語表 (B6): \`${ZH_TERMS_JSON}\` を Read する。日本語本文・図ラベル・caption に表の用語 (terms; per_unit はこの単元の訳が優先、excluded は対象外) があれば、zh はその訳語を使う。validate が \`warn zh-term\` 行を出したら、自然な文で直せるものは直す (warn は不合格ではない。文脈上ほかの訳が正しいなら残してよい)。`
+// batch B6: the unit's zh term entries (prep writes them from data/ip/textbook/zh_terms.json, the single source of the
+// check); validate prints `warn zh-term` lines (never an issue)
+const zhTermsOf = (unit) => `${dirOf(unit)}/zh_terms.unit.json`
+const ZH_TERMS = (unit) => `zh 訳語表 (B6): \`${zhTermsOf(unit)}\` (この単元に関係する項目だけ) を Read する。日本語の語がその見出し語としての専門的な意味で使われているときだけ表の zh を使い、日常語・別の意味で使われているときは意味に合わせて訳す (例: 一般的な「項目」「手続」)。validate が \`warn zh-term\` 行を出したら、専門的な意味で使っている箇所は表の訳に直す (warn は不合格ではない。文脈上ほかの訳が正しいなら残してよい)。`
 
 function writerPrompt(unit, round, prev, review, seed) {
   const part = partOf(unit, 'jp', round)
@@ -202,7 +203,7 @@ ${revise}
 - 日本語・id・kind・mode・qids・quiz・key・数値・配列の要素数と順序は**1 文字も変えない** (merge が「訳 part から zh / en を除くと JP part と一致」を検査する)。
 - 行内標記: 原文で **語** の箇所は訳文でも **訳語**。zh / en 本文中で試験の日本語表記を示すところは [[jp:日本語]] を併記 (D-195 §5 日本語原語の明示: 見出し語や試験用語の初出など、多用しない)。analogy・総表 extra・図ラベル・caption は平文。
 - 文数: detail は各言語でも 2〜3 文 (en は ". " で区切って数えられる)。D-195 §9 の禁止 (定型の締め句、"make sure to understand"、"非常重要"、羅列、誇張) は zh / en にも適用。
-- ${ZH_TERMS}
+- ${ZH_TERMS(unit)}
 - 訳文も過去問 (questions の題文・選択肢・解説、translations の既存訳) の文を写さない。事実と数値だけを使い、文は自分で書く。
 
 ## 手順
@@ -221,7 +222,7 @@ function trReviewPrompt(unit, round, part, partRound, jpPart) {
 
 ## 審査観点
 1. **意味の一致**: 各 zh / en が jp と同じ事実・同じ主張か (欠落・付加・数値ずれ・因果の逆転・考点の意味変化)。図ラベル・caption・総表・易混表も含む。
-2. **現地化**: 直訳調でなく自然か。zh は中国大陸の簡体・IT 用語 (日式借词でない)、en は自然な学習者向け英語。見出し語の訳が v1_terms の term_zh / term_en と揃っているか。zh の用語が訳語表 \`${ZH_TERMS_JSON}\` と揃っているか (validate の \`warn zh-term\` 行も見る。表と違う訳が文脈上正しければ low で報告)。
+2. **現地化**: 直訳調でなく自然か。zh は中国大陸の簡体・IT 用語 (日式借词でない)、en は自然な学習者向け英語。見出し語の訳が v1_terms の term_zh / term_en と揃っているか。zh の用語が訳語表 \`${zhTermsOf(unit)}\` と揃っているか (見出し語としての専門的な意味で使われている箇所だけ。validate の \`warn zh-term\` 行も見る。表と違う訳が文脈上正しければ low で報告)。
 3. **標記**: **語** が原文と対応、[[jp:…]] が試験の日本語表記を正しく示し、過剰でないか。
 4. **構造**: 三語で文数・項目数・順序が揃うか (parity)。D-195 §9 の禁止事項が zh / en に出ていないか。
 

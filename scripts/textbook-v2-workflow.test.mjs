@@ -283,13 +283,15 @@ test("loc seed args: all three or none, not with a JP seed, one unit, a loc part
   await assert.rejects(runWf({ jp: [], loc: [] }, { ...SEED_LOC_ARGS, ...SEED_ARGS }), /not both/);
 });
 
-test("B6: the localiser and the translation reviewer get the zh term table", async () => {
+test("B6: the localiser and the translation reviewer read the unit's zh term entries (not the full table), technical sense only", async () => {
   const { calls } = await runWf({ jp: ["PASS"], loc: ["REVISE", "PASS"] });
   for (const label of [/^localize:/, /^relocalize:/, /^tr-review:/]) {
     const p = calls.find((x) => label.test(x.opts.label)).prompt;
-    assert.ok(p.includes("/Volumes/DevSSD/Project/IT-Passport-Learning/data/ip/textbook/zh_terms.json"), String(label));
+    assert.ok(p.includes(`${DIR}/zh_terms.unit.json`), String(label));
+    assert.ok(!p.includes("data/ip/textbook/zh_terms.json"), `${label}: not the full table`);
     assert.match(p, /warn zh-term/);
+    assert.match(p, /見出し語としての(専門的な)?意味/);
   }
   const { calls: seeded } = await runWf({ jp: [], loc: ["PASS"] }, SEED_LOC_ARGS);
-  assert.ok(seeded[0].prompt.includes("zh_terms.json"));
+  assert.ok(seeded[0].prompt.includes("zh_terms.unit.json"));
 });

@@ -28,12 +28,34 @@
 //   - d195_lines     docs/decisions/D-195-textbook-writing-and-figure-rules.md, full text
 //   - output_schema  JSON Schema of the JP part (the localised part = the same + _zh / _en, {zh, en})
 // Determinism: no timestamps, ids sorted, fixed key order → two runs give identical bytes.
+// Also (batch B6 review F3), when <data-root>/textbook/zh_terms.json exists: <planning>/<unit>/zh_terms.unit.json =
+// the table entries this unit needs (lib zhTermsForUnit, the same matcher as the zh-term check, over the manifest's
+// JP content — v1 *_jp text, objective, index title / summary, question stems / choices — plus the headwords and
+// this unit's per_unit entries). The localiser and translation reviewer read only this file.
+
+/** Every JP text of a manifest the unit's zh entries are looked up in. */
+export function manifestJpTexts(m) {
+  const out = [];
+  const walk = (v, k) => {
+    if (typeof v === "string") {
+      if (k?.endsWith("_jp")) out.push(v);
+    } else if (Array.isArray(v)) v.forEach((x) => walk(x, k));
+    else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) walk(x, kk);
+  };
+  walk(m.v1);
+  out.push(m.topic.objective_jp ?? "", m.index_unit.title_jp ?? "", m.index_unit.summary_jp ?? "");
+  for (const q of Object.values(m.questions)) {
+    out.push(...(Array.isArray(q.stem_jp) ? q.stem_jp : [q.stem_jp ?? ""]));
+    for (const c of Object.values(q.choices_jp ?? {})) out.push(...(Array.isArray(c) ? c : [c]));
+  }
+  return out.filter((x) => typeof x === "string" && x !== "");
+}
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { dataPaths, jsonText, loadV2, MANIFEST_SCHEMA, parseArgs, readJson, REPO, toLines, UNIT_ID_RE, V1_SCHEMA } from "./lib/textbook-v2.mjs";
+import { dataPaths, jsonText, loadV2, MANIFEST_SCHEMA, parseArgs, readJson, REPO, toLines, UNIT_ID_RE, V1_SCHEMA, zhTermsForUnit } from "./lib/textbook-v2.mjs";
 
 const D195 = path.join(REPO, "docs/decisions/D-195-textbook-writing-and-figure-rules.md");
 const TYPES = path.join(REPO, "apps/web/src/lib/textbook/types.ts");
@@ -227,6 +249,16 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const text = jsonText(m);
   const prev = existsSync(out) ? readFileSync(out, "utf-8") : null;
   if (prev !== text) writeFileSync(out, text);
+  if (existsSync(paths.zhTerms)) {
+    const zf = path.join(path.dirname(out), "zh_terms.unit.json");
+    const zt = jsonText({
+      schema: "textbook-zh-terms-unit-1",
+      unit_id: m.unit_id,
+      note: "the zh_terms.json entries of this unit (prep; same matcher as the zh-term check). Use an entry only where the Japanese word has that headword's technical sense.",
+      terms: zhTermsForUnit(readJson(paths.zhTerms), m.unit_id, m.terms, manifestJpTexts(m)),
+    });
+    if (!existsSync(zf) || readFileSync(zf, "utf-8") !== zt) writeFileSync(zf, zt);
+  }
   console.log(
     `${prev === text ? "=" : "✓"} ${path.relative(process.cwd(), out)} (${Buffer.byteLength(text)} bytes): ${m.terms.length} terms [${m.terms.join(" / ")}], ` +
       `${Object.keys(m.questions).length} questions, ${m.chumon_members.length} chumon members, svg ${m.figures.svg_available.length}`,

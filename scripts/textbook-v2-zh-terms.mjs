@@ -8,6 +8,9 @@
 //   node scripts/textbook-v2-zh-terms.mjs --check-units [--unit <id> …]
 //        the WARN check (lib zhTermWarnings) over the committed v2 units (default all of them); run it after any
 //        table change — hits on already-published units go through the B3 patch procedure. Exit 1 when any hit.
+//   node scripts/textbook-v2-zh-terms.mjs --probe-v1 [--top <n>]
+//        the check's noise on v1 prose: every v1 unit's definition / explanation jp↔zh pairs → share of pairs with
+//        a warning + the most frequent (term → zh) hits (B6 review: before / after rates in the B6 evidence)
 //   [--data-root <dir>]
 //
 // Table: { schema, note,
@@ -18,7 +21,8 @@
 // CONFLICT_RULES (a new conflict stops the seed: it needs a decision); PILOT_WORDS = the jp → zh pairs the S135
 // pilot localisation settled on ([[jp:…]] glosses in management-10-27-u01〜u03), added where they are not headwords
 // (a headword keeps its v1 term_zh: term_zh = v1 is a v2 invariant).
-// The localiser reads the table (workflow prompt); validate / merge print its WARN lines, never as issues (D-199,
+// The localiser and translation reviewer read only the unit's entries (prep writes <planning>/<id>/zh_terms.unit.json
+// with lib zhTermsForUnit, the same matcher as the check); this table stays the single source for the checks; validate / merge print its WARN lines, never as issues (D-199,
 // --write unaffected).
 // Exit: 0 = ok, 1 = refused / hits (--check-units), 2 = usage error.
 
@@ -38,6 +42,18 @@ export const CONFLICT_RULES = {
   デュアルシステム: { kind: "excluded", why: "OQ-15: v1 term_zh swapped with デュプレックスシステム across technology-16-43-u02 / technology-16-44-u03 (v1 mistranslation; term_zh = v1 invariant)" },
   デュプレックスシステム: { kind: "excluded", why: "OQ-15: v1 term_zh swapped with デュアルシステム across technology-16-43-u02 / technology-16-44-u03 (v1 mistranslation; term_zh = v1 invariant)" },
 };
+
+/**
+ * Per-entry decisions over the v1 term_zh (B6 review F2). The headword's own term_zh is unchanged (v2 invariant);
+ * the table value only widens what the zh text may use.
+ *   パスワード: v1 term_zh 口令 (technology-23-63-u08), but the v1 body text with パスワード uses 密码 42× / 口令 13×
+ *   and mainland everyday usage is 密码 (口令 is the GB/T security-standard word) → both accepted.
+ *   最適化: v1 term_zh 最优化; the v1 body text uses 优化 in all 32 pairs that say 最適化 (最优化 6) → both.
+ *   アンケート: v1 term_zh 问卷调查; the v1 body uses 问卷 in 26 / 26 pairs (问卷调查 9) → both.
+ *   Left as advisory residue (both readings natural, no override): PC (电脑 18 / PC kept 32 of 45 pairs),
+ *   SNS (社交媒体 11 / 社交网络 7 / SNS kept 16 of 30).
+ */
+export const OVERRIDES = { パスワード: "口令（密码）", 最適化: "最优化（优化）", アンケート: "问卷调查（问卷）" };
 
 /** The S135 pilot's settled jp → zh pairs (from its zh [[jp:…]] glosses). */
 export const PILOT_WORDS = {
@@ -126,6 +142,7 @@ export function seedTable(units) {
     else excluded[jp] = rule.why;
   }
   for (const [jp, zh] of Object.entries(PILOT_WORDS.global)) if (!headwords.has(jp)) terms[jp] = zh;
+  for (const [jp, zh] of Object.entries(OVERRIDES)) terms[jp] = zh;
   for (const [jp, byUnit] of Object.entries(PILOT_WORDS.per_unit)) if (!headwords.has(jp)) per_unit[jp] = byUnit;
   return {
     schema: TABLE_SCHEMA,
@@ -134,6 +151,23 @@ export function seedTable(units) {
     per_unit: sorted(per_unit),
     excluded: sorted(excluded),
   };
+}
+
+/** --probe-v1: {pairs, hit (pairs with ≥ 1 warning), warnings, top: [[label, n]]}. */
+export function probeV1(units, table) {
+  let pairs = 0;
+  let hit = 0;
+  const by = new Map();
+  for (const u of units.filter((x) => x.schema_version !== V2_SCHEMA)) {
+    const probe = { unit_id: u.unit_id, terms: u.terms.map((t) => ({ term: t.term, one_jp: t.definition_jp, one_zh: t.definition_zh, detail_jp: t.explanation_jp, detail_zh: t.explanation_zh })) };
+    const w = zhTermWarnings(probe, table);
+    pairs += probe.terms.length * 2;
+    hit += new Set(w.map((x) => x.field)).size;
+    for (const x of w) by.set(x.term, (by.get(x.term) ?? 0) + 1);
+  }
+  const map = new Map(Object.entries(table.terms ?? {}));
+  const top = [...by].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map(([k, n]) => [`${k} → ${map.get(k) ?? "(per unit)"}`, n]);
+  return { pairs, hit, warnings: [...by.values()].reduce((a, b) => a + b, 0), top };
 }
 
 export function conflictsMarkdown(conflicts) {
@@ -151,19 +185,23 @@ const allUnits = (P) => readJson(P.index).topics.flatMap((t) => t.units.map((u) 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   let opt;
   try {
-    opt = parseArgs(process.argv.slice(2), { conflicts: "bool", seed: "bool", "check-units": "bool", unit: "list", out: "string", "data-root": "string" });
+    opt = parseArgs(process.argv.slice(2), { conflicts: "bool", seed: "bool", "check-units": "bool", "probe-v1": "bool", top: "string", unit: "list", out: "string", "data-root": "string" });
   } catch (e) {
     console.error(`✗ ${e.message}`);
     process.exit(2);
   }
-  const modes = ["conflicts", "seed", "check-units"].filter((k) => opt[k]);
+  const modes = ["conflicts", "seed", "check-units", "probe-v1"].filter((k) => opt[k]);
   if (modes.length !== 1 || (opt.unit && !opt["check-units"])) {
-    console.error("usage: textbook-v2-zh-terms.mjs (--conflicts | --seed [--out <file>] | --check-units [--unit <id> …]) [--data-root <dir>]");
+    console.error("usage: textbook-v2-zh-terms.mjs (--conflicts | --seed [--out <file>] | --check-units [--unit <id> …] | --probe-v1 [--top <n>]) [--data-root <dir>]");
     process.exit(2);
   }
   const P = dataPaths(opt["data-root"]);
   const units = allUnits(P);
-  if (opt.conflicts) {
+  if (opt["probe-v1"]) {
+    const r = probeV1(units, readJson(P.zhTerms));
+    console.log(`v1 definition / explanation pairs ${r.pairs}: ${r.hit} with a warning (${((100 * r.hit) / r.pairs).toFixed(1)}%), ${r.warnings} warning(s)`);
+    for (const [k, n] of r.top.slice(0, Number(opt.top ?? 15))) console.log(`  ${n}  ${k}`);
+  } else if (opt.conflicts) {
     process.stdout.write(conflictsMarkdown(termZhConflicts(units)));
   } else if (opt.seed) {
     const out = path.resolve(opt.out ?? P.zhTerms);

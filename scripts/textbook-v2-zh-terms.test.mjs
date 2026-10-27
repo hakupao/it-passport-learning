@@ -9,7 +9,7 @@ import { test } from "node:test";
 
 import { dataPaths, readJson, zhTermWarnings } from "./lib/textbook-v2.mjs";
 import { fixture, run, tempRoot, writeJson } from "./lib/textbook-v2-testkit.mjs";
-import { PILOT_WORDS, seedTable, termZhConflicts } from "./textbook-v2-zh-terms.mjs";
+import { OVERRIDES, PILOT_WORDS, probeV1, seedTable, termZhConflicts } from "./textbook-v2-zh-terms.mjs";
 
 const P = dataPaths();
 const units = () => readJson(P.index).topics.flatMap((t) => t.units.map((u) => readJson(P.unit(u.unit_id))));
@@ -31,7 +31,7 @@ test("seed: conflict-free v1 term_zh + per-unit MBO + unified E-R図 + pilot wor
   for (const u of all) for (const x of u.terms) headwords.set(x.term, x.term_zh);
   // every conflict-free headword with its v1 term_zh
   for (const [jp, zh] of headwords) {
-    if (["E-R図", "MBO", "デュアルシステム", "デュプレックスシステム"].includes(jp)) continue;
+    if (["E-R図", "MBO", "デュアルシステム", "デュプレックスシステム"].includes(jp) || jp in OVERRIDES) continue;
     assert.equal(t.terms[jp], zh, jp);
   }
   assert.equal(t.terms["E-R図"], "E-R图");
@@ -117,4 +117,69 @@ test("--check-units: every committed v2 unit (or --unit …) checked, warnings l
   const one = run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "management-10-27-u02"]);
   assert.doesNotMatch(one.out, /management-10-27-u01/);
   assert.equal(run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "strategy-01-01-u01"]).code, 2, "a v1 unit is a usage error");
+});
+
+// ---- B6 review (F1 / F2 / F3 / F5) --------------------------------------------------------------
+
+const probe = (jp, zh, terms, extra = {}) => zhTermWarnings({ unit_id: "x-01-01-u01", terms: [{ term: "h", one_jp: jp, one_zh: zh }], ...extra }, { terms, per_unit: {}, excluded: {} }).map((w) => w.term);
+
+test("F1: a Latin entry needs a non-alphanumeric on both sides", () => {
+  const T = { AP: "接入点", AND: "与", CA: "认证机构", CD: "光盘", ROM: "只读存储器", CASE: "计算机辅助软件工程" };
+  assert.deepEqual(probe("GAP分析を行う。", "进行差距分析。", T), []);
+  assert.deepEqual(probe("BRANDを守る。", "保护品牌。", T), []);
+  assert.deepEqual(probe("SCANする。", "扫描。", T), []);
+  assert.deepEqual(probe("CDROMを読む。", "读取光驱。", T), []);
+  assert.deepEqual(probe("CASEツールを使う。", "使用工具。", T), ["CASE"]);
+  assert.deepEqual(probe("CD と ROM。", "两种介质。", T), ["CD", "ROM"]);
+  // an acronym kept as-is in the zh text is accepted
+  assert.deepEqual(probe("OSを入れる。", "安装OS。", { OS: "操作系统" }), []);
+});
+
+test("F5: ・ is not part of a katakana run (a term next to ・ still matches)", () => {
+  assert.deepEqual(probe("リスク・コスト・品質", "成本与质量", { リスク: "风险" }), ["リスク"]);
+});
+
+test("F2: kanji entries under 3 characters are checked only in a unit whose own headwords include them", () => {
+  const T = { 項目: "数据项", 手続: "过程", 変更管理: "变更管理", パスワード: "口令（密码）" };
+  assert.deepEqual(probe("この項目と手続を見る。", "看这一条和流程。", T), [], "polysemous short kanji: not global");
+  assert.deepEqual(zhTermWarnings({ unit_id: "x-01-01-u01", terms: [{ term: "項目", one_jp: "項目を定義する。", one_zh: "定义条目。" }] }, { terms: T }).map((w) => w.term), ["項目"], "the unit's own headword");
+  assert.deepEqual(probe("変更管理を行う。", "进行变更控制。", T), ["変更管理"], "≥ 3 characters: global");
+  assert.deepEqual(probe("パスワードを変える。", "修改密码。", T), [], "both 口令 and 密码 accepted");
+});
+
+test("F2 seed decision: パスワード → 口令（密码） (v1 body text uses 密码 42× / 口令 13×; headword term_zh stays 口令)", () => {
+  const t = seedTable(units());
+  assert.equal(t.terms["パスワード"], "口令（密码）");
+  assert.equal(t.terms["最適化"], "最优化（优化）");
+  assert.equal(t.terms["アンケート"], "问卷调查（问卷）");
+});
+
+test("--probe-v1: the check's noise on v1 definition / explanation pairs stays under 10% (15.2% before the B6 review)", () => {
+  const r = probeV1(units(), readJson(P.zhTerms));
+  assert.ok(r.pairs > 2700, String(r.pairs));
+  assert.ok(r.hit / r.pairs < 0.1, `${r.hit} / ${r.pairs}`);
+  const top = new Map(r.top);
+  for (const k of ["項目 → 数据项", "手続 → 过程", "分散 → 方差", "パスワード → 口令（密码）"]) assert.equal(top.get(k), undefined, k);
+});
+
+test("F3: prep writes the unit's relevant entries to <planning>/<id>/zh_terms.unit.json (same matcher, per_unit included)", () => {
+  const root = tempRoot();
+  const U = "management-10-27-u03";
+  writeJson(path.join(root, "textbook/zh_terms.json"), {
+    terms: { 回避: "规避", 軽減: "减轻", リスク: "风险", 項目: "数据项", 存在しない語句: "无", プロジェクトリスクマネジメント: "项目风险管理" },
+    per_unit: { 保有: { [U]: "保留" }, MBO: { "strategy-01-01-u06": "MBO(目标管理)" } },
+    excluded: { デュアルシステム: "OQ-15" },
+  });
+  assert.equal(run("textbook-v2-prep.mjs", ["--unit", U, "--data-root", root]).code, 0);
+  const f = path.join(dataPaths(root).planning(U), "zh_terms.unit.json");
+  const doc = readJson(f);
+  assert.equal(doc.unit_id, U);
+  assert.equal(doc.terms["回避"], "规避", "headword");
+  assert.equal(doc.terms["プロジェクトリスクマネジメント"], "项目风险管理");
+  assert.equal(doc.terms["リスク"], "风险", "katakana word in the unit's JP content");
+  assert.equal(doc.terms["保有"], "保留", "per_unit for this unit");
+  for (const k of ["MBO", "存在しない語句", "項目"]) assert.equal(doc.terms[k], undefined, k);
+  const bytes = readFileSync(f, "utf-8");
+  assert.equal(run("textbook-v2-prep.mjs", ["--unit", U, "--data-root", root]).code, 0);
+  assert.equal(readFileSync(f, "utf-8"), bytes, "deterministic");
 });

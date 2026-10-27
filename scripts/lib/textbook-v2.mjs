@@ -572,42 +572,88 @@ export function zhAccepted(value) {
   return [...new Set([v, ...(m ? [`${m[1]}${m[3]}`, m[2]] : [])])].filter((x) => x !== "");
 }
 
+// Matching (B6 review): a katakana entry matches a whole katakana run only (・ is a separator, F5); an entry
+// starting with a Latin letter / digit needs a non-alphanumeric on both sides (F1: AP not in GAP, CA not in SCAN,
+// CD not in CDROM; CASE in CASEツール still matches). Which entries are checked (F2): ≥ 3 characters, a full
+// katakana word or a Latin entry everywhere; a shorter kanji entry (項目, 手続, 分散 … — polysemous in ordinary
+// prose) only in a unit whose own headwords include it; 1-character entries never.
+const KATA_CH = /[\u30A1-\u30FA\u30FC-\u30FF\uFF66-\uFF9F]/;
+const KATA_WORD = /^[\u30A1-\u30FA\u30FC-\u30FF\uFF66-\uFF9F]+$/;
+const LATIN_CH = /[A-Za-z0-9]/;
+const LATIN_WORD = /^[A-Za-z0-9]+$/;
+const chAt = (t, i, re) => i >= 0 && i < t.length && re.test(t[i]);
+
+/** The table as jp → zh for one unit: per_unit entries of this unit over the global ones; excluded removed. */
+export function zhTermMap(table, unitId) {
+  const map = new Map();
+  for (const [jp, zh] of Object.entries(table?.terms ?? {})) map.set(jp, zh);
+  for (const [jp, byUnit] of Object.entries(table?.per_unit ?? {})) {
+    if (byUnit?.[unitId] !== undefined) map.set(jp, byUnit[unitId]);
+    else map.delete(jp);
+  }
+  for (const jp of Object.keys(table?.excluded ?? {})) map.delete(jp);
+  return map;
+}
+
+/** Entries of `map` checked in a unit with these headwords, longest first (F2). */
+export function zhKeys(map, headwords) {
+  const global = (k) => [...k].length >= 3 || KATA_WORD.test(k) || LATIN_CH.test(k[0]);
+  return [...map.keys()]
+    .filter((k) => [...k].length >= 2 && (global(k) || headwords.has(k)))
+    .sort((a, b) => b.length - a.length || (a < b ? -1 : 1));
+}
+
+function matchAt(text, k, i) {
+  if (!text.startsWith(k, i)) return false;
+  const end = i + k.length;
+  if (KATA_WORD.test(k) && (chAt(text, i - 1, KATA_CH) || chAt(text, end, KATA_CH))) return false;
+  if (LATIN_CH.test(k[0]) && (chAt(text, i - 1, LATIN_CH) || chAt(text, end, LATIN_CH))) return false;
+  return true;
+}
+
+/** Table entries found in a JP text (longest first, non-overlapping), in order of first occurrence. */
+export function zhTermsIn(jp, keys) {
+  const text = jp.replace(/\*\*/g, "");
+  const found = [];
+  for (let i = 0; i < text.length; ) {
+    const k = keys.find((x) => matchAt(text, x, i));
+    if (k) {
+      if (!found.includes(k)) found.push(k);
+      i += k.length;
+    } else i++;
+  }
+  return found;
+}
+
 /**
- * B6 WARN (non-blocking, never an issue): for each jp / zh field pair, every table term found in the jp text
- * (longest first, non-overlapping; a katakana term only as a whole katakana run; terms of one character not
- * checked; per_unit entry for this unit before the global one; excluded terms skipped)
- * must appear in the zh text as one of its accepted forms (whitespace, ** and [[jp:…]] ignored).
+ * The entries a unit's localiser needs (F3: <planning>/<id>/zh_terms.unit.json, written by prep): those the
+ * matcher finds in the given JP texts, the headwords' own entries and this unit's per_unit entries. Sorted.
+ */
+export function zhTermsForUnit(table, unitId, headwords, texts) {
+  const map = zhTermMap(table, unitId);
+  const hw = new Set(headwords);
+  const keys = zhKeys(map, hw);
+  const pick = new Set([...headwords.filter((h) => map.has(h)), ...Object.entries(table?.per_unit ?? {}).filter(([, b]) => b?.[unitId] !== undefined).map(([jp]) => jp).filter((jp) => map.has(jp))]);
+  for (const t of texts) for (const k of zhTermsIn(t, keys)) pick.add(k);
+  return Object.fromEntries([...pick].sort().map((k) => [k, map.get(k)]));
+}
+
+/**
+ * B6 WARN (non-blocking, never an issue): for each jp / zh field pair, every checked table entry found in the jp
+ * text (zhKeys / zhTermsIn above) must appear in the zh text as one of its accepted forms (whitespace, ** and
+ * [[jp:…]] ignored; zhAccepted: the value, and the parts outside / inside its (…) — so a per-unit value
+ * "MBO(目标管理)" also accepts a bare "MBO" (F4, a known leniency); a Latin-only entry kept as-is is accepted too).
  * → [{unitId, code: "zh-term", field, term, message}]
  */
 export function zhTermWarnings(u, table) {
   const unit = u.unit_id;
-  const map = new Map();
-  for (const [jp, zh] of Object.entries(table?.terms ?? {})) map.set(jp, zh);
-  for (const [jp, byUnit] of Object.entries(table?.per_unit ?? {})) {
-    if (byUnit?.[unit] !== undefined) map.set(jp, byUnit[unit]);
-    else map.delete(jp);
-  }
-  for (const jp of Object.keys(table?.excluded ?? {})) map.delete(jp);
-  // single-character terms (式, 表 …) match everywhere: not checked
-  const keys = [...map.keys()].filter((k) => [...k].length >= 2).sort((a, b) => b.length - a.length || (a < b ? -1 : 1));
-  const KATA = /^[\u30A0-\u30FF\uFF66-\uFF9F]+$/;
-  const kataAt = (t, i) => i >= 0 && i < t.length && KATA.test(t[i]);
-  // a katakana term matches a whole katakana run only (リスト is not in リストア, キュー not in セキュリティ)
-  const at = (text, k, i) => text.startsWith(k, i) && (!KATA.test(k) || (!kataAt(text, i - 1) && !kataAt(text, i + k.length)));
+  const map = zhTermMap(table, unit);
+  const keys = zhKeys(map, new Set((u.terms ?? []).map((t) => t?.term)));
   const out = [];
   for (const [field, jp, zh] of zhPairs(u)) {
-    const text = jp.replace(/\*\*/g, "");
-    const found = [];
-    for (let i = 0; i < text.length; ) {
-      const k = keys.find((x) => at(text, x, i));
-      if (k) {
-        if (!found.includes(k)) found.push(k);
-        i += k.length;
-      } else i++;
-    }
     const z = zhNorm(zh);
-    for (const k of found) {
-      const acc = zhAccepted(map.get(k));
+    for (const k of zhTermsIn(jp, keys)) {
+      const acc = [...zhAccepted(map.get(k)), ...(LATIN_WORD.test(k) ? [k] : [])];
       if (!acc.some((a) => z.includes(a))) out.push({ unitId: unit, code: "zh-term", field, term: k, message: `${k} → ${map.get(k)} not in the zh text (data/ip/textbook/zh_terms.json)` });
     }
   }
