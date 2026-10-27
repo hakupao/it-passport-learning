@@ -101,7 +101,7 @@ export interface LearningActions {
 export function makeLearningActions(
   update: (fn: (prev: LearningRecord) => LearningRecord) => void,
   now: () => number,
-  persist: (r: LearningRecord) => void = () => {},
+  persist: (r: LearningRecord) => void,
 ): LearningActions {
   return {
     answer: (qid, choice, correct, src = "practice") =>

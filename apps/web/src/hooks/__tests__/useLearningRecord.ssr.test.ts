@@ -79,6 +79,7 @@ describe("makeLearningActions (what the provider's actions do)", () => {
         box.record = fn(box.record);
       },
       () => box.now,
+      () => {},
     );
     return { box, actions };
   }
@@ -130,6 +131,7 @@ describe("makeLearningActions (what the provider's actions do)", () => {
         box.record = fn(box.record);
       },
       () => 999_999,
+      () => {},
     );
     const items = [
       ["q1", "ア", false],
