@@ -4,7 +4,7 @@
 // data/ip/textbook/units/<id>.json.
 //
 // Run: node scripts/textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <more.jsonl> …] | --run-tag <tag>)
-//        [--write] [--data-root <dir>]
+//        [--write] [--data-root <dir>] [--batch-dir <dir>]
 //   Several --journal (a resumed / continued run): rows are read in order, one per unit / stage / round,
 //   a later row replacing an earlier one.
 //
@@ -39,9 +39,12 @@
 //      manifest.v1; a units file that is v1 but ≠ manifest.v1 means a stale manifest → refuse),
 //   2. write data/ip/textbook/units/<id>.json.
 //   Then run scripts/textbook-unit-minutes-build.mjs (copy-only) and its --check.
-// NOTE (S135): the pilot units management-10-27-u01〜u03 carry post-merge scripted fixes
-// (scripts/archive/textbook-v2-pilot-lowfix-S135.mjs, commit 7de5fb5). Re-merging them from their parts
-// drops those fixes — reapply them (or fold them into the parts) after any re-merge.
+// Patches (D-201 §0-4, scripts/textbook-v2-patch.mjs): <batch-dir>/patches/<id>.json is replayed on the
+// in-memory localised part after the loc-vs-JP check and before assembly, so compat fields and est_minutes
+// follow; a patch whose base_sha256 ≠ the final loc part refuses the merge (retire it). Part files are never rewritten.
+// Frozen baseline (§0-4 N1): units listed in <batch-dir>/frozen_baseline.json (the S135 pilot, whose units/
+// files carry post-merge fixes no journal reproduces) are refused by --write; a dry-run still works.
+// <batch-dir> default = evidence/phase5/stage_07_ui/phase3/batch.
 // Exit: 0 = merged (and written with --write), 1 = refused / issues, 2 = usage / input error.
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -49,6 +52,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { assemble, canon, dataPaths, jsonText, loadKit, locVsJp, parityDiff, parseArgs, partCounts, readJournal, readJson, RUN_TAG_RE, sha256File, V1_SCHEMA } from "./lib/textbook-v2.mjs";
+import { applyPatches, BATCH_DIR, PatchError, readFrozen, readPatches } from "./textbook-v2-patch.mjs";
 import { validateUnit } from "./textbook-v2-validate.mjs";
 
 class Refuse extends Error {}
@@ -113,7 +117,7 @@ function readPart(row, unit) {
   return p;
 }
 
-export async function merge({ unit, journals, runTag, write, paths }) {
+export async function merge({ unit, journals, runTag, write, paths, batchDir = BATCH_DIR }) {
   const mf = paths.manifest(unit);
   if (!existsSync(mf)) throw new Refuse(`manifest not found: ${mf} (run textbook-v2-prep.mjs --unit ${unit})`);
   const manifest = readJson(mf);
@@ -125,6 +129,14 @@ export async function merge({ unit, journals, runTag, write, paths }) {
   // the localiser may add zh / en only: compared with the JP part it hashed (= the reviewed one when approved)
   const structure = locVsJp(locPart, jpPart);
   if (structure.length > 0) throw new Refuse(`localised part ≠ JP part + zh/en:\n  ${structure.join("\n  ")}`);
+  // §0-4: wording patches on the in-memory loc part (the reviewed file stays as it is)
+  let patches;
+  try {
+    patches = applyPatches(locPart, readPatches(batchDir, unit).patches, sha256File(fin.loc.part)).results;
+  } catch (e) {
+    if (e instanceof PatchError) throw new Refuse(`patch: ${e.message}`);
+    throw e;
+  }
 
   const kit = await loadKit();
   const unitDoc = assemble(locPart, manifest, kit);
@@ -147,12 +159,15 @@ export async function merge({ unit, journals, runTag, write, paths }) {
     issues,
     parity_diff: diff,
     merged: out,
+    patches,
     written: false,
     // a seeded run (workflow args.seed_*): provenance only — approval above is of the final part's own sha256
     seed: rows?.find((r) => r.unit_id === unit && r.stage === "jp" && typeof r.seed_sha256 === "string") ?? null,
   };
   if (!write) return report;
 
+  const frozen = readFrozen(batchDir)[unit];
+  if (frozen) throw new Refuse(`frozen baseline (${frozen}) — its units/ file is not reproducible from the journal; --write refused (remove it from ${path.join(batchDir, "frozen_baseline.json")} only for a full regeneration)`);
   const why = [];
   if (!fin.fromJournal) why.push("--write needs --journal (the journal is the record of the final parts)");
   if (!approved.jp) why.push(`JP review of jp#${jpPart.round}: ${blockers(fin.jpReview)}`);
@@ -183,14 +198,13 @@ export async function merge({ unit, journals, runTag, write, paths }) {
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   let opt;
   try {
-    opt = parseArgs(process.argv.slice(2), { unit: "string", journal: "list", "run-tag": "string", write: "bool", "data-root": "string" });
+    opt = parseArgs(process.argv.slice(2), { unit: "string", journal: "list", "run-tag": "string", write: "bool", "data-root": "string", "batch-dir": "string" });
   } catch (e) {
     console.error(`✗ ${e.message}`);
     process.exit(2);
   }
   if (!opt.unit) {
-    console.error("usage: textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <resumed run's journal.jsonl> …] | --run-tag <tag>) [--write] [--data-root <dir>]");
-    console.error("note: the S135 pilot units carry post-merge fixes (scripts/archive/textbook-v2-pilot-lowfix-S135.mjs); a re-merge must reapply them");
+    console.error("usage: textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <resumed run's journal.jsonl> …] | --run-tag <tag>) [--write] [--data-root <dir>] [--batch-dir <dir>]");
     process.exit(2);
   }
   for (const j of opt.journal ?? []) {
@@ -205,10 +219,11 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   }
   const paths = dataPaths(opt["data-root"]);
   try {
-    const r = await merge({ unit: opt.unit, journals: (opt.journal ?? []).map((j) => path.resolve(j)), runTag: opt["run-tag"], write: !!opt.write, paths });
+    const r = await merge({ unit: opt.unit, journals: (opt.journal ?? []).map((j) => path.resolve(j)), runTag: opt["run-tag"], write: !!opt.write, paths, batchDir: path.resolve(opt["batch-dir"] ?? BATCH_DIR) });
     if (!r.from_journal) console.log(`? no --journal: newest part files of run ${opt["run-tag"]} used, reviews unknown (dry-run only)`);
     console.log(`${r.issues.length + r.parity_diff.length === 0 ? "✓" : "✗"} ${r.unit}: jp#${r.jp_round} + loc#${r.loc_round} → ${path.relative(process.cwd(), r.merged)}`);
     if (r.seed) console.log(`  seed: ${r.seed.seed_part} (sha256 ${String(r.seed.seed_sha256).slice(0, 12)}…, jp-review #${r.seed.seed_review_round}) — provenance only`);
+    for (const p of r.patches) console.log(`  patch ${p.id} ${p.outcome} (${p.field})`);
     console.log(`  reviews: jp ${r.approved.jp ? "PASS" : "not PASS"} / loc ${r.approved.loc ? "PASS" : "not PASS"}; validate ${r.issues.length} issue(s); parity ${r.parity_diff.length} diff`);
     for (const i of r.issues) console.log(`  ${i.code.padEnd(13)} ${i.field}  ${i.message}`);
     for (const [loc, c] of r.parity_diff) console.log(`  parity ${loc}  jp=${c.jp} zh=${c.zh} en=${c.en}`);

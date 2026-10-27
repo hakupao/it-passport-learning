@@ -43,7 +43,8 @@ function setup(opts = {}) {
   writeFileSync(journal, journalText(rowsFor(jpFile, locFile, opts)));
   return { root, P, journal, jpFile, locFile };
 }
-const merge = (s, extra = []) => run("textbook-v2-merge.mjs", ["--unit", UNIT, "--data-root", s.root, ...extra]);
+// an empty batch dir: no patches, and the fixture unit (pilot u03, a frozen baseline in the real batch dir) is writable
+const merge = (s, extra = []) => run("textbook-v2-merge.mjs", ["--unit", UNIT, "--data-root", s.root, "--batch-dir", s.root, ...extra]);
 
 test("dry-run: merged unit == fixture except est_minutes; units/ untouched", () => {
   const s = setup();
