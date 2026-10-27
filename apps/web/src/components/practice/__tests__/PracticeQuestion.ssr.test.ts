@@ -57,26 +57,23 @@ describe("PracticeQuestion — 問 N, layout, choices", () => {
     );
   });
 
-  it("a shown translation turns row4 into list (grid2 stays grid2); hidden or ja keeps row4", () => {
-    const q = QS.find((x) => choiceLayout(x) === "row4")!;
-    expect(renderFace(q, "zh", { showTranslation: true })).toMatch(/data-layout="list"/);
-    expect(renderFace(q, "en", { showTranslation: true })).toMatch(/data-layout="list"/);
-    expect(renderFace(q, "zh", { showTranslation: false })).toMatch(/data-layout="row4"/);
-    expect(renderFace(q, "ja", { showTranslation: true })).toMatch(/data-layout="row4"/);
-    const grid = QS.find((x) => choiceLayout(x) === "grid2")!;
-    expect(renderFace(grid, "en", { showTranslation: true })).toMatch(/data-layout="grid2"/);
-  });
-
-  it("row4 renders 4 columns class", () => {
-    const q = QS.find((x) => choiceLayout(x) === "row4")!;
-    const out = renderFace(q, "ja");
-    expect(out).toMatch(/<ul[^>]*class="[^"]*row4[^"]*"[^>]*data-layout="row4"/);
-    expect(CSS).toMatch(/\.row4\s*\{[^}]*grid-template-columns:\s*repeat\(4,/);
-    const list = QS.find((x) => choiceLayout(x) === "list")!;
-    expect(renderFace(list, "ja")).toMatch(/data-layout="list"/);
+  it("OQ-13 / D-194: text choices are one per line (list), translation shown or not; choice_figures stay grid2", () => {
+    // a former row4 set (four short choices)
+    const q = byId("2023r05-q086");
+    expect(choiceLayout(q)).toBe("list");
+    for (const [locale, showTranslation] of [["ja", false], ["zh", false], ["zh", true], ["en", true]] as const) {
+      expect(renderFace(q, locale, { showTranslation })).toMatch(/<ul[^>]*class="[^"]*list[^"]*"[^>]*data-layout="list"/);
+    }
+    expect(CSS).toMatch(/\.list\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\);/);
     const grid = QS.find((x) => choiceLayout(x) === "grid2")!;
     expect(renderFace(grid, "ja")).toMatch(/data-layout="grid2"/);
+    expect(renderFace(grid, "en", { showTranslation: true })).toMatch(/data-layout="grid2"/);
     expect(CSS).toMatch(/\.grid2\s*\{[^}]*grid-template-columns:\s*repeat\(2,/);
+  });
+
+  it("OQ-13: row4 and its container queries are gone", () => {
+    expect(CSS).not.toMatch(/\.row4\b/);
+    expect(CSS).not.toMatch(/@container|container-type/);
   });
 
   it("choices are buttons in ア〜エ order; unanswered = enabled, unmarked", () => {
@@ -218,16 +215,6 @@ describe("PracticeQuestion — 复习三格 / 頻出度 / figure / 中問", () =
     // dialog box 96vw × 94vh (border-box) − padding 2 × 12 − border 2 × 1.5 = 27px; close button 10 + 36 = 46px
     expect(CSS).toMatch(/\.zoomImg\s*\{[^}]*max-width:\s*calc\(96vw - 27px\);/);
     expect(CSS).toMatch(/\.zoomImg\s*\{[^}]*max-height:\s*calc\(94dvh - 73px\);/);
-  });
-
-  it("OQ-10: row4 drops to 2 columns below 460px and 1 column below 234px of the face body (container query)", () => {
-    expect(CSS).toMatch(/\.body\s*\{[^}]*container-type:\s*inline-size;/);
-    expect(CSS).toMatch(
-      /@container\s*\(max-width:\s*459\.98px\)\s*\{\s*\.row4\s*\{\s*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/,
-    );
-    expect(CSS).toMatch(
-      /@container\s*\(max-width:\s*233\.98px\)\s*\{\s*\.row4\s*\{\s*grid-template-columns:\s*minmax\(0,\s*1fr\);/,
-    );
   });
 
   it("practice.module.css: tokens only — no hex, no shadow, no gradient, radius ≤ 6px, no white-space override", () => {

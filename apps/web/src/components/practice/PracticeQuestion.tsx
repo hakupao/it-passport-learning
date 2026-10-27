@@ -5,7 +5,7 @@
 // 复习三格 (the last 3 results, newest first: ○ = correct on paper, × = wrong as an ink block), 頻出度 ★.
 // Right column, hanging off it: the JP stem (default, D-186), the figure (under the stem, above the
 // choices; click → <dialog>, Esc closes natively), the choices in ア〜エ order (layout from
-// choiceLayout, §0-15; one ChoiceItem each), the 出典 line and — zh / en only — the translation toggle. With the translation shown, the translated stem and choices are added under the JP ones.
+// choiceLayout: one per line, choice figures 2 × 2 — OQ-13 / D-194; one ChoiceItem each), the 出典 line and — zh / en only — the translation toggle. With the translation shown, the translated stem and choices are added under the JP ones.
 //
 // Display fidelity (D-189 §7 / §9): the JP stem and every choice go through the same QuizRichText
 // components as the old QuizSet (StemBlocks / ChoiceBody), translated ones too, and every compared
@@ -90,9 +90,7 @@ export function PracticeQuestion({
   const hasTr = locale !== "ja";
   const showTr = hasTr && showTranslation;
   const trLang = LANG_TAG[locale] ?? locale;
-  // a shown translation adds a line under each choice that a 4-column cell cannot hold (Rule A attempt 3)
-  const base = choiceLayout(q);
-  const layout = showTr && base === "row4" ? "list" : base;
+  const layout = choiceLayout(q);
   const fold = foldPreamble && preambleChars !== null && preambleChars > 0 && preambleChars < q.stem_jp.length;
 
   return (
