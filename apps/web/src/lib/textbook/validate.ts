@@ -24,6 +24,8 @@ import { LANGS, type TextbookUnit } from "./types";
 
 export type Severity = "error" | "warn";
 
+const V1_SCHEMA = "stage4-unit-v1-trilingual";
+
 export interface SchemaIssue {
   unitId: string;
   severity: Severity;
@@ -60,6 +62,13 @@ export interface ContentResult {
  * validateUnit(). Exported separately so corruption-detection can be unit tested.
  */
 export function validateContent(u: TextbookUnit): ContentResult {
+  // v1 only: a v2 unit's compat fields may legitimately be empty (analogy / hook) — validate it with validateV2
+  if (u.schema_version !== V1_SCHEMA) {
+    return {
+      issues: [{ unitId: u.unit_id, severity: "error", field: "schema_version", message: `${JSON.stringify(u.schema_version)}: validateContent checks ${V1_SCHEMA} units only — use validateV2` }],
+      contentComplete: false,
+    };
+  }
   const issues: SchemaIssue[] = [];
   let contentComplete = true;
 

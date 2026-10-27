@@ -129,6 +129,13 @@ describe("normalizeUnit (v2)", () => {
     expect(kaihi.analogy?.jp).toBe(SAMPLE.terms[2]!.analogy_jp);
   });
 
+  it("a whitespace-only hook is no hook (trimmed like analogy)", async () => {
+    const raw = structuredClone(SAMPLE);
+    Object.assign(raw.terms[2]!, { hook_jp: "  ", hook_zh: " ", hook_en: " " });
+    const u = normalizeUnit(raw, await loadChumonMembers());
+    expect(u.terms[2]!.hook).toBeNull();
+  });
+
   it("a term without analogy / hook gets null (受容)", async () => {
     const u = normalizeUnit(SAMPLE, await loadChumonMembers());
     const juyou = u.terms.find((t) => t.term === "受容")!;

@@ -39,6 +39,9 @@
 //      manifest.v1; a units file that is v1 but ≠ manifest.v1 means a stale manifest → refuse),
 //   2. write data/ip/textbook/units/<id>.json.
 //   Then run scripts/textbook-unit-minutes-build.mjs (copy-only) and its --check.
+// NOTE (S135): the pilot units management-10-27-u01〜u03 carry post-merge scripted fixes
+// (scripts/archive/textbook-v2-pilot-lowfix-S135.mjs, commit 7de5fb5). Re-merging them from their parts
+// drops those fixes — reapply them (or fold them into the parts) after any re-merge.
 // Exit: 0 = merged (and written with --write), 1 = refused / issues, 2 = usage / input error.
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -187,6 +190,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   }
   if (!opt.unit) {
     console.error("usage: textbook-v2-merge.mjs --unit <id> (--journal <journal.jsonl> [--journal <resumed run's journal.jsonl> …] | --run-tag <tag>) [--write] [--data-root <dir>]");
+    console.error("note: the S135 pilot units carry post-merge fixes (scripts/archive/textbook-v2-pilot-lowfix-S135.mjs); a re-merge must reapply them");
     process.exit(2);
   }
   for (const j of opt.journal ?? []) {

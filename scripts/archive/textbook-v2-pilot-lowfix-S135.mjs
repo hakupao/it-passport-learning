@@ -1,3 +1,6 @@
+// ARCHIVED — executed once in S135 (commit 7de5fb5), do not re-run: its exact-string replacements were
+// applied to data/ip/textbook/units/management-10-27-u0{1,2,3}.json after the merge. Kept as the record of
+// those post-merge fixes (a re-merge of the pilot units would drop them; see scripts/textbook-v2-merge.mjs).
 // Task 10 Step 2: scripted LOW fixes from pilot_audit.md (L1 L4 L5 L7 O1). Exact-string replacements; each must hit.
 import fs from "node:fs";
 const R = (file, pairs) => {

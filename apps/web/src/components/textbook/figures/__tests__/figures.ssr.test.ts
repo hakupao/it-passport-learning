@@ -14,7 +14,11 @@ import type { FigSpec, TextbookUnitV2 } from "@/lib/textbook/types";
 import { CompareFig } from "../CompareFig";
 import { FlowFig } from "../FlowFig";
 import { NetworkFig } from "../NetworkFig";
-import { DaysField, networkGeometry, NODE_R } from "../NetworkFig";
+import { DaysField, daysOk, networkGeometry, NODE_R } from "../NetworkFig";
+import { NETWORK_DAYS_MAX } from "@/lib/textbook/figureSpec";
+import enMsgs from "../../../../../messages/en.json";
+import jaMsgs from "../../../../../messages/ja.json";
+import zhMsgs from "../../../../../messages/zh.json";
 import { FIG_COMPONENTS, renderFig } from "../registry";
 import { StageView } from "../StepStage";
 import { TableFig } from "../TableFig";
@@ -305,5 +309,18 @@ describe("widget accessibility", () => {
     // the aria-disabled 前へ looks disabled too (N1)
     const css = readFileSync(path.resolve(__dirname, "../figures.module.css"), "utf-8");
     expect(css).toMatch(/\.btn\[aria-disabled="true"\][^{]*\{[^}]*cursor:\s*default/);
+  });
+});
+
+describe("network day limit (figureSpec NETWORK_DAYS_MAX, one source)", () => {
+  it("daysOk: integers 0〜NETWORK_DAYS_MAX by value, not by digit count", () => {
+    for (const v of ["0", "7", String(NETWORK_DAYS_MAX), "07"]) expect(daysOk(v), v).toBe(true);
+    for (const v of ["", "-1", "1.5", "x", String(NETWORK_DAYS_MAX + 1), "100", " 5"]) expect(daysOk(v), v).toBe(false);
+  });
+  it("Figure.invalid takes {max} in ja / zh / en (no hard-coded 99)", () => {
+    for (const m of [jaMsgs, zhMsgs, enMsgs]) {
+      expect(m.Figure.invalid).toContain("{max}");
+      expect(m.Figure.invalid).not.toContain("99");
+    }
   });
 });

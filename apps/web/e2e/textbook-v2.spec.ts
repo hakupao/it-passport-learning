@@ -23,6 +23,7 @@ import en from "../messages/en.json";
 import ja from "../messages/ja.json";
 import zh from "../messages/zh.json";
 import { termId } from "../src/lib/glossary/termId";
+import { NETWORK_DAYS_MAX } from "../src/lib/textbook/figureSpec";
 import { guardAnthropic } from "./helpers/fakeAnthropic";
 import { waitForRecord } from "./helpers/learning";
 
@@ -172,15 +173,13 @@ test(`steps figure: an untouched playback runs to the last step and stops there`
 
 test("reduced motion: the steps figure shows its last step and stays there in view", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto(`/ja/textbook/${STEPS.unitId}`);
-  await waitForRecord(page);
-  const s = stage(page);
+  const s = await openStepsUnit(page);
   await expect(counter(s)).toHaveText(`${N} / ${N}`);
   const last = await caption(s).innerText();
   await s.scrollIntoViewIfNeeded();
-  // real time: well past two playback steps
-  await page.waitForTimeout(AUTO_MS * 2 + 500);
-  await expect(counter(s)).toHaveText(`${N} / ${N}`);
+  // fast-forward the frozen clock well past two playback steps (no real-time wait), then poll the final state
+  await page.clock.runFor(AUTO_MS * 2 + 500);
+  await expect.poll(() => counter(s).innerText()).toBe(`${N} / ${N}`);
   await expect(caption(s)).toHaveText(last);
   await expect(btn(s, F.replay)).toBeVisible();
 });
@@ -224,7 +223,7 @@ test(`network widget (${NETWORK.unitId} / ${NETWORK.term}): a new duration recom
     await expect(input).toHaveAttribute("aria-invalid", "true");
     const errId = (await input.getAttribute("aria-describedby"))!;
     await expect(page.locator(`[id="${errId}"]`)).toBeVisible();
-    await expect(page.locator(`[id="${errId}"]`)).toHaveText(F.invalid);
+    await expect(page.locator(`[id="${errId}"]`)).toHaveText(F.invalid.replace("{max}", String(NETWORK_DAYS_MAX)));
     await expect(total).toHaveText(totalAfter);
   }
 

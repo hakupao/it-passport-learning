@@ -349,7 +349,8 @@ function normalizeV2(raw: TextbookUnitV2, keep: (id: string) => boolean): Reader
       one: tri(t, "one"),
       detail: tri(t, "detail"),
       analogy: optTri(t, "analogy"),
-      hook: t.hook_jp ? { jp: t.hook_jp, zh: t.hook_zh ?? "", en: t.hook_en ?? "" } : null,
+      // hook_* is optional in v2; blank = none (trimmed, like analogy's optTri)
+      hook: t.hook_jp && t.hook_jp.trim() !== "" ? { jp: t.hook_jp, zh: t.hook_zh ?? "", en: t.hook_en ?? "" } : null,
       points: t.points.map((p) => ({ kind: p.kind, text: tri(p, "text"), ...(p.qids ? { qids: p.qids } : {}) })),
       fig: t.fig,
       quiz: t.quiz.filter(keep),

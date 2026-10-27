@@ -22,7 +22,8 @@ interface Props {
   locale: string;
 }
 
-const DAYS_RE = /^\d{1,2}$/; // 0〜NETWORK_DAYS_MAX (99), as figureSpec
+/** A duration entry the widget accepts: a whole number 0〜NETWORK_DAYS_MAX (figureSpec, the one limit). */
+export const daysOk = (v: string): boolean => /^\d+$/.test(v) && Number(v) <= NETWORK_DAYS_MAX;
 export const NODE_R = 16;
 const R = NODE_R;
 const DX = 150; // column spacing
@@ -106,14 +107,14 @@ interface FieldProps {
   id: string;
   label: string;
   value: string;
-  /** shown under the input while the value is not an integer 0〜99 */
+  /** shown under the input while the value is not an integer 0〜NETWORK_DAYS_MAX */
   error: string;
   onChange: (v: string) => void;
 }
 
 /** One duration input; an invalid value gets a visible message tied to it by aria-describedby. */
 export function DaysField({ id, label, value, error, onChange }: FieldProps): React.ReactElement {
-  const bad = !DAYS_RE.test(value);
+  const bad = !daysOk(value);
   return (
     <div className={styles.netField}>
       <label htmlFor={id}>{label}</label>
@@ -165,7 +166,7 @@ export function NetworkFig({ fig }: Props): React.ReactElement | null {
 
   const edit = (i: number, v: string) => {
     setText((s) => s.map((x, j) => (j === i ? v : x)));
-    if (DAYS_RE.test(v)) setDays((d) => d.map((x, j) => (j === i ? Number(v) : x)));
+    if (daysOk(v)) setDays((d) => d.map((x, j) => (j === i ? Number(v) : x)));
   };
   const reset = () => {
     setText(base.map(String));
@@ -231,7 +232,7 @@ export function NetworkFig({ fig }: Props): React.ReactElement | null {
               id={`${uid}-d${i}`}
               label={t("actDays", { name: name(a) })}
               value={text[i] ?? ""}
-              error={t("invalid")}
+              error={t("invalid", { max: NETWORK_DAYS_MAX })}
               onChange={(v) => edit(i, v)}
             />
           ),

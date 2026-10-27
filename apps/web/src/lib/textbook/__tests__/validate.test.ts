@@ -138,3 +138,14 @@ describe("validateContent — must NOT report false OK", () => {
     expect(hasError(u, "lang_status.en")).toBe(true);
   });
 });
+
+describe("validateContent — v1 only", () => {
+  it("a non-v1 unit gets one schema_version error and is not content-complete (v2 → validateV2)", () => {
+    const u = { ...validUnit(), schema_version: "textbook-unit-v2" } as TextbookUnit;
+    const r = validateContent(u);
+    expect(r.contentComplete).toBe(false);
+    expect(r.issues).toEqual([
+      { unitId: u.unit_id, severity: "error", field: "schema_version", message: expect.stringContaining("validateV2") },
+    ]);
+  });
+});
