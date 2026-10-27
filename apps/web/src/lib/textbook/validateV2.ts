@@ -273,6 +273,10 @@ export function confirmIds(
 
 // ---- validator -----------------------------------------------------------------
 
+/** The JP-label marker (inline.ts) and the fields it must not appear in (…_jp, …_jp[i]). */
+const JP_OPEN = "[[jp:";
+const JP_FIELD = /_jp(\[\d+\])?$/;
+
 type Rec = Record<string, unknown>;
 const rec = (o: unknown): Rec => (o && typeof o === "object" ? (o as Rec) : {});
 function nonEmpty(v: unknown): v is string {
@@ -357,9 +361,10 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
 
   const qOf = (id: unknown) => (typeof id === "string" ? ctx.questions.get(id) : undefined);
 
-  /** Inline markup of one string; true when well-formed. */
+  /** Inline markup of one string; true when well-formed. [[jp:…]] marks the JP wording inside zh / en only. */
   const markupOk = (field: string, s: string): boolean => {
     const errs = inlineErrors(s);
+    if (JP_FIELD.test(field) && s.includes(JP_OPEN)) errs.push(`${JP_OPEN}…]] is for zh / en text only (D-195 §5)`);
     if (errs.length > 0) push("markup", field, errs.join("; "));
     return errs.length === 0;
   };
@@ -462,7 +467,12 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
       prose(rec(r), "one_line", where, { noListing: true }); // the 総表 is outside D-197's scope
       const bad = LANGS.filter((l, li) => {
         const e = rec(r)[`extra_${l}`];
-        return !strList(e) || e.length !== (cols[li] as string[]).length || !e.every(nonEmpty) || !e.every((s) => inlineErrors(s).length === 0);
+        return (
+          !strList(e) ||
+          e.length !== (cols[li] as string[]).length ||
+          !e.every(nonEmpty) ||
+          !e.every((s) => inlineErrors(s).length === 0 && !(l === "jp" && s.includes(JP_OPEN)))
+        );
       });
       if (bad.length > 0) push("overview", `${where}.extra`, `${bad.join(", ")}: one non-empty cell per column`);
     });

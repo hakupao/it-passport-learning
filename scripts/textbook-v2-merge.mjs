@@ -16,6 +16,8 @@
 //     the agent returned, or a journal from another run, is refused (S135 M1).
 //   - approved = a "jp-review" PASS whose reviewed_sha256 = that JP part's sha256 and a "loc-review"
 //     PASS whose reviewed_sha256 = the loc part's sha256 (a review approves exactly what it hashed).
+//   A seeded run's round-0 row carries seed_part / seed_sha256 / seed_review_round: printed as provenance,
+//   never used for approval (the seed's own review was of other bytes).
 //   Without --journal (dry-run only) the newest parts/<run-tag>/<unit>.{jp,loc}.r<N>.json are used, unapproved.
 // The localised part must be the JP part plus zh / en only (lib locVsJp: structure, ids, Japanese).
 //
@@ -135,6 +137,8 @@ export async function merge({ unit, journals, runTag, write, paths }) {
     parity_diff: diff,
     merged: out,
     written: false,
+    // a seeded run (workflow args.seed_*): provenance only — approval above is of the final part's own sha256
+    seed: rows?.find((r) => r.unit_id === unit && r.stage === "jp" && typeof r.seed_sha256 === "string") ?? null,
   };
   if (!write) return report;
 
@@ -192,6 +196,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     const r = await merge({ unit: opt.unit, journals: (opt.journal ?? []).map((j) => path.resolve(j)), runTag: opt["run-tag"], write: !!opt.write, paths });
     if (!r.from_journal) console.log(`? no --journal: newest part files of run ${opt["run-tag"]} used, reviews unknown (dry-run only)`);
     console.log(`${r.issues.length + r.parity_diff.length === 0 ? "✓" : "✗"} ${r.unit}: jp#${r.jp_round} + loc#${r.loc_round} → ${path.relative(process.cwd(), r.merged)}`);
+    if (r.seed) console.log(`  seed: ${r.seed.seed_part} (sha256 ${String(r.seed.seed_sha256).slice(0, 12)}…, jp-review #${r.seed.seed_review_round}) — provenance only`);
     console.log(`  reviews: jp ${r.approved.jp ? "PASS" : "not PASS"} / loc ${r.approved.loc ? "PASS" : "not PASS"}; validate ${r.issues.length} issue(s); parity ${r.parity_diff.length} diff`);
     for (const i of r.issues) console.log(`  ${i.code.padEnd(13)} ${i.field}  ${i.message}`);
     for (const [loc, c] of r.parity_diff) console.log(`  parity ${loc}  jp=${c.jp} zh=${c.zh} en=${c.en}`);

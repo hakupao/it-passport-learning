@@ -1,7 +1,7 @@
 export const meta = {
   name: 'textbook-v2',
   description: 'Stage 7 Phase 3 教科書 v2 生成 (D-196 §0-13): JP 執筆 → JP 審査 (≤2 輪) → zh/en 意訳・現地化 → 訳審査 (≤2 輪)。各 agent は part file を書き、計数だけを返す',
-  whenToUse: 'scripts/textbook-v2-prep.mjs --unit <id> の後。args = {unit: "<unit_id>", run_tag: "<新しい tag>"} (または units: [...])。終了後 textbook-v2-merge.mjs --unit <id> --journal <journal.jsonl>',
+  whenToUse: 'scripts/textbook-v2-prep.mjs --unit <id> の後。args = {unit: "<unit_id>", run_tag: "<新しい tag>"} (または units: [...])。前回の草稿から始めるなら + seed_part / seed_journal / seed_review_round。終了後 textbook-v2-merge.mjs --unit <id> --journal <journal.jsonl>',
   phases: [
     { title: 'Write', detail: 'general-purpose (opus): manifest から JP part を書き、validate --part を 0 issue まで自分で回す', model: 'opus' },
     { title: 'Review', detail: 'oh-my-claudecode:critic (opus): D-195 清單 + 事実 (objective_jp・過去問正解)、REVISE なら執筆者が改稿、最大 2 輪', model: 'opus' },
@@ -32,6 +32,7 @@ export const meta = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const ROOT = '/Volumes/DevSSD/Project/IT-Passport-Learning'
+const absolutize = (p) => (typeof p === 'string' && p.startsWith('/') ? p : `${ROOT}/${p}`)
 const MODEL = 'opus'
 const AGENT = {
   write: 'general-purpose',
@@ -46,9 +47,11 @@ const COUNTS = {
   additionalProperties: false,
   properties: Object.fromEntries(['terms', 'figs', 'steps', 'points', 'pairs', 'key_points', 'goals'].map((k) => [k, { type: 'integer', minimum: 0 }])),
 }
-const PART_RESULT = (stage) => ({
+const PART_RESULT = (stage, seeded = false) => ({
   type: 'object',
-  required: ['unit_id', 'stage', 'round', 'part', 'sha256', 'counts', 'validate_issues'].concat(stage === 'loc' ? ['jp_round', 'jp_sha256', 'parity_diff'] : []),
+  required: ['unit_id', 'stage', 'round', 'part', 'sha256', 'counts', 'validate_issues']
+    .concat(stage === 'loc' ? ['jp_round', 'jp_sha256', 'parity_diff'] : [])
+    .concat(seeded ? ['seed_part', 'seed_sha256', 'seed_review_round'] : []),
   additionalProperties: false,
   properties: {
     unit_id: { type: 'string' },
@@ -58,6 +61,13 @@ const PART_RESULT = (stage) => ({
     sha256: { type: 'string', description: '最後の validate --part が出力した `sha256 <hex>` 行の hex (最後に Write した後の値)' },
     counts: { ...COUNTS, description: 'validate --part が最後に出力した `counts {...}` 行の JSON をそのまま' },
     validate_issues: { type: 'integer', minimum: 0, description: '最後の validate --part の issue 数 (0 が目標)' },
+    ...(seeded
+      ? {
+          seed_part: { type: 'string', description: '種にした前回 run の JP part' },
+          seed_sha256: { type: 'string', description: 'textbook-v2-seed.mjs が出力した seed_sha256 行の hex (種のバイト列)' },
+          seed_review_round: { type: 'integer', minimum: 1, description: '使った jp-review の round' },
+        }
+      : {}),
     ...(stage === 'loc'
       ? {
           jp_round: { type: 'integer', minimum: 0 },
@@ -101,15 +111,19 @@ const manifestOf = (unit) => `${dirOf(unit)}/manifest.json`
 const partOf = (unit, stage, round) => `${dirOf(unit)}/parts/${RUN_TAG}/${unit}.${stage}.r${round}.json`
 const validateCmd = (part, jp) => `node ${ROOT}/scripts/textbook-v2-validate.mjs --part ${part}${jp ? ` --jp ${jp}` : ''}`
 const parityCmd = (part) => `node ${ROOT}/scripts/textbook-v2-parity.mjs --part ${part}`
+const seedCmd = (seed) => `node ${ROOT}/scripts/textbook-v2-seed.mjs --part ${seed.part} --journal ${seed.journal} --review-round ${seed.reviewRound}`
+const SEED_ERROR = 'SEED-ERROR'
 
 const READ_MANIFEST = (unit) => `\`${manifestOf(unit)}\` を**全部** Read する (数千行: offset で分けて最後まで)。中身: d195_lines (D-195 全文)、topic.objective_jp (シラバス)、terms (見出し語、順序固定)、v1 (現行版)、questions / term_questions (関連過去問: 題文・正解・解説要約 [長文は行の配列]・中問組 chumon_group)、figures (図種 kinds・types_ts_lines = v2 の型定義・svg_available)、rules (validateV2 の上限と禁止句)、output_schema (JP part の JSON Schema)。加えて原本を直接 Read する: \`${ROOT}/docs/decisions/D-195-textbook-writing-and-figure-rules.md\`、\`${ROOT}/apps/web/src/lib/textbook/types.ts\`、\`${ROOT}/apps/web/src/lib/textbook/figureSpec.ts\`。`
 const NO_COPY = '**過去問の題文・選択肢・解説を文として写さない** (事実と数値だけを使い、文は自分で書く)。validate が「正規化 (標記・空白・句読点・記号を除去) した 20 字以上の一致」を `copy` issue として検出する。'
 
-function writerPrompt(unit, round, prev, review) {
+function writerPrompt(unit, round, prev, review, seed) {
   const part = partOf(unit, 'jp', round)
-  const revise = prev
-    ? `\n## 改稿 (round ${round})\n前稿 \`${prev}\` を Read し、下の審査指摘を**全部**直した版を書く。指摘されていない箇所は理由なく変えない。\n\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
-    : ''
+  const revise = seed
+    ? `\n## 改稿 (round ${round}: 前回 run の草稿を種にする)\n1. まず \`${seedCmd(seed)}\` を実行する。種 \`${seed.part}\` の sha256 (\`seed_sha256 <hex>\` 行) と、その草稿そのものを審査した jp-review #${seed.reviewRound} の指摘 (JSON) が出る。**exit が 0 でなければ** part を書かずに StructuredOutput で part:"${SEED_ERROR}" を返して終わる (seed_part / seed_review_round は指定値、他の数値は 0、文字列は空)。\n2. 種を Read し、その指摘を**全部**直した版を書く。指摘されていない箇所も、下の「書き方」に反していれば直す。\n`
+    : prev
+      ? `\n## 改稿 (round ${round})\n前稿 \`${prev}\` を Read し、下の審査指摘を**全部**直した版を書く。指摘されていない箇所も、下の「書き方」に反していれば直す。\n\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
+      : ''
   return `あなたは IT パスポート試験の教科書執筆者です。単元 \`${unit}\` を D-195 の規則で**日本語で**書き直します (zh / en は後工程で意訳する。あなたは日本語だけ)。
 
 ## 入力
@@ -120,16 +134,22 @@ ${revise}
 - terms: manifest.terms と**同じ見出し語・同じ順** (増減・改名禁止)。各用語: one_jp (一句話 1 文、キーワードは **語**) → fig (図: D-195 §2 で選ぶ。不要なら null) → detail_jp (展開 2〜3 文) → analogy_jp (比喩、平文。無理なら "") / hook_jp (記法: 定義の言い換え禁止、語源・字形・対比など別の手がかり。無ければ省略) → points (考点: kind "exam" は根拠の過去問 id を qids に必ず入れる、"mix" は易混) → quiz (この用語の過去問 id: manifest.term_questions[用語] から 1〜3 題、中問組員 chumon_group≠null は避ける)。
 - goals_jp (学習目標 3 前後)、overview_cols_jp + overview_rows (用語総表: 用語ごと 1 行、one_line_jp + 列ごとのセル extra_jp)、pairs (易混組: a が b より用語順で前、決め手の行に key:true)、key_points_jp (要点 3〜5)、challenge_questions (確認題: 本 topic の過去問 id、中問組員を除いて 3〜5 題。v1.challenge_questions を基に見直してよい)。
 - 図: kind / mode は figures.kinds の組合せだけ (svg / table / compare / flow / tree / network)。型は figures.types_ts_lines (原本 apps/web/src/lib/textbook/types.ts) の FigSpec。ラベルは \`{"jp": "…"}\` だけ、分段の caption は \`caption_jp\` だけ書く (zh / en は後工程)。flow / tree の段階図は ${'`'}mode:"steps"${'`'} で 3〜4 step。network (アローダイアグラム等) は mode "widget"、工期は 0〜99 の整数、始点・終点は 1 つずつ、並行作業はダミーで。svg を使うなら figures.svg_available のパスだけ。
-- 行内標記は **語** と [[jp:語]] の 2 種のみ (analogy・総表 extra・図ラベル・caption は平文)。
-- 事実: topic.objective_jp と関連過去問の正解・解説要約に反することを書かない。数値・用語の定義は過去問の解説と照合する。捏造しない。
+- 行内標記は **語** だけ。[[jp:…]] は zh / en 専用なので**日本語の本文には使わない** (validate が markup issue にする)。analogy・総表 extra・図ラベル・caption は平文。
+- 事実: topic.objective_jp と関連過去問の正解・解説要約に反することを書かない。捏造しない。
 - ${NO_COPY}
+
+## 書き方 (前回の不合格理由 = 過去問の文への寄りかかり・考点と正解の矛盾・未定義語。必ず守る)
+1. **二段階で書く**: 用語ごとに、まず topic.objective_jp と見出し語と D-195 だけを見て草稿を書く (この段階では questions / term_questions を**開かない**)。草稿ができてから過去問を開き、事実の確認と qids の付与にだけ使う。
+2. **文の骨格を借りない**: 題文・選択肢・解説と語順や文型が重なる文は、その文からではなく事実から書き直す。同じ骨格のまま語句を同義語に入れ替えたものも転載とみなす (20 字未満の一致でも)。
+3. **exam 考点は引用題と突き合わせる**: 各 exam 考点について、qids の題をそれぞれ読み直し、主張がその題の正解 (correct_answer と解説) と一致することを確かめる。データが支持しない規則 (「必ず〜」「〜は 1 つだけ」等) を作らない。合わなければ主張を直す (qid を外すだけで済ませない)。
+4. **定義してから使う**: 専門語 (例: 結合点・矢線・最遅結合点時刻) は、それを使う考点・図・易混表より前に、定義する 1 文を本文 (one_jp / detail_jp) に置く。
 - D-195 §9 禁止: 定型の締め句 (「〜と理解しておきましょう」「試験では〜が問われます」の常用 → 試験の話は考点枠でだけ)、同義の言い換えの反復、1 文に見出し語を 3 つ以上「・、」で羅列 (分類の数を明示する 1 文「〜には A・B・C・D の 4 つがある」だけ例外 = D-197)、根拠のない誇張語。
 
 ## 手順
-1. manifest を全部読む。関連過去問で、各用語が実際にどう問われるかを把握する。
-2. JP part を \`${part}\` に Write (親ディレクトリが無ければ作る)。
+1. manifest を全部読む (questions / term_questions は「書き方 1」の順で、草稿の後に開く)。
+2. JP part を \`${part}\` に Write (親ディレクトリが無ければ作る)。書いたら「書き方 1〜4」を用語ごとに自分で点検する。
 3. \`${validateCmd(part)}\` を実行。issue が出たら part を直して再実行、**0 issue になるまで**繰り返す (最後の出力の \`counts {...}\` 行と \`sha256 <hex>\` 行を控える。part を書き換えたら必ず validate を再実行し、最後の値を使う)。0 にできない issue があれば残数をそのまま返す。
-4. StructuredOutput で {unit_id, stage:"jp", round:${round}, part:"${part}", sha256: (最後の sha256 行の hex), counts: (最後の counts 行の JSON), validate_issues: (最後の issue 数)} を返す。本文は返さない。`
+4. StructuredOutput で {unit_id, stage:"jp", round:${round}, part:"${part}", sha256: (最後の sha256 行の hex), counts: (最後の counts 行の JSON), validate_issues: (最後の issue 数)${seed ? `, seed_part:"${seed.part}", seed_sha256: (seed コマンドの seed_sha256 行の hex), seed_review_round:${seed.reviewRound}` : ''}} を返す。本文は返さない。`
 }
 
 function reviewPrompt(unit, round, part, partRound) {
@@ -143,8 +163,10 @@ function reviewPrompt(unit, round, part, partRound) {
 ## 審査観点
 1. **事実**: 定義・説明・考点・図 (数値、工期、因果、分類) が topic.objective_jp と関連過去問の正解・解説要約に照らして正しいか。exam 考点の qids の題が本当にその点を問うているか。quiz / challenge_questions の題がその用語・単元に合っているか。
 2. **D-195 清單**: §1 一句話 1 文 + 太字キーワード / 展開 2〜3 文 / §2 図の選び方 (過程→段階図、量・計算→操作部品、その他→静的、別名だけの用語は図なし、飾りの図は不可) / §3 学習目標 + 総表 / §4 易混対比は 2 つ目の直後 / §5 強調 4 種 / §6 比喩・記法が定義の言い換えでない / §7 要点 3〜5 / §9 禁止事項 (定型の締め句、言い換えの反復、羅列、誇張)。
-3. **初学者に分かるか**: 結論先行、用語の前提が先に説明されているか、図と文が噛み合うか。
-4. **転載していないか**: 過去問の題文・選択肢・解説を言い回しごと写した文 (20 字未満の一致でも、語順と言い回しがほぼ同じなら) は high。事実と数値の利用は可。${NO_COPY}
+3. **初学者に分かるか**: 結論先行、図と文が噛み合うか。**定義してから使う**: 専門語 (例: 結合点・矢線・最遅結合点時刻) が、それを定義する文より前に考点・図・易混表で使われていたら指摘する。
+4. **転載していないか**: 過去問の題文・選択肢・解説を言い回しごと写した文 (20 字未満の一致でも、語順と言い回しがほぼ同じなら) は high。**同じ文の骨格のまま語句を同義語に入れ替えた文も転載**として扱う。事実と数値の利用は可。${NO_COPY}
+5. **考点と引用題の正解**: 各 exam 考点の qids の題を読み、主張がその題の正解 (correct_answer と解説) と一致するか、データが支持しない規則を作っていないかを確かめる。矛盾は high。
+6. **標記**: 日本語の本文に [[jp:…]] (zh / en 専用) があれば指摘する。
 
 ## 判定
 - verdict: high / medium の issue が 0 なら PASS、1 つでもあれば REVISE。
@@ -202,10 +224,15 @@ const sev = (issues) => (issues || []).reduce((m, i) => { m[i.severity] = (m[i.s
 async function runUnit(unit, maxRounds) {
   const out = { unit, run_tag: RUN_TAG, status: 'running', jp_rounds: 0, jp_verdict: null, jp_issues: {}, jp_validate_issues: null, loc_rounds: 0, loc_verdict: null, loc_issues: {}, parts: [], validate_issues: null, parity_diff: null }
   /** A writing agent; null + out.status set when it died or wrote somewhere else than told (S135 L4). */
-  const write = async (prompt, label, phase, stage, round, agentType) => {
-    const res = await agent(prompt, { label, phase, schema: PART_RESULT(stage), model: MODEL, agentType })
+  const write = async (prompt, label, phase, stage, round, agentType, seeded = false) => {
+    const res = await agent(prompt, { label, phase, schema: PART_RESULT(stage, seeded), model: MODEL, agentType })
     if (!res) {
       out.status = `${stage}-write-failed`
+      return null
+    }
+    if (seeded && (res.part === SEED_ERROR || !/^[0-9a-f]{64}$/.test(res.seed_sha256 ?? ''))) {
+      log(`${unit}: the seed did not verify (no jp-review #${SEED.reviewRound} of ${SEED.part} in ${SEED.journal}) — stop`)
+      out.status = 'seed-invalid'
       return null
     }
     const want = partOf(unit, stage, round)
@@ -218,9 +245,10 @@ async function runUnit(unit, maxRounds) {
     return res
   }
 
-  // ---- JP: write, review, revise ----
-  let jp = await write(writerPrompt(unit, 0, null, null), `write:${unit}#0`, 'Write', 'jp', 0, AGENT.write)
+  // ---- JP: write (or revise the seed), review, revise ----
+  let jp = await write(writerPrompt(unit, 0, null, null, SEED), `${SEED ? 'seed-rewrite' : 'write'}:${unit}#0`, 'Write', 'jp', 0, AGENT.write, !!SEED)
   if (!jp) return out
+  if (SEED) out.seed = { part: SEED.part, sha256: jp.seed_sha256, review_round: SEED.reviewRound }
   out.jp_rounds = 1
   let review = null
   for (let r = 1; r <= maxRounds; r++) {
@@ -274,6 +302,16 @@ if (units.some((u) => typeof u !== 'string' || !/^[a-z]+-\d{2}-\d{2}-u\d{2}$/.te
 const RUN_TAG = parsed?.run_tag
 if (typeof RUN_TAG !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(RUN_TAG)) throw new Error('need args.run_tag (new per run, [A-Za-z0-9_-]{1,40}, e.g. "20261027a")')
 const maxRounds = Math.min(2, Math.max(1, Number(parsed?.max_rounds ?? 2)))
+// Seeded start (S135 u02 attempt 2): round 0 revises an earlier run's JP part with the review of exactly
+// that part (textbook-v2-seed.mjs checks the hash) instead of drafting from blank; ≤ maxRounds reviews
+// still apply to this run. The seed is provenance only: merge approves the final part's own hash.
+const seedKeys = ['seed_part', 'seed_journal', 'seed_review_round'].filter((k) => parsed?.[k] !== undefined)
+if (seedKeys.length !== 0 && seedKeys.length !== 3) throw new Error('seed_part, seed_journal and seed_review_round go together')
+const SEED = seedKeys.length === 3 ? { part: absolutize(parsed.seed_part), journal: absolutize(parsed.seed_journal), reviewRound: Number(parsed.seed_review_round) } : null
+if (SEED && (!Number.isInteger(SEED.reviewRound) || SEED.reviewRound < 1)) throw new Error('seed_review_round: an integer ≥ 1')
+if (SEED && units.length !== 1) throw new Error('a seeded run takes one unit')
+if (SEED && !SEED.part.includes(`/${units[0]}.jp.r`)) throw new Error(`seed_part must be a JP part of ${units[0]}`)
+if (SEED && SEED.part.includes(`/parts/${RUN_TAG}/`)) throw new Error('seed_part is from this run_tag: use a new run_tag')
 
 const results = await pipeline(units, (unit) => runUnit(unit, maxRounds))
 const summary = results.map((r, i) => r ?? { unit: units[i], status: 'crashed' })

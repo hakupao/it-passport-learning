@@ -206,3 +206,20 @@ test("stale manifest: units/ holds a v1 that differs from manifest.v1 → refuse
   assert.ok(before.equals(readFileSync(s.P.unit(UNIT))));
   assert.ok(!existsSync(s.P.v1Original(UNIT)));
 });
+
+test("seeded run: the seed is printed as provenance only; approval needs a PASS of the final part's own sha256", () => {
+  const s = setup();
+  const rows = rowsFor(s.jpFile, s.locFile);
+  const seedSha = "b".repeat(64);
+  rows[0] = { ...rows[0], seed_part: "/elsewhere/u.jp.r1.json", seed_sha256: seedSha, seed_review_round: 2 };
+  writeFileSync(s.journal, journalText(rows));
+  const ok = merge(s, ["--journal", s.journal]);
+  assert.equal(ok.code, 0, ok.out);
+  assert.match(ok.out, /seed: \/elsewhere\/u\.jp\.r1\.json \(sha256 bbbbbbbbbbbb…, jp-review #2\) — provenance only/);
+  // the seed's own PASS (of the seed bytes) does not approve the new part
+  const noFinal = [rows[0], { ...rows[1], reviewed_sha256: seedSha, verdict: "PASS" }, rows[2], rows[3]];
+  writeFileSync(s.journal, journalText(noFinal));
+  const r = merge(s, ["--journal", s.journal, "--write"]);
+  assert.equal(r.code, 1, r.out);
+  assert.match(r.out, /JP review of jp#0: none/);
+});

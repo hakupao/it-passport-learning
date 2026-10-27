@@ -26,10 +26,14 @@ async function runWf(verdicts, args = { unit: UNIT, run_tag: TAG }, fake = {}) {
   const logs = [];
   const agent = async (prompt, opts) => {
     calls.push({ prompt, opts });
-    const m = /^(write|rewrite|review|localize|relocalize|tr-review):(.+)#(\d+)$/.exec(opts.label);
+    const m = /^(seed-rewrite|write|rewrite|review|localize|relocalize|tr-review):(.+)#(\d+)$/.exec(opts.label);
     const [, kind, unit, n] = m;
     const round = Number(n);
     const part = (stage) => (fake.wrongPath ? `/elsewhere/${unit}.${stage}.json` : partPath(unit, stage, round));
+    if (kind === "seed-rewrite") {
+      if (fake.seedError) return { unit_id: unit, stage: "jp", round, part: "SEED-ERROR", sha256: "", counts: { ...COUNTS, terms: 0 }, validate_issues: 0, seed_part: "x", seed_sha256: "", seed_review_round: 2 };
+      return { unit_id: unit, stage: "jp", round, part: part("jp"), sha256: "jp0", counts: COUNTS, validate_issues: 0, seed_part: "x", seed_sha256: "a".repeat(64), seed_review_round: 2 };
+    }
     if (kind === "write" || kind === "rewrite") return { unit_id: unit, stage: "jp", round, part: part("jp"), sha256: `jp${round}`, counts: COUNTS, validate_issues: fake.jpIssues ?? 0 };
     if (kind === "localize" || kind === "relocalize") return { unit_id: unit, stage: "loc", round, jp_round: 0, part: part("loc"), sha256: `loc${round}`, jp_sha256: "jp0", counts: COUNTS, validate_issues: fake.locIssues ?? 0, parity_diff: fake.parity ?? 0 };
     const v = (kind === "review" ? verdicts.jp : verdicts.loc)[round - 1];
@@ -128,4 +132,53 @@ test("both reviews PASS but validate / parity issues left → needs-fix, not rea
     const { ret } = await runWf({ jp: ["PASS"], loc: ["PASS"] }, undefined, fake);
     assert.equal(ret.units[0].status, "needs-fix", JSON.stringify(fake));
   }
+});
+
+const SEED_PART = "/Volumes/DevSSD/Project/IT-Passport-Learning/data/ip/textbook/.planning/v2/management-10-27-u02/parts/s135u02a/management-10-27-u02.jp.r1.json";
+const SEED_ARGS = { unit: UNIT, run_tag: TAG, seed_part: SEED_PART, seed_journal: "data/ip/textbook/.planning/v2/management-10-27-u02/journal.s135u02a.jsonl", seed_review_round: 2 };
+
+test("writer prompts carry the attempt-1 hardening; the critic checks it (S135 u02 attempt 2)", async () => {
+  const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
+  const [w, rv, rw] = calls.map((c) => c.prompt);
+  for (const p of [w, rw]) {
+    assert.match(p, /二段階で書く/);
+    assert.match(p, /questions \/ term_questions を\*\*開かない\*\*/);
+    assert.match(p, /同義語に入れ替えたものも転載/);
+    assert.match(p, /exam 考点は引用題と突き合わせる/);
+    assert.match(p, /定義してから使う/);
+    assert.match(p, /\[\[jp:…\]\] は zh \/ en 専用なので\*\*日本語の本文には使わない\*\*/);
+  }
+  assert.match(rv, /同義語に入れ替えた文も転載/);
+  assert.match(rv, /考点と引用題の正解/);
+  assert.match(rv, /定義してから使う/);
+  assert.match(rv, /\[\[jp:…\]\]/);
+});
+
+test("seeded start: round 0 revises the seed with its review (from the seed journal), then ≤ 2 reviews as usual", async () => {
+  const { ret, calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] }, SEED_ARGS);
+  assert.deepEqual(calls.map((c) => c.opts.label).slice(0, 4), [`seed-rewrite:${UNIT}#0`, `review:${UNIT}#1`, `rewrite:${UNIT}#1`, `review:${UNIT}#2`]);
+  const seed = calls[0];
+  assert.equal(seed.opts.agentType, "general-purpose");
+  assert.equal(seed.opts.model, "opus");
+  assert.ok(seed.prompt.includes(`scripts/textbook-v2-seed.mjs --part ${SEED_PART} --journal /Volumes/DevSSD/Project/IT-Passport-Learning/data/ip/textbook/.planning/v2/management-10-27-u02/journal.s135u02a.jsonl --review-round 2`));
+  assert.ok(seed.prompt.includes(partPath(UNIT, "jp", 0)), "writes round 0 of the new run");
+  assert.deepEqual(seed.opts.schema.required.slice(-3), ["seed_part", "seed_sha256", "seed_review_round"]);
+  assert.ok(!calls[2].opts.schema.required.includes("seed_sha256"), "only round 0 is seeded");
+  assert.equal(calls.filter((c) => c.opts.agentType === "oh-my-claudecode:critic").length, 2);
+  assert.equal(ret.units[0].status, "ready-to-merge");
+  assert.deepEqual(ret.units[0].seed, { part: SEED_PART, sha256: "a".repeat(64), review_round: 2 });
+});
+
+test("seeded start: a seed that does not verify stops the unit before any review", async () => {
+  const { ret, calls } = await runWf({ jp: ["PASS"], loc: ["PASS"] }, SEED_ARGS, { seedError: true });
+  assert.equal(calls.length, 1);
+  assert.equal(ret.units[0].status, "seed-invalid");
+});
+
+test("seed args: all three or none, one unit, a seed from another run_tag", async () => {
+  const { seed_review_round, ...partial } = SEED_ARGS;
+  await assert.rejects(runWf({ jp: [], loc: [] }, partial), /go together/);
+  await assert.rejects(runWf({ jp: [], loc: [] }, { ...SEED_ARGS, seed_review_round: 0 }), /integer ≥ 1/);
+  await assert.rejects(runWf({ jp: [], loc: [] }, { ...SEED_ARGS, run_tag: "s135u02a" }), /new run_tag/);
+  await assert.rejects(runWf({ jp: [], loc: [] }, { ...SEED_ARGS, unit: "management-10-27-u01" }), /JP part of/);
 });

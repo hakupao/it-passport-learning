@@ -134,6 +134,17 @@ describe("validateV2 — one broken thing → one error", () => {
     expectOne((u) => void (u.goals_jp[0] = "[[jp:未閉合"), "markup");
   });
 
+  it("[[jp:…]] is for zh / en only: in any *_jp field it is a markup issue (S135 u02 attempt 1)", () => {
+    // well-formed markers whose stripped text is unchanged, so only the JP-label rule fires
+    expectOne((u) => void (u.goals_jp[0] = `[[jp:リスク管理]]${u.goals_jp[0]!.slice("リスク管理".length)}`), "markup");
+    expectOne((u) => void (u.key_points_jp[0] = `[[jp:リスク管理]]${u.key_points_jp[0]!.slice("リスク管理".length)}`), "markup");
+    expectOne((u) => void (term(u, "プロジェクトリスクマネジメント").hook_jp = "「[[jp:リスク]]」は**まだ起きていない**こと。起きたら「問題」になる。"), "markup");
+    expectOne((u) => void (u.overview_rows[0]!.extra_jp[0] = "[[jp:管理領域]]"), "overview");
+    expectOne((u) => void (u.pairs[0]!.rows[0]!.a_jp = `[[jp:${u.pairs[0]!.rows[0]!.a_jp}]]`), "markup");
+    // still allowed in zh / en
+    expect(issuesAfter((u) => void (u.goals_zh[0] = `[[jp:リスク管理]]${u.goals_zh[0]}`)).filter((i) => i.code === "markup")).toEqual([]);
+  });
+
   it("analogy is plain text (it doubles as the compat field)", () => {
     expectOne((u) => void (term(u, "回避").analogy_jp = "**落石**が心配な道を通らず、別の道に変えるようなものです。"), "markup");
   });
