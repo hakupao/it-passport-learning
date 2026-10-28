@@ -353,12 +353,14 @@ const JP_LABEL = /\[\[jp:(.+?)\]\]/g;
 
 /**
  * `word` at `text[i]`, not part of a longer word: a katakana edge must not touch katakana (ゲート in ゲートウェイ),
- * a Latin / digit edge must not touch a Latin letter / digit (IPS in IPSec). Kanji edges are not checked.
+ * a Latin / digit edge must not touch a Latin letter / digit (IPS in IPSec), except an English plural `s` after an
+ * acronym (IDSs). Kanji edges are not checked.
  */
 function wordAt(text: string, word: string, i: number): boolean {
   if (!text.startsWith(word, i)) return false;
   const before = text[i - 1];
-  const after = text[i + word.length];
+  const plural = /[A-Z0-9]/.test(word[word.length - 1]!) && text[i + word.length] === "s" ? 1 : 0;
+  const after = text[i + word.length + plural];
   const touches = (edge: string, ch: string | undefined) =>
     ch !== undefined && ((KATA_CH.test(edge) && KATA_CH.test(ch)) || (ALNUM_CH.test(edge) && ALNUM_CH.test(ch)));
   return !touches(word[0]!, before) && !touches(word[word.length - 1]!, after);
@@ -654,7 +656,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
     // D-202: one_zh / one_en name the headword (field …_zh / …_en: a JP-only part drops it, jpOnlyIssues)
     for (const l of ["zh", "en"] as const) {
       const s = tr[`one_${l}`];
-      if (nonEmpty(s) && !hasJpOrigin(s, t.term)) {
+      if (typeof t.term === "string" && nonEmpty(s) && !hasJpOrigin(s, t.term)) {
         push("jp-origin", `${where}.one_${l}`, `no [[jp:${t.term}]] (D-202 / D-195 §5: the one names the Japanese headword)`);
       }
     }

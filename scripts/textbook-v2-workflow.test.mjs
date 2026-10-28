@@ -313,19 +313,20 @@ test("D-202: writer 書き方 7〜9 and the critic's checks; the localiser's [[j
   for (const p of [byLabel(/^write:/), byLabel(/^rewrite:/)]) {
     assert.match(p, /7\. \*\*欄同士を突き合わせる\*\*/);
     assert.match(p, /one \/ detail \/ points \/ pairs \/ hook と単元の overview \/ goals/);
-    assert.match(p, /8\. \*\*同じ対比は単元内 2 箇所まで\*\*/);
+    assert.match(p, /8\. \*\*同じ対比は pairs と mix 考点の 2 箇所まで\*\*。detail・key_points で同じ対比を繰り返さない/);
     assert.match(p, /9\. \*\*引用題の限定条件を外さない\*\*/);
     assert.match(p, /「書き方 7〜9」を単元全体で/);
   }
   const rv = byLabel(/^review:/);
   assert.match(rv, /7\. \*\*欄同士の整合\*\*.*medium。それで事実の誤りになるなら high/);
-  assert.match(rv, /8\. \*\*対比の反復\*\*.*2 箇所を超えて.*medium/);
+  assert.match(rv, /8\. \*\*対比の反復\*\*: 同じ対比は pairs と mix 考点の 2 箇所まで。detail・key_points で同じ対比を繰り返さない。.*medium/);
   assert.match(rv, /9\. \*\*限定条件\*\*.*high \(観点 5 と同じ扱い\)/);
   for (const p of [byLabel(/^localize:/), byLabel(/^relocalize:/)]) {
     assert.doesNotMatch(p, /多用しない/);
     assert.match(p, /one_zh \/ one_en で\*\*必ず\*\* \[\[jp:見出し語\]\]/);
-    assert.match(p, /考点での初出で併記/);
-    assert.match(p, /同じ語の 2 回目以降は不要/);
+    assert.match(p, /考点 \(exam・mix\) での初出で併記/);
+    assert.doesNotMatch(p, /引用題の題文・選択肢に出る用語/);
+    assert.match(p, /考点の中で同じ語の 2 回目以降は不要 \(one での併記は考点の初出に数えない\)/);
     assert.match(p, /`jp-origin` issue/);
     assert.match(p, /`warn jp-origin`/);
   }

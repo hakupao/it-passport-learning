@@ -613,6 +613,10 @@ describe("jp-origin: the Japanese headword in one_zh / one_en (D-202)", () => {
     expect(hasJpOrigin("([[jp:IDS]]) watches traffic.", "IDS")).toBe(true);
     expect(hasJpOrigin("IPSec protects packets.", "IPS")).toBe(false);
     expect(hasJpOrigin("The WBSX chart.", "WBS")).toBe(false);
+    // an English plural of the acronym counts; a longer word does not
+    expect(hasJpOrigin("Network IDSs watch traffic.", "IDS")).toBe(true);
+    expect(hasJpOrigin("IPSec and IPSecs protect packets.", "IPS")).toBe(false);
+    expect(hasJpOrigin("The IDSsx box.", "IDS")).toBe(false);
     // a headword with kana needs the marker even when it contains Latin letters
     expect(hasJpOrigin("A/B testing compares two versions.", "A/Bテスト")).toBe(false);
     expect(hasJpOrigin("A/B testing ([[jp:A/Bテスト]]) compares two versions.", "A/Bテスト")).toBe(true);
@@ -680,6 +684,11 @@ describe("warn jp-origin: other headwords in the 考点 (D-202, non-blocking)", 
       ["terms[2](回避).points[0].text_zh", "ゲート"],
       ["terms[2](回避).points[0].text_en", "ゲート"],
     ]);
+  });
+
+  it("a non-string headword in validateV2 is an invariant issue, not a crash; hasJpOrigin is never called with it", () => {
+    const issues = issuesAfter((u) => void ((u.terms[2] as unknown as { term: unknown }).term = 42));
+    expect(issues.map((i) => i.code)).toEqual(["invariant"]);
   });
 
   it("malformed input gives no warnings and does not throw", () => {
