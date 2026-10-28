@@ -226,3 +226,33 @@ test("framing (batch 1 lesson) on a JP-only part: 3 jp exam-framing sentences �
   const i = (field) => ({ unitId: UNIT, code: "framing", field, message: "x" });
   assert.deepEqual(jpOnlyIssues([i("points_jp"), i("points_zh"), i("points_en")]), [i("points_jp")]);
 });
+
+test("jp-origin (D-202): a loc part / unit whose one_zh drops [[jp:<headword>]] → issue, exit 1; a JP-only part never has it", () => {
+  const loc = locPartOf(fixture());
+  const t = loc.terms[2]; // 回避
+  t.one_zh = t.one_zh.replace("[[jp:回避]]", "回避");
+  const r = validate(loc, "--part");
+  assert.equal(r.code, 1, r.out);
+  assert.match(r.out, new RegExp(`jp-origin\\s+${reEsc("terms[2](回避).one_zh")}\\s+no \\[\\[jp:回避\\]\\]`));
+  assert.doesNotMatch(r.out, /one_en/);
+  // the JP part of the fixture: zh / en mirrored from jp (no [[jp:]] at all) → no jp-origin issue, no warn
+  const jp = validate(jpPartOf(locPartOf(fixture())), "--part");
+  assert.equal(jp.code, 0, jp.out);
+  assert.doesNotMatch(jp.out, /jp-origin/);
+});
+
+test("warn jp-origin (D-202): another headword in a 考点 without [[jp:]] in zh / en prints warn lines, exit unaffected", () => {
+  // the fixture: 回避's mix point names 軽減 (jp) but its zh / en have no [[jp:軽減]]
+  const r = validate(fixture());
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /0 issues .*2 warning\(s\)/);
+  assert.match(r.out, new RegExp(`warn  jp-origin  ${reEsc("terms[2](回避).points[0].text_zh")}  軽減`));
+  assert.match(r.out, new RegExp(`warn  jp-origin  ${reEsc("terms[2](回避).points[0].text_en")}  軽減`));
+  const u = fixture();
+  const p = u.terms[2].points[0];
+  p.text_zh = p.text_zh.replace("减轻", "减轻（[[jp:軽減]]）");
+  p.text_en = p.text_en.replace("Mitigation", "Mitigation ([[jp:軽減]])");
+  const ok = validate(u);
+  assert.equal(ok.code, 0, ok.out);
+  assert.doesNotMatch(ok.out, /warn/);
+});

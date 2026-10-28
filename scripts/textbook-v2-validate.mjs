@@ -22,6 +22,9 @@
 //   with --jp also `jp_sha256 <hex>`: the workflow agents return them, merge recomputes and compares.
 // WARN (batch B6, never an issue, exit code unaffected): with <data-root>/textbook/zh_terms.json present, a unit / loc
 // part whose jp text names a table term without its mapped zh in the same field's zh prints `warn  zh-term  field  message`.
+// WARN (D-202, same rules): a unit / loc part whose 考点 text_jp names another headword of the unit without [[jp:…]] in
+// text_zh / text_en at its first 考点 occurrence prints `warn  jp-origin  field  message` (validateV2 jpOriginWarnings;
+// the one_zh / one_en headword itself is the blocking `jp-origin` issue).
 // Exit: 0 = no issues, 1 = issues (printed one per line as `code  field  message`), 2 = usage / input error.
 
 import { existsSync } from "node:fs";
@@ -104,8 +107,11 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     ? await validatePart(doc, manifest, paths, opt.jp ? readJson(path.resolve(opt.jp)) : null)
     : await validateUnit(doc, manifest, paths);
   const what = opt.part ? `part ${doc.stage}#${doc.round}` : "unit";
-  // B6: zh term WARN lines (a JP-only part has no zh yet)
-  const warns = doc.stage !== "jp" && existsSync(paths.zhTerms) ? zhTermWarnings(doc, readJson(paths.zhTerms)) : [];
+  // B6 zh term / D-202 jp-origin WARN lines (a JP-only part has no zh / en yet)
+  const warns =
+    doc.stage === "jp"
+      ? []
+      : [...(existsSync(paths.zhTerms) ? zhTermWarnings(doc, readJson(paths.zhTerms)) : []), ...(await loadKit()).v2.jpOriginWarnings(doc)];
   const printWarns = () => {
     for (const w of warns) console.log(`  warn  ${w.code}  ${w.field}  ${w.message}`);
   };
@@ -116,7 +122,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     if (opt.jp) console.log(`jp_sha256 ${sha256File(path.resolve(opt.jp))}`);
   }
   if (issues.length === 0) {
-    console.log(`✓ ${unitId} ${what}: 0 issues (${path.relative(process.cwd(), file)})${warns.length ? `, ${warns.length} zh-term warning(s)` : ""}`);
+    console.log(`✓ ${unitId} ${what}: 0 issues (${path.relative(process.cwd(), file)})${warns.length ? `, ${warns.length} warning(s)` : ""}`);
     printWarns();
     process.exit(0);
   }

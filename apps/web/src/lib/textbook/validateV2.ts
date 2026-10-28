@@ -16,6 +16,8 @@
 //     what the exam asks), three or more headwords listed in one sentence of any
 //     JP prose (§9 羅列 → listingRun, scope D-197), a memory hook that restates
 //     the definition (§6),
+//   - D-202: each term's one_zh / one_en names the Japanese headword ([[jp:…]], hasJpOrigin);
+//     jpOriginWarnings (non-blocking, printed by the validate script) covers other headwords in the 考点,
 //   - figures against the closed registry (figureSpec.ts), 易混 pairs, 考点
 //     (`exam` cites its questions), past questions (resolvable, same topic; the
 //     per-term ones must list the term), 3〜5 confirm questions once chumon
@@ -30,6 +32,7 @@ import { LANGS, V2_SCHEMA, type Lang, type TextbookUnitV2, type UnitTermV2 } fro
 export type V2IssueCode =
   | "schema"
   | "framing"
+  | "jp-origin"
   | "invariant"
   | "meta"
   | "missing"
@@ -341,6 +344,98 @@ export function confirmIds(
   return out.slice(0, CONFIRM.max);
 }
 
+// ---- D-202 日本語原語の明示 (D-195 §5, b01 lesson ②) ---------------------------------
+
+const JP_SCRIPT = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u;
+const KATA_CH = /[ァ-ヺー-ヿｦ-ﾟ]/;
+const ALNUM_CH = /[A-Za-z0-9]/;
+const JP_LABEL = /\[\[jp:(.+?)\]\]/g;
+
+/**
+ * `word` at `text[i]`, not part of a longer word: a katakana edge must not touch katakana (ゲート in ゲートウェイ),
+ * a Latin / digit edge must not touch a Latin letter / digit (IPS in IPSec). Kanji edges are not checked.
+ */
+function wordAt(text: string, word: string, i: number): boolean {
+  if (!text.startsWith(word, i)) return false;
+  const before = text[i - 1];
+  const after = text[i + word.length];
+  const touches = (edge: string, ch: string | undefined) =>
+    ch !== undefined && ((KATA_CH.test(edge) && KATA_CH.test(ch)) || (ALNUM_CH.test(edge) && ALNUM_CH.test(ch)));
+  return !touches(word[0]!, before) && !touches(word[word.length - 1]!, after);
+}
+
+/**
+ * D-202: zh / en text `s` names the Japanese headword: a [[jp:<headword>]] label with exactly that headword (not a
+ * shorter / longer form). A headword with no kana / kanji (WBS, SSL/TLS: the exam writes it the same way in every
+ * language) is accepted as the plain word too.
+ */
+export function hasJpOrigin(s: string, headword: string): boolean {
+  if ([...s.matchAll(JP_LABEL)].some((m) => m[1] === headword)) return true;
+  if (headword === "" || JP_SCRIPT.test(headword)) return false;
+  const plain = stripInline(s);
+  for (let i = plain.indexOf(headword); i !== -1; i = plain.indexOf(headword, i + 1)) if (wordAt(plain, headword, i)) return true;
+  return false;
+}
+
+export interface V2Warning {
+  unitId: string;
+  code: "jp-origin";
+  field: string;
+  term: string;
+  message: string;
+}
+
+/**
+ * WARN jp-origin (D-202, never an issue): in the 考点, another headword of the unit named in text_jp needs
+ * [[jp:<headword>]] in text_zh / text_en at its first 考点 occurrence in unit order (D-202 loc rule: later
+ * occurrences need none). The point's own headword is skipped (its one already names it). Headwords are matched
+ * longest first without overlap (リスク inside プロジェクトリスクマネジメント is not counted) at word edges (wordAt).
+ * Takes a unit or a loc part; malformed input gives no warnings.
+ */
+export function jpOriginWarnings(unit: TextbookUnitV2): V2Warning[] {
+  const ur = rec(unit);
+  const terms = (Array.isArray(ur.terms) ? ur.terms : []).map(rec);
+  const hw = terms
+    .map((t) => t.term)
+    .filter(nonEmpty)
+    .sort((a, b) => b.length - a.length);
+  const seen: Record<"zh" | "en", Set<string>> = { zh: new Set(), en: new Set() };
+  const out: V2Warning[] = [];
+  terms.forEach((t, i) => {
+    (Array.isArray(t.points) ? t.points : []).forEach((p, pi) => {
+      const pr = rec(p);
+      if (!nonEmpty(pr.text_jp)) return;
+      const jp = stripInline(pr.text_jp);
+      const found: string[] = [];
+      for (let k = 0; k < jp.length; ) {
+        const h = hw.find((x) => wordAt(jp, x, k));
+        if (h) {
+          if (h !== t.term && !found.includes(h)) found.push(h);
+          k += h.length;
+        } else k += 1;
+      }
+      for (const l of ["zh", "en"] as const) {
+        const s = pr[`text_${l}`];
+        if (!nonEmpty(s)) continue;
+        for (const h of found) {
+          if (seen[l].has(h)) continue;
+          seen[l].add(h);
+          if (!hasJpOrigin(s, h)) {
+            out.push({
+              unitId: String(ur.unit_id),
+              code: "jp-origin",
+              field: `terms[${i}](${String(t.term)}).points[${pi}].text_${l}`,
+              term: h,
+              message: `${h}: headword named in text_jp without [[jp:${h}]] at its first 考点 occurrence (D-202)`,
+            });
+          }
+        }
+      }
+    });
+  });
+  return out;
+}
+
 // ---- validator -----------------------------------------------------------------
 
 /** The JP-label marker (inline.ts) and the fields it must not appear in (…_jp, …_jp[i]). */
@@ -556,6 +651,13 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
 
     const one = prose(tr, "one", where);
     if (one) for (const l of LANGS) compat(`${where}.definition_${l}`, tr[`definition_${l}`], one[l]);
+    // D-202: one_zh / one_en name the headword (field …_zh / …_en: a JP-only part drops it, jpOnlyIssues)
+    for (const l of ["zh", "en"] as const) {
+      const s = tr[`one_${l}`];
+      if (nonEmpty(s) && !hasJpOrigin(s, t.term)) {
+        push("jp-origin", `${where}.one_${l}`, `no [[jp:${t.term}]] (D-202 / D-195 §5: the one names the Japanese headword)`);
+      }
+    }
     const detail = prose(tr, "detail", where);
     if (detail) {
       for (const l of LANGS) compat(`${where}.explanation_${l}`, tr[`explanation_${l}`], detail[l]);

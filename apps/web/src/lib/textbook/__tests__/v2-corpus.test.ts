@@ -7,6 +7,9 @@
 //                  of each v2 unit (unit_index.json has no term_zh / term_en; validateV2 must not take them
 //                  from the file it validates). A new v2 unit adds its v1 glosses here before it is committed.
 // Parity = scripts/lib/textbook-v2.mjs parityDiff (the script the pipeline runs), imported, not copied.
+// D-202 (S136): `jp-origin` was added after batch 1 was committed. Its calibration on the committed units is
+// recorded in PRE_D202 and not patched (D-201: content already read stays as it is), so those units are checked
+// for every other issue here and their jp-origin count must stay exactly as recorded; any later unit is fully gated.
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -23,6 +26,9 @@ type V1Terms = Record<string, { term: string; term_zh: string; term_en: string }
 const V1TERMS = JSON.parse(readFileSync(path.join(__dirname, "..", "__fixtures__", "v2-units.v1terms.json"), "utf-8")) as V1Terms;
 // a non-literal specifier: the .mjs has no types, its parityDiff is typed here
 const LIB = pathToFileURL(path.resolve(__dirname, "../../../../../../scripts/lib/textbook-v2.mjs")).href;
+
+/** D-202 calibration: committed unit → jp-origin issues it had when the check was added (S136). */
+const PRE_D202: Record<string, number> = { "technology-23-63-u05": 17 };
 
 let units: TextbookUnitV2[] = [];
 let issuesOf: (u: TextbookUnitV2) => V2Issue[];
@@ -51,9 +57,18 @@ describe("committed v2 units", () => {
     for (const u of units) expect(V1TERMS[u.unit_id], u.unit_id).toBeDefined();
   });
 
-  it("validateV2: 0 issues each", () => {
-    const bad = units.map((u) => [u.unit_id, issuesOf(u)] as const).filter(([, is]) => is.length > 0);
+  it("validateV2: 0 issues each (PRE_D202 units: jp-origin aside)", () => {
+    const pre = (u: TextbookUnitV2, i: V2Issue) => i.code === "jp-origin" && u.unit_id in PRE_D202;
+    const bad = units.map((u) => [u.unit_id, issuesOf(u).filter((i) => !pre(u, i))] as const).filter(([, is]) => is.length > 0);
     expect(bad.map(([id, is]) => `${id}: ${is.map((i) => `${i.code} ${i.field} ${i.message}`).join(" | ")}`)).toEqual([]);
+  });
+
+  it("D-202 calibration: the PRE_D202 units keep exactly their recorded jp-origin count", () => {
+    for (const id of Object.keys(PRE_D202)) expect(units.some((u) => u.unit_id === id), id).toBe(true);
+    const got = Object.fromEntries(
+      units.map((u) => [u.unit_id, issuesOf(u).filter((i) => i.code === "jp-origin").length] as const).filter(([id, n]) => n > 0 || id in PRE_D202),
+    );
+    expect(got).toEqual(PRE_D202);
   });
 
   it("parity: the same structure in jp / zh / en", () => {

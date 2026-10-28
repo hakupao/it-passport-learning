@@ -12,12 +12,15 @@ import { loadReaderIndex } from "../reader";
 import type { TextbookUnitV2 } from "../types";
 import { loadChumonMembers } from "../../practice/chumonMembers";
 import { pickConfirm } from "../confirm";
+import { stripInline } from "../inline";
 import { loadAllUnits, normalizeUnit } from "../reader";
 import {
   BANNED_PHRASES,
   confirmIds,
+  hasJpOrigin,
   hookLines,
   introOf,
+  jpOriginWarnings,
   listingRun,
   POINT_FRAMING_MAX,
   pointFraming,
@@ -568,5 +571,119 @@ describe("exam framing — boundaries and domain words (Rule D on 04ba3e5)", () 
     for (const s of ["説明の選択肢は誤りになる。", "名前としてはアンチパスバックが挙がる。", "正解は侵入を試す検査である。"]) expect(n("jp", s), s).toBe(1);
     for (const s of ["错误选项。", "正确答案是防尾随。", "这道题的正确答案在选项里。", "常被考到。"]) expect(n("zh", s), s).toBe(1);
     for (const s of ["The correct answer among the choices is anti-passback.", "Asked to name a countermeasure, pick it.", "It appears as the name for the technique.", "Users are asked which term fits."]) expect(n("en", s), s).toBe(1);
+  });
+});
+
+// D-202 (b01 lesson ②, D-195 §5): zh / en name the exam's Japanese headword with [[jp:…]]. Each term's one_zh /
+// one_en must carry [[jp:<headword>]] (issue `jp-origin`); in the 考点, another headword of the unit named in
+// text_jp needs [[jp:…]] in zh / en at its first 考点 occurrence (warn only, jpOriginWarnings).
+describe("jp-origin: the Japanese headword in one_zh / one_en (D-202)", () => {
+  it("[[jp:<headword>]] missing from one_zh → one jp-origin issue on that field", () => {
+    const issues = issuesAfter((u) => {
+      const t = term(u, "回避");
+      t.one_zh = t.one_zh.replace("[[jp:回避]]", "回避"); // the stripped text (definition_zh) stays the same
+    });
+    expect(issues, JSON.stringify(issues)).toHaveLength(1);
+    expect(issues[0]).toMatchObject({ code: "jp-origin", field: "terms[2](回避).one_zh" });
+  });
+
+  it("each language counts separately", () => {
+    const issues = issuesAfter((u) => {
+      const t = term(u, "受容");
+      t.one_zh = t.one_zh.replace("[[jp:受容]]", "受容");
+      t.one_en = t.one_en.replace("[[jp:受容]]", "受容");
+    });
+    expect(issues.map((i) => [i.code, i.field])).toEqual([
+      ["jp-origin", "terms[4](受容).one_zh"],
+      ["jp-origin", "terms[4](受容).one_en"],
+    ]);
+  });
+
+  it("only the exact headword counts: a shorter, longer or other label does not", () => {
+    expect(hasJpOrigin("应对（[[jp:リスク]]）", "リスクの対応策")).toBe(false);
+    expect(hasJpOrigin("规避（[[jp:回避策]]）", "回避")).toBe(false);
+    expect(hasJpOrigin("规避（[[jp:軽減]]）", "回避")).toBe(false);
+    expect(hasJpOrigin("应对（[[jp:リスクの対応策]]）", "リスクの対応策")).toBe(true);
+    expect(hasJpOrigin("**Avoidance** ([[jp:回避]])", "回避")).toBe(true);
+  });
+
+  it("a headword without kana / kanji (WBS, SSL/TLS) is written as-is: the plain word counts, within word boundaries", () => {
+    expect(hasJpOrigin("**WBS** 是把项目分解的图。", "WBS")).toBe(true);
+    expect(hasJpOrigin("**SSL/TLS** encrypts the channel.", "SSL/TLS")).toBe(true);
+    expect(hasJpOrigin("([[jp:IDS]]) watches traffic.", "IDS")).toBe(true);
+    expect(hasJpOrigin("IPSec protects packets.", "IPS")).toBe(false);
+    expect(hasJpOrigin("The WBSX chart.", "WBS")).toBe(false);
+    // a headword with kana needs the marker even when it contains Latin letters
+    expect(hasJpOrigin("A/B testing compares two versions.", "A/Bテスト")).toBe(false);
+    expect(hasJpOrigin("A/B testing ([[jp:A/Bテスト]]) compares two versions.", "A/Bテスト")).toBe(true);
+  });
+
+  it("a JP-only part's mirrored zh / en are the scripts' business (fields end in _zh / _en: jpOnlyIssues drops them)", () => {
+    const issues = issuesAfter((u) => {
+      const t = term(u, "転嫁");
+      t.one_zh = t.one_jp;
+      t.definition_zh = stripInline(t.one_jp);
+    });
+    expect(issues.filter((i) => i.code === "jp-origin").map((i) => i.field)).toEqual(["terms[5](転嫁).one_zh"]);
+    expect(issues.every((i) => /_zh$/.test(i.field)), JSON.stringify(issues)).toBe(true);
+  });
+});
+
+describe("warn jp-origin: other headwords in the 考点 (D-202, non-blocking)", () => {
+  it("the sample: 回避's mix point names 軽減 without [[jp:軽減]] in zh / en → two warnings; never an issue", () => {
+    expect(validateV2(clone(), ctx)).toEqual([]);
+    expect(jpOriginWarnings(clone()).map((w) => [w.field, w.term])).toEqual([
+      ["terms[2](回避).points[0].text_zh", "軽減"],
+      ["terms[2](回避).points[0].text_en", "軽減"],
+    ]);
+  });
+
+  it("with [[jp:…]] at the first 考点 occurrence, later occurrences need none", () => {
+    const u = clone();
+    const p = term(u, "回避").points[0]!;
+    p.text_zh = p.text_zh.replace("减轻", "减轻（[[jp:軽減]]）");
+    p.text_en = p.text_en.replace("Mitigation", "Mitigation ([[jp:軽減]])");
+    term(u, "受容").points[0]!.text_jp = "軽減も検討したうえで、小さいリスクには受容を選ぶ。";
+    expect(jpOriginWarnings(u)).toEqual([]);
+  });
+
+  it("the point's own headword is not checked (its one already names it)", () => {
+    const u = clone();
+    expect(term(u, "軽減").points[0]!.text_jp).toContain("軽減");
+    expect(jpOriginWarnings(u).some((w) => w.field.startsWith("terms[3](軽減)"))).toBe(false);
+  });
+
+  it("no substring hits: a shorter headword inside a longer headword, a katakana run, or a Latin word", () => {
+    const u = clone();
+    // only 回避's point is rewritten here (other points may name the renamed headwords)
+    const at = (x: TextbookUnitV2) => jpOriginWarnings(x).filter((w) => w.field.startsWith("terms[2]"));
+    // longest first, non-overlapping: リスク inside プロジェクトリスクマネジメント is not a second headword
+    u.terms[0]!.term = "リスク";
+    u.terms[1]!.term = "プロジェクトリスクマネジメント";
+    term(u, "回避").points[0]!.text_jp = "プロジェクトリスクマネジメントの中で回避を選ぶ。";
+    const p = term(u, "回避").points[0]!;
+    p.text_zh = "在[[jp:プロジェクトリスクマネジメント]]中选择规避。";
+    p.text_en = "Choose avoidance in [[jp:プロジェクトリスクマネジメント]].";
+    expect(at(u)).toEqual([]);
+    // a katakana headword inside a longer katakana word (ゲート in ゲートウェイ), a Latin one inside a word (IPS in IPSec)
+    u.terms[0]!.term = "ゲート";
+    u.terms[1]!.term = "IPS";
+    p.text_jp = "ゲートウェイとIPSecは回避とは別の話である。";
+    p.text_zh = "网关与IPSec是另一回事。";
+    p.text_en = "Gateways and IPSec are another matter.";
+    expect(at(u)).toEqual([]);
+    // the same words standing alone do count (the Latin one as a plain word in zh / en)
+    p.text_jp = "ゲートとIPSは回避とは別の話である。";
+    p.text_zh = "闸门与IPS是另一回事。";
+    p.text_en = "A gate and an IPS are another matter.";
+    expect(at(u).map((w) => [w.field, w.term])).toEqual([
+      ["terms[2](回避).points[0].text_zh", "ゲート"],
+      ["terms[2](回避).points[0].text_en", "ゲート"],
+    ]);
+  });
+
+  it("malformed input gives no warnings and does not throw", () => {
+    expect(jpOriginWarnings({} as TextbookUnitV2)).toEqual([]);
+    expect(jpOriginWarnings({ unit_id: "x", terms: [null, { term: "A", points: [null, { text_jp: 1 }] }] } as unknown as TextbookUnitV2)).toEqual([]);
   });
 });
