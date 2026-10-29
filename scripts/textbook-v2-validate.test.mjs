@@ -183,6 +183,23 @@ test("D-198 masking: katakana runs of 4+ and alphanumeric tokens are terms, not 
   assert.equal(hits(q("大きな作業をバラして細かい単位へ順に分けていく。"), "作業をバラして細かい単位へ順に並べる。").length, 1);
 });
 
+test("OQ-16: masked terms / katakana runs keep a run continuous (one placeholder per distinct token), so a katakana-heavy near-copy is caught", async () => {
+  const { stripInline } = await loadKit();
+  // own fixture modelled on the b02 u08 a1 miss: a headword (パスワード) and a non-headword katakana run (ヘルプデスク) inside the copied sentence
+  const m = { unit_id: UNIT, terms: ["パスワード"], questions: { "2001h13a-q001": { topic_id: "x", terms: [], stem_jp: ["次のうち適切なものはどれか。"], choices_jp: { ア: "利用者のパスワードはヘルプデスク担当者にも口外しない。" }, correct_answer: "ア" } } };
+  const hits = (text) => copyIssues({ unit_id: UNIT, goals_jp: [text] }, m, stripInline);
+  // P は H 担当者にも口外しない = 13 (each masked token counts as 1) → copy; before OQ-16 the longest run was 担当者にも口外しない = 10
+  const hit = hits("利用者パスワードはヘルプデスク担当者にも口外しない。");
+  assert.equal(hit.length, 1);
+  assert.match(hit[0].message, /^12\+ characters copied from the stem \/ choices of 2001h13a-q001: 「パスワードはヘルプデスク担当者にも口外しな…」/, "the excerpt shows the tokens, not placeholders");
+  // 11 (P は H 担当者にも口外し) is not a copy
+  assert.deepEqual(hits("利用者パスワードはヘルプデスク担当者にも口外せず。"), []);
+  // different katakana words in the same slots do not match each other (per-token placeholders, not one shared mark)
+  assert.deepEqual(hits("利用者のトークンはサービスデスク担当者にも口外しない。"), []);
+  // half-width / full-width forms of the same token are the same token
+  assert.equal(hits("利用者ﾊﾟｽﾜｰﾄﾞはﾍﾙﾌﾟﾃﾞｽｸ担当者にも口外しない。").length, 1);
+});
+
 test("copy guard B7: figure labels, step captions, 総表 extra cells and 易混 rows are checked too; est_minutes ignores figure text", async () => {
   const { stripInline } = await loadKit();
   const stem = "作業の前後関係と所要日数から全体の日程を求める図はどれか。";

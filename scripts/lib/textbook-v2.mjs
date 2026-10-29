@@ -237,7 +237,9 @@ export function estMinutes(p, stripInline) {
  * Copy guard (S135 M3, D-198 (i)(ii)): past-question text must not be reproduced. Normalised = markers,
  * whitespace, punctuation and symbols removed; glossary terms (the unit's headwords, every manifest
  * question's `terms`) and term-like runs (TERMLIKE_RE: 4+ katakana, alphanumeric tokens) are masked
- * first, so naming a term is never a copy and no run crosses one.
+ * first, so naming a term is never a copy. OQ-16 (S137): a masked token is replaced by one placeholder
+ * character (its own per distinct token, NFKC, shared by the question and unit texts), not cut out, so it
+ * counts as 1 and a katakana-heavy near-copy still forms one run; different terms never match each other.
  *   (ii) COPY_MIN_QUESTION (12) consecutive normalised characters shared with a question's stem or choices,
  *   (i)  COPY_MIN (20) shared with any other question text the manifest still carries (an older
  *        manifest's explanations; the D-198 thin manifest has none).
@@ -265,44 +267,56 @@ export function questionTexts(manifest) {
  * katakana (ー・ and half-width forms included) and ASCII / full-width alphanumeric tokens (WBS, PERT, 5日).
  */
 export const TERMLIKE_RE = /[\u30A0-\u30FF\uFF66-\uFF9F]{4,}|[A-Za-z0-9\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A]+/g;
-/** Normalised text split at term-like runs and glossary-term occurrences (longest term first): the runs between. */
-function unmasked(n, terms) {
-  return n.split(TERMLIKE_RE).flatMap((part) => splitTerms(part, terms));
-}
-function splitTerms(n, terms) {
-  const segs = [];
-  let cur = "";
-  for (let i = 0; i < n.length; ) {
-    const t = terms.find((x) => n.startsWith(x, i));
-    if (t) {
-      segs.push(cur);
-      cur = "";
-      i += t.length;
-    } else cur += n[i++];
-  }
-  segs.push(cur);
-  return segs;
+/**
+ * OQ-16 masker: NFKC, then glossary-term occurrences (longest term first), then term-like runs → one
+ * private-use character per distinct token. unmask maps the placeholders back for messages.
+ */
+function masker(terms) {
+  const ph = new Map();
+  const back = new Map();
+  const mark = (tok) => {
+    if (!ph.has(tok)) {
+      const c = String.fromCharCode(0xe000 + ph.size);
+      ph.set(tok, c);
+      back.set(c, tok);
+    }
+    return ph.get(tok);
+  };
+  const keys = terms.map((t) => t.normalize("NFKC"));
+  const mask = (raw) => {
+    const n = raw.normalize("NFKC");
+    let out = "";
+    for (let i = 0; i < n.length; ) {
+      const t = keys.find((x) => n.startsWith(x, i));
+      if (t) {
+        out += mark(t);
+        i += t.length;
+      } else out += n[i++];
+    }
+    return out.replace(TERMLIKE_RE, mark);
+  };
+  const unmask = (m) => m.replace(/[\uE000-\uF8FF]/g, (c) => back.get(c) ?? c);
+  return { mask, unmask };
 }
 export function copyIssues(p, manifest, stripInline, unitId = p.unit_id) {
   const termSet = new Set([...(manifest.terms ?? []), ...(manifest.v1_terms ?? []).map((t) => t.term), ...Object.values(manifest.questions ?? {}).flatMap((q) => q.terms ?? [])]);
   const terms = [...termSet].map((t) => normCopy(t, stripInline)).filter((t) => t.length >= 2).sort((x, y) => y.length - x.length);
+  const { mask, unmask } = masker(terms);
   const grams = { question: new Map(), other: new Map() };
   const size = { question: COPY_MIN_QUESTION, other: COPY_MIN };
   for (const [id, kind, text] of questionTexts(manifest)) {
-    for (const seg of unmasked(normCopy(text, stripInline), terms)) {
-      for (let i = 0; i + size[kind] <= seg.length; i++) if (!grams[kind].has(seg.slice(i, i + size[kind]))) grams[kind].set(seg.slice(i, i + size[kind]), id);
-    }
+    const seg = mask(normCopy(text, stripInline));
+    for (let i = 0; i + size[kind] <= seg.length; i++) if (!grams[kind].has(seg.slice(i, i + size[kind]))) grams[kind].set(seg.slice(i, i + size[kind]), id);
   }
   const out = [];
   // B7: figure labels / step captions too (総表 extra cells and 易混 rows are already in jpProse)
   for (const [field, s] of [...jpProse(p), ...jpFigText(p)]) {
     const hit = (() => {
-      for (const seg of unmasked(normCopy(s, stripInline), terms)) {
-        for (const kind of ["question", "other"]) {
-          for (let i = 0; i + size[kind] <= seg.length; i++) {
-            const id = grams[kind].get(seg.slice(i, i + size[kind]));
-            if (id) return { id, kind, run: seg.slice(i, i + size[kind]) };
-          }
+      const seg = mask(normCopy(s, stripInline));
+      for (const kind of ["question", "other"]) {
+        for (let i = 0; i + size[kind] <= seg.length; i++) {
+          const id = grams[kind].get(seg.slice(i, i + size[kind]));
+          if (id) return { id, kind, run: unmask(seg.slice(i, i + size[kind])) };
         }
       }
       return null;
