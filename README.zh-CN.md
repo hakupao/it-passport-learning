@@ -2,20 +2,19 @@
 
 # IT Passport Learning
 
-### 面向 ITパスポート 资格考试的三语学习 Web 应用
+### 面向 ITパスポート 资格考试的三语过去问练习应用
 
-*结构化日语教材内容 + AI 学习工具 —— **日 / 中 / 英** 三语。*
+*29 回 IPA 过去问（FY2009–FY2026）、对齐シラバス的教科书和术语表 —— **日 / 中 / 英** 三语。*
 
 [![在线访问](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E8%AE%BF%E9%97%AE-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://itlearn.bojiangz.com)
-[![Phase 4](https://img.shields.io/badge/Phase%204-%E2%9C%85%20DONE-brightgreen?style=for-the-badge)](docs/STATE.md)
-[![Tests](https://img.shields.io/badge/%E6%B5%8B%E8%AF%95-978%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#技术栈)
-[![ADRs](https://img.shields.io/badge/%E5%B7%B2%E9%94%81%20ADR-107-6f42c1?style=for-the-badge)](docs/decisions/)
+[![Stage 7](https://img.shields.io/badge/Stage%207-%E6%95%99%E7%A7%91%E4%B9%A6%20v2%20%E9%87%8D%E5%86%99%E4%B8%AD-orange?style=for-the-badge)](docs/STATE.md)
+[![Tests](https://img.shields.io/badge/%E6%B5%8B%E8%AF%95-1264%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#技术栈)
+[![Decisions](https://img.shields.io/badge/%E5%B7%B2%E9%94%81%E5%86%B3%E7%AD%96-203-6f42c1?style=for-the-badge)](docs/decisions/)
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-000?logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=000)](https://react.dev/)
-[![AI SDK](https://img.shields.io/badge/AI%20SDK-v6-000?logo=vercel&logoColor=white)](https://ai-sdk.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-only-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Python](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-%E5%BE%85%E5%AE%9A-lightgrey)](#许可)
 
 [:gb: English README](README.md) &nbsp;&middot;&nbsp; :cn: **中文**
@@ -26,35 +25,33 @@
 
 ## 这是什么？
 
-**[itlearn.bojiangz.com](https://itlearn.bojiangz.com)** —— 面向日本 IT パスポート 考试（令和 6 年度）的三语学习工具。
+**[itlearn.bojiangz.com](https://itlearn.bojiangz.com)** —— *ITパスポート 過去問ノート*，围绕真实过去问打造的日本 IT パスポート 考试学习应用。
 
-非母语的日语技术考试学习者卡的不是**概念**（CPU / TCP/IP / ROI），而是**假名/汉字识读**。`アクセシビリティ → accessibility → 可访问性`，看一次就记住了。这个项目把一本教材变成完整的三语学习体验 —— 读教材、做题、查术语、AI 对话、个性化辅导，全部三语。
+非母语的日语技术考试学习者卡的不是**概念**，而是**假名/汉字识读**。`アクセシビリティ → accessibility → 可访问性`，看一次就记住了。所以每道题都保留日语原文，并附可显示/隐藏的中文和英文译文；每道题的解析也都有三种语言。
 
-### 五大学习面
+### 有什么
 
-| 面 | 功能 |
+| 页面 | 功能 |
 |---|---|
-| **教科书** | 全书阅读器 —— 16 章连续翻页、划词翻译、章内对话 & 测验、阅读进度追踪 |
-| **测验** | 按章节分组的练习题 —— AI 为每道题生成解析 |
-| **术语表** | 908 条三语术语 —— 按领域 & 章节分组，带 `kana_helper` 标注和 AI 悬浮解释 |
-| **对话** | 自由 AI 对话 —— 围绕 IT Passport 话题，支持上下文和对话历史 |
-| **助教** | AI 学习助手 —— 读取你的进度、答题记录和章节状态，给出个性化指导，难题自动升级模型 |
+| **今日** | 每日计划：要重做的错题、到期的复习和新题（按考试的领域比例挑选）。新用户先做 20 题基线测试。还显示 2,900 道过去问的完成进度、考试日倒计时、弱项（正确率低 × 常考）、按领域对照合格标准（总分 600/1000，各领域 ≥300/1000）的正确率，以及今日 3 个术语。 |
+| **练习** | 一屏一题：按考试回或按领域浏览、用自定设置练习，或重做错题。日语题面配中/英译文开关，图可放大，作答后显示三语解析。 |
+| **模拟考试** | 和正式考试一样 100 题 120 分钟：按官方领域比例（ストラテジ 35 / マネジメント 20 / テクノロジ 45）随机抽题，或整套某一回过去问。0–1000 计分，交卷后才显示结果。 |
+| **教科书** | 对齐シラバス的三语学习单元 —— 63 个领域、244 个单元 —— 含要点、图解和取自过去问的确认题。 |
+| **术语表** | 1,395 个教科书术语，可用日 / 中 / 英检索，每条链接到所在教科书单元和相关过去问。 |
+| **学习记录** | 累计数据、未来 7 天的复习量、每日题数（5 周）和各领域正确率。 |
+| **设置** | 考试日、每日复习上限、每日新题数、译文默认显示与否、界面语言。 |
 
-### 三套主题皮肤
+界面语言可在 日 / 中 / EN 之间切换。学习记录保存在你设备的浏览器里，无需注册账号。
 
-随时切换视觉主题：
+### 计划中：AI 辅导
 
-- **Gamified** —— 现代渐变 UI，进度游戏化
-- **Retro** —— Windows 95 复古风，可拖拽窗口
-- **Terminal** —— 黑客/终端风，绿字黑底
+AI 辅导（*AI 先生*）—— 针对题目、术语或教科书单元提问，并对你的弱项做复习分析 —— **尚在计划中，暂未对访客开放**。
 
 ---
 
 ## 快速开始
 
 访问 **[itlearn.bojiangz.com](https://itlearn.bojiangz.com)** —— 无需安装。
-
-应用支持三种界面语言（日语 / 中文 / 英语），通过右上角语言切换器切换。
 
 ---
 
@@ -64,46 +61,63 @@
 itlearn.bojiangz.com
         │
         ▼
-┌─────────────────────────────────────┐
-│  Next.js 15 (App Router, Turbopack) │
-│  React 19 · Tailwind CSS v4         │
-│  next-intl (ja/zh/en)               │
-├─────────────────────────────────────┤
-│  5 个页面: /book /chat /quiz        │
-│            /glossary /tutor         │
-├─────────────────────────────────────┤
-│  5 个 API 路由:                     │
-│    /api/chat        (DeepSeek V4)   │
-│    /api/quiz/explain (DeepSeek V4)  │
-│    /api/glossary/hover (DeepSeek V4)│
-│    /api/tutor       (多模型)        │
-│    /api/hello-ai    (健康检查)      │
-├─────────────────────────────────────┤
-│  AI SDK v6 (streamText)             │
-│  DeepSeek V4 Flash/Pro · Anthropic  │
-│  Claude Sonnet/Opus · OpenAI (预留) │
-├─────────────────────────────────────┤
-│  Vercel (部署) · Analytics ·        │
-│  Speed Insights                     │
-└─────────────────────────────────────┘
-        │
-        ▼
-  cert-extractor pipeline (Phase 1)
-  Mistral OCR + Claude LLM → 三语数据集
+┌──────────────────────────────────────────┐
+│  Next.js 15 (App Router, Turbopack)      │
+│  React 19 · Tailwind CSS v4 · next-intl  │
+├──────────────────────────────────────────┤
+│  Pages /[locale]/…                       │
+│    today (home) · practice · mock        │
+│    textbook · glossary · record          │
+│    settings · quiz (old-link redirect)   │
+├──────────────────────────────────────────┤
+│  API routes                              │
+│    /api/quiz/questions                   │
+│    /api/quiz/feedback  (owner only)      │
+│    /api/learning       (owner sync)      │
+│    /api/sensei/terms (AI tutor, planned) │
+├──────────────────────────────────────────┤
+│  Data: committed JSON corpus             │
+│    data/ip/quiz      2,900 questions     │
+│    data/ip/textbook  244 units           │
+│  Learning record: browser storage        │
+│    (+ Upstash Redis sync for the owner)  │
+├──────────────────────────────────────────┤
+│  Vercel · Analytics · Speed Insights     │
+└──────────────────────────────────────────┘
+        ▲
+        │ built offline by
+  scripts/  (Node / TypeScript pipeline)
+  IPA past exams + syllabus → Claude extraction,
+  checks and translation → trilingual corpus
 ```
 
 ---
 
-## Phase 路线图
+## 内容
 
-| Phase | 状态 | 交付物 |
+| 项目 | 来源 | 应用里有什么 |
 |---|---|---|
-| **Phase 1 — 内容工厂** | :white_check_mark: 完成 | `cert-extractor` pipeline —— 554 页、2224 entities、6059 三语叶子、908 术语表。两次 GitHub Release（v1.0.0 + v1.0.2）。 |
-| **Phase 2 — 学习工具** | :white_check_mark: 完成 | Next.js 15 Web 应用 —— 对话、测验、术语表三大面。DeepSeek AI 集成。三语 UI。Vercel 部署。 |
-| **Phase 3 — 教科书阅读器** | :white_check_mark: 完成 | 全书阅读器 —— 16 章连续翻页、划词翻译工具栏、章内对话 & 测验、阅读进度 & 完成追踪。 |
-| **Phase 4 — AI 助教** | :white_check_mark: 完成 | AI 学习助手 —— 多模型大脑（DeepSeek/Anthropic/OpenAI）、上下文感知、难题自动升级、三套主题皮肤（Gamified/Retro/Terminal）。 |
-| **Stage 8-9 — 内容重建** | :white_check_mark: 完成 | Web 用教材 pipeline —— 16 章蓝图 + 105 课 JSON 文件从 OCR 重建。 |
-| **Stage 10 — 图片提取** | :hourglass: 下一步 | 从教材页面提取并关联图片。 |
+| 过去问 | IPA 過去問題，FY2009–FY2026（29 回） | 2,900 题，其中 511 题带图；日语原文 + 中/英译文；三语解析；每题归入 63 个シラバス领域之一 |
+| 教科书 | 以 IPA シラバス Ver.6.5 为骨架，AI 生成 | 63 个领域 244 个单元（ストラテジ 98 / マネジメント 23 / テクノロジ 123），1,417 个术语条目 |
+| 术语表 | 由教科书术语汇总 | 1,395 条 |
+
+过去问文本用 Claude vision 从 IPA PDF 提取，之后多轮全量对照原文修复和核验，独立抽样审核记录在 `evidence/` 下。
+
+---
+
+## 进度
+
+| 阶段 | 状态 | 内容 |
+|---|---|---|
+| **Phase 1–4（第一版应用）** | :white_check_mark: 已退役 | 基于一本购买的教材构建的第一版（教科书 / 测验 / 术语表 / 对话 / 助教、三套主题皮肤）。已被下面基于 IPA 官方源的重建取代。 |
+| **Stage 1–3.5 —— IPA 源数据** | :white_check_mark: 完成 | シラバス结构化；2,900 道过去问全部提取、修复并归入シラバス领域。 |
+| **Stage 4 —— 教科书 v1** | :white_check_mark: 完成 | 生成 244 个三语单元。 |
+| **Stage 6 —— 应用数据整合** | :white_check_mark: 已上线 | 教科书阅读、带译文和解析的过去问练习、术语表。 |
+| **Stage 7 —— UI 重新设计** | :white_check_mark: 已上线 | 所有页面统一一套设计（今日 / 练习 / 教科书 / 术语表 / 学习记录 / 设置），模拟考试、学习记录、新的教科书阅读界面。 |
+| **Stage 7 —— 教科书 v2 分批重写** | :hourglass: 进行中 | 单元正分批重写为 v2 格式：目前 244 个中已完成 13 个。 |
+| **AI 辅导** | :calendar: 计划中 | 暂未对访客开放。 |
+
+实时状态见 [`docs/STATE.md`](docs/STATE.md)。
 
 ---
 
@@ -113,12 +127,11 @@ itlearn.bojiangz.com
 |---|---|
 | 框架 | Next.js 15.5（App Router, Turbopack） |
 | UI | React 19, Tailwind CSS v4, Radix UI, Lucide icons |
-| AI | AI SDK v6, DeepSeek V4 Flash/Pro, Anthropic Claude Sonnet/Opus |
 | 国际化 | next-intl（日语 / 中文 / 英语） |
-| 测试 | Vitest（486 前端测试）、Playwright（e2e）、pytest（492 pipeline 测试） |
+| 存储 | 学习记录存浏览器；站长同步和题目反馈用 Upstash Redis |
+| 测试 | Vitest（1,264 个测试）、Playwright（e2e） |
 | 部署 | Vercel, Vercel Analytics, Speed Insights |
-| 内容 pipeline | Python 3.11+, uv workspace, Mistral OCR, Claude LLM |
-| 限流 | Upstash Redis |
+| 内容 pipeline | Node / TypeScript 脚本；用 Claude（Anthropic）做提取、审核和翻译 |
 
 ---
 
@@ -126,87 +139,81 @@ itlearn.bojiangz.com
 
 ```
 .
-├── apps/web/                    Next.js 15 Web 应用
-│   ├── src/app/[locale]/        5 个页面路由 (book/chat/quiz/glossary/tutor)
-│   ├── src/app/api/             5 个 API 路由 (chat/quiz/glossary/tutor/hello-ai)
-│   ├── src/components/          UI 组件 + 3 套主题皮肤
-│   ├── src/lib/                 AI 供应商、数据层、工具库
-│   └── messages/                国际化字符串 (ja/zh/en)
-├── packages/extractor/          Phase 1 cert-extractor pipeline
-├── docs/                        STATE.md、ADR、session log
+├── apps/web/                    Next.js 15 Web 应用（唯一的 pnpm workspace 成员）
+│   ├── src/app/[locale]/        页面路由（practice、mock、textbook、glossary、record、settings 等）
+│   ├── src/app/api/             API 路由（quiz、learning、sensei）
+│   ├── src/components/          UI 组件
+│   ├── src/lib/                 数据读取、学习记录、复习排期、模拟考试
+│   ├── public/quiz-figures/     过去问图片（WebP）
+│   ├── e2e/                     Playwright 测试
+│   └── messages/                i18n 文案（ja/zh/en）
+├── data/ip/quiz/                已提交的题库（题目、译文、解析）
+├── data/ip/textbook/            已提交的教科书单元、图、单元索引
+├── scripts/                     提取 / 修复 / 生成 pipeline 脚本
+├── docs/
 │   ├── STATE.md                 项目实时状态（真相源）
-│   ├── decisions/               107 条已锁 ADR (D-001 … D-107)
-│   └── discussion/              60 份 session log
-├── evidence/                    审核证据 (Rule A)
-├── failures/                    失败归档 (Rule B)
-├── data/                        [gitignored] pipeline 运行时数据
-└── .source/                     [gitignored] 源教材 EPUB
+│   ├── decisions/               重大决策 ADR
+│   └── discussion/              Session log
+├── evidence/                    审核证据（Rule A）
+└── failures/                    失败尝试归档（Rule B）
 ```
+
+IPA 原始 PDF 和中间数据（`data/ip/exams`、`data/ip/sources`、`data/ip/syllabus`、`.source/`）已 gitignore。
 
 ---
 
 ## 本地开发
+
+需要 Node ≥ 20.9 和 pnpm 11。
 
 ```bash
 # 克隆
 git clone https://github.com/hakupao/it-passport-learning
 cd it-passport-learning
 
+# 安装（在 workspace 根目录）
+pnpm install
+
 # Web 应用
 cd apps/web
-pnpm install
 pnpm dev              # http://localhost:3000
+pnpm build
 
-# 跑测试
-pnpm test             # Vitest（486 个测试）
+# 检查
+pnpm test             # Vitest
+pnpm lint
 pnpm test:e2e         # Playwright e2e
 
-# 内容 pipeline（Phase 1）
+# 题库答案交叉核对（仓库根目录）
 cd ../..
-uv sync
-uv run pytest packages/extractor/tests/
+pnpm check:quiz:ci    # 只查已提交的数据
 ```
+
+应用读取 `data/ip/` 下已提交的数据，所以本地运行不需要任何环境变量。没有 Redis 和站长密钥时，学习记录只保存在浏览器里。
 
 ### 环境变量
 
-Web 应用需要 AI 供应商密钥来驱动对话/测验/助教功能：
+全部可选。
 
-| 变量 | 必填 | 说明 |
-|---|---|---|
-| `LLM_PROVIDER` | 是 | 默认 AI 供应商（`deepseek`） |
-| `DEEPSEEK_API_KEY` | 是 | DeepSeek API 密钥 |
-| `LLM_PROVIDER_TUTOR` | 否 | 助教专用供应商覆盖（`deepseek` / `anthropic`） |
-| `ANTHROPIC_API_KEY` | 否 | Anthropic API 密钥（助教 Anthropic 模式） |
-| `UPSTASH_REDIS_REST_URL` | 否 | Upstash Redis URL（限流用） |
-| `UPSTASH_REDIS_REST_TOKEN` | 否 | Upstash Redis token |
+| 变量 | 说明 |
+|---|---|
+| `OWNER_KEY` | 站长密钥。带 `?owner_key=<OWNER_KEY>` 打开任意页面一次即设置站长 cookie，启用记录同步和题目反馈。未设置 = 没有站长。 |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | 站长记录同步和题目反馈用的 Upstash Redis（也接受 `KV_REST_API_URL` / `KV_REST_API_TOKEN`）。 |
+| `QUIZ_DATA_ROOT` / `TEXTBOOK_DATA_ROOT` | 覆盖数据目录（默认是相对 `apps/web` 的 `../../data/ip`）。 |
 
 ---
-
-## 构建数据
-
-<details>
-<summary><strong>Phase 1 pipeline 指标</strong></summary>
-
-| 指标 | 值 |
-|---|---|
-| 源教材 | IT パスポート 令和 6 年度 —— 579 页 |
-| 产出 | 554 页、2224 entities、6059 三语叶子、908 术语表 |
-| 成本 | Mistral $0.58 billed、Anthropic $0 billed |
-| 发布后校订 | ~736 处 JSON 编辑，100% 自动化验证 |
-| 最新 release | [`itpassport-r6-v1.0.2`](https://github.com/hakupao/it-passport-learning/releases/tag/itpassport-r6-v1.0.2) |
-
-</details>
 
 <details>
 <summary><strong>项目统计</strong></summary>
 
 | 指标 | 值 |
 |---|---|
-| 已锁 ADR | 107（D-001 … D-107） |
-| Session log | 60 份 |
-| 测试集 | 486 前端（Vitest）+ 492 pipeline（pytest）= **978 个测试** |
-| Git tag | 7 个（3 个内容 release + 4 个 phase ship tag） |
-| 已完成 Phase | 4 |
+| 过去问 | 2,900 题（29 回，FY2009–FY2026） |
+| 教科书 | 63 个领域、244 个单元（13 个为 v2） |
+| 术语表 | 1,395 条 |
+| 已锁决策 | 203（D-001 … D-203） |
+| Session log | `docs/discussion/` 下 73 份 |
+| 单元测试 | 1,264 个（Vitest，110 个文件） |
 
 </details>
 
@@ -214,14 +221,14 @@ Web 应用需要 AI 供应商密钥来驱动对话/测验/助教功能：
 
 ## 许可
 
-- **代码、pipeline、ADR** —— License 待定（将采用宽松 OSS license；redistribution 前请咨询 repo owner）。
-- **源教材** —— **不**重新分发。要重跑 pipeline 需自行合法获取 EPUB。
-- **生成的三语内容** —— 通过 GitHub Release 发布，面向个人学习用途。
+- **代码、pipeline、ADR** —— 许可待定（再分发前请联系仓库作者）。
+- **过去问题目** —— 基于 IPA 公开的过去问题，著作权归 IPA 所有。文本经过 OCR 提取、整理、按シラバス分类和翻译，与原文有所不同。
+- **教科书和解析** —— 本项目用 AI 生成。
 
 ---
 
 ## 贡献
 
-这是个人 R&D 项目。Issues 和 PR 欢迎。提交 substantive issue 前先读 [`docs/STATE.md`](docs/STATE.md) 和最近的 session log。
+这是个人研发项目，欢迎 Issue 和 PR。提交任何实质性内容前，请先读 [`docs/STATE.md`](docs/STATE.md) 和最新的 session log。
 
 <p align="right"><a href="#it-passport-learning">↑ 回到顶部</a></p>
