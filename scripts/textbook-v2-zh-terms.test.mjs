@@ -163,7 +163,9 @@ test("S137 u10 O1: 生体認証 → 生物特征认证 (b02 body text; not a hea
 
 test("--probe-v1: the check's noise on v1 definition / explanation pairs stays under 10% (15.2% before the B6 review)", () => {
   const r = probeV1(units(), readJson(P.zhTerms));
-  assert.ok(r.pairs > 2700, String(r.pairs));
+  // v1 units only: the pool shrinks with every batch rewritten to v2 (S137: 2662 after b02), so the floor only
+  // guards against an empty / broken probe, not against the batch progress.
+  assert.ok(r.pairs > 500, String(r.pairs));
   assert.ok(r.hit / r.pairs < 0.1, `${r.hit} / ${r.pairs}`);
   const top = new Map(r.top);
   for (const k of ["項目 → 数据项", "手続 → 过程", "分散 → 方差", "パスワード → 口令（密码）"]) assert.equal(top.get(k), undefined, k);
