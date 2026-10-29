@@ -128,7 +128,7 @@ const zhTermsOf = (unit) => `${dirOf(unit)}/zh_terms.unit.json`
 const ZH_TERMS = (unit) => `zh 訳語表 (B6): \`${zhTermsOf(unit)}\` (この単元に関係する項目だけ) を Read する。日本語の語がその見出し語としての専門的な意味で使われているときだけ表の zh を使い、日常語・別の意味で使われているときは意味に合わせて訳す (例: 一般的な「項目」「手続」)。validate が \`warn zh-term\` 行を出したら、専門的な意味で使っている箇所は表の訳に直す (warn は不合格ではない。文脈上ほかの訳が正しいなら残してよい)。`
 
 // D-203 (S137 b02 u06 / u07: each revision fixed the flagged items and introduced new ones elsewhere, once a high)
-const REVISE_GUARD = `3. 直し方 (D-203、改稿で新しい誤りを生まない): (a) 指摘の修正は**削除・絞り込みを優先**し、新しい概括句を足さない。足した句・書き換えた文は、事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / overview / goals) に照らして読み直す。(b) 書き終えたら単元の対比 (「A は〜、B は〜」) ごとに出てくる欄を列挙し、pairs と mix 考点以外に出ていれば削る。(c) 比喩に用語自身の操作 (暗号化する・署名する 等) を入れない。定義の言い換えにしかならないなら analogy_jp は "" にする。hook_jp も同様。定義の言い換えにしかならないなら省略する。(d) 審査の fix_jp は方向の手がかりであって、逐語で写す文ではない (D-204)。採用する文も自分の言葉で書き、引用題の場面・判断項目の列挙を写していないか (D-198) と他の欄との整合を点検する。\n`
+const REVISE_GUARD = `3. 直し方 (D-203、改稿で新しい誤りを生まない): (a) 指摘の修正は**削除・絞り込みを優先**し、新しい概括句を足さない。足した句・書き換えた文は、事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / hook / overview / goals) に照らして読み直す。(b) 書き終えたら単元の対比 (「A は〜、B は〜」) ごとに出てくる欄を列挙し、pairs と mix 考点以外に出ていれば削る。(c) 比喩に用語自身の操作 (暗号化する・署名する 等) を入れない。定義の言い換えにしかならないなら analogy_jp は "" にする。hook_jp も同様。定義の言い換えにしかならないなら省略する。(d) 審査の fix_jp は方向の手がかりであって、逐語で写す文ではない (D-204)。採用する文も自分の言葉で書き、引用題の場面・判断項目の列挙を写していないか (D-198) と他の欄との整合を点検する。\n`
 
 function writerPrompt(unit, round, prev, review, seed) {
   const part = partOf(unit, 'jp', round)
@@ -193,7 +193,7 @@ function reviewPrompt(unit, round, part, partRound) {
 ## 判定
 - verdict (D-199): high / medium の issue が 0 なら PASS、1 つでもあれば REVISE。low だけなら PASS を返す (low も issues に全部書く。記録され、改稿は任意)。workflow も issues の severity から同じ規則で判定する。
 - issues: 1 件ずつ severity・where (JSON 位置)・rule (根拠)・detail_jp・fix_jp (修正案。下の書き方に従う)。
-- fix_jp の書き方 (D-204): 修正案は**一般原則で書く**。引用題の場面・判断項目の列挙・選択肢・数値を使わない (D-198 (iii) は修正案にも掛かる。執筆者がそのまま採用しても写しにならないこと)。**削除・絞り込み案を優先**する。文を足す案は、出す前に事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / hook / overview / goals) に照らして審査者自身が確かめる。low の fix_jp は空 ("") でよい。
+- fix_jp の書き方 (D-204): 修正案は**一般原則で書く**。引用題の場面・判断項目の列挙・選択肢・数値を使わない (D-198 (iii) は修正案にも掛かる。執筆者がそのまま採用しても写しにならないこと)。**削除・絞り込み案を優先**する (ただし exam 考点と正解の食い違いは qid を外す案でなく主張を直す方向で、限定条件の落ちは条件を戻す方向で書く)。文を足す案は、出す前に事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / hook / overview / goals) に照らして審査者自身が確かめる。low の fix_jp は空 ("") でよい。
 - StructuredOutput で {unit_id:"${unit}", stage:"jp-review", round:${round}, reviewed_round:${partRound}, reviewed_sha256: (validate の sha256 行の hex), verdict, issues} を返す。ファイルは書かない。`
 }
 

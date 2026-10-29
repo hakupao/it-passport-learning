@@ -358,7 +358,8 @@ test("D-204: the critic writes fix_jp as a general principle and checks addition
   const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
   const review = calls.find((x) => /^review:/.test(x.opts.label));
   const rv = review.prompt;
-  for (const w of ["fix_jp の書き方 (D-204)", "**一般原則で書く**", "引用題の場面・判断項目の列挙・選択肢・数値を使わない", "D-198 (iii) は修正案にも掛かる", "**削除・絞り込み案を優先**", "審査者自身が確かめる", "low の fix_jp は空 (\"\") でよい"]) assert.ok(rv.includes(w), w);
+  for (const w of ["fix_jp の書き方 (D-204)", "**一般原則で書く**", "引用題の場面・判断項目の列挙・選択肢・数値を使わない", "D-198 (iii) は修正案にも掛かる", "**削除・絞り込み案を優先**", "審査者自身が確かめる", "low の fix_jp は空 (\"\") でよい", "qid を外す案でなく主張を直す方向", "限定条件の落ちは条件を戻す方向"]) assert.ok(rv.includes(w), w);
+  assert.ok(calls.find((x) => /^rewrite:/.test(x.opts.label)).prompt.includes("(one / detail / points / pairs / hook / overview / goals)"), "the guard's field list includes hook");
   assert.doesNotMatch(rv, /fix_jp \(具体的な直し方\)/);
   assert.match(rv, /7\. \*\*欄同士の整合\*\*[^\n]*比喩・hook も対象 \(D-204\): その像や結論が、同じ用語の考点・detail が否定する内容 \(例: 証明書が保証しない事業者の信用\) を運んでいれば medium/);
   assert.match(rv, /7\. \*\*欄同士の整合\*\*.*medium。それで事実の誤りになるなら high/, "D-202 / D-203 wording kept");
@@ -369,6 +370,7 @@ test("D-204: the critic writes fix_jp as a general principle and checks addition
   assert.ok(review.opts.schema.properties.issues.items.required.includes("fix_jp"), "fix_jp stays required");
   const tr = calls.find((x) => /^tr-review:/.test(x.opts.label));
   assert.doesNotMatch(tr.opts.schema.properties.issues.items.properties.fix_jp.description, /D-204/, "the translation review is unchanged");
+  assert.equal(tr.opts.schema.properties.issues.items.properties.fix_jp.description, "具体的な直し方");
   assert.doesNotMatch(tr.prompt, /D-204/);
   const write = calls.find((x) => /^write:/.test(x.opts.label)).prompt;
   assert.doesNotMatch(write, /D-204/, "a first draft has no review to follow");
