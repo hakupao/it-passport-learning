@@ -128,14 +128,14 @@ const zhTermsOf = (unit) => `${dirOf(unit)}/zh_terms.unit.json`
 const ZH_TERMS = (unit) => `zh 訳語表 (B6): \`${zhTermsOf(unit)}\` (この単元に関係する項目だけ) を Read する。日本語の語がその見出し語としての専門的な意味で使われているときだけ表の zh を使い、日常語・別の意味で使われているときは意味に合わせて訳す (例: 一般的な「項目」「手続」)。validate が \`warn zh-term\` 行を出したら、専門的な意味で使っている箇所は表の訳に直す (warn は不合格ではない。文脈上ほかの訳が正しいなら残してよい)。`
 
 // D-203 (S137 b02 u06 / u07: each revision fixed the flagged items and introduced new ones elsewhere, once a high)
-const REVISE_GUARD = `3. 直し方 (D-203、改稿で新しい誤りを生まない): (a) 指摘の修正は**削除・絞り込みを優先**し、新しい概括句を足さない。足した句・書き換えた文は、事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / overview / goals) に照らして読み直す。(b) 書き終えたら単元の対比 (「A は〜、B は〜」) ごとに出てくる欄を列挙し、pairs と mix 考点以外に出ていれば削る。(c) 比喩に用語自身の操作 (暗号化する・署名する 等) を入れない。定義の言い換えにしかならないなら analogy_jp は "" にする。\n`
+const REVISE_GUARD = `3. 直し方 (D-203、改稿で新しい誤りを生まない): (a) 指摘の修正は**削除・絞り込みを優先**し、新しい概括句を足さない。足した句・書き換えた文は、事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / overview / goals) に照らして読み直す。(b) 書き終えたら単元の対比 (「A は〜、B は〜」) ごとに出てくる欄を列挙し、pairs と mix 考点以外に出ていれば削る。(c) 比喩に用語自身の操作 (暗号化する・署名する 等) を入れない。定義の言い換えにしかならないなら analogy_jp は "" にする。hook_jp も同様。定義の言い換えにしかならないなら省略する。\n`
 
 function writerPrompt(unit, round, prev, review, seed) {
   const part = partOf(unit, 'jp', round)
   const revise = seed
     ? `\n## 改稿 (round ${round}: 前回 run の草稿を種にする)\n1. まず \`${seedCmd(seed)}\` を実行する。種 \`${seed.part}\` の sha256 (\`seed_sha256 <hex>\` 行) と、その草稿そのものを審査した jp-review #${seed.reviewRound} の指摘 (JSON) が出る。**exit が 0 でなければ** part を書かずに StructuredOutput で part:"${SEED_ERROR}" を返して終わる (seed_part / seed_review_round は指定値、他の数値は 0、文字列は空)。\n2. 種を Read し、その指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。指摘されていない箇所も、下の「書き方」に反していれば直す。\n${REVISE_GUARD}`
     : prev
-      ? `\n## 改稿 (round ${round})\n前稿 \`${prev}\` を Read し、下の審査指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。指摘されていない箇所も、下の「書き方」に反していれば直す。\n${REVISE_GUARD}\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
+      ? `\n## 改稿 (round ${round})\n1. 前稿 \`${prev}\` を Read し、下の審査指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。\n2. 指摘されていない箇所も、下の「書き方」に反していれば直す。\n${REVISE_GUARD}\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
       : ''
   return `あなたは IT パスポート試験の教科書執筆者です。単元 \`${unit}\` を D-195 の規則で**日本語で**書き直します (zh / en は後工程で意訳する。あなたは日本語だけ)。
 

@@ -348,4 +348,7 @@ test("D-203: the critic grades restatement (§6 / §9 / 観点 8) low, keeps 観
   const rewrite = calls.find((x) => /^rewrite:/.test(x.opts.label)).prompt;
   for (const w of ["直し方 (D-203", "削除・絞り込みを優先", "新しい概括句を足さない", "pairs と mix 考点以外に出ていれば削る", "analogy_jp は \"\" にする"]) assert.ok(rewrite.includes(w), w);
   assert.ok(rewrite.indexOf("直し方 (D-203") < rewrite.indexOf("```json"), "the guard comes before the review's issues");
+  assert.ok(rewrite.includes("hook_jp も同様。定義の言い換えにしかならないなら省略する"), "guard (c) also covers hook_jp");
+  // numbering: the normal revise branch is 1. / 2. so the guard's 3. follows
+  assert.match(rewrite, /## 改稿 \(round 1\)\n1\. 前稿 `[^`]+` を Read し[^\n]*直した版を書く[^\n]*\n2\. 指摘されていない箇所も[^\n]*\n3\. 直し方 \(D-203/);
 });
