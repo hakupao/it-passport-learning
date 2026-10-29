@@ -249,7 +249,12 @@ export function estMinutes(p, stripInline) {
  */
 export const COPY_MIN = 20;
 export const COPY_MIN_QUESTION = 12;
-export const normCopy = (s, stripInline) => stripInline(s).replace(/[\s\p{P}\p{S}]/gu, "");
+// NFKC first, so symbols it produces (㈱ → (株)) are stripped too; private-use characters are stripped as well,
+// they are the masker's placeholders (OQ-16 Rule D L2 / L3)
+export const normCopy = (s, stripInline) => stripInline(s).normalize("NFKC").replace(/[\s\p{P}\p{S}\p{Co}]/gu, "");
+/** OQ-16 Rule D M1: a matched run needs this share of real (unmasked) characters — a list of terms in the
+ * same order joined by particles is not expression. */
+export const COPY_REAL_SHARE = 2 / 3;
 const joinLines = (v) => (Array.isArray(v) ? v.join("") : typeof v === "string" ? v : "");
 /** The manifest question texts as [id, "question" (stem / choices) | "other", text]. */
 export function questionTexts(manifest) {
@@ -264,9 +269,9 @@ export function questionTexts(manifest) {
 }
 /**
  * D-198 clarification (S135): term names are not expression. Masked like glossary terms: runs of 4+
- * katakana (ー・ and half-width forms included) and ASCII / full-width alphanumeric tokens (WBS, PERT, 5日).
+ * katakana (ー・ included; half-width forms are full-width after normCopy's NFKC) and ASCII / full-width alphanumeric tokens (WBS, PERT, 5日).
  */
-export const TERMLIKE_RE = /[\u30A0-\u30FF\uFF66-\uFF9F]{4,}|[A-Za-z0-9\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A]+/g;
+export const TERMLIKE_RE = /[\u30A0-\u30FF]{4,}|[A-Za-z0-9\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A]+/g;
 /**
  * OQ-16 masker: NFKC, then glossary-term occurrences (longest term first), then term-like runs → one
  * private-use character per distinct token. unmask maps the placeholders back for messages.
@@ -276,6 +281,7 @@ function masker(terms) {
   const back = new Map();
   const mark = (tok) => {
     if (!ph.has(tok)) {
+      if (ph.size >= 0x1900) throw new Error("copy guard: more than 6400 distinct masked tokens (private-use area U+E000–U+F8FF exhausted)");
       const c = String.fromCharCode(0xe000 + ph.size);
       ph.set(tok, c);
       back.set(c, tok);
@@ -303,6 +309,7 @@ export function copyIssues(p, manifest, stripInline, unitId = p.unit_id) {
   const terms = [...termSet].map((t) => normCopy(t, stripInline)).filter((t) => t.length >= 2).sort((x, y) => y.length - x.length);
   const { mask, unmask } = masker(terms);
   const grams = { question: new Map(), other: new Map() };
+  const real = (g) => g.replace(/[\uE000-\uF8FF]/g, "").length;
   const size = { question: COPY_MIN_QUESTION, other: COPY_MIN };
   for (const [id, kind, text] of questionTexts(manifest)) {
     const seg = mask(normCopy(text, stripInline));
@@ -315,8 +322,9 @@ export function copyIssues(p, manifest, stripInline, unitId = p.unit_id) {
       const seg = mask(normCopy(s, stripInline));
       for (const kind of ["question", "other"]) {
         for (let i = 0; i + size[kind] <= seg.length; i++) {
-          const id = grams[kind].get(seg.slice(i, i + size[kind]));
-          if (id) return { id, kind, run: unmask(seg.slice(i, i + size[kind])) };
+          const g = seg.slice(i, i + size[kind]);
+          const id = grams[kind].get(g);
+          if (id && real(g) >= Math.ceil(size[kind] * COPY_REAL_SHARE)) return { id, kind, run: unmask(g) };
         }
       }
       return null;

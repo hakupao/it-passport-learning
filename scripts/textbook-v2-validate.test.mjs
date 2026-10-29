@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { test } from "node:test";
 
-import { copyIssues, dataPaths, estMinutes, jpOnlyIssues, loadKit, readJson, sha256File } from "./lib/textbook-v2.mjs";
+import { copyIssues, dataPaths, normCopy, estMinutes, jpOnlyIssues, loadKit, readJson, sha256File } from "./lib/textbook-v2.mjs";
 import { fixture, jpPartOf, locPartOf, run, tempRoot, UNIT, writeJson } from "./lib/textbook-v2-testkit.mjs";
 
 const root = tempRoot();
@@ -198,6 +198,20 @@ test("OQ-16: masked terms / katakana runs keep a run continuous (one placeholder
   assert.deepEqual(hits("利用者のトークンはサービスデスク担当者にも口外しない。"), []);
   // half-width / full-width forms of the same token are the same token
   assert.equal(hits("利用者ﾊﾟｽﾜｰﾄﾞはﾍﾙﾌﾟﾃﾞｽｸ担当者にも口外しない。").length, 1);
+});
+
+test("OQ-16 Rule D: a run made mostly of masked tokens is not a copy; a masked kanji headword keeps the run; NFKC before stripping", async () => {
+  const { stripInline } = await loadKit();
+  const m = { unit_id: UNIT, terms: ["生体認証"], questions: { "2001h13a-q002": { topic_id: "x", terms: [], stem_jp: ["次のうち適切なものはどれか。"], choices_jp: { ア: "WBSとPERTとCPMとEVMをESとLFで管理する。", イ: "入室時に生体認証で本人を確かめてから扉を開ける。" }, correct_answer: "イ" } } };
+  const hits = (text) => copyIssues({ unit_id: UNIT, goals_jp: [text] }, m, stripInline);
+  // the same list of terms in the same order: 6 real characters (とととをとで) in the 12 → not a copy
+  assert.deepEqual(hits("WBSとPERTとCPMとEVMをESとLFで扱う。"), []);
+  // a kanji headword (term list, not TERMLIKE) is one placeholder inside a copied run: 入室時に G で本人を確かめてから = 14 → copy
+  assert.equal(hits("入室時に生体認証で本人を確かめてから入る。").length, 1);
+  // the headword alone is not a copy
+  assert.deepEqual(hits("生体認証を使う。"), []);
+  // NFKC first: a symbol produced by NFKC (㈱ → (株)) is stripped like any other
+  assert.equal(normCopy("㈱生体", stripInline), "株生体");
 });
 
 test("copy guard B7: figure labels, step captions, 総表 extra cells and 易混 rows are checked too; est_minutes ignores figure text", async () => {
