@@ -9,7 +9,7 @@
 [![在线访问](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E8%AE%BF%E9%97%AE-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://itlearn.bojiangz.com)
 [![Stage 7](https://img.shields.io/badge/Stage%207-%E6%95%99%E7%A7%91%E4%B9%A6%20v2%20%E9%87%8D%E5%86%99%E4%B8%AD-orange?style=for-the-badge)](docs/STATE.md)
 [![Tests](https://img.shields.io/badge/%E6%B5%8B%E8%AF%95-1264%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#技术栈)
-[![Decisions](https://img.shields.io/badge/%E5%B7%B2%E9%94%81%E5%86%B3%E7%AD%96-203-6f42c1?style=for-the-badge)](docs/decisions/)
+[![Decisions](https://img.shields.io/badge/%E5%B7%B2%E9%94%81%E5%86%B3%E7%AD%96-203-6f42c1?style=for-the-badge)](docs/STATE.md)
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-000?logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=000)](https://react.dev/)
@@ -34,18 +34,18 @@
 | 页面 | 功能 |
 |---|---|
 | **今日** | 每日计划：要重做的错题、到期的复习和新题（按考试的领域比例挑选）。新用户先做 20 题基线测试。还显示 2,900 道过去问的完成进度、考试日倒计时、弱项（正确率低 × 常考）、按领域对照合格标准（总分 600/1000，各领域 ≥300/1000）的正确率，以及今日 3 个术语。 |
-| **练习** | 一屏一题：按考试回或按领域浏览、用自定设置练习，或重做错题。日语题面配中/英译文开关，图可放大，作答后显示三语解析。 |
+| **练习** | 一屏一题：按考试回或按主题浏览、用自定设置练习，或重做错题。日语题面配中/英译文开关，图可放大，作答后显示三语解析。 |
 | **模拟考试** | 和正式考试一样 100 题 120 分钟：按官方领域比例（ストラテジ 35 / マネジメント 20 / テクノロジ 45）随机抽题，或整套某一回过去问。0–1000 计分，交卷后才显示结果。 |
-| **教科书** | 对齐シラバス的三语学习单元 —— 63 个领域、244 个单元 —— 含要点、图解和取自过去问的确认题。 |
+| **教科书** | 对齐シラバス的三语学习单元 —— 63 个主题、244 个单元 —— 含要点、图解和取自过去问的确认题。 |
 | **术语表** | 1,395 个教科书术语，可用日 / 中 / 英检索，每条链接到所在教科书单元和相关过去问。 |
-| **学习记录** | 累计数据、未来 7 天的复习量、每日题数（5 周）和各领域正确率。 |
+| **学习记录** | 累计数据、未来 7 天的复习量、每日题数（5 周）和各主题正确率。 |
 | **设置** | 考试日、每日复习上限、每日新题数、译文默认显示与否、界面语言。 |
 
 界面语言可在 日 / 中 / EN 之间切换。学习记录保存在你设备的浏览器里，无需注册账号。
 
-### 计划中：AI 辅导
+### AI 辅导（自带 key 预览版）
 
-AI 辅导（*AI 先生*）—— 针对题目、术语或教科书单元提问，并对你的弱项做复习分析 —— **尚在计划中，暂未对访客开放**。
+AI 辅导（*AI 先生*）可以针对题目、术语或教科书单元提问，并对你的弱项做复习分析。目前是**需要自带 Anthropic API key 的预览版**：key 只保存在你的浏览器里，由浏览器直接调用 Anthropic。入口在答题后或术语页上的 **Ask AI Tutor**，以及设置页；暂未放进主导航。正式版在计划中。
 
 ---
 
@@ -74,7 +74,7 @@ itlearn.bojiangz.com
 │    /api/quiz/questions                   │
 │    /api/quiz/feedback  (owner only)      │
 │    /api/learning       (owner sync)      │
-│    /api/sensei/terms (AI tutor, planned) │
+│    /api/sensei/terms   (tutor lookup)    │
 ├──────────────────────────────────────────┤
 │  Data: committed JSON corpus             │
 │    data/ip/quiz      2,900 questions     │
@@ -97,8 +97,8 @@ itlearn.bojiangz.com
 
 | 项目 | 来源 | 应用里有什么 |
 |---|---|---|
-| 过去问 | IPA 過去問題，FY2009–FY2026（29 回） | 2,900 题，其中 511 题带图；日语原文 + 中/英译文；三语解析；每题归入 63 个シラバス领域之一 |
-| 教科书 | 以 IPA シラバス Ver.6.5 为骨架，AI 生成 | 63 个领域 244 个单元（ストラテジ 98 / マネジメント 23 / テクノロジ 123），1,417 个术语条目 |
+| 过去问 | IPA 過去問題，FY2009–FY2026（29 回） | 2,900 题，其中 511 题带图；日语原文 + 中/英译文；三语解析；每题归入 63 个シラバス主题之一 |
+| 教科书 | 以 IPA シラバス Ver.6.5 为骨架，AI 生成 | 63 个主题 244 个单元（ストラテジ 98 / マネジメント 23 / テクノロジ 123），1,417 个术语条目 |
 | 术语表 | 由教科书术语汇总 | 1,395 条 |
 
 过去问文本用 Claude vision 从 IPA PDF 提取，之后多轮全量对照原文修复和核验，独立抽样审核记录在 `evidence/` 下。
@@ -110,12 +110,12 @@ itlearn.bojiangz.com
 | 阶段 | 状态 | 内容 |
 |---|---|---|
 | **Phase 1–4（第一版应用）** | :white_check_mark: 已退役 | 基于一本购买的教材构建的第一版（教科书 / 测验 / 术语表 / 对话 / 助教、三套主题皮肤）。已被下面基于 IPA 官方源的重建取代。 |
-| **Stage 1–3.5 —— IPA 源数据** | :white_check_mark: 完成 | シラバス结构化；2,900 道过去问全部提取、修复并归入シラバス领域。 |
+| **Stage 1–3.5 —— IPA 源数据** | :white_check_mark: 完成 | シラバス结构化；2,900 道过去问全部提取、修复并归入シラバス主题。 |
 | **Stage 4 —— 教科书 v1** | :white_check_mark: 完成 | 生成 244 个三语单元。 |
 | **Stage 6 —— 应用数据整合** | :white_check_mark: 已上线 | 教科书阅读、带译文和解析的过去问练习、术语表。 |
 | **Stage 7 —— UI 重新设计** | :white_check_mark: 已上线 | 所有页面统一一套设计（今日 / 练习 / 教科书 / 术语表 / 学习记录 / 设置），模拟考试、学习记录、新的教科书阅读界面。 |
 | **Stage 7 —— 教科书 v2 分批重写** | :hourglass: 进行中 | 单元正分批重写为 v2 格式：目前 244 个中已完成 13 个。 |
-| **AI 辅导** | :calendar: 计划中 | 暂未对访客开放。 |
+| **AI 辅导** | :test_tube: 预览 | 自带 Anthropic key；入口在 Ask AI Tutor 和设置页。正式版计划中。 |
 
 实时状态见 [`docs/STATE.md`](docs/STATE.md)。
 
@@ -209,7 +209,7 @@ pnpm check:quiz:ci    # 只查已提交的数据
 | 指标 | 值 |
 |---|---|
 | 过去问 | 2,900 题（29 回，FY2009–FY2026） |
-| 教科书 | 63 个领域、244 个单元（13 个为 v2） |
+| 教科书 | 63 个主题、244 个单元（13 个为 v2） |
 | 术语表 | 1,395 条 |
 | 已锁决策 | 203（D-001 … D-203） |
 | Session log | `docs/discussion/` 下 73 份 |

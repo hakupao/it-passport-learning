@@ -20,7 +20,7 @@ You will be lost without these. Don't skip them.
 
 A trilingual (ja/zh/en) learning web app + AI textbook pipeline for the IT Passport (ITパスポート) certification exam.
 
-- **Web app**: Next.js 15 at `apps/web/` — 過去問ノート: today, practice, mock exam, textbook, glossary, record, settings. AI 先生 (sensei) is an owner-only BYOK preview; public release is planned
+- **Web app**: Next.js 15 at `apps/web/` — 過去問ノート: today, practice, mock exam, textbook, glossary, record, settings. AI 先生 (sensei) is a bring-your-own-key preview open to all visitors (not in the nav); full release is planned
 - **Phase 5**: IPA 官方源 → Claude vision 提取 → AI 生成三语教科書
 - **Tech stack**: TypeScript only (D-110). No Python.
 

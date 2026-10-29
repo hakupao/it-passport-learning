@@ -53,7 +53,7 @@ Plan: `docs/phase5/PLAN.md`
 | 组件 | 状态 | 说明 |
 |------|------|------|
 | Next.js 15 app | ✅ 运行中 | `apps/web/` |
-| AI 先生 (sensei) | 🔒 owner 限定プレビュー | `/[locale]/sensei` + `/api/sensei/terms`、BYOK (D-181)、AI 路由は owner のみ (D-148)、ナビ非表示 (D-188)。訪問者向けは計画中。旧 Phase 4 `/api/tutor` + DeepSeek は撤去済 |
+| AI 先生 (sensei) | 🧪 BYOK プレビュー (全訪問者) | `/[locale]/sensei`、ブラウザが利用者自身の Anthropic key で直接呼ぶ (D-181)。入口 = 解説・用語の「AI 先生に聞く」と設定ページ、ナビ非表示 (D-188)。`/api/sensei/terms` は LLM なしの用語引き。正式版は計画中。旧 Phase 4 `/api/tutor` + DeepSeek は撤去済 |
 | Quiz 系统 | ✅ | Phase 2 QuizExplain + self-report |
 | Glossary 系统 | ✅ | Phase 2 悬浮卡 |
 | Chat 系统 | ⛔ 撤去 | 旧 Phase 2 `/api/chat` は現存しない (`src/lib/chat/historyStore.ts` のみ残存) |

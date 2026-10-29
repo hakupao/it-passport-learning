@@ -9,7 +9,7 @@
 [![Live](https://img.shields.io/badge/live-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://itlearn.bojiangz.com)
 [![Stage 7](https://img.shields.io/badge/Stage%207-textbook%20v2%20rewrite%20in%20progress-orange?style=for-the-badge)](docs/STATE.md)
 [![Tests](https://img.shields.io/badge/tests-1264%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#tech-stack)
-[![Decisions](https://img.shields.io/badge/locked%20decisions-203-6f42c1?style=for-the-badge)](docs/decisions/)
+[![Decisions](https://img.shields.io/badge/locked%20decisions-203-6f42c1?style=for-the-badge)](docs/STATE.md)
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-000?logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=000)](https://react.dev/)
@@ -43,9 +43,9 @@ Non-native learners of Japanese technical exams get blocked by **kana/kanji reco
 
 The interface language switches between 日 / 中 / EN. Your learning record is kept in the browser on your device; no account is needed.
 
-### Planned: AI tutor
+### AI tutor (bring-your-own-key preview)
 
-An AI tutor (*AI 先生*) — ask about a question, a term or a textbook unit, and get a review of your weak topics — is **planned and not yet open to visitors**.
+An AI tutor (*AI 先生*) lets you ask about a question, a term or a textbook unit, and get a review of your weak topics. It is a **preview that needs your own Anthropic API key**: the key stays in your browser, which calls Anthropic directly. Open it from **Ask AI Tutor** after answering a question or on a glossary term, or from Settings; it is not in the main navigation yet. A full release is planned.
 
 ---
 
@@ -74,7 +74,7 @@ itlearn.bojiangz.com
 │    /api/quiz/questions                   │
 │    /api/quiz/feedback  (owner only)      │
 │    /api/learning       (owner sync)      │
-│    /api/sensei/terms (AI tutor, planned) │
+│    /api/sensei/terms   (tutor lookup)    │
 ├──────────────────────────────────────────┤
 │  Data: committed JSON corpus             │
 │    data/ip/quiz      2,900 questions     │
@@ -115,7 +115,7 @@ The past-exam text was extracted from the IPA PDFs with Claude vision, then repa
 | **Stage 6 — App data integration** | :white_check_mark: Shipped | Textbook reader, past-question practice with translations and explanations, glossary. |
 | **Stage 7 — UI redesign** | :white_check_mark: Shipped | One design for every page (Today / Practice / Textbook / Glossary / Record / Settings), mock exam, learning record, new textbook reader. |
 | **Stage 7 — Textbook v2 batch rewrite** | :hourglass: In progress | Units are being rewritten to the v2 format in batches: 13 of 244 so far. |
-| **AI tutor** | :calendar: Planned | Not yet open to visitors. |
+| **AI tutor** | :test_tube: Preview | Bring your own Anthropic key; reachable from Ask AI Tutor and Settings. Full release planned. |
 
 The live state is in [`docs/STATE.md`](docs/STATE.md).
 
