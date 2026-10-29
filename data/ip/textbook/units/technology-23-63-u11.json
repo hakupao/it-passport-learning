@@ -1,266 +1,1099 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-63-u11",
   "topic_id": "technology-23-63",
   "category": "technology",
   "title_jp": "PKIと公開鍵基盤の中核",
+  "title_zh": "PKI 与公钥基础设施的核心",
+  "title_en": "PKI and the Core of Public Key Infrastructure",
   "unit_summary_jp": "PKI/公開鍵基盤の枠組みと、デジタル証明書・各種証明書(ルート/サーバ/クライアント)の役割を学ぶ。",
+  "unit_summary_zh": "学习 PKI / 公钥基础设施的框架，以及数字证书与各类证书（根证书 / 服务器证书 / 客户端证书）的作用。",
+  "unit_summary_en": "Learn the framework of PKI / public key infrastructure and the roles of digital certificates and the various certificate types (root / server / client).",
   "order_in_topic": 11,
   "prerequisites": [
     "technology-23-63-u06",
     "technology-23-63-u07"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、公開鍵暗号やデジタル署名を安全に使うための社会基盤であるPKI(公開鍵基盤)を学びます。中心となるデジタル証明書、その信頼の起点となるルート証明書・トラストアンカー、そして用途別のサーバ証明書・クライアント証明書まで積み上げます。情報セキュリティ対策の頻出分野です。",
-    "freq_badge": "頻出",
-    "est_minutes": 23,
-    "intro_zh": "本单元学习 PKI（公钥基础设施）——它是为安全地使用公钥加密和数字签名而存在的社会性基础设施。我们将从作为核心的数字证书出发，逐步搭建到信任起点的根证书与信任锚，再到按用途区分的服务器证书与客户端证书。这是信息安全对策中的高频考点领域。",
-    "intro_en": "In this unit you learn PKI (Public Key Infrastructure), the societal foundation that lets you use public key cryptography and digital signatures safely. We build up from the central digital certificate, to the root certificate and trust anchor that serve as the starting point of trust, and on to the purpose-specific server certificate and client certificate. This is a frequently tested area within information security measures."
-  },
-  "terms": [
+  "goals_jp": [
+    "**PKI** の中で **認証局** と **デジタル証明書** が何を保証しているかを説明できる。",
+    "証明書を発行者の側へ順にたどって確かめる流れを説明でき、その行き着く先で信頼の起点になる **トラストアンカー** の役割を言える。",
+    "**サーバ証明書** と **クライアント証明書** を、どちら側を証明するかで分けられる。"
+  ],
+  "goals_zh": [
+    "能说明在 **PKI** 中，**认证中心** 和 **数字证书** 分别保证了什么。",
+    "能说明沿着签发者方向逐级向上核验证书的流程，并说出位于终点、作为信任起点的 **信任锚** 所起的作用。",
+    "能按照证明的是哪一方，区分 **服务器证书** 与 **客户端证书**。"
+  ],
+  "goals_en": [
+    "Explain what the **certificate authority** and the **digital certificate** each guarantee within **PKI**.",
+    "Describe how a certificate is checked by following its issuers upward one by one, and state the role of the **trust anchor**, the starting point of trust where that path ends.",
+    "Tell a **server certificate** from a **client certificate** by which side each one proves."
+  ],
+  "overview_cols_jp": [
+    "区分",
+    "対応する語"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "对应术语"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Related term"
+  ],
+  "overview_rows": [
     {
       "term": "PKI",
-      "definition_jp": "公開鍵が本人のものだと証明書で保証する社会的な仕組みの総称。",
-      "explanation_jp": "PKI(Public Key Infrastructure)は、公開鍵暗号やデジタル署名を安全に使うための基盤となる仕組みです。公開鍵そのものは誰でも作れるため、「その鍵が本当に相手本人のものか」を信頼できる第三者(認証局)が証明書で保証します。\n\nこれにより、なりすましを防ぎ、通信相手の正当性を確認できます。試験では、PKIが特定の製品名ではなく公開鍵を信頼するための枠組み全体を指すこと、デジタル証明書や認証局がその構成要素であることが問われます。",
-      "analogy_jp": "公開鍵を「身分証」、認証局を「役所」に例えると、PKIは役所が身分証を発行・保証する社会制度そのものにあたります。制度があるから身分証を信用できます。",
-      "memory_hook_jp": "PKIといえば公開鍵を証明書で保証する社会基盤",
-      "inline_quiz": [
-        "2009h21a-q085",
-        "2014h26a-q055"
+      "one_line_jp": "公開鍵の持ち主を認証局が証明書で保証する仕組み",
+      "one_line_zh": "由认证中心用证书来保证公钥归谁所有的机制",
+      "one_line_en": "A system in which a certificate authority uses certificates to vouch for who owns a public key",
+      "extra_jp": [
+        "仕組み",
+        "公開鍵基盤 (同じもの)"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "PKI（公钥基础设施）",
-      "term_en": "PKI",
-      "definition_zh": "用证书来保证公钥确实属于本人的社会性机制的总称。",
-      "definition_en": "The general term for the societal mechanism that uses certificates to guarantee a public key truly belongs to its claimed owner.",
-      "explanation_zh": "PKI（Public Key Infrastructure）是为安全地使用公钥加密和数字签名而提供基础的一套机制。由于公钥本身任何人都能生成，因此需要一个可信的第三方（认证机构）通过证书来保证“这个公钥是否真的属于通信对方本人”。\n\n借此可以防止冒充，并确认通信对方的合法性。考试中常考的是：PKI 指的不是某个特定的产品名称，而是用来信任公钥的整体框架；数字证书和认证机构则是它的组成要素。",
-      "explanation_en": "PKI (Public Key Infrastructure) is the mechanism that provides the foundation for using public key cryptography and digital signatures safely. Because anyone can create a public key, a trusted third party (a certificate authority) uses a certificate to guarantee \"whether this key really belongs to the other party.\"\n\nThis prevents impersonation and lets you confirm that the party you are communicating with is legitimate. Exams often ask that PKI refers not to a specific product name but to the entire framework for trusting public keys, and that digital certificates and certificate authorities are its components.",
-      "analogy_zh": "如果把公钥比作“身份证”、把认证机构比作“政府机关”，那么 PKI 就相当于政府机关签发并担保身份证的整套社会制度。正因为有这套制度，身份证才能被信任。",
-      "analogy_en": "If a public key is an \"ID card\" and a certificate authority is a \"government office,\" then PKI is the very social system by which the office issues and vouches for ID cards. Because the system exists, the ID card can be trusted.",
-      "memory_hook_zh": "说到 PKI，就是用证书保证公钥的社会基础设施",
-      "memory_hook_en": "PKI → the societal infrastructure that guarantees public keys with certificates"
+      "extra_zh": [
+        "机制",
+        "公钥基础设施（同一事物）"
+      ],
+      "extra_en": [
+        "System",
+        "Public key infrastructure (same thing)"
+      ]
     },
     {
       "term": "公開鍵基盤",
-      "definition_jp": "PKIの日本語名称で、同じく公開鍵を信頼するための基盤を指す。",
-      "explanation_jp": "公開鍵基盤は、PKI(Public Key Infrastructure)を日本語で表した呼び方で、指している中身はPKIとまったく同じです。公開鍵が確かに本人のものだと証明書によって保証し、安全な暗号通信やデジタル署名を成り立たせる基盤を意味します。\n\n試験では「PKI=公開鍵基盤」と同一概念であることをそのまま問う出題があります。英略語と日本語名がペアで結び付いていることを押さえておけば、どちらの表記で出ても対応できます。",
-      "analogy_jp": "「PC」と「パソコン」が同じものを指すのと同じで、PKIと公開鍵基盤は英語の略語と日本語名という違いだけで、中身は同一の仕組みです。",
-      "memory_hook_jp": "公開鍵基盤といえばPKIの日本語名で同じ仕組み",
-      "inline_quiz": [
-        "2011h23a-q060",
-        "2012h24a-q056"
+      "one_line_jp": "PKI の日本語名",
+      "one_line_zh": "PKI 的日语名称",
+      "one_line_en": "The Japanese name for PKI",
+      "extra_jp": [
+        "仕組み (日本語名)",
+        "PKI"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "公钥基础设施",
-      "term_en": "Public key infrastructure",
-      "definition_zh": "PKI 的日文名称，同样指用来信任公钥的基础设施。",
-      "definition_en": "The Japanese name for PKI, likewise referring to the infrastructure for trusting public keys.",
-      "explanation_zh": "公钥基础设施是 PKI（Public Key Infrastructure）的日文表述，所指的内容与 PKI 完全相同。它指的是通过证书来保证公钥确实属于本人，从而支撑安全的加密通信和数字签名的基础设施。\n\n考试中会直接考查“PKI = 公钥基础设施”属于同一概念。只要记住英文缩写与日文名称是成对对应的，无论以哪种写法出题都能应对。",
-      "explanation_en": "Public key infrastructure is the Japanese way of expressing PKI (Public Key Infrastructure), and what it points to is exactly the same as PKI. It means the infrastructure that uses certificates to guarantee a public key truly belongs to its owner, thereby enabling secure encrypted communication and digital signatures.\n\nExams ask directly that \"PKI = public key infrastructure\" is one and the same concept. If you keep in mind that the English acronym and the Japanese name are paired, you can handle the question no matter which notation appears.",
-      "analogy_zh": "就像“PC”和“个人电脑”指的是同一个东西一样，PKI 与公钥基础设施只是英文缩写和日文名称的差别，内容是完全相同的机制。",
-      "analogy_en": "Just as \"PC\" and \"personal computer\" refer to the same thing, PKI and public key infrastructure differ only as an English acronym versus a Japanese name; the underlying mechanism is identical.",
-      "memory_hook_zh": "说到公钥基础设施，就是 PKI 的日文名、同一套机制",
-      "memory_hook_en": "Public key infrastructure → the Japanese name for PKI, the same mechanism"
+      "extra_zh": [
+        "机制（日语名称）",
+        "PKI"
+      ],
+      "extra_en": [
+        "System (Japanese name)",
+        "PKI"
+      ]
     },
     {
       "term": "デジタル証明書",
-      "definition_jp": "公開鍵が本人のものだと認証局が保証する電子的な証明書。",
-      "explanation_jp": "デジタル証明書(電子証明書・公開鍵証明書)は、PKIの中心となる成果物です。「この公開鍵は確かにこの人(またはサーバ)のものだ」という対応関係を、信頼できる認証局(CA)がデジタル署名を付けて保証した電子データです。\n\n証明書には公開鍵・所有者情報・発行者(認証局)・有効期限などが含まれます。試験では、公開鍵と所有者を結び付けてなりすましを防ぐ役割、認証局が発行する点が頻出です。鍵そのものではなく「鍵の持ち主を保証する書類」である点を押さえましょう。",
-      "analogy_jp": "公開鍵を顔写真とすると、デジタル証明書は役所が「この顔はこの人」と保証印を押した身分証明書。証明書があるから初めてその鍵を信用できます。",
-      "memory_hook_jp": "デジタル証明書といえば公開鍵の持ち主を認証局が保証する書類",
-      "inline_quiz": [
-        "2010h22a-q073",
-        "2010h22h-q071"
+      "one_line_jp": "公開鍵と持ち主の対応を認証局が署名で保証した電子データ",
+      "one_line_zh": "由认证中心签名、保证公钥与所有者对应关系的电子数据",
+      "one_line_en": "Electronic data in which a certificate authority's signature vouches that a public key belongs to its owner",
+      "extra_jp": [
+        "証明書",
+        "電子証明書・公開鍵証明書 (別名)"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "数字证书",
-      "term_en": "Digital certificate",
-      "definition_zh": "由认证机构保证公钥确实属于本人的电子证书。",
-      "definition_en": "An electronic certificate in which a certificate authority guarantees that a public key truly belongs to its owner.",
-      "explanation_zh": "数字证书（电子证书 / 公钥证书）是 PKI 的核心交付物。它是一份电子数据，由可信的认证机构（CA）附加数字签名，来保证“这个公钥确实属于这个人（或服务器）”这一对应关系。\n\n证书中包含公钥、所有者信息、签发者（认证机构）、有效期等内容。考试中高频考查的是：它把公钥与所有者绑定以防止冒充的作用，以及由认证机构签发这一点。请记住，它不是密钥本身，而是“保证密钥所有者的文件”。",
-      "explanation_en": "A digital certificate (electronic certificate / public key certificate) is the central deliverable of PKI. It is electronic data in which a trusted certificate authority (CA) attaches a digital signature to guarantee the correspondence that \"this public key truly belongs to this person (or server).\"\n\nA certificate contains the public key, owner information, issuer (certificate authority), validity period, and more. Exams frequently test its role of binding a public key to an owner to prevent impersonation, and the point that a certificate authority issues it. Remember that it is not the key itself but a \"document that vouches for the key's owner.\"",
-      "analogy_zh": "如果把公钥比作脸部照片，那么数字证书就是政府机关盖上“这张脸就是这个人”担保印章的身份证明文件。正因为有证书，那个密钥才第一次变得可信。",
-      "analogy_en": "If a public key is a face photo, a digital certificate is an ID document on which a government office stamps a seal vouching that \"this face is this person.\" Only because the certificate exists can you trust that key.",
-      "memory_hook_zh": "说到数字证书，就是认证机构担保公钥所有者的文件",
-      "memory_hook_en": "Digital certificate → a document in which a certificate authority vouches for the public key's owner"
+      "extra_zh": [
+        "证书",
+        "电子证书、公钥证书（别名）"
+      ],
+      "extra_en": [
+        "Certificate",
+        "Electronic certificate, public key certificate (other names)"
+      ]
     },
     {
       "term": "ルート証明書",
-      "definition_jp": "信頼チェーンの最上位にある、認証局自身が署名した証明書。",
-      "explanation_jp": "ルート証明書は、証明書による信頼の連鎖(信頼チェーン)の最上位に位置する証明書です。最上位の認証局(ルート認証局)が自分自身に対して署名(自己署名)しており、それ以上たどる上位がありません。\n\nブラウザやOSにはあらかじめ信頼できるルート証明書が組み込まれており、これを起点として下位の証明書の正当性を順にたどって検証します。試験では、証明書が単独ではなく上位へつながる階層構造で信頼される点、ルート証明書がその出発点になる点が問われます。",
-      "analogy_jp": "信頼を保証印のリレーに例えると、ルート証明書は誰の上位の印も要らない「最終的に皆が信じる大元の印」。この大元があるから連鎖全体を信用できます。",
-      "memory_hook_jp": "ルート証明書といえば信頼チェーン最上位の自己署名証明書",
-      "inline_quiz": [
-        "2011h23a-q007"
+      "one_line_jp": "連鎖の最上位にある自己署名の証明書",
+      "one_line_zh": "位于证书链最顶端的自签名证书",
+      "one_line_en": "The self-signed certificate at the top of the chain",
+      "extra_jp": [
+        "証明書",
+        "トラストアンカー (多くの場合)"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"ルート証明書(信頼の起点)\"] --> B[\"中間証明書\"]; B --> C[\"サーバ証明書/クライアント証明書\"]",
-        "svg_path": "figures/technology-23-63-u11-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "根证书",
-      "term_en": "Root certificate",
-      "definition_zh": "位于信任链最顶端、由认证机构自身签名的证书。",
-      "definition_en": "The certificate at the very top of the trust chain, signed by the certificate authority itself.",
-      "explanation_zh": "根证书是位于证书信任链条（信任链）最顶端的证书。最顶层的认证机构（根认证机构）对自己签名（自签名），其上再没有可以追溯的上级。\n\n浏览器和操作系统中预先内置了可信的根证书，并以此为起点，依次向下追溯并验证下级证书的合法性。考试中常考的是：证书不是单独被信任，而是通过向上连接的层级结构被信任；而根证书正是这一结构的出发点。",
-      "explanation_en": "A root certificate sits at the very top of the chain of trust formed by certificates (the trust chain). The top-level certificate authority (the root certificate authority) signs itself (self-signing), and there is no higher level to trace beyond it.\n\nBrowsers and operating systems come with trusted root certificates built in beforehand, and using these as the starting point, they trace down to verify the legitimacy of lower-level certificates in turn. Exams ask that a certificate is trusted not on its own but through a hierarchical structure that connects upward, and that the root certificate is the starting point of that structure.",
-      "analogy_zh": "如果把信任比作担保印章的接力，那么根证书就是不需要任何上级印章、最终大家都信任的“源头大印”。正因为有这个源头，整条链条才能被信任。",
-      "analogy_en": "If trust is a relay of vouching seals, a root certificate is the \"original master seal\" that needs no higher seal above it and that everyone ultimately trusts. Because this origin exists, the whole chain can be trusted.",
-      "memory_hook_zh": "说到根证书，就是信任链最顶端的自签名证书",
-      "memory_hook_en": "Root certificate → the self-signed certificate at the top of the trust chain"
+      "extra_zh": [
+        "证书",
+        "信任锚（多数情况下）"
+      ],
+      "extra_en": [
+        "Certificate",
+        "Trust anchor (in most cases)"
+      ]
     },
     {
       "term": "トラストアンカー",
-      "definition_jp": "証明書を検証する際に無条件で信頼する起点となる証明書。",
-      "explanation_jp": "トラストアンカー(trust anchor)は、証明書の正当性を検証するときに「これは無条件で信頼する」と定めた起点のことです。通常はルート証明書がトラストアンカーとして使われ、検証はここを出発点としてチェーンをたどります。\n\nつまりルート証明書という具体物に対し、トラストアンカーは「信頼の出発点」という役割を概念として表した言葉です。試験では、検証が必ず信頼の起点から始まること、その起点を指す用語であることを押さえると、似た用語との区別がしやすくなります。",
-      "analogy_jp": "地図でルートをたどるときの「現在地(スタート地点)」のようなもの。どこから信頼を出発するかを決める基準点で、ここがぶれると全体の検証が成り立ちません。",
-      "memory_hook_jp": "トラストアンカーといえば無条件に信頼する検証の起点",
-      "inline_quiz": [
-        "2013h25a-q060"
+      "one_line_jp": "検証で無条件に信頼する起点",
+      "one_line_zh": "验证时无条件信任的起点",
+      "one_line_en": "The starting point trusted unconditionally during verification",
+      "extra_jp": [
+        "役割",
+        "信頼の基点 (同じもの)"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "信任锚",
-      "term_en": "Trust anchor",
-      "definition_zh": "验证证书时无条件信任、作为起点的证书。",
-      "definition_en": "The certificate trusted unconditionally as the starting point when verifying certificates.",
-      "explanation_zh": "信任锚（trust anchor）是指在验证证书合法性时，被设定为“无条件信任”的起点。通常以根证书作为信任锚，验证就以此为出发点沿着信任链向下追溯。\n\n也就是说，相对于根证书这一具体实体，信任锚是用概念表达“信任起点”这一角色的术语。考试中只要记住：验证必然从信任起点开始，而信任锚正是指代这一起点的术语，就能更容易地与相似术语区分开来。",
-      "explanation_en": "A trust anchor is the starting point defined as \"trusted unconditionally\" when verifying the legitimacy of a certificate. Normally a root certificate is used as the trust anchor, and verification traces the chain downward starting from here.\n\nIn other words, whereas a root certificate is a concrete object, a trust anchor is the term that expresses, as a concept, the role of \"the starting point of trust.\" In exams, if you grasp that verification always begins from the starting point of trust and that the trust anchor is the term denoting that starting point, it becomes easier to distinguish it from similar terms.",
-      "analogy_zh": "就像在地图上沿路线行进时的“当前位置（出发地点）”。它是决定从哪里开始建立信任的基准点，一旦这里出现偏差，整个验证就无法成立。",
-      "analogy_en": "It is like your \"current location (starting point)\" when following a route on a map. It is the reference point that decides where trust begins, and if this point is off, the entire verification falls apart.",
-      "memory_hook_zh": "说到信任锚，就是无条件信任的验证起点",
-      "memory_hook_en": "Trust anchor → the verification starting point that is trusted unconditionally"
+      "extra_zh": [
+        "角色",
+        "信任基点（同一事物）"
+      ],
+      "extra_en": [
+        "Role",
+        "Point of trust (same thing)"
+      ]
     },
     {
       "term": "信頼の基点",
-      "definition_jp": "トラストアンカーの日本語表現で、信頼を始める起点を指す。",
-      "explanation_jp": "信頼の基点は、トラストアンカー(trust anchor)を日本語で言い換えた表現で、意味はまったく同じです。証明書を検証する際に無条件で信頼する出発点を指し、通常はルート証明書がこの役割を担います。\n\n試験では「トラストアンカー=信頼の基点」と同一概念であること、そしてその実体がルート証明書であることが整理できていれば十分です。英語表現と日本語表現がペアで結び付いている点を押さえておきましょう。",
-      "analogy_jp": "「スタート地点」と「出発点」が同じ意味であるのと同じで、トラストアンカーと信頼の基点は呼び方が違うだけ。どちらも信頼をたどり始める一番の元を指します。",
-      "memory_hook_jp": "信頼の基点といえばトラストアンカーの日本語表現",
-      "inline_quiz": [
-        "2013h25h-q100"
+      "one_line_jp": "トラストアンカーの日本語名",
+      "one_line_zh": "信任锚的日语名称",
+      "one_line_en": "The Japanese name for trust anchor",
+      "extra_jp": [
+        "役割 (日本語名)",
+        "トラストアンカー"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "信任基点",
-      "term_en": "Point of trust",
-      "definition_zh": "信任锚的日文表达，指开始建立信任的起点。",
-      "definition_en": "The Japanese expression for trust anchor; the starting point from which trust begins.",
-      "explanation_zh": "信任基点是信任锚（trust anchor）的日文表述，含义完全相同。它指验证证书时无条件信任的出发点，通常由根证书来承担这一角色。\n\n考试中只要能理清“信任锚 = 信任基点”属于同一概念，并且其实体是根证书，就足够了。请记住，英文表述与日文表述是成对对应的。",
-      "explanation_en": "Point of trust is the Japanese expression for trust anchor, with exactly the same meaning. It refers to the starting point trusted unconditionally when verifying certificates, a role normally taken by the root certificate.\n\nIn exams it is enough to sort out that \"trust anchor = point of trust\" is one and the same concept, and that its concrete form is the root certificate. Keep in mind that the English expression and the Japanese expression are paired.",
-      "analogy_zh": "就像“起点”和“出发点”意思相同一样，信任锚和信任基点只是叫法不同。两者都指开始追溯信任的最初源头。",
-      "analogy_en": "Just as \"starting point\" and \"point of departure\" mean the same thing, trust anchor and point of trust are merely different names. Both refer to the very origin from which tracing trust begins.",
-      "memory_hook_zh": "说到信任基点，就是信任锚的日文表达",
-      "memory_hook_en": "Point of trust → the Japanese expression for trust anchor"
+      "extra_zh": [
+        "角色（日语名称）",
+        "信任锚"
+      ],
+      "extra_en": [
+        "Role (Japanese name)",
+        "Trust anchor"
+      ]
     },
     {
       "term": "サーバ証明書",
-      "definition_jp": "Webサーバ等が正当な相手だと証明する用途別のデジタル証明書。",
-      "explanation_jp": "サーバ証明書は、WebサーバなどがなりすましでないことをWebブラウザに証明するためのデジタル証明書です。HTTPS(SSL/TLS)通信で使われ、サイトの運営者が正当であることや、暗号通信に使う公開鍵を相手に伝える役割を持ちます。\n\n利用者はアドレスバーの鍵マークなどでサーバ証明書の有無を確認できます。試験では、サーバ証明書がサーバ側の正当性を証明する点、クライアント証明書(利用者側を証明)と対になる用途別証明書である点の違いが問われます。",
-      "analogy_jp": "店の入口に掲げられた「正規認可店」の認定証のようなもの。客(ブラウザ)は、その証明書を見て安心してこのサーバと取引(通信)してよいと判断できます。",
-      "memory_hook_jp": "サーバ証明書といえばサーバの正当性を証明する証明書",
-      "inline_quiz": [
-        "2010h22a-q080"
+      "one_line_jp": "接続先のサーバが本物であることを示す証明書",
+      "one_line_zh": "表明所连接的服务器是真实服务器的证书",
+      "one_line_en": "A certificate showing that the server being connected to is genuine",
+      "extra_jp": [
+        "用途別の証明書",
+        "クライアント証明書と対"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "服务器证书",
-      "term_en": "Server certificate",
-      "definition_zh": "用于证明 Web 服务器等是合法对象的、按用途区分的数字证书。",
-      "definition_en": "A purpose-specific digital certificate that proves a web server or similar is a legitimate party.",
-      "explanation_zh": "服务器证书是用于向 Web 浏览器证明 Web 服务器等并非冒充的数字证书。它用于 HTTPS（SSL/TLS）通信，承担着证明网站运营者合法、以及把加密通信所用的公钥传达给对方的作用。\n\n用户可以通过地址栏的锁形标志等确认服务器证书是否存在。考试中常考的是：服务器证书证明的是服务器一方的合法性，它与客户端证书（证明用户一方）构成一对按用途区分的证书，二者的区别是考点。",
-      "explanation_en": "A server certificate is a digital certificate used to prove to a web browser that a web server or similar is not an impersonator. It is used in HTTPS (SSL/TLS) communication and serves to show that the site operator is legitimate and to convey to the other party the public key used for encrypted communication.\n\nUsers can confirm whether a server certificate is present via the lock icon in the address bar and similar indicators. Exams test that a server certificate proves the legitimacy of the server side, and the distinction that it forms a purpose-specific pair with the client certificate (which proves the user side).",
-      "analogy_zh": "就像挂在店门口的“正规授权店”认证书一样。顾客（浏览器）看到这张证书，就能放心地判断可以和这台服务器进行交易（通信）。",
-      "analogy_en": "It is like a \"licensed official store\" certificate displayed at a shop's entrance. The customer (browser) sees that certificate and can confidently decide it is fine to do business (communicate) with this server.",
-      "memory_hook_zh": "说到服务器证书，就是证明服务器合法性的证书",
-      "memory_hook_en": "Server certificate → the certificate that proves the server's legitimacy"
+      "extra_zh": [
+        "按用途区分的证书",
+        "与客户端证书成对"
+      ],
+      "extra_en": [
+        "Certificate by use",
+        "Paired with the client certificate"
+      ]
     },
     {
       "term": "クライアント証明書",
-      "definition_jp": "利用者(端末)側が正当な相手だと証明する用途別のデジタル証明書。",
-      "explanation_jp": "クライアント証明書は、サーバにアクセスしてくる利用者や端末が正当な相手であることを証明するためのデジタル証明書です。利用者側にあらかじめ配布しておき、ID・パスワードに加えてこの証明書を持つ端末だけにアクセスを許す、といった本人認証の強化に使われます。\n\n試験では、サーバ側を証明するサーバ証明書と、利用者側を証明するクライアント証明書という「どちらを証明するか」の向きの違いが頻出です。両者は対になる用途別の証明書だと整理しておきましょう。",
-      "analogy_jp": "会員制の店に入るときに見せる「会員証」のようなもの。店(サーバ)側が、来た人(クライアント)が正規の会員かを証明書で確かめ、本人だけ入店を許します。",
-      "memory_hook_jp": "クライアント証明書といえば利用者側の正当性を証明する証明書",
-      "inline_quiz": [
-        "2015h27a-q083"
+      "one_line_jp": "接続してくる利用者や端末が正規であることを示す証明書",
+      "one_line_zh": "表明前来连接的用户或终端是正当对象的证书",
+      "one_line_en": "A certificate showing that the user or device connecting in is legitimate",
+      "extra_jp": [
+        "用途別の証明書",
+        "サーバ証明書と対"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "客户端证书",
-      "term_en": "Client certificate",
-      "definition_zh": "用于证明用户（终端）一方是合法对象的、按用途区分的数字证书。",
-      "definition_en": "A purpose-specific digital certificate that proves the user (device) side is a legitimate party.",
-      "explanation_zh": "客户端证书是用于证明访问服务器的用户或终端是合法对象的数字证书。它会预先分发给用户一方，常用于强化身份认证，例如在 ID、密码之外，只允许持有该证书的终端访问。\n\n考试中高频考查的是“证明哪一方”的方向差异：证明服务器一方的是服务器证书，证明用户一方的是客户端证书。请记住，二者是构成一对、按用途区分的证书。",
-      "explanation_en": "A client certificate is a digital certificate used to prove that a user or device accessing a server is a legitimate party. It is distributed to the user side in advance and is used to strengthen authentication, for example by allowing access only to devices that hold this certificate in addition to an ID and password.\n\nExams frequently test the directional difference of \"which side is proved\": the server certificate proves the server side, while the client certificate proves the user side. Remember that the two form a purpose-specific pair.",
-      "analogy_zh": "就像进入会员制店铺时出示的“会员卡”一样。店铺（服务器）一方用证书核实来的人（客户端）是否为正式会员，只允许本人进入。",
-      "analogy_en": "It is like the \"membership card\" you present when entering a members-only shop. The shop (server) side uses the certificate to verify whether the person who came (the client) is a genuine member, and admits only that person.",
-      "memory_hook_zh": "说到客户端证书，就是证明用户一方合法性的证书",
-      "memory_hook_en": "Client certificate → the certificate that proves the user side's legitimacy"
+      "extra_zh": [
+        "按用途区分的证书",
+        "与服务器证书成对"
+      ],
+      "extra_en": [
+        "Certificate by use",
+        "Paired with the server certificate"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "PKI",
+      "term_zh": "PKI（公钥基础设施）",
+      "term_en": "PKI",
+      "one_jp": "**PKI** は、ある **公開鍵** が本当にその人のものかを、第三者の **認証局** が **デジタル証明書** で保証する仕組み全体である。",
+      "one_zh": "**PKI** 是一整套机制：由第三方 **认证中心** 用 **数字证书** 来保证某个 **公钥** 确实属于声称拥有它的那个人。",
+      "one_en": "**PKI** is the whole system in which a third-party **certificate authority** uses a **digital certificate** to vouch that a given **public key** really belongs to the person who claims it.",
+      "detail_jp": "公開鍵そのものには持ち主の名前が書かれていないため、鍵だけを受け取っても、なりすましの鍵と見分けられない。**認証局** (CA) は申請者の身元を確かめたうえで、公開鍵と持ち主を結び付けた証明書を発行する。PKI は認証局や証明書、それを検証する手順などをまとめた基盤を指し、特定の製品名ではない。",
+      "detail_zh": "公钥本身并没有写上所有者的名字，所以只拿到密钥，无法把它和冒充者的密钥区分开。**认证中心**（CA）先核实申请者的身份，再签发把公钥与所有者绑定在一起的证书。PKI 指的是由认证中心、证书以及验证证书的流程等组成的基础设施，并不是某个产品的名称。",
+      "detail_en": "A public key carries no owner's name, so receiving the key alone does not let you tell it apart from an impostor's key. A **certificate authority** (CA) verifies the applicant's identity and then issues a certificate that binds the public key to its owner. PKI means the whole infrastructure made up of certificate authorities, certificates and the procedures for checking them, not the name of a particular product.",
+      "analogy_jp": "印鑑そのものは誰でも彫れるが、役所が印鑑登録証明を出すことで「この印はこの人のもの」と信用できるようになる。PKI はその登録制度にあたる。",
+      "analogy_zh": "签名用的印章谁都能刻，但有了官方出具的印章登记证明，别人才能相信“这枚印章属于这个人”。PKI 就相当于这套登记制度。",
+      "analogy_en": "Anyone can have a name stamp made, but once an official office certifies that the stamp is registered to you, others can trust it is really yours. PKI is that registration system.",
+      "hook_jp": "Infrastructure は、道路や水道のような社会の土台を指す語である。",
+      "hook_zh": "Infrastructure 指的是像道路、自来水那样支撑社会运转的基础设施。",
+      "hook_en": "\"Infrastructure\" is the word for society's groundwork, such as roads and water mains.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "PKI に欠かせない構成要素は **認証局** である。認証局は利用者の公開鍵に証明書を発行し、有効期間内でも問題が起きた証明書を失効させて鍵の正当性を支える。",
+          "text_zh": "PKI 中不可或缺的组成要素是 **认证中心**（[[jp:認証局]]）。认证中心为用户的公钥签发证书，即使在有效期内，也会让出了问题的证书失效，以此支撑密钥的正当性。",
+          "text_en": "The essential component of PKI is the **certificate authority** ([[jp:認証局]]). It issues certificates for users' public keys and revokes a certificate that runs into trouble even before it expires, which keeps the keys trustworthy.",
+          "qids": [
+            "2016h28h-q057",
+            "2024r06-q066",
+            "2025r07-q087"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "PKI は、知人どうしが互いの鍵に署名し合って信頼を広げる方式とは異なり、第三者の **認証局** を信頼のよりどころに置く。",
+          "text_zh": "PKI 不同于熟人之间互相为对方的密钥签名来扩大信任的方式，而是把第三方 **认证中心** 作为信任的依据。",
+          "text_en": "Unlike a scheme where acquaintances sign each other's keys to spread trust, PKI rests its trust on a third-party **certificate authority**.",
+          "qids": [
+            "2026r08-q090"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "公開鍵は誰でも作れる",
+                "zh": "任何人都能生成公钥",
+                "en": "Anyone can create a public key"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "他人の名をかたる鍵も作れる",
+                "zh": "也能生成冒用他人名义的密钥",
+                "en": "Keys claiming someone else's name can be made too"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "認証局が持ち主を確かめて証明書を出す",
+                "zh": "认证中心核实所有者后签发证书",
+                "en": "A CA checks the owner and issues a certificate"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "受け取った側が証明書で持ち主を確かめる",
+                "zh": "接收方用证书确认所有者",
+                "en": "The receiver checks the owner via the certificate"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "鍵の組は手元のソフトで誰でも作れる。",
+            "caption_zh": "一对密钥用手头的软件谁都能生成。",
+            "caption_en": "Anyone can generate a key pair with software on their own machine.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "鍵だけでは、名乗った人の鍵かどうか区別できない。",
+            "caption_zh": "只凭密钥，无法分辨它是否属于自称的那个人。",
+            "caption_en": "The key alone cannot show whether it belongs to the person who claims it.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "そこで信頼できる第三者が持ち主を確認し、証明書に署名する。",
+            "caption_zh": "于是由可信的第三方核实所有者，并在证书上签名。",
+            "caption_en": "So a trusted third party confirms the owner and signs a certificate.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "相手は証明書を確かめてから、その公開鍵を使う。",
+            "caption_zh": "对方先核验证书，再使用其中的公钥。",
+            "caption_en": "The other side checks the certificate before using that public key.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2016h28h-q057",
+        "2026r08-q090"
+      ],
+      "definition_jp": "PKI は、ある 公開鍵 が本当にその人のものかを、第三者の 認証局 が デジタル証明書 で保証する仕組み全体である。",
+      "definition_zh": "PKI 是一整套机制：由第三方 认证中心 用 数字证书 来保证某个 公钥 确实属于声称拥有它的那个人。",
+      "definition_en": "PKI is the whole system in which a third-party certificate authority uses a digital certificate to vouch that a given public key really belongs to the person who claims it.",
+      "explanation_jp": "公開鍵そのものには持ち主の名前が書かれていないため、鍵だけを受け取っても、なりすましの鍵と見分けられない。認証局 (CA) は申請者の身元を確かめたうえで、公開鍵と持ち主を結び付けた証明書を発行する。PKI は認証局や証明書、それを検証する手順などをまとめた基盤を指し、特定の製品名ではない。",
+      "explanation_zh": "公钥本身并没有写上所有者的名字，所以只拿到密钥，无法把它和冒充者的密钥区分开。认证中心（CA）先核实申请者的身份，再签发把公钥与所有者绑定在一起的证书。PKI 指的是由认证中心、证书以及验证证书的流程等组成的基础设施，并不是某个产品的名称。",
+      "explanation_en": "A public key carries no owner's name, so receiving the key alone does not let you tell it apart from an impostor's key. A certificate authority (CA) verifies the applicant's identity and then issues a certificate that binds the public key to its owner. PKI means the whole infrastructure made up of certificate authorities, certificates and the procedures for checking them, not the name of a particular product.",
+      "memory_hook_jp": "Infrastructure は、道路や水道のような社会の土台を指す語である。",
+      "memory_hook_zh": "Infrastructure 指的是像道路、自来水那样支撑社会运转的基础设施。",
+      "memory_hook_en": "\"Infrastructure\" is the word for society's groundwork, such as roads and water mains.",
+      "inline_quiz": [
+        "2016h28h-q057",
+        "2026r08-q090"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "公開鍵基盤",
+      "term_zh": "公钥基础设施",
+      "term_en": "Public key infrastructure",
+      "one_jp": "**公開鍵基盤** は **PKI** (Public Key Infrastructure) を日本語にした名前で、指す仕組みは同じである。",
+      "one_zh": "**公钥基础设施**（[[jp:公開鍵基盤]]）是 **PKI**（Public Key Infrastructure）的日语名称，两者指的是同一套机制。",
+      "one_en": "[[jp:公開鍵基盤]] (**public key infrastructure**) is the Japanese-language name for **PKI** (Public Key Infrastructure); both refer to the same system.",
+      "detail_jp": "Public が「公開」、Key が「鍵」、Infrastructure が「基盤」に対応する。文書では「PKI (公開鍵基盤)」のように両方を並べて書かれることも多い。",
+      "detail_zh": "在日语名称中，[[jp:公開]] 对应 Public，[[jp:鍵]] 对应 Key，[[jp:基盤]] 对应 Infrastructure。文档里也常把两种写法并列，写成“PKI（公钥基础设施）”的样子（[[jp:PKI (公開鍵基盤)]]）。",
+      "detail_en": "In the Japanese name, [[jp:公開]] stands for Public, [[jp:鍵]] for Key and [[jp:基盤]] for Infrastructure. Documents often show both forms side by side, as in [[jp:PKI (公開鍵基盤)]].",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "公開鍵基盤では、認証局が保証した公開鍵でデジタル署名を検証する。受信者が確かめられるのは送信者が本人であることと内容が書き換えられていないことで、盗み見を防ぐのは暗号化の役割である。",
+          "text_zh": "在公钥基础设施（[[jp:公開鍵基盤]]）中，用认证中心（[[jp:認証局]]）担保过的公钥来验证数字签名（[[jp:デジタル署名]]）。接收方能确认的是发送者确为本人、内容没有被篡改；防止偷窥则是加密（[[jp:暗号化]]）的作用。",
+          "text_en": "In public key infrastructure ([[jp:公開鍵基盤]]), a digital signature ([[jp:デジタル署名]]) is checked with a public key vouched for by a certificate authority ([[jp:認証局]]). The receiver can confirm that the sender is genuine and that the content was not altered; keeping others from reading it is the job of encryption ([[jp:暗号化]]).",
+          "qids": [
+            "2011h23a-q060",
+            "2016h28a-q055"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2011h23a-q060",
+        "2024r06-q066"
+      ],
+      "definition_jp": "公開鍵基盤 は PKI (Public Key Infrastructure) を日本語にした名前で、指す仕組みは同じである。",
+      "definition_zh": "公钥基础设施（公開鍵基盤）是 PKI（Public Key Infrastructure）的日语名称，两者指的是同一套机制。",
+      "definition_en": "公開鍵基盤 (public key infrastructure) is the Japanese-language name for PKI (Public Key Infrastructure); both refer to the same system.",
+      "explanation_jp": "Public が「公開」、Key が「鍵」、Infrastructure が「基盤」に対応する。文書では「PKI (公開鍵基盤)」のように両方を並べて書かれることも多い。",
+      "explanation_zh": "在日语名称中，公開 对应 Public，鍵 对应 Key，基盤 对应 Infrastructure。文档里也常把两种写法并列，写成“PKI（公钥基础设施）”的样子（PKI (公開鍵基盤)）。",
+      "explanation_en": "In the Japanese name, 公開 stands for Public, 鍵 for Key and 基盤 for Infrastructure. Documents often show both forms side by side, as in PKI (公開鍵基盤).",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2011h23a-q060",
+        "2024r06-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "デジタル証明書",
+      "term_zh": "数字证书",
+      "term_en": "Digital certificate",
+      "one_jp": "**デジタル証明書** は、「この **公開鍵** はこの人 (またはこのサーバ) のもの」という対応を、**認証局** が **署名** を付けて保証した電子データである。",
+      "one_zh": "**数字证书**（[[jp:デジタル証明書]]）是一份电子数据，由 **认证中心** 附上 **签名**，保证“这个 **公钥** 属于这个人（或这台服务器）”这一对应关系。",
+      "one_en": "A **digital certificate** ([[jp:デジタル証明書]]) is electronic data in which a **certificate authority** attaches its **signature** to vouch that \"this **public key** belongs to this person (or this server).\"",
+      "detail_jp": "電子証明書や公開鍵証明書とも呼ばれ、PKI の中心になる。受け取った側は、発行した認証局の署名を確かめることで、記載された公開鍵を相手本人のものとして使える。証明書には有効期限があり、期限が来たら更新が要る。",
+      "detail_zh": "它也叫电子证书或公钥证书，是 PKI 的核心。接收方核验签发它的认证中心的签名后，就可以把证书上记载的公钥当作对方本人的公钥来使用。证书有有效期，到期后需要更新。",
+      "detail_en": "Also called an electronic certificate or public key certificate, it sits at the center of PKI. By checking the signature of the issuing certificate authority, the receiver can use the listed public key as the other party's own. A certificate has an expiry date and must be renewed when it runs out.",
+      "analogy_jp": "顔写真付きの身分証のようなもの。写真 (公開鍵) と氏名 (持ち主) の組を、発行元の印が保証している。",
+      "analogy_zh": "就像带照片的身份证。照片（公钥）与姓名（所有者）这一组合，由签发机关的印章来担保。",
+      "analogy_en": "It is like a photo ID card: the issuing office's seal vouches that the photo (public key) and the name (owner) go together.",
+      "hook_jp": "別名の「公開鍵証明書」が、証明している対象は公開鍵だと名前で教えてくれる。",
+      "hook_zh": "它的别名“公钥证书”直接告诉你：被证明的对象是公钥。",
+      "hook_en": "Its other name, \"public key certificate,\" tells you outright that what it certifies is the public key.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "デジタル証明書が正当性を保証する対象は **公開鍵** である。秘密鍵や共通鍵に対して発行されるものではない。",
+          "text_zh": "数字证书（[[jp:デジタル証明書]]）保证其正当性的对象是 **公钥**（[[jp:公開鍵]]）。它不是为私钥或共享密钥签发的。",
+          "text_en": "What a digital certificate ([[jp:デジタル証明書]]) vouches for is the **public key** ([[jp:公開鍵]]). It is not issued for a private key or a shared key.",
+          "qids": [
+            "2015h27a-q083",
+            "2010h22a-q073",
+            "2017h29h-q065"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "信頼できる認証局の証明書ではなく、送信者が自作した証明書を添えて署名付きメールを送った場合、受信者はそのメールが名乗った本人から来たのかを確かめられない。",
+          "text_zh": "如果发送者不用可信认证中心的证书，而是附上自己制作的证书来发送带签名的邮件，接收方就无法确认这封邮件是否真的来自自称的那个人。",
+          "text_en": "If a sender attaches a self-made certificate to a signed email instead of one from a trusted certificate authority, the receiver cannot confirm that the email really came from the person it claims to be from.",
+          "qids": [
+            "2020r02o-q100"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "メールを安全にやり取りする規格 S/MIME では、暗号化して送るには受信者の証明書が、署名を付けて送るには送信者の証明書が前もって要る。",
+          "text_zh": "在安全收发邮件的标准 S/MIME 中，要加密发送需要事先取得收件人的证书，要附签名发送则需要事先有发件人的证书。",
+          "text_en": "Under S/MIME, the standard for exchanging email securely, sending encrypted mail requires the recipient's certificate beforehand, while sending signed mail requires the sender's certificate.",
+          "qids": [
+            "2012h24a-q056",
+            "2013h25a-q060"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "主な記載項目",
+              "zh": "主要记载项目",
+              "en": "Main field"
+            },
+            {
+              "jp": "内容",
+              "zh": "内容",
+              "en": "Content"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "所有者",
+                  "zh": "所有者",
+                  "en": "Owner"
+                },
+                {
+                  "jp": "証明される人や組織、サーバの名前",
+                  "zh": "被证明的个人、组织或服务器的名称",
+                  "en": "Name of the person, organization or server being certified"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "公開鍵",
+                  "zh": "公钥",
+                  "en": "Public key"
+                },
+                {
+                  "jp": "所有者の公開鍵 (証明の対象)",
+                  "zh": "所有者的公钥（证明的对象）",
+                  "en": "The owner's public key (what is certified)"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "発行者",
+                  "zh": "签发者",
+                  "en": "Issuer"
+                },
+                {
+                  "jp": "証明書を発行した認証局",
+                  "zh": "签发该证书的认证中心",
+                  "en": "The certificate authority that issued it"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "有効期限",
+                  "zh": "有效期",
+                  "en": "Expiry"
+                },
+                {
+                  "jp": "証明書を使ってよい期間",
+                  "zh": "可以使用该证书的期间",
+                  "en": "The period during which the certificate may be used"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "認証局の署名",
+                  "zh": "认证中心的签名",
+                  "en": "CA's signature"
+                },
+                {
+                  "jp": "その認証局が発行し、内容が書き換えられていないことを示す",
+                  "zh": "表明由该认证中心签发，且内容未被篡改",
+                  "en": "Shows that the CA issued it and that the content has not been altered"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2015h27a-q083",
+        "2010h22a-q073",
+        "2020r02o-q100"
+      ],
+      "definition_jp": "デジタル証明書 は、「この 公開鍵 はこの人 (またはこのサーバ) のもの」という対応を、認証局 が 署名 を付けて保証した電子データである。",
+      "definition_zh": "数字证书（デジタル証明書）是一份电子数据，由 认证中心 附上 签名，保证“这个 公钥 属于这个人（或这台服务器）”这一对应关系。",
+      "definition_en": "A digital certificate (デジタル証明書) is electronic data in which a certificate authority attaches its signature to vouch that \"this public key belongs to this person (or this server).\"",
+      "explanation_jp": "電子証明書や公開鍵証明書とも呼ばれ、PKI の中心になる。受け取った側は、発行した認証局の署名を確かめることで、記載された公開鍵を相手本人のものとして使える。証明書には有効期限があり、期限が来たら更新が要る。",
+      "explanation_zh": "它也叫电子证书或公钥证书，是 PKI 的核心。接收方核验签发它的认证中心的签名后，就可以把证书上记载的公钥当作对方本人的公钥来使用。证书有有效期，到期后需要更新。",
+      "explanation_en": "Also called an electronic certificate or public key certificate, it sits at the center of PKI. By checking the signature of the issuing certificate authority, the receiver can use the listed public key as the other party's own. A certificate has an expiry date and must be renewed when it runs out.",
+      "memory_hook_jp": "別名の「公開鍵証明書」が、証明している対象は公開鍵だと名前で教えてくれる。",
+      "memory_hook_zh": "它的别名“公钥证书”直接告诉你：被证明的对象是公钥。",
+      "memory_hook_en": "Its other name, \"public key certificate,\" tells you outright that what it certifies is the public key.",
+      "inline_quiz": [
+        "2015h27a-q083",
+        "2010h22a-q073",
+        "2020r02o-q100"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ルート証明書",
+      "term_zh": "根证书",
+      "term_en": "Root certificate",
+      "one_jp": "**ルート証明書** は、証明書どうしの **信頼の連鎖** の最上位にあり、最上位の認証局が自分自身に署名した (**自己署名** の) 証明書である。",
+      "one_zh": "**根证书**（[[jp:ルート証明書]]）位于证书之间 **信任链** 的最顶端，是最上层的认证中心为自己签名的（**自签名**）证书。",
+      "one_en": "A **root certificate** ([[jp:ルート証明書]]) sits at the top of the **chain of trust** between certificates; it is a (**self-signed**) certificate that the top-level certificate authority signs for itself.",
+      "detail_jp": "証明書は上位の認証局の署名で保証され、その上位もさらに上の認証局が保証する、という **信頼の連鎖** (証明書チェーン) を作る。間に入る認証局の証明書を **中間証明書** と呼び、連鎖をさかのぼった先の最上位にはもう保証してくれる上位がないため、ルート証明書は自己署名になる。ブラウザや OS には信頼できるルート証明書があらかじめ組み込まれている。",
+      "detail_zh": "证书由上级认证中心的签名来担保，而上级又由更上一级的认证中心担保，由此形成 **信任链**（证书链）。处在中间的认证中心的证书叫做 **中间证书**；沿链条追溯到最顶端时已没有上级可以担保，所以根证书是自签名的。浏览器和操作系统中预先内置了可信的根证书。",
+      "detail_en": "Each certificate is vouched for by a higher certificate authority's signature, and that one by a CA higher still, forming a **chain of trust** (certificate chain). Certificates of the CAs in between are called **intermediate certificates**; at the top of the chain no one is left above to vouch for it, so the root certificate is self-signed. Browsers and operating systems come with trusted root certificates already installed.",
+      "analogy_jp": "会社の辞令が課長、部長、社長と順に上の人の承認で効力を持つとすると、ルート証明書は社長の印にあたる。上に承認する人はいないが、社員全員がこの印だけは本物と最初から認めている。",
+      "analogy_zh": "假设公司的任命书要依次经过科长、部长、总经理的批准才生效，那么根证书就相当于总经理的印章。总经理之上再没有人批准，但全体员工从一开始就认定这枚印章是真的。",
+      "analogy_en": "If a company appointment takes effect only after approval by the section manager, then the department head, then the CEO, the root certificate is the CEO's seal. No one stands above to approve it, yet every employee accepts that seal as genuine from the start.",
+      "hook_jp": "root は「根」: 逆さに描いた証明書の木では、一番上の根から下の枝へ信頼が下りる。",
+      "hook_zh": "root 意为“根”：在倒过来画的证书树里，信任从最上面的根流向下面的枝。",
+      "hook_en": "\"Root\": in a certificate tree drawn upside down, trust flows from the root at the top down to the branches.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "ルート証明書も自己署名だが、送信者が自作しただけの証明書とは扱いが違う。違いは、検証する側が組み込みなどで前もって信頼すると決めているかどうかにある。",
+          "text_zh": "根证书（[[jp:ルート証明書]]）同样是自签名（[[jp:自己署名]]）的，但与发送者自行制作的证书待遇不同。区别在于验证方是否已通过预装等方式事先决定信任它。",
+          "text_en": "A root certificate ([[jp:ルート証明書]]) is also self-signed ([[jp:自己署名]]), but it is treated differently from a certificate a sender simply made themselves. The difference is whether the verifier has decided in advance to trust it, for example by having it preinstalled."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "steps",
+        "data": {
+          "root": {
+            "id": "r",
+            "label": {
+              "jp": "ルート証明書 (ルート認証局・自己署名)",
+              "zh": "根证书（根认证中心·自签名）",
+              "en": "Root certificate (root CA, self-signed)"
+            },
+            "children": [
+              {
+                "id": "m",
+                "label": {
+                  "jp": "中間証明書 (中間認証局)",
+                  "zh": "中间证书（中间认证中心）",
+                  "en": "Intermediate certificate (intermediate CA)"
+                },
+                "children": [
+                  {
+                    "id": "s",
+                    "label": {
+                      "jp": "Web サーバの証明書",
+                      "zh": "Web 服务器的证书",
+                      "en": "Web server's certificate"
+                    }
+                  },
+                  {
+                    "id": "c",
+                    "label": {
+                      "jp": "利用者の証明書",
+                      "zh": "用户的证书",
+                      "en": "User's certificate"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "steps": [
+          {
+            "caption_jp": "最上位のルート認証局は、自分の証明書に自分で署名する。",
+            "caption_zh": "最上层的根认证中心自己为自己的证书签名。",
+            "caption_en": "The top-level root CA signs its own certificate.",
+            "state": {
+              "depth": 1
+            }
+          },
+          {
+            "caption_jp": "ルート認証局が、間に入る中間認証局の証明書 (中間証明書) に署名する。",
+            "caption_zh": "根认证中心为处在中间的中间认证中心的证书（中间证书）签名。",
+            "caption_en": "The root CA signs the certificate of the intermediate CA in between (the intermediate certificate).",
+            "state": {
+              "depth": 2
+            }
+          },
+          {
+            "caption_jp": "中間認証局がサーバや利用者の証明書に署名する。",
+            "caption_zh": "中间认证中心为服务器和用户的证书签名。",
+            "caption_en": "The intermediate CA signs the certificates of servers and users.",
+            "state": {
+              "depth": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ルート証明書 は、証明書どうしの 信頼の連鎖 の最上位にあり、最上位の認証局が自分自身に署名した (自己署名 の) 証明書である。",
+      "definition_zh": "根证书（ルート証明書）位于证书之间 信任链 的最顶端，是最上层的认证中心为自己签名的（自签名）证书。",
+      "definition_en": "A root certificate (ルート証明書) sits at the top of the chain of trust between certificates; it is a (self-signed) certificate that the top-level certificate authority signs for itself.",
+      "explanation_jp": "証明書は上位の認証局の署名で保証され、その上位もさらに上の認証局が保証する、という 信頼の連鎖 (証明書チェーン) を作る。間に入る認証局の証明書を 中間証明書 と呼び、連鎖をさかのぼった先の最上位にはもう保証してくれる上位がないため、ルート証明書は自己署名になる。ブラウザや OS には信頼できるルート証明書があらかじめ組み込まれている。",
+      "explanation_zh": "证书由上级认证中心的签名来担保，而上级又由更上一级的认证中心担保，由此形成 信任链（证书链）。处在中间的认证中心的证书叫做 中间证书；沿链条追溯到最顶端时已没有上级可以担保，所以根证书是自签名的。浏览器和操作系统中预先内置了可信的根证书。",
+      "explanation_en": "Each certificate is vouched for by a higher certificate authority's signature, and that one by a CA higher still, forming a chain of trust (certificate chain). Certificates of the CAs in between are called intermediate certificates; at the top of the chain no one is left above to vouch for it, so the root certificate is self-signed. Browsers and operating systems come with trusted root certificates already installed.",
+      "memory_hook_jp": "root は「根」: 逆さに描いた証明書の木では、一番上の根から下の枝へ信頼が下りる。",
+      "memory_hook_zh": "root 意为“根”：在倒过来画的证书树里，信任从最上面的根流向下面的枝。",
+      "memory_hook_en": "\"Root\": in a certificate tree drawn upside down, trust flows from the root at the top down to the branches.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "トラストアンカー",
+      "term_zh": "信任锚",
+      "term_en": "Trust anchor",
+      "one_jp": "**トラストアンカー** は、証明書を検証するときに、それ以上確かめずに信頼するものとして定めた **起点** である。",
+      "one_zh": "**信任锚**（[[jp:トラストアンカー]]）是在验证证书时，被规定为不再继续核实、直接予以信任的 **起点**。",
+      "one_en": "A **trust anchor** ([[jp:トラストアンカー]]) is the **starting point** that certificate verification is set to trust without checking any further.",
+      "detail_jp": "検証は受け取った証明書から発行者を順にたどり、署名が正しく、どの証明書も期限切れや取り消しがないことを確かめながら、前もって「ここは信じる」と決めた点に着けば成功する。その決めておいた点がトラストアンカーで、多くの場合はブラウザや OS に組み込まれたルート証明書がこの役を担う。信頼はトラストアンカーから下の証明書へ伝わるため、行き着く点が信頼の起点になる。",
+      "detail_zh": "验证从收到的证书开始，依次追溯签发者，一边确认签名正确、每张证书都没有过期或被吊销，一边向上走，只要到达事先定好“这里可以相信”的点就算成功。这个事先定好的点就是信任锚，多数情况下由浏览器或操作系统中内置的根证书来担当。信任从信任锚向下面的证书传递，因此最终到达的那个点就是信任的起点。",
+      "detail_en": "Verification starts from the received certificate and follows the issuers one by one, confirming that each signature is correct and that no certificate has expired or been revoked; it succeeds once it reaches a point decided in advance as trusted. That predetermined point is the trust anchor, and in most cases a root certificate built into the browser or OS plays this role. Trust flows down from the trust anchor to the certificates below it, so the point where the path ends is where trust starts.",
+      "analogy_jp": "知らない人の紹介状をたどって、最後に自分がよく知る恩師の名前に行き着けば、その紹介を信じられる。恩師にあたるのがトラストアンカーである。",
+      "analogy_zh": "顺着一个陌生人的介绍信一路往上追，最后追到自己非常熟悉的恩师名下，就能相信这份介绍。恩师就相当于信任锚。",
+      "analogy_en": "Following a stranger's chain of letters of introduction, if you finally reach the name of a mentor you know well, you can trust the introduction. The mentor is the trust anchor.",
+      "hook_jp": "anchor は船の「錨」。たどる検証がここで止まり、流されずに落ち着く場所と覚える。",
+      "hook_zh": "anchor 是船的“锚”。可以记成：一路追溯的验证在这里停下，不再漂流，稳稳落定。",
+      "hook_en": "An anchor holds a ship in place: the step-by-step check stops here and settles instead of drifting.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "トラストアンカーは、連鎖の中で上位に確かめてもらう証明書ではない。検証する側が自分で信頼すると決めた起点なので、何を置くかは検証者の設定で決まる。",
+          "text_zh": "信任锚（[[jp:トラストアンカー]]）不是在链条中需要上级来确认的证书。它是验证方自己决定信任的起点，所以把什么设为信任锚，由验证方的设置决定。",
+          "text_en": "A trust anchor ([[jp:トラストアンカー]]) is not a certificate that relies on a higher level in the chain to confirm it. It is a starting point the verifier itself has chosen to trust, so what serves as the anchor depends on the verifier's settings."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "受け取った証明書",
+                "zh": "收到的证书",
+                "en": "The received certificate"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "発行者の証明書で署名を確かめる",
+                "zh": "用签发者的证书核对签名",
+                "en": "Check the signature with the issuer's certificate"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "さらに上の発行者へたどる",
+                "zh": "继续追溯到更上级的签发者",
+                "en": "Move up to the next issuer"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "トラストアンカーで確認が完結する",
+                "zh": "在信任锚处完成确认",
+                "en": "Confirmation ends at the trust anchor"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "相手から届いた証明書の確認を始める。",
+            "caption_zh": "开始核验对方发来的证书。",
+            "caption_en": "Start checking the certificate sent by the other party.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "その証明書に署名した認証局の証明書で署名が正しいかを見て、期限切れや取り消しがないかも確かめる。",
+            "caption_zh": "用为该证书签名的认证中心的证书检查签名是否正确，同时确认它没有过期或被吊销。",
+            "caption_en": "Use the certificate of the CA that signed it to check the signature, and also confirm it has not expired or been revoked.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "発行者の証明書も、その上の発行者で同じように確かめる。",
+            "caption_zh": "签发者的证书也用其上级签发者以同样方式核验。",
+            "caption_en": "The issuer's certificate is checked the same way using the issuer above it.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "途中の証明書がどれも有効なまま信頼済みの起点まで行き着けば、最初の証明書を信頼できる。",
+            "caption_zh": "如果途中的证书都有效，并且一路到达已被信任的起点，就可以信任最初那张证书。",
+            "caption_en": "If every certificate on the way is valid and the path reaches the trusted starting point, the first certificate can be trusted.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "トラストアンカー は、証明書を検証するときに、それ以上確かめずに信頼するものとして定めた 起点 である。",
+      "definition_zh": "信任锚（トラストアンカー）是在验证证书时，被规定为不再继续核实、直接予以信任的 起点。",
+      "definition_en": "A trust anchor (トラストアンカー) is the starting point that certificate verification is set to trust without checking any further.",
+      "explanation_jp": "検証は受け取った証明書から発行者を順にたどり、署名が正しく、どの証明書も期限切れや取り消しがないことを確かめながら、前もって「ここは信じる」と決めた点に着けば成功する。その決めておいた点がトラストアンカーで、多くの場合はブラウザや OS に組み込まれたルート証明書がこの役を担う。信頼はトラストアンカーから下の証明書へ伝わるため、行き着く点が信頼の起点になる。",
+      "explanation_zh": "验证从收到的证书开始，依次追溯签发者，一边确认签名正确、每张证书都没有过期或被吊销，一边向上走，只要到达事先定好“这里可以相信”的点就算成功。这个事先定好的点就是信任锚，多数情况下由浏览器或操作系统中内置的根证书来担当。信任从信任锚向下面的证书传递，因此最终到达的那个点就是信任的起点。",
+      "explanation_en": "Verification starts from the received certificate and follows the issuers one by one, confirming that each signature is correct and that no certificate has expired or been revoked; it succeeds once it reaches a point decided in advance as trusted. That predetermined point is the trust anchor, and in most cases a root certificate built into the browser or OS plays this role. Trust flows down from the trust anchor to the certificates below it, so the point where the path ends is where trust starts.",
+      "memory_hook_jp": "anchor は船の「錨」。たどる検証がここで止まり、流されずに落ち着く場所と覚える。",
+      "memory_hook_zh": "anchor 是船的“锚”。可以记成：一路追溯的验证在这里停下，不再漂流，稳稳落定。",
+      "memory_hook_en": "An anchor holds a ship in place: the step-by-step check stops here and settles instead of drifting.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "信頼の基点",
+      "term_zh": "信任基点",
+      "term_en": "Point of trust",
+      "one_jp": "**信頼の基点** は **トラストアンカー** の日本語名で、検証で無条件に信頼する起点を指す。",
+      "one_zh": "**信任基点**（[[jp:信頼の基点]]）是 **信任锚** 的日语名称，指验证时无条件信任的起点。",
+      "one_en": "[[jp:信頼の基点]] (**point of trust**) is the Japanese name for **trust anchor**, the starting point trusted unconditionally during verification.",
+      "detail_jp": "トラスト (trust) が「信頼」、アンカー (anchor) が「基点」と訳されている。文書によって、英語名と日本語名のどちらでも書かれる。",
+      "detail_zh": "trust 被译作 [[jp:信頼]]（信任），anchor 被译作 [[jp:基点]]。不同的文档里，片假名的英语名称和日语名称两种写法都会用到。",
+      "detail_en": "Trust is rendered as [[jp:信頼]] and anchor as [[jp:基点]]. Japanese documents use either this native name or the katakana loanword.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "信頼の基点 は トラストアンカー の日本語名で、検証で無条件に信頼する起点を指す。",
+      "definition_zh": "信任基点（信頼の基点）是 信任锚 的日语名称，指验证时无条件信任的起点。",
+      "definition_en": "信頼の基点 (point of trust) is the Japanese name for trust anchor, the starting point trusted unconditionally during verification.",
+      "explanation_jp": "トラスト (trust) が「信頼」、アンカー (anchor) が「基点」と訳されている。文書によって、英語名と日本語名のどちらでも書かれる。",
+      "explanation_zh": "trust 被译作 信頼（信任），anchor 被译作 基点。不同的文档里，片假名的英语名称和日语名称两种写法都会用到。",
+      "explanation_en": "Trust is rendered as 信頼 and anchor as 基点. Japanese documents use either this native name or the katakana loanword.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "サーバ証明書",
+      "term_zh": "服务器证书",
+      "term_en": "Server certificate",
+      "one_jp": "**サーバ証明書** は、Web サーバなどの **接続先** が本物であることを、接続してきたブラウザなどに示すための証明書である。",
+      "one_zh": "**服务器证书**（[[jp:サーバ証明書]]）是向连接过来的浏览器等表明 Web 服务器等 **连接目标** 是真实的证书。",
+      "one_en": "A **server certificate** ([[jp:サーバ証明書]]) is a certificate that shows a connecting browser or similar client that the **destination**, such as a web server, is genuine.",
+      "detail_jp": "**SSL/TLS** (https の通信) で使われるため、「SSL 証明書」と呼ばれることもある。証明書にはサーバの名前や運営者の情報、そのサーバの公開鍵、発行した認証局の署名が入っている。",
+      "detail_zh": "它用于 **SSL/TLS**（https 通信），因此也被称为“SSL 证书”。证书中包含服务器的名称和运营者信息、该服务器的公钥，以及签发它的认证中心的签名。",
+      "detail_en": "Because it is used in **SSL/TLS** (https connections), people also call it an SSL certificate. It contains the server's name and operator details, that server's public key and the signature of the issuing certificate authority.",
+      "analogy_jp": "店の入口に、信頼できる第三者が確かめた店名と所在地の証明が掲げてあるようなもの。客は看板どおりの本物の店だと確かめられるが、店の評判までは分からない。",
+      "analogy_zh": "就像店门口挂着一份由可信第三方核实过店名和地址的证明。顾客能确认这是招牌上写的那家真店，但看不出这家店的口碑好坏。",
+      "analogy_en": "It is like a notice at a shop's entrance in which a trusted third party confirms the shop's name and address. Customers can tell it is the real shop named on the sign, but not whether the shop has a good reputation.",
+      "hook_jp": "server は「仕える側」の意味で、頼まれて応える側が自分の身元を示すための証明書と覚える。",
+      "hook_zh": "server 有“侍奉者”的意思，可以记成：这是应请求提供服务的一方用来表明自己身份的证书。",
+      "hook_en": "\"Server\" comes from serving: it is the certificate the side that answers requests uses to prove who it is.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "SSL/TLS で接続し、証明書が意図した運営者のものと確かめられれば、接続先が本物であることと、通信が暗号化されていることは判断できる。運営者が信用できる事業者かどうかまでは、証明書は保証しない。",
+          "text_zh": "用 SSL/TLS 连接，并确认证书属于预期的运营者后，就能判断连接目标是真实的、通信已被加密。至于运营者是不是值得信赖的企业，证书并不保证。",
+          "text_en": "When you connect over SSL/TLS and confirm the certificate belongs to the intended operator, you can conclude that the destination is genuine and that the traffic is encrypted. The certificate does not vouch for whether the operator is a trustworthy business.",
+          "qids": [
+            "2010h22a-q080"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**SSL/TLS** では、ブラウザがサーバ証明書で接続先を確かめ、証明書に入ったサーバの公開鍵を使って暗号化通信の鍵を安全に共有する。",
+          "text_zh": "在 **SSL/TLS** 中，浏览器用服务器证书（[[jp:サーバ証明書]]）确认连接目标，并用证书中服务器的公钥安全地共享加密通信用的密钥。",
+          "text_en": "In **SSL/TLS**, the browser checks the destination with the server certificate ([[jp:サーバ証明書]]) and uses the server's public key in that certificate to share the key for encrypted communication safely.",
+          "qids": [
+            "2018h30h-q057",
+            "2010h22h-q071"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "ブラウザが接続を求める",
+                "zh": "浏览器请求连接",
+                "en": "Browser requests a connection"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "サーバがサーバ証明書を送る",
+                "zh": "服务器发送服务器证书",
+                "en": "Server sends its server certificate"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "ブラウザが証明書を検証する",
+                "zh": "浏览器验证证书",
+                "en": "Browser verifies the certificate"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "暗号化した通信を始める",
+                "zh": "开始加密通信",
+                "en": "Encrypted communication begins"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者のブラウザが https で始まるサイトに接続する。",
+            "caption_zh": "用户的浏览器连接以 https 开头的网站。",
+            "caption_en": "The user's browser connects to a site whose address starts with https.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "サーバは自分の公開鍵が入った証明書を返す。",
+            "caption_zh": "服务器返回装有自己公钥的证书。",
+            "caption_en": "The server returns a certificate containing its public key.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "ブラウザは組み込みのルート証明書まで連鎖をたどって確かめる。",
+            "caption_zh": "浏览器沿证书链一直追溯到内置的根证书进行确认。",
+            "caption_en": "The browser follows the chain up to a built-in root certificate to check it.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "確認できたら、その公開鍵を使って通信用の鍵を共有し、暗号化した通信に入る。",
+            "caption_zh": "确认无误后，用该公钥共享通信用的密钥，进入加密通信。",
+            "caption_en": "Once confirmed, it uses that public key to share a session key and switches to encrypted communication.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2010h22a-q080",
+        "2018h30h-q057"
+      ],
+      "definition_jp": "サーバ証明書 は、Web サーバなどの 接続先 が本物であることを、接続してきたブラウザなどに示すための証明書である。",
+      "definition_zh": "服务器证书（サーバ証明書）是向连接过来的浏览器等表明 Web 服务器等 连接目标 是真实的证书。",
+      "definition_en": "A server certificate (サーバ証明書) is a certificate that shows a connecting browser or similar client that the destination, such as a web server, is genuine.",
+      "explanation_jp": "SSL/TLS (https の通信) で使われるため、「SSL 証明書」と呼ばれることもある。証明書にはサーバの名前や運営者の情報、そのサーバの公開鍵、発行した認証局の署名が入っている。",
+      "explanation_zh": "它用于 SSL/TLS（https 通信），因此也被称为“SSL 证书”。证书中包含服务器的名称和运营者信息、该服务器的公钥，以及签发它的认证中心的签名。",
+      "explanation_en": "Because it is used in SSL/TLS (https connections), people also call it an SSL certificate. It contains the server's name and operator details, that server's public key and the signature of the issuing certificate authority.",
+      "memory_hook_jp": "server は「仕える側」の意味で、頼まれて応える側が自分の身元を示すための証明書と覚える。",
+      "memory_hook_zh": "server 有“侍奉者”的意思，可以记成：这是应请求提供服务的一方用来表明自己身份的证书。",
+      "memory_hook_en": "\"Server\" comes from serving: it is the certificate the side that answers requests uses to prove who it is.",
+      "inline_quiz": [
+        "2010h22a-q080",
+        "2018h30h-q057"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "クライアント証明書",
+      "term_zh": "客户端证书",
+      "term_en": "Client certificate",
+      "one_jp": "**クライアント証明書** は、サーバに **接続してくる利用者や端末** が正規の相手であることを示すための証明書である。",
+      "one_zh": "**客户端证书**（[[jp:クライアント証明書]]）是用来表明连接到服务器的 **用户或终端** 是正当对象的证书。",
+      "one_en": "A **client certificate** ([[jp:クライアント証明書]]) is a certificate that shows the **user or device connecting** to a server is a legitimate party.",
+      "detail_jp": "許可した利用者の端末にあらかじめ入れておき、サーバは接続のたびにその証明書を確かめる。ID とパスワードに加えて使えば、証明書を入れていない端末からは、パスワードを知っていても入れないようにできる。",
+      "detail_zh": "事先把它装进已获许可的用户终端，服务器在每次连接时核验该证书。与 ID 和口令（密码）配合使用，就能让没有装证书的终端即使知道口令也进不来。",
+      "detail_en": "It is installed in advance on the devices of authorized users, and the server checks it on every connection. Used together with an ID and password, it keeps out devices without the certificate even if someone knows the password.",
+      "analogy_jp": "会員制のクラブの会員証のようなもの。店の側が、入ってくる客の会員証を見て正規の会員かを確かめる。",
+      "analogy_zh": "就像会员制俱乐部的会员卡。店方查看进门顾客的会员卡，确认对方是不是正式会员。",
+      "analogy_en": "It is like a membership card at a members-only club: the staff check each arriving guest's card to confirm they are a real member.",
+      "hook_jp": "client は「依頼人」。サービスを頼む側が持つ証明書と覚える。",
+      "hook_zh": "client 是“委托人”，可以记成：请求服务的一方所持有的证书。",
+      "hook_en": "A client is the one who asks for a service, so this is the certificate held by the requesting side.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "クライアント証明書はサーバが利用者側を確かめるための証明書で、ブラウザが接続先を確かめるサーバ証明書とは確かめる向きが逆である。",
+          "text_zh": "客户端证书（[[jp:クライアント証明書]]）是服务器用来确认用户一方的证书，与浏览器用来确认连接目标的服务器证书（[[jp:サーバ証明書]]）方向正好相反。",
+          "text_en": "A client certificate ([[jp:クライアント証明書]]) is what the server uses to check the user side, the opposite direction from a server certificate ([[jp:サーバ証明書]]), which the browser uses to check the destination."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "クライアント証明書 は、サーバに 接続してくる利用者や端末 が正規の相手であることを示すための証明書である。",
+      "definition_zh": "客户端证书（クライアント証明書）是用来表明连接到服务器的 用户或终端 是正当对象的证书。",
+      "definition_en": "A client certificate (クライアント証明書) is a certificate that shows the user or device connecting to a server is a legitimate party.",
+      "explanation_jp": "許可した利用者の端末にあらかじめ入れておき、サーバは接続のたびにその証明書を確かめる。ID とパスワードに加えて使えば、証明書を入れていない端末からは、パスワードを知っていても入れないようにできる。",
+      "explanation_zh": "事先把它装进已获许可的用户终端，服务器在每次连接时核验该证书。与 ID 和口令（密码）配合使用，就能让没有装证书的终端即使知道口令也进不来。",
+      "explanation_en": "It is installed in advance on the devices of authorized users, and the server checks it on every connection. Used together with an ID and password, it keeps out devices without the certificate even if someone knows the password.",
+      "memory_hook_jp": "client は「依頼人」。サービスを頼む側が持つ証明書と覚える。",
+      "memory_hook_zh": "client 是“委托人”，可以记成：请求服务的一方所持有的证书。",
+      "memory_hook_en": "A client is the one who asks for a service, so this is the certificate held by the requesting side.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "ルート証明書",
+      "b": "トラストアンカー",
+      "rows": [
+        {
+          "label_jp": "何を指すか",
+          "label_zh": "指什么",
+          "label_en": "What it is",
+          "a_jp": "連鎖の最上位にある具体的な証明書",
+          "a_zh": "链条最顶端的具体证书",
+          "a_en": "The concrete certificate at the top of the chain",
+          "b_jp": "検証で信頼を始める起点という役割",
+          "b_zh": "验证中开始信任的起点这一角色",
+          "b_en": "The role of the point where trust begins in verification",
+          "key": true
+        },
+        {
+          "label_jp": "署名",
+          "label_zh": "签名",
+          "label_en": "Signature",
+          "a_jp": "自分で自分に署名している",
+          "a_zh": "自己为自己签名",
+          "a_en": "Signed by itself",
+          "b_jp": "役割の名前なので署名の形は問わない",
+          "b_zh": "是角色名称，不限定签名形式",
+          "b_en": "A role name, so the form of signature does not matter",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "サーバ証明書",
+      "b": "クライアント証明書",
+      "rows": [
+        {
+          "label_jp": "証明される側",
+          "label_zh": "被证明的一方",
+          "label_en": "Side being proved",
+          "a_jp": "Web サーバなどの接続先",
+          "a_zh": "Web 服务器等连接目标",
+          "a_en": "The destination, such as a web server",
+          "b_jp": "接続してくる利用者や端末",
+          "b_zh": "连接过来的用户或终端",
+          "b_en": "The user or device connecting in",
+          "key": true
+        },
+        {
+          "label_jp": "確かめる側",
+          "label_zh": "核验的一方",
+          "label_en": "Side doing the check",
+          "a_jp": "ブラウザなどの利用者側",
+          "a_zh": "浏览器等用户一方",
+          "a_en": "The user side, such as a browser",
+          "b_jp": "サーバ側",
+          "b_zh": "服务器一方",
+          "b_en": "The server side",
+          "key": false
+        },
+        {
+          "label_jp": "主な使い道",
+          "label_zh": "主要用途",
+          "label_en": "Main use",
+          "a_jp": "SSL/TLS で接続先を認証し暗号化通信を始める",
+          "a_zh": "在 SSL/TLS 中认证连接目标并开始加密通信",
+          "a_en": "Authenticates the destination in SSL/TLS and starts encrypted communication",
+          "b_jp": "パスワードに加えて接続できる端末を絞る",
+          "b_zh": "在口令之外进一步限定可以连接的终端",
+          "b_en": "Limits which devices can connect, on top of the password",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**PKI** (公開鍵基盤) は、公開鍵の持ち主を **認証局** がデジタル証明書で保証する仕組みである。",
+    "**デジタル証明書** が保証するのは公開鍵と持ち主の対応で、認証局の署名が付き、有効期限がある。",
+    "証明書は発行者を上へたどって検証し、途中の証明書がどれも有効で、信頼済みの起点 (**トラストアンカー**) に行き着けば信頼される。多くは自己署名の **ルート証明書** がこの起点になる。",
+    "**サーバ証明書** は接続先のサーバが本物であることを示し、SSL/TLS で暗号化通信を始める前にブラウザが検証する。"
+  ],
+  "key_points_zh": [
+    "**PKI**（公钥基础设施）是由 **认证中心** 用数字证书来保证公钥所有者的机制。",
+    "**数字证书** 保证的是公钥与所有者的对应关系，附有认证中心的签名，并设有有效期。",
+    "验证证书时沿签发者逐级向上追溯，只要途中的证书都有效并到达已被信任的起点（**信任锚**），证书就会被信任。多数情况下，这个起点是自签名的 **根证书**。",
+    "**服务器证书** 表明所连接的服务器是真实的，在 SSL/TLS 开始加密通信之前由浏览器进行验证。"
+  ],
+  "key_points_en": [
+    "**PKI** (public key infrastructure) is the system in which a **certificate authority** uses digital certificates to vouch for who owns a public key.",
+    "A **digital certificate** vouches for the link between a public key and its owner; it carries the certificate authority's signature and has an expiry date.",
+    "A certificate is verified by tracing its issuers upward; if every certificate on the way is valid and the path reaches a trusted starting point (the **trust anchor**), it is trusted. In most cases that starting point is a self-signed **root certificate**.",
+    "A **server certificate** shows that the server being connected to is genuine, and the browser verifies it before SSL/TLS starts encrypted communication."
+  ],
+  "overview": {
+    "intro_jp": "PKI の中で 認証局 と デジタル証明書 が何を保証しているかを説明できる。証明書を発行者の側へ順にたどって確かめる流れを説明でき、その行き着く先で信頼の起点になる トラストアンカー の役割を言える。サーバ証明書 と クライアント証明書 を、どちら側を証明するかで分けられる。",
+    "intro_zh": "能说明在 PKI 中，认证中心 和 数字证书 分别保证了什么。能说明沿着签发者方向逐级向上核验证书的流程，并说出位于终点、作为信任起点的 信任锚 所起的作用。能按照证明的是哪一方，区分 服务器证书 与 客户端证书。",
+    "intro_en": "Explain what the certificate authority and the digital certificate each guarantee within PKI. Describe how a certificate is checked by following its issuers upward one by one, and state the role of the trust anchor, the starting point of trust where that path ends. Tell a server certificate from a client certificate by which side each one proves.",
+    "freq_badge": "頻出",
+    "est_minutes": 42
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "PKI: PKIといえば公開鍵を証明書で保証する社会基盤",
-      "公開鍵基盤: 公開鍵基盤といえばPKIの日本語名で同じ仕組み",
-      "デジタル証明書: デジタル証明書といえば公開鍵の持ち主を認証局が保証する書類",
-      "ルート証明書: ルート証明書といえば信頼チェーン最上位の自己署名証明書",
-      "トラストアンカー: トラストアンカーといえば無条件に信頼する検証の起点",
-      "信頼の基点: 信頼の基点といえばトラストアンカーの日本語表現",
-      "サーバ証明書: サーバ証明書といえばサーバの正当性を証明する証明書",
-      "クライアント証明書: クライアント証明書といえば利用者側の正当性を証明する証明書"
-    ],
     "key_points_jp": [
-      "PKI(公開鍵基盤)は、公開鍵が本人のものだと認証局が証明書で保証する社会的な仕組みで、PKIと公開鍵基盤は同じものを指す。",
-      "デジタル証明書はPKIの中心で、公開鍵と所有者を結び付けて認証局が署名・保証し、なりすましを防ぐ。",
-      "証明書は階層的な信頼チェーンで検証され、その最上位がルート証明書(自己署名)である。",
-      "トラストアンカー(=信頼の基点)は検証で無条件に信頼する起点を指し、通常はルート証明書がその役割を担う。",
-      "用途別にサーバ証明書(サーバ側の正当性を証明)とクライアント証明書(利用者側の正当性を証明)があり、証明する向きが対になっている。"
+      "PKI (公開鍵基盤) は、公開鍵の持ち主を 認証局 がデジタル証明書で保証する仕組みである。",
+      "デジタル証明書 が保証するのは公開鍵と持ち主の対応で、認証局の署名が付き、有効期限がある。",
+      "証明書は発行者を上へたどって検証し、途中の証明書がどれも有効で、信頼済みの起点 (トラストアンカー) に行き着けば信頼される。多くは自己署名の ルート証明書 がこの起点になる。",
+      "サーバ証明書 は接続先のサーバが本物であることを示し、SSL/TLS で暗号化通信を始める前にブラウザが検証する。"
     ],
     "key_points_zh": [
-      "PKI（公钥基础设施）是由认证机构用证书保证公钥确实属于本人的社会性机制，PKI 与公钥基础设施指的是同一个东西。",
-      "数字证书是 PKI 的核心，它把公钥与所有者绑定，由认证机构签名并担保，从而防止冒充。",
-      "证书通过层级化的信任链来验证，其最顶端是根证书（自签名）。",
-      "信任锚（= 信任基点）指验证中无条件信任的起点，通常由根证书承担这一角色。",
-      "按用途分为服务器证书（证明服务器一方的合法性）和客户端证书（证明用户一方的合法性），证明的方向构成一对。"
+      "PKI（公钥基础设施）是由 认证中心 用数字证书来保证公钥所有者的机制。",
+      "数字证书 保证的是公钥与所有者的对应关系，附有认证中心的签名，并设有有效期。",
+      "验证证书时沿签发者逐级向上追溯，只要途中的证书都有效并到达已被信任的起点（信任锚），证书就会被信任。多数情况下，这个起点是自签名的 根证书。",
+      "服务器证书 表明所连接的服务器是真实的，在 SSL/TLS 开始加密通信之前由浏览器进行验证。"
     ],
     "key_points_en": [
-      "PKI (public key infrastructure) is the societal mechanism in which a certificate authority uses a certificate to guarantee that a public key truly belongs to its owner; PKI and public key infrastructure refer to the same thing.",
-      "The digital certificate is the core of PKI; it binds a public key to its owner, signed and vouched for by a certificate authority, thereby preventing impersonation.",
-      "Certificates are verified through a hierarchical trust chain, whose top is the root certificate (self-signed).",
-      "The trust anchor (= point of trust) refers to the starting point that is trusted unconditionally during verification, a role normally taken by the root certificate.",
-      "By purpose there are the server certificate (proving the server side's legitimacy) and the client certificate (proving the user side's legitimacy), and the direction of proof forms a pair."
+      "PKI (public key infrastructure) is the system in which a certificate authority uses digital certificates to vouch for who owns a public key.",
+      "A digital certificate vouches for the link between a public key and its owner; it carries the certificate authority's signature and has an expiry date.",
+      "A certificate is verified by tracing its issuers upward; if every certificate on the way is valid and the path reaches a trusted starting point (the trust anchor), it is trusted. In most cases that starting point is a self-signed root certificate.",
+      "A server certificate shows that the server being connected to is genuine, and the browser verifies it before SSL/TLS starts encrypted communication."
+    ],
+    "memory_hooks_jp": [
+      "PKI: Infrastructure は、道路や水道のような社会の土台を指す語である。",
+      "デジタル証明書: 別名の「公開鍵証明書」が、証明している対象は公開鍵だと名前で教えてくれる。",
+      "ルート証明書: root は「根」: 逆さに描いた証明書の木では、一番上の根から下の枝へ信頼が下りる。",
+      "トラストアンカー: anchor は船の「錨」。たどる検証がここで止まり、流されずに落ち着く場所と覚える。",
+      "サーバ証明書: server は「仕える側」の意味で、頼まれて応える側が自分の身元を示すための証明書と覚える。",
+      "クライアント証明書: client は「依頼人」。サービスを頼む側が持つ証明書と覚える。"
     ],
     "memory_hooks_zh": [
-      "PKI：说到 PKI，就是用证书保证公钥的社会基础设施",
-      "公钥基础设施：说到公钥基础设施，就是 PKI 的日文名、同一套机制",
-      "数字证书：说到数字证书，就是认证机构担保公钥所有者的文件",
-      "根证书：说到根证书，就是信任链最顶端的自签名证书",
-      "信任锚：说到信任锚，就是无条件信任的验证起点",
-      "信任基点：说到信任基点，就是信任锚的日文表达",
-      "服务器证书：说到服务器证书，就是证明服务器合法性的证书",
-      "客户端证书：说到客户端证书，就是证明用户一方合法性的证书"
+      "PKI（公钥基础设施）：Infrastructure 指的是像道路、自来水那样支撑社会运转的基础设施。",
+      "数字证书：它的别名“公钥证书”直接告诉你：被证明的对象是公钥。",
+      "根证书：root 意为“根”：在倒过来画的证书树里，信任从最上面的根流向下面的枝。",
+      "信任锚：anchor 是船的“锚”。可以记成：一路追溯的验证在这里停下，不再漂流，稳稳落定。",
+      "服务器证书：server 有“侍奉者”的意思，可以记成：这是应请求提供服务的一方用来表明自己身份的证书。",
+      "客户端证书：client 是“委托人”，可以记成：请求服务的一方所持有的证书。"
     ],
     "memory_hooks_en": [
-      "PKI: PKI → the societal infrastructure that guarantees public keys with certificates",
-      "Public key infrastructure: Public key infrastructure → the Japanese name for PKI, the same mechanism",
-      "Digital certificate: Digital certificate → a document in which a certificate authority vouches for the public key's owner",
-      "Root certificate: Root certificate → the self-signed certificate at the top of the trust chain",
-      "Trust anchor: Trust anchor → the verification starting point that is trusted unconditionally",
-      "Point of trust: Point of trust → the Japanese expression for trust anchor",
-      "Server certificate: Server certificate → the certificate that proves the server's legitimacy",
-      "Client certificate: Client certificate → the certificate that proves the user side's legitimacy"
+      "PKI: \"Infrastructure\" is the word for society's groundwork, such as roads and water mains.",
+      "Digital certificate: Its other name, \"public key certificate,\" tells you outright that what it certifies is the public key.",
+      "Root certificate: \"Root\": in a certificate tree drawn upside down, trust flows from the root at the top down to the branches.",
+      "Trust anchor: An anchor holds a ship in place: the step-by-step check stops here and settles instead of drifting.",
+      "Server certificate: \"Server\" comes from serving: it is the certificate the side that answers requests uses to prove who it is.",
+      "Client certificate: A client is the one who asks for a service, so this is the certificate held by the requesting side."
     ]
   },
   "challenge_questions": [
+    "2009h21a-q085",
+    "2014h26a-q055",
     "2016h28a-q055",
-    "2016h28h-q090",
-    "2018h30h-q057",
-    "2017h29a-q071",
-    "2017h29h-q065"
+    "2012h24a-q056",
+    "2010h22h-q071"
   ],
   "source_figures": [
     {
@@ -292,9 +1125,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "PKI 与公钥基础设施的核心",
-  "title_en": "PKI and the Core of Public Key Infrastructure",
-  "unit_summary_zh": "学习 PKI / 公钥基础设施的框架，以及数字证书与各类证书（根证书 / 服务器证书 / 客户端证书）的作用。",
-  "unit_summary_en": "Learn the framework of PKI / public key infrastructure and the roles of digital certificates and the various certificate types (root / server / client)."
+  }
 }
