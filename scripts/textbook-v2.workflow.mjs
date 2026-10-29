@@ -101,7 +101,7 @@ const REVIEW_RESULT = (stage) => ({
           where: { type: 'string', description: 'JSON 上の位置 (例 terms[2].detail_jp / pairs[0].rows[1].b_zh)' },
           rule: { type: 'string', description: '根拠 (D-195 §N / 事実: 問題 id / 訳: 意味ずれ など)' },
           detail_jp: { type: 'string' },
-          fix_jp: { type: 'string', description: '具体的な直し方' },
+          fix_jp: { type: 'string', description: stage === 'jp-review' ? '直し方の方向 (D-204: 一般原則で書き、引用題の場面・列挙・選択肢・数値を使わない。削除・絞り込み案を優先。low は空でよい)' : '具体的な直し方' },
         },
       },
     },
@@ -128,7 +128,7 @@ const zhTermsOf = (unit) => `${dirOf(unit)}/zh_terms.unit.json`
 const ZH_TERMS = (unit) => `zh 訳語表 (B6): \`${zhTermsOf(unit)}\` (この単元に関係する項目だけ) を Read する。日本語の語がその見出し語としての専門的な意味で使われているときだけ表の zh を使い、日常語・別の意味で使われているときは意味に合わせて訳す (例: 一般的な「項目」「手続」)。validate が \`warn zh-term\` 行を出したら、専門的な意味で使っている箇所は表の訳に直す (warn は不合格ではない。文脈上ほかの訳が正しいなら残してよい)。`
 
 // D-203 (S137 b02 u06 / u07: each revision fixed the flagged items and introduced new ones elsewhere, once a high)
-const REVISE_GUARD = `3. 直し方 (D-203、改稿で新しい誤りを生まない): (a) 指摘の修正は**削除・絞り込みを優先**し、新しい概括句を足さない。足した句・書き換えた文は、事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / overview / goals) に照らして読み直す。(b) 書き終えたら単元の対比 (「A は〜、B は〜」) ごとに出てくる欄を列挙し、pairs と mix 考点以外に出ていれば削る。(c) 比喩に用語自身の操作 (暗号化する・署名する 等) を入れない。定義の言い換えにしかならないなら analogy_jp は "" にする。hook_jp も同様。定義の言い換えにしかならないなら省略する。\n`
+const REVISE_GUARD = `3. 直し方 (D-203、改稿で新しい誤りを生まない): (a) 指摘の修正は**削除・絞り込みを優先**し、新しい概括句を足さない。足した句・書き換えた文は、事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / overview / goals) に照らして読み直す。(b) 書き終えたら単元の対比 (「A は〜、B は〜」) ごとに出てくる欄を列挙し、pairs と mix 考点以外に出ていれば削る。(c) 比喩に用語自身の操作 (暗号化する・署名する 等) を入れない。定義の言い換えにしかならないなら analogy_jp は "" にする。hook_jp も同様。定義の言い換えにしかならないなら省略する。(d) 審査の fix_jp は方向の手がかりであって、逐語で写す文ではない (D-204)。採用する文も自分の言葉で書き、引用題の場面・判断項目の列挙を写していないか (D-198) と他の欄との整合を点検する。\n`
 
 function writerPrompt(unit, round, prev, review, seed) {
   const part = partOf(unit, 'jp', round)
@@ -186,13 +186,14 @@ function reviewPrompt(unit, round, part, partRound) {
 4. **写していないか**: ${D198} (i)(ii)(iii) に当たれば high。標準的な定義・計算規則・原則を一般的な表現で述べた文は、正解選択肢が同じ原則を述べていても写しとして指摘しない。
 5. **考点と引用題の正解**: 各 exam 考点の qids の題だけを \`${QUESTIONS_JSON}\` から Read し (id で検索、題文・選択肢・correct_answer)、主張がその題の正解と一致するか、データが支持しない規則を作っていないかを確かめる。矛盾は high。
 6. **標記**: 日本語の本文に [[jp:…]] (zh / en 専用) があれば指摘する。
-7. **欄同士の整合**: 同じ用語の one / detail / points / pairs / hook と overview / goals で定義の範囲が食い違う・矛盾する箇所 (「〜だけ」「〜ではない」と限る文が他欄と合わない等) は medium。それで事実の誤りになるなら high。
+7. **欄同士の整合**: 同じ用語の one / detail / points / pairs / hook と overview / goals で定義の範囲が食い違う・矛盾する箇所 (「〜だけ」「〜ではない」と限る文が他欄と合わない等) は medium。それで事実の誤りになるなら high。比喩・hook も対象 (D-204): その像や結論が、同じ用語の考点・detail が否定する内容 (例: 証明書が保証しない事業者の信用) を運んでいれば medium。
 8. **対比の反復**: 同じ対比は pairs と mix 考点の 2 箇所まで。detail・key_points で同じ対比を繰り返さない。これを超えて繰り返していれば **low** (D-203、issues には書く)。
 9. **限定条件**: 引用題の場面・前提を外して無条件に言い切った主張は high (観点 5 と同じ扱い)。
 
 ## 判定
 - verdict (D-199): high / medium の issue が 0 なら PASS、1 つでもあれば REVISE。low だけなら PASS を返す (low も issues に全部書く。記録され、改稿は任意)。workflow も issues の severity から同じ規則で判定する。
-- issues: 1 件ずつ severity・where (JSON 位置)・rule (根拠)・detail_jp・fix_jp (具体的な直し方)。
+- issues: 1 件ずつ severity・where (JSON 位置)・rule (根拠)・detail_jp・fix_jp (修正案。下の書き方に従う)。
+- fix_jp の書き方 (D-204): 修正案は**一般原則で書く**。引用題の場面・判断項目の列挙・選択肢・数値を使わない (D-198 (iii) は修正案にも掛かる。執筆者がそのまま採用しても写しにならないこと)。**削除・絞り込み案を優先**する。文を足す案は、出す前に事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / hook / overview / goals) に照らして審査者自身が確かめる。low の fix_jp は空 ("") でよい。
 - StructuredOutput で {unit_id:"${unit}", stage:"jp-review", round:${round}, reviewed_round:${partRound}, reviewed_sha256: (validate の sha256 行の hex), verdict, issues} を返す。ファイルは書かない。`
 }
 
