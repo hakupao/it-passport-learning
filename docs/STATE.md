@@ -53,12 +53,12 @@ Plan: `docs/phase5/PLAN.md`
 | 组件 | 状态 | 说明 |
 |------|------|------|
 | Next.js 15 app | ✅ 运行中 | `apps/web/` |
-| AI Tutor | ✅ Phase 4 完成 | `/api/tutor` + DeepSeek V4 pro / Anthropic Sonnet 4.6 |
+| AI 先生 (sensei) | 🔒 owner 限定プレビュー | `/[locale]/sensei` + `/api/sensei/terms`、BYOK (D-181)、AI 路由は owner のみ (D-148)、ナビ非表示 (D-188)。訪問者向けは計画中。旧 Phase 4 `/api/tutor` + DeepSeek は撤去済 |
 | Quiz 系统 | ✅ | Phase 2 QuizExplain + self-report |
 | Glossary 系统 | ✅ | Phase 2 悬浮卡 |
-| Chat 系统 | ✅ | Phase 2 `/api/chat` |
+| Chat 系统 | ⛔ 撤去 | 旧 Phase 2 `/api/chat` は現存しない (`src/lib/chat/historyStore.ts` のみ残存) |
 | i18n 三语 | ✅ | ja / zh / en via next-intl |
-| Middleware firewall | ✅ | Basic Auth (D-097) |
+| Middleware | ✅ | next-intl ルーティング + owner cookie 発行 (`?owner_key=`、D-148)。Basic Auth (D-097) は現行 middleware に無し |
 
 ---
 
