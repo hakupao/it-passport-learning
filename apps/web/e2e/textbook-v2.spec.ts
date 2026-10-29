@@ -260,6 +260,29 @@ test("v2 units at 390px: no horizontal page scroll", async ({ page }) => {
   }
 });
 
+// S137 (user, b02 u10 at 390px): the term table squeezed its text columns to one character a line
+// (width 100% + nowrap term column never overflows, so the scroll box never scrolled). On a phone the
+// table stacks into one block per term; the pair table's aspect column keeps a readable width.
+test("v2 units at 390px: term-table and pair-table text cells are readable, not one character a line", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const unit of E2E_UNITS) {
+    for (const locale of ["ja", "zh", "en"] as const) {
+      await page.goto(`/${locale}/textbook/${unit.unit_id}`);
+      await page.evaluate(() => document.fonts.ready);
+      const r = await page.evaluate(() => {
+        const ov = document.querySelector('[data-part="overview"] table')!;
+        const box = ov.getBoundingClientRect().width;
+        const ovMin = Math.min(...[...ov.querySelectorAll("tbody td")].map((c) => c.getBoundingClientRect().width));
+        const aspect = [...document.querySelectorAll('[data-part="pair"] table tbody th')].map((c) => c.getBoundingClientRect().width);
+        return { box, ovMin, aspectMin: aspect.length ? Math.min(...aspect) : Infinity };
+      });
+      const where = `${unit.unit_id} /${locale}`;
+      expect(r.ovMin, `${where} term table cell`).toBeGreaterThanOrEqual(r.box * 0.6);
+      expect(r.aspectMin, `${where} pair aspect column`).toBeGreaterThanOrEqual(56);
+    }
+  }
+});
+
 function expectNoMarkup(text: string, where: string): void {
   for (const m of MARKUP) expect(text.includes(m), `${where}: raw ${JSON.stringify(m)} in the page text`).toBe(false);
 }

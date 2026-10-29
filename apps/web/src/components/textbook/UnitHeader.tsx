@@ -122,9 +122,11 @@ function V2Overview({ unit, locale }: { unit: ReaderUnit; locale: string }): Rea
                 return (
                   <tr key={r.term}>
                     <th scope="row">{tm ? <a href={`#${tm.id}`}>{r.term}</a> : r.term}</th>
-                    <td>{parseInline(r.one[dl] || r.one.jp, INLINE)}</td>
+                    <td data-label={t("overviewOne")}>{parseInline(r.one[dl] || r.one.jp, INLINE)}</td>
                     {extra.map((x, i) => (
-                      <td key={i}>{parseInline(x, INLINE)}</td>
+                      <td key={i} data-label={cols[i]}>
+                        {parseInline(x, INLINE)}
+                      </td>
                     ))}
                   </tr>
                 );

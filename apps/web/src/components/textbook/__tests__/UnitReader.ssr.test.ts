@@ -337,6 +337,15 @@ describe("UnitReader v2 (SSR, D-196 §0-9 / D-195)", () => {
     expect(count(table.match(/<tbody[\s\S]*?<\/tbody>/)![0], /<tr/g)).toBe(V2.terms.length);
   });
 
+  it("term table: every body cell carries its column header as data-label (the phone layout prints it)", async () => {
+    const out = await renderV2("zh");
+    const table = out.match(/<details[^>]*data-part="overview"[\s\S]*?<\/details>/)![0];
+    const heads = [...table.match(/<thead[\s\S]*?<\/thead>/)![0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => m[1]);
+    const rows = [...table.match(/<tbody[\s\S]*?<\/tbody>/)![0].matchAll(/<tr[\s\S]*?<\/tr>/g)].map((m) => m[0]);
+    expect(rows.length).toBe(V2.terms.length);
+    for (const r of rows) expect([...r.matchAll(/<td[^>]*data-label="([^"]*)"/g)].map((m) => m[1])).toEqual(heads.slice(1));
+  });
+
   it("each article: one → fig → detail → analogy / hook → points → this term's past questions; id = termId", async () => {
     const out = await renderV2("ja");
     const arts = articlesOf(out);

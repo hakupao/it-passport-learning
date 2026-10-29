@@ -450,6 +450,7 @@
 }
 .overviewScroll {
   overflow-x: auto;
+  container-type: inline-size;
 }
 .overviewTable,
 .pairTable {
@@ -489,6 +490,48 @@
 .overviewTable tbody th a:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
+}
+/* S137: width 100% + the nowrap term column never overflows, so on a phone the text columns were squeezed
+   to one character a line instead of scrolling. Under 520px the term table stacks: one block per term, the
+   term on its own line, each cell below it after its column header (data-label). The pair table keeps its
+   aspect column readable (short labels such as 何か / 主な成果 no longer break per character). */
+@container (max-width: 520px) {
+  .overviewTable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .overviewTable,
+  .overviewTable tbody,
+  .overviewTable tr,
+  .overviewTable tbody th,
+  .overviewTable td {
+    display: block;
+    width: 100%;
+  }
+  .overviewTable tr {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .overviewTable tbody th,
+  .overviewTable td {
+    padding: 2px 0;
+    border-bottom: 0;
+  }
+  .overviewTable tbody th {
+    white-space: normal;
+  }
+  .overviewTable td::before {
+    content: attr(data-label) "：";
+    color: var(--ink-muted);
+    font-size: 12px;
+  }
+  .pairTable tbody th {
+    min-width: 4.5em;
+  }
 }
 /* 考点 box: each point with a square 出題 (spot reverse) / 混同注意 (spot ruled) tag */
 .points {
