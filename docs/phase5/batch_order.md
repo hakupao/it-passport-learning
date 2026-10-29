@@ -13,7 +13,7 @@
 | b04 | technology-23-62 | 情報セキュリティ管理 (1/2) | u01 u02 u03 u04 u05 | 135 | 29 | done (S138, attempts 2/2/3/2/1, Rule A PASS after 45 patches) |
 | b05 | technology-23-62 | 情報セキュリティ管理 (2/2) | u06 u07 | 135 | 14 | done (S138, attempts 2/2, Rule A PASS after 27 patches) |
 | b06 | management-08-25 | システム開発技術 | u01 u02 u03 u04 u05 | 125 | 23 | done (S138, attempts 2/2/2/1/2, Rule A PASS after 39 patches) |
-| b07 | strategy-01-02 | 業務分析・データ利活用 (1/3) | u01 u02 u03 u04 u05 | 98 | 26 | todo |
+| b07 | strategy-01-02 | 業務分析・データ利活用 (1/3) | u01 u02 u03 u04 u05 | 98 | 26 | done (S138, attempts 1/2/1/2/1, Rule A PASS after 38 patches) |
 | b08 | strategy-01-02 | 業務分析・データ利活用 (2/3) | u06 u07 u08 u09 u10 | 98 | 36 | todo |
 | b09 | strategy-01-02 | 業務分析・データ利活用 (3/3) | u11 u12 u13 u14 u15 | 98 | 29 | todo |
 | b10 | technology-22-60 | ネットワーク応用 (1/2) | u01 u02 u03 u04 u05 | 97 | 30 | todo |

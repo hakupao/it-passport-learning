@@ -1,164 +1,633 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-01-02-u04",
   "topic_id": "strategy-01-02",
   "category": "strategy",
   "title_jp": "回帰・相関と擬似相関",
+  "title_zh": "回归、相关与伪相关",
+  "title_en": "Regression, Correlation, and Spurious Correlation",
   "unit_summary_jp": "2つの数量の関係を直線で近似する回帰分析と、関係の強さ・因果の有無を見分ける相関の考え方を学ぶ。",
+  "unit_summary_zh": "学习用直线来近似两个数量之间关系的回归分析，以及用于判断关系强弱和是否存在因果的相关的思路。",
+  "unit_summary_en": "Learn regression analysis, which approximates the relationship between two quantities with a straight line, and the concept of correlation, which gauges the strength of a relationship and whether causation exists.",
   "order_in_topic": 4,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "2つの数量の関係を分析する理論を学ぶ単元です。誤差を最小にして直線を引く最小二乗法から、その直線で予測する回帰分析、関係の強さを表す相関と、相関があっても因果とは限らないという考え方、そして第三の要因が生む擬似相関までを扱います。データ利活用の土台であり、散布図など可視化の前提となる頻出テーマです。",
-    "freq_badge": "頻出",
-    "est_minutes": 13,
-    "intro_zh": "这是学习分析两个数量之间关系理论的单元。内容涵盖：使误差最小化以画出直线的最小二乘法，用该直线进行预测的回归分析，表示关系强弱的相关，以及“即使有相关也未必有因果”的思路，最后还有由第三个因素产生的伪相关。它是数据利用的基础，也是散点图等可视化的前提，是高频考点主题。",
-    "intro_en": "This unit teaches the theory of analyzing the relationship between two quantities. It covers the least squares method (which draws a line by minimizing error), regression analysis (which predicts using that line), correlation (which expresses the strength of a relationship), the idea that correlation does not necessarily imply causation, and finally spurious correlation produced by a third factor. As the foundation of data utilization and the premise behind visualizations such as scatter plots, it is a frequently tested theme."
-  },
-  "terms": [
+  "goals_jp": [
+    "**最小二乗法**で、残差を二乗してから合計する理由を説明できる。",
+    "**回帰分析**の説明変数と目的変数を区別し、式を使って値を見積もる流れをたどれる。",
+    "相関の向きと強さを読み取り、因果のある関係と**擬似相関**を見分けられる。"
+  ],
+  "goals_zh": [
+    "能够说明**最小二乘法**为什么要先把残差平方再求合计。",
+    "能够区分**回归分析**中的说明变量和目标变量，并理解用公式估算数值的流程。",
+    "能够读出相关的方向和强弱，并把存在因果的关系与**伪相关**区分开来。"
+  ],
+  "goals_en": [
+    "Explain why the **least squares method** squares the residuals before adding them up.",
+    "Tell the explanatory variable from the target variable in **regression analysis**, and follow how a formula is used to estimate values.",
+    "Read the direction and strength of a correlation, and tell a causal relationship apart from a **spurious correlation**."
+  ],
+  "overview_cols_jp": [
+    "扱うもの",
+    "手がかりになる量・形"
+  ],
+  "overview_cols_zh": [
+    "处理的对象",
+    "作为线索的量或形式"
+  ],
+  "overview_cols_en": [
+    "What it deals with",
+    "Key quantity or form"
+  ],
+  "overview_rows": [
     {
       "term": "最小二乗法",
-      "definition_jp": "実測値と直線との誤差の二乗の合計が最小になるように回帰直線を求める手法。",
-      "explanation_jp": "最小二乗法は、データの点と直線とのずれ(残差)を二乗して合計し、その合計が最も小さくなるように直線を決める計算手法です。二乗するのは、プラスとマイナスの誤差が打ち消し合わないようにし、大きなずれをより重く扱うためです。\n\nこうして得られる直線が回帰直線で、最小二乗法は次に学ぶ回帰分析の土台になります。試験では細かい計算より、『誤差の二乗和を最小にして最も当てはまりの良い直線を引く方法』という考え方を押さえることが大切です。",
-      "analogy_jp": "たくさんの点の真ん中を一本の棒で貫くとき、すべての点からの距離が全体として最も小さくなる位置に棒を合わせるようなものです。",
-      "memory_hook_jp": "最小二乗法といえば誤差の二乗和を最小にして回帰直線を引く",
-      "inline_quiz": [
-        "2024r06-q014"
+      "one_line_jp": "点と直線のずれを二乗して合計し、その合計が最小になるように直線などの式を決める方法",
+      "one_line_zh": "把各点与直线的偏差平方后求和，并使这个合计最小，以此确定直线等公式的方法",
+      "one_line_en": "A method that squares and sums the gaps between points and a line, then fixes the line or formula that makes this sum smallest",
+      "extra_jp": [
+        "データへの直線などの当てはめ",
+        "ずれの二乗の合計"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "最小二乘法",
-      "term_en": "Least Squares Method",
-      "definition_zh": "通过使实测值与直线之间误差的平方之和达到最小，来求出回归直线的方法。",
-      "definition_en": "A technique that finds the regression line so that the sum of the squared errors between the actual measured values and the line is minimized.",
-      "explanation_zh": "最小二乘法是将数据点与直线之间的偏差（残差）平方后求和，并使该和达到最小，从而确定直线的计算方法。之所以要平方，是为了让正误差和负误差不互相抵消，并让较大的偏差被更重地对待。\n\n这样得到的直线就是回归直线，最小二乘法是接下来要学的回归分析的基础。考试中，比起细致的计算，更重要的是把握“使误差平方和最小，画出拟合度最好的直线”这一思路。",
-      "explanation_en": "The least squares method is a calculation technique that squares and sums the deviations (residuals) between the data points and a line, then determines the line so that this sum is as small as possible. Squaring is used so that positive and negative errors do not cancel each other out, and so that larger deviations are weighted more heavily.\n\nThe line obtained this way is the regression line, and the least squares method forms the foundation of the regression analysis you will study next. On the exam, rather than detailed calculation, it is important to grasp the idea of 'drawing the best-fitting line by minimizing the sum of squared errors.'",
-      "analogy_zh": "就像用一根棍子去贯穿许多点的中间时，把棍子调整到与所有点的总距离整体上最小的位置。",
-      "analogy_en": "It is like running a single stick through the middle of many dots, adjusting the stick to the position where the total distance from all the dots is the smallest overall.",
-      "memory_hook_zh": "说到最小二乘法，就是使误差平方和最小来画出回归直线",
-      "memory_hook_en": "Least squares method → minimize the sum of squared errors to draw the regression line"
+      "extra_zh": [
+        "用直线等拟合数据",
+        "偏差平方的合计"
+      ],
+      "extra_en": [
+        "Fitting a line or similar to data",
+        "Sum of the squared gaps"
+      ]
     },
     {
       "term": "回帰分析",
-      "definition_jp": "ある変数から別の変数の値を、回帰直線を使って予測・説明する分析手法。",
-      "explanation_jp": "回帰分析は、原因となる変数(説明変数)から結果となる変数(目的変数)を予測するために、両者の関係を数式(多くは直線)で表す分析手法です。たとえば気温から飲料の売上を見積もる、といった予測に使われます。\n\n直線は最小二乗法で求めた回帰直線を用います。試験では、回帰分析が『関係を式にして予測する』手法であること、変数が1つの単回帰と複数の重回帰がある点、後で学ぶ相関(関係の強さを測る)とは目的が異なる点が問われます。",
-      "analogy_jp": "過去の勉強時間とテスト点数の関係から、「来週これだけ勉強すれば何点取れそうか」を見積もる占いのようなもの。関係を式にして先を予測します。",
-      "memory_hook_jp": "回帰分析といえば回帰直線で別の変数の値を予測する",
-      "inline_quiz": [
-        "2023r05-q006"
+      "one_line_jp": "手がかりとなる変数の値から別の変数の値を説明・予測する式を作る手法",
+      "one_line_zh": "建立公式，用作为线索的变量值来说明、预测另一个变量值的方法",
+      "one_line_en": "A method that builds a formula to explain or predict one variable from the value of another",
+      "extra_jp": [
+        "予測・説明",
+        "式 (例: y = a + bx)"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"観測データ\"] --> B[\"最小二乗法\"]; B --> C[\"回帰直線\"]; C --> D[\"目的変数を予測\"]",
-        "svg_path": "figures/strategy-01-02-u04-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "回归分析",
-      "term_en": "Regression Analysis",
-      "definition_zh": "利用回归直线，从某个变量预测或解释另一个变量取值的分析方法。",
-      "definition_en": "An analytical technique that uses a regression line to predict or explain the value of one variable from another.",
-      "explanation_zh": "回归分析是一种为了从作为原因的变量（自变量）预测作为结果的变量（因变量），而用数学式（多为直线）表示二者关系的分析方法。例如可用于根据气温来估算饮料的销售额这类预测。\n\n直线采用最小二乘法求出的回归直线。考试会考查：回归分析是“把关系写成式子来预测”的方法、有只含一个变量的一元回归和含多个变量的多元回归之分、以及它与之后要学的相关（衡量关系强弱）目的不同这几点。",
-      "explanation_en": "Regression analysis is an analytical technique that expresses the relationship between two variables with a mathematical formula (often a straight line) in order to predict the result variable (dependent variable) from the cause variable (explanatory variable). For example, it is used for predictions such as estimating beverage sales from temperature.\n\nThe line used is the regression line found by the least squares method. The exam asks about the following: that regression analysis is a method that 'turns a relationship into a formula to predict,' that there is simple regression with one variable and multiple regression with several variables, and that its purpose differs from correlation (which measures the strength of a relationship), studied later.",
-      "analogy_zh": "就像根据过去学习时间和考试分数的关系，去估算“下周学这么久大概能考多少分”的占卜。把关系写成式子来预测未来。",
-      "analogy_en": "It is like a fortune-telling that estimates 'if I study this many hours next week, how many points can I score?' based on the relationship between past study time and test scores. It turns the relationship into a formula to predict what lies ahead.",
-      "memory_hook_zh": "说到回归分析，就是用回归直线预测另一个变量的取值",
-      "memory_hook_en": "Regression analysis → use the regression line to predict the value of another variable"
+      "extra_zh": [
+        "预测与说明",
+        "公式（例：y = a + bx）"
+      ],
+      "extra_en": [
+        "Prediction and explanation",
+        "Formula (e.g. y = a + bx)"
+      ]
     },
     {
       "term": "相関と因果",
-      "definition_jp": "相関は2変数が一緒に増減する関係の強さ、因果は一方が他方の原因という関係。",
-      "explanation_jp": "相関とは、2つの数量が「一方が増えるともう一方も増える(または減る)」という連動の関係で、その強さは相関係数(-1〜+1)で表します。+1に近いほど強い正の相関、-1に近いほど強い負の相関、0に近いと相関は弱くなります。\n\n一方、因果は一方が他方を引き起こす原因と結果の関係です。試験で最重要なのは『相関があっても因果があるとは限らない』という点です。両者が連動して見えても、偶然や別の要因が原因のことがあり、相関を因果と早合点しない姿勢が問われます。",
-      "analogy_jp": "アイスの売上と水難事故が同時に増えても、アイスが事故の原因ではありません(両方とも気温という別要因のため)。一緒に動く=原因とは限らないのです。",
-      "memory_hook_jp": "相関と因果といえば相関があっても因果とは限らない",
-      "inline_quiz": [
-        "2011h23tokubetsu-q015"
+      "one_line_jp": "連動して増減する関係と、原因と結果の関係の区別",
+      "one_line_zh": "区分“联动增减”的关系与“原因和结果”的关系",
+      "one_line_en": "The difference between quantities that rise and fall together and a cause-and-effect relationship",
+      "extra_jp": [
+        "関係の向き・強さと原因の有無",
+        "連動の向きと強さを表す -1〜+1 の値"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "相关与因果",
-      "term_en": "Correlation and Causation",
-      "definition_zh": "相关是两个变量一起增减这一关系的强弱，因果则是一方为另一方原因的关系。",
-      "definition_en": "Correlation is the strength of the relationship in which two variables increase or decrease together; causation is the relationship in which one is the cause of the other.",
-      "explanation_zh": "相关是指两个数量之间“一方增加时另一方也增加（或减少）”这种联动的关系，其强弱用相关系数（-1～+1）表示。越接近+1，正相关越强；越接近-1，负相关越强；越接近0，相关越弱。\n\n另一方面，因果是一方引起另一方的原因与结果的关系。考试中最重要的是“即使有相关，也未必有因果”这一点。即便二者看起来联动，也可能是偶然或别的因素所导致，因此考查的是不把相关草率当成因果的态度。",
-      "explanation_en": "Correlation refers to a coordinated relationship between two quantities in which 'when one increases, the other also increases (or decreases),' and its strength is expressed by the correlation coefficient (-1 to +1). The closer to +1, the stronger the positive correlation; the closer to -1, the stronger the negative correlation; and the closer to 0, the weaker the correlation.\n\nCausation, on the other hand, is a cause-and-effect relationship in which one brings about the other. The most important point on the exam is that 'even if there is correlation, there is not necessarily causation.' Even when two things appear to move together, the cause may be coincidence or another factor, so the exam tests the attitude of not hastily mistaking correlation for causation.",
-      "analogy_zh": "即使冰淇淋的销售额和溺水事故同时增加，冰淇淋也不是事故的原因（因为两者都由气温这个别的因素引起）。一起变动并不等于是原因。",
-      "analogy_en": "Even if ice cream sales and drowning accidents increase at the same time, ice cream is not the cause of the accidents (because both are driven by a separate factor: temperature). Moving together does not necessarily mean being the cause.",
-      "memory_hook_zh": "说到相关与因果，就是即使有相关也未必有因果",
-      "memory_hook_en": "Correlation and causation → correlation does not necessarily mean causation"
+      "extra_zh": [
+        "关系的方向、强弱以及是否存在原因",
+        "表示联动方向和强弱的 -1～+1 的值"
+      ],
+      "extra_en": [
+        "Direction and strength of a relationship, and whether one causes the other",
+        "A value from -1 to +1 showing the direction and strength of co-movement"
+      ]
     },
     {
       "term": "擬似相関",
-      "definition_jp": "第三の要因のせいで、直接関係のない2変数が相関して見える見かけだけの相関。",
-      "explanation_jp": "擬似相関(見せかけの相関)とは、本来は直接の因果関係がない2つの変数が、共通の第三の要因(交絡因子)の影響で、あたかも関係があるかのように相関して見える現象です。\n\nたとえば「アイスの売上」と「水難事故」はどちらも『気温』が高いほど増えるため一緒に増減しますが、両者に直接の因果はありません。試験では、相関を見たときに隠れた共通要因の有無を疑うこと、擬似相関は『相関と因果の混同が生む誤解』である点が問われます。データ利活用での誤った判断を防ぐ重要な注意点です。",
-      "analogy_jp": "朝に鶏が鳴くと日が昇るからといって、鶏が太陽を昇らせるわけではありません。「時刻」という共通の要因が両方を動かしているだけです。",
-      "memory_hook_jp": "擬似相関といえば共通の第三要因が生む見かけだけの相関",
-      "inline_quiz": [
-        "2011h23a-q099"
+      "one_line_jp": "第三の要因のせいで、直接の関係がない 2 つの量が相関して見えること",
+      "one_line_zh": "由于第三个因素，两个没有直接关系的量看起来像是相关",
+      "one_line_en": "Two quantities with no direct link appearing correlated because of a third factor",
+      "extra_jp": [
+        "見かけだけの相関",
+        "両方に影響する別の要因"
       ],
-      "inline_fallback": true,
+      "extra_zh": [
+        "只是表面上的相关",
+        "同时影响两者的另一个因素"
+      ],
+      "extra_en": [
+        "A correlation in appearance only",
+        "Another factor that affects both"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "最小二乗法",
+      "term_zh": "最小二乘法",
+      "term_en": "Least Squares Method",
+      "one_jp": "**最小二乗法**は、データの各点と直線との縦方向のずれ (**残差**) を二乗して合計し、その合計が最小になるように直線などの式を決める方法である。",
+      "one_zh": "**最小二乘法**（[[jp:最小二乗法]]）是把数据各点与直线在纵向上的偏差（**残差**，[[jp:残差]]）平方后求和，并使这个合计最小，以此确定直线等公式的方法。",
+      "one_en": "The **least squares method** ([[jp:最小二乗法]]) fixes a line or other formula so that the sum of the squared vertical gaps between each data point and the line (the **residuals**, [[jp:残差]]) is as small as possible.",
+      "detail_jp": "残差とは、実際の値から直線が示す値を引いた差で、点が直線より上にあれば正、下にあれば負になる。そのまま足すと正と負が打ち消し合うため、二乗してすべて 0 以上の値にしてから合計する。二乗すると大きなずれほど重く数えられるので、ほかから大きく外れた点に直線が引き寄せられやすい。",
+      "detail_zh": "残差是实际值减去直线所示值得到的差，点在直线上方时为正，在下方时为负。直接相加会让正负相互抵消，所以要先平方，使每个值都不小于 0，再求合计。平方后偏差越大的点分量越重，因此直线容易被远离其他点的数据拉过去。",
+      "detail_en": "A residual is the actual value minus the value the line gives, so it is positive when the point lies above the line and negative when it lies below. Adding residuals as they are lets the positives and negatives cancel out, so each one is squared to make it zero or more before summing. Squaring makes large gaps count far more heavily, which means a point lying far from the rest tends to pull the line toward itself.",
+      "analogy_jp": "何軒かの家のために共同の停留所を 1 か所置くとき、遠い家ほど不便さを重く数え、その合計が一番小さくなる場所を選ぶようなもの。",
+      "analogy_zh": "就像为几户人家设一个共用的公交站：离得越远的人家，不便程度算得越重，然后选出这些不便合计最小的位置。",
+      "analogy_en": "It is like choosing one shared bus stop for several houses: the farther a house is, the more heavily its inconvenience counts, and you pick the spot where the total is lowest.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "残差をそのまま合計した値は、正と負が打ち消し合って 0 になることがあり、当てはまりの良さの目安にならない。最小二乗法で比べるのは、二乗した残差の合計である。",
+          "text_zh": "把残差（[[jp:残差]]）直接相加，正负可能相互抵消而得到 0，因此不能用来衡量拟合得好不好。最小二乘法比较的是残差平方后的合计。",
+          "text_en": "Simply adding up the residuals ([[jp:残差]]) can give 0 as positives and negatives cancel, so it says nothing about how well the line fits. What the least squares method compares is the sum of the squared residuals."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "データ点",
+              "zh": "数据点",
+              "en": "Data point"
+            },
+            {
+              "jp": "残差",
+              "zh": "残差",
+              "en": "Residual"
+            },
+            {
+              "jp": "残差の二乗",
+              "zh": "残差的平方",
+              "en": "Squared residual"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "点 P",
+                  "zh": "点 P",
+                  "en": "Point P"
+                },
+                {
+                  "jp": "+3",
+                  "zh": "+3",
+                  "en": "+3"
+                },
+                {
+                  "jp": "9",
+                  "zh": "9",
+                  "en": "9"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "点 Q",
+                  "zh": "点 Q",
+                  "en": "Point Q"
+                },
+                {
+                  "jp": "-1",
+                  "zh": "-1",
+                  "en": "-1"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "点 R",
+                  "zh": "点 R",
+                  "en": "Point R"
+                },
+                {
+                  "jp": "-2",
+                  "zh": "-2",
+                  "en": "-2"
+                },
+                {
+                  "jp": "4",
+                  "zh": "4",
+                  "en": "4"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "合計",
+                  "zh": "合计",
+                  "en": "Total"
+                },
+                {
+                  "jp": "0 (ずれが見えない)",
+                  "zh": "0（看不出偏差）",
+                  "en": "0 (the gaps cancel out)"
+                },
+                {
+                  "jp": "14 (ずれの大きさが残る)",
+                  "zh": "14（偏差的大小得以保留）",
+                  "en": "14 (the size of the gaps remains)"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "最小二乗法は、データの各点と直線との縦方向のずれ (残差) を二乗して合計し、その合計が最小になるように直線などの式を決める方法である。",
+      "definition_zh": "最小二乘法（最小二乗法）是把数据各点与直线在纵向上的偏差（残差，残差）平方后求和，并使这个合计最小，以此确定直线等公式的方法。",
+      "definition_en": "The least squares method (最小二乗法) fixes a line or other formula so that the sum of the squared vertical gaps between each data point and the line (the residuals, 残差) is as small as possible.",
+      "explanation_jp": "残差とは、実際の値から直線が示す値を引いた差で、点が直線より上にあれば正、下にあれば負になる。そのまま足すと正と負が打ち消し合うため、二乗してすべて 0 以上の値にしてから合計する。二乗すると大きなずれほど重く数えられるので、ほかから大きく外れた点に直線が引き寄せられやすい。",
+      "explanation_zh": "残差是实际值减去直线所示值得到的差，点在直线上方时为正，在下方时为负。直接相加会让正负相互抵消，所以要先平方，使每个值都不小于 0，再求合计。平方后偏差越大的点分量越重，因此直线容易被远离其他点的数据拉过去。",
+      "explanation_en": "A residual is the actual value minus the value the line gives, so it is positive when the point lies above the line and negative when it lies below. Adding residuals as they are lets the positives and negatives cancel out, so each one is squared to make it zero or more before summing. Squaring makes large gaps count far more heavily, which means a point lying far from the rest tends to pull the line toward itself.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "回帰分析",
+      "term_zh": "回归分析",
+      "term_en": "Regression Analysis",
+      "one_jp": "**回帰分析**は、手がかりとなる変数の値から別の変数の値を説明・予測するために、変数どうしの関係を式で表す分析手法である。",
+      "one_zh": "**回归分析**（[[jp:回帰分析]]）是用公式表示变量之间的关系，从而由作为线索的变量值来说明、预测另一个变量值的分析方法。",
+      "one_en": "**Regression analysis** ([[jp:回帰分析]]) expresses the relationship between variables as a formula so that the value of one variable can be explained or predicted from the values of one or more explanatory variables.",
+      "detail_jp": "予測の手がかりにする側の変数を**説明変数**、予測される側の変数を**目的変数**と呼ぶ。説明変数が 1 つで関係を直線 (y = a + bx) で表すものを**単回帰分析**、説明変数が複数あるものを**重回帰分析**という。",
+      "detail_zh": "作为预测线索的变量称为**说明变量**（[[jp:説明変数]]），被预测的变量称为**目标变量**（[[jp:目的変数]]）。说明变量只有一个、用直线（y = a + bx）表示关系的叫**一元回归分析**（[[jp:単回帰分析]]），说明变量有多个的叫**多元回归分析**（[[jp:重回帰分析]]）。",
+      "detail_en": "The variable used as the clue for prediction is the **explanatory variable** ([[jp:説明変数]]), and the one being predicted is the **target variable** ([[jp:目的変数]]). With a single explanatory variable and a straight-line relationship (y = a + bx) it is **simple regression analysis** ([[jp:単回帰分析]]), and with several explanatory variables it is **multiple regression analysis** ([[jp:重回帰分析]]).",
+      "analogy_jp": "これまでの散歩の歩数と消費カロリーの記録から早見表を作り、明日歩く予定の歩数で消費カロリーを見積もるようなもの。",
+      "analogy_zh": "就像根据以往散步的步数和消耗热量记录做一张速查表，再按明天打算走的步数来估算会消耗多少热量。",
+      "analogy_en": "It is like turning your past records of walking steps and calories burned into a quick reference chart, then using tomorrow's planned step count to estimate the calories you will burn.",
+      "hook_jp": "名前の由来は、親の身長が極端でも子の身長は平均の側へ「戻る (regress)」傾向を、ゴルトンが分析したこと。",
+      "hook_zh": "这个名称源于高尔顿的研究：即使父母身高偏高或偏矮，子女的身高也有向平均值“回归（regress）”的倾向。",
+      "hook_en": "The name comes from Galton's study showing that even when parents are unusually tall or short, their children's heights tend to \"regress\" toward the average.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "2 つの量の関係を直線の式 (一次式) で表し、一方の値から他方の値を見積もる手法は**回帰分析**である。",
+          "text_zh": "用直线公式（一次式）表示两个量的关系，并由其中一个的值估算另一个的值，这种方法就是**回归分析**。",
+          "text_en": "Expressing the relationship between two quantities as a straight-line (linear) formula and estimating one from the other is **regression analysis**.",
+          "qids": [
+            "2024r06-q014"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "多くの変数を少数の総合的な指標にまとめて情報を要約する**主成分分析**は、式を作って値を予測する回帰分析とは目的が違う。",
+          "text_zh": "**主成分分析**（[[jp:主成分分析]]）是把众多变量归纳为少数综合指标来概括信息，与建立公式预测数值的回归分析目的不同。",
+          "text_en": "**Principal component analysis** ([[jp:主成分分析]]) condenses many variables into a few overall indicators to summarize the information, a different aim from regression analysis, which builds a formula to predict values."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "collect",
+              "label": {
+                "jp": "データを集める",
+                "zh": "收集数据",
+                "en": "Collect data"
+              }
+            },
+            {
+              "id": "fit",
+              "label": {
+                "jp": "最小二乗法で直線を決める",
+                "zh": "用最小二乘法确定直线",
+                "en": "Fit a line by least squares"
+              }
+            },
+            {
+              "id": "formula",
+              "label": {
+                "jp": "回帰式 y = a + bx",
+                "zh": "回归方程 y = a + bx",
+                "en": "Regression equation y = a + bx"
+              }
+            },
+            {
+              "id": "predict",
+              "label": {
+                "jp": "新しい x から y を見積もる",
+                "zh": "由新的 x 估算 y",
+                "en": "Estimate y from a new x"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "手がかりにする量 x と予測したい量 y の値の組を、観測した件数だけ集める。",
+            "caption_zh": "把作为线索的量 x 与想要预测的量 y 成对记录，观测了多少次就收集多少组。",
+            "caption_en": "Gather a pair of values, the clue x and the quantity y you want to predict, for every observation.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "残差の二乗の合計が最小になるように直線を決める。",
+            "caption_zh": "确定一条直线，使残差平方的合计最小。",
+            "caption_en": "Choose the line that makes the sum of squared residuals smallest.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "決めた直線を式で表すと、切片 a と傾き b の値が定まる。",
+            "caption_zh": "把确定的直线写成公式，截距 a 和斜率 b 的值就随之确定。",
+            "caption_en": "Writing that line as a formula fixes the values of the intercept a and the slope b.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "まだ観測していない x の値を式に代入して、y の値を見積もる。",
+            "caption_zh": "把尚未观测到的 x 值代入公式，估算出 y 的值。",
+            "caption_en": "Plug an x value you have not yet observed into the formula to estimate y.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2024r06-q014",
+        "2023r05-q006"
+      ],
+      "definition_jp": "回帰分析は、手がかりとなる変数の値から別の変数の値を説明・予測するために、変数どうしの関係を式で表す分析手法である。",
+      "definition_zh": "回归分析（回帰分析）是用公式表示变量之间的关系，从而由作为线索的变量值来说明、预测另一个变量值的分析方法。",
+      "definition_en": "Regression analysis (回帰分析) expresses the relationship between variables as a formula so that the value of one variable can be explained or predicted from the values of one or more explanatory variables.",
+      "explanation_jp": "予測の手がかりにする側の変数を説明変数、予測される側の変数を目的変数と呼ぶ。説明変数が 1 つで関係を直線 (y = a + bx) で表すものを単回帰分析、説明変数が複数あるものを重回帰分析という。",
+      "explanation_zh": "作为预测线索的变量称为说明变量（説明変数），被预测的变量称为目标变量（目的変数）。说明变量只有一个、用直线（y = a + bx）表示关系的叫一元回归分析（単回帰分析），说明变量有多个的叫多元回归分析（重回帰分析）。",
+      "explanation_en": "The variable used as the clue for prediction is the explanatory variable (説明変数), and the one being predicted is the target variable (目的変数). With a single explanatory variable and a straight-line relationship (y = a + bx) it is simple regression analysis (単回帰分析), and with several explanatory variables it is multiple regression analysis (重回帰分析).",
+      "memory_hook_jp": "名前の由来は、親の身長が極端でも子の身長は平均の側へ「戻る (regress)」傾向を、ゴルトンが分析したこと。",
+      "memory_hook_zh": "这个名称源于高尔顿的研究：即使父母身高偏高或偏矮，子女的身高也有向平均值“回归（regress）”的倾向。",
+      "memory_hook_en": "The name comes from Galton's study showing that even when parents are unusually tall or short, their children's heights tend to \"regress\" toward the average.",
+      "inline_quiz": [
+        "2024r06-q014",
+        "2023r05-q006"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "相関と因果",
+      "term_zh": "相关与因果",
+      "term_en": "Correlation and Causation",
+      "one_jp": "**相関**は 2 つの量が連動して増減する関係、**因果**は一方が原因となって他方を引き起こす関係であり、相関があっても因果があるとは限らない。",
+      "one_zh": "在**相关与因果**（[[jp:相関と因果]]）中，**相关**指两个量联动增减的关系，**因果**指一方作为原因引起另一方的关系，有相关并不一定有因果。",
+      "one_en": "In **correlation and causation** ([[jp:相関と因果]]), **correlation** means two quantities rise and fall together, while **causation** means one brings about the other, and a correlation does not by itself prove causation.",
+      "detail_jp": "2 つの量を横軸と縦軸にとり、データを点で打った図を**散布図**といい、点が右上がりに並べば**正の相関**、右下がりに並べば**負の相関**である。相関の向きと強さは**相関係数**で表し、値は -1 から +1 の範囲で、絶対値が 1 に近いほど関係が強く、0 に近いほど弱い。因果があると言うには、連動しているだけでなく、一方を変えたときに他方が変わることを確かめる必要がある。",
+      "detail_zh": "把两个量分别放在横轴和纵轴上、将数据描成点的图叫**散点图**（[[jp:散布図]]），点向右上方排列是**正相关**（[[jp:正の相関]]），向右下方排列是**负相关**（[[jp:負の相関]]）。相关的方向和强弱用**相关系数**（[[jp:相関係数]]）表示，取值在 -1 到 +1 之间，绝对值越接近 1 关系越强，越接近 0 越弱。要说存在因果，不能只看两者是否联动，还要确认改变一方时另一方确实随之变化。",
+      "detail_en": "A chart that puts two quantities on the horizontal and vertical axes and plots the data as dots is a **scatter diagram** ([[jp:散布図]]); dots rising to the right show a **positive correlation** ([[jp:正の相関]]), and dots falling to the right show a **negative correlation** ([[jp:負の相関]]). The direction and strength are given by the **correlation coefficient** ([[jp:相関係数]]), which ranges from -1 to +1, with values near 1 in absolute terms meaning a strong relationship and values near 0 a weak one. To claim causation, it is not enough that the two move together; you must confirm that changing one actually changes the other.",
+      "analogy_jp": "毎朝同じ電車に乗り合わせる 2 人は、いつもそろって駅に現れるが、一方が他方を連れて来ているわけではない。",
+      "analogy_zh": "每天早上搭同一班电车的两个人，总是一起出现在车站，但并不是其中一人把另一人带来的。",
+      "analogy_en": "Two people who ride the same train every morning always show up at the station together, yet neither one is bringing the other.",
+      "hook_jp": "「相関」の「相」は相互・相談の「相」で「互いに」。「因果」は「因 (もと) があって果 (結果) が生じる」と書き、どちらが原因でどちらが結果かを分けている。",
+      "hook_zh": "日语的「相関」「因果」与中文字面一致：“相”是“相互”的相，“因果”就是“有因才有果”，字面上已经分清哪边是原因、哪边是结果。",
+      "hook_en": "The Japanese [[jp:相関]] starts with a character meaning \"mutual\", while [[jp:因果]] literally reads \"cause and fruit\", so the word itself separates the cause from the result.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "点が右下がりに並ぶ散布図は**負の相関**を表し、一方の量が増えるほど他方の量は減る傾向にある。",
+          "text_zh": "点向右下方排列的散点图（[[jp:散布図]]）表示**负相关**（[[jp:負の相関]]），即一个量越增加，另一个量越倾向于减少。",
+          "text_en": "A scatter diagram ([[jp:散布図]]) whose dots fall to the right shows a **negative correlation** ([[jp:負の相関]]): as one quantity increases, the other tends to decrease.",
+          "qids": [
+            "2011h23tokubetsu-q015"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "相関係数が +1 に近いほど、一方の値が大きいと他方の値も大きいという関係が強い。",
+          "text_zh": "相关系数（[[jp:相関係数]]）越接近 +1，“一方的值大，另一方的值也大”这种关系就越强。",
+          "text_en": "The closer the correlation coefficient ([[jp:相関係数]]) is to +1, the stronger the tendency for a large value of one to go with a large value of the other.",
+          "qids": [
+            "2015h27a-q088"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "負の相関は「関係が弱い」という意味ではない。相関係数 -0.9 は、+0.3 よりも強い関係を表す。",
+          "text_zh": "负相关并不是“关系弱”的意思。相关系数 -0.9 表示的关系比 +0.3 更强。",
+          "text_en": "A negative correlation does not mean a weak relationship. A correlation coefficient of -0.9 indicates a stronger relationship than +0.3."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2011h23tokubetsu-q015",
+        "2023r05-q006"
+      ],
+      "definition_jp": "相関は 2 つの量が連動して増減する関係、因果は一方が原因となって他方を引き起こす関係であり、相関があっても因果があるとは限らない。",
+      "definition_zh": "在相关与因果（相関と因果）中，相关指两个量联动增减的关系，因果指一方作为原因引起另一方的关系，有相关并不一定有因果。",
+      "definition_en": "In correlation and causation (相関と因果), correlation means two quantities rise and fall together, while causation means one brings about the other, and a correlation does not by itself prove causation.",
+      "explanation_jp": "2 つの量を横軸と縦軸にとり、データを点で打った図を散布図といい、点が右上がりに並べば正の相関、右下がりに並べば負の相関である。相関の向きと強さは相関係数で表し、値は -1 から +1 の範囲で、絶対値が 1 に近いほど関係が強く、0 に近いほど弱い。因果があると言うには、連動しているだけでなく、一方を変えたときに他方が変わることを確かめる必要がある。",
+      "explanation_zh": "把两个量分别放在横轴和纵轴上、将数据描成点的图叫散点图（散布図），点向右上方排列是正相关（正の相関），向右下方排列是负相关（負の相関）。相关的方向和强弱用相关系数（相関係数）表示，取值在 -1 到 +1 之间，绝对值越接近 1 关系越强，越接近 0 越弱。要说存在因果，不能只看两者是否联动，还要确认改变一方时另一方确实随之变化。",
+      "explanation_en": "A chart that puts two quantities on the horizontal and vertical axes and plots the data as dots is a scatter diagram (散布図); dots rising to the right show a positive correlation (正の相関), and dots falling to the right show a negative correlation (負の相関). The direction and strength are given by the correlation coefficient (相関係数), which ranges from -1 to +1, with values near 1 in absolute terms meaning a strong relationship and values near 0 a weak one. To claim causation, it is not enough that the two move together; you must confirm that changing one actually changes the other.",
+      "memory_hook_jp": "「相関」の「相」は相互・相談の「相」で「互いに」。「因果」は「因 (もと) があって果 (結果) が生じる」と書き、どちらが原因でどちらが結果かを分けている。",
+      "memory_hook_zh": "日语的「相関」「因果」与中文字面一致：“相”是“相互”的相，“因果”就是“有因才有果”，字面上已经分清哪边是原因、哪边是结果。",
+      "memory_hook_en": "The Japanese 相関 starts with a character meaning \"mutual\", while 因果 literally reads \"cause and fruit\", so the word itself separates the cause from the result.",
+      "inline_quiz": [
+        "2011h23tokubetsu-q015",
+        "2023r05-q006"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "擬似相関",
+      "term_zh": "伪相关",
+      "term_en": "Spurious Correlation",
+      "one_jp": "**擬似相関**は、直接の因果関係がない 2 つの量が、両方に影響する**第三の要因**のために相関しているように見える現象である。",
+      "one_zh": "**伪相关**（[[jp:擬似相関]]）是指两个没有直接因果关系的量，由于同时影响两者的**第三个因素**（[[jp:第三の要因]]）而看起来相关的现象。",
+      "one_en": "A **spurious correlation** ([[jp:擬似相関]]) is when two quantities with no direct causal link appear correlated because a **third factor** ([[jp:第三の要因]]) affects both of them.",
+      "detail_jp": "第三の要因は**交絡因子**とも呼ばれ、それが変化すると 2 つの量がそろって動くため、データ上は強い相関が現れることがある。このとき一方を操作しても他方は変わらないので、相関だけを根拠に施策を決めると効果が出ない。",
+      "detail_zh": "第三个因素也称为**混杂因素**（[[jp:交絡因子]]），它一变化，两个量就会一起变动，因此数据上可能出现很强的相关。这时即使操纵其中一方，另一方也不会改变，所以只凭相关来决定对策是不会见效的。",
+      "detail_en": "The third factor is also called a **confounding factor** ([[jp:交絡因子]]), and because the two quantities move together whenever it changes, the data can show a strong correlation. Since changing one of them leaves the other unchanged, a measure chosen on the strength of the correlation alone will have no effect.",
+      "analogy_jp": "夏になると扇風機とかき氷がそろって売れるが、かき氷が扇風機を売っているわけではなく、暑さが両方を動かしている。",
+      "analogy_zh": "一到夏天，电风扇和刨冰都卖得很好，但并不是刨冰带动了电风扇的销量，而是炎热同时推动了两者。",
+      "analogy_en": "In summer, electric fans and shaved ice both sell well, but the shaved ice is not selling the fans; the heat is driving both.",
+      "hook_jp": "「擬」は擬音・擬態の擬で「それらしく似せる」。英語の spurious も「偽りの」という意味。",
+      "hook_zh": "「擬似」的“拟”与“拟声”“拟态”的“拟”相同，意为“模仿得像真的”；英文 spurious 也是“虚假的”意思。",
+      "hook_en": "The first character of [[jp:擬似相関]] means \"imitating\", the same one used for onomatopoeia ([[jp:擬音]]), and the English word spurious likewise means \"false\".",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "擬似相関は、第三の要因が同じ水準のデータどうしで比べると、消えるか弱まる。直接の因果がある関係は、そう比べても残る。",
+          "text_zh": "如果只在第三个因素处于同一水平的数据之间比较，伪相关就会消失或减弱。存在直接因果的关系，这样比较后依然会保留。",
+          "text_en": "When you compare only data in which the third factor is at the same level, a spurious correlation disappears or weakens. A relationship with direct causation remains even under that comparison."
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/strategy-01-02-u04-t02.svg"
+        }
+      },
+      "quiz": [],
+      "definition_jp": "擬似相関は、直接の因果関係がない 2 つの量が、両方に影響する第三の要因のために相関しているように見える現象である。",
+      "definition_zh": "伪相关（擬似相関）是指两个没有直接因果关系的量，由于同时影响两者的第三个因素（第三の要因）而看起来相关的现象。",
+      "definition_en": "A spurious correlation (擬似相関) is when two quantities with no direct causal link appear correlated because a third factor (第三の要因) affects both of them.",
+      "explanation_jp": "第三の要因は交絡因子とも呼ばれ、それが変化すると 2 つの量がそろって動くため、データ上は強い相関が現れることがある。このとき一方を操作しても他方は変わらないので、相関だけを根拠に施策を決めると効果が出ない。",
+      "explanation_zh": "第三个因素也称为混杂因素（交絡因子），它一变化，两个量就会一起变动，因此数据上可能出现很强的相关。这时即使操纵其中一方，另一方也不会改变，所以只凭相关来决定对策是不会见效的。",
+      "explanation_en": "The third factor is also called a confounding factor (交絡因子), and because the two quantities move together whenever it changes, the data can show a strong correlation. Since changing one of them leaves the other unchanged, a measure chosen on the strength of the correlation alone will have no effect.",
+      "memory_hook_jp": "「擬」は擬音・擬態の擬で「それらしく似せる」。英語の spurious も「偽りの」という意味。",
+      "memory_hook_zh": "「擬似」的“拟”与“拟声”“拟态”的“拟”相同，意为“模仿得像真的”；英文 spurious 也是“虚假的”意思。",
+      "memory_hook_en": "The first character of 擬似相関 means \"imitating\", the same one used for onomatopoeia (擬音), and the English word spurious likewise means \"false\".",
+      "inline_quiz": [],
+      "inline_fallback": false,
       "figure": {
         "mermaid": "graph TD; A[\"第三の要因\"] --> B[\"変数X\"]; A --> C[\"変数Y\"]; B -.見かけの相関.- C",
         "svg_path": "figures/strategy-01-02-u04-t02.svg",
         "rendered": true
-      },
-      "term_zh": "伪相关",
-      "term_en": "Spurious Correlation",
-      "definition_zh": "由于第三个因素，本无直接关系的两个变量看起来相关的、徒有其表的相关。",
-      "definition_en": "A correlation in appearance only, in which two variables that have no direct relationship appear correlated because of a third factor.",
-      "explanation_zh": "伪相关（表面上的相关）是指本来没有直接因果关系的两个变量，由于受到共同的第三个因素（混杂因素）的影响，看起来好像有关系而呈现出相关的现象。\n\n例如“冰淇淋的销售额”和“溺水事故”都会随着“气温”升高而增加，所以一起增减，但二者之间并没有直接的因果。考试会考查：看到相关时要怀疑是否存在隐藏的共同因素，以及伪相关是“混淆相关与因果所产生的误解”这一点。这是防止在数据利用中做出错误判断的重要注意事项。",
-      "explanation_en": "Spurious correlation (apparent correlation) is the phenomenon in which two variables that originally have no direct causal relationship appear correlated, as if they were related, due to the influence of a common third factor (a confounding factor).\n\nFor example, both 'ice cream sales' and 'drowning accidents' increase as the 'temperature' rises, so they rise and fall together, yet there is no direct causation between them. The exam asks you to suspect the presence of a hidden common factor when you see a correlation, and tests the point that spurious correlation is 'a misunderstanding arising from confusing correlation with causation.' This is an important caution for preventing wrong judgments in data utilization.",
-      "analogy_zh": "公鸡在清晨打鸣后太阳就升起，但并不是公鸡让太阳升起的。只是“时刻”这个共同的因素同时推动了两者而已。",
-      "analogy_en": "Just because the sun rises after the rooster crows in the morning does not mean the rooster makes the sun rise. It is merely that a common factor, 'the time of day,' drives both.",
-      "memory_hook_zh": "说到伪相关，就是由共同的第三个因素产生的徒有其表的相关",
-      "memory_hook_en": "Spurious correlation → an appearance-only correlation produced by a common third factor"
+      }
     }
   ],
+  "pairs": [
+    {
+      "a": "回帰分析",
+      "b": "相関と因果",
+      "rows": [
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "一方の値から他方の値を予測する式を作る",
+          "a_zh": "建立由一方的值预测另一方的值的公式",
+          "a_en": "Build a formula that predicts one value from another",
+          "b_jp": "2 つの量の関係の向きと強さを測る",
+          "b_zh": "衡量两个量之间关系的方向和强弱",
+          "b_en": "Measure the direction and strength of the relationship between two quantities",
+          "key": true
+        },
+        {
+          "label_jp": "結果の形",
+          "label_zh": "结果的形式",
+          "label_en": "Form of the result",
+          "a_jp": "回帰式 (例: y = a + bx)",
+          "a_zh": "回归方程（例：y = a + bx）",
+          "a_en": "Regression equation (e.g. y = a + bx)",
+          "b_jp": "相関係数 (-1〜+1)",
+          "b_zh": "相关系数（-1～+1）",
+          "b_en": "Correlation coefficient (-1 to +1)",
+          "key": false
+        },
+        {
+          "label_jp": "変数の扱い",
+          "label_zh": "变量的处理",
+          "label_en": "How variables are treated",
+          "a_jp": "説明変数と目的変数を区別する",
+          "a_zh": "区分说明变量和目标变量",
+          "a_en": "Distinguishes the explanatory variable from the target variable",
+          "b_jp": "2 つの量を区別せず対等に扱う",
+          "b_zh": "不区分两个量，平等对待",
+          "b_en": "Treats the two quantities equally, without distinction",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "相関と因果",
+      "b": "擬似相関",
+      "rows": [
+        {
+          "label_jp": "関係の正体",
+          "label_zh": "关系的实质",
+          "label_en": "What the relationship really is",
+          "a_jp": "因果があれば、一方が他方を直接動かす",
+          "a_zh": "如果存在因果，一方会直接带动另一方",
+          "a_en": "With causation, one directly drives the other",
+          "b_jp": "直接のつながりはなく、第三の要因が両方を動かす",
+          "b_zh": "两者没有直接联系，是第三个因素同时带动两者",
+          "b_en": "No direct link; a third factor drives both",
+          "key": true
+        },
+        {
+          "label_jp": "第三の要因が同じ水準のデータどうしで比べたとき",
+          "label_zh": "只在第三个因素处于同一水平的数据之间比较时",
+          "label_en": "When comparing data with the third factor at the same level",
+          "a_jp": "因果による関係は残る",
+          "a_zh": "因果带来的关系依然保留",
+          "a_en": "The causal relationship remains",
+          "b_jp": "相関は消えるか弱まる",
+          "b_zh": "相关消失或减弱",
+          "b_en": "The correlation disappears or weakens",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "最小二乗法は、残差の二乗の合計が最小になるように式を決める。回帰分析の直線は、一般にこの方法で求める。",
+    "回帰分析は、説明変数から目的変数を説明・予測する式を作る手法である。",
+    "相関係数は -1〜+1 の値をとり、符号が関係の向き、絶対値が強さを表す。",
+    "相関があるだけでは因果は言えない。第三の要因が両方を動かすと、直接の関係がなくても擬似相関が現れる。"
+  ],
+  "key_points_zh": [
+    "最小二乘法按残差平方合计最小的原则确定公式。回归分析中的直线一般就是用这种方法求出的。",
+    "回归分析是建立公式、由说明变量来说明和预测目标变量的方法。",
+    "相关系数取 -1～+1 之间的值，符号表示关系的方向，绝对值表示强弱。",
+    "仅有相关并不能说明存在因果。当第三个因素同时带动两者时，即使没有直接关系也会出现伪相关。"
+  ],
+  "key_points_en": [
+    "The least squares method fixes a formula so that the sum of squared residuals is as small as possible. The line in regression analysis is usually found this way.",
+    "Regression analysis builds a formula that explains or predicts the target variable from the explanatory variable.",
+    "The correlation coefficient takes values from -1 to +1; its sign gives the direction of the relationship and its absolute value gives the strength.",
+    "A correlation alone does not establish causation. When a third factor drives both quantities, a spurious correlation appears even without any direct link."
+  ],
+  "overview": {
+    "intro_jp": "最小二乗法で、残差を二乗してから合計する理由を説明できる。回帰分析の説明変数と目的変数を区別し、式を使って値を見積もる流れをたどれる。相関の向きと強さを読み取り、因果のある関係と擬似相関を見分けられる。",
+    "intro_zh": "能够说明最小二乘法为什么要先把残差平方再求合计。能够区分回归分析中的说明变量和目标变量，并理解用公式估算数值的流程。能够读出相关的方向和强弱，并把存在因果的关系与伪相关区分开来。",
+    "intro_en": "Explain why the least squares method squares the residuals before adding them up. Tell the explanatory variable from the target variable in regression analysis, and follow how a formula is used to estimate values. Read the direction and strength of a correlation, and tell a causal relationship apart from a spurious correlation.",
+    "freq_badge": "頻出",
+    "est_minutes": 25
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "最小二乗法: 最小二乗法といえば誤差の二乗和を最小にして回帰直線を引く",
-      "回帰分析: 回帰分析といえば回帰直線で別の変数の値を予測する",
-      "相関と因果: 相関と因果といえば相関があっても因果とは限らない",
-      "擬似相関: 擬似相関といえば共通の第三要因が生む見かけだけの相関"
-    ],
     "key_points_jp": [
-      "本単元は『最小二乗法→回帰分析→相関と因果→擬似相関』という、数量関係の分析理論を一本道で学ぶ。",
-      "最小二乗法は誤差(残差)の二乗和を最小にして回帰直線を引く基礎手法で、回帰分析の土台。",
-      "回帰分析は回帰直線を使って説明変数から目的変数を予測する手法。相関は関係の強さを相関係数(-1〜+1)で測るもので、目的が異なる。",
-      "最重要観点は『相関があっても因果があるとは限らない』こと。連動して見えても原因とは限らない。",
-      "擬似相関は共通の第三要因(交絡因子)が原因で、直接関係のない2変数が相関して見える見かけだけの相関。"
+      "最小二乗法は、残差の二乗の合計が最小になるように式を決める。回帰分析の直線は、一般にこの方法で求める。",
+      "回帰分析は、説明変数から目的変数を説明・予測する式を作る手法である。",
+      "相関係数は -1〜+1 の値をとり、符号が関係の向き、絶対値が強さを表す。",
+      "相関があるだけでは因果は言えない。第三の要因が両方を動かすと、直接の関係がなくても擬似相関が現れる。"
     ],
     "key_points_zh": [
-      "本单元沿着“最小二乘法→回归分析→相关与因果→伪相关”这一条主线，连贯地学习数量关系的分析理论。",
-      "最小二乘法是使误差（残差）平方和最小来画出回归直线的基础方法，是回归分析的基础。",
-      "回归分析是使用回归直线从自变量预测因变量的方法。相关则用相关系数（-1～+1）来衡量关系的强弱，二者目的不同。",
-      "最重要的观点是“即使有相关，也未必有因果”。即便看起来联动，也未必是原因。",
-      "伪相关是由共同的第三个因素（混杂因素）引起，使本无直接关系的两个变量看起来相关的、徒有其表的相关。"
+      "最小二乘法按残差平方合计最小的原则确定公式。回归分析中的直线一般就是用这种方法求出的。",
+      "回归分析是建立公式、由说明变量来说明和预测目标变量的方法。",
+      "相关系数取 -1～+1 之间的值，符号表示关系的方向，绝对值表示强弱。",
+      "仅有相关并不能说明存在因果。当第三个因素同时带动两者时，即使没有直接关系也会出现伪相关。"
     ],
     "key_points_en": [
-      "This unit follows the single thread of 'least squares method → regression analysis → correlation and causation → spurious correlation' to study the theory of analyzing quantitative relationships in one coherent line.",
-      "The least squares method is a foundational technique that draws the regression line by minimizing the sum of squared errors (residuals), and it is the foundation of regression analysis.",
-      "Regression analysis is a method that uses the regression line to predict the dependent variable from the explanatory variable. Correlation, by contrast, measures the strength of a relationship with the correlation coefficient (-1 to +1); their purposes differ.",
-      "The most important point is that 'even if there is correlation, there is not necessarily causation.' Even when things appear to move together, that is not necessarily the cause.",
-      "Spurious correlation is an appearance-only correlation, caused by a common third factor (a confounding factor), that makes two variables with no direct relationship appear correlated."
+      "The least squares method fixes a formula so that the sum of squared residuals is as small as possible. The line in regression analysis is usually found this way.",
+      "Regression analysis builds a formula that explains or predicts the target variable from the explanatory variable.",
+      "The correlation coefficient takes values from -1 to +1; its sign gives the direction of the relationship and its absolute value gives the strength.",
+      "A correlation alone does not establish causation. When a third factor drives both quantities, a spurious correlation appears even without any direct link."
+    ],
+    "memory_hooks_jp": [
+      "回帰分析: 名前の由来は、親の身長が極端でも子の身長は平均の側へ「戻る (regress)」傾向を、ゴルトンが分析したこと。",
+      "相関と因果: 「相関」の「相」は相互・相談の「相」で「互いに」。「因果」は「因 (もと) があって果 (結果) が生じる」と書き、どちらが原因でどちらが結果かを分けている。",
+      "擬似相関: 「擬」は擬音・擬態の擬で「それらしく似せる」。英語の spurious も「偽りの」という意味。"
     ],
     "memory_hooks_zh": [
-      "最小二乘法：说到最小二乘法，就是使误差平方和最小来画出回归直线",
-      "回归分析：说到回归分析，就是用回归直线预测另一个变量的取值",
-      "相关与因果：说到相关与因果，就是即使有相关也未必有因果",
-      "伪相关：说到伪相关，就是由共同的第三个因素产生的徒有其表的相关"
+      "回归分析：这个名称源于高尔顿的研究：即使父母身高偏高或偏矮，子女的身高也有向平均值“回归（regress）”的倾向。",
+      "相关与因果：日语的「相関」「因果」与中文字面一致：“相”是“相互”的相，“因果”就是“有因才有果”，字面上已经分清哪边是原因、哪边是结果。",
+      "伪相关：「擬似」的“拟”与“拟声”“拟态”的“拟”相同，意为“模仿得像真的”；英文 spurious 也是“虚假的”意思。"
     ],
     "memory_hooks_en": [
-      "Least squares method: Least squares method → minimize the sum of squared errors to draw the regression line",
-      "Regression analysis: Regression analysis → use the regression line to predict the value of another variable",
-      "Correlation and causation: Correlation and causation → correlation does not necessarily mean causation",
-      "Spurious correlation: Spurious correlation → an appearance-only correlation produced by a common third factor"
+      "Regression Analysis: The name comes from Galton's study showing that even when parents are unusually tall or short, their children's heights tend to \"regress\" toward the average.",
+      "Correlation and Causation: The Japanese 相関 starts with a character meaning \"mutual\", while 因果 literally reads \"cause and fruit\", so the word itself separates the cause from the result.",
+      "Spurious Correlation: The first character of 擬似相関 means \"imitating\", the same one used for onomatopoeia (擬音), and the English word spurious likewise means \"false\"."
     ]
   },
   "challenge_questions": [
-    "2015h27a-q088",
-    "2024r06-q009",
-    "2009h21a-q002",
-    "2009h21h-q095",
-    "2010h22a-q009"
+    "2024r06-q014",
+    "2011h23tokubetsu-q015",
+    "2023r05-q006"
   ],
   "source_figures": [
     {
@@ -190,9 +659,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "回归、相关与伪相关",
-  "title_en": "Regression, Correlation, and Spurious Correlation",
-  "unit_summary_zh": "学习用直线来近似两个数量之间关系的回归分析，以及用于判断关系强弱和是否存在因果的相关的思路。",
-  "unit_summary_en": "Learn regression analysis, which approximates the relationship between two quantities with a straight line, and the concept of correlation, which gauges the strength of a relationship and whether causation exists."
+  }
 }
