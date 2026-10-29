@@ -8,7 +8,7 @@
 | batch | topic | names | units | questions | terms | status |
 |---|---|---|---|---|---|---|
 | b01 | technology-23-63 | 情報セキュリティ対策・情報セキュリティ実装技術 (1/3) | u01 u02 u03 u04 u05 | 217 | 36 | done (S135, attempts 2/2/1/1/3, Rule A PASS after 65 patches) |
-| b02 | technology-23-63 | 情報セキュリティ対策・情報セキュリティ実装技術 (2/3) | u06 u07 u08 u09 u10 | 217 | 35 | todo |
+| b02 | technology-23-63 | 情報セキュリティ対策・情報セキュリティ実装技術 (2/3) | u06 u07 u08 u09 u10 | 217 | 35 | done (S137, attempts 2/3/3/1/1, Rule A PASS after 28 patches) |
 | b03 | technology-23-63 | 情報セキュリティ対策・情報セキュリティ実装技術 (3/3) | u11 u12 u13 | 217 | 17 | todo |
 | b04 | technology-23-62 | 情報セキュリティ管理 (1/2) | u01 u02 u03 u04 u05 | 135 | 29 | todo |
 | b05 | technology-23-62 | 情報セキュリティ管理 (2/2) | u06 u07 | 135 | 14 | todo |
