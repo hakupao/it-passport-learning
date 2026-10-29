@@ -1,193 +1,906 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "management-08-25-u03",
   "topic_id": "management-08-25",
   "category": "management",
   "title_jp": "テスト技法と結合・性能検証",
+  "title_zh": "测试技术与集成、性能验证",
+  "title_en": "Test Techniques and Integration/Performance Verification",
   "unit_summary_jp": "外部仕様に基づくテスト技法と、モジュールを統合した段階での結合・性能・負荷・回帰の検証を学ぶ。",
+  "unit_summary_zh": "学习基于外部规格的测试技术，以及在模块集成阶段进行的集成、性能、负载、回归验证。",
+  "unit_summary_en": "Learn test techniques based on external specifications, and the integration, performance, load, and regression verification carried out at the stage where modules are combined.",
   "order_in_topic": 3,
   "prerequisites": [
     "management-08-25-u02"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、外部仕様に着目するブラックボックステスト、複数モジュールを組み合わせる統合テスト、応答時間や処理量を測る性能テスト、高負荷時の挙動を見る負荷テスト、修正後に既存機能が壊れていないか確かめる回帰テストを学ぶ。部品を統合して品質を測る段階の技法・工程・観点であり、ITパスポートでも頻出の重要分野である。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习：关注外部规格的黑盒测试、组合多个模块的集成测试、测量响应时间和处理量的性能测试、观察高负载下行为的负载测试，以及在修改后确认既有功能是否被破坏的回归测试。这些是将各部件集成起来、衡量质量这一阶段的技术、工序与视角，在 IT 护照考试中也是经常出现的重要领域。",
-    "intro_en": "In this unit, you will learn about black-box testing that focuses on external specifications, integration testing that combines multiple modules, performance testing that measures response time and processing volume, load testing that observes behavior under heavy load, and regression testing that confirms whether existing functions remain intact after a change. These are the techniques, processes, and viewpoints of the stage where parts are integrated and quality is measured, and they form an important area that appears frequently in the IT Passport exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**ブラックボックステスト** が何を手がかりにテストケースを作るかを説明できる。",
+    "テストの段階の順序を並べ、**統合テスト** で確かめる範囲を他の段階と区別できる。",
+    "**性能テスト** と **負荷テスト** の違いを説明し、修正の後に **回帰テスト** を行う理由を述べられる。"
+  ],
+  "goals_zh": [
+    "能够说明**黑盒测试**依据什么来设计测试用例。",
+    "能够排出测试阶段的先后顺序，并把**集成测试**所确认的范围与其他阶段区分开。",
+    "能够说明**性能测试**与**负载测试**的区别，并讲出修正之后要做**回归测试**的理由。"
+  ],
+  "goals_en": [
+    "Explain what **black-box testing** relies on to build its test cases.",
+    "Put the testing stages in order and tell the scope that **integration testing** checks apart from the other stages.",
+    "Explain how **performance testing** differs from **load testing**, and say why **regression testing** follows a fix."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "行う時期の目安"
+  ],
+  "overview_cols_zh": [
+    "分类",
+    "大致的进行时机"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Typical timing"
+  ],
+  "overview_rows": [
     {
       "term": "ブラックボックステスト",
-      "definition_jp": "内部構造を見ず、入力と出力(外部仕様)が正しいかだけを確認するテスト技法。",
-      "explanation_jp": "ブラックボックステストは、プログラムの中身(処理の流れやコード)を意識せず、「ある入力を与えたら、仕様どおりの出力が返るか」だけに注目するテスト技法です。利用者目線で機能が要求どおり動くかを確かめます。\n\n試験では、内部構造に着目するホワイトボックステストとの対比が頻出です。ブラックボックスは外部仕様ベース、ホワイトボックスは内部ロジックベースと覚えましょう。代表的な技法に、入力範囲を区切る同値分割や、境界の前後を狙う境界値分析があります。",
-      "analogy_jp": "自動販売機をテストするとき、内部の配線は見ずに「100円入れてボタンを押したら正しい飲み物が出るか」だけを確認するようなもの。中身を知らなくても入出力で判断します。",
-      "memory_hook_jp": "ブラックボックステストといえば中身を見ず入出力(外部仕様)で確認",
-      "inline_quiz": [
-        "2009h21h-q042",
-        "2010h22a-q089"
+      "one_line_jp": "外部仕様に照らして入力と出力の対応を確かめる技法",
+      "one_line_zh": "对照外部规格，确认输入与输出对应关系的技法",
+      "one_line_en": "A technique that checks inputs against outputs using the external specification",
+      "extra_jp": [
+        "テスト技法",
+        "仕様がそろえば各段階で使える"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "黑盒测试",
-      "term_en": "Black-box testing",
-      "definition_zh": "不看内部结构，只确认输入与输出（外部规格）是否正确的测试技术。",
-      "definition_en": "A test technique that does not look at the internal structure and only checks whether the inputs and outputs (the external specification) are correct.",
-      "explanation_zh": "黑盒测试是一种不去关注程序内部（处理流程或代码），只关注「给定某个输入后，是否返回符合规格的输出」的测试技术。它从用户的视角确认功能是否按要求运作。\n\n考试中，黑盒测试与关注内部结构的白盒测试之间的对比经常出现。请记住：黑盒以外部规格为基础，白盒以内部逻辑为基础。代表性的技术有划分输入范围的等价类划分，以及瞄准边界前后取值的边界值分析。",
-      "explanation_en": "Black-box testing is a test technique that pays no attention to the inside of the program (the flow of processing or the code) and focuses only on \"whether, given a certain input, the output returned matches the specification.\" It confirms from the user's point of view whether a function works as required.\n\nIn the exam, the contrast with white-box testing, which focuses on the internal structure, appears often. Remember that black-box is based on the external specification while white-box is based on the internal logic. Representative techniques include equivalence partitioning, which divides the input range, and boundary value analysis, which targets values just before and after a boundary.",
-      "analogy_zh": "就像测试自动售货机时，不去看内部的线路，只确认「投入 100 日元并按下按钮后，是否出来正确的饮料」。即使不了解内部构造，也能凭输入和输出来判断。",
-      "analogy_en": "It is like testing a vending machine by not looking at the internal wiring and only confirming \"if you insert 100 yen and press a button, does the correct drink come out.\" You can judge from the input and output even without knowing the inside.",
-      "memory_hook_zh": "说到黑盒测试，就是不看内部、用输入输出（外部规格）来确认",
-      "memory_hook_en": "Black-box testing → confirm via input and output (external spec) without looking inside"
+      "extra_zh": [
+        "测试技法",
+        "规格齐备后，各阶段都能使用"
+      ],
+      "extra_en": [
+        "Test technique",
+        "Usable at any stage once the specification is ready"
+      ]
     },
     {
       "term": "統合テスト",
-      "definition_jp": "単体検証済みの複数モジュールを結合し、連携が正しく動くか確認する工程。",
-      "explanation_jp": "統合テスト(結合テスト)は、それぞれ単体テストを通ったモジュールを組み合わせ、モジュール間でデータの受け渡しや呼び出しが正しく行われるかを確認する工程です。単体では問題なくても、つなぐと不具合が出ることを検出します。\n\n試験では、単体テスト→統合テスト→システムテスト→受入れテストという工程の順序が問われます。下位から組み上げるボトムアップ、上位から組むトップダウンなどの結合方式がある点も押さえておきましょう。",
-      "analogy_jp": "車の部品検査を終えたエンジン・ブレーキ・ハンドルを実際に組み付け、ペダルを踏むと連動して止まるかなど、部品どうしの連携を確かめる試走のようなものです。",
-      "memory_hook_jp": "統合テストといえば複数モジュールを結合し連携を確認する工程",
-      "inline_quiz": [
-        "2010h22a-q048",
-        "2010h22h-q034"
+      "one_line_jp": "部品をつなぎ、受け渡しがかみ合うかを確かめる",
+      "one_line_zh": "把部件连起来，确认相互之间的传递是否衔接",
+      "one_line_en": "Connecting components and checking that what they pass to each other fits",
+      "extra_jp": [
+        "テストの工程",
+        "単体テストの後"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"単体テスト\"] --> B[\"統合テスト\"]; B --> C[\"システムテスト\"]; C --> D[\"受入れテスト\"]",
-        "svg_path": "figures/management-08-25-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "集成测试",
-      "term_en": "Integration testing",
-      "definition_zh": "将已通过单元验证的多个模块结合起来，确认它们之间的协作是否正确运作的工序。",
-      "definition_en": "A process that combines multiple modules already verified individually and checks whether their cooperation works correctly.",
-      "explanation_zh": "集成测试（结合测试）是一道工序：将各自已通过单元测试的模块组合起来，确认模块之间的数据传递和调用是否正确进行。它能检测出单独运行没问题、但一连接就出故障的情况。\n\n考试中会考查工序顺序：单元测试→集成测试→系统测试→验收测试。还应掌握结合方式，例如从下层逐步往上组装的自底向上（Bottom-up），以及从上层开始组装的自顶向下（Top-down）。",
-      "explanation_en": "Integration testing (also called combination testing) is a process that combines modules each of which has passed unit testing, and checks whether data passing and calls between modules are performed correctly. It detects defects that do not appear in a single module but emerge once they are connected.\n\nIn the exam, the order of the processes—unit testing → integration testing → system testing → acceptance testing—is tested. You should also keep in mind that there are combination approaches such as bottom-up, which builds up from the lower layers, and top-down, which builds from the upper layers.",
-      "analogy_zh": "就像把已完成零件检验的发动机、刹车、方向盘实际组装到一起，再去试车：踩下踏板时它们是否联动并停下来，以此确认各部件之间的协作。",
-      "analogy_en": "It is like actually assembling an engine, brakes, and steering wheel that have each passed parts inspection, then doing a test run to confirm cooperation between parts—for example, whether pressing the pedal makes them work together and stop the car.",
-      "memory_hook_zh": "说到集成测试，就是结合多个模块、确认协作的工序",
-      "memory_hook_en": "Integration testing → the process of combining multiple modules and confirming their cooperation"
+      "extra_zh": [
+        "测试工序",
+        "单元测试之后"
+      ],
+      "extra_en": [
+        "Testing phase",
+        "After unit testing"
+      ]
     },
     {
       "term": "性能テスト",
-      "definition_jp": "応答時間や処理量など、システムの処理性能(非機能要件)を測定し評価するテスト。",
-      "explanation_jp": "性能テストは、統合されたシステムが実用上必要な速さ・量で処理できるかを測るテストです。応答時間(レスポンスタイム)や単位時間あたりの処理量(スループット)などの指標を測定し、要求水準を満たすか評価します。\n\n試験では、「機能が正しいか」ではなく「どれだけ速く・多く処理できるか」という非機能要件を確かめる点が問われます。機能テストとの違い、また高負荷条件を扱う負荷テストとの関係を整理しておくとよいでしょう。",
-      "analogy_jp": "新しく開通した高速道路で「制限速度どおりに走れるか」「渋滞なくスムーズに流れるか」を計測点で測るようなもの。正しく通れるかではなく、どれだけ速く流れるかを見ます。",
-      "memory_hook_jp": "性能テストといえば応答時間や処理量を測る非機能の検証",
-      "inline_quiz": [
-        "2010h22a-q038"
+      "one_line_jp": "速さと処理量が要求水準に届くかを数値で測る",
+      "one_line_zh": "用数值测量速度和处理量能否达到要求水平",
+      "one_line_en": "Measuring in figures whether speed and throughput reach the required level",
+      "extra_jp": [
+        "非機能の検証",
+        "主にシステムテスト"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "性能测试",
-      "term_en": "Performance testing",
-      "definition_zh": "测量并评估响应时间、处理量等系统处理性能（非功能需求）的测试。",
-      "definition_en": "A test that measures and evaluates a system's processing performance (a non-functional requirement), such as response time and processing volume.",
-      "explanation_zh": "性能测试用于衡量已集成的系统是否能以实用上所需的速度和量来处理。它测量响应时间（Response Time）、单位时间的处理量（吞吐量，Throughput）等指标，评估是否满足要求水准。\n\n考试中考查的是确认「非功能需求」这一点，即不是「功能是否正确」，而是「能处理得多快、多大量」。最好整理清楚它与功能测试的区别，以及它与处理高负载条件的负载测试之间的关系。",
-      "explanation_en": "Performance testing measures whether an integrated system can process at the speed and volume needed for practical use. It measures indicators such as response time and processing volume per unit of time (throughput) and evaluates whether the required level is met.\n\nIn the exam, the point tested is confirming the \"non-functional requirements\"—that is, not \"whether the function is correct\" but \"how fast and how much it can process.\" It is good to organize the difference from functional testing, as well as the relationship to load testing, which deals with high-load conditions.",
-      "analogy_zh": "就像在新开通的高速公路上设置测量点，检测「能否按限速行驶」「是否畅通无堵地通行」。看的不是能否正确通过，而是车流能跑多快。",
-      "analogy_en": "It is like setting up measurement points on a newly opened highway to check \"whether you can drive at the speed limit\" and \"whether traffic flows smoothly without congestion.\" What you look at is not whether you can pass correctly, but how fast the flow can go.",
-      "memory_hook_zh": "说到性能测试，就是测量响应时间和处理量的非功能验证",
-      "memory_hook_en": "Performance testing → non-functional verification that measures response time and processing volume"
+      "extra_zh": [
+        "非功能方面的验证",
+        "主要在系统测试中"
+      ],
+      "extra_en": [
+        "Non-functional check",
+        "Mainly in system testing"
+      ]
     },
     {
       "term": "負荷テスト",
-      "definition_jp": "想定上限やそれを超える高負荷をかけ、システムの挙動や限界を確認するテスト。",
-      "explanation_jp": "負荷テストは、多数の同時アクセスや大量データなど、高い負荷をかけた状態でシステムが正常に動き続けるか、どこまで耐えられるかを確認するテストです。性能テストの一種・延長として位置づけられます。\n\n試験では、通常の性能測定よりも厳しい条件で耐久性や限界点を見るのが負荷テストだと押さえましょう。ピーク時アクセスでも落ちないか、処理が破綻しないかといった信頼性・可用性の確認につながる観点が問われます。",
-      "analogy_jp": "橋に何台ものトラックを同時に載せ、設計上の重さや想定を超える重量まで耐えられるかを試す耐荷重テストのようなものです。",
-      "memory_hook_jp": "負荷テストといえば高負荷をかけて限界・耐久を確認",
-      "inline_quiz": [
-        "2010h22a-q091"
+      "one_line_jp": "量を増やしていき、振る舞いと限界を探る",
+      "one_line_zh": "逐步加大数量，探寻系统的表现与极限",
+      "one_line_en": "Raising the volume to probe how the system behaves and where its limit lies",
+      "extra_jp": [
+        "非機能の検証 (性能テストの一種)",
+        "システム全体がそろった後"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "负载测试",
-      "term_en": "Load testing",
-      "definition_zh": "施加设想上限或超过上限的高负载，确认系统行为及极限的测试。",
-      "definition_en": "A test that applies the assumed upper limit or a high load exceeding it, to confirm the system's behavior and its limits.",
-      "explanation_zh": "负载测试是在施加大量并发访问、海量数据等高负载状态下，确认系统能否持续正常运作、以及能承受到什么程度的测试。它被定位为性能测试的一种或延伸。\n\n考试中请把握住：负载测试是在比通常性能测量更严苛的条件下，考察耐久性和极限点。它考查的视角与可靠性、可用性的确认相关，例如在峰值访问下是否不宕机、处理是否不崩溃。",
-      "explanation_en": "Load testing is a test that, under a high-load state such as many simultaneous accesses or massive amounts of data, confirms whether the system keeps operating normally and how much it can withstand. It is positioned as a kind or an extension of performance testing.\n\nIn the exam, keep in mind that load testing examines durability and the limit point under conditions more severe than ordinary performance measurement. The viewpoint tested connects to confirming reliability and availability, such as whether the system stays up under peak access and whether processing does not break down.",
-      "analogy_zh": "就像在桥上同时压上好几辆卡车，试验它能否承受设计上的重量、乃至超过设想的重量的承重测试。",
-      "analogy_en": "It is like a load-bearing test in which several trucks are placed on a bridge at the same time to try whether it can withstand the designed weight and even weights beyond what was assumed.",
-      "memory_hook_zh": "说到负载测试，就是施加高负载、确认极限与耐久",
-      "memory_hook_en": "Load testing → apply heavy load and confirm the limit and durability"
+      "extra_zh": [
+        "非功能方面的验证（性能测试的一种）",
+        "整个系统齐备之后"
+      ],
+      "extra_en": [
+        "Non-functional check (a kind of performance testing)",
+        "Once the whole system is in place"
+      ]
     },
     {
       "term": "回帰テスト",
-      "definition_jp": "修正や機能追加の後、既存の機能が壊れていないか再確認するテスト。",
-      "explanation_jp": "回帰テスト(リグレッションテスト)は、プログラムを修正・改良したときに、その変更が原因でこれまで正常だった他の機能に不具合(デグレード)を起こしていないかを再度確認するテストです。\n\n試験では、新しく直した箇所だけでなく「既存機能への悪影響がないか」を確かめるのが目的だと問われます。変更のたびに繰り返し実施するため、テストの自動化と相性がよい点も知っておくと役立ちます。",
-      "analogy_jp": "家の一部屋をリフォームした後、他の部屋の電気や水道がちゃんと使えるかを一通り見て回るようなもの。直した所以外に影響が出ていないか確認します。",
-      "memory_hook_jp": "回帰テストといえば修正後に既存機能が壊れていないか再確認",
-      "inline_quiz": [
-        "2009h21h-q053"
+      "one_line_jp": "修正の後、既存の機能が壊れていないかを確かめ直す",
+      "one_line_zh": "修正之后，重新确认现有功能有没有被破坏",
+      "one_line_en": "Rechecking after a fix that existing features still work",
+      "extra_jp": [
+        "変更後の確認",
+        "修正・変更のたび"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"プログラムを修正\"] --> B[\"回帰テストを実施\"]; B --> C[\"既存機能が正常\"]; B --> D[\"デグレードを発見\"]; D --> A",
-        "svg_path": "figures/management-08-25-u03-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "回归测试",
-      "term_en": "Regression testing",
-      "definition_zh": "在修改或追加功能之后，重新确认既有功能是否未被破坏的测试。",
-      "definition_en": "A test that, after a fix or a feature addition, re-confirms whether the existing functions have not been broken.",
-      "explanation_zh": "回归测试（Regression Testing）是在修改、改良程序时，再次确认该变更是否导致原本正常的其他功能出现故障（劣化，Degrade）的测试。\n\n考试中考查的目的是：不只是确认新修正的部位，而是确认「对既有功能是否有不良影响」。由于每次变更都要反复执行，因此它与测试自动化很契合——了解这一点也会很有帮助。",
-      "explanation_en": "Regression testing is a test that, when a program is fixed or improved, re-confirms whether that change has caused defects (degradation) in other functions that had been working normally.\n\nIn the exam, the purpose tested is to confirm not only the newly fixed part but also \"whether there is any adverse effect on existing functions.\" Because it is run repeatedly with every change, it is also useful to know that it is a good fit for test automation.",
-      "analogy_zh": "就像把家里的一个房间装修之后，把其他房间的电和水都走一遍、看看是否还能正常使用。确认除了改动的地方之外有没有受到影响。",
-      "analogy_en": "It is like, after remodeling one room in your house, going around to check whether the electricity and water in the other rooms still work properly. You confirm whether anything outside the changed spot has been affected.",
-      "memory_hook_zh": "说到回归测试，就是修改后重新确认既有功能是否未被破坏",
-      "memory_hook_en": "Regression testing → after a fix, re-confirm whether existing functions remain intact"
+      "extra_zh": [
+        "变更后的确认",
+        "每次修正或变更时"
+      ],
+      "extra_en": [
+        "Post-change check",
+        "After every fix or change"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "ブラックボックステスト",
+      "term_zh": "黑盒测试",
+      "term_en": "Black-box testing",
+      "one_jp": "プログラムの内部構造を見ずに、**外部仕様** に照らして、与えた入力に対して正しい出力が返るかを確かめるテスト技法。",
+      "one_zh": "黑盒测试（[[jp:ブラックボックステスト]]）是一种测试技法：不看程序的内部结构，只对照**外部规格**（[[jp:外部仕様]]），确认给出的输入能否得到正确的输出。",
+      "one_en": "Black-box testing ([[jp:ブラックボックステスト]]) is a test technique that ignores the program's internal structure and checks, against the **external specification** ([[jp:外部仕様]]), whether each input produces the correct output.",
+      "detail_jp": "テストする人は仕様書だけを手がかりにケースを作るので、コードを書いた本人でなくても設計できる。代表的な作り方の **同値分割** は、入力を「結果が同じになる範囲」ごとのグループに分け、各グループから代表の値を選ぶ方法である。範囲の端とその隣の値を重点的に試す **境界値分析** も、仕様だけから作れる。",
+      "detail_zh": "测试人员只凭规格书来设计用例，所以即使不是写代码的本人也能完成设计。代表性的设计方法**等价类划分**（[[jp:同値分割]]），是把输入按“结果相同的范围”分成若干组，再从每组中选出代表值。重点测试范围边界及其相邻值的**边界值分析**（[[jp:境界値分析]]），同样只靠规格就能设计。",
+      "detail_en": "Because testers build the cases from the specification alone, someone other than the person who wrote the code can design them. A typical method, **equivalence partitioning** ([[jp:同値分割]]), splits the inputs into groups that each lead to the same result and picks a representative value from each group. **Boundary value analysis** ([[jp:境界値分析]]), which focuses on the edges of each range and the values right beside them, can also be built from the specification alone.",
+      "analogy_jp": "電卓を分解せずに、キーを押して表示された答えが合っているかだけを確かめるようなもの。",
+      "analogy_zh": "就像不拆开计算器，只按下按键，看屏幕上显示的答案对不对。",
+      "analogy_en": "It is like testing a calculator by pressing keys and seeing whether the displayed answer is right, without ever opening the case.",
+      "hook_jp": "ブラックボックス = 中が黒く塗られて見えない箱。見えるのは入口と出口だけ。",
+      "hook_zh": "黑盒＝里面涂黑、看不见的箱子，看得到的只有入口和出口。",
+      "hook_en": "A black box is painted black so you cannot see inside; all you can watch is what goes in and what comes out.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ブラックボックステストは内部構造を問わず、仕様に照らして入力と出力の対応を確かめる技法である。",
+          "text_zh": "黑盒测试（[[jp:ブラックボックステスト]]）不涉及内部结构，而是对照规格确认输入与输出的对应关系。",
+          "text_en": "Black-box testing ([[jp:ブラックボックステスト]]) does not look at the internal structure; it checks that inputs map to the right outputs according to the specification.",
+          "qids": [
+            "2009h21h-q042",
+            "2022r04-q045",
+            "2014h26a-q044"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ケースの作り方の一つである同値分割では、正常・異常を含む入力を結果が同じになるグループに分け、各グループから少なくとも 1 つ値を選ぶ。",
+          "text_zh": "等价类划分（[[jp:同値分割]]）是设计用例的方法之一：把包括正常值与异常值在内的输入分成结果相同的组，并从每组至少选一个值。",
+          "text_en": "Equivalence partitioning ([[jp:同値分割]]), one way to build cases, divides the inputs, valid and invalid alike, into groups that give the same result and takes at least one value from each group.",
+          "qids": [
+            "2014h26h-q035"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "全命令や全分岐を通すようにケースを作るのは、内部構造を見るホワイトボックステストのやり方である。ホワイトボックステストは主に単体テストで使われる。",
+          "text_zh": "以执行全部语句或全部分支为目标来设计用例，是查看内部结构的白盒测试（[[jp:ホワイトボックステスト]]）的做法。白盒测试主要用于单元测试（[[jp:単体テスト]]）。",
+          "text_en": "Designing cases so that every statement or every branch gets executed is the approach of white-box testing ([[jp:ホワイトボックステスト]]), which looks at the internal structure. White-box testing is used mainly in unit testing ([[jp:単体テスト]]).",
+          "qids": [
+            "2014h26h-q035",
+            "2022r04-q045",
+            "2018h30a-q044"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "グループ (仕様: 注文数は 1〜50 個まで受け付ける)",
+              "zh": "分组（规格：订购数量接受 1～50 个）",
+              "en": "Group (spec: orders of 1 to 50 items are accepted)"
+            },
+            {
+              "jp": "範囲",
+              "zh": "范围",
+              "en": "Range"
+            },
+            {
+              "jp": "選ぶ値の例",
+              "zh": "选取的值示例",
+              "en": "Example values"
+            },
+            {
+              "jp": "期待する結果",
+              "zh": "预期结果",
+              "en": "Expected result"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "有効",
+                  "zh": "有效",
+                  "en": "Valid"
+                },
+                {
+                  "jp": "1〜50",
+                  "zh": "1～50",
+                  "en": "1–50"
+                },
+                {
+                  "jp": "25",
+                  "zh": "25",
+                  "en": "25"
+                },
+                {
+                  "jp": "受け付ける",
+                  "zh": "接受",
+                  "en": "Accepted"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "無効 (少なすぎる)",
+                  "zh": "无效（过少）",
+                  "en": "Invalid (too few)"
+                },
+                {
+                  "jp": "0 以下",
+                  "zh": "0 及以下",
+                  "en": "0 or less"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "エラーを返す",
+                  "zh": "返回错误",
+                  "en": "Returns an error"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "無効 (多すぎる)",
+                  "zh": "无效（过多）",
+                  "en": "Invalid (too many)"
+                },
+                {
+                  "jp": "51 以上",
+                  "zh": "51 及以上",
+                  "en": "51 or more"
+                },
+                {
+                  "jp": "80",
+                  "zh": "80",
+                  "en": "80"
+                },
+                {
+                  "jp": "エラーを返す",
+                  "zh": "返回错误",
+                  "en": "Returns an error"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "範囲の端とその隣",
+                  "zh": "范围的边界及其相邻值",
+                  "en": "Range edges and their neighbors"
+                },
+                {
+                  "jp": "各範囲の端",
+                  "zh": "各范围的边界",
+                  "en": "Edge of each range"
+                },
+                {
+                  "jp": "0、1、50、51",
+                  "zh": "0、1、50、51",
+                  "en": "0, 1, 50, 51"
+                },
+                {
+                  "jp": "1 と 50 は受け付け、0 と 51 はエラー",
+                  "zh": "1 和 50 被接受，0 和 51 返回错误",
+                  "en": "1 and 50 accepted; 0 and 51 return errors"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2009h21h-q042",
+        "2022r04-q045",
+        "2014h26h-q035"
+      ],
+      "definition_jp": "プログラムの内部構造を見ずに、外部仕様 に照らして、与えた入力に対して正しい出力が返るかを確かめるテスト技法。",
+      "definition_zh": "黑盒测试（ブラックボックステスト）是一种测试技法：不看程序的内部结构，只对照外部规格（外部仕様），确认给出的输入能否得到正确的输出。",
+      "definition_en": "Black-box testing (ブラックボックステスト) is a test technique that ignores the program's internal structure and checks, against the external specification (外部仕様), whether each input produces the correct output.",
+      "explanation_jp": "テストする人は仕様書だけを手がかりにケースを作るので、コードを書いた本人でなくても設計できる。代表的な作り方の 同値分割 は、入力を「結果が同じになる範囲」ごとのグループに分け、各グループから代表の値を選ぶ方法である。範囲の端とその隣の値を重点的に試す 境界値分析 も、仕様だけから作れる。",
+      "explanation_zh": "测试人员只凭规格书来设计用例，所以即使不是写代码的本人也能完成设计。代表性的设计方法等价类划分（同値分割），是把输入按“结果相同的范围”分成若干组，再从每组中选出代表值。重点测试范围边界及其相邻值的边界值分析（境界値分析），同样只靠规格就能设计。",
+      "explanation_en": "Because testers build the cases from the specification alone, someone other than the person who wrote the code can design them. A typical method, equivalence partitioning (同値分割), splits the inputs into groups that each lead to the same result and picks a representative value from each group. Boundary value analysis (境界値分析), which focuses on the edges of each range and the values right beside them, can also be built from the specification alone.",
+      "memory_hook_jp": "ブラックボックス = 中が黒く塗られて見えない箱。見えるのは入口と出口だけ。",
+      "memory_hook_zh": "黑盒＝里面涂黑、看不见的箱子，看得到的只有入口和出口。",
+      "memory_hook_en": "A black box is painted black so you cannot see inside; all you can watch is what goes in and what comes out.",
+      "inline_quiz": [
+        "2009h21h-q042",
+        "2022r04-q045",
+        "2014h26h-q035"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "統合テスト",
+      "term_zh": "集成测试",
+      "term_en": "Integration testing",
+      "one_jp": "単体テストを終えたプログラムや部品を組み合わせ、互いの **インタフェース** (データの受け渡しや呼び出し方の取り決め) が正しくかみ合うかを確かめるテスト。",
+      "one_zh": "集成测试（[[jp:統合テスト]]）是把已完成单元测试的程序或部件组合起来，确认彼此的**接口**（[[jp:インタフェース]]，即数据传递和调用方式的约定）能否正确衔接的测试。",
+      "one_en": "Integration testing ([[jp:統合テスト]]) combines programs or components that have passed unit testing and checks whether their **interfaces** ([[jp:インタフェース]]: the agreed rules for passing data and making calls) mesh correctly.",
+      "detail_jp": "**結合テスト** とも呼ばれ、単体では正しく動く部品同士でも、渡す値の形式や順序が食い違えばつないだ所で不具合が出るため、その継ぎ目を確かめる。テストは一般に、部品ごとの **単体テスト**、統合テスト、開発者がシステム全体を要件に照らして確かめる **システムテスト**、利用者が業務で使えるかを確かめる **運用テスト** の順に進む。開発工程と対応させると、統合テストはシステム内部の構造を決める **内部設計** の結果を確かめる段階にあたる。",
+      "detail_zh": "集成测试在日语中也叫**结合测试**（[[jp:結合テスト]]）：单独运行都正确的部件，一旦传递值的格式或顺序对不上，连接处就会出问题，所以要检查这些接缝。测试一般依次进行逐个部件的**单元测试**（[[jp:単体テスト]]）、集成测试、由开发者对照需求确认整个系统的**系统测试**（[[jp:システムテスト]]），以及由用户确认能否用于业务的**运行测试**（[[jp:運用テスト]]）。与开发工序对应来看，集成测试是确认**内部设计**（[[jp:内部設計]]，决定系统内部结构的工序）成果的阶段。",
+      "detail_en": "Also called [[jp:結合テスト]] in Japanese (literally a **joining test**), it checks the seams, because components that each work correctly on their own can still fail where they connect if the format or order of the values they pass does not match. Testing generally moves from **unit testing** ([[jp:単体テスト]]) of each component, to integration testing, to **system testing** ([[jp:システムテスト]]), where developers check the whole system against the requirements, and finally to **operational testing** ([[jp:運用テスト]]), where users confirm it works for their business. Mapped to the development phases, integration testing verifies the output of **internal design** ([[jp:内部設計]]), the phase that decides the system's internal structure.",
+      "analogy_jp": "検査を終えたエンジンと変速機を車体に組み付け、アクセルを踏んだ力が車輪まで正しく伝わるかを試すようなもの。",
+      "analogy_zh": "就像把检验合格的发动机和变速箱装到车身上，试一试踩下油门的力量能否正确传到车轮。",
+      "analogy_en": "It is like mounting an engine and a gearbox that have each passed inspection onto the car body, then checking that pressing the accelerator really turns the wheels.",
+      "hook_jp": "結合 = 結んで合わせる。見るのは部品そのものではなく「結び目」。",
+      "hook_zh": "[[jp:結合]]＝先“结”起来再“合”上。要看的不是部件本身，而是部件之间的“结点”。",
+      "hook_en": "[[jp:結合]] literally means \"tie and join\": what you inspect is not each part but the knot between them.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "統合テストは、単体テストを終えたプログラム同士をつなぎ、インタフェースの取り決めどおりにデータが渡って連携できるかを確かめる。",
+          "text_zh": "集成测试（[[jp:統合テスト]]）把已完成单元测试（[[jp:単体テスト]]）的程序连接起来，确认数据能否按接口（[[jp:インタフェース]]）约定传递，使程序协同工作。",
+          "text_en": "Integration testing ([[jp:統合テスト]]) connects programs that have finished unit testing ([[jp:単体テスト]]) and checks that data passes as the interface ([[jp:インタフェース]]) rules specify, so the programs work together.",
+          "qids": [
+            "2010h22h-q034",
+            "2011h23a-q041",
+            "2010h22h-q040",
+            "2023r05-q042"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "開発工程と対にすると、単体テストはプログラミング、統合テストは内部設計、システムテストは外部設計、運用テストは要件定義に対応する。",
+          "text_zh": "与开发工序配对来看：单元测试对应编程（[[jp:プログラミング]]），集成测试对应内部设计（[[jp:内部設計]]），系统测试（[[jp:システムテスト]]）对应外部设计（[[jp:外部設計]]），运行测试（[[jp:運用テスト]]）对应需求定义（[[jp:要件定義]]）。",
+          "text_en": "Paired with the development phases, unit testing matches programming ([[jp:プログラミング]]), integration testing matches internal design ([[jp:内部設計]]), system testing ([[jp:システムテスト]]) matches external design ([[jp:外部設計]]), and operational testing ([[jp:運用テスト]]) matches requirements definition ([[jp:要件定義]]).",
+          "qids": [
+            "2010h22a-q048"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "システム全体の性能を測るのは次のシステムテストで、統合テストの対象は部品同士の継ぎ目である。内部の経路を網羅的に確かめるのは前の単体テストである。",
+          "text_zh": "测量整个系统性能的是下一阶段的系统测试，集成测试的对象是部件之间的接缝。全面确认内部路径的则是前一阶段的单元测试。",
+          "text_en": "Measuring the performance of the whole system belongs to the next stage, system testing, while integration testing targets the seams between components. Checking internal paths exhaustively belongs to the stage before it, unit testing.",
+          "qids": [
+            "2023r05-q042",
+            "2016h28h-q043"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "unit",
+              "label": {
+                "jp": "単体テスト",
+                "zh": "单元测试",
+                "en": "Unit testing"
+              }
+            },
+            {
+              "id": "integ",
+              "label": {
+                "jp": "統合 (結合) テスト",
+                "zh": "集成（结合）测试",
+                "en": "Integration testing"
+              }
+            },
+            {
+              "id": "system",
+              "label": {
+                "jp": "システムテスト",
+                "zh": "系统测试",
+                "en": "System testing"
+              }
+            },
+            {
+              "id": "ops",
+              "label": {
+                "jp": "運用テスト",
+                "zh": "运行测试",
+                "en": "Operational testing"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "単体テスト: 部品を 1 つずつ確かめる。",
+            "caption_zh": "单元测试：逐个确认部件。",
+            "caption_en": "Unit testing: check each component one at a time.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "統合テスト: 部品をつなぎ、受け渡しがかみ合うかを確かめる。",
+            "caption_zh": "集成测试：把部件连起来，确认相互之间的传递是否衔接。",
+            "caption_en": "Integration testing: connect the components and check that what they pass to each other fits.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "システムテスト: 開発者がシステム全体を要件に照らして確かめる。性能もここで測る。",
+            "caption_zh": "系统测试：开发者对照需求确认整个系统，性能也在这一阶段测量。",
+            "caption_en": "System testing: developers check the whole system against the requirements, and performance is measured here as well.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "運用テスト: 利用者が実際の業務の流れで使えるかを確かめる。",
+            "caption_zh": "运行测试：用户确认系统能否在实际业务流程中使用。",
+            "caption_en": "Operational testing: users check that the system works in their actual business flow.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2011h23a-q041",
+        "2010h22h-q040",
+        "2010h22a-q048"
+      ],
+      "definition_jp": "単体テストを終えたプログラムや部品を組み合わせ、互いの インタフェース (データの受け渡しや呼び出し方の取り決め) が正しくかみ合うかを確かめるテスト。",
+      "definition_zh": "集成测试（統合テスト）是把已完成单元测试的程序或部件组合起来，确认彼此的接口（インタフェース，即数据传递和调用方式的约定）能否正确衔接的测试。",
+      "definition_en": "Integration testing (統合テスト) combines programs or components that have passed unit testing and checks whether their interfaces (インタフェース: the agreed rules for passing data and making calls) mesh correctly.",
+      "explanation_jp": "結合テスト とも呼ばれ、単体では正しく動く部品同士でも、渡す値の形式や順序が食い違えばつないだ所で不具合が出るため、その継ぎ目を確かめる。テストは一般に、部品ごとの 単体テスト、統合テスト、開発者がシステム全体を要件に照らして確かめる システムテスト、利用者が業務で使えるかを確かめる 運用テスト の順に進む。開発工程と対応させると、統合テストはシステム内部の構造を決める 内部設計 の結果を確かめる段階にあたる。",
+      "explanation_zh": "集成测试在日语中也叫结合测试（結合テスト）：单独运行都正确的部件，一旦传递值的格式或顺序对不上，连接处就会出问题，所以要检查这些接缝。测试一般依次进行逐个部件的单元测试（単体テスト）、集成测试、由开发者对照需求确认整个系统的系统测试（システムテスト），以及由用户确认能否用于业务的运行测试（運用テスト）。与开发工序对应来看，集成测试是确认内部设计（内部設計，决定系统内部结构的工序）成果的阶段。",
+      "explanation_en": "Also called 結合テスト in Japanese (literally a joining test), it checks the seams, because components that each work correctly on their own can still fail where they connect if the format or order of the values they pass does not match. Testing generally moves from unit testing (単体テスト) of each component, to integration testing, to system testing (システムテスト), where developers check the whole system against the requirements, and finally to operational testing (運用テスト), where users confirm it works for their business. Mapped to the development phases, integration testing verifies the output of internal design (内部設計), the phase that decides the system's internal structure.",
+      "memory_hook_jp": "結合 = 結んで合わせる。見るのは部品そのものではなく「結び目」。",
+      "memory_hook_zh": "結合＝先“结”起来再“合”上。要看的不是部件本身，而是部件之间的“结点”。",
+      "memory_hook_en": "結合 literally means \"tie and join\": what you inspect is not each part but the knot between them.",
+      "inline_quiz": [
+        "2011h23a-q041",
+        "2010h22h-q040",
+        "2010h22a-q048"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "性能テスト",
+      "term_zh": "性能测试",
+      "term_en": "Performance testing",
+      "one_jp": "システムが求められた速さと量で処理できるかを、**応答時間** や **スループット** (一定時間に処理できる件数) などの数値で測るテスト。",
+      "one_zh": "性能测试（[[jp:性能テスト]]）是用**应答时间**（[[jp:応答時間]]）和**吞吐量**（[[jp:スループット]]，单位时间内能处理的件数）等数值，测量系统能否以要求的速度和数量完成处理的测试。",
+      "one_en": "Performance testing ([[jp:性能テスト]]) measures, with figures such as **response time** ([[jp:応答時間]]) and **throughput** ([[jp:スループット]]: the number of items handled in a set time), whether the system can process work at the required speed and volume.",
+      "detail_jp": "どれだけ速く多く処理できるかは **非機能要件** (機能以外に求められる性能・信頼性などの条件) の一つで、その目標値に届くかを確かめる。測った値は機器の構成に左右されるため、本番に近い機器とソフトウェアをそろえた環境で測る。部品をつないだ後のシステム全体で意味をもつので、主に **システムテスト** の段階で開発者が行う。",
+      "detail_zh": "处理得多快、多少，属于**非功能性需求**（[[jp:非機能要件]]，即功能以外所要求的性能、可靠性等条件）之一，性能测试就是确认能否达到其目标值。测得的数值会受设备配置左右，因此要在硬件和软件都接近正式环境的环境中测量。它要在部件连接后的整个系统上才有意义，所以主要由开发者在**系统测试**（[[jp:システムテスト]]）阶段进行。",
+      "detail_en": "How fast and how much the system can process is one of the **non-functional requirements** ([[jp:非機能要件]]), the conditions other than functions, such as performance and reliability, and this test checks whether their target values are met. Because the measured values depend on the equipment, the test runs in an environment whose hardware and software are close to production. It only means something for the whole system once the components are connected, so developers carry it out mainly at the **system testing** ([[jp:システムテスト]]) stage.",
+      "analogy_jp": "新しいレジを入れた店で、客 1 人の会計にかかる秒数と、1 時間にさばける人数をストップウォッチで数えるようなもの。",
+      "analogy_zh": "就像在换了新收银机的店里，用秒表记下给一位顾客结账要几秒、一小时能接待多少人。",
+      "analogy_en": "It is like timing a store's new checkout register with a stopwatch: how many seconds one customer's payment takes, and how many customers it can serve in an hour.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "応答時間やスループットといった性能の要件が目標値に届くかは、主にシステムテストで開発者が確かめる。",
+          "text_zh": "应答时间（[[jp:応答時間]]）、吞吐量（[[jp:スループット]]）等性能需求能否达到目标值，主要由开发者在系统测试（[[jp:システムテスト]]）中确认。",
+          "text_en": "Whether performance requirements such as response time ([[jp:応答時間]]) and throughput ([[jp:スループット]]) reach their targets is checked by developers mainly in system testing ([[jp:システムテスト]]).",
+          "qids": [
+            "2016h28h-q043",
+            "2011h23a-q044",
+            "2013h25h-q032",
+            "2023r05-q042",
+            "2011h23tokubetsu-q054"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "仕様どおりの結果が出るかを見るのは機能 (機能性) のテストで、速さや処理量を測る性能テストとは別物である。",
+          "text_zh": "查看能否得到符合规格的结果属于功能（功能性）测试，与测量速度和处理量的性能测试（[[jp:性能テスト]]）不是一回事。",
+          "text_en": "Checking whether the results match the specification is functional (functionality) testing; performance testing ([[jp:性能テスト]]) is a separate thing that measures speed and volume.",
+          "qids": [
+            "2010h22a-q038"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28h-q043",
+        "2013h25h-q032",
+        "2010h22a-q038"
+      ],
+      "definition_jp": "システムが求められた速さと量で処理できるかを、応答時間 や スループット (一定時間に処理できる件数) などの数値で測るテスト。",
+      "definition_zh": "性能测试（性能テスト）是用应答时间（応答時間）和吞吐量（スループット，单位时间内能处理的件数）等数值，测量系统能否以要求的速度和数量完成处理的测试。",
+      "definition_en": "Performance testing (性能テスト) measures, with figures such as response time (応答時間) and throughput (スループット: the number of items handled in a set time), whether the system can process work at the required speed and volume.",
+      "explanation_jp": "どれだけ速く多く処理できるかは 非機能要件 (機能以外に求められる性能・信頼性などの条件) の一つで、その目標値に届くかを確かめる。測った値は機器の構成に左右されるため、本番に近い機器とソフトウェアをそろえた環境で測る。部品をつないだ後のシステム全体で意味をもつので、主に システムテスト の段階で開発者が行う。",
+      "explanation_zh": "处理得多快、多少，属于非功能性需求（非機能要件，即功能以外所要求的性能、可靠性等条件）之一，性能测试就是确认能否达到其目标值。测得的数值会受设备配置左右，因此要在硬件和软件都接近正式环境的环境中测量。它要在部件连接后的整个系统上才有意义，所以主要由开发者在系统测试（システムテスト）阶段进行。",
+      "explanation_en": "How fast and how much the system can process is one of the non-functional requirements (非機能要件), the conditions other than functions, such as performance and reliability, and this test checks whether their target values are met. Because the measured values depend on the equipment, the test runs in an environment whose hardware and software are close to production. It only means something for the whole system once the components are connected, so developers carry it out mainly at the system testing (システムテスト) stage.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2016h28h-q043",
+        "2013h25h-q032",
+        "2010h22a-q038"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "負荷テスト",
+      "term_zh": "负载测试",
+      "term_en": "Load testing",
+      "one_jp": "同時アクセスやデータ量を想定の上限まで、さらにはそれを超えるまで増やし、システムが動き続けられるかと処理の **限界** を確かめるテスト。",
+      "one_zh": "负载测试（[[jp:負荷テスト]]）是把同时访问数或数据量加到预想的上限、甚至超过上限，确认系统能否持续运行以及处理**极限**在哪里的测试。",
+      "one_en": "Load testing ([[jp:負荷テスト]]) raises simultaneous access or data volume up to the expected maximum and beyond, to see whether the system keeps running and where its processing **limit** lies.",
+      "detail_jp": "**性能テスト** の一種で、アクセス数やデータ量を段階的に増やし、応答の遅れ方と処理が追いつかなくなる点を見る。限界を超えたときにデータを壊さずにエラーを返せるか、負荷が下がれば元の速さに戻るかを確かめることもある。",
+      "detail_zh": "它是**性能测试**（[[jp:性能テスト]]）的一种，逐步增加访问数和数据量，观察应答如何变慢、处理从哪一点开始跟不上。有时还会确认：超过极限时能否在不破坏数据的前提下返回错误，负载下降后能否恢复原来的速度。",
+      "detail_en": "It is a kind of **performance testing** ([[jp:性能テスト]]) that raises the number of accesses and the data volume step by step, watching how responses slow down and where processing can no longer keep up. It may also check whether the system returns errors without corrupting data once the limit is passed, and whether it gets back to its original speed when the load drops.",
+      "analogy_jp": "橋の耐荷重試験で、おもりを少しずつ積み増し、どの重さでたわみが急に大きくなるかを見るようなもの。",
+      "analogy_zh": "就像桥梁的承重试验：一点点加放重物，看压到多重时桥面的弯曲突然变大。",
+      "analogy_en": "It is like a bridge load test: you add weights a little at a time and note the weight at which the deck suddenly starts to sag much more.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "負荷テストは、決めた条件で目標値に届くかを測るだけでなく、量を上限の先まで増やして限界と限界付近の振る舞いを探る点で、普段の性能テストと狙いが異なる。",
+          "text_zh": "负载测试（[[jp:負荷テスト]]）不只是测量在既定条件下能否达到目标值，而是把量加到上限之外，探寻极限以及极限附近的表现，这一点与一般的性能测试（[[jp:性能テスト]]）目的不同。",
+          "text_en": "Load testing ([[jp:負荷テスト]]) goes beyond measuring whether targets are met under set conditions: it pushes volume past the maximum to find the limit and how the system behaves near it, which gives it a different aim from ordinary performance testing ([[jp:性能テスト]])."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "normal",
+              "label": {
+                "jp": "普段の量",
+                "zh": "平时的量",
+                "en": "Normal volume"
+              }
+            },
+            {
+              "id": "peak",
+              "label": {
+                "jp": "想定の上限",
+                "zh": "预想的上限",
+                "en": "Expected maximum"
+              }
+            },
+            {
+              "id": "over",
+              "label": {
+                "jp": "上限を超える量",
+                "zh": "超出上限的量",
+                "en": "Beyond the maximum"
+              }
+            },
+            {
+              "id": "limit",
+              "label": {
+                "jp": "限界点",
+                "zh": "极限点",
+                "en": "Limit point"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "普段の量で動かし、基準となる応答時間を測っておく。",
+            "caption_zh": "先以平时的量运行，测出作为基准的应答时间。",
+            "caption_en": "Run at normal volume first and record a baseline response time.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "想定の最大量まで増やし、要求水準を保てるかを見る。",
+            "caption_zh": "加到预想的最大量，看能否保持要求的水平。",
+            "caption_en": "Raise it to the expected maximum and see whether the required level holds.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "想定を超える量をかけ、応答の遅れ方やエラーの出方を見る。",
+            "caption_zh": "施加超出预想的量，观察应答如何变慢、错误如何出现。",
+            "caption_en": "Apply more than expected and watch how responses slow down and how errors appear.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "処理が追いつかなくなる点を限界として記録する。",
+            "caption_zh": "把处理跟不上的那一点记录为极限。",
+            "caption_en": "Record the point where processing can no longer keep up as the limit.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "同時アクセスやデータ量を想定の上限まで、さらにはそれを超えるまで増やし、システムが動き続けられるかと処理の 限界 を確かめるテスト。",
+      "definition_zh": "负载测试（負荷テスト）是把同时访问数或数据量加到预想的上限、甚至超过上限，确认系统能否持续运行以及处理极限在哪里的测试。",
+      "definition_en": "Load testing (負荷テスト) raises simultaneous access or data volume up to the expected maximum and beyond, to see whether the system keeps running and where its processing limit lies.",
+      "explanation_jp": "性能テスト の一種で、アクセス数やデータ量を段階的に増やし、応答の遅れ方と処理が追いつかなくなる点を見る。限界を超えたときにデータを壊さずにエラーを返せるか、負荷が下がれば元の速さに戻るかを確かめることもある。",
+      "explanation_zh": "它是性能测试（性能テスト）的一种，逐步增加访问数和数据量，观察应答如何变慢、处理从哪一点开始跟不上。有时还会确认：超过极限时能否在不破坏数据的前提下返回错误，负载下降后能否恢复原来的速度。",
+      "explanation_en": "It is a kind of performance testing (性能テスト) that raises the number of accesses and the data volume step by step, watching how responses slow down and where processing can no longer keep up. It may also check whether the system returns errors without corrupting data once the limit is passed, and whether it gets back to its original speed when the load drops.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "回帰テスト",
+      "term_zh": "回归测试",
+      "term_en": "Regression testing",
+      "one_jp": "プログラムを修正・変更した後に、これまで正しく動いていた機能が **変更の影響で壊れていないか** を、確認済みのテストをもう一度実行して確かめるテスト。",
+      "one_zh": "回归测试（[[jp:回帰テスト]]）是在修正或变更程序后，重新执行已经确认过的测试，检查原本正常的功能有没有**因变更的影响而出问题**的测试。",
+      "one_en": "Regression testing ([[jp:回帰テスト]]) reruns tests that have already passed after a program is fixed or changed, to check whether features that used to work **have been broken by the change**.",
+      "detail_jp": "**リグレッションテスト** とも呼ばれ、修正が原因で既存の機能に出た不具合 (**デグレード**、品質の後戻り) を見つけるのがねらいである。1 か所を直しても、その部品を共有する別の処理に影響が及ぶことがあるため、直した箇所だけでなく周辺の機能も流し直す。変更のたびに同じテストを繰り返すので、テストの自動化と相性がよい。",
+      "detail_zh": "在日语中它也写作外来语形式的**回归测试**（[[jp:リグレッションテスト]]），目的是找出因修正而在现有功能中出现的缺陷（**质量退化**，[[jp:デグレード]]）。改了一处，也可能影响共用该部件的其他处理，因此不只是修正处，周边的功能也要重新运行一遍。由于每次变更都要重复同样的测试，它很适合做测试自动化。",
+      "detail_en": "It also goes by the katakana name **regression testing** ([[jp:リグレッションテスト]]), and its aim is to catch defects that a fix introduces into existing features (**degradation**, [[jp:デグレード]], a slide backward in quality). Fixing one spot can affect other processing that shares the same component, so the surrounding features are rerun as well, not just the fixed part. Because the same tests are repeated after every change, regression testing pairs well with test automation.",
+      "analogy_jp": "台所の配管を直した後、風呂や洗面所の水も出るかを確かめに、家じゅうの蛇口をひと通りひねって回るようなもの。",
+      "analogy_zh": "就像修好厨房的水管后，把家里的水龙头挨个拧一遍，确认浴室和洗脸池照样出水。",
+      "analogy_en": "It is like repairing the kitchen pipe and then turning on every tap in the house to make sure the bath and the washbasin still run.",
+      "hook_jp": "regression は英語で「後戻り」。直したつもりで品質が後ろへ戻っていないかを見る。",
+      "hook_zh": "regression 在英语里是“倒退”的意思：要看的是，自以为修好了，质量却有没有往回退。",
+      "hook_en": "Regression means \"going backward\": you check that quality has not slipped back while you thought you were fixing things.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "テストを終えたプログラムを直したら、修正箇所を確かめるケースを、以前に合格したケース一式に加えて流し直す。",
+          "text_zh": "修正已测试完的程序后，要把确认修正处的用例加入以前通过的整套用例，再重新运行一遍。",
+          "text_en": "After fixing a program that has finished testing, add the cases that check the fix to the full set of previously passed cases and run the whole set again.",
+          "qids": [
+            "2009h21h-q053"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "不具合を見つけたケースだけを再実行するのでは足りず、修正が他の機能に影響していないかも確かめる。",
+          "text_zh": "只重新运行发现缺陷的那个用例是不够的，还要确认修正有没有影响到其他功能。",
+          "text_en": "Rerunning only the case that found the defect is not enough; you also check whether the fix has affected other features.",
+          "qids": [
+            "2013h25a-q035"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "稼働中のシステムに加えた変更を確かめるテスト (回帰テストもその一つ) は、本番に影響を与えないよう、本番と同等の構成をもつ別のテスト環境で行う。",
+          "text_zh": "确认对运行中系统所做变更的测试（回归测试（[[jp:回帰テスト]]）也是其中之一），要在配置与正式环境相同的另一套测试环境中进行，以免影响正式环境。",
+          "text_en": "Tests of changes made to a running system, regression tests ([[jp:回帰テスト]]) among them, take place in a separate test environment configured the same as production, so that production is not affected.",
+          "qids": [
+            "2009h21h-q045"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "fix",
+              "label": {
+                "jp": "プログラムを修正",
+                "zh": "修正程序",
+                "en": "Fix the program"
+              }
+            },
+            {
+              "id": "check",
+              "label": {
+                "jp": "修正箇所を確認",
+                "zh": "确认修正处",
+                "en": "Check the fix"
+              }
+            },
+            {
+              "id": "rerun",
+              "label": {
+                "jp": "合格済みのケースを再実行",
+                "zh": "重新执行已通过的用例",
+                "en": "Rerun passed cases"
+              }
+            },
+            {
+              "id": "ok",
+              "label": {
+                "jp": "既存機能への影響なし",
+                "zh": "对现有功能无影响",
+                "en": "No impact on existing features"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "見つかった不具合を直す。",
+            "caption_zh": "修复发现的缺陷。",
+            "caption_en": "Fix the defect that was found.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "直した箇所が正しく動くかを、新しいケースで確かめる。",
+            "caption_zh": "用新的用例确认修正处能否正确运行。",
+            "caption_en": "Check with new cases that the fixed part works correctly.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "以前に合格したケース一式に新しいケースを加え、まとめて流し直す。",
+            "caption_zh": "在以前通过的整套用例中加入新用例，一起重新运行。",
+            "caption_en": "Add the new cases to the full set of previously passed cases and run them all again.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "これまでの結果と変わらなければ、修正が他を壊していないと判断する。",
+            "caption_zh": "如果结果与以往相同，就判断修正没有破坏其他部分。",
+            "caption_en": "If the results match earlier runs, conclude that the fix has not broken anything else.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21h-q053",
+        "2009h21h-q045"
+      ],
+      "definition_jp": "プログラムを修正・変更した後に、これまで正しく動いていた機能が 変更の影響で壊れていないか を、確認済みのテストをもう一度実行して確かめるテスト。",
+      "definition_zh": "回归测试（回帰テスト）是在修正或变更程序后，重新执行已经确认过的测试，检查原本正常的功能有没有因变更的影响而出问题的测试。",
+      "definition_en": "Regression testing (回帰テスト) reruns tests that have already passed after a program is fixed or changed, to check whether features that used to work have been broken by the change.",
+      "explanation_jp": "リグレッションテスト とも呼ばれ、修正が原因で既存の機能に出た不具合 (デグレード、品質の後戻り) を見つけるのがねらいである。1 か所を直しても、その部品を共有する別の処理に影響が及ぶことがあるため、直した箇所だけでなく周辺の機能も流し直す。変更のたびに同じテストを繰り返すので、テストの自動化と相性がよい。",
+      "explanation_zh": "在日语中它也写作外来语形式的回归测试（リグレッションテスト），目的是找出因修正而在现有功能中出现的缺陷（质量退化，デグレード）。改了一处，也可能影响共用该部件的其他处理，因此不只是修正处，周边的功能也要重新运行一遍。由于每次变更都要重复同样的测试，它很适合做测试自动化。",
+      "explanation_en": "It also goes by the katakana name regression testing (リグレッションテスト), and its aim is to catch defects that a fix introduces into existing features (degradation, デグレード, a slide backward in quality). Fixing one spot can affect other processing that shares the same component, so the surrounding features are rerun as well, not just the fixed part. Because the same tests are repeated after every change, regression testing pairs well with test automation.",
+      "memory_hook_jp": "regression は英語で「後戻り」。直したつもりで品質が後ろへ戻っていないかを見る。",
+      "memory_hook_zh": "regression 在英语里是“倒退”的意思：要看的是，自以为修好了，质量却有没有往回退。",
+      "memory_hook_en": "Regression means \"going backward\": you check that quality has not slipped back while you thought you were fixing things.",
+      "inline_quiz": [
+        "2009h21h-q053",
+        "2009h21h-q045"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "性能テスト",
+      "b": "負荷テスト",
+      "rows": [
+        {
+          "label_jp": "ねらい",
+          "label_zh": "目的",
+          "label_en": "Aim",
+          "a_jp": "要求された速さと量を満たすかを測る",
+          "a_zh": "测量能否满足所要求的速度和数量",
+          "a_en": "Measures whether the required speed and volume are met",
+          "b_jp": "量を増やしたときの振る舞いと限界を探る",
+          "b_zh": "探寻加大数量时的表现与极限",
+          "b_en": "Finds how the system behaves and where its limit lies as volume grows",
+          "key": true
+        },
+        {
+          "label_jp": "かける量",
+          "label_zh": "施加的量",
+          "label_en": "Volume applied",
+          "a_jp": "要求水準を決めた条件の量",
+          "a_zh": "设定要求水平时所定条件下的量",
+          "a_en": "The volume in the conditions set for the required level",
+          "b_jp": "想定の上限、さらにそれを超える量",
+          "b_zh": "预想的上限，乃至超出上限的量",
+          "b_en": "Up to the expected maximum, and beyond it",
+          "key": false
+        },
+        {
+          "label_jp": "結果の見方",
+          "label_zh": "怎样看结果",
+          "label_en": "How results are read",
+          "a_jp": "目標値に収まるか",
+          "a_zh": "是否在目标值之内",
+          "a_en": "Whether figures stay within targets",
+          "b_jp": "どこで遅れやエラーが出始めるか",
+          "b_zh": "从哪里开始出现延迟或错误",
+          "b_en": "Where delays or errors start to appear",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**ブラックボックステスト** は仕様だけを手がかりにケースを作り、同値分割では入力をグループに分けて代表の値を選ぶ。",
+    "テストは単体、統合 (結合)、システム、運用の順に進み、**統合テスト** はプログラム同士の継ぎ目を確かめる。",
+    "**性能テスト** は応答時間や処理量が目標値に届くかを数値で測る非機能のテストで、主にシステムテストで行う。",
+    "**負荷テスト** は性能テストの一種で、量を上限の先まで増やして限界を探る。",
+    "**回帰テスト** は、修正や変更が既存の機能を壊していないかを確かめ直すテストである。"
+  ],
+  "key_points_zh": [
+    "**黑盒测试**只凭规格设计用例，其中等价类划分是把输入分组后从各组选出代表值。",
+    "测试按单元、集成（结合）、系统、运行的顺序推进，**集成测试**确认的是程序之间的接缝。",
+    "**性能测试**是用数值测量应答时间和处理量能否达到目标值的非功能测试，主要在系统测试中进行。",
+    "**负载测试**是性能测试的一种，把量加到上限之外来探寻极限。",
+    "**回归测试**是重新确认修正或变更有没有破坏现有功能的测试。"
+  ],
+  "key_points_en": [
+    "**Black-box testing** builds cases from the specification alone; equivalence partitioning splits the inputs into groups and picks a representative value from each.",
+    "Testing proceeds through the unit, integration, system, and operational stages, and **integration testing** checks the seams between programs.",
+    "**Performance testing** is a non-functional test that measures in figures whether response time and throughput reach their targets, mainly during system testing.",
+    "**Load testing** is a kind of performance testing that pushes volume past the maximum to find the limit.",
+    "**Regression testing** rechecks that a fix or change has not broken existing features."
+  ],
+  "overview": {
+    "intro_jp": "ブラックボックステスト が何を手がかりにテストケースを作るかを説明できる。テストの段階の順序を並べ、統合テスト で確かめる範囲を他の段階と区別できる。性能テスト と 負荷テスト の違いを説明し、修正の後に 回帰テスト を行う理由を述べられる。",
+    "intro_zh": "能够说明黑盒测试依据什么来设计测试用例。能够排出测试阶段的先后顺序，并把集成测试所确认的范围与其他阶段区分开。能够说明性能测试与负载测试的区别，并讲出修正之后要做回归测试的理由。",
+    "intro_en": "Explain what black-box testing relies on to build its test cases. Put the testing stages in order and tell the scope that integration testing checks apart from the other stages. Explain how performance testing differs from load testing, and say why regression testing follows a fix.",
+    "freq_badge": "頻出",
+    "est_minutes": 33
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ブラックボックステスト: ブラックボックステストといえば中身を見ず入出力(外部仕様)で確認",
-      "統合テスト: 統合テストといえば複数モジュールを結合し連携を確認する工程",
-      "性能テスト: 性能テストといえば応答時間や処理量を測る非機能の検証",
-      "負荷テスト: 負荷テストといえば高負荷をかけて限界・耐久を確認",
-      "回帰テスト: 回帰テストといえば修正後に既存機能が壊れていないか再確認"
-    ],
     "key_points_jp": [
-      "ブラックボックステストは外部仕様(入出力)に基づく技法で、内部構造を見るホワイトボックステストと対をなす。",
-      "テスト工程は単体→統合→システム→受入れの順で進み、統合テストはモジュール間連携の検証を担う。",
-      "性能テストは応答時間・処理量などの非機能を測り、負荷テストはさらに高負荷条件で限界・耐久を確認する。",
-      "回帰テストは修正後に既存機能が壊れていないか(デグレード)を再確認する変更管理の検証である。",
-      "技法(ブラックボックス)→工程(統合)→観点(性能・負荷)→変更検証(回帰)へと、品質を測る段階が広がる。"
+      "ブラックボックステスト は仕様だけを手がかりにケースを作り、同値分割では入力をグループに分けて代表の値を選ぶ。",
+      "テストは単体、統合 (結合)、システム、運用の順に進み、統合テスト はプログラム同士の継ぎ目を確かめる。",
+      "性能テスト は応答時間や処理量が目標値に届くかを数値で測る非機能のテストで、主にシステムテストで行う。",
+      "負荷テスト は性能テストの一種で、量を上限の先まで増やして限界を探る。",
+      "回帰テスト は、修正や変更が既存の機能を壊していないかを確かめ直すテストである。"
     ],
     "key_points_zh": [
-      "黑盒测试是基于外部规格（输入输出）的技术，与查看内部结构的白盒测试成对出现。",
-      "测试工序按单元→集成→系统→验收的顺序进行，集成测试承担模块间协作的验证。",
-      "性能测试测量响应时间、处理量等非功能项，负载测试则进一步在高负载条件下确认极限与耐久。",
-      "回归测试是变更管理的验证，用于修改后重新确认既有功能是否被破坏（劣化）。",
-      "从技术（黑盒）→工序（集成）→视角（性能、负载）→变更验证（回归），衡量质量的阶段不断扩展。"
+      "黑盒测试只凭规格设计用例，其中等价类划分是把输入分组后从各组选出代表值。",
+      "测试按单元、集成（结合）、系统、运行的顺序推进，集成测试确认的是程序之间的接缝。",
+      "性能测试是用数值测量应答时间和处理量能否达到目标值的非功能测试，主要在系统测试中进行。",
+      "负载测试是性能测试的一种，把量加到上限之外来探寻极限。",
+      "回归测试是重新确认修正或变更有没有破坏现有功能的测试。"
     ],
     "key_points_en": [
-      "Black-box testing is a technique based on the external specification (inputs and outputs), and it forms a pair with white-box testing, which looks at the internal structure.",
-      "The testing processes proceed in the order unit → integration → system → acceptance, and integration testing is responsible for verifying cooperation between modules.",
-      "Performance testing measures non-functional items such as response time and processing volume, while load testing goes further and confirms the limit and durability under high-load conditions.",
-      "Regression testing is a verification within change management, used to re-confirm after a fix whether existing functions have been broken (degraded).",
-      "From technique (black-box) → process (integration) → viewpoint (performance, load) → change verification (regression), the stages of measuring quality keep expanding."
+      "Black-box testing builds cases from the specification alone; equivalence partitioning splits the inputs into groups and picks a representative value from each.",
+      "Testing proceeds through the unit, integration, system, and operational stages, and integration testing checks the seams between programs.",
+      "Performance testing is a non-functional test that measures in figures whether response time and throughput reach their targets, mainly during system testing.",
+      "Load testing is a kind of performance testing that pushes volume past the maximum to find the limit.",
+      "Regression testing rechecks that a fix or change has not broken existing features."
+    ],
+    "memory_hooks_jp": [
+      "ブラックボックステスト: ブラックボックス = 中が黒く塗られて見えない箱。見えるのは入口と出口だけ。",
+      "統合テスト: 結合 = 結んで合わせる。見るのは部品そのものではなく「結び目」。",
+      "回帰テスト: regression は英語で「後戻り」。直したつもりで品質が後ろへ戻っていないかを見る。"
     ],
     "memory_hooks_zh": [
-      "黑盒测试：说到黑盒测试，就是不看内部、用输入输出（外部规格）来确认",
-      "集成测试：说到集成测试，就是结合多个模块、确认协作的工序",
-      "性能测试：说到性能测试，就是测量响应时间和处理量的非功能验证",
-      "负载测试：说到负载测试，就是施加高负载、确认极限与耐久",
-      "回归测试：说到回归测试，就是修改后重新确认既有功能是否未被破坏"
+      "黑盒测试：黑盒＝里面涂黑、看不见的箱子，看得到的只有入口和出口。",
+      "集成测试：結合＝先“结”起来再“合”上。要看的不是部件本身，而是部件之间的“结点”。",
+      "回归测试：regression 在英语里是“倒退”的意思：要看的是，自以为修好了，质量却有没有往回退。"
     ],
     "memory_hooks_en": [
-      "Black-box testing: Black-box testing → confirm via input and output (external spec) without looking inside",
-      "Integration testing: Integration testing → the process of combining multiple modules and confirming their cooperation",
-      "Performance testing: Performance testing → non-functional verification that measures response time and processing volume",
-      "Load testing: Load testing → apply heavy load and confirm the limit and durability",
-      "Regression testing: Regression testing → after a fix, re-confirm whether existing functions remain intact"
+      "Black-box testing: A black box is painted black so you cannot see inside; all you can watch is what goes in and what comes out.",
+      "Integration testing: 結合 literally means \"tie and join\": what you inspect is not each part but the knot between them.",
+      "Regression testing: Regression means \"going backward\": you check that quality has not slipped back while you thought you were fixing things."
     ]
   },
   "challenge_questions": [
-    "2010h22h-q040",
+    "2014h26a-q044",
+    "2023r05-q042",
     "2011h23tokubetsu-q054",
-    "2012h24a-q046",
-    "2011h23a-q041",
-    "2013h25a-q035"
+    "2013h25a-q035",
+    "2010h22h-q034"
   ],
   "source_figures": [
     {
@@ -219,9 +932,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "测试技术与集成、性能验证",
-  "title_en": "Test Techniques and Integration/Performance Verification",
-  "unit_summary_zh": "学习基于外部规格的测试技术，以及在模块集成阶段进行的集成、性能、负载、回归验证。",
-  "unit_summary_en": "Learn test techniques based on external specifications, and the integration, performance, load, and regression verification carried out at the stage where modules are combined."
+  }
 }

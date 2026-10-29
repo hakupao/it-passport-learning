@@ -1,203 +1,881 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "management-08-25-u01",
   "topic_id": "management-08-25",
   "category": "management",
   "title_jp": "要件定義と設計",
+  "title_zh": "需求定义与设计",
+  "title_en": "Requirements Definition and Design",
   "unit_summary_jp": "システムに求める機能・品質を定義し、それを満たす設計へ落とし込む上流工程を学ぶ。",
+  "unit_summary_zh": "学习上游工程：定义系统所需的功能与质量，并将其落实为满足这些要求的设计。",
+  "unit_summary_en": "Learn the upstream phase: define the functions and quality required of a system, then translate them into a design that satisfies those requirements.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、システム開発の最上流である「何を作るか」を決める要件定義(機能要件・非機能要件)と、それを「どう作るか」へ落とし込む設計工程(機能設計・詳細設計)、そして品質の評価軸となる品質特性を学びます。上流工程は手戻りの影響が大きく、システム開発技術の中でも頻出分野です。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习系统开发最上游的内容：决定「做什么」的需求定义（功能性需求、非功能性需求），将其落实为「怎么做」的设计工程（功能设计、详细设计），以及作为质量评价标准的质量特性。上游工程一旦返工影响巨大，是系统开发技术中的高频考点领域。",
-    "intro_en": "In this unit, you will learn the most upstream part of system development: requirements definition that decides \"what to build\" (functional and non-functional requirements), the design phase that turns it into \"how to build it\" (functional design and detailed design), and the quality characteristics that serve as the yardstick for evaluating quality. Rework in the upstream phase has a large impact, making this a frequently tested area within system development technology."
-  },
-  "terms": [
+  "goals_jp": [
+    "**機能要件**と**非機能要件**を見分け、どちらもシステム要件定義の段階で明確にするものだと説明できる。",
+    "**品質特性**の各特性が何を見る観点かを知り、具体的な記述がどの特性に当たるかを判断できる。",
+    "要件定義から設計を経てプログラミングへ進む流れの中で、**機能設計**と**詳細設計**がそれぞれ何を決めるかを説明できる。"
+  ],
+  "goals_zh": [
+    "能够区分**功能性需求**和**非功能性需求**，并说明两者都要在系统需求定义阶段明确。",
+    "能够了解各项**质量特性**分别从什么角度考察，并判断某个具体描述属于哪一项特性。",
+    "能够说明在从需求定义经过设计走向编程的流程中，**功能设计**和**详细设计**各自决定什么。"
+  ],
+  "goals_en": [
+    "Tell **functional requirements** apart from **non-functional requirements**, and explain that both are clarified during system requirements definition.",
+    "Know what each **quality characteristic** looks at, and judge which characteristic a given description belongs to.",
+    "Explain what **functional design** and **detailed design** each decide, in the flow from requirements definition through design to programming."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "工程の中での位置"
+  ],
+  "overview_cols_zh": [
+    "类型",
+    "在工序中的位置"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "Position in the process"
+  ],
+  "overview_rows": [
     {
       "term": "機能要件",
-      "definition_jp": "システムが備えるべき機能・処理内容そのものを定めた要求。",
-      "explanation_jp": "機能要件は、システムが「何をするか」を具体的に定義したものです。例えば在庫管理システムなら「入庫を登録できる」「在庫数を一覧表示できる」といった処理・機能が該当します。\n\n後続の設計・実装すべての前提となる最上流の取り決めで、ここが曖昧だと工程が進むほど手戻りが大きくなります。試験では、性能や信頼性を定める非機能要件との違いが頻出で、『機能=何をするか』『非機能=どれだけうまく・安定して動くか』と区別できることが重要です。",
-      "analogy_jp": "家を建てるときの「部屋を3つ、台所と風呂を付ける」という要望書のようなもの。建物が果たすべき役割そのものを並べたものです。",
-      "memory_hook_jp": "機能要件といえば「何をするか」を定める要求",
-      "inline_quiz": [
-        "2017h29a-q055",
-        "2018h30h-q051"
+      "one_line_jp": "システムが何をするか、どんな処理や機能を持つかを定めた要件",
+      "one_line_zh": "规定系统做什么、具备哪些处理和功能的需求",
+      "one_line_en": "Requirements that define what the system does and which processes and functions it has",
+      "extra_jp": [
+        "要件",
+        "システム要件定義で明確にする"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "功能性需求",
-      "term_en": "Functional requirements",
-      "definition_zh": "规定系统应具备的功能与处理内容本身的要求。",
-      "definition_en": "Requirements that specify the functions and processing content the system itself must provide.",
-      "explanation_zh": "功能性需求是对系统「做什么」的具体定义。例如对于库存管理系统，「能够登记入库」「能够以列表显示库存数量」这类处理与功能就属于功能性需求。\n\n它是后续设计、实现一切工作的前提，是最上游的约定；这里一旦含糊，工程越往后推进返工就越大。考试中，它与规定性能、可靠性的非功能性需求之间的区别属于高频考点，关键在于能区分『功能＝做什么』『非功能＝做得多好、多稳定』。",
-      "explanation_en": "Functional requirements concretely define \"what the system does.\" For an inventory management system, for example, processes and functions such as \"can register incoming stock\" or \"can display the stock quantity as a list\" fall under this category.\n\nThey are the premise for all subsequent design and implementation work and are the most upstream agreement; if they are vague here, the further the project progresses, the larger the rework becomes. On the exam, the distinction from non-functional requirements (which specify performance and reliability) is frequently tested, and it is important to be able to distinguish 'functional = what it does' from 'non-functional = how well and how stably it operates.'",
-      "analogy_zh": "就像盖房子时「要三个房间，加上厨房和浴室」的需求书。它列出的是建筑物本身应承担的作用。",
-      "analogy_en": "Like a request sheet when building a house saying \"three rooms, plus a kitchen and a bath.\" It lists the roles the building itself should fulfill.",
-      "memory_hook_zh": "说到功能性需求，就是规定「做什么」的要求",
-      "memory_hook_en": "Functional requirements → the requirement that defines \"what it does\""
+      "extra_zh": [
+        "需求",
+        "在系统需求定义中明确"
+      ],
+      "extra_en": [
+        "Requirement",
+        "Clarified in system requirements definition"
+      ]
     },
     {
       "term": "非機能要件",
-      "definition_jp": "性能・信頼性・セキュリティなど機能以外の品質や制約に関する要求。",
-      "explanation_jp": "非機能要件は、機能そのものではなく「どれだけうまく動くか」を定める要求です。応答速度などの性能、止まりにくさの信頼性(可用性)、不正アクセスを防ぐセキュリティ、使いやすさ、保守のしやすさなどが含まれます。\n\n機能要件とセットで要件定義の中核をなし、見落とすと「動くけれど遅い・落ちる・守れない」システムになります。試験では機能要件との対比が頻出で、「24時間止まらない」「1秒以内に応答する」といった例が非機能要件にあたると判断できることがポイントです。",
-      "analogy_jp": "家の「耐震性を高く」「冬でも暖かく」「光熱費を抑えて」といった、部屋数とは別の住み心地・安全性への要望にあたります。",
-      "memory_hook_jp": "非機能要件といえば性能・信頼性・セキュリティの要求",
-      "inline_quiz": [
-        "2010h22a-q049",
-        "2011h23tokubetsu-q053"
+      "one_line_jp": "性能や信頼性、安全性など、機能をどの水準・条件で提供するかを定めた要件",
+      "one_line_zh": "规定以何种水平和条件提供功能的需求，涉及性能、可靠性、安全性等",
+      "one_line_en": "Requirements that set the level and conditions at which functions are provided, covering performance, reliability, security, and so on",
+      "extra_jp": [
+        "要件",
+        "システム要件定義で目標を決め、システムテストで確かめる"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "非功能性需求",
-      "term_en": "Non-functional requirements",
-      "definition_zh": "关于性能、可靠性、安全性等功能以外的质量或约束的要求。",
-      "definition_en": "Requirements concerning quality or constraints other than functionality, such as performance, reliability, and security.",
-      "explanation_zh": "非功能性需求不是关于功能本身，而是规定「运行得多好」的要求。它包括响应速度等性能、不易中断的可靠性（可用性）、防止非法访问的安全性、易用性、易维护性等。\n\n它与功能性需求一起构成需求定义的核心，一旦遗漏就会造成「能用但很慢、会崩溃、守不住」的系统。考试中与功能性需求的对比属于高频考点，关键在于能判断「24小时不停机」「1秒内响应」这类例子属于非功能性需求。",
-      "explanation_en": "Non-functional requirements are not about functionality itself but specify \"how well it operates.\" They include performance such as response speed, reliability (availability) in terms of resistance to going down, security to prevent unauthorized access, usability, ease of maintenance, and more.\n\nTogether with functional requirements, they form the core of requirements definition, and overlooking them results in a system that \"works but is slow, crashes, or cannot protect itself.\" On the exam, the contrast with functional requirements is frequently tested, and the key point is being able to judge that examples like \"runs 24 hours without stopping\" or \"responds within one second\" are non-functional requirements.",
-      "analogy_zh": "相当于对房子提出「抗震性要高」「冬天也要暖和」「控制水电费」这类与房间数无关、针对居住舒适度与安全性的需求。",
-      "analogy_en": "Corresponds to demands on a house such as \"high earthquake resistance,\" \"warm even in winter,\" or \"keep utility costs down\" — demands about comfort and safety that are separate from the number of rooms.",
-      "memory_hook_zh": "说到非功能性需求，就是性能、可靠性、安全性的要求",
-      "memory_hook_en": "Non-functional requirements → requirements for performance, reliability, and security"
+      "extra_zh": [
+        "需求",
+        "在系统需求定义中确定目标，在系统测试中确认"
+      ],
+      "extra_en": [
+        "Requirement",
+        "Targets set in system requirements definition, checked in system testing"
+      ]
     },
     {
       "term": "品質特性",
-      "definition_jp": "ソフトウェアの品質を評価するための観点を体系化した分類軸。",
-      "explanation_jp": "品質特性は、ソフトウェアの良し悪しを測るための評価の観点を整理したものです。代表的には機能適合性・性能効率性・互換性・使用性(使いやすさ)・信頼性・セキュリティ・保守性・移植性などがあり(JIS X 25010 では8特性)、ソフトウェアの品質を体系立てて考えるためのものさしになります(非機能要件を考える際の指針にもなります)。\n\n要件定義の段階で「どの品質をどの程度満たすか」を決める際の基準として使われます。試験では、これらが品質を測る軸であること、特に信頼性・使用性・保守性などの個別の用語の意味を問う問題が出ます。各特性が何を表すかを押さえておきましょう。",
-      "analogy_jp": "料理の評価を「味・見た目・栄養・値段・提供の速さ」といった観点ごとに採点表へ整理するようなもの。漠然とした良し悪しを軸で見える化します。",
-      "memory_hook_jp": "品質特性といえば品質を測る評価の観点を体系化した軸",
-      "inline_quiz": [
-        "2010h22a-q038",
-        "2011h23a-q034"
+      "one_line_jp": "ソフトウェアの品質を測る観点を分類したもの",
+      "one_line_zh": "对衡量软件质量的角度进行分类的结果",
+      "one_line_en": "A classification of the viewpoints used to measure software quality",
+      "extra_jp": [
+        "評価の観点",
+        "要件を定めるときの観点になり、出来上がりの評価にも使う"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"品質特性\"]; A --> B[\"機能適合性\"]; A --> C[\"性能効率性\"]; A --> I[\"互換性\"]; A --> D[\"使用性\"]; A --> E[\"信頼性\"]; A --> F[\"セキュリティ\"]; A --> G[\"保守性\"]; A --> H[\"移植性\"]",
-        "svg_path": "figures/management-08-25-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "质量特性",
-      "term_en": "Quality characteristics",
-      "definition_zh": "将评价软件质量的视角加以体系化的分类轴。",
-      "definition_en": "A set of classification axes that systematize the viewpoints for evaluating software quality.",
-      "explanation_zh": "质量特性是把衡量软件优劣的评价视角加以整理而成的。代表性的有功能适合性、性能效率、兼容性、易用性、可靠性、安全性、可维护性、可移植性等（JIS X 25010 中为 8 个特性），是有体系地思考软件质量的尺度（也可作为考虑非功能性需求时的指引）。\n\n它被用作需求定义阶段决定「满足哪种质量、满足到何种程度」时的基准。考试中会出考查这些是衡量质量的轴，尤其会考查可靠性、易用性、可维护性等各个术语含义的题目。请掌握各特性各自代表什么。",
-      "explanation_en": "Quality characteristics organize the evaluation viewpoints used to measure how good or bad software is. Representative ones include functional suitability, performance efficiency, compatibility, usability, reliability, security, maintainability, and portability (8 characteristics in JIS X 25010), and they serve as a yardstick for thinking about software quality in a systematic way (they also serve as a guide when considering non-functional requirements).\n\nThey are used as criteria when deciding, at the requirements definition stage, \"which quality to satisfy and to what degree.\" On the exam, questions ask that these are axes for measuring quality, and in particular ask the meanings of individual terms such as reliability, usability, and maintainability. Make sure you grasp what each characteristic represents.",
-      "analogy_zh": "就像把对菜肴的评价按「味道、外观、营养、价格、上菜速度」等视角整理到一张评分表上。把笼统的好坏用各个轴可视化出来。",
-      "analogy_en": "Like organizing the evaluation of a dish onto a scorecard by viewpoints such as \"taste, appearance, nutrition, price, and serving speed.\" It makes a vague sense of good or bad visible along defined axes.",
-      "memory_hook_zh": "说到质量特性，就是把衡量质量的评价视角体系化的轴",
-      "memory_hook_en": "Quality characteristics → the axes that systematize the evaluation viewpoints for measuring quality"
+      "extra_zh": [
+        "评价角度",
+        "既是确定需求时的角度，也用于评价成品"
+      ],
+      "extra_en": [
+        "Evaluation viewpoint",
+        "Guides requirement setting and is used to evaluate the finished product"
+      ]
     },
     {
       "term": "機能設計",
-      "definition_jp": "要件を受けてシステムの外部仕様・機能の実現方式を決める設計工程。",
-      "explanation_jp": "機能設計は、定義された要件をもとに「その機能をどう実現するか」の大枠を決める工程です。画面や帳票のレイアウト、入出力のデータ、機能の分割など、利用者から見える外部仕様を中心に設計します。外部設計とも呼ばれます。\n\n要件定義の次、詳細設計の前に位置する中間段階で、「要件→機能設計→詳細設計→実装」という流れの中での順番が試験で問われます。利用者視点の外部仕様を扱う点が、内部構造を扱う詳細設計との違いです。",
-      "analogy_jp": "家づくりで、要望書をもとに「間取り図」を描く段階。どこに何の部屋を置き、どう出入りするかという全体の見取り図を決めます。",
-      "memory_hook_jp": "機能設計といえば利用者から見える外部仕様を決める設計",
-      "inline_quiz": [
-        "2013h25a-q040",
-        "2013h25h-q049"
+      "one_line_jp": "要件をもとに、画面や帳票など利用者から見える仕様を決める設計",
+      "one_line_zh": "根据需求决定画面、报表等用户可见规格的设计",
+      "one_line_en": "Design that decides user-visible specifications, such as screens and forms, from the requirements",
+      "extra_jp": [
+        "設計工程",
+        "要件定義の後、詳細設計の前"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"要件定義\"] --> B[\"機能設計(外部設計)\"]; B --> C[\"詳細設計(内部設計)\"]; C --> D[\"実装\"]",
-        "svg_path": "figures/management-08-25-u01-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "功能设计",
-      "term_en": "Functional design",
-      "definition_zh": "承接需求、决定系统的外部规格与功能实现方式的设计工程。",
-      "definition_en": "The design phase that, based on requirements, decides the system's external specifications and how its functions are realized.",
-      "explanation_zh": "功能设计是以已定义的需求为依据，决定「如何实现这些功能」大框架的工程。它主要围绕画面与报表的布局、输入输出的数据、功能的划分等用户可见的外部规格来设计，也称为外部设计。\n\n它位于需求定义之后、详细设计之前的中间阶段，考试会考查「需求→功能设计→详细设计→实现」这一流程中的顺序。处理用户视角的外部规格，是它与处理内部结构的详细设计的区别。",
-      "explanation_en": "Functional design is the phase that, based on the defined requirements, decides the broad outline of \"how to realize those functions.\" It centers on user-visible external specifications such as screen and report layouts, input/output data, and the division of functions; it is also called external design.\n\nIt sits in the intermediate stage after requirements definition and before detailed design, and the exam asks about its order in the flow \"requirements → functional design → detailed design → implementation.\" Handling user-facing external specifications is what distinguishes it from detailed design, which handles the internal structure.",
-      "analogy_zh": "在盖房子中，是根据需求书绘制「平面布置图」的阶段。决定把什么房间放在哪里、如何进出，定下整体的示意图。",
-      "analogy_en": "In house building, the stage of drawing a \"floor plan\" based on the request sheet. It decides where each room goes and how to enter and exit, setting the overall layout.",
-      "memory_hook_zh": "说到功能设计，就是决定用户可见的外部规格的设计",
-      "memory_hook_en": "Functional design → the design that decides the user-visible external specifications"
+      "extra_zh": [
+        "设计工序",
+        "需求定义之后、详细设计之前"
+      ],
+      "extra_en": [
+        "Design phase",
+        "After requirements definition, before detailed design"
+      ]
     },
     {
       "term": "詳細設計",
-      "definition_jp": "機能設計を内部仕様レベルへ具体化し実装可能にする設計工程。",
-      "explanation_jp": "詳細設計は、機能設計で決めた外部仕様を、プログラムが作れるレベルの内部仕様まで具体化する工程です。モジュールの分割、処理手順(アルゴリズム)、データ構造など、開発者向けの内部構造を設計します。内部設計とも呼ばれます。\n\n設計工程の最後に位置し、ここまで決めて初めて実装(プログラミング)に進めます。試験では、利用者視点の機能設計(外部設計)に対し、詳細設計は内部の作り込みを扱うという役割の違いと、設計工程の中で最後にくる順番が問われます。",
-      "analogy_jp": "間取り図をもとに、柱や配線・配管をどこに通すかまで描き込む「施工図面」を作る段階。職人がそのまま作業できる細かさまで落とします。",
-      "memory_hook_jp": "詳細設計といえば実装できるレベルの内部仕様を作り込む設計",
-      "inline_quiz": [
-        "2009h21a-q033",
-        "2010h22h-q049"
+      "one_line_jp": "設計の結果を、プログラムを書ける細かさの内部の仕様まで具体化する設計",
+      "one_line_zh": "把设计结果具体化到可以编写程序的内部规格的设计",
+      "one_line_en": "Design that refines earlier design results into internal specifications detailed enough to write programs",
+      "extra_jp": [
+        "設計工程",
+        "設計の最後に行い、次はプログラミング"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "详细设计",
-      "term_en": "Detailed design",
-      "definition_zh": "把功能设计具体化到内部规格层面、使其可实现的设计工程。",
-      "definition_en": "The design phase that concretizes functional design down to the internal-specification level so that it can be implemented.",
-      "explanation_zh": "详细设计是把功能设计所定的外部规格，具体化到可以编写程序那一层级的内部规格的工程。它设计模块的划分、处理步骤（算法）、数据结构等面向开发者的内部结构，也称为内部设计。\n\n它位于设计工程的最后，定到这一步才能首次进入实现（编程）。考试会考查：相对于用户视角的功能设计（外部设计），详细设计处理内部的具体打磨这一职责差异，以及它在设计工程中排在最后的顺序。",
-      "explanation_en": "Detailed design is the phase that concretizes the external specifications decided in functional design down to internal specifications at the level where a program can be written. It designs developer-facing internal structures such as module division, processing procedures (algorithms), and data structures; it is also called internal design.\n\nIt sits at the end of the design phase, and only after deciding this far can you proceed to implementation (programming). On the exam, you are asked about the difference in roles — that, in contrast to user-facing functional design (external design), detailed design handles the internal build-out — and about its position as the last step within the design phase.",
-      "analogy_zh": "是根据平面布置图，进一步画出柱子、布线、管路要从哪里走的「施工图纸」的阶段。落实到工匠可以照着直接施工的细致程度。",
-      "analogy_en": "The stage of producing \"construction drawings\" that, based on the floor plan, draw in where to run the pillars, wiring, and piping. It is brought down to a level of detail at which craftsmen can work directly from it.",
-      "memory_hook_zh": "说到详细设计，就是打磨到可实现层级的内部规格的设计",
-      "memory_hook_en": "Detailed design → the design that builds out the internal specifications down to an implementable level"
+      "extra_zh": [
+        "设计工序",
+        "设计的最后一步，下一步是编程"
+      ],
+      "extra_en": [
+        "Design phase",
+        "Last step of design; programming comes next"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "機能要件",
+      "term_zh": "功能性需求",
+      "term_en": "Functional requirements",
+      "one_jp": "**機能要件**は、システムが**何をするか**、つまり業務のためにどんな処理や機能を提供するかを定めた要件である。",
+      "one_zh": "**功能性需求**（[[jp:機能要件]]）是规定系统**做什么**的需求，也就是为了业务要提供哪些处理和功能。",
+      "one_en": "**Functional requirements** ([[jp:機能要件]]) define **what the system does**: the processes and functions it provides for the business.",
+      "detail_jp": "要件定義では、業務の流れや使い方を分析し、システムに任せる処理を洗い出す。例えば図書の貸出システムなら「会員番号で貸出を記録する」「返却期限を過ぎた本を一覧にする」が機能要件に当たる。工程を細かく分ける呼び方には、システム全体の要件を決める**システム要件定義**や、その中のソフトウェアについて決める**ソフトウェア要件定義**がある。",
+      "detail_zh": "需求定义阶段要分析业务流程和使用方式，梳理出要交给系统完成的处理。以图书借阅系统为例，「用会员号登记借书」「列出超过归还期限的书」就属于功能性需求。在把工序划分得更细的叫法中，有决定整个系统需求的**系统需求定义**（[[jp:システム要件定義]]），以及决定其中软件部分的**软件需求定义**（[[jp:ソフトウェア要件定義]]）等工序。",
+      "detail_en": "Requirements definition analyzes business workflows and usage to list the processing the system will take on. In a library lending system, for example, \"record a loan by member number\" and \"list books past their return date\" are functional requirements. The finer naming scheme for phases includes **system requirements definition** ([[jp:システム要件定義]]), which covers the whole system, and **software requirements definition** ([[jp:ソフトウェア要件定義]]), which covers the software inside it.",
+      "analogy_jp": "レストランのメニューに並ぶ料理の一覧のようなもの。この店で何を出せるかを決めたもので、作り方はまだ書かれていない。",
+      "analogy_zh": "就像餐厅菜单上列出的菜品。它决定了这家店能上哪些菜，但还没写怎么做。",
+      "analogy_en": "It is like the list of dishes on a restaurant menu. It fixes what the restaurant can serve, but says nothing yet about how to cook them.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "システム要件定義では、システムが持つべき**機能と性能**を明確にし、システム化する**対象範囲**もこの段階で決める。",
+          "text_zh": "在系统需求定义（[[jp:システム要件定義]]）中，要明确系统应具备的**功能和性能**，系统化的**对象范围**也在这一阶段确定。",
+          "text_en": "System requirements definition ([[jp:システム要件定義]]) clarifies the **functions and performance** the system must have, and the **scope** of what will be systematized is also fixed at this stage.",
+          "qids": [
+            "2017h29a-q055",
+            "2013h25h-q033",
+            "2011h23tokubetsu-q049"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ソフトウェア要件定義では、ソフトウェアが扱う**データの項目や定義**を明確にする。処理の動作ロジックを考えてコードを書くのは、後の設計・プログラミングの工程である。",
+          "text_zh": "软件需求定义（[[jp:ソフトウェア要件定義]]）要明确软件所处理的**数据项目及其定义**。构思处理的动作逻辑并编写代码，是之后设计和编程工序的工作。",
+          "text_en": "Software requirements definition ([[jp:ソフトウェア要件定義]]) clarifies the **data items and their definitions** the software handles. Working out processing logic and writing code belong to the later design and programming phases.",
+          "qids": [
+            "2010h22h-q051",
+            "2009h21a-q037"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "発注側は納品物に仕様書どおりの機能が備わっているかを、利用部門はシステムが**業務の要件**を満たすかを確かめる。個々のプログラムが設計どおりに動くかの確認は開発側の役割である。",
+          "text_zh": "订购方确认交付物是否具备规格书中写明的功能，使用部门确认系统是否满足**业务需求**。确认各个程序是否按设计运行，是开发方的职责。",
+          "text_en": "The ordering party checks that the delivered product has the functions in the specification, and the user department checks that the system meets the **business requirements**. Checking that each program works as designed is the development side's job.",
+          "qids": [
+            "2009h21h-q043",
+            "2018h30h-q051"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2017h29a-q055",
+        "2010h22h-q051",
+        "2018h30h-q051"
+      ],
+      "definition_jp": "機能要件は、システムが何をするか、つまり業務のためにどんな処理や機能を提供するかを定めた要件である。",
+      "definition_zh": "功能性需求（機能要件）是规定系统做什么的需求，也就是为了业务要提供哪些处理和功能。",
+      "definition_en": "Functional requirements (機能要件) define what the system does: the processes and functions it provides for the business.",
+      "explanation_jp": "要件定義では、業務の流れや使い方を分析し、システムに任せる処理を洗い出す。例えば図書の貸出システムなら「会員番号で貸出を記録する」「返却期限を過ぎた本を一覧にする」が機能要件に当たる。工程を細かく分ける呼び方には、システム全体の要件を決めるシステム要件定義や、その中のソフトウェアについて決めるソフトウェア要件定義がある。",
+      "explanation_zh": "需求定义阶段要分析业务流程和使用方式，梳理出要交给系统完成的处理。以图书借阅系统为例，「用会员号登记借书」「列出超过归还期限的书」就属于功能性需求。在把工序划分得更细的叫法中，有决定整个系统需求的系统需求定义（システム要件定義），以及决定其中软件部分的软件需求定义（ソフトウェア要件定義）等工序。",
+      "explanation_en": "Requirements definition analyzes business workflows and usage to list the processing the system will take on. In a library lending system, for example, \"record a loan by member number\" and \"list books past their return date\" are functional requirements. The finer naming scheme for phases includes system requirements definition (システム要件定義), which covers the whole system, and software requirements definition (ソフトウェア要件定義), which covers the software inside it.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2017h29a-q055",
+        "2010h22h-q051",
+        "2018h30h-q051"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "非機能要件",
+      "term_zh": "非功能性需求",
+      "term_en": "Non-functional requirements",
+      "one_jp": "**非機能要件**は、応答の速さ・止まりにくさ・安全性・運用のしやすさなど、機能を**どの水準・条件で**提供するかを定めた要件である。",
+      "one_zh": "**非功能性需求**（[[jp:非機能要件]]）规定以**何种水平和条件**提供功能，例如响应速度、不易中断、安全性、便于运维等。",
+      "one_en": "**Non-functional requirements** ([[jp:非機能要件]]) set **the level and conditions** at which functions are provided, such as response speed, resistance to outages, security, and ease of operation.",
+      "detail_jp": "非機能要件も機能要件と同じく要件定義の段階で目標を決める。目標はできるだけ数値など確かめられる形にしておくと、後で達成できたかどうかを判定しやすい。",
+      "detail_zh": "非功能性需求也和功能性需求一样，在需求定义阶段确定目标。目标尽量写成数值等可以检验的形式，之后就容易判定是否达成。",
+      "detail_en": "Like functional requirements, non-functional requirements get their targets during requirements definition. Stating targets in a checkable form, such as numbers, makes it easier to judge later whether they were met.",
+      "analogy_jp": "注文を受けてから 10 分以内に料理を出す、といった店の約束にあたる。料理の種類ではなく、出し方の水準を決めている。",
+      "analogy_zh": "相当于店家「接单后 10 分钟内上菜」这样的承诺。它规定的不是菜的种类，而是上菜的水平。",
+      "analogy_en": "It is like a restaurant promising to serve food within 10 minutes of the order. It sets the standard of service, not the kinds of dishes.",
+      "hook_jp": "「非」は機能を否定するのではなく「機能以外」の条件を指す。機能がそろったうえに付く条件と読む。",
+      "hook_zh": "「非」不是否定功能，而是指「功能以外」的条件。可以理解为在功能齐备之后再附加上的条件。",
+      "hook_en": "The \"non-\" does not deny the functions; it points to conditions other than the functions themselves. Read it as conditions attached once the functions are in place.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "応答時間の目標値のような性能の目標は、**システム要件定義**で決める。設計の段階まで先送りするものではない。",
+          "text_zh": "像应答时间目标值这样的性能目标，要在**系统需求定义**（[[jp:システム要件定義]]）中确定。它不会推迟到设计阶段再决定。",
+          "text_en": "Performance targets, such as a target response time ([[jp:応答時間]]), are set in **system requirements definition** ([[jp:システム要件定義]]). They are not put off until the design stage.",
+          "qids": [
+            "2010h22a-q049"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "開発したシステム全体を確かめる**システムテスト**では、機能が正しく動くかに加えて、性能などの**非機能要件**を満たしているかも確かめる。",
+          "text_zh": "在检验整个已开发系统的**系统测试**（[[jp:システムテスト]]）中，除了确认功能能否正确运行，还要确认是否满足性能等**非功能性需求**。",
+          "text_en": "**System testing** ([[jp:システムテスト]]), which checks the whole developed system, confirms not only that functions work correctly but also that **non-functional requirements** such as performance are met.",
+          "qids": [
+            "2013h25a-q035"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "機能要件は業務のための**処理そのもの**を定め、非機能要件はその処理に求める性能・信頼性・安全性・運用などの**水準や条件**を定める。",
+          "text_zh": "功能性需求（[[jp:機能要件]]）规定业务所需的**处理本身**，非功能性需求则规定对这些处理所要求的性能、可靠性、安全性、运维等**水平和条件**。",
+          "text_en": "Functional requirements ([[jp:機能要件]]) define **the processing itself** that the business needs, while non-functional requirements define the **level and conditions** that processing must meet in performance, reliability, security, operation, and so on."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "観点",
+              "zh": "角度",
+              "en": "Viewpoint"
+            },
+            {
+              "jp": "要件の書き方の例",
+              "zh": "需求的写法示例",
+              "en": "Example requirement"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "性能",
+                  "zh": "性能",
+                  "en": "Performance"
+                },
+                {
+                  "jp": "月末の締め処理は夜間の 4 時間以内に終える",
+                  "zh": "月末结账处理在夜间 4 小时内完成",
+                  "en": "Month-end closing finishes within 4 hours overnight"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "信頼性・可用性",
+                  "zh": "可靠性・可用性",
+                  "en": "Reliability / availability"
+                },
+                {
+                  "jp": "計画停止を除き、営業時間中は止めない",
+                  "zh": "除计划停机外，营业时间内不停止运行",
+                  "en": "No downtime during business hours, except planned outages"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "セキュリティ",
+                  "zh": "信息安全性",
+                  "en": "Security"
+                },
+                {
+                  "jp": "担当者以外は顧客情報を閲覧できない",
+                  "zh": "负责人员以外的人不能查看客户信息",
+                  "en": "Only the staff in charge can view customer information"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "運用・保守",
+                  "zh": "运维",
+                  "en": "Operation and maintenance"
+                },
+                {
+                  "jp": "障害の原因を記録から追跡できる",
+                  "zh": "能从记录中追查故障原因",
+                  "en": "The cause of a failure can be traced from logs"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22a-q049",
+        "2013h25a-q035"
+      ],
+      "definition_jp": "非機能要件は、応答の速さ・止まりにくさ・安全性・運用のしやすさなど、機能をどの水準・条件で提供するかを定めた要件である。",
+      "definition_zh": "非功能性需求（非機能要件）规定以何种水平和条件提供功能，例如响应速度、不易中断、安全性、便于运维等。",
+      "definition_en": "Non-functional requirements (非機能要件) set the level and conditions at which functions are provided, such as response speed, resistance to outages, security, and ease of operation.",
+      "explanation_jp": "非機能要件も機能要件と同じく要件定義の段階で目標を決める。目標はできるだけ数値など確かめられる形にしておくと、後で達成できたかどうかを判定しやすい。",
+      "explanation_zh": "非功能性需求也和功能性需求一样，在需求定义阶段确定目标。目标尽量写成数值等可以检验的形式，之后就容易判定是否达成。",
+      "explanation_en": "Like functional requirements, non-functional requirements get their targets during requirements definition. Stating targets in a checkable form, such as numbers, makes it easier to judge later whether they were met.",
+      "memory_hook_jp": "「非」は機能を否定するのではなく「機能以外」の条件を指す。機能がそろったうえに付く条件と読む。",
+      "memory_hook_zh": "「非」不是否定功能，而是指「功能以外」的条件。可以理解为在功能齐备之后再附加上的条件。",
+      "memory_hook_en": "The \"non-\" does not deny the functions; it points to conditions other than the functions themselves. Read it as conditions attached once the functions are in place.",
+      "inline_quiz": [
+        "2010h22a-q049",
+        "2013h25a-q035"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "品質特性",
+      "term_zh": "质量特性",
+      "term_en": "Quality characteristics",
+      "one_jp": "**品質特性**は、ソフトウェアの品質を「使いやすいか」「故障しにくいか」などの**観点**ごとに分類したものである。",
+      "one_zh": "**质量特性**（[[jp:品質特性]]）是把软件质量按「是否好用」「是否不易出故障」等**角度**分类而成的。",
+      "one_en": "**Quality characteristics** ([[jp:品質特性]]) sort software quality into **viewpoints**, such as how easy it is to use and how rarely it fails.",
+      "detail_jp": "規格 JIS X 25010:2013 では 8 つの特性に分け、それより前の規格では 6 つの特性に分けていた。前の規格の機能性は、JIS X 25010 の機能適合性にほぼ当たる。漠然とした「品質が良い」を観点に分けることで、要件を定めるときに目標を決めやすくなり、出来上がりも観点ごとに評価できる。",
+      "detail_zh": "JIS X 25010:2013 标准把质量分为 8 项特性，更早的标准则分为 6 项。旧标准中的功能性，大致相当于 JIS X 25010 的功能适合性。把笼统的「质量好」拆成多个角度后，确定需求时更容易设定目标，成品也能按角度逐项评价。",
+      "detail_en": "The JIS X 25010:2013 standard divides quality into 8 characteristics, while earlier standards used 6. Functionality in the earlier standard roughly matches functional suitability in JIS X 25010. Splitting a vague sense of \"good quality\" into viewpoints makes targets easier to set when defining requirements, and lets the finished product be judged viewpoint by viewpoint.",
+      "analogy_jp": "車を燃費、乗り心地、故障の少なさ、整備のしやすさといった項目ごとに採点する評価表のようなもの。",
+      "analogy_zh": "就像给汽车按油耗、乘坐舒适度、故障少、保养方便等项目分别打分的评价表。",
+      "analogy_en": "It is like a scorecard that rates a car item by item: fuel economy, ride comfort, few breakdowns, and ease of servicing.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**使用性**は、利用者が覚えやすく、少ない手間で使いこなせるかという特性である。利用者と、画面などシステムの操作部分との接点に関わる。",
+          "text_zh": "**易用性**（[[jp:使用性]]）是指用户是否容易学会、能否少费功夫就运用自如的特性。它关系到用户与画面等系统操作部分之间的接点。",
+          "text_en": "**Usability** ([[jp:使用性]]) is the characteristic of whether users can learn the system easily and use it well with little effort. It concerns where users meet the parts of the system they operate, such as screens.",
+          "qids": [
+            "2011h23a-q034",
+            "2024r06-q050",
+            "2025r07-q047"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**機能性**は仕様に沿って正しい結果を出す性質、**信頼性**は誤った入力や故障があっても正常な動作を保つ性質である。",
+          "text_zh": "**功能性**（[[jp:機能性]]）是按规格给出正确结果的性质，**可靠性**（[[jp:信頼性]]）是即使遇到错误输入或故障也能保持正常运行的性质。",
+          "text_en": "**Functionality** ([[jp:機能性]]) is the property of producing correct results as specified, and **reliability** ([[jp:信頼性]]) is the property of keeping normal operation despite incorrect input or failures.",
+          "qids": [
+            "2010h22a-q038",
+            "2013h25h-q046",
+            "2011h23tokubetsu-q053"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "特性 (JIS X 25010:2013)",
+              "zh": "特性 (JIS X 25010:2013)",
+              "en": "Characteristic (JIS X 25010:2013)"
+            },
+            {
+              "jp": "見る観点",
+              "zh": "考察角度",
+              "en": "What it looks at"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "機能適合性",
+                  "zh": "功能适合性",
+                  "en": "Functional suitability"
+                },
+                {
+                  "jp": "必要な機能がそろい、正しい結果を出すか",
+                  "zh": "是否具备必要的功能，并给出正确结果",
+                  "en": "Has the needed functions and gives correct results"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "性能効率性",
+                  "zh": "性能效率性",
+                  "en": "Performance efficiency"
+                },
+                {
+                  "jp": "応答の速さや資源の使い方が適切か",
+                  "zh": "响应速度和资源使用是否恰当",
+                  "en": "Response speed and resource use are appropriate"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "互換性",
+                  "zh": "兼容性",
+                  "en": "Compatibility"
+                },
+                {
+                  "jp": "他のシステムと共存し、情報をやり取りできるか",
+                  "zh": "能否与其他系统共存并交换信息",
+                  "en": "Coexists with other systems and exchanges information"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "使用性",
+                  "zh": "易用性",
+                  "en": "Usability"
+                },
+                {
+                  "jp": "利用者が覚えやすく、操作しやすいか",
+                  "zh": "用户是否容易学会、容易操作",
+                  "en": "Easy for users to learn and operate"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "信頼性",
+                  "zh": "可靠性",
+                  "en": "Reliability"
+                },
+                {
+                  "jp": "異常が起きても正常に動き続け、回復できるか",
+                  "zh": "发生异常时能否继续正常运行并恢复",
+                  "en": "Keeps running normally and recovers when problems occur"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "セキュリティ",
+                  "zh": "信息安全性",
+                  "en": "Security"
+                },
+                {
+                  "jp": "許可のない利用から情報を守れるか",
+                  "zh": "能否保护信息不被未经许可地使用",
+                  "en": "Protects information from unauthorized use"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "保守性",
+                  "zh": "维护性",
+                  "en": "Maintainability"
+                },
+                {
+                  "jp": "修正や変更をしやすいか",
+                  "zh": "是否容易修改和变更",
+                  "en": "Easy to fix and change"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "移植性",
+                  "zh": "可移植性",
+                  "en": "Portability"
+                },
+                {
+                  "jp": "別の環境に移しても動かせるか",
+                  "zh": "移到其他环境后能否运行",
+                  "en": "Still runs after moving to another environment"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2011h23a-q034",
+        "2013h25h-q046",
+        "2024r06-q050"
+      ],
+      "definition_jp": "品質特性は、ソフトウェアの品質を「使いやすいか」「故障しにくいか」などの観点ごとに分類したものである。",
+      "definition_zh": "质量特性（品質特性）是把软件质量按「是否好用」「是否不易出故障」等角度分类而成的。",
+      "definition_en": "Quality characteristics (品質特性) sort software quality into viewpoints, such as how easy it is to use and how rarely it fails.",
+      "explanation_jp": "規格 JIS X 25010:2013 では 8 つの特性に分け、それより前の規格では 6 つの特性に分けていた。前の規格の機能性は、JIS X 25010 の機能適合性にほぼ当たる。漠然とした「品質が良い」を観点に分けることで、要件を定めるときに目標を決めやすくなり、出来上がりも観点ごとに評価できる。",
+      "explanation_zh": "JIS X 25010:2013 标准把质量分为 8 项特性，更早的标准则分为 6 项。旧标准中的功能性，大致相当于 JIS X 25010 的功能适合性。把笼统的「质量好」拆成多个角度后，确定需求时更容易设定目标，成品也能按角度逐项评价。",
+      "explanation_en": "The JIS X 25010:2013 standard divides quality into 8 characteristics, while earlier standards used 6. Functionality in the earlier standard roughly matches functional suitability in JIS X 25010. Splitting a vague sense of \"good quality\" into viewpoints makes targets easier to set when defining requirements, and lets the finished product be judged viewpoint by viewpoint.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2011h23a-q034",
+        "2013h25h-q046",
+        "2024r06-q050"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "機能設計",
+      "term_zh": "功能设计",
+      "term_en": "Functional design",
+      "one_jp": "**機能設計**は、要件定義の結果をもとに、画面や帳票など**利用者から見える仕様**を決める設計工程で、外部設計とも呼ばれる。",
+      "one_zh": "**功能设计**（[[jp:機能設計]]）是根据需求定义的结果，决定画面、报表等**用户可见规格**的设计工序，也称为外部设计。",
+      "one_en": "**Functional design** ([[jp:機能設計]]) is the design phase that decides **user-visible specifications**, such as screens and forms, from the results of requirements definition; it is also called external design.",
+      "detail_jp": "機能設計では、利用者が操作する画面の項目や配置、出力する帳票の様式、利用者の操作の流れなどを決める。ここで決めた仕様は利用者が見て確かめられるので、要望とのずれをこの段階で見つけやすい。",
+      "detail_zh": "功能设计要决定用户操作的画面项目和布局、输出报表的格式以及用户的操作流程等。这里决定的规格用户能亲眼确认，所以容易在这个阶段发现与要求之间的偏差。",
+      "detail_en": "Functional design decides the items and layout of the screens users operate, the format of output forms, and the flow of user operations. Because users can see and check these specifications, gaps from what they asked for are easy to spot at this stage.",
+      "analogy_jp": "家づくりで、施主の要望をもとに間取り図や外観図を描く段階。住む人が見て、使い勝手を確かめられる図面にあたる。",
+      "analogy_zh": "相当于盖房子时，根据业主的要求画出平面图和外观图的阶段。这些是住户一看就能确认是否好用的图纸。",
+      "analogy_en": "It is the stage in building a house where floor plans and exterior drawings are made from the owner's wishes. These are drawings the residents can look at to check how livable the house will be.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "画面や帳票に載せる項目と、その配置や様式を決めるのは、**外部設計** (機能設計) である。",
+          "text_zh": "决定画面和报表上要放哪些项目，以及它们的布局和格式的，是**外部设计**（[[jp:外部設計]]），也就是功能设计。",
+          "text_en": "Deciding which items go on screens and forms, and their layout and format, is **external design** ([[jp:外部設計]]), in other words functional design.",
+          "qids": [
+            "2009h21h-q047",
+            "2013h25h-q049",
+            "2014h26h-q049"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**システム方式設計**は細かく分ける呼び方の工程で、要件をハードウェア・ソフトウェア・手作業に割り振り、機器やネットワークの構成を決める。利用者から見える仕様は決めず、機能設計の別名ではない。",
+          "text_zh": "**系统方式设计**（[[jp:システム方式設計]]）是细分叫法中的工序，它把需求分配给硬件、软件和人工作业，并决定设备和网络的构成。它不决定用户可见的规格，也不是功能设计的别名。",
+          "text_en": "**System architecture design** ([[jp:システム方式設計]]) is a phase in the finer naming scheme that allocates requirements to hardware, software, and manual work and decides the configuration of equipment and networks. It does not decide user-visible specifications and is not another name for functional design.",
+          "qids": [
+            "2012h24h-q033",
+            "2016h28a-q053",
+            "2012h24a-q032",
+            "2011h23a-q049"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "req",
+              "label": {
+                "jp": "要件定義",
+                "zh": "需求定义",
+                "en": "Requirements definition"
+              }
+            },
+            {
+              "id": "fd",
+              "label": {
+                "jp": "機能設計",
+                "zh": "功能设计",
+                "en": "Functional design"
+              }
+            },
+            {
+              "id": "dd",
+              "label": {
+                "jp": "詳細設計",
+                "zh": "详细设计",
+                "en": "Detailed design"
+              }
+            },
+            {
+              "id": "prog",
+              "label": {
+                "jp": "プログラミング",
+                "zh": "编程",
+                "en": "Programming"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "要件定義: システムが何をするか、どの水準で動くかを決める。",
+            "caption_zh": "需求定义：决定系统做什么、以什么水平运行。",
+            "caption_en": "Requirements definition: decide what the system does and at what level it runs.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "機能設計: 画面や帳票の項目と配置など、利用者から見える仕様を決める。",
+            "caption_zh": "功能设计：决定画面和报表的项目与布局等用户可见的规格。",
+            "caption_en": "Functional design: decide user-visible specifications, such as the items and layout of screens and forms.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "詳細設計: プログラムごとの処理の手順やデータの扱いを決める。",
+            "caption_zh": "详细设计：决定每个程序的处理步骤和数据的处理方式。",
+            "caption_en": "Detailed design: decide the processing steps and data handling for each program.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "プログラミング: 決めた処理の手順をプログラム言語で記述する。",
+            "caption_zh": "编程：用编程语言写出已决定的处理步骤。",
+            "caption_en": "Programming: write the decided processing steps in a programming language.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2013h25h-q049",
+        "2009h21h-q047",
+        "2012h24h-q033"
+      ],
+      "definition_jp": "機能設計は、要件定義の結果をもとに、画面や帳票など利用者から見える仕様を決める設計工程で、外部設計とも呼ばれる。",
+      "definition_zh": "功能设计（機能設計）是根据需求定义的结果，决定画面、报表等用户可见规格的设计工序，也称为外部设计。",
+      "definition_en": "Functional design (機能設計) is the design phase that decides user-visible specifications, such as screens and forms, from the results of requirements definition; it is also called external design.",
+      "explanation_jp": "機能設計では、利用者が操作する画面の項目や配置、出力する帳票の様式、利用者の操作の流れなどを決める。ここで決めた仕様は利用者が見て確かめられるので、要望とのずれをこの段階で見つけやすい。",
+      "explanation_zh": "功能设计要决定用户操作的画面项目和布局、输出报表的格式以及用户的操作流程等。这里决定的规格用户能亲眼确认，所以容易在这个阶段发现与要求之间的偏差。",
+      "explanation_en": "Functional design decides the items and layout of the screens users operate, the format of output forms, and the flow of user operations. Because users can see and check these specifications, gaps from what they asked for are easy to spot at this stage.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2013h25h-q049",
+        "2009h21h-q047",
+        "2012h24h-q033"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "詳細設計",
+      "term_zh": "详细设计",
+      "term_en": "Detailed design",
+      "one_jp": "**詳細設計**は、それまでの設計で決めた仕様を、プログラムを書ける細かさの**内部の仕様**にまで具体化する設計工程である。",
+      "one_zh": "**详细设计**（[[jp:詳細設計]]）是把此前设计中决定的规格，具体化到可以编写程序的**内部规格**的设计工序。",
+      "one_en": "**Detailed design** ([[jp:詳細設計]]) is the design phase that refines the specifications from earlier design into **internal specifications** detailed enough to write programs.",
+      "detail_jp": "工程を細かく分ける呼び方では、**ソフトウェア詳細設計**の段階で、コーディングするプログラム 1 本ごとに処理の手順やデータの扱いを決める。決めた内容は設計書にまとめ、プログラミングの拠り所にする。",
+      "detail_zh": "在细分工序的叫法中，到了**软件详细设计**（[[jp:ソフトウェア詳細設計]]）阶段，要为每一个需要编码的程序决定处理步骤和数据的处理方式。决定的内容整理成设计书，作为编程的依据。",
+      "detail_en": "In the finer naming scheme, the **software detailed design** ([[jp:ソフトウェア詳細設計]]) stage decides the processing steps and data handling for each program to be coded. The results are compiled into design documents that programming then relies on.",
+      "analogy_jp": "間取り図をもとに、柱の位置や配線・配管の通り道まで描き込んだ施工図。職人がそのまま作業に入れる細かさにする。",
+      "analogy_zh": "就像在平面图的基础上，连柱子位置和电线、管道走向都画进去的施工图。细到工匠拿到后就能直接开工。",
+      "analogy_en": "It is like construction drawings that add pillar positions and the routes of wiring and piping to the floor plan. They are detailed enough for workers to start building right away.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ソフトウェア詳細設計で初めて決めるのは、1 本ずつのプログラムの仕様である。その設計書に基づいて、次の工程でプログラマがプログラミングを行う。",
+          "text_zh": "软件详细设计（[[jp:ソフトウェア詳細設計]]）中首次决定的，是每一个程序的规格。程序员在下一道工序中依据这份设计书进行编程。",
+          "text_en": "What software detailed design ([[jp:ソフトウェア詳細設計]]) decides for the first time is the specification of each individual program. In the next phase, programmers write the programs from that design document.",
+          "qids": [
+            "2013h25a-q040",
+            "2009h21a-q033",
+            "2013h25h-q042",
+            "2012h24h-q032"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "プログラムが条件ごとにどう分岐して処理するかを考え、**流れ図**で書き表す作業は、ソフトウェア詳細設計の段階で行う。",
+          "text_zh": "构思程序在不同条件下如何分支处理，并用**流程图**（[[jp:流れ図]]）表示出来，这项工作在软件详细设计阶段进行。",
+          "text_en": "Working out how a program branches for each condition and drawing it as a **flowchart** ([[jp:流れ図]]) takes place in the software detailed design stage.",
+          "qids": [
+            "2010h22h-q050"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "機能設計は画面や帳票など利用者から見える外側を、詳細設計はプログラムの処理手順など開発者が作る**内側**を決める。",
+          "text_zh": "功能设计（[[jp:機能設計]]）决定画面、报表等用户看得到的外侧，详细设计则决定程序处理步骤等由开发者构建的**内侧**。",
+          "text_en": "Functional design ([[jp:機能設計]]) decides the outside users see, such as screens and forms, while detailed design decides the **inside** developers build, such as program processing steps."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2013h25a-q040",
+        "2010h22h-q050",
+        "2012h24h-q032"
+      ],
+      "definition_jp": "詳細設計は、それまでの設計で決めた仕様を、プログラムを書ける細かさの内部の仕様にまで具体化する設計工程である。",
+      "definition_zh": "详细设计（詳細設計）是把此前设计中决定的规格，具体化到可以编写程序的内部规格的设计工序。",
+      "definition_en": "Detailed design (詳細設計) is the design phase that refines the specifications from earlier design into internal specifications detailed enough to write programs.",
+      "explanation_jp": "工程を細かく分ける呼び方では、ソフトウェア詳細設計の段階で、コーディングするプログラム 1 本ごとに処理の手順やデータの扱いを決める。決めた内容は設計書にまとめ、プログラミングの拠り所にする。",
+      "explanation_zh": "在细分工序的叫法中，到了软件详细设计（ソフトウェア詳細設計）阶段，要为每一个需要编码的程序决定处理步骤和数据的处理方式。决定的内容整理成设计书，作为编程的依据。",
+      "explanation_en": "In the finer naming scheme, the software detailed design (ソフトウェア詳細設計) stage decides the processing steps and data handling for each program to be coded. The results are compiled into design documents that programming then relies on.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2013h25a-q040",
+        "2010h22h-q050",
+        "2012h24h-q032"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "機能要件",
+      "b": "非機能要件",
+      "rows": [
+        {
+          "label_jp": "決めること",
+          "label_zh": "决定的内容",
+          "label_en": "What it decides",
+          "a_jp": "システムが何をするか (処理・機能)",
+          "a_zh": "系统做什么（处理、功能）",
+          "a_en": "What the system does (processes and functions)",
+          "b_jp": "機能をどの水準・条件で提供するか (速さ・止まりにくさ・安全性・運用のしやすさなど)",
+          "b_zh": "以何种水平和条件提供功能（速度、不易中断、安全性、便于运维等）",
+          "b_en": "The level and conditions for providing functions (speed, resistance to outages, security, ease of operation, etc.)",
+          "key": true
+        },
+        {
+          "label_jp": "書き方の例",
+          "label_zh": "写法示例",
+          "label_en": "Example wording",
+          "a_jp": "「注文を登録できる」",
+          "a_zh": "「能够登记订单」",
+          "a_en": "\"Orders can be registered\"",
+          "b_jp": "「注文の登録を 1 日 5 万件まで処理できる」",
+          "b_zh": "「每天最多能处理 5 万件订单登记」",
+          "b_en": "\"Up to 50,000 order registrations can be processed per day\"",
+          "key": false
+        },
+        {
+          "label_jp": "抜けたときの結果",
+          "label_zh": "遗漏时的后果",
+          "label_en": "If it is left out",
+          "a_jp": "必要な処理がそもそもできない",
+          "a_zh": "根本无法完成必要的处理",
+          "a_en": "The needed processing cannot be done at all",
+          "b_jp": "処理はできるが、遅い・止まる・守れない",
+          "b_zh": "能处理，但慢、会停、守不住",
+          "b_en": "Processing works, but it is slow, stops, or is not secure",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "機能設計",
+      "b": "詳細設計",
+      "rows": [
+        {
+          "label_jp": "誰の目線か",
+          "label_zh": "从谁的视角",
+          "label_en": "Whose viewpoint",
+          "a_jp": "利用者から見える外側",
+          "a_zh": "用户看得到的外侧",
+          "a_en": "The outside that users see",
+          "b_jp": "開発者が作る内側",
+          "b_zh": "开发者构建的内侧",
+          "b_en": "The inside that developers build",
+          "key": true
+        },
+        {
+          "label_jp": "決めるものの例",
+          "label_zh": "决定内容的示例",
+          "label_en": "Examples of what it decides",
+          "a_jp": "画面の項目と配置、帳票の様式",
+          "a_zh": "画面的项目与布局、报表格式",
+          "a_en": "Screen items and layout, form formats",
+          "b_jp": "プログラムごとの処理手順、データの扱い",
+          "b_zh": "每个程序的处理步骤、数据的处理方式",
+          "b_en": "Processing steps for each program, data handling",
+          "key": false
+        },
+        {
+          "label_jp": "前後の工程",
+          "label_zh": "前后工序",
+          "label_en": "Neighboring phases",
+          "a_jp": "要件定義の後、詳細設計の前",
+          "a_zh": "需求定义之后、详细设计之前",
+          "a_en": "After requirements definition, before detailed design",
+          "b_jp": "設計の最後、次はプログラミング",
+          "b_zh": "设计的最后一步，下一步是编程",
+          "b_en": "Last step of design, followed by programming",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "開発は、要件定義で「何を作るか」を決め、設計で「どう作るか」を段階的に細かくし、プログラミングへ進む。",
+    "品質特性は、記述が表す性質 (使いやすい、故障に強い、別の環境で動く など) から、どの特性に当たるかを見分ける。",
+    "工程の呼び方には、本単元の図のように要件定義、機能設計 (外部設計)、詳細設計と粗く分けるものと、システム要件定義やシステム方式設計のように細かく分けるものがある。両者の区切りは一対一には対応しないので、工程の順序はどちらか一方の呼び方の中で考える。"
+  ],
+  "key_points_zh": [
+    "开发时，先在需求定义中决定「做什么」，再在设计中把「怎么做」逐步细化，然后进入编程。",
+    "判断质量特性时，要看描述所表达的性质（好用、耐故障、能在其他环境运行等），由此找出对应的特性。",
+    "工序的叫法有两种：一种像本单元的图那样，粗分为需求定义、功能设计（外部设计）、详细设计；另一种像系统需求定义、系统方式设计那样细分。两者的分界并不一一对应，所以考虑工序顺序时，要在其中一种叫法之内进行。"
+  ],
+  "key_points_en": [
+    "Development first decides \"what to build\" in requirements definition, then refines \"how to build it\" step by step in design, and moves on to programming.",
+    "To match a description to a quality characteristic, look at the property it expresses, such as ease of use, resistance to failure, or running in another environment.",
+    "Phase names follow two schemes: a coarse one, as in this unit's figure, with requirements definition, functional design (external design), and detailed design, and a finer one with names such as system requirements definition and system architecture design. Their boundaries do not map one to one, so reason about phase order within one scheme at a time."
+  ],
+  "overview": {
+    "intro_jp": "機能要件と非機能要件を見分け、どちらもシステム要件定義の段階で明確にするものだと説明できる。品質特性の各特性が何を見る観点かを知り、具体的な記述がどの特性に当たるかを判断できる。要件定義から設計を経てプログラミングへ進む流れの中で、機能設計と詳細設計がそれぞれ何を決めるかを説明できる。",
+    "intro_zh": "能够区分功能性需求和非功能性需求，并说明两者都要在系统需求定义阶段明确。能够了解各项质量特性分别从什么角度考察，并判断某个具体描述属于哪一项特性。能够说明在从需求定义经过设计走向编程的流程中，功能设计和详细设计各自决定什么。",
+    "intro_en": "Tell functional requirements apart from non-functional requirements, and explain that both are clarified during system requirements definition. Know what each quality characteristic looks at, and judge which characteristic a given description belongs to. Explain what functional design and detailed design each decide, in the flow from requirements definition through design to programming.",
+    "freq_badge": "頻出",
+    "est_minutes": 33
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "機能要件: 機能要件といえば「何をするか」を定める要求",
-      "非機能要件: 非機能要件といえば性能・信頼性・セキュリティの要求",
-      "品質特性: 品質特性といえば品質を測る評価の観点を体系化した軸",
-      "機能設計: 機能設計といえば利用者から見える外部仕様を決める設計",
-      "詳細設計: 詳細設計といえば実装できるレベルの内部仕様を作り込む設計"
-    ],
     "key_points_jp": [
-      "要件は「機能要件(何をするか)」と「非機能要件(性能・信頼性・セキュリティ等)」の2種類に大別される。",
-      "品質特性はソフトウェアの品質を評価する軸で、機能適合性・性能効率性・互換性・使用性・信頼性・セキュリティ・保守性・移植性などがある(JIS X 25010 では8特性)。",
-      "開発は「要件定義→機能設計→詳細設計→実装」の順に進み、上流ほど手戻りの影響が大きい。",
-      "機能設計(外部設計)は利用者視点の外部仕様、詳細設計(内部設計)は実装に向けた内部仕様を扱う点が違い。",
-      "要件→設計には前提依存があり、要件を定めなければ設計できない。"
+      "開発は、要件定義で「何を作るか」を決め、設計で「どう作るか」を段階的に細かくし、プログラミングへ進む。",
+      "品質特性は、記述が表す性質 (使いやすい、故障に強い、別の環境で動く など) から、どの特性に当たるかを見分ける。",
+      "工程の呼び方には、本単元の図のように要件定義、機能設計 (外部設計)、詳細設計と粗く分けるものと、システム要件定義やシステム方式設計のように細かく分けるものがある。両者の区切りは一対一には対応しないので、工程の順序はどちらか一方の呼び方の中で考える。"
     ],
     "key_points_zh": [
-      "需求大致分为「功能性需求（做什么）」和「非功能性需求（性能、可靠性、安全性等）」两类。",
-      "质量特性是评价软件质量的轴，包括功能适合性、性能效率、兼容性、易用性、可靠性、安全性、可维护性、可移植性等（JIS X 25010 中为 8 个特性）。",
-      "开发按「需求定义→功能设计→详细设计→实现」的顺序推进，越上游返工的影响越大。",
-      "功能设计（外部设计）处理用户视角的外部规格，详细设计（内部设计）处理面向实现的内部规格，这是两者的区别。",
-      "需求→设计之间存在前提依赖：不先确定需求就无法进行设计。"
+      "开发时，先在需求定义中决定「做什么」，再在设计中把「怎么做」逐步细化，然后进入编程。",
+      "判断质量特性时，要看描述所表达的性质（好用、耐故障、能在其他环境运行等），由此找出对应的特性。",
+      "工序的叫法有两种：一种像本单元的图那样，粗分为需求定义、功能设计（外部设计）、详细设计；另一种像系统需求定义、系统方式设计那样细分。两者的分界并不一一对应，所以考虑工序顺序时，要在其中一种叫法之内进行。"
     ],
     "key_points_en": [
-      "Requirements are broadly divided into two types: \"functional requirements (what it does)\" and \"non-functional requirements (performance, reliability, security, etc.).\"",
-      "Quality characteristics are axes for evaluating software quality, including functional suitability, performance efficiency, compatibility, usability, reliability, security, maintainability, and portability (8 characteristics in JIS X 25010).",
-      "Development proceeds in the order \"requirements definition → functional design → detailed design → implementation,\" and the more upstream a step is, the greater the impact of rework.",
-      "Functional design (external design) handles user-facing external specifications, while detailed design (internal design) handles internal specifications geared toward implementation — that is the difference between them.",
-      "There is a prerequisite dependency from requirements to design: you cannot design without first defining the requirements."
+      "Development first decides \"what to build\" in requirements definition, then refines \"how to build it\" step by step in design, and moves on to programming.",
+      "To match a description to a quality characteristic, look at the property it expresses, such as ease of use, resistance to failure, or running in another environment.",
+      "Phase names follow two schemes: a coarse one, as in this unit's figure, with requirements definition, functional design (external design), and detailed design, and a finer one with names such as system requirements definition and system architecture design. Their boundaries do not map one to one, so reason about phase order within one scheme at a time."
+    ],
+    "memory_hooks_jp": [
+      "非機能要件: 「非」は機能を否定するのではなく「機能以外」の条件を指す。機能がそろったうえに付く条件と読む。"
     ],
     "memory_hooks_zh": [
-      "功能性需求：说到功能性需求，就是规定「做什么」的要求",
-      "非功能性需求：说到非功能性需求，就是性能、可靠性、安全性的要求",
-      "质量特性：说到质量特性，就是把衡量质量的评价视角体系化的轴",
-      "功能设计：说到功能设计，就是决定用户可见的外部规格的设计",
-      "详细设计：说到详细设计，就是打磨到可实现层级的内部规格的设计"
+      "非功能性需求：「非」不是否定功能，而是指「功能以外」的条件。可以理解为在功能齐备之后再附加上的条件。"
     ],
     "memory_hooks_en": [
-      "Functional requirements: Functional requirements → the requirement that defines \"what it does\"",
-      "Non-functional requirements: Non-functional requirements → requirements for performance, reliability, and security",
-      "Quality characteristics: Quality characteristics → the axes that systematize the evaluation viewpoints for measuring quality",
-      "Functional design: Functional design → the design that decides the user-visible external specifications",
-      "Detailed design: Detailed design → the design that builds out the internal specifications down to an implementable level"
+      "Non-functional requirements: The \"non-\" does not deny the functions; it points to conditions other than the functions themselves. Read it as conditions attached once the functions are in place."
     ]
   },
   "challenge_questions": [
-    "2012h24h-q032",
-    "2013h25a-q035",
-    "2013h25h-q046",
-    "2009h21a-q037",
-    "2009h21h-q047"
+    "2014h26h-q049",
+    "2012h24a-q038",
+    "2025r07-q047",
+    "2016h28a-q053",
+    "2013h25h-q033"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "需求定义与设计",
-  "title_en": "Requirements Definition and Design",
-  "unit_summary_zh": "学习上游工程：定义系统所需的功能与质量，并将其落实为满足这些要求的设计。",
-  "unit_summary_en": "Learn the upstream phase: define the functions and quality required of a system, then translate them into a design that satisfies those requirements."
+  }
 }

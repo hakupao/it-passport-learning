@@ -1,136 +1,574 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "management-08-25-u05",
   "topic_id": "management-08-25",
   "category": "management",
   "title_jp": "開発工数の見積り",
+  "title_zh": "开发工时的估算",
+  "title_en": "Estimating Development Effort",
   "unit_summary_jp": "ファンクションポイント法・類推見積法・相対見積など、開発規模・工数を見積もる代表手法を学ぶ。",
+  "unit_summary_zh": "学习功能点法、类推估算法、相对估算等用于估算开发规模与工时的代表性方法。",
+  "unit_summary_en": "Learn the representative methods for estimating development size and effort, including Function Point analysis, analogy-based estimation, and relative estimation.",
   "order_in_topic": 5,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、システム開発にどれだけの規模・工数がかかるかを事前に見積もる代表手法を学ぶ。ファンクションポイント法・類推見積法・相対見積の3つを取り上げる。見積りは予算や納期の根拠となる重要工程であり、ITパスポートでも各手法の『何を基準に見積もるか』の違いがよく問われる。",
-    "freq_badge": "頻出",
-    "est_minutes": 11,
-    "intro_zh": "本单元学习如何在事前估算系统开发需要多大的规模与多少工时的代表性方法。我们将介绍功能点法、类推估算法和相对估算这三种方法。估算是预算和交付期限的依据，是一道重要的工序；在 IT 护照考试中也常考查各方法之间“以什么为基准来估算”的差异。",
-    "intro_en": "In this unit, you will learn the representative methods for estimating, in advance, how much size and effort a system development project will require. We cover three approaches: Function Point analysis, analogy-based estimation, and relative estimation. Estimation is a crucial process that serves as the basis for budgets and deadlines, and the IT Passport exam often tests the difference in 'what each method uses as the basis for estimation.'"
-  },
-  "terms": [
+  "goals_jp": [
+    "3 つの見積り手法を、何を基準に見積もるかで区別できる。",
+    "見積りの精度が開発の進み具合でどう変わるかを説明できる。",
+    "規模と**生産性**から**工数**を求められる。"
+  ],
+  "goals_zh": [
+    "能根据“以什么为依据来估算”区分 3 种估算方法。",
+    "能说明估算精度如何随开发进展而变化。",
+    "能根据规模和**生产率**求出**工作量**。"
+  ],
+  "goals_en": [
+    "Tell the three estimation methods apart by what each one bases its estimate on.",
+    "Explain how estimation accuracy changes as development progresses.",
+    "Work out **effort** from size and **productivity**."
+  ],
+  "overview_cols_jp": [
+    "見積りの基準",
+    "使う場面"
+  ],
+  "overview_cols_zh": [
+    "估算依据",
+    "适用场合"
+  ],
+  "overview_cols_en": [
+    "Basis of the estimate",
+    "When it is used"
+  ],
+  "overview_rows": [
     {
       "term": "ファンクションポイント法",
-      "definition_jp": "システムの機能の数と複雑さから開発規模を定量的に見積もる技法。",
-      "explanation_jp": "ファンクションポイント(FP)法は、開発するシステムが持つ機能(画面・帳票・データ入出力など)の数を数え、それぞれの複雑さに応じた重み付けを行って合計し、開発規模を点数で表す見積技法です。利用者から見える機能を基準にするため、プログラムの行数のように実装言語に左右されにくいのが特徴です。\n\n試験では、FP 法が『機能の数と複雑さ』をもとに規模を算出する手法である点が問われます。プログラムのステップ数(行数)で測る方法との違いを意識しましょう。算出した FP に過去の実績(1FPあたりの工数)を掛けることで、必要な工数や期間の見積りにつなげます。",
-      "analogy_jp": "引っ越し料金を、運ぶ荷物の『品目数と大きさ』から積み上げて見積もるようなもの。部屋の広さ(行数)ではなく、運ぶ中身(機能)で値段を決める。",
-      "memory_hook_jp": "ファンクションポイント法といえば機能の数と複雑さで開発規模を算出",
-      "inline_quiz": [
-        "2009h21h-q041",
-        "2011h23tokubetsu-q052"
+      "one_line_jp": "機能の数と複雑さを点数にして規模を出す",
+      "one_line_zh": "把功能的数量和复杂度换算成点数，得出规模",
+      "one_line_en": "Turns the number and complexity of functions into points to get the size",
+      "extra_jp": [
+        "利用者から見える機能の量",
+        "機能の一覧ができた段階"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"機能を洗い出す\"] --> B[\"機能ごとに複雑さで重み付け\"]; B --> C[\"合計してFP値を算出\"]; C --> D[\"工数・期間を見積り\"]",
-        "svg_path": "figures/management-08-25-u05-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "功能点法",
-      "term_en": "Function Point analysis (FP method)",
-      "definition_zh": "根据系统功能的数量与复杂度，定量估算开发规模的技法。",
-      "definition_en": "A technique that quantitatively estimates development size based on the number and complexity of a system's functions.",
-      "explanation_zh": "功能点（FP）法是这样一种估算技法：数出所开发系统所具备的功能（画面、报表、数据输入输出等）的数量，按各自的复杂度进行加权后求和，用分数来表示开发规模。由于它以用户可见的功能为基准，因此与程序行数那种方式不同，不易受实现语言的影响，这是它的特点。\n\n考试中会考查 FP 法是依据“功能的数量与复杂度”来计算规模这一点。请注意它与用程序步数（行数）来衡量的方法之间的区别。把算出的 FP 乘以过去的历史数据（每 1FP 所需的工时），即可进而估算出所需的工时与周期。",
-      "explanation_en": "The Function Point (FP) method is an estimation technique in which you count the number of functions a system to be developed will have (screens, reports, data input/output, etc.), apply weights according to the complexity of each, sum them up, and express the development size as a score. Because it is based on functions visible to the user, a key characteristic is that it is less affected by the implementation language than methods such as lines of code.\n\nThe exam tests the point that the FP method calculates size based on 'the number and complexity of functions.' Be conscious of how it differs from methods that measure by the number of program steps (lines of code). By multiplying the calculated FP by past performance data (effort per 1 FP), you can go on to estimate the required effort and duration.",
-      "analogy_zh": "就像估算搬家费用时，根据要搬运的行李的“品目数量与大小”逐项累加得出报价一样。决定价格的不是房间的面积（行数），而是要搬运的内容物（功能）。",
-      "analogy_en": "It is like estimating a moving fee by building up the cost from the 'number and size of items' to be transported. The price is determined not by the floor area of the room (lines of code) but by the contents being moved (functions).",
-      "memory_hook_zh": "说到功能点法，就是用功能的数量与复杂度来计算开发规模。",
-      "memory_hook_en": "Function Point analysis → calculate development size from the number and complexity of functions."
+      "extra_zh": [
+        "用户能看到的功能量",
+        "功能清单已经整理好的阶段"
+      ],
+      "extra_en": [
+        "Amount of functionality visible to users",
+        "Once a list of functions exists"
+      ]
     },
     {
       "term": "類推見積法",
-      "definition_jp": "過去の類似した開発事例を基準に、規模や工数を見積もる手法。",
-      "explanation_jp": "類推見積法は、これから行う開発に似た過去のプロジェクトの実績(規模・工数・期間など)を参考にして見積もる手法です。『前回の似た案件はこれくらいかかったから、今回も同程度だろう』と推定する考え方で、過去データがあれば素早く概算できるのが利点です。\n\n試験では、類推見積法が『過去の類似事例』を根拠にする点が問われます。機能を数えて積み上げるファンクションポイント法と対比して覚えましょう。過去の実績に依存するため、似た事例が無い新規性の高い開発では精度が落ちる、という弱点も理解しておくとよいです。",
-      "analogy_jp": "新しい家を建てるとき『去年建てた同じくらいの家がこの値段だったから』と見当をつけるようなもの。過去の似た例が判断の物差しになる。",
-      "memory_hook_jp": "類推見積法といえば過去の類似事例から見積もる",
-      "inline_quiz": [
-        "2016h28h-q046",
-        "2017h29h-q037"
+      "one_line_jp": "似た過去案件の実績から推し量る",
+      "one_line_zh": "参照相似的以往项目实绩进行推算",
+      "one_line_en": "Infers figures from the actual results of similar past projects",
+      "extra_jp": [
+        "過去の類似案件の実績",
+        "詳細が決まっていない計画初期の概算"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "类推估算法",
-      "term_en": "Analogy-based estimation",
-      "definition_zh": "以过去类似的开发案例为基准，来估算规模或工时的方法。",
-      "definition_en": "A method that estimates size or effort based on similar past development cases.",
-      "explanation_zh": "类推估算法是这样一种方法：参考与即将进行的开发相似的过去项目的实绩（规模、工时、周期等）来进行估算。它的思路是“上一次类似的项目花了这么多，这次大概也差不多”，只要有过去的数据，就能快速作出概算，这是它的优点。\n\n考试中会考查类推估算法是以“过去的类似案例”为依据这一点。请把它与逐项累加功能的功能点法对照起来记忆。由于它依赖过去的实绩，因此在没有相似案例、新颖性较高的开发中精度会下降，这一弱点也最好理解清楚。",
-      "explanation_en": "Analogy-based estimation is a method in which you estimate by referring to the actual results (size, effort, duration, etc.) of past projects similar to the development you are about to undertake. The idea is to reason 'the similar project last time took about this much, so this one will probably be about the same.' Its advantage is that, if past data exists, you can make a rough estimate quickly.\n\nThe exam tests the point that analogy-based estimation is grounded in 'similar past cases.' Remember it in contrast with the Function Point method, which builds up an estimate by counting functions. It is also good to understand its weakness: because it depends on past results, its accuracy drops for highly novel development where no similar case exists.",
-      "analogy_zh": "就像盖新房子时，根据“去年盖的差不多大小的房子是这个价”来估摸价格一样。过去的相似例子成了判断的尺子。",
-      "analogy_en": "It is like sizing up the price when building a new house by reasoning 'a house of about the same size built last year cost this much.' A similar past example becomes the yardstick for judgment.",
-      "memory_hook_zh": "说到类推估算法，就是从过去的类似案例来估算。",
-      "memory_hook_en": "Analogy-based estimation → estimate from similar past cases."
+      "extra_zh": [
+        "以往相似项目的实绩",
+        "细节尚未确定的规划初期粗略估算"
+      ],
+      "extra_en": [
+        "Actual results of similar past projects",
+        "Rough estimates early in planning, before details are fixed"
+      ]
     },
     {
       "term": "相対見積",
-      "definition_jp": "ある作業を基準に、他作業の大きさを相対的な比で見積もる手法。",
-      "explanation_jp": "相対見積は、作業量を時間で直接見積もるのではなく、『基準とする作業の何倍くらいか』という相対的な大きさで見積もる手法です。アジャイル開発などで用いられ、ストーリーポイントといった単位で『この作業はあの作業の2倍』のように相対比較で規模を表します。\n\n試験では、相対見積が『絶対的な時間ではなく、作業同士の相対的な大きさ』で見積もる点が問われます。人は『○時間』と当てるより『あれよりこれが大きい』と比べる方が判断しやすい、という考え方に基づきます。FP 法や類推見積法とは発想の異なる、比較的新しい見積りの捉え方として押さえましょう。",
-      "analogy_jp": "服のサイズを cm で正確に測らず、S・M・L のように『あの服より一回り大きい』と相対的に決めるようなもの。比べる方が手早く合意できる。",
-      "memory_hook_jp": "相対見積といえば基準作業との相対的な大きさで見積もる",
-      "inline_quiz": [
-        "2013h25h-q048"
+      "one_line_jp": "基準作業との比で作業の大きさを表す",
+      "one_line_zh": "用与基准任务的比值表示任务大小",
+      "one_line_en": "Expresses the size of a task as a ratio to a reference task",
+      "extra_jp": [
+        "基準にした作業との大きさの比",
+        "アジャイル開発で作業の大きさを互いに比べて見積もるとき"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "相对估算",
-      "term_en": "Relative estimation",
-      "definition_zh": "以某项作业为基准，用相对的比值来估算其他作业大小的方法。",
-      "definition_en": "A method that estimates the size of other tasks as a relative ratio against a baseline task.",
-      "explanation_zh": "相对估算是这样一种方法：不是直接用时间来估算工作量，而是用“大约是作为基准的作业的几倍”这种相对的大小来估算。它常用于敏捷开发等，以故事点之类的单位，用“这项作业是那项作业的 2 倍”这样的相对比较来表示规模。\n\n考试中会考查相对估算是用“作业彼此之间的相对大小，而非绝对的时间”来估算这一点。它基于这样一种思路：比起猜“○小时”，人更容易作出“这个比那个大”这样的比较判断。请把它作为与 FP 法、类推估算法发想不同、相对较新的一种估算视角来掌握。",
-      "explanation_en": "Relative estimation is a method in which, rather than estimating the amount of work directly in time, you estimate by relative size such as 'about how many times the baseline task.' It is used in agile development and others, expressing size by relative comparison in units like story points, as in 'this task is twice that task.'\n\nThe exam tests the point that relative estimation estimates by 'the relative size of tasks against one another, not absolute time.' It is based on the idea that people find it easier to judge by comparing 'this is bigger than that' than by guessing '○ hours.' Grasp it as a relatively new way of approaching estimation, with a conception different from the FP method or analogy-based estimation.",
-      "analogy_zh": "就像衣服尺码不用厘米精确测量，而是像 S、M、L 那样，用“比那件衣服大一号”这种相对方式来决定一样。比较着定更快达成共识。",
-      "analogy_en": "It is like deciding clothing sizes not by measuring precisely in centimeters, but relatively—like S, M, L—as in 'a size up from that one.' Comparing makes it quicker to reach agreement.",
-      "memory_hook_zh": "说到相对估算，就是用相对于基准作业的相对大小来估算。",
-      "memory_hook_en": "Relative estimation → estimate by relative size against a baseline task."
+      "extra_zh": [
+        "与基准任务相比的大小比例",
+        "敏捷开发中相互比较任务大小来估算时"
+      ],
+      "extra_en": [
+        "Size ratio to the chosen reference task",
+        "In agile development, when tasks are sized by comparing them with each other"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "ファンクションポイント法",
+      "term_zh": "功能点法",
+      "term_en": "Function Point analysis (FP method)",
+      "one_jp": "**ファンクションポイント法**は、システムが持つ**機能の数と複雑さ**を点数にして開発規模を見積もる手法である。",
+      "one_zh": "**功能点法**（[[jp:ファンクションポイント法]]）是把系统所具备的**功能的数量和复杂度**换算成点数，以此估算开发规模的方法。",
+      "one_en": "**Function Point analysis** ([[jp:ファンクションポイント法]]) estimates development size by turning the **number and complexity of a system's functions** into points.",
+      "detail_jp": "利用者から見える入出力・ファイル・照会などの機能を数え、それぞれの複雑さに応じた重みを付けて合計した点数を**FP値**と呼び、これを開発規模とする。作り方ではなく機能を数えるので、使うプログラム言語に左右されにくく、機能の一覧ができた段階で数えられる。必要な**工数** (作業量を人月などで表したもの) は、この規模を過去の実績から得た**生産性** (1 人月あたりにこなせる規模) で割って求める。",
+      "detail_zh": "清点用户能看到的输入输出、文件、查询等功能，再按各自的复杂度加权并求和，所得点数称为**FP值**，作为开发规模。由于数的是功能而不是实现方式，结果不太受所用编程语言的影响，在功能清单整理出来后就能开始计算。所需的**工作量**（以人月等表示的作业量）用这个规模除以根据以往实绩得出的**生产率**（每人月能完成的规模）来求得。",
+      "detail_en": "You count the functions users can see, such as inputs, outputs, files and inquiries, weight each by its complexity, and add them up; the resulting score is the **FP count**, which serves as the development size. Because it counts functions rather than how they are built, the result depends little on the programming language, and the count can be made as soon as a list of functions exists. The **effort** needed (the amount of work, in units such as person-months) is found by dividing this size by the **productivity** taken from past results (the size one person can handle per month).",
+      "analogy_jp": "料理の手間を、鍋の大きさではなく、作る品数とそれぞれの難しさから見積もるようなもの。",
+      "analogy_zh": "就像估算做饭要花多少工夫时，不看锅有多大，而是看要做几道菜、每道菜有多难。",
+      "analogy_en": "It is like judging how much work a dinner will take not by the size of the pot, but by how many dishes you will make and how hard each one is.",
+      "hook_jp": "ファンクション = 機能。プログラムの関数ではなく、利用者から見える機能のまとまりを数える。",
+      "hook_zh": "“Function”就是“功能”。数的不是程序里的函数，而是用户能看到的一组组功能。",
+      "hook_en": "\"Function\" here means a feature, not a function in program code: you count the chunks of functionality users can see.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ファンクションポイント法は入力・出力・ファイルなどの機能の数と難しさから規模を出す方法で、ソースコードの行数を数える方法とは別物である。",
+          "text_zh": "**功能点法**（[[jp:ファンクションポイント法]]）根据输入、输出、文件等功能的数量和难度得出规模，与清点源代码行数的方法是两回事。",
+          "text_en": "**Function Point analysis** ([[jp:ファンクションポイント法]]) derives size from the number and difficulty of functions such as inputs, outputs and files. It is a different thing from counting lines of source code.",
+          "qids": [
+            "2009h21h-q041",
+            "2013h25h-q048",
+            "2017h29h-q037"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ファンクションポイント法がまず見積もるのは開発規模である。開発期間や工数はその規模から導く結果であり、規模を見積もる材料ではない。",
+          "text_zh": "功能点法首先估算的是开发规模。开发周期和**工作量**（[[jp:工数]]）是由这个规模推导出的结果，而不是用来估算规模的材料。",
+          "text_en": "What Function Point analysis estimates first is development size. Development time and **effort** ([[jp:工数]]) are results derived from that size, not inputs for estimating it.",
+          "qids": [
+            "2011h23tokubetsu-q052"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "作業を細かく分けて工数を見積もり合計する積み上げ法は、機能でなく作業を数える点でファンクションポイント法と異なる。",
+          "text_zh": "**自下而上估算法**（[[jp:積み上げ法]]）把作业细分后估算各自的工作量再合计，它数的是作业而不是功能，这一点与功能点法不同。",
+          "text_en": "The **bottom-up method** ([[jp:積み上げ法]]) breaks the work into small tasks, estimates the effort for each and adds them up. It differs from Function Point analysis in that it counts tasks, not functions."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "count",
+              "label": {
+                "jp": "機能を数える",
+                "zh": "清点功能",
+                "en": "Count functions"
+              }
+            },
+            {
+              "id": "weight",
+              "label": {
+                "jp": "複雑さで重み付け",
+                "zh": "按复杂度加权",
+                "en": "Weight by complexity"
+              }
+            },
+            {
+              "id": "sum",
+              "label": {
+                "jp": "合計してFP値",
+                "zh": "合计得出FP值",
+                "en": "Sum to get the FP count"
+              }
+            },
+            {
+              "id": "effort",
+              "label": {
+                "jp": "生産性で工数に換算",
+                "zh": "用生产率换算成工作量",
+                "en": "Convert to effort using productivity"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者から見える入出力やファイルなどの機能を一つずつ数え上げる。",
+            "caption_zh": "逐一清点用户能看到的输入输出、文件等功能。",
+            "caption_en": "Count, one by one, the functions users can see, such as inputs, outputs and files.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "数えた機能ごとに、複雑さに応じた重みを掛ける。",
+            "caption_zh": "对清点出的每个功能，按其复杂度乘以相应的权重。",
+            "caption_en": "Multiply each counted function by a weight that matches its complexity.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "重みを掛けた値の合計がFP値で、これを開発規模とする。",
+            "caption_zh": "加权后数值的合计就是FP值，以此作为开发规模。",
+            "caption_en": "The total of the weighted values is the FP count, which is taken as the development size.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "FP値を、1人月あたりにこなせる規模 (生産性) で割り、必要な人月 (工数) を求める。",
+            "caption_zh": "用FP值除以每人月能完成的规模（生产率），求出所需的人月数（工作量）。",
+            "caption_en": "Divide the FP count by the size one person can handle in a month (productivity) to get the person-months needed (effort).",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21h-q041",
+        "2013h25h-q048",
+        "2017h29h-q037"
+      ],
+      "definition_jp": "ファンクションポイント法は、システムが持つ機能の数と複雑さを点数にして開発規模を見積もる手法である。",
+      "definition_zh": "功能点法（ファンクションポイント法）是把系统所具备的功能的数量和复杂度换算成点数，以此估算开发规模的方法。",
+      "definition_en": "Function Point analysis (ファンクションポイント法) estimates development size by turning the number and complexity of a system's functions into points.",
+      "explanation_jp": "利用者から見える入出力・ファイル・照会などの機能を数え、それぞれの複雑さに応じた重みを付けて合計した点数をFP値と呼び、これを開発規模とする。作り方ではなく機能を数えるので、使うプログラム言語に左右されにくく、機能の一覧ができた段階で数えられる。必要な工数 (作業量を人月などで表したもの) は、この規模を過去の実績から得た生産性 (1 人月あたりにこなせる規模) で割って求める。",
+      "explanation_zh": "清点用户能看到的输入输出、文件、查询等功能，再按各自的复杂度加权并求和，所得点数称为FP值，作为开发规模。由于数的是功能而不是实现方式，结果不太受所用编程语言的影响，在功能清单整理出来后就能开始计算。所需的工作量（以人月等表示的作业量）用这个规模除以根据以往实绩得出的生产率（每人月能完成的规模）来求得。",
+      "explanation_en": "You count the functions users can see, such as inputs, outputs, files and inquiries, weight each by its complexity, and add them up; the resulting score is the FP count, which serves as the development size. Because it counts functions rather than how they are built, the result depends little on the programming language, and the count can be made as soon as a list of functions exists. The effort needed (the amount of work, in units such as person-months) is found by dividing this size by the productivity taken from past results (the size one person can handle per month).",
+      "memory_hook_jp": "ファンクション = 機能。プログラムの関数ではなく、利用者から見える機能のまとまりを数える。",
+      "memory_hook_zh": "“Function”就是“功能”。数的不是程序里的函数，而是用户能看到的一组组功能。",
+      "memory_hook_en": "\"Function\" here means a feature, not a function in program code: you count the chunks of functionality users can see.",
+      "inline_quiz": [
+        "2009h21h-q041",
+        "2013h25h-q048",
+        "2017h29h-q037"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "類推見積法",
+      "term_zh": "类推估算法",
+      "term_en": "Analogy-based estimation",
+      "one_jp": "**類推見積法**は、これから行う開発に似た**過去の案件の実績**をもとに規模や工数を見積もる手法である。",
+      "one_zh": "**类推估算法**（[[jp:類推見積法]]）是以与即将进行的开发相似的**以往项目实绩**为依据，估算规模和工作量的方法。",
+      "one_en": "**Analogy-based estimation** ([[jp:類推見積法]]) estimates size and effort from the **actual results of past projects** that resemble the development about to begin.",
+      "detail_jp": "似た案件の規模・工数・費用の実績を物差しにし、今回との違いを補正して値を推し量る。詳細がまだ決まっていない段階でも手早く概算を出せる。一方、似た前例が無い新しい種類の開発では、根拠そのものが弱くなる。",
+      "detail_zh": "以相似项目在规模、工作量、费用上的实绩为尺子，再针对本次的差异加以修正，推算出数值。即使细节还没定下来，也能很快给出粗略估算。另一方面，如果是没有相似先例的新型开发，推算的依据本身就会变得薄弱。",
+      "detail_en": "The actual size, effort and cost of a similar project serve as the yardstick, and the figures are inferred after adjusting for how this project differs. It gives a rough estimate quickly, even before the details are settled. On the other hand, for a new kind of development with no similar precedent, the basis for the estimate itself becomes weak.",
+      "analogy_jp": "去年の似た旅行でかかった出費を見て、今年の旅費の見当をつけるようなもの。",
+      "analogy_zh": "就像翻看去年一次类似旅行花了多少钱，来大致估计今年的旅费。",
+      "analogy_en": "It is like looking at what a similar trip cost you last year to get a rough idea of this year's travel budget.",
+      "hook_jp": "「類」は似たもの、「推」はおしはかる。似た前例からおしはかる方法。",
+      "hook_zh": "“类”指相似的东西，“推”指推测。也就是从相似的先例推测出来的方法。",
+      "hook_en": "In the Japanese name, 類 means \"similar\" and 推 means \"infer\": the method infers from similar precedents.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "類推見積法は見積り自体にかかる手間や費用が少なく済む。その代わり、詳細な作業から積み上げる方法より正確さで劣る。",
+          "text_zh": "**类推估算法**（[[jp:類推見積法]]）做估算本身所花的工夫和费用都较少。代价是，它的准确度不如从详细作业逐项累加的方法。",
+          "text_en": "**Analogy-based estimation** ([[jp:類推見積法]]) takes little time or money to carry out. The trade-off is that it is less accurate than methods that build up from detailed tasks.",
+          "qids": [
+            "2016h28h-q046"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "類推見積法は、詳細が固まっていない計画段階で、短期間に概算のコストを出すのに向いている。",
+          "text_zh": "类推估算法适合在细节尚未确定的规划阶段，于短时间内得出粗略的成本。",
+          "text_en": "Analogy-based estimation suits the planning stage, before details are settled, when a rough cost figure is needed in a short time.",
+          "qids": [
+            "2026r08-q037",
+            "2024r06-q049"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "見積りの精度は、開発が進んで確定した情報が増えるほど高くなる。計画初期の概算がもっとも粗い。",
+          "text_zh": "开发越往后推进、确定的信息越多，**估算**（[[jp:見積り]]）的精度就越高。规划初期的粗略估算最不精确。",
+          "text_en": "The accuracy of an **estimate** ([[jp:見積り]]) rises as development moves forward and more information is fixed. The rough estimate at the start of planning is the least precise.",
+          "qids": [
+            "2013h25h-q050"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28h-q046",
+        "2026r08-q037"
+      ],
+      "definition_jp": "類推見積法は、これから行う開発に似た過去の案件の実績をもとに規模や工数を見積もる手法である。",
+      "definition_zh": "类推估算法（類推見積法）是以与即将进行的开发相似的以往项目实绩为依据，估算规模和工作量的方法。",
+      "definition_en": "Analogy-based estimation (類推見積法) estimates size and effort from the actual results of past projects that resemble the development about to begin.",
+      "explanation_jp": "似た案件の規模・工数・費用の実績を物差しにし、今回との違いを補正して値を推し量る。詳細がまだ決まっていない段階でも手早く概算を出せる。一方、似た前例が無い新しい種類の開発では、根拠そのものが弱くなる。",
+      "explanation_zh": "以相似项目在规模、工作量、费用上的实绩为尺子，再针对本次的差异加以修正，推算出数值。即使细节还没定下来，也能很快给出粗略估算。另一方面，如果是没有相似先例的新型开发，推算的依据本身就会变得薄弱。",
+      "explanation_en": "The actual size, effort and cost of a similar project serve as the yardstick, and the figures are inferred after adjusting for how this project differs. It gives a rough estimate quickly, even before the details are settled. On the other hand, for a new kind of development with no similar precedent, the basis for the estimate itself becomes weak.",
+      "memory_hook_jp": "「類」は似たもの、「推」はおしはかる。似た前例からおしはかる方法。",
+      "memory_hook_zh": "“类”指相似的东西，“推”指推测。也就是从相似的先例推测出来的方法。",
+      "memory_hook_en": "In the Japanese name, 類 means \"similar\" and 推 means \"infer\": the method infers from similar precedents.",
+      "inline_quiz": [
+        "2016h28h-q046",
+        "2026r08-q037"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "相対見積",
+      "term_zh": "相对估算",
+      "term_en": "Relative estimation",
+      "one_jp": "**相対見積**は、作業量を時間で直接見積もらず、基準にした作業と比べて**何倍の大きさか**で見積もる手法である。",
+      "one_zh": "**相对估算**（[[jp:相対見積]]）不直接用时间估算作业量，而是与选定的基准任务相比，看它**是几倍大**来估算的方法。",
+      "one_en": "**Relative estimation** ([[jp:相対見積]]) does not estimate work directly in time; instead it sizes a task by **how many times as large** it is as a chosen reference task.",
+      "detail_jp": "基準にする作業を一つ決め、ほかの作業がその何倍か、何分の一かを比べて値を付ける。アジャイル開発では、この比を**ストーリーポイント**という、時間と切り離した単位で表すことが多い。人は量を直接言い当てるより、2 つを比べる方が判断しやすいという考えに基づく。",
+      "detail_zh": "先选定一个基准任务，再比较其他任务是它的几倍或几分之一，据此给出数值。在敏捷开发中，这个比值通常用**故事点**这种与时间脱钩的单位来表示。其依据是：比起直接说出一个量，人更容易对两样东西进行比较判断。",
+      "detail_en": "You pick one reference task, then compare each other task with it, as a multiple or a fraction, and give it a value. In agile development this ratio is usually expressed in **story points**, a unit kept separate from time. It rests on the idea that people judge more easily by comparing two things than by naming an amount outright.",
+      "analogy_jp": "荷物を量りに載せず、両手に持ち比べて「こちらが倍くらい重い」と決めるようなもの。",
+      "analogy_zh": "就像不把行李放到秤上，而是两手各拿一件掂一掂，判断“这件大概重一倍”。",
+      "analogy_en": "It is like skipping the scale and holding one bag in each hand to decide that this one is about twice as heavy.",
+      "hook_jp": "相対の反対は絶対。成績の相対評価と絶対評価と同じ対の言葉。",
+      "hook_zh": "“相对”的反面是“绝对”，和成绩的相对评价、绝对评价是同一对词。",
+      "hook_en": "The opposite of relative is absolute, the same pair as grading on a curve versus grading against a fixed standard.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "相対見積で付ける値は基準作業との比であり、そのまま時間や人月に読み替えられる絶対量ではない。",
+          "text_zh": "**相对估算**（[[jp:相対見積]]）给出的值是与基准任务的比值，并不是能直接换算成时间或人月的绝对量。",
+          "text_en": "The values given in **relative estimation** ([[jp:相対見積]]) are ratios to a reference task, not absolute amounts that can be read straight off as hours or person-months."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "作業",
+              "zh": "任务",
+              "en": "Task"
+            },
+            {
+              "jp": "基準作業との比べ方",
+              "zh": "与基准任务的比较",
+              "en": "Compared with the reference task"
+            },
+            {
+              "jp": "付けた値",
+              "zh": "给出的值",
+              "en": "Value given"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "作業P",
+                  "zh": "任务P",
+                  "en": "Task P"
+                },
+                {
+                  "jp": "これを基準にする",
+                  "zh": "以此为基准",
+                  "en": "Used as the reference"
+                },
+                {
+                  "jp": "2",
+                  "zh": "2",
+                  "en": "2"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "作業Q",
+                  "zh": "任务Q",
+                  "en": "Task Q"
+                },
+                {
+                  "jp": "基準の約2倍",
+                  "zh": "约为基准的2倍",
+                  "en": "About twice the reference"
+                },
+                {
+                  "jp": "4",
+                  "zh": "4",
+                  "en": "4"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "作業R",
+                  "zh": "任务R",
+                  "en": "Task R"
+                },
+                {
+                  "jp": "基準の半分ほど",
+                  "zh": "约为基准的一半",
+                  "en": "About half the reference"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "相対見積は、作業量を時間で直接見積もらず、基準にした作業と比べて何倍の大きさかで見積もる手法である。",
+      "definition_zh": "相对估算（相対見積）不直接用时间估算作业量，而是与选定的基准任务相比，看它是几倍大来估算的方法。",
+      "definition_en": "Relative estimation (相対見積) does not estimate work directly in time; instead it sizes a task by how many times as large it is as a chosen reference task.",
+      "explanation_jp": "基準にする作業を一つ決め、ほかの作業がその何倍か、何分の一かを比べて値を付ける。アジャイル開発では、この比をストーリーポイントという、時間と切り離した単位で表すことが多い。人は量を直接言い当てるより、2 つを比べる方が判断しやすいという考えに基づく。",
+      "explanation_zh": "先选定一个基准任务，再比较其他任务是它的几倍或几分之一，据此给出数值。在敏捷开发中，这个比值通常用故事点这种与时间脱钩的单位来表示。其依据是：比起直接说出一个量，人更容易对两样东西进行比较判断。",
+      "explanation_en": "You pick one reference task, then compare each other task with it, as a multiple or a fraction, and give it a value. In agile development this ratio is usually expressed in story points, a unit kept separate from time. It rests on the idea that people judge more easily by comparing two things than by naming an amount outright.",
+      "memory_hook_jp": "相対の反対は絶対。成績の相対評価と絶対評価と同じ対の言葉。",
+      "memory_hook_zh": "“相对”的反面是“绝对”，和成绩的相对评价、绝对评价是同一对词。",
+      "memory_hook_en": "The opposite of relative is absolute, the same pair as grading on a curve versus grading against a fixed standard.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "ファンクションポイント法",
+      "b": "類推見積法",
+      "rows": [
+        {
+          "label_jp": "見積りの根拠",
+          "label_zh": "估算依据",
+          "label_en": "Basis of the estimate",
+          "a_jp": "システムの機能の数と複雑さ",
+          "a_zh": "系统功能的数量和复杂度",
+          "a_en": "Number and complexity of the system's functions",
+          "b_jp": "似た過去案件の実績",
+          "b_zh": "相似的以往项目实绩",
+          "b_en": "Actual results of similar past projects",
+          "key": true
+        },
+        {
+          "label_jp": "前もって要るもの",
+          "label_zh": "需要事先准备的东西",
+          "label_en": "What you need beforehand",
+          "a_jp": "機能の一覧",
+          "a_zh": "功能清单",
+          "a_en": "A list of functions",
+          "b_jp": "類似案件の実績データ",
+          "b_zh": "相似项目的实绩数据",
+          "b_en": "Actual data from similar projects",
+          "key": false
+        },
+        {
+          "label_jp": "使う時期",
+          "label_zh": "使用时期",
+          "label_en": "When it is used",
+          "a_jp": "機能が洗い出せた後",
+          "a_zh": "功能梳理出来之后",
+          "a_en": "After the functions have been identified",
+          "b_jp": "詳細が決まる前の計画初期",
+          "b_zh": "细节确定前的规划初期",
+          "b_en": "Early planning, before details are fixed",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "類推見積法",
+      "b": "相対見積",
+      "rows": [
+        {
+          "label_jp": "比べる相手",
+          "label_zh": "比较对象",
+          "label_en": "What it compares against",
+          "a_jp": "過去の別の案件",
+          "a_zh": "以往的其他项目",
+          "a_en": "Other projects from the past",
+          "b_jp": "同じ開発の中の基準作業",
+          "b_zh": "同一开发中的基准任务",
+          "b_en": "A reference task within the same development",
+          "key": true
+        },
+        {
+          "label_jp": "主な使われ方",
+          "label_zh": "主要用法",
+          "label_en": "Main use",
+          "a_jp": "計画初期に全体のコストを概算する",
+          "a_zh": "在规划初期粗略估算整体成本",
+          "a_en": "Roughly estimating the overall cost early in planning",
+          "b_jp": "アジャイル開発で作業の大きさを互いに比べて見積もる",
+          "b_zh": "在敏捷开发中相互比较任务大小来估算",
+          "b_en": "Sizing tasks in agile development by comparing them with each other",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**ファンクションポイント法**は機能の量を点数にするため、プログラム言語の違いに左右されにくい。",
+    "**類推見積法**は計画初期の概算に向くが、似た前例が無い開発では根拠が弱くなる。",
+    "見積りは開発が進んで情報が増えるほど精度が上がる。",
+    "**工数**は、規模を生産性で割って求める。",
+    "**相対見積**は作業の大きさを時間でなく基準作業との比で表す。"
+  ],
+  "key_points_zh": [
+    "**功能点法**把功能量换算成点数，因此不太受编程语言差异的影响。",
+    "**类推估算法**适合规划初期的粗略估算，但对于没有相似先例的开发，依据会变得薄弱。",
+    "开发越推进、信息越多，估算的精度就越高。",
+    "**工作量**用规模除以生产率求得。",
+    "**相对估算**不用时间，而是用与基准任务的比值来表示任务大小。"
+  ],
+  "key_points_en": [
+    "**Function Point analysis** turns the amount of functionality into points, so differences in programming language affect it little.",
+    "**Analogy-based estimation** suits rough early-planning estimates, but its basis is weak for development with no similar precedent.",
+    "Estimates become more accurate as development progresses and more information becomes available.",
+    "**Effort** is found by dividing size by productivity.",
+    "**Relative estimation** expresses a task's size as a ratio to a reference task rather than in time."
+  ],
+  "overview": {
+    "intro_jp": "3 つの見積り手法を、何を基準に見積もるかで区別できる。見積りの精度が開発の進み具合でどう変わるかを説明できる。規模と生産性から工数を求められる。",
+    "intro_zh": "能根据“以什么为依据来估算”区分 3 种估算方法。能说明估算精度如何随开发进展而变化。能根据规模和生产率求出工作量。",
+    "intro_en": "Tell the three estimation methods apart by what each one bases its estimate on. Explain how estimation accuracy changes as development progresses. Work out effort from size and productivity.",
+    "freq_badge": "頻出",
+    "est_minutes": 20
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ファンクションポイント法: ファンクションポイント法といえば機能の数と複雑さで開発規模を算出",
-      "類推見積法: 類推見積法といえば過去の類似事例から見積もる",
-      "相対見積: 相対見積といえば基準作業との相対的な大きさで見積もる"
-    ],
     "key_points_jp": [
-      "見積りは予算・納期の根拠となる重要工程であり、本ユニットでは規模・工数を見積もる代表3手法を学ぶ。",
-      "ファンクションポイント法は機能の数と複雑さから規模を点数化する手法で、プログラムの行数で測る方法と区別する。",
-      "類推見積法は過去の類似事例の実績を基準に見積もる手法で、似た事例が無い新規開発では精度が下がる。",
-      "相対見積は絶対的な時間ではなく作業同士の相対的な大きさ(比)で見積もる、アジャイル文脈の手法である。",
-      "3手法は『機能から積み上げる』『過去事例から推定する』『作業同士を比べる』と見積りの基準が異なる点が要点。"
+      "ファンクションポイント法は機能の量を点数にするため、プログラム言語の違いに左右されにくい。",
+      "類推見積法は計画初期の概算に向くが、似た前例が無い開発では根拠が弱くなる。",
+      "見積りは開発が進んで情報が増えるほど精度が上がる。",
+      "工数は、規模を生産性で割って求める。",
+      "相対見積は作業の大きさを時間でなく基準作業との比で表す。"
     ],
     "key_points_zh": [
-      "估算是预算与交付期限的依据，是一道重要的工序；本单元学习用于估算规模、工时的三种代表性方法。",
-      "功能点法是根据功能的数量与复杂度把规模分数化的方法，要与用程序行数衡量的方法区分开。",
-      "类推估算法是以过去类似案例的实绩为基准来估算的方法，在没有相似案例的全新开发中精度会下降。",
-      "相对估算是不用绝对时间、而用作业彼此之间相对大小（比值）来估算的方法，属于敏捷语境下的手法。",
-      "这三种方法的要点在于估算基准不同：“从功能累加”“从过去案例推定”“把作业彼此相比较”。"
+      "功能点法把功能量换算成点数，因此不太受编程语言差异的影响。",
+      "类推估算法适合规划初期的粗略估算，但对于没有相似先例的开发，依据会变得薄弱。",
+      "开发越推进、信息越多，估算的精度就越高。",
+      "工作量用规模除以生产率求得。",
+      "相对估算不用时间，而是用与基准任务的比值来表示任务大小。"
     ],
     "key_points_en": [
-      "Estimation is a crucial process that serves as the basis for budgets and deadlines; this unit covers three representative methods for estimating size and effort.",
-      "The Function Point method scores size based on the number and complexity of functions; distinguish it from methods that measure by lines of code.",
-      "Analogy-based estimation estimates based on the actual results of similar past cases; its accuracy drops for brand-new development with no similar case.",
-      "Relative estimation estimates not by absolute time but by the relative size (ratio) of tasks against one another, a method in the agile context.",
-      "The key point is that the three methods differ in their basis for estimation: 'building up from functions,' 'inferring from past cases,' and 'comparing tasks against one another.'"
+      "Function Point analysis turns the amount of functionality into points, so differences in programming language affect it little.",
+      "Analogy-based estimation suits rough early-planning estimates, but its basis is weak for development with no similar precedent.",
+      "Estimates become more accurate as development progresses and more information becomes available.",
+      "Effort is found by dividing size by productivity.",
+      "Relative estimation expresses a task's size as a ratio to a reference task rather than in time."
+    ],
+    "memory_hooks_jp": [
+      "ファンクションポイント法: ファンクション = 機能。プログラムの関数ではなく、利用者から見える機能のまとまりを数える。",
+      "類推見積法: 「類」は似たもの、「推」はおしはかる。似た前例からおしはかる方法。",
+      "相対見積: 相対の反対は絶対。成績の相対評価と絶対評価と同じ対の言葉。"
     ],
     "memory_hooks_zh": [
-      "功能点法：说到功能点法，就是用功能的数量与复杂度来计算开发规模。",
-      "类推估算法：说到类推估算法，就是从过去的类似案例来估算。",
-      "相对估算：说到相对估算，就是用相对于基准作业的相对大小来估算。"
+      "功能点法：“Function”就是“功能”。数的不是程序里的函数，而是用户能看到的一组组功能。",
+      "类推估算法：“类”指相似的东西，“推”指推测。也就是从相似的先例推测出来的方法。",
+      "相对估算：“相对”的反面是“绝对”，和成绩的相对评价、绝对评价是同一对词。"
     ],
     "memory_hooks_en": [
-      "Function Point analysis: Function Point analysis → calculate development size from the number and complexity of functions.",
-      "Analogy-based estimation: Analogy-based estimation → estimate from similar past cases.",
-      "Relative estimation: Relative estimation → estimate by relative size against a baseline task."
+      "Function Point analysis (FP method): \"Function\" here means a feature, not a function in program code: you count the chunks of functionality users can see.",
+      "Analogy-based estimation: In the Japanese name, 類 means \"similar\" and 推 means \"infer\": the method infers from similar precedents.",
+      "Relative estimation: The opposite of relative is absolute, the same pair as grading on a curve versus grading against a fixed standard."
     ]
   },
   "challenge_questions": [
     "2024r06-q049",
-    "2026r08-q037",
     "2013h25h-q050",
-    "2017h29a-q040",
+    "2011h23tokubetsu-q052",
+    "2022r04-q050",
     "2019h31h-q053"
   ],
   "source_figures": [
@@ -155,9 +593,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "开发工时的估算",
-  "title_en": "Estimating Development Effort",
-  "unit_summary_zh": "学习功能点法、类推估算法、相对估算等用于估算开发规模与工时的代表性方法。",
-  "unit_summary_en": "Learn the representative methods for estimating development size and effort, including Function Point analysis, analogy-based estimation, and relative estimation."
+  }
 }

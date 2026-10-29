@@ -1,188 +1,792 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "management-08-25-u02",
   "topic_id": "management-08-25",
   "category": "management",
   "title_jp": "実装とレビュー",
+  "title_zh": "实现与评审",
+  "title_en": "Implementation and Review",
   "unit_summary_jp": "設計に基づくコーディングと、コード品質を担保するレビュー・デバッグ・内部構造検証を学ぶ。",
+  "unit_summary_zh": "学习基于设计的编码，以及保障代码质量的评审、调试和内部结构验证。",
+  "unit_summary_en": "Learn coding based on the design, along with the review, debugging, and internal-structure verification that ensure code quality.",
   "order_in_topic": 2,
   "prerequisites": [
     "management-08-25-u01"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、詳細設計をプログラムへ落とし込む「コーディング」と、コード品質を確かめる検証活動を学ぶ。レビューによる点検、デバッグによる欠陥修正、内部構造に着目したホワイトボックステストを『作って中身を検証する』流れとして理解する。頻出分野で工程と検証技法の関係がよく問われる。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，你将学习把详细设计落实为程序的“编码”，以及确认代码质量的验证活动。把通过评审进行的检查、通过调试进行的缺陷修复，以及着眼于内部结构的白盒测试，理解为“先做出来、再验证内部”的一连串流程。这是高频领域，常考查工序与验证技法之间的关系。",
-    "intro_en": "In this unit, you will learn \"coding,\" which turns the detailed design into a program, as well as the verification activities that confirm code quality. Understand inspection through review, defect fixing through debugging, and white-box testing that focuses on internal structure as a single flow of \"build it, then verify the inside.\" This is a frequently tested area, and the relationship between the development phases and the verification techniques is often asked about."
-  },
-  "terms": [
+  "goals_jp": [
+    "詳細設計からコーディング、単体テストへと進む工程の順序を説明できる。",
+    "コードレビューと共同レビューを、点検する対象と参加する人の違いで分けられる。",
+    "不具合を直すデバッグと、内部構造からテストケースを作るホワイトボックステストの役割を区別できる。"
+  ],
+  "goals_zh": [
+    "能够说明从详细设计到编码、再到单元测试的工序顺序。",
+    "能够从检查对象和参与人员两方面区分代码评审与联合评审。",
+    "能够区分修复缺陷的调试与依据内部结构设计测试用例的白盒测试各自的作用。"
+  ],
+  "goals_en": [
+    "Explain the order of the phases that run from detailed design through coding to unit testing.",
+    "Tell code review and joint review apart by what is inspected and who takes part.",
+    "Distinguish the role of debugging, which fixes defects, from that of white-box testing, which builds test cases from the internal structure."
+  ],
+  "overview_cols_jp": [
+    "行う時期",
+    "主に生まれるもの"
+  ],
+  "overview_cols_zh": [
+    "进行时机",
+    "主要产出"
+  ],
+  "overview_cols_en": [
+    "When it happens",
+    "Main output"
+  ],
+  "overview_rows": [
     {
       "term": "コーディング",
-      "definition_jp": "詳細設計に基づき、プログラミング言語を用いて実際のプログラム(ソースコード)を作成する作業。",
-      "explanation_jp": "コーディングは、詳細設計でまとめた処理手順やアルゴリズムを、プログラミング言語の文法に従って具体的なソースコードへ書き起こす実装工程です。設計を「作る」段階の起点にあたります。\n\n試験では、設計(何をどう作るかを決める)→コーディング(実際に書く)という順序関係が問われます。コーディング規約に従って読みやすく統一されたコードを書くと、後のレビューや保守がしやすくなる点も押さえましょう。",
-      "analogy_jp": "建築の設計図をもとに、大工が実際に木材を切り組み立てて家を建てる作業に似ています。図面(設計)を現実の形(コード)にする工程です。",
-      "memory_hook_jp": "コーディングといえば設計をソースコードに書き起こす実装作業",
-      "inline_quiz": [
-        "2009h21a-q033"
+      "one_line_jp": "詳細設計をプログラム言語で書き表し、誤りがないか確かめる作業",
+      "one_line_zh": "把详细设计用编程语言写出来，并确认其中没有错误的工作",
+      "one_line_en": "Writing the detailed design out in a programming language and checking it for errors",
+      "extra_jp": [
+        "ソフトウェア詳細設計の次",
+        "ソースコード"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "编码",
-      "term_en": "Coding",
-      "definition_zh": "依据详细设计，使用编程语言编写出实际程序（源代码）的工作。",
-      "definition_en": "The work of writing the actual program (source code) using a programming language, based on the detailed design.",
-      "explanation_zh": "编码是按照编程语言的语法，把在详细设计中梳理好的处理步骤和算法，具体地落笔写成源代码的实现工序。它处于“构建”设计这一阶段的起点。\n\n考试会考查这一顺序关系：设计（确定做什么、怎么做）→编码（实际写出来）。还要记住一点：按照编码规范写出可读且统一的代码，能让后续的评审和维护更轻松。",
-      "explanation_en": "Coding is the implementation phase in which you write out the processing steps and algorithms organized in the detailed design into concrete source code, following the grammar of a programming language. It sits at the starting point of the \"build it\" stage of design.\n\nThe exam tests the order relationship: design (deciding what to make and how) → coding (actually writing it). Also keep in mind that writing readable, consistent code according to coding conventions makes later review and maintenance easier.",
-      "analogy_zh": "就像木匠依照建筑图纸，实际切割木料、搭建组装，把房子盖起来。它是把图纸（设计）变成现实形态（代码）的工序。",
-      "analogy_en": "It is like a carpenter actually cutting and assembling timber to build a house from architectural blueprints. It is the process of turning the drawings (the design) into a real form (the code).",
-      "memory_hook_zh": "说到编码，就是把设计落笔写成源代码的实现工作",
-      "memory_hook_en": "Coding → the implementation work of writing the design out into source code"
+      "extra_zh": [
+        "紧接软件详细设计之后",
+        "源代码"
+      ],
+      "extra_en": [
+        "Right after software detailed design",
+        "Source code"
+      ]
     },
     {
       "term": "コードレビュー",
-      "definition_jp": "作成したソースコードを他者が点検し、誤りや改善点を早期に見つける検証活動。",
-      "explanation_jp": "コードレビューは、書き上げたソースコードを開発者本人以外の人が読み、バグ・規約違反・分かりにくい記述などを指摘する検証活動です。プログラムを実行しなくても机上で欠陥を見つけられるのが特徴です。\n\n試験では、テスト(実行して確認)と異なり、レビューは実行せずに点検する手法である点が問われます。欠陥を早い段階で発見できるほど修正費用が小さく済むという「早期発見の効果」も典型的な出題観点です。",
-      "analogy_jp": "書いた文章を提出前に同僚に読んでもらい、誤字や分かりにくい箇所を指摘してもらう校正のようなものです。自分では気づけない誤りが見つかります。",
-      "memory_hook_jp": "コードレビューといえば実行せずコードを他者が点検する検証",
-      "inline_quiz": [
-        "2010h22a-q091"
+      "one_line_jp": "ソースコードを実行せずに読んで点検する活動",
+      "one_line_zh": "不运行源代码、通过阅读来检查的活动",
+      "one_line_en": "Inspecting source code by reading it, without running it",
+      "extra_jp": [
+        "コードを書いた後",
+        "誤りや規約違反の指摘"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "代码评审",
-      "term_en": "Code Review",
-      "definition_zh": "由他人检查编写好的源代码，及早发现错误和可改进之处的验证活动。",
-      "definition_en": "A verification activity in which others inspect the written source code to find errors and points for improvement at an early stage.",
-      "explanation_zh": "代码评审是由开发者本人以外的人阅读写好的源代码，指出其中的缺陷、规范违例、难懂的写法等的验证活动。其特点是无需运行程序，在纸面上就能发现缺陷。\n\n考试会考查这一点：与测试（运行后确认）不同，评审是不运行就进行检查的方法。“越早发现缺陷，修复成本越低”这一“早期发现的效果”也是典型考点。",
-      "explanation_en": "Code review is a verification activity in which someone other than the developer reads the written source code and points out defects, convention violations, hard-to-understand expressions, and so on. Its characteristic is that defects can be found on paper without running the program.\n\nThe exam tests the point that, unlike testing (which confirms by running), review is a method of inspecting without execution. The \"effect of early detection\"—the earlier a defect is found, the lower the cost to fix it—is also a typical exam point.",
-      "analogy_zh": "就像写好的文章在提交前请同事帮忙阅读，指出错别字和难懂之处的校对。它能找出自己注意不到的错误。",
-      "analogy_en": "It is like having a colleague read your writing before you submit it, pointing out typos and hard-to-understand spots—a kind of proofreading. It finds errors you cannot notice on your own.",
-      "memory_hook_zh": "说到代码评审，就是不运行、由他人检查代码的验证",
-      "memory_hook_en": "Code Review → the verification where others inspect the code without running it"
+      "extra_zh": [
+        "代码写完之后",
+        "指出错误和规范违例"
+      ],
+      "extra_en": [
+        "After the code is written",
+        "Errors and convention violations pointed out"
+      ]
     },
     {
       "term": "共同レビュー",
-      "definition_jp": "開発者や関係者が集まり、成果物を共同で点検・評価して問題を洗い出す一般的なレビュー手法。",
-      "explanation_jp": "共同レビューは、開発者だけでなく利用者や関係者が一緒に成果物(設計書・コードなど)を確認し、合意を取りながら問題点を見つける活動です。共同レビューは関係者が共同で広範な成果物を評価するレビューで、コードレビューは対象をコードに絞ったレビューの一種です(両者は対象範囲が異なります)。\n\n試験では、関係者が参画して認識を合わせ、欠陥を早期に発見する点が問われます。代表的なレビュー技法としてウォークスルー(作成者主導で説明しながら確認)やインスペクション(役割を決めて公式に検証)といった手法名も押さえると有利です。",
-      "analogy_jp": "発表前にチーム全員で資料を読み合わせ、内容のミスや認識のズレをその場で出し合う合同チェック会のようなものです。",
-      "memory_hook_jp": "共同レビューといえば関係者が集まり成果物を点検する手法",
-      "inline_quiz": [
-        "2009h21a-q029"
+      "one_line_jp": "立場の違う関係者がそろって成果物を点検する活動",
+      "one_line_zh": "立场不同的相关方一起检查交付物的活动",
+      "one_line_en": "Stakeholders in different roles inspecting a work product together",
+      "extra_jp": [
+        "要件定義や設計など各工程",
+        "要求とのずれの発見と合意"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "联合评审",
-      "term_en": "Joint Review",
-      "definition_zh": "由开发者和相关方共同检查、评估交付物以查出问题的一般性评审方法。",
-      "definition_en": "A general review method in which developers and stakeholders together inspect and evaluate a work product to surface problems.",
-      "explanation_zh": "联合评审是不仅开发者，还包括用户和相关方一起确认交付物（设计书、代码等），在达成共识的同时查出问题点的活动。联合评审是相关方共同评估范围广泛的交付物的评审，而代码评审是把对象限定在代码上的评审之一（两者的对象范围不同）。\n\n考试会考查这一点：相关方参与进来对齐认识，从而及早发现缺陷。若能记住代表性的评审技法名称，如走查（由作者主导、边讲解边确认）和审查（明确分工、正式地验证），会更有优势。",
-      "explanation_en": "A joint review is an activity in which not only developers but also users and stakeholders confirm a work product (design documents, code, etc.) together, finding problems while reaching agreement. A joint review is a review where stakeholders jointly evaluate a broad range of work products, whereas a code review is one type of review whose target is narrowed down to code (the two differ in scope of target).\n\nThe exam tests the point that stakeholders take part to align understanding and thereby detect defects early. It is also advantageous to remember the names of representative review techniques, such as the walkthrough (the author leads and confirms while explaining) and the inspection (roles are assigned and verification is done formally).",
-      "analogy_zh": "就像演示前全队一起通读资料，当场把内容上的错误和认识上的偏差都摆出来的联合检查会。",
-      "analogy_en": "It is like a joint check meeting where the whole team reads through the materials together before a presentation, putting any content mistakes and gaps in understanding on the table right then and there.",
-      "memory_hook_zh": "说到联合评审，就是相关方聚在一起检查交付物的方法",
-      "memory_hook_en": "Joint Review → the method where stakeholders gather to inspect the work product"
+      "extra_zh": [
+        "需求定义、设计等各个工序",
+        "发现与需求的偏差并达成共识"
+      ],
+      "extra_en": [
+        "Each phase, such as requirements definition and design",
+        "Gaps from the requirements found and agreed on"
+      ]
     },
     {
       "term": "デバッグ",
-      "definition_jp": "プログラムに含まれる欠陥(バグ)の原因を特定し、修正する作業。",
-      "explanation_jp": "デバッグは、レビューやテストで見つかった不具合について、どこにどんな誤りがあるのか原因を突き止め、ソースコードを直す作業です。デバッガなどのツールを使って動きを追いながら原因箇所を絞り込みます。\n\n試験では、テストが『欠陥を見つける』活動であるのに対し、デバッグは『見つかった欠陥の原因を特定し直す』活動だという役割の違いが問われます。テストとデバッグはセットで品質を高める点を押さえましょう。",
-      "analogy_jp": "家電が動かないとき、原因の部品を探り当てて交換・修理する作業に似ています。「故障に気づく」のがテスト、「直す」のがデバッグです。",
-      "memory_hook_jp": "デバッグといえばバグの原因を特定して修正する作業",
-      "inline_quiz": [
-        "2011h23tokubetsu-q036"
+      "one_line_jp": "不具合の原因を突き止めて直す作業",
+      "one_line_zh": "查明缺陷原因并加以修正的工作",
+      "one_line_en": "Tracking down the cause of a defect and fixing it",
+      "extra_jp": [
+        "不具合が見つかった後",
+        "修正したプログラム"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "调试",
-      "term_en": "Debugging",
-      "definition_zh": "查明程序中所含缺陷（bug）的原因并加以修正的工作。",
-      "definition_en": "The work of identifying the cause of a defect (bug) contained in a program and fixing it.",
-      "explanation_zh": "调试是针对评审或测试中发现的故障，查明哪里有什么样的错误、定位其原因，并修改源代码的工作。它会借助调试器等工具追踪程序的运行，逐步缩小原因所在的范围。\n\n考试会考查这一角色差异：测试是“发现缺陷”的活动，而调试是“查明已发现缺陷的原因并修复”的活动。要记住，测试和调试成对配合来提升质量。",
-      "explanation_en": "Debugging is the work of, for a problem found in review or testing, pinning down where and what kind of error exists, locating its cause, and fixing the source code. Using tools such as a debugger, you follow the program's behavior to narrow down the location of the cause.\n\nThe exam tests this difference in roles: whereas testing is the activity of \"finding defects,\" debugging is the activity of \"identifying the cause of a found defect and fixing it.\" Keep in mind that testing and debugging work as a pair to raise quality.",
-      "analogy_zh": "就像家电不工作时，找出出问题的零件并加以更换、修理的工作。“察觉到故障”是测试，“把它修好”是调试。",
-      "analogy_en": "It is like, when an appliance does not work, tracking down the faulty part and replacing or repairing it. \"Noticing the breakdown\" is testing, and \"fixing it\" is debugging.",
-      "memory_hook_zh": "说到调试，就是查明 bug 原因并加以修正的工作",
-      "memory_hook_en": "Debugging → the work of identifying the cause of a bug and fixing it"
+      "extra_zh": [
+        "发现缺陷之后",
+        "修正后的程序"
+      ],
+      "extra_en": [
+        "After a defect is found",
+        "The corrected program"
+      ]
     },
     {
       "term": "ホワイトボックステスト",
-      "definition_jp": "プログラムの内部構造(処理の流れや分岐)に着目し、論理が正しく動くかを検証するテスト技法。",
-      "explanation_jp": "ホワイトボックステストは、プログラムの内部のロジック(条件分岐や繰り返しなどの処理の流れ)に注目し、すべての経路や分岐がきちんと通るかを確認するテスト技法です。主に単体テスト工程で、内部を理解している開発者が行います。\n\n試験では、内部構造を見ない「ブラックボックステスト」との対比が頻出です。網羅の度合いを測る基準として、命令網羅・分岐(判定)網羅などがあり、内部のすべての分岐を通すように設計する点が重要な出題観点です。",
-      "analogy_jp": "機械の内部を開けて、すべての歯車や配線が正しくつながり回るかを一つずつ確認する点検に似ています。外側からの動作確認ではなく中身を見ます。",
-      "memory_hook_jp": "ホワイトボックステストといえば内部構造に着目するテスト技法",
-      "inline_quiz": [
-        "2009h21h-q042",
-        "2009h21h-q053"
+      "one_line_jp": "内部構造を基にテストケースを作るテスト技法",
+      "one_line_zh": "依据内部结构设计测试用例的测试技法",
+      "one_line_en": "A test technique that builds test cases from the internal structure",
+      "extra_jp": [
+        "主に単体テスト",
+        "内部の経路を通した確認結果"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"内部構造を分析\"] --> B[\"分岐や経路を洗い出す\"]; B --> C[\"全経路を通すテスト設計\"]; C --> D[\"命令網羅や分岐網羅で確認\"]; D --> E[\"論理の誤りを検出\"]",
-        "svg_path": "figures/management-08-25-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "白盒测试",
-      "term_en": "White-Box Testing",
-      "definition_zh": "着眼于程序的内部结构（处理流程和分支），验证逻辑是否正确运行的测试技法。",
-      "definition_en": "A testing technique that focuses on the internal structure of a program (the processing flow and branches) to verify whether the logic operates correctly.",
-      "explanation_zh": "白盒测试是着眼于程序内部的逻辑（条件分支、循环等处理流程），确认所有路径和分支是否都能正确走通的测试技法。它主要在单元测试工序进行，由理解内部的开发者来执行。\n\n考试中，它与不看内部结构的“黑盒测试”的对比是高频考点。衡量覆盖程度的标准有语句覆盖、分支（判定）覆盖等，按照走通内部所有分支的方式来设计是重要的考查角度。",
-      "explanation_en": "White-box testing is a testing technique that focuses on the internal logic of a program (the processing flow, such as conditional branches and loops) and confirms whether all paths and branches are properly traversed. It is performed mainly in the unit testing phase, by developers who understand the internals.\n\nIn the exam, the contrast with \"black-box testing,\" which does not look at the internal structure, appears frequently. As criteria for measuring the degree of coverage, there are statement coverage, branch (decision) coverage, and so on, and designing so that all internal branches are traversed is an important exam angle.",
-      "analogy_zh": "就像打开机器内部，逐一确认所有齿轮和接线是否都正确连接并转动的检查。它不是从外部确认动作，而是查看内部。",
-      "analogy_en": "It is like opening up the inside of a machine and checking one by one whether all the gears and wiring are correctly connected and turning. Rather than confirming behavior from the outside, you look at the inside.",
-      "memory_hook_zh": "说到白盒测试，就是着眼于内部结构的测试技法",
-      "memory_hook_en": "White-Box Testing → the testing technique that focuses on the internal structure"
+      "extra_zh": [
+        "主要在单元测试中",
+        "走通内部路径的确认结果"
+      ],
+      "extra_en": [
+        "Mainly in unit testing",
+        "Results from running through internal paths"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "コーディング",
+      "term_zh": "编码",
+      "term_en": "Coding",
+      "one_jp": "**コーディング**は、詳細設計で決めた処理手順を**プログラム言語**の文法に沿って書き表し、**ソースコード**を作る作業で、**プログラミング**とも呼ばれる。",
+      "one_zh": "**编码**（[[jp:コーディング]]）是把详细设计中确定的处理步骤按照**编程语言**的语法写出来、形成**源代码**的工作，也叫**编程**（[[jp:プログラミング]]）。",
+      "one_en": "**Coding** ([[jp:コーディング]]) is the work of writing out the processing steps fixed in detailed design according to the grammar of a **programming language**, producing **source code**; it is also called **programming** ([[jp:プログラミング]]).",
+      "detail_jp": "詳細設計書に書かれた処理の流れやデータの扱いを1行ずつ命令に置き換え、書いた手順に誤りがないかを確かめるところまでがこの作業に含まれる。チームでは名前の付け方や字下げなどをそろえる**コーディング規約**を決めておき、だれが書いても読みやすいコードにする。読みやすいコードは、後のレビューや保守の手間を減らす。",
+      "detail_zh": "把详细设计书中写明的处理流程和数据处理方式逐行换成指令，并确认所写步骤没有错误，都属于这项工作。团队会事先制定统一命名方式、缩进等的**编码规范**（[[jp:コーディング規約]]），让任何人写出的代码都易于阅读。易读的代码能减少之后评审和维护的工夫。",
+      "detail_en": "The work covers turning the processing flow and data handling in the detailed design document into instructions line by line, and checking the written steps for errors. A team agrees in advance on **coding conventions** ([[jp:コーディング規約]]) for naming, indentation and the like, so that code stays easy to read no matter who wrote it. Readable code cuts the effort of later reviews and maintenance.",
+      "analogy_jp": "組立説明書を見ながら家具を組み上げる作業に近い。紙の上の寸法と手順を、実物の部材に置き換えていく。",
+      "analogy_zh": "就像对照组装说明书把家具组装起来。纸上的尺寸和步骤，被一步步换成实际的部件。",
+      "analogy_en": "It is like assembling furniture while following the instruction sheet. The dimensions and steps on paper are turned, one by one, into real parts.",
+      "hook_jp": "code は「符号」の意味。人の考えを機械が読める記号へ置き換える、と語から思い出す。",
+      "hook_zh": "code 意为“符号”。从词义联想：把人的想法换成机器能读懂的符号。",
+      "hook_en": "\"Code\" means a set of symbols: think of turning human ideas into symbols a machine can read.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "コーディングはソフトウェア詳細設計のすぐ後の工程であり、詳細設計書を受け取ったプログラマが担当する。",
+          "text_zh": "编码是紧接在软件详细设计（[[jp:ソフトウェア詳細設計]]）之后的工序，由拿到详细设计书的程序员负责。",
+          "text_en": "Coding is the phase that comes right after software detailed design ([[jp:ソフトウェア詳細設計]]), and the programmer who receives the detailed design document carries it out.",
+          "qids": [
+            "2012h24h-q032",
+            "2009h21a-q033",
+            "2013h25h-q042"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "コーディング (プログラミング) には、書いた処理手順に誤りがないかを確かめるところまでが含まれる。",
+          "text_zh": "编码（编程，[[jp:プログラミング]]）还包括确认所写处理步骤有无错误这一环节。",
+          "text_en": "Coding (programming, [[jp:プログラミング]]) also covers checking the written processing steps for errors.",
+          "qids": [
+            "2009h21h-q049"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "画面や帳票の項目を決めるのは外部設計の仕事であり、コーディングはすでに決まった仕様をコードにする段階である。",
+          "text_zh": "决定画面和报表上的项目属于外部设计（[[jp:外部設計]]）的工作，而编码是把已经确定的规格写成代码的阶段。",
+          "text_en": "Deciding the items on screens and printed forms is the job of external design ([[jp:外部設計]]); coding is the stage that turns an already settled specification into code.",
+          "qids": [
+            "2014h26h-q049"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "design",
+              "label": {
+                "jp": "詳細設計",
+                "zh": "详细设计",
+                "en": "Detailed design"
+              }
+            },
+            {
+              "id": "coding",
+              "label": {
+                "jp": "コーディング",
+                "zh": "编码",
+                "en": "Coding"
+              }
+            },
+            {
+              "id": "unit",
+              "label": {
+                "jp": "単体テスト",
+                "zh": "单元测试",
+                "en": "Unit testing"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "詳細設計で、プログラム1本ごとの仕様が決まる。",
+            "caption_zh": "在详细设计中，每个程序的规格被确定下来。",
+            "caption_en": "Detailed design fixes the specification of each individual program.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "その仕様を言語の文法どおりに書き表し、ソースコードに仕上げる。",
+            "caption_zh": "按语言的语法把该规格写出来，完成源代码。",
+            "caption_en": "That specification is written out in the language's grammar and finished as source code.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "できたプログラムを1本ずつ動かし、単体テストで確かめる。",
+            "caption_zh": "逐个运行写好的程序，用单元测试进行确认。",
+            "caption_en": "Each finished program is run on its own and checked in unit testing.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2012h24h-q032",
+        "2009h21a-q033",
+        "2009h21h-q049"
+      ],
+      "definition_jp": "コーディングは、詳細設計で決めた処理手順をプログラム言語の文法に沿って書き表し、ソースコードを作る作業で、プログラミングとも呼ばれる。",
+      "definition_zh": "编码（コーディング）是把详细设计中确定的处理步骤按照编程语言的语法写出来、形成源代码的工作，也叫编程（プログラミング）。",
+      "definition_en": "Coding (コーディング) is the work of writing out the processing steps fixed in detailed design according to the grammar of a programming language, producing source code; it is also called programming (プログラミング).",
+      "explanation_jp": "詳細設計書に書かれた処理の流れやデータの扱いを1行ずつ命令に置き換え、書いた手順に誤りがないかを確かめるところまでがこの作業に含まれる。チームでは名前の付け方や字下げなどをそろえるコーディング規約を決めておき、だれが書いても読みやすいコードにする。読みやすいコードは、後のレビューや保守の手間を減らす。",
+      "explanation_zh": "把详细设计书中写明的处理流程和数据处理方式逐行换成指令，并确认所写步骤没有错误，都属于这项工作。团队会事先制定统一命名方式、缩进等的编码规范（コーディング規約），让任何人写出的代码都易于阅读。易读的代码能减少之后评审和维护的工夫。",
+      "explanation_en": "The work covers turning the processing flow and data handling in the detailed design document into instructions line by line, and checking the written steps for errors. A team agrees in advance on coding conventions (コーディング規約) for naming, indentation and the like, so that code stays easy to read no matter who wrote it. Readable code cuts the effort of later reviews and maintenance.",
+      "memory_hook_jp": "code は「符号」の意味。人の考えを機械が読める記号へ置き換える、と語から思い出す。",
+      "memory_hook_zh": "code 意为“符号”。从词义联想：把人的想法换成机器能读懂的符号。",
+      "memory_hook_en": "\"Code\" means a set of symbols: think of turning human ideas into symbols a machine can read.",
+      "inline_quiz": [
+        "2012h24h-q032",
+        "2009h21a-q033",
+        "2009h21h-q049"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "コードレビュー",
+      "term_zh": "代码评审",
+      "term_en": "Code Review",
+      "one_jp": "**コードレビュー**は、書き上げたソースコードを**実行せずに**読み、誤りや**規約違反**、分かりにくい書き方を見つける点検である。",
+      "one_zh": "**代码评审**（[[jp:コードレビュー]]）是**不运行**写好的源代码、通过阅读找出错误、**规范违例**和难懂写法的检查。",
+      "one_en": "A **code review** ([[jp:コードレビュー]]) is a check in which finished source code is read **without being run**, to find errors, **convention violations** and hard-to-follow writing.",
+      "detail_jp": "書いた本人以外が読むことで、作成者が思い込みで見落とした誤りに気づきやすくなる。動かす前の段階で見つけた欠陥ほど直す範囲が狭く、手戻りの費用を小さく抑えられる。",
+      "detail_zh": "由作者以外的人来读，更容易发现作者因先入为主而漏看的错误。缺陷在运行前的阶段发现得越早，需要修改的范围就越小，返工成本也越低。",
+      "detail_en": "Having someone other than the author read the code makes it easier to catch errors the author missed through their own assumptions. The earlier a defect is found, before the code even runs, the narrower the fix and the lower the cost of rework.",
+      "analogy_jp": "提出前の原稿を同僚に読んでもらい、誤字や伝わりにくい箇所に赤を入れてもらう校正に近い。",
+      "analogy_zh": "就像提交前请同事读一遍原稿，用红笔标出错字和不好懂的地方的校对。",
+      "analogy_en": "It is like asking a colleague to read your draft before you hand it in and mark typos and unclear passages in red.",
+      "hook_jp": "review = re (もう一度) + view (見る)。書き上げたものを「見直す」と語の成り立ちで覚える。",
+      "hook_zh": "review = re（再一次）+ view（看）。从词的构成记住：把写好的东西“再看一遍”。",
+      "hook_en": "review = re (again) + view (look): the word itself says to look over finished work once more.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "コードレビューはコードを読むだけの静的な確認であり、プログラムを動かして結果を確かめるテストとは別の活動である。",
+          "text_zh": "代码评审是只阅读代码的静态确认，与运行程序、检查结果的测试是不同的活动。",
+          "text_en": "A code review is a static check that only reads the code, and it is a separate activity from testing, which runs the program and checks the results."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "コードレビューは、書き上げたソースコードを実行せずに読み、誤りや規約違反、分かりにくい書き方を見つける点検である。",
+      "definition_zh": "代码评审（コードレビュー）是不运行写好的源代码、通过阅读找出错误、规范违例和难懂写法的检查。",
+      "definition_en": "A code review (コードレビュー) is a check in which finished source code is read without being run, to find errors, convention violations and hard-to-follow writing.",
+      "explanation_jp": "書いた本人以外が読むことで、作成者が思い込みで見落とした誤りに気づきやすくなる。動かす前の段階で見つけた欠陥ほど直す範囲が狭く、手戻りの費用を小さく抑えられる。",
+      "explanation_zh": "由作者以外的人来读，更容易发现作者因先入为主而漏看的错误。缺陷在运行前的阶段发现得越早，需要修改的范围就越小，返工成本也越低。",
+      "explanation_en": "Having someone other than the author read the code makes it easier to catch errors the author missed through their own assumptions. The earlier a defect is found, before the code even runs, the narrower the fix and the lower the cost of rework.",
+      "memory_hook_jp": "review = re (もう一度) + view (見る)。書き上げたものを「見直す」と語の成り立ちで覚える。",
+      "memory_hook_zh": "review = re（再一次）+ view（看）。从词的构成记住：把写好的东西“再看一遍”。",
+      "memory_hook_en": "review = re (again) + view (look): the word itself says to look over finished work once more.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "共同レビュー",
+      "term_zh": "联合评审",
+      "term_en": "Joint Review",
+      "one_jp": "**共同レビュー**は、開発者と利用者など立場の異なる**関係者**がそろって成果物を確認し、内容が**要求に合っているか**を確かめて合意する活動である。",
+      "one_zh": "**联合评审**（[[jp:共同レビュー]]）是开发者和用户等立场不同的**相关方**一起确认交付物，检查内容是否**符合需求**并达成共识的活动。",
+      "one_en": "A **joint review** ([[jp:共同レビュー]]) is an activity in which **stakeholders** in different roles, such as developers and users, go over a work product together, check whether it **meets the requirements**, and reach agreement.",
+      "detail_jp": "点検する対象は、要件定義書や設計書など各工程で作られる成果物である。利用する側が加わることで、開発者だけでは気づきにくい要求との食い違いを見つけやすくなる。",
+      "detail_zh": "检查对象是需求定义书、设计书等各工序产出的交付物。有使用方参与，更容易发现仅靠开发者难以察觉的与需求不一致之处。",
+      "detail_en": "What gets inspected is the work product of each phase, such as the requirements definition document or a design document. With the user side taking part, it becomes easier to find mismatches with the requirements that developers alone would hardly notice.",
+      "analogy_jp": "家を建てる前に、施主と設計士が図面を一緒に広げ、間取りが希望どおりかを一部屋ずつ確かめる打合せに近い。",
+      "analogy_zh": "就像盖房子之前，业主和设计师一起摊开图纸，逐个房间确认格局是否符合期望的碰头会。",
+      "analogy_en": "It is like a meeting before a house is built, where the owner and the architect spread out the plans together and check room by room that the layout is what the owner wants.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "システム要件は開発者だけで決めるものではなく、利用する部門も加わって内容を一緒に点検する。",
+          "text_zh": "系统需求（[[jp:システム要件]]）不是由开发者单独决定的，使用部门也要参与进来，一起检查其内容。",
+          "text_en": "System requirements ([[jp:システム要件]]) are not decided by developers alone; the user department joins in and checks their content together with them.",
+          "qids": [
+            "2009h21a-q029"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "共同レビューは動くプログラムがなくても行え、設計書の段階で利用者の要求とのずれを確かめられる。",
+          "text_zh": "联合评审即使没有能运行的程序也可以进行，在设计书阶段就能确认与用户需求之间的偏差。",
+          "text_en": "A joint review can be held even without a working program, so gaps from user requirements can be checked while things are still at the design-document stage.",
+          "qids": [
+            "2019h31h-q051"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "レビューは成果物の品質を確かめる方法の一つであり、共同レビューはそのレビューの形の一つである。",
+          "text_zh": "评审是确认交付物质量的方法之一，联合评审是评审的一种形式。",
+          "text_en": "Review is one way to confirm the quality of a work product, and a joint review is one form of review.",
+          "qids": [
+            "2012h24a-q031"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2019h31h-q051",
+        "2009h21a-q029"
+      ],
+      "definition_jp": "共同レビューは、開発者と利用者など立場の異なる関係者がそろって成果物を確認し、内容が要求に合っているかを確かめて合意する活動である。",
+      "definition_zh": "联合评审（共同レビュー）是开发者和用户等立场不同的相关方一起确认交付物，检查内容是否符合需求并达成共识的活动。",
+      "definition_en": "A joint review (共同レビュー) is an activity in which stakeholders in different roles, such as developers and users, go over a work product together, check whether it meets the requirements, and reach agreement.",
+      "explanation_jp": "点検する対象は、要件定義書や設計書など各工程で作られる成果物である。利用する側が加わることで、開発者だけでは気づきにくい要求との食い違いを見つけやすくなる。",
+      "explanation_zh": "检查对象是需求定义书、设计书等各工序产出的交付物。有使用方参与，更容易发现仅靠开发者难以察觉的与需求不一致之处。",
+      "explanation_en": "What gets inspected is the work product of each phase, such as the requirements definition document or a design document. With the user side taking part, it becomes easier to find mismatches with the requirements that developers alone would hardly notice.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2019h31h-q051",
+        "2009h21a-q029"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "デバッグ",
+      "term_zh": "调试",
+      "term_en": "Debugging",
+      "one_jp": "**デバッグ**は、テストなどで見つかった不具合について、**原因の箇所を突き止め**てプログラムを**修正**する作業である。",
+      "one_zh": "**调试**（[[jp:デバッグ]]）是针对测试等发现的缺陷，**查明原因所在位置**并**修正**程序的工作。",
+      "one_en": "**Debugging** ([[jp:デバッグ]]) is the work of **pinpointing where the cause lies** for a defect found in testing or elsewhere and **fixing** the program.",
+      "detail_jp": "プログラムの動きを1行ずつ追ったり、途中の変数の値を表示したりして、誤りの場所を絞り込む。直した後は、修正した部分と、その影響が及ぶ部分をもう一度テストする。",
+      "detail_zh": "通过逐行跟踪程序的运行，或显示中途变量的值，来缩小错误所在的范围。修好之后，要对修改的部分和受其影响的部分再测试一遍。",
+      "detail_en": "You follow the program's behavior line by line, or display variable values partway through, to narrow down where the error is. After the fix, both the changed part and the parts it affects are tested again.",
+      "analogy_jp": "家の照明がつかないとき、電球、スイッチ、配線と順に調べて故障箇所を見つけ、そこを取り替える作業に近い。",
+      "analogy_zh": "就像家里的灯不亮时，依次检查灯泡、开关和线路，找到故障处后把它换掉。",
+      "analogy_en": "It is like a light at home that won't turn on: you check the bulb, the switch and the wiring in turn, find the faulty spot and replace it.",
+      "hook_jp": "bug は「虫」。de- (取り除く) を付けて、プログラムに入り込んだ虫を取り除くと語源から覚える。",
+      "hook_zh": "bug 是“虫子”。加上 de-（去除），从词源记住：把钻进程序里的虫子清除出去。",
+      "hook_en": "A bug is an insect; add de- (remove) and the word itself says to clear out the bugs that crept into the program.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "テスト担当者と開発者が分かれている場合、デバッグはプログラムを作った開発者側が受け持ち、テスト担当者は見つけた不具合を開発者へ伝える。",
+          "text_zh": "测试人员和开发者分工时，调试由编写程序的开发者一方负责，测试人员把发现的缺陷告知开发者。",
+          "text_en": "When testers and developers are separate, debugging falls to the developers who wrote the program, and testers report the defects they find to the developers.",
+          "qids": [
+            "2011h23tokubetsu-q036"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "見つけたバグの数 (バグ摘出数) は、プログラムの品質を測る指標の一つになる。",
+          "text_zh": "发现的缺陷（bug）数量（缺陷检出数，[[jp:バグ摘出数]]）是衡量程序质量的指标之一。",
+          "text_en": "The number of bugs found (the bug detection count, [[jp:バグ摘出数]]) is one indicator of program quality.",
+          "qids": [
+            "2017h29h-q038"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "found",
+              "label": {
+                "jp": "不具合の発見",
+                "zh": "发现缺陷",
+                "en": "Defect found"
+              }
+            },
+            {
+              "id": "locate",
+              "label": {
+                "jp": "原因箇所の特定",
+                "zh": "定位原因",
+                "en": "Cause located"
+              }
+            },
+            {
+              "id": "fix",
+              "label": {
+                "jp": "修正",
+                "zh": "修正",
+                "en": "Fix"
+              }
+            },
+            {
+              "id": "retest",
+              "label": {
+                "jp": "再テスト",
+                "zh": "重新测试",
+                "en": "Retest"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "期待した結果と違う動きが見つかる。",
+            "caption_zh": "发现了与预期结果不同的运行情况。",
+            "caption_en": "Behavior that differs from the expected result turns up.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "動きを追って、誤りのある行を絞り込む。",
+            "caption_zh": "追踪运行过程，缩小到有错误的那一行。",
+            "caption_en": "Tracing the behavior narrows things down to the line with the error.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "原因となった行を書き直す。",
+            "caption_zh": "改写造成问题的那一行。",
+            "caption_en": "The line that caused the problem is rewritten.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "直した部分と、その影響を受ける部分をもう一度テストする。",
+            "caption_zh": "对修改的部分及受其影响的部分再次进行测试。",
+            "caption_en": "The fixed part and the parts it affects are tested again.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2011h23tokubetsu-q036",
+        "2017h29h-q038"
+      ],
+      "definition_jp": "デバッグは、テストなどで見つかった不具合について、原因の箇所を突き止めてプログラムを修正する作業である。",
+      "definition_zh": "调试（デバッグ）是针对测试等发现的缺陷，查明原因所在位置并修正程序的工作。",
+      "definition_en": "Debugging (デバッグ) is the work of pinpointing where the cause lies for a defect found in testing or elsewhere and fixing the program.",
+      "explanation_jp": "プログラムの動きを1行ずつ追ったり、途中の変数の値を表示したりして、誤りの場所を絞り込む。直した後は、修正した部分と、その影響が及ぶ部分をもう一度テストする。",
+      "explanation_zh": "通过逐行跟踪程序的运行，或显示中途变量的值，来缩小错误所在的范围。修好之后，要对修改的部分和受其影响的部分再测试一遍。",
+      "explanation_en": "You follow the program's behavior line by line, or display variable values partway through, to narrow down where the error is. After the fix, both the changed part and the parts it affects are tested again.",
+      "memory_hook_jp": "bug は「虫」。de- (取り除く) を付けて、プログラムに入り込んだ虫を取り除くと語源から覚える。",
+      "memory_hook_zh": "bug 是“虫子”。加上 de-（去除），从词源记住：把钻进程序里的虫子清除出去。",
+      "memory_hook_en": "A bug is an insect; add de- (remove) and the word itself says to clear out the bugs that crept into the program.",
+      "inline_quiz": [
+        "2011h23tokubetsu-q036",
+        "2017h29h-q038"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ホワイトボックステスト",
+      "term_zh": "白盒测试",
+      "term_en": "White-Box Testing",
+      "one_jp": "**ホワイトボックステスト**は、プログラムの**内部構造** (命令の並びや分岐) を見ながらテストケースを作る技法で、主に**単体テスト**で使われる。",
+      "one_zh": "**白盒测试**（[[jp:ホワイトボックステスト]]）是一边查看程序的**内部结构**（指令的排列和分支）一边设计测试用例的技法，主要用于**单元测试**。",
+      "one_en": "**White-box testing** ([[jp:ホワイトボックステスト]]) is a technique for designing test cases while looking at a program's **internal structure** (the sequence of instructions and its branches), used mainly in **unit testing**.",
+      "detail_jp": "テストケースは、内部の経路をどこまで通すかという**網羅の基準**に沿って作る。例えば、どの命令も最低1度は実行させるのが**命令網羅**、各分岐で真と偽の両方を最低1度は通すのが**分岐網羅**である。",
+      "detail_zh": "测试用例要按照内部路径需走通到什么程度的**覆盖标准**（[[jp:網羅の基準]]）来设计。例如，让每条指令至少执行一次的是**语句覆盖**（[[jp:命令網羅]]），让每个分支的真和假都至少走一次的是**分支覆盖**（[[jp:分岐網羅]]）。",
+      "detail_en": "Test cases are built according to a **coverage criterion** ([[jp:網羅の基準]]), which says how far the internal paths must be exercised. For example, running every instruction at least once is **statement coverage** ([[jp:命令網羅]]), and taking both the true and the false outcome of every branch at least once is **branch coverage** ([[jp:分岐網羅]]).",
+      "analogy_jp": "迷路の地図を見ながら、確かめたい分かれ道を選んで実際に歩き、行き止まりや間違った出口がないかを調べる作業に近い。",
+      "analogy_zh": "就像拿着迷宫地图，挑出想确认的岔路实际走一遍，检查有没有死胡同或错误的出口。",
+      "analogy_en": "It is like holding a map of a maze, picking the forks you want to check and actually walking them to see whether any lead to a dead end or the wrong exit.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ホワイトボックステストは主に単体テストで活用され、プログラム内部の経路を網羅的に確かめる。",
+          "text_zh": "白盒测试主要用于单元测试（[[jp:単体テスト]]），全面地确认程序内部的路径。",
+          "text_en": "White-box testing is used mainly in unit testing ([[jp:単体テスト]]) and checks the paths inside a program comprehensively.",
+          "qids": [
+            "2018h30a-q044",
+            "2023r05-q042",
+            "2010h22h-q047"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "内部構造を分析してテストケースを決める作業は、ホワイトボックステストにあたる。",
+          "text_zh": "分析内部结构来确定测试用例的工作，就属于白盒测试。",
+          "text_en": "Analyzing the internal structure to decide on test cases is white-box testing.",
+          "qids": [
+            "2012h24a-q046",
+            "2014h26h-q034"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "内部を見ずに入力と出力だけで仕様どおりかを確かめる技法はブラックボックステストと呼び、分岐や命令をすべて通すデータの選び方はこちらには含まれない。",
+          "text_zh": "不看内部、只根据输入和输出确认是否符合规格的技法称为黑盒测试（[[jp:ブラックボックステスト]]），挑选让所有分支和指令都走通的数据不属于该技法。",
+          "text_en": "The technique that checks conformance to the specification from inputs and outputs alone, without looking inside, is called black-box testing ([[jp:ブラックボックステスト]]); choosing data so that every branch and instruction is run is not part of it.",
+          "qids": [
+            "2014h26h-q035",
+            "2022r04-q045",
+            "2013h25h-q037"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "read",
+              "label": {
+                "jp": "内部構造を読む",
+                "zh": "阅读内部结构",
+                "en": "Read the internal structure"
+              }
+            },
+            {
+              "id": "goal",
+              "label": {
+                "jp": "通す経路を決める",
+                "zh": "确定要走通的路径",
+                "en": "Choose paths to run"
+              }
+            },
+            {
+              "id": "data",
+              "label": {
+                "jp": "テストデータを作る",
+                "zh": "准备测试数据",
+                "en": "Prepare test data"
+              }
+            },
+            {
+              "id": "run",
+              "label": {
+                "jp": "実行して確認",
+                "zh": "运行并确认",
+                "en": "Run and check"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ソースコードや流れ図から、処理の順序と分かれ道を読み取る。",
+            "caption_zh": "从源代码或流程图中读出处理顺序和分岔点。",
+            "caption_en": "Read the order of processing and its forks from the source code or flowchart.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "どの命令や分岐まで通すかという目標 (網羅の基準) を決める。",
+            "caption_zh": "确定要走通到哪些指令或分支的目标（覆盖标准）。",
+            "caption_en": "Set the target for which instructions or branches to run through (the coverage criterion).",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "目標の経路を通るような入力データを用意する。",
+            "caption_zh": "准备能走通目标路径的输入数据。",
+            "caption_en": "Prepare input data that will follow the target paths.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "実行し、期待した結果と一致するかを確かめる。",
+            "caption_zh": "运行，确认结果是否与预期一致。",
+            "caption_en": "Run it and check that the results match what was expected.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2012h24a-q046",
+        "2013h25h-q037",
+        "2018h30a-q044"
+      ],
+      "definition_jp": "ホワイトボックステストは、プログラムの内部構造 (命令の並びや分岐) を見ながらテストケースを作る技法で、主に単体テストで使われる。",
+      "definition_zh": "白盒测试（ホワイトボックステスト）是一边查看程序的内部结构（指令的排列和分支）一边设计测试用例的技法，主要用于单元测试。",
+      "definition_en": "White-box testing (ホワイトボックステスト) is a technique for designing test cases while looking at a program's internal structure (the sequence of instructions and its branches), used mainly in unit testing.",
+      "explanation_jp": "テストケースは、内部の経路をどこまで通すかという網羅の基準に沿って作る。例えば、どの命令も最低1度は実行させるのが命令網羅、各分岐で真と偽の両方を最低1度は通すのが分岐網羅である。",
+      "explanation_zh": "测试用例要按照内部路径需走通到什么程度的覆盖标准（網羅の基準）来设计。例如，让每条指令至少执行一次的是语句覆盖（命令網羅），让每个分支的真和假都至少走一次的是分支覆盖（分岐網羅）。",
+      "explanation_en": "Test cases are built according to a coverage criterion (網羅の基準), which says how far the internal paths must be exercised. For example, running every instruction at least once is statement coverage (命令網羅), and taking both the true and the false outcome of every branch at least once is branch coverage (分岐網羅).",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2012h24a-q046",
+        "2013h25h-q037",
+        "2018h30a-q044"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "コードレビュー",
+      "b": "共同レビュー",
+      "rows": [
+        {
+          "label_jp": "点検する対象",
+          "label_zh": "检查对象",
+          "label_en": "What is inspected",
+          "a_jp": "ソースコード",
+          "a_zh": "源代码",
+          "a_en": "Source code",
+          "b_jp": "設計書やコードなど各工程の成果物",
+          "b_zh": "设计书、代码等各工序的交付物",
+          "b_en": "Work products of each phase, such as design documents and code",
+          "key": false
+        },
+        {
+          "label_jp": "参加する人",
+          "label_zh": "参与人员",
+          "label_en": "Who takes part",
+          "a_jp": "主に開発者どうし",
+          "a_zh": "主要是开发者之间",
+          "a_en": "Mainly developers among themselves",
+          "b_jp": "利用者と開発者など立場の異なる関係者",
+          "b_zh": "用户与开发者等立场不同的相关方",
+          "b_en": "Stakeholders in different roles, such as users and developers",
+          "key": true
+        },
+        {
+          "label_jp": "ねらい",
+          "label_zh": "目的",
+          "label_en": "Aim",
+          "a_jp": "コードの誤りや規約違反を見つける",
+          "a_zh": "找出代码中的错误和规范违例",
+          "a_en": "Find errors and convention violations in the code",
+          "b_jp": "要求に合っているかを確かめて合意する",
+          "b_zh": "确认是否符合需求并达成共识",
+          "b_en": "Check fit with the requirements and reach agreement",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "デバッグ",
+      "b": "ホワイトボックステスト",
+      "rows": [
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "見つかった不具合の原因を突き止めて直す",
+          "a_zh": "查明已发现缺陷的原因并修复",
+          "a_en": "Find the cause of a defect already found and fix it",
+          "b_jp": "内部構造を手がかりに不具合を見つけ出す",
+          "b_zh": "以内部结构为线索找出缺陷",
+          "b_en": "Find defects using the internal structure as a guide",
+          "key": true
+        },
+        {
+          "label_jp": "作業の中心",
+          "label_zh": "工作重心",
+          "label_en": "Core activity",
+          "a_jp": "プログラムの修正",
+          "a_zh": "修改程序",
+          "a_en": "Fixing the program",
+          "b_jp": "テストケースの作成と実行",
+          "b_zh": "设计并执行测试用例",
+          "b_en": "Creating and running test cases",
+          "key": false
+        },
+        {
+          "label_jp": "行う時期",
+          "label_zh": "进行时机",
+          "label_en": "When",
+          "a_jp": "不具合が見つかった後",
+          "a_zh": "发现缺陷之后",
+          "a_en": "After a defect is found",
+          "b_jp": "コーディングの後、主に単体テスト",
+          "b_zh": "编码之后，主要在单元测试中",
+          "b_en": "After coding, mainly in unit testing",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "開発は詳細設計からコーディング、単体テストへと進み、詳細設計書がコーディングの出発点になる。",
+    "レビューで欠陥を早い工程のうちに見つけるほど、直す範囲が狭く費用も小さく済む。",
+    "テストで見つかった不具合の数は、プログラムの品質を測る指標の一つになる。",
+    "ホワイトボックステストは内部構造を基にテストケースを作る技法で、主に単体テストで使われる。"
+  ],
+  "key_points_zh": [
+    "开发从详细设计推进到编码，再到单元测试，详细设计书是编码的起点。",
+    "通过评审越早发现缺陷，需要修改的范围就越小，成本也越低。",
+    "测试中发现的缺陷数量是衡量程序质量的指标之一。",
+    "白盒测试是依据内部结构设计测试用例的技法，主要用于单元测试。"
+  ],
+  "key_points_en": [
+    "Development moves from detailed design to coding and then to unit testing, and the detailed design document is where coding starts.",
+    "The earlier a review catches a defect, the narrower the fix and the lower its cost.",
+    "The number of defects found in testing is one indicator of program quality.",
+    "White-box testing is a technique that builds test cases from the internal structure and is used mainly in unit testing."
+  ],
+  "overview": {
+    "intro_jp": "詳細設計からコーディング、単体テストへと進む工程の順序を説明できる。コードレビューと共同レビューを、点検する対象と参加する人の違いで分けられる。不具合を直すデバッグと、内部構造からテストケースを作るホワイトボックステストの役割を区別できる。",
+    "intro_zh": "能够说明从详细设计到编码、再到单元测试的工序顺序。能够从检查对象和参与人员两方面区分代码评审与联合评审。能够区分修复缺陷的调试与依据内部结构设计测试用例的白盒测试各自的作用。",
+    "intro_en": "Explain the order of the phases that run from detailed design through coding to unit testing. Tell code review and joint review apart by what is inspected and who takes part. Distinguish the role of debugging, which fixes defects, from that of white-box testing, which builds test cases from the internal structure.",
+    "freq_badge": "頻出",
+    "est_minutes": 29
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "コーディング: コーディングといえば設計をソースコードに書き起こす実装作業",
-      "コードレビュー: コードレビューといえば実行せずコードを他者が点検する検証",
-      "共同レビュー: 共同レビューといえば関係者が集まり成果物を点検する手法",
-      "デバッグ: デバッグといえばバグの原因を特定して修正する作業",
-      "ホワイトボックステスト: ホワイトボックステストといえば内部構造に着目するテスト技法"
-    ],
     "key_points_jp": [
-      "コーディングは詳細設計を受けてソースコードを作成する実装工程の起点である。",
-      "レビュー(コードレビュー・共同レビュー)は、プログラムを実行せずに成果物を点検し欠陥を早期発見する検証活動である。",
-      "コードレビューは対象をコードに絞ったレビュー、共同レビューは関係者が成果物全般を共同で点検するレビューで、対象範囲が異なる。",
-      "テストは欠陥を『見つける』活動、デバッグはその欠陥の原因を『特定し修正する』活動という役割の違いを押さえる。",
-      "ホワイトボックステストは内部構造(分岐・経路)に着目する技法で、外部仕様に着目するブラックボックステストと対比される。"
+      "開発は詳細設計からコーディング、単体テストへと進み、詳細設計書がコーディングの出発点になる。",
+      "レビューで欠陥を早い工程のうちに見つけるほど、直す範囲が狭く費用も小さく済む。",
+      "テストで見つかった不具合の数は、プログラムの品質を測る指標の一つになる。",
+      "ホワイトボックステストは内部構造を基にテストケースを作る技法で、主に単体テストで使われる。"
     ],
     "key_points_zh": [
-      "编码是承接详细设计、编写出源代码的实现工序的起点。",
-      "评审（代码评审、联合评审）是不运行程序、检查交付物以及早发现缺陷的验证活动。",
-      "代码评审是把对象限定在代码上的评审，联合评审是相关方共同检查交付物全局的评审，二者的对象范围不同。",
-      "要把握这一角色差异：测试是“发现”缺陷的活动，调试是“查明该缺陷的原因并修复”的活动。",
-      "白盒测试是着眼于内部结构（分支、路径）的技法，与着眼于外部规格的黑盒测试相对照。"
+      "开发从详细设计推进到编码，再到单元测试，详细设计书是编码的起点。",
+      "通过评审越早发现缺陷，需要修改的范围就越小，成本也越低。",
+      "测试中发现的缺陷数量是衡量程序质量的指标之一。",
+      "白盒测试是依据内部结构设计测试用例的技法，主要用于单元测试。"
     ],
     "key_points_en": [
-      "Coding is the starting point of the implementation phase, which takes the detailed design and produces source code.",
-      "Review (code review and joint review) is a verification activity that inspects work products without running the program, finding defects early.",
-      "A code review is a review whose target is narrowed to code, while a joint review is one where stakeholders jointly inspect work products as a whole; the two differ in scope of target.",
-      "Grasp this difference in roles: testing is the activity of \"finding\" defects, while debugging is the activity of \"identifying the cause of that defect and fixing it.\"",
-      "White-box testing is a technique that focuses on the internal structure (branches and paths), contrasted with black-box testing, which focuses on the external specifications."
+      "Development moves from detailed design to coding and then to unit testing, and the detailed design document is where coding starts.",
+      "The earlier a review catches a defect, the narrower the fix and the lower its cost.",
+      "The number of defects found in testing is one indicator of program quality.",
+      "White-box testing is a technique that builds test cases from the internal structure and is used mainly in unit testing."
+    ],
+    "memory_hooks_jp": [
+      "コーディング: code は「符号」の意味。人の考えを機械が読める記号へ置き換える、と語から思い出す。",
+      "コードレビュー: review = re (もう一度) + view (見る)。書き上げたものを「見直す」と語の成り立ちで覚える。",
+      "デバッグ: bug は「虫」。de- (取り除く) を付けて、プログラムに入り込んだ虫を取り除くと語源から覚える。"
     ],
     "memory_hooks_zh": [
-      "编码：说到编码，就是把设计落笔写成源代码的实现工作",
-      "代码评审：说到代码评审，就是不运行、由他人检查代码的验证",
-      "联合评审：说到联合评审，就是相关方聚在一起检查交付物的方法",
-      "调试：说到调试，就是查明 bug 原因并加以修正的工作",
-      "白盒测试：说到白盒测试，就是着眼于内部结构的测试技法"
+      "编码：code 意为“符号”。从词义联想：把人的想法换成机器能读懂的符号。",
+      "代码评审：review = re（再一次）+ view（看）。从词的构成记住：把写好的东西“再看一遍”。",
+      "调试：bug 是“虫子”。加上 de-（去除），从词源记住：把钻进程序里的虫子清除出去。"
     ],
     "memory_hooks_en": [
-      "Coding: Coding → the implementation work of writing the design out into source code",
-      "Code Review: Code Review → the verification where others inspect the code without running it",
-      "Joint Review: Joint Review → the method where stakeholders gather to inspect the work product",
-      "Debugging: Debugging → the work of identifying the cause of a bug and fixing it",
-      "White-Box Testing: White-Box Testing → the testing technique that focuses on the internal structure"
+      "Coding: \"Code\" means a set of symbols: think of turning human ideas into symbols a machine can read.",
+      "Code Review: review = re (again) + view (look): the word itself says to look over finished work once more.",
+      "Debugging: A bug is an insect; add de- (remove) and the word itself says to clear out the bugs that crept into the program."
     ]
   },
   "challenge_questions": [
-    "2010h22h-q034",
-    "2012h24h-q032",
-    "2019h31h-q051",
-    "2009h21h-q049",
-    "2012h24a-q046"
+    "2013h25h-q042",
+    "2014h26h-q034",
+    "2023r05-q042",
+    "2012h24a-q031"
   ],
   "source_figures": [
     {
@@ -198,9 +802,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "实现与评审",
-  "title_en": "Implementation and Review",
-  "unit_summary_zh": "学习基于设计的编码，以及保障代码质量的评审、调试和内部结构验证。",
-  "unit_summary_en": "Learn coding based on the design, along with the review, debugging, and internal-structure verification that ensure code quality."
+  }
 }

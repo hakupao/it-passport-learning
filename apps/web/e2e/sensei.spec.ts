@@ -987,7 +987,7 @@ test("term page: 「AI 先生に聞く」 sends every sense of the term; no AI S
   for (const s of senses) {
     expect(system).toContain(s.definition_jp);
     expect(system).toContain(s.explanation_jp);
-    expect(system).toContain(s.memory_hook_jp);
+    if (s.memory_hook_jp) expect(system).toContain(s.memory_hook_jp); // a v2 term may have no hook ("")
     if (s.analogy_jp) expect(system).not.toContain(s.analogy_jp); // a v2 term may have no analogy ("")
     expect(system).not.toContain(s.definition_en);
   }
@@ -1159,7 +1159,9 @@ test("free question: no AI SDK before focus; matched definitions in the anchor; 
   expect(senses).toHaveLength(2);
   // 2 terms (≤ 3): each sense carries its explanation and memory hook too
   const jpSense = ({ titleJp, t }: { titleJp: string; t: CorpusTerm }) =>
-    `単元「${titleJp}」\n定義（日本語原文）: ${t.definition_jp}\n解説（日本語原文）: ${t.explanation_jp}\n覚え方（日本語原文）: ${t.memory_hook_jp}`;
+    `単元「${titleJp}」\n定義（日本語原文）: ${t.definition_jp}\n解説（日本語原文）: ${t.explanation_jp}` +
+    // v2 units may leave the memory hook empty; the anchor then has no 覚え方 line
+    (t.memory_hook_jp ? `\n覚え方（日本語原文）: ${t.memory_hook_jp}` : "");
   for (const sense of senses) expect(first).toContain(jpSense(sense));
   const iso = corpusSenseUnits(ISO_TERM);
   expect(iso).toHaveLength(1);
@@ -1312,8 +1314,9 @@ test("free question (zh): a later sense's zh spelling matches; every sense with 
         `定義（簡体字中国語）: ${t.definition_zh}`,
         `解説（日本語原文）: ${t.explanation_jp}`,
         `解説（簡体字中国語）: ${t.explanation_zh}`,
-        `覚え方（日本語原文）: ${t.memory_hook_jp}`,
-        `覚え方（簡体字中国語）: ${t.memory_hook_zh}`,
+        // v2 units may leave the memory hook empty; the anchor then has no 覚え方 lines
+        ...(t.memory_hook_jp ? [`覚え方（日本語原文）: ${t.memory_hook_jp}`] : []),
+        ...(t.memory_hook_zh ? [`覚え方（簡体字中国語）: ${t.memory_hook_zh}`] : []),
       ].join("\n"),
     );
   }
