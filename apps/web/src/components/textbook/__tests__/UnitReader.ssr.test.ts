@@ -337,8 +337,8 @@ describe("UnitReader v2 (SSR, D-196 §0-9 / D-195)", () => {
     expect(count(table.match(/<tbody[\s\S]*?<\/tbody>/)![0], /<tr/g)).toBe(V2.terms.length);
   });
 
-  it("term table: every body cell carries its column header as data-label (the phone layout prints it)", async () => {
-    const out = await renderV2("zh");
+  it.each(["ja", "zh", "en"] as const)("term table /%s: every body cell carries its column header as data-label (the phone layout prints it)", async (loc) => {
+    const out = await renderV2(loc);
     const table = out.match(/<details[^>]*data-part="overview"[\s\S]*?<\/details>/)![0];
     const heads = [...table.match(/<thead[\s\S]*?<\/thead>/)![0].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map((m) => m[1]);
     const rows = [...table.match(/<tbody[\s\S]*?<\/tbody>/)![0].matchAll(/<tr[\s\S]*?<\/tr>/g)].map((m) => m[0]);
