@@ -127,12 +127,15 @@ const FRAMING = '考点の試験枠表現の上限 (第 1 批の教訓): 考点�
 const zhTermsOf = (unit) => `${dirOf(unit)}/zh_terms.unit.json`
 const ZH_TERMS = (unit) => `zh 訳語表 (B6): \`${zhTermsOf(unit)}\` (この単元に関係する項目だけ) を Read する。日本語の語がその見出し語としての専門的な意味で使われているときだけ表の zh を使い、日常語・別の意味で使われているときは意味に合わせて訳す (例: 一般的な「項目」「手続」)。validate が \`warn zh-term\` 行を出したら、専門的な意味で使っている箇所は表の訳に直す (warn は不合格ではない。文脈上ほかの訳が正しいなら残してよい)。`
 
+// D-203 (S137 b02 u06 / u07: each revision fixed the flagged items and introduced new ones elsewhere, once a high)
+const REVISE_GUARD = `3. 直し方 (D-203、改稿で新しい誤りを生まない): (a) 指摘の修正は**削除・絞り込みを優先**し、新しい概括句を足さない。足した句・書き換えた文は、事実 (引用題の正解) と同じ単元の他の欄 (one / detail / points / pairs / overview / goals) に照らして読み直す。(b) 書き終えたら単元の対比 (「A は〜、B は〜」) ごとに出てくる欄を列挙し、pairs と mix 考点以外に出ていれば削る。(c) 比喩に用語自身の操作 (暗号化する・署名する 等) を入れない。定義の言い換えにしかならないなら analogy_jp は "" にする。\n`
+
 function writerPrompt(unit, round, prev, review, seed) {
   const part = partOf(unit, 'jp', round)
   const revise = seed
-    ? `\n## 改稿 (round ${round}: 前回 run の草稿を種にする)\n1. まず \`${seedCmd(seed)}\` を実行する。種 \`${seed.part}\` の sha256 (\`seed_sha256 <hex>\` 行) と、その草稿そのものを審査した jp-review #${seed.reviewRound} の指摘 (JSON) が出る。**exit が 0 でなければ** part を書かずに StructuredOutput で part:"${SEED_ERROR}" を返して終わる (seed_part / seed_review_round は指定値、他の数値は 0、文字列は空)。\n2. 種を Read し、その指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。指摘されていない箇所も、下の「書き方」に反していれば直す。\n`
+    ? `\n## 改稿 (round ${round}: 前回 run の草稿を種にする)\n1. まず \`${seedCmd(seed)}\` を実行する。種 \`${seed.part}\` の sha256 (\`seed_sha256 <hex>\` 行) と、その草稿そのものを審査した jp-review #${seed.reviewRound} の指摘 (JSON) が出る。**exit が 0 でなければ** part を書かずに StructuredOutput で part:"${SEED_ERROR}" を返して終わる (seed_part / seed_review_round は指定値、他の数値は 0、文字列は空)。\n2. 種を Read し、その指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。指摘されていない箇所も、下の「書き方」に反していれば直す。\n${REVISE_GUARD}`
     : prev
-      ? `\n## 改稿 (round ${round})\n前稿 \`${prev}\` を Read し、下の審査指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。指摘されていない箇所も、下の「書き方」に反していれば直す。\n\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
+      ? `\n## 改稿 (round ${round})\n前稿 \`${prev}\` を Read し、下の審査指摘の high / medium を**全部**直した版を書く (D-199: low は直さなくてもよい。直すなら新しい high / medium を生まないこと)。指摘されていない箇所も、下の「書き方」に反していれば直す。\n${REVISE_GUARD}\`\`\`json\n${JSON.stringify(review.issues, null, 1)}\n\`\`\`\n`
       : ''
   return `あなたは IT パスポート試験の教科書執筆者です。単元 \`${unit}\` を D-195 の規則で**日本語で**書き直します (zh / en は後工程で意訳する。あなたは日本語だけ)。
 
@@ -178,13 +181,13 @@ function reviewPrompt(unit, round, part, partRound) {
 
 ## 審査観点
 1. **事実**: 定義・説明・考点・図 (数値、工期、因果、分類) が topic.objective_jp と関連過去問の正解に照らして正しいか。網羅的な言い切り (「〜は A と B である」「必ず〜」) が引用題すべてに支持されているか。図の caption が考点・本文と一致するか。exam 考点の qids の題が本当にその点を問うているか。quiz / challenge_questions の題がその用語・単元に合っているか。
-2. **D-195 清單**: §1 一句話 1 文 + 太字キーワード / 展開 2〜3 文 / §2 図の選び方 (過程→段階図、量・計算→操作部品、その他→静的、別名だけの用語は図なし、飾りの図は不可) / §3 学習目標 + 総表 / §4 易混対比は 2 つ目の直後 / §5 強調 4 種 / §6 比喩・記法が定義の言い換えでない / §7 要点 3〜5 / §9 禁止事項 (定型の締め句、言い換えの反復、羅列、誇張) / ${D200} 超過は medium。/ ${FRAMING} 上限内でも、事実を言わず出題のされ方だけを述べる考点は medium。
+2. **D-195 清單**: §1 一句話 1 文 + 太字キーワード / 展開 2〜3 文 / §2 図の選び方 (過程→段階図、量・計算→操作部品、その他→静的、別名だけの用語は図なし、飾りの図は不可) / §3 学習目標 + 総表 / §4 易混対比は 2 つ目の直後 / §5 強調 4 種 / §6 比喩・記法が定義の言い換えでない / §7 要点 3〜5 / §9 禁止事項 (定型の締め句、言い換えの反復、羅列、誇張) / ${D200} 超過は medium。/ D-203: §6 比喩・記法が定義の言い換え、§9 同義の言い換えの反復 (考点が one・detail の言い直し等) は **low** (事実や他欄との食い違いを生むなら観点 7 で判定)。/ ${FRAMING} 上限内でも、事実を言わず出題のされ方だけを述べる考点は medium。
 3. **初学者に分かるか**: 結論先行、図と文が噛み合うか。**定義してから使う**: 専門語 (例: 結合点・矢線・最遅結合点時刻) が、それを定義する文より前に考点・図・易混表で使われていたら指摘する。
 4. **写していないか**: ${D198} (i)(ii)(iii) に当たれば high。標準的な定義・計算規則・原則を一般的な表現で述べた文は、正解選択肢が同じ原則を述べていても写しとして指摘しない。
 5. **考点と引用題の正解**: 各 exam 考点の qids の題だけを \`${QUESTIONS_JSON}\` から Read し (id で検索、題文・選択肢・correct_answer)、主張がその題の正解と一致するか、データが支持しない規則を作っていないかを確かめる。矛盾は high。
 6. **標記**: 日本語の本文に [[jp:…]] (zh / en 専用) があれば指摘する。
 7. **欄同士の整合**: 同じ用語の one / detail / points / pairs / hook と overview / goals で定義の範囲が食い違う・矛盾する箇所 (「〜だけ」「〜ではない」と限る文が他欄と合わない等) は medium。それで事実の誤りになるなら high。
-8. **対比の反復**: 同じ対比は pairs と mix 考点の 2 箇所まで。detail・key_points で同じ対比を繰り返さない。これを超えて繰り返していれば medium。
+8. **対比の反復**: 同じ対比は pairs と mix 考点の 2 箇所まで。detail・key_points で同じ対比を繰り返さない。これを超えて繰り返していれば **low** (D-203、issues には書く)。
 9. **限定条件**: 引用題の場面・前提を外して無条件に言い切った主張は high (観点 5 と同じ扱い)。
 
 ## 判定

@@ -182,6 +182,7 @@ test("seeded start: round 0 revises the seed with its review (from the seed jour
   assert.equal(seed.opts.model, "opus");
   assert.ok(seed.prompt.includes(`scripts/textbook-v2-seed.mjs --part ${SEED_PART} --journal /Volumes/DevSSD/Project/IT-Passport-Learning/data/ip/textbook/.planning/v2/management-10-27-u02/journal.s135u02a.jsonl --review-round 2`));
   assert.ok(seed.prompt.includes(partPath(UNIT, "jp", 0)), "writes round 0 of the new run");
+  assert.ok(seed.prompt.includes("直し方 (D-203"), "the seeded rewrite carries the revise guard");
   assert.deepEqual(seed.opts.schema.required.slice(-3), ["seed_part", "seed_sha256", "seed_review_round"]);
   assert.ok(!calls[2].opts.schema.required.includes("seed_sha256"), "only round 0 is seeded");
   assert.equal(calls.filter((c) => c.opts.agentType === "oh-my-claudecode:critic").length, 2);
@@ -319,7 +320,7 @@ test("D-202: writer 書き方 7〜9 and the critic's checks; the localiser's [[j
   }
   const rv = byLabel(/^review:/);
   assert.match(rv, /7\. \*\*欄同士の整合\*\*.*medium。それで事実の誤りになるなら high/);
-  assert.match(rv, /8\. \*\*対比の反復\*\*: 同じ対比は pairs と mix 考点の 2 箇所まで。detail・key_points で同じ対比を繰り返さない。.*medium/);
+  assert.match(rv, /8\. \*\*対比の反復\*\*: 同じ対比は pairs と mix 考点の 2 箇所まで。detail・key_points で同じ対比を繰り返さない。これを超えて繰り返していれば \*\*low\*\* \(D-203/);
   assert.match(rv, /9\. \*\*限定条件\*\*.*high \(観点 5 と同じ扱い\)/);
   for (const p of [byLabel(/^localize:/), byLabel(/^relocalize:/)]) {
     assert.doesNotMatch(p, /多用しない/);
@@ -333,4 +334,18 @@ test("D-202: writer 書き方 7〜9 and the critic's checks; the localiser's [[j
   const tr = byLabel(/^tr-review:/);
   assert.doesNotMatch(tr, /過剰でないか/);
   assert.match(tr, /D-202 の併記規則/);
+});
+
+test("D-203: the critic grades restatement (§6 / §9 / 観点 8) low, keeps 観点 7 medium and 9 high; every rewrite carries the revise guard", async () => {
+  const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
+  const rv = calls.find((x) => /^review:/.test(x.opts.label)).prompt;
+  assert.match(rv, /D-203: §6 比喩・記法が定義の言い換え、§9 同義の言い換えの反復 \(考点が one・detail の言い直し等\) は \*\*low\*\*/);
+  assert.doesNotMatch(rv, /8\. \*\*対比の反復\*\*[^\n]*medium/);
+  assert.match(rv, /7\. \*\*欄同士の整合\*\*.*medium/);
+  assert.match(rv, /9\. \*\*限定条件\*\*.*high/);
+  const write = calls.find((x) => /^write:/.test(x.opts.label)).prompt;
+  assert.doesNotMatch(write, /直し方 \(D-203/, "a first draft has nothing to fix");
+  const rewrite = calls.find((x) => /^rewrite:/.test(x.opts.label)).prompt;
+  for (const w of ["直し方 (D-203", "削除・絞り込みを優先", "新しい概括句を足さない", "pairs と mix 考点以外に出ていれば削る", "analogy_jp は \"\" にする"]) assert.ok(rewrite.includes(w), w);
+  assert.ok(rewrite.indexOf("直し方 (D-203") < rewrite.indexOf("```json"), "the guard comes before the review's issues");
 });
