@@ -154,6 +154,13 @@ test("F2 seed decision: パスワード → 口令（密码） (v1 body text use
   assert.equal(t.terms["アンケート"], "问卷调查（问卷）");
 });
 
+test("S137 u10 O1: 生体認証 → 生物特征认证 (b02 body text; not a headword), in the seed and the committed table", () => {
+  assert.equal(seedTable(units()).terms["生体認証"], "生物特征认证");
+  assert.equal(readJson(P.zhTerms).terms["生体認証"], "生物特征认证");
+  assert.deepEqual(probe("生体認証を使う。", "使用生物特征认证。", { 生体認証: "生物特征认证" }), []);
+  assert.deepEqual(probe("生体認証を使う。", "使用生物识别认证。", { 生体認証: "生物特征认证" }), ["生体認証"]);
+});
+
 test("--probe-v1: the check's noise on v1 definition / explanation pairs stays under 10% (15.2% before the B6 review)", () => {
   const r = probeV1(units(), readJson(P.zhTerms));
   assert.ok(r.pairs > 2700, String(r.pairs));

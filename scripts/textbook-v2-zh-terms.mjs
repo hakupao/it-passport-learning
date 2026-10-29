@@ -52,8 +52,10 @@ export const CONFLICT_RULES = {
  *   アンケート: v1 term_zh 问卷调查; the v1 body uses 问卷 in 26 / 26 pairs (问卷调查 9) → both.
  *   Left as advisory residue (both readings natural, no override): PC (电脑 18 / PC kept 32 of 45 pairs),
  *   SNS (社交媒体 11 / 社交网络 7 / SNS kept 16 of 30).
+ *   生体認証 (S137, b02 u10 Rule A O1; not a headword): the b02 body text uses 生物特征认证; u10 title_zh /
+ *   unit_summary_zh are v1 (生物识别认证, not checked: ZH_SKIP) and stay as they are.
  */
-export const OVERRIDES = { パスワード: "口令（密码）", 最適化: "最优化（优化）", アンケート: "问卷调查（问卷）" };
+export const OVERRIDES = { パスワード: "口令（密码）", 最適化: "最优化（优化）", アンケート: "问卷调查（问卷）", 生体認証: "生物特征认证" };
 
 /** The S135 pilot's settled jp → zh pairs (from its zh [[jp:…]] glosses). */
 export const PILOT_WORDS = {
