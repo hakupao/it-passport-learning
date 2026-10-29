@@ -1,267 +1,1179 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-63-u08",
   "topic_id": "technology-23-63",
   "category": "technology",
   "title_jp": "利用者認証(知識・所持による認証)",
+  "title_zh": "用户认证（基于知识与持有的认证）",
+  "title_en": "User Authentication (Knowledge-Based and Possession-Based)",
   "unit_summary_jp": "ID/パスワードからワンタイムパスワード・多要素認証・SSOまで、知識と所持にもとづく本人確認を学ぶ。",
+  "unit_summary_zh": "从 ID/口令到一次性口令、多因素认证、SSO，学习基于知识与持有的身份核验。",
+  "unit_summary_en": "From ID/passwords to one-time passwords, multi-factor authentication, and SSO, learn identity verification based on knowledge and possession.",
   "order_in_topic": 8,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、コンピュータやサービスを使う前に「本人かどうか」を確かめる利用者認証を学びます。ID/パスワードという知識による認証から、ICカードやワンタイムパスワードという所持による認証、それらを組み合わせる多要素認証までを扱います。情報セキュリティ対策の入口であり、多要素認証・パスワード・ワンタイムパスワードは試験でも特に頻出の重要分野です。",
-    "freq_badge": "頻出",
-    "est_minutes": 23,
-    "intro_zh": "在本单元中，我们学习在使用计算机或服务之前确认「是否本人」的用户认证。内容涵盖基于 ID/口令这一知识的认证、基于 IC 卡和一次性口令这一持有的认证，以及将两者组合起来的多因素认证。它是信息安全对策的入口，多因素认证、口令、一次性口令在考试中也属于格外高频的重要领域。",
-    "intro_en": "In this unit, you learn user authentication, which verifies \"whether you are who you claim to be\" before using a computer or service. It covers knowledge-based authentication such as ID/passwords, possession-based authentication such as IC cards and one-time passwords, and multi-factor authentication that combines them. As the entry point to information security measures, multi-factor authentication, passwords, and one-time passwords are especially frequent and important topics on the exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**識別**(誰かを示す)と**認証**(本人かを確かめる)と**アクセス権**(何を使えるか)の役割を分けられる",
+    "**認証要素**(本人確認の根拠になる情報の種類)の**知識**・**所持**・**生体**を見分け、**多要素認証**になる組合せとならない組合せを判断できる",
+    "**ワンタイムパスワード**や**リスクベース認証**が、どんな不正をどう防ぐのかを説明できる"
+  ],
+  "goals_zh": [
+    "能区分**识别**（表明是谁）、**认证**（确认是否本人）和**访问权限**（能使用什么）各自的作用。",
+    "能辨别**认证要素**（作为确认本人依据的信息种类）中的**知识**、**持有**和**生物特征**，并判断哪些组合构成**多因素认证**、哪些不构成。",
+    "能说明**一次性口令**和**基于风险的认证**分别防范哪种非法行为、如何防范。"
+  ],
+  "goals_en": [
+    "Tell apart the roles of **identification** (saying who someone is), **authentication** (confirming it is really that person), and **access rights** (what they may use).",
+    "Distinguish the **knowledge**, **possession**, and **biometric** types of **authentication factor** (the kinds of information used to confirm identity), and judge which combinations count as **multi-factor authentication** and which do not.",
+    "Explain what kind of misuse **one-time passwords** and **risk-based authentication** each prevent, and how."
+  ],
+  "overview_cols_jp": [
+    "分類・役割",
+    "区別する相手"
+  ],
+  "overview_cols_zh": [
+    "分类与作用",
+    "需要区分的对象"
+  ],
+  "overview_cols_en": [
+    "Category / role",
+    "Easily confused with"
+  ],
+  "overview_rows": [
     {
       "term": "リスクベース認証",
-      "definition_jp": "状況の危険度に応じて追加の認証を求めるかどうかを変える認証方式。",
-      "explanation_jp": "リスクベース認証は、ログインのたびに毎回同じ強さで認証するのではなく、その時の状況の危険度(リスク)を判断して認証の強さを変える方式です。いつもと同じ端末・場所からのアクセスなら通常のID/パスワードだけで通し、見慣れない端末や海外からのアクセスなど怪しい場合だけ追加の質問やワンタイムパスワードを求めます。\n\n正規利用者の手間を増やさずに、なりすましだけを狙ってはじける点が特長です。試験では「ふだんと異なる環境からのアクセス時に追加認証を行う」のがリスクベース認証だと判断できることがポイントになります。",
-      "analogy_jp": "顔なじみの常連はそのまま通すが、初めて見る客には身分証の提示を求める店員のような仕組み。怪しいときだけ確認を厳しくします。",
-      "memory_hook_jp": "リスクベース認証といえば怪しいときだけ追加認証",
-      "inline_quiz": [
-        "2014h26a-q051"
+      "one_line_jp": "普段と違う状況のときだけ追加の確認を求める認証方式",
+      "one_line_zh": "仅在情况与平常不同时才要求追加确认的认证方式",
+      "one_line_en": "Authentication that asks for an extra check only when the situation looks unusual",
+      "extra_jp": [
+        "認証の強さを状況で変える方式",
+        "自動ログアウトやアカウントロック(一律に働く仕組み)"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "基于风险的认证",
-      "term_en": "Risk-Based Authentication",
-      "definition_zh": "根据当前情况的危险程度，改变是否要求追加认证的认证方式。",
-      "definition_en": "An authentication method that changes whether additional authentication is required based on the risk level of the situation.",
-      "explanation_zh": "基于风险的认证不是每次登录都用相同强度去认证，而是判断当时情况的危险程度（风险），相应地改变认证强度的方式。如果是从平时一样的终端、地点访问，就只用普通的 ID/口令放行；只有在不常见的终端或从海外访问等可疑情况下，才追加要求安全问题或一次性口令。\n\n它的特点在于：不增加正规用户的麻烦，只针对冒名顶替进行拦截。考试中的要点是，能判断出「在与平时不同的环境下访问时进行追加认证」就是基于风险的认证。",
-      "explanation_en": "Risk-based authentication does not authenticate with the same strength on every login; instead, it judges the risk level of the situation at that moment and changes the authentication strength accordingly. If the access comes from the usual device and location, it lets the user through with just the normal ID/password; only in suspicious cases such as access from an unfamiliar device or from overseas does it additionally require security questions or a one-time password.\n\nIts strength is that it blocks only impersonation without adding burden for legitimate users. On the exam, the key point is being able to identify that \"performing additional authentication when access comes from an environment different from usual\" is risk-based authentication.",
-      "analogy_zh": "就像店员对熟面孔的常客直接放行，但对初次见到的客人要求出示身份证一样。只在可疑时才把核验变严格。",
-      "analogy_en": "Like a clerk who lets familiar regulars pass straight through but asks first-time customers to show ID. The check is tightened only when something seems suspicious.",
-      "memory_hook_zh": "说到基于风险的认证，就是只在可疑时追加认证",
-      "memory_hook_en": "Risk-based authentication → add extra authentication only when suspicious"
+      "extra_zh": [
+        "根据情况改变认证强度的方式",
+        "自动登出和账户锁定（对所有人统一生效的机制）"
+      ],
+      "extra_en": [
+        "Adjusts how strict authentication is to the situation",
+        "Automatic logout and account lockout (apply the same way every time)"
+      ]
     },
     {
       "term": "ログイン",
-      "definition_jp": "IDやパスワードを入力し利用権限を得てシステムの利用を始める操作。",
-      "explanation_jp": "ログインは、利用者IDとパスワードなどを入力して、システムやサービスに「自分は正規の利用者だ」と申告し、利用を開始する操作です。サインインともいい、利用を終える操作はログアウト(サインアウト)と呼びます。\n\nログインという行為は、本人確認(認証)を行う入口そのものです。試験では、利用者IDで「誰か」を示し、パスワードで「本人であること」を確かめる、という認証の基本的な流れの起点として問われます。利用後にログアウトを行うことが、なりすまし防止につながる点も押さえましょう。",
-      "analogy_jp": "建物の入口で受付に名前を告げ、入館証を受け取って中に入る手続きのようなもの。用が済んだら入館証を返すのがログアウトにあたります。",
-      "memory_hook_jp": "ログインといえばID/パスワードで利用を始める入口",
+      "one_line_jp": "IDなどを入力して本人と確認され、利用を始める操作",
+      "one_line_zh": "输入 ID 等信息、被确认为本人后开始使用的操作",
+      "one_line_en": "Entering an ID and similar details, being confirmed, and starting to use a system",
+      "extra_jp": [
+        "認証の入口となる操作",
+        "ログアウト(利用を終える操作)"
+      ],
+      "extra_zh": [
+        "认证开始的入口操作",
+        "登出（结束使用的操作）"
+      ],
+      "extra_en": [
+        "The action where authentication begins",
+        "Logout (the action that ends use)"
+      ]
+    },
+    {
+      "term": "利用者ID",
+      "one_line_jp": "システムの中で利用者を一人ずつ区別する名前や番号",
+      "one_line_zh": "在系统中逐一区分用户的名称或编号",
+      "one_line_en": "A name or number that tells each user apart within a system",
+      "extra_jp": [
+        "識別(誰かを示す)",
+        "パスワード(本人かを確かめる)"
+      ],
+      "extra_zh": [
+        "识别（表明是谁）",
+        "口令（确认是否本人）"
+      ],
+      "extra_en": [
+        "Identification (who someone is)",
+        "Password (confirms it is really that person)"
+      ]
+    },
+    {
+      "term": "パスワード",
+      "one_line_jp": "本人だけが知る秘密の文字列で本人かを確かめる情報",
+      "one_line_zh": "只有本人知道、用来确认是否本人的秘密字符串",
+      "one_line_en": "A secret string only the user knows, used to confirm identity",
+      "extra_jp": [
+        "知識による認証",
+        "ICカード(所持による認証)"
+      ],
+      "extra_zh": [
+        "基于知识的认证",
+        "IC 卡（基于持有物的认证）"
+      ],
+      "extra_en": [
+        "Knowledge-based authentication",
+        "IC card (possession-based authentication)"
+      ]
+    },
+    {
+      "term": "アクセス管理",
+      "one_line_jp": "誰がどの情報や機能をどこまで使えるかを決めて管理すること",
+      "one_line_zh": "决定并管理谁能在多大范围内使用哪些信息和功能",
+      "one_line_en": "Deciding and managing who may use which information and functions, and how far",
+      "extra_jp": [
+        "認証の後の権限の管理",
+        "認証(本人かどうかの確認)"
+      ],
+      "extra_zh": [
+        "认证之后的权限管理",
+        "认证（确认是否本人）"
+      ],
+      "extra_en": [
+        "Managing rights after authentication",
+        "Authentication (confirming it is really that person)"
+      ]
+    },
+    {
+      "term": "ICカード",
+      "one_line_jp": "ICチップを内蔵し、持っていることを本人確認の根拠にするカード",
+      "one_line_zh": "内置 IC 芯片、以持有该卡作为本人确认依据的卡片",
+      "one_line_en": "A card with a built-in IC chip; holding it is the proof of identity",
+      "extra_jp": [
+        "所持による認証",
+        "パスワード(知識による認証)"
+      ],
+      "extra_zh": [
+        "基于持有物的认证",
+        "口令（基于知识的认证）"
+      ],
+      "extra_en": [
+        "Possession-based authentication",
+        "Password (knowledge-based authentication)"
+      ]
+    },
+    {
+      "term": "ワンタイムパスワード",
+      "one_line_jp": "1回の認証にだけ使える使い捨てのパスワード",
+      "one_line_zh": "只能用于一次认证、用完即弃的口令",
+      "one_line_en": "A disposable password valid for a single authentication",
+      "extra_jp": [
+        "使い捨ての認証情報",
+        "シングルサインオン(1回のログインで複数を利用)"
+      ],
+      "extra_zh": [
+        "用完即弃的认证信息",
+        "单点登录（登录一次即可使用多个系统）"
+      ],
+      "extra_en": [
+        "Single-use authentication data",
+        "Single sign-on (one login opens several systems)"
+      ]
+    },
+    {
+      "term": "多要素認証",
+      "one_line_jp": "種類の異なる認証要素を2つ以上組み合わせる認証",
+      "one_line_zh": "组合两个以上不同种类认证要素的认证",
+      "one_line_en": "Authentication that combines two or more factors of different types",
+      "extra_jp": [
+        "認証要素の組合せ",
+        "二段階認証(確認の回数で数える)"
+      ],
+      "extra_zh": [
+        "认证要素的组合",
+        "两步验证（按确认的次数计算）"
+      ],
+      "extra_en": [
+        "A combination of authentication factors",
+        "Two-step verification (counted by the number of checks)"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "リスクベース認証",
+      "term_zh": "基于风险的认证",
+      "term_en": "Risk-Based Authentication",
+      "one_jp": "**リスクベース認証**は、ログインのときの端末や場所などを普段と比べ、危険度が高いと判断したときだけ**追加の認証**を求める方式である。",
+      "one_zh": "**基于风险的认证**（[[jp:リスクベース認証]]）会把登录时使用的终端、所在地点等与平常相比较，只在判断风险较高时才要求**追加认证**。",
+      "one_en": "**Risk-based authentication** ([[jp:リスクベース認証]]) compares the device, location, and other conditions of a login with the user's usual pattern, and asks for **additional authentication** only when it judges the risk to be high.",
+      "detail_jp": "毎回すべての利用者に重い確認を課すと手間が増えるため、怪しい状況に絞って確認を強める。追加の確認には、例えば登録したスマートフォンに届く確認番号や、事前に登録した質問への回答が使われる。正規の利用者の手間を抑えつつ、他人が本人のふりをして利用する**なりすまし**を、盗んだパスワードだけでは成功させにくくする点に意味がある。",
+      "detail_zh": "如果每次都让所有用户接受繁琐的确认，操作负担就会增加，因此只在可疑的情况下加强确认。追加确认可以使用例如发送到已登记智能手机上的验证码，或事先登记的问题的答案。它的意义在于既减少合法用户的麻烦，又让他人假扮本人进行使用的**冒充**（[[jp:なりすまし]]）仅凭盗来的口令难以得逞。",
+      "detail_en": "Putting every user through a heavy check every time adds effort, so the check is tightened only when something looks suspicious. The extra check might be a verification code sent to a registered smartphone or the answer to a question set up in advance. The point is to keep things easy for legitimate users while making **impersonation** ([[jp:なりすまし]]), where someone pretends to be the user, hard to pull off with a stolen password alone.",
+      "analogy_jp": "いつもの社員は社員証だけで通すが、夜中に見慣れない入口から入ろうとする人には警備員が身分を詳しく尋ねる、という警備のやり方に似ている。",
+      "analogy_zh": "就像大楼的保安：熟悉的员工出示工牌就能进，而半夜想从不常用的入口进去的人，保安会仔细盘问身份。",
+      "analogy_en": "It is like building security that waves familiar staff through with just a badge, but questions anyone trying to get in through an unusual door in the middle of the night.",
+      "hook_jp": "英語の risk-based は「危険度に基づく」という意味である。",
+      "hook_zh": "英文 risk-based 的意思是“基于风险程度”。",
+      "hook_en": "Read it literally: the check is based on risk, rather than applied the same way to everyone.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "自動ログアウトやアカウントロックは、操作のない時間や失敗回数で一律に働く仕組みで、状況の危険度で確認を足すリスクベース認証とは別物である。",
+          "text_zh": "自动登出（[[jp:自動ログアウト]]）和账户锁定（[[jp:アカウントロック]]）是根据无操作的时间或失败次数统一生效的机制，与根据情况的风险程度追加确认的基于风险的认证（[[jp:リスクベース認証]]）不是一回事。",
+          "text_en": "Automatic logout ([[jp:自動ログアウト]]) and account lockout ([[jp:アカウントロック]]) kick in the same way for everyone, based on idle time or the number of failed attempts. Risk-based authentication ([[jp:リスクベース認証]]) is different, because it adds a check depending on how risky the situation is.",
+          "qids": [
+            "2026r08-q071"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "req",
+              "label": {
+                "jp": "ログインの要求",
+                "zh": "登录请求",
+                "en": "Login request"
+              }
+            },
+            {
+              "id": "cmp",
+              "label": {
+                "jp": "端末や場所を普段と比較",
+                "zh": "将终端和地点与平常比较",
+                "en": "Compare device and location with usual"
+              }
+            },
+            {
+              "id": "judge",
+              "label": {
+                "jp": "危険度を判定",
+                "zh": "判定风险程度",
+                "en": "Assess the risk"
+              }
+            },
+            {
+              "id": "add",
+              "label": {
+                "jp": "高いときだけ追加の確認",
+                "zh": "仅在风险高时追加确认",
+                "en": "Extra check only if risk is high"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者がIDとパスワードを入力し、ログインを求める。",
+            "caption_zh": "用户输入 ID 和口令，请求登录。",
+            "caption_en": "The user enters an ID and password and asks to log in.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "システムは接続元の端末や場所を、これまでの利用と比べる。",
+            "caption_zh": "系统把连接来源的终端和地点与以往的使用情况进行比较。",
+            "caption_en": "The system compares the connecting device and location with past use.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "比べた結果から、この接続の危険度を見積もる。",
+            "caption_zh": "根据比较结果，估计这次连接的风险程度。",
+            "caption_en": "From that comparison, it estimates how risky this connection is.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "普段どおりならそのまま通し、見慣れない状況のときだけ確認番号の入力などを追加で求める。",
+            "caption_zh": "如果与平常一致就直接放行，只有在陌生的情况下才追加要求输入验证码等。",
+            "caption_en": "If everything looks normal, the login goes through; only in an unfamiliar situation does it also ask for something like a verification code.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2026r08-q071"
+      ],
+      "definition_jp": "リスクベース認証は、ログインのときの端末や場所などを普段と比べ、危険度が高いと判断したときだけ追加の認証を求める方式である。",
+      "definition_zh": "基于风险的认证（リスクベース認証）会把登录时使用的终端、所在地点等与平常相比较，只在判断风险较高时才要求追加认证。",
+      "definition_en": "Risk-based authentication (リスクベース認証) compares the device, location, and other conditions of a login with the user's usual pattern, and asks for additional authentication only when it judges the risk to be high.",
+      "explanation_jp": "毎回すべての利用者に重い確認を課すと手間が増えるため、怪しい状況に絞って確認を強める。追加の確認には、例えば登録したスマートフォンに届く確認番号や、事前に登録した質問への回答が使われる。正規の利用者の手間を抑えつつ、他人が本人のふりをして利用するなりすましを、盗んだパスワードだけでは成功させにくくする点に意味がある。",
+      "explanation_zh": "如果每次都让所有用户接受繁琐的确认，操作负担就会增加，因此只在可疑的情况下加强确认。追加确认可以使用例如发送到已登记智能手机上的验证码，或事先登记的问题的答案。它的意义在于既减少合法用户的麻烦，又让他人假扮本人进行使用的冒充（なりすまし）仅凭盗来的口令难以得逞。",
+      "explanation_en": "Putting every user through a heavy check every time adds effort, so the check is tightened only when something looks suspicious. The extra check might be a verification code sent to a registered smartphone or the answer to a question set up in advance. The point is to keep things easy for legitimate users while making impersonation (なりすまし), where someone pretends to be the user, hard to pull off with a stolen password alone.",
+      "memory_hook_jp": "英語の risk-based は「危険度に基づく」という意味である。",
+      "memory_hook_zh": "英文 risk-based 的意思是“基于风险程度”。",
+      "memory_hook_en": "Read it literally: the check is based on risk, rather than applied the same way to everyone.",
+      "inline_quiz": [
+        "2026r08-q071"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ログイン",
+      "term_zh": "登录",
+      "term_en": "Login",
+      "one_jp": "**ログイン**は、利用者IDとパスワードなどを入力して本人と確認され、システムやサービスの利用を始める操作である。",
+      "one_zh": "**登录**（[[jp:ログイン]]）是输入用户 ID 和口令等信息、被确认为本人后，开始使用系统或服务的操作。",
+      "one_en": "A **login** ([[jp:ログイン]]) is the action of entering a user ID, password, or similar details, being confirmed as the genuine user, and starting to use a system or service.",
+      "detail_jp": "入力された内容を事前に登録した情報と照合し、本人かどうかを確かめることを**認証**という。その照合の結果や、誰に何を使わせるかを定めた**アクセス権**に従って、利用を許すか拒むかを決める働きを**アクセス制御**という。利用を終える操作は**ログアウト**で、席を離れる前に行えば他人に続きを操作されにくい。",
+      "detail_zh": "将输入的内容与事先登记的信息核对、确认是否本人，称为**认证**（[[jp:認証]]）。根据核对结果以及规定允许谁使用什么的**访问权限**（[[jp:アクセス権]]），决定允许还是拒绝使用，这一功能称为**访问控制**（[[jp:アクセス制御]]）。结束使用的操作是**登出**（[[jp:ログアウト]]），离开座位前登出，别人就难以接着操作。",
+      "detail_en": "Checking what was entered against registered information to confirm the user's identity is called **authentication** ([[jp:認証]]). Deciding whether to allow or refuse use, based on that result and on the **access rights** ([[jp:アクセス権]]) that define who may use what, is called **access control** ([[jp:アクセス制御]]). The action that ends use is **logging out** ([[jp:ログアウト]]), and doing it before leaving your desk keeps others from picking up where you left off.",
+      "analogy_jp": "会員制のジムの受付で会員番号と暗証番号を伝え、名簿と一致したら中に入れてもらう手続きに似ている。",
+      "analogy_zh": "就像在会员制健身房的前台报出会员号和密码，与名册一致后才被放进去。",
+      "analogy_en": "It is like giving your membership number and PIN at the front desk of a members-only gym and being let in once they match the list.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ログイン時の照合で利用を許可・拒否するのはアクセス制御の働きであり、利用者ごとのアクセス権をあらかじめ与える作業とは別である。",
+          "text_zh": "在登录（[[jp:ログイン]]）时通过核对来允许或拒绝使用，是访问控制（[[jp:アクセス制御]]）的作用，与事先为每个用户授予访问权限（[[jp:アクセス権]]）的工作不同。",
+          "text_en": "Allowing or refusing use by checking credentials at login ([[jp:ログイン]]) is the job of access control ([[jp:アクセス制御]]). That is separate from the work of granting each user access rights ([[jp:アクセス権]]) in advance.",
+          "qids": [
+            "2022r04-q037"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2022r04-q037"
+      ],
+      "definition_jp": "ログインは、利用者IDとパスワードなどを入力して本人と確認され、システムやサービスの利用を始める操作である。",
+      "definition_zh": "登录（ログイン）是输入用户 ID 和口令等信息、被确认为本人后，开始使用系统或服务的操作。",
+      "definition_en": "A login (ログイン) is the action of entering a user ID, password, or similar details, being confirmed as the genuine user, and starting to use a system or service.",
+      "explanation_jp": "入力された内容を事前に登録した情報と照合し、本人かどうかを確かめることを認証という。その照合の結果や、誰に何を使わせるかを定めたアクセス権に従って、利用を許すか拒むかを決める働きをアクセス制御という。利用を終える操作はログアウトで、席を離れる前に行えば他人に続きを操作されにくい。",
+      "explanation_zh": "将输入的内容与事先登记的信息核对、确认是否本人，称为认证（認証）。根据核对结果以及规定允许谁使用什么的访问权限（アクセス権），决定允许还是拒绝使用，这一功能称为访问控制（アクセス制御）。结束使用的操作是登出（ログアウト），离开座位前登出，别人就难以接着操作。",
+      "explanation_en": "Checking what was entered against registered information to confirm the user's identity is called authentication (認証). Deciding whether to allow or refuse use, based on that result and on the access rights (アクセス権) that define who may use what, is called access control (アクセス制御). The action that ends use is logging out (ログアウト), and doing it before leaving your desk keeps others from picking up where you left off.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
         "2022r04-q037"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "登录",
-      "term_en": "Login",
-      "definition_zh": "输入 ID 或口令以获得使用权限、开始使用系统的操作。",
-      "definition_en": "The operation of entering an ID or password to gain access rights and begin using a system.",
-      "explanation_zh": "登录是输入用户 ID 和口令等，向系统或服务申明「我是正规用户」并开始使用的操作。它也叫登入（sign in），结束使用的操作叫注销（登出 / sign out）。\n\n登录这一行为本身就是进行身份核验（认证）的入口。考试中，它作为认证基本流程的起点被考查：用用户 ID 表示「是谁」，用口令确认「确实是本人」。还要记住，使用完毕后进行注销有助于防止冒名顶替。",
-      "explanation_en": "Login is the operation of entering a user ID, password, and so on to declare to a system or service \"I am a legitimate user\" and to start using it. It is also called sign-in, and the operation to end use is called logout (sign-out).\n\nThe act of logging in is itself the entry point where identity verification (authentication) takes place. On the exam, it is asked as the starting point of the basic authentication flow: the user ID indicates \"who you are\" and the password confirms \"that you are that person.\" Also keep in mind that logging out after use helps prevent impersonation.",
-      "analogy_zh": "就像在大楼入口处向前台报上姓名、领取出入证后进入楼内的手续。事情办完后归还出入证，相当于注销。",
-      "analogy_en": "Like the procedure of telling the reception your name at a building entrance, receiving a visitor pass, and going inside. Returning the pass when you are done corresponds to logging out.",
-      "memory_hook_zh": "说到登录，就是用 ID/口令开始使用的入口",
-      "memory_hook_en": "Login → the entry point where you start using with an ID/password"
+      "figure": null
     },
     {
       "term": "利用者ID",
-      "definition_jp": "利用者を一意に識別するために割り当てられる名前・番号などの符号。",
-      "explanation_jp": "利用者ID(ユーザID)は、システムの中で「あなたは誰か」を区別するために一人ひとりに割り当てられる名前や番号です。同じIDが複数の人に重複しないように管理され、これによって誰が操作したかを記録(ログ)できるようになります。\n\n利用者IDは「識別」を担い、本人であることの「確認(認証)」はパスワードなどが担う、という役割分担が重要です。試験では、IDは公開されても大きな問題はないが、対になるパスワードは秘密にしなければならない、という性質の違いが問われます。",
-      "analogy_jp": "出席番号や社員番号のようなもの。それ自体は「誰か」を示すだけで、本人だと証明するのは別に必要な印鑑やサイン(パスワード)です。",
-      "memory_hook_jp": "利用者IDといえば誰かを識別する符号",
-      "inline_quiz": [
-        "2011h23a-q081"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "用户 ID",
       "term_en": "User ID",
-      "definition_zh": "为唯一标识用户而分配的名称、编号等符号。",
-      "definition_en": "A code such as a name or number assigned to uniquely identify a user.",
-      "explanation_zh": "用户 ID（用户标识）是为了在系统中区分「你是谁」而分配给每个人的名称或编号。它被管理为不会让多个人重复使用同一个 ID，由此就能记录（日志）下是谁进行了操作。\n\n重要的是这种分工：用户 ID 负责「识别」，而「确认（认证）是否本人」由口令等负责。考试中会考查这种性质差异：ID 即使被公开也没有大问题，但与之配对的口令必须保密。",
-      "explanation_en": "A user ID (user identifier) is a name or number assigned to each individual in order to distinguish \"who you are\" within a system. It is managed so that the same ID is not duplicated among multiple people, which makes it possible to record (log) who performed an operation.\n\nWhat is important is the division of roles: the user ID handles \"identification,\" while \"confirmation (authentication) that you are the person\" is handled by a password and the like. On the exam, the difference in nature is asked: an ID causes no major problem even if disclosed, but the paired password must be kept secret.",
-      "analogy_zh": "就像座号或工号一样。它本身只表示「是谁」，要证明确实是本人，还另外需要印章或签名（口令）。",
-      "analogy_en": "Like a roll number or an employee number. By itself it only indicates \"who you are\"; to prove you really are that person, a separate seal or signature (password) is still needed.",
-      "memory_hook_zh": "说到用户 ID，就是识别「是谁」的符号",
-      "memory_hook_en": "User ID → the code that identifies \"who\""
+      "one_jp": "**利用者ID**は、システムの中で利用者を一人ずつ**識別**するために割り当てる名前や番号である。",
+      "one_zh": "**用户 ID**（[[jp:利用者ID]]）是为了在系统中逐一**识别**（[[jp:識別]]）用户而分配的名称或编号。",
+      "one_en": "A **user ID** ([[jp:利用者ID]]) is a name or number assigned so that a system can **identify** ([[jp:識別]]) each user individually.",
+      "detail_jp": "IDは一人に一つずつ割り当て、複数の人で共有しない。そうしておけば、操作の記録に残ったIDから、誰がいつ何をしたかを後から追える。",
+      "detail_zh": "ID 要一人一个，不能多人共用。这样一来，就能根据操作记录中留下的 ID，事后追查谁在什么时候做了什么。",
+      "detail_en": "Each person gets their own ID, and IDs are never shared. That way, the IDs left in the operation logs show afterward who did what and when.",
+      "analogy_jp": "学校の出席番号のようなもの。番号で一人ずつ区別でき、出欠の記録も番号で残る。",
+      "analogy_zh": "就像学校的学号，用号码就能逐一区分每个人，出勤记录也按号码留存。",
+      "analogy_en": "It is like a student number at school: each number marks one student, and attendance is recorded by number.",
+      "hook_jp": "ID は identification(識別)の略。",
+      "hook_zh": "ID 是 identification（识别）的缩写。",
+      "hook_en": "ID is short for identification.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "利用者IDは誰かを示す識別の情報で、本人かどうかの確認はパスワードなどが受け持つ。IDだけでは本人の証明にならない。",
+          "text_zh": "用户 ID（[[jp:利用者ID]]）是表明身份的识别（[[jp:識別]]）信息，确认是否本人则由口令（[[jp:パスワード]]）等负责。仅凭 ID 无法证明是本人。",
+          "text_en": "A user ID ([[jp:利用者ID]]) is identification ([[jp:識別]]) information that says who someone is, while a password ([[jp:パスワード]]) or similar confirms it is really them. An ID alone does not prove identity."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2022r04-q037"
+      ],
+      "definition_jp": "利用者IDは、システムの中で利用者を一人ずつ識別するために割り当てる名前や番号である。",
+      "definition_zh": "用户 ID（利用者ID）是为了在系统中逐一识别（識別）用户而分配的名称或编号。",
+      "definition_en": "A user ID (利用者ID) is a name or number assigned so that a system can identify (識別) each user individually.",
+      "explanation_jp": "IDは一人に一つずつ割り当て、複数の人で共有しない。そうしておけば、操作の記録に残ったIDから、誰がいつ何をしたかを後から追える。",
+      "explanation_zh": "ID 要一人一个，不能多人共用。这样一来，就能根据操作记录中留下的 ID，事后追查谁在什么时候做了什么。",
+      "explanation_en": "Each person gets their own ID, and IDs are never shared. That way, the IDs left in the operation logs show afterward who did what and when.",
+      "memory_hook_jp": "ID は identification(識別)の略。",
+      "memory_hook_zh": "ID 是 identification（识别）的缩写。",
+      "memory_hook_en": "ID is short for identification.",
+      "inline_quiz": [
+        "2022r04-q037"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "パスワード",
-      "definition_jp": "本人だけが知る秘密の文字列で、知識による本人確認に使う認証情報。",
-      "explanation_jp": "パスワードは、本人だけが知っている秘密の文字列で、利用者IDと対にして「確かに本人だ」と確認するために使います。本人の知識(記憶)にもとづくため、知識認証の代表例です。\n\n他人に推測・盗用されると簡単になりすまされるため、長く複雑にする、使い回さない、定期的でなく漏えい時に変更する、といった運用が求められます。試験では、生年月日や辞書語など推測されやすいパスワードの危険性、複数サービスでの使い回しがもたらすリスク、ICカードなど所持認証との違い(知識か所持か)が頻出です。",
-      "analogy_jp": "本人しか知らない「合言葉」のようなもの。合言葉を知っていれば本人とみなされるため、人に教えたりメモを貼ったりすると意味がなくなります。",
-      "memory_hook_jp": "パスワードといえば本人だけが知る秘密の知識",
-      "inline_quiz": [
-        "2013h25a-q096",
-        "2014h26h-q054"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "口令",
       "term_en": "Password",
-      "definition_zh": "只有本人才知道的秘密字符串，用于基于知识的身份核验的认证信息。",
-      "definition_en": "A secret string known only to the person, used as authentication information for knowledge-based identity verification.",
-      "explanation_zh": "口令是只有本人才知道的秘密字符串，与用户 ID 配对使用，用于确认「确实是本人」。因为它基于本人的知识（记忆），所以是知识认证的代表例子。\n\n一旦被他人猜中或盗用，就很容易被冒名顶替，因此运维上要求口令长而复杂、不重复使用、不定期更换而是在泄露时更换。考试中高频考查：生日、词典词汇等易被猜中的口令的危险性，在多个服务中重复使用所带来的风险，以及与 IC 卡等持有认证的区别（属于知识还是持有）。",
-      "explanation_en": "A password is a secret string known only to the person, used in pairs with a user ID to confirm \"that you really are the person.\" Because it is based on the person's knowledge (memory), it is the representative example of knowledge-based authentication.\n\nIf guessed or stolen by others, impersonation becomes easy, so operational practices require making it long and complex, not reusing it, and changing it not on a fixed schedule but when a leak occurs. The exam frequently asks about the danger of easily guessed passwords such as birthdays or dictionary words, the risk caused by reusing the same password across multiple services, and the difference from possession-based authentication such as IC cards (knowledge versus possession).",
-      "analogy_zh": "就像只有本人才知道的「暗号」。知道暗号就会被当作本人，所以告诉别人或贴便条记下来就失去了意义。",
-      "analogy_en": "Like a \"secret word\" that only the person knows. Since knowing the word means being treated as the person, telling others or posting a sticky note with it defeats the purpose.",
-      "memory_hook_zh": "说到口令，就是只有本人才知道的秘密知识",
-      "memory_hook_en": "Password → secret knowledge known only to the person"
+      "one_jp": "**パスワード**は、本人だけが知っている秘密の文字列で、利用者IDと組にして**知識による認証**に使う情報である。",
+      "one_zh": "**口令**（[[jp:パスワード]]，即密码）是只有本人知道的秘密字符串，与用户 ID 配对，用于**基于知识的认证**。",
+      "one_en": "A **password** ([[jp:パスワード]]) is a secret string only the user knows, paired with a user ID for **knowledge-based authentication**.",
+      "detail_jp": "本人確認の根拠になる情報の種類を**認証要素**といい、知識・所持・生体の3種類がある。パスワードはこのうち知識にあたり、知っていれば誰でも本人とみなされる弱点をもつ。主な脅威には、通信の途中で盗み取る**盗聴**と、考えられる文字列を片端から試す**総当たり攻撃**がある。",
+      "detail_zh": "作为确认本人依据的信息种类称为**认证要素**（[[jp:認証要素]]），分为知识、持有、生物特征 3 种。口令属于其中的知识，弱点是只要知道它，任何人都会被当作本人。主要威胁有在通信途中窃取信息的**窃听**（[[jp:盗聴]]），以及逐个尝试所有可能字符串的**暴力破解攻击**（[[jp:総当たり攻撃]]）。",
+      "detail_en": "The kinds of information used to confirm identity are called **authentication factors** ([[jp:認証要素]]), and there are three: knowledge, possession, and biometrics. A password falls under knowledge, and its weakness is that anyone who knows it is treated as the user. The main threats are **eavesdropping** ([[jp:盗聴]]), which captures data in transit, and the **brute-force attack** ([[jp:総当たり攻撃]]), which tries every possible string one after another.",
+      "analogy_jp": "秘密基地の合言葉のようなもの。言えれば仲間と扱われるので、誰かに漏らした時点で役に立たなくなる。",
+      "analogy_zh": "就像秘密基地的暗号，说得出就被当作自己人，一旦泄露给别人就失去作用。",
+      "analogy_en": "It is like the password to a secret clubhouse: whoever says it is treated as a member, so it becomes useless the moment it leaks.",
+      "hook_jp": "pass(通る)+ word(言葉)= 通るための言葉。",
+      "hook_zh": "pass（通过）+ word（话语）= 用于通过的话语。",
+      "hook_en": "pass + word: the word that lets you pass.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "盗聴への対策は通信路の暗号化、総当たり攻撃への対策はログインの失敗回数に上限を設けることで、対策の向きが異なる。",
+          "text_zh": "针对窃听（[[jp:盗聴]]）的对策是对通信线路加密（[[jp:暗号化]]），针对暴力破解攻击（[[jp:総当たり攻撃]]）的对策是限制登录（[[jp:ログイン]]）失败次数，两者的方向不同。",
+          "text_en": "The countermeasure for eavesdropping ([[jp:盗聴]]) is encrypting ([[jp:暗号化]]) the communication path, while the countermeasure for a brute-force attack ([[jp:総当たり攻撃]]) is capping failed login ([[jp:ログイン]]) attempts. The two aim at different threats.",
+          "qids": [
+            "2019h31h-q059"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "複雑で十分に長いパスワードは不正なログインを防ぐ対策として有効だが、マルウェア(不正なプログラム)の感染を防ぐ対策にはならない。",
+          "text_zh": "复杂且足够长的口令（[[jp:パスワード]]）能有效防止非法登录（[[jp:ログイン]]），但不能防止感染恶意软件（[[jp:マルウェア]]，即恶意程序）。",
+          "text_en": "A complex, long enough password ([[jp:パスワード]]) helps prevent unauthorized logins ([[jp:ログイン]]), but it does nothing to prevent infection by malware ([[jp:マルウェア]]), meaning malicious programs.",
+          "qids": [
+            "2014h26h-q054",
+            "2026r08-q083"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "パスワードは管理者を含む他人に知らせず、業務用と私用でも使い回さない。",
+          "text_zh": "口令（[[jp:パスワード]]）不告诉包括管理员在内的任何人，工作和私人用途之间也不重复使用。",
+          "text_en": "A password ([[jp:パスワード]]) is not told to anyone, administrators included, and the same one is not reused across work and personal accounts.",
+          "qids": [
+            "2011h23a-q081",
+            "2018h30h-q063"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "場面",
+              "zh": "场景",
+              "en": "Situation"
+            },
+            {
+              "jp": "望ましい扱い",
+              "zh": "正确做法",
+              "en": "Do"
+            },
+            {
+              "jp": "避ける扱い",
+              "zh": "应避免的做法",
+              "en": "Avoid"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "文字列の作り方",
+                  "zh": "如何设定字符串",
+                  "en": "Creating it"
+                },
+                {
+                  "jp": "長く、文字の種類を混ぜる",
+                  "zh": "长一些，混合多种字符",
+                  "en": "Make it long and mix character types"
+                },
+                {
+                  "jp": "名前や誕生日など推測しやすいもの",
+                  "zh": "姓名、生日等容易猜到的内容",
+                  "en": "Easy guesses like names or birthdays"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "初めて渡されたとき",
+                  "zh": "首次领取时",
+                  "en": "When first issued"
+                },
+                {
+                  "jp": "最初のログインで自分のものに変える",
+                  "zh": "第一次登录时改成自己设定的口令",
+                  "en": "Change it to your own at the first login"
+                },
+                {
+                  "jp": "初期パスワードのまま使う",
+                  "zh": "继续使用初始口令",
+                  "en": "Keep using the initial password"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "他のサービスでも使うとき",
+                  "zh": "其他服务也要用时",
+                  "en": "Using other services"
+                },
+                {
+                  "jp": "サービスごとに別のものにする",
+                  "zh": "每个服务使用不同的口令",
+                  "en": "Use a different one for each service"
+                },
+                {
+                  "jp": "同じものを使い回す",
+                  "zh": "重复使用同一个口令",
+                  "en": "Reuse the same one"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "他人に知られた疑いがあるとき",
+                  "zh": "怀疑被他人知道时",
+                  "en": "If someone may know it"
+                },
+                {
+                  "jp": "すぐに変える",
+                  "zh": "立即更改",
+                  "en": "Change it right away"
+                },
+                {
+                  "jp": "そのまま様子を見る",
+                  "zh": "先观望不处理",
+                  "en": "Wait and see"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "共有",
+                  "zh": "共享",
+                  "en": "Sharing"
+                },
+                {
+                  "jp": "誰にも教えない",
+                  "zh": "不告诉任何人",
+                  "en": "Tell no one"
+                },
+                {
+                  "jp": "同僚や家族に教える",
+                  "zh": "告诉同事或家人",
+                  "en": "Tell coworkers or family"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "保管",
+                  "zh": "保存",
+                  "en": "Storing"
+                },
+                {
+                  "jp": "書き残すなら暗号化して保管する",
+                  "zh": "如需记下，就加密保存",
+                  "en": "If you write it down, store it encrypted"
+                },
+                {
+                  "jp": "暗号化していないファイルやメモに残す",
+                  "zh": "记在未加密的文件或便条上",
+                  "en": "Leave it in an unencrypted file or note"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2011h23a-q081",
+        "2019h31h-q059",
+        "2026r08-q055"
+      ],
+      "definition_jp": "パスワードは、本人だけが知っている秘密の文字列で、利用者IDと組にして知識による認証に使う情報である。",
+      "definition_zh": "口令（パスワード，即密码）是只有本人知道的秘密字符串，与用户 ID 配对，用于基于知识的认证。",
+      "definition_en": "A password (パスワード) is a secret string only the user knows, paired with a user ID for knowledge-based authentication.",
+      "explanation_jp": "本人確認の根拠になる情報の種類を認証要素といい、知識・所持・生体の3種類がある。パスワードはこのうち知識にあたり、知っていれば誰でも本人とみなされる弱点をもつ。主な脅威には、通信の途中で盗み取る盗聴と、考えられる文字列を片端から試す総当たり攻撃がある。",
+      "explanation_zh": "作为确认本人依据的信息种类称为认证要素（認証要素），分为知识、持有、生物特征 3 种。口令属于其中的知识，弱点是只要知道它，任何人都会被当作本人。主要威胁有在通信途中窃取信息的窃听（盗聴），以及逐个尝试所有可能字符串的暴力破解攻击（総当たり攻撃）。",
+      "explanation_en": "The kinds of information used to confirm identity are called authentication factors (認証要素), and there are three: knowledge, possession, and biometrics. A password falls under knowledge, and its weakness is that anyone who knows it is treated as the user. The main threats are eavesdropping (盗聴), which captures data in transit, and the brute-force attack (総当たり攻撃), which tries every possible string one after another.",
+      "memory_hook_jp": "pass(通る)+ word(言葉)= 通るための言葉。",
+      "memory_hook_zh": "pass（通过）+ word（话语）= 用于通过的话语。",
+      "memory_hook_en": "pass + word: the word that lets you pass.",
+      "inline_quiz": [
+        "2011h23a-q081",
+        "2019h31h-q059",
+        "2026r08-q055"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "アクセス管理",
-      "definition_jp": "誰がどの情報や機能を使えるかを定め、不正な利用を防ぐ管理活動。",
-      "explanation_jp": "アクセス管理は、認証した利用者に対して「どの情報やシステムを、どこまで使ってよいか」という権限を定め、許された範囲だけを利用できるように管理する仕組みです。アクセス権の設定や、利用者IDの登録・変更・削除などの運用がこれに含まれます。\n\n本人確認である認証(誰か)と、許可の範囲を決める認可・アクセス制御(何ができるか)を組み合わせて成り立ちます。試験では、退職者のIDを速やかに削除する、必要最小限の権限だけ与える(最小権限の原則)といった運用上の考え方が問われます。",
-      "analogy_jp": "オフィスで、社員証ごとに入れる部屋を分ける仕組みのようなもの。本人だと分かっても、立ち入ってよい部屋は役割によって決められています。",
-      "memory_hook_jp": "アクセス管理といえば誰が何を使えるかの権限管理",
+      "term_zh": "访问管理",
+      "term_en": "Access Management",
+      "one_jp": "**アクセス管理**は、誰がどの情報や機能をどこまで使えるかという**アクセス権**を決め、その範囲の中だけで使わせるように管理することである。",
+      "one_zh": "**访问管理**（[[jp:アクセス管理]]）是确定谁能在多大范围内使用哪些信息和功能，即**访问权限**（[[jp:アクセス権]]），并加以管理，使其只在该范围内使用。",
+      "one_en": "**Access management** ([[jp:アクセス管理]]) means deciding **access rights** ([[jp:アクセス権]]), that is, who may use which information and functions and how far, and making sure use stays within those limits.",
+      "detail_jp": "アクセス権は、ある利用者があるデータや機能に対して、読む・書き換える・実行するなどのどの操作まで許されるかを表す。アクセス管理は、この権限を決めて与える作業と、その権限に従って利用を許可・拒否する**アクセス制御**をまとめて指す。利用者の登録・異動・削除に合わせて権限を見直し、不要になった権限を残さない。",
+      "detail_zh": "访问权限表示某个用户对某些数据或功能被允许进行读取、修改、执行等哪些操作。访问管理既包括确定并授予这些权限的工作，也包括依据权限允许或拒绝使用的**访问控制**（[[jp:アクセス制御]]）。要配合用户的登记、调动和删除重新审视权限，不留下不再需要的权限。",
+      "detail_en": "Access rights state which operations, such as reading, changing, or running, a given user may perform on given data or functions. Access management covers both deciding and granting these rights and **access control** ([[jp:アクセス制御]]), which allows or refuses use according to them. Rights are reviewed whenever users are added, transferred, or removed, so that no unneeded rights are left behind.",
+      "analogy_jp": "ホテルのカードキーのようなもの。宿泊客だと確認されても、開けられるのは自分の部屋とジムだけで、従業員用の部屋には入れない。",
+      "analogy_zh": "就像酒店的房卡：即使确认了你是住客，也只能打开自己的房间和健身房，进不了员工专用的房间。",
+      "analogy_en": "It is like a hotel key card: even once you are confirmed as a guest, it opens only your room and the gym, not the staff-only areas.",
+      "hook_jp": "access は「近づく・入る」。どこまで入ってよいかの線引きを管理すると覚える。",
+      "hook_zh": "access 意为“接近、进入”。可以记成：管理的是能进到哪一步的界线。",
+      "hook_en": "\"Access\" means getting in, so access management is about drawing the line on how far each person may go.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "利用者ごとに見られるデータを変えるには、利用者とデータの組ごとにアクセス権を与える。",
+          "text_zh": "要让每个用户能看到的数据各不相同，就要按“用户与数据”的组合分别授予访问权限（[[jp:アクセス権]]）。",
+          "text_en": "To vary which data each user can see, grant access rights ([[jp:アクセス権]]) for each pairing of user and data.",
+          "qids": [
+            "2009h21a-q076"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "認証は本人かどうかを確かめることで、アクセス管理は確かめた後に何をどこまで使わせるかを決め、それを守らせることである。",
+          "text_zh": "认证（[[jp:認証]]）是确认是否本人，而访问管理（[[jp:アクセス管理]]）是在确认之后决定允许使用什么、用到什么程度，并让人遵守。",
+          "text_en": "Authentication ([[jp:認証]]) confirms whether someone is who they claim to be. Access management ([[jp:アクセス管理]]) comes after that, deciding what they may use and how far and enforcing it."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2009h21a-q076"
+      ],
+      "definition_jp": "アクセス管理は、誰がどの情報や機能をどこまで使えるかというアクセス権を決め、その範囲の中だけで使わせるように管理することである。",
+      "definition_zh": "访问管理（アクセス管理）是确定谁能在多大范围内使用哪些信息和功能，即访问权限（アクセス権），并加以管理，使其只在该范围内使用。",
+      "definition_en": "Access management (アクセス管理) means deciding access rights (アクセス権), that is, who may use which information and functions and how far, and making sure use stays within those limits.",
+      "explanation_jp": "アクセス権は、ある利用者があるデータや機能に対して、読む・書き換える・実行するなどのどの操作まで許されるかを表す。アクセス管理は、この権限を決めて与える作業と、その権限に従って利用を許可・拒否するアクセス制御をまとめて指す。利用者の登録・異動・削除に合わせて権限を見直し、不要になった権限を残さない。",
+      "explanation_zh": "访问权限表示某个用户对某些数据或功能被允许进行读取、修改、执行等哪些操作。访问管理既包括确定并授予这些权限的工作，也包括依据权限允许或拒绝使用的访问控制（アクセス制御）。要配合用户的登记、调动和删除重新审视权限，不留下不再需要的权限。",
+      "explanation_en": "Access rights state which operations, such as reading, changing, or running, a given user may perform on given data or functions. Access management covers both deciding and granting these rights and access control (アクセス制御), which allows or refuses use according to them. Rights are reviewed whenever users are added, transferred, or removed, so that no unneeded rights are left behind.",
+      "memory_hook_jp": "access は「近づく・入る」。どこまで入ってよいかの線引きを管理すると覚える。",
+      "memory_hook_zh": "access 意为“接近、进入”。可以记成：管理的是能进到哪一步的界线。",
+      "memory_hook_en": "\"Access\" means getting in, so access management is about drawing the line on how far each person may go.",
       "inline_quiz": [
         "2009h21a-q076"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "访问管理",
-      "term_en": "Access Management",
-      "definition_zh": "规定谁可以使用哪些信息或功能、防止非法使用的管理活动。",
-      "definition_en": "A management activity that defines who can use which information or functions, in order to prevent unauthorized use.",
-      "explanation_zh": "访问管理是针对已认证的用户，规定「可以使用哪些信息或系统、可以使用到什么程度」这一权限，并加以管理，使其只能使用被允许范围的机制。设置访问权限，以及用户 ID 的注册、变更、删除等运维都包含在内。\n\n它由身份核验的认证（是谁）与决定许可范围的授权 / 访问控制（能做什么）组合构成。考试中会考查运维上的思路，如迅速删除离职者的 ID、只授予必要的最小权限（最小权限原则）。",
-      "explanation_en": "Access management is the mechanism of defining and managing, for an authenticated user, the permission of \"which information or systems may be used, and to what extent,\" so that only the permitted scope can be used. Setting access rights and operations such as registering, changing, and deleting user IDs are included.\n\nIt is formed by combining authentication, which is identity verification (who you are), with authorization / access control, which determines the scope of permission (what you can do). On the exam, operational thinking is asked, such as promptly deleting the IDs of resigned employees and granting only the minimum necessary permissions (the principle of least privilege).",
-      "analogy_zh": "就像在办公室里，按每张员工证区分可以进入的房间一样。即使确认是本人，可以进入的房间也按角色决定。",
-      "analogy_en": "Like a setup in an office where the rooms you may enter are separated by each employee badge. Even if you are confirmed to be the person, which rooms you may enter is decided by your role.",
-      "memory_hook_zh": "说到访问管理，就是谁能使用什么的权限管理",
-      "memory_hook_en": "Access management → permission control over who can use what"
+      "figure": null
     },
     {
       "term": "ICカード",
-      "definition_jp": "ICチップを埋め込み、本人の所持を根拠に認証に使うカード。",
-      "explanation_jp": "ICカードは、情報を記録・処理できるICチップを埋め込んだカードで、本人がそれを「持っていること」を根拠に認証に使います。磁気カードより記憶できる情報が多く、暗号処理で偽造・複製がされにくいのが特長です。\n\nパスワードのような知識認証に対し、ICカードは所持認証の代表例です。試験では、知識か所持かの区分、暗証番号(知識)と組み合わせると本人確認が強くなる点、紛失・盗難時はカードの利用停止が必要になる点が問われます。",
-      "analogy_jp": "建物に入るための鍵そのもの。鍵を持っている人が本人とみなされるため、なくすと拾った人に使われる危険があり、すぐ無効化が必要です。",
-      "memory_hook_jp": "ICカードといえば所持による認証の代表",
-      "inline_quiz": [
-        "2014h26a-q060"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "IC 卡",
       "term_en": "IC Card",
-      "definition_zh": "嵌入 IC 芯片，以本人持有为依据用于认证的卡片。",
-      "definition_en": "A card with an embedded IC chip, used for authentication based on the fact that the person possesses it.",
-      "explanation_zh": "IC 卡是嵌入了能记录、处理信息的 IC 芯片的卡片，以本人「持有它」为依据用于认证。与磁卡相比，它能存储的信息更多，并通过加密处理使其难以被伪造、复制，这是它的特点。\n\n相对于口令这类知识认证，IC 卡是持有认证的代表例子。考试中会考查：知识还是持有的区分，与密码（知识）组合后身份核验会变得更强这一点，以及遗失、被盗时需要停用卡片这一点。",
-      "explanation_en": "An IC card is a card with an embedded IC chip that can record and process information, used for authentication based on the fact that the person \"possesses it.\" Compared with a magnetic card, it can store more information and, through cryptographic processing, is harder to forge or copy, which is its strength.\n\nIn contrast to knowledge-based authentication such as passwords, the IC card is the representative example of possession-based authentication. On the exam, the following are asked: the distinction between knowledge and possession, the point that combining it with a PIN (knowledge) makes identity verification stronger, and the point that the card must be suspended when lost or stolen.",
-      "analogy_zh": "就像进入大楼用的钥匙本身。持有钥匙的人会被当作本人，所以一旦丢失就有被捡到的人使用的危险，需要立即作废。",
-      "analogy_en": "Like the key itself for entering a building. Whoever holds the key is treated as the person, so if it is lost there is a danger of someone who picks it up using it, and it must be invalidated immediately.",
-      "memory_hook_zh": "说到 IC 卡，就是持有认证的代表",
-      "memory_hook_en": "IC card → the representative of possession-based authentication"
+      "one_jp": "**ICカード**は、情報を記録・処理できるICチップを内蔵したカードで、本人がそれを持っていることを根拠にする**所持による認証**に使う。",
+      "one_zh": "**IC 卡**（[[jp:ICカード]]）是内置能记录和处理信息的 IC 芯片的卡片，用于以本人持有该卡为依据的**基于持有物的认证**。",
+      "one_en": "An **IC card** ([[jp:ICカード]]) has a built-in IC chip that can store and process information, and is used for **possession-based authentication**, where holding the card is the proof of identity.",
+      "detail_jp": "チップの中で暗号の処理ができるため、磁気だけで記録するカードに比べて中身を読み取られたり複製されたりしにくい。社員証や入館証として使われることが多く、なくしたり盗まれたりしたときはすぐに使えないよう止める必要がある。",
+      "detail_zh": "由于芯片内部能进行加密处理，与只用磁条记录的卡相比，其内容更难被读取或复制。它常用作员工卡或出入证，丢失或被盗时需要立即停用。",
+      "detail_en": "Because the chip can carry out cryptographic processing itself, its contents are harder to read or copy than those of a card that stores data only on a magnetic stripe. IC cards are often used as employee badges or building passes, and a lost or stolen card must be disabled right away.",
+      "analogy_jp": "家の鍵のようなもの。鍵を持っている人が住人とみなされるので、落としたら鍵を替える必要がある。",
+      "analogy_zh": "就像家里的钥匙，拿着钥匙的人就被当作住户，所以丢了就得换锁。",
+      "analogy_en": "It is like a house key: whoever holds it is treated as a resident, so if you lose it, the lock has to be changed.",
+      "hook_jp": "IC は Integrated Circuit(集積回路)の略。カードの中に小さな計算機が入っている。",
+      "hook_zh": "IC 是 Integrated Circuit（集成电路）的缩写，卡里装着一台小小的计算机。",
+      "hook_en": "IC stands for integrated circuit, meaning there is a tiny computer inside the card.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ICカードによる入退室管理は、建物や部屋への人の出入りを制限する物理的セキュリティ対策にあたる。",
+          "text_zh": "用 IC 卡（[[jp:ICカード]]）进行出入室管理（[[jp:入退室管理]]），属于限制人员进出建筑物或房间的物理安全对策（[[jp:物理的セキュリティ対策]]）。",
+          "text_en": "Managing entry to and exit from rooms ([[jp:入退室管理]]) with IC cards ([[jp:ICカード]]) is a physical security measure ([[jp:物理的セキュリティ対策]]), since it restricts people's movement into buildings and rooms.",
+          "qids": [
+            "2025r07-q088"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2014h26a-q060",
+        "2025r07-q088"
+      ],
+      "definition_jp": "ICカードは、情報を記録・処理できるICチップを内蔵したカードで、本人がそれを持っていることを根拠にする所持による認証に使う。",
+      "definition_zh": "IC 卡（ICカード）是内置能记录和处理信息的 IC 芯片的卡片，用于以本人持有该卡为依据的基于持有物的认证。",
+      "definition_en": "An IC card (ICカード) has a built-in IC chip that can store and process information, and is used for possession-based authentication, where holding the card is the proof of identity.",
+      "explanation_jp": "チップの中で暗号の処理ができるため、磁気だけで記録するカードに比べて中身を読み取られたり複製されたりしにくい。社員証や入館証として使われることが多く、なくしたり盗まれたりしたときはすぐに使えないよう止める必要がある。",
+      "explanation_zh": "由于芯片内部能进行加密处理，与只用磁条记录的卡相比，其内容更难被读取或复制。它常用作员工卡或出入证，丢失或被盗时需要立即停用。",
+      "explanation_en": "Because the chip can carry out cryptographic processing itself, its contents are harder to read or copy than those of a card that stores data only on a magnetic stripe. IC cards are often used as employee badges or building passes, and a lost or stolen card must be disabled right away.",
+      "memory_hook_jp": "IC は Integrated Circuit(集積回路)の略。カードの中に小さな計算機が入っている。",
+      "memory_hook_zh": "IC 是 Integrated Circuit（集成电路）的缩写，卡里装着一台小小的计算机。",
+      "memory_hook_en": "IC stands for integrated circuit, meaning there is a tiny computer inside the card.",
+      "inline_quiz": [
+        "2014h26a-q060",
+        "2025r07-q088"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ワンタイムパスワード",
-      "definition_jp": "一度きり・短時間だけ有効な使い捨てのパスワード。",
-      "explanation_jp": "ワンタイムパスワード(OTP)は、その場かぎりで一度しか使えない、または短時間しか有効でないパスワードです。専用のトークンやスマートフォンのアプリ、SMSなどで、ログインのたびに新しい番号が発行されます。\n\n固定のパスワードと違い、たとえ盗み見られても次回には使えないため、盗聴や使い回しに強いのが利点です。試験では、固定パスワードとの違い(毎回変わる/一度きり)や、時刻や回数から番号を生成する仕組み、別の認証要素と組み合わせて使われる点が問われます。",
-      "analogy_jp": "1回しか使えない使い捨ての入場整理券のようなもの。番号を盗み見られても、次に来たときには別の番号に変わっているので役に立ちません。",
-      "memory_hook_jp": "ワンタイムパスワードといえば一度きりの使い捨て",
-      "inline_quiz": [
-        "2011h23a-q085",
-        "2013h25h-q058"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"トークン/アプリ\"] --> B[\"時刻や回数から生成\"]; B --> C[\"使い捨ての番号\"]; C --> D[\"今回のログインで使用\"]; D --> E[\"次回は無効\"]",
-        "svg_path": "figures/technology-23-63-u08-t01.svg",
-        "rendered": true
-      },
       "term_zh": "一次性口令",
       "term_en": "One-Time Password",
-      "definition_zh": "只能使用一次、仅在短时间内有效的用后即弃的口令。",
-      "definition_en": "A disposable password that can be used only once and is valid only for a short time.",
-      "explanation_zh": "一次性口令（OTP）是仅限当场、只能使用一次，或仅在短时间内有效的口令。它通过专用令牌、智能手机上的应用或短信等，在每次登录时发放新的号码。\n\n与固定口令不同，即使被偷看到，下一次也无法再用，因此它对窃听和重复使用具有较强的防护力。考试中会考查：与固定口令的区别（每次变化 / 只能用一次）、根据时刻或次数生成号码的机制，以及它与其他认证要素组合使用这一点。",
-      "explanation_en": "A one-time password (OTP) is a password that is valid only on the spot and can be used only once, or that is valid only for a short time. A new number is issued at each login via a dedicated token, a smartphone app, SMS, and so on.\n\nUnlike a fixed password, even if it is glimpsed by someone, it cannot be used the next time, so it is strong against eavesdropping and reuse. On the exam, the following are asked: the difference from a fixed password (changes each time / usable only once), the mechanism of generating the number from the time or a counter, and the point that it is used in combination with another authentication factor.",
-      "analogy_zh": "就像只能用一次、用后即弃的入场号码券。即使号码被偷看到，下次来时已经换成了别的号码，所以毫无用处。",
-      "analogy_en": "Like a disposable, single-use admission ticket number. Even if the number is glimpsed, it has changed to a different number by the next visit, so it is useless.",
-      "memory_hook_zh": "说到一次性口令，就是只能用一次、用后即弃",
-      "memory_hook_en": "One-time password → single-use and disposable"
+      "one_jp": "**ワンタイムパスワード**は、1回の認証にだけ使える**使い捨て**のパスワードで、認証のたびに新しい値に変わる。",
+      "one_zh": "**一次性口令**（[[jp:ワンタイムパスワード]]）是只能用于一次认证、**用完即弃**的口令，每次认证都会换成新的值。",
+      "one_en": "A **one-time password** ([[jp:ワンタイムパスワード]]) is a **single-use** password valid for one authentication only, and a new value is issued every time.",
+      "detail_jp": "値は、例えば**トークン**と呼ぶ専用の小型装置やスマートフォンのアプリが作るか、SMSで届けられる。事前に配られた**乱数表**のうち毎回異なる位置を指定され、その数字を入れる方式や、覚えておいた位置と順序に毎回違う数字が並ぶ表を使う**マトリクス認証**も、入力する値が認証ごとに変わる点で同じ考え方に立つ。",
+      "detail_zh": "这个值例如由称为**令牌**（[[jp:トークン]]）的专用小型设备或智能手机应用生成，也可以通过短信服务（SMS）发送。输入事先发放的**随机数表**（[[jp:乱数表]]）中每次指定的不同位置上的数字的方式，以及**矩阵认证**（[[jp:マトリクス認証]]）——表格中每次出现不同的数字，按自己记住的位置和顺序输入——在每次认证输入的值都会变化这一点上，也基于同样的思路。",
+      "detail_en": "The value is generated, for example, by a small dedicated device called a **token** ([[jp:トークン]]) or by a smartphone app, or it is sent by SMS. Two other methods follow the same idea, because the value entered changes with each authentication: typing the digits at positions, different each time, specified on a pre-issued **random number table** ([[jp:乱数表]]), and **matrix authentication** ([[jp:マトリクス認証]]), where different digits appear each time in a grid at positions and in an order the user has memorized.",
+      "analogy_jp": "銀行の窓口で受け取る呼出番号の紙のようなもの。一度呼ばれて使えば終わりで、次に来たときは別の番号になる。",
+      "analogy_zh": "就像在银行窗口领取的叫号单，叫到用过就作废，下次来又是别的号码。",
+      "analogy_en": "It is like the numbered ticket you take at a bank counter: once your number is called, it is done, and on your next visit you get a different one.",
+      "hook_jp": "one-time は「1回限り」という意味。何度でも使える普通のパスワードとは逆である。",
+      "hook_zh": "one-time 意为“仅限一次”，与可以反复使用的普通口令正好相反。",
+      "hook_en": "\"One-time\" means good for one use only, the opposite of an ordinary password that you can use again and again.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ワンタイムパスワードで防げるのは漏えいした値を後から使う不正侵入であり、通信の途中での盗聴そのものは防げない。",
+          "text_zh": "一次性口令（[[jp:ワンタイムパスワード]]）能防止的是事后利用泄露（[[jp:漏えい]]）的值进行的非法入侵，而无法防止通信途中的窃听（[[jp:盗聴]]）本身。",
+          "text_en": "A one-time password ([[jp:ワンタイムパスワード]]) stops intrusions that reuse a leaked ([[jp:漏えい]]) value later, but it cannot stop eavesdropping ([[jp:盗聴]]) on the communication itself.",
+          "qids": [
+            "2015h27h-q061"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "乱数表やマトリクス認証も、盗聴された値でのなりすましを防ぐのに有効である。",
+          "text_zh": "随机数表（[[jp:乱数表]]）和矩阵认证（[[jp:マトリクス認証]]）也能有效防止利用被窃听的值进行冒充（[[jp:なりすまし]]）。",
+          "text_en": "Random number tables ([[jp:乱数表]]) and matrix authentication ([[jp:マトリクス認証]]) also work well against impersonation ([[jp:なりすまし]]) with an eavesdropped value.",
+          "qids": [
+            "2014h26a-q051",
+            "2017h29a-q097"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "1回のログインで許可された複数のシステムを使えるようにする仕組みはシングルサインオンで、ワンタイムパスワードとは別物である。",
+          "text_zh": "登录（[[jp:ログイン]]）一次就能使用多个已获许可的系统的机制是单点登录（[[jp:シングルサインオン]]），与一次性口令（[[jp:ワンタイムパスワード]]）不是一回事。",
+          "text_en": "The mechanism that lets one login ([[jp:ログイン]]) open several permitted systems is single sign-on ([[jp:シングルサインオン]]), which is not the same as a one-time password ([[jp:ワンタイムパスワード]]).",
+          "qids": [
+            "2013h25h-q058",
+            "2018h30a-q069"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "gen",
+              "label": {
+                "jp": "新しい値を生成",
+                "zh": "生成新值",
+                "en": "Generate a new value"
+              }
+            },
+            {
+              "id": "use",
+              "label": {
+                "jp": "その値でログイン",
+                "zh": "用该值登录",
+                "en": "Log in with it"
+              }
+            },
+            {
+              "id": "void",
+              "label": {
+                "jp": "使った値は無効",
+                "zh": "用过的值失效",
+                "en": "Used value expires"
+              }
+            },
+            {
+              "id": "next",
+              "label": {
+                "jp": "次回は別の値",
+                "zh": "下次换另一个值",
+                "en": "A different value next time"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "専用の小型装置やスマートフォンのアプリが、その回だけの値を作る。",
+            "caption_zh": "专用小型设备或智能手机应用生成只供这一次使用的值。",
+            "caption_en": "A small dedicated device or smartphone app creates a value for this one time only.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "利用者はその値を入力して認証を受ける。",
+            "caption_zh": "用户输入该值，接受认证。",
+            "caption_en": "The user enters that value to be authenticated.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "一度使った値はその時点で通用しなくなる。",
+            "caption_zh": "用过一次的值从那一刻起就不再有效。",
+            "caption_en": "Once used, the value stops working immediately.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "次のログインでは、また別の値が作られる。",
+            "caption_zh": "下次登录时，又会生成另一个值。",
+            "caption_en": "At the next login, another value is created.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2015h27a-q055",
+        "2015h27h-q061",
+        "2017h29h-q094"
+      ],
+      "definition_jp": "ワンタイムパスワードは、1回の認証にだけ使える使い捨てのパスワードで、認証のたびに新しい値に変わる。",
+      "definition_zh": "一次性口令（ワンタイムパスワード）是只能用于一次认证、用完即弃的口令，每次认证都会换成新的值。",
+      "definition_en": "A one-time password (ワンタイムパスワード) is a single-use password valid for one authentication only, and a new value is issued every time.",
+      "explanation_jp": "値は、例えばトークンと呼ぶ専用の小型装置やスマートフォンのアプリが作るか、SMSで届けられる。事前に配られた乱数表のうち毎回異なる位置を指定され、その数字を入れる方式や、覚えておいた位置と順序に毎回違う数字が並ぶ表を使うマトリクス認証も、入力する値が認証ごとに変わる点で同じ考え方に立つ。",
+      "explanation_zh": "这个值例如由称为令牌（トークン）的专用小型设备或智能手机应用生成，也可以通过短信服务（SMS）发送。输入事先发放的随机数表（乱数表）中每次指定的不同位置上的数字的方式，以及矩阵认证（マトリクス認証）——表格中每次出现不同的数字，按自己记住的位置和顺序输入——在每次认证输入的值都会变化这一点上，也基于同样的思路。",
+      "explanation_en": "The value is generated, for example, by a small dedicated device called a token (トークン) or by a smartphone app, or it is sent by SMS. Two other methods follow the same idea, because the value entered changes with each authentication: typing the digits at positions, different each time, specified on a pre-issued random number table (乱数表), and matrix authentication (マトリクス認証), where different digits appear each time in a grid at positions and in an order the user has memorized.",
+      "memory_hook_jp": "one-time は「1回限り」という意味。何度でも使える普通のパスワードとは逆である。",
+      "memory_hook_zh": "one-time 意为“仅限一次”，与可以反复使用的普通口令正好相反。",
+      "memory_hook_en": "\"One-time\" means good for one use only, the opposite of an ordinary password that you can use again and again.",
+      "inline_quiz": [
+        "2015h27a-q055",
+        "2015h27h-q061",
+        "2017h29h-q094"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "多要素認証",
-      "definition_jp": "知識・所持・生体など種類の異なる要素を2つ以上組み合わせる認証。",
-      "explanation_jp": "多要素認証(MFA)は、性質の異なる複数の認証要素を組み合わせて本人確認を行う方式です。認証要素は、本人だけが知る「知識」(パスワードなど)、本人が持つ「所持」(ICカード・スマートフォンなど)、本人の身体的特徴である「生体」(指紋・顔など)の3種類に大別されます。\n\nこのうち2種類以上を使うものを多要素認証、特に2種類を使うものを二要素認証と呼びます。パスワードを2つ重ねるなど同じ種類だけを増やしても多要素にはならない点が要注意です。1つの要素が破られても他の要素で守れるため安全性が高く、試験では最頻出のテーマです。",
-      "analogy_jp": "玄関を「鍵(所持)」と「暗証番号(知識)」の両方で守るようなもの。片方を破られても、もう片方が残っているので簡単には突破されません。",
-      "memory_hook_jp": "多要素認証といえば知識・所持・生体を組み合わせる",
-      "inline_quiz": [
-        "2009h21h-q063",
-        "2013h25a-q050"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"多要素認証\"]; A --> B[\"知識(パスワード)\"]; A --> C[\"所持(ICカード)\"]; A --> D[\"生体(指紋・顔)\"]; B --> E[\"2種類以上を組合せ\"]; C --> E; D --> E",
-        "svg_path": "figures/technology-23-63-u08-t02.svg",
-        "rendered": true
-      },
       "term_zh": "多因素认证",
       "term_en": "Multi-Factor Authentication",
-      "definition_zh": "将知识、持有、生物特征等种类不同的要素组合两种以上的认证。",
-      "definition_en": "Authentication that combines two or more factors of different kinds, such as knowledge, possession, and biometrics.",
-      "explanation_zh": "多因素认证（MFA）是组合性质不同的多个认证要素来进行身份核验的方式。认证要素大致分为三类：只有本人才知道的「知识」（口令等）、本人持有的「持有」（IC 卡、智能手机等）、本人身体特征的「生物特征」（指纹、面部等）。\n\n其中使用两类以上的称为多因素认证，特别是使用两类的称为双因素认证。要特别注意：即使叠加两个口令等只增加同一类要素，也不构成多因素。即便一个要素被攻破，还能靠其他要素守护，所以安全性高，是考试中最高频的主题。",
-      "explanation_en": "Multi-factor authentication (MFA) is a method that combines multiple authentication factors of different natures to verify identity. Authentication factors are broadly divided into three kinds: \"knowledge\" known only to the person (passwords, etc.), \"possession\" held by the person (IC cards, smartphones, etc.), and \"biometrics\" that are the person's physical characteristics (fingerprints, face, etc.).\n\nUsing two or more of these kinds is called multi-factor authentication, and using two kinds in particular is called two-factor authentication. Note carefully that increasing only the same kind of factor, such as stacking two passwords, does not make it multi-factor. Even if one factor is broken, the others can still protect you, so it offers high security and is the most frequent topic on the exam.",
-      "analogy_zh": "就像用「钥匙（持有）」和「密码（知识）」两者来守护家门一样。即使一方被攻破，另一方还在，所以不会被轻易突破。",
-      "analogy_en": "Like protecting a front door with both a \"key (possession)\" and a \"PIN (knowledge).\" Even if one is broken, the other remains, so it is not easily breached.",
-      "memory_hook_zh": "说到多因素认证，就是组合知识、持有、生物特征",
-      "memory_hook_en": "Multi-factor authentication → combine knowledge, possession, and biometrics"
+      "one_jp": "**多要素認証**は、種類の異なる**認証要素**を2つ以上組み合わせて本人を確かめる方式である。",
+      "one_zh": "**多因素认证**（[[jp:多要素認証]]）是组合两个以上不同种类的**认证要素**（[[jp:認証要素]]）来确认本人的方式。",
+      "one_en": "**Multi-factor authentication** ([[jp:多要素認証]]) confirms identity by combining two or more **authentication factors** ([[jp:認証要素]]) of different types.",
+      "detail_jp": "所持の要素は所有物とも呼ばれ、生体の要素は指紋や静脈のような体の特徴のほか筆跡のような動作の特徴も含み、**バイオメトリクス**とも呼ばれる。種類の異なる要素を2つ使い、その両方の確認に通って初めて利用を認めるものを**二要素認証**と呼ぶ。片方の要素が破られても、もう一方が残るので守りが固くなる。",
+      "detail_zh": "持有类要素也称为所有物；生物特征类要素除了指纹、静脉这类身体特征外，还包括笔迹这类动作特征，也称为**生物识别**（[[jp:バイオメトリクス]]）。使用两种不同的要素、两项确认都通过后才允许使用的方式称为**双因素认证**（[[jp:二要素認証]]）。即使其中一个要素被攻破，另一个仍然有效，因此防护更牢固。",
+      "detail_en": "The possession factor is also called an owned item ([[jp:所有物]]); the biometric factor covers behavioral traits like handwriting as well as physical ones like fingerprints and veins, and it also goes by the loanword **biometrics** ([[jp:バイオメトリクス]]). Using two factors of different types and granting access only after both checks pass is called **two-factor authentication** ([[jp:二要素認証]]). If one factor is broken, the other still stands, which makes the defense stronger.",
+      "analogy_jp": "貸金庫を開けるのに、窓口で暗証番号を言い、さらに自分の鍵を差し込む必要があるようなもの。番号を知られても鍵がなければ開かない。",
+      "analogy_zh": "就像打开银行保险箱，既要在窗口报出密码，还要插入自己的钥匙。即使密码被人知道，没有钥匙也打不开。",
+      "analogy_en": "It is like opening a bank safe-deposit box, where you must give a PIN at the counter and also turn your own key. Someone who learns the PIN still cannot open it without the key.",
+      "hook_jp": "MFA は Multi-Factor Authentication の略。factor は「要素」を意味する。",
+      "hook_zh": "MFA 是 Multi-Factor Authentication 的缩写，factor 意为“要素”。",
+      "hook_en": "MFA stands for multi-factor authentication, and a factor is one type of proof.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "認証要素は知識・所持・生体の3種類に分ける。指紋などの生体情報も個人に関する情報だが、分類の名前は「生体」である。",
+          "text_zh": "认证要素（[[jp:認証要素]]）分为知识（[[jp:知識]]）、持有（[[jp:所持]]）、生物特征（[[jp:生体]]）3 种。指纹等生物信息虽然也是与个人有关的信息，但分类名称是“生物特征”。",
+          "text_en": "Authentication factors ([[jp:認証要素]]) fall into three types: knowledge ([[jp:知識]]), possession ([[jp:所持]]), and biometrics ([[jp:生体]]). Fingerprints and similar data are also personal information, but the category is called biometrics.",
+          "qids": [
+            "2023r05-q062",
+            "2020r02o-q086"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "同じ種類の要素を重ねても多要素にはならない。知識による認証に、所持や生体の要素を加えたときに二要素になる。",
+          "text_zh": "叠加同一种类的要素并不构成多因素（[[jp:多要素]]）。在基于知识的认证上加入持有或生物特征要素时，才成为双因素（[[jp:二要素]]）。",
+          "text_en": "Stacking factors of the same type does not make it multi-factor ([[jp:多要素]]). It becomes two-factor ([[jp:二要素]]) when a possession or biometric factor is added to knowledge-based authentication.",
+          "qids": [
+            "2022r04-q082"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "確認を2回に分けて行う二段階認証でも、2回とも知識を使えば二要素認証にはならない。段階の数と要素の種類の数は別に数える。",
+          "text_zh": "即使是分两次确认的两步验证（[[jp:二段階認証]]），如果两次都用知识要素，也不是双因素认证（[[jp:二要素認証]]）。步骤数和要素种类数要分开计算。",
+          "text_en": "Even two-step verification ([[jp:二段階認証]]), which checks twice, is not two-factor authentication ([[jp:二要素認証]]) if both checks use knowledge. The number of steps and the number of factor types are counted separately.",
+          "qids": [
+            "2021r03-q060"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "factor",
+            "label": {
+              "jp": "認証要素",
+              "zh": "认证要素",
+              "en": "Authentication factor"
+            },
+            "children": [
+              {
+                "id": "know",
+                "label": {
+                  "jp": "知識(本人が知っている)",
+                  "zh": "知识（本人知道的）",
+                  "en": "Knowledge (something you know)"
+                },
+                "children": [
+                  {
+                    "id": "k1",
+                    "label": {
+                      "jp": "パスワード",
+                      "zh": "口令",
+                      "en": "Password"
+                    }
+                  },
+                  {
+                    "id": "k2",
+                    "label": {
+                      "jp": "秘密の質問の答え",
+                      "zh": "秘密问题的答案",
+                      "en": "Answer to a secret question"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "have",
+                "label": {
+                  "jp": "所持(本人が持っている物)",
+                  "zh": "持有（本人拥有的物品）",
+                  "en": "Possession (something you have)"
+                },
+                "children": [
+                  {
+                    "id": "h1",
+                    "label": {
+                      "jp": "ICカード",
+                      "zh": "IC 卡",
+                      "en": "IC card"
+                    }
+                  },
+                  {
+                    "id": "h2",
+                    "label": {
+                      "jp": "SMSを受け取る携帯電話",
+                      "zh": "接收短信（SMS）的手机",
+                      "en": "Mobile phone that receives SMS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "bio",
+                "label": {
+                  "jp": "生体・バイオメトリクス(体や動作の特徴)",
+                  "zh": "生物特征（生物识别：身体或动作的特征）",
+                  "en": "Biometrics (traits of your body or behavior)"
+                },
+                "children": [
+                  {
+                    "id": "b1",
+                    "label": {
+                      "jp": "指紋・静脈",
+                      "zh": "指纹、静脉",
+                      "en": "Fingerprint, vein pattern"
+                    }
+                  },
+                  {
+                    "id": "b2",
+                    "label": {
+                      "jp": "署名の筆跡・筆圧",
+                      "zh": "签名的笔迹、笔压",
+                      "en": "Signature handwriting and pen pressure"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2020r02o-q086",
+        "2022r04-q082",
+        "2023r05-q062"
+      ],
+      "definition_jp": "多要素認証は、種類の異なる認証要素を2つ以上組み合わせて本人を確かめる方式である。",
+      "definition_zh": "多因素认证（多要素認証）是组合两个以上不同种类的认证要素（認証要素）来确认本人的方式。",
+      "definition_en": "Multi-factor authentication (多要素認証) confirms identity by combining two or more authentication factors (認証要素) of different types.",
+      "explanation_jp": "所持の要素は所有物とも呼ばれ、生体の要素は指紋や静脈のような体の特徴のほか筆跡のような動作の特徴も含み、バイオメトリクスとも呼ばれる。種類の異なる要素を2つ使い、その両方の確認に通って初めて利用を認めるものを二要素認証と呼ぶ。片方の要素が破られても、もう一方が残るので守りが固くなる。",
+      "explanation_zh": "持有类要素也称为所有物；生物特征类要素除了指纹、静脉这类身体特征外，还包括笔迹这类动作特征，也称为生物识别（バイオメトリクス）。使用两种不同的要素、两项确认都通过后才允许使用的方式称为双因素认证（二要素認証）。即使其中一个要素被攻破，另一个仍然有效，因此防护更牢固。",
+      "explanation_en": "The possession factor is also called an owned item (所有物); the biometric factor covers behavioral traits like handwriting as well as physical ones like fingerprints and veins, and it also goes by the loanword biometrics (バイオメトリクス). Using two factors of different types and granting access only after both checks pass is called two-factor authentication (二要素認証). If one factor is broken, the other still stands, which makes the defense stronger.",
+      "memory_hook_jp": "MFA は Multi-Factor Authentication の略。factor は「要素」を意味する。",
+      "memory_hook_zh": "MFA 是 Multi-Factor Authentication 的缩写，factor 意为“要素”。",
+      "memory_hook_en": "MFA stands for multi-factor authentication, and a factor is one type of proof.",
+      "inline_quiz": [
+        "2020r02o-q086",
+        "2022r04-q082",
+        "2023r05-q062"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "利用者ID",
+      "b": "パスワード",
+      "rows": [
+        {
+          "label_jp": "役割",
+          "label_zh": "作用",
+          "label_en": "Role",
+          "a_jp": "誰かを示す(識別)",
+          "a_zh": "表明是谁（识别）",
+          "a_en": "Says who someone is (identification)",
+          "b_jp": "本人かを確かめる(認証)",
+          "b_zh": "确认是否本人（认证）",
+          "b_en": "Confirms it is really them (authentication)",
+          "key": true
+        },
+        {
+          "label_jp": "秘密にする必要",
+          "label_zh": "保密的必要性",
+          "label_en": "Need for secrecy",
+          "a_jp": "低い(他人に見られる場面もある)",
+          "a_zh": "低（有时会被他人看到）",
+          "a_en": "Low (others may see it)",
+          "b_jp": "高い(本人以外に知らせない)",
+          "b_zh": "高（不告诉本人以外的人）",
+          "b_en": "High (shared with no one else)",
+          "key": false
+        },
+        {
+          "label_jp": "認証要素としての位置",
+          "label_zh": "作为认证要素的定位",
+          "label_en": "As an authentication factor",
+          "a_jp": "それだけでは認証要素にならない",
+          "a_zh": "单独使用时不构成认证要素",
+          "a_en": "Not a factor on its own",
+          "b_jp": "知識の要素",
+          "b_zh": "知识要素",
+          "b_en": "Knowledge factor",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "パスワード",
+      "b": "ICカード",
+      "rows": [
+        {
+          "label_jp": "認証要素",
+          "label_zh": "认证要素",
+          "label_en": "Authentication factor",
+          "a_jp": "知識(覚えている)",
+          "a_zh": "知识（记在脑中）",
+          "a_en": "Knowledge (remembered)",
+          "b_jp": "所持(持っている)",
+          "b_zh": "持有（拿在手里）",
+          "b_en": "Possession (carried)",
+          "key": true
+        },
+        {
+          "label_jp": "盗まれ方の例",
+          "label_zh": "被盗方式举例",
+          "label_en": "How it gets stolen",
+          "a_jp": "盗み見・推測・盗聴",
+          "a_zh": "偷窥、猜测、窃听",
+          "a_en": "Shoulder surfing, guessing, eavesdropping",
+          "b_jp": "紛失・盗難",
+          "b_zh": "丢失、被盗",
+          "b_en": "Loss or theft",
+          "key": false
+        },
+        {
+          "label_jp": "漏れたときの対処",
+          "label_zh": "泄露时的处理",
+          "label_en": "If compromised",
+          "a_jp": "すぐに変更する",
+          "a_zh": "立即更改",
+          "a_en": "Change it right away",
+          "b_jp": "利用を止めて再発行する",
+          "b_zh": "停用并重新发放",
+          "b_en": "Disable it and get a new one",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "ログインして本人と確認された後も、使える範囲は**アクセス権**で絞られ、何でも使えるわけではない。",
+    "**パスワード**は知識の認証要素なので、他人に知られた時点でその人も本人として通ってしまう。",
+    "**多要素認証**は、知識・所持・生体のうち種類の異なる要素を組み合わせて初めて成り立つ。",
+    "**ワンタイムパスワード**は使い捨てなので、盗まれた値を後から入力されても通らない。",
+    "**リスクベース認証**は、普段と違う状況のときだけ確認を足すので、いつもどおりの利用では手間が増えない。"
+  ],
+  "key_points_zh": [
+    "登录并被确认为本人之后，可用范围仍受**访问权限**限制，并不是什么都能用。",
+    "**口令**属于知识类认证要素，一旦被他人知道，那个人也会被当作本人放行。",
+    "**多因素认证**只有组合知识、持有、生物特征中不同种类的要素才能成立。",
+    "**一次性口令**用完即弃，被盗的值即使事后被输入也无法通过。",
+    "**基于风险的认证**只在情况与平常不同时追加确认，正常使用时不会增加麻烦。"
+  ],
+  "key_points_en": [
+    "Even after logging in and being confirmed, what you can use is still limited by your **access rights**.",
+    "A **password** is a knowledge factor, so anyone who learns it gets through as you.",
+    "**Multi-factor authentication** works only when it combines different types of factor among knowledge, possession, and biometrics.",
+    "A **one-time password** is used once and discarded, so a stolen value entered later will not work.",
+    "**Risk-based authentication** adds a check only when the situation is unusual, so normal use takes no extra effort."
+  ],
+  "overview": {
+    "intro_jp": "識別(誰かを示す)と認証(本人かを確かめる)とアクセス権(何を使えるか)の役割を分けられる。認証要素(本人確認の根拠になる情報の種類)の知識・所持・生体を見分け、多要素認証になる組合せとならない組合せを判断できる。ワンタイムパスワードやリスクベース認証が、どんな不正をどう防ぐのかを説明できる。",
+    "intro_zh": "能区分识别（表明是谁）、认证（确认是否本人）和访问权限（能使用什么）各自的作用。能辨别认证要素（作为确认本人依据的信息种类）中的知识、持有和生物特征，并判断哪些组合构成多因素认证、哪些不构成。能说明一次性口令和基于风险的认证分别防范哪种非法行为、如何防范。",
+    "intro_en": "Tell apart the roles of identification (saying who someone is), authentication (confirming it is really that person), and access rights (what they may use). Distinguish the knowledge, possession, and biometric types of authentication factor (the kinds of information used to confirm identity), and judge which combinations count as multi-factor authentication and which do not. Explain what kind of misuse one-time passwords and risk-based authentication each prevent, and how.",
+    "freq_badge": "頻出",
+    "est_minutes": 44
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "リスクベース認証: リスクベース認証といえば怪しいときだけ追加認証",
-      "ログイン: ログインといえばID/パスワードで利用を始める入口",
-      "利用者ID: 利用者IDといえば誰かを識別する符号",
-      "パスワード: パスワードといえば本人だけが知る秘密の知識",
-      "アクセス管理: アクセス管理といえば誰が何を使えるかの権限管理",
-      "ICカード: ICカードといえば所持による認証の代表",
-      "ワンタイムパスワード: ワンタイムパスワードといえば一度きりの使い捨て",
-      "多要素認証: 多要素認証といえば知識・所持・生体を組み合わせる"
-    ],
     "key_points_jp": [
-      "認証要素は「知識(パスワード)」「所持(ICカード・OTP)」「生体(指紋・顔)」の3種類に大別される。",
-      "利用者IDは「誰か」を識別する役割、パスワードは「本人であること」を確認する役割で、IDは公開可・パスワードは秘密が原則。",
-      "ワンタイムパスワードは一度きり・短時間だけ有効なため、盗み見られても再利用されず固定パスワードより安全。",
-      "多要素認証は種類の異なる要素を2つ以上組み合わせる方式で、最も重要かつ頻出。同じ種類を重ねても多要素にはならない。",
-      "リスクベース認証は状況の危険度に応じて追加認証の要否を変え、安全性と利便性を両立させる。"
+      "ログインして本人と確認された後も、使える範囲はアクセス権で絞られ、何でも使えるわけではない。",
+      "パスワードは知識の認証要素なので、他人に知られた時点でその人も本人として通ってしまう。",
+      "多要素認証は、知識・所持・生体のうち種類の異なる要素を組み合わせて初めて成り立つ。",
+      "ワンタイムパスワードは使い捨てなので、盗まれた値を後から入力されても通らない。",
+      "リスクベース認証は、普段と違う状況のときだけ確認を足すので、いつもどおりの利用では手間が増えない。"
     ],
     "key_points_zh": [
-      "认证要素大致分为三类：「知识（口令）」「持有（IC 卡、OTP）」「生物特征（指纹、面部）」。",
-      "用户 ID 承担识别「是谁」的角色，口令承担确认「是否本人」的角色；原则上 ID 可公开、口令需保密。",
-      "一次性口令只能使用一次、仅在短时间内有效，因此即使被偷看到也不会被再次利用，比固定口令更安全。",
-      "多因素认证是将种类不同的要素组合两种以上的方式，最为重要且高频；叠加同一类要素并不构成多因素。",
-      "基于风险的认证根据情况的危险程度改变是否需要追加认证，兼顾安全性与便利性。"
+      "登录并被确认为本人之后，可用范围仍受访问权限限制，并不是什么都能用。",
+      "口令属于知识类认证要素，一旦被他人知道，那个人也会被当作本人放行。",
+      "多因素认证只有组合知识、持有、生物特征中不同种类的要素才能成立。",
+      "一次性口令用完即弃，被盗的值即使事后被输入也无法通过。",
+      "基于风险的认证只在情况与平常不同时追加确认，正常使用时不会增加麻烦。"
     ],
     "key_points_en": [
-      "Authentication factors are broadly divided into three kinds: \"knowledge (passwords),\" \"possession (IC cards, OTPs),\" and \"biometrics (fingerprints, face).\"",
-      "The user ID plays the role of identifying \"who,\" and the password plays the role of confirming \"that you are the person\"; in principle the ID may be disclosed while the password must be kept secret.",
-      "A one-time password is usable only once and valid only for a short time, so even if glimpsed it cannot be reused, making it safer than a fixed password.",
-      "Multi-factor authentication is a method that combines two or more factors of different kinds; it is the most important and frequent topic, and stacking the same kind of factor does not make it multi-factor.",
-      "Risk-based authentication changes whether additional authentication is needed based on the risk level of the situation, balancing security and convenience."
+      "Even after logging in and being confirmed, what you can use is still limited by your access rights.",
+      "A password is a knowledge factor, so anyone who learns it gets through as you.",
+      "Multi-factor authentication works only when it combines different types of factor among knowledge, possession, and biometrics.",
+      "A one-time password is used once and discarded, so a stolen value entered later will not work.",
+      "Risk-based authentication adds a check only when the situation is unusual, so normal use takes no extra effort."
+    ],
+    "memory_hooks_jp": [
+      "リスクベース認証: 英語の risk-based は「危険度に基づく」という意味である。",
+      "利用者ID: ID は identification(識別)の略。",
+      "パスワード: pass(通る)+ word(言葉)= 通るための言葉。",
+      "アクセス管理: access は「近づく・入る」。どこまで入ってよいかの線引きを管理すると覚える。",
+      "ICカード: IC は Integrated Circuit(集積回路)の略。カードの中に小さな計算機が入っている。",
+      "ワンタイムパスワード: one-time は「1回限り」という意味。何度でも使える普通のパスワードとは逆である。",
+      "多要素認証: MFA は Multi-Factor Authentication の略。factor は「要素」を意味する。"
     ],
     "memory_hooks_zh": [
-      "基于风险的认证：说到基于风险的认证，就是只在可疑时追加认证",
-      "登录：说到登录，就是用 ID/口令开始使用的入口",
-      "用户 ID：说到用户 ID，就是识别「是谁」的符号",
-      "口令：说到口令，就是只有本人才知道的秘密知识",
-      "访问管理：说到访问管理，就是谁能使用什么的权限管理",
-      "IC 卡：说到 IC 卡，就是持有认证的代表",
-      "一次性口令：说到一次性口令，就是只能用一次、用后即弃",
-      "多因素认证：说到多因素认证，就是组合知识、持有、生物特征"
+      "基于风险的认证：英文 risk-based 的意思是“基于风险程度”。",
+      "用户 ID：ID 是 identification（识别）的缩写。",
+      "口令：pass（通过）+ word（话语）= 用于通过的话语。",
+      "访问管理：access 意为“接近、进入”。可以记成：管理的是能进到哪一步的界线。",
+      "IC 卡：IC 是 Integrated Circuit（集成电路）的缩写，卡里装着一台小小的计算机。",
+      "一次性口令：one-time 意为“仅限一次”，与可以反复使用的普通口令正好相反。",
+      "多因素认证：MFA 是 Multi-Factor Authentication 的缩写，factor 意为“要素”。"
     ],
     "memory_hooks_en": [
-      "Risk-based authentication: Risk-based authentication → add extra authentication only when suspicious",
-      "Login: Login → the entry point where you start using with an ID/password",
-      "User ID: User ID → the code that identifies \"who\"",
-      "Password: Password → secret knowledge known only to the person",
-      "Access management: Access management → permission control over who can use what",
-      "IC card: IC card → the representative of possession-based authentication",
-      "One-time password: One-time password → single-use and disposable",
-      "Multi-factor authentication: Multi-factor authentication → combine knowledge, possession, and biometrics"
+      "Risk-Based Authentication: Read it literally: the check is based on risk, rather than applied the same way to everyone.",
+      "User ID: ID is short for identification.",
+      "Password: pass + word: the word that lets you pass.",
+      "Access Management: \"Access\" means getting in, so access management is about drawing the line on how far each person may go.",
+      "IC Card: IC stands for integrated circuit, meaning there is a tiny computer inside the card.",
+      "One-Time Password: \"One-time\" means good for one use only, the opposite of an ordinary password that you can use again and again.",
+      "Multi-Factor Authentication: MFA stands for multi-factor authentication, and a factor is one type of proof."
     ]
   },
   "challenge_questions": [
-    "2015h27a-q055",
     "2015h27h-q054",
     "2016h28h-q076",
-    "2017h29a-q097",
-    "2018h30h-q063"
+    "2018h30h-q079",
+    "2025r07-q100"
   ],
   "source_figures": [
     {
@@ -309,9 +1221,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "用户认证（基于知识与持有的认证）",
-  "title_en": "User Authentication (Knowledge-Based and Possession-Based)",
-  "unit_summary_zh": "从 ID/口令到一次性口令、多因素认证、SSO，学习基于知识与持有的身份核验。",
-  "unit_summary_en": "From ID/passwords to one-time passwords, multi-factor authentication, and SSO, learn identity verification based on knowledge and possession."
+  }
 }

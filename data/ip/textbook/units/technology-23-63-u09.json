@@ -1,195 +1,724 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-63-u09",
   "topic_id": "technology-23-63",
   "category": "technology",
   "title_jp": "先進的な認証方式と決済認証",
+  "title_zh": "先进认证方式与支付认证",
+  "title_en": "Advanced Authentication Methods and Payment Authentication",
   "unit_summary_jp": "パスワードレス認証・SMS認証・シングルサインオンと、EMV 3-Dセキュア等の決済向け本人認証を学ぶ。",
+  "unit_summary_zh": "学习无密码认证、短信认证、单点登录，以及 EMV 3-D Secure 等面向支付的身份认证。",
+  "unit_summary_en": "Learn about passwordless authentication, SMS authentication, single sign-on, and payment-oriented identity authentication such as EMV 3-D Secure.",
   "order_in_topic": 9,
   "prerequisites": [
     "technology-23-63-u08"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、パスワードに頼らないパスワードレス認証や、携帯電話番号を使うSMS認証、一度の認証で複数サービスを使えるシングルサインオン、さらにEMV 3-Dセキュアなどクレジットカード決済向けの本人認証を学びます。利便性と安全性を両立する発展的な認証方式として、情報セキュリティ分野で問われる頻出テーマです。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习不依赖密码的无密码认证、使用手机号码的短信认证、一次认证即可使用多个服务的单点登录，以及面向信用卡支付的身份认证（如 EMV 3-D Secure）。作为兼顾便利性与安全性的进阶认证方式，这是信息安全领域中常考的高频主题。",
-    "intro_en": "In this unit, you will learn about passwordless authentication that does not rely on passwords, SMS authentication that uses a mobile phone number, single sign-on that lets you use multiple services with a single authentication, and identity authentication for credit card payments such as EMV 3-D Secure. As advanced authentication methods that balance convenience and security, these are frequently tested topics in the field of information security."
-  },
-  "terms": [
+  "goals_jp": [
+    "**パスワードレス認証** と **SMS認証** が、それぞれ何を手がかりに本人を確かめるかを説明できる",
+    "**シングルサインオン** の仕組みを、便利になる点と注意する点の両面から説明できる",
+    "ネット上のカード決済で使う **EMV 3-Dセキュア** と、リスクに応じて追加の確認を求める考え方を説明できる"
+  ],
+  "goals_zh": [
+    "能说明 **无密码认证** 与 **短信认证** 各自凭什么来确认用户本人",
+    "能从变方便的地方和需要注意的地方两方面，说明 **单点登录** 的机制",
+    "能说明网上信用卡支付所用的 **EMV 3-D Secure**，以及按风险高低决定是否追加确认的思路"
+  ],
+  "goals_en": [
+    "Explain what **passwordless authentication** and **SMS authentication** each rely on to confirm who the user is",
+    "Explain how **single sign-on** works, covering both what it makes easier and what to watch out for",
+    "Explain **EMV 3-D Secure**, used for online card payments, and the idea of asking for an extra check only when the risk calls for it"
+  ],
+  "overview_cols_jp": [
+    "使う場面",
+    "本人確認の手がかり"
+  ],
+  "overview_cols_zh": [
+    "使用场景",
+    "确认本人的依据"
+  ],
+  "overview_cols_en": [
+    "Where it is used",
+    "What proves identity"
+  ],
+  "overview_rows": [
     {
       "term": "パスワードレス認証",
-      "definition_jp": "パスワードを使わず生体情報や所持物で本人確認する認証方式。",
-      "explanation_jp": "パスワードレス認証は、その名のとおりパスワードを入力せずに本人確認を行う方式です。指紋・顔などの生体認証や、スマートフォン・セキュリティキーといった所持しているものを使って認証します。\n\n従来のパスワードは、使い回しや漏えい、推測といった弱点がありました。パスワードレス認証はこれらの原因を断つことで、安全性と使いやすさの両立を狙います。試験では「パスワードを使わない=より安全で便利」という発展形である点と、生体認証や所持認証(スマホ等)を土台にしている点を押さえておきましょう。",
-      "analogy_jp": "暗証番号を覚えて入力する代わりに、顔パスや社員証のタッチだけで部屋に入れるようにするイメージ。覚える手間も盗み見られる心配もありません。",
-      "memory_hook_jp": "パスワードレス認証といえばパスワードを使わず生体や所持物で本人確認",
-      "inline_quiz": [
-        "2013h25h-q058"
+      "one_line_jp": "パスワードを使わずに本人を確かめる認証方式",
+      "one_line_zh": "不用密码就能确认本人的认证方式",
+      "one_line_en": "An authentication method that confirms identity without a password",
+      "extra_jp": [
+        "ログイン全般",
+        "指紋や顔などの生体情報、手元の端末"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "无密码认证",
-      "term_en": "Passwordless authentication",
-      "definition_zh": "不使用密码，而通过生物特征信息或持有物来确认身份的认证方式。",
-      "definition_en": "An authentication method that verifies identity using biometric information or a possessed item instead of a password.",
-      "explanation_zh": "无密码认证，顾名思义，是一种不输入密码就完成身份确认的方式。它使用指纹、人脸等生物认证，或智能手机、安全密钥等持有的物品来进行认证。\n\n传统的密码存在重复使用、泄露、被猜测等弱点。无密码认证通过切断这些根源，力求兼顾安全性与易用性。在考试中，要记住它是「不使用密码＝更安全更便利」的进阶形态这一点，以及它以生物认证或持有认证（智能手机等）为基础这一点。",
-      "explanation_en": "Passwordless authentication, as its name suggests, is a method that completes identity verification without entering a password. It authenticates using biometrics such as fingerprints or faces, or items you possess such as a smartphone or a security key.\n\nTraditional passwords have weaknesses such as reuse, leakage, and guessing. Passwordless authentication aims to balance security and usability by eliminating these root causes. For the exam, remember that it is an advanced form where \"not using a password = safer and more convenient,\" and that it is built on a foundation of biometric authentication or possession-based authentication (such as a smartphone).",
-      "analogy_zh": "想象一下，不用记住并输入密码，只需刷脸或刷一下员工卡就能进入房间。既省去了记忆的麻烦，也不必担心被人偷看。",
-      "analogy_en": "Imagine that instead of memorizing and entering a PIN, you can enter a room just by face recognition or a tap of your employee badge. There is no hassle of memorizing and no worry about being peeked at.",
-      "memory_hook_zh": "说到无密码认证，就是不用密码、靠生物特征或持有物来确认身份。",
-      "memory_hook_en": "Passwordless authentication → verify identity with biometrics or a possessed item, no password needed."
+      "extra_zh": [
+        "各种登录场合",
+        "指纹、人脸等生物特征，或手边的设备"
+      ],
+      "extra_en": [
+        "Logins in general",
+        "Biometrics such as a fingerprint or face, or a device you hold"
+      ]
     },
     {
       "term": "SMS認証",
-      "definition_jp": "SMSで送る確認コードの入力で本人確認する所持認証。",
-      "explanation_jp": "SMS認証は、登録した携帯電話番号宛にショートメッセージ(SMS)で一時的な確認コードを送り、それを入力させることで本人確認を行う方式です。\n\nコードを受け取れるのは正しい電話番号の端末を持つ本人だけ、という前提から、「所持しているもの」による認証(所持認証)の一種です。ID・パスワード(知識)に加えて使えば多要素認証になり、安全性が高まります。試験では、SMS認証が所持認証であること、パスワードと組み合わせる追加の本人確認手段として使われる点が問われます。",
-      "analogy_jp": "宅配ボックスの解錠番号を、契約者本人のスマホにだけ届くようにする仕組みに似ています。番号を受け取れる端末を持つ人だけが操作できます。",
-      "memory_hook_jp": "SMS認証といえば携帯に届く確認コードで本人確認する所持認証",
+      "one_line_jp": "登録した電話番号に届く確認コードで本人を確かめる方式",
+      "one_line_zh": "用发到已登记电话号码的验证码来确认本人的方式",
+      "one_line_en": "A method that confirms identity with a code sent to a registered phone number",
+      "extra_jp": [
+        "ログイン時の追加の確認など",
+        "その番号の端末を持っていること (所持)"
+      ],
+      "extra_zh": [
+        "登录时的追加确认等",
+        "持有该号码的设备（持有）"
+      ],
+      "extra_en": [
+        "Extra checks at login, among others",
+        "Holding the device for that number (possession)"
+      ]
+    },
+    {
+      "term": "シングルサインオン",
+      "one_line_jp": "1 回の認証で、連携する複数のサービスを入り直さずに使える仕組み",
+      "one_line_zh": "认证一次后，无需重新登录即可使用多个相互关联的服务的机制",
+      "one_line_en": "A mechanism that lets one authentication carry you into several linked services without signing in again",
+      "extra_jp": [
+        "社内システムや連携した Web サービス",
+        "最初の 1 回の認証の結果を引き継ぐ"
+      ],
+      "extra_zh": [
+        "公司内部系统、相互关联的 Web 服务",
+        "沿用最初那一次认证的结果"
+      ],
+      "extra_en": [
+        "In-house systems and linked web services",
+        "The result of the first authentication is passed on"
+      ]
+    },
+    {
+      "term": "EMV 3-Dセキュア",
+      "one_line_jp": "ネット上のクレジットカード決済で本人を確かめる国際的な仕組み",
+      "one_line_zh": "网上信用卡支付中确认本人的国际通行机制",
+      "one_line_en": "An international scheme that confirms the cardholder in online credit card payments",
+      "extra_jp": [
+        "ネット通販などのカード決済",
+        "発行会社による本人確認 (リスクに応じて追加確認)"
+      ],
+      "extra_zh": [
+        "网购等场合的信用卡支付",
+        "由发卡机构确认本人（视风险追加确认）"
+      ],
+      "extra_en": [
+        "Card payments when shopping online, among others",
+        "Identity check by the card issuer (extra checks depending on risk)"
+      ]
+    },
+    {
+      "term": "3Dセキュア2.0",
+      "one_line_jp": "EMV 3-Dセキュアを版番号で呼んだ名前",
+      "one_line_zh": "按版本号称呼 EMV 3-D Secure 时的名称",
+      "one_line_en": "The name for EMV 3-D Secure when it is called by its version number",
+      "extra_jp": [
+        "ネット通販などのカード決済",
+        "発行会社による本人確認 (リスクに応じて追加確認)"
+      ],
+      "extra_zh": [
+        "网购等场合的信用卡支付",
+        "由发卡机构确认本人（视风险追加确认）"
+      ],
+      "extra_en": [
+        "Card payments when shopping online, among others",
+        "Identity check by the card issuer (extra checks depending on risk)"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "パスワードレス認証",
+      "term_zh": "无密码认证",
+      "term_en": "Passwordless authentication",
+      "one_jp": "**パスワードレス認証** は、パスワードを入力させずに、**生体情報** や **手元の端末** を使って本人を確かめる認証方式である。",
+      "one_zh": "**无密码认证**（[[jp:パスワードレス認証]]）是不让用户输入密码，而是用 **生物特征信息** 或 **手边的设备** 来确认本人的认证方式。",
+      "one_en": "**Passwordless authentication** ([[jp:パスワードレス認証]]) confirms identity without asking for a password, using **biometric data** or **a device you hold** instead.",
+      "detail_jp": "パスワードは推測されたり、盗み見られたり、別のサービスで使い回されたりしやすい。パスワードレス認証は、指紋や顔などの体の特徴や、登録したスマートフォン・セキュリティキーなど持っている物で確認するので、覚える負担がなくなり、パスワードにまつわるこれらの弱点もなくなる。例えば **FIDO** という規格では、指紋などの照合は利用者の端末の中で行われ、照合用の情報がネットワークに流れない。",
+      "detail_zh": "密码容易被猜中、被偷窥，或在别的服务上被重复使用。无密码认证凭指纹、人脸等身体特征，或已登记的智能手机、安全密钥等持有物来确认，既不必再记密码，也消除了围绕密码的这些弱点。例如在 **FIDO** 这一规范中，指纹等的比对在用户自己的设备内完成，用于比对的信息不会在网络上传输。",
+      "detail_en": "Passwords can be guessed, spied on over someone's shoulder, or reused across other services. Passwordless authentication checks a body feature such as a fingerprint or face, or something you hold such as a registered smartphone or security key, so there is nothing to memorise and those password weaknesses disappear. Under the **FIDO** standard, for example, the fingerprint (or other biometric) match happens inside the user's own device, and the data used for matching never travels over the network.",
+      "analogy_jp": "番号を覚えて押すダイヤル錠をやめて、登録した社員証をかざすか、顔を見せるだけで開く扉に替えるようなもの。",
+      "analogy_zh": "就像把要记住号码再按键的密码锁，换成只要刷一下已登记的工牌或露个脸就能打开的门。",
+      "analogy_en": "It is like replacing a combination lock, where you must remember and key in a number, with a door that opens when you tap your registered staff badge or simply show your face.",
+      "hook_jp": "「レス」は英語の less (〜がない)。ペーパーレスやキャッシュレスと同じ「レス」で、パスワードが無い認証と読める。",
+      "hook_zh": "日语名称[[jp:パスワードレス認証]]里的“レス”来自英语 less（没有），和日语“无纸化”“无现金”说法里的“レス”相同，字面就是“没有密码的认证”。",
+      "hook_en": "The \"-less\" means \"without\", as in paperless or cashless; the Japanese name [[jp:パスワードレス認証]] borrows the same English suffix, so it reads as authentication without a password.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "パスワードレス認証 は、パスワードを使わない方式全体の呼び名である。FIDO はそれを実現するための規格の 1 つで、方式の総称ではない。",
+          "text_zh": "无密码认证（[[jp:パスワードレス認証]]）是所有不使用密码的方式的统称。FIDO 是实现它的规范之一，并不是这类方式的总称。",
+          "text_en": "Passwordless authentication ([[jp:パスワードレス認証]]) is the name for every method that does without a password. FIDO is one standard for achieving it, not the name of the whole approach."
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "パスワード認証",
+            "zh": "密码认证",
+            "en": "Password authentication"
+          },
+          "b": {
+            "jp": "パスワードレス認証",
+            "zh": "无密码认证",
+            "en": "Passwordless authentication"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "本人が示すもの",
+                "zh": "本人出示的东西",
+                "en": "What the user presents"
+              },
+              "a": {
+                "jp": "記憶している文字列",
+                "zh": "记在脑中的字符串",
+                "en": "A memorised string"
+              },
+              "b": {
+                "jp": "指紋や顔、登録したスマートフォンやセキュリティキー",
+                "zh": "指纹或人脸、已登记的智能手机或安全密钥",
+                "en": "A fingerprint or face, or a registered smartphone or security key"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "利用者が覚えるもの",
+                "zh": "用户要记住的东西",
+                "en": "What the user must remember"
+              },
+              "a": {
+                "jp": "サービスごとのパスワード",
+                "zh": "每个服务各自的密码",
+                "en": "A password for each service"
+              },
+              "b": {
+                "jp": "なし",
+                "zh": "无",
+                "en": "Nothing"
+              }
+            },
+            {
+              "label": {
+                "jp": "主な弱点",
+                "zh": "主要弱点",
+                "en": "Main weakness"
+              },
+              "a": {
+                "jp": "推測、盗み見、使い回し、漏えい",
+                "zh": "被猜中、被偷窥、重复使用、泄露",
+                "en": "Guessing, shoulder surfing, reuse, leaks"
+              },
+              "b": {
+                "jp": "端末をなくしたときの再登録の手間",
+                "zh": "设备丢失后重新登记的麻烦",
+                "en": "Re-registering after losing the device"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "パスワードレス認証 は、パスワードを入力させずに、生体情報 や 手元の端末 を使って本人を確かめる認証方式である。",
+      "definition_zh": "无密码认证（パスワードレス認証）是不让用户输入密码，而是用 生物特征信息 或 手边的设备 来确认本人的认证方式。",
+      "definition_en": "Passwordless authentication (パスワードレス認証) confirms identity without asking for a password, using biometric data or a device you hold instead.",
+      "explanation_jp": "パスワードは推測されたり、盗み見られたり、別のサービスで使い回されたりしやすい。パスワードレス認証は、指紋や顔などの体の特徴や、登録したスマートフォン・セキュリティキーなど持っている物で確認するので、覚える負担がなくなり、パスワードにまつわるこれらの弱点もなくなる。例えば FIDO という規格では、指紋などの照合は利用者の端末の中で行われ、照合用の情報がネットワークに流れない。",
+      "explanation_zh": "密码容易被猜中、被偷窥，或在别的服务上被重复使用。无密码认证凭指纹、人脸等身体特征，或已登记的智能手机、安全密钥等持有物来确认，既不必再记密码，也消除了围绕密码的这些弱点。例如在 FIDO 这一规范中，指纹等的比对在用户自己的设备内完成，用于比对的信息不会在网络上传输。",
+      "explanation_en": "Passwords can be guessed, spied on over someone's shoulder, or reused across other services. Passwordless authentication checks a body feature such as a fingerprint or face, or something you hold such as a registered smartphone or security key, so there is nothing to memorise and those password weaknesses disappear. Under the FIDO standard, for example, the fingerprint (or other biometric) match happens inside the user's own device, and the data used for matching never travels over the network.",
+      "memory_hook_jp": "「レス」は英語の less (〜がない)。ペーパーレスやキャッシュレスと同じ「レス」で、パスワードが無い認証と読める。",
+      "memory_hook_zh": "日语名称パスワードレス認証里的“レス”来自英语 less（没有），和日语“无纸化”“无现金”说法里的“レス”相同，字面就是“没有密码的认证”。",
+      "memory_hook_en": "The \"-less\" means \"without\", as in paperless or cashless; the Japanese name パスワードレス認証 borrows the same English suffix, so it reads as authentication without a password.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "SMS認証",
+      "term_zh": "短信认证",
+      "term_en": "SMS authentication",
+      "one_jp": "**SMS認証** は、登録した携帯電話番号に **SMS** (短いメッセージ) で 1 回限りの **確認コード** を送り、それを入力させて本人を確かめる方式である。",
+      "one_zh": "**短信认证**（[[jp:SMS認証]]）是通过 **SMS**（短信）向已登记的手机号码发送一次性的 **验证码**，让用户输入该验证码来确认本人的方式。",
+      "one_en": "**SMS authentication** ([[jp:SMS認証]]) sends a one-time **verification code** by **SMS** (text message) to a registered mobile number and confirms identity when the user types that code in.",
+      "detail_jp": "コードを受け取れるのは、その電話番号の端末を手元に持っている人だけなので、端末を持っていることが本人の証拠になる。知識の手がかりであるパスワードと組み合わせると、種類の異なる手がかりを重ねる **多要素認証** になる。",
+      "detail_zh": "能收到验证码的只有手边持有该电话号码设备的人，所以“持有设备”本身就成了本人的证明。再与属于知识类依据的密码组合，就成为叠加不同种类依据的 **多因素认证**（[[jp:多要素認証]]）。",
+      "detail_en": "Only someone holding the device for that phone number can receive the code, so having the device becomes the proof of identity. Combined with a password, which is a knowledge factor, it gives **multi-factor authentication** ([[jp:多要素認証]]), stacking factors of different kinds.",
+      "analogy_jp": "宅配ロッカーの暗証番号が、受取人のスマートフォンにだけ届く仕組みに似ている。番号を読めるのは、その端末を持っている人だけになる。",
+      "analogy_zh": "类似于快递柜的取件码只发到收件人的智能手机上：能看到这个号码的，只有拿着那部手机的人。",
+      "analogy_en": "It resembles a parcel locker whose pickup code goes only to the recipient's smartphone: only the person holding that phone can read the number.",
+      "hook_jp": "SMS は Short Message Service の略。電話番号だけを宛先にして届く短い文で、届いた先の端末を持っていることが証拠になる。",
+      "hook_zh": "SMS 是 Short Message Service 的缩写，即只凭电话号码就能送达的短信；收到短信的那部设备在谁手里，谁就有了证明。",
+      "hook_en": "SMS stands for Short Message Service: short texts addressed by phone number alone, so holding the receiving device is the evidence.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "認証の手がかりを知識・所持・生体の 3 つに分けると、SMS認証 は **所持** (持っている物) に当たる。",
+          "text_zh": "把认证依据分为知识、持有、生物特征三类时，短信认证（[[jp:SMS認証]]）属于 **持有**（[[jp:所持]]，即持有的物品）。",
+          "text_en": "When authentication factors are split into knowledge, possession and biometrics, SMS authentication ([[jp:SMS認証]]) falls under **possession** ([[jp:所持]]): something you have.",
+          "qids": [
+            "2025r07-q100"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "IDとパスワードを入力",
+                "zh": "输入 ID 和密码",
+                "en": "Enter ID and password"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "登録番号へ確認コードを送信",
+                "zh": "向登记号码发送验证码",
+                "en": "Code sent to the registered number"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "届いたコードを入力",
+                "zh": "输入收到的验证码",
+                "en": "Enter the received code"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "一致すれば利用開始",
+                "zh": "一致即可开始使用",
+                "en": "Access granted if it matches"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "この例では、まず利用者がIDとパスワードを入力する。",
+            "caption_zh": "在这个例子中，用户先输入 ID 和密码。",
+            "caption_en": "In this example, the user first enters an ID and password.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "サービス側が、登録済みの電話番号へ1回限りのコードをSMSで送る。",
+            "caption_zh": "服务方通过短信（SMS）向已登记的电话号码发送一次性验证码。",
+            "caption_en": "The service sends a one-time code by SMS to the registered phone number.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "その番号の端末を持っている人だけが、届いたコードを読んで入力できる。",
+            "caption_zh": "只有持有该号码设备的人，才能看到收到的验证码并输入。",
+            "caption_en": "Only the person holding the device for that number can read the code and enter it.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "入力されたコードが送ったものと一致すれば、本人として利用を認める。",
+            "caption_zh": "输入的验证码与发送的一致，就认定是本人并允许使用。",
+            "caption_en": "If the code entered matches the one sent, the user is accepted as genuine and let in.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2025r07-q100"
+      ],
+      "definition_jp": "SMS認証 は、登録した携帯電話番号に SMS (短いメッセージ) で 1 回限りの 確認コード を送り、それを入力させて本人を確かめる方式である。",
+      "definition_zh": "短信认证（SMS認証）是通过 SMS（短信）向已登记的手机号码发送一次性的 验证码，让用户输入该验证码来确认本人的方式。",
+      "definition_en": "SMS authentication (SMS認証) sends a one-time verification code by SMS (text message) to a registered mobile number and confirms identity when the user types that code in.",
+      "explanation_jp": "コードを受け取れるのは、その電話番号の端末を手元に持っている人だけなので、端末を持っていることが本人の証拠になる。知識の手がかりであるパスワードと組み合わせると、種類の異なる手がかりを重ねる 多要素認証 になる。",
+      "explanation_zh": "能收到验证码的只有手边持有该电话号码设备的人，所以“持有设备”本身就成了本人的证明。再与属于知识类依据的密码组合，就成为叠加不同种类依据的 多因素认证（多要素認証）。",
+      "explanation_en": "Only someone holding the device for that phone number can receive the code, so having the device becomes the proof of identity. Combined with a password, which is a knowledge factor, it gives multi-factor authentication (多要素認証), stacking factors of different kinds.",
+      "memory_hook_jp": "SMS は Short Message Service の略。電話番号だけを宛先にして届く短い文で、届いた先の端末を持っていることが証拠になる。",
+      "memory_hook_zh": "SMS 是 Short Message Service 的缩写，即只凭电话号码就能送达的短信；收到短信的那部设备在谁手里，谁就有了证明。",
+      "memory_hook_en": "SMS stands for Short Message Service: short texts addressed by phone number alone, so holding the receiving device is the evidence.",
       "inline_quiz": [
         "2025r07-q100"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "短信认证",
-      "term_en": "SMS authentication",
-      "definition_zh": "通过输入由短信发送的验证码来确认身份的持有认证。",
-      "definition_en": "Possession-based authentication that verifies identity by entering a verification code sent via SMS.",
-      "explanation_zh": "短信认证是一种向已登记的手机号码发送一次性验证码（通过短信 SMS），并让用户输入该验证码来确认身份的方式。\n\n基于「只有持有正确电话号码终端的本人才能收到验证码」这一前提，它属于使用「持有的物品」进行认证（持有认证）的一种。如果在 ID、密码（知识）之外再加上它，就构成了多因素认证，安全性更高。在考试中，会考查短信认证属于持有认证、以及它被用作与密码组合的追加身份确认手段这一点。",
-      "explanation_en": "SMS authentication is a method that sends a one-time verification code (via short message, SMS) to a registered mobile phone number and has the user enter that code to verify their identity.\n\nBased on the premise that only the person holding the device with the correct phone number can receive the code, it is a type of authentication using \"something you possess\" (possession-based authentication). If used in addition to an ID and password (knowledge), it becomes multi-factor authentication and improves security. The exam tests that SMS authentication is possession-based authentication and that it is used as an additional means of identity verification combined with a password.",
-      "analogy_zh": "这类似于一种机制：让快递柜的开锁号码只送到签约本人的智能手机上。只有持有能接收号码的终端的人才能操作。",
-      "analogy_en": "It is similar to a mechanism where the unlock code for a delivery locker is sent only to the contract holder's own smartphone. Only the person holding the device that can receive the code can operate it.",
-      "memory_hook_zh": "说到短信认证，就是用发到手机上的验证码确认身份的持有认证。",
-      "memory_hook_en": "SMS authentication → possession-based authentication that verifies identity with a code sent to your phone."
+      "figure": null
     },
     {
       "term": "シングルサインオン",
-      "definition_jp": "一度の認証で複数のサービスを使えるようにする仕組み。",
-      "explanation_jp": "シングルサインオン(SSO)は、一度ログイン(認証)すれば、その後は再びIDやパスワードを入力しなくても、連携する複数のサービスをまとめて利用できる仕組みです。\n\n利用者は覚えるパスワードが減り、ログインの手間も省けるため利便性が上がります。一方で、その一つの認証情報が破られると複数サービスに被害が及ぶため、最初の認証を強固にすることが重要です。試験では、SSO=「一度の認証で複数サービス」という定義と、利便性向上の代表策である点が頻出です。",
-      "analogy_jp": "遊園地の入口で一度フリーパスを見せれば、中の各アトラクションにいちいち券を買わず乗り放題になるイメージ。最初の一回でまとめて通れます。",
-      "memory_hook_jp": "シングルサインオンといえば一度の認証で複数サービス利用",
+      "term_zh": "单点登录",
+      "term_en": "Single sign-on",
+      "one_jp": "**シングルサインオン** (SSO) は、最初に 1 回認証を受ければ、利用を認められた **複数のサービス** に入り直さずにアクセスできる仕組みである。",
+      "one_zh": "**单点登录**（[[jp:シングルサインオン]]，SSO）是只要最初认证一次，就能不必重新登录、直接访问获准使用的 **多个服务** 的机制。",
+      "one_en": "**Single sign-on** ([[jp:シングルサインオン]], SSO) lets a user authenticate once at the start and then reach **multiple services** they are permitted to use without signing in again.",
+      "detail_jp": "利用者は、サービスごとにIDとパスワードを入れる手間がなくなり、覚えるパスワードも減る。その反面、最初の認証が破られると連携先のすべてに入られてしまうので、入口の認証は多要素認証などで強くしておく。",
+      "detail_zh": "用户不必再为每个服务分别输入 ID 和密码，要记的密码也变少了。反过来，一旦最初的认证被攻破，所有关联的服务都会被闯入，因此要用多因素认证等手段把入口的认证加固。",
+      "detail_en": "Users no longer type an ID and password for each service, and they have fewer passwords to remember. The flip side is that if the first authentication is broken, an intruder gets into every linked service, so the entry point should be hardened with multi-factor authentication or similar.",
+      "analogy_jp": "遊園地の入口で 1 日パスを確かめてもらえば、中のアトラクションでは券を買い直さずに乗れるのと同じ。",
+      "analogy_zh": "就像在游乐园入口验过一日通票后，园内的游乐项目都不用再买票就能玩。",
+      "analogy_en": "It is like an amusement park where your day pass is checked once at the gate, and you then ride every attraction inside without buying another ticket.",
+      "hook_jp": "サインオンはログインの別の言い方。Single (1 回) の Sign-On (ログイン) で済む、と英語のまま読める。",
+      "hook_zh": "Sign-On 是“登录”的另一种说法。Single（一次）加 Sign-On（登录），按英文字面读就是“登录一次就够了”。",
+      "hook_en": "Sign-on is just another word for logging in, so the name reads literally: a single sign-on (login) is all it takes.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "連携先のうち、利用者が使うことを許されたサービスは、最初の認証で本人と確かめられた結果を受け取って利用を認める。そのため利用者は入り直さずに済み、利便性が高まる。",
+          "text_zh": "在各个关联服务中，用户获准使用的那些服务会接收最初认证中已确认为本人的结果，并据此允许使用。因此用户无需重新登录，便利性随之提高。",
+          "text_en": "Each linked service that the user is permitted to use accepts the result of the first authentication, which already confirmed the user's identity, and grants access on that basis. The user therefore does not have to sign in again, which makes things more convenient.",
+          "qids": [
+            "2010h22a-q062",
+            "2011h23a-q085",
+            "2016h28h-q093",
+            "2018h30h-q091"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "1 回しか使えないパスワードはワンタイムパスワード、指紋などの体の特徴を使う認証はバイオメトリクス認証であり、どちらもシングルサインオンとは別物である。",
+          "text_zh": "只能使用一次的密码叫一次性口令（[[jp:ワンタイムパスワード]]），利用指纹等身体特征的认证叫生物特征认证（[[jp:バイオメトリクス認証]]），两者与单点登录（[[jp:シングルサインオン]]）都不是一回事。",
+          "text_en": "A password that works only once is a one-time password ([[jp:ワンタイムパスワード]]), and authentication by body features such as fingerprints is biometric authentication ([[jp:バイオメトリクス認証]]). Neither one is single sign-on ([[jp:シングルサインオン]]).",
+          "qids": [
+            "2013h25h-q058",
+            "2018h30a-q069",
+            "2024r06-q089"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-23-63-u09-t01.svg"
+        }
+      },
+      "quiz": [
+        "2016h28h-q093",
+        "2011h23a-q085",
+        "2024r06-q089"
+      ],
+      "definition_jp": "シングルサインオン (SSO) は、最初に 1 回認証を受ければ、利用を認められた 複数のサービス に入り直さずにアクセスできる仕組みである。",
+      "definition_zh": "单点登录（シングルサインオン，SSO）是只要最初认证一次，就能不必重新登录、直接访问获准使用的 多个服务 的机制。",
+      "definition_en": "Single sign-on (シングルサインオン, SSO) lets a user authenticate once at the start and then reach multiple services they are permitted to use without signing in again.",
+      "explanation_jp": "利用者は、サービスごとにIDとパスワードを入れる手間がなくなり、覚えるパスワードも減る。その反面、最初の認証が破られると連携先のすべてに入られてしまうので、入口の認証は多要素認証などで強くしておく。",
+      "explanation_zh": "用户不必再为每个服务分别输入 ID 和密码，要记的密码也变少了。反过来，一旦最初的认证被攻破，所有关联的服务都会被闯入，因此要用多因素认证等手段把入口的认证加固。",
+      "explanation_en": "Users no longer type an ID and password for each service, and they have fewer passwords to remember. The flip side is that if the first authentication is broken, an intruder gets into every linked service, so the entry point should be hardened with multi-factor authentication or similar.",
+      "memory_hook_jp": "サインオンはログインの別の言い方。Single (1 回) の Sign-On (ログイン) で済む、と英語のまま読める。",
+      "memory_hook_zh": "Sign-On 是“登录”的另一种说法。Single（一次）加 Sign-On（登录），按英文字面读就是“登录一次就够了”。",
+      "memory_hook_en": "Sign-on is just another word for logging in, so the name reads literally: a single sign-on (login) is all it takes.",
       "inline_quiz": [
-        "2010h22a-q062",
-        "2011h23a-q085"
+        "2016h28h-q093",
+        "2011h23a-q085",
+        "2024r06-q089"
       ],
       "inline_fallback": false,
       "figure": {
         "mermaid": "graph LR; U[\"利用者\"] --> A[\"一度だけ認証\"]; A --> S1[\"サービスA\"]; A --> S2[\"サービスB\"]; A --> S3[\"サービスC\"]",
         "svg_path": "figures/technology-23-63-u09-t01.svg",
         "rendered": true
-      },
-      "term_zh": "单点登录",
-      "term_en": "Single sign-on",
-      "definition_zh": "通过一次认证就能使用多个服务的机制。",
-      "definition_en": "A mechanism that lets you use multiple services with a single authentication.",
-      "explanation_zh": "单点登录（SSO）是这样一种机制：只要登录（认证）一次，之后无需再次输入 ID 或密码，就能统一使用相互关联的多个服务。\n\n用户需要记住的密码减少了，也省去了登录的麻烦，因此便利性提升。另一方面，一旦这一份认证信息被攻破，损害就会波及多个服务，因此把最初的认证做得足够强固非常重要。在考试中，SSO＝「一次认证使用多个服务」的定义，以及它是提升便利性的代表性手段这一点，是高频考点。",
-      "explanation_en": "Single sign-on (SSO) is a mechanism in which, once you log in (authenticate) a single time, you can then use multiple linked services together without entering your ID or password again.\n\nUsers have fewer passwords to remember and save the trouble of logging in, so convenience improves. On the other hand, if that single set of authentication credentials is breached, the damage spreads to multiple services, so it is important to make the initial authentication strong. The exam frequently asks about the definition of SSO as \"using multiple services with a single authentication\" and that it is a representative measure for improving convenience.",
-      "analogy_zh": "想象一下，在游乐园入口出示一次通票后，里面的各个游乐项目就都能随便玩，而不必每个都单独买票。最初的一次就让你一并通行。",
-      "analogy_en": "Imagine that once you show a free pass at the entrance of an amusement park, you can ride all the attractions inside without buying a separate ticket for each. A single time at the start lets you through all of them at once.",
-      "memory_hook_zh": "说到单点登录，就是一次认证使用多个服务。",
-      "memory_hook_en": "Single sign-on → use multiple services with a single authentication."
+      }
     },
     {
       "term": "EMV 3-Dセキュア",
-      "definition_jp": "オンラインのカード決済で本人認証を行う国際的な仕組み。",
-      "explanation_jp": "EMV 3-Dセキュアは、インターネット上のクレジットカード決済で、カード名義人が本当に本人かを確認するための国際的な本人認証の仕組みです。\n\nカード番号や有効期限だけでは「持ち主のなりすまし」を防げないため、決済時に追加の本人確認を行い、不正利用(なりすまし決済)を減らします。試験では、これがカード番号入力に上乗せされるオンライン決済向けの本人認証であり、不正利用対策として用いられる点を押さえておきましょう。",
-      "analogy_jp": "通販でカードを使うとき、番号だけでなく「本当にあなたですか」と本人だけが答えられる確認を一段追加するイメージ。盗んだ番号だけでは決済できなくします。",
-      "memory_hook_jp": "EMV 3-Dセキュアといえばオンラインカード決済の本人認証",
-      "inline_quiz": [
-        "2016h28h-q093"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "EMV 3-D Secure",
       "term_en": "EMV 3-D Secure",
-      "definition_zh": "在线卡支付中进行身份认证的国际性机制。",
-      "definition_en": "An international mechanism for performing identity authentication in online card payments.",
-      "explanation_zh": "EMV 3-D Secure 是一种国际性的身份认证机制，用于在互联网上的信用卡支付中确认持卡人是否确实是本人。\n\n由于仅凭卡号和有效期无法防止「冒充持卡人」，所以在支付时进行追加的身份确认，以减少盗用（冒充支付）。在考试中，要记住它是在输入卡号之外再叠加的、面向在线支付的身份认证，并被用作盗用对策这一点。",
-      "explanation_en": "EMV 3-D Secure is an international identity authentication mechanism used to confirm whether the cardholder really is who they claim to be in credit card payments over the internet.\n\nBecause the card number and expiration date alone cannot prevent \"impersonation of the cardholder,\" additional identity verification is performed at the time of payment to reduce fraudulent use (impersonation payments). For the exam, remember that this is an identity authentication for online payments layered on top of entering the card number, and that it is used as a countermeasure against fraudulent use.",
-      "analogy_zh": "想象一下，在网购时用卡，不仅要输入卡号，还要额外加一步只有本人才能回答的「确认真的是你吗」。这样仅凭盗来的卡号就无法完成支付。",
-      "analogy_en": "Imagine that when you use a card for online shopping, in addition to the card number, one extra step is added that asks \"Is this really you?\"—which only you can answer. This makes it impossible to complete payment with a stolen card number alone.",
-      "memory_hook_zh": "说到 EMV 3-D Secure，就是在线卡支付的身份认证。",
-      "memory_hook_en": "EMV 3-D Secure → identity authentication for online card payments."
+      "one_jp": "**EMV 3-Dセキュア** は、ネット上のクレジットカード決済で、カードを使っている人が本当に **カードの持ち主** かを **カード発行会社** が確かめる国際的な本人認証の仕組みである。",
+      "one_zh": "**EMV 3-D Secure**（[[jp:EMV 3-Dセキュア]]）是在网上信用卡支付中，由 **发卡机构** 确认用卡的人是否真是 **持卡人本人** 的国际通行身份认证机制。",
+      "one_en": "**EMV 3-D Secure** ([[jp:EMV 3-Dセキュア]]) is an international identity check for online credit card payments in which the **card issuer** confirms that the person using the card really is the **cardholder**.",
+      "detail_jp": "カード番号や有効期限は、盗まれれば他人でも入力できるので、それだけでは持ち主になりすました決済を防げない。そこで、カードを受け付ける店 (加盟店) からの依頼を受けて、カードを発行した会社が決済の場で本人かどうかを確かめる。日本でも、ネット通販の加盟店にこの仕組みの導入が求められている。",
+      "detail_zh": "卡号和有效期一旦被盗，别人也能输入，仅凭这些无法阻止冒充持卡人的支付。因此，受理该卡的商户（特约商户）会请求发卡机构，在支付当场确认是否为持卡人本人。在日本，网购商户也被要求引入这一机制。",
+      "detail_en": "A stolen card number and expiry date can be typed in by anyone, so on their own they cannot stop someone posing as the cardholder. The issuer therefore checks, at the moment of payment, whether it is really the cardholder, at the request of the merchant accepting the card. In Japan, online merchants are now required to adopt this scheme.",
+      "analogy_jp": "店が客の身元を自分で調べるのではなく、その客のカードを作った銀行に電話して「本人で間違いないか」を確かめてから品物を渡すようなもの。",
+      "analogy_zh": "就像店家不自己调查顾客身份，而是打电话给为这位顾客办卡的银行，确认“确实是本人吧”之后再交货。",
+      "analogy_en": "It is like a shop that, instead of checking a customer's identity itself, phones the bank that issued the customer's card to ask whether it is really them before handing over the goods.",
+      "hook_jp": "EMV は Europay・Mastercard・Visa の頭文字で、規格を管理する団体 EMVCo の名に残る。3-D は、加盟店側・発行会社側・両者をつなぐ部分という 3 つの領域 (Domain) を表す。",
+      "hook_zh": "EMV 取自 Europay、Mastercard、Visa 的首字母，也留在管理该规范的组织 EMVCo 的名称里。3-D 指商户侧、发卡机构侧以及连接两者的部分这三个域（Domain）。",
+      "hook_en": "EMV comes from the initials of Europay, Mastercard and Visa, and lives on in the name of EMVCo, the body that manages the standard. The 3-D stands for three domains: the merchant side, the issuer side, and the part that connects them.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "EMV 3-Dセキュア は決済のときに本人かどうかを確かめる仕組みである。カード情報を暗号化して送る通信の保護とは、役割が違う。",
+          "text_zh": "EMV 3-D Secure（[[jp:EMV 3-Dセキュア]]）是在支付时确认是否为本人的机制。它与把卡片信息加密后传送的通信保护，作用并不相同。",
+          "text_en": "EMV 3-D Secure ([[jp:EMV 3-Dセキュア]]) checks identity at the moment of payment. That is a different job from protecting the connection that carries the card details in encrypted form."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "通販サイトでカード情報を入力",
+                "zh": "在网购网站输入卡片信息",
+                "en": "Card details entered on the shop site"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "カード発行会社へ本人確認を依頼",
+                "zh": "请发卡机构确认本人",
+                "en": "Shop asks the card issuer to verify"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "発行会社が本人かを判断",
+                "zh": "发卡机构判断是否本人",
+                "en": "Issuer decides if it is the cardholder"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "結果を受けて決済",
+                "zh": "根据结果完成支付",
+                "en": "Payment proceeds on the result"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者が通販サイトで、カード番号や有効期限を入力する。",
+            "caption_zh": "用户在网购网站上输入卡号和有效期。",
+            "caption_en": "The shopper enters the card number and expiry date on the online store.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "通販サイトは、そのカードを発行した会社に本人確認を依頼する。",
+            "caption_zh": "网购网站请发行这张卡的机构确认是否为本人。",
+            "caption_en": "The store asks the company that issued the card to verify the shopper.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "発行会社が本人かどうかを判断し、必要なときは利用者に追加の確認を求める。",
+            "caption_zh": "发卡机构判断是否为本人，必要时要求用户追加确认。",
+            "caption_en": "The issuer judges whether it is the cardholder and, when needed, asks the shopper for an extra check.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "本人と確かめられた取引だけが、決済へ進む。",
+            "caption_zh": "只有确认为本人的交易才会进入支付。",
+            "caption_en": "Only transactions confirmed as genuine go on to payment.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "EMV 3-Dセキュア は、ネット上のクレジットカード決済で、カードを使っている人が本当に カードの持ち主 かを カード発行会社 が確かめる国際的な本人認証の仕組みである。",
+      "definition_zh": "EMV 3-D Secure（EMV 3-Dセキュア）是在网上信用卡支付中，由 发卡机构 确认用卡的人是否真是 持卡人本人 的国际通行身份认证机制。",
+      "definition_en": "EMV 3-D Secure (EMV 3-Dセキュア) is an international identity check for online credit card payments in which the card issuer confirms that the person using the card really is the cardholder.",
+      "explanation_jp": "カード番号や有効期限は、盗まれれば他人でも入力できるので、それだけでは持ち主になりすました決済を防げない。そこで、カードを受け付ける店 (加盟店) からの依頼を受けて、カードを発行した会社が決済の場で本人かどうかを確かめる。日本でも、ネット通販の加盟店にこの仕組みの導入が求められている。",
+      "explanation_zh": "卡号和有效期一旦被盗，别人也能输入，仅凭这些无法阻止冒充持卡人的支付。因此，受理该卡的商户（特约商户）会请求发卡机构，在支付当场确认是否为持卡人本人。在日本，网购商户也被要求引入这一机制。",
+      "explanation_en": "A stolen card number and expiry date can be typed in by anyone, so on their own they cannot stop someone posing as the cardholder. The issuer therefore checks, at the moment of payment, whether it is really the cardholder, at the request of the merchant accepting the card. In Japan, online merchants are now required to adopt this scheme.",
+      "memory_hook_jp": "EMV は Europay・Mastercard・Visa の頭文字で、規格を管理する団体 EMVCo の名に残る。3-D は、加盟店側・発行会社側・両者をつなぐ部分という 3 つの領域 (Domain) を表す。",
+      "memory_hook_zh": "EMV 取自 Europay、Mastercard、Visa 的首字母，也留在管理该规范的组织 EMVCo 的名称里。3-D 指商户侧、发卡机构侧以及连接两者的部分这三个域（Domain）。",
+      "memory_hook_en": "EMV comes from the initials of Europay, Mastercard and Visa, and lives on in the name of EMVCo, the body that manages the standard. The 3-D stands for three domains: the merchant side, the issuer side, and the part that connects them.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "3Dセキュア2.0",
-      "definition_jp": "EMV 3-Dセキュアの新しい版で利便性を高めた本人認証方式。",
-      "explanation_jp": "3Dセキュア2.0は、オンラインカード決済の本人認証であるEMV 3-Dセキュアの新しいバージョンです。従来は決済のたびに固定パスワード入力を求められ手間でしたが、2.0では端末や購入の情報をもとにリスクを判断します。\n\nリスクが低いと判断した取引は追加の本人確認を省き、怪しい取引のときだけワンタイムパスワードなどの確認を求めます。これにより、安全性を保ちつつ利用者の手間とかご落ち(購入の途中離脱)を減らせます。試験では、旧来方式の改良版で利便性と安全性を両立した決済認証である点が問われます。",
-      "analogy_jp": "毎回必ず守衛に呼び止められる検問を、普段は素通りでき、不審なときだけ呼び止めて確認する方式に変えたイメージ。安全を保ちつつ通過を速くします。",
-      "memory_hook_jp": "3Dセキュア2.0といえばリスクに応じて確認する改良版の決済認証",
-      "inline_quiz": [
-        "2018h30a-q069"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "3-D Secure 2.0",
       "term_en": "3-D Secure 2.0",
-      "definition_zh": "EMV 3-D Secure 的新版本，提升了便利性的身份认证方式。",
-      "definition_en": "A new version of EMV 3-D Secure that is an identity authentication method with improved convenience.",
-      "explanation_zh": "3-D Secure 2.0 是在线卡支付身份认证 EMV 3-D Secure 的新版本。以往每次支付都要求输入固定密码，比较麻烦；而 2.0 会根据终端或购买的信息来判断风险。\n\n对于判断为低风险的交易，会省去追加的身份确认；只有在可疑交易时才要求输入一次性密码等进行确认。这样既能保持安全性，又能减少用户的麻烦和购物车放弃（购买途中流失）。在考试中，会考查它是旧方式的改良版、兼顾便利性与安全性的支付认证这一点。",
-      "explanation_en": "3-D Secure 2.0 is a new version of EMV 3-D Secure, the identity authentication for online card payments. Previously, a fixed password had to be entered for every payment, which was cumbersome; in 2.0, risk is assessed based on device and purchase information.\n\nFor transactions judged to be low-risk, additional identity verification is skipped, and only for suspicious transactions is confirmation such as a one-time password required. This reduces user hassle and cart abandonment (dropping out partway through a purchase) while maintaining security. The exam tests that it is an improved version of the old method and a payment authentication that balances convenience and security.",
-      "analogy_zh": "想象一下，把每次都必定被门卫拦下检查的关卡，改成平时可以直接通过、只在可疑时才拦下确认的方式。既保持安全，又让通过更快。",
-      "analogy_en": "Imagine changing a checkpoint where you are always stopped by a guard into one where you can usually pass straight through and are only stopped for a check when something seems suspicious. It keeps things safe while speeding up passage.",
-      "memory_hook_zh": "说到 3-D Secure 2.0，就是根据风险来确认的改良版支付认证。",
-      "memory_hook_en": "3-D Secure 2.0 → an improved payment authentication that verifies according to risk."
+      "one_jp": "**3Dセキュア2.0** は、**EMV 3-Dセキュア** を版番号で呼んだ名前で、端末や取引の情報から **リスク** を判定し、高いと見た取引にだけ追加の確認を求める。",
+      "one_zh": "**3-D Secure 2.0**（[[jp:3Dセキュア2.0]]）是按版本号称呼 **EMV 3-D Secure** 时的名称，它根据设备和交易的信息判定 **风险**，只对判定为高风险的交易要求追加确认。",
+      "one_en": "**3-D Secure 2.0** ([[jp:3Dセキュア2.0]]) is **EMV 3-D Secure** called by its version number; it assesses **risk** from device and transaction data and asks for an extra check only on transactions it rates as high risk.",
+      "detail_jp": "従来の版 (1.0) では、事前に登録した固定のパスワードを決済のたびに入力させていたため、手間がかかり、購入を途中でやめる原因にもなっていた。2.0 では、使っている端末や購入の内容・履歴をもとにカード発行会社がリスクを判定し、普段どおりの取引は利用者に何も求めずに通す。このように、リスクの大きさに応じて確認の強さを変える方式を **リスクベース認証** という。",
+      "detail_zh": "旧版（1.0）每次支付都要求输入事先登记的固定密码，既费事，也会让人中途放弃购买。2.0 则由发卡机构根据所用设备以及购买内容和记录判定风险，对与平常无异的交易不向用户提出任何要求直接放行。像这样根据风险大小改变确认强度的方式，称为 **基于风险的认证**（[[jp:リスクベース認証]]）。",
+      "detail_en": "The earlier version (1.0) made shoppers type a fixed, pre-registered password on every payment, which was a chore and led some to abandon their purchase. In 2.0, the card issuer assesses risk from the device in use and the purchase details and history, and lets ordinary-looking transactions through without asking the shopper for anything. Scaling the strength of the check to the size of the risk in this way is called **risk-based authentication** ([[jp:リスクベース認証]]).",
+      "analogy_jp": "毎回全員を呼び止める検問から、いつもと様子が違う車だけを止めて確かめる検問に変えるようなもの。",
+      "analogy_zh": "就像把拦下每辆车检查的关卡，改成只拦下看起来和平常不一样的车来确认。",
+      "analogy_en": "It is like changing a checkpoint that stops every car into one that pulls over only the cars that look out of the ordinary.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "3Dセキュア2.0 と EMV 3-Dセキュア は別の方式ではない。2.0 からは規格団体 EMVCo が仕様を定めており、その名を冠して EMV 3-Dセキュア と呼ばれる。",
+          "text_zh": "3-D Secure 2.0（[[jp:3Dセキュア2.0]]）与 EMV 3-D Secure（[[jp:EMV 3-Dセキュア]]）并不是两种方式。从 2.0 起由规范组织 EMVCo 制定规格，因此冠以其名，称为 EMV 3-D Secure。",
+          "text_en": "3-D Secure 2.0 ([[jp:3Dセキュア2.0]]) and EMV 3-D Secure ([[jp:EMV 3-Dセキュア]]) are not two separate methods. From 2.0 on, the specification is set by the standards body EMVCo, which is why the scheme carries its name as EMV 3-D Secure."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "r",
+            "label": {
+              "jp": "端末や取引の情報からリスクを判定",
+              "zh": "根据设备和交易信息判定风险",
+              "en": "Assess risk from device and transaction data"
+            },
+            "children": [
+              {
+                "id": "lo",
+                "label": {
+                  "jp": "低リスク: 追加の確認なしで決済へ",
+                  "zh": "低风险：无需追加确认，直接支付",
+                  "en": "Low risk: payment with no extra check"
+                }
+              },
+              {
+                "id": "hi",
+                "label": {
+                  "jp": "高リスク: ワンタイムパスワードや生体認証で追加確認",
+                  "zh": "高风险：用一次性口令或生物认证追加确认",
+                  "en": "High risk: extra check by one-time password or biometrics"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [],
+      "definition_jp": "3Dセキュア2.0 は、EMV 3-Dセキュア を版番号で呼んだ名前で、端末や取引の情報から リスク を判定し、高いと見た取引にだけ追加の確認を求める。",
+      "definition_zh": "3-D Secure 2.0（3Dセキュア2.0）是按版本号称呼 EMV 3-D Secure 时的名称，它根据设备和交易的信息判定 风险，只对判定为高风险的交易要求追加确认。",
+      "definition_en": "3-D Secure 2.0 (3Dセキュア2.0) is EMV 3-D Secure called by its version number; it assesses risk from device and transaction data and asks for an extra check only on transactions it rates as high risk.",
+      "explanation_jp": "従来の版 (1.0) では、事前に登録した固定のパスワードを決済のたびに入力させていたため、手間がかかり、購入を途中でやめる原因にもなっていた。2.0 では、使っている端末や購入の内容・履歴をもとにカード発行会社がリスクを判定し、普段どおりの取引は利用者に何も求めずに通す。このように、リスクの大きさに応じて確認の強さを変える方式を リスクベース認証 という。",
+      "explanation_zh": "旧版（1.0）每次支付都要求输入事先登记的固定密码，既费事，也会让人中途放弃购买。2.0 则由发卡机构根据所用设备以及购买内容和记录判定风险，对与平常无异的交易不向用户提出任何要求直接放行。像这样根据风险大小改变确认强度的方式，称为 基于风险的认证（リスクベース認証）。",
+      "explanation_en": "The earlier version (1.0) made shoppers type a fixed, pre-registered password on every payment, which was a chore and led some to abandon their purchase. In 2.0, the card issuer assesses risk from the device in use and the purchase details and history, and lets ordinary-looking transactions through without asking the shopper for anything. Scaling the strength of the check to the size of the risk in this way is called risk-based authentication (リスクベース認証).",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "パスワードレス認証",
+      "b": "シングルサインオン",
+      "rows": [
+        {
+          "label_jp": "パスワードの扱い",
+          "label_zh": "对密码的处理",
+          "label_en": "Role of the password",
+          "a_jp": "パスワードそのものを使わない",
+          "a_zh": "根本不使用密码",
+          "a_en": "No password is used at all",
+          "b_jp": "最初の認証でパスワードを使うこともあり、入力の回数を 1 回にまとめる",
+          "b_zh": "最初的认证也可能使用密码，把输入次数合并为一次",
+          "b_en": "The first authentication may still use a password; the number of entries is cut to one",
+          "key": true
+        },
+        {
+          "label_jp": "主なねらい",
+          "label_zh": "主要目的",
+          "label_en": "Main aim",
+          "a_jp": "推測・盗み見・使い回しの危険をなくす",
+          "a_zh": "消除被猜中、被偷窥、被重复使用的风险",
+          "a_en": "Remove the risks of guessing, shoulder surfing and reuse",
+          "b_jp": "サービスごとにログインし直す手間を省く",
+          "b_zh": "省去在每个服务上重新登录的麻烦",
+          "b_en": "Save the trouble of logging in again for each service",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**パスワードレス認証** は、生体情報や手元の端末を使い、パスワードを覚えて入力すること自体をなくす。",
+    "**SMS認証** は電話番号の端末を持っていることで確かめる所持の認証で、パスワードと組み合わせると多要素認証になる。",
+    "**シングルサインオン** は 1 回の認証で複数のサービスを使えて便利だが、入口の認証が破られると被害が連携先すべてに広がる。",
+    "**EMV 3-Dセキュア** (3Dセキュア2.0) は、ネットのカード決済でカード発行会社が本人を確かめ、リスクが高い取引にだけ追加の確認を求める。"
+  ],
+  "key_points_zh": [
+    "**无密码认证** 使用生物特征信息或手边的设备，从根本上免去记住并输入密码这件事。",
+    "**短信认证** 以持有该电话号码的设备为依据，属于持有类认证，与密码组合就成为多因素认证。",
+    "**单点登录** 认证一次就能使用多个服务，十分方便，但入口的认证一旦被攻破，损害会波及所有关联的服务。",
+    "**EMV 3-D Secure**（3-D Secure 2.0）在网上信用卡支付时由发卡机构确认本人，只对高风险的交易要求追加确认。"
+  ],
+  "key_points_en": [
+    "**Passwordless authentication** uses biometrics or a device in hand, removing the need to memorise and type a password at all.",
+    "**SMS authentication** is a possession factor that relies on holding the device for a phone number, and paired with a password it becomes multi-factor authentication.",
+    "**Single sign-on** makes several services usable after one authentication, but if that entry point is broken, the damage spreads to every linked service.",
+    "**EMV 3-D Secure** (3-D Secure 2.0) has the card issuer confirm the cardholder in online card payments and asks for an extra check only on high-risk transactions."
+  ],
+  "overview": {
+    "intro_jp": "パスワードレス認証 と SMS認証 が、それぞれ何を手がかりに本人を確かめるかを説明できる。シングルサインオン の仕組みを、便利になる点と注意する点の両面から説明できる。ネット上のカード決済で使う EMV 3-Dセキュア と、リスクに応じて追加の確認を求める考え方を説明できる。",
+    "intro_zh": "能说明 无密码认证 与 短信认证 各自凭什么来确认用户本人。能从变方便的地方和需要注意的地方两方面，说明 单点登录 的机制。能说明网上信用卡支付所用的 EMV 3-D Secure，以及按风险高低决定是否追加确认的思路。",
+    "intro_en": "Explain what passwordless authentication and SMS authentication each rely on to confirm who the user is. Explain how single sign-on works, covering both what it makes easier and what to watch out for. Explain EMV 3-D Secure, used for online card payments, and the idea of asking for an extra check only when the risk calls for it.",
+    "freq_badge": "頻出",
+    "est_minutes": 31
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "パスワードレス認証: パスワードレス認証といえばパスワードを使わず生体や所持物で本人確認",
-      "SMS認証: SMS認証といえば携帯に届く確認コードで本人確認する所持認証",
-      "シングルサインオン: シングルサインオンといえば一度の認証で複数サービス利用",
-      "EMV 3-Dセキュア: EMV 3-Dセキュアといえばオンラインカード決済の本人認証",
-      "3Dセキュア2.0: 3Dセキュア2.0といえばリスクに応じて確認する改良版の決済認証"
-    ],
     "key_points_jp": [
-      "パスワードレス認証は生体認証や所持物を使い、パスワードの弱点を断って安全性と利便性を両立する発展形。",
-      "SMS認証は携帯電話番号宛の確認コードを使う所持認証で、パスワードと組み合わせると多要素認証になる。",
-      "シングルサインオン(SSO)は一度の認証で複数サービスを利用でき、利便性向上の代表策である一方、最初の認証を強固にする必要がある。",
-      "EMV 3-Dセキュアはオンラインのクレジットカード決済で本人を確認し、なりすましによる不正利用を防ぐ国際的な仕組み。",
-      "3Dセキュア2.0はその改良版で、取引のリスクに応じて追加確認の要否を変え、安全性と利便性を両立する。"
+      "パスワードレス認証 は、生体情報や手元の端末を使い、パスワードを覚えて入力すること自体をなくす。",
+      "SMS認証 は電話番号の端末を持っていることで確かめる所持の認証で、パスワードと組み合わせると多要素認証になる。",
+      "シングルサインオン は 1 回の認証で複数のサービスを使えて便利だが、入口の認証が破られると被害が連携先すべてに広がる。",
+      "EMV 3-Dセキュア (3Dセキュア2.0) は、ネットのカード決済でカード発行会社が本人を確かめ、リスクが高い取引にだけ追加の確認を求める。"
     ],
     "key_points_zh": [
-      "无密码认证使用生物认证或持有物，切断密码的弱点，是兼顾安全性与便利性的进阶形态。",
-      "短信认证是使用发往手机号码的验证码的持有认证，与密码组合后就成为多因素认证。",
-      "单点登录（SSO）通过一次认证就能使用多个服务，是提升便利性的代表性手段，但另一方面需要把最初的认证做得足够强固。",
-      "EMV 3-D Secure 是在在线信用卡支付中确认本人、防止因冒充而盗用的国际性机制。",
-      "3-D Secure 2.0 是其改良版，根据交易的风险来改变是否需要追加确认，兼顾安全性与便利性。"
+      "无密码认证 使用生物特征信息或手边的设备，从根本上免去记住并输入密码这件事。",
+      "短信认证 以持有该电话号码的设备为依据，属于持有类认证，与密码组合就成为多因素认证。",
+      "单点登录 认证一次就能使用多个服务，十分方便，但入口的认证一旦被攻破，损害会波及所有关联的服务。",
+      "EMV 3-D Secure（3-D Secure 2.0）在网上信用卡支付时由发卡机构确认本人，只对高风险的交易要求追加确认。"
     ],
     "key_points_en": [
-      "Passwordless authentication uses biometrics or a possessed item, eliminating the weaknesses of passwords, and is an advanced form that balances security and convenience.",
-      "SMS authentication is possession-based authentication that uses a verification code sent to a mobile phone number, and combined with a password it becomes multi-factor authentication.",
-      "Single sign-on (SSO) lets you use multiple services with a single authentication and is a representative measure for improving convenience, but on the other hand the initial authentication needs to be made strong.",
-      "EMV 3-D Secure is an international mechanism that verifies the person in online credit card payments and prevents fraudulent use through impersonation.",
-      "3-D Secure 2.0 is its improved version, changing whether additional verification is required according to the risk of the transaction, balancing security and convenience."
+      "Passwordless authentication uses biometrics or a device in hand, removing the need to memorise and type a password at all.",
+      "SMS authentication is a possession factor that relies on holding the device for a phone number, and paired with a password it becomes multi-factor authentication.",
+      "Single sign-on makes several services usable after one authentication, but if that entry point is broken, the damage spreads to every linked service.",
+      "EMV 3-D Secure (3-D Secure 2.0) has the card issuer confirm the cardholder in online card payments and asks for an extra check only on high-risk transactions."
+    ],
+    "memory_hooks_jp": [
+      "パスワードレス認証: 「レス」は英語の less (〜がない)。ペーパーレスやキャッシュレスと同じ「レス」で、パスワードが無い認証と読める。",
+      "SMS認証: SMS は Short Message Service の略。電話番号だけを宛先にして届く短い文で、届いた先の端末を持っていることが証拠になる。",
+      "シングルサインオン: サインオンはログインの別の言い方。Single (1 回) の Sign-On (ログイン) で済む、と英語のまま読める。",
+      "EMV 3-Dセキュア: EMV は Europay・Mastercard・Visa の頭文字で、規格を管理する団体 EMVCo の名に残る。3-D は、加盟店側・発行会社側・両者をつなぐ部分という 3 つの領域 (Domain) を表す。"
     ],
     "memory_hooks_zh": [
-      "无密码认证：说到无密码认证，就是不用密码、靠生物特征或持有物来确认身份。",
-      "短信认证：说到短信认证，就是用发到手机上的验证码确认身份的持有认证。",
-      "单点登录：说到单点登录，就是一次认证使用多个服务。",
-      "EMV 3-D Secure：说到 EMV 3-D Secure，就是在线卡支付的身份认证。",
-      "3-D Secure 2.0：说到 3-D Secure 2.0，就是根据风险来确认的改良版支付认证。"
+      "无密码认证：日语名称パスワードレス認証里的“レス”来自英语 less（没有），和日语“无纸化”“无现金”说法里的“レス”相同，字面就是“没有密码的认证”。",
+      "短信认证：SMS 是 Short Message Service 的缩写，即只凭电话号码就能送达的短信；收到短信的那部设备在谁手里，谁就有了证明。",
+      "单点登录：Sign-On 是“登录”的另一种说法。Single（一次）加 Sign-On（登录），按英文字面读就是“登录一次就够了”。",
+      "EMV 3-D Secure：EMV 取自 Europay、Mastercard、Visa 的首字母，也留在管理该规范的组织 EMVCo 的名称里。3-D 指商户侧、发卡机构侧以及连接两者的部分这三个域（Domain）。"
     ],
     "memory_hooks_en": [
-      "Passwordless authentication: Passwordless authentication → verify identity with biometrics or a possessed item, no password needed.",
-      "SMS authentication: SMS authentication → possession-based authentication that verifies identity with a code sent to your phone.",
-      "Single sign-on: Single sign-on → use multiple services with a single authentication.",
-      "EMV 3-D Secure: EMV 3-D Secure → identity authentication for online card payments.",
-      "3-D Secure 2.0: 3-D Secure 2.0 → an improved payment authentication that verifies according to risk."
+      "Passwordless authentication: The \"-less\" means \"without\", as in paperless or cashless; the Japanese name パスワードレス認証 borrows the same English suffix, so it reads as authentication without a password.",
+      "SMS authentication: SMS stands for Short Message Service: short texts addressed by phone number alone, so holding the receiving device is the evidence.",
+      "Single sign-on: Sign-on is just another word for logging in, so the name reads literally: a single sign-on (login) is all it takes.",
+      "EMV 3-D Secure: EMV comes from the initials of Europay, Mastercard and Visa, and lives on in the name of EMVCo, the body that manages the standard. The 3-D stands for three domains: the merchant side, the issuer side, and the part that connects them."
     ]
   },
   "challenge_questions": [
     "2018h30h-q091",
-    "2024r06-q089",
-    "2017h29a-q059"
+    "2010h22a-q062",
+    "2018h30a-q069",
+    "2013h25h-q058"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "先进认证方式与支付认证",
-  "title_en": "Advanced Authentication Methods and Payment Authentication",
-  "unit_summary_zh": "学习无密码认证、短信认证、单点登录，以及 EMV 3-D Secure 等面向支付的身份认证。",
-  "unit_summary_en": "Learn about passwordless authentication, SMS authentication, single sign-on, and payment-oriented identity authentication such as EMV 3-D Secure."
+  }
 }

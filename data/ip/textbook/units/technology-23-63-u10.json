@@ -1,295 +1,1012 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-63-u10",
   "topic_id": "technology-23-63",
   "category": "technology",
   "title_jp": "生体認証と認証精度の指標",
+  "title_zh": "生物识别认证与认证精度指标",
+  "title_en": "Biometric Authentication and Authentication Accuracy Metrics",
   "unit_summary_jp": "静脈・虹彩・声紋・顔・網膜による生体認証と、本人拒否率(FRR)・他人受入率(FAR)という精度指標を学ぶ。",
+  "unit_summary_zh": "学习基于静脉、虹膜、声纹、人脸、视网膜的生物识别认证，以及拒真率（FRR）、认假率（FAR）这两项精度指标。",
+  "unit_summary_en": "Learn biometric authentication based on veins, iris, voiceprint, face, and retina, along with two accuracy metrics: False Rejection Rate (FRR) and False Acceptance Rate (FAR).",
   "order_in_topic": 10,
   "prerequisites": [
     "technology-23-63-u08"
   ],
-  "overview": {
-    "intro_jp": "身体的特徴で本人確認を行う生体認証(バイオメトリクス認証)を学ぶ単元です。静脈・虹彩・顔・声紋・網膜の5方式を押さえたうえで、認証の正確さを測る本人拒否率(FRR)と他人受入率(FAR)という2指標を扱います。各方式の特徴と、2指標がトレードオフの関係にある点はこの分野で頻出で、得点の鍵になります。",
-    "freq_badge": "頻出",
-    "est_minutes": 26,
-    "intro_zh": "本单元学习通过身体特征确认本人身份的生物识别认证（biometrics 认证）。在掌握静脉、虹膜、人脸、声纹、视网膜这 5 种方式的基础上，还会涉及衡量认证准确度的拒真率（FRR）与认假率（FAR）这两项指标。各方式的特征，以及这两项指标之间存在权衡关系这一点，在本领域属于高频考点，是得分的关键。",
-    "intro_en": "This unit covers biometric authentication, which verifies a person's identity using physical characteristics. After mastering the five methods — veins, iris, face, voiceprint, and retina — you will also study two metrics that measure the accuracy of authentication: the False Rejection Rate (FRR) and the False Acceptance Rate (FAR). The features of each method and the fact that these two metrics are in a trade-off relationship are frequently tested in this field and are key to scoring."
-  },
-  "terms": [
+  "goals_jp": [
+    "この単元で扱う**生体認証**の 5 つの方式が、それぞれ体のどこの特徴を読み取るかを言い分けられる。",
+    "生体認証が、知識や所持品による認証と比べて何が要らず何が要るかを説明できる。",
+    "**本人拒否率**と**他人受入率**がどちらの誤りを表し、低く抑えると何が高まるかを区別できる。"
+  ],
+  "goals_zh": [
+    "能分别说出本单元所讲**生物特征认证**的 5 种方式各自读取身体哪个部位的特征。",
+    "能说明与依靠知识或持有物的认证相比，生物特征认证省去了什么、又需要什么。",
+    "能区分**拒真率**和**认假率**各自代表哪一种错误，以及把它们压低后会提高什么。"
+  ],
+  "goals_en": [
+    "Tell apart the five methods of **biometric authentication** covered in this unit by which part of the body each one reads.",
+    "Explain what biometric authentication does away with, and what it still needs, compared with authentication by knowledge or by possession.",
+    "Distinguish which error the **false rejection rate** and the **false acceptance rate** each describe, and what improves when each is kept low."
+  ],
+  "overview_cols_jp": [
+    "区分",
+    "読み取る特徴・表す誤り"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "读取的特征 / 代表的错误"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Feature read / error measured"
+  ],
+  "overview_rows": [
     {
       "term": "静脈パターン認証",
-      "definition_jp": "手のひらや指の静脈の形状パターンを読み取って本人確認を行う生体認証方式。",
-      "explanation_jp": "静脈パターン認証は、手のひらや指の内部にある静脈の分岐や形のパターンを、近赤外線で読み取って本人を識別する生体認証方式です。\n\n静脈は体内にあるため偽造や盗み取りが難しく、安全性が高いのが特徴です。指紋のように表面に痕跡が残らず、ケガや乾燥の影響も受けにくいため、ATMや入退室管理など実用例が多くあります。試験ではこの単元で最も問われやすい方式で、『体内の静脈の形で認証する』という点と、表面の特徴を使う指紋認証との違いを押さえましょう。",
-      "analogy_jp": "手のひらを懐中電灯にかざすと、内部に走る血管が地図のように透けて見えます。その人だけの血管マップを照合して本人と確かめるイメージです。",
-      "memory_hook_jp": "静脈パターン認証といえば体内の静脈の形で本人確認",
-      "inline_quiz": [
-        "2013h25a-q050",
-        "2016h28a-q066"
+      "one_line_jp": "手のひらや指の内部の静脈の形で本人を確かめる。",
+      "one_line_zh": "根据手掌或手指内部的静脉形状确认本人。",
+      "one_line_en": "Confirms identity from the shape of the veins inside the palm or finger.",
+      "extra_jp": [
+        "方式",
+        "皮膚の下の静脈の形"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"生体認証\"] --> B[\"身体的特徴\"]; A --> C[\"行動的特徴\"]; B --> D[\"静脈\"]; B --> E[\"虹彩\"]; B --> F[\"顔\"]; B --> G[\"網膜\"]; C --> H[\"声紋\"]",
-        "svg_path": "figures/technology-23-63-u10-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "静脉模式认证",
-      "term_en": "Vein pattern authentication",
-      "definition_zh": "读取手掌或手指的静脉形状模式来确认本人身份的生物识别认证方式。",
-      "definition_en": "A biometric authentication method that verifies a person's identity by reading the shape pattern of the veins in the palm or finger.",
-      "explanation_zh": "静脉模式认证是用近红外线读取手掌或手指内部静脉的分叉与形状模式，从而识别本人的生物识别认证方式。\n\n由于静脉位于体内，难以伪造或盗取，安全性高，这是它的特征。它不像指纹那样会在表面留下痕迹，也不易受伤口或干燥的影响，因此在 ATM、门禁管理等场景有许多实际应用。在考试中，它是本单元最容易被考到的方式，请掌握「依据体内静脉的形状进行认证」这一点，以及它与使用表面特征的指纹认证之间的区别。",
-      "explanation_en": "Vein pattern authentication is a biometric method that identifies a person by reading, with near-infrared light, the branching and shape pattern of the veins inside the palm or finger.\n\nBecause veins are inside the body, they are hard to forge or steal, giving high security — this is its defining feature. Unlike fingerprints, it leaves no trace on the surface and is less affected by injury or dryness, so it has many practical uses such as ATMs and entry/exit management. On the exam, this is the method most likely to be asked about in this unit; be sure to grasp the point that it \"authenticates by the shape of the veins inside the body\" and its difference from fingerprint authentication, which uses surface characteristics.",
-      "analogy_zh": "把手掌对着手电筒，内部走行的血管就会像地图一样透出来。其形象是：核对只属于那个人的血管地图，来确认本人。",
-      "analogy_en": "When you hold your palm up to a flashlight, the blood vessels running inside show through like a map. The image is checking the blood-vessel map unique to that person to confirm their identity.",
-      "memory_hook_zh": "说到静脉模式认证，就是用体内静脉的形状确认本人",
-      "memory_hook_en": "Vein pattern authentication → verifying identity by the shape of the veins inside the body"
+      "extra_zh": [
+        "方式",
+        "皮肤下的静脉形状"
+      ],
+      "extra_en": [
+        "Method",
+        "Shape of veins under the skin"
+      ]
     },
     {
       "term": "虹彩認証",
-      "definition_jp": "瞳の周りの虹彩の模様を読み取って本人確認を行う生体認証方式。",
-      "explanation_jp": "虹彩認証は、瞳孔の周りにあるドーナツ状の虹彩(瞳の色がついた部分)の細かい模様を読み取って本人を識別する方式です。\n\n虹彩の模様は人によって異なり、一生ほとんど変化せず、双子でも違うため、非常に高精度な認証ができます。カメラで非接触に読み取れる利点もあります。試験では『虹彩=高精度な生体認証』として問われます。眼底の血管を使う網膜認証と混同しやすいので、虹彩は瞳の表側の色付き部分の模様という点を区別して覚えましょう。",
-      "analogy_jp": "目の中にある「色のついた輪」の模様は、人それぞれ異なる手書きの判子のようなもの。その細かな模様を見比べて本人を確かめます。",
-      "memory_hook_jp": "虹彩認証といえば瞳の色付き部分の模様で高精度認証",
-      "inline_quiz": [
-        "2014h26a-q069",
-        "2015h27h-q054"
+      "one_line_jp": "瞳孔の周りの色の付いた輪の模様で本人を確かめる。",
+      "one_line_zh": "根据瞳孔周围那圈有颜色的环上的花纹确认本人。",
+      "one_line_en": "Confirms identity from the pattern of the colored ring around the pupil.",
+      "extra_jp": [
+        "方式",
+        "瞳孔の周りの虹彩の模様"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "虹膜认证",
-      "term_en": "Iris authentication",
-      "definition_zh": "读取瞳孔周围虹膜的纹理来确认本人身份的生物识别认证方式。",
-      "definition_en": "A biometric authentication method that verifies a person's identity by reading the pattern of the iris around the pupil.",
-      "explanation_zh": "虹膜认证是读取瞳孔周围那圈环状虹膜（眼睛带颜色的部分）的细微纹理，从而识别本人的方式。\n\n虹膜的纹理因人而异，一生中几乎不变，即使双胞胎也不相同，因此能实现非常高精度的认证。它还有可用摄像头非接触读取的优点。在考试中，它以「虹膜＝高精度生物识别认证」的形式出现。由于容易与使用眼底血管的视网膜认证混淆，请记清虹膜是「眼睛正面带颜色部分的纹理」这一区别。",
-      "explanation_en": "Iris authentication is a method that identifies a person by reading the fine pattern of the ring-shaped iris (the colored part of the eye) around the pupil.\n\nThe iris pattern differs from person to person, barely changes throughout life, and differs even between twins, so it enables very high-accuracy authentication. It also has the advantage of being readable contactlessly with a camera. On the exam it is asked about as \"iris = high-accuracy biometric authentication.\" Because it is easily confused with retinal authentication, which uses the blood vessels at the back of the eye, remember the distinction that the iris is \"the pattern of the colored part on the front of the eye.\"",
-      "analogy_zh": "眼睛里那个「带颜色的环」的纹理，就像每个人各不相同的手写印章。通过比对这细微的纹理来确认本人。",
-      "analogy_en": "The pattern of the \"colored ring\" in the eye is like a hand-drawn seal that differs for each person. Identity is confirmed by comparing this fine pattern.",
-      "memory_hook_zh": "说到虹膜认证，就是用瞳孔带颜色部分的纹理实现高精度认证",
-      "memory_hook_en": "Iris authentication → high-accuracy authentication using the pattern of the colored part around the pupil"
+      "extra_zh": [
+        "方式",
+        "瞳孔周围的虹膜花纹"
+      ],
+      "extra_en": [
+        "Method",
+        "Iris pattern around the pupil"
+      ]
     },
     {
       "term": "顔認証",
-      "definition_jp": "目・鼻・口の配置など顔の特徴を読み取って本人確認を行う生体認証方式。",
-      "explanation_jp": "顔認証は、目・鼻・口の位置関係や輪郭といった顔の特徴をカメラで撮影し、登録データと照合して本人を識別する方式です。\n\nカメラに顔を向けるだけで認証でき、専用の読み取り装置に触れる必要がない手軽さから、スマートフォンのロック解除や空港の出入国管理など、普及度の高い方式です。試験では実用例の多い非接触型として問われます。一方で、照明や角度、マスクや経年による顔の変化の影響を受けやすい点も理解しておきましょう。",
-      "analogy_jp": "受付の人があなたの顔を見て「いつもの○○さんですね」と分かるように、機械が顔のパーツの配置を見て本人かどうか判断します。",
-      "memory_hook_jp": "顔認証といえば顔のパーツ配置で非接触に本人確認",
-      "inline_quiz": [
-        "2009h21h-q063",
-        "2014h26a-q057"
+      "one_line_jp": "目や鼻の位置関係、輪郭をカメラで捉えて本人を確かめる。",
+      "one_line_zh": "用摄像头捕捉眼睛、鼻子的位置关系和脸部轮廓来确认本人。",
+      "one_line_en": "Confirms identity by capturing the layout of the eyes and nose and the face outline with a camera.",
+      "extra_jp": [
+        "方式",
+        "顔のパーツの配置と輪郭"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "人脸认证",
-      "term_en": "Face authentication",
-      "definition_zh": "读取眼、鼻、口的布局等面部特征来确认本人身份的生物识别认证方式。",
-      "definition_en": "A biometric authentication method that verifies a person's identity by reading facial features such as the arrangement of the eyes, nose, and mouth.",
-      "explanation_zh": "人脸认证是用摄像头拍摄眼、鼻、口的位置关系以及轮廓等面部特征，与登记数据进行比对，从而识别本人的方式。\n\n只需把脸对准摄像头即可完成认证，无需触碰专用读取设备，这种便捷性使它成为普及度很高的方式，应用于智能手机解锁、机场出入境管理等场景。在考试中，它作为应用实例众多的非接触型方式出现。另一方面，也要理解它容易受光照、角度，以及口罩或随年龄变化的面部变化的影响这一点。",
-      "explanation_en": "Face authentication is a method that identifies a person by using a camera to capture facial features such as the positional relationship of the eyes, nose, and mouth and the contour, and comparing them with registered data.\n\nYou can authenticate just by facing the camera, with no need to touch a dedicated reader, and this convenience makes it a widely adopted method, used for unlocking smartphones, airport immigration control, and more. On the exam it is asked about as a contactless type with many practical applications. On the other hand, understand that it is easily affected by lighting, angle, and changes in the face such as masks or aging.",
-      "analogy_zh": "就像前台的人看到你的脸就知道「是平时那位○○先生吧」一样，机器通过查看面部各部位的布局来判断是否为本人。",
-      "analogy_en": "Just as a receptionist sees your face and recognizes \"that's the usual Mr. So-and-so,\" the machine judges whether it is you by looking at the arrangement of your facial parts.",
-      "memory_hook_zh": "说到人脸认证，就是用面部各部位的布局非接触地确认本人",
-      "memory_hook_en": "Face authentication → verifying identity contactlessly by the arrangement of facial parts"
+      "extra_zh": [
+        "方式",
+        "五官的布局与轮廓"
+      ],
+      "extra_en": [
+        "Method",
+        "Layout of facial features and outline"
+      ]
     },
     {
       "term": "声紋認証",
-      "definition_jp": "声の周波数や波形などの特徴で本人確認を行う生体認証方式。",
-      "explanation_jp": "声紋認証は、声に含まれる周波数や波形などの音声的な特徴(声紋)を分析して本人を識別する方式です。\n\nマイクさえあれば電話越しでも認証でき、専用機器が不要な点が利点です。一方、声は風邪や体調、周囲の雑音の影響を受けやすく、録音による なりすましのリスクもあります。試験では、身体の形状ではなく『声(音声)の特徴を使う生体認証』として、他の視覚的な方式と区別して問われます。",
-      "analogy_jp": "電話の向こうの相手が、顔が見えなくても声だけで「あ、お母さんだ」と分かるように、声の特徴から本人を見分ける仕組みです。",
-      "memory_hook_jp": "声紋認証といえば声の特徴で本人確認",
-      "inline_quiz": [
-        "2011h23tokubetsu-q068"
+      "one_line_jp": "声の高さや響き方の特徴で本人を確かめる。",
+      "one_line_zh": "根据声音的高低和共鸣方式等特征确认本人。",
+      "one_line_en": "Confirms identity from features such as the pitch and resonance of the voice.",
+      "extra_jp": [
+        "方式",
+        "声の特徴"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "声纹认证",
-      "term_en": "Voiceprint authentication",
-      "definition_zh": "依据声音的频率、波形等特征来确认本人身份的生物识别认证方式。",
-      "definition_en": "A biometric authentication method that verifies a person's identity based on features of the voice such as frequency and waveform.",
-      "explanation_zh": "声纹认证是分析声音中包含的频率、波形等声学特征（声纹），从而识别本人的方式。\n\n只要有麦克风，即使隔着电话也能完成认证，无需专用设备，这是它的优点。另一方面，声音容易受感冒、身体状况以及周围噪声的影响，还存在被录音冒充（假冒）的风险。在考试中，它作为「使用声音（语音）特征的生物识别认证」出现，而非依据身体形状，需与其他视觉型方式区分。",
-      "explanation_en": "Voiceprint authentication is a method that identifies a person by analyzing acoustic features contained in the voice, such as frequency and waveform (the voiceprint).\n\nIts advantage is that, as long as there is a microphone, it can authenticate even over the phone, with no dedicated equipment needed. On the other hand, the voice is easily affected by colds, physical condition, and surrounding noise, and there is also a risk of impersonation (spoofing) through recordings. On the exam, it is asked about as \"biometric authentication that uses the features of the voice (audio)\" rather than the shape of the body, and should be distinguished from other visual methods.",
-      "analogy_zh": "就像电话那头的对方即使看不见脸，仅凭声音就能听出「啊，是妈妈」一样，是通过声音特征来辨别本人的机制。",
-      "analogy_en": "Just as you can tell \"ah, it's Mom\" over the phone from the voice alone even without seeing the face, it is a mechanism that distinguishes a person by the features of the voice.",
-      "memory_hook_zh": "说到声纹认证，就是用声音的特征确认本人",
-      "memory_hook_en": "Voiceprint authentication → verifying identity by the features of the voice"
+      "extra_zh": [
+        "方式",
+        "声音的特征"
+      ],
+      "extra_en": [
+        "Method",
+        "Features of the voice"
+      ]
     },
     {
       "term": "網膜認証",
-      "definition_jp": "眼球の奥にある網膜の血管パターンで本人確認を行う生体認証方式。",
-      "explanation_jp": "網膜認証は、眼球の奥(眼底)にある網膜上の毛細血管のパターンを読み取って本人を識別する方式です。\n\n網膜の血管パターンは個人差が大きく偽造が困難なため精度は高いものの、目をのぞき込む形で読み取る必要があり、利用者の負担が大きい方式です。試験では、瞳の表側の模様を使う虹彩認証との違いがポイントで、網膜は『目の奥(眼底)の血管』を使うと押さえます。出題頻度は低めですが、虹彩との対比で問われることがあります。",
-      "analogy_jp": "目の奥に広がる血管の地図は、その人だけの模様。眼底をのぞき込んで、その地図を読み取り本人かどうかを確かめます。",
-      "memory_hook_jp": "網膜認証といえば目の奥(眼底)の血管で本人確認",
+      "one_line_jp": "眼球の奥にある網膜の血管の模様で本人を確かめる。",
+      "one_line_zh": "根据眼球深处视网膜上的血管花纹确认本人。",
+      "one_line_en": "Confirms identity from the pattern of blood vessels in the retina at the back of the eye.",
+      "extra_jp": [
+        "方式",
+        "眼底の血管の模様"
+      ],
+      "extra_zh": [
+        "方式",
+        "眼底的血管花纹"
+      ],
+      "extra_en": [
+        "Method",
+        "Blood vessel pattern at the back of the eye"
+      ]
+    },
+    {
+      "term": "本人拒否率",
+      "one_line_jp": "本人を誤って拒否してしまう割合。",
+      "one_line_zh": "把本人误判而拒绝的比例。",
+      "one_line_en": "The rate at which the genuine user is wrongly rejected.",
+      "extra_jp": [
+        "精度指標",
+        "本人を締め出す誤り"
+      ],
+      "extra_zh": [
+        "精度指标",
+        "把本人挡在门外的错误"
+      ],
+      "extra_en": [
+        "Accuracy measure",
+        "Error that locks out the genuine user"
+      ]
+    },
+    {
+      "term": "FRR",
+      "one_line_jp": "本人拒否率の英語略称。",
+      "one_line_zh": "拒真率的英文缩写。",
+      "one_line_en": "The English abbreviation for the false rejection rate.",
+      "extra_jp": [
+        "略称",
+        "False Rejection Rate"
+      ],
+      "extra_zh": [
+        "缩写",
+        "False Rejection Rate"
+      ],
+      "extra_en": [
+        "Abbreviation",
+        "False Rejection Rate"
+      ]
+    },
+    {
+      "term": "他人受入率",
+      "one_line_jp": "他人を誤って本人として受け入れてしまう割合。",
+      "one_line_zh": "把他人误当作本人而接受的比例。",
+      "one_line_en": "The rate at which an impostor is wrongly accepted as the genuine user.",
+      "extra_jp": [
+        "精度指標",
+        "他人を通してしまう誤り"
+      ],
+      "extra_zh": [
+        "精度指标",
+        "把他人放进来的错误"
+      ],
+      "extra_en": [
+        "Accuracy measure",
+        "Error that lets an impostor through"
+      ]
+    },
+    {
+      "term": "FAR",
+      "one_line_jp": "他人受入率の英語略称。",
+      "one_line_zh": "认假率的英文缩写。",
+      "one_line_en": "The English abbreviation for the false acceptance rate.",
+      "extra_jp": [
+        "略称",
+        "False Acceptance Rate"
+      ],
+      "extra_zh": [
+        "缩写",
+        "False Acceptance Rate"
+      ],
+      "extra_en": [
+        "Abbreviation",
+        "False Acceptance Rate"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "静脈パターン認証",
+      "term_zh": "静脉模式认证",
+      "term_en": "Vein pattern authentication",
+      "one_jp": "**静脈パターン認証**は、手のひらや指の内部を通る**静脈の形**を読み取り、登録しておいた形と照合して本人を確かめる生体認証の方式である。",
+      "one_zh": "**静脉模式认证**（[[jp:静脈パターン認証]]）是一种生物特征认证方式：读取手掌或手指内部的**静脉形状**，与事先登记的形状比对，以确认是否为本人。",
+      "one_en": "**Vein pattern authentication** ([[jp:静脈パターン認証]]) is a biometric method that reads the **shape of the veins** running inside the palm or finger and matches it against the registered shape to confirm identity.",
+      "detail_jp": "**生体認証** (バイオメトリクス認証) は、体や動作の特徴を使って本人を確かめる認証で、覚えている知識や持っている物を使う方式と並ぶ 3 つ目の系統である。静脈は皮膚の下にあって外から見えにくいので、装置は近赤外線を当てて撮影した影の形を使う。読み取った形が登録データとどれだけ一致するかを装置が判定し、基準を満たせば本人として受け入れる。",
+      "detail_zh": "**生物特征认证**（[[jp:生体認証]]，又称[[jp:バイオメトリクス認証]]）利用身体或动作的特征来确认本人，是与“记住的知识”“持有的物品”并列的第三类认证方式。静脉位于皮肤之下，从外面不易看到，因此装置会照射近红外线，使用拍到的阴影形状。装置判断读取的形状与登记数据的吻合程度，达到基准就作为本人接受。",
+      "detail_en": "**Biometric authentication** ([[jp:生体認証]], also called [[jp:バイオメトリクス認証]]) confirms identity from features of the body or of behavior, and it is the third family alongside methods based on something you know and something you have. Veins lie under the skin and are hard to see from outside, so the device shines near-infrared light and uses the shadow shape it captures. The device judges how closely the captured shape matches the registered data and accepts the user when the match meets the threshold.",
+      "analogy_jp": "手を強い光にかざすと血管が影のように透けて見えるのと同じ理屈で、装置は手の内側にある血管の地図を撮って見比べる。",
+      "analogy_zh": "就像把手举到强光前，血管会像影子一样透出来，装置也是拍下手内侧的“血管地图”来对照。",
+      "analogy_en": "Just as blood vessels show through as shadows when you hold your hand up to a bright light, the device photographs the map of vessels inside your hand and compares it.",
+      "hook_jp": "静脈は皮膚の下の血管なので、表面に跡が残る指紋と違い、触った物から写し取られることがない。",
+      "hook_zh": "静脉是皮肤下的血管，不像指纹那样会在表面留下痕迹，所以无法从摸过的东西上复制下来。",
+      "hook_en": "Veins are vessels beneath the skin, so unlike fingerprints, which leave marks on surfaces, they cannot be lifted from things you touch.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "生体認証では、パスワードのように覚える情報も、カードのように持ち歩く物も要らない。その代わり、特徴を読み取る装置が要る。",
+          "text_zh": "生物特征认证（[[jp:生体認証]]）既不需要像口令（[[jp:パスワード]]）那样要记住的信息，也不需要像卡片那样要随身携带的物品。相应地，需要有读取特征的装置。",
+          "text_en": "Biometric authentication ([[jp:生体認証]]) needs neither information to memorize, like a password ([[jp:パスワード]]), nor an item to carry, like a card. Instead, it needs a device that reads the feature.",
+          "qids": [
+            "2016h28a-q066",
+            "2015h27a-q059"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "手のひらや指をセンサに向け、内部の静脈の形を登録データと照合する方式は、生体認証の代表例である。",
+          "text_zh": "把手掌或手指对准传感器、将内部静脉形状与登记数据比对的方式，是生物特征认证的典型例子。",
+          "text_en": "Holding a palm or finger to a sensor and matching the vein shape inside it against registered data is a typical example of biometric authentication.",
+          "qids": [
+            "2018h30a-q090",
+            "2019r01a-q088",
+            "2011h23tokubetsu-q068"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "指紋や静脈の情報は、画面や手元をのぞき見しても盗み取れる種類のものではない。",
+          "text_zh": "指纹（[[jp:指紋]]）或静脉的信息，不是靠偷看屏幕或手边动作就能窃取的那类信息。",
+          "text_en": "Fingerprint ([[jp:指紋]]) and vein information is not the kind of thing that can be stolen by peeking at a screen or at someone's hands.",
+          "qids": [
+            "2019h31h-q076",
+            "2022r04-q075"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "reg",
+              "label": {
+                "jp": "登録: 静脈の形を保存",
+                "zh": "登记：保存静脉形状",
+                "en": "Register: store the vein shape"
+              }
+            },
+            {
+              "id": "scan",
+              "label": {
+                "jp": "読取り: 近赤外線で撮影",
+                "zh": "读取：用近红外线拍摄",
+                "en": "Scan: capture with near-infrared light"
+              }
+            },
+            {
+              "id": "match",
+              "label": {
+                "jp": "照合: 登録データと比較",
+                "zh": "比对：与登记数据对照",
+                "en": "Match: compare with registered data"
+              }
+            },
+            {
+              "id": "judge",
+              "label": {
+                "jp": "判定: 基準以上なら受入",
+                "zh": "判定：达到基准即接受",
+                "en": "Decide: accept if above the threshold"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "最初に本人の手を装置に向け、静脈の形を登録データとして保存する。",
+            "caption_zh": "首先让本人把手对准装置，将静脉形状保存为登记数据。",
+            "caption_en": "First, the user holds a hand to the device and the vein shape is stored as registered data.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "認証のたびに近赤外線を当て、静脈を影の形として撮影する。",
+            "caption_zh": "每次认证时照射近红外线，把静脉拍成阴影的形状。",
+            "caption_en": "At each authentication, near-infrared light is shone on the hand and the veins are captured as shadows.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "撮影した形と登録データを比べ、どれだけ一致するかを求める。",
+            "caption_zh": "把拍到的形状与登记数据比较，算出两者的吻合程度。",
+            "caption_en": "The captured shape is compared with the registered data to work out how closely they match.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "一致の度合いが基準以上なら本人として受け入れ、未満なら拒否する。",
+            "caption_zh": "吻合程度达到基准就作为本人接受，低于基准则拒绝。",
+            "caption_en": "If the match reaches the threshold the user is accepted, and if not, rejected.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2018h30a-q090",
+        "2019r01a-q088",
+        "2011h23tokubetsu-q068"
+      ],
+      "definition_jp": "静脈パターン認証は、手のひらや指の内部を通る静脈の形を読み取り、登録しておいた形と照合して本人を確かめる生体認証の方式である。",
+      "definition_zh": "静脉模式认证（静脈パターン認証）是一种生物特征认证方式：读取手掌或手指内部的静脉形状，与事先登记的形状比对，以确认是否为本人。",
+      "definition_en": "Vein pattern authentication (静脈パターン認証) is a biometric method that reads the shape of the veins running inside the palm or finger and matches it against the registered shape to confirm identity.",
+      "explanation_jp": "生体認証 (バイオメトリクス認証) は、体や動作の特徴を使って本人を確かめる認証で、覚えている知識や持っている物を使う方式と並ぶ 3 つ目の系統である。静脈は皮膚の下にあって外から見えにくいので、装置は近赤外線を当てて撮影した影の形を使う。読み取った形が登録データとどれだけ一致するかを装置が判定し、基準を満たせば本人として受け入れる。",
+      "explanation_zh": "生物特征认证（生体認証，又称バイオメトリクス認証）利用身体或动作的特征来确认本人，是与“记住的知识”“持有的物品”并列的第三类认证方式。静脉位于皮肤之下，从外面不易看到，因此装置会照射近红外线，使用拍到的阴影形状。装置判断读取的形状与登记数据的吻合程度，达到基准就作为本人接受。",
+      "explanation_en": "Biometric authentication (生体認証, also called バイオメトリクス認証) confirms identity from features of the body or of behavior, and it is the third family alongside methods based on something you know and something you have. Veins lie under the skin and are hard to see from outside, so the device shines near-infrared light and uses the shadow shape it captures. The device judges how closely the captured shape matches the registered data and accepts the user when the match meets the threshold.",
+      "memory_hook_jp": "静脈は皮膚の下の血管なので、表面に跡が残る指紋と違い、触った物から写し取られることがない。",
+      "memory_hook_zh": "静脉是皮肤下的血管，不像指纹那样会在表面留下痕迹，所以无法从摸过的东西上复制下来。",
+      "memory_hook_en": "Veins are vessels beneath the skin, so unlike fingerprints, which leave marks on surfaces, they cannot be lifted from things you touch.",
+      "inline_quiz": [
+        "2018h30a-q090",
+        "2019r01a-q088",
+        "2011h23tokubetsu-q068"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "虹彩認証",
+      "term_zh": "虹膜认证",
+      "term_en": "Iris authentication",
+      "one_jp": "**虹彩認証**は、瞳孔の周りにある色の付いた輪 (**虹彩**) の細かな模様をカメラで読み取って本人を確かめる方式である。",
+      "one_zh": "**虹膜认证**（[[jp:虹彩認証]]）是用摄像头读取瞳孔周围那圈有颜色的环（**虹膜**）上的细微花纹，以确认本人的方式。",
+      "one_en": "**Iris authentication** ([[jp:虹彩認証]]) uses a camera to read the fine pattern of the colored ring around the pupil (the **iris**) to confirm identity.",
+      "detail_jp": "虹彩の模様は人ごとに異なり、幼いころに出来上がった後はほとんど変わらないため、精度の高い生体認証に使われる。カメラで少し離れた位置から読み取れるので、利用者は装置に触れずに済む。",
+      "detail_zh": "虹膜花纹因人而异，在幼年形成后几乎不再变化，因此被用于高精度的生物特征认证。摄像头可以在稍远的位置读取，用户无需接触装置。",
+      "detail_en": "Iris patterns differ from person to person and barely change once formed in early childhood, so they are used for highly accurate biometric authentication. A camera can read them from a short distance, so users do not have to touch the device.",
+      "analogy_jp": "世界に一枚しかない手織りの布の柄を、瞳の周りに生まれつき身に着けているようなもの。",
+      "analogy_zh": "就像每个人的瞳孔周围天生织着一块世上独一无二的手织布花纹。",
+      "analogy_en": "It is as if everyone were born wearing a one-of-a-kind handwoven pattern around the pupil that no one else shares.",
+      "hook_jp": "「虹」の字のとおり、瞳の周りには色の付いた輪がある。その輪の模様を読むのが虹彩認証である。",
+      "hook_zh": "正如“虹”字所示，瞳孔周围有一圈带颜色的环，读取这圈环上的花纹就是虹膜认证。",
+      "hook_en": "The iris is named after Iris, the Greek goddess of the rainbow, and it is the colored ring around the pupil whose pattern this method reads.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "生体情報は本人の体そのものなので、パスワードのような定期的な変更・更新の手間がかからない。",
+          "text_zh": "生物特征信息（[[jp:生体情報]]）就是本人身体本身，因此不必像口令（密码）那样花工夫定期更改、更新。",
+          "text_en": "Biometric data ([[jp:生体情報]]) is the user's own body, so it does not need the regular changes and renewals that a password does.",
+          "qids": [
+            "2016h28h-q090"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "生体認証に失敗したときにパスワード入力へ切り替えられる構成は、本人が締め出されにくく利便性が高まる。どちらか一方で通れるので、認証の強度が上がるわけではない。",
+          "text_zh": "生物特征认证失败时可以改为输入口令（密码）的配置，使本人不易被挡在门外，提高了便利性（[[jp:利便性]]）。但由于任选其一即可通过，认证强度并不会因此提高。",
+          "text_en": "A setup that lets users switch to entering a password when biometric authentication fails keeps them from being locked out and improves convenience ([[jp:利便性]]). Since passing either one is enough, it does not make authentication stronger.",
+          "qids": [
+            "2015h27h-q054"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "暗証番号 (PIN) は本人が覚えている知識の情報であり、指紋や虹彩のような体の特徴とは種類が違う。",
+          "text_zh": "个人识别码（[[jp:暗証番号]]，PIN）属于本人记住的知识类信息，与指纹、虹膜（[[jp:虹彩]]）这类身体特征属于不同种类。",
+          "text_en": "A PIN ([[jp:暗証番号]]) is knowledge that the user remembers, which is a different kind of factor from body features such as fingerprints or the iris ([[jp:虹彩]]).",
+          "qids": [
+            "2018h30h-q079"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2018h30h-q079",
+        "2016h28h-q090",
+        "2015h27h-q054"
+      ],
+      "definition_jp": "虹彩認証は、瞳孔の周りにある色の付いた輪 (虹彩) の細かな模様をカメラで読み取って本人を確かめる方式である。",
+      "definition_zh": "虹膜认证（虹彩認証）是用摄像头读取瞳孔周围那圈有颜色的环（虹膜）上的细微花纹，以确认本人的方式。",
+      "definition_en": "Iris authentication (虹彩認証) uses a camera to read the fine pattern of the colored ring around the pupil (the iris) to confirm identity.",
+      "explanation_jp": "虹彩の模様は人ごとに異なり、幼いころに出来上がった後はほとんど変わらないため、精度の高い生体認証に使われる。カメラで少し離れた位置から読み取れるので、利用者は装置に触れずに済む。",
+      "explanation_zh": "虹膜花纹因人而异，在幼年形成后几乎不再变化，因此被用于高精度的生物特征认证。摄像头可以在稍远的位置读取，用户无需接触装置。",
+      "explanation_en": "Iris patterns differ from person to person and barely change once formed in early childhood, so they are used for highly accurate biometric authentication. A camera can read them from a short distance, so users do not have to touch the device.",
+      "memory_hook_jp": "「虹」の字のとおり、瞳の周りには色の付いた輪がある。その輪の模様を読むのが虹彩認証である。",
+      "memory_hook_zh": "正如“虹”字所示，瞳孔周围有一圈带颜色的环，读取这圈环上的花纹就是虹膜认证。",
+      "memory_hook_en": "The iris is named after Iris, the Greek goddess of the rainbow, and it is the colored ring around the pupil whose pattern this method reads.",
+      "inline_quiz": [
+        "2018h30h-q079",
+        "2016h28h-q090",
+        "2015h27h-q054"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "顔認証",
+      "term_zh": "人脸认证",
+      "term_en": "Face authentication",
+      "one_jp": "**顔認証**は、目や鼻の位置関係、輪郭といった**顔の特徴**をカメラで捉え、登録データと照合して本人を確かめる方式である。",
+      "one_zh": "**人脸认证**（[[jp:顔認証]]）是用摄像头捕捉眼睛和鼻子的位置关系、脸部轮廓等**面部特征**，与登记数据比对以确认本人的方式。",
+      "one_en": "**Face authentication** ([[jp:顔認証]]) captures **facial features** such as the layout of the eyes and nose and the face outline with a camera, and matches them against registered data to confirm identity.",
+      "detail_jp": "カメラに顔を向けるだけで済むため、スマートフォンのロック解除や出入口の通行管理などに広く使われている。照明の当たり方や顔の向き、マスクの有無によって読み取りの結果が変わりやすい。",
+      "detail_zh": "只需把脸朝向摄像头即可，因此被广泛用于智能手机解锁和出入口的通行管理等场合。读取结果容易受光照角度、脸的朝向以及是否戴口罩的影响。",
+      "detail_en": "Because users only need to face the camera, it is widely used for unlocking smartphones and controlling passage through entrances. The result can easily change with the lighting, the angle of the face, and whether a mask is worn.",
+      "analogy_jp": "顔なじみの受付係が顔を見て通してくれるのを、機械がパーツの位置を測って行うイメージ。",
+      "analogy_zh": "就像熟识你的前台看一眼脸就放行，只不过换成机器去测量五官的位置。",
+      "analogy_en": "Think of a receptionist who knows you and waves you in at a glance, except that a machine does it by measuring where your features sit.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "生体認証は、装置が読み取った特徴を登録データと機械的に照合する仕組みである。人が見た目で見比べる確認はこれに当たらない。",
+          "text_zh": "生物特征认证是由装置把读取到的特征与登记数据进行机械比对的机制。由人凭外观目测对比的确认方式不属于此类。",
+          "text_en": "Biometric authentication is a mechanism in which a device mechanically matches the features it reads against registered data. A check where a person compares appearances by eye does not count.",
+          "qids": [
+            "2013h25a-q050"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "パスワード (知識) による認証に顔の照合 (生体) を加えると、種類の違う要素を組み合わせた二要素認証になる。",
+          "text_zh": "在口令（密码，知识）认证之外再加上人脸比对（生物特征），就成为组合了不同种类要素的双因素认证（[[jp:二要素認証]]）。",
+          "text_en": "Adding a face match (biometric) to password authentication (knowledge) creates two-factor authentication ([[jp:二要素認証]]), which combines factors of different kinds.",
+          "qids": [
+            "2022r04-q082"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "生体認証の読取り装置は小型にでき、スマートフォンやノートパソコンにも組み込まれている。",
+          "text_zh": "生物特征认证的读取装置可以做得很小，智能手机（[[jp:スマートフォン]]）和笔记本电脑中也已内置。",
+          "text_en": "Biometric readers can be made small and are built into smartphones ([[jp:スマートフォン]]) and laptops.",
+          "qids": [
+            "2017h29h-q076",
+            "2019h31h-q076",
+            "2022r04-q075"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2013h25a-q050",
+        "2022r04-q082",
+        "2009h21h-q063"
+      ],
+      "definition_jp": "顔認証は、目や鼻の位置関係、輪郭といった顔の特徴をカメラで捉え、登録データと照合して本人を確かめる方式である。",
+      "definition_zh": "人脸认证（顔認証）是用摄像头捕捉眼睛和鼻子的位置关系、脸部轮廓等面部特征，与登记数据比对以确认本人的方式。",
+      "definition_en": "Face authentication (顔認証) captures facial features such as the layout of the eyes and nose and the face outline with a camera, and matches them against registered data to confirm identity.",
+      "explanation_jp": "カメラに顔を向けるだけで済むため、スマートフォンのロック解除や出入口の通行管理などに広く使われている。照明の当たり方や顔の向き、マスクの有無によって読み取りの結果が変わりやすい。",
+      "explanation_zh": "只需把脸朝向摄像头即可，因此被广泛用于智能手机解锁和出入口的通行管理等场合。读取结果容易受光照角度、脸的朝向以及是否戴口罩的影响。",
+      "explanation_en": "Because users only need to face the camera, it is widely used for unlocking smartphones and controlling passage through entrances. The result can easily change with the lighting, the angle of the face, and whether a mask is worn.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2013h25a-q050",
+        "2022r04-q082",
+        "2009h21h-q063"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "声紋認証",
+      "term_zh": "声纹认证",
+      "term_en": "Voiceprint authentication",
+      "one_jp": "**声紋認証**は、声の高さや響き方などの特徴 (**声紋**) をマイクで集めて分析し、本人を確かめる方式である。",
+      "one_zh": "**声纹认证**（[[jp:声紋認証]]）是用麦克风采集声音的高低、共鸣方式等特征（**声纹**）并加以分析，以确认本人的方式。",
+      "one_en": "**Voiceprint authentication** ([[jp:声紋認証]]) collects and analyzes features of the voice such as pitch and resonance (the **voiceprint**) through a microphone to confirm identity.",
+      "detail_jp": "マイクを読取り装置として使えるので、電話越しの本人確認にも向く。一方で、風邪による声の変化や周りの雑音に左右されやすく、録音した声を使ったなりすましへの対策も要る。",
+      "detail_zh": "麦克风就能充当读取装置，因此也适合通过电话确认本人。另一方面，它容易受感冒引起的声音变化和周围噪声影响，还需要防范利用录音进行的冒充。",
+      "detail_en": "Since a microphone can serve as the reader, it also suits identity checks over the phone. On the other hand, it is easily affected by voice changes from a cold or by background noise, and it needs protection against impersonation using recorded voices.",
+      "analogy_jp": "電話口の声だけで家族だと分かるのを、機械が声の特徴を数値にして比べて行うもの。",
+      "analogy_zh": "就像接电话时只听声音就知道是家人，只是改由机器把声音特征变成数值来比较。",
+      "analogy_en": "It is like knowing a family member from their voice alone on the phone, except that a machine turns the voice features into numbers and compares them.",
+      "hook_jp": "「紋」は指紋の紋と同じで、声を図に描くと人ごとに違う模様が現れるという見立てから来た名前である。",
+      "hook_zh": "“纹”和指纹的“纹”是同一个字，名字来自把声音画成图后会出现因人而异的纹路这一说法。",
+      "hook_en": "The name compares the voice to a fingerprint: when a voice is drawn as a chart, a pattern unique to each person appears.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "生体認証が使う特徴には、体の形 (身体的特徴) のほかに、署名の癖や歩き方のような動作の特徴 (行動的特徴) もある。",
+          "text_zh": "生物特征认证使用的特征，除了身体的形态（身体特征，[[jp:身体的特徴]]）之外，还有签名习惯、走路姿势这类动作特征（行为特征，[[jp:行動的特徴]]）。",
+          "text_en": "The features used in biometric authentication include not only the shape of the body (physical characteristics, [[jp:身体的特徴]]) but also traits of movement such as signing habits or the way a person walks (behavioral characteristics, [[jp:行動的特徴]]).",
+          "qids": [
+            "2017h29a-q095",
+            "2024r06-q072",
+            "2023r05-q099"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2017h29a-q095"
+      ],
+      "definition_jp": "声紋認証は、声の高さや響き方などの特徴 (声紋) をマイクで集めて分析し、本人を確かめる方式である。",
+      "definition_zh": "声纹认证（声紋認証）是用麦克风采集声音的高低、共鸣方式等特征（声纹）并加以分析，以确认本人的方式。",
+      "definition_en": "Voiceprint authentication (声紋認証) collects and analyzes features of the voice such as pitch and resonance (the voiceprint) through a microphone to confirm identity.",
+      "explanation_jp": "マイクを読取り装置として使えるので、電話越しの本人確認にも向く。一方で、風邪による声の変化や周りの雑音に左右されやすく、録音した声を使ったなりすましへの対策も要る。",
+      "explanation_zh": "麦克风就能充当读取装置，因此也适合通过电话确认本人。另一方面，它容易受感冒引起的声音变化和周围噪声影响，还需要防范利用录音进行的冒充。",
+      "explanation_en": "Since a microphone can serve as the reader, it also suits identity checks over the phone. On the other hand, it is easily affected by voice changes from a cold or by background noise, and it needs protection against impersonation using recorded voices.",
+      "memory_hook_jp": "「紋」は指紋の紋と同じで、声を図に描くと人ごとに違う模様が現れるという見立てから来た名前である。",
+      "memory_hook_zh": "“纹”和指纹的“纹”是同一个字，名字来自把声音画成图后会出现因人而异的纹路这一说法。",
+      "memory_hook_en": "The name compares the voice to a fingerprint: when a voice is drawn as a chart, a pattern unique to each person appears.",
+      "inline_quiz": [
+        "2017h29a-q095"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "網膜認証",
+      "term_zh": "视网膜认证",
+      "term_en": "Retinal authentication",
+      "one_jp": "**網膜認証**は、眼球の奥 (**眼底**) にある網膜に走る**血管の模様**を読み取って本人を確かめる方式である。",
+      "one_zh": "**视网膜认证**（[[jp:網膜認証]]）是读取眼球深处（**眼底**）视网膜上分布的**血管花纹**，以确认本人的方式。",
+      "one_en": "**Retinal authentication** ([[jp:網膜認証]]) reads the **pattern of blood vessels** running across the retina at the back of the eye (the **fundus**) to confirm identity.",
+      "detail_jp": "網膜の血管の模様は人ごとの差が大きく、外から見えない場所にあるため偽造しにくい。読み取るには装置をのぞき込んで目の奥を照らす必要があり、利用者の手間は大きい。",
+      "detail_zh": "视网膜的血管花纹个体差异大，又位于外面看不到的地方，因此难以伪造。读取时需要凑近装置，让光照进眼睛深处，用户的负担较大。",
+      "detail_en": "Retinal vessel patterns vary greatly between people and sit where they cannot be seen from outside, which makes them hard to forge. Reading them requires looking into the device while it lights up the back of the eye, which takes more effort from the user.",
+      "analogy_jp": "眼科の検査で目の奥をのぞくように、装置が目の奥に広がる血管の地図を読み取る。",
+      "analogy_zh": "就像眼科检查时医生查看眼底一样，装置读取的是铺展在眼睛深处的“血管地图”。",
+      "analogy_en": "Much like an eye doctor looking into the back of your eye, the device reads the map of vessels spread across it.",
+      "hook_jp": "「膜」は目の奥に張った薄い膜で、カメラでいえばフィルムに当たる場所である。そこに走る血管を読む。",
+      "hook_zh": "“膜”是贴在眼睛深处的一层薄膜，相当于相机里胶片的位置，这种方式读取的就是分布在上面的血管。",
+      "hook_en": "The retina is the thin layer at the back of the eye that plays the role of film in a camera, and this method reads the vessels running across it.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "生体認証に向くのは、偽造しにくく、年月がたっても変わりにくい特徴である。網膜や静脈の模様はこの条件を満たし、短い期間で使えなくなるものではない。",
+          "text_zh": "适合用于生物特征认证的，是难以伪造、经年累月也不易改变的特征。视网膜（[[jp:網膜]]）和静脉（[[jp:静脈]]）的花纹满足这些条件，不会在短期内失效。",
+          "text_en": "Features suited to biometric authentication are hard to forge and change little over the years. Retinal ([[jp:網膜]]) and vein ([[jp:静脈]]) patterns meet these conditions and do not become unusable after a short time.",
+          "qids": [
+            "2020r02o-q066",
+            "2015h27a-q059"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "虹彩は目の表から見える瞳孔の周りの模様、網膜は目の奥の血管の模様で、読み取る場所が違う。",
+          "text_zh": "虹膜是从眼睛表面就能看到的瞳孔周围的花纹，视网膜则是眼睛深处的血管花纹，两者读取的位置不同。",
+          "text_en": "The iris is the pattern around the pupil visible on the surface of the eye, while the retina carries the vessel pattern at the back of the eye, so they are read in different places."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2015h27a-q059"
+      ],
+      "definition_jp": "網膜認証は、眼球の奥 (眼底) にある網膜に走る血管の模様を読み取って本人を確かめる方式である。",
+      "definition_zh": "视网膜认证（網膜認証）是读取眼球深处（眼底）视网膜上分布的血管花纹，以确认本人的方式。",
+      "definition_en": "Retinal authentication (網膜認証) reads the pattern of blood vessels running across the retina at the back of the eye (the fundus) to confirm identity.",
+      "explanation_jp": "網膜の血管の模様は人ごとの差が大きく、外から見えない場所にあるため偽造しにくい。読み取るには装置をのぞき込んで目の奥を照らす必要があり、利用者の手間は大きい。",
+      "explanation_zh": "视网膜的血管花纹个体差异大，又位于外面看不到的地方，因此难以伪造。读取时需要凑近装置，让光照进眼睛深处，用户的负担较大。",
+      "explanation_en": "Retinal vessel patterns vary greatly between people and sit where they cannot be seen from outside, which makes them hard to forge. Reading them requires looking into the device while it lights up the back of the eye, which takes more effort from the user.",
+      "memory_hook_jp": "「膜」は目の奥に張った薄い膜で、カメラでいえばフィルムに当たる場所である。そこに走る血管を読む。",
+      "memory_hook_zh": "“膜”是贴在眼睛深处的一层薄膜，相当于相机里胶片的位置，这种方式读取的就是分布在上面的血管。",
+      "memory_hook_en": "The retina is the thin layer at the back of the eye that plays the role of film in a camera, and this method reads the vessels running across it.",
       "inline_quiz": [
         "2015h27a-q059"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "视网膜认证",
-      "term_en": "Retinal authentication",
-      "definition_zh": "依据眼球深处视网膜的血管模式来确认本人身份的生物识别认证方式。",
-      "definition_en": "A biometric authentication method that verifies a person's identity based on the blood-vessel pattern of the retina deep inside the eyeball.",
-      "explanation_zh": "视网膜认证是读取眼球深处（眼底）视网膜上毛细血管的模式，从而识别本人的方式。\n\n视网膜的血管模式个体差异大、难以伪造，因此精度高；但需要以凑近窥视眼睛的方式来读取，对使用者的负担较大。在考试中，与使用瞳孔正面纹理的虹膜认证之间的区别是要点，请记住视网膜使用的是「眼睛深处（眼底）的血管」。其出题频率偏低，但有时会与虹膜对比出现。",
-      "explanation_en": "Retinal authentication is a method that identifies a person by reading the pattern of the capillaries on the retina deep inside the eyeball (the fundus).\n\nThe retinal blood-vessel pattern has large individual differences and is hard to forge, so accuracy is high; however, it must be read by peering closely into the eye, which places a large burden on the user. On the exam, the difference from iris authentication, which uses the pattern on the front of the pupil, is the key point — remember that the retina uses \"the blood vessels deep inside the eye (the fundus).\" Its frequency of appearance is on the lower side, but it is sometimes asked about in contrast with the iris.",
-      "analogy_zh": "在眼睛深处铺开的血管地图，是只属于那个人的纹样。凑近窥视眼底，读取那张地图来确认是否为本人。",
-      "analogy_en": "The map of blood vessels spread deep inside the eye is a pattern unique to that person. You peer into the fundus and read that map to confirm whether it is you.",
-      "memory_hook_zh": "说到视网膜认证，就是用眼睛深处（眼底）的血管确认本人",
-      "memory_hook_en": "Retinal authentication → verifying identity by the blood vessels deep inside the eye (the fundus)"
+      "figure": null
     },
     {
       "term": "本人拒否率",
-      "definition_jp": "正規の本人を誤って拒否してしまう確率。生体認証の精度指標の一つ。",
-      "explanation_jp": "本人拒否率は、本来受け入れるべき正規の利用者を、生体認証が誤って「本人ではない」と拒否してしまう割合を表す精度指標です。\n\nこの値が高いと、正しい利用者が何度も認証に失敗し、使い勝手(利便性)が悪くなります。試験では、後述の他人受入率(FAR)とペアで問われ、判定を厳しくすると本人拒否率は上がる、という関係が重要です。『拒否』という言葉から、正しい人を締め出してしまう誤りだと結びつけて覚えましょう。",
-      "analogy_jp": "本物の社員証を持っているのに、警備が厳しすぎて「君は本物じゃない」と入口で止められてしまうようなもの。正しい人を誤って追い返す誤りです。",
-      "memory_hook_jp": "本人拒否率といえば正規の本人を誤って拒否する確率",
-      "inline_quiz": [
-        "2025r07-q069",
-        "2026r08-q080"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "拒真率",
       "term_en": "False Rejection Rate",
-      "definition_zh": "把合法的本人错误地予以拒绝的概率。生物识别认证的精度指标之一。",
-      "definition_en": "The probability of mistakenly rejecting a legitimate, genuine user. One of the accuracy metrics for biometric authentication.",
-      "explanation_zh": "拒真率是表示生物识别认证把本应接受的合法用户错误地判为「不是本人」而予以拒绝的比例的精度指标。\n\n该值越高，正确的用户就会一再认证失败，使用体验（便利性）变差。在考试中，它与后述的认假率（FAR）成对出现，「把判定调严，拒真率就会上升」这一关系很重要。可以从「拒绝」一词联想到：这是把正确的人挡在门外的错误，从而记住它。",
-      "explanation_en": "The False Rejection Rate is an accuracy metric that represents the proportion at which biometric authentication mistakenly judges a legitimate user who should be accepted as \"not the person\" and rejects them.\n\nThe higher this value, the more often correct users fail authentication, worsening usability (convenience). On the exam, it is asked about in pairs with the later False Acceptance Rate (FAR), and the relationship that \"making the judgment stricter raises the False Rejection Rate\" is important. From the word \"rejection,\" you can associate it with the error of shutting out the correct person, which makes it easier to remember.",
-      "analogy_zh": "就像明明持有真正的员工证，却因为安保过于严格而在入口被拦下「你不是真的」。这是把正确的人误当作外人赶走的错误。",
-      "analogy_en": "Like being stopped at the entrance with \"you're not the real one\" even though you hold a genuine employee ID, because security is too strict. It is the error of mistakenly turning away the correct person.",
-      "memory_hook_zh": "说到拒真率，就是把合法本人错误拒绝的概率",
-      "memory_hook_en": "False Rejection Rate → the probability of mistakenly rejecting the genuine, legitimate person"
+      "one_jp": "**本人拒否率**は、登録した本人が認証を受けたのに、誤って「本人ではない」と**拒否**されてしまう割合である。",
+      "one_zh": "**拒真率**（[[jp:本人拒否率]]）是指已登记的本人接受认证时，却被误判为“不是本人”而遭**拒绝**的比例。",
+      "one_en": "The **false rejection rate** ([[jp:本人拒否率]]) is the rate at which a registered user who tries to authenticate is wrongly judged \"not the user\" and **rejected**.",
+      "detail_jp": "生体認証では、読み取った特徴と登録データの一致度を求め、**しきい値** (受け入れの基準となる一致度) 以上なら受け入れる。しきい値を高くして判定を厳しくすると、体調や読み取り方のずれで一致度が下がった本人まで拒否されやすくなる。この割合が高いと本人がやり直しを繰り返すことになり、使い勝手が悪くなる。",
+      "detail_zh": "生物特征认证会算出读取的特征与登记数据的吻合度，达到**阈值**（[[jp:しきい値]]，作为接受基准的吻合度）以上就接受。把阈值调高、判定变严后，因身体状况或读取方式偏差而吻合度下降的本人也容易被拒绝。这个比例高的话，本人就得反复重试，使用起来很不方便。",
+      "detail_en": "Biometric authentication calculates how closely the captured features match the registered data and accepts the user when the match is at or above the **threshold** ([[jp:しきい値]]), the match level set as the bar for acceptance. Raising the threshold to make the check stricter means even genuine users whose match drops because of their condition or a slightly off scan are more likely to be rejected. When this rate is high, genuine users have to retry again and again, which makes the system awkward to use.",
+      "analogy_jp": "合格ラインを上げすぎた門番が、正しい社員まで追い返してしまう割合。",
+      "analogy_zh": "相当于把及格线定得过高的门卫，连正牌员工都赶回去的比例。",
+      "analogy_en": "It is the share of real employees turned away by a gatekeeper who has set the pass mark too high.",
+      "hook_jp": "主語は「本人」。本人が拒否される率と読めば、他人受入率と取り違えない。",
+      "hook_zh": "主语是“本人”（日文“本人拒否率”的字面意思就是本人被拒绝的比率），这样读就不会和认假率搞混。",
+      "hook_en": "In the Japanese name 本人拒否率, the subject is 本人 (the genuine user): read it as the rate at which the real user is rejected, and you will not confuse it with the false acceptance rate.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "本人拒否率を低く抑える設定は本人が通りやすくなる利便性重視、他人受入率を低く抑える設定は安全性重視になる。",
+          "text_zh": "把拒真率（[[jp:本人拒否率]]）压低的设置让本人更容易通过，偏重便利性；把认假率（[[jp:他人受入率]]）压低的设置则偏重安全性（[[jp:安全性]]）。",
+          "text_en": "A setting that keeps the false rejection rate ([[jp:本人拒否率]]) low lets genuine users through more easily and favors convenience, while one that keeps the false acceptance rate ([[jp:他人受入率]]) low favors security ([[jp:安全性]]).",
+          "qids": [
+            "2021r03-q069",
+            "2025r07-q069",
+            "2026r08-q080"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "装置が生体情報をそもそも読み取れない割合は未対応率と呼び、本人拒否率とは別の指標である。",
+          "text_zh": "装置根本无法读取生物特征信息的比例称为无法识别率（[[jp:未対応率]]），与拒真率是不同的指标。",
+          "text_en": "The rate at which the device cannot read the biometric data at all is called the failure-to-recognize rate ([[jp:未対応率]]), a measure separate from the false rejection rate."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2025r07-q069"
+      ],
+      "definition_jp": "本人拒否率は、登録した本人が認証を受けたのに、誤って「本人ではない」と拒否されてしまう割合である。",
+      "definition_zh": "拒真率（本人拒否率）是指已登记的本人接受认证时，却被误判为“不是本人”而遭拒绝的比例。",
+      "definition_en": "The false rejection rate (本人拒否率) is the rate at which a registered user who tries to authenticate is wrongly judged \"not the user\" and rejected.",
+      "explanation_jp": "生体認証では、読み取った特徴と登録データの一致度を求め、しきい値 (受け入れの基準となる一致度) 以上なら受け入れる。しきい値を高くして判定を厳しくすると、体調や読み取り方のずれで一致度が下がった本人まで拒否されやすくなる。この割合が高いと本人がやり直しを繰り返すことになり、使い勝手が悪くなる。",
+      "explanation_zh": "生物特征认证会算出读取的特征与登记数据的吻合度，达到阈值（しきい値，作为接受基准的吻合度）以上就接受。把阈值调高、判定变严后，因身体状况或读取方式偏差而吻合度下降的本人也容易被拒绝。这个比例高的话，本人就得反复重试，使用起来很不方便。",
+      "explanation_en": "Biometric authentication calculates how closely the captured features match the registered data and accepts the user when the match is at or above the threshold (しきい値), the match level set as the bar for acceptance. Raising the threshold to make the check stricter means even genuine users whose match drops because of their condition or a slightly off scan are more likely to be rejected. When this rate is high, genuine users have to retry again and again, which makes the system awkward to use.",
+      "memory_hook_jp": "主語は「本人」。本人が拒否される率と読めば、他人受入率と取り違えない。",
+      "memory_hook_zh": "主语是“本人”（日文“本人拒否率”的字面意思就是本人被拒绝的比率），这样读就不会和认假率搞混。",
+      "memory_hook_en": "In the Japanese name 本人拒否率, the subject is 本人 (the genuine user): read it as the rate at which the real user is rejected, and you will not confuse it with the false acceptance rate.",
+      "inline_quiz": [
+        "2025r07-q069"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "FRR",
-      "definition_jp": "本人拒否率の英語略称(False Rejection Rate)。",
-      "explanation_jp": "FRRは False Rejection Rate の略で、日本語の本人拒否率と同じ意味です。正規の本人を誤って拒否する確率を指します。\n\n試験では、日本語名と英略称の対応(本人拒否率=FRR)がそのまま問われることがあります。「Rejection(拒否)」の頭文字Rが入っている点に注目すると、本人を『拒否』する誤りだと結びつけやすくなります。次に学ぶFAR(他人受入率)と取り違えないよう、R=拒否・A=受入と区別しましょう。",
-      "analogy_jp": "本人拒否率という日本語の名前に貼られた「英語のラベル」がFRR。中身は同じで、呼び方が違うだけと考えるとよいです。",
-      "memory_hook_jp": "FRRといえば本人拒否率(False Rejection Rate)",
+      "term_zh": "FRR",
+      "term_en": "FRR",
+      "one_jp": "**FRR** は False Rejection Rate の略で、**本人拒否率**の英語での呼び名である。",
+      "one_zh": "**FRR** 是 False Rejection Rate 的缩写，是**拒真率**（[[jp:本人拒否率]]）的英文名称。",
+      "one_en": "**FRR** stands for False Rejection Rate, the English counterpart of the Japanese term [[jp:本人拒否率]] (**false rejection rate**).",
+      "detail_jp": "意味は本人拒否率と同じで、正しい本人を誤って拒否する割合を表す。資料によって日本語名と略称のどちらでも書かれるので、両方を結び付けて読めるようにする。",
+      "detail_zh": "含义与拒真率相同，表示把真正的本人误判而拒绝的比例。不同资料有的写日文名称，有的写缩写，阅读时要能把两者对应起来。",
+      "detail_en": "It is the rate at which the genuine user is wrongly rejected. Japanese materials may write either 本人拒否率 or FRR, so learn to link the two when reading.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "Reject は「突き返す」という英単語で、本人が入口で突き返される場面と結び付く。",
+      "hook_zh": "Reject 是英语“退回、拒收”的意思，可以联想成本人在入口处被退了回去。",
+      "hook_en": "Reject means to turn back, so picture the genuine user being turned back at the entrance.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "FRR と FAR は 1 文字違いで、R は Rejection (拒否)、A は Acceptance (受入) を表す。",
+          "text_zh": "FRR 和 FAR 只差一个字母，R 代表 Rejection（拒绝），A 代表 Acceptance（接受）。",
+          "text_en": "FRR and FAR differ by one letter: R stands for Rejection and A stands for Acceptance."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2026r08-q080"
+      ],
+      "definition_jp": "FRR は False Rejection Rate の略で、本人拒否率の英語での呼び名である。",
+      "definition_zh": "FRR 是 False Rejection Rate 的缩写，是拒真率（本人拒否率）的英文名称。",
+      "definition_en": "FRR stands for False Rejection Rate, the English counterpart of the Japanese term 本人拒否率 (false rejection rate).",
+      "explanation_jp": "意味は本人拒否率と同じで、正しい本人を誤って拒否する割合を表す。資料によって日本語名と略称のどちらでも書かれるので、両方を結び付けて読めるようにする。",
+      "explanation_zh": "含义与拒真率相同，表示把真正的本人误判而拒绝的比例。不同资料有的写日文名称，有的写缩写，阅读时要能把两者对应起来。",
+      "explanation_en": "It is the rate at which the genuine user is wrongly rejected. Japanese materials may write either 本人拒否率 or FRR, so learn to link the two when reading.",
+      "memory_hook_jp": "Reject は「突き返す」という英単語で、本人が入口で突き返される場面と結び付く。",
+      "memory_hook_zh": "Reject 是英语“退回、拒收”的意思，可以联想成本人在入口处被退了回去。",
+      "memory_hook_en": "Reject means to turn back, so picture the genuine user being turned back at the entrance.",
+      "inline_quiz": [
+        "2026r08-q080"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "他人受入率",
+      "term_zh": "认假率",
+      "term_en": "False Acceptance Rate",
+      "one_jp": "**他人受入率**は、登録した本人ではない他人を、誤って本人として**受け入れて**しまう割合である。",
+      "one_zh": "**认假率**（[[jp:他人受入率]]）是指把并非已登记本人的他人，误当作本人而**接受**的比例。",
+      "one_en": "The **false acceptance rate** ([[jp:他人受入率]]) is the rate at which someone other than the registered user is wrongly **accepted** as that user.",
+      "detail_jp": "この割合が高いと、他人が本人になりすまして通れることになり、安全性が損なわれる。生体認証は読み取った特徴の一致度で判定するので、特徴がよく似た他人を本人と取り違える可能性が残る。",
+      "detail_zh": "这个比例高，意味着他人可以冒充本人通过，安全性会受到损害。生物特征认证根据读取特征的吻合度来判定，所以仍有可能把特征非常相似的他人误认为本人。",
+      "detail_en": "When this rate is high, an impostor can pass by posing as the genuine user, which undermines security. Because biometric authentication decides by how closely the captured features match, there remains a chance of mistaking someone with very similar features for the real user.",
+      "analogy_jp": "合格ラインを下げすぎた門番が、よそ者まで通してしまう割合。",
+      "analogy_zh": "相当于把及格线定得过低的门卫，连外人都放进去的比例。",
+      "analogy_en": "It is the share of outsiders let in by a gatekeeper who has set the pass mark too low.",
+      "hook_jp": "主語は「他人」。他人が受け入れられてしまう率と読む。",
+      "hook_zh": "主语是“他人”（日文“他人受入率”的字面意思就是他人被接受的比率）。",
+      "hook_en": "In the Japanese name 他人受入率, the subject is 他人 (someone else): read it as the rate at which an impostor gets accepted.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "生体認証でも、他人を本人と取り違えて受け入れる可能性は 0 にはならない。",
+          "text_zh": "即使是生物特征认证，把他人误认为本人而接受的可能性也不会降到 0。",
+          "text_en": "Even with biometric authentication, the chance of mistaking someone else for the genuine user and accepting them never drops to 0.",
+          "qids": [
+            "2019h31h-q076",
+            "2022r04-q075"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "照合の許容範囲を広げると本人拒否率は下がるが、他人受入率は上がる。しきい値の調整だけで両方を同時に下げることはできない。",
+          "text_zh": "放宽比对的容许范围，拒真率（[[jp:本人拒否率]]）会下降，但认假率会上升。仅靠调整阈值（[[jp:しきい値]]），无法让两者同时下降。",
+          "text_en": "Widening the matching tolerance lowers the false rejection rate ([[jp:本人拒否率]]) but raises the false acceptance rate. Adjusting the threshold ([[jp:しきい値]]) alone cannot lower both at once.",
+          "qids": [
+            "2015h27a-q059"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "判定の基準",
+              "zh": "判定基准",
+              "en": "Decision threshold"
+            },
+            {
+              "jp": "本人拒否率",
+              "zh": "拒真率",
+              "en": "False rejection rate"
+            },
+            {
+              "jp": "他人受入率",
+              "zh": "认假率",
+              "en": "False acceptance rate"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "しきい値を高くする (厳しく)",
+                  "zh": "调高阈值（更严）",
+                  "en": "Raise the threshold (stricter)"
+                },
+                {
+                  "jp": "上がる",
+                  "zh": "上升",
+                  "en": "Rises"
+                },
+                {
+                  "jp": "下がる",
+                  "zh": "下降",
+                  "en": "Falls"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "しきい値を低くする (緩く)",
+                  "zh": "调低阈值（更松）",
+                  "en": "Lower the threshold (looser)"
+                },
+                {
+                  "jp": "下がる",
+                  "zh": "下降",
+                  "en": "Falls"
+                },
+                {
+                  "jp": "上がる",
+                  "zh": "上升",
+                  "en": "Rises"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2022r04-q075",
+        "2019h31h-q076"
+      ],
+      "definition_jp": "他人受入率は、登録した本人ではない他人を、誤って本人として受け入れてしまう割合である。",
+      "definition_zh": "认假率（他人受入率）是指把并非已登记本人的他人，误当作本人而接受的比例。",
+      "definition_en": "The false acceptance rate (他人受入率) is the rate at which someone other than the registered user is wrongly accepted as that user.",
+      "explanation_jp": "この割合が高いと、他人が本人になりすまして通れることになり、安全性が損なわれる。生体認証は読み取った特徴の一致度で判定するので、特徴がよく似た他人を本人と取り違える可能性が残る。",
+      "explanation_zh": "这个比例高，意味着他人可以冒充本人通过，安全性会受到损害。生物特征认证根据读取特征的吻合度来判定，所以仍有可能把特征非常相似的他人误认为本人。",
+      "explanation_en": "When this rate is high, an impostor can pass by posing as the genuine user, which undermines security. Because biometric authentication decides by how closely the captured features match, there remains a chance of mistaking someone with very similar features for the real user.",
+      "memory_hook_jp": "主語は「他人」。他人が受け入れられてしまう率と読む。",
+      "memory_hook_zh": "主语是“他人”（日文“他人受入率”的字面意思就是他人被接受的比率）。",
+      "memory_hook_en": "In the Japanese name 他人受入率, the subject is 他人 (someone else): read it as the rate at which an impostor gets accepted.",
+      "inline_quiz": [
+        "2022r04-q075",
+        "2019h31h-q076"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "FAR",
+      "term_zh": "FAR",
+      "term_en": "FAR",
+      "one_jp": "**FAR** は False Acceptance Rate の略で、**他人受入率**の英語での呼び名である。",
+      "one_zh": "**FAR** 是 False Acceptance Rate 的缩写，是**认假率**（[[jp:他人受入率]]）的英文名称。",
+      "one_en": "**FAR** stands for False Acceptance Rate, the English counterpart of the Japanese term [[jp:他人受入率]] (**false acceptance rate**).",
+      "detail_jp": "意味は他人受入率と同じで、他人を誤って本人として受け入れる割合を表す。値が高いほどなりすましを許しやすく、安全性の低い設定であることを示す。",
+      "detail_zh": "含义与认假率相同，表示把他人误当作本人而接受的比例。数值越高越容易让冒充得逞，说明设置的安全性越低。",
+      "detail_en": "It is the rate at which an impostor is wrongly accepted as the genuine user. The higher the value, the more easily impersonation succeeds, signaling a less secure setting.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "Accept は「受け取る」という英単語で、他人を受け取ってしまう誤りと結び付く。",
+      "hook_zh": "Accept 是英语“接受、收下”的意思，可以联想成把他人收下的错误。",
+      "hook_en": "Accept means to take in, so link it with the error of taking in an impostor.",
+      "points": [],
+      "fig": null,
+      "quiz": [
+        "2021r03-q069"
+      ],
+      "definition_jp": "FAR は False Acceptance Rate の略で、他人受入率の英語での呼び名である。",
+      "definition_zh": "FAR 是 False Acceptance Rate 的缩写，是认假率（他人受入率）的英文名称。",
+      "definition_en": "FAR stands for False Acceptance Rate, the English counterpart of the Japanese term 他人受入率 (false acceptance rate).",
+      "explanation_jp": "意味は他人受入率と同じで、他人を誤って本人として受け入れる割合を表す。値が高いほどなりすましを許しやすく、安全性の低い設定であることを示す。",
+      "explanation_zh": "含义与认假率相同，表示把他人误当作本人而接受的比例。数值越高越容易让冒充得逞，说明设置的安全性越低。",
+      "explanation_en": "It is the rate at which an impostor is wrongly accepted as the genuine user. The higher the value, the more easily impersonation succeeds, signaling a less secure setting.",
+      "memory_hook_jp": "Accept は「受け取る」という英単語で、他人を受け取ってしまう誤りと結び付く。",
+      "memory_hook_zh": "Accept 是英语“接受、收下”的意思，可以联想成把他人收下的错误。",
+      "memory_hook_en": "Accept means to take in, so link it with the error of taking in an impostor.",
       "inline_quiz": [
         "2021r03-q069"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "FRR",
-      "term_en": "FRR",
-      "definition_zh": "拒真率的英文缩写（False Rejection Rate）。",
-      "definition_en": "The English abbreviation for the False Rejection Rate.",
-      "explanation_zh": "FRR 是 False Rejection Rate 的缩写，与中文的拒真率含义相同，指把合法本人错误拒绝的概率。\n\n在考试中，有时会直接考查中文名称与英文缩写的对应（拒真率＝FRR）。注意其中含有「Rejection（拒绝）」的首字母 R，就容易联想到这是「拒绝」本人的错误。为避免与接下来要学的 FAR（认假率）混淆，请区分 R＝拒绝、A＝接受。",
-      "explanation_en": "FRR is the abbreviation of False Rejection Rate and has the same meaning as the False Rejection Rate; it refers to the probability of mistakenly rejecting the genuine person.\n\nOn the exam, the correspondence between the full name and the English abbreviation (False Rejection Rate = FRR) is sometimes asked about directly. Noting that it contains the initial \"R\" of \"Rejection\" makes it easy to associate it with the error of \"rejecting\" the person. To avoid mixing it up with FAR (False Acceptance Rate), which you will learn next, distinguish R = rejection and A = acceptance.",
-      "analogy_zh": "贴在「拒真率」这个名称上的「英文标签」就是 FRR。可以这样理解：内容相同，只是叫法不同。",
-      "analogy_en": "FRR is the \"English label\" attached to the name \"False Rejection Rate.\" Think of it as the same content, just called by a different name.",
-      "memory_hook_zh": "说到 FRR，就是拒真率（False Rejection Rate）",
-      "memory_hook_en": "FRR → the False Rejection Rate"
-    },
-    {
-      "term": "他人受入率",
-      "definition_jp": "他人を誤って本人として受け入れてしまう確率。生体認証の精度指標の一つ。",
-      "explanation_jp": "他人受入率は、本来拒否すべき他人(別人)を、生体認証が誤って「本人だ」と受け入れてしまう割合を表す精度指標です。\n\nこの値が高いと、なりすましを許してしまい、安全性(セキュリティ)が低下します。本人拒否率とは逆の誤りで、両者はトレードオフの関係にあります。判定を緩くすると他人受入率は上がり本人拒否率は下がる、厳しくするとその逆になります。試験では、安全性に直結する誤りはどちらか、2指標の増減の向きが頻出です。",
-      "analogy_jp": "他人の社員証なのに、警備が甘くて「どうぞお入りください」と通してしまうようなもの。別人を本人と取り違えて受け入れる誤りです。",
-      "memory_hook_jp": "他人受入率といえば他人を誤って本人として受け入れる確率",
-      "inline_quiz": [
-        "2022r04-q075"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"判定を厳しく\"] --> B[\"他人受入率(FAR)低下\"]; A --> C[\"本人拒否率(FRR)上昇\"]; D[\"判定を緩く\"] --> E[\"他人受入率(FAR)上昇\"]; D --> F[\"本人拒否率(FRR)低下\"]",
-        "svg_path": "figures/technology-23-63-u10-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "认假率",
-      "term_en": "False Acceptance Rate",
-      "definition_zh": "把他人错误地当作本人予以接受的概率。生物识别认证的精度指标之一。",
-      "definition_en": "The probability of mistakenly accepting another person as the genuine user. One of the accuracy metrics for biometric authentication.",
-      "explanation_zh": "认假率是表示生物识别认证把本应拒绝的他人（别人）错误地判为「是本人」而予以接受的比例的精度指标。\n\n该值越高，就越会放过假冒，使安全性下降。它与拒真率是相反的错误，两者处于权衡关系。把判定调松，认假率会上升、拒真率会下降；调严则相反。在考试中，直接关系到安全性的错误是哪一个、两项指标增减的方向，都是高频考点。",
-      "explanation_en": "The False Acceptance Rate is an accuracy metric that represents the proportion at which biometric authentication mistakenly judges another person (someone else), who should be rejected, as \"the genuine person\" and accepts them.\n\nThe higher this value, the more it lets impersonation through, lowering security. It is the opposite error from the False Rejection Rate, and the two are in a trade-off relationship. Making the judgment looser raises the False Acceptance Rate and lowers the False Rejection Rate; making it stricter does the reverse. On the exam, which error is directly tied to security and the direction in which the two metrics rise and fall are frequently tested.",
-      "analogy_zh": "就像明明是他人的员工证，却因为安保松懈而被放行「请进」。这是把别人误当作本人予以接受的错误。",
-      "analogy_en": "Like someone being let through with \"please come in\" even though it is another person's employee ID, because security is lax. It is the error of mistaking someone else for the genuine person and accepting them.",
-      "memory_hook_zh": "说到认假率，就是把他人错误当作本人接受的概率",
-      "memory_hook_en": "False Acceptance Rate → the probability of mistakenly accepting another person as the genuine one"
-    },
-    {
-      "term": "FAR",
-      "definition_jp": "他人受入率の英語略称(False Acceptance Rate)。",
-      "explanation_jp": "FARは False Acceptance Rate の略で、日本語の他人受入率と同じ意味です。他人を誤って本人として受け入れる確率を指します。\n\n試験では、日本語名と英略称の対応(他人受入率=FAR)や、FRRとの違いが問われます。「Acceptance(受入)」の頭文字Aが入っている点に注目すると、他人を『受け入れる』誤りだと結びつけられます。FRRは利便性、FARは安全性に関わる誤りで、両者はトレードオフの関係にあるという全体像をセットで押さえましょう。",
-      "analogy_jp": "他人受入率という日本語の名前に貼られた「英語のラベル」がFAR。中身は同じで、A=Acceptance=受入と覚えると取り違えません。",
-      "memory_hook_jp": "FARといえば他人受入率(False Acceptance Rate)",
-      "inline_quiz": [
-        "2019h31h-q076"
-      ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "FAR",
-      "term_en": "FAR",
-      "definition_zh": "认假率的英文缩写（False Acceptance Rate）。",
-      "definition_en": "The English abbreviation for the False Acceptance Rate.",
-      "explanation_zh": "FAR 是 False Acceptance Rate 的缩写，与中文的认假率含义相同，指把他人错误当作本人接受的概率。\n\n在考试中，会考查中文名称与英文缩写的对应（认假率＝FAR），以及它与 FRR 的区别。注意其中含有「Acceptance（接受）」的首字母 A，就能联想到这是「接受」他人的错误。FRR 关系到便利性、FAR 关系到安全性，二者处于权衡关系——请把这个整体图景成套掌握。",
-      "explanation_en": "FAR is the abbreviation of False Acceptance Rate and has the same meaning as the False Acceptance Rate; it refers to the probability of mistakenly accepting another person as the genuine one.\n\nOn the exam, the correspondence between the full name and the English abbreviation (False Acceptance Rate = FAR) and its difference from FRR are asked about. Noting that it contains the initial \"A\" of \"Acceptance\" lets you associate it with the error of \"accepting\" another person. FRR relates to convenience and FAR relates to security, and the two are in a trade-off relationship — grasp this whole picture as a set.",
-      "analogy_zh": "贴在「认假率」这个名称上的「英文标签」就是 FAR。内容相同，记住 A＝Acceptance＝接受，就不会弄混。",
-      "analogy_en": "FAR is the \"English label\" attached to the name \"False Acceptance Rate.\" The content is the same; remember A = Acceptance and you won't mix it up.",
-      "memory_hook_zh": "说到 FAR，就是认假率（False Acceptance Rate）",
-      "memory_hook_en": "FAR → the False Acceptance Rate"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "虹彩認証",
+      "b": "網膜認証",
+      "rows": [
+        {
+          "label_jp": "読み取る場所",
+          "label_zh": "读取位置",
+          "label_en": "Where it reads",
+          "a_jp": "瞳孔の周りの色の付いた輪",
+          "a_zh": "瞳孔周围那圈有颜色的环",
+          "a_en": "Colored ring around the pupil",
+          "b_jp": "眼球の奥 (眼底) の膜",
+          "b_zh": "眼球深处（眼底）的膜",
+          "b_en": "Layer at the back of the eye (fundus)",
+          "key": true
+        },
+        {
+          "label_jp": "読み取る模様",
+          "label_zh": "读取的花纹",
+          "label_en": "Pattern read",
+          "a_jp": "虹彩の細かな模様",
+          "a_zh": "虹膜的细微花纹",
+          "a_en": "Fine pattern of the iris",
+          "b_jp": "網膜に走る血管",
+          "b_zh": "视网膜上分布的血管",
+          "b_en": "Blood vessels across the retina",
+          "key": false
+        },
+        {
+          "label_jp": "読み取り方",
+          "label_zh": "读取方法",
+          "label_en": "How it reads",
+          "a_jp": "少し離れた位置からカメラで撮る",
+          "a_zh": "用摄像头在稍远的位置拍摄",
+          "a_en": "Camera shot from a short distance",
+          "b_jp": "装置をのぞき込み目の奥を照らす",
+          "b_zh": "凑近装置，照亮眼睛深处",
+          "b_en": "Look into the device as it lights the back of the eye",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "本人拒否率",
+      "b": "他人受入率",
+      "rows": [
+        {
+          "label_jp": "誤りの中身",
+          "label_zh": "错误的内容",
+          "label_en": "What goes wrong",
+          "a_jp": "本人を誤って拒否する",
+          "a_zh": "误将本人拒绝",
+          "a_en": "Wrongly rejects the genuine user",
+          "b_jp": "他人を誤って受け入れる",
+          "b_zh": "误将他人接受",
+          "b_en": "Wrongly accepts an impostor",
+          "key": true
+        },
+        {
+          "label_jp": "低く抑えると高まるもの",
+          "label_zh": "压低后提高的是",
+          "label_en": "Improves when kept low",
+          "a_jp": "利便性",
+          "a_zh": "便利性",
+          "a_en": "Convenience",
+          "b_jp": "安全性",
+          "b_zh": "安全性",
+          "b_en": "Security",
+          "key": false
+        },
+        {
+          "label_jp": "英語略称",
+          "label_zh": "英文缩写",
+          "label_en": "Abbreviation",
+          "a_jp": "FRR",
+          "a_zh": "FRR",
+          "a_en": "FRR",
+          "b_jp": "FAR",
+          "b_zh": "FAR",
+          "b_en": "FAR",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**生体認証**は体や動作の特徴で本人を確かめる方式で、覚える情報も持ち歩く物も要らないが、特徴を読み取る装置は要る。",
+    "この単元の 5 つの方式は読み取る特徴で区別でき、静脈は手のひらや指の内部、虹彩は瞳孔の周り、網膜は眼球の奥、顔はパーツの配置、声紋は声の響きを使う。",
+    "認証に使う特徴は、偽造しにくく年月がたっても変わりにくいものほど向いている。",
+    "**本人拒否率** (FRR) は本人を拒否する誤り、**他人受入率** (FAR) は他人を受け入れる誤りの割合で、しきい値の調整だけでは両方を同時に下げられない。"
+  ],
+  "key_points_zh": [
+    "**生物特征认证**利用身体或动作的特征确认本人，不需要记住信息，也不需要随身携带物品，但需要读取特征的装置。",
+    "本单元的 5 种方式可按读取的特征区分：静脉用手掌或手指内部，虹膜用瞳孔周围，视网膜用眼球深处，人脸用五官布局，声纹用声音的共鸣。",
+    "用于认证的特征，越难伪造、越不随岁月变化就越合适。",
+    "**拒真率**（FRR）是拒绝本人的错误比例，**认假率**（FAR）是接受他人的错误比例，仅靠调整阈值无法让两者同时下降。"
+  ],
+  "key_points_en": [
+    "**Biometric authentication** confirms identity from features of the body or behavior, so it needs nothing to memorize and nothing to carry, but it does need a device that reads the feature.",
+    "The five methods in this unit are told apart by what they read: veins inside the palm or finger, the iris around the pupil, the retina at the back of the eye, the layout of facial features, and the resonance of the voice.",
+    "Features that are hard to forge and change little over the years are the best suited to authentication.",
+    "The **false rejection rate** (FRR) is the rate of wrongly rejecting the genuine user, and the **false acceptance rate** (FAR) is the rate of wrongly accepting an impostor; adjusting the threshold alone cannot lower both at once."
+  ],
+  "overview": {
+    "intro_jp": "この単元で扱う生体認証の 5 つの方式が、それぞれ体のどこの特徴を読み取るかを言い分けられる。生体認証が、知識や所持品による認証と比べて何が要らず何が要るかを説明できる。本人拒否率と他人受入率がどちらの誤りを表し、低く抑えると何が高まるかを区別できる。",
+    "intro_zh": "能分别说出本单元所讲生物特征认证的 5 种方式各自读取身体哪个部位的特征。能说明与依靠知识或持有物的认证相比，生物特征认证省去了什么、又需要什么。能区分拒真率和认假率各自代表哪一种错误，以及把它们压低后会提高什么。",
+    "intro_en": "Tell apart the five methods of biometric authentication covered in this unit by which part of the body each one reads. Explain what biometric authentication does away with, and what it still needs, compared with authentication by knowledge or by possession. Distinguish which error the false rejection rate and the false acceptance rate each describe, and what improves when each is kept low.",
+    "freq_badge": "頻出",
+    "est_minutes": 42
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "静脈パターン認証: 静脈パターン認証といえば体内の静脈の形で本人確認",
-      "虹彩認証: 虹彩認証といえば瞳の色付き部分の模様で高精度認証",
-      "顔認証: 顔認証といえば顔のパーツ配置で非接触に本人確認",
-      "声紋認証: 声紋認証といえば声の特徴で本人確認",
-      "網膜認証: 網膜認証といえば目の奥(眼底)の血管で本人確認",
-      "本人拒否率: 本人拒否率といえば正規の本人を誤って拒否する確率",
-      "FRR: FRRといえば本人拒否率(False Rejection Rate)",
-      "他人受入率: 他人受入率といえば他人を誤って本人として受け入れる確率",
-      "FAR: FARといえば他人受入率(False Acceptance Rate)"
-    ],
     "key_points_jp": [
-      "生体認証(バイオメトリクス認証)は身体的・行動的特徴で本人確認する方式で、本単元では静脈・虹彩・顔・声紋・網膜の5方式と精度指標(FRR・FAR)を扱う。",
-      "静脈パターン認証は体内の静脈の形を使い偽造に強くこの分野で最頻出。虹彩認証は瞳の色付き部分の模様で高精度、網膜認証は目の奥の血管を使う点が虹彩との区別ポイント。",
-      "本人拒否率(FRR)は正規の本人を誤って拒否する確率で、高いと利便性が下がる。他人受入率(FAR)は他人を誤って受け入れる確率で、高いと安全性が下がる。",
-      "FRRとFARはトレードオフの関係。判定を厳しくするとFARは下がりFRRは上がり、緩くするとその逆になる。",
-      "日本語名と英略称の対応(本人拒否率=FRR、他人受入率=FAR)、R=Rejection=拒否、A=Acceptance=受入の区別が頻出。"
+      "生体認証は体や動作の特徴で本人を確かめる方式で、覚える情報も持ち歩く物も要らないが、特徴を読み取る装置は要る。",
+      "この単元の 5 つの方式は読み取る特徴で区別でき、静脈は手のひらや指の内部、虹彩は瞳孔の周り、網膜は眼球の奥、顔はパーツの配置、声紋は声の響きを使う。",
+      "認証に使う特徴は、偽造しにくく年月がたっても変わりにくいものほど向いている。",
+      "本人拒否率 (FRR) は本人を拒否する誤り、他人受入率 (FAR) は他人を受け入れる誤りの割合で、しきい値の調整だけでは両方を同時に下げられない。"
     ],
     "key_points_zh": [
-      "生物识别认证（biometrics 认证）是用身体特征或行为特征确认本人的方式，本单元涉及静脉、虹膜、人脸、声纹、视网膜这 5 种方式以及精度指标（FRR、FAR）。",
-      "静脉模式认证使用体内静脉的形状，抗伪造性强，是本领域最高频的方式。虹膜认证用瞳孔带颜色部分的纹理实现高精度，而视网膜认证使用眼睛深处的血管，这是与虹膜区分的要点。",
-      "拒真率（FRR）是把合法本人错误拒绝的概率，过高会使便利性下降。认假率（FAR）是把他人错误接受的概率，过高会使安全性下降。",
-      "FRR 与 FAR 处于权衡关系。把判定调严，FAR 会下降、FRR 会上升；调松则相反。",
-      "中文名称与英文缩写的对应（拒真率＝FRR、认假率＝FAR），以及 R＝Rejection＝拒绝、A＝Acceptance＝接受的区分，都是高频考点。"
+      "生物特征认证利用身体或动作的特征确认本人，不需要记住信息，也不需要随身携带物品，但需要读取特征的装置。",
+      "本单元的 5 种方式可按读取的特征区分：静脉用手掌或手指内部，虹膜用瞳孔周围，视网膜用眼球深处，人脸用五官布局，声纹用声音的共鸣。",
+      "用于认证的特征，越难伪造、越不随岁月变化就越合适。",
+      "拒真率（FRR）是拒绝本人的错误比例，认假率（FAR）是接受他人的错误比例，仅靠调整阈值无法让两者同时下降。"
     ],
     "key_points_en": [
-      "Biometric authentication (biometrics authentication) is a method that verifies a person using physical or behavioral characteristics; this unit covers the five methods of veins, iris, face, voiceprint, and retina, as well as the accuracy metrics (FRR, FAR).",
-      "Vein pattern authentication uses the shape of the veins inside the body, is strong against forgery, and is the most frequently tested method in this field. Iris authentication achieves high accuracy using the pattern of the colored part around the pupil, while retinal authentication uses the blood vessels deep inside the eye — that is the point distinguishing it from the iris.",
-      "The False Rejection Rate (FRR) is the probability of mistakenly rejecting the genuine person, and if it is too high, convenience drops. The False Acceptance Rate (FAR) is the probability of mistakenly accepting another person, and if it is too high, security drops.",
-      "FRR and FAR are in a trade-off relationship. Making the judgment stricter lowers FAR and raises FRR; making it looser does the reverse.",
-      "The correspondence between the full names and the English abbreviations (False Rejection Rate = FRR, False Acceptance Rate = FAR), and the distinction R = Rejection and A = Acceptance, are frequently tested."
+      "Biometric authentication confirms identity from features of the body or behavior, so it needs nothing to memorize and nothing to carry, but it does need a device that reads the feature.",
+      "The five methods in this unit are told apart by what they read: veins inside the palm or finger, the iris around the pupil, the retina at the back of the eye, the layout of facial features, and the resonance of the voice.",
+      "Features that are hard to forge and change little over the years are the best suited to authentication.",
+      "The false rejection rate (FRR) is the rate of wrongly rejecting the genuine user, and the false acceptance rate (FAR) is the rate of wrongly accepting an impostor; adjusting the threshold alone cannot lower both at once."
+    ],
+    "memory_hooks_jp": [
+      "静脈パターン認証: 静脈は皮膚の下の血管なので、表面に跡が残る指紋と違い、触った物から写し取られることがない。",
+      "虹彩認証: 「虹」の字のとおり、瞳の周りには色の付いた輪がある。その輪の模様を読むのが虹彩認証である。",
+      "声紋認証: 「紋」は指紋の紋と同じで、声を図に描くと人ごとに違う模様が現れるという見立てから来た名前である。",
+      "網膜認証: 「膜」は目の奥に張った薄い膜で、カメラでいえばフィルムに当たる場所である。そこに走る血管を読む。",
+      "本人拒否率: 主語は「本人」。本人が拒否される率と読めば、他人受入率と取り違えない。",
+      "FRR: Reject は「突き返す」という英単語で、本人が入口で突き返される場面と結び付く。",
+      "他人受入率: 主語は「他人」。他人が受け入れられてしまう率と読む。",
+      "FAR: Accept は「受け取る」という英単語で、他人を受け取ってしまう誤りと結び付く。"
     ],
     "memory_hooks_zh": [
-      "静脉模式认证：说到静脉模式认证，就是用体内静脉的形状确认本人",
-      "虹膜认证：说到虹膜认证，就是用瞳孔带颜色部分的纹理实现高精度认证",
-      "人脸认证：说到人脸认证，就是用面部各部位的布局非接触地确认本人",
-      "声纹认证：说到声纹认证，就是用声音的特征确认本人",
-      "视网膜认证：说到视网膜认证，就是用眼睛深处（眼底）的血管确认本人",
-      "拒真率：说到拒真率，就是把合法本人错误拒绝的概率",
-      "FRR：说到 FRR，就是拒真率（False Rejection Rate）",
-      "认假率：说到认假率，就是把他人错误当作本人接受的概率",
-      "FAR：说到 FAR，就是认假率（False Acceptance Rate）"
+      "静脉模式认证：静脉是皮肤下的血管，不像指纹那样会在表面留下痕迹，所以无法从摸过的东西上复制下来。",
+      "虹膜认证：正如“虹”字所示，瞳孔周围有一圈带颜色的环，读取这圈环上的花纹就是虹膜认证。",
+      "声纹认证：“纹”和指纹的“纹”是同一个字，名字来自把声音画成图后会出现因人而异的纹路这一说法。",
+      "视网膜认证：“膜”是贴在眼睛深处的一层薄膜，相当于相机里胶片的位置，这种方式读取的就是分布在上面的血管。",
+      "拒真率：主语是“本人”（日文“本人拒否率”的字面意思就是本人被拒绝的比率），这样读就不会和认假率搞混。",
+      "FRR：Reject 是英语“退回、拒收”的意思，可以联想成本人在入口处被退了回去。",
+      "认假率：主语是“他人”（日文“他人受入率”的字面意思就是他人被接受的比率）。",
+      "FAR：Accept 是英语“接受、收下”的意思，可以联想成把他人收下的错误。"
     ],
     "memory_hooks_en": [
-      "Vein pattern authentication: Vein pattern authentication → verifying identity by the shape of the veins inside the body",
-      "Iris authentication: Iris authentication → high-accuracy authentication using the pattern of the colored part around the pupil",
-      "Face authentication: Face authentication → verifying identity contactlessly by the arrangement of facial parts",
-      "Voiceprint authentication: Voiceprint authentication → verifying identity by the features of the voice",
-      "Retinal authentication: Retinal authentication → verifying identity by the blood vessels deep inside the eye (the fundus)",
-      "False Rejection Rate: False Rejection Rate → the probability of mistakenly rejecting the genuine, legitimate person",
-      "FRR: FRR → the False Rejection Rate",
-      "False Acceptance Rate: False Acceptance Rate → the probability of mistakenly accepting another person as the genuine one",
-      "FAR: FAR → the False Acceptance Rate"
+      "Vein pattern authentication: Veins are vessels beneath the skin, so unlike fingerprints, which leave marks on surfaces, they cannot be lifted from things you touch.",
+      "Iris authentication: The iris is named after Iris, the Greek goddess of the rainbow, and it is the colored ring around the pupil whose pattern this method reads.",
+      "Voiceprint authentication: The name compares the voice to a fingerprint: when a voice is drawn as a chart, a pattern unique to each person appears.",
+      "Retinal authentication: The retina is the thin layer at the back of the eye that plays the role of film in a camera, and this method reads the vessels running across it.",
+      "False Rejection Rate: In the Japanese name 本人拒否率, the subject is 本人 (the genuine user): read it as the rate at which the real user is rejected, and you will not confuse it with the false acceptance rate.",
+      "FRR: Reject means to turn back, so picture the genuine user being turned back at the entrance.",
+      "False Acceptance Rate: In the Japanese name 他人受入率, the subject is 他人 (someone else): read it as the rate at which an impostor gets accepted.",
+      "FAR: Accept means to take in, so link it with the error of taking in an impostor."
     ]
   },
   "challenge_questions": [
     "2016h28h-q076",
-    "2017h29a-q095",
     "2023r05-q099",
     "2024r06-q072",
-    "2017h29h-q076"
+    "2017h29h-q076",
+    "2020r02o-q066"
   ],
   "source_figures": [
     {
@@ -313,9 +1030,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "生物识别认证与认证精度指标",
-  "title_en": "Biometric Authentication and Authentication Accuracy Metrics",
-  "unit_summary_zh": "学习基于静脉、虹膜、声纹、人脸、视网膜的生物识别认证，以及拒真率（FRR）、认假率（FAR）这两项精度指标。",
-  "unit_summary_en": "Learn biometric authentication based on veins, iris, voiceprint, face, and retina, along with two accuracy metrics: False Rejection Rate (FRR) and False Acceptance Rate (FAR)."
+  }
 }
