@@ -1,158 +1,510 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-01-02-u10",
   "topic_id": "strategy-01-02",
   "category": "strategy",
   "title_jp": "仮説検定の枠組み",
+  "title_zh": "假设检验的框架",
+  "title_en": "The Framework of Hypothesis Testing",
   "unit_summary_jp": "標本から母集団についての仮説を判断する仮説検定の手順と、有意水準・2種類の誤りの考え方を学ぶ。",
+  "unit_summary_zh": "学习根据样本对总体的假设作出判断的假设检验步骤，以及显著性水平和两类错误的思想。",
+  "unit_summary_en": "Learn the procedure of hypothesis testing, which judges a hypothesis about a population from a sample, along with the ideas of the significance level and the two types of error.",
   "order_in_topic": 10,
   "prerequisites": [
     "strategy-01-02-u09"
   ],
-  "overview": {
-    "intro_jp": "標本から得たデータをもとに、母集団についての仮説が正しいかを統計的に判断する「仮説検定」の枠組みを学ぶ単元です。判断の基準となる有意水準と、検定で避けられない第1種・第2種の2種類の誤りを扱います。データ利活用が頻出の本分野で、データに基づく意思決定の考え方を理解する基礎となる重要な単元です。",
-    "freq_badge": "頻出",
-    "est_minutes": 13,
-    "intro_zh": "本单元学习「假设检验」的框架：依据从样本得到的数据，统计地判断关于总体的假设是否成立。我们会处理作为判断基准的显著性水平，以及检验中无法避免的第一类错误与第二类错误这两类错误。在数据利用频繁出现的本领域中，本单元是理解基于数据进行决策这一思想的基础，是重要单元。",
-    "intro_en": "This unit covers the framework of \"hypothesis testing,\" which statistically judges whether a hypothesis about a population is correct based on data obtained from a sample. It deals with the significance level that serves as the criterion for judgment, and the two types of error that are unavoidable in testing: the Type I and Type II errors. In this field, where data utilization appears frequently, this is an important unit that forms the foundation for understanding the idea of data-driven decision making."
-  },
-  "terms": [
+  "goals_jp": [
+    "**仮説検定**の手順を、帰無仮説を立てるところから棄却の判断まで順に説明できる。",
+    "**有意水準**が何を表す確率で、いつ決めておくものかを説明できる。",
+    "**第1種の誤り**と**第2種の誤り**を、帰無仮説の実際と判断の組合せで見分けられる。"
+  ],
+  "goals_zh": [
+    "能按顺序说明**假设检验**的步骤，从提出原假设一直到判断是否拒绝。",
+    "能说明**显著性水平**表示的是什么概率，以及应当在什么时候定下来。",
+    "能根据原假设的实际情况与所作判断的组合，区分**第一类错误**和**第二类错误**。"
+  ],
+  "goals_en": [
+    "Walk through the steps of **hypothesis testing** in order, from stating the null hypothesis to deciding whether to reject it.",
+    "Explain what probability the **significance level** stands for and when it has to be set.",
+    "Tell a **Type I error** from a **Type II error** by pairing the actual state of the null hypothesis with the decision made."
+  ],
+  "overview_cols_jp": [
+    "帰無仮説との関係"
+  ],
+  "overview_cols_zh": [
+    "与原假设的关系"
+  ],
+  "overview_cols_en": [
+    "Relation to the null hypothesis"
+  ],
+  "overview_rows": [
     {
       "term": "仮説検定",
-      "definition_jp": "標本データをもとに、母集団に関する仮説が正しいかを統計的に判断する手法。",
-      "explanation_jp": "仮説検定は、調べたい母集団全体を直接調べられないとき、抽出した標本のデータを使って、母集団についての仮説が成り立つかどうかを確率的に判断する手法です。\n\n手順は、まず「差がない・効果がない」とする帰無仮説と、それに反する対立仮説を立てます。次に標本の結果が、帰無仮説が正しいと仮定したときに偶然起こりにくいか(確率が小さいか)を調べ、起こりにくければ帰無仮説を棄却し対立仮説を採用します。試験では、標本から母集団を推測する点、帰無仮説を棄却するか否かで判断する流れが問われます。仮説を『証明』するのではなく、確率的に『棄却できるか』を判断する点が重要です。",
-      "analogy_jp": "裁判で「被告は無罪」とまず仮定し、証拠がそれを覆すほど強ければ有罪と判断するのに似ています。標本という証拠で、最初の仮定を退けられるかを見ます。",
-      "memory_hook_jp": "仮説検定といえば標本から母集団の仮説を統計的に判断",
-      "inline_quiz": [
-        "2009h21a-q002"
+      "one_line_jp": "標本から母集団についての仮説を確率で判断する手法",
+      "one_line_zh": "根据样本、用概率判断关于总体的假设的方法",
+      "one_line_en": "A method that uses a sample to judge a hypothesis about the population by probability",
+      "extra_jp": [
+        "帰無仮説を立て、棄却するかを決める"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"帰無仮説と対立仮説を立てる\"] --> B[\"有意水準を決める\"]; B --> C[\"標本データを集計\"]; C --> D[\"偶然起こりにくいか判定\"]; D --> E[\"帰無仮説を棄却 または 棄却しない\"]",
-        "svg_path": "figures/strategy-01-02-u10-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "假设检验",
-      "term_en": "Hypothesis testing",
-      "definition_zh": "根据样本数据统计地判断关于总体的假设是否正确的方法。",
-      "definition_en": "A method that statistically judges, based on sample data, whether a hypothesis about a population is correct.",
-      "explanation_zh": "假设检验是在无法直接调查整个目标总体时，利用抽取的样本数据，以概率的方式判断关于总体的假设是否成立的方法。\n\n步骤是：首先提出认为「没有差异、没有效果」的原假设，以及与之相反的备择假设。接着考察在假定原假设为真时，样本结果是否偶然难以发生（概率是否很小）；若难以发生，就拒绝原假设、采纳备择假设。考试中会考查从样本推断总体这一点，以及依据是否拒绝原假设来作判断的流程。重点在于：检验并非『证明』假设，而是判断能否在概率上『拒绝』假设。",
-      "explanation_en": "Hypothesis testing is a method used when you cannot directly examine the entire population of interest: it uses data from an extracted sample to judge probabilistically whether a hypothesis about the population holds.\n\nThe procedure is: first set up a null hypothesis stating \"there is no difference / no effect,\" and an alternative hypothesis that contradicts it. Next, examine whether the sample result is unlikely to occur by chance (whether its probability is small) under the assumption that the null hypothesis is true; if it is unlikely, reject the null hypothesis and adopt the alternative hypothesis. On the exam, you are asked about inferring the population from the sample and about the flow of judging based on whether the null hypothesis is rejected. The key point is that testing does not 'prove' a hypothesis but judges whether it can be 'rejected' in probabilistic terms.",
-      "analogy_zh": "类似于审判中先假定「被告无罪」，若证据强到足以推翻这一假定才判定有罪。我们用样本这一证据，来看能否推翻最初的假定。",
-      "analogy_en": "Similar to a trial that first assumes \"the defendant is not guilty,\" and finds them guilty only if the evidence is strong enough to overturn that assumption. We use the sample as evidence to see whether the initial assumption can be overturned.",
-      "memory_hook_zh": "说到假设检验，就是从样本统计地判断关于总体的假设",
-      "memory_hook_en": "Hypothesis testing → statistically judging a hypothesis about a population from a sample"
+      "extra_zh": [
+        "提出原假设，再决定是否拒绝它"
+      ],
+      "extra_en": [
+        "Set up a null hypothesis, then decide whether to reject it"
+      ]
     },
     {
       "term": "有意水準",
-      "definition_jp": "帰無仮説を棄却するかどうかの基準となる確率。通常5%や1%を用いる。",
-      "explanation_jp": "有意水準は、仮説検定で帰無仮説を棄却するかどうかを判断する基準となる確率で、検定の前にあらかじめ決めておきます。一般に5%(0.05)や1%(0.01)が使われます。\n\n標本の結果が起こる確率が有意水準より小さければ「偶然とは考えにくい」として帰無仮説を棄却します。試験では、有意水準が判断の『ものさし』であること、また有意水準を小さくするほど帰無仮説を棄却しにくくなる(慎重になる)という関係が問われます。有意水準は、後述する第1種の誤りを犯す確率に対応する点も押さえましょう。",
-      "analogy_jp": "「これ以上珍しいことが起きたら偶然ではないと認める」という合格ラインのようなもの。ラインを5%と厳しく引くか、もっと厳しく1%にするかをあらかじめ決めます。",
-      "memory_hook_jp": "有意水準といえば帰無仮説を棄却する判断基準の確率(5%や1%)",
-      "inline_quiz": [
-        "2009h21a-q004"
+      "one_line_jp": "帰無仮説を棄却するかの境目となる確率",
+      "one_line_zh": "决定是否拒绝原假设的分界概率",
+      "one_line_en": "The probability that serves as the cutoff for rejecting the null hypothesis",
+      "extra_jp": [
+        "棄却の基準として検定の前に決める"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "显著性水平",
-      "term_en": "Significance level",
-      "definition_zh": "判断是否拒绝原假设的基准概率，通常采用 5% 或 1%。",
-      "definition_en": "The probability that serves as the criterion for whether to reject the null hypothesis; usually 5% or 1% is used.",
-      "explanation_zh": "显著性水平是在假设检验中判断是否拒绝原假设的基准概率，在检验之前预先确定。一般使用 5%（0.05）或 1%（0.01）。\n\n若样本结果发生的概率小于显著性水平，就认为「难以视为偶然」，从而拒绝原假设。考试中会考查：显著性水平是判断的『标尺』，以及显著性水平取得越小、就越难拒绝原假设（越谨慎）这一关系。还要记住：显著性水平对应于犯下后文所述第一类错误的概率。",
-      "explanation_en": "The significance level is the criterion probability for judging whether to reject the null hypothesis in a test, and it is decided in advance before the test. Generally 5% (0.05) or 1% (0.01) is used.\n\nIf the probability of the sample result occurring is smaller than the significance level, it is regarded as \"hard to consider a coincidence,\" and the null hypothesis is rejected. On the exam, you are asked that the significance level is the 'ruler' for judgment, and about the relationship that the smaller the significance level, the harder it becomes to reject the null hypothesis (the more cautious you are). Also note that the significance level corresponds to the probability of committing the Type I error described later.",
-      "analogy_zh": "就像「若发生比这更罕见的事，就认定不是偶然」的及格线。要预先决定把线严格地划在 5%，还是更严格地划在 1%。",
-      "analogy_en": "Like a passing line that says \"if something rarer than this happens, I'll accept it isn't a coincidence.\" You decide in advance whether to draw the line strictly at 5%, or even more strictly at 1%.",
-      "memory_hook_zh": "说到显著性水平，就是拒绝原假设的判断基准概率（5% 或 1%）",
-      "memory_hook_en": "Significance level → the criterion probability for rejecting the null hypothesis (5% or 1%)"
+      "extra_zh": [
+        "作为拒绝的标准，在检验之前定好"
+      ],
+      "extra_en": [
+        "Fixed before the test as the rule for rejection"
+      ]
     },
     {
       "term": "第1種の誤り",
-      "definition_jp": "本当は正しい帰無仮説を、誤って棄却してしまう誤り。",
-      "explanation_jp": "第1種の誤り(あわてものの誤り)は、実際には正しい帰無仮説を、誤って「正しくない」と判断して棄却してしまう誤りです。例えば、本当は効果がない薬を「効果がある」と誤って結論づける場合がこれにあたります。\n\nこの誤りを犯す確率は、設定した有意水準に一致します。つまり有意水準を5%にすると、第1種の誤りが起こる確率は5%です。試験では、第1種の誤り=正しい帰無仮説を棄却(本当はないのに『ある』と判断)、有意水準と対応するという点が、第2種の誤りとの対比で問われます。",
-      "analogy_jp": "火事でもないのに火災報知器が鳴ってしまう「誤報」のようなもの。何も問題ない(正しい)状態を、誤って「異常あり」と判断してしまう失敗です。",
-      "memory_hook_jp": "第1種の誤りといえば正しい帰無仮説を誤って棄却(あわてもの)",
-      "inline_quiz": [
-        "2009h21a-q007"
+      "one_line_jp": "正しい帰無仮説を棄却してしまう誤り",
+      "one_line_zh": "把正确的原假设拒绝掉的错误",
+      "one_line_en": "Rejecting a null hypothesis that is true",
+      "extra_jp": [
+        "実際は正しいのに棄却する"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "第一类错误",
-      "term_en": "Type I error",
-      "definition_zh": "把本来正确的原假设错误地加以拒绝的错误。",
-      "definition_en": "The error of mistakenly rejecting a null hypothesis that is actually correct.",
-      "explanation_zh": "第一类错误（弃真错误／「冒失者的错误」）是指：本来正确的原假设，却被错误地判断为「不正确」而加以拒绝。例如，把本来没有效果的药错误地下结论为「有效果」，就属于这种情形。\n\n犯下这种错误的概率与设定的显著性水平一致。也就是说，把显著性水平定为 5%，第一类错误发生的概率就是 5%。考试中会以与第二类错误对比的形式考查：第一类错误＝拒绝正确的原假设（本来没有却判断为『有』），并与显著性水平相对应。",
-      "explanation_en": "The Type I error (the \"error of the hasty person\") is when a null hypothesis that is actually correct is mistakenly judged as \"incorrect\" and rejected. For example, concluding that a drug which actually has no effect \"has an effect\" falls under this.\n\nThe probability of committing this error matches the significance level you set. That is, if you set the significance level to 5%, the probability of a Type I error occurring is 5%. On the exam, in contrast with the Type II error, you are asked that the Type I error = rejecting a correct null hypothesis (judging there 'is' something when there actually is not) and that it corresponds to the significance level.",
-      "analogy_zh": "就像明明没有着火，火灾报警器却响了的「误报」。把毫无问题（正确）的状态，错误地判断为「有异常」的失误。",
-      "analogy_en": "Like a \"false alarm\" where the fire alarm goes off even though there is no fire. It is the mistake of judging a state that is perfectly fine (correct) as \"abnormal.\"",
-      "memory_hook_zh": "说到第一类错误，就是错误地拒绝正确的原假设（冒失者）",
-      "memory_hook_en": "Type I error → mistakenly rejecting a correct null hypothesis (the hasty one)"
+      "extra_zh": [
+        "实际上正确，却被拒绝"
+      ],
+      "extra_en": [
+        "Actually true, yet rejected"
+      ]
     },
     {
       "term": "第2種の誤り",
-      "definition_jp": "本当は誤っている帰無仮説を、棄却せずに見逃してしまう誤り。",
-      "explanation_jp": "第2種の誤り(ぼんやりものの誤り)は、実際には誤っている帰無仮説を、誤って「正しい」と判断して棄却せず見逃してしまう誤りです。例えば、本当は効果がある薬を「効果がない」と見逃してしまう場合がこれにあたります。\n\n第1種の誤りと第2種の誤りはトレードオフの関係にあり、有意水準を小さくして第1種の誤りを減らすと、第2種の誤りは増えやすくなります。試験では、第2種の誤り=誤った帰無仮説の見逃し(本当はあるのに『ない』と判断)であること、第1種の誤りとの違いと両者が対の概念であることが問われます。",
-      "analogy_jp": "本当は火事が起きているのに、火災報知器が鳴らず気づかない「見逃し」のようなもの。異常がある状態を、誤って「問題なし」と判断してしまう失敗です。",
-      "memory_hook_jp": "第2種の誤りといえば誤った帰無仮説を見逃す(ぼんやりもの)",
-      "inline_quiz": [
-        "2009h21a-q091"
+      "one_line_jp": "誤った帰無仮説を棄却せず見逃す誤り",
+      "one_line_zh": "没有拒绝错误的原假设、把它放过的错误",
+      "one_line_en": "Letting a false null hypothesis slip by without rejecting it",
+      "extra_jp": [
+        "実際は誤りなのに棄却しない"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "第二类错误",
-      "term_en": "Type II error",
-      "definition_zh": "把本来错误的原假设不予拒绝而漏掉的错误。",
-      "definition_en": "The error of failing to reject a null hypothesis that is actually wrong, thereby missing it.",
-      "explanation_zh": "第二类错误（取伪错误／「马虎者的错误」）是指：本来错误的原假设，却被错误地判断为「正确」而没有拒绝、被漏掉。例如，把本来有效果的药漏判为「没有效果」，就属于这种情形。\n\n第一类错误与第二类错误处于权衡（此消彼长）关系：把显著性水平定得越小以减少第一类错误，第二类错误就越容易增多。考试中会考查：第二类错误＝漏掉错误的原假设（本来有却判断为『没有』），以及它与第一类错误的区别和两者互为成对的概念。",
-      "explanation_en": "The Type II error (the \"error of the careless person\") is when a null hypothesis that is actually wrong is mistakenly judged as \"correct,\" so it is not rejected and is missed. For example, missing a drug that actually has an effect by judging it \"has no effect\" falls under this.\n\nThe Type I and Type II errors are in a trade-off relationship: the smaller you set the significance level to reduce the Type I error, the more the Type II error tends to increase. On the exam, you are asked that the Type II error = missing a wrong null hypothesis (judging there 'is not' something when there actually is), and about its difference from the Type I error and that the two are a paired concept.",
-      "analogy_zh": "就像明明真的着火了，火灾报警器却没响、没被察觉的「漏报」。把有异常的状态，错误地判断为「没有问题」的失误。",
-      "analogy_en": "Like a \"missed alarm\" where a fire is actually breaking out but the fire alarm does not sound and goes unnoticed. It is the mistake of judging a state that has an abnormality as \"no problem.\"",
-      "memory_hook_zh": "说到第二类错误，就是漏掉错误的原假设（马虎者）",
-      "memory_hook_en": "Type II error → missing a wrong null hypothesis (the careless one)"
+      "extra_zh": [
+        "实际上错误，却没有被拒绝"
+      ],
+      "extra_en": [
+        "Actually false, yet not rejected"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "仮説検定",
+      "term_zh": "假设检验",
+      "term_en": "Hypothesis testing",
+      "one_jp": "**仮説検定**は、**標本**のデータを使い、母集団についての仮説を退けてよいかを**確率**にもとづいて判断する手法である。",
+      "one_zh": "**假设检验**（[[jp:仮説検定]]）是利用**样本**数据，依据**概率**来判断能否否定某个关于总体的假设的方法。",
+      "one_en": "**Hypothesis testing** ([[jp:仮説検定]]) uses data from a **sample** to decide, on the basis of **probability**, whether a hypothesis about the population can be set aside.",
+      "detail_jp": "まず、退けられるかを確かめたい仮説 (**帰無仮説**、例えば「2 つの売り場で平均購入額に差はない」) と、その反対の**対立仮説**を立てる。次に、帰無仮説が正しいとしたら標本の結果がどれほど起こりにくいかを確率で表し、前もって決めた境目 (**有意水準**) を下回れば帰無仮説を**棄却** (退けること) して対立仮説を採る。棄却できなかったときも帰無仮説が正しいと証明されたわけではなく、「差があるとは言えない」という結論にとどまる。",
+      "detail_zh": "首先，提出想检验能否被否定的假设（**原假设**，例如“两个卖场的平均消费金额没有差异”），以及与之相反的**备择假设**。接着，假如原假设成立，用概率表示样本结果有多难出现；若低于事先定好的分界（**显著性水平**），就**拒绝**（否定）原假设、采纳备择假设。即使没能拒绝，也不等于证明了原假设正确，结论只能停留在“不能说存在差异”。",
+      "detail_en": "First, state the hypothesis you want to test for rejection (the **null hypothesis**, such as “there is no difference in average spending between the two sales floors”) and its opposite, the **alternative hypothesis**. Next, express how unlikely the sample result would be if the null hypothesis were true, and if that probability falls below a cutoff fixed in advance (the **significance level**), **reject** the null hypothesis and adopt the alternative. Failing to reject does not prove the null hypothesis true, and the conclusion stays at “we cannot say there is a difference”.",
+      "analogy_jp": "刑事裁判で、まず被告人は無罪だと仮定し、その仮定では説明しにくいほど強い証拠がそろったときだけ有罪とする進め方に似ている。証拠が足りずに有罪にできなくても、無実が証明されたことにはならない点も同じである。",
+      "analogy_zh": "这就像刑事审判：先假定被告无罪，只有在证据强到用这个假定难以解释时，才判定有罪。证据不足、无法定罪时，也不代表被告的清白得到了证明，这一点同样相似。",
+      "analogy_en": "It works like a criminal trial: the defendant is presumed innocent, and a guilty verdict comes only when the evidence is too strong to square with that presumption. When the evidence falls short and there is no conviction, innocence has not been proven either.",
+      "hook_jp": "「帰無」は「無に帰す」。退けられることを見込んで立てる仮説なので、この名で呼ばれる。",
+      "hook_zh": "[[jp:帰無]]就是“归于无”。它是预料会被否定才提出的假设，因此得了这个名字。",
+      "hook_en": "The Japanese [[jp:帰無]] means “return to nothing”. The hypothesis is set up in the expectation that it will be rejected, hence the name.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "仮説検定の結論は標本にもとづく確率的な判断なので、手順どおりに行っても誤った結論になることがある。",
+          "text_zh": "假设检验（[[jp:仮説検定]]）的结论是基于样本的概率性判断，所以即使完全按步骤进行，也可能得出错误的结论。",
+          "text_en": "The conclusion of hypothesis testing ([[jp:仮説検定]]) is a probabilistic judgment based on a sample, so it can be wrong even when every step is followed correctly."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "hyp",
+              "label": {
+                "jp": "帰無仮説と対立仮説を立てる",
+                "zh": "提出原假设和备择假设",
+                "en": "State the null and alternative hypotheses"
+              }
+            },
+            {
+              "id": "alpha",
+              "label": {
+                "jp": "有意水準を決める",
+                "zh": "确定显著性水平",
+                "en": "Set the significance level"
+              }
+            },
+            {
+              "id": "prob",
+              "label": {
+                "jp": "標本の結果の起こりにくさを確率で表す",
+                "zh": "用概率表示样本结果有多难出现",
+                "en": "Express how unlikely the sample result is as a probability"
+              }
+            },
+            {
+              "id": "judge",
+              "label": {
+                "jp": "棄却するかを判断する",
+                "zh": "判断是否拒绝",
+                "en": "Decide whether to reject"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "退けられるかを確かめたい仮説を帰無仮説、その反対を対立仮説として立てる。",
+            "caption_zh": "把想检验能否被否定的假设作为原假设，把与它相反的主张作为备择假设。",
+            "caption_en": "The hypothesis you want to test for rejection becomes the null hypothesis, and its opposite becomes the alternative hypothesis.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "データを見る前に、棄却の境目となる有意水準を決めておく。",
+            "caption_zh": "在看数据之前，先定好作为拒绝分界的显著性水平。",
+            "caption_en": "Before looking at the data, fix the significance level that will serve as the cutoff for rejection.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "帰無仮説が正しいとしたら、標本の結果がどれほど起こりにくいかを確率で表す。",
+            "caption_zh": "假如原假设成立，用概率表示样本的结果有多难出现。",
+            "caption_en": "Assuming the null hypothesis is true, express as a probability how unlikely the sample result would be.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "その確率が有意水準を下回れば帰無仮説を棄却して対立仮説を採り、そうでなければ棄却しない。",
+            "caption_zh": "如果这个概率低于显著性水平，就拒绝原假设、采纳备择假设；否则不拒绝。",
+            "caption_en": "If that probability falls below the significance level, reject the null hypothesis and adopt the alternative; otherwise, do not reject it.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "仮説検定は、標本のデータを使い、母集団についての仮説を退けてよいかを確率にもとづいて判断する手法である。",
+      "definition_zh": "假设检验（仮説検定）是利用样本数据，依据概率来判断能否否定某个关于总体的假设的方法。",
+      "definition_en": "Hypothesis testing (仮説検定) uses data from a sample to decide, on the basis of probability, whether a hypothesis about the population can be set aside.",
+      "explanation_jp": "まず、退けられるかを確かめたい仮説 (帰無仮説、例えば「2 つの売り場で平均購入額に差はない」) と、その反対の対立仮説を立てる。次に、帰無仮説が正しいとしたら標本の結果がどれほど起こりにくいかを確率で表し、前もって決めた境目 (有意水準) を下回れば帰無仮説を棄却 (退けること) して対立仮説を採る。棄却できなかったときも帰無仮説が正しいと証明されたわけではなく、「差があるとは言えない」という結論にとどまる。",
+      "explanation_zh": "首先，提出想检验能否被否定的假设（原假设，例如“两个卖场的平均消费金额没有差异”），以及与之相反的备择假设。接着，假如原假设成立，用概率表示样本结果有多难出现；若低于事先定好的分界（显著性水平），就拒绝（否定）原假设、采纳备择假设。即使没能拒绝，也不等于证明了原假设正确，结论只能停留在“不能说存在差异”。",
+      "explanation_en": "First, state the hypothesis you want to test for rejection (the null hypothesis, such as “there is no difference in average spending between the two sales floors”) and its opposite, the alternative hypothesis. Next, express how unlikely the sample result would be if the null hypothesis were true, and if that probability falls below a cutoff fixed in advance (the significance level), reject the null hypothesis and adopt the alternative. Failing to reject does not prove the null hypothesis true, and the conclusion stays at “we cannot say there is a difference”.",
+      "memory_hook_jp": "「帰無」は「無に帰す」。退けられることを見込んで立てる仮説なので、この名で呼ばれる。",
+      "memory_hook_zh": "帰無就是“归于无”。它是预料会被否定才提出的假设，因此得了这个名字。",
+      "memory_hook_en": "The Japanese 帰無 means “return to nothing”. The hypothesis is set up in the expectation that it will be rejected, hence the name.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "有意水準",
+      "term_zh": "显著性水平",
+      "term_en": "Significance level",
+      "one_jp": "**有意水準**は、帰無仮説を棄却するかどうかの境目となる**確率**で、検定を行う前に決めておく。",
+      "one_zh": "**显著性水平**（[[jp:有意水準]]）是决定是否拒绝原假设的分界**概率**，要在进行检验之前定好。",
+      "one_en": "The **significance level** ([[jp:有意水準]]) is the **probability** that marks the cutoff for rejecting the null hypothesis, and it is set before the test is run.",
+      "detail_jp": "例えば 5% や 1% がよく使われ、帰無仮説が正しいとしたときに標本の結果かそれ以上に偏った結果が起こる確率がこれを下回ると、「偶然とは考えにくい」として棄却する。有意水準は、実際には正しい帰無仮説を棄却してしまう確率をどこまで許すかを決める値でもある。小さく設定するほど、棄却の条件は厳しくなる。",
+      "detail_zh": "常用的值有 5% 或 1%；假如原假设成立，样本结果或更极端的结果出现的概率低于这个值时，就认为“难以用偶然来解释”而拒绝原假设。显著性水平同时也是一个界限，决定能容许多大的概率去拒绝实际上正确的原假设。设得越小，拒绝的条件就越严格。",
+      "detail_en": "Values such as 5% or 1% are common, and when the probability of the sample result or a more extreme one under a true null hypothesis drops below this value, the null hypothesis is rejected as “hard to put down to chance”. The significance level also fixes how much probability of rejecting a null hypothesis that is in fact true you are willing to accept. The smaller you set it, the stricter the condition for rejection becomes.",
+      "analogy_jp": "「これより珍しい出来事なら偶然とは見なさない」と前もって引いておく合格線のようなもの。結果を見てから線を動かすと、判断が都合よく変わってしまう。",
+      "analogy_zh": "它像一条事先划好的及格线：“比这更罕见的事，就不当作偶然。”如果看到结果后再挪动这条线，判断就会变得随心所欲。",
+      "analogy_en": "It is like a pass line drawn in advance: anything rarer than this will not be treated as chance. Moving the line after seeing the result lets the judgment bend to suit you.",
+      "hook_jp": "「有意」は「偶然では片づけられない意味が有る」。境目を下回った結果を「有意な差」と呼ぶ。",
+      "hook_zh": "[[jp:有意]]是指“有着无法用偶然打发掉的意义”。低于分界的结果被称为“显著差异”（[[jp:有意な差]]）。",
+      "hook_en": "[[jp:有意]] means “having a meaning that chance cannot explain away”. A result below the cutoff is called a “significant difference” ([[jp:有意な差]]).",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "有意水準は帰無仮説が正しい確率を表すものではない。棄却するかを判断するために前もって定める境目である。",
+          "text_zh": "显著性水平（[[jp:有意水準]]）并不表示原假设（[[jp:帰無仮説]]）正确的概率。它是为了判断是否拒绝而事先定下的分界。",
+          "text_en": "The significance level ([[jp:有意水準]]) is not the probability that the null hypothesis ([[jp:帰無仮説]]) is true. It is a cutoff fixed in advance for deciding whether to reject."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "有意水準は、帰無仮説を棄却するかどうかの境目となる確率で、検定を行う前に決めておく。",
+      "definition_zh": "显著性水平（有意水準）是决定是否拒绝原假设的分界概率，要在进行检验之前定好。",
+      "definition_en": "The significance level (有意水準) is the probability that marks the cutoff for rejecting the null hypothesis, and it is set before the test is run.",
+      "explanation_jp": "例えば 5% や 1% がよく使われ、帰無仮説が正しいとしたときに標本の結果かそれ以上に偏った結果が起こる確率がこれを下回ると、「偶然とは考えにくい」として棄却する。有意水準は、実際には正しい帰無仮説を棄却してしまう確率をどこまで許すかを決める値でもある。小さく設定するほど、棄却の条件は厳しくなる。",
+      "explanation_zh": "常用的值有 5% 或 1%；假如原假设成立，样本结果或更极端的结果出现的概率低于这个值时，就认为“难以用偶然来解释”而拒绝原假设。显著性水平同时也是一个界限，决定能容许多大的概率去拒绝实际上正确的原假设。设得越小，拒绝的条件就越严格。",
+      "explanation_en": "Values such as 5% or 1% are common, and when the probability of the sample result or a more extreme one under a true null hypothesis drops below this value, the null hypothesis is rejected as “hard to put down to chance”. The significance level also fixes how much probability of rejecting a null hypothesis that is in fact true you are willing to accept. The smaller you set it, the stricter the condition for rejection becomes.",
+      "memory_hook_jp": "「有意」は「偶然では片づけられない意味が有る」。境目を下回った結果を「有意な差」と呼ぶ。",
+      "memory_hook_zh": "有意是指“有着无法用偶然打发掉的意义”。低于分界的结果被称为“显著差异”（有意な差）。",
+      "memory_hook_en": "有意 means “having a meaning that chance cannot explain away”. A result below the cutoff is called a “significant difference” (有意な差).",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "第1種の誤り",
+      "term_zh": "第一类错误",
+      "term_en": "Type I error",
+      "one_jp": "**第1種の誤り**は、帰無仮説が実際には正しいのに、それを**棄却**してしまう誤りである。",
+      "one_zh": "**第一类错误**（[[jp:第1種の誤り]]）是指原假设实际上正确，却把它**拒绝**了的错误。",
+      "one_en": "A **Type I error** ([[jp:第1種の誤り]]) is **rejecting** the null hypothesis when it is actually true.",
+      "detail_jp": "本当は差がないのに「差がある」と結論づけることにあたる。この誤りが起こる確率は、検定の前に決めた有意水準を超えないように抑えられている。例えば、新しい広告に効果がないのに、たまたま売上が伸びた標本を見て「効果あり」と判断する場合がこれにあたる。",
+      "detail_zh": "相当于本来没有差异，却得出“有差异”的结论。这种错误发生的概率被控制在检验前定好的显著性水平以内。例如，新广告其实没有效果，却因为看到销售额碰巧上升的样本而判断“有效果”，就属于这种情况。",
+      "detail_en": "It amounts to concluding “there is a difference” when in fact there is none. The probability of this error is kept from exceeding the significance level set before the test. Judging a new advertisement “effective” because a sample happened to show rising sales, when the ad actually did nothing, is one case of it.",
+      "analogy_jp": "健康な人が健康診断で「要精密検査」と判定されるようなもの。何も起きていないのに、異常ありと言ってしまう失敗である。",
+      "analogy_zh": "就像一个健康的人在体检中被判定为“需要进一步检查”。明明什么问题都没有，却被说成有异常，这就是这类失误。",
+      "analogy_en": "It is like a healthy person being told at a checkup that they need further tests. Nothing is wrong, yet an abnormality is reported.",
+      "hook_jp": "別名「あわてものの誤り」。慌てて「差がある」と言ってしまう、と結び付ける。",
+      "hook_zh": "别名“慌张者的错误”（[[jp:あわてものの誤り]]）。可以联想成慌慌张张地喊出“有差异”。",
+      "hook_en": "In Japanese it is nicknamed the “hasty person's error” ([[jp:あわてものの誤り]]). Picture someone rushing to announce “there is a difference”.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "第1種の誤りは、帰無仮説が実際には正しいのに、それを棄却してしまう誤りである。",
+      "definition_zh": "第一类错误（第1種の誤り）是指原假设实际上正确，却把它拒绝了的错误。",
+      "definition_en": "A Type I error (第1種の誤り) is rejecting the null hypothesis when it is actually true.",
+      "explanation_jp": "本当は差がないのに「差がある」と結論づけることにあたる。この誤りが起こる確率は、検定の前に決めた有意水準を超えないように抑えられている。例えば、新しい広告に効果がないのに、たまたま売上が伸びた標本を見て「効果あり」と判断する場合がこれにあたる。",
+      "explanation_zh": "相当于本来没有差异，却得出“有差异”的结论。这种错误发生的概率被控制在检验前定好的显著性水平以内。例如，新广告其实没有效果，却因为看到销售额碰巧上升的样本而判断“有效果”，就属于这种情况。",
+      "explanation_en": "It amounts to concluding “there is a difference” when in fact there is none. The probability of this error is kept from exceeding the significance level set before the test. Judging a new advertisement “effective” because a sample happened to show rising sales, when the ad actually did nothing, is one case of it.",
+      "memory_hook_jp": "別名「あわてものの誤り」。慌てて「差がある」と言ってしまう、と結び付ける。",
+      "memory_hook_zh": "别名“慌张者的错误”（あわてものの誤り）。可以联想成慌慌张张地喊出“有差异”。",
+      "memory_hook_en": "In Japanese it is nicknamed the “hasty person's error” (あわてものの誤り). Picture someone rushing to announce “there is a difference”.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "第2種の誤り",
+      "term_zh": "第二类错误",
+      "term_en": "Type II error",
+      "one_jp": "**第2種の誤り**は、帰無仮説が実際には誤っているのに、それを棄却せずに**見逃す**誤りである。",
+      "one_zh": "**第二类错误**（[[jp:第2種の誤り]]）是指原假设实际上错误，却没有拒绝、把它**放过**了的错误。",
+      "one_en": "A **Type II error** ([[jp:第2種の誤り]]) is **letting slip** a null hypothesis that is actually false, by failing to reject it.",
+      "detail_jp": "本当は差があるのに「差があるとは言えない」と結論づけることにあたる。例えば、新しい教材に効果があるのに、集めた標本が少なくて差がはっきりせず、効果を見逃す場合がこれにあたる。ほかの条件が同じなら、標本を大きくするほどこの誤りは起こりにくくなる。",
+      "detail_zh": "相当于本来存在差异，却得出“不能说有差异”的结论。例如，新教材其实有效果，但收集的样本太少，差异显现不出来，于是漏掉了这个效果，就属于这种情况。在其他条件相同时，样本越大，这种错误越不容易发生。",
+      "detail_en": "It amounts to concluding “we cannot say there is a difference” when a difference really exists. Suppose a new study material does help, but the sample was too small for the difference to show, so its effect goes unnoticed. With other conditions equal, a larger sample makes this error less likely.",
+      "analogy_jp": "病気が始まっている人が健康診断で「異常なし」とされるようなもの。起きている変化を見落としてしまう失敗である。",
+      "analogy_zh": "就像一个已经开始生病的人在体检中被判定为“没有异常”。这是把正在发生的变化看漏了的失误。",
+      "analogy_en": "It is like a person whose illness has already begun being told at a checkup that nothing is wrong. A change that is really happening gets overlooked.",
+      "hook_jp": "別名「ぼんやりものの誤り」。ぼんやりしていて、あるはずの差を見落とす、と結び付ける。",
+      "hook_zh": "别名“迷糊者的错误”（[[jp:ぼんやりものの誤り]]）。可以联想成迷迷糊糊地看漏了本该存在的差异。",
+      "hook_en": "In Japanese it is nicknamed the “absent-minded person's error” ([[jp:ぼんやりものの誤り]]). Picture someone daydreaming and missing a difference that is really there.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "第1種の誤りは正しい帰無仮説を棄却する誤り、第2種の誤りは誤った帰無仮説を棄却しない誤りで、棄却したかどうかで見分ける。",
+          "text_zh": "第一类错误（[[jp:第1種の誤り]]）是拒绝了正确的原假设（[[jp:帰無仮説]]），第二类错误（[[jp:第2種の誤り]]）是没有拒绝错误的原假设，区分的关键在于是否作出了拒绝（[[jp:棄却]]）。",
+          "text_en": "A Type I error ([[jp:第1種の誤り]]) rejects a true null hypothesis ([[jp:帰無仮説]]), while a Type II error ([[jp:第2種の誤り]]) fails to reject a false one, so whether a rejection ([[jp:棄却]]) was made tells them apart."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "判断＼実際",
+              "zh": "判断＼实际",
+              "en": "Decision \\ Reality"
+            },
+            {
+              "jp": "帰無仮説が正しい",
+              "zh": "原假设正确",
+              "en": "Null hypothesis true"
+            },
+            {
+              "jp": "帰無仮説が誤り",
+              "zh": "原假设错误",
+              "en": "Null hypothesis false"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "棄却しない",
+                  "zh": "不拒绝",
+                  "en": "Do not reject"
+                },
+                {
+                  "jp": "正しい判断",
+                  "zh": "正确的判断",
+                  "en": "Correct decision"
+                },
+                {
+                  "jp": "第2種の誤り",
+                  "zh": "第二类错误",
+                  "en": "Type II error"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "棄却する",
+                  "zh": "拒绝",
+                  "en": "Reject"
+                },
+                {
+                  "jp": "第1種の誤り",
+                  "zh": "第一类错误",
+                  "en": "Type I error"
+                },
+                {
+                  "jp": "正しい判断",
+                  "zh": "正确的判断",
+                  "en": "Correct decision"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "第2種の誤りは、帰無仮説が実際には誤っているのに、それを棄却せずに見逃す誤りである。",
+      "definition_zh": "第二类错误（第2種の誤り）是指原假设实际上错误，却没有拒绝、把它放过了的错误。",
+      "definition_en": "A Type II error (第2種の誤り) is letting slip a null hypothesis that is actually false, by failing to reject it.",
+      "explanation_jp": "本当は差があるのに「差があるとは言えない」と結論づけることにあたる。例えば、新しい教材に効果があるのに、集めた標本が少なくて差がはっきりせず、効果を見逃す場合がこれにあたる。ほかの条件が同じなら、標本を大きくするほどこの誤りは起こりにくくなる。",
+      "explanation_zh": "相当于本来存在差异，却得出“不能说有差异”的结论。例如，新教材其实有效果，但收集的样本太少，差异显现不出来，于是漏掉了这个效果，就属于这种情况。在其他条件相同时，样本越大，这种错误越不容易发生。",
+      "explanation_en": "It amounts to concluding “we cannot say there is a difference” when a difference really exists. Suppose a new study material does help, but the sample was too small for the difference to show, so its effect goes unnoticed. With other conditions equal, a larger sample makes this error less likely.",
+      "memory_hook_jp": "別名「ぼんやりものの誤り」。ぼんやりしていて、あるはずの差を見落とす、と結び付ける。",
+      "memory_hook_zh": "别名“迷糊者的错误”（ぼんやりものの誤り）。可以联想成迷迷糊糊地看漏了本该存在的差异。",
+      "memory_hook_en": "In Japanese it is nicknamed the “absent-minded person's error” (ぼんやりものの誤り). Picture someone daydreaming and missing a difference that is really there.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "第1種の誤り",
+      "b": "第2種の誤り",
+      "rows": [
+        {
+          "label_jp": "実際の帰無仮説",
+          "label_zh": "原假设的实际情况",
+          "label_en": "Null hypothesis in reality",
+          "a_jp": "正しい",
+          "a_zh": "正确",
+          "a_en": "True",
+          "b_jp": "誤っている",
+          "b_zh": "错误",
+          "b_en": "False",
+          "key": false
+        },
+        {
+          "label_jp": "下した判断",
+          "label_zh": "作出的判断",
+          "label_en": "Decision made",
+          "a_jp": "棄却する",
+          "a_zh": "拒绝",
+          "a_en": "Reject",
+          "b_jp": "棄却しない",
+          "b_zh": "不拒绝",
+          "b_en": "Do not reject",
+          "key": true
+        },
+        {
+          "label_jp": "標本の大きさが同じまま有意水準を小さくすると",
+          "label_zh": "样本大小不变而把显著性水平调小时",
+          "label_en": "Lowering the significance level with the same sample size",
+          "a_jp": "起こりにくくなる",
+          "a_zh": "变得不容易发生",
+          "a_en": "Becomes less likely",
+          "b_jp": "起こりやすくなる",
+          "b_zh": "变得容易发生",
+          "b_en": "Becomes more likely",
+          "key": false
+        },
+        {
+          "label_jp": "別名",
+          "label_zh": "别名",
+          "label_en": "Nickname",
+          "a_jp": "あわてものの誤り",
+          "a_zh": "慌张者的错误",
+          "a_en": "Hasty person's error",
+          "b_jp": "ぼんやりものの誤り",
+          "b_zh": "迷糊者的错误",
+          "b_en": "Absent-minded person's error",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**仮説検定**では、帰無仮説が正しいとしたら標本の結果がどれほど起こりにくいかを確率で表し、有意水準と比べて棄却するかを決める。",
+    "**有意水準**は検定の前に決める境目で、正しい帰無仮説を棄却してしまう確率をどこまで許すかを表す。",
+    "帰無仮説を棄却できなかったことは、帰無仮説が正しいことの証明にはならない。",
+    "標本の大きさが同じなら、有意水準を小さくして一方の誤りを減らすと、もう一方の誤りは増えやすい。"
+  ],
+  "key_points_zh": [
+    "**假设检验**是在假定原假设成立的前提下，用概率表示样本结果有多难出现，再与显著性水平比较，决定是否拒绝。",
+    "**显著性水平**是在检验前定好的分界，表示能容许多大的概率去拒绝正确的原假设。",
+    "没能拒绝原假设，并不能证明原假设是正确的。",
+    "样本大小不变时，调小显著性水平来减少一种错误，另一种错误就容易增加。"
+  ],
+  "key_points_en": [
+    "**Hypothesis testing** expresses how unlikely the sample result would be if the null hypothesis were true, then compares that probability with the significance level to decide on rejection.",
+    "The **significance level** is a cutoff set before the test, stating how much probability of rejecting a true null hypothesis is acceptable.",
+    "Failing to reject the null hypothesis does not prove that it is true.",
+    "With the same sample size, lowering the significance level to cut one kind of error tends to raise the other."
+  ],
+  "overview": {
+    "intro_jp": "仮説検定の手順を、帰無仮説を立てるところから棄却の判断まで順に説明できる。有意水準が何を表す確率で、いつ決めておくものかを説明できる。第1種の誤りと第2種の誤りを、帰無仮説の実際と判断の組合せで見分けられる。",
+    "intro_zh": "能按顺序说明假设检验的步骤，从提出原假设一直到判断是否拒绝。能说明显著性水平表示的是什么概率，以及应当在什么时候定下来。能根据原假设的实际情况与所作判断的组合，区分第一类错误和第二类错误。",
+    "intro_en": "Walk through the steps of hypothesis testing in order, from stating the null hypothesis to deciding whether to reject it. Explain what probability the significance level stands for and when it has to be set. Tell a Type I error from a Type II error by pairing the actual state of the null hypothesis with the decision made.",
+    "freq_badge": "頻出",
+    "est_minutes": 22
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "仮説検定: 仮説検定といえば標本から母集団の仮説を統計的に判断",
-      "有意水準: 有意水準といえば帰無仮説を棄却する判断基準の確率(5%や1%)",
-      "第1種の誤り: 第1種の誤りといえば正しい帰無仮説を誤って棄却(あわてもの)",
-      "第2種の誤り: 第2種の誤りといえば誤った帰無仮説を見逃す(ぼんやりもの)"
-    ],
     "key_points_jp": [
-      "仮説検定は、抽出した標本のデータから母集団についての仮説(帰無仮説)を統計的に判断する手法で、確率的に棄却できるかを見る。",
-      "有意水準は帰無仮説を棄却するかの基準となる確率(通常5%や1%)で、検定の前に決めておく。小さくするほど棄却に慎重になる。",
-      "第1種の誤りは正しい帰無仮説を誤って棄却する誤り(あわてもの)で、その確率は有意水準に一致する。",
-      "第2種の誤りは誤った帰無仮説を棄却せず見逃す誤り(ぼんやりもの)で、第1種とはトレードオフの関係にある。",
-      "4語(仮説検定→有意水準→第1種・第2種の誤り)は一本の検定理論として不可分で、誤りの2種類の区別と有意水準との対応が頻出。"
+      "仮説検定では、帰無仮説が正しいとしたら標本の結果がどれほど起こりにくいかを確率で表し、有意水準と比べて棄却するかを決める。",
+      "有意水準は検定の前に決める境目で、正しい帰無仮説を棄却してしまう確率をどこまで許すかを表す。",
+      "帰無仮説を棄却できなかったことは、帰無仮説が正しいことの証明にはならない。",
+      "標本の大きさが同じなら、有意水準を小さくして一方の誤りを減らすと、もう一方の誤りは増えやすい。"
     ],
     "key_points_zh": [
-      "假设检验是从抽取的样本数据统计地判断关于总体的假设（原假设）的方法，看的是能否在概率上加以拒绝。",
-      "显著性水平是判断是否拒绝原假设的基准概率（通常 5% 或 1%），在检验之前确定。取得越小，拒绝就越谨慎。",
-      "第一类错误是把正确的原假设错误地加以拒绝的错误（冒失者），其概率与显著性水平一致。",
-      "第二类错误是不予拒绝、漏掉错误的原假设的错误（马虎者），与第一类错误处于权衡关系。",
-      "四个词（假设检验→显著性水平→第一类错误·第二类错误）作为同一套检验理论密不可分，两类错误的区分及其与显著性水平的对应是高频考点。"
+      "假设检验是在假定原假设成立的前提下，用概率表示样本结果有多难出现，再与显著性水平比较，决定是否拒绝。",
+      "显著性水平是在检验前定好的分界，表示能容许多大的概率去拒绝正确的原假设。",
+      "没能拒绝原假设，并不能证明原假设是正确的。",
+      "样本大小不变时，调小显著性水平来减少一种错误，另一种错误就容易增加。"
     ],
     "key_points_en": [
-      "Hypothesis testing is a method that statistically judges a hypothesis about a population (the null hypothesis) from extracted sample data; it looks at whether the hypothesis can be rejected in probabilistic terms.",
-      "The significance level is the criterion probability for whether to reject the null hypothesis (usually 5% or 1%), decided before the test. The smaller it is set, the more cautious the rejection.",
-      "The Type I error is the error of mistakenly rejecting a correct null hypothesis (the hasty one), and its probability matches the significance level.",
-      "The Type II error is the error of failing to reject and thus missing a wrong null hypothesis (the careless one), and it is in a trade-off relationship with the Type I error.",
-      "The four terms (hypothesis testing → significance level → Type I and Type II errors) are inseparable as a single body of test theory; distinguishing the two types of error and their correspondence with the significance level is a frequent exam topic."
+      "Hypothesis testing expresses how unlikely the sample result would be if the null hypothesis were true, then compares that probability with the significance level to decide on rejection.",
+      "The significance level is a cutoff set before the test, stating how much probability of rejecting a true null hypothesis is acceptable.",
+      "Failing to reject the null hypothesis does not prove that it is true.",
+      "With the same sample size, lowering the significance level to cut one kind of error tends to raise the other."
+    ],
+    "memory_hooks_jp": [
+      "仮説検定: 「帰無」は「無に帰す」。退けられることを見込んで立てる仮説なので、この名で呼ばれる。",
+      "有意水準: 「有意」は「偶然では片づけられない意味が有る」。境目を下回った結果を「有意な差」と呼ぶ。",
+      "第1種の誤り: 別名「あわてものの誤り」。慌てて「差がある」と言ってしまう、と結び付ける。",
+      "第2種の誤り: 別名「ぼんやりものの誤り」。ぼんやりしていて、あるはずの差を見落とす、と結び付ける。"
     ],
     "memory_hooks_zh": [
-      "假设检验：说到假设检验，就是从样本统计地判断关于总体的假设",
-      "显著性水平：说到显著性水平，就是拒绝原假设的判断基准概率（5% 或 1%）",
-      "第一类错误：说到第一类错误，就是错误地拒绝正确的原假设（冒失者）",
-      "第二类错误：说到第二类错误，就是漏掉错误的原假设（马虎者）"
+      "假设检验：帰無就是“归于无”。它是预料会被否定才提出的假设，因此得了这个名字。",
+      "显著性水平：有意是指“有着无法用偶然打发掉的意义”。低于分界的结果被称为“显著差异”（有意な差）。",
+      "第一类错误：别名“慌张者的错误”（あわてものの誤り）。可以联想成慌慌张张地喊出“有差异”。",
+      "第二类错误：别名“迷糊者的错误”（ぼんやりものの誤り）。可以联想成迷迷糊糊地看漏了本该存在的差异。"
     ],
     "memory_hooks_en": [
-      "Hypothesis testing: Hypothesis testing → statistically judging a hypothesis about a population from a sample",
-      "Significance level: Significance level → the criterion probability for rejecting the null hypothesis (5% or 1%)",
-      "Type I error: Type I error → mistakenly rejecting a correct null hypothesis (the hasty one)",
-      "Type II error: Type II error → missing a wrong null hypothesis (the careless one)"
+      "Hypothesis testing: The Japanese 帰無 means “return to nothing”. The hypothesis is set up in the expectation that it will be rejected, hence the name.",
+      "Significance level: 有意 means “having a meaning that chance cannot explain away”. A result below the cutoff is called a “significant difference” (有意な差).",
+      "Type I error: In Japanese it is nicknamed the “hasty person's error” (あわてものの誤り). Picture someone rushing to announce “there is a difference”.",
+      "Type II error: In Japanese it is nicknamed the “absent-minded person's error” (ぼんやりものの誤り). Picture someone daydreaming and missing a difference that is really there."
     ]
   },
   "challenge_questions": [
-    "2009h21h-q095",
     "2010h22a-q009",
     "2010h22h-q002",
     "2011h23a-q014",
@@ -188,9 +540,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "假设检验的框架",
-  "title_en": "The Framework of Hypothesis Testing",
-  "unit_summary_zh": "学习根据样本对总体的假设作出判断的假设检验步骤，以及显著性水平和两类错误的思想。",
-  "unit_summary_en": "Learn the procedure of hypothesis testing, which judges a hypothesis about a population from a sample, along with the ideas of the significance level and the two types of error."
+  }
 }

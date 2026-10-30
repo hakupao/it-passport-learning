@@ -1,242 +1,1076 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-01-02-u06",
   "topic_id": "strategy-01-02",
   "category": "strategy",
   "title_jp": "クロス集計と相関の高度可視化",
+  "title_zh": "交叉汇总与相关性的高级可视化",
+  "title_en": "Cross-Tabulation and Advanced Visualization of Correlation",
   "unit_summary_jp": "2変数の対応を集計するクロス集計表系と、多変数の相関をまとめて見る行列・複合グラフなど発展的な可視化を学ぶ。",
+  "unit_summary_zh": "学习汇总两个变量对应关系的交叉汇总表系列，以及一次性查看多变量相关性的矩阵、复合图表等进阶可视化方法。",
+  "unit_summary_en": "Learn cross-tabulation tables that summarize the correspondence between two variables, plus advanced visualizations such as matrices and combination charts that show the correlation among many variables at once.",
   "order_in_topic": 6,
   "prerequisites": [
     "strategy-01-02-u04",
     "strategy-01-02-u05"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、2変数の対応を表にまとめるクロス集計表(別名:分割表)や、それを面積で表すモザイク図、さらに多変数の相関を一覧する相関係数行列・散布図行列、異種データを重ねる複合グラフ・2軸グラフといった発展的な可視化を学びます。データ利活用で頻出の、目的に応じた表・グラフの使い分けを身につけます。",
-    "freq_badge": "頻出",
-    "est_minutes": 21,
-    "intro_zh": "在本单元中，我们将学习把两个变量的对应关系汇总成表格的交叉汇总表（别名：列联表），以及用面积来表现它的马赛克图，进而学习一览多变量相关性的相关系数矩阵、散点图矩阵，还有把异类数据叠加在一起的复合图表、双轴图表等进阶可视化方法。掌握数据利用中频繁出现的、根据目的灵活选用表格与图表的能力。",
-    "intro_en": "In this unit, you will learn cross-tabulation tables (also called contingency tables) that organize the correspondence between two variables into a table, mosaic plots that express them by area, correlation coefficient matrices and scatter plot matrices that survey the correlation among many variables, and advanced visualizations such as combination charts and dual-axis charts that overlay heterogeneous data. You will acquire the ability—frequently needed in data utilization—to choose the right table or chart according to your purpose."
-  },
-  "terms": [
+  "goals_jp": [
+    "2 つの項目の組合せごとの件数を **クロス集計表** から読み取り、割合に直して比べられる",
+    "多数の変数どうしの関係を、**相関係数行列** と **散布図行列** の違いを踏まえて読み分けられる",
+    "種類や単位の違うデータを重ねた **複合グラフ** と **2軸グラフ** を、系列と軸の対応に注意して読める"
+  ],
+  "goals_zh": [
+    "能从 **交叉汇总表** 中读出两个项目各组合的件数，并换算成比例加以比较",
+    "理解 **相关系数矩阵** 与 **散点图矩阵** 的区别，分别读懂多个变量之间的关系",
+    "读懂叠加了种类或单位不同的数据的 **复合图表** 和 **双轴图表**，并留意每个系列对应哪条轴"
+  ],
+  "goals_en": [
+    "Read the count for each combination of two items from a **cross-tabulation table**, and convert the counts to proportions to compare them",
+    "Read the relationships among many variables, telling a **correlation coefficient matrix** apart from a **scatter plot matrix**",
+    "Read **combination charts** and **dual-axis charts**, which overlay data of different kinds or units, while checking which axis each series belongs to"
+  ],
+  "overview_cols_jp": [
+    "見るもの",
+    "表し方"
+  ],
+  "overview_cols_zh": [
+    "看什么",
+    "表现方式"
+  ],
+  "overview_cols_en": [
+    "What it shows",
+    "How it is shown"
+  ],
+  "overview_rows": [
     {
       "term": "クロス集計表",
-      "definition_jp": "2つの項目を行と列に取り、該当件数を集計して交点に示す表。",
-      "explanation_jp": "クロス集計表は、アンケートやデータの2つの項目(例:性別と購入有無)を一方を行、もう一方を列に配置し、両方の条件に当てはまる件数を交点のマス目に集計した表です。縦横の合計欄を付けることが多く、項目どうしの関係(傾向)を読み取れます。\n\n単純な度数分布表が1項目の集計であるのに対し、クロス集計表は2項目を掛け合わせて見る点が特徴です。試験では「2変数を行×列で集計する」基本表として問われ、属性ごとの差を把握する代表的手法と理解しておきましょう。",
-      "analogy_jp": "クラスの名簿を「男女」×「部活の有無」でマス目に振り分け、各マスの人数を数える出欠表のようなもの。縦と横の条件が交わるところに人数を書き込みます。",
-      "memory_hook_jp": "クロス集計表といえば2項目を行×列で集計する表",
-      "inline_quiz": [
-        "2009h21h-q095"
+      "one_line_jp": "2 つの項目の組合せごとの件数を、行と列の交わるマスに数えた表",
+      "one_line_zh": "把两个项目各组合的件数，计入行与列交叉格子里的表",
+      "one_line_en": "A table that counts each combination of two items in the cell where a row meets a column",
+      "extra_jp": [
+        "2 項目の組合せごとの件数",
+        "数値を並べた表"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "交叉汇总表",
-      "term_en": "Cross-tabulation table",
-      "definition_zh": "把两个项目分别放在行和列上，统计符合条件的件数并在交点处显示的表格。",
-      "definition_en": "A table that places two items along rows and columns and shows the count of matching cases at each intersection.",
-      "explanation_zh": "交叉汇总表是把问卷或数据中的两个项目（例如：性别与是否购买）一个放在行、另一个放在列，并在交点的格子里统计同时满足两个条件的件数的表格。通常会附上纵向和横向的合计栏，从而可以读出项目之间的关系（倾向）。\n\n相对于单纯的频数分布表只对一个项目进行统计，交叉汇总表的特点在于把两个项目交叉起来一起看。考试中它会作为「把两个变量按行×列进行统计」的基础表格出现，请把它理解为掌握各属性之间差异的代表性方法。",
-      "explanation_en": "A cross-tabulation table places two items from a survey or dataset (for example, gender and whether a purchase was made) one along the rows and the other along the columns, and counts in each intersecting cell the number of cases that satisfy both conditions. Row and column total columns are often added, so you can read off the relationship (tendency) between the items.\n\nWhereas a simple frequency distribution table tabulates a single item, the distinctive feature of a cross-tabulation table is that it views two items multiplied together. On the exam it is asked about as the basic table that 'tabulates two variables by row × column,' so understand it as a representative method for grasping differences across attributes.",
-      "analogy_zh": "就像把班级名册按「男女」×「有无社团」分配到格子里，再数每个格子人数的点名表。在纵向和横向条件交汇的地方写上人数。",
-      "analogy_en": "Like an attendance sheet where you sort a class roster into cells by 'male/female' × 'in a club or not' and count the number of people in each cell. You write the headcount where the vertical and horizontal conditions intersect.",
-      "memory_hook_zh": "说到交叉汇总表，就是把两个项目按行×列统计的表",
-      "memory_hook_en": "Cross-tabulation table → a table that tabulates two items by row × column"
+      "extra_zh": [
+        "两个项目各组合的件数",
+        "排列数值的表"
+      ],
+      "extra_en": [
+        "Counts for each combination of two items",
+        "A table of numbers"
+      ]
     },
     {
       "term": "分割表",
-      "definition_jp": "クロス集計表の統計用語での呼び名。同一概念を指す別名。",
-      "explanation_jp": "分割表は、統計学の分野でクロス集計表を指すときの呼び名で、内容はまったく同じものです。行と列に2つの項目を取り、交点に件数(度数)を並べた表を指します。\n\n呼び方が二通りあるのは、実務やアンケート集計では「クロス集計表」、統計の検定などでは「分割表」と使い分けられてきたためです。試験では、両者が同一概念の別名であることを知っているかが問われます。言葉が違っても同じ表だと結びつけられれば十分です。",
-      "analogy_jp": "同じ料理でも店によって呼び名が違うようなもの。「クロス集計表」と「分割表」は、現場と統計の場で名前が違うだけで、出てくる中身は同じ表です。",
-      "memory_hook_jp": "分割表といえばクロス集計表の別名(同じ表)",
-      "inline_quiz": [
-        "2011h23tokubetsu-q018"
+      "one_line_jp": "クロス集計表を統計学で呼ぶときの名前",
+      "one_line_zh": "交叉汇总表在统计学中的名称",
+      "one_line_en": "The statistics name for a cross-tabulation table",
+      "extra_jp": [
+        "クロス集計表と同じ",
+        "数値を並べた表"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "列联表",
-      "term_en": "Contingency table",
-      "definition_zh": "交叉汇总表在统计学中的称呼。指代同一概念的别名。",
-      "definition_en": "The name used for a cross-tabulation table in statistics. An alternative name for the same concept.",
-      "explanation_zh": "列联表是统计学领域指代交叉汇总表时的称呼，内容完全相同。它指的是把两个项目放在行和列上、在交点处排列件数（频数）的表格。\n\n之所以有两种叫法，是因为在实务和问卷统计中常用「交叉汇总表」，而在统计检验等场合则用「列联表」，两者各有使用习惯。考试中会考查你是否知道二者是同一概念的别名。只要能把不同的名称与同一张表联系起来就足够了。",
-      "explanation_en": "A contingency table is the name used in the field of statistics to refer to a cross-tabulation table, and the content is exactly the same. It refers to a table that places two items along rows and columns and arranges the counts (frequencies) at the intersections.\n\nThere are two names because 'cross-tabulation table' has been used in practical work and survey tabulation, while 'contingency table' has been used in statistical testing and the like. The exam asks whether you know that the two are alternative names for the same concept. It is enough if you can connect the different names to the same table.",
-      "analogy_zh": "就像同一道菜在不同的店里叫法不同。「交叉汇总表」和「列联表」只是在实务现场和统计场合名称不同，端上来的内容是同一张表。",
-      "analogy_en": "Like the same dish having different names at different restaurants. 'Cross-tabulation table' and 'contingency table' just have different names in practical settings versus statistical settings; what comes out is the same table.",
-      "memory_hook_zh": "说到列联表，就是交叉汇总表的别名（同一张表）",
-      "memory_hook_en": "Contingency table → another name for a cross-tabulation table (the same table)"
+      "extra_zh": [
+        "与交叉汇总表相同",
+        "排列数值的表"
+      ],
+      "extra_en": [
+        "Same as a cross-tabulation table",
+        "A table of numbers"
+      ]
     },
     {
       "term": "モザイク図",
-      "definition_jp": "クロス集計の各区分を面積の大きさで表す、面積比のグラフ。",
-      "explanation_jp": "モザイク図は、クロス集計表の各マスの件数を、長方形のタイルの面積の大きさに置き換えて並べたグラフです。割合が大きい区分ほどタイルが大きく描かれ、表の数値を見るより、項目間の構成比や偏りを視覚的につかみやすくなります。\n\nクロス集計表が数値の表、モザイク図はそれを面積で見せる派生グラフ、という関係です。試験では、クロス集計を面積で可視化したものという位置づけを押さえましょう。タイルの大小で割合の差が一目で分かる点が利点です。",
-      "analogy_jp": "土地を用途ごとに区画した地図のようなもの。広い区画ほど割合が大きいことを表し、面積の大小を見るだけで構成比のバランスが直感的に分かります。",
-      "memory_hook_jp": "モザイク図といえばクロス集計を面積で見せる図",
-      "inline_quiz": [
-        "2009h21h-q094"
+      "one_line_jp": "クロス集計表の件数を長方形の面積で表す図",
+      "one_line_zh": "用长方形面积表示交叉汇总表件数的图",
+      "one_line_en": "A chart that shows the counts of a cross-tabulation table as rectangle areas",
+      "extra_jp": [
+        "区分の大きさと内訳の割合",
+        "タイルの面積"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"クロス集計表(=分割表)\"] --> B[\"各マスの件数\"]; B --> C[\"件数を面積に変換\"]; C --> D[\"モザイク図(面積比で可視化)\"]",
-        "svg_path": "figures/strategy-01-02-u06-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "马赛克图",
-      "term_en": "Mosaic plot",
-      "definition_zh": "用面积大小来表现交叉汇总各分区的、表示面积比的图。",
-      "definition_en": "An area-ratio chart that represents each segment of a cross-tabulation by the size of its area.",
-      "explanation_zh": "马赛克图是把交叉汇总表中各格子的件数，换算成长方形瓷砖的面积大小并排列起来的图。占比越大的分区，瓷砖画得越大，比起看表格里的数值，更容易直观地把握项目之间的构成比和偏差。\n\n二者的关系是：交叉汇总表是数值的表，马赛克图是把它用面积来呈现的派生图。考试中请把握它作为「把交叉汇总用面积可视化」的定位。通过瓷砖的大小一眼就能看出占比差异，是它的优点。",
-      "explanation_en": "A mosaic plot is a chart in which the count in each cell of a cross-tabulation table is converted into the area of a rectangular tile and laid out. The larger a segment's proportion, the larger its tile is drawn, making it easier to grasp the composition ratios and biases among items visually than by reading the numbers in the table.\n\nThe relationship is that the cross-tabulation table is a table of numbers, and the mosaic plot is a derived chart that shows it by area. On the exam, grasp its positioning as 'a visualization of cross-tabulation by area.' Its advantage is that differences in proportion can be seen at a glance from the size of the tiles.",
-      "analogy_zh": "就像按用途把土地划分成区块的地图。区块越大表示占比越大，只要看面积的大小，就能直观地了解构成比的平衡。",
-      "analogy_en": "Like a map that partitions land into zones by use. A larger zone means a larger proportion; just by looking at the size of the areas, you can intuitively understand the balance of the composition ratios.",
-      "memory_hook_zh": "说到马赛克图，就是把交叉汇总用面积来呈现的图",
-      "memory_hook_en": "Mosaic plot → a chart that shows cross-tabulation by area"
+      "extra_zh": [
+        "各类别的大小与内部比例",
+        "色块的面积"
+      ],
+      "extra_en": [
+        "Size of each group and its breakdown",
+        "Areas of tiles"
+      ]
     },
     {
       "term": "相関係数行列",
-      "definition_jp": "複数変数の全組み合わせの相関係数を一覧にまとめた表。",
-      "explanation_jp": "相関係数行列は、3つ以上の変数があるとき、すべての2変数の組み合わせについて相関係数を計算し、行と列に変数を並べて交点に値を示した正方形の表です。対角線上は自分自身との相関なので必ず1になります。\n\n2変数だけの相関を、多変数へまとめて拡張した一覧表だと考えると分かりやすいです。試験では、多くの変数の関係を一度に見渡せる表であること、相関係数が-1〜+1の範囲を取り、絶対値が大きいほど強い相関を示すという前提を押さえましょう。",
-      "analogy_jp": "総当たり戦の対戦表のようなもの。すべての選手(変数)どうしの相性(相関の強さ)を、表の交点に点数として一覧で書き込んだイメージです。",
-      "memory_hook_jp": "相関係数行列といえば全変数ペアの相関を一覧する表",
-      "inline_quiz": [
-        "2015h27a-q088"
+      "one_line_jp": "変数の組合せごとの相関係数を正方形に並べた表",
+      "one_line_zh": "把各变量组合的相关系数排成正方形的表",
+      "one_line_en": "A square table of the correlation coefficient for each pair of variables",
+      "extra_jp": [
+        "多くの変数の関係の強さと向き",
+        "数値を並べた表"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "相关系数矩阵",
-      "term_en": "Correlation coefficient matrix",
-      "definition_zh": "把多个变量所有组合的相关系数汇总成一览的表。",
-      "definition_en": "A table that compiles the correlation coefficients of all combinations of multiple variables into a single overview.",
-      "explanation_zh": "相关系数矩阵是在有三个以上变量时，对所有两两变量的组合计算相关系数，把变量排列在行和列上、在交点处显示数值的正方形表格。对角线上是变量与自身的相关，所以必定为1。\n\n把它理解为「将仅两个变量的相关，一并扩展到多变量的一览表」就容易明白了。考试中请把握：它是能一次纵览众多变量关系的表，以及相关系数取值范围为-1～+1、绝对值越大表示相关越强这一前提。",
-      "explanation_en": "A correlation coefficient matrix is, when there are three or more variables, a square table that computes the correlation coefficient for every combination of two variables and arranges the variables along the rows and columns, showing the values at the intersections. The diagonal is the correlation of a variable with itself, so it is always 1.\n\nIt is easy to understand if you think of it as 'an overview table that extends the correlation of just two variables to many variables at once.' On the exam, grasp that it is a table that lets you survey the relationships among many variables at once, and the premise that a correlation coefficient ranges from -1 to +1, with a larger absolute value indicating a stronger correlation.",
-      "analogy_zh": "就像循环赛的对阵表。把所有选手（变量）之间的契合度（相关的强弱）作为分数，一览地写在表格的交点上。",
-      "analogy_en": "Like the match table of a round-robin tournament. The compatibility (strength of correlation) between all players (variables) is written as a score at each intersection of the table in an at-a-glance overview.",
-      "memory_hook_zh": "说到相关系数矩阵，就是一览所有变量对相关性的表",
-      "memory_hook_en": "Correlation coefficient matrix → a table listing the correlations of every pair of variables"
+      "extra_zh": [
+        "多个变量间关系的强弱与方向",
+        "排列数值的表"
+      ],
+      "extra_en": [
+        "Strength and direction of relationships among many variables",
+        "A table of numbers"
+      ]
     },
     {
       "term": "散布図行列",
-      "definition_jp": "複数変数の散布図を格子状に並べ、相関を一望できる図。",
-      "explanation_jp": "散布図行列は、複数の変数の中からすべての2変数の組み合わせについて散布図を描き、相関係数行列と同じように行と列に変数を並べて格子状に配置した図です。各マスの点の散らばり方から、どの変数どうしに相関がありそうかを目で確かめられます。\n\n相関係数行列が数値で示すのに対し、散布図行列はその関係をグラフで見せる対の手法です。試験では、多変数の相関を一望できる発展的な可視化として、相関係数行列とセットで押さえておくとよいでしょう。",
-      "analogy_jp": "総当たり戦の対戦結果を、点数ではなく一戦ごとの試合写真で並べたようなもの。各マスの様子を眺めて、どの組み合わせに強い関係があるかを見て取ります。",
-      "memory_hook_jp": "散布図行列といえば多変数の散布図を格子に並べた図",
-      "inline_quiz": [
-        "2013h25h-q095"
+      "one_line_jp": "変数の組合せごとの散布図を格子状に並べた図",
+      "one_line_zh": "把各变量组合的散点图排成网格的图",
+      "one_line_en": "A grid of scatter plots, one for each pair of variables",
+      "extra_jp": [
+        "多くの変数の関係の形",
+        "格子に並ぶ小さな散布図"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "散点图矩阵",
-      "term_en": "Scatter plot matrix",
-      "definition_zh": "把多个变量的散点图排成格子状、可一望相关性的图。",
-      "definition_en": "A figure that arranges the scatter plots of multiple variables in a grid, letting you survey correlations at a glance.",
-      "explanation_zh": "散点图矩阵是从多个变量中对所有两两变量的组合绘制散点图，并像相关系数矩阵那样把变量排列在行和列上、配置成格子状的图。从各格子里点的散布方式，可以用眼睛确认哪些变量之间可能存在相关。\n\n相对于相关系数矩阵用数值来表示，散点图矩阵则是用图来呈现这种关系，是成对的方法。考试中可以把它作为一望多变量相关性的进阶可视化，与相关系数矩阵成套地把握。",
-      "explanation_en": "A scatter plot matrix is a figure that draws a scatter plot for every combination of two variables among multiple variables and, like a correlation coefficient matrix, arranges the variables along the rows and columns in a grid layout. From how the points scatter in each cell, you can visually confirm which variables are likely to be correlated.\n\nWhereas a correlation coefficient matrix shows this with numbers, a scatter plot matrix is the paired method that shows the relationship with graphs. On the exam, it is good to grasp it together with the correlation coefficient matrix as an advanced visualization for surveying the correlation among many variables at a glance.",
-      "analogy_zh": "就像把循环赛的对战结果，不用分数、而用每一场比赛的现场照片排列起来。通过观察各格子的样子，看出哪些组合之间存在强关系。",
-      "analogy_en": "Like laying out the results of a round-robin tournament not as scores but as a match photo of each game. By looking at the appearance of each cell, you discern which combinations have a strong relationship.",
-      "memory_hook_zh": "说到散点图矩阵，就是把多变量散点图排成格子的图",
-      "memory_hook_en": "Scatter plot matrix → a figure that arranges scatter plots of many variables in a grid"
+      "extra_zh": [
+        "多个变量间关系的形状",
+        "排列在网格中的小散点图"
+      ],
+      "extra_en": [
+        "Shape of relationships among many variables",
+        "Small scatter plots in a grid"
+      ]
     },
     {
       "term": "複合グラフ",
-      "definition_jp": "棒グラフと折れ線グラフなど異なる種類を1つに重ねたグラフ。",
-      "explanation_jp": "複合グラフは、棒グラフと折れ線グラフのように種類の異なるグラフを1つの図に重ね合わせて表すグラフです。例えば月ごとの売上を棒で、来店者数の推移を折れ線で同時に示すと、量と推移の両方を1枚で読み取れます。\n\n1種類のグラフでは伝えにくい複数の側面を、同じ図の中で対比できるのが利点です。試験では、異種のグラフを組み合わせる手法であること、性質の異なるデータを一緒に見せたいときに使う点が問われます。次の2軸グラフは、この複合グラフの代表的な一形態です。",
-      "analogy_jp": "天気予報の図のようなもの。気温は折れ線、降水確率は棒、というように違う種類のデータを1枚に重ねて、全体の様子をまとめて見せます。",
-      "memory_hook_jp": "複合グラフといえば棒と折れ線など異種を重ねたグラフ",
-      "inline_quiz": [
-        "2010h22h-q002"
+      "one_line_jp": "種類の異なるグラフを 1 つの図に重ねたグラフ",
+      "one_line_zh": "把不同种类的图表叠加在一张图里的图表",
+      "one_line_en": "A chart that overlays different kinds of charts in one figure",
+      "extra_jp": [
+        "量と変化など異なる側面",
+        "棒と折れ線などの重ね合わせ"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"複合グラフ(異種を重ねる)\"] --> B[\"棒グラフ(量を表す)\"]; A --> C[\"折れ線グラフ(推移を表す)\"]; A --> D[\"2軸グラフ(左右で目盛が異なる一形態)\"]",
-        "svg_path": "figures/strategy-01-02-u06-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "复合图表",
-      "term_en": "Combination chart",
-      "definition_zh": "把柱状图和折线图等不同种类叠加在一张图里的图表。",
-      "definition_en": "A chart that overlays different types, such as a bar chart and a line chart, into a single figure.",
-      "explanation_zh": "复合图表是把柱状图和折线图这样不同种类的图表叠加在一张图里来表现的图表。例如把每月的销售额用柱状表示、把来店人数的变化用折线表示，就能在一张图里同时读出数量和变化趋势。\n\n它的优点是能在同一张图中对比单一种类图表难以传达的多个侧面。考试中会考查：它是把异类图表组合起来的方法，以及在想把性质不同的数据放在一起呈现时使用这一点。接下来的双轴图表，正是这种复合图表的一种典型形态。",
-      "explanation_en": "A combination chart is a chart that overlays different types of charts, such as a bar chart and a line chart, into a single figure. For example, if you show monthly sales as bars and the trend in the number of visitors as a line at the same time, you can read both the amounts and the trend in a single sheet.\n\nIts advantage is that it can contrast, within the same figure, multiple aspects that are hard to convey with a single type of chart. The exam asks that it is a method of combining heterogeneous charts and that it is used when you want to show data of different natures together. The dual-axis chart described next is a representative form of this combination chart.",
-      "analogy_zh": "就像天气预报的图。气温用折线、降水概率用柱状，把不同种类的数据叠加在一张图里，整体情况一并呈现。",
-      "analogy_en": "Like a weather forecast figure. Temperature as a line and chance of rain as bars—different kinds of data are overlaid on one sheet to show the overall picture together.",
-      "memory_hook_zh": "说到复合图表，就是把柱状和折线等异类叠加的图表",
-      "memory_hook_en": "Combination chart → a chart overlaying heterogeneous types such as bars and lines"
+      "extra_zh": [
+        "数量与变化等不同侧面",
+        "柱形与折线等的叠加"
+      ],
+      "extra_en": [
+        "Different aspects, such as amounts and changes",
+        "Bars and lines laid over each other"
+      ]
     },
     {
       "term": "2軸グラフ",
-      "definition_jp": "左右に目盛の異なる2本の縦軸を持つ複合グラフの一種。",
-      "explanation_jp": "2軸グラフは、複合グラフの中でも、左右に単位や目盛の異なる2本の縦軸を設けたグラフです。例えば左軸を売上高(円)、右軸を販売数量(個)とすることで、数値の桁が大きく違うデータでも見やすく重ねられます。\n\n単位や規模が違うと片方の変化が見えなくなりますが、軸を2本にすればそれぞれに合った目盛で両方の動きを比較できます。試験では、左右で目盛が異なる軸を使うこと、複合グラフの一形態である点が問われます。どちらの軸がどのデータかを取り違えない読み取りも大切です。",
-      "analogy_jp": "体重と体脂肪率を1つのグラフで見たいときに、左の目盛をキログラム、右の目盛をパーセントに分けるようなもの。単位の違う2つを別々の物差しで同時に追えます。",
-      "memory_hook_jp": "2軸グラフといえば左右で目盛が異なる複合グラフ",
-      "inline_quiz": [
-        "2013h25h-q094"
+      "one_line_jp": "左右に目盛の異なる縦軸を持ち、各系列をどちらかの軸で読むグラフ",
+      "one_line_zh": "左右各有一条刻度不同的纵轴，每个系列按其中一条轴读取的图表",
+      "one_line_en": "A chart with differently scaled vertical axes on the left and right, where each series is read on one of them",
+      "extra_jp": [
+        "単位や桁の違う系列の動き",
+        "左右 2 本の縦軸"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "双轴图表",
-      "term_en": "Dual-axis chart",
-      "definition_zh": "左右各有一根刻度不同的纵轴的复合图表的一种。",
-      "definition_en": "A type of combination chart that has two vertical axes with different scales on the left and right.",
-      "explanation_zh": "双轴图表是在复合图表中，在左右设置两根单位或刻度不同的纵轴的图表。例如把左轴设为销售额（日元）、右轴设为销售数量（个），就能把数值位数相差很大的数据也清晰地叠加在一起。\n\n如果单位或规模不同，其中一方的变化就会看不出来，但只要把轴设为两根，就能各用合适的刻度来比较双方的动向。考试中会考查：它使用左右刻度不同的轴，以及它是复合图表的一种形态这一点。不弄错哪根轴对应哪份数据的读图，也很重要。",
-      "explanation_en": "A dual-axis chart is, among combination charts, a chart that provides two vertical axes with different units or scales on the left and right. For example, by setting the left axis to sales amount (yen) and the right axis to quantity sold (units), even data whose digit magnitudes differ greatly can be overlaid in an easy-to-read way.\n\nWhen units or scales differ, the change in one side becomes invisible, but if you make the axes two, you can compare the movements of both with a scale suited to each. The exam asks that it uses axes with different scales on the left and right, and that it is a form of combination chart. It is also important to read the chart without mistaking which axis corresponds to which data.",
-      "analogy_zh": "就像想在一张图里同时看体重和体脂率时，把左侧刻度设为千克、右侧刻度设为百分比。用不同的尺子同时追踪单位不同的两者。",
-      "analogy_en": "Like wanting to view weight and body fat percentage in one chart by splitting the left scale into kilograms and the right scale into percent. You can track two things with different units simultaneously, each on its own ruler.",
-      "memory_hook_zh": "说到双轴图表，就是左右刻度不同的复合图表",
-      "memory_hook_en": "Dual-axis chart → a combination chart with different scales on the left and right"
+      "extra_zh": [
+        "单位或数量级不同的系列的变化",
+        "左右两条纵轴"
+      ],
+      "extra_en": [
+        "Movement of series that differ in unit or magnitude",
+        "Two vertical axes, left and right"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "クロス集計表",
+      "term_zh": "交叉汇总表",
+      "term_en": "Cross-tabulation table",
+      "one_jp": "**クロス集計表** は、2 つの項目を行と列に分けて並べ、両方の条件に当てはまるデータの **件数** を交わるマスに数えた表である。",
+      "one_zh": "**交叉汇总表**（[[jp:クロス集計表]]）把两个项目分别排在行和列上，在两者交叉的格子里计入同时满足两个条件的数据 **件数**。",
+      "one_en": "A **cross-tabulation table** ([[jp:クロス集計表]]) places one item along the rows and another along the columns, and counts in each cell the **number of records** that meet both conditions.",
+      "detail_jp": "例えば区分 (学生か社会人か) を行に、朝食をとるかどうかを列にとり、組合せごとの人数を数える。端に行と列の **合計** 欄を付けると、全体の人数と内訳を同時に確かめられる。各マスをその行の合計で割って **割合** に直すと、人数の違うグループどうしでも傾向を比べられる。",
+      "detail_zh": "例如把类别（学生还是上班族）放在行上，把是否吃早餐放在列上，统计每种组合的人数。在表的边上加上行和列的 **合计** 栏，就能同时确认总人数和内部构成。把每个格子除以所在行的合计换算成 **比例**，即使各组人数不同，也能比较彼此的倾向。",
+      "detail_en": "For example, put the group (student or working adult) on the rows and whether people eat breakfast on the columns, then count the people in each combination. Adding **total** cells at the end of the rows and columns lets you check the overall count and the breakdown at once. Dividing each cell by its row total turns it into a **proportion**, so groups of different sizes can still be compared.",
+      "analogy_jp": "学校の時間割表で曜日と時限が交わるマスに授業が 1 つ決まるように、行の条件と列の条件が交わるマスに件数が 1 つ入る。",
+      "analogy_zh": "就像学校课程表里星期与节次交叉的格子中排定一门课一样，行条件与列条件交叉的格子中填入一个件数。",
+      "analogy_en": "Just as a school timetable fixes one class in the cell where a weekday meets a period, each cell here holds one count where a row condition meets a column condition.",
+      "hook_jp": "クロス = 十字に交わること。",
+      "hook_zh": "交叉（cross）= 像十字一样相交。",
+      "hook_en": "Cross = two lines meeting like a plus sign.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**クロス集計表** を読むときは、同じ行の中で比べるのか、同じ列の中で比べるのかを先に決める。最も多いマスの位置は、行ごとに違うことがある。",
+          "text_zh": "读 **交叉汇总表**（[[jp:クロス集計表]]）时，先决定是在同一行内比较，还是在同一列内比较。数值最大的格子所在的位置，可能每一行都不一样。",
+          "text_en": "When reading a **cross-tabulation table** ([[jp:クロス集計表]]), first decide whether you compare within a row or within a column. The cell with the largest count can sit in a different place in each row.",
+          "qids": [
+            "2009h21h-q094"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "各マスの件数を表全体の合計で割ると、全体に占める **構成比** になる。行の合計で割る割合とは、割る数が違う。",
+          "text_zh": "把各格子的件数除以全表合计，得到的是占整体的 **构成比**（[[jp:構成比]]）。它与除以行合计得到的比例，分母不同。",
+          "text_en": "Dividing each cell by the grand total of the table gives its **share of the whole** ([[jp:構成比]]). This differs from a proportion based on the row total because the divisor is different.",
+          "qids": [
+            "2009h21h-q095"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "区分",
+              "zh": "类别",
+              "en": "Group"
+            },
+            {
+              "jp": "朝食をとる",
+              "zh": "吃早餐",
+              "en": "Eats breakfast"
+            },
+            {
+              "jp": "朝食をとらない",
+              "zh": "不吃早餐",
+              "en": "Skips breakfast"
+            },
+            {
+              "jp": "合計",
+              "zh": "合计",
+              "en": "Total"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "学生",
+                  "zh": "学生",
+                  "en": "Students"
+                },
+                {
+                  "jp": "18",
+                  "zh": "18",
+                  "en": "18"
+                },
+                {
+                  "jp": "12",
+                  "zh": "12",
+                  "en": "12"
+                },
+                {
+                  "jp": "30",
+                  "zh": "30",
+                  "en": "30"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "社会人",
+                  "zh": "上班族",
+                  "en": "Working adults"
+                },
+                {
+                  "jp": "25",
+                  "zh": "25",
+                  "en": "25"
+                },
+                {
+                  "jp": "15",
+                  "zh": "15",
+                  "en": "15"
+                },
+                {
+                  "jp": "40",
+                  "zh": "40",
+                  "en": "40"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "合計",
+                  "zh": "合计",
+                  "en": "Total"
+                },
+                {
+                  "jp": "43",
+                  "zh": "43",
+                  "en": "43"
+                },
+                {
+                  "jp": "27",
+                  "zh": "27",
+                  "en": "27"
+                },
+                {
+                  "jp": "70",
+                  "zh": "70",
+                  "en": "70"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "クロス集計表 は、2 つの項目を行と列に分けて並べ、両方の条件に当てはまるデータの 件数 を交わるマスに数えた表である。",
+      "definition_zh": "交叉汇总表（クロス集計表）把两个项目分别排在行和列上，在两者交叉的格子里计入同时满足两个条件的数据 件数。",
+      "definition_en": "A cross-tabulation table (クロス集計表) places one item along the rows and another along the columns, and counts in each cell the number of records that meet both conditions.",
+      "explanation_jp": "例えば区分 (学生か社会人か) を行に、朝食をとるかどうかを列にとり、組合せごとの人数を数える。端に行と列の 合計 欄を付けると、全体の人数と内訳を同時に確かめられる。各マスをその行の合計で割って 割合 に直すと、人数の違うグループどうしでも傾向を比べられる。",
+      "explanation_zh": "例如把类别（学生还是上班族）放在行上，把是否吃早餐放在列上，统计每种组合的人数。在表的边上加上行和列的 合计 栏，就能同时确认总人数和内部构成。把每个格子除以所在行的合计换算成 比例，即使各组人数不同，也能比较彼此的倾向。",
+      "explanation_en": "For example, put the group (student or working adult) on the rows and whether people eat breakfast on the columns, then count the people in each combination. Adding total cells at the end of the rows and columns lets you check the overall count and the breakdown at once. Dividing each cell by its row total turns it into a proportion, so groups of different sizes can still be compared.",
+      "memory_hook_jp": "クロス = 十字に交わること。",
+      "memory_hook_zh": "交叉（cross）= 像十字一样相交。",
+      "memory_hook_en": "Cross = two lines meeting like a plus sign.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "分割表",
+      "term_zh": "列联表",
+      "term_en": "Contingency table",
+      "one_jp": "**分割表** は、**クロス集計表** を統計学で呼ぶときの名前で、指している表は同じである。",
+      "one_zh": "**列联表**（[[jp:分割表]]）是 **交叉汇总表** 在统计学中的叫法，指的是同一种表。",
+      "one_en": "A **contingency table** ([[jp:分割表]]) is the statistics name for a **cross-tabulation table**; both names refer to the same table.",
+      "detail_jp": "データ全体を 2 つの項目の区分で切り分け、区分の組合せごとに度数 (件数) を並べた表を指す。例えば 2 つの項目に関連があるかを統計的に調べる場面で、この呼び名が使われる。",
+      "detail_zh": "它指按两个项目的类别切分全部数据，再按类别组合列出频数（件数）的表。例如在用统计方法检验两个项目之间是否有关联时，就会使用这个名称。",
+      "detail_en": "It refers to a table that splits all the data by the categories of two items and lists the frequency (count) for each combination. This name is used, for example, when testing statistically whether two items are related.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "分割表 は、クロス集計表 を統計学で呼ぶときの名前で、指している表は同じである。",
+      "definition_zh": "列联表（分割表）是 交叉汇总表 在统计学中的叫法，指的是同一种表。",
+      "definition_en": "A contingency table (分割表) is the statistics name for a cross-tabulation table; both names refer to the same table.",
+      "explanation_jp": "データ全体を 2 つの項目の区分で切り分け、区分の組合せごとに度数 (件数) を並べた表を指す。例えば 2 つの項目に関連があるかを統計的に調べる場面で、この呼び名が使われる。",
+      "explanation_zh": "它指按两个项目的类别切分全部数据，再按类别组合列出频数（件数）的表。例如在用统计方法检验两个项目之间是否有关联时，就会使用这个名称。",
+      "explanation_en": "It refers to a table that splits all the data by the categories of two items and lists the frequency (count) for each combination. This name is used, for example, when testing statistically whether two items are related.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "モザイク図",
+      "term_zh": "马赛克图",
+      "term_en": "Mosaic plot",
+      "one_jp": "**モザイク図** は、クロス集計表の件数を **長方形の面積** に置き換え、区分ごとの割合を見せる図である。",
+      "one_zh": "**马赛克图**（[[jp:モザイク図]]）把交叉汇总表的件数换成 **长方形的面积**，用来展示各类别所占的比例。",
+      "one_en": "A **mosaic plot** ([[jp:モザイク図]]) turns the counts of a cross-tabulation table into **rectangle areas** to show the proportions within each group.",
+      "detail_jp": "まず一方の項目について、区分ごとの割合に応じて横幅を決める。次にそれぞれの幅を、もう一方の項目の割合に応じて縦に区切る。できたタイルの面積は各マスの件数に比例するので、区分の大きさと内訳の違いを 1 枚で読み取れる。",
+      "detail_zh": "首先针对一个项目，按各类别所占比例决定横向宽度。接着把每段宽度按另一个项目的比例纵向切分。得到的色块面积与各格子的件数成正比，因此一张图就能读出类别的大小和内部构成的差异。",
+      "detail_en": "First, set the widths according to the share of each category of one item. Next, cut each width vertically according to the shares of the other item. Because each tile's area is proportional to its cell's count, one figure shows both the size of each group and how their breakdowns differ.",
+      "analogy_jp": "板チョコを人数の割合で縦に割り、それぞれのかけらをさらに内訳の割合で横に割ると、かけらの大きさが人数を表すのと同じ。",
+      "analogy_zh": "就像把一块板状巧克力按人数比例竖着掰开，再把每一块按内部比例横着掰开，每小块的大小就代表人数。",
+      "analogy_en": "It is like snapping a chocolate bar vertically by the share of people, then snapping each piece horizontally by its breakdown, so the size of each small piece stands for a number of people.",
+      "hook_jp": "モザイク画のように、大きさの違う長方形のタイルが組み合わさって 1 枚の絵になる。",
+      "hook_zh": "就像马赛克画那样，大小不一的长方形色块拼成一整幅图。",
+      "hook_en": "Like a mosaic artwork, rectangular tiles of different sizes fit together into one picture.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**帯グラフ** は長さをそろえた帯を内訳の割合で区切る図で、帯の幅は一定である。**モザイク図** は帯の幅も区分の件数に比例させる。",
+          "text_zh": "**百分比堆积条形图**（[[jp:帯グラフ]]）把长度相同的带子按内部比例切分，带子的宽度固定不变。**马赛克图**（[[jp:モザイク図]]）连带子的宽度也与类别的件数成正比。",
+          "text_en": "A **100% stacked bar chart** ([[jp:帯グラフ]]) divides bands of equal length by their breakdown, and every band has the same width. A **mosaic plot** ([[jp:モザイク図]]) also makes each band's width proportional to the count of its group."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "クロス集計表の件数",
+                "zh": "交叉汇总表的件数",
+                "en": "Counts in the cross-tabulation table"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "一方の項目の割合で横幅を分ける",
+                "zh": "按一个项目的比例划分横向宽度",
+                "en": "Split the width by the shares of one item"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "それぞれの幅をもう一方の項目の割合で縦に分ける",
+                "zh": "再按另一个项目的比例把每段宽度纵向切分",
+                "en": "Split each width vertically by the shares of the other item"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "面積が件数に比例するタイル",
+                "zh": "面积与件数成正比的色块",
+                "en": "Tiles whose areas are proportional to the counts"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "出発点は、学生 30 人と社会人 40 人を朝食の有無で数えた表である。",
+            "caption_zh": "起点是按是否吃早餐统计学生30人和上班族40人的表。",
+            "caption_en": "The starting point is a table counting 30 students and 40 working adults by whether they eat breakfast.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "表では行に並んでいた学生 30 人と社会人 40 人の比が 3 対 4 なので、図では両者の横幅を 3 対 4 に分ける。",
+            "caption_zh": "表中分行排列的学生30人与上班族40人之比为3比4，所以图中把两者的宽度分成3比4。",
+            "caption_en": "The table lists 30 students and 40 working adults in separate rows, a ratio of 3 to 4, so the figure splits their widths 3 to 4.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "学生の幅は 18 人と 12 人なので縦を 3 対 2 に、社会人の幅は 25 人と 15 人なので 5 対 3 に区切る。",
+            "caption_zh": "学生那一段是18人和12人，所以纵向按3比2切分；上班族那一段是25人和15人，所以按5比3切分。",
+            "caption_en": "The student strip holds 18 and 12 people, so it is cut 3 to 2 vertically; the working-adult strip holds 25 and 15, so it is cut 5 to 3.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "できた 4 枚のタイルの面積は、それぞれのマスの人数に比例する。",
+            "caption_zh": "得到的4个色块，面积分别与各格子的人数成正比。",
+            "caption_en": "Each of the 4 resulting tiles has an area proportional to the number of people in its cell.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "モザイク図 は、クロス集計表の件数を 長方形の面積 に置き換え、区分ごとの割合を見せる図である。",
+      "definition_zh": "马赛克图（モザイク図）把交叉汇总表的件数换成 长方形的面积，用来展示各类别所占的比例。",
+      "definition_en": "A mosaic plot (モザイク図) turns the counts of a cross-tabulation table into rectangle areas to show the proportions within each group.",
+      "explanation_jp": "まず一方の項目について、区分ごとの割合に応じて横幅を決める。次にそれぞれの幅を、もう一方の項目の割合に応じて縦に区切る。できたタイルの面積は各マスの件数に比例するので、区分の大きさと内訳の違いを 1 枚で読み取れる。",
+      "explanation_zh": "首先针对一个项目，按各类别所占比例决定横向宽度。接着把每段宽度按另一个项目的比例纵向切分。得到的色块面积与各格子的件数成正比，因此一张图就能读出类别的大小和内部构成的差异。",
+      "explanation_en": "First, set the widths according to the share of each category of one item. Next, cut each width vertically according to the shares of the other item. Because each tile's area is proportional to its cell's count, one figure shows both the size of each group and how their breakdowns differ.",
+      "memory_hook_jp": "モザイク画のように、大きさの違う長方形のタイルが組み合わさって 1 枚の絵になる。",
+      "memory_hook_zh": "就像马赛克画那样，大小不一的长方形色块拼成一整幅图。",
+      "memory_hook_en": "Like a mosaic artwork, rectangular tiles of different sizes fit together into one picture.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "相関係数行列",
+      "term_zh": "相关系数矩阵",
+      "term_en": "Correlation coefficient matrix",
+      "one_jp": "**相関係数行列** は、複数の変数を行と列に同じ順で並べ、2 つずつの組合せの **相関係数** を交わるマスに書いた表である。",
+      "one_zh": "**相关系数矩阵**（[[jp:相関係数行列]]）把多个变量按相同顺序排在行和列上，在交叉的格子里写出每两个变量组合的 **相关系数**。",
+      "one_en": "A **correlation coefficient matrix** ([[jp:相関係数行列]]) lists several variables in the same order along the rows and columns, and writes the **correlation coefficient** of each pair in the cell where they meet.",
+      "detail_jp": "**相関係数** は 2 つの変数の直線的な関係の強さと向きを表す値で、−1 から 1 までをとる。同じ変数どうしが交わる対角線のマスは 1 になり、対角線をはさんで同じ値が向かい合う。変数が多くても、対角線以外のマスから符号にかかわらず 1 や −1 に近い値を探せば、関係の強い組合せが一度に見つかる。",
+      "detail_zh": "**相关系数** 表示两个变量之间直线关系的强弱和方向，取值在−1到1之间。同一变量相交的对角线格子为1，对角线两侧的相同值彼此对称。即使变量很多，只要在对角线以外的格子中找出接近1或−1的值（不论正负），就能一次找到关系强的组合。",
+      "detail_en": "A **correlation coefficient** shows the strength and direction of the linear relationship between two variables, and ranges from −1 to 1. The diagonal cells, where a variable meets itself, are 1, and the same values mirror each other across the diagonal. Even with many variables, scanning the off-diagonal cells for values close to 1 or −1, whatever the sign, finds the strongly related pairs at once.",
+      "analogy_jp": "都市の距離早見表で行と列に同じ都市を並べると、A から B と B から A は同じ距離なので、対角線をはさんで同じ数が向かい合うのと同じ形である。",
+      "analogy_zh": "就像城市间距离速查表在行和列上排列相同的城市时，A到B与B到A的距离相同，所以对角线两侧出现相同数字，形状是一样的。",
+      "analogy_en": "It has the same shape as a city distance chart with the same cities on the rows and columns: A to B equals B to A, so identical numbers face each other across the diagonal.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "相関係数が正で 1 に近いほど、一方が大きいと他方も大きいという関係が強い。",
+          "text_zh": "相关系数（[[jp:相関係数]]）为正且越接近1，“一方越大另一方也越大”的关系就越强。",
+          "text_en": "The closer a positive correlation coefficient ([[jp:相関係数]]) is to 1, the stronger the tendency for one variable to be large when the other is large.",
+          "qids": [
+            "2015h27a-q088"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "変数",
+              "zh": "变量",
+              "en": "Variable"
+            },
+            {
+              "jp": "気温",
+              "zh": "气温",
+              "en": "Temperature"
+            },
+            {
+              "jp": "来店者数",
+              "zh": "来店人数",
+              "en": "Store visitors"
+            },
+            {
+              "jp": "アイス売上",
+              "zh": "冰淇淋销售额",
+              "en": "Ice cream sales"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "気温",
+                  "zh": "气温",
+                  "en": "Temperature"
+                },
+                {
+                  "jp": "1.00",
+                  "zh": "1.00",
+                  "en": "1.00"
+                },
+                {
+                  "jp": "0.35",
+                  "zh": "0.35",
+                  "en": "0.35"
+                },
+                {
+                  "jp": "0.82",
+                  "zh": "0.82",
+                  "en": "0.82"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "来店者数",
+                  "zh": "来店人数",
+                  "en": "Store visitors"
+                },
+                {
+                  "jp": "0.35",
+                  "zh": "0.35",
+                  "en": "0.35"
+                },
+                {
+                  "jp": "1.00",
+                  "zh": "1.00",
+                  "en": "1.00"
+                },
+                {
+                  "jp": "0.48",
+                  "zh": "0.48",
+                  "en": "0.48"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "アイス売上",
+                  "zh": "冰淇淋销售额",
+                  "en": "Ice cream sales"
+                },
+                {
+                  "jp": "0.82",
+                  "zh": "0.82",
+                  "en": "0.82"
+                },
+                {
+                  "jp": "0.48",
+                  "zh": "0.48",
+                  "en": "0.48"
+                },
+                {
+                  "jp": "1.00",
+                  "zh": "1.00",
+                  "en": "1.00"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "相関係数行列 は、複数の変数を行と列に同じ順で並べ、2 つずつの組合せの 相関係数 を交わるマスに書いた表である。",
+      "definition_zh": "相关系数矩阵（相関係数行列）把多个变量按相同顺序排在行和列上，在交叉的格子里写出每两个变量组合的 相关系数。",
+      "definition_en": "A correlation coefficient matrix (相関係数行列) lists several variables in the same order along the rows and columns, and writes the correlation coefficient of each pair in the cell where they meet.",
+      "explanation_jp": "相関係数 は 2 つの変数の直線的な関係の強さと向きを表す値で、−1 から 1 までをとる。同じ変数どうしが交わる対角線のマスは 1 になり、対角線をはさんで同じ値が向かい合う。変数が多くても、対角線以外のマスから符号にかかわらず 1 や −1 に近い値を探せば、関係の強い組合せが一度に見つかる。",
+      "explanation_zh": "相关系数 表示两个变量之间直线关系的强弱和方向，取值在−1到1之间。同一变量相交的对角线格子为1，对角线两侧的相同值彼此对称。即使变量很多，只要在对角线以外的格子中找出接近1或−1的值（不论正负），就能一次找到关系强的组合。",
+      "explanation_en": "A correlation coefficient shows the strength and direction of the linear relationship between two variables, and ranges from −1 to 1. The diagonal cells, where a variable meets itself, are 1, and the same values mirror each other across the diagonal. Even with many variables, scanning the off-diagonal cells for values close to 1 or −1, whatever the sign, finds the strongly related pairs at once.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "散布図行列",
+      "term_zh": "散点图矩阵",
+      "term_en": "Scatter plot matrix",
+      "one_jp": "**散布図行列** は、複数の変数から 2 つずつ選んだ組合せの **散布図** を、行と列に変数を並べた格子に配置した図である。",
+      "one_zh": "**散点图矩阵**（[[jp:散布図行列]]）从多个变量中每次选出两个，把这些组合的 **散点图** 配置在行和列都排列着变量的网格中。",
+      "one_en": "A **scatter plot matrix** ([[jp:散布図行列]]) places a **scatter plot** for each pair of variables in a grid that lists the variables along its rows and columns.",
+      "detail_jp": "各マスには、その行の変数と列の変数の値を縦横の軸にとって点を打った散布図が入る。対角線のマスは同じ変数どうしになるので、例えば変数名やその変数だけの分布を置く。点が右上がりに並ぶ組合せは正の相関、右下がりに並ぶ組合せは負の相関があると目で確かめられる。",
+      "detail_zh": "每个格子里放一张散点图，以该行变量和该列变量的值作为纵横坐标轴来描点。对角线格子是同一变量相交，因此可以放变量名或该变量自身的分布等。点向右上方排列的组合有正相关，向右下方排列的组合有负相关，用眼睛就能确认。",
+      "detail_en": "Each cell holds a scatter plot that uses the values of its row variable and its column variable as the two axes. The diagonal cells pair a variable with itself, so they can hold the variable name or that variable's own distribution. Points rising to the upper right show a positive correlation and points falling to the lower right show a negative one, which you can confirm by eye.",
+      "analogy_jp": "名簿の順に並べた座席表の各席に、2 人ずつ組にした写真を貼っていくと、どの 2 人の組合せも漏れなく見渡せる。",
+      "analogy_zh": "就像在按名单顺序排列的座位表的每个座位上，贴上两人一组的合影，任何两人的组合都能一览无遗。",
+      "analogy_en": "It is like a seating chart in roster order with a photo of a pair of people pinned to every seat, so every possible pair can be seen at a glance.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "関係の強さを数値 1 つにまとめるのが **相関係数行列**、点の並び方そのものを見せるのが **散布図行列** である。曲線的な関係や外れ値は散布図行列で見つけやすい。",
+          "text_zh": "把关系的强弱汇总为一个数值的是 **相关系数矩阵**（[[jp:相関係数行列]]），直接展示点的排列方式的是 **散点图矩阵**（[[jp:散布図行列]]）。曲线关系和离群值在散点图矩阵中更容易发现。",
+          "text_en": "A **correlation coefficient matrix** ([[jp:相関係数行列]]) sums up each relationship's strength in a single number, while a **scatter plot matrix** ([[jp:散布図行列]]) shows how the points themselves are arranged. Curved relationships and outliers are easier to spot in a scatter plot matrix."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "変数",
+              "zh": "变量",
+              "en": "Variable"
+            },
+            {
+              "jp": "気温",
+              "zh": "气温",
+              "en": "Temperature"
+            },
+            {
+              "jp": "来店者数",
+              "zh": "来店人数",
+              "en": "Store visitors"
+            },
+            {
+              "jp": "アイス売上",
+              "zh": "冰淇淋销售额",
+              "en": "Ice cream sales"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "気温",
+                  "zh": "气温",
+                  "en": "Temperature"
+                },
+                {
+                  "jp": "気温の分布",
+                  "zh": "气温的分布",
+                  "en": "Distribution of temperature"
+                },
+                {
+                  "jp": "気温と来店者数の散布図",
+                  "zh": "气温与来店人数的散点图",
+                  "en": "Temperature and visitors scatter plot"
+                },
+                {
+                  "jp": "気温とアイス売上の散布図",
+                  "zh": "气温与冰淇淋销售额的散点图",
+                  "en": "Temperature and ice cream sales scatter plot"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "来店者数",
+                  "zh": "来店人数",
+                  "en": "Store visitors"
+                },
+                {
+                  "jp": "来店者数と気温の散布図",
+                  "zh": "来店人数与气温的散点图",
+                  "en": "Visitors and temperature scatter plot"
+                },
+                {
+                  "jp": "来店者数の分布",
+                  "zh": "来店人数的分布",
+                  "en": "Distribution of visitors"
+                },
+                {
+                  "jp": "来店者数とアイス売上の散布図",
+                  "zh": "来店人数与冰淇淋销售额的散点图",
+                  "en": "Visitors and ice cream sales scatter plot"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "アイス売上",
+                  "zh": "冰淇淋销售额",
+                  "en": "Ice cream sales"
+                },
+                {
+                  "jp": "アイス売上と気温の散布図",
+                  "zh": "冰淇淋销售额与气温的散点图",
+                  "en": "Ice cream sales and temperature scatter plot"
+                },
+                {
+                  "jp": "アイス売上と来店者数の散布図",
+                  "zh": "冰淇淋销售额与来店人数的散点图",
+                  "en": "Ice cream sales and visitors scatter plot"
+                },
+                {
+                  "jp": "アイス売上の分布",
+                  "zh": "冰淇淋销售额的分布",
+                  "en": "Distribution of ice cream sales"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "散布図行列 は、複数の変数から 2 つずつ選んだ組合せの 散布図 を、行と列に変数を並べた格子に配置した図である。",
+      "definition_zh": "散点图矩阵（散布図行列）从多个变量中每次选出两个，把这些组合的 散点图 配置在行和列都排列着变量的网格中。",
+      "definition_en": "A scatter plot matrix (散布図行列) places a scatter plot for each pair of variables in a grid that lists the variables along its rows and columns.",
+      "explanation_jp": "各マスには、その行の変数と列の変数の値を縦横の軸にとって点を打った散布図が入る。対角線のマスは同じ変数どうしになるので、例えば変数名やその変数だけの分布を置く。点が右上がりに並ぶ組合せは正の相関、右下がりに並ぶ組合せは負の相関があると目で確かめられる。",
+      "explanation_zh": "每个格子里放一张散点图，以该行变量和该列变量的值作为纵横坐标轴来描点。对角线格子是同一变量相交，因此可以放变量名或该变量自身的分布等。点向右上方排列的组合有正相关，向右下方排列的组合有负相关，用眼睛就能确认。",
+      "explanation_en": "Each cell holds a scatter plot that uses the values of its row variable and its column variable as the two axes. The diagonal cells pair a variable with itself, so they can hold the variable name or that variable's own distribution. Points rising to the upper right show a positive correlation and points falling to the lower right show a negative one, which you can confirm by eye.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "複合グラフ",
+      "term_zh": "复合图表",
+      "term_en": "Combination chart",
+      "one_jp": "**複合グラフ** は、棒グラフと折れ線グラフのように **種類の異なるグラフ** を 1 つの図に重ねたグラフである。",
+      "one_zh": "**复合图表**（[[jp:複合グラフ]]）是把柱状图和折线图这样 **种类不同的图表** 叠加在一张图中的图表。",
+      "one_en": "A **combination chart** ([[jp:複合グラフ]]) overlays **different kinds of charts**, such as a bar chart and a line chart, in one figure.",
+      "detail_jp": "例えば金額を棒で、比率や時間に沿った動きを折れ線で示すと、量と変化を同じ時間軸の上で見比べられる。一定期間の合計を、期間を 1 つずつずらしながら求めた値を **移動合計** といい、その折れ線を元の値の棒に重ねて描くこともある。",
+      "detail_zh": "例如用柱形表示金额，用折线表示比率或随时间的变化，就能在同一条时间轴上对照数量与变化。把一定期间的合计逐期错开一个期间来计算，得到的值称为 **移动合计**，也可以把它的折线叠加在原始值的柱形上。",
+      "detail_en": "For example, showing amounts as bars and ratios or changes over time as a line lets you compare amounts and changes on the same time axis. A **moving total** is the sum over a fixed period, recalculated as the period shifts forward one step at a time, and its line can be drawn over bars of the original values.",
+      "analogy_jp": "地図の上に、土地の色分けと鉄道の路線を重ねて 1 枚にすると、描き方の違う情報を同じ土台の上で見比べられる。",
+      "analogy_zh": "就像在地图上把土地的颜色分区和铁路线路叠成一张，画法不同的信息就能在同一张底图上对照。",
+      "analogy_en": "Layering land-use colors and railway lines onto one map lets you compare information drawn in different ways on the same base.",
+      "hook_jp": "複合 = 2 つ以上のものを組み合わせて 1 つにすること。",
+      "hook_zh": "复合 = 把两个以上的东西组合成一个。",
+      "hook_en": "Combination = putting two or more things together into one.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "棒と折れ線を重ねた図でも、**利益率** は利益を売上高で割って時点ごとに比べる。伸び率も、増えた量を基準時点の値で割って求める。",
+          "text_zh": "即使是柱形与折线叠加的图，**利润率**（[[jp:利益率]]）也是用利润除以销售额（[[jp:売上高]]），按各时点进行比较。增长率（[[jp:伸び率]]）同样是用增加量除以基准时点的值求出。",
+          "text_en": "Even in a chart that overlays bars and a line, the **profit margin** ([[jp:利益率]]) is profit divided by sales ([[jp:売上高]]), compared at each point in time. A growth rate ([[jp:伸び率]]) is likewise the increase divided by the value at the base point.",
+          "qids": [
+            "2010h22h-q002"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "費用の金額が増え続けていても、売上高がそれ以上の割合で伸びれば、売上高に対する費用の比率は下がる。",
+          "text_zh": "即使费用金额持续增加，只要销售额以更高的比例增长，费用相对于销售额的比率就会下降。",
+          "text_en": "Even if costs keep rising, the ratio of costs to sales falls as long as sales grow at a faster rate.",
+          "qids": [
+            "2011h23tokubetsu-q018"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**移動合計** を 12 か月分でとると、どの時点の合計にも 1 年の各月が 1 回ずつ入るので季節による増減がならされ、その折れ線は元の値の長期的な推移を表す。",
+          "text_zh": "以12个月为单位取 **移动合计**（[[jp:移動合計]]）时，每个时点的合计都恰好包含一年中每个月各一次，因此季节带来的增减被抹平，其折线反映原始值的长期走势。",
+          "text_en": "When a **moving total** ([[jp:移動合計]]) covers 12 months, every point's total includes each month of the year exactly once, so seasonal ups and downs are smoothed out and the line shows the long-term trend of the original values.",
+          "qids": [
+            "2013h25h-q094",
+            "2013h25h-q095"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2010h22h-q002",
+        "2011h23tokubetsu-q018"
+      ],
+      "definition_jp": "複合グラフ は、棒グラフと折れ線グラフのように 種類の異なるグラフ を 1 つの図に重ねたグラフである。",
+      "definition_zh": "复合图表（複合グラフ）是把柱状图和折线图这样 种类不同的图表 叠加在一张图中的图表。",
+      "definition_en": "A combination chart (複合グラフ) overlays different kinds of charts, such as a bar chart and a line chart, in one figure.",
+      "explanation_jp": "例えば金額を棒で、比率や時間に沿った動きを折れ線で示すと、量と変化を同じ時間軸の上で見比べられる。一定期間の合計を、期間を 1 つずつずらしながら求めた値を 移動合計 といい、その折れ線を元の値の棒に重ねて描くこともある。",
+      "explanation_zh": "例如用柱形表示金额，用折线表示比率或随时间的变化，就能在同一条时间轴上对照数量与变化。把一定期间的合计逐期错开一个期间来计算，得到的值称为 移动合计，也可以把它的折线叠加在原始值的柱形上。",
+      "explanation_en": "For example, showing amounts as bars and ratios or changes over time as a line lets you compare amounts and changes on the same time axis. A moving total is the sum over a fixed period, recalculated as the period shifts forward one step at a time, and its line can be drawn over bars of the original values.",
+      "memory_hook_jp": "複合 = 2 つ以上のものを組み合わせて 1 つにすること。",
+      "memory_hook_zh": "复合 = 把两个以上的东西组合成一个。",
+      "memory_hook_en": "Combination = putting two or more things together into one.",
+      "inline_quiz": [
+        "2010h22h-q002",
+        "2011h23tokubetsu-q018"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "2軸グラフ",
+      "term_zh": "双轴图表",
+      "term_en": "Dual-axis chart",
+      "one_jp": "**2軸グラフ** は、図の左右に **目盛の異なる縦軸** を 1 本ずつ設け、各系列をどちらか一方の軸に対応させて 1 つの図に重ねるグラフである。",
+      "one_zh": "**双轴图表**（[[jp:2軸グラフ]]）在图的左右各设一条 **刻度不同的纵轴**，让每个系列对应其中一条轴，叠加在一张图中。",
+      "one_en": "A **dual-axis chart** ([[jp:2軸グラフ]]) has a **vertical axis with its own scale** on each side, left and right, and overlays the series in one figure with each series tied to one of the two axes.",
+      "detail_jp": "例えば左の軸を金額 (億円)、右の軸を数量 (千個) にとり、単位の同じ系列は同じ側の軸にまとめて載せる。1 本の軸に複数の系列が載ることもあるので、各系列がどちらの軸に対応するかを凡例や軸の見出しで先に確かめる。",
+      "detail_zh": "例如左轴表示金额（亿日元），右轴表示数量（千个），单位相同的系列集中放在同一侧的轴上。一条轴上也可能有多个系列，所以要先通过图例或轴标题确认每个系列对应哪条轴。",
+      "detail_en": "For example, the left axis may show amounts (in 100 million yen) and the right axis quantities (in thousands of units), with series of the same unit grouped on the same side. Because one axis can carry several series, first check the legend or the axis titles to see which axis each series belongs to.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "左右の目盛は基準が別なので、左の軸の系列と右の軸の系列の線が交わっても、その位置で 2 つの値が等しいという意味はない。",
+          "text_zh": "左右刻度的基准各不相同，即使左轴系列与右轴系列的线相交，也不表示两个值在该位置相等。",
+          "text_en": "The left and right axes use separate scales, so when a left-axis line crosses a right-axis line, it does not mean the two values are equal at that point."
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "縦軸が 1 本",
+            "zh": "1条纵轴",
+            "en": "One vertical axis"
+          },
+          "b": {
+            "jp": "縦軸が左右に 2 本",
+            "zh": "左右各1条，共2条纵轴",
+            "en": "Two vertical axes, one on each side"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "目盛",
+                "zh": "刻度",
+                "en": "Scale"
+              },
+              "a": {
+                "jp": "すべての系列で共通",
+                "zh": "所有系列共用",
+                "en": "Shared by all series"
+              },
+              "b": {
+                "jp": "左の軸と右の軸で別々",
+                "zh": "左轴与右轴各自独立",
+                "en": "Separate for the left and right axes"
+              }
+            },
+            {
+              "label": {
+                "jp": "桁が大きく違う系列",
+                "zh": "数量级相差很大的系列",
+                "en": "Series with very different magnitudes"
+              },
+              "a": {
+                "jp": "値の小さい系列が底に張り付き、変化が見えにくい",
+                "zh": "值较小的系列贴在底部，变化难以看出",
+                "en": "The smaller series hugs the bottom, so its changes are hard to see"
+              },
+              "b": {
+                "jp": "それぞれの系列が対応する軸の目盛で変化が見える",
+                "zh": "各系列按所对应轴的刻度显示出变化",
+                "en": "Each series shows its changes on the scale of its own axis"
+              },
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "2軸グラフ は、図の左右に 目盛の異なる縦軸 を 1 本ずつ設け、各系列をどちらか一方の軸に対応させて 1 つの図に重ねるグラフである。",
+      "definition_zh": "双轴图表（2軸グラフ）在图的左右各设一条 刻度不同的纵轴，让每个系列对应其中一条轴，叠加在一张图中。",
+      "definition_en": "A dual-axis chart (2軸グラフ) has a vertical axis with its own scale on each side, left and right, and overlays the series in one figure with each series tied to one of the two axes.",
+      "explanation_jp": "例えば左の軸を金額 (億円)、右の軸を数量 (千個) にとり、単位の同じ系列は同じ側の軸にまとめて載せる。1 本の軸に複数の系列が載ることもあるので、各系列がどちらの軸に対応するかを凡例や軸の見出しで先に確かめる。",
+      "explanation_zh": "例如左轴表示金额（亿日元），右轴表示数量（千个），单位相同的系列集中放在同一侧的轴上。一条轴上也可能有多个系列，所以要先通过图例或轴标题确认每个系列对应哪条轴。",
+      "explanation_en": "For example, the left axis may show amounts (in 100 million yen) and the right axis quantities (in thousands of units), with series of the same unit grouped on the same side. Because one axis can carry several series, first check the legend or the axis titles to see which axis each series belongs to.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "クロス集計表",
+      "b": "モザイク図",
+      "rows": [
+        {
+          "label_jp": "表し方",
+          "label_zh": "表现方式",
+          "label_en": "How it is shown",
+          "a_jp": "件数を数値のまま並べる",
+          "a_zh": "把件数按原样以数值排列",
+          "a_en": "Lists the counts as numbers",
+          "b_jp": "件数を長方形の面積に置き換える",
+          "b_zh": "把件数换成长方形的面积",
+          "b_en": "Turns the counts into rectangle areas",
+          "key": true
+        },
+        {
+          "label_jp": "読み取りやすいもの",
+          "label_zh": "容易读出的内容",
+          "label_en": "Easy to read",
+          "a_jp": "それぞれのマスの正確な件数",
+          "a_zh": "各格子的准确件数",
+          "a_en": "The exact count in each cell",
+          "b_jp": "区分の大きさと内訳の割合の全体像",
+          "b_zh": "类别大小与内部比例的整体情况",
+          "b_en": "The overall picture of group sizes and their breakdowns",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "相関係数行列",
+      "b": "散布図行列",
+      "rows": [
+        {
+          "label_jp": "並べ方",
+          "label_zh": "排列方式",
+          "label_en": "Layout",
+          "a_jp": "行と列に同じ変数を同じ順で並べる",
+          "a_zh": "行和列按相同顺序排列相同的变量",
+          "a_en": "The same variables in the same order on rows and columns",
+          "b_jp": "行と列に同じ変数を同じ順で並べる",
+          "b_zh": "行和列按相同顺序排列相同的变量",
+          "b_en": "The same variables in the same order on rows and columns",
+          "key": false
+        },
+        {
+          "label_jp": "マスの中身",
+          "label_zh": "格子中的内容",
+          "label_en": "Cell contents",
+          "a_jp": "相関係数 (数値)",
+          "a_zh": "相关系数（数值）",
+          "a_en": "Correlation coefficients (numbers)",
+          "b_jp": "散布図 (点の並び)",
+          "b_zh": "散点图（点的排列）",
+          "b_en": "Scatter plots (point patterns)",
+          "key": true
+        },
+        {
+          "label_jp": "分かること",
+          "label_zh": "能看出什么",
+          "label_en": "What it reveals",
+          "a_jp": "直線的な関係の強さと向き",
+          "a_zh": "直线关系的强弱与方向",
+          "a_en": "Strength and direction of linear relationships",
+          "b_jp": "曲線的な関係や外れ値を含む点の並び方",
+          "b_zh": "包括曲线关系和离群值在内的点的排列方式",
+          "b_en": "Point patterns, including curved relationships and outliers",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "複合グラフ",
+      "b": "2軸グラフ",
+      "rows": [
+        {
+          "label_jp": "重ねるもの",
+          "label_zh": "叠加的对象",
+          "label_en": "What is overlaid",
+          "a_jp": "種類の異なるグラフ",
+          "a_zh": "种类不同的图表",
+          "a_en": "Different kinds of charts",
+          "b_jp": "単位や桁の違う系列 (1 本の軸に複数載ることもある)",
+          "b_zh": "单位或数量级不同的系列（一条轴上也可能有多个）",
+          "b_en": "Series with different units or magnitudes (one axis may carry several)",
+          "key": false
+        },
+        {
+          "label_jp": "縦軸",
+          "label_zh": "纵轴",
+          "label_en": "Vertical axes",
+          "a_jp": "1 本のことも 2 本のこともある",
+          "a_zh": "可能是1条，也可能是2条",
+          "a_en": "Either one or two",
+          "b_jp": "左右に目盛の異なる 2 本",
+          "b_zh": "左右2条，刻度不同",
+          "b_en": "Two, left and right, with different scales",
+          "key": true
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**クロス集計表** (統計学では **分割表**) は 2 つの項目の組合せごとの件数を数えた表で、合計欄や割合と合わせて傾向を読む。",
+    "**モザイク図** はクロス集計表の件数をタイルの面積に置き換え、区分の大きさと内訳を 1 枚で見せる。",
+    "**相関係数行列** は対角線が 1 で、対角線をはさんで同じ値が向かい合い、−1 から 1 の値で関係の強さと向きを示す。",
+    "**複合グラフ** は棒と折れ線など種類の違うグラフを 1 つの図に重ね、量と変化を 1 枚の上で見比べられるようにする。",
+    "**2軸グラフ** は左右の縦軸に別々の目盛を持つので、桁の大きく違う系列どうしでも、それぞれの変化を 1 つの図で追える。"
+  ],
+  "key_points_zh": [
+    "**交叉汇总表**（统计学中称 **列联表**）统计两个项目各组合的件数，要结合合计栏和比例来读出倾向。",
+    "**马赛克图** 把交叉汇总表的件数换成色块的面积，一张图就能展示类别的大小和内部构成。",
+    "**相关系数矩阵** 的对角线为1，对角线两侧的相同值彼此对称，用−1到1的值表示关系的强弱和方向。",
+    "**复合图表** 把柱形与折线等种类不同的图表叠加在一张图中，便于在同一张图上对照数量与变化。",
+    "**双轴图表** 的左右纵轴各有独立的刻度，因此即使是数量级相差很大的系列，也能在一张图中分别追踪变化。"
+  ],
+  "key_points_en": [
+    "A **cross-tabulation table** (a **contingency table** in statistics) counts each combination of two items, and its trends are read together with the totals and proportions.",
+    "A **mosaic plot** turns the counts of a cross-tabulation table into tile areas, showing group sizes and breakdowns in one figure.",
+    "In a **correlation coefficient matrix**, the diagonal is 1, the same values mirror each other across it, and values from −1 to 1 show the strength and direction of each relationship.",
+    "A **combination chart** overlays different kinds of charts, such as bars and a line, so amounts and changes can be compared in one figure.",
+    "A **dual-axis chart** has separate scales on its left and right vertical axes, so series of very different magnitudes can each be followed in one figure."
+  ],
+  "overview": {
+    "intro_jp": "2 つの項目の組合せごとの件数を クロス集計表 から読み取り、割合に直して比べられる。多数の変数どうしの関係を、相関係数行列 と 散布図行列 の違いを踏まえて読み分けられる。種類や単位の違うデータを重ねた 複合グラフ と 2軸グラフ を、系列と軸の対応に注意して読める。",
+    "intro_zh": "能从 交叉汇总表 中读出两个项目各组合的件数，并换算成比例加以比较。理解 相关系数矩阵 与 散点图矩阵 的区别，分别读懂多个变量之间的关系。读懂叠加了种类或单位不同的数据的 复合图表 和 双轴图表，并留意每个系列对应哪条轴。",
+    "intro_en": "Read the count for each combination of two items from a cross-tabulation table, and convert the counts to proportions to compare them. Read the relationships among many variables, telling a correlation coefficient matrix apart from a scatter plot matrix. Read combination charts and dual-axis charts, which overlay data of different kinds or units, while checking which axis each series belongs to.",
+    "freq_badge": "頻出",
+    "est_minutes": 33
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "クロス集計表: クロス集計表といえば2項目を行×列で集計する表",
-      "分割表: 分割表といえばクロス集計表の別名(同じ表)",
-      "モザイク図: モザイク図といえばクロス集計を面積で見せる図",
-      "相関係数行列: 相関係数行列といえば全変数ペアの相関を一覧する表",
-      "散布図行列: 散布図行列といえば多変数の散布図を格子に並べた図",
-      "複合グラフ: 複合グラフといえば棒と折れ線など異種を重ねたグラフ",
-      "2軸グラフ: 2軸グラフといえば左右で目盛が異なる複合グラフ"
-    ],
     "key_points_jp": [
-      "クロス集計表は2項目を行×列に取り交点に件数を集計する表で、統計では分割表と呼ばれる同一概念である。",
-      "モザイク図はクロス集計の各区分を面積の大きさで表し、構成比や偏りを視覚的につかむ派生グラフである。",
-      "相関係数行列は全変数ペアの相関係数を一覧する表、散布図行列はそれをグラフで見せる対の手法で、多変数の相関を一望できる。",
-      "複合グラフは棒と折れ線など異種のグラフを1枚に重ね、量と推移など複数の側面を同時に比較する手法である。",
-      "2軸グラフは複合グラフの一形態で、左右に目盛の異なる縦軸を設け、単位や桁が違うデータを見やすく重ねる。"
+      "クロス集計表 (統計学では 分割表) は 2 つの項目の組合せごとの件数を数えた表で、合計欄や割合と合わせて傾向を読む。",
+      "モザイク図 はクロス集計表の件数をタイルの面積に置き換え、区分の大きさと内訳を 1 枚で見せる。",
+      "相関係数行列 は対角線が 1 で、対角線をはさんで同じ値が向かい合い、−1 から 1 の値で関係の強さと向きを示す。",
+      "複合グラフ は棒と折れ線など種類の違うグラフを 1 つの図に重ね、量と変化を 1 枚の上で見比べられるようにする。",
+      "2軸グラフ は左右の縦軸に別々の目盛を持つので、桁の大きく違う系列どうしでも、それぞれの変化を 1 つの図で追える。"
     ],
     "key_points_zh": [
-      "交叉汇总表把两个项目放在行×列上、在交点处统计件数，在统计学中被称为列联表，是同一概念。",
-      "马赛克图用面积大小表现交叉汇总的各分区，是直观把握构成比和偏差的派生图表。",
-      "相关系数矩阵是一览所有变量对相关系数的表，散点图矩阵是用图来呈现它的成对方法，二者都能一望多变量的相关性。",
-      "复合图表把柱状和折线等异类图表叠加在一张图里，是同时比较数量和趋势等多个侧面的方法。",
-      "双轴图表是复合图表的一种形态，在左右设置刻度不同的纵轴，把单位或位数不同的数据清晰地叠加在一起。"
+      "交叉汇总表（统计学中称 列联表）统计两个项目各组合的件数，要结合合计栏和比例来读出倾向。",
+      "马赛克图 把交叉汇总表的件数换成色块的面积，一张图就能展示类别的大小和内部构成。",
+      "相关系数矩阵 的对角线为1，对角线两侧的相同值彼此对称，用−1到1的值表示关系的强弱和方向。",
+      "复合图表 把柱形与折线等种类不同的图表叠加在一张图中，便于在同一张图上对照数量与变化。",
+      "双轴图表 的左右纵轴各有独立的刻度，因此即使是数量级相差很大的系列，也能在一张图中分别追踪变化。"
     ],
     "key_points_en": [
-      "A cross-tabulation table places two items on rows × columns and tabulates counts at the intersections; in statistics it is called a contingency table, the same concept.",
-      "A mosaic plot represents each segment of a cross-tabulation by area size, a derived chart for grasping composition ratios and biases visually.",
-      "A correlation coefficient matrix is a table listing the correlation coefficients of all variable pairs, and a scatter plot matrix is the paired method that shows them with graphs; both let you survey the correlation among many variables at a glance.",
-      "A combination chart overlays heterogeneous charts such as bars and lines into one figure, a method for comparing multiple aspects such as amount and trend at the same time.",
-      "A dual-axis chart is a form of combination chart that sets vertical axes with different scales on the left and right, overlaying data with different units or digit magnitudes in an easy-to-read way."
+      "A cross-tabulation table (a contingency table in statistics) counts each combination of two items, and its trends are read together with the totals and proportions.",
+      "A mosaic plot turns the counts of a cross-tabulation table into tile areas, showing group sizes and breakdowns in one figure.",
+      "In a correlation coefficient matrix, the diagonal is 1, the same values mirror each other across it, and values from −1 to 1 show the strength and direction of each relationship.",
+      "A combination chart overlays different kinds of charts, such as bars and a line, so amounts and changes can be compared in one figure.",
+      "A dual-axis chart has separate scales on its left and right vertical axes, so series of very different magnitudes can each be followed in one figure."
+    ],
+    "memory_hooks_jp": [
+      "クロス集計表: クロス = 十字に交わること。",
+      "モザイク図: モザイク画のように、大きさの違う長方形のタイルが組み合わさって 1 枚の絵になる。",
+      "複合グラフ: 複合 = 2 つ以上のものを組み合わせて 1 つにすること。"
     ],
     "memory_hooks_zh": [
-      "交叉汇总表：说到交叉汇总表，就是把两个项目按行×列统计的表",
-      "列联表：说到列联表，就是交叉汇总表的别名（同一张表）",
-      "马赛克图：说到马赛克图，就是把交叉汇总用面积来呈现的图",
-      "相关系数矩阵：说到相关系数矩阵，就是一览所有变量对相关性的表",
-      "散点图矩阵：说到散点图矩阵，就是把多变量散点图排成格子的图",
-      "复合图表：说到复合图表，就是把柱状和折线等异类叠加的图表",
-      "双轴图表：说到双轴图表，就是左右刻度不同的复合图表"
+      "交叉汇总表：交叉（cross）= 像十字一样相交。",
+      "马赛克图：就像马赛克画那样，大小不一的长方形色块拼成一整幅图。",
+      "复合图表：复合 = 把两个以上的东西组合成一个。"
     ],
     "memory_hooks_en": [
-      "Cross-tabulation table: Cross-tabulation table → a table that tabulates two items by row × column",
-      "Contingency table: Contingency table → another name for a cross-tabulation table (the same table)",
-      "Mosaic plot: Mosaic plot → a chart that shows cross-tabulation by area",
-      "Correlation coefficient matrix: Correlation coefficient matrix → a table listing the correlations of every pair of variables",
-      "Scatter plot matrix: Scatter plot matrix → a figure that arranges scatter plots of many variables in a grid",
-      "Combination chart: Combination chart → a chart overlaying heterogeneous types such as bars and lines",
-      "Dual-axis chart: Dual-axis chart → a combination chart with different scales on the left and right"
+      "Cross-tabulation table: Cross = two lines meeting like a plus sign.",
+      "Mosaic plot: Like a mosaic artwork, rectangular tiles of different sizes fit together into one picture.",
+      "Combination chart: Combination = putting two or more things together into one."
     ]
   },
   "challenge_questions": [
-    "2009h21a-q002",
-    "2010h22a-q009",
-    "2010h22h-q003",
-    "2011h23a-q014",
-    "2011h23tokubetsu-q009"
+    "2010h22h-q002",
+    "2011h23tokubetsu-q018",
+    "2011h23a-q014"
   ],
   "source_figures": [
     {
@@ -292,9 +1126,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "交叉汇总与相关性的高级可视化",
-  "title_en": "Cross-Tabulation and Advanced Visualization of Correlation",
-  "unit_summary_zh": "学习汇总两个变量对应关系的交叉汇总表系列，以及一次性查看多变量相关性的矩阵、复合图表等进阶可视化方法。",
-  "unit_summary_en": "Learn cross-tabulation tables that summarize the correspondence between two variables, plus advanced visualizations such as matrices and combination charts that show the correlation among many variables at once."
+  }
 }
