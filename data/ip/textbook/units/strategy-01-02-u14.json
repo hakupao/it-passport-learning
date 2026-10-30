@@ -1,219 +1,1002 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-01-02-u14",
   "topic_id": "strategy-01-02",
   "category": "strategy",
   "title_jp": "データ活用の処理と業務応用",
+  "title_zh": "数据应用的处理与业务应用",
+  "title_en": "Data Utilization Processing and Business Applications",
   "unit_summary_jp": "グルーピング・パターン発見・最適化といったデータ処理と、在庫・発注・与信への具体的な業務応用を学ぶ。",
+  "unit_summary_zh": "学习分组、模式发现、最优化等数据处理，以及在库存、订货、授信上的具体业务应用。",
+  "unit_summary_en": "Learn data processing such as grouping, pattern discovery, and optimization, along with concrete business applications to inventory, ordering, and credit.",
   "order_in_topic": 14,
   "prerequisites": [
     "strategy-01-02-u13"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、集めたデータを価値に変える処理(グルーピング・パターン発見・最適化)と、それを在庫・発注・与信といった日々の業務へ応用する手法を学びます。とりわけ最適化・在庫管理・発注方式は出題頻度が高く、データ利活用の実務的な要となる頻出分野です。",
-    "freq_badge": "頻出",
-    "est_minutes": 18,
-    "intro_zh": "本单元学习把收集到的数据转化为价值的处理(分组、模式发现、最优化)，以及把它应用到库存、订货、授信等日常业务中的方法。其中最优化、库存管理、订货方式出题频率很高，是数据应用实务上的核心、属于高频考点领域。",
-    "intro_en": "In this unit you learn the processing that turns collected data into value (grouping, pattern discovery, optimization), and the methods for applying it to everyday operations such as inventory, ordering, and credit. In particular, optimization, inventory management, and ordering methods are asked frequently, and they form the practical core of data utilization—a high-frequency exam area."
-  },
-  "terms": [
+  "goals_jp": [
+    "データをまとめる処理と、データから**規則性**を探す処理を分けられる。",
+    "**制約条件**と**目的**を読み取り、最も良い案を計算で求められる。",
+    "**定量発注方式**と**定期発注方式**を区別し、発注量や与信の余力を計算できる。"
+  ],
+  "goals_zh": [
+    "能分清把数据归类分组的处理和从数据中寻找**规律**的处理。",
+    "能读出**约束条件**和**目标**，并通过计算求出最佳方案。",
+    "能区分**定量订货方式**和**定期订货方式**，并计算订货量和授信余力。"
+  ],
+  "goals_en": [
+    "Tell apart processing that sorts data into groups from processing that searches data for **regularities**.",
+    "Read the **constraints** and the **objective** of a problem and calculate the best option.",
+    "Distinguish the **fixed-quantity** and **fixed-period ordering methods**, and calculate order quantities and available credit."
+  ],
+  "overview_cols_jp": [
+    "扱うもの",
+    "得られるもの"
+  ],
+  "overview_cols_zh": [
+    "处理对象",
+    "得到的结果"
+  ],
+  "overview_cols_en": [
+    "Works with",
+    "Yields"
+  ],
+  "overview_rows": [
     {
       "term": "グルーピング",
-      "definition_jp": "似た性質のデータ同士をまとめ、いくつかの集団に分類する処理。",
-      "explanation_jp": "グルーピングは、たくさんのデータを「似たもの同士」でまとめ、扱いやすい集団(グループ)に分ける処理です。顧客を購買傾向ごと、商品を売れ方ごとにまとめるなど、ばらばらのデータに見通しを与えます。\n\nデータ活用の最初の整理ステップにあたり、グループに分けることで各集団の特徴をつかみ、次のパターン発見や施策につなげられます。試験では、規則性そのものを見つける「パターン発見」との違いを意識しておくとよく、グルーピングは『分類してまとめる』段階だと押さえましょう。",
-      "analogy_jp": "洗濯物を色物・白物・タオルといった山に分けるようなもの。一つひとつ別々に見るより、似たもの同士にまとめると一気に扱いやすくなります。",
-      "memory_hook_jp": "グルーピングといえば似たもの同士をまとめて分類",
-      "inline_quiz": [
-        "2016h28a-q027"
+      "one_line_jp": "似た性質のデータを集団に分ける処理",
+      "one_line_zh": "把性质相似的数据分成组的处理",
+      "one_line_en": "Dividing data with similar traits into groups",
+      "extra_jp": [
+        "個々のデータ",
+        "似たものの集団"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "分组",
-      "term_en": "Grouping",
-      "definition_zh": "把性质相似的数据汇总到一起，分成若干个集合的处理。",
-      "definition_en": "Processing that gathers data of similar nature together and classifies it into several groups.",
-      "explanation_zh": "分组是把大量数据按『相似的归到一起』汇总，分成便于处理的集合(组)的处理。比如把顾客按购买倾向、把商品按销售情况归类，从而给杂乱的数据带来条理。\n\n它属于数据应用最初的整理步骤，通过分组可以抓住各个集合的特征，再衔接到接下来的模式发现或施策。考试中最好留意它与寻找规律本身的『模式发现』的区别，记住分组是『分类并汇总』的阶段。",
-      "explanation_en": "Grouping is processing that gathers a large amount of data by 'putting similar things together,' dividing it into easy-to-handle groups. For example, classifying customers by purchasing tendency or products by how they sell gives order to scattered data.\n\nIt is the first organizing step in data utilization; by dividing into groups you grasp the features of each set and connect to the next pattern discovery or measures. In the exam it helps to be aware of the difference from 'pattern discovery,' which finds the regularity itself, and to remember that grouping is the 'classify and gather' stage.",
-      "analogy_zh": "就像把要洗的衣物分成深色、白色、毛巾等几堆。比起一件件单独看，把相似的归到一起，一下子就好处理多了。",
-      "analogy_en": "Like sorting laundry into piles such as colors, whites, and towels. Rather than looking at each item separately, putting similar things together makes them far easier to handle all at once.",
-      "memory_hook_zh": "说到分组，就是把相似的归到一起做分类",
-      "memory_hook_en": "Grouping → gather similar things together and classify them"
+      "extra_zh": [
+        "单条数据",
+        "相似项组成的组"
+      ],
+      "extra_en": [
+        "Individual records",
+        "Groups of similar items"
+      ]
     },
     {
       "term": "パターン発見",
-      "definition_jp": "データの中から繰り返し現れる規則性や傾向を見いだす処理。",
-      "explanation_jp": "パターン発見は、データの中に潜む「規則性」や「よくある組み合わせ」を見つけ出す処理です。例えば「ビールを買う人はおむつも一緒に買う」といった併売の傾向を見つけるのが代表例で、販売戦略やレコメンドに活用されます。\n\nグルーピングが似たデータをまとめる整理であるのに対し、パターン発見は『隠れた関係や傾向を読み解く』点が違いです。試験では、データマイニングなどデータから知見を引き出す処理の一例として位置づけを問われます。見つけた規則を次の最適化や施策に生かすことがねらいです。",
-      "analogy_jp": "レシートの山を眺めるうち「雨の日は傘と一緒に温かい飲み物が売れる」と気づくようなもの。バラバラの記録から繰り返す傾向を読み取ります。",
-      "memory_hook_jp": "パターン発見といえばデータから規則性・傾向を見つける",
-      "inline_quiz": [
-        "2011h23tokubetsu-q009"
+      "one_line_jp": "繰り返し現れる規則性を見つける処理",
+      "one_line_zh": "找出反复出现的规律的处理",
+      "one_line_en": "Finding regularities that recur",
+      "extra_jp": [
+        "蓄積したデータ",
+        "関連や傾向"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "模式发现",
-      "term_en": "Pattern Discovery",
-      "definition_zh": "从数据中找出反复出现的规律或倾向的处理。",
-      "definition_en": "Processing that finds regularities or tendencies that appear repeatedly within data.",
-      "explanation_zh": "模式发现是从数据中找出潜藏的『规律』或『常见组合』的处理。例如发现『买啤酒的人往往也会一起买纸尿裤』这类连带购买的倾向就是典型例子，可用于销售策略和推荐。\n\n分组是把相似数据汇总的整理，而模式发现的不同在于『解读隐藏的关系或倾向』。考试会把它作为数据挖掘等从数据中提炼洞见的处理的一个实例来考查其定位。把发现的规律用到后续的最优化或施策上，正是它的目的。",
-      "explanation_en": "Pattern discovery is processing that finds hidden 'regularities' or 'common combinations' within data. A typical example is finding a cross-selling tendency such as 'people who buy beer often also buy diapers,' which is used for sales strategy and recommendations.\n\nWhile grouping is the organizing that gathers similar data, pattern discovery differs in that it 'reads out hidden relationships or tendencies.' The exam asks about its position as an example of processing—such as data mining—that draws insight from data. The aim is to apply the discovered regularities to subsequent optimization or measures.",
-      "analogy_zh": "就像盯着一堆收据看着看着，忽然发现『下雨天雨伞会和热饮一起卖得好』。从零散的记录中读出反复出现的倾向。",
-      "analogy_en": "Like staring at a pile of receipts until you notice that 'on rainy days, umbrellas sell well together with hot drinks.' You read repeating tendencies out of scattered records.",
-      "memory_hook_zh": "说到模式发现，就是从数据中找出规律、倾向",
-      "memory_hook_en": "Pattern discovery → find regularities and tendencies in data"
+      "extra_zh": [
+        "积累的数据",
+        "关联和趋势"
+      ],
+      "extra_en": [
+        "Accumulated data",
+        "Links and trends"
+      ]
     },
     {
       "term": "最適化",
-      "definition_jp": "制約条件のもとで目的(費用最小・利益最大等)が最良となる解を求めること。",
-      "explanation_jp": "最適化は、決められた条件(制約)を満たしながら、目的とする値が一番よくなる解を選び出すことです。「予算内でコストを最小にする」「在庫を切らさず保管費を抑える」など、限られた資源の中で最良の選択を導きます。\n\nグルーピングやパターン発見で得た知見を、実際の意思決定へ落とし込む処理にあたり、在庫管理・発注方式・与信管理など多くの業務応用の理論的な支えになります。試験では頻出語で、『制約の中で最良解を求める』という考え方と、コスト最小化・利益最大化といった目的の例を結びつけて理解しておくことが大切です。",
-      "analogy_jp": "限られた小遣いで、満足度が一番高くなるようお菓子の買い方を選ぶようなもの。使える条件の中で「いちばん得な組み合わせ」を探します。",
-      "memory_hook_jp": "最適化といえば制約の中で最良解を求める",
-      "inline_quiz": [
-        "2009h21h-q097",
-        "2011h23a-q024"
+      "one_line_jp": "制約を守って目的の値を最も良くすること",
+      "one_line_zh": "在遵守约束的前提下使目标值达到最佳",
+      "one_line_en": "Getting the best value of the objective within the constraints",
+      "extra_jp": [
+        "目的と制約",
+        "最も良い案"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"目的(費用最小・利益最大)\"]; B[\"制約条件\"]; A --> C[\"最適化\"]; B --> C; C --> D[\"在庫管理\"]; C --> E[\"発注方式\"]; C --> F[\"与信管理\"]",
-        "svg_path": "figures/strategy-01-02-u14-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "最优化",
-      "term_en": "Optimization",
-      "definition_zh": "在约束条件下，求出使目标(费用最小、利益最大等)达到最佳的解。",
-      "definition_en": "Finding the solution that makes the objective (minimum cost, maximum profit, etc.) best under given constraints.",
-      "explanation_zh": "最优化是在满足既定条件(约束)的前提下，挑出使目标值达到最佳的解。比如『在预算内把成本压到最低』『不让库存断货又压低保管费』，在有限的资源中导出最佳选择。\n\n它属于把分组、模式发现得到的洞见落实到实际决策的处理，是库存管理、订货方式、授信管理等众多业务应用的理论支撑。考试中是高频词，重要的是把握『在约束中求最佳解』的思路，并把它与成本最小化、利益最大化这类目标的例子结合起来理解。",
-      "explanation_en": "Optimization is selecting the solution that makes the target value best, while satisfying given conditions (constraints). It derives the best choice within limited resources, as in 'minimize cost within the budget' or 'keep inventory from running out while holding down storage cost.'\n\nIt is the processing that translates the insights gained from grouping and pattern discovery into actual decisions, and it theoretically underpins many business applications such as inventory management, ordering methods, and credit management. It is a high-frequency word in the exam; what matters is grasping the idea of 'finding the best solution within constraints' and connecting it to examples of objectives such as cost minimization and profit maximization.",
-      "analogy_zh": "就像用有限的零花钱，挑出让满足感最高的买零食方式。在可用的条件中，寻找『最划算的组合』。",
-      "analogy_en": "Like choosing how to buy snacks with limited pocket money so that your satisfaction is highest. Within the conditions you can use, you look for the 'most worthwhile combination.'",
-      "memory_hook_zh": "说到最优化，就是在约束中求最佳解",
-      "memory_hook_en": "Optimization → find the best solution within constraints"
+      "extra_zh": [
+        "目标和约束",
+        "最佳方案"
+      ],
+      "extra_en": [
+        "Objective and constraints",
+        "The best option"
+      ]
     },
     {
       "term": "在庫管理",
-      "definition_jp": "適正な在庫量を保ち、欠品や過剰在庫を防ぐための管理業務。",
-      "explanation_jp": "在庫管理は、商品や部品の在庫を「多すぎず少なすぎず」適正な量に保つ業務です。在庫が多すぎると保管費や資金が無駄になり、少なすぎると欠品(品切れ)で販売機会を失うため、両者のバランスを取ることが目的です。\n\n最適化の代表的な業務応用であり、後で学ぶ発注方式の土台にもなります。試験では、在庫を最適に保つ考え方や、ABC分析(重要度で在庫を区分し重点管理する手法)と結びつけて問われることがあります。『欠品と過剰の両方を避ける』のが狙いだと押さえましょう。",
-      "analogy_jp": "冷蔵庫の食材を切らさず、かといって腐らせて捨てない量に保つようなもの。足りなくても余りすぎても困るので、ちょうどよい量を狙います。",
-      "memory_hook_jp": "在庫管理といえば欠品も過剰も防ぐ適正在庫",
-      "inline_quiz": [
-        "2009h21a-q091",
-        "2011h23tokubetsu-q011"
+      "one_line_jp": "欠品も過剰も起こさない量に保つ業務",
+      "one_line_zh": "把数量保持在既不缺货也不过剩水平的业务",
+      "one_line_en": "Keeping stock free of both shortage and excess",
+      "extra_jp": [
+        "商品や部品の量",
+        "適正な在庫"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "库存管理",
-      "term_en": "Inventory Management",
-      "definition_zh": "保持适量库存，防止缺货和库存过剩的管理业务。",
-      "definition_en": "Management work that keeps an appropriate level of inventory and prevents both stockouts and excess inventory.",
-      "explanation_zh": "库存管理是把商品或零件的库存保持在『不多不少』的合理水平的业务。库存太多会浪费保管费和资金，太少又会因缺货(断货)而错失销售机会，所以目的是在两者之间取得平衡。\n\n它是最优化的典型业务应用，也是后面要学的订货方式的基础。考试中可能会结合把库存保持在最优的思路，或与 ABC 分析(按重要程度对库存分类、做重点管理的方法)一起考查。记住它的目标是『缺货和过剩两头都要避免』。",
-      "explanation_en": "Inventory management is the work of keeping the stock of goods or parts at an appropriate level that is 'neither too much nor too little.' Too much inventory wastes storage cost and capital, while too little loses sales opportunities through stockouts (running out), so the aim is to balance the two.\n\nIt is a representative business application of optimization and the foundation for the ordering methods learned later. The exam may ask it together with the idea of keeping inventory optimal, or with ABC analysis (a method that classifies inventory by importance and manages it with priority). Remember that its aim is to 'avoid both stockouts and excess.'",
-      "analogy_zh": "就像把冰箱里的食材保持在既不断顿、又不会放坏丢掉的量。少了不行，多了也麻烦，所以瞄准刚刚好的量。",
-      "analogy_en": "Like keeping the food in your fridge at a level where you never run out, yet nothing spoils and gets thrown away. Too little is bad, too much is troublesome, so you aim for just the right amount.",
-      "memory_hook_zh": "说到库存管理，就是防缺货也防过剩的合理库存",
-      "memory_hook_en": "Inventory management → appropriate stock that prevents both stockouts and excess"
+      "extra_zh": [
+        "商品和零部件的数量",
+        "适当的库存"
+      ],
+      "extra_en": [
+        "Quantities of goods and parts",
+        "Appropriate stock"
+      ]
     },
     {
       "term": "発注方式",
-      "definition_jp": "いつ・どれだけ発注するかを決める在庫補充のルール。",
-      "explanation_jp": "発注方式は、在庫を補充する際に「いつ」「どれだけ」注文するかを定めたルールです。代表的に、在庫が一定量(発注点)まで減ったら決まった量を注文する『定量発注方式』と、決まった時期ごとにそのつど必要量を注文する『定期発注方式』の2つがあります。\n\n在庫管理を具体的に実現する仕組みで、試験では2方式の違いがよく問われます。定量発注は「量は一定・時期は不定」、定期発注は「時期は一定・量は不定」と整理でき、発注点や安全在庫といった用語とあわせて、どちらの方式の特徴かを区別できることがポイントです。",
-      "analogy_jp": "トイレットペーパーを「残り1個になったら買う」のが定量発注、「毎週日曜にまとめ買い」が定期発注。きっかけが残量か日付かで方式が分かれます。",
-      "memory_hook_jp": "発注方式といえば定量発注と定期発注の使い分け",
-      "inline_quiz": [
-        "2009h21a-q007",
-        "2017h29h-q005"
+      "one_line_jp": "補充の時期と量を決める規則",
+      "one_line_zh": "决定补货时机和数量的规则",
+      "one_line_en": "A rule that sets when and how much to reorder",
+      "extra_jp": [
+        "残量や周期",
+        "発注の時期と量"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"発注方式\"]; A --> B[\"定量発注方式\"]; A --> C[\"定期発注方式\"]; B --> D[\"在庫が発注点まで減ったら一定量を発注\"]; C --> E[\"一定の時期ごとに必要量を発注\"]",
-        "svg_path": "figures/strategy-01-02-u14-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "订货方式",
-      "term_en": "Ordering Method",
-      "definition_zh": "决定何时、订多少的库存补充规则。",
-      "definition_en": "A rule for replenishing inventory that decides when and how much to order.",
-      "explanation_zh": "订货方式是补充库存时，规定『何时』『订多少』的规则。代表性的有两种：库存减到一定量(订货点)就订固定数量的『定量订货方式』，以及每隔固定的时期就按当时的需要量订货的『定期订货方式』。\n\n它是把库存管理具体落地的机制，考试中经常考查两种方式的区别。可以整理为：定量订货是『量固定、时期不定』，定期订货是『时期固定、量不定』，再配合订货点、安全库存等术语，能区分出各是哪种方式的特征是关键。",
-      "explanation_en": "An ordering method is a rule that specifies 'when' and 'how much' to order when replenishing inventory. There are two representative types: the 'fixed-quantity ordering method,' which orders a set amount once stock drops to a certain level (the order point), and the 'fixed-period ordering method,' which orders the amount needed at the time, at regular intervals.\n\nIt is the mechanism that concretely realizes inventory management, and the exam often asks about the difference between the two methods. You can organize it as: fixed-quantity ordering is 'fixed amount, variable timing,' and fixed-period ordering is 'fixed timing, variable amount'; together with terms like order point and safety stock, the key is being able to tell which method each feature belongs to.",
-      "analogy_zh": "卫生纸『剩到最后一卷就去买』是定量订货，『每周日统一采购』是定期订货。触发点是剩余量还是日期，方式就此分开。",
-      "analogy_en": "Buying toilet paper 'when only one roll is left' is fixed-quantity ordering; 'stocking up every Sunday' is fixed-period ordering. Whether the trigger is the remaining amount or the date is what separates the methods.",
-      "memory_hook_zh": "说到订货方式，就是定量订货与定期订货的区分使用",
-      "memory_hook_en": "Ordering method → choosing between fixed-quantity and fixed-period ordering"
+      "extra_zh": [
+        "余量或周期",
+        "订货时机和数量"
+      ],
+      "extra_en": [
+        "Remaining stock or cycle",
+        "Order timing and quantity"
+      ]
     },
     {
       "term": "与信管理",
-      "definition_jp": "取引先の支払能力(信用)を評価・管理し、貸倒れを防ぐ業務。",
-      "explanation_jp": "与信管理は、掛け取引(後払い)の相手にどこまで信用してよいかを評価し、管理する業務です。取引先ごとに与信限度額(信用して取引できる上限)を設け、支払い状況を見ながら未回収や貸倒れ(代金が回収できなくなること)を防ぎます。\n\n在庫・発注と並ぶ代表的な業務応用で、データに基づき取引先の信用を判断する点でデータ利活用とつながります。試験では出題は多くありませんが、『取引先の信用を管理して貸倒れリスクを抑える業務』という意味と、与信限度額の考え方を押さえておけば十分です。",
-      "analogy_jp": "友人にお金を貸すとき、相手の返済ぐあいを見て「この人にはここまでなら貸せる」と上限を決めるようなもの。信用に応じて取引の枠を管理します。",
-      "memory_hook_jp": "与信管理といえば取引先の信用を管理して貸倒れ防止",
+      "one_line_jp": "後払いの相手に上限を決めて貸倒れを防ぐ業務",
+      "one_line_zh": "给赊销客户定上限以防坏账的业务",
+      "one_line_en": "Setting limits for customers who pay later to prevent bad debts",
+      "extra_jp": [
+        "取引先の支払能力",
+        "未回収額の上限"
+      ],
+      "extra_zh": [
+        "客户的支付能力",
+        "未回收金额的上限"
+      ],
+      "extra_en": [
+        "Customers' ability to pay",
+        "Ceiling on uncollected amounts"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "グルーピング",
+      "term_zh": "分组",
+      "term_en": "Grouping",
+      "one_jp": "**グルーピング**は、データを似た性質ごとにまとめて、いくつかの集団に分ける処理である。",
+      "one_zh": "**分组**（[[jp:グルーピング]]）是把数据按相似的性质归到一起、分成若干组的处理。",
+      "one_en": "**Grouping** ([[jp:グルーピング]]) is the processing that gathers data by similar traits and divides it into several groups.",
+      "detail_jp": "顧客なら購入額や来店頻度、商品なら売れ方を基準にまとめると、集団ごとの特徴を比べやすくなる。基準を人が決めて分ける方法も、データの近さから自動でまとめる方法もある。",
+      "detail_zh": "以顾客的消费金额和到店频率、商品的销售情况为标准归类后，各组的特征就容易比较了。既可以由人定好标准来分，也可以根据数据之间的接近程度自动归类。",
+      "detail_en": "Group customers by spending and visit frequency, or products by how they sell, and the traits of each group become easy to compare. People can set the criteria themselves, or the data can be gathered automatically according to how close the values are.",
+      "analogy_jp": "雑多に積まれた本を、小説、料理、旅行といった棚に分けるようなもの。棚ができると、どの分野が多いかが一目で分かります。",
+      "analogy_zh": "就像把乱堆的书分到小说、烹饪、旅行等书架上。有了书架，哪一类书多就一目了然。",
+      "analogy_en": "Like sorting a messy stack of books onto shelves for fiction, cooking, and travel. Once the shelves exist, you can see at a glance which subject dominates.",
+      "points": [],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "all",
+            "label": {
+              "jp": "会員全体",
+              "zh": "全体会员",
+              "en": "All members"
+            },
+            "children": [
+              {
+                "id": "a",
+                "label": {
+                  "jp": "よく来店し購入額が多い集団",
+                  "zh": "常到店且消费多的群体",
+                  "en": "Frequent visitors who spend a lot"
+                }
+              },
+              {
+                "id": "b",
+                "label": {
+                  "jp": "来店は少ないが購入額が多い集団",
+                  "zh": "到店少但消费多的群体",
+                  "en": "Rare visitors who spend a lot"
+                }
+              },
+              {
+                "id": "c",
+                "label": {
+                  "jp": "購入額が少ない集団",
+                  "zh": "消费少的群体",
+                  "en": "Members who spend little"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [],
+      "definition_jp": "グルーピングは、データを似た性質ごとにまとめて、いくつかの集団に分ける処理である。",
+      "definition_zh": "分组（グルーピング）是把数据按相似的性质归到一起、分成若干组的处理。",
+      "definition_en": "Grouping (グルーピング) is the processing that gathers data by similar traits and divides it into several groups.",
+      "explanation_jp": "顧客なら購入額や来店頻度、商品なら売れ方を基準にまとめると、集団ごとの特徴を比べやすくなる。基準を人が決めて分ける方法も、データの近さから自動でまとめる方法もある。",
+      "explanation_zh": "以顾客的消费金额和到店频率、商品的销售情况为标准归类后，各组的特征就容易比较了。既可以由人定好标准来分，也可以根据数据之间的接近程度自动归类。",
+      "explanation_en": "Group customers by spending and visit frequency, or products by how they sell, and the traits of each group become easy to compare. People can set the criteria themselves, or the data can be gathered automatically according to how close the values are.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "パターン発見",
+      "term_zh": "模式发现",
+      "term_en": "Pattern Discovery",
+      "one_jp": "**パターン発見**は、蓄積したデータの中から繰り返し現れる**規則性**や傾向を見つけ出す処理である。",
+      "one_zh": "**模式发现**（[[jp:パターン発見]]）是从积累的数据中找出反复出现的**规律**和趋势的处理。",
+      "one_en": "**Pattern discovery** ([[jp:パターン発見]]) is the processing that finds **regularities** and trends that recur in accumulated data.",
+      "detail_jp": "項目どうしの関連や時期による変化を探り、品ぞろえや販売促進に生かす。こうした規則性を大量のデータから掘り出す手法を**データマイニング**という。",
+      "detail_zh": "它探寻项目之间的关联和随时间的变化，用于调整商品结构和销售促进。从大量数据中挖掘这类规律的方法称为**数据挖掘**（[[jp:データマイニング]]）。",
+      "detail_en": "It probes how items relate and how they shift over time, then feeds the results into product selection and promotions. The technique of digging such regularities out of large volumes of data is called **data mining** ([[jp:データマイニング]]).",
+      "analogy_jp": "店長がレジ記録を眺めるうちに、金曜の夕方は総菜が先に売れると気づくようなもの。個々の記録には書かれていない傾向を読み取ります。",
+      "analogy_zh": "就像店长翻看收银记录时，发现周五傍晚熟食总是先卖完。读出的是单条记录里没有写的趋势。",
+      "analogy_en": "Like a store manager skimming register records and noticing that prepared foods sell first on Friday evenings. You read a trend that no single record states.",
+      "hook_jp": "mining は「採掘」の意味。データの山から鉱脈を掘り当てる姿を思い浮かべる。",
+      "hook_zh": "mining 的意思是“采矿”。想象从数据堆成的山里挖到矿脉的样子。",
+      "hook_en": "\"Mining\" means digging for ore: picture striking a rich vein in a mountain of data.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "データマイニングの典型は、同時に買われる商品の組合せの分析である。決まった項目の集計はこれに当たらない。",
+          "text_zh": "数据挖掘（[[jp:データマイニング]]）的典型例子是分析一起购买的商品组合。对固定项目做汇总不算数据挖掘。",
+          "text_en": "The classic case of data mining ([[jp:データマイニング]]) is analyzing which products are bought together. Totaling fixed fields does not count.",
+          "qids": [
+            "2011h23tokubetsu-q009"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "データウェアハウスは分析用のデータをためておく保管庫であり、規則性を探す手法であるデータマイニングとは別物である。",
+          "text_zh": "数据仓库（[[jp:データウェアハウス]]）是存放分析用数据的仓库，与寻找规律的方法数据挖掘不是一回事。",
+          "text_en": "A data warehouse ([[jp:データウェアハウス]]) is a store that holds data for analysis, which makes it something quite different from data mining, a technique for finding regularities.",
+          "qids": [
+            "2016h28a-q027"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "記録を集める",
+                "zh": "收集记录",
+                "en": "Collect records"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "関連を探す",
+                "zh": "寻找关联",
+                "en": "Look for links"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "施策に生かす",
+                "zh": "落实到经营措施",
+                "en": "Act on the findings"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "例として、パン店が朝の時間帯のレジ記録を 1 か月分集める。",
+            "caption_zh": "例如，一家面包店收集一个月的早间收银记录。",
+            "caption_en": "For example, a bakery gathers one month of its morning register records.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "同じレシートによく並ぶ品目の組を数え、コーヒーと総菜パンの組が多いと分かる。",
+            "caption_zh": "统计经常出现在同一张小票上的商品组合，发现咖啡配咸味面包的组合很多。",
+            "caption_en": "It counts which item pairs often share a receipt and finds that coffee with savory bread is common.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "2 つの売り場を隣に移し、セット価格を試す。",
+            "caption_zh": "把这两个货位挪到相邻位置，并试行套餐价。",
+            "caption_en": "It moves the two displays next to each other and tries a set price.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2011h23tokubetsu-q009",
+        "2016h28a-q027"
+      ],
+      "definition_jp": "パターン発見は、蓄積したデータの中から繰り返し現れる規則性や傾向を見つけ出す処理である。",
+      "definition_zh": "模式发现（パターン発見）是从积累的数据中找出反复出现的规律和趋势的处理。",
+      "definition_en": "Pattern discovery (パターン発見) is the processing that finds regularities and trends that recur in accumulated data.",
+      "explanation_jp": "項目どうしの関連や時期による変化を探り、品ぞろえや販売促進に生かす。こうした規則性を大量のデータから掘り出す手法をデータマイニングという。",
+      "explanation_zh": "它探寻项目之间的关联和随时间的变化，用于调整商品结构和销售促进。从大量数据中挖掘这类规律的方法称为数据挖掘（データマイニング）。",
+      "explanation_en": "It probes how items relate and how they shift over time, then feeds the results into product selection and promotions. The technique of digging such regularities out of large volumes of data is called data mining (データマイニング).",
+      "memory_hook_jp": "mining は「採掘」の意味。データの山から鉱脈を掘り当てる姿を思い浮かべる。",
+      "memory_hook_zh": "mining 的意思是“采矿”。想象从数据堆成的山里挖到矿脉的样子。",
+      "memory_hook_en": "\"Mining\" means digging for ore: picture striking a rich vein in a mountain of data.",
+      "inline_quiz": [
+        "2011h23tokubetsu-q009",
+        "2016h28a-q027"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "最適化",
+      "term_zh": "最优化",
+      "term_en": "Optimization",
+      "one_jp": "**最適化**は、**制約条件**を守りながら**目的**の値を最も良くする案を探すことである。",
+      "one_zh": "**最优化**（[[jp:最適化]]）是在遵守**约束条件**（[[jp:制約条件]]）的同时，寻找使**目标**（[[jp:目的]]）值达到最佳的方案。",
+      "one_en": "**Optimization** ([[jp:最適化]]) is the search for the option that brings the value of the **objective** ([[jp:目的]]) to its best while honoring the **constraints** ([[jp:制約条件]]).",
+      "detail_jp": "目的の例は費用の最小化や利益の最大化、制約の例は予算や時間、原料の量である。複数の拠点間の輸送のように供給と需要を同時に満たす問題では、単価の安い経路から埋める方法が最良とは限らず、組合せごとの総額を比べる。先が読めない場面では、案ごとの最悪の結果を比べて決める**マクシミン戦略**のような考え方も使う。",
+      "detail_zh": "目标可以是费用最小或利润最大，约束可以是预算、时间或原料数量。像多个站点之间的运输那样要同时满足供给和需求的问题，从单价便宜的路线开始填满未必最好，要比较各种组合的总额。前景难料时，也会用到**最大最小策略**（[[jp:マクシミン戦略]]）这样的思路，比较各方案的最坏结果后再决定。",
+      "detail_en": "Objectives include minimizing cost or maximizing profit, while constraints include budget, time, and the amount of materials. In problems that must meet supply and demand at once, such as shipping between several sites, filling the cheapest routes first is not always best, so compare the total for each combination. When the future is hard to read, an approach such as the **maximin strategy** ([[jp:マクシミン戦略]]) decides by comparing the worst outcome of each option.",
+      "analogy_jp": "限られた旅費と日数の中で、満足度が一番高くなる旅程を組むようなもの。行きたい場所を全部は回れないので、組合せを比べて決めます。",
+      "analogy_zh": "就像在有限的旅费和天数内，安排一条满意度最高的行程。想去的地方不可能全都去，只能比较各种组合后再定。",
+      "analogy_en": "Like planning the most satisfying trip you can on a limited budget and number of days. You cannot visit everywhere, so you compare combinations and choose.",
+      "hook_jp": "英語の optimize はラテン語の optimus (最良の) に由来する。「最も適した」という漢字と同じ向きの語である。",
+      "hook_zh": "英语 optimize 源自拉丁语 optimus（最好的）。日语汉字 [[jp:最適]]（最合适）的含义也指向同一方向。",
+      "hook_en": "English \"optimize\" comes from the Latin optimus (\"best\"), which points the same way as the kanji in [[jp:最適]] (\"most suitable\").",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "原料が複数あるとき、生産できる数は最も早く尽きる原料で決まる。原料ごとに作れる数を計算し、その最小値をとる。",
+          "text_zh": "原料有多种时，能生产的数量取决于最先用完的原料。先算出每种原料能做多少个，再取其中的最小值。",
+          "text_en": "With several materials, output is capped by whichever runs out first. Work out how many units each material allows and take the smallest figure.",
+          "qids": [
+            "2015h27a-q015"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "限られた作業時間で利益を最大にする生産計画では、1 個当たりでなく作業時間当たりの利益が高い製品から順に、生産上限まで時間を割り当てる。",
+          "text_zh": "要在有限的作业时间内让生产计划的利润最大，应按单位作业时间（而不是每件）的利润从高到低，依次把时间分配给各产品，直到其生产上限。",
+          "text_en": "To maximize profit in limited working time, rank products by profit per unit of working time, not per item, and give each its hours in that order up to its production ceiling.",
+          "qids": [
+            "2016h28h-q018"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "マクシミン戦略は、案ごとの最小の利益を比べ、それが最大の案を採る。",
+          "text_zh": "最大最小策略（[[jp:マクシミン戦略]]）比较各方案的最低利润，选其中最低利润最大的方案。",
+          "text_en": "The maximin strategy ([[jp:マクシミン戦略]]) compares each option's lowest profit and picks the option whose lowest profit is highest.",
+          "qids": [
+            "2026r08-q003"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "目的を決める",
+                "zh": "确定目标",
+                "en": "Set the objective"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "制約を挙げる",
+                "zh": "列出约束",
+                "en": "List the constraints"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "候補を比べる",
+                "zh": "比较候选方案",
+                "en": "Compare candidates"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "最良の案を採る",
+                "zh": "采用最佳方案",
+                "en": "Adopt the best option"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "例として、イベントに出店する店が目的を「利益を最大にする」と決める。",
+            "caption_zh": "例如，一家要在活动上摆摊的店把目标定为“利润最大化”。",
+            "caption_en": "For example, a shop with a stall at an event sets its objective as maximizing profit.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "仕入れ予算は 3 万円まで、という守るべき条件を書き出す。",
+            "caption_zh": "写下必须遵守的条件：进货预算不超过 3 万日元。",
+            "caption_en": "It writes down the condition it must honor: a purchasing budget of up to 30,000 yen.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "商品の組合せごとに費用と利益を計算する。",
+            "caption_zh": "按每种商品组合计算费用和利润。",
+            "caption_en": "It calculates cost and profit for each combination of products.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "予算内に収まる組合せのうち、利益が最も大きいものを採用する。",
+            "caption_zh": "在预算内的组合中，采用利润最大的一种。",
+            "caption_en": "Among the combinations within budget, it adopts the one with the largest profit.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2015h27a-q015",
+        "2016h28h-q018",
+        "2016h28a-q028"
+      ],
+      "definition_jp": "最適化は、制約条件を守りながら目的の値を最も良くする案を探すことである。",
+      "definition_zh": "最优化（最適化）是在遵守约束条件（制約条件）的同时，寻找使目标（目的）值达到最佳的方案。",
+      "definition_en": "Optimization (最適化) is the search for the option that brings the value of the objective (目的) to its best while honoring the constraints (制約条件).",
+      "explanation_jp": "目的の例は費用の最小化や利益の最大化、制約の例は予算や時間、原料の量である。複数の拠点間の輸送のように供給と需要を同時に満たす問題では、単価の安い経路から埋める方法が最良とは限らず、組合せごとの総額を比べる。先が読めない場面では、案ごとの最悪の結果を比べて決めるマクシミン戦略のような考え方も使う。",
+      "explanation_zh": "目标可以是费用最小或利润最大，约束可以是预算、时间或原料数量。像多个站点之间的运输那样要同时满足供给和需求的问题，从单价便宜的路线开始填满未必最好，要比较各种组合的总额。前景难料时，也会用到最大最小策略（マクシミン戦略）这样的思路，比较各方案的最坏结果后再决定。",
+      "explanation_en": "Objectives include minimizing cost or maximizing profit, while constraints include budget, time, and the amount of materials. In problems that must meet supply and demand at once, such as shipping between several sites, filling the cheapest routes first is not always best, so compare the total for each combination. When the future is hard to read, an approach such as the maximin strategy (マクシミン戦略) decides by comparing the worst outcome of each option.",
+      "memory_hook_jp": "英語の optimize はラテン語の optimus (最良の) に由来する。「最も適した」という漢字と同じ向きの語である。",
+      "memory_hook_zh": "英语 optimize 源自拉丁语 optimus（最好的）。日语汉字 最適（最合适）的含义也指向同一方向。",
+      "memory_hook_en": "English \"optimize\" comes from the Latin optimus (\"best\"), which points the same way as the kanji in 最適 (\"most suitable\").",
+      "inline_quiz": [
+        "2015h27a-q015",
+        "2016h28h-q018",
+        "2016h28a-q028"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "在庫管理",
+      "term_zh": "库存管理",
+      "term_en": "Inventory Management",
+      "one_jp": "**在庫管理**は、商品や部品の量を欠品も過剰も起こさない水準に保つ業務である。",
+      "one_zh": "**库存管理**（[[jp:在庫管理]]）是把商品和零部件的数量保持在既不缺货也不过剩的水平的业务。",
+      "one_en": "**Inventory management** ([[jp:在庫管理]]) is the work of keeping goods and parts at a level with neither shortages nor excess.",
+      "detail_jp": "**欠品**は必要なときに品物が無い状態を指す。重点管理の手法の例が **ABC 分析**で、品目を金額の大きい順に区分して上位を手厚く管理する。受注に在庫を割り当てることを**引当**という。",
+      "detail_zh": "**缺货**（[[jp:欠品]]）是指需要时没有货的状态。**ABC 分析**（[[jp:ABC分析]]）是重点管理方法的一例，按金额从大到小给品项分类，对靠前的品项重点管理。把库存分配给已接订单称为**库存分配**（[[jp:引当]]）。",
+      "detail_en": "A **stockout** ([[jp:欠品]]) means the goods are not there when needed. **ABC analysis** ([[jp:ABC分析]]) is one method of focused control: it classes items in descending order of value and manages the top group most closely. Assigning stock to received orders is called **allocation** ([[jp:引当]]).",
+      "analogy_jp": "家の常備品のようなもの。切らすと困るが、買い込みすぎると置き場所に困り、使用期限も過ぎてしまいます。",
+      "analogy_zh": "就像家里常备的日用品。用完了麻烦，囤太多又没地方放，还会过期。",
+      "analogy_en": "Like household staples. Running out is a nuisance, but overbuy and you run short of space and things pass their use-by dates.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "パレート図は、項目を大きい順に並べた棒に累積比率の折れ線を重ねた図で、金額の比率が高い品目を重点管理の対象に絞り込むのに使う。",
+          "text_zh": "帕累托图（[[jp:パレート図]]）是在从大到小排列的柱形上叠加累计比率折线的图，用来筛选金额占比高的品项作为重点管理对象。",
+          "text_en": "A Pareto chart ([[jp:パレート図]]) overlays a cumulative-percentage line on bars sorted from largest to smallest, and it narrows focused control down to the items with the largest share of value.",
+          "qids": [
+            "2011h23tokubetsu-q011"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "引当可能在庫を在庫のうち引当できる数量とみなす場合、入荷前の発注分は数えない。集計を始める時点の在庫にその後の入荷分を足し、受注済みの数量を引いて求める。",
+          "text_zh": "把可分配库存（[[jp:引当可能在庫]]）看作库存中可以分配的数量时，尚未到货的订货不计入。用开始统计时的库存加上之后的到货，再减去已接订单的数量来计算。",
+          "text_en": "When allocatable stock ([[jp:引当可能在庫]]) is taken to mean the stock that can be allocated, ordered goods not yet received do not count. Start from the stock at the beginning of the tally, add later receipts, and subtract the quantity already ordered by customers.",
+          "qids": [
+            "2011h23tokubetsu-q010"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "移動平均 (直近の一定期間の平均) で翌月の販売を見込み、在庫との差を基に製造量を求める場合、平均するのは販売実績だけである。在庫は当月末の値を使う。",
+          "text_zh": "用移动平均（[[jp:移動平均]]，最近一段时间的平均值）预估下月销量、再根据与库存的差额求生产量时，只对销售实绩取平均。库存用当月月末的数值。",
+          "text_en": "When a moving average ([[jp:移動平均]], the mean over a recent fixed period) forecasts next month's sales and output is set from the gap against stock, only actual sales are averaged. Stock uses the figure at the end of the current month.",
+          "qids": [
+            "2009h21h-q027",
+            "2012h24a-q029"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "在庫の状態",
+              "zh": "库存状态",
+              "en": "Stock level"
+            },
+            {
+              "jp": "起こること",
+              "zh": "会发生什么",
+              "en": "What happens"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "少なすぎる",
+                  "zh": "太少",
+                  "en": "Too low"
+                },
+                {
+                  "jp": "欠品で販売や生産の機会を逃す",
+                  "zh": "因缺货错失销售或生产机会",
+                  "en": "Stockouts cost sales and production opportunities"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "適正",
+                  "zh": "适当",
+                  "en": "Right level"
+                },
+                {
+                  "jp": "必要な量に応じられ、余分な費用も抑えられる",
+                  "zh": "能满足所需数量，也能控制多余费用",
+                  "en": "Demand can be met and extra costs stay down"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "多すぎる",
+                  "zh": "太多",
+                  "en": "Too high"
+                },
+                {
+                  "jp": "保管費用が増え、資金が品物の形で寝る",
+                  "zh": "保管费用增加，资金压在货物上",
+                  "en": "Storage costs rise and cash sits idle in the form of goods"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2011h23tokubetsu-q011",
+        "2011h23tokubetsu-q010",
+        "2012h24a-q029"
+      ],
+      "definition_jp": "在庫管理は、商品や部品の量を欠品も過剰も起こさない水準に保つ業務である。",
+      "definition_zh": "库存管理（在庫管理）是把商品和零部件的数量保持在既不缺货也不过剩的水平的业务。",
+      "definition_en": "Inventory management (在庫管理) is the work of keeping goods and parts at a level with neither shortages nor excess.",
+      "explanation_jp": "欠品は必要なときに品物が無い状態を指す。重点管理の手法の例が ABC 分析で、品目を金額の大きい順に区分して上位を手厚く管理する。受注に在庫を割り当てることを引当という。",
+      "explanation_zh": "缺货（欠品）是指需要时没有货的状态。ABC 分析（ABC分析）是重点管理方法的一例，按金额从大到小给品项分类，对靠前的品项重点管理。把库存分配给已接订单称为库存分配（引当）。",
+      "explanation_en": "A stockout (欠品) means the goods are not there when needed. ABC analysis (ABC分析) is one method of focused control: it classes items in descending order of value and manages the top group most closely. Assigning stock to received orders is called allocation (引当).",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2011h23tokubetsu-q011",
+        "2011h23tokubetsu-q010",
+        "2012h24a-q029"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "発注方式",
+      "term_zh": "订货方式",
+      "term_en": "Ordering Method",
+      "one_jp": "**発注方式**は、在庫を補充するときの時期と量を決める規則で、代表例に**定量発注方式**と**定期発注方式**がある。",
+      "one_zh": "**订货方式**（[[jp:発注方式]]）是决定补充库存的时机和数量的规则，代表性的有**定量订货方式**（[[jp:定量発注方式]]）和**定期订货方式**（[[jp:定期発注方式]]）。",
+      "one_en": "An **ordering method** ([[jp:発注方式]]) is a rule that sets when and how much to reorder, with the **fixed-quantity ordering method** ([[jp:定量発注方式]]) and the **fixed-period ordering method** ([[jp:定期発注方式]]) as the main examples.",
+      "detail_jp": "定量発注方式で発注の目安とする残量を**発注点**という。どちらの方式でも、需要のぶれや納入の遅れに備えて余分に持つ**安全在庫**を見込むことがある。",
+      "detail_zh": "定量订货方式中作为订货标准的余量称为**订货点**（[[jp:発注点]]）。两种方式都可能计入**安全库存**（[[jp:安全在庫]]），即为应对需求波动和交货延迟而多备的量。",
+      "detail_en": "The stock level that triggers an order under the fixed-quantity method is the **reorder point** ([[jp:発注点]]). Either method may also allow for **safety stock** ([[jp:安全在庫]]), extra units held against swings in demand and late deliveries.",
+      "analogy_jp": "冷蔵庫の牛乳を買い足すルールのようなもの。いつ、どれだけ買うかを決めておくと、切らす前に迷わず補充できます。",
+      "analogy_zh": "就像给冰箱里的牛奶定一条补货规矩。定好何时买、买多少，就能在喝完之前毫不犹豫地补上。",
+      "analogy_en": "Like a house rule for restocking milk in the fridge. Decide when and how much to buy, and you top up before it runs out, with no second-guessing.",
+      "hook_jp": "字で覚える。定「量」は量が定まり、定「期」は期日が定まる。",
+      "hook_zh": "从字面记：定“量”是数量固定，定“期”是日期固定。",
+      "hook_en": "Read the kanji: [[jp:定量]] fixes the [[jp:量]] (quantity), and [[jp:定期]] fixes the [[jp:期]] (period).",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "需要が安定しているとき、定量発注方式の最適な発注量は、発注にかかる費用と保管にかかる費用の合計が最小になる量である。1 回の量を増やすと前者は減り、後者は増える。",
+          "text_zh": "需求稳定时，定量订货方式（[[jp:定量発注方式]]）的最佳订货量，是让订货费用与保管费用之和最小的量。每次订得越多，前者越少，后者越多。",
+          "text_en": "With steady demand, the best order size under the fixed-quantity ordering method ([[jp:定量発注方式]]) is the one that minimizes ordering costs plus storage costs combined. Larger orders lower the first and raise the second.",
+          "qids": [
+            "2023r05-q024"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "定期発注方式の発注量は (発注間隔 + 調達期間) × 1 日の使用量 + 安全在庫 − 現在の在庫 − 発注残 で求める。調達期間は発注から納入まで、発注残は注文済みで未入荷の量を指す。",
+          "text_zh": "定期订货方式（[[jp:定期発注方式]]）的订货量 = (订货间隔（[[jp:発注間隔]]） + 采购周期（[[jp:調達期間]]）) × 每天的使用量 + 安全库存（[[jp:安全在庫]]） − 当前库存 − 未到货量（[[jp:発注残]]）。采购周期指从下单到交货的时间，未到货量指已下单但尚未入库的量。",
+          "text_en": "The fixed-period ordering method ([[jp:定期発注方式]]) sets the order quantity as (order interval ([[jp:発注間隔]]) + lead time ([[jp:調達期間]])) × daily usage + safety stock ([[jp:安全在庫]]) − current stock − outstanding orders ([[jp:発注残]]). Lead time runs from placing an order to delivery, and outstanding orders are goods ordered but not yet received.",
+          "qids": [
+            "2024r06-q024",
+            "2009h21a-q007"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "生産計画から部品の発注量を求める場合は、その入荷分で賄う期間の使用量から、入荷直前に残る見込みの在庫を引く。安全在庫を見込むなら、その分を足す。",
+          "text_zh": "根据生产计划求零部件订货量时，用这批到货所要覆盖期间的用量，减去预计到货前剩余的库存。如果要计入安全库存，就再加上这部分。",
+          "text_en": "To get a parts order from a production plan, take the usage for the period this delivery must cover and subtract the stock expected to remain just before it arrives. If safety stock is included, add it on.",
+          "qids": [
+            "2019r01a-q026",
+            "2017h29h-q005"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "定量発注方式",
+            "zh": "定量订货方式",
+            "en": "Fixed-quantity ordering method"
+          },
+          "b": {
+            "jp": "定期発注方式",
+            "zh": "定期订货方式",
+            "en": "Fixed-period ordering method"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "発注のきっかけ",
+                "zh": "订货的触发条件",
+                "en": "Order trigger"
+              },
+              "a": {
+                "jp": "在庫が決めた残量まで減ったとき",
+                "zh": "库存减少到设定的余量时",
+                "en": "When stock falls to a set level"
+              },
+              "b": {
+                "jp": "決めた周期が来たとき",
+                "zh": "到了设定的周期时",
+                "en": "When the set cycle comes round"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "1 回の発注量",
+                "zh": "每次的订货量",
+                "en": "Quantity per order"
+              },
+              "a": {
+                "jp": "あらかじめ決めた量",
+                "zh": "事先定好的量",
+                "en": "A preset amount"
+              },
+              "b": {
+                "jp": "そのつど計算した量",
+                "zh": "每次计算出的量",
+                "en": "An amount calculated each time"
+              }
+            },
+            {
+              "label": {
+                "jp": "変わるもの",
+                "zh": "会变动的是",
+                "en": "What varies"
+              },
+              "a": {
+                "jp": "発注の時期",
+                "zh": "订货时机",
+                "en": "Order timing"
+              },
+              "b": {
+                "jp": "発注の量",
+                "zh": "订货量",
+                "en": "Order quantity"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2023r05-q024",
+        "2024r06-q024",
+        "2009h21a-q007"
+      ],
+      "definition_jp": "発注方式は、在庫を補充するときの時期と量を決める規則で、代表例に定量発注方式と定期発注方式がある。",
+      "definition_zh": "订货方式（発注方式）是决定补充库存的时机和数量的规则，代表性的有定量订货方式（定量発注方式）和定期订货方式（定期発注方式）。",
+      "definition_en": "An ordering method (発注方式) is a rule that sets when and how much to reorder, with the fixed-quantity ordering method (定量発注方式) and the fixed-period ordering method (定期発注方式) as the main examples.",
+      "explanation_jp": "定量発注方式で発注の目安とする残量を発注点という。どちらの方式でも、需要のぶれや納入の遅れに備えて余分に持つ安全在庫を見込むことがある。",
+      "explanation_zh": "定量订货方式中作为订货标准的余量称为订货点（発注点）。两种方式都可能计入安全库存（安全在庫），即为应对需求波动和交货延迟而多备的量。",
+      "explanation_en": "The stock level that triggers an order under the fixed-quantity method is the reorder point (発注点). Either method may also allow for safety stock (安全在庫), extra units held against swings in demand and late deliveries.",
+      "memory_hook_jp": "字で覚える。定「量」は量が定まり、定「期」は期日が定まる。",
+      "memory_hook_zh": "从字面记：定“量”是数量固定，定“期”是日期固定。",
+      "memory_hook_en": "Read the kanji: 定量 fixes the 量 (quantity), and 定期 fixes the 期 (period).",
+      "inline_quiz": [
+        "2023r05-q024",
+        "2024r06-q024",
+        "2009h21a-q007"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "与信管理",
+      "term_zh": "授信管理",
+      "term_en": "Credit Management",
+      "one_jp": "**与信管理**は、代金を後払いにする取引先の支払能力を評価し、未回収額の上限である**与信限度額**を決めて**貸倒れ**を防ぐ業務である。",
+      "one_zh": "**授信管理**（[[jp:与信管理]]）是评估赊销客户的支付能力，设定未回收金额的上限**授信额度**（[[jp:与信限度額]]），以防止**坏账**（[[jp:貸倒れ]]）的业务。",
+      "one_en": "**Credit management** ([[jp:与信管理]]) is the work of assessing whether customers buying on deferred terms can pay and setting a **credit limit** ([[jp:与信限度額]]), the ceiling on uncollected amounts, to prevent **bad debts** ([[jp:貸倒れ]]).",
+      "detail_jp": "**貸倒れ**は、売上の代金を回収できなくなることを指す。上限のうちまだ使える分を**与信の余力**という。支払い状況を見ながら、限度額の見直しや取引条件の変更につなげる。",
+      "detail_zh": "**坏账**（[[jp:貸倒れ]]）是指销售货款无法收回。上限中还能使用的部分称为**授信余力**（[[jp:与信の余力]]）。企业要一边关注付款情况，一边据此调整额度或变更交易条件。",
+      "detail_en": "A **bad debt** ([[jp:貸倒れ]]) arises when payment for a sale can no longer be collected. The part of the limit still usable is the **available credit** ([[jp:与信の余力]]). Payment records then feed into revising the limit or changing the trading terms.",
+      "analogy_jp": "クレジットカードの利用枠のようなもの。使うと残りの枠が減り、返済すると枠が戻ります。",
+      "analogy_zh": "就像信用卡的额度。刷卡后剩余额度减少，还款后额度又恢复。",
+      "analogy_en": "Like the limit on a credit card. Spending shrinks what is left, and repaying restores it.",
+      "hook_jp": "字のとおり「信 (信用) を与える」。代金の後払いを認めることは、相手に信用を与えることである。",
+      "hook_zh": "日语 [[jp:与信]] 字面就是“给予信用”。允许对方延后付款，就是给了对方信用。",
+      "hook_en": "The kanji in [[jp:与信]] literally mean \"give trust\". Allowing a customer to pay later is exactly that.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "与信の余力は、与信限度額から未回収の残高を引いた額である。受注分も与信に含め、満期前の手形を回収とみなさない条件なら、どちらも残高に足して計算する。",
+          "text_zh": "授信余力（[[jp:与信の余力]]）是授信额度（[[jp:与信限度額]]）减去未回收余额后的金额。如果条件是已接订单也计入授信、未到期票据（[[jp:手形]]）不视为已回收，这两项都要加进余额再计算。",
+          "text_en": "Available credit ([[jp:与信の余力]]) is the credit limit ([[jp:与信限度額]]) minus the uncollected balance. If the terms count orders received as credit and do not treat unmatured promissory notes ([[jp:手形]]) as collected, add both to the balance.",
+          "qids": [
+            "2022r04-q011"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "項目",
+              "zh": "项目",
+              "en": "Item"
+            },
+            {
+              "jp": "金額の例",
+              "zh": "金额示例",
+              "en": "Example amount"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "与信限度額 (未回収額の上限)",
+                  "zh": "授信额度（未回收金额的上限）",
+                  "en": "Credit limit (ceiling on uncollected amounts)"
+                },
+                {
+                  "jp": "1,000 万円",
+                  "zh": "1,000 万日元",
+                  "en": "¥10,000,000"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "売上のうち未回収の分",
+                  "zh": "销售额中未回收的部分",
+                  "en": "Uncollected sales"
+                },
+                {
+                  "jp": "300 万円",
+                  "zh": "300 万日元",
+                  "en": "¥3,000,000"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "手形 (期日に支払うと約束した証書) のうち満期 (その期日) 前の分。未回収と扱う条件の場合",
+                  "zh": "票据（约定在到期日付款的凭证）中尚未到期（未到该日期）的部分（条件规定按未回收处理时）",
+                  "en": "Promissory notes (written promises to pay on a set date) not yet at maturity (that date), if the terms treat them as uncollected"
+                },
+                {
+                  "jp": "100 万円",
+                  "zh": "100 万日元",
+                  "en": "¥1,000,000"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "受注済みの分 (含める条件の場合)",
+                  "zh": "已接订单部分（条件规定计入时）",
+                  "en": "Orders received (if the terms include them)"
+                },
+                {
+                  "jp": "150 万円",
+                  "zh": "150 万日元",
+                  "en": "¥1,500,000"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "上限のうち、まだ使える分 (与信の余力)",
+                  "zh": "上限中还能使用的部分（授信余力）",
+                  "en": "Portion of the limit still usable (available credit)"
+                },
+                {
+                  "jp": "450 万円",
+                  "zh": "450 万日元",
+                  "en": "¥4,500,000"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2022r04-q011"
+      ],
+      "definition_jp": "与信管理は、代金を後払いにする取引先の支払能力を評価し、未回収額の上限である与信限度額を決めて貸倒れを防ぐ業務である。",
+      "definition_zh": "授信管理（与信管理）是评估赊销客户的支付能力，设定未回收金额的上限授信额度（与信限度額），以防止坏账（貸倒れ）的业务。",
+      "definition_en": "Credit management (与信管理) is the work of assessing whether customers buying on deferred terms can pay and setting a credit limit (与信限度額), the ceiling on uncollected amounts, to prevent bad debts (貸倒れ).",
+      "explanation_jp": "貸倒れは、売上の代金を回収できなくなることを指す。上限のうちまだ使える分を与信の余力という。支払い状況を見ながら、限度額の見直しや取引条件の変更につなげる。",
+      "explanation_zh": "坏账（貸倒れ）是指销售货款无法收回。上限中还能使用的部分称为授信余力（与信の余力）。企业要一边关注付款情况，一边据此调整额度或变更交易条件。",
+      "explanation_en": "A bad debt (貸倒れ) arises when payment for a sale can no longer be collected. The part of the limit still usable is the available credit (与信の余力). Payment records then feed into revising the limit or changing the trading terms.",
+      "memory_hook_jp": "字のとおり「信 (信用) を与える」。代金の後払いを認めることは、相手に信用を与えることである。",
+      "memory_hook_zh": "日语 与信 字面就是“给予信用”。允许对方延后付款，就是给了对方信用。",
+      "memory_hook_en": "The kanji in 与信 literally mean \"give trust\". Allowing a customer to pay later is exactly that.",
       "inline_quiz": [
         "2022r04-q011"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "授信管理",
-      "term_en": "Credit Management",
-      "definition_zh": "评估并管理交易对象的支付能力(信用)，防止坏账的业务。",
-      "definition_en": "Work that evaluates and manages a counterparty's ability to pay (creditworthiness) to prevent bad debt.",
-      "explanation_zh": "授信管理是评估并管理对赊销(后付款)的对象可以信任到什么程度的业务。对每个交易对象设定授信额度(可以信任并交易的上限)，并随时关注付款情况，以防货款收不回或形成坏账(货款无法回收)。\n\n它与库存、订货并列，是典型的业务应用，在基于数据判断交易对象信用这一点上与数据应用相联系。考试出题不多，但只要把握『管理交易对象的信用、抑制坏账风险的业务』这一含义，以及授信额度的思路，就足够了。",
-      "explanation_en": "Credit management is the work of evaluating and managing how far you can trust a counterparty in credit transactions (deferred payment). You set a credit limit (the upper bound up to which you can trust and trade) for each counterparty, and watch their payment status to prevent uncollected receivables and bad debt (payments that can no longer be recovered).\n\nAlongside inventory and ordering, it is a representative business application, and it connects to data utilization in that you judge a counterparty's creditworthiness based on data. It is not asked often in the exam, but it is enough to grasp the meaning—'work that manages a counterparty's creditworthiness to curb bad-debt risk'—and the idea of a credit limit.",
-      "analogy_zh": "就像借钱给朋友时，看对方的还款情况，决定『这个人借到这里为止还行』的上限。按信用来管理交易的额度。",
-      "analogy_en": "Like lending money to a friend: you look at how they repay and decide an upper limit—'I can lend this person up to here.' You manage the size of the dealings according to creditworthiness.",
-      "memory_hook_zh": "说到授信管理，就是管理交易对象的信用、防止坏账",
-      "memory_hook_en": "Credit management → manage a counterparty's creditworthiness to prevent bad debt"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "グルーピング",
+      "b": "パターン発見",
+      "rows": [
+        {
+          "label_jp": "やること",
+          "label_zh": "做什么",
+          "label_en": "What it does",
+          "a_jp": "データを集団に分ける",
+          "a_zh": "把数据分成组",
+          "a_en": "Divides data into groups",
+          "b_jp": "データの中の関連や傾向を探す",
+          "b_zh": "寻找数据中的关联和趋势",
+          "b_en": "Searches data for links and trends",
+          "key": true
+        },
+        {
+          "label_jp": "得られるもの",
+          "label_zh": "得到的结果",
+          "label_en": "Yields",
+          "a_jp": "似たものの集団",
+          "a_zh": "相似项组成的组",
+          "a_en": "Groups of similar items",
+          "b_jp": "繰り返し現れる規則",
+          "b_zh": "反复出现的规律",
+          "b_en": "Recurring rules",
+          "key": false
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "示例",
+          "label_en": "Example",
+          "a_jp": "会員を来店頻度と購入額で分ける",
+          "a_zh": "按到店频率和消费金额给会员分组",
+          "a_en": "Sorting members by visit frequency and spending",
+          "b_jp": "朝のレジ記録からよく並ぶ品目の組を探す",
+          "b_zh": "从早间收银记录中寻找经常一起出现的商品组合",
+          "b_en": "Searching morning register records for items that often appear together",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "大量のデータから規則性を掘り出す手法を**データマイニング**という。",
+    "**最適化**では、目的と制約を整理してから候補を比べる。",
+    "**在庫管理**のねらいは、欠品による機会損失と、過剰による保管費用や資金の負担を避けることにある。",
+    "**定期発注方式**の発注量は、その発注で賄う期間の使用量に**安全在庫**を足し、手元の在庫と発注残を引いて求める。",
+    "**与信の余力**は、与信限度額から未回収の残高を引いて求める。"
+  ],
+  "key_points_zh": [
+    "从大量数据中挖掘规律的方法称为**数据挖掘**（[[jp:データマイニング]]）。",
+    "**最优化**（[[jp:最適化]]）要先理清目标和约束，再比较候选方案。",
+    "**库存管理**（[[jp:在庫管理]]）的目的是避免缺货带来的机会损失，以及过剩带来的保管费用和资金负担。",
+    "**定期订货方式**（[[jp:定期発注方式]]）的订货量，是用这次订货要覆盖期间的用量加上**安全库存**（[[jp:安全在庫]]），再减去手头库存和未到货量。",
+    "**授信余力**（[[jp:与信の余力]]）等于授信额度减去未回收余额。"
+  ],
+  "key_points_en": [
+    "The technique of digging regularities out of large volumes of data is **data mining** ([[jp:データマイニング]]).",
+    "**Optimization** ([[jp:最適化]]) sorts out the objective and constraints first, then compares candidates.",
+    "**Inventory management** ([[jp:在庫管理]]) aims to avoid the lost opportunities of stockouts and the storage and cash burden of excess.",
+    "Under the **fixed-period ordering method** ([[jp:定期発注方式]]), the order quantity is the usage for the period the order must cover plus **safety stock** ([[jp:安全在庫]]), minus stock on hand and outstanding orders.",
+    "**Available credit** ([[jp:与信の余力]]) equals the credit limit minus the uncollected balance."
+  ],
+  "overview": {
+    "intro_jp": "データをまとめる処理と、データから規則性を探す処理を分けられる。制約条件と目的を読み取り、最も良い案を計算で求められる。定量発注方式と定期発注方式を区別し、発注量や与信の余力を計算できる。",
+    "intro_zh": "能分清把数据归类分组的处理和从数据中寻找规律的处理。能读出约束条件和目标，并通过计算求出最佳方案。能区分定量订货方式和定期订货方式，并计算订货量和授信余力。",
+    "intro_en": "Tell apart processing that sorts data into groups from processing that searches data for regularities. Read the constraints and the objective of a problem and calculate the best option. Distinguish the fixed-quantity and fixed-period ordering methods, and calculate order quantities and available credit.",
+    "freq_badge": "頻出",
+    "est_minutes": 31
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "グルーピング: グルーピングといえば似たもの同士をまとめて分類",
-      "パターン発見: パターン発見といえばデータから規則性・傾向を見つける",
-      "最適化: 最適化といえば制約の中で最良解を求める",
-      "在庫管理: 在庫管理といえば欠品も過剰も防ぐ適正在庫",
-      "発注方式: 発注方式といえば定量発注と定期発注の使い分け",
-      "与信管理: 与信管理といえば取引先の信用を管理して貸倒れ防止"
-    ],
     "key_points_jp": [
-      "データ活用の処理は、グルーピング(似たもの同士の分類)→パターン発見(規則性の発見)→最適化(最良解の選択)と、整理から意思決定へ進む。",
-      "最適化は制約条件のもとで目的(費用最小・利益最大など)が最良になる解を求めることで、在庫・発注・与信の業務応用を支える理論的な軸となる。",
-      "在庫管理は欠品と過剰在庫の両方を避け、適正在庫を保つことが目的。",
-      "発注方式には、量が一定で時期が不定の定量発注方式と、時期が一定で量が不定の定期発注方式があり、両者の違いが頻出。",
-      "与信管理は取引先の信用(支払能力)を評価し与信限度額などで貸倒れを防ぐ業務応用である。"
+      "大量のデータから規則性を掘り出す手法をデータマイニングという。",
+      "最適化では、目的と制約を整理してから候補を比べる。",
+      "在庫管理のねらいは、欠品による機会損失と、過剰による保管費用や資金の負担を避けることにある。",
+      "定期発注方式の発注量は、その発注で賄う期間の使用量に安全在庫を足し、手元の在庫と発注残を引いて求める。",
+      "与信の余力は、与信限度額から未回収の残高を引いて求める。"
     ],
     "key_points_zh": [
-      "数据应用的处理沿着分组(把相似的分类)→模式发现(找出规律)→最优化(选出最佳解)推进，由整理走向决策。",
-      "最优化是在约束条件下求使目标(费用最小、利益最大等)达到最佳的解，是支撑库存、订货、授信业务应用的理论主轴。",
-      "库存管理的目的是同时避免缺货和库存过剩，保持合理库存。",
-      "订货方式有量固定、时期不定的定量订货方式，和时期固定、量不定的定期订货方式，两者的区别为高频考点。",
-      "授信管理是评估交易对象的信用(支付能力)，并通过授信额度等防止坏账的业务应用。"
+      "从大量数据中挖掘规律的方法称为数据挖掘（データマイニング）。",
+      "最优化（最適化）要先理清目标和约束，再比较候选方案。",
+      "库存管理（在庫管理）的目的是避免缺货带来的机会损失，以及过剩带来的保管费用和资金负担。",
+      "定期订货方式（定期発注方式）的订货量，是用这次订货要覆盖期间的用量加上安全库存（安全在庫），再减去手头库存和未到货量。",
+      "授信余力（与信の余力）等于授信额度减去未回收余额。"
     ],
     "key_points_en": [
-      "Data utilization processing proceeds along grouping (classifying similar items) → pattern discovery (finding regularities) → optimization (selecting the best solution), advancing from organizing to decision-making.",
-      "Optimization is finding the solution that makes the objective (minimum cost, maximum profit, etc.) best under constraints, and it is the theoretical axis that underpins the inventory, ordering, and credit applications.",
-      "The aim of inventory management is to avoid both stockouts and excess inventory while keeping an appropriate level of stock.",
-      "Ordering methods include the fixed-quantity method (fixed amount, variable timing) and the fixed-period method (fixed timing, variable amount), and the difference between them is a high-frequency exam point.",
-      "Credit management is a business application that evaluates a counterparty's creditworthiness (ability to pay) and prevents bad debt through means such as a credit limit."
+      "The technique of digging regularities out of large volumes of data is data mining (データマイニング).",
+      "Optimization (最適化) sorts out the objective and constraints first, then compares candidates.",
+      "Inventory management (在庫管理) aims to avoid the lost opportunities of stockouts and the storage and cash burden of excess.",
+      "Under the fixed-period ordering method (定期発注方式), the order quantity is the usage for the period the order must cover plus safety stock (安全在庫), minus stock on hand and outstanding orders.",
+      "Available credit (与信の余力) equals the credit limit minus the uncollected balance."
+    ],
+    "memory_hooks_jp": [
+      "パターン発見: mining は「採掘」の意味。データの山から鉱脈を掘り当てる姿を思い浮かべる。",
+      "最適化: 英語の optimize はラテン語の optimus (最良の) に由来する。「最も適した」という漢字と同じ向きの語である。",
+      "発注方式: 字で覚える。定「量」は量が定まり、定「期」は期日が定まる。",
+      "与信管理: 字のとおり「信 (信用) を与える」。代金の後払いを認めることは、相手に信用を与えることである。"
     ],
     "memory_hooks_zh": [
-      "分组：说到分组，就是把相似的归到一起做分类",
-      "模式发现：说到模式发现，就是从数据中找出规律、倾向",
-      "最优化：说到最优化，就是在约束中求最佳解",
-      "库存管理：说到库存管理，就是防缺货也防过剩的合理库存",
-      "订货方式：说到订货方式，就是定量订货与定期订货的区分使用",
-      "授信管理：说到授信管理，就是管理交易对象的信用、防止坏账"
+      "模式发现：mining 的意思是“采矿”。想象从数据堆成的山里挖到矿脉的样子。",
+      "最优化：英语 optimize 源自拉丁语 optimus（最好的）。日语汉字 最適（最合适）的含义也指向同一方向。",
+      "订货方式：从字面记：定“量”是数量固定，定“期”是日期固定。",
+      "授信管理：日语 与信 字面就是“给予信用”。允许对方延后付款，就是给了对方信用。"
     ],
     "memory_hooks_en": [
-      "Grouping: grouping → gather similar things together and classify them",
-      "Pattern discovery: pattern discovery → find regularities and tendencies in data",
-      "Optimization: optimization → find the best solution within constraints",
-      "Inventory management: inventory management → appropriate stock that prevents both stockouts and excess",
-      "Ordering method: ordering method → choosing between fixed-quantity and fixed-period ordering",
-      "Credit management: credit management → manage a counterparty's creditworthiness to prevent bad debt"
+      "Pattern Discovery: \"Mining\" means digging for ore: picture striking a rich vein in a mountain of data.",
+      "Optimization: English \"optimize\" comes from the Latin optimus (\"best\"), which points the same way as the kanji in 最適 (\"most suitable\").",
+      "Ordering Method: Read the kanji: 定量 fixes the 量 (quantity), and 定期 fixes the 期 (period).",
+      "Credit Management: The kanji in 与信 literally mean \"give trust\". Allowing a customer to pay later is exactly that."
     ]
   },
   "challenge_questions": [
     "2023r05-q024",
     "2013h25a-q012",
     "2024r06-q024",
-    "2009h21h-q027",
-    "2011h23a-q026"
+    "2022r04-q011",
+    "2016h28a-q027"
   ],
   "source_figures": [
     {
@@ -293,9 +1076,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "数据应用的处理与业务应用",
-  "title_en": "Data Utilization Processing and Business Applications",
-  "unit_summary_zh": "学习分组、模式发现、最优化等数据处理，以及在库存、订货、授信上的具体业务应用。",
-  "unit_summary_en": "Learn data processing such as grouping, pattern discovery, and optimization, along with concrete business applications to inventory, ordering, and credit."
+  }
 }
