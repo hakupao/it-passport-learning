@@ -1,184 +1,853 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-60-u01",
   "topic_id": "technology-22-60",
   "category": "technology",
   "title_jp": "IPアドレスとアドレス体系",
+  "title_zh": "IP 地址与地址体系",
+  "title_en": "IP Addresses and the Address System",
   "unit_summary_jp": "インターネット上で機器を識別するIPアドレスの基本と、IPv4/IPv6・グローバル/プライベートの区別を学ぶ。",
+  "unit_summary_zh": "学习在互联网上识别设备的 IP 地址的基础知识，以及 IPv4/IPv6、全局/私有地址的区分。",
+  "unit_summary_en": "Learn the basics of IP addresses, which identify devices on the internet, along with the distinction between IPv4/IPv6 and global/private addresses.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、インターネット上で機器を識別する「IPアドレス」の基本を学びます。アドレスの桁数体系であるIPv4とIPv6の違い、そしてインターネット側で使うグローバルIPアドレスと組織内部で使うプライベートIPアドレスの用途区分を押さえます。ネットワーク応用分野の最下層基盤であり、頻出テーマです。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习用于在互联网上识别设备的「IP 地址」的基础知识。我们会掌握地址位数体系 IPv4 与 IPv6 的区别，以及在互联网一侧使用的全局 IP 地址与在组织内部使用的私有 IP 地址的用途区分。它是网络应用领域的最底层基础，也是高频考点。",
-    "intro_en": "In this unit, you will learn the basics of the \"IP address\", which identifies devices on the internet. You will grasp the difference between IPv4 and IPv6 (the bit-length systems for addresses), as well as the distinction in purpose between global IP addresses used on the internet side and private IP addresses used inside an organization. This is the lowest-layer foundation of the networking application field and a frequently tested topic."
-  },
-  "terms": [
+  "goals_jp": [
+    "**IPアドレス**の役目を、サブネットマスクやDNSの役目と分けて説明できる。",
+    "**IPv4**と**IPv6**を、アドレスの長さと表記で見分けられる。",
+    "**グローバルIPアドレス**と**プライベートIPアドレス**を使う範囲で区別し、両者をつなぐNATの働きを説明できる。"
+  ],
+  "goals_zh": [
+    "能够讲清 **IP 地址**做什么，并把它和子网掩码、DNS 各自的作用分开。",
+    "能够凭地址长度和写法分辨 **IPv4** 与 **IPv6**。",
+    "能够按使用范围区分**全局 IP 地址**和**私有 IP 地址**，并说明连接两者的 NAT 如何工作。"
+  ],
+  "goals_en": [
+    "Explain what an **IP address** does, and keep that apart from the jobs of a subnet mask and DNS.",
+    "Tell **IPv4** from **IPv6** by address length and notation.",
+    "Separate **global IP addresses** from **private IP addresses** by where they are used, and explain how NAT connects the two."
+  ],
+  "overview_cols_jp": [
+    "語の位置づけ",
+    "目印"
+  ],
+  "overview_cols_zh": [
+    "术语定位",
+    "辨认要点"
+  ],
+  "overview_cols_en": [
+    "Where it fits",
+    "How to spot it"
+  ],
+  "overview_rows": [
     {
       "term": "IPアドレス",
-      "definition_jp": "ネットワーク上で機器を一意に識別するための番号。",
-      "explanation_jp": "IPアドレスは、インターネットや社内ネットワークにつながった機器(パソコン・スマホ・サーバなど)を一つひとつ区別するための番号です。データを正しい相手に届けるための「あて先」として使われます。\n\n原則として同じネットワーク内で同じアドレスが重複しないように割り当てられます。試験では、機器を識別する番号であること、後述のIPv4・IPv6という桁数の体系や、グローバル・プライベートという用途区分の親概念であることを理解しているかが問われます。MACアドレス(機器固有の番号)との違いも意識しておきましょう。",
-      "analogy_jp": "郵便物を届けるための「住所」のようなもの。住所が分かるからこそ手紙が正しい家に届くように、IPアドレスが分かるからデータが目的の機器に届きます。",
-      "memory_hook_jp": "IPアドレスといえばネットワーク上の機器を識別する番号",
-      "inline_quiz": [
-        "2009h21h-q059",
-        "2012h24h-q073"
+      "one_line_jp": "ネットワーク上で通信相手の機器を識別する番号",
+      "one_line_zh": "在网络上识别通信对方设备的编号",
+      "one_line_en": "The number that identifies the device you are communicating with on a network",
+      "extra_jp": [
+        "アドレス全般を指す語",
+        "通信の宛先と送信元に使う"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "IP 地址",
-      "term_en": "IP address",
-      "definition_zh": "用于在网络上唯一识别设备的编号。",
-      "definition_en": "A number used to uniquely identify a device on a network.",
-      "explanation_zh": "IP 地址是用来逐一区分连接到互联网或公司内部网络的设备（电脑、智能手机、服务器等）的编号。它被用作把数据准确送达对方的「目的地址」。\n\n原则上，在同一网络内会进行分配，以保证同一地址不会重复。考试中会考查你是否理解：它是识别设备的编号，以及它是后文所述 IPv4／IPv6 这种位数体系、以及全局／私有这种用途区分的上位（父）概念。也要留意它与 MAC 地址（设备固有的编号）之间的区别。",
-      "explanation_en": "An IP address is a number used to tell apart, one by one, the devices (PCs, smartphones, servers, etc.) connected to the internet or an in-house network. It serves as the \"destination\" for delivering data correctly to the intended party.\n\nIn principle, addresses are assigned so that the same address is not duplicated within the same network. On the exam, you are tested on whether you understand that it is a number that identifies a device, and that it is the parent concept of the bit-length systems IPv4/IPv6 and the purpose-based distinction of global/private discussed later. Also keep in mind the difference from a MAC address (a number unique to the device itself).",
-      "analogy_zh": "就像投递邮件用的「住址」。正因为知道住址，信才能送到正确的家；正因为知道 IP 地址，数据才能送达目标设备。",
-      "analogy_en": "Like the \"address\" used to deliver mail. Just as a letter reaches the right house because the address is known, data reaches the intended device because the IP address is known.",
-      "memory_hook_zh": "说到 IP 地址，就是识别网络上设备的编号",
-      "memory_hook_en": "IP address → the number that identifies a device on the network"
+      "extra_zh": [
+        "泛指各类地址的总称",
+        "用来标明通信的目的地和发送方"
+      ],
+      "extra_en": [
+        "The umbrella term for all these addresses",
+        "Marks the destination and source of a transmission"
+      ]
     },
     {
       "term": "IPv4",
-      "definition_jp": "32ビットでアドレスを表す現行主流のIPアドレス方式。",
-      "explanation_jp": "IPv4は、IPアドレスを32ビット(2進数で32桁)で表す方式で、現在最も広く使われています。人が読みやすいよう、8ビットずつ4つに区切り「192.168.0.1」のように10進数とドットで表記します。\n\n32ビットで表せるアドレスは約43億個で、世界中の機器の増加によりアドレスが足りなくなる「アドレス枯渇」が問題になりました。試験では、32ビットであること・約43億個という規模、そして枯渇問題を背景にIPv6が登場したという流れが頻出です。表記が4区切りのドット形式である点も押さえましょう。",
-      "analogy_jp": "4桁ずつ区切られた市外局番付きの電話番号のようなもの。区切りごとに数字を割り当てますが、桁数に上限があるため使える番号の総数には限りがあります。",
-      "memory_hook_jp": "IPv4といえば32ビット・約43億個のアドレス方式",
-      "inline_quiz": [
-        "2010h22a-q060"
+      "one_line_jp": "アドレスを32ビットで表すIPの版",
+      "one_line_zh": "用 32 比特表示地址的 IP 版本",
+      "one_line_en": "The IP version that writes an address in 32 bits",
+      "extra_jp": [
+        "版による種類",
+        "32ビット、ドット区切り"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"IPv4アドレス 32ビット\"]; A --> B[\"8ビット\"]; A --> C[\"8ビット\"]; A --> D[\"8ビット\"]; A --> E[\"8ビット\"]; B --> F[\"例 192.168.0.1\"]",
-        "svg_path": "figures/technology-22-60-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "IPv4",
-      "term_en": "IPv4",
-      "definition_zh": "用 32 位表示地址的当前主流 IP 地址方式。",
-      "definition_en": "The current mainstream IP address scheme, which expresses addresses with 32 bits.",
-      "explanation_zh": "IPv4 是用 32 位（二进制 32 个数字位）来表示 IP 地址的方式，目前使用最为广泛。为了便于人阅读，每 8 位分为一组、共 4 组，用十进制数和点表示，例如「192.168.0.1」。\n\n用 32 位可表示的地址约为 43 亿个，随着全世界设备数量的增加，出现了地址不够用的「地址枯竭」问题。考试中常考：它是 32 位、约 43 亿个这一规模，以及以枯竭问题为背景而出现了 IPv6 这一脉络。也要掌握其表记是四段点分形式这一点。",
-      "explanation_en": "IPv4 is the scheme that expresses an IP address with 32 bits (32 digits in binary), and it is currently the most widely used. To make it easy for people to read, it is divided into four groups of 8 bits each and written in decimal with dots, such as \"192.168.0.1\".\n\nThe addresses expressible with 32 bits number about 4.3 billion, and as the number of devices worldwide grew, the problem of \"address exhaustion\" — running out of addresses — arose. The exam frequently covers that it is 32 bits, the scale of about 4.3 billion, and the storyline that IPv6 appeared against the backdrop of the exhaustion problem. Also note that its notation is a four-segment dotted form.",
-      "analogy_zh": "就像每几位分段、带区号的电话号码。每一段都分配数字，但因为位数有上限，可用号码的总数也是有限的。",
-      "analogy_en": "Like a phone number with an area code, divided into segments. Numbers are assigned segment by segment, but because the number of digits has an upper limit, the total number of usable numbers is finite.",
-      "memory_hook_zh": "说到 IPv4，就是 32 位、约 43 亿个地址的方式",
-      "memory_hook_en": "IPv4 → a 32-bit scheme with about 4.3 billion addresses"
+      "extra_zh": [
+        "按版本划分的类型",
+        "32 比特，用点分隔"
+      ],
+      "extra_en": [
+        "A type by version",
+        "32 bits, separated by dots"
+      ]
     },
     {
       "term": "IPv6",
-      "definition_jp": "128ビットでアドレスを表す次世代のIPアドレス方式。",
-      "explanation_jp": "IPv6は、IPアドレスを128ビットで表す方式で、IPv4のアドレス枯渇を解決するために導入されました。128ビットにより事実上ほぼ無限といえる膨大な数のアドレスを扱え、表記は16進数をコロンで区切る形式(例:2001:db8::1)になります。\n\n試験では、IPv4=32ビットに対しIPv6=128ビットという桁数の対比、アドレス枯渇への対策として登場したという目的、そしてアドレス数が大幅に増えたという特徴が問われます。「4=少ない(32ビット)」「6=多い(128ビット)」と数字に惑わされず桁数で区別できることが重要です。",
-      "analogy_jp": "電話番号の桁数を大幅に増やして、人口が爆発的に増えても全員に番号を割り振れるようにした新しい番号体系のようなものです。",
-      "memory_hook_jp": "IPv6といえば128ビットでアドレス枯渇を解決する方式",
-      "inline_quiz": [
-        "2012h24h-q051"
+      "one_line_jp": "アドレスを128ビットに広げたIPの版",
+      "one_line_zh": "把地址扩展到 128 比特的 IP 版本",
+      "one_line_en": "The IP version that extends the address to 128 bits",
+      "extra_jp": [
+        "版による種類",
+        "128ビット、コロン区切り"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "IPv6",
-      "term_en": "IPv6",
-      "definition_zh": "用 128 位表示地址的下一代 IP 地址方式。",
-      "definition_en": "The next-generation IP address scheme, which expresses addresses with 128 bits.",
-      "explanation_zh": "IPv6 是用 128 位来表示 IP 地址的方式，是为了解决 IPv4 的地址枯竭而引入的。借助 128 位，可以处理几乎可以说是无限的庞大数量的地址，其表记是用冒号分隔十六进制的形式（例如 2001:db8::1）。\n\n考试中会考查：IPv4＝32 位与 IPv6＝128 位的位数对比、作为地址枯竭对策而出现这一目的，以及地址数量大幅增加这一特征。重要的是不要被数字迷惑——能用位数来区分「4＝少（32 位）」「6＝多（128 位）」。",
-      "explanation_en": "IPv6 is the scheme that expresses an IP address with 128 bits, and it was introduced to solve the address exhaustion of IPv4. With 128 bits, it can handle an enormous number of addresses that is effectively almost unlimited, and its notation is a form that separates hexadecimal with colons (e.g., 2001:db8::1).\n\nThe exam tests the bit-length contrast of IPv4 = 32 bits versus IPv6 = 128 bits, the purpose that it appeared as a countermeasure against address exhaustion, and the feature that the number of addresses increased substantially. The key is not to be misled by the numbers — be able to distinguish by bit length that \"4 = few (32 bits)\" and \"6 = many (128 bits)\".",
-      "analogy_zh": "就像大幅增加电话号码的位数，使得即便人口爆炸式增长也能给每个人分配号码的新号码体系。",
-      "analogy_en": "Like a new numbering system that greatly increases the number of digits in phone numbers, so that everyone can be assigned a number even if the population explodes.",
-      "memory_hook_zh": "说到 IPv6，就是用 128 位解决地址枯竭的方式",
-      "memory_hook_en": "IPv6 → the 128-bit scheme that solves address exhaustion"
+      "extra_zh": [
+        "按版本划分的类型",
+        "128 比特，用冒号分隔"
+      ],
+      "extra_en": [
+        "A type by version",
+        "128 bits, separated by colons"
+      ]
     },
     {
       "term": "グローバルIPアドレス",
-      "definition_jp": "インターネット上で使われ世界で重複しないIPアドレス。",
-      "explanation_jp": "グローバルIPアドレスは、インターネットに直接接続するために使うアドレスで、世界中で重複しないよう管理機関を通じて割り当てられます。インターネット側から見える「公の住所」にあたります。\n\nプライベートIPアドレスと対になる概念で、両者はNATという仕組みで相互に変換されてインターネット通信が成立します。試験では、世界で一意であること・インターネット側で使うこと、そしてプライベートIPアドレスとの違いが頻出です。グローバル=外向き(インターネット)、プライベート=内向き(組織内)という区分を押さえましょう。",
-      "analogy_jp": "郵便で世界中どこからでも届く「正式な住所」のようなもの。世界に一つしかないからこそ、外部から確実にたどり着けます。",
-      "memory_hook_jp": "グローバルIPアドレスといえばインターネットで世界に一意なアドレス",
-      "inline_quiz": [
-        "2013h25h-q072",
-        "2014h26a-q052"
+      "one_line_jp": "インターネット上で世界に重複なく割り当てられるアドレス",
+      "one_line_zh": "在互联网上分配、全世界不重复的地址",
+      "one_line_en": "An address assigned on the internet with no duplicate anywhere in the world",
+      "extra_jp": [
+        "使う範囲による種類",
+        "世界全体で重複なし"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"IPアドレス\"]; A --> B[\"グローバルIPアドレス インターネット側 世界で一意\"]; A --> C[\"プライベートIPアドレス 組織内部 内部で一意\"]",
-        "svg_path": "figures/technology-22-60-u01-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "全局 IP 地址",
-      "term_en": "Global IP address",
-      "definition_zh": "在互联网上使用、全球不重复的 IP 地址。",
-      "definition_en": "An IP address used on the internet that is not duplicated anywhere in the world.",
-      "explanation_zh": "全局 IP 地址是用于直接连接互联网的地址，为保证全球范围内不重复，通过管理机构进行分配。它相当于从互联网一侧可见的「公开住址」。\n\n它与私有 IP 地址是一对相对的概念，两者通过名为 NAT 的机制相互转换，互联网通信才得以成立。考试中常考：它在全球唯一、用于互联网一侧，以及它与私有 IP 地址的区别。要掌握「全局＝对外（互联网）、私有＝对内（组织内）」这一区分。",
-      "explanation_en": "A global IP address is an address used to connect directly to the internet, and it is assigned through a managing organization so that it is not duplicated anywhere in the world. It corresponds to a \"public address\" visible from the internet side.\n\nIt is a concept paired with the private IP address, and the two are converted back and forth by a mechanism called NAT, which is how internet communication is established. The exam frequently covers that it is unique worldwide and used on the internet side, as well as its difference from the private IP address. Grasp the distinction that global = outward-facing (internet) and private = inward-facing (within the organization).",
-      "analogy_zh": "就像通过邮政可以从世界任何地方寄达的「正式住址」。正因为全世界只有一个，外部才能可靠地找到它。",
-      "analogy_en": "Like an \"official address\" that mail can reach from anywhere in the world. Precisely because there is only one in the world, it can be reliably reached from the outside.",
-      "memory_hook_zh": "说到全局 IP 地址，就是在互联网上全球唯一的地址",
-      "memory_hook_en": "Global IP address → an address that is unique worldwide on the internet"
+      "extra_zh": [
+        "按使用范围划分的类型",
+        "全世界不重复"
+      ],
+      "extra_en": [
+        "A type by scope of use",
+        "No duplicates worldwide"
+      ]
     },
     {
       "term": "プライベートIPアドレス",
-      "definition_jp": "組織内ネットワーク内で自由に使える内部用のIPアドレス。",
-      "explanation_jp": "プライベートIPアドレスは、家庭や社内など組織内のネットワーク内だけで使うアドレスです。決められた範囲(例:192.168.x.x など)から自由に割り当てられ、内部で重複しなければよく、そのままではインターネットには出られません。\n\nインターネットへ通信する際は、NAT(ネットワークアドレス変換)によってグローバルIPアドレスに変換されます。試験では、組織内部用であること・自由に使える反面そのままでは外部と通信できないこと、グローバルとの対比とNATによる変換が頻出です。グローバル=外、プライベート=内という対の理解が要点です。",
-      "analogy_jp": "会社の中だけで通じる「内線番号」のようなもの。社内では自由に番号を振れますが、外部からは直接かけられず、代表番号(グローバル側)を経由します。",
-      "memory_hook_jp": "プライベートIPアドレスといえば組織内部で使う内線番号的アドレス",
-      "inline_quiz": [
-        "2009h21a-q065",
-        "2014h26a-q089"
+      "one_line_jp": "家庭や社内など内部のネットワークの中でだけ使うアドレス",
+      "one_line_zh": "只在家庭、公司等内部网络里使用的地址",
+      "one_line_en": "An address used only inside an internal network, such as at home or in a company",
+      "extra_jp": [
+        "使う範囲による種類",
+        "内部のネットワーク全体で重複なし"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "私有 IP 地址",
-      "term_en": "Private IP address",
-      "definition_zh": "可在组织内部网络中自由使用的内部用 IP 地址。",
-      "definition_en": "An internal IP address that can be used freely within an organization's network.",
-      "explanation_zh": "私有 IP 地址是仅在家庭、公司内部等组织内网络中使用的地址。可从规定的范围（例如 192.168.x.x 等）中自由分配，只要在内部不重复即可，原样状态下无法直接连上互联网。\n\n在与互联网通信时，会通过 NAT（网络地址转换）转换为全局 IP 地址。考试中常考：它用于组织内部、虽可自由使用但原样状态下无法与外部通信，以及它与全局地址的对比和经由 NAT 的转换。要点是理解「全局＝外、私有＝内」这一对应关系。",
-      "explanation_en": "A private IP address is an address used only within a network inside an organization, such as a home or a company. It can be assigned freely from a designated range (e.g., 192.168.x.x), as long as it is not duplicated internally, and on its own it cannot go out to the internet.\n\nWhen communicating with the internet, it is converted into a global IP address by NAT (Network Address Translation). The exam frequently covers that it is for internal use within an organization, that although it can be used freely it cannot communicate externally as-is, as well as its contrast with the global address and the conversion via NAT. The key point is to understand the pairing of global = outside, private = inside.",
-      "analogy_zh": "就像只在公司内部才通用的「分机号」。在公司内可以自由编号，但外部无法直接拨入，需要经由总机号码（全局一侧）。",
-      "analogy_en": "Like an \"extension number\" that works only inside a company. You can assign numbers freely within the company, but outsiders cannot dial it directly; they must go through the main number (the global side).",
-      "memory_hook_zh": "说到私有 IP 地址，就是组织内部使用的、类似分机号的地址",
-      "memory_hook_en": "Private IP address → an extension-number-like address used inside an organization"
+      "extra_zh": [
+        "按使用范围划分的类型",
+        "在整个内部网络中不重复"
+      ],
+      "extra_en": [
+        "A type by scope of use",
+        "No duplicates across the internal network"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "IPアドレス",
+      "term_zh": "IP 地址",
+      "term_en": "IP address",
+      "one_jp": "**IPアドレス**は、ネットワーク上で通信相手の機器を識別する番号で、通信用の部品に固有の**MACアドレス**とは別のものである。",
+      "one_zh": "**IP 地址**（[[jp:IPアドレス]]）是在网络上识别通信对方设备的编号，与通信部件自带的 **MAC地址**（[[jp:MACアドレス]]）是两回事。",
+      "one_en": "An **IP address** ([[jp:IPアドレス]]) is the number that identifies the device you are communicating with on a network, and it is not the same thing as the **MAC address** ([[jp:MACアドレス]]) built into a communication component.",
+      "detail_jp": "データはパケットという小さな単位に分けて送られ、ネットワーク同士を中継する機器の**ルータ**が、宛先のIPアドレスを見て次の転送先を選ぶ。アドレスは、どのネットワークかを示す**ネットワークアドレス部**と、その中のどの機器かを示す**ホストアドレス部**に分かれ、境目は**サブネットマスク**という値で決まる。数字の並びは覚えにくいので、普段は**ドメイン名**という文字列で相手を指定し、**DNS**という仕組みがIPアドレスとの対応を調べる。",
+      "detail_zh": "数据被切成叫作数据包的小单位来传送，在网络之间做中继的设备**路由器**（[[jp:ルータ]]）会查看目的 IP 地址，决定下一步转发给谁。地址分成两段：指明哪个网络的**网络地址部分**（[[jp:ネットワークアドレス部]]）和指明其中哪台设备的**主机地址部分**（[[jp:ホストアドレス部]]），分界由**子网掩码**（[[jp:サブネットマスク]]）这个值决定。一串数字不好记，所以平时用**域名**（[[jp:ドメイン名]]）这种字符串来指定对方，再由 **DNS** 这套机制查出对应的 IP 地址。",
+      "detail_en": "Data travels in small units called packets, and a **router** ([[jp:ルータ]]), the device that relays between networks, reads the destination IP address to choose the next hop. The address splits into a **network portion** ([[jp:ネットワークアドレス部]]) that names the network and a **host portion** ([[jp:ホストアドレス部]]) that names a device on it, with a value called the **subnet mask** ([[jp:サブネットマスク]]) setting the boundary. Strings of digits are hard to remember, so people normally use a text **domain name** ([[jp:ドメイン名]]), and a system called **DNS** looks up the matching IP address.",
+      "analogy_jp": "宅配便の伝票に書く届け先のようなもの。町名までで配送地域が決まり、番地で家が決まる。",
+      "analogy_zh": "就像快递单上的收件地址。写到街道就定下了配送片区，再写门牌号就定下了是哪一户。",
+      "analogy_en": "Think of the delivery address on a parcel label. The street narrows it to a delivery area, and the house number picks out the home.",
+      "hook_jp": "IPは Internet Protocol の略で、Pは「番号」ではなく「通信の約束事」を指す。",
+      "hook_zh": "IP 是 Internet Protocol 的缩写，其中的 P 不是“编号”，而是“通信的约定”。",
+      "hook_en": "IP stands for Internet Protocol, so the P means a set of communication rules, not a number.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "サブネットマスクは、アドレスのどこまでがネットワークを指す部分かを区切る値である。アドレスの変換や自動割当ての機能はもたない。",
+          "text_zh": "子网掩码（[[jp:サブネットマスク]]）这个值用来划定地址中到哪一位为止表示网络。它不负责转换地址，也不负责自动分配地址。",
+          "text_en": "A subnet mask ([[jp:サブネットマスク]]) is a value that marks how much of an address indicates the network. It neither translates addresses nor assigns them automatically.",
+          "qids": [
+            "2016h28h-q070",
+            "2018h30a-q097",
+            "2023r05-q097"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "DNSが結び付けるのは、ドメイン名やホスト名といった名前とIPアドレスである。MACアドレスとの対応付けや、機器へのアドレスの自動割当ては別の仕組みの役目である。",
+          "text_zh": "DNS 关联的是域名（[[jp:ドメイン名]]）、主机名（[[jp:ホスト名]]）这类名称和 IP 地址（[[jp:IPアドレス]]）。与 MAC地址（[[jp:MACアドレス]]）的对应、给设备自动分配地址，都由别的机制负责。",
+          "text_en": "DNS links names such as domain names ([[jp:ドメイン名]]) and host names ([[jp:ホスト名]]) with IP addresses ([[jp:IPアドレス]]). Mapping to MAC addresses ([[jp:MACアドレス]]) and handing addresses to devices automatically are the jobs of other mechanisms.",
+          "qids": [
+            "2012h24h-q073",
+            "2019h31h-q057",
+            "2025r07-q058"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "DNSサーバが止まっても、回線やルータが止まるわけではない。影響を受けるのは名前での指定で、IPアドレスでの指定は影響を受けない。",
+          "text_zh": "DNS 服务器（[[jp:DNSサーバ]]）停了，线路和路由器（[[jp:ルータ]]）并不会跟着停。受影响的是用名称指定对方的方式，直接用 IP 地址指定则不受影响。",
+          "text_en": "When a DNS server ([[jp:DNSサーバ]]) goes down, the lines and routers ([[jp:ルータ]]) keep running. Only access by name is affected, and access by IP address still works.",
+          "qids": [
+            "2017h29h-q066"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "send",
+              "label": {
+                "jp": "宛先のIPアドレスを付ける",
+                "zh": "附上目的 IP 地址",
+                "en": "Add the destination IP address"
+              }
+            },
+            {
+              "id": "router",
+              "label": {
+                "jp": "ルータが次へ転送",
+                "zh": "路由器转发到下一站",
+                "en": "Router forwards to the next hop"
+              }
+            },
+            {
+              "id": "arrive",
+              "label": {
+                "jp": "相手の機器に届く",
+                "zh": "送达对方设备",
+                "en": "Reaches the other device"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "送り手は、データを小さく分けたパケットに宛先と送信元のIPアドレスを付けて送り出す。",
+            "caption_zh": "发送方把数据切成小块的数据包，标上目的 IP 地址和源 IP 地址后发出。",
+            "caption_en": "The sender splits data into small packets, labels each with the destination and source IP addresses, and sends them out.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "ネットワーク同士を中継するルータが、宛先のIPアドレスを見て次の転送先を選ぶ。",
+            "caption_zh": "负责在网络之间中继的路由器，根据目的 IP 地址选择下一个转发对象。",
+            "caption_en": "A router, which relays traffic between networks, reads the destination IP address and picks where to forward the packet next.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "転送を繰り返し、宛先のIPアドレスをもつ機器にパケットが届く。",
+            "caption_zh": "经过多次转发，数据包到达持有该目的 IP 地址的设备。",
+            "caption_en": "After repeated forwarding, the packet arrives at the device that holds the destination IP address.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2023r05-q097",
+        "2012h24h-q073",
+        "2017h29h-q066"
+      ],
+      "definition_jp": "IPアドレスは、ネットワーク上で通信相手の機器を識別する番号で、通信用の部品に固有のMACアドレスとは別のものである。",
+      "definition_zh": "IP 地址（IPアドレス）是在网络上识别通信对方设备的编号，与通信部件自带的 MAC地址（MACアドレス）是两回事。",
+      "definition_en": "An IP address (IPアドレス) is the number that identifies the device you are communicating with on a network, and it is not the same thing as the MAC address (MACアドレス) built into a communication component.",
+      "explanation_jp": "データはパケットという小さな単位に分けて送られ、ネットワーク同士を中継する機器のルータが、宛先のIPアドレスを見て次の転送先を選ぶ。アドレスは、どのネットワークかを示すネットワークアドレス部と、その中のどの機器かを示すホストアドレス部に分かれ、境目はサブネットマスクという値で決まる。数字の並びは覚えにくいので、普段はドメイン名という文字列で相手を指定し、DNSという仕組みがIPアドレスとの対応を調べる。",
+      "explanation_zh": "数据被切成叫作数据包的小单位来传送，在网络之间做中继的设备路由器（ルータ）会查看目的 IP 地址，决定下一步转发给谁。地址分成两段：指明哪个网络的网络地址部分（ネットワークアドレス部）和指明其中哪台设备的主机地址部分（ホストアドレス部），分界由子网掩码（サブネットマスク）这个值决定。一串数字不好记，所以平时用域名（ドメイン名）这种字符串来指定对方，再由 DNS 这套机制查出对应的 IP 地址。",
+      "explanation_en": "Data travels in small units called packets, and a router (ルータ), the device that relays between networks, reads the destination IP address to choose the next hop. The address splits into a network portion (ネットワークアドレス部) that names the network and a host portion (ホストアドレス部) that names a device on it, with a value called the subnet mask (サブネットマスク) setting the boundary. Strings of digits are hard to remember, so people normally use a text domain name (ドメイン名), and a system called DNS looks up the matching IP address.",
+      "memory_hook_jp": "IPは Internet Protocol の略で、Pは「番号」ではなく「通信の約束事」を指す。",
+      "memory_hook_zh": "IP 是 Internet Protocol 的缩写，其中的 P 不是“编号”，而是“通信的约定”。",
+      "memory_hook_en": "IP stands for Internet Protocol, so the P means a set of communication rules, not a number.",
+      "inline_quiz": [
+        "2023r05-q097",
+        "2012h24h-q073",
+        "2017h29h-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "IPv4",
+      "term_zh": "IPv4",
+      "term_en": "IPv4",
+      "one_jp": "**IPv4**は、インターネットの通信規約であるIPの第4版で、アドレスを**32ビット**で表す。",
+      "one_zh": "**IPv4** 是互联网通信协议 IP 的第 4 版，用 **32 比特**（[[jp:32ビット]]）表示地址。",
+      "one_en": "**IPv4** is version 4 of IP, the internet's communication protocol, and it writes an address in **32 bits** ([[jp:32ビット]]).",
+      "detail_jp": "表せるアドレスは2の32乗、つまり約43億個で、接続する機器が増えるにつれて不足が問題になった。表記では32ビットを8ビットずつ4組に分け、各組を0〜255の10進数にしてドットでつなぐ。",
+      "detail_zh": "可表示的地址有 2 的 32 次方个，大约 43 亿，随着联网设备增多，地址不够用成了问题。书写时把 32 比特按每 8 比特分成 4 组，每组写成 0～255 的十进制数，再用点连起来。",
+      "detail_en": "It can express 2 to the 32nd power addresses, roughly 4.3 billion, and the shortage became a problem as more devices came online. To write one, you split the 32 bits into four groups of 8 bits, turn each group into a decimal number from 0 to 255, and join them with dots.",
+      "analogy_jp": "桁数の決まった会員番号のようなもの。桁を増やさない限り、会員が増えても発行できる番号の総数は変わらない。",
+      "analogy_zh": "好比位数固定的会员号。只要不加位数，会员再多，能发出的号码总数也不会变。",
+      "analogy_en": "Think of a membership number with a fixed length. Unless you add digits, the total supply of numbers stays the same however many members join.",
+      "hook_jp": "v4の4は版の番号だが、ドットで区切る組の数と同じなので「4組×8ビット=32」と思い出せる。",
+      "hook_zh": "v4 的 4 是版本号，恰好也等于用点分开的组数，可以记成“4 组 × 8 比特 = 32”。",
+      "hook_en": "The 4 in v4 is a version number, but it happens to match the number of dotted groups, so you can recall 4 groups × 8 bits = 32.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "英字を含む組があるものや、組の数が4でないものはIPv4アドレスではない。",
+          "text_zh": "只要有一组含英文字母，或组数不是 4，就不是 IPv4 地址。",
+          "text_en": "If any group contains a letter, or the number of groups is not four, it is not an IPv4 address.",
+          "qids": [
+            "2020r02o-q075"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "IPv4のアドレスは数に上限があり、インターネットに直接つなぐ機器すべてには行き渡らない。",
+          "text_zh": "IPv4 地址的数量有上限，不够分给所有直接连入互联网的设备。",
+          "text_en": "IPv4 addresses have a fixed ceiling, so there are not enough to go around for every device connected directly to the internet.",
+          "qids": [
+            "2014h26a-q052"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "表し方",
+              "zh": "表示方式",
+              "en": "Notation"
+            },
+            {
+              "jp": "第1組",
+              "zh": "第 1 组",
+              "en": "Group 1"
+            },
+            {
+              "jp": "第2組",
+              "zh": "第 2 组",
+              "en": "Group 2"
+            },
+            {
+              "jp": "第3組",
+              "zh": "第 3 组",
+              "en": "Group 3"
+            },
+            {
+              "jp": "第4組",
+              "zh": "第 4 组",
+              "en": "Group 4"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "2進数 (8ビットずつ)",
+                  "zh": "二进制数（每组 8 比特）",
+                  "en": "Binary (8 bits each)"
+                },
+                {
+                  "jp": "11001011",
+                  "zh": "11001011",
+                  "en": "11001011"
+                },
+                {
+                  "jp": "00000000",
+                  "zh": "00000000",
+                  "en": "00000000"
+                },
+                {
+                  "jp": "01110001",
+                  "zh": "01110001",
+                  "en": "01110001"
+                },
+                {
+                  "jp": "00011001",
+                  "zh": "00011001",
+                  "en": "00011001"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "10進数 (203.0.113.25)",
+                  "zh": "十进制数（203.0.113.25）",
+                  "en": "Decimal (203.0.113.25)"
+                },
+                {
+                  "jp": "203",
+                  "zh": "203",
+                  "en": "203"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "113",
+                  "zh": "113",
+                  "en": "113"
+                },
+                {
+                  "jp": "25",
+                  "zh": "25",
+                  "en": "25"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2020r02o-q075",
+        "2014h26a-q052"
+      ],
+      "definition_jp": "IPv4は、インターネットの通信規約であるIPの第4版で、アドレスを32ビットで表す。",
+      "definition_zh": "IPv4 是互联网通信协议 IP 的第 4 版，用 32 比特（32ビット）表示地址。",
+      "definition_en": "IPv4 is version 4 of IP, the internet's communication protocol, and it writes an address in 32 bits (32ビット).",
+      "explanation_jp": "表せるアドレスは2の32乗、つまり約43億個で、接続する機器が増えるにつれて不足が問題になった。表記では32ビットを8ビットずつ4組に分け、各組を0〜255の10進数にしてドットでつなぐ。",
+      "explanation_zh": "可表示的地址有 2 的 32 次方个，大约 43 亿，随着联网设备增多，地址不够用成了问题。书写时把 32 比特按每 8 比特分成 4 组，每组写成 0～255 的十进制数，再用点连起来。",
+      "explanation_en": "It can express 2 to the 32nd power addresses, roughly 4.3 billion, and the shortage became a problem as more devices came online. To write one, you split the 32 bits into four groups of 8 bits, turn each group into a decimal number from 0 to 255, and join them with dots.",
+      "memory_hook_jp": "v4の4は版の番号だが、ドットで区切る組の数と同じなので「4組×8ビット=32」と思い出せる。",
+      "memory_hook_zh": "v4 的 4 是版本号，恰好也等于用点分开的组数，可以记成“4 组 × 8 比特 = 32”。",
+      "memory_hook_en": "The 4 in v4 is a version number, but it happens to match the number of dotted groups, so you can recall 4 groups × 8 bits = 32.",
+      "inline_quiz": [
+        "2020r02o-q075",
+        "2014h26a-q052"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "IPv6",
+      "term_zh": "IPv6",
+      "term_en": "IPv6",
+      "one_jp": "**IPv6**は、アドレス長を**128ビット**に広げ、IPv4のアドレス不足を解消するために作られたIPの版である。",
+      "one_zh": "**IPv6** 是为解决 IPv4 地址不足而设计的 IP 版本，它把地址长度扩展到 **128 比特**（[[jp:128ビット]]）。",
+      "one_en": "**IPv6** is the IP version created to end the IPv4 address shortage, and it extends the address length to **128 bits** ([[jp:128ビット]]).",
+      "detail_jp": "表せるアドレスは2の128乗で、事実上不足の心配がない規模になる。表記は16ビットずつコロンで区切る16進数で、文字を含んで見えても数値であり、ドメイン名のような名前ではない。",
+      "detail_zh": "可表示的地址达到 2 的 128 次方个，实际上不必再担心不够用。写法是每 16 比特一组、用冒号分隔的十六进制数，看上去带字母，其实仍是数值，并不是域名那样的名称。",
+      "detail_en": "It can express 2 to the 128th power addresses, a scale at which running out is no practical concern. The notation is hexadecimal in 16-bit groups separated by colons, so even when letters appear it is still a numeric value, not a name like a domain name.",
+      "analogy_jp": "会員番号の桁を大きく増やすようなもの。桁が増えるたびに、発行できる番号の総数は掛け算で増えていく。",
+      "analogy_zh": "好比把会员号的位数大幅加长。每多一位，能发出的号码总数就成倍增长。",
+      "analogy_en": "Think of making a membership number much longer. Each added digit multiplies the total supply of numbers.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "IPv6のアドレス長は128ビットで、IPv4の4倍の長さである。",
+          "text_zh": "IPv6 的地址长度是 128 比特（[[jp:128ビット]]），是 IPv4 的 4 倍。",
+          "text_en": "An IPv6 address is 128 bits ([[jp:128ビット]]) long, four times the length of an IPv4 address.",
+          "qids": [
+            "2012h24h-q051",
+            "2010h22a-q060"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "IPv6で解消するのはアドレス不足である。通信が速くなることや、特定のケーブルが必要になることとは関係がない。",
+          "text_zh": "IPv6 解决的是地址不足。它既不会让通信变快，也不要求使用特定的线缆（[[jp:ケーブル]]）。",
+          "text_en": "What IPv6 solves is the address shortage. It has nothing to do with faster communication or a need for a particular cable ([[jp:ケーブル]]).",
+          "qids": [
+            "2014h26a-q052",
+            "2013h25a-q063"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "IPv6とIPv4は同じネットワーク上で共存できるので、別のネットワークに分けて構築しなくてよい。",
+          "text_zh": "IPv6 和 IPv4 能在同一网络上共存，不必分开搭建两套网络。",
+          "text_en": "IPv6 and IPv4 can coexist on one network, so there is no need to build them as separate networks.",
+          "qids": [
+            "2013h25a-q063",
+            "2010h22a-q060"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2012h24h-q051",
+        "2010h22a-q060"
+      ],
+      "definition_jp": "IPv6は、アドレス長を128ビットに広げ、IPv4のアドレス不足を解消するために作られたIPの版である。",
+      "definition_zh": "IPv6 是为解决 IPv4 地址不足而设计的 IP 版本，它把地址长度扩展到 128 比特（128ビット）。",
+      "definition_en": "IPv6 is the IP version created to end the IPv4 address shortage, and it extends the address length to 128 bits (128ビット).",
+      "explanation_jp": "表せるアドレスは2の128乗で、事実上不足の心配がない規模になる。表記は16ビットずつコロンで区切る16進数で、文字を含んで見えても数値であり、ドメイン名のような名前ではない。",
+      "explanation_zh": "可表示的地址达到 2 的 128 次方个，实际上不必再担心不够用。写法是每 16 比特一组、用冒号分隔的十六进制数，看上去带字母，其实仍是数值，并不是域名那样的名称。",
+      "explanation_en": "It can express 2 to the 128th power addresses, a scale at which running out is no practical concern. The notation is hexadecimal in 16-bit groups separated by colons, so even when letters appear it is still a numeric value, not a name like a domain name.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2012h24h-q051",
+        "2010h22a-q060"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "グローバルIPアドレス",
+      "term_zh": "全局 IP 地址",
+      "term_en": "Global IP address",
+      "one_jp": "**グローバルIPアドレス**は、インターネット上で世界に重複なく割り当てられ、外部から直接到達できるIPアドレスである。",
+      "one_zh": "**全局 IP 地址**（[[jp:グローバルIPアドレス]]）是在互联网上分配、全世界不重复、从外部可以直接访问到的 IP 地址。",
+      "one_en": "A **global IP address** ([[jp:グローバルIPアドレス]]) is an IP address assigned on the internet with no duplicate anywhere in the world, and it can be reached directly from outside.",
+      "detail_jp": "同じ番号が2か所にあると宛先が定まらないため、番号を管理する国際団体のICANNを頂点とする枠組みの中で、プロバイダ(ISP)などを通じて割り当てられる。Webサーバのように外部から接続を受ける機器には、通常このアドレスを使う。",
+      "detail_zh": "同一个号码若出现在两处，目的地就无法确定，因此要在以号码管理国际组织 ICANN 为顶层的体系内，经由互联网服务提供商（ISP）等渠道分配。像 Web 服务器这样接受外部连接的设备，通常使用这种地址。",
+      "detail_en": "If one number existed in two places, the destination would be ambiguous, so these addresses are assigned through providers (ISPs) and others, within a framework headed by ICANN, the international body that manages the numbers. Devices that accept outside connections, such as web servers, normally use this kind of address.",
+      "analogy_jp": "会社の代表電話番号のようなもの。世界のどこからかけても同じ相手につながる。",
+      "analogy_zh": "就像公司的总机号码。无论从世界哪里打来，接通的都是同一家。",
+      "analogy_en": "Think of a company's main phone number. Call it from anywhere in the world and you reach the same company.",
+      "hook_jp": "グローバルは globe (地球) と同じ語源で、地球規模で一つだけと結び付く。",
+      "hook_zh": "global 与 globe（地球）同源，可以联想成“放眼地球只此一个”。",
+      "hook_en": "Global shares its root with globe, which points to one of a kind on the whole planet.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "グローバルIPアドレスは、空いているように見えても無断で設定できない。同じ値を複数の機器に同時に割り当てて使うこともできない。",
+          "text_zh": "全局 IP 地址（[[jp:グローバルIPアドレス]]）即使看上去没人用，也不能擅自设定。同一个值也不能同时分给多台设备使用。",
+          "text_en": "You cannot set a global IP address ([[jp:グローバルIPアドレス]]) without authorization, even if it looks unused. Nor can the same value be given to several machines at once.",
+          "qids": [
+            "2017h29a-q084"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "グローバルIPアドレスは機器に焼き付いた番号ではなく設定値なので、機器を入れ替えても同じ値を引き継げる。",
+          "text_zh": "全局 IP 地址不是固化在设备里的编号，而是一个设定值，所以更换设备后可以沿用原来的值。",
+          "text_en": "A global IP address is a configured value, not a number burned into the hardware, so a replacement machine can take over the same value.",
+          "qids": [
+            "2017h29a-q084"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2017h29a-q084",
+        "2009h21a-q065"
+      ],
+      "definition_jp": "グローバルIPアドレスは、インターネット上で世界に重複なく割り当てられ、外部から直接到達できるIPアドレスである。",
+      "definition_zh": "全局 IP 地址（グローバルIPアドレス）是在互联网上分配、全世界不重复、从外部可以直接访问到的 IP 地址。",
+      "definition_en": "A global IP address (グローバルIPアドレス) is an IP address assigned on the internet with no duplicate anywhere in the world, and it can be reached directly from outside.",
+      "explanation_jp": "同じ番号が2か所にあると宛先が定まらないため、番号を管理する国際団体のICANNを頂点とする枠組みの中で、プロバイダ(ISP)などを通じて割り当てられる。Webサーバのように外部から接続を受ける機器には、通常このアドレスを使う。",
+      "explanation_zh": "同一个号码若出现在两处，目的地就无法确定，因此要在以号码管理国际组织 ICANN 为顶层的体系内，经由互联网服务提供商（ISP）等渠道分配。像 Web 服务器这样接受外部连接的设备，通常使用这种地址。",
+      "explanation_en": "If one number existed in two places, the destination would be ambiguous, so these addresses are assigned through providers (ISPs) and others, within a framework headed by ICANN, the international body that manages the numbers. Devices that accept outside connections, such as web servers, normally use this kind of address.",
+      "memory_hook_jp": "グローバルは globe (地球) と同じ語源で、地球規模で一つだけと結び付く。",
+      "memory_hook_zh": "global 与 globe（地球）同源，可以联想成“放眼地球只此一个”。",
+      "memory_hook_en": "Global shares its root with globe, which points to one of a kind on the whole planet.",
+      "inline_quiz": [
+        "2017h29a-q084",
+        "2009h21a-q065"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "プライベートIPアドレス",
+      "term_zh": "私有 IP 地址",
+      "term_en": "Private IP address",
+      "one_jp": "**プライベートIPアドレス**は、家庭や社内など内部のネットワークの中でだけ使うIPアドレスである。",
+      "one_zh": "**私有 IP 地址**（[[jp:プライベートIPアドレス]]）是只在家庭、公司等内部网络里使用的 IP 地址。",
+      "one_en": "A **private IP address** ([[jp:プライベートIPアドレス]]) is an IP address used only inside an internal network, such as at home or in a company.",
+      "detail_jp": "決められた範囲(例えば192.168で始まる範囲)から選び、内部のネットワーク全体で重複しないように割り当てる。そのままではインターネットと通信できないため、**NAT**(Network Address Translation)という機能がグローバルIPアドレスとの間を変換する。",
+      "detail_zh": "从规定的范围（比如以 192.168 开头的范围）中选取，并保证在整个内部网络中不重复。它本身无法与互联网通信，因此由 **NAT**（Network Address Translation）这一功能在它和全局 IP 地址之间进行转换。",
+      "detail_en": "You pick from reserved ranges, such as the one starting with 192.168, and assign addresses so none repeats across the internal network. A private address cannot talk to the internet as it stands, so a function called **NAT** (Network Address Translation) converts between it and a global IP address.",
+      "analogy_jp": "社内でだけ通じる内線番号のようなもの。別の会社に同じ内線番号があっても困らず、外線とは代表番号を介してつながる。",
+      "analogy_zh": "就像只在公司内部管用的分机号。别的公司有相同的分机号也无妨，对外则要通过总机号码接通。",
+      "analogy_en": "Think of an internal extension that works only inside a company. Another company can have the same extension without trouble, and outside calls connect through the main number.",
+      "hook_jp": "private room の private と同じで、そのままでは部屋の外に通じない番号と結び付く。",
+      "hook_zh": "和 private room（包间）的 private 一样，可以联想成单靠自己出不了房间门的号码。",
+      "hook_en": "It is the private of private room, so picture a number that does not reach beyond the room on its own.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "NATが変換するのはプライベートとグローバルの2種類のIPアドレスの間である。IPアドレスとドメイン名の変換はDNSの役目である。",
+          "text_zh": "NAT 转换的是私有（[[jp:プライベート]]）与全局（[[jp:グローバル]]）这两类 IP 地址（[[jp:IPアドレス]]）。IP 地址和域名（[[jp:ドメイン名]]）之间的转换归 DNS 负责。",
+          "text_en": "NAT converts between the two kinds of IP address ([[jp:IPアドレス]]): private ([[jp:プライベート]]) and global ([[jp:グローバル]]). Converting between IP addresses and domain names ([[jp:ドメイン名]]) is the job of DNS.",
+          "qids": [
+            "2015h27a-q067",
+            "2017h29a-q063",
+            "2019r01a-q065",
+            "2013h25h-q072"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "プライベートIPアドレスの利用にISPへの申請は要らず、ICANNからの割当ても受けない。",
+          "text_zh": "使用私有 IP 地址（[[jp:プライベートIPアドレス]]）无须向 ISP 申请，也不由 ICANN 分配。",
+          "text_en": "Using a private IP address ([[jp:プライベートIPアドレス]]) requires no application to an ISP, and ICANN does not allocate it.",
+          "qids": [
+            "2016h28a-q072",
+            "2009h21a-q065"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "割り当てる機器の種類に制限はなく、内部のネットワークのサーバにもプライベートIPアドレスを使える。",
+          "text_zh": "分配给哪类设备没有限制，内部网络的服务器（[[jp:サーバ]]）同样可以使用私有 IP 地址。",
+          "text_en": "There is no limit on the kind of device it can go to, so a server ([[jp:サーバ]]) on the internal network can use a private IP address too.",
+          "qids": [
+            "2016h28a-q072"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "pc",
+              "label": {
+                "jp": "内部のネットワークの機器",
+                "zh": "内部网络的设备",
+                "en": "Device on the internal network"
+              }
+            },
+            {
+              "id": "nat",
+              "label": {
+                "jp": "アドレス変換 (NAT)",
+                "zh": "地址转换（NAT）",
+                "en": "Address translation (NAT)"
+              }
+            },
+            {
+              "id": "net",
+              "label": {
+                "jp": "インターネットの相手",
+                "zh": "互联网上的对方",
+                "en": "Host on the internet"
+              }
+            },
+            {
+              "id": "back",
+              "label": {
+                "jp": "応答を逆に変換して機器へ",
+                "zh": "反向转换响应并交给设备",
+                "en": "Reply translated back to the device"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "内部のネットワークの機器は、送信元をプライベートIPアドレスにしてパケットを送り出す。",
+            "caption_zh": "内部网络的设备发出数据包，源地址是私有 IP 地址。",
+            "caption_en": "A device on the internal network sends a packet with its private IP address as the source.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "ルータなどのアドレス変換機能 (NAT) が、送信元をグローバルIPアドレスに置き換える。",
+            "caption_zh": "路由器等设备上的地址转换功能（NAT）把源地址换成全局 IP 地址。",
+            "caption_en": "The address translation function (NAT) in a router or similar device replaces the source with a global IP address.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "インターネットの相手は、そのグローバルIPアドレスに宛てて応答する。",
+            "caption_zh": "互联网上的对方把响应发往这个全局 IP 地址。",
+            "caption_en": "The host on the internet addresses its reply to that global IP address.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "NATが宛先をプライベートIPアドレスに戻し、応答が内部のネットワークの機器に届く。",
+            "caption_zh": "NAT 把目的地址改回私有 IP 地址，响应由此送达内部网络的设备。",
+            "caption_en": "NAT changes the destination back to the private IP address, and the reply reaches the device on the internal network.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2019r01a-q065",
+        "2013h25h-q072"
+      ],
+      "definition_jp": "プライベートIPアドレスは、家庭や社内など内部のネットワークの中でだけ使うIPアドレスである。",
+      "definition_zh": "私有 IP 地址（プライベートIPアドレス）是只在家庭、公司等内部网络里使用的 IP 地址。",
+      "definition_en": "A private IP address (プライベートIPアドレス) is an IP address used only inside an internal network, such as at home or in a company.",
+      "explanation_jp": "決められた範囲(例えば192.168で始まる範囲)から選び、内部のネットワーク全体で重複しないように割り当てる。そのままではインターネットと通信できないため、NAT(Network Address Translation)という機能がグローバルIPアドレスとの間を変換する。",
+      "explanation_zh": "从规定的范围（比如以 192.168 开头的范围）中选取，并保证在整个内部网络中不重复。它本身无法与互联网通信，因此由 NAT（Network Address Translation）这一功能在它和全局 IP 地址之间进行转换。",
+      "explanation_en": "You pick from reserved ranges, such as the one starting with 192.168, and assign addresses so none repeats across the internal network. A private address cannot talk to the internet as it stands, so a function called NAT (Network Address Translation) converts between it and a global IP address.",
+      "memory_hook_jp": "private room の private と同じで、そのままでは部屋の外に通じない番号と結び付く。",
+      "memory_hook_zh": "和 private room（包间）的 private 一样，可以联想成单靠自己出不了房间门的号码。",
+      "memory_hook_en": "It is the private of private room, so picture a number that does not reach beyond the room on its own.",
+      "inline_quiz": [
+        "2019r01a-q065",
+        "2013h25h-q072"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "IPv4",
+      "b": "IPv6",
+      "rows": [
+        {
+          "label_jp": "アドレス長",
+          "label_zh": "地址长度",
+          "label_en": "Address length",
+          "a_jp": "32ビット",
+          "a_zh": "32 比特",
+          "a_en": "32 bits",
+          "b_jp": "128ビット",
+          "b_zh": "128 比特",
+          "b_en": "128 bits",
+          "key": true
+        },
+        {
+          "label_jp": "アドレス総数",
+          "label_zh": "地址总数",
+          "label_en": "Total addresses",
+          "a_jp": "2の32乗 (約43億個)",
+          "a_zh": "2 的 32 次方（约 43 亿个）",
+          "a_en": "2 to the 32nd power (about 4.3 billion)",
+          "b_jp": "2の128乗",
+          "b_zh": "2 的 128 次方",
+          "b_en": "2 to the 128th power",
+          "key": false
+        },
+        {
+          "label_jp": "表記",
+          "label_zh": "写法",
+          "label_en": "Notation",
+          "a_jp": "10進数をドットで区切る",
+          "a_zh": "十进制数，用点分隔",
+          "a_en": "Decimal numbers separated by dots",
+          "b_jp": "16進数をコロンで区切る",
+          "b_zh": "十六进制数，用冒号分隔",
+          "b_en": "Hexadecimal numbers separated by colons",
+          "key": false
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "示例",
+          "label_en": "Example",
+          "a_jp": "203.0.113.25",
+          "a_zh": "203.0.113.25",
+          "a_en": "203.0.113.25",
+          "b_jp": "2001:db8:0:0:0:0:0:1",
+          "b_zh": "2001:db8:0:0:0:0:0:1",
+          "b_en": "2001:db8:0:0:0:0:0:1",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "グローバルIPアドレス",
+      "b": "プライベートIPアドレス",
+      "rows": [
+        {
+          "label_jp": "使う範囲",
+          "label_zh": "使用范围",
+          "label_en": "Where it is used",
+          "a_jp": "インターネット",
+          "a_zh": "互联网",
+          "a_en": "The internet",
+          "b_jp": "内部のネットワークの中",
+          "b_zh": "内部网络之内",
+          "b_en": "Inside the internal network",
+          "key": true
+        },
+        {
+          "label_jp": "重複してはならない範囲",
+          "label_zh": "不得重复的范围",
+          "label_en": "Must be unique across",
+          "a_jp": "世界全体",
+          "a_zh": "全世界",
+          "a_en": "The whole world",
+          "b_jp": "内部のネットワーク全体",
+          "b_zh": "整个内部网络",
+          "b_en": "The whole internal network",
+          "key": false
+        },
+        {
+          "label_jp": "入手のしかた",
+          "label_zh": "获取方式",
+          "label_en": "How you get one",
+          "a_jp": "ISPなどを通じて割り当てられる",
+          "a_zh": "经由 ISP 等渠道分配",
+          "a_en": "Assigned through an ISP or similar",
+          "b_jp": "申請なしで自分で選ぶ",
+          "b_zh": "无须申请，自行选定",
+          "b_en": "Chosen yourself, with no application",
+          "key": false
+        },
+        {
+          "label_jp": "インターネットとの通信",
+          "label_zh": "与互联网通信",
+          "label_en": "Communicating with the internet",
+          "a_jp": "直接できる",
+          "a_zh": "可以直接进行",
+          "a_en": "Possible directly",
+          "b_jp": "NATを介してできる",
+          "b_zh": "可以经由 NAT 进行",
+          "b_en": "Possible through NAT",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "IPアドレスは通信相手を識別する番号で、ルータはこれを見てパケットの転送先を選ぶ。",
+    "サブネットマスクはアドレスをネットワーク側と機器側に区切り、DNSはドメイン名との対応を調べる。",
+    "IPv6はIPv4のアドレス不足を解消するための版で、同じネットワーク上で共存できる。",
+    "プライベートIPアドレスを使う機器がインターネットと通信するときは、NATがアドレスを変換する。"
+  ],
+  "key_points_zh": [
+    "IP 地址是识别通信对方的编号，路由器据此选择数据包的转发对象。",
+    "子网掩码把地址划分为网络一侧和设备一侧，DNS 负责查出它与域名的对应关系。",
+    "IPv6 是为解决 IPv4 地址不足而设的版本，两者能在同一网络上共存。",
+    "使用私有 IP 地址的设备与互联网通信时，由 NAT 转换地址。"
+  ],
+  "key_points_en": [
+    "An IP address is the number that identifies the other party, and routers read it to choose where to forward each packet.",
+    "A subnet mask divides an address into a network side and a device side, while DNS looks up its match with a domain name.",
+    "IPv6 is the version built to end the IPv4 address shortage, and the two can coexist on one network.",
+    "When a device with a private IP address communicates with the internet, NAT translates the address."
+  ],
+  "overview": {
+    "intro_jp": "IPアドレスの役目を、サブネットマスクやDNSの役目と分けて説明できる。IPv4とIPv6を、アドレスの長さと表記で見分けられる。グローバルIPアドレスとプライベートIPアドレスを使う範囲で区別し、両者をつなぐNATの働きを説明できる。",
+    "intro_zh": "能够讲清 IP 地址做什么，并把它和子网掩码、DNS 各自的作用分开。能够凭地址长度和写法分辨 IPv4 与 IPv6。能够按使用范围区分全局 IP 地址和私有 IP 地址，并说明连接两者的 NAT 如何工作。",
+    "intro_en": "Explain what an IP address does, and keep that apart from the jobs of a subnet mask and DNS. Tell IPv4 from IPv6 by address length and notation. Separate global IP addresses from private IP addresses by where they are used, and explain how NAT connects the two.",
+    "freq_badge": "頻出",
+    "est_minutes": 32
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "IPアドレス: IPアドレスといえばネットワーク上の機器を識別する番号",
-      "IPv4: IPv4といえば32ビット・約43億個のアドレス方式",
-      "IPv6: IPv6といえば128ビットでアドレス枯渇を解決する方式",
-      "グローバルIPアドレス: グローバルIPアドレスといえばインターネットで世界に一意なアドレス",
-      "プライベートIPアドレス: プライベートIPアドレスといえば組織内部で使う内線番号的アドレス"
-    ],
     "key_points_jp": [
-      "IPアドレスはネットワーク上の機器を一意に識別する番号で、本ユニットの全用語の親概念。",
-      "IPv4は32ビット(約43億個)、IPv6は128ビットで、IPv6はIPv4のアドレス枯渇対策として登場した。",
-      "IPv4はドット区切りの10進数、IPv6はコロン区切りの16進数で表記する。",
-      "グローバルIPアドレスはインターネット側で世界に一意、プライベートIPアドレスは組織内部用で外部とは直接通信できない。",
-      "プライベートとグローバルはNAT(アドレス変換)で相互に結ばれ、内部の機器がインターネットと通信できる。"
+      "IPアドレスは通信相手を識別する番号で、ルータはこれを見てパケットの転送先を選ぶ。",
+      "サブネットマスクはアドレスをネットワーク側と機器側に区切り、DNSはドメイン名との対応を調べる。",
+      "IPv6はIPv4のアドレス不足を解消するための版で、同じネットワーク上で共存できる。",
+      "プライベートIPアドレスを使う機器がインターネットと通信するときは、NATがアドレスを変換する。"
     ],
     "key_points_zh": [
-      "IP 地址是在网络上唯一识别设备的编号，是本单元所有术语的上位（父）概念。",
-      "IPv4 是 32 位（约 43 亿个），IPv6 是 128 位，IPv6 作为 IPv4 的地址枯竭对策而出现。",
-      "IPv4 用点分隔的十进制表记，IPv6 用冒号分隔的十六进制表记。",
-      "全局 IP 地址在互联网一侧全球唯一，私有 IP 地址用于组织内部、无法与外部直接通信。",
-      "私有地址与全局地址通过 NAT（地址转换）相互连接，使内部设备能够与互联网通信。"
+      "IP 地址是识别通信对方的编号，路由器据此选择数据包的转发对象。",
+      "子网掩码把地址划分为网络一侧和设备一侧，DNS 负责查出它与域名的对应关系。",
+      "IPv6 是为解决 IPv4 地址不足而设的版本，两者能在同一网络上共存。",
+      "使用私有 IP 地址的设备与互联网通信时，由 NAT 转换地址。"
     ],
     "key_points_en": [
-      "An IP address is a number that uniquely identifies a device on a network, and it is the parent concept of all terms in this unit.",
-      "IPv4 is 32 bits (about 4.3 billion), IPv6 is 128 bits, and IPv6 appeared as a countermeasure against the address exhaustion of IPv4.",
-      "IPv4 is written in dot-separated decimal, while IPv6 is written in colon-separated hexadecimal.",
-      "A global IP address is unique worldwide on the internet side, while a private IP address is for internal organizational use and cannot communicate directly with the outside.",
-      "Private and global addresses are linked to each other by NAT (address translation), enabling internal devices to communicate with the internet."
+      "An IP address is the number that identifies the other party, and routers read it to choose where to forward each packet.",
+      "A subnet mask divides an address into a network side and a device side, while DNS looks up its match with a domain name.",
+      "IPv6 is the version built to end the IPv4 address shortage, and the two can coexist on one network.",
+      "When a device with a private IP address communicates with the internet, NAT translates the address."
+    ],
+    "memory_hooks_jp": [
+      "IPアドレス: IPは Internet Protocol の略で、Pは「番号」ではなく「通信の約束事」を指す。",
+      "IPv4: v4の4は版の番号だが、ドットで区切る組の数と同じなので「4組×8ビット=32」と思い出せる。",
+      "グローバルIPアドレス: グローバルは globe (地球) と同じ語源で、地球規模で一つだけと結び付く。",
+      "プライベートIPアドレス: private room の private と同じで、そのままでは部屋の外に通じない番号と結び付く。"
     ],
     "memory_hooks_zh": [
-      "IP 地址：说到 IP 地址，就是识别网络上设备的编号",
-      "IPv4：说到 IPv4，就是 32 位、约 43 亿个地址的方式",
-      "IPv6：说到 IPv6，就是用 128 位解决地址枯竭的方式",
-      "全局 IP 地址：说到全局 IP 地址，就是在互联网上全球唯一的地址",
-      "私有 IP 地址：说到私有 IP 地址，就是组织内部使用的、类似分机号的地址"
+      "IP 地址：IP 是 Internet Protocol 的缩写，其中的 P 不是“编号”，而是“通信的约定”。",
+      "IPv4：v4 的 4 是版本号，恰好也等于用点分开的组数，可以记成“4 组 × 8 比特 = 32”。",
+      "全局 IP 地址：global 与 globe（地球）同源，可以联想成“放眼地球只此一个”。",
+      "私有 IP 地址：和 private room（包间）的 private 一样，可以联想成单靠自己出不了房间门的号码。"
     ],
     "memory_hooks_en": [
-      "IP address: IP address → the number that identifies a device on the network",
-      "IPv4: IPv4 → a 32-bit scheme with about 4.3 billion addresses",
-      "IPv6: IPv6 → the 128-bit scheme that solves address exhaustion",
-      "Global IP address: Global IP address → an address that is unique worldwide on the internet",
-      "Private IP address: Private IP address → an extension-number-like address used inside an organization"
+      "IP address: IP stands for Internet Protocol, so the P means a set of communication rules, not a number.",
+      "IPv4: The 4 in v4 is a version number, but it happens to match the number of dotted groups, so you can recall 4 groups × 8 bits = 32.",
+      "Global IP address: Global shares its root with globe, which points to one of a kind on the whole planet.",
+      "Private IP address: It is the private of private room, so picture a number that does not reach beyond the room on its own."
     ]
   },
   "challenge_questions": [
@@ -193,9 +862,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "IP 地址与地址体系",
-  "title_en": "IP Addresses and the Address System",
-  "unit_summary_zh": "学习在互联网上识别设备的 IP 地址的基础知识，以及 IPv4/IPv6、全局/私有地址的区分。",
-  "unit_summary_en": "Learn the basics of IP addresses, which identify devices on the internet, along with the distinction between IPv4/IPv6 and global/private addresses."
+  }
 }

@@ -1,186 +1,1031 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-60-u02",
   "topic_id": "technology-22-60",
   "category": "technology",
   "title_jp": "ドメイン名・DNSとWebの仕組み",
+  "title_zh": "域名、DNS 与 Web 的工作原理",
+  "title_en": "Domain Names, DNS, and How the Web Works",
   "unit_summary_jp": "数値のIPアドレスを人間に分かりやすい名前へ対応づけるドメイン名・DNSと、Web閲覧の基礎(URL・cookie・RSS)を学ぶ。",
+  "unit_summary_zh": "学习将数字 IP 地址对应到人类易懂名称的域名与 DNS，以及 Web 浏览的基础知识（URL、cookie、RSS）。",
+  "unit_summary_en": "Learn about domain names and DNS, which map numeric IP addresses to human-friendly names, along with the basics of web browsing (URL, cookie, RSS).",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-22-60-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、数値のIPアドレスを人間に分かりやすい名前へ対応づけるドメイン名とその変換役であるDNS、そしてWeb閲覧の基礎となるURL・cookie・RSSを学びます。インターネット利用のたびに必ず働く基盤技術であり、ネットワーク応用分野でも特に頻出のテーマです。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习把数字 IP 地址对应到人类易懂名称的域名及其负责转换的 DNS，以及作为 Web 浏览基础的 URL、cookie 和 RSS。这是每次使用互联网时都必然运作的基础技术，也是网络应用领域中尤为高频出现的主题。",
-    "intro_en": "In this unit, you will learn about domain names, which map numeric IP addresses to human-friendly names, and DNS, which performs that conversion, as well as URL, cookie, and RSS, the foundations of web browsing. These are core technologies that work every time you use the internet, and they are especially frequently tested topics in the network applications field."
-  },
-  "terms": [
+  "goals_jp": [
+    "**ドメイン名**の階層と **URL** の各部分を読み取れる。",
+    "**DNS** の役割を、ほかのネットワーク機能と区別して説明できる。",
+    "**cookie** と **RSS** について、データの置き場所と使い道を分けて説明できる。"
+  ],
+  "goals_zh": [
+    "能读懂**域名**的层级和 **URL** 的各个部分。",
+    "能说明 **DNS** 的作用，并把它与其他网络功能区分开。",
+    "能分别说明 **cookie** 和 **RSS** 的数据放在哪里、用来做什么。"
+  ],
+  "goals_en": [
+    "Read the hierarchy of a **domain name** and each part of a **URL**.",
+    "Explain what **DNS** does and tell it apart from other network functions.",
+    "For **cookies** and **RSS**, explain where the data sits and what it is for."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "主な働き"
+  ],
+  "overview_cols_zh": [
+    "种类",
+    "主要作用"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "Main job"
+  ],
+  "overview_rows": [
     {
       "term": "ドメイン名",
-      "definition_jp": "数値のIPアドレスに対応づけられた、人間に分かりやすい階層的な名前。",
-      "explanation_jp": "ドメイン名は、コンピュータが使う数値のIPアドレスを、人間が覚えやすい文字の名前に置き換えたものです。例えば「example.co.jp」のように、ドットで区切られた階層構造を持ち、右側ほど大きな分類(jp は日本、co は企業)を表します。\n\n同じ相手を指すのにIPアドレスとドメイン名の二通りの表し方がある、という関係が試験の要点です。IPアドレスが変わってもドメイン名はそのまま使い続けられる利点があります。次に学ぶDNSは、このドメイン名とIPアドレスを橋渡しする仕組みです。",
-      "analogy_jp": "電話番号(IPアドレス)に対する「○○さん」という名前のようなもの。番号そのままより、名前で相手を指したほうが人間には分かりやすく覚えやすいのと同じです。",
-      "memory_hook_jp": "ドメイン名といえばIPアドレスに対応する人間向けの名前",
-      "inline_quiz": [
-        "2012h24h-q073",
-        "2014h26h-q071"
+      "one_line_jp": "IP アドレスに代えて接続先を指す文字の名前",
+      "one_line_zh": "代替 IP 地址、指明连接目标的文字名称",
+      "one_line_en": "A text name that points to a destination in place of an IP address",
+      "extra_jp": [
+        "名前",
+        "接続先を文字で示す"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "域名",
-      "term_en": "Domain name",
-      "definition_zh": "对应到数字 IP 地址的、人类易懂的分层式名称。",
-      "definition_en": "A human-friendly, hierarchical name mapped to a numeric IP address.",
-      "explanation_zh": "域名是把计算机使用的数字 IP 地址替换成人类容易记忆的文字名称。例如「example.co.jp」这样，用点号分隔，具有分层结构，越靠右表示的分类范围越大（jp 表示日本，co 表示企业）。\n\n指向同一个对象时，存在 IP 地址和域名两种表示方式，这一关系是考试的要点。即使 IP 地址发生变化，域名仍可以照常继续使用，这是它的优点。接下来要学习的 DNS，就是在域名和 IP 地址之间架起桥梁的机制。",
-      "explanation_en": "A domain name replaces the numeric IP address used by computers with a text name that is easy for people to remember. For example, in \"example.co.jp\" the parts are separated by dots and form a hierarchical structure, where the further right a part is, the broader the category it represents (jp means Japan, co means a company).\n\nThe key exam point is the relationship that the same target can be expressed in two ways: by IP address and by domain name. An advantage is that even if the IP address changes, the domain name can keep being used as is. DNS, which you will learn next, is the mechanism that bridges domain names and IP addresses.",
-      "analogy_zh": "就像对应电话号码（IP 地址）的「○○先生」这个名字一样。比起直接用号码，用名字来指代对方，对人类来说更易懂、更好记，道理是一样的。",
-      "analogy_en": "It is like the name \"Mr. So-and-so\" that corresponds to a phone number (IP address). Just as referring to someone by name is easier for people to understand and remember than using the number itself.",
-      "memory_hook_zh": "说到域名，就是对应 IP 地址的、面向人类的名称",
-      "memory_hook_en": "Domain name -> the human-friendly name that corresponds to an IP address"
+      "extra_zh": [
+        "名称",
+        "用文字表示连接目标"
+      ],
+      "extra_en": [
+        "Name",
+        "Shows the destination in text"
+      ]
     },
     {
       "term": "DNS",
-      "definition_jp": "ドメイン名とIPアドレスを相互に変換する名前解決の仕組み。",
-      "explanation_jp": "DNS(Domain Name System)は、入力されたドメイン名に対応するIPアドレスを調べて返す仕組みです。この変換作業を名前解決と呼びます。利用者がブラウザにドメイン名を入力すると、PCはDNSサーバに問い合わせ、得られたIPアドレスを使って目的のサーバへ接続します。\n\n試験では「ドメイン名をIPアドレスに変換するのはDNS」という役割が頻出です。ドメイン名そのもの(名前)と、それを変換する仕組み(DNS)を混同しないことが重要です。DNSが正しく動かないと、名前でのインターネット接続ができなくなります。",
-      "analogy_jp": "名前から電話番号を調べてくれる電話帳の案内サービスのようなもの。相手の名前を伝えると番号を教えてくれて、初めて電話をかけられるのと同じ役割です。",
-      "memory_hook_jp": "DNSといえばドメイン名をIPアドレスに変換する名前解決",
-      "inline_quiz": [
-        "2009h21h-q059",
-        "2017h29h-q066"
+      "one_line_jp": "名前と IP アドレスの対応を調べて答える仕組み",
+      "one_line_zh": "查询并答复名称与 IP 地址对应关系的机制",
+      "one_line_en": "A system that looks up and answers which name goes with which IP address",
+      "extra_jp": [
+        "仕組み",
+        "名前解決を行う"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"利用者PC\"] --> B[\"DNSサーバ\"]; B --> C[\"IPアドレスを回答\"]; C --> D[\"目的のWebサーバへ接続\"]",
-        "svg_path": "figures/technology-22-60-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "DNS",
-      "term_en": "DNS",
-      "definition_zh": "在域名和 IP 地址之间相互转换的名称解析机制。",
-      "definition_en": "The name-resolution mechanism that converts between domain names and IP addresses.",
-      "explanation_zh": "DNS（Domain Name System）是查询并返回所输入域名对应 IP 地址的机制。这个转换工作称为名称解析。当用户在浏览器中输入域名时，PC 会向 DNS 服务器查询，并使用得到的 IP 地址连接到目标服务器。\n\n在考试中，「将域名转换为 IP 地址的是 DNS」这一职责经常出现。重要的是不要把域名本身（名称）与转换它的机制（DNS）混淆。如果 DNS 无法正常工作，就无法通过名称连接互联网。",
-      "explanation_en": "DNS (Domain Name System) is the mechanism that looks up and returns the IP address corresponding to an entered domain name. This conversion work is called name resolution. When a user enters a domain name in a browser, the PC queries a DNS server and uses the IP address it receives to connect to the target server.\n\nOn the exam, the role that \"DNS is what converts a domain name into an IP address\" appears frequently. It is important not to confuse the domain name itself (the name) with the mechanism that converts it (DNS). If DNS does not work correctly, you cannot connect to the internet by name.",
-      "analogy_zh": "就像根据名字帮你查电话号码的电话簿查号服务。告诉它对方的名字，它就告诉你号码，你才能拨打电话，扮演的是同样的角色。",
-      "analogy_en": "It is like a phone-book directory service that looks up a phone number from a name. You give it the person's name, it tells you the number, and only then can you place the call—DNS plays the same role.",
-      "memory_hook_zh": "说到 DNS，就是把域名转换为 IP 地址的名称解析",
-      "memory_hook_en": "DNS -> name resolution that converts a domain name into an IP address"
+      "extra_zh": [
+        "机制",
+        "进行名称解析"
+      ],
+      "extra_en": [
+        "System",
+        "Performs name resolution"
+      ]
     },
     {
       "term": "URL",
-      "definition_jp": "Web上の資源の所在を示す住所表記(アドレス)。",
-      "explanation_jp": "URL(Uniform Resource Locator)は、Web上のページやファイルがどこにあるかを示す住所のような表記です。「https://example.co.jp/index.html」のように、通信方式を表すスキーム(https)、サーバを指すドメイン名、その中の場所を示すパスなどを組み合わせて構成されます。\n\nドメイン名を含む点でDNSや名前解決とつながっています。試験では、URLがWebページやファイルなどWeb資源の場所を一意に指し示す表記であること、HTTPやHTTPSといったスキーム部分の意味を問う問題が出ます。各部分が何を表すかを押さえておきましょう。",
-      "analogy_jp": "「○○県△△市□□町1-2-3」という住所と同じで、大きな範囲から細かい場所へと順に絞り込み、Web上の特定のページまでたどり着ける表記です。",
-      "memory_hook_jp": "URLといえばWeb資源の所在を示す住所表記",
-      "inline_quiz": [
-        "2010h22a-q074"
+      "one_line_jp": "情報がどこにあるかを示す書き方",
+      "one_line_zh": "表示信息位于何处的写法",
+      "one_line_en": "A way of writing where information is located",
+      "extra_jp": [
+        "表記法",
+        "情報の所在を指定する"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"URL\"] --> B[\"スキーム(https)\"]; A --> C[\"ドメイン名(example.co.jp)\"]; A --> D[\"パス(/index.html)\"]",
-        "svg_path": "figures/technology-22-60-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "URL",
-      "term_en": "URL",
-      "definition_zh": "表示 Web 上资源所在位置的地址表示法。",
-      "definition_en": "An address notation that indicates the location of a resource on the web.",
-      "explanation_zh": "URL（Uniform Resource Locator）是表示 Web 上的页面或文件位于何处的、类似地址的表示法。如「https://example.co.jp/index.html」这样，由表示通信方式的协议方案（https）、指向服务器的域名、以及表示其内部位置的路径等组合构成。\n\n由于包含域名，它与 DNS 和名称解析相关联。考试中会出现这样的题目：URL 是唯一指明网页、文件等 Web 资源位置的表示法，以及考查 HTTP、HTTPS 等协议方案部分的含义。请掌握各个部分各自表示什么。",
-      "explanation_en": "A URL (Uniform Resource Locator) is an address-like notation that indicates where a page or file is located on the web. For example, \"https://example.co.jp/index.html\" is made up of a scheme that indicates the communication method (https), a domain name that points to a server, and a path that indicates the location within it.\n\nBecause it contains a domain name, it is connected to DNS and name resolution. On the exam, questions ask that a URL is a notation that uniquely indicates the location of web resources such as web pages and files, and ask about the meaning of the scheme part such as HTTP or HTTPS. Be sure you know what each part represents.",
-      "analogy_zh": "和「○○省△△市□□街 1-2-3」这样的地址一样，从大范围逐步缩小到具体位置，最终能定位到 Web 上的特定页面的一种表示法。",
-      "analogy_en": "Just like an address such as \"○○ Prefecture, △△ City, □□ Town 1-2-3,\" it narrows down step by step from a large area to a specific location, letting you reach a particular page on the web.",
-      "memory_hook_zh": "说到 URL，就是表示 Web 资源所在位置的地址表示法",
-      "memory_hook_en": "URL -> the address notation that indicates where a web resource is located"
+      "extra_zh": [
+        "表示法",
+        "指定信息所在位置"
+      ],
+      "extra_en": [
+        "Notation",
+        "Specifies where information is"
+      ]
     },
     {
       "term": "cookie",
-      "definition_jp": "Webサーバがブラウザに保存させる、利用者を識別するための小さなデータ。",
-      "explanation_jp": "cookie(クッキー)は、Webサーバが利用者のブラウザに一時的に保存させる小さなデータです。次に同じサイトへアクセスしたときにこのデータが送り返されるため、サーバは「前に来た利用者」を識別できます。\n\nログイン状態の維持、買い物かごの中身の保持、サイトの表示設定の記憶などに使われます。試験では、cookieがブラウザ側に保存され利用者を識別・状態保持するために使われる点が問われます。便利な反面、利用者の行動が追跡されうるためプライバシー面の話題にも関わることを押さえておきましょう。",
-      "analogy_jp": "再来店時に提示する会員カードのようなもの。お店(サーバ)が客(利用者)に渡しておき、次に来たときそれを見せることで「いつもの人」と分かる仕組みです。",
-      "memory_hook_jp": "cookieといえばブラウザに保存して利用者を識別する小さなデータ",
-      "inline_quiz": [
-        "2010h22a-q059"
+      "one_line_jp": "サーバがブラウザに預ける小さなデータ",
+      "one_line_zh": "服务器寄存在浏览器里的少量数据",
+      "one_line_en": "A small piece of data a server leaves with the browser",
+      "extra_jp": [
+        "データとその仕組み",
+        "再訪した利用者を見分ける"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "cookie",
-      "term_en": "cookie",
-      "definition_zh": "Web 服务器让浏览器保存的、用于识别用户的小型数据。",
-      "definition_en": "Small data that a web server has the browser store in order to identify the user.",
-      "explanation_zh": "cookie 是 Web 服务器让用户浏览器临时保存的小型数据。下次访问同一站点时，这份数据会被送回，因此服务器能够识别出「之前来过的用户」。\n\n它用于保持登录状态、保存购物车内容、记忆站点的显示设置等。考试中会考查 cookie 保存在浏览器一侧、用于识别用户和保持状态这一点。请掌握：它虽然方便，但由于用户的行为可能被追踪，因此也涉及隐私方面的话题。",
-      "explanation_en": "A cookie is small data that a web server has the user's browser store temporarily. When the user next accesses the same site, this data is sent back, so the server can identify \"a user who came before.\"\n\nIt is used to keep a login state, retain the contents of a shopping cart, remember a site's display settings, and so on. On the exam, the point tested is that a cookie is stored on the browser side and used to identify the user and retain state. Keep in mind that, while convenient, it can also relate to privacy topics because a user's behavior may be tracked.",
-      "analogy_zh": "就像再次到店时出示的会员卡。商店（服务器）事先发给顾客（用户），下次来时出示它，就能认出是「熟客」，是这样一种机制。",
-      "analogy_en": "It is like a membership card you present when you visit the store again. The store (server) gives it to the customer (user) in advance, and when they return and show it, the store recognizes them as \"a regular.\"",
-      "memory_hook_zh": "说到 cookie，就是保存在浏览器中、用于识别用户的小型数据",
-      "memory_hook_en": "cookie -> small data stored in the browser to identify the user"
+      "extra_zh": [
+        "数据及其机制",
+        "识别再次访问的用户"
+      ],
+      "extra_en": [
+        "Data and its mechanism",
+        "Recognizes returning users"
+      ]
     },
     {
       "term": "RSS",
-      "definition_jp": "Webサイトの更新情報をまとめて配信するための文書形式。",
-      "explanation_jp": "RSSは、ニュースサイトやブログなどの更新情報(見出し・要約・日付・リンクなど)を、決まった形式でまとめて配信するための仕組みです。利用者はRSSリーダーなどの専用ソフトに登録しておくと、各サイトを一つずつ見て回らなくても、新着情報をまとめて受け取れます。\n\n試験では、RSSがWebサイトの更新情報を配信・購読するための形式であることが問われます。自分から各サイトを巡回するのではなく、更新があったら情報が集まってくる点が特徴で、情報収集を効率化するサービスとして押さえておきましょう。",
-      "analogy_jp": "気になる雑誌をまとめて定期購読するようなもの。新しい号が出るたびに自分で買いに行かなくても、新着がまとめて手元に届くのと同じ便利さです。",
-      "memory_hook_jp": "RSSといえばWebサイトの更新情報をまとめて配信する形式",
-      "inline_quiz": [
-        "2009h21a-q075",
-        "2012h24a-q054"
+      "one_line_jp": "サイトの更新内容を記述するデータ形式",
+      "one_line_zh": "描述网站更新内容的数据格式",
+      "one_line_en": "A data format that describes a site's updates",
+      "extra_jp": [
+        "データ形式",
+        "更新を読者に知らせる"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "RSS",
-      "term_en": "RSS",
-      "definition_zh": "用于汇总分发 Web 站点更新信息的文档格式。",
-      "definition_en": "A document format for bundling and distributing a website's update information.",
-      "explanation_zh": "RSS 是把新闻站点、博客等的更新信息（标题、摘要、日期、链接等），按固定格式汇总后进行分发的机制。用户只要在 RSS 阅读器等专用软件中订阅，就无需逐一浏览各个站点，也能汇总接收到最新信息。\n\n考试中会考查 RSS 是用于分发和订阅 Web 站点更新信息的格式。其特点是：不是自己去逐个巡查各站点，而是一旦有更新，信息就会汇集过来。请将其作为提高信息收集效率的服务来掌握。",
-      "explanation_en": "RSS is a mechanism that bundles the update information of news sites, blogs, and the like (headlines, summaries, dates, links, etc.) into a fixed format and distributes it. If users subscribe in dedicated software such as an RSS reader, they can receive new information all together without having to visit each site one by one.\n\nOn the exam, the point tested is that RSS is a format for distributing and subscribing to a website's update information. Its characteristic is that, rather than patrolling each site yourself, information comes to you whenever there is an update. Understand it as a service that makes information gathering more efficient.",
-      "analogy_zh": "就像一并定期订阅你感兴趣的杂志。即使新一期出版时不用自己去买，新到的内容也会一并送到手边，是同样的便利。",
-      "analogy_en": "It is like taking out regular subscriptions to the magazines you care about all at once. Just as you don't have to go buy each new issue yourself—new issues are delivered to you together—RSS offers the same convenience.",
-      "memory_hook_zh": "说到 RSS，就是汇总分发 Web 站点更新信息的格式",
-      "memory_hook_en": "RSS -> the format that bundles and distributes a website's update information"
+      "extra_zh": [
+        "数据格式",
+        "把更新告知读者"
+      ],
+      "extra_en": [
+        "Data format",
+        "Tells readers about updates"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "ドメイン名",
+      "term_zh": "域名",
+      "term_en": "Domain name",
+      "one_jp": "**ドメイン名**は、数字の並びである **IP アドレス**に代えて接続先を指す、人が読んで覚えやすい文字の名前である。",
+      "one_zh": "**域名**（[[jp:ドメイン名]]）是代替一串数字形式的 **IP 地址**、用来指明连接目标的文字名称，人看了容易读也容易记。",
+      "one_en": "A **domain name** ([[jp:ドメイン名]]) is a text name, easy for people to read and remember, that points to a destination in place of an **IP address**, which is just a string of digits.",
+      "detail_jp": "example.ne.jp のようにドットで区切った階層構造をもち、右に行くほど広い区分を表す。右端の区分を**トップレベルドメイン** (TLD) と呼ぶ。Web のアドレスだけでなくメールアドレスにも使われ、@ の右側がドメイン名にあたる。",
+      "detail_zh": "域名用点号分隔成 example.ne.jp 这样的层级结构，越往右表示的分区范围越大。最右边的分区称为**顶级域名**（[[jp:トップレベルドメイン]]，TLD）。它不只用于网页地址，也用于邮箱地址，@ 右边的部分就是域名。",
+      "detail_en": "Written with dots as in example.ne.jp, it has a layered structure in which each part further right is a broader division. The rightmost division is the **top-level domain** ([[jp:トップレベルドメイン]], TLD). Domain names appear in email addresses as well as web addresses: whatever follows the @ is the domain name.",
+      "analogy_jp": "友人の電話番号を暗記する代わりに、連絡先アプリで名前を選んで電話をかけるようなもの。",
+      "analogy_zh": "就像不用背朋友的电话号码，在通讯录里选中名字就能拨出去。",
+      "analogy_en": "It is like picking a friend's name in your contacts app to place a call, instead of memorizing their number.",
+      "hook_jp": "domain は「領地」の意味。jp の領地の中の ne の中の example と、右から領地を絞っていく。",
+      "hook_zh": "domain 意为“领地”。在 jp 的领地里找 ne，再在 ne 里找 example，从右往左逐步缩小领地。",
+      "hook_en": "Domain means territory: inside the jp territory is ne, and inside ne is example, so the territory narrows as you read from the right.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ドメイン名は接続先を示す文字の名前で、通信規約の名前ではない。Web のアドレスだけでなくメールアドレスにも現れる。",
+          "text_zh": "域名（[[jp:ドメイン名]]）是表示连接目标的文字名称，不是通信协议的名字。它不仅出现在网页地址里，也出现在邮箱地址里。",
+          "text_en": "A domain name ([[jp:ドメイン名]]) is a text name for a destination, not the name of a communication protocol. It shows up in email addresses as well as web addresses.",
+          "qids": [
+            "2021r03-q098",
+            "2024r06-q071"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "URL の中でトップレベルドメインを探すときは、URL 全体の右端ではなく、ドメイン名の部分の右端を見る。",
+          "text_zh": "要在 URL 里找顶级域名（[[jp:トップレベルドメイン]]），不是看整个 URL 的最右端，而是看域名部分的最右端。",
+          "text_en": "To find the top-level domain ([[jp:トップレベルドメイン]]) in a URL, look at the right end of the domain-name part, not the right end of the whole URL.",
+          "qids": [
+            "2015h27h-q060"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ドメイン名の取得は企業や団体に限られず、個人でも取得できる。漢字や平仮名を含むドメイン名もある。",
+          "text_zh": "注册域名不限于企业或团体，个人也可以。还有包含汉字或平假名的域名。",
+          "text_en": "Registering a domain name is not limited to companies and organizations; individuals can do it too. Some domain names even contain kanji or hiragana.",
+          "qids": [
+            "2021r03-q098"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "steps",
+        "data": {
+          "root": {
+            "id": "jp",
+            "label": {
+              "jp": "jp",
+              "zh": "jp",
+              "en": "jp"
+            },
+            "children": [
+              {
+                "id": "co",
+                "label": {
+                  "jp": "co (企業など)",
+                  "zh": "co（企业等）",
+                  "en": "co (companies, etc.)"
+                }
+              },
+              {
+                "id": "ne",
+                "label": {
+                  "jp": "ne (ネットワークサービス)",
+                  "zh": "ne（网络服务）",
+                  "en": "ne (network services)"
+                },
+                "children": [
+                  {
+                    "id": "example",
+                    "label": {
+                      "jp": "example.ne.jp",
+                      "zh": "example.ne.jp",
+                      "en": "example.ne.jp"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "ac",
+                "label": {
+                  "jp": "ac (大学など)",
+                  "zh": "ac（大学等）",
+                  "en": "ac (universities, etc.)"
+                }
+              }
+            ]
+          }
+        },
+        "steps": [
+          {
+            "caption_jp": "右端の jp が最も広い区分で、トップレベルドメインと呼ぶ。",
+            "caption_zh": "最右边的 jp 是范围最大的分区，称为顶级域名。",
+            "caption_en": "The jp at the far right is the broadest division, called the top-level domain.",
+            "state": {
+              "depth": 1
+            }
+          },
+          {
+            "caption_jp": "jp の下には、例えば用途ごとの区分が並ぶ。",
+            "caption_zh": "jp 下面排列着若干分区，例如按用途划分的分区。",
+            "caption_en": "Under jp sit further divisions, such as ones split by purpose.",
+            "state": {
+              "depth": 2
+            }
+          },
+          {
+            "caption_jp": "さらに左へ独自の名前を足すと、example.ne.jp というドメイン名になる。",
+            "caption_zh": "再往左加上自己的名字，就成了 example.ne.jp 这个域名。",
+            "caption_en": "Add your own name further to the left and you get the domain name example.ne.jp.",
+            "state": {
+              "depth": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2021r03-q098",
+        "2024r06-q071"
+      ],
+      "definition_jp": "ドメイン名は、数字の並びである IP アドレスに代えて接続先を指す、人が読んで覚えやすい文字の名前である。",
+      "definition_zh": "域名（ドメイン名）是代替一串数字形式的 IP 地址、用来指明连接目标的文字名称，人看了容易读也容易记。",
+      "definition_en": "A domain name (ドメイン名) is a text name, easy for people to read and remember, that points to a destination in place of an IP address, which is just a string of digits.",
+      "explanation_jp": "example.ne.jp のようにドットで区切った階層構造をもち、右に行くほど広い区分を表す。右端の区分をトップレベルドメイン (TLD) と呼ぶ。Web のアドレスだけでなくメールアドレスにも使われ、@ の右側がドメイン名にあたる。",
+      "explanation_zh": "域名用点号分隔成 example.ne.jp 这样的层级结构，越往右表示的分区范围越大。最右边的分区称为顶级域名（トップレベルドメイン，TLD）。它不只用于网页地址，也用于邮箱地址，@ 右边的部分就是域名。",
+      "explanation_en": "Written with dots as in example.ne.jp, it has a layered structure in which each part further right is a broader division. The rightmost division is the top-level domain (トップレベルドメイン, TLD). Domain names appear in email addresses as well as web addresses: whatever follows the @ is the domain name.",
+      "memory_hook_jp": "domain は「領地」の意味。jp の領地の中の ne の中の example と、右から領地を絞っていく。",
+      "memory_hook_zh": "domain 意为“领地”。在 jp 的领地里找 ne，再在 ne 里找 example，从右往左逐步缩小领地。",
+      "memory_hook_en": "Domain means territory: inside the jp territory is ne, and inside ne is example, so the territory narrows as you read from the right.",
+      "inline_quiz": [
+        "2021r03-q098",
+        "2024r06-q071"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "DNS",
+      "term_zh": "DNS",
+      "term_en": "DNS",
+      "one_jp": "**DNS** は、ドメイン名と IP アドレスの対応を管理し、問い合わせに応じて一方から他方を調べて答える仕組みである。",
+      "one_zh": "**DNS** 管理域名与 IP 地址的对应关系，是一种根据查询由其中一方查出另一方并作答的机制。",
+      "one_en": "**DNS** is a system that keeps track of which domain names go with which IP addresses and, when asked, uses one to look up the other.",
+      "detail_jp": "名前と IP アドレスを変換する処理を**名前解決**と呼ぶ。ブラウザに名前を入力すると、PC はまず **DNS サーバ**へ問い合わせ、回答の IP アドレスを宛先にして接続する。逆に IP アドレスから名前を調べることもできる。",
+      "detail_zh": "名称与 IP 地址之间的转换处理称为**名称解析**（[[jp:名前解決]]）。在浏览器中输入名称后，PC（个人计算机）先向 **DNS 服务器**（[[jp:DNS サーバ]]）查询，再以答复的 IP 地址为目的地进行连接。反过来，也可以由 IP 地址查出名称。",
+      "detail_en": "Converting between names and IP addresses is called **name resolution** ([[jp:名前解決]]). When you enter a name in a browser, the PC first queries a **DNS server** ([[jp:DNS サーバ]]), then connects using the IP address it gets back. The lookup also works the other way, from an IP address to a name.",
+      "analogy_jp": "相手の名前を告げると電話番号を教えてくれる番号案内の窓口のようなもの。",
+      "analogy_zh": "就像查号台：报上对方的名字，窗口就告诉你电话号码。",
+      "analogy_en": "Think of a directory-assistance desk: give the person's name and it tells you their phone number.",
+      "hook_jp": "正式名は Domain Name System。真ん中の Name が「名前を引く係」の目印になる。",
+      "hook_zh": "全称是 Domain Name System，中间的 Name 可以记成“查名字的专员”。",
+      "hook_en": "The full name is Domain Name System; let the Name in the middle remind you of the clerk who looks up names.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "DNS が名前に結び付ける相手は IP アドレスであり、MAC アドレスではない。",
+          "text_zh": "DNS 把名称对应到 IP 地址（[[jp:IP アドレス]]），而不是 MAC 地址（[[jp:MAC アドレス]]）。",
+          "text_en": "DNS ties a name to an IP address ([[jp:IP アドレス]]), not to a MAC address ([[jp:MAC アドレス]]).",
+          "qids": [
+            "2014h26h-q071",
+            "2019h31h-q057",
+            "2025r07-q058"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "IP アドレスの自動割当ては DHCP、Web アクセスの代理はプロキシの役割で、どちらも DNS の仕事とは別である。",
+          "text_zh": "自动分配 IP 地址是 DHCP 的工作，代理访问 Web 是代理服务器（[[jp:プロキシ]]）的工作，两者都不归 DNS 管。",
+          "text_en": "Assigning IP addresses automatically is DHCP's job and accessing the web on a client's behalf is a proxy's ([[jp:プロキシ]]); neither belongs to DNS.",
+          "qids": [
+            "2019r01a-q091",
+            "2026r08-q065"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "正しい名前を入力しても接続できないのに IP アドレスを直接指定すれば接続できる場合、最も疑われるのは DNS サーバの障害である。",
+          "text_zh": "如果输入正确的名称也连不上、直接指定 IP 地址却能连上，最值得怀疑的是 DNS 服务器（[[jp:DNS サーバ]]）故障。",
+          "text_en": "If you cannot connect even with the correct name but can connect by entering the IP address directly, the prime suspect is a failed DNS server ([[jp:DNS サーバ]]).",
+          "qids": [
+            "2017h29h-q066"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "input",
+              "label": {
+                "jp": "名前を入力",
+                "zh": "输入名称",
+                "en": "Enter a name"
+              }
+            },
+            {
+              "id": "ask",
+              "label": {
+                "jp": "DNS サーバへ問い合わせ",
+                "zh": "向 DNS 服务器查询",
+                "en": "Ask the DNS server"
+              }
+            },
+            {
+              "id": "answer",
+              "label": {
+                "jp": "IP アドレスを回答",
+                "zh": "答复 IP 地址",
+                "en": "IP address returned"
+              }
+            },
+            {
+              "id": "connect",
+              "label": {
+                "jp": "Web サーバへ接続",
+                "zh": "连接 Web 服务器",
+                "en": "Connect to the web server"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ブラウザに www.example.ne.jp と入力する。",
+            "caption_zh": "在浏览器中输入 www.example.ne.jp。",
+            "caption_en": "Type www.example.ne.jp into the browser.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "PC が DNS サーバへ、その名前に対応する IP アドレスを尋ねる。",
+            "caption_zh": "PC 向 DNS 服务器询问该名称对应的 IP 地址。",
+            "caption_en": "The PC asks a DNS server for the IP address that goes with that name.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "DNS サーバが 192.0.2.10 のように IP アドレスを返す。",
+            "caption_zh": "DNS 服务器返回一个 IP 地址，例如 192.0.2.10。",
+            "caption_en": "The DNS server replies with an IP address such as 192.0.2.10.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "PC は受け取った IP アドレスを宛先にして Web サーバへ接続する。",
+            "caption_zh": "PC 以收到的 IP 地址为目的地，连接 Web 服务器。",
+            "caption_en": "With that IP address as the destination, the PC connects to the web server.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2012h24h-q073",
+        "2025r07-q058",
+        "2017h29h-q066"
+      ],
+      "definition_jp": "DNS は、ドメイン名と IP アドレスの対応を管理し、問い合わせに応じて一方から他方を調べて答える仕組みである。",
+      "definition_zh": "DNS 管理域名与 IP 地址的对应关系，是一种根据查询由其中一方查出另一方并作答的机制。",
+      "definition_en": "DNS is a system that keeps track of which domain names go with which IP addresses and, when asked, uses one to look up the other.",
+      "explanation_jp": "名前と IP アドレスを変換する処理を名前解決と呼ぶ。ブラウザに名前を入力すると、PC はまず DNS サーバへ問い合わせ、回答の IP アドレスを宛先にして接続する。逆に IP アドレスから名前を調べることもできる。",
+      "explanation_zh": "名称与 IP 地址之间的转换处理称为名称解析（名前解決）。在浏览器中输入名称后，PC（个人计算机）先向 DNS 服务器（DNS サーバ）查询，再以答复的 IP 地址为目的地进行连接。反过来，也可以由 IP 地址查出名称。",
+      "explanation_en": "Converting between names and IP addresses is called name resolution (名前解決). When you enter a name in a browser, the PC first queries a DNS server (DNS サーバ), then connects using the IP address it gets back. The lookup also works the other way, from an IP address to a name.",
+      "memory_hook_jp": "正式名は Domain Name System。真ん中の Name が「名前を引く係」の目印になる。",
+      "memory_hook_zh": "全称是 Domain Name System，中间的 Name 可以记成“查名字的专员”。",
+      "memory_hook_en": "The full name is Domain Name System; let the Name in the middle remind you of the clerk who looks up names.",
+      "inline_quiz": [
+        "2012h24h-q073",
+        "2025r07-q058",
+        "2017h29h-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "URL",
+      "term_zh": "URL",
+      "term_en": "URL",
+      "one_jp": "**URL** は、Web ページなどインターネット上の情報がどこにあるかを示す**書き方**である。",
+      "one_zh": "**URL** 是表示网页等互联网信息位于何处的一种**写法**。",
+      "one_en": "A **URL** is a **way of writing** where information on the internet, such as a web page, is located.",
+      "detail_jp": "正式名は Uniform Resource Locator で、https://www.example.ne.jp/news/top.html のように書く。先頭の**スキーム**が通信の方法、ドメイン名が接続先、最後の**パス**がサーバ内の場所を表す。ドメイン名の左に www のような**ホスト名**が付くと、そのドメインの中のコンピュータなどを指す。",
+      "detail_zh": "正式名称是 Uniform Resource Locator，写法如 https://www.example.ne.jp/news/top.html。开头的**协议方案**（[[jp:スキーム]]）表示通信方式，域名表示连接目标，末尾的**路径**（[[jp:パス]]）表示服务器内的位置。域名左边若带有 www 这样的**主机名**（[[jp:ホスト名]]），就表示该域内的计算机等。",
+      "detail_en": "Short for Uniform Resource Locator, it looks like https://www.example.ne.jp/news/top.html. The **scheme** ([[jp:スキーム]]) at the start gives the communication method, the domain name gives the destination, and the **path** ([[jp:パス]]) at the end gives the location on the server. A **host name** ([[jp:ホスト名]]) such as www to the left of the domain name refers to a computer or the like within that domain.",
+      "analogy_jp": "本の場所を「中央図書館の 3 階、棚 B、5 番目」と示す案内票のようなもの。",
+      "analogy_zh": "就像写着“中央图书馆 3 楼、B 架、第 5 本”的指引条。",
+      "analogy_en": "Like a slip that reads \"Central Library, floor 3, shelf B, fifth book.\"",
+      "hook_jp": "Locator は「場所を突き止めるもの」。L の字から、URL が指すのは中身でなく場所だと思い出せる。",
+      "hook_zh": "Locator 意为“定位用的东西”。看到 L，就能想起 URL 指的是位置，而不是内容。",
+      "hook_en": "Locator means something that pins down a place. The L reminds you that a URL points to a location, not to the content.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "URL は情報の場所を表す表記であり、通信規約でも、ページの本文を書くための文法でもない。",
+          "text_zh": "URL 是表示信息位置的写法，既不是通信协议，也不是编写网页正文用的语法。",
+          "text_en": "A URL is a notation for where information is, not a communication protocol and not a grammar for writing page text.",
+          "qids": [
+            "2010h22a-q074"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ドメイン名のすぐ左に付く部分はホスト名で、そのドメインの中のコンピュータなどを指す。ファイル名はパスの側に現れる。",
+          "text_zh": "紧挨域名（[[jp:ドメイン名]]）左边的部分是主机名（[[jp:ホスト名]]），指该域内的计算机等。文件名则出现在路径（[[jp:パス]]）一侧。",
+          "text_en": "The part immediately to the left of a domain name ([[jp:ドメイン名]]) is the host name ([[jp:ホスト名]]), which refers to a computer or the like within that domain. A file name appears on the path ([[jp:パス]]) side.",
+          "qids": [
+            "2018h30h-q064"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "部分",
+              "zh": "部分",
+              "en": "Part"
+            },
+            {
+              "jp": "例",
+              "zh": "例子",
+              "en": "Example"
+            },
+            {
+              "jp": "表すもの",
+              "zh": "表示的内容",
+              "en": "What it shows"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "スキーム",
+                  "zh": "协议方案",
+                  "en": "Scheme"
+                },
+                {
+                  "jp": "https",
+                  "zh": "https",
+                  "en": "https"
+                },
+                {
+                  "jp": "通信の方法",
+                  "zh": "通信方式",
+                  "en": "Communication method"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "ホスト名",
+                  "zh": "主机名",
+                  "en": "Host name"
+                },
+                {
+                  "jp": "www",
+                  "zh": "www",
+                  "en": "www"
+                },
+                {
+                  "jp": "そのドメインの中のコンピュータなど",
+                  "zh": "该域内的计算机等",
+                  "en": "A computer or the like within that domain"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "ドメイン名",
+                  "zh": "域名",
+                  "en": "Domain name"
+                },
+                {
+                  "jp": "example.ne.jp",
+                  "zh": "example.ne.jp",
+                  "en": "example.ne.jp"
+                },
+                {
+                  "jp": "接続先を示す名前",
+                  "zh": "表示连接目标的名称",
+                  "en": "Name of the destination"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "パス",
+                  "zh": "路径",
+                  "en": "Path"
+                },
+                {
+                  "jp": "/news/top.html",
+                  "zh": "/news/top.html",
+                  "en": "/news/top.html"
+                },
+                {
+                  "jp": "サーバ内での情報の場所",
+                  "zh": "信息在服务器内的位置",
+                  "en": "Where the information sits on the server"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22a-q074",
+        "2018h30h-q064"
+      ],
+      "definition_jp": "URL は、Web ページなどインターネット上の情報がどこにあるかを示す書き方である。",
+      "definition_zh": "URL 是表示网页等互联网信息位于何处的一种写法。",
+      "definition_en": "A URL is a way of writing where information on the internet, such as a web page, is located.",
+      "explanation_jp": "正式名は Uniform Resource Locator で、https://www.example.ne.jp/news/top.html のように書く。先頭のスキームが通信の方法、ドメイン名が接続先、最後のパスがサーバ内の場所を表す。ドメイン名の左に www のようなホスト名が付くと、そのドメインの中のコンピュータなどを指す。",
+      "explanation_zh": "正式名称是 Uniform Resource Locator，写法如 https://www.example.ne.jp/news/top.html。开头的协议方案（スキーム）表示通信方式，域名表示连接目标，末尾的路径（パス）表示服务器内的位置。域名左边若带有 www 这样的主机名（ホスト名），就表示该域内的计算机等。",
+      "explanation_en": "Short for Uniform Resource Locator, it looks like https://www.example.ne.jp/news/top.html. The scheme (スキーム) at the start gives the communication method, the domain name gives the destination, and the path (パス) at the end gives the location on the server. A host name (ホスト名) such as www to the left of the domain name refers to a computer or the like within that domain.",
+      "memory_hook_jp": "Locator は「場所を突き止めるもの」。L の字から、URL が指すのは中身でなく場所だと思い出せる。",
+      "memory_hook_zh": "Locator 意为“定位用的东西”。看到 L，就能想起 URL 指的是位置，而不是内容。",
+      "memory_hook_en": "Locator means something that pins down a place. The L reminds you that a URL points to a location, not to the content.",
+      "inline_quiz": [
+        "2010h22a-q074",
+        "2018h30h-q064"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "cookie",
+      "term_zh": "cookie",
+      "term_en": "cookie",
+      "one_jp": "**cookie** は、Web サーバが閲覧者側のブラウザに預けておく**小さなデータ**、またはその仕組みである。",
+      "one_zh": "**cookie** 是 Web 服务器寄存在访问者浏览器里的**少量数据**，也指这一机制。",
+      "one_en": "A **cookie** is a **small piece of data** that a web server leaves with the visitor's browser, or the mechanism that does this.",
+      "detail_jp": "次に同じサイトを開くとブラウザがこのデータをサーバへ送り返すので、サーバは相手を見分けられる。ログイン状態の維持や表示設定の再現などに使われる。データは閲覧した PC のブラウザ側にあるため、別の PC には引き継がれない。",
+      "detail_zh": "下次打开同一网站时，浏览器会把这份数据发回服务器，服务器因此能认出对方。它用于保持登录状态、还原显示设置等。由于数据存放在所用 PC 的浏览器一侧，换一台 PC 就带不过去。",
+      "detail_en": "The next time the site is opened, the browser sends this data back, so the server can tell who is visiting. It is used for things like staying logged in and restoring display settings. Because the data sits in the browser on the PC used for viewing, it does not carry over to another PC.",
+      "analogy_jp": "クリーニング店の引換札のようなもの。札は客の手元にあり、店に見せるとどの客の預かり物か分かる。",
+      "analogy_zh": "就像干洗店的取衣凭条。凭条在顾客手里，拿给店家看，店家就知道是哪位顾客寄存的衣物。",
+      "analogy_en": "Like a dry cleaner's claim ticket: the customer keeps it, and showing it tells the shop whose items it is holding.",
+      "hook_jp": "お菓子を手元に置いておく姿を思い浮かべると、データの置き場所がサーバではなく利用者側だと思い出せる。",
+      "hook_zh": "想象把饼干放在自己手边，就能想起数据放在用户这边，而不是服务器上。",
+      "hook_en": "Picture a cookie kept close at hand, and you will remember that the data sits on the user's side, not on the server.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "cookie を使うと、再訪した利用者向けの設定でページを表示するなど、閲覧の手間を減らせる。",
+          "text_zh": "有了 cookie，可以按再次访问的用户的设置显示页面等，省去浏览时的麻烦。",
+          "text_en": "Cookies save effort while browsing, for example by showing a returning user a page with their settings.",
+          "qids": [
+            "2014h26a-q081",
+            "2016h28h-q079"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "クロスサイトスクリプティングのような攻撃を受けると、cookie の中の個人情報が漏れるおそれがある。共用の PC では使い終えたら消去する。",
+          "text_zh": "遭到跨站脚本（[[jp:クロスサイトスクリプティング]]）这类攻击时，cookie 中的个人信息可能泄露。在公用 PC 上，用完后要清除。",
+          "text_en": "An attack such as cross-site scripting ([[jp:クロスサイトスクリプティング]]) can expose personal information held in a cookie. On a shared PC, clear cookies when you finish.",
+          "qids": [
+            "2010h22a-q059"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "閲覧したページそのものをファイルとして一時保存するのはキャッシュで、cookie はサイトから渡されたデータを保存する点が異なる。",
+          "text_zh": "把浏览过的页面本身作为文件暂时保存的是缓存（[[jp:キャッシュ]]），cookie 保存的则是网站交来的数据。",
+          "text_en": "A cache ([[jp:キャッシュ]]) temporarily saves the viewed page itself as a file, whereas a cookie stores data handed over by the site.",
+          "qids": [
+            "2024r06-q061"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "first",
+              "label": {
+                "jp": "初めて訪問",
+                "zh": "首次访问",
+                "en": "First visit"
+              }
+            },
+            {
+              "id": "issue",
+              "label": {
+                "jp": "サーバがデータを発行",
+                "zh": "服务器发出数据",
+                "en": "Server issues data"
+              }
+            },
+            {
+              "id": "store",
+              "label": {
+                "jp": "ブラウザが保存",
+                "zh": "浏览器保存",
+                "en": "Browser stores it"
+              }
+            },
+            {
+              "id": "return",
+              "label": {
+                "jp": "再訪時に送り返す",
+                "zh": "再次访问时发回",
+                "en": "Sent back on return"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者がブラウザで、あるサイトを初めて開く。",
+            "caption_zh": "用户用浏览器第一次打开某个网站。",
+            "caption_en": "A user opens a site in the browser for the first time.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "サーバが、応答と一緒に cookie を渡す。",
+            "caption_zh": "服务器在响应时一并交出 cookie。",
+            "caption_en": "The server hands over a cookie along with its response.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "cookie は利用者の PC のブラウザ側に残る。",
+            "caption_zh": "cookie 留在用户 PC 的浏览器这一侧。",
+            "caption_en": "The cookie stays with the browser on the user's PC.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "同じサイトを再び開くとブラウザが cookie を送り、サーバは相手を見分ける。",
+            "caption_zh": "再次打开同一网站时，浏览器发送 cookie，服务器据此认出对方。",
+            "caption_en": "When the user returns to the site, the browser sends the cookie and the server recognizes them.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2024r06-q061",
+        "2010h22a-q059",
+        "2014h26a-q081"
+      ],
+      "definition_jp": "cookie は、Web サーバが閲覧者側のブラウザに預けておく小さなデータ、またはその仕組みである。",
+      "definition_zh": "cookie 是 Web 服务器寄存在访问者浏览器里的少量数据，也指这一机制。",
+      "definition_en": "A cookie is a small piece of data that a web server leaves with the visitor's browser, or the mechanism that does this.",
+      "explanation_jp": "次に同じサイトを開くとブラウザがこのデータをサーバへ送り返すので、サーバは相手を見分けられる。ログイン状態の維持や表示設定の再現などに使われる。データは閲覧した PC のブラウザ側にあるため、別の PC には引き継がれない。",
+      "explanation_zh": "下次打开同一网站时，浏览器会把这份数据发回服务器，服务器因此能认出对方。它用于保持登录状态、还原显示设置等。由于数据存放在所用 PC 的浏览器一侧，换一台 PC 就带不过去。",
+      "explanation_en": "The next time the site is opened, the browser sends this data back, so the server can tell who is visiting. It is used for things like staying logged in and restoring display settings. Because the data sits in the browser on the PC used for viewing, it does not carry over to another PC.",
+      "memory_hook_jp": "お菓子を手元に置いておく姿を思い浮かべると、データの置き場所がサーバではなく利用者側だと思い出せる。",
+      "memory_hook_zh": "想象把饼干放在自己手边，就能想起数据放在用户这边，而不是服务器上。",
+      "memory_hook_en": "Picture a cookie kept close at hand, and you will remember that the data sits on the user's side, not on the server.",
+      "inline_quiz": [
+        "2024r06-q061",
+        "2010h22a-q059",
+        "2014h26a-q081"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "RSS",
+      "term_zh": "RSS",
+      "term_en": "RSS",
+      "one_jp": "**RSS** は、サイトの更新内容を題名・概要・日時などの形でまとめて記述する**データ形式**である。",
+      "one_zh": "**RSS** 是把网站的更新内容整理成标题、概要、日期时间等形式来描述的**数据格式**。",
+      "one_en": "**RSS** is a **data format** that describes a site's updates in a set form, with items such as titles, summaries, and dates.",
+      "detail_jp": "各サイトが公開するこのデータは**フィード**と呼ばれ、**XML** を基にしている。**RSS リーダ**に読みたいサイトを登録しておくと、リーダがフィードを集めて新着記事の一覧を作る。利用者は一つずつサイトを開かなくても更新を知ることができる。",
+      "detail_zh": "各网站发布的这种数据称为**订阅源**（[[jp:フィード]]），以 **XML** 为基础。只要在 **RSS 阅读器**（[[jp:RSS リーダ]]）中登记想看的网站，阅读器就会收集订阅源，生成新文章列表。用户不必逐个打开网站，也能得知更新。",
+      "detail_en": "The data each site publishes is called a **feed** ([[jp:フィード]]) and is based on **XML**. Register the sites you want to follow in an **RSS reader** ([[jp:RSS リーダ]]), and it gathers their feeds into a list of new articles. You learn about updates without opening each site in turn.",
+      "analogy_jp": "新聞の見出し一覧のようなもの。全文ではなく見出しと短い紹介が決まった形で並ぶので、気になる記事だけを本紙で読めばよい。",
+      "analogy_zh": "就像报纸的标题一览。这里不放全文，只按固定格式排列标题和简短介绍，感兴趣的文章再去正刊读就行。",
+      "analogy_en": "Like a newspaper's list of headlines: instead of full text, you get headlines and short blurbs in a fixed layout, and you read only the stories that interest you in the paper itself.",
+      "hook_jp": "展開形の一つが Really Simple Syndication。Syndication (配信) の S で、配信用の形式だと思い出せる。",
+      "hook_zh": "其中一种全称是 Really Simple Syndication。Syndication（分发）的 S 提醒你它是用于分发的格式。",
+      "hook_en": "One expansion is Really Simple Syndication. The S for syndication (distribution) reminds you it is a format for distributing content.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "RSS リーダの画面に並ぶのは、ブログなどの新着記事の題名や概要である。ブログの編集画面や閲覧者数の集計を見る道具ではない。",
+          "text_zh": "RSS 阅读器（[[jp:RSS リーダ]]）的画面上排列的是博客（[[jp:ブログ]]）等的新文章标题和概要。它不是查看博客编辑界面或访问人数统计的工具。",
+          "text_en": "An RSS reader ([[jp:RSS リーダ]]) lists the titles and summaries of new articles from sources such as blogs ([[jp:ブログ]]). It is not a tool for a blog's editing screen or for checking visitor counts.",
+          "qids": [
+            "2014h26h-q074",
+            "2021r03-q093"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "フィードアイコンは、そのサイトが更新情報のフィードを提供している目印である。",
+          "text_zh": "订阅源图标（[[jp:フィードアイコン]]）是该网站提供更新信息订阅源的标志。",
+          "text_en": "A feed icon ([[jp:フィードアイコン]]) marks a site that offers a feed of its updates.",
+          "qids": [
+            "2015h27h-q048"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "CSS はページのデザインを定義し、RSS は更新情報を記述する。一字違いだが役割は別物である。",
+          "text_zh": "CSS 定义页面的设计，RSS 描述更新信息。两者只差一个字母，作用却完全不同。",
+          "text_en": "CSS defines a page's design, while RSS describes update information. Only one letter apart, they do entirely different jobs.",
+          "qids": [
+            "2013h25a-q069",
+            "2015h27a-q057",
+            "2025r07-q064"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "update",
+              "label": {
+                "jp": "サイトを更新",
+                "zh": "更新网站",
+                "en": "Site updated"
+              }
+            },
+            {
+              "id": "feed",
+              "label": {
+                "jp": "フィードを公開",
+                "zh": "发布订阅源",
+                "en": "Feed published"
+              }
+            },
+            {
+              "id": "fetch",
+              "label": {
+                "jp": "RSS リーダが取得",
+                "zh": "RSS 阅读器获取",
+                "en": "RSS reader fetches it"
+              }
+            },
+            {
+              "id": "list",
+              "label": {
+                "jp": "新着を一覧表示",
+                "zh": "列出新内容",
+                "en": "New items listed"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ニュースサイトに新しい記事が載る。",
+            "caption_zh": "新闻网站刊登了一篇新文章。",
+            "caption_en": "A news site posts a new article.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "記事の題名や概要を収めたフィードがサイトで公開される。",
+            "caption_zh": "收录文章标题和概要的订阅源在网站上发布。",
+            "caption_en": "A feed holding the article's title and summary is published on the site.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "登録先のサイトを RSS リーダが回り、フィードを集める。",
+            "caption_zh": "RSS 阅读器逐个访问已登记的网站，收集订阅源。",
+            "caption_en": "The RSS reader goes around the registered sites and collects their feeds.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "利用者は新着記事の一覧を見て、読みたいものを開く。",
+            "caption_zh": "用户查看新文章列表，打开想读的内容。",
+            "caption_en": "The user scans the list of new articles and opens the ones worth reading.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2013h25a-q069",
+        "2015h27a-q057",
+        "2021r03-q093"
+      ],
+      "definition_jp": "RSS は、サイトの更新内容を題名・概要・日時などの形でまとめて記述するデータ形式である。",
+      "definition_zh": "RSS 是把网站的更新内容整理成标题、概要、日期时间等形式来描述的数据格式。",
+      "definition_en": "RSS is a data format that describes a site's updates in a set form, with items such as titles, summaries, and dates.",
+      "explanation_jp": "各サイトが公開するこのデータはフィードと呼ばれ、XML を基にしている。RSS リーダに読みたいサイトを登録しておくと、リーダがフィードを集めて新着記事の一覧を作る。利用者は一つずつサイトを開かなくても更新を知ることができる。",
+      "explanation_zh": "各网站发布的这种数据称为订阅源（フィード），以 XML 为基础。只要在 RSS 阅读器（RSS リーダ）中登记想看的网站，阅读器就会收集订阅源，生成新文章列表。用户不必逐个打开网站，也能得知更新。",
+      "explanation_en": "The data each site publishes is called a feed (フィード) and is based on XML. Register the sites you want to follow in an RSS reader (RSS リーダ), and it gathers their feeds into a list of new articles. You learn about updates without opening each site in turn.",
+      "memory_hook_jp": "展開形の一つが Really Simple Syndication。Syndication (配信) の S で、配信用の形式だと思い出せる。",
+      "memory_hook_zh": "其中一种全称是 Really Simple Syndication。Syndication（分发）的 S 提醒你它是用于分发的格式。",
+      "memory_hook_en": "One expansion is Really Simple Syndication. The S for syndication (distribution) reminds you it is a format for distributing content.",
+      "inline_quiz": [
+        "2013h25a-q069",
+        "2015h27a-q057",
+        "2021r03-q093"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "ドメイン名",
+      "b": "DNS",
+      "rows": [
+        {
+          "label_jp": "何か",
+          "label_zh": "是什么",
+          "label_en": "What it is",
+          "a_jp": "接続先を示す名前",
+          "a_zh": "表示连接目标的名称",
+          "a_en": "A name for the destination",
+          "b_jp": "名前と IP アドレスの対応を答える仕組み",
+          "b_zh": "答复名称与 IP 地址对应关系的机制",
+          "b_en": "A system that answers which name goes with which IP address",
+          "key": true
+        },
+        {
+          "label_jp": "形",
+          "label_zh": "形式",
+          "label_en": "Form",
+          "a_jp": "ドットで区切った文字列",
+          "a_zh": "用点号分隔的字符串",
+          "a_en": "A string separated by dots",
+          "b_jp": "DNS サーバなどから成るシステム",
+          "b_zh": "由 DNS 服务器等组成的系统",
+          "b_en": "A system made up of DNS servers and more",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "ドメイン名",
+      "b": "URL",
+      "rows": [
+        {
+          "label_jp": "指すもの",
+          "label_zh": "指向的对象",
+          "label_en": "What it points to",
+          "a_jp": "接続先を示す名前",
+          "a_zh": "表示连接目标的名称",
+          "a_en": "A name for the destination",
+          "b_jp": "個々のページなど情報の場所",
+          "b_zh": "具体页面等信息的位置",
+          "b_en": "The location of information such as a specific page",
+          "key": true
+        },
+        {
+          "label_jp": "関係",
+          "label_zh": "关系",
+          "label_en": "Relationship",
+          "a_jp": "URL の一部として現れる",
+          "a_zh": "作为 URL 的一部分出现",
+          "a_en": "Appears as part of a URL",
+          "b_jp": "スキームやパスなども含む",
+          "b_zh": "还包含协议方案、路径等",
+          "b_en": "Also includes the scheme, path, and more",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "cookie",
+      "b": "RSS",
+      "rows": [
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "再訪した利用者を見分ける",
+          "a_zh": "识别再次访问的用户",
+          "a_en": "Recognize returning users",
+          "b_jp": "サイトの更新を読者に知らせる",
+          "b_zh": "把网站更新告知读者",
+          "b_en": "Tell readers about site updates",
+          "key": true
+        },
+        {
+          "label_jp": "データの置き場所",
+          "label_zh": "数据存放位置",
+          "label_en": "Where the data sits",
+          "a_jp": "利用者の PC のブラウザ側",
+          "a_zh": "用户 PC 的浏览器一侧",
+          "a_en": "In the browser on the user's PC",
+          "b_jp": "サイトが公開し、リーダが取得する",
+          "b_zh": "由网站发布、阅读器获取",
+          "b_en": "Published by the site and fetched by a reader",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**ドメイン名**は接続先を示す文字の名前で、右に行くほど広い区分を表す。",
+    "**DNS** は、問い合わせに応じてドメイン名と IP アドレスの一方から他方を調べて答える。",
+    "**URL** はスキーム、ドメイン名、パスなどを組み合わせて情報の所在を示す。",
+    "**cookie** は利用者側のブラウザに置かれ、再訪時にサーバへ送り返される。",
+    "**RSS** で書かれたフィードを RSS リーダが集め、新着の一覧にする。"
+  ],
+  "key_points_zh": [
+    "**域名**是表示连接目标的文字名称，越往右表示的分区范围越大。",
+    "**DNS** 根据查询，由域名和 IP 地址中的一方查出另一方并作答。",
+    "**URL** 由协议方案、域名、路径等组合而成，表示信息所在位置。",
+    "**cookie** 存放在用户一侧的浏览器中，再次访问时发回服务器。",
+    "用 **RSS** 写成的订阅源由 RSS 阅读器收集，汇成新文章列表。"
+  ],
+  "key_points_en": [
+    "A **domain name** is a text name for a destination, and each part further right is a broader division.",
+    "**DNS** answers queries by using a domain name or an IP address to look up the other.",
+    "A **URL** combines a scheme, a domain name, a path, and other parts to show where information is.",
+    "A **cookie** sits in the browser on the user's side and is sent back to the server on a return visit.",
+    "An RSS reader collects feeds written in **RSS** and turns them into a list of new articles."
+  ],
+  "overview": {
+    "intro_jp": "ドメイン名の階層と URL の各部分を読み取れる。DNS の役割を、ほかのネットワーク機能と区別して説明できる。cookie と RSS について、データの置き場所と使い道を分けて説明できる。",
+    "intro_zh": "能读懂域名的层级和 URL 的各个部分。能说明 DNS 的作用，并把它与其他网络功能区分开。能分别说明 cookie 和 RSS 的数据放在哪里、用来做什么。",
+    "intro_en": "Read the hierarchy of a domain name and each part of a URL. Explain what DNS does and tell it apart from other network functions. For cookies and RSS, explain where the data sits and what it is for.",
+    "freq_badge": "頻出",
+    "est_minutes": 31
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ドメイン名: ドメイン名といえばIPアドレスに対応する人間向けの名前",
-      "DNS: DNSといえばドメイン名をIPアドレスに変換する名前解決",
-      "URL: URLといえばWeb資源の所在を示す住所表記",
-      "cookie: cookieといえばブラウザに保存して利用者を識別する小さなデータ",
-      "RSS: RSSといえばWebサイトの更新情報をまとめて配信する形式"
-    ],
     "key_points_jp": [
-      "ドメイン名は数値のIPアドレスに対応する人間可読な階層的名前で、同じ相手を二通りで表せる。",
-      "DNSはドメイン名とIPアドレスを相互変換する名前解決の仕組みで、名前でのインターネット接続を支える。",
-      "URLはスキーム・ドメイン名・パスなどから成り、Web資源の所在を一意に示す住所表記である。",
-      "cookieはブラウザ側に保存される小さなデータで、利用者の識別やログイン状態などの状態保持に使う。",
-      "RSSはWebサイトの更新情報をまとめて配信・購読するための形式で、情報収集を効率化する。"
+      "ドメイン名は接続先を示す文字の名前で、右に行くほど広い区分を表す。",
+      "DNS は、問い合わせに応じてドメイン名と IP アドレスの一方から他方を調べて答える。",
+      "URL はスキーム、ドメイン名、パスなどを組み合わせて情報の所在を示す。",
+      "cookie は利用者側のブラウザに置かれ、再訪時にサーバへ送り返される。",
+      "RSS で書かれたフィードを RSS リーダが集め、新着の一覧にする。"
     ],
     "key_points_zh": [
-      "域名是对应数字 IP 地址的、人类可读的分层式名称，可以用两种方式表示同一个对象。",
-      "DNS 是在域名和 IP 地址之间相互转换的名称解析机制，支撑着通过名称连接互联网。",
-      "URL 由协议方案、域名、路径等组成，是唯一指明 Web 资源所在位置的地址表示法。",
-      "cookie 是保存在浏览器一侧的小型数据，用于识别用户以及保持登录状态等状态信息。",
-      "RSS 是用于汇总分发和订阅 Web 站点更新信息的格式，能提高信息收集效率。"
+      "域名是表示连接目标的文字名称，越往右表示的分区范围越大。",
+      "DNS 根据查询，由域名和 IP 地址中的一方查出另一方并作答。",
+      "URL 由协议方案、域名、路径等组合而成，表示信息所在位置。",
+      "cookie 存放在用户一侧的浏览器中，再次访问时发回服务器。",
+      "用 RSS 写成的订阅源由 RSS 阅读器收集，汇成新文章列表。"
     ],
     "key_points_en": [
-      "A domain name is a human-readable, hierarchical name that corresponds to a numeric IP address, letting the same target be expressed in two ways.",
-      "DNS is the name-resolution mechanism that converts between domain names and IP addresses, supporting internet connection by name.",
-      "A URL consists of a scheme, a domain name, a path, and so on, and is an address notation that uniquely indicates where a web resource is located.",
-      "A cookie is small data stored on the browser side, used to identify the user and retain state such as the login status.",
-      "RSS is a format for bundling, distributing, and subscribing to a website's update information, which makes information gathering more efficient."
+      "A domain name is a text name for a destination, and each part further right is a broader division.",
+      "DNS answers queries by using a domain name or an IP address to look up the other.",
+      "A URL combines a scheme, a domain name, a path, and other parts to show where information is.",
+      "A cookie sits in the browser on the user's side and is sent back to the server on a return visit.",
+      "An RSS reader collects feeds written in RSS and turns them into a list of new articles."
+    ],
+    "memory_hooks_jp": [
+      "ドメイン名: domain は「領地」の意味。jp の領地の中の ne の中の example と、右から領地を絞っていく。",
+      "DNS: 正式名は Domain Name System。真ん中の Name が「名前を引く係」の目印になる。",
+      "URL: Locator は「場所を突き止めるもの」。L の字から、URL が指すのは中身でなく場所だと思い出せる。",
+      "cookie: お菓子を手元に置いておく姿を思い浮かべると、データの置き場所がサーバではなく利用者側だと思い出せる。",
+      "RSS: 展開形の一つが Really Simple Syndication。Syndication (配信) の S で、配信用の形式だと思い出せる。"
     ],
     "memory_hooks_zh": [
-      "域名：说到域名，就是对应 IP 地址的、面向人类的名称",
-      "DNS：说到 DNS，就是把域名转换为 IP 地址的名称解析",
-      "URL：说到 URL，就是表示 Web 资源所在位置的地址表示法",
-      "cookie：说到 cookie，就是保存在浏览器中、用于识别用户的小型数据",
-      "RSS：说到 RSS，就是汇总分发 Web 站点更新信息的格式"
+      "域名：domain 意为“领地”。在 jp 的领地里找 ne，再在 ne 里找 example，从右往左逐步缩小领地。",
+      "DNS：全称是 Domain Name System，中间的 Name 可以记成“查名字的专员”。",
+      "URL：Locator 意为“定位用的东西”。看到 L，就能想起 URL 指的是位置，而不是内容。",
+      "cookie：想象把饼干放在自己手边，就能想起数据放在用户这边，而不是服务器上。",
+      "RSS：其中一种全称是 Really Simple Syndication。Syndication（分发）的 S 提醒你它是用于分发的格式。"
     ],
     "memory_hooks_en": [
-      "Domain name: Domain name -> the human-friendly name that corresponds to an IP address",
-      "DNS: DNS -> name resolution that converts a domain name into an IP address",
-      "URL: URL -> the address notation that indicates where a web resource is located",
-      "cookie: cookie -> small data stored in the browser to identify the user",
-      "RSS: RSS -> the format that bundles and distributes a website's update information"
+      "Domain name: Domain means territory: inside the jp territory is ne, and inside ne is example, so the territory narrows as you read from the right.",
+      "DNS: The full name is Domain Name System; let the Name in the middle remind you of the clerk who looks up names.",
+      "URL: Locator means something that pins down a place. The L reminds you that a URL points to a location, not to the content.",
+      "cookie: Picture a cookie kept close at hand, and you will remember that the data sits on the user's side, not on the server.",
+      "RSS: One expansion is Really Simple Syndication. The S for syndication (distribution) reminds you it is a format for distributing content."
     ]
   },
   "challenge_questions": [
@@ -204,9 +1049,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "域名、DNS 与 Web 的工作原理",
-  "title_en": "Domain Names, DNS, and How the Web Works",
-  "unit_summary_zh": "学习将数字 IP 地址对应到人类易懂名称的域名与 DNS，以及 Web 浏览的基础知识（URL、cookie、RSS）。",
-  "unit_summary_en": "Learn about domain names and DNS, which map numeric IP addresses to human-friendly names, along with the basics of web browsing (URL, cookie, RSS)."
+  }
 }

@@ -1,218 +1,979 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-60-u03",
   "topic_id": "technology-22-60",
   "category": "technology",
   "title_jp": "電子メールの仕組みと宛先指定",
+  "title_zh": "电子邮件的工作原理与收件人指定",
+  "title_en": "How Email Works and Specifying Recipients",
   "unit_summary_jp": "メールボックスの概念、同報・メーリングリストによる複数宛先、cc/bccの使い分け、MIMEによる添付の仕組みを学ぶ。",
+  "unit_summary_zh": "学习邮箱的概念、通过群发与邮件列表向多个收件人发送、cc/bcc 的区分使用，以及通过 MIME 处理附件的机制。",
+  "unit_summary_en": "Learn the concept of the mailbox, sending to multiple recipients via broadcast mail and mailing lists, when to use cc vs. bcc, and how MIME handles attachments.",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-22-60-u02"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、インターネットの代表的応用サービスである電子メールの仕組みを学びます。受信を蓄えるメールボックス、複数の相手へ同じ内容を送る同報メールとメーリングリスト、宛先指定欄のcc/bccの使い分け、本文や添付の形式を定めるMIMEまでを扱います。出題頻度の高い分野で、特にcc/bccの違いは頻出です。",
-    "freq_badge": "頻出",
-    "est_minutes": 18,
-    "intro_zh": "本单元学习互联网中最具代表性的应用服务——电子邮件的工作原理。内容涵盖：存放收到邮件的邮箱、向多个对象发送相同内容的群发邮件与邮件列表、收件人指定栏 cc 与 bcc 的区分使用，以及规定正文与附件格式的 MIME。这是考试出题频率很高的领域，尤其 cc 与 bcc 的区别属于高频考点。",
-    "intro_en": "In this unit, you will learn how email—one of the internet's most representative application services—works. It covers the mailbox that stores received mail, broadcast mail and mailing lists for sending the same content to multiple parties, when to use the cc vs. bcc recipient fields, and MIME, which defines the format of the body and attachments. This is a frequently tested area, and the difference between cc and bcc in particular comes up often."
-  },
-  "terms": [
+  "goals_jp": [
+    "メールが届いてから読まれるまでの流れを、**メールボックス**を中心に説明できる。",
+    "複数の相手へ送る方法として、**同報メール**と**メーリングリスト**を区別できる。",
+    "宛先欄ごとに、受信者から誰のアドレスが見えるかを判断できる。",
+    "**MIME** が電子メールのどんな制約を緩めたのかを説明できる。"
+  ],
+  "goals_zh": [
+    "能够以**邮箱**为中心，讲清一封邮件从送达到被阅读的全过程。",
+    "在向多人发信的方法中，能够分清**群发邮件**和**邮件列表**。",
+    "能够按收件栏逐一判断，收件人能看到哪些人的地址。",
+    "能够说明 **MIME** 放宽了电子邮件的哪项限制。"
+  ],
+  "goals_en": [
+    "Explain how a message goes from delivery to being read, with the **mailbox** at the center.",
+    "Tell **broadcast mail** apart from a **mailing list** as ways of reaching several people.",
+    "Work out, field by field, whose addresses each recipient can see.",
+    "Explain which limitation of email **MIME** lifted."
+  ],
+  "overview_cols_jp": [
+    "扱う領域"
+  ],
+  "overview_cols_zh": [
+    "涉及方面"
+  ],
+  "overview_cols_en": [
+    "Area"
+  ],
+  "overview_rows": [
     {
       "term": "メールボックス",
-      "definition_jp": "届いた電子メールをユーザーごとに蓄えておく保管領域。",
-      "explanation_jp": "メールボックスは、メールサーバ上に用意された利用者ごとの受信箱で、届いたメールが取り出されるまで保管されます。送信者はいつでもメールを送れますが、受信者は都合のよいときにメールボックスから受信して読みます。\n\nこのように、送信と受信のタイミングが一致しなくてよい点が電子メールの特徴です。試験では、メールが相手のパソコンへ直接届くのではなく、いったんサーバ上のメールボックスに蓄えられてから受信する、という基本の流れが問われます。",
-      "analogy_jp": "自宅の郵便受け(ポスト)のようなもの。郵便屋さんが入れておいた手紙を、自分の都合のよいときに取りに行って読むのと同じ仕組みです。",
-      "memory_hook_jp": "メールボックスといえばサーバ上の受信箱(届いたメールの保管領域)",
-      "inline_quiz": [
-        "2018h30h-q059"
+      "one_line_jp": "届いたメールを利用者ごとに保管するサーバ上の受信箱",
+      "one_line_zh": "服务器上按用户存放收到邮件的收件箱",
+      "one_line_en": "A server-side inbox that keeps delivered mail for each user",
+      "extra_jp": [
+        "保管場所"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "邮箱",
-      "term_en": "Mailbox",
-      "definition_zh": "按用户分别存放收到的电子邮件的保管区域。",
-      "definition_en": "A storage area that holds received email separately for each user.",
-      "explanation_zh": "邮箱是邮件服务器上为每个用户准备的收件箱，收到的邮件会一直保存在其中，直到被取出为止。发送方随时都可以发邮件，而接收方则可以在方便的时候从邮箱中接收并阅读邮件。\n\n如此一来，发送和接收的时机不必一致，这正是电子邮件的特点。考试中会考查这一基本流程：邮件并不是直接送达对方的电脑，而是先存放到服务器上的邮箱里，之后再由接收方接收。",
-      "explanation_en": "A mailbox is an inbox prepared for each user on the mail server, where received mail is stored until it is retrieved. The sender can send mail at any time, while the recipient retrieves and reads it from the mailbox whenever it is convenient.\n\nThus, the timing of sending and receiving need not match—this is a defining feature of email. The exam tests this basic flow: mail does not arrive directly at the recipient's computer; it is first stored in the mailbox on the server and only then retrieved by the recipient.",
-      "analogy_zh": "就像家门口的信箱（邮筒）。邮递员投进来的信件，你可以在自己方便的时候去取出来阅读，原理是一样的。",
-      "analogy_en": "Like the mailbox at your home. The letters the mail carrier drops in are picked up and read whenever it suits you—the same mechanism.",
-      "memory_hook_zh": "说到邮箱，就是服务器上的收件箱（存放收到邮件的保管区域）",
-      "memory_hook_en": "Mailbox → the inbox on the server (a storage area for received mail)"
+      "extra_zh": [
+        "存放位置"
+      ],
+      "extra_en": [
+        "Storage"
+      ]
     },
     {
       "term": "同報メール",
-      "definition_jp": "同一内容のメールを複数の宛先へまとめて送る送り方。",
-      "explanation_jp": "同報メールは、1通のメールを複数の相手に同時に送ることをいいます。宛先欄(To)やcc・bccに複数のアドレスを並べることで実現でき、同じ案内を大勢へ一斉に伝えたいときに使います。\n\n試験では「同じ内容を複数の人へ一斉送信すること」を指す用語として問われます。次に学ぶメーリングリストは、この同報を仕組みとして固定化したものだという関係を押さえておくと違いが理解しやすくなります。",
-      "analogy_jp": "1枚の回覧板を複数の家に回して同じお知らせを共有するように、同じ内容を一度に大勢へ届けるイメージです。",
-      "memory_hook_jp": "同報メールといえば同じ内容を複数宛先へ一斉送信",
-      "inline_quiz": [
-        "2010h22a-q001",
-        "2015h27a-q078"
+      "one_line_jp": "同じ内容の 1 通を複数の相手へ一度に届ける送り方",
+      "one_line_zh": "把同一封邮件一次发给多个对象的发送方式",
+      "one_line_en": "Sending one message with the same content to several people at once",
+      "extra_jp": [
+        "送り方"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "群发邮件",
-      "term_en": "Broadcast Mail",
-      "definition_zh": "将相同内容的邮件一次性发送给多个收件人的发送方式。",
-      "definition_en": "A way of sending one piece of mail with the same content to multiple recipients at once.",
-      "explanation_zh": "群发邮件是指将一封邮件同时发送给多个对象。只要在收件人栏（To）或 cc、bcc 中并列填写多个地址即可实现，常用于想把同一通知一次性传达给众多人的场合。\n\n考试中会把它作为表示「将相同内容一次性发送给多人」的术语来考查。接下来要学的邮件列表，是把这种群发以机制的形式固定下来的产物——记住这层关系，就更容易理解二者的区别。",
-      "explanation_en": "Broadcast mail means sending a single message to multiple parties at the same time. You can do this by listing several addresses in the recipient field (To) or in cc/bcc, and it is used when you want to deliver the same notice to many people at once.\n\nThe exam tests it as the term meaning \"sending the same content to many people at once.\" The mailing list you will learn next is broadcast mail fixed into a permanent mechanism—keeping this relationship in mind makes the difference easier to understand.",
-      "analogy_zh": "就像把一份传阅板在多户人家之间传递，共享同一则通知一样，将相同内容一次性送达众人。",
-      "analogy_en": "Like passing a single circular notice around to several households so everyone shares the same announcement—delivering the same content to many people at once.",
-      "memory_hook_zh": "说到群发邮件，就是把相同内容一次性发送给多个收件人",
-      "memory_hook_en": "Broadcast mail → send the same content to multiple recipients at once"
+      "extra_zh": [
+        "发送方式"
+      ],
+      "extra_en": [
+        "Sending method"
+      ]
     },
     {
       "term": "メーリングリスト",
-      "definition_jp": "1つの代表アドレス宛で登録メンバー全員に配信する仕組み。",
-      "explanation_jp": "メーリングリストは、あらかじめ登録したメンバーをひとまとめにし、代表となる1つのアドレスへ送るだけで全員に同じメールが届く仕組みです。送信者は個々のアドレスを書く必要がなく、メンバーの追加・削除も一元管理できます。\n\n同報メールが「宛先を都度並べる」のに対し、メーリングリストは「グループを仕組みとして固定する」点が違いです。試験では、代表アドレス1つへの送信で登録者全員へ配信されるという特徴が問われます。",
-      "analogy_jp": "部署名の社内便受けのようなもの。「営業部」宛に出せば、誰が所属しているかを書かなくても、登録された全員に同じ書類が配られます。",
-      "memory_hook_jp": "メーリングリストといえば代表アドレス1つで登録メンバー全員へ配信",
-      "inline_quiz": [
-        "2014h26h-q077"
+      "one_line_jp": "代表アドレス宛てのメールを登録者全員へ配信する仕組み",
+      "one_line_zh": "把发往代表地址的邮件投递给全体登记者的机制",
+      "one_line_en": "A mechanism that delivers mail sent to one shared address to everyone registered",
+      "extra_jp": [
+        "配信の仕組み"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"送信者\"] --> B[\"代表アドレス(ML)\"]; B --> C[\"メンバー1\"]; B --> D[\"メンバー2\"]; B --> E[\"メンバー3\"]",
-        "svg_path": "figures/technology-22-60-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "邮件列表",
-      "term_en": "Mailing List",
-      "definition_zh": "只需发往一个代表地址，即可向全体登记成员投递的机制。",
-      "definition_en": "A mechanism where sending to a single representative address delivers to all registered members.",
-      "explanation_zh": "邮件列表是把预先登记的成员归为一组，只要发往一个作为代表的地址，全体成员就都能收到同一封邮件的机制。发送方无需逐个填写各成员的地址，成员的增删也可以统一管理。\n\n群发邮件是「每次并列填写收件人」，而邮件列表则是「把群组以机制的形式固定下来」，这正是二者的区别。考试中会考查这一特点：只要发往一个代表地址，全体登记者就都能收到。",
-      "explanation_en": "A mailing list groups pre-registered members together so that sending to a single representative address delivers the same mail to everyone. The sender does not need to write each member's address individually, and adding or removing members can be managed centrally.\n\nWhereas broadcast mail \"lists recipients each time,\" a mailing list \"fixes the group into a mechanism\"—that is the difference. The exam tests this feature: sending to one representative address delivers to all registered members.",
-      "analogy_zh": "就像以部门名义设立的公司内部信箱。只要寄给「销售部」，无需写明谁是其成员，登记在内的全体成员都会收到同一份文件。",
-      "analogy_en": "Like an internal company mailbox under a department name. Send it to \"Sales,\" and without naming who belongs there, all registered members receive the same document.",
-      "memory_hook_zh": "说到邮件列表，就是发往一个代表地址即可投递给全体登记成员",
-      "memory_hook_en": "Mailing list → one representative address delivers to all registered members"
+      "extra_zh": [
+        "投递机制"
+      ],
+      "extra_en": [
+        "Delivery mechanism"
+      ]
     },
     {
       "term": "cc",
-      "definition_jp": "参考として送る宛先で、全受信者にアドレスが見える欄。",
-      "explanation_jp": "cc(カーボンコピー)は、主たる宛先(To)とは別に「参考までに見ておいてほしい」相手を指定する欄です。ccに入れたアドレスは、Toやほかのccのすべての受信者から見える状態で送られます。\n\n試験では、ccに指定したアドレスが受信者全員に公開される点が重要で、アドレスを隠して送るbccとの対比で出題されます。誰が同じメールを受け取っているかを互いに知ってよい場合にccを使う、と覚えましょう。",
-      "analogy_jp": "会議の議事録を「念のため上司にも共有」と全員に分かる形で送るようなもの。誰に共有したかが受け取った人みんなに見えています。",
-      "memory_hook_jp": "ccといえば参考送付・宛先が全員に見える",
-      "inline_quiz": [
-        "2013h25h-q086",
-        "2017h29a-q079"
+      "one_line_jp": "内容を共有したい相手を指定し、アドレスが受信者全員に見える欄",
+      "one_line_zh": "填写想共享内容的对象、其地址所有收件人都看得到的栏",
+      "one_line_en": "The field for people you want to keep informed; all recipients can see their addresses",
+      "extra_jp": [
+        "宛先欄"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "cc（抄送）",
-      "term_en": "cc (carbon copy)",
-      "definition_zh": "作为参考而发送的收件人栏，其地址对全体收件人可见。",
-      "definition_en": "A recipient field for sending as a reference, where the address is visible to all recipients.",
-      "explanation_zh": "cc（carbon copy，抄送）是有别于主要收件人（To）、用来指定「希望对方作为参考过目」的对象的栏目。填入 cc 的地址，会以 To 和其他 cc 全体收件人都能看到的状态被发送出去。\n\n考试中的重点是：指定在 cc 中的地址会对全体收件人公开，并常与隐藏地址发送的 bcc 作对比出题。记住：当各收件人之间彼此知道谁也收到了同一封邮件无妨时，就用 cc。",
-      "explanation_en": "cc (carbon copy) is a field, separate from the main recipient (To), used to designate parties you want to read the mail \"for reference.\" An address placed in cc is sent in a state visible to everyone in To and the other cc recipients.\n\nThe key exam point is that an address specified in cc is disclosed to all recipients, and it is tested in contrast with bcc, which hides addresses. Remember: use cc when it is fine for recipients to know one another received the same mail.",
-      "analogy_zh": "就像把会议记录「以防万一也同步给上司」，并以全员都看得见的方式发送。同步给了谁，每个收件人都看得到。",
-      "analogy_en": "Like sending the meeting minutes \"to the boss as well, just in case,\" in a way everyone can see. Who it was shared with is visible to all recipients.",
-      "memory_hook_zh": "说到 cc，就是参考性发送、地址对全员可见",
-      "memory_hook_en": "cc → for-reference copy; the address is visible to everyone"
+      "extra_zh": [
+        "收件栏"
+      ],
+      "extra_en": [
+        "Address field"
+      ]
     },
     {
       "term": "bcc",
-      "definition_jp": "他の受信者にアドレスを知られずに送る非公開の宛先欄。",
-      "explanation_jp": "bcc(ブラインドカーボンコピー)は、指定したアドレスが他の受信者に表示されない宛先欄です。bccで受け取った人がいても、To・ccの受信者にはその存在やアドレスが見えません。\n\n面識のない多数へ一斉送信してメールアドレスの漏えいを防ぎたいときなどに使います。試験では、アドレスが全員に見えるccと、他者に知られないbccの違いがほぼ確実に問われます。『bcc=他人に見えない隠し宛先』と押さえましょう。",
-      "analogy_jp": "全員宛のお知らせを、こっそり別の人にも同じ内容で渡すイメージ。受け取った本人以外は、その人にも渡したことに気づきません。",
-      "memory_hook_jp": "bccといえばアドレス非公開・他の受信者に見えない宛先",
-      "inline_quiz": [
-        "2014h26a-q064",
-        "2017h29h-q071"
+      "one_line_jp": "他の受信者に伏せて相手を指定する欄",
+      "one_line_zh": "瞒着其他收件人指定对象的栏",
+      "one_line_en": "The field for adding people without telling the other recipients",
+      "extra_jp": [
+        "宛先欄"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"差出人\"] --> B[\"To/cc 受信者\"]; A --> C[\"bcc 受信者\"]; B -. \"見えない\" .-> C; C -. \"To/ccは見える\" .-> B",
-        "svg_path": "figures/technology-22-60-u03-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "bcc（密送）",
-      "term_en": "bcc (blind carbon copy)",
-      "definition_zh": "在不让其他收件人知晓地址的情况下发送的非公开收件人栏。",
-      "definition_en": "A non-disclosed recipient field that sends without letting other recipients know the address.",
-      "explanation_zh": "bcc（blind carbon copy，密送）是所指定的地址不会显示给其他收件人的收件人栏。即使有人通过 bcc 收到了邮件，To、cc 的收件人也看不到其存在和地址。\n\n常用于向互不相识的众多对象一次性发送、想防止邮件地址泄露等场合。考试中几乎必然会考查地址对全员可见的 cc 与不让他人知晓的 bcc 之间的区别。记住「bcc＝他人看不见的隐藏收件人」。",
-      "explanation_en": "bcc (blind carbon copy) is a recipient field whose specified address is not shown to other recipients. Even if someone receives the mail via bcc, the To and cc recipients cannot see that person's existence or address.\n\nIt is used when sending at once to many parties who do not know one another and you want to prevent email-address leakage. The exam is almost certain to test the difference between cc, whose address is visible to everyone, and bcc, which is hidden from others. Remember: \"bcc = a hidden recipient others cannot see.\"",
-      "analogy_zh": "就像把发给全员的通知，再悄悄地以相同内容也递给另一个人。除了收到的本人，其他人都不会察觉也递给了那个人。",
-      "analogy_en": "Like quietly handing the same all-recipients notice to one more person on the side. No one except that person realizes it was also given to them.",
-      "memory_hook_zh": "说到 bcc，就是地址不公开、其他收件人看不见的收件人",
-      "memory_hook_en": "bcc → address not disclosed; a recipient other recipients cannot see"
+      "extra_zh": [
+        "收件栏"
+      ],
+      "extra_en": [
+        "Address field"
+      ]
     },
     {
       "term": "MIME",
-      "definition_jp": "メールで画像や添付ファイルなど多様なデータを扱う規格。",
-      "explanation_jp": "MIME(Multipurpose Internet Mail Extensions)は、本来は文字(テキスト)しか送れなかった電子メールで、画像・音声・各種ファイルなどを送れるように拡張した規格です。日本語などの文字や添付ファイルを所定の形式に符号化して本文に組み込みます。\n\n試験では、メールに写真や文書ファイルを添付できるのはMIMEのおかげである、という役割が問われます。宛先指定(To/cc/bcc)が「誰に送るか」なのに対し、MIMEは「どんな中身を送れるか(本文・添付の形式)」を定める点を区別しましょう。",
-      "analogy_jp": "手紙の封筒に、便箋だけでなく写真やパンフレットも入れて送れるようにする決まりごとのようなもの。中身の種類を増やす取り決めです。",
-      "memory_hook_jp": "MIMEといえばメールで画像・添付ファイルを扱う拡張規格",
-      "inline_quiz": [
-        "2010h22h-q058"
+      "one_line_jp": "文字以外のデータもメールで送れるようにした拡張規格",
+      "one_line_zh": "让邮件也能发送文字以外数据的扩展规范",
+      "one_line_en": "An extension standard that lets email carry data other than text",
+      "extra_jp": [
+        "中身の形式"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "MIME",
-      "term_en": "MIME",
-      "definition_zh": "让邮件能够处理图像、附件等多种数据的规范。",
-      "definition_en": "A specification that lets email handle diverse data such as images and attachments.",
-      "explanation_zh": "MIME（Multipurpose Internet Mail Extensions）是一种扩展规范，让原本只能发送文字（文本）的电子邮件能够发送图像、声音、各种文件等。它将日文等文字以及附件按规定的格式进行编码，再组合进正文中。\n\n考试中会考查它的作用：之所以能在邮件中附带照片、文档文件，正是依靠 MIME。收件人指定（To/cc/bcc）解决的是「发给谁」，而 MIME 规定的是「能发送什么样的内容（正文与附件的格式）」，请将二者区分开。",
-      "explanation_en": "MIME (Multipurpose Internet Mail Extensions) is a specification that extends email—which originally could only send characters (text)—so it can send images, audio, and various files. It encodes characters such as Japanese and attachments into a defined format and embeds them in the body.\n\nThe exam tests its role: the ability to attach photos and document files to mail is thanks to MIME. Whereas recipient specification (To/cc/bcc) is about \"whom to send to,\" MIME defines \"what kind of content can be sent (the format of the body and attachments)\"—keep the two distinct.",
-      "analogy_zh": "就像一条约定，让信件的信封里不仅能装信纸，还能装入照片和宣传册一并寄出。这是一种增加可装内容种类的约定。",
-      "analogy_en": "Like a rule that lets you put not only writing paper but also photos and brochures into a letter's envelope to send together. It is an agreement that increases the kinds of content you can enclose.",
-      "memory_hook_zh": "说到 MIME，就是让邮件能处理图像、附件的扩展规范",
-      "memory_hook_en": "MIME → the extension spec that lets email handle images and attachments"
+      "extra_zh": [
+        "内容格式"
+      ],
+      "extra_en": [
+        "Content format"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "メールボックス",
+      "term_zh": "邮箱",
+      "term_en": "Mailbox",
+      "one_jp": "**メールボックス**は、届いた電子メールを利用者ごとに保管しておく、メールサーバ上の受信箱である。",
+      "one_zh": "**邮箱**（[[jp:メールボックス]]）是邮件服务器上按用户分别存放收到的电子邮件的收件箱。",
+      "one_en": "A **mailbox** ([[jp:メールボックス]]) is the inbox on a mail server where delivered email is kept for each user.",
+      "detail_jp": "メールは相手の端末へ直接届くのではなく、まず相手側のメールサーバにある保管領域に入る。受信者は都合のよいときに接続して読めばよいので、送信と受信が同時でなくてもやり取りが成り立つ。ブラウザからこの保管領域を読み書きする使い方を **Web メール** という。",
+      "detail_zh": "邮件不会直接送到对方的终端，而是先进入对方邮件服务器上的存放区。收件人方便时再连接上去读就行，所以收发不必同时进行，通信照样成立。通过浏览器读写这个存放区的用法叫作 **Web 邮件**（[[jp:Web メール]]）。",
+      "detail_en": "Mail does not go straight to the recipient's device; it first enters a storage area on the recipient's mail server. The recipient can connect and read it at any convenient time, so sending and receiving need not happen at once. Reading and writing that storage area from a browser is called **webmail** ([[jp:Web メール]]).",
+      "analogy_jp": "マンションの宅配ボックスのようなもの。留守の間も荷物を預かっておき、帰宅してから取り出せる。",
+      "analogy_zh": "就像小区里的快递柜。你不在家时它替你保管包裹，回家后再取出来。",
+      "analogy_en": "Think of a parcel locker in an apartment building. It holds packages while you are out, and you collect them when you get home.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**転送機能**を使えば、アドレスをいくつ持っていても、メールの受け取り先を 1 つのメールボックスにまとめられる。",
+          "text_zh": "用**转发功能**（[[jp:転送機能]]），不管有几个地址，都可以把收信的地方集中到一个邮箱（[[jp:メールボックス]]）。",
+          "text_en": "With a **forwarding feature** ([[jp:転送機能]]), however many addresses you have, all their mail can end up in one mailbox ([[jp:メールボックス]]).",
+          "qids": [
+            "2018h30h-q059",
+            "2023r05-q092"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**SMTP** はメールを送る手順、**POP3** はメールボックスから受け取る手順であり、逆ではない。",
+          "text_zh": "**SMTP** 是发送邮件的协议，**POP3** 是从邮箱收取邮件的协议，别弄反。",
+          "text_en": "**SMTP** is the procedure for sending mail and **POP3** the one for retrieving it from a mailbox, not the other way round.",
+          "qids": [
+            "2018h30h-q059",
+            "2023r05-q092"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**Web メール**はブラウザさえあれば使え、専用のメールソフトも端末への保存も要らない。",
+          "text_zh": "**Web 邮件**（[[jp:Web メール]]）只要有浏览器就能用，既不需要专用邮件软件，也不需要存到终端上。",
+          "text_en": "**Webmail** ([[jp:Web メール]]) needs only a browser, with no dedicated mail software and nothing saved to the device.",
+          "qids": [
+            "2016h28h-q066",
+            "2018h30a-q057"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "sender",
+              "label": {
+                "jp": "送信者",
+                "zh": "发件人",
+                "en": "Sender"
+              }
+            },
+            {
+              "id": "relay",
+              "label": {
+                "jp": "送信側サーバ",
+                "zh": "发送方服务器",
+                "en": "Sending server"
+              }
+            },
+            {
+              "id": "box",
+              "label": {
+                "jp": "相手のメールボックス",
+                "zh": "对方的邮箱",
+                "en": "Recipient's mailbox"
+              }
+            },
+            {
+              "id": "reader",
+              "label": {
+                "jp": "受信者",
+                "zh": "收件人",
+                "en": "Recipient"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "送信者がメールを送り出す。",
+            "caption_zh": "发件人把邮件发出去。",
+            "caption_en": "The sender sends the message.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "送信側のサーバが、相手側のサーバへメールを中継する。",
+            "caption_zh": "发送方的服务器把邮件转交给对方的服务器。",
+            "caption_en": "The sending server relays the message to the recipient's server.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "メールは相手のメールボックスに入り、そこで保管される。",
+            "caption_zh": "邮件进入对方的邮箱，并存放在那里。",
+            "caption_en": "The message lands in the recipient's mailbox and stays there.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "受信者は都合のよいときに接続して、メールを読む。",
+            "caption_zh": "收件人在方便的时候连接上去读信。",
+            "caption_en": "The recipient connects whenever convenient and reads it.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2018h30h-q059",
+        "2018h30a-q057"
+      ],
+      "definition_jp": "メールボックスは、届いた電子メールを利用者ごとに保管しておく、メールサーバ上の受信箱である。",
+      "definition_zh": "邮箱（メールボックス）是邮件服务器上按用户分别存放收到的电子邮件的收件箱。",
+      "definition_en": "A mailbox (メールボックス) is the inbox on a mail server where delivered email is kept for each user.",
+      "explanation_jp": "メールは相手の端末へ直接届くのではなく、まず相手側のメールサーバにある保管領域に入る。受信者は都合のよいときに接続して読めばよいので、送信と受信が同時でなくてもやり取りが成り立つ。ブラウザからこの保管領域を読み書きする使い方を Web メール という。",
+      "explanation_zh": "邮件不会直接送到对方的终端，而是先进入对方邮件服务器上的存放区。收件人方便时再连接上去读就行，所以收发不必同时进行，通信照样成立。通过浏览器读写这个存放区的用法叫作 Web 邮件（Web メール）。",
+      "explanation_en": "Mail does not go straight to the recipient's device; it first enters a storage area on the recipient's mail server. The recipient can connect and read it at any convenient time, so sending and receiving need not happen at once. Reading and writing that storage area from a browser is called webmail (Web メール).",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2018h30h-q059",
+        "2018h30a-q057"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "同報メール",
+      "term_zh": "群发邮件",
+      "term_en": "Broadcast Mail",
+      "one_jp": "**同報メール**は、同じ内容の 1 通を複数の相手へ一度に届ける送り方である。",
+      "one_zh": "**群发邮件**（[[jp:同報メール]]）是把内容相同的一封邮件一次发给多个对象的发送方式。",
+      "one_en": "**Broadcast mail** ([[jp:同報メール]]) means delivering one message with the same content to several people at once.",
+      "detail_jp": "宛先を書く欄には、主な相手を書く **To**、参考として共有する相手を書く **cc**、他の受信者に伏せる相手を書く **bcc** があり、ここに複数のアドレスを並べれば同報になる。どの欄に誰を入れるかで、受信者同士に見える情報が変わる。",
+      "detail_zh": "收件栏分三种：填主要对象的 **To**、填抄送参考对象的 **cc（抄送）**、填要瞒着其他收件人的对象的 **bcc（密送）**，在这些栏里并列多个地址就成了群发。把谁放进哪一栏，决定了收件人之间能看到什么信息。",
+      "detail_en": "Mail has three address fields: **To** for the main people, **cc** for those copied for reference, and **bcc** for those hidden from other recipients; listing several addresses in them makes a broadcast. Who goes in which field decides what recipients can see about each other.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "「同報」は「同じ報せ (しらせ)」と読み下すと、字面から意味を思い出せる。",
+      "hook_zh": "把 [[jp:同報]] 拆开读成「相同的通报」，从字面就能想起它的意思。",
+      "hook_en": "Read the kanji of [[jp:同報]] as \"same notice\" and the meaning comes back from the characters alone.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "受信者同士にアドレスを知られたくない同報では、相手全員を bcc 欄だけに入れる。To にも併記すれば、そこから見えてしまう。",
+          "text_zh": "群发（[[jp:同報]]）时若不想让收件人互相知道地址，就把所有对象只填进 bcc（密送）栏。要是在 To 里也写上，地址就会从那里暴露。",
+          "text_en": "For a broadcast ([[jp:同報]]) where recipients must not learn each other's addresses, put everyone in bcc and nowhere else. Add them to To as well and the addresses show from there.",
+          "qids": [
+            "2015h27a-q078"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "アドレスをすでに互いに知っている相手同士なら、To に並べて同報しても、新たに知られるアドレスはない。",
+          "text_zh": "如果对象之间本来就知道彼此的地址，即使在 To 里并列群发，也不会有新的地址被人知道。",
+          "text_en": "When people already know one another's addresses, listing them together in To reveals no new addresses.",
+          "qids": [
+            "2017h29a-q012"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2015h27a-q078",
+        "2010h22a-q001"
+      ],
+      "definition_jp": "同報メールは、同じ内容の 1 通を複数の相手へ一度に届ける送り方である。",
+      "definition_zh": "群发邮件（同報メール）是把内容相同的一封邮件一次发给多个对象的发送方式。",
+      "definition_en": "Broadcast mail (同報メール) means delivering one message with the same content to several people at once.",
+      "explanation_jp": "宛先を書く欄には、主な相手を書く To、参考として共有する相手を書く cc、他の受信者に伏せる相手を書く bcc があり、ここに複数のアドレスを並べれば同報になる。どの欄に誰を入れるかで、受信者同士に見える情報が変わる。",
+      "explanation_zh": "收件栏分三种：填主要对象的 To、填抄送参考对象的 cc（抄送）、填要瞒着其他收件人的对象的 bcc（密送），在这些栏里并列多个地址就成了群发。把谁放进哪一栏，决定了收件人之间能看到什么信息。",
+      "explanation_en": "Mail has three address fields: To for the main people, cc for those copied for reference, and bcc for those hidden from other recipients; listing several addresses in them makes a broadcast. Who goes in which field decides what recipients can see about each other.",
+      "memory_hook_jp": "「同報」は「同じ報せ (しらせ)」と読み下すと、字面から意味を思い出せる。",
+      "memory_hook_zh": "把 同報 拆开读成「相同的通报」，从字面就能想起它的意思。",
+      "memory_hook_en": "Read the kanji of 同報 as \"same notice\" and the meaning comes back from the characters alone.",
+      "inline_quiz": [
+        "2015h27a-q078",
+        "2010h22a-q001"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "メーリングリスト",
+      "term_zh": "邮件列表",
+      "term_en": "Mailing List",
+      "one_jp": "**メーリングリスト**は、代表となる 1 つのアドレスへ送ったメールを、登録者全員へ配信する仕組みである。",
+      "one_zh": "**邮件列表**（[[jp:メーリングリスト]]）是把发往一个代表地址的邮件投递给全体登记者的机制。",
+      "one_en": "A **mailing list** ([[jp:メーリングリスト]]) is a mechanism that delivers mail sent to one shared address to everyone registered.",
+      "detail_jp": "登録者の名簿はメーリングリストの側で管理するので、送信者は一人ひとりのアドレスを知らなくても全員へ届けられる。メンバーの追加や削除も、名簿を直すだけで済む。",
+      "detail_zh": "登记者名单由邮件列表一方管理，所以发件人不必知道每个人的地址，也能把邮件送到所有人手里。增减成员也只需改名单。",
+      "detail_en": "The roster is kept on the mailing list's side, so a sender can reach everyone without knowing a single individual address. Adding or removing a member takes nothing more than editing the roster.",
+      "analogy_jp": "幹事に一言伝えれば、名簿の全員へ同じ案内を配ってくれるようなもの。",
+      "analogy_zh": "就像跟负责人说一声，他就会把同一份通知发给名单上的每个人。",
+      "analogy_en": "Like telling an organizer once and having them pass the same notice to everyone on the roster.",
+      "hook_jp": "「リスト」は名簿のこと。仕組みの本体が名前に書いてある。",
+      "hook_zh": "名字里的「列表」指的就是名单，机制的核心直接写在名称上。",
+      "hook_en": "The \"list\" in the name is the roster, so the name itself states what the mechanism is built on.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "代表アドレス 1 つに送るだけで、結び付いた登録者全員へ同じメールが配られる。",
+          "text_zh": "只要发给一个代表地址（[[jp:代表アドレス]]），与之关联的全体登记者都会收到同样的邮件。",
+          "text_en": "Send to one shared address ([[jp:代表アドレス]]) and the same mail reaches everyone registered under it.",
+          "qids": [
+            "2014h26h-q077",
+            "2015h27h-q072"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "配信されたメールの宛先に、登録者全員のアドレスが並ぶわけではない。",
+          "text_zh": "投递来的邮件，收件地址里并不会列出全体登记者的地址。",
+          "text_en": "A delivered message does not list every registered member's address among its recipients.",
+          "qids": [
+            "2018h30h-q059",
+            "2023r05-q092"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "sender",
+              "label": {
+                "jp": "送信者",
+                "zh": "发件人",
+                "en": "Sender"
+              }
+            },
+            {
+              "id": "alias",
+              "label": {
+                "jp": "代表アドレス",
+                "zh": "代表地址",
+                "en": "Shared address"
+              }
+            },
+            {
+              "id": "roster",
+              "label": {
+                "jp": "登録名簿",
+                "zh": "登记名单",
+                "en": "Registered roster"
+              }
+            },
+            {
+              "id": "members",
+              "label": {
+                "jp": "登録者全員",
+                "zh": "全体登记者",
+                "en": "All registered members"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "送信者は代表アドレス宛てに 1 通だけ送る。",
+            "caption_zh": "发件人只向代表地址发一封。",
+            "caption_en": "The sender sends just one message to the shared address.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "代表アドレスに対応する登録名簿を参照する。",
+            "caption_zh": "查询与代表地址对应的登记名单。",
+            "caption_en": "The roster tied to that address is looked up.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "名簿に載っている全員へ同じ内容が配られる。",
+            "caption_zh": "相同内容分发给名单上的所有人。",
+            "caption_en": "Everyone on the roster gets the same content.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2014h26h-q077",
+        "2023r05-q092"
+      ],
+      "definition_jp": "メーリングリストは、代表となる 1 つのアドレスへ送ったメールを、登録者全員へ配信する仕組みである。",
+      "definition_zh": "邮件列表（メーリングリスト）是把发往一个代表地址的邮件投递给全体登记者的机制。",
+      "definition_en": "A mailing list (メーリングリスト) is a mechanism that delivers mail sent to one shared address to everyone registered.",
+      "explanation_jp": "登録者の名簿はメーリングリストの側で管理するので、送信者は一人ひとりのアドレスを知らなくても全員へ届けられる。メンバーの追加や削除も、名簿を直すだけで済む。",
+      "explanation_zh": "登记者名单由邮件列表一方管理，所以发件人不必知道每个人的地址，也能把邮件送到所有人手里。增减成员也只需改名单。",
+      "explanation_en": "The roster is kept on the mailing list's side, so a sender can reach everyone without knowing a single individual address. Adding or removing a member takes nothing more than editing the roster.",
+      "memory_hook_jp": "「リスト」は名簿のこと。仕組みの本体が名前に書いてある。",
+      "memory_hook_zh": "名字里的「列表」指的就是名单，机制的核心直接写在名称上。",
+      "memory_hook_en": "The \"list\" in the name is the roster, so the name itself states what the mechanism is built on.",
+      "inline_quiz": [
+        "2014h26h-q077",
+        "2023r05-q092"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "cc",
+      "term_zh": "cc（抄送）",
+      "term_en": "cc (carbon copy)",
+      "one_jp": "**cc** は、内容を共有しておきたい相手を指定する宛先欄で、そのアドレスは受信者全員に見える。",
+      "one_zh": "**cc（抄送）**是指定想共享内容的对象的收件栏，其地址所有收件人都看得到。",
+      "one_en": "**cc** (carbon copy) is the address field for people you want to keep informed, and all recipients can see those addresses.",
+      "detail_jp": "To が用件の当事者を書く欄であるのに対し、cc には参考として目を通してほしい相手を入れる。cc の相手のアドレスはメールの宛先情報に載るので、受信者は cc でほかに誰へ送られたかを読み取れる。",
+      "detail_zh": "To 填的是事情的当事人，cc（抄送）填的则是希望过目作参考的人。cc 对象的地址会写进邮件的收件信息，所以收件人能看出还抄送给了谁。",
+      "detail_en": "To is for the people the matter directly concerns, while cc is for those you would like to look it over for reference. Addresses in cc go into the message's address information, so recipients can tell who else was copied.",
+      "analogy_jp": "報告書の送付先欄に「参考: 課長」と書いて配るようなもの。誰に渡したかが全員に分かる。",
+      "analogy_zh": "就像在报告的分发栏写上「参阅：科长」再发下去，发给了谁大家都一清二楚。",
+      "analogy_en": "Like circulating a report with \"FYI: section manager\" on the distribution line. Everyone can see who got it.",
+      "hook_jp": "carbon copy の略で、カーボン紙で写し取った控えを別の人にも渡す、という昔の事務作業が語源。",
+      "hook_zh": "cc 是 carbon copy 的缩写，语源是从前办公时用复写纸誊出副本再交给别人的做法。",
+      "hook_en": "Short for carbon copy, from the old office practice of making a duplicate with carbon paper and handing it to someone else.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "To の相手と cc の相手は、互いのアドレスを見ることができる。",
+          "text_zh": "To 的对象和 cc（抄送）的对象能看到彼此的地址。",
+          "text_en": "People in To and people in cc can see each other's addresses.",
+          "qids": [
+            "2017h29a-q079",
+            "2021r03-q059"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "互いのアドレスを知らない相手同士を cc に並べると、アドレスが知られてしまい、個人情報保護の面で問題になる。",
+          "text_zh": "把互不知道地址的人并列在 cc（抄送）里，地址就会被别人知道，从个人信息保护（[[jp:個人情報保護]]）的角度看有问题。",
+          "text_en": "Listing people who do not know each other's addresses together in cc exposes those addresses, which is a problem for personal information protection ([[jp:個人情報保護]]).",
+          "qids": [
+            "2017h29a-q012"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "参考として送る相手のうち、他の受信者に知られてよい相手は cc、知られたくない相手は bcc に入れる。",
+          "text_zh": "作为参考发送的对象中，可以让其他收件人知道的放进 cc（抄送），不想让人知道的放进 bcc（密送）。",
+          "text_en": "Among people copied for reference, use cc for those others may know about and bcc for those they should not.",
+          "qids": [
+            "2020r02o-q092"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2017h29a-q079",
+        "2021r03-q059"
+      ],
+      "definition_jp": "cc は、内容を共有しておきたい相手を指定する宛先欄で、そのアドレスは受信者全員に見える。",
+      "definition_zh": "cc（抄送）是指定想共享内容的对象的收件栏，其地址所有收件人都看得到。",
+      "definition_en": "cc (carbon copy) is the address field for people you want to keep informed, and all recipients can see those addresses.",
+      "explanation_jp": "To が用件の当事者を書く欄であるのに対し、cc には参考として目を通してほしい相手を入れる。cc の相手のアドレスはメールの宛先情報に載るので、受信者は cc でほかに誰へ送られたかを読み取れる。",
+      "explanation_zh": "To 填的是事情的当事人，cc（抄送）填的则是希望过目作参考的人。cc 对象的地址会写进邮件的收件信息，所以收件人能看出还抄送给了谁。",
+      "explanation_en": "To is for the people the matter directly concerns, while cc is for those you would like to look it over for reference. Addresses in cc go into the message's address information, so recipients can tell who else was copied.",
+      "memory_hook_jp": "carbon copy の略で、カーボン紙で写し取った控えを別の人にも渡す、という昔の事務作業が語源。",
+      "memory_hook_zh": "cc 是 carbon copy 的缩写，语源是从前办公时用复写纸誊出副本再交给别人的做法。",
+      "memory_hook_en": "Short for carbon copy, from the old office practice of making a duplicate with carbon paper and handing it to someone else.",
+      "inline_quiz": [
+        "2017h29a-q079",
+        "2021r03-q059"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "bcc",
+      "term_zh": "bcc（密送）",
+      "term_en": "bcc (blind carbon copy)",
+      "one_jp": "**bcc** は、他の受信者に伏せて相手を指定する宛先欄で、そのアドレスは To や cc の相手へ伝わらない。",
+      "one_zh": "**bcc（密送）**是瞒着其他收件人指定对象的收件栏，其地址不会传给 To 和 cc（抄送）的对象。",
+      "one_en": "**bcc** (blind carbon copy) is the address field for adding people without telling the other recipients, and those addresses never reach anyone in To or cc.",
+      "detail_jp": "bcc の相手がいることは、To や cc で受け取った人には分からない。互いのアドレスを知らない多数へ一斉に送るときに、アドレスの流出を防ぐ目的でよく使われる。",
+      "detail_zh": "通过 To 或 cc（抄送）收到邮件的人，并不知道还有 bcc（密送）对象存在。向互不知道地址的众多对象一起发信时，常用它来防止地址外泄。",
+      "detail_en": "People who receive a message through To or cc cannot tell that anyone is in bcc. It is a common way to keep addresses from getting out when mailing a large group of people who do not know each other's addresses.",
+      "analogy_jp": "配布した書類の写しを、他の人には言わずに別の人へそっと渡すようなもの。",
+      "analogy_zh": "就像把分发的文件另外复印一份，不告诉其他人，悄悄交给另一个人。",
+      "analogy_en": "Like quietly passing a copy of a circulated document to one more person without telling the others.",
+      "hook_jp": "b は blind (目隠し) の頭文字で、他の受信者の目から隠した cc と読める。",
+      "hook_zh": "b 是 blind（蒙住眼睛）的首字母，可以理解成避开其他收件人视线的 cc。",
+      "hook_en": "The b stands for blind: read it as a cc kept out of the other recipients' sight.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "bcc 欄に入れても、届く本文や添付の中身は変わらない。",
+          "text_zh": "填进 bcc（密送）栏，收到的正文和附件内容也不会变。",
+          "text_en": "Being in bcc changes nothing about the body or attachments that arrive.",
+          "qids": [
+            "2014h26a-q064",
+            "2026r08-q075"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "bcc で受け取った人には To と cc の相手が見えるが、他の bcc の相手は見えない。",
+          "text_zh": "通过 bcc（密送）收信的人看得到 To 和 cc（抄送）的对象，但看不到其他 bcc 对象。",
+          "text_en": "Someone receiving through bcc can see the people in To and cc, but not the other bcc recipients.",
+          "qids": [
+            "2017h29a-q079",
+            "2019r01a-q079",
+            "2024r06-q096"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "cc で受け取った人が全員へ返信しても、宛先情報に載らない bcc の相手には届かない。",
+          "text_zh": "通过 cc（抄送）收信的人即使回复全部，也到不了不在收件信息里的 bcc（密送）对象那里。",
+          "text_en": "When someone in cc replies to all, the reply does not reach bcc recipients, because they are not in the address information.",
+          "qids": [
+            "2017h29h-q071"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "受け取った人の欄",
+              "zh": "收件人所在的栏",
+              "en": "Recipient's field"
+            },
+            {
+              "jp": "To の相手",
+              "zh": "To 的对象",
+              "en": "People in To"
+            },
+            {
+              "jp": "cc の相手",
+              "zh": "cc 的对象",
+              "en": "People in cc"
+            },
+            {
+              "jp": "bcc の相手",
+              "zh": "bcc 的对象",
+              "en": "People in bcc"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "To",
+                  "zh": "To",
+                  "en": "To"
+                },
+                {
+                  "jp": "見える",
+                  "zh": "看得到",
+                  "en": "Visible"
+                },
+                {
+                  "jp": "見える",
+                  "zh": "看得到",
+                  "en": "Visible"
+                },
+                {
+                  "jp": "見えない",
+                  "zh": "看不到",
+                  "en": "Hidden"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "cc",
+                  "zh": "cc",
+                  "en": "cc"
+                },
+                {
+                  "jp": "見える",
+                  "zh": "看得到",
+                  "en": "Visible"
+                },
+                {
+                  "jp": "見える",
+                  "zh": "看得到",
+                  "en": "Visible"
+                },
+                {
+                  "jp": "見えない",
+                  "zh": "看不到",
+                  "en": "Hidden"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "bcc",
+                  "zh": "bcc",
+                  "en": "bcc"
+                },
+                {
+                  "jp": "見える",
+                  "zh": "看得到",
+                  "en": "Visible"
+                },
+                {
+                  "jp": "見える",
+                  "zh": "看得到",
+                  "en": "Visible"
+                },
+                {
+                  "jp": "他の bcc の相手は見えない",
+                  "zh": "看不到其他 bcc 对象",
+                  "en": "Other bcc recipients hidden"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2014h26a-q064",
+        "2017h29h-q071",
+        "2024r06-q096"
+      ],
+      "definition_jp": "bcc は、他の受信者に伏せて相手を指定する宛先欄で、そのアドレスは To や cc の相手へ伝わらない。",
+      "definition_zh": "bcc（密送）是瞒着其他收件人指定对象的收件栏，其地址不会传给 To 和 cc（抄送）的对象。",
+      "definition_en": "bcc (blind carbon copy) is the address field for adding people without telling the other recipients, and those addresses never reach anyone in To or cc.",
+      "explanation_jp": "bcc の相手がいることは、To や cc で受け取った人には分からない。互いのアドレスを知らない多数へ一斉に送るときに、アドレスの流出を防ぐ目的でよく使われる。",
+      "explanation_zh": "通过 To 或 cc（抄送）收到邮件的人，并不知道还有 bcc（密送）对象存在。向互不知道地址的众多对象一起发信时，常用它来防止地址外泄。",
+      "explanation_en": "People who receive a message through To or cc cannot tell that anyone is in bcc. It is a common way to keep addresses from getting out when mailing a large group of people who do not know each other's addresses.",
+      "memory_hook_jp": "b は blind (目隠し) の頭文字で、他の受信者の目から隠した cc と読める。",
+      "memory_hook_zh": "b 是 blind（蒙住眼睛）的首字母，可以理解成避开其他收件人视线的 cc。",
+      "memory_hook_en": "The b stands for blind: read it as a cc kept out of the other recipients' sight.",
+      "inline_quiz": [
+        "2014h26a-q064",
+        "2017h29h-q071",
+        "2024r06-q096"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "MIME",
+      "term_zh": "MIME",
+      "term_en": "MIME",
+      "one_jp": "**MIME** は、文字しか扱えなかった電子メールで、画像や音声などの多様なデータを送れるようにした拡張規格である。",
+      "one_zh": "**MIME** 是一种扩展规范，让原本只能处理文字的电子邮件也能发送图像、声音等各种数据。",
+      "one_en": "**MIME** is an extension standard that lets email, once limited to text, carry many kinds of data such as images and audio.",
+      "detail_jp": "添付ファイルのようなデータは、いったん文字の並びに符号化して本文とともに 1 通にまとめて送る。これとは別に、メール本文の形式としては、文字だけの**テキスト形式**と、書式を指定できる **HTML 形式**がよく使われ、ファイルの添付はどちらでもできる。",
+      "detail_zh": "附件这类数据要先编码成文字序列，再和正文合成一封邮件发送。另外，邮件正文的格式常用的有只含文字的**文本格式**（[[jp:テキスト形式]]）和可以指定样式的 **HTML 格式**（[[jp:HTML 形式]]），两者都能附加文件。",
+      "detail_en": "Data such as an attached file is first encoded as a string of characters, then sent together with the body as one message. Separately, the common body formats are **plain text** ([[jp:テキスト形式]]), which holds characters only, and **HTML format** ([[jp:HTML 形式]]), which allows formatting, and either one can carry attachments.",
+      "analogy_jp": "封筒しか運ばない郵便で、布製品をたたんで封筒に収めて送り、届いた先で広げ直すようなもの。",
+      "analogy_zh": "就像邮局只运信封时，把布制品叠好塞进信封寄出，到了对方手里再展开。",
+      "analogy_en": "Imagine a postal service that carries only envelopes: you fold a piece of cloth to fit inside one, and the receiver unfolds it at the other end.",
+      "hook_jp": "M は Multipurpose (多目的)、E は Extensions (拡張) で、文字専用だったメールを多目的に広げたと名前に書いてある。",
+      "hook_zh": "M 是 Multipurpose（多用途），E 是 Extensions（扩展），名称本身就写明它把只能传文字的邮件扩展成了多用途。",
+      "hook_en": "M is Multipurpose and E is Extensions: the name itself says text-only email was widened to many uses.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "MIME は、添付ファイルのような文字以外のデータをメールで運ぶための規格である。",
+          "text_zh": "MIME 是用邮件传送附加文件（[[jp:添付ファイル]]）这类非文字数据的规范。",
+          "text_en": "MIME is the standard for carrying non-text data such as attachments ([[jp:添付ファイル]]) by email.",
+          "qids": [
+            "2010h22h-q058"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "文字の色や大きさを指定でき、語句にリンクを張れるのは HTML 形式である。開いたときにスクリプトが動くおそれがあるのも HTML 形式の側である。",
+          "text_zh": "能指定文字颜色和大小、能给词句加链接的是 HTML 格式（[[jp:HTML 形式]]）。打开时可能运行脚本（[[jp:スクリプト]]）的，也是 HTML 格式这一边。",
+          "text_en": "Setting text color and size and linking words are things only HTML format ([[jp:HTML 形式]]) does. It is also the side where a script ([[jp:スクリプト]]) may run when a message is opened.",
+          "qids": [
+            "2019h31h-q060",
+            "2022r04-q089"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "file",
+              "label": {
+                "jp": "添付するデータ",
+                "zh": "要附加的数据",
+                "en": "Data to attach"
+              }
+            },
+            {
+              "id": "encode",
+              "label": {
+                "jp": "文字の並びに符号化",
+                "zh": "编码成文字序列",
+                "en": "Encode as a string of characters"
+              }
+            },
+            {
+              "id": "send",
+              "label": {
+                "jp": "本文と 1 通にして送信",
+                "zh": "与正文合成一封发送",
+                "en": "Combine with the body and send"
+              }
+            },
+            {
+              "id": "decode",
+              "label": {
+                "jp": "受信側で元に戻す",
+                "zh": "接收方还原",
+                "en": "Restore on the receiving side"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "画像などのデータを、メールで運べる文字の並びに変換する。",
+            "caption_zh": "把图像等数据转换成邮件能传送的文字序列。",
+            "caption_en": "Data such as an image is converted into characters that email can carry.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "変換した部分と本文を 1 通のメールにまとめて送る。",
+            "caption_zh": "把转换后的部分和正文合成一封邮件发送。",
+            "caption_en": "The converted part and the body go out together as one message.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "受信側のソフトが元のデータに戻して表示する。",
+            "caption_zh": "接收方的软件把它还原成原来的数据并显示。",
+            "caption_en": "The receiving software restores the original data and displays it.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2010h22h-q058",
+        "2022r04-q089"
+      ],
+      "definition_jp": "MIME は、文字しか扱えなかった電子メールで、画像や音声などの多様なデータを送れるようにした拡張規格である。",
+      "definition_zh": "MIME 是一种扩展规范，让原本只能处理文字的电子邮件也能发送图像、声音等各种数据。",
+      "definition_en": "MIME is an extension standard that lets email, once limited to text, carry many kinds of data such as images and audio.",
+      "explanation_jp": "添付ファイルのようなデータは、いったん文字の並びに符号化して本文とともに 1 通にまとめて送る。これとは別に、メール本文の形式としては、文字だけのテキスト形式と、書式を指定できる HTML 形式がよく使われ、ファイルの添付はどちらでもできる。",
+      "explanation_zh": "附件这类数据要先编码成文字序列，再和正文合成一封邮件发送。另外，邮件正文的格式常用的有只含文字的文本格式（テキスト形式）和可以指定样式的 HTML 格式（HTML 形式），两者都能附加文件。",
+      "explanation_en": "Data such as an attached file is first encoded as a string of characters, then sent together with the body as one message. Separately, the common body formats are plain text (テキスト形式), which holds characters only, and HTML format (HTML 形式), which allows formatting, and either one can carry attachments.",
+      "memory_hook_jp": "M は Multipurpose (多目的)、E は Extensions (拡張) で、文字専用だったメールを多目的に広げたと名前に書いてある。",
+      "memory_hook_zh": "M 是 Multipurpose（多用途），E 是 Extensions（扩展），名称本身就写明它把只能传文字的邮件扩展成了多用途。",
+      "memory_hook_en": "M is Multipurpose and E is Extensions: the name itself says text-only email was widened to many uses.",
+      "inline_quiz": [
+        "2010h22h-q058",
+        "2022r04-q089"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "同報メール",
+      "b": "メーリングリスト",
+      "rows": [
+        {
+          "label_jp": "何を指すか",
+          "label_zh": "指什么",
+          "label_en": "What it is",
+          "a_jp": "複数の相手へ送る送り方",
+          "a_zh": "向多个对象发送的方式",
+          "a_en": "A way of sending to several people",
+          "b_jp": "複数の相手へ配信する仕組み",
+          "b_zh": "向多个对象投递的机制",
+          "b_en": "A mechanism for delivering to several people",
+          "key": false
+        },
+        {
+          "label_jp": "宛先の書き方",
+          "label_zh": "收件地址的写法",
+          "label_en": "How it is addressed",
+          "a_jp": "送信者が相手のアドレスを並べる",
+          "a_zh": "发件人逐个列出对方地址",
+          "a_en": "The sender lists each address",
+          "b_jp": "代表アドレスを 1 つ書くだけ",
+          "b_zh": "只写一个代表地址",
+          "b_en": "Only one shared address is written",
+          "key": true
+        },
+        {
+          "label_jp": "相手の管理",
+          "label_zh": "收件对象的管理",
+          "label_en": "Managing recipients",
+          "a_jp": "送るたびに送信者が決める",
+          "a_zh": "每次发送时由发件人决定",
+          "a_en": "The sender decides each time",
+          "b_jp": "登録名簿でまとめて管理する",
+          "b_zh": "用登记名单统一管理",
+          "b_en": "Kept together on a registered roster",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "cc",
+      "b": "bcc",
+      "rows": [
+        {
+          "label_jp": "用途",
+          "label_zh": "用途",
+          "label_en": "Purpose",
+          "a_jp": "内容の共有先を受信者に示して送る",
+          "a_zh": "发送时让收件人知道内容还共享给了谁",
+          "a_en": "Shows recipients who else is being kept informed",
+          "b_jp": "他の受信者に伏せて送る",
+          "b_zh": "瞒着其他收件人发送",
+          "b_en": "Hides the person from the other recipients",
+          "key": false
+        },
+        {
+          "label_jp": "他の受信者からの見え方",
+          "label_zh": "在其他收件人眼中",
+          "label_en": "As seen by other recipients",
+          "a_jp": "アドレスが全員に見える",
+          "a_zh": "地址所有人都看得到",
+          "a_en": "Address visible to everyone",
+          "b_jp": "アドレスが誰にも見えない",
+          "b_zh": "地址谁也看不到",
+          "b_en": "Address visible to no one",
+          "key": true
+        },
+        {
+          "label_jp": "他の受信者の全員返信",
+          "label_zh": "其他收件人回复全部时",
+          "label_en": "When another recipient replies to all",
+          "a_jp": "宛先情報に載っているので届く",
+          "a_zh": "地址在收件信息里，所以收得到",
+          "a_en": "In the address information, so the reply arrives",
+          "b_jp": "宛先情報に載らないので届かない",
+          "b_zh": "地址不在收件信息里，所以收不到",
+          "b_en": "Not in the address information, so the reply does not arrive",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "メールは**メールボックス**で保管されるので、送信と受信が同時でなくてよい。",
+    "**メーリングリスト**では、送り手が一人ひとりのアドレスを知らなくても、名簿の全員へメールが届く。",
+    "どの宛先欄に入れても、届く本文や添付の中身は変わらない。",
+    "**MIME** の役割は、文字専用だったメールに添付ファイルなどのデータを載せることにある。"
+  ],
+  "key_points_zh": [
+    "邮件存放在**邮箱**里，所以收发不必同时进行。",
+    "用**邮件列表**时，发件人不必知道每个人的地址，邮件也能送到名单上的所有人。",
+    "无论填进哪个收件栏，收到的正文和附件内容都不变。",
+    "**MIME** 的作用是让原本只能传文字的邮件也能带上附加文件等数据。"
+  ],
+  "key_points_en": [
+    "Mail waits in a **mailbox**, so sending and receiving need not happen at the same time.",
+    "With a **mailing list**, mail reaches everyone on the roster even if the sender knows no individual address.",
+    "Whichever address field someone is in, the body and attachments they receive are the same.",
+    "The job of **MIME** is to put data such as attachments onto what used to be text-only email."
+  ],
+  "overview": {
+    "intro_jp": "メールが届いてから読まれるまでの流れを、メールボックスを中心に説明できる。複数の相手へ送る方法として、同報メールとメーリングリストを区別できる。宛先欄ごとに、受信者から誰のアドレスが見えるかを判断できる。MIME が電子メールのどんな制約を緩めたのかを説明できる。",
+    "intro_zh": "能够以邮箱为中心，讲清一封邮件从送达到被阅读的全过程。在向多人发信的方法中，能够分清群发邮件和邮件列表。能够按收件栏逐一判断，收件人能看到哪些人的地址。能够说明 MIME 放宽了电子邮件的哪项限制。",
+    "intro_en": "Explain how a message goes from delivery to being read, with the mailbox at the center. Tell broadcast mail apart from a mailing list as ways of reaching several people. Work out, field by field, whose addresses each recipient can see. Explain which limitation of email MIME lifted.",
+    "freq_badge": "頻出",
+    "est_minutes": 31
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "メールボックス: メールボックスといえばサーバ上の受信箱(届いたメールの保管領域)",
-      "同報メール: 同報メールといえば同じ内容を複数宛先へ一斉送信",
-      "メーリングリスト: メーリングリストといえば代表アドレス1つで登録メンバー全員へ配信",
-      "cc: ccといえば参考送付・宛先が全員に見える",
-      "bcc: bccといえばアドレス非公開・他の受信者に見えない宛先",
-      "MIME: MIMEといえばメールで画像・添付ファイルを扱う拡張規格"
-    ],
     "key_points_jp": [
-      "電子メールはサーバ上のメールボックスにいったん蓄えられ、受信者が都合のよいときに受信する(送受信のタイミングは一致しなくてよい)。",
-      "同報メールは同一内容を複数宛先へ一斉送信すること、メーリングリストはそれを代表アドレス1つで実現する仕組みである。",
-      "ccはアドレスが全受信者に見える参考宛先、bccはアドレスが他者に見えない非公開宛先で、この違いが頻出。",
-      "MIMEは本来テキストのみのメールで画像や添付ファイルなど多様なデータを扱えるようにする規格である。",
-      "To/cc/bccは「誰に送るか(宛先)」、MIMEは「どんな中身を送れるか(本文・添付の形式)」という役割の違いがある。"
+      "メールはメールボックスで保管されるので、送信と受信が同時でなくてよい。",
+      "メーリングリストでは、送り手が一人ひとりのアドレスを知らなくても、名簿の全員へメールが届く。",
+      "どの宛先欄に入れても、届く本文や添付の中身は変わらない。",
+      "MIME の役割は、文字専用だったメールに添付ファイルなどのデータを載せることにある。"
     ],
     "key_points_zh": [
-      "电子邮件会先存放到服务器上的邮箱里，由接收方在方便的时候接收（发送与接收的时机不必一致）。",
-      "群发邮件是把相同内容一次性发送给多个收件人，邮件列表则是用一个代表地址来实现这一点的机制。",
-      "cc 是地址对全体收件人可见的参考性收件人，bcc 是地址不让他人看见的非公开收件人，二者的区别属于高频考点。",
-      "MIME 是让原本只能发送文本的邮件能够处理图像、附件等多种数据的规范。",
-      "To/cc/bcc 解决的是「发给谁（收件人）」，MIME 规定的是「能发送什么样的内容（正文与附件的格式）」，二者在作用上有所不同。"
+      "邮件存放在邮箱里，所以收发不必同时进行。",
+      "用邮件列表时，发件人不必知道每个人的地址，邮件也能送到名单上的所有人。",
+      "无论填进哪个收件栏，收到的正文和附件内容都不变。",
+      "MIME 的作用是让原本只能传文字的邮件也能带上附加文件等数据。"
     ],
     "key_points_en": [
-      "Email is first stored in the mailbox on the server and retrieved by the recipient whenever convenient (the timing of sending and receiving need not match).",
-      "Broadcast mail sends the same content to multiple recipients at once; a mailing list is the mechanism that achieves this with a single representative address.",
-      "cc is a for-reference recipient whose address is visible to all recipients; bcc is a non-disclosed recipient whose address others cannot see—this difference is frequently tested.",
-      "MIME is a specification that lets email—originally text-only—handle diverse data such as images and attachments.",
-      "To/cc/bcc address \"whom to send to (the recipients),\" while MIME defines \"what kind of content can be sent (the format of the body and attachments)\"—they differ in role."
+      "Mail waits in a mailbox, so sending and receiving need not happen at the same time.",
+      "With a mailing list, mail reaches everyone on the roster even if the sender knows no individual address.",
+      "Whichever address field someone is in, the body and attachments they receive are the same.",
+      "The job of MIME is to put data such as attachments onto what used to be text-only email."
+    ],
+    "memory_hooks_jp": [
+      "同報メール: 「同報」は「同じ報せ (しらせ)」と読み下すと、字面から意味を思い出せる。",
+      "メーリングリスト: 「リスト」は名簿のこと。仕組みの本体が名前に書いてある。",
+      "cc: carbon copy の略で、カーボン紙で写し取った控えを別の人にも渡す、という昔の事務作業が語源。",
+      "bcc: b は blind (目隠し) の頭文字で、他の受信者の目から隠した cc と読める。",
+      "MIME: M は Multipurpose (多目的)、E は Extensions (拡張) で、文字専用だったメールを多目的に広げたと名前に書いてある。"
     ],
     "memory_hooks_zh": [
-      "邮箱：说到邮箱，就是服务器上的收件箱（存放收到邮件的保管区域）",
-      "群发邮件：说到群发邮件，就是把相同内容一次性发送给多个收件人",
-      "邮件列表：说到邮件列表，就是发往一个代表地址即可投递给全体登记成员",
-      "cc：说到 cc，就是参考性发送、地址对全员可见",
-      "bcc：说到 bcc，就是地址不公开、其他收件人看不见的收件人",
-      "MIME：说到 MIME，就是让邮件能处理图像、附件的扩展规范"
+      "群发邮件：把 同報 拆开读成「相同的通报」，从字面就能想起它的意思。",
+      "邮件列表：名字里的「列表」指的就是名单，机制的核心直接写在名称上。",
+      "cc（抄送）：cc 是 carbon copy 的缩写，语源是从前办公时用复写纸誊出副本再交给别人的做法。",
+      "bcc（密送）：b 是 blind（蒙住眼睛）的首字母，可以理解成避开其他收件人视线的 cc。",
+      "MIME：M 是 Multipurpose（多用途），E 是 Extensions（扩展），名称本身就写明它把只能传文字的邮件扩展成了多用途。"
     ],
     "memory_hooks_en": [
-      "Mailbox: Mailbox → the inbox on the server (a storage area for received mail)",
-      "Broadcast mail: Broadcast mail → send the same content to multiple recipients at once",
-      "Mailing list: Mailing list → one representative address delivers to all registered members",
-      "cc: cc → for-reference copy; the address is visible to everyone",
-      "bcc: bcc → address not disclosed; a recipient other recipients cannot see",
-      "MIME: MIME → the extension spec that lets email handle images and attachments"
+      "Broadcast Mail: Read the kanji of 同報 as \"same notice\" and the meaning comes back from the characters alone.",
+      "Mailing List: The \"list\" in the name is the roster, so the name itself states what the mechanism is built on.",
+      "cc (carbon copy): Short for carbon copy, from the old office practice of making a duplicate with carbon paper and handing it to someone else.",
+      "bcc (blind carbon copy): The b stands for blind: read it as a cc kept out of the other recipients' sight.",
+      "MIME: M is Multipurpose and E is Extensions: the name itself says text-only email was widened to many uses."
     ]
   },
   "challenge_questions": [
     "2015h27h-q072",
-    "2019r01a-q079",
     "2016h28h-q066",
     "2019h31h-q060",
+    "2019r01a-q079",
     "2020r02o-q092"
   ],
   "source_figures": [
@@ -229,9 +990,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "电子邮件的工作原理与收件人指定",
-  "title_en": "How Email Works and Specifying Recipients",
-  "unit_summary_zh": "学习邮箱的概念、通过群发与邮件列表向多个收件人发送、cc/bcc 的区分使用，以及通过 MIME 处理附件的机制。",
-  "unit_summary_en": "Learn the concept of the mailbox, sending to multiple recipients via broadcast mail and mailing lists, when to use cc vs. bcc, and how MIME handles attachments."
+  }
 }
