@@ -285,6 +285,58 @@ for (const width of [390, 600]) test(`v2 units at ${width}px: term-table and pai
   }
 });
 
+// S140 (b10 u01): an unbreakable value in a pair cell squeezed the aspect column to 30px. Injected text, so
+// the check keeps working after the batch's units leave TEXTBOOK_E2E_UNITS.
+test("v2 pair table at 390px: an unbreakable cell value leaves the aspect column readable and does not overflow", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  let checked = 0;
+  for (const unit of E2E_UNITS) {
+    await page.goto(`/ja/textbook/${unit.unit_id}`);
+    await page.evaluate(() => document.fonts.ready);
+    const r = await page.evaluate(() => {
+      const table = document.querySelector('[data-part="pair"] table');
+      if (!table) return null;
+      const cell = table.querySelector("tbody td:last-child")!;
+      cell.textContent = "2001:0db8:0000:0000:0000:0000:0000:0001";
+      const box = table.parentElement!;
+      return {
+        aspectMin: Math.min(...[...table.querySelectorAll("tbody th")].map((c) => c.getBoundingClientRect().width)),
+        overflow: box.scrollWidth - box.clientWidth,
+      };
+    });
+    if (!r) continue;
+    checked++;
+    expect(r.aspectMin, unit.unit_id).toBeGreaterThanOrEqual(56);
+    expect(r.overflow, unit.unit_id).toBeLessThanOrEqual(1);
+  }
+  expect(checked).toBeGreaterThan(0);
+});
+
+// S140 (Rule D): overflow-wrap: anywhere on every locale split ordinary English words in pair cells.
+test("v2 pair table at 390px /en: no word is split across lines", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const unit of E2E_UNITS) {
+    await page.goto(`/en/textbook/${unit.unit_id}`);
+    await page.evaluate(() => document.fonts.ready);
+    const split = await page.evaluate(() => {
+      const out: string[] = [];
+      for (const td of document.querySelectorAll('[data-part="pair"] td')) {
+        const walker = document.createTreeWalker(td, NodeFilter.SHOW_TEXT);
+        for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+          for (const m of (n.textContent ?? "").matchAll(/[A-Za-z0-9]{2,}/g)) {
+            const range = document.createRange();
+            range.setStart(n, m.index);
+            range.setEnd(n, m.index + m[0].length);
+            if (new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size > 1) out.push(m[0]);
+          }
+        }
+      }
+      return out;
+    });
+    expect(split, unit.unit_id).toEqual([]);
+  }
+});
+
 function expectNoMarkup(text: string, where: string): void {
   for (const m of MARKUP) expect(text.includes(m), `${where}: raw ${JSON.stringify(m)} in the page text`).toBe(false);
 }
