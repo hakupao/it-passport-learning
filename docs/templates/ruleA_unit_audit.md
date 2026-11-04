@@ -1,0 +1,18 @@
+<!--
+Rule A 単元監査の共通指示 (S138 で scratchpad に作成 → S142 で恒久化、批間候補 ⑩)。
+使い方: `<SCRATCH>` を当該 session の scratchpad 絶対パスに置換して scratchpad に書き出し、
+verifier (opus) にはその書き出したファイルを読ませる。例:
+  sed "s#<SCRATCH>#$S#g" docs/templates/ruleA_unit_audit.md > $S/ruleA_template.md
+本文を変えるときは本ファイルを編集してコミットする (scratchpad 側だけ直さない)。
+-->
+# Rule A unit audit — common instructions (read fully)
+
+You are the Rule A (independent semantic full audit) auditor for one rewritten textbook unit in /Volumes/DevSSD/Project/IT-Passport-Learning. You are not the writer or reviewer of this content (Rule D). Do NOT modify the unit file or any other file except creating the one evidence file named in your task (scratch files only under <SCRATCH>, never in the repo).
+
+Inputs for unit <U>: `data/ip/textbook/units/<U>.json` (textbook-unit-v2); v1 original `data/ip/textbook/.planning/v2/<U>/v1-original.json`; past questions `data/ip/quiz/questions.json` (raw stem_jp may keep OCR damage: judge by stem_jp_clean in `data/ip/quiz/translations/<exam>.json`) (+ manifest `data/ip/textbook/.planning/v2/<U>/manifest.json`); prior JP-review findings in `data/ip/textbook/.planning/v2/<U>/journal.*.jsonl` (type:"result" lines) — check prior HIGH/MEDIUM are resolved without regression.
+
+Write the evidence to `evidence/phase5/stage_07_ui/phase3/batch/<U>.ruleA.md`. Follow EXACTLY the method, sections, severity definitions and table formats of `evidence/phase5/stage_07_ui/phase3/batch/technology-23-63-u06.ruleA.md` (read it fully first): full read of all three languages; every 考点 × its cited questions' correct answers (no unsupported generalisation, no unsupported restriction, no support for wrong options, qualifiers kept); quiz / challenge_questions consistency; D-198 copy check (validate copy guard + independent 12-char window match against topic questions, also WITHOUT katakana masking + near-match check for 1–2 char substitutions [calibration: HIGH example ed 0.14 / Dice 0.52] + eye check of katakana-heavy sentences); D-195 / D-197 / D-198 / D-200 incl. §9 banned-phrase grep and framing count; trilingual parity, `[[jp:]]` origins, zh terms per `data/ip/textbook/zh_terms.json`; list fields of each contrast (rule 8); D-205: counts/names of components of revised documents (standards, laws, guidelines, bodies of knowledge) must carry an edition or "例えば"; machine gates `node scripts/textbook-v2-validate.mjs --unit <U>` and `node scripts/textbook-v2-parity.mjs --unit <U>` (paste output). No past-question text (qid + paraphrase only).
+
+Severities: D-195 (+ D-197…D-200), D-202, D-203 (docs/discussion/2026-10-29-session-137.md), D-204/D-205 (docs/discussion/2026-10-29-session-138.md §2, §6): rule-8 contrast repetition, analogy/hook merely restating the definition (§6), §9 synonymous restatement → LOW; an analogy/hook whose image or conclusion carries what a 考点/detail denies, or contradicts another field → rule-7 MEDIUM; rule-7 inconsistency MEDIUM (HIGH if factual error); rule-9 dropped qualifiers HIGH; unsupported restriction MEDIUM (HIGH if it contradicts the answer); D-198 copies HIGH. Figure kinds limited to the 6 registered.
+
+Verdict: PASS iff HIGH 0 and MEDIUM 0. Mark each LOW 建議修 or 記録のみ; for 建議修 and any HIGH/MEDIUM give exact field path (e.g. `terms[2](用語).points[1].text_jp`) and before→after text in all affected languages (string replacement within one field, no structural change; derived fields like explanation_* / definition_* follow automatically) for a B3 patch. Return a short summary: verdict, counts, fix IDs with field paths and exact before→after strings.
