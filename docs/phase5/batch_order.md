@@ -18,7 +18,7 @@
 | b09 | strategy-01-02 | 業務分析・データ利活用 (3/3) | u11 u12 u13 u14 u15 | 98 | 29 | done (S139, attempts 1/1/4/2/1, Rule A PASS after 33 patches) |
 | b10 | technology-22-60 | ネットワーク応用 (1/2) | u01 u02 u03 u04 u05 | 97 | 30 | done (S140, attempts 2/1/1/2/2, Rule A PASS after 69 patches) |
 | b11 | technology-22-60 | ネットワーク応用 (2/2) | u06 | 97 | 7 | done (S141, attempts 2, Rule A PASS after 9 patches) |
-| b12 | strategy-01-03 | 会計・財務 (1/2) | u01 u02 u03 u04 u05 | 90 | 26 | todo |
+| b12 | strategy-01-03 | 会計・財務 (1/2) | u01 u02 u03 u04 u05 | 90 | 26 | done (S142, attempts 3/2/1/2/1, Rule A PASS after 65 patches, D-206 auto) |
 | b13 | strategy-01-03 | 会計・財務 (2/2) | u06 | 90 | 4 | todo |
 | b14 | technology-23-61 | 情報セキュリティ (1/3) | u01 u02 u03 u04 u05 | 89 | 31 | todo |
 | b15 | technology-23-61 | 情報セキュリティ (2/3) | u06 u07 u08 u09 u10 | 89 | 30 | todo |
