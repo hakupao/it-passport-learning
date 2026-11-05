@@ -1,220 +1,1091 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-61-u05",
   "topic_id": "technology-23-61",
   "category": "technology",
   "title_jp": "マルウェアの基礎と主要な感染型",
+  "title_zh": "恶意软件基础与主要的感染类型",
+  "title_en": "Malware Basics and Major Infection Types",
   "unit_summary_jp": "マルウェアの総称と、ウイルス・ワーム・トロイの木馬・ボット・ランサムウェアなど代表的な種類を理解する。",
+  "unit_summary_zh": "理解恶意软件这一统称，以及病毒、蠕虫、特洛伊木马、机器人程序（Bot）、勒索软件等具有代表性的种类。",
+  "unit_summary_en": "Understand the umbrella term \"malware\" and its representative types, including viruses, worms, Trojan horses, bots, and ransomware.",
   "order_in_topic": 5,
   "prerequisites": [
     "technology-23-61-u01",
     "technology-23-61-u04"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、悪意あるソフトウェアの総称であるマルウェアと、その代表的な種類を学びます。宿主に寄生するウイルス、自己増殖するワーム、正規装いのトロイの木馬、遠隔操作されるボット、身代金を要求するランサムウェアを押さえます。マルウェアは情報セキュリティで最頻出のテーマで、種類ごとの特徴の違いが繰り返し問われます。",
-    "freq_badge": "頻出",
-    "est_minutes": 18,
-    "intro_zh": "在本单元中，我们将学习恶意软件这一对恶意程序的统称，以及它的代表性种类。重点掌握寄生于宿主的病毒、自我增殖的蠕虫、伪装成正规软件的特洛伊木马、被远程操控的机器人程序（Bot），以及索要赎金的勒索软件。恶意软件是信息安全中出现频率最高的主题，各类型之间特征的差异会被反复考查。",
-    "intro_en": "In this unit, we learn about malware—the umbrella term for malicious software—and its representative types. We focus on viruses that parasitize a host, worms that self-propagate, Trojan horses disguised as legitimate software, bots that are remotely controlled, and ransomware that demands a ransom. Malware is the most frequently tested theme in information security, and the differences in characteristics between each type are asked about repeatedly."
-  },
-  "terms": [
+  "goals_jp": [
+    "**マルウェア**が個別の種類名ではなく総称であることを説明できる",
+    "**コンピュータウイルス**と**ワーム**は宿主の要否で、**トロイの木馬**は偽装という入り込み方で見分けられる",
+    "**ボット**と**ランサムウェア**を、感染後に起きる被害の型で見分けられる"
+  ],
+  "goals_zh": [
+    "能说明**恶意软件**是一个总称，而不是某一具体种类的名称",
+    "能根据是否需要宿主区分**计算机病毒**和**蠕虫**，并根据伪装这一入侵方式识别**特洛伊木马**",
+    "能根据感染后造成的损害类型区分**机器人程序（Bot）**和**勒索软件**"
+  ],
+  "goals_en": [
+    "Explain that **malware** is an umbrella term, not the name of one specific type",
+    "Tell a **computer virus** from a **worm** by whether it needs a host, and recognize a **Trojan horse** by how it gets in: disguise",
+    "Distinguish a **bot** from **ransomware** by the kind of damage that follows infection"
+  ],
+  "overview_cols_jp": [
+    "入り込み方・広がり方",
+    "見分ける手がかり"
+  ],
+  "overview_cols_zh": [
+    "入侵与传播方式",
+    "识别线索"
+  ],
+  "overview_cols_en": [
+    "How it gets in and spreads",
+    "Clues for telling it apart"
+  ],
+  "overview_rows": [
     {
       "term": "マルウェア",
-      "definition_jp": "利用者に害を与える目的で作られた悪意あるソフトウェアの総称。",
-      "explanation_jp": "マルウェアとは、コンピュータやその利用者に害を与えることを目的に作られた、悪意あるソフトウェア全般を指す総称です。英語の「malicious(悪意ある)」と「software」を組み合わせた言葉で、ウイルス・ワーム・トロイの木馬・ボット・ランサムウェアなどがすべてこの中に含まれます。\n\nつまり、これから学ぶ個別の感染型は、いずれもマルウェアという大きなくくりの一種だと整理できます。試験では、特定の種類を指す言葉ではなく「悪意あるプログラム全体をまとめて呼ぶ総称」である点と、各種類の親概念にあたる位置づけが問われます。",
-      "analogy_jp": "「犯罪」が窃盗・詐欺・破壊など悪事全体をまとめて呼ぶ言葉であるように、マルウェアは悪意あるプログラムをひとくくりにした呼び名です。",
-      "memory_hook_jp": "マルウェアといえば悪意あるソフトウェアの総称",
-      "inline_quiz": [
-        "2011h23tokubetsu-q076",
-        "2012h24h-q054"
+      "one_line_jp": "害を与える目的で作られた悪意あるソフトウェアの総称",
+      "one_line_zh": "为造成危害而制作的各类恶意程序的总称",
+      "one_line_en": "Umbrella term for malicious software built to cause harm",
+      "extra_jp": [
+        "種類ごとに異なる",
+        "特定の 1 種類の名前ではない"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"マルウェア\"]; A --> B[\"ウイルス\"]; A --> C[\"ワーム\"]; A --> D[\"トロイの木馬\"]; A --> E[\"ボット\"]; A --> F[\"ランサムウェア\"]",
-        "svg_path": "figures/technology-23-61-u05-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "恶意软件",
-      "term_en": "Malware",
-      "definition_zh": "为了对用户造成危害而制作的恶意软件的统称。",
-      "definition_en": "The umbrella term for malicious software created with the purpose of harming users.",
-      "explanation_zh": "恶意软件是指以对计算机或其用户造成危害为目的而制作的、所有恶意软件的统称。这个词由英语中的「malicious（恶意的）」和「software（软件）」组合而成，病毒、蠕虫、特洛伊木马、机器人程序（Bot）、勒索软件等全都包含在其中。\n\n也就是说，接下来要学习的各种具体感染类型，都可以归纳为恶意软件这一大类下的一种。考试中会考查它并非指代某一特定种类的词语，而是「将所有恶意程序统一称呼的统称」这一点，以及它作为各类型上位概念的定位。",
-      "explanation_en": "Malware is the umbrella term for all malicious software created with the purpose of harming a computer or its users. The word combines the English \"malicious\" and \"software,\" and viruses, worms, Trojan horses, bots, and ransomware are all included within it.\n\nIn other words, all the individual infection types we are about to learn can be organized as one kind under the broad category of malware. The exam tests the point that it is not a word referring to a specific type, but rather \"the umbrella term that collectively names all malicious programs,\" as well as its position as the parent concept of each type.",
-      "analogy_zh": "正如「犯罪」是将盗窃、诈骗、破坏等所有恶行统一称呼的词语一样，恶意软件就是把恶意程序统一归为一类的称呼。",
-      "analogy_en": "Just as \"crime\" is a word that collectively names all wrongdoing such as theft, fraud, and destruction, malware is the collective name that groups all malicious programs into one category.",
-      "memory_hook_zh": "说到恶意软件，就是恶意软件的统称",
-      "memory_hook_en": "Malware → the umbrella term for all malicious software"
+      "extra_zh": [
+        "因种类而异",
+        "不是某一特定种类的名称"
+      ],
+      "extra_en": [
+        "Varies by type",
+        "Not the name of any single type"
+      ]
     },
     {
       "term": "コンピュータウイルス",
-      "definition_jp": "他のプログラムに寄生して感染を広げる代表的なマルウェア。",
-      "explanation_jp": "コンピュータウイルスとは、他のプログラムやファイルに自分のコードを潜り込ませる(寄生する)ことで増え、害を及ぼすマルウェアです。生物のウイルスが宿主に取りつくのと同じように、単独では活動できず宿主となるプログラムを必要とする点が特徴です。\n\n試験で特に重要なのが、次に学ぶワームとの違いです。ウイルスは宿主が必要で、ファイルを開く・実行するなど利用者の操作をきっかけに感染が広がります。一方ワームは宿主なしで自分だけで増えます。「寄生するのがウイルス、単独で増えるのがワーム」という対比を押さえましょう。",
-      "analogy_jp": "風邪のウイルスが人(宿主)にうつって初めて広がるように、コンピュータウイルスもプログラムという宿主に取りついて増えていきます。",
-      "memory_hook_jp": "コンピュータウイルスといえば宿主に寄生して増える",
-      "inline_quiz": [
-        "2011h23a-q061",
-        "2013h25a-q077"
+      "one_line_jp": "ほかのプログラムやファイルに寄生して増える",
+      "one_line_zh": "寄生在其他程序或文件中进行繁殖",
+      "one_line_en": "Attaches itself to other programs or files to multiply",
+      "extra_jp": [
+        "宿主が開かれる・実行されると動き出す",
+        "宿主が要る"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "计算机病毒",
-      "term_en": "Computer Virus",
-      "definition_zh": "寄生于其他程序、扩散感染的代表性恶意软件。",
-      "definition_en": "A representative type of malware that parasitizes other programs and spreads infection.",
-      "explanation_zh": "计算机病毒是指通过把自己的代码潜入（寄生于）其他程序或文件来增殖、并造成危害的恶意软件。就像生物病毒附着于宿主一样，它的特征是无法单独活动，需要一个作为宿主的程序。\n\n考试中尤其重要的是它与接下来要学习的蠕虫之间的区别。病毒需要宿主，并以打开文件、运行程序等用户的操作为契机来扩散感染。而蠕虫无需宿主，仅靠自己就能增殖。请掌握「寄生的是病毒，单独增殖的是蠕虫」这一对比。",
-      "explanation_en": "A computer virus is malware that increases in number by embedding (parasitizing) its own code into other programs or files, thereby causing harm. Just as a biological virus attaches to a host, its characteristic is that it cannot act alone and requires a host program.\n\nWhat is especially important in the exam is its difference from the worm we will learn next. A virus needs a host and spreads its infection triggered by user actions such as opening or running a file. A worm, on the other hand, has no host and propagates on its own. Grasp the contrast: \"the one that parasitizes is the virus; the one that propagates alone is the worm.\"",
-      "analogy_zh": "正如感冒病毒只有传染给人（宿主）后才开始扩散一样，计算机病毒也是附着在程序这个宿主上才逐渐增殖。",
-      "analogy_en": "Just as a cold virus only spreads once it infects a person (the host), a computer virus also attaches to the host that is a program and gradually multiplies.",
-      "memory_hook_zh": "说到计算机病毒，就是寄生于宿主来增殖",
-      "memory_hook_en": "Computer virus → parasitizes a host to multiply"
+      "extra_zh": [
+        "宿主被打开或执行时开始运行",
+        "需要宿主"
+      ],
+      "extra_en": [
+        "Activates when its host is opened or run",
+        "Needs a host"
+      ]
     },
     {
       "term": "ワーム",
-      "definition_jp": "宿主を必要とせず自分自身を複製して増殖するマルウェア。",
-      "explanation_jp": "ワームとは、他のプログラムに寄生せず、自分自身の複製を作りながら単独で増えていくマルウェアです。ネットワークを通じて次々と他のコンピュータへ感染を広げ、短時間で爆発的に拡散することがあります。\n\n試験頻出の観点は、やはりウイルスとの違いです。ウイルスが宿主(他のファイル)を必要とし、利用者の操作で広がるのに対し、ワームは宿主なしで自己増殖し、人の操作がなくても自動的に広がります。「単独で自己増殖=ワーム」と覚えておくと、ウイルスとの区別がつきます。",
-      "analogy_jp": "ウイルスが「人にうつる風邪」なら、ワームは誰の手も借りず自分でコピーを増やして部屋中に広がっていくクローンのようなものです。",
-      "memory_hook_jp": "ワームといえば宿主なしで自己増殖",
-      "inline_quiz": [
-        "2009h21h-q081"
+      "one_line_jp": "宿主なしで自分を複製し、ネットワーク経由で広がる",
+      "one_line_zh": "无需宿主即可自我复制，并通过网络传播",
+      "one_line_en": "Copies itself without a host and spreads over networks",
+      "extra_jp": [
+        "自分の複製をほかの端末へ送り込む",
+        "単独のプログラムとして動く"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "蠕虫",
-      "term_en": "Worm",
-      "definition_zh": "无需宿主、自我复制并增殖的恶意软件。",
-      "definition_en": "Malware that self-replicates and propagates without requiring a host.",
-      "explanation_zh": "蠕虫是指不寄生于其他程序，而是一边制作自身的副本一边单独增殖的恶意软件。它会通过网络接连不断地向其他计算机扩散感染，有时会在短时间内爆发式地扩散。\n\n考试常考的角度，同样是它与病毒的区别。病毒需要宿主（其他文件），并靠用户的操作来扩散；而蠕虫无需宿主即可自我增殖，即使没有人的操作也会自动扩散。记住「单独自我增殖＝蠕虫」，就能与病毒区分开来。",
-      "explanation_en": "A worm is malware that, rather than parasitizing other programs, propagates on its own while making copies of itself. It spreads its infection one after another to other computers over a network, sometimes proliferating explosively in a short time.\n\nThe angle frequently tested in the exam is, again, its difference from the virus. Whereas a virus requires a host (another file) and spreads through user actions, a worm self-propagates without a host and spreads automatically even without human action. Remembering \"self-propagates alone = worm\" lets you distinguish it from a virus.",
-      "analogy_zh": "如果说病毒是「会传染给人的感冒」，那么蠕虫就像是不借助任何人的手、自己不断复制并扩散到整个房间的克隆体。",
-      "analogy_en": "If a virus is \"a cold that infects people,\" then a worm is like a clone that, without anyone's help, keeps copying itself and spreading throughout the whole room.",
-      "memory_hook_zh": "说到蠕虫，就是无需宿主自我增殖",
-      "memory_hook_en": "Worm → self-propagates without a host"
+      "extra_zh": [
+        "把自身的副本送入其他终端",
+        "作为独立程序运行"
+      ],
+      "extra_en": [
+        "Sends copies of itself to other devices",
+        "Runs as a standalone program"
+      ]
     },
     {
       "term": "トロイの木馬",
-      "definition_jp": "正規のソフトを装って侵入し、裏で不正動作を行うマルウェア。",
-      "explanation_jp": "トロイの木馬とは、便利なアプリや無害なファイルなど正規のソフトウェアを装って利用者にインストールさせ、内部に潜んで裏で情報の盗み出しや遠隔操作などの不正行為を行うマルウェアです。名前はギリシャ神話の「木馬に兵を隠して城に入り込んだ」逸話に由来します。\n\n試験で問われるのは感染のしかたの違いです。ウイルスやワームが「自己増殖」するのに対し、トロイの木馬は基本的に自己増殖せず、利用者が自らだまされて取り込んでしまう点が特徴です。「正規を装ってだます=トロイの木馬」と押さえましょう。",
-      "analogy_jp": "便利なアプリの顔をして近づき、中に泥棒を忍ばせた贈り物のようなもの。受け取った本人が自分の手で家に入れてしまう点がやっかいです。",
-      "memory_hook_jp": "トロイの木馬といえば正規を装い裏で悪事",
-      "inline_quiz": [
-        "2009h21a-q058"
+      "one_line_jp": "役に立つソフトのふりをして取り込ませ、裏で悪事を働く",
+      "one_line_zh": "伪装成有用的软件让人安装，暗中实施恶意行为",
+      "one_line_en": "Poses as useful software to get installed, then does harm behind the scenes",
+      "extra_jp": [
+        "利用者が自分でインストール・実行する",
+        "見せかけ（偽装）で入り込む"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "特洛伊木马",
-      "term_en": "Trojan Horse",
-      "definition_zh": "伪装成正规软件入侵、在暗中进行非法操作的恶意软件。",
-      "definition_en": "Malware that intrudes by disguising itself as legitimate software and performs malicious actions in the background.",
-      "explanation_zh": "特洛伊木马是指伪装成方便的应用、无害的文件等正规软件，诱使用户安装，并潜藏在内部、在暗中进行窃取信息或远程操控等非法行为的恶意软件。这个名字源自希腊神话中「把士兵藏在木马里潜入城内」的典故。\n\n考试考查的是它在感染方式上的区别。病毒和蠕虫会「自我增殖」，而特洛伊木马基本上不会自我增殖，其特征是用户自己被欺骗而主动将其引入。请掌握「伪装成正规来行骗＝特洛伊木马」。",
-      "explanation_en": "A Trojan horse is malware that disguises itself as legitimate software such as a useful app or a harmless file, gets the user to install it, lurks inside, and performs malicious acts such as stealing information or remote control in the background. The name comes from the Greek myth in which \"soldiers were hidden inside a wooden horse to slip into the city.\"\n\nWhat the exam tests is the difference in the method of infection. Whereas viruses and worms \"self-propagate,\" a Trojan horse basically does not self-propagate; its characteristic is that the user is deceived and brings it in voluntarily. Grasp it as \"disguising as legitimate to deceive = Trojan horse.\"",
-      "analogy_zh": "就像一份以方便应用的面目接近、却在里面藏了小偷的礼物。麻烦之处在于，是收下它的本人亲手把它带进了家门。",
-      "analogy_en": "It is like a gift that approaches wearing the face of a useful app but has a thief hidden inside. The troublesome part is that the recipient personally brings it into their own home.",
-      "memory_hook_zh": "说到特洛伊木马，就是伪装正规、暗中作恶",
-      "memory_hook_en": "Trojan horse → disguised as legitimate, does evil in the background"
+      "extra_zh": [
+        "由用户自己安装、运行",
+        "靠伪装潜入"
+      ],
+      "extra_en": [
+        "The user installs and runs it themselves",
+        "Gets in through disguise"
+      ]
     },
     {
       "term": "ボット",
-      "definition_jp": "感染後に攻撃者から遠隔操作される状態にされたマルウェア。",
-      "explanation_jp": "ボットとは、感染したコンピュータを攻撃者が外部から自由に遠隔操作できる状態にするマルウェアです。感染した端末は攻撃者の指示どおりに動く「手下」となり、多数の感染端末が攻撃者の指令で一斉に操られる仕組みをボットネットと呼びます。\n\n試験では、ボットネットが大量の迷惑メール送信やDDoS攻撃などの踏み台に悪用される点が重要です。利用者が気づかないうちに加害者側に加担させられてしまうこともあります。「遠隔操作される手下=ボット、その集団=ボットネット」と関連づけて覚えましょう。",
-      "analogy_jp": "知らぬ間に操り人形にされ、糸を引く攻撃者の命令で動かされる状態。同じ人形が大勢集まって一斉に動くのがボットネットです。",
-      "memory_hook_jp": "ボットといえば遠隔操作される手下",
-      "inline_quiz": [
-        "2009h21a-q073"
+      "one_line_jp": "感染した端末を外部からの指令で操れる状態にする",
+      "one_line_zh": "让被感染的终端能被外部指令操控",
+      "one_line_en": "Puts an infected device under the control of outside commands",
+      "extra_jp": [
+        "多数の端末に入り込み、指令サーバとつながる",
+        "一斉攻撃などの加害に使われる"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"攻撃者\"] --> B[\"指令サーバ\"]; B --> C[\"感染端末\"]; B --> D[\"感染端末\"]; B --> E[\"感染端末\"]; C --> F[\"DDoS等の攻撃\"]; D --> F; E --> F",
-        "svg_path": "figures/technology-23-61-u05-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "机器人程序（Bot）",
-      "term_en": "Bot",
-      "definition_zh": "感染后被置于由攻击者远程操控状态的恶意软件。",
-      "definition_en": "Malware that, after infection, puts the device into a state where it is remotely controlled by an attacker.",
-      "explanation_zh": "机器人程序（Bot）是指使被感染的计算机处于攻击者可从外部自由远程操控状态的恶意软件。被感染的终端会成为听从攻击者指令行动的「爪牙」，而众多被感染的终端在攻击者指令下被一齐操控的机制，被称为僵尸网络（Botnet）。\n\n考试中重要的是，僵尸网络会被滥用为大量发送垃圾邮件、发动DDoS攻击等的跳板这一点。有时用户会在毫不知情的情况下，被卷入而成为加害一方的帮凶。请把「被远程操控的爪牙＝Bot，其集群＝僵尸网络」关联起来记忆。",
-      "explanation_en": "A bot is malware that puts an infected computer into a state where an attacker can freely control it remotely from the outside. The infected device becomes a \"minion\" that acts exactly as the attacker instructs, and the mechanism in which many infected devices are controlled all at once by the attacker's command is called a botnet.\n\nWhat is important in the exam is that a botnet is abused as a stepping stone for sending large volumes of spam, launching DDoS attacks, and so on. Sometimes users are made to participate as part of the attacking side without realizing it. Memorize it by associating \"a remotely controlled minion = bot, and its collective = botnet.\"",
-      "analogy_zh": "就是在不知不觉中被变成提线木偶，按照拉线的攻击者的命令而被操控的状态。许多相同的木偶聚集在一起一齐行动，就是僵尸网络。",
-      "analogy_en": "It is the state of being turned into a puppet without your knowledge, moved by the commands of the attacker pulling the strings. Many of the same puppets gathered together and moving in unison form a botnet.",
-      "memory_hook_zh": "说到Bot，就是被远程操控的爪牙",
-      "memory_hook_en": "Bot → a remotely controlled minion"
+      "extra_zh": [
+        "潜入大量终端，并与指令服务器相连",
+        "被用于集中攻击等加害行为"
+      ],
+      "extra_en": [
+        "Infects many devices that connect to a command server",
+        "Used for coordinated attacks and other harm"
+      ]
     },
     {
       "term": "ランサムウェア",
-      "definition_jp": "データを暗号化し復旧と引き換えに身代金を要求するマルウェア。",
-      "explanation_jp": "ランサムウェアとは、感染したコンピュータのファイルを勝手に暗号化して使えなくし、元に戻すことと引き換えに金銭(身代金)を要求するマルウェアです。「ransom(身代金)」が名前の由来で、近年被害が大きく、企業や病院などが業務停止に追い込まれる事例が多発しています。\n\n試験では、被害の特徴と対策が問われます。要求に応じても復旧の保証はないため、安易に支払わないこと、そして日頃からバックアップを取っておくことが有効な備えとされます。「データを人質に身代金=ランサムウェア」と覚えましょう。",
-      "analogy_jp": "大事な書類に勝手に鍵をかけて持ち主が開けられなくし、「開けてほしければ金を払え」と脅す誘拐犯のようなマルウェアです。",
-      "memory_hook_jp": "ランサムウェアといえばデータを人質に身代金要求",
-      "inline_quiz": [
-        "2013h25h-q062",
-        "2016h28h-q061"
+      "one_line_jp": "ファイルや PC を使えなくし、元に戻す代わりに金銭を求める",
+      "one_line_zh": "使文件或 PC 无法使用，并以恢复为条件索要钱财",
+      "one_line_en": "Locks up files or a PC and demands money to restore them",
+      "extra_jp": [
+        "メールの添付やリンク、不正なサイトなど",
+        "狙いは金銭（身代金）"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "勒索软件",
-      "term_en": "Ransomware",
-      "definition_zh": "将数据加密、以恢复为交换条件索要赎金的恶意软件。",
-      "definition_en": "Malware that encrypts data and demands a ransom in exchange for recovery.",
-      "explanation_zh": "勒索软件是指擅自将被感染计算机的文件加密使其无法使用，并以恢复原状为交换条件索要金钱（赎金）的恶意软件。名字源自「ransom（赎金）」，近年来危害很大，企业和医院等被迫停止业务的案例频频发生。\n\n考试考查的是其危害特征与对策。即使响应了要求也无法保证能够恢复，因此不要轻易支付，并平时就做好备份，被认为是有效的防范措施。记住「把数据当人质索要赎金＝勒索软件」。",
-      "explanation_en": "Ransomware is malware that, without permission, encrypts the files of an infected computer to make them unusable, and demands money (a ransom) in exchange for restoring them. Its name comes from \"ransom,\" and in recent years the damage has been severe, with frequent cases of companies and hospitals being forced to halt operations.\n\nThe exam tests the characteristics of the damage and the countermeasures. Because there is no guarantee of recovery even if you comply with the demand, not paying carelessly and taking backups regularly are considered effective preparations. Memorize it as \"taking data hostage to demand a ransom = ransomware.\"",
-      "analogy_zh": "就像把重要文件擅自上锁、让持有者无法打开，再威胁「想打开就交钱」的绑匪一样的恶意软件。",
-      "analogy_en": "It is malware like a kidnapper who arbitrarily locks up important documents so the owner cannot open them, then threatens, \"Pay up if you want them opened.\"",
-      "memory_hook_zh": "说到勒索软件，就是把数据当人质索要赎金",
-      "memory_hook_en": "Ransomware → takes data hostage to demand a ransom"
+      "extra_zh": [
+        "邮件附件、链接、恶意网站等",
+        "目的是钱财（赎金）"
+      ],
+      "extra_en": [
+        "Email attachments, links, malicious sites, and the like",
+        "Goal: money (a ransom)"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "マルウェア",
+      "term_zh": "恶意软件",
+      "term_en": "Malware",
+      "one_jp": "**マルウェア**は、コンピュータやその利用者に害を与える目的で作られた**悪意あるソフトウェア**をまとめて呼ぶ総称である。",
+      "one_zh": "**恶意软件**（[[jp:マルウェア]]）是一个总称，泛指为了危害计算机或其用户而编写的各类**恶意程序**。",
+      "one_en": "**Malware** ([[jp:マルウェア]]) is the umbrella term for **malicious software**: programs written to harm computers or the people who use them.",
+      "detail_jp": "入り込み方や被害の出方が異なる多くの種類があり、この単元で学ぶ個別の種類はどれもマルウェアの一部にあたる。対策ソフトは、既知のマルウェアの特徴をまとめた**定義ファイル**（パターンファイル）と主に照合して見つけるので、新しい種類に追いつくには定義ファイルの更新が欠かせない。",
+      "detail_zh": "恶意软件种类繁多，入侵方式和造成的损害各不相同，本单元介绍的各个种类都属于恶意软件的一部分。防病毒软件主要通过与**病毒定义文件**（[[jp:定義ファイル]]，也称特征码文件）比对来发现恶意软件，该文件汇总了已知恶意软件的特征，因此要跟上新出现的种类，就离不开定义文件的更新。",
+      "detail_en": "Malware comes in many types that differ in how they get in and what damage they cause, and every type covered in this unit is one kind of malware. Antivirus software finds malware mainly by matching against a **definition file** ([[jp:定義ファイル]], also called a pattern file) that lists the traits of known malware, so keeping up with new types depends on updating that file.",
+      "analogy_jp": "「病気」という言葉が風邪や食中毒などをまとめて指すように、マルウェアは個々の悪意あるプログラムをまとめて指す言葉である。",
+      "analogy_zh": "就像“疾病”一词统称感冒、食物中毒等一样，恶意软件也是统称各种恶意程序的词。",
+      "analogy_en": "Just as the word “illness” covers everything from colds to food poisoning, malware is a word that covers every individual malicious program.",
+      "hook_jp": "先頭の「マル」は英語の mal-（悪い）で、malfunction（故障）と同じ接頭辞。",
+      "hook_zh": "开头的“mal”来自英语前缀 mal-（坏的），与 malfunction（故障）中的前缀相同。",
+      "hook_en": "The “mal” at the front is the English prefix mal- (bad), the same one found in malfunction.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**マルウェア**は特定の 1 種類を指す名前ではなく、悪意をもって作られたソフトウェアをまとめて呼ぶ総称である。",
+          "text_zh": "**恶意软件**（[[jp:マルウェア]]）不是某一特定种类的名称，而是对出于恶意而编写的软件的总称。",
+          "text_en": "**Malware** ([[jp:マルウェア]]) is not the name of one specific type; it is the umbrella term for software written with malicious intent.",
+          "qids": [
+            "2013h25a-q077",
+            "2016h28a-q080"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "対策ソフトは導入して終わりではなく、**定義ファイル**を更新し続けて使う。更新していても、まだ知られていないマルウェアは見逃すことがある。",
+          "text_zh": "防病毒软件并不是装上就完事，而要持续更新**病毒定义文件**（[[jp:定義ファイル]]）。即使已经更新，仍可能漏掉尚未被发现的恶意软件。",
+          "text_en": "Antivirus software is not something you install and forget: its **definition files** ([[jp:定義ファイル]]) must be kept updated. Even when they are current, malware that is not yet known can slip through.",
+          "qids": [
+            "2013h25h-q064",
+            "2015h27h-q068",
+            "2011h23a-q061"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "外部記憶媒体を接続しただけで中のプログラムを動かす OS の**自動実行**（オートラン）機能は、マルウェア感染のきっかけになる。",
+          "text_zh": "操作系统的**自动运行**（[[jp:自動実行]]／[[jp:オートラン]]，AutoRun）功能只要接入外部存储介质就会运行其中的程序，这可能成为感染恶意软件的入口。",
+          "text_en": "The OS **AutoRun** feature ([[jp:オートラン]], also [[jp:自動実行]]), which runs a program on an external storage device as soon as the device is connected, can open the door to malware infection.",
+          "qids": [
+            "2023r05-q080"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "malware",
+            "label": {
+              "jp": "マルウェア（総称）",
+              "zh": "恶意软件（总称）",
+              "en": "Malware (umbrella term)"
+            },
+            "children": [
+              {
+                "id": "virus",
+                "label": {
+                  "jp": "コンピュータウイルス",
+                  "zh": "计算机病毒",
+                  "en": "Computer virus"
+                }
+              },
+              {
+                "id": "worm",
+                "label": {
+                  "jp": "ワーム",
+                  "zh": "蠕虫",
+                  "en": "Worm"
+                }
+              },
+              {
+                "id": "trojan",
+                "label": {
+                  "jp": "トロイの木馬",
+                  "zh": "特洛伊木马",
+                  "en": "Trojan horse"
+                }
+              },
+              {
+                "id": "bot",
+                "label": {
+                  "jp": "ボット",
+                  "zh": "机器人程序（Bot）",
+                  "en": "Bot"
+                }
+              },
+              {
+                "id": "ransom",
+                "label": {
+                  "jp": "ランサムウェア",
+                  "zh": "勒索软件",
+                  "en": "Ransomware"
+                }
+              },
+              {
+                "id": "others",
+                "label": {
+                  "jp": "スパイウェアなど、ほかの種類",
+                  "zh": "间谍软件等其他种类",
+                  "en": "Spyware and other types"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2013h25a-q077",
+        "2016h28a-q080",
+        "2013h25h-q064"
+      ],
+      "definition_jp": "マルウェアは、コンピュータやその利用者に害を与える目的で作られた悪意あるソフトウェアをまとめて呼ぶ総称である。",
+      "definition_zh": "恶意软件（マルウェア）是一个总称，泛指为了危害计算机或其用户而编写的各类恶意程序。",
+      "definition_en": "Malware (マルウェア) is the umbrella term for malicious software: programs written to harm computers or the people who use them.",
+      "explanation_jp": "入り込み方や被害の出方が異なる多くの種類があり、この単元で学ぶ個別の種類はどれもマルウェアの一部にあたる。対策ソフトは、既知のマルウェアの特徴をまとめた定義ファイル（パターンファイル）と主に照合して見つけるので、新しい種類に追いつくには定義ファイルの更新が欠かせない。",
+      "explanation_zh": "恶意软件种类繁多，入侵方式和造成的损害各不相同，本单元介绍的各个种类都属于恶意软件的一部分。防病毒软件主要通过与病毒定义文件（定義ファイル，也称特征码文件）比对来发现恶意软件，该文件汇总了已知恶意软件的特征，因此要跟上新出现的种类，就离不开定义文件的更新。",
+      "explanation_en": "Malware comes in many types that differ in how they get in and what damage they cause, and every type covered in this unit is one kind of malware. Antivirus software finds malware mainly by matching against a definition file (定義ファイル, also called a pattern file) that lists the traits of known malware, so keeping up with new types depends on updating that file.",
+      "memory_hook_jp": "先頭の「マル」は英語の mal-（悪い）で、malfunction（故障）と同じ接頭辞。",
+      "memory_hook_zh": "开头的“mal”来自英语前缀 mal-（坏的），与 malfunction（故障）中的前缀相同。",
+      "memory_hook_en": "The “mal” at the front is the English prefix mal- (bad), the same one found in malfunction.",
+      "inline_quiz": [
+        "2013h25a-q077",
+        "2016h28a-q080",
+        "2013h25h-q064"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "コンピュータウイルス",
+      "term_zh": "计算机病毒",
+      "term_en": "Computer Virus",
+      "one_jp": "**コンピュータウイルス**は、ほかのプログラムやファイルに自分のコードを**寄生**させ、それを足がかりに感染を広げるマルウェアである。",
+      "one_zh": "**计算机病毒**（[[jp:コンピュータウイルス]]）是一种恶意软件，它把自己的代码**寄生**在其他程序或文件中，并以此为跳板扩大感染。",
+      "one_en": "A **computer virus** ([[jp:コンピュータウイルス]]) is malware that **attaches** its own code to other programs or files and uses them as a foothold to spread infection.",
+      "detail_jp": "ウイルスは単独では動けず、寄生先の**宿主**（文書ファイルやプログラム）が開かれたり実行されたりしたときに一緒に動き出す。OS やアプリケーションの**脆弱性**（設計や作りの弱点）を突いて入り込むものもあり、その場合は弱点をふさぐ**セキュリティパッチ**の適用が予防になる。",
+      "detail_zh": "病毒无法独立运行，只有当寄生对象**宿主**（文档文件或程序）被打开或执行时，才会随之运行。有些病毒会利用操作系统或应用程序的**漏洞**（[[jp:脆弱性]]，设计或实现上的弱点）入侵，这时打上修补弱点的**安全补丁**（[[jp:セキュリティパッチ]]）就能起到预防作用。",
+      "detail_en": "A virus cannot run on its own; it starts running only when the file it has attached to, its **host** (a document file or program), is opened or run. Some viruses get in by exploiting a **vulnerability** ([[jp:脆弱性]]), a weakness in the design or build of an OS or application, and in that case applying the **security patch** ([[jp:セキュリティパッチ]]) that closes the weakness prevents infection.",
+      "analogy_jp": "生物のウイルスが細胞に入り込まなければ増えられないように、コンピュータウイルスも宿主となるファイルがあって初めて増えられる。",
+      "analogy_zh": "就像生物病毒不进入细胞就无法繁殖一样，计算机病毒也要有作为宿主的文件才能繁殖。",
+      "analogy_en": "A biological virus cannot multiply until it gets inside a cell, and a computer virus likewise cannot multiply without a host file.",
+      "hook_jp": "virus はラテン語で「毒」を意味する言葉に由来する。",
+      "hook_zh": "virus 一词源自拉丁语中意为“毒”的词。",
+      "hook_en": "The word virus comes from a Latin word meaning “poison.”",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "定義ファイルを更新しても、ソフトの**脆弱性**（弱点）そのものは残る。脆弱性を突くウイルスを防ぐには、弱点を直す**セキュリティパッチ**も当てる。",
+          "text_zh": "即使更新了病毒定义文件，软件的**漏洞**（[[jp:脆弱性]]，即弱点）本身依然存在。要防范利用漏洞的病毒，还要打上修补弱点的**安全补丁**（[[jp:セキュリティパッチ]]）。",
+          "text_en": "Updating definition files does not remove a **vulnerability** ([[jp:脆弱性]]), a weakness in the software itself. To block viruses that exploit one, you also apply the **security patch** ([[jp:セキュリティパッチ]]) that fixes it.",
+          "qids": [
+            "2015h27a-q075"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "感染先はパソコン上のプログラムに限らず、機器の内部で動く**ファームウェア**にまで及ぶことがある。",
+          "text_zh": "感染对象不限于电脑上的程序，还可能波及在设备内部运行的**固件**（[[jp:ファームウェア]]）。",
+          "text_en": "Infection is not limited to programs on a PC; it can reach the **firmware** ([[jp:ファームウェア]]) that runs inside a device.",
+          "qids": [
+            "2019h31h-q088"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "文書作成ソフトや表計算ソフトのマクロ機能を使い、そのデータファイルに感染するウイルスを**マクロウイルス**と呼ぶ。",
+          "text_zh": "利用文字处理软件或电子表格软件的宏功能、感染这些软件数据文件的病毒，称为**宏病毒**（[[jp:マクロウイルス]]）。",
+          "text_en": "A virus that uses the macro feature of word-processing or spreadsheet software to infect that software's data files is called a **macro virus** ([[jp:マクロウイルス]]).",
+          "qids": [
+            "2009h21h-q081"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "s1",
+              "label": {
+                "jp": "宿主のファイルに寄生",
+                "zh": "寄生在宿主文件中",
+                "en": "Attaches to a host file"
+              }
+            },
+            {
+              "id": "s2",
+              "label": {
+                "jp": "宿主が開かれる・実行される",
+                "zh": "宿主被打开或执行",
+                "en": "Host is opened or run"
+              }
+            },
+            {
+              "id": "s3",
+              "label": {
+                "jp": "ほかのファイルへ複製を入れる",
+                "zh": "把副本植入其他文件",
+                "en": "Copies itself into other files"
+              }
+            },
+            {
+              "id": "s4",
+              "label": {
+                "jp": "破壊などの害を起こす",
+                "zh": "造成破坏等危害",
+                "en": "Causes harm such as destruction"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ウイルスはまず、文書やプログラムなど宿主となるファイルの中に入り込む。",
+            "caption_zh": "病毒首先潜入文档或程序等作为宿主的文件中。",
+            "caption_en": "The virus first slips into a host file, such as a document or a program.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "宿主が開かれたり実行されたりしたとき、ウイルスのコードも一緒に動き出す。",
+            "caption_zh": "宿主被打开或执行时，病毒的代码也随之运行。",
+            "caption_en": "When the host is opened or run, the virus code starts running along with it.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "動き出したウイルスは、ほかのファイルにも自分の複製を入れて仲間を増やす。",
+            "caption_zh": "开始运行的病毒会把自身的副本植入其他文件，不断增加同类。",
+            "caption_en": "Once running, the virus puts copies of itself into other files to multiply.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "条件がそろうと、データの破壊などの害を起こす。",
+            "caption_zh": "条件满足时，病毒会造成数据被破坏等危害。",
+            "caption_en": "When certain conditions are met, it causes harm such as destroying data.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2015h27a-q075",
+        "2019h31h-q088",
+        "2011h23a-q061"
+      ],
+      "definition_jp": "コンピュータウイルスは、ほかのプログラムやファイルに自分のコードを寄生させ、それを足がかりに感染を広げるマルウェアである。",
+      "definition_zh": "计算机病毒（コンピュータウイルス）是一种恶意软件，它把自己的代码寄生在其他程序或文件中，并以此为跳板扩大感染。",
+      "definition_en": "A computer virus (コンピュータウイルス) is malware that attaches its own code to other programs or files and uses them as a foothold to spread infection.",
+      "explanation_jp": "ウイルスは単独では動けず、寄生先の宿主（文書ファイルやプログラム）が開かれたり実行されたりしたときに一緒に動き出す。OS やアプリケーションの脆弱性（設計や作りの弱点）を突いて入り込むものもあり、その場合は弱点をふさぐセキュリティパッチの適用が予防になる。",
+      "explanation_zh": "病毒无法独立运行，只有当寄生对象宿主（文档文件或程序）被打开或执行时，才会随之运行。有些病毒会利用操作系统或应用程序的漏洞（脆弱性，设计或实现上的弱点）入侵，这时打上修补弱点的安全补丁（セキュリティパッチ）就能起到预防作用。",
+      "explanation_en": "A virus cannot run on its own; it starts running only when the file it has attached to, its host (a document file or program), is opened or run. Some viruses get in by exploiting a vulnerability (脆弱性), a weakness in the design or build of an OS or application, and in that case applying the security patch (セキュリティパッチ) that closes the weakness prevents infection.",
+      "memory_hook_jp": "virus はラテン語で「毒」を意味する言葉に由来する。",
+      "memory_hook_zh": "virus 一词源自拉丁语中意为“毒”的词。",
+      "memory_hook_en": "The word virus comes from a Latin word meaning “poison.”",
+      "inline_quiz": [
+        "2015h27a-q075",
+        "2019h31h-q088",
+        "2011h23a-q061"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ワーム",
+      "term_zh": "蠕虫",
+      "term_en": "Worm",
+      "one_jp": "**ワーム**は、宿主を必要とせず、**自分自身を複製**してネットワーク経由でほかのコンピュータへ広がっていくマルウェアである。",
+      "one_zh": "**蠕虫**（[[jp:ワーム]]）是一种不需要宿主、通过**自我复制**在网络中向其他计算机扩散的恶意软件。",
+      "one_en": "A **worm** ([[jp:ワーム]]) is malware that needs no host: it **copies itself** and spreads to other computers over a network.",
+      "detail_jp": "ワームはそれ自体が独立したプログラムとして動く。人が操作しなくても複製を次々に送り出せるため、短い時間で多数の端末に広がり、ネットワークに大きな負荷をかけることもある。",
+      "detail_zh": "蠕虫本身就是一个独立的程序。即使没有人操作，它也能不断发出副本，因此会在短时间内扩散到大量终端，有时还会给网络带来很大负荷。",
+      "detail_en": "A worm runs as an independent program in its own right. Because it can keep sending out copies with no human action, it can reach large numbers of devices in a short time and sometimes puts a heavy load on the network.",
+      "analogy_jp": "自分でドアを開けて隣の部屋へ移り、そこで自分のコピーを作っては、また次の部屋へ向かう分身のようなものである。",
+      "analogy_zh": "就像一个分身，自己开门走进隔壁房间，在那里复制出自己，再走向下一个房间。",
+      "analogy_en": "Picture a double that opens the door to the next room on its own, makes a copy of itself there, and then heads for the room after that.",
+      "hook_jp": "worm は英語で「這う虫」。寄りかかる宿主なしに、自分の体で這い回って移動する姿を思い浮かべる。",
+      "hook_zh": "worm 在英语中是“爬行的虫子”。可以想象它不依附任何宿主，靠自己的身体到处爬行。",
+      "hook_en": "Worm is English for a crawling creature. Picture it moving around on its own body, with no host to lean on.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ワーム**は自分の複製をネットワーク上のほかのコンピュータへ送り込み、自力で感染を広げる。",
+          "text_zh": "**蠕虫**（[[jp:ワーム]]）会把自身副本送到网络上的其他计算机，靠自己的力量扩大感染。",
+          "text_en": "A **worm** ([[jp:ワーム]]) sends copies of itself to other computers on a network and spreads the infection under its own power.",
+          "qids": [
+            "2009h21a-q058"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "w1",
+              "label": {
+                "jp": "1 台に感染",
+                "zh": "感染 1 台",
+                "en": "Infects one machine"
+              }
+            },
+            {
+              "id": "w2",
+              "label": {
+                "jp": "つながった別の端末を探す",
+                "zh": "寻找相连的其他终端",
+                "en": "Looks for other connected devices"
+              }
+            },
+            {
+              "id": "w3",
+              "label": {
+                "jp": "自分の複製を送り込む",
+                "zh": "送入自身副本",
+                "en": "Sends in a copy of itself"
+              }
+            },
+            {
+              "id": "w4",
+              "label": {
+                "jp": "送り先でも同じことを繰り返す",
+                "zh": "在目标终端重复同样的动作",
+                "en": "Each copy repeats the process"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ワームが 1 台のコンピュータで動き始める。",
+            "caption_zh": "蠕虫开始在一台计算机上运行。",
+            "caption_en": "The worm starts running on one computer.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "ネットワークでつながっている別のコンピュータを探す。",
+            "caption_zh": "它寻找通过网络相连的其他计算机。",
+            "caption_en": "It looks for other computers connected to the network.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "見つけた相手に自分の複製を送り込む。宿主となるファイルは要らない。",
+            "caption_zh": "向找到的对象送入自身的副本，不需要作为宿主的文件。",
+            "caption_en": "It sends a copy of itself to each one it finds, with no host file needed.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "送り込まれた複製も同じ動きを繰り返すので、感染は短時間で広がる。",
+            "caption_zh": "被送入的副本也重复同样的动作，因此感染会在短时间内扩散。",
+            "caption_en": "Each copy repeats the same steps, so the infection spreads quickly.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21a-q058",
+        "2009h21h-q081"
+      ],
+      "definition_jp": "ワームは、宿主を必要とせず、自分自身を複製してネットワーク経由でほかのコンピュータへ広がっていくマルウェアである。",
+      "definition_zh": "蠕虫（ワーム）是一种不需要宿主、通过自我复制在网络中向其他计算机扩散的恶意软件。",
+      "definition_en": "A worm (ワーム) is malware that needs no host: it copies itself and spreads to other computers over a network.",
+      "explanation_jp": "ワームはそれ自体が独立したプログラムとして動く。人が操作しなくても複製を次々に送り出せるため、短い時間で多数の端末に広がり、ネットワークに大きな負荷をかけることもある。",
+      "explanation_zh": "蠕虫本身就是一个独立的程序。即使没有人操作，它也能不断发出副本，因此会在短时间内扩散到大量终端，有时还会给网络带来很大负荷。",
+      "explanation_en": "A worm runs as an independent program in its own right. Because it can keep sending out copies with no human action, it can reach large numbers of devices in a short time and sometimes puts a heavy load on the network.",
+      "memory_hook_jp": "worm は英語で「這う虫」。寄りかかる宿主なしに、自分の体で這い回って移動する姿を思い浮かべる。",
+      "memory_hook_zh": "worm 在英语中是“爬行的虫子”。可以想象它不依附任何宿主，靠自己的身体到处爬行。",
+      "memory_hook_en": "Worm is English for a crawling creature. Picture it moving around on its own body, with no host to lean on.",
+      "inline_quiz": [
+        "2009h21a-q058",
+        "2009h21h-q081"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "トロイの木馬",
+      "term_zh": "特洛伊木马",
+      "term_en": "Trojan Horse",
+      "one_jp": "**トロイの木馬**は、役に立つソフトウェアに**見せかけて**利用者に取り込ませ、裏で不正な動作をするマルウェアである。",
+      "one_zh": "**特洛伊木马**（[[jp:トロイの木馬]]）是一种**伪装**成有用软件、诱使用户安装，然后在暗中进行非法操作的恶意软件。",
+      "one_en": "A **Trojan horse** ([[jp:トロイの木馬]]) is malware **disguised** as useful software so that users install it, after which it carries out unauthorized actions behind the scenes.",
+      "detail_jp": "入り込むきっかけは、利用者自身によるインストールや実行である。入り込んだ後の動作は、データの破壊、個人情報の盗み出し、外部から侵入するための**バックドア**（裏口）の設置などさまざまである。",
+      "detail_zh": "它得以潜入的契机，是用户自己进行的安装或运行。潜入后的行为多种多样，包括破坏数据、窃取个人信息，以及设置供外部入侵的**后门**（[[jp:バックドア]]）等。",
+      "detail_en": "It gets in when users themselves install or run it. What it does once inside varies: destroying data, stealing personal information, or planting a **backdoor** ([[jp:バックドア]]) that lets attackers in from outside.",
+      "analogy_jp": "中身をすり替えた贈り物の箱のように、受け取った人が自分の手で家の中に持ち込んでしまう。",
+      "analogy_zh": "就像一个内容被调包的礼品盒，收礼的人亲手把它拿进了家里。",
+      "analogy_en": "It is like a gift box whose contents have been swapped: the person who receives it carries it into the house with their own hands.",
+      "hook_jp": "名前はギリシャ神話のトロイア戦争で、兵士を隠した巨大な木馬を敵が自ら城内へ運び入れた話に由来する。",
+      "hook_zh": "名字来自希腊神话中的特洛伊战争：敌方亲手把藏有士兵的巨大木马运进了城内。",
+      "hook_en": "The name comes from the Trojan War in Greek myth, where the enemy itself hauled a giant wooden horse full of hidden soldiers into the city.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**トロイの木馬**は有用なプログラムのふりをして、利用者にインストールや実行をさせた後、データを壊したり情報を外へ漏らしたりする。",
+          "text_zh": "**特洛伊木马**（[[jp:トロイの木馬]]）会伪装成有用的程序，让用户安装或运行，之后破坏数据或把信息泄露出去。",
+          "text_en": "A **Trojan horse** ([[jp:トロイの木馬]]) poses as a useful program, gets the user to install or run it, and then destroys data or leaks information.",
+          "qids": [
+            "2012h24h-q054",
+            "2018h30a-q077"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "自分の複製を送り込んで広がるのは**ワーム**で、**トロイの木馬**は偽装によって入り込み、一般に自己増殖しない。",
+          "text_zh": "靠送出自身副本来扩散的是**蠕虫**（[[jp:ワーム]]），而**特洛伊木马**（[[jp:トロイの木馬]]）通过伪装潜入，一般不会自我繁殖。",
+          "text_en": "Spreading by sending out copies of itself is what a **worm** ([[jp:ワーム]]) does; a **Trojan horse** ([[jp:トロイの木馬]]) gets in through disguise and generally does not replicate itself."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "t1",
+              "label": {
+                "jp": "便利なソフトに見せかけて配る",
+                "zh": "伪装成实用软件进行分发",
+                "en": "Distributed disguised as handy software"
+              }
+            },
+            {
+              "id": "t2",
+              "label": {
+                "jp": "利用者が自分でインストール・実行",
+                "zh": "用户自己安装并运行",
+                "en": "User installs and runs it"
+              }
+            },
+            {
+              "id": "t3",
+              "label": {
+                "jp": "裏で破壊や情報の持ち出し",
+                "zh": "暗中破坏或窃取信息",
+                "en": "Secretly destroys data or steals information"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "無料ツールなど、役に立ちそうなソフトの姿で配布される。",
+            "caption_zh": "以免费工具等看似有用的软件形式分发。",
+            "caption_en": "It is handed out in the form of seemingly useful software, such as a free tool.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "利用者は害があると気付かず、自分の手でインストールして実行してしまう。",
+            "caption_zh": "用户没有察觉其危害，亲手安装并运行了它。",
+            "caption_en": "Unaware of the danger, users install and run it with their own hands.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "表向きの機能の裏で、データの破壊や情報の持ち出しなどを行う。",
+            "caption_zh": "在表面功能的背后，实施数据破坏、信息窃取等行为。",
+            "caption_en": "Behind its visible features, it destroys data, steals information, and so on.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2012h24h-q054"
+      ],
+      "definition_jp": "トロイの木馬は、役に立つソフトウェアに見せかけて利用者に取り込ませ、裏で不正な動作をするマルウェアである。",
+      "definition_zh": "特洛伊木马（トロイの木馬）是一种伪装成有用软件、诱使用户安装，然后在暗中进行非法操作的恶意软件。",
+      "definition_en": "A Trojan horse (トロイの木馬) is malware disguised as useful software so that users install it, after which it carries out unauthorized actions behind the scenes.",
+      "explanation_jp": "入り込むきっかけは、利用者自身によるインストールや実行である。入り込んだ後の動作は、データの破壊、個人情報の盗み出し、外部から侵入するためのバックドア（裏口）の設置などさまざまである。",
+      "explanation_zh": "它得以潜入的契机，是用户自己进行的安装或运行。潜入后的行为多种多样，包括破坏数据、窃取个人信息，以及设置供外部入侵的后门（バックドア）等。",
+      "explanation_en": "It gets in when users themselves install or run it. What it does once inside varies: destroying data, stealing personal information, or planting a backdoor (バックドア) that lets attackers in from outside.",
+      "memory_hook_jp": "名前はギリシャ神話のトロイア戦争で、兵士を隠した巨大な木馬を敵が自ら城内へ運び入れた話に由来する。",
+      "memory_hook_zh": "名字来自希腊神话中的特洛伊战争：敌方亲手把藏有士兵的巨大木马运进了城内。",
+      "memory_hook_en": "The name comes from the Trojan War in Greek myth, where the enemy itself hauled a giant wooden horse full of hidden soldiers into the city.",
+      "inline_quiz": [
+        "2012h24h-q054"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ボット",
+      "term_zh": "机器人程序（Bot）",
+      "term_en": "Bot",
+      "one_jp": "**ボット**は、感染したコンピュータを攻撃者が外部から**遠隔操作**できる状態にするマルウェアである。",
+      "one_zh": "**机器人程序**（Bot，[[jp:ボット]]）是一种让攻击者能够从外部**远程操控**被感染计算机的恶意软件。",
+      "one_en": "A **bot** ([[jp:ボット]]) is malware that lets an attacker **remotely control** an infected computer from outside.",
+      "detail_jp": "感染した端末は、攻撃者が用意した**指令サーバ**からの命令を待ち、受け取ると命令どおりに動く。同じ指令で動く多数の感染端末の集まりを**ボットネット**と呼び、特定のサイトへの一斉攻撃（**DDoS攻撃**）や迷惑メールの大量送信に使われるため、感染した側が気付かないまま加害に加わってしまう。",
+      "detail_zh": "被感染的终端等待攻击者准备的**指令服务器**（[[jp:指令サーバ]]）发出命令，收到后就照命令行动。受同一指令驱动的大量感染终端的集合称为**僵尸网络**（[[jp:ボットネット]]），它被用于对特定网站的集中攻击（**DDoS 攻击**，[[jp:DDoS攻撃]]）或大量发送垃圾邮件，因此被感染的一方会在不知不觉中成为加害的一员。",
+      "detail_en": "An infected device waits for orders from a **command server** ([[jp:指令サーバ]]) set up by the attacker and acts on them once they arrive. A group of many infected devices driven by the same orders is called a **botnet** ([[jp:ボットネット]]); because botnets are used for mass attacks on a particular site (**DDoS attacks**, [[jp:DDoS攻撃]]) and for sending spam in bulk, the infected side ends up taking part in the attack without realizing it.",
+      "analogy_jp": "糸を引く人の動きどおりに操られる操り人形が、大勢そろって同時に動かされるようなものである。",
+      "analogy_zh": "就像一大群提线木偶，随着牵线人的动作被同时操控。",
+      "analogy_en": "Picture a whole troupe of puppets all moved at once by the hands of the person pulling the strings.",
+      "hook_jp": "ボットは robot（ロボット）を縮めた呼び名で、命令どおりに動く機械というイメージから付いた。",
+      "hook_zh": "Bot 是 robot（机器人）的缩写，取自“按命令行动的机器”这一形象。",
+      "hook_en": "Bot is short for robot, a name drawn from the image of a machine that does what it is told.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ボット**は多数の PC に感染し、ネットワーク越しに届く指令どおりに動いて、狙ったサイトへまとめて攻撃をしかけたり迷惑メールを送ったりする。",
+          "text_zh": "**机器人程序**（Bot，[[jp:ボット]]）会感染大量 PC，按照通过网络传来的指令行动，对目标网站发动集中攻击或发送垃圾邮件。",
+          "text_en": "A **bot** ([[jp:ボット]]) infects large numbers of PCs, acts on commands that arrive over the network, and launches coordinated (mass) attacks on a target site or sends spam.",
+          "qids": [
+            "2009h21a-q073",
+            "2011h23tokubetsu-q076",
+            "2014h26h-q061"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "感染を防ぐ対策は入り込む経路をふさぐものであり、盗難や感染後の被害を小さくする対策とは目的が別である。**ボット**の感染防止に効くのは前者である。",
+          "text_zh": "防止感染的对策是堵住入侵途径，与减轻失窃或感染后损害的对策目的不同。对防止**机器人程序**（Bot，[[jp:ボット]]）感染有效的是前者。",
+          "text_en": "Measures that prevent infection block the routes malware uses to get in, which is a different aim from measures that limit damage after theft or infection. For keeping a **bot** ([[jp:ボット]]) out, the former is what works.",
+          "qids": [
+            "2013h25a-q083"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "b1",
+              "label": {
+                "jp": "攻撃者",
+                "zh": "攻击者",
+                "en": "Attacker"
+              }
+            },
+            {
+              "id": "b2",
+              "label": {
+                "jp": "指令サーバ",
+                "zh": "指令服务器",
+                "en": "Command server"
+              }
+            },
+            {
+              "id": "b3",
+              "label": {
+                "jp": "ボットに感染した多数の端末",
+                "zh": "感染了机器人程序的大量终端",
+                "en": "Many bot-infected devices"
+              }
+            },
+            {
+              "id": "b4",
+              "label": {
+                "jp": "標的への一斉攻撃・迷惑メール送信",
+                "zh": "对目标集中攻击、发送垃圾邮件",
+                "en": "Mass attacks on a target, spam"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "攻撃者が、感染端末を動かすための命令を用意する。",
+            "caption_zh": "攻击者准备好用来驱动感染终端的命令。",
+            "caption_en": "The attacker prepares commands to drive the infected devices.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "命令は指令サーバに置かれ、感染端末はそこから指示を受け取る。",
+            "caption_zh": "命令放在指令服务器上，感染终端从那里接收指示。",
+            "caption_en": "The commands sit on a command server, and the infected devices pick up instructions from there.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "多数の感染端末が同じ指示を受け、利用者の知らないうちに動き出す。",
+            "caption_zh": "大量感染终端收到同一指示，在用户不知情的情况下开始行动。",
+            "caption_en": "Many infected devices receive the same instruction and spring into action without their users knowing.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "指示どおりに標的へ一斉に通信を送ったり、迷惑メールを送ったりする。",
+            "caption_zh": "它们按照指示向目标集中发送通信，或者发送垃圾邮件。",
+            "caption_en": "Following the instruction, they flood a target with traffic or send spam.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21a-q073",
+        "2011h23tokubetsu-q076"
+      ],
+      "definition_jp": "ボットは、感染したコンピュータを攻撃者が外部から遠隔操作できる状態にするマルウェアである。",
+      "definition_zh": "机器人程序（Bot，ボット）是一种让攻击者能够从外部远程操控被感染计算机的恶意软件。",
+      "definition_en": "A bot (ボット) is malware that lets an attacker remotely control an infected computer from outside.",
+      "explanation_jp": "感染した端末は、攻撃者が用意した指令サーバからの命令を待ち、受け取ると命令どおりに動く。同じ指令で動く多数の感染端末の集まりをボットネットと呼び、特定のサイトへの一斉攻撃（DDoS攻撃）や迷惑メールの大量送信に使われるため、感染した側が気付かないまま加害に加わってしまう。",
+      "explanation_zh": "被感染的终端等待攻击者准备的指令服务器（指令サーバ）发出命令，收到后就照命令行动。受同一指令驱动的大量感染终端的集合称为僵尸网络（ボットネット），它被用于对特定网站的集中攻击（DDoS 攻击，DDoS攻撃）或大量发送垃圾邮件，因此被感染的一方会在不知不觉中成为加害的一员。",
+      "explanation_en": "An infected device waits for orders from a command server (指令サーバ) set up by the attacker and acts on them once they arrive. A group of many infected devices driven by the same orders is called a botnet (ボットネット); because botnets are used for mass attacks on a particular site (DDoS attacks, DDoS攻撃) and for sending spam in bulk, the infected side ends up taking part in the attack without realizing it.",
+      "memory_hook_jp": "ボットは robot（ロボット）を縮めた呼び名で、命令どおりに動く機械というイメージから付いた。",
+      "memory_hook_zh": "Bot 是 robot（机器人）的缩写，取自“按命令行动的机器”这一形象。",
+      "memory_hook_en": "Bot is short for robot, a name drawn from the image of a machine that does what it is told.",
+      "inline_quiz": [
+        "2009h21a-q073",
+        "2011h23tokubetsu-q076"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ランサムウェア",
+      "term_zh": "勒索软件",
+      "term_en": "Ransomware",
+      "one_jp": "**ランサムウェア**は、ファイルを**暗号化**したり PC をロックしたりして使えなくし、元に戻すことと引き換えに金銭（**身代金**）を要求するマルウェアである。",
+      "one_zh": "**勒索软件**（[[jp:ランサムウェア]]）是一种通过**加密**文件或锁定 PC 使其无法使用，并以恢复为条件索要钱财（**赎金**）的恶意软件。",
+      "one_en": "**Ransomware** ([[jp:ランサムウェア]]) is malware that makes files or a PC unusable by **encrypting** the files or locking the PC, then demands money (a **ransom**) in exchange for restoring them.",
+      "detail_jp": "攻撃者の主な狙いは、使えなくしたデータを人質にして金銭を得ることにある。要求に応じて支払っても元に戻る保証はないため、日頃から**バックアップ**を取り、感染した PC からは書き換えられない場所に保管しておくことが被害への備えになる。",
+      "detail_zh": "攻击者的主要目的，是把无法使用的数据当作人质来获取钱财。即使按要求付款也不能保证恢复，因此平时就要做好**备份**（[[jp:バックアップ]]），并把它保存在受感染 PC 无法改写的地方，以此防备损害。",
+      "detail_en": "The attacker's main goal is to hold the locked-up data hostage and collect money. Paying the demand does not guarantee recovery, so the way to prepare is to take regular **backups** ([[jp:バックアップ]]) and keep them somewhere an infected PC cannot overwrite.",
+      "analogy_jp": "家じゅうの扉の鍵を勝手に付け替え、「合鍵が欲しければ金を払え」と迫るようなものである。",
+      "analogy_zh": "就像有人擅自把家里所有门锁都换掉，然后威胁说“想要备用钥匙就拿钱来”。",
+      "analogy_en": "It is like someone changing every lock in your house without asking and then saying, “Pay up if you want the keys.”",
+      "hook_jp": "ransom は英語で「身代金」。ransom + software でランサムウェアになる。",
+      "hook_zh": "ransom 在英语中是“赎金”。ransom + software 就成了 ransomware（勒索软件）。",
+      "hook_en": "Ransom is English for the money paid to free a hostage. Ransom + software gives ransomware.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ランサムウェア**の狙いは金銭で、ファイルを暗号化したり PC をロックしたりして使えなくし、解除と引き換えに支払いを求める。",
+          "text_zh": "**勒索软件**（[[jp:ランサムウェア]]）的目的是钱财，它把文件加密或锁定 PC 使其无法使用，再以解除为条件要求付款。",
+          "text_en": "**Ransomware** ([[jp:ランサムウェア]]) is after money: it encrypts files or locks a PC to make them unusable, then demands payment to undo it.",
+          "qids": [
+            "2019r01a-q098",
+            "2016h28h-q061",
+            "2018h30h-q066"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**RAT**（遠隔操作ツール）は、攻撃者が感染端末を遠隔操作するための道具である。狙いが端末の操作や情報の入手にある点で、金銭が狙いの**ランサムウェア**とは別物である。",
+          "text_zh": "**RAT**（远程访问木马）是攻击者用来远程操控感染终端的工具。其目的在于操控终端或获取信息，这一点与以钱财为目的的**勒索软件**（[[jp:ランサムウェア]]）不同。",
+          "text_en": "A **RAT** (remote access tool) is a tool attackers use to control an infected device remotely. Its aim is to operate the device or obtain information, which sets it apart from **ransomware** ([[jp:ランサムウェア]]), whose aim is money.",
+          "qids": [
+            "2021r03-q094"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "r1",
+              "label": {
+                "jp": "PC に感染",
+                "zh": "感染 PC",
+                "en": "Infects a PC"
+              }
+            },
+            {
+              "id": "r2",
+              "label": {
+                "jp": "ファイルの暗号化・画面のロック",
+                "zh": "加密文件、锁定屏幕",
+                "en": "Encrypts files or locks the screen"
+              }
+            },
+            {
+              "id": "r3",
+              "label": {
+                "jp": "元に戻す代わりに金銭を要求",
+                "zh": "以恢复为条件索要钱财",
+                "en": "Demands money to undo it"
+              }
+            },
+            {
+              "id": "r4",
+              "label": {
+                "jp": "備え：バックアップから復元",
+                "zh": "防备：从备份中恢复",
+                "en": "Safeguard: restore from backup"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "メールの添付ファイルや不正なサイトなどから PC に入り込む。",
+            "caption_zh": "通过邮件附件或恶意网站等途径侵入 PC。",
+            "caption_en": "It gets into a PC through email attachments, malicious websites, and similar routes.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "PC 内のファイルを暗号化したり画面をロックしたりして、使えない状態にする。",
+            "caption_zh": "把 PC 内的文件加密或锁定屏幕，使其无法使用。",
+            "caption_en": "It encrypts the files on the PC or locks the screen so that nothing can be used.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "元に戻すための鍵などと引き換えに、金銭の支払いを求める画面を出す。",
+            "caption_zh": "显示画面，要求支付钱财以换取用于恢复的密钥等。",
+            "caption_en": "It displays a screen demanding payment in exchange for a key or other means of recovery.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "支払っても元に戻る保証はないため、事前に取ったバックアップから戻すことが備えになる。",
+            "caption_zh": "即使付款也不能保证恢复，因此从事先做好的备份中恢复才是防备之道。",
+            "caption_en": "Paying does not guarantee recovery, so the real safeguard is restoring from a backup taken in advance.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2013h25h-q062",
+        "2016h28h-q061",
+        "2018h30h-q066"
+      ],
+      "definition_jp": "ランサムウェアは、ファイルを暗号化したり PC をロックしたりして使えなくし、元に戻すことと引き換えに金銭（身代金）を要求するマルウェアである。",
+      "definition_zh": "勒索软件（ランサムウェア）是一种通过加密文件或锁定 PC 使其无法使用，并以恢复为条件索要钱财（赎金）的恶意软件。",
+      "definition_en": "Ransomware (ランサムウェア) is malware that makes files or a PC unusable by encrypting the files or locking the PC, then demands money (a ransom) in exchange for restoring them.",
+      "explanation_jp": "攻撃者の主な狙いは、使えなくしたデータを人質にして金銭を得ることにある。要求に応じて支払っても元に戻る保証はないため、日頃からバックアップを取り、感染した PC からは書き換えられない場所に保管しておくことが被害への備えになる。",
+      "explanation_zh": "攻击者的主要目的，是把无法使用的数据当作人质来获取钱财。即使按要求付款也不能保证恢复，因此平时就要做好备份（バックアップ），并把它保存在受感染 PC 无法改写的地方，以此防备损害。",
+      "explanation_en": "The attacker's main goal is to hold the locked-up data hostage and collect money. Paying the demand does not guarantee recovery, so the way to prepare is to take regular backups (バックアップ) and keep them somewhere an infected PC cannot overwrite.",
+      "memory_hook_jp": "ransom は英語で「身代金」。ransom + software でランサムウェアになる。",
+      "memory_hook_zh": "ransom 在英语中是“赎金”。ransom + software 就成了 ransomware（勒索软件）。",
+      "memory_hook_en": "Ransom is English for the money paid to free a hostage. Ransom + software gives ransomware.",
+      "inline_quiz": [
+        "2013h25h-q062",
+        "2016h28h-q061",
+        "2018h30h-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "コンピュータウイルス",
+      "b": "ワーム",
+      "rows": [
+        {
+          "label_jp": "宿主",
+          "label_zh": "宿主",
+          "label_en": "Host",
+          "a_jp": "寄生先のファイルやプログラムが要る",
+          "a_zh": "需要寄生的文件或程序",
+          "a_en": "Needs a file or program to attach to",
+          "b_jp": "要らない（独立したプログラム）",
+          "b_zh": "不需要（独立的程序）",
+          "b_en": "Not needed (standalone program)",
+          "key": true
+        },
+        {
+          "label_jp": "動き出すきっかけ",
+          "label_zh": "开始运行的契机",
+          "label_en": "What sets it off",
+          "a_jp": "宿主が開かれる・実行される",
+          "a_zh": "宿主被打开或执行",
+          "a_en": "Its host being opened or run",
+          "b_jp": "自分で動き、複製を送り出す",
+          "b_zh": "自行运行并发出副本",
+          "b_en": "Runs by itself and sends out copies",
+          "key": false
+        },
+        {
+          "label_jp": "広がる先",
+          "label_zh": "传播对象",
+          "label_en": "Where it spreads",
+          "a_jp": "同じ端末やほかの端末のファイル",
+          "a_zh": "同一终端或其他终端上的文件",
+          "a_en": "Files on the same device or on other devices",
+          "b_jp": "ネットワークでつながったほかの端末",
+          "b_zh": "通过网络相连的其他终端",
+          "b_en": "Other devices linked by the network",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "トロイの木馬",
+      "b": "ボット",
+      "rows": [
+        {
+          "label_jp": "特徴の中心",
+          "label_zh": "核心特征",
+          "label_en": "Core trait",
+          "a_jp": "役に立つソフトに見せかけて入り込む",
+          "a_zh": "伪装成有用的软件潜入",
+          "a_en": "Gets in disguised as useful software",
+          "b_jp": "外部からの指令で端末を操れるようにする",
+          "b_zh": "让终端能被外部指令操控",
+          "b_en": "Makes a device controllable by outside commands",
+          "key": true
+        },
+        {
+          "label_jp": "感染後の動き",
+          "label_zh": "感染后的行为",
+          "label_en": "Behavior after infection",
+          "a_jp": "裏で破壊や情報の持ち出しなど",
+          "a_zh": "暗中破坏、窃取信息等",
+          "a_en": "Secretly destroys data, steals information, and so on",
+          "b_jp": "指令を待ち、一斉攻撃や迷惑メール送信",
+          "b_zh": "等待指令，进行集中攻击或发送垃圾邮件",
+          "b_en": "Waits for orders, then joins mass attacks or sends spam",
+          "key": false
+        },
+        {
+          "label_jp": "感染の規模",
+          "label_zh": "感染规模",
+          "label_en": "Scale of infection",
+          "a_jp": "取り込んだ利用者の端末",
+          "a_zh": "安装了它的用户的终端",
+          "a_en": "The device of the user who installed it",
+          "b_jp": "多数の端末がボットネットとして束ねられる",
+          "b_zh": "大量终端被组成僵尸网络",
+          "b_en": "Many devices bundled into a botnet",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**マルウェア**は悪意あるソフトウェアの総称で、ウイルスやボットなどの個別の種類はその一部にあたる。",
+    "対策の基本は、対策ソフトの**定義ファイル**を更新し続けることと、ソフトの脆弱性を**セキュリティパッチ**でふさぐことである。",
+    "感染の入口はメールの添付ファイルに限らず外部記憶媒体の自動実行などもあり、感染先が機器のファームウェアにまで及ぶこともある。",
+    "**ボット**は感染端末を加害の手先に変え、**ランサムウェア**はデータを人質に金銭を求めるというように、感染後の被害の型も種類を見分ける手がかりになる。"
+  ],
+  "key_points_zh": [
+    "**恶意软件**是各类恶意程序的总称，病毒、机器人程序等具体种类都是其中的一部分。",
+    "防范的基本做法，是持续更新防病毒软件的**病毒定义文件**，并用**安全补丁**堵住软件的漏洞。",
+    "感染的入口不只是邮件附件，还包括外部存储介质的自动运行等，感染对象甚至可能波及设备的固件。",
+    "**机器人程序（Bot）**把感染终端变成加害的帮凶，**勒索软件**把数据当作人质索要钱财，像这样，感染后的损害类型也是区分种类的线索。"
+  ],
+  "key_points_en": [
+    "**Malware** is the umbrella term for malicious software, and specific types such as viruses and bots are each one part of it.",
+    "The basic defenses are keeping the antivirus software's **definition files** up to date and closing software vulnerabilities with **security patches**.",
+    "Infection does not only come through email attachments; it can also enter through the AutoRun feature of external storage media, and it can even reach a device's firmware.",
+    "A **bot** turns infected devices into tools for harming others, while **ransomware** holds data hostage for money; the type of damage after infection is also a clue to which kind you are facing."
+  ],
+  "overview": {
+    "intro_jp": "マルウェアが個別の種類名ではなく総称であることを説明できる。コンピュータウイルスとワームは宿主の要否で、トロイの木馬は偽装という入り込み方で見分けられる。ボットとランサムウェアを、感染後に起きる被害の型で見分けられる。",
+    "intro_zh": "能说明恶意软件是一个总称，而不是某一具体种类的名称。能根据是否需要宿主区分计算机病毒和蠕虫，并根据伪装这一入侵方式识别特洛伊木马。能根据感染后造成的损害类型区分机器人程序（Bot）和勒索软件。",
+    "intro_en": "Explain that malware is an umbrella term, not the name of one specific type. Tell a computer virus from a worm by whether it needs a host, and recognize a Trojan horse by how it gets in: disguise. Distinguish a bot from ransomware by the kind of damage that follows infection.",
+    "freq_badge": "頻出",
+    "est_minutes": 37
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "マルウェア: マルウェアといえば悪意あるソフトウェアの総称",
-      "コンピュータウイルス: コンピュータウイルスといえば宿主に寄生して増える",
-      "ワーム: ワームといえば宿主なしで自己増殖",
-      "トロイの木馬: トロイの木馬といえば正規を装い裏で悪事",
-      "ボット: ボットといえば遠隔操作される手下",
-      "ランサムウェア: ランサムウェアといえばデータを人質に身代金要求"
-    ],
     "key_points_jp": [
-      "マルウェアは悪意あるソフトウェアの総称で、ウイルス・ワーム・トロイの木馬・ボット・ランサムウェアはすべてその一種。",
-      "ウイルスは他のプログラムに寄生して増え、ワームは宿主なしで単独に自己増殖する点が最大の違い。",
-      "トロイの木馬は正規ソフトを装って侵入し、自己増殖せず利用者にだまされて取り込まれる。",
-      "ボットは感染端末を遠隔操作され、多数が集まったボットネットはDDoSや迷惑メールの踏み台に悪用される。",
-      "ランサムウェアはデータを暗号化して身代金を要求し、安易に支払わずバックアップで備えるのが対策の基本。"
+      "マルウェアは悪意あるソフトウェアの総称で、ウイルスやボットなどの個別の種類はその一部にあたる。",
+      "対策の基本は、対策ソフトの定義ファイルを更新し続けることと、ソフトの脆弱性をセキュリティパッチでふさぐことである。",
+      "感染の入口はメールの添付ファイルに限らず外部記憶媒体の自動実行などもあり、感染先が機器のファームウェアにまで及ぶこともある。",
+      "ボットは感染端末を加害の手先に変え、ランサムウェアはデータを人質に金銭を求めるというように、感染後の被害の型も種類を見分ける手がかりになる。"
     ],
     "key_points_zh": [
-      "恶意软件是恶意软件的统称，病毒、蠕虫、特洛伊木马、机器人程序（Bot）、勒索软件全都是它的一种。",
-      "病毒寄生于其他程序来增殖，蠕虫则无需宿主、单独自我增殖，这是两者最大的区别。",
-      "特洛伊木马伪装成正规软件入侵，不自我增殖，靠用户被欺骗而将其引入。",
-      "机器人程序（Bot）使被感染的终端被远程操控，大量聚集而成的僵尸网络会被滥用为DDoS或垃圾邮件的跳板。",
-      "勒索软件将数据加密并索要赎金，不轻易支付、靠备份来防范是对策的基本。"
+      "恶意软件是各类恶意程序的总称，病毒、机器人程序等具体种类都是其中的一部分。",
+      "防范的基本做法，是持续更新防病毒软件的病毒定义文件，并用安全补丁堵住软件的漏洞。",
+      "感染的入口不只是邮件附件，还包括外部存储介质的自动运行等，感染对象甚至可能波及设备的固件。",
+      "机器人程序（Bot）把感染终端变成加害的帮凶，勒索软件把数据当作人质索要钱财，像这样，感染后的损害类型也是区分种类的线索。"
     ],
     "key_points_en": [
-      "Malware is the umbrella term for malicious software, and viruses, worms, Trojan horses, bots, and ransomware are all one kind of it.",
-      "A virus parasitizes other programs to multiply, while a worm self-propagates alone without a host—this is the biggest difference between the two.",
-      "A Trojan horse intrudes disguised as legitimate software, does not self-propagate, and is brought in by a deceived user.",
-      "A bot causes infected devices to be remotely controlled, and a botnet formed by gathering many of them is abused as a stepping stone for DDoS or spam.",
-      "Ransomware encrypts data and demands a ransom; not paying carelessly and preparing with backups is the basis of the countermeasures."
+      "Malware is the umbrella term for malicious software, and specific types such as viruses and bots are each one part of it.",
+      "The basic defenses are keeping the antivirus software's definition files up to date and closing software vulnerabilities with security patches.",
+      "Infection does not only come through email attachments; it can also enter through the AutoRun feature of external storage media, and it can even reach a device's firmware.",
+      "A bot turns infected devices into tools for harming others, while ransomware holds data hostage for money; the type of damage after infection is also a clue to which kind you are facing."
+    ],
+    "memory_hooks_jp": [
+      "マルウェア: 先頭の「マル」は英語の mal-（悪い）で、malfunction（故障）と同じ接頭辞。",
+      "コンピュータウイルス: virus はラテン語で「毒」を意味する言葉に由来する。",
+      "ワーム: worm は英語で「這う虫」。寄りかかる宿主なしに、自分の体で這い回って移動する姿を思い浮かべる。",
+      "トロイの木馬: 名前はギリシャ神話のトロイア戦争で、兵士を隠した巨大な木馬を敵が自ら城内へ運び入れた話に由来する。",
+      "ボット: ボットは robot（ロボット）を縮めた呼び名で、命令どおりに動く機械というイメージから付いた。",
+      "ランサムウェア: ransom は英語で「身代金」。ransom + software でランサムウェアになる。"
     ],
     "memory_hooks_zh": [
-      "恶意软件：说到恶意软件，就是恶意软件的统称",
-      "计算机病毒：说到计算机病毒，就是寄生于宿主来增殖",
-      "蠕虫：说到蠕虫，就是无需宿主自我增殖",
-      "特洛伊木马：说到特洛伊木马，就是伪装正规、暗中作恶",
-      "机器人程序（Bot）：说到Bot，就是被远程操控的爪牙",
-      "勒索软件：说到勒索软件，就是把数据当人质索要赎金"
+      "恶意软件：开头的“mal”来自英语前缀 mal-（坏的），与 malfunction（故障）中的前缀相同。",
+      "计算机病毒：virus 一词源自拉丁语中意为“毒”的词。",
+      "蠕虫：worm 在英语中是“爬行的虫子”。可以想象它不依附任何宿主，靠自己的身体到处爬行。",
+      "特洛伊木马：名字来自希腊神话中的特洛伊战争：敌方亲手把藏有士兵的巨大木马运进了城内。",
+      "机器人程序（Bot）：Bot 是 robot（机器人）的缩写，取自“按命令行动的机器”这一形象。",
+      "勒索软件：ransom 在英语中是“赎金”。ransom + software 就成了 ransomware（勒索软件）。"
     ],
     "memory_hooks_en": [
-      "Malware: Malware → the umbrella term for all malicious software",
-      "Computer virus: Computer virus → parasitizes a host to multiply",
-      "Worm: Worm → self-propagates without a host",
-      "Trojan horse: Trojan horse → disguised as legitimate, does evil in the background",
-      "Bot: Bot → a remotely controlled minion",
-      "Ransomware: Ransomware → takes data hostage to demand a ransom"
+      "Malware: The “mal” at the front is the English prefix mal- (bad), the same one found in malfunction.",
+      "Computer Virus: The word virus comes from a Latin word meaning “poison.”",
+      "Worm: Worm is English for a crawling creature. Picture it moving around on its own body, with no host to lean on.",
+      "Trojan Horse: The name comes from the Trojan War in Greek myth, where the enemy itself hauled a giant wooden horse full of hidden soldiers into the city.",
+      "Bot: Bot is short for robot, a name drawn from the image of a machine that does what it is told.",
+      "Ransomware: Ransom is English for the money paid to free a hostage. Ransom + software gives ransomware."
     ]
   },
   "challenge_questions": [
-    "2013h25a-q083",
     "2014h26h-q061",
-    "2015h27a-q075",
-    "2016h28a-q080",
-    "2017h29a-q056"
+    "2018h30a-q077",
+    "2019h31h-q094",
+    "2024r06-q098",
+    "2013h25a-q083"
   ],
   "source_figures": [
     {
@@ -238,9 +1109,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "恶意软件基础与主要的感染类型",
-  "title_en": "Malware Basics and Major Infection Types",
-  "unit_summary_zh": "理解恶意软件这一统称，以及病毒、蠕虫、特洛伊木马、机器人程序（Bot）、勒索软件等具有代表性的种类。",
-  "unit_summary_en": "Understand the umbrella term \"malware\" and its representative types, including viruses, worms, Trojan horses, bots, and ransomware."
+  }
 }
