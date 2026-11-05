@@ -413,3 +413,27 @@ test("D-208: writer rule 11 forbids option-tracing 考点 and reads warn choice-
   assert.ok(rv.includes("判断項目・空欄は題文側にあり warn に出ない"), "the stem blind spot is named");
   for (const label of [/^localize:/, /^tr-review:/]) assert.doesNotMatch(calls.find((x) => label.test(x.opts.label)).prompt, /D-208/, "loc stages unchanged");
 });
+
+test("D-209: the critic's 観点 4 carries rule 11's two-sided exemption verbatim, exempts all-correct / classification items stated as general definitions, and needs the traced words shown", async () => {
+  const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
+  const write = calls.find((x) => /^write:/.test(x.opts.label)).prompt;
+  const rw = calls.find((x) => /^rewrite:/.test(x.opts.label)).prompt;
+  const rv = calls.find((x) => /^review:/.test(x.opts.label)).prompt;
+  const TWO_SIDED = "取り違えやすい 2 語の対比を、両側を正の定義で述べた文";
+  const LIMIT = "ただし、いずれも判断項目・選択肢の語句・組・順序、または穴埋め題の空欄の語と比較の相手の組まで再現していれば書き方 11 の (a)〜(d) に当たる";
+  const ALL_CORRECT = "全項目正解型 (判断項目がすべて適切)・分類型 (どれが X に当たるか) の題で、正解の内容を見出し語の一般的な定義・役割の区別として述べた文";
+  for (const p of [write, rw]) {
+    const r11 = p.match(/\n11\. \*\*引用題の選択肢・判断項目をなぞらない\*\*[^\n]*/)[0];
+    assert.ok(r11.includes(TWO_SIDED) && r11.includes(ALL_CORRECT), "rule 11 states both exemptions");
+    const lim = r11.indexOf(LIMIT);
+    assert.ok(lim > r11.indexOf(TWO_SIDED) && lim > r11.indexOf(ALL_CORRECT), "the limit follows (and so bounds) both exemptions");
+  }
+  const v4 = rv.match(/\n4\. \*\*写していないか\*\*[^\n]*/)[0];
+  assert.ok(v4.includes("(iii) に当たらないもの (D-209)"), "観点 4 names the exemption");
+  assert.ok(v4.includes(TWO_SIDED) && v4.includes(ALL_CORRECT), "the same wording as rule 11");
+  const lim = v4.indexOf(LIMIT);
+  assert.ok(lim > v4.indexOf(TWO_SIDED) && lim > v4.indexOf(ALL_CORRECT), "the limit bounds both exemptions in 観点 4 too");
+  assert.ok(v4.includes("**medium**。low にしない (下の判定条件を満たさないときを除く)"), "medium floor and the evidence condition are ordered");
+  assert.ok(v4.includes("なぞったと見る題の語句・組・順序を detail_jp に具体的に示す。示せなければ low"), "a (iii) medium must show what it traced");
+  for (const label of [/^localize:/, /^tr-review:/]) assert.doesNotMatch(calls.find((x) => label.test(x.opts.label)).prompt, /D-209/, "loc stages unchanged");
+});
