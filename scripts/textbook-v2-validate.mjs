@@ -25,6 +25,8 @@
 // WARN (D-202, same rules): a unit / loc part whose 考点 text_jp names another headword of the unit without [[jp:…]] in
 // text_zh / text_en at its first 考点 occurrence prints `warn  jp-origin  field  message` (validateV2 jpOriginWarnings;
 // the one_zh / one_en headword itself is the blocking `jp-origin` issue).
+// WARN (D-208, a unit / file and a JP-only part; not a loc part, whose Japanese the localiser cannot change): a 考点 with a negation that echoes a cited question's wrong option(s)
+// prints `warn  choice-echo  field  <qid> <options> — …` (lib choiceEchoWarnings; D-198 (iii) pointer for the writer / JP reviewer).
 // Exit: 0 = no issues, 1 = issues (printed one per line as `code  field  message`), 2 = usage / input error.
 
 import { existsSync } from "node:fs";
@@ -33,6 +35,7 @@ import { pathToFileURL } from "node:url";
 
 import {
   assemble,
+  choiceEchoWarnings,
   contextFor,
   copyIssues,
   dataPaths,
@@ -107,11 +110,13 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
     ? await validatePart(doc, manifest, paths, opt.jp ? readJson(path.resolve(opt.jp)) : null)
     : await validateUnit(doc, manifest, paths);
   const what = opt.part ? `part ${doc.stage}#${doc.round}` : "unit";
-  // B6 zh term / D-202 jp-origin WARN lines (a JP-only part has no zh / en yet)
-  const warns =
-    doc.stage === "jp"
-      ? []
-      : [...(existsSync(paths.zhTerms) ? zhTermWarnings(doc, readJson(paths.zhTerms)) : []), ...(await loadKit()).v2.jpOriginWarnings(doc)];
+  // B6 zh term / D-202 jp-origin WARN lines (a JP-only part has no zh / en yet); D-208 choice-echo on the Japanese (unit / file and JP part)
+  const kit = await loadKit();
+  const warns = [
+    ...(doc.stage === "jp" ? [] : [...(existsSync(paths.zhTerms) ? zhTermWarnings(doc, readJson(paths.zhTerms)) : []), ...kit.v2.jpOriginWarnings(doc)]),
+    // D-208: the writer's / JP reviewer's pointer — a loc part's Japanese is fixed, so not there (Rule D L3)
+    ...(doc.stage === "jp" || !opt.part ? choiceEchoWarnings(doc, manifest, kit.stripInline, unitId) : []),
+  ];
   const printWarns = () => {
     for (const w of warns) console.log(`  warn  ${w.code}  ${w.field}  ${w.message}`);
   };

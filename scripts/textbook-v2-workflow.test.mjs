@@ -317,7 +317,7 @@ test("D-202: writer 書き方 7〜9 and the critic's checks; the localiser's [[j
     assert.match(p, /one \/ detail \/ points \/ pairs \/ hook と単元の overview \/ goals/);
     assert.match(p, /8\. \*\*同じ対比は pairs と mix 考点の 2 箇所まで\*\*。detail・key_points で同じ対比を繰り返さない/);
     assert.match(p, /9\. \*\*引用題の限定条件を外さない\*\*/);
-    assert.match(p, /「書き方 7〜10」を単元全体で/);
+    assert.match(p, /「書き方 7〜11」を単元全体で/);
   }
   const rv = byLabel(/^review:/);
   assert.match(rv, /7\. \*\*欄同士の整合\*\*.*medium。それで事実の誤りになるなら high/);
@@ -383,7 +383,7 @@ test("D-205: writer rule 10 and critic 観点 10 qualify the edition of standard
   const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
   const write = calls.find((x) => /^write:/.test(x.opts.label)).prompt;
   assert.match(write, /\n10\. \*\*版を限定する\*\* \(D-205\): [^\n]*JIS X 25010:2013[^\n]*改正版の中身は引用題が問わない限り足さない/);
-  assert.ok(write.includes("「書き方 7〜10」を単元全体で"), "self-check covers rule 10");
+  assert.ok(write.includes("「書き方 7〜11」を単元全体で"), "self-check covers rules 10 and 11");
   assert.ok(write.includes("題が支持しない限定 (方法・場所・主体・時期を限る語) を作らない (D-205)"), "rule 3 covers tie-in additions");
   const rv = calls.find((x) => /^review:/.test(x.opts.label)).prompt;
   assert.match(rv, /\n10\. \*\*版\*\* \(D-205\): [^\n]*版の明記も「例えば」の限定もなく言い切っていれば medium[^\n]*対象外[^\n]*low で記録する/);
@@ -398,4 +398,18 @@ test("D-205: writer rule 10 and critic 観点 10 qualify the edition of standard
   assert.ok(rv.indexOf("10. **版**") < rv.indexOf("## 判定"), "観点 10 sits in the checklist");
   const tr = calls.find((x) => /^tr-review:/.test(x.opts.label));
   assert.doesNotMatch(tr.prompt, /D-205/, "the translation review is unchanged");
+});
+
+test("D-208: writer rule 11 forbids option-tracing 考点 and reads warn choice-echo; the critic grades (iii) option tracing medium, never low", async () => {
+  const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
+  const write = calls.find((x) => /^write:/.test(x.opts.label)).prompt;
+  const rw = calls.find((x) => /^rewrite:/.test(x.opts.label)).prompt;
+  for (const p of [write, rw]) {
+    assert.match(p, /\n11\. \*\*引用題の選択肢・判断項目をなぞらない\*\* \(D-208[^\n]*\(a\)[^\n]*\(b\)[^\n]*\(c\)[^\n]*\(d\)[^\n]*正の定義と区別の軸[^\n]*`warn choice-echo`/);
+    assert.ok(p.includes("`warn choice-echo` 行 (issue 数には数えない) が出た考点は「書き方 11」で読み直し"), "step 3 reads the warn");
+  }
+  const rv = calls.find((x) => /^review:/.test(x.opts.label)).prompt;
+  assert.match(rv, /4\. \*\*写していないか\*\*[^\n]*\(iii\) のうち選択肢・判断項目をなぞる型 \(D-208[^\n]*\*\*medium\*\*。low にしない[^\n]*`warn choice-echo` 行に出た考点は 1 件ずつ/);
+  assert.ok(rv.includes("判断項目・空欄は題文側にあり warn に出ない"), "the stem blind spot is named");
+  for (const label of [/^localize:/, /^tr-review:/]) assert.doesNotMatch(calls.find((x) => label.test(x.opts.label)).prompt, /D-208/, "loc stages unchanged");
 });

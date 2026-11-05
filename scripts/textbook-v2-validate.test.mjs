@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { test } from "node:test";
 
-import { copyIssues, dataPaths, normCopy, estMinutes, jpOnlyIssues, loadKit, readJson, sha256File } from "./lib/textbook-v2.mjs";
+import { choiceEchoWarnings, copyIssues, dataPaths, normCopy, estMinutes, jpOnlyIssues, loadKit, readJson, sha256File } from "./lib/textbook-v2.mjs";
 import { fixture, jpPartOf, locPartOf, run, tempRoot, UNIT, writeJson } from "./lib/textbook-v2-testkit.mjs";
 
 const root = tempRoot();
@@ -286,4 +286,63 @@ test("warn jp-origin (D-202): another headword in a 考点 without [[jp:]] in zh
   const ok = validate(u);
   assert.equal(ok.code, 0, ok.out);
   assert.doesNotMatch(ok.out, /warn/);
+});
+
+// D-208 (S143): choice-echo WARN — a 考点 with a negation that echoes a cited question's wrong option(s)
+// (D-198 (iii): refuting wrong options / reproducing the option set). Non-blocking: a pointer for the writer
+// and the JP reviewer (calibration showed no lexical threshold separates (iii) from legitimate contrasts).
+test("choiceEchoWarnings (D-208): negation + a wrong option echoed → warn with qid and option label", async () => {
+  const { stripInline } = await loadKit();
+  const man = (choices, correct = "ア") => ({ unit_id: UNIT, terms: [], questions: { "2001h13a-q001": { topic_id: "x", terms: [], stem_jp: ["架空の設問"], choices_jp: choices, correct_answer: correct } } });
+  const unit = (text, qids = ["2001h13a-q001"]) => ({ unit_id: UNIT, terms: [{ term: "甲方式", points: [{ kind: "exam", text_jp: text, qids }] }] });
+  const C = { ア: "甲方式は通信路を常に占有する", イ: "乙方式は宛先ごとに鍵を配り直す", ウ: "丙方式は利用者の数を数える", エ: "丁方式" };
+  const w = (text, m = man(C), qids) => choiceEchoWarnings(unit(text, qids), m, stripInline);
+  // wrong option イ echoed (bigram coverage ≥ 0.3) inside a negation → 1 warn
+  const hit = w("甲方式は、宛先ごとに鍵を配り直す方式ではない。");
+  assert.equal(hit.length, 1);
+  assert.equal(hit[0].code, "choice-echo");
+  assert.equal(hit[0].field, "terms[0](甲方式).points[0].text_jp");
+  assert.match(hit[0].message, /2001h13a-q001 イ/);
+  // no negation → silent; only the correct option echoed → silent
+  assert.deepEqual(w("甲方式は、宛先ごとに鍵を配り直す方式である。"), []);
+  assert.deepEqual(w("甲方式は通信路を常に占有するので、品質を保てないことはない。"), []);
+  // a short wrong option (a term name) contained in a negation → warn; markup does not hide it
+  assert.equal(w("**甲方式**は 丁方式 とは別物である。").length, 1);
+  // no qids / unknown qid → silent
+  assert.deepEqual(w("甲方式は、宛先ごとに鍵を配り直す方式ではない。", man(C), []), []);
+  assert.deepEqual(w("甲方式は、宛先ごとに鍵を配り直す方式ではない。", man(C), ["2099r99-q999"]), []);
+  // coverage below 0.3 → silent (イ has 14 bigrams; 4 shared = 0.29)
+  assert.deepEqual(w("甲方式は宛先を見ない。"), []);
+  // two wrong options echoed → one warn naming both
+  const two = w("甲方式は、宛先ごとに鍵を配り直す方式でも、利用者の数を数える方式でもない。");
+  assert.equal(two.length, 1);
+  assert.match(two[0].message, /イ・ウ/);
+  // just above the threshold: 5 of イ's 14 bigrams shared = 0.36 → warn
+  assert.equal(w("甲方式は宛先ごではない。").length, 1);
+  // an option stored as lines (joinLines) is matched as one text
+  assert.equal(w("甲方式は、宛先ごとに鍵を配り直す方式ではない。", man({ ...C, イ: ["乙方式は宛先ごとに", "鍵を配り直す"] })).length, 1);
+  // Rule D L2: a digits-only option is never matched by containment; an ASCII token needs word boundaries
+  assert.deepEqual(w("甲方式は 1000 台を扱えないわけではない。", man({ ...C, エ: "100" })), []);
+  assert.deepEqual(w("甲方式は GPUs を使わない。", man({ ...C, エ: "GPU" })), []);
+  assert.equal(w("甲方式は GPU を使わない。", man({ ...C, エ: "GPU" })).length, 1);
+  assert.equal(w("甲方式は SSL/TLS を使わない。", man({ ...C, エ: "TLS" })).length, 1);
+});
+
+test("warn choice-echo (D-208): printed for a JP part and a unit (not a loc part), exit code unaffected", () => {
+  const mf = readJson(dataPaths(root).manifest(UNIT));
+  // a wrong option that is real text (not a digits / ASCII token, which need boundaries — Rule D L2)
+  const textual = (c) => /[^\x00-\x7F]/.test([c].flat().join("")) && [c].flat().join("").length >= 6;
+  const [qid, q] = Object.entries(mf.questions).find(([, x]) => Object.entries(x.choices_jp ?? {}).some(([k, c]) => k !== x.correct_answer && textual(c)));
+  const wrong = Object.keys(q.choices_jp).find((k) => k !== q.correct_answer && textual(q.choices_jp[k]));
+  const text = [q.choices_jp[wrong]].flat().join("");
+  const u = fixture();
+  u.terms[0].points[0] = { ...u.terms[0].points[0], text_jp: `${text}ではない。`, qids: [qid] };
+  const r = validate(u);
+  assert.match(r.out, new RegExp(`warn  choice-echo  ${reEsc(`terms[0](${u.terms[0].term}).points[0].text_jp`)}  ${qid} ${wrong}`), r.out);
+  assert.doesNotMatch(r.out, /^ {2}choice-echo/m, "never an issue line");
+  const jp = validate(jpPartOf(u), "--part");
+  assert.match(jp.out, /warn  choice-echo/, jp.out);
+  // Rule D L3: the localiser cannot change the Japanese → no choice-echo on a loc part
+  const loc = validate(locPartOf(u), "--part");
+  assert.doesNotMatch(loc.out, /choice-echo/, loc.out);
 });

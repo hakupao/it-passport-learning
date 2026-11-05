@@ -1,0 +1,10 @@
+import {loadPos,loadNeg,POS,LOWS} from './calib.mjs';
+import {choiceEchoWarnings,loadKit} from '/Volumes/DevSSD/Project/IT-Passport-Learning/scripts/lib/textbook-v2.mjs';
+const {stripInline}=await loadKit();
+const fire=s=>choiceEchoWarnings({unit_id:s.u,terms:[{term:'x',points:[{text_jp:s.text,qids:s.qids}]}]},s.man,stripInline).length>0;
+const P=loadPos(POS),L=loadPos(LOWS),N=loadNeg(),B=/^technology-(23-61|22-58)-/;
+const N2=N.filter(s=>B.test(s.u)),N1=N.filter(s=>!B.test(s.u));
+console.log('POS',P.filter(fire).length,'/',P.length, P.map(s=>`${s.u.slice(-8)} t${s.t}p${s.p}:${fire(s)?'Y':'n'}`).join(' '));
+console.log('LOW',L.filter(fire).length,'/',L.length, L.map(s=>`${s.lab}:${fire(s)?'Y':'n'}`).join(' '));
+console.log('NEG b14-17',N2.filter(fire).length,'/',N2.length,' NEG b01-13+pilot',N1.filter(fire).length,'/',N1.length);
+const units=new Set(N.map(s=>s.u)).size;console.log('units',units,'warn/unit',(N.filter(fire).length/units).toFixed(2));

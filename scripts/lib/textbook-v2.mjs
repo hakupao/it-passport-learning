@@ -337,6 +337,63 @@ export function copyIssues(p, manifest, stripInline, unitId = p.unit_id) {
   return out;
 }
 
+/**
+ * D-208 (S143) choice-echo WARN (non-blocking, never an issue): a 考点 (terms[i].points[j].text_jp) that carries a
+ * negation (CHOICE_ECHO_NEG) and echoes a wrong option of one of its cited questions (qids): the option's normalised
+ * text (normCopy) is contained in the 考点 (2+ characters; a digits-only option never, an ASCII-only one as a whole word), or ≥ CHOICE_ECHO_MIN_COVER of the option's character
+ * bigrams occur in the 考点 (options of 6+ characters). Targets D-198 (iii): refuting a cited question's wrong options
+ * in turn / reproducing its option set (b14〜b17 Rule A MEDIUM). Calibration (evidence/phase5/stage_07_ui/phase3/
+ * d208_calibration.md): no lexical threshold separates (iii) from a legitimate confusable pair, so this is a pointer
+ * the writer and the JP reviewer must judge, not a gate. Not covered: echoes of the stem (judgment items, fill-in
+ * blanks) — the reviewer checks those by reading.
+ * → [{unitId, code: "choice-echo", field, qid, options, message}]
+ */
+export const CHOICE_ECHO_MIN_COVER = 0.3;
+export const CHOICE_ECHO_NEG = /ない|ではなく|とは別|別物/;
+const bigrams = (s) => {
+  const o = new Set();
+  for (let i = 0; i + 1 < s.length; i++) o.add(s.slice(i, i + 2));
+  return o;
+};
+export function choiceEchoWarnings(u, manifest, stripInline, unitId = u.unit_id) {
+  const out = [];
+  (u.terms ?? []).forEach((t, i) =>
+    (t?.points ?? []).forEach((p, j) => {
+      if (typeof p?.text_jp !== "string" || !CHOICE_ECHO_NEG.test(stripInline(p.text_jp)) || !(p.qids ?? []).length) return;
+      const text = normCopy(p.text_jp, stripInline);
+      const raw = stripInline(p.text_jp).normalize("NFKC"); // for ASCII word boundaries (normCopy drops spaces / slashes)
+      const tb = bigrams(text);
+      for (const qid of p.qids) {
+        const q = manifest.questions?.[qid];
+        if (!q) continue;
+        const options = Object.entries(q.choices_jp ?? {})
+          .filter(([k]) => k !== q.correct_answer)
+          .filter(([, c]) => {
+            const n = normCopy(joinLines(c), stripInline);
+            // containment (2+ chars): digits-only options never; ASCII tokens (TLS, GPU) only as a whole word (Rule D L2)
+            if (n.length >= 2 && !/^[0-9]+$/.test(n) && (/^[A-Za-z0-9]+$/.test(n) ? new RegExp(`(?<![A-Za-z0-9])${n}(?![A-Za-z0-9])`).test(raw) : text.includes(n))) return true;
+            if (n.length < 6) return false;
+            const b = bigrams(n);
+            let hit = 0;
+            for (const g of b) if (tb.has(g)) hit++;
+            return hit / b.size >= CHOICE_ECHO_MIN_COVER;
+          })
+          .map(([k]) => k);
+        if (options.length)
+          out.push({
+            unitId,
+            code: "choice-echo",
+            field: `terms[${i}](${t.term}).points[${j}].text_jp`,
+            qid,
+            options,
+            message: `${qid} ${options.join("・")} — a negation echoing wrong option(s) of a cited question: D-198 (iii) if it only refutes them or reproduces the option set (D-208: rewrite as the positive rule / distinguishing axis, or keep as a genuine confusable pair)`,
+          });
+      }
+    }),
+  );
+  return out;
+}
+
 /** Long text → lines for the manifest (Read truncates long lines): split at newlines, then after 。 beyond 200 chars. */
 export function toLines(s) {
   if (typeof s !== "string") return s;
