@@ -20,7 +20,7 @@
 | b11 | technology-22-60 | ネットワーク応用 (2/2) | u06 | 97 | 7 | done (S141, attempts 2, Rule A PASS after 9 patches) |
 | b12 | strategy-01-03 | 会計・財務 (1/2) | u01 u02 u03 u04 u05 | 90 | 26 | done (S142, attempts 3/2/1/2/1, Rule A PASS after 65 patches, D-206 auto) |
 | b13 | strategy-01-03 | 会計・財務 (2/2) | u06 | 90 | 4 | done (S142, attempts 1, Rule A PASS after 7 patches, D-206 auto) |
-| b14 | technology-23-61 | 情報セキュリティ (1/3) | u01 u02 u03 u04 u05 | 89 | 31 | todo |
+| b14 | technology-23-61 | 情報セキュリティ (1/3) | u01 u02 u03 u04 u05 | 89 | 31 | done (S142, attempts 2/1/2/2/1, Rule A PASS after 41 patches, D-206 auto) |
 | b15 | technology-23-61 | 情報セキュリティ (2/3) | u06 u07 u08 u09 u10 | 89 | 30 | todo |
 | b16 | technology-23-61 | 情報セキュリティ (3/3) | u11 u12 u13 | 89 | 16 | todo |
 | b17 | technology-22-58 | ネットワーク方式 | u01 u02 u03 u04 u05 | 87 | 31 | todo |
