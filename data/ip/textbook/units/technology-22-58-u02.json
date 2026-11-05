@@ -1,243 +1,1085 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-58-u02",
   "topic_id": "technology-22-58",
   "category": "technology",
   "title_jp": "ネットワークを構成する接続装置",
+  "title_zh": "构成网络的连接设备",
+  "title_en": "Connecting Devices That Make Up a Network",
   "unit_summary_jp": "ハブ・スイッチ・ルーターなどネットワークを構築・中継・制御する接続装置の役割と、論理分割・集中制御の概念を理解する。",
+  "unit_summary_zh": "理解集线器、交换机、路由器等用于搭建、中继和控制网络的连接设备的作用，以及逻辑划分与集中控制的概念。",
+  "unit_summary_en": "Understand the roles of connecting devices such as hubs, switches, and routers that build, relay, and control networks, along with the concepts of logical segmentation and centralized control.",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-22-58-u01"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、ネットワークをつなぐ接続装置を学ぶ。ハブ・スイッチ・ルーターが「どの範囲をどう中継するか」を押さえ、外部への出口となるデフォルトゲートウェイやプロキシ、論理分割のVLAN、集中制御のSDNへ広げる。装置の役割と機能差はITパスポートで頻出のため、対比で正確に区別できることが重要。",
-    "freq_badge": "頻出",
-    "est_minutes": 21,
-    "intro_zh": "本单元学习用于连接网络的连接设备。在掌握集线器、交换机、路由器各自“在什么范围内、如何中继”的基础上，进一步扩展到作为对外出口的默认网关与代理服务器、实现逻辑划分的 VLAN，以及实现集中控制的 SDN。这些设备的作用与功能差异在 IT 护照考试中经常出现，因此能够通过对比准确区分它们非常重要。",
-    "intro_en": "In this unit you will learn about the connecting devices that link networks together. After grasping how hubs, switches, and routers each \"relay traffic, and over what range,\" we expand to the default gateway and proxy that serve as exits to the outside, the VLAN for logical segmentation, and SDN for centralized control. Because the roles and functional differences of these devices appear frequently in the IT Passport exam, it is important to distinguish them accurately through comparison."
-  },
-  "terms": [
+  "goals_jp": [
+    "**ハブ**と**スイッチ**を、届いたデータを全ポートへ送るか宛先のポートだけへ送るかで見分けられる",
+    "**ルーター**が IP アドレスで経路を選んでネットワーク同士を中継することと、端末に設定する**デフォルトゲートウェイ**との関係を説明できる",
+    "端末に代わって外部へ接続する**プロキシ**の役割を説明できる",
+    "**VLAN** による論理的な分割と、**SDN** による制御の集約を区別できる"
+  ],
+  "goals_zh": [
+    "能根据收到的数据是发往所有端口还是只发往目标端口，区分 **集线器** 和 **交换机**。",
+    "能说明 **路由器** 根据 IP 地址选择路径、在网络之间转发，以及它与终端上设置的 **默认网关** 之间的关系。",
+    "能说明代替终端连接外部的 **代理** 起什么作用。",
+    "能区分 **VLAN** 的逻辑划分与 **SDN** 的控制集中。"
+  ],
+  "goals_en": [
+    "Tell a **hub** from a **switch** by whether incoming data goes out every port or only the destination's port.",
+    "Explain how a **router** picks routes by IP address to relay between networks, and how that ties to the **default gateway** set on each device.",
+    "Explain the role of a **proxy**, which connects to the outside on a device's behalf.",
+    "Distinguish logical division with **VLAN** from centralized control with **SDN**."
+  ],
+  "overview_cols_jp": [
+    "判断の手がかり",
+    "位置づけ"
+  ],
+  "overview_cols_zh": [
+    "判断线索",
+    "定位"
+  ],
+  "overview_cols_en": [
+    "What to look for",
+    "Where it fits"
+  ],
+  "overview_rows": [
     {
       "term": "ハブ",
-      "definition_jp": "受信した信号を全ポートにそのまま流す、最も単純な集線装置。",
-      "explanation_jp": "ハブは複数の機器を1か所に集めてつなぐ装置で、受け取ったデータを宛先に関係なく接続中の全ポートへ送り出す。配線をまとめる役割が中心で、宛先を見分ける機能は持たない。\n\n試験では「全ポートに送る=共有型」という点が、宛先だけに送るスイッチとの違いとして問われる。全員に流すため通信が増えると衝突が起きやすく、効率はスイッチに劣るという弱点も押さえておきたい。",
-      "analogy_jp": "会議室の全員に同じ書類を配ってしまう受付係のようなもの。誰宛てかを見ずに、その場にいる人すべてに同じものを渡してしまう。",
-      "memory_hook_jp": "ハブといえば全ポートにそのまま流す集線装置",
-      "inline_quiz": [
-        "2011h23a-q068",
-        "2012h24a-q084"
+      "one_line_jp": "受け取った信号をほかの全ポートへそのまま送る集線装置",
+      "one_line_zh": "把收到的信号原样发往其他所有端口的集线设备",
+      "one_line_en": "A concentrator that repeats incoming signals out every other port",
+      "extra_jp": [
+        "宛先を見ない",
+        "LAN 内の集線装置"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "集线器（Hub）",
-      "term_en": "Hub",
-      "definition_zh": "把接收到的信号原样转发到所有端口的、最简单的集线设备。",
-      "definition_en": "The simplest concentrator device, which forwards a received signal as-is to all ports.",
-      "explanation_zh": "集线器是把多台设备集中到一处进行连接的设备，它会把收到的数据不论目的地为何，都发送到所有正在连接的端口。其核心作用是汇总线缆，并不具备识别目的地的功能。\n\n考试中，“向所有端口发送＝共享型”这一点常作为与“只向目的地发送”的交换机之间的区别被考查。由于会向所有人转发，通信量增加时容易发生冲突，效率不如交换机，这个弱点也要记住。",
-      "explanation_en": "A hub is a device that gathers multiple machines into one place to connect them; it sends received data to every connected port regardless of the destination. Its main role is to consolidate cabling, and it has no function to tell destinations apart.\n\nOn the exam, the point that \"sending to all ports = shared type\" is asked as the difference from a switch, which sends only to the destination. Because it forwards to everyone, collisions occur easily as traffic grows, and its efficiency is inferior to a switch—a weakness worth remembering.",
-      "analogy_zh": "就像把同一份文件发给会议室里所有人的接待员。不看是发给谁的，就把同样的东西交给在场的每一个人。",
-      "analogy_en": "Like a receptionist who hands the same document to everyone in a meeting room. Without checking who it is for, they give the same thing to every person present.",
-      "memory_hook_zh": "说到集线器，就是把信号原样转发到所有端口的集线设备",
-      "memory_hook_en": "Hub → forwards the signal as-is to all ports (a concentrator)"
+      "extra_zh": [
+        "不看目的地址",
+        "局域网内的集线设备"
+      ],
+      "extra_en": [
+        "Ignores the destination",
+        "Concentrator inside a LAN"
+      ]
     },
     {
       "term": "スイッチ",
-      "definition_jp": "宛先を判別し、必要なポートだけにデータを送る集線装置。",
-      "explanation_jp": "スイッチ(レイヤ2スイッチ)はハブを高度化した装置で、各機器のMACアドレスを記憶し、データを宛先の機器がつながるポートだけへ転送する。\n\n試験では、全ポートに流すハブとの違いが頻出。宛先だけに送るため無駄な通信が減り、衝突が起きにくく効率がよい。「ハブ=全員に配る/スイッチ=宛先だけに配る」という対比で覚えると区別しやすい。",
-      "analogy_jp": "宛名を見て、その人の机だけに郵便を届ける社内の仕分け係。全員に配らず、必要な相手にだけ正確に渡す。",
-      "memory_hook_jp": "スイッチといえば宛先のポートだけに送る",
-      "inline_quiz": [
-        "2014h26a-q066"
+      "one_line_jp": "宛先の MAC アドレスを見て、その機器のポートだけへ送る集線装置",
+      "one_line_zh": "查看目的 MAC 地址，只发往该设备所在端口的集线设备",
+      "one_line_en": "A concentrator that reads the destination MAC address and sends only to that device's port",
+      "extra_jp": [
+        "宛先 MAC アドレス",
+        "LAN 内の集線装置"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "交换机（Switch）",
-      "term_en": "Switch",
-      "definition_zh": "判别目的地、只把数据发送到所需端口的集线设备。",
-      "definition_en": "A concentrator device that identifies the destination and sends data only to the required port.",
-      "explanation_zh": "交换机（二层交换机）是集线器的高级版，它会记住各台设备的 MAC 地址，只把数据转发到目的设备所连接的那个端口。\n\n考试中，它与向所有端口转发的集线器之间的区别经常出现。由于只向目的地发送，可减少无用通信、不易发生冲突、效率更高。用“集线器＝发给所有人／交换机＝只发给目的地”的对比来记忆，更容易区分。",
-      "explanation_en": "A switch (Layer 2 switch) is an advanced version of a hub; it memorizes the MAC address of each machine and forwards data only to the port to which the destination machine is connected.\n\nOn the exam, the difference from a hub, which floods all ports, appears frequently. Because it sends only to the destination, it reduces wasteful traffic, makes collisions less likely, and is more efficient. Remembering it as the contrast \"hub = hands to everyone / switch = hands only to the destination\" makes it easier to tell them apart.",
-      "analogy_zh": "像公司里看着收件人姓名、只把邮件送到那个人桌上的分拣员。不发给所有人，只准确地交给需要的对象。",
-      "analogy_en": "Like an in-house sorter who reads the addressee's name and delivers the mail only to that person's desk. Instead of distributing to everyone, it accurately hands it only to the intended recipient.",
-      "memory_hook_zh": "说到交换机，就是只把数据发送到目的端口",
-      "memory_hook_en": "Switch → sends only to the destination port"
+      "extra_zh": [
+        "目的 MAC 地址",
+        "局域网内的集线设备"
+      ],
+      "extra_en": [
+        "Destination MAC address",
+        "Concentrator inside a LAN"
+      ]
     },
     {
       "term": "ルーター",
-      "definition_jp": "異なるネットワーク(LAN)同士を中継し、最適経路で転送する装置。",
-      "explanation_jp": "ルーターはLANとLAN、あるいはLANとインターネットなど、異なるネットワーク同士をつなぐ装置。IPアドレスを見て、データをどの経路へ送るか(ルーティング)を判断する。\n\n試験では、同じLAN内の中継であるハブ・スイッチに対し、ルーターは「ネットワーク間」をつなぐ上位の装置だという役割の違いが問われる。家庭でインターネットに接続する機器の中核もルーターである点も押さえておきたい。",
-      "analogy_jp": "街と街を結ぶ道路の分岐点に立ち、行き先を見て最適な道へ案内する交通案内係のような役割を果たす。",
-      "memory_hook_jp": "ルーターといえばLAN間を最適経路で中継",
-      "inline_quiz": [
-        "2009h21h-q056",
-        "2010h22h-q064"
+      "one_line_jp": "宛先の IP アドレスで経路を選び、ネットワーク同士を中継する装置",
+      "one_line_zh": "根据目的 IP 地址选择路径、在网络之间转发的设备",
+      "one_line_en": "A device that picks a route by destination IP address and relays between networks",
+      "extra_jp": [
+        "宛先 IP アドレスと経路表",
+        "ネットワークとネットワークの境目"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "路由器（Router）",
-      "term_en": "Router",
-      "definition_zh": "在不同网络（LAN）之间进行中继、并按最佳路径转发的设备。",
-      "definition_en": "A device that relays between different networks (LANs) and forwards along the optimal route.",
-      "explanation_zh": "路由器是连接 LAN 与 LAN，或 LAN 与互联网等不同网络之间的设备。它查看 IP 地址，判断应把数据发往哪条路径（路由）。\n\n考试中，相对于在同一 LAN 内中继的集线器和交换机，路由器作为连接“网络之间”的上层设备，其作用上的差异会被考查。家庭中连接互联网的设备的核心也是路由器，这一点也要记住。",
-      "explanation_en": "A router is a device that connects different networks—LAN to LAN, or LAN to the internet, and so on. It looks at the IP address to decide which route to send data along (routing).\n\nOn the exam, the difference in role is asked: against hubs and switches that relay within the same LAN, the router is a higher-level device that connects \"between networks.\" Keep in mind that the core of the device used to connect to the internet at home is also a router.",
-      "analogy_zh": "就像站在连接各个城市的道路岔口、看着目的地把车引导到最佳道路上的交通指挥员。",
-      "analogy_en": "Like a traffic guide standing at the junction of roads that link towns, looking at the destination and directing you onto the best road.",
-      "memory_hook_zh": "说到路由器，就是在 LAN 之间按最佳路径中继",
-      "memory_hook_en": "Router → relays between LANs along the optimal route"
+      "extra_zh": [
+        "目的 IP 地址和路由表",
+        "网络与网络的交界处"
+      ],
+      "extra_en": [
+        "Destination IP address and routing table",
+        "The border between networks"
+      ]
     },
     {
       "term": "デフォルトゲートウェイ",
-      "definition_jp": "自LAN外への通信時に、出口として使う機器のこと。",
-      "explanation_jp": "デフォルトゲートウェイは、同じLAN内に宛先がない通信を外部へ送り出すときに経由する出口で、通常はルーターがその役割を担う。\n\n試験では「外部(別ネットワーク)へ出るときの出口」という役割の理解が問われる。宛先が自分のLAN内なら直接届け、LAN外ならまずデフォルトゲートウェイへ渡す、という振り分けの考え方を図でイメージしておくと正答しやすい。",
-      "analogy_jp": "建物の中の人へは直接届け、外の人へ送るときは必ず通る正面玄関のような存在。外への通信はすべてここを通る。",
-      "memory_hook_jp": "デフォルトゲートウェイといえばLAN外への出口",
-      "inline_quiz": [
-        "2015h27h-q049"
+      "one_line_jp": "自分のネットワークの外あての通信を、端末がまず渡す出口",
+      "one_line_zh": "终端把发往本网络之外的通信先交给的出口",
+      "one_line_en": "The exit a device first hands traffic to when it is bound outside its own network",
+      "extra_jp": [
+        "宛先が自分のネットワークの外かどうか",
+        "端末に設定する出口 (通常はルーター)"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR\n  A[\"自分の端末\"] -->|\"同一LAN内\"| B[\"LAN内の相手\"]\n  A -->|\"LAN外あて\"| C[\"デフォルトゲートウェイ ルーター\"]\n  C --> D[\"外部ネットワーク\"]",
-        "svg_path": "figures/technology-22-58-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "默认网关（Default Gateway）",
-      "term_en": "Default Gateway",
-      "definition_zh": "向本 LAN 之外通信时，作为出口使用的设备。",
-      "definition_en": "The device used as the exit when communicating outside one's own LAN.",
-      "explanation_zh": "默认网关是当通信的目的地不在同一 LAN 内、需要把数据发往外部时所经过的出口，通常由路由器承担这一作用。\n\n考试中，会考查对“向外部（其他网络）发送时的出口”这一作用的理解。把“如果目的地在自己的 LAN 内就直接送达，如果在 LAN 之外就先交给默认网关”这种分流思路用图来想象，更容易答对。",
-      "explanation_en": "The default gateway is the exit traffic passes through when its destination is not within the same LAN and must be sent outside; usually a router takes on this role.\n\nOn the exam, your understanding of the role \"the exit when going outside (to another network)\" is tested. Picturing the routing logic—\"if the destination is within your own LAN, deliver directly; if outside the LAN, first hand it to the default gateway\"—with a diagram makes it easier to answer correctly.",
-      "analogy_zh": "就像对楼里的人可以直接送达，而给外面的人时必定要经过的正门。所有对外的通信都从这里通过。",
-      "analogy_en": "Like the front entrance that you deliver directly to people inside the building but must always pass through when sending to someone outside. All outbound communication goes through here.",
-      "memory_hook_zh": "说到默认网关，就是通向 LAN 之外的出口",
-      "memory_hook_en": "Default gateway → the exit to outside the LAN"
+      "extra_zh": [
+        "目的地是否在本网络之外",
+        "在终端上设置的出口（通常是路由器）"
+      ],
+      "extra_en": [
+        "Whether the destination is outside its own network",
+        "An exit set on the device (usually a router)"
+      ]
     },
     {
       "term": "プロキシ",
-      "definition_jp": "内部の機器に代わって外部と通信を中継する代理サーバ。",
-      "explanation_jp": "プロキシ(プロキシサーバ)は、社内などの内部機器に代わってインターネットへアクセスする「代理人」。通信を一手に中継することで、アクセス記録の取得や有害サイトの遮断、内部アドレスの隠蔽といった効果が得られる。\n\n試験では、通信を「代理・中継する」役割と、セキュリティやアクセス制御に使われる点が問われる。単なる経路装置ではなく、間に立って内容を見たり制御したりできる点がデフォルトゲートウェイとの違い。",
-      "analogy_jp": "本人に代わって窓口へ出向く代理人。代わりに手続きをしつつ、誰が何を頼んだかを記録し、不適切な依頼は断ってくれる。",
-      "memory_hook_jp": "プロキシといえば内部に代わって外部と通信する代理",
-      "inline_quiz": [
-        "2018h30a-q064"
+      "one_line_jp": "内部の端末の代理として外部の Web サーバへ接続し、通信を中継するサーバ",
+      "one_line_zh": "代替内部终端连接外部 Web 服务器并中转通信的服务器",
+      "one_line_en": "A server that connects to outside web servers for internal devices and relays the traffic",
+      "extra_jp": [
+        "端末から受けた接続要求",
+        "内部と外部の間に置く代理サーバ"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "代理（Proxy）",
-      "term_en": "Proxy",
-      "definition_zh": "代替内部设备与外部进行通信中继的代理服务器。",
-      "definition_en": "A proxy server that relays communication with the outside on behalf of internal machines.",
-      "explanation_zh": "代理（代理服务器）是代替公司内部等内部设备去访问互联网的“代理人”。通过把通信统一中继，可获得获取访问记录、屏蔽有害网站、隐藏内部地址等效果。\n\n考试中，会考查它“代理、中继”通信的作用，以及被用于安全和访问控制这一点。它不是单纯的路径设备，而是能站在中间查看内容或加以控制，这正是它与默认网关的区别。",
-      "explanation_en": "A proxy (proxy server) is an \"agent\" that accesses the internet on behalf of internal machines, such as those inside a company. By relaying all communication in one place, it yields effects such as obtaining access logs, blocking harmful sites, and hiding internal addresses.\n\nOn the exam, its role of \"acting for and relaying\" communication, and the point that it is used for security and access control, are tested. Unlike a mere routing device, it can stand in between and inspect or control the content—and that is the difference from a default gateway.",
-      "analogy_zh": "就像代替本人去窗口办事的代理人。一边替你办手续，一边记录谁委托了什么，并替你拒绝不当的请求。",
-      "analogy_en": "Like an agent who goes to the counter in place of you. While handling the procedures for you, it records who requested what and turns down inappropriate requests on your behalf.",
-      "memory_hook_zh": "说到代理，就是代替内部与外部通信的代理人",
-      "memory_hook_en": "Proxy → an agent that communicates with the outside in place of the internal side"
+      "extra_zh": [
+        "从终端收到的连接请求",
+        "放在内部与外部之间的代理服务器"
+      ],
+      "extra_en": [
+        "Connection requests from devices",
+        "A stand-in server between inside and outside"
+      ]
     },
     {
       "term": "VLAN",
-      "definition_jp": "物理配線によらず、論理的にLANを分割するしくみ。",
-      "explanation_jp": "VLAN(仮想LAN)は、1台のスイッチや同じ物理配線の中でも、設定によってグループを分け、別々のLANのように扱う技術。部署ごとに通信を分離するといった使い方ができる。\n\n試験では「物理的な配線を変えずに論理的に分割する」という点が要点。配線をつなぎ替えなくてもソフト設定で区切りを作れるため、柔軟な構成変更やセキュリティ向上に役立つことを押さえておきたい。",
-      "analogy_jp": "1つの大部屋を、壁を立てずに座席の割り当てだけで複数の部署に分けるようなもの。配置を変えずグループを区切れる。",
-      "memory_hook_jp": "VLANといえば物理によらず論理的にLAN分割",
-      "inline_quiz": [
-        "2012h24h-q065"
+      "one_line_jp": "配線を変えずに、設定で LAN を論理的なグループに分けるしくみ",
+      "one_line_zh": "不改布线、靠设置把局域网分成逻辑分组的机制",
+      "one_line_en": "A way to split a LAN into logical groups by settings, without rewiring",
+      "extra_jp": [
+        "機器やポートに付けたグループの設定",
+        "スイッチ上の論理的な区切り"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD\n  S[\"1台のスイッチ\"] --> V1[\"VLAN A 営業部\"]\n  S --> V2[\"VLAN B 開発部\"]\n  V1 -.->|\"論理的に分離\"| V2",
-        "svg_path": "figures/technology-22-58-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "VLAN（虚拟局域网）",
-      "term_en": "VLAN",
-      "definition_zh": "不依赖物理布线、在逻辑上划分 LAN 的机制。",
-      "definition_en": "A mechanism that logically segments a LAN without depending on physical cabling.",
-      "explanation_zh": "VLAN（虚拟 LAN）是一种即便在同一台交换机或同一物理布线之内，也能通过设置把组划分开、像分别独立的 LAN 一样使用的技术。可用于按部门隔离通信等用途。\n\n考试中，“不改变物理布线就在逻辑上划分”是要点。由于不必重新接线、靠软件设置就能划出界限，因此有助于灵活地变更结构和提升安全性，这一点要记住。",
-      "explanation_en": "A VLAN (virtual LAN) is a technology that, even within a single switch or the same physical cabling, divides groups by configuration and treats them like separate LANs. It can be used, for example, to isolate communication by department.\n\nOn the exam, the point is that it \"divides logically without changing the physical cabling.\" Because you can create boundaries by software settings without rewiring, it helps with flexible configuration changes and improved security—worth keeping in mind.",
-      "analogy_zh": "就像把一个大房间不立隔墙、只靠座位的分配就分给多个部门。不改变布局也能把组划分开。",
-      "analogy_en": "Like dividing one large room among several departments by seat assignment alone, without putting up walls. You can partition groups without changing the layout.",
-      "memory_hook_zh": "说到 VLAN，就是不依赖物理、在逻辑上划分 LAN",
-      "memory_hook_en": "VLAN → segments a LAN logically, not physically"
+      "extra_zh": [
+        "给设备或端口指定的分组设置",
+        "交换机上的逻辑划分"
+      ],
+      "extra_en": [
+        "Group settings assigned to devices or ports",
+        "A logical partition on a switch"
+      ]
     },
     {
       "term": "SDN",
-      "definition_jp": "ネットワークをソフトウェアで集中制御する考え方。",
-      "explanation_jp": "SDN(Software-Defined Networking)は、各機器を個別に設定するのではなく、ソフトウェアによって全体の経路や制御をまとめて管理する方式。データを運ぶ部分と制御する部分を分離するのが特徴。\n\n試験では「ソフトウェアで集中的に制御・構成変更できる」という考え方が問われる。装置を一台ずつ手作業で設定する従来方式に比べ、柔軟で迅速な構成変更ができる点が、本ユニットの応用の到達点として重要。",
-      "analogy_jp": "各信号機を個別に手で切り替えるのではなく、管制室から街全体の信号をまとめて制御するような集中管理のしくみ。",
-      "memory_hook_jp": "SDNといえばソフトでネットワークを集中制御",
-      "inline_quiz": [
-        "2015h27a-q060"
+      "one_line_jp": "ネットワークの経路制御をソフトウェアに集めて行う考え方",
+      "one_line_zh": "把网络的路径控制集中到软件上进行的思路",
+      "one_line_en": "An approach that gathers network route control into software",
+      "extra_jp": [
+        "制御を集めたソフトウェアからの指示",
+        "ネットワーク全体の制御のしかた"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "SDN（软件定义网络）",
-      "term_en": "SDN",
-      "definition_zh": "用软件对网络进行集中控制的理念。",
-      "definition_en": "The concept of controlling a network centrally with software.",
-      "explanation_zh": "SDN（Software-Defined Networking，软件定义网络）是一种不对各设备逐台单独配置，而是通过软件统一管理整体路径与控制的方式。其特点是把传输数据的部分与进行控制的部分相分离。\n\n考试中，会考查“能用软件集中地控制、变更结构”这一理念。相比逐台手工配置设备的传统方式，它能更灵活、更迅速地变更结构，作为本单元在应用层面的最终目标，这一点很重要。",
-      "explanation_en": "SDN (Software-Defined Networking) is an approach that, instead of configuring each device individually, manages the overall routing and control collectively through software. Its characteristic is separating the part that carries data from the part that performs control.\n\nOn the exam, the concept that you can \"control and reconfigure centrally with software\" is tested. Compared with the conventional approach of configuring devices one by one by hand, it allows flexible and rapid configuration changes—important as the culminating application point of this unit.",
-      "analogy_zh": "就像不再逐个用手切换每盏信号灯，而是从指挥室对全城的信号灯统一进行控制的集中管理机制。",
-      "analogy_en": "Like a centralized management scheme where, instead of switching each traffic light by hand one by one, you control all the city's lights together from a control room.",
-      "memory_hook_zh": "说到 SDN，就是用软件对网络集中控制",
-      "memory_hook_en": "SDN → centrally controls the network with software"
+      "extra_zh": [
+        "来自集中控制的软件的指令",
+        "整个网络的控制方式"
+      ],
+      "extra_en": [
+        "Instructions from the software that holds the control",
+        "How the whole network is controlled"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "ハブ",
+      "term_zh": "集线器（Hub）",
+      "term_en": "Hub",
+      "one_jp": "**ハブ**は、複数の機器をケーブルで 1 か所に集めてつなぎ、あるポートで受け取った信号を**ほかの全ポート**へそのまま送り出す集線装置である。",
+      "one_zh": "**集线器**（[[jp:ハブ]]）是用线缆把多台设备集中连接到一处的集线设备，它把某个端口收到的信号原样发往 **其他所有端口**。",
+      "one_en": "A **hub** ([[jp:ハブ]]) is a concentrator that gathers cables from several devices in one place and repeats a signal received on one port out of **every other port** unchanged.",
+      "detail_jp": "**ポート**は、ケーブルを差し込む機器側の接続口である。ハブは信号の宛先を見分けないので、特定の 1 台あての通信でも、つながっているすべての機器に届く。同時に送る機器が増えるほど信号がぶつかり合う**衝突**が起きやすく、通信の効率が落ちる。",
+      "detail_zh": "**端口**（[[jp:ポート]]）是设备上插线缆的接口。集线器不分辨信号的目的地，所以即使是发给某一台设备的通信，也会送到所有相连的设备。同时发送的设备越多，信号越容易相撞而发生 **冲突**（[[jp:衝突]]），通信效率随之下降。",
+      "detail_en": "A **port** ([[jp:ポート]]) is the socket on a device where a cable plugs in. A hub does not check where a signal is headed, so even traffic meant for one machine reaches every connected device. The more devices send at the same time, the more often signals run into each other in a **collision** ([[jp:衝突]]), and efficiency drops.",
+      "analogy_jp": "館内放送のようなもの。1 人あての呼び出しでも、フロアにいる全員に聞こえてしまう。",
+      "analogy_zh": "就像楼内广播。即使只是呼叫一个人，整层楼的人都会听到。",
+      "analogy_en": "It is like a building's PA system. Even a page for one person is heard by everyone on the floor.",
+      "hook_jp": "hub は英語で車輪の中心 (こしき)。そこからスポークが放射状に伸びる姿が、ハブを中心にした配線の形と重なる。",
+      "hook_zh": "hub 在英语里指车轮的中心（轮毂）。辐条从轮毂向外放射伸出的样子，正好与以集线器为中心的布线形状重合。",
+      "hook_en": "A hub is the center of a wheel. The spokes radiating from it match the way cables spread out from a hub.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "LAN を組むときに、各機器からのケーブルを 1 か所に集めてつなぐ機器が**ハブ**である。",
+          "text_zh": "组建局域网（LAN）时，把各设备的线缆集中到一处连接起来的设备是 **集线器**（[[jp:ハブ]]）。",
+          "text_en": "When building a LAN, the device that brings every machine's cable together in one place is a **hub** ([[jp:ハブ]]).",
+          "qids": [
+            "2011h23a-q068"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**ハブ**を中心に置き、機器を放射状につなぐ物理的な接続形態を**スター型**という。",
+          "text_zh": "以 **集线器** 为中心、把设备呈放射状连接起来的物理连接形态叫作 **星型**（[[jp:スター型]]）。",
+          "text_en": "The physical layout with a **hub** in the middle and devices linked to it like rays is called a **star topology** ([[jp:スター型]]).",
+          "qids": [
+            "2018h30h-q058"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**リンクランプ**の点灯で分かるのは、ケーブルでつないだポートまで物理的な接続ができたことだけである。",
+          "text_zh": "**链路指示灯**（[[jp:リンクランプ]]）亮起，只能说明到线缆所连端口为止的物理连接已经接通。",
+          "text_en": "A lit **link lamp** ([[jp:リンクランプ]]) only shows that the physical connection up to the port the cable is plugged into works.",
+          "qids": [
+            "2015h27a-q066"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2011h23a-q068",
+        "2018h30h-q058",
+        "2015h27a-q066"
+      ],
+      "definition_jp": "ハブは、複数の機器をケーブルで 1 か所に集めてつなぎ、あるポートで受け取った信号をほかの全ポートへそのまま送り出す集線装置である。",
+      "definition_zh": "集线器（ハブ）是用线缆把多台设备集中连接到一处的集线设备，它把某个端口收到的信号原样发往 其他所有端口。",
+      "definition_en": "A hub (ハブ) is a concentrator that gathers cables from several devices in one place and repeats a signal received on one port out of every other port unchanged.",
+      "explanation_jp": "ポートは、ケーブルを差し込む機器側の接続口である。ハブは信号の宛先を見分けないので、特定の 1 台あての通信でも、つながっているすべての機器に届く。同時に送る機器が増えるほど信号がぶつかり合う衝突が起きやすく、通信の効率が落ちる。",
+      "explanation_zh": "端口（ポート）是设备上插线缆的接口。集线器不分辨信号的目的地，所以即使是发给某一台设备的通信，也会送到所有相连的设备。同时发送的设备越多，信号越容易相撞而发生 冲突（衝突），通信效率随之下降。",
+      "explanation_en": "A port (ポート) is the socket on a device where a cable plugs in. A hub does not check where a signal is headed, so even traffic meant for one machine reaches every connected device. The more devices send at the same time, the more often signals run into each other in a collision (衝突), and efficiency drops.",
+      "memory_hook_jp": "hub は英語で車輪の中心 (こしき)。そこからスポークが放射状に伸びる姿が、ハブを中心にした配線の形と重なる。",
+      "memory_hook_zh": "hub 在英语里指车轮的中心（轮毂）。辐条从轮毂向外放射伸出的样子，正好与以集线器为中心的布线形状重合。",
+      "memory_hook_en": "A hub is the center of a wheel. The spokes radiating from it match the way cables spread out from a hub.",
+      "inline_quiz": [
+        "2011h23a-q068",
+        "2018h30h-q058",
+        "2015h27a-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "スイッチ",
+      "term_zh": "交换机（Switch）",
+      "term_en": "Switch",
+      "one_jp": "**スイッチ** (レイヤ2スイッチ) は、届いたデータの宛先**MACアドレス**を見て、その機器がつながるポートにだけ転送する集線装置である。",
+      "one_zh": "**交换机**（[[jp:スイッチ]]，二层交换机）是查看收到数据的目的 **MAC地址**，只转发到该设备所连端口的集线设备。",
+      "one_en": "A **switch** ([[jp:スイッチ]]), or Layer 2 switch, is a concentrator that reads the destination **MAC address** of incoming data and forwards it only to the port where that device is connected.",
+      "detail_jp": "**MACアドレス**は、ネットワークにつなぐ部品ごとに製造時に付けられる識別番号である。スイッチは、受け取ったデータの送信元 MAC アドレスとポートの組を表に記録していき、宛先がどのポートの先にあるかをその表で判断する。この単元で単にスイッチというときはこのレイヤ2スイッチを指し、通信相手を見分けるためにネットワーク上で機器に割り当てる番号である **IPアドレス** を見て送り先を決めるものは**レイヤ3スイッチ**と呼んで区別する。",
+      "detail_zh": "**MAC地址**（[[jp:MACアドレス]]）是出厂时给每个联网部件分配的识别号。交换机会把收到数据的源 MAC 地址和端口的组合逐一记入表中，再用这张表判断目的地位于哪个端口之后。本单元单说交换机时指这种二层交换机；而根据 **IP 地址**（[[jp:IPアドレス]]，在网络上分配给设备、用来区分通信对象的编号）决定发送目标的设备，则称为 **三层交换机**（[[jp:レイヤ3スイッチ]]）以示区别。",
+      "detail_en": "A **MAC address** ([[jp:MACアドレス]]) is an ID number assigned at manufacture to each network component. A switch records each incoming frame's source MAC address and port in a table, then uses that table to work out which port leads to the destination. In this unit a plain \"switch\" means this Layer 2 switch, while one that decides where to send data by **IP address** ([[jp:IPアドレス]]), the number assigned to devices on a network to tell them apart, is called a **Layer 3 switch** ([[jp:レイヤ3スイッチ]]).",
+      "analogy_jp": "社内便の仕分け係が宛名を見て、その人の席がある棚にだけ届けるようなもの。",
+      "analogy_zh": "就像公司内部邮件的分拣员看收件人姓名，只把信件放进那个人座位所在的格子里。",
+      "analogy_en": "It is like a mailroom clerk who reads the name on each envelope and drops it only in that person's slot.",
+      "hook_jp": "switch は英語で「切り替える」。",
+      "hook_zh": "switch 在英语里是“切换”的意思。",
+      "hook_en": "To switch means to change over.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "名前に「スイッチ」と付いていても、**レイヤ3スイッチ**は宛先の IP アドレスを見て送信先を決める機器である。",
+          "text_zh": "名字里虽然带“交换机”，**三层交换机**（[[jp:レイヤ3スイッチ]]）却是根据目的 IP 地址（[[jp:IPアドレス]]）决定发送目标的设备。",
+          "text_en": "Despite \"switch\" in its name, a **Layer 3 switch** ([[jp:レイヤ3スイッチ]]) decides where to send data by the destination IP address ([[jp:IPアドレス]]).",
+          "qids": [
+            "2018h30h-q072"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**スイッチングハブ**は名前に「ハブ」と付くが、宛先を見て送り分けるスイッチの一種である。",
+          "text_zh": "**交换式集线器**（[[jp:スイッチングハブ]]）名字里带“集线器”（[[jp:ハブ]]），实际上是查看目的地址分别转发的一种交换机（[[jp:スイッチ]]）。",
+          "text_en": "A **switching hub** ([[jp:スイッチングハブ]]) has \"hub\" ([[jp:ハブ]]) in its name, but it is a kind of switch ([[jp:スイッチ]]) that reads the destination and forwards accordingly."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "recv",
+              "label": {
+                "jp": "データを受信",
+                "zh": "接收数据",
+                "en": "Receive data"
+              }
+            },
+            {
+              "id": "learn",
+              "label": {
+                "jp": "送信元 MAC アドレスと受信ポートを表に記録",
+                "zh": "把源 MAC 地址和接收端口记入表中",
+                "en": "Record source MAC address and port in the table"
+              }
+            },
+            {
+              "id": "look",
+              "label": {
+                "jp": "宛先 MAC アドレスを表で探す",
+                "zh": "在表中查找目的 MAC 地址",
+                "en": "Look up the destination MAC address"
+              }
+            },
+            {
+              "id": "send",
+              "label": {
+                "jp": "該当するポートだけへ転送",
+                "zh": "只转发到对应端口",
+                "en": "Forward only to the matching port"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "あるポートからデータが届く。",
+            "caption_zh": "数据从某个端口到达。",
+            "caption_en": "Data arrives on a port.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "送ってきた機器の MAC アドレスと、届いたポートの組を表に覚える。",
+            "caption_zh": "把发送方设备的 MAC 地址与到达端口的组合记入表中。",
+            "caption_en": "The switch notes the sender's MAC address together with the port it came in on.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "宛先の MAC アドレスがどのポートの先にあるかを表で調べる。",
+            "caption_zh": "在表中查找目的 MAC 地址位于哪个端口之后。",
+            "caption_en": "It checks the table to see which port leads to the destination MAC address.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "見つかったポートにだけ送る。表にまだ無い宛先なら、受け取ったポート以外のポートへ送る。",
+            "caption_zh": "只发往找到的端口。如果目的地址还不在表中，就发往接收端口以外的所有端口。",
+            "caption_en": "It sends the data only out that port. If the destination is not in the table yet, it sends it out every port except the one it arrived on.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2018h30h-q072"
+      ],
+      "definition_jp": "スイッチ (レイヤ2スイッチ) は、届いたデータの宛先MACアドレスを見て、その機器がつながるポートにだけ転送する集線装置である。",
+      "definition_zh": "交换机（スイッチ，二层交换机）是查看收到数据的目的 MAC地址，只转发到该设备所连端口的集线设备。",
+      "definition_en": "A switch (スイッチ), or Layer 2 switch, is a concentrator that reads the destination MAC address of incoming data and forwards it only to the port where that device is connected.",
+      "explanation_jp": "MACアドレスは、ネットワークにつなぐ部品ごとに製造時に付けられる識別番号である。スイッチは、受け取ったデータの送信元 MAC アドレスとポートの組を表に記録していき、宛先がどのポートの先にあるかをその表で判断する。この単元で単にスイッチというときはこのレイヤ2スイッチを指し、通信相手を見分けるためにネットワーク上で機器に割り当てる番号である IPアドレス を見て送り先を決めるものはレイヤ3スイッチと呼んで区別する。",
+      "explanation_zh": "MAC地址（MACアドレス）是出厂时给每个联网部件分配的识别号。交换机会把收到数据的源 MAC 地址和端口的组合逐一记入表中，再用这张表判断目的地位于哪个端口之后。本单元单说交换机时指这种二层交换机；而根据 IP 地址（IPアドレス，在网络上分配给设备、用来区分通信对象的编号）决定发送目标的设备，则称为 三层交换机（レイヤ3スイッチ）以示区别。",
+      "explanation_en": "A MAC address (MACアドレス) is an ID number assigned at manufacture to each network component. A switch records each incoming frame's source MAC address and port in a table, then uses that table to work out which port leads to the destination. In this unit a plain \"switch\" means this Layer 2 switch, while one that decides where to send data by IP address (IPアドレス), the number assigned to devices on a network to tell them apart, is called a Layer 3 switch (レイヤ3スイッチ).",
+      "memory_hook_jp": "switch は英語で「切り替える」。",
+      "memory_hook_zh": "switch 在英语里是“切换”的意思。",
+      "memory_hook_en": "To switch means to change over.",
+      "inline_quiz": [
+        "2018h30h-q072"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ルーター",
+      "term_zh": "路由器（Router）",
+      "term_en": "Router",
+      "one_jp": "**ルーター**は、受け取ったパケットの宛先**IPアドレス**を見て転送の経路を選び、**異なるネットワーク同士**を中継する装置である。",
+      "one_zh": "**路由器**（[[jp:ルーター]]）是查看收到数据包的目的 **IP 地址**、选择转发路径，在 **不同网络之间** 进行中继的设备。",
+      "one_en": "A **router** ([[jp:ルーター]]) is a device that reads the destination **IP address** of each packet it receives, picks a forwarding route, and relays traffic **between different networks**.",
+      "detail_jp": "データを小分けにした送信の単位である**パケット**には、宛先の IP アドレスが付いている。経路を選ぶ働きを**ルーティング**といい、ルーターは宛先のネットワークごとに次の中継先をまとめた**経路表** (ルーティングテーブル) を参照して送り先を決める。社内の LAN 同士や、LAN とインターネットのように、別々のネットワークの境目に置かれる。",
+      "detail_zh": "**数据包**（[[jp:パケット]]）是把数据切分后的发送单位，上面带有目的 IP 地址。选择路径的功能叫作 **路由**（[[jp:ルーティング]]），路由器参照按目的网络汇总了下一跳的 **路由表**（[[jp:経路表]]，routing table）来决定发往哪里。路由器放在不同网络的交界处，比如公司内各局域网之间，或局域网与互联网之间。",
+      "detail_en": "A **packet** ([[jp:パケット]]), a small unit that data is split into for sending, carries the destination IP address. Choosing the path is called **routing** ([[jp:ルーティング]]), and a router consults its **routing table** ([[jp:経路表]]), which lists the next hop for each destination network, to decide where to send each packet. Routers sit on the border between separate networks, such as between office LANs or between a LAN and the internet.",
+      "analogy_jp": "町と町を結ぶ道路の分かれ道で、荷物の行き先の住所を見てどの道へ進めるかを決める案内係。",
+      "analogy_zh": "就像站在连接城镇的岔路口的引导员，看包裹上的收件地址，决定让它走哪条路。",
+      "analogy_en": "It is like a guide at a fork in the road between towns who reads each parcel's address and sends it down the right road.",
+      "hook_jp": "route (道筋) を決めるもの = router。「ルート」と「ルーター」は同じ語から来ている。",
+      "hook_zh": "决定 route（路径）的东西就是 router，即路由器（Router）。“route”和“router”来自同一个词。",
+      "hook_en": "A router is the thing that picks the route. Both words share the same root.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ルーティング**は、宛先の IP アドレスをもとに、いくつかある経路から最適なものを選んでパケットを中継する働きである。ルーターはこの働きで**異なるネットワーク同士**を結ぶ。",
+          "text_zh": "**路由**（[[jp:ルーティング]]）是根据目的 IP 地址，从多条路径中选出最合适的一条来中继数据包（[[jp:パケット]]）的功能。路由器（[[jp:ルーター]]）靠这项功能连接 **不同网络**。",
+          "text_en": "**Routing** ([[jp:ルーティング]]) means using the destination IP address to choose the best of several paths and relay a packet ([[jp:パケット]]) along it. With this function a router ([[jp:ルーター]]) links **different networks** together.",
+          "qids": [
+            "2009h21h-q056",
+            "2010h22h-q064",
+            "2012h24a-q084",
+            "2017h29a-q078"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "信号の変調と復調 (デジタルとアナログの変換) は**モデム**の役目で、ルーターとは別の機器である。",
+          "text_zh": "信号的调制与解调（数字与模拟之间的转换）是 **调制解调器**（[[jp:モデム]]）的工作，它和路由器是不同的设备。",
+          "text_en": "Modulating and demodulating signals (converting between digital and analog) is the job of a **modem** ([[jp:モデム]]), which is a separate device from a router.",
+          "qids": [
+            "2009h21h-q056",
+            "2010h22h-q064",
+            "2012h24h-q065"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "無線 LAN ルーターのゲスト用の接続機能は、持ち込まれた端末に外部との通信だけを許し、内部ネットワークの機器へは通さないための機能である。",
+          "text_zh": "无线局域网路由器的访客连接功能，只允许带进来的终端与外部通信，不让它访问内部网络的设备。",
+          "text_en": "A wireless LAN router's guest connection feature lets visitors' devices reach only the outside and keeps them away from devices on the internal network.",
+          "qids": [
+            "2022r04-q068"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2010h22h-q064",
+        "2012h24a-q084",
+        "2017h29a-q078"
+      ],
+      "definition_jp": "ルーターは、受け取ったパケットの宛先IPアドレスを見て転送の経路を選び、異なるネットワーク同士を中継する装置である。",
+      "definition_zh": "路由器（ルーター）是查看收到数据包的目的 IP 地址、选择转发路径，在 不同网络之间 进行中继的设备。",
+      "definition_en": "A router (ルーター) is a device that reads the destination IP address of each packet it receives, picks a forwarding route, and relays traffic between different networks.",
+      "explanation_jp": "データを小分けにした送信の単位であるパケットには、宛先の IP アドレスが付いている。経路を選ぶ働きをルーティングといい、ルーターは宛先のネットワークごとに次の中継先をまとめた経路表 (ルーティングテーブル) を参照して送り先を決める。社内の LAN 同士や、LAN とインターネットのように、別々のネットワークの境目に置かれる。",
+      "explanation_zh": "数据包（パケット）是把数据切分后的发送单位，上面带有目的 IP 地址。选择路径的功能叫作 路由（ルーティング），路由器参照按目的网络汇总了下一跳的 路由表（経路表，routing table）来决定发往哪里。路由器放在不同网络的交界处，比如公司内各局域网之间，或局域网与互联网之间。",
+      "explanation_en": "A packet (パケット), a small unit that data is split into for sending, carries the destination IP address. Choosing the path is called routing (ルーティング), and a router consults its routing table (経路表), which lists the next hop for each destination network, to decide where to send each packet. Routers sit on the border between separate networks, such as between office LANs or between a LAN and the internet.",
+      "memory_hook_jp": "route (道筋) を決めるもの = router。「ルート」と「ルーター」は同じ語から来ている。",
+      "memory_hook_zh": "决定 route（路径）的东西就是 router，即路由器（Router）。“route”和“router”来自同一个词。",
+      "memory_hook_en": "A router is the thing that picks the route. Both words share the same root.",
+      "inline_quiz": [
+        "2010h22h-q064",
+        "2012h24a-q084",
+        "2017h29a-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "デフォルトゲートウェイ",
+      "term_zh": "默认网关（Default Gateway）",
+      "term_en": "Default Gateway",
+      "one_jp": "**デフォルトゲートウェイ**は、宛先が自分のネットワークの外にあるとき、端末がまずパケットを渡す**出口**にあたる機器の役割で、通常は**ルーター**がこれを担う。",
+      "one_zh": "**默认网关**（[[jp:デフォルトゲートウェイ]]）是当目的地在本网络之外时，终端首先把数据包交给的 **出口** 设备所担当的角色，通常由 **路由器** 承担。",
+      "one_en": "A **default gateway** ([[jp:デフォルトゲートウェイ]]) is the role of the **exit** device a host first hands a packet to when the destination lies outside its own network, and a **router** usually fills it.",
+      "detail_jp": "端末には、自分の IP アドレスなどと一緒に、このデフォルトゲートウェイの **IPアドレス** を設定しておく。宛先ごとの細かな経路情報を持たなくても、外あての通信はひとまずこの出口へ渡せば、その先の中継に乗せられる。",
+      "detail_zh": "终端在设置自身 IP 地址等信息的同时，也要设置这个默认网关的 **IP 地址**。即使终端没有按目的地划分的详细路径信息，只要先把发往外部的通信交给这个出口，就能进入后续的中继。",
+      "detail_en": "Along with its own IP address and other settings, each device is configured with the **IP address** of its default gateway. Even without detailed route information for each destination, the device can hand outbound traffic to this exit and let it be relayed onward from there.",
+      "analogy_jp": "家の外あての郵便は、とりあえず近所のポストに入れておけば、あとは郵便局が行き先まで運んでくれる。",
+      "analogy_zh": "寄往外地的信，只要先投进附近的邮筒，之后邮局就会把它送到目的地。",
+      "analogy_en": "Mail for anywhere outside the house only needs to go in the nearest postbox. The post office carries it the rest of the way.",
+      "hook_jp": "default は「ほかに指定がないときの既定値」。行き先ごとの道が決まっていない通信が向かう、既定の門 (gateway)。",
+      "hook_zh": "default 的意思是“没有其他指定时的默认值”。没有为目的地定好专门路径的通信，就会走向这扇默认的门（gateway）。",
+      "hook_en": "Default means the value used when nothing else is specified. It is the standard gate that traffic takes when no specific path has been set for its destination.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**デフォルトゲートウェイ**はほかのネットワークへの出入口にあたり、端末は個別の経路が分からない宛先への通信をここへ送る。",
+          "text_zh": "**默认网关**（[[jp:デフォルトゲートウェイ]]）相当于通往其他网络的出入口，终端会把发往不知道具体路径的目的地的通信送到这里。",
+          "text_en": "A **default gateway** ([[jp:デフォルトゲートウェイ]]) is the doorway to other networks, and a device sends it any traffic whose destination has no specific route.",
+          "qids": [
+            "2015h27h-q049",
+            "2016h28a-q064"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ルーターがデフォルトゲートウェイを担う構成では、PC には、その PC と同じ LAN の側にあるルーターのポートの IP アドレスを設定する。",
+          "text_zh": "在由路由器（[[jp:ルーター]]）担任默认网关的组网中，要在 PC 上设置路由器位于该 PC 同一局域网一侧的端口的 IP 地址。",
+          "text_en": "Where a router ([[jp:ルーター]]) serves as the default gateway, each PC is set with the IP address of the router port that faces the PC's own LAN.",
+          "qids": [
+            "2016h28h-q078",
+            "2019h31h-q058"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "単に**ゲートウェイ**というと、通信の取り決め (プロトコル) が違うために直接やりとりできないネットワーク同士を、変換してつなぐ機器を指すこともある。",
+          "text_zh": "单说 **网关**（[[jp:ゲートウェイ]]）时，也可能指这样一种设备：通信规则（协议，[[jp:プロトコル]]）不同的网络之间无法直接交换数据，由它进行转换后连接起来。",
+          "text_en": "A plain **gateway** ([[jp:ゲートウェイ]]) can also mean a device that translates between networks whose communication rules (protocols, [[jp:プロトコル]]) differ, so they cannot talk directly.",
+          "qids": [
+            "2014h26a-q066"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "dest",
+              "label": {
+                "jp": "送り先の IP アドレスを確認",
+                "zh": "确认目的 IP 地址",
+                "en": "Check the destination IP address"
+              }
+            },
+            {
+              "id": "judge",
+              "label": {
+                "jp": "自分のネットワークの内か外かを判定",
+                "zh": "判断在本网络之内还是之外",
+                "en": "Decide if it is inside or outside the network"
+              }
+            },
+            {
+              "id": "gw",
+              "label": {
+                "jp": "外ならデフォルトゲートウェイへ渡す",
+                "zh": "如在外部，交给默认网关",
+                "en": "If outside, hand it to the default gateway"
+              }
+            },
+            {
+              "id": "relay",
+              "label": {
+                "jp": "ルーターが外のネットワークへ中継",
+                "zh": "路由器转发到外部网络",
+                "en": "The router relays it to the outside network"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "端末は、送りたい相手の IP アドレスを確かめる。",
+            "caption_zh": "终端确认要发送对象的 IP 地址。",
+            "caption_en": "The device checks the IP address of the host it wants to reach.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "相手が自分と同じネットワークにいれば、そのまま直接届ける。",
+            "caption_zh": "如果对方和自己在同一网络，就直接送达。",
+            "caption_en": "If that host is on the same network, the device delivers the data directly.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "外にいる相手なら、設定してあるデフォルトゲートウェイへパケットを渡す。",
+            "caption_zh": "如果对方在外部，就把数据包交给已设置的默认网关。",
+            "caption_en": "If the host is outside, the device passes the packet to its configured default gateway.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "受け取ったルーターが経路を選び、外のネットワークへ送り出す。",
+            "caption_zh": "收到数据包的路由器选择路径，发往外部网络。",
+            "caption_en": "The router that receives it picks a route and sends it out to the other network.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2015h27h-q049",
+        "2019h31h-q058"
+      ],
+      "definition_jp": "デフォルトゲートウェイは、宛先が自分のネットワークの外にあるとき、端末がまずパケットを渡す出口にあたる機器の役割で、通常はルーターがこれを担う。",
+      "definition_zh": "默认网关（デフォルトゲートウェイ）是当目的地在本网络之外时，终端首先把数据包交给的 出口 设备所担当的角色，通常由 路由器 承担。",
+      "definition_en": "A default gateway (デフォルトゲートウェイ) is the role of the exit device a host first hands a packet to when the destination lies outside its own network, and a router usually fills it.",
+      "explanation_jp": "端末には、自分の IP アドレスなどと一緒に、このデフォルトゲートウェイの IPアドレス を設定しておく。宛先ごとの細かな経路情報を持たなくても、外あての通信はひとまずこの出口へ渡せば、その先の中継に乗せられる。",
+      "explanation_zh": "终端在设置自身 IP 地址等信息的同时，也要设置这个默认网关的 IP 地址。即使终端没有按目的地划分的详细路径信息，只要先把发往外部的通信交给这个出口，就能进入后续的中继。",
+      "explanation_en": "Along with its own IP address and other settings, each device is configured with the IP address of its default gateway. Even without detailed route information for each destination, the device can hand outbound traffic to this exit and let it be relayed onward from there.",
+      "memory_hook_jp": "default は「ほかに指定がないときの既定値」。行き先ごとの道が決まっていない通信が向かう、既定の門 (gateway)。",
+      "memory_hook_zh": "default 的意思是“没有其他指定时的默认值”。没有为目的地定好专门路径的通信，就会走向这扇默认的门（gateway）。",
+      "memory_hook_en": "Default means the value used when nothing else is specified. It is the standard gate that traffic takes when no specific path has been set for its destination.",
+      "inline_quiz": [
+        "2015h27h-q049",
+        "2019h31h-q058"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "プロキシ",
+      "term_zh": "代理（Proxy）",
+      "term_en": "Proxy",
+      "one_jp": "**プロキシ** (プロキシサーバ) は、社内などの端末の**代理**として外部の Web サーバへ接続し、やりとりを中継するサーバである。",
+      "one_zh": "**代理**（[[jp:プロキシ]]，代理服务器）是作为公司内部等处终端的 **代理人**，去连接外部 Web 服务器并中转往来通信的服务器。",
+      "one_en": "A **proxy** ([[jp:プロキシ]]), or proxy server, is a server that connects to outside web servers **on behalf of** devices inside an office or similar network and relays the exchange.",
+      "detail_jp": "社内の Web 通信が 1 か所を通るので、閲覧の記録を残したり不適切なサイトへの接続を止めたりできる。外部の Web サーバから見える接続相手はプロキシなので、内部の端末のアドレスは見えにくくなる。一度取り寄せたページを保存しておき、次の要求に再利用して応答を速める働き (**キャッシュ**) もある。",
+      "detail_zh": "公司内部的 Web 通信都经过同一处，因此可以留下浏览记录，或阻止连接不当网站。外部 Web 服务器看到的连接方是代理，所以内部终端的地址不容易暴露。代理还能把取回过的页面保存下来，在下次请求时再次使用以加快响应，这一功能叫作 **缓存**（[[jp:キャッシュ]]）。",
+      "detail_en": "Because all of the office's web traffic passes through one point, the proxy can log browsing and block connections to inappropriate sites. Outside web servers see the proxy as the party connecting, so internal devices' addresses are harder to see. It can also store pages it has already fetched and reuse them for later requests to speed up responses, which is called a **cache** ([[jp:キャッシュ]]).",
+      "analogy_jp": "社員に代わって外の店で買い物をする購買担当。店から見えるのは担当者で、誰が頼んだかは見えにくい。",
+      "analogy_zh": "就像替员工去外面商店购物的采购员。商店看到的只是采购员，很难知道是谁托他买的。",
+      "analogy_en": "It is like a purchasing clerk who shops at outside stores for the staff. The store sees only the clerk and has a hard time telling who placed the order.",
+      "hook_jp": "proxy は英語で「代理人」。代理投票や代理出席の proxy と同じ語。",
+      "hook_zh": "proxy 在英语里是“代理人”，和代理投票、代理出席中的 proxy 是同一个词。",
+      "hook_en": "A proxy is a stand-in, the same word as in a proxy vote.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**プロキシ**は内部ネットワークとインターネットの間に立ち、端末の求めに応じて自分が Web サーバとつながり、行き来する内容を取り次ぐ。主な目的の一つはセキュリティの確保である。",
+          "text_zh": "**代理**（[[jp:プロキシ]]）位于内部网络与互联网之间，应终端的请求亲自连接 Web 服务器，转交往来的内容。它的主要目的之一是保障安全。",
+          "text_en": "A **proxy** ([[jp:プロキシ]]) stands between the internal network and the internet, connects to web servers itself when devices ask, and passes the content back and forth. One of its main purposes is security.",
+          "qids": [
+            "2018h30a-q064",
+            "2024r06-q079",
+            "2025r07-q057"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**NAT** はパケットのアドレスを書き換えて通すしくみで、端末に代わって自分が相手のサーバへ接続し直すプロキシとは別物である。",
+          "text_zh": "**NAT** 是改写数据包地址后放行的机制，与代替终端、由自己重新连接对方服务器的代理不是一回事。",
+          "text_en": "**NAT** rewrites the addresses in packets and lets them through, which differs from a proxy that makes its own new connection to the server for the device.",
+          "qids": [
+            "2018h30a-q064"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "req",
+              "label": {
+                "jp": "端末がプロキシへ要求を送る",
+                "zh": "终端向代理发送请求",
+                "en": "The device sends a request to the proxy"
+              }
+            },
+            {
+              "id": "conn",
+              "label": {
+                "jp": "プロキシが代わりに Web サーバへ接続",
+                "zh": "代理代为连接 Web 服务器",
+                "en": "The proxy connects to the web server instead"
+              }
+            },
+            {
+              "id": "ret",
+              "label": {
+                "jp": "受け取った内容を端末へ返す",
+                "zh": "把收到的内容返回终端",
+                "en": "Return the received content to the device"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "端末は Web サーバへ直接はつながず、見たいページの要求をプロキシに送る。",
+            "caption_zh": "终端不直接连接 Web 服务器，而是把想看的页面的请求发给代理。",
+            "caption_en": "The device does not connect to the web server directly. It sends its request for a page to the proxy.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "プロキシが端末の代わりに Web サーバへ接続し、内容を受け取る。",
+            "caption_zh": "代理代替终端连接 Web 服务器并接收内容。",
+            "caption_en": "The proxy connects to the web server in the device's place and receives the content.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "プロキシが受け取った内容を、要求してきた端末へ返す。",
+            "caption_zh": "代理把收到的内容返回给发出请求的终端。",
+            "caption_en": "The proxy passes the content back to the device that asked for it.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2018h30a-q064",
+        "2025r07-q057"
+      ],
+      "definition_jp": "プロキシ (プロキシサーバ) は、社内などの端末の代理として外部の Web サーバへ接続し、やりとりを中継するサーバである。",
+      "definition_zh": "代理（プロキシ，代理服务器）是作为公司内部等处终端的 代理人，去连接外部 Web 服务器并中转往来通信的服务器。",
+      "definition_en": "A proxy (プロキシ), or proxy server, is a server that connects to outside web servers on behalf of devices inside an office or similar network and relays the exchange.",
+      "explanation_jp": "社内の Web 通信が 1 か所を通るので、閲覧の記録を残したり不適切なサイトへの接続を止めたりできる。外部の Web サーバから見える接続相手はプロキシなので、内部の端末のアドレスは見えにくくなる。一度取り寄せたページを保存しておき、次の要求に再利用して応答を速める働き (キャッシュ) もある。",
+      "explanation_zh": "公司内部的 Web 通信都经过同一处，因此可以留下浏览记录，或阻止连接不当网站。外部 Web 服务器看到的连接方是代理，所以内部终端的地址不容易暴露。代理还能把取回过的页面保存下来，在下次请求时再次使用以加快响应，这一功能叫作 缓存（キャッシュ）。",
+      "explanation_en": "Because all of the office's web traffic passes through one point, the proxy can log browsing and block connections to inappropriate sites. Outside web servers see the proxy as the party connecting, so internal devices' addresses are harder to see. It can also store pages it has already fetched and reuse them for later requests to speed up responses, which is called a cache (キャッシュ).",
+      "memory_hook_jp": "proxy は英語で「代理人」。代理投票や代理出席の proxy と同じ語。",
+      "memory_hook_zh": "proxy 在英语里是“代理人”，和代理投票、代理出席中的 proxy 是同一个词。",
+      "memory_hook_en": "A proxy is a stand-in, the same word as in a proxy vote.",
+      "inline_quiz": [
+        "2018h30a-q064",
+        "2025r07-q057"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "VLAN",
+      "term_zh": "VLAN（虚拟局域网）",
+      "term_en": "VLAN",
+      "one_jp": "**VLAN** (仮想LAN) は、物理的な配線を変えずに、スイッチの設定によって 1 つの LAN を複数の**論理的なグループ**に分けるしくみである。",
+      "one_zh": "**VLAN（虚拟局域网）**（[[jp:仮想LAN]]）是不改变物理布线，通过交换机的设置把一个局域网分成多个 **逻辑分组** 的机制。",
+      "one_en": "A **VLAN** (virtual LAN, [[jp:仮想LAN]]) is a way to split one LAN into several **logical groups** through switch settings, without changing the physical wiring.",
+      "detail_jp": "同じスイッチにつながっていても、別のグループに属する機器同士は別々の LAN として扱われ、データは直接届かない。グループをまたいで通信させるには、ルーターやレイヤ3スイッチによる中継が要る。席の移動や組織の変更があっても、配線をつなぎ替えずに設定だけで所属を変えられる。",
+      "detail_zh": "即使连在同一台交换机上，属于不同分组的设备也被当作不同的局域网，数据无法直接送达。要让不同分组之间通信，需要由路由器或三层交换机中继。即使座位调动或组织变更，也不必重新接线，只改设置就能变更所属分组。",
+      "detail_en": "Even on the same switch, devices in different groups are treated as separate LANs, and data does not pass directly between them. Traffic between groups has to be relayed by a router or a Layer 3 switch. When people change desks or the organization is reshuffled, group membership can be changed by settings alone, without rewiring.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "V は Virtual (仮想)。VPN の V も同じ語なので、後ろが LAN か PN (Private Network) かで見分ける。",
+      "hook_zh": "V 是 Virtual（虚拟）。VPN 的 V 也是这个词，所以要看后面是 LAN 还是 PN（Private Network）来区分。",
+      "hook_en": "The V stands for virtual. VPN uses the same V, so tell them apart by what follows: LAN or PN (Private Network).",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**VLAN** は 1 つの LAN を内部で区切るしくみで、インターネットなどの上に仮想的な専用の通信路を作る VPN とは別物である。",
+          "text_zh": "**VLAN（虚拟局域网）** 是在一个局域网内部进行划分的机制，与在互联网等之上建立虚拟专用通信线路的 VPN 不是一回事。",
+          "text_en": "A **VLAN** divides one LAN internally, which is different from a VPN, which builds a virtual private channel over the internet or another network."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "sw",
+            "label": {
+              "jp": "1 台のスイッチ",
+              "zh": "1 台交换机",
+              "en": "One switch"
+            },
+            "children": [
+              {
+                "id": "v1",
+                "label": {
+                  "jp": "グループ 1 (ポート 1〜4 の機器)",
+                  "zh": "分组 1（端口 1〜4 的设备）",
+                  "en": "Group 1 (devices on ports 1–4)"
+                }
+              },
+              {
+                "id": "v2",
+                "label": {
+                  "jp": "グループ 2 (ポート 5〜8 の機器)",
+                  "zh": "分组 2（端口 5〜8 的设备）",
+                  "en": "Group 2 (devices on ports 5–8)"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [],
+      "definition_jp": "VLAN (仮想LAN) は、物理的な配線を変えずに、スイッチの設定によって 1 つの LAN を複数の論理的なグループに分けるしくみである。",
+      "definition_zh": "VLAN（虚拟局域网）（仮想LAN）是不改变物理布线，通过交换机的设置把一个局域网分成多个 逻辑分组 的机制。",
+      "definition_en": "A VLAN (virtual LAN, 仮想LAN) is a way to split one LAN into several logical groups through switch settings, without changing the physical wiring.",
+      "explanation_jp": "同じスイッチにつながっていても、別のグループに属する機器同士は別々の LAN として扱われ、データは直接届かない。グループをまたいで通信させるには、ルーターやレイヤ3スイッチによる中継が要る。席の移動や組織の変更があっても、配線をつなぎ替えずに設定だけで所属を変えられる。",
+      "explanation_zh": "即使连在同一台交换机上，属于不同分组的设备也被当作不同的局域网，数据无法直接送达。要让不同分组之间通信，需要由路由器或三层交换机中继。即使座位调动或组织变更，也不必重新接线，只改设置就能变更所属分组。",
+      "explanation_en": "Even on the same switch, devices in different groups are treated as separate LANs, and data does not pass directly between them. Traffic between groups has to be relayed by a router or a Layer 3 switch. When people change desks or the organization is reshuffled, group membership can be changed by settings alone, without rewiring.",
+      "memory_hook_jp": "V は Virtual (仮想)。VPN の V も同じ語なので、後ろが LAN か PN (Private Network) かで見分ける。",
+      "memory_hook_zh": "V 是 Virtual（虚拟）。VPN 的 V 也是这个词，所以要看后面是 LAN 还是 PN（Private Network）来区分。",
+      "memory_hook_en": "The V stands for virtual. VPN uses the same V, so tell them apart by what follows: LAN or PN (Private Network).",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "SDN",
+      "term_zh": "SDN（软件定义网络）",
+      "term_en": "SDN",
+      "one_jp": "**SDN** (Software-Defined Networking) は、ネットワーク機器の経路制御を**ソフトウェア**にまとめて任せ、ネットワーク全体の構成を集中して変更できるようにする考え方である。",
+      "one_zh": "**SDN（软件定义网络）**（Software-Defined Networking）是把网络设备的路径控制集中交给 **软件**，从而能够集中变更整个网络配置的思路。",
+      "one_en": "**SDN** (Software-Defined Networking) is an approach that hands the route control of network devices over to **software** in one place, so the whole network's configuration can be changed centrally.",
+      "detail_jp": "ネットワーク機器の働きは、どこへ送るかを決める**制御**と、実際にデータを送り出す**転送**に分けて考えられる。SDN では制御を**コントローラ**と呼ぶソフトウェアに集め、各機器はその指示に従って転送を受け持つ。",
+      "detail_zh": "网络设备的工作可以分为决定发往哪里的 **控制** 和实际发出数据的 **转发** 两部分。SDN 把控制集中到叫作 **控制器**（[[jp:コントローラ]]）的软件上，各设备则按照它的指令负责转发。",
+      "detail_en": "A network device's work can be split into **control**, which decides where data goes, and **forwarding**, which actually sends it out. SDN gathers control into software called a **controller** ([[jp:コントローラ]]), and each device handles forwarding as it instructs.",
+      "analogy_jp": "交差点ごとに信号機を 1 台ずつ調整する代わりに、交通管制センターが街じゅうの信号をまとめて切り替えるようなもの。",
+      "analogy_zh": "就像不再逐个路口调整红绿灯，而是由交通指挥中心统一切换全城的信号灯。",
+      "analogy_en": "Instead of adjusting the lights at each intersection one by one, a traffic control center switches every signal in the city at once.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**SDN** の「ソフトウェアで定義」は制御のしかたを指し、機器が要らなくなるわけではない。データを運ぶのは引き続きスイッチなどの機器である。",
+          "text_zh": "**SDN（软件定义网络）** 中的“软件定义”指的是控制方式，并不意味着不再需要设备。运送数据的仍然是交换机（[[jp:スイッチ]]）等设备。",
+          "text_en": "The \"software-defined\" in **SDN** refers to how control is done, not to doing away with hardware. Switches ([[jp:スイッチ]]) and other devices still carry the data."
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "従来のネットワーク",
+            "zh": "传统网络",
+            "en": "Conventional network"
+          },
+          "b": {
+            "jp": "SDN",
+            "zh": "SDN",
+            "en": "SDN"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "転送先の判断",
+                "zh": "转发目标的判断",
+                "en": "Forwarding decisions"
+              },
+              "a": {
+                "jp": "機器ごとに個別に行う",
+                "zh": "每台设备各自进行",
+                "en": "Made by each device separately"
+              },
+              "b": {
+                "jp": "制御用のソフトウェアに集めて行う",
+                "zh": "集中到控制软件进行",
+                "en": "Gathered into control software"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "設定の変更",
+                "zh": "设置变更",
+                "en": "Configuration changes"
+              },
+              "a": {
+                "jp": "1 台ずつ設定する",
+                "zh": "逐台设置",
+                "en": "Set one device at a time"
+              },
+              "b": {
+                "jp": "ソフトウェアからまとめて反映する",
+                "zh": "从软件统一下发",
+                "en": "Pushed out together from software"
+              }
+            },
+            {
+              "label": {
+                "jp": "機器の役割",
+                "zh": "设备的角色",
+                "en": "Role of the devices"
+              },
+              "a": {
+                "jp": "判断と転送の両方",
+                "zh": "判断和转发两者兼顾",
+                "en": "Both deciding and forwarding"
+              },
+              "b": {
+                "jp": "指示どおりの転送が中心",
+                "zh": "以按指令转发为主",
+                "en": "Mainly forwarding as instructed"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "SDN (Software-Defined Networking) は、ネットワーク機器の経路制御をソフトウェアにまとめて任せ、ネットワーク全体の構成を集中して変更できるようにする考え方である。",
+      "definition_zh": "SDN（软件定义网络）（Software-Defined Networking）是把网络设备的路径控制集中交给 软件，从而能够集中变更整个网络配置的思路。",
+      "definition_en": "SDN (Software-Defined Networking) is an approach that hands the route control of network devices over to software in one place, so the whole network's configuration can be changed centrally.",
+      "explanation_jp": "ネットワーク機器の働きは、どこへ送るかを決める制御と、実際にデータを送り出す転送に分けて考えられる。SDN では制御をコントローラと呼ぶソフトウェアに集め、各機器はその指示に従って転送を受け持つ。",
+      "explanation_zh": "网络设备的工作可以分为决定发往哪里的 控制 和实际发出数据的 转发 两部分。SDN 把控制集中到叫作 控制器（コントローラ）的软件上，各设备则按照它的指令负责转发。",
+      "explanation_en": "A network device's work can be split into control, which decides where data goes, and forwarding, which actually sends it out. SDN gathers control into software called a controller (コントローラ), and each device handles forwarding as it instructs.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "ハブ",
+      "b": "スイッチ",
+      "rows": [
+        {
+          "label_jp": "送り先",
+          "label_zh": "发往目标",
+          "label_en": "Where it sends",
+          "a_jp": "受け取ったポート以外の全ポート",
+          "a_zh": "接收端口以外的所有端口",
+          "a_en": "Every port except the receiving one",
+          "b_jp": "宛先の機器がつながるポートだけ",
+          "b_zh": "只发往目标设备所连端口",
+          "b_en": "Only the port of the destination device",
+          "key": true
+        },
+        {
+          "label_jp": "宛先の判別",
+          "label_zh": "目的地的判别",
+          "label_en": "Destination check",
+          "a_jp": "しない",
+          "a_zh": "不判别",
+          "a_en": "None",
+          "b_jp": "MAC アドレスとポートの対応表で判別する",
+          "b_zh": "用 MAC 地址与端口的对应表判别",
+          "b_en": "Uses a MAC address to port table",
+          "key": false
+        },
+        {
+          "label_jp": "衝突・無駄な通信",
+          "label_zh": "冲突与无用通信",
+          "label_en": "Collisions and wasted traffic",
+          "a_jp": "機器が増えると起きやすい",
+          "a_zh": "设备增多就容易发生",
+          "a_en": "More likely as devices increase",
+          "b_jp": "起きにくい",
+          "b_zh": "不易发生",
+          "b_en": "Unlikely",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "スイッチ",
+      "b": "ルーター",
+      "rows": [
+        {
+          "label_jp": "見るアドレス",
+          "label_zh": "查看的地址",
+          "label_en": "Address it reads",
+          "a_jp": "MAC アドレス",
+          "a_zh": "MAC 地址",
+          "a_en": "MAC address",
+          "b_jp": "IP アドレス",
+          "b_zh": "IP 地址",
+          "b_en": "IP address",
+          "key": true
+        },
+        {
+          "label_jp": "つなぐ範囲",
+          "label_zh": "连接范围",
+          "label_en": "What it connects",
+          "a_jp": "同じ LAN の中の機器同士",
+          "a_zh": "同一局域网内的设备之间",
+          "a_en": "Devices within the same LAN",
+          "b_jp": "異なるネットワーク同士",
+          "b_zh": "不同网络之间",
+          "b_en": "Different networks",
+          "key": true
+        },
+        {
+          "label_jp": "判断に使う表",
+          "label_zh": "判断所用的表",
+          "label_en": "Table it uses",
+          "a_jp": "MAC アドレスとポートの対応表",
+          "a_zh": "MAC 地址与端口的对应表",
+          "a_en": "MAC address to port table",
+          "b_jp": "経路表 (ルーティングテーブル)",
+          "b_zh": "路由表（routing table）",
+          "b_en": "Routing table",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "デフォルトゲートウェイ",
+      "b": "プロキシ",
+      "rows": [
+        {
+          "label_jp": "正体",
+          "label_zh": "本质",
+          "label_en": "What it is",
+          "a_jp": "端末に設定する出口の役割 (通常はルーター)",
+          "a_zh": "在终端上设置的出口角色（通常是路由器）",
+          "a_en": "An exit role set on the device (usually a router)",
+          "b_jp": "端末の代理で接続するサーバ",
+          "b_zh": "代替终端进行连接的服务器",
+          "b_en": "A server that connects for the device",
+          "key": true
+        },
+        {
+          "label_jp": "通信の扱い",
+          "label_zh": "通信的处理方式",
+          "label_en": "How it handles traffic",
+          "a_jp": "受け取ったパケットを外へ中継する",
+          "a_zh": "把收到的数据包中继到外部",
+          "a_en": "Relays received packets outward",
+          "b_jp": "端末に代わって相手へ接続し直し、結果を返す",
+          "b_zh": "代替终端重新连接对方，再返回结果",
+          "b_en": "Opens its own connection for the device and returns the result",
+          "key": false
+        },
+        {
+          "label_jp": "主な目的",
+          "label_zh": "主要目的",
+          "label_en": "Main purpose",
+          "a_jp": "ほかのネットワークへの出口",
+          "a_zh": "通往其他网络的出口",
+          "a_en": "Exit to other networks",
+          "b_jp": "セキュリティの確保、閲覧の記録、キャッシュ",
+          "b_zh": "保障安全、浏览记录、缓存",
+          "b_en": "Security, browsing logs, caching",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**ハブ**は宛先を見ずに受け取った信号をほかの全ポートへ送り、ハブを中心に機器を放射状につなぐ接続形態を**スター型**という。",
+    "**ルーター**は宛先の IP アドレスと経路表から次の中継先を選び、別々のネットワークをつなぐ。",
+    "端末は、自分のネットワークの外あての通信を**デフォルトゲートウェイ** (通常はルーター) へ渡し、その先の経路はそのルーターが選ぶ。",
+    "**プロキシ**は内部の端末に代わって外部の Web サーバへ接続し、通信を 1 か所に集めることで記録や接続の制限をしやすくする。",
+    "**VLAN** は配線を変えずに LAN を論理的に分け、**SDN** はネットワークの制御をソフトウェアに集めて構成の変更をまとめて行う。"
+  ],
+  "key_points_zh": [
+    "**集线器** 不看目的地址，把收到的信号发往其他所有端口；以集线器为中心把设备呈放射状连接的形态叫作 **星型**。",
+    "**路由器** 根据目的 IP 地址和路由表选择下一个中继点，把彼此独立的网络连接起来。",
+    "终端把发往本网络之外的通信交给 **默认网关**（通常是路由器），之后的路径由该路由器选择。",
+    "**代理** 代替内部终端连接外部 Web 服务器，把通信集中到一处，从而便于记录和限制连接。",
+    "**VLAN** 不改布线就能在逻辑上划分局域网，**SDN** 则把网络控制集中到软件上，统一进行配置变更。"
+  ],
+  "key_points_en": [
+    "A **hub** sends incoming signals out every other port without checking the destination, and the layout with devices radiating from a central hub is called a **star topology**.",
+    "A **router** uses the destination IP address and its routing table to choose the next hop, linking separate networks.",
+    "A device hands traffic bound outside its network to its **default gateway** (usually a router), and that router chooses the route from there.",
+    "A **proxy** connects to outside web servers for internal devices, and funneling traffic through one point makes logging and access restrictions easier.",
+    "A **VLAN** divides a LAN logically without rewiring, and **SDN** gathers network control into software so configuration changes are made all at once."
+  ],
+  "overview": {
+    "intro_jp": "ハブとスイッチを、届いたデータを全ポートへ送るか宛先のポートだけへ送るかで見分けられる。ルーターが IP アドレスで経路を選んでネットワーク同士を中継することと、端末に設定するデフォルトゲートウェイとの関係を説明できる。端末に代わって外部へ接続するプロキシの役割を説明できる。VLAN による論理的な分割と、SDN による制御の集約を区別できる。",
+    "intro_zh": "能根据收到的数据是发往所有端口还是只发往目标端口，区分 集线器 和 交换机。能说明 路由器 根据 IP 地址选择路径、在网络之间转发，以及它与终端上设置的 默认网关 之间的关系。能说明代替终端连接外部的 代理 起什么作用。能区分 VLAN 的逻辑划分与 SDN 的控制集中。",
+    "intro_en": "Tell a hub from a switch by whether incoming data goes out every port or only the destination's port. Explain how a router picks routes by IP address to relay between networks, and how that ties to the default gateway set on each device. Explain the role of a proxy, which connects to the outside on a device's behalf. Distinguish logical division with VLAN from centralized control with SDN.",
+    "freq_badge": "頻出",
+    "est_minutes": 45
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ハブ: ハブといえば全ポートにそのまま流す集線装置",
-      "スイッチ: スイッチといえば宛先のポートだけに送る",
-      "ルーター: ルーターといえばLAN間を最適経路で中継",
-      "デフォルトゲートウェイ: デフォルトゲートウェイといえばLAN外への出口",
-      "プロキシ: プロキシといえば内部に代わって外部と通信する代理",
-      "VLAN: VLANといえば物理によらず論理的にLAN分割",
-      "SDN: SDNといえばソフトでネットワークを集中制御"
-    ],
     "key_points_jp": [
-      "ハブは全ポートに流す共有型、スイッチは宛先ポートだけに送る——この機能差が頻出の対比ポイント。",
-      "ハブ・スイッチは同一LAN内の中継、ルーターは異なるLAN(ネットワーク)間を中継する上位装置。",
-      "デフォルトゲートウェイはLAN外への出口(通常ルーター)、プロキシは内部に代わって外部と通信する代理サーバ。",
-      "VLANは物理配線を変えずに論理的にLANを分割するしくみ。",
-      "SDNはネットワークをソフトウェアで集中制御する方式で、本ユニットの応用の到達点。"
+      "ハブは宛先を見ずに受け取った信号をほかの全ポートへ送り、ハブを中心に機器を放射状につなぐ接続形態をスター型という。",
+      "ルーターは宛先の IP アドレスと経路表から次の中継先を選び、別々のネットワークをつなぐ。",
+      "端末は、自分のネットワークの外あての通信をデフォルトゲートウェイ (通常はルーター) へ渡し、その先の経路はそのルーターが選ぶ。",
+      "プロキシは内部の端末に代わって外部の Web サーバへ接続し、通信を 1 か所に集めることで記録や接続の制限をしやすくする。",
+      "VLAN は配線を変えずに LAN を論理的に分け、SDN はネットワークの制御をソフトウェアに集めて構成の変更をまとめて行う。"
     ],
     "key_points_zh": [
-      "集线器是向所有端口转发的共享型，交换机只向目的端口发送——这一功能差异是常考的对比要点。",
-      "集线器和交换机在同一 LAN 内中继，路由器则是在不同 LAN（网络）之间中继的上层设备。",
-      "默认网关是通向 LAN 之外的出口（通常是路由器），代理是代替内部与外部通信的代理服务器。",
-      "VLAN 是不改变物理布线、在逻辑上划分 LAN 的机制。",
-      "SDN 是用软件对网络进行集中控制的方式，是本单元在应用层面的最终目标。"
+      "集线器 不看目的地址，把收到的信号发往其他所有端口；以集线器为中心把设备呈放射状连接的形态叫作 星型。",
+      "路由器 根据目的 IP 地址和路由表选择下一个中继点，把彼此独立的网络连接起来。",
+      "终端把发往本网络之外的通信交给 默认网关（通常是路由器），之后的路径由该路由器选择。",
+      "代理 代替内部终端连接外部 Web 服务器，把通信集中到一处，从而便于记录和限制连接。",
+      "VLAN 不改布线就能在逻辑上划分局域网，SDN 则把网络控制集中到软件上，统一进行配置变更。"
     ],
     "key_points_en": [
-      "A hub is a shared type that floods all ports, while a switch sends only to the destination port—this functional difference is a frequently tested point of contrast.",
-      "Hubs and switches relay within the same LAN, while the router is a higher-level device that relays between different LANs (networks).",
-      "The default gateway is the exit to outside the LAN (usually a router), and the proxy is a proxy server that communicates with the outside on behalf of the internal side.",
-      "A VLAN is a mechanism that logically segments a LAN without changing the physical cabling.",
-      "SDN is an approach that controls the network centrally with software, and is the culminating application point of this unit."
+      "A hub sends incoming signals out every other port without checking the destination, and the layout with devices radiating from a central hub is called a star topology.",
+      "A router uses the destination IP address and its routing table to choose the next hop, linking separate networks.",
+      "A device hands traffic bound outside its network to its default gateway (usually a router), and that router chooses the route from there.",
+      "A proxy connects to outside web servers for internal devices, and funneling traffic through one point makes logging and access restrictions easier.",
+      "A VLAN divides a LAN logically without rewiring, and SDN gathers network control into software so configuration changes are made all at once."
+    ],
+    "memory_hooks_jp": [
+      "ハブ: hub は英語で車輪の中心 (こしき)。そこからスポークが放射状に伸びる姿が、ハブを中心にした配線の形と重なる。",
+      "スイッチ: switch は英語で「切り替える」。",
+      "ルーター: route (道筋) を決めるもの = router。「ルート」と「ルーター」は同じ語から来ている。",
+      "デフォルトゲートウェイ: default は「ほかに指定がないときの既定値」。行き先ごとの道が決まっていない通信が向かう、既定の門 (gateway)。",
+      "プロキシ: proxy は英語で「代理人」。代理投票や代理出席の proxy と同じ語。",
+      "VLAN: V は Virtual (仮想)。VPN の V も同じ語なので、後ろが LAN か PN (Private Network) かで見分ける。"
     ],
     "memory_hooks_zh": [
-      "集线器：说到集线器，就是把信号原样转发到所有端口的集线设备",
-      "交换机：说到交换机，就是只把数据发送到目的端口",
-      "路由器：说到路由器，就是在 LAN 之间按最佳路径中继",
-      "默认网关：说到默认网关，就是通向 LAN 之外的出口",
-      "代理：说到代理，就是代替内部与外部通信的代理人",
-      "VLAN：说到 VLAN，就是不依赖物理、在逻辑上划分 LAN",
-      "SDN：说到 SDN，就是用软件对网络集中控制"
+      "集线器（Hub）：hub 在英语里指车轮的中心（轮毂）。辐条从轮毂向外放射伸出的样子，正好与以集线器为中心的布线形状重合。",
+      "交换机（Switch）：switch 在英语里是“切换”的意思。",
+      "路由器（Router）：决定 route（路径）的东西就是 router，即路由器（Router）。“route”和“router”来自同一个词。",
+      "默认网关（Default Gateway）：default 的意思是“没有其他指定时的默认值”。没有为目的地定好专门路径的通信，就会走向这扇默认的门（gateway）。",
+      "代理（Proxy）：proxy 在英语里是“代理人”，和代理投票、代理出席中的 proxy 是同一个词。",
+      "VLAN（虚拟局域网）：V 是 Virtual（虚拟）。VPN 的 V 也是这个词，所以要看后面是 LAN 还是 PN（Private Network）来区分。"
     ],
     "memory_hooks_en": [
-      "Hub: Hub → forwards the signal as-is to all ports (a concentrator)",
-      "Switch: Switch → sends only to the destination port",
-      "Router: Router → relays between LANs along the optimal route",
-      "Default gateway: Default gateway → the exit to outside the LAN",
-      "Proxy: Proxy → an agent that communicates with the outside in place of the internal side",
-      "VLAN: VLAN → segments a LAN logically, not physically",
-      "SDN: SDN → centrally controls the network with software"
+      "Hub: A hub is the center of a wheel. The spokes radiating from it match the way cables spread out from a hub.",
+      "Switch: To switch means to change over.",
+      "Router: A router is the thing that picks the route. Both words share the same root.",
+      "Default Gateway: Default means the value used when nothing else is specified. It is the standard gate that traffic takes when no specific path has been set for its destination.",
+      "Proxy: A proxy is a stand-in, the same word as in a proxy vote.",
+      "VLAN: The V stands for virtual. VPN uses the same V, so tell them apart by what follows: LAN or PN (Private Network)."
     ]
   },
   "challenge_questions": [
+    "2009h21h-q056",
+    "2012h24h-q065",
     "2016h28a-q064",
-    "2018h30h-q058",
-    "2024r06-q079",
     "2016h28h-q078",
-    "2017h29a-q078"
+    "2024r06-q079"
   ],
   "source_figures": [
     {
@@ -253,9 +1095,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "构成网络的连接设备",
-  "title_en": "Connecting Devices That Make Up a Network",
-  "unit_summary_zh": "理解集线器、交换机、路由器等用于搭建、中继和控制网络的连接设备的作用，以及逻辑划分与集中控制的概念。",
-  "unit_summary_en": "Understand the roles of connecting devices such as hubs, switches, and routers that build, relay, and control networks, along with the concepts of logical segmentation and centralized control."
+  }
 }

@@ -1,191 +1,757 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-58-u05",
   "topic_id": "technology-22-58",
   "category": "technology",
   "title_jp": "IoTネットワーク",
+  "title_zh": "IoT 网络",
+  "title_en": "IoT Networks",
   "unit_summary_jp": "IoT機器を結ぶエリアネットワークの構成と、省電力・近距離向けの通信方式、データを近端で処理するエッジコンピューティングを理解する。",
+  "unit_summary_zh": "理解连接 IoT 设备的区域网络构成，面向低功耗、近距离的通信方式，以及在数据近端进行处理的边缘计算。",
+  "unit_summary_en": "Understand the structure of area networks that connect IoT devices, low-power and short-range communication methods, and edge computing that processes data close to where it is generated.",
   "order_in_topic": 5,
   "prerequisites": [
     "technology-22-58-u04"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、多数のIoT機器を束ねるIoTエリアネットワークの構成と、それを支える省電力・広域のLPWA、省電力・近距離のBLE、位置や情報を発信するビーコン、そしてデータを末端近くで処理するエッジコンピューティングを学びます。ネットワーク方式の中でも近年出題が増えている重要分野です。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "本单元学习将大量 IoT 设备汇聚起来的 IoT 区域网络的构成，以及支撑它的低功耗、广域的 LPWA、低功耗、近距离的 BLE、发送位置与信息的信标（Beacon），还有在末端附近处理数据的边缘计算。这是网络方式中近年来出题不断增加的重要领域。",
-    "intro_en": "In this unit you will learn the structure of the IoT area network that bundles many IoT devices, along with the technologies that support it: low-power, wide-area LPWA; low-power, short-range BLE; beacons that broadcast location and information; and edge computing that processes data close to the endpoints. Among networking methods, this is an important field that has appeared on the exam with increasing frequency in recent years."
-  },
-  "terms": [
+  "goals_jp": [
+    "**IoT エリアネットワーク**の構成の中で、デバイスとゲートウェイとサーバがそれぞれどこに位置するかを説明できる",
+    "省電力の無線である **LPWA** と **BLE** を、電波の届く距離で分けられる",
+    "**ビーコン**の発信側と受信側の役割、**エッジコンピューティング**で処理を現場の近くに置く利点を説明できる"
+  ],
+  "goals_zh": [
+    "能说明在 **IoT 区域网络**的构成中，设备、网关和服务器各自处在什么位置",
+    "能按信号能传多远，区分同为低功耗无线的 **LPWA** 和 **BLE**",
+    "能说明**信标**发送方与接收方的分工，以及**边缘计算**把处理放在现场附近的好处"
+  ],
+  "goals_en": [
+    "Explain where the device, the gateway and the server each sit in the layout of an **IoT area network**",
+    "Tell apart **LPWA** and **BLE**, both low-power wireless, by how far their signals reach",
+    "Explain what the sending and receiving sides of a **beacon** each do, and why **edge computing** gains by processing data close to the site"
+  ],
+  "overview_cols_jp": [
+    "位置付け",
+    "主な特徴"
+  ],
+  "overview_cols_zh": [
+    "定位",
+    "主要特点"
+  ],
+  "overview_cols_en": [
+    "What it is",
+    "Main traits"
+  ],
+  "overview_rows": [
     {
       "term": "IoTエリアネットワーク",
-      "definition_jp": "IoT機器を相互接続し、ゲートウェイを介して上位網へつなぐ近距離ネットワーク。",
-      "explanation_jp": "IoTエリアネットワークは、センサーや家電などのIoT機器を一定範囲内で結び付けるネットワークです。多数の機器をまとめ、IoTゲートウェイを経由してインターネットやクラウド側のサーバへデータを送る構成をとります。\n\n機器同士は近距離・省電力の無線(BLEなど)で結ばれることが多く、ゲートウェイが「橋渡し役」として広域網へ中継します。試験では、IoT機器→エリアネットワーク→ゲートウェイ→クラウドという全体構成の中で各要素がどの位置にあるかを問われます。多数の末端機器を束ねる枠組みである点を押さえましょう。",
-      "analogy_jp": "学校の各教室(IoT機器)を校内放送で結び、職員室の交換機(ゲートウェイ)を通して外部へつなぐ仕組みに似ています。教室同士は近距離でまとまり、外への窓口は一つに集約されます。",
-      "memory_hook_jp": "IoTエリアネットワークといえばIoT機器を束ねゲートウェイで上位網へつなぐ近距離網",
-      "inline_quiz": [
-        "2019r01a-q081"
+      "one_line_jp": "現場の IoT デバイスを結び、ゲートウェイを通して外へつなぐネットワーク",
+      "one_line_zh": "连接现场的 IoT 设备、经网关通往外部的网络",
+      "one_line_en": "A network that links on-site IoT devices and reaches the outside through a gateway",
+      "extra_jp": [
+        "現場側のネットワーク",
+        "無線も有線も使われ、外への出口はゲートウェイ"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"IoT機器(センサー等)\"] --> B[\"IoTエリアネットワーク\"]; B --> C[\"IoTゲートウェイ\"]; C --> D[\"インターネット\"]; D --> E[\"クラウド/サーバ\"]",
-        "svg_path": "figures/technology-22-58-u05-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "IoT 区域网络",
-      "term_en": "IoT area network",
-      "definition_zh": "将 IoT 设备相互连接，并经由网关接入上位网络的近距离网络。",
-      "definition_en": "A short-range network that interconnects IoT devices and links them to an upper-level network via a gateway.",
-      "explanation_zh": "IoT 区域网络是在一定范围内把传感器、家电等 IoT 设备连接起来的网络。它把大量设备汇集到一起，采用经由 IoT 网关向互联网或云端服务器发送数据的构成。\n\n设备之间多用近距离、低功耗的无线（如 BLE）相连，由网关充当“桥梁”，向广域网络转发。考试中会问到，在“IoT 设备→区域网络→网关→云”这一整体构成中，各要素分别处于哪个位置。要把握它是汇聚大量末端设备的框架这一点。",
-      "explanation_en": "An IoT area network connects IoT devices such as sensors and home appliances within a limited range. It bundles many devices together and adopts a structure that sends data to servers on the Internet or in the cloud by way of an IoT gateway.\n\nDevices are often linked by short-range, low-power wireless (such as BLE), and the gateway acts as a \"bridge\" that relays to the wide-area network. The exam asks where each element sits within the overall structure of IoT device → area network → gateway → cloud. Keep in mind that it is the framework that bundles many endpoint devices.",
-      "analogy_zh": "类似于用校内广播把各间教室（IoT 设备）连起来，再通过教务处的总机（网关）接通外部的机制。教室之间在近距离内汇成一片，对外的窗口则集中为一个。",
-      "analogy_en": "It is like a system that links each classroom (IoT devices) through the school's in-house broadcast, then connects to the outside through the switchboard (gateway) in the staff room. The classrooms cluster together at short range, while the single window to the outside is consolidated into one.",
-      "memory_hook_zh": "说到 IoT 区域网络，就是汇聚 IoT 设备、经网关接入上位网络的近距离网。",
-      "memory_hook_en": "IoT area network → bundles IoT devices and links them to the upper network via a gateway, a short-range net."
+      "extra_zh": [
+        "现场一侧的网络",
+        "无线、有线都可用，对外出口是网关"
+      ],
+      "extra_en": [
+        "The on-site network",
+        "Wireless or wired; the gateway is the exit to the outside"
+      ]
     },
     {
       "term": "LPWA",
-      "definition_jp": "省電力で数km規模の広域通信を行うIoT向け無線通信方式の総称。",
-      "explanation_jp": "LPWA(Low Power Wide Area)は、消費電力を抑えながら数km〜十数kmの広い範囲をカバーするIoT向けの無線通信方式です。通信速度は低い(低速)ものの、電池で長期間動かせるため、広域に点在するセンサーの遠隔監視などに向きます。\n\n試験では「省電力・広域・低速」という特徴の組み合わせが頻出です。高速だが消費電力の大きいWi-Fiや、近距離のBLEとの違いを問われます。畑の土壌センサーやガス・水道のメーター検針など、広い範囲に少量データを送る用途の代表例として理解しておきましょう。",
-      "analogy_jp": "燃費をとことん良くした代わりに荷物は少しだけ運ぶ、長距離向けの軽トラックのようなもの。速くはないが遠くまで、燃料(電池)をほとんど使わずに届けます。",
-      "memory_hook_jp": "LPWAといえば省電力・広域・低速のIoT向け無線",
-      "inline_quiz": [
-        "2019h31h-q086"
+      "one_line_jp": "省電力で広い範囲に届く IoT 向け無線の総称",
+      "one_line_zh": "低功耗且覆盖范围广的 IoT 无线方式的统称",
+      "one_line_en": "An umbrella term for low-power, long-reach wireless for IoT",
+      "extra_jp": [
+        "広域向けの通信方式",
+        "電池で長く動き遠くまで届くが、速度は低い"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "LPWA",
-      "term_en": "LPWA",
-      "definition_zh": "以低功耗进行数公里规模广域通信、面向 IoT 的无线通信方式的统称。",
-      "definition_en": "A general term for IoT-oriented wireless communication methods that achieve wide-area communication on the order of several kilometers with low power consumption.",
-      "explanation_zh": "LPWA（Low Power Wide Area）是一种在抑制功耗的同时覆盖数公里到十几公里大范围、面向 IoT 的无线通信方式。虽然通信速度较低（低速），但可用电池长期运行，因此适合对广域分散的传感器进行远程监控等用途。\n\n考试中“低功耗、广域、低速”这一特征组合频繁出现。会问到它与高速但功耗大的 Wi-Fi、近距离的 BLE 有何区别。把田地里的土壤传感器、燃气与自来水表的抄表等“向大范围发送少量数据”的用途，作为代表例来理解。",
-      "explanation_en": "LPWA (Low Power Wide Area) is an IoT-oriented wireless communication method that covers a wide range of several to over ten kilometers while keeping power consumption low. Although the communication speed is low, devices can run on batteries for a long time, so it suits applications such as remotely monitoring sensors scattered over a wide area.\n\nOn the exam, the combination of features \"low power, wide area, low speed\" appears frequently. You are asked about the difference from Wi-Fi, which is fast but power-hungry, and from short-range BLE. Understand it through representative uses such as soil sensors in fields and meter reading for gas and water, where small amounts of data are sent over a wide area.",
-      "analogy_zh": "好比一辆把油耗做到极致、代价是只载一点货物的长途小货车。虽然不快，但能把货送到远处，而且几乎不用燃料（电池）。",
-      "analogy_en": "It is like a long-haul light truck whose fuel economy has been pushed to the extreme in exchange for carrying only a little cargo. It is not fast, but it delivers far away while using almost no fuel (battery).",
-      "memory_hook_zh": "说到 LPWA，就是低功耗、广域、低速的面向 IoT 无线。",
-      "memory_hook_en": "LPWA → low-power, wide-area, low-speed wireless for IoT."
+      "extra_zh": [
+        "面向广域的通信方式",
+        "靠电池能用很久、传得远，但速度慢"
+      ],
+      "extra_en": [
+        "A wide-area method",
+        "Runs long on batteries and reaches far, but is slow"
+      ]
     },
     {
       "term": "BLE",
-      "definition_jp": "省電力に特化した近距離無線通信規格(Bluetooth Low Energy)。",
-      "explanation_jp": "BLE(Bluetooth Low Energy)は、Bluetoothの中でも消費電力を極力抑えた近距離無線通信の規格です。ボタン電池でも長期間動作でき、センサーやウェアラブル機器、ビーコンなど少量のデータを近くでやり取りするIoT機器に広く使われます。\n\n試験では「省電力・近距離」という点で、広域のLPWAと対比して問われます。従来のBluetoothが音声や音楽など連続的なデータ転送を得意とするのに対し、BLEは間欠的に少量データを送る用途に向く点が違いです。近距離・省電力といえばBLE、と押さえましょう。",
-      "analogy_jp": "声を張らずにそっと隣の人へ耳打ちするようなもの。遠くには届かないけれど、近くへ少しずつ伝えるなら体力(電池)をほとんど使いません。",
-      "memory_hook_jp": "BLEといえば省電力・近距離のBluetooth",
-      "inline_quiz": [
-        "2020r02o-q098"
+      "one_line_jp": "Bluetooth に加わった省電力の近距離無線の仕様",
+      "one_line_zh": "加入蓝牙的低功耗近距离无线规范",
+      "one_line_en": "A low-power, short-range wireless spec added to Bluetooth",
+      "extra_jp": [
+        "近距離向けの通信方式",
+        "ボタン電池でも長く動き、近くの機器どうしをつなぐ"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "BLE",
-      "term_en": "BLE",
-      "definition_zh": "专为低功耗优化的近距离无线通信规格（Bluetooth Low Energy）。",
-      "definition_en": "A short-range wireless communication standard specialized for low power consumption (Bluetooth Low Energy).",
-      "explanation_zh": "BLE（Bluetooth Low Energy）是在 Bluetooth 中把功耗压到极低的近距离无线通信规格。即便用纽扣电池也能长期运行，广泛用于传感器、可穿戴设备、信标等在近处收发少量数据的 IoT 设备。\n\n考试中会以“低功耗、近距离”为要点，与广域的 LPWA 对比来出题。传统 Bluetooth 擅长音频、音乐等连续的数据传输，而 BLE 则适合间歇性地发送少量数据，这是两者的区别。记住“近距离、低功耗就是 BLE”。",
-      "explanation_en": "BLE (Bluetooth Low Energy) is a short-range wireless communication standard that keeps power consumption as low as possible within Bluetooth. It can run for a long time even on a coin cell battery and is widely used in IoT devices that exchange small amounts of data nearby, such as sensors, wearables, and beacons.\n\nThe exam contrasts it with wide-area LPWA on the point of \"low power, short range.\" Whereas conventional Bluetooth is good at continuous data transfer such as voice and music, BLE suits applications that send small amounts of data intermittently — that is the difference. Remember: short range and low power means BLE.",
-      "analogy_zh": "就像不提高嗓门、轻轻在旁边人耳边说悄悄话。虽然传不到远处，但若只是向近处一点点地传递，几乎不耗体力（电池）。",
-      "analogy_en": "It is like whispering softly into the ear of the person next to you without raising your voice. It does not reach far away, but if you only convey a little to someone nearby, it uses almost no stamina (battery).",
-      "memory_hook_zh": "说到 BLE，就是低功耗、近距离的 Bluetooth。",
-      "memory_hook_en": "BLE → low-power, short-range Bluetooth."
+      "extra_zh": [
+        "面向近距离的通信方式",
+        "纽扣电池也能长期工作，连接附近的设备"
+      ],
+      "extra_en": [
+        "A short-range method",
+        "Lasts long even on a coin cell and links nearby devices"
+      ]
     },
     {
       "term": "ビーコン",
-      "definition_jp": "BLE等の電波を周期的に発信し、位置検知や情報提供に使う仕組み。",
-      "explanation_jp": "ビーコンは、BLEなどの電波を一定間隔で発信し続ける小型の発信機(またはその仕組み)です。電波を受け取ったスマートフォン側が発信元との距離や位置を把握でき、近くにいる人へ情報を届けたり、屋内での位置測位に使われたりします。\n\n店舗でのクーポン配信、施設での道案内、来場者の動線把握などが代表例です。試験では、GPSが届きにくい屋内での位置検知や、近接した利用者への情報配信に用いられる点が問われます。BLEを発信側から応用した仕組みとして理解しておきましょう。",
-      "analogy_jp": "灯台が周期的に光を放ち、近くの船がそれを見て自分の位置を知るのに似ています。発信側はただ光(電波)を出し続け、受け取った側が位置を把握します。",
-      "memory_hook_jp": "ビーコンといえば電波を周期発信して近接検知・屋内測位",
-      "inline_quiz": [
-        "2020r02o-q070"
+      "one_line_jp": "識別用の信号を一定間隔で出し続ける小型の発信機",
+      "one_line_zh": "按固定间隔持续发出识别信号的小型发射器",
+      "one_line_en": "A small transmitter that keeps sending an ID signal at fixed intervals",
+      "extra_jp": [
+        "信号を出す側の装置",
+        "BLE を使うものが多く、電池で長く動く"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "信标（Beacon）",
-      "term_en": "Beacon",
-      "definition_zh": "周期性发射 BLE 等电波，用于位置检测或信息推送的机制。",
-      "definition_en": "A mechanism that periodically transmits radio waves such as BLE, used for location detection and information delivery.",
-      "explanation_zh": "信标是一种以固定间隔持续发射 BLE 等电波的小型发射器（或该机制）。接收到电波的智能手机一侧可掌握与发射源之间的距离或位置，从而向附近的人推送信息，或用于室内的位置定位。\n\n店铺的优惠券发放、设施内的路线引导、把握来访者的动线等都是代表例。考试中会问到它用于 GPS 难以覆盖的室内位置检测，以及向近旁用户推送信息。把它理解为从发射侧应用 BLE 的机制。",
-      "explanation_en": "A beacon is a small transmitter (or the mechanism itself) that continuously emits radio waves such as BLE at fixed intervals. The smartphone that receives the signal can grasp its distance from or position relative to the transmitter, allowing information to be delivered to people nearby or used for indoor positioning.\n\nRepresentative examples include distributing coupons in stores, guiding routes within a facility, and tracking visitor movement. The exam asks about its use for location detection indoors where GPS is hard to reach, and for delivering information to nearby users. Understand it as a mechanism that applies BLE from the transmitting side.",
-      "analogy_zh": "类似于灯塔周期性地发出光，附近的船看到光后便知道自己的位置。发射侧只是不断发出光（电波），接收侧据此掌握位置。",
-      "analogy_en": "It is like a lighthouse that periodically gives off light, and nearby ships see it to learn their own position. The transmitting side simply keeps emitting light (radio waves), and the receiving side uses it to grasp its location.",
-      "memory_hook_zh": "说到信标，就是周期发射电波，做近接检测、室内定位。",
-      "memory_hook_en": "Beacon → periodically broadcasts radio waves for proximity detection and indoor positioning."
+      "extra_zh": [
+        "发出信号的一方的装置",
+        "多数使用 BLE，靠电池能用很久"
+      ],
+      "extra_en": [
+        "The device on the sending side",
+        "Usually uses BLE and runs long on a battery"
+      ]
     },
     {
       "term": "エッジコンピューティング",
-      "definition_jp": "データを発生源の末端近くで処理し、クラウド集中処理を補う方式。",
-      "explanation_jp": "エッジコンピューティングは、IoT機器が生み出すデータを、遠くのクラウドへ全部送る前に、機器に近い末端(エッジ)側でまず処理する考え方です。現場近くのゲートウェイやサーバで処理することで、応答を速くし、通信量やクラウドの負荷を減らせます。\n\n試験では、すべてを中央のクラウドで処理する集中型との違いが問われます。リアルタイム性が求められる制御や、大量データの一次処理を末端で済ませる点が利点です。「近くで処理する」のがエッジ、「中央へ集めて処理する」のがクラウド、と対比で押さえましょう。",
-      "analogy_jp": "本社に全部送らず、各支店でその場でさばける用件は支店内で処理するようなもの。手元で片付けるぶん、返事が速く本社の混雑も減らせます。",
-      "memory_hook_jp": "エッジコンピューティングといえばデータを末端近くで処理",
-      "inline_quiz": [
-        "2019r01a-q071"
+      "one_line_jp": "IoT デバイスの近くでデータを処理してからサーバへ送る方式",
+      "one_line_zh": "在 IoT 设备附近先处理数据、再发给服务器的方式",
+      "one_line_en": "Processing data near the IoT devices before sending it to the server",
+      "extra_jp": [
+        "処理を置く場所の考え方",
+        "反応が速くなり、通信量とサーバの負荷が減る"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"IoT機器\"] --> B[\"エッジ(末端で一次処理)\"]; B --> C[\"クラウド(集約・分析)\"]; A -.全データ送信は負荷大.-> C",
-        "svg_path": "figures/technology-22-58-u05-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "边缘计算",
-      "term_en": "Edge computing",
-      "definition_zh": "在数据发生源的末端附近进行处理、对云集中处理形成补充的方式。",
-      "definition_en": "A method that processes data near the endpoints where it is generated, complementing centralized processing in the cloud.",
-      "explanation_zh": "边缘计算是一种理念：在把 IoT 设备产生的数据全部发往远处的云之前，先在靠近设备的末端（边缘）侧进行处理。通过在现场附近的网关或服务器上处理，可以加快响应，减少通信量与云的负载。\n\n考试中会问到它与“全部在中央的云处理”的集中型之间的区别。对要求实时性的控制，以及在末端完成大量数据的初步处理，是它的优点。把“在近处处理”记为边缘，“汇集到中央处理”记为云，用对比来把握。",
-      "explanation_en": "Edge computing is the idea of first processing data produced by IoT devices on the endpoint (edge) side close to the device, before sending all of it to a distant cloud. By processing on a gateway or server near the site, it speeds up responses and reduces communication volume and cloud load.\n\nThe exam asks about the difference from the centralized type, where everything is processed in the central cloud. Its advantages are control that requires real-time responsiveness and completing the first-stage processing of large volumes of data at the endpoint. Grasp it by contrast: \"processing nearby\" is edge, and \"gathering to the center to process\" is cloud.",
-      "analogy_zh": "好比不把所有事都送到总公司，凡是各分店当场能办的事就在分店内处理。就近办妥，回复更快，也能减轻总公司的拥挤。",
-      "analogy_en": "It is like not sending everything to headquarters but handling on the spot, within each branch, the matters a branch can deal with itself. Settling things locally makes replies faster and eases congestion at headquarters.",
-      "memory_hook_zh": "说到边缘计算，就是把数据在末端附近处理。",
-      "memory_hook_en": "Edge computing → process data close to the endpoints."
+      "extra_zh": [
+        "关于把处理放在哪里的思路",
+        "响应更快，通信量和服务器负载减少"
+      ],
+      "extra_en": [
+        "An idea about where processing happens",
+        "Faster response, less traffic and lighter server load"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "IoTエリアネットワーク",
+      "term_zh": "IoT 区域网络",
+      "term_en": "IoT area network",
+      "one_jp": "**IoT エリアネットワーク**は、センサーなどの **IoT デバイス**を工場や住宅のような限られた範囲で結び、**IoT ゲートウェイ**を通して外の広域ネットワークや IoT サーバへつなぐネットワークである。",
+      "one_zh": "**IoT 区域网络**（[[jp:IoTエリアネットワーク]]）是在工厂、住宅这类有限范围内把传感器等 **IoT 设备**连在一起，再经 **IoT 网关**接到外部广域网和 IoT 服务器的网络。",
+      "one_en": "An **IoT area network** ([[jp:IoTエリアネットワーク]]) links **IoT devices** such as sensors within a limited space like a factory or a home, and connects them through an **IoT gateway** to the wide-area network and IoT servers outside.",
+      "detail_jp": "**IoT ゲートウェイ**は、エリア内の通信と外の広域ネットワークとの間で、データを中継し形式を変換する出入口の機器である。エリア内の接続には、ZigBee のような近距離無線のほか、電気を送る電力線を通信路として兼用する **PLC** という有線の方式も使われる。ある機器の電波を別の機器が受け取って先へ渡すことを繰り返す **マルチホップ** を使えば、1 台の電波が届く距離より広い範囲を覆える。",
+      "detail_zh": "**IoT 网关**是区域内通信与外部广域网之间的出入口设备，负责转发数据并转换格式。区域内的连接除了 ZigBee 这类近距离无线，也会用 **PLC** 这种有线方式，它让输电的电力线兼作通信线路。采用 **多跳**（[[jp:マルチホップ]]），由一台设备接住另一台的信号再往下传，反复接力，就能覆盖比单台设备信号所及更大的范围。",
+      "detail_en": "The **IoT gateway** is the entry and exit point between traffic inside the area and the wide-area network outside, relaying data and converting its format. Inside the area, devices connect by short-range wireless such as ZigBee, and also by **PLC**, a wired method that uses the power lines carrying electricity as the communication path. With **multi-hop** ([[jp:マルチホップ]]) relaying, where one device picks up another's signal and passes it on again and again, the network covers a wider area than any single device's signal can reach.",
+      "analogy_jp": "マンションの各部屋 (デバイス) が館内の配線や無線でつながり、外の道路へは玄関 (ゲートウェイ) を通って出入りするような作りである。",
+      "analogy_zh": "就像一栋公寓楼：各个房间（设备）靠楼内的布线或无线连在一起，进出外面的马路都要经过大门（网关）。",
+      "analogy_en": "Think of an apartment building: the rooms (devices) are joined by the building's wiring or wireless, and everyone goes in and out to the street through the front entrance (the gateway).",
+      "hook_jp": "ゲートウェイの gate は「門」。エリアの中と外を分ける門だと覚える。",
+      "hook_zh": "网关的英文 gateway 里有 gate，就是“门”：把它记成隔开区域内外的那道门。",
+      "hook_en": "The \"gate\" in gateway is literally a gate: the one that separates the inside of the area from the outside.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "IoT エリアネットワークは無線だけでなく有線でも組める。例えば、電力線を通信路として兼用する PLC は有線の方式である。",
+          "text_zh": "IoT 区域网络不只用无线，也能用有线搭建。比如把电力线兼作通信线路的 PLC 就属于有线方式。",
+          "text_en": "An IoT area network can be built with wires as well as wireless. PLC, for example, uses power lines as its communication path and counts as a wired method.",
+          "qids": [
+            "2020r02o-q098",
+            "2023r05-q087"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "マルチホップは、デバイスどうしが電波の中継を繰り返して通信範囲を広げる技術で、IoT エリアネットワークでも使われる。",
+          "text_zh": "多跳（[[jp:マルチホップ]]）是设备之间反复接力转发信号、以扩大通信范围的技术，IoT 区域网络中也会用到。",
+          "text_en": "Multi-hop ([[jp:マルチホップ]]) extends coverage by having devices relay signals for one another again and again, and IoT area networks use it too.",
+          "qids": [
+            "2024r06-q084"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "dev",
+              "label": {
+                "jp": "IoT デバイス (センサーなど)",
+                "zh": "IoT 设备（传感器等）",
+                "en": "IoT devices (sensors, etc.)"
+              }
+            },
+            {
+              "id": "area",
+              "label": {
+                "jp": "IoT エリアネットワーク (無線・有線)",
+                "zh": "IoT 区域网络（无线 / 有线）",
+                "en": "IoT area network (wireless / wired)"
+              }
+            },
+            {
+              "id": "gw",
+              "label": {
+                "jp": "IoT ゲートウェイ",
+                "zh": "IoT 网关",
+                "en": "IoT gateway"
+              }
+            },
+            {
+              "id": "wan",
+              "label": {
+                "jp": "広域ネットワーク",
+                "zh": "广域网",
+                "en": "Wide-area network"
+              }
+            },
+            {
+              "id": "srv",
+              "label": {
+                "jp": "IoT サーバ",
+                "zh": "IoT 服务器",
+                "en": "IoT server"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2020r02o-q098",
+        "2023r05-q087",
+        "2024r06-q084"
+      ],
+      "definition_jp": "IoT エリアネットワークは、センサーなどの IoT デバイスを工場や住宅のような限られた範囲で結び、IoT ゲートウェイを通して外の広域ネットワークや IoT サーバへつなぐネットワークである。",
+      "definition_zh": "IoT 区域网络（IoTエリアネットワーク）是在工厂、住宅这类有限范围内把传感器等 IoT 设备连在一起，再经 IoT 网关接到外部广域网和 IoT 服务器的网络。",
+      "definition_en": "An IoT area network (IoTエリアネットワーク) links IoT devices such as sensors within a limited space like a factory or a home, and connects them through an IoT gateway to the wide-area network and IoT servers outside.",
+      "explanation_jp": "IoT ゲートウェイは、エリア内の通信と外の広域ネットワークとの間で、データを中継し形式を変換する出入口の機器である。エリア内の接続には、ZigBee のような近距離無線のほか、電気を送る電力線を通信路として兼用する PLC という有線の方式も使われる。ある機器の電波を別の機器が受け取って先へ渡すことを繰り返す マルチホップ を使えば、1 台の電波が届く距離より広い範囲を覆える。",
+      "explanation_zh": "IoT 网关是区域内通信与外部广域网之间的出入口设备，负责转发数据并转换格式。区域内的连接除了 ZigBee 这类近距离无线，也会用 PLC 这种有线方式，它让输电的电力线兼作通信线路。采用 多跳（マルチホップ），由一台设备接住另一台的信号再往下传，反复接力，就能覆盖比单台设备信号所及更大的范围。",
+      "explanation_en": "The IoT gateway is the entry and exit point between traffic inside the area and the wide-area network outside, relaying data and converting its format. Inside the area, devices connect by short-range wireless such as ZigBee, and also by PLC, a wired method that uses the power lines carrying electricity as the communication path. With multi-hop (マルチホップ) relaying, where one device picks up another's signal and passes it on again and again, the network covers a wider area than any single device's signal can reach.",
+      "memory_hook_jp": "ゲートウェイの gate は「門」。エリアの中と外を分ける門だと覚える。",
+      "memory_hook_zh": "网关的英文 gateway 里有 gate，就是“门”：把它记成隔开区域内外的那道门。",
+      "memory_hook_en": "The \"gate\" in gateway is literally a gate: the one that separates the inside of the area from the outside.",
+      "inline_quiz": [
+        "2020r02o-q098",
+        "2023r05-q087",
+        "2024r06-q084"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "LPWA",
+      "term_zh": "LPWA",
+      "term_en": "LPWA",
+      "one_jp": "**LPWA** (Low Power Wide Area) は、**省電力**と**広域**を両立させた IoT 向け無線通信方式の総称で、その代わりに通信速度は低い。",
+      "one_zh": "**LPWA**（Low Power Wide Area）是兼顾**低功耗**与**广域覆盖**的 IoT 无线通信方式的统称，代价是通信速度低。",
+      "one_en": "**LPWA** (Low Power Wide Area) is an umbrella term for IoT wireless methods that combine **low power** with **wide coverage**, at the cost of low data rates.",
+      "detail_jp": "温度や計測値のような小さなデータを送るだけなら、速度が低くても困ることは少ない。電池だけで年単位の稼働ができ、数 km から数十 km 先まで電波が届くため、広い地域に散らばった機器からデータを集める用途に向く。",
+      "detail_zh": "如果只是发送温度、读数这类小数据，速度低一些也几乎不碍事。它仅靠电池就能运行以年计的时间，信号可达几公里到几十公里，因此适合从分散在大片区域的设备收集数据。",
+      "detail_en": "When a device only sends small readings such as temperatures or meter values, a low data rate rarely gets in the way. A battery alone keeps it running for years and its signal reaches several to tens of kilometers, so it suits collecting data from devices scattered over a large region.",
+      "analogy_jp": "大きな荷物は運べないが、燃料をほとんど使わずに遠くの村まで手紙を届け続ける郵便配達のようなものである。",
+      "analogy_zh": "好比一位邮差：大件包裹运不了，却几乎不耗燃料，一直把信送到很远的村子。",
+      "analogy_en": "It is like a mail carrier who cannot haul big parcels but keeps delivering letters to distant villages on almost no fuel.",
+      "hook_jp": "名前は Low Power (省電力) と Wide Area (広域) だけで、速さを表す語は入っていない。",
+      "hook_zh": "名字里只有 Low Power（低功耗）和 Wide Area（广域），没有任何表示“快”的词。",
+      "hook_en": "The name holds only Low Power and Wide Area; no word in it says anything about speed.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "LPWA は速さよりも電力と届く距離を優先した方式である。そのため通信速度は無線 LAN や携帯電話の通信に及ばないが、電力は無線 LAN より少なくて済む。",
+          "text_zh": "LPWA 是把功耗和传输距离放在速度之前的方式。因此通信速度比不上无线局域网（[[jp:無線LAN]]）和手机通信，但功耗比无线局域网少。",
+          "text_en": "LPWA puts power and reach ahead of speed. It is therefore slower than wireless LAN ([[jp:無線LAN]]) and mobile phone networks, but it draws less power than wireless LAN.",
+          "qids": [
+            "2019h31h-q086",
+            "2020r02o-q070"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "LPWA は近距離向けの無線 LAN よりずっと広い範囲に届く。電力が少ないのは無線 LAN と比べたときだけでなく、第 4 世代の携帯電話の通信 (4G) と比べても同じである。",
+          "text_zh": "LPWA 的覆盖范围远大于近距离使用的无线局域网。它不仅比无线局域网省电，与第四代手机通信（4G）相比也同样省电。",
+          "text_en": "LPWA reaches far beyond short-range wireless LAN. It uses less power not only than wireless LAN but also than fourth-generation mobile networks (4G).",
+          "qids": [
+            "2026r08-q076"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2019h31h-q086",
+        "2026r08-q076",
+        "2021r03-q092"
+      ],
+      "definition_jp": "LPWA (Low Power Wide Area) は、省電力と広域を両立させた IoT 向け無線通信方式の総称で、その代わりに通信速度は低い。",
+      "definition_zh": "LPWA（Low Power Wide Area）是兼顾低功耗与广域覆盖的 IoT 无线通信方式的统称，代价是通信速度低。",
+      "definition_en": "LPWA (Low Power Wide Area) is an umbrella term for IoT wireless methods that combine low power with wide coverage, at the cost of low data rates.",
+      "explanation_jp": "温度や計測値のような小さなデータを送るだけなら、速度が低くても困ることは少ない。電池だけで年単位の稼働ができ、数 km から数十 km 先まで電波が届くため、広い地域に散らばった機器からデータを集める用途に向く。",
+      "explanation_zh": "如果只是发送温度、读数这类小数据，速度低一些也几乎不碍事。它仅靠电池就能运行以年计的时间，信号可达几公里到几十公里，因此适合从分散在大片区域的设备收集数据。",
+      "explanation_en": "When a device only sends small readings such as temperatures or meter values, a low data rate rarely gets in the way. A battery alone keeps it running for years and its signal reaches several to tens of kilometers, so it suits collecting data from devices scattered over a large region.",
+      "memory_hook_jp": "名前は Low Power (省電力) と Wide Area (広域) だけで、速さを表す語は入っていない。",
+      "memory_hook_zh": "名字里只有 Low Power（低功耗）和 Wide Area（广域），没有任何表示“快”的词。",
+      "memory_hook_en": "The name holds only Low Power and Wide Area; no word in it says anything about speed.",
+      "inline_quiz": [
+        "2019h31h-q086",
+        "2026r08-q076",
+        "2021r03-q092"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "BLE",
+      "term_zh": "BLE",
+      "term_en": "BLE",
+      "one_jp": "**BLE** (Bluetooth Low Energy) は、Bluetooth に追加された**省電力**の**近距離無線**通信の仕様である。",
+      "one_zh": "**BLE**（Bluetooth Low Energy）是蓝牙（Bluetooth）中新增的一项**低功耗**的**近距离无线**通信规范。",
+      "one_en": "**BLE** (Bluetooth Low Energy) is a **low-power**, **short-range wireless** specification added to Bluetooth.",
+      "detail_jp": "Bluetooth 4.0 で加わった仕様で、一般的なボタン電池でも長期間動き続けられるほど電力を使わない。少量のデータをときどき送るセンサーや身に着ける機器に向いている。",
+      "detail_zh": "它是 Bluetooth 4.0 加入的规范，耗电少到用普通纽扣电池也能长期工作。适合偶尔发送少量数据的传感器和可穿戴设备。",
+      "detail_en": "It arrived with Bluetooth 4.0 and draws so little power that an ordinary coin cell keeps it going for a long time. It suits sensors and wearables that send small amounts of data now and then.",
+      "analogy_jp": "大声で話し続けるのではなく、用があるときだけ隣の人に小声で一言伝えるような話し方である。",
+      "analogy_zh": "不是一直大声说话，而是有事时才对身边的人轻声说一句。",
+      "analogy_en": "Rather than talking loudly all the time, it is like murmuring a quick word to the person beside you only when there is something to say.",
+      "hook_jp": "LE は Low Energy の略で「省エネ」。Bluetooth の省エネ版と読める。",
+      "hook_zh": "LE 是 Low Energy 的缩写，意思是“节能”，可以读作蓝牙的节能版。",
+      "hook_en": "LE stands for Low Energy, so the name reads as \"the energy-saving Bluetooth\".",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "BLE は少量のデータを短く送っては休むことを繰り返して電力を抑えるので、ボタン電池でも長期間動き続けられる。",
+          "text_zh": "BLE 反复“短时间发送少量数据、然后休眠”，以此压低功耗，因此用纽扣电池也能长期工作。",
+          "text_en": "BLE keeps its power use low by sending small amounts of data in short bursts and resting in between, so it can keep running for a long time even on a coin cell.",
+          "qids": [
+            "2022r04-q092"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "BLE は、IoT デバイスとすぐそばの IoT ゲートウェイを省電力でつなぐ無線として使われ、送受信する機器どうしの距離をつかむ用途もある。",
+          "text_zh": "BLE 被用来以低功耗连接 IoT 设备和附近的 IoT 网关（[[jp:IoTゲートウェイ]]），也可用来掌握收发两端设备之间的距离。",
+          "text_en": "BLE links IoT devices to a nearby IoT gateway ([[jp:IoTゲートウェイ]]) on little power, and it is also used to gauge the distance between the sending and receiving devices.",
+          "qids": [
+            "2021r03-q080",
+            "2025r07-q056"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "BLE と LPWA はどちらも省電力だが、BLE は近距離用で Bluetooth の仕様の一つ、LPWA は数 km 以上に届く広域用の方式の総称である。",
+          "text_zh": "BLE 和 LPWA 都是低功耗，但 BLE 用于近距离，是蓝牙规范之一；LPWA 则是可达数公里以上的广域方式的统称。",
+          "text_en": "BLE and LPWA both save power, but BLE is a short-range part of the Bluetooth spec, while LPWA is an umbrella term for wide-area methods that reach several kilometers or more.",
+          "qids": [
+            "2026r08-q081"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2022r04-q092",
+        "2025r07-q056",
+        "2026r08-q081"
+      ],
+      "definition_jp": "BLE (Bluetooth Low Energy) は、Bluetooth に追加された省電力の近距離無線通信の仕様である。",
+      "definition_zh": "BLE（Bluetooth Low Energy）是蓝牙（Bluetooth）中新增的一项低功耗的近距离无线通信规范。",
+      "definition_en": "BLE (Bluetooth Low Energy) is a low-power, short-range wireless specification added to Bluetooth.",
+      "explanation_jp": "Bluetooth 4.0 で加わった仕様で、一般的なボタン電池でも長期間動き続けられるほど電力を使わない。少量のデータをときどき送るセンサーや身に着ける機器に向いている。",
+      "explanation_zh": "它是 Bluetooth 4.0 加入的规范，耗电少到用普通纽扣电池也能长期工作。适合偶尔发送少量数据的传感器和可穿戴设备。",
+      "explanation_en": "It arrived with Bluetooth 4.0 and draws so little power that an ordinary coin cell keeps it going for a long time. It suits sensors and wearables that send small amounts of data now and then.",
+      "memory_hook_jp": "LE は Low Energy の略で「省エネ」。Bluetooth の省エネ版と読める。",
+      "memory_hook_zh": "LE 是 Low Energy 的缩写，意思是“节能”，可以读作蓝牙的节能版。",
+      "memory_hook_en": "LE stands for Low Energy, so the name reads as \"the energy-saving Bluetooth\".",
+      "inline_quiz": [
+        "2022r04-q092",
+        "2025r07-q056",
+        "2026r08-q081"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ビーコン",
+      "term_zh": "信标（Beacon）",
+      "term_en": "Beacon",
+      "one_jp": "**ビーコン**は、自分を識別する信号を**一定の間隔で発信し続ける**小型の装置で、受け取った端末がその装置の近くにいることや居場所を知る手がかりになる。",
+      "one_zh": "**信标**（[[jp:ビーコン]]）是一种**按固定间隔持续发出**自身识别信号的小型装置，收到信号的终端可据此得知自己就在它附近、并推断所在位置。",
+      "one_en": "A **beacon** ([[jp:ビーコン]]) is a small device that **keeps sending its own ID signal at fixed intervals**, giving a receiving device a clue that it is near the beacon and where it is.",
+      "detail_jp": "発信には **BLE** を使うものが多く、電池で長く動く。スマートフォンなどの受信側は、電波の強さから発信機との距離を推し量り、その場所に合った情報をアプリで表示する。衛星からの電波が届きにくい建物の中でも、発信機を置いた場所を目印にして居場所をつかめる。",
+      "detail_zh": "大多数信标用 **BLE** 发送，靠电池可以长期工作。智能手机等接收方根据信号强弱估算与发射器的距离，再通过应用显示适合该位置的信息。即使在卫星信号难以到达的建筑物内，也能以安放发射器的位置为参照来确定自己在哪儿。",
+      "detail_en": "Most beacons transmit over **BLE** and run for a long time on a battery. The receiver, such as a smartphone, estimates how far away the transmitter is from the signal strength and uses an app to show information suited to that spot. Even inside buildings where satellite signals barely reach, the places where transmitters are installed serve as landmarks for finding where you are.",
+      "analogy_jp": "夜の海で灯台が一定のリズムで光を出し、それを見た船が自分の位置を知るのに似ている。",
+      "analogy_zh": "就像夜晚海上的灯塔按固定节奏发光，船只看到后便知道自己在哪儿。",
+      "analogy_en": "It resembles a lighthouse flashing at a steady rhythm over the night sea, letting ships that see it work out their position.",
+      "hook_jp": "英語の beacon の元の意味は、のろしや灯台の灯のように遠くへ合図を送る目印である。",
+      "hook_zh": "英文 beacon 原指烽火、灯塔之光这类向远方传递信号的标志。",
+      "hook_en": "The English word beacon first meant a signal fire or lighthouse lamp: a marker that sends a sign far away.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "ビーコンは識別用の信号を発信する側の装置で、距離や居場所を推し量るのは信号を受け取った端末の側である。",
+          "text_zh": "信标只是发出识别信号的一方，估算距离和位置的是收到信号的终端。",
+          "text_en": "The beacon only sends the ID signal; it is the receiving device that estimates distance and location."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "tx",
+              "label": {
+                "jp": "ビーコン (発信機)",
+                "zh": "信标（发射器）",
+                "en": "Beacon (transmitter)"
+              }
+            },
+            {
+              "id": "rx",
+              "label": {
+                "jp": "スマートフォンなどの受信端末",
+                "zh": "智能手机等接收终端",
+                "en": "Receiver such as a smartphone"
+              }
+            },
+            {
+              "id": "app",
+              "label": {
+                "jp": "アプリが情報を表示",
+                "zh": "应用显示信息",
+                "en": "App shows information"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ビーコンが、識別用の信号を一定の間隔で発信し続ける。",
+            "caption_zh": "信标按固定间隔不断发出识别信号。",
+            "caption_en": "The beacon keeps sending its ID signal at fixed intervals.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "近くの端末が信号を受け取り、電波の強さから発信機までの距離を推し量る。",
+            "caption_zh": "附近的终端收到信号，根据信号强弱估算与发射器的距离。",
+            "caption_en": "A nearby device picks up the signal and estimates its distance from the transmitter by signal strength.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "アプリが、端末のいる場所に合った案内や情報を表示する。",
+            "caption_zh": "应用显示与终端所在位置相符的指引或信息。",
+            "caption_en": "An app shows guidance or information that fits where the device is.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ビーコンは、自分を識別する信号を一定の間隔で発信し続ける小型の装置で、受け取った端末がその装置の近くにいることや居場所を知る手がかりになる。",
+      "definition_zh": "信标（ビーコン）是一种按固定间隔持续发出自身识别信号的小型装置，收到信号的终端可据此得知自己就在它附近、并推断所在位置。",
+      "definition_en": "A beacon (ビーコン) is a small device that keeps sending its own ID signal at fixed intervals, giving a receiving device a clue that it is near the beacon and where it is.",
+      "explanation_jp": "発信には BLE を使うものが多く、電池で長く動く。スマートフォンなどの受信側は、電波の強さから発信機との距離を推し量り、その場所に合った情報をアプリで表示する。衛星からの電波が届きにくい建物の中でも、発信機を置いた場所を目印にして居場所をつかめる。",
+      "explanation_zh": "大多数信标用 BLE 发送，靠电池可以长期工作。智能手机等接收方根据信号强弱估算与发射器的距离，再通过应用显示适合该位置的信息。即使在卫星信号难以到达的建筑物内，也能以安放发射器的位置为参照来确定自己在哪儿。",
+      "explanation_en": "Most beacons transmit over BLE and run for a long time on a battery. The receiver, such as a smartphone, estimates how far away the transmitter is from the signal strength and uses an app to show information suited to that spot. Even inside buildings where satellite signals barely reach, the places where transmitters are installed serve as landmarks for finding where you are.",
+      "memory_hook_jp": "英語の beacon の元の意味は、のろしや灯台の灯のように遠くへ合図を送る目印である。",
+      "memory_hook_zh": "英文 beacon 原指烽火、灯塔之光这类向远方传递信号的标志。",
+      "memory_hook_en": "The English word beacon first meant a signal fire or lighthouse lamp: a marker that sends a sign far away.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "エッジコンピューティング",
+      "term_zh": "边缘计算",
+      "term_en": "Edge computing",
+      "one_jp": "**エッジコンピューティング**は、IoT デバイスの**近く**にコンピュータを置いてデータを処理し、その結果を IoT サーバへ送る方式である。",
+      "one_zh": "**边缘计算**（[[jp:エッジコンピューティング]]）是在 IoT 设备**附近**放置计算机来处理数据，再把结果发送给 IoT 服务器的方式。",
+      "one_en": "**Edge computing** ([[jp:エッジコンピューティング]]) places computers **close to** the IoT devices to process data there, then sends the results on to the IoT server.",
+      "detail_jp": "現場の近くで処理するので、遠くのサーバとの往復を待たずに反応でき、即時の反応 (リアルタイム性) が求められる制御に向く。送る前にデータを絞り込めば、ネットワークを流れる量とサーバの負荷を減らせる。",
+      "detail_zh": "由于在现场附近处理，不必等待与远处服务器往返就能响应，适合要求即时响应（实时性）的控制。发送前先筛选数据，还能减少网络上的流量和服务器负载。",
+      "detail_en": "Because processing happens near the site, the system can respond without waiting for a round trip to a distant server, which suits control tasks that need an immediate (real-time) response. Filtering data before sending it also cuts network traffic and the load on the server.",
+      "analogy_jp": "本社に何でも問い合わせるのではなく、支店で判断できる用件は支店で片付け、結果だけを本社へ報告するやり方である。",
+      "analogy_zh": "就像不是事事都请示总公司，分店能定的事就在分店办完，只把结果上报总公司。",
+      "analogy_en": "Instead of checking everything with head office, each branch settles what it can decide itself and reports only the outcome to head office.",
+      "hook_jp": "edge は「端・ふち」。ネットワークの中心にあるサーバから見た端、つまり現場の側で処理すると覚える。",
+      "hook_zh": "edge 意为“边、边缘”。从网络中心的服务器看过去，边缘就是现场一侧，把处理放在那里。",
+      "hook_en": "Edge means the rim or border: seen from the server at the network's center, the edge is the on-site side, and that is where processing happens.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "エッジコンピューティングは、IoT デバイスのそばに置いたコンピュータに処理を受け持たせ、IoT サーバの負荷を下げてリアルタイム性を高める。",
+          "text_zh": "边缘计算让放在 IoT 设备旁的计算机承担处理，以降低 IoT 服务器的负载、提高实时性（[[jp:リアルタイム性]]）。",
+          "text_en": "Edge computing hands processing to computers placed beside the IoT devices, lowering the IoT server's load and improving real-time response ([[jp:リアルタイム性]]).",
+          "qids": [
+            "2019r01a-q071",
+            "2023r05-q071"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "現場側でデータから必要な部分だけを取り出し、量を減らしてからサーバへ送る形態もエッジコンピューティングに当たる。",
+          "text_zh": "在现场一侧只取出数据中需要的部分、减少数据量后再发给服务器，这种形态也属于边缘计算。",
+          "text_en": "Pulling out only the needed part of the data on site and sending the reduced amount to the server also counts as edge computing.",
+          "qids": [
+            "2021r03-q086"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "処理を置く場所で比べると、クラウドコンピューティングは遠くのデータセンターに集め、エッジコンピューティングは IoT デバイスのある現場の側に置く。",
+          "text_zh": "按处理放在哪里来比较，云计算（[[jp:クラウドコンピューティング]]）把处理集中到远处的数据中心，边缘计算则放在 IoT 设备所在的现场一侧。",
+          "text_en": "Compared by where processing happens, cloud computing ([[jp:クラウドコンピューティング]]) gathers it in a distant data center, while edge computing keeps it on site, where the IoT devices are.",
+          "qids": [
+            "2023r05-q071"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "サーバでまとめて処理",
+            "zh": "在服务器集中处理",
+            "en": "Process everything at the server"
+          },
+          "b": {
+            "jp": "エッジで処理してから送る",
+            "zh": "先在边缘处理再发送",
+            "en": "Process at the edge, then send"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "処理する場所",
+                "zh": "处理地点",
+                "en": "Where processing happens"
+              },
+              "a": {
+                "jp": "遠くの IoT サーバ",
+                "zh": "远处的 IoT 服务器",
+                "en": "A distant IoT server"
+              },
+              "b": {
+                "jp": "IoT デバイスの近くのコンピュータ",
+                "zh": "IoT 设备附近的计算机",
+                "en": "A computer near the IoT devices"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "ネットワークを流れるデータ量",
+                "zh": "网络上传输的数据量",
+                "en": "Data flowing over the network"
+              },
+              "a": {
+                "jp": "生のデータをすべて送るので多い",
+                "zh": "原始数据全部发送，所以多",
+                "en": "Large: all raw data is sent"
+              },
+              "b": {
+                "jp": "絞り込んでから送るので少ない",
+                "zh": "筛选后再发送，所以少",
+                "en": "Small: data is filtered first"
+              }
+            },
+            {
+              "label": {
+                "jp": "反応までの時間",
+                "zh": "响应所需时间",
+                "en": "Time to respond"
+              },
+              "a": {
+                "jp": "サーバとの往復を待つので長い",
+                "zh": "要等与服务器往返，所以长",
+                "en": "Long: waits for a round trip to the server"
+              },
+              "b": {
+                "jp": "現場の近くで判断するので短い",
+                "zh": "在现场附近判断，所以短",
+                "en": "Short: decisions are made on site"
+              }
+            },
+            {
+              "label": {
+                "jp": "サーバの負荷",
+                "zh": "服务器负载",
+                "en": "Server load"
+              },
+              "a": {
+                "jp": "デバイスが増えるほど重くなる",
+                "zh": "设备越多越重",
+                "en": "Grows as devices are added"
+              },
+              "b": {
+                "jp": "一部を現場側が受け持つので軽くなる",
+                "zh": "现场一侧分担一部分，所以减轻",
+                "en": "Lighter: the site takes on part of the work"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2019r01a-q071",
+        "2021r03-q086"
+      ],
+      "definition_jp": "エッジコンピューティングは、IoT デバイスの近くにコンピュータを置いてデータを処理し、その結果を IoT サーバへ送る方式である。",
+      "definition_zh": "边缘计算（エッジコンピューティング）是在 IoT 设备附近放置计算机来处理数据，再把结果发送给 IoT 服务器的方式。",
+      "definition_en": "Edge computing (エッジコンピューティング) places computers close to the IoT devices to process data there, then sends the results on to the IoT server.",
+      "explanation_jp": "現場の近くで処理するので、遠くのサーバとの往復を待たずに反応でき、即時の反応 (リアルタイム性) が求められる制御に向く。送る前にデータを絞り込めば、ネットワークを流れる量とサーバの負荷を減らせる。",
+      "explanation_zh": "由于在现场附近处理，不必等待与远处服务器往返就能响应，适合要求即时响应（实时性）的控制。发送前先筛选数据，还能减少网络上的流量和服务器负载。",
+      "explanation_en": "Because processing happens near the site, the system can respond without waiting for a round trip to a distant server, which suits control tasks that need an immediate (real-time) response. Filtering data before sending it also cuts network traffic and the load on the server.",
+      "memory_hook_jp": "edge は「端・ふち」。ネットワークの中心にあるサーバから見た端、つまり現場の側で処理すると覚える。",
+      "memory_hook_zh": "edge 意为“边、边缘”。从网络中心的服务器看过去，边缘就是现场一侧，把处理放在那里。",
+      "memory_hook_en": "Edge means the rim or border: seen from the server at the network's center, the edge is the on-site side, and that is where processing happens.",
+      "inline_quiz": [
+        "2019r01a-q071",
+        "2021r03-q086"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "LPWA",
+      "b": "BLE",
+      "rows": [
+        {
+          "label_jp": "電波の届く距離",
+          "label_zh": "信号可达距离",
+          "label_en": "Signal reach",
+          "a_jp": "数 km から数十 km の広域",
+          "a_zh": "数公里到数十公里的广域",
+          "a_en": "Wide area, several to tens of km",
+          "b_jp": "同じ部屋や建物の中に収まる程度の近距離",
+          "b_zh": "同一房间或建筑物内的近距离",
+          "b_en": "Short range, within a room or building",
+          "key": true
+        },
+        {
+          "label_jp": "消費電力",
+          "label_zh": "功耗",
+          "label_en": "Power use",
+          "a_jp": "少ない (電池で年単位)",
+          "a_zh": "少（靠电池可用数年）",
+          "a_en": "Low (years on a battery)",
+          "b_jp": "少ない (ボタン電池で長期間)",
+          "b_zh": "少（纽扣电池可长期使用）",
+          "b_en": "Low (long life on a coin cell)",
+          "key": false
+        },
+        {
+          "label_jp": "位置付け",
+          "label_zh": "定位",
+          "label_en": "What it is",
+          "a_jp": "広域向け無線通信方式の総称",
+          "a_zh": "广域无线通信方式的统称",
+          "a_en": "Umbrella term for wide-area wireless methods",
+          "b_jp": "Bluetooth の一部として定められた仕様",
+          "b_zh": "作为蓝牙一部分制定的规范",
+          "b_en": "A spec defined as part of Bluetooth",
+          "key": false
+        },
+        {
+          "label_jp": "向いている使い方",
+          "label_zh": "适合的用途",
+          "label_en": "Best use",
+          "a_jp": "広い地域に散らばった機器からのデータ集め",
+          "a_zh": "从分散在大片区域的设备收集数据",
+          "a_en": "Collecting data from devices spread over a large region",
+          "b_jp": "身近な機器や近くのゲートウェイとの接続",
+          "b_zh": "连接身边的设备或附近的网关",
+          "b_en": "Linking nearby devices or a nearby gateway",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**IoT エリアネットワーク**は現場の IoT デバイスを結ぶ範囲で、外の広域ネットワークや IoT サーバへは **IoT ゲートウェイ**を通ってつながる。",
+    "エリア内の接続には無線のほか、電力線を通信路に使う PLC のような有線も使われ、マルチホップで範囲を広げることもできる。",
+    "**LPWA** は電池で長く動き遠くまで届く代わりに、通信速度は低い。",
+    "**ビーコン**は識別用の信号を一定間隔で出し続ける小型の発信機で、発信には **BLE** がよく使われる。",
+    "**エッジコンピューティング**は処理を IoT デバイスの近くに置き、反応を速くして通信量とサーバの負荷を減らす。"
+  ],
+  "key_points_zh": [
+    "**IoT 区域网络**是连接现场 IoT 设备的范围，要经 **IoT 网关**才能接到外部广域网和 IoT 服务器。",
+    "区域内的连接除无线外，也会用 PLC 这类以电力线为通信线路的有线方式，还可以靠多跳扩大范围。",
+    "**LPWA** 靠电池能用很久、信号传得远，代价是通信速度低。",
+    "**信标**是按固定间隔持续发出识别信号的小型发射器，发送时常用 **BLE**。",
+    "**边缘计算**把处理放在 IoT 设备附近，加快响应，并减少通信量和服务器负载。"
+  ],
+  "key_points_en": [
+    "An **IoT area network** covers the on-site IoT devices, and it reaches the outside wide-area network and IoT servers through an **IoT gateway**.",
+    "Inside the area, links can be wireless or wired, such as PLC over power lines, and multi-hop relaying can widen the coverage.",
+    "**LPWA** runs long on batteries and reaches far, in exchange for low data rates.",
+    "A **beacon** is a small transmitter that keeps sending an ID signal at fixed intervals, often over **BLE**.",
+    "**Edge computing** places processing near the IoT devices, speeding up response while cutting traffic and server load."
+  ],
+  "overview": {
+    "intro_jp": "IoT エリアネットワークの構成の中で、デバイスとゲートウェイとサーバがそれぞれどこに位置するかを説明できる。省電力の無線である LPWA と BLE を、電波の届く距離で分けられる。ビーコンの発信側と受信側の役割、エッジコンピューティングで処理を現場の近くに置く利点を説明できる。",
+    "intro_zh": "能说明在 IoT 区域网络的构成中，设备、网关和服务器各自处在什么位置。能按信号能传多远，区分同为低功耗无线的 LPWA 和 BLE。能说明信标发送方与接收方的分工，以及边缘计算把处理放在现场附近的好处。",
+    "intro_en": "Explain where the device, the gateway and the server each sit in the layout of an IoT area network. Tell apart LPWA and BLE, both low-power wireless, by how far their signals reach. Explain what the sending and receiving sides of a beacon each do, and why edge computing gains by processing data close to the site.",
+    "freq_badge": "頻出",
+    "est_minutes": 34
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "IoTエリアネットワーク: IoTエリアネットワークといえばIoT機器を束ねゲートウェイで上位網へつなぐ近距離網",
-      "LPWA: LPWAといえば省電力・広域・低速のIoT向け無線",
-      "BLE: BLEといえば省電力・近距離のBluetooth",
-      "ビーコン: ビーコンといえば電波を周期発信して近接検知・屋内測位",
-      "エッジコンピューティング: エッジコンピューティングといえばデータを末端近くで処理"
-    ],
     "key_points_jp": [
-      "IoTエリアネットワークは多数のIoT機器を束ね、IoTゲートウェイを介してインターネット/クラウドへつなぐ近距離ネットワーク。",
-      "LPWAは「省電力・広域・低速」、BLEは「省電力・近距離」が特徴で、広域か近距離かで対比して覚える。",
-      "ビーコンはBLE等の電波を周期発信し、屋内測位や近接した利用者への情報配信に使われる。",
-      "エッジコンピューティングはデータを末端近くで処理し、応答の高速化と通信量・クラウド負荷の軽減を図る方式。",
-      "全体構成は「IoT機器→エリアネットワーク→ゲートウェイ→クラウド」で、エッジ処理はこの末端側で一次処理を担う。"
+      "IoT エリアネットワークは現場の IoT デバイスを結ぶ範囲で、外の広域ネットワークや IoT サーバへは IoT ゲートウェイを通ってつながる。",
+      "エリア内の接続には無線のほか、電力線を通信路に使う PLC のような有線も使われ、マルチホップで範囲を広げることもできる。",
+      "LPWA は電池で長く動き遠くまで届く代わりに、通信速度は低い。",
+      "ビーコンは識別用の信号を一定間隔で出し続ける小型の発信機で、発信には BLE がよく使われる。",
+      "エッジコンピューティングは処理を IoT デバイスの近くに置き、反応を速くして通信量とサーバの負荷を減らす。"
     ],
     "key_points_zh": [
-      "IoT 区域网络汇聚大量 IoT 设备，经由 IoT 网关接入互联网/云的近距离网络。",
-      "LPWA 的特征是“低功耗、广域、低速”，BLE 的特征是“低功耗、近距离”，按广域还是近距离对比记忆。",
-      "信标周期性发射 BLE 等电波，用于室内定位以及向近旁用户推送信息。",
-      "边缘计算在末端附近处理数据，以加快响应、减轻通信量与云的负载。",
-      "整体构成是“IoT 设备→区域网络→网关→云”，边缘处理在这个末端侧承担初步处理。"
+      "IoT 区域网络是连接现场 IoT 设备的范围，要经 IoT 网关才能接到外部广域网和 IoT 服务器。",
+      "区域内的连接除无线外，也会用 PLC 这类以电力线为通信线路的有线方式，还可以靠多跳扩大范围。",
+      "LPWA 靠电池能用很久、信号传得远，代价是通信速度低。",
+      "信标是按固定间隔持续发出识别信号的小型发射器，发送时常用 BLE。",
+      "边缘计算把处理放在 IoT 设备附近，加快响应，并减少通信量和服务器负载。"
     ],
     "key_points_en": [
-      "An IoT area network bundles many IoT devices and connects them to the Internet/cloud via an IoT gateway; it is a short-range network.",
-      "LPWA is characterized by \"low power, wide area, low speed\" and BLE by \"low power, short range\"; remember them by contrasting wide-area vs. short-range.",
-      "A beacon periodically transmits radio waves such as BLE, used for indoor positioning and for delivering information to nearby users.",
-      "Edge computing processes data near the endpoints to speed up responses and reduce communication volume and cloud load.",
-      "The overall structure is \"IoT device → area network → gateway → cloud,\" and edge processing handles the first-stage processing on this endpoint side."
+      "An IoT area network covers the on-site IoT devices, and it reaches the outside wide-area network and IoT servers through an IoT gateway.",
+      "Inside the area, links can be wireless or wired, such as PLC over power lines, and multi-hop relaying can widen the coverage.",
+      "LPWA runs long on batteries and reaches far, in exchange for low data rates.",
+      "A beacon is a small transmitter that keeps sending an ID signal at fixed intervals, often over BLE.",
+      "Edge computing places processing near the IoT devices, speeding up response while cutting traffic and server load."
+    ],
+    "memory_hooks_jp": [
+      "IoTエリアネットワーク: ゲートウェイの gate は「門」。エリアの中と外を分ける門だと覚える。",
+      "LPWA: 名前は Low Power (省電力) と Wide Area (広域) だけで、速さを表す語は入っていない。",
+      "BLE: LE は Low Energy の略で「省エネ」。Bluetooth の省エネ版と読める。",
+      "ビーコン: 英語の beacon の元の意味は、のろしや灯台の灯のように遠くへ合図を送る目印である。",
+      "エッジコンピューティング: edge は「端・ふち」。ネットワークの中心にあるサーバから見た端、つまり現場の側で処理すると覚える。"
     ],
     "memory_hooks_zh": [
-      "IoT 区域网络：说到 IoT 区域网络，就是汇聚 IoT 设备、经网关接入上位网络的近距离网。",
-      "LPWA：说到 LPWA，就是低功耗、广域、低速的面向 IoT 无线。",
-      "BLE：说到 BLE，就是低功耗、近距离的 Bluetooth。",
-      "信标：说到信标，就是周期发射电波，做近接检测、室内定位。",
-      "边缘计算：说到边缘计算，就是把数据在末端附近处理。"
+      "IoT 区域网络：网关的英文 gateway 里有 gate，就是“门”：把它记成隔开区域内外的那道门。",
+      "LPWA：名字里只有 Low Power（低功耗）和 Wide Area（广域），没有任何表示“快”的词。",
+      "BLE：LE 是 Low Energy 的缩写，意思是“节能”，可以读作蓝牙的节能版。",
+      "信标（Beacon）：英文 beacon 原指烽火、灯塔之光这类向远方传递信号的标志。",
+      "边缘计算：edge 意为“边、边缘”。从网络中心的服务器看过去，边缘就是现场一侧，把处理放在那里。"
     ],
     "memory_hooks_en": [
-      "IoT area network: IoT area network → bundles IoT devices and links them to the upper network via a gateway, a short-range net.",
-      "LPWA: LPWA → low-power, wide-area, low-speed wireless for IoT.",
-      "BLE: BLE → low-power, short-range Bluetooth.",
-      "Beacon: Beacon → periodically broadcasts radio waves for proximity detection and indoor positioning.",
-      "Edge computing: Edge computing → process data close to the endpoints."
+      "IoT area network: The \"gate\" in gateway is literally a gate: the one that separates the inside of the area from the outside.",
+      "LPWA: The name holds only Low Power and Wide Area; no word in it says anything about speed.",
+      "BLE: LE stands for Low Energy, so the name reads as \"the energy-saving Bluetooth\".",
+      "Beacon: The English word beacon first meant a signal fire or lighthouse lamp: a marker that sends a sign far away.",
+      "Edge computing: Edge means the rim or border: seen from the server at the network's center, the edge is the on-site side, and that is where processing happens."
     ]
   },
   "challenge_questions": [
     "2021r03-q080",
-    "2023r05-q071",
-    "2022r04-q092",
-    "2024r06-q084",
-    "2025r07-q056"
+    "2019r01a-q081",
+    "2020r02o-q070",
+    "2023r05-q071"
   ],
   "source_figures": [
     {
@@ -201,9 +767,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "IoT 网络",
-  "title_en": "IoT Networks",
-  "unit_summary_zh": "理解连接 IoT 设备的区域网络构成，面向低功耗、近距离的通信方式，以及在数据近端进行处理的边缘计算。",
-  "unit_summary_en": "Understand the structure of area networks that connect IoT devices, low-power and short-range communication methods, and edge computing that processes data close to where it is generated."
+  }
 }

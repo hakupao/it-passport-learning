@@ -1,254 +1,943 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-58-u03",
   "topic_id": "technology-22-58",
   "category": "technology",
   "title_jp": "無線LANとWi-Fi",
+  "title_zh": "无线LAN与Wi-Fi",
+  "title_en": "Wireless LAN and Wi-Fi",
   "unit_summary_jp": "無線LANの仕組みとWi-Fi関連技術、無線で機器を識別・接続するための識別子（ESSID・MACアドレス）を理解する。",
+  "unit_summary_zh": "理解无线LAN的工作原理与Wi-Fi相关技术，以及用于无线识别和连接设备的标识符（ESSID、MAC地址）。",
+  "unit_summary_en": "Understand how wireless LAN works and Wi-Fi-related technologies, along with the identifiers used to identify and connect devices wirelessly (ESSID and MAC address).",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-22-58-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、ケーブルを使わず電波で通信する無線LANの仕組みと、その代表規格Wi-Fi、派生技術(Wi-Fi Direct・メッシュWi-Fi・WPS)を学びます。さらに無線でネットワークや機器を識別する識別子ESSIDとMACアドレスも扱います。無線LANはネットワーク方式の中でも特に出題が多い頻出分野です。",
-    "freq_badge": "頻出",
-    "est_minutes": 21,
-    "intro_zh": "在本单元中，我们将学习不使用线缆、依靠电波进行通信的无线LAN工作原理，及其代表性规格Wi-Fi，还有其衍生技术（Wi-Fi Direct、网状Wi-Fi、WPS）。此外，还会涉及用于无线识别网络和设备的标识符ESSID与MAC地址。无线LAN在各种网络方式中尤其出题频繁，是高频考点领域。",
-    "intro_en": "In this unit, we learn how wireless LAN works—communicating over radio waves without cables—along with its representative standard Wi-Fi and its derived technologies (Wi-Fi Direct, mesh Wi-Fi, WPS). We also cover the identifiers ESSID and MAC address, which identify networks and devices wirelessly. Wireless LAN is an especially frequently tested area among networking methods."
-  },
+  "goals_jp": [
+    "**無線LAN** と **Wi-Fi** の関係を説明し、電波で通信するために要る安全対策を挙げられる。",
+    "専用のアクセスポイント機器なしで機器同士をつなぐ技術、電波の届く範囲を広げる構成、接続設定を簡単にする機能を、それぞれの名前と結び付けられる。",
+    "**ESSID** と **MACアドレス** が何を識別するかを区別し、それぞれを使った不正接続の対策を説明できる。"
+  ],
+  "goals_zh": [
+    "能说明 **无线LAN** 与 **Wi-Fi** 的关系，并举出用电波通信时需要的安全措施。",
+    "能把不用专用接入点设备就让设备互连的技术、扩大电波覆盖范围的组网方式、简化连接设置的功能，分别与各自的名称对应起来。",
+    "能区分 **ESSID** 和 **MAC地址** 各自标识的对象，并说明利用它们防止非法接入的措施。"
+  ],
+  "goals_en": [
+    "Explain how **wireless LAN** relates to **Wi-Fi**, and name the security measures needed when devices talk over radio waves.",
+    "Match each name to its job: linking devices directly without a dedicated access point, extending radio coverage, or simplifying connection setup.",
+    "Tell apart what an **ESSID** and a **MAC address** identify, and explain how each one is used to block unauthorized connections."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "見分けどころ"
+  ],
+  "overview_cols_zh": [
+    "类型",
+    "辨别要点"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "How to tell it apart"
+  ],
+  "overview_rows": [
+    {
+      "term": "無線LAN",
+      "one_line_jp": "電波で機器をつなぐLAN",
+      "one_line_zh": "用电波连接设备的LAN",
+      "one_line_en": "A LAN that links devices by radio waves",
+      "extra_jp": [
+        "ネットワークの形態",
+        "電波が外へ届くので暗号化が前提"
+      ],
+      "extra_zh": [
+        "网络形态",
+        "电波会传到外部，因此以加密为前提"
+      ],
+      "extra_en": [
+        "Network form",
+        "Signals reach outside, so encryption is a given"
+      ]
+    },
+    {
+      "term": "Wi-Fi",
+      "one_line_jp": "他社製品ともつながると認証された無線LAN製品のブランド名",
+      "one_line_zh": "经认证可与其他厂商产品互连的无线LAN产品品牌名",
+      "one_line_en": "Brand name for wireless LAN products certified to work with other makers' products",
+      "extra_jp": [
+        "認証・ブランド",
+        "中身の規格は IEEE 802.11"
+      ],
+      "extra_zh": [
+        "认证与品牌",
+        "底层标准是 IEEE 802.11"
+      ],
+      "extra_en": [
+        "Certification and brand",
+        "Built on the IEEE 802.11 standards"
+      ]
+    },
+    {
+      "term": "Wi-Fi Direct",
+      "one_line_jp": "専用のアクセスポイント機器なしで機器同士を直接つなぐ規格",
+      "one_line_zh": "无需专用接入点设备、让设备之间直接连接的标准",
+      "one_line_en": "A standard that connects devices directly without a dedicated access point",
+      "extra_jp": [
+        "接続のしかた",
+        "専用のアクセスポイント機器を置かない"
+      ],
+      "extra_zh": [
+        "连接方式",
+        "不设置专用接入点设备"
+      ],
+      "extra_en": [
+        "Connection method",
+        "No dedicated access point device"
+      ]
+    },
+    {
+      "term": "メッシュWi-Fi",
+      "one_line_jp": "複数の機器を網目状に連携させて電波の範囲を広げる構成",
+      "one_line_zh": "让多台设备呈网状协作、扩大电波覆盖范围的组网方式",
+      "one_line_en": "A setup in which several devices work together as a mesh to extend coverage",
+      "extra_jp": [
+        "ネットワークの構成",
+        "全体で1つのネットワークとして働く"
+      ],
+      "extra_zh": [
+        "网络结构",
+        "整体作为一个网络运作"
+      ],
+      "extra_en": [
+        "Network structure",
+        "Works as one network overall"
+      ]
+    },
+    {
+      "term": "WPS",
+      "one_line_jp": "ボタン操作などで接続設定を済ませる機能",
+      "one_line_zh": "通过按按钮等操作完成连接设置的功能",
+      "one_line_en": "A feature that finishes connection setup with a button press or similar",
+      "extra_jp": [
+        "設定の補助機能",
+        "PIN方式には破られやすい弱点がある"
+      ],
+      "extra_zh": [
+        "设置辅助功能",
+        "PIN 方式存在容易被破解的弱点"
+      ],
+      "extra_en": [
+        "Setup helper",
+        "The PIN method is easy to crack"
+      ]
+    },
+    {
+      "term": "ESSID",
+      "one_line_jp": "無線LANのネットワーク名",
+      "one_line_zh": "无线LAN的网络名称",
+      "one_line_en": "The name of a wireless LAN network",
+      "extra_jp": [
+        "識別子 (ネットワーク)",
+        "管理者が自由に付ける"
+      ],
+      "extra_zh": [
+        "标识符（网络）",
+        "由管理员自由命名"
+      ],
+      "extra_en": [
+        "Identifier (network)",
+        "Named freely by the administrator"
+      ]
+    },
+    {
+      "term": "MACアドレス",
+      "one_line_jp": "機器ごとに固有の物理アドレス",
+      "one_line_zh": "每台设备固有的物理地址",
+      "one_line_en": "A physical address unique to each device",
+      "extra_jp": [
+        "識別子 (機器)",
+        "製造時に割り当て済み"
+      ],
+      "extra_zh": [
+        "标识符（设备）",
+        "出厂时已分配"
+      ],
+      "extra_en": [
+        "Identifier (device)",
+        "Assigned at manufacture"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "無線LAN",
-      "definition_jp": "電波を使ってケーブルなしで機器を接続する構内ネットワーク。",
-      "explanation_jp": "無線LANは、LANケーブルの代わりに電波を使って機器同士を接続する構内ネットワークです。パソコンやスマートフォンは、アクセスポイント(電波の中継拠点)を経由してネットワークや有線LANにつながります。\n\n配線が不要で機器を自由に移動できる反面、電波が壁などで弱まる、傍受されやすいといった注意点があり、暗号化(WPA2など)による保護が前提となります。試験では、ケーブルを用いる有線LANとの違いや、接続にアクセスポイントが必要なこと、電波の特性に由来する長所・短所が問われます。",
-      "analogy_jp": "有線LANが各席まで電話線を引く固定電話なら、無線LANは基地局(アクセスポイント)経由でつながる携帯電話のようなもの。線がない分どこでもつながりますが電波の届き方に左右されます。",
-      "memory_hook_jp": "無線LANといえば電波でケーブルなしに接続するLAN",
+      "term_zh": "无线LAN",
+      "term_en": "Wireless LAN",
+      "one_jp": "**無線LAN** は、ケーブルの代わりに **電波** を使って機器同士をつなぐLANである。",
+      "one_zh": "**无线LAN**（[[jp:無線LAN]]）是不用线缆、改用 **电波** 把设备彼此连接起来的LAN。",
+      "one_en": "A **wireless LAN** ([[jp:無線LAN]]) is a LAN that links devices using **radio waves** instead of cables.",
+      "detail_jp": "パソコンやスマートフォンは、ふつう **アクセスポイント** (電波を送受信して端末をネットワークへ中継する機器) を経由して有線LANやインターネットにつながる。電波は距離や壁で弱まるので、置き場所によって通信の品質が変わる。電波は建物の外にも届くので、通信の暗号化やアクセスポイントの不正利用への対策が欠かせない。",
+      "detail_zh": "电脑和智能手机通常经由 **接入点**（[[jp:アクセスポイント]]，收发电波、把终端中继到网络的设备）连接到有线 LAN 或互联网。电波会随距离和墙壁衰减，因此设备摆放的位置会影响通信质量。电波还会传到建筑物外，所以必须对通信加密，并防范接入点被他人盗用。",
+      "detail_en": "PCs and smartphones usually reach a wired LAN or the internet through an **access point** ([[jp:アクセスポイント]]), a device that sends and receives radio signals and relays devices onto the network. Radio signals weaken with distance and walls, so where the equipment sits affects connection quality. Because the signals also reach outside the building, encrypting traffic and guarding the access point against misuse are essential.",
+      "analogy_jp": "有線LANが机ごとに電話線を引いた固定電話なら、無線LANは親機から電波で子機を使うコードレス電話のようなもの。線がない分自由に動けるが、親機から離れすぎると声が届きにくくなる。",
+      "analogy_zh": "如果说有线LAN像给每张桌子拉了电话线的固定电话，无线LAN就像子机通过电波连接母机的无绳电话。没有电话线就能自由走动，但离母机太远，声音就不容易传过去。",
+      "analogy_en": "If a wired LAN is a desk phone with a line run to every desk, a wireless LAN is a cordless phone whose handset reaches its base by radio. With no cord you can move around freely, but stray too far from the base and the voice starts to break up.",
+      "hook_jp": "英語の wireless は wire (線) + less (無い)。「線が無い」から電波で結ぶ、と字面で覚える。",
+      "hook_zh": "英语 wireless 由 wire（线）+ less（没有）组成。按字面记：“没有线”，所以靠电波连接。",
+      "hook_en": "Wireless is wire plus less: no wire, so the link is made by radio.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "無線LANの通信を暗号化する方式に **WPA2** がある。WPA2 は、無線LANの古い暗号化方式で短時間で解読されやすい WEP の弱点を改善した方式である。",
+          "text_zh": "给无线LAN通信加密的方式有 **WPA2**。WPA2 改进了 WEP 的弱点，WEP 是无线LAN的旧加密方式，短时间内就容易被破解。",
+          "text_en": "**WPA2** is one method for encrypting wireless LAN traffic. It fixes the weaknesses of WEP, an older wireless LAN encryption method that can be cracked in a short time.",
+          "qids": [
+            "2014h26a-q076",
+            "2017h29a-q069",
+            "2019h31h-q074"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "無線LANが使う電波の帯域 (周波数帯) のうち、2.4GHz帯は5GHz帯より障害物に強く遠くまで届きやすいが、電子レンジなど家電の電波と干渉しやすい。干渉が起きると伝送速度が落ちる。",
+          "text_zh": "在无线LAN使用的电波频段（[[jp:周波数帯]]）中，2.4GHz 频段比 5GHz 频段更不怕障碍物、传得更远，但容易与微波炉等家电的电波相互干扰。一旦发生干扰，传输速率就会下降。",
+          "text_en": "Of the frequency bands ([[jp:周波数帯]]) wireless LANs use, the 2.4 GHz band copes with obstacles better and reaches farther than the 5 GHz band, but it is prone to interference from appliances such as microwave ovens. Interference lowers the transmission speed.",
+          "qids": [
+            "2018h30a-q096",
+            "2015h27a-q076",
+            "2020r02o-q088"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "IoT機器に使う **LPWA** は、無線LANと比べて通信速度は遅いが、少ない電力で広い範囲をカバーできる無線通信方式である。",
+          "text_zh": "IoT（物联网）设备使用的 **LPWA** 是一种无线通信方式，通信速度比无线LAN慢，但能以很少的电力覆盖很大的范围。",
+          "text_en": "**LPWA**, used for IoT devices, is a wireless method that is slower than a wireless LAN but covers a wide area on very little power.",
+          "qids": [
+            "2019h31h-q086",
+            "2026r08-q076"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-22-58-u03-t01.svg"
+        }
+      },
+      "quiz": [
+        "2014h26a-q076",
+        "2018h30a-q096",
+        "2019h31h-q086"
+      ],
+      "definition_jp": "無線LAN は、ケーブルの代わりに 電波 を使って機器同士をつなぐLANである。",
+      "definition_zh": "无线LAN（無線LAN）是不用线缆、改用 电波 把设备彼此连接起来的LAN。",
+      "definition_en": "A wireless LAN (無線LAN) is a LAN that links devices using radio waves instead of cables.",
+      "explanation_jp": "パソコンやスマートフォンは、ふつう アクセスポイント (電波を送受信して端末をネットワークへ中継する機器) を経由して有線LANやインターネットにつながる。電波は距離や壁で弱まるので、置き場所によって通信の品質が変わる。電波は建物の外にも届くので、通信の暗号化やアクセスポイントの不正利用への対策が欠かせない。",
+      "explanation_zh": "电脑和智能手机通常经由 接入点（アクセスポイント，收发电波、把终端中继到网络的设备）连接到有线 LAN 或互联网。电波会随距离和墙壁衰减，因此设备摆放的位置会影响通信质量。电波还会传到建筑物外，所以必须对通信加密，并防范接入点被他人盗用。",
+      "explanation_en": "PCs and smartphones usually reach a wired LAN or the internet through an access point (アクセスポイント), a device that sends and receives radio signals and relays devices onto the network. Radio signals weaken with distance and walls, so where the equipment sits affects connection quality. Because the signals also reach outside the building, encrypting traffic and guarding the access point against misuse are essential.",
+      "memory_hook_jp": "英語の wireless は wire (線) + less (無い)。「線が無い」から電波で結ぶ、と字面で覚える。",
+      "memory_hook_zh": "英语 wireless 由 wire（线）+ less（没有）组成。按字面记：“没有线”，所以靠电波连接。",
+      "memory_hook_en": "Wireless is wire plus less: no wire, so the link is made by radio.",
       "inline_quiz": [
-        "2012h24a-q064",
-        "2014h26a-q056"
+        "2014h26a-q076",
+        "2018h30a-q096",
+        "2019h31h-q086"
       ],
       "inline_fallback": false,
       "figure": {
         "mermaid": "graph TD; AP[\"アクセスポイント\"]; PC[\"パソコン\"]; SP[\"スマートフォン\"]; NET[\"インターネット/有線LAN\"]; PC -->|電波| AP; SP -->|電波| AP; AP --> NET",
         "svg_path": "figures/technology-22-58-u03-t01.svg",
         "rendered": true
-      },
-      "term_zh": "无线LAN",
-      "term_en": "Wireless LAN",
-      "definition_zh": "使用电波、无需线缆即可连接设备的局域网络。",
-      "definition_en": "A local area network that connects devices using radio waves, without cables.",
-      "explanation_zh": "无线LAN是用电波代替LAN线缆来连接设备之间的局域网络。计算机和智能手机通过接入点（电波的中继据点）连接到网络或有线LAN。\n\n它的优点是无需布线、设备可以自由移动，但也有需要注意的地方：电波会因墙壁等被削弱，且容易被窃听，因此以加密（如WPA2）保护为前提。考试中会问到它与使用线缆的有线LAN的区别、连接时需要接入点，以及源于电波特性的优缺点。",
-      "explanation_en": "A wireless LAN is a local area network that uses radio waves instead of LAN cables to connect devices to each other. Computers and smartphones connect to the network or to a wired LAN via an access point (a relay point for radio waves).\n\nIts advantage is that no wiring is needed and devices can move freely, but there are caveats: radio waves are weakened by walls and other obstacles and are easily intercepted, so protection through encryption (such as WPA2) is assumed. The exam asks about the difference from wired LAN (which uses cables), the fact that an access point is needed to connect, and the pros and cons that stem from the characteristics of radio waves.",
-      "analogy_zh": "如果说有线LAN像把电话线拉到每个座位的固定电话，那么无线LAN就像经由基站（接入点）连接的手机。因为没有线缆所以哪里都能连，但会受电波覆盖情况的影响。",
-      "analogy_en": "If wired LAN is like a landline phone with a wire run to each desk, then wireless LAN is like a mobile phone that connects via a base station (the access point). Without wires you can connect anywhere, but you depend on how well the radio waves reach you.",
-      "memory_hook_zh": "说到无线LAN，就是用电波、无需线缆连接的LAN",
-      "memory_hook_en": "Wireless LAN -> a LAN that connects over radio waves without cables"
+      }
     },
     {
       "term": "Wi-Fi",
-      "definition_jp": "無線LANの相互接続性を保証する事実上の標準規格・ブランド名。",
-      "explanation_jp": "Wi-Fiは、業界団体(Wi-Fi Alliance)が異なるメーカーの無線LAN機器同士でも問題なくつながることを認定したブランド名で、IEEE 802.11という規格に基づきます。今日では無線LANのほぼ同義語として使われます。\n\nWi-Fi認証マークがあれば、メーカーが違っても相互接続できる点が利用者の安心につながります。試験では、Wi-Fiが無線LANの代表的な規格・ブランドであること、有線ではなく無線の技術であること、世代(Wi-Fi 5/6など)が速度や規格の違いを表すことを押さえます。",
-      "analogy_jp": "さまざまな店のコンセントでも同じ形のプラグが挿せるように、メーカーが違う無線LAN機器でも「Wi-Fi」という共通規格に合わせてあれば互いにつながる、という相互接続の保証マークです。",
-      "memory_hook_jp": "Wi-Fiといえば無線LANの相互接続を保証する標準規格",
-      "inline_quiz": [
-        "2011h23tokubetsu-q082",
-        "2015h27h-q071"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "Wi-Fi",
       "term_en": "Wi-Fi",
-      "definition_zh": "保证无线LAN互联互通的事实标准规格与品牌名称。",
-      "definition_en": "The de facto standard and brand name that guarantees the interoperability of wireless LAN.",
-      "explanation_zh": "Wi-Fi是行业团体（Wi-Fi Alliance，Wi-Fi联盟）认证的品牌名称，用于确保不同厂商的无线LAN设备之间也能顺畅连接，它基于IEEE 802.11规格。如今它几乎被当作无线LAN的同义词使用。\n\n只要带有Wi-Fi认证标志，即使厂商不同也能互联互通，这一点让用户更放心。考试中要掌握：Wi-Fi是无线LAN的代表性规格与品牌、它是无线而非有线的技术，以及世代（如Wi-Fi 5/6）代表速度和规格上的差异。",
-      "explanation_en": "Wi-Fi is a brand name certified by the industry body (the Wi-Fi Alliance) that guarantees wireless LAN devices from different manufacturers connect together without trouble, and it is based on the IEEE 802.11 standard. Today it is used almost synonymously with wireless LAN.\n\nIf a device carries the Wi-Fi certification mark, it can interconnect even across manufacturers, which gives users peace of mind. The exam covers that Wi-Fi is the representative standard and brand of wireless LAN, that it is a wireless (not wired) technology, and that generations (such as Wi-Fi 5/6) indicate differences in speed and standards.",
-      "analogy_zh": "就像在不同店家的插座上都能插入同样形状的插头一样，即便是厂商不同的无线LAN设备，只要符合“Wi-Fi”这个共通规格，就能彼此连接——它就是这样一个互联互通的保证标志。",
-      "analogy_en": "Just as a plug of the same shape fits into outlets at all sorts of shops, wireless LAN devices from different makers can connect to each other as long as they conform to the common \"Wi-Fi\" standard—it is a mark guaranteeing interoperability.",
-      "memory_hook_zh": "说到Wi-Fi，就是保证无线LAN互联互通的标准规格",
-      "memory_hook_en": "Wi-Fi -> the standard that guarantees wireless LAN interoperability"
+      "one_jp": "**Wi-Fi** は、IEEE 802.11 規格に従う無線LAN機器のうち、他社の製品ともつながると業界団体に認められた製品に付く **ブランド名** である。",
+      "one_zh": "**Wi-Fi** 是遵循 IEEE 802.11 标准的无线LAN设备中，经行业团体认可、能与其他厂商产品互连的产品所使用的 **品牌名**。",
+      "one_en": "**Wi-Fi** is the **brand name** carried by IEEE 802.11 wireless LAN products that an industry group has certified as able to connect with other makers' products.",
+      "detail_jp": "認証を行うのは業界団体の Wi-Fi Alliance で、ロゴのある製品同士ならメーカーが違っても接続できる目安になる。今では無線LANとほぼ同じ意味の言葉として使われている。",
+      "detail_zh": "负责认证的是行业团体 Wi-Fi Alliance，带有其标志的产品即使厂商不同，一般也能互相连接。如今这个词几乎被当作无线LAN的同义词使用。",
+      "detail_en": "Certification is run by the industry group Wi-Fi Alliance, and its logo signals that products from different makers should connect with each other. Today the word is used almost as a synonym for wireless LAN.",
+      "analogy_jp": "家電に付く規格適合のマークのようなもの。マークがあれば、作ったメーカーが違う製品同士でも組み合わせて使えると分かる。",
+      "analogy_zh": "就像家电上印的标准合格标志。只要有这个标志，就知道不同厂家的产品也能搭配使用。",
+      "analogy_en": "It works like a standards-compliance mark on home appliances. Seeing the mark tells you that products from different makers can be used together.",
+      "hook_jp": "名前は高音質オーディオを表す Hi-Fi に響きを合わせた造語とされる。",
+      "hook_zh": "据说这个名字是模仿代表高保真音响的 Hi-Fi 的发音造出来的。",
+      "hook_en": "The name is said to have been coined to echo Hi-Fi, the term for high-fidelity audio.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "IEEE 802.11 は無線LANの規格群で、802.11n などがこれに含まれる。IEEE 802.3 は有線LAN (イーサネット) の規格である。",
+          "text_zh": "IEEE 802.11 是无线LAN（[[jp:無線LAN]]）的一组标准，802.11n 等都属于其中。IEEE 802.3 则是有线 LAN（[[jp:有線LAN]]），即以太网（[[jp:イーサネット]]）的标准。",
+          "text_en": "IEEE 802.11 is the family of wireless LAN ([[jp:無線LAN]]) standards and includes 802.11n and others. IEEE 802.3 is the standard for wired LAN ([[jp:有線LAN]]), that is, Ethernet ([[jp:イーサネット]]).",
+          "qids": [
+            "2011h23tokubetsu-q082"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "無線LANの規格は使う周波数帯が規格ごとに決まっていて、例えば5GHz帯だけを使う 802.11a の機器と2.4GHz帯だけを使う 802.11b の機器は互いに通信できない。",
+          "text_zh": "无线LAN的各项标准分别规定了所用的频段，例如只用 5GHz 频段的 802.11a 设备和只用 2.4GHz 频段的 802.11b 设备之间无法互相通信。",
+          "text_en": "Each wireless LAN standard fixes which frequency band it uses; for example, an 802.11a device, which uses only the 5 GHz band, cannot talk to an 802.11b device, which uses only the 2.4 GHz band.",
+          "qids": [
+            "2019r01a-q077"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "WPA2 の **PSK** は接続の認証に使う合言葉 (パスフレーズ) で、これを元に端末ごとの暗号鍵が作られる。",
+          "text_zh": "WPA2 的 **PSK** 是用于接入认证的共享口令（[[jp:パスフレーズ]]），每台终端的加密密钥都以它为基础生成。",
+          "text_en": "In WPA2, the **PSK** is a shared passphrase ([[jp:パスフレーズ]]) used to authenticate connections, and each device's encryption key is derived from it.",
+          "qids": [
+            "2023r05-q065"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2018h30h-q088",
+        "2011h23tokubetsu-q082",
+        "2023r05-q065"
+      ],
+      "definition_jp": "Wi-Fi は、IEEE 802.11 規格に従う無線LAN機器のうち、他社の製品ともつながると業界団体に認められた製品に付く ブランド名 である。",
+      "definition_zh": "Wi-Fi 是遵循 IEEE 802.11 标准的无线LAN设备中，经行业团体认可、能与其他厂商产品互连的产品所使用的 品牌名。",
+      "definition_en": "Wi-Fi is the brand name carried by IEEE 802.11 wireless LAN products that an industry group has certified as able to connect with other makers' products.",
+      "explanation_jp": "認証を行うのは業界団体の Wi-Fi Alliance で、ロゴのある製品同士ならメーカーが違っても接続できる目安になる。今では無線LANとほぼ同じ意味の言葉として使われている。",
+      "explanation_zh": "负责认证的是行业团体 Wi-Fi Alliance，带有其标志的产品即使厂商不同，一般也能互相连接。如今这个词几乎被当作无线LAN的同义词使用。",
+      "explanation_en": "Certification is run by the industry group Wi-Fi Alliance, and its logo signals that products from different makers should connect with each other. Today the word is used almost as a synonym for wireless LAN.",
+      "memory_hook_jp": "名前は高音質オーディオを表す Hi-Fi に響きを合わせた造語とされる。",
+      "memory_hook_zh": "据说这个名字是模仿代表高保真音响的 Hi-Fi 的发音造出来的。",
+      "memory_hook_en": "The name is said to have been coined to echo Hi-Fi, the term for high-fidelity audio.",
+      "inline_quiz": [
+        "2018h30h-q088",
+        "2011h23tokubetsu-q082",
+        "2023r05-q065"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "Wi-Fi Direct",
-      "definition_jp": "アクセスポイントなしで機器同士を直接Wi-Fi接続する技術。",
-      "explanation_jp": "Wi-Fi Directは、アクセスポイント(親機)を介さず、機器同士が直接Wi-Fiで通信できるようにする技術です。一方の機器が一時的に親機の役割を担うことで、ルーターがない場所でも接続できます。\n\nスマートフォンからプリンターへ印刷したり、機器間でファイルを送ったりする用途で使われます。試験では、通常のWi-Fiがアクセスポイント経由なのに対し、Wi-Fi Directはアクセスポイント不要で機器を直接つなぐ点が問われます。短距離の1対1接続という意味でBluetoothと比較されることもあります。",
-      "analogy_jp": "いつもは郵便局(アクセスポイント)を通して手紙を送るところを、近所同士で直接手渡しするようなもの。郵便局がなくても相手にすぐ届けられます。",
-      "memory_hook_jp": "Wi-Fi Directといえばアクセスポイント不要で機器を直接接続",
+      "term_zh": "Wi-Fi Direct",
+      "term_en": "Wi-Fi Direct",
+      "one_jp": "**Wi-Fi Direct** は、専用の **アクセスポイント** 機器を置かずに Wi-Fi 対応機器同士を直接つなぐ規格である。",
+      "one_zh": "**Wi-Fi Direct** 是一种无需设置专用 **接入点** 设备、让支持 Wi-Fi 的设备之间直接连接的标准。",
+      "one_en": "**Wi-Fi Direct** is a standard that connects Wi-Fi devices directly to each other without a dedicated **access point** device.",
+      "detail_jp": "接続する機器の一方が一時的にアクセスポイントの役を兼ねるため、ルーターのない場所でも機器同士で通信できる。例えば、スマートフォンからプリンターへ直接データを送って印刷する使い方がある。",
+      "detail_zh": "相连的设备中有一台会临时兼任接入点，所以即使在没有路由器的地方，设备之间也能通信。例如，可以从智能手机把数据直接发送到打印机进行打印。",
+      "detail_en": "One of the connected devices temporarily doubles as the access point, so devices can talk to each other even where there is no router. For example, a smartphone can send data straight to a printer to print it.",
+      "analogy_jp": "郵便局を通して手紙を送る代わりに、目の前の相手へ直接手渡しするようなもの。",
+      "analogy_zh": "就像不经过邮局寄信，而是把信直接交给眼前的人。",
+      "analogy_en": "It is like handing a letter directly to the person in front of you instead of sending it through the post office.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**アドホックネットワーク** は、すべての端末が対等な立場で相互に通信する無線LANの形態である。Wi-Fi Direct は、一方の機器がアクセスポイントの役を兼ねる点でこれと異なる。",
+          "text_zh": "**Ad Hoc 网络**（[[jp:アドホックネットワーク]]）是所有终端以对等地位相互通信的无线LAN形态。Wi-Fi Direct 由其中一台设备兼任接入点，这一点与它不同。",
+          "text_en": "An **ad hoc network** ([[jp:アドホックネットワーク]]) is a wireless LAN form in which all devices communicate with each other as equals. Wi-Fi Direct differs in that one device doubles as the access point.",
+          "qids": [
+            "2022r04-q062"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "アクセスポイント経由の接続",
+            "zh": "经由接入点连接",
+            "en": "Connection via an access point"
+          },
+          "b": {
+            "jp": "Wi-Fi Direct",
+            "zh": "Wi-Fi Direct",
+            "en": "Wi-Fi Direct"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "通信の経路",
+                "zh": "通信路径",
+                "en": "Traffic path"
+              },
+              "a": {
+                "jp": "端末からアクセスポイントを通って相手へ",
+                "zh": "从终端经接入点到达对方",
+                "en": "From the device through the access point to the other end"
+              },
+              "b": {
+                "jp": "端末から相手へ直接",
+                "zh": "从终端直接到达对方",
+                "en": "Straight from the device to the other end"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "専用のアクセスポイント機器",
+                "zh": "专用接入点设备",
+                "en": "Dedicated access point device"
+              },
+              "a": {
+                "jp": "必要",
+                "zh": "需要",
+                "en": "Required"
+              },
+              "b": {
+                "jp": "不要 (一方の機器がアクセスポイントの役を兼ねる)",
+                "zh": "不需要（由其中一台设备兼任接入点）",
+                "en": "Not needed (one device doubles as the access point)"
+              }
+            },
+            {
+              "label": {
+                "jp": "使い方の例",
+                "zh": "使用示例",
+                "en": "Example use"
+              },
+              "a": {
+                "jp": "家庭や会社のネットワークに参加する",
+                "zh": "加入家庭或公司的网络",
+                "en": "Joining a home or office network"
+              },
+              "b": {
+                "jp": "近くの機器同士でデータを送る",
+                "zh": "在附近的设备之间传送数据",
+                "en": "Sending data between nearby devices"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2014h26h-q081"
+      ],
+      "definition_jp": "Wi-Fi Direct は、専用の アクセスポイント 機器を置かずに Wi-Fi 対応機器同士を直接つなぐ規格である。",
+      "definition_zh": "Wi-Fi Direct 是一种无需设置专用 接入点 设备、让支持 Wi-Fi 的设备之间直接连接的标准。",
+      "definition_en": "Wi-Fi Direct is a standard that connects Wi-Fi devices directly to each other without a dedicated access point device.",
+      "explanation_jp": "接続する機器の一方が一時的にアクセスポイントの役を兼ねるため、ルーターのない場所でも機器同士で通信できる。例えば、スマートフォンからプリンターへ直接データを送って印刷する使い方がある。",
+      "explanation_zh": "相连的设备中有一台会临时兼任接入点，所以即使在没有路由器的地方，设备之间也能通信。例如，可以从智能手机把数据直接发送到打印机进行打印。",
+      "explanation_en": "One of the connected devices temporarily doubles as the access point, so devices can talk to each other even where there is no router. For example, a smartphone can send data straight to a printer to print it.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
         "2014h26h-q081"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "Wi-Fi Direct",
-      "term_en": "Wi-Fi Direct",
-      "definition_zh": "无需接入点即可让设备之间直接进行Wi-Fi连接的技术。",
-      "definition_en": "A technology that lets devices connect to each other directly over Wi-Fi without an access point.",
-      "explanation_zh": "Wi-Fi Direct是一种让设备之间无需经由接入点（主机）即可直接用Wi-Fi通信的技术。由一方设备临时承担主机的角色，从而在没有路由器的地方也能连接。\n\n它用于从智能手机向打印机打印、或在设备之间传送文件等场景。考试中会问到：普通Wi-Fi要经由接入点，而Wi-Fi Direct无需接入点、可直接连接设备。由于是短距离的一对一连接，有时也会与蓝牙作比较。",
-      "explanation_en": "Wi-Fi Direct is a technology that lets devices communicate directly over Wi-Fi without going through an access point (a parent device). One of the devices temporarily takes on the role of the parent device, so connection is possible even where there is no router.\n\nIt is used for purposes such as printing from a smartphone to a printer, or sending files between devices. The exam asks about how ordinary Wi-Fi goes through an access point, whereas Wi-Fi Direct needs no access point and connects devices directly. Because it is a short-range one-to-one connection, it is sometimes compared with Bluetooth.",
-      "analogy_zh": "就像平时要通过邮局（接入点）寄信，而邻里之间则直接当面递交一样。即使没有邮局，也能立刻把东西送到对方手中。",
-      "analogy_en": "It is like normally sending a letter through the post office (the access point), but neighbors handing it directly to each other instead. Even without a post office, you can deliver it to the other party right away.",
-      "memory_hook_zh": "说到Wi-Fi Direct，就是无需接入点直接连接设备",
-      "memory_hook_en": "Wi-Fi Direct -> connect devices directly, no access point needed"
+      "figure": null
     },
     {
       "term": "メッシュWi-Fi",
-      "definition_jp": "複数の無線機器を網目状に連携させ通信範囲を広げる構成。",
-      "explanation_jp": "メッシュWi-Fiは、複数の無線機器(メッシュ用ルーターやノード)を網目(メッシュ)状に連携させ、電波の届く範囲を建物全体へ面的に広げる構成です。各機器が電波をバケツリレーのように中継します。\n\n1台のアクセスポイントでは電波が届かない広い家やオフィスでも、同じネットワーク名(ESSID)のまま移動でき、つながりが途切れにくいのが利点です。試験では、Wi-Fiの通信エリアを拡張する仕組みであること、中継機を網目状に配置して死角(電波の届かない場所)を減らす点が問われます。",
-      "analogy_jp": "1本のろうそくでは部屋の隅まで明るくならないところに、複数のろうそくを部屋中へ配置して家全体をムラなく照らすようなもの。電波の死角を互いに補い合います。",
-      "memory_hook_jp": "メッシュWi-Fiといえば複数機器を網目状に連携し電波範囲を拡張",
-      "inline_quiz": [
-        "2015h27a-q076"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; R[\"親ルーター\"]; N1[\"中継ノード1\"]; N2[\"中継ノード2\"]; D[\"端末\"]; R --- N1; N1 --- N2; D -->|電波| N2",
-        "svg_path": "figures/technology-22-58-u03-t02.svg",
-        "rendered": true
-      },
       "term_zh": "网状Wi-Fi",
       "term_en": "Mesh Wi-Fi",
-      "definition_zh": "让多个无线设备呈网状协同、扩大通信范围的组网方式。",
-      "definition_en": "A configuration that links multiple wireless devices in a mesh pattern to extend the communication range.",
-      "explanation_zh": "网状Wi-Fi是让多个无线设备（网状路由器或节点）呈网状（mesh）协同，将电波覆盖范围以面状方式扩展到整栋建筑的组网方式。各设备像接力传水桶一样中继电波。\n\n它的优点是：在单台接入点电波无法覆盖的大房子或办公室里，也能保持同一网络名称（ESSID）移动，连接不易中断。考试中会问到：它是扩展Wi-Fi通信区域的机制，以及将中继设备呈网状布置以减少死角（电波到不了的地方）这一点。",
-      "explanation_en": "Mesh Wi-Fi is a configuration that links multiple wireless devices (mesh routers or nodes) in a mesh pattern, extending radio coverage across an entire building as an area. Each device relays the radio waves like a bucket brigade.\n\nIts advantage is that even in a large home or office where a single access point cannot reach, you can move around under the same network name (ESSID) without the connection dropping easily. The exam asks about it being a mechanism that extends the Wi-Fi coverage area, and about placing relay devices in a mesh pattern to reduce dead zones (places radio waves do not reach).",
-      "analogy_zh": "就像一支蜡烛照不亮房间的角落，于是在整个房间里摆放多支蜡烛，把整栋房子均匀照亮一样。各处互相弥补电波的死角。",
-      "analogy_en": "It is like how a single candle cannot light up the corners of a room, so you place several candles throughout the room to light the whole house evenly. The devices fill in each other's radio dead zones.",
-      "memory_hook_zh": "说到网状Wi-Fi，就是多个设备呈网状协同、扩展电波范围",
-      "memory_hook_en": "Mesh Wi-Fi -> link multiple devices in a mesh to extend radio range"
+      "one_jp": "**メッシュWi-Fi** は、複数の無線LAN機器を **網目状** に連携させて、電波の届く範囲を広げる構成である。",
+      "one_zh": "**网状Wi-Fi**（[[jp:メッシュWi-Fi]]）是让多台无线LAN设备呈 **网状** 协作、扩大电波覆盖范围的组网方式。",
+      "one_en": "**Mesh Wi-Fi** ([[jp:メッシュWi-Fi]]) is a setup that links several wireless LAN devices in a **mesh** so that together they extend radio coverage.",
+      "detail_jp": "親機となるルーターと複数の中継機が互いに電波を中継し合い、端末はその時点で近い機器につながる。全体が1つのネットワーク名をもつ1つのネットワークとして働くため、建物の中を移動しても接続を保ちやすい。",
+      "detail_zh": "作为主路由的路由器和多台中继器相互转发电波，终端则连接当时离自己较近的设备。整体作为拥有同一个网络名称的单一网络运作，因此在建筑物内移动时也容易保持连接。",
+      "detail_en": "A main router and several satellite units relay signals among themselves, and each device connects to whichever unit is nearest at the moment. The whole system works as a single network with one network name, so connections tend to hold as you move around the building.",
+      "analogy_jp": "部屋の隅まで照らすために、明かりを1つ強くするのではなく、小さな明かりを部屋のあちこちに置くようなもの。",
+      "analogy_zh": "就像为了照亮房间的每个角落，不是把一盏灯调得更亮，而是在房间各处放几盏小灯。",
+      "analogy_en": "It is like lighting every corner of a room by placing small lamps around it rather than making a single lamp brighter.",
+      "hook_jp": "mesh は網戸のメッシュと同じ「網の目」。点と点を何本もの線で結ぶ形を思い浮かべる。",
+      "hook_zh": "mesh 就是纱窗那种“网眼”。可以想象点与点之间用许多条线连起来的样子。",
+      "hook_en": "Mesh is the netting of a window screen. Picture points joined to one another by many lines.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "メッシュWi-Fi は電波の届く範囲を広げる構成で、専用のアクセスポイント機器を置かずに機器同士をつなぐ Wi-Fi Direct とは目的が違う。",
+          "text_zh": "网状Wi-Fi 是扩大电波覆盖范围的组网方式，与不设专用接入点设备、让设备直接互连的 Wi-Fi Direct 目的不同。",
+          "text_en": "Mesh Wi-Fi is a setup for extending radio coverage, so its purpose differs from that of Wi-Fi Direct, which links devices directly without a dedicated access point."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "メッシュWi-Fi は、複数の無線LAN機器を 網目状 に連携させて、電波の届く範囲を広げる構成である。",
+      "definition_zh": "网状Wi-Fi（メッシュWi-Fi）是让多台无线LAN设备呈 网状 协作、扩大电波覆盖范围的组网方式。",
+      "definition_en": "Mesh Wi-Fi (メッシュWi-Fi) is a setup that links several wireless LAN devices in a mesh so that together they extend radio coverage.",
+      "explanation_jp": "親機となるルーターと複数の中継機が互いに電波を中継し合い、端末はその時点で近い機器につながる。全体が1つのネットワーク名をもつ1つのネットワークとして働くため、建物の中を移動しても接続を保ちやすい。",
+      "explanation_zh": "作为主路由的路由器和多台中继器相互转发电波，终端则连接当时离自己较近的设备。整体作为拥有同一个网络名称的单一网络运作，因此在建筑物内移动时也容易保持连接。",
+      "explanation_en": "A main router and several satellite units relay signals among themselves, and each device connects to whichever unit is nearest at the moment. The whole system works as a single network with one network name, so connections tend to hold as you move around the building.",
+      "memory_hook_jp": "mesh は網戸のメッシュと同じ「網の目」。点と点を何本もの線で結ぶ形を思い浮かべる。",
+      "memory_hook_zh": "mesh 就是纱窗那种“网眼”。可以想象点与点之间用许多条线连起来的样子。",
+      "memory_hook_en": "Mesh is the netting of a window screen. Picture points joined to one another by many lines.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "WPS",
-      "definition_jp": "ボタン操作などで無線LANの接続設定を簡単に行う機能。",
-      "explanation_jp": "WPS(Wi-Fi Protected Setup)は、無線LANの接続設定を簡単に行うための機能です。本来は機器ごとにネットワーク名(ESSID)や暗号化キー(パスワード)を手入力しますが、WPSではアクセスポイントと端末のボタンを押す、PINコードを入力するといった操作だけで設定が完了します。\n\n設定の手間とパスワードの入力ミスを減らせるのが利点です。試験では、WPSが暗号化の規格そのものではなく『接続設定を簡単にする補助機能』である点が問われます。便利な反面、PIN方式には脆弱性が指摘されている点も押さえておくとよいでしょう。",
-      "analogy_jp": "新しい家電をコンセントに挿すたびに長い設定番号を打ち込む代わりに、本体のボタンをワンプッシュするだけでペアリングが終わる「かんたん設定ボタン」のようなものです。",
-      "memory_hook_jp": "WPSといえばボタン操作で無線LAN接続設定を簡単化する機能",
-      "inline_quiz": [
-        "2016h28a-q068"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "WPS",
       "term_en": "WPS",
-      "definition_zh": "通过按钮操作等方式简便完成无线LAN连接设置的功能。",
-      "definition_en": "A feature that makes it easy to set up a wireless LAN connection through operations such as pressing a button.",
-      "explanation_zh": "WPS（Wi-Fi Protected Setup）是用于简便完成无线LAN连接设置的功能。本来需要为每台设备手动输入网络名称（ESSID）和加密密钥（密码），而使用WPS时，只需按下接入点和终端上的按钮、或输入PIN码等操作即可完成设置。\n\n它的优点是减少设置的麻烦和密码输入错误。考试中会问到：WPS本身并不是加密规格，而是“简化连接设置的辅助功能”这一点。它虽然方便，但也最好记住：PIN方式被指出存在脆弱性。",
-      "explanation_en": "WPS (Wi-Fi Protected Setup) is a feature for setting up a wireless LAN connection easily. Originally you have to manually enter the network name (ESSID) and the encryption key (password) for each device, but with WPS, setup is completed with only an operation such as pressing a button on the access point and the terminal, or entering a PIN code.\n\nIts advantage is reducing the hassle of setup and password entry mistakes. The exam asks about the point that WPS is not an encryption standard itself, but an \"auxiliary feature that simplifies connection setup.\" It is convenient, but it is also good to note that the PIN method has been pointed out as having a vulnerability.",
-      "analogy_zh": "就像不必每次把新家电插进插座时都输入一长串设置编号，而是只需在机身上按一下按钮就完成配对的“简易设置按钮”一样。",
-      "analogy_en": "It is like an \"easy setup button\": instead of typing a long setup number every time you plug a new appliance into an outlet, pairing finishes with a single press of a button on the device.",
-      "memory_hook_zh": "说到WPS，就是用按钮操作简化无线LAN连接设置的功能",
-      "memory_hook_en": "WPS -> a feature that simplifies wireless LAN setup with a button press"
+      "one_jp": "**WPS** は、ボタンを押す、**PIN** コードを入力するといった簡単な操作で、端末を無線LANにつなぐ設定を済ませる機能である。",
+      "one_zh": "**WPS** 是一种只需按下按钮、输入 **PIN** 码等简单操作，就能完成终端接入无线LAN所需设置的功能。",
+      "one_en": "**WPS** is a feature that completes the settings for joining a device to a wireless LAN through a simple action such as pressing a button or entering a **PIN** code.",
+      "detail_jp": "本来は接続先のネットワーク名と暗号化のパスワードを端末に手で入力するが、WPSではこれらを機器同士が自動でやり取りする。入力の手間と打ち間違いを減らせる反面、PIN方式には総当たりで短時間に破られやすい弱点が指摘されている。",
+      "detail_zh": "通常要在终端上手动输入目标网络的名称和加密用的口令（密码），而 WPS 让设备之间自动交换这些信息。它能省去输入的麻烦、减少输错，但 PIN 方式已被指出存在容易被穷举攻击在短时间内破解的弱点。",
+      "detail_en": "Normally you type the network name and the encryption password into the device by hand, but with WPS the devices exchange them automatically. That saves effort and avoids typos, but the PIN method has a known weakness: a brute-force attack can break it in a short time.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "WPS は Wi-Fi Protected Setup の略。末尾の Setup (設定) が、この機能の役目を表している。",
+      "hook_zh": "WPS 是 Wi-Fi Protected Setup 的缩写。末尾的 Setup（设置）点明了这个功能的用途。",
+      "hook_en": "WPS stands for Wi-Fi Protected Setup. The last word, Setup, tells you what the feature is for.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "WPS は接続設定を簡単にする機能で、通信内容を暗号化する方式 (WPA2 など) とは役割が違う。",
+          "text_zh": "WPS 是简化连接设置的功能，与对通信内容进行加密的方式（WPA2 等）作用不同。",
+          "text_en": "WPS is a feature that simplifies connection setup, and its role differs from that of methods that encrypt traffic, such as WPA2."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "s1",
+              "label": {
+                "jp": "ルーターのWPSボタンを押す",
+                "zh": "按下路由器的 WPS 按钮",
+                "en": "Press the router's WPS button"
+              }
+            },
+            {
+              "id": "s2",
+              "label": {
+                "jp": "端末でWPS接続を選ぶ",
+                "zh": "在终端上选择 WPS 连接",
+                "en": "Choose WPS connection on the device"
+              }
+            },
+            {
+              "id": "s3",
+              "label": {
+                "jp": "設定情報が自動で端末へ渡る",
+                "zh": "设置信息自动传给终端",
+                "en": "Settings pass to the device automatically"
+              }
+            },
+            {
+              "id": "s4",
+              "label": {
+                "jp": "接続完了",
+                "zh": "连接完成",
+                "en": "Connected"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "無線LANルーター側でWPSのボタンを押し、受け付けを始める。",
+            "caption_zh": "在无线LAN路由器一侧按下 WPS 按钮，开始等待终端连接。",
+            "caption_en": "Press the WPS button on the wireless LAN router to start accepting a connection.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "決められた時間内に、端末側でもWPSによる接続を選ぶ。",
+            "caption_zh": "在规定时间内，终端一侧也选择通过 WPS 连接。",
+            "caption_en": "Within the set time, choose to connect by WPS on the device as well.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "ネットワーク名と暗号化のキーが、ルーターから端末へ自動で送られる。",
+            "caption_zh": "网络名称和加密密钥由路由器自动发送给终端。",
+            "caption_en": "The router automatically sends the network name and encryption key to the device.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "手入力なしで、端末が暗号化された接続を始める。",
+            "caption_zh": "无需手动输入，终端即开始加密连接。",
+            "caption_en": "With nothing typed in, the device starts an encrypted connection.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "WPS は、ボタンを押す、PIN コードを入力するといった簡単な操作で、端末を無線LANにつなぐ設定を済ませる機能である。",
+      "definition_zh": "WPS 是一种只需按下按钮、输入 PIN 码等简单操作，就能完成终端接入无线LAN所需设置的功能。",
+      "definition_en": "WPS is a feature that completes the settings for joining a device to a wireless LAN through a simple action such as pressing a button or entering a PIN code.",
+      "explanation_jp": "本来は接続先のネットワーク名と暗号化のパスワードを端末に手で入力するが、WPSではこれらを機器同士が自動でやり取りする。入力の手間と打ち間違いを減らせる反面、PIN方式には総当たりで短時間に破られやすい弱点が指摘されている。",
+      "explanation_zh": "通常要在终端上手动输入目标网络的名称和加密用的口令（密码），而 WPS 让设备之间自动交换这些信息。它能省去输入的麻烦、减少输错，但 PIN 方式已被指出存在容易被穷举攻击在短时间内破解的弱点。",
+      "explanation_en": "Normally you type the network name and the encryption password into the device by hand, but with WPS the devices exchange them automatically. That saves effort and avoids typos, but the PIN method has a known weakness: a brute-force attack can break it in a short time.",
+      "memory_hook_jp": "WPS は Wi-Fi Protected Setup の略。末尾の Setup (設定) が、この機能の役目を表している。",
+      "memory_hook_zh": "WPS 是 Wi-Fi Protected Setup 的缩写。末尾的 Setup（设置）点明了这个功能的用途。",
+      "memory_hook_en": "WPS stands for Wi-Fi Protected Setup. The last word, Setup, tells you what the feature is for.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ESSID",
-      "definition_jp": "無線LANのアクセスポイントを識別するネットワーク名(SSID)。",
-      "explanation_jp": "ESSID(Extended SSID)は、無線LANのアクセスポイントに付けられたネットワークの名前で、一般にSSIDとも呼ばれます。最大32文字程度の文字列で、端末はこの名前を選んで接続先の無線ネットワークを指定します。\n\n周囲に複数の無線LANがあっても、ESSIDで目的のネットワークを区別できます。試験では、ESSIDが『無線ネットワークを識別する名前』であること、機器を識別するMACアドレスとは識別する対象が違うことが問われます。ESSIDを見えなくするステルス機能などの簡易的なセキュリティ対策と結び付けて出ることもあります。",
-      "analogy_jp": "電波という見えない空間に建つ各「お店の看板」のようなもの。たくさんの無線が飛び交う中でも、看板(ESSID)を見れば入りたいネットワークを選べます。",
-      "memory_hook_jp": "ESSIDといえば無線LANを識別するネットワーク名",
-      "inline_quiz": [
-        "2012h24a-q062",
-        "2015h27a-q056"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "ESSID",
       "term_en": "ESSID",
-      "definition_zh": "用于识别无线LAN接入点的网络名称（SSID）。",
-      "definition_en": "The network name (SSID) used to identify a wireless LAN access point.",
-      "explanation_zh": "ESSID（Extended SSID，扩展SSID）是给无线LAN接入点起的网络名称，一般也称为SSID。它是最多约32个字符的字符串，终端通过选择这个名称来指定要连接的无线网络。\n\n即使周围有多个无线LAN，也能通过ESSID区分出目标网络。考试中会问到：ESSID是“识别无线网络的名称”，以及它与识别设备的MAC地址在识别对象上的不同。它有时也会与隐藏ESSID的隐身（stealth）功能等简易安全措施结合出题。",
-      "explanation_en": "ESSID (Extended SSID) is the network name given to a wireless LAN access point, and is generally also called the SSID. It is a string of up to about 32 characters, and a terminal selects this name to specify which wireless network to connect to.\n\nEven when there are multiple wireless LANs nearby, you can tell apart the target network by its ESSID. The exam asks that the ESSID is the \"name that identifies a wireless network,\" and that what it identifies differs from the MAC address, which identifies devices. It sometimes appears together with simple security measures such as the stealth feature that hides the ESSID.",
-      "analogy_zh": "就像在电波这个看不见的空间里立起的各家“店铺招牌”。即便有许多无线信号交织飞舞，只要看招牌（ESSID）就能选出想进入的网络。",
-      "analogy_en": "It is like the \"shop signboard\" of each establishment standing in the invisible space of the airwaves. Even amid many wireless signals crisscrossing, you can pick the network you want to join just by looking at its signboard (the ESSID).",
-      "memory_hook_zh": "说到ESSID，就是识别无线LAN的网络名称",
-      "memory_hook_en": "ESSID -> the network name that identifies a wireless LAN"
+      "one_jp": "**ESSID** は無線LANの **ネットワーク名** で、端末はこの名前を選んでどのネットワークにつなぐかを決める。",
+      "one_zh": "**ESSID** 是无线LAN的 **网络名称**，终端通过选择这个名称来决定连接哪个网络。",
+      "one_en": "An **ESSID** is the **network name** of a wireless LAN, and a device picks this name to decide which network to join.",
+      "detail_jp": "ESSID は SSID とも呼ばれ、名前は管理者が32文字以内で自由に付けられる。複数のアクセスポイントに同じESSIDを設定して、まとめて1つのネットワークとして扱うこともできる。ESSIDの発信を止めて周囲の端末の一覧に名前を出さない機能を **ステルス機能** (ステルス化) という。",
+      "detail_zh": "ESSID 也称 SSID，名称可由管理员在32个字符以内自由设定。也可以给多个接入点设置相同的 ESSID，把它们作为一个网络统一对待。停止广播 ESSID、让名称不出现在周围终端列表中的功能，称为 **隐身功能**（[[jp:ステルス機能]]，也称 [[jp:ステルス化]]）。",
+      "detail_en": "An ESSID is also called an SSID, and the administrator can choose any name up to 32 characters. Several access points can be given the same ESSID so that they are treated as one network. Turning off ESSID broadcasting so the name does not show up in nearby devices' lists is called the **stealth feature** ([[jp:ステルス機能]], also [[jp:ステルス化]]).",
+      "analogy_jp": "通りに並ぶ店の看板のようなもの。目に見えない電波の中でも、看板の名前を見て入る店を選べる。",
+      "analogy_zh": "就像街边一排店铺的招牌。即使在看不见的电波里，也能看着招牌上的名字选择要进哪家店。",
+      "analogy_en": "It is like the signboards on a row of shops. Even among invisible radio waves, you can read the name on the sign and choose which shop to walk into.",
+      "hook_jp": "ESSID は Extended Service Set Identifier の略。最後の Identifier (識別子) が、ネットワークを見分けるための名前であることを示す。",
+      "hook_zh": "ESSID 是 Extended Service Set Identifier 的缩写。最后的 Identifier（标识符）表明它是用来区分网络的名称。",
+      "hook_en": "ESSID stands for Extended Service Set Identifier. The final word, Identifier, shows that it is a name for telling networks apart.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ESSID 自体に通信を暗号化する働きはなく、暗号化は WPA2 などの方式とその鍵が担う。",
+          "text_zh": "ESSID 本身没有加密通信的作用，加密由 WPA2 等方式及其密钥承担。",
+          "text_en": "An ESSID does not encrypt anything by itself; encryption comes from methods such as WPA2 and their keys.",
+          "qids": [
+            "2012h24a-q064",
+            "2018h30a-q089"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ステルス機能は名前を一覧に出さず接続先として見つかりにくくするだけで、やり取りの電波を拾えば ESSID は分かるため、不正接続のリスクを下げる対策にとどまる。",
+          "text_zh": "隐身功能（[[jp:ステルス機能]]）只是不在列表中显示名称、让网络不易被发现；只要截获通信的电波就能得知 ESSID，因此它只能起到降低非法接入风险的作用。",
+          "text_en": "The stealth feature ([[jp:ステルス機能]]) only keeps the name off device lists so the network is harder to find; anyone who picks up the radio traffic can still learn the ESSID, so it only lowers the risk of unauthorized connections.",
+          "qids": [
+            "2016h28h-q074",
+            "2024r06-q070",
+            "2015h27a-q056"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "1台のアクセスポイントに複数のESSIDを設け、ESSIDごとに暗号化の方式や通信できる範囲を分けて設定できる。",
+          "text_zh": "一台接入点上可以设置多个 ESSID，并按 ESSID 分别设定加密方式和可通信的范围。",
+          "text_en": "One access point can carry several ESSIDs, each with its own encryption method and its own limits on what it can reach.",
+          "qids": [
+            "2018h30h-q100",
+            "2022r04-q068"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28a-q068",
+        "2017h29h-q085",
+        "2024r06-q070"
+      ],
+      "definition_jp": "ESSID は無線LANの ネットワーク名 で、端末はこの名前を選んでどのネットワークにつなぐかを決める。",
+      "definition_zh": "ESSID 是无线LAN的 网络名称，终端通过选择这个名称来决定连接哪个网络。",
+      "definition_en": "An ESSID is the network name of a wireless LAN, and a device picks this name to decide which network to join.",
+      "explanation_jp": "ESSID は SSID とも呼ばれ、名前は管理者が32文字以内で自由に付けられる。複数のアクセスポイントに同じESSIDを設定して、まとめて1つのネットワークとして扱うこともできる。ESSIDの発信を止めて周囲の端末の一覧に名前を出さない機能を ステルス機能 (ステルス化) という。",
+      "explanation_zh": "ESSID 也称 SSID，名称可由管理员在32个字符以内自由设定。也可以给多个接入点设置相同的 ESSID，把它们作为一个网络统一对待。停止广播 ESSID、让名称不出现在周围终端列表中的功能，称为 隐身功能（ステルス機能，也称 ステルス化）。",
+      "explanation_en": "An ESSID is also called an SSID, and the administrator can choose any name up to 32 characters. Several access points can be given the same ESSID so that they are treated as one network. Turning off ESSID broadcasting so the name does not show up in nearby devices' lists is called the stealth feature (ステルス機能, also ステルス化).",
+      "memory_hook_jp": "ESSID は Extended Service Set Identifier の略。最後の Identifier (識別子) が、ネットワークを見分けるための名前であることを示す。",
+      "memory_hook_zh": "ESSID 是 Extended Service Set Identifier 的缩写。最后的 Identifier（标识符）表明它是用来区分网络的名称。",
+      "memory_hook_en": "ESSID stands for Extended Service Set Identifier. The final word, Identifier, shows that it is a name for telling networks apart.",
+      "inline_quiz": [
+        "2016h28a-q068",
+        "2017h29h-q085",
+        "2024r06-q070"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "MACアドレス",
-      "definition_jp": "ネットワーク機器に固有に割り当てられた物理アドレス。",
-      "explanation_jp": "MACアドレスは、LANカードなどのネットワーク機器に製造段階で割り当てられる固有の識別番号(物理アドレス)です。48ビットで表され、16進数2桁ずつをコロンやハイフンで区切って表記します(例:00-11-22-33-44-55)。\n\n世界で重複しないよう前半が製造メーカーを表す番号になっており、同一ネットワーク内で機器を一意に識別します。試験では、ネットワーク名を表すESSIDとの違い、利用者が変更できるIPアドレス(論理アドレス)に対し、MACアドレスは機器固有の物理アドレスである点が問われます。許可した機器だけ接続させるMACアドレスフィルタリングと結び付くこともあります。",
-      "analogy_jp": "製品ごとに刻印された世界で1つだけの製造番号のようなもの。住所(IPアドレス)は引っ越しで変わっても、機器そのものに刻まれた番号(MACアドレス)は変わりません。",
-      "memory_hook_jp": "MACアドレスといえば機器に固有の物理アドレス",
-      "inline_quiz": [
-        "2011h23tokubetsu-q061",
-        "2012h24h-q065"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "MAC地址",
       "term_en": "MAC address",
-      "definition_zh": "为网络设备固有分配的物理地址。",
-      "definition_en": "A physical address uniquely assigned to a network device.",
-      "explanation_zh": "MAC地址是在制造阶段分配给LAN卡等网络设备的固有识别编号（物理地址）。它用48位表示，按每两位十六进制数用冒号或连字符分隔来书写（例如：00-11-22-33-44-55）。\n\n为保证全球不重复，前半部分是表示制造厂商的编号，可在同一网络内唯一地识别设备。考试中会问到：它与表示网络名称的ESSID的区别，以及相对于用户可更改的IP地址（逻辑地址），MAC地址是设备固有的物理地址这一点。它有时也会与“只允许已许可设备连接”的MAC地址过滤结合出题。",
-      "explanation_en": "A MAC address is a unique identification number (physical address) assigned at the manufacturing stage to a network device such as a LAN card. It is expressed in 48 bits and written as pairs of two hexadecimal digits separated by colons or hyphens (e.g., 00-11-22-33-44-55).\n\nSo that it does not duplicate anywhere in the world, the first half is a number indicating the manufacturer, and it uniquely identifies a device within the same network. The exam asks about its difference from the ESSID, which represents a network name, and that—unlike an IP address (a logical address) that the user can change—a MAC address is a physical address unique to the device. It is sometimes tied to MAC address filtering, which allows only permitted devices to connect.",
-      "analogy_zh": "就像刻在每件产品上、全球独一无二的制造编号。住址（IP地址）会因搬家而改变，但刻在设备本身上的编号（MAC地址）不会变。",
-      "analogy_en": "It is like a one-of-a-kind manufacturing number engraved on each product worldwide. The address (the IP address) may change when you move, but the number engraved on the device itself (the MAC address) does not change.",
-      "memory_hook_zh": "说到MAC地址，就是设备固有的物理地址",
-      "memory_hook_en": "MAC address -> a physical address unique to the device"
+      "one_jp": "**MACアドレス** は、ネットワーク機器の通信部品に製造時に割り当てられる、機器ごとに固有の **物理アドレス** である。",
+      "one_zh": "**MAC地址**（[[jp:MACアドレス]]）是网络设备的通信部件在出厂时被分配的、每台设备固有的 **物理地址**。",
+      "one_en": "A **MAC address** ([[jp:MACアドレス]]) is a **physical address**, unique to each device, that is assigned to a network device's communication hardware at manufacture.",
+      "detail_jp": "表記は、例えば 00-1A-2B-3C-4D-5E のように16進数2桁ずつを区切って並べる。同じネットワークの中では、この番号で通信相手の機器を見分ける。",
+      "detail_zh": "写法是把十六进制数每两位分隔开排列，例如 00-1A-2B-3C-4D-5E。在同一个网络内部，靠这个编号来区分通信对象是哪台设备。",
+      "detail_en": "It is written as pairs of hexadecimal digits separated by hyphens, as in 00-1A-2B-3C-4D-5E. Within the same network, this number tells which device is on the other end of the communication.",
+      "analogy_jp": "製品ごとに刻まれた製造番号のようなもの。番号を見れば、同じ型の製品が並んでいてもその1台を見分けられる。",
+      "analogy_zh": "就像每件产品上刻的制造编号。即使同型号的产品摆在一起，看编号也能认出是哪一台。",
+      "analogy_en": "It is like the serial number stamped on each product. Even with identical models lined up, the number picks out the one unit.",
+      "hook_jp": "MAC は Media Access Control の略で、パソコンの Mac とは無関係。",
+      "hook_zh": "MAC 是 Media Access Control 的缩写，与电脑 Mac 毫无关系。",
+      "hook_en": "MAC stands for Media Access Control and has nothing to do with Mac computers.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "MACアドレスは、前半のメーカー番号を IEEE が配り、後半をメーカーが重ならないように付けることで、世界中で重複のない番号として割り当てる仕組みになっている。",
+          "text_zh": "MAC地址的前半部分是由 IEEE 分配的制造商编号，后半部分由制造商自行编号、避免重复，以此按全世界不重复的原则来分配编号。",
+          "text_en": "MAC addresses are allocated so that no two in the world are the same: IEEE hands out the manufacturer number in the first half, and each manufacturer numbers the second half so that none clash.",
+          "qids": [
+            "2016h28h-q068"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**MACアドレスフィルタリング** は、接続を認める端末のMACアドレスをアクセスポイントに事前に登録し、それ以外の端末からの接続を断る仕組みである。",
+          "text_zh": "**MAC地址过滤**（[[jp:MACアドレスフィルタリング]]）是预先把允许接入的终端的MAC地址登记到接入点上，拒绝其他终端接入的机制。",
+          "text_en": "**MAC address filtering** ([[jp:MACアドレスフィルタリング]]) registers the MAC addresses of permitted devices on the access point in advance and refuses connections from any other device.",
+          "qids": [
+            "2017h29h-q100",
+            "2021r03-q085",
+            "2018h30a-q087"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "IPアドレスはネットワーク上の宛先を表す論理アドレスで、ルーターが転送先を決めるのに使う。",
+          "text_zh": "IP 地址（[[jp:IPアドレス]]）是表示网络上目的地的逻辑地址（[[jp:論理アドレス]]），路由器用它来决定转发目标。",
+          "text_en": "An IP address ([[jp:IPアドレス]]) is a logical address ([[jp:論理アドレス]]) that marks a destination on the network, and routers use it to decide where to forward data.",
+          "qids": [
+            "2012h24h-q065"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "部分",
+              "zh": "部分",
+              "en": "Part"
+            },
+            {
+              "jp": "長さ",
+              "zh": "长度",
+              "en": "Length"
+            },
+            {
+              "jp": "内容",
+              "zh": "内容",
+              "en": "Content"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "前半",
+                  "zh": "前半部分",
+                  "en": "First half"
+                },
+                {
+                  "jp": "24ビット",
+                  "zh": "24比特",
+                  "en": "24 bits"
+                },
+                {
+                  "jp": "製造メーカーを表す番号 (IEEE が割り当てる)",
+                  "zh": "表示制造商的编号（由 IEEE 分配）",
+                  "en": "Number identifying the manufacturer (assigned by IEEE)"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "後半",
+                  "zh": "后半部分",
+                  "en": "Second half"
+                },
+                {
+                  "jp": "24ビット",
+                  "zh": "24比特",
+                  "en": "24 bits"
+                },
+                {
+                  "jp": "メーカーが機器ごとに付ける番号",
+                  "zh": "制造商为每台设备分配的编号",
+                  "en": "Number the manufacturer gives each device"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "全体",
+                  "zh": "整体",
+                  "en": "Whole"
+                },
+                {
+                  "jp": "48ビット",
+                  "zh": "48比特",
+                  "en": "48 bits"
+                },
+                {
+                  "jp": "1台の機器を表す番号",
+                  "zh": "代表一台设备的编号",
+                  "en": "Number that identifies one device"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2016h28h-q068",
+        "2017h29h-q100",
+        "2021r03-q085"
+      ],
+      "definition_jp": "MACアドレス は、ネットワーク機器の通信部品に製造時に割り当てられる、機器ごとに固有の 物理アドレス である。",
+      "definition_zh": "MAC地址（MACアドレス）是网络设备的通信部件在出厂时被分配的、每台设备固有的 物理地址。",
+      "definition_en": "A MAC address (MACアドレス) is a physical address, unique to each device, that is assigned to a network device's communication hardware at manufacture.",
+      "explanation_jp": "表記は、例えば 00-1A-2B-3C-4D-5E のように16進数2桁ずつを区切って並べる。同じネットワークの中では、この番号で通信相手の機器を見分ける。",
+      "explanation_zh": "写法是把十六进制数每两位分隔开排列，例如 00-1A-2B-3C-4D-5E。在同一个网络内部，靠这个编号来区分通信对象是哪台设备。",
+      "explanation_en": "It is written as pairs of hexadecimal digits separated by hyphens, as in 00-1A-2B-3C-4D-5E. Within the same network, this number tells which device is on the other end of the communication.",
+      "memory_hook_jp": "MAC は Media Access Control の略で、パソコンの Mac とは無関係。",
+      "memory_hook_zh": "MAC 是 Media Access Control 的缩写，与电脑 Mac 毫无关系。",
+      "memory_hook_en": "MAC stands for Media Access Control and has nothing to do with Mac computers.",
+      "inline_quiz": [
+        "2016h28h-q068",
+        "2017h29h-q100",
+        "2021r03-q085"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "ESSID",
+      "b": "MACアドレス",
+      "rows": [
+        {
+          "label_jp": "識別するもの",
+          "label_zh": "识别对象",
+          "label_en": "What it identifies",
+          "a_jp": "無線のネットワーク",
+          "a_zh": "无线网络",
+          "a_en": "A wireless network",
+          "b_jp": "個々の機器",
+          "b_zh": "单台设备",
+          "b_en": "An individual device",
+          "key": true
+        },
+        {
+          "label_jp": "値の決まり方",
+          "label_zh": "值的确定方式",
+          "label_en": "How the value is set",
+          "a_jp": "管理者が自由に付ける",
+          "a_zh": "由管理员自由设定",
+          "a_en": "Chosen freely by the administrator",
+          "b_jp": "製造時に割り当てられる",
+          "b_zh": "出厂时分配",
+          "b_en": "Assigned at manufacture",
+          "key": false
+        },
+        {
+          "label_jp": "形",
+          "label_zh": "形式",
+          "label_en": "Form",
+          "a_jp": "32文字以内の名前",
+          "a_zh": "32个字符以内的名称",
+          "a_en": "A name of up to 32 characters",
+          "b_jp": "48ビットの番号",
+          "b_zh": "48比特的编号",
+          "b_en": "A 48-bit number",
+          "key": false
+        },
+        {
+          "label_jp": "不正接続の対策",
+          "label_zh": "防止非法接入的措施",
+          "label_en": "Defense against unauthorized access",
+          "a_jp": "ステルス機能で名前を隠す",
+          "a_zh": "用隐身功能隐藏名称",
+          "a_en": "Hide the name with the stealth feature",
+          "b_jp": "フィルタリングで登録済みの機器だけ通す",
+          "b_zh": "用过滤只放行已登记的设备",
+          "b_en": "Let only registered devices in by filtering",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**無線LAN** の電波は建物の外にも届くため、**WPA2** などによる暗号化と、アクセスポイントの不正利用への対策が要る。",
+    "無線LANの技術の中身は IEEE 802.11 の規格群が定め、**Wi-Fi** はそれに沿う製品の相互接続を認証した名前である。",
+    "電波は距離や障害物で弱まり、ほかの電波との干渉でも速度が落ちるので、機器の置き場所や使う周波数帯で通信の品質が変わる。"
+  ],
+  "key_points_zh": [
+    "**无线LAN** 的电波会传到建筑物外，因此需要用 **WPA2** 等方式加密，并防范接入点被盗用。",
+    "无线LAN的技术内容由 IEEE 802.11 系列标准规定，**Wi-Fi** 则是对符合这些标准的产品进行互连认证后使用的名称。",
+    "电波会随距离和障碍物衰减，与其他电波干扰时速度也会下降，因此设备的摆放位置和所用频段会影响通信质量。"
+  ],
+  "key_points_en": [
+    "**Wireless LAN** signals reach outside the building, so they need encryption with **WPA2** or a similar method and protection against misuse of access points.",
+    "The IEEE 802.11 family of standards defines how wireless LAN technology works, and **Wi-Fi** is the name for products certified to interconnect under those standards.",
+    "Radio signals weaken with distance and obstacles and slow down when other signals interfere, so equipment placement and the frequency band in use affect connection quality."
+  ],
+  "overview": {
+    "intro_jp": "無線LAN と Wi-Fi の関係を説明し、電波で通信するために要る安全対策を挙げられる。専用のアクセスポイント機器なしで機器同士をつなぐ技術、電波の届く範囲を広げる構成、接続設定を簡単にする機能を、それぞれの名前と結び付けられる。ESSID と MACアドレス が何を識別するかを区別し、それぞれを使った不正接続の対策を説明できる。",
+    "intro_zh": "能说明 无线LAN 与 Wi-Fi 的关系，并举出用电波通信时需要的安全措施。能把不用专用接入点设备就让设备互连的技术、扩大电波覆盖范围的组网方式、简化连接设置的功能，分别与各自的名称对应起来。能区分 ESSID 和 MAC地址 各自标识的对象，并说明利用它们防止非法接入的措施。",
+    "intro_en": "Explain how wireless LAN relates to Wi-Fi, and name the security measures needed when devices talk over radio waves. Match each name to its job: linking devices directly without a dedicated access point, extending radio coverage, or simplifying connection setup. Tell apart what an ESSID and a MAC address identify, and explain how each one is used to block unauthorized connections.",
+    "freq_badge": "頻出",
+    "est_minutes": 40
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "無線LAN: 無線LANといえば電波でケーブルなしに接続するLAN",
-      "Wi-Fi: Wi-Fiといえば無線LANの相互接続を保証する標準規格",
-      "Wi-Fi Direct: Wi-Fi Directといえばアクセスポイント不要で機器を直接接続",
-      "メッシュWi-Fi: メッシュWi-Fiといえば複数機器を網目状に連携し電波範囲を拡張",
-      "WPS: WPSといえばボタン操作で無線LAN接続設定を簡単化する機能",
-      "ESSID: ESSIDといえば無線LANを識別するネットワーク名",
-      "MACアドレス: MACアドレスといえば機器に固有の物理アドレス"
-    ],
     "key_points_jp": [
-      "無線LANは電波で機器を接続するLANで、通常はアクセスポイントを経由する。配線不要だが電波の届き方や傍受への対策(暗号化)が必要。",
-      "Wi-Fiは無線LANの相互接続性を保証する標準規格・ブランド名で、IEEE 802.11に基づく。Wi-Fi Directはアクセスポイント不要で機器を直接接続する派生技術。",
-      "メッシュWi-Fiは複数機器を網目状に連携させ通信範囲を面的に拡張する構成、WPSはボタン操作などで接続設定を簡単化する補助機能。",
-      "ESSIDは無線ネットワークを識別する名前(SSID)、MACアドレスは機器に固有の物理アドレスで、識別する対象が異なる。",
-      "MACアドレスは48ビットの機器固有アドレスで、変更できるIPアドレス(論理アドレス)と対比して問われる。"
+      "無線LAN の電波は建物の外にも届くため、WPA2 などによる暗号化と、アクセスポイントの不正利用への対策が要る。",
+      "無線LANの技術の中身は IEEE 802.11 の規格群が定め、Wi-Fi はそれに沿う製品の相互接続を認証した名前である。",
+      "電波は距離や障害物で弱まり、ほかの電波との干渉でも速度が落ちるので、機器の置き場所や使う周波数帯で通信の品質が変わる。"
     ],
     "key_points_zh": [
-      "无线LAN是用电波连接设备的LAN，通常要经由接入点。无需布线，但需要应对电波覆盖情况和窃听（加密）。",
-      "Wi-Fi是保证无线LAN互联互通的标准规格与品牌名称，基于IEEE 802.11。Wi-Fi Direct是无需接入点直接连接设备的衍生技术。",
-      "网状Wi-Fi是让多个设备呈网状协同、将通信范围以面状方式扩展的组网方式；WPS是通过按钮操作等简化连接设置的辅助功能。",
-      "ESSID是识别无线网络的名称（SSID），MAC地址是设备固有的物理地址，二者识别的对象不同。",
-      "MAC地址是48位的设备固有地址，常与可更改的IP地址（逻辑地址）对比出题。"
+      "无线LAN 的电波会传到建筑物外，因此需要用 WPA2 等方式加密，并防范接入点被盗用。",
+      "无线LAN的技术内容由 IEEE 802.11 系列标准规定，Wi-Fi 则是对符合这些标准的产品进行互连认证后使用的名称。",
+      "电波会随距离和障碍物衰减，与其他电波干扰时速度也会下降，因此设备的摆放位置和所用频段会影响通信质量。"
     ],
     "key_points_en": [
-      "Wireless LAN is a LAN that connects devices over radio waves, usually via an access point. It needs no wiring, but requires measures against radio reach and interception (encryption).",
-      "Wi-Fi is the standard and brand name that guarantees wireless LAN interoperability, based on IEEE 802.11. Wi-Fi Direct is a derived technology that connects devices directly without an access point.",
-      "Mesh Wi-Fi is a configuration that links multiple devices in a mesh to extend the communication range as an area; WPS is an auxiliary feature that simplifies connection setup through operations such as pressing a button.",
-      "The ESSID is the name (SSID) that identifies a wireless network, while the MAC address is a physical address unique to a device; the two identify different things.",
-      "A MAC address is a 48-bit device-unique address, often tested in contrast with the changeable IP address (a logical address)."
+      "Wireless LAN signals reach outside the building, so they need encryption with WPA2 or a similar method and protection against misuse of access points.",
+      "The IEEE 802.11 family of standards defines how wireless LAN technology works, and Wi-Fi is the name for products certified to interconnect under those standards.",
+      "Radio signals weaken with distance and obstacles and slow down when other signals interfere, so equipment placement and the frequency band in use affect connection quality."
+    ],
+    "memory_hooks_jp": [
+      "無線LAN: 英語の wireless は wire (線) + less (無い)。「線が無い」から電波で結ぶ、と字面で覚える。",
+      "Wi-Fi: 名前は高音質オーディオを表す Hi-Fi に響きを合わせた造語とされる。",
+      "メッシュWi-Fi: mesh は網戸のメッシュと同じ「網の目」。点と点を何本もの線で結ぶ形を思い浮かべる。",
+      "WPS: WPS は Wi-Fi Protected Setup の略。末尾の Setup (設定) が、この機能の役目を表している。",
+      "ESSID: ESSID は Extended Service Set Identifier の略。最後の Identifier (識別子) が、ネットワークを見分けるための名前であることを示す。",
+      "MACアドレス: MAC は Media Access Control の略で、パソコンの Mac とは無関係。"
     ],
     "memory_hooks_zh": [
-      "无线LAN：说到无线LAN，就是用电波、无需线缆连接的LAN",
-      "Wi-Fi：说到Wi-Fi，就是保证无线LAN互联互通的标准规格",
-      "Wi-Fi Direct：说到Wi-Fi Direct，就是无需接入点直接连接设备",
-      "网状Wi-Fi：说到网状Wi-Fi，就是多个设备呈网状协同、扩展电波范围",
-      "WPS：说到WPS，就是用按钮操作简化无线LAN连接设置的功能",
-      "ESSID：说到ESSID，就是识别无线LAN的网络名称",
-      "MAC地址：说到MAC地址，就是设备固有的物理地址"
+      "无线LAN：英语 wireless 由 wire（线）+ less（没有）组成。按字面记：“没有线”，所以靠电波连接。",
+      "Wi-Fi：据说这个名字是模仿代表高保真音响的 Hi-Fi 的发音造出来的。",
+      "网状Wi-Fi：mesh 就是纱窗那种“网眼”。可以想象点与点之间用许多条线连起来的样子。",
+      "WPS：WPS 是 Wi-Fi Protected Setup 的缩写。末尾的 Setup（设置）点明了这个功能的用途。",
+      "ESSID：ESSID 是 Extended Service Set Identifier 的缩写。最后的 Identifier（标识符）表明它是用来区分网络的名称。",
+      "MAC地址：MAC 是 Media Access Control 的缩写，与电脑 Mac 毫无关系。"
     ],
     "memory_hooks_en": [
-      "Wireless LAN: Wireless LAN -> a LAN that connects over radio waves without cables",
-      "Wi-Fi: Wi-Fi -> the standard that guarantees wireless LAN interoperability",
-      "Wi-Fi Direct: Wi-Fi Direct -> connect devices directly, no access point needed",
-      "Mesh Wi-Fi: Mesh Wi-Fi -> link multiple devices in a mesh to extend radio range",
-      "WPS: WPS -> a feature that simplifies wireless LAN setup with a button press",
-      "ESSID: ESSID -> the network name that identifies a wireless LAN",
-      "MAC address: MAC address -> a physical address unique to the device"
+      "Wireless LAN: Wireless is wire plus less: no wire, so the link is made by radio.",
+      "Wi-Fi: The name is said to have been coined to echo Hi-Fi, the term for high-fidelity audio.",
+      "Mesh Wi-Fi: Mesh is the netting of a window screen. Picture points joined to one another by many lines.",
+      "WPS: WPS stands for Wi-Fi Protected Setup. The last word, Setup, tells you what the feature is for.",
+      "ESSID: ESSID stands for Extended Service Set Identifier. The final word, Identifier, shows that it is a name for telling networks apart.",
+      "MAC address: MAC stands for Media Access Control and has nothing to do with Mac computers."
     ]
   },
   "challenge_questions": [
-    "2016h28h-q068",
-    "2017h29h-q085",
-    "2018h30a-q096",
-    "2018h30h-q088",
-    "2019h31h-q074"
+    "2019r01a-q077",
+    "2015h27a-q076",
+    "2020r02o-q088",
+    "2018h30a-q087",
+    "2025r07-q090"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "无线LAN与Wi-Fi",
-  "title_en": "Wireless LAN and Wi-Fi",
-  "unit_summary_zh": "理解无线LAN的工作原理与Wi-Fi相关技术，以及用于无线识别和连接设备的标识符（ESSID、MAC地址）。",
-  "unit_summary_en": "Understand how wireless LAN works and Wi-Fi-related technologies, along with the identifiers used to identify and connect devices wirelessly (ESSID and MAC address)."
+  }
 }

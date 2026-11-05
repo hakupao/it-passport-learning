@@ -1,241 +1,1028 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-58-u01",
   "topic_id": "technology-22-58",
   "category": "technology",
   "title_jp": "ネットワークの分類と有線の物理基盤",
+  "title_zh": "网络的分类与有线的物理基础",
+  "title_en": "Network Classification and the Physical Foundation of Wired Connections",
   "unit_summary_jp": "LANとWANという規模による分類と、ネットワークを支える伝送媒体・有線接続の物理的な基礎を理解する。",
+  "unit_summary_zh": "理解按规模划分的 LAN 与 WAN 分类，以及支撑网络的传输介质和有线连接的物理基础。",
+  "unit_summary_en": "Understand the classification by scale into LAN and WAN, and the physical foundation of the transmission media and wired connections that support a network.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "このユニットでは、ネットワークを規模で分けるLANとWANという分類を起点に、信号を運ぶ通信回線・伝送路・ケーブルといった物理的な基盤と、有線LANや機器を接続するネットワークインタフェースカードを学ぶ。装置や無線・IoTを学ぶ前提となる土台で、ITパスポートでも頻出する基礎分野である。",
-    "freq_badge": "頻出",
-    "est_minutes": 21,
-    "intro_zh": "本单元以按规模划分网络的 LAN 与 WAN 分类为起点，学习运载信号的通信线路、传输通路、线缆等物理基础，以及有线 LAN 和用于连接设备的网络接口卡。它是学习网络设备、无线、IoT 之前所需的基础，也是 IT 护照考试中的高频基础领域。",
-    "intro_en": "This unit starts from the classification of networks by scale into LAN and WAN, then covers the physical foundation that carries signals - communication lines, transmission paths, and cables - as well as wired LANs and the network interface card used to connect devices. It is the groundwork needed before studying network equipment, wireless, and IoT, and is a frequently tested basic field on the IT Passport exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**LAN** と **WAN** を、つなぐ範囲と回線の用意の仕方で見分けられる。",
+    "信号の通り道を表す**通信回線**や**伝送路**と、具体的な配線である**ケーブル**の関係を説明できる。",
+    "**有線LAN** で機器をつなぐ部品と技術を挙げ、ファイルの転送時間を伝送速度と伝送効率から求められる。"
+  ],
+  "goals_zh": [
+    "能从连接范围和线路的准备方式两方面区分 **局域网（LAN）** 与 **广域网（WAN）**。",
+    "能说明表示信号通道的 **通信线路**、**传输通路** 与作为具体布线的 **线缆** 之间的关系。",
+    "能举出 **有线 LAN** 中连接设备的部件和技术，并能根据传输速率和传输效率算出文件的传输时间。"
+  ],
+  "goals_en": [
+    "Tell a **LAN** from a **WAN** by the area each connects and by who provides the lines.",
+    "Explain how a **communication line** and a **transmission path**, the routes signals travel, relate to the **cable** that physically carries them.",
+    "Name the parts and technologies that connect devices on a **wired LAN**, and work out a file's transfer time from the transmission speed and transmission efficiency."
+  ],
+  "overview_cols_jp": [
+    "位置づけ"
+  ],
+  "overview_cols_zh": [
+    "定位"
+  ],
+  "overview_cols_en": [
+    "Where it fits"
+  ],
+  "overview_rows": [
     {
       "term": "LAN",
-      "definition_jp": "建物内など限られた範囲で機器を接続する、構内の狭域ネットワーク。",
-      "explanation_jp": "LAN(Local Area Network)は、同じ建物やフロア、家庭内といった限られた範囲でコンピュータやプリンタなどを相互に接続するネットワークです。自社で配線や機器を用意して構築・管理でき、高速で利用できるのが特徴です。\n\n試験では、LANが「狭い範囲(構内)」を対象とする点と、広域を結ぶWANとの対比がよく問われます。会社や家のなかをつなぐのがLAN、離れた拠点どうしをつなぐのがWAN、という規模の違いを軸に区別して覚えましょう。",
-      "analogy_jp": "一つの家やオフィスの中だけに張りめぐらせた電話線網のようなもの。自分の敷地内で自由に引いて使える、身近で閉じたつながりです。",
-      "memory_hook_jp": "LANといえば建物内など狭い範囲をつなぐ構内ネットワーク",
-      "inline_quiz": [
-        "2011h23a-q068",
-        "2014h26h-q052"
+      "one_line_jp": "建物や敷地の中など限られた範囲をつなぐネットワーク",
+      "one_line_zh": "连接建筑物或园区内部等有限范围的网络",
+      "one_line_en": "A network covering a limited area, such as inside a building or on one site",
+      "extra_jp": [
+        "範囲による分類"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"ネットワークの規模分類\"] --> B[\"LAN 狭域\"]; A --> C[\"WAN 広域\"]; B --> D[\"建物内・家庭内\"]; C --> E[\"離れた拠点間\"]",
-        "svg_path": "figures/technology-22-58-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "局域网（LAN）",
-      "term_en": "LAN",
-      "definition_zh": "在建筑物内等有限范围内连接设备的、局部范围的网络。",
-      "definition_en": "A local-area network that connects devices within a limited range, such as inside a building.",
-      "explanation_zh": "LAN（Local Area Network，局域网）是在同一栋建筑、同一楼层或家庭内等有限范围内，把计算机、打印机等相互连接起来的网络。它的特点是可以由自己准备布线和设备来搭建与管理，而且能高速使用。\n\n考试中常考查 LAN 以「狭小范围（局部）」为对象这一点，以及它与连接广阔范围的 WAN 之间的对比。请抓住规模差异这条主线来区分记忆：连接公司或家庭内部的是 LAN，连接相隔较远的各据点的是 WAN。",
-      "explanation_en": "A LAN (Local Area Network) is a network that interconnects computers, printers, and the like within a limited range such as the same building, floor, or home. Its key feature is that you can build and manage it yourself by providing your own cabling and equipment, and it can be used at high speed.\n\nThe exam often asks that a LAN targets a \"narrow range (local area),\" and contrasts it with a WAN that links wide areas. Remember the distinction along the axis of scale: a LAN connects within a company or home, while a WAN connects sites that are far apart.",
-      "analogy_zh": "就像只在一个家或一间办公室内部铺设的电话线网。你可以在自己的地块内自由地拉线使用，是一种贴近身边、封闭的连接。",
-      "analogy_en": "It's like a telephone wiring network strung up only inside one house or office. You can freely run the lines within your own premises - a close, self-contained connection.",
-      "memory_hook_zh": "说到 LAN，就是连接建筑物内等狭小范围的局部网络。",
-      "memory_hook_en": "LAN → a local network that connects a narrow range such as inside a building."
+      "extra_zh": [
+        "按范围分类"
+      ],
+      "extra_en": [
+        "Classified by area"
+      ]
     },
     {
       "term": "WAN",
-      "definition_jp": "離れた拠点間を結ぶ、広い範囲をカバーする広域ネットワーク。",
-      "explanation_jp": "WAN(Wide Area Network)は、都市や地域をまたいで離れた拠点どうしを接続する広範囲のネットワークです。距離が長いため、通信事業者(キャリア)が提供する回線サービスを利用して構築するのが一般的です。\n\n試験では、WANが「広い範囲(拠点間)」を対象とし、通信事業者の回線を借りて使う点が問われます。自前で構築するLANとの違い、すなわち規模と回線の調達方法の対比を押さえておくことが重要です。",
-      "analogy_jp": "各家庭(LAN)どうしを結ぶ、街全体に張られた公共の電話網のようなもの。遠くの拠点まで届くよう、通信会社が用意した道を借りてつなぎます。",
-      "memory_hook_jp": "WANといえば拠点間を結ぶ広域ネットワーク(通信事業者の回線を利用)",
-      "inline_quiz": [
-        "2013h25a-q071",
-        "2015h27h-q050"
+      "one_line_jp": "離れた地域の拠点どうしを結ぶネットワーク",
+      "one_line_zh": "连接位于不同地区的各个据点的网络",
+      "one_line_en": "A network linking sites in distant regions",
+      "extra_jp": [
+        "範囲による分類"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "广域网（WAN）",
-      "term_en": "WAN",
-      "definition_zh": "连接相隔较远的各据点、覆盖广阔范围的广域网络。",
-      "definition_en": "A wide-area network that links sites far apart and covers a broad range.",
-      "explanation_zh": "WAN（Wide Area Network，广域网）是跨越城市或地区、把相隔较远的各据点连接起来的大范围网络。由于距离很长，一般会利用通信运营商（电信运营商）提供的线路服务来搭建。\n\n考试中会考查 WAN 以「广阔范围（据点之间）」为对象、并租用通信运营商线路这一点。重点是要掌握它与自行搭建的 LAN 的区别，也就是规模与线路获取方式上的对比。",
-      "explanation_en": "A WAN (Wide Area Network) is a large-scale network that connects sites far apart, spanning cities or regions. Because the distances are long, it is generally built by using the line services provided by a telecommunications carrier.\n\nThe exam asks that a WAN targets a \"wide range (between sites)\" and is used by leasing a carrier's lines. It is important to grasp the difference from a LAN that you build yourself - that is, the contrast in scale and in how the lines are obtained.",
-      "analogy_zh": "就像把各个家庭（LAN）连接起来、铺遍整座城市的公共电话网。为了能抵达遥远的据点，需要借用通信公司铺好的通路来连接。",
-      "analogy_en": "It's like a public telephone network spread across an entire city that links individual homes (LANs) together. To reach distant sites, you borrow the paths laid out by the telecom company.",
-      "memory_hook_zh": "说到 WAN，就是连接各据点之间的广域网络（利用通信运营商的线路）。",
-      "memory_hook_en": "WAN → a wide-area network linking sites (using a carrier's lines)."
+      "extra_zh": [
+        "按范围分类"
+      ],
+      "extra_en": [
+        "Classified by area"
+      ]
     },
     {
       "term": "通信回線",
-      "definition_jp": "拠点間でデータをやり取りするために信号を伝える通信の経路。",
-      "explanation_jp": "通信回線は、コンピュータや拠点の間でデータを送受信するために信号を運ぶ経路のことです。電話回線や光回線などがあり、特にWANでは通信事業者が提供する通信回線を利用してネットワークを構成します。\n\n試験では、通信回線が「どことどこを何でつなぐか」という伝送の経路を指す言葉である点が問われます。回線の太さ(帯域)が大きいほど多くのデータを速く送れる、といった基本的なイメージも合わせて押さえておきましょう。",
-      "analogy_jp": "離れた町どうしを結ぶ道路のようなもの。データという荷物を運ぶための通り道で、道幅が広いほど一度にたくさん運べます。",
-      "memory_hook_jp": "通信回線といえばデータを運ぶ信号の通り道(経路)",
-      "inline_quiz": [
-        "2013h25a-q084"
+      "one_line_jp": "データを送受信するための通信の経路",
+      "one_line_zh": "用于收发数据的通信路径",
+      "one_line_en": "The communication route used to send and receive data",
+      "extra_jp": [
+        "経路"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "通信线路",
-      "term_en": "Communication Line",
-      "definition_zh": "为了在各据点之间交换数据而传送信号的通信通路。",
-      "definition_en": "The communication path that conveys signals to exchange data between sites.",
-      "explanation_zh": "通信线路是指为了在计算机或各据点之间收发数据而运载信号的通路。它有电话线路、光纤线路等，尤其在 WAN 中，会利用通信运营商提供的通信线路来构成网络。\n\n考试中会考查通信线路是指「用什么把哪里和哪里连起来」这条传输通路的词。也请一并掌握一个基本印象：线路越粗（带宽越大），就能越快地传送越多的数据。",
-      "explanation_en": "A communication line refers to the path that carries signals in order to send and receive data between computers or sites. There are telephone lines, optical lines, and so on; in WANs in particular, a network is formed by using the communication lines provided by a telecommunications carrier.\n\nThe exam asks that a communication line is a term referring to the transmission path of \"what connects where to where.\" Also keep in mind the basic image that the thicker the line (the larger the bandwidth), the more data can be sent faster.",
-      "analogy_zh": "就像连接相隔较远的两座城镇的道路。它是运载「数据」这种货物的通道，道路越宽，一次就能运得越多。",
-      "analogy_en": "It's like a road connecting two towns far apart. It is the passage for carrying the cargo called data, and the wider the road, the more can be carried at once.",
-      "memory_hook_zh": "说到通信线路，就是运载数据的信号通道（传输路径）。",
-      "memory_hook_en": "Communication line → the signal passage (path) that carries data."
+      "extra_zh": [
+        "路径"
+      ],
+      "extra_en": [
+        "Route"
+      ]
     },
     {
       "term": "伝送路",
-      "definition_jp": "信号が実際に伝わっていく物理的・論理的な通り道。",
-      "explanation_jp": "伝送路は、データを表す信号が送信側から受信側へ伝わっていく通り道のことです。ケーブルのような有線の媒体や、電波のような無線の空間も伝送路に含まれます。\n\n試験では、伝送路が通信回線とほぼ同じく「信号が通る道」を指す媒体寄りの言葉である点が問われます。回線=サービスとしての経路、伝送路=信号が物理的に通る媒体、というニュアンスの違いを意識しつつ、どちらも信号の通り道だと理解しておきましょう。",
-      "analogy_jp": "声が相手まで届くときに空気を伝わっていく、その「空気の通り道」のようなもの。信号が乗って進んでいく道筋そのものを指します。",
-      "memory_hook_jp": "伝送路といえば信号が伝わっていく媒体(有線も無線も含む通り道)",
-      "inline_quiz": [
-        "2009h21a-q082"
+      "one_line_jp": "信号が実際に伝わっていく道筋",
+      "one_line_zh": "信号实际传播所经过的通道",
+      "one_line_en": "The path a signal actually travels along",
+      "extra_jp": [
+        "経路"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "传输通路",
-      "term_en": "Transmission Path",
-      "definition_zh": "信号实际传递所经过的物理或逻辑通道。",
-      "definition_en": "The physical or logical channel along which a signal actually travels.",
-      "explanation_zh": "传输通路是指表示数据的信号从发送方传递到接收方所经过的通道。它既包括线缆这类有线介质，也包括电波这类无线空间。\n\n考试中会考查传输通路与通信线路几乎相同、是偏向「介质」一侧的、指「信号通过的通道」的词。请在意识到二者细微差别的同时来理解：线路＝作为服务的通路，传输通路＝信号在物理上经过的介质，但两者都是信号通过的通道。",
-      "explanation_en": "A transmission path refers to the channel along which the signal representing data travels from the sender to the receiver. It includes both wired media such as cables and wireless space such as radio waves.\n\nThe exam asks that a transmission path is, much like a communication line, a more medium-oriented term referring to \"the channel a signal passes through.\" While being aware of the nuance - a line is the path as a service, whereas a transmission path is the medium the signal physically passes through - understand that both are channels through which a signal passes.",
-      "analogy_zh": "就像声音传到对方耳中时所经过的「空气通道」。它指的正是信号搭乘其上、向前推进的那条路径本身。",
-      "analogy_en": "It's like the \"path through the air\" that sound travels along to reach the other person. It refers to the very route along which a signal rides and moves forward.",
-      "memory_hook_zh": "说到传输通路，就是信号传递所经过的介质（含有线与无线的通道）。",
-      "memory_hook_en": "Transmission path → the medium a signal travels along (a channel covering both wired and wireless)."
+      "extra_zh": [
+        "路径"
+      ],
+      "extra_en": [
+        "Route"
+      ]
     },
     {
       "term": "ケーブル",
-      "definition_jp": "有線通信で信号を伝える具体的な配線(銅線や光ファイバなど)。",
-      "explanation_jp": "ケーブルは、有線ネットワークで信号を伝えるための物理的な配線です。代表例として、電気信号を流す銅線を使うLANケーブル(ツイストペアケーブル)や、光の点滅で高速・長距離に伝える光ファイバケーブルがあります。\n\n試験では、ケーブルが伝送路を具体化した「有線の媒体」である点と、光ファイバが電気を使わず光で伝えるため高速・長距離・ノイズに強いという特徴が問われやすいです。無線との対比で、有線=ケーブルという基本も押さえましょう。",
-      "analogy_jp": "水を運ぶ水道管のようなもの。電気の信号を流す金属の管(銅線)もあれば、光を通す透明な管(光ファイバ)もあり、用途で使い分けます。",
-      "memory_hook_jp": "ケーブルといえば有線の物理配線(銅線のLANケーブルと光ファイバ)",
-      "inline_quiz": [
-        "2014h26a-q056"
+      "one_line_jp": "有線通信で信号を運ぶ物理的な配線",
+      "one_line_zh": "在有线通信中传送信号的物理布线",
+      "one_line_en": "The physical wiring that carries signals in wired communication",
+      "extra_jp": [
+        "媒体"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "线缆",
-      "term_en": "Cable",
-      "definition_zh": "有线通信中传送信号的具体布线（铜线或光纤等）。",
-      "definition_en": "The concrete wiring (such as copper wire or optical fiber) that conveys signals in wired communication.",
-      "explanation_zh": "线缆是有线网络中用来传送信号的物理布线。代表性的例子有：使用流过电信号的铜线的 LAN 线缆（双绞线），以及通过光的明灭来实现高速、长距离传输的光纤线缆。\n\n考试中容易考查线缆是把传输通路具体化的「有线介质」这一点，以及光纤不使用电、而用光来传送，因而高速、长距离、抗噪声强这一特征。请结合与无线的对比，掌握「有线＝线缆」这一基本点。",
-      "explanation_en": "A cable is the physical wiring used to convey signals in a wired network. Representative examples include LAN cables (twisted-pair cables) that use copper wire to carry electrical signals, and optical fiber cables that transmit at high speed over long distances using flashes of light.\n\nThe exam tends to ask that a cable is the \"wired medium\" that makes a transmission path concrete, and that optical fiber transmits with light rather than electricity, making it high-speed, long-distance, and noise-resistant. In contrast with wireless, also grasp the basic point that \"wired = cable.\"",
-      "analogy_zh": "就像运水的水管。既有流通电信号的金属管（铜线），也有让光通过的透明管（光纤），可按用途分别使用。",
-      "analogy_en": "It's like a water pipe that carries water. There are metal pipes (copper wire) that carry electrical signals and transparent pipes (optical fiber) that let light through, used differently depending on the purpose.",
-      "memory_hook_zh": "说到线缆，就是有线的物理布线（铜质 LAN 线缆与光纤）。",
-      "memory_hook_en": "Cable → the physical wiring of wired connections (copper LAN cables and optical fiber)."
+      "extra_zh": [
+        "介质"
+      ],
+      "extra_en": [
+        "Medium"
+      ]
     },
     {
       "term": "有線LAN",
-      "definition_jp": "ケーブルを使って機器どうしを接続する有線方式のLAN。",
-      "explanation_jp": "有線LANは、LANケーブルなどの配線で機器を物理的に接続するLANのことです。電波を使う無線LANに比べ、通信が安定して速度を確保しやすく、外部からの傍受も比較的されにくいという利点があります。\n\n試験では、有線LANと無線LANの対比が問われます。有線は安定・高速・セキュリティ面で有利だが配線が必要で移動しにくく、無線は配線不要で自由だが電波の干渉や安定性で劣る、という長所と短所の違いを整理して覚えましょう。",
-      "analogy_jp": "固定電話のようなもの。コードでしっかりつながっているので音声が安定し途切れにくい反面、コードの届く範囲でしか使えません。",
-      "memory_hook_jp": "有線LANといえばケーブル接続のLAN(安定・高速だが配線が必要)",
-      "inline_quiz": [
-        "2014h26a-q082"
+      "one_line_jp": "ケーブルで機器をつなぐ形の LAN",
+      "one_line_zh": "用线缆连接设备的局域网",
+      "one_line_en": "A LAN in which devices are connected by cable",
+      "extra_jp": [
+        "LAN の接続形態"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "有线 LAN",
-      "term_en": "Wired LAN",
-      "definition_zh": "使用线缆把设备相互连接的有线方式的 LAN。",
-      "definition_en": "A LAN of the wired type that interconnects devices using cables.",
-      "explanation_zh": "有线 LAN 是指用 LAN 线缆等布线把设备在物理上连接起来的 LAN。与使用电波的无线 LAN 相比，它具有通信稳定、容易确保速度、并且也较难被外部窃听等优点。\n\n考试中会考查有线 LAN 与无线 LAN 的对比。请整理记忆二者优缺点的差异：有线在稳定、高速、安全方面占优，但需要布线、不便移动；无线无需布线、较为自由，但在电波干扰和稳定性方面较差。",
-      "explanation_en": "A wired LAN is a LAN in which devices are physically connected by wiring such as LAN cables. Compared with a wireless LAN that uses radio waves, it has the advantages of stable communication, easily secured speed, and relatively low susceptibility to eavesdropping from outside.\n\nThe exam asks about the contrast between wired LAN and wireless LAN. Organize and remember the differences in their pros and cons: wired is advantageous in stability, speed, and security but requires cabling and is hard to move; wireless needs no cabling and is free but is inferior in radio interference and stability.",
-      "analogy_zh": "就像固定电话。因为用电话线牢牢连着，所以声音稳定、不易中断；但反过来，也只能在电话线够得着的范围内使用。",
-      "analogy_en": "It's like a landline telephone. Because it is firmly connected by a cord, the voice is stable and not easily cut off; but in turn, it can only be used within the range the cord reaches.",
-      "memory_hook_zh": "说到有线 LAN，就是用线缆连接的 LAN（稳定、高速，但需要布线）。",
-      "memory_hook_en": "Wired LAN → a cable-connected LAN (stable and fast, but requires cabling)."
+      "extra_zh": [
+        "局域网的连接形式"
+      ],
+      "extra_en": [
+        "How a LAN is connected"
+      ]
     },
     {
       "term": "ネットワークインタフェースカード",
-      "definition_jp": "コンピュータをネットワークに接続するための末端の通信装置。",
-      "explanation_jp": "ネットワークインタフェースカード(NIC)は、コンピュータや機器をLANに接続するための部品で、LANケーブルを挿す差込口(ポート)を備えます。LANアダプタとも呼ばれ、機器とネットワークをつなぐ末端の窓口の役割を果たします。\n\n試験では、NICが「機器をネットワークに接続する装置」であり、各NICには製造時に割り当てられた固有のMACアドレスを持つ点が問われやすいです。ケーブルを差して通信できるようにする出入口がNIC、と覚えておきましょう。",
-      "analogy_jp": "家の玄関に取り付けられた郵便受けのようなもの。外の道(ネットワーク)と家の中(機器)をつなぐ出入口で、ここに固有の住所(MACアドレス)が付いています。",
-      "memory_hook_jp": "ネットワークインタフェースカードといえば機器をLANにつなぐ末端の接続装置(固有のMACアドレスを持つ)",
+      "one_line_jp": "機器を LAN につないで通信させる部品",
+      "one_line_zh": "让设备接入局域网并进行通信的部件",
+      "one_line_en": "The part that connects a device to a LAN so it can communicate",
+      "extra_jp": [
+        "機器側の部品"
+      ],
+      "extra_zh": [
+        "设备一侧的部件"
+      ],
+      "extra_en": [
+        "Part on the device side"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "LAN",
+      "term_zh": "局域网（LAN）",
+      "term_en": "LAN",
+      "one_jp": "**LAN** は、建物やフロア、同じ敷地の中など**限られた範囲**にある機器どうしをつなぐネットワークである。",
+      "one_zh": "**局域网（LAN）** 是把建筑物、楼层或同一园区内等 **有限范围** 里的设备相互连接起来的网络。",
+      "one_en": "A **LAN** is a network that connects devices within a **limited area**, such as a building, a floor, or a single site.",
+      "detail_jp": "Local Area Network の略である。範囲が限られるため、利用する組織や家庭が自分で配線や機器をそろえて構築し、管理できる。",
+      "detail_zh": "它是 Local Area Network 的缩写。由于范围有限，使用它的组织或家庭可以自己准备布线和设备来搭建并管理。",
+      "detail_en": "The name stands for Local Area Network. Because the area is limited, the organization or household that uses it can lay the wiring, gather the equipment, and build and manage it on its own.",
+      "analogy_jp": "家の中に引いた水道の配管のようなもの。家の敷地の中なら、住む人が自分で好きなように管を通して使える。",
+      "analogy_zh": "就像家里自己铺设的自来水管道。只要在自家院子里，住户就可以随意布管使用。",
+      "analogy_en": "Think of the water pipes inside a house. On your own property, you can run the pipes however you like.",
+      "hook_jp": "Local は「その土地の、地元の」という意味。自分たちのいる建物の中、という感覚と結び付く。",
+      "hook_zh": "Local 意为“本地的、当地的”，正好对应“我们自己所在的这栋楼里”的感觉。",
+      "hook_en": "Local means \"of this place\", which matches the sense of \"inside the building where we are\".",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "LAN は範囲が限られるので、通信事業者と契約しなくても、使う組織や家庭が自分で構築できる。LAN かどうかはつなぐ範囲で決まり、ケーブルか無線かでは決まらない。",
+          "text_zh": "局域网（LAN）范围有限，所以不必与通信运营商（[[jp:通信事業者]]）签约，使用它的组织或家庭自己就能搭建。是不是局域网取决于连接的范围，而不取决于用线缆（[[jp:ケーブル]]）还是无线。",
+          "text_en": "Because its area is limited, a LAN can be built by the organization or household that uses it, without a contract with a carrier ([[jp:通信事業者]]). Whether a network is a LAN depends on the area it covers, not on whether it uses cable ([[jp:ケーブル]]) or wireless.",
+          "qids": [
+            "2014h26a-q056"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "複数の機器を有線でつなぐ LAN では、一般に集線装置であるハブを中心に各機器を接続する。ハブから放射状に広がるこの形をスター型という。",
+          "text_zh": "在用有线方式连接多台设备的局域网中，一般以集线器（[[jp:ハブ]]）这种集线设备为中心连接各台设备。这种从集线器向四周放射展开的形态称为星型（[[jp:スター型]]）。",
+          "text_en": "In a LAN that wires several devices together, each device is usually connected to a central concentrator called a hub ([[jp:ハブ]]). This layout, radiating out from the hub, is called a star topology ([[jp:スター型]]).",
+          "qids": [
+            "2011h23a-q068",
+            "2018h30h-q058"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2015h27h-q050",
+        "2014h26a-q056",
+        "2011h23a-q068"
+      ],
+      "definition_jp": "LAN は、建物やフロア、同じ敷地の中など限られた範囲にある機器どうしをつなぐネットワークである。",
+      "definition_zh": "局域网（LAN） 是把建筑物、楼层或同一园区内等 有限范围 里的设备相互连接起来的网络。",
+      "definition_en": "A LAN is a network that connects devices within a limited area, such as a building, a floor, or a single site.",
+      "explanation_jp": "Local Area Network の略である。範囲が限られるため、利用する組織や家庭が自分で配線や機器をそろえて構築し、管理できる。",
+      "explanation_zh": "它是 Local Area Network 的缩写。由于范围有限，使用它的组织或家庭可以自己准备布线和设备来搭建并管理。",
+      "explanation_en": "The name stands for Local Area Network. Because the area is limited, the organization or household that uses it can lay the wiring, gather the equipment, and build and manage it on its own.",
+      "memory_hook_jp": "Local は「その土地の、地元の」という意味。自分たちのいる建物の中、という感覚と結び付く。",
+      "memory_hook_zh": "Local 意为“本地的、当地的”，正好对应“我们自己所在的这栋楼里”的感觉。",
+      "memory_hook_en": "Local means \"of this place\", which matches the sense of \"inside the building where we are\".",
       "inline_quiz": [
-        "2011h23a-q058"
+        "2015h27h-q050",
+        "2014h26a-q056",
+        "2011h23a-q068"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "WAN",
+      "term_zh": "广域网（WAN）",
+      "term_en": "WAN",
+      "one_jp": "**WAN** は、都市や地域をまたいで**離れた場所にある拠点どうし**を結ぶネットワークである。",
+      "one_zh": "**广域网（WAN）** 是跨越城市和地区，把 **相隔遥远的各个据点** 连接起来的网络。",
+      "one_en": "A **WAN** is a network that spans cities and regions to link **sites located far apart**.",
+      "detail_jp": "Wide Area Network の略である。長い距離を自前で配線するのは現実的でないため、通信事業者が提供する回線サービスを利用して構築するのが一般的である。",
+      "detail_zh": "它是 Wide Area Network 的缩写。自己铺设长距离线路并不现实，因此一般借助通信运营商提供的线路服务来构建。",
+      "detail_en": "The name stands for Wide Area Network. Running your own wiring over long distances is not practical, so a WAN is usually built on line services provided by a carrier.",
+      "analogy_jp": "町と町を結ぶ鉄道のようなもの。自分で線路を敷くのではなく、鉄道会社が用意した路線に乗って遠くの町へ行く。",
+      "analogy_zh": "就像连接城镇之间的铁路。你不必自己铺铁轨，而是乘坐铁路公司开通的线路去远方的城镇。",
+      "analogy_en": "It is like the railway between towns. You do not lay your own track; you ride the line the railway company runs to reach a distant town.",
+      "hook_jp": "Wide は「広い」。頭文字が L (Local) か W (Wide) かで、範囲の広さが分かれる。",
+      "hook_zh": "Wide 意为“宽广”。首字母是 L（Local）还是 W（Wide），决定了范围的大小。",
+      "hook_en": "Wide means broad. Whether the first letter is L (Local) or W (Wide) tells you how far the network reaches.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "WAN は通信事業者のサービスを使って、離れた拠点の LAN どうしを結ぶ。",
+          "text_zh": "广域网（WAN）利用通信运营商（[[jp:通信事業者]]）的服务，把相隔遥远的各据点的局域网（LAN）连接起来。",
+          "text_en": "A WAN uses services from a carrier ([[jp:通信事業者]]) to link the LANs of distant sites.",
+          "qids": [
+            "2013h25a-q071",
+            "2018h30a-q091"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "通信の相手が別の地域の拠点にあるときは WAN が必要になる。同じ建物や同じ構内で完結する通信は LAN だけで足りる。",
+          "text_zh": "通信对象位于其他地区的据点时，就需要广域网（WAN）。在同一栋建筑或同一园区内就能完成的通信，只用局域网（LAN）就够了。",
+          "text_en": "When the other party is at a site in another region, a WAN is needed. Communication that stays within one building or one site needs only a LAN.",
+          "qids": [
+            "2016h28h-q067",
+            "2017h29a-q099"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "LAN か WAN かは、建物をいくつまたぐかではなく、離れた地域の拠点どうしを結ぶかどうかで分かれる。",
+          "text_zh": "是局域网（LAN）还是广域网（WAN），不看跨越了多少栋建筑，而看是否连接相隔遥远地区的各个据点。",
+          "text_en": "Whether a network is a LAN or a WAN depends not on how many buildings it spans but on whether it links sites in distant regions.",
+          "qids": [
+            "2017h29h-q084"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "a",
+              "label": {
+                "jp": "拠点 A の LAN",
+                "zh": "据点 A 的局域网",
+                "en": "LAN at site A"
+              }
+            },
+            {
+              "id": "w",
+              "label": {
+                "jp": "通信事業者が提供する回線サービス",
+                "zh": "通信运营商提供的线路服务",
+                "en": "Line service from a carrier"
+              }
+            },
+            {
+              "id": "b",
+              "label": {
+                "jp": "拠点 B の LAN",
+                "zh": "据点 B 的局域网",
+                "en": "LAN at site B"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2018h30a-q091",
+        "2017h29h-q084",
+        "2017h29a-q099"
+      ],
+      "definition_jp": "WAN は、都市や地域をまたいで離れた場所にある拠点どうしを結ぶネットワークである。",
+      "definition_zh": "广域网（WAN） 是跨越城市和地区，把 相隔遥远的各个据点 连接起来的网络。",
+      "definition_en": "A WAN is a network that spans cities and regions to link sites located far apart.",
+      "explanation_jp": "Wide Area Network の略である。長い距離を自前で配線するのは現実的でないため、通信事業者が提供する回線サービスを利用して構築するのが一般的である。",
+      "explanation_zh": "它是 Wide Area Network 的缩写。自己铺设长距离线路并不现实，因此一般借助通信运营商提供的线路服务来构建。",
+      "explanation_en": "The name stands for Wide Area Network. Running your own wiring over long distances is not practical, so a WAN is usually built on line services provided by a carrier.",
+      "memory_hook_jp": "Wide は「広い」。頭文字が L (Local) か W (Wide) かで、範囲の広さが分かれる。",
+      "memory_hook_zh": "Wide 意为“宽广”。首字母是 L（Local）还是 W（Wide），决定了范围的大小。",
+      "memory_hook_en": "Wide means broad. Whether the first letter is L (Local) or W (Wide) tells you how far the network reaches.",
+      "inline_quiz": [
+        "2018h30a-q091",
+        "2017h29h-q084",
+        "2017h29a-q099"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "通信回線",
+      "term_zh": "通信线路",
+      "term_en": "Communication Line",
+      "one_jp": "**通信回線**は、離れた機器や拠点の間でデータを送受信するために使う**通信の経路**である。",
+      "one_zh": "**通信线路**（[[jp:通信回線]]）是在相隔两地的设备或据点之间收发数据时所使用的 **通信路径**。",
+      "one_en": "A **communication line** ([[jp:通信回線]]) is the **communication route** used to send and receive data between devices or sites in separate locations.",
+      "detail_jp": "電話回線や光回線のように通信事業者がサービスとして提供するものが多いが、自社で敷設して管理する回線もある。通信の間ずっと経路を一組の利用者が占有する方式を**回線交換方式**、データを**パケット**という小さな単位に分けて複数の利用者が回線を分け合う方式を**パケット交換方式**という。利用が一度に集中し、回線がさばける量を上回って通信が滞る状態は**輻輳**と呼ぶ。",
+      "detail_zh": "电话线路、光纤线路等多由通信运营商作为服务提供，但也有企业自己铺设并管理的线路。通信期间始终由一组用户独占路径的方式叫 **电路交换方式**（[[jp:回線交換方式]]），把数据切分成称为 **分组**（[[jp:パケット]]）的小单位、由多个用户分享线路的方式叫 **分组交换方式**（[[jp:パケット交換方式]]）。使用一下子集中起来、超出线路的处理能力而导致通信停滞的状态，称为 **拥塞**（[[jp:輻輳]]）。",
+      "detail_en": "Many lines, such as telephone and fiber-optic lines, are offered as services by carriers, though some are laid and managed by the company itself. A method in which one pair of users holds the route for the entire exchange is **circuit switching** ([[jp:回線交換方式]]), while one that splits data into small units called **packets** ([[jp:パケット]]) so many users can share the line is **packet switching** ([[jp:パケット交換方式]]). When usage piles up all at once and traffic stalls because it exceeds what the line can handle, the state is called **congestion** ([[jp:輻輳]]).",
+      "analogy_jp": "回線交換は貸し切りバス、パケット交換は乗り合いバスに近い。貸し切りは確実に座れるが空席が出やすく、乗り合いは座席を無駄なく使える。",
+      "analogy_zh": "电路交换像包车，分组交换像公交车。包车保证有座位，但容易空着座位；公交车则能把座位充分利用起来。",
+      "analogy_en": "Circuit switching is like a chartered bus, and packet switching like a regular route bus. On a charter you are sure of a seat but many seats go empty, while a route bus fills its seats without waste.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "パケット交換方式では、一本の回線に多くの利用者のパケットが混ざって流れるため、回線のすき間を無駄なく使える。",
+          "text_zh": "在分组交换方式（[[jp:パケット交換方式]]）中，许多用户的分组（[[jp:パケット]]）混在一条线路上传输，因此线路的空隙能得到充分利用。",
+          "text_en": "With packet switching ([[jp:パケット交換方式]]), packets ([[jp:パケット]]) from many users travel mixed together on one line, so no gap in the line goes to waste.",
+          "qids": [
+            "2015h27a-q068",
+            "2016h28h-q071"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "回線交換方式では経路を他の利用者と分け合わないので、ほかの通信の混み具合に左右されにくく、速さや品質を一定に保ちやすい。",
+          "text_zh": "电路交换方式（[[jp:回線交換方式]]）不与其他用户分享路径，因此不易受其他通信拥挤程度的影响，容易保持稳定的速度和质量。",
+          "text_en": "Circuit switching ([[jp:回線交換方式]]) does not share its route with other users, so it is little affected by how busy other traffic is, and speed and quality are easy to keep steady.",
+          "qids": [
+            "2016h28h-q071"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "輻輳は、通信が急に増えて回線やネットワークが処理しきれなくなり、通信が滞る状態である。",
+          "text_zh": "拥塞（[[jp:輻輳]]）是指通信量骤增、线路或网络处理不过来而使通信停滞的状态。",
+          "text_en": "Congestion ([[jp:輻輳]]) is the state in which traffic surges, the line or network cannot keep up, and communication stalls.",
+          "qids": [
+            "2017h29h-q096"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "回線交換方式",
+            "zh": "电路交换方式",
+            "en": "Circuit switching"
+          },
+          "b": {
+            "jp": "パケット交換方式",
+            "zh": "分组交换方式",
+            "en": "Packet switching"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "回線の使い方",
+                "zh": "线路的使用方式",
+                "en": "How the line is used"
+              },
+              "a": {
+                "jp": "通信の間、経路を一組で占有する",
+                "zh": "通信期间由一组用户独占路径",
+                "en": "One pair holds the route for the whole call"
+              },
+              "b": {
+                "jp": "データを小さく分け、複数の利用者で共有する",
+                "zh": "把数据切成小块，由多个用户共享",
+                "en": "Data is cut into small pieces and many users share the line"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "回線の利用効率",
+                "zh": "线路的利用效率",
+                "en": "Line utilization"
+              },
+              "a": {
+                "jp": "通信していない時間も経路を押さえるため低くなりやすい",
+                "zh": "不通信时也占着路径，所以往往偏低",
+                "en": "Tends to be low, since the route stays reserved even when idle"
+              },
+              "b": {
+                "jp": "すき間に他の利用者のデータを流せるため高い",
+                "zh": "空隙中可以传送其他用户的数据，所以较高",
+                "en": "High, since other users' data fills the gaps"
+              }
+            },
+            {
+              "label": {
+                "jp": "速度や品質の保証",
+                "zh": "速度与质量的保证",
+                "en": "Guaranteed speed and quality"
+              },
+              "a": {
+                "jp": "経路を独占するので保証しやすい",
+                "zh": "独占路径，容易保证",
+                "en": "Easy to guarantee, as the route is exclusive"
+              },
+              "b": {
+                "jp": "混み具合に左右されやすい",
+                "zh": "容易受拥挤程度影响",
+                "en": "Easily affected by how busy the line is"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2015h27a-q068",
+        "2017h29h-q096"
+      ],
+      "definition_jp": "通信回線は、離れた機器や拠点の間でデータを送受信するために使う通信の経路である。",
+      "definition_zh": "通信线路（通信回線）是在相隔两地的设备或据点之间收发数据时所使用的 通信路径。",
+      "definition_en": "A communication line (通信回線) is the communication route used to send and receive data between devices or sites in separate locations.",
+      "explanation_jp": "電話回線や光回線のように通信事業者がサービスとして提供するものが多いが、自社で敷設して管理する回線もある。通信の間ずっと経路を一組の利用者が占有する方式を回線交換方式、データをパケットという小さな単位に分けて複数の利用者が回線を分け合う方式をパケット交換方式という。利用が一度に集中し、回線がさばける量を上回って通信が滞る状態は輻輳と呼ぶ。",
+      "explanation_zh": "电话线路、光纤线路等多由通信运营商作为服务提供，但也有企业自己铺设并管理的线路。通信期间始终由一组用户独占路径的方式叫 电路交换方式（回線交換方式），把数据切分成称为 分组（パケット）的小单位、由多个用户分享线路的方式叫 分组交换方式（パケット交換方式）。使用一下子集中起来、超出线路的处理能力而导致通信停滞的状态，称为 拥塞（輻輳）。",
+      "explanation_en": "Many lines, such as telephone and fiber-optic lines, are offered as services by carriers, though some are laid and managed by the company itself. A method in which one pair of users holds the route for the entire exchange is circuit switching (回線交換方式), while one that splits data into small units called packets (パケット) so many users can share the line is packet switching (パケット交換方式). When usage piles up all at once and traffic stalls because it exceeds what the line can handle, the state is called congestion (輻輳).",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2015h27a-q068",
+        "2017h29h-q096"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "伝送路",
+      "term_zh": "传输通路",
+      "term_en": "Transmission Path",
+      "one_jp": "**伝送路**は、送信側から受信側へ**信号が実際に伝わっていく道筋**で、配線のような有線の媒体も、電波が通る空間も含む。",
+      "one_zh": "**传输通路**（[[jp:伝送路]]）是 **信号从发送方实际传到接收方所经过的通道**，既包括布线之类的有线介质，也包括电波穿过的空间。",
+      "one_en": "A **transmission path** ([[jp:伝送路]]) is **the route a signal actually travels** from sender to receiver, covering both wired media such as wiring and the space radio waves pass through.",
+      "detail_jp": "伝送路の速さは、1 秒間に送れるビット数である**伝送速度** (単位 bps) で表す。伝送路には制御用のデータなども流れるため、伝送速度のうち利用者のデータを運べる割合を**伝送効率**という。",
+      "detail_zh": "传输通路的快慢用 **传输速率**（[[jp:伝送速度]]，单位 bps）表示，即每秒能发送的比特数。由于传输通路上还要传送控制用的数据等，传输速率中可用来运送用户数据的比例称为 **传输效率**（[[jp:伝送効率]]）。",
+      "detail_en": "The speed of a transmission path is expressed as its **transmission speed** ([[jp:伝送速度]], in bps), the number of bits it can send per second. Since control data and the like also flow over the path, the share of the transmission speed that can carry user data is called the **transmission efficiency** ([[jp:伝送効率]]).",
+      "analogy_jp": "道路を 1 時間に通れる車の台数が伝送速度なら、そのうち荷物を運ぶトラックの割合が伝送効率にあたる。残りは交通を整理する誘導車で、荷物は積んでいない。",
+      "analogy_zh": "如果把道路每小时能通过的车辆数比作传输速率，那么其中运货卡车所占的比例就相当于传输效率。其余的是负责疏导交通的引导车，并不载货。",
+      "analogy_en": "If the number of vehicles a road can pass per hour is the transmission speed, the share of them that are trucks carrying cargo is the transmission efficiency. The rest are escort vehicles that manage traffic and carry no cargo.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "転送時間は、ファイルの大きさをビットに換算し、伝送速度に伝送効率を掛けた実際の速さで割って求める。バイトのまま割ると 8 倍ずれる。",
+          "text_zh": "传输时间的求法是：先把文件大小换算成比特，再除以传输速率（[[jp:伝送速度]]）乘以传输效率（[[jp:伝送効率]]）得到的实际速度。如果直接用字节去除，结果会差 8 倍。",
+          "text_en": "To find the transfer time, convert the file size to bits and divide by the actual speed, which is the transmission speed ([[jp:伝送速度]]) times the transmission efficiency ([[jp:伝送効率]]). Dividing while still in bytes leaves the answer off by a factor of 8.",
+          "qids": [
+            "2009h21a-q082"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "伝送路と通信回線は、どちらも信号やデータの通り道を指し、ほぼ同じ意味で使われることも多い。伝送路は媒体そのものに、通信回線は利用する経路に目を向けた言い方である。",
+          "text_zh": "传输通路（[[jp:伝送路]]）和通信线路（[[jp:通信回線]]）都指信号或数据的通道，常常几乎当作同义词使用。传输通路着眼于介质本身，通信线路则着眼于所利用的路径。",
+          "text_en": "A transmission path ([[jp:伝送路]]) and a communication line ([[jp:通信回線]]) both refer to the route signals or data take, and the two are often used almost interchangeably. Transmission path focuses on the medium itself, while communication line focuses on the route being used."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "s1",
+              "label": {
+                "jp": "500Mバイト × 8 = 4,000Mビット",
+                "zh": "500M字节 × 8 = 4,000M比特",
+                "en": "500 MB × 8 = 4,000 Mbit"
+              }
+            },
+            {
+              "id": "s2",
+              "label": {
+                "jp": "50Mビット/秒 × 0.8 = 40Mビット/秒",
+                "zh": "50M比特/秒 × 0.8 = 40M比特/秒",
+                "en": "50 Mbit/s × 0.8 = 40 Mbit/s"
+              }
+            },
+            {
+              "id": "s3",
+              "label": {
+                "jp": "4,000Mビット ÷ 40Mビット/秒 = 100秒",
+                "zh": "4,000M比特 ÷ 40M比特/秒 = 100秒",
+                "en": "4,000 Mbit ÷ 40 Mbit/s = 100 s"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ファイルの大きさをバイトからビットに直す。1 バイトは 8 ビットである。",
+            "caption_zh": "把文件大小从字节换算成比特。1 字节等于 8 比特。",
+            "caption_en": "Convert the file size from bytes to bits. One byte is 8 bits.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "伝送速度 (1 秒に送れるビット数) に、伝送効率 (そのうち利用者のデータに使える割合) を掛けて、実際にデータを運べる速さを求める。",
+            "caption_zh": "用传输速率（每秒可发送的比特数）乘以传输效率（其中可用于用户数据的比例），求出实际能运送数据的速度。",
+            "caption_en": "Multiply the transmission speed (bits sent per second) by the transmission efficiency (the share usable for user data) to get the speed at which data actually moves.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "ビット数を実際の速さで割ると、転送にかかる時間になる。",
+            "caption_zh": "用比特数除以实际速度，就得到传输所需的时间。",
+            "caption_en": "Divide the number of bits by the actual speed to get the transfer time.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21a-q082",
+        "2016h28h-q071"
+      ],
+      "definition_jp": "伝送路は、送信側から受信側へ信号が実際に伝わっていく道筋で、配線のような有線の媒体も、電波が通る空間も含む。",
+      "definition_zh": "传输通路（伝送路）是 信号从发送方实际传到接收方所经过的通道，既包括布线之类的有线介质，也包括电波穿过的空间。",
+      "definition_en": "A transmission path (伝送路) is the route a signal actually travels from sender to receiver, covering both wired media such as wiring and the space radio waves pass through.",
+      "explanation_jp": "伝送路の速さは、1 秒間に送れるビット数である伝送速度 (単位 bps) で表す。伝送路には制御用のデータなども流れるため、伝送速度のうち利用者のデータを運べる割合を伝送効率という。",
+      "explanation_zh": "传输通路的快慢用 传输速率（伝送速度，单位 bps）表示，即每秒能发送的比特数。由于传输通路上还要传送控制用的数据等，传输速率中可用来运送用户数据的比例称为 传输效率（伝送効率）。",
+      "explanation_en": "The speed of a transmission path is expressed as its transmission speed (伝送速度, in bps), the number of bits it can send per second. Since control data and the like also flow over the path, the share of the transmission speed that can carry user data is called the transmission efficiency (伝送効率).",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2009h21a-q082",
+        "2016h28h-q071"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ケーブル",
+      "term_zh": "线缆",
+      "term_en": "Cable",
+      "one_jp": "**ケーブル**は、有線通信で信号を運ぶ**物理的な配線**で、伝送路を目に見える形にしたものである。",
+      "one_zh": "**线缆**（[[jp:ケーブル]]）是在有线通信中传送信号的 **物理布线**，也就是把传输通路变成看得见的形态。",
+      "one_en": "A **cable** ([[jp:ケーブル]]) is the **physical wiring** that carries signals in wired communication, a transmission path in a form you can see.",
+      "detail_jp": "LAN でよく使う**ツイストペアケーブル**は、より合わせた銅線に電気信号を流す。**光ファイバケーブル**は光で信号を送るため、長い距離でも信号が弱まりにくく、電気的な雑音の影響も受けにくい。",
+      "detail_zh": "局域网中常用的 **双绞线**（[[jp:ツイストペアケーブル]]）是在绞合的铜线上传送电信号。**光纤线缆**（[[jp:光ファイバケーブル]]）用光来传送信号，所以即使距离很长信号也不易衰减，也不易受电气噪声的影响。",
+      "detail_en": "The **twisted-pair cable** ([[jp:ツイストペアケーブル]]) common in LANs sends electrical signals through copper wires twisted together. A **fiber-optic cable** ([[jp:光ファイバケーブル]]) sends signals as light, so they weaken little even over long distances and are hardly affected by electrical noise.",
+      "analogy_jp": "ケーブルは信号を通す管である。銅線は電気を流す金属の管、光ファイバは光を通すガラスの管と考えると違いがつかみやすい。",
+      "analogy_zh": "线缆就是让信号通过的管子。把铜线想成导电的金属管，把光纤想成透光的玻璃管，区别就好理解了。",
+      "analogy_en": "A cable is a pipe for signals. Picture copper wire as a metal pipe that conducts electricity and optical fiber as a glass pipe that lets light through, and the difference becomes easy to grasp.",
+      "hook_jp": "英語の cable は、もともと船をつなぎ留める太い綱を指す語である。",
+      "hook_zh": "英语的 cable 原本是指拴住船只的粗缆绳。",
+      "hook_en": "The English word cable originally meant the thick rope used to moor a ship.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ケーブルを機器のポートに差してリンクランプが点灯したら、確かめられるのはその区間の物理的な接続までである。その先の機器やインターネットと通信できるかは別に確かめる。",
+          "text_zh": "把线缆插入设备端口后链路指示灯（[[jp:リンクランプ]]）亮起，能确认的只是这一段的物理连接。能否与更远的设备或互联网通信，需要另行确认。",
+          "text_en": "When a cable is plugged into a device's port and the link light ([[jp:リンクランプ]]) comes on, all that is confirmed is the physical connection on that segment. Whether the device can reach equipment beyond it or the internet has to be checked separately.",
+          "qids": [
+            "2015h27a-q066"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "ツイストペアケーブル",
+            "zh": "双绞线",
+            "en": "Twisted-pair cable"
+          },
+          "b": {
+            "jp": "光ファイバケーブル",
+            "zh": "光纤线缆",
+            "en": "Fiber-optic cable"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "運ぶ信号",
+                "zh": "传送的信号",
+                "en": "Signal carried"
+              },
+              "a": {
+                "jp": "電気",
+                "zh": "电",
+                "en": "Electrical"
+              },
+              "b": {
+                "jp": "光",
+                "zh": "光",
+                "en": "Light"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "芯の素材",
+                "zh": "芯的材料",
+                "en": "Core material"
+              },
+              "a": {
+                "jp": "より合わせた銅線",
+                "zh": "绞合在一起的铜线",
+                "en": "Twisted copper wires"
+              },
+              "b": {
+                "jp": "ガラスなどの細い繊維",
+                "zh": "玻璃等细纤维",
+                "en": "Thin fibers of glass or similar"
+              }
+            },
+            {
+              "label": {
+                "jp": "雑音の影響",
+                "zh": "受噪声影响",
+                "en": "Effect of noise"
+              },
+              "a": {
+                "jp": "受けやすい",
+                "zh": "容易受影响",
+                "en": "Easily affected"
+              },
+              "b": {
+                "jp": "受けにくい",
+                "zh": "不易受影响",
+                "en": "Hardly affected"
+              }
+            },
+            {
+              "label": {
+                "jp": "よく使う場面",
+                "zh": "常用场合",
+                "en": "Typical use"
+              },
+              "a": {
+                "jp": "建物内で PC などをつなぐ",
+                "zh": "在建筑物内连接 PC 等设备",
+                "en": "Connecting PCs and the like inside a building"
+              },
+              "b": {
+                "jp": "長い距離や高速の幹線",
+                "zh": "长距离或高速干线",
+                "en": "Long-distance or high-speed backbones"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2015h27a-q066",
+        "2014h26a-q056"
+      ],
+      "definition_jp": "ケーブルは、有線通信で信号を運ぶ物理的な配線で、伝送路を目に見える形にしたものである。",
+      "definition_zh": "线缆（ケーブル）是在有线通信中传送信号的 物理布线，也就是把传输通路变成看得见的形态。",
+      "definition_en": "A cable (ケーブル) is the physical wiring that carries signals in wired communication, a transmission path in a form you can see.",
+      "explanation_jp": "LAN でよく使うツイストペアケーブルは、より合わせた銅線に電気信号を流す。光ファイバケーブルは光で信号を送るため、長い距離でも信号が弱まりにくく、電気的な雑音の影響も受けにくい。",
+      "explanation_zh": "局域网中常用的 双绞线（ツイストペアケーブル）是在绞合的铜线上传送电信号。光纤线缆（光ファイバケーブル）用光来传送信号，所以即使距离很长信号也不易衰减，也不易受电气噪声的影响。",
+      "explanation_en": "The twisted-pair cable (ツイストペアケーブル) common in LANs sends electrical signals through copper wires twisted together. A fiber-optic cable (光ファイバケーブル) sends signals as light, so they weaken little even over long distances and are hardly affected by electrical noise.",
+      "memory_hook_jp": "英語の cable は、もともと船をつなぎ留める太い綱を指す語である。",
+      "memory_hook_zh": "英语的 cable 原本是指拴住船只的粗缆绳。",
+      "memory_hook_en": "The English word cable originally meant the thick rope used to moor a ship.",
+      "inline_quiz": [
+        "2015h27a-q066",
+        "2014h26a-q056"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "有線LAN",
+      "term_zh": "有线 LAN",
+      "term_en": "Wired LAN",
+      "one_jp": "**有線LAN** は、ケーブルで機器どうしを**物理的につなぐ**形の LAN である。",
+      "one_zh": "**有线 LAN**（[[jp:有線LAN]]）是用线缆把设备 **以物理方式相互连接** 的局域网。",
+      "one_en": "A **wired LAN** ([[jp:有線LAN]]) is a LAN in which devices are **physically connected** by cable.",
+      "detail_jp": "電波を使う**無線LAN**と比べると、配線の手間がかかり機器を動かしにくい一方、通信が安定しやすい。LAN ケーブルを通して通信と同時に電力も機器へ送る **PoE** (Power over Ethernet) という技術もある。",
+      "detail_zh": "与使用电波的 **无线LAN**（[[jp:無線LAN]]）相比，它布线费事、设备不便移动，但通信比较稳定。还有一种叫 **PoE**（Power over Ethernet）的技术，可以通过 LAN 线缆在通信的同时向设备供电。",
+      "detail_en": "Compared with a **wireless LAN** ([[jp:無線LAN]]), which uses radio waves, it takes more effort to wire and its devices are harder to move, but communication tends to be more stable. A technology called **PoE** (Power over Ethernet) also sends power to devices over the LAN cable along with the data.",
+      "analogy_jp": "コードでつながった固定電話のようなもの。音声は安定しているが、コードの届く範囲でしか使えない。",
+      "analogy_zh": "就像用电话线连着的座机。通话声音稳定，但只能在电话线够得着的地方使用。",
+      "analogy_en": "It is like a corded landline phone. The sound is steady, but you can only use it as far as the cord reaches.",
+      "hook_jp": "「有線」の反対が「無線」。線が有るか無いかで名前が分かれる。",
+      "hook_zh": "“有线”的反义词是“无线”，名称就看有没有线。",
+      "hook_en": "The opposite of wired is wireless; the names split on whether there is a wire.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "PoE は LAN ケーブルで通信と電力を一緒に送る技術である。例えば近くに電源のない天井や壁に置く機器で使われる。",
+          "text_zh": "PoE 是通过 LAN 线缆同时传送数据和电力的技术。例如，用于安装在附近没有电源插座的天花板或墙上的设备。",
+          "text_en": "PoE is a technology that delivers data and power together over a LAN cable. It is used, for example, for devices mounted on ceilings or walls with no power outlet nearby.",
+          "qids": [
+            "2014h26a-q082",
+            "2019h31h-q083"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "PoE は LAN ケーブルに電力を乗せる技術であり、屋内の電力線に通信用の信号を乗せる PLC とは組合せが逆である。",
+          "text_zh": "PoE 是在 LAN 线缆上加载电力的技术，而 PLC 是在室内电力线上加载通信信号，两者的组合方向正好相反。",
+          "text_en": "PoE puts power onto a LAN cable, whereas PLC puts communication signals onto indoor power lines, so the pairing runs the opposite way."
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "有線LAN",
+            "zh": "有线 LAN",
+            "en": "Wired LAN"
+          },
+          "b": {
+            "jp": "無線LAN",
+            "zh": "无线LAN",
+            "en": "Wireless LAN"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "つなぎ方",
+                "zh": "连接方式",
+                "en": "Connection"
+              },
+              "a": {
+                "jp": "ケーブル",
+                "zh": "线缆",
+                "en": "Cable"
+              },
+              "b": {
+                "jp": "電波",
+                "zh": "电波",
+                "en": "Radio waves"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "通信の安定",
+                "zh": "通信稳定性",
+                "en": "Stability"
+              },
+              "a": {
+                "jp": "安定しやすい",
+                "zh": "比较稳定",
+                "en": "Tends to be stable"
+              },
+              "b": {
+                "jp": "周りの電波や壁の影響を受けやすい",
+                "zh": "容易受周围电波和墙壁的影响",
+                "en": "Easily affected by nearby radio waves and walls"
+              }
+            },
+            {
+              "label": {
+                "jp": "機器の置き場所",
+                "zh": "设备摆放位置",
+                "en": "Device placement"
+              },
+              "a": {
+                "jp": "配線が届く範囲",
+                "zh": "布线能到达的范围",
+                "en": "Wherever the wiring reaches"
+              },
+              "b": {
+                "jp": "電波が届く範囲で自由に動かせる",
+                "zh": "在电波覆盖范围内可自由移动",
+                "en": "Free to move within radio range"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2019h31h-q083",
+        "2014h26a-q082"
+      ],
+      "definition_jp": "有線LAN は、ケーブルで機器どうしを物理的につなぐ形の LAN である。",
+      "definition_zh": "有线 LAN（有線LAN）是用线缆把设备 以物理方式相互连接 的局域网。",
+      "definition_en": "A wired LAN (有線LAN) is a LAN in which devices are physically connected by cable.",
+      "explanation_jp": "電波を使う無線LANと比べると、配線の手間がかかり機器を動かしにくい一方、通信が安定しやすい。LAN ケーブルを通して通信と同時に電力も機器へ送る PoE (Power over Ethernet) という技術もある。",
+      "explanation_zh": "与使用电波的 无线LAN（無線LAN）相比，它布线费事、设备不便移动，但通信比较稳定。还有一种叫 PoE（Power over Ethernet）的技术，可以通过 LAN 线缆在通信的同时向设备供电。",
+      "explanation_en": "Compared with a wireless LAN (無線LAN), which uses radio waves, it takes more effort to wire and its devices are harder to move, but communication tends to be more stable. A technology called PoE (Power over Ethernet) also sends power to devices over the LAN cable along with the data.",
+      "memory_hook_jp": "「有線」の反対が「無線」。線が有るか無いかで名前が分かれる。",
+      "memory_hook_zh": "“有线”的反义词是“无线”，名称就看有没有线。",
+      "memory_hook_en": "The opposite of wired is wireless; the names split on whether there is a wire.",
+      "inline_quiz": [
+        "2019h31h-q083",
+        "2014h26a-q082"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ネットワークインタフェースカード",
+      "term_zh": "网络接口卡",
+      "term_en": "Network Interface Card",
+      "one_jp": "**ネットワークインタフェースカード** (NIC) は、PC やプリンタなどの機器を **LAN につないで通信できるようにする部品**である。",
+      "one_zh": "**网络接口卡**（[[jp:ネットワークインタフェースカード]]，NIC）是 **让 PC、打印机等设备接入局域网并能进行通信的部件**。",
+      "one_en": "A **network interface card** ([[jp:ネットワークインタフェースカード]], NIC) is **the part that connects a device such as a PC or printer to a LAN so it can communicate**.",
+      "detail_jp": "ケーブルを差し込む口 (ポート) を備え、機器とネットワークの間で信号を受け渡す。LAN アダプタとも呼ばれ、今の PC では本体に初めから組み込まれていることが多い。各 NIC には、機器を見分けるための固有の番号である **MACアドレス**が製造時に割り当てられている。",
+      "detail_zh": "它带有插入线缆的接口（端口），在设备和网络之间传递信号。它也叫 LAN 适配器，如今的 PC 大多在机身里就已内置。每块 NIC 在制造时都会分配一个用于识别设备的唯一编号，即 **MAC地址**（[[jp:MACアドレス]]）。",
+      "detail_en": "It has a socket (port) for the cable and passes signals between the device and the network. It is also called a LAN adapter, and most current PCs have one built in from the start. Every NIC is assigned a unique number for identifying the device, its **MAC address** ([[jp:MACアドレス]]), at the time of manufacture.",
+      "analogy_jp": "家の玄関のようなもの。外の道と家の中をつなぐ出入口にあたり、人や荷物はここを通って出入りする。",
+      "analogy_zh": "就像家的大门。它是连接外面道路和屋内的出入口，人和货物都从这里进出。",
+      "analogy_en": "It is like the front door of a house. It is the entrance between the street and the inside, and people and parcels come and go through it.",
+      "hook_jp": "略称 NIC は「ニック」と読む。インタフェースは「境目、接点」の意味で、機器とネットワークの境目にある部品と覚えられる。",
+      "hook_zh": "缩写 NIC 读作“nick”。interface 意为“边界、接点”，可以记成位于设备与网络交界处的部件。",
+      "hook_en": "The abbreviation NIC is pronounced \"nick\". Interface means a boundary or point of contact, so think of it as the part sitting where the device meets the network.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "NIC は、端末や周辺機器をネットワークに参加させ、データの送受信を可能にする部品である。",
+          "text_zh": "NIC（[[jp:ネットワークインタフェースカード]]）是让终端和外围设备加入网络、能够收发数据的部件。",
+          "text_en": "A NIC ([[jp:ネットワークインタフェースカード]]) is the part that lets terminals and peripherals join a network and send and receive data.",
+          "qids": [
+            "2011h23a-q058"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "NIC が受け持つのは、自分の機器を LAN につなぐところまでである。宛先が LAN の外にあるときに機器がパケットを渡す出口の役割はデフォルトゲートウェイといい、別の機器が担う。",
+          "text_zh": "NIC 负责的只是把自己的设备接入局域网这一段。目的地在局域网之外时，设备把分组交出去的出口这一角色称为默认网关（[[jp:デフォルトゲートウェイ]]），由另外的设备担任。",
+          "text_en": "A NIC only covers connecting its own device to the LAN. When the destination is outside the LAN, the exit the device hands its packets to is the role called the default gateway ([[jp:デフォルトゲートウェイ]]), and a separate device fills it.",
+          "qids": [
+            "2015h27h-q049"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-22-58-u01-t02.svg"
+        }
+      },
+      "quiz": [
+        "2011h23a-q058",
+        "2015h27h-q049"
+      ],
+      "definition_jp": "ネットワークインタフェースカード (NIC) は、PC やプリンタなどの機器を LAN につないで通信できるようにする部品である。",
+      "definition_zh": "网络接口卡（ネットワークインタフェースカード，NIC）是 让 PC、打印机等设备接入局域网并能进行通信的部件。",
+      "definition_en": "A network interface card (ネットワークインタフェースカード, NIC) is the part that connects a device such as a PC or printer to a LAN so it can communicate.",
+      "explanation_jp": "ケーブルを差し込む口 (ポート) を備え、機器とネットワークの間で信号を受け渡す。LAN アダプタとも呼ばれ、今の PC では本体に初めから組み込まれていることが多い。各 NIC には、機器を見分けるための固有の番号である MACアドレスが製造時に割り当てられている。",
+      "explanation_zh": "它带有插入线缆的接口（端口），在设备和网络之间传递信号。它也叫 LAN 适配器，如今的 PC 大多在机身里就已内置。每块 NIC 在制造时都会分配一个用于识别设备的唯一编号，即 MAC地址（MACアドレス）。",
+      "explanation_en": "It has a socket (port) for the cable and passes signals between the device and the network. It is also called a LAN adapter, and most current PCs have one built in from the start. Every NIC is assigned a unique number for identifying the device, its MAC address (MACアドレス), at the time of manufacture.",
+      "memory_hook_jp": "略称 NIC は「ニック」と読む。インタフェースは「境目、接点」の意味で、機器とネットワークの境目にある部品と覚えられる。",
+      "memory_hook_zh": "缩写 NIC 读作“nick”。interface 意为“边界、接点”，可以记成位于设备与网络交界处的部件。",
+      "memory_hook_en": "The abbreviation NIC is pronounced \"nick\". Interface means a boundary or point of contact, so think of it as the part sitting where the device meets the network.",
+      "inline_quiz": [
+        "2011h23a-q058",
+        "2015h27h-q049"
       ],
       "inline_fallback": false,
       "figure": {
         "mermaid": "graph LR; A[\"コンピュータ\"] --> B[\"NIC 接続装置\"]; B --> C[\"ケーブル 伝送媒体\"]; C --> D[\"有線LAN\"]",
         "svg_path": "figures/technology-22-58-u01-t02.svg",
         "rendered": true
-      },
-      "term_zh": "网络接口卡",
-      "term_en": "Network Interface Card",
-      "definition_zh": "用于把计算机接入网络的末端通信装置。",
-      "definition_en": "An end-point communication device used to connect a computer to a network.",
-      "explanation_zh": "网络接口卡（NIC）是用于把计算机或设备接入 LAN 的部件，具有插入 LAN 线缆的插口（端口）。它也被称为 LAN 适配器，承担着连接设备与网络的末端窗口的角色。\n\n考试中容易考查 NIC 是「把设备接入网络的装置」这一点，以及每块 NIC 都拥有在制造时分配的固有 MAC 地址这一点。请记住：插上线缆、使之能够通信的出入口就是 NIC。",
-      "explanation_en": "A network interface card (NIC) is a component for connecting a computer or device to a LAN, equipped with a socket (port) into which a LAN cable is plugged. Also called a LAN adapter, it serves as the end-point gateway that links a device to the network.\n\nThe exam tends to ask that a NIC is the \"device that connects equipment to a network,\" and that each NIC has a unique MAC address assigned at manufacture. Remember that the NIC is the entry/exit point where you plug in a cable to enable communication.",
-      "analogy_zh": "就像安装在家门口的信箱。它是连接外面的道路（网络）和家里（设备）的出入口，并且这里挂着一个固有的地址（MAC 地址）。",
-      "analogy_en": "It's like a mailbox installed at the entrance of a house. It is the entry/exit point connecting the road outside (the network) and the inside of the house (the device), and it bears a unique address (a MAC address).",
-      "memory_hook_zh": "说到网络接口卡，就是把设备接入 LAN 的末端连接装置（拥有固有的 MAC 地址）。",
-      "memory_hook_en": "Network interface card → the end-point connection device that joins equipment to a LAN (it has a unique MAC address)."
+      }
     }
   ],
+  "pairs": [
+    {
+      "a": "LAN",
+      "b": "WAN",
+      "rows": [
+        {
+          "label_jp": "つなぐ範囲",
+          "label_zh": "连接范围",
+          "label_en": "Area connected",
+          "a_jp": "建物や敷地の中など限られた範囲",
+          "a_zh": "建筑物或园区内等有限范围",
+          "a_en": "A limited area, such as inside a building or site",
+          "b_jp": "離れた地域にある拠点どうし",
+          "b_zh": "位于不同地区的各个据点之间",
+          "b_en": "Sites in distant regions",
+          "key": true
+        },
+        {
+          "label_jp": "回線の用意",
+          "label_zh": "线路的准备",
+          "label_en": "Who provides the lines",
+          "a_jp": "自分で配線や機器をそろえて構築できる",
+          "a_zh": "可以自己准备布线和设备来搭建",
+          "a_en": "Users can lay the wiring and set up the equipment themselves",
+          "b_jp": "通信事業者の回線サービスを利用するのが一般的",
+          "b_zh": "一般使用通信运营商的线路服务",
+          "b_en": "Usually a carrier's line service",
+          "key": false
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "示例",
+          "label_en": "Example",
+          "a_jp": "オフィスのフロア内の PC とプリンタ",
+          "a_zh": "办公室同一楼层内的 PC 和打印机",
+          "a_en": "PCs and printers on one office floor",
+          "b_jp": "別々の都市にある事業所の LAN どうし",
+          "b_zh": "位于不同城市的各办事处的局域网之间",
+          "b_en": "The LANs of offices in different cities",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "通信回線",
+      "b": "伝送路",
+      "rows": [
+        {
+          "label_jp": "目を向ける点",
+          "label_zh": "着眼点",
+          "label_en": "What it focuses on",
+          "a_jp": "データをやり取りするために利用する経路",
+          "a_zh": "为交换数据而利用的路径",
+          "a_en": "The route used to exchange data",
+          "b_jp": "信号が実際に伝わる媒体や空間",
+          "b_zh": "信号实际传播的介质或空间",
+          "b_en": "The medium or space a signal actually travels through",
+          "key": true
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "示例",
+          "label_en": "Example",
+          "a_jp": "電話回線、光回線",
+          "a_zh": "电话线路、光纤线路",
+          "a_en": "Telephone lines, fiber-optic lines",
+          "b_jp": "銅線、光ファイバ、電波が通る空間",
+          "b_zh": "铜线、光纤、电波穿过的空间",
+          "b_en": "Copper wire, optical fiber, the space radio waves cross",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**LAN** は通信事業者と契約しなくても、利用する組織や家庭が自分たちで構築できる。",
+    "別の地域の拠点と通信するには **WAN** が必要で、通信事業者の回線サービスを使って拠点の LAN どうしを結ぶ。",
+    "転送時間は、データ量をビットに直し、伝送速度に伝送効率を掛けた実際の速さで割って求める。",
+    "**PoE** は LAN ケーブルで電力も送る技術で、電源を取りにくい場所の機器に使われる。",
+    "**ネットワークインタフェースカード** は機器を LAN につなぐ部品で、固有の MACアドレスを持つ。"
+  ],
+  "key_points_zh": [
+    "**局域网（LAN）** 不必与通信运营商签约，使用它的组织或家庭自己就能搭建。",
+    "要与其他地区的据点通信就需要 **广域网（WAN）**，它借助通信运营商的线路服务把各据点的局域网连接起来。",
+    "传输时间的求法是把数据量换算成比特，再除以传输速率乘以传输效率得到的实际速度。",
+    "**PoE** 是通过 LAN 线缆同时供电的技术，用于不方便取电的位置上的设备。",
+    "**网络接口卡** 是把设备接入局域网的部件，带有唯一的 MAC地址。"
+  ],
+  "key_points_en": [
+    "A **LAN** can be built by the organization or household that uses it, with no contract with a carrier.",
+    "Reaching a site in another region requires a **WAN**, which links the sites' LANs over a carrier's line service.",
+    "Transfer time is the data size converted to bits, divided by the actual speed, which is the transmission speed times the transmission efficiency.",
+    "**PoE** sends power over the LAN cable as well, and serves devices in places where power is hard to reach.",
+    "A **network interface card** connects a device to a LAN and carries its own unique MAC address."
+  ],
+  "overview": {
+    "intro_jp": "LAN と WAN を、つなぐ範囲と回線の用意の仕方で見分けられる。信号の通り道を表す通信回線や伝送路と、具体的な配線であるケーブルの関係を説明できる。有線LAN で機器をつなぐ部品と技術を挙げ、ファイルの転送時間を伝送速度と伝送効率から求められる。",
+    "intro_zh": "能从连接范围和线路的准备方式两方面区分 局域网（LAN） 与 广域网（WAN）。能说明表示信号通道的 通信线路、传输通路 与作为具体布线的 线缆 之间的关系。能举出 有线 LAN 中连接设备的部件和技术，并能根据传输速率和传输效率算出文件的传输时间。",
+    "intro_en": "Tell a LAN from a WAN by the area each connects and by who provides the lines. Explain how a communication line and a transmission path, the routes signals travel, relate to the cable that physically carries them. Name the parts and technologies that connect devices on a wired LAN, and work out a file's transfer time from the transmission speed and transmission efficiency.",
+    "freq_badge": "頻出",
+    "est_minutes": 39
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "LAN: LANといえば建物内など狭い範囲をつなぐ構内ネットワーク",
-      "WAN: WANといえば拠点間を結ぶ広域ネットワーク(通信事業者の回線を利用)",
-      "通信回線: 通信回線といえばデータを運ぶ信号の通り道(経路)",
-      "伝送路: 伝送路といえば信号が伝わっていく媒体(有線も無線も含む通り道)",
-      "ケーブル: ケーブルといえば有線の物理配線(銅線のLANケーブルと光ファイバ)",
-      "有線LAN: 有線LANといえばケーブル接続のLAN(安定・高速だが配線が必要)",
-      "ネットワークインタフェースカード: ネットワークインタフェースカードといえば機器をLANにつなぐ末端の接続装置(固有のMACアドレスを持つ)"
-    ],
     "key_points_jp": [
-      "ネットワークは規模で分類され、建物内など狭域がLAN、離れた拠点間を結ぶ広域がWANで、この対比が最頻出。",
-      "LANは自前で構築・管理する一方、WANは通信事業者(キャリア)が提供する通信回線を利用するという調達方法の違いがある。",
-      "通信回線・伝送路は信号が通る経路や媒体を指し、ケーブル(銅線のLANケーブル・光ファイバ)はそれを具体化した有線の物理媒体である。",
-      "有線LANはケーブル接続で安定・高速・セキュリティに優れ、無線LANは配線不要で自由という長所と短所の対比が問われる。",
-      "ネットワークインタフェースカード(NIC)は機器をLANに接続する末端装置で、固有のMACアドレスを持つ。『分類(LAN/WAN)→媒体(回線・伝送路・ケーブル)→実体(有線LAN・NIC)』という流れが理解の軸。"
+      "LAN は通信事業者と契約しなくても、利用する組織や家庭が自分たちで構築できる。",
+      "別の地域の拠点と通信するには WAN が必要で、通信事業者の回線サービスを使って拠点の LAN どうしを結ぶ。",
+      "転送時間は、データ量をビットに直し、伝送速度に伝送効率を掛けた実際の速さで割って求める。",
+      "PoE は LAN ケーブルで電力も送る技術で、電源を取りにくい場所の機器に使われる。",
+      "ネットワークインタフェースカード は機器を LAN につなぐ部品で、固有の MACアドレスを持つ。"
     ],
     "key_points_zh": [
-      "网络按规模分类，建筑物内等狭小范围是 LAN，连接相隔较远各据点的广阔范围是 WAN，这一对比是最高频考点。",
-      "LAN 由自己搭建与管理，而 WAN 则利用通信运营商（电信运营商）提供的通信线路，二者在获取方式上有所不同。",
-      "通信线路、传输通路指的是信号通过的路径或介质，而线缆（铜质 LAN 线缆、光纤）则是把它们具体化的有线物理介质。",
-      "有线 LAN 通过线缆连接，在稳定、高速、安全方面占优；无线 LAN 无需布线、较为自由；这一优缺点的对比是考点。",
-      "网络接口卡（NIC）是把设备接入 LAN 的末端装置，拥有固有的 MAC 地址。「分类（LAN/WAN）→介质（线路、传输通路、线缆）→实体（有线 LAN、NIC）」这一脉络是理解的主线。"
+      "局域网（LAN） 不必与通信运营商签约，使用它的组织或家庭自己就能搭建。",
+      "要与其他地区的据点通信就需要 广域网（WAN），它借助通信运营商的线路服务把各据点的局域网连接起来。",
+      "传输时间的求法是把数据量换算成比特，再除以传输速率乘以传输效率得到的实际速度。",
+      "PoE 是通过 LAN 线缆同时供电的技术，用于不方便取电的位置上的设备。",
+      "网络接口卡 是把设备接入局域网的部件，带有唯一的 MAC地址。"
     ],
     "key_points_en": [
-      "Networks are classified by scale: a narrow range such as inside a building is a LAN, and a wide range linking sites far apart is a WAN; this contrast is the most frequent exam point.",
-      "A LAN is built and managed by oneself, whereas a WAN uses communication lines provided by a telecommunications carrier; the two differ in how they are obtained.",
-      "Communication lines and transmission paths refer to the paths or media a signal passes through, while cables (copper LAN cables, optical fiber) are the wired physical media that make them concrete.",
-      "A wired LAN connects via cables and is advantageous in stability, speed, and security; a wireless LAN needs no cabling and is free; this contrast of pros and cons is an exam point.",
-      "The network interface card (NIC) is the end-point device that connects equipment to a LAN and has a unique MAC address. The flow \"classification (LAN/WAN) → media (lines, transmission paths, cables) → concrete entities (wired LAN, NIC)\" is the central thread of understanding."
+      "A LAN can be built by the organization or household that uses it, with no contract with a carrier.",
+      "Reaching a site in another region requires a WAN, which links the sites' LANs over a carrier's line service.",
+      "Transfer time is the data size converted to bits, divided by the actual speed, which is the transmission speed times the transmission efficiency.",
+      "PoE sends power over the LAN cable as well, and serves devices in places where power is hard to reach.",
+      "A network interface card connects a device to a LAN and carries its own unique MAC address."
+    ],
+    "memory_hooks_jp": [
+      "LAN: Local は「その土地の、地元の」という意味。自分たちのいる建物の中、という感覚と結び付く。",
+      "WAN: Wide は「広い」。頭文字が L (Local) か W (Wide) かで、範囲の広さが分かれる。",
+      "ケーブル: 英語の cable は、もともと船をつなぎ留める太い綱を指す語である。",
+      "有線LAN: 「有線」の反対が「無線」。線が有るか無いかで名前が分かれる。",
+      "ネットワークインタフェースカード: 略称 NIC は「ニック」と読む。インタフェースは「境目、接点」の意味で、機器とネットワークの境目にある部品と覚えられる。"
     ],
     "memory_hooks_zh": [
-      "LAN：说到 LAN，就是连接建筑物内等狭小范围的局部网络。",
-      "WAN：说到 WAN，就是连接各据点之间的广域网络（利用通信运营商的线路）。",
-      "通信线路：说到通信线路，就是运载数据的信号通道（传输路径）。",
-      "传输通路：说到传输通路，就是信号传递所经过的介质（含有线与无线的通道）。",
-      "线缆：说到线缆，就是有线的物理布线（铜质 LAN 线缆与光纤）。",
-      "有线 LAN：说到有线 LAN，就是用线缆连接的 LAN（稳定、高速，但需要布线）。",
-      "网络接口卡：说到网络接口卡，就是把设备接入 LAN 的末端连接装置（拥有固有的 MAC 地址）。"
+      "局域网（LAN）：Local 意为“本地的、当地的”，正好对应“我们自己所在的这栋楼里”的感觉。",
+      "广域网（WAN）：Wide 意为“宽广”。首字母是 L（Local）还是 W（Wide），决定了范围的大小。",
+      "线缆：英语的 cable 原本是指拴住船只的粗缆绳。",
+      "有线 LAN：“有线”的反义词是“无线”，名称就看有没有线。",
+      "网络接口卡：缩写 NIC 读作“nick”。interface 意为“边界、接点”，可以记成位于设备与网络交界处的部件。"
     ],
     "memory_hooks_en": [
-      "LAN: LAN → a local network that connects a narrow range such as inside a building.",
-      "WAN: WAN → a wide-area network linking sites (using a carrier's lines).",
-      "Communication line: Communication line → the signal passage (path) that carries data.",
-      "Transmission path: Transmission path → the medium a signal travels along (a channel covering both wired and wireless).",
-      "Cable: Cable → the physical wiring of wired connections (copper LAN cables and optical fiber).",
-      "Wired LAN: Wired LAN → a cable-connected LAN (stable and fast, but requires cabling).",
-      "Network interface card: Network interface card → the end-point connection device that joins equipment to a LAN (it has a unique MAC address)."
+      "LAN: Local means \"of this place\", which matches the sense of \"inside the building where we are\".",
+      "WAN: Wide means broad. Whether the first letter is L (Local) or W (Wide) tells you how far the network reaches.",
+      "Cable: The English word cable originally meant the thick rope used to moor a ship.",
+      "Wired LAN: The opposite of wired is wireless; the names split on whether there is a wire.",
+      "Network Interface Card: The abbreviation NIC is pronounced \"nick\". Interface means a boundary or point of contact, so think of it as the part sitting where the device meets the network."
     ]
   },
   "challenge_questions": [
-    "2015h27h-q049",
+    "2013h25a-q071",
     "2016h28h-q067",
-    "2009h21h-q089",
     "2015h27a-q068",
-    "2019h31h-q083"
+    "2013h25a-q084",
+    "2018h30h-q058"
   ],
   "source_figures": [
     {
@@ -251,9 +1038,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "网络的分类与有线的物理基础",
-  "title_en": "Network Classification and the Physical Foundation of Wired Connections",
-  "unit_summary_zh": "理解按规模划分的 LAN 与 WAN 分类，以及支撑网络的传输介质和有线连接的物理基础。",
-  "unit_summary_en": "Understand the classification by scale into LAN and WAN, and the physical foundation of the transmission media and wired connections that support a network."
+  }
 }

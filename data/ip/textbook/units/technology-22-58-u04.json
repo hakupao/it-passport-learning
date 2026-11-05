@@ -1,190 +1,612 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-58-u04",
   "topic_id": "technology-22-58",
   "category": "technology",
   "title_jp": "モバイル広域通信と伝送性能",
+  "title_zh": "移动广域通信与传输性能",
+  "title_en": "Mobile Wide-Area Communication and Transmission Performance",
   "unit_summary_jp": "LTE・5GなどのモバイルWAN通信方式と、ネットワークの速さを表す伝送速度・bpsという性能指標を理解する。",
+  "unit_summary_zh": "理解 LTE、5G 等移动 WAN 通信方式，以及表示网络速度的传输速率与 bps 这一性能指标。",
+  "unit_summary_en": "Understand mobile WAN communication methods such as LTE and 5G, along with transmission speed and bps as the performance metric that expresses network speed.",
   "order_in_topic": 4,
   "prerequisites": [
     "technology-22-58-u03"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、携帯電話網を使った広域無線通信であるWiMAX・LTE・5GといったモバイルWANの通信方式と、ネットワークの速さを表す伝送速度およびその単位bpsを学びます。スマートフォンやIoTを支える身近な技術で、世代ごとの特徴と性能指標の計算はネットワーク方式の頻出分野です。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "本单元学习使用蜂窝电话网进行广域无线通信的 WiMAX、LTE、5G 等移动 WAN 通信方式，以及表示网络速度的传输速率及其单位 bps。这是支撑智能手机和 IoT 的身边技术，各代的特点与性能指标的计算是网络方式的高频考点。",
-    "intro_en": "In this unit you will learn about mobile WAN communication methods such as WiMAX, LTE, and 5G — wide-area wireless communication that uses cellular phone networks — along with transmission speed, which expresses network speed, and its unit bps. These are familiar technologies that support smartphones and IoT, and the characteristics of each generation and the calculation of performance metrics are frequently tested topics in the area of network methods."
-  },
-  "terms": [
+  "goals_jp": [
+    "**WiMAX** や **LTE** が、基地局から広い範囲を無線で覆う広域向けの通信方式であることを説明できる。",
+    "**5G** の特徴 (高速大容量・低遅延・多数同時接続) を説明できる。",
+    "データ量と**伝送速度**と伝送効率から転送時間を計算し、ビットとバイトの換算を正しく扱える。"
+  ],
+  "goals_zh": [
+    "能够说明 **WiMAX** 和 **LTE** 是由基站以无线方式覆盖大范围区域的广域通信方式。",
+    "能够说明 **5G** 的特点（高速大容量、低时延、海量连接）。",
+    "能够根据数据量、**传输速率**和传输效率计算传输时间，并正确进行比特与字节的换算。"
+  ],
+  "goals_en": [
+    "Explain that **WiMAX** and **LTE** are wide-area methods in which base stations cover a large area by radio.",
+    "Explain the features of **5G**: high speed and large capacity, low latency, and massive simultaneous connections.",
+    "Calculate transfer time from data size, **transmission speed**, and transmission efficiency, converting correctly between bits and bytes."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "要点"
+  ],
+  "overview_cols_zh": [
+    "分类",
+    "要点"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Key point"
+  ],
+  "overview_rows": [
     {
       "term": "WiMAX",
-      "definition_jp": "広い範囲をカバーする高速無線通信規格の一つ。広域無線アクセス方式。",
-      "explanation_jp": "WiMAX(ワイマックス)は、基地局から広い範囲に電波を届けて高速通信を行う無線通信規格です。建物内に配線を引かなくてもインターネットに接続でき、移動しながらでも利用できるモバイル通信方式の一つとして使われてきました。\n\n同じ無線でも、家庭やオフィスの数十メートル程度をカバーする無線LAN(Wi-Fi)に比べ、WiMAXは数キロメートル規模の広い範囲(WAN相当)を対象とする点が違いです。試験では、LTEや5Gと並ぶ「広域の無線通信方式」の一つとして位置づけを押さえておけば十分です。",
-      "analogy_jp": "Wi-Fiが家の中だけ届く小さな拡声器なら、WiMAXは街全体に声を届ける大型スピーカーのようなもの。広いエリアを一台でカバーします。",
-      "memory_hook_jp": "WiMAXといえば広いエリアをカバーする高速無線通信",
-      "inline_quiz": [
-        "2020r02o-q088"
+      "one_line_jp": "基地局から広い範囲を無線で覆う高速データ通信規格",
+      "one_line_zh": "由基站以无线方式覆盖大范围区域的高速数据通信标准",
+      "one_line_en": "High-speed data standard in which base stations cover a large area by radio",
+      "extra_jp": [
+        "通信方式",
+        "街単位の広い範囲を覆う広域向け"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "WiMAX",
-      "term_en": "WiMAX",
-      "definition_zh": "一种覆盖广阔范围的高速无线通信标准。广域无线接入方式。",
-      "definition_en": "One of the high-speed wireless communication standards that cover a wide area. A wide-area wireless access method.",
-      "explanation_zh": "WiMAX 是一种从基站向广阔范围发射电波进行高速通信的无线通信标准。即使不在建筑物内布线也能连接互联网，并且可以在移动过程中使用，曾作为移动通信方式之一被广泛采用。\n\n同样是无线，与覆盖家庭或办公室数十米左右范围的无线 LAN（Wi-Fi）相比，WiMAX 的覆盖对象是数公里规模的广阔范围（相当于 WAN），这是两者的区别。考试中，只要把它定位为与 LTE、5G 并列的“广域无线通信方式”之一来掌握就足够了。",
-      "explanation_en": "WiMAX is a wireless communication standard that performs high-speed communication by transmitting radio waves from a base station over a wide area. It can connect to the internet without wiring inside a building and can be used while moving, and it has been used as one of the mobile communication methods.\n\nAlthough both are wireless, WiMAX differs from wireless LAN (Wi-Fi), which covers a range of several tens of meters in a home or office, in that WiMAX targets a wide area on the scale of several kilometers (equivalent to a WAN). For the exam, it is enough to grasp its position as one of the \"wide-area wireless communication methods\" alongside LTE and 5G.",
-      "analogy_zh": "如果说 Wi-Fi 是只在家中可及的小型扩音器，那么 WiMAX 就像是把声音传遍整座城市的大型扬声器，一台就能覆盖广阔的区域。",
-      "analogy_en": "If Wi-Fi is a small megaphone that only reaches inside a house, WiMAX is like a large loudspeaker that delivers your voice across an entire city — a single unit covers a wide area.",
-      "memory_hook_zh": "说到 WiMAX，就是覆盖广阔区域的高速无线通信",
-      "memory_hook_en": "WiMAX → high-speed wireless communication that covers a wide area"
+      "extra_zh": [
+        "通信方式",
+        "覆盖整座城市级别范围的广域方式"
+      ],
+      "extra_en": [
+        "Communication method",
+        "Wide-area, covering a whole town or city"
+      ]
     },
     {
       "term": "LTE",
-      "definition_jp": "携帯電話網で高速データ通信を行う通信方式。いわゆる4Gの中心技術。",
-      "explanation_jp": "LTE(Long Term Evolution)は、携帯電話の回線を使って高速にデータ通信を行う方式で、第4世代(4G)を代表する技術です。スマートフォンでの動画視聴やWeb閲覧を快適にした、現在も広く使われているモバイル通信の基盤です。\n\n第3世代(3G)を高速化・改良した発展形で、その次の世代がより高速な5Gにあたります。試験では「LTE=携帯電話網の高速データ通信(4G)」という位置づけと、5Gの一つ前の世代であるという世代関係を押さえておくことが重要です。",
-      "analogy_jp": "電話用の道路を、通話だけでなく大量のデータも速く運べるよう拡張した高速道路のようなもの。携帯回線でネットを快適に使えるようにした方式です。",
-      "memory_hook_jp": "LTEといえば携帯電話網の高速データ通信(4G)",
-      "inline_quiz": [
-        "2018h30h-q089"
+      "one_line_jp": "携帯電話網で高速データ通信を行う規格 (4G 相当)",
+      "one_line_zh": "在手机网络上进行高速数据通信的标准（相当于 4G）",
+      "one_line_en": "Standard for high-speed data over mobile phone networks (equivalent to 4G)",
+      "extra_jp": [
+        "通信方式",
+        "3G より高速、5G の一つ前の世代"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "LTE",
-      "term_en": "LTE",
-      "definition_zh": "在蜂窝电话网上进行高速数据通信的通信方式。即所谓 4G 的核心技术。",
-      "definition_en": "A communication method that performs high-speed data communication over cellular phone networks. The core technology of so-called 4G.",
-      "explanation_zh": "LTE（Long Term Evolution）是一种利用蜂窝电话线路进行高速数据通信的方式，是代表第四代（4G）的技术。它让在智能手机上观看视频和浏览网页变得流畅，是至今仍被广泛使用的移动通信基础。\n\n它是在第三代（3G）基础上提速、改良后的发展形态，其下一代就是速度更快的 5G。考试中，重要的是掌握“LTE＝蜂窝电话网的高速数据通信（4G）”这一定位，以及它是 5G 前一代这一代际关系。",
-      "explanation_en": "LTE (Long Term Evolution) is a method that performs high-speed data communication using cellular phone lines, and it is the technology that represents the fourth generation (4G). It made watching video and browsing the web on smartphones smooth, and it is a foundation of mobile communication that is still widely used today.\n\nIt is an evolved form that sped up and improved the third generation (3G), and the next generation after it is the faster 5G. For the exam, it is important to grasp the positioning of \"LTE = high-speed data communication over cellular phone networks (4G)\" and the generational relationship that it is the generation just before 5G.",
-      "analogy_zh": "就像把原本用于通话的道路扩建为不仅能通话、还能快速运送大量数据的高速公路，是让手机线路能够流畅上网的方式。",
-      "analogy_en": "Like expanding a road meant for phone calls into a highway that can carry not just calls but large amounts of data quickly — a method that makes using the internet over cellular lines comfortable.",
-      "memory_hook_zh": "说到 LTE，就是蜂窝电话网的高速数据通信（4G）",
-      "memory_hook_en": "LTE → high-speed data communication over cellular phone networks (4G)"
+      "extra_zh": [
+        "通信方式",
+        "比 3G 更快，是 5G 的上一代"
+      ],
+      "extra_en": [
+        "Communication method",
+        "Faster than 3G; the generation before 5G"
+      ]
     },
     {
       "term": "5G",
-      "definition_jp": "高速・大容量・低遅延・多数同時接続を特徴とする第5世代移動通信システム。",
-      "explanation_jp": "5G(第5世代移動通信システム)は、LTE(4G)の次の世代にあたる携帯通信方式です。「高速・大容量」「低遅延(タイムラグが小さい)」「多数同時接続(多くの機器を一度につなげる)」という3つの特徴を持ちます。\n\n通信が速いだけでなく、遅延の小ささや同時接続数の多さから、自動運転やIoT、遠隔医療など新しい用途を支える技術として期待されています。試験では、LTEより新しい世代であること、そして上記3つの特徴をキーワードとして問う問題が出ます。「速い」だけでなく「低遅延」「多数同時接続」も5Gの特徴だと区別できることがポイントです。",
-      "analogy_jp": "4Gが片側数車線の高速道路なら、5Gは車線が一気に増え、合流もスムーズ(低遅延)で、たくさんの車(機器)が同時に走れる超大型の高速道路のようなものです。",
-      "memory_hook_jp": "5Gといえば高速・低遅延・多数同時接続",
-      "inline_quiz": [
-        "2019h31h-q073"
+      "one_line_jp": "第 5 世代移動通信システム",
+      "one_line_zh": "第五代移动通信系统",
+      "one_line_en": "Fifth-generation mobile communication system",
+      "extra_jp": [
+        "通信方式",
+        "高速大容量・低遅延・多数同時接続"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"5G(第5世代移動通信)\"]; A --> B[\"高速・大容量\"]; A --> C[\"低遅延\"]; A --> D[\"多数同時接続\"]",
-        "svg_path": "figures/technology-22-58-u04-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "5G",
-      "term_en": "5G",
-      "definition_zh": "以高速、大容量、低延迟、多设备同时连接为特征的第五代移动通信系统。",
-      "definition_en": "The fifth-generation mobile communication system characterized by high speed, large capacity, low latency, and massive simultaneous connections.",
-      "explanation_zh": "5G（第五代移动通信系统）是位于 LTE（4G）之后一代的蜂窝通信方式。它具有“高速、大容量”“低延迟（时间差小）”“多设备同时连接（一次连接大量设备）”这三个特征。\n\n它不仅通信速度快，还因延迟小、同时连接数多，被寄望成为支撑自动驾驶、IoT、远程医疗等新用途的技术。考试中，会考查它是比 LTE 更新的一代，以及上述三个特征作为关键词。要点在于能够区分：5G 的特征不仅是“快”，还有“低延迟”和“多设备同时连接”。",
-      "explanation_en": "5G (the fifth-generation mobile communication system) is a cellular communication method that comes one generation after LTE (4G). It has three characteristics: \"high speed and large capacity,\" \"low latency (small time lag),\" and \"massive simultaneous connections (connecting many devices at once).\"\n\nNot only is communication fast, but thanks to its low latency and large number of simultaneous connections, it is expected to be a technology that supports new uses such as autonomous driving, IoT, and remote medical care. The exam asks that it is a newer generation than LTE and tests the three characteristics above as keywords. The key point is being able to distinguish that 5G's characteristics are not only \"fast\" but also \"low latency\" and \"massive simultaneous connections.\"",
-      "analogy_zh": "如果说 4G 是单向数条车道的高速公路，那么 5G 就像车道一下子大幅增加、汇入也很顺畅（低延迟）、能让大量车辆（设备）同时行驶的超大型高速公路。",
-      "analogy_en": "If 4G is a highway with several lanes in each direction, 5G is like a super-large highway where the number of lanes suddenly increases dramatically, merging is smooth (low latency), and many cars (devices) can travel at the same time.",
-      "memory_hook_zh": "说到 5G，就是高速、低延迟、多设备同时连接",
-      "memory_hook_en": "5G → high speed, low latency, massive simultaneous connections"
+      "extra_zh": [
+        "通信方式",
+        "高速大容量、低时延、海量连接"
+      ],
+      "extra_en": [
+        "Communication method",
+        "High speed and capacity, low latency, massive connections"
+      ]
     },
     {
       "term": "伝送速度",
-      "definition_jp": "1秒間に送れるデータ量で表す通信の速さの指標。単位はbps。",
-      "explanation_jp": "伝送速度は、通信回線が1秒間にどれだけのデータを運べるかを表す、ネットワークの「速さ」の指標です。数値が大きいほど、同じデータをより短い時間で送れます。単位にはbps(ビット毎秒)を使います。\n\n試験では計算問題が頻出です。基本は「伝送時間 = データ量 ÷ 伝送速度」で、bit と Byte の単位換算(1Byte=8bit)や、回線の利用効率(伝送効率)を掛ける応用も出ます。LTEや5Gといった通信方式の優劣を比べる共通のものさしになる点も押さえておきましょう。",
-      "analogy_jp": "水道管で1秒間に流せる水の量のようなもの。管が太い(伝送速度が大きい)ほど、同じ量の水(データ)を速くため終えられます。",
-      "memory_hook_jp": "伝送速度といえば1秒あたりに送れるデータ量(bps)",
-      "inline_quiz": [
-        "2011h23a-q056"
+      "one_line_jp": "1 秒間に送れるデータ量で表す通信の速さ",
+      "one_line_zh": "以每秒可传送的数据量表示的通信速度",
+      "one_line_en": "Communication speed expressed as the amount of data sent per second",
+      "extra_jp": [
+        "性能の指標",
+        "転送時間の計算に使う"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"データ量(bit)\"] --> C[\"伝送時間\"]; B[\"伝送速度(bps)\"] --> C; C --> D[\"伝送時間 = データ量 ÷ 伝送速度\"]",
-        "svg_path": "figures/technology-22-58-u04-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "传输速率",
-      "term_en": "Transmission speed",
-      "definition_zh": "以每秒可发送的数据量表示的通信速度指标。单位是 bps。",
-      "definition_en": "A metric of communication speed expressed by the amount of data that can be sent per second. The unit is bps.",
-      "explanation_zh": "传输速率是表示通信线路每秒能够传送多少数据的指标，即网络的“速度”指标。数值越大，发送相同数据所需的时间就越短。单位使用 bps（比特每秒）。\n\n考试中计算题为高频考点。基本公式是“传输时间 = 数据量 ÷ 传输速率”，还会出现 bit 与 Byte 的单位换算（1Byte=8bit），以及乘上线路利用效率（传输效率）的应用题。同时也要记住，它是比较 LTE、5G 等通信方式优劣的通用标尺。",
-      "explanation_en": "Transmission speed is a metric that indicates how much data a communication line can carry per second — that is, the \"speed\" metric of a network. The larger the value, the shorter the time needed to send the same data. The unit used is bps (bits per second).\n\nCalculation problems are frequently tested on the exam. The basic formula is \"transmission time = data amount ÷ transmission speed,\" and applied problems also appear that involve unit conversion between bits and bytes (1 Byte = 8 bits) or multiplying by the line's utilization efficiency (transmission efficiency). Also keep in mind that it serves as a common yardstick for comparing the merits of communication methods such as LTE and 5G.",
-      "analogy_zh": "就像水管每秒能流过的水量。水管越粗（传输速率越大），就能越快地把相同量的水（数据）注满。",
-      "analogy_en": "Like the amount of water that can flow through a pipe per second. The thicker the pipe (the higher the transmission speed), the faster you can finish filling the same amount of water (data).",
-      "memory_hook_zh": "说到传输速率，就是每秒可发送的数据量（bps）",
-      "memory_hook_en": "Transmission speed → the amount of data that can be sent per second (bps)"
+      "extra_zh": [
+        "性能指标",
+        "用于计算传输时间"
+      ],
+      "extra_en": [
+        "Performance metric",
+        "Used to calculate transfer time"
+      ]
     },
     {
       "term": "bps",
-      "definition_jp": "1秒間に送れるビット数を表す伝送速度の単位。bits per second の略。",
-      "explanation_jp": "bps(ビット毎秒、bits per second)は、伝送速度を表す単位で、1秒間に何ビットのデータを送れるかを示します。例えば100bpsなら1秒間に100ビットを送れる速さです。\n\n実際の通信では値が大きくなるため、kbps(千)、Mbps(百万)、Gbps(十億)といった補助単位がよく使われます。試験で注意すべきは、データ量はByte(バイト)、速度はbit(ビット)で表されることが多く、1Byte=8bit の換算を忘れると計算を誤る点です。「bps はビット、容量は Byte」を意識しましょう。",
-      "analogy_jp": "水道の「1秒あたり何リットル流れるか」という流量の単位に相当します。bpsは水の代わりにビット(データの最小単位)を数えた速さの目盛りです。",
-      "memory_hook_jp": "bpsといえば1秒間に送れるビット数(bits per second)",
-      "inline_quiz": [
-        "2009h21a-q082"
+      "one_line_jp": "1 秒間に送れるビット数を表す伝送速度の単位",
+      "one_line_zh": "表示每秒可传送比特数的传输速率单位",
+      "one_line_en": "Unit of transmission speed giving the number of bits sent per second",
+      "extra_jp": [
+        "単位",
+        "1 バイト = 8 ビット"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "bps",
-      "term_en": "bps",
-      "definition_zh": "表示每秒可发送的比特数的传输速率单位。bits per second 的缩写。",
-      "definition_en": "The unit of transmission speed indicating the number of bits that can be sent per second. An abbreviation for bits per second.",
-      "explanation_zh": "bps（比特每秒，bits per second）是表示传输速率的单位，表示每秒能发送多少比特的数据。例如 100bps 就是每秒能发送 100 比特的速度。\n\n实际通信中数值会变得很大，因此常使用 kbps（千）、Mbps（百万）、Gbps（十亿）等辅助单位。考试中需要注意的是：数据量多用 Byte（字节）表示，而速度多用 bit（比特）表示，如果忘记 1Byte=8bit 的换算就会算错。要记住“bps 是比特，容量是 Byte”。",
-      "explanation_en": "bps (bits per second) is the unit that expresses transmission speed, indicating how many bits of data can be sent per second. For example, 100 bps is a speed that can send 100 bits per second.\n\nIn actual communication the values become large, so auxiliary units such as kbps (thousand), Mbps (million), and Gbps (billion) are often used. What to watch out for on the exam is that data amounts are often expressed in bytes while speeds are often expressed in bits, and forgetting the conversion of 1 Byte = 8 bits leads to calculation errors. Keep in mind that \"bps is bits, and capacity is bytes.\"",
-      "analogy_zh": "相当于自来水中“每秒流过多少升”这样的流量单位。bps 是把水换成比特（数据的最小单位）来计数的速度刻度。",
-      "analogy_en": "Equivalent to a flow-rate unit such as \"how many liters of tap water flow per second.\" bps is a speed scale that counts bits (the smallest unit of data) instead of water.",
-      "memory_hook_zh": "说到 bps，就是每秒可发送的比特数（bits per second）",
-      "memory_hook_en": "bps → the number of bits that can be sent per second (bits per second)"
+      "extra_zh": [
+        "单位",
+        "1 字节 = 8 比特"
+      ],
+      "extra_en": [
+        "Unit",
+        "1 byte = 8 bits"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "WiMAX",
+      "term_zh": "WiMAX",
+      "term_en": "WiMAX",
+      "one_jp": "**WiMAX** は、基地局から広い範囲に電波を届けて**高速データ通信**を行う、広域向けの無線通信規格である。",
+      "one_zh": "**WiMAX** 是一种从基站向大范围区域发射电波、进行**高速数据通信**的广域无线通信标准。",
+      "one_en": "**WiMAX** is a wide-area wireless standard in which base stations send radio waves over a large area to provide **high-speed data communication**.",
+      "detail_jp": "WiMAX は街単位の広い範囲を対象にしており、LAN と WAN の分類では広域側に入る。利用者の端末は基地局と無線でつながるため、回線工事をしなくてもインターネットに接続でき、移動しながらの利用も想定されている。",
+      "detail_zh": "WiMAX 以整座城市级别的大范围为对象，在局域网（LAN）与广域网（WAN）的划分中属于广域一侧。用户终端通过无线与基站相连，因此无需铺设线路就能接入互联网，也设想了在移动中使用。",
+      "detail_en": "WiMAX targets areas the size of a whole town, so in the split between LAN and WAN it falls on the wide-area side. User devices link to a base station by radio, which means they can reach the internet without any cabling work and can also be used on the move.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "Worldwide Interoperability for Microwave Access の頭文字をつないだ名前で、マイクロ波 (Microwave) を使った接続 (Access) の方式であることを表す。",
+      "hook_zh": "名称取自 Worldwide Interoperability for Microwave Access 的首字母，表示这是利用微波（Microwave）进行接入（Access）的方式。",
+      "hook_en": "The name is an acronym of Worldwide Interoperability for Microwave Access, showing that it is a way of connecting (Access) by microwaves (Microwave).",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "WiMAX は名前が Wi-Fi に似ているが、構内向けの無線 LAN ではなく、広域向けの無線通信規格である。",
+          "text_zh": "WiMAX 的名称和 Wi-Fi 相似，但它不是面向建筑物内部的无线LAN（[[jp:無線LAN]]），而是广域无线通信标准。",
+          "text_en": "WiMAX sounds like Wi-Fi, but it is a wide-area wireless standard, not a wireless LAN ([[jp:無線LAN]]) for use inside a building or site."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "WiMAX は、基地局から広い範囲に電波を届けて高速データ通信を行う、広域向けの無線通信規格である。",
+      "definition_zh": "WiMAX 是一种从基站向大范围区域发射电波、进行高速数据通信的广域无线通信标准。",
+      "definition_en": "WiMAX is a wide-area wireless standard in which base stations send radio waves over a large area to provide high-speed data communication.",
+      "explanation_jp": "WiMAX は街単位の広い範囲を対象にしており、LAN と WAN の分類では広域側に入る。利用者の端末は基地局と無線でつながるため、回線工事をしなくてもインターネットに接続でき、移動しながらの利用も想定されている。",
+      "explanation_zh": "WiMAX 以整座城市级别的大范围为对象，在局域网（LAN）与广域网（WAN）的划分中属于广域一侧。用户终端通过无线与基站相连，因此无需铺设线路就能接入互联网，也设想了在移动中使用。",
+      "explanation_en": "WiMAX targets areas the size of a whole town, so in the split between LAN and WAN it falls on the wide-area side. User devices link to a base station by radio, which means they can reach the internet without any cabling work and can also be used on the move.",
+      "memory_hook_jp": "Worldwide Interoperability for Microwave Access の頭文字をつないだ名前で、マイクロ波 (Microwave) を使った接続 (Access) の方式であることを表す。",
+      "memory_hook_zh": "名称取自 Worldwide Interoperability for Microwave Access 的首字母，表示这是利用微波（Microwave）进行接入（Access）的方式。",
+      "memory_hook_en": "The name is an acronym of Worldwide Interoperability for Microwave Access, showing that it is a way of connecting (Access) by microwaves (Microwave).",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "LTE",
+      "term_zh": "LTE",
+      "term_en": "LTE",
+      "one_jp": "**LTE** は、携帯電話の基地局網を通じて**高速データ通信**を行う移動通信の規格で、一般に**第 4 世代 (4G)** を代表する方式として扱われる。",
+      "one_zh": "**LTE** 是通过手机基站网络进行**高速数据通信**的移动通信标准，一般被视为**第四代（4G）**的代表方式。",
+      "one_en": "**LTE** is a mobile standard for **high-speed data communication** over the base station network of mobile phones, generally treated as the representative **fourth-generation (4G)** method.",
+      "detail_jp": "3G から次の世代へ移る段階で導入され、3G より速くデータを送れるようになった。スマートフォンなどのデータ通信を支える土台となり、その次の世代が **5G** である。",
+      "detail_zh": "它是在从 3G 向下一代过渡的阶段引入的，数据传送速度比 3G 更快。LTE 成为智能手机等设备数据通信的基础，它的下一代就是 **5G**。",
+      "detail_en": "It was introduced as networks moved on from 3G, and it sends data faster than 3G. LTE became the foundation for data on smartphones and similar devices, and the generation after it is **5G**.",
+      "analogy_jp": "通話のために作られた道を、大量の荷物を速く運べる幹線道路に広げたようなもの。",
+      "analogy_zh": "就像把原本为通话修建的道路，拓宽成能快速运送大量货物的干线公路。",
+      "analogy_en": "Like widening a road built for phone calls into a highway that moves large loads quickly.",
+      "hook_jp": "Long Term Evolution =「長期的な進化」。3G からの長い進化の途中にある規格、という名前の由来。",
+      "hook_zh": "Long Term Evolution 意为“长期演进”，名称表示它是从 3G 起长期演进途中的标准。",
+      "hook_en": "Long Term Evolution: the name marks it as one stage in a long evolution that started from 3G.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "LTE は携帯電話網で使われる通信規格で、3G より高速なデータ通信ができる。",
+          "text_zh": "LTE 是用于手机网络（[[jp:携帯電話網]]）的通信标准，能进行比 3G 更快的数据通信。",
+          "text_en": "LTE is a standard used on mobile phone networks ([[jp:携帯電話網]]), offering faster data communication than 3G.",
+          "qids": [
+            "2018h30h-q089"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2018h30h-q089",
+        "2026r08-q081"
+      ],
+      "definition_jp": "LTE は、携帯電話の基地局網を通じて高速データ通信を行う移動通信の規格で、一般に第 4 世代 (4G) を代表する方式として扱われる。",
+      "definition_zh": "LTE 是通过手机基站网络进行高速数据通信的移动通信标准，一般被视为第四代（4G）的代表方式。",
+      "definition_en": "LTE is a mobile standard for high-speed data communication over the base station network of mobile phones, generally treated as the representative fourth-generation (4G) method.",
+      "explanation_jp": "3G から次の世代へ移る段階で導入され、3G より速くデータを送れるようになった。スマートフォンなどのデータ通信を支える土台となり、その次の世代が 5G である。",
+      "explanation_zh": "它是在从 3G 向下一代过渡的阶段引入的，数据传送速度比 3G 更快。LTE 成为智能手机等设备数据通信的基础，它的下一代就是 5G。",
+      "explanation_en": "It was introduced as networks moved on from 3G, and it sends data faster than 3G. LTE became the foundation for data on smartphones and similar devices, and the generation after it is 5G.",
+      "memory_hook_jp": "Long Term Evolution =「長期的な進化」。3G からの長い進化の途中にある規格、という名前の由来。",
+      "memory_hook_zh": "Long Term Evolution 意为“长期演进”，名称表示它是从 3G 起长期演进途中的标准。",
+      "memory_hook_en": "Long Term Evolution: the name marks it as one stage in a long evolution that started from 3G.",
+      "inline_quiz": [
+        "2018h30h-q089",
+        "2026r08-q081"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "5G",
+      "term_zh": "5G",
+      "term_en": "5G",
+      "one_jp": "**5G** は LTE (4G) の次の世代にあたる**第 5 世代移動通信システム**で、**高速大容量**に加えて**低遅延**と**多数同時接続**を特徴とする。",
+      "one_zh": "**5G** 是 LTE（4G）的下一代，即**第五代移动通信系统**，除**高速大容量**外，还具有**低时延**和**海量连接**的特点。",
+      "one_en": "**5G** is the **fifth-generation mobile communication system** that follows LTE (4G); besides **high speed and large capacity**, it features **low latency** and **massive simultaneous connections**.",
+      "detail_jp": "**遅延**とは、データを送ってから相手に届くまでの待ち時間のことで、これが小さいと遠隔操作のように即座の反応が要る用途に向く。また 1 つの基地局の範囲で大量の機器を同時につなげられるため、多数のセンサーを使う **IoT** の通信基盤としても期待されている。",
+      "detail_zh": "**时延**（[[jp:遅延]]）是指数据从发出到送达对方所需的等待时间，时延小的网络适合远程操作这类需要即时反应的用途。此外，一个基站的覆盖范围内可以同时连接大量设备，因此 5G 也被寄望成为使用众多传感器的 **IoT**（物联网）的通信基础。",
+      "detail_en": "**Latency** ([[jp:遅延]]) is the wait between sending data and its arrival at the other end, and a network with little of it suits uses that need an instant response, such as remote operation. A single base station area can also connect huge numbers of devices at once, so 5G is expected to serve as the communication base for **IoT** systems that use many sensors.",
+      "analogy_jp": "車線が大きく増え、合流の待ちも短く、膨大な数の車が同時に走れる道路のようなもの。",
+      "analogy_zh": "就像一条车道大幅增加、汇入时等待很短、能让海量车辆同时通行的道路。",
+      "analogy_en": "Like a road with many more lanes, short waits at merges, and room for an enormous number of cars at once.",
+      "hook_jp": "G は Generation (世代) の頭文字で、ギガ (Giga) ではない。5G =「5 番目の世代」。",
+      "hook_zh": "G 是 Generation（代）的首字母，不是吉（Giga）。5G 就是“第 5 代”。",
+      "hook_en": "The G stands for Generation, not Giga. 5G simply means \"fifth generation.\"",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "5G は LTE より高速大容量で、低遅延と多数同時接続も備えた移動通信システムである。",
+          "text_zh": "5G 是一种移动通信系统，比 LTE 更加高速大容量（[[jp:高速大容量]]），还具备低时延（[[jp:低遅延]]）与海量连接（[[jp:多数同時接続]]）。",
+          "text_en": "5G is a mobile communication system with higher speed and capacity ([[jp:高速大容量]]) than LTE, plus low latency ([[jp:低遅延]]) and massive simultaneous connections ([[jp:多数同時接続]]).",
+          "qids": [
+            "2019h31h-q073"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "5G は通信方式の世代の名前であり、事業者の形態とは軸が違う。自社の設備を持つ事業者も、他社の回線を借りる MVNO も、5G の回線でサービスを提供できる。",
+          "text_zh": "5G 是通信方式代际的名称，与运营商的形态是不同的维度。无论是拥有自有设备的运营商，还是租用其他公司线路的 MVNO（虚拟移动网络运营商），都可以用 5G 线路提供服务。",
+          "text_en": "5G names a generation of communication method, a different axis from the form an operator takes. Operators with their own equipment and MVNOs that lease other companies' lines can both offer service over 5G.",
+          "qids": [
+            "2019h31h-q073"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "IoT 機器向けには 5G のほかに、少ない電力で広い範囲をカバーできる LPWA と呼ばれる無線方式もある。",
+          "text_zh": "面向 IoT 设备，除 5G 外还有一种称为 LPWA 的无线方式，能以较少的电力在大范围内通信。",
+          "text_en": "For IoT devices there is also LPWA besides 5G, a wireless approach that communicates over a wide area on little power.",
+          "qids": [
+            "2026r08-q076"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2019h31h-q073",
+        "2026r08-q076"
+      ],
+      "definition_jp": "5G は LTE (4G) の次の世代にあたる第 5 世代移動通信システムで、高速大容量に加えて低遅延と多数同時接続を特徴とする。",
+      "definition_zh": "5G 是 LTE（4G）的下一代，即第五代移动通信系统，除高速大容量外，还具有低时延和海量连接的特点。",
+      "definition_en": "5G is the fifth-generation mobile communication system that follows LTE (4G); besides high speed and large capacity, it features low latency and massive simultaneous connections.",
+      "explanation_jp": "遅延とは、データを送ってから相手に届くまでの待ち時間のことで、これが小さいと遠隔操作のように即座の反応が要る用途に向く。また 1 つの基地局の範囲で大量の機器を同時につなげられるため、多数のセンサーを使う IoT の通信基盤としても期待されている。",
+      "explanation_zh": "时延（遅延）是指数据从发出到送达对方所需的等待时间，时延小的网络适合远程操作这类需要即时反应的用途。此外，一个基站的覆盖范围内可以同时连接大量设备，因此 5G 也被寄望成为使用众多传感器的 IoT（物联网）的通信基础。",
+      "explanation_en": "Latency (遅延) is the wait between sending data and its arrival at the other end, and a network with little of it suits uses that need an instant response, such as remote operation. A single base station area can also connect huge numbers of devices at once, so 5G is expected to serve as the communication base for IoT systems that use many sensors.",
+      "memory_hook_jp": "G は Generation (世代) の頭文字で、ギガ (Giga) ではない。5G =「5 番目の世代」。",
+      "memory_hook_zh": "G 是 Generation（代）的首字母，不是吉（Giga）。5G 就是“第 5 代”。",
+      "memory_hook_en": "The G stands for Generation, not Giga. 5G simply means \"fifth generation.\"",
+      "inline_quiz": [
+        "2019h31h-q073",
+        "2026r08-q076"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "伝送速度",
+      "term_zh": "传输速率",
+      "term_en": "Transmission speed",
+      "one_jp": "**伝送速度** は、通信回線が 1 秒間に送れるデータの量で表す**通信の速さ**の指標で、単位には **bps** を使う。",
+      "one_zh": "**传输速率**（[[jp:伝送速度]]）是以通信线路每秒可传送的数据量来表示**通信速度**的指标，单位使用 **bps**。",
+      "one_en": "**Transmission speed** ([[jp:伝送速度]]) measures **how fast a line communicates** by the amount of data it can send per second, using the unit **bps**.",
+      "detail_jp": "データを送り終えるまでの時間は「データ量 ÷ 伝送速度」で求まる。実際の回線では制御情報などの分だけ表示どおりの速度は出ないため、使える割合を**伝送効率**として掛けた**実効速度**で計算する。",
+      "detail_zh": "数据传完所需的时间可以用“数据量 ÷ 传输速率”求出。实际线路中由于控制信息等的开销，达不到标称的速率，因此要乘上可用比例即**传输效率**（[[jp:伝送効率]]），用得到的**实际速率**（[[jp:実効速度]]）来计算。",
+      "detail_en": "The time to finish sending data is found as data size ÷ transmission speed. On a real line, overhead such as control information keeps the speed below its rated value, so you multiply by the usable share, the **transmission efficiency** ([[jp:伝送効率]]), and calculate with the resulting **effective speed** ([[jp:実効速度]]).",
+      "analogy_jp": "水道管が 1 秒間に流せる水の量のようなもの。管が太いほど、同じ量の水を早く送り終えられる。",
+      "analogy_zh": "就像水管每秒能流过的水量。水管越粗，同样多的水就能越早送完。",
+      "analogy_en": "Like the amount of water a pipe can carry each second. The wider the pipe, the sooner the same amount of water gets through.",
+      "hook_jp": "道のり = 速さ × 時間 と同じ形で、データ量 = 伝送速度 × 時間。時間を求めるときは割り算にする。",
+      "hook_zh": "与“路程 = 速度 × 时间”形式相同：数据量 = 传输速率 × 时间。求时间时就用除法。",
+      "hook_en": "Same shape as distance = speed × time: data size = transmission speed × time. To find the time, divide.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "転送時間は、データ量をビットに直し、伝送速度に伝送効率を掛けた実効速度で割って求める。バイトからビットへの 8 倍を落とすと、答えが 8 分の 1 にずれる。",
+          "text_zh": "传输时间的求法是：先把数据量换算为比特，再除以实际速率（[[jp:実効速度]]），即传输速率（[[jp:伝送速度]]）× 传输效率（[[jp:伝送効率]]）。如果漏掉从字节到比特的 8 倍换算，答案就会变成正确值的八分之一。",
+          "text_en": "To get the transfer time, convert the data size to bits and divide by the effective speed ([[jp:実効速度]]), which is the transmission speed ([[jp:伝送速度]]) times the transmission efficiency ([[jp:伝送効率]]). Dropping the ×8 from bytes to bits makes the answer one eighth of the correct value.",
+          "qids": [
+            "2009h21a-q082",
+            "2020r02o-q095"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "輻輳は、利用が一時に集中してネットワークの処理能力を上回り、通信が滞る状態を指す。",
+          "text_zh": "拥塞（[[jp:輻輳]]）是指使用量在短时间内集中、超出网络的处理能力，导致通信停滞的状态。",
+          "text_en": "Congestion ([[jp:輻輳]]) is the state in which usage piles up at once beyond what the network can handle, so communication stalls.",
+          "qids": [
+            "2017h29h-q096"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "無線 LAN では、近くの別の無線と電波が干渉すると、速度が落ちたり接続が乱れたりする。",
+          "text_zh": "在无线LAN（[[jp:無線LAN]]）中，如果与附近其他无线设备的电波发生干扰（[[jp:干渉]]），速度就会下降，连接也会变得不稳定。",
+          "text_en": "On a wireless LAN ([[jp:無線LAN]]), radio interference ([[jp:干渉]]) from other nearby wireless equipment lowers the speed or makes the connection unstable.",
+          "qids": [
+            "2020r02o-q088"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "s1",
+              "label": {
+                "jp": "ビットに換算: 600 Mバイト × 8 = 4800 Mビット",
+                "zh": "换算为比特：600 M字节 × 8 = 4800 M比特",
+                "en": "Convert to bits: 600 MB × 8 = 4800 Mbit"
+              }
+            },
+            {
+              "id": "s2",
+              "label": {
+                "jp": "実効速度: 40 Mbps × 0.5 = 20 Mbps",
+                "zh": "实际速率：40 Mbps × 0.5 = 20 Mbps",
+                "en": "Effective speed: 40 Mbps × 0.5 = 20 Mbps"
+              }
+            },
+            {
+              "id": "s3",
+              "label": {
+                "jp": "転送時間: 4800 ÷ 20 = 240 秒",
+                "zh": "传输时间：4800 ÷ 20 = 240 秒",
+                "en": "Transfer time: 4800 ÷ 20 = 240 s"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "データ量がバイトで与えられたら、8 倍してビットにそろえる。",
+            "caption_zh": "数据量以字节给出时，乘以 8 统一为比特。",
+            "caption_en": "If the data size is given in bytes, multiply it by 8 to put it in bits.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "伝送速度に、実際に使える割合 (ここでは 50%) を掛けて、実効速度を出す。",
+            "caption_zh": "用传输速率乘以实际可用的比例（这里是 50%），得出实际速率。",
+            "caption_en": "Multiply the transmission speed by the share actually usable (50% here) to get the effective speed.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "ビットにしたデータ量を実効速度で割ると、転送にかかる秒数が出る。",
+            "caption_zh": "用换算成比特的数据量除以实际速率，就得到传输所需的秒数。",
+            "caption_en": "Divide the data size in bits by the effective speed to get the transfer time in seconds.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21a-q082",
+        "2017h29h-q096",
+        "2020r02o-q088"
+      ],
+      "definition_jp": "伝送速度 は、通信回線が 1 秒間に送れるデータの量で表す通信の速さの指標で、単位には bps を使う。",
+      "definition_zh": "传输速率（伝送速度）是以通信线路每秒可传送的数据量来表示通信速度的指标，单位使用 bps。",
+      "definition_en": "Transmission speed (伝送速度) measures how fast a line communicates by the amount of data it can send per second, using the unit bps.",
+      "explanation_jp": "データを送り終えるまでの時間は「データ量 ÷ 伝送速度」で求まる。実際の回線では制御情報などの分だけ表示どおりの速度は出ないため、使える割合を伝送効率として掛けた実効速度で計算する。",
+      "explanation_zh": "数据传完所需的时间可以用“数据量 ÷ 传输速率”求出。实际线路中由于控制信息等的开销，达不到标称的速率，因此要乘上可用比例即传输效率（伝送効率），用得到的实际速率（実効速度）来计算。",
+      "explanation_en": "The time to finish sending data is found as data size ÷ transmission speed. On a real line, overhead such as control information keeps the speed below its rated value, so you multiply by the usable share, the transmission efficiency (伝送効率), and calculate with the resulting effective speed (実効速度).",
+      "memory_hook_jp": "道のり = 速さ × 時間 と同じ形で、データ量 = 伝送速度 × 時間。時間を求めるときは割り算にする。",
+      "memory_hook_zh": "与“路程 = 速度 × 时间”形式相同：数据量 = 传输速率 × 时间。求时间时就用除法。",
+      "memory_hook_en": "Same shape as distance = speed × time: data size = transmission speed × time. To find the time, divide.",
+      "inline_quiz": [
+        "2009h21a-q082",
+        "2017h29h-q096",
+        "2020r02o-q088"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "bps",
+      "term_zh": "bps",
+      "term_en": "bps",
+      "one_jp": "**bps** は bits per second の略で、1 秒間に送れる**ビット数**で伝送速度を表す単位である。",
+      "one_zh": "**bps** 是 bits per second 的缩写，是以每秒可传送的**比特数**表示传输速率的单位。",
+      "one_en": "**bps** stands for bits per second, a unit that expresses transmission speed as the **number of bits** sent per second.",
+      "detail_jp": "実際の回線では値が大きいため、k (10^3) や M (10^6)、G (10^9) の接頭語を付けた kbps や Mbps がよく使われる。ファイルの大きさはバイト (B) で示されることが多く、1 バイト = 8 ビットなので、bps と組み合わせるときは単位をそろえる必要がある。",
+      "detail_zh": "实际线路的数值很大，因此常用加上 k（10^3）、M（10^6）、G（10^9）等前缀的 kbps 或 Mbps。文件大小大多以字节（B）表示，而 1 字节 = 8 比特，所以与 bps 搭配计算时必须统一单位。",
+      "detail_en": "Real line speeds are large numbers, so prefixed forms such as kbps and Mbps are common, using k (10^3), M (10^6), and G (10^9). File sizes are usually given in bytes (B), and since 1 byte = 8 bits, the units must match before you combine them with bps.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "小文字の b はビット、大文字の B はバイト。「Mbps」と「MB/s」は別の大きさを表す。",
+      "hook_zh": "小写 b 是比特，大写 B 是字节。“Mbps”和“MB/s”表示的大小不同。",
+      "hook_en": "Lowercase b means bit and uppercase B means byte, so \"Mbps\" and \"MB/s\" are different amounts.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ネットワークで通信の速さを表す単位は bps (1 秒あたりのビット数) である。",
+          "text_zh": "在网络中表示通信速度的单位是 bps（每秒比特数）。",
+          "text_en": "The unit for communication speed on a network is bps, the number of bits per second.",
+          "qids": [
+            "2011h23a-q056"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "伝送速度は「速さ」という量の名前で、bps はその量を数値で表すための単位である。",
+          "text_zh": "传输速率（[[jp:伝送速度]]）是“速度”这一量的名称，而 bps 是用数值表示该量的单位。",
+          "text_en": "Transmission speed ([[jp:伝送速度]]) is the name of a quantity, speed, while bps is the unit that puts a number on that quantity."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2011h23a-q056",
+        "2020r02o-q095"
+      ],
+      "definition_jp": "bps は bits per second の略で、1 秒間に送れるビット数で伝送速度を表す単位である。",
+      "definition_zh": "bps 是 bits per second 的缩写，是以每秒可传送的比特数表示传输速率的单位。",
+      "definition_en": "bps stands for bits per second, a unit that expresses transmission speed as the number of bits sent per second.",
+      "explanation_jp": "実際の回線では値が大きいため、k (10^3) や M (10^6)、G (10^9) の接頭語を付けた kbps や Mbps がよく使われる。ファイルの大きさはバイト (B) で示されることが多く、1 バイト = 8 ビットなので、bps と組み合わせるときは単位をそろえる必要がある。",
+      "explanation_zh": "实际线路的数值很大，因此常用加上 k（10^3）、M（10^6）、G（10^9）等前缀的 kbps 或 Mbps。文件大小大多以字节（B）表示，而 1 字节 = 8 比特，所以与 bps 搭配计算时必须统一单位。",
+      "explanation_en": "Real line speeds are large numbers, so prefixed forms such as kbps and Mbps are common, using k (10^3), M (10^6), and G (10^9). File sizes are usually given in bytes (B), and since 1 byte = 8 bits, the units must match before you combine them with bps.",
+      "memory_hook_jp": "小文字の b はビット、大文字の B はバイト。「Mbps」と「MB/s」は別の大きさを表す。",
+      "memory_hook_zh": "小写 b 是比特，大写 B 是字节。“Mbps”和“MB/s”表示的大小不同。",
+      "memory_hook_en": "Lowercase b means bit and uppercase B means byte, so \"Mbps\" and \"MB/s\" are different amounts.",
+      "inline_quiz": [
+        "2011h23a-q056",
+        "2020r02o-q095"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "LTE",
+      "b": "5G",
+      "rows": [
+        {
+          "label_jp": "世代",
+          "label_zh": "代际",
+          "label_en": "Generation",
+          "a_jp": "第 4 世代 (4G) 相当",
+          "a_zh": "相当于第四代（4G）",
+          "a_en": "Fourth generation (4G) equivalent",
+          "b_jp": "第 5 世代",
+          "b_zh": "第五代",
+          "b_en": "Fifth generation",
+          "key": false
+        },
+        {
+          "label_jp": "特徴",
+          "label_zh": "特点",
+          "label_en": "Features",
+          "a_jp": "3G より高速なデータ通信",
+          "a_zh": "比 3G 更快的数据通信",
+          "a_en": "Faster data communication than 3G",
+          "b_jp": "高速大容量に加え、低遅延と多数同時接続",
+          "b_zh": "高速大容量之外，还有低时延和海量连接",
+          "b_en": "High speed and capacity, plus low latency and massive connections",
+          "key": true
+        }
+      ]
+    },
+    {
+      "a": "伝送速度",
+      "b": "bps",
+      "rows": [
+        {
+          "label_jp": "何を指すか",
+          "label_zh": "指什么",
+          "label_en": "What it refers to",
+          "a_jp": "通信の速さという量",
+          "a_zh": "通信速度这一量",
+          "a_en": "The quantity of communication speed",
+          "b_jp": "その量を表す単位",
+          "b_zh": "表示该量的单位",
+          "b_en": "The unit for that quantity",
+          "key": true
+        },
+        {
+          "label_jp": "使い方の例",
+          "label_zh": "用法示例",
+          "label_en": "Example of use",
+          "a_jp": "「伝送速度が速い回線」",
+          "a_zh": "“传输速率快的线路”",
+          "a_en": "\"a line with a fast transmission speed\"",
+          "b_jp": "「50 Mbps の回線」",
+          "b_zh": "“50 Mbps 的线路”",
+          "b_en": "\"a 50 Mbps line\"",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**WiMAX** と **LTE** は、基地局から広い範囲を無線で覆う広域側の通信方式である。",
+    "**5G** は高速大容量に加えて**低遅延**と**多数同時接続**を特徴とし、IoT の通信基盤としても期待されている。",
+    "転送時間は、ビットにそろえたデータ量を実効速度 (伝送速度 × 伝送効率) で割って求める。",
+    "**bps** は 1 秒あたりのビット数を表す単位で、バイトで示されたデータ量とは単位をそろえて使う。",
+    "実際に出る速度は、輻輳や電波の干渉によって下がる。"
+  ],
+  "key_points_zh": [
+    "**WiMAX** 和 **LTE** 都是由基站以无线方式覆盖大范围区域、属于广域一侧的通信方式。",
+    "**5G** 除高速大容量外，还以**低时延**和**海量连接**为特点，也被寄望成为 IoT 的通信基础。",
+    "传输时间等于统一为比特的数据量除以实际速率（传输速率 × 传输效率）。",
+    "**bps** 是表示每秒比特数的单位，与以字节表示的数据量一起使用时要统一单位。",
+    "实际能达到的速度会因拥塞或电波干扰而下降。"
+  ],
+  "key_points_en": [
+    "**WiMAX** and **LTE** are wide-area methods in which base stations cover a large area by radio.",
+    "**5G** adds **low latency** and **massive simultaneous connections** to high speed and capacity, and is expected to serve as a communication base for IoT.",
+    "Transfer time is the data size in bits divided by the effective speed (transmission speed × transmission efficiency).",
+    "**bps** is the unit for bits per second, so match units before using it with data sizes given in bytes.",
+    "The speed actually achieved drops with congestion or radio interference."
+  ],
+  "overview": {
+    "intro_jp": "WiMAX や LTE が、基地局から広い範囲を無線で覆う広域向けの通信方式であることを説明できる。5G の特徴 (高速大容量・低遅延・多数同時接続) を説明できる。データ量と伝送速度と伝送効率から転送時間を計算し、ビットとバイトの換算を正しく扱える。",
+    "intro_zh": "能够说明 WiMAX 和 LTE 是由基站以无线方式覆盖大范围区域的广域通信方式。能够说明 5G 的特点（高速大容量、低时延、海量连接）。能够根据数据量、传输速率和传输效率计算传输时间，并正确进行比特与字节的换算。",
+    "intro_en": "Explain that WiMAX and LTE are wide-area methods in which base stations cover a large area by radio. Explain the features of 5G: high speed and large capacity, low latency, and massive simultaneous connections. Calculate transfer time from data size, transmission speed, and transmission efficiency, converting correctly between bits and bytes.",
+    "freq_badge": "頻出",
+    "est_minutes": 27
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "WiMAX: WiMAXといえば広いエリアをカバーする高速無線通信",
-      "LTE: LTEといえば携帯電話網の高速データ通信(4G)",
-      "5G: 5Gといえば高速・低遅延・多数同時接続",
-      "伝送速度: 伝送速度といえば1秒あたりに送れるデータ量(bps)",
-      "bps: bpsといえば1秒間に送れるビット数(bits per second)"
-    ],
     "key_points_jp": [
-      "WiMAX・LTE・5Gはいずれも広い範囲をカバーするモバイル(広域)無線通信方式である。",
-      "モバイル通信は世代で発展し、3G→LTE(4G)→5Gと高速化してきた。",
-      "5Gの特徴は「高速・大容量」「低遅延」「多数同時接続」の3点である。",
-      "伝送速度は通信の速さを表す指標で、単位はbps(1秒間に送れるビット数)。",
-      "伝送時間は『データ量 ÷ 伝送速度』で求め、1Byte=8bit の単位換算に注意する。"
+      "WiMAX と LTE は、基地局から広い範囲を無線で覆う広域側の通信方式である。",
+      "5G は高速大容量に加えて低遅延と多数同時接続を特徴とし、IoT の通信基盤としても期待されている。",
+      "転送時間は、ビットにそろえたデータ量を実効速度 (伝送速度 × 伝送効率) で割って求める。",
+      "bps は 1 秒あたりのビット数を表す単位で、バイトで示されたデータ量とは単位をそろえて使う。",
+      "実際に出る速度は、輻輳や電波の干渉によって下がる。"
     ],
     "key_points_zh": [
-      "WiMAX、LTE、5G 都是覆盖广阔范围的移动（广域）无线通信方式。",
-      "移动通信按代际发展，从 3G → LTE（4G）→ 5G 不断提速。",
-      "5G 的特征是“高速、大容量”“低延迟”“多设备同时连接”三点。",
-      "传输速率是表示通信速度的指标，单位是 bps（每秒可发送的比特数）。",
-      "传输时间用“数据量 ÷ 传输速率”求得，注意 1Byte=8bit 的单位换算。"
+      "WiMAX 和 LTE 都是由基站以无线方式覆盖大范围区域、属于广域一侧的通信方式。",
+      "5G 除高速大容量外，还以低时延和海量连接为特点，也被寄望成为 IoT 的通信基础。",
+      "传输时间等于统一为比特的数据量除以实际速率（传输速率 × 传输效率）。",
+      "bps 是表示每秒比特数的单位，与以字节表示的数据量一起使用时要统一单位。",
+      "实际能达到的速度会因拥塞或电波干扰而下降。"
     ],
     "key_points_en": [
-      "WiMAX, LTE, and 5G are all mobile (wide-area) wireless communication methods that cover a wide area.",
-      "Mobile communication develops by generation, speeding up from 3G → LTE (4G) → 5G.",
-      "The characteristics of 5G are three points: \"high speed and large capacity,\" \"low latency,\" and \"massive simultaneous connections.\"",
-      "Transmission speed is a metric that expresses communication speed, and its unit is bps (the number of bits that can be sent per second).",
-      "Transmission time is found by \"data amount ÷ transmission speed,\" and watch out for the unit conversion of 1 Byte = 8 bits."
+      "WiMAX and LTE are wide-area methods in which base stations cover a large area by radio.",
+      "5G adds low latency and massive simultaneous connections to high speed and capacity, and is expected to serve as a communication base for IoT.",
+      "Transfer time is the data size in bits divided by the effective speed (transmission speed × transmission efficiency).",
+      "bps is the unit for bits per second, so match units before using it with data sizes given in bytes.",
+      "The speed actually achieved drops with congestion or radio interference."
+    ],
+    "memory_hooks_jp": [
+      "WiMAX: Worldwide Interoperability for Microwave Access の頭文字をつないだ名前で、マイクロ波 (Microwave) を使った接続 (Access) の方式であることを表す。",
+      "LTE: Long Term Evolution =「長期的な進化」。3G からの長い進化の途中にある規格、という名前の由来。",
+      "5G: G は Generation (世代) の頭文字で、ギガ (Giga) ではない。5G =「5 番目の世代」。",
+      "伝送速度: 道のり = 速さ × 時間 と同じ形で、データ量 = 伝送速度 × 時間。時間を求めるときは割り算にする。",
+      "bps: 小文字の b はビット、大文字の B はバイト。「Mbps」と「MB/s」は別の大きさを表す。"
     ],
     "memory_hooks_zh": [
-      "WiMAX：说到 WiMAX，就是覆盖广阔区域的高速无线通信",
-      "LTE：说到 LTE，就是蜂窝电话网的高速数据通信（4G）",
-      "5G：说到 5G，就是高速、低延迟、多设备同时连接",
-      "传输速率：说到传输速率，就是每秒可发送的数据量（bps）",
-      "bps：说到 bps，就是每秒可发送的比特数（bits per second）"
+      "WiMAX：名称取自 Worldwide Interoperability for Microwave Access 的首字母，表示这是利用微波（Microwave）进行接入（Access）的方式。",
+      "LTE：Long Term Evolution 意为“长期演进”，名称表示它是从 3G 起长期演进途中的标准。",
+      "5G：G 是 Generation（代）的首字母，不是吉（Giga）。5G 就是“第 5 代”。",
+      "传输速率：与“路程 = 速度 × 时间”形式相同：数据量 = 传输速率 × 时间。求时间时就用除法。",
+      "bps：小写 b 是比特，大写 B 是字节。“Mbps”和“MB/s”表示的大小不同。"
     ],
     "memory_hooks_en": [
-      "WiMAX: WiMAX → high-speed wireless communication that covers a wide area",
-      "LTE: LTE → high-speed data communication over cellular phone networks (4G)",
-      "5G: 5G → high speed, low latency, massive simultaneous connections",
-      "Transmission speed: Transmission speed → the amount of data that can be sent per second (bps)",
-      "bps: bps → the number of bits that can be sent per second (bits per second)"
+      "WiMAX: The name is an acronym of Worldwide Interoperability for Microwave Access, showing that it is a way of connecting (Access) by microwaves (Microwave).",
+      "LTE: Long Term Evolution: the name marks it as one stage in a long evolution that started from 3G.",
+      "5G: The G stands for Generation, not Giga. 5G simply means \"fifth generation.\"",
+      "Transmission speed: Same shape as distance = speed × time: data size = transmission speed × time. To find the time, divide.",
+      "bps: Lowercase b means bit and uppercase B means byte, so \"Mbps\" and \"MB/s\" are different amounts."
     ]
   },
   "challenge_questions": [
-    "2020r02o-q095",
+    "2018h30h-q089",
+    "2019h31h-q073",
     "2026r08-q076",
     "2017h29h-q096",
-    "2026r08-q081"
+    "2020r02o-q095"
   ],
   "source_figures": [
     {
@@ -200,9 +622,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "移动广域通信与传输性能",
-  "title_en": "Mobile Wide-Area Communication and Transmission Performance",
-  "unit_summary_zh": "理解 LTE、5G 等移动 WAN 通信方式，以及表示网络速度的传输速率与 bps 这一性能指标。",
-  "unit_summary_en": "Understand mobile WAN communication methods such as LTE and 5G, along with transmission speed and bps as the performance metric that expresses network speed."
+  }
 }
