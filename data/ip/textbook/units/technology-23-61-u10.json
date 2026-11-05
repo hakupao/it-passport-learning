@@ -1,29 +1,218 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-61-u10",
   "topic_id": "technology-23-61",
   "category": "technology",
   "title_jp": "ネットワーク・通信経路への攻撃",
+  "title_zh": "针对网络与通信路径的攻击",
+  "title_en": "Attacks on Networks and Communication Paths",
   "unit_summary_jp": "中間者攻撃・なりすまし系(IPスプーフィング/DNSキャッシュポイズニング)・セッションハイジャックなど通信を狙う攻撃を理解する。",
+  "unit_summary_zh": "理解中间人攻击、冒充类攻击（IP 欺骗 / DNS 缓存投毒）、会话劫持等以通信为目标的攻击。",
+  "unit_summary_en": "Understand attacks that target communications, such as man-in-the-middle attacks, impersonation-type attacks (IP spoofing / DNS cache poisoning), and session hijacking.",
   "order_in_topic": 10,
   "prerequisites": [
     "technology-23-61-u01",
     "technology-23-61-u02"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、ネットワークや通信経路そのものを狙う攻撃を学びます。通信に割り込んで盗聴・改ざんする中間者攻撃やMITB攻撃、メールサーバを悪用する第三者中継とオープンリレー、送信元や名前解決を偽装するIPスプーフィング・DNSキャッシュポイズニング、確立済みの通信を乗っ取るセッションハイジャックを扱います。情報セキュリティは頻出分野で、各手口の違いを問う出題が多くあります。",
-    "freq_badge": "頻出",
-    "est_minutes": 21,
-    "intro_zh": "在本单元中，我们将学习以网络和通信路径本身为目标的攻击。内容包括：插入通信进行窃听和篡改的中间人攻击与 MITB 攻击；滥用邮件服务器的第三方中继与开放中继；伪造发送源或名称解析的 IP 欺骗与 DNS 缓存投毒；以及劫持已建立通信的会话劫持。信息安全是高频考查领域，经常出现考查各种手法之间差异的题目。",
-    "intro_en": "In this unit, you will learn about attacks that target networks and communication paths themselves. We cover man-in-the-middle (MITM) and MITB attacks that intercept communications to eavesdrop and tamper with them; third-party relay and open relay that abuse mail servers; IP spoofing and DNS cache poisoning that forge the sender or name resolution; and session hijacking that takes over an already established communication. Information security is a frequently tested field, and many questions ask about the differences between these techniques."
-  },
+  "goals_jp": [
+    "通信に割り込む攻撃を、割り込む場所 (通信経路の途中か、利用者のブラウザの中か) で分けられる。",
+    "メールの中継の悪用 (第三者中継、別名 オープンリレー) について、悪用する **行為** の面と、それを許すサーバの **設定状態** の面を分けて説明できる。",
+    "偽装や乗っ取りの手口を、偽る・奪う情報 (送信元の IP アドレス、名前解決の情報、セッション ID) で見分けられる。"
+  ],
+  "goals_zh": [
+    "能按插入的位置（通信线路途中，还是用户的浏览器内部）区分插入通信的攻击。",
+    "关于滥用邮件中继（第三方中继，又称开放中继），能把滥用的**行为**这一面与允许这种滥用的服务器**设置状态**这一面分开说明。",
+    "能根据被伪造或窃取的信息（源 IP 地址、域名解析信息、会话 ID）辨别伪装与劫持的手法。"
+  ],
+  "goals_en": [
+    "Sort attacks that cut into communication by where they cut in: partway along the network path, or inside the user's browser.",
+    "For abuse of mail relaying (third-party relay, also called open relay), explain the **act** of abuse and the server **configuration** that allows it as two sides of the same thing.",
+    "Distinguish spoofing and hijacking techniques by the information they fake or steal: the source IP address, name-resolution information, or a session ID."
+  ],
+  "overview_cols_jp": [
+    "偽装・悪用される対象",
+    "起きる場所"
+  ],
+  "overview_cols_zh": [
+    "被伪造或滥用的对象",
+    "发生的位置"
+  ],
+  "overview_cols_en": [
+    "What is faked or abused",
+    "Where it happens"
+  ],
+  "overview_rows": [
+    {
+      "term": "中間者攻撃",
+      "one_line_jp": "通信する二者の間に入り込み、やり取りを盗み見たり書き換えたりする",
+      "one_line_zh": "插入通信双方之间，偷窥或改写往来内容",
+      "one_line_en": "Gets between two communicating parties to read or rewrite what they exchange",
+      "extra_jp": [
+        "二者の間を流れるデータ",
+        "通信経路の途中"
+      ],
+      "extra_zh": [
+        "双方之间传输的数据",
+        "通信线路途中"
+      ],
+      "extra_en": [
+        "Data flowing between the two parties",
+        "Partway along the network path"
+      ]
+    },
+    {
+      "term": "MITB攻撃",
+      "one_line_jp": "ブラウザに潜むマルウェアが、画面や送信内容を内側から書き換える",
+      "one_line_zh": "潜伏在浏览器中的恶意软件从内部改写页面和发送内容",
+      "one_line_en": "Malware hiding in the browser rewrites the screen and outgoing data from inside",
+      "extra_jp": [
+        "ブラウザに表示・入力される取引の内容",
+        "利用者のブラウザの中"
+      ],
+      "extra_zh": [
+        "浏览器中显示和输入的交易内容",
+        "用户的浏览器内部"
+      ],
+      "extra_en": [
+        "Transaction details shown and entered in the browser",
+        "Inside the user's browser"
+      ]
+    },
+    {
+      "term": "第三者中継",
+      "one_line_jp": "無関係な人が他人のメールサーバを経由させてメールを送らせる",
+      "one_line_zh": "无关人员借他人的邮件服务器替自己发送邮件",
+      "one_line_en": "An unrelated party gets someone else's mail server to send their mail",
+      "extra_jp": [
+        "中継を制限しないメールサーバ",
+        "メールサーバ"
+      ],
+      "extra_zh": [
+        "不限制中继的邮件服务器",
+        "邮件服务器"
+      ],
+      "extra_en": [
+        "A mail server that does not restrict relaying",
+        "The mail server"
+      ]
+    },
+    {
+      "term": "オープンリレー",
+      "one_line_jp": "誰から誰へのメールでも制限なく中継してしまうサーバの設定状態",
+      "one_line_zh": "对任何人发往任何人的邮件都无限制中继的服务器设置状态",
+      "one_line_en": "A server configuration that relays mail from anyone to anyone without restriction",
+      "extra_jp": [
+        "中継先を限らない設定そのもの",
+        "メールサーバ"
+      ],
+      "extra_zh": [
+        "不限定中继目的地的设置本身",
+        "邮件服务器"
+      ],
+      "extra_en": [
+        "The configuration itself, which places no limit on where mail is relayed",
+        "The mail server"
+      ]
+    },
+    {
+      "term": "IPスプーフィング",
+      "one_line_jp": "パケットの送信元 IP アドレスを偽り、別の機器を装う",
+      "one_line_zh": "伪造数据包的源 IP 地址，冒充另一台设备",
+      "one_line_en": "Forges a packet's source IP address to pose as another device",
+      "extra_jp": [
+        "パケットの送信元 IP アドレス",
+        "ネットワーク上のパケット"
+      ],
+      "extra_zh": [
+        "数据包的源 IP 地址",
+        "网络上的数据包"
+      ],
+      "extra_en": [
+        "A packet's source IP address",
+        "Packets on the network"
+      ]
+    },
+    {
+      "term": "DNSキャッシュポイズニング",
+      "one_line_jp": "DNS サーバに偽の対応情報を覚えさせ、利用者を偽サイトへ向かわせる",
+      "one_line_zh": "让 DNS 服务器记住虚假的对应信息，把用户引向假网站",
+      "one_line_en": "Makes a DNS server remember a false mapping and sends users to a fake site",
+      "extra_jp": [
+        "ドメイン名と IP アドレスの対応情報",
+        "DNS サーバのキャッシュ"
+      ],
+      "extra_zh": [
+        "域名与 IP 地址的对应信息",
+        "DNS 服务器的缓存"
+      ],
+      "extra_en": [
+        "The mapping between domain names and IP addresses",
+        "The DNS server's cache"
+      ]
+    },
+    {
+      "term": "セッションハイジャック",
+      "one_line_jp": "ログイン後の通信を識別する情報を奪い、本人として通信を続ける",
+      "one_line_zh": "窃取识别登录后通信的信息，以本人身份继续通信",
+      "one_line_en": "Steals the information that identifies post-login traffic and carries on as the user",
+      "extra_jp": [
+        "セッション ID",
+        "ログイン後の通信"
+      ],
+      "extra_zh": [
+        "会话 ID",
+        "登录后的通信"
+      ],
+      "extra_en": [
+        "The session ID",
+        "Post-login communication"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "中間者攻撃",
-      "definition_jp": "通信する二者の間に割り込み、盗聴や改ざんを行う攻撃。",
-      "explanation_jp": "中間者攻撃(MITM:Man-In-The-Middle)は、通信している二者の間に攻撃者がこっそり入り込み、やり取りされるデータを盗み見たり書き換えたりする攻撃です。利用者とサーバの双方は、相手と直接通信しているつもりでいるため気づきにくいのが特徴です。\n\n暗号化されていない通信や、偽のアクセスポイント・偽のサーバ証明書を使って成立します。試験では「通信に割り込んで盗聴・改ざんする」という基本概念を問う出題が中心で、対策として通信の暗号化(SSL/TLS)やサーバ認証が有効である点も押さえましょう。",
-      "analogy_jp": "手紙のやり取りを、配達人になりすました第三者が途中で開封して読み、内容をこっそり書き換えてから届けるようなものです。送り手も受け手も気づきません。",
-      "memory_hook_jp": "中間者攻撃といえば通信に割り込んで盗聴・改ざん",
+      "term_zh": "中间人攻击",
+      "term_en": "Man-in-the-Middle (MITM) Attack",
+      "one_jp": "**中間者攻撃** は、通信している二者の間に攻撃者が気付かれないように入り込み、やり取りされるデータを **盗聴** したり **改ざん** したりする攻撃である。",
+      "one_zh": "**中间人攻击**（[[jp:中間者攻撃]]）是攻击者在不被察觉的情况下插入正在通信的双方之间，对往来数据进行**窃听**（[[jp:盗聴]]）或**篡改**（[[jp:改ざん]]）的攻击。",
+      "one_en": "A **man-in-the-middle attack** ([[jp:中間者攻撃]]) is one in which an attacker secretly places themselves between two communicating parties and **eavesdrops** ([[jp:盗聴]]) on or **tampers** ([[jp:改ざん]]) with the data they exchange.",
+      "detail_jp": "攻撃者は利用者に対してはサーバのふりをし、サーバに対しては利用者のふりをして、両方向のデータを自分の手元で受け渡す。二者はどちらも相手と直接やり取りしているつもりなので、途中で中身を読まれても書き換えられても気付きにくい。暗号化されていない通信や、本物かどうかを確かめずに接続した相手との通信が狙われやすく、通信の暗号化と、相手が本物であることの確認 (サーバ証明書の検証など) が対策になる。",
+      "detail_zh": "攻击者对用户冒充服务器，对服务器冒充用户，让双向的数据都经过自己转手。双方都以为在与对方直接通信，所以即使内容在途中被读取或改写也很难发觉。未加密的通信、未确认对方真伪就建立的连接容易成为目标，对策是对通信加密，并确认对方是真的（如验证服务器证书）。",
+      "detail_en": "The attacker poses as the server to the user and as the user to the server, passing data in both directions through their own hands. Because each side believes it is talking directly to the other, neither is likely to notice when the contents are read or altered on the way. Unencrypted traffic and connections made without checking whether the other side is genuine are easy targets, and the defenses are encrypting the traffic and confirming the other party is authentic, for instance by validating its server certificate.",
+      "analogy_jp": "二人の間で手紙を運ぶ使いが、こっそり封を開けて読み、文面を書き足してから届けるようなもの。受け取った側は、使いが途中で手を加えたことを知らない。",
+      "analogy_zh": "就像在两人之间送信的信使，偷偷拆开信封读过，再添上几句才送到。收信的一方并不知道信使在途中动过手脚。",
+      "analogy_en": "It is like a messenger carrying letters between two people who quietly opens each one, reads it, adds a few lines, and then delivers it. The recipient has no idea the messenger tampered with it along the way.",
+      "hook_jp": "英語の Man-in-the-Middle を訳した名前で、頭文字から MITM と略される。",
+      "hook_zh": "名称译自英语 Man-in-the-Middle，取首字母简称 MITM。",
+      "hook_en": "The Japanese name is a direct rendering of \"man-in-the-middle\", shortened to MITM from its initials.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**中間者攻撃** は盗み見るだけの盗聴にとどまらず、受け渡す途中で内容を書き換えることもできる。",
+          "text_zh": "**中间人攻击**（[[jp:中間者攻撃]]）不止于偷窥内容的窃听（[[jp:盗聴]]），还能在转交途中改写内容。",
+          "text_en": "A **man-in-the-middle attack** ([[jp:中間者攻撃]]) goes beyond eavesdropping ([[jp:盗聴]]), which only reads the data: the attacker can also rewrite it while passing it on."
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-23-61-u10-t01.svg"
+        }
+      },
+      "quiz": [
+        "2018h30a-q060"
+      ],
+      "definition_jp": "中間者攻撃 は、通信している二者の間に攻撃者が気付かれないように入り込み、やり取りされるデータを 盗聴 したり 改ざん したりする攻撃である。",
+      "definition_zh": "中间人攻击（中間者攻撃）是攻击者在不被察觉的情况下插入正在通信的双方之间，对往来数据进行窃听（盗聴）或篡改（改ざん）的攻击。",
+      "definition_en": "A man-in-the-middle attack (中間者攻撃) is one in which an attacker secretly places themselves between two communicating parties and eavesdrops (盗聴) on or tampers (改ざん) with the data they exchange.",
+      "explanation_jp": "攻撃者は利用者に対してはサーバのふりをし、サーバに対しては利用者のふりをして、両方向のデータを自分の手元で受け渡す。二者はどちらも相手と直接やり取りしているつもりなので、途中で中身を読まれても書き換えられても気付きにくい。暗号化されていない通信や、本物かどうかを確かめずに接続した相手との通信が狙われやすく、通信の暗号化と、相手が本物であることの確認 (サーバ証明書の検証など) が対策になる。",
+      "explanation_zh": "攻击者对用户冒充服务器，对服务器冒充用户，让双向的数据都经过自己转手。双方都以为在与对方直接通信，所以即使内容在途中被读取或改写也很难发觉。未加密的通信、未确认对方真伪就建立的连接容易成为目标，对策是对通信加密，并确认对方是真的（如验证服务器证书）。",
+      "explanation_en": "The attacker poses as the server to the user and as the user to the server, passing data in both directions through their own hands. Because each side believes it is talking directly to the other, neither is likely to notice when the contents are read or altered on the way. Unencrypted traffic and connections made without checking whether the other side is genuine are easy targets, and the defenses are encrypting the traffic and confirming the other party is authentic, for instance by validating its server certificate.",
+      "memory_hook_jp": "英語の Man-in-the-Middle を訳した名前で、頭文字から MITM と略される。",
+      "memory_hook_zh": "名称译自英语 Man-in-the-Middle，取首字母简称 MITM。",
+      "memory_hook_en": "The Japanese name is a direct rendering of \"man-in-the-middle\", shortened to MITM from its initials.",
       "inline_quiz": [
         "2018h30a-q060"
       ],
@@ -32,220 +221,914 @@
         "mermaid": "graph LR; A[\"利用者\"] --> M[\"攻撃者(中間者)\"]; M --> B[\"サーバ\"]; B --> M; M --> A",
         "svg_path": "figures/technology-23-61-u10-t01.svg",
         "rendered": true
-      },
-      "term_zh": "中间人攻击",
-      "term_en": "Man-in-the-Middle (MITM) Attack",
-      "definition_zh": "插入通信双方之间，进行窃听或篡改的攻击。",
-      "definition_en": "An attack that inserts itself between two communicating parties to eavesdrop or tamper with the traffic.",
-      "explanation_zh": "中间人攻击（MITM：Man-In-The-Middle）是指攻击者悄悄插入正在通信的双方之间，窥探或改写双方往来数据的攻击。其特点是用户与服务器双方都以为自己在与对方直接通信，因此难以察觉。\n\n这种攻击在未加密的通信，或使用伪造的接入点、伪造的服务器证书时得以成立。考试中主要考查“插入通信进行窃听、篡改”这一基本概念，同时也要记住：通信加密（SSL/TLS）和服务器认证是有效的应对措施。",
-      "explanation_en": "A man-in-the-middle attack (MITM: Man-In-The-Middle) is an attack in which the attacker secretly slips in between two communicating parties and views or rewrites the data exchanged between them. Its key feature is that both the user and the server believe they are communicating directly with each other, which makes it hard to notice.\n\nIt succeeds against unencrypted communications, or by using a fake access point or a fake server certificate. Exams mainly ask about the basic concept of \"intercepting communication to eavesdrop and tamper.\" Remember too that encrypting the communication (SSL/TLS) and server authentication are effective countermeasures.",
-      "analogy_zh": "就像一个冒充成投递员的第三者，在途中拆开你来往的信件阅读，偷偷改写内容后再送达。寄信人和收信人都不会察觉。",
-      "analogy_en": "It is like a third party who poses as the mail carrier, opens and reads the letters you exchange along the way, secretly rewrites their contents, and then delivers them. Neither the sender nor the recipient notices.",
-      "memory_hook_zh": "说到中间人攻击，就是插入通信进行窃听、篡改",
-      "memory_hook_en": "Man-in-the-middle attack → slip into the communication to eavesdrop and tamper"
+      }
     },
     {
       "term": "MITB攻撃",
-      "definition_jp": "利用者のブラウザに侵入し通信内容を改ざんする攻撃。",
-      "explanation_jp": "MITB攻撃(Man-In-The-Browser)は、マルウェアを利用者のブラウザに潜ませ、画面表示や送信データを内側から書き換える攻撃です。特にインターネットバンキングで、利用者が入力した正しい振込先を、本人に気づかれないまま攻撃者の口座へすり替える手口が知られます。\n\n中間者攻撃が「通信経路の途中」に割り込むのに対し、MITB攻撃は「利用者のブラウザ内部」に潜む点が違いです。通信が暗号化されていても、暗号化前のブラウザ内で改ざんされるため防ぎにくく、不正検知や端末のマルウェア対策が重要になります。",
-      "analogy_jp": "通帳に振込先を書く瞬間に、肩越しではなく手元のペンに細工がされていて、書いた文字が勝手に別の口座番号に変わってしまうようなものです。",
-      "memory_hook_jp": "MITB攻撃といえばブラウザ内部に潜んで改ざん",
-      "inline_quiz": [
-        "2016h28h-q086"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "MITB 攻击",
       "term_en": "Man-in-the-Browser (MITB) Attack",
-      "definition_zh": "侵入用户浏览器并篡改通信内容的攻击。",
-      "definition_en": "An attack that infiltrates the user's browser and tampers with the communication content.",
-      "explanation_zh": "MITB 攻击（Man-In-The-Browser）是指将恶意软件潜伏在用户的浏览器中，从内部改写画面显示或发送数据的攻击。尤其在网上银行中，有一种众所周知的手法：在用户本人毫无察觉的情况下，把用户输入的正确转账对象替换成攻击者的账户。\n\n与中间人攻击插入“通信路径途中”不同，MITB 攻击的区别在于它潜伏在“用户的浏览器内部”。即使通信经过加密，由于篡改发生在加密之前的浏览器内，因此很难防范，故而异常检测和终端的恶意软件防护就显得尤为重要。",
-      "explanation_en": "A MITB attack (Man-In-The-Browser) is an attack in which malware is hidden inside the user's browser and rewrites the screen display or the data being sent from within. A well-known technique, especially in internet banking, swaps the correct transfer destination that the user entered for the attacker's account without the user noticing.\n\nThe difference from a man-in-the-middle attack, which inserts itself \"midway along the communication path,\" is that a MITB attack lurks \"inside the user's browser.\" Even if the communication is encrypted, the tampering happens inside the browser before encryption, so it is hard to prevent; fraud detection and anti-malware measures on the device become important.",
-      "analogy_zh": "就好比在你往存折上填写转账对象的那一刻——动手脚的不是别人从肩后偷看，而是你手中的笔本身被做了手脚，写下的文字会擅自变成另一个账号。",
-      "analogy_en": "It is as if, at the very moment you write the transfer destination in your bankbook, the trick is not someone peeking over your shoulder but your own pen having been tampered with, so the characters you write change by themselves into a different account number.",
-      "memory_hook_zh": "说到 MITB 攻击，就是潜伏在浏览器内部进行篡改",
-      "memory_hook_en": "MITB attack → lurk inside the browser and tamper"
+      "one_jp": "**MITB攻撃** は、利用者の端末に入り込んだ **マルウェア** (悪意のあるソフトウェア) がブラウザを乗っ取り、画面の表示や送信する内容をブラウザの内側から書き換える攻撃である。",
+      "one_zh": "**MITB 攻击**（[[jp:MITB攻撃]]）是潜入用户终端的**恶意软件**（[[jp:マルウェア]]，怀有恶意的软件）劫持浏览器，从浏览器内部改写页面显示和发送内容的攻击。",
+      "one_en": "A **man-in-the-browser (MITB) attack** ([[jp:MITB攻撃]]) is one in which **malware** ([[jp:マルウェア]], malicious software) that has got into the user's device takes over the browser and rewrites what the screen shows and what gets sent, from inside the browser.",
+      "detail_jp": "主な標的はインターネットバンキングで、利用者が開いているのは本物のサイトであり、ログインも本人が正しく行う。マルウェアは画面に利用者の入力どおりの内容を表示し続けることもあり、利用者は不正に気付きにくい。",
+      "detail_zh": "主要目标是网上银行，用户打开的是真正的网站，登录也由本人正确完成。恶意软件有时还会让页面继续显示用户输入的原样内容，用户很难察觉异常。",
+      "detail_en": "The main target is online banking: the site the user opens is the real one, and the user logs in correctly themselves. The malware may even keep showing the details exactly as the user typed them, so the user is unlikely to notice anything wrong.",
+      "analogy_jp": "窓口で書いた申込用紙を、自分の手から離れる直前に、隣に立つ偽の係員が別の用紙と差し替えるようなもの。窓口も、届いた用紙を本人のものとして受け付ける。",
+      "analogy_zh": "就像在窗口填好的申请表，在离手前一刻，被站在旁边的假工作人员换成了另一张。窗口也把收到的表当作本人的来受理。",
+      "analogy_en": "It is like a fake clerk standing beside you at the counter who swaps your completed application form for a different one just as it leaves your hand. The counter accepts the form it receives as yours.",
+      "hook_jp": "Man-in-the-Middle の Middle を Browser に置き換えた名前で、中間者がブラウザの中に住み着いたと読める。",
+      "hook_zh": "把 Man-in-the-Middle 中的 Middle 换成 Browser 而得名，可以理解为中间人住进了浏览器里。",
+      "hook_en": "The name swaps the \"middle\" in man-in-the-middle for \"browser\": the man in the middle has moved into the browser.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**MITB攻撃** は、ブラウザを乗っ取ったマルウェアがインターネットバンキングの取引内容を利用者に気付かれないように書き換え、不正な送金などをさせる手口である。",
+          "text_zh": "**MITB 攻击**（[[jp:MITB攻撃]]）是劫持浏览器的恶意软件（[[jp:マルウェア]]）在用户不知情的情况下改写网上银行（[[jp:インターネットバンキング]]）的交易内容，进而实施非法转账等的手法。",
+          "text_en": "In a **man-in-the-browser attack** ([[jp:MITB攻撃]]), malware ([[jp:マルウェア]]) that has hijacked the browser quietly alters online banking ([[jp:インターネットバンキング]]) transactions without the user noticing, leading to fraudulent transfers and the like.",
+          "qids": [
+            "2018h30a-q060"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**MITB攻撃** の書き換えは暗号化の前に端末内で起きるため、通信経路の暗号化は対策にならない。端末のマルウェア対策や、取引内容を別の経路で確かめる仕組みが有効である。",
+          "text_zh": "**MITB 攻击**（[[jp:MITB攻撃]]）的改写发生在终端内部、加密之前，因此对通信线路加密（[[jp:暗号化]]）不起作用。有效的是终端的恶意软件（[[jp:マルウェア]]）对策，以及通过另一条途径确认交易内容的机制。",
+          "text_en": "A **man-in-the-browser attack** ([[jp:MITB攻撃]]) alters data on the device before it is encrypted, so encrypting ([[jp:暗号化]]) the connection does not stop it. What helps is protection against malware ([[jp:マルウェア]]) on the device and a way to confirm the transaction through a separate channel."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "infect",
+              "label": {
+                "jp": "マルウェアがブラウザに潜む",
+                "zh": "恶意软件潜伏在浏览器中",
+                "en": "Malware hides in the browser"
+              }
+            },
+            {
+              "id": "input",
+              "label": {
+                "jp": "利用者が取引内容を入力",
+                "zh": "用户输入交易内容",
+                "en": "The user enters the transaction"
+              }
+            },
+            {
+              "id": "swap",
+              "label": {
+                "jp": "送信前に内容を書き換え",
+                "zh": "发送前改写内容",
+                "en": "The content is altered before sending"
+              }
+            },
+            {
+              "id": "send",
+              "label": {
+                "jp": "正規の通信で銀行へ届く",
+                "zh": "经正规通信送达银行",
+                "en": "It reaches the bank over the genuine connection"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者の端末に入り込んだマルウェアが、ブラウザの中に潜む。",
+            "caption_zh": "潜入用户终端的恶意软件藏身于浏览器中。",
+            "caption_en": "Malware that has got into the user's device hides inside the browser.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "利用者は本物の銀行サイトを開き、いつもどおり取引の内容を入力する。",
+            "caption_zh": "用户打开真正的银行网站，像往常一样输入交易内容。",
+            "caption_en": "The user opens the real bank site and enters the transaction as usual.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "マルウェアが、送信される前の内容を攻撃者に都合のよいものへ書き換える。",
+            "caption_zh": "恶意软件在内容发送前，把它改成对攻击者有利的内容。",
+            "caption_en": "Before the data is sent, the malware changes it to suit the attacker.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "書き換え後の内容が正規の暗号化された通信で届き、銀行は本人の依頼として処理する。",
+            "caption_zh": "改写后的内容经正规的加密通信送达，银行将其作为本人的请求处理。",
+            "caption_en": "The altered request arrives over the genuine encrypted connection, and the bank processes it as the customer's own.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2018h30a-q060"
+      ],
+      "definition_jp": "MITB攻撃 は、利用者の端末に入り込んだ マルウェア (悪意のあるソフトウェア) がブラウザを乗っ取り、画面の表示や送信する内容をブラウザの内側から書き換える攻撃である。",
+      "definition_zh": "MITB 攻击（MITB攻撃）是潜入用户终端的恶意软件（マルウェア，怀有恶意的软件）劫持浏览器，从浏览器内部改写页面显示和发送内容的攻击。",
+      "definition_en": "A man-in-the-browser (MITB) attack (MITB攻撃) is one in which malware (マルウェア, malicious software) that has got into the user's device takes over the browser and rewrites what the screen shows and what gets sent, from inside the browser.",
+      "explanation_jp": "主な標的はインターネットバンキングで、利用者が開いているのは本物のサイトであり、ログインも本人が正しく行う。マルウェアは画面に利用者の入力どおりの内容を表示し続けることもあり、利用者は不正に気付きにくい。",
+      "explanation_zh": "主要目标是网上银行，用户打开的是真正的网站，登录也由本人正确完成。恶意软件有时还会让页面继续显示用户输入的原样内容，用户很难察觉异常。",
+      "explanation_en": "The main target is online banking: the site the user opens is the real one, and the user logs in correctly themselves. The malware may even keep showing the details exactly as the user typed them, so the user is unlikely to notice anything wrong.",
+      "memory_hook_jp": "Man-in-the-Middle の Middle を Browser に置き換えた名前で、中間者がブラウザの中に住み着いたと読める。",
+      "memory_hook_zh": "把 Man-in-the-Middle 中的 Middle 换成 Browser 而得名，可以理解为中间人住进了浏览器里。",
+      "memory_hook_en": "The name swaps the \"middle\" in man-in-the-middle for \"browser\": the man in the middle has moved into the browser.",
+      "inline_quiz": [
+        "2018h30a-q060"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "第三者中継",
-      "definition_jp": "無関係な第三者がメールサーバを経由して送信に悪用する行為。",
-      "explanation_jp": "第三者中継(サードパーティリレー)は、本来そのメールサーバの利用者ではない無関係な第三者が、そのサーバを経由(中継)してメールを送りつける悪用行為です。攻撃者は自分の正体を隠したまま、他人のサーバから大量の迷惑メール(スパム)を送信できてしまいます。\n\n中継を許してしまったサーバは、送信元として迷惑メールの発信源にされ、信頼を失ったりブラックリストに載ったりする被害を受けます。試験では「第三者がメールサーバを踏み台にして送信する」点と、それを許す設定状態である次のオープンリレーとの関係を押さえましょう。",
-      "analogy_jp": "誰でも自由に使える公衆の郵便ポストを、見知らぬ人が大量の悪質なチラシの投函に使い、ポストの持ち主が発信元として疑われてしまうようなものです。",
-      "memory_hook_jp": "第三者中継といえば無関係な第三者がメールサーバを踏み台に",
-      "inline_quiz": [
-        "2024r06-q100"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "第三方中继",
       "term_en": "Third-Party Relay",
-      "definition_zh": "无关的第三方借助邮件服务器进行发送的滥用行为。",
-      "definition_en": "The abusive act of an unrelated third party using a mail server to send mail through it.",
-      "explanation_zh": "第三方中继（third-party relay）是指本不是该邮件服务器用户的无关第三方，借助（中继）该服务器来发送邮件的滥用行为。攻击者可以隐藏自己的真实身份，借用他人的服务器发送大量垃圾邮件（spam）。\n\n允许中继的服务器会被当作发送源，沦为垃圾邮件的发信源头，从而遭受失去信任或被列入黑名单等损害。考试中要把握“第三方把邮件服务器当作跳板进行发送”这一点，以及它与下一条“允许此行为的设置状态——开放中继”之间的关系。",
-      "explanation_en": "Third-party relay is the abusive act in which an unrelated third party, who is not actually a user of that mail server, sends mail by going through (relaying via) that server. The attacker can hide their true identity and send large amounts of junk mail (spam) from someone else's server.\n\nA server that allows relaying gets treated as the sender and becomes the origin of spam, suffering damage such as losing trust or being placed on a blacklist. For exams, grasp the point that \"a third party uses the mail server as a stepping stone to send mail,\" and the relationship with open relay (the next term, the configuration state that permits this).",
-      "analogy_zh": "就像一个谁都可以自由使用的公共邮筒，被陌生人用来投递大量恶意传单，结果邮筒的主人反倒被怀疑是发送源。",
-      "analogy_en": "It is like a public mailbox that anyone can freely use being used by a stranger to drop in large quantities of malicious flyers, so that the owner of the mailbox ends up being suspected as the source.",
-      "memory_hook_zh": "说到第三方中继，就是无关的第三方把邮件服务器当跳板",
-      "memory_hook_en": "Third-party relay → an unrelated third party uses the mail server as a stepping stone"
+      "one_jp": "**第三者中継** は、そのメールサーバと関係のない第三者が、サーバに自分のメールを **中継** (受け取ったメールを別のサーバへ転送すること) させ、送信に利用する行為である。",
+      "one_zh": "**第三方中继**（[[jp:第三者中継]]）是与该邮件服务器毫无关系的第三方，让服务器替自己**中继**（[[jp:中継]]，把收到的邮件转发到其他服务器）邮件、借以发送的行为。",
+      "one_en": "**Third-party relay** ([[jp:第三者中継]]) is the act of an outsider with no connection to a mail server getting that server to **relay** ([[jp:中継]], forward a received message on to another server) their mail, using it to send messages.",
+      "detail_jp": "攻撃者は、外部から外部へのメールを受け付けてしまうサーバを探して経由させ、迷惑メールを大量に送ることが多い。このように悪用のために経由される機器を **踏み台** と呼び、受け取った側からは踏み台のサーバが送り主に見えるため、攻撃者は自分の身元を隠せる。",
+      "detail_zh": "攻击者往往寻找会接受“外部发往外部”邮件的服务器并借道发送，大量发送垃圾邮件。像这样为作恶而被借道的设备称为**跳板**（[[jp:踏み台]]），在收件方看来跳板服务器才是发件人，攻击者因此能隐藏自己的身份。",
+      "detail_en": "Attackers typically look for servers that accept mail from outside addressed to outside, route mail through them, and send spam in bulk. A device used as a pass-through for abuse like this is called a **stepping stone** ([[jp:踏み台]]); because the recipients see the stepping-stone server as the sender, the attacker can hide their own identity.",
+      "analogy_jp": "会社の受付が、社員でも来客でもない通行人から預かった大量の封書を、会社の名前で社外へ発送してしまうようなもの。苦情は通行人ではなく会社へ来る。",
+      "analogy_zh": "就像公司前台把一个既非员工也非访客的路人交来的大批信件，以公司的名义寄往外部。投诉找上的不是路人，而是公司。",
+      "analogy_en": "It is like a company reception desk taking a stack of letters from a passer-by who is neither staff nor a visitor and mailing them out under the company's name. The complaints go to the company, not the passer-by.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**第三者中継** の被害者は迷惑メールを受け取る人だけではない。経由されたメールサーバの持ち主も、送り主と見なされて信用を落とす。",
+          "text_zh": "**第三方中继**（[[jp:第三者中継]]）的受害者不只是收到垃圾邮件（[[jp:迷惑メール]]）的人。被借道的邮件服务器的所有者也会被视为发件人而失去信誉。",
+          "text_en": "**Third-party relay** ([[jp:第三者中継]]) does not only harm the people who receive the spam ([[jp:迷惑メール]]). The owner of the mail server it passes through is also taken for the sender and loses trust."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "attacker",
+              "label": {
+                "jp": "外部の攻撃者が送信を依頼",
+                "zh": "外部攻击者请求发送",
+                "en": "An outside attacker asks it to send mail"
+              }
+            },
+            {
+              "id": "server",
+              "label": {
+                "jp": "制限のないメールサーバが受け付け",
+                "zh": "无限制的邮件服务器予以受理",
+                "en": "An unrestricted mail server accepts"
+              }
+            },
+            {
+              "id": "relay",
+              "label": {
+                "jp": "外部の宛先へ中継",
+                "zh": "中继到外部收件人",
+                "en": "Relayed to outside recipients"
+              }
+            },
+            {
+              "id": "blame",
+              "label": {
+                "jp": "サーバが発信元と見なされる",
+                "zh": "服务器被视为发件源",
+                "en": "The server is seen as the sender"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "組織と関係のない攻撃者が、外部の宛先へのメールを組織のメールサーバに渡す。",
+            "caption_zh": "与组织无关的攻击者，把发往外部收件人的邮件交给组织的邮件服务器。",
+            "caption_en": "An attacker unrelated to the organization hands the organization's mail server a message addressed to outside recipients.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "中継先を確かめない設定のサーバは、その依頼を受け付けてしまう。",
+            "caption_zh": "设置为不核对中继目的地的服务器，接受了这一请求。",
+            "caption_en": "A server set up not to check where it relays mail accepts the request.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "サーバは、組織とは無関係な外部の宛先へメールを送り出す。",
+            "caption_zh": "服务器把邮件发往与组织无关的外部收件人。",
+            "caption_en": "The server sends the message out to recipients that have nothing to do with the organization.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "受け取った側からは、中継したサーバが送り主に見え、攻撃者の姿は隠れる。",
+            "caption_zh": "在收件方看来，发件人是负责中继的服务器，攻击者则隐身其后。",
+            "caption_en": "To the recipients, the relaying server looks like the sender, and the attacker stays hidden.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "第三者中継 は、そのメールサーバと関係のない第三者が、サーバに自分のメールを 中継 (受け取ったメールを別のサーバへ転送すること) させ、送信に利用する行為である。",
+      "definition_zh": "第三方中继（第三者中継）是与该邮件服务器毫无关系的第三方，让服务器替自己中继（中継，把收到的邮件转发到其他服务器）邮件、借以发送的行为。",
+      "definition_en": "Third-party relay (第三者中継) is the act of an outsider with no connection to a mail server getting that server to relay (中継, forward a received message on to another server) their mail, using it to send messages.",
+      "explanation_jp": "攻撃者は、外部から外部へのメールを受け付けてしまうサーバを探して経由させ、迷惑メールを大量に送ることが多い。このように悪用のために経由される機器を 踏み台 と呼び、受け取った側からは踏み台のサーバが送り主に見えるため、攻撃者は自分の身元を隠せる。",
+      "explanation_zh": "攻击者往往寻找会接受“外部发往外部”邮件的服务器并借道发送，大量发送垃圾邮件。像这样为作恶而被借道的设备称为跳板（踏み台），在收件方看来跳板服务器才是发件人，攻击者因此能隐藏自己的身份。",
+      "explanation_en": "Attackers typically look for servers that accept mail from outside addressed to outside, route mail through them, and send spam in bulk. A device used as a pass-through for abuse like this is called a stepping stone (踏み台); because the recipients see the stepping-stone server as the sender, the attacker can hide their own identity.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "オープンリレー",
-      "definition_jp": "誰からのメールでも無制限に中継してしまうサーバ設定状態。",
-      "explanation_jp": "オープンリレーは、メールサーバが送信者を制限せず、誰からのメールでも無条件に中継(リレー)してしまう設定状態のことです。この状態を放置すると、前述の第三者中継を許してしまい、迷惑メールの送信に悪用されます。\n\n第三者中継が「悪用される行為」を指すのに対し、オープンリレーは「それを許してしまう原因となるサーバの状態」を指す点が違いです。対策は、自組織の利用者や正しい宛先だけに中継を限定する設定にすること(オープンリレーを禁止する設定)で、メールサーバ運用の基本とされます。",
-      "analogy_jp": "鍵をかけず誰でも入れて好きに使える共用の倉庫のような状態。善意で開放したつもりが、悪意ある人の不正利用の場になってしまいます。",
-      "memory_hook_jp": "オープンリレーといえば誰でも無制限に中継してしまう設定",
-      "inline_quiz": [
-        "2009h21a-q058"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "开放中继",
       "term_en": "Open Relay",
-      "definition_zh": "无限制中继来自任何人邮件的服务器配置状态。",
-      "definition_en": "A server configuration state that relays mail from anyone without restriction.",
-      "explanation_zh": "开放中继（open relay）是指邮件服务器不限制发件人，无条件中继（relay）来自任何人的邮件的配置状态。若放任这种状态，就会允许前述的第三方中继，被滥用于发送垃圾邮件。\n\n第三方中继指的是“被滥用的行为”，而开放中继指的是“成为允许该行为之原因的服务器状态”，这是二者的区别。应对措施是将中继限定为只允许本组织用户或正确收件方（即禁止开放中继的设置），这被视为邮件服务器运维的基本要求。",
-      "explanation_en": "Open relay is a configuration state in which a mail server does not restrict senders and unconditionally relays mail from anyone. Leaving this state unaddressed permits the third-party relay described above and gets abused for sending spam.\n\nWhereas third-party relay refers to \"the act of being abused,\" open relay refers to \"the server state that becomes the cause of allowing it\"; that is the difference. The countermeasure is to configure the server so that relaying is limited only to your own organization's users and valid recipients (a setting that prohibits open relay), which is regarded as a basic requirement of mail server operation.",
-      "analogy_zh": "就像一个不上锁、谁都能进去随意使用的公用仓库。本以为是出于善意开放，结果却成了恶意者非法利用的场所。",
-      "analogy_en": "It is like a shared warehouse that is not locked and that anyone can enter and use freely. You think you have opened it out of goodwill, but it becomes a place for malicious people to misuse.",
-      "memory_hook_zh": "说到开放中继，就是无限制中继任何人邮件的配置",
-      "memory_hook_en": "Open relay → the configuration that relays anyone's mail without restriction"
+      "one_jp": "**オープンリレー** は、メールサーバが送り主や宛先を確かめず、誰から誰へのメールでも制限なく中継してしまう **設定状態** のことで、**第三者中継** とも呼ばれる。",
+      "one_zh": "**开放中继**（[[jp:オープンリレー]]）是指邮件服务器不核对发件人和收件人，对任何人发往任何人的邮件都无限制中继的**设置状态**，也称为**第三方中继**（[[jp:第三者中継]]）。",
+      "one_en": "An **open relay** ([[jp:オープンリレー]]) is a mail server **configuration** that relays mail from anyone to anyone without restriction, never checking the sender or the recipient; it is also called **third-party relay** ([[jp:第三者中継]]).",
+      "detail_jp": "オープンリレーのサーバは、攻撃者に見つかると第三者中継の踏み台として使われる。防ぐには、中継を自組織の利用者が出すメールに限り、外部から外部へのメールを拒否するように設定する。この設定にしても、組織の利用者がメールを送ることや、外部から組織宛てのメールを受け取ることは妨げられない。",
+      "detail_zh": "开放中继的服务器一旦被攻击者发现，就会被用作第三方中继的跳板。要防止这种情况，应设置为只中继本组织用户发出的邮件，拒绝从外部发往外部的邮件。这样设置后，组织内用户发送邮件、从外部接收发给组织的邮件都不受影响。",
+      "detail_en": "Once attackers find an open relay, they use it as a stepping stone for third-party relay. The fix is to configure the server to relay only mail sent by the organization's own users and to reject mail from outside addressed to outside. This setting still lets the organization's users send mail and still accepts mail from outside addressed to the organization.",
+      "analogy_jp": "宛名も差出人も見ずに、持ち込まれた荷物を何でも配送に回してしまう集荷所のようなもの。",
+      "analogy_zh": "就像一个不看收件人也不看寄件人，把送来的包裹统统发出去的收件点。",
+      "analogy_en": "It is like a parcel depot that sends out anything brought to it without looking at either the address or the sender.",
+      "hook_jp": "open は「誰にでも開いている」、relay はリレー競走でバトンを次の走者へ渡すことを表す。",
+      "hook_zh": "open 表示“对谁都敞开”，relay 指接力赛中把接力棒传给下一位选手。",
+      "hook_en": "\"Open\" means open to anyone, and \"relay\" is the same word as in a relay race, where the baton is handed on to the next runner.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**オープンリレー** と **第三者中継** は同じ意味で使われることが多い。前者はサーバの設定の弱点の側から、後者はその弱点を突いて他人のサーバからメールを送る側から見た呼び方である。",
+          "text_zh": "**开放中继**（[[jp:オープンリレー]]）与**第三方中继**（[[jp:第三者中継]]）常常作为同一个意思使用。前者是从服务器设置弱点的角度，后者是从利用这一弱点、借他人服务器发送邮件的一方的角度来称呼的。",
+          "text_en": "**Open relay** ([[jp:オープンリレー]]) and **third-party relay** ([[jp:第三者中継]]) are often used to mean the same thing. The first names it from the side of the server's configuration weakness, the second from the side of whoever exploits that weakness to send mail through someone else's server."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "メールの流れ",
+              "zh": "邮件流向",
+              "en": "Mail flow"
+            },
+            {
+              "jp": "適切な設定",
+              "zh": "正确的设置",
+              "en": "Proper configuration"
+            },
+            {
+              "jp": "オープンリレーの状態",
+              "zh": "开放中继状态",
+              "en": "Open relay"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "組織の利用者から外部へ",
+                  "zh": "从组织内用户发往外部",
+                  "en": "From the organization's users to outside"
+                },
+                {
+                  "jp": "中継する",
+                  "zh": "中继",
+                  "en": "Relayed"
+                },
+                {
+                  "jp": "中継する",
+                  "zh": "中继",
+                  "en": "Relayed"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "外部から組織の利用者へ",
+                  "zh": "从外部发往组织内用户",
+                  "en": "From outside to the organization's users"
+                },
+                {
+                  "jp": "受け取る",
+                  "zh": "接收",
+                  "en": "Accepted"
+                },
+                {
+                  "jp": "受け取る",
+                  "zh": "接收",
+                  "en": "Accepted"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "外部から外部へ",
+                  "zh": "从外部发往外部",
+                  "en": "From outside to outside"
+                },
+                {
+                  "jp": "拒否する",
+                  "zh": "拒绝",
+                  "en": "Rejected"
+                },
+                {
+                  "jp": "中継してしまう",
+                  "zh": "照样中继",
+                  "en": "Relayed anyway"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "オープンリレー は、メールサーバが送り主や宛先を確かめず、誰から誰へのメールでも制限なく中継してしまう 設定状態 のことで、第三者中継 とも呼ばれる。",
+      "definition_zh": "开放中继（オープンリレー）是指邮件服务器不核对发件人和收件人，对任何人发往任何人的邮件都无限制中继的设置状态，也称为第三方中继（第三者中継）。",
+      "definition_en": "An open relay (オープンリレー) is a mail server configuration that relays mail from anyone to anyone without restriction, never checking the sender or the recipient; it is also called third-party relay (第三者中継).",
+      "explanation_jp": "オープンリレーのサーバは、攻撃者に見つかると第三者中継の踏み台として使われる。防ぐには、中継を自組織の利用者が出すメールに限り、外部から外部へのメールを拒否するように設定する。この設定にしても、組織の利用者がメールを送ることや、外部から組織宛てのメールを受け取ることは妨げられない。",
+      "explanation_zh": "开放中继的服务器一旦被攻击者发现，就会被用作第三方中继的跳板。要防止这种情况，应设置为只中继本组织用户发出的邮件，拒绝从外部发往外部的邮件。这样设置后，组织内用户发送邮件、从外部接收发给组织的邮件都不受影响。",
+      "explanation_en": "Once attackers find an open relay, they use it as a stepping stone for third-party relay. The fix is to configure the server to relay only mail sent by the organization's own users and to reject mail from outside addressed to outside. This setting still lets the organization's users send mail and still accepts mail from outside addressed to the organization.",
+      "memory_hook_jp": "open は「誰にでも開いている」、relay はリレー競走でバトンを次の走者へ渡すことを表す。",
+      "memory_hook_zh": "open 表示“对谁都敞开”，relay 指接力赛中把接力棒传给下一位选手。",
+      "memory_hook_en": "\"Open\" means open to anyone, and \"relay\" is the same word as in a relay race, where the baton is handed on to the next runner.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "IPスプーフィング",
-      "definition_jp": "送信元IPアドレスを偽装して別の機器になりすます攻撃。",
-      "explanation_jp": "IPスプーフィング(spoofing=なりすまし)は、通信パケットの送信元IPアドレスを別のものに偽装し、信頼された機器になりすます攻撃です。これにより、IPアドレスで通信相手を判断しているアクセス制限をすり抜けたり、攻撃の発信元を隠したりできます。\n\nDoS/DDoS攻撃で発信元を隠す目的にも使われます。試験では「送信元IPアドレスを偽る」という点が頻出(本トピックでも出題頻度が高い)で、認証をIPアドレスだけに頼らないことが対策になると理解しておきましょう。",
-      "analogy_jp": "手紙の差出人欄に、自分ではなく信頼されている他人の住所と名前を勝手に書いて送り、受け取り手にその人からの手紙だと思い込ませるようなものです。",
-      "memory_hook_jp": "IPスプーフィングといえば送信元IPアドレスを偽装してなりすまし",
+      "term_zh": "IP 欺骗",
+      "term_en": "IP Spoofing",
+      "one_jp": "**IPスプーフィング** は、通信で送る **パケット** (データを小分けにした単位) の送信元 **IP アドレス** を偽り、別の機器から送られたように見せかける手口である。",
+      "one_zh": "**IP 欺骗**（[[jp:IPスプーフィング]]）是伪造通信中发送的**数据包**（[[jp:パケット]]，将数据分割成小块的单位）的源 **IP 地址**（[[jp:IPアドレス]]），使其看起来像是从另一台设备发出的手法。",
+      "one_en": "**IP spoofing** ([[jp:IPスプーフィング]]) is a technique that forges the source **IP address** ([[jp:IPアドレス]]) of the **packets** ([[jp:パケット]], the small units data is split into for sending) so they look as if they came from another device.",
+      "detail_jp": "パケットには宛先と並んで送信元の IP アドレスが書かれており、受け取った機器は通常その値を信じて相手を判断する。送信元の値は送る側で書き換えられるので、IP アドレスだけで通信を許可する仕組みは許可済みの機器を装ったパケットで突破されるおそれがあり、IP アドレスだけに頼らない認証が対策になる。攻撃の発信元を隠す目的で使われることもある。",
+      "detail_zh": "数据包中与目的地址并列写有源 IP 地址，接收设备通常相信这个值并据此判断对方。源地址的值可以由发送方改写，因此仅凭 IP 地址放行通信的机制，可能被冒充获准设备的数据包突破，对策是采用不只依赖 IP 地址的认证。这种手法也会被用来隐藏攻击的来源。",
+      "detail_en": "Each packet carries a source IP address alongside its destination, and the receiving device normally trusts that value to decide who sent it. Because the sender can rewrite the source value, a system that permits traffic on IP address alone can be breached by packets posing as an approved device, and the countermeasure is authentication that does not depend only on the IP address. The technique is also used to hide where an attack comes from.",
+      "analogy_jp": "封筒の裏の差出人欄に、信用されている取引先の住所を書いて出すようなもの。受け取る側が差出人欄だけを見て開封すれば、だまされてしまう。",
+      "analogy_zh": "就像在信封背面的寄件人栏写上受信任的客户地址再寄出。收件人如果只看寄件人栏就拆信，就会上当。",
+      "analogy_en": "It is like writing a trusted business partner's address in the return-address corner of an envelope. If the recipient opens it based on the return address alone, they are fooled.",
+      "hook_jp": "英語の spoof は「人をかつぐ、まねてからかう」という意味の語である。",
+      "hook_zh": "英语 spoof 是“哄骗、模仿取乐”的意思。",
+      "hook_en": "The English word \"spoof\" means to trick someone or to mimic something in fun.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**IPスプーフィング** は、送信元の IP アドレスを偽ったパケットを送る不正アクセスの手段である。",
+          "text_zh": "**IP 欺骗**（[[jp:IPスプーフィング]]）是发送伪造了源 IP 地址（[[jp:IPアドレス]]）的数据包（[[jp:パケット]]）的非法访问手段。",
+          "text_en": "**IP spoofing** ([[jp:IPスプーフィング]]) is a means of unauthorized access that sends packets ([[jp:パケット]]) with a forged source IP address ([[jp:IPアドレス]]).",
+          "qids": [
+            "2015h27a-q081"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**IPスプーフィング** は機器を相手にした技術的な偽装である。人の心理や油断を突いて情報を聞き出す **ソーシャルエンジニアリング** には当たらない。",
+          "text_zh": "**IP 欺骗**（[[jp:IPスプーフィング]]）是针对设备的技术性伪装。它不属于利用人的心理和疏忽套取信息的**社会工程学**（[[jp:ソーシャルエンジニアリング]]）。",
+          "text_en": "**IP spoofing** ([[jp:IPスプーフィング]]) is a technical disguise aimed at machines. It is not **social engineering** ([[jp:ソーシャルエンジニアリング]]), which extracts information by playing on people's psychology and carelessness.",
+          "qids": [
+            "2016h28h-q086"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "forge",
+              "label": {
+                "jp": "送信元欄を許可された機器のアドレスに書き換える",
+                "zh": "把源地址栏改写成获准设备的地址",
+                "en": "The source field is rewritten to a permitted device's address"
+              }
+            },
+            {
+              "id": "check",
+              "label": {
+                "jp": "IP アドレスだけで相手を判断する機器",
+                "zh": "仅凭 IP 地址判断对方的设备",
+                "en": "A device that judges senders by IP address alone"
+              }
+            },
+            {
+              "id": "pass",
+              "label": {
+                "jp": "許可された通信として通してしまう",
+                "zh": "当作获准的通信放行",
+                "en": "Lets it through as permitted traffic"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2015h27a-q081"
+      ],
+      "definition_jp": "IPスプーフィング は、通信で送る パケット (データを小分けにした単位) の送信元 IP アドレス を偽り、別の機器から送られたように見せかける手口である。",
+      "definition_zh": "IP 欺骗（IPスプーフィング）是伪造通信中发送的数据包（パケット，将数据分割成小块的单位）的源 IP 地址（IPアドレス），使其看起来像是从另一台设备发出的手法。",
+      "definition_en": "IP spoofing (IPスプーフィング) is a technique that forges the source IP address (IPアドレス) of the packets (パケット, the small units data is split into for sending) so they look as if they came from another device.",
+      "explanation_jp": "パケットには宛先と並んで送信元の IP アドレスが書かれており、受け取った機器は通常その値を信じて相手を判断する。送信元の値は送る側で書き換えられるので、IP アドレスだけで通信を許可する仕組みは許可済みの機器を装ったパケットで突破されるおそれがあり、IP アドレスだけに頼らない認証が対策になる。攻撃の発信元を隠す目的で使われることもある。",
+      "explanation_zh": "数据包中与目的地址并列写有源 IP 地址，接收设备通常相信这个值并据此判断对方。源地址的值可以由发送方改写，因此仅凭 IP 地址放行通信的机制，可能被冒充获准设备的数据包突破，对策是采用不只依赖 IP 地址的认证。这种手法也会被用来隐藏攻击的来源。",
+      "explanation_en": "Each packet carries a source IP address alongside its destination, and the receiving device normally trusts that value to decide who sent it. Because the sender can rewrite the source value, a system that permits traffic on IP address alone can be breached by packets posing as an approved device, and the countermeasure is authentication that does not depend only on the IP address. The technique is also used to hide where an attack comes from.",
+      "memory_hook_jp": "英語の spoof は「人をかつぐ、まねてからかう」という意味の語である。",
+      "memory_hook_zh": "英语 spoof 是“哄骗、模仿取乐”的意思。",
+      "memory_hook_en": "The English word \"spoof\" means to trick someone or to mimic something in fun.",
       "inline_quiz": [
         "2015h27a-q081"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "IP 欺骗",
-      "term_en": "IP Spoofing",
-      "definition_zh": "伪造发送源 IP 地址，冒充成另一台设备的攻击。",
-      "definition_en": "An attack that forges the source IP address to impersonate another device.",
-      "explanation_zh": "IP 欺骗（spoofing = 冒充）是指把通信数据包的发送源 IP 地址伪造成另一个地址，从而冒充成受信任设备的攻击。借此可以绕过那些依据 IP 地址判断通信对象的访问限制，或隐藏攻击的发信源。\n\n它也被用于在 DoS/DDoS 攻击中隐藏发信源。考试中“伪造发送源 IP 地址”这一点出现频率很高（在本主题中考查频率也较高），应理解其应对之道是：不要仅凭 IP 地址进行认证。",
-      "explanation_en": "IP spoofing (spoofing = impersonation) is an attack that forges the source IP address of a communication packet into another address to impersonate a trusted device. This makes it possible to slip past access restrictions that judge the communication partner by IP address, or to hide the origin of an attack.\n\nIt is also used to hide the origin in DoS/DDoS attacks. On exams, the point that \"the source IP address is forged\" appears frequently (and it is tested often within this topic as well); understand that the countermeasure is not to rely on the IP address alone for authentication.",
-      "analogy_zh": "就像在信件的寄件人栏里，擅自写上的不是自己、而是某个受信任他人的住址和姓名，让收信人误以为这是那个人寄来的信。",
-      "analogy_en": "It is like writing, in the sender field of a letter, not your own but a trusted other person's address and name without permission, so that the recipient is fooled into thinking the letter came from that person.",
-      "memory_hook_zh": "说到 IP 欺骗，就是伪造发送源 IP 地址来冒充",
-      "memory_hook_en": "IP spoofing → forge the source IP address to impersonate"
+      "figure": null
     },
     {
       "term": "DNSキャッシュポイズニング",
-      "definition_jp": "DNSの名前解決情報を偽り利用者を偽サイトへ誘導する攻撃。",
-      "explanation_jp": "DNSキャッシュポイズニング(DNSキャッシュ汚染)は、ドメイン名をIPアドレスに変換するDNSサーバのキャッシュに偽の対応情報を覚え込ませ、利用者を本物そっくりの偽サイトへ誘導する攻撃です。利用者は正しいURLを入力したつもりでも、偽のIPアドレスに案内されてしまいます。\n\n偽サイトでIDやパスワードを入力させて盗む被害(フィッシングの一種)につながります。試験では「DNSの応答(名前解決)を偽る」点が頻出(本トピックでも出題頻度が高い)で、対策としてDNSSEC(応答の正当性を検証する仕組み)が挙げられることも押さえましょう。",
-      "analogy_jp": "電話帳の番号案内に偽の番号をこっそり書き加え、本物に電話したつもりの人を、そっくりに用意した偽の窓口へつないでしまうようなものです。",
-      "memory_hook_jp": "DNSキャッシュポイズニングといえば名前解決を偽って偽サイトへ誘導",
+      "term_zh": "DNS 缓存投毒",
+      "term_en": "DNS Cache Poisoning",
+      "one_jp": "**DNSキャッシュポイズニング** は、**DNS サーバ** が一時的に保存している名前解決の情報に偽の内容を紛れ込ませ、利用者を偽のサイトへ接続させる攻撃である。",
+      "one_zh": "**DNS 缓存投毒**（[[jp:DNSキャッシュポイズニング]]）是在 **DNS 服务器**（[[jp:DNSサーバ]]）临时保存的域名解析信息中混入虚假内容，使用户连接到假网站的攻击。",
+      "one_en": "**DNS cache poisoning** ([[jp:DNSキャッシュポイズニング]]) is an attack that slips false entries into the name-resolution information a **DNS server** ([[jp:DNSサーバ]]) keeps temporarily, so that users are sent to a fake site.",
+      "detail_jp": "**DNS** は、ドメイン名からその機器の IP アドレスを調べる名前解決の仕組みで、DNS サーバは調べた結果を **キャッシュ** (再利用のための一時保存) として持っておく。キャッシュが汚されている間は、そのドメイン名をその DNS サーバに問い合わせた利用者が影響を受ける。偽サイトにログイン情報などを入力させて盗む被害につながり、DNS の応答が正しいことを電子署名で確かめる DNSSEC が対策の一つになる。",
+      "detail_zh": "**DNS** 是根据域名查出该设备 IP 地址的域名解析机制，DNS 服务器会把查到的结果作为**缓存**（[[jp:キャッシュ]]，供重复使用的临时保存）保留下来。缓存被污染期间，凡是向该 DNS 服务器查询这个域名的用户都会受到影响。这会导致用户在假网站输入登录信息等而被窃取，用电子签名确认 DNS 应答是否正确的 DNSSEC 是对策之一。",
+      "detail_en": "**DNS** is the name-resolution system that looks up a device's IP address from its domain name, and a DNS server keeps the results it has looked up as a **cache** ([[jp:キャッシュ]], temporary storage for reuse). While the cache is poisoned, every user who asks that DNS server about the domain name is affected. This can lead to login details and other information being entered on the fake site and stolen, and DNSSEC, which uses digital signatures to verify that DNS responses are genuine, is one countermeasure.",
+      "analogy_jp": "町の案内所の地図に、ある店の場所として偽の店の住所を書き込んでおくようなもの。正しい店名を尋ねた人ほど、迷わず偽の店へ案内される。",
+      "analogy_zh": "就像在街道问讯处的地图上，把某家店的位置写成一家假店的地址。越是报出正确店名来问路的人，越会毫不犹豫地被带到假店。",
+      "analogy_en": "It is like someone writing a fake shop's address onto the map at a town information desk as the location of a real shop. The people who ask for the shop by its correct name are exactly the ones sent straight to the fake one.",
+      "hook_jp": "poisoning は「毒を盛ること」で、名前解決の情報のたまり場であるキャッシュに毒を混ぜる様子を表す。",
+      "hook_zh": "poisoning 意为“下毒”，表示往缓存这个存放域名解析信息的地方掺毒。",
+      "hook_en": "\"Poisoning\" pictures slipping poison into the cache, the pool where name-resolution information collects.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**DNSキャッシュポイズニング** は、ドメイン名から IP アドレスを引くための情報をサーバ上で偽物に書き換え、利用者を偽サイトに着かせる攻撃である。",
+          "text_zh": "**DNS 缓存投毒**（[[jp:DNSキャッシュポイズニング]]）是把服务器上用于根据域名（[[jp:ドメイン名]]）查找 IP 地址（[[jp:IPアドレス]]）的信息改写成假的，让用户到达假网站的攻击。",
+          "text_en": "**DNS cache poisoning** ([[jp:DNSキャッシュポイズニング]]) rewrites, on a server, the information used to look up an IP address ([[jp:IPアドレス]]) from a domain name ([[jp:ドメイン名]]), so that users land on a fake site.",
+          "qids": [
+            "2021r03-q056",
+            "2024r06-q100"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**フィッシング** は偽のメールなどで人をだまして偽サイトへ誘う。**DNSキャッシュポイズニング** は名前解決の情報を汚すので、利用者が正しいドメイン名を入力しても偽サイトに着く。",
+          "text_zh": "**钓鱼**（[[jp:フィッシング]]）是用虚假邮件等欺骗人，把人引向假网站。**DNS 缓存投毒**（[[jp:DNSキャッシュポイズニング]]）污染的是域名解析信息，所以即使用户输入了正确的域名也会到达假网站。",
+          "text_en": "**Phishing** ([[jp:フィッシング]]) tricks people with fake emails and the like into visiting a fake site. **DNS cache poisoning** ([[jp:DNSキャッシュポイズニング]]) corrupts name-resolution information instead, so users reach the fake site even when they type the correct domain name."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "poison",
+              "label": {
+                "jp": "攻撃者が偽の対応情報を送り込む",
+                "zh": "攻击者送入虚假的对应信息",
+                "en": "The attacker injects a false mapping"
+              }
+            },
+            {
+              "id": "cache",
+              "label": {
+                "jp": "DNS サーバのキャッシュに残る",
+                "zh": "留存在 DNS 服务器的缓存中",
+                "en": "It stays in the DNS server's cache"
+              }
+            },
+            {
+              "id": "ask",
+              "label": {
+                "jp": "利用者が正しいドメイン名で問い合わせる",
+                "zh": "用户用正确的域名查询",
+                "en": "The user queries the correct domain name"
+              }
+            },
+            {
+              "id": "fake",
+              "label": {
+                "jp": "偽の IP アドレスが返り偽サイトへ",
+                "zh": "返回虚假 IP 地址，跳转到假网站",
+                "en": "A false IP address comes back and leads to the fake site"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "攻撃者は、あるドメイン名に偽サイトの IP アドレスを結び付けた偽の情報を DNS サーバへ送り込む。",
+            "caption_zh": "攻击者向 DNS 服务器送入虚假信息，把某个域名与假网站的 IP 地址关联起来。",
+            "caption_en": "The attacker sends the DNS server false information that ties a domain name to the fake site's IP address.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "DNS サーバは、その偽の情報をキャッシュに保存してしまう。",
+            "caption_zh": "DNS 服务器把这条虚假信息存入了缓存。",
+            "caption_en": "The DNS server stores that false information in its cache.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "利用者は正しいドメイン名を入力し、DNS サーバに IP アドレスを尋ねる。",
+            "caption_zh": "用户输入正确的域名，向 DNS 服务器查询 IP 地址。",
+            "caption_en": "The user enters the correct domain name and asks the DNS server for its IP address.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "キャッシュの偽の IP アドレスが返され、利用者のブラウザは偽サイトにつながる。",
+            "caption_zh": "缓存中的虚假 IP 地址被返回，用户的浏览器连到了假网站。",
+            "caption_en": "The false IP address in the cache is returned, and the user's browser connects to the fake site.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2021r03-q056"
+      ],
+      "definition_jp": "DNSキャッシュポイズニング は、DNS サーバ が一時的に保存している名前解決の情報に偽の内容を紛れ込ませ、利用者を偽のサイトへ接続させる攻撃である。",
+      "definition_zh": "DNS 缓存投毒（DNSキャッシュポイズニング）是在 DNS 服务器（DNSサーバ）临时保存的域名解析信息中混入虚假内容，使用户连接到假网站的攻击。",
+      "definition_en": "DNS cache poisoning (DNSキャッシュポイズニング) is an attack that slips false entries into the name-resolution information a DNS server (DNSサーバ) keeps temporarily, so that users are sent to a fake site.",
+      "explanation_jp": "DNS は、ドメイン名からその機器の IP アドレスを調べる名前解決の仕組みで、DNS サーバは調べた結果を キャッシュ (再利用のための一時保存) として持っておく。キャッシュが汚されている間は、そのドメイン名をその DNS サーバに問い合わせた利用者が影響を受ける。偽サイトにログイン情報などを入力させて盗む被害につながり、DNS の応答が正しいことを電子署名で確かめる DNSSEC が対策の一つになる。",
+      "explanation_zh": "DNS 是根据域名查出该设备 IP 地址的域名解析机制，DNS 服务器会把查到的结果作为缓存（キャッシュ，供重复使用的临时保存）保留下来。缓存被污染期间，凡是向该 DNS 服务器查询这个域名的用户都会受到影响。这会导致用户在假网站输入登录信息等而被窃取，用电子签名确认 DNS 应答是否正确的 DNSSEC 是对策之一。",
+      "explanation_en": "DNS is the name-resolution system that looks up a device's IP address from its domain name, and a DNS server keeps the results it has looked up as a cache (キャッシュ, temporary storage for reuse). While the cache is poisoned, every user who asks that DNS server about the domain name is affected. This can lead to login details and other information being entered on the fake site and stolen, and DNSSEC, which uses digital signatures to verify that DNS responses are genuine, is one countermeasure.",
+      "memory_hook_jp": "poisoning は「毒を盛ること」で、名前解決の情報のたまり場であるキャッシュに毒を混ぜる様子を表す。",
+      "memory_hook_zh": "poisoning 意为“下毒”，表示往缓存这个存放域名解析信息的地方掺毒。",
+      "memory_hook_en": "\"Poisoning\" pictures slipping poison into the cache, the pool where name-resolution information collects.",
       "inline_quiz": [
         "2021r03-q056"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"利用者\"] --> B[\"DNSサーバ(偽情報を記憶)\"]; B --> C[\"偽サイト\"]; D[\"攻撃者\"] --> B",
-        "svg_path": "figures/technology-23-61-u10-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "DNS 缓存投毒",
-      "term_en": "DNS Cache Poisoning",
-      "definition_zh": "伪造 DNS 名称解析信息，把用户引导到假冒网站的攻击。",
-      "definition_en": "An attack that forges DNS name resolution information to lure users to a fake site.",
-      "explanation_zh": "DNS 缓存投毒（DNS 缓存污染）是指在把域名转换为 IP 地址的 DNS 服务器的缓存中，强行记入伪造的对应信息，从而把用户引导到与真站极为相似的假冒网站的攻击。即使用户自以为输入了正确的 URL，也会被指引到伪造的 IP 地址。\n\n它会导致在假冒网站上输入并被窃取 ID 或密码的损害（属于钓鱼攻击的一种）。考试中“伪造 DNS 的应答（名称解析）”这一点出现频率很高（在本主题中考查频率也较高），还应记住作为应对措施会提到 DNSSEC（验证应答正当性的机制）。",
-      "explanation_en": "DNS cache poisoning (DNS cache contamination) is an attack that forcibly stores forged mapping information into the cache of a DNS server, which converts domain names into IP addresses, in order to lure users to a fake site that closely resembles the real one. Even if users believe they entered the correct URL, they are guided to a forged IP address.\n\nThis leads to damage in which IDs or passwords are entered on and stolen from the fake site (a form of phishing). On exams, the point that \"the DNS response (name resolution) is forged\" appears frequently (and it is tested often within this topic as well); also remember that DNSSEC (a mechanism that verifies the legitimacy of responses) is cited as a countermeasure.",
-      "analogy_zh": "就像在电话簿的号码查询里悄悄添上一个假号码，让本想拨打真号码的人，被接到一个布置得一模一样的假窗口去。",
-      "analogy_en": "It is like secretly adding a fake number to a phone directory's number lookup, so that someone who meant to call the real number is connected to a fake counter set up to look exactly the same.",
-      "memory_hook_zh": "说到 DNS 缓存投毒，就是伪造名称解析、引导到假冒网站",
-      "memory_hook_en": "DNS cache poisoning → forge name resolution to lure users to a fake site"
+      "figure": null
     },
     {
       "term": "セッションハイジャック",
-      "definition_jp": "確立済みの通信(セッション)を乗っ取り本人になりすます攻撃。",
-      "explanation_jp": "セッションハイジャックは、利用者がログインして確立した通信(セッション)を、攻撃者が乗っ取って本人になりすます攻撃です。やり取りを識別するセッションIDを盗み取ったり推測したりすることで、改めて認証を受けずにログイン済みの状態を悪用します。\n\n通信段階の最終局面、つまり「すでにつながった通信」を狙う点が特徴です。試験では「セッションIDを奪って成りすます」という仕組みが問われ、対策としてセッションIDを推測されにくくする、通信を暗号化してIDの盗聴を防ぐ、といった点を押さえておきましょう。",
-      "analogy_jp": "会員制の店で入店済みの人のリストバンドを途中で奪い取り、その人になりすまして本人のサービスを横取りするようなものです。",
-      "memory_hook_jp": "セッションハイジャックといえばセッションIDを奪って通信を乗っ取り",
+      "term_zh": "会话劫持",
+      "term_en": "Session Hijacking",
+      "one_jp": "**セッションハイジャック** は、ログイン後の一続きのやり取り (**セッション**) を識別する情報を攻撃者が奪い、本人になりすましてその通信を乗っ取る攻撃である。",
+      "one_zh": "**会话劫持**（[[jp:セッションハイジャック]]）是攻击者窃取用于识别登录后那一连串交互——**会话**（[[jp:セッション]]）——的信息，冒充本人接管该通信的攻击。",
+      "one_en": "**Session hijacking** ([[jp:セッションハイジャック]]) is an attack in which the attacker steals the information that identifies the continuing exchange after login, the **session** ([[jp:セッション]]), and takes over that communication by posing as the user.",
+      "detail_jp": "Web サービスはログインした利用者に **セッション ID** という識別用の値を発行し、それを **Cookie** (サイトがブラウザに保存させる小さなデータ) などに入れてやり取りすることで、ログイン済みであることを確かめる。攻撃者がこの値を盗聴や推測、スクリプトによる抜き取りなどで手に入れると、パスワードを知らなくても本人として操作できてしまう。",
+      "detail_zh": "Web 服务会给登录的用户签发名为**会话 ID**（[[jp:セッションID]]）的识别值，并把它放进 **Cookie**（网站让浏览器保存的小块数据）等中往来传递，以此确认用户已登录。攻击者一旦通过窃听、猜测或用脚本窃取等手段拿到这个值，即使不知道密码也能以本人身份操作。",
+      "detail_en": "A web service issues each logged-in user an identifying value called a **session ID** ([[jp:セッションID]]) and passes it back and forth in a **cookie** (a small piece of data a site has the browser store) or similar, to confirm the user is logged in. If an attacker obtains this value by eavesdropping, guessing, or extracting it with a script, they can act as the user without knowing the password.",
+      "analogy_jp": "遊園地で入場時に巻いてもらった腕輪を奪えば、入場券を買わずに本人のふりをして乗り物に乗れるようなもの。係員は腕輪だけを見て通している。",
+      "analogy_zh": "就像抢走游乐园入场时给游客戴上的手环，不买门票也能冒充本人去玩项目。工作人员只看手环就放行。",
+      "analogy_en": "It is like stealing the wristband an amusement park puts on you at the gate: with it, someone can ride the attractions as you without buying a ticket. The staff let people through by looking at the wristband alone.",
+      "hook_jp": "hijack は飛行機や車の乗っ取りを指す英語と同じ語で、乗っ取る対象がセッションになったと読める。",
+      "hook_zh": "hijack 与指劫持飞机、汽车的英语是同一个词，可以理解为劫持的对象换成了会话。",
+      "hook_en": "\"Hijack\" is the same word used for seizing a plane or a car; here the thing seized is the session.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "セッションを識別する情報を収めた **Cookie** が クロスサイトスクリプティング などで漏れると、攻撃者が本人として扱われ、利用者のアカウントが不正に使われるおそれがある。",
+          "text_zh": "存有会话识别信息的 **Cookie** 如果因跨站脚本（[[jp:クロスサイトスクリプティング]]）等而泄露，攻击者就可能被当作本人，非法使用该用户的账户。",
+          "text_en": "If a **cookie** holding session-identifying information leaks through cross-site scripting ([[jp:クロスサイトスクリプティング]]) or a similar attack, the attacker may be treated as the user and misuse that user's account.",
+          "qids": [
+            "2017h29a-q091"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**セッションハイジャック** は、パスワードを盗む攻撃とは違い、ログインが済んだ後の状態を奪う。攻撃者は認証を通らずに本人の通信へ入り込める。",
+          "text_zh": "**会话劫持**（[[jp:セッションハイジャック]]）与窃取密码的攻击不同，夺取的是登录完成后的状态。攻击者无需通过认证就能闯入本人的通信。",
+          "text_en": "Unlike attacks that steal passwords, **session hijacking** ([[jp:セッションハイジャック]]) seizes the state that exists after login is complete. The attacker gets into the user's communication without passing authentication."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "login",
+              "label": {
+                "jp": "ログインでセッション ID が発行される",
+                "zh": "登录时签发会话 ID",
+                "en": "A session ID is issued at login"
+              }
+            },
+            {
+              "id": "steal",
+              "label": {
+                "jp": "攻撃者がセッション ID を入手",
+                "zh": "攻击者获取会话 ID",
+                "en": "The attacker obtains the session ID"
+              }
+            },
+            {
+              "id": "reuse",
+              "label": {
+                "jp": "攻撃者がその ID を付けて通信",
+                "zh": "攻击者附上该 ID 通信",
+                "en": "The attacker sends requests with that ID"
+              }
+            },
+            {
+              "id": "accept",
+              "label": {
+                "jp": "サーバは本人の通信として扱う",
+                "zh": "服务器将其视为本人的通信",
+                "en": "The server treats them as the user's own"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者がログインすると、サーバはその利用者を見分けるためのセッション ID を発行する。",
+            "caption_zh": "用户登录后，服务器签发用于识别该用户的会话 ID。",
+            "caption_en": "When the user logs in, the server issues a session ID to tell that user apart.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "攻撃者が、盗聴や推測などでそのセッション ID を手に入れる。",
+            "caption_zh": "攻击者通过窃听、猜测等方式拿到这个会话 ID。",
+            "caption_en": "The attacker gets hold of the session ID by eavesdropping, guessing, or similar means.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "攻撃者は、手に入れたセッション ID を付けてサーバへアクセスする。",
+            "caption_zh": "攻击者附上拿到的会话 ID 访问服务器。",
+            "caption_en": "The attacker accesses the server with the stolen session ID attached.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "サーバはパスワードを改めて求めず、攻撃者の通信を本人のものとして受け付ける。",
+            "caption_zh": "服务器不再要求输入密码，把攻击者的通信当作本人的来受理。",
+            "caption_en": "The server does not ask for the password again and accepts the attacker's requests as the user's.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2017h29a-q091"
+      ],
+      "definition_jp": "セッションハイジャック は、ログイン後の一続きのやり取り (セッション) を識別する情報を攻撃者が奪い、本人になりすましてその通信を乗っ取る攻撃である。",
+      "definition_zh": "会话劫持（セッションハイジャック）是攻击者窃取用于识别登录后那一连串交互——会话（セッション）——的信息，冒充本人接管该通信的攻击。",
+      "definition_en": "Session hijacking (セッションハイジャック) is an attack in which the attacker steals the information that identifies the continuing exchange after login, the session (セッション), and takes over that communication by posing as the user.",
+      "explanation_jp": "Web サービスはログインした利用者に セッション ID という識別用の値を発行し、それを Cookie (サイトがブラウザに保存させる小さなデータ) などに入れてやり取りすることで、ログイン済みであることを確かめる。攻撃者がこの値を盗聴や推測、スクリプトによる抜き取りなどで手に入れると、パスワードを知らなくても本人として操作できてしまう。",
+      "explanation_zh": "Web 服务会给登录的用户签发名为会话 ID（セッションID）的识别值，并把它放进 Cookie（网站让浏览器保存的小块数据）等中往来传递，以此确认用户已登录。攻击者一旦通过窃听、猜测或用脚本窃取等手段拿到这个值，即使不知道密码也能以本人身份操作。",
+      "explanation_en": "A web service issues each logged-in user an identifying value called a session ID (セッションID) and passes it back and forth in a cookie (a small piece of data a site has the browser store) or similar, to confirm the user is logged in. If an attacker obtains this value by eavesdropping, guessing, or extracting it with a script, they can act as the user without knowing the password.",
+      "memory_hook_jp": "hijack は飛行機や車の乗っ取りを指す英語と同じ語で、乗っ取る対象がセッションになったと読める。",
+      "memory_hook_zh": "hijack 与指劫持飞机、汽车的英语是同一个词，可以理解为劫持的对象换成了会话。",
+      "memory_hook_en": "\"Hijack\" is the same word used for seizing a plane or a car; here the thing seized is the session.",
       "inline_quiz": [
         "2017h29a-q091"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "会话劫持",
-      "term_en": "Session Hijacking",
-      "definition_zh": "劫持已建立的通信（会话）、冒充本人的攻击。",
-      "definition_en": "An attack that takes over an already established communication (session) to impersonate the legitimate user.",
-      "explanation_zh": "会话劫持是指攻击者劫持用户登录后已建立的通信（会话），冒充本人的攻击。通过窃取或推测用于识别往来通信的会话 ID，攻击者无需重新通过认证，就能滥用已登录的状态。\n\n其特点是针对通信阶段的最终环节，也就是“已经接通的通信”。考试中会考查“夺取会话 ID 来冒充”这一机制，应对措施方面应把握：让会话 ID 难以被推测、对通信加密以防会话 ID 被窃听等要点。",
-      "explanation_en": "Session hijacking is an attack in which the attacker takes over the communication (session) that a user established after logging in, and impersonates that user. By stealing or guessing the session ID used to identify the exchange, the attacker abuses the already-logged-in state without going through authentication again.\n\nIts feature is targeting the final stage of the communication phase, that is, \"a communication that is already connected.\" On exams, the mechanism of \"seizing the session ID to impersonate\" is tested; for countermeasures, grasp points such as making the session ID hard to guess and encrypting the communication to prevent the ID from being eavesdropped.",
-      "analogy_zh": "就像在会员制商店里，中途夺走一位已经入店者的腕带，冒充成那个人，把本属于他的服务据为己有。",
-      "analogy_en": "It is like snatching, partway through, the wristband of someone who has already entered a members-only store, impersonating that person, and stealing the service that belongs to them.",
-      "memory_hook_zh": "说到会话劫持，就是夺取会话 ID 来劫持通信",
-      "memory_hook_en": "Session hijacking → seize the session ID to take over the communication"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "中間者攻撃",
+      "b": "MITB攻撃",
+      "rows": [
+        {
+          "label_jp": "攻撃者が入り込む場所",
+          "label_zh": "攻击者插入的位置",
+          "label_en": "Where the attacker gets in",
+          "a_jp": "通信経路の途中",
+          "a_zh": "通信线路途中",
+          "a_en": "Partway along the network path",
+          "b_jp": "利用者のブラウザの中",
+          "b_zh": "用户的浏览器内部",
+          "b_en": "Inside the user's browser",
+          "key": true
+        },
+        {
+          "label_jp": "攻撃の主体",
+          "label_zh": "攻击的主体",
+          "label_en": "Who carries it out",
+          "a_jp": "経路上に割り込んだ攻撃者",
+          "a_zh": "插入线路的攻击者",
+          "a_en": "An attacker who has cut into the path",
+          "b_jp": "端末に入り込んだマルウェア",
+          "b_zh": "潜入终端的恶意软件",
+          "b_en": "Malware that has got into the device",
+          "key": false
+        },
+        {
+          "label_jp": "通信経路の暗号化",
+          "label_zh": "通信线路加密",
+          "label_en": "Encrypting the connection",
+          "a_jp": "相手の確認と組み合わせれば有効",
+          "a_zh": "与确认对方真伪配合即有效",
+          "a_en": "Effective when combined with verifying the other party",
+          "b_jp": "暗号化前に書き換えるので効かない",
+          "b_zh": "在加密前改写，所以无效",
+          "b_en": "Useless, since data is altered before encryption",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "第三者中継",
+      "b": "オープンリレー",
+      "rows": [
+        {
+          "label_jp": "主に指す面",
+          "label_zh": "侧重的方面",
+          "label_en": "Main focus",
+          "a_jp": "他人のサーバを経由させて送る行為",
+          "a_zh": "借他人服务器发送邮件的行为",
+          "a_en": "The act of sending mail through someone else's server",
+          "b_jp": "制限なく中継してしまうサーバの設定状態",
+          "b_zh": "无限制中继的服务器设置状态",
+          "b_en": "A server configuration that relays without restriction",
+          "key": true
+        },
+        {
+          "label_jp": "関係",
+          "label_zh": "关系",
+          "label_en": "How they relate",
+          "a_jp": "弱点を突いた結果として起きる",
+          "a_zh": "利用弱点后产生的结果",
+          "a_en": "The result of exploiting the weakness",
+          "b_jp": "悪用を許す原因になる",
+          "b_zh": "允许滥用的原因",
+          "b_en": "The cause that permits the abuse",
+          "key": false
+        },
+        {
+          "label_jp": "誰の側の話か",
+          "label_zh": "说的是哪一方",
+          "label_en": "Whose side it describes",
+          "a_jp": "サーバを悪用する外部の人",
+          "a_zh": "滥用服务器的外部人员",
+          "a_en": "The outsider abusing the server",
+          "b_jp": "悪用されるサーバ",
+          "b_zh": "被滥用的服务器",
+          "b_en": "The server being abused",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "IPスプーフィング",
+      "b": "DNSキャッシュポイズニング",
+      "rows": [
+        {
+          "label_jp": "偽るもの",
+          "label_zh": "伪造的内容",
+          "label_en": "What is faked",
+          "a_jp": "パケットの送信元 IP アドレス",
+          "a_zh": "数据包的源 IP 地址",
+          "a_en": "A packet's source IP address",
+          "b_jp": "ドメイン名と IP アドレスの対応情報",
+          "b_zh": "域名与 IP 地址的对应信息",
+          "b_en": "The mapping between domain names and IP addresses",
+          "key": true
+        },
+        {
+          "label_jp": "偽の情報を受け入れてしまう側",
+          "label_zh": "接受虚假信息的一方",
+          "label_en": "Who accepts the false information",
+          "a_jp": "パケットを受け取る機器",
+          "a_zh": "接收数据包的设备",
+          "a_en": "The device receiving the packet",
+          "b_jp": "問い合わせを受ける DNS サーバ",
+          "b_zh": "受理查询的 DNS 服务器",
+          "b_en": "The DNS server answering queries",
+          "key": false
+        },
+        {
+          "label_jp": "主な狙い",
+          "label_zh": "主要目的",
+          "label_en": "Main aim",
+          "a_jp": "別の機器を装う、発信元を隠す",
+          "a_zh": "冒充另一台设备、隐藏攻击来源",
+          "a_en": "Posing as another device, hiding the source",
+          "b_jp": "利用者を偽サイトへ向かわせる",
+          "b_zh": "把用户引向假网站",
+          "b_en": "Sending users to a fake site",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "通信に割り込む攻撃では、利用者も相手も直接やり取りしているつもりのまま、データを読まれたり書き換えられたりする。",
+    "メールサーバは、自組織と無関係なメールを中継しない設定にして、迷惑メールの **踏み台** にされないようにする。",
+    "パケットの送信元 IP アドレスは送る側で書き換えられるため、IP アドレスだけで相手を信用する仕組みは破られうる。",
+    "DNS サーバのキャッシュが汚されると、利用者がドメイン名を正しく入力しても偽サイトにつながる。",
+    "**セッション ID** を奪われると、パスワードを知らない攻撃者でもログイン済みの本人として扱われる。"
+  ],
+  "key_points_zh": [
+    "在插入通信的攻击中，用户和对方都以为在直接通信，数据却被读取或改写。",
+    "邮件服务器应设置为不中继与本组织无关的邮件，以免沦为垃圾邮件的**跳板**（[[jp:踏み台]]）。",
+    "数据包的源 IP 地址可以由发送方改写，因此仅凭 IP 地址信任对方的机制可能被攻破。",
+    "DNS 服务器的缓存一旦被污染，即使用户正确输入域名，也会连到假网站。",
+    "**会话 ID**（[[jp:セッションID]]）一旦被夺走，不知道密码的攻击者也会被当作已登录的本人。"
+  ],
+  "key_points_en": [
+    "In attacks that cut into communication, data is read or rewritten while both the user and the other party believe they are talking directly.",
+    "Configure mail servers not to relay mail unrelated to the organization, so they are not used as a **stepping stone** ([[jp:踏み台]]) for spam.",
+    "The sender can rewrite a packet's source IP address, so any system that trusts the other party by IP address alone can be broken.",
+    "Once a DNS server's cache is poisoned, users reach a fake site even when they type the domain name correctly.",
+    "If the **session ID** ([[jp:セッションID]]) is stolen, an attacker who does not know the password is treated as the logged-in user."
+  ],
+  "overview": {
+    "intro_jp": "通信に割り込む攻撃を、割り込む場所 (通信経路の途中か、利用者のブラウザの中か) で分けられる。メールの中継の悪用 (第三者中継、別名 オープンリレー) について、悪用する 行為 の面と、それを許すサーバの 設定状態 の面を分けて説明できる。偽装や乗っ取りの手口を、偽る・奪う情報 (送信元の IP アドレス、名前解決の情報、セッション ID) で見分けられる。",
+    "intro_zh": "能按插入的位置（通信线路途中，还是用户的浏览器内部）区分插入通信的攻击。关于滥用邮件中继（第三方中继，又称开放中继），能把滥用的行为这一面与允许这种滥用的服务器设置状态这一面分开说明。能根据被伪造或窃取的信息（源 IP 地址、域名解析信息、会话 ID）辨别伪装与劫持的手法。",
+    "intro_en": "Sort attacks that cut into communication by where they cut in: partway along the network path, or inside the user's browser. For abuse of mail relaying (third-party relay, also called open relay), explain the act of abuse and the server configuration that allows it as two sides of the same thing. Distinguish spoofing and hijacking techniques by the information they fake or steal: the source IP address, name-resolution information, or a session ID.",
+    "freq_badge": "頻出",
+    "est_minutes": 48
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "中間者攻撃: 中間者攻撃といえば通信に割り込んで盗聴・改ざん",
-      "MITB攻撃: MITB攻撃といえばブラウザ内部に潜んで改ざん",
-      "第三者中継: 第三者中継といえば無関係な第三者がメールサーバを踏み台に",
-      "オープンリレー: オープンリレーといえば誰でも無制限に中継してしまう設定",
-      "IPスプーフィング: IPスプーフィングといえば送信元IPアドレスを偽装してなりすまし",
-      "DNSキャッシュポイズニング: DNSキャッシュポイズニングといえば名前解決を偽って偽サイトへ誘導",
-      "セッションハイジャック: セッションハイジャックといえばセッションIDを奪って通信を乗っ取り"
-    ],
     "key_points_jp": [
-      "中間者攻撃は通信経路の途中に割り込んで盗聴・改ざんし、MITB攻撃は利用者のブラウザ内部に潜んで改ざんする点が違い。",
-      "第三者中継は無関係な第三者がメールサーバを踏み台に送信する悪用行為で、オープンリレー(無制限に中継する設定状態)がその原因となる。",
-      "IPスプーフィングは送信元IPアドレスの偽装によるなりすまし、DNSキャッシュポイズニングは名前解決情報の偽装による偽サイト誘導で、どちらも頻出。",
-      "セッションハイジャックは確立済みの通信をセッションIDの奪取で乗っ取り、本人になりすます攻撃。",
-      "対策の基本は通信の暗号化(SSL/TLS)・サーバ認証・DNSSEC・推測されにくいセッションID管理など、偽装と盗聴を防ぐ仕組みである。"
+      "通信に割り込む攻撃では、利用者も相手も直接やり取りしているつもりのまま、データを読まれたり書き換えられたりする。",
+      "メールサーバは、自組織と無関係なメールを中継しない設定にして、迷惑メールの 踏み台 にされないようにする。",
+      "パケットの送信元 IP アドレスは送る側で書き換えられるため、IP アドレスだけで相手を信用する仕組みは破られうる。",
+      "DNS サーバのキャッシュが汚されると、利用者がドメイン名を正しく入力しても偽サイトにつながる。",
+      "セッション ID を奪われると、パスワードを知らない攻撃者でもログイン済みの本人として扱われる。"
     ],
     "key_points_zh": [
-      "中间人攻击插入通信路径途中进行窃听、篡改，而 MITB 攻击潜伏在用户的浏览器内部进行篡改，这是二者的区别。",
-      "第三方中继是无关的第三方把邮件服务器当作跳板进行发送的滥用行为，而开放中继（无限制中继的配置状态）正是其成因。",
-      "IP 欺骗是通过伪造发送源 IP 地址来冒充，DNS 缓存投毒是通过伪造名称解析信息来引导至假冒网站，两者都是高频考点。",
-      "会话劫持是通过夺取会话 ID 来劫持已建立的通信、冒充本人的攻击。",
-      "应对的基础是通信加密（SSL/TLS）、服务器认证、DNSSEC、难以被推测的会话 ID 管理等防止伪造和窃听的机制。"
+      "在插入通信的攻击中，用户和对方都以为在直接通信，数据却被读取或改写。",
+      "邮件服务器应设置为不中继与本组织无关的邮件，以免沦为垃圾邮件的跳板（踏み台）。",
+      "数据包的源 IP 地址可以由发送方改写，因此仅凭 IP 地址信任对方的机制可能被攻破。",
+      "DNS 服务器的缓存一旦被污染，即使用户正确输入域名，也会连到假网站。",
+      "会话 ID（セッションID）一旦被夺走，不知道密码的攻击者也会被当作已登录的本人。"
     ],
     "key_points_en": [
-      "A man-in-the-middle attack inserts itself midway along the communication path to eavesdrop and tamper, while a MITB attack lurks inside the user's browser to tamper—that is the difference.",
-      "Third-party relay is the abusive act of an unrelated third party using the mail server as a stepping stone to send mail, and open relay (the configuration state that relays without restriction) is its cause.",
-      "IP spoofing impersonates by forging the source IP address, and DNS cache poisoning lures users to a fake site by forging name resolution information; both are frequently tested.",
-      "Session hijacking is an attack that takes over an already established communication by seizing the session ID and impersonates the legitimate user.",
-      "The basis of countermeasures consists of mechanisms that prevent forgery and eavesdropping, such as communication encryption (SSL/TLS), server authentication, DNSSEC, and management of hard-to-guess session IDs."
+      "In attacks that cut into communication, data is read or rewritten while both the user and the other party believe they are talking directly.",
+      "Configure mail servers not to relay mail unrelated to the organization, so they are not used as a stepping stone (踏み台) for spam.",
+      "The sender can rewrite a packet's source IP address, so any system that trusts the other party by IP address alone can be broken.",
+      "Once a DNS server's cache is poisoned, users reach a fake site even when they type the domain name correctly.",
+      "If the session ID (セッションID) is stolen, an attacker who does not know the password is treated as the logged-in user."
+    ],
+    "memory_hooks_jp": [
+      "中間者攻撃: 英語の Man-in-the-Middle を訳した名前で、頭文字から MITM と略される。",
+      "MITB攻撃: Man-in-the-Middle の Middle を Browser に置き換えた名前で、中間者がブラウザの中に住み着いたと読める。",
+      "オープンリレー: open は「誰にでも開いている」、relay はリレー競走でバトンを次の走者へ渡すことを表す。",
+      "IPスプーフィング: 英語の spoof は「人をかつぐ、まねてからかう」という意味の語である。",
+      "DNSキャッシュポイズニング: poisoning は「毒を盛ること」で、名前解決の情報のたまり場であるキャッシュに毒を混ぜる様子を表す。",
+      "セッションハイジャック: hijack は飛行機や車の乗っ取りを指す英語と同じ語で、乗っ取る対象がセッションになったと読める。"
     ],
     "memory_hooks_zh": [
-      "中间人攻击：说到中间人攻击，就是插入通信进行窃听、篡改",
-      "MITB 攻击：说到 MITB 攻击，就是潜伏在浏览器内部进行篡改",
-      "第三方中继：说到第三方中继，就是无关的第三方把邮件服务器当跳板",
-      "开放中继：说到开放中继，就是无限制中继任何人邮件的配置",
-      "IP 欺骗：说到 IP 欺骗，就是伪造发送源 IP 地址来冒充",
-      "DNS 缓存投毒：说到 DNS 缓存投毒，就是伪造名称解析、引导到假冒网站",
-      "会话劫持：说到会话劫持，就是夺取会话 ID 来劫持通信"
+      "中间人攻击：名称译自英语 Man-in-the-Middle，取首字母简称 MITM。",
+      "MITB 攻击：把 Man-in-the-Middle 中的 Middle 换成 Browser 而得名，可以理解为中间人住进了浏览器里。",
+      "开放中继：open 表示“对谁都敞开”，relay 指接力赛中把接力棒传给下一位选手。",
+      "IP 欺骗：英语 spoof 是“哄骗、模仿取乐”的意思。",
+      "DNS 缓存投毒：poisoning 意为“下毒”，表示往缓存这个存放域名解析信息的地方掺毒。",
+      "会话劫持：hijack 与指劫持飞机、汽车的英语是同一个词，可以理解为劫持的对象换成了会话。"
     ],
     "memory_hooks_en": [
-      "Man-in-the-middle attack: MITM → slip into the communication to eavesdrop and tamper",
-      "MITB attack: MITB → lurk inside the browser and tamper",
-      "Third-party relay: third-party relay → an unrelated third party uses the mail server as a stepping stone",
-      "Open relay: open relay → the configuration that relays anyone's mail without restriction",
-      "IP spoofing: IP spoofing → forge the source IP address to impersonate",
-      "DNS cache poisoning: DNS cache poisoning → forge name resolution to lure users to a fake site",
-      "Session hijacking: session hijacking → seize the session ID to take over the communication"
+      "Man-in-the-Middle (MITM) Attack: The Japanese name is a direct rendering of \"man-in-the-middle\", shortened to MITM from its initials.",
+      "Man-in-the-Browser (MITB) Attack: The name swaps the \"middle\" in man-in-the-middle for \"browser\": the man in the middle has moved into the browser.",
+      "Open Relay: \"Open\" means open to anyone, and \"relay\" is the same word as in a relay race, where the baton is handed on to the next runner.",
+      "IP Spoofing: The English word \"spoof\" means to trick someone or to mimic something in fun.",
+      "DNS Cache Poisoning: \"Poisoning\" pictures slipping poison into the cache, the pool where name-resolution information collects.",
+      "Session Hijacking: \"Hijack\" is the same word used for seizing a plane or a car; here the thing seized is the session."
     ]
   },
   "challenge_questions": [
+    "2016h28h-q086",
+    "2024r06-q100",
     "2009h21a-q071",
-    "2009h21h-q068",
-    "2010h22a-q075",
-    "2010h22h-q087",
-    "2011h23a-q059"
+    "2010h22a-q075"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "针对网络与通信路径的攻击",
-  "title_en": "Attacks on Networks and Communication Paths",
-  "unit_summary_zh": "理解中间人攻击、冒充类攻击（IP 欺骗 / DNS 缓存投毒）、会话劫持等以通信为目标的攻击。",
-  "unit_summary_en": "Understand attacks that target communications, such as man-in-the-middle attacks, impersonation-type attacks (IP spoofing / DNS cache poisoning), and session hijacking."
+  }
 }

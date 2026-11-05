@@ -1,213 +1,753 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-61-u07",
   "topic_id": "technology-23-61",
   "category": "technology",
   "title_jp": "マルウェアの配布経路と脅迫の手口",
+  "title_zh": "恶意软件的传播途径与勒索手法",
+  "title_en": "Malware Distribution Routes and Extortion Tactics",
   "unit_summary_jp": "迷惑メール・ファイル交換ソフトなどの拡散経路と、二重脅迫・ダークウェブといったランサムウェアの周辺手口を理解する。",
+  "unit_summary_zh": "理解垃圾邮件、文件交换软件等扩散途径，以及双重勒索、暗网等围绕勒索软件的相关手法。",
+  "unit_summary_en": "Understand spread routes such as spam email and file-sharing software, along with ransomware-related tactics like double extortion and the dark web.",
   "order_in_topic": 7,
   "prerequisites": [
     "technology-23-61-u05",
     "technology-23-61-u06"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、マルウェアがどのように広がり、悪用されるかを学びます。ランサムウェアの発展手口である二重脅迫(ダブルエクストーション)とその舞台となるダークウェブ、そして迷惑メールやファイル交換ソフトといった配布・拡散経路を扱います。情報セキュリティは頻出分野で、特に迷惑メール関連は出題が多い重要テーマです。",
-    "freq_badge": "頻出",
-    "est_minutes": 18,
-    "intro_zh": "在本单元中，我们将学习恶意软件如何扩散并被滥用。内容涵盖勒索软件的进阶手法——双重勒索（double extortion）及其活动场所暗网，以及垃圾邮件、文件交换软件等传播与扩散途径。信息安全是高频出题领域，尤其是垃圾邮件相关内容出题较多，是重要主题。",
-    "intro_en": "In this unit, you will learn how malware spreads and is abused. It covers double extortion, an advanced ransomware tactic, and the dark web that serves as its stage, as well as distribution and spread routes such as spam email and file-sharing software. Information security is a frequently tested area, and spam-related topics in particular are an important theme with many exam questions."
-  },
-  "terms": [
+  "goals_jp": [
+    "**二重脅迫**（**ダブルエクストーション**）が、従来のランサムウェアに比べて何を脅しの材料に加えたかを説明できる",
+    "**ダークウェブ**の性質と、盗まれた情報の売買や公開に使われやすい理由を説明できる",
+    "**ファイル交換ソフトウェア**と**迷惑メール**がマルウェアや詐欺の入口になる仕組みを、届き方の違いで分けられる"
+  ],
+  "goals_zh": [
+    "能说明**双重勒索**（**Double Extortion**）与传统勒索软件相比，多拿了什么来要挟受害者。",
+    "能说明**暗网**有什么特点，以及它为什么容易被用来买卖或公开被盗信息。",
+    "能从危险文件的来路不同，区分**文件交换软件**和**垃圾邮件**怎样成为恶意软件或诈骗的入口。"
+  ],
+  "goals_en": [
+    "Explain what **double extortion** ([[jp:二重脅迫]] / [[jp:ダブルエクストーション]]) adds as leverage compared with conventional ransomware.",
+    "Explain what the **dark web** is like and why it is often used to sell or publish stolen information.",
+    "Tell **file-sharing software** from **spam email** as entry points for malware and fraud by how the dangerous content arrives."
+  ],
+  "overview_cols_jp": [
+    "位置付け"
+  ],
+  "overview_cols_zh": [
+    "定位"
+  ],
+  "overview_cols_en": [
+    "Where it fits"
+  ],
+  "overview_rows": [
     {
       "term": "二重脅迫",
-      "definition_jp": "暗号化に加え情報暴露も盾に取り、二段構えで身代金を要求する手口。",
-      "explanation_jp": "二重脅迫は、ランサムウェアの発展した攻撃手口です。従来は「データを暗号化して使えなくし、復号と引き換えに身代金を要求する」だけでしたが、二重脅迫ではその前にデータを盗み出しておきます。\n\nそのうえで「お金を払わなければ盗んだ情報を公開する」という二つ目の脅しを加えます。これにより、バックアップから復旧できる被害者からも金銭を取ろうとします。\n\n試験では、単なる暗号化型ランサムウェアとの違い、つまり『暗号化』と『情報暴露』の二段構えである点が問われます。バックアップだけでは防ぎきれない理由も押さえましょう。",
-      "analogy_jp": "家の鍵を勝手に替えて締め出したうえ、家の中の手紙のコピーも持ち去り「お金を払わなければ手紙をばらまく」と二重に脅すようなものです。",
-      "memory_hook_jp": "二重脅迫といえば暗号化と情報暴露の二段構え",
-      "inline_quiz": [
-        "2012h24h-q068"
+      "one_line_jp": "暗号化に加え、盗んだデータの公開でも脅して金銭を求める",
+      "one_line_zh": "除了加密数据，还以公开窃取的数据相要挟来索要钱财",
+      "one_line_en": "Demands money by threatening to publish stolen data as well as by encrypting it",
+      "extra_jp": [
+        "ランサムウェアの手口"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"データを窃取\"] --> B[\"データを暗号化\"]; B --> C[\"脅迫1: 復号と引き換えに身代金\"]; B --> D[\"脅迫2: 払わなければ情報を公開\"]",
-        "svg_path": "figures/technology-23-61-u07-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "双重勒索",
-      "term_en": "Double extortion",
-      "definition_zh": "在加密之外，还以泄露信息作为筹码，分两层索要赎金的手法。",
-      "definition_en": "A tactic that demands ransom in two stages, using not only encryption but also the threat of leaking information as leverage.",
-      "explanation_zh": "双重勒索是勒索软件进阶后的攻击手法。以往只是“将数据加密使其无法使用，并以解密为交换条件索要赎金”，但在双重勒索中，攻击者会在此之前先把数据窃取出来。\n\n在此基础上，再加上第二重威胁：“如果不付钱，就公开窃取的信息。”由此，即使是能从备份恢复数据的受害者，攻击者也试图向其勒索钱财。\n\n考试中会考查它与单纯加密型勒索软件的区别，即“加密”与“信息泄露”双层并用这一点。也要掌握仅靠备份无法完全防御的原因。",
-      "explanation_en": "Double extortion is an advanced attack tactic for ransomware. Previously it was only a matter of \"encrypting data so it cannot be used and demanding ransom in exchange for decryption,\" but in double extortion the attacker first steals the data beforehand.\n\nOn top of that, they add a second threat: \"If you don't pay, we will publish the stolen information.\" This way, they try to extract money even from victims who can recover from backups.\n\nThe exam asks about the difference from plain encryption-type ransomware, namely that it is a two-stage combination of \"encryption\" and \"information disclosure.\" Be sure to grasp why backups alone cannot fully prevent it.",
-      "analogy_zh": "就像有人擅自换掉你家的门锁把你关在门外，还顺手带走了家里信件的复印件，并双重威胁说“不付钱就把信件散布出去”一样。",
-      "analogy_en": "It is like someone changing the lock on your house to lock you out, while also carrying off copies of the letters inside and threatening twice over: \"If you don't pay, we'll spread the letters around.\"",
-      "memory_hook_zh": "说到双重勒索，就是加密与信息泄露的双层并用。",
-      "memory_hook_en": "Double extortion → the two-stage combo of encryption plus information leak."
+      "extra_zh": [
+        "勒索软件的手法"
+      ],
+      "extra_en": [
+        "A ransomware tactic"
+      ]
     },
     {
       "term": "ダブルエクストーション",
-      "definition_jp": "二重脅迫の英語名。暗号化と暴露の二重で金銭を要求する手口。",
-      "explanation_jp": "ダブルエクストーション(double extortion)は、前項の二重脅迫を英語で表した呼び名で、まったく同じ意味です。extortion は「脅し取ること・ゆすり」を表し、それが double(二重)になっている、と覚えるとよいでしょう。\n\n日本語と英語のどちらの表記でも出題される可能性があるため、二重脅迫=ダブルエクストーションが同じ概念だと結びつけておくことが大切です。\n\n試験では用語の言い換えとして問われやすく、「暗号化+情報暴露の二段脅迫」を指す語だと判断できれば対応できます。",
-      "analogy_jp": "同じ料理を日本語で「二重脅迫」、メニューの英語表記で「ダブルエクストーション」と書いてあるだけ。呼び名が違うだけで中身は同一です。",
-      "memory_hook_jp": "ダブルエクストーションといえば二重脅迫の英語名",
-      "inline_quiz": [
-        "2019r01a-q063"
+      "one_line_jp": "二重脅迫の英語の呼び名",
+      "one_line_zh": "双重勒索的英文叫法",
+      "one_line_en": "The English name for [[jp:二重脅迫]], written in katakana",
+      "extra_jp": [
+        "二重脅迫の別名"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "双重勒索（Double Extortion）",
-      "term_en": "Double extortion",
-      "definition_zh": "双重勒索的英文名称。以加密和泄露双重手段索要钱财的手法。",
-      "definition_en": "The English name for double extortion. A tactic that demands money through the two means of encryption and disclosure.",
-      "explanation_zh": "Double extortion（双重勒索）是用英文表达前一项“双重勒索”的叫法，含义完全相同。extortion 表示“敲诈、勒索”，记成它变成了 double（双重的）即可。\n\n由于日文和英文两种写法都有可能出题，所以把“双重勒索＝Double Extortion”是同一概念这一点关联记忆很重要。\n\n考试中容易以术语换说法的形式考查，只要能判断它指的是“加密＋信息泄露的双层勒索”，就能应对。",
-      "explanation_en": "Double extortion is the English way of expressing the previous term \"double extortion,\" and it means exactly the same thing. \"Extortion\" means \"to extort or blackmail,\" and you can remember it as that becoming \"double.\"\n\nBecause it may appear in the exam in either the Japanese or the English form, it is important to link in your memory that \"double extortion (Japanese) = double extortion (English)\" is the same concept.\n\nIn the exam it tends to be asked as a rephrasing of the term, and you can handle it as long as you can judge that it refers to \"two-stage extortion of encryption plus information disclosure.\"",
-      "analogy_zh": "同一道菜，用中文写作“双重勒索”，用菜单上的英文写作“Double Extortion”，只是叫法不同而已。名称不同但内容完全一致。",
-      "analogy_en": "It is just the same dish written as \"double extortion\" in one language and \"double extortion\" in the English menu spelling. Only the name differs; the contents are identical.",
-      "memory_hook_zh": "说到 Double Extortion，就是双重勒索的英文名称。",
-      "memory_hook_en": "Double extortion (English) → the English name for double extortion."
+      "extra_zh": [
+        "双重勒索的别称"
+      ],
+      "extra_en": [
+        "Another name for double extortion"
+      ]
     },
     {
       "term": "ダークウェブ",
-      "definition_jp": "特殊なソフトでしか閲覧できない匿名性の高い隠れたWeb領域。",
-      "explanation_jp": "ダークウェブは、通常のブラウザや検索エンジンではたどり着けず、専用のソフトウェアを使わないと閲覧できないインターネット上の領域です。発信元をたどりにくい高い匿名性が特徴です。\n\nその匿名性ゆえに、盗み出した個人情報やクレジットカード情報の売買、不正なツールの取引など、犯罪の温床になりやすい場所です。二重脅迫で窃取した情報の公開・取引の舞台にもなります。\n\n試験では、検索エンジンに載らず匿名性が高い点、違法な情報取引に悪用される点が問われます。一般のWeb(サーフェスウェブ)との違いを押さえましょう。",
-      "analogy_jp": "表通りの店ではなく、住所も看板もなく、合言葉と特別な入口でしか入れない地下の闇市場のような場所。普通の地図(検索)には載っていません。",
-      "memory_hook_jp": "ダークウェブといえば専用ソフトでしか入れない匿名の闇市場",
+      "one_line_jp": "検索に現れず、匿名性の高いネット上の情報の集まり",
+      "one_line_zh": "搜索引擎查不到、匿名性很高的网上信息集合",
+      "one_line_en": "Online content that search engines do not show and that offers strong anonymity",
+      "extra_jp": [
+        "盗んだ情報が売買される場"
+      ],
+      "extra_zh": [
+        "买卖被盗信息的场所"
+      ],
+      "extra_en": [
+        "A marketplace for stolen information"
+      ]
+    },
+    {
+      "term": "ファイル交換ソフトウェア",
+      "one_line_jp": "利用者同士が直接ファイルを送り合うソフトウェア",
+      "one_line_zh": "让用户之间直接互传文件的软件",
+      "one_line_en": "Software that lets users send files directly to one another",
+      "extra_jp": [
+        "マルウェアが広がる経路"
+      ],
+      "extra_zh": [
+        "恶意软件的传播途径"
+      ],
+      "extra_en": [
+        "A route for spreading malware"
+      ]
+    },
+    {
+      "term": "迷惑メール",
+      "one_line_jp": "受信者が望まないのに一方的に送り付けられるメール",
+      "one_line_zh": "收件人并不想要、却被单方面发来的邮件",
+      "one_line_en": "Email pushed onto recipients who never asked for it",
+      "extra_jp": [
+        "攻撃や詐欺の入口"
+      ],
+      "extra_zh": [
+        "攻击和诈骗的入口"
+      ],
+      "extra_en": [
+        "An entry point for attacks and fraud"
+      ]
+    },
+    {
+      "term": "スパム",
+      "one_line_jp": "相手を選ばず大量に送られるメッセージ",
+      "one_line_zh": "不挑对象、大量发送的消息",
+      "one_line_en": "Messages sent in bulk to anyone at all",
+      "extra_jp": [
+        "電子メールでは迷惑メールと同じ"
+      ],
+      "extra_zh": [
+        "在电子邮件中即垃圾邮件"
+      ],
+      "extra_en": [
+        "In email, the same as unsolicited email"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "二重脅迫",
+      "term_zh": "双重勒索",
+      "term_en": "Double extortion",
+      "one_jp": "**二重脅迫**は、ランサムウェアの攻撃で、データを暗号化して復号の対価を求めるだけでなく、事前に盗み出したデータを**公開する**と脅して金銭を要求する手口である。",
+      "one_zh": "**双重勒索**（[[jp:二重脅迫]]）是勒索软件攻击的一种手法：不只加密数据、索要解密的代价，还威胁要**公开**事先偷走的数据，以此索取钱财。",
+      "one_en": "**Double extortion** ([[jp:二重脅迫]]) is a ransomware tactic in which the attacker not only encrypts data and charges for decryption but also threatens to **publish** data stolen beforehand to extract money.",
+      "detail_jp": "攻撃者はまず組織のネットワークに入り込み、重要なデータを外部へ持ち出してから暗号化する。そのため被害者がバックアップからデータを戻せても、公開をやめさせる見返りとしての要求は残る。盗んだデータの公開先には、後に出てくる**ダークウェブ**上のサイトが使われることがある。",
+      "detail_zh": "攻击者先潜入组织的网络，把重要数据转移到外部之后再进行加密。因此即使受害者能从备份中恢复数据，以“停止公开”为交换条件的要求依然存在。公开被盗数据的地方，有时是后面会讲到的**暗网**上的网站。",
+      "detail_en": "The attacker first gets into the organization’s network and copies important data out before encrypting it. So even if the victim can restore everything from backups, the demand to pay in exchange for not publishing the data remains. The stolen data is sometimes posted on sites on the **dark web**, covered later in this unit.",
+      "analogy_jp": "金庫に鍵を掛けて開け方を売りつけるだけでなく、中の書類の写しも持ち帰り、払わなければ近所に配ると迫る強盗のようなもの。",
+      "analogy_zh": "就像一个强盗，不但给保险柜上了锁再兜售开锁方法，还把里面文件的复印件带走，扬言不付钱就分发给左邻右舍。",
+      "analogy_en": "Picture a burglar who locks your safe and sells you the combination, but also walks off with copies of the papers inside and threatens to hand them out to the neighbors unless you pay.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "従来型のランサムウェアは暗号化で使えなくすることだけを材料にするが、**二重脅迫**は情報の公開も材料にするため、バックアップだけでは被害を抑えきれない。",
+          "text_zh": "传统勒索软件（[[jp:ランサムウェア]]）只拿“加密后无法使用”作筹码，而**双重勒索**（[[jp:二重脅迫]]）还拿公开信息作筹码，所以仅靠备份无法完全遏制损失。",
+          "text_en": "Conventional ransomware ([[jp:ランサムウェア]]) relies only on making data unusable through encryption, while **double extortion** ([[jp:二重脅迫]]) also uses the threat of publication. Backups alone therefore cannot fully contain the damage."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "in",
+              "label": {
+                "jp": "組織のネットワークに侵入",
+                "zh": "入侵组织的网络",
+                "en": "Break into the network"
+              }
+            },
+            {
+              "id": "steal",
+              "label": {
+                "jp": "データを外部へ持ち出す",
+                "zh": "把数据带到外部",
+                "en": "Copy data out"
+              }
+            },
+            {
+              "id": "enc",
+              "label": {
+                "jp": "組織内のデータを暗号化",
+                "zh": "加密组织内的数据",
+                "en": "Encrypt the data inside"
+              }
+            },
+            {
+              "id": "demand",
+              "label": {
+                "jp": "復号と非公開を条件に金銭を要求",
+                "zh": "以解密和不公开为条件索要钱财",
+                "en": "Demand money for decryption and silence"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "攻撃者がまず組織のネットワークに入り込む。",
+            "caption_zh": "攻击者先潜入组织的网络。",
+            "caption_en": "The attacker first gets inside the organization’s network.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "暗号化より前に、価値のあるデータを外部へ持ち出しておく。",
+            "caption_zh": "在加密之前，先把有价值的数据转移到外部。",
+            "caption_en": "Before encrypting anything, the attacker copies valuable data to an outside location.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "端末やサーバのデータを暗号化し、使えない状態にする。",
+            "caption_zh": "加密终端和服务器上的数据，让它们无法使用。",
+            "caption_en": "Data on PCs and servers is encrypted so it can no longer be used.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "元に戻す見返りと、公開しない見返りの両方を材料に金銭を求める。",
+            "caption_zh": "同时拿“恢复数据”和“不公开数据”两件事作筹码索要钱财。",
+            "caption_en": "The ransom demand rests on two promises: restoring the data and keeping it private.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "二重脅迫は、ランサムウェアの攻撃で、データを暗号化して復号の対価を求めるだけでなく、事前に盗み出したデータを公開すると脅して金銭を要求する手口である。",
+      "definition_zh": "双重勒索（二重脅迫）是勒索软件攻击的一种手法：不只加密数据、索要解密的代价，还威胁要公开事先偷走的数据，以此索取钱财。",
+      "definition_en": "Double extortion (二重脅迫) is a ransomware tactic in which the attacker not only encrypts data and charges for decryption but also threatens to publish data stolen beforehand to extract money.",
+      "explanation_jp": "攻撃者はまず組織のネットワークに入り込み、重要なデータを外部へ持ち出してから暗号化する。そのため被害者がバックアップからデータを戻せても、公開をやめさせる見返りとしての要求は残る。盗んだデータの公開先には、後に出てくるダークウェブ上のサイトが使われることがある。",
+      "explanation_zh": "攻击者先潜入组织的网络，把重要数据转移到外部之后再进行加密。因此即使受害者能从备份中恢复数据，以“停止公开”为交换条件的要求依然存在。公开被盗数据的地方，有时是后面会讲到的暗网上的网站。",
+      "explanation_en": "The attacker first gets into the organization’s network and copies important data out before encrypting it. So even if the victim can restore everything from backups, the demand to pay in exchange for not publishing the data remains. The stolen data is sometimes posted on sites on the dark web, covered later in this unit.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ダブルエクストーション",
+      "term_zh": "双重勒索（Double Extortion）",
+      "term_en": "Double extortion",
+      "one_jp": "**ダブルエクストーション**は、**二重脅迫**を英語の呼び名で表したもので、指す手口は同じである。",
+      "one_zh": "**Double Extortion**（[[jp:ダブルエクストーション]]）是**双重勒索**的英文叫法，所指的手法完全相同。",
+      "one_en": "**Double extortion** ([[jp:ダブルエクストーション]]) is the English name, written in katakana, for the tactic known in Japanese as [[jp:二重脅迫]] (**double extortion**); both refer to exactly the same thing.",
+      "detail_jp": "英語の double extortion をカタカナで書いた語で、暗号化と公開の脅しを組み合わせる点も変わらない。セキュリティの報道や資料では、日本語名と英語名の両方が使われている。",
+      "detail_zh": "这个词是把英语 double extortion 直接用片假名写出来的，把加密和公开威胁结合起来这一点也没有区别。在安全类报道和资料里，日文名称和英文名称都会出现。",
+      "detail_en": "In Japanese the term is just the English phrase written in katakana, and it likewise combines encryption with the threat of publication. Security news and reports use both the Japanese name and the English-derived one.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "extortion は「ゆすり・恐喝」を意味する英単語で、double が付いて「二重のゆすり」になる。",
+      "hook_zh": "extortion 是英语中“敲诈、勒索”的意思，加上 double 就成了“双重敲诈”。",
+      "hook_en": "Extortion means obtaining money through threats; add double and you get two threats at once.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ダブルエクストーション**の「ダブル」は脅しの材料が二つあることを指し、二度の侵入や二種類のマルウェアを意味するわけではない。",
+          "text_zh": "**Double Extortion**（[[jp:ダブルエクストーション]]）里的“double”是指要挟的筹码有两样，并不是指入侵了两次或使用了两种恶意软件。",
+          "text_en": "The “double” in **double extortion** ([[jp:ダブルエクストーション]]) refers to two kinds of leverage. It does not mean two separate intrusions or two kinds of malware."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "ダブルエクストーションは、二重脅迫を英語の呼び名で表したもので、指す手口は同じである。",
+      "definition_zh": "Double Extortion（ダブルエクストーション）是双重勒索的英文叫法，所指的手法完全相同。",
+      "definition_en": "Double extortion (ダブルエクストーション) is the English name, written in katakana, for the tactic known in Japanese as 二重脅迫 (double extortion); both refer to exactly the same thing.",
+      "explanation_jp": "英語の double extortion をカタカナで書いた語で、暗号化と公開の脅しを組み合わせる点も変わらない。セキュリティの報道や資料では、日本語名と英語名の両方が使われている。",
+      "explanation_zh": "这个词是把英语 double extortion 直接用片假名写出来的，把加密和公开威胁结合起来这一点也没有区别。在安全类报道和资料里，日文名称和英文名称都会出现。",
+      "explanation_en": "In Japanese the term is just the English phrase written in katakana, and it likewise combines encryption with the threat of publication. Security news and reports use both the Japanese name and the English-derived one.",
+      "memory_hook_jp": "extortion は「ゆすり・恐喝」を意味する英単語で、double が付いて「二重のゆすり」になる。",
+      "memory_hook_zh": "extortion 是英语中“敲诈、勒索”的意思，加上 double 就成了“双重敲诈”。",
+      "memory_hook_en": "Extortion means obtaining money through threats; add double and you get two threats at once.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ダークウェブ",
+      "term_zh": "暗网",
+      "term_en": "Dark web",
+      "one_jp": "**ダークウェブ**は、一般の検索サービスでは見つからず、専用のソフトウェアを使わないと接続できない場合もある、**匿名性**の高いインターネット上の情報の集まりである。",
+      "one_zh": "**暗网**（[[jp:ダークウェブ]]）是互联网上一类**匿名性**很高的信息集合：普通搜索服务查不到它，有时还必须使用专用软件才能连接。",
+      "one_en": "The **dark web** ([[jp:ダークウェブ]]) is a body of online content with a high degree of **anonymity**: ordinary search services do not find it, and some of it can only be reached with special software.",
+      "detail_jp": "発信者や利用者をたどりにくいため、盗まれた個人情報やアカウント情報の売買、攻撃の請け負いなどに悪用されやすい。**二重脅迫**で盗まれたデータを公開するサイトが置かれることもある。",
+      "detail_zh": "由于很难追查发布者和使用者，它容易被滥用于买卖被盗的个人信息和账户信息、承接攻击委托等。用于公开**双重勒索**中被盗数据的网站，有时也设在这里。",
+      "detail_en": "Because it is hard to trace who posts or visits, it is readily abused for selling stolen personal data and account credentials or for hiring out attacks. Sites that publish data stolen in **double extortion** attacks are sometimes hosted there too.",
+      "analogy_jp": "看板も住所も出しておらず、出入りする客の素性も分からない裏通りの市場のようなもの。",
+      "analogy_zh": "就像一个后街集市，既不挂招牌也不公开地址，进出的客人是什么来头也没人知道。",
+      "analogy_en": "It is like a back-alley market with no sign and no address, where nobody knows who the customers really are.",
+      "hook_jp": "dark は「光が当たらない」。検索の光が届かない場所と結び付ける。",
+      "hook_zh": "dark 是“照不到光”的意思，可以联想成搜索之光照不到的地方。",
+      "hook_en": "Dark means out of the light; think of it as the place a search engine’s light never reaches.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ダークウェブ**は検索サービスの結果に現れず匿名性が高いため、犯罪に関わる取引などに悪用されることがある。",
+          "text_zh": "**暗网**（[[jp:ダークウェブ]]）不会出现在搜索服务的结果中，匿名性又高，所以有时会被用于与犯罪相关的交易。",
+          "text_en": "The **dark web** ([[jp:ダークウェブ]]) does not show up in search results and is highly anonymous, so it is sometimes used for crime-related dealings.",
+          "qids": [
+            "2024r06-q087"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**ダークウェブ**は接続した先にある情報の集まりを指す語であり、接続に使われることがある専用のソフトウェアそのものの名前ではない。",
+          "text_zh": "**暗网**指的是连接之后所到达的信息集合，而不是有时用来连接的专用软件本身的名称。",
+          "text_en": "The **dark web** is the body of content you reach, not the name of the special software that is sometimes used to reach it."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2024r06-q087"
+      ],
+      "definition_jp": "ダークウェブは、一般の検索サービスでは見つからず、専用のソフトウェアを使わないと接続できない場合もある、匿名性の高いインターネット上の情報の集まりである。",
+      "definition_zh": "暗网（ダークウェブ）是互联网上一类匿名性很高的信息集合：普通搜索服务查不到它，有时还必须使用专用软件才能连接。",
+      "definition_en": "The dark web (ダークウェブ) is a body of online content with a high degree of anonymity: ordinary search services do not find it, and some of it can only be reached with special software.",
+      "explanation_jp": "発信者や利用者をたどりにくいため、盗まれた個人情報やアカウント情報の売買、攻撃の請け負いなどに悪用されやすい。二重脅迫で盗まれたデータを公開するサイトが置かれることもある。",
+      "explanation_zh": "由于很难追查发布者和使用者，它容易被滥用于买卖被盗的个人信息和账户信息、承接攻击委托等。用于公开双重勒索中被盗数据的网站，有时也设在这里。",
+      "explanation_en": "Because it is hard to trace who posts or visits, it is readily abused for selling stolen personal data and account credentials or for hiring out attacks. Sites that publish data stolen in double extortion attacks are sometimes hosted there too.",
+      "memory_hook_jp": "dark は「光が当たらない」。検索の光が届かない場所と結び付ける。",
+      "memory_hook_zh": "dark 是“照不到光”的意思，可以联想成搜索之光照不到的地方。",
+      "memory_hook_en": "Dark means out of the light; think of it as the place a search engine’s light never reaches.",
       "inline_quiz": [
         "2024r06-q087"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "暗网",
-      "term_en": "Dark web",
-      "definition_zh": "只能用特殊软件才能浏览、匿名性很高的隐蔽网络区域。",
-      "definition_en": "A hidden Web area with high anonymity that can only be viewed using special software.",
-      "explanation_zh": "暗网是普通浏览器和搜索引擎无法到达、必须使用专用软件才能浏览的互联网区域。其特征是难以追踪发送来源，匿名性很高。\n\n正因为这种匿名性，它容易成为犯罪温床，例如买卖窃取的个人信息和信用卡信息、交易非法工具等。它也成为双重勒索中所窃取信息公开、交易的场所。\n\n考试中会考查它不被搜索引擎收录、匿名性高，以及被滥用于非法信息交易这两点。要掌握它与普通网络（明网/表层网络）的区别。",
-      "explanation_en": "The dark web is an area of the internet that cannot be reached with ordinary browsers or search engines and can only be viewed using dedicated software. Its characteristic is high anonymity, making the source hard to trace.\n\nBecause of that anonymity, it tends to become a hotbed of crime, such as buying and selling stolen personal information and credit card data, or trading illicit tools. It also serves as the stage for disclosing and trading information stolen through double extortion.\n\nThe exam asks about its not appearing on search engines and its high anonymity, as well as its abuse for illegal information trading. Be sure to grasp the difference from the ordinary Web (the surface web).",
-      "analogy_zh": "它不像临街的店铺，而像一个没有地址、没有招牌、只能凭暗号和特殊入口才能进入的地下黑市。普通地图（搜索）上根本找不到它。",
-      "analogy_en": "It is not a shop on the main street, but like an underground black market with no address or signboard, enterable only with a password and a special entrance. It does not appear on an ordinary map (a search).",
-      "memory_hook_zh": "说到暗网，就是只能用专用软件进入的匿名黑市。",
-      "memory_hook_en": "Dark web → the anonymous black market you can only enter with dedicated software."
+      "figure": null
     },
     {
       "term": "ファイル交換ソフトウェア",
-      "definition_jp": "利用者同士が直接ファイルを共有・交換するためのソフトウェア。",
-      "explanation_jp": "ファイル交換ソフトウェアは、サーバを介さず利用者(P2P)同士が直接ファイルをやり取りできるソフトです。音楽や動画などを手軽に共有できる一方、出所の分からないファイルが大量に流通します。\n\nそのため、ファイルにマルウェアが仕込まれていても気づきにくく、ダウンロードした利用者の端末が感染する経路になります。著作権侵害や情報漏えいの温床にもなりやすい点に注意が必要です。\n\n試験では、マルウェアの拡散・配布経路の一つとして問われます。素性の不確かなファイルを安易に取り込む危険性を理解しておきましょう。",
-      "analogy_jp": "見知らぬ人同士が中身を確認せずに荷物を直接手渡しでやり取りする闇のフリーマーケット。中に危険物が紛れていても誰も保証してくれません。",
-      "memory_hook_jp": "ファイル交換ソフトウェアといえばP2Pでマルウェアが紛れ込む拡散経路",
-      "inline_quiz": [
-        "2009h21a-q058"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "文件交换软件",
       "term_en": "File-sharing software",
-      "definition_zh": "供用户之间直接共享、交换文件的软件。",
-      "definition_en": "Software that lets users directly share and exchange files with each other.",
-      "explanation_zh": "文件交换软件是一种不经过服务器、让用户之间（P2P）直接互传文件的软件。它能轻松共享音乐、视频等内容，但与此同时，大量来源不明的文件也会随之流通。\n\n因此，即使文件中被植入了恶意软件也难以察觉，于是它成为下载文件的用户终端被感染的途径。还要注意，它也容易成为侵犯著作权和信息泄露的温床。\n\n考试中会把它作为恶意软件的扩散与传播途径之一来考查。要理解随意接收来历不明文件的危险性。",
-      "explanation_en": "File-sharing software is software that lets users exchange files directly with each other (P2P) without going through a server. While it makes it easy to share music, videos, and so on, at the same time large numbers of files of unknown origin circulate through it.\n\nAs a result, even if malware has been planted in a file it is hard to notice, so it becomes a route by which the terminal of the user who downloads it gets infected. Be aware that it also tends to become a hotbed of copyright infringement and information leaks.\n\nThe exam asks about it as one of the spread and distribution routes for malware. Be sure to understand the danger of casually taking in files of uncertain origin.",
-      "analogy_zh": "就像一个黑市跳蚤市场，互不相识的人不查验内容就直接手递手交换包裹。即使里面混进了危险品，也没有人为你担保。",
-      "analogy_en": "It is like a shady flea market where strangers hand packages directly to each other without checking the contents. Even if something dangerous is mixed in, no one guarantees its safety.",
-      "memory_hook_zh": "说到文件交换软件，就是通过 P2P 让恶意软件混入的扩散途径。",
-      "memory_hook_en": "File-sharing software → a P2P spread route where malware sneaks in."
+      "one_jp": "**ファイル交換ソフトウェア**は、利用者同士のコンピュータが直接つながってファイルをやり取りする、主に **P2P**（ピアツーピア）型の仕組みを使うソフトウェアである。",
+      "one_zh": "**文件交换软件**（[[jp:ファイル交換ソフトウェア]]）是让用户的计算机彼此直接连接、互相传送文件的软件，主要采用 **P2P**（对等网络）方式。",
+      "one_en": "**File-sharing software** ([[jp:ファイル交換ソフトウェア]]) lets users’ computers connect directly to one another to exchange files, mostly using a **P2P** (peer-to-peer) design.",
+      "detail_jp": "流れているファイルは出所を確かめにくく、マルウェアを紛れ込ませた偽のファイルを受け取って感染する経路になる。感染したマルウェアによっては、共有するつもりのない端末内の文書が交換用の領域に置かれ、多くの利用者に広がってしまう。一度広がったファイルは、後から回収することがほぼできない。",
+      "detail_zh": "在这类软件上流转的文件很难确认来源，接收了混入恶意软件的伪造文件就会因此感染。根据所感染的恶意软件不同，终端里本不打算共享的文档可能被放进交换用的区域，进而扩散给大量用户。文件一旦扩散，事后几乎不可能收回。",
+      "detail_en": "The files passed around are hard to trace to a source, so downloading a fake file with malware hidden in it becomes a route to infection. Depending on the malware, documents on the PC that were never meant to be shared can end up in the exchange area and spread to many users. Once a file has spread, it is almost impossible to recall.",
+      "analogy_jp": "差出人の分からない小包を、見知らぬ相手と直接受け渡しし合う集まりのようなもの。中身の安全はだれも確かめていない。",
+      "analogy_zh": "就像一个聚会，大家和素不相识的人直接交换寄件人不明的包裹，里面的东西安不安全，谁都没有检查过。",
+      "analogy_en": "It is like a swap meet where strangers hand each other parcels with no sender’s name. Nobody has checked whether what is inside is safe.",
+      "hook_jp": "P2P の peer は「対等な仲間」。配る側と受け取る側の区別がない形を思い浮かべる。",
+      "hook_zh": "P2P 中的 peer 意思是“地位对等的伙伴”，可以想象成分发方和接收方没有区别的形态。",
+      "hook_en": "A peer is an equal; picture a setup where there is no difference between the side that gives and the side that receives.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ファイル交換ソフトウェア**の利用者は感染する側になるだけでなく、感染後は自分の端末の文書を流出させる発信源にもなりうる。",
+          "text_zh": "**文件交换软件**（[[jp:ファイル交換ソフトウェア]]）的用户不只会成为被感染的一方，感染之后还可能成为泄露自己终端内文档的源头。",
+          "text_en": "Users of **file-sharing software** ([[jp:ファイル交換ソフトウェア]]) can do more than get infected. After infection they can become the source that leaks documents from their own PC."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "get",
+              "label": {
+                "jp": "出所の分からないファイルを入手",
+                "zh": "获得来历不明的文件",
+                "en": "Get a file of unknown origin"
+              }
+            },
+            {
+              "id": "infect",
+              "label": {
+                "jp": "開いた端末がマルウェアに感染",
+                "zh": "打开文件的终端感染恶意软件",
+                "en": "The PC that opens it is infected"
+              }
+            },
+            {
+              "id": "expose",
+              "label": {
+                "jp": "端末内の文書が共有の対象になる",
+                "zh": "终端里的文档被纳入共享",
+                "en": "Documents on the PC become shared"
+              }
+            },
+            {
+              "id": "spread",
+              "label": {
+                "jp": "多くの利用者に文書が広がる",
+                "zh": "文档扩散到众多用户",
+                "en": "The documents spread to many users"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "動画や音楽を装ったファイルを、相手の素性を知らないまま受け取る。",
+            "caption_zh": "在不清楚对方底细的情况下，接收了伪装成视频或音乐的文件。",
+            "caption_en": "You download a file posing as a video or song from someone you know nothing about.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "ファイルを開くと、紛れ込んでいたマルウェアが動き出す。",
+            "caption_zh": "一打开文件，混在里面的恶意软件就开始运行。",
+            "caption_en": "Opening the file starts the malware hidden inside it.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "マルウェアによっては、共有するつもりのない文書を交換用の領域に置く。",
+            "caption_zh": "有些恶意软件会把用户本不打算共享的文档放进交换用的区域。",
+            "caption_en": "Some malware puts documents you never meant to share into the area used for exchange.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "他の利用者が次々に取り込むため、一度広がった文書は後からほぼ回収できない。",
+            "caption_zh": "其他用户接连下载，文档一旦扩散，事后几乎无法收回。",
+            "caption_en": "Other users keep downloading them, so once the documents spread they are almost impossible to recall.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ファイル交換ソフトウェアは、利用者同士のコンピュータが直接つながってファイルをやり取りする、主に P2P（ピアツーピア）型の仕組みを使うソフトウェアである。",
+      "definition_zh": "文件交换软件（ファイル交換ソフトウェア）是让用户的计算机彼此直接连接、互相传送文件的软件，主要采用 P2P（对等网络）方式。",
+      "definition_en": "File-sharing software (ファイル交換ソフトウェア) lets users’ computers connect directly to one another to exchange files, mostly using a P2P (peer-to-peer) design.",
+      "explanation_jp": "流れているファイルは出所を確かめにくく、マルウェアを紛れ込ませた偽のファイルを受け取って感染する経路になる。感染したマルウェアによっては、共有するつもりのない端末内の文書が交換用の領域に置かれ、多くの利用者に広がってしまう。一度広がったファイルは、後から回収することがほぼできない。",
+      "explanation_zh": "在这类软件上流转的文件很难确认来源，接收了混入恶意软件的伪造文件就会因此感染。根据所感染的恶意软件不同，终端里本不打算共享的文档可能被放进交换用的区域，进而扩散给大量用户。文件一旦扩散，事后几乎不可能收回。",
+      "explanation_en": "The files passed around are hard to trace to a source, so downloading a fake file with malware hidden in it becomes a route to infection. Depending on the malware, documents on the PC that were never meant to be shared can end up in the exchange area and spread to many users. Once a file has spread, it is almost impossible to recall.",
+      "memory_hook_jp": "P2P の peer は「対等な仲間」。配る側と受け取る側の区別がない形を思い浮かべる。",
+      "memory_hook_zh": "P2P 中的 peer 意思是“地位对等的伙伴”，可以想象成分发方和接收方没有区别的形态。",
+      "memory_hook_en": "A peer is an equal; picture a setup where there is no difference between the side that gives and the side that receives.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "迷惑メール",
-      "definition_jp": "受信者の意思に反して一方的に送りつけられる迷惑な電子メール。",
-      "explanation_jp": "迷惑メールは、受け取る人の同意なく一方的に大量送信される望まないメールです。広告・宣伝のほか、マルウェアを添付したり、偽サイトへ誘導するURLを載せたりして攻撃の入口に使われます。\n\nフィッシング詐欺やマルウェア感染のきっかけになることが多く、安易に添付ファイルを開いたりリンクをクリックしたりしないことが基本対策です。\n\n試験では、この迷惑メールが代表的な攻撃・拡散経路として頻出します(本ユニットでも出題頻度が高い語)。送信者を装う手口やフィッシングとの関連も合わせて押さえましょう。",
-      "analogy_jp": "頼んでもいないチラシやダイレクトメールが郵便受けに大量に投げ込まれる状態。中には怪しい当選通知を装った危険な手紙も混じっています。",
-      "memory_hook_jp": "迷惑メールといえば一方的に送られる攻撃の入口",
-      "inline_quiz": [
-        "2009h21a-q071"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "垃圾邮件",
       "term_en": "Spam email (unsolicited email)",
-      "definition_zh": "违背接收者意愿、单方面发送过来的恼人电子邮件。",
-      "definition_en": "Annoying email sent unilaterally against the recipient's wishes.",
-      "explanation_zh": "垃圾邮件是未经收件人同意、单方面大量发送的不受欢迎的邮件。除了广告、宣传之外，它还会被用作攻击的入口，例如附带恶意软件，或者放入诱导至假冒网站的 URL。\n\n它常常成为网络钓鱼诈骗和恶意软件感染的起因，因此不随意打开附件、不随意点击链接是基本对策。\n\n考试中，这种垃圾邮件作为典型的攻击与扩散途径属于高频考点（在本单元中也是出题频率较高的词语）。还要一并掌握冒充发件人的手法以及它与网络钓鱼的关联。",
-      "explanation_en": "Spam email is unwanted email sent in bulk and unilaterally without the recipient's consent. Besides advertising and promotion, it is used as an entry point for attacks—for example by attaching malware or including a URL that lures the user to a fake site.\n\nIt often becomes the trigger for phishing scams and malware infection, so the basic countermeasure is not to carelessly open attachments or click links.\n\nIn the exam, this spam email frequently appears as a representative attack and spread route (it is also a high-frequency term within this unit). Be sure to also grasp the tactic of impersonating the sender and its connection to phishing.",
-      "analogy_zh": "就像没有索取过的传单和直邮广告被大量塞进信箱的状态。其中还混杂着伪装成可疑中奖通知的危险信件。",
-      "analogy_en": "It is like a state where heaps of flyers and direct-mail ads you never asked for are stuffed into your mailbox. Among them are dangerous letters disguised as suspicious prize notifications.",
-      "memory_hook_zh": "说到垃圾邮件，就是单方面发送过来的攻击入口。",
-      "memory_hook_en": "Spam email → the attack entry point that arrives unilaterally."
+      "one_jp": "**迷惑メール**は、受信者が望んでいないのに、広告や詐欺、マルウェアの配布などを目的として一方的に送り付けられる電子メールである。",
+      "one_zh": "**垃圾邮件**（[[jp:迷惑メール]]）是收件人并不想要，却出于广告、诈骗、散布恶意软件等目的被单方面发送过来的电子邮件。",
+      "one_en": "**Spam email** ([[jp:迷惑メール]]) is email that recipients do not want, sent to them unilaterally for advertising, fraud, distributing malware and similar purposes.",
+      "detail_jp": "受け取ったときは返信せず、本文のリンクや添付ファイルも開かずに削除するのが基本である。返信すると、そのアドレスが実際に使われていることを送信者に教えてしまい、さらに多くのメールが届く原因になりうる。受信側では、例えば拒否したい送信元を登録する**ブラックリスト**方式や、受け取りたい送信元を登録する**ホワイトリスト**方式でメールを振り分ける。",
+      "detail_zh": "收到后基本做法是不回复，也不打开正文里的链接和附件，直接删除。回复会让发件人知道这个地址确实有人在用，可能招来更多邮件。在接收端，可以用登记拒收发件人的**黑名单**方式，或登记接收发件人的**白名单**方式来分拣邮件。",
+      "detail_en": "The basic response is to delete it without replying and without opening any links or attachments in it. Replying tells the sender the address is actually in use, which can bring in even more mail. On the receiving side, mail can be sorted with a **blacklist** method that registers senders to reject or a **whitelist** method that registers senders to accept.",
+      "analogy_jp": "頼んでいないチラシが郵便受けに押し込まれるのと同じで、中には当選を装って連絡先を聞き出そうとするものも混じる。",
+      "analogy_zh": "就像没人订过的传单被塞进信箱一样，其中还混着假装通知中奖、想套取联系方式的东西。",
+      "analogy_en": "It is like flyers nobody asked for being stuffed into your mailbox, with a few among them pretending you won a prize so they can get your contact details.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**迷惑メール**に苦情の返信をすると、アドレスが有効だと送信者に知らせることになるため、返信はしない。",
+          "text_zh": "如果回复**垃圾邮件**（[[jp:迷惑メール]]）表示投诉，就等于告诉发件人这个地址有效，所以不要回复。",
+          "text_en": "Replying to **spam email** ([[jp:迷惑メール]]) to complain tells the sender the address is valid, so do not reply.",
+          "qids": [
+            "2011h23a-q059"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**ホワイトリスト**方式では受け取りたい送信元のアドレスを登録し、そこから届いたメールだけを受信する。",
+          "text_zh": "**白名单**（[[jp:ホワイトリスト]]）方式登记想接收的发件人地址，只接收从这些地址发来的邮件。",
+          "text_en": "A **whitelist** ([[jp:ホワイトリスト]]) method registers the addresses of senders you want to hear from and accepts mail only from them.",
+          "qids": [
+            "2012h24h-q068"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "ブラックリスト方式",
+            "zh": "黑名单方式",
+            "en": "Blacklist method"
+          },
+          "b": {
+            "jp": "ホワイトリスト方式",
+            "zh": "白名单方式",
+            "en": "Whitelist method"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "登録する送信元",
+                "zh": "登记的发件人",
+                "en": "Senders you register"
+              },
+              "a": {
+                "jp": "受け取りを拒否したい相手",
+                "zh": "想拒收的对象",
+                "en": "Ones you want to block"
+              },
+              "b": {
+                "jp": "受け取りたい相手",
+                "zh": "想接收的对象",
+                "en": "Ones you want to receive"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "登録していない送信元",
+                "zh": "未登记的发件人",
+                "en": "Senders not registered"
+              },
+              "a": {
+                "jp": "受け取る",
+                "zh": "接收",
+                "en": "Received"
+              },
+              "b": {
+                "jp": "受け取らない",
+                "zh": "不接收",
+                "en": "Not received"
+              }
+            },
+            {
+              "label": {
+                "jp": "向いている場面",
+                "zh": "适用场景",
+                "en": "Good for"
+              },
+              "a": {
+                "jp": "特定の迷惑な送り主を止めたい",
+                "zh": "想挡住某些特定的骚扰发件人",
+                "en": "Stopping specific nuisance senders"
+              },
+              "b": {
+                "jp": "決まった相手とだけやり取りする",
+                "zh": "只和固定的对象往来",
+                "en": "Exchanging mail only with set contacts"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2011h23a-q059",
+        "2012h24h-q068"
+      ],
+      "definition_jp": "迷惑メールは、受信者が望んでいないのに、広告や詐欺、マルウェアの配布などを目的として一方的に送り付けられる電子メールである。",
+      "definition_zh": "垃圾邮件（迷惑メール）是收件人并不想要，却出于广告、诈骗、散布恶意软件等目的被单方面发送过来的电子邮件。",
+      "definition_en": "Spam email (迷惑メール) is email that recipients do not want, sent to them unilaterally for advertising, fraud, distributing malware and similar purposes.",
+      "explanation_jp": "受け取ったときは返信せず、本文のリンクや添付ファイルも開かずに削除するのが基本である。返信すると、そのアドレスが実際に使われていることを送信者に教えてしまい、さらに多くのメールが届く原因になりうる。受信側では、例えば拒否したい送信元を登録するブラックリスト方式や、受け取りたい送信元を登録するホワイトリスト方式でメールを振り分ける。",
+      "explanation_zh": "收到后基本做法是不回复，也不打开正文里的链接和附件，直接删除。回复会让发件人知道这个地址确实有人在用，可能招来更多邮件。在接收端，可以用登记拒收发件人的黑名单方式，或登记接收发件人的白名单方式来分拣邮件。",
+      "explanation_en": "The basic response is to delete it without replying and without opening any links or attachments in it. Replying tells the sender the address is actually in use, which can bring in even more mail. On the receiving side, mail can be sorted with a blacklist method that registers senders to reject or a whitelist method that registers senders to accept.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2011h23a-q059",
+        "2012h24h-q068"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "スパム",
-      "definition_jp": "迷惑メールの別称。無差別・大量に送られる迷惑なメッセージ。",
-      "explanation_jp": "スパム(spam)は、迷惑メールを指す別の呼び名で、基本的に同じものを表します。無差別かつ大量に送りつけられる点が特徴で、メールだけでなくSNSの書き込みなどに広がった呼び方をされることもあります。\n\n迷惑メールと同様、広告目的のものから、マルウェア配布やフィッシングといった攻撃目的のものまで含まれます。\n\n試験では、迷惑メール=スパムという言い換えを押さえておけば対応できます。どちらも『望まないのに大量送信される』という共通点を結びつけておきましょう。",
-      "analogy_jp": "「迷惑メール」と「スパム」は、同じ迷惑な大量送信物を日本語と英語(由来は缶詰の商品名)で呼び分けているだけ。中身は同じです。",
-      "memory_hook_jp": "スパムといえば迷惑メールの別称",
-      "inline_quiz": [
-        "2011h23a-q059"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "垃圾信息（Spam）",
       "term_en": "Spam",
-      "definition_zh": "垃圾邮件的别称。无差别、大量发送的恼人信息。",
-      "definition_en": "Another name for spam email. Annoying messages sent indiscriminately and in bulk.",
-      "explanation_zh": "Spam（垃圾信息）是指垃圾邮件的另一个叫法，基本上表示的是同一个东西。其特征是被无差别且大量地发送过来，这个叫法有时也扩展到不仅是邮件，还包括社交网络上的留言等。\n\n与垃圾邮件一样，它既包含以广告为目的的内容，也包含散布恶意软件、网络钓鱼等以攻击为目的的内容。\n\n考试中，只要掌握“垃圾邮件＝Spam”这一换说法就能应对。要把两者“尽管不情愿却被大量发送”这一共同点关联起来记忆。",
-      "explanation_en": "Spam is another name for spam email and basically refers to the same thing. Its characteristic is being sent indiscriminately and in bulk, and the term is sometimes extended to cover not only email but also postings on social networks.\n\nLike spam email, it ranges from things aimed at advertising to things aimed at attacks such as malware distribution and phishing.\n\nIn the exam, you can handle it as long as you grasp the rephrasing \"spam email = spam.\" Be sure to link in your memory their shared point that both are \"sent in bulk even though unwanted.\"",
-      "analogy_zh": "“垃圾邮件”和“Spam”只是把同样恼人的大量发送物，分别用中文和英文（其由来是一种罐头食品的商品名）来称呼而已。内容是相同的。",
-      "analogy_en": "\"Spam email\" and \"spam\" are just the same annoying bulk-sent material called by different names in two languages (the English name comes from a canned-food brand). The contents are the same.",
-      "memory_hook_zh": "说到 Spam，就是垃圾邮件的别称。",
-      "memory_hook_en": "Spam → another name for spam email."
+      "one_jp": "**スパム**は、受信者の同意を得ずに、相手を選ばず大量に送られるメッセージのことで、電子メールの場合は**迷惑メール**と同じものを指す。",
+      "one_zh": "**垃圾信息**（[[jp:スパム]]，Spam）是指未经收件人同意、不挑对象大量发送的消息，在电子邮件中与**垃圾邮件**指的是同一种东西。",
+      "one_en": "**Spam** ([[jp:スパム]]) means messages sent in bulk to anyone at all without the recipients’ consent; in email it refers to the same thing as **spam email** ([[jp:迷惑メール]]).",
+      "detail_jp": "電子メールで送られるものはスパムメールとも呼ばれ、掲示板やSNSへの大量の書き込みにも同じ呼び名が使われる。似た迷惑行為に**チェーンメール**があり、こちらは本文で多くの人への転送を求め、受け取った人の転送によって広がっていく。",
+      "detail_zh": "通过电子邮件发送的这类消息也叫垃圾邮件（spam mail），在论坛或社交平台（SNS）上大量发帖也用同样的叫法。与之相似的骚扰行为还有**连锁邮件**，它在正文中要求转发给很多人，靠收件人一次次转发而扩散。",
+      "detail_en": "Spam sent by email is also called spam mail, and the same word is used for mass posting on message boards and social media. A similar nuisance is the **chain letter**, which asks in its text to be forwarded to many people and spreads as each recipient passes it on.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "英国のコメディ番組で、ある缶詰肉の商品名がしつこく連呼される場面に由来するとされる。",
+      "hook_zh": "据说这个词来自英国的一部喜剧节目，其中有一幕反复不停地喊某种罐头肉的商品名。",
+      "hook_en": "The word is said to come from a British comedy sketch in which the brand name of a canned meat is chanted over and over.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**スパム**メールは、受け取る側が同意していないのに、宛先を選ばず送り付けられるメールを指す。",
+          "text_zh": "**垃圾信息**类邮件，即 Spam 邮件（[[jp:スパムメール]]），是指收件方并未同意、却被不挑收件人地发送过来的邮件。",
+          "text_en": "**Spam** email ([[jp:スパムメール]]) is email sent to arbitrary addresses without the recipients having agreed to receive it.",
+          "qids": [
+            "2009h21a-q071"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**チェーンメール**は受け取った人が次々に転送し、その分だけメールが積み重なるので、回線やサーバに余計な負担をかける。",
+          "text_zh": "**连锁邮件**（[[jp:チェーンメール]]）被收到的人一个接一个地转发，邮件随之层层累积，会给线路和服务器带来额外负担。",
+          "text_en": "A **chain letter** ([[jp:チェーンメール]]) is forwarded on by one recipient after another, and as the copies pile up they put extra load on networks and servers.",
+          "qids": [
+            "2019r01a-q063"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**スパム**は送信者が一斉に送り付けるもの、**チェーンメール**は受信者の転送で広がるものであり、増え方が異なる。",
+          "text_zh": "**垃圾信息**是发件人一次性群发出去的，**连锁邮件**则靠收件人转发而扩散，两者增加的方式不同。",
+          "text_en": "**Spam** is blasted out by the sender all at once, while a **chain letter** spreads through recipients forwarding it, so they multiply in different ways."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2009h21a-q071",
+        "2019r01a-q063"
+      ],
+      "definition_jp": "スパムは、受信者の同意を得ずに、相手を選ばず大量に送られるメッセージのことで、電子メールの場合は迷惑メールと同じものを指す。",
+      "definition_zh": "垃圾信息（スパム，Spam）是指未经收件人同意、不挑对象大量发送的消息，在电子邮件中与垃圾邮件指的是同一种东西。",
+      "definition_en": "Spam (スパム) means messages sent in bulk to anyone at all without the recipients’ consent; in email it refers to the same thing as spam email (迷惑メール).",
+      "explanation_jp": "電子メールで送られるものはスパムメールとも呼ばれ、掲示板やSNSへの大量の書き込みにも同じ呼び名が使われる。似た迷惑行為にチェーンメールがあり、こちらは本文で多くの人への転送を求め、受け取った人の転送によって広がっていく。",
+      "explanation_zh": "通过电子邮件发送的这类消息也叫垃圾邮件（spam mail），在论坛或社交平台（SNS）上大量发帖也用同样的叫法。与之相似的骚扰行为还有连锁邮件，它在正文中要求转发给很多人，靠收件人一次次转发而扩散。",
+      "explanation_en": "Spam sent by email is also called spam mail, and the same word is used for mass posting on message boards and social media. A similar nuisance is the chain letter, which asks in its text to be forwarded to many people and spreads as each recipient passes it on.",
+      "memory_hook_jp": "英国のコメディ番組で、ある缶詰肉の商品名がしつこく連呼される場面に由来するとされる。",
+      "memory_hook_zh": "据说这个词来自英国的一部喜剧节目，其中有一幕反复不停地喊某种罐头肉的商品名。",
+      "memory_hook_en": "The word is said to come from a British comedy sketch in which the brand name of a canned meat is chanted over and over.",
+      "inline_quiz": [
+        "2009h21a-q071",
+        "2019r01a-q063"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "ファイル交換ソフトウェア",
+      "b": "迷惑メール",
+      "rows": [
+        {
+          "label_jp": "危険なファイルの届き方",
+          "label_zh": "危险文件的来路",
+          "label_en": "How the dangerous file arrives",
+          "a_jp": "利用者が自分で探して取り込む",
+          "a_zh": "用户自己搜索并下载",
+          "a_en": "The user finds and downloads it",
+          "b_jp": "送信者から一方的に届く",
+          "b_zh": "由发件人单方面发来",
+          "b_en": "The sender pushes it to you",
+          "key": true
+        },
+        {
+          "label_jp": "感染のきっかけ",
+          "label_zh": "感染的契机",
+          "label_en": "What triggers infection",
+          "a_jp": "入手したファイルを開く",
+          "a_zh": "打开下载的文件",
+          "a_en": "Opening the downloaded file",
+          "b_jp": "添付ファイルを開く、本文のリンク先へ進む",
+          "b_zh": "打开附件，或点进正文中的链接",
+          "b_en": "Opening an attachment or following a link in the message",
+          "key": false
+        },
+        {
+          "label_jp": "身を守る基本",
+          "label_zh": "基本防护",
+          "label_en": "Basic protection",
+          "a_jp": "出所の分からないファイルを入手しない",
+          "a_zh": "不下载来历不明的文件",
+          "a_en": "Do not download files of unknown origin",
+          "b_jp": "返信せず、開かずに削除する",
+          "b_zh": "不回复，不打开，直接删除",
+          "b_en": "Delete without replying or opening",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**二重脅迫**と**ダブルエクストーション**は、暗号化と公開の脅しを組み合わせる同じ手口の日本語名と英語名である。",
+    "**ダークウェブ**は、**二重脅迫**で盗まれたデータの公開や売買の場として使われることがある。",
+    "**ファイル交換ソフトウェア**では、出所の分からないファイルを開くことが感染の入口になり、感染後は端末内の文書が流出することがある。",
+    "**迷惑メール**には返信せず、リンクや添付ファイルを開かずに削除する。",
+    "電子メールの**スパム**は**迷惑メール**と同じものを指す。"
+  ],
+  "key_points_zh": [
+    "**双重勒索**的日文名 [[jp:二重脅迫]] 与英文名 **Double Extortion**（[[jp:ダブルエクストーション]]）指的是同一种手法，都把加密和公开威胁结合在一起。",
+    "**暗网**有时被用作公开或买卖**双重勒索**中被盗数据的场所。",
+    "使用**文件交换软件**时，打开来历不明的文件是感染的入口，感染后终端里的文档可能外泄。",
+    "对**垃圾邮件**不要回复，不打开链接和附件，直接删除。",
+    "电子邮件中的**垃圾信息**与**垃圾邮件**指的是同一种东西。"
+  ],
+  "key_points_en": [
+    "[[jp:二重脅迫]] and [[jp:ダブルエクストーション]] are the Japanese and katakana-English names for the same tactic, **double extortion**, which pairs encryption with the threat of publication.",
+    "The **dark web** is sometimes where data stolen in **double extortion** attacks is published or sold.",
+    "With **file-sharing software**, opening a file of unknown origin is the way in for infection, and afterwards documents on the PC may leak.",
+    "Do not reply to **spam email**; delete it without opening its links or attachments.",
+    "In email, **spam** ([[jp:スパム]]) is the same thing as **spam email** ([[jp:迷惑メール]]), i.e. unsolicited mail."
+  ],
+  "overview": {
+    "intro_jp": "二重脅迫（ダブルエクストーション）が、従来のランサムウェアに比べて何を脅しの材料に加えたかを説明できる。ダークウェブの性質と、盗まれた情報の売買や公開に使われやすい理由を説明できる。ファイル交換ソフトウェアと迷惑メールがマルウェアや詐欺の入口になる仕組みを、届き方の違いで分けられる。",
+    "intro_zh": "能说明双重勒索（Double Extortion）与传统勒索软件相比，多拿了什么来要挟受害者。能说明暗网有什么特点，以及它为什么容易被用来买卖或公开被盗信息。能从危险文件的来路不同，区分文件交换软件和垃圾邮件怎样成为恶意软件或诈骗的入口。",
+    "intro_en": "Explain what double extortion (二重脅迫 / ダブルエクストーション) adds as leverage compared with conventional ransomware. Explain what the dark web is like and why it is often used to sell or publish stolen information. Tell file-sharing software from spam email as entry points for malware and fraud by how the dangerous content arrives.",
+    "freq_badge": "頻出",
+    "est_minutes": 32
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "二重脅迫: 二重脅迫といえば暗号化と情報暴露の二段構え",
-      "ダブルエクストーション: ダブルエクストーションといえば二重脅迫の英語名",
-      "ダークウェブ: ダークウェブといえば専用ソフトでしか入れない匿名の闇市場",
-      "ファイル交換ソフトウェア: ファイル交換ソフトウェアといえばP2Pでマルウェアが紛れ込む拡散経路",
-      "迷惑メール: 迷惑メールといえば一方的に送られる攻撃の入口",
-      "スパム: スパムといえば迷惑メールの別称"
-    ],
     "key_points_jp": [
-      "二重脅迫(ダブルエクストーション)は、暗号化に加えて窃取データの暴露でも脅す二段構えの手口で、同じ概念の日本語名・英語名である。",
-      "二重脅迫はデータを盗んでから暗号化するため、バックアップによる復旧だけでは情報暴露を防げない点が従来型との違い。",
-      "ダークウェブは専用ソフトでしか閲覧できない匿名性の高い領域で、窃取情報の取引・公開の舞台になる。",
-      "マルウェアの主な拡散・配布経路として、ファイル交換ソフトウェアと迷惑メール(スパム)がある。",
-      "迷惑メールとスパムは同じものを指す別称で、攻撃・拡散経路として特に出題頻度が高い。"
+      "二重脅迫とダブルエクストーションは、暗号化と公開の脅しを組み合わせる同じ手口の日本語名と英語名である。",
+      "ダークウェブは、二重脅迫で盗まれたデータの公開や売買の場として使われることがある。",
+      "ファイル交換ソフトウェアでは、出所の分からないファイルを開くことが感染の入口になり、感染後は端末内の文書が流出することがある。",
+      "迷惑メールには返信せず、リンクや添付ファイルを開かずに削除する。",
+      "電子メールのスパムは迷惑メールと同じものを指す。"
     ],
     "key_points_zh": [
-      "双重勒索（Double Extortion）是除加密外还以泄露窃取数据相威胁的双层手法，是同一概念的中文名（日文名）与英文名。",
-      "双重勒索是先窃取数据再加密，因此仅靠备份恢复无法防止信息泄露，这正是它与传统型的区别。",
-      "暗网是只能用专用软件才能浏览、匿名性很高的区域，成为窃取信息交易与公开的场所。",
-      "恶意软件的主要扩散与传播途径包括文件交换软件和垃圾邮件（Spam）。",
-      "垃圾邮件与 Spam 是指代同一事物的别称，作为攻击与扩散途径出题频率尤其高。"
+      "双重勒索的日文名 二重脅迫 与英文名 Double Extortion（ダブルエクストーション）指的是同一种手法，都把加密和公开威胁结合在一起。",
+      "暗网有时被用作公开或买卖双重勒索中被盗数据的场所。",
+      "使用文件交换软件时，打开来历不明的文件是感染的入口，感染后终端里的文档可能外泄。",
+      "对垃圾邮件不要回复，不打开链接和附件，直接删除。",
+      "电子邮件中的垃圾信息与垃圾邮件指的是同一种东西。"
     ],
     "key_points_en": [
-      "Double extortion is a two-stage tactic that, in addition to encryption, also threatens to leak stolen data; it is the same concept's Japanese name and English name.",
-      "Double extortion steals the data before encrypting it, so recovery from backups alone cannot prevent information disclosure—this is the difference from the traditional type.",
-      "The dark web is a highly anonymous area viewable only with dedicated software, and it serves as the stage for trading and disclosing stolen information.",
-      "The main spread and distribution routes for malware include file-sharing software and spam email (spam).",
-      "Spam email and spam are alternative names for the same thing, and they are especially frequently tested as attack and spread routes."
+      "二重脅迫 and ダブルエクストーション are the Japanese and katakana-English names for the same tactic, double extortion, which pairs encryption with the threat of publication.",
+      "The dark web is sometimes where data stolen in double extortion attacks is published or sold.",
+      "With file-sharing software, opening a file of unknown origin is the way in for infection, and afterwards documents on the PC may leak.",
+      "Do not reply to spam email; delete it without opening its links or attachments.",
+      "In email, spam (スパム) is the same thing as spam email (迷惑メール), i.e. unsolicited mail."
+    ],
+    "memory_hooks_jp": [
+      "ダブルエクストーション: extortion は「ゆすり・恐喝」を意味する英単語で、double が付いて「二重のゆすり」になる。",
+      "ダークウェブ: dark は「光が当たらない」。検索の光が届かない場所と結び付ける。",
+      "ファイル交換ソフトウェア: P2P の peer は「対等な仲間」。配る側と受け取る側の区別がない形を思い浮かべる。",
+      "スパム: 英国のコメディ番組で、ある缶詰肉の商品名がしつこく連呼される場面に由来するとされる。"
     ],
     "memory_hooks_zh": [
-      "双重勒索：说到双重勒索，就是加密与信息泄露的双层并用。",
-      "双重勒索（Double Extortion）：说到 Double Extortion，就是双重勒索的英文名称。",
-      "暗网：说到暗网，就是只能用专用软件进入的匿名黑市。",
-      "文件交换软件：说到文件交换软件，就是通过 P2P 让恶意软件混入的扩散途径。",
-      "垃圾邮件：说到垃圾邮件，就是单方面发送过来的攻击入口。",
-      "垃圾信息（Spam）：说到 Spam，就是垃圾邮件的别称。"
+      "双重勒索（Double Extortion）：extortion 是英语中“敲诈、勒索”的意思，加上 double 就成了“双重敲诈”。",
+      "暗网：dark 是“照不到光”的意思，可以联想成搜索之光照不到的地方。",
+      "文件交换软件：P2P 中的 peer 意思是“地位对等的伙伴”，可以想象成分发方和接收方没有区别的形态。",
+      "垃圾信息（Spam）：据说这个词来自英国的一部喜剧节目，其中有一幕反复不停地喊某种罐头肉的商品名。"
     ],
     "memory_hooks_en": [
-      "Double extortion: Double extortion → the two-stage combo of encryption plus information leak.",
-      "Double extortion (English): Double extortion (English) → the English name for double extortion.",
-      "Dark web: Dark web → the anonymous black market you can only enter with dedicated software.",
-      "File-sharing software: File-sharing software → a P2P spread route where malware sneaks in.",
-      "Spam email: Spam email → the attack entry point that arrives unilaterally.",
-      "Spam: Spam → another name for spam email."
+      "Double extortion: Extortion means obtaining money through threats; add double and you get two threats at once.",
+      "Dark web: Dark means out of the light; think of it as the place a search engine’s light never reaches.",
+      "File-sharing software: A peer is an equal; picture a setup where there is no difference between the side that gives and the side that receives.",
+      "Spam: The word is said to come from a British comedy sketch in which the brand name of a canned meat is chanted over and over."
     ]
   },
   "challenge_questions": [
-    "2009h21a-q073",
-    "2009h21h-q068",
+    "2019r01a-q063",
+    "2009h21a-q058",
     "2010h22a-q075",
-    "2010h22h-q087",
-    "2011h23a-q061"
+    "2024r06-q087"
   ],
   "source_figures": [
     {
@@ -223,9 +763,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "恶意软件的传播途径与勒索手法",
-  "title_en": "Malware Distribution Routes and Extortion Tactics",
-  "unit_summary_zh": "理解垃圾邮件、文件交换软件等扩散途径，以及双重勒索、暗网等围绕勒索软件的相关手法。",
-  "unit_summary_en": "Understand spread routes such as spam email and file-sharing software, along with ransomware-related tactics like double extortion and the dark web."
+  }
 }

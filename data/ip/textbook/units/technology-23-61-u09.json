@@ -1,242 +1,1109 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-23-61-u09",
   "topic_id": "technology-23-61",
   "category": "technology",
   "title_jp": "Webアプリケーションへの攻撃",
+  "title_zh": "针对 Web 应用的攻击",
+  "title_en": "Attacks on Web Applications",
   "unit_summary_jp": "クロスサイトスクリプティング・SQLインジェクション・バッファオーバーフローなどWebアプリの脆弱性を突く攻撃を理解する。",
+  "unit_summary_zh": "理解利用 Web 应用漏洞发起的攻击，如跨站脚本、SQL 注入、缓冲区溢出等。",
+  "unit_summary_en": "Understand attacks that exploit web application vulnerabilities, such as cross-site scripting, SQL injection, and buffer overflow.",
   "order_in_topic": 9,
   "prerequisites": [
     "technology-23-61-u01",
     "technology-23-61-u04"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、Webアプリケーションの脆弱性(セキュリティホール)を突く代表的な攻撃を学ぶ。利用者を狙うXSS・CSRF・クリックジャッキング・ドライブバイダウンロードから、サーバやプログラムを狙うSQLインジェクション・ディレクトリトラバーサル・バッファオーバーフローまでを扱う。情報セキュリティ分野でも頻出で、攻撃の手口と狙う対象の違いを区別することが得点の鍵となる。",
-    "freq_badge": "頻出",
-    "est_minutes": 21,
-    "intro_zh": "本单元学习利用 Web 应用漏洞（安全漏洞）发起的代表性攻击。内容涵盖从针对用户的 XSS、CSRF、点击劫持、路过式下载，到针对服务器或程序的 SQL 注入、目录遍历、缓冲区溢出。这一主题在信息安全领域也属高频考点，区分攻击手法与攻击目标的差异是得分的关键。",
-    "intro_en": "This unit covers representative attacks that exploit web application vulnerabilities (security holes). It ranges from attacks targeting users—XSS, CSRF, clickjacking, and drive-by download—to attacks targeting servers or programs—SQL injection, directory traversal, and buffer overflow. These topics appear frequently in the information security field, and distinguishing the differences in attack methods and targets is the key to scoring well."
-  },
-  "terms": [
+  "goals_jp": [
+    "7 つの攻撃を、不正な処理や被害がどこで起きるかで区別できる。",
+    "名前の似た攻撃を、攻撃者が送り込むものと悪用される弱点で見分けられる。",
+    "受け取った入力をそのまま使わずに確かめることやソフトウェアの更新といった基本の対策が、どの攻撃に効くかを説明できる。"
+  ],
+  "goals_zh": [
+    "能按非法处理或损害发生在何处，区分这 7 种攻击。",
+    "能根据攻击者送入的东西和被利用的弱点，分辨名称相似的攻击。",
+    "能说明先确认收到的输入再使用、更新软件等基本对策分别对哪些攻击有效。"
+  ],
+  "goals_en": [
+    "Tell the seven attacks apart by where the unauthorized processing or the damage takes place.",
+    "Distinguish attacks with similar names by what the attacker sends in and which weakness is exploited.",
+    "Explain which attacks are countered by basic measures such as checking received input before using it and keeping software updated."
+  ],
+  "overview_cols_jp": [
+    "不正な処理・被害が起きる場所",
+    "悪用されるもの"
+  ],
+  "overview_cols_zh": [
+    "非法处理·损害发生的位置",
+    "被利用的东西"
+  ],
+  "overview_cols_en": [
+    "Where the wrongdoing or damage occurs",
+    "What is exploited"
+  ],
+  "overview_rows": [
     {
       "term": "クロスサイトスクリプティング",
-      "definition_jp": "脆弱なサイトに不正なスクリプトを埋め込み、閲覧者のブラウザ上で実行させる攻撃。",
-      "explanation_jp": "クロスサイトスクリプティング(XSS)は、利用者の入力をそのまま表示してしまう脆弱なWebサイトを悪用し、攻撃者が用意した不正なスクリプトを他の利用者のブラウザ上で実行させる攻撃です。掲示板や検索結果の表示部分などが狙われます。\n\nこれにより、Cookieに保存されたセッション情報を盗まれたり、偽の入力画面を表示されたりします。試験では、サーバではなく「サイトを閲覧した利用者のブラウザ」で被害が起きる点、対策が入力値の無害化(エスケープ処理)である点が問われます。",
-      "analogy_jp": "誰でも貼れる伝言板に、悪意ある人が「読んだ人が勝手に動く仕掛け」のメモを貼るようなもの。それを見た来訪者が知らぬ間に被害に遭います。",
-      "memory_hook_jp": "クロスサイトスクリプティングといえば不正スクリプトを閲覧者のブラウザで実行させる攻撃",
-      "inline_quiz": [
-        "2012h24a-q060"
+      "one_line_jp": "サイトの弱点を使い、閲覧者のブラウザで攻撃者のスクリプトを動かす",
+      "one_line_zh": "利用网站的弱点，在浏览者的浏览器中运行攻击者的脚本",
+      "one_line_en": "Uses a site's flaw to run the attacker's script in the viewer's browser",
+      "extra_jp": [
+        "閲覧者のブラウザ",
+        "受け取った文字列をそのまま表示する作り"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"攻撃者\"] --> B[\"脆弱なサイトに不正スクリプトを仕込む\"]; B --> C[\"利用者がページを閲覧\"]; C --> D[\"利用者のブラウザでスクリプト実行\"]; D --> E[\"Cookieやセッション情報を窃取\"]",
-        "svg_path": "figures/technology-23-61-u09-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "跨站脚本",
-      "term_en": "Cross-Site Scripting (XSS)",
-      "definition_zh": "在有漏洞的网站中植入恶意脚本，使其在浏览者的浏览器上执行的攻击。",
-      "definition_en": "An attack that embeds a malicious script into a vulnerable site and gets it executed in the viewer's browser.",
-      "explanation_zh": "跨站脚本（XSS）是利用会原样显示用户输入的有漏洞 Web 网站，让攻击者准备的恶意脚本在其他用户的浏览器上执行的攻击。留言板、搜索结果的显示部分等都是攻击目标。\n\n由此，存储在 Cookie 中的会话信息可能被窃取，或者被显示伪造的输入界面。考试中会考查：受害发生在“浏览网站的用户的浏览器”而非服务器这一点，以及对策是对输入值进行无害化处理（转义处理）这一点。",
-      "explanation_en": "Cross-site scripting (XSS) is an attack that abuses a vulnerable website which displays user input as-is, causing a malicious script prepared by the attacker to run in other users' browsers. Display areas such as message boards or search results are common targets.\n\nThrough this, session information stored in cookies can be stolen, or a fake input screen can be displayed. On the exam, you are asked to recognize that the damage occurs in \"the browser of the user who viewed the site\" rather than on the server, and that the countermeasure is to sanitize input values (escape processing).",
-      "analogy_zh": "就像在谁都能张贴的留言板上，恶意者贴了一张带有“读到的人会被擅自操控的机关”的纸条。看到它的来访者会在不知不觉中受害。",
-      "analogy_en": "It's like a notice board anyone can post on, where a malicious person sticks a note with \"a trap that makes whoever reads it act on its own.\" Visitors who see it fall victim without realizing.",
-      "memory_hook_zh": "说到跨站脚本，就是让恶意脚本在浏览者浏览器上执行的攻击",
-      "memory_hook_en": "Cross-site scripting → an attack that runs a malicious script in the viewer's browser"
+      "extra_zh": [
+        "浏览者的浏览器",
+        "把收到的文字原样显示的设计"
+      ],
+      "extra_en": [
+        "The viewer's browser",
+        "Showing received text as is"
+      ]
     },
     {
       "term": "クロスサイトリクエストフォージェリ",
-      "definition_jp": "ログイン中の利用者になりすまし、意図しない処理をサーバへ送信させる攻撃。",
-      "explanation_jp": "クロスサイトリクエストフォージェリ(CSRF)は、あるサイトにログイン中の利用者を罠サイトへ誘導し、本人の意図しないリクエスト(投稿・送金・設定変更など)を正規サイトへ送らせる攻撃です。サーバ側は本人の操作と区別できず処理してしまいます。\n\n試験では、XSSとの違いが頻出です。XSSが「利用者のブラウザでスクリプトを実行させる」のに対し、CSRFは「ログイン状態を悪用して本人になりすまし、サーバに不正な処理をさせる」点が区別の鍵です。",
-      "analogy_jp": "ログイン済みの状態を、署名済みの白紙委任状に例えられます。攻撃者がその委任状に勝手な内容を書き込み、本人が頼んだかのように手続きを進めてしまうイメージです。",
-      "memory_hook_jp": "クロスサイトリクエストフォージェリといえばログイン中の本人になりすまし不正処理を送らせる攻撃",
-      "inline_quiz": [
-        "2012h24h-q077"
+      "one_line_jp": "ログイン中の利用者に罠のページを開かせ、意図しない依頼を正規サイトへ送らせる",
+      "one_line_zh": "诱使已登录的用户打开陷阱页面，向正规网站发送其无意的请求",
+      "one_line_en": "Lures a logged-in user to a trap page that sends the real site requests they never intended",
+      "extra_jp": [
+        "正規サイトのサーバ",
+        "ログインしたままの状態"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "跨站请求伪造",
-      "term_en": "Cross-Site Request Forgery (CSRF)",
-      "definition_zh": "冒充登录中的用户，使其向服务器发送非本意的处理请求的攻击。",
-      "definition_en": "An attack that impersonates a logged-in user to make the server carry out an unintended operation.",
-      "explanation_zh": "跨站请求伪造（CSRF）是把已在某网站登录的用户引诱到陷阱网站，使其向正规网站发送本人非本意的请求（发帖、转账、修改设置等）的攻击。服务器端无法将其与本人的操作区分开，就照常处理了。\n\n考试中常考它与 XSS 的区别。XSS 是“让脚本在用户的浏览器上执行”，而 CSRF 是“利用登录状态冒充本人，让服务器执行非法处理”，这是区分的关键。",
-      "explanation_en": "Cross-site request forgery (CSRF) is an attack that lures a user who is logged in to a certain site to a trap site, making them send requests they did not intend (posting, transferring money, changing settings, etc.) to the legitimate site. The server cannot distinguish these from the user's own actions and processes them. \n\nOn the exam, the difference from XSS appears frequently. Whereas XSS \"runs a script in the user's browser,\" CSRF \"abuses the logged-in state to impersonate the user and make the server perform unauthorized operations\"—this is the key to telling them apart.",
-      "analogy_zh": "可以把登录状态比作一张已签名的空白委托书。攻击者在这张委托书上擅自填写内容，仿佛是本人委托一样推进办理手续。",
-      "analogy_en": "The logged-in state can be likened to a pre-signed blank letter of authorization. The attacker fills in arbitrary content on it and proceeds with procedures as if the person themselves had requested it.",
-      "memory_hook_zh": "说到跨站请求伪造，就是冒充登录中的本人、代其向服务器发送非法请求的攻击",
-      "memory_hook_en": "Cross-site request forgery → an attack that impersonates the logged-in user to send unauthorized requests on the user's behalf"
+      "extra_zh": [
+        "正规网站的服务器",
+        "保持登录的状态"
+      ],
+      "extra_en": [
+        "The legitimate site's server",
+        "The user still being logged in"
+      ]
     },
     {
       "term": "クリックジャッキング",
-      "definition_jp": "透明な罠を重ね、利用者に意図しないボタンをクリックさせる攻撃。",
-      "explanation_jp": "クリックジャッキングは、正規のボタンの上に透明化した別のページを重ね、利用者が普通のボタンを押したつもりで、裏に隠された危険なボタンを押させる攻撃です。設定変更や購入などを本人に気づかせず実行させます。\n\n試験では、「見た目」を悪用して利用者をだます手口である点が問われます。スクリプトを実行させるXSSや、なりすまし送信のCSRFと異なり、視覚的にクリック先をすり替える点が特徴です。",
-      "analogy_jp": "透明なフィルムを画面に重ね、「再生」ボタンを押したつもりが、その下に隠された「購入」ボタンを押させられるようなだまし討ちです。",
-      "memory_hook_jp": "クリックジャッキングといえば透明な罠を重ねて意図しないクリックをさせる攻撃",
-      "inline_quiz": [
-        "2017h29a-q065"
+      "one_line_jp": "透明にした別サイトの画面を重ね、意図しないボタンを押させる",
+      "one_line_zh": "叠上设为透明的他站页面，诱使用户按下无意的按钮",
+      "one_line_en": "Lays another site's invisible page on top so the user presses a button they did not mean to",
+      "extra_jp": [
+        "利用者がログイン中のサービス",
+        "画面の見た目 (透明な重ね合わせ)"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "点击劫持",
-      "term_en": "Clickjacking",
-      "definition_zh": "叠加透明的陷阱，诱使用户点击非本意按钮的攻击。",
-      "definition_en": "An attack that overlays an invisible trap to make the user click a button they did not intend to.",
-      "explanation_zh": "点击劫持是在正规按钮上叠加一个透明化的其他页面，让用户以为按的是普通按钮，实际却按下了隐藏在背后的危险按钮的攻击。它在本人毫无察觉的情况下执行修改设置、购买等操作。\n\n考试中会考查它是利用“外观”来欺骗用户的手法这一点。与让脚本执行的 XSS、冒充发送的 CSRF 不同，它的特征在于从视觉上偷换点击的目标。",
-      "explanation_en": "Clickjacking is an attack that overlays an invisible separate page on top of a legitimate button, so that when the user thinks they are pressing an ordinary button, they actually press a dangerous button hidden behind it. It executes actions like changing settings or making purchases without the user noticing.\n\nOn the exam, you are asked to recognize that it is a technique that deceives users by exploiting \"appearance.\" Unlike XSS, which runs a script, or CSRF, which sends impersonated requests, its characteristic is visually swapping the click target.",
-      "analogy_zh": "就像在屏幕上叠了一层透明薄膜，你以为按的是“播放”按钮，却被诱导按下了藏在它下面的“购买”按钮，是一种暗算。",
-      "analogy_en": "It's like a transparent film laid over the screen: you think you're pressing the \"Play\" button, but you're tricked into pressing the \"Buy\" button hidden beneath it—a sneaky ambush.",
-      "memory_hook_zh": "说到点击劫持，就是叠加透明陷阱诱使非本意点击的攻击",
-      "memory_hook_en": "Clickjacking → an attack that overlays an invisible trap to cause unintended clicks"
+      "extra_zh": [
+        "用户已登录的服务",
+        "页面的外观（透明叠加）"
+      ],
+      "extra_en": [
+        "A service the user is logged in to",
+        "How the screen looks (a transparent overlay)"
+      ]
     },
     {
       "term": "ドライブバイダウンロード",
-      "definition_jp": "Webサイトを閲覧しただけで、利用者の意図に関係なく不正プログラムを送り込む攻撃。",
-      "explanation_jp": "ドライブバイダウンロードは、改ざんされたWebサイトを閲覧しただけで、利用者がダウンロード操作をしていないのにマルウェアを自動的に送り込み感染させる攻撃です。ブラウザやプラグインの脆弱性が悪用されます。\n\n試験では、「ファイルを開く・実行する」といった利用者の操作なしに、見ただけで感染する点が最大のポイントです。被害を防ぐには、OSやソフトウェアを最新に更新し脆弱性をふさぐことが有効である点も押さえましょう。",
-      "analogy_jp": "ただ店の前を通り過ぎただけなのに、知らないうちにポケットへ怪しい品物を入れられてしまうようなもの。こちらは何の操作もしていないのに感染します。",
-      "memory_hook_jp": "ドライブバイダウンロードといえば閲覧しただけで勝手に不正プログラムを送り込む攻撃",
+      "one_line_jp": "ページを開いただけで、知らないうちにマルウェアを入り込ませる",
+      "one_line_zh": "只是打开页面，就在不知不觉中被植入恶意软件",
+      "one_line_en": "Merely opening a page lets malware in without the user noticing",
+      "extra_jp": [
+        "利用者の PC やスマートフォン",
+        "ブラウザや追加機能の弱点"
+      ],
+      "extra_zh": [
+        "用户的 PC 或智能手机",
+        "浏览器或扩展功能的漏洞"
+      ],
+      "extra_en": [
+        "The user's PC or smartphone",
+        "Flaws in the browser or its add-ons"
+      ]
+    },
+    {
+      "term": "SQLインジェクション",
+      "one_line_jp": "入力欄に SQL の断片を混ぜ、データベースに想定外の命令を実行させる",
+      "one_line_zh": "在输入框中混入 SQL 片段，使数据库执行意外的命令",
+      "one_line_en": "Mixes SQL fragments into an input field so the database runs unexpected commands",
+      "extra_jp": [
+        "データベース",
+        "入力を命令文にそのままつなげる作り"
+      ],
+      "extra_zh": [
+        "数据库",
+        "把输入直接拼进命令语句的设计"
+      ],
+      "extra_en": [
+        "The database",
+        "Joining input straight into commands"
+      ]
+    },
+    {
+      "term": "ディレクトリトラバーサル",
+      "one_line_jp": "上の階層へ戻るパスの書き方を使い、公開していないファイルを読み出す",
+      "one_line_zh": "利用返回上级的路径写法，读取未公开的文件",
+      "one_line_en": "Uses path notation for going up a level to read files that are not public",
+      "extra_jp": [
+        "サーバ上のファイル",
+        "指定されたファイル名を確かめない作り"
+      ],
+      "extra_zh": [
+        "服务器上的文件",
+        "不检查所指定文件名的设计"
+      ],
+      "extra_en": [
+        "Files on the server",
+        "Not checking requested file names"
+      ]
+    },
+    {
+      "term": "バッファオーバーフロー攻撃",
+      "one_line_jp": "確保された領域より大きいデータを送り、プログラムに想定外の振る舞いをさせる",
+      "one_line_zh": "发送超出预留区域的数据，使程序出现意外行为",
+      "one_line_en": "Sends data larger than the reserved area to make the program misbehave",
+      "extra_jp": [
+        "攻撃を受けたプログラム (メモリ)",
+        "入力の長さを確かめない作り"
+      ],
+      "extra_zh": [
+        "受攻击的程序（内存）",
+        "不检查输入长度的设计"
+      ],
+      "extra_en": [
+        "The attacked program (its memory)",
+        "Not checking input length"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "クロスサイトスクリプティング",
+      "term_zh": "跨站脚本",
+      "term_en": "Cross-Site Scripting (XSS)",
+      "one_jp": "**クロスサイトスクリプティング** (XSS) は、Web サイトの入力処理の弱点を利用して、そのページを開いた利用者のブラウザで攻撃者の **スクリプト** を実行させる攻撃である。",
+      "one_zh": "**跨站脚本**（[[jp:クロスサイトスクリプティング]]，XSS）是利用网站处理输入时的弱点，让打开该页面的用户在自己的浏览器中运行攻击者的**脚本**的攻击。",
+      "one_en": "**Cross-site scripting** ([[jp:クロスサイトスクリプティング]], XSS) is an attack that exploits a flaw in how a website handles input, so that an attacker's **script** runs in the browser of anyone who opens the page.",
+      "detail_jp": "スクリプトとは、Web ページに組み込んでブラウザ上で動かす小さなプログラムのことである。掲示板の投稿などで受け取った文字列を無害化 (スクリプトとして動かない形への変換) せずにページへ書き出すサイトでは、文字列に混ぜたスクリプトが閲覧者の画面で動き出す。動いたスクリプトは、ログイン状態を保つための **Cookie** (サイトがブラウザに保存させる小さなデータ) を攻撃者へ送るなどの被害を生む。",
+      "detail_zh": "脚本是指嵌入网页、在浏览器上运行的小程序。有的网站对留言等收到的文字不做无害化处理（转换成无法作为脚本运行的形式）就写进页面，混在文字里的脚本便会在浏览者的屏幕上运行起来。运行的脚本会把用于保持登录状态的 **cookie**（网站让浏览器保存的小块数据）发给攻击者，从而造成损害。",
+      "detail_en": "A script is a small program embedded in a web page and run by the browser. If a site writes text it receives, such as message-board posts, into its pages without sanitizing it (converting it into a form that cannot run as a script), a script hidden in that text runs on the viewer's screen. The script can then cause harm, for example by sending the attacker the **cookie** (a small piece of data a site has the browser store) that keeps the user logged in.",
+      "analogy_jp": "店の伝言板に、読んだ客のポケットから会員証を抜き取る仕掛けを紛れ込ませるようなもの。仕掛けが働くのは伝言板ではなく、読んだ客の手元である。",
+      "analogy_zh": "就像在店里的留言板上混进一个机关，谁读了留言，会员卡就会从谁的口袋里被抽走。机关起作用的地方不在留言板，而在读留言的顾客手边。",
+      "analogy_en": "It is like slipping a gadget onto a shop's notice board that lifts the membership card from the pocket of whoever reads the notices. The gadget does its work not at the board but in the reader's hands.",
+      "hook_jp": "XSS の X は cross (交差) を表す略記で、スタイルシートの CSS と取り違えないためにこう書く。",
+      "hook_zh": "XSS 中的 X 是表示 cross（交叉）的简写，这样写是为了不和样式表 CSS 混淆。",
+      "hook_en": "The X in XSS is shorthand for \"cross\"; writing it this way keeps it from being confused with CSS, the style-sheet language.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**クロスサイトスクリプティング** は、利用者の入力を無害化せずにページへ出力する Web サイトの弱点を突き、そのページを開いた人のブラウザでスクリプトを動かす攻撃である。",
+          "text_zh": "**跨站脚本**（[[jp:クロスサイトスクリプティング]]）攻击的是不对用户输入做无害化处理就输出到页面的网站弱点，让打开该页面的人的浏览器运行脚本。",
+          "text_en": "**Cross-site scripting** ([[jp:クロスサイトスクリプティング]]) targets websites that output user input to their pages without sanitizing it, and makes a script run in the browser of whoever opens the page.",
+          "qids": [
+            "2012h24a-q060",
+            "2012h24h-q077",
+            "2015h27h-q084",
+            "2018h30a-q077"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "スクリプトに **Cookie** を盗まれると、ログイン状態を保つ情報が攻撃者の手に渡り、Web サービスでの成りすましやアカウントの乗っ取りにつながる。",
+          "text_zh": "脚本一旦盗走 **cookie**，用于保持登录状态的信息就会落入攻击者手中，进而导致在 Web 服务上被冒充（[[jp:成りすまし]]）或账户被盗用。",
+          "text_en": "Once a script steals the **cookie**, the information that keeps the user logged in is in the attacker's hands, which leads to impersonation ([[jp:成りすまし]]) on web services or account takeover.",
+          "qids": [
+            "2017h29a-q091"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "スクリプトを組み込めるのは Web ページだけではない。**HTML 形式の電子メール** にも埋め込めるので、表示した際に悪意のあるスクリプトが動く危険がある。",
+          "text_zh": "能嵌入脚本的不只是网页。**HTML 格式的电子邮件**（[[jp:HTML 形式の電子メール]]）中也能嵌入脚本，因此显示邮件时存在恶意脚本运行的风险。",
+          "text_en": "Web pages are not the only place a script can be embedded. **HTML-format email** ([[jp:HTML 形式の電子メール]]) can carry one too, so a malicious script may run when the message is displayed.",
+          "qids": [
+            "2020r02o-q056"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "post",
+              "label": {
+                "jp": "スクリプト入りの文字列を投稿",
+                "zh": "发布夹带脚本的文字",
+                "en": "Text with a script is posted"
+              }
+            },
+            {
+              "id": "show",
+              "label": {
+                "jp": "サイトがそのままページに表示",
+                "zh": "网站原样显示在页面上",
+                "en": "Site shows it on the page as is"
+              }
+            },
+            {
+              "id": "run",
+              "label": {
+                "jp": "閲覧者のブラウザで実行",
+                "zh": "在浏览者的浏览器中运行",
+                "en": "It runs in the viewer's browser"
+              }
+            },
+            {
+              "id": "leak",
+              "label": {
+                "jp": "ログイン状態の情報などが攻撃者へ",
+                "zh": "登录状态信息等被发给攻击者",
+                "en": "Login-state data goes to the attacker"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "攻撃者が、掲示板などにスクリプトを混ぜた文字列を書き込む。",
+            "caption_zh": "攻击者在留言板等处写入夹带脚本的文字。",
+            "caption_en": "The attacker posts text with a script mixed in, for example on a message board.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "弱点のあるサイトは、その文字列をスクリプトとして動かない形に変えないまま、ページに載せる。",
+            "caption_zh": "存在弱点的网站没有把这段文字转换成无法作为脚本运行的形式，就直接放进页面。",
+            "caption_en": "The vulnerable site puts that text into its page without converting it into a form that cannot run as a script.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "ページを開いた利用者のブラウザで、混ぜられたスクリプトが動き出す。",
+            "caption_zh": "用户打开页面后，混入的脚本在其浏览器中开始运行。",
+            "caption_en": "When a user opens the page, the hidden script starts running in that user's browser.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "動いたスクリプトが、ログイン状態を保つ情報などを攻撃者のもとへ送る。",
+            "caption_zh": "运行起来的脚本把用于保持登录状态的信息等发送给攻击者。",
+            "caption_en": "The running script sends the attacker information such as the data that keeps the user logged in.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2012h24h-q077",
+        "2017h29a-q091"
+      ],
+      "definition_jp": "クロスサイトスクリプティング (XSS) は、Web サイトの入力処理の弱点を利用して、そのページを開いた利用者のブラウザで攻撃者の スクリプト を実行させる攻撃である。",
+      "definition_zh": "跨站脚本（クロスサイトスクリプティング，XSS）是利用网站处理输入时的弱点，让打开该页面的用户在自己的浏览器中运行攻击者的脚本的攻击。",
+      "definition_en": "Cross-site scripting (クロスサイトスクリプティング, XSS) is an attack that exploits a flaw in how a website handles input, so that an attacker's script runs in the browser of anyone who opens the page.",
+      "explanation_jp": "スクリプトとは、Web ページに組み込んでブラウザ上で動かす小さなプログラムのことである。掲示板の投稿などで受け取った文字列を無害化 (スクリプトとして動かない形への変換) せずにページへ書き出すサイトでは、文字列に混ぜたスクリプトが閲覧者の画面で動き出す。動いたスクリプトは、ログイン状態を保つための Cookie (サイトがブラウザに保存させる小さなデータ) を攻撃者へ送るなどの被害を生む。",
+      "explanation_zh": "脚本是指嵌入网页、在浏览器上运行的小程序。有的网站对留言等收到的文字不做无害化处理（转换成无法作为脚本运行的形式）就写进页面，混在文字里的脚本便会在浏览者的屏幕上运行起来。运行的脚本会把用于保持登录状态的 cookie（网站让浏览器保存的小块数据）发给攻击者，从而造成损害。",
+      "explanation_en": "A script is a small program embedded in a web page and run by the browser. If a site writes text it receives, such as message-board posts, into its pages without sanitizing it (converting it into a form that cannot run as a script), a script hidden in that text runs on the viewer's screen. The script can then cause harm, for example by sending the attacker the cookie (a small piece of data a site has the browser store) that keeps the user logged in.",
+      "memory_hook_jp": "XSS の X は cross (交差) を表す略記で、スタイルシートの CSS と取り違えないためにこう書く。",
+      "memory_hook_zh": "XSS 中的 X 是表示 cross（交叉）的简写，这样写是为了不和样式表 CSS 混淆。",
+      "memory_hook_en": "The X in XSS is shorthand for \"cross\"; writing it this way keeps it from being confused with CSS, the style-sheet language.",
+      "inline_quiz": [
+        "2012h24h-q077",
+        "2017h29a-q091"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "クロスサイトリクエストフォージェリ",
+      "term_zh": "跨站请求伪造",
+      "term_en": "Cross-Site Request Forgery (CSRF)",
+      "one_jp": "**クロスサイトリクエストフォージェリ** (CSRF) は、正規サイトにログインしたままの利用者に罠のページを開かせ、本人が意図しない **リクエスト** (サーバへの処理の依頼) をその正規サイトへ送らせる攻撃である。",
+      "one_zh": "**跨站请求伪造**（[[jp:クロスサイトリクエストフォージェリ]]，CSRF）是诱使仍登录着正规网站的用户打开陷阱页面，让其向该正规网站发送本人并无此意的**请求**（向服务器提出的处理要求）的攻击。",
+      "one_en": "**Cross-site request forgery** ([[jp:クロスサイトリクエストフォージェリ]], CSRF) is an attack that lures a user who is still logged in to a legitimate site onto a trap page, making the user's browser send that site a **request** (asking the server to carry out some processing) the user never intended.",
+      "detail_jp": "罠のページには、開いただけで正規サイト宛ての書き込みや設定変更の依頼が送られる仕掛けが入っている。依頼はログイン中の利用者のブラウザから届くので、正規サイトのサーバは本人の操作と見分けられずに処理してしまう。対策の例として、正規の画面から送られた依頼かどうかを確かめる合言葉 (トークン) をサイト側で照合する方法がある。",
+      "detail_zh": "陷阱页面里藏有机关，只要打开页面，就会向正规网站发出发帖或更改设置的请求。由于请求来自已登录用户的浏览器，正规网站的服务器无法将其与本人的操作区分开，便会照常处理。对策之一是由网站核对一个暗号（令牌），用来确认请求是否从正规页面发出。",
+      "detail_en": "A trap page contains a mechanism that, as soon as the page opens, sends the legitimate site a request to post something or change a setting. Because the request arrives from the logged-in user's browser, the site's server cannot distinguish it from the user's own action and carries it out. One countermeasure is for the site to check a secret value (a token) that shows whether the request came from its own genuine page.",
+      "analogy_jp": "本人の使いの者が運ぶ書類の束に、他人がこっそり偽の申込書を紛れ込ませるようなもの。使いの者はそのまま窓口へ出し、窓口は本人の使いが持ってきた書類なので本人からの依頼と区別できずに受け付けてしまう。",
+      "analogy_zh": "就像有人偷偷把一张假申请书塞进本人所派跑腿者携带的文件里。跑腿者原样交到窗口，窗口因为文件是本人的跑腿者送来的，分不清真假，就当作本人的申请受理了。",
+      "analogy_en": "It is like someone slipping a fake application form into the stack of papers a person's messenger is carrying. The messenger hands the whole stack in at the counter, and because it came from that person's own messenger, the counter accepts the fake as a genuine request.",
+      "hook_jp": "フォージェリは forgery (偽造) のこと。この攻撃で偽造されるのは、サーバへの依頼 (リクエスト) である。",
+      "hook_zh": "フォージェリ就是 forgery（伪造）。这种攻击伪造的是发给服务器的请求。",
+      "hook_en": "\"Forgery\" here refers to a forged request to the server.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**CSRF** で不正な処理を実行するのは正規サイトのサーバであり、攻撃者のスクリプトを利用者のブラウザで動かす **XSS** とは、不正な処理が起きる場所が異なる。",
+          "text_zh": "在 **CSRF** 中执行非法处理的是正规网站的服务器；而 **XSS** 是在用户的浏览器里运行攻击者的脚本，两者发生非法处理的位置不同。",
+          "text_en": "In **CSRF** the unauthorized processing is carried out by the legitimate site's server, whereas **XSS** runs the attacker's script in the user's browser: they differ in where the wrongdoing happens."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "login",
+              "label": {
+                "jp": "正規サイトにログイン中",
+                "zh": "已登录正规网站",
+                "en": "Logged in to the real site"
+              }
+            },
+            {
+              "id": "trap",
+              "label": {
+                "jp": "罠のページを開く",
+                "zh": "打开陷阱页面",
+                "en": "Opens a trap page"
+              }
+            },
+            {
+              "id": "send",
+              "label": {
+                "jp": "ブラウザが正規サイトへ依頼を送る",
+                "zh": "浏览器向正规网站发出请求",
+                "en": "Browser sends the real site a request"
+              }
+            },
+            {
+              "id": "exec",
+              "label": {
+                "jp": "サーバが本人の操作として処理",
+                "zh": "服务器当作本人的操作处理",
+                "en": "Server treats it as the user's action"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者は、ある正規サイトにログインした状態のままでいる。",
+            "caption_zh": "用户一直保持着某个正规网站的登录状态。",
+            "caption_en": "The user stays logged in to a legitimate site.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "その利用者が、攻撃者の用意した罠のページを開く。",
+            "caption_zh": "该用户打开了攻击者准备的陷阱页面。",
+            "caption_en": "That user then opens a trap page the attacker has prepared.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "罠の仕掛けにより、利用者のブラウザから正規サイトへ書き込みなどの依頼が送られる。",
+            "caption_zh": "在陷阱机关的作用下，用户的浏览器向正规网站发出发帖等请求。",
+            "caption_en": "A mechanism in the trap makes the user's browser send the legitimate site a request, such as posting a message.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "正規サイトのサーバは、本人からの依頼と見分けられずに処理してしまう。",
+            "caption_zh": "正规网站的服务器分辨不出这是否是本人的请求，便照常处理了。",
+            "caption_en": "The legitimate site's server cannot tell it apart from a request the user really made, and processes it.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "クロスサイトリクエストフォージェリ (CSRF) は、正規サイトにログインしたままの利用者に罠のページを開かせ、本人が意図しない リクエスト (サーバへの処理の依頼) をその正規サイトへ送らせる攻撃である。",
+      "definition_zh": "跨站请求伪造（クロスサイトリクエストフォージェリ，CSRF）是诱使仍登录着正规网站的用户打开陷阱页面，让其向该正规网站发送本人并无此意的请求（向服务器提出的处理要求）的攻击。",
+      "definition_en": "Cross-site request forgery (クロスサイトリクエストフォージェリ, CSRF) is an attack that lures a user who is still logged in to a legitimate site onto a trap page, making the user's browser send that site a request (asking the server to carry out some processing) the user never intended.",
+      "explanation_jp": "罠のページには、開いただけで正規サイト宛ての書き込みや設定変更の依頼が送られる仕掛けが入っている。依頼はログイン中の利用者のブラウザから届くので、正規サイトのサーバは本人の操作と見分けられずに処理してしまう。対策の例として、正規の画面から送られた依頼かどうかを確かめる合言葉 (トークン) をサイト側で照合する方法がある。",
+      "explanation_zh": "陷阱页面里藏有机关，只要打开页面，就会向正规网站发出发帖或更改设置的请求。由于请求来自已登录用户的浏览器，正规网站的服务器无法将其与本人的操作区分开，便会照常处理。对策之一是由网站核对一个暗号（令牌），用来确认请求是否从正规页面发出。",
+      "explanation_en": "A trap page contains a mechanism that, as soon as the page opens, sends the legitimate site a request to post something or change a setting. Because the request arrives from the logged-in user's browser, the site's server cannot distinguish it from the user's own action and carries it out. One countermeasure is for the site to check a secret value (a token) that shows whether the request came from its own genuine page.",
+      "memory_hook_jp": "フォージェリは forgery (偽造) のこと。この攻撃で偽造されるのは、サーバへの依頼 (リクエスト) である。",
+      "memory_hook_zh": "フォージェリ就是 forgery（伪造）。这种攻击伪造的是发给服务器的请求。",
+      "memory_hook_en": "\"Forgery\" here refers to a forged request to the server.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "クリックジャッキング",
+      "term_zh": "点击劫持",
+      "term_en": "Clickjacking",
+      "one_jp": "**クリックジャッキング** は、透明にして見えなくした別サイトの画面を罠のページに重ね、利用者に意図しないボタンを **クリック** させる攻撃である。",
+      "one_zh": "**点击劫持**（[[jp:クリックジャッキング]]）是把另一个网站的页面设为透明后叠在陷阱页面上，诱使用户**点击**本不想按的按钮的攻击。",
+      "one_en": "**Clickjacking** ([[jp:クリックジャッキング]]) is an attack that lays another site's page, made transparent, over a trap page so that the user **clicks** a button they never meant to press.",
+      "detail_jp": "利用者に見えているのは罠のページのボタンだけだが、実際に押しているのは上に重なった見えない画面のボタンである。その結果、ログイン中のサービスで設定の変更や公開範囲の切り替えなどが、本人の知らないうちに行われる。対策の例として、自サイトの画面を他のサイトの中に重ねて表示させない設定がある。",
+      "detail_zh": "用户看到的只有陷阱页面的按钮，实际按下的却是叠在上面、看不见的页面上的按钮。结果，在已登录的服务中，设置被更改、公开范围被切换等操作会在本人不知情时完成。对策之一是进行设置，不让自己网站的页面被嵌入其他网站中叠加显示。",
+      "detail_en": "The user sees only the trap page's buttons, but the button they actually press belongs to the invisible page on top. As a result, in a service the user is logged in to, settings get changed or who can see the user's content gets switched without the user knowing. One countermeasure is a setting that stops the site's own pages from being displayed inside other sites.",
+      "analogy_jp": "案内板のボタンの前に、別のスイッチを付けた透明な板を立てておき、案内板のボタンを押そうとした人に板のスイッチを押させるようなもの。",
+      "analogy_zh": "就像在指示牌的按钮前竖一块装着别的开关的透明板，想按指示牌按钮的人，按下的其实是板上的开关。",
+      "analogy_en": "It is like standing a clear panel with its own switch in front of a sign's button, so that anyone reaching for the sign's button presses the panel's switch instead.",
+      "hook_jp": "ジャッキングはハイジャック (乗っ取り) の jack と同じ。乗っ取られるのは利用者のクリックである。",
+      "hook_zh": "ジャッキング与 hijack（劫持）中的 jack 是同一个词。被劫持的是用户的点击。",
+      "hook_en": "The \"jacking\" is the same \"jack\" as in hijack. What gets hijacked is the user's click.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**クリックジャッキング** では利用者自身のクリックが悪用される。ページを開くだけでブラウザから依頼が送られる **CSRF** とは、操作の乗っ取り方が異なる。",
+          "text_zh": "**点击劫持**（[[jp:クリックジャッキング]]）利用的是用户本人的点击；而 **CSRF** 只要打开页面，浏览器就会发出请求，两者劫持操作的方式不同。",
+          "text_en": "**Clickjacking** ([[jp:クリックジャッキング]]) abuses the user's own click, while in **CSRF** the browser sends a request as soon as the page opens: they take over the user's actions in different ways."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "layer",
+              "label": {
+                "jp": "透明な別サイトの画面を重ねる",
+                "zh": "叠上透明的他站页面",
+                "en": "Another site laid on top, invisible"
+              }
+            },
+            {
+              "id": "click",
+              "label": {
+                "jp": "見えているボタンを押したつもり",
+                "zh": "以为按的是看得见的按钮",
+                "en": "User thinks they press the visible button"
+              }
+            },
+            {
+              "id": "done",
+              "label": {
+                "jp": "見えない画面の操作が実行",
+                "zh": "执行看不见页面上的操作",
+                "en": "The hidden page's action runs"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "攻撃者は、罠のページの上に、透明にした別サイトの画面をぴったり重ねる。",
+            "caption_zh": "攻击者在陷阱页面上方严丝合缝地叠放一个设为透明的他站页面。",
+            "caption_en": "The attacker places another site's page, made transparent, exactly over the trap page.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "利用者は、罠のページに見えているボタンを押したつもりになる。",
+            "caption_zh": "用户以为自己按下的是陷阱页面上看得见的按钮。",
+            "caption_en": "The user believes they are pressing a button they can see on the trap page.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "実際には上に重なった見えない画面のボタンが押され、その操作が実行される。",
+            "caption_zh": "实际按下的是叠在上面、看不见的页面上的按钮，相应的操作随即执行。",
+            "caption_en": "What actually gets pressed is a button on the invisible page on top, and that action is carried out.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "クリックジャッキング は、透明にして見えなくした別サイトの画面を罠のページに重ね、利用者に意図しないボタンを クリック させる攻撃である。",
+      "definition_zh": "点击劫持（クリックジャッキング）是把另一个网站的页面设为透明后叠在陷阱页面上，诱使用户点击本不想按的按钮的攻击。",
+      "definition_en": "Clickjacking (クリックジャッキング) is an attack that lays another site's page, made transparent, over a trap page so that the user clicks a button they never meant to press.",
+      "explanation_jp": "利用者に見えているのは罠のページのボタンだけだが、実際に押しているのは上に重なった見えない画面のボタンである。その結果、ログイン中のサービスで設定の変更や公開範囲の切り替えなどが、本人の知らないうちに行われる。対策の例として、自サイトの画面を他のサイトの中に重ねて表示させない設定がある。",
+      "explanation_zh": "用户看到的只有陷阱页面的按钮，实际按下的却是叠在上面、看不见的页面上的按钮。结果，在已登录的服务中，设置被更改、公开范围被切换等操作会在本人不知情时完成。对策之一是进行设置，不让自己网站的页面被嵌入其他网站中叠加显示。",
+      "explanation_en": "The user sees only the trap page's buttons, but the button they actually press belongs to the invisible page on top. As a result, in a service the user is logged in to, settings get changed or who can see the user's content gets switched without the user knowing. One countermeasure is a setting that stops the site's own pages from being displayed inside other sites.",
+      "memory_hook_jp": "ジャッキングはハイジャック (乗っ取り) の jack と同じ。乗っ取られるのは利用者のクリックである。",
+      "memory_hook_zh": "ジャッキング与 hijack（劫持）中的 jack 是同一个词。被劫持的是用户的点击。",
+      "memory_hook_en": "The \"jacking\" is the same \"jack\" as in hijack. What gets hijacked is the user's click.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ドライブバイダウンロード",
+      "term_zh": "路过式下载",
+      "term_en": "Drive-by Download",
+      "one_jp": "**ドライブバイダウンロード** は、Web ページを開いただけで、利用者の知らないうちに **マルウェア** (不正なプログラム) を送り込んで感染させる攻撃である。",
+      "one_zh": "**路过式下载**（[[jp:ドライブバイダウンロード]]）是用户只是打开网页，就在不知不觉中被送入**恶意软件**（非法程序）而遭感染的攻击。",
+      "one_en": "A **drive-by download** ([[jp:ドライブバイダウンロード]]) is an attack that infects a user with **malware** (malicious programs) without their knowledge, simply because they opened a web page.",
+      "detail_jp": "攻撃者は、改ざんした正規サイトや自分で用意した罠のサイトに不正なプログラムを仕込んでおく。利用者がそのページを開くと、ブラウザやプラグイン (ブラウザの追加機能) の **脆弱性** (セキュリティ上の弱点) が突かれ、ファイルを開くなどの操作をしなくても感染する。OS やブラウザを更新して脆弱性をふさいでおくことが主な防御になる。",
+      "detail_zh": "攻击者事先在被篡改的正规网站或自己准备的陷阱网站中植入非法程序。用户打开该页面时，浏览器或插件（浏览器的扩展功能）的**漏洞**（安全上的弱点）被利用，即使没有打开文件等操作也会被感染。更新操作系统和浏览器、堵住漏洞，是主要的防御手段。",
+      "detail_en": "The attacker plants malicious code in advance, either on a legitimate site they have tampered with or on a trap site of their own. When the user opens the page, a **vulnerability** (a security weakness) in the browser or a plug-in (an add-on to the browser) is exploited, and infection happens even without actions such as opening a file. The main defense is to update the OS and browser so that their vulnerabilities are closed.",
+      "analogy_jp": "通りかかった家の前で、門をくぐってもいないのに塀越しに荷物を投げ込まれるようなもの。受け取る操作をしなくても荷物は届いてしまう。",
+      "analogy_zh": "就像只是从一户人家门前经过，明明没进门，包裹却被隔着围墙扔了过来。即使没有接收的动作，包裹也照样送到了。",
+      "analogy_en": "It is like walking past a house and having a parcel tossed over the wall at you, though you never went through the gate. The parcel arrives whether or not you did anything to accept it.",
+      "hook_jp": "drive-by は「車で通りかかりざまに」という意味。通りかかっただけ、つまりページを閲覧しただけで被害に遭うと読む。",
+      "hook_zh": "drive-by 的意思是“开车路过时顺便”。只是路过，也就是只浏览了页面，就会受害。",
+      "hook_en": "\"Drive-by\" means done while passing in a car. Just passing by, which here means merely viewing a page, is enough to be hit.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ドライブバイダウンロード** は、ページを表示しただけでブラウザなどの弱点を利用してマルウェアを入り込ませる攻撃で、利用者は感染に気付きにくい。",
+          "text_zh": "**路过式下载**（[[jp:ドライブバイダウンロード]]）是仅仅显示页面，就利用浏览器等的弱点让恶意软件（[[jp:マルウェア]]）侵入的攻击，用户很难察觉自己已被感染。",
+          "text_en": "A **drive-by download** ([[jp:ドライブバイダウンロード]]) uses a flaw in the browser or similar software to slip malware ([[jp:マルウェア]]) in just because a page was displayed, and the user rarely notices the infection.",
+          "qids": [
+            "2019h31h-q069",
+            "2023r05-q058"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "plant",
+              "label": {
+                "jp": "ページに不正なプログラムを仕込む",
+                "zh": "在页面中植入非法程序",
+                "en": "Malicious code planted in a page"
+              }
+            },
+            {
+              "id": "open",
+              "label": {
+                "jp": "利用者がページを開く",
+                "zh": "用户打开页面",
+                "en": "User opens the page"
+              }
+            },
+            {
+              "id": "infect",
+              "label": {
+                "jp": "弱点を突かれて感染",
+                "zh": "弱点被利用而感染",
+                "en": "Flaw exploited, device infected"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "攻撃者が、改ざんした正規サイトや罠のサイトに不正なプログラムを仕込む。",
+            "caption_zh": "攻击者在被篡改的正规网站或陷阱网站中植入非法程序。",
+            "caption_en": "The attacker plants malicious code on a legitimate site they have tampered with or on a trap site.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "利用者は、ふだんどおりにそのページを開く。",
+            "caption_zh": "用户像平常一样打开该页面。",
+            "caption_en": "The user opens the page as usual.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "ブラウザなどの弱点が突かれ、操作をしていないのにマルウェアが入り込む。",
+            "caption_zh": "浏览器等的弱点被利用，用户什么都没操作，恶意软件就已侵入。",
+            "caption_en": "A flaw in the browser or similar software is exploited, and malware gets in without the user doing anything.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2019h31h-q069"
+      ],
+      "definition_jp": "ドライブバイダウンロード は、Web ページを開いただけで、利用者の知らないうちに マルウェア (不正なプログラム) を送り込んで感染させる攻撃である。",
+      "definition_zh": "路过式下载（ドライブバイダウンロード）是用户只是打开网页，就在不知不觉中被送入恶意软件（非法程序）而遭感染的攻击。",
+      "definition_en": "A drive-by download (ドライブバイダウンロード) is an attack that infects a user with malware (malicious programs) without their knowledge, simply because they opened a web page.",
+      "explanation_jp": "攻撃者は、改ざんした正規サイトや自分で用意した罠のサイトに不正なプログラムを仕込んでおく。利用者がそのページを開くと、ブラウザやプラグイン (ブラウザの追加機能) の 脆弱性 (セキュリティ上の弱点) が突かれ、ファイルを開くなどの操作をしなくても感染する。OS やブラウザを更新して脆弱性をふさいでおくことが主な防御になる。",
+      "explanation_zh": "攻击者事先在被篡改的正规网站或自己准备的陷阱网站中植入非法程序。用户打开该页面时，浏览器或插件（浏览器的扩展功能）的漏洞（安全上的弱点）被利用，即使没有打开文件等操作也会被感染。更新操作系统和浏览器、堵住漏洞，是主要的防御手段。",
+      "explanation_en": "The attacker plants malicious code in advance, either on a legitimate site they have tampered with or on a trap site of their own. When the user opens the page, a vulnerability (a security weakness) in the browser or a plug-in (an add-on to the browser) is exploited, and infection happens even without actions such as opening a file. The main defense is to update the OS and browser so that their vulnerabilities are closed.",
+      "memory_hook_jp": "drive-by は「車で通りかかりざまに」という意味。通りかかっただけ、つまりページを閲覧しただけで被害に遭うと読む。",
+      "memory_hook_zh": "drive-by 的意思是“开车路过时顺便”。只是路过，也就是只浏览了页面，就会受害。",
+      "memory_hook_en": "\"Drive-by\" means done while passing in a car. Just passing by, which here means merely viewing a page, is enough to be hit.",
       "inline_quiz": [
         "2019h31h-q069"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "路过式下载",
-      "term_en": "Drive-by Download",
-      "definition_zh": "仅仅浏览 Web 网站，就会与用户意愿无关地植入恶意程序的攻击。",
-      "definition_en": "An attack that plants a malicious program regardless of the user's intent, simply by viewing a website.",
-      "explanation_zh": "路过式下载是仅仅浏览被篡改的 Web 网站，用户并未进行下载操作，就自动植入并感染恶意软件的攻击。它会利用浏览器或插件的漏洞。\n\n考试中最重要的点是：无需用户“打开文件、执行”等操作，仅仅浏览就会被感染。要记住，防止受害的有效做法是把操作系统和软件更新到最新，封堵漏洞。",
-      "explanation_en": "Drive-by download is an attack that automatically plants and infects malware merely when a user views a tampered website, even though the user performed no download operation. It exploits vulnerabilities in browsers or plug-ins.\n\nOn the exam, the most important point is that infection occurs just by viewing, without any user operation such as \"opening or executing a file.\" Also remember that an effective way to prevent damage is to keep the OS and software updated to the latest version and close the vulnerabilities.",
-      "analogy_zh": "就像你只是从店门前走过，却在不知不觉中被人往口袋里塞进了可疑物品。你什么操作都没做，却被感染了。",
-      "analogy_en": "It's like merely walking past the front of a shop and, without noticing, having a suspicious item slipped into your pocket. You did nothing at all, yet you get infected.",
-      "memory_hook_zh": "说到路过式下载，就是仅仅浏览就被擅自植入恶意程序的攻击",
-      "memory_hook_en": "Drive-by download → an attack that plants a malicious program on its own just by viewing"
+      "figure": null
     },
     {
       "term": "SQLインジェクション",
-      "definition_jp": "入力欄に不正なSQL文を注入し、データベースを不正に操作する攻撃。",
-      "explanation_jp": "SQLインジェクションは、Webアプリの入力欄に不正なSQL(データベースへの命令文)を紛れ込ませ、開発者が想定しない問い合わせを実行させる攻撃です。入力値をそのまま命令文に組み込む脆弱なつくりが原因です。\n\nこれにより、本来見えない個人情報の不正取得や、データの改ざん・削除、認証の回避などが起こります。試験では、サーバ側の「データベース」を狙う代表的攻撃である点、対策が入力値の検証やプレースホルダ(バインド機構)の利用である点が問われます。",
-      "analogy_jp": "注文票の品名欄に、商品名ではなく「店の金庫を開けろ」という別の指示を書き込み、店員にそのまま実行させてしまうようなものです。",
-      "memory_hook_jp": "SQLインジェクションといえば不正なSQL文を注入しデータベースを不正操作する攻撃",
-      "inline_quiz": [
-        "2015h27h-q084"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "SQL 注入",
       "term_en": "SQL Injection",
-      "definition_zh": "在输入栏中注入恶意 SQL 语句，非法操作数据库的攻击。",
-      "definition_en": "An attack that injects malicious SQL statements into an input field to manipulate the database illegitimately.",
-      "explanation_zh": "SQL 注入是在 Web 应用的输入栏中混入恶意 SQL（对数据库的命令语句），使其执行开发者未曾设想的查询的攻击。其根源在于将输入值原样拼入命令语句的脆弱结构。\n\n由此会发生本不应可见的个人信息的非法获取、数据的篡改与删除、绕过身份验证等情况。考试中会考查：它是针对服务器端“数据库”的代表性攻击这一点，以及对策是对输入值进行校验、使用占位符（绑定机制）这一点。",
-      "explanation_en": "SQL injection is an attack that slips malicious SQL (command statements for the database) into a web application's input field, causing it to execute queries the developer never anticipated. The root cause is a vulnerable design that embeds input values directly into command statements.\n\nThrough this, the illegitimate retrieval of personal information that should not be visible, tampering with or deletion of data, and bypassing of authentication can occur. On the exam, you are asked to recognize that it is a representative attack targeting the server-side \"database,\" and that the countermeasures are validating input values and using placeholders (the bind mechanism).",
-      "analogy_zh": "就像在订单的品名栏里，不写商品名，而写下“打开店里的保险箱”这样另一条指令，让店员照原样执行了。",
-      "analogy_en": "It's like writing not a product name but a different instruction—\"open the shop's safe\"—in the item-name field of an order slip, and getting the clerk to carry it out as written.",
-      "memory_hook_zh": "说到 SQL 注入，就是注入恶意 SQL 语句非法操作数据库的攻击",
-      "memory_hook_en": "SQL injection → an attack that injects malicious SQL statements to manipulate the database illegitimately"
+      "one_jp": "**SQLインジェクション** は、Web アプリケーションの入力欄に **SQL** (データベースを操作する命令の言語) の断片を紛れ込ませ、開発者が想定しない命令をデータベースに実行させる攻撃である。",
+      "one_zh": "**SQL 注入**（[[jp:SQLインジェクション]]）是在 Web 应用程序的输入框中混入 **SQL**（操作数据库的命令语言）片段，使数据库执行开发者未预料到的命令的攻击。",
+      "one_en": "**SQL injection** ([[jp:SQLインジェクション]]) is an attack that slips fragments of **SQL** (the command language for operating a database) into an input field of a web application so that the database runs commands the developers never expected.",
+      "detail_jp": "入力された文字列をそのまま命令文の一部としてつなげるプログラムでは、入力に混ぜた記号や語句によって命令の意味が書き換わる。その結果、非公開の会員情報の読み出し、データの改ざんや削除、ログイン認証のすり抜けなどが起こる。対策は、入力を命令文と切り離して扱うしくみ (プレースホルダ) の利用や、入力値の検証である。",
+      "detail_zh": "如果程序把输入的字符串原样拼接为命令语句的一部分，输入中混入的符号和词语就会改写命令的含义。其结果是非公开的会员信息被读取、数据被篡改或删除、登录认证被绕过等。对策是使用把输入与命令语句分开处理的机制（占位符），以及校验输入值。",
+      "detail_en": "In a program that joins input strings directly into its commands, symbols and words mixed into the input change what the command means. The result can be leaked private member data, altered or deleted records, or a bypassed login check. The countermeasures are a mechanism that handles input separately from the command (placeholders) and validation of input values.",
+      "analogy_jp": "電話注文で商品名を言うふりをして「ついでに金庫の番号も読み上げて」と続け、受付係がそれもメモどおりに実行してしまうようなもの。",
+      "analogy_zh": "就像打电话订货时假装报商品名，接着说“顺便把保险柜的密码也念一下”，接线员就照着记录把这句也执行了。",
+      "analogy_en": "It is like phoning in an order, naming a product, then adding \"and while you are at it, read out the safe combination\", and the clerk does that too, just as it was written on the order slip.",
+      "hook_jp": "インジェクションは英語の injection (注入) で、注射を指す語でもある。",
+      "hook_zh": "インジェクション就是英语的 injection（注入），这个词也指打针。",
+      "hook_en": "\"Injection\" is the same word used for a shot given with a syringe.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**SQLインジェクション** は、人の油断や思い込みにつけ込む手口ではなく、プログラムが入力を扱うしくみの弱点を突く技術的な攻撃である。",
+          "text_zh": "**SQL 注入**（[[jp:SQLインジェクション]]）不是利用人的疏忽或成见的手法，而是针对程序处理输入的机制中的弱点的技术性攻击。",
+          "text_en": "**SQL injection** ([[jp:SQLインジェクション]]) is not a trick that preys on people's carelessness or assumptions but a technical attack on a weakness in how a program handles input.",
+          "qids": [
+            "2017h29a-q065"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "入力欄に紛れ込ませるのがデータベースへの命令なら **SQLインジェクション**、閲覧者のブラウザで動くスクリプトなら **XSS** である。",
+          "text_zh": "混入输入框的如果是发给数据库的命令，就是 **SQL 注入**；如果是在浏览者浏览器中运行的脚本，就是 **XSS**。",
+          "text_en": "If what is slipped into the input field is a command for the database, the attack is **SQL injection**; if it is a script that runs in the viewer's browser, it is **XSS**."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "input",
+              "label": {
+                "jp": "入力欄に SQL の断片を混ぜる",
+                "zh": "在输入框中混入 SQL 片段",
+                "en": "SQL fragments typed into a field"
+              }
+            },
+            {
+              "id": "join",
+              "label": {
+                "jp": "入力を命令文にそのままつなげる",
+                "zh": "把输入直接拼进命令语句",
+                "en": "Input joined straight into the command"
+              }
+            },
+            {
+              "id": "db",
+              "label": {
+                "jp": "データベースが想定外の命令を実行",
+                "zh": "数据库执行意外的命令",
+                "en": "Database runs an unexpected command"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "攻撃者が、検索語やログイン ID の欄に SQL の記号や語句を混ぜて送る。",
+            "caption_zh": "攻击者在搜索词或登录 ID 栏中混入 SQL 的符号和词语后提交。",
+            "caption_en": "The attacker submits SQL symbols and keywords mixed into a search box or a login ID field.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "弱点のあるプログラムは、その入力を命令文の一部としてそのままつなげる。",
+            "caption_zh": "存在弱点的程序把这些输入原样拼接成命令语句的一部分。",
+            "caption_en": "The vulnerable program joins that input, unchanged, into its command as part of the statement.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "意味の書き換わった命令をデータベースが実行し、情報の読み出しや改ざんが起こる。",
+            "caption_zh": "数据库执行了含义已被改写的命令，导致信息被读取或篡改。",
+            "caption_en": "The database runs the command with its meaning rewritten, and data is read out or altered.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2017h29a-q065"
+      ],
+      "definition_jp": "SQLインジェクション は、Web アプリケーションの入力欄に SQL (データベースを操作する命令の言語) の断片を紛れ込ませ、開発者が想定しない命令をデータベースに実行させる攻撃である。",
+      "definition_zh": "SQL 注入（SQLインジェクション）是在 Web 应用程序的输入框中混入 SQL（操作数据库的命令语言）片段，使数据库执行开发者未预料到的命令的攻击。",
+      "definition_en": "SQL injection (SQLインジェクション) is an attack that slips fragments of SQL (the command language for operating a database) into an input field of a web application so that the database runs commands the developers never expected.",
+      "explanation_jp": "入力された文字列をそのまま命令文の一部としてつなげるプログラムでは、入力に混ぜた記号や語句によって命令の意味が書き換わる。その結果、非公開の会員情報の読み出し、データの改ざんや削除、ログイン認証のすり抜けなどが起こる。対策は、入力を命令文と切り離して扱うしくみ (プレースホルダ) の利用や、入力値の検証である。",
+      "explanation_zh": "如果程序把输入的字符串原样拼接为命令语句的一部分，输入中混入的符号和词语就会改写命令的含义。其结果是非公开的会员信息被读取、数据被篡改或删除、登录认证被绕过等。对策是使用把输入与命令语句分开处理的机制（占位符），以及校验输入值。",
+      "explanation_en": "In a program that joins input strings directly into its commands, symbols and words mixed into the input change what the command means. The result can be leaked private member data, altered or deleted records, or a bypassed login check. The countermeasures are a mechanism that handles input separately from the command (placeholders) and validation of input values.",
+      "memory_hook_jp": "インジェクションは英語の injection (注入) で、注射を指す語でもある。",
+      "memory_hook_zh": "インジェクション就是英语的 injection（注入），这个词也指打针。",
+      "memory_hook_en": "\"Injection\" is the same word used for a shot given with a syringe.",
+      "inline_quiz": [
+        "2017h29a-q065"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ディレクトリトラバーサル",
-      "definition_jp": "相対パスを悪用し、公開外のファイルへ不正にアクセスする攻撃。",
-      "explanation_jp": "ディレクトリトラバーサルは、ファイル名の指定に「上の階層へ戻る」相対パス指定を紛れ込ませ、本来公開されていないサーバ上のファイル(設定ファイルやパスワード情報など)へ不正にアクセスする攻撃です。\n\n試験では、サーバ上の「ファイル」を狙う点が問われます。データベースを狙うSQLインジェクションと並ぶサーバ側攻撃ですが、標的がファイルシステムである点が区別の鍵です。対策はファイルパスの検証やアクセス権の適切な設定です。",
-      "analogy_jp": "図書館で「閲覧室の隣の本」と頼むふりをして、廊下や階段をたどり立入禁止の書庫まで入り込み、非公開の資料を持ち出すようなものです。",
-      "memory_hook_jp": "ディレクトリトラバーサルといえば相対パスを悪用し公開外ファイルへ不正アクセスする攻撃",
-      "inline_quiz": [
-        "2017h29a-q091"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "目录遍历",
       "term_en": "Directory Traversal",
-      "definition_zh": "滥用相对路径，非法访问非公开文件的攻击。",
-      "definition_en": "An attack that abuses relative paths to illegitimately access files that are not meant to be public.",
-      "explanation_zh": "目录遍历是在文件名的指定中混入“返回上层目录”的相对路径指定，从而非法访问服务器上本不公开的文件（配置文件、密码信息等）的攻击。\n\n考试中会考查它针对的是服务器上的“文件”这一点。它与针对数据库的 SQL 注入同属服务器端攻击，但区分的关键在于其目标是文件系统。对策是对文件路径进行校验，以及恰当地设置访问权限。",
-      "explanation_en": "Directory traversal is an attack that slips a relative-path specification meaning \"go back up a level\" into a file-name specification, thereby illegitimately accessing files on the server that are not meant to be public (configuration files, password information, etc.).\n\nOn the exam, you are asked to recognize that it targets \"files\" on the server. It is a server-side attack alongside SQL injection, which targets the database, but the key distinction is that its target is the file system. The countermeasures are validating file paths and appropriately setting access permissions.",
-      "analogy_zh": "就像在图书馆假装请求“阅览室隔壁的书”，却沿着走廊、楼梯一路潜入禁止进入的书库，把非公开的资料带了出来。",
-      "analogy_en": "It's like pretending in a library to request \"the book next to the reading room,\" but following the corridors and stairs all the way into the off-limits stacks and carrying off non-public materials.",
-      "memory_hook_zh": "说到目录遍历，就是滥用相对路径非法访问非公开文件的攻击",
-      "memory_hook_en": "Directory traversal → an attack that abuses relative paths to illegitimately access non-public files"
+      "one_jp": "**ディレクトリトラバーサル** は、ファイル名の指定に上の階層へ戻る **パス** の書き方を混ぜ、サーバ上の公開していないファイルを読み出す攻撃である。",
+      "one_zh": "**目录遍历**（[[jp:ディレクトリトラバーサル]]）是在指定文件名时混入返回上级目录的**路径**写法，读取服务器上未公开文件的攻击。",
+      "one_en": "**Directory traversal** ([[jp:ディレクトリトラバーサル]]) is an attack that mixes **path** notation for going up a level into a requested file name in order to read files on the server that were never made public.",
+      "detail_jp": "パスとは、フォルダ (ディレクトリ) の階層をたどってファイルの場所を示す書き方で、例えば「../」は一つ上の階層を表す。利用者が指定したファイル名をそのまま使って中身を返すプログラムでは、「../」を重ねることで公開用のフォルダの外へ出られてしまう。対策は、指定されたファイル名を検証して階層の移動を許さないことや、公開しないファイルへのアクセス権を絞ることである。",
+      "detail_zh": "路径是沿着文件夹（目录）的层级指示文件位置的写法，例如“../”表示上一级。如果程序直接用用户指定的文件名返回内容，叠加“../”就能跳出公开用的文件夹。对策是校验所指定的文件名、不允许在层级间移动，以及收紧对非公开文件的访问权限。",
+      "detail_en": "A path is notation that shows where a file is by tracing the levels of folders (directories); for example, \"../\" means one level up. If a program returns contents using a user-supplied file name as is, repeating \"../\" lets the request escape the public folder. Countermeasures include validating requested file names so they cannot move between levels and tightening access rights to files that are not public.",
+      "analogy_jp": "資料室の窓口に「この棚の 3 冊目」ではなく「この棚から通路へ戻り、奥の書庫の 1 冊目」と頼み、確かめずに非公開の資料を出させるようなもの。",
+      "analogy_zh": "就像对资料室窗口说的不是“这个架子的第 3 本”，而是“从这个架子退回通道，再去里面书库的第 1 本”，窗口不加确认就把非公开资料拿了出来。",
+      "analogy_en": "It is like asking a reference desk not for \"the third book on this shelf\" but for \"back out of this shelf to the corridor, then the first book in the closed stacks\", and the clerk hands over the restricted material without checking.",
+      "hook_jp": "トラバーサルは traverse (たどる・横切る) から来た語。ディレクトリの階層をたどって外へ出る、と語の並びがそのまま手口を表す。",
+      "hook_zh": "トラバーサル源自 traverse（沿着走、穿过）。“沿着目录层级走出去”，词的组合本身就说明了手法。",
+      "hook_en": "\"Traversal\" comes from \"traverse\" (to travel across or through). Read as a phrase, \"directory traversal\" names the trick itself: travelling through the directory levels and out.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ディレクトリトラバーサル** が狙うのはサーバ上のファイルであり、データベースに命令を実行させる **SQLインジェクション** とは標的が異なる。",
+          "text_zh": "**目录遍历**（[[jp:ディレクトリトラバーサル]]）的目标是服务器上的文件，而 **SQL 注入**（[[jp:SQLインジェクション]]）是让数据库执行命令，两者的攻击对象不同。",
+          "text_en": "**Directory traversal** ([[jp:ディレクトリトラバーサル]]) goes after files on the server, while **SQL injection** ([[jp:SQLインジェクション]]) makes the database run commands, so the two have different targets."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "req",
+              "label": {
+                "jp": "ファイル名に上の階層へ戻る指定を混ぜる",
+                "zh": "在文件名中混入返回上级的写法",
+                "en": "File name includes go-up steps"
+              }
+            },
+            {
+              "id": "up",
+              "label": {
+                "jp": "公開用フォルダの外へさかのぼる",
+                "zh": "回溯到公开文件夹之外",
+                "en": "Climbs out of the public folder"
+              }
+            },
+            {
+              "id": "read",
+              "label": {
+                "jp": "非公開のファイルが読まれる",
+                "zh": "非公开文件被读取",
+                "en": "Private files are read"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "攻撃者が、表示させたいファイル名の指定に、上の階層へ戻る書き方を何度か重ねて送る。",
+            "caption_zh": "攻击者在想要显示的文件名中，把返回上级目录的写法叠加好几次后发送。",
+            "caption_en": "The attacker sends a file name with the notation for going up a level repeated several times.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "指定を確かめないプログラムは、公開用フォルダより上の階層へたどってしまう。",
+            "caption_zh": "不检查所指定内容的程序，会一路回溯到公开文件夹之上的层级。",
+            "caption_en": "A program that does not check the request climbs to levels above the public folder.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "設定ファイルなど、本来は外から見えないファイルの中身が返される。",
+            "caption_zh": "设置文件等本不该从外部看到的文件，其内容被返回。",
+            "caption_en": "The contents of files that should never be visible from outside, such as configuration files, are sent back.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ディレクトリトラバーサル は、ファイル名の指定に上の階層へ戻る パス の書き方を混ぜ、サーバ上の公開していないファイルを読み出す攻撃である。",
+      "definition_zh": "目录遍历（ディレクトリトラバーサル）是在指定文件名时混入返回上级目录的路径写法，读取服务器上未公开文件的攻击。",
+      "definition_en": "Directory traversal (ディレクトリトラバーサル) is an attack that mixes path notation for going up a level into a requested file name in order to read files on the server that were never made public.",
+      "explanation_jp": "パスとは、フォルダ (ディレクトリ) の階層をたどってファイルの場所を示す書き方で、例えば「../」は一つ上の階層を表す。利用者が指定したファイル名をそのまま使って中身を返すプログラムでは、「../」を重ねることで公開用のフォルダの外へ出られてしまう。対策は、指定されたファイル名を検証して階層の移動を許さないことや、公開しないファイルへのアクセス権を絞ることである。",
+      "explanation_zh": "路径是沿着文件夹（目录）的层级指示文件位置的写法，例如“../”表示上一级。如果程序直接用用户指定的文件名返回内容，叠加“../”就能跳出公开用的文件夹。对策是校验所指定的文件名、不允许在层级间移动，以及收紧对非公开文件的访问权限。",
+      "explanation_en": "A path is notation that shows where a file is by tracing the levels of folders (directories); for example, \"../\" means one level up. If a program returns contents using a user-supplied file name as is, repeating \"../\" lets the request escape the public folder. Countermeasures include validating requested file names so they cannot move between levels and tightening access rights to files that are not public.",
+      "memory_hook_jp": "トラバーサルは traverse (たどる・横切る) から来た語。ディレクトリの階層をたどって外へ出る、と語の並びがそのまま手口を表す。",
+      "memory_hook_zh": "トラバーサル源自 traverse（沿着走、穿过）。“沿着目录层级走出去”，词的组合本身就说明了手法。",
+      "memory_hook_en": "\"Traversal\" comes from \"traverse\" (to travel across or through). Read as a phrase, \"directory traversal\" names the trick itself: travelling through the directory levels and out.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "バッファオーバーフロー攻撃",
-      "definition_jp": "用意した記憶領域を超えるデータを送り込み、プログラムを誤動作させる攻撃。",
-      "explanation_jp": "バッファオーバーフロー攻撃は、プログラムが確保したバッファ(一時的な記憶領域)の容量を超える大きさのデータを送り込み、あふれた部分で隣接するメモリを上書きして、プログラムを異常終了させたり不正なコードを実行させたりする攻撃です。\n\n試験では、メモリの容量を超えるデータでプログラムの脆弱性を突く低レイヤの攻撃である点が問われます。入力値の長さを検査していないプログラムが狙われ、対策は入力サイズのチェックや安全な関数の利用です。",
-      "analogy_jp": "決められた大きさのコップに水をあふれるまで注ぎ、こぼれた水で周りの書類(隣のデータ)を汚し、書いてある内容を書き換えてしまうようなものです。",
-      "memory_hook_jp": "バッファオーバーフロー攻撃といえば記憶領域を超えるデータでプログラムを誤動作させる攻撃",
+      "term_zh": "缓冲区溢出攻击",
+      "term_en": "Buffer Overflow Attack",
+      "one_jp": "**バッファオーバーフロー攻撃** は、プログラムが入力用に確保した記憶領域 (**バッファ**) の大きさを超えるデータを送り込み、プログラムに想定外の振る舞いをさせる攻撃である。",
+      "one_zh": "**缓冲区溢出攻击**（[[jp:バッファオーバーフロー攻撃]]）是向程序送入超过其为输入预留的存储区域（**缓冲区**）大小的数据，使程序出现意外行为的攻击。",
+      "one_en": "A **buffer overflow attack** ([[jp:バッファオーバーフロー攻撃]]) sends a program more data than the memory area it reserved for input (the **buffer**) can hold, making the program behave in unexpected ways.",
+      "detail_jp": "入力の長さを確かめないプログラムでは、領域からあふれたデータが隣のメモリの内容を上書きする。上書きの結果、プログラムが異常終了したり、攻撃者が送り込んだ命令が実行されたりする。対策は、入力の長さの検査に加え、欠陥を直した修正プログラム (パッチ) をソフトウェアに適用することである。",
+      "detail_zh": "在不检查输入长度的程序中，溢出区域的数据会覆盖相邻内存的内容。覆盖的结果是程序异常终止，或者攻击者送入的命令被执行。对策除了检查输入长度之外，还要为软件应用修复缺陷的修正程序（补丁）。",
+      "detail_en": "In a program that does not check input length, data spilling out of the area overwrites the neighboring memory. This can make the program crash or run commands the attacker sent in. Besides checking input length, the countermeasure is to apply fixes for the flaw (patches) to the software.",
+      "analogy_jp": "決まった大きさの升に米を注ぎ続け、あふれた米が隣の升に流れ込んで中身を混ぜてしまうようなもの。",
+      "analogy_zh": "就像往固定大小的升里不停倒米，溢出的米流进旁边的升，把里面的东西混在一起。",
+      "analogy_en": "It is like pouring rice into a fixed-size measuring box until it spills into the box next to it and mixes with what is already there.",
+      "hook_jp": "オーバーフローは overflow (あふれる)。バッファはもともと「緩衝材・一時置き場」を指す語である。",
+      "hook_zh": "オーバーフロー就是 overflow（溢出）。バッファ（buffer）原本指“缓冲物、临时存放处”。",
+      "hook_en": "\"Overflow\" means to spill over. \"Buffer\" originally means a cushion or a place to hold things for a while.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**バッファオーバーフロー攻撃** は、入力用に確保された領域の大きさを超えるデータを与えて、プログラムに想定外の振る舞いを起こさせる攻撃である。",
+          "text_zh": "**缓冲区溢出攻击**（[[jp:バッファオーバーフロー攻撃]]）是提供超出为输入预留区域大小的数据，使程序发生意外行为的攻击。",
+          "text_en": "A **buffer overflow attack** ([[jp:バッファオーバーフロー攻撃]]) feeds a program data larger than the area reserved for its input, causing the program to behave in unexpected ways.",
+          "qids": [
+            "2014h26a-q059"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "原因はソフトウェアの作りの欠陥 (脆弱性) なので、脆弱性を直す修正プログラム (パッチ) を適用することが有効な対策になる。",
+          "text_zh": "其根源在于软件构造上的缺陷（漏洞，[[jp:脆弱性]]），因此应用修复漏洞的修正程序（补丁，[[jp:パッチ]]）是有效的对策。",
+          "text_en": "The cause is a flaw in how the software is built (a vulnerability, [[jp:脆弱性]]), so applying a fix for that flaw (a patch, [[jp:パッチ]]) is an effective countermeasure.",
+          "qids": [
+            "2017h29h-q080",
+            "2025r07-q070"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "1 回の入力が長すぎることで起きるのが **バッファオーバーフロー攻撃** である。要求を大量に浴びせてサーバを応答不能にする **DoS 攻撃** とは別物である。",
+          "text_zh": "因单次输入过长而引发的是 **缓冲区溢出攻击**。用大量请求冲击服务器、使其无法响应的 **DoS 攻击**（[[jp:DoS 攻撃]]）是另一回事。",
+          "text_en": "A **buffer overflow attack** is caused by a single input that is too long. It is a different thing from a **DoS attack** ([[jp:DoS 攻撃]]), which floods a server with requests until it can no longer respond."
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-23-61-u09-t02.svg"
+        }
+      },
+      "quiz": [
+        "2014h26a-q059",
+        "2017h29h-q080"
+      ],
+      "definition_jp": "バッファオーバーフロー攻撃 は、プログラムが入力用に確保した記憶領域 (バッファ) の大きさを超えるデータを送り込み、プログラムに想定外の振る舞いをさせる攻撃である。",
+      "definition_zh": "缓冲区溢出攻击（バッファオーバーフロー攻撃）是向程序送入超过其为输入预留的存储区域（缓冲区）大小的数据，使程序出现意外行为的攻击。",
+      "definition_en": "A buffer overflow attack (バッファオーバーフロー攻撃) sends a program more data than the memory area it reserved for input (the buffer) can hold, making the program behave in unexpected ways.",
+      "explanation_jp": "入力の長さを確かめないプログラムでは、領域からあふれたデータが隣のメモリの内容を上書きする。上書きの結果、プログラムが異常終了したり、攻撃者が送り込んだ命令が実行されたりする。対策は、入力の長さの検査に加え、欠陥を直した修正プログラム (パッチ) をソフトウェアに適用することである。",
+      "explanation_zh": "在不检查输入长度的程序中，溢出区域的数据会覆盖相邻内存的内容。覆盖的结果是程序异常终止，或者攻击者送入的命令被执行。对策除了检查输入长度之外，还要为软件应用修复缺陷的修正程序（补丁）。",
+      "explanation_en": "In a program that does not check input length, data spilling out of the area overwrites the neighboring memory. This can make the program crash or run commands the attacker sent in. Besides checking input length, the countermeasure is to apply fixes for the flaw (patches) to the software.",
+      "memory_hook_jp": "オーバーフローは overflow (あふれる)。バッファはもともと「緩衝材・一時置き場」を指す語である。",
+      "memory_hook_zh": "オーバーフロー就是 overflow（溢出）。バッファ（buffer）原本指“缓冲物、临时存放处”。",
+      "memory_hook_en": "\"Overflow\" means to spill over. \"Buffer\" originally means a cushion or a place to hold things for a while.",
       "inline_quiz": [
-        "2014h26a-q059"
+        "2014h26a-q059",
+        "2017h29h-q080"
       ],
       "inline_fallback": false,
       "figure": {
         "mermaid": "graph TD; A[\"攻撃者が過大なデータを送信\"] --> B[\"バッファの容量を超過\"]; B --> C[\"あふれた分が隣接メモリを上書き\"]; C --> D[\"プログラムが異常終了\"]; C --> E[\"不正なコードを実行\"]",
         "svg_path": "figures/technology-23-61-u09-t02.svg",
         "rendered": true
-      },
-      "term_zh": "缓冲区溢出攻击",
-      "term_en": "Buffer Overflow Attack",
-      "definition_zh": "送入超过预留存储区域的数据，使程序发生误动作的攻击。",
-      "definition_en": "An attack that sends data exceeding the reserved storage area, causing the program to malfunction.",
-      "explanation_zh": "缓冲区溢出攻击是送入超过程序所分配缓冲区（临时存储区域）容量大小的数据，用溢出的部分覆盖相邻内存，从而使程序异常终止或执行恶意代码的攻击。\n\n考试中会考查它是用超过内存容量的数据来攻击程序漏洞的底层攻击这一点。未检查输入值长度的程序会成为目标，对策是检查输入大小以及使用安全的函数。",
-      "explanation_en": "A buffer overflow attack sends data larger than the capacity of the buffer (temporary storage area) a program has allocated, overwriting adjacent memory with the overflowing portion, thereby causing the program to terminate abnormally or to execute malicious code.\n\nOn the exam, you are asked to recognize that it is a low-level attack that exploits a program's vulnerability with data exceeding the memory capacity. Programs that do not check the length of input values are targeted, and the countermeasures are checking input size and using safe functions.",
-      "analogy_zh": "就像往规定大小的杯子里倒水直到溢出，溢出的水弄脏了周围的文件（相邻的数据），把上面写的内容给改写了。",
-      "analogy_en": "It's like pouring water into a cup of a fixed size until it overflows, and the spilled water soils the surrounding documents (adjacent data), rewriting what was written on them.",
-      "memory_hook_zh": "说到缓冲区溢出攻击，就是用超过存储区域的数据使程序误动作的攻击",
-      "memory_hook_en": "Buffer overflow attack → an attack that makes a program malfunction with data exceeding the storage area"
+      }
     }
   ],
+  "pairs": [
+    {
+      "a": "クロスサイトスクリプティング",
+      "b": "クロスサイトリクエストフォージェリ",
+      "rows": [
+        {
+          "label_jp": "攻撃者が送り込むもの",
+          "label_zh": "攻击者送入的东西",
+          "label_en": "What the attacker sends in",
+          "a_jp": "ブラウザで動くスクリプト",
+          "a_zh": "在浏览器中运行的脚本",
+          "a_en": "A script that runs in the browser",
+          "b_jp": "本人名義の偽の依頼",
+          "b_zh": "以本人名义伪造的请求",
+          "b_en": "A fake request in the user's name",
+          "key": false
+        },
+        {
+          "label_jp": "不正な処理が起きる場所",
+          "label_zh": "发生非法处理的位置",
+          "label_en": "Where the wrongdoing happens",
+          "a_jp": "閲覧者のブラウザ",
+          "a_zh": "浏览者的浏览器",
+          "a_en": "The viewer's browser",
+          "b_jp": "正規サイトのサーバ",
+          "b_zh": "正规网站的服务器",
+          "b_en": "The legitimate site's server",
+          "key": true
+        },
+        {
+          "label_jp": "悪用されるもの",
+          "label_zh": "被利用的东西",
+          "label_en": "What is exploited",
+          "a_jp": "文字列を無害化せずに表示する作り",
+          "a_zh": "不做无害化处理就显示文字的设计",
+          "a_en": "Showing text without sanitizing it",
+          "b_jp": "ログインしたままの状態",
+          "b_zh": "保持登录的状态",
+          "b_en": "The user still being logged in",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "クロスサイトスクリプティング",
+      "b": "バッファオーバーフロー攻撃",
+      "rows": [
+        {
+          "label_jp": "送り込むもの",
+          "label_zh": "送入的东西",
+          "label_en": "What is sent in",
+          "a_jp": "スクリプトを混ぜた文字列",
+          "a_zh": "混入脚本的文字",
+          "a_en": "Text with a script mixed in",
+          "b_jp": "確保された領域より長いデータ",
+          "b_zh": "超出预留区域的长数据",
+          "b_en": "Data longer than the reserved area",
+          "key": false
+        },
+        {
+          "label_jp": "突かれる弱点",
+          "label_zh": "被利用的弱点",
+          "label_en": "Weakness exploited",
+          "a_jp": "入力を無害化せずに出力すること",
+          "a_zh": "对输入不做无害化处理就直接输出",
+          "a_en": "Outputting input without sanitizing it",
+          "b_jp": "入力の長さを確かめないこと",
+          "b_zh": "不检查输入长度",
+          "b_en": "Not checking input length",
+          "key": true
+        },
+        {
+          "label_jp": "被害が起きる場所",
+          "label_zh": "受害的位置",
+          "label_en": "Where the damage occurs",
+          "a_jp": "閲覧者のブラウザ",
+          "a_zh": "浏览者的浏览器",
+          "a_en": "The viewer's browser",
+          "b_jp": "攻撃を受けたプログラムそのもの",
+          "b_zh": "受攻击的程序本身",
+          "b_en": "The attacked program itself",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "SQLインジェクション",
+      "b": "ディレクトリトラバーサル",
+      "rows": [
+        {
+          "label_jp": "入力に混ぜるもの",
+          "label_zh": "混入输入的东西",
+          "label_en": "Mixed into the input",
+          "a_jp": "SQL の記号や語句",
+          "a_zh": "SQL 的符号和词语",
+          "a_en": "SQL symbols and keywords",
+          "b_jp": "上の階層へ戻るパス (../)",
+          "b_zh": "返回上级的路径（../）",
+          "b_en": "Paths that go up a level (../)",
+          "key": false
+        },
+        {
+          "label_jp": "標的",
+          "label_zh": "攻击对象",
+          "label_en": "Target",
+          "a_jp": "データベース",
+          "a_zh": "数据库",
+          "a_en": "The database",
+          "b_jp": "サーバ上のファイル",
+          "b_zh": "服务器上的文件",
+          "b_en": "Files on the server",
+          "key": true
+        },
+        {
+          "label_jp": "対策の例",
+          "label_zh": "对策示例",
+          "label_en": "Example countermeasures",
+          "a_jp": "プレースホルダの利用、入力値の検証",
+          "a_zh": "使用占位符、校验输入值",
+          "a_en": "Placeholders, input validation",
+          "b_jp": "ファイル名の検証、アクセス権の絞り込み",
+          "b_zh": "校验文件名、收紧访问权限",
+          "b_en": "File-name validation, tighter access rights",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "この単元の攻撃の多くは、利用者から受け取った入力を確かめずに使うプログラムの作りを突く。入力の無害化や検証が共通の基本対策になる。",
+    "ページを表示しただけで被害が始まる攻撃もあるため、OS やブラウザを最新に保って脆弱性をふさぐことが利用者側の防御になる。",
+    "**CSRF** やクリックジャッキングのように、利用者がログインしたままの状態を悪用して、本人が意図しない処理を本人の操作として実行させる攻撃もある。"
+  ],
+  "key_points_zh": [
+    "本单元的多数攻击，针对的是不加检查就使用用户输入的程序设计。对输入进行无害化处理和校验，是共同的基本对策。",
+    "有些攻击只要显示页面就会开始造成损害，因此让操作系统和浏览器保持最新、堵住漏洞，是用户这一方的防御。",
+    "也有像 **CSRF** 和点击劫持这样的攻击，利用用户保持登录的状态，把本人无意的处理当作本人的操作来执行。"
+  ],
+  "key_points_en": [
+    "Most attacks in this unit target programs that use input received from users without checking it. Sanitizing and validating input is the common basic countermeasure.",
+    "Some attacks start doing harm the moment a page is displayed, so keeping the OS and browser up to date to close vulnerabilities is the defense on the user's side.",
+    "Some attacks, such as **CSRF** and clickjacking, exploit the fact that the user is still logged in and have processing the user never intended carried out as the user's own action."
+  ],
+  "overview": {
+    "intro_jp": "7 つの攻撃を、不正な処理や被害がどこで起きるかで区別できる。名前の似た攻撃を、攻撃者が送り込むものと悪用される弱点で見分けられる。受け取った入力をそのまま使わずに確かめることやソフトウェアの更新といった基本の対策が、どの攻撃に効くかを説明できる。",
+    "intro_zh": "能按非法处理或损害发生在何处，区分这 7 种攻击。能根据攻击者送入的东西和被利用的弱点，分辨名称相似的攻击。能说明先确认收到的输入再使用、更新软件等基本对策分别对哪些攻击有效。",
+    "intro_en": "Tell the seven attacks apart by where the unauthorized processing or the damage takes place. Distinguish attacks with similar names by what the attacker sends in and which weakness is exploited. Explain which attacks are countered by basic measures such as checking received input before using it and keeping software updated.",
+    "freq_badge": "頻出",
+    "est_minutes": 50
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "クロスサイトスクリプティング: クロスサイトスクリプティングといえば不正スクリプトを閲覧者のブラウザで実行させる攻撃",
-      "クロスサイトリクエストフォージェリ: クロスサイトリクエストフォージェリといえばログイン中の本人になりすまし不正処理を送らせる攻撃",
-      "クリックジャッキング: クリックジャッキングといえば透明な罠を重ねて意図しないクリックをさせる攻撃",
-      "ドライブバイダウンロード: ドライブバイダウンロードといえば閲覧しただけで勝手に不正プログラムを送り込む攻撃",
-      "SQLインジェクション: SQLインジェクションといえば不正なSQL文を注入しデータベースを不正操作する攻撃",
-      "ディレクトリトラバーサル: ディレクトリトラバーサルといえば相対パスを悪用し公開外ファイルへ不正アクセスする攻撃",
-      "バッファオーバーフロー攻撃: バッファオーバーフロー攻撃といえば記憶領域を超えるデータでプログラムを誤動作させる攻撃"
-    ],
     "key_points_jp": [
-      "Webアプリへの攻撃は「利用者を狙う系(XSS・CSRF・クリックジャッキング・ドライブバイダウンロード)」と「サーバ/プログラムを狙う系(SQLインジェクション・ディレクトリトラバーサル・バッファオーバーフロー)」に大別できる。",
-      "XSSは不正スクリプトを閲覧者のブラウザで実行させる攻撃、CSRFはログイン状態を悪用し本人になりすまして不正処理を送らせる攻撃で、この区別が頻出。",
-      "ドライブバイダウンロードは利用者の操作なしに閲覧だけで感染する点が特徴で、OS・ソフトの更新による脆弱性対策が有効。",
-      "SQLインジェクションはデータベースを、ディレクトリトラバーサルはサーバ上のファイルを狙う点で標的が異なる。対策は入力値の検証やバインド機構の利用。",
-      "バッファオーバーフロー攻撃は記憶領域の容量超過でメモリを上書きしプログラムを誤動作させる低レイヤ攻撃で、入力サイズの検査が対策となる。"
+      "この単元の攻撃の多くは、利用者から受け取った入力を確かめずに使うプログラムの作りを突く。入力の無害化や検証が共通の基本対策になる。",
+      "ページを表示しただけで被害が始まる攻撃もあるため、OS やブラウザを最新に保って脆弱性をふさぐことが利用者側の防御になる。",
+      "CSRF やクリックジャッキングのように、利用者がログインしたままの状態を悪用して、本人が意図しない処理を本人の操作として実行させる攻撃もある。"
     ],
     "key_points_zh": [
-      "针对 Web 应用的攻击大致可分为“针对用户的类型（XSS、CSRF、点击劫持、路过式下载）”和“针对服务器/程序的类型（SQL 注入、目录遍历、缓冲区溢出）”。",
-      "XSS 是让恶意脚本在浏览者浏览器上执行的攻击，CSRF 是利用登录状态冒充本人发送非法处理的攻击，二者的区分是高频考点。",
-      "路过式下载的特征是无需用户操作、仅浏览就会感染，通过更新操作系统和软件来防范漏洞是有效的对策。",
-      "SQL 注入针对数据库，目录遍历针对服务器上的文件，二者攻击目标不同。对策是校验输入值和使用绑定机制。",
-      "缓冲区溢出攻击是利用存储区域容量超额覆盖内存、使程序误动作的底层攻击，检查输入大小是其对策。"
+      "本单元的多数攻击，针对的是不加检查就使用用户输入的程序设计。对输入进行无害化处理和校验，是共同的基本对策。",
+      "有些攻击只要显示页面就会开始造成损害，因此让操作系统和浏览器保持最新、堵住漏洞，是用户这一方的防御。",
+      "也有像 CSRF 和点击劫持这样的攻击，利用用户保持登录的状态，把本人无意的处理当作本人的操作来执行。"
     ],
     "key_points_en": [
-      "Attacks on web applications can be broadly divided into \"those targeting users (XSS, CSRF, clickjacking, drive-by download)\" and \"those targeting servers/programs (SQL injection, directory traversal, buffer overflow).\"",
-      "XSS is an attack that runs a malicious script in the viewer's browser, while CSRF is an attack that abuses the logged-in state to impersonate the user and send unauthorized operations; distinguishing the two is a frequent exam point.",
-      "Drive-by download is characterized by infecting just from viewing, without user operation; updating the OS and software to address vulnerabilities is an effective countermeasure.",
-      "SQL injection targets the database, while directory traversal targets files on the server—their targets differ. The countermeasures are validating input values and using the bind mechanism.",
-      "A buffer overflow attack is a low-level attack that overwrites memory by exceeding the storage area's capacity, causing the program to malfunction; checking input size is its countermeasure."
+      "Most attacks in this unit target programs that use input received from users without checking it. Sanitizing and validating input is the common basic countermeasure.",
+      "Some attacks start doing harm the moment a page is displayed, so keeping the OS and browser up to date to close vulnerabilities is the defense on the user's side.",
+      "Some attacks, such as CSRF and clickjacking, exploit the fact that the user is still logged in and have processing the user never intended carried out as the user's own action."
+    ],
+    "memory_hooks_jp": [
+      "クロスサイトスクリプティング: XSS の X は cross (交差) を表す略記で、スタイルシートの CSS と取り違えないためにこう書く。",
+      "クロスサイトリクエストフォージェリ: フォージェリは forgery (偽造) のこと。この攻撃で偽造されるのは、サーバへの依頼 (リクエスト) である。",
+      "クリックジャッキング: ジャッキングはハイジャック (乗っ取り) の jack と同じ。乗っ取られるのは利用者のクリックである。",
+      "ドライブバイダウンロード: drive-by は「車で通りかかりざまに」という意味。通りかかっただけ、つまりページを閲覧しただけで被害に遭うと読む。",
+      "SQLインジェクション: インジェクションは英語の injection (注入) で、注射を指す語でもある。",
+      "ディレクトリトラバーサル: トラバーサルは traverse (たどる・横切る) から来た語。ディレクトリの階層をたどって外へ出る、と語の並びがそのまま手口を表す。",
+      "バッファオーバーフロー攻撃: オーバーフローは overflow (あふれる)。バッファはもともと「緩衝材・一時置き場」を指す語である。"
     ],
     "memory_hooks_zh": [
-      "跨站脚本：说到跨站脚本，就是让恶意脚本在浏览者浏览器上执行的攻击",
-      "跨站请求伪造：说到跨站请求伪造，就是冒充登录中的本人、代其向服务器发送非法请求的攻击",
-      "点击劫持：说到点击劫持，就是叠加透明陷阱诱使非本意点击的攻击",
-      "路过式下载：说到路过式下载，就是仅仅浏览就被擅自植入恶意程序的攻击",
-      "SQL 注入：说到 SQL 注入，就是注入恶意 SQL 语句非法操作数据库的攻击",
-      "目录遍历：说到目录遍历，就是滥用相对路径非法访问非公开文件的攻击",
-      "缓冲区溢出攻击：说到缓冲区溢出攻击，就是用超过存储区域的数据使程序误动作的攻击"
+      "跨站脚本：XSS 中的 X 是表示 cross（交叉）的简写，这样写是为了不和样式表 CSS 混淆。",
+      "跨站请求伪造：フォージェリ就是 forgery（伪造）。这种攻击伪造的是发给服务器的请求。",
+      "点击劫持：ジャッキング与 hijack（劫持）中的 jack 是同一个词。被劫持的是用户的点击。",
+      "路过式下载：drive-by 的意思是“开车路过时顺便”。只是路过，也就是只浏览了页面，就会受害。",
+      "SQL 注入：インジェクション就是英语的 injection（注入），这个词也指打针。",
+      "目录遍历：トラバーサル源自 traverse（沿着走、穿过）。“沿着目录层级走出去”，词的组合本身就说明了手法。",
+      "缓冲区溢出攻击：オーバーフロー就是 overflow（溢出）。バッファ（buffer）原本指“缓冲物、临时存放处”。"
     ],
     "memory_hooks_en": [
-      "Cross-site scripting: Cross-site scripting → an attack that runs a malicious script in the viewer's browser",
-      "Cross-site request forgery: Cross-site request forgery → an attack that impersonates the logged-in user to send unauthorized requests on the user's behalf",
-      "Clickjacking: Clickjacking → an attack that overlays an invisible trap to cause unintended clicks",
-      "Drive-by download: Drive-by download → an attack that plants a malicious program on its own just by viewing",
-      "SQL injection: SQL injection → an attack that injects malicious SQL statements to manipulate the database illegitimately",
-      "Directory traversal: Directory traversal → an attack that abuses relative paths to illegitimately access non-public files",
-      "Buffer overflow attack: Buffer overflow attack → an attack that makes a program malfunction with data exceeding the storage area"
+      "Cross-Site Scripting (XSS): The X in XSS is shorthand for \"cross\"; writing it this way keeps it from being confused with CSS, the style-sheet language.",
+      "Cross-Site Request Forgery (CSRF): \"Forgery\" here refers to a forged request to the server.",
+      "Clickjacking: The \"jacking\" is the same \"jack\" as in hijack. What gets hijacked is the user's click.",
+      "Drive-by Download: \"Drive-by\" means done while passing in a car. Just passing by, which here means merely viewing a page, is enough to be hit.",
+      "SQL Injection: \"Injection\" is the same word used for a shot given with a syringe.",
+      "Directory Traversal: \"Traversal\" comes from \"traverse\" (to travel across or through). Read as a phrase, \"directory traversal\" names the trick itself: travelling through the directory levels and out.",
+      "Buffer Overflow Attack: \"Overflow\" means to spill over. \"Buffer\" originally means a cushion or a place to hold things for a while."
     ]
   },
   "challenge_questions": [
-    "2017h29h-q080",
+    "2012h24a-q060",
     "2018h30a-q077",
+    "2020r02o-q056",
     "2023r05-q058",
-    "2025r07-q070",
-    "2020r02o-q056"
+    "2025r07-q070"
   ],
   "source_figures": [
     {
@@ -252,9 +1119,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "针对 Web 应用的攻击",
-  "title_en": "Attacks on Web Applications",
-  "unit_summary_zh": "理解利用 Web 应用漏洞发起的攻击，如跨站脚本、SQL 注入、缓冲区溢出等。",
-  "unit_summary_en": "Understand attacks that exploit web application vulnerabilities, such as cross-site scripting, SQL injection, and buffer overflow."
+  }
 }
