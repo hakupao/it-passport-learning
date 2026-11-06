@@ -34,7 +34,7 @@
 | b25 | management-12-31 | システム監査 | u01 u02 | 58 | 14 | done (S147, attempts 1/2, Rule A PASS after 10 patches, D-206 auto) |
 | b26 | technology-21-55 | データベース設計 | u01 u02 u03 | 55 | 14 | done (S147, attempts 2/2/1, Rule A PASS after 23 patches, D-206 auto) |
 | b27 | strategy-02-05 | セキュリティ関連法規 | u01 u02 u03 u04 | 54 | 19 | done (S148, attempts 2/2/1/2, Rule A PASS after 30 patches, D-206 auto) |
-| b28 | management-12-32 | 内部統制 | u01 | 53 | 5 | todo |
+| b28 | management-12-32 | 内部統制 | u01 | 53 | 5 | done (S148, attempts 2, Rule A PASS, no patches, D-206 auto) |
 | b29 | technology-16-44 | システムの評価指標 | u01 u02 u03 u04 | 46 | 17 | todo |
 | b30 | strategy-03-10 | マーケティング (1/2) | u01 u02 u03 u04 u05 | 43 | 29 | todo |
 | b31 | strategy-03-10 | マーケティング (2/2) | u06 u07 | 43 | 7 | todo |
