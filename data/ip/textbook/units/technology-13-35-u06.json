@@ -1,239 +1,868 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-35-u06",
   "topic_id": "technology-13-35",
   "category": "technology",
   "title_jp": "学習の転用と代表的な深層学習モデル",
+  "title_zh": "学习的迁移与代表性的深度学习模型",
+  "title_en": "Transfer of Learning and Representative Deep Learning Models",
   "unit_summary_jp": "学習済みモデルを再利用する技法(事前学習・ファインチューニング・転移学習)と、画像向けCNN・系列向けRNNという代表的な深層学習モデルを学ぶ。",
+  "unit_summary_zh": "学习复用已训练模型的技法（预训练、微调、迁移学习），以及面向图像的 CNN 和面向序列的 RNN 这两类代表性的深度学习模型。",
+  "unit_summary_en": "Learn techniques for reusing already-trained models (pre-training, fine-tuning, transfer learning), along with two representative deep learning models: CNN for images and RNN for sequences.",
   "order_in_topic": 6,
   "prerequisites": [
     "technology-13-35-u05"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、一度学習させたモデルを再利用する技法(事前学習・ファインチューニング・転移学習)と、画像認識に強いCNN・系列データに強いRNNという代表的な深層学習モデルを学ぶ。学習資産をどう使い回し、どんな構造で実装するかを押さえることは、近年出題が増えるAI分野の理解として重要である。",
-    "freq_badge": "標準",
-    "est_minutes": 21,
-    "intro_zh": "在本单元中，你将学习复用已训练模型的技法（预训练、微调、迁移学习），以及擅长图像识别的 CNN 和擅长序列数据的 RNN 这两类代表性的深度学习模型。掌握如何反复利用学习成果、以及用什么结构来实现，对于理解近年来出题日益增多的 AI 领域非常重要。",
-    "intro_en": "In this unit, you will learn techniques for reusing a model once it has been trained (pre-training, fine-tuning, transfer learning), as well as two representative deep learning models: CNN, which is strong at image recognition, and RNN, which is strong at sequential data. Grasping how to reuse learning assets and what structures are used to implement them is important for understanding the AI field, which has appeared on the exam with growing frequency in recent years."
-  },
+  "goals_jp": [
+    "**事前学習**と**ファインチューニング**を、学習させる順番と使うデータの違いで区別できる。",
+    "**転移学習**が、ある課題で得た知識を別の課題に生かす考え方であることを説明できる。",
+    "**CNN**と**RNN**を、得意とするデータの種類と仕組みの違いで分けられる。"
+  ],
+  "goals_zh": [
+    "能从训练的先后顺序和所用数据的不同，区分**预训练**与**微调**。",
+    "能说明**迁移学习**是把在某项任务中获得的知识运用到另一项任务上的思路。",
+    "能根据擅长处理的数据类型和工作原理的不同，区分 **CNN** 与 **RNN**。"
+  ],
+  "goals_en": [
+    "Distinguish **pre-training** from **fine-tuning** by the order in which each is done and the data each uses.",
+    "Explain that **transfer learning** is the idea of putting knowledge gained on one task to work on a different task.",
+    "Tell **CNN** and **RNN** apart by the kind of data each handles well and by how each works."
+  ],
+  "overview_cols_jp": [
+    "単元内での位置づけ"
+  ],
+  "overview_cols_zh": [
+    "在本单元中的定位"
+  ],
+  "overview_cols_en": [
+    "Role in this unit"
+  ],
+  "overview_rows": [
+    {
+      "term": "事前学習",
+      "one_line_jp": "用途を決める前に、大量のデータで幅広い特徴を身につけさせる学習。",
+      "one_line_zh": "在确定用途之前，先用大量数据让模型掌握广泛特征的训练。",
+      "one_line_en": "Training that gives a model broad features from large amounts of data before any specific use is decided.",
+      "extra_jp": [
+        "再利用の土台を作る段階"
+      ],
+      "extra_zh": [
+        "打下可复用基础的阶段"
+      ],
+      "extra_en": [
+        "Stage that builds a reusable base"
+      ]
+    },
+    {
+      "term": "ファインチューニング",
+      "one_line_jp": "学習済みのモデルを、目的に合ったデータで追加学習して調整すること。",
+      "one_line_zh": "用符合目的的数据对已训练好的模型进行追加训练，加以调整。",
+      "one_line_en": "Adjusting an already-trained model by training it further on data suited to the goal.",
+      "extra_jp": [
+        "土台を用途に合わせる段階"
+      ],
+      "extra_zh": [
+        "让基础适应具体用途的阶段"
+      ],
+      "extra_en": [
+        "Stage that adapts the base to a use"
+      ]
+    },
+    {
+      "term": "転移学習",
+      "one_line_jp": "ある課題で学んだ知識を、関連する別の課題に転用する手法。",
+      "one_line_zh": "把在某项任务中学到的知识转用到另一项相关任务上的方法。",
+      "one_line_en": "A method that reuses knowledge learned on one task for a related but different task.",
+      "extra_jp": [
+        "学習済みモデルを使い回す考え方"
+      ],
+      "extra_zh": [
+        "复用已训练模型的思路"
+      ],
+      "extra_en": [
+        "Idea of reusing trained models"
+      ]
+    },
+    {
+      "term": "CNN",
+      "one_line_jp": "画像認識に広く使われる深層学習モデルの略称。",
+      "one_line_zh": "广泛用于图像识别的深度学习模型的缩写。",
+      "one_line_en": "Abbreviation for a deep learning model widely used in image recognition.",
+      "extra_jp": [
+        "画像向けのモデル (略称)"
+      ],
+      "extra_zh": [
+        "面向图像的模型（缩写）"
+      ],
+      "extra_en": [
+        "Model for images (abbreviation)"
+      ]
+    },
+    {
+      "term": "畳み込みニューラルネットワーク",
+      "one_line_jp": "CNN の正式名称。フィルタで画像の局所的な特徴を取り出す。",
+      "one_line_zh": "CNN 的正式名称，用滤波器提取图像的局部特征。",
+      "one_line_en": "The full name of CNN; it uses filters to pick out local features of an image.",
+      "extra_jp": [
+        "画像向けのモデル (正式名称)"
+      ],
+      "extra_zh": [
+        "面向图像的模型（正式名称）"
+      ],
+      "extra_en": [
+        "Model for images (full name)"
+      ]
+    },
+    {
+      "term": "RNN",
+      "one_line_jp": "文章や時系列のように順序に意味があるデータ向けの深層学習モデルの略称。",
+      "one_line_zh": "面向文本、时间序列等顺序有意义的数据的深度学习模型的缩写。",
+      "one_line_en": "Abbreviation for a deep learning model for data whose order matters, such as text or time series.",
+      "extra_jp": [
+        "系列データ向けのモデル (略称)"
+      ],
+      "extra_zh": [
+        "面向序列数据的模型（缩写）"
+      ],
+      "extra_en": [
+        "Model for sequence data (abbreviation)"
+      ]
+    },
+    {
+      "term": "リカレントニューラルネットワーク",
+      "one_line_jp": "RNN の正式名称。前の時点の状態を次の時点の処理に戻して使う。",
+      "one_line_zh": "RNN 的正式名称，把上一时刻的状态送回下一时刻的处理中使用。",
+      "one_line_en": "The full name of RNN; it feeds the state from one time step back into the processing of the next.",
+      "extra_jp": [
+        "系列データ向けのモデル (正式名称)"
+      ],
+      "extra_zh": [
+        "面向序列数据的模型（正式名称）"
+      ],
+      "extra_en": [
+        "Model for sequence data (full name)"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "事前学習",
-      "definition_jp": "大量のデータで先にモデルを学習させ、汎用的な知識を獲得させておく工程。",
-      "explanation_jp": "事前学習は、特定の用途に絞る前に、大規模なデータでモデルをあらかじめ訓練し、画像や言葉の一般的な特徴を身につけさせる工程です。こうして作った学習済みモデルを土台にすると、後の作業を効率よく進められます。\n\n試験では、後述のファインチューニングとセットで『先に汎用知識を学ぶのが事前学習、その後に個別用途へ調整するのがファインチューニング』という順序が問われます。最初からゼロで学習するより、少ないデータ・短い時間で高い性能を出せる点が利点です。",
-      "analogy_jp": "専門学校に入る前に、まず小中高で読み書き計算という基礎を幅広く身につけておくようなもの。この基礎があるから、後で専門分野をすぐ習得できます。",
-      "memory_hook_jp": "事前学習といえば大量データで先に汎用知識を仕込む土台づくり",
+      "term_zh": "预训练",
+      "term_en": "Pre-training",
+      "one_jp": "特定の用途に合わせる前に、**大量のデータ**でモデルを学習させ、多くの用途に共通する特徴を身につけさせておく工程を**事前学習**という。",
+      "one_zh": "在针对特定用途进行调整之前，先用**大量数据**训练模型，让它掌握多种用途共通的特征，这一过程称为**预训练**（[[jp:事前学習]]）。",
+      "one_en": "**Pre-training** ([[jp:事前学習]]) is the process of training a model on **large amounts of data** before tailoring it to a specific use, so that it acquires features shared by many uses.",
+      "detail_jp": "例えば膨大な文章を読ませて言葉のつながり方を覚えさせたり、多種多様な画像を見せて形や色の特徴をつかませたりする。こうして作った**学習済みモデル**を、後から別の目的に合わせるための土台として使う。土台を共有できるので、用途ごとに毎回ゼロから大量のデータを集めて学習させる手間を省ける。",
+      "detail_zh": "例如让模型阅读海量文章来掌握词语之间的衔接方式，或给它看各种各样的图像来把握形状和颜色的特征。这样做出来的**已训练模型**（[[jp:学習済みモデル]]），之后被作为适配其他目的的基础来使用。由于基础可以共用，就省去了每种用途都从零开始收集大量数据再训练的麻烦。",
+      "detail_en": "For example, a model may read a vast amount of text to learn how words connect, or view a wide variety of images to grasp features of shape and color. The resulting **trained model** ([[jp:学習済みモデル]]) later serves as the base for adapting to other purposes. Because that base can be shared, there is no need to gather large amounts of data and train from scratch for every use.",
+      "analogy_jp": "特定の仕事に就く前に、学校で読み書きや計算といった、どの仕事でも使う基礎を広く身につけておくようなもの。",
+      "analogy_zh": "就像在从事某项具体工作之前，先在学校里广泛学好读写、计算这类任何工作都用得上的基础。",
+      "analogy_en": "It is like learning reading, writing and arithmetic at school, basics every job relies on, before taking up any particular job.",
+      "hook_jp": "英語では pre-training。対話 AI の名前に使われる GPT の P は Pre-trained (事前学習済み) の頭文字である。",
+      "hook_zh": "英语叫 pre-training。对话式 AI 的名称 GPT 中的 P，就是 Pre-trained（预训练过的）的首字母。",
+      "hook_en": "The \"P\" in GPT, a name used for conversational AI, is the initial of Pre-trained, from the same word as pre-training.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "多様で大量のデータによる**事前学習**を済ませ、後から調整して多くの用途に使い回せる大規模なモデルを**基盤モデル**という。",
+          "text_zh": "经过使用多样且大量数据的**预训练**（[[jp:事前学習]]），之后再加以调整就能在多种用途中复用的大规模模型，称为**基础模型**（[[jp:基盤モデル]]）。",
+          "text_en": "A large-scale model that has completed **pre-training** ([[jp:事前学習]]) on diverse, massive data and can later be adjusted and reused for many purposes is called a **foundation model** ([[jp:基盤モデル]]).",
+          "qids": [
+            "2025r07-q080"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2025r07-q080"
+      ],
+      "definition_jp": "特定の用途に合わせる前に、大量のデータでモデルを学習させ、多くの用途に共通する特徴を身につけさせておく工程を事前学習という。",
+      "definition_zh": "在针对特定用途进行调整之前，先用大量数据训练模型，让它掌握多种用途共通的特征，这一过程称为预训练（事前学習）。",
+      "definition_en": "Pre-training (事前学習) is the process of training a model on large amounts of data before tailoring it to a specific use, so that it acquires features shared by many uses.",
+      "explanation_jp": "例えば膨大な文章を読ませて言葉のつながり方を覚えさせたり、多種多様な画像を見せて形や色の特徴をつかませたりする。こうして作った学習済みモデルを、後から別の目的に合わせるための土台として使う。土台を共有できるので、用途ごとに毎回ゼロから大量のデータを集めて学習させる手間を省ける。",
+      "explanation_zh": "例如让模型阅读海量文章来掌握词语之间的衔接方式，或给它看各种各样的图像来把握形状和颜色的特征。这样做出来的已训练模型（学習済みモデル），之后被作为适配其他目的的基础来使用。由于基础可以共用，就省去了每种用途都从零开始收集大量数据再训练的麻烦。",
+      "explanation_en": "For example, a model may read a vast amount of text to learn how words connect, or view a wide variety of images to grasp features of shape and color. The resulting trained model (学習済みモデル) later serves as the base for adapting to other purposes. Because that base can be shared, there is no need to gather large amounts of data and train from scratch for every use.",
+      "memory_hook_jp": "英語では pre-training。対話 AI の名前に使われる GPT の P は Pre-trained (事前学習済み) の頭文字である。",
+      "memory_hook_zh": "英语叫 pre-training。对话式 AI 的名称 GPT 中的 P，就是 Pre-trained（预训练过的）的首字母。",
+      "memory_hook_en": "The \"P\" in GPT, a name used for conversational AI, is the initial of Pre-trained, from the same word as pre-training.",
       "inline_quiz": [
         "2025r07-q080"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "预训练",
-      "term_en": "Pre-training",
-      "definition_zh": "用大量数据先训练模型、使其获得通用知识的工序。",
-      "definition_en": "The process of first training a model on a large amount of data so that it acquires general-purpose knowledge.",
-      "explanation_zh": "预训练是指在锁定到具体用途之前，先用大规模数据预先训练模型，使其掌握图像或语言的通用特征的工序。以这样得到的已训练模型为基础，后续工作就能高效推进。\n\n考试中，它常与后文的微调成套出现，考查“先学通用知识的是预训练，之后再针对具体用途调整的是微调”这一先后顺序。与从零开始训练相比，它能用更少的数据、更短的时间获得更高的性能，这是其优点。",
-      "explanation_en": "Pre-training is the process of training a model in advance on large-scale data, before narrowing it to a specific purpose, so that it acquires the general features of images or language. By using the resulting trained model as a foundation, later work can proceed efficiently.\n\nOn the exam, it is asked as a set together with fine-tuning (described later): \"pre-training is learning general-purpose knowledge first, and fine-tuning is adjusting it for a specific purpose afterward.\" Its advantage is that it can achieve higher performance with less data and in less time than training from scratch.",
-      "analogy_zh": "就像在进入专科学校之前，先在中小学广泛打好读写算这类基础。正因为有了这个基础，之后才能很快掌握专业领域。",
-      "analogy_en": "It is like broadly building up the basics of reading, writing, and arithmetic in primary and secondary school before entering a vocational college. Because of these basics, you can quickly master a specialized field later.",
-      "memory_hook_zh": "说到预训练，就是用大量数据先打好通用知识的根基。",
-      "memory_hook_en": "Pre-training → building the foundation by loading general-purpose knowledge first from large amounts of data."
+      "figure": null
     },
     {
       "term": "ファインチューニング",
-      "definition_jp": "事前学習済みモデルを、個別タスク向けのデータで微調整して仕上げる工程。",
-      "explanation_jp": "ファインチューニングは、すでに事前学習で汎用知識を持つモデルに対し、解きたい具体的な課題のデータを追加で学習させ、パラメータを少し調整して専用化する工程です。土台ができているため、少量のデータでも目的の性能を引き出せます。\n\n試験では、事前学習との役割分担が問われます。『先に汎用的に学ぶ事前学習→後で個別用途に微調整するファインチューニング』という流れを押さえましょう。ゼロから全部学習し直すのではなく、既存モデルを活かして仕上げる点が要点です。",
-      "analogy_jp": "基礎を学んだ社会人が、配属先の会社のやり方に合わせて研修で微調整するようなもの。一からやり直さず、既にある力を職場用に整えます。",
-      "memory_hook_jp": "ファインチューニングといえば学習済みモデルを個別用途に微調整",
-      "inline_quiz": [
-        "2009h21a-q097"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "微调",
       "term_en": "Fine-tuning",
-      "definition_zh": "用面向具体任务的数据对预训练模型进行微调、最终定型的工序。",
-      "definition_en": "The process of finishing a pre-trained model by lightly adjusting it with data for a specific task.",
-      "explanation_zh": "微调是指对已经通过预训练具备通用知识的模型，额外用想解决的具体课题的数据再训练，稍微调整参数使其专用化的工序。由于已有根基，即使数据量很少也能引出目标性能。\n\n考试中会考查它与预训练的分工。请掌握“先做通用学习的预训练 → 之后针对具体用途微调”这一流程。要点在于：不是从零全部重新训练，而是利用现有模型来定型。",
-      "explanation_en": "Fine-tuning is the process of taking a model that already holds general-purpose knowledge from pre-training, additionally training it on data for the specific problem you want to solve, and slightly adjusting the parameters to specialize it. Because the foundation is in place, the target performance can be drawn out even with a small amount of data.\n\nOn the exam, the division of roles with pre-training is asked. Keep in mind the flow: \"pre-training that learns general-purpose knowledge first → fine-tuning that adjusts it for a specific purpose afterward.\" The key point is that, rather than relearning everything from scratch, you make use of an existing model to finish it.",
-      "analogy_zh": "就像学过基础的职场新人，按照所分配公司的做法在培训中做微调。不必从头再来，而是把已有的能力调整得适合职场。",
-      "analogy_en": "It is like a working adult who has learned the basics making small adjustments through training to match the way the company they are assigned to does things. Rather than starting over from scratch, they tune the abilities they already have for the workplace.",
-      "memory_hook_zh": "说到微调，就是把已训练模型针对具体用途做小幅调整。",
-      "memory_hook_en": "Fine-tuning → lightly adjusting an already-trained model for a specific purpose."
+      "one_jp": "**事前学習済みのモデル**に、目的の作業に合ったデータで**追加の学習**をさせ、その用途向けに調整することを**ファインチューニング**という。",
+      "one_zh": "用符合目标任务的数据对**预训练好的模型**进行**追加训练**，使其适应该用途，这称为**微调**（[[jp:ファインチューニング]]）。",
+      "one_en": "**Fine-tuning** ([[jp:ファインチューニング]]) means giving a **pre-trained model** **additional training** on data suited to the target task so that it is adjusted for that use.",
+      "detail_jp": "モデルを一から作り直すのではなく、すでに身につけた特徴を生かしたまま、**重み**などのパラメータを目的に合わせて動かす。そのため、ゼロから学習させる場合よりも、必要なデータの量や計算にかかる時間を抑えやすい。例えば、一般的な文章で学習した言語モデルに、ある病院の問診の記録を学ばせ、医療の用語に強い応答をさせるといった使い方がある。",
+      "detail_zh": "它不是把模型从头重新做一遍，而是在利用已掌握特征的同时，让**权重**等参数朝目标方向调整。因此与从零开始训练相比，更容易减少所需的数据量和计算时间。例如，让用一般文章训练过的语言模型学习某家医院的问诊记录，使它的回答能很好地应对医疗术语。",
+      "detail_en": "Instead of rebuilding the model from the start, it keeps the features already learned and shifts parameters such as the **weights** toward the goal. As a result, it tends to need less data and less computing time than training from scratch. One use is to have a language model trained on general text learn a hospital's consultation records so that its answers handle medical terms well.",
+      "analogy_jp": "学校で基礎を身につけた新入社員が、配属先の部署で、その部署ならではの仕事の進め方を短い研修で覚えるようなもの。",
+      "analogy_zh": "就像在学校打好基础的新员工，到了分配的部门后，通过短期培训学会这个部门特有的工作方法。",
+      "analogy_en": "It is like a new employee with a solid grounding from school learning, through a short training period, the way their assigned department does its work.",
+      "hook_jp": "fine は「細かい」、tuning は「楽器の調律」。できあがった楽器の音を最後に細かく合わせる作業になぞらえた名前である。",
+      "hook_zh": "fine 意为“细微的”，tuning 意为“给乐器调音”。这个名称把它比作乐器做好后，最后细细校准音高的工作。",
+      "hook_en": "\"Fine\" means precise, and \"tuning\" is what you do to a musical instrument. The name likens it to the last careful adjustment of a finished instrument's pitch.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**基盤モデル**は、**ファインチューニング**などの追加の学習で用途ごとに調整することで、一つの土台から多くの種類の AI に作り分けられる。",
+          "text_zh": "**基础模型**（[[jp:基盤モデル]]）通过**微调**（[[jp:ファインチューニング]]）等追加训练针对各个用途进行调整，就能从同一个基础分别做出多种 AI。",
+          "text_en": "By adjusting a **foundation model** ([[jp:基盤モデル]]) for each use through **fine-tuning** ([[jp:ファインチューニング]]) or other additional training, many kinds of AI can be built from a single base.",
+          "qids": [
+            "2025r07-q080"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**事前学習**は幅広いデータで土台を作る最初の学習で、**ファインチューニング**はその土台に目的別のデータで行う後からの学習である。",
+          "text_zh": "**预训练**（[[jp:事前学習]]）是用广泛数据打基础的最初训练，**微调**（[[jp:ファインチューニング]]）是之后在这一基础上用面向目的的数据进行的训练。",
+          "text_en": "**Pre-training** ([[jp:事前学習]]) is the first training, which builds a base from broad data, while **fine-tuning** ([[jp:ファインチューニング]]) is the later training done on that base with goal-specific data."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "base",
+              "label": {
+                "jp": "事前学習済みのモデル",
+                "zh": "预训练好的模型",
+                "en": "Pre-trained model"
+              }
+            },
+            {
+              "id": "data",
+              "label": {
+                "jp": "目的に合ったデータを用意",
+                "zh": "准备符合目的的数据",
+                "en": "Prepare data suited to the goal"
+              }
+            },
+            {
+              "id": "tune",
+              "label": {
+                "jp": "追加学習で重みを調整",
+                "zh": "通过追加训练调整权重",
+                "en": "Adjust weights by further training"
+              }
+            },
+            {
+              "id": "task",
+              "label": {
+                "jp": "用途向けのモデル",
+                "zh": "面向该用途的模型",
+                "en": "Model for the specific use"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "大量のデータで学習を済ませた、汎用的なモデルから始める。",
+            "caption_zh": "从已用大量数据训练过的通用模型出发。",
+            "caption_en": "Start from a general-purpose model already trained on large amounts of data.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "使いたい作業の例となるデータを、比較的少ない量で集める。",
+            "caption_zh": "收集一批数量相对较少、作为目标任务示例的数据。",
+            "caption_en": "Collect a relatively small set of example data for the task you want to do.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "そのデータで追加の学習を行い、重みを目的に合わせて動かす。",
+            "caption_zh": "用这些数据进行追加训练，让权重朝目标方向调整。",
+            "caption_en": "Train further on that data, shifting the weights toward the goal.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "身につけた特徴を残したまま、その作業に強いモデルができる。",
+            "caption_zh": "在保留已掌握特征的同时，得到擅长该任务的模型。",
+            "caption_en": "The result is a model that is strong at that task and still keeps the features it learned.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2025r07-q080"
+      ],
+      "definition_jp": "事前学習済みのモデルに、目的の作業に合ったデータで追加の学習をさせ、その用途向けに調整することをファインチューニングという。",
+      "definition_zh": "用符合目标任务的数据对预训练好的模型进行追加训练，使其适应该用途，这称为微调（ファインチューニング）。",
+      "definition_en": "Fine-tuning (ファインチューニング) means giving a pre-trained model additional training on data suited to the target task so that it is adjusted for that use.",
+      "explanation_jp": "モデルを一から作り直すのではなく、すでに身につけた特徴を生かしたまま、重みなどのパラメータを目的に合わせて動かす。そのため、ゼロから学習させる場合よりも、必要なデータの量や計算にかかる時間を抑えやすい。例えば、一般的な文章で学習した言語モデルに、ある病院の問診の記録を学ばせ、医療の用語に強い応答をさせるといった使い方がある。",
+      "explanation_zh": "它不是把模型从头重新做一遍，而是在利用已掌握特征的同时，让权重等参数朝目标方向调整。因此与从零开始训练相比，更容易减少所需的数据量和计算时间。例如，让用一般文章训练过的语言模型学习某家医院的问诊记录，使它的回答能很好地应对医疗术语。",
+      "explanation_en": "Instead of rebuilding the model from the start, it keeps the features already learned and shifts parameters such as the weights toward the goal. As a result, it tends to need less data and less computing time than training from scratch. One use is to have a language model trained on general text learn a hospital's consultation records so that its answers handle medical terms well.",
+      "memory_hook_jp": "fine は「細かい」、tuning は「楽器の調律」。できあがった楽器の音を最後に細かく合わせる作業になぞらえた名前である。",
+      "memory_hook_zh": "fine 意为“细微的”，tuning 意为“给乐器调音”。这个名称把它比作乐器做好后，最后细细校准音高的工作。",
+      "memory_hook_en": "\"Fine\" means precise, and \"tuning\" is what you do to a musical instrument. The name likens it to the last careful adjustment of a finished instrument's pitch.",
+      "inline_quiz": [
+        "2025r07-q080"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "転移学習",
-      "definition_jp": "あるタスクで得た学習済みの知識を、別のタスクに転用して活用する技法。",
-      "explanation_jp": "転移学習は、すでに学習させたモデルが持つ知識を、別の関連した課題に流用して効率よく学習する考え方です。事前学習で得た土台を新しいタスクに移し、必要に応じてファインチューニングで仕上げる、という形で実現されます。\n\n試験では、事前学習・ファインチューニングを包括する総括概念として位置づけられます。『学習済みの知識を別タスクへ転用する』のが転移学習で、ゼロから学ぶより少ないデータ・短い時間で済むのが最大の利点です。これら3語が学習資産を使い回す技法のセットだと整理しましょう。",
-      "analogy_jp": "自転車に乗れる人がバイクの運転を覚えるとき、バランス感覚という既存の経験を活かして早く習得できるようなもの。学んだことを別の場面へ移します。",
-      "memory_hook_jp": "転移学習といえば学習済み知識を別タスクへ転用(事前学習+微調整の総称)",
-      "inline_quiz": [
-        "2009h21h-q066"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"大量データ\"] -->|\"事前学習\"| B[\"学習済みモデル(汎用知識)\"]; B -->|\"転移学習で転用\"| C[\"別タスク用モデル\"]; D[\"個別データ\"] -->|\"ファインチューニング\"| C",
-        "svg_path": "figures/technology-13-35-u06-t01.svg",
-        "rendered": true
-      },
       "term_zh": "迁移学习",
       "term_en": "Transfer learning",
-      "definition_zh": "把在某个任务中获得的已训练知识，迁移并运用到另一个任务上的技法。",
-      "definition_en": "A technique that repurposes already-learned knowledge gained from one task to make use of it on a different task.",
-      "explanation_zh": "迁移学习是指把已训练模型所具备的知识，挪用到另一个相关课题上以高效学习的思路。它通过把预训练得到的根基迁移到新任务，并按需用微调来定型的方式实现。\n\n考试中，它被定位为涵盖预训练与微调的总括性概念。“把已训练的知识迁移到另一个任务”就是迁移学习，其最大优点是比从零学习所需的数据更少、时间更短。请把这三个词整理为“反复利用学习成果的技法”这一成套概念。",
-      "explanation_en": "Transfer learning is the idea of repurposing the knowledge held by an already-trained model onto another related problem in order to learn efficiently. It is realized by moving the foundation gained through pre-training to a new task and, as needed, finishing it with fine-tuning.\n\nOn the exam, it is positioned as the umbrella concept that encompasses pre-training and fine-tuning. \"Repurposing already-learned knowledge for a different task\" is transfer learning, and its greatest advantage is that it requires less data and less time than learning from scratch. Organize these three terms as a set of techniques for reusing learning assets.",
-      "analogy_zh": "就像会骑自行车的人在学骑摩托车时，能借助平衡感这一已有经验更快学会。把学到的东西迁移到另一个场景。",
-      "analogy_en": "It is like someone who can ride a bicycle learning to ride a motorcycle, mastering it quickly by drawing on their existing sense of balance. You move what you have learned to a different situation.",
-      "memory_hook_zh": "说到迁移学习，就是把已训练知识迁移到另一任务（预训练+微调的统称）。",
-      "memory_hook_en": "Transfer learning → repurposing already-learned knowledge for a different task (the umbrella term for pre-training + fine-tuning)."
+      "one_jp": "ある課題で学習したモデルの知識を、**関連する別の課題**に転用して、新しい課題の学習を効率よく進める手法を**転移学習**という。",
+      "one_zh": "把在某项任务中训练好的模型的知识转用到**相关的另一项任务**上，从而高效推进新任务学习的方法，称为**迁移学习**（[[jp:転移学習]]）。",
+      "one_en": "**Transfer learning** ([[jp:転移学習]]) is a method that carries the knowledge of a model trained on one task over to a **related, different task**, so that learning the new task goes efficiently.",
+      "detail_jp": "例えば、多くの種類の物を見分けるように学習した画像認識のモデルを、工場で製品の傷を見つけるという別の課題に使う。新しい課題のデータが少なくても、すでに学んだ形や模様の特徴を生かせるため、ゼロから学習するより短い時間で精度を出しやすい。学習済みモデルを土台にした**ファインチューニング**は、転移学習を実現する代表的なやり方の一つである。",
+      "detail_zh": "例如，把已学会分辨多种物体的图像识别模型，用在“在工厂里发现产品划痕”这项另外的任务上。即使新任务的数据较少，也能利用已经学到的形状和纹理特征，因此比从零训练更容易在短时间内达到所需精度。以已训练模型为基础的**微调**（[[jp:ファインチューニング]]），是实现迁移学习的代表性做法之一。",
+      "detail_en": "For example, an image recognition model trained to tell many kinds of objects apart can be put to a different task: spotting scratches on products in a factory. Even with little data for the new task, it can draw on the shape and pattern features it has already learned, so it tends to reach good accuracy in less time than training from scratch. **Fine-tuning** ([[jp:ファインチューニング]]) with a trained model as the base is one of the main ways to achieve transfer learning.",
+      "analogy_jp": "ピアノを習った人が、鍵盤の感覚や楽譜の読み方を生かして、電子オルガンを早く弾けるようになるようなもの。",
+      "analogy_zh": "就像学过钢琴的人，凭着对琴键的手感和读谱能力，很快就能学会弹电子琴。",
+      "analogy_en": "It is like someone who has learned the piano using their feel for the keys and their ability to read music to pick up the electronic organ quickly.",
+      "hook_jp": "英語は transfer learning。乗り換えを「トランスファー」と呼ぶのと同じ語で、知識を別の路線へ乗り換えさせると読める。",
+      "hook_zh": "英语是 transfer learning。transfer 也是交通“换乘”的意思，可以理解为让知识换乘到另一条线路上。",
+      "hook_en": "In English it is transfer learning. \"Transfer\" is the same word used for changing trains, so you can picture knowledge switching over to another line.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**転移学習**は知識を別の課題へ移すという考え方を指し、**ファインチューニング**は移した先で学習済みの重みを調整する具体的な手順を指す。",
+          "text_zh": "**迁移学习**（[[jp:転移学習]]）指把知识转移到另一项任务上的思路，**微调**（[[jp:ファインチューニング]]）指在转移目标处调整已训练权重的具体步骤。",
+          "text_en": "**Transfer learning** ([[jp:転移学習]]) refers to the idea of moving knowledge to another task, while **fine-tuning** ([[jp:ファインチューニング]]) refers to the concrete procedure of adjusting the already-trained weights at the destination."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "tl",
+            "label": {
+              "jp": "転移学習のやり方の例",
+              "zh": "迁移学习的做法示例",
+              "en": "Examples of how transfer learning is done"
+            },
+            "children": [
+              {
+                "id": "fx",
+                "label": {
+                  "jp": "学習済みの部分はそのまま使う",
+                  "zh": "已训练的部分原样使用",
+                  "en": "Use the trained part as it is"
+                },
+                "children": [
+                  {
+                    "id": "fx1",
+                    "label": {
+                      "jp": "出力に近い層だけを新しいデータで学習",
+                      "zh": "只用新数据训练靠近输出的层",
+                      "en": "Train only the layers near the output on new data"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "ft",
+                "label": {
+                  "jp": "学習済みの部分の重みも調整する",
+                  "zh": "已训练部分的权重也调整",
+                  "en": "Also adjust the trained part's weights"
+                },
+                "children": [
+                  {
+                    "id": "ft1",
+                    "label": {
+                      "jp": "ファインチューニングで重みを少しずつ更新",
+                      "zh": "通过微调一点点更新权重",
+                      "en": "Update the weights bit by bit with fine-tuning"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [],
+      "definition_jp": "ある課題で学習したモデルの知識を、関連する別の課題に転用して、新しい課題の学習を効率よく進める手法を転移学習という。",
+      "definition_zh": "把在某项任务中训练好的模型的知识转用到相关的另一项任务上，从而高效推进新任务学习的方法，称为迁移学习（転移学習）。",
+      "definition_en": "Transfer learning (転移学習) is a method that carries the knowledge of a model trained on one task over to a related, different task, so that learning the new task goes efficiently.",
+      "explanation_jp": "例えば、多くの種類の物を見分けるように学習した画像認識のモデルを、工場で製品の傷を見つけるという別の課題に使う。新しい課題のデータが少なくても、すでに学んだ形や模様の特徴を生かせるため、ゼロから学習するより短い時間で精度を出しやすい。学習済みモデルを土台にしたファインチューニングは、転移学習を実現する代表的なやり方の一つである。",
+      "explanation_zh": "例如，把已学会分辨多种物体的图像识别模型，用在“在工厂里发现产品划痕”这项另外的任务上。即使新任务的数据较少，也能利用已经学到的形状和纹理特征，因此比从零训练更容易在短时间内达到所需精度。以已训练模型为基础的微调（ファインチューニング），是实现迁移学习的代表性做法之一。",
+      "explanation_en": "For example, an image recognition model trained to tell many kinds of objects apart can be put to a different task: spotting scratches on products in a factory. Even with little data for the new task, it can draw on the shape and pattern features it has already learned, so it tends to reach good accuracy in less time than training from scratch. Fine-tuning (ファインチューニング) with a trained model as the base is one of the main ways to achieve transfer learning.",
+      "memory_hook_jp": "英語は transfer learning。乗り換えを「トランスファー」と呼ぶのと同じ語で、知識を別の路線へ乗り換えさせると読める。",
+      "memory_hook_zh": "英语是 transfer learning。transfer 也是交通“换乘”的意思，可以理解为让知识换乘到另一条线路上。",
+      "memory_hook_en": "In English it is transfer learning. \"Transfer\" is the same word used for changing trains, so you can picture knowledge switching over to another line.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "CNN",
-      "definition_jp": "画像認識を得意とする代表的な深層学習モデル(畳み込みNNの略称)。",
-      "explanation_jp": "CNNは、画像のような格子状のデータから特徴を自動で抽出することに優れた深層学習モデルの略称です。線や輪郭といった部分的なパターンを段階的に捉え、画像分類や物体検出などで高い性能を発揮します。\n\n試験では、正式名称『畳み込みニューラルネットワーク』との対応と、用途が『画像向け』である点が問われます。系列データ向けのRNNと役割が対比されるため、CNN=画像、RNN=時系列・文章、と用途で覚えると区別しやすくなります。",
-      "analogy_jp": "虫めがねを画像の上で少しずつずらしながら、部分ごとの模様を拾い集めて全体像を理解する人のようなもの。細部の特徴から何が写っているかを判断します。",
-      "memory_hook_jp": "CNNといえば画像認識が得意な深層学習モデル(=畳み込みNN)",
-      "inline_quiz": [
-        "2010h22a-q083"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "CNN",
       "term_en": "CNN",
-      "definition_zh": "擅长图像识别的代表性深度学习模型（卷积神经网络的简称）。",
-      "definition_en": "A representative deep learning model that excels at image recognition (abbreviation for convolutional neural network).",
-      "explanation_zh": "CNN 是擅长从图像这类网格状数据中自动提取特征的深度学习模型的简称。它能分阶段捕捉线条、轮廓等局部模式，在图像分类、目标检测等任务上发挥出色性能。\n\n考试中会考查它与正式名称“卷积神经网络”的对应关系，以及其用途为“面向图像”这一点。由于它与面向序列数据的 RNN 在角色上形成对比，按用途记成 CNN＝图像、RNN＝时间序列・文本，就更容易区分。",
-      "explanation_en": "CNN is the abbreviation for a deep learning model that excels at automatically extracting features from grid-like data such as images. It captures partial patterns like lines and contours in stages, delivering high performance in tasks such as image classification and object detection.\n\nOn the exam, the correspondence with its formal name \"convolutional neural network\" and the point that its use is \"for images\" are asked. Because its role is contrasted with RNN for sequential data, remembering them by use—CNN = images, RNN = time series and text—makes them easier to tell apart.",
-      "analogy_zh": "就像一个人拿着放大镜在图像上一点点移动，把各部分的纹样逐一拾取并理解整体图景。从细节特征判断画面上拍的是什么。",
-      "analogy_en": "It is like a person sliding a magnifying glass little by little over an image, picking up the patterns of each part to understand the whole picture. From the detailed features, they judge what is shown.",
-      "memory_hook_zh": "说到 CNN，就是擅长图像识别的深度学习模型（＝卷积神经网络）。",
-      "memory_hook_en": "CNN → a deep learning model good at image recognition (= convolutional neural network)."
+      "one_jp": "**CNN** は Convolutional Neural Network の略で、**画像認識**に広く使われる深層学習のモデルである。",
+      "one_zh": "**CNN** 是 Convolutional Neural Network 的缩写，是一种广泛用于**图像识别**的深度学习模型。",
+      "one_en": "**CNN** stands for Convolutional Neural Network, a deep learning model widely used for **image recognition**.",
+      "detail_jp": "画像の小さな範囲ごとに特徴を拾う処理を何層も重ね、線や角のような単純な形から、目や車輪のようなまとまった形へと段階的にとらえていく。写真に写っている物の分類や位置の検出、顔認証などで使われている。中の仕組みは、正式名称である**畳み込みニューラルネットワーク**の項で見る。",
+      "detail_zh": "它把逐个小范围提取图像特征的处理叠加很多层，从线条、拐角这样的简单形状，逐步把握到眼睛、车轮这样成形的整体。它被用于照片中物体的分类、位置检测以及人脸认证等。内部原理放在其正式名称**卷积神经网络**（[[jp:畳み込みニューラルネットワーク]]）一项中介绍。",
+      "detail_en": "It stacks many layers of processing that pick up features from each small area of an image, building step by step from simple shapes such as lines and corners to whole shapes such as eyes or wheels. It is used to classify objects in photos, find where they are, and recognize faces. Its inner workings are covered under its full name, **convolutional neural network** ([[jp:畳み込みニューラルネットワーク]]).",
+      "analogy_jp": "大きな地図を小さなマスに区切り、マスごとに道や川があるかを調べてから、全体でどこの地図かを見当づけるようなもの。",
+      "analogy_zh": "就像把一张大地图划成小方格，逐格查看有没有道路或河流，再综合起来判断这是哪里的地图。",
+      "analogy_en": "It is like dividing a large map into small squares, checking each one for roads or rivers, and then working out from the whole which area the map shows.",
+      "hook_jp": "C は Convolution (畳み込み) の C。RNN の R が Recurrent (くり返し) なので、頭の 1 文字で仕組みの違いが分かる。",
+      "hook_zh": "C 是 Convolution（卷积）的 C，而 RNN 的 R 是 Recurrent（循环），所以只看首字母就能分辨两者原理的不同。",
+      "hook_en": "The C is for Convolution, and the R in RNN is for Recurrent, so the first letter alone tells you how the two work differently.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**CNN** は画像のように縦横に並んだデータの特徴をつかむのが得意で、**RNN** は文章のように順番に並んだデータの流れをつかむのが得意である。",
+          "text_zh": "**CNN** 擅长把握图像这类纵横排列的数据的特征，**RNN** 擅长把握文本这类按顺序排列的数据的走向。",
+          "text_en": "A **CNN** is good at capturing the features of data laid out in a two-dimensional grid, like images, while an **RNN** is good at capturing the flow of data laid out in order, like text."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "CNN は Convolutional Neural Network の略で、画像認識に広く使われる深層学習のモデルである。",
+      "definition_zh": "CNN 是 Convolutional Neural Network 的缩写，是一种广泛用于图像识别的深度学习模型。",
+      "definition_en": "CNN stands for Convolutional Neural Network, a deep learning model widely used for image recognition.",
+      "explanation_jp": "画像の小さな範囲ごとに特徴を拾う処理を何層も重ね、線や角のような単純な形から、目や車輪のようなまとまった形へと段階的にとらえていく。写真に写っている物の分類や位置の検出、顔認証などで使われている。中の仕組みは、正式名称である畳み込みニューラルネットワークの項で見る。",
+      "explanation_zh": "它把逐个小范围提取图像特征的处理叠加很多层，从线条、拐角这样的简单形状，逐步把握到眼睛、车轮这样成形的整体。它被用于照片中物体的分类、位置检测以及人脸认证等。内部原理放在其正式名称卷积神经网络（畳み込みニューラルネットワーク）一项中介绍。",
+      "explanation_en": "It stacks many layers of processing that pick up features from each small area of an image, building step by step from simple shapes such as lines and corners to whole shapes such as eyes or wheels. It is used to classify objects in photos, find where they are, and recognize faces. Its inner workings are covered under its full name, convolutional neural network (畳み込みニューラルネットワーク).",
+      "memory_hook_jp": "C は Convolution (畳み込み) の C。RNN の R が Recurrent (くり返し) なので、頭の 1 文字で仕組みの違いが分かる。",
+      "memory_hook_zh": "C 是 Convolution（卷积）的 C，而 RNN 的 R 是 Recurrent（循环），所以只看首字母就能分辨两者原理的不同。",
+      "memory_hook_en": "The C is for Convolution, and the R in RNN is for Recurrent, so the first letter alone tells you how the two work differently.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "畳み込みニューラルネットワーク",
-      "definition_jp": "CNNの正式名称。畳み込み処理で画像の特徴を抽出する深層学習モデル。",
-      "explanation_jp": "畳み込みニューラルネットワークはCNNの正式名称で、「畳み込み」と呼ばれる処理によって画像の局所的な特徴(エッジや模様)を取り出し、層を重ねて複雑なパターンを認識するモデルです。画像認識分野の標準的な手法となっています。\n\n試験では、略称CNNと正式名称が同じものを指すこと、そして画像向けであることが問われます。名前の由来である『畳み込み』が画像から特徴を抜き出す中心的な仕組みだと押さえておけば、用途と結びつけて覚えられます。",
-      "analogy_jp": "写真の上にフィルターを少しずつ滑らせ、輪郭や色の変化を拾っていく作業を何層も重ねるようなもの。集めた特徴から被写体を見分けます。",
-      "memory_hook_jp": "畳み込みニューラルネットワークといえばCNNの正式名称で画像向け",
-      "inline_quiz": [
-        "2010h22h-q060"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "卷积神经网络",
       "term_en": "Convolutional neural network",
-      "definition_zh": "CNN 的正式名称。通过卷积处理来提取图像特征的深度学习模型。",
-      "definition_en": "The formal name for CNN. A deep learning model that extracts image features through convolution processing.",
-      "explanation_zh": "卷积神经网络是 CNN 的正式名称，它通过名为“卷积”的处理取出图像的局部特征（边缘、纹样），并通过层层叠加来识别复杂模式，已成为图像识别领域的标准方法。\n\n考试中会考查简称 CNN 与正式名称指的是同一事物，以及它面向图像这一点。只要记住名字由来的“卷积”正是从图像中抽取特征的核心机制，就能把它与用途联系起来记忆。",
-      "explanation_en": "Convolutional neural network is the formal name for CNN. Through processing called \"convolution,\" it extracts the local features of an image (edges and patterns) and, by stacking layers, recognizes complex patterns; it has become the standard method in the field of image recognition.\n\nOn the exam, it is asked that the abbreviation CNN and the formal name refer to the same thing, and that it is for images. If you keep in mind that \"convolution,\" the origin of the name, is the core mechanism for extracting features from images, you can remember it by linking it to its use.",
-      "analogy_zh": "就像把一块滤镜在照片上一点点滑动，拾取轮廓和颜色的变化，并把这样的工序叠加许多层。从汇集的特征中辨认出被拍摄的对象。",
-      "analogy_en": "It is like sliding a filter little by little over a photo, picking up changes in contours and colors, and stacking that work in many layers. From the gathered features, it identifies the subject.",
-      "memory_hook_zh": "说到卷积神经网络，就是 CNN 的正式名称、面向图像。",
-      "memory_hook_en": "Convolutional neural network → the formal name for CNN, for images."
+      "one_jp": "CNN の正式名称で、**畳み込み**と呼ばれる処理によって画像の局所的な特徴を取り出していくニューラルネットワークを**畳み込みニューラルネットワーク**という。",
+      "one_zh": "**卷积神经网络**（[[jp:畳み込みニューラルネットワーク]]）是 CNN 的正式名称，指通过名为**卷积**的处理，逐步提取图像局部特征的神经网络。",
+      "one_en": "**Convolutional neural network** ([[jp:畳み込みニューラルネットワーク]]) is the full name of CNN: a neural network that extracts the local features of an image through a process called **convolution**.",
+      "detail_jp": "**畳み込み**では、小さな**フィルタ**を画像の上で少しずつずらしながら当て、その範囲に特定の模様があるかどうかを数値にする。続く**プーリング**で近くの値をまとめて特徴を縮め、こうした層を重ねたあと、最後の層で何が写っているかを判定する。写っている物の位置が少しずれても同じ特徴を見つけやすいため、画像を扱う作業に向いている。",
+      "detail_zh": "在**卷积**（[[jp:畳み込み]]）中，把小**滤波器**在图像上一点点移动着套上去，把该范围内有没有特定图案转换成数值。接下来的**池化**（[[jp:プーリング]]）把相邻的值合并以压缩特征，这些层叠加几次之后，由最后一层判断图中拍到的是什么。即使物体的位置稍有偏移也容易找到相同的特征，所以它适合处理图像的工作。",
+      "detail_en": "In **convolution** ([[jp:畳み込み]]), a small **filter** is slid across the image bit by bit, and whether a particular pattern appears in each area is turned into a number. The **pooling** ([[jp:プーリング]]) step that follows merges nearby values to shrink the features, and after several such layers, the last layer decides what the image shows. Because the same feature is easy to find even when an object shifts slightly, it suits work that deals with images.",
+      "analogy_jp": "小さな型紙を布の端から端まで少しずつずらして当て、型と同じ柄がある場所に印を付けていくようなもの。",
+      "analogy_zh": "就像拿一张小纸样，从布料的一端到另一端一点点挪动着比对，在出现相同花纹的地方做上记号。",
+      "analogy_en": "It is like sliding a small paper template across a cloth from one edge to the other and marking each spot where the same design appears.",
+      "hook_jp": "「畳み込み」は数学の convolution の訳語で、音や画像の信号にフィルタを掛ける計算の名前として以前から使われてきた。",
+      "hook_zh": "日语的“[[jp:畳み込み]]”是数学术语 convolution 的译名，很早就被用作给声音和图像信号加滤波器这种计算的名称。",
+      "hook_en": "The Japanese term [[jp:畳み込み]] translates the mathematical term convolution, which has long named the calculation that applies a filter to sound and image signals.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**畳み込みニューラルネットワーク**の中心は、フィルタをずらしながら当てて局所の特徴を取り出す畳み込み層である。",
+          "text_zh": "**卷积神经网络**（[[jp:畳み込みニューラルネットワーク]]）的核心，是把滤波器移动着套上去、提取局部特征的卷积层。",
+          "text_en": "The core of a **convolutional neural network** ([[jp:畳み込みニューラルネットワーク]]) is the convolution layer, which slides filters across the input to extract local features."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "img",
+              "label": {
+                "jp": "入力画像",
+                "zh": "输入图像",
+                "en": "Input image"
+              }
+            },
+            {
+              "id": "conv",
+              "label": {
+                "jp": "畳み込み層 (局所の特徴を抽出)",
+                "zh": "卷积层（提取局部特征）",
+                "en": "Convolution layer (extracts local features)"
+              }
+            },
+            {
+              "id": "pool",
+              "label": {
+                "jp": "プーリング層 (特徴を縮める)",
+                "zh": "池化层（压缩特征）",
+                "en": "Pooling layer (shrinks features)"
+              }
+            },
+            {
+              "id": "fc",
+              "label": {
+                "jp": "全結合層 (何が写っているかを判定)",
+                "zh": "全连接层（判断拍到了什么）",
+                "en": "Fully connected layer (decides what is shown)"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "画像は画素ごとの数値の並びとして入力される。",
+            "caption_zh": "图像以逐个像素的数值排列形式输入。",
+            "caption_en": "The image comes in as an array of numbers, one for each pixel.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "小さなフィルタを少しずつずらして当て、模様の有無を数値にする。",
+            "caption_zh": "把小滤波器一点点移动着套上去，把有没有图案转换成数值。",
+            "caption_en": "A small filter is slid across bit by bit, turning whether a pattern is present into a number.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "近くの値をまとめて縮め、多少の位置のずれに強くする。",
+            "caption_zh": "把相邻的值合并压缩，使结果不易受轻微位置偏移的影响。",
+            "caption_en": "Nearby values are merged and shrunk, so small shifts in position matter less.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "集めた特徴をもとに、最後の層で分類の結果を出す。",
+            "caption_zh": "根据收集到的特征，由最后一层输出分类结果。",
+            "caption_en": "Based on the collected features, the last layer outputs the classification.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "CNN の正式名称で、畳み込みと呼ばれる処理によって画像の局所的な特徴を取り出していくニューラルネットワークを畳み込みニューラルネットワークという。",
+      "definition_zh": "卷积神经网络（畳み込みニューラルネットワーク）是 CNN 的正式名称，指通过名为卷积的处理，逐步提取图像局部特征的神经网络。",
+      "definition_en": "Convolutional neural network (畳み込みニューラルネットワーク) is the full name of CNN: a neural network that extracts the local features of an image through a process called convolution.",
+      "explanation_jp": "畳み込みでは、小さなフィルタを画像の上で少しずつずらしながら当て、その範囲に特定の模様があるかどうかを数値にする。続くプーリングで近くの値をまとめて特徴を縮め、こうした層を重ねたあと、最後の層で何が写っているかを判定する。写っている物の位置が少しずれても同じ特徴を見つけやすいため、画像を扱う作業に向いている。",
+      "explanation_zh": "在卷积（畳み込み）中，把小滤波器在图像上一点点移动着套上去，把该范围内有没有特定图案转换成数值。接下来的池化（プーリング）把相邻的值合并以压缩特征，这些层叠加几次之后，由最后一层判断图中拍到的是什么。即使物体的位置稍有偏移也容易找到相同的特征，所以它适合处理图像的工作。",
+      "explanation_en": "In convolution (畳み込み), a small filter is slid across the image bit by bit, and whether a particular pattern appears in each area is turned into a number. The pooling (プーリング) step that follows merges nearby values to shrink the features, and after several such layers, the last layer decides what the image shows. Because the same feature is easy to find even when an object shifts slightly, it suits work that deals with images.",
+      "memory_hook_jp": "「畳み込み」は数学の convolution の訳語で、音や画像の信号にフィルタを掛ける計算の名前として以前から使われてきた。",
+      "memory_hook_zh": "日语的“畳み込み”是数学术语 convolution 的译名，很早就被用作给声音和图像信号加滤波器这种计算的名称。",
+      "memory_hook_en": "The Japanese term 畳み込み translates the mathematical term convolution, which has long named the calculation that applies a filter to sound and image signals.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "RNN",
-      "definition_jp": "時系列や文章など系列データを得意とする代表的な深層学習モデル(略称)。",
-      "explanation_jp": "RNNは、前の入力の情報を内部に保持しながら順番に処理することで、時系列データや文章のような『並び・順序に意味があるデータ』を扱うのが得意な深層学習モデルの略称です。直前までの文脈を踏まえて次を予測できます。\n\n試験では、正式名称『リカレントニューラルネットワーク』との対応と、用途が『系列データ向け』である点が問われます。画像向けのCNNと対比され、CNN=画像、RNN=時系列・自然言語、と用途で覚えると確実に区別できます。",
-      "analogy_jp": "前の言葉を覚えながら会話を聞き、文脈に沿って次の発言を予想する人のようなもの。直前までの流れを手がかりに、続きを処理します。",
-      "memory_hook_jp": "RNNといえば系列データ(時系列・文章)が得意な深層学習モデル",
-      "inline_quiz": [
-        "2010h22h-q088"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "RNN",
       "term_en": "RNN",
-      "definition_zh": "擅长时间序列、文本等序列数据的代表性深度学习模型（简称）。",
-      "definition_en": "A representative deep learning model that excels at sequential data such as time series and text (abbreviation).",
-      "explanation_zh": "RNN 是擅长处理“排列・顺序有意义的数据”（如时间序列数据、文本）的深度学习模型的简称，它在内部保留先前输入的信息并按顺序处理。能够依据到此前为止的上下文来预测下一个。\n\n考试中会考查它与正式名称“循环神经网络”的对应关系，以及其用途为“面向序列数据”这一点。它与面向图像的 CNN 形成对比，按用途记成 CNN＝图像、RNN＝时间序列・自然语言，就能可靠地区分。",
-      "explanation_en": "RNN is the abbreviation for a deep learning model that excels at handling \"data where the arrangement and order carry meaning,\" such as time series data and text, by retaining information from previous inputs internally and processing in order. It can predict what comes next based on the context up to just before.\n\nOn the exam, the correspondence with its formal name \"recurrent neural network\" and the point that its use is \"for sequential data\" are asked. It is contrasted with CNN for images, and remembering them by use—CNN = images, RNN = time series and natural language—lets you reliably tell them apart.",
-      "analogy_zh": "就像一个人一边记住前面的话一边听对话，顺着上下文预测下一句要说什么。以到此前为止的脉络为线索，处理接下来的内容。",
-      "analogy_en": "It is like a person listening to a conversation while remembering the previous words, predicting the next utterance in line with the context. Using the flow up to just before as a clue, they process what comes next.",
-      "memory_hook_zh": "说到 RNN，就是擅长序列数据（时间序列・文本）的深度学习模型。",
-      "memory_hook_en": "RNN → a deep learning model good at sequential data (time series and text)."
+      "one_jp": "**RNN** は Recurrent Neural Network の略で、文章や音声、時系列データのように**順序に意味があるデータ**を扱うのに向いた深層学習のモデルである。",
+      "one_zh": "**RNN** 是 Recurrent Neural Network 的缩写，是一种适合处理文本、语音、时间序列数据这类**顺序有意义的数据**的深度学习模型。",
+      "one_en": "**RNN** stands for Recurrent Neural Network, a deep learning model suited to **data whose order matters**, such as text, speech and time-series data.",
+      "detail_jp": "前の入力を処理したときの情報を内部に残し、次の入力と合わせて処理するため、それまでの流れを踏まえた判断ができる。例えば、文章の次に来る単語の予測、音声の文字起こし、売上の推移からの先の予測などに使われる。",
+      "detail_zh": "它把处理前一个输入时得到的信息留在内部，再与下一个输入合在一起处理，因此能做出考虑到此前走向的判断。例如可用于预测句子里接下来出现的单词、把语音转写成文字，以及根据销售额的变化预测今后的走势。",
+      "detail_en": "It keeps information from processing the previous input inside itself and handles it together with the next input, so it can make judgments that take the flow so far into account. For example, it is used to predict the next word in a sentence, turn speech into text, and forecast what comes next from a sales trend.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "Recurrent は「くり返し起こる」という意味の英語。情報がネットワークの中をくり返し巡る形をそのまま名前にしている。",
+      "hook_zh": "Recurrent 是英语“反复发生”的意思。这个名称直接取自信息在网络内部反复循环的结构。",
+      "hook_en": "Recurrent is an English word for something that keeps happening again. The name comes straight from the way information circulates repeatedly inside the network.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**RNN** の弱点は長い系列で古い情報が薄れることで、それを補うために情報を残すか忘れるかを調整する仕組みを加えたのが **LSTM** である。",
+          "text_zh": "**RNN** 的弱点是在长序列中旧信息会逐渐变淡；为弥补这一点，加入了调节信息保留还是遗忘的机制的模型就是 **LSTM**。",
+          "text_en": "A weakness of an **RNN** is that older information fades over long sequences, and **LSTM** makes up for this by adding a mechanism that controls whether to keep or forget information."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "RNN は Recurrent Neural Network の略で、文章や音声、時系列データのように順序に意味があるデータを扱うのに向いた深層学習のモデルである。",
+      "definition_zh": "RNN 是 Recurrent Neural Network 的缩写，是一种适合处理文本、语音、时间序列数据这类顺序有意义的数据的深度学习模型。",
+      "definition_en": "RNN stands for Recurrent Neural Network, a deep learning model suited to data whose order matters, such as text, speech and time-series data.",
+      "explanation_jp": "前の入力を処理したときの情報を内部に残し、次の入力と合わせて処理するため、それまでの流れを踏まえた判断ができる。例えば、文章の次に来る単語の予測、音声の文字起こし、売上の推移からの先の予測などに使われる。",
+      "explanation_zh": "它把处理前一个输入时得到的信息留在内部，再与下一个输入合在一起处理，因此能做出考虑到此前走向的判断。例如可用于预测句子里接下来出现的单词、把语音转写成文字，以及根据销售额的变化预测今后的走势。",
+      "explanation_en": "It keeps information from processing the previous input inside itself and handles it together with the next input, so it can make judgments that take the flow so far into account. For example, it is used to predict the next word in a sentence, turn speech into text, and forecast what comes next from a sales trend.",
+      "memory_hook_jp": "Recurrent は「くり返し起こる」という意味の英語。情報がネットワークの中をくり返し巡る形をそのまま名前にしている。",
+      "memory_hook_zh": "Recurrent 是英语“反复发生”的意思。这个名称直接取自信息在网络内部反复循环的结构。",
+      "memory_hook_en": "Recurrent is an English word for something that keeps happening again. The name comes straight from the way information circulates repeatedly inside the network.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "リカレントニューラルネットワーク",
-      "definition_jp": "RNNの正式名称。情報を循環させ系列データを順に処理する深層学習モデル。",
-      "explanation_jp": "リカレントニューラルネットワークはRNNの正式名称で、「リカレント(循環)」の名のとおり、過去の処理結果を次の処理へ戻して使う仕組みを持ちます。これにより、文章や音声、株価のような時間的・順序的なつながりのあるデータをうまく扱えます。\n\n試験では、略称RNNと正式名称が同じものを指すこと、用途が系列データ向けであることが問われます。CNN(画像)とRNN(系列)を用途のペアで対比して覚えるのが、本ユニット最大のポイントです。",
-      "analogy_jp": "メモを次のページへ引き継ぎながら物語を読み進めるようなもの。前の内容を循環させて持ち越すから、流れのあるデータの続きを理解できます。",
-      "memory_hook_jp": "リカレントニューラルネットワークといえばRNNの正式名称で系列向け",
-      "inline_quiz": [
-        "2011h23a-q078"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"CNN(畳み込みNN)\"] --> B[\"画像データ向け\"]; C[\"RNN(リカレントNN)\"] --> D[\"系列データ向け(時系列・文章)\"]",
-        "svg_path": "figures/technology-13-35-u06-t02.svg",
-        "rendered": true
-      },
       "term_zh": "循环神经网络",
       "term_en": "Recurrent neural network",
-      "definition_zh": "RNN 的正式名称。让信息循环、按顺序处理序列数据的深度学习模型。",
-      "definition_en": "The formal name for RNN. A deep learning model that circulates information to process sequential data in order.",
-      "explanation_zh": "循环神经网络是 RNN 的正式名称，正如“循环（recurrent）”这一名称所示，它具有把过去的处理结果回送到下一次处理中使用的机制。借此，它能很好地处理文本、语音、股价这类在时间上、顺序上有关联的数据。\n\n考试中会考查简称 RNN 与正式名称指的是同一事物，以及其用途面向序列数据这一点。把 CNN（图像）与 RNN（序列）按用途成对对比来记忆，正是本单元最大的要点。",
-      "explanation_en": "Recurrent neural network is the formal name for RNN. As the name \"recurrent\" suggests, it has a mechanism that sends past processing results back into the next round of processing for reuse. With this, it can handle well the data that is connected in time and order, such as text, speech, and stock prices.\n\nOn the exam, it is asked that the abbreviation RNN and the formal name refer to the same thing, and that its use is for sequential data. Remembering CNN (images) and RNN (sequences) by contrasting them as a pair by use is the single biggest point of this unit.",
-      "analogy_zh": "就像把笔记一页页接续到下一页，顺着读下去推进故事。因为把前面的内容循环着带过来，所以能理解有连贯脉络的数据的后续。",
-      "analogy_en": "It is like reading through a story while carrying notes over from one page to the next. Because it circulates and carries over the previous content, it can understand the continuation of data that has a flow.",
-      "memory_hook_zh": "说到循环神经网络，就是 RNN 的正式名称、面向序列。",
-      "memory_hook_en": "Recurrent neural network → the formal name for RNN, for sequences."
+      "one_jp": "RNN の正式名称で、ある時点の処理で作った内部の**状態**を次の時点の処理に**戻して使う**仕組みをもつニューラルネットワークを**リカレントニューラルネットワーク**という。",
+      "one_zh": "**循环神经网络**（[[jp:リカレントニューラルネットワーク]]）是 RNN 的正式名称，指这样一种神经网络：把某一时刻处理中形成的内部**状态**，**送回**下一时刻的处理中使用。",
+      "one_en": "**Recurrent neural network** ([[jp:リカレントニューラルネットワーク]]) is the full name of RNN: a neural network that **feeds** the internal **state** created at one time step **back** into the processing of the next step.",
+      "detail_jp": "処理の結果を次の処理へ戻す経路があるため、内部の**状態**がそれまでに見たデータの要約として引き継がれていく。各時点で同じ重みを使い回すので、長さの違う文章や時系列も同じ仕組みで扱える。",
+      "detail_zh": "由于存在把处理结果送回下一次处理的路径，内部的**状态**作为对此前所见数据的概括，被不断传递下去。各个时刻都重复使用相同的权重，因此长度不同的文本和时间序列也能用同一机制处理。",
+      "detail_en": "Because there is a path that sends each result back into the next round of processing, the internal **state** is passed along as a summary of the data seen so far. The same weights are reused at every time step, so texts and time series of different lengths can be handled by the same mechanism.",
+      "analogy_jp": "日記を書くときに前の日のページを読み返し、その流れを踏まえて今日の分を書き足していくようなもの。",
+      "analogy_zh": "就像写日记时先翻看前一天的那页，顺着那天的脉络续写今天的内容。",
+      "analogy_en": "It is like rereading the previous day's page when writing a diary, then adding today's entry so that it follows on from it.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**リカレントニューラルネットワーク**は層の出力を自分自身へ戻す経路をもち、入力から出力へ一方向に流れるだけのネットワークとはこの点で分かれる。",
+          "text_zh": "**循环神经网络**（[[jp:リカレントニューラルネットワーク]]）具有把层的输出送回自身的路径，这一点使它区别于从输入到输出只单向流动的网络。",
+          "text_en": "A **recurrent neural network** ([[jp:リカレントニューラルネットワーク]]) has a path that sends a layer's output back to itself, which sets it apart from networks where data only flows one way from input to output."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "t1",
+              "label": {
+                "jp": "1 つ目の入力を処理",
+                "zh": "处理第 1 个输入",
+                "en": "Process the first input"
+              }
+            },
+            {
+              "id": "h1",
+              "label": {
+                "jp": "状態を次の時点へ渡す",
+                "zh": "把状态传给下一时刻",
+                "en": "Pass the state to the next step"
+              }
+            },
+            {
+              "id": "t2",
+              "label": {
+                "jp": "次の入力と前の状態を合わせて処理",
+                "zh": "将下一个输入与之前的状态合并处理",
+                "en": "Process the next input with the previous state"
+              }
+            },
+            {
+              "id": "end",
+              "label": {
+                "jp": "最後の入力まで繰り返して出力",
+                "zh": "重复到最后一个输入后输出",
+                "en": "Repeat to the last input, then output"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "系列の 1 つ目のデータを処理し、内部の状態を作る。",
+            "caption_zh": "处理序列中的第 1 个数据，形成内部状态。",
+            "caption_en": "The first item in the sequence is processed, forming an internal state.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "その状態を、次の時点の処理へ引き継ぐ。",
+            "caption_zh": "把这一状态交接给下一时刻的处理。",
+            "caption_en": "That state is handed over to the processing at the next step.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "次のデータは、引き継いだ状態と組み合わせて処理される。",
+            "caption_zh": "下一个数据与交接过来的状态组合在一起处理。",
+            "caption_en": "The next item is processed together with the state handed over.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "これを最後まで繰り返すので、出力にはそれまでの流れが反映される。",
+            "caption_zh": "这样一直重复到最后，所以输出中反映了此前的走向。",
+            "caption_en": "This repeats to the end, so the output reflects the flow up to that point.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "RNN の正式名称で、ある時点の処理で作った内部の状態を次の時点の処理に戻して使う仕組みをもつニューラルネットワークをリカレントニューラルネットワークという。",
+      "definition_zh": "循环神经网络（リカレントニューラルネットワーク）是 RNN 的正式名称，指这样一种神经网络：把某一时刻处理中形成的内部状态，送回下一时刻的处理中使用。",
+      "definition_en": "Recurrent neural network (リカレントニューラルネットワーク) is the full name of RNN: a neural network that feeds the internal state created at one time step back into the processing of the next step.",
+      "explanation_jp": "処理の結果を次の処理へ戻す経路があるため、内部の状態がそれまでに見たデータの要約として引き継がれていく。各時点で同じ重みを使い回すので、長さの違う文章や時系列も同じ仕組みで扱える。",
+      "explanation_zh": "由于存在把处理结果送回下一次处理的路径，内部的状态作为对此前所见数据的概括，被不断传递下去。各个时刻都重复使用相同的权重，因此长度不同的文本和时间序列也能用同一机制处理。",
+      "explanation_en": "Because there is a path that sends each result back into the next round of processing, the internal state is passed along as a summary of the data seen so far. The same weights are reused at every time step, so texts and time series of different lengths can be handled by the same mechanism.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "事前学習",
+      "b": "ファインチューニング",
+      "rows": [
+        {
+          "label_jp": "行う順番",
+          "label_zh": "进行的顺序",
+          "label_en": "Order",
+          "a_jp": "先に行う",
+          "a_zh": "先进行",
+          "a_en": "Done first",
+          "b_jp": "事前学習の後に行う",
+          "b_zh": "在预训练之后进行",
+          "b_en": "Done after pre-training",
+          "key": true
+        },
+        {
+          "label_jp": "使うデータ",
+          "label_zh": "使用的数据",
+          "label_en": "Data used",
+          "a_jp": "幅広く大量のデータ",
+          "a_zh": "范围广、数量大的数据",
+          "a_en": "Broad, large-scale data",
+          "b_jp": "目的の作業に合った比較的少ないデータ",
+          "b_zh": "符合目标任务、数量相对较少的数据",
+          "b_en": "A relatively small amount of data suited to the target task",
+          "key": false
+        },
+        {
+          "label_jp": "できあがるもの",
+          "label_zh": "得到的结果",
+          "label_en": "Result",
+          "a_jp": "多くの用途の土台になるモデル",
+          "a_zh": "作为多种用途基础的模型",
+          "a_en": "A model that serves as a base for many uses",
+          "b_jp": "特定の用途に強いモデル",
+          "b_zh": "擅长特定用途的模型",
+          "b_en": "A model strong at a specific use",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "CNN",
+      "b": "RNN",
+      "rows": [
+        {
+          "label_jp": "得意なデータ",
+          "label_zh": "擅长的数据",
+          "label_en": "Data it handles well",
+          "a_jp": "画像など縦横に並んだデータ",
+          "a_zh": "图像等纵横排列的数据",
+          "a_en": "Data in a two-dimensional grid, such as images",
+          "b_jp": "文章・音声など順序のあるデータ",
+          "b_zh": "文本、语音等有顺序的数据",
+          "b_en": "Ordered data such as text and speech",
+          "key": true
+        },
+        {
+          "label_jp": "中心となる仕組み",
+          "label_zh": "核心机制",
+          "label_en": "Core mechanism",
+          "a_jp": "フィルタで局所の特徴を取り出す畳み込み",
+          "a_zh": "用滤波器提取局部特征的卷积",
+          "a_en": "Convolution, which extracts local features with filters",
+          "b_jp": "前の時点の状態を次へ戻す循環",
+          "b_zh": "把前一时刻的状态送回下一步的循环",
+          "b_en": "A loop that feeds the previous step's state into the next",
+          "key": false
+        },
+        {
+          "label_jp": "正式名称",
+          "label_zh": "正式名称",
+          "label_en": "Full name",
+          "a_jp": "畳み込みニューラルネットワーク",
+          "a_zh": "卷积神经网络",
+          "a_en": "Convolutional neural network",
+          "b_jp": "リカレントニューラルネットワーク",
+          "b_zh": "循环神经网络",
+          "b_en": "Recurrent neural network",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**事前学習**で作った汎用的なモデルを土台にすると、少ないデータでも目的の作業に合ったモデルを作りやすい。",
+    "**ファインチューニング**はモデルを一から作り直さず、学習済みの重みを目的に合わせて調整する。",
+    "**転移学習**は、ある課題で得た知識を関連する別の課題に生かす考え方である。",
+    "**畳み込みニューラルネットワーク**は CNN の、**リカレントニューラルネットワーク**は RNN の正式名称であり、略称と同じモデルを指す。"
+  ],
+  "key_points_zh": [
+    "以**预训练**得到的通用模型为基础，即使数据较少，也容易做出符合目标任务的模型。",
+    "**微调**不是把模型从头重做，而是让已训练好的权重朝目标方向调整。",
+    "**迁移学习**是把在某项任务中获得的知识运用到另一项相关任务上的思路。",
+    "**卷积神经网络**是 CNN 的正式名称，**循环神经网络**是 RNN 的正式名称，各自与缩写指的是同一种模型。"
+  ],
+  "key_points_en": [
+    "Starting from a general-purpose model built by **pre-training** makes it easier to create a model suited to the target task, even with little data.",
+    "**Fine-tuning** does not rebuild the model from scratch; it adjusts the already-trained weights toward the goal.",
+    "**Transfer learning** is the idea of putting knowledge gained on one task to work on a related, different task.",
+    "**Convolutional neural network** is the full name of CNN and **recurrent neural network** is the full name of RNN; each refers to the same model as its abbreviation."
+  ],
+  "overview": {
+    "intro_jp": "事前学習とファインチューニングを、学習させる順番と使うデータの違いで区別できる。転移学習が、ある課題で得た知識を別の課題に生かす考え方であることを説明できる。CNNとRNNを、得意とするデータの種類と仕組みの違いで分けられる。",
+    "intro_zh": "能从训练的先后顺序和所用数据的不同，区分预训练与微调。能说明迁移学习是把在某项任务中获得的知识运用到另一项任务上的思路。能根据擅长处理的数据类型和工作原理的不同，区分 CNN 与 RNN。",
+    "intro_en": "Distinguish pre-training from fine-tuning by the order in which each is done and the data each uses. Explain that transfer learning is the idea of putting knowledge gained on one task to work on a different task. Tell CNN and RNN apart by the kind of data each handles well and by how each works.",
+    "freq_badge": "標準",
+    "est_minutes": 39
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "事前学習: 事前学習といえば大量データで先に汎用知識を仕込む土台づくり",
-      "ファインチューニング: ファインチューニングといえば学習済みモデルを個別用途に微調整",
-      "転移学習: 転移学習といえば学習済み知識を別タスクへ転用(事前学習+微調整の総称)",
-      "CNN: CNNといえば画像認識が得意な深層学習モデル(=畳み込みNN)",
-      "畳み込みニューラルネットワーク: 畳み込みニューラルネットワークといえばCNNの正式名称で画像向け",
-      "RNN: RNNといえば系列データ(時系列・文章)が得意な深層学習モデル",
-      "リカレントニューラルネットワーク: リカレントニューラルネットワークといえばRNNの正式名称で系列向け"
-    ],
     "key_points_jp": [
-      "事前学習→ファインチューニングは『先に汎用知識を学び、後で個別用途へ微調整する』という順序の工程ペアである。",
-      "転移学習は学習済みの知識を別タスクへ転用する総括概念で、事前学習・ファインチューニングを包括し、少ないデータ・短い時間で済むのが利点。",
-      "CNN(畳み込みニューラルネットワーク)は画像認識を得意とする代表モデルで、略称と正式名称は同じものを指す。",
-      "RNN(リカレントニューラルネットワーク)は時系列・文章など系列データを得意とする代表モデルで、略称と正式名称は同じものを指す。",
-      "CNN=画像、RNN=系列(時系列・自然言語)という用途の対比が、両者を区別する最重要ポイントである。"
+      "事前学習で作った汎用的なモデルを土台にすると、少ないデータでも目的の作業に合ったモデルを作りやすい。",
+      "ファインチューニングはモデルを一から作り直さず、学習済みの重みを目的に合わせて調整する。",
+      "転移学習は、ある課題で得た知識を関連する別の課題に生かす考え方である。",
+      "畳み込みニューラルネットワークは CNN の、リカレントニューラルネットワークは RNN の正式名称であり、略称と同じモデルを指す。"
     ],
     "key_points_zh": [
-      "预训练→微调是一对先后顺序的工序：“先学通用知识，之后再针对具体用途做微调”。",
-      "迁移学习是把已训练知识迁移到另一任务的总括性概念，它涵盖预训练与微调，优点是所需数据更少、时间更短。",
-      "CNN（卷积神经网络）是擅长图像识别的代表性模型，简称与正式名称指的是同一事物。",
-      "RNN（循环神经网络）是擅长时间序列、文本等序列数据的代表性模型，简称与正式名称指的是同一事物。",
-      "CNN＝图像、RNN＝序列（时间序列・自然语言）这一用途上的对比，是区分两者的最重要要点。"
+      "以预训练得到的通用模型为基础，即使数据较少，也容易做出符合目标任务的模型。",
+      "微调不是把模型从头重做，而是让已训练好的权重朝目标方向调整。",
+      "迁移学习是把在某项任务中获得的知识运用到另一项相关任务上的思路。",
+      "卷积神经网络是 CNN 的正式名称，循环神经网络是 RNN 的正式名称，各自与缩写指的是同一种模型。"
     ],
     "key_points_en": [
-      "Pre-training → fine-tuning is a pair of processes in order: \"learn general-purpose knowledge first, then fine-tune for a specific purpose afterward.\"",
-      "Transfer learning is the umbrella concept of repurposing already-learned knowledge for a different task; it encompasses pre-training and fine-tuning, and its advantage is requiring less data and less time.",
-      "CNN (convolutional neural network) is a representative model that excels at image recognition; the abbreviation and the formal name refer to the same thing.",
-      "RNN (recurrent neural network) is a representative model that excels at sequential data such as time series and text; the abbreviation and the formal name refer to the same thing.",
-      "The contrast by use—CNN = images, RNN = sequences (time series and natural language)—is the most important point for distinguishing the two."
+      "Starting from a general-purpose model built by pre-training makes it easier to create a model suited to the target task, even with little data.",
+      "Fine-tuning does not rebuild the model from scratch; it adjusts the already-trained weights toward the goal.",
+      "Transfer learning is the idea of putting knowledge gained on one task to work on a related, different task.",
+      "Convolutional neural network is the full name of CNN and recurrent neural network is the full name of RNN; each refers to the same model as its abbreviation."
+    ],
+    "memory_hooks_jp": [
+      "事前学習: 英語では pre-training。対話 AI の名前に使われる GPT の P は Pre-trained (事前学習済み) の頭文字である。",
+      "ファインチューニング: fine は「細かい」、tuning は「楽器の調律」。できあがった楽器の音を最後に細かく合わせる作業になぞらえた名前である。",
+      "転移学習: 英語は transfer learning。乗り換えを「トランスファー」と呼ぶのと同じ語で、知識を別の路線へ乗り換えさせると読める。",
+      "CNN: C は Convolution (畳み込み) の C。RNN の R が Recurrent (くり返し) なので、頭の 1 文字で仕組みの違いが分かる。",
+      "畳み込みニューラルネットワーク: 「畳み込み」は数学の convolution の訳語で、音や画像の信号にフィルタを掛ける計算の名前として以前から使われてきた。",
+      "RNN: Recurrent は「くり返し起こる」という意味の英語。情報がネットワークの中をくり返し巡る形をそのまま名前にしている。"
     ],
     "memory_hooks_zh": [
-      "预训练：说到预训练，就是用大量数据先打好通用知识的根基。",
-      "微调：说到微调，就是把已训练模型针对具体用途做小幅调整。",
-      "迁移学习：说到迁移学习，就是把已训练知识迁移到另一任务（预训练+微调的统称）。",
-      "CNN：说到 CNN，就是擅长图像识别的深度学习模型（＝卷积神经网络）。",
-      "卷积神经网络：说到卷积神经网络，就是 CNN 的正式名称、面向图像。",
-      "RNN：说到 RNN，就是擅长序列数据（时间序列・文本）的深度学习模型。",
-      "循环神经网络：说到循环神经网络，就是 RNN 的正式名称、面向序列。"
+      "预训练：英语叫 pre-training。对话式 AI 的名称 GPT 中的 P，就是 Pre-trained（预训练过的）的首字母。",
+      "微调：fine 意为“细微的”，tuning 意为“给乐器调音”。这个名称把它比作乐器做好后，最后细细校准音高的工作。",
+      "迁移学习：英语是 transfer learning。transfer 也是交通“换乘”的意思，可以理解为让知识换乘到另一条线路上。",
+      "CNN：C 是 Convolution（卷积）的 C，而 RNN 的 R 是 Recurrent（循环），所以只看首字母就能分辨两者原理的不同。",
+      "卷积神经网络：日语的“畳み込み”是数学术语 convolution 的译名，很早就被用作给声音和图像信号加滤波器这种计算的名称。",
+      "RNN：Recurrent 是英语“反复发生”的意思。这个名称直接取自信息在网络内部反复循环的结构。"
     ],
     "memory_hooks_en": [
-      "Pre-training: Pre-training → building the foundation by loading general-purpose knowledge first from large amounts of data.",
-      "Fine-tuning: Fine-tuning → lightly adjusting an already-trained model for a specific purpose.",
-      "Transfer learning: Transfer learning → repurposing already-learned knowledge for a different task (the umbrella term for pre-training + fine-tuning).",
-      "CNN: CNN → a deep learning model good at image recognition (= convolutional neural network).",
-      "Convolutional neural network: Convolutional neural network → the formal name for CNN, for images.",
-      "RNN: RNN → a deep learning model good at sequential data (time series and text).",
-      "Recurrent neural network: Recurrent neural network → the formal name for RNN, for sequences."
+      "Pre-training: The \"P\" in GPT, a name used for conversational AI, is the initial of Pre-trained, from the same word as pre-training.",
+      "Fine-tuning: \"Fine\" means precise, and \"tuning\" is what you do to a musical instrument. The name likens it to the last careful adjustment of a finished instrument's pitch.",
+      "Transfer learning: In English it is transfer learning. \"Transfer\" is the same word used for changing trains, so you can picture knowledge switching over to another line.",
+      "CNN: The C is for Convolution, and the R in RNN is for Recurrent, so the first letter alone tells you how the two work differently.",
+      "Convolutional neural network: The Japanese term 畳み込み translates the mathematical term convolution, which has long named the calculation that applies a filter to sound and image signals.",
+      "RNN: Recurrent is an English word for something that keeps happening again. The name comes straight from the way information circulates repeatedly inside the network."
     ]
   },
   "challenge_questions": [
-    "2013h25a-q076",
-    "2013h25h-q078",
-    "2018h30h-q075",
+    "2025r07-q080",
     "2019r01a-q021",
     "2020r02o-q004"
   ],
@@ -267,9 +896,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "学习的迁移与代表性的深度学习模型",
-  "title_en": "Transfer of Learning and Representative Deep Learning Models",
-  "unit_summary_zh": "学习复用已训练模型的技法（预训练、微调、迁移学习），以及面向图像的 CNN 和面向序列的 RNN 这两类代表性的深度学习模型。",
-  "unit_summary_en": "Learn techniques for reusing already-trained models (pre-training, fine-tuning, transfer learning), along with two representative deep learning models: CNN for images and RNN for sequences."
+  }
 }

@@ -1,187 +1,662 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-35-u07",
   "topic_id": "technology-13-35",
   "category": "technology",
   "title_jp": "生成モデルと大規模言語モデル",
+  "title_zh": "生成模型与大语言模型",
+  "title_en": "Generative Models and Large Language Models",
   "unit_summary_jp": "データを生成する深層学習モデルGANと、生成AIの中核である大規模言語モデル(LLM)、その活用技法プロンプトエンジニアリングを学ぶ。",
+  "unit_summary_zh": "学习用于生成数据的深度学习模型 GAN、作为生成式 AI 核心的大语言模型（LLM），以及运用 LLM 的技巧——提示工程。",
+  "unit_summary_en": "Learn GAN, a deep learning model that generates data; the large language model (LLM) at the core of generative AI; and prompt engineering, the technique for using it well.",
   "order_in_topic": 7,
   "prerequisites": [
     "technology-13-35-u06"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、新しいデータそのものを作り出す深層学習モデルGANから、生成AIの中核である大規模言語モデル(LLM)、そしてLLMを上手に使いこなす技法プロンプトエンジニアリングまでを学びます。生成AIは近年の出題が増えている注目分野で、各用語の略称と正式名称、そして「生成する」という共通テーマを押さえることが試験で重要になります。",
-    "freq_badge": "標準",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将从能够创造出全新数据本身的深度学习模型 GAN，学到作为生成式 AI 核心的大语言模型（LLM），再到能够巧妙驾驭 LLM 的技巧——提示工程。生成式 AI 是近年出题增多的热门领域，掌握各术语的简称与全称，以及「生成」这一共同主题，对考试很重要。",
-    "intro_en": "In this unit, you will learn from GAN, a deep learning model that creates entirely new data itself, to the large language model (LLM) at the core of generative AI, and on to prompt engineering, the technique for skillfully handling LLMs. Generative AI is a hot area with increasing exam coverage in recent years, and for the exam it is important to master each term's abbreviation and full name, as well as the shared theme of \"generating.\""
-  },
-  "terms": [
+  "goals_jp": [
+    "**GAN** が 2 つのネットワークを競わせて新しいデータを作る仕組みを説明できる。",
+    "**LLM** が次の語を予測するモデルを大規模にしたもので、**基盤モデル**の一種であることを説明できる。",
+    "**プロンプトエンジニアリング**で指示文をどう工夫するかを、自分で作った例で説明できる。"
+  ],
+  "goals_zh": [
+    "能说明 **GAN** 如何让两个网络相互较量，从而生成新的数据。",
+    "能说明 **LLM** 是把“预测下一个词”的模型做到超大规模的产物，属于**基础模型**的一种。",
+    "能用自己举的例子，说明**提示工程**是怎样改进指令文本的。"
+  ],
+  "goals_en": [
+    "Explain how a **GAN** pits two networks against each other to produce new data.",
+    "Explain that an **LLM** is a next-word prediction model scaled up to a very large size, and that it is one type of **foundation model**.",
+    "Explain, with an example of your own, how **prompt engineering** improves the wording of instructions."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "主に扱うもの"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "主要对象"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Mainly deals with"
+  ],
+  "overview_rows": [
     {
       "term": "GAN",
-      "definition_jp": "二つのネットワークを競わせて本物そっくりのデータを生成する深層学習モデル。",
-      "explanation_jp": "GANは、画像などのデータを新しく生成することを得意とする深層学習モデルです。「生成器(ジェネレータ)」と「識別器(ディスクリミネータ)」という二つのネットワークが、偽物を作る側と見破る側として互いに競い合いながら学習します。\n\nこの競争を繰り返すうちに、生成器は本物と見分けがつかないほど精巧なデータを作れるようになります。試験では、データを分類・識別するモデルではなく「データを新しく生成する」代表的なモデルであること、二つのネットワークが対立しながら学ぶ仕組みが問われます。",
-      "analogy_jp": "偽札職人(生成器)と鑑定士(識別器)がいたちごっこをするようなもの。鑑定士に見破られまいと職人の腕が上がり、最後は本物そっくりの札ができあがります。",
-      "memory_hook_jp": "GANといえば生成器と識別器を競わせて本物そっくりを作る",
-      "inline_quiz": [
-        "2009h21a-q097"
+      "one_line_jp": "生成器と識別器を競わせて新しいデータを作る深層学習モデル",
+      "one_line_zh": "让生成器与判别器相互较量来生成新数据的深度学习模型",
+      "one_line_en": "A deep learning model that has a generator and a discriminator compete to create new data",
+      "extra_jp": [
+        "生成モデル",
+        "画像などのデータ"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"ランダムな入力\"] --> B[\"生成器(偽データを作る)\"]; B --> C[\"識別器(本物か偽物か判定)\"]; D[\"本物のデータ\"] --> C; C --> E[\"競い合って精度が向上\"]",
-        "svg_path": "figures/technology-13-35-u07-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "GAN（生成对抗网络）",
-      "term_en": "GAN",
-      "definition_zh": "让两个网络相互竞争、生成以假乱真数据的深度学习模型。",
-      "definition_en": "A deep learning model that pits two networks against each other to generate data nearly indistinguishable from the real thing.",
-      "explanation_zh": "GAN 是一种擅长全新生成图像等数据的深度学习模型。「生成器（generator）」和「判别器（discriminator）」这两个网络，分别作为造假的一方和识破的一方，在相互竞争中学习。\n\n在反复进行这种竞争的过程中，生成器逐渐能够造出与真品难以区分、精致逼真的数据。考试中会考查：它不是对数据进行分类、识别的模型，而是「全新生成数据」的代表性模型，以及两个网络相互对立着学习的机制。",
-      "explanation_en": "GAN is a deep learning model that excels at newly generating data such as images. Two networks — a \"generator\" and a \"discriminator\" — learn while competing with each other as the side that makes fakes and the side that sees through them.\n\nAs this competition is repeated, the generator becomes able to produce data so refined that it is indistinguishable from the real thing. On the exam, you are asked that it is not a model that classifies or identifies data but a representative model that \"newly generates data,\" and about the mechanism in which two networks learn while opposing each other.",
-      "analogy_zh": "就像伪钞匠（生成器）和鉴定师（判别器）在玩猫鼠游戏。为了不被鉴定师识破，匠人的手艺不断精进，最终造出以假乱真的钞票。",
-      "analogy_en": "Like a counterfeiter (generator) and an appraiser (discriminator) playing a cat-and-mouse game. To avoid being seen through by the appraiser, the counterfeiter's skill keeps improving, until at last they produce bills indistinguishable from the real thing.",
-      "memory_hook_zh": "说到 GAN，就是让生成器和判别器相互竞争、造出以假乱真",
-      "memory_hook_en": "GAN → pit a generator and a discriminator against each other to make something indistinguishable from the real thing"
+      "extra_zh": [
+        "生成模型",
+        "图像等数据"
+      ],
+      "extra_en": [
+        "Generative model",
+        "Images and similar data"
+      ]
     },
     {
       "term": "敵対的生成ネットワーク",
-      "definition_jp": "GANの正式名称。二つの網が敵対しながらデータを生成する手法。",
-      "explanation_jp": "敵対的生成ネットワークは、GAN(Generative Adversarial Network)の正式な日本語名称です。「敵対的」は生成器と識別器が互いに競い合う(敵対する)関係を、「生成」は新しいデータを作り出すことを表しています。\n\n名称そのものが仕組みを言い表している点がポイントです。試験では、GANという略称と「敵対的生成ネットワーク」という正式名称が対応していること、名前の通り二つのネットワークが敵対的に学習する生成モデルであることが問われます。",
-      "analogy_jp": "「敵対」「生成」「ネットワーク」という三つの言葉が、そのまま“競い合って・新しく作る・二つの網”という中身を説明している名札のようなものです。",
-      "memory_hook_jp": "敵対的生成ネットワークといえばGANの正式名称",
-      "inline_quiz": [
-        "2009h21h-q066"
+      "one_line_jp": "GAN の日本語の正式名称",
+      "one_line_zh": "GAN 在日语中的正式名称",
+      "one_line_en": "The full Japanese name for GAN",
+      "extra_jp": [
+        "名称",
+        "画像などのデータ"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "生成对抗网络",
-      "term_en": "Generative Adversarial Network",
-      "definition_zh": "GAN 的全称。两个网络相互对抗着生成数据的方法。",
-      "definition_en": "The full name of GAN. A method in which two networks generate data while adversarially competing.",
-      "explanation_zh": "生成对抗网络是 GAN（Generative Adversarial Network）的正式名称。「对抗」表示生成器和判别器相互竞争（对抗）的关系，「生成」表示创造出新的数据。\n\n要点在于，名称本身就道出了其机制。考试中会考查：GAN 这一简称与「生成对抗网络」这一全称相对应，以及正如其名，它是两个网络对抗式学习的生成模型。",
-      "explanation_en": "Generative Adversarial Network is the formal name of GAN (Generative Adversarial Network). \"Adversarial\" expresses the relationship in which the generator and discriminator compete (oppose) with each other, and \"generative\" expresses creating new data.\n\nThe key point is that the name itself describes the mechanism. On the exam, you are asked that the abbreviation GAN corresponds to the full name \"Generative Adversarial Network,\" and that, as the name says, it is a generative model in which two networks learn adversarially.",
-      "analogy_zh": "「对抗」「生成」「网络」这三个词，本身就像一张名牌，直接说明了它的内容——「相互竞争、全新创造、两个网络」。",
-      "analogy_en": "The three words \"adversarial,\" \"generative,\" and \"network\" are like a name tag that directly explains the contents: \"competing with each other, creating anew, two networks.\"",
-      "memory_hook_zh": "说到生成对抗网络，就是 GAN 的全称",
-      "memory_hook_en": "Generative Adversarial Network → the full name of GAN"
+      "extra_zh": [
+        "名称",
+        "图像等数据"
+      ],
+      "extra_en": [
+        "Name",
+        "Images and similar data"
+      ]
     },
     {
       "term": "LLM",
-      "definition_jp": "膨大な文章を学習し人間のような文章を生成するAIモデル。",
-      "explanation_jp": "LLMは、インターネット上の膨大な量の文章を学習し、人間が書いたような自然な文章を生成できるAIモデルです。質問に答えたり、文章を要約・翻訳したり、文章を続けて書いたりと、言葉に関する幅広い作業をこなせるのが特徴です。\n\n近年の対話型生成AIサービスの中核技術であり、生成AIの代表例として出題されます。試験では、LLMが「大規模言語モデル」の略称であること、大量のテキストを学習して言語を扱う生成AIである、という基本理解が問われます。",
-      "analogy_jp": "とてつもない数の本を読破した物知りの相談相手のようなもの。質問すれば、それまで読んだ膨大な文章をもとに自然な言葉で答えを組み立ててくれます。",
-      "memory_hook_jp": "LLMといえば膨大な文章を学習して文章を生成するAI",
+      "one_line_jp": "膨大な文章から学び、続きの文章を作る生成AIのモデル",
+      "one_line_zh": "从海量文本中学习、续写文本的生成式 AI 模型",
+      "one_line_en": "A generative AI model that learns from huge amounts of text and writes what comes next",
+      "extra_jp": [
+        "生成モデル",
+        "文章"
+      ],
+      "extra_zh": [
+        "生成模型",
+        "文本"
+      ],
+      "extra_en": [
+        "Generative model",
+        "Text"
+      ]
+    },
+    {
+      "term": "大規模言語モデル",
+      "one_line_jp": "LLM の日本語の正式名称",
+      "one_line_zh": "LLM 在日语中的正式名称",
+      "one_line_en": "The full Japanese name for LLM",
+      "extra_jp": [
+        "名称",
+        "文章"
+      ],
+      "extra_zh": [
+        "名称",
+        "文本"
+      ],
+      "extra_en": [
+        "Name",
+        "Text"
+      ]
+    },
+    {
+      "term": "プロンプトエンジニアリング",
+      "one_line_jp": "AI に渡す指示文を工夫して目的に合う出力を引き出す技法",
+      "one_line_zh": "通过改进交给 AI 的指令文本来获得符合目的的输出的技巧",
+      "one_line_en": "The technique of refining the instructions given to an AI to get output that fits the goal",
+      "extra_jp": [
+        "活用の技法",
+        "AI への指示文"
+      ],
+      "extra_zh": [
+        "使用技巧",
+        "给 AI 的指令文本"
+      ],
+      "extra_en": [
+        "Usage technique",
+        "Instructions given to AI"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "GAN",
+      "term_zh": "GAN（生成对抗网络）",
+      "term_en": "GAN",
+      "one_jp": "**GAN** は、偽のデータを作る**生成器**と、それを本物と見分けようとする**識別器**を競わせて学習させ、本物に似た新しいデータを作り出す深層学習のモデルである。",
+      "one_zh": "**GAN**（生成对抗网络）是一种深度学习模型：让制造假数据的**生成器**与试图分辨真假的**判别器**相互较量着学习，最终生成与真实数据相似的新数据。",
+      "one_en": "A **GAN** is a deep learning model that trains a **generator**, which makes fake data, against a **discriminator**, which tries to tell it apart from real data, until it can create new data that resembles the real thing.",
+      "detail_jp": "生成器は乱数を元にデータを作り、識別器は本物のデータと生成器の作ったデータを見比べて判定する。判定の結果を受けて、生成器は見破られにくい作り方へ、識別器は見破りやすい見方へとそれぞれ学び直す。この繰り返しで、生成器は本物と区別しにくいデータを作れるようになる。",
+      "detail_zh": "生成器以随机数为起点制造数据，判别器则对照真实数据与生成器的数据作出判断。根据判断结果，生成器改进做法让自己更难被识破，判别器改进眼光让自己更容易识破。经过反复较量，生成器就能做出与真品难以区分的数据。",
+      "detail_en": "The generator builds data from random numbers, and the discriminator compares real data with the generator's output to judge which is which. Based on each verdict, the generator adjusts to become harder to catch, while the discriminator adjusts to catch it more easily. Through this repeated contest, the generator learns to produce data that is hard to tell from the real thing.",
+      "analogy_jp": "贋作を描く画家と鑑定士が腕を競い合うと、鑑定の目が厳しくなるほど画家の絵も本物に近づいていく。",
+      "analogy_zh": "就像造假画的画师和鉴定师互相比拼：鉴定师的眼光越毒，画师的作品也越接近真迹。",
+      "analogy_en": "Picture a forger and an art appraiser locked in a contest: the sharper the appraiser's eye becomes, the closer the forger's paintings get to the genuine article.",
+      "hook_jp": "頭文字は G = Generative (生成)、A = Adversarial (敵対的)、N = Network。3 文字から正式名称を組み立て直せる。",
+      "hook_zh": "首字母分别是 G = Generative（生成）、A = Adversarial（对抗）、N = Network（网络），由这 3 个字母就能拼回完整名称。",
+      "hook_en": "The letters stand for G = Generative, A = Adversarial, N = Network, so the three letters alone let you rebuild the full name.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "GAN の中の**識別器**は本物か偽物かを判定するが、それは生成器を鍛えるための部品である。GAN 全体の目的は新しいデータの生成にある。",
+          "text_zh": "GAN 中的**判别器**（[[jp:識別器]]）负责判断真假，但它只是用来锤炼生成器的部件。GAN 整体的目的在于生成新数据。",
+          "text_en": "The **discriminator** ([[jp:識別器]]) inside a GAN judges real versus fake, but it is only a part for training the generator. The purpose of the GAN as a whole is to generate new data."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "乱数",
+                "zh": "随机数",
+                "en": "Random numbers"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "生成器が偽のデータを作る",
+                "zh": "生成器制造假数据",
+                "en": "Generator makes fake data"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "識別器が本物か偽物かを判定",
+                "zh": "判别器判断真假",
+                "en": "Discriminator judges real or fake"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "判定の結果で両方が学び直す",
+                "zh": "双方根据判断结果再学习",
+                "en": "Both relearn from the verdict"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "生成器は乱数を材料にして、本物らしく見えるデータを作る。",
+            "caption_zh": "生成器以随机数为原料，制造看起来像真的数据。",
+            "caption_en": "The generator uses random numbers as raw material to make data that looks real.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "識別器は、本物のデータと生成器が作ったデータを見比べて判定する。",
+            "caption_zh": "判别器对照真实数据和生成器制造的数据，作出判断。",
+            "caption_en": "The discriminator compares real data with the generator's data and gives its verdict.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "生成器は見破られにくく、識別器は見破りやすくなるよう学び直し、これを繰り返す。",
+            "caption_zh": "生成器朝着更难被识破、判别器朝着更容易识破的方向再学习，如此反复。",
+            "caption_en": "The generator learns to be harder to catch and the discriminator learns to catch it more easily, and this repeats.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "GAN は、偽のデータを作る生成器と、それを本物と見分けようとする識別器を競わせて学習させ、本物に似た新しいデータを作り出す深層学習のモデルである。",
+      "definition_zh": "GAN（生成对抗网络）是一种深度学习模型：让制造假数据的生成器与试图分辨真假的判别器相互较量着学习，最终生成与真实数据相似的新数据。",
+      "definition_en": "A GAN is a deep learning model that trains a generator, which makes fake data, against a discriminator, which tries to tell it apart from real data, until it can create new data that resembles the real thing.",
+      "explanation_jp": "生成器は乱数を元にデータを作り、識別器は本物のデータと生成器の作ったデータを見比べて判定する。判定の結果を受けて、生成器は見破られにくい作り方へ、識別器は見破りやすい見方へとそれぞれ学び直す。この繰り返しで、生成器は本物と区別しにくいデータを作れるようになる。",
+      "explanation_zh": "生成器以随机数为起点制造数据，判别器则对照真实数据与生成器的数据作出判断。根据判断结果，生成器改进做法让自己更难被识破，判别器改进眼光让自己更容易识破。经过反复较量，生成器就能做出与真品难以区分的数据。",
+      "explanation_en": "The generator builds data from random numbers, and the discriminator compares real data with the generator's output to judge which is which. Based on each verdict, the generator adjusts to become harder to catch, while the discriminator adjusts to catch it more easily. Through this repeated contest, the generator learns to produce data that is hard to tell from the real thing.",
+      "memory_hook_jp": "頭文字は G = Generative (生成)、A = Adversarial (敵対的)、N = Network。3 文字から正式名称を組み立て直せる。",
+      "memory_hook_zh": "首字母分别是 G = Generative（生成）、A = Adversarial（对抗）、N = Network（网络），由这 3 个字母就能拼回完整名称。",
+      "memory_hook_en": "The letters stand for G = Generative, A = Adversarial, N = Network, so the three letters alone let you rebuild the full name.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "敵対的生成ネットワーク",
+      "term_zh": "生成对抗网络",
+      "term_en": "Generative Adversarial Network",
+      "one_jp": "**敵対的生成ネットワーク**は、**GAN** (Generative Adversarial Network) の日本語の正式名称である。",
+      "one_zh": "**生成对抗网络**（[[jp:敵対的生成ネットワーク]]）是 **GAN**（Generative Adversarial Network）在日语中的正式名称。",
+      "one_en": "**Generative Adversarial Network** ([[jp:敵対的生成ネットワーク]]) is the full name of **GAN**, and the Japanese term is its official Japanese rendering.",
+      "detail_jp": "「敵対的」は生成器と識別器が互いを出し抜こうとして競う関係を、「生成」は新しいデータを作り出す目的を表す。名称の各部分が、そのまま仕組みの要点に対応している。",
+      "detail_zh": "“对抗”表示生成器与判别器互相想要胜过对方的竞争关系，“生成”表示创造新数据这一目的。名称的每个部分都直接对应着机制的要点。",
+      "detail_en": "\"Adversarial\" describes the rivalry in which the generator and discriminator each try to outwit the other, and \"generative\" describes the goal of creating new data. Each part of the name maps directly onto a key point of how the model works.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "英語は Generative (生成) が先、日本語訳は「敵対的」が先で、語の並びが逆になっている。",
+      "hook_zh": "英语是 Generative（生成）在前，日语译名则是“对抗”（[[jp:敵対的]]，字面意为“敌对的”）在前，词序正好相反。",
+      "hook_en": "In English, Generative comes first, but the Japanese name puts \"adversarial\" ([[jp:敵対的]]) first, so the word order is reversed.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "この名称の「敵対的」は、GAN の中の 2 つのネットワークが競い合う学習のしかたを指す。外部からの攻撃や不正アクセスを表す語ではない。",
+          "text_zh": "这个名称中的“对抗”（[[jp:敵対的]]）指的是 GAN 内部两个网络相互竞争的学习方式，并不是表示外部攻击或非法访问的词。",
+          "text_en": "In this name, \"adversarial\" ([[jp:敵対的]]) refers to the way the two networks inside a GAN learn by competing. It does not mean outside attacks or unauthorized access."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "敵対的生成ネットワークは、GAN (Generative Adversarial Network) の日本語の正式名称である。",
+      "definition_zh": "生成对抗网络（敵対的生成ネットワーク）是 GAN（Generative Adversarial Network）在日语中的正式名称。",
+      "definition_en": "Generative Adversarial Network (敵対的生成ネットワーク) is the full name of GAN, and the Japanese term is its official Japanese rendering.",
+      "explanation_jp": "「敵対的」は生成器と識別器が互いを出し抜こうとして競う関係を、「生成」は新しいデータを作り出す目的を表す。名称の各部分が、そのまま仕組みの要点に対応している。",
+      "explanation_zh": "“对抗”表示生成器与判别器互相想要胜过对方的竞争关系，“生成”表示创造新数据这一目的。名称的每个部分都直接对应着机制的要点。",
+      "explanation_en": "\"Adversarial\" describes the rivalry in which the generator and discriminator each try to outwit the other, and \"generative\" describes the goal of creating new data. Each part of the name maps directly onto a key point of how the model works.",
+      "memory_hook_jp": "英語は Generative (生成) が先、日本語訳は「敵対的」が先で、語の並びが逆になっている。",
+      "memory_hook_zh": "英语是 Generative（生成）在前，日语译名则是“对抗”（敵対的，字面意为“敌对的”）在前，词序正好相反。",
+      "memory_hook_en": "In English, Generative comes first, but the Japanese name puts \"adversarial\" (敵対的) first, so the word order is reversed.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "LLM",
+      "term_zh": "LLM（大语言模型）",
+      "term_en": "LLM",
+      "one_jp": "**LLM** は、膨大な量の文章を学習し、与えられた文に続く自然な文章を作り出す**生成AI**のモデルである。",
+      "one_zh": "**LLM**（大语言模型）是一种**生成式 AI** 模型，它学习海量文本，能接着给定的句子写出自然的后续文字。",
+      "one_en": "An **LLM** is a **generative AI** model that learns from an enormous amount of text and produces natural text that continues a given sentence.",
+      "detail_jp": "文の中で次にどの語が来やすいかを確率で予測する**言語モデル**を、非常に大きな規模で作ったものである。まず幅広い分野の大量のデータで学習させて (**事前学習**) 汎用的な力を持たせ、その後の追加の学習 (**ファインチューニング**) で特定の用途に合わせることもできる。このように多くの用途の土台になるモデルを**基盤モデル**という。",
+      "detail_zh": "它是把用概率预测句中下一个词的**语言模型**做到超大规模的产物。先用涵盖广泛领域的大量数据进行学习（**预训练**），使其具备通用能力，之后还可以通过追加学习（**微调**）让它适应特定用途。像这样成为众多用途之基础的模型，称为**基础模型**。",
+      "detail_en": "It is a **language model**, which predicts the probability of the next word in a sentence, built at a very large scale. It is first trained on vast data from a wide range of fields (**pre-training**) to gain general ability, and can then be adapted to a specific use through additional training (**fine-tuning**). A model that serves as the base for many uses in this way is called a **foundation model**.",
+      "analogy_jp": "膨大な本を読み込んだ人が、書きかけの文を見せられると、いかにもそれらしい続きを書けるのに似ている。",
+      "analogy_zh": "就像一个读过无数本书的人，看到写了一半的句子，就能顺手写出像模像样的下文。",
+      "analogy_en": "It is like someone who has read countless books being shown an unfinished sentence and writing a perfectly plausible continuation.",
+      "hook_jp": "先頭の L は Large。服の L サイズと同じ「大きい」の L である。",
+      "hook_zh": "开头的 L 是 Large，和衣服 L 码一样，表示“大”。",
+      "hook_en": "The leading L is Large, the same L as on a large-size shirt.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "LLM は、事前学習で汎用的な力を身に付け、追加の学習で多くの用途に転用できる**基盤モデル**のうち、言語を扱う代表例である。",
+          "text_zh": "LLM 是**基础模型**（[[jp:基盤モデル]]）中处理语言的代表例子；基础模型通过预训练（[[jp:事前学習]]）获得通用能力，再经追加学习即可转用于多种用途。",
+          "text_en": "An LLM is the leading language example of a **foundation model** ([[jp:基盤モデル]]), a model that gains general ability through pre-training ([[jp:事前学習]]) and can be repurposed for many uses with additional training.",
+          "qids": [
+            "2025r07-q080"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "入力された文",
+                "zh": "输入的句子",
+                "en": "Input sentence"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "次の語の候補に確率を付ける",
+                "zh": "给下一个词的候选打出概率",
+                "en": "Assign probabilities to next-word candidates"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "1 語を選んで文に足す",
+                "zh": "选出 1 个词接到句末",
+                "en": "Pick one word and append it"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "繰り返して文章になる",
+                "zh": "反复进行，形成文章",
+                "en": "Repeat to build a passage"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "入力された文を読み、次に来そうな語の候補ごとに確率を見積もる。",
+            "caption_zh": "读取输入的句子，为每个可能出现的下一个词估算概率。",
+            "caption_en": "The model reads the input sentence and estimates a probability for each word that might come next.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "見積もった確率に従って候補から 1 語を選び、文の末尾に足す。",
+            "caption_zh": "按照估算出的概率从候选中选出 1 个词，接到句子末尾。",
+            "caption_en": "Following those probabilities, it picks one candidate word and adds it to the end of the sentence.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "足した文を入力にして同じことを繰り返し、まとまった文章を作る。",
+            "caption_zh": "把加长后的句子作为新的输入重复同样的步骤，写出完整的文章。",
+            "caption_en": "It feeds the longer sentence back in and repeats the process until a full passage takes shape.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2025r07-q080",
+        "2026r08-q098"
+      ],
+      "definition_jp": "LLM は、膨大な量の文章を学習し、与えられた文に続く自然な文章を作り出す生成AIのモデルである。",
+      "definition_zh": "LLM（大语言模型）是一种生成式 AI 模型，它学习海量文本，能接着给定的句子写出自然的后续文字。",
+      "definition_en": "An LLM is a generative AI model that learns from an enormous amount of text and produces natural text that continues a given sentence.",
+      "explanation_jp": "文の中で次にどの語が来やすいかを確率で予測する言語モデルを、非常に大きな規模で作ったものである。まず幅広い分野の大量のデータで学習させて (事前学習) 汎用的な力を持たせ、その後の追加の学習 (ファインチューニング) で特定の用途に合わせることもできる。このように多くの用途の土台になるモデルを基盤モデルという。",
+      "explanation_zh": "它是把用概率预测句中下一个词的语言模型做到超大规模的产物。先用涵盖广泛领域的大量数据进行学习（预训练），使其具备通用能力，之后还可以通过追加学习（微调）让它适应特定用途。像这样成为众多用途之基础的模型，称为基础模型。",
+      "explanation_en": "It is a language model, which predicts the probability of the next word in a sentence, built at a very large scale. It is first trained on vast data from a wide range of fields (pre-training) to gain general ability, and can then be adapted to a specific use through additional training (fine-tuning). A model that serves as the base for many uses in this way is called a foundation model.",
+      "memory_hook_jp": "先頭の L は Large。服の L サイズと同じ「大きい」の L である。",
+      "memory_hook_zh": "开头的 L 是 Large，和衣服 L 码一样，表示“大”。",
+      "memory_hook_en": "The leading L is Large, the same L as on a large-size shirt.",
+      "inline_quiz": [
+        "2025r07-q080",
+        "2026r08-q098"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "大規模言語モデル",
+      "term_zh": "大语言模型",
+      "term_en": "Large Language Model",
+      "one_jp": "**大規模言語モデル**は、**LLM** (Large Language Model) の日本語の正式名称である。",
+      "one_zh": "**大语言模型**（[[jp:大規模言語モデル]]）是 **LLM**（Large Language Model）在日语中的正式名称。",
+      "one_en": "**Large Language Model** ([[jp:大規模言語モデル]]) is the full name of **LLM**, and the Japanese term is its official Japanese rendering.",
+      "detail_jp": "「言語モデル」は語のつながりやすさを確率で表すモデルを、「大規模」は学習に使う文章の量と、学習で調整される内部の数値 (**パラメータ**) の数が非常に多いことを指す。規模を大きくしたことで、質問への回答や要約、翻訳など幅広い言葉の作業をこなせるようになった。",
+      "detail_zh": "“语言模型”指用概率表示词与词衔接可能性的模型，“大规模”指用于学习的文本量以及在学习中被调整的内部数值（**参数**）的数量都极其庞大。正因规模变大，它才能胜任回答问题、摘要、翻译等多种语言工作。",
+      "detail_en": "\"Language model\" means a model that expresses, as probabilities, how likely words are to follow one another, while \"large\" refers to the huge volume of training text and the huge number of internal values adjusted during training (**parameters**). Scaling up is what allowed it to handle a wide range of language tasks, such as answering questions, summarizing, and translating.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "「言語モデル」の部分は昔からある技術の名前で、新しさは頭に付いた「大規模」の側にある。",
+      "hook_zh": "“语言模型”是早就存在的技术名称，新意在于前面加上的“大规模”。",
+      "hook_en": "\"Language model\" is the name of a long-established technique; what is new is the \"large\" in front of it.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "「大規模」は学習データの量とパラメータ数の大きさを表す。対応できる言語の数の多さを表す語ではない。",
+          "text_zh": "“大规模”（[[jp:大規模]]）表示学习数据量和参数数量之大，并不是指能处理的语言种类多。",
+          "text_en": "\"Large\" ([[jp:大規模]]) refers to the size of the training data and the number of parameters. It does not mean the model handles many different languages."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2025r07-q080"
+      ],
+      "definition_jp": "大規模言語モデルは、LLM (Large Language Model) の日本語の正式名称である。",
+      "definition_zh": "大语言模型（大規模言語モデル）是 LLM（Large Language Model）在日语中的正式名称。",
+      "definition_en": "Large Language Model (大規模言語モデル) is the full name of LLM, and the Japanese term is its official Japanese rendering.",
+      "explanation_jp": "「言語モデル」は語のつながりやすさを確率で表すモデルを、「大規模」は学習に使う文章の量と、学習で調整される内部の数値 (パラメータ) の数が非常に多いことを指す。規模を大きくしたことで、質問への回答や要約、翻訳など幅広い言葉の作業をこなせるようになった。",
+      "explanation_zh": "“语言模型”指用概率表示词与词衔接可能性的模型，“大规模”指用于学习的文本量以及在学习中被调整的内部数值（参数）的数量都极其庞大。正因规模变大，它才能胜任回答问题、摘要、翻译等多种语言工作。",
+      "explanation_en": "\"Language model\" means a model that expresses, as probabilities, how likely words are to follow one another, while \"large\" refers to the huge volume of training text and the huge number of internal values adjusted during training (parameters). Scaling up is what allowed it to handle a wide range of language tasks, such as answering questions, summarizing, and translating.",
+      "memory_hook_jp": "「言語モデル」の部分は昔からある技術の名前で、新しさは頭に付いた「大規模」の側にある。",
+      "memory_hook_zh": "“语言模型”是早就存在的技术名称，新意在于前面加上的“大规模”。",
+      "memory_hook_en": "\"Language model\" is the name of a long-established technique; what is new is the \"large\" in front of it.",
       "inline_quiz": [
         "2025r07-q080"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "LLM（大语言模型）",
-      "term_en": "LLM",
-      "definition_zh": "学习海量文章、生成类似人类文章的 AI 模型。",
-      "definition_en": "An AI model that learns from vast amounts of text and generates human-like text.",
-      "explanation_zh": "LLM 是一种学习互联网上海量文章、能够生成宛如人类所写的自然文章的 AI 模型。它能回答提问、对文章进行摘要与翻译、续写文章等，胜任与语言相关的广泛工作，这是它的特点。\n\n它是近年对话型生成式 AI 服务的核心技术，作为生成式 AI 的代表例出题。考试中会考查这样的基本理解：LLM 是「大语言模型」的简称，是学习大量文本、处理语言的生成式 AI。",
-      "explanation_en": "LLM is an AI model that learns from the vast amount of text on the internet and can generate natural text as if written by a human. Its characteristic is that it can handle a wide range of language-related tasks, such as answering questions, summarizing and translating text, and continuing to write text.\n\nIt is the core technology behind recent conversational generative AI services and is tested as a representative example of generative AI. On the exam, the basic understanding is asked that LLM is the abbreviation of \"Large Language Model,\" a generative AI that learns from large amounts of text and handles language.",
-      "analogy_zh": "就像一位读遍了数量惊人的书籍、知识渊博的咨询对象。只要提问，它就会基于此前读过的海量文章，用自然的语言组织出答案。",
-      "analogy_en": "Like a knowledgeable advisor who has read through a staggering number of books. Ask a question, and based on the vast amount of text it has read, it assembles an answer in natural language.",
-      "memory_hook_zh": "说到 LLM，就是学习海量文章、生成文章的 AI",
-      "memory_hook_en": "LLM → an AI that learns from vast amounts of text and generates text"
-    },
-    {
-      "term": "大規模言語モデル",
-      "definition_jp": "LLMの正式名称。大量の言語データを学習した生成AIモデル。",
-      "explanation_jp": "大規模言語モデルは、LLM(Large Language Model)の正式な日本語名称です。「大規模」は学習に使う文章量とモデルの規模が非常に大きいこと、「言語モデル」は言葉のつながりやすさを予測して文章を扱う仕組みを表しています。\n\n試験では、LLMという略称と「大規模言語モデル」という正式名称が対応していること、名称の通り大量の言語データを学習した生成AIであることが問われます。GANが主に画像などを生成するのに対し、こちらは文章(言語)を生成する点で対比して覚えると効果的です。",
-      "analogy_jp": "「大規模」=膨大な文章で鍛えた、「言語モデル」=言葉を扱う頭脳、という名前がそのまま中身を表しています。図書館一館分を覚えた言葉の専門家のイメージです。",
-      "memory_hook_jp": "大規模言語モデルといえばLLMの正式名称",
-      "inline_quiz": [
-        "2010h22a-q083"
-      ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "大语言模型",
-      "term_en": "Large Language Model",
-      "definition_zh": "LLM 的全称。学习了大量语言数据的生成式 AI 模型。",
-      "definition_en": "The full name of LLM. A generative AI model that has learned from large amounts of language data.",
-      "explanation_zh": "大语言模型是 LLM（Large Language Model）的正式名称。「大规模」表示用于学习的文章量与模型规模都非常庞大，「语言模型」表示一种预测词语衔接可能性、从而处理文章的机制。\n\n考试中会考查：LLM 这一简称与「大语言模型」这一全称相对应，以及正如其名，它是学习了大量语言数据的生成式 AI。GAN 主要生成图像等，而它生成的是文章（语言），与 GAN 对照着记会很有效。",
-      "explanation_en": "Large Language Model is the formal name of LLM (Large Language Model). \"Large\" expresses that both the amount of text used for learning and the scale of the model are very large, and \"language model\" expresses a mechanism that predicts how likely words are to connect and thereby handles text.\n\nOn the exam, you are asked that the abbreviation LLM corresponds to the full name \"Large Language Model,\" and that, as the name says, it is a generative AI that has learned from large amounts of language data. Whereas GAN mainly generates images and the like, this one generates text (language), so it is effective to remember it in contrast with GAN.",
-      "analogy_zh": "「大规模」＝用海量文章磨炼而成，「语言模型」＝处理语言的大脑，这个名字本身就道出了它的内容。可以想象成一位记住了整整一座图书馆的语言专家。",
-      "analogy_en": "\"Large\" = honed with a vast amount of text, \"language model\" = a brain that handles language — the name itself describes the contents. Picture a language expert who has memorized an entire library's worth of books.",
-      "memory_hook_zh": "说到大语言模型，就是 LLM 的全称",
-      "memory_hook_en": "Large Language Model → the full name of LLM"
+      "figure": null
     },
     {
       "term": "プロンプトエンジニアリング",
-      "definition_jp": "AIへの指示文を工夫し望む回答を引き出す技法。",
-      "explanation_jp": "プロンプトエンジニアリングは、生成AI(LLMなど)に与える指示や質問の文章(プロンプト)を工夫し、より的確で望ましい回答を引き出す技法です。同じAIでも、指示の出し方しだいで回答の質が大きく変わるため重要視されます。\n\n例えば「役割を与える」「手順を細かく示す」「出力の形式を指定する」といった工夫が含まれます。試験では、これがモデルそのものを作る技術ではなく、出来上がったAIを「使いこなす側」の活用技法である点が問われます。",
-      "analogy_jp": "検索エンジンで良い結果を得るために検索キーワードを工夫するのと同じように、AIにうまく頼むための“聞き方の工夫”だと考えると分かりやすいです。",
-      "memory_hook_jp": "プロンプトエンジニアリングといえば指示文を工夫して望む回答を引き出す技法",
+      "term_zh": "提示工程",
+      "term_en": "Prompt engineering",
+      "one_jp": "**プロンプトエンジニアリング**は、生成AI に渡す指示文 (**プロンプト**) の書き方を工夫して、目的に合った出力を引き出す技法である。",
+      "one_zh": "**提示工程**（[[jp:プロンプトエンジニアリング]]）是通过改进交给生成式 AI 的指令文本（**提示词**）的写法，来获得符合目的的输出的技巧。",
+      "one_en": "**Prompt engineering** ([[jp:プロンプトエンジニアリング]]) is the technique of refining how you write the instructions (**prompts**) given to a generative AI so that it produces output that fits your goal.",
+      "detail_jp": "同じモデルでも、指示の具体さや前提の示し方によって出力の質は大きく変わる。例えば、AI に担当させる役割を最初に示す、作業を小さな段階に分けて頼む、答えを表や箇条書きの形で出すよう指定する、といった工夫がある。出力を見て指示文を直す試行を何度も繰り返すことも多い。",
+      "detail_zh": "即使是同一个模型，输出质量也会因指令的具体程度和前提的交代方式而大不相同。常见的做法有：一开始就说明让 AI 扮演什么角色、把任务拆成小步骤来提出、指定用表格或分条列表的形式作答等。人们也常常一边看输出一边修改指令，反复尝试多次。",
+      "detail_en": "Even with the same model, output quality varies greatly depending on how specific the instructions are and how the background is presented. Typical techniques include stating up front what role the AI should play, breaking the task into small steps, and specifying that the answer come as a table or bullet points. People also often look at the output and revise the instructions over many rounds of trial and error.",
+      "analogy_jp": "初めて仕事を頼む相手に、目的や期限、仕上がりの形まで伝えておくと、望みに近い成果が返ってくるのと似ている。",
+      "analogy_zh": "就像第一次请人帮忙做事时，把目的、期限乃至成品的样子都交代清楚，拿回来的结果就会更接近期望。",
+      "analogy_en": "It is like briefing someone you are working with for the first time: tell them the purpose, the deadline, and what the finished product should look like, and what you get back will be much closer to what you wanted.",
+      "hook_jp": "prompt は、舞台で役者にせりふのきっかけを小声で伝える「プロンプター」と同じ語で、ここでは人が AI に、書き出すきっかけの言葉を渡すという意味を持つ。",
+      "hook_zh": "prompt 和舞台上小声给演员提词的“提词员”（prompter）同源，在这里指人向 AI 递上一句引出下文的话。",
+      "hook_en": "Prompt is the same word as the theater prompter who whispers cues to actors, and here it means a person handing the AI a cue to start writing.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "プロンプトエンジニアリングは、AI に渡す質問や指示の書き方を練り、意図に合った回答を引き出す工夫である。",
+          "text_zh": "提示工程（[[jp:プロンプトエンジニアリング]]）是推敲交给 AI 的提问和指令的写法，从而得到符合意图的回答的方法。",
+          "text_en": "Prompt engineering ([[jp:プロンプトエンジニアリング]]) is the practice of polishing the questions and instructions given to an AI to draw out answers that match your intent.",
+          "qids": [
+            "2026r08-q098"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**ファインチューニング**は追加の学習でモデルのパラメータを変える。プロンプトエンジニアリングはモデルに手を加えず、入力する指示文の側を工夫する。",
+          "text_zh": "**微调**（[[jp:ファインチューニング]]）通过追加学习来改变模型的参数。提示工程则不改动模型，而是在输入的指令上下功夫。",
+          "text_en": "**Fine-tuning** ([[jp:ファインチューニング]]) changes the model's parameters through additional training. Prompt engineering leaves the model untouched and works on the instructions you feed in instead."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "指示文を書く",
+                "zh": "编写指令",
+                "en": "Write the instructions"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "出力を確かめる",
+                "zh": "检查输出",
+                "en": "Check the output"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "指示文を直す",
+                "zh": "修改指令",
+                "en": "Revise the instructions"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "目的や条件を書き込んだ指示文を AI に渡す。",
+            "caption_zh": "把写明目的和条件的指令交给 AI。",
+            "caption_en": "Give the AI instructions that spell out the goal and conditions.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "返ってきた出力が目的に合っているかを確かめる。",
+            "caption_zh": "检查返回的输出是否符合目的。",
+            "caption_en": "Check whether the output that comes back fits the goal.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "足りない点を補うように指示文を書き直し、もう一度渡す。",
+            "caption_zh": "改写指令以补足欠缺之处，再交给 AI 一次。",
+            "caption_en": "Rewrite the instructions to fill in what was missing, then hand them over again.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2026r08-q098"
+      ],
+      "definition_jp": "プロンプトエンジニアリングは、生成AI に渡す指示文 (プロンプト) の書き方を工夫して、目的に合った出力を引き出す技法である。",
+      "definition_zh": "提示工程（プロンプトエンジニアリング）是通过改进交给生成式 AI 的指令文本（提示词）的写法，来获得符合目的的输出的技巧。",
+      "definition_en": "Prompt engineering (プロンプトエンジニアリング) is the technique of refining how you write the instructions (prompts) given to a generative AI so that it produces output that fits your goal.",
+      "explanation_jp": "同じモデルでも、指示の具体さや前提の示し方によって出力の質は大きく変わる。例えば、AI に担当させる役割を最初に示す、作業を小さな段階に分けて頼む、答えを表や箇条書きの形で出すよう指定する、といった工夫がある。出力を見て指示文を直す試行を何度も繰り返すことも多い。",
+      "explanation_zh": "即使是同一个模型，输出质量也会因指令的具体程度和前提的交代方式而大不相同。常见的做法有：一开始就说明让 AI 扮演什么角色、把任务拆成小步骤来提出、指定用表格或分条列表的形式作答等。人们也常常一边看输出一边修改指令，反复尝试多次。",
+      "explanation_en": "Even with the same model, output quality varies greatly depending on how specific the instructions are and how the background is presented. Typical techniques include stating up front what role the AI should play, breaking the task into small steps, and specifying that the answer come as a table or bullet points. People also often look at the output and revise the instructions over many rounds of trial and error.",
+      "memory_hook_jp": "prompt は、舞台で役者にせりふのきっかけを小声で伝える「プロンプター」と同じ語で、ここでは人が AI に、書き出すきっかけの言葉を渡すという意味を持つ。",
+      "memory_hook_zh": "prompt 和舞台上小声给演员提词的“提词员”（prompter）同源，在这里指人向 AI 递上一句引出下文的话。",
+      "memory_hook_en": "Prompt is the same word as the theater prompter who whispers cues to actors, and here it means a person handing the AI a cue to start writing.",
       "inline_quiz": [
         "2026r08-q098"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "提示工程",
-      "term_en": "Prompt engineering",
-      "definition_zh": "对给 AI 的指令文加以斟酌，从而引出理想回答的技巧。",
-      "definition_en": "A technique of crafting the instruction text given to an AI in order to elicit the desired answer.",
-      "explanation_zh": "提示工程是一种通过斟酌给生成式 AI（如 LLM）的指令或提问文本（提示词），从而引出更准确、更理想回答的技巧。即便是同一个 AI，回答质量也会因下达指令的方式而大相径庭，因此它受到重视。\n\n例如「赋予角色」「细致地给出步骤」「指定输出的格式」等斟酌都包含在内。考试中会考查这一点：它不是制造模型本身的技术，而是「驾驭」已建好的 AI 的运用技巧。",
-      "explanation_en": "Prompt engineering is a technique of crafting the instruction or question text (the prompt) given to a generative AI (such as an LLM) in order to elicit a more accurate and desirable answer. Even with the same AI, the quality of the answer changes greatly depending on how the instruction is given, which is why it is valued.\n\nFor example, it includes crafting such as \"assigning a role,\" \"giving the steps in detail,\" and \"specifying the output format.\" On the exam, the point asked is that this is not a technique for building the model itself but a usage technique on the \"side that handles\" an already-built AI.",
-      "analogy_zh": "就像在搜索引擎中为了得到好结果而斟酌搜索关键词一样，可以把它理解为为了把事情顺利托付给 AI 而下的「提问方式上的功夫」，这样就好懂了。",
-      "analogy_en": "Just as you craft your search keywords to get good results in a search engine, you can understand it as the \"art of how to ask\" so you can successfully entrust a task to the AI — that makes it easy to grasp.",
-      "memory_hook_zh": "说到提示工程，就是斟酌指令文、引出理想回答的技巧",
-      "memory_hook_en": "Prompt engineering → the technique of crafting the instruction text to elicit the desired answer"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "GAN",
+      "b": "LLM",
+      "rows": [
+        {
+          "label_jp": "学習のしかた",
+          "label_zh": "学习方式",
+          "label_en": "How it learns",
+          "a_jp": "生成器と識別器を競わせる",
+          "a_zh": "让生成器与判别器相互较量",
+          "a_en": "Pits a generator against a discriminator",
+          "b_jp": "大量の文章で次の語の予測を学ぶ",
+          "b_zh": "用大量文本学习预测下一个词",
+          "b_en": "Learns to predict the next word from vast text",
+          "key": true
+        },
+        {
+          "label_jp": "主に作るもの",
+          "label_zh": "主要生成内容",
+          "label_en": "Mainly produces",
+          "a_jp": "画像などのデータ",
+          "a_zh": "图像等数据",
+          "a_en": "Images and similar data",
+          "b_jp": "文章",
+          "b_zh": "文本",
+          "b_en": "Text",
+          "key": false
+        },
+        {
+          "label_jp": "正式名称",
+          "label_zh": "正式名称",
+          "label_en": "Full name",
+          "a_jp": "敵対的生成ネットワーク",
+          "a_zh": "生成对抗网络",
+          "a_en": "Generative Adversarial Network",
+          "b_jp": "大規模言語モデル",
+          "b_zh": "大语言模型",
+          "b_en": "Large Language Model",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**GAN** は生成器と識別器を競わせ、本物に近い新しいデータを作れるように学習する。",
+    "**LLM** は次の語の予測を大規模に学んだ言語モデルで、事前学習の後に追加の学習で用途に合わせられる基盤モデルの一種である。",
+    "**プロンプトエンジニアリング**は、指示の具体さや答えの形の指定を練って、生成AI の出力の質を上げる技法である。",
+    "略称と正式名称は、GAN が敵対的生成ネットワーク、LLM が大規模言語モデルに対応する。"
+  ],
+  "key_points_zh": [
+    "**GAN** 让生成器与判别器相互较量，学会生成接近真实的新数据。",
+    "**LLM** 是大规模学习“预测下一个词”的语言模型，属于基础模型的一种，预训练后可经追加学习适配具体用途。",
+    "**提示工程**通过推敲指令的具体程度和对回答形式的指定，提高生成式 AI 的输出质量。",
+    "缩写与正式名称的对应：GAN 是生成对抗网络（[[jp:敵対的生成ネットワーク]]），LLM 是大语言模型（[[jp:大規模言語モデル]]）。"
+  ],
+  "key_points_en": [
+    "A **GAN** pits a generator against a discriminator and learns to create new data close to the real thing.",
+    "An **LLM** is a language model that has learned next-word prediction at a large scale, and it is a type of foundation model that can be adapted to specific uses with additional training after pre-training.",
+    "**Prompt engineering** raises the quality of generative AI output by refining how specific the instructions are and what form the answer should take.",
+    "The abbreviations map to full names as follows: GAN is Generative Adversarial Network ([[jp:敵対的生成ネットワーク]]), and LLM is Large Language Model ([[jp:大規模言語モデル]])."
+  ],
+  "overview": {
+    "intro_jp": "GAN が 2 つのネットワークを競わせて新しいデータを作る仕組みを説明できる。LLM が次の語を予測するモデルを大規模にしたもので、基盤モデルの一種であることを説明できる。プロンプトエンジニアリングで指示文をどう工夫するかを、自分で作った例で説明できる。",
+    "intro_zh": "能说明 GAN 如何让两个网络相互较量，从而生成新的数据。能说明 LLM 是把“预测下一个词”的模型做到超大规模的产物，属于基础模型的一种。能用自己举的例子，说明提示工程是怎样改进指令文本的。",
+    "intro_en": "Explain how a GAN pits two networks against each other to produce new data. Explain that an LLM is a next-word prediction model scaled up to a very large size, and that it is one type of foundation model. Explain, with an example of your own, how prompt engineering improves the wording of instructions.",
+    "freq_badge": "標準",
+    "est_minutes": 26
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "GAN: GANといえば生成器と識別器を競わせて本物そっくりを作る",
-      "敵対的生成ネットワーク: 敵対的生成ネットワークといえばGANの正式名称",
-      "LLM: LLMといえば膨大な文章を学習して文章を生成するAI",
-      "大規模言語モデル: 大規模言語モデルといえばLLMの正式名称",
-      "プロンプトエンジニアリング: プロンプトエンジニアリングといえば指示文を工夫して望む回答を引き出す技法"
-    ],
     "key_points_jp": [
-      "GAN(敵対的生成ネットワーク)は、生成器と識別器の二つのネットワークを競わせて本物そっくりのデータを生成する深層学習モデルである。",
-      "LLM(大規模言語モデル)は、膨大な文章を学習して人間のような自然な文章を生成するAIで、対話型生成AIの中核技術である。",
-      "GANは主に画像などを、LLMは文章(言語)を生成する点で対比して覚えると整理しやすい。",
-      "略称と正式名称の対応(GAN=敵対的生成ネットワーク、LLM=大規模言語モデル)は頻出なので必ずセットで押さえる。",
-      "プロンプトエンジニアリングは、モデルを作る技術ではなく、指示文を工夫してAIから望む回答を引き出す「使いこなす側」の活用技法である。"
+      "GAN は生成器と識別器を競わせ、本物に近い新しいデータを作れるように学習する。",
+      "LLM は次の語の予測を大規模に学んだ言語モデルで、事前学習の後に追加の学習で用途に合わせられる基盤モデルの一種である。",
+      "プロンプトエンジニアリングは、指示の具体さや答えの形の指定を練って、生成AI の出力の質を上げる技法である。",
+      "略称と正式名称は、GAN が敵対的生成ネットワーク、LLM が大規模言語モデルに対応する。"
     ],
     "key_points_zh": [
-      "GAN（生成对抗网络）是让生成器和判别器这两个网络相互竞争、生成以假乱真数据的深度学习模型。",
-      "LLM（大语言模型）是学习海量文章、生成类似人类自然文章的 AI，是对话型生成式 AI 的核心技术。",
-      "GAN 主要生成图像等，LLM 生成文章（语言），对照着记会更便于梳理。",
-      "简称与全称的对应（GAN＝生成对抗网络，LLM＝大语言模型）是高频考点，务必成套掌握。",
-      "提示工程不是制造模型的技术，而是通过斟酌指令文、从 AI 引出理想回答的「驾驭一方」的运用技巧。"
+      "GAN 让生成器与判别器相互较量，学会生成接近真实的新数据。",
+      "LLM 是大规模学习“预测下一个词”的语言模型，属于基础模型的一种，预训练后可经追加学习适配具体用途。",
+      "提示工程通过推敲指令的具体程度和对回答形式的指定，提高生成式 AI 的输出质量。",
+      "缩写与正式名称的对应：GAN 是生成对抗网络（敵対的生成ネットワーク），LLM 是大语言模型（大規模言語モデル）。"
     ],
     "key_points_en": [
-      "GAN (Generative Adversarial Network) is a deep learning model that pits two networks — a generator and a discriminator — against each other to generate data indistinguishable from the real thing.",
-      "LLM (Large Language Model) is an AI that learns from vast amounts of text and generates natural, human-like text, and it is the core technology of conversational generative AI.",
-      "GAN mainly generates images and the like, while LLM generates text (language); remembering them in contrast makes them easier to organize.",
-      "The correspondence between abbreviation and full name (GAN = Generative Adversarial Network, LLM = Large Language Model) is frequently tested, so be sure to master them as a set.",
-      "Prompt engineering is not a technique for building a model but a usage technique on the \"side that handles\" the AI, eliciting the desired answer from it by crafting the instruction text."
+      "A GAN pits a generator against a discriminator and learns to create new data close to the real thing.",
+      "An LLM is a language model that has learned next-word prediction at a large scale, and it is a type of foundation model that can be adapted to specific uses with additional training after pre-training.",
+      "Prompt engineering raises the quality of generative AI output by refining how specific the instructions are and what form the answer should take.",
+      "The abbreviations map to full names as follows: GAN is Generative Adversarial Network (敵対的生成ネットワーク), and LLM is Large Language Model (大規模言語モデル)."
+    ],
+    "memory_hooks_jp": [
+      "GAN: 頭文字は G = Generative (生成)、A = Adversarial (敵対的)、N = Network。3 文字から正式名称を組み立て直せる。",
+      "敵対的生成ネットワーク: 英語は Generative (生成) が先、日本語訳は「敵対的」が先で、語の並びが逆になっている。",
+      "LLM: 先頭の L は Large。服の L サイズと同じ「大きい」の L である。",
+      "大規模言語モデル: 「言語モデル」の部分は昔からある技術の名前で、新しさは頭に付いた「大規模」の側にある。",
+      "プロンプトエンジニアリング: prompt は、舞台で役者にせりふのきっかけを小声で伝える「プロンプター」と同じ語で、ここでは人が AI に、書き出すきっかけの言葉を渡すという意味を持つ。"
     ],
     "memory_hooks_zh": [
-      "GAN：说到 GAN，就是让生成器和判别器相互竞争、造出以假乱真",
-      "生成对抗网络：说到生成对抗网络，就是 GAN 的全称",
-      "LLM：说到 LLM，就是学习海量文章、生成文章的 AI",
-      "大语言模型：说到大语言模型，就是 LLM 的全称",
-      "提示工程：说到提示工程，就是斟酌指令文、引出理想回答的技巧"
+      "GAN（生成对抗网络）：首字母分别是 G = Generative（生成）、A = Adversarial（对抗）、N = Network（网络），由这 3 个字母就能拼回完整名称。",
+      "生成对抗网络：英语是 Generative（生成）在前，日语译名则是“对抗”（敵対的，字面意为“敌对的”）在前，词序正好相反。",
+      "LLM（大语言模型）：开头的 L 是 Large，和衣服 L 码一样，表示“大”。",
+      "大语言模型：“语言模型”是早就存在的技术名称，新意在于前面加上的“大规模”。",
+      "提示工程：prompt 和舞台上小声给演员提词的“提词员”（prompter）同源，在这里指人向 AI 递上一句引出下文的话。"
     ],
     "memory_hooks_en": [
-      "GAN: GAN → pit a generator and a discriminator against each other to make something indistinguishable from the real thing",
-      "Generative Adversarial Network: Generative Adversarial Network → the full name of GAN",
-      "LLM: LLM → an AI that learns from vast amounts of text and generates text",
-      "Large Language Model: Large Language Model → the full name of LLM",
-      "Prompt engineering: Prompt engineering → the technique of crafting the instruction text to elicit the desired answer"
+      "GAN: The letters stand for G = Generative, A = Adversarial, N = Network, so the three letters alone let you rebuild the full name.",
+      "Generative Adversarial Network: In English, Generative comes first, but the Japanese name puts \"adversarial\" (敵対的) first, so the word order is reversed.",
+      "LLM: The leading L is Large, the same L as on a large-size shirt.",
+      "Large Language Model: \"Language model\" is the name of a long-established technique; what is new is the \"large\" in front of it.",
+      "Prompt engineering: Prompt is the same word as the theater prompter who whispers cues to actors, and here it means a person handing the AI a cue to start writing."
     ]
   },
   "challenge_questions": [
-    "2010h22h-q060",
-    "2011h23a-q078",
-    "2013h25a-q076",
-    "2013h25h-q078",
-    "2018h30h-q075"
+    "2025r07-q080",
+    "2026r08-q098",
+    "2018h30h-q075",
+    "2013h25a-q076"
   ],
   "source_figures": [
     {
@@ -205,9 +680,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "生成模型与大语言模型",
-  "title_en": "Generative Models and Large Language Models",
-  "unit_summary_zh": "学习用于生成数据的深度学习模型 GAN、作为生成式 AI 核心的大语言模型（LLM），以及运用 LLM 的技巧——提示工程。",
-  "unit_summary_en": "Learn GAN, a deep learning model that generates data; the large language model (LLM) at the core of generative AI; and prompt engineering, the technique for using it well."
+  }
 }
