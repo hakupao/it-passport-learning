@@ -1,234 +1,1054 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-16-44-u03",
   "topic_id": "technology-16-44",
   "category": "technology",
   "title_jp": "信頼性設計",
+  "title_zh": "可靠性设计",
+  "title_en": "Reliability Design",
   "unit_summary_jp": "冗長構成と安全設計思想で信頼性を高める設計手法を学ぶ。",
+  "unit_summary_zh": "学习通过冗余配置与安全设计思想来提升可靠性的设计方法。",
+  "unit_summary_en": "Learn design techniques that improve reliability through redundant configurations and safety-oriented design philosophies.",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-16-44-u02"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、システムの信頼性を高めるための「信頼性設計」を学ぶ。前半は複数の系統を用意して可用性を確保する冗長構成(デュアル/デュプレックス/ホット・コールドスタンバイ)、後半は障害や誤操作に備える安全設計思想(フォールトトレラント/フェールセーフ/フールプルーフ)を扱う。ITパスポートでは頻出分野で、各方式・思想の違いを問う問題が繰り返し出題される。",
-    "freq_badge": "頻出",
-    "est_minutes": 21,
-    "intro_zh": "在本单元中，将学习用于提升系统可靠性的「可靠性设计」。前半部分讲解准备多套系统以确保可用性的冗余配置（双工系统 dual / 双重系统 duplex / 热备用与冷备用），后半部分讲解为应对故障或误操作的安全设计思想（容错 / 故障安全 / 防误操作）。这是 IT 护照中的高频领域，反复出现考查各方式与思想之间差异的题目。",
-    "intro_en": "In this unit you will learn 'reliability design,' which improves a system's reliability. The first half covers redundant configurations that secure availability by preparing multiple systems (dual / duplex / hot and cold standby), while the second half covers safety-oriented design philosophies that prepare for failures and operating mistakes (fault tolerant / fail-safe / fool-proof). This is a frequently tested area on the IT Passport exam, with questions asking about the differences among each method and philosophy appearing repeatedly."
-  },
-  "terms": [
+  "goals_jp": [
+    "**デュアルシステム**と**デュプレックスシステム**を、平常時に処理を受け持つ系統の数で分けられる。",
+    "待機系の状態から、**ホットスタンバイ**と**コールドスタンバイ**の切替の速さと費用の違いを説明できる。",
+    "障害や人の誤りに備える設計の考え方を、何を優先し、何に向けて手当てするかで区別できる。"
+  ],
+  "goals_zh": [
+    "能够根据平时承担处理的系统数量，区分**双工系统**和**双重系统**。",
+    "能够根据备用系统的状态，说明**热备用**和**冷备用**在切换速度和费用上的差异。",
+    "能够根据优先保证什么、针对什么采取措施，区分应对故障和人为失误的几种设计思路。"
+  ],
+  "goals_en": [
+    "Tell a **dual system** from a **duplex system** by how many systems handle the work in normal operation.",
+    "Explain, from the state the standby system is kept in, how **hot standby** and **cold standby** differ in switchover speed and cost.",
+    "Distinguish the design approaches for coping with failures and human error by what each puts first and what each guards against."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "障害や誤りが起きたときの動き"
+  ],
+  "overview_cols_zh": [
+    "分类",
+    "发生故障或失误时的动作"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Behavior when a failure or error occurs"
+  ],
+  "overview_rows": [
     {
       "term": "デュアルシステム",
-      "definition_jp": "2系統で同じ処理を並行実行し、結果を相互照合する高信頼の冗長構成。",
-      "explanation_jp": "デュアルシステムは、同一の処理を2つの系統で同時に行い、両者の結果を常に突き合わせて確認する構成です。結果が一致していれば正常とみなし、片方が故障しても残りの系統で処理を続けられます。\n\n試験では、後述のデュプレックスシステムとの違いがよく問われます。デュアルは2系統が「常に並行稼働して照合」するのに対し、デュプレックスは主系が稼働し副系は待機する点が対比のポイントです。信頼性は高いがコストも高く、銀行のオンライン処理など高い無停止性が求められる場面で使われます。",
-      "analogy_jp": "2人の会計係が同じ計算を別々に行い、答えを突き合わせて一致を確認するようなもの。片方が間違えても、もう片方ですぐ気づき処理を止めずに済みます。",
-      "memory_hook_jp": "デュアルシステムといえば2系統で並行処理し結果を相互照合する冗長構成",
-      "inline_quiz": [
-        "2012h24a-q057"
+      "one_line_jp": "2 系統が同じ処理を同時に行い、結果を照合する構成",
+      "one_line_zh": "两套系统同时执行相同处理，并核对结果的结构",
+      "one_line_en": "Two systems run the same processing at once and compare the results",
+      "extra_jp": [
+        "系統の構成",
+        "残った系統がそのまま処理を続ける"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; I[\"入力\"] --> A[\"系統1で処理\"]; I --> B[\"系統2で処理\"]; A --> C[\"結果を相互照合\"]; B --> C; C --> O[\"出力\"]",
-        "svg_path": "figures/technology-16-44-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "双工系统",
-      "term_en": "Dual system",
-      "definition_zh": "用两套系统并行执行相同处理，并相互核对结果的高可靠冗余配置。",
-      "definition_en": "A high-reliability redundant configuration in which two systems run the same processing in parallel and cross-check their results.",
-      "explanation_zh": "双工系统是用两套系统同时执行相同处理，并始终将两者的结果相互比对核对的配置。只要结果一致就视为正常；即使其中一套发生故障，也能用剩下的一套继续处理。\n\n考试中常考它与后述双重系统（duplex）的区别。双工系统的两套系统「始终并行运行并核对」，而双重系统则是主用系统运行、备用系统待机，这一点是对比的要点。它可靠性高但成本也高，常用于银行联机处理等对不停机性要求很高的场合。",
-      "explanation_en": "A dual system runs the same processing on two systems at the same time and always compares and checks the results of both. As long as the results match, it is regarded as normal, and even if one system fails, processing can continue on the remaining system.\n\nOn the exam, the difference from the duplex system described later is often asked. The point of contrast is that in a dual system both systems 'always run in parallel and cross-check,' whereas in a duplex system the primary system runs while the secondary stands by. Reliability is high but so is cost, so it is used where high non-stop operation is required, such as bank online processing.",
-      "analogy_zh": "就像两名会计员各自独立做同样的计算，再核对答案确认一致。即使一方算错，另一方也能立即发现，从而无需停下处理。",
-      "analogy_en": "Like two accountants each doing the same calculation separately and then comparing answers to confirm they match. Even if one makes a mistake, the other notices immediately, so processing does not have to stop.",
-      "memory_hook_zh": "说到双工系统，就是用两套系统并行处理并相互核对结果的冗余配置",
-      "memory_hook_en": "Dual system → a redundant configuration that processes in parallel on two systems and cross-checks the results"
+      "extra_zh": [
+        "系统结构",
+        "剩下的系统直接继续处理"
+      ],
+      "extra_en": [
+        "System configuration",
+        "The remaining system simply keeps processing"
+      ]
     },
     {
       "term": "デュプレックスシステム",
-      "definition_jp": "現用系(主系)が稼働し、待機系(副系)が控える二重化の冗長構成。",
-      "explanation_jp": "デュプレックスシステムは、普段は主系(現用系)が処理を担当し、副系(待機系)は予備として控える構成です。主系が故障したら副系に切り替えて処理を継続します。副系は障害発生まで本処理を行わない点がデュアルとの大きな違いです。\n\n試験では、待機系の控え方によって「ホットスタンバイ」「コールドスタンバイ」に分かれる点が問われます。デュアルが常時2系統並行なのに対し、デュプレックスは主系1本+待機系という構成で、コストを抑えつつ可用性を確保する方式だと整理しておきましょう。",
-      "analogy_jp": "レジ係が1人で接客し、もう1人は奥で控えているお店のようなもの。担当者が倒れたら、控えの人が代わりに前へ出て接客を続けます。",
-      "memory_hook_jp": "デュプレックスシステムといえば主系が稼働し待機系が控える二重化構成",
-      "inline_quiz": [
-        "2009h21a-q086"
+      "one_line_jp": "主系だけが処理し、待機系が控える構成",
+      "one_line_zh": "只有主系统处理，备用系统待命的结构",
+      "one_line_en": "Only the primary system processes while a standby system waits",
+      "extra_jp": [
+        "系統の構成",
+        "待機系へ切り替えて処理を続ける"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "双重系统",
-      "term_en": "Duplex system",
-      "definition_zh": "由现用系统（主用系统）运行、备用系统（副系统）待命的双重化冗余配置。",
-      "definition_en": "A duplicated redundant configuration in which the active system (primary) runs while the standby system (secondary) waits in reserve.",
-      "explanation_zh": "双重系统是平时由主用系统（现用系统）负责处理、副系统（备用系统）作为后备待命的配置。一旦主用系统发生故障，就切换到副系统继续处理。副系统在故障发生前不执行正式处理，这一点是它与双工系统的主要区别。\n\n考试中常考根据备用系统的待命方式分为「热备用」和「冷备用」这一点。双工系统是始终两套并行，而双重系统是主用系统一套加备用系统的配置，应整理为「在抑制成本的同时确保可用性」的方式。",
-      "explanation_en": "A duplex system normally has the primary system (active system) handle processing while the secondary system (standby system) waits in reserve. When the primary fails, processing continues by switching to the secondary. The major difference from a dual system is that the secondary does not perform the main processing until a failure occurs.\n\nOn the exam, it is asked that the standby method divides into 'hot standby' and 'cold standby' depending on how the standby system waits. Whereas a dual system always runs two systems in parallel, a duplex system has one primary plus a standby, so organize it as a method that secures availability while keeping cost down.",
-      "analogy_zh": "就像店里一名收银员在接待顾客，另一名在后面待命的情形。负责的人倒下时，待命的人就上前替他继续接待。",
-      "analogy_en": "Like a shop where one cashier serves customers while another waits in the back. If the one on duty goes down, the one in reserve steps forward to continue serving.",
-      "memory_hook_zh": "说到双重系统，就是主用系统运行、备用系统待命的双重化配置",
-      "memory_hook_en": "Duplex system → a duplicated configuration where the primary runs and the standby waits in reserve"
+      "extra_zh": [
+        "系统结构",
+        "切换到备用系统继续处理"
+      ],
+      "extra_en": [
+        "System configuration",
+        "Switches to the standby system and keeps processing"
+      ]
     },
     {
       "term": "ホットスタンバイ",
-      "definition_jp": "待機系を常時起動しておき、障害時に即座に切り替えられる待機方式。",
-      "explanation_jp": "ホットスタンバイは、デュプレックス構成における待機系の控え方の一つで、待機系をあらかじめ起動・準備した状態で待たせておく方式です。主系が故障すると、ほぼ待ち時間なく待機系へ切り替えられます。\n\n試験では、コールドスタンバイとの対比が定番です。ホットは切替が速い分、待機系も常に動かすため電力やコストがかかります。切替時間の短さ(可用性の高さ)とコストのトレードオフを理解しておくことが重要です。",
-      "analogy_jp": "代走の選手がすでにユニフォーム姿でベンチに立ち、準備運動も済ませている状態。出番が来たら一瞬でグラウンドへ出られます。",
-      "memory_hook_jp": "ホットスタンバイといえば待機系を常時起動し即座に切り替える方式",
-      "inline_quiz": [
-        "2013h25a-q047"
+      "one_line_jp": "待機系を起動済みで控えさせる方式",
+      "one_line_zh": "让备用系统处于已启动状态待命的方式",
+      "one_line_en": "Keeps the standby system already running while it waits",
+      "extra_jp": [
+        "待機の方式",
+        "すぐに待機系へ切り替える"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "热备用",
-      "term_en": "Hot standby",
-      "definition_zh": "让备用系统始终处于启动状态，故障时能立即切换的待命方式。",
-      "definition_en": "A standby method that keeps the standby system running at all times so it can switch over instantly when a failure occurs.",
-      "explanation_zh": "热备用是双重配置中备用系统待命方式之一，即让备用系统预先处于已启动、已准备好的状态等待。一旦主用系统发生故障，几乎无需等待就能切换到备用系统。\n\n考试中与冷备用的对比是固定考点。热备用切换快，但因为备用系统也要一直运行，所以会耗费电力和成本。理解切换时间短（可用性高）与成本之间的权衡非常重要。",
-      "explanation_en": "Hot standby is one of the standby methods for the standby system in a duplex configuration, in which the standby system is kept already started and prepared while waiting. When the primary fails, it can switch to the standby with almost no waiting time.\n\nOn the exam, the contrast with cold standby is a standard point. Because hot standby switches quickly, the standby system must run constantly, which costs power and money. It is important to understand the trade-off between short switchover time (high availability) and cost.",
-      "analogy_zh": "就像替补球员已经穿好球衣站在替补席上，连热身也做完了的状态。轮到上场时，一瞬间就能进入球场。",
-      "analogy_en": "Like a substitute player already in uniform standing by the bench with warm-ups done. When the turn comes, they can step onto the field in an instant.",
-      "memory_hook_zh": "说到热备用，就是让备用系统始终启动、可立即切换的方式",
-      "memory_hook_en": "Hot standby → a method that keeps the standby running at all times and switches over instantly"
+      "extra_zh": [
+        "待机方式",
+        "立即切换到备用系统"
+      ],
+      "extra_en": [
+        "Standby method",
+        "Switches to the standby system at once"
+      ]
     },
     {
       "term": "コールドスタンバイ",
-      "definition_jp": "待機系を停止しておき、障害時に起動して切り替える待機方式。",
-      "explanation_jp": "コールドスタンバイは、待機系を普段は停止(電源オフや未起動)の状態で控えさせておく方式です。主系が故障したら、待機系を起動してから切り替えるため、復旧までに時間がかかります。\n\n試験では、ホットスタンバイとの違いが問われます。コールドは切替に時間を要する代わりに、待機中のコストを低く抑えられます。「切替は遅いが安い=コールド」「切替は速いが高い=ホット」という対の関係で覚えると区別しやすくなります。",
-      "analogy_jp": "予備の発電機を倉庫にしまっておくようなもの。いざというときは取り出してエンジンをかける手間がかかりますが、普段の維持費は安く済みます。",
-      "memory_hook_jp": "コールドスタンバイといえば待機系を停止しておき障害時に起動する方式",
+      "one_line_jp": "待機系を止めたまま控えさせる方式",
+      "one_line_zh": "让备用系统处于停止状态待命的方式",
+      "one_line_en": "Keeps the standby system shut down while it waits",
+      "extra_jp": [
+        "待機の方式",
+        "待機系を起動してから切り替える"
+      ],
+      "extra_zh": [
+        "待机方式",
+        "先启动备用系统再切换"
+      ],
+      "extra_en": [
+        "Standby method",
+        "Starts the standby system first, then switches"
+      ]
+    },
+    {
+      "term": "フォールトトレラント",
+      "one_line_jp": "一部が故障しても全体の処理を続ける考え方",
+      "one_line_zh": "部分发生故障也能让整体继续处理的思路",
+      "one_line_en": "Keeps the whole system processing even if part of it fails",
+      "extra_jp": [
+        "設計の考え方",
+        "予備の部分が代わりに働く"
+      ],
+      "extra_zh": [
+        "设计思路",
+        "备用部分代替工作"
+      ],
+      "extra_en": [
+        "Design approach",
+        "A spare part takes over the work"
+      ]
+    },
+    {
+      "term": "フェールセーフ",
+      "one_line_jp": "異常のときは安全な状態を優先する考え方",
+      "one_line_zh": "出现异常时优先保证安全状态的思路",
+      "one_line_en": "Puts a safe state first when something goes wrong",
+      "extra_jp": [
+        "設計の考え方",
+        "停止など安全な動作へ移る"
+      ],
+      "extra_zh": [
+        "设计思路",
+        "转入停止等安全的动作"
+      ],
+      "extra_en": [
+        "Design approach",
+        "Moves to a safe action such as stopping"
+      ]
+    },
+    {
+      "term": "フールプルーフ",
+      "one_line_jp": "人が操作を誤ることを見込んで備える考え方",
+      "one_line_zh": "预先考虑到人会误操作并加以防范的思路",
+      "one_line_en": "Assumes people will make operating mistakes and prepares for them",
+      "extra_jp": [
+        "設計の考え方",
+        "誤った操作をさせない、または誤っても害にならないようにする"
+      ],
+      "extra_zh": [
+        "设计思路",
+        "让人无法进行错误操作，或即使操作错了也不会造成危害"
+      ],
+      "extra_en": [
+        "Design approach",
+        "Prevents wrong operations, or makes them harmless when they happen"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "デュアルシステム",
+      "term_zh": "双工系统",
+      "term_en": "Dual system",
+      "one_jp": "**デュアルシステム**は、2 つの系統で同じ処理を同時に行い、出てきた結果を**照合**しながら動かす構成である。",
+      "one_zh": "**双工系统**（[[jp:デュアルシステム]]）是用两套系统同时执行相同的处理，并一边**核对**输出结果一边运行的结构。",
+      "one_en": "A **dual system** ([[jp:デュアルシステム]]) runs the same processing on two systems at the same time and operates while **comparing** the results they produce.",
+      "detail_jp": "装置や系統を予備も含めて重ねて持ち、1 つの故障でサービスが止まらないようにする構成を**冗長構成**といい、デュアルシステムはその一つである。結果が食い違えばどちらかの異常に気づけるので、処理の正しさまで確かめられる。両系統とも常に動かすため、設備と運用の費用は高くなる。",
+      "detail_zh": "把设备或系统连同备用部分重复配置，使单一故障不会让服务中断，这种结构叫作**冗余结构**，双工系统就是其中一种。两边结果不一致时就能发现某一方出了异常，因此连处理是否正确都能确认。由于两套系统始终都在运行，设备和运维费用都比较高。",
+      "detail_en": "Keeping devices or systems in duplicate, spares included, so that a single failure does not stop the service is called a **redundant configuration**, and a dual system is one form of it. When the two results disagree, you know one side has gone wrong, so the system can even confirm that its processing is correct. Because both systems are always running, equipment and operating costs are high.",
+      "analogy_jp": "2 人の担当者が同じ書類の合計をそれぞれ計算し、答えを見比べてから提出するようなもの。",
+      "analogy_zh": "就像两名经办人各自计算同一份单据的合计，对过答案后再提交。",
+      "analogy_en": "It is like two clerks each adding up the same invoice and checking their answers against each other before handing it in.",
+      "hook_jp": "英語の dual は「両方の」。両方の系統がいつも同じ処理をしている、と覚える。",
+      "hook_zh": "英语 dual 意为“双方的”。记住：两套系统一直都在执行相同的处理。",
+      "hook_en": "Dual means \"both\": both systems are always running the same processing.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**デュアルシステム**は、2 系統が同一の処理を並行して行い、互いの結果を突き合わせて信頼性を高める。",
+          "text_zh": "**双工系统**（[[jp:デュアルシステム]]）由两套系统并行执行同一处理，并相互对照结果来提高可靠性（[[jp:信頼性]]）。",
+          "text_en": "In a **dual system** ([[jp:デュアルシステム]]), two systems carry out the same processing in parallel and check their results against each other to raise reliability ([[jp:信頼性]]).",
+          "qids": [
+            "2009h21a-q086",
+            "2012h24a-q057"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**デュアルシステム**は両系統が常に処理しているため、片方が故障しても残りの系統で処理が続き、予備の系統へ処理を移す構成より停止時間が短い。",
+          "text_zh": "**双工系统**的两套系统一直在处理，即使一方出现故障，剩下的系统也能继续处理，因此停机时间比把处理转移到备用系统的结构更短。",
+          "text_en": "Since both systems in a **dual system** are always processing, the remaining one carries on when the other fails, giving shorter downtime than a configuration that moves the work over to a standby system.",
+          "qids": [
+            "2015h27a-q082"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "in",
+              "label": {
+                "jp": "入力",
+                "zh": "输入",
+                "en": "Input"
+              }
+            },
+            {
+              "id": "run",
+              "label": {
+                "jp": "2 系統が同じ処理を実行",
+                "zh": "两套系统执行相同处理",
+                "en": "Both systems run the same processing"
+              }
+            },
+            {
+              "id": "chk",
+              "label": {
+                "jp": "2 つの結果を照合",
+                "zh": "核对两个结果",
+                "en": "Compare the two results"
+              }
+            },
+            {
+              "id": "out",
+              "label": {
+                "jp": "出力",
+                "zh": "输出",
+                "en": "Output"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2012h24a-q057",
+        "2009h21a-q086"
+      ],
+      "definition_jp": "デュアルシステムは、2 つの系統で同じ処理を同時に行い、出てきた結果を照合しながら動かす構成である。",
+      "definition_zh": "双工系统（デュアルシステム）是用两套系统同时执行相同的处理，并一边核对输出结果一边运行的结构。",
+      "definition_en": "A dual system (デュアルシステム) runs the same processing on two systems at the same time and operates while comparing the results they produce.",
+      "explanation_jp": "装置や系統を予備も含めて重ねて持ち、1 つの故障でサービスが止まらないようにする構成を冗長構成といい、デュアルシステムはその一つである。結果が食い違えばどちらかの異常に気づけるので、処理の正しさまで確かめられる。両系統とも常に動かすため、設備と運用の費用は高くなる。",
+      "explanation_zh": "把设备或系统连同备用部分重复配置，使单一故障不会让服务中断，这种结构叫作冗余结构，双工系统就是其中一种。两边结果不一致时就能发现某一方出了异常，因此连处理是否正确都能确认。由于两套系统始终都在运行，设备和运维费用都比较高。",
+      "explanation_en": "Keeping devices or systems in duplicate, spares included, so that a single failure does not stop the service is called a redundant configuration, and a dual system is one form of it. When the two results disagree, you know one side has gone wrong, so the system can even confirm that its processing is correct. Because both systems are always running, equipment and operating costs are high.",
+      "memory_hook_jp": "英語の dual は「両方の」。両方の系統がいつも同じ処理をしている、と覚える。",
+      "memory_hook_zh": "英语 dual 意为“双方的”。记住：两套系统一直都在执行相同的处理。",
+      "memory_hook_en": "Dual means \"both\": both systems are always running the same processing.",
+      "inline_quiz": [
+        "2012h24a-q057",
+        "2009h21a-q086"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "デュプレックスシステム",
+      "term_zh": "双重系统",
+      "term_en": "Duplex system",
+      "one_jp": "**デュプレックスシステム**は、平常時は**主系**だけが処理を受け持ち、もう 1 系統の**待機系**が障害に備えて控える構成である。",
+      "one_zh": "**双重系统**（[[jp:デュプレックスシステム]]）是平时只由**主系统**负责处理，另一套**备用系统**为应对故障而待命的结构。",
+      "one_en": "In a **duplex system** ([[jp:デュプレックスシステム]]), only the **primary system** handles the work in normal operation, while a second **standby system** waits in case of failure.",
+      "detail_jp": "主系は現用系とも呼ばれ、待機系は主系が故障したときに処理を引き継ぐ。控えている間の待機系が、別の処理を受け持つこともある。主系が故障すると、待機系への切替が済むまで処理が止まる。",
+      "detail_zh": "主系统也叫在用系统，备用系统在主系统发生故障时接手处理。备用系统在待命期间也可能承担别的处理。主系统出现故障后，在切换到备用系统完成之前，处理会一直停止。",
+      "detail_en": "The primary system is also called the active system, and the standby system takes over processing when the primary fails. While waiting, the standby system may also be given other work. After the primary fails, processing stays stopped until the switch to the standby system is complete.",
+      "analogy_jp": "試合に出ている正選手と、ベンチで出番を待つ控え選手の関係に近い。",
+      "analogy_zh": "就像场上比赛的主力队员和坐在替补席上等待出场的替补队员。",
+      "analogy_en": "Think of the starting player on the field and the substitute waiting on the bench for a turn.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**デュアルシステム**と**デュプレックスシステム**は、平常時に 2 系統とも同じ処理をして結果を照合するか、主系だけがその処理をするかで分かれる。",
+          "text_zh": "**双工系统**（[[jp:デュアルシステム]]）和**双重系统**（[[jp:デュプレックスシステム]]）的区别在于，平时是两套系统执行相同处理并核对结果，还是只有主系统（[[jp:主系]]）执行该处理。",
+          "text_en": "A **dual system** ([[jp:デュアルシステム]]) and a **duplex system** ([[jp:デュプレックスシステム]]) differ in whether, in normal operation, both systems run the same processing and compare the results, or only the primary system ([[jp:主系]]) runs it."
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**デュプレックスシステム**で主系が故障したときの停止時間は、待機系をどの状態で控えさせているかによって変わる。",
+          "text_zh": "在**双重系统**（[[jp:デュプレックスシステム]]）中，主系统发生故障时的停机时间，取决于备用系统（[[jp:待機系]]）以什么状态待命。",
+          "text_en": "In a **duplex system** ([[jp:デュプレックスシステム]]), how long processing stops after the primary system fails depends on the state the standby system ([[jp:待機系]]) is kept in.",
+          "qids": [
+            "2015h27a-q082"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "normal",
+              "label": {
+                "jp": "主系が処理",
+                "zh": "主系统处理",
+                "en": "Primary system processes"
+              }
+            },
+            {
+              "id": "fault",
+              "label": {
+                "jp": "主系に障害",
+                "zh": "主系统发生故障",
+                "en": "Primary system fails"
+              }
+            },
+            {
+              "id": "switch",
+              "label": {
+                "jp": "待機系へ切替",
+                "zh": "切换到备用系统",
+                "en": "Switch to standby system"
+              }
+            },
+            {
+              "id": "cont",
+              "label": {
+                "jp": "待機系が処理を継続",
+                "zh": "备用系统继续处理",
+                "en": "Standby system keeps processing"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "平常時は主系だけが本来の処理を受け持ち、待機系はその処理をせずに控えている。",
+            "caption_zh": "平时只有主系统承担本来的处理，备用系统不执行这项处理，只是待命。",
+            "caption_en": "In normal operation only the primary system handles the main processing; the standby system does not run it and simply waits.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "主系が故障すると、その時点で処理が止まる。",
+            "caption_zh": "主系统一旦发生故障，处理就在那一刻停下。",
+            "caption_en": "When the primary system fails, processing stops at that moment.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "処理の担当を主系から待機系へ移す。",
+            "caption_zh": "把处理任务从主系统转交给备用系统。",
+            "caption_en": "Responsibility for processing passes from the primary system to the standby system.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "切替が済むと、待機系が主系の代わりに処理を続ける。",
+            "caption_zh": "切换完成后，备用系统代替主系统继续处理。",
+            "caption_en": "Once the switch is complete, the standby system carries on in place of the primary system.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2015h27a-q082"
+      ],
+      "definition_jp": "デュプレックスシステムは、平常時は主系だけが処理を受け持ち、もう 1 系統の待機系が障害に備えて控える構成である。",
+      "definition_zh": "双重系统（デュプレックスシステム）是平时只由主系统负责处理，另一套备用系统为应对故障而待命的结构。",
+      "definition_en": "In a duplex system (デュプレックスシステム), only the primary system handles the work in normal operation, while a second standby system waits in case of failure.",
+      "explanation_jp": "主系は現用系とも呼ばれ、待機系は主系が故障したときに処理を引き継ぐ。控えている間の待機系が、別の処理を受け持つこともある。主系が故障すると、待機系への切替が済むまで処理が止まる。",
+      "explanation_zh": "主系统也叫在用系统，备用系统在主系统发生故障时接手处理。备用系统在待命期间也可能承担别的处理。主系统出现故障后，在切换到备用系统完成之前，处理会一直停止。",
+      "explanation_en": "The primary system is also called the active system, and the standby system takes over processing when the primary fails. While waiting, the standby system may also be given other work. After the primary fails, processing stays stopped until the switch to the standby system is complete.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2015h27a-q082"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ホットスタンバイ",
+      "term_zh": "热备用",
+      "term_en": "Hot standby",
+      "one_jp": "**ホットスタンバイ**は、待機系を**起動済み**の状態で控えさせ、主系の障害時にすぐ切り替える待機の方式である。",
+      "one_zh": "**热备用**（[[jp:ホットスタンバイ]]）是让备用系统以**已启动**的状态待命，在主系统发生故障时立即切换的待机方式。",
+      "one_en": "**Hot standby** ([[jp:ホットスタンバイ]]) keeps the standby system **already running** so that it can take over the moment the primary system fails.",
+      "detail_jp": "待機系は電源が入り、処理に必要なプログラムも立ち上がった状態で待っている。そのため切替の手間が少なく、利用者から見た中断はごく短い。その代わり、待機している間も機器を動かし続ける費用がかかる。",
+      "detail_zh": "备用系统已经接通电源，处理所需的程序也已运行起来，处于等待状态。因此切换几乎不费工夫，从用户角度看，中断时间极短。代价是待命期间设备也要一直运行，会产生相应的费用。",
+      "detail_en": "The standby system is powered on, with the programs it needs already up and running. Switching over therefore takes little effort, and users see only a very brief interruption. The trade-off is the cost of keeping the equipment running even while it waits.",
+      "analogy_jp": "エンジンをかけたまま乗り場で客を待つタクシーのように、呼ばれた瞬間に走り出せる。",
+      "analogy_zh": "就像开着发动机在乘车点等客的出租车，一有人招呼就能马上出发。",
+      "analogy_en": "Like a taxi idling at the stand with its engine on, it can pull away the instant someone hails it.",
+      "hook_jp": "hot は「温まっている」。機械がすでに温まっているので、すぐ動ける。",
+      "hook_zh": "hot 是“热着的”。机器已经热起来了，所以马上就能动。",
+      "hook_en": "Hot means already warmed up, so the machine can go right away.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ホットスタンバイ**の待機系はいつでも処理できる状態で待ち、障害が起きると直ちに処理を引き継ぐ。",
+          "text_zh": "**热备用**（[[jp:ホットスタンバイ]]）的备用系统（[[jp:待機系]]）以随时可以处理的状态等待，一旦发生故障就立刻接手处理。",
+          "text_en": "Under **hot standby** ([[jp:ホットスタンバイ]]), the standby system ([[jp:待機系]]) waits ready to process at any time and takes over the work immediately when a failure occurs.",
+          "qids": [
+            "2014h26h-q056"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2014h26h-q056"
+      ],
+      "definition_jp": "ホットスタンバイは、待機系を起動済みの状態で控えさせ、主系の障害時にすぐ切り替える待機の方式である。",
+      "definition_zh": "热备用（ホットスタンバイ）是让备用系统以已启动的状态待命，在主系统发生故障时立即切换的待机方式。",
+      "definition_en": "Hot standby (ホットスタンバイ) keeps the standby system already running so that it can take over the moment the primary system fails.",
+      "explanation_jp": "待機系は電源が入り、処理に必要なプログラムも立ち上がった状態で待っている。そのため切替の手間が少なく、利用者から見た中断はごく短い。その代わり、待機している間も機器を動かし続ける費用がかかる。",
+      "explanation_zh": "备用系统已经接通电源，处理所需的程序也已运行起来，处于等待状态。因此切换几乎不费工夫，从用户角度看，中断时间极短。代价是待命期间设备也要一直运行，会产生相应的费用。",
+      "explanation_en": "The standby system is powered on, with the programs it needs already up and running. Switching over therefore takes little effort, and users see only a very brief interruption. The trade-off is the cost of keeping the equipment running even while it waits.",
+      "memory_hook_jp": "hot は「温まっている」。機械がすでに温まっているので、すぐ動ける。",
+      "memory_hook_zh": "hot 是“热着的”。机器已经热起来了，所以马上就能动。",
+      "memory_hook_en": "Hot means already warmed up, so the machine can go right away.",
       "inline_quiz": [
         "2014h26h-q056"
       ],
       "inline_fallback": false,
-      "figure": null,
+      "figure": null
+    },
+    {
+      "term": "コールドスタンバイ",
       "term_zh": "冷备用",
       "term_en": "Cold standby",
-      "definition_zh": "让备用系统处于停止状态，故障时再启动并切换的待命方式。",
-      "definition_en": "A standby method that keeps the standby system stopped and starts it up to switch over only when a failure occurs.",
-      "explanation_zh": "冷备用是让备用系统平时处于停止（断电或未启动）状态待命的方式。一旦主用系统发生故障，需要先启动备用系统再切换，所以恢复需要一定时间。\n\n考试中常考它与热备用的区别。冷备用的代价是切换需要时间，但好处是能把待命期间的成本压得很低。用「切换慢但便宜＝冷备用」「切换快但贵＝热备用」这一对应关系来记忆，就容易区分。",
-      "explanation_en": "Cold standby keeps the standby system normally in a stopped state (powered off or not started) while waiting in reserve. When the primary fails, the standby must be started before switching over, so recovery takes time.\n\nOn the exam, the difference from hot standby is asked. In exchange for taking time to switch over, cold standby keeps the cost during standby very low. Remembering the paired relationship 'slow to switch but cheap = cold' and 'fast to switch but expensive = hot' makes them easy to tell apart.",
-      "analogy_zh": "就像把备用发电机收在仓库里。需要时要把它取出来再启动发动机，比较费事，但平时的维护费很便宜。",
-      "analogy_en": "Like keeping a spare generator stored in a warehouse. When needed, you have to take it out and start the engine, which is some trouble, but the everyday upkeep cost is cheap.",
-      "memory_hook_zh": "说到冷备用，就是让备用系统停着、故障时再启动的方式",
-      "memory_hook_en": "Cold standby → a method that keeps the standby stopped and starts it up when a failure occurs"
+      "one_jp": "**コールドスタンバイ**は、待機系を**止めた状態**で控えさせ、主系の障害後に起動してから切り替える待機の方式である。",
+      "one_zh": "**冷备用**（[[jp:コールドスタンバイ]]）是让备用系统以**停止的状态**待命，在主系统发生故障后先启动再切换的待机方式。",
+      "one_en": "**Cold standby** ([[jp:コールドスタンバイ]]) keeps the standby system **shut down** and, after the primary system fails, starts it up before switching over.",
+      "detail_jp": "待機系は電源を切った、または処理を始めていない状態で置いておく。障害が起きてから起動や設定を行うため、業務の再開までに時間がかかる。待機中は機器を動かさないので、維持の費用は低い。",
+      "detail_zh": "备用系统处于断电或尚未开始处理的状态。由于要在故障发生后才进行启动和设置，业务恢复需要一段时间。待命期间设备不运行，因此维持费用较低。",
+      "detail_en": "The standby system is left powered off, or at least not yet processing anything. Because it has to be started and configured after the failure occurs, it takes a while for business to resume. The equipment does not run while it waits, so upkeep costs are low.",
+      "analogy_jp": "冬の朝に冷えきった車は、エンジンをかけて暖まるまで待たないと出発できない。",
+      "analogy_zh": "冬天早上冻透了的汽车，要发动引擎等它热起来才能出发。",
+      "analogy_en": "On a winter morning, a car that has gone stone cold cannot leave until the engine has been started and warmed up.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**コールドスタンバイ**は待機系の起動から始めるので、主系が故障したときの停止時間は**ホットスタンバイ**より長い。",
+          "text_zh": "**冷备用**（[[jp:コールドスタンバイ]]）要从启动备用系统（[[jp:待機系]]）开始，所以主系统故障时的停机时间比**热备用**（[[jp:ホットスタンバイ]]）长。",
+          "text_en": "**Cold standby** ([[jp:コールドスタンバイ]]) has to begin by starting up the standby system ([[jp:待機系]]), so downtime after a primary failure is longer than with **hot standby** ([[jp:ホットスタンバイ]]).",
+          "qids": [
+            "2015h27a-q082"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**ホットスタンバイ**と**コールドスタンバイ**は、待機中の待機系が動いているか止まっているかで分かれ、それが切替の速さと費用の差になる。",
+          "text_zh": "**热备用**（[[jp:ホットスタンバイ]]）和**冷备用**（[[jp:コールドスタンバイ]]）的区别在于待命中的备用系统是在运行还是停止，这一点带来了切换速度和费用的差异。",
+          "text_en": "**Hot standby** ([[jp:ホットスタンバイ]]) and **cold standby** ([[jp:コールドスタンバイ]]) differ in whether the waiting standby system is running or stopped, and that difference accounts for the gap in switchover speed and cost."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "fault",
+              "label": {
+                "jp": "主系に障害",
+                "zh": "主系统发生故障",
+                "en": "Primary system fails"
+              }
+            },
+            {
+              "id": "boot",
+              "label": {
+                "jp": "待機系を起動・準備",
+                "zh": "启动并准备备用系统",
+                "en": "Start up and prepare standby system"
+              }
+            },
+            {
+              "id": "take",
+              "label": {
+                "jp": "待機系が処理を引き継ぐ",
+                "zh": "备用系统接手处理",
+                "en": "Standby system takes over"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "主系が故障し、処理が止まる。待機系は止まったまま控えている。",
+            "caption_zh": "主系统出现故障，处理停止。备用系统仍处于停止状态待命。",
+            "caption_en": "The primary system fails and processing stops. The standby system is still shut down.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "待機系の電源を入れて起動し、必要なプログラムやデータを準備する。この段階に時間がかかる。",
+            "caption_zh": "接通备用系统的电源并启动，准备好所需的程序和数据。这一步需要花时间。",
+            "caption_en": "The standby system is powered on and started, and the programs and data it needs are prepared. This stage takes time.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "準備が整ってから待機系が処理を引き継ぎ、業務が再開する。",
+            "caption_zh": "准备就绪后，备用系统接手处理，业务恢复。",
+            "caption_en": "Once everything is ready, the standby system takes over and business resumes.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2015h27a-q082",
+        "2014h26h-q056"
+      ],
+      "definition_jp": "コールドスタンバイは、待機系を止めた状態で控えさせ、主系の障害後に起動してから切り替える待機の方式である。",
+      "definition_zh": "冷备用（コールドスタンバイ）是让备用系统以停止的状态待命，在主系统发生故障后先启动再切换的待机方式。",
+      "definition_en": "Cold standby (コールドスタンバイ) keeps the standby system shut down and, after the primary system fails, starts it up before switching over.",
+      "explanation_jp": "待機系は電源を切った、または処理を始めていない状態で置いておく。障害が起きてから起動や設定を行うため、業務の再開までに時間がかかる。待機中は機器を動かさないので、維持の費用は低い。",
+      "explanation_zh": "备用系统处于断电或尚未开始处理的状态。由于要在故障发生后才进行启动和设置，业务恢复需要一段时间。待命期间设备不运行，因此维持费用较低。",
+      "explanation_en": "The standby system is left powered off, or at least not yet processing anything. Because it has to be started and configured after the failure occurs, it takes a while for business to resume. The equipment does not run while it waits, so upkeep costs are low.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2015h27a-q082",
+        "2014h26h-q056"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "フォールトトレラント",
-      "definition_jp": "障害が発生しても全体として機能を維持し続ける設計思想。",
-      "explanation_jp": "フォールトトレラント(耐故障)は、構成要素の一部に障害が起きても、システム全体としては処理を止めずに機能を維持し続けることを目指す設計思想です。冗長構成(部品の二重化など)によって実現されることが多く、前半で学んだデュアルやデュプレックスはこの思想を支える具体策にあたります。\n\n試験では、フェールセーフやフールプルーフとの違いが問われます。フォールトトレラントは「壊れても止めずに動かし続ける」のが狙いで、安全側に止める発想のフェールセーフとは方向性が異なる点を押さえましょう。",
-      "analogy_jp": "タイヤが1本パンクしても走り続けられるよう、予備の仕組みを備えた乗り物のようなもの。一部が壊れても全体は止まらずに走り続けます。",
-      "memory_hook_jp": "フォールトトレラントといえば障害が起きても機能を維持し続ける設計思想",
-      "inline_quiz": [
-        "2015h27h-q064",
-        "2016h28a-q067"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"信頼性を高める設計思想\"] --> B[\"フォールトトレラント: 止めずに動かし続ける\"]; A --> C[\"フェールセーフ: 安全側に止める\"]; A --> D[\"フールプルーフ: 誤操作を防ぐ\"]",
-        "svg_path": "figures/technology-16-44-u03-t02.svg",
-        "rendered": true
-      },
       "term_zh": "容错",
       "term_en": "Fault tolerant",
-      "definition_zh": "即使发生故障，整体上也持续维持功能的设计思想。",
-      "definition_en": "A design philosophy that keeps maintaining functionality as a whole even when a failure occurs.",
-      "explanation_zh": "容错（耐故障）是一种设计思想，即使构成要素中的一部分发生故障，也力求系统整体不停止处理、持续维持功能。它多通过冗余配置（如部件的双重化）来实现，前半部分学过的双工与双重系统正是支撑这一思想的具体手段。\n\n考试中常考它与故障安全、防误操作的区别。容错的目标是「即使坏了也不停下、持续运行」，与采取「向安全一侧停下」思路的故障安全方向性不同，这一点要掌握。",
-      "explanation_en": "Fault tolerant means a design philosophy that aims to keep the system as a whole maintaining its functionality without stopping processing, even when part of its components fails. It is often achieved through redundant configurations (such as duplicating parts), and the dual and duplex systems learned in the first half are concrete measures that support this philosophy.\n\nOn the exam, the difference from fail-safe and fool-proof is asked. The aim of fault tolerant is to 'keep running without stopping even when broken,' which differs in direction from fail-safe, whose idea is to stop on the safe side. Keep this in mind.",
-      "analogy_zh": "就像一辆即使一条轮胎爆胎也能继续行驶、备有冗余机制的交通工具。即使一部分坏了，整体也不停下、继续行驶。",
-      "analogy_en": "Like a vehicle equipped with backup mechanisms so it can keep running even if one tire goes flat. Even when a part breaks, the whole does not stop and keeps moving.",
-      "memory_hook_zh": "说到容错，就是即使发生故障也持续维持功能的设计思想",
-      "memory_hook_en": "Fault tolerant → a design philosophy that keeps maintaining functionality even when a failure occurs"
+      "one_jp": "**フォールトトレラント**は、システムの一部が故障しても、全体としては**処理を続けられる**ようにしておく設計の考え方である。",
+      "one_zh": "**容错**（[[jp:フォールトトレラント]]）是让系统即使部分发生故障，整体也能**继续处理**的设计思路。",
+      "one_en": "**Fault tolerant** ([[jp:フォールトトレラント]]) design arranges a system so that, even if part of it fails, the whole **keeps processing**.",
+      "detail_jp": "故障をなくすことはできないという前提に立ち、壊れても困らない構成をあらかじめ作っておく。冗長構成は、この考え方を系統の単位で形にしたものといえる。名詞の形でフォールトトレランスとも呼ぶ。",
+      "detail_zh": "它以故障无法完全消除为前提，事先构建出即使出故障也不会造成麻烦的结构。冗余结构可以说是在系统层面把这一思路落到实处的做法。名词形式写作[[jp:フォールトトレランス]]。",
+      "detail_en": "It starts from the premise that failures can never be eliminated and builds in advance a configuration that copes when something breaks. A redundant configuration can be seen as this idea put into practice at the level of whole systems. The noun form is fault tolerance ([[jp:フォールトトレランス]]).",
+      "analogy_jp": "エンジンを複数積んだ旅客機は、1 基が止まっても残りのエンジンで飛び続けられる。",
+      "analogy_zh": "装有多台发动机的客机，即使一台停了，也能靠其余发动机继续飞行。",
+      "analogy_en": "An airliner with several engines can keep flying on the others if one of them quits.",
+      "hook_jp": "fault は「故障」、tolerant は「耐えられる」。故障に耐えて動き続ける、と読める。",
+      "hook_zh": "fault 是“故障”，tolerant 是“能承受的”。读作：承受住故障继续运行。",
+      "hook_en": "Fault means a failure and tolerant means able to bear it: a system that bears its faults and keeps going.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**フォールトトレラント**は、障害が起きても処理を続けることを目的とし、単一の故障が全体の停止につながらない備えを前もって用意する。",
+          "text_zh": "**容错**（[[jp:フォールトトレラント]]）以发生故障后仍能继续处理为目的，事先准备好措施，使单一故障不会导致整体停止。",
+          "text_en": "**Fault tolerant** ([[jp:フォールトトレラント]]) design aims to keep processing after a failure, preparing in advance so that no single fault brings the whole system down.",
+          "qids": [
+            "2009h21h-q033",
+            "2015h27h-q064"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**フォールトトレラント**を実現する代表的な手段はハードウェアの**多重化**で、壊れた部分の仕事を残りの部分が引き受ける。",
+          "text_zh": "实现**容错**的代表性手段是硬件的**冗余化**（[[jp:多重化]]），由剩下的部分承担坏掉部分的工作。",
+          "text_en": "The typical way to achieve **fault tolerance** is **duplicating hardware** ([[jp:多重化]]), that is, hardware redundancy, so the remaining parts pick up the work of the part that broke.",
+          "qids": [
+            "2013h25a-q047",
+            "2016h28a-q067"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "part",
+              "label": {
+                "jp": "部品の 1 つが故障",
+                "zh": "一个部件发生故障",
+                "en": "One part fails"
+              }
+            },
+            {
+              "id": "spare",
+              "label": {
+                "jp": "予備の部品が代わりに働く",
+                "zh": "备用部件代替工作",
+                "en": "A spare part takes over"
+              }
+            },
+            {
+              "id": "keep",
+              "label": {
+                "jp": "全体は止まらずに動く",
+                "zh": "整体不停止，继续运行",
+                "en": "The whole keeps running without stopping"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2015h27h-q064",
+        "2016h28a-q067",
+        "2013h25a-q047"
+      ],
+      "definition_jp": "フォールトトレラントは、システムの一部が故障しても、全体としては処理を続けられるようにしておく設計の考え方である。",
+      "definition_zh": "容错（フォールトトレラント）是让系统即使部分发生故障，整体也能继续处理的设计思路。",
+      "definition_en": "Fault tolerant (フォールトトレラント) design arranges a system so that, even if part of it fails, the whole keeps processing.",
+      "explanation_jp": "故障をなくすことはできないという前提に立ち、壊れても困らない構成をあらかじめ作っておく。冗長構成は、この考え方を系統の単位で形にしたものといえる。名詞の形でフォールトトレランスとも呼ぶ。",
+      "explanation_zh": "它以故障无法完全消除为前提，事先构建出即使出故障也不会造成麻烦的结构。冗余结构可以说是在系统层面把这一思路落到实处的做法。名词形式写作フォールトトレランス。",
+      "explanation_en": "It starts from the premise that failures can never be eliminated and builds in advance a configuration that copes when something breaks. A redundant configuration can be seen as this idea put into practice at the level of whole systems. The noun form is fault tolerance (フォールトトレランス).",
+      "memory_hook_jp": "fault は「故障」、tolerant は「耐えられる」。故障に耐えて動き続ける、と読める。",
+      "memory_hook_zh": "fault 是“故障”，tolerant 是“能承受的”。读作：承受住故障继续运行。",
+      "memory_hook_en": "Fault means a failure and tolerant means able to bear it: a system that bears its faults and keeps going.",
+      "inline_quiz": [
+        "2015h27h-q064",
+        "2016h28a-q067",
+        "2013h25a-q047"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "フェールセーフ",
-      "definition_jp": "障害発生時に、被害を最小化する安全な側へ移行させる設計思想。",
-      "explanation_jp": "フェールセーフは、故障や異常が起きたときに、システムを安全な状態へ向かわせる設計思想です。たとえば信号機が故障したら全方向を赤(または点滅)にする、ストーブが倒れたら自動で消火する、といった「危険な側ではなく安全な側に倒す」考え方です。\n\n試験では、機能を維持し続けるフォールトトレラントや、誤操作を防ぐフールプルーフとの区別が問われます。フェールセーフは「故障そのものを前提に、起きたら安全に止める」点が核心で、似た用語との対比で覚えるのが効果的です。",
-      "analogy_jp": "石油ストーブが地震で倒れた瞬間に自動で火が消える仕組みのようなもの。トラブルが起きたら、被害が広がらない安全な状態へ自動で移ります。",
-      "memory_hook_jp": "フェールセーフといえば障害時に安全な側へ倒す設計思想",
-      "inline_quiz": [
-        "2009h21a-q067"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "故障安全",
       "term_en": "Fail-safe",
-      "definition_zh": "在发生故障时，使系统转向把损害降到最小的安全一侧的设计思想。",
-      "definition_en": "A design philosophy that, when a failure occurs, shifts the system toward the safe side that minimizes damage.",
-      "explanation_zh": "故障安全是一种设计思想，即在发生故障或异常时，让系统朝着安全状态转移。例如信号灯故障时让所有方向变红（或闪烁），取暖炉倾倒时自动灭火，这就是「不倒向危险一侧，而倒向安全一侧」的思路。\n\n考试中常考它与持续维持功能的容错、以及防止误操作的防误操作之间的区别。故障安全的核心是「以故障本身为前提，一旦发生就安全地停下」，与相似术语对比记忆很有效。",
-      "explanation_en": "Fail-safe is a design philosophy that, when a failure or abnormality occurs, directs the system toward a safe state. For example, when a traffic light fails it turns all directions red (or flashing), and when a stove tips over it extinguishes automatically; this is the idea of 'tipping toward the safe side rather than the dangerous side.'\n\nOn the exam, the distinction from fault tolerant, which keeps maintaining functionality, and from fool-proof, which prevents operating mistakes, is asked. The core of fail-safe is that 'it assumes failure itself, and when it happens, it stops safely,' and it is effective to remember it by contrast with similar terms.",
-      "analogy_zh": "就像石油取暖炉在地震倾倒的瞬间自动熄火的机制。一旦出问题，就自动转向损害不会扩大的安全状态。",
-      "analogy_en": "Like a mechanism where a kerosene heater automatically goes out the moment it tips over in an earthquake. When trouble occurs, it automatically shifts to a safe state where damage will not spread.",
-      "memory_hook_zh": "说到故障安全，就是故障时倒向安全一侧的设计思想",
-      "memory_hook_en": "Fail-safe → a design philosophy that tips toward the safe side when a failure occurs"
-    },
-    {
-      "term": "フールプルーフ",
-      "definition_jp": "利用者の誤操作を前提に、間違った操作をできなくする設計思想。",
-      "explanation_jp": "フールプルーフは、利用者が誤った操作をすることをあらかじめ想定し、そもそも間違った使い方ができないように工夫する設計思想です。たとえば電子レンジは扉を閉めないと加熱できない、洗濯機は蓋を開けると停止する、といった仕組みが該当します。\n\n試験では、障害そのものへの備えであるフェールセーフ・フォールトトレラントとの違いが問われます。フールプルーフは「機器の故障」ではなく「人の操作ミス」を防ぐ点が核心です。対象が機械の障害か人の誤操作かで見分けると確実です。",
-      "analogy_jp": "扉を閉めないと回らない電子レンジのようなもの。うっかり危ない使い方をしようとしても、最初から操作できないようになっています。",
-      "memory_hook_jp": "フールプルーフといえば利用者の誤操作を前提に防ぐ設計思想",
+      "one_jp": "**フェールセーフ**は、故障や操作の誤りなどで異常が起きたときに、システムを**安全な側**の動作へ移して被害の広がりを防ぐ設計の考え方である。",
+      "one_zh": "**故障安全**（[[jp:フェールセーフ]]）是在因故障或操作失误等出现异常时，让系统转入**安全一侧**的动作，防止损害扩大的设计思路。",
+      "one_en": "**Fail-safe** ([[jp:フェールセーフ]]) design moves a system to an action on the **safe side** when something goes wrong, whether from a failure or an operating mistake, so the damage does not spread.",
+      "detail_jp": "異常のときにどう動けば危険が小さいかを設計の段階で決めておき、その動作に倒れるようにする。安全な側とは多くの場合、機械を止める、出力を切るといった動作である。",
+      "detail_zh": "在设计阶段就确定好异常时怎样动作危险最小，并使系统倒向这种动作。所谓安全一侧，多数情况下是指让机器停下、切断输出之类的动作。",
+      "detail_en": "At the design stage, engineers decide which behavior carries the least danger when something goes wrong and make the system fall back to it. In most cases the safe side means stopping the machine or cutting off its output.",
+      "analogy_jp": "踏切の遮断機は、電気が来なくなると自分の重みで下りる作りにしておけば、故障しても通行を止める側に働く。",
+      "analogy_zh": "铁路道口的栏杆如果做成断电后靠自重落下的结构，即使出了故障，也会朝着拦住通行的方向起作用。",
+      "analogy_en": "A level-crossing barrier built to drop under its own weight when the power goes out will, even when it breaks, end up blocking the road.",
+      "hook_jp": "fail は「失敗する」、safe は「安全」。失敗したときは安全な方へ、と読める。",
+      "hook_zh": "fail 是“失败”，safe 是“安全”。读作：失败时就倒向安全的一边。",
+      "hook_en": "Fail plus safe: when it fails, it fails toward safety.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**フェールセーフ**は、機器の故障に限らず操作の誤りが起きた場合にも、安全な状態が保たれるようにしておく考え方である。",
+          "text_zh": "**故障安全**（[[jp:フェールセーフ]]）的思路是，不仅限于设备故障，在发生操作失误时也要保持安全的状态。",
+          "text_en": "**Fail-safe** ([[jp:フェールセーフ]]) design keeps the system in a safe state not only when equipment fails but also when an operating mistake occurs.",
+          "qids": [
+            "2009h21h-q065"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**フォールトトレラント**は障害の後も処理を続けることを優先し、**フェールセーフ**は処理を止めてでも安全を優先する。",
+          "text_zh": "**容错**（[[jp:フォールトトレラント]]）优先保证故障后继续处理，**故障安全**（[[jp:フェールセーフ]]）则宁可停止处理也要优先保证安全。",
+          "text_en": "**Fault tolerant** ([[jp:フォールトトレラント]]) design puts continued processing after a failure first, while **fail-safe** ([[jp:フェールセーフ]]) design puts safety first, even if that means stopping."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "detect",
+              "label": {
+                "jp": "故障や誤りなどの異常が起きる",
+                "zh": "发生故障或失误等异常",
+                "en": "A failure, error or other fault occurs"
+              }
+            },
+            {
+              "id": "safe",
+              "label": {
+                "jp": "停止など安全な動作へ移る",
+                "zh": "转入停止等安全的动作",
+                "en": "Move to a safe action such as stopping"
+              }
+            },
+            {
+              "id": "limit",
+              "label": {
+                "jp": "事故や被害の拡大を防ぐ",
+                "zh": "防止事故或损害扩大",
+                "en": "Keep accidents and damage from spreading"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2009h21h-q065"
+      ],
+      "definition_jp": "フェールセーフは、故障や操作の誤りなどで異常が起きたときに、システムを安全な側の動作へ移して被害の広がりを防ぐ設計の考え方である。",
+      "definition_zh": "故障安全（フェールセーフ）是在因故障或操作失误等出现异常时，让系统转入安全一侧的动作，防止损害扩大的设计思路。",
+      "definition_en": "Fail-safe (フェールセーフ) design moves a system to an action on the safe side when something goes wrong, whether from a failure or an operating mistake, so the damage does not spread.",
+      "explanation_jp": "異常のときにどう動けば危険が小さいかを設計の段階で決めておき、その動作に倒れるようにする。安全な側とは多くの場合、機械を止める、出力を切るといった動作である。",
+      "explanation_zh": "在设计阶段就确定好异常时怎样动作危险最小，并使系统倒向这种动作。所谓安全一侧，多数情况下是指让机器停下、切断输出之类的动作。",
+      "explanation_en": "At the design stage, engineers decide which behavior carries the least danger when something goes wrong and make the system fall back to it. In most cases the safe side means stopping the machine or cutting off its output.",
+      "memory_hook_jp": "fail は「失敗する」、safe は「安全」。失敗したときは安全な方へ、と読める。",
+      "memory_hook_zh": "fail 是“失败”，safe 是“安全”。读作：失败时就倒向安全的一边。",
+      "memory_hook_en": "Fail plus safe: when it fails, it fails toward safety.",
       "inline_quiz": [
         "2009h21h-q065"
       ],
       "inline_fallback": false,
-      "figure": null,
+      "figure": null
+    },
+    {
+      "term": "フールプルーフ",
       "term_zh": "防误操作",
       "term_en": "Fool-proof",
-      "definition_zh": "以用户会误操作为前提，使错误操作根本无法进行的设计思想。",
-      "definition_en": "A design philosophy that assumes users will make operating mistakes and makes wrong operations impossible in the first place.",
-      "explanation_zh": "防误操作是一种设计思想，即预先设想用户会做出错误操作，从根本上设法让错误的用法无法进行。例如微波炉不关门就无法加热、洗衣机一打开盖子就停止，这类机制就属于此类。\n\n考试中常考它与针对故障本身做准备的故障安全、容错之间的区别。防误操作的核心是防止「人的操作失误」，而非「设备的故障」。按对象是机器故障还是人为误操作来辨别，最为可靠。",
-      "explanation_en": "Fool-proof is a design philosophy that anticipates in advance that users will perform incorrect operations and devises ways so that wrong usage cannot be done in the first place. For example, a microwave oven cannot heat unless the door is closed, and a washing machine stops when the lid is opened; such mechanisms fall under this.\n\nOn the exam, the difference from fail-safe and fault tolerant, which prepare for failure itself, is asked. The core of fool-proof is preventing 'human operating mistakes' rather than 'equipment failure.' Distinguishing by whether the target is machine failure or human operating error is the surest way.",
-      "analogy_zh": "就像不关门就不转的微波炉。即便不小心想用危险的方式去使用，从一开始就无法操作。",
-      "analogy_en": "Like a microwave oven that will not run unless the door is closed. Even if you carelessly try to use it in a dangerous way, it cannot be operated from the start.",
-      "memory_hook_zh": "说到防误操作，就是以用户误操作为前提加以防范的设计思想",
-      "memory_hook_en": "Fool-proof → a design philosophy that guards against user operating mistakes by assuming they will happen"
+      "one_jp": "**フールプルーフ**は、利用者が**操作を誤る**ことを前提に、誤った操作ができない、または誤っても害にならないようにしておく設計の考え方である。",
+      "one_zh": "**防误操作**（[[jp:フールプルーフ]]）是以用户会**操作失误**为前提，使人无法进行错误操作，或即使操作错了也不会造成危害的设计思路。",
+      "one_en": "**Fool-proof** ([[jp:フールプルーフ]]) design assumes users will **make operating mistakes** and either prevents wrong operations or makes them harmless when they happen.",
+      "detail_jp": "人は慣れや思い込みで操作を間違えるものとして、その誤りがそのまま事故や障害につながらない仕組みを設計に組み込む。工夫は機器の形や画面の作りなど、利用者が触れる部分に置かれることが多い。",
+      "detail_zh": "把人看作会因习惯或想当然而操作出错的存在，在设计中加入使这种失误不会直接导致事故或故障的机制。这类巧思大多放在设备的外形、画面的布局等用户直接接触的部分。",
+      "detail_en": "Designers treat people as bound to slip up out of habit or assumption and build in mechanisms that keep those slips from turning straight into accidents or failures. These safeguards usually sit in the parts users touch, such as the shape of a device or the layout of a screen.",
+      "analogy_jp": "子どもが触っても簡単には開かない薬のふたのように、使う人の不注意を初めから見込んでおく。",
+      "analogy_zh": "就像孩子碰了也不容易打开的药瓶盖，从一开始就把使用者的疏忽考虑进去。",
+      "analogy_en": "Like a medicine cap a child cannot easily open, it plans for the user's carelessness from the start.",
+      "hook_jp": "proof は waterproof (防水) の proof と同じで「〜に耐える」。不慣れな人の操作に耐える、と読める。",
+      "hook_zh": "proof 和 waterproof（防水）里的 proof 一样，意为“经得起……”。读作：经得起生手的操作。",
+      "hook_en": "The proof here is the same as in waterproof: able to withstand something, in this case a novice's handling.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**フールプルーフ**は人の誤操作に備える考え方で、利用者が間違えた場合でもシステムが危険な状態や誤った結果に至らないようにする。",
+          "text_zh": "**防误操作**（[[jp:フールプルーフ]]）是防范人为误操作（[[jp:誤操作]]）的思路，使用户即使操作错误，系统也不会陷入危险状态或得出错误结果。",
+          "text_en": "**Fool-proof** ([[jp:フールプルーフ]]) design guards against human operating errors ([[jp:誤操作]]), so that a user's mistake does not lead the system into a dangerous state or a wrong result.",
+          "qids": [
+            "2009h21a-q067"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**フールプルーフ**の工夫には、誤った操作を物理的にできなくするもののほか、例えば画面の表示で利用者に操作を見直させるものもある。",
+          "text_zh": "**防误操作**的措施除了从物理上让人无法进行错误操作之外，也有例如通过画面上的提示让用户重新检查操作的做法。",
+          "text_en": "**Fool-proof** safeguards include not only making a wrong operation physically impossible but also, for example, using an on-screen message to prompt the user to review the operation.",
+          "qids": [
+            "2019h31h-q090",
+            "2023r05-q093"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "手当ての形",
+              "zh": "措施的形式",
+              "en": "Form of safeguard"
+            },
+            {
+              "jp": "身近な例",
+              "zh": "身边的例子",
+              "en": "Everyday example"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "誤った操作を物理的にできなくする",
+                  "zh": "从物理上让人无法进行错误操作",
+                  "en": "Make the wrong operation physically impossible"
+                },
+                {
+                  "jp": "向きを違えると差し込めない差込口",
+                  "zh": "方向不对就插不进去的插口",
+                  "en": "A socket that will not accept a plug inserted the wrong way"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "条件がそろうまで動かさない",
+                  "zh": "条件不齐备就不运行",
+                  "en": "Do not run until conditions are met"
+                },
+                {
+                  "jp": "扉を閉めるまで加熱を始めない電子レンジ",
+                  "zh": "不关上门就不开始加热的微波炉",
+                  "en": "A microwave that will not start heating until the door is shut"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2009h21a-q067"
+      ],
+      "definition_jp": "フールプルーフは、利用者が操作を誤ることを前提に、誤った操作ができない、または誤っても害にならないようにしておく設計の考え方である。",
+      "definition_zh": "防误操作（フールプルーフ）是以用户会操作失误为前提，使人无法进行错误操作，或即使操作错了也不会造成危害的设计思路。",
+      "definition_en": "Fool-proof (フールプルーフ) design assumes users will make operating mistakes and either prevents wrong operations or makes them harmless when they happen.",
+      "explanation_jp": "人は慣れや思い込みで操作を間違えるものとして、その誤りがそのまま事故や障害につながらない仕組みを設計に組み込む。工夫は機器の形や画面の作りなど、利用者が触れる部分に置かれることが多い。",
+      "explanation_zh": "把人看作会因习惯或想当然而操作出错的存在，在设计中加入使这种失误不会直接导致事故或故障的机制。这类巧思大多放在设备的外形、画面的布局等用户直接接触的部分。",
+      "explanation_en": "Designers treat people as bound to slip up out of habit or assumption and build in mechanisms that keep those slips from turning straight into accidents or failures. These safeguards usually sit in the parts users touch, such as the shape of a device or the layout of a screen.",
+      "memory_hook_jp": "proof は waterproof (防水) の proof と同じで「〜に耐える」。不慣れな人の操作に耐える、と読める。",
+      "memory_hook_zh": "proof 和 waterproof（防水）里的 proof 一样，意为“经得起……”。读作：经得起生手的操作。",
+      "memory_hook_en": "The proof here is the same as in waterproof: able to withstand something, in this case a novice's handling.",
+      "inline_quiz": [
+        "2009h21a-q067"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "デュアルシステム",
+      "b": "デュプレックスシステム",
+      "rows": [
+        {
+          "label_jp": "平常時に処理する系統",
+          "label_zh": "平时处理的系统",
+          "label_en": "Systems processing in normal operation",
+          "a_jp": "2 系統とも同じ処理をする",
+          "a_zh": "两套系统都执行相同处理",
+          "a_en": "Both systems run the same processing",
+          "b_jp": "主系だけがその処理をする",
+          "b_zh": "只有主系统执行该处理",
+          "b_en": "Only the primary system runs it",
+          "key": true
+        },
+        {
+          "label_jp": "故障したとき",
+          "label_zh": "发生故障时",
+          "label_en": "On failure",
+          "a_jp": "残った系統がそのまま続ける",
+          "a_zh": "剩下的系统直接继续",
+          "a_en": "The remaining system simply carries on",
+          "b_jp": "待機系へ切り替えて続ける",
+          "b_zh": "切换到备用系统继续",
+          "b_en": "Switches to the standby system and carries on",
+          "key": false
+        },
+        {
+          "label_jp": "結果の照合",
+          "label_zh": "结果核对",
+          "label_en": "Result comparison",
+          "a_jp": "2 つの結果を突き合わせる",
+          "a_zh": "对照两个结果",
+          "a_en": "Compares the two results",
+          "b_jp": "行わない",
+          "b_zh": "不进行",
+          "b_en": "Not performed",
+          "key": false
+        },
+        {
+          "label_jp": "費用",
+          "label_zh": "费用",
+          "label_en": "Cost",
+          "a_jp": "高い",
+          "a_zh": "高",
+          "a_en": "High",
+          "b_jp": "比べると抑えられる",
+          "b_zh": "相比之下较低",
+          "b_en": "Lower by comparison",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "ホットスタンバイ",
+      "b": "コールドスタンバイ",
+      "rows": [
+        {
+          "label_jp": "待機中の待機系",
+          "label_zh": "待命中的备用系统",
+          "label_en": "Standby system while waiting",
+          "a_jp": "起動済みで動いている",
+          "a_zh": "已启动并在运行",
+          "a_en": "Already started and running",
+          "b_jp": "止まっている",
+          "b_zh": "处于停止状态",
+          "b_en": "Shut down",
+          "key": true
+        },
+        {
+          "label_jp": "切替の速さ",
+          "label_zh": "切换速度",
+          "label_en": "Switchover speed",
+          "a_jp": "直ちに切り替わる",
+          "a_zh": "立即切换",
+          "a_en": "Switches over at once",
+          "b_jp": "起動と準備の分だけ遅い",
+          "b_zh": "因启动和准备而较慢",
+          "b_en": "Slower by the time needed to start and prepare",
+          "key": false
+        },
+        {
+          "label_jp": "待機中の費用",
+          "label_zh": "待命期间的费用",
+          "label_en": "Cost while waiting",
+          "a_jp": "高い",
+          "a_zh": "高",
+          "a_en": "High",
+          "b_jp": "低い",
+          "b_zh": "低",
+          "b_en": "Low",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "フォールトトレラント",
+      "b": "フェールセーフ",
+      "rows": [
+        {
+          "label_jp": "障害時に優先すること",
+          "label_zh": "故障时优先的事",
+          "label_en": "Priority on failure",
+          "a_jp": "処理を続けること",
+          "a_zh": "继续处理",
+          "a_en": "Keeping processing going",
+          "b_jp": "安全を保つこと",
+          "b_zh": "保持安全",
+          "b_en": "Keeping things safe",
+          "key": true
+        },
+        {
+          "label_jp": "障害時の動き",
+          "label_zh": "故障时的动作",
+          "label_en": "Behavior on failure",
+          "a_jp": "予備が代わりに働き、動き続ける",
+          "a_zh": "备用部分代替工作，持续运行",
+          "a_en": "A spare takes over and operation continues",
+          "b_jp": "停止など危険の小さい動作へ移る",
+          "b_zh": "转入停止等危险较小的动作",
+          "b_en": "Moves to a less dangerous action such as stopping",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "フェールセーフ",
+      "b": "フールプルーフ",
+      "rows": [
+        {
+          "label_jp": "手当ての向け先",
+          "label_zh": "措施针对的对象",
+          "label_en": "What the safeguard targets",
+          "a_jp": "起きてしまった異常 (故障や操作の誤り)",
+          "a_zh": "已经发生的异常（故障或操作失误）",
+          "a_en": "An abnormality that has already occurred (a failure or an operating mistake)",
+          "b_jp": "人の操作そのもの",
+          "b_zh": "人的操作本身",
+          "b_en": "The human operation itself",
+          "key": true
+        },
+        {
+          "label_jp": "手当ての中身",
+          "label_zh": "措施的内容",
+          "label_en": "What the safeguard does",
+          "a_jp": "安全な状態へ移す",
+          "a_zh": "转入安全状态",
+          "a_en": "Moves to a safe state",
+          "b_jp": "誤った操作をさせない、または誤っても害にならないようにする",
+          "b_zh": "让人无法进行错误操作，或即使操作错了也不会造成危害",
+          "b_en": "Prevents wrong operations, or makes them harmless when they happen",
+          "key": false
+        },
+        {
+          "label_jp": "身近な例",
+          "label_zh": "身边的例子",
+          "label_en": "Everyday example",
+          "a_jp": "電気が止まると下りる遮断機",
+          "a_zh": "断电后会落下的道口栏杆",
+          "a_en": "A crossing barrier that drops when the power fails",
+          "b_jp": "扉を閉めないと動かない電子レンジ",
+          "b_zh": "不关门就不运转的微波炉",
+          "b_en": "A microwave that will not run with the door open",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**冗長構成**では、予備の系統をどう持つかによって、故障時の中断の短さと平常時の費用が引き換えになる。",
+    "障害への備えは、故障や誤りがいつか起きることを前提に、起きても困らない構成や動作を前もって決めておくことである。",
+    "人の誤りへの備えは、誤った操作をさせない仕組みのほかに、誤りが起きても安全な状態を保つ仕組みでも行える。"
+  ],
+  "key_points_zh": [
+    "在**冗余结构**中，如何配置备用系统决定了故障时中断的长短与平时费用之间的取舍。",
+    "应对故障，就是以故障或失误迟早会发生为前提，事先确定好即使发生也不会造成麻烦的结构或动作。",
+    "应对人为失误，除了让人无法进行错误操作的机制之外，也可以靠即使出错也能保持安全状态的机制来实现。"
+  ],
+  "key_points_en": [
+    "In a **redundant configuration**, how the spare system is kept determines the trade-off between a short interruption on failure and the cost of normal operation.",
+    "Preparing for failures means assuming that faults and mistakes will happen sooner or later and deciding in advance on configurations or behaviors that cope when they do.",
+    "Human error can be handled not only by mechanisms that prevent wrong operations but also by mechanisms that keep things safe even when a mistake is made."
+  ],
+  "overview": {
+    "intro_jp": "デュアルシステムとデュプレックスシステムを、平常時に処理を受け持つ系統の数で分けられる。待機系の状態から、ホットスタンバイとコールドスタンバイの切替の速さと費用の違いを説明できる。障害や人の誤りに備える設計の考え方を、何を優先し、何に向けて手当てするかで区別できる。",
+    "intro_zh": "能够根据平时承担处理的系统数量，区分双工系统和双重系统。能够根据备用系统的状态，说明热备用和冷备用在切换速度和费用上的差异。能够根据优先保证什么、针对什么采取措施，区分应对故障和人为失误的几种设计思路。",
+    "intro_en": "Tell a dual system from a duplex system by how many systems handle the work in normal operation. Explain, from the state the standby system is kept in, how hot standby and cold standby differ in switchover speed and cost. Distinguish the design approaches for coping with failures and human error by what each puts first and what each guards against.",
+    "freq_badge": "頻出",
+    "est_minutes": 37
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "デュアルシステム: デュアルシステムといえば2系統で並行処理し結果を相互照合する冗長構成",
-      "デュプレックスシステム: デュプレックスシステムといえば主系が稼働し待機系が控える二重化構成",
-      "ホットスタンバイ: ホットスタンバイといえば待機系を常時起動し即座に切り替える方式",
-      "コールドスタンバイ: コールドスタンバイといえば待機系を停止しておき障害時に起動する方式",
-      "フォールトトレラント: フォールトトレラントといえば障害が起きても機能を維持し続ける設計思想",
-      "フェールセーフ: フェールセーフといえば障害時に安全な側へ倒す設計思想",
-      "フールプルーフ: フールプルーフといえば利用者の誤操作を前提に防ぐ設計思想"
-    ],
     "key_points_jp": [
-      "信頼性設計は、複数系統で可用性を確保する「冗長構成」と、障害・誤操作に備える「安全設計思想」に大別される。",
-      "デュアルは2系統を並行稼働させ結果を相互照合、デュプレックスは主系+待機系の二重化で、常時並行か待機かが区別の要点。",
-      "デュプレックスの待機系は、即時切替で速いが高コストのホットスタンバイと、起動に時間がかかるが低コストのコールドスタンバイに分かれる。",
-      "フォールトトレラントは『止めずに動かし続ける』、フェールセーフは『安全側に止める』で、障害時の方向性が逆。",
-      "フェールセーフ・フォールトトレラントが機器の障害への備えなのに対し、フールプルーフは人の誤操作を防ぐ点で対象が異なる。"
+      "冗長構成では、予備の系統をどう持つかによって、故障時の中断の短さと平常時の費用が引き換えになる。",
+      "障害への備えは、故障や誤りがいつか起きることを前提に、起きても困らない構成や動作を前もって決めておくことである。",
+      "人の誤りへの備えは、誤った操作をさせない仕組みのほかに、誤りが起きても安全な状態を保つ仕組みでも行える。"
     ],
     "key_points_zh": [
-      "可靠性设计大致分为以多套系统确保可用性的「冗余配置」，以及为应对故障与误操作的「安全设计思想」。",
-      "双工系统让两套系统并行运行并相互核对结果，双重系统是主用系统＋备用系统的双重化，是始终并行还是待命是区分的要点。",
-      "双重系统的备用系统分为：可立即切换、速度快但成本高的热备用，以及启动需要时间但成本低的冷备用。",
-      "容错是「不停下、持续运行」，故障安全是「向安全一侧停下」，二者在故障时的方向性相反。",
-      "故障安全、容错是针对设备故障的准备，而防误操作则是防止人的误操作，二者对象不同。"
+      "在冗余结构中，如何配置备用系统决定了故障时中断的长短与平时费用之间的取舍。",
+      "应对故障，就是以故障或失误迟早会发生为前提，事先确定好即使发生也不会造成麻烦的结构或动作。",
+      "应对人为失误，除了让人无法进行错误操作的机制之外，也可以靠即使出错也能保持安全状态的机制来实现。"
     ],
     "key_points_en": [
-      "Reliability design is broadly divided into 'redundant configurations' that secure availability with multiple systems, and 'safety-oriented design philosophies' that prepare for failures and operating mistakes.",
-      "A dual system runs two systems in parallel and cross-checks the results, while a duplex system is a duplication of primary plus standby; whether it runs constantly in parallel or stands by is the key to telling them apart.",
-      "The standby system in a duplex configuration divides into hot standby, which switches over immediately and is fast but high-cost, and cold standby, which takes time to start up but is low-cost.",
-      "Fault tolerant means 'keep running without stopping,' while fail-safe means 'stop on the safe side'; the two are opposite in direction when a failure occurs.",
-      "Fail-safe and fault tolerant prepare for equipment failure, whereas fool-proof prevents human operating mistakes; the two differ in their target."
+      "In a redundant configuration, how the spare system is kept determines the trade-off between a short interruption on failure and the cost of normal operation.",
+      "Preparing for failures means assuming that faults and mistakes will happen sooner or later and deciding in advance on configurations or behaviors that cope when they do.",
+      "Human error can be handled not only by mechanisms that prevent wrong operations but also by mechanisms that keep things safe even when a mistake is made."
+    ],
+    "memory_hooks_jp": [
+      "デュアルシステム: 英語の dual は「両方の」。両方の系統がいつも同じ処理をしている、と覚える。",
+      "ホットスタンバイ: hot は「温まっている」。機械がすでに温まっているので、すぐ動ける。",
+      "フォールトトレラント: fault は「故障」、tolerant は「耐えられる」。故障に耐えて動き続ける、と読める。",
+      "フェールセーフ: fail は「失敗する」、safe は「安全」。失敗したときは安全な方へ、と読める。",
+      "フールプルーフ: proof は waterproof (防水) の proof と同じで「〜に耐える」。不慣れな人の操作に耐える、と読める。"
     ],
     "memory_hooks_zh": [
-      "双工系统：说到双工系统，就是用两套系统并行处理并相互核对结果的冗余配置",
-      "双重系统：说到双重系统，就是主用系统运行、备用系统待命的双重化配置",
-      "热备用：说到热备用，就是让备用系统始终启动、可立即切换的方式",
-      "冷备用：说到冷备用，就是让备用系统停着、故障时再启动的方式",
-      "容错：说到容错，就是即使发生故障也持续维持功能的设计思想",
-      "故障安全：说到故障安全，就是故障时倒向安全一侧的设计思想",
-      "防误操作：说到防误操作，就是以用户误操作为前提加以防范的设计思想"
+      "双工系统：英语 dual 意为“双方的”。记住：两套系统一直都在执行相同的处理。",
+      "热备用：hot 是“热着的”。机器已经热起来了，所以马上就能动。",
+      "容错：fault 是“故障”，tolerant 是“能承受的”。读作：承受住故障继续运行。",
+      "故障安全：fail 是“失败”，safe 是“安全”。读作：失败时就倒向安全的一边。",
+      "防误操作：proof 和 waterproof（防水）里的 proof 一样，意为“经得起……”。读作：经得起生手的操作。"
     ],
     "memory_hooks_en": [
-      "Dual system: Dual system → a redundant configuration that processes in parallel on two systems and cross-checks the results",
-      "Duplex system: Duplex system → a duplicated configuration where the primary runs and the standby waits in reserve",
-      "Hot standby: Hot standby → a method that keeps the standby running at all times and switches over instantly",
-      "Cold standby: Cold standby → a method that keeps the standby stopped and starts it up when a failure occurs",
-      "Fault tolerant: Fault tolerant → a design philosophy that keeps maintaining functionality even when a failure occurs",
-      "Fail-safe: Fail-safe → a design philosophy that tips toward the safe side when a failure occurs",
-      "Fool-proof: Fool-proof → a design philosophy that guards against user operating mistakes by assuming they will happen"
+      "Dual system: Dual means \"both\": both systems are always running the same processing.",
+      "Hot standby: Hot means already warmed up, so the machine can go right away.",
+      "Fault tolerant: Fault means a failure and tolerant means able to bear it: a system that bears its faults and keeps going.",
+      "Fail-safe: Fail plus safe: when it fails, it fails toward safety.",
+      "Fool-proof: The proof here is the same as in waterproof: able to withstand something, in this case a novice's handling."
     ]
   },
   "challenge_questions": [
@@ -242,9 +1062,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "可靠性设计",
-  "title_en": "Reliability Design",
-  "unit_summary_zh": "学习通过冗余配置与安全设计思想来提升可靠性的设计方法。",
-  "unit_summary_en": "Learn design techniques that improve reliability through redundant configurations and safety-oriented design philosophies."
+  }
 }

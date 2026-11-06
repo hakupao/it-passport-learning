@@ -1,129 +1,474 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-16-44-u01",
   "topic_id": "technology-16-44",
   "category": "technology",
   "title_jp": "性能評価",
+  "title_zh": "性能评估",
+  "title_en": "Performance Evaluation",
   "unit_summary_jp": "システムの処理速度を測る性能指標と評価手法を学ぶ。",
+  "unit_summary_zh": "学习衡量系统处理速度的性能指标与评估方法。",
+  "unit_summary_en": "Learn the performance metrics and evaluation methods used to measure a system's processing speed.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、システムの「速さ」を測る性能評価を学びます。利用者が体感する処理の速さを表すレスポンスタイム(応答時間)と、システム全体の性能を比較するための評価手法であるベンチマークが中心です。性能はシステムの評価指標の柱の一つで、信頼性・経済性と並んで頻出する基礎分野です。",
-    "freq_badge": "頻出",
-    "est_minutes": 11,
-    "intro_zh": "在本单元中，我们将学习衡量系统“快慢”的性能评估。核心内容是表示用户所感受到的处理速度的响应时间（response time），以及用于比较系统整体性能的评估方法——基准测试（benchmark）。性能是系统评估指标的支柱之一，与可靠性、经济性并列，是经常出现的基础领域。",
-    "intro_en": "In this unit, we learn performance evaluation, which measures how \"fast\" a system is. The focus is on response time, which expresses the processing speed users actually feel, and benchmarking, an evaluation method for comparing the overall performance of systems. Performance is one of the pillars of system evaluation metrics and, alongside reliability and economy, is a frequently tested foundational area."
-  },
+  "goals_jp": [
+    "**レスポンスタイム**がどの時点からどの時点までの時間かを説明できる。",
+    "**応答時間**がレスポンスタイムと同じ時間を指す別の呼び方だと説明できる。",
+    "**ベンチマーク**が標準の処理を実機で動かして性能を評価する手法だと説明できる。"
+  ],
+  "goals_zh": [
+    "能说明**响应时间**是从哪个时间点到哪个时间点的时长。",
+    "能说明**应答时间**是与响应时间指同一段时间的另一种叫法。",
+    "能说明**基准测试**是在实际机器上运行标准处理来评估性能的方法。"
+  ],
+  "goals_en": [
+    "Explain the start and end points of the interval that **response time** measures.",
+    "Explain that **response time** written as [[jp:応答時間]] is just another name for the same interval as [[jp:レスポンスタイム]].",
+    "Explain that a **benchmark** evaluates performance by running standard workloads on the actual machine."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "測る区間・やり方"
+  ],
+  "overview_cols_zh": [
+    "类型",
+    "测量的区间与方法"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "Interval measured / method"
+  ],
+  "overview_rows": [
+    {
+      "term": "レスポンスタイム",
+      "one_line_jp": "依頼の入力を終えてから最初の応答が返り始めるまでの時間。",
+      "one_line_zh": "从输入完请求到第一个响应开始返回的时间。",
+      "one_line_en": "The time from finishing input of a request until the first response starts to come back.",
+      "extra_jp": [
+        "性能の指標 (時間)",
+        "入力完了から応答の開始まで"
+      ],
+      "extra_zh": [
+        "性能指标（时间）",
+        "从输入完成到响应开始"
+      ],
+      "extra_en": [
+        "Performance metric (time)",
+        "From end of input to start of response"
+      ]
+    },
+    {
+      "term": "応答時間",
+      "one_line_jp": "レスポンスタイムの日本語名で、同じ時間を指す。",
+      "one_line_zh": "响应时间的汉字词叫法，指同一段时间。",
+      "one_line_en": "The kanji-based Japanese name for response time, referring to the same interval.",
+      "extra_jp": [
+        "性能の指標 (時間)",
+        "レスポンスタイムと同じ区間"
+      ],
+      "extra_zh": [
+        "性能指标（时间）",
+        "与响应时间区间相同"
+      ],
+      "extra_en": [
+        "Performance metric (time)",
+        "Same interval as response time"
+      ]
+    },
+    {
+      "term": "ベンチマーク",
+      "one_line_jp": "標準として決めた処理を実際に動かし、測った値で性能を評価する手法。",
+      "one_line_zh": "实际运行事先定为标准的处理，用测得的数值评估性能的方法。",
+      "one_line_en": "A method that actually runs a workload fixed as the standard and evaluates performance from the measured values.",
+      "extra_jp": [
+        "性能の評価手法",
+        "標準の処理を実機で走らせて実測する"
+      ],
+      "extra_zh": [
+        "性能评估方法",
+        "在实机上运行标准处理并实测"
+      ],
+      "extra_en": [
+        "Performance evaluation method",
+        "Runs standard workloads on real machines and measures them"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "レスポンスタイム",
-      "definition_jp": "処理の依頼が終わってから、最初の応答が返り始めるまでの時間。",
-      "explanation_jp": "レスポンスタイムは、利用者がコンピュータに処理を依頼し終えた瞬間から、システムが反応(応答)を返し始めるまでの時間です。値が小さいほど反応が速く、利用者の体感の良さに直結します。\n\n試験では、すべての処理結果が出そろうまでの時間を表す「ターンアラウンドタイム」との違いがよく問われます。レスポンスタイムは『反応が返り始めるまで』、ターンアラウンドタイムは『依頼してから全結果が出そろうまで』を測る点が異なります。オンライン処理では特にレスポンスタイムが重視されます。",
-      "analogy_jp": "レストランで注文し終えた瞬間から、店員が「かしこまりました」と返事をするまでの時間のようなもの。料理が出てくるまでの時間とは別物です。",
-      "memory_hook_jp": "レスポンスタイムといえば応答が返り始めるまでの時間",
+      "term_zh": "响应时间",
+      "term_en": "Response time",
+      "one_jp": "**レスポンスタイム**は、利用者が処理の依頼を入力し終えてから、システムの最初の応答が返り始めるまでの時間である。",
+      "one_zh": "**响应时间** [[jp:レスポンスタイム]] 是指从用户输入完处理请求，到系统的第一个响应开始返回为止的时间。",
+      "one_en": "**Response time** [[jp:レスポンスタイム]] is the time from when a user finishes entering a processing request until the system's first response begins to come back.",
+      "detail_jp": "計測の起点は入力を終えた時点なので、入力の操作そのものにかかる時間は含まない。値が短いほど利用者の待ち時間が減り、画面とやり取りしながら使う**オンライン処理**では特に重視される。",
+      "detail_zh": "计时起点是输入结束的时刻，因此不包括输入操作本身所花的时间。数值越短，用户等待越少，在边看画面边交互使用的**联机处理** [[jp:オンライン処理]] 中尤其受重视。",
+      "detail_en": "Timing starts when input ends, so the time spent on the input itself is not included. Shorter values mean less waiting for the user, which matters most in **online processing** [[jp:オンライン処理]], where people work interactively with the screen.",
+      "analogy_jp": "窓口で用件を言い終えてから、係の人が最初の一言を返すまでの間のようなもの。手続きがすべて片付くまでの時間とは別に数える。",
+      "analogy_zh": "就像在窗口说完要办的事后，到工作人员说出第一句回应为止的那段间隔。它与把手续全部办完所需的时间分开计算。",
+      "analogy_en": "It is like the gap between finishing your request at a service counter and the clerk's first words in reply. That is counted separately from the time needed to finish the whole procedure.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**スループット**は一定の時間内に片付く仕事の量を表し、レスポンスタイムは 1 件の依頼が応答を得るまでの時間の長さを表す。",
+          "text_zh": "**吞吐量** [[jp:スループット]] 表示一定时间内完成的工作量，而响应时间 [[jp:レスポンスタイム]] 表示单个请求得到响应所需的时间长短。",
+          "text_en": "**Throughput** [[jp:スループット]] is the amount of work finished within a given time, while response time [[jp:レスポンスタイム]] is how long a single request takes to get a response.",
+          "qids": [
+            "2009h21a-q061"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**ターンアラウンドタイム**は依頼してから結果をすべて出し終えるまでの時間で、応答が返り始めた時点で止まるレスポンスタイムより長い区間を測る。",
+          "text_zh": "**周转时间** [[jp:ターンアラウンドタイム]] 是从提交请求到全部结果输出完毕的时间，测量的区间比在响应开始返回时就停止的响应时间更长。",
+          "text_en": "**Turnaround time** [[jp:ターンアラウンドタイム]] runs from submitting a request until all results have been output, a longer span than response time, which stops when the response begins.",
+          "qids": [
+            "2010h22a-q086"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "input",
+              "label": {
+                "jp": "依頼の入力を終える",
+                "zh": "输入完请求",
+                "en": "Finish entering request"
+              }
+            },
+            {
+              "id": "process",
+              "label": {
+                "jp": "通信と処理",
+                "zh": "通信与处理",
+                "en": "Transmission and processing"
+              }
+            },
+            {
+              "id": "reply",
+              "label": {
+                "jp": "最初の応答が返り始める",
+                "zh": "第一个响应开始返回",
+                "en": "First response starts"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者が依頼を入力し終えた時点で計測が始まる。",
+            "caption_zh": "用户输入完请求的时刻开始计时。",
+            "caption_en": "Timing starts when the user finishes entering the request.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "依頼は通信路を通ってシステムに届き、処理される。",
+            "caption_zh": "请求经通信线路到达系统并被处理。",
+            "caption_en": "The request travels over the network to the system and is processed.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "最初の応答が返り始めた時点で計測が止まり、ここまでがレスポンスタイムになる。",
+            "caption_zh": "第一个响应开始返回时停止计时，这段时间就是响应时间。",
+            "caption_en": "Timing stops when the first response starts to arrive, and this span is the response time.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21a-q061"
+      ],
+      "definition_jp": "レスポンスタイムは、利用者が処理の依頼を入力し終えてから、システムの最初の応答が返り始めるまでの時間である。",
+      "definition_zh": "响应时间 レスポンスタイム 是指从用户输入完处理请求，到系统的第一个响应开始返回为止的时间。",
+      "definition_en": "Response time レスポンスタイム is the time from when a user finishes entering a processing request until the system's first response begins to come back.",
+      "explanation_jp": "計測の起点は入力を終えた時点なので、入力の操作そのものにかかる時間は含まない。値が短いほど利用者の待ち時間が減り、画面とやり取りしながら使うオンライン処理では特に重視される。",
+      "explanation_zh": "计时起点是输入结束的时刻，因此不包括输入操作本身所花的时间。数值越短，用户等待越少，在边看画面边交互使用的联机处理 オンライン処理 中尤其受重视。",
+      "explanation_en": "Timing starts when input ends, so the time spent on the input itself is not included. Shorter values mean less waiting for the user, which matters most in online processing オンライン処理, where people work interactively with the screen.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
         "2009h21a-q061"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "响应时间",
-      "term_en": "Response time",
-      "definition_zh": "从处理请求发出完毕，到系统开始返回首个响应为止的时间。",
-      "definition_en": "The time from when a processing request is fully submitted until the first response begins to be returned.",
-      "explanation_zh": "响应时间是指从用户向计算机发出处理请求的那一刻起，到系统开始返回反应（响应）为止的时间。数值越小表示反应越快，并直接关系到用户体感的好坏。\n\n在考试中，经常会考查它与表示“所有处理结果全部产出为止的时间”的周转时间（turnaround time）之间的区别。响应时间衡量的是“到反应开始返回为止”，而周转时间衡量的是“从发出请求到所有结果全部产出为止”，二者测量的对象不同。在联机处理中尤其重视响应时间。",
-      "explanation_en": "Response time is the time from the moment a user finishes submitting a processing request to a computer until the system begins to return a reaction (response). The smaller the value, the faster the reaction, and this directly affects how good the experience feels to the user.\n\nExams often test the difference between response time and turnaround time, which is the time until all processing results are fully produced. Response time measures \"until the reaction begins to return,\" while turnaround time measures \"from submitting the request until all results are fully produced\" — the two measure different things. In online (interactive) processing, response time is especially important.",
-      "analogy_zh": "就像在餐厅点完餐的那一刻起，到服务员回应一句“好的，明白了”为止的时间。它与菜品端上来为止的时间是两回事。",
-      "analogy_en": "It is like the time from the moment you finish placing your order at a restaurant until the server replies \"Certainly.\" It is a separate thing from the time until the food actually arrives.",
-      "memory_hook_zh": "说到响应时间，就是到响应开始返回为止的时间",
-      "memory_hook_en": "Response time → the time until the response begins to return"
+      "figure": null
     },
     {
       "term": "応答時間",
-      "definition_jp": "レスポンスタイムの日本語表現で、応答が返り始めるまでの時間。",
-      "explanation_jp": "応答時間は、レスポンスタイムを日本語で言い換えた同じ意味の用語です。処理を依頼し終えてから、システムの応答が返り始めるまでの時間を指し、短いほど性能が高いと評価されます。\n\n試験では、レスポンスタイムと応答時間が同じものを指すことを押さえておくことが大切です。出題ではどちらの表記も使われ、「応答時間が短い=反応が速い=性能が良い」という方向の関係を問われます。あわせて、全結果が出そろうまでを測るターンアラウンドタイムと混同しないよう区別しておきましょう。",
-      "analogy_jp": "呼びかけに対して相手が返事をするまでの間のこと。「レスポンスタイム」を日本語で言っただけで、指している中身は同じです。",
-      "memory_hook_jp": "応答時間といえばレスポンスタイムの日本語表現",
-      "inline_quiz": [
-        "2010h22a-q086"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "应答时间",
       "term_en": "Response time (Japanese term)",
-      "definition_zh": "“レスポンスタイム（响应时间）”的日语表达，即到响应开始返回为止的时间。",
-      "definition_en": "The Japanese-language term for response time: the time until the response begins to be returned.",
-      "explanation_zh": "应答时间（応答時間）是用日语对“レスポンスタイム（响应时间）”的换说，含义完全相同。它指从处理请求发出完毕起，到系统的响应开始返回为止的时间，越短则被评价为性能越高。\n\n在考试中，重要的是要记住响应时间（レスポンスタイム）与应答时间（応答時間）指的是同一事物。出题时两种写法都会使用，并会考查“应答时间越短＝反应越快＝性能越好”这一方向上的关系。同时也要注意不要把它与衡量“所有结果全部产出为止”的周转时间相混淆。",
-      "explanation_en": "\"Ōtō jikan\" (応答時間) is simply the Japanese rephrasing of \"response time,\" with exactly the same meaning. It refers to the time from when a processing request is fully submitted until the system's response begins to return; the shorter it is, the higher the performance is rated.\n\nIn exams, it is important to remember that \"response time\" and this Japanese term refer to the same thing. Both notations appear in questions, which test the relationship that \"shorter response time = faster reaction = better performance.\" Also be careful not to confuse it with turnaround time, which measures the time until all results are fully produced.",
-      "analogy_zh": "就是对方对你的呼唤作出回应所经过的那段间隔。它只是把“レスポンスタイム（响应时间）”用日语说了一遍，所指的内容完全相同。",
-      "analogy_en": "It is the interval until someone replies to your call. It is just \"response time\" said in Japanese; what it refers to is exactly the same.",
-      "memory_hook_zh": "说到应答时间，就是“响应时间”的日语表达",
-      "memory_hook_en": "Response time (応答時間) → the Japanese way of saying \"response time\""
+      "one_jp": "**応答時間**はレスポンスタイムの日本語名で、指している時間は同じである。",
+      "one_zh": "**应答时间** [[jp:応答時間]] 是响应时间的汉字词叫法，所指的时间完全相同。",
+      "one_en": "**Response time** written as [[jp:応答時間]] is the kanji-based Japanese name for response time and refers to exactly the same interval.",
+      "detail_jp": "文書によってカタカナ語と漢字語のどちらを使うかが違うだけで、測る区間も評価の向きも変わらない。どちらの名前で出てきても、同じ指標として読み替えればよい。",
+      "detail_zh": "不同文档只是在片假名词和汉字词之间选用不同，测量的区间和评价的方向都不变。无论以哪个名称出现，都可以当作同一个指标来理解。",
+      "detail_en": "Documents differ only in whether they use the katakana word or the kanji word, and neither the interval measured nor which way counts as better (shorter is better) changes. Whichever name appears, read it as the same metric.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "「応答時間」の「応答」は英語の response に当てた訳語なので、カタカナの「レスポンス」と同じ中身になる。",
+      "hook_zh": "「応答時間」中的「応答」是给英语 response 配的译词，所以与片假名的「レスポンス」含义相同。",
+      "hook_en": "In 応答時間, 応答 is the word used to render the English \"response,\" so it means the same as the katakana レスポンス.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "応答時間が測るのは、利用者が入力を終えた時点から、システムの応答が返り始める時点までの区間である。",
+          "text_zh": "应答时间 [[jp:応答時間]] 测量的是从用户输入结束的时刻，到系统的响应开始返回的时刻为止的区间。",
+          "text_en": "Response time [[jp:応答時間]] covers the span from the moment the user finishes input to the moment the system's response starts to come back.",
+          "qids": [
+            "2020r02o-q063"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2020r02o-q063"
+      ],
+      "definition_jp": "応答時間はレスポンスタイムの日本語名で、指している時間は同じである。",
+      "definition_zh": "应答时间 応答時間 是响应时间的汉字词叫法，所指的时间完全相同。",
+      "definition_en": "Response time written as 応答時間 is the kanji-based Japanese name for response time and refers to exactly the same interval.",
+      "explanation_jp": "文書によってカタカナ語と漢字語のどちらを使うかが違うだけで、測る区間も評価の向きも変わらない。どちらの名前で出てきても、同じ指標として読み替えればよい。",
+      "explanation_zh": "不同文档只是在片假名词和汉字词之间选用不同，测量的区间和评价的方向都不变。无论以哪个名称出现，都可以当作同一个指标来理解。",
+      "explanation_en": "Documents differ only in whether they use the katakana word or the kanji word, and neither the interval measured nor which way counts as better (shorter is better) changes. Whichever name appears, read it as the same metric.",
+      "memory_hook_jp": "「応答時間」の「応答」は英語の response に当てた訳語なので、カタカナの「レスポンス」と同じ中身になる。",
+      "memory_hook_zh": "「応答時間」中的「応答」是给英语 response 配的译词，所以与片假名的「レスポンス」含义相同。",
+      "memory_hook_en": "In 応答時間, 応答 is the word used to render the English \"response,\" so it means the same as the katakana レスポンス.",
+      "inline_quiz": [
+        "2020r02o-q063"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ベンチマーク",
-      "definition_jp": "標準的な処理を実行させて性能を測定・比較する評価手法。",
-      "explanation_jp": "ベンチマークは、あらかじめ決めた標準的なプログラム(ベンチマークプログラム)を複数のシステムで同じように実行させ、その処理時間や処理量を測って性能を客観的に比較する手法です。条件をそろえて測るため、異なる機種同士の性能を公平に比べられます。\n\n試験では、個々のレスポンスタイムのような単一指標と違い、ベンチマークは『システム全体の性能を比較するための評価手法』である点が問われます。同じ基準で測定して比較するという考え方を押さえておきましょう。",
-      "analogy_jp": "複数の車を同じコース・同じ条件で走らせてタイムを測り、速さを比べる「サーキットの計測走行」のようなもの。条件をそろえるから公平に比較できます。",
-      "memory_hook_jp": "ベンチマークといえば標準処理で性能を測り比較する評価手法",
+      "term_zh": "基准测试",
+      "term_en": "Benchmark",
+      "one_jp": "**ベンチマーク**は、標準として決めた処理を評価したいシステムで実際に動かし、測った処理時間などで性能を評価・比較する手法である。",
+      "one_zh": "**基准测试** [[jp:ベンチマーク]] 是在要评估的系统上实际运行事先定为标准的处理，用测得的处理时间等来评估、比较性能的方法。",
+      "one_en": "A **benchmark** [[jp:ベンチマーク]] is a method that actually runs a workload fixed as the standard on the system being evaluated and uses measured values such as processing time to evaluate and compare performance.",
+      "detail_jp": "同じ処理と同じ条件で測るので、機種や構成が違うシステムどうしでも結果を公平に並べられる。用いる処理は、そのシステムを何に使うかに合わせて選ぶ。「ベンチマークテスト」と呼ぶこともある。",
+      "detail_zh": "因为用相同的处理和相同的条件测量，即使是机型或配置不同的系统，结果也能公平地放在一起比较。所用的处理要根据该系统的用途来选择。也叫 [[jp:ベンチマークテスト]]。",
+      "detail_en": "Because every system is measured with the same workload under the same conditions, results can be compared fairly even across different models and configurations. The workload is chosen to match what the system will be used for. It is also called a benchmark test [[jp:ベンチマークテスト]].",
+      "analogy_jp": "全員に同じ問題を同じ制限時間で解いてもらい、点数で力を比べる試験のようなもの。",
+      "analogy_zh": "就像让所有人在相同时限内解答相同的题目，用分数比较实力的考试。",
+      "analogy_en": "It is like a test where everyone solves the same questions within the same time limit and ability is compared by score.",
+      "hook_jp": "もとは測量で高さの基準として刻む印を指す語で、「比べるための基準」という意味が性能評価に移った。",
+      "hook_zh": "这个词原指测量中作为高度基准刻下的标记，“用于比较的基准”这一含义后来转用到了性能评估上。",
+      "hook_en": "The word originally meant a mark cut by surveyors as a reference for height, and the sense of \"a reference for comparison\" carried over to performance evaluation.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ベンチマークで得る値は、標準の処理を評価対象の機械で本当に走らせたときの実測値である。",
+          "text_zh": "基准测试 [[jp:ベンチマーク]] 得到的值，是在被评估的机器上真正运行标准处理时的实测值。",
+          "text_en": "The values a benchmark [[jp:ベンチマーク]] produces are actual measurements taken by really running the standard workload on the machine being evaluated.",
+          "qids": [
+            "2011h23tokubetsu-q066",
+            "2017h29h-q077",
+            "2026r08-q062"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**SPEC**は、性能比較用のベンチマークを作り、その測定結果を公開している中立の団体である。",
+          "text_zh": "**SPEC** 是开发用于性能比较的基准测试并公开其测量结果的中立组织。",
+          "text_en": "**SPEC** is a neutral organization that develops benchmarks for comparing performance and publishes the results.",
+          "qids": [
+            "2012h24a-q075"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "define",
+              "label": {
+                "jp": "標準の処理を決める",
+                "zh": "确定标准处理",
+                "en": "Fix the standard workload"
+              }
+            },
+            {
+              "id": "run",
+              "label": {
+                "jp": "実機で同じ条件で動かす",
+                "zh": "在实机上以相同条件运行",
+                "en": "Run on real machines under the same conditions"
+              }
+            },
+            {
+              "id": "compare",
+              "label": {
+                "jp": "測った値で比べる",
+                "zh": "用测得的值比较",
+                "en": "Compare measured values"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "比べたい用途に合った標準の処理 (プログラムとデータ) を決める。",
+            "caption_zh": "确定与要比较的用途相符的标准处理（程序和数据）。",
+            "caption_en": "Choose a standard workload (programs and data) that matches the use you want to compare.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "その処理を評価したいシステムで、条件をそろえて実際に動かす。",
+            "caption_zh": "在要评估的系统上统一条件，实际运行该处理。",
+            "caption_en": "Actually run that workload on the systems being evaluated, keeping the conditions the same.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "かかった時間などの測定値を並べ、性能を評価する。",
+            "caption_zh": "把所花时间等测量值排在一起，评估性能。",
+            "caption_en": "Line up the measurements, such as time taken, and evaluate performance.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2011h23tokubetsu-q066"
+      ],
+      "definition_jp": "ベンチマークは、標準として決めた処理を評価したいシステムで実際に動かし、測った処理時間などで性能を評価・比較する手法である。",
+      "definition_zh": "基准测试 ベンチマーク 是在要评估的系统上实际运行事先定为标准的处理，用测得的处理时间等来评估、比较性能的方法。",
+      "definition_en": "A benchmark ベンチマーク is a method that actually runs a workload fixed as the standard on the system being evaluated and uses measured values such as processing time to evaluate and compare performance.",
+      "explanation_jp": "同じ処理と同じ条件で測るので、機種や構成が違うシステムどうしでも結果を公平に並べられる。用いる処理は、そのシステムを何に使うかに合わせて選ぶ。「ベンチマークテスト」と呼ぶこともある。",
+      "explanation_zh": "因为用相同的处理和相同的条件测量，即使是机型或配置不同的系统，结果也能公平地放在一起比较。所用的处理要根据该系统的用途来选择。也叫 ベンチマークテスト。",
+      "explanation_en": "Because every system is measured with the same workload under the same conditions, results can be compared fairly even across different models and configurations. The workload is chosen to match what the system will be used for. It is also called a benchmark test ベンチマークテスト.",
+      "memory_hook_jp": "もとは測量で高さの基準として刻む印を指す語で、「比べるための基準」という意味が性能評価に移った。",
+      "memory_hook_zh": "这个词原指测量中作为高度基准刻下的标记，“用于比较的基准”这一含义后来转用到了性能评估上。",
+      "memory_hook_en": "The word originally meant a mark cut by surveyors as a reference for height, and the sense of \"a reference for comparison\" carried over to performance evaluation.",
       "inline_quiz": [
         "2011h23tokubetsu-q066"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"標準ベンチマークプログラム\"] --> B[\"システムA で実行\"]; A --> C[\"システムB で実行\"]; B --> D[\"測定結果を比較\"]; C --> D",
-        "svg_path": "figures/technology-16-44-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "基准测试",
-      "term_en": "Benchmark",
-      "definition_zh": "让系统执行标准化的处理，从而测定并比较性能的评估方法。",
-      "definition_en": "An evaluation method that runs standardized processing to measure and compare performance.",
-      "explanation_zh": "基准测试是指让多个系统以相同方式执行预先确定的标准程序（基准程序），测量其处理时间或处理量，从而客观地比较性能的方法。由于在一致的条件下测量，因此能够公平地比较不同机型之间的性能。\n\n在考试中会考查：与响应时间这类单一指标不同，基准测试是“用于比较系统整体性能的评估方法”。要记住“以相同基准进行测量并比较”这一核心思路。",
-      "explanation_en": "Benchmarking is a method in which multiple systems run a predetermined standard program (a benchmark program) in the same way, and the processing time or throughput is measured to compare performance objectively. Because the measurement is done under uniform conditions, the performance of different models can be compared fairly.\n\nExams test the point that, unlike a single metric such as response time, a benchmark is \"an evaluation method for comparing the overall performance of a system.\" Keep in mind the core idea of measuring and comparing under the same criteria.",
-      "analogy_zh": "就像“赛道计时跑”：让多辆车在同一赛道、同一条件下行驶并计时，从而比较速度。正因为条件一致，才能公平地比较。",
-      "analogy_en": "It is like a \"timed run on a circuit\": you have several cars drive the same course under the same conditions and time them to compare speed. Because the conditions are kept uniform, the comparison is fair.",
-      "memory_hook_zh": "说到基准测试，就是用标准处理测定并比较性能的评估方法",
-      "memory_hook_en": "Benchmark → an evaluation method that measures and compares performance using standard processing"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "レスポンスタイム",
+      "b": "ベンチマーク",
+      "rows": [
+        {
+          "label_jp": "何を指すか",
+          "label_zh": "指什么",
+          "label_en": "What it is",
+          "a_jp": "性能を表す指標 (時間の長さ)",
+          "a_zh": "表示性能的指标（时间长度）",
+          "a_en": "A performance metric (a length of time)",
+          "b_jp": "性能を調べる方法",
+          "b_zh": "调查性能的方法",
+          "b_en": "A method for examining performance",
+          "key": true
+        },
+        {
+          "label_jp": "得られるもの",
+          "label_zh": "得到什么",
+          "label_en": "What you get",
+          "a_jp": "1 件の依頼に対する待ち時間",
+          "a_zh": "单个请求的等待时间",
+          "a_en": "The wait for a single request",
+          "b_jp": "標準の処理を走らせて測った値の一式",
+          "b_zh": "运行标准处理测得的一组数值",
+          "b_en": "A set of values measured by running standard workloads",
+          "key": false
+        },
+        {
+          "label_jp": "主な使い道",
+          "label_zh": "主要用途",
+          "label_en": "Main use",
+          "a_jp": "対話型の処理の速さを見る",
+          "a_zh": "看交互式处理的快慢",
+          "a_en": "Checking how fast interactive processing is",
+          "b_jp": "機種や構成の違うシステムを同じ条件で比べる",
+          "b_zh": "在相同条件下比较机型或配置不同的系统",
+          "b_en": "Comparing systems of different models or configurations under the same conditions",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "レスポンスタイムは入力を終えた時点から最初の応答が返り始めるまでの時間で、短いほど性能が良い。",
+    "応答時間はレスポンスタイムと同じ時間を指し、違うのは呼び方だけである。",
+    "ベンチマークは標準の処理を実機で動かし、その実測値で性能を評価する。",
+    "SPEC はベンチマークの開発と結果の公開を中立の立場で行う団体である。"
+  ],
+  "key_points_zh": [
+    "响应时间是从输入结束到第一个响应开始返回的时间，越短性能越好。",
+    "应答时间与响应时间指同一段时间，不同的只是叫法。",
+    "基准测试在实机上运行标准处理，用实测值评估性能。",
+    "SPEC 是以中立立场开发基准测试并公开结果的组织。"
+  ],
+  "key_points_en": [
+    "Response time runs from the end of input until the first response begins to return, and shorter means better performance.",
+    "The kanji term [[jp:応答時間]] refers to the same interval as response time, and only the name differs.",
+    "A benchmark runs standard workloads on the real machine and evaluates performance from the measured values.",
+    "SPEC is an organization that develops benchmarks and publishes their results from a neutral position."
+  ],
+  "overview": {
+    "intro_jp": "レスポンスタイムがどの時点からどの時点までの時間かを説明できる。応答時間がレスポンスタイムと同じ時間を指す別の呼び方だと説明できる。ベンチマークが標準の処理を実機で動かして性能を評価する手法だと説明できる。",
+    "intro_zh": "能说明响应时间是从哪个时间点到哪个时间点的时长。能说明应答时间是与响应时间指同一段时间的另一种叫法。能说明基准测试是在实际机器上运行标准处理来评估性能的方法。",
+    "intro_en": "Explain the start and end points of the interval that response time measures. Explain that response time written as 応答時間 is just another name for the same interval as レスポンスタイム. Explain that a benchmark evaluates performance by running standard workloads on the actual machine.",
+    "freq_badge": "頻出",
+    "est_minutes": 16
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "レスポンスタイム: レスポンスタイムといえば応答が返り始めるまでの時間",
-      "応答時間: 応答時間といえばレスポンスタイムの日本語表現",
-      "ベンチマーク: ベンチマークといえば標準処理で性能を測り比較する評価手法"
-    ],
     "key_points_jp": [
-      "レスポンスタイム(応答時間)は、処理を依頼し終えてから応答が返り始めるまでの時間で、短いほど性能が良い。",
-      "レスポンスタイムと応答時間は同じ概念を指し、表記が異なるだけである。",
-      "全結果が出そろうまでを測るターンアラウンドタイムとレスポンスタイムは別物で、この違いが頻出。",
-      "ベンチマークは、標準的なプログラムを同条件で実行して性能を測定・比較する評価手法である。"
+      "レスポンスタイムは入力を終えた時点から最初の応答が返り始めるまでの時間で、短いほど性能が良い。",
+      "応答時間はレスポンスタイムと同じ時間を指し、違うのは呼び方だけである。",
+      "ベンチマークは標準の処理を実機で動かし、その実測値で性能を評価する。",
+      "SPEC はベンチマークの開発と結果の公開を中立の立場で行う団体である。"
     ],
     "key_points_zh": [
-      "响应时间（应答时间）是从处理请求发出完毕到响应开始返回为止的时间，越短则性能越好。",
-      "响应时间（レスポンスタイム）与应答时间（応答時間）指的是同一概念，只是写法不同。",
-      "衡量“所有结果全部产出为止”的周转时间与响应时间是两回事，这一区别为高频考点。",
-      "基准测试是在相同条件下执行标准程序，以测定并比较性能的评估方法。"
+      "响应时间是从输入结束到第一个响应开始返回的时间，越短性能越好。",
+      "应答时间与响应时间指同一段时间，不同的只是叫法。",
+      "基准测试在实机上运行标准处理，用实测值评估性能。",
+      "SPEC 是以中立立场开发基准测试并公开结果的组织。"
     ],
     "key_points_en": [
-      "Response time (also called 応答時間) is the time from finishing a processing request until the response begins to return; the shorter it is, the better the performance.",
-      "\"Response time\" and the Japanese term 応答時間 refer to the same concept; only the notation differs.",
-      "Turnaround time, which measures the time until all results are fully produced, is different from response time, and this distinction is frequently tested.",
-      "Benchmarking is an evaluation method that runs a standard program under identical conditions to measure and compare performance."
+      "Response time runs from the end of input until the first response begins to return, and shorter means better performance.",
+      "The kanji term 応答時間 refers to the same interval as response time, and only the name differs.",
+      "A benchmark runs standard workloads on the real machine and evaluates performance from the measured values.",
+      "SPEC is an organization that develops benchmarks and publishes their results from a neutral position."
+    ],
+    "memory_hooks_jp": [
+      "応答時間: 「応答時間」の「応答」は英語の response に当てた訳語なので、カタカナの「レスポンス」と同じ中身になる。",
+      "ベンチマーク: もとは測量で高さの基準として刻む印を指す語で、「比べるための基準」という意味が性能評価に移った。"
     ],
     "memory_hooks_zh": [
-      "响应时间：说到响应时间，就是到响应开始返回为止的时间",
-      "应答时间：说到应答时间，就是“响应时间”的日语表达",
-      "基准测试：说到基准测试，就是用标准处理测定并比较性能的评估方法"
+      "应答时间：「応答時間」中的「応答」是给英语 response 配的译词，所以与片假名的「レスポンス」含义相同。",
+      "基准测试：这个词原指测量中作为高度基准刻下的标记，“用于比较的基准”这一含义后来转用到了性能评估上。"
     ],
     "memory_hooks_en": [
-      "Response time: response time → the time until the response begins to return",
-      "応答時間: response time (応答時間) → the Japanese way of saying \"response time\"",
-      "Benchmark: benchmark → an evaluation method that measures and compares performance using standard processing"
+      "Response time (Japanese term): In 応答時間, 応答 is the word used to render the English \"response,\" so it means the same as the katakana レスポンス.",
+      "Benchmark: The word originally meant a mark cut by surveyors as a reference for height, and the sense of \"a reference for comparison\" carried over to performance evaluation."
     ]
   },
   "challenge_questions": [
+    "2010h22a-q086",
     "2012h24a-q075",
-    "2020r02o-q063",
     "2017h29h-q077",
     "2026r08-q062"
   ],
@@ -141,9 +486,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "性能评估",
-  "title_en": "Performance Evaluation",
-  "unit_summary_zh": "学习衡量系统处理速度的性能指标与评估方法。",
-  "unit_summary_en": "Learn the performance metrics and evaluation methods used to measure a system's processing speed."
+  }
 }
