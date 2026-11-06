@@ -437,3 +437,24 @@ test("D-209: the critic's 観点 4 carries rule 11's two-sided exemption verbati
   assert.ok(v4.includes("なぞったと見る題の語句・組・順序を detail_jp に具体的に示す。示せなければ low"), "a (iii) medium must show what it traced");
   for (const label of [/^localize:/, /^tr-review:/]) assert.doesNotMatch(calls.find((x) => label.test(x.opts.label)).prompt, /D-209/, "loc stages unchanged");
 });
+
+test("D-210: a cited question worded before a law / standard amendment is written in its edition with the edition named; the condition is kept, not deleted (writer rule 10, revise guard, 観点 10, fix_jp)", async () => {
+  const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
+  const write = calls.find((x) => /^write:/.test(x.opts.label)).prompt;
+  const rw = calls.find((x) => /^rewrite:/.test(x.opts.label)).prompt;
+  const rv = calls.find((x) => /^review:/.test(x.opts.label)).prompt;
+  const PRE = "引用題の文言が法令・規格の改正前の版に基づくときは、その版を明記して引用題の版どおりに書く";
+  const KEEP = "版の問題を避けるために引用題が前提とする除外・限定の条件を落とさない";
+  const NO_COPY = "引用題の文言は写さず自分の言葉で書く (D-198)";
+  for (const p of [write, rw]) {
+    const r10 = p.match(/\n10\. \*\*版を限定する\*\* \(D-205\)[^\n]*/)[0];
+    assert.ok(r10.includes(PRE) && r10.includes(KEEP) && r10.includes(NO_COPY), "writer rule 10 states D-210");
+  }
+  assert.ok(rw.includes("引用題の文言が法令・規格の改正前の版に基づく除外・限定の条件は削らず、版を明記して残す (D-210)"), "the revise guard's delete-first has the D-210 exception");
+  const v10 = rv.match(/\n10\. \*\*版\*\* \(D-205\)[^\n]*/)[0];
+  assert.ok(v10.includes(PRE) && v10.includes(KEEP), "観点 10 uses the same wording");
+  assert.ok(v10.includes("版を明記して引用題の版どおりに書いていれば、この観点の medium にしない"), "an edition-named pre-amendment statement passes 観点 10");
+  const fx = rv.match(/\n- fix_jp の書き方 \(D-204\)[^\n]*/)[0];
+  assert.ok(fx.includes("条件を削る案でなく、改正前の版を明記して引用題の版で書く案にする (D-210"), "fix_jp does not push deletion");
+  for (const label of [/^localize:/, /^tr-review:/]) assert.doesNotMatch(calls.find((x) => label.test(x.opts.label)).prompt, /D-210/, "loc stages unchanged");
+});
