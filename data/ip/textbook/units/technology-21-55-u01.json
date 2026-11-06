@@ -1,218 +1,736 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-21-55-u01",
   "topic_id": "technology-21-55",
   "category": "technology",
   "title_jp": "データ構造の基本単位",
+  "title_zh": "数据结构的基本单位",
+  "title_en": "Basic Units of Data Structure",
   "unit_summary_jp": "テーブル(表)を構成するフィールド・項目・レコードなど、データベースの最小構成要素の語彙とその階層関係を理解する。",
+  "unit_summary_zh": "理解构成数据表的字段、数据项、记录等数据库最小组成要素的词汇及其层级关系。",
+  "unit_summary_en": "Understand the vocabulary of the smallest building blocks of a database—such as fields, data items, and records that make up a table—and their hierarchical relationships.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、データベースの最小構成要素である「レコード(行)」「フィールド(列)」「項目」と、それらを束ねる入れ物「テーブル(表)」「ファイル」の語彙と階層関係を学びます。データベース設計の全概念が前提とする土台で、頻出分野の入り口として確実に押さえるべき基礎です。",
-    "freq_badge": "頻出",
-    "est_minutes": 18,
-    "intro_zh": "在本单元中，将学习数据库的最小组成要素「记录（行）」「字段（列）」「数据项」，以及把它们汇集起来的容器「表」「文件」的词汇及其层级关系。这是数据库设计所有概念都以之为前提的基础，作为高频考查领域的入门，应当切实掌握。",
-    "intro_en": "In this unit, you will learn the smallest building blocks of a database—\"record (row),\" \"field (column),\" and \"data item\"—along with the vocabulary and hierarchical relationships of the containers that bundle them, namely the \"table\" and the \"file.\" This is the foundation that every concept in database design presupposes, and as the entry point to a frequently tested field, it is a basic that you should master firmly."
-  },
-  "terms": [
+  "goals_jp": [
+    "**レコード**と**フィールド**を、表の行と列に対応させて区別できる。",
+    "**テーブル** (表) の中でレコードを見分ける方法と、テーブルどうしを結び付ける方法を説明できる。",
+    "表に持たせる**データ項目**の決め方と、冗長な項目の見分け方を説明できる。"
+  ],
+  "goals_zh": [
+    "能够把**记录**和**字段**分别对应到表的行和列，加以区分。",
+    "能够说明在**数据表**中区分各条记录的方法，以及把数据表相互关联起来的方法。",
+    "能够说明如何确定表中应包含的**数据项**，以及如何识别冗余的数据项。"
+  ],
+  "goals_en": [
+    "Distinguish **records** from **fields** by matching them to the rows and columns of a table.",
+    "Explain how to tell records apart within a **table** and how tables are linked to each other.",
+    "Explain how to decide which **data items** a table should hold and how to spot redundant ones."
+  ],
+  "overview_cols_jp": [
+    "表との対応"
+  ],
+  "overview_cols_zh": [
+    "与表的对应"
+  ],
+  "overview_cols_en": [
+    "Position in the table"
+  ],
+  "overview_rows": [
     {
       "term": "レコード",
-      "definition_jp": "関連する複数の項目をまとめた、データ1件分を表す行単位。",
-      "explanation_jp": "レコードは、ひとつの対象についての情報をひとまとめにした、データ1件分の単位です。表形式のデータベースでは「1行」がこれにあたり、例えば社員名簿なら「社員1人分の情報(社員番号・氏名・部署など)」がひとつのレコードになります。\n\nテーブルは、このレコードを縦に積み重ねた集合です。試験では、列にあたるフィールドとの違いがよく問われます。レコードは横方向の「1件のまとまり=行」、フィールドは縦方向の「1種類の項目=列」と、行と列の役割を取り違えないことが重要です。",
-      "analogy_jp": "名刺ファイルに差し込んだ「1枚の名刺」のようなもの。1枚に1人分の氏名・会社・連絡先がまとまっており、これが1件分=1レコードにあたります。",
-      "memory_hook_jp": "レコードといえばデータ1件分=表の1行",
-      "inline_quiz": [
-        "2009h21a-q098",
-        "2010h22h-q093"
+      "one_line_jp": "1 つの対象についての 1 件分のデータ",
+      "one_line_zh": "关于一个对象的一条数据",
+      "one_line_en": "One entry of data about a single subject",
+      "extra_jp": [
+        "横の 1 行"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "记录",
-      "term_en": "Record",
-      "definition_zh": "把多个相关的数据项汇集在一起、表示一条数据的行单位。",
-      "definition_en": "A row unit that gathers multiple related data items together and represents one piece of data.",
-      "explanation_zh": "记录是把关于某一个对象的信息汇集为一体、表示一条数据的单位。在表格形式的数据库中，「一行」就对应于此。例如在员工名册中，「一名员工的信息（员工编号、姓名、部门等）」就构成一条记录。\n\n表就是把这种记录纵向叠加起来的集合。考试中常考查它与对应于列的字段之间的区别。记录是横向的「一条数据的整体＝行」，字段是纵向的「一类数据项＝列」，不要把行和列的作用弄混，这一点很重要。",
-      "explanation_en": "A record is a unit that bundles information about a single subject into one whole and represents one piece of data. In a tabular database, \"one row\" corresponds to this. For example, in an employee roster, \"the information for one employee (employee number, name, department, etc.)\" becomes one record.\n\nA table is a collection of these records stacked vertically. The exam often tests the difference from a field, which corresponds to a column. It is important not to confuse the roles of rows and columns: a record is the horizontal \"one whole piece of data = a row,\" while a field is the vertical \"one kind of data item = a column.\"",
-      "analogy_zh": "就像插在名片夹里的「一张名片」。一张名片上汇集了一个人的姓名、公司、联系方式，这就相当于一条数据＝一条记录。",
-      "analogy_en": "Like \"a single business card\" tucked into a card holder. One card gathers one person's name, company, and contact details, and this corresponds to one piece of data = one record.",
-      "memory_hook_zh": "说到记录，就是一条数据＝表中的一行",
-      "memory_hook_en": "Record → one piece of data = one row of the table"
+      "extra_zh": [
+        "横向的一行"
+      ],
+      "extra_en": [
+        "One horizontal row"
+      ]
     },
     {
       "term": "フィールド",
-      "definition_jp": "レコードを構成する個々の列で、1種類のデータを格納する場所。",
-      "explanation_jp": "フィールドは、レコードを構成する1つ1つの列です。表形式のデータベースでは「1列」がこれにあたり、「氏名」「部署」「入社日」のように、同じ種類のデータを縦に集めた格納場所になります。\n\nレコード(行)が複数のフィールド(列)から成る、という関係が基本です。試験では、行を表すレコードと列を表すフィールドの対比が頻出します。「1件分のまとまり=レコード(行)」「1種類の項目=フィールド(列)」という縦横の対応を、確実に区別できるようにしておきましょう。",
-      "analogy_jp": "出席簿の「氏名」欄や「学籍番号」欄のように、縦にずらりと同じ種類の情報が並ぶ1本の列。その列全体がひとつのフィールドです。",
-      "memory_hook_jp": "フィールドといえばレコードを構成する列(1項目の格納場所)",
-      "inline_quiz": [
-        "2011h23tokubetsu-q072",
-        "2016h28a-q095"
+      "one_line_jp": "1 種類のデータを入れる場所",
+      "one_line_zh": "存放一类数据的位置",
+      "one_line_en": "A place that holds one kind of data",
+      "extra_jp": [
+        "縦の 1 列"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "字段",
-      "term_en": "Field",
-      "definition_zh": "构成记录的各个列，是存放一类数据的位置。",
-      "definition_en": "Each individual column that makes up a record—a place that stores one kind of data.",
-      "explanation_zh": "字段是构成记录的一个个列。在表格形式的数据库中，「一列」就对应于此，像「姓名」「部门」「入职日期」那样，是把同一类数据纵向汇集起来的存放位置。\n\n记录（行）由多个字段（列）组成，这一关系是基础。考试中，表示行的记录与表示列的字段之间的对比是高频考点。请把「一条数据的整体＝记录（行）」「一类数据项＝字段（列）」这一纵横对应关系切实地区分清楚。",
-      "explanation_en": "A field is each individual column that makes up a record. In a tabular database, \"one column\" corresponds to this; like \"name,\" \"department,\" or \"date of joining,\" it is a storage location that gathers the same kind of data vertically.\n\nThe basic relationship is that a record (row) consists of multiple fields (columns). The exam frequently tests the contrast between a record, which represents a row, and a field, which represents a column. Make sure you can reliably distinguish the vertical-horizontal correspondence of \"one whole piece of data = a record (row)\" and \"one kind of data item = a field (column).\"",
-      "analogy_zh": "就像点名册中的「姓名」栏或「学号」栏，纵向整齐排列着同一类信息的一整列。那一整列就是一个字段。",
-      "analogy_en": "Like the \"name\" column or \"student ID\" column in an attendance register, where the same kind of information lines up neatly down a single column. That entire column is one field.",
-      "memory_hook_zh": "说到字段，就是构成记录的列（一个数据项的存放处）",
-      "memory_hook_en": "Field → a column that makes up a record (the storage place for one data item)"
+      "extra_zh": [
+        "纵向的一列"
+      ],
+      "extra_en": [
+        "One vertical column"
+      ]
     },
     {
       "term": "項目",
-      "definition_jp": "フィールドが扱う、意味を持ったデータの最小単位(データ項目)。",
-      "explanation_jp": "項目(データ項目)は、フィールドが扱う「氏名」「年齢」「住所」といった、意味を持つデータの最小のまとまりを指します。表の中では1つのマス(セル)に入る個々の値や、その値が表す意味そのものを指して使われます。\n\nフィールドが「その項目を格納する列」であるのに対し、項目はそこに入る「データの意味・中身」という関係でとらえると分かりやすくなります。試験では、フィールドや列と並べて「データを構成する最小の意味単位」として問われることがあり、フィールドとほぼ対応する概念として理解しておきましょう。",
-      "analogy_jp": "申込用紙の「お名前」「ご住所」「電話番号」といった記入欄ひとつひとつが項目。書き込む内容の種類を表す最小の単位です。",
-      "memory_hook_jp": "項目といえばフィールドが扱うデータの最小単位",
-      "inline_quiz": [
-        "2020r02o-q057"
+      "one_line_jp": "意味を持つデータの 1 つ 1 つの単位 (データ項目)",
+      "one_line_zh": "有含义的数据的一个个单位（数据项）",
+      "one_line_en": "Each individual unit of meaningful data (data item)",
+      "extra_jp": [
+        "列 (フィールドとほぼ同じ)"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "数据项",
-      "term_en": "Data Item",
-      "definition_zh": "字段所处理的、具有含义的数据的最小单位（数据项）。",
-      "definition_en": "The smallest meaningful unit of data that a field handles (a data item).",
-      "explanation_zh": "数据项指的是字段所处理的「姓名」「年龄」「住址」这类具有含义的数据的最小整体。在表中，它指放入某一个格子（单元格）的具体数值，或该数值所表示的含义本身。\n\n如果把字段理解为「存放该数据项的列」，那么数据项就是放入其中的「数据的含义、内容」，这样的关系会更容易理解。考试中有时会把它与字段或列并列，作为「构成数据的最小含义单位」来考查，可将其理解为与字段大致对应的概念。",
-      "explanation_en": "A data item refers to the smallest meaningful whole of data that a field handles, such as \"name,\" \"age,\" or \"address.\" Within a table, it refers to each individual value placed in a single cell, or to the very meaning that the value represents.\n\nIt is easier to grasp the relationship if you think of a field as \"the column that stores that data item,\" while the data item is the \"meaning and content of the data\" placed into it. The exam sometimes tests it alongside fields or columns as the \"smallest meaningful unit that makes up data,\" so understand it as a concept that largely corresponds to a field.",
-      "analogy_zh": "就像申请表上的「姓名」「住址」「电话号码」等一个个填写栏，每一个填写栏都是一个数据项。它是表示所填内容种类的最小单位。",
-      "analogy_en": "Like each individual fill-in box on an application form, such as \"name,\" \"address,\" or \"phone number\"—each box is a data item. It is the smallest unit representing the kind of content to be filled in.",
-      "memory_hook_zh": "说到数据项，就是字段所处理的数据的最小单位",
-      "memory_hook_en": "Data item → the smallest unit of data that a field handles"
+      "extra_zh": [
+        "列（与字段基本相同）"
+      ],
+      "extra_en": [
+        "Column (nearly the same as a field)"
+      ]
     },
     {
       "term": "テーブル",
-      "definition_jp": "レコード(行)とフィールド(列)から成る、表形式のデータの入れ物。",
-      "explanation_jp": "テーブルは、行(レコード)と列(フィールド)を縦横に組み合わせた表形式のデータの入れ物で、関係データベースの中心となる実体です。1つのテーブルが「社員テーブル」「商品テーブル」のように、ある対象の集合を表します。\n\n横の1行がレコード、縦の1列がフィールド、両者が交わるマスに項目の値が入る、という構造を押さえることが大切です。試験では本 topic で最も頻出する用語で、テーブル=表(同じ意味の日本語)であること、行と列の交差で1つの値が定まることが繰り返し問われます。",
-      "analogy_jp": "クラス全員の成績を一覧にした「座席ごとの成績表」のようなもの。各行が生徒1人(レコード)、各列が教科(フィールド)で、表全体がひとつのテーブルです。",
-      "memory_hook_jp": "テーブルといえば行(レコード)と列(フィールド)から成る表",
-      "inline_quiz": [
-        "2010h22a-q079",
-        "2013h25h-q055"
+      "one_line_jp": "行と列から成る表形式のデータの入れ物",
+      "one_line_zh": "由行和列构成的表格形式的数据容器",
+      "one_line_en": "A container that holds data in a grid of rows and columns",
+      "extra_jp": [
+        "表全体"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"テーブル(表)\"]; A --> B[\"レコード(行)\"]; A --> C[\"フィールド(列)\"]; B --> D[\"項目の値\"]; C --> D",
-        "svg_path": "figures/technology-21-55-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "表（数据表）",
-      "term_en": "Table",
-      "definition_zh": "由记录（行）和字段（列）组成的、表格形式的数据容器。",
-      "definition_en": "A tabular container of data made up of records (rows) and fields (columns).",
-      "explanation_zh": "表是把行（记录）和列（字段）纵横组合而成的表格形式的数据容器，是关系数据库的核心实体。一张表，如「员工表」「商品表」那样，表示某个对象的集合。\n\n关键是要掌握这样的结构：横向的一行是记录，纵向的一列是字段，两者相交的格子里放入数据项的值。考试中它是本主题最高频的用语，反复考查「表＝数据表（含义相同的日语说法）」、以及行与列相交即可确定一个值这两点。",
-      "explanation_en": "A table is a tabular container of data formed by combining rows (records) and columns (fields) vertically and horizontally; it is the central entity of a relational database. One table represents a set of some subject, such as an \"employee table\" or a \"product table.\"\n\nIt is important to grasp the structure: a horizontal row is a record, a vertical column is a field, and the cell where the two intersect holds the value of a data item. In the exam, this is the most frequently appearing term in this topic, and it repeatedly tests that \"table = 表 (the Japanese term with the same meaning)\" and that the intersection of a row and a column determines a single value.",
-      "analogy_zh": "就像把全班成绩汇成一览的「按座位排列的成绩表」。每一行是一名学生（记录），每一列是一门科目（字段），整张表就是一张表（数据表）。",
-      "analogy_en": "Like a \"seat-by-seat grade sheet\" that lists the whole class's grades at a glance. Each row is one student (a record), each column is one subject (a field), and the whole sheet is one table.",
-      "memory_hook_zh": "说到表，就是由行（记录）和列（字段）组成的表格",
-      "memory_hook_en": "Table → a grid made up of rows (records) and columns (fields)"
+      "extra_zh": [
+        "整张表"
+      ],
+      "extra_en": [
+        "The whole table"
+      ]
     },
     {
       "term": "表",
-      "definition_jp": "テーブルを指す日本語表現で、行と列から成る同一の入れ物概念。",
-      "explanation_jp": "表は、テーブルの日本語での呼び方で、両者は同じ概念を指します。行(レコード)と列(フィールド)から成る表形式のデータの入れ物であり、関係データベースでは「表(テーブル)」と並記されることもよくあります。\n\n試験では、英語の「テーブル」と日本語の「表」が同じものを指すと理解できているかが問われます。用語が違っても示す中身は同一で、「表=テーブル」「行=レコード」「列=フィールド」という対応関係をセットで覚えておくと、表記が変わっても迷わず答えられます。",
-      "analogy_jp": "「テーブル」と「表」は、同じ料理を「ライス」と呼ぶか「ご飯」と呼ぶかの違いのようなもの。呼び方が違うだけで、指している中身は同一です。",
-      "memory_hook_jp": "表といえばテーブルと同じ(行と列の入れ物)",
-      "inline_quiz": [
-        "2014h26a-q068",
-        "2014h26h-q060"
+      "one_line_jp": "テーブルの日本語での呼び名",
+      "one_line_zh": "数据表在日语中的另一种叫法",
+      "one_line_en": "The native Japanese word for a table",
+      "extra_jp": [
+        "表全体 (テーブルと同じ)"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "表",
-      "term_en": "Table (Japanese term 表)",
-      "definition_zh": "「テーブル」的日语表达，指由行和列组成的同一个容器概念。",
-      "definition_en": "The Japanese expression for \"table,\" referring to the same container concept made up of rows and columns.",
-      "explanation_zh": "「表」是「テーブル（table）」在日语中的叫法，两者指的是同一个概念。它是由行（记录）和列（字段）组成的表格形式的数据容器，在关系数据库中也常常以「表（テーブル）」并列书写。\n\n考试中考查的是，能否理解英语外来词的「テーブル」与日语的「表」指的是同一事物。即便用语不同，所指的内容也完全相同，把「表＝テーブル」「行＝记录」「列＝字段」这组对应关系成套记住，即使写法变了也能毫不犹豫地作答。",
-      "explanation_en": "\"表\" is the Japanese reading of \"テーブル (table),\" and the two refer to the same concept. It is a tabular container of data made up of rows (records) and columns (fields), and in relational databases it is often written side by side as \"表（テーブル）.\"\n\nThe exam tests whether you understand that the loanword \"テーブル\" and the Japanese word \"表\" refer to the same thing. Even if the terms differ, what they point to is identical; memorize the correspondence set of \"表 = table,\" \"row = record,\" and \"column = field\" so that you can answer without hesitation even when the wording changes.",
-      "analogy_zh": "「テーブル」和「表」的关系，就像把同一道饭称作「rice」还是「米饭」的区别。只是叫法不同，所指的内容完全相同。",
-      "analogy_en": "The relationship between \"テーブル\" and \"表\" is like the difference between calling the same dish \"rice\" or \"cooked rice.\" Only the name differs; what they refer to is identical.",
-      "memory_hook_zh": "说到「表」，就是和テーブル相同（行与列的容器）",
-      "memory_hook_en": "表 → the same as table (a container of rows and columns)"
+      "extra_zh": [
+        "整张表（与数据表相同）"
+      ],
+      "extra_en": [
+        "The whole table (same thing as a table)"
+      ]
     },
     {
       "term": "ファイル",
-      "definition_jp": "関連するレコードを集めた集合を指す、伝統的なデータの入れ物概念。",
-      "explanation_jp": "ファイルは、関連するレコードをまとめた集合を指す、データベース以前から使われる伝統的な入れ物の概念です。データの階層では「ファイル ⊃ レコード ⊃ フィールド(項目)」と、レコードを束ねる上位のまとまりとして位置づけられます。\n\n現代の関係データベースでは、この役割を主にテーブル(表)が担います。試験では、ファイル・レコード・フィールドという構成階層の順序や、テーブルと対比される入れ物概念として問われることがあります。テーブルほど中心的ではない補足的な用語として、階層の位置を押さえておきましょう。",
-      "analogy_jp": "名刺を1枚ずつ差し込んでまとめた「名刺ホルダー1冊」のようなもの。1枚の名刺(レコード)を多数集めた、ひとつの大きなまとまりがファイルです。",
-      "memory_hook_jp": "ファイルといえばレコードを集めた集合(伝統的な入れ物)",
-      "inline_quiz": [
-        "2014h26h-q064"
+      "one_line_jp": "同じ形式のレコードを集めて保存したまとまり",
+      "one_line_zh": "把相同格式的记录汇集起来保存的一个整体",
+      "one_line_en": "A set of same-format records saved together as one unit",
+      "extra_jp": [
+        "表の外の保存単位 (レコードの集まり)"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"ファイル\"] --> B[\"レコード(行)\"]; B --> C[\"フィールド(列)\"]; C --> D[\"項目(データの最小単位)\"]",
-        "svg_path": "figures/technology-21-55-u01-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "文件",
-      "term_en": "File",
-      "definition_zh": "指把相关记录汇集起来的集合，是传统的数据容器概念。",
-      "definition_en": "Refers to a collection that gathers related records together—a traditional concept of a data container.",
-      "explanation_zh": "文件指的是把相关记录汇集起来的集合，是数据库出现之前就已使用的传统容器概念。在数据的层级中，它处于「文件 ⊃ 记录 ⊃ 字段（数据项）」这样的位置，作为把记录汇集起来的上位整体。\n\n在现代的关系数据库中，这一角色主要由表来承担。考试中有时会考查文件、记录、字段这一组成层级的顺序，或把它作为与表相对比的容器概念来出题。请把它作为不如表那么核心的补充性用语，掌握它在层级中的位置。",
-      "explanation_en": "A file refers to a collection that gathers related records together; it is a traditional container concept used even before databases existed. In the data hierarchy, it occupies the position \"file ⊃ record ⊃ field (data item),\" serving as the higher-level whole that bundles records.\n\nIn modern relational databases, this role is mainly carried by the table. The exam sometimes tests the order of the composition hierarchy of file, record, and field, or presents it as a container concept contrasted with the table. Treat it as a supplementary term that is less central than the table, and grasp its position in the hierarchy.",
-      "analogy_zh": "就像把名片一张张插入、汇集成的「一本名片册」。把一张名片（记录）大量汇集起来形成的一个大整体，就是文件。",
-      "analogy_en": "Like \"one business-card binder\" formed by tucking in cards one by one. The single large whole formed by gathering many business cards (records) is the file.",
-      "memory_hook_zh": "说到文件，就是把记录汇集起来的集合（传统的容器）",
-      "memory_hook_en": "File → a collection that gathers records together (a traditional container)"
+      "extra_zh": [
+        "表之外的保存单位（记录的集合）"
+      ],
+      "extra_en": [
+        "A storage unit outside the table (a collection of records)"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "レコード",
+      "term_zh": "记录",
+      "term_en": "Record",
+      "one_jp": "**レコード**は、1 つの対象について関連するデータをひとまとめにした**1 件分**のデータで、表では横の**行**に当たる。",
+      "one_zh": "**记录**（[[jp:レコード]]）是把关于一个对象的相关数据汇总在一起的**一条**数据，在表中对应横向的**行**。",
+      "one_en": "A **record** ([[jp:レコード]]) is **one entry** of data that groups the related data about a single subject, and it corresponds to a horizontal **row** in a table.",
+      "detail_jp": "例えば生徒の名簿なら、1 人の生徒の番号と氏名と学年を組にしたものが 1 件のレコードになる。図で強調した横の 1 行が、そうした 1 人分のレコードに当たる。表の中でレコードを 1 件ずつ見分けるために使う列 (または列の組) を**主キー**といい、どのレコードとも値が重ならないものを選ぶ。",
+      "detail_zh": "比如在学生名册中，把一名学生的编号、姓名和年级组合起来，就是一条记录。图中突出显示的那一行，就相当于这样一名学生的记录。为了在表中逐条区分记录而使用的列（或列的组合）称为**主键**（[[jp:主キー]]），要选择与任何记录的值都不重复的列。",
+      "detail_en": "In a student roster, for example, one student's number, name, and grade taken together form one record. The highlighted row in the figure is one such record for a single student. The column (or set of columns) used to tell each record in a table apart is called the **primary key** ([[jp:主キー]]), and it is chosen so that its value never repeats across records.",
+      "analogy_jp": "住所録のカード 1 枚に当たる。1 枚に 1 人分の名前や住所や電話番号がまとまっている。",
+      "analogy_zh": "就像通讯录里的一张卡片。一张卡片上汇集了一个人的姓名、地址和电话号码。",
+      "analogy_en": "It is like a single card in an address file. One card holds one person's name, address, and phone number.",
+      "hook_jp": "英語の record は「記録」。人や出来事について書き留めた 1 回分の記録と考えると、「1 件」という単位と結び付く。",
+      "hook_zh": "英语 record 的意思是“记录”。把它想成针对某人或某事写下的一次记录，就能和“一条”这个单位联系起来。",
+      "hook_en": "The English word record means a written account. Think of it as one note jotted down about a person or an event, and it ties naturally to the idea of a single entry.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**主キー**を決めておくと、同じ表の中のレコードを 1 件ずつ取り違えずに特定できる。",
+          "text_zh": "事先确定**主键**（[[jp:主キー]]），就能在同一张表（[[jp:表]]）中逐条准确地找出每条记录（[[jp:レコード]]），不会弄错。",
+          "text_en": "Setting a **primary key** ([[jp:主キー]]) lets you pinpoint each record ([[jp:レコード]]) in the same table ([[jp:表]]) one by one without mixing them up.",
+          "qids": [
+            "2019r01a-q066"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "生徒番号",
+              "zh": "学生编号",
+              "en": "Student No."
+            },
+            {
+              "jp": "氏名",
+              "zh": "姓名",
+              "en": "Name"
+            },
+            {
+              "jp": "学年",
+              "zh": "年级",
+              "en": "Grade"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "S01",
+                  "zh": "S01",
+                  "en": "S01"
+                },
+                {
+                  "jp": "青木",
+                  "zh": "青木",
+                  "en": "Aoki"
+                },
+                {
+                  "jp": "2",
+                  "zh": "2",
+                  "en": "2"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "S02",
+                  "zh": "S02",
+                  "en": "S02"
+                },
+                {
+                  "jp": "井上",
+                  "zh": "井上",
+                  "en": "Inoue"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "S03",
+                  "zh": "S03",
+                  "en": "S03"
+                },
+                {
+                  "jp": "上田",
+                  "zh": "上田",
+                  "en": "Ueda"
+                },
+                {
+                  "jp": "3",
+                  "zh": "3",
+                  "en": "3"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2019r01a-q066",
+        "2018h30a-q100",
+        "2024r06-q060"
+      ],
+      "definition_jp": "レコードは、1 つの対象について関連するデータをひとまとめにした1 件分のデータで、表では横の行に当たる。",
+      "definition_zh": "记录（レコード）是把关于一个对象的相关数据汇总在一起的一条数据，在表中对应横向的行。",
+      "definition_en": "A record (レコード) is one entry of data that groups the related data about a single subject, and it corresponds to a horizontal row in a table.",
+      "explanation_jp": "例えば生徒の名簿なら、1 人の生徒の番号と氏名と学年を組にしたものが 1 件のレコードになる。図で強調した横の 1 行が、そうした 1 人分のレコードに当たる。表の中でレコードを 1 件ずつ見分けるために使う列 (または列の組) を主キーといい、どのレコードとも値が重ならないものを選ぶ。",
+      "explanation_zh": "比如在学生名册中，把一名学生的编号、姓名和年级组合起来，就是一条记录。图中突出显示的那一行，就相当于这样一名学生的记录。为了在表中逐条区分记录而使用的列（或列的组合）称为主键（主キー），要选择与任何记录的值都不重复的列。",
+      "explanation_en": "In a student roster, for example, one student's number, name, and grade taken together form one record. The highlighted row in the figure is one such record for a single student. The column (or set of columns) used to tell each record in a table apart is called the primary key (主キー), and it is chosen so that its value never repeats across records.",
+      "memory_hook_jp": "英語の record は「記録」。人や出来事について書き留めた 1 回分の記録と考えると、「1 件」という単位と結び付く。",
+      "memory_hook_zh": "英语 record 的意思是“记录”。把它想成针对某人或某事写下的一次记录，就能和“一条”这个单位联系起来。",
+      "memory_hook_en": "The English word record means a written account. Think of it as one note jotted down about a person or an event, and it ties naturally to the idea of a single entry.",
+      "inline_quiz": [
+        "2019r01a-q066",
+        "2018h30a-q100",
+        "2024r06-q060"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "フィールド",
+      "term_zh": "字段",
+      "term_en": "Field",
+      "one_jp": "**フィールド**は、レコードを構成する 1 つ 1 つの**データの入れ場所**で、表では縦の**列**に当たる。",
+      "one_zh": "**字段**（[[jp:フィールド]]）是构成记录的一个个**存放数据的位置**，在表中对应纵向的**列**。",
+      "one_en": "A **field** ([[jp:フィールド]]) is each **slot for data** that makes up a record, and it corresponds to a vertical **column** in a table.",
+      "detail_jp": "1 つのフィールドには、「氏名」なら氏名だけというように、同じ種類のデータが全レコード分縦に並ぶ。フィールドには名前を付け、例えば数値・文字・日付のようなデータの型を決めておく。",
+      "detail_zh": "一个字段中纵向排列着所有记录的同一类数据，比如“姓名”字段里只放姓名。字段要起名字，并事先确定数据类型，例如数值、字符或日期。",
+      "detail_en": "A single field lines up the same kind of data for every record, so a \"Name\" field holds only names. Each field is given a name and a data type set in advance, such as number, text, or date.",
+      "analogy_jp": "名簿の「電話番号」の欄を全員分たどった縦の帯に当たる。どの行を見ても、その帯には電話番号しか入らない。",
+      "analogy_zh": "就像沿着名册的“电话号码”一栏把所有人的内容从上到下看下来的那条竖带。无论看哪一行，这条竖带里都只有电话号码。",
+      "analogy_en": "Think of the vertical strip you trace down the \"Phone\" column of a roster for everyone. Whichever row you look at, that strip holds only phone numbers.",
+      "hook_jp": "field は英語で「畑」。決まった作物だけを植える畑のように、決まった種類の値だけが入る場所と覚える。",
+      "hook_zh": "field 在英语中有“田地”的意思。就像只种某一种作物的田地，把它记成只放某一类值的地方。",
+      "hook_en": "Field also means a plot of farmland. Just as a field grows only one crop, it is a place that holds only one kind of value.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "1 つの列だけでは値が重なってしまう場合は、2 つ以上のフィールドを合わせて**主キー**とすることができる。",
+          "text_zh": "只用一列会出现值重复时，可以把两个以上的字段（[[jp:フィールド]]）组合起来作为**主键**（[[jp:主キー]]）。",
+          "text_en": "When one column alone would leave duplicate values, two or more fields ([[jp:フィールド]]) can be combined to form the **primary key** ([[jp:主キー]]).",
+          "qids": [
+            "2016h28a-q095",
+            "2023r05-q078"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "関係データベースでは、別々の表にあるレコードどうしを、両方の表が持つ共通のフィールドの値によって結び付ける。",
+          "text_zh": "在关系数据库（[[jp:関係データベース]]）中，分别位于不同表中的记录（[[jp:レコード]]），通过两张表都具有的共同字段的值关联起来。",
+          "text_en": "In a relational database ([[jp:関係データベース]]), records ([[jp:レコード]]) in separate tables are linked through the values of a field that both tables share.",
+          "qids": [
+            "2018h30a-q100",
+            "2011h23tokubetsu-q072"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28a-q095",
+        "2011h23tokubetsu-q072",
+        "2023r05-q078"
+      ],
+      "definition_jp": "フィールドは、レコードを構成する 1 つ 1 つのデータの入れ場所で、表では縦の列に当たる。",
+      "definition_zh": "字段（フィールド）是构成记录的一个个存放数据的位置，在表中对应纵向的列。",
+      "definition_en": "A field (フィールド) is each slot for data that makes up a record, and it corresponds to a vertical column in a table.",
+      "explanation_jp": "1 つのフィールドには、「氏名」なら氏名だけというように、同じ種類のデータが全レコード分縦に並ぶ。フィールドには名前を付け、例えば数値・文字・日付のようなデータの型を決めておく。",
+      "explanation_zh": "一个字段中纵向排列着所有记录的同一类数据，比如“姓名”字段里只放姓名。字段要起名字，并事先确定数据类型，例如数值、字符或日期。",
+      "explanation_en": "A single field lines up the same kind of data for every record, so a \"Name\" field holds only names. Each field is given a name and a data type set in advance, such as number, text, or date.",
+      "memory_hook_jp": "field は英語で「畑」。決まった作物だけを植える畑のように、決まった種類の値だけが入る場所と覚える。",
+      "memory_hook_zh": "field 在英语中有“田地”的意思。就像只种某一种作物的田地，把它记成只放某一类值的地方。",
+      "memory_hook_en": "Field also means a plot of farmland. Just as a field grows only one crop, it is a place that holds only one kind of value.",
+      "inline_quiz": [
+        "2016h28a-q095",
+        "2011h23tokubetsu-q072",
+        "2023r05-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "項目",
+      "term_zh": "数据项",
+      "term_en": "Data Item",
+      "one_jp": "**項目** (**データ項目**) は、「氏名」「価格」のように意味を持つデータを分けて扱う 1 つ 1 つの単位で、表ではフィールドとほぼ同じものを指す。",
+      "one_zh": "**数据项**（[[jp:項目]]，也称[[jp:データ項目]]）是像“姓名”“价格”那样，把有含义的数据分开处理的一个个单位，在表中与字段基本相同。",
+      "one_en": "A **data item** ([[jp:項目]], also called [[jp:データ項目]]) is each unit, such as \"Name\" or \"Price,\" into which meaningful data is divided, and in a table it means almost the same thing as a field.",
+      "detail_jp": "1 件のレコードは、いくつかの項目の値の組として表される。何を項目として持つかを決めることは、そのまま表の列の構成を決めることになる。",
+      "detail_zh": "一条记录表示为若干数据项的值的组合。决定把哪些内容作为数据项，也就直接决定了表的列结构。",
+      "detail_en": "One record is expressed as a set of values for several data items. Deciding which data items to keep is the same as deciding how the table's columns are laid out.",
+      "analogy_jp": "家計簿の「日付」「品名」「金額」という見出しの一つ一つに当たる。何を書き留めるかを決める単位である。",
+      "analogy_zh": "就像家庭账本上“日期”“品名”“金额”这些栏目标题中的每一个。它是决定要记下什么的单位。",
+      "analogy_en": "It is like each heading in a household account book, such as \"Date,\" \"Item,\" and \"Amount.\" Each heading decides what gets written down.",
+      "hook_jp": "「項」も「目」も、全体を細かく分けた区切りを表す字。箇条書きの 1 行ずつを思い浮かべる。",
+      "hook_zh": "[[jp:項目]]中的“项”和“目”，都是表示把整体细分之后的分段的字。可以联想到条目式列表中的每一行。",
+      "hook_en": "Both kanji in [[jp:項目]] stand for the smaller divisions of a whole. Picture each line of a bulleted list.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ほかの項目から計算で求められる項目は**冗長**なので、表には持たせない。例えば単価と数量があれば、金額は必要なときに計算できる。",
+          "text_zh": "能通过其他数据项（[[jp:項目]]）计算得出的数据项属于**冗余**（[[jp:冗長]]），不放在表中。例如有了单价和数量，金额在需要时就能算出来。",
+          "text_en": "A data item ([[jp:項目]]) that can be calculated from other items is **redundant** ([[jp:冗長]]), so the table does not store it. If unit price and quantity are present, for example, the amount can be calculated whenever it is needed.",
+          "qids": [
+            "2020r02o-q057"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "データベース設計の工程で行う**データ分析**では、業務に必要なデータ項目を列挙し、項目どうしがどう関係するかをまとめる。",
+          "text_zh": "在数据库设计过程中进行的**数据分析**（[[jp:データ分析]]）中，要列出业务所需的数据项，并整理数据项之间的关系。",
+          "text_en": "**Data analysis** ([[jp:データ分析]]) carried out as a step in database design lists the data items the business needs and sorts out how those items relate to one another.",
+          "qids": [
+            "2025r07-q095"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2020r02o-q057",
+        "2025r07-q095",
+        "2014h26h-q083"
+      ],
+      "definition_jp": "項目 (データ項目) は、「氏名」「価格」のように意味を持つデータを分けて扱う 1 つ 1 つの単位で、表ではフィールドとほぼ同じものを指す。",
+      "definition_zh": "数据项（項目，也称データ項目）是像“姓名”“价格”那样，把有含义的数据分开处理的一个个单位，在表中与字段基本相同。",
+      "definition_en": "A data item (項目, also called データ項目) is each unit, such as \"Name\" or \"Price,\" into which meaningful data is divided, and in a table it means almost the same thing as a field.",
+      "explanation_jp": "1 件のレコードは、いくつかの項目の値の組として表される。何を項目として持つかを決めることは、そのまま表の列の構成を決めることになる。",
+      "explanation_zh": "一条记录表示为若干数据项的值的组合。决定把哪些内容作为数据项，也就直接决定了表的列结构。",
+      "explanation_en": "One record is expressed as a set of values for several data items. Deciding which data items to keep is the same as deciding how the table's columns are laid out.",
+      "memory_hook_jp": "「項」も「目」も、全体を細かく分けた区切りを表す字。箇条書きの 1 行ずつを思い浮かべる。",
+      "memory_hook_zh": "項目中的“项”和“目”，都是表示把整体细分之后的分段的字。可以联想到条目式列表中的每一行。",
+      "memory_hook_en": "Both kanji in 項目 stand for the smaller divisions of a whole. Picture each line of a bulleted list.",
+      "inline_quiz": [
+        "2020r02o-q057",
+        "2025r07-q095",
+        "2014h26h-q083"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "テーブル",
+      "term_zh": "表（数据表）",
+      "term_en": "Table",
+      "one_jp": "**テーブル**は、同じ形のレコードを**行**、フィールドを**列**として縦横に並べた、関係データベースでデータを入れておく**表形式**の入れ物である。",
+      "one_zh": "**数据表**（[[jp:テーブル]]）是把相同结构的记录作为**行**、字段作为**列**纵横排列起来的**表格形式**的容器，在关系数据库中用来存放数据。",
+      "one_en": "A **table** ([[jp:テーブル]]) is a **grid-shaped** container that a relational database uses to hold data, with same-shaped records as **rows** and fields as **columns**.",
+      "detail_jp": "1 つのテーブルは、生徒や図書や注文のように、1 種類の対象をまとめて表す。関係データベースは複数のテーブルから成り、行と列が交わる 1 つのマスに 1 つの値が入る。",
+      "detail_zh": "一张数据表集中表示学生、图书或订单这样的一类对象。关系数据库由多张数据表构成，行与列相交的每个格子中放入一个值。",
+      "detail_en": "Each table represents one kind of subject, such as students, books, or orders. A relational database consists of several tables, and each cell where a row and a column meet holds a single value.",
+      "analogy_jp": "クラスの連絡網の一覧表に当たる。1 行が 1 人分、列が名前や電話番号で、表全体で 1 クラス分の情報になる。",
+      "analogy_zh": "就像班级联络网的一览表。一行是一个人，各列是姓名、电话号码等，整张表就是一个班级的信息。",
+      "analogy_en": "It is like a class contact list. Each row is one person, the columns are name and phone number, and the whole sheet covers one class.",
+      "hook_jp": "英語の table は「食卓」のほかに「一覧表」の意味もあり、時刻表 (timetable) の table と同じ語である。",
+      "hook_zh": "英语 table 除了“餐桌”之外还有“一览表”的意思，和时刻表 timetable 中的 table 是同一个词。",
+      "hook_en": "Besides a dining table, the English word table also means a chart or list, the same table found in timetable.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "別のテーブルの値を参照する列を持つテーブルに行を追加するときは、参照される側のテーブルに該当する行を先に登録しておく。",
+          "text_zh": "向带有引用其他数据表值的列的数据表（[[jp:テーブル]]）中添加行时，要先在被引用一方的数据表中登记相应的行。",
+          "text_en": "Before adding a row to a table ([[jp:テーブル]]) with a column that refers to values in another table, register the matching row in the referenced table first.",
+          "qids": [
+            "2010h22a-q079",
+            "2026r08-q072"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "テーブルの列の構成は列挙したデータ項目から決まるので、テーブルは項目の列挙を済ませてから作成する。",
+          "text_zh": "数据表的列结构由梳理出的数据项（[[jp:データ項目]]）决定，所以要在完成数据项（[[jp:項目]]）的梳理之后再创建数据表。",
+          "text_en": "A table's columns follow from the data items ([[jp:データ項目]]) that have been identified, so the table is created only after the items ([[jp:項目]]) have been listed out.",
+          "qids": [
+            "2014h26h-q083",
+            "2015h27a-q052"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "tbl",
+            "label": {
+              "jp": "テーブル (生徒の表)",
+              "zh": "数据表（学生表）",
+              "en": "Table (students)"
+            },
+            "children": [
+              {
+                "id": "r1",
+                "label": {
+                  "jp": "レコード (1 人目の行)",
+                  "zh": "记录（第 1 名学生的行）",
+                  "en": "Record (row for student 1)"
+                },
+                "children": [
+                  {
+                    "id": "r1a",
+                    "label": {
+                      "jp": "フィールド「生徒番号」の値",
+                      "zh": "字段“学生编号”的值",
+                      "en": "Value of the \"Student No.\" field"
+                    }
+                  },
+                  {
+                    "id": "r1b",
+                    "label": {
+                      "jp": "フィールド「氏名」の値",
+                      "zh": "字段“姓名”的值",
+                      "en": "Value of the \"Name\" field"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "r2",
+                "label": {
+                  "jp": "レコード (2 人目の行)",
+                  "zh": "记录（第 2 名学生的行）",
+                  "en": "Record (row for student 2)"
+                },
+                "children": [
+                  {
+                    "id": "r2a",
+                    "label": {
+                      "jp": "フィールド「生徒番号」の値",
+                      "zh": "字段“学生编号”的值",
+                      "en": "Value of the \"Student No.\" field"
+                    }
+                  },
+                  {
+                    "id": "r2b",
+                    "label": {
+                      "jp": "フィールド「氏名」の値",
+                      "zh": "字段“姓名”的值",
+                      "en": "Value of the \"Name\" field"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2010h22a-q079",
+        "2026r08-q072",
+        "2015h27a-q052"
+      ],
+      "definition_jp": "テーブルは、同じ形のレコードを行、フィールドを列として縦横に並べた、関係データベースでデータを入れておく表形式の入れ物である。",
+      "definition_zh": "数据表（テーブル）是把相同结构的记录作为行、字段作为列纵横排列起来的表格形式的容器，在关系数据库中用来存放数据。",
+      "definition_en": "A table (テーブル) is a grid-shaped container that a relational database uses to hold data, with same-shaped records as rows and fields as columns.",
+      "explanation_jp": "1 つのテーブルは、生徒や図書や注文のように、1 種類の対象をまとめて表す。関係データベースは複数のテーブルから成り、行と列が交わる 1 つのマスに 1 つの値が入る。",
+      "explanation_zh": "一张数据表集中表示学生、图书或订单这样的一类对象。关系数据库由多张数据表构成，行与列相交的每个格子中放入一个值。",
+      "explanation_en": "Each table represents one kind of subject, such as students, books, or orders. A relational database consists of several tables, and each cell where a row and a column meet holds a single value.",
+      "memory_hook_jp": "英語の table は「食卓」のほかに「一覧表」の意味もあり、時刻表 (timetable) の table と同じ語である。",
+      "memory_hook_zh": "英语 table 除了“餐桌”之外还有“一览表”的意思，和时刻表 timetable 中的 table 是同一个词。",
+      "memory_hook_en": "Besides a dining table, the English word table also means a chart or list, the same table found in timetable.",
+      "inline_quiz": [
+        "2010h22a-q079",
+        "2026r08-q072",
+        "2015h27a-q052"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "表",
+      "term_zh": "表",
+      "term_en": "Table (Japanese term 表)",
+      "one_jp": "**表**は**テーブル**を日本語で呼んだ言い方で、行と列から成る同じ入れ物を指す。",
+      "one_zh": "**表**（[[jp:表]]）是**数据表**（[[jp:テーブル]]）在日语中的另一种叫法，指的是由行和列构成的同一种容器。",
+      "one_en": "**Hyō** ([[jp:表]]) is the native Japanese word for a **table** ([[jp:テーブル]]), and it refers to the same container made of rows and columns.",
+      "detail_jp": "関係データベースの説明では、「“生徒”表」のように対象の名前に「表」を付けて個々のテーブルを呼ぶことが多い。同じように、行はレコードの、列はフィールドの言い換えとして使われる。",
+      "detail_zh": "在讲解关系数据库时，常在对象名称后加上“表”来称呼各张数据表，例如“学生”表（[[jp:“生徒”表]]）。同样，行被用作记录的另一种说法，列被用作字段的另一种说法。",
+      "detail_en": "When explaining relational databases, individual tables are often named by adding [[jp:表]] to the subject, as in the \"Students\" table ([[jp:“生徒”表]]). In the same way, row is used as another word for record, and column as another word for field.",
+      "analogy_jp": "「お手洗い」と「トイレ」のように、呼び名が違っても指している中身は同じである。",
+      "analogy_zh": "就像“洗手间”和“厕所”，叫法不同，指的东西却是同一个。",
+      "analogy_en": "Like \"restroom\" and \"bathroom,\" the names differ but they point to the same thing.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**正規化**は、同じデータが何か所にも入らないように表を分けることで、更新のときに一部だけ値が変わって食い違うのを防げる。",
+          "text_zh": "**规范化**（[[jp:正規化]]）是把表拆分开，使同一数据不会存放在多个地方，这样更新时就不会因为只改了一部分值而出现前后不一致。",
+          "text_en": "**Normalization** ([[jp:正規化]]) splits tables ([[jp:表]]) so that the same data is not stored in several places, which prevents mismatches caused by updating only some of the copies.",
+          "qids": [
+            "2014h26a-q068"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2014h26a-q068",
+        "2018h30h-q081"
+      ],
+      "definition_jp": "表はテーブルを日本語で呼んだ言い方で、行と列から成る同じ入れ物を指す。",
+      "definition_zh": "表（表）是数据表（テーブル）在日语中的另一种叫法，指的是由行和列构成的同一种容器。",
+      "definition_en": "Hyō (表) is the native Japanese word for a table (テーブル), and it refers to the same container made of rows and columns.",
+      "explanation_jp": "関係データベースの説明では、「“生徒”表」のように対象の名前に「表」を付けて個々のテーブルを呼ぶことが多い。同じように、行はレコードの、列はフィールドの言い換えとして使われる。",
+      "explanation_zh": "在讲解关系数据库时，常在对象名称后加上“表”来称呼各张数据表，例如“学生”表（“生徒”表）。同样，行被用作记录的另一种说法，列被用作字段的另一种说法。",
+      "explanation_en": "When explaining relational databases, individual tables are often named by adding 表 to the subject, as in the \"Students\" table (“生徒”表). In the same way, row is used as another word for record, and column as another word for field.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2014h26a-q068",
+        "2018h30h-q081"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ファイル",
+      "term_zh": "文件",
+      "term_en": "File",
+      "one_jp": "**ファイル**は、同じ形式のレコードを集めて 1 つの単位として保存したデータのまとまりである。",
+      "one_zh": "**文件**（[[jp:ファイル]]）是把相同格式的记录汇集起来、作为一个单位保存的数据整体。",
+      "one_en": "A **file** ([[jp:ファイル]]) is a body of data in which records of the same format are collected and saved as a single unit.",
+      "detail_jp": "ファイルには名前を付けて保存し、プログラムはその名前を指定して中のレコードを読み書きする。データベースが広まる前は、業務ごとのプログラムがそれぞれ専用のファイルでデータを管理していたため、同じデータが複数のファイルに重なって入りやすかった。",
+      "detail_zh": "文件要起名字保存，程序通过指定这个名字来读写其中的记录。在数据库普及之前，各项业务的程序分别用各自专用的文件管理数据，因此同一数据很容易重复存放在多个文件中。",
+      "detail_en": "A file is saved under a name, and a program reads and writes the records inside by specifying that name. Before databases became common, each business program managed its data in its own dedicated files, so the same data easily ended up duplicated across several files.",
+      "analogy_jp": "同じ書式の書類をとじたバインダー 1 冊に当たる。中の 1 枚 1 枚がレコードである。",
+      "analogy_zh": "就像一本装订着同一格式文件的活页夹。里面的每一页就是一条记录。",
+      "analogy_en": "It is like a binder of forms that all share the same layout. Each sheet inside is one record.",
+      "hook_jp": "file は英語で「書類をとじる」「とじた書類」。とじ込んだ紙の束を思い浮かべる。",
+      "hook_zh": "file 在英语中有“把文件归档装订”和“装订好的文件”的意思。可以想象成订在一起的一叠纸。",
+      "hook_en": "As an English verb, file means to put papers away in order, and as a noun it means the papers kept that way. Picture a bound stack of sheets.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "ファイルは、同じ形式のレコードを集めて 1 つの単位として保存したデータのまとまりである。",
+      "definition_zh": "文件（ファイル）是把相同格式的记录汇集起来、作为一个单位保存的数据整体。",
+      "definition_en": "A file (ファイル) is a body of data in which records of the same format are collected and saved as a single unit.",
+      "explanation_jp": "ファイルには名前を付けて保存し、プログラムはその名前を指定して中のレコードを読み書きする。データベースが広まる前は、業務ごとのプログラムがそれぞれ専用のファイルでデータを管理していたため、同じデータが複数のファイルに重なって入りやすかった。",
+      "explanation_zh": "文件要起名字保存，程序通过指定这个名字来读写其中的记录。在数据库普及之前，各项业务的程序分别用各自专用的文件管理数据，因此同一数据很容易重复存放在多个文件中。",
+      "explanation_en": "A file is saved under a name, and a program reads and writes the records inside by specifying that name. Before databases became common, each business program managed its data in its own dedicated files, so the same data easily ended up duplicated across several files.",
+      "memory_hook_jp": "file は英語で「書類をとじる」「とじた書類」。とじ込んだ紙の束を思い浮かべる。",
+      "memory_hook_zh": "file 在英语中有“把文件归档装订”和“装订好的文件”的意思。可以想象成订在一起的一叠纸。",
+      "memory_hook_en": "As an English verb, file means to put papers away in order, and as a noun it means the papers kept that way. Picture a bound stack of sheets.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "レコード",
+      "b": "フィールド",
+      "rows": [
+        {
+          "label_jp": "表での向き",
+          "label_zh": "在表中的方向",
+          "label_en": "Direction in the table",
+          "a_jp": "横の 1 行",
+          "a_zh": "横向的一行",
+          "a_en": "One horizontal row",
+          "b_jp": "縦の 1 列",
+          "b_zh": "纵向的一列",
+          "b_en": "One vertical column",
+          "key": true
+        },
+        {
+          "label_jp": "表すもの",
+          "label_zh": "表示的内容",
+          "label_en": "What it represents",
+          "a_jp": "1 つの対象についての 1 件分のデータ",
+          "a_zh": "关于一个对象的一条数据",
+          "a_en": "One entry of data about a single subject",
+          "b_jp": "全件に共通する 1 種類のデータ",
+          "b_zh": "所有记录共有的一类数据",
+          "b_en": "One kind of data shared by every entry",
+          "key": false
+        },
+        {
+          "label_jp": "呼び方の例",
+          "label_zh": "称呼方式举例",
+          "label_en": "How it is referred to",
+          "a_jp": "1 件、2 件と件数で数える",
+          "a_zh": "按 1 条、2 条的条数来计数",
+          "a_en": "Counted in entries: one entry, two entries, and so on",
+          "b_jp": "「氏名」のように名前で呼ぶ",
+          "b_zh": "像“姓名”那样用名称来称呼",
+          "b_en": "Called by a name such as \"Name\"",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "テーブル",
+      "b": "ファイル",
+      "rows": [
+        {
+          "label_jp": "何のまとまりか",
+          "label_zh": "是什么的集合",
+          "label_en": "What it groups",
+          "a_jp": "関係データベースの中で 1 種類の対象を表す、行と列の表",
+          "a_zh": "在关系数据库中表示一类对象的、由行和列构成的表",
+          "a_en": "A grid of rows and columns representing one kind of subject in a relational database",
+          "b_jp": "同じ形式のレコードを 1 つの単位として保存したもの",
+          "b_zh": "把相同格式的记录作为一个单位保存起来的东西",
+          "b_en": "Records of the same format saved together as one unit",
+          "key": true
+        },
+        {
+          "label_jp": "データの重なり",
+          "label_zh": "数据的重复",
+          "label_en": "Duplication of data",
+          "a_jp": "複数の業務から同じ表を共通に使う",
+          "a_zh": "多项业务共同使用同一张表",
+          "a_en": "Several business processes share the same table",
+          "b_jp": "業務ごとに専用のファイルを持つと、同じデータが重なりやすい",
+          "b_zh": "各业务各持专用文件时，同一数据容易重复",
+          "b_en": "When each business process keeps its own files, the same data tends to be duplicated",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "表の中の各レコードは**主キー**で 1 件ずつ見分け、主キーは複数の列を組み合わせて作ることもできる。",
+    "テーブルどうしは共通する列の値で関連付けられ、参照される側のテーブルに先にデータを登録する。",
+    "ほかの項目から計算で求まる項目は冗長なので、表には持たせない。",
+    "**テーブル**と**表**は同じものを指す呼び名で、どちらも行と列から成る表形式の入れ物である。"
+  ],
+  "key_points_zh": [
+    "表中的每条记录通过**主键**逐条区分，主键也可以由多个列组合而成。",
+    "数据表之间通过共同列的值相关联，要先在被引用一方的数据表中登记数据。",
+    "能由其他数据项计算得出的数据项是冗余的，不放在表中。",
+    "**数据表**（[[jp:テーブル]]）和**表**（[[jp:表]]）是指同一事物的两种叫法，都是由行和列构成的表格形式的容器。"
+  ],
+  "key_points_en": [
+    "Each record in a table is identified one by one by its **primary key**, which can also be built by combining several columns.",
+    "Tables are linked through the values of a shared column, and data goes into the referenced table first.",
+    "A data item that can be calculated from other items is redundant, so the table does not store it.",
+    "**Table** ([[jp:テーブル]]) and **hyō** ([[jp:表]]) are two names for the same thing: a grid-shaped container made of rows and columns."
+  ],
+  "overview": {
+    "intro_jp": "レコードとフィールドを、表の行と列に対応させて区別できる。テーブル (表) の中でレコードを見分ける方法と、テーブルどうしを結び付ける方法を説明できる。表に持たせるデータ項目の決め方と、冗長な項目の見分け方を説明できる。",
+    "intro_zh": "能够把记录和字段分别对应到表的行和列，加以区分。能够说明在数据表中区分各条记录的方法，以及把数据表相互关联起来的方法。能够说明如何确定表中应包含的数据项，以及如何识别冗余的数据项。",
+    "intro_en": "Distinguish records from fields by matching them to the rows and columns of a table. Explain how to tell records apart within a table and how tables are linked to each other. Explain how to decide which data items a table should hold and how to spot redundant ones.",
+    "freq_badge": "頻出",
+    "est_minutes": 29
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "レコード: レコードといえばデータ1件分=表の1行",
-      "フィールド: フィールドといえばレコードを構成する列(1項目の格納場所)",
-      "項目: 項目といえばフィールドが扱うデータの最小単位",
-      "テーブル: テーブルといえば行(レコード)と列(フィールド)から成る表",
-      "表: 表といえばテーブルと同じ(行と列の入れ物)",
-      "ファイル: ファイルといえばレコードを集めた集合(伝統的な入れ物)"
-    ],
     "key_points_jp": [
-      "レコードは「行」=データ1件分のまとまり、フィールドは「列」=1種類のデータの格納場所で、行と列の役割を取り違えないことが重要。",
-      "項目(データ項目)はフィールドが扱うデータの最小の意味単位で、フィールドとほぼ対応する概念。",
-      "テーブルと表は同じ概念で、行(レコード)と列(フィールド)から成る表形式の入れ物。本 topic で最頻出の中心用語。",
-      "ファイルはレコードを集めた伝統的な入れ物で、現代の関係データベースではその役割を主にテーブルが担う。",
-      "データの構成階層は「ファイル(テーブル) ⊃ レコード ⊃ フィールド(項目)」で、後続のキー設計・正規化の前提となる土台。"
+      "表の中の各レコードは主キーで 1 件ずつ見分け、主キーは複数の列を組み合わせて作ることもできる。",
+      "テーブルどうしは共通する列の値で関連付けられ、参照される側のテーブルに先にデータを登録する。",
+      "ほかの項目から計算で求まる項目は冗長なので、表には持たせない。",
+      "テーブルと表は同じものを指す呼び名で、どちらも行と列から成る表形式の入れ物である。"
     ],
     "key_points_zh": [
-      "记录是「行」＝一条数据的整体，字段是「列」＝一类数据的存放位置，不要弄混行和列的作用，这一点很重要。",
-      "数据项是字段所处理的数据的最小含义单位，是与字段大致对应的概念。",
-      "表与日语的「表」是同一个概念，是由行（记录）和列（字段）组成的表格形式的容器，是本主题最高频的核心用语。",
-      "文件是把记录汇集起来的传统容器，在现代关系数据库中这一角色主要由表承担。",
-      "数据的组成层级是「文件（表） ⊃ 记录 ⊃ 字段（数据项）」，是后续键设计、规范化的前提基础。"
+      "表中的每条记录通过主键逐条区分，主键也可以由多个列组合而成。",
+      "数据表之间通过共同列的值相关联，要先在被引用一方的数据表中登记数据。",
+      "能由其他数据项计算得出的数据项是冗余的，不放在表中。",
+      "数据表（テーブル）和表（表）是指同一事物的两种叫法，都是由行和列构成的表格形式的容器。"
     ],
     "key_points_en": [
-      "A record is a \"row\" = one whole piece of data, and a field is a \"column\" = a storage location for one kind of data; it is important not to confuse the roles of rows and columns.",
-      "A data item is the smallest meaningful unit of data that a field handles, and is a concept that largely corresponds to a field.",
-      "Table and the Japanese word \"表\" are the same concept—a tabular container made up of rows (records) and columns (fields)—and it is the most frequently appearing core term in this topic.",
-      "A file is a traditional container that gathers records together; in modern relational databases this role is mainly carried by the table.",
-      "The composition hierarchy of data is \"file (table) ⊃ record ⊃ field (data item),\" which is the foundational premise for the later key design and normalization."
+      "Each record in a table is identified one by one by its primary key, which can also be built by combining several columns.",
+      "Tables are linked through the values of a shared column, and data goes into the referenced table first.",
+      "A data item that can be calculated from other items is redundant, so the table does not store it.",
+      "Table (テーブル) and hyō (表) are two names for the same thing: a grid-shaped container made of rows and columns."
+    ],
+    "memory_hooks_jp": [
+      "レコード: 英語の record は「記録」。人や出来事について書き留めた 1 回分の記録と考えると、「1 件」という単位と結び付く。",
+      "フィールド: field は英語で「畑」。決まった作物だけを植える畑のように、決まった種類の値だけが入る場所と覚える。",
+      "項目: 「項」も「目」も、全体を細かく分けた区切りを表す字。箇条書きの 1 行ずつを思い浮かべる。",
+      "テーブル: 英語の table は「食卓」のほかに「一覧表」の意味もあり、時刻表 (timetable) の table と同じ語である。",
+      "ファイル: file は英語で「書類をとじる」「とじた書類」。とじ込んだ紙の束を思い浮かべる。"
     ],
     "memory_hooks_zh": [
-      "记录：说到记录，就是一条数据＝表中的一行",
-      "字段：说到字段，就是构成记录的列（一个数据项的存放处）",
-      "数据项：说到数据项，就是字段所处理的数据的最小单位",
-      "表：说到表，就是由行（记录）和列（字段）组成的表格",
-      "表（日语「表」）：说到「表」，就是和テーブル相同（行与列的容器）",
-      "文件：说到文件，就是把记录汇集起来的集合（传统的容器）"
+      "记录：英语 record 的意思是“记录”。把它想成针对某人或某事写下的一次记录，就能和“一条”这个单位联系起来。",
+      "字段：field 在英语中有“田地”的意思。就像只种某一种作物的田地，把它记成只放某一类值的地方。",
+      "数据项：項目中的“项”和“目”，都是表示把整体细分之后的分段的字。可以联想到条目式列表中的每一行。",
+      "表（数据表）：英语 table 除了“餐桌”之外还有“一览表”的意思，和时刻表 timetable 中的 table 是同一个词。",
+      "文件：file 在英语中有“把文件归档装订”和“装订好的文件”的意思。可以想象成订在一起的一叠纸。"
     ],
     "memory_hooks_en": [
-      "Record: record → one piece of data = one row of the table",
-      "Field: field → a column that makes up a record (the storage place for one data item)",
-      "Data item: data item → the smallest unit of data that a field handles",
-      "Table: table → a grid made up of rows (records) and columns (fields)",
-      "表 (Japanese term): 表 → the same as table (a container of rows and columns)",
-      "File: file → a collection that gathers records together (a traditional container)"
+      "Record: The English word record means a written account. Think of it as one note jotted down about a person or an event, and it ties naturally to the idea of a single entry.",
+      "Field: Field also means a plot of farmland. Just as a field grows only one crop, it is a place that holds only one kind of value.",
+      "Data Item: Both kanji in 項目 stand for the smaller divisions of a whole. Picture each line of a bulleted list.",
+      "Table: Besides a dining table, the English word table also means a chart or list, the same table found in timetable.",
+      "File: As an English verb, file means to put papers away in order, and as a noun it means the papers kept that way. Picture a bound stack of sheets."
     ]
   },
   "challenge_questions": [
-    "2015h27a-q052",
-    "2015h27h-q086",
-    "2016h28h-q094",
-    "2025r07-q095",
-    "2017h29h-q069"
+    "2024r06-q060",
+    "2022r04-q065",
+    "2014h26h-q064",
+    "2018h30a-q073"
   ],
   "source_figures": [
     {
@@ -284,9 +802,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "数据结构的基本单位",
-  "title_en": "Basic Units of Data Structure",
-  "unit_summary_zh": "理解构成数据表的字段、数据项、记录等数据库最小组成要素的词汇及其层级关系。",
-  "unit_summary_en": "Understand the vocabulary of the smallest building blocks of a database—such as fields, data items, and records that make up a table—and their hierarchical relationships."
+  }
 }

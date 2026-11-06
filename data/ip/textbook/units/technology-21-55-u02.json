@@ -1,195 +1,1009 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-21-55-u02",
   "topic_id": "technology-21-55",
   "category": "technology",
   "title_jp": "E-R図・キー設計と正規化",
+  "title_zh": "E-R图、键设计与规范化",
+  "title_en": "E-R Diagrams, Key Design, and Normalization",
   "unit_summary_jp": "E-R図による実体と関連のモデリング、主キー・外部キーによる行の識別とテーブル間の関連付け、正規化による冗長排除、インデックスによる検索最適化という、関係データベース設計の核を理解する。",
+  "unit_summary_zh": "理解关系数据库设计的核心：用 E-R 图对实体与关联进行建模、用主键与外键来识别行并关联表之间的关系、用规范化消除冗余、用索引优化检索。",
+  "unit_summary_en": "Understand the core of relational database design: modeling entities and relationships with E-R diagrams, identifying rows and linking tables with primary and foreign keys, eliminating redundancy through normalization, and optimizing searches with indexes.",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-21-55-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、関係データベース設計の核心を学びます。E-R図で実体と関連をモデル化し、主キーで行を一意に識別、外部キーでテーブル間を関連付け、インデックスで検索を高速化、正規化で冗長を排除します。データベース設計は『データベース設計』topic の最頻出領域であり、ITパスポートでも主キー・外部キー・正規化が繰り返し問われる超重要単元です。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习关系数据库设计的核心。用 E-R 图对实体与关联建模，用主键唯一识别行，用外键关联各张表，用索引加速检索，用规范化消除冗余。数据库设计是「数据库设计」这一主题中出现频率最高的领域，在 IT 护照考试中，主键、外键、规范化也被反复考查，是极其重要的单元。",
-    "intro_en": "In this unit, we learn the core of relational database design. We model entities and relationships with E-R diagrams, uniquely identify rows with primary keys, link tables with foreign keys, speed up searches with indexes, and eliminate redundancy through normalization. Database design is the most frequently tested area within the \"Database Design\" topic, and on the IT Passport exam, primary keys, foreign keys, and normalization are asked repeatedly, making this an extremely important unit."
-  },
-  "terms": [
+  "goals_jp": [
+    "**E-R図**で、業務の実体と関連、関連の多重度を読み取れるようになる",
+    "**主キー**と**外部キー**を、役割と値の制約で区別できるようになる",
+    "**正規化**で表をどう分けるか、その目的と合わせて説明できるようになる"
+  ],
+  "goals_zh": [
+    "能从**E-R图**中读出业务的实体、实体间的关联以及关联的多重度",
+    "能从作用和取值限制两方面区分**主键**与**外键**",
+    "能说明**规范化**如何拆分表，以及这样做的目的"
+  ],
+  "goals_en": [
+    "Read an **E-R diagram** to find the business entities, their relationships, and the multiplicity of each relationship",
+    "Tell a **primary key** from a **foreign key** by its role and the limits on its values",
+    "Explain how **normalization** splits tables and why"
+  ],
+  "overview_cols_jp": [
+    "設計での役目"
+  ],
+  "overview_cols_zh": [
+    "在设计中的作用"
+  ],
+  "overview_cols_en": [
+    "Role in design"
+  ],
+  "overview_rows": [
     {
       "term": "E-R図",
-      "definition_jp": "実体(エンティティ)と実体間の関連(リレーションシップ)を図で表すデータモデリング手法。",
-      "explanation_jp": "E-R図(Entity-Relationship図)は、データベースに何を保存し、どう関係づけるかを設計段階で図にしたものです。『顧客』『商品』『注文』といった管理対象を実体(エンティティ)として四角で表し、実体どうしのつながりを関連(リレーションシップ)として線で結びます。\n\n試験では、関連に付く『1対1』『1対多』『多対多』といった多重度(カーディナリティ)がよく問われます。例えば『1人の顧客が複数の注文を持つ』は1対多の関連です。E-R図はあくまで概念設計の道具で、ここで描いた関連を後から外部キーで実装します。テーブルそのものを表す図ではなく『設計図』である点を押さえましょう。",
-      "analogy_jp": "建物を建てる前の間取り図のようなもの。『リビング』『キッチン』という部屋(実体)と、ドアでつながる関係(関連)を先に図で決めてから、実際の工事(テーブル作成)に入るイメージです。",
-      "memory_hook_jp": "E-R図といえば実体と関連をモデル化する設計図",
-      "inline_quiz": [
-        "2009h21a-q014",
-        "2011h23a-q057"
+      "one_line_jp": "実体と実体の間の関連を図に表したもの",
+      "one_line_zh": "把实体以及实体之间的关联画成图",
+      "one_line_en": "A diagram of entities and the relationships between them",
+      "extra_jp": [
+        "業務の分析結果からデータの構造を整理する"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"顧客\"] -->|\"1対多\"| B[\"注文\"]; B -->|\"多対多\"| C[\"商品\"]",
-        "svg_path": "figures/technology-21-55-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "E-R图（实体-关联图）",
-      "term_en": "E-R Diagram",
-      "definition_zh": "用图来表示实体（Entity）以及实体之间的关联（Relationship）的数据建模方法。",
-      "definition_en": "A data modeling technique that uses a diagram to represent entities and the relationships between them.",
-      "explanation_zh": "E-R 图（Entity-Relationship 图，实体-关联图）是在设计阶段，把数据库中要保存什么、各部分如何相互关联，用图画出来的成果。把「客户」「商品」「订单」这类管理对象作为实体（Entity）用方框表示，再把实体之间的联系作为关联（Relationship）用连线连接起来。\n\n考试中常考查附在关联上的「一对一」「一对多」「多对多」等基数（多重度）。例如「一位客户拥有多个订单」就是一对多的关联。E-R 图始终是概念设计的工具，这里画出的关联会在之后用外键来实现。要记住它不是表示表本身的图，而是一张「设计图」。",
-      "explanation_en": "An E-R diagram (Entity-Relationship diagram) is what you draw at the design stage to show what to store in a database and how the parts relate to one another. Management targets such as \"customer,\" \"product,\" and \"order\" are represented as entities with rectangles, and the connections between entities are linked as relationships with lines.\n\nThe exam often asks about the cardinality (multiplicity) attached to a relationship, such as \"one-to-one,\" \"one-to-many,\" and \"many-to-many.\" For example, \"one customer has multiple orders\" is a one-to-many relationship. An E-R diagram is purely a tool for conceptual design; the relationships drawn here are later implemented with foreign keys. Keep in mind that it is not a diagram of the tables themselves, but a \"blueprint.\"",
-      "analogy_zh": "就像盖房子前的户型图。先在图上定好「客厅」「厨房」这些房间（实体），以及通过门相连的关系（关联），然后才进入实际的施工（创建表）。",
-      "analogy_en": "Like a floor plan drawn before building a house. You first decide on the diagram which rooms (entities) like the \"living room\" and \"kitchen\" exist and how they connect through doors (relationships), and only then start the actual construction (creating tables).",
-      "memory_hook_zh": "说到 E-R 图，就是对实体与关联建模的设计图",
-      "memory_hook_en": "E-R diagram → the blueprint that models entities and relationships"
+      "extra_zh": [
+        "根据业务分析的结果理清数据的结构"
+      ],
+      "extra_en": [
+        "Organizes the data structure from the results of business analysis"
+      ]
     },
     {
       "term": "主キー",
-      "definition_jp": "テーブル内の1行(レコード)を一意に識別するための列、またはその組み合わせ。",
-      "explanation_jp": "主キー(プライマリキー)は、テーブルの中で1行を確実に1つだけ特定するための列です。例えば『社員番号』を主キーにすれば、同姓同名の社員がいても番号で必ず区別できます。\n\n主キーには重要な制約が2つあります。値が重複してはいけない『一意性』と、空(NULL)にしてはいけない『非NULL制約』です。試験では『主キーには重複・NULLが許されない』という性質がよく問われます。氏名のように重複しうる列は主キーに向きません。複数列を組み合わせて1つの主キーとする『複合キー』も出題されます。",
-      "analogy_jp": "クラスの出席番号のようなもの。名前は同じ人がいるかもしれませんが、出席番号は必ず1人に1つで重複せず、空欄もない。だから番号を言えば誰か一人に確定できます。",
-      "memory_hook_jp": "主キーといえば行を一意に識別(重複・NULL禁止)",
-      "inline_quiz": [
-        "2009h21a-q098",
-        "2009h21a-q100"
+      "one_line_jp": "表の中の1行を一意に識別する列または列の組合せ",
+      "one_line_zh": "能唯一识别表中某一行的列或列的组合",
+      "one_line_en": "A column or set of columns that uniquely identifies one row in a table",
+      "extra_jp": [
+        "行を1つに特定する"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "主键",
-      "term_en": "Primary Key",
-      "definition_zh": "用于在表中唯一识别一行（记录）的列，或这些列的组合。",
-      "definition_en": "A column, or combination of columns, used to uniquely identify a single row (record) within a table.",
-      "explanation_zh": "主键（Primary Key）是用于在表中确切地只锁定一行的列。例如把「员工编号」设为主键，那么即使有同名同姓的员工，也一定能用编号区分开。\n\n主键有两个重要约束：值不允许重复的「唯一性」，以及不允许为空（NULL）的「非 NULL 约束」。考试中常考查「主键不允许重复和 NULL」这一性质。像姓名这样可能重复的列不适合做主键。把多个列组合起来作为一个主键的「复合主键」也会出题。",
-      "explanation_en": "A primary key is a column used to pin down exactly one row in a table. For example, if you make \"employee number\" the primary key, you can always distinguish employees by number even when they have the same name.\n\nA primary key has two important constraints: \"uniqueness,\" meaning values must not be duplicated, and the \"NOT NULL constraint,\" meaning it must not be empty (NULL). The exam often asks about the property that \"primary keys do not allow duplicates or NULL.\" A column like a name, which can be duplicated, is unsuitable as a primary key. The \"composite key,\" which combines multiple columns into one primary key, is also tested.",
-      "analogy_zh": "就像班级里的学号。名字可能有重名的人，但学号一定是一人一个、不会重复、也没有空缺。所以只要说出学号，就能确定到某一个人。",
-      "analogy_en": "Like a student number in a class. There may be people with the same name, but each person has exactly one student number, with no duplicates and no blanks. So stating a number pins down exactly one person.",
-      "memory_hook_zh": "说到主键，就是唯一识别行（禁止重复与 NULL）",
-      "memory_hook_en": "Primary key → uniquely identifies a row (no duplicates, no NULL)"
+      "extra_zh": [
+        "锁定唯一的一行"
+      ],
+      "extra_en": [
+        "Pins down a single row"
+      ]
     },
     {
       "term": "外部キー",
-      "definition_jp": "他のテーブルの主キーを参照し、テーブル間を関連付けるための列。",
-      "explanation_jp": "外部キー(フォーリンキー)は、あるテーブルの列が別のテーブルの主キーを指し示すことで、2つのテーブルをつなぐ仕組みです。例えば『注文』テーブルの『顧客ID』列が『顧客』テーブルの主キー『顧客ID』を参照すれば、どの注文が誰のものか結びつきます。E-R図で描いた関連を実際に実装するのが外部キーです。\n\n試験では『参照整合性』がよく問われます。これは外部キーが指す相手の行が必ず存在しなければならないというルールで、存在しない顧客IDの注文は登録できません。主キーと違い、外部キーは値の重複が許される(同じ顧客が複数注文できる)点も区別して覚えましょう。",
-      "analogy_jp": "宅配便の伝票に書く『お届け先の会員番号』のようなもの。番号は会員名簿(別テーブル)に実在する人を指していなければならず、存在しない番号は書けません。",
-      "memory_hook_jp": "外部キーといえば他テーブルの主キーを参照して関連付け",
-      "inline_quiz": [
-        "2009h21a-q084",
-        "2010h22a-q079"
+      "one_line_jp": "ほかの表の主キーの値を参照する列または列の組合せ",
+      "one_line_zh": "引用其他表主键值的列或列的组合",
+      "one_line_en": "A column or set of columns that refers to primary key values in another table",
+      "extra_jp": [
+        "表と表を値で結び付ける"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "外键",
-      "term_en": "Foreign Key",
-      "definition_zh": "引用另一张表的主键，用于关联表与表之间关系的列。",
-      "definition_en": "A column that references the primary key of another table to link tables together.",
-      "explanation_zh": "外键（Foreign Key）是通过让一张表中的列指向另一张表的主键，从而把两张表连接起来的机制。例如让「订单」表的「客户ID」列引用「客户」表的主键「客户ID」，就能把哪个订单属于谁联系起来。把 E-R 图中画出的关联实际加以实现的，就是外键。\n\n考试中常考查「参照完整性」。它是一条规则，要求外键所指向的对方那一行必须存在，因此不能登记一个不存在的客户ID所对应的订单。与主键不同，外键允许值重复（同一个客户可以下多个订单），这一点也要区分记住。",
-      "explanation_en": "A foreign key is a mechanism that connects two tables by having a column in one table point to the primary key of another table. For example, if the \"customer ID\" column of the \"orders\" table references the primary key \"customer ID\" of the \"customers\" table, you can link which order belongs to whom. The foreign key is what actually implements the relationships drawn in an E-R diagram.\n\nThe exam often asks about \"referential integrity.\" This is a rule requiring that the row pointed to by a foreign key must exist, so you cannot register an order with a customer ID that does not exist. Unlike a primary key, a foreign key allows duplicate values (the same customer can place multiple orders) — remember this distinction too.",
-      "analogy_zh": "就像快递单上填写的「收件人会员号」。这个号码必须指向会员名册（另一张表）中实际存在的人，不能填写一个不存在的号码。",
-      "analogy_en": "Like the \"recipient's member number\" written on a delivery slip. The number must point to a person who actually exists in the membership roster (another table); you cannot write a number that does not exist.",
-      "memory_hook_zh": "说到外键，就是引用另一张表的主键来建立关联",
-      "memory_hook_en": "Foreign key → references another table's primary key to link them"
+      "extra_zh": [
+        "通过值把表与表联系起来"
+      ],
+      "extra_en": [
+        "Links tables through their values"
+      ]
     },
     {
       "term": "インデックス",
-      "definition_jp": "列の値と行の位置を対応づけ、検索を高速化する補助的なデータ構造。",
-      "explanation_jp": "インデックス(索引)は、テーブルの特定の列に作る『検索用の早見表』です。インデックスがないと全行を順番に調べる必要がありますが、インデックスがあれば目的の行へ素早くたどり着けます。検索や絞り込みが多い列に作ると効果的です。\n\n試験では利点と欠点の両方が問われます。利点は検索の高速化。一方、データの追加・更新・削除のたびにインデックスも更新するため、書き込みが遅くなり、記憶領域も余分に使うという欠点があります。何にでも付ければよいわけではない点が重要です。",
-      "analogy_jp": "分厚い辞典の巻末にある『索引』のようなもの。索引があれば目的の語をすぐ引けますが、索引自体のページ分だけ本は厚くなり、本文を改訂するたびに索引も直す手間が増えます。",
-      "memory_hook_jp": "インデックスといえば検索高速化だが書き込みは遅くなる",
-      "inline_quiz": [
-        "2013h25a-q051"
+      "one_line_jp": "列の値と行の位置を対応づけた索引",
+      "one_line_zh": "把列值与行的位置对应起来的查找目录",
+      "one_line_en": "A lookup structure that maps column values to row locations",
+      "extra_jp": [
+        "検索を速くする"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "索引",
-      "term_en": "Index",
-      "definition_zh": "将列的值与行的位置对应起来、用于加速检索的辅助性数据结构。",
-      "definition_en": "An auxiliary data structure that maps column values to row positions to speed up searches.",
-      "explanation_zh": "索引（Index）是为表中某个特定列建立的「检索用速查表」。没有索引时需要按顺序逐行查找，而有了索引就能迅速定位到目标行。为检索或筛选频繁的列建立索引会很有效。\n\n考试中会同时考查优点和缺点。优点是加速检索；另一方面，每次对数据进行添加、更新、删除时都要同时更新索引，因此写入会变慢，还会额外占用存储空间，这是它的缺点。并不是给所有列都加上索引就好，这一点很重要。",
-      "explanation_en": "An index is a \"quick-reference table for searching\" built on a specific column of a table. Without an index, you have to scan every row in order, but with an index you can quickly reach the target row. Building an index on columns frequently searched or filtered is effective.\n\nThe exam asks about both the advantages and disadvantages. The advantage is faster searching. On the other hand, because the index must also be updated each time data is added, updated, or deleted, writes become slower and extra storage space is consumed — these are its drawbacks. It is important to note that it is not good to put an index on everything.",
-      "analogy_zh": "就像厚厚的词典卷末的「索引」。有了索引就能立刻查到目标词，但书会因索引本身的页数而变厚，而且每次修订正文，都要多花功夫去改索引。",
-      "analogy_en": "Like the \"index\" at the back of a thick dictionary. With an index you can look up the target word instantly, but the book gets thicker by the pages of the index itself, and every time you revise the main text you have the extra work of fixing the index too.",
-      "memory_hook_zh": "说到索引，就是加速检索但写入会变慢",
-      "memory_hook_en": "Index → speeds up searches but slows down writes"
+      "extra_zh": [
+        "加快检索"
+      ],
+      "extra_en": [
+        "Speeds up searches"
+      ]
     },
     {
       "term": "正規化",
-      "definition_jp": "データの重複や矛盾を防ぐため、テーブルを適切に分割して整理する設計手法。",
-      "explanation_jp": "正規化は、1つのテーブルに情報を詰め込みすぎて生じる重複や更新時の矛盾(更新不整合)をなくすため、テーブルを意味のまとまりごとに分割する作業です。主キー・外部キーを使ってテーブルを結びつけながら、冗長なデータを排除します。\n\n試験では段階が問われます。第1正規形(繰り返し項目をなくす)→第2正規形(主キーの一部だけで決まる項目を分離)→第3正規形(主キー以外の項目に依存する項目を分離)と進みます。目的は『データの重複排除』と『整合性の向上』です。逆に分割しすぎると結合処理が増える点も理解しておきましょう。",
-      "analogy_jp": "持ち物を種類ごとに引き出しへ分ける整理整頓のようなもの。何でも一つの箱に入れると同じ物が重複し探しにくいので、用途別に分けて『どこに何があるか』を主キーで参照し合うイメージです。",
-      "memory_hook_jp": "正規化といえばテーブル分割で冗長排除と整合性向上",
-      "inline_quiz": [
-        "2009h21a-q063",
-        "2010h22a-q063"
+      "one_line_jp": "重複をなくすために表を複数に分ける作業",
+      "one_line_zh": "为消除重复而把一张表拆成多张表的工作",
+      "one_line_en": "Splitting one table into several to remove duplication",
+      "extra_jp": [
+        "更新時の食い違いを防ぐ"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"非正規形(重複あり)\"] --> B[\"第1正規形:繰り返し項目を除去\"]; B --> C[\"第2正規形:部分関数従属を除去\"]; C --> D[\"第3正規形:推移的関数従属を除去\"]",
-        "svg_path": "figures/technology-21-55-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "规范化",
-      "term_en": "Normalization",
-      "definition_zh": "为防止数据重复与矛盾，将表恰当拆分并加以整理的设计方法。",
-      "definition_en": "A design technique that appropriately splits and organizes tables to prevent data duplication and inconsistency.",
-      "explanation_zh": "规范化是为了消除因一张表塞入过多信息而产生的重复，以及更新时的矛盾（更新异常），把表按意义的归属逐块拆分的工作。一边用主键、外键把各张表连接起来，一边排除冗余的数据。\n\n考试中会考查其阶段。依次推进为：第一范式（消除重复项）→第二范式（分离出仅由主键的一部分决定的项）→第三范式（分离出依赖于主键以外项的项）。目的是「消除数据重复」和「提升一致性」。反过来，如果拆分过度，连接处理会增多，这一点也要理解。",
-      "explanation_en": "Normalization is the work of splitting a table into chunks by meaning, in order to eliminate the duplication that arises from cramming too much information into one table and the inconsistencies at update time (update anomalies). While connecting the tables with primary and foreign keys, it removes redundant data.\n\nThe exam asks about its stages. It proceeds as: first normal form (eliminate repeating items) → second normal form (separate items determined by only part of the primary key) → third normal form (separate items that depend on non-primary-key items). The goals are \"eliminating data duplication\" and \"improving consistency.\" Conversely, if you split too much, join processing increases — understand this point too.",
-      "analogy_zh": "就像把物品按种类分别放进抽屉的整理收纳。什么都塞进一个箱子，同样的东西会重复、又难找，所以按用途分开，再用主键彼此参照「哪里有什么」。",
-      "analogy_en": "Like tidying up by sorting belongings into drawers by type. If you put everything into one box, identical items get duplicated and become hard to find, so you separate them by purpose and cross-reference \"what is where\" via primary keys.",
-      "memory_hook_zh": "说到规范化，就是拆分表以消除冗余、提升一致性",
-      "memory_hook_en": "Normalization → splitting tables to remove redundancy and improve consistency"
+      "extra_zh": [
+        "防止更新后数据前后不一致"
+      ],
+      "extra_en": [
+        "Prevents mismatched values after updates"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "E-R図",
+      "term_zh": "E-R图（实体-关联图）",
+      "term_en": "E-R Diagram",
+      "one_jp": "**E-R図**は、業務で管理する**実体**(エンティティ)と、実体どうしの**関連**(リレーションシップ)を図に表したものである。",
+      "one_zh": "**E-R图**（[[jp:E-R図]]）是把业务中要管理的**实体**（entity）以及实体之间的**关联**（relationship）画成图的表示方法。",
+      "one_en": "An **E-R diagram** ([[jp:E-R図]]) shows the **entities** a business manages and the **relationships** between those entities.",
+      "detail_jp": "実体はデータとして記録したい対象のまとまりで、関連は実体どうしのつながりを表す。関連には、片方の1件に相手が何件対応するかを示す**多重度**(1対1、1対多、多対多など)を書き添える。",
+      "detail_zh": "实体是想作为数据记录下来的一类对象，关联表示实体之间的联系。关联上还要注明**多重度**（一对一、一对多、多对多等），表示一方的1条对应对方的几条。",
+      "detail_en": "An entity is a group of things you want to record as data, and a relationship shows how entities are connected. Each relationship is labeled with its **multiplicity** (one-to-one, one-to-many, many-to-many and so on), which tells how many records on one side match a single record on the other.",
+      "analogy_jp": "ドラマの人物相関図のようなもの。登場人物を枠で描き、親子や同僚といった関係を線で結んで、誰と誰がどうつながるかを一目で分かるようにする。",
+      "analogy_zh": "就像电视剧的人物关系图。把每个角色画成一个框，再用线连出父子、同事等关系，谁和谁怎样相连一目了然。",
+      "analogy_en": "Think of the character map for a TV drama. Each character gets a box, and lines labeled \"parent\" or \"coworker\" show at a glance who is connected to whom and how.",
+      "hook_jp": "E は Entity(実体)、R は Relationship(関連)の頭文字。名前そのものが図の2つの部品を表している。",
+      "hook_zh": "E 取自 Entity（实体），R 取自 Relationship（关联）。名字本身就点出了图的两种组成部分。",
+      "hook_en": "E stands for Entity and R for Relationship, so the name itself lists the diagram's two building blocks.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "E-R図は、データベースを設計するときに業務の管理対象どうしの関係を整理する図であり、関係データベースではテーブル間のつながりを示すのにも使う。",
+          "text_zh": "E-R图（[[jp:E-R図]]）用于在设计数据库（[[jp:データベース]]）时理清业务管理对象之间的关系，在关系数据库中也用来表示表（[[jp:テーブル]]）之间的联系。",
+          "text_en": "An E-R diagram ([[jp:E-R図]]) sorts out how the things a business manages relate to one another when a database ([[jp:データベース]]) is designed, and in a relational database it also shows how tables ([[jp:テーブル]]) connect.",
+          "qids": [
+            "2012h24a-q053",
+            "2012h24h-q076",
+            "2017h29h-q087",
+            "2019h31h-q091",
+            "2021r03-q001"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "1つの学級に生徒が複数いて、どの生徒も1つの学級だけに属するなら、学級と生徒は1対多の関連になる。多重度は両方の向きから件数を数えて決める。",
+          "text_zh": "如果1个班有多名学生，而每名学生只属于1个班，那么班级与学生是一对多（[[jp:1対多]]）的关联。多重度（[[jp:多重度]]）要从两个方向分别数出条数来确定。",
+          "text_en": "If a class has several students and every student belongs to just one class, class and student have a one-to-many ([[jp:1対多]]) relationship. Multiplicity ([[jp:多重度]]) is fixed by counting records in both directions.",
+          "qids": [
+            "2011h23a-q057",
+            "2021r03-q070"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "E-R図は業務の分析結果をもとに描き、テーブルの設計はそのE-R図を土台に進める。",
+          "text_zh": "E-R图根据业务分析的结果来画，表的设计则以这张E-R图为基础展开。",
+          "text_en": "An E-R diagram is drawn from the results of business analysis, and table design then builds on that diagram.",
+          "qids": [
+            "2015h27a-q054",
+            "2016h28h-q084"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "多重度",
+              "zh": "多重度",
+              "en": "Multiplicity"
+            },
+            {
+              "jp": "対応のしかた",
+              "zh": "对应方式",
+              "en": "How records correspond"
+            },
+            {
+              "jp": "例",
+              "zh": "例子",
+              "en": "Example"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "1対1",
+                  "zh": "一对一",
+                  "en": "One-to-one"
+                },
+                {
+                  "jp": "どちらの側から見ても相手は1件",
+                  "zh": "从哪一方看，对方都只有1条",
+                  "en": "Seen from either side, there is one record on the other"
+                },
+                {
+                  "jp": "店舗と店長(1店舗に店長は1人、店長は1店舗だけ担当)",
+                  "zh": "门店与店长（每家门店只有1名店长，每名店长只负责1家门店）",
+                  "en": "Store and store manager (each store has one manager, and each manager runs only one store)"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "1対多",
+                  "zh": "一对多",
+                  "en": "One-to-many"
+                },
+                {
+                  "jp": "一方の1件に相手の複数件が対応し、逆向きは1件",
+                  "zh": "一方的1条对应对方的多条，反过来只对应1条",
+                  "en": "One record on one side matches several on the other; the reverse direction matches one"
+                },
+                {
+                  "jp": "学級と生徒(1学級に生徒は複数、生徒は1学級に所属)",
+                  "zh": "班级与学生（1个班有多名学生，每名学生只属于1个班）",
+                  "en": "Class and student (a class has several students, and each student belongs to one class)"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "多対多",
+                  "zh": "多对多",
+                  "en": "Many-to-many"
+                },
+                {
+                  "jp": "どちらの側から見ても相手は複数件",
+                  "zh": "从哪一方看，对方都有多条",
+                  "en": "Seen from either side, there are several records on the other"
+                },
+                {
+                  "jp": "生徒と部活動(兼部あり、1つの部に生徒は複数)",
+                  "zh": "学生与社团活动（可以同时参加多个社团，1个社团有多名学生）",
+                  "en": "Student and club (students may join several clubs, and a club has several students)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2012h24a-q053",
+        "2019h31h-q091",
+        "2021r03-q070"
+      ],
+      "definition_jp": "E-R図は、業務で管理する実体(エンティティ)と、実体どうしの関連(リレーションシップ)を図に表したものである。",
+      "definition_zh": "E-R图（E-R図）是把业务中要管理的实体（entity）以及实体之间的关联（relationship）画成图的表示方法。",
+      "definition_en": "An E-R diagram (E-R図) shows the entities a business manages and the relationships between those entities.",
+      "explanation_jp": "実体はデータとして記録したい対象のまとまりで、関連は実体どうしのつながりを表す。関連には、片方の1件に相手が何件対応するかを示す多重度(1対1、1対多、多対多など)を書き添える。",
+      "explanation_zh": "实体是想作为数据记录下来的一类对象，关联表示实体之间的联系。关联上还要注明多重度（一对一、一对多、多对多等），表示一方的1条对应对方的几条。",
+      "explanation_en": "An entity is a group of things you want to record as data, and a relationship shows how entities are connected. Each relationship is labeled with its multiplicity (one-to-one, one-to-many, many-to-many and so on), which tells how many records on one side match a single record on the other.",
+      "memory_hook_jp": "E は Entity(実体)、R は Relationship(関連)の頭文字。名前そのものが図の2つの部品を表している。",
+      "memory_hook_zh": "E 取自 Entity（实体），R 取自 Relationship（关联）。名字本身就点出了图的两种组成部分。",
+      "memory_hook_en": "E stands for Entity and R for Relationship, so the name itself lists the diagram's two building blocks.",
+      "inline_quiz": [
+        "2012h24a-q053",
+        "2019h31h-q091",
+        "2021r03-q070"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "主キー",
+      "term_zh": "主键",
+      "term_en": "Primary Key",
+      "one_jp": "**主キー**は、表の中の1行(レコード)を**一意に識別**するために決める列、または列の組合せである。",
+      "one_zh": "**主键**（[[jp:主キー]]）是为了**唯一识别**表中的一行（记录）而指定的列或列的组合。",
+      "one_en": "A **primary key** ([[jp:主キー]]) is the column, or set of columns, chosen to **uniquely identify** each row (record) in a table.",
+      "detail_jp": "上の表では、公演番号だけでも座席番号だけでも同じ値が複数の行にあるが、2つの列を組にすると1行が決まる。このように組にした場合は、その組全体で1つの主キーとして扱う。",
+      "detail_zh": "在上表中，不论只看演出编号还是只看座位号，都有相同的值出现在多行里，但把两列组合起来就能确定一行。像这样组合使用时，整个组合被当作一个主键。",
+      "detail_en": "In the table above, the same show number appears in several rows, and so does the same seat number, but the two columns together pin down a single row. When columns are combined like this, the whole combination counts as one primary key.",
+      "analogy_jp": "学生証の学籍番号のようなもの。同じ名前の学生がいても、番号が分かれば一人に決まる。",
+      "analogy_zh": "就像学生证上的学号。即使有同名的学生，只要知道学号就能确定是哪一个人。",
+      "analogy_en": "It works like the ID number on a student card. Two students may share a name, but the number points to exactly one of them.",
+      "hook_jp": "英語では primary key。primary は「第一の」という意味で、表の行を見分ける第一の手がかりになる。",
+      "hook_zh": "英文是 primary key，primary 意为“首要的”，也就是区分表中各行的首要依据。",
+      "hook_en": "Primary means \"first in importance\": the primary key is the first thing you look at to tell rows apart.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "主キーの値は行ごとに異なり、列を組にした主キーでは組全体の値で行を区別するので、組を構成する個々の列の値は重なってよい。主キーを構成する各列は空の値(NULL)をとれない。",
+          "text_zh": "主键（[[jp:主キー]]）的值每行都不同；由多列组合成的主键靠组合整体的值区分各行，所以组成组合的单个列的值可以重复。构成主键的每一列都不能取空值（NULL）。",
+          "text_en": "Every row has a different primary key ([[jp:主キー]]) value, and a key built from several columns tells rows apart by the combined value, so the individual columns may repeat. None of the columns that make up a primary key may be empty (NULL).",
+          "qids": [
+            "2014h26h-q064",
+            "2023r05-q078"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "1つの列で行が決まらない表では、列を2つ以上まとめて1つの主キーとすることもできる。",
+          "text_zh": "如果一个表靠单独一列无法确定行，也可以把两列以上合起来作为一个主键。",
+          "text_en": "When no single column identifies a row, two or more columns can be combined into one primary key.",
+          "qids": [
+            "2009h21a-q084",
+            "2016h28a-q095"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "主キーを決める目的は、表の中のどの行かを一意に見分けられるようにすることにある。",
+          "text_zh": "设定主键的目的，是让人能唯一地分辨出表中的每一行。",
+          "text_en": "A primary key is set so that any row in the table can be identified uniquely.",
+          "qids": [
+            "2019r01a-q066",
+            "2022r04-q065"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "公演番号",
+              "zh": "演出编号",
+              "en": "Show No."
+            },
+            {
+              "jp": "座席番号",
+              "zh": "座位号",
+              "en": "Seat No."
+            },
+            {
+              "jp": "予約者名",
+              "zh": "预订人",
+              "en": "Booked by"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "P01",
+                  "zh": "P01",
+                  "en": "P01"
+                },
+                {
+                  "jp": "A1",
+                  "zh": "A1",
+                  "en": "A1"
+                },
+                {
+                  "jp": "青木",
+                  "zh": "青木",
+                  "en": "Aoki"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "P01",
+                  "zh": "P01",
+                  "en": "P01"
+                },
+                {
+                  "jp": "A2",
+                  "zh": "A2",
+                  "en": "A2"
+                },
+                {
+                  "jp": "青木",
+                  "zh": "青木",
+                  "en": "Aoki"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "P02",
+                  "zh": "P02",
+                  "en": "P02"
+                },
+                {
+                  "jp": "A1",
+                  "zh": "A1",
+                  "en": "A1"
+                },
+                {
+                  "jp": "西村",
+                  "zh": "西村",
+                  "en": "Nishimura"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22h-q083",
+        "2014h26h-q064",
+        "2022r04-q065"
+      ],
+      "definition_jp": "主キーは、表の中の1行(レコード)を一意に識別するために決める列、または列の組合せである。",
+      "definition_zh": "主键（主キー）是为了唯一识别表中的一行（记录）而指定的列或列的组合。",
+      "definition_en": "A primary key (主キー) is the column, or set of columns, chosen to uniquely identify each row (record) in a table.",
+      "explanation_jp": "上の表では、公演番号だけでも座席番号だけでも同じ値が複数の行にあるが、2つの列を組にすると1行が決まる。このように組にした場合は、その組全体で1つの主キーとして扱う。",
+      "explanation_zh": "在上表中，不论只看演出编号还是只看座位号，都有相同的值出现在多行里，但把两列组合起来就能确定一行。像这样组合使用时，整个组合被当作一个主键。",
+      "explanation_en": "In the table above, the same show number appears in several rows, and so does the same seat number, but the two columns together pin down a single row. When columns are combined like this, the whole combination counts as one primary key.",
+      "memory_hook_jp": "英語では primary key。primary は「第一の」という意味で、表の行を見分ける第一の手がかりになる。",
+      "memory_hook_zh": "英文是 primary key，primary 意为“首要的”，也就是区分表中各行的首要依据。",
+      "memory_hook_en": "Primary means \"first in importance\": the primary key is the first thing you look at to tell rows apart.",
+      "inline_quiz": [
+        "2010h22h-q083",
+        "2014h26h-q064",
+        "2022r04-q065"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "外部キー",
+      "term_zh": "外键",
+      "term_en": "Foreign Key",
+      "one_jp": "**外部キー**は、ほかの表の主キーの値を**参照**する列(または列の組合せ)で、表と表を値によって結び付ける。",
+      "one_zh": "**外键**（[[jp:外部キー]]）是**引用**其他表主键值的列（或列的组合），通过值把表与表联系起来。",
+      "one_en": "A **foreign key** ([[jp:外部キー]]) is a column (or set of columns) that **refers** to primary key values in another table, linking the two tables through those values.",
+      "detail_jp": "外部キーの列には、参照先の表に存在しない値は入れられず、この決まりを**参照制約**(参照整合性)という。この制約によって、上の表で言えば学級表にない学級を指す生徒の行が生じず、表どうしのつながりが保たれる。",
+      "detail_zh": "外键列中不能填入被引用表里不存在的值，这条规则称为**参照约束**（参照完整性）。有了这条约束，以上表为例，就不会出现指向班级表中并不存在的班级的学生行，表与表之间的联系得以保持。",
+      "detail_en": "A foreign key column cannot hold a value that does not exist in the table it refers to, and this rule is called a **referential constraint** (referential integrity). In the tables above, it means no student row can point to a class missing from the class table, so the link between the tables stays intact.",
+      "analogy_jp": "宅配の伝票に書くお届け先の会員番号のようなもの。番号は会員名簿に実在する人を指していなければならない。",
+      "analogy_zh": "就像快递单上填写的收件人会员号。这个号码必须对应会员名册里真实存在的人。",
+      "analogy_en": "It is like the member number written on a delivery slip. The number has to match someone who actually appears in the member list.",
+      "hook_jp": "「外部」は自分の表の外を指すという意味。外部キーは、外の表への道しるべになる。",
+      "hook_zh": "“外”指的是指向本表之外。外键就是通往其他表的路标。",
+      "hook_en": "Foreign means it points outside its own table: a foreign key is a signpost to another table.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "1対多の関連は、多の側の表に、1の側の表の主キーを外部キーとして持たせて表す。",
+          "text_zh": "一对多（[[jp:1対多]]）的关联，是在“多”一方的表中放入“一”一方表的主键（[[jp:主キー]]）作为外键（[[jp:外部キー]]）来表示的。",
+          "text_en": "A one-to-many ([[jp:1対多]]) relationship is represented by giving the table on the \"many\" side the primary key ([[jp:主キー]]) of the table on the \"one\" side as a foreign key ([[jp:外部キー]]).",
+          "qids": [
+            "2011h23a-q057",
+            "2013h25h-q055"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "外部キーには参照先に存在しない値を入れられないので、データを追加するときは参照される側の表から先に登録する。",
+          "text_zh": "外键不能填入被引用表中不存在的值，所以添加数据时要先登记被引用一方的表。",
+          "text_en": "Because a foreign key cannot hold a value missing from the table it refers to, data must be added to the referenced table first.",
+          "qids": [
+            "2010h22a-q079",
+            "2026r08-q072"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "1つの表が複数の表を参照するときは参照先ごとに外部キーを置くので、1つの表に外部キーが複数あってよい。",
+          "text_zh": "一个表引用多个表时，要为每个被引用的表各设一个外键，因此一个表中可以有多个外键。",
+          "text_en": "A table that refers to several tables gets a separate foreign key for each one, so a single table may have more than one foreign key.",
+          "qids": [
+            "2017h29a-q088",
+            "2018h30a-q085"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "表",
+              "zh": "表",
+              "en": "Table"
+            },
+            {
+              "jp": "列",
+              "zh": "列",
+              "en": "Column"
+            },
+            {
+              "jp": "役割",
+              "zh": "作用",
+              "en": "Role"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "学級表",
+                  "zh": "班级表",
+                  "en": "Class table"
+                },
+                {
+                  "jp": "学級コード",
+                  "zh": "班级代码",
+                  "en": "Class code"
+                },
+                {
+                  "jp": "主キー",
+                  "zh": "主键",
+                  "en": "Primary key"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "生徒表",
+                  "zh": "学生表",
+                  "en": "Student table"
+                },
+                {
+                  "jp": "生徒番号",
+                  "zh": "学号",
+                  "en": "Student No."
+                },
+                {
+                  "jp": "主キー",
+                  "zh": "主键",
+                  "en": "Primary key"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "生徒表",
+                  "zh": "学生表",
+                  "en": "Student table"
+                },
+                {
+                  "jp": "学級コード",
+                  "zh": "班级代码",
+                  "en": "Class code"
+                },
+                {
+                  "jp": "外部キー(学級表の学級コードを参照)",
+                  "zh": "外键（引用班级表的班级代码）",
+                  "en": "Foreign key (refers to the class code in the class table)"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22a-q079",
+        "2013h25h-q055",
+        "2026r08-q072"
+      ],
+      "definition_jp": "外部キーは、ほかの表の主キーの値を参照する列(または列の組合せ)で、表と表を値によって結び付ける。",
+      "definition_zh": "外键（外部キー）是引用其他表主键值的列（或列的组合），通过值把表与表联系起来。",
+      "definition_en": "A foreign key (外部キー) is a column (or set of columns) that refers to primary key values in another table, linking the two tables through those values.",
+      "explanation_jp": "外部キーの列には、参照先の表に存在しない値は入れられず、この決まりを参照制約(参照整合性)という。この制約によって、上の表で言えば学級表にない学級を指す生徒の行が生じず、表どうしのつながりが保たれる。",
+      "explanation_zh": "外键列中不能填入被引用表里不存在的值，这条规则称为参照约束（参照完整性）。有了这条约束，以上表为例，就不会出现指向班级表中并不存在的班级的学生行，表与表之间的联系得以保持。",
+      "explanation_en": "A foreign key column cannot hold a value that does not exist in the table it refers to, and this rule is called a referential constraint (referential integrity). In the tables above, it means no student row can point to a class missing from the class table, so the link between the tables stays intact.",
+      "memory_hook_jp": "「外部」は自分の表の外を指すという意味。外部キーは、外の表への道しるべになる。",
+      "memory_hook_zh": "“外”指的是指向本表之外。外键就是通往其他表的路标。",
+      "memory_hook_en": "Foreign means it points outside its own table: a foreign key is a signpost to another table.",
+      "inline_quiz": [
+        "2010h22a-q079",
+        "2013h25h-q055",
+        "2026r08-q072"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "インデックス",
+      "term_zh": "索引",
+      "term_en": "Index",
+      "one_jp": "**インデックス**は、表の列の値と行の位置を対応づけた索引で、**検索を速く**するために作る。",
+      "one_zh": "**索引**（[[jp:インデックス]]）是把表中列的值与行的位置对应起来的查找目录，用来**加快检索**。",
+      "one_en": "An **index** ([[jp:インデックス]]) is a lookup structure that maps a column's values to row locations, built to **speed up searches**.",
+      "detail_jp": "索引がなければ、条件に合う行を探すために表の行を端から調べることになる。索引があれば検索は速くなる一方、行を書き換えるたびに索引も直すので書き込みの手間が増え、索引そのものを保存する分だけ記憶領域も増える。",
+      "detail_zh": "没有索引时，要找出符合条件的行，只能从头到尾逐行查看。有了索引，检索会变快，但每次改写行时都要同时修改索引，写入的工作量随之增加，而且保存索引本身也要多占存储空间。",
+      "detail_en": "Without an index, finding rows that meet a condition means scanning the table from top to bottom. With one, searches get faster, but every change to a row also requires updating the index, which adds work to each write and takes extra storage for the index itself.",
+      "analogy_jp": "分厚い本の巻末にある索引のようなもの。語からページをすぐ引けるが、本文を改訂するたびに索引も直す必要がある。",
+      "analogy_zh": "就像厚书末尾的索引。可以按词语迅速查到页码，但每次修订正文时，索引也得跟着改。",
+      "analogy_en": "It is like the index at the back of a thick book. You can jump from a word to its page right away, but whenever the text is revised, the index has to be revised too.",
+      "hook_jp": "英語の index には「人差し指」の意味もある。目的の行を指さして場所を教える、と覚える。",
+      "hook_zh": "英文 index 还有“食指”的意思。可以记成：用手指指出目标行在哪里。",
+      "hook_en": "In English, index also names the forefinger (the index finger): picture it pointing straight at the row you want.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "インデックスの役割は検索を速くすることであり、どの列に作るかは検索の使われ方に応じて決める。",
+          "text_zh": "索引（[[jp:インデックス]]）的作用是加快检索，在哪一列上建立则根据检索的使用方式来决定。",
+          "text_en": "An index ([[jp:インデックス]]) exists to speed up searches, and which columns get one depends on how searches are actually used.",
+          "qids": [
+            "2018h30h-q086",
+            "2025r07-q065"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "インデックスは検索に使う列ごとに作れるので、1つの表に複数あってよい。",
+          "text_zh": "索引可以为每个用于检索的列分别建立，所以一个表中可以有多个索引。",
+          "text_en": "An index can be built for each column used in searches, so one table may have several indexes.",
+          "qids": [
+            "2013h25a-q051"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "インデックスなし",
+            "zh": "没有索引",
+            "en": "Without an index"
+          },
+          "b": {
+            "jp": "インデックスあり",
+            "zh": "有索引",
+            "en": "With an index"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "条件に合う行の検索",
+                "zh": "查找符合条件的行",
+                "en": "Finding rows that match a condition"
+              },
+              "a": {
+                "jp": "全行を順に調べる",
+                "zh": "逐行查看所有行",
+                "en": "Check every row in turn"
+              },
+              "b": {
+                "jp": "索引から行の位置へ直接たどる",
+                "zh": "通过索引直接找到行的位置",
+                "en": "Go straight from the index to the row"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "行の追加・更新・削除",
+                "zh": "添加、更新、删除行",
+                "en": "Adding, updating, deleting rows"
+              },
+              "a": {
+                "jp": "表だけを書き換える",
+                "zh": "只改写表",
+                "en": "Rewrite the table only"
+              },
+              "b": {
+                "jp": "表に加えて索引も書き換える",
+                "zh": "改写表的同时也要改写索引",
+                "en": "Rewrite the index as well as the table"
+              }
+            },
+            {
+              "label": {
+                "jp": "記憶領域",
+                "zh": "存储空间",
+                "en": "Storage space"
+              },
+              "a": {
+                "jp": "表の分だけ",
+                "zh": "只占表本身的空间",
+                "en": "The table alone"
+              },
+              "b": {
+                "jp": "索引の分が増える",
+                "zh": "再加上索引占用的空间",
+                "en": "Extra space for the index"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2018h30h-q086",
+        "2013h25a-q051",
+        "2025r07-q065"
+      ],
+      "definition_jp": "インデックスは、表の列の値と行の位置を対応づけた索引で、検索を速くするために作る。",
+      "definition_zh": "索引（インデックス）是把表中列的值与行的位置对应起来的查找目录，用来加快检索。",
+      "definition_en": "An index (インデックス) is a lookup structure that maps a column's values to row locations, built to speed up searches.",
+      "explanation_jp": "索引がなければ、条件に合う行を探すために表の行を端から調べることになる。索引があれば検索は速くなる一方、行を書き換えるたびに索引も直すので書き込みの手間が増え、索引そのものを保存する分だけ記憶領域も増える。",
+      "explanation_zh": "没有索引时，要找出符合条件的行，只能从头到尾逐行查看。有了索引，检索会变快，但每次改写行时都要同时修改索引，写入的工作量随之增加，而且保存索引本身也要多占存储空间。",
+      "explanation_en": "Without an index, finding rows that meet a condition means scanning the table from top to bottom. With one, searches get faster, but every change to a row also requires updating the index, which adds work to each write and takes extra storage for the index itself.",
+      "memory_hook_jp": "英語の index には「人差し指」の意味もある。目的の行を指さして場所を教える、と覚える。",
+      "memory_hook_zh": "英文 index 还有“食指”的意思。可以记成：用手指指出目标行在哪里。",
+      "memory_hook_en": "In English, index also names the forefinger (the index finger): picture it pointing straight at the row you want.",
+      "inline_quiz": [
+        "2018h30h-q086",
+        "2013h25a-q051",
+        "2025r07-q065"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "正規化",
+      "term_zh": "规范化",
+      "term_en": "Normalization",
+      "one_jp": "**正規化**は、データの**重複**をなくして更新時の**矛盾**を防ぐために、1つの表を複数の表に分ける設計の作業である。",
+      "one_zh": "**规范化**（[[jp:正規化]]）是为了消除数据的**重复**、防止更新时出现**矛盾**，而把一张表拆分成多张表的设计工作。",
+      "one_en": "**Normalization** ([[jp:正規化]]) is the design work of splitting one table into several to remove **duplicated** data and prevent **inconsistencies** when data is updated.",
+      "detail_jp": "同じ事実が何か所にも記録されていると、変更のときに一部だけ直して値が食い違うおそれがある。正規化では、各項目がどの項目によって決まるかを手がかりに表を分け、分けた表どうしは共通の列(主キーと外部キー)で結び付ける。段階を進めるほど表は細かく分かれる。",
+      "detail_zh": "同一事实记录在好几个地方时，修改时可能只改了其中一部分，导致数值前后不一致。规范化以“每个项目由哪个项目决定”为线索来拆分表，拆开的表之间再用共同的列（主键和外键）联系起来。规范化推进得越深入，表就分得越细。",
+      "detail_en": "When the same fact is stored in several places, a change may reach only some of them and leave the values out of step. Normalization splits tables according to which item each item depends on, then links the resulting tables through shared columns (primary and foreign keys). The further normalization goes, the finer the tables are divided.",
+      "analogy_jp": "いろいろな書類に何度も書いていた取引先の住所を、専用の取引先名簿に切り出し、書類には名簿の番号だけを書くようにするようなもの。住所が変わっても名簿の1か所を直せば済む。",
+      "analogy_zh": "好比把过去在各种单据上反复填写的往来单位地址，单独整理成一本往来单位名册，单据上只写名册里的编号。地址变了，只要改名册里的一处就行。",
+      "analogy_en": "Imagine a business partner's address that used to be copied onto every form, moved into a dedicated partner list so that forms carry only the list number. When the address changes, you fix one entry in the list.",
+      "hook_jp": "「正規」は決まった形に整えること。整えるほど表は増える、と逆向きの感覚で覚える。",
+      "hook_zh": "“规范”就是整理成规定的形式。记住这个反直觉的点：越整理，表反而越多。",
+      "hook_en": "To normalize is to put things into a standard form, and here tidying up has a counterintuitive effect: the tidier it gets, the more tables you have.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "正規化のねらいは、同じ事実を1か所にだけ記録して、更新したときに値が食い違わないようにし、保守を楽にすることにある。",
+          "text_zh": "规范化（[[jp:正規化]]）的目的，是让同一事实只记录在一处，更新时数值不会前后不一致，从而便于维护。",
+          "text_en": "Normalization ([[jp:正規化]]) aims to store each fact in just one place, so values never disagree after an update and maintenance gets easier.",
+          "qids": [
+            "2009h21a-q063",
+            "2014h26a-q068",
+            "2019h31h-q092",
+            "2026r08-q069"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "別の列(例えば会員番号)だけで値が決まる項目は、その列を主キーとする表へ移し、元の表にはその列を残して結び付ける。",
+          "text_zh": "值只由另一列（例如会员编号）决定的项目，要移到以该列为主键（[[jp:主キー]]）的表中，原表则保留这一列来建立联系。",
+          "text_en": "An item whose value depends only on another column (such as the member number) moves to a table that uses that column as its primary key ([[jp:主キー]]), and the original table keeps the column to stay linked.",
+          "qids": [
+            "2014h26h-q060",
+            "2016h28h-q094",
+            "2024r06-q081"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ほかの項目から計算で求められる項目は冗長な項目である。例えば単価と数量があれば金額は求まる。",
+          "text_zh": "能由其他项目计算得出的项目属于冗余项目（[[jp:冗長]]）。例如有了单价和数量，就能算出金额。",
+          "text_en": "An item that can be calculated from other items is redundant ([[jp:冗長]]). For example, the amount follows from the unit price and quantity.",
+          "qids": [
+            "2020r02o-q057"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "予約の表に会員と講座の情報も混在",
+                "zh": "预约表里混有会员和课程的信息",
+                "en": "Booking table also holds member and course details"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "会員表を分ける(会員番号で決まる項目)",
+                "zh": "拆出会员表（由会员编号决定的项目）",
+                "en": "Split off a member table (items set by member No.)"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "講座表を分ける(講座コードで決まる項目)",
+                "zh": "拆出课程表（由课程代码决定的项目）",
+                "en": "Split off a course table (items set by course code)"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "予約表は会員番号と講座コードで参照",
+                "zh": "预约表通过会员编号和课程代码引用",
+                "en": "Booking table refers by member No. and course code"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "1つの表に全部を書くと、同じ会員名や講座名が予約のたびに繰り返し記録される。",
+            "caption_zh": "把所有内容写在一张表里，同一个会员名或课程名每预约一次就要重复记录一次。",
+            "caption_en": "With everything in one table, the same member name and course name are recorded again with every booking.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "会員番号だけで決まる会員名などを会員表に移し、会員番号を主キーにする。",
+            "caption_zh": "把只由会员编号决定的会员名等移到会员表，并以会员编号为主键。",
+            "caption_en": "Items such as the member name, which depend only on the member number, move to a member table keyed by member number.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "講座コードだけで決まる講座名や受講料を講座表に移し、講座コードを主キーにする。",
+            "caption_zh": "把只由课程代码决定的课程名和学费移到课程表，并以课程代码为主键。",
+            "caption_en": "The course name and fee, which depend only on the course code, move to a course table keyed by course code.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "予約表には会員番号と講座コードを外部キーとして残し、分けた表と結び付ける。",
+            "caption_zh": "预约表中保留会员编号和课程代码作为外键，与拆出的表相连。",
+            "caption_en": "The booking table keeps the member number and course code as foreign keys that link it to the new tables.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2014h26a-q068",
+        "2019r01a-q087",
+        "2016h28h-q094"
+      ],
+      "definition_jp": "正規化は、データの重複をなくして更新時の矛盾を防ぐために、1つの表を複数の表に分ける設計の作業である。",
+      "definition_zh": "规范化（正規化）是为了消除数据的重复、防止更新时出现矛盾，而把一张表拆分成多张表的设计工作。",
+      "definition_en": "Normalization (正規化) is the design work of splitting one table into several to remove duplicated data and prevent inconsistencies when data is updated.",
+      "explanation_jp": "同じ事実が何か所にも記録されていると、変更のときに一部だけ直して値が食い違うおそれがある。正規化では、各項目がどの項目によって決まるかを手がかりに表を分け、分けた表どうしは共通の列(主キーと外部キー)で結び付ける。段階を進めるほど表は細かく分かれる。",
+      "explanation_zh": "同一事实记录在好几个地方时，修改时可能只改了其中一部分，导致数值前后不一致。规范化以“每个项目由哪个项目决定”为线索来拆分表，拆开的表之间再用共同的列（主键和外键）联系起来。规范化推进得越深入，表就分得越细。",
+      "explanation_en": "When the same fact is stored in several places, a change may reach only some of them and leave the values out of step. Normalization splits tables according to which item each item depends on, then links the resulting tables through shared columns (primary and foreign keys). The further normalization goes, the finer the tables are divided.",
+      "memory_hook_jp": "「正規」は決まった形に整えること。整えるほど表は増える、と逆向きの感覚で覚える。",
+      "memory_hook_zh": "“规范”就是整理成规定的形式。记住这个反直觉的点：越整理，表反而越多。",
+      "memory_hook_en": "To normalize is to put things into a standard form, and here tidying up has a counterintuitive effect: the tidier it gets, the more tables you have.",
+      "inline_quiz": [
+        "2014h26a-q068",
+        "2019r01a-q087",
+        "2016h28h-q094"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "主キー",
+      "b": "外部キー",
+      "rows": [
+        {
+          "label_jp": "役割",
+          "label_zh": "作用",
+          "label_en": "Role",
+          "a_jp": "自分の表の行を一意に識別する",
+          "a_zh": "唯一识别本表中的行",
+          "a_en": "Uniquely identifies rows in its own table",
+          "b_jp": "ほかの表の主キーを参照して表を結び付ける",
+          "b_zh": "引用其他表的主键，把表联系起来",
+          "b_en": "Refers to another table's primary key to link the tables",
+          "key": true
+        },
+        {
+          "label_jp": "同じ値",
+          "label_zh": "相同的值",
+          "label_en": "Repeated values",
+          "a_jp": "主キーの値(組なら組全体の値)はほかの行と重複できない",
+          "a_zh": "主键的值（组合主键则是组合整体的值）不能与其他行重复",
+          "a_en": "The key value (the combined value, for a multi-column key) cannot repeat in another row",
+          "b_jp": "何行に現れてもよい",
+          "b_zh": "可以出现在任意多行中",
+          "b_en": "May appear in any number of rows",
+          "key": false
+        },
+        {
+          "label_jp": "1つの表での数",
+          "label_zh": "一个表中的数量",
+          "label_en": "Number per table",
+          "a_jp": "1つ",
+          "a_zh": "1个",
+          "a_en": "One",
+          "b_jp": "参照先に応じて複数あってよい",
+          "b_zh": "可按引用对象设多个",
+          "b_en": "Several allowed, depending on the tables it refers to",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "主キー",
+      "b": "インデックス",
+      "rows": [
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "行を1つに特定する",
+          "a_zh": "锁定唯一的一行",
+          "a_en": "Pins down a single row",
+          "b_jp": "検索を速くする",
+          "b_zh": "加快检索",
+          "b_en": "Speeds up searches",
+          "key": true
+        },
+        {
+          "label_jp": "設定のしかた",
+          "label_zh": "设定方式",
+          "label_en": "How it is set",
+          "a_jp": "1つの表に1つだけ決める",
+          "a_zh": "每个表只设定一个",
+          "a_en": "Exactly one per table",
+          "b_jp": "検索の使われ方に応じて必要な列に作る",
+          "b_zh": "根据检索的使用方式，在需要的列上建立",
+          "b_en": "Built on the columns that searches need",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**E-R図**は実体と関連で業務のデータ構造を表し、関連には1対1や1対多などの多重度を付ける。",
+    "**主キー**は行を一意に識別する列またはその組合せで、その値はほかの行と重複できず、構成する列には空の値を入れられない。",
+    "**外部キー**はほかの表の主キーを参照する列(または列の組合せ)で、参照先に存在しない値は入れられない。",
+    "**インデックス**は検索を速くする索引で、書き込みの手間と記憶領域が増える。",
+    "**正規化**は、各項目が何によって決まるかで表を分け、重複と更新時の食い違いをなくす。"
+  ],
+  "key_points_zh": [
+    "**E-R图**用实体和关联表示业务的数据结构，关联上要标注一对一、一对多等多重度。",
+    "**主键**是唯一识别行的列或列的组合，其值不能与其他行重复，构成它的列也不能填空值。",
+    "**外键**是引用其他表主键的列（或列的组合），不能填入被引用表中不存在的值。",
+    "**索引**用来加快检索，代价是写入的工作量和存储空间都会增加。",
+    "**规范化**按每个项目由什么决定来拆分表，消除重复和更新时的不一致。"
+  ],
+  "key_points_en": [
+    "An **E-R diagram** describes a business's data structure with entities and relationships, and each relationship carries a multiplicity such as one-to-one or one-to-many.",
+    "A **primary key** is a column or set of columns that uniquely identifies a row; its value cannot repeat in another row, and none of its columns may be empty.",
+    "A **foreign key** is a column (or set of columns) that refers to another table's primary key, and it cannot hold a value missing from that table.",
+    "An **index** speeds up searches at the cost of extra write work and storage space.",
+    "**Normalization** splits tables by what each item depends on, removing duplication and mismatches after updates."
+  ],
+  "overview": {
+    "intro_jp": "E-R図で、業務の実体と関連、関連の多重度を読み取れるようになる。主キーと外部キーを、役割と値の制約で区別できるようになる。正規化で表をどう分けるか、その目的と合わせて説明できるようになる。",
+    "intro_zh": "能从E-R图中读出业务的实体、实体间的关联以及关联的多重度。能从作用和取值限制两方面区分主键与外键。能说明规范化如何拆分表，以及这样做的目的。",
+    "intro_en": "Read an E-R diagram to find the business entities, their relationships, and the multiplicity of each relationship. Tell a primary key from a foreign key by its role and the limits on its values. Explain how normalization splits tables and why.",
+    "freq_badge": "頻出",
+    "est_minutes": 32
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "E-R図: E-R図といえば実体と関連をモデル化する設計図",
-      "主キー: 主キーといえば行を一意に識別(重複・NULL禁止)",
-      "外部キー: 外部キーといえば他テーブルの主キーを参照して関連付け",
-      "インデックス: インデックスといえば検索高速化だが書き込みは遅くなる",
-      "正規化: 正規化といえばテーブル分割で冗長排除と整合性向上"
-    ],
     "key_points_jp": [
-      "E-R図は実体(エンティティ)と関連(リレーションシップ)で構成し、1対多・多対多などの多重度を表す概念設計の道具である。",
-      "主キーは行を一意に識別する列で、重複もNULLも許されない。外部キーは他テーブルの主キーを参照して関連を実装し、参照整合性を保つ。",
-      "インデックスは検索を高速化する一方、書き込みが遅くなり領域を消費するため、付けすぎは禁物である。",
-      "正規化は第1→第2→第3正規形と段階的にテーブルを分割し、データの冗長排除と整合性向上を図る設計手法である。",
-      "E-R図(概念設計)→主キー・外部キー(実装)→正規化(品質向上)という設計の流れで理解すると全体像がつかめる。"
+      "E-R図は実体と関連で業務のデータ構造を表し、関連には1対1や1対多などの多重度を付ける。",
+      "主キーは行を一意に識別する列またはその組合せで、その値はほかの行と重複できず、構成する列には空の値を入れられない。",
+      "外部キーはほかの表の主キーを参照する列(または列の組合せ)で、参照先に存在しない値は入れられない。",
+      "インデックスは検索を速くする索引で、書き込みの手間と記憶領域が増える。",
+      "正規化は、各項目が何によって決まるかで表を分け、重複と更新時の食い違いをなくす。"
     ],
     "key_points_zh": [
-      "E-R 图由实体（Entity）和关联（Relationship）构成，用一对多、多对多等基数来表示，是概念设计的工具。",
-      "主键是唯一识别行的列，不允许重复也不允许 NULL。外键引用另一张表的主键来实现关联，并保持参照完整性。",
-      "索引能加速检索，但会使写入变慢并消耗存储空间，因此不可滥加。",
-      "规范化按第一→第二→第三范式逐阶段拆分表，旨在消除数据冗余、提升一致性，是一种设计方法。",
-      "按 E-R 图（概念设计）→主键、外键（实现）→规范化（提升质量）这一设计流程来理解，就能把握整体全貌。"
+      "E-R图用实体和关联表示业务的数据结构，关联上要标注一对一、一对多等多重度。",
+      "主键是唯一识别行的列或列的组合，其值不能与其他行重复，构成它的列也不能填空值。",
+      "外键是引用其他表主键的列（或列的组合），不能填入被引用表中不存在的值。",
+      "索引用来加快检索，代价是写入的工作量和存储空间都会增加。",
+      "规范化按每个项目由什么决定来拆分表，消除重复和更新时的不一致。"
     ],
     "key_points_en": [
-      "An E-R diagram consists of entities and relationships, expresses cardinalities such as one-to-many and many-to-many, and is a tool for conceptual design.",
-      "A primary key is a column that uniquely identifies a row, allowing neither duplicates nor NULL. A foreign key references another table's primary key to implement relationships and maintain referential integrity.",
-      "An index speeds up searches but slows down writes and consumes storage space, so it must not be added excessively.",
-      "Normalization splits tables stage by stage as first → second → third normal form, aiming to eliminate data redundancy and improve consistency, and is a design technique.",
-      "Understanding it along the design flow of E-R diagram (conceptual design) → primary/foreign keys (implementation) → normalization (quality improvement) lets you grasp the overall picture."
+      "An E-R diagram describes a business's data structure with entities and relationships, and each relationship carries a multiplicity such as one-to-one or one-to-many.",
+      "A primary key is a column or set of columns that uniquely identifies a row; its value cannot repeat in another row, and none of its columns may be empty.",
+      "A foreign key is a column (or set of columns) that refers to another table's primary key, and it cannot hold a value missing from that table.",
+      "An index speeds up searches at the cost of extra write work and storage space.",
+      "Normalization splits tables by what each item depends on, removing duplication and mismatches after updates."
+    ],
+    "memory_hooks_jp": [
+      "E-R図: E は Entity(実体)、R は Relationship(関連)の頭文字。名前そのものが図の2つの部品を表している。",
+      "主キー: 英語では primary key。primary は「第一の」という意味で、表の行を見分ける第一の手がかりになる。",
+      "外部キー: 「外部」は自分の表の外を指すという意味。外部キーは、外の表への道しるべになる。",
+      "インデックス: 英語の index には「人差し指」の意味もある。目的の行を指さして場所を教える、と覚える。",
+      "正規化: 「正規」は決まった形に整えること。整えるほど表は増える、と逆向きの感覚で覚える。"
     ],
     "memory_hooks_zh": [
-      "E-R图：说到 E-R 图，就是对实体与关联建模的设计图",
-      "主键：说到主键，就是唯一识别行（禁止重复与 NULL）",
-      "外键：说到外键，就是引用另一张表的主键来建立关联",
-      "索引：说到索引，就是加速检索但写入会变慢",
-      "规范化：说到规范化，就是拆分表以消除冗余、提升一致性"
+      "E-R图（实体-关联图）：E 取自 Entity（实体），R 取自 Relationship（关联）。名字本身就点出了图的两种组成部分。",
+      "主键：英文是 primary key，primary 意为“首要的”，也就是区分表中各行的首要依据。",
+      "外键：“外”指的是指向本表之外。外键就是通往其他表的路标。",
+      "索引：英文 index 还有“食指”的意思。可以记成：用手指指出目标行在哪里。",
+      "规范化：“规范”就是整理成规定的形式。记住这个反直觉的点：越整理，表反而越多。"
     ],
     "memory_hooks_en": [
-      "E-R diagram: E-R diagram → the blueprint that models entities and relationships",
-      "Primary key: Primary key → uniquely identifies a row (no duplicates, no NULL)",
-      "Foreign key: Foreign key → references another table's primary key to link them",
-      "Index: Index → speeds up searches but slows down writes",
-      "Normalization: Normalization → splitting tables to remove redundancy and improve consistency"
+      "E-R Diagram: E stands for Entity and R for Relationship, so the name itself lists the diagram's two building blocks.",
+      "Primary Key: Primary means \"first in importance\": the primary key is the first thing you look at to tell rows apart.",
+      "Foreign Key: Foreign means it points outside its own table: a foreign key is a signpost to another table.",
+      "Index: In English, index also names the forefinger (the index finger): picture it pointing straight at the row you want.",
+      "Normalization: To normalize is to put things into a standard form, and here tidying up has a counterintuitive effect: the tidier it gets, the more tables you have."
     ]
   },
   "challenge_questions": [
-    "2010h22h-q083",
     "2011h23tokubetsu-q072",
-    "2012h24a-q053",
     "2012h24h-q079",
-    "2018h30h-q086"
+    "2018h30a-q073",
+    "2017h29a-q088",
+    "2023r05-q059"
   ],
   "source_figures": [
     {
@@ -237,9 +1051,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "E-R图、键设计与规范化",
-  "title_en": "E-R Diagrams, Key Design, and Normalization",
-  "unit_summary_zh": "理解关系数据库设计的核心：用 E-R 图对实体与关联进行建模、用主键与外键来识别行并关联表之间的关系、用规范化消除冗余、用索引优化检索。",
-  "unit_summary_en": "Understand the core of relational database design: modeling entities and relationships with E-R diagrams, identifying rows and linking tables with primary and foreign keys, eliminating redundancy through normalization, and optimizing searches with indexes."
+  }
 }

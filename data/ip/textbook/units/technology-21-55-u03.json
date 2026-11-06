@@ -1,133 +1,601 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-21-55-u03",
   "topic_id": "technology-21-55",
   "category": "technology",
   "title_jp": "データ分析と前処理",
+  "title_zh": "数据分析与预处理",
+  "title_en": "Data Analysis and Preprocessing",
   "unit_summary_jp": "データの結合、品質を整えるデータクレンジング、識別コードを定めるコード設計など、データベースに格納する前のデータの分析・整備の考え方を理解する。",
+  "unit_summary_zh": "理解将数据存入数据库之前的数据分析与整理思路，包括数据的结合、整理质量的数据清洗，以及确定识别编码的编码设计等。",
+  "unit_summary_en": "Understand the concepts of analyzing and preparing data before storing it in a database, including joining data, data cleansing to improve quality, and code design to define identification codes.",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-21-55-u01",
     "technology-21-55-u02"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、データをデータベースへ格納する前の「分析・前処理」の考え方を学びます。誤りや表記揺れを正すデータクレンジング、複数のデータを突き合わせる結合、そして項目を識別するためのコード設計です。データ品質を左右する実務的で重要な工程です。",
-    "freq_badge": "頻出",
-    "est_minutes": 11,
-    "intro_zh": "本单元学习将数据存入数据库之前的“分析与预处理”思路。包括纠正错误和写法不一致的数据清洗、把多份数据相互对照的结合，以及为各项目赋予标识的编码设计。这是左右数据质量的、实务性强且重要的工序。",
-    "intro_en": "In this unit, you will learn the concept of \"analysis and preprocessing\" performed before storing data in a database. These are data cleansing to correct errors and inconsistent notation, joining to match multiple datasets together, and code design to identify items. They are practical and important steps that determine data quality."
-  },
+  "goals_jp": [
+    "**データクレンジング**で直す不備の種類を挙げ、分析の前に行う理由を説明できるようになる",
+    "**データの結合**で、共通の列を手がかりに複数の表を1つにまとめる流れを説明できるようになる",
+    "**コード設計**で決める桁数や付け方と、**チェックディジット**の働きを説明できるようになる"
+  ],
+  "goals_zh": [
+    "能列举**数据清洗**要修正的几类问题，并说明为什么要在分析之前进行",
+    "能说明**数据的结合**如何以共同的列为线索，把多张表合并成一张",
+    "能说明**编码设计**要确定的位数和编排方式，以及**校验位**的作用"
+  ],
+  "goals_en": [
+    "List the kinds of flaws that **data cleansing** fixes, and explain why it comes before analysis",
+    "Explain how a **data join** uses a shared column to bring several tables together into one",
+    "Explain what **code design** decides, such as the number of digits and the numbering scheme, and what a **check digit** does"
+  ],
+  "overview_cols_jp": [
+    "行う場面"
+  ],
+  "overview_cols_zh": [
+    "使用场合"
+  ],
+  "overview_cols_en": [
+    "When it is done"
+  ],
+  "overview_rows": [
+    {
+      "term": "データクレンジング",
+      "one_line_jp": "データの誤りや不統一を見つけて正す作業",
+      "one_line_zh": "找出并纠正数据中的错误和不统一之处",
+      "one_line_en": "Finding and correcting errors and inconsistencies in data",
+      "extra_jp": [
+        "集計・分析・格納に使う前"
+      ],
+      "extra_zh": [
+        "用于汇总、分析或存储之前"
+      ],
+      "extra_en": [
+        "Before the data is aggregated, analyzed, or stored"
+      ]
+    },
+    {
+      "term": "データの結合",
+      "one_line_jp": "複数の表を共通の列で突き合わせて1つにまとめる操作",
+      "one_line_zh": "用共同的列对照多张表，把它们合并成一张",
+      "one_line_en": "Matching several tables on a shared column and merging them into one",
+      "extra_jp": [
+        "必要な情報が複数の表に分かれているとき"
+      ],
+      "extra_zh": [
+        "所需信息分散在多张表中时"
+      ],
+      "extra_en": [
+        "When the information you need is spread across several tables"
+      ]
+    },
+    {
+      "term": "コード設計",
+      "one_line_jp": "データ項目に付ける番号や記号の体系を決める作業",
+      "one_line_zh": "确定给数据项目编配的编号或符号体系",
+      "one_line_en": "Deciding the system of numbers or symbols assigned to data items",
+      "extra_jp": [
+        "データを登録する仕組みを設計するとき"
+      ],
+      "extra_zh": [
+        "设计数据登记机制时"
+      ],
+      "extra_en": [
+        "When designing how data will be registered"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "データクレンジング",
-      "definition_jp": "誤り・重複・表記揺れを修正してデータの品質を整える前処理。",
-      "explanation_jp": "データクレンジングは、集めたデータに含まれる誤入力・重複・表記の揺れ・欠損などを洗い出し、正しく整える作業です。例えば「(株)」と「株式会社」の表記統一、同じ顧客が二重登録された重複の削除、空欄や明らかな異常値の補正などが該当します。\n\n分析や結合に先立つ最初の工程で、ここを怠ると後続の集計・分析結果が信用できなくなります(「ゴミを入れればゴミが出る」)。試験では、データを格納・活用する前に品質を高める作業がデータクレンジングである、という目的の理解が問われます。",
-      "analogy_jp": "料理の下ごしらえで、野菜の泥や傷んだ部分を取り除き、形を揃えてから調理するようなもの。素材をきれいにしてこそ良い料理になります。",
-      "memory_hook_jp": "データクレンジングといえば誤り・重複・表記揺れを正す前処理",
+      "term_zh": "数据清洗",
+      "term_en": "Data Cleansing",
+      "one_jp": "**データクレンジング**は、集めたデータに含まれる誤りや不統一を見つけて正し、**データの品質**を整える作業である。",
+      "one_zh": "**数据清洗**（[[jp:データクレンジング]]）是找出并纠正所收集数据中的错误和不统一之处、提升**数据质量**的工作。",
+      "one_en": "**Data cleansing** ([[jp:データクレンジング]]) is the work of finding and correcting errors and inconsistencies in collected data to raise **data quality**.",
+      "detail_jp": "不備には、例えば入力の誤り、同じものが二重に登録された**重複**、同じ内容が違う書き方で入った**表記の揺れ**、値が入っていない**欠損**がある。不備を残したまま集計や結合をすると、同じ人が別人として数えられるなど、結果を信用できなくなる。そのため、データを分析や格納に使う前の段階で行う。",
+      "detail_zh": "常见的问题有输入错误、同一对象被登记两次的**重复**、同一内容用不同写法录入的**写法不一致**，以及该有值却空着的**缺失**。带着这些问题去汇总或结合，就会出现同一个人被当成两个人来计数之类的情况，结果也就不可信了。所以，清洗要放在数据用于分析或存储之前进行。",
+      "detail_en": "Typical flaws include typing errors, **duplicates** where the same thing is registered twice, **inconsistent notation** where the same content is written in different ways, and **missing values** where a field is empty. If you aggregate or join data with these flaws still in it, one person may be counted as two, and the results can no longer be trusted. That is why cleansing is done before the data is used for analysis or storage.",
+      "analogy_jp": "年賀状を出す前の住所録の手入れに似ている。同じ友人が旧姓と新姓で2回載っていれば1つにまとめ、引っ越した人の住所を書き直してから宛名を印刷する。",
+      "analogy_zh": "就像寄贺卡前整理通讯录：同一个朋友因为改名被记了两次，就合并成一条；有人搬了家，就先改好地址，再打印收件人信息。",
+      "analogy_en": "It is like tidying your address book before sending holiday cards. If a friend appears twice, under an old and a new surname, you merge the entries, and you update the addresses of people who have moved before printing the labels.",
+      "hook_jp": "cleanse は英語で「洗い清める」。化粧落としのクレンジングと同じ語で、データの汚れを洗い落とす場面を思い浮かべる。",
+      "hook_zh": "英语 cleanse 意为“洗净”，和卸妆用的“洁面（cleansing）”是同一个词，可以想象把数据上的污渍洗掉。",
+      "hook_en": "Cleanse means to wash thoroughly, the same word as in a facial cleanser. Picture scrubbing the dirt off your data.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**データクレンジング**はデータの値やレコードに含まれる誤りや不統一を正す作業である。業務データの構造を実体と関連に分けて整理する作業は**データモデリング**と呼ばれ、目的が異なる。",
+          "text_zh": "**数据清洗**（[[jp:データクレンジング]]）纠正的是数据的值和记录中的错误和不统一。把业务数据的结构拆成实体和关系来整理，叫作**数据建模**（[[jp:データモデリング]]），两者目的不同。",
+          "text_en": "**Data cleansing** ([[jp:データクレンジング]]) corrects errors and inconsistencies in the values and records of the data. Organizing the structure of business data into entities and relationships is called **data modeling** ([[jp:データモデリング]]), which serves a different purpose.",
+          "qids": [
+            "2009h21a-q014"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "不備の種類",
+              "zh": "问题类型",
+              "en": "Type of flaw"
+            },
+            {
+              "jp": "例",
+              "zh": "示例",
+              "en": "Example"
+            },
+            {
+              "jp": "整え方",
+              "zh": "处理方法",
+              "en": "How to fix it"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "表記の揺れ",
+                  "zh": "写法不一致",
+                  "en": "Inconsistent notation"
+                },
+                {
+                  "jp": "「3丁目」と「三丁目」、全角と半角の数字が混在",
+                  "zh": "“3号楼”和“三号楼”混用，全角和半角数字并存",
+                  "en": "\"Unit 3\" and \"Unit three\" both appear, with full-width and half-width digits mixed"
+                },
+                {
+                  "jp": "どちらかの書き方に統一する",
+                  "zh": "统一为其中一种写法",
+                  "en": "Standardize on one form"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "重複",
+                  "zh": "重复",
+                  "en": "Duplicate"
+                },
+                {
+                  "jp": "同じ会員が入会時と再登録時の2件で登録されている",
+                  "zh": "同一会员在入会时和重新注册时各登记了一条",
+                  "en": "One member is registered twice, once on joining and again on re-registering"
+                },
+                {
+                  "jp": "1件にまとめる",
+                  "zh": "合并为一条",
+                  "en": "Merge into a single entry"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "欠損",
+                  "zh": "缺失",
+                  "en": "Missing value"
+                },
+                {
+                  "jp": "郵便番号の欄が空のまま",
+                  "zh": "邮政编码一栏是空的",
+                  "en": "The postal code field is left blank"
+                },
+                {
+                  "jp": "ほかの情報から補うか、集計の対象から外す",
+                  "zh": "根据其他信息补上，或不纳入汇总",
+                  "en": "Fill it in from other information, or leave it out of the totals"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "誤り・異常値",
+                  "zh": "错误、异常值",
+                  "en": "Error or outlier"
+                },
+                {
+                  "jp": "年齢の欄に 250 が入っている",
+                  "zh": "年龄一栏填的是 250",
+                  "en": "The age field contains 250"
+                },
+                {
+                  "jp": "元の記録を確かめて直す",
+                  "zh": "核对原始记录后改正",
+                  "en": "Check the original record and correct it"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2009h21a-q014"
+      ],
+      "definition_jp": "データクレンジングは、集めたデータに含まれる誤りや不統一を見つけて正し、データの品質を整える作業である。",
+      "definition_zh": "数据清洗（データクレンジング）是找出并纠正所收集数据中的错误和不统一之处、提升数据质量的工作。",
+      "definition_en": "Data cleansing (データクレンジング) is the work of finding and correcting errors and inconsistencies in collected data to raise data quality.",
+      "explanation_jp": "不備には、例えば入力の誤り、同じものが二重に登録された重複、同じ内容が違う書き方で入った表記の揺れ、値が入っていない欠損がある。不備を残したまま集計や結合をすると、同じ人が別人として数えられるなど、結果を信用できなくなる。そのため、データを分析や格納に使う前の段階で行う。",
+      "explanation_zh": "常见的问题有输入错误、同一对象被登记两次的重复、同一内容用不同写法录入的写法不一致，以及该有值却空着的缺失。带着这些问题去汇总或结合，就会出现同一个人被当成两个人来计数之类的情况，结果也就不可信了。所以，清洗要放在数据用于分析或存储之前进行。",
+      "explanation_en": "Typical flaws include typing errors, duplicates where the same thing is registered twice, inconsistent notation where the same content is written in different ways, and missing values where a field is empty. If you aggregate or join data with these flaws still in it, one person may be counted as two, and the results can no longer be trusted. That is why cleansing is done before the data is used for analysis or storage.",
+      "memory_hook_jp": "cleanse は英語で「洗い清める」。化粧落としのクレンジングと同じ語で、データの汚れを洗い落とす場面を思い浮かべる。",
+      "memory_hook_zh": "英语 cleanse 意为“洗净”，和卸妆用的“洁面（cleansing）”是同一个词，可以想象把数据上的污渍洗掉。",
+      "memory_hook_en": "Cleanse means to wash thoroughly, the same word as in a facial cleanser. Picture scrubbing the dirt off your data.",
       "inline_quiz": [
         "2009h21a-q014"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "数据清洗",
-      "term_en": "Data Cleansing",
-      "definition_zh": "修正错误、重复和写法不一致，以整理数据质量的预处理。",
-      "definition_en": "Preprocessing that improves data quality by correcting errors, duplicates, and inconsistent notation.",
-      "explanation_zh": "数据清洗是指找出所收集数据中包含的录入错误、重复、写法不一致、缺失等问题，并将其正确整理的工作。例如统一“（株）”与“株式会社”的写法、删除同一客户被重复登记的记录、补正空白或明显的异常值等都属于此类。\n\n它是分析或结合之前的第一道工序，若在此处偷懒，后续的汇总与分析结果就会变得不可信（“输入垃圾，输出垃圾”）。考试中会考查这样的目的理解：在存储和利用数据之前提高其质量的工作就是数据清洗。",
-      "explanation_en": "Data cleansing is the work of finding and properly correcting issues contained in collected data, such as input errors, duplicates, inconsistent notation, and missing values. For example, unifying the notation of \"(Co.)\" and \"Company Ltd.\", deleting duplicate records where the same customer was registered twice, and correcting blanks or obvious abnormal values all fall under this.\n\nIt is the first step before analysis or joining, and neglecting it makes the subsequent aggregation and analysis results untrustworthy (\"garbage in, garbage out\"). The exam tests the understanding of its purpose: the work of improving quality before storing and utilizing data is data cleansing.",
-      "analogy_zh": "就像做菜前的备料：去掉蔬菜上的泥和坏掉的部分，把形状切整齐后再下锅。把食材弄干净，才能做出好菜。",
-      "analogy_en": "Like prepping ingredients before cooking: removing dirt and spoiled parts from vegetables and trimming them to even shapes before cooking. Only by cleaning the ingredients can you make a good dish.",
-      "memory_hook_zh": "说到数据清洗，就是纠正错误、重复、写法不一致的预处理",
-      "memory_hook_en": "Data cleansing → preprocessing that fixes errors, duplicates, and inconsistent notation"
+      "figure": null
     },
     {
       "term": "データの結合",
-      "definition_jp": "複数のデータを共通項目で突き合わせて1つに統合する処理。",
-      "explanation_jp": "データの結合は、別々に管理されている複数の表(データ)を、共通する項目(キー)を手がかりに突き合わせて1つにまとめる処理です。例えば「顧客番号」を手がかりに、顧客マスタの氏名と注文データの注文額を結びつけ、誰がいくら買ったかを1つの表として得られます。\n\n結合によって、単独の表だけでは分からない関係を見える化でき、分析の幅が広がります。試験では、共通のキー項目をもとに複数データを統合する操作であること、整えた(クレンジング済みの)データを次に統合する工程として位置づくことを押さえます。",
-      "analogy_jp": "名簿と出席カードを「学籍番号」で照合し、「この番号の人は誰で、何回出席したか」を一枚の表にまとめる作業のようなものです。",
-      "memory_hook_jp": "データの結合といえば共通キーで複数データを1つに統合",
-      "inline_quiz": [
-        "2009h21a-q063"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "数据的结合",
       "term_en": "Data Join",
-      "definition_zh": "用共同的项目把多份数据相互对照，整合为一份的处理。",
-      "definition_en": "Processing that matches multiple datasets by a common item and integrates them into one.",
-      "explanation_zh": "数据的结合是指以共同项目（键）为线索，把分别管理的多张表（数据）相互对照、汇总为一份的处理。例如以“客户编号”为线索，把客户主数据中的姓名与订单数据中的订单金额关联起来，就能得到一张表，看清谁买了多少。\n\n通过结合，可以让仅凭单张表无法看出的关系可视化，从而拓宽分析的广度。考试中要掌握：它是以共同的键项目为依据整合多份数据的操作，并且它处于将整理（已清洗）好的数据进一步整合的工序位置。",
-      "explanation_en": "A data join is the processing that uses a common item (key) as a clue to match and consolidate multiple separately managed tables (data) into one. For example, using \"customer number\" as a clue, you can link the name in the customer master to the order amount in the order data and obtain a single table showing who bought how much.\n\nBy joining, you can visualize relationships that a single table alone cannot reveal, widening the scope of analysis. The exam asks you to grasp that it is an operation integrating multiple datasets based on a common key item, and that it is positioned as the step that next integrates the prepared (cleansed) data.",
-      "analogy_zh": "就像把名册和签到卡用“学号”进行核对，整理出一张表：“这个学号的人是谁、出席了几次”。",
-      "analogy_en": "Like matching a roster and attendance cards by \"student ID\" to compile a single table showing \"who this ID belongs to and how many times they attended.\"",
-      "memory_hook_zh": "说到数据的结合，就是用共同的键把多份数据整合为一份",
-      "memory_hook_en": "Data join → integrating multiple datasets into one by a common key"
+      "one_jp": "**データの結合**は、別々の表を**共通の列**(キー)の値で突き合わせ、1つの表にまとめる操作である。",
+      "one_zh": "**数据的结合**（[[jp:データの結合]]）是用**共同的列**（键）的值对照各自独立的表，把它们合并成一张表的操作。",
+      "one_en": "A **data join** ([[jp:データの結合]]) matches separate tables on the values of a **shared column** (the key) and combines them into a single table.",
+      "detail_jp": "結合では、両方の表にある同じ意味の列を手がかりに、値が一致する行どうしを組にして、列を横につなげる。これにより、1つの表だけでは分からない情報の組合せが得られる。突き合わせる相手が見つからない行の扱いは結合の方法によって異なり、例えば一致した行だけを残す方法がある。",
+      "detail_zh": "结合时，以两张表中含义相同的列为线索，把值相同的行配成一对，再把各自的列横向拼接起来。这样就能得到单看一张表无法知道的信息组合。找不到对应行的数据怎么处理，取决于结合的方式，例如有一种方式只保留匹配上的行。",
+      "detail_en": "A join uses a column with the same meaning in both tables, pairs rows whose values match, and places their columns side by side. This yields combinations of information that neither table can show on its own. What happens to rows with no match depends on the type of join; one type, for example, keeps only the rows that matched.",
+      "analogy_jp": "宅配の伝票の控えと顧客台帳を、伝票に書かれた顧客番号で照らし合わせ、控えに届け先の電話番号を書き足していく作業に似ている。",
+      "analogy_zh": "就像拿快递单的存根和客户名册，按单上的客户编号逐一核对，再把收件人的电话号码补写到存根上。",
+      "analogy_en": "It is like taking your copies of delivery slips, looking up each customer number in the customer register, and writing the recipient's phone number onto each slip.",
+      "hook_jp": "英語では join。2つの表が共通の列で手をつなぐ姿で覚える。",
+      "hook_zh": "英语叫 join，可以想象两张表借共同的列手拉手。",
+      "hook_en": "Join literally means to link up. Picture two tables holding hands through the column they share.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "表どうしを結び付ける手がかりは、両方の表にある同じ意味の列である。多くの場合、一方の表で行を見分ける**主キー**と、その値を参照する他方の表の**外部キー**が使われる。",
+          "text_zh": "把表与表连起来的线索，是两张表中含义相同的列。多数情况下，用的是一张表中用来区分各行的**主键**（[[jp:主キー]]），以及另一张表中引用该值的**外键**（[[jp:外部キー]]）。",
+          "text_en": "Tables are linked through a column that carries the same meaning in both. Usually this is the **primary key** ([[jp:主キー]]) that identifies rows in one table and the **foreign key** ([[jp:外部キー]]) in the other table that refers to it.",
+          "qids": [
+            "2011h23tokubetsu-q072"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**データの結合**は別々の表にある情報を組み合わせる操作で、誤りや不統一を正して品質を整える**データクレンジング**とは目的が異なる。整えてから結合するのが基本の順序である。",
+          "text_zh": "**数据的结合**（[[jp:データの結合]]）是把分散在不同表中的信息组合起来的操作，与纠正错误和不统一、提升质量的**数据清洗**（[[jp:データクレンジング]]）目的不同。基本顺序是先清洗，再结合。",
+          "text_en": "A **data join** ([[jp:データの結合]]) brings together information held in separate tables, while **data cleansing** ([[jp:データクレンジング]]) fixes errors and inconsistencies to improve quality, so their purposes differ. The standard order is to clean the data first and then join it."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "会員表と購買表",
+                "zh": "会员表和购买表",
+                "en": "Member and purchase tables"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "共通の列を決める",
+                "zh": "确定共同的列",
+                "en": "Pick the shared column"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "値が同じ行を対応づける",
+                "zh": "对应值相同的行",
+                "en": "Pair rows with equal values"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "1つの表になる",
+                "zh": "合成一张表",
+                "en": "One combined table"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "会員番号と氏名をもつ会員表、会員番号と購入額をもつ購買表が別々にある。",
+            "caption_zh": "有两张独立的表：会员表含会员编号和姓名，购买表含会员编号和购买金额。",
+            "caption_en": "There are two separate tables: a member table with member numbers and names, and a purchase table with member numbers and amounts spent.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "両方の表にある会員番号を、突き合わせの手がかりにする。",
+            "caption_zh": "把两张表都有的会员编号作为对照的线索。",
+            "caption_en": "The member number, found in both tables, becomes the basis for matching.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "会員番号が一致する行どうしを組にする。",
+            "caption_zh": "把会员编号相同的行配成一对。",
+            "caption_en": "Rows with the same member number are paired up.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "氏名と購入額が同じ行に並び、誰がいくら買ったかが1つの表で分かる。",
+            "caption_zh": "姓名和购买金额排在同一行，一张表就能看出谁买了多少。",
+            "caption_en": "Names and amounts now sit on the same row, so one table shows who spent how much.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "データの結合は、別々の表を共通の列(キー)の値で突き合わせ、1つの表にまとめる操作である。",
+      "definition_zh": "数据的结合（データの結合）是用共同的列（键）的值对照各自独立的表，把它们合并成一张表的操作。",
+      "definition_en": "A data join (データの結合) matches separate tables on the values of a shared column (the key) and combines them into a single table.",
+      "explanation_jp": "結合では、両方の表にある同じ意味の列を手がかりに、値が一致する行どうしを組にして、列を横につなげる。これにより、1つの表だけでは分からない情報の組合せが得られる。突き合わせる相手が見つからない行の扱いは結合の方法によって異なり、例えば一致した行だけを残す方法がある。",
+      "explanation_zh": "结合时，以两张表中含义相同的列为线索，把值相同的行配成一对，再把各自的列横向拼接起来。这样就能得到单看一张表无法知道的信息组合。找不到对应行的数据怎么处理，取决于结合的方式，例如有一种方式只保留匹配上的行。",
+      "explanation_en": "A join uses a column with the same meaning in both tables, pairs rows whose values match, and places their columns side by side. This yields combinations of information that neither table can show on its own. What happens to rows with no match depends on the type of join; one type, for example, keeps only the rows that matched.",
+      "memory_hook_jp": "英語では join。2つの表が共通の列で手をつなぐ姿で覚える。",
+      "memory_hook_zh": "英语叫 join，可以想象两张表借共同的列手拉手。",
+      "memory_hook_en": "Join literally means to link up. Picture two tables holding hands through the column they share.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "コード設計",
-      "definition_jp": "データ項目を体系的に分類・識別するためのコード体系を決める設計。",
-      "explanation_jp": "コード設計は、商品・顧客・部門などのデータ項目を一意に識別し、分類・集計しやすくするためのコード(番号や記号)の付け方を決める作業です。桁数や採番ルール、意味の持たせ方(順番号方式・区分コード方式・桁別コードなど)を設計します。\n\n良いコード設計は、一意性が保て、将来の項目追加にも耐え、人が扱いやすいものです。試験では、コードに分類や識別の役割を持たせること、桁数不足で項目が足りなくなる・意味を詰め込みすぎて分かりにくくなるといった設計上の注意点が問われます。データを整え統合した上で、識別の体系を与える観点です。",
-      "analogy_jp": "図書館の本に分類番号(請求記号)を割り振るようなもの。番号の付け方を決めておけば、どの棚の何の本かを一目で識別・整理できます。",
-      "memory_hook_jp": "コード設計といえばデータを識別・分類するコード体系の設計",
+      "term_zh": "编码设计",
+      "term_en": "Code Design",
+      "one_jp": "**コード設計**は、商品や顧客などのデータ項目に付ける**コード**(番号や記号)の桁数・付け方・各桁の意味を決める作業である。",
+      "one_zh": "**编码设计**（[[jp:コード設計]]）是为商品、客户等数据项目所编配的**编码**（编号或符号）确定位数、编排方式及各位含义的工作。",
+      "one_en": "**Code design** ([[jp:コード設計]]) is the work of deciding the length, numbering scheme, and meaning of each digit of the **codes** (numbers or symbols) assigned to data items such as products and customers.",
+      "detail_jp": "コードは項目を一意に見分けるためのもので、桁や番号の範囲に意味を持たせれば分類や集計にも使える。将来の項目の追加で番号が足りなくならないよう、桁数には余裕をもたせる。入力の誤りを見つけるため、ほかの桁から決まった規則で求めた検査用の数字である**チェックディジット**を付けることもある。",
+      "detail_zh": "编码的作用是唯一地区分各个项目，如果让数位或号码范围带上含义，还能用来分类和汇总。为了将来增加项目时号码不至于不够用，位数要留有余量。为了发现输入错误，有时还会加上**校验位**，它是由其他各位按固定规则算出的检查用数字。",
+      "detail_en": "A code exists to tell items apart uniquely, and if its digits or number ranges carry meaning, it can also be used for classification and aggregation. Leave room in the number of digits so that you do not run out of numbers as items are added later. To catch input errors, a **check digit** may also be added, a verification digit calculated from the other digits by a fixed rule.",
+      "analogy_jp": "郵便番号に似ている。先頭の数字で大まかな地域が分かり、後ろの数字ほど細かな区域を表すので、番号を見るだけで配達先のおおよその場所が分かる。",
+      "analogy_zh": "就像邮政编码：开头的数字表示大致的地区，越往后的数字代表越小的区域，所以只看号码就能知道投递地址的大概位置。",
+      "analogy_en": "It is like a postal code. The leading digits indicate a broad region and later digits narrow it down, so the number alone tells you roughly where a delivery is headed.",
+      "hook_jp": "digit は英語で「数字」や「桁」の意味。check(検査)のための digit と覚える。",
+      "hook_zh": "英语 digit 意为“数字”或“位”，记作用来 check（检查）的 digit。",
+      "hook_en": "Read the name literally: a digit whose only job is to check the others.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**チェックディジット**は元の桁の数字から決められた規則で計算した数字である。入力されたコードを同じ規則で計算し直し、結果が合わなければ入力の誤りと分かる。",
+          "text_zh": "**校验位**（[[jp:チェックディジット]]）是由原有各位数字按规定的规则计算出来的数字。对输入的编码按同一规则重新计算，结果对不上，就说明输入有误。",
+          "text_en": "A **check digit** ([[jp:チェックディジット]]) is a digit calculated from the original digits by a set rule. Recalculating an entered code with the same rule reveals an input error whenever the result does not match.",
+          "qids": [
+            "2010h22a-q088"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "付け方の例",
+              "zh": "编排方式举例",
+              "en": "Scheme"
+            },
+            {
+              "jp": "決め方",
+              "zh": "确定方法",
+              "en": "How it works"
+            },
+            {
+              "jp": "例",
+              "zh": "示例",
+              "en": "Example"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "順番号コード",
+                  "zh": "顺序编码",
+                  "en": "Sequential code"
+                },
+                {
+                  "jp": "登録した順に連番を振る",
+                  "zh": "按登记顺序编连续号",
+                  "en": "Numbers are given in order of registration"
+                },
+                {
+                  "jp": "0001、0002、0003",
+                  "zh": "0001、0002、0003",
+                  "en": "0001, 0002, 0003"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "区分コード",
+                  "zh": "区段编码",
+                  "en": "Block code"
+                },
+                {
+                  "jp": "番号の範囲ごとに分類を割り当てる",
+                  "zh": "按号码范围分配类别",
+                  "en": "Each range of numbers is assigned to a category"
+                },
+                {
+                  "jp": "100〜199 は飲料、200〜299 は菓子",
+                  "zh": "100～199 为饮料，200～299 为零食",
+                  "en": "100-199 for drinks, 200-299 for snacks"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "桁別コード",
+                  "zh": "分位编码",
+                  "en": "Positional code"
+                },
+                {
+                  "jp": "桁の位置ごとに意味を決める",
+                  "zh": "按数位的位置规定含义",
+                  "en": "Each digit position carries a set meaning"
+                },
+                {
+                  "jp": "先頭2桁が地域、次の2桁が店舗",
+                  "zh": "前 2 位表示地区，接下来的 2 位表示门店",
+                  "en": "First 2 digits for the region, next 2 for the store"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "表意コード",
+                  "zh": "表意编码",
+                  "en": "Mnemonic code"
+                },
+                {
+                  "jp": "文字や略号で中身が分かるようにする",
+                  "zh": "用文字或缩写让人看出内容",
+                  "en": "Letters or abbreviations show what the item is"
+                },
+                {
+                  "jp": "TV-32 で 32 型のテレビ",
+                  "zh": "TV-32 表示 32 英寸电视",
+                  "en": "TV-32 for a 32-inch television"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22a-q088"
+      ],
+      "definition_jp": "コード設計は、商品や顧客などのデータ項目に付けるコード(番号や記号)の桁数・付け方・各桁の意味を決める作業である。",
+      "definition_zh": "编码设计（コード設計）是为商品、客户等数据项目所编配的编码（编号或符号）确定位数、编排方式及各位含义的工作。",
+      "definition_en": "Code design (コード設計) is the work of deciding the length, numbering scheme, and meaning of each digit of the codes (numbers or symbols) assigned to data items such as products and customers.",
+      "explanation_jp": "コードは項目を一意に見分けるためのもので、桁や番号の範囲に意味を持たせれば分類や集計にも使える。将来の項目の追加で番号が足りなくならないよう、桁数には余裕をもたせる。入力の誤りを見つけるため、ほかの桁から決まった規則で求めた検査用の数字であるチェックディジットを付けることもある。",
+      "explanation_zh": "编码的作用是唯一地区分各个项目，如果让数位或号码范围带上含义，还能用来分类和汇总。为了将来增加项目时号码不至于不够用，位数要留有余量。为了发现输入错误，有时还会加上校验位，它是由其他各位按固定规则算出的检查用数字。",
+      "explanation_en": "A code exists to tell items apart uniquely, and if its digits or number ranges carry meaning, it can also be used for classification and aggregation. Leave room in the number of digits so that you do not run out of numbers as items are added later. To catch input errors, a check digit may also be added, a verification digit calculated from the other digits by a fixed rule.",
+      "memory_hook_jp": "digit は英語で「数字」や「桁」の意味。check(検査)のための digit と覚える。",
+      "memory_hook_zh": "英语 digit 意为“数字”或“位”，记作用来 check（检查）的 digit。",
+      "memory_hook_en": "Read the name literally: a digit whose only job is to check the others.",
       "inline_quiz": [
         "2010h22a-q088"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"コード設計\"]; A --> B[\"識別する(一意性)\"]; A --> C[\"分類する(区分)\"]; A --> D[\"集計しやすくする\"]; A --> E[\"桁数・採番ルールを決める\"]",
-        "svg_path": "figures/technology-21-55-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "编码设计",
-      "term_en": "Code Design",
-      "definition_zh": "确定一套编码体系，用于对数据项目进行体系化分类与识别的设计。",
-      "definition_en": "Design that defines a code system for systematically classifying and identifying data items.",
-      "explanation_zh": "编码设计是指确定编码（编号或符号）的赋予方式的工作，使商品、客户、部门等数据项目能够被唯一识别，并便于分类与汇总。要设计位数、编号规则，以及让编码承载意义的方式（顺序号方式、区分编码方式、按位编码等）。\n\n好的编码设计能够保持唯一性、能承受未来项目的增加，并且便于人使用。考试中会考查：要让编码承担分类与识别的作用；以及设计上的注意点，例如位数不足会导致项目不够用、塞入过多意义会变得难以理解。这是在整理并整合数据之后，再赋予识别体系的视角。",
-      "explanation_en": "Code design is the work of deciding how to assign codes (numbers or symbols) so that data items such as products, customers, and departments can be uniquely identified and are easy to classify and aggregate. You design the number of digits, the numbering rules, and how meaning is embedded (sequential-number method, classification-code method, digit-by-digit code, etc.).\n\nGood code design maintains uniqueness, withstands future additions of items, and is easy for people to handle. The exam tests that codes should carry the roles of classification and identification, as well as design cautions such as running out of items due to insufficient digits, or becoming hard to understand by packing in too much meaning. This is the perspective of giving an identification system after the data has been prepared and integrated.",
-      "analogy_zh": "就像给图书馆的书分配分类号（索书号）。事先定好编号的赋予方式，就能一眼识别并整理出某本书在哪个书架、是什么书。",
-      "analogy_en": "Like assigning classification numbers (call numbers) to books in a library. Once you decide how to assign numbers, you can identify and organize at a glance which shelf a book is on and what it is.",
-      "memory_hook_zh": "说到编码设计，就是设计用于识别、分类数据的编码体系",
-      "memory_hook_en": "Code design → designing a code system to identify and classify data"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "データクレンジング",
+      "b": "データの結合",
+      "rows": [
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "誤りや不統一をなくして品質を上げる",
+          "a_zh": "消除错误和不统一，提升质量",
+          "a_en": "Remove errors and inconsistencies to raise quality",
+          "b_jp": "別々の表にある情報を組み合わせる",
+          "b_zh": "把分散在不同表中的信息组合起来",
+          "b_en": "Bring together information from separate tables",
+          "key": true
+        },
+        {
+          "label_jp": "処理の後",
+          "label_zh": "处理之后",
+          "label_en": "Result",
+          "a_jp": "値やレコードが正しく揃ったデータになる",
+          "a_zh": "得到值和记录都正确、规整的数据",
+          "a_en": "Data whose values and records are correct and consistent",
+          "b_jp": "列が横につながった1つの表ができる",
+          "b_zh": "得到一张列横向拼接起来的表",
+          "b_en": "A single table with the columns placed side by side",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**データクレンジング**は、値の誤り・重複・表記の揺れ・欠損などを整えてデータの品質を上げる作業で、集計や分析の前に行う。",
+    "**データの結合**では、両方の表にある同じ意味の列の値が一致する行どうしを組にして、1つの表にまとめる。",
+    "**コード設計**では、項目を一意に見分けられ、将来の追加にも番号が足りるように、桁数・付け方・各桁の意味を決める。",
+    "**チェックディジット**を付けておくと、入力されたコードを計算し直し、結果が合わなければ打ち間違いと分かる。"
+  ],
+  "key_points_zh": [
+    "**数据清洗**处理值的错误、重复、写法不一致和缺失等问题，以提升数据质量，要在汇总和分析之前进行。",
+    "**数据的结合**把两张表中含义相同的列的值相同的行配成一对，合并成一张表。",
+    "**编码设计**要确定位数、编排方式和各位含义，使项目能被唯一区分，将来增加项目时号码也够用。",
+    "加上**校验位**后，把输入的编码重新计算一遍，结果对不上就说明输错了。"
+  ],
+  "key_points_en": [
+    "**Data cleansing** deals with wrong values, duplicates, inconsistent notation, missing values, and similar flaws to raise data quality, and it comes before aggregation and analysis.",
+    "A **data join** pairs rows whose values match in a column with the same meaning in both tables, combining them into one table.",
+    "**Code design** sets the number of digits, the numbering scheme, and the meaning of each digit so that every item can be told apart and there are enough numbers for future additions.",
+    "With a **check digit** attached, recalculating an entered code shows a typing mistake whenever the result does not match."
+  ],
+  "overview": {
+    "intro_jp": "データクレンジングで直す不備の種類を挙げ、分析の前に行う理由を説明できるようになる。データの結合で、共通の列を手がかりに複数の表を1つにまとめる流れを説明できるようになる。コード設計で決める桁数や付け方と、チェックディジットの働きを説明できるようになる。",
+    "intro_zh": "能列举数据清洗要修正的几类问题，并说明为什么要在分析之前进行。能说明数据的结合如何以共同的列为线索，把多张表合并成一张。能说明编码设计要确定的位数和编排方式，以及校验位的作用。",
+    "intro_en": "List the kinds of flaws that data cleansing fixes, and explain why it comes before analysis. Explain how a data join uses a shared column to bring several tables together into one. Explain what code design decides, such as the number of digits and the numbering scheme, and what a check digit does.",
+    "freq_badge": "頻出",
+    "est_minutes": 21
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "データクレンジング: データクレンジングといえば誤り・重複・表記揺れを正す前処理",
-      "データの結合: データの結合といえば共通キーで複数データを1つに統合",
-      "コード設計: コード設計といえばデータを識別・分類するコード体系の設計"
-    ],
     "key_points_jp": [
-      "データ整備は「クレンジング(整える)→結合(統合する)→コード設計(識別体系を与える)」という流れで考えると理解しやすい。",
-      "データクレンジングは誤り・重複・表記揺れ・欠損を正してデータ品質を高める前処理で、分析・統合に先立つ最初の工程。",
-      "データの結合は共通のキー項目を手がかりに複数のデータを突き合わせ、1つに統合する処理。",
-      "コード設計はデータ項目を一意に識別・分類するためのコード体系を決める設計で、一意性・拡張性・扱いやすさが要点。"
+      "データクレンジングは、値の誤り・重複・表記の揺れ・欠損などを整えてデータの品質を上げる作業で、集計や分析の前に行う。",
+      "データの結合では、両方の表にある同じ意味の列の値が一致する行どうしを組にして、1つの表にまとめる。",
+      "コード設計では、項目を一意に見分けられ、将来の追加にも番号が足りるように、桁数・付け方・各桁の意味を決める。",
+      "チェックディジットを付けておくと、入力されたコードを計算し直し、結果が合わなければ打ち間違いと分かる。"
     ],
     "key_points_zh": [
-      "数据整理可以按“清洗（整理）→结合（整合）→编码设计（赋予识别体系）”的流程来理解，更容易把握。",
-      "数据清洗是纠正错误、重复、写法不一致、缺失以提高数据质量的预处理，是先于分析与整合的第一道工序。",
-      "数据的结合是以共同的键项目为线索，把多份数据相互对照、整合为一份的处理。",
-      "编码设计是确定编码体系以唯一识别、分类数据项目的设计，要点是唯一性、扩展性和易用性。"
+      "数据清洗处理值的错误、重复、写法不一致和缺失等问题，以提升数据质量，要在汇总和分析之前进行。",
+      "数据的结合把两张表中含义相同的列的值相同的行配成一对，合并成一张表。",
+      "编码设计要确定位数、编排方式和各位含义，使项目能被唯一区分，将来增加项目时号码也够用。",
+      "加上校验位后，把输入的编码重新计算一遍，结果对不上就说明输错了。"
     ],
     "key_points_en": [
-      "Data preparation is easier to understand when thought of as the flow \"cleansing (prepare) → joining (integrate) → code design (give an identification system).\"",
-      "Data cleansing is preprocessing that corrects errors, duplicates, inconsistent notation, and missing values to improve data quality, and is the first step before analysis and integration.",
-      "A data join is processing that uses a common key item as a clue to match multiple datasets and integrate them into one.",
-      "Code design is the design of a code system to uniquely identify and classify data items, with uniqueness, extensibility, and ease of use as its key points."
+      "Data cleansing deals with wrong values, duplicates, inconsistent notation, missing values, and similar flaws to raise data quality, and it comes before aggregation and analysis.",
+      "A data join pairs rows whose values match in a column with the same meaning in both tables, combining them into one table.",
+      "Code design sets the number of digits, the numbering scheme, and the meaning of each digit so that every item can be told apart and there are enough numbers for future additions.",
+      "With a check digit attached, recalculating an entered code shows a typing mistake whenever the result does not match."
+    ],
+    "memory_hooks_jp": [
+      "データクレンジング: cleanse は英語で「洗い清める」。化粧落としのクレンジングと同じ語で、データの汚れを洗い落とす場面を思い浮かべる。",
+      "データの結合: 英語では join。2つの表が共通の列で手をつなぐ姿で覚える。",
+      "コード設計: digit は英語で「数字」や「桁」の意味。check(検査)のための digit と覚える。"
     ],
     "memory_hooks_zh": [
-      "数据清洗：说到数据清洗，就是纠正错误、重复、写法不一致的预处理",
-      "数据的结合：说到数据的结合，就是用共同的键把多份数据整合为一份",
-      "编码设计：说到编码设计，就是设计用于识别、分类数据的编码体系"
+      "数据清洗：英语 cleanse 意为“洗净”，和卸妆用的“洁面（cleansing）”是同一个词，可以想象把数据上的污渍洗掉。",
+      "数据的结合：英语叫 join，可以想象两张表借共同的列手拉手。",
+      "编码设计：英语 digit 意为“数字”或“位”，记作用来 check（检查）的 digit。"
     ],
     "memory_hooks_en": [
-      "Data cleansing: Data cleansing → preprocessing that fixes errors, duplicates, and inconsistent notation",
-      "Data join: Data join → integrating multiple datasets into one by a common key",
-      "Code design: Code design → designing a code system to identify and classify data"
+      "Data Cleansing: Cleanse means to wash thoroughly, the same word as in a facial cleanser. Picture scrubbing the dirt off your data.",
+      "Data Join: Join literally means to link up. Picture two tables holding hands through the column they share.",
+      "Code Design: Read the name literally: a digit whose only job is to check the others."
     ]
   },
   "challenge_questions": [
-    "2009h21a-q084",
-    "2010h22a-q063",
-    "2010h22h-q083",
+    "2009h21a-q014",
+    "2010h22a-q088",
     "2011h23a-q057",
     "2011h23tokubetsu-q072"
   ],
@@ -153,9 +621,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "数据分析与预处理",
-  "title_en": "Data Analysis and Preprocessing",
-  "unit_summary_zh": "理解将数据存入数据库之前的数据分析与整理思路，包括数据的结合、整理质量的数据清洗，以及确定识别编码的编码设计等。",
-  "unit_summary_en": "Understand the concepts of analyzing and preparing data before storing it in a database, including joining data, data cleansing to improve quality, and code design to define identification codes."
+  }
 }
