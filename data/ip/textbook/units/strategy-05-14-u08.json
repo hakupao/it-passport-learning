@@ -1,183 +1,666 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-05-14-u08",
   "topic_id": "strategy-05-14",
   "category": "strategy",
   "title_jp": "AIの仕組みと透明性・人間の関与",
+  "title_zh": "AI 的运行机制与透明性、人类的参与",
+  "title_en": "How AI Works: Transparency and Human Involvement",
   "unit_summary_jp": "マルチモーダルや生成のランダム性、説明可能AI(XAI)、人間が関与する仕組みを学ぶ。",
+  "unit_summary_zh": "学习多模态、生成的随机性、可解释 AI（XAI），以及让人类参与其中的机制。",
+  "unit_summary_en": "Learn about multimodality, the randomness of generation, explainable AI (XAI), and mechanisms that keep humans involved.",
   "order_in_topic": 8,
   "prerequisites": [
     "strategy-05-14-u07"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、AIが「どう動き・どう制御するか」を学びます。複数種類のデータを扱うマルチモーダルAI、出力が確率的に揺らぐランダム性、判断根拠を示すXAI、そして人間が判断に関与するヒューマンインザループ(HITL)を扱います。生成AIの信頼性・透明性に関わる頻出テーマです。",
-    "freq_badge": "標準",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习 AI「如何运行、如何被控制」。内容涵盖能处理多种数据的多模态 AI、输出会按概率产生波动的随机性、能展示判断依据的 XAI，以及让人类参与判断的人在回路（HITL）。这些都是与生成式 AI 的可信度和透明性相关的高频主题。",
-    "intro_en": "In this unit, we learn how AI \"operates and is controlled.\" We cover multimodal AI that handles multiple kinds of data, the randomness that makes outputs vary probabilistically, XAI that shows the basis for judgments, and human-in-the-loop (HITL) in which humans take part in decisions. These are frequently tested themes related to the reliability and transparency of generative AI."
-  },
-  "terms": [
+  "goals_jp": [
+    "**マルチモーダルAI** が扱うデータの形式 (モダリティ) を例で説明できる。",
+    "生成AIの出力に **ランダム性** があることと、それがもたらす表現の多様さと再現しにくさを説明できる。",
+    "**XAI** が AI の側に説明を求める技術で、**ヒューマンインザループ** が人を処理の流れに入れる仕組みであることを区別できる。"
+  ],
+  "goals_zh": [
+    "能举例说明 **多模态 AI** 所处理的数据形式（模态）。",
+    "能说明生成式 AI 的输出具有 **随机性**，以及它为何既让表达更丰富、又让结果难以重现。",
+    "能分清 **XAI** 是要求 AI 自己给出解释的技术，而 **人在回路** 是把人放进处理流程的机制。"
+  ],
+  "goals_en": [
+    "Give examples of the data formats (modalities) that **multimodal AI** works with.",
+    "Explain that generative AI output has **randomness**, and how this brings varied expression but makes results hard to reproduce.",
+    "Distinguish **XAI**, a technology that asks the AI itself for an explanation, from **human-in-the-loop**, a mechanism that puts people into the processing flow."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "主な狙い・特徴"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "主要目的与特点"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Main aim / feature"
+  ],
+  "overview_rows": [
     {
       "term": "マルチモーダルAI",
-      "definition_jp": "テキスト・画像・音声など複数種類のデータを統合して扱うAI。",
-      "explanation_jp": "マルチモーダルAIは、テキスト・画像・音声・動画といった異なる種類(モダリティ)のデータをまとめて入力・出力できるAIです。例えば「画像を見せて内容を文章で説明させる」「文章から画像を生成する」といった、種類をまたいだ処理ができます。\n\n文章だけを扱う従来の生成AIの発展形にあたり、人間に近い総合的な理解・表現に近づける技術です。試験では、複数の様式(モーダル)のデータを横断して扱える点が特徴であること、単一種類しか扱えないAIとの違いを押さえておくとよいでしょう。",
-      "analogy_jp": "目で見て、耳で聞いて、口で話せる人のように、複数の感覚を同時に使えるAIです。文字も絵も音もまとめて理解し、表現できるイメージです。",
-      "memory_hook_jp": "マルチモーダルAIといえばテキスト・画像・音声を横断して扱うAI",
-      "inline_quiz": [
-        "2010h22h-q008"
+      "one_line_jp": "文章・画像・音声など複数の形式のデータをまとめて扱う AI",
+      "one_line_zh": "能综合处理文字、图像、声音等多种形式数据的 AI",
+      "one_line_en": "AI that handles several data formats, such as text, images and audio, together",
+      "extra_jp": [
+        "AI の方式",
+        "形式をまたいだ入力と出力ができる"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "多模态 AI",
-      "term_en": "Multimodal AI",
-      "definition_zh": "整合处理文本、图像、语音等多种类型数据的 AI。",
-      "definition_en": "AI that integrates and handles multiple kinds of data, such as text, images, and audio.",
-      "explanation_zh": "多模态 AI 是能够把文本、图像、语音、视频等不同类型（模态）的数据综合起来进行输入和输出的 AI。例如「展示一张图片，让它用文字说明内容」「根据文字生成图片」等，可以进行跨类型的处理。\n\n它是只处理文字的传统生成式 AI 的进阶形态，是一种让 AI 更接近人类那种综合理解与表达能力的技术。在考试中，需要把握其特征在于能够跨越多种样式（模态）的数据进行处理，并理解它与只能处理单一类型的 AI 之间的区别。",
-      "explanation_en": "Multimodal AI is AI that can take in and produce data of different kinds (modalities) together, such as text, images, audio, and video. For example, it can perform cross-type processing like \"showing it an image and having it describe the content in words\" or \"generating an image from text.\"\n\nIt is an advanced form of conventional generative AI that handled only text, a technology that brings AI closer to human-like comprehensive understanding and expression. On the exam, it is good to grasp that its defining feature is the ability to handle data across multiple modalities, and to note how it differs from AI that can handle only a single type.",
-      "analogy_zh": "就像一个能用眼睛看、用耳朵听、用嘴说话的人一样，是一个能同时运用多种感官的 AI。可以把文字、图画、声音都综合起来理解并加以表达。",
-      "analogy_en": "Like a person who can see with their eyes, hear with their ears, and speak with their mouth, it is an AI that can use several senses at once. Picture it understanding and expressing text, pictures, and sound all together.",
-      "memory_hook_zh": "说到多模态 AI，就是跨文本、图像、语音进行处理的 AI",
-      "memory_hook_en": "Multimodal AI → AI that handles text, images, and audio across modalities"
+      "extra_zh": [
+        "AI 的类型",
+        "可跨形式地输入与输出"
+      ],
+      "extra_en": [
+        "Type of AI",
+        "Inputs and outputs can cross formats"
+      ]
     },
     {
       "term": "ランダム性",
-      "definition_jp": "AIの出力が確率に基づき毎回揺らぐ性質。",
-      "explanation_jp": "ランダム性とは、生成AIが同じ質問に対しても毎回まったく同じ答えを返すとは限らない性質のことです。AIは次に来る言葉を確率的に選んで文章を組み立てるため、出力に揺らぎ(ばらつき)が生まれます。\n\nこの性質のおかげで多様で自然な表現が得られる一方、再現性が低く、誤った内容を作る(ハルシネーション)原因にもなります。試験では、生成AIの出力が確定的でなく確率に基づくこと、だからこそ結果の検証や人間の確認が必要になる、という流れを押さえておきましょう。",
-      "analogy_jp": "同じ料理人に「おまかせ」を頼むと、その日ごとに少し違う一皿が出てくるようなもの。基本は同じでも、毎回まったく同一にはなりません。",
-      "memory_hook_jp": "ランダム性といえばAIの出力が確率で毎回揺らぐこと",
-      "inline_quiz": [
-        "2011h23a-q031"
+      "one_line_jp": "生成AIの出力が確率に基づいて回ごとに変わりうる性質",
+      "one_line_zh": "生成式 AI 的输出基于概率、每次都可能不同的性质",
+      "one_line_en": "The property that generative AI output is based on probability and can differ each time",
+      "extra_jp": [
+        "出力の性質",
+        "表現が多様になる一方、同じ結果を再現しにくい"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "随机性",
-      "term_en": "Randomness",
-      "definition_zh": "AI 的输出基于概率、每次都会产生波动的性质。",
-      "definition_en": "The property whereby AI output is based on probability and varies each time.",
-      "explanation_zh": "随机性是指生成式 AI 即使面对同一个问题，也未必每次都返回完全相同的答案这一性质。AI 是按概率挑选接下来要出现的词语来组织语句的，因此输出会产生波动（差异）。\n\n得益于这一性质，可以获得多样而自然的表达；但另一方面，它的可复现性较低，也会成为生成错误内容（幻觉）的原因。在考试中，要把握生成式 AI 的输出并非确定性的、而是基于概率，正因如此才需要对结果进行验证以及人类的确认，理清这一逻辑脉络。",
-      "explanation_en": "Randomness refers to the property that generative AI does not necessarily return exactly the same answer every time, even for the same question. Because AI builds sentences by choosing the next word probabilistically, variation (spread) arises in the output.\n\nThanks to this property, we obtain diverse and natural expressions; on the other hand, reproducibility is low, and it also becomes a cause of producing incorrect content (hallucination). On the exam, grasp the flow that the output of generative AI is not deterministic but probability-based, and that for this very reason verification of results and human confirmation become necessary.",
-      "analogy_zh": "就像向同一位厨师点「随意发挥」的菜，每天端上来的那一盘都会略有不同。底子虽然一样，但每次都不会完全一模一样。",
-      "analogy_en": "Like asking the same chef for the \"chef's choice\": each day a slightly different dish comes out. The basics are the same, but it is never exactly identical each time.",
-      "memory_hook_zh": "说到随机性，就是 AI 的输出按概率每次都会波动",
-      "memory_hook_en": "Randomness → AI output varies each time based on probability"
+      "extra_zh": [
+        "输出的性质",
+        "表达更加多样，但难以重现同一结果"
+      ],
+      "extra_en": [
+        "Property of output",
+        "More varied expression, but the same result is hard to reproduce"
+      ]
     },
     {
       "term": "XAI",
-      "definition_jp": "AIの判断根拠を人間が理解できる形で示す説明可能AI技術。",
-      "explanation_jp": "XAI(Explainable AI、説明可能AI)とは、AIがなぜその結論を出したのか、その判断の根拠を人間に分かる形で示そうとする技術・考え方です。AIの内部は複雑で「ブラックボックス」になりがちなため、根拠を見えるようにすることで信頼して使えるようにします。\n\n融資審査や医療診断のように、結果の理由が問われる分野で特に重要です。試験では、XAIが透明性・説明責任を高めるための技術であること、判断根拠が不明なブラックボックス型AIの課題に応える概念であることを押さえておきましょう。",
-      "analogy_jp": "テストで答えだけでなく「途中式」も書いてもらうようなもの。なぜその答えになったのかが見えると、納得して受け入れられます。",
-      "memory_hook_jp": "XAIといえばAIの判断根拠を説明する説明可能AI",
-      "inline_quiz": [
-        "2012h24a-q030"
+      "one_line_jp": "AI が結論に至った根拠を人に分かる形で示す技術",
+      "one_line_zh": "以人能理解的方式展示 AI 得出结论之依据的技术",
+      "one_line_en": "Technology that shows people, in a form they can follow, why the AI reached its conclusion",
+      "extra_jp": [
+        "技術・考え方",
+        "判断の透明性を高め、納得して使えるようにする"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"入力データ\"] --> B[\"AIモデル\"]; B --> C[\"判断結果\"]; B --> D[\"判断根拠の提示\"]; D --> E[\"人間が理解・納得\"]",
-        "svg_path": "figures/strategy-05-14-u08-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "XAI（可解释 AI）",
-      "term_en": "XAI",
-      "definition_zh": "以人类能够理解的形式展示 AI 判断依据的可解释 AI 技术。",
-      "definition_en": "Explainable AI technology that presents the basis for AI judgments in a form humans can understand.",
-      "explanation_zh": "XAI（Explainable AI，可解释 AI）是指力图把 AI 为什么得出该结论、其判断的依据以人类能理解的形式展示出来的技术与理念。由于 AI 内部复杂、容易变成「黑箱」，因此通过让依据可见，使人们能够放心地加以使用。\n\n在像贷款审查、医疗诊断这类会追问结果原因的领域，它尤为重要。在考试中，要把握 XAI 是一种用于提升透明性与问责性的技术，是回应判断依据不明的黑箱型 AI 所带来问题的概念。",
-      "explanation_en": "XAI (Explainable AI) is the technology and mindset that tries to show, in a form humans can understand, why AI reached its conclusion and what the basis for that judgment was. Because the inside of AI is complex and tends to become a \"black box,\" making the basis visible allows people to use it with confidence.\n\nIt is especially important in fields where the reasons for a result are questioned, such as loan screening and medical diagnosis. On the exam, grasp that XAI is a technology for raising transparency and accountability, and a concept that responds to the problem of black-box AI whose basis for judgment is unclear.",
-      "analogy_zh": "就像考试时不仅要写出答案，还要写出「演算过程」一样。当能看到为什么会得出那个答案时，人们才能信服地接受它。",
-      "analogy_en": "Like being asked to write not just the answer but also the \"working steps\" on a test. When you can see why that answer came about, you can accept it with conviction.",
-      "memory_hook_zh": "说到 XAI，就是解释 AI 判断依据的可解释 AI",
-      "memory_hook_en": "XAI → explainable AI that explains the basis for AI's judgments"
+      "extra_zh": [
+        "技术·思路",
+        "提高判断的透明度，让人用得放心"
+      ],
+      "extra_en": [
+        "Technology / approach",
+        "Makes decisions more transparent so people can trust them"
+      ]
     },
     {
       "term": "ヒューマンインザループ",
-      "definition_jp": "AIの処理過程に人間が関与し判断・修正を行う仕組み。",
-      "explanation_jp": "ヒューマンインザループは、AIにすべてを任せきりにせず、処理の途中や最終判断に人間が関与する仕組みのことです。AIが出した結果を人間が確認・承認・修正することで、誤りや偏りを防ぎ、責任の所在を明確にします。\n\n前述のランダム性や誤生成(ハルシネーション)があるため、重要な判断ではこの人間関与が欠かせません。試験では、AIを完全自動で動かすのではなく、人間がチェック役として加わる仕組みである点、XAIと並ぶAIの信頼性・安全性を支える考え方である点を押さえましょう。",
-      "analogy_jp": "自動運転で危険時にドライバーがハンドルを握り直すように、AIに任せつつ要所では人間が舵を取る仕組みです。",
-      "memory_hook_jp": "ヒューマンインザループといえばAIの判断に人間が関与する仕組み",
-      "inline_quiz": [
-        "2012h24h-q013"
+      "one_line_jp": "AI の処理の流れに人の確認や判断を組み込む仕組み",
+      "one_line_zh": "在 AI 的处理流程中加入人的确认与判断的机制",
+      "one_line_en": "A mechanism that builds human checks and decisions into the AI's processing flow",
+      "extra_jp": [
+        "運用の仕組み",
+        "誤りや偏りを人が止め、責任の所在をはっきりさせる"
       ],
-      "inline_fallback": true,
+      "extra_zh": [
+        "运用机制",
+        "由人拦下错误和偏差，明确责任归属"
+      ],
+      "extra_en": [
+        "Operating mechanism",
+        "People stop errors and bias, and responsibility is clear"
+      ]
+    },
+    {
+      "term": "HITL",
+      "one_line_jp": "ヒューマンインザループの英語表記の頭文字",
+      "one_line_zh": "人在回路的英文首字母缩写",
+      "one_line_en": "Initials of the English name Human In The Loop",
+      "extra_jp": [
+        "略語",
+        "中身はヒューマンインザループと同じ"
+      ],
+      "extra_zh": [
+        "缩写",
+        "含义与人在回路相同"
+      ],
+      "extra_en": [
+        "Abbreviation",
+        "Same meaning as human-in-the-loop"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "マルチモーダルAI",
+      "term_zh": "多模态 AI",
+      "term_en": "Multimodal AI",
+      "one_jp": "**マルチモーダルAI** は、文章・画像・音声など形式の異なるデータ (**モダリティ**) を組み合わせて扱える AI である。",
+      "one_zh": "**多模态 AI**（[[jp:マルチモーダルAI]]）是能把文字、图像、声音等形式各异的数据（**模态**，[[jp:モダリティ]]）组合起来处理的 AI。",
+      "one_en": "**Multimodal AI** ([[jp:マルチモーダルAI]]) is AI that can combine and handle data of different formats, such as text, images and audio (each format is a **modality**, [[jp:モダリティ]]).",
+      "detail_jp": "1 種類の形式だけを入力・出力する AI は **シングルモーダル** と呼ばれ、マルチモーダルAI はその対になる。複数の形式を組み合わせて入力したり、入力とは別の形式で出力したりして、形式をまたぐやり取りができる。",
+      "detail_zh": "只输入、输出一种形式的 AI 称为 **单模态**（[[jp:シングルモーダル]]），多模态 AI 与之相对。它可以把多种形式组合起来作为输入，也可以用与输入不同的形式输出，实现跨形式的交互。",
+      "detail_en": "AI that takes in and puts out only one format is called **single-modal** ([[jp:シングルモーダル]]), the counterpart of multimodal AI. Multimodal AI can take a mix of formats as input, or answer in a different format from the input, so exchanges can cross formats.",
+      "analogy_jp": "目で見たものについて耳で聞いた質問に、口で答える人のように、複数の感覚をつないで働く。",
+      "analogy_zh": "就像一个人用耳朵听到关于眼前所见之物的提问，再开口作答，把多种感官连在一起运作。",
+      "analogy_en": "Like a person who hears a question about something they are looking at and answers out loud, it links several senses together.",
+      "hook_jp": "「モーダル」は様式・形式のこと。「マルチ」(多い) が付いて、形式が多いと読める。",
+      "hook_zh": "“模态”（modal）指样式、形式；加上“多”（multi），就是形式很多。",
+      "hook_en": "\"Modal\" refers to a mode or format; add \"multi\" (many) and it reads as \"many formats.\"",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**マルチモーダルAI** の「マルチ」はデータの形式の数を指し、AI の台数や利用者の数を指すのではない。",
+          "text_zh": "**多模态 AI**（[[jp:マルチモーダルAI]]）中的“多”指的是数据形式的数量，而不是 AI 的台数或用户的人数。",
+          "text_en": "The \"multi\" in **multimodal AI** ([[jp:マルチモーダルAI]]) counts data formats, not the number of AI systems or users."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "入力の形式",
+              "zh": "输入形式",
+              "en": "Input format"
+            },
+            {
+              "jp": "出力の形式",
+              "zh": "输出形式",
+              "en": "Output format"
+            },
+            {
+              "jp": "やり取りの例",
+              "zh": "交互示例",
+              "en": "Example exchange"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "画像と文章",
+                  "zh": "图像和文字",
+                  "en": "Image and text"
+                },
+                {
+                  "jp": "文章",
+                  "zh": "文字",
+                  "en": "Text"
+                },
+                {
+                  "jp": "写真を見せて中身を尋ね、文章で答えを得る",
+                  "zh": "给 AI 看一张照片并询问内容，得到文字回答",
+                  "en": "Show a photo, ask what is in it, and get a written answer"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "文章",
+                  "zh": "文字",
+                  "en": "Text"
+                },
+                {
+                  "jp": "画像",
+                  "zh": "图像",
+                  "en": "Image"
+                },
+                {
+                  "jp": "描いてほしい場面を文で伝え、絵を作らせる",
+                  "zh": "用文字描述想要的场景，让 AI 画出来",
+                  "en": "Describe a scene in words and have the AI draw it"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "動画 (映像と音声)",
+                  "zh": "视频（影像和声音）",
+                  "en": "Video (picture and sound)"
+                },
+                {
+                  "jp": "文章",
+                  "zh": "文字",
+                  "en": "Text"
+                },
+                {
+                  "jp": "録画した会議の内容を文章にまとめさせる",
+                  "zh": "让 AI 把录下来的会议内容整理成文字",
+                  "en": "Have the AI turn a recorded meeting into a written summary"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "マルチモーダルAI は、文章・画像・音声など形式の異なるデータ (モダリティ) を組み合わせて扱える AI である。",
+      "definition_zh": "多模态 AI（マルチモーダルAI）是能把文字、图像、声音等形式各异的数据（模态，モダリティ）组合起来处理的 AI。",
+      "definition_en": "Multimodal AI (マルチモーダルAI) is AI that can combine and handle data of different formats, such as text, images and audio (each format is a modality, モダリティ).",
+      "explanation_jp": "1 種類の形式だけを入力・出力する AI は シングルモーダル と呼ばれ、マルチモーダルAI はその対になる。複数の形式を組み合わせて入力したり、入力とは別の形式で出力したりして、形式をまたぐやり取りができる。",
+      "explanation_zh": "只输入、输出一种形式的 AI 称为 单模态（シングルモーダル），多模态 AI 与之相对。它可以把多种形式组合起来作为输入，也可以用与输入不同的形式输出，实现跨形式的交互。",
+      "explanation_en": "AI that takes in and puts out only one format is called single-modal (シングルモーダル), the counterpart of multimodal AI. Multimodal AI can take a mix of formats as input, or answer in a different format from the input, so exchanges can cross formats.",
+      "memory_hook_jp": "「モーダル」は様式・形式のこと。「マルチ」(多い) が付いて、形式が多いと読める。",
+      "memory_hook_zh": "“模态”（modal）指样式、形式；加上“多”（multi），就是形式很多。",
+      "memory_hook_en": "\"Modal\" refers to a mode or format; add \"multi\" (many) and it reads as \"many formats.\"",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ランダム性",
+      "term_zh": "随机性",
+      "term_en": "Randomness",
+      "one_jp": "**ランダム性** とは、生成AIの出力が確率に基づいて作られるため、同じ指示でも出力が回ごとに変わりうる性質である。",
+      "one_zh": "**随机性**（[[jp:ランダム性]]）是指生成式 AI 的输出基于概率生成，因此即使指令相同，每次的输出也可能不同的性质。",
+      "one_en": "**Randomness** ([[jp:ランダム性]]) is the property that generative AI builds its output from probabilities, so the same prompt can give a different output each time.",
+      "detail_jp": "例えば文章を生成する AI は、次に続く語の候補それぞれに確率を割り当て、その確率に応じて語を選ぶので、選ばれる語が変われば出来上がる文も変わる。このばらつきによって表現に多様さが生まれる一方、同じ結果を **再現** しにくくなる。ばらつきの大きさは、例えば生成時の設定で小さくも大きくもできる。",
+      "detail_zh": "例如，生成文本的 AI 会给下一个候选词分别分配概率，并按概率选词，所以选中的词一变，生成的文本也随之改变。这种波动让表达更加多样，但也使同一结果难以 **重现**。波动的大小可以通过生成时的设置等调小或调大。",
+      "detail_en": "For example, a text-generating AI assigns a probability to each candidate next word and picks words according to those probabilities, so when the chosen words change, the finished text changes too. This variation makes expression more varied, but it also makes the same result hard to **reproduce**. How much the output varies can be turned down or up, for instance through settings at generation time.",
+      "analogy_jp": "同じ店で同じ「おまかせ」を頼んでも、日によって盛り付けや付け合わせが少しずつ違うようなもの。",
+      "analogy_zh": "就像在同一家店点同一份“主厨推荐”，摆盘和配菜每天都会有些不同。",
+      "analogy_en": "It is like ordering the same chef's choice at the same restaurant: the plating and side dishes differ a little from day to day.",
+      "hook_jp": "ランダム (random) は「でたらめ・無作為」の意味だが、ここでは確率に沿ったばらつきを指す。",
+      "hook_zh": "random 原意是“胡乱、无规则”，但这里指的是遵循概率的波动。",
+      "hook_en": "\"Random\" usually means haphazard or arbitrary, but here it means variation that follows probabilities.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ランダム性** は出力が確率に基づいて揺れる性質のことで、AI が壊れている状態や故障を意味するものではない。",
+          "text_zh": "**随机性**（[[jp:ランダム性]]）是输出依概率而波动的性质，并不表示 AI 坏了或出了故障。",
+          "text_en": "**Randomness** ([[jp:ランダム性]]) means the output varies according to probabilities. It does not mean the AI is broken or malfunctioning."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "in",
+              "label": {
+                "jp": "同じ指示を入力",
+                "zh": "输入相同的指令",
+                "en": "Enter the same prompt"
+              }
+            },
+            {
+              "id": "prob",
+              "label": {
+                "jp": "続く語の候補ごとに確率を計算",
+                "zh": "为每个候选词计算概率",
+                "en": "Assign a probability to each candidate next word"
+              }
+            },
+            {
+              "id": "pick",
+              "label": {
+                "jp": "確率に応じて語を選ぶ",
+                "zh": "按概率选词",
+                "en": "Pick a word according to probability"
+              }
+            },
+            {
+              "id": "out",
+              "label": {
+                "jp": "回ごとに異なる文ができる",
+                "zh": "每次生成不同的文本",
+                "en": "A different text comes out each time"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "文章を生成する AI を例にとる。同じ指示を入力する。",
+            "caption_zh": "以生成文本的 AI 为例，输入相同的指令。",
+            "caption_en": "Take a text-generating AI as the example, and enter the same prompt.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "AI は次に続く語の候補それぞれに確率を割り当てる。",
+            "caption_zh": "AI 给接下来可能出现的每个候选词分配概率。",
+            "caption_en": "The AI gives each candidate for the next word a probability.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "最も確率の高い語に限らず、確率に応じて語が選ばれる。",
+            "caption_zh": "并不总是选概率最高的词，而是按概率来选词。",
+            "caption_en": "It does not always take the most likely word; it picks words in line with their probabilities.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "選ばれる語が変わるので、出来上がる文も回ごとに変わりうる。",
+            "caption_zh": "选中的词不同，最终生成的文本每次也可能不同。",
+            "caption_en": "Because the chosen words vary, the finished text can differ from run to run.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ランダム性 とは、生成AIの出力が確率に基づいて作られるため、同じ指示でも出力が回ごとに変わりうる性質である。",
+      "definition_zh": "随机性（ランダム性）是指生成式 AI 的输出基于概率生成，因此即使指令相同，每次的输出也可能不同的性质。",
+      "definition_en": "Randomness (ランダム性) is the property that generative AI builds its output from probabilities, so the same prompt can give a different output each time.",
+      "explanation_jp": "例えば文章を生成する AI は、次に続く語の候補それぞれに確率を割り当て、その確率に応じて語を選ぶので、選ばれる語が変われば出来上がる文も変わる。このばらつきによって表現に多様さが生まれる一方、同じ結果を 再現 しにくくなる。ばらつきの大きさは、例えば生成時の設定で小さくも大きくもできる。",
+      "explanation_zh": "例如，生成文本的 AI 会给下一个候选词分别分配概率，并按概率选词，所以选中的词一变，生成的文本也随之改变。这种波动让表达更加多样，但也使同一结果难以 重现。波动的大小可以通过生成时的设置等调小或调大。",
+      "explanation_en": "For example, a text-generating AI assigns a probability to each candidate next word and picks words according to those probabilities, so when the chosen words change, the finished text changes too. This variation makes expression more varied, but it also makes the same result hard to reproduce. How much the output varies can be turned down or up, for instance through settings at generation time.",
+      "memory_hook_jp": "ランダム (random) は「でたらめ・無作為」の意味だが、ここでは確率に沿ったばらつきを指す。",
+      "memory_hook_zh": "random 原意是“胡乱、无规则”，但这里指的是遵循概率的波动。",
+      "memory_hook_en": "\"Random\" usually means haphazard or arbitrary, but here it means variation that follows probabilities.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "XAI",
+      "term_zh": "XAI（可解释 AI）",
+      "term_en": "XAI",
+      "one_jp": "**XAI** (Explainable AI、**説明可能なAI**) は、AI がその結論に至った根拠を人に分かる形で示す技術や考え方である。",
+      "one_zh": "**XAI**（Explainable AI，**可解释 AI**，[[jp:説明可能なAI]]）是以人能理解的方式展示 AI 得出结论之依据的技术和思路。",
+      "one_en": "**XAI** (Explainable AI, [[jp:説明可能なAI]]) is the technology and approach of showing people, in a form they can follow, the grounds on which an AI reached its conclusion.",
+      "detail_jp": "高度な AI は内部の計算が複雑で、なぜその結果になったかが外から見えない **ブラックボックス** になりやすい。XAI は根拠を見えるようにして判断の **透明性** を高め、人が結果を検証したり説明責任を果たしたりできるようにする。",
+      "detail_zh": "高级的 AI 内部计算复杂，从外部看不出为何得出这一结果，容易成为 **黑箱**（[[jp:ブラックボックス]]）。XAI 让依据变得可见，从而提高判断的 **透明度**（[[jp:透明性]]），使人能够检验结果、履行说明责任。",
+      "detail_en": "Advanced AI runs complex internal calculations, so it easily becomes a **black box** ([[jp:ブラックボックス]]) where no one outside can see why it gave a result. XAI makes the grounds visible, raising the **transparency** ([[jp:透明性]]) of decisions so people can check results and be accountable for them.",
+      "analogy_jp": "答えだけでなく途中の式も書かれた答案のようなもの。式が見えれば、どこで考え違いをしたかも確かめられる。",
+      "analogy_zh": "就像不只写答案、连演算过程都写出来的答卷。看得到算式，就能查出是在哪一步想错的。",
+      "analogy_en": "Like an answer sheet that shows the working, not just the answer. With the working visible, you can find exactly where the reasoning went wrong.",
+      "hook_jp": "頭の X は eXplainable (説明できる) の X。",
+      "hook_zh": "开头的 X 取自 eXplainable（可解释）。",
+      "hook_en": "The X at the front comes from \"eXplainable.\"",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**XAI** は AI の判断を説明できるようにする技術であり、AI の判断の精度を上げる技術そのものを指す語ではない。",
+          "text_zh": "**XAI**（[[jp:説明可能なAI]]）是让 AI 的判断能够被解释的技术，并不是指提高 AI 判断准确度的技术本身。",
+          "text_en": "**XAI** ([[jp:説明可能なAI]]) is technology for making AI decisions explainable. The term does not refer to technology that raises the accuracy of those decisions."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "data",
+              "label": {
+                "jp": "データを入力",
+                "zh": "输入数据",
+                "en": "Enter data"
+              }
+            },
+            {
+              "id": "model",
+              "label": {
+                "jp": "AI が判断する",
+                "zh": "AI 作出判断",
+                "en": "The AI makes a decision"
+              }
+            },
+            {
+              "id": "why",
+              "label": {
+                "jp": "結果と根拠を示す",
+                "zh": "展示结果和依据",
+                "en": "Show the result and its grounds"
+              }
+            },
+            {
+              "id": "human",
+              "label": {
+                "jp": "人が根拠を確かめて受け入れるか決める",
+                "zh": "人确认依据后决定是否接受",
+                "en": "A person checks the grounds and decides whether to accept"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "判断の材料となるデータを AI に入力する。",
+            "caption_zh": "把作为判断材料的数据输入 AI。",
+            "caption_en": "Feed the AI the data it will base its decision on.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "AI が内部の計算で判断を下す。中身は人から見えにくい。",
+            "caption_zh": "AI 通过内部计算作出判断，其过程人很难看清。",
+            "caption_en": "The AI decides through internal calculations that people can hardly see into.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "結果だけでなく、どの要素が判断に効いたかを示す。",
+            "caption_zh": "不只给出结果，还展示哪些因素影响了判断。",
+            "caption_en": "It shows not just the result but which factors drove the decision.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "人は示された根拠を見て、結果を受け入れるかを決める。",
+            "caption_zh": "人看过展示的依据后，决定是否接受结果。",
+            "caption_en": "Looking at those grounds, a person decides whether to accept the result.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "XAI (Explainable AI、説明可能なAI) は、AI がその結論に至った根拠を人に分かる形で示す技術や考え方である。",
+      "definition_zh": "XAI（Explainable AI，可解释 AI，説明可能なAI）是以人能理解的方式展示 AI 得出结论之依据的技术和思路。",
+      "definition_en": "XAI (Explainable AI, 説明可能なAI) is the technology and approach of showing people, in a form they can follow, the grounds on which an AI reached its conclusion.",
+      "explanation_jp": "高度な AI は内部の計算が複雑で、なぜその結果になったかが外から見えない ブラックボックス になりやすい。XAI は根拠を見えるようにして判断の 透明性 を高め、人が結果を検証したり説明責任を果たしたりできるようにする。",
+      "explanation_zh": "高级的 AI 内部计算复杂，从外部看不出为何得出这一结果，容易成为 黑箱（ブラックボックス）。XAI 让依据变得可见，从而提高判断的 透明度（透明性），使人能够检验结果、履行说明责任。",
+      "explanation_en": "Advanced AI runs complex internal calculations, so it easily becomes a black box (ブラックボックス) where no one outside can see why it gave a result. XAI makes the grounds visible, raising the transparency (透明性) of decisions so people can check results and be accountable for them.",
+      "memory_hook_jp": "頭の X は eXplainable (説明できる) の X。",
+      "memory_hook_zh": "开头的 X 取自 eXplainable（可解释）。",
+      "memory_hook_en": "The X at the front comes from \"eXplainable.\"",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ヒューマンインザループ",
+      "term_zh": "人在回路",
+      "term_en": "Human-in-the-loop",
+      "one_jp": "**ヒューマンインザループ** は、AI に処理を任せきりにせず、処理の流れの中に人の確認や判断を組み込む仕組みである。",
+      "one_zh": "**人在回路**（[[jp:ヒューマンインザループ]]）是不把处理完全交给 AI，而是在处理流程中加入人的确认与判断的机制。",
+      "one_en": "**Human-in-the-loop** ([[jp:ヒューマンインザループ]]) is a mechanism that, instead of leaving processing entirely to the AI, builds human checks and decisions into the processing flow.",
+      "detail_jp": "例えば、AI が出した提案を人が確かめ、良ければ承認して実行し、問題があれば修正して戻す。人が要所に入ることで、AI の誤りや偏りを実行前に止め、誰が判断したかという責任の所在もはっきりする。",
+      "detail_zh": "例如，由人确认 AI 提出的方案，没问题就批准执行，有问题就修改后退回。人在关键环节介入，能在执行前拦下 AI 的错误和偏差，也能明确是谁作出的判断、责任归谁。",
+      "detail_en": "For example, a person reviews a proposal from the AI, approves it for execution if it is sound, and sends it back with corrections if not. With people stepping in at key points, AI errors and bias are stopped before anything is executed, and it is clear who made each decision and who is responsible.",
+      "analogy_jp": "部下が作った書類を上司が目を通して判を押してから外に出す、社内の決裁の流れに似ている。",
+      "analogy_zh": "就像公司里的审批流程：下属做好的文件要经上司过目盖章后才能发出。",
+      "analogy_en": "It resembles approval inside a company, where a manager reads and signs off on a document a staff member drafted before it goes out.",
+      "hook_jp": "英語の Human in the loop をそのまま片仮名にした語。loop (輪) の中に human (人) がいる姿を思い浮かべる。",
+      "hook_zh": "日语名称[[jp:ヒューマンインザループ]]是把英语 Human in the loop 直接用片假名写出的词。可以想象 loop（回路）之中站着 human（人）的样子。",
+      "hook_en": "The Japanese term simply writes the English \"Human in the loop\" in katakana. Picture a human standing inside the loop.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ヒューマンインザループ** は人を処理の流れに加える仕組みで、人の作業をすべて AI に置き換える完全自動化とは向きが逆である。",
+          "text_zh": "**人在回路**（[[jp:ヒューマンインザループ]]）是把人加入处理流程的机制，与把人的工作全部交给 AI 的完全自动化方向相反。",
+          "text_en": "**Human-in-the-loop** ([[jp:ヒューマンインザループ]]) adds people to the processing flow, the opposite direction from full automation, which hands all human work to AI."
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/strategy-05-14-u08-t02.svg"
+        }
+      },
+      "quiz": [],
+      "definition_jp": "ヒューマンインザループ は、AI に処理を任せきりにせず、処理の流れの中に人の確認や判断を組み込む仕組みである。",
+      "definition_zh": "人在回路（ヒューマンインザループ）是不把处理完全交给 AI，而是在处理流程中加入人的确认与判断的机制。",
+      "definition_en": "Human-in-the-loop (ヒューマンインザループ) is a mechanism that, instead of leaving processing entirely to the AI, builds human checks and decisions into the processing flow.",
+      "explanation_jp": "例えば、AI が出した提案を人が確かめ、良ければ承認して実行し、問題があれば修正して戻す。人が要所に入ることで、AI の誤りや偏りを実行前に止め、誰が判断したかという責任の所在もはっきりする。",
+      "explanation_zh": "例如，由人确认 AI 提出的方案，没问题就批准执行，有问题就修改后退回。人在关键环节介入，能在执行前拦下 AI 的错误和偏差，也能明确是谁作出的判断、责任归谁。",
+      "explanation_en": "For example, a person reviews a proposal from the AI, approves it for execution if it is sound, and sends it back with corrections if not. With people stepping in at key points, AI errors and bias are stopped before anything is executed, and it is clear who made each decision and who is responsible.",
+      "memory_hook_jp": "英語の Human in the loop をそのまま片仮名にした語。loop (輪) の中に human (人) がいる姿を思い浮かべる。",
+      "memory_hook_zh": "日语名称ヒューマンインザループ是把英语 Human in the loop 直接用片假名写出的词。可以想象 loop（回路）之中站着 human（人）的样子。",
+      "memory_hook_en": "The Japanese term simply writes the English \"Human in the loop\" in katakana. Picture a human standing inside the loop.",
+      "inline_quiz": [],
+      "inline_fallback": false,
       "figure": {
         "mermaid": "graph LR; A[\"AIが処理・提案\"] --> B[\"人間が確認・修正\"]; B --> C[\"承認して実行\"]; B --> D[\"差戻し\"]; D --> A",
         "svg_path": "figures/strategy-05-14-u08-t02.svg",
         "rendered": true
-      },
-      "term_zh": "人在回路",
-      "term_en": "Human-in-the-loop",
-      "definition_zh": "让人类参与到 AI 的处理过程中、进行判断与修正的机制。",
-      "definition_en": "A mechanism in which humans take part in the AI processing flow to judge and correct.",
-      "explanation_zh": "人在回路是指不把一切都完全交给 AI，而是让人类在处理的中途或最终判断上参与进来的机制。通过让人类对 AI 给出的结果进行确认、批准、修正，来防止错误和偏差，并明确责任归属。\n\n由于存在前面提到的随机性和错误生成（幻觉），在重要的判断中这种人类参与不可或缺。在考试中，要把握它是一种不让 AI 完全自动运行、而是让人类作为检查角色加入的机制，并理解它与 XAI 并列、是支撑 AI 可信度与安全性的理念。",
-      "explanation_en": "Human-in-the-loop is a mechanism in which, rather than leaving everything entirely to AI, humans take part midway through processing or in the final decision. By having humans confirm, approve, and correct the results AI produces, it prevents errors and bias and clarifies where responsibility lies.\n\nBecause of the aforementioned randomness and erroneous generation (hallucination), this human involvement is indispensable for important decisions. On the exam, grasp that it is a mechanism in which humans join as a checking role rather than running AI fully automatically, and understand that, alongside XAI, it is an idea that underpins the reliability and safety of AI.",
-      "analogy_zh": "就像自动驾驶在遇到危险时驾驶员重新握住方向盘一样，是一种在交给 AI 的同时、在关键之处由人类掌舵的机制。",
-      "analogy_en": "Like a driver retaking the wheel in a dangerous moment during autonomous driving, it is a mechanism where you leave things to AI yet have humans steer at the key points.",
-      "memory_hook_zh": "说到人在回路，就是让人类参与 AI 判断的机制",
-      "memory_hook_en": "Human-in-the-loop → a mechanism where humans take part in AI's judgments"
+      }
     },
     {
       "term": "HITL",
-      "definition_jp": "ヒューマンインザループの略語。Human In The Loopの頭字語。",
-      "explanation_jp": "HITLは「Human In The Loop(ヒューマンインザループ)」の略語で、意味は同じく、AIの処理過程に人間が関与する仕組みを指します。Loop(ループ=処理の流れ)の中にHuman(人間)が組み込まれている、というイメージから付いた名前です。\n\n試験では、HITLという略語とヒューマンインザループというフルネームが同じものを指すこと、人間が確認・承認することでAIの判断の信頼性を担保する仕組みであることが問われます。略語と正式名称の対応を覚えておきましょう。",
-      "analogy_jp": "「PC=パーソナルコンピュータ」のように、HITLは長い名前を縮めた呼び名。中身はヒューマンインザループそのものです。",
-      "memory_hook_jp": "HITLといえばヒューマンインザループ(Human In The Loop)の略",
-      "inline_quiz": [
-        "2014h26h-q005"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "HITL",
       "term_en": "HITL",
-      "definition_zh": "人在回路的缩写，是 Human In The Loop 的首字母缩略词。",
-      "definition_en": "An abbreviation for human-in-the-loop; the acronym of Human In The Loop.",
-      "explanation_zh": "HITL 是「Human In The Loop（人在回路）」的缩写，含义相同，指的是让人类参与到 AI 处理过程中的机制。这个名称来自这样一种意象：在 Loop（回路＝处理的流程）之中嵌入了 Human（人类）。\n\n在考试中，会考查 HITL 这一缩写与人在回路这一全称指的是同一事物，以及它是通过人类的确认、批准来保障 AI 判断可信度的机制。把缩写与正式名称的对应关系记下来吧。",
-      "explanation_en": "HITL is the abbreviation for \"Human In The Loop (human-in-the-loop)\"; it means the same thing and refers to a mechanism in which humans take part in the AI processing flow. The name comes from the image of a Human being built into the Loop (the processing flow).\n\nOn the exam, you will be asked that the abbreviation HITL and the full name human-in-the-loop refer to the same thing, and that it is a mechanism that ensures the reliability of AI's judgments through human confirmation and approval. Be sure to memorize the correspondence between the abbreviation and the formal name.",
-      "analogy_zh": "就像「PC＝个人电脑」一样，HITL 是把长名称缩短后的叫法。其内容就是人在回路本身。",
-      "analogy_en": "Like \"PC = personal computer,\" HITL is a shortened name for a longer term. Its substance is human-in-the-loop itself.",
-      "memory_hook_zh": "说到 HITL，就是人在回路（Human In The Loop）的缩写",
-      "memory_hook_en": "HITL → short for human-in-the-loop (Human In The Loop)"
+      "one_jp": "**HITL** は Human In The Loop の頭文字を取った略語で、ヒューマンインザループと同じ仕組みを指す。",
+      "one_zh": "**HITL** 是取 Human In The Loop 首字母构成的缩写，与人在回路（[[jp:ヒューマンインザループ]]）指同一机制。",
+      "one_en": "**HITL** is an abbreviation formed from the initials of Human In The Loop, and refers to the same mechanism as human-in-the-loop ([[jp:ヒューマンインザループ]]).",
+      "detail_jp": "略語と片仮名の名称は表記が違うだけで、意味に差はない。文書によってどちらの書き方も使われる。",
+      "detail_zh": "缩写和片假名名称只是写法不同，含义没有差别。不同文献中两种写法都会出现。",
+      "detail_en": "The abbreviation and the katakana name differ only in how they are written; the meaning is the same. Documents use either form.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "HITL は Human In The Loop の頭文字を取った略語で、ヒューマンインザループと同じ仕組みを指す。",
+      "definition_zh": "HITL 是取 Human In The Loop 首字母构成的缩写，与人在回路（ヒューマンインザループ）指同一机制。",
+      "definition_en": "HITL is an abbreviation formed from the initials of Human In The Loop, and refers to the same mechanism as human-in-the-loop (ヒューマンインザループ).",
+      "explanation_jp": "略語と片仮名の名称は表記が違うだけで、意味に差はない。文書によってどちらの書き方も使われる。",
+      "explanation_zh": "缩写和片假名名称只是写法不同，含义没有差别。不同文献中两种写法都会出现。",
+      "explanation_en": "The abbreviation and the katakana name differ only in how they are written; the meaning is the same. Documents use either form.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "XAI",
+      "b": "ヒューマンインザループ",
+      "rows": [
+        {
+          "label_jp": "何を加えるか",
+          "label_zh": "加入什么",
+          "label_en": "What is added",
+          "a_jp": "AI の側に、判断の根拠を示す働きを加える",
+          "a_zh": "在 AI 一侧加入展示判断依据的功能",
+          "a_en": "A function on the AI's side that shows the grounds for its decisions",
+          "b_jp": "処理の流れの中に、人の確認や判断を加える",
+          "b_zh": "在处理流程中加入人的确认与判断",
+          "b_en": "Human checks and decisions inside the processing flow",
+          "key": true
+        },
+        {
+          "label_jp": "主に高めるもの",
+          "label_zh": "主要提升什么",
+          "label_en": "Mainly improves",
+          "a_jp": "判断の透明性",
+          "a_zh": "判断的透明度",
+          "a_en": "Transparency of decisions",
+          "b_jp": "誤りや偏りを止める力と責任の所在の明確さ",
+          "b_zh": "拦下错误和偏差的能力，以及责任归属的明确性",
+          "b_en": "Ability to stop errors and bias, and clarity about who is responsible",
+          "key": false
+        },
+        {
+          "label_jp": "分類",
+          "label_zh": "类别",
+          "label_en": "Category",
+          "a_jp": "技術・考え方",
+          "a_zh": "技术·思路",
+          "a_en": "Technology / approach",
+          "b_jp": "運用の仕組み",
+          "b_zh": "运用机制",
+          "b_en": "Operating mechanism",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**マルチモーダルAI** は、文章・画像・音声など形式の異なるデータを組み合わせて入力・出力できる。",
+    "生成AIの出力は確率に基づいて作られるので **ランダム性** があり、同じ指示でも結果が変わりうる。",
+    "**XAI** は AI の判断の根拠を人に分かる形で示し、ブラックボックスになりがちな AI の透明性を高める。",
+    "**ヒューマンインザループ** (略語は **HITL**) は、AI の処理の流れに人の確認や判断を組み込む仕組みである。"
+  ],
+  "key_points_zh": [
+    "**多模态 AI** 能把文字、图像、声音等形式各异的数据组合起来进行输入和输出。",
+    "生成式 AI 的输出基于概率生成，因此具有 **随机性**，即使指令相同，结果也可能不同。",
+    "**XAI** 以人能理解的方式展示 AI 的判断依据，提高容易成为黑箱的 AI 的透明度。",
+    "**人在回路**（缩写为 **HITL**）是在 AI 的处理流程中加入人的确认与判断的机制。"
+  ],
+  "key_points_en": [
+    "**Multimodal AI** can combine data of different formats, such as text, images and audio, for both input and output.",
+    "Generative AI builds its output from probabilities, so it has **randomness** and the same prompt can produce different results.",
+    "**XAI** shows the grounds for an AI's decision in a form people can follow, making AI that tends to be a black box more transparent.",
+    "**Human-in-the-loop** (abbreviated **HITL**) is a mechanism that builds human checks and decisions into the AI's processing flow."
+  ],
+  "overview": {
+    "intro_jp": "マルチモーダルAI が扱うデータの形式 (モダリティ) を例で説明できる。生成AIの出力に ランダム性 があることと、それがもたらす表現の多様さと再現しにくさを説明できる。XAI が AI の側に説明を求める技術で、ヒューマンインザループ が人を処理の流れに入れる仕組みであることを区別できる。",
+    "intro_zh": "能举例说明 多模态 AI 所处理的数据形式（模态）。能说明生成式 AI 的输出具有 随机性，以及它为何既让表达更丰富、又让结果难以重现。能分清 XAI 是要求 AI 自己给出解释的技术，而 人在回路 是把人放进处理流程的机制。",
+    "intro_en": "Give examples of the data formats (modalities) that multimodal AI works with. Explain that generative AI output has randomness, and how this brings varied expression but makes results hard to reproduce. Distinguish XAI, a technology that asks the AI itself for an explanation, from human-in-the-loop, a mechanism that puts people into the processing flow.",
+    "freq_badge": "標準",
+    "est_minutes": 22
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "マルチモーダルAI: マルチモーダルAIといえばテキスト・画像・音声を横断して扱うAI",
-      "ランダム性: ランダム性といえばAIの出力が確率で毎回揺らぐこと",
-      "XAI: XAIといえばAIの判断根拠を説明する説明可能AI",
-      "ヒューマンインザループ: ヒューマンインザループといえばAIの判断に人間が関与する仕組み",
-      "HITL: HITLといえばヒューマンインザループ(Human In The Loop)の略"
-    ],
     "key_points_jp": [
-      "マルチモーダルAIは、テキスト・画像・音声など複数種類(モダリティ)のデータを統合して扱うAIで、生成AIの発展形にあたる。",
-      "生成AIの出力はランダム性(確率的な揺らぎ)を持つため再現性が低く、ハルシネーションの原因にもなり、結果の検証が必要になる。",
-      "XAI(説明可能AI)はAIの判断根拠を人間に分かる形で示す技術で、ブラックボックス化を防ぎ透明性・説明責任を高める。",
-      "ヒューマンインザループ(HITL)はAIの処理に人間が関与し確認・修正する仕組みで、誤りや偏りを防ぎ信頼性を担保する。",
-      "HITLはHuman In The Loopの略で、ヒューマンインザループと同じものを指す。"
+      "マルチモーダルAI は、文章・画像・音声など形式の異なるデータを組み合わせて入力・出力できる。",
+      "生成AIの出力は確率に基づいて作られるので ランダム性 があり、同じ指示でも結果が変わりうる。",
+      "XAI は AI の判断の根拠を人に分かる形で示し、ブラックボックスになりがちな AI の透明性を高める。",
+      "ヒューマンインザループ (略語は HITL) は、AI の処理の流れに人の確認や判断を組み込む仕組みである。"
     ],
     "key_points_zh": [
-      "多模态 AI 是整合处理文本、图像、语音等多种类型（模态）数据的 AI，属于生成式 AI 的进阶形态。",
-      "生成式 AI 的输出具有随机性（概率性的波动），因而可复现性低，也会成为幻觉的原因，需要对结果进行验证。",
-      "XAI（可解释 AI）是以人类能理解的形式展示 AI 判断依据的技术，可防止黑箱化、提升透明性与问责性。",
-      "人在回路（HITL）是让人类参与 AI 处理、进行确认与修正的机制，可防止错误和偏差、保障可信度。",
-      "HITL 是 Human In The Loop 的缩写，与人在回路指的是同一事物。"
+      "多模态 AI 能把文字、图像、声音等形式各异的数据组合起来进行输入和输出。",
+      "生成式 AI 的输出基于概率生成，因此具有 随机性，即使指令相同，结果也可能不同。",
+      "XAI 以人能理解的方式展示 AI 的判断依据，提高容易成为黑箱的 AI 的透明度。",
+      "人在回路（缩写为 HITL）是在 AI 的处理流程中加入人的确认与判断的机制。"
     ],
     "key_points_en": [
-      "Multimodal AI is AI that integrates and handles data of multiple kinds (modalities), such as text, images, and audio, and is an advanced form of generative AI.",
-      "The output of generative AI has randomness (probabilistic variation), so reproducibility is low; it can also cause hallucination, and verification of results becomes necessary.",
-      "XAI (explainable AI) is a technology that presents the basis for AI judgments in a form humans can understand, preventing black-boxing and raising transparency and accountability.",
-      "Human-in-the-loop (HITL) is a mechanism in which humans take part in AI processing to confirm and correct, preventing errors and bias and ensuring reliability.",
-      "HITL is short for Human In The Loop and refers to the same thing as human-in-the-loop."
+      "Multimodal AI can combine data of different formats, such as text, images and audio, for both input and output.",
+      "Generative AI builds its output from probabilities, so it has randomness and the same prompt can produce different results.",
+      "XAI shows the grounds for an AI's decision in a form people can follow, making AI that tends to be a black box more transparent.",
+      "Human-in-the-loop (abbreviated HITL) is a mechanism that builds human checks and decisions into the AI's processing flow."
+    ],
+    "memory_hooks_jp": [
+      "マルチモーダルAI: 「モーダル」は様式・形式のこと。「マルチ」(多い) が付いて、形式が多いと読める。",
+      "ランダム性: ランダム (random) は「でたらめ・無作為」の意味だが、ここでは確率に沿ったばらつきを指す。",
+      "XAI: 頭の X は eXplainable (説明できる) の X。",
+      "ヒューマンインザループ: 英語の Human in the loop をそのまま片仮名にした語。loop (輪) の中に human (人) がいる姿を思い浮かべる。"
     ],
     "memory_hooks_zh": [
-      "多模态 AI：说到多模态 AI，就是跨文本、图像、语音进行处理的 AI",
-      "随机性：说到随机性，就是 AI 的输出按概率每次都会波动",
-      "XAI：说到 XAI，就是解释 AI 判断依据的可解释 AI",
-      "人在回路：说到人在回路，就是让人类参与 AI 判断的机制",
-      "HITL：说到 HITL，就是人在回路（Human In The Loop）的缩写"
+      "多模态 AI：“模态”（modal）指样式、形式；加上“多”（multi），就是形式很多。",
+      "随机性：random 原意是“胡乱、无规则”，但这里指的是遵循概率的波动。",
+      "XAI（可解释 AI）：开头的 X 取自 eXplainable（可解释）。",
+      "人在回路：日语名称ヒューマンインザループ是把英语 Human in the loop 直接用片假名写出的词。可以想象 loop（回路）之中站着 human（人）的样子。"
     ],
     "memory_hooks_en": [
-      "Multimodal AI: Multimodal AI → AI that handles text, images, and audio across modalities",
-      "Randomness: Randomness → AI output varies each time based on probability",
-      "XAI: XAI → explainable AI that explains the basis for AI's judgments",
-      "Human-in-the-loop: Human-in-the-loop → a mechanism where humans take part in AI's judgments",
-      "HITL: HITL → short for human-in-the-loop (Human In The Loop)"
+      "Multimodal AI: \"Modal\" refers to a mode or format; add \"multi\" (many) and it reads as \"many formats.\"",
+      "Randomness: \"Random\" usually means haphazard or arbitrary, but here it means variation that follows probabilities.",
+      "XAI: The X at the front comes from \"eXplainable.\"",
+      "Human-in-the-loop: The Japanese term simply writes the English \"Human in the loop\" in katakana. Picture a human standing inside the loop."
     ]
   },
   "challenge_questions": [
@@ -192,9 +675,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "AI 的运行机制与透明性、人类的参与",
-  "title_en": "How AI Works: Transparency and Human Involvement",
-  "unit_summary_zh": "学习多模态、生成的随机性、可解释 AI（XAI），以及让人类参与其中的机制。",
-  "unit_summary_en": "Learn about multimodality, the randomness of generation, explainable AI (XAI), and mechanisms that keep humans involved."
+  }
 }
