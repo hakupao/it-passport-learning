@@ -45,7 +45,7 @@
 | b36 | strategy-07-24 | 調達計画・実施 | u01 | 38 | 4 | done |
 | b37 | technology-16-43 | システムの構成 | u01 u02 u03 u04 | 38 | 25 | done |
 | b38 | strategy-07-23 | 要件定義 | u01 | 37 | 4 | done |
-| b39 | strategy-02-06 | 労働関連・取引関連法規 | u01 u02 u03 | 36 | 18 | todo |
+| b39 | strategy-02-06 | 労働関連・取引関連法規 | u01 u02 u03 | 36 | 18 | done |
 | b40 | technology-17-47 | オフィスツール | u01 | 36 | 5 | todo |
 | b41 | technology-13-35 | 情報に関する理論 (1/2) | u01 u02 u03 u04 u05 | 35 | 25 | todo |
 | b42 | technology-13-35 | 情報に関する理論 (2/2) | u06 u07 | 35 | 12 | todo |
