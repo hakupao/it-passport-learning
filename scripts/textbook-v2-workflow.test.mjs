@@ -458,3 +458,30 @@ test("D-210: a cited question worded before a law / standard amendment is writte
   assert.ok(fx.includes("条件を削る案でなく、改正前の版を明記して引用題の版で書く案にする (D-210"), "fix_jp does not push deletion");
   for (const label of [/^localize:/, /^tr-review:/]) assert.doesNotMatch(calls.find((x) => label.test(x.opts.label)).prompt, /D-210/, "loc stages unchanged");
 });
+
+test("D-211: a cited general-principle answer that cannot be written without its wording / set / order goes to quiz only (writer rule 3 / 11, 観点 4, fix_jp); a true/false item's general principle reworded is not (b) (観点 4, D-198 side, not D-209)", async () => {
+  const { calls } = await runWf({ jp: ["REVISE", "PASS"], loc: ["PASS"] });
+  const write = calls.find((x) => /^write:/.test(x.opts.label)).prompt;
+  const rw = calls.find((x) => /^rewrite:/.test(x.opts.label)).prompt;
+  const rv = calls.find((x) => /^review:/.test(x.opts.label)).prompt;
+  const QUIZ_ONLY = "その qid を quiz にだけ置き、その題を根拠とする exam 考点を立てない (mix 考点の qids に置くのは可)";
+  const TF = "正誤選択型 (記述のうち適切なもの・不適切なものを選ぶ題) で正解肢が一般原則を述べているとき、選択肢の順序を変え列挙を落として同じ原則を一般的な表現で述べた考点は (b) に当たらない";
+  const SIDE = "D-198 の「写しでない」の側であり、D-209 の免除ではない";
+  for (const p of [write, rw]) {
+    const r3 = p.match(/\n3\. \*\*exam 考点は引用題と突き合わせる\*\*[^\n]*/)[0];
+    assert.ok(r3.includes(QUIZ_ONLY) && r3.includes("(D-211)"), "writer rule 3 has the quiz-only exit");
+    assert.ok(r3.includes("qid を外すだけで済ませない") && r3.indexOf("考点と正解の食い違いの扱いとは別に") < r3.indexOf(QUIZ_ONLY), "the general rule stays and the exit is scoped away from mismatches");
+    const r11 = p.match(/\n11\. \*\*引用題の選択肢・判断項目をなぞらない\*\*[^\n]*/)[0];
+    assert.ok(r11.includes(QUIZ_ONLY), "writer rule 11 has the quiz-only exit");
+    assert.ok(!r11.includes(TF), "the true/false clarification is the critic's (観点 4), not a writer exemption");
+  }
+  const v4 = rv.match(/\n4\. \*\*写していないか\*\*[^\n]*/)[0];
+  assert.ok(v4.includes(TF) && v4.includes(SIDE), "観点 4 states the true/false case on the D-198 side");
+  assert.ok(v4.indexOf(TF) > v4.indexOf("(iii) に当たらないもの (D-209)"), "stated after (not inside) the D-209 exemption");
+  assert.ok(v4.includes(QUIZ_ONLY), "観点 4 names the quiz-only exit");
+  const fx = rv.match(/\n- fix_jp の書き方 \(D-204\)[^\n]*/)[0];
+  assert.ok(fx.includes("qid を quiz に移し exam 考点を外す案にしてよい (D-211。観点 5 の食い違いには使わない)"), "fix_jp may propose moving the qid to quiz in that case, never for a mismatch");
+  assert.ok(!/食い違いは qid を外す案でなく主張を直す方向で \(/.test(fx), "the mismatch clause carries no D-211 parenthetical");
+  assert.ok(fx.includes("qid を外す案でなく主張を直す方向"), "the general rule is kept");
+  for (const label of [/^localize:/, /^tr-review:/]) assert.doesNotMatch(calls.find((x) => label.test(x.opts.label)).prompt, /D-211/, "loc stages unchanged");
+});
