@@ -113,10 +113,10 @@ test("--check-units: every committed v2 unit (or --unit …) checked, warnings l
   const r = run("textbook-v2-zh-terms.mjs", ["--check-units"]);
   assert.ok(r.code === 0 || r.code === 1, r.out);
   for (const id of ["management-10-27-u01", "management-10-27-u02", "management-10-27-u03"]) assert.match(r.out, new RegExp(id));
-  assert.doesNotMatch(r.out, /strategy-01-01-u01/, "v1 units are not checked");
+  assert.doesNotMatch(r.out, /technology-21-54-u01/, "v1 units are not checked"); // b78 = the last batch (S147: was strategy-01-01-u01, v2 since b21)
   const one = run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "management-10-27-u02"]);
   assert.doesNotMatch(one.out, /management-10-27-u01/);
-  assert.equal(run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "strategy-01-01-u01"]).code, 2, "a v1 unit is a usage error");
+  assert.equal(run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "technology-21-54-u01"]).code, 2, "a v1 unit is a usage error");
 });
 
 // ---- B6 review (F1 / F2 / F3 / F5) --------------------------------------------------------------
