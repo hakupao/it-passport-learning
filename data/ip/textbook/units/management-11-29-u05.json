@@ -1,199 +1,694 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "management-11-29-u05",
   "topic_id": "management-11-29",
   "category": "management",
   "title_jp": "サービスデスクと利用者支援ツール",
+  "title_zh": "服务台与用户支持工具",
+  "title_en": "Service Desk and User Support Tools",
   "unit_summary_jp": "利用者との単一窓口であるサービスデスクの役割(SPOC)と、FAQ・チャットボット・AIOps など対応を効率化する支援手段を理解する。",
+  "unit_summary_zh": "理解作为与用户单一联系窗口的服务台的作用（SPOC），以及 FAQ、聊天机器人、AIOps 等提升应对效率的支持手段。",
+  "unit_summary_en": "Understand the role of the service desk as the single point of contact with users (SPOC), and the support means that make response more efficient, such as FAQ, chatbots, and AIOps.",
   "order_in_topic": 5,
   "prerequisites": [
     "management-11-29-u02"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、利用者とサービス提供者をつなぐ単一窓口であるサービスデスクと、その対応を効率化する各種支援ツール(FAQ・チャットボット・AIOps)を学ぶ。サービスデスクはサービスマネジメントの『顔』であり、ITパスポートでも頻出のため、役割(SPOC)と支援手段の違いを正しく押さえることが重要である。",
-    "freq_badge": "頻出",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习连接用户与服务提供方的单一联系窗口——服务台，以及用于提升其应对效率的各种支持工具（FAQ、聊天机器人、AIOps）。服务台是服务管理的“门面”，在 IT 护照考试中也属高频考点，因此正确把握其作用（SPOC）与各支持手段之间的区别十分重要。",
-    "intro_en": "In this unit, you will learn about the service desk—the single point of contact that connects users with the service provider—and the various support tools (FAQ, chatbots, AIOps) that make its responses more efficient. The service desk is the \"face\" of service management and appears frequently on the IT Passport exam, so it is important to correctly grasp its role (SPOC) and the differences between the support means."
-  },
-  "terms": [
+  "goals_jp": [
+    "**サービスデスク**が連絡を受けてから結果を伝えるまでの流れを、受付・記録、一次対応、エスカレーション、結果の連絡の段階に分けて説明できる。",
+    "**SPOC** の考え方と、連絡先を 1 つにまとめる利点を説明できる。",
+    "**FAQ** と**チャットボット**の答えの届け方の違いと、運用そのものに AI を取り入れる **AIOps** の役割を説明できる。"
+  ],
+  "goals_zh": [
+    "能把 **服务台** 从接到联系到告知结果的流程，分成受理与记录、一线处理、升级、告知结果几个阶段来说明。",
+    "能说明 **SPOC** 的思路，以及把联系窗口集中到一处的好处。",
+    "能说明 **FAQ** 和 **聊天机器人** 在给出答案的方式上有何不同，以及把 AI 引入运维本身的 **AIOps** 起什么作用。"
+  ],
+  "goals_en": [
+    "Explain the flow of the **service desk** from receiving a contact to reporting the result, split into the stages of logging, first-line response, escalation and reporting back.",
+    "Explain the idea of **SPOC** and the benefit of gathering all contact into one point.",
+    "Explain how **FAQs** and **chatbots** differ in the way they deliver answers, and the role of **AIOps**, which brings AI into operations themselves."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "主な使われ方"
+  ],
+  "overview_cols_zh": [
+    "类型",
+    "主要用途"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "Main use"
+  ],
+  "overview_rows": [
     {
       "term": "サービスデスク",
-      "definition_jp": "利用者からの問合せや障害連絡を受け付ける、サービス提供側の一元的な窓口。",
-      "explanation_jp": "サービスデスクは、利用者がシステムの不具合や使い方の質問を連絡したときに、最初に対応する窓口です。問合せの記録、一次対応、担当部署への取次ぎを行い、利用者満足度を左右する重要な役割を担います。\n\n試験では、インシデント管理や問題管理といった『裏側のプロセス』との違いが問われます。サービスデスクはあくまで利用者との接点(フロント)であり、復旧作業そのものを担う部署とは区別して理解しましょう。設置形態には、利用者の近くに置く『ローカル』、1か所に集約する『中央』などがあります。",
-      "analogy_jp": "デパートの総合案内カウンターのようなもの。客はまずそこへ行けば、どの売り場の用件でも受け付けてもらえ、適切な担当へ案内してもらえる。",
-      "memory_hook_jp": "サービスデスクといえば利用者対応の単一窓口",
-      "inline_quiz": [
-        "2016h28h-q038"
+      "one_line_jp": "稼働中のサービスについて利用者からの連絡を一手に引き受ける提供者側の窓口",
+      "one_line_zh": "服务提供方的窗口，统一受理用户就运行中的服务发来的联系",
+      "one_line_en": "Provider-side point that takes in all user contacts about a live service",
+      "extra_jp": [
+        "組織・機能",
+        "利用者からの連絡の受付と対応"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"利用者\"] --> B[\"サービスデスク(窓口)\"]; B --> C[\"インシデント管理\"]; B --> D[\"問題管理\"]; B --> E[\"各担当部署\"]",
-        "svg_path": "figures/management-11-29-u05-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "服务台",
-      "term_en": "Service Desk",
-      "definition_zh": "受理用户咨询及故障报告的、服务提供方的统一联系窗口。",
-      "definition_en": "A unified contact point on the service provider's side that receives inquiries and incident reports from users.",
-      "explanation_zh": "服务台是当用户就系统故障或使用方法的疑问进行联络时，最先进行应对的窗口。它负责记录咨询、进行一次应对（初步处理）、以及向相关部门转接，承担着左右用户满意度的重要作用。\n\n考试中会考查它与事件管理、问题管理等“幕后流程”的区别。服务台始终是与用户的接触点（前台），应将其与负责恢复作业本身的部门区分开来理解。其设置形态包括设在用户附近的“本地型”、集中于一处的“中央型”等。",
-      "explanation_en": "The service desk is the first point of response when a user reports a system malfunction or asks a question about how to use it. It records inquiries, performs first-line response, and routes matters to the relevant department, playing an important role that influences user satisfaction.\n\nOn the exam, the difference from \"behind-the-scenes processes\" such as incident management and problem management is tested. The service desk is purely the point of contact with users (the front line), and you should understand it as distinct from the departments that carry out the recovery work itself. Setup forms include the \"local\" type placed near users and the \"central\" type consolidated in one location.",
-      "analogy_zh": "就像百货商场的综合咨询服务台。顾客只要先去那里，无论是哪个柜台的事情都能得到受理，并被引导至合适的负责人那里。",
-      "analogy_en": "Like the general information counter at a department store. Customers can first go there, have any matter from any sales floor accepted, and be guided to the appropriate staff.",
-      "memory_hook_zh": "说到服务台，就是用户应对的单一联系窗口",
-      "memory_hook_en": "Service desk → the single point of contact for handling users"
+      "extra_zh": [
+        "组织、职能",
+        "受理并处理用户的联系"
+      ],
+      "extra_en": [
+        "Organization / function",
+        "Taking in and handling user contacts"
+      ]
     },
     {
       "term": "SPOC",
-      "definition_jp": "利用者の問合せ窓口を一つに集約する『単一窓口』という原則。",
-      "explanation_jp": "SPOC は Single Point Of Contact の略で、利用者が連絡すべき窓口を一本化する考え方です。サービスデスクはこの SPOC を体現する仕組みであり、窓口が複数あって『どこに連絡すればよいか分からない』状態を避けることが目的です。\n\n試験では、SPOC の利点を問う出題が多くあります。窓口を一元化すると、問合せ対応の重複や漏れが減り、対応状況の一元管理ができ、利用者の利便性が高まります。サービスデスクと SPOC はほぼ一体の概念ですが、SPOC は『単一窓口にするという原則』を指す点を意識しましょう。",
-      "analogy_jp": "会社の代表電話番号のようなもの。用件が何であれ、まずその一つの番号にかければよく、社内のどこへ取り次ぐかは受付側が判断してくれる。",
-      "memory_hook_jp": "SPOCといえば連絡先を一本化する単一窓口の原則",
-      "inline_quiz": [
-        "2009h21h-q035",
-        "2014h26h-q037"
+      "one_line_jp": "利用者の連絡先を 1 つの窓口にまとめる考え方",
+      "one_line_zh": "把用户要联系的地方集中到一个窗口的思路",
+      "one_line_en": "The idea of directing all user contact to a single point",
+      "extra_jp": [
+        "窓口の設け方の原則",
+        "利用者が連絡先に迷わないようにする"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "SPOC（单一联系窗口）",
-      "term_en": "SPOC (Single Point of Contact)",
-      "definition_zh": "将用户的咨询窗口集中为一个的“单一窗口”原则。",
-      "definition_en": "The \"single point of contact\" principle of consolidating the user's inquiry window into one.",
-      "explanation_zh": "SPOC 是 Single Point Of Contact 的缩写，是将用户应联系的窗口统一为一个的理念。服务台正是体现这一 SPOC 的机制，其目的是避免出现窗口众多、“不知道该联系哪里”的状况。\n\n考试中常出现考查 SPOC 优点的题目。将窗口统一化后，可以减少咨询应对中的重复与遗漏，能够统一管理应对状况，从而提升用户的便利性。服务台与 SPOC 几乎是一体的概念，但要注意 SPOC 指的是“将窗口设为单一的原则”这一点。",
-      "explanation_en": "SPOC stands for Single Point Of Contact, and it is the idea of unifying the window users should contact into one. The service desk is precisely the mechanism that embodies this SPOC, and its purpose is to avoid a situation where there are multiple windows and users \"don't know where to contact.\"\n\nOn the exam, questions asking about the advantages of SPOC appear often. Unifying the window reduces duplication and omissions in handling inquiries, enables centralized management of response status, and improves user convenience. The service desk and SPOC are nearly an integrated concept, but be aware that SPOC refers to \"the principle of making the window single.\"",
-      "analogy_zh": "就像公司的总机代表电话号码。无论是什么事情，先打那一个号码就行，至于转接到公司内部的哪里，由接线方来判断。",
-      "analogy_en": "Like a company's main representative phone number. Whatever the matter, you just call that single number, and the receiving side decides where inside the company to forward it.",
-      "memory_hook_zh": "说到 SPOC，就是把联系方式统一为一个的单一窗口原则",
-      "memory_hook_en": "SPOC → the single-window principle of unifying contact into one"
+      "extra_zh": [
+        "设置窗口的原则",
+        "让用户不必为找谁联系而犯难"
+      ],
+      "extra_en": [
+        "Principle for setting up the point of contact",
+        "Users never have to wonder whom to contact"
+      ]
     },
     {
       "term": "FAQ",
-      "definition_jp": "よくある質問とその回答をまとめて公開し、自己解決を促す支援ツール。",
-      "explanation_jp": "FAQ は Frequently Asked Questions の略で、利用者から頻繁に寄せられる質問と回答を一覧化したものです。利用者が窓口に問い合わせる前に自分で答えを見つけられるため、サービスデスクへの問合せ件数を減らす効果があります。\n\n試験では、FAQ が『問合せ対応の効率化・負荷軽減』に役立つツールであることが問われます。24時間いつでも参照でき、同じ質問への繰り返し対応を防げるのが利点です。後述のチャットボットや AIOps と比べると、人が用意した固定的な情報を提供する最も基本的な支援手段にあたります。",
-      "analogy_jp": "家電製品に付いてくる『困ったときは』のページのようなもの。サポートに電話する前に、まず自分でそこを見れば多くの疑問が解決する。",
-      "memory_hook_jp": "FAQといえばよくある質問集で自己解決",
-      "inline_quiz": [
-        "2013h25a-q029",
-        "2018h30h-q041"
+      "one_line_jp": "よく寄せられる質問と回答を集めて蓄積したもの",
+      "one_line_zh": "把常被问到的问题和回答收集、积累起来的内容",
+      "one_line_en": "A collected store of frequently asked questions and their answers",
+      "extra_jp": [
+        "質問と回答の蓄積",
+        "利用者の自己解決、窓口担当者の回答探し"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "FAQ（常见问题）",
-      "term_en": "FAQ (Frequently Asked Questions)",
-      "definition_zh": "将常见的问题及其回答汇总公开、促进自助解决的支持工具。",
-      "definition_en": "A support tool that compiles and publishes frequently asked questions and their answers to encourage self-resolution.",
-      "explanation_zh": "FAQ 是 Frequently Asked Questions 的缩写，是将用户频繁提出的问题与回答列成一览的内容。由于用户在向窗口咨询之前就能自己找到答案，因此具有减少向服务台咨询件数的效果。\n\n考试中会考查 FAQ 是有助于“提升咨询应对效率、减轻负荷”的工具这一点。其优点是可以 24 小时随时查阅，并能避免对同一问题的反复应对。与后述的聊天机器人和 AIOps 相比，它是提供由人事先准备好的固定信息的、最基础的支持手段。",
-      "explanation_en": "FAQ stands for Frequently Asked Questions, and it is a list of questions frequently raised by users together with their answers. Because users can find answers themselves before contacting the window, it has the effect of reducing the number of inquiries to the service desk.\n\nOn the exam, the point that FAQ is a tool useful for \"making inquiry handling more efficient and reducing the load\" is tested. Its advantages are that it can be referenced anytime, 24 hours a day, and that it prevents repeated responses to the same question. Compared with the chatbots and AIOps described later, it is the most basic support means, providing fixed information prepared by people.",
-      "analogy_zh": "就像家电产品附带的“遇到困难时”页面。在打电话给客服之前，先自己看那里，许多疑问就能得到解决。",
-      "analogy_en": "Like the \"Troubleshooting\" page that comes with a home appliance. Before calling support, if you look there yourself first, many questions get resolved.",
-      "memory_hook_zh": "说到 FAQ，就是用常见问题集来自助解决",
-      "memory_hook_en": "FAQ → self-resolve with a collection of common questions"
+      "extra_zh": [
+        "问题与回答的积累",
+        "用户自行解决、窗口人员查找答案"
+      ],
+      "extra_en": [
+        "Store of questions and answers",
+        "Self-help for users, finding answers for desk staff"
+      ]
     },
     {
       "term": "チャットボット",
-      "definition_jp": "利用者の質問に自動で会話形式の応答を返すプログラム。",
-      "explanation_jp": "チャットボットは、チャット画面で利用者が入力した質問に対し、プログラムが自動で回答する仕組みです。FAQ を一歩進め、利用者が自然な言葉で問い合わせると、その内容に応じた回答を即座に返します。\n\n試験では、チャットボットが問合せ対応の自動化・効率化を実現する支援ツールである点が問われます。人手を介さず24時間対応でき、定型的な質問をさばくことでサービスデスク要員の負荷を下げられます。近年は AI を活用したものも増えていますが、基本は『会話形式で自動応答する』ツールと理解すれば十分です。",
-      "analogy_jp": "店のウェブサイトに出てくる『ご質問はこちら』の自動応答チャット窓のようなもの。営業時間外でも話しかければすぐ返事をしてくれる。",
-      "memory_hook_jp": "チャットボットといえば会話形式の自動応答",
-      "inline_quiz": [
-        "2019h31h-q046",
-        "2019r01a-q043"
+      "one_line_jp": "入力された質問に会話の形で自動的に答えるソフトウェア",
+      "one_line_zh": "以对话形式自动回答输入的问题的软件",
+      "one_line_en": "Software that answers typed-in questions automatically, in conversational form",
+      "extra_jp": [
+        "自動応答の仕組み",
+        "利用者の質問への会話形式の応答"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "聊天机器人",
-      "term_en": "Chatbot",
-      "definition_zh": "对用户的提问以会话形式自动返回应答的程序。",
-      "definition_en": "A program that automatically returns conversational responses to user questions.",
-      "explanation_zh": "聊天机器人是这样一种机制：对于用户在聊天界面输入的提问，由程序自动给出回答。它比 FAQ 更进一步，当用户用自然的语言进行咨询时，能立即根据其内容返回相应的回答。\n\n考试中会考查聊天机器人是实现咨询应对自动化、效率化的支持工具这一点。它无需人工介入即可 24 小时应对，通过处理定型化的提问，可以降低服务台人员的负荷。近年来运用 AI 的聊天机器人也在增多，但只要理解其基本是“以会话形式自动应答”的工具就足够了。",
-      "explanation_en": "A chatbot is a mechanism in which a program automatically answers questions that a user types on a chat screen. Going one step beyond FAQ, when a user inquires in natural language, it immediately returns an answer corresponding to that content.\n\nOn the exam, the point that a chatbot is a support tool that achieves automation and efficiency of inquiry handling is tested. It can respond 24 hours a day without human intervention, and by handling routine questions, it can reduce the load on service desk staff. In recent years, AI-powered ones have been increasing, but it is enough to understand it basically as a tool that \"responds automatically in conversational form.\"",
-      "analogy_zh": "就像出现在商店网站上的“有疑问点这里”的自动应答聊天窗口。即便在营业时间之外，只要向它搭话，它也会立刻回复。",
-      "analogy_en": "Like the automated-response chat window \"Questions here\" that pops up on a store's website. Even outside business hours, it replies right away when you talk to it.",
-      "memory_hook_zh": "说到聊天机器人，就是会话形式的自动应答",
-      "memory_hook_en": "Chatbot → automatic responses in conversational form"
+      "extra_zh": [
+        "自动应答的机制",
+        "以对话形式回应用户的问题"
+      ],
+      "extra_en": [
+        "Automatic answering mechanism",
+        "Conversational replies to user questions"
+      ]
     },
     {
       "term": "AIOps",
-      "definition_jp": "AI を活用してIT運用の監視・分析・対応を自動化・高度化する手法。",
-      "explanation_jp": "AIOps は Artificial Intelligence for IT Operations の略で、AI(人工知能)や機械学習を運用業務に取り入れ、大量の監視データから障害の予兆を検知したり、原因分析や対応を自動化したりする手法です。\n\n試験では、AIOps が『AI を運用に適用して効率化・高度化する』最新の概念であることが問われます。FAQ やチャットボットが利用者対応の支援であるのに対し、AIOps は運用全体(ログ監視・異常検知・障害対応など)を AI で支える、より広く発展的な取り組みである点が違いです。支援ツール群の到達点として位置づけられます。",
-      "analogy_jp": "工場の設備を見張るベテラン保全員に AI が加わったようなもの。膨大なセンサー情報から『そろそろ故障しそう』を先回りで察知し、対処まで助けてくれる。",
-      "memory_hook_jp": "AIOpsといえばAIでIT運用を自動化・高度化",
-      "inline_quiz": [
-        "2022r04-q054"
+      "one_line_jp": "AI を IT サービスの運用に取り入れて分析や対応を自動化・高度化する取組み",
+      "one_line_zh": "把 AI 引入 IT 服务运维，使分析和处理实现自动化、更加高级的做法",
+      "one_line_en": "Bringing AI into IT service operations to automate and enhance analysis and response",
+      "extra_jp": [
+        "運用への AI の適用",
+        "運用データの分析と担当者の判断支援"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "AIOps（智能运维）",
-      "term_en": "AIOps",
-      "definition_zh": "运用 AI 将 IT 运维的监控、分析、应对加以自动化、高级化的手法。",
-      "definition_en": "An approach that uses AI to automate and advance the monitoring, analysis, and response of IT operations.",
-      "explanation_zh": "AIOps 是 Artificial Intelligence for IT Operations 的缩写，是将 AI（人工智能）和机器学习引入运维业务，从大量监控数据中检测故障的征兆，或将原因分析与应对自动化的手法。\n\n考试中会考查 AIOps 是“将 AI 应用于运维以实现效率化、高级化”的最新概念这一点。FAQ 和聊天机器人是面向用户应对的支持，而 AIOps 则是用 AI 支撑整个运维（日志监控、异常检测、故障应对等）的、更为广泛且发展性的举措，这是两者的区别。它可被定位为各支持工具群的到达点。",
-      "explanation_en": "AIOps stands for Artificial Intelligence for IT Operations, and it is an approach that incorporates AI (artificial intelligence) and machine learning into operations work to detect signs of failures from large volumes of monitoring data, and to automate cause analysis and response.\n\nOn the exam, the point that AIOps is the latest concept of \"applying AI to operations for efficiency and advancement\" is tested. Whereas FAQ and chatbots are support for handling users, AIOps is a broader and more advanced effort that supports operations as a whole (log monitoring, anomaly detection, failure response, etc.) with AI—this is the difference. It can be positioned as the culmination of the group of support tools.",
-      "analogy_zh": "就像在看守工厂设备的资深维护员身边又加入了 AI。它能从海量的传感器信息中预先察觉“快要出故障了”，并连应对处置也一并帮忙。",
-      "analogy_en": "Like adding AI to a veteran maintenance worker who watches over a factory's equipment. From a huge amount of sensor information, it anticipates \"a breakdown is coming soon\" and even helps with the response.",
-      "memory_hook_zh": "说到 AIOps，就是用 AI 将 IT 运维自动化、高级化",
-      "memory_hook_en": "AIOps → automate and advance IT operations with AI"
+      "extra_zh": [
+        "AI 在运维中的应用",
+        "分析运维数据、辅助负责人判断"
+      ],
+      "extra_en": [
+        "Applying AI to operations",
+        "Analyzing operational data and supporting staff decisions"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "サービスデスク",
+      "term_zh": "服务台",
+      "term_en": "Service Desk",
+      "one_jp": "**サービスデスク**は、稼働中の IT サービスについて利用者からの問合せや障害の連絡を受け付ける、サービス提供者側の**窓口**である。",
+      "one_zh": "**服务台**（[[jp:サービスデスク]]）是服务提供方设立的 **窗口**，负责受理用户就运行中的 IT 服务提出的咨询和故障联系。",
+      "one_en": "The **service desk** ([[jp:サービスデスク]]) is the provider's **point of contact** that takes in users' inquiries and fault reports about IT services in operation.",
+      "detail_jp": "受け付けた連絡はすべて記録し、手順が分かっている件はすぐに回答する。窓口だけで解決できない難しい件は、専門技術をもつ担当者 (二次サポート) に引き継ぐ。この引継ぎを**エスカレーション**という。",
+      "detail_zh": "受理的联系一律记录，已知处理步骤的事项当即答复。仅靠窗口解决不了的疑难事项，转交给具备专业技术的人员（二线支持）。这种转交称为 **升级**（[[jp:エスカレーション]]）。",
+      "detail_en": "Every contact received is logged, and cases with a known procedure are answered right away. Difficult cases the desk cannot solve alone are passed to staff with specialist skills (second-line support). This hand-off is called **escalation** ([[jp:エスカレーション]]).",
+      "analogy_jp": "病院の総合受付のようなもの。来た人の用件を聞いて記録し、簡単な案内はその場で済ませ、専門の診察が必要なら担当の科へ回す。",
+      "analogy_zh": "就像医院的总服务台。先问清来人的事由并登记，简单的指引当场办完，需要专科诊治的就转到相应科室。",
+      "analogy_en": "It works like a hospital's main reception. Staff hear why you came and note it down, handle simple directions on the spot, and send you to the right department if you need a specialist.",
+      "hook_jp": "デスク (desk) は机。利用者が最初に声をかける受付の机、と字面から思い出せる。",
+      "hook_zh": "desk 就是桌子。可以从字面联想到：用户最先上前搭话的那张接待桌。",
+      "hook_en": "A desk is literally a table. Picture the front table users walk up to first, and the name sticks.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "障害の連絡を受けたサービスデスクは、原因を突き止めることよりも、利用者がサービスを再び使える状態に戻すことを優先して対応する。",
+          "text_zh": "接到故障联系的服务台（[[jp:サービスデスク]]），处理时优先让用户恢复使用服务，而不是先查明原因。",
+          "text_en": "When the service desk ([[jp:サービスデスク]]) receives a fault report, it puts getting the user back to a working service ahead of pinning down the cause.",
+          "qids": [
+            "2014h26h-q037"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "サービスデスクは、システムが稼働を始めた後の運用段階で、利用者のトラブルや質問に応じる窓口である。",
+          "text_zh": "服务台（[[jp:サービスデスク]]）是在系统投入运行后的运维阶段，应对用户故障和疑问的窗口。",
+          "text_en": "The service desk ([[jp:サービスデスク]]) is the point that handles users' troubles and questions in the operations phase, after the system has gone live.",
+          "qids": [
+            "2026r08-q042",
+            "2009h21h-q035"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "電話窓口のサービスレベルは、例えば利用者がつながるまでに待たされる時間のように、窓口の応対そのものを表す指標で評価する。",
+          "text_zh": "电话窗口的服务水平（[[jp:サービスレベル]]），用直接反映窗口应对情况的指标来评价，例如用户接通前需要等待的时间。",
+          "text_en": "The service level ([[jp:サービスレベル]]) of a phone help line is judged by indicators of the line's own handling, such as how long callers wait before getting through.",
+          "qids": [
+            "2016h28h-q038"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "rec",
+              "label": {
+                "jp": "受付・記録",
+                "zh": "受理与记录",
+                "en": "Log the contact"
+              }
+            },
+            {
+              "id": "first",
+              "label": {
+                "jp": "一次対応",
+                "zh": "一线处理",
+                "en": "First-line response"
+              }
+            },
+            {
+              "id": "esc",
+              "label": {
+                "jp": "エスカレーション",
+                "zh": "升级",
+                "en": "Escalation"
+              }
+            },
+            {
+              "id": "close",
+              "label": {
+                "jp": "結果の連絡",
+                "zh": "告知结果",
+                "en": "Report back"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "受け付けた連絡の内容を記録する。",
+            "caption_zh": "把受理的联系内容记录下来。",
+            "caption_en": "Record what the contact is about.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "手順が分かっている件は、回答や一時的な回避策をその場で示す。",
+            "caption_zh": "已知处理步骤的事项，当场给出回答或临时的规避办法。",
+            "caption_en": "Where the procedure is known, give an answer or a temporary workaround on the spot.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "窓口で解決できない件は、専門技術をもつ担当者へ引き継ぐ。",
+            "caption_zh": "窗口无法解决的事项，转交给具备专业技术的人员。",
+            "caption_en": "Hand cases the desk cannot solve to staff with specialist skills.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "解決したら利用者に結果を伝えて、その件の対応を締めくくる。",
+            "caption_zh": "解决后把结果告诉用户，结束这件事的处理。",
+            "caption_en": "Once solved, tell the user the outcome and close the case.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "サービスデスクは、稼働中の IT サービスについて利用者からの問合せや障害の連絡を受け付ける、サービス提供者側の窓口である。",
+      "definition_zh": "服务台（サービスデスク）是服务提供方设立的 窗口，负责受理用户就运行中的 IT 服务提出的咨询和故障联系。",
+      "definition_en": "The service desk (サービスデスク) is the provider's point of contact that takes in users' inquiries and fault reports about IT services in operation.",
+      "explanation_jp": "受け付けた連絡はすべて記録し、手順が分かっている件はすぐに回答する。窓口だけで解決できない難しい件は、専門技術をもつ担当者 (二次サポート) に引き継ぐ。この引継ぎをエスカレーションという。",
+      "explanation_zh": "受理的联系一律记录，已知处理步骤的事项当即答复。仅靠窗口解决不了的疑难事项，转交给具备专业技术的人员（二线支持）。这种转交称为 升级（エスカレーション）。",
+      "explanation_en": "Every contact received is logged, and cases with a known procedure are answered right away. Difficult cases the desk cannot solve alone are passed to staff with specialist skills (second-line support). This hand-off is called escalation (エスカレーション).",
+      "memory_hook_jp": "デスク (desk) は机。利用者が最初に声をかける受付の机、と字面から思い出せる。",
+      "memory_hook_zh": "desk 就是桌子。可以从字面联想到：用户最先上前搭话的那张接待桌。",
+      "memory_hook_en": "A desk is literally a table. Picture the front table users walk up to first, and the name sticks.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "SPOC",
+      "term_zh": "SPOC（单一联系窗口）",
+      "term_en": "SPOC (Single Point of Contact)",
+      "one_jp": "**SPOC** (Single Point of Contact) は、利用者がどんな用件でも**1 つの窓口**に連絡すればよいように、連絡先をまとめる考え方である。",
+      "one_zh": "**SPOC**（Single Point of Contact，单一联系窗口）是一种把联系窗口集中起来的思路，让用户无论什么事都只需联系 **一个窗口**。",
+      "one_en": "**SPOC** (Single Point of Contact) is the idea of gathering points of contact so that users can reach **one point of contact** for any matter.",
+      "detail_jp": "連絡先が複数あると、利用者はどこに伝えるべきか迷い、提供者側でも同じ件の二重受付や対応漏れが起こりやすい。連絡先を 1 つにすれば、問合せの記録と進み具合をまとめて管理できる。サービスデスクは、この考え方を組織として形にしたものである。",
+      "detail_zh": "联系窗口有好几个时，用户会犯难不知该找谁，提供方也容易出现同一件事重复受理或漏办。只保留一个联系窗口，就能统一管理咨询的记录和进展。服务台正是把这一思路落实为组织的形式。",
+      "detail_en": "With several points of contact, users are unsure where to go, and the provider is prone to logging the same case twice or letting one slip through. A single point of contact lets the records and progress of all inquiries be managed in one place. The service desk is this idea turned into an organization.",
+      "analogy_jp": "マンションの管理人室のようなもの。水漏れでも鍵の紛失でも、住人はまず管理人室に伝えれば、そこから必要な業者へ手配してもらえる。",
+      "analogy_zh": "就像小区的物业服务中心。不管是漏水还是丢了钥匙，住户先告诉物业，物业再去安排相应的师傅。",
+      "analogy_en": "Think of the management office of an apartment building. Whether it is a leak or a lost key, residents just tell the office, and it arranges the right contractor.",
+      "hook_jp": "Single は「1 つ」、Point of Contact は「連絡の接点」。頭の S が「ひとつ」を表すと読むと思い出しやすい。",
+      "hook_zh": "Single 是“单一”，Point of Contact 是“联系的接点”。把开头的 S 读作“一个”，就容易想起来。",
+      "hook_en": "Single means one, and Point of Contact means where you get in touch. Read the leading S as \"just one\" and the meaning comes back.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "SPOC の考え方で設ける単一窓口のサービスデスクは、インシデント管理を担当する部門に置く。",
+          "text_zh": "按 SPOC 思路设置的单一窗口服务台（[[jp:サービスデスク]]），设在负责事件管理（[[jp:インシデント管理]]）的部门。",
+          "text_en": "A single-point service desk ([[jp:サービスデスク]]) set up on the SPOC idea is placed in the department in charge of incident management ([[jp:インシデント管理]]).",
+          "qids": [
+            "2019h31h-q036"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "サービスデスクを導入する利点の 1 つは、利用者の問合せに素早く回答できるようになることである。",
+          "text_zh": "引入服务台（[[jp:サービスデスク]]）的好处之一，是能更快地回答用户的咨询。",
+          "text_en": "One benefit of introducing a service desk ([[jp:サービスデスク]]) is that users' inquiries can be answered more quickly.",
+          "qids": [
+            "2011h23tokubetsu-q046"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2019h31h-q036",
+        "2014h26h-q037",
+        "2011h23tokubetsu-q046"
+      ],
+      "definition_jp": "SPOC (Single Point of Contact) は、利用者がどんな用件でも1 つの窓口に連絡すればよいように、連絡先をまとめる考え方である。",
+      "definition_zh": "SPOC（Single Point of Contact，单一联系窗口）是一种把联系窗口集中起来的思路，让用户无论什么事都只需联系 一个窗口。",
+      "definition_en": "SPOC (Single Point of Contact) is the idea of gathering points of contact so that users can reach one point of contact for any matter.",
+      "explanation_jp": "連絡先が複数あると、利用者はどこに伝えるべきか迷い、提供者側でも同じ件の二重受付や対応漏れが起こりやすい。連絡先を 1 つにすれば、問合せの記録と進み具合をまとめて管理できる。サービスデスクは、この考え方を組織として形にしたものである。",
+      "explanation_zh": "联系窗口有好几个时，用户会犯难不知该找谁，提供方也容易出现同一件事重复受理或漏办。只保留一个联系窗口，就能统一管理咨询的记录和进展。服务台正是把这一思路落实为组织的形式。",
+      "explanation_en": "With several points of contact, users are unsure where to go, and the provider is prone to logging the same case twice or letting one slip through. A single point of contact lets the records and progress of all inquiries be managed in one place. The service desk is this idea turned into an organization.",
+      "memory_hook_jp": "Single は「1 つ」、Point of Contact は「連絡の接点」。頭の S が「ひとつ」を表すと読むと思い出しやすい。",
+      "memory_hook_zh": "Single 是“单一”，Point of Contact 是“联系的接点”。把开头的 S 读作“一个”，就容易想起来。",
+      "memory_hook_en": "Single means one, and Point of Contact means where you get in touch. Read the leading S as \"just one\" and the meaning comes back.",
+      "inline_quiz": [
+        "2019h31h-q036",
+        "2014h26h-q037",
+        "2011h23tokubetsu-q046"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "FAQ",
+      "term_zh": "FAQ（常见问题）",
+      "term_en": "FAQ (Frequently Asked Questions)",
+      "one_jp": "**FAQ** (Frequently Asked Questions) は、よく寄せられる質問とその回答を集めて**蓄積**したもので、利用者の自己解決にも、窓口の担当者が回答を探す手がかりにも使われる。",
+      "one_zh": "**FAQ**（Frequently Asked Questions，常见问题）是把常被问到的问题及其回答收集并 **积累** 起来的内容，既可供用户自行解决，也是窗口人员查找答案的线索。",
+      "one_en": "An **FAQ** (Frequently Asked Questions) is a collected **store** of common questions and their answers, used both for users' self-help and as a lead for desk staff looking for answers.",
+      "detail_jp": "利用者は窓口の受付時間を待たずに答えを探せ、サービスデスクは同じ質問に何度も答える手間が減る。過去に受け付けた問合せやインシデントの記録を基に項目を作ると、実際によく起こる困りごとを反映できる。",
+      "detail_zh": "用户不必等窗口的受理时间就能自己找答案，服务台也省去了一遍遍回答同样问题的工夫。以过去受理的咨询和事件的记录为基础编写条目，就能反映实际常见的困扰。",
+      "detail_en": "Users can look for answers without waiting for the desk's opening hours, and the service desk spends less effort answering the same question again and again. Building entries from records of past inquiries and incidents makes them reflect the problems that actually come up most.",
+      "analogy_jp": "駅に貼ってある「よくあるお問い合わせ」の掲示のようなもの。駅員に聞く前に、乗換えや忘れ物についての答えをその場で読める。",
+      "analogy_zh": "就像车站张贴的“常见问题”告示。不用去问站务员，换乘、失物之类的答案当场就能看到。",
+      "analogy_en": "Like the \"common questions\" notice posted at a train station. Before asking staff, you can read answers about transfers or lost property right there.",
+      "hook_jp": "Frequently は「たびたび」。たびたび聞かれる (Asked) 質問 (Questions) を集めたもの、と英語の並びから読める。",
+      "hook_zh": "Frequently 是“经常”。从英文顺序就能读出：把经常被问到（Asked）的问题（Questions）汇集起来。",
+      "hook_en": "Frequently means often. The word order itself spells it out: questions that are often asked, gathered in one place.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "FAQ を利用者に提供する目的は、利用者が窓口を通さずに自分の力で問題を解決できるよう支えることである。",
+          "text_zh": "向用户提供 FAQ 的目的，是帮助用户不经过窗口、凭自己的力量解决问题。",
+          "text_en": "The purpose of offering users an FAQ is to help them solve problems on their own, without going through the desk.",
+          "qids": [
+            "2018h30h-q041"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "過去のインシデントを FAQ として蓄積しておくと、問合せを最初に受けた時点で回答できる割合 (一次回答率) が上がる。",
+          "text_zh": "把过去的事件（[[jp:インシデント]]）积累成 FAQ，最初受理咨询时就能回答的比例（首次回答率，[[jp:一次回答率]]）会提高。",
+          "text_en": "Storing past incidents ([[jp:インシデント]]) as FAQ entries raises the share of inquiries answered at first contact (first-contact answer rate, [[jp:一次回答率]]).",
+          "qids": [
+            "2023r05-q051"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2018h30h-q041",
+        "2023r05-q051",
+        "2023r05-q036"
+      ],
+      "definition_jp": "FAQ (Frequently Asked Questions) は、よく寄せられる質問とその回答を集めて蓄積したもので、利用者の自己解決にも、窓口の担当者が回答を探す手がかりにも使われる。",
+      "definition_zh": "FAQ（Frequently Asked Questions，常见问题）是把常被问到的问题及其回答收集并 积累 起来的内容，既可供用户自行解决，也是窗口人员查找答案的线索。",
+      "definition_en": "An FAQ (Frequently Asked Questions) is a collected store of common questions and their answers, used both for users' self-help and as a lead for desk staff looking for answers.",
+      "explanation_jp": "利用者は窓口の受付時間を待たずに答えを探せ、サービスデスクは同じ質問に何度も答える手間が減る。過去に受け付けた問合せやインシデントの記録を基に項目を作ると、実際によく起こる困りごとを反映できる。",
+      "explanation_zh": "用户不必等窗口的受理时间就能自己找答案，服务台也省去了一遍遍回答同样问题的工夫。以过去受理的咨询和事件的记录为基础编写条目，就能反映实际常见的困扰。",
+      "explanation_en": "Users can look for answers without waiting for the desk's opening hours, and the service desk spends less effort answering the same question again and again. Building entries from records of past inquiries and incidents makes them reflect the problems that actually come up most.",
+      "memory_hook_jp": "Frequently は「たびたび」。たびたび聞かれる (Asked) 質問 (Questions) を集めたもの、と英語の並びから読める。",
+      "memory_hook_zh": "Frequently 是“经常”。从英文顺序就能读出：把经常被问到（Asked）的问题（Questions）汇集起来。",
+      "memory_hook_en": "Frequently means often. The word order itself spells it out: questions that are often asked, gathered in one place.",
+      "inline_quiz": [
+        "2018h30h-q041",
+        "2023r05-q051",
+        "2023r05-q036"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "チャットボット",
+      "term_zh": "聊天机器人",
+      "term_en": "Chatbot",
+      "one_jp": "**チャットボット**は、文字や音声で寄せられた質問の内容を読み取り、ソフトウェアが**会話**のやり取りの形で自動的に答えを返す仕組みである。",
+      "one_zh": "**聊天机器人**（[[jp:チャットボット]]）是由软件读取以文字或语音提出的问题内容，并以 **对话** 往来的形式自动给出答案的机制。",
+      "one_en": "A **chatbot** ([[jp:チャットボット]]) is a mechanism in which software reads a question sent by text or voice and automatically replies in the form of a **conversation**.",
+      "detail_jp": "定型的な質問をチャットボットが引き受けると、人の担当者は込み入った案件に時間を回せる。答えられない質問は、人の担当者への引継ぎにつなげて運用することが多い。",
+      "detail_zh": "把固定类型的问题交给聊天机器人处理，人工负责人就能把时间腾给复杂的事项。回答不了的问题，在运营上多半会衔接到转交人工负责人。",
+      "detail_en": "When a chatbot takes on routine questions, human staff can spend their time on complicated cases. Questions it cannot answer are usually set up to be handed over to a human.",
+      "analogy_jp": "夜中でも返事をくれる自動の受付係のようなもの。決まった質問にはすぐ答え、難しい相談は翌朝の担当者へ回す。",
+      "analogy_zh": "就像半夜也会回话的自动接待员。固定的问题马上答复，棘手的商量就转给第二天早上的负责人。",
+      "analogy_en": "Like an automated receptionist who replies even in the middle of the night. It answers set questions at once and passes tricky requests to the morning staff.",
+      "hook_jp": "chat (おしゃべり) と bot (robot の略) を合わせた語で、「おしゃべりするロボット」と読める。",
+      "hook_zh": "由 chat（闲聊）和 bot（robot 的缩写）组合而成，可以读作“会聊天的机器人”。",
+      "hook_en": "The word joins chat and bot (short for robot), so read it as \"a robot you can chat with\".",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "受付時間が限られた窓口にチャットボットを加えると、人の担当者がいない時間帯も応答できるので、問合せを受け付ける時間を広げられる。",
+          "text_zh": "受理时间有限的窗口加入聊天机器人（[[jp:チャットボット]]）后，在没有人工负责人的时段也能应答，因此可以延长受理咨询的时间。",
+          "text_en": "Adding a chatbot ([[jp:チャットボット]]) to a desk with limited hours lets it respond even when no human staff are on duty, which extends the hours inquiries can be taken.",
+          "qids": [
+            "2025r07-q049"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "チャットボットによる問合せへの自動応答は、利用者からの連絡を受けてサービスを早く回復させるインシデント管理の活動を助ける。",
+          "text_zh": "用聊天机器人（[[jp:チャットボット]]）自动应答咨询，有助于事件管理（[[jp:インシデント管理]]）的活动，即接到用户联系后尽快恢复服务。",
+          "text_en": "Automatic replies to inquiries by a chatbot ([[jp:チャットボット]]) support incident management ([[jp:インシデント管理]]), the activity of restoring the service quickly after a user gets in touch.",
+          "qids": [
+            "2022r04-q049"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "FAQ は質問と回答をあらかじめ蓄積しておき、そこから当てはまる項目を探して答えを得る。チャットボットは質問を受けるたびに、ソフトウェアが会話の形で答えを返す。",
+          "text_zh": "FAQ 是预先积累好问题和回答，从中查找相符的条目来获得答案。聊天机器人（[[jp:チャットボット]]）则是每接到一个问题，就由软件以对话的形式给出回答。",
+          "text_en": "With an FAQ, questions and answers are stored in advance, and you get an answer by finding the matching entry. With a chatbot ([[jp:チャットボット]]), the software replies in conversational form each time it receives a question."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2019h31h-q046",
+        "2020r02o-q049",
+        "2025r07-q050"
+      ],
+      "definition_jp": "チャットボットは、文字や音声で寄せられた質問の内容を読み取り、ソフトウェアが会話のやり取りの形で自動的に答えを返す仕組みである。",
+      "definition_zh": "聊天机器人（チャットボット）是由软件读取以文字或语音提出的问题内容，并以 对话 往来的形式自动给出答案的机制。",
+      "definition_en": "A chatbot (チャットボット) is a mechanism in which software reads a question sent by text or voice and automatically replies in the form of a conversation.",
+      "explanation_jp": "定型的な質問をチャットボットが引き受けると、人の担当者は込み入った案件に時間を回せる。答えられない質問は、人の担当者への引継ぎにつなげて運用することが多い。",
+      "explanation_zh": "把固定类型的问题交给聊天机器人处理，人工负责人就能把时间腾给复杂的事项。回答不了的问题，在运营上多半会衔接到转交人工负责人。",
+      "explanation_en": "When a chatbot takes on routine questions, human staff can spend their time on complicated cases. Questions it cannot answer are usually set up to be handed over to a human.",
+      "memory_hook_jp": "chat (おしゃべり) と bot (robot の略) を合わせた語で、「おしゃべりするロボット」と読める。",
+      "memory_hook_zh": "由 chat（闲聊）和 bot（robot 的缩写）组合而成，可以读作“会聊天的机器人”。",
+      "memory_hook_en": "The word joins chat and bot (short for robot), so read it as \"a robot you can chat with\".",
+      "inline_quiz": [
+        "2019h31h-q046",
+        "2020r02o-q049",
+        "2025r07-q050"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "AIOps",
+      "term_zh": "AIOps（智能运维）",
+      "term_en": "AIOps",
+      "one_jp": "**AIOps** (Artificial Intelligence for IT Operations) は、**AI** を IT サービスの運用に取り入れ、運用データの分析や対応の判断を自動化・高度化する取組みである。",
+      "one_zh": "**AIOps**（Artificial Intelligence for IT Operations，智能运维）是把 **AI** 引入 IT 服务的运维，使运维数据的分析和处理判断实现自动化、更加高级的做法。",
+      "one_en": "**AIOps** (Artificial Intelligence for IT Operations) is the practice of bringing **AI** into IT service operations to automate and enhance the analysis of operational data and decisions on how to respond.",
+      "detail_jp": "運用の現場では、ログや稼働状況など人が見切れない量のデータが日々生まれる。AI がそこから異常の兆しや原因の候補を見つけ出し、担当者の判断や作業を支える。サービスデスクの業務でも、問合せ内容の解析に AI を使えば担当者の応対を支援できる。",
+      "detail_zh": "运维现场每天都会产生日志、运行状况等人工看不过来的大量数据。AI 从中找出异常的苗头和可能的原因，辅助负责人的判断和作业。在服务台的业务中，用 AI 解析咨询内容，也能辅助负责人的应对。",
+      "detail_en": "Operations generate more data every day, such as logs and system status, than people can review. AI finds signs of trouble and likely causes in that data and supports staff in their decisions and work. At the service desk too, using AI to analyze what inquiries are about can help staff handle them.",
+      "analogy_jp": "経験豊富な先輩が隣で画面を見て、この警告は前にも出た、原因はたぶんあれだ、と耳打ちしてくれるようなもの。",
+      "analogy_zh": "就像一位经验丰富的前辈坐在旁边看着屏幕，悄悄提醒你：这个警告以前也出现过，原因多半是那个。",
+      "analogy_en": "It is like a seasoned colleague watching the screen beside you and whispering, \"We've seen this alert before. It's probably that again.\"",
+      "hook_jp": "Ops は Operations (運用) の略。AI + Ops は「AI の運用」ではなく「AI で運用」と読む。",
+      "hook_zh": "Ops 是 Operations（运维）的缩写。AI + Ops 不是“运维 AI”，而要读作“用 AI 做运维”。",
+      "hook_en": "Ops is short for Operations. Read AI + Ops not as \"operating AI\" but as \"operating with AI\".",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "AIOps などで運用を自動化した効果は、自動化で減った時間だけでなく、自動化の後も人手で残る作業の時間を含めて評価する。",
+          "text_zh": "用 AIOps 等手段实现运维自动化后，其效果不只看自动化减少的时间，还要把自动化后仍需人工完成的作业时间一并计入来评价。",
+          "text_en": "When operations are automated with AIOps or similar means, the effect is judged not only by the time automation saves but also by counting the time of the work still left for people afterwards.",
+          "qids": [
+            "2026r08-q044"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "collect",
+              "label": {
+                "jp": "運用データの収集",
+                "zh": "收集运维数据",
+                "en": "Collect operational data"
+              }
+            },
+            {
+              "id": "analyze",
+              "label": {
+                "jp": "AI による分析",
+                "zh": "AI 分析",
+                "en": "AI analysis"
+              }
+            },
+            {
+              "id": "suggest",
+              "label": {
+                "jp": "異常・原因の提示",
+                "zh": "提示异常与原因",
+                "en": "Point out anomalies and causes"
+              }
+            },
+            {
+              "id": "act",
+              "label": {
+                "jp": "対応の自動化・支援",
+                "zh": "处理的自动化与辅助",
+                "en": "Automate and support the response"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ログや稼働状況、問合せの記録など、運用で生まれるデータを集める。",
+            "caption_zh": "收集日志、运行状况、咨询记录等运维中产生的数据。",
+            "caption_en": "Gather the data operations produce, such as logs, system status and inquiry records.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "集めたデータを AI がまとめて解析し、傾向やつながりを見つける。",
+            "caption_zh": "由 AI 对收集的数据进行综合解析，找出趋势和关联。",
+            "caption_en": "AI analyzes the collected data as a whole and finds trends and connections.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "異常の兆しや原因の候補を、担当者に分かる形で示す。",
+            "caption_zh": "以负责人看得懂的形式，指出异常的苗头和可能的原因。",
+            "caption_en": "Show signs of anomalies and likely causes in a form staff can understand.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "決まった対処は自動で実行し、残りは担当者の判断を支える。",
+            "caption_zh": "固定的处置自动执行，其余部分辅助负责人做判断。",
+            "caption_en": "Run routine fixes automatically and support staff in deciding the rest.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2022r04-q054",
+        "2023r05-q016",
+        "2026r08-q044"
+      ],
+      "definition_jp": "AIOps (Artificial Intelligence for IT Operations) は、AI を IT サービスの運用に取り入れ、運用データの分析や対応の判断を自動化・高度化する取組みである。",
+      "definition_zh": "AIOps（Artificial Intelligence for IT Operations，智能运维）是把 AI 引入 IT 服务的运维，使运维数据的分析和处理判断实现自动化、更加高级的做法。",
+      "definition_en": "AIOps (Artificial Intelligence for IT Operations) is the practice of bringing AI into IT service operations to automate and enhance the analysis of operational data and decisions on how to respond.",
+      "explanation_jp": "運用の現場では、ログや稼働状況など人が見切れない量のデータが日々生まれる。AI がそこから異常の兆しや原因の候補を見つけ出し、担当者の判断や作業を支える。サービスデスクの業務でも、問合せ内容の解析に AI を使えば担当者の応対を支援できる。",
+      "explanation_zh": "运维现场每天都会产生日志、运行状况等人工看不过来的大量数据。AI 从中找出异常的苗头和可能的原因，辅助负责人的判断和作业。在服务台的业务中，用 AI 解析咨询内容，也能辅助负责人的应对。",
+      "explanation_en": "Operations generate more data every day, such as logs and system status, than people can review. AI finds signs of trouble and likely causes in that data and supports staff in their decisions and work. At the service desk too, using AI to analyze what inquiries are about can help staff handle them.",
+      "memory_hook_jp": "Ops は Operations (運用) の略。AI + Ops は「AI の運用」ではなく「AI で運用」と読む。",
+      "memory_hook_zh": "Ops 是 Operations（运维）的缩写。AI + Ops 不是“运维 AI”，而要读作“用 AI 做运维”。",
+      "memory_hook_en": "Ops is short for Operations. Read AI + Ops not as \"operating AI\" but as \"operating with AI\".",
+      "inline_quiz": [
+        "2022r04-q054",
+        "2023r05-q016",
+        "2026r08-q044"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "サービスデスク",
+      "b": "SPOC",
+      "rows": [
+        {
+          "label_jp": "何を指すか",
+          "label_zh": "指什么",
+          "label_en": "What it is",
+          "a_jp": "問合せを受け付ける組織・機能",
+          "a_zh": "受理咨询的组织、职能",
+          "a_en": "The organization or function that takes in inquiries",
+          "b_jp": "連絡先を 1 つにまとめるという考え方",
+          "b_zh": "把联系窗口集中为一个的思路",
+          "b_en": "The idea of gathering contact into one point",
+          "key": true
+        }
+      ]
+    },
+    {
+      "a": "FAQ",
+      "b": "チャットボット",
+      "rows": [
+        {
+          "label_jp": "答えの届け方",
+          "label_zh": "给出答案的方式",
+          "label_en": "How answers are delivered",
+          "a_jp": "蓄積された質問と回答から、当てはまる項目を探して答えを得る",
+          "a_zh": "从积累的问题与回答中，查找相符的条目获得答案",
+          "a_en": "Find the matching entry among stored questions and answers",
+          "b_jp": "質問を受けるたびに、ソフトウェアが会話の形で答えを返す",
+          "b_zh": "每接到一个问题，由软件以对话形式给出回答",
+          "b_en": "Software replies in conversational form to each question",
+          "key": true
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**サービスデスク**は稼働中のサービスの利用者窓口で、障害の連絡にはサービスの回復を優先して応じ、窓口で解決できない件は**エスカレーション**する。",
+    "**SPOC** は利用者の連絡先を 1 つにまとめる原則で、二重受付や対応漏れを防ぎ、問合せの進み具合をまとめて管理しやすくする。",
+    "**FAQ** は利用者の自己解決にも窓口担当者の回答にも使える質問と回答の蓄積であり、**チャットボット**は人の担当者がいない時間も質問に自動で答えられる。",
+    "**AIOps** は運用データを AI で分析し、異常の発見や担当者の判断・作業を自動化・支援する。"
+  ],
+  "key_points_zh": [
+    "**服务台** 是运行中服务面向用户的窗口，对故障联系优先恢复服务，窗口解决不了的事项则 **升级**。",
+    "**SPOC** 是把用户的联系窗口集中到一处的原则，可防止重复受理和漏办，也便于统一管理咨询的进展。",
+    "**FAQ** 是问题与回答的积累，既能供用户自行解决，也能用于窗口人员作答；**聊天机器人** 在没有人工负责人的时段也能自动回答问题。",
+    "**AIOps** 用 AI 分析运维数据，使异常的发现以及负责人的判断和作业实现自动化或得到辅助。"
+  ],
+  "key_points_en": [
+    "The **service desk** is the user-facing point of contact for live services; it puts restoring the service first when a fault is reported and **escalates** cases it cannot solve.",
+    "**SPOC** is the principle of gathering user contact into one point, which prevents duplicate logging and missed cases and makes inquiry progress easier to track in one place.",
+    "An **FAQ** is a store of questions and answers that serves both user self-help and desk staff's replies, while a **chatbot** can answer questions automatically even when no human staff are available.",
+    "**AIOps** analyzes operational data with AI to automate or support finding anomalies and staff's decisions and work."
+  ],
+  "overview": {
+    "intro_jp": "サービスデスクが連絡を受けてから結果を伝えるまでの流れを、受付・記録、一次対応、エスカレーション、結果の連絡の段階に分けて説明できる。SPOC の考え方と、連絡先を 1 つにまとめる利点を説明できる。FAQ とチャットボットの答えの届け方の違いと、運用そのものに AI を取り入れる AIOps の役割を説明できる。",
+    "intro_zh": "能把 服务台 从接到联系到告知结果的流程，分成受理与记录、一线处理、升级、告知结果几个阶段来说明。能说明 SPOC 的思路，以及把联系窗口集中到一处的好处。能说明 FAQ 和 聊天机器人 在给出答案的方式上有何不同，以及把 AI 引入运维本身的 AIOps 起什么作用。",
+    "intro_en": "Explain the flow of the service desk from receiving a contact to reporting the result, split into the stages of logging, first-line response, escalation and reporting back. Explain the idea of SPOC and the benefit of gathering all contact into one point. Explain how FAQs and chatbots differ in the way they deliver answers, and the role of AIOps, which brings AI into operations themselves.",
+    "freq_badge": "頻出",
+    "est_minutes": 32
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "サービスデスク: サービスデスクといえば利用者対応の単一窓口",
-      "SPOC: SPOCといえば連絡先を一本化する単一窓口の原則",
-      "FAQ: FAQといえばよくある質問集で自己解決",
-      "チャットボット: チャットボットといえば会話形式の自動応答",
-      "AIOps: AIOpsといえばAIでIT運用を自動化・高度化"
-    ],
     "key_points_jp": [
-      "サービスデスクは利用者と提供側をつなぐ単一の窓口であり、復旧作業を担う裏側のプロセス(インシデント管理・問題管理)とは役割が異なる。",
-      "SPOC(単一窓口)とは連絡先を一本化する原則で、サービスデスクがこれを体現する。問合せの重複・漏れを防ぎ利用者の利便性を高める。",
-      "FAQ→チャットボット→AIOps の順に、固定情報の提供から会話形式の自動応答、さらに AI による運用全体の高度化へと支援手段が発展する。",
-      "FAQ・チャットボットはいずれもサービスデスクへの問合せ負荷を軽減し、24時間の自己解決・自動対応を可能にする。",
-      "AIOps は AI を運用全体に適用する発展的概念で、利用者対応に留まらず監視・異常検知・障害対応までを高度化する。"
+      "サービスデスクは稼働中のサービスの利用者窓口で、障害の連絡にはサービスの回復を優先して応じ、窓口で解決できない件はエスカレーションする。",
+      "SPOC は利用者の連絡先を 1 つにまとめる原則で、二重受付や対応漏れを防ぎ、問合せの進み具合をまとめて管理しやすくする。",
+      "FAQ は利用者の自己解決にも窓口担当者の回答にも使える質問と回答の蓄積であり、チャットボットは人の担当者がいない時間も質問に自動で答えられる。",
+      "AIOps は運用データを AI で分析し、異常の発見や担当者の判断・作業を自動化・支援する。"
     ],
     "key_points_zh": [
-      "服务台是连接用户与提供方的单一窗口，其作用不同于负责恢复作业的幕后流程（事件管理、问题管理）。",
-      "SPOC（单一窗口）是将联系方式统一为一个的原则，由服务台来体现。它防止咨询的重复与遗漏，提升用户的便利性。",
-      "按 FAQ→聊天机器人→AIOps 的顺序，支持手段从提供固定信息，发展到会话形式的自动应答，再到由 AI 实现整个运维的高级化。",
-      "FAQ 与聊天机器人都能减轻向服务台咨询的负荷，并使 24 小时的自助解决、自动应对成为可能。",
-      "AIOps 是将 AI 应用于整个运维的发展性概念，不止于用户应对，还将监控、异常检测、故障应对加以高级化。"
+      "服务台 是运行中服务面向用户的窗口，对故障联系优先恢复服务，窗口解决不了的事项则 升级。",
+      "SPOC 是把用户的联系窗口集中到一处的原则，可防止重复受理和漏办，也便于统一管理咨询的进展。",
+      "FAQ 是问题与回答的积累，既能供用户自行解决，也能用于窗口人员作答；聊天机器人 在没有人工负责人的时段也能自动回答问题。",
+      "AIOps 用 AI 分析运维数据，使异常的发现以及负责人的判断和作业实现自动化或得到辅助。"
     ],
     "key_points_en": [
-      "The service desk is the single window connecting users and the provider, and its role differs from the behind-the-scenes processes that carry out recovery work (incident management, problem management).",
-      "SPOC (single point of contact) is the principle of unifying contact into one, which the service desk embodies. It prevents duplication and omission of inquiries and improves user convenience.",
-      "In the order FAQ → chatbot → AIOps, the support means develop from providing fixed information, to conversational automatic responses, and further to advancing operations as a whole with AI.",
-      "Both FAQ and chatbots reduce the inquiry load on the service desk and make 24-hour self-resolution and automatic response possible.",
-      "AIOps is an advanced concept that applies AI to operations as a whole; it goes beyond handling users to advance monitoring, anomaly detection, and failure response."
+      "The service desk is the user-facing point of contact for live services; it puts restoring the service first when a fault is reported and escalates cases it cannot solve.",
+      "SPOC is the principle of gathering user contact into one point, which prevents duplicate logging and missed cases and makes inquiry progress easier to track in one place.",
+      "An FAQ is a store of questions and answers that serves both user self-help and desk staff's replies, while a chatbot can answer questions automatically even when no human staff are available.",
+      "AIOps analyzes operational data with AI to automate or support finding anomalies and staff's decisions and work."
+    ],
+    "memory_hooks_jp": [
+      "サービスデスク: デスク (desk) は机。利用者が最初に声をかける受付の机、と字面から思い出せる。",
+      "SPOC: Single は「1 つ」、Point of Contact は「連絡の接点」。頭の S が「ひとつ」を表すと読むと思い出しやすい。",
+      "FAQ: Frequently は「たびたび」。たびたび聞かれる (Asked) 質問 (Questions) を集めたもの、と英語の並びから読める。",
+      "チャットボット: chat (おしゃべり) と bot (robot の略) を合わせた語で、「おしゃべりするロボット」と読める。",
+      "AIOps: Ops は Operations (運用) の略。AI + Ops は「AI の運用」ではなく「AI で運用」と読む。"
     ],
     "memory_hooks_zh": [
-      "服务台：说到服务台，就是用户应对的单一联系窗口",
-      "SPOC：说到 SPOC，就是把联系方式统一为一个的单一窗口原则",
-      "FAQ：说到 FAQ，就是用常见问题集来自助解决",
-      "聊天机器人：说到聊天机器人，就是会话形式的自动应答",
-      "AIOps：说到 AIOps，就是用 AI 将 IT 运维自动化、高级化"
+      "服务台：desk 就是桌子。可以从字面联想到：用户最先上前搭话的那张接待桌。",
+      "SPOC（单一联系窗口）：Single 是“单一”，Point of Contact 是“联系的接点”。把开头的 S 读作“一个”，就容易想起来。",
+      "FAQ（常见问题）：Frequently 是“经常”。从英文顺序就能读出：把经常被问到（Asked）的问题（Questions）汇集起来。",
+      "聊天机器人：由 chat（闲聊）和 bot（robot 的缩写）组合而成，可以读作“会聊天的机器人”。",
+      "AIOps（智能运维）：Ops 是 Operations（运维）的缩写。AI + Ops 不是“运维 AI”，而要读作“用 AI 做运维”。"
     ],
     "memory_hooks_en": [
-      "Service Desk: Service desk → the single point of contact for handling users",
-      "SPOC: SPOC → the single-window principle of unifying contact into one",
-      "FAQ: FAQ → self-resolve with a collection of common questions",
-      "Chatbot: Chatbot → automatic responses in conversational form",
-      "AIOps: AIOps → automate and advance IT operations with AI"
+      "Service Desk: A desk is literally a table. Picture the front table users walk up to first, and the name sticks.",
+      "SPOC (Single Point of Contact): Single means one, and Point of Contact means where you get in touch. Read the leading S as \"just one\" and the meaning comes back.",
+      "FAQ (Frequently Asked Questions): Frequently means often. The word order itself spells it out: questions that are often asked, gathered in one place.",
+      "Chatbot: The word joins chat and bot (short for robot), so read it as \"a robot you can chat with\".",
+      "AIOps: Ops is short for Operations. Read AI + Ops not as \"operating AI\" but as \"operating with AI\"."
     ]
   },
   "challenge_questions": [
-    "2019h31h-q036",
-    "2019r01a-q054",
-    "2023r05-q016",
+    "2009h21h-q035",
     "2020r02o-q047",
-    "2021r03-q044"
+    "2021r03-q044",
+    "2019r01a-q054",
+    "2026r08-q042"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "服务台与用户支持工具",
-  "title_en": "Service Desk and User Support Tools",
-  "unit_summary_zh": "理解作为与用户单一联系窗口的服务台的作用（SPOC），以及 FAQ、聊天机器人、AIOps 等提升应对效率的支持手段。",
-  "unit_summary_en": "Understand the role of the service desk as the single point of contact with users (SPOC), and the support means that make response more efficient, such as FAQ, chatbots, and AIOps."
+  }
 }
