@@ -36,7 +36,7 @@
 | b27 | strategy-02-05 | セキュリティ関連法規 | u01 u02 u03 u04 | 54 | 19 | done (S148, attempts 2/2/1/2, Rule A PASS after 30 patches, D-206 auto) |
 | b28 | management-12-32 | 内部統制 | u01 | 53 | 5 | done (S148, attempts 2, Rule A PASS, no patches, D-206 auto) |
 | b29 | technology-16-44 | システムの評価指標 | u01 u02 u03 u04 | 46 | 17 | done (S148, attempts 1/2 (B5)/1/1, Rule A PASS after 34 patches, D-206 auto) |
-| b30 | strategy-03-10 | マーケティング (1/2) | u01 u02 u03 u04 u05 | 43 | 29 | todo |
+| b30 | strategy-03-10 | マーケティング (1/2) | u01 u02 u03 u04 u05 | 43 | 29 | done (S148, attempts 2/1/2/1/1, Rule A PASS after 37 patches, D-206 auto) |
 | b31 | strategy-03-10 | マーケティング (2/2) | u06 u07 | 43 | 7 | todo |
 | b32 | management-09-26 | 開発プロセス・手法 | u01 u02 u03 u04 u05 | 41 | 30 | todo |
 | b33 | strategy-05-14 | ビジネスシステム (1/2) | u01 u02 u03 u04 u05 | 39 | 35 | todo |
