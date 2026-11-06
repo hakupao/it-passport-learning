@@ -1,162 +1,606 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-35-u02",
   "topic_id": "technology-13-35",
   "category": "technology",
   "title_jp": "符号化と文字コード",
+  "title_zh": "编码与字符编码",
+  "title_en": "Encoding and Character Codes",
   "unit_summary_jp": "情報をビット列に対応づける符号化の考え方と、文字を符号化する代表的な文字コード(JIS・シフトJIS・Unicode)を学ぶ。",
+  "unit_summary_zh": "学习将信息对应到比特串的编码思想，以及对字符进行编码的代表性字符编码（JIS、Shift_JIS、Unicode）。",
+  "unit_summary_en": "Learn the concept of encoding, which maps information to bit strings, and the representative character codes used to encode characters (JIS, Shift_JIS, Unicode).",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-13-35-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、文字や記号などの情報をコンピュータが扱えるビット列(0と1)に対応づける「符号化」の考え方と、その代表例として文字を数値に割り当てる文字コード(JISコード・シフトJISコード・Unicode)を学びます。文字化けの原因理解にもつながり、情報のデジタル化の基礎として試験でも問われる重要分野です。",
-    "freq_badge": "標準",
-    "est_minutes": 13,
-    "intro_zh": "在本单元中，我们将学习把字符、符号等信息对应到计算机可处理的比特串（0 和 1）的「编码」思想，以及作为其代表例、把字符分配为数值的字符编码（JIS 编码、Shift_JIS 编码、Unicode）。它也有助于理解乱码产生的原因，作为信息数字化的基础，是考试中也会考查的重要领域。",
-    "intro_en": "In this unit, you will learn the concept of \"encoding,\" which maps information such as characters and symbols to bit strings (0s and 1s) that a computer can handle, and as its representative example, the character codes that assign numeric values to characters (JIS code, Shift_JIS code, Unicode). It also helps you understand why garbled text (mojibake) occurs, and as a foundation of digitizing information, it is an important area that the exam also tests."
-  },
+  "goals_jp": [
+    "**符号化** と **復号** の関係を説明し、区別したい種類の数から必要な **ビット数** を求められる。",
+    "**JISコード** と **シフトJISコード** を、1 バイト文字と 2 バイト文字の混ぜ方で区別できる。",
+    "**Unicode** を、扱う文字の範囲と符号化方式の考え方で説明できる。"
+  ],
+  "goals_zh": [
+    "能说明 **编码**（[[jp:符号化]]）与 **解码**（[[jp:復号]]）的关系，并能根据需要区分的种类数求出所需的 **比特数**。",
+    "能根据单字节字符与双字节字符的混合方式，区分 **JIS 编码** 与 **Shift_JIS 编码**。",
+    "能从可处理的字符范围和编码方式的思路来说明 **Unicode**。"
+  ],
+  "goals_en": [
+    "Explain how **encoding** and **decoding** relate, and work out the number of **bits** needed from how many kinds of things must be told apart.",
+    "Tell **JIS Code** and **Shift_JIS Code** apart by how they mix single-byte and double-byte characters.",
+    "Explain **Unicode** in terms of the range of characters it covers and the idea behind encoding schemes."
+  ],
+  "overview_cols_jp": [
+    "対象とする情報・文字",
+    "1 文字の大きさ"
+  ],
+  "overview_cols_zh": [
+    "处理对象（信息・字符）",
+    "每个字符的大小"
+  ],
+  "overview_cols_en": [
+    "What it covers",
+    "Size per character"
+  ],
+  "overview_rows": [
+    {
+      "term": "符号化",
+      "one_line_jp": "情報を決められた規則で符号に対応づけること",
+      "one_line_zh": "按既定规则把信息对应到代码上",
+      "one_line_en": "Mapping information to codes by fixed rules",
+      "extra_jp": [
+        "文字・音・画像など情報全般",
+        "規則による (n ビットで 2 の n 乗通り)"
+      ],
+      "extra_zh": [
+        "文字、声音、图像等各类信息",
+        "取决于规则（n 比特可区分 2 的 n 次方种）"
+      ],
+      "extra_en": [
+        "Any information: text, sound, images",
+        "Depends on the rules (n bits give 2^n patterns)"
+      ]
+    },
+    {
+      "term": "JISコード",
+      "one_line_jp": "日本産業規格が定めた日本語の文字コード",
+      "one_line_zh": "日本工业标准规定的日语字符编码",
+      "one_line_en": "Japanese character code defined by Japanese Industrial Standards",
+      "extra_jp": [
+        "日本語の文字と英数字",
+        "英数字は 1 バイト、漢字などは 2 バイト"
+      ],
+      "extra_zh": [
+        "日语字符和英文数字",
+        "英文数字 1 字节，汉字等 2 字节"
+      ],
+      "extra_en": [
+        "Japanese characters and alphanumerics",
+        "Alphanumerics 1 byte, kanji etc. 2 bytes"
+      ]
+    },
+    {
+      "term": "シフトJISコード",
+      "one_line_jp": "2 バイト文字の番号をずらして 1 バイト文字と共存させた文字コード",
+      "one_line_zh": "把双字节字符的编号错开，使其与单字节字符共存的字符编码",
+      "one_line_en": "Character code that shifts double-byte code numbers so they coexist with single-byte characters",
+      "extra_jp": [
+        "日本語の文字と英数字",
+        "英数字や半角カナは 1 バイト、漢字などは 2 バイト"
+      ],
+      "extra_zh": [
+        "日语字符和英文数字",
+        "英文数字和半角假名 1 字节，汉字等 2 字节"
+      ],
+      "extra_en": [
+        "Japanese characters and alphanumerics",
+        "Alphanumerics and half-width kana 1 byte, kanji etc. 2 bytes"
+      ]
+    },
+    {
+      "term": "Unicode",
+      "one_line_jp": "世界の多くの言語の文字を 1 つの番号体系にまとめた文字コード",
+      "one_line_zh": "把世界上多种语言的字符统一到一套编号体系中的字符编码",
+      "one_line_en": "Character code that gathers characters of many of the world's languages into one numbering system",
+      "extra_jp": [
+        "世界の多くの言語の文字",
+        "符号化方式による (UTF-8 は 1〜4 バイト)"
+      ],
+      "extra_zh": [
+        "世界上多种语言的字符",
+        "取决于编码方式（UTF-8 为 1〜4 字节）"
+      ],
+      "extra_en": [
+        "Characters of many of the world's languages",
+        "Depends on the encoding scheme (UTF-8 uses 1–4 bytes)"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "符号化",
-      "definition_jp": "情報を一定の規則でビット列などの符号に対応づけること。",
-      "explanation_jp": "符号化(エンコード)とは、文字・音声・画像などの情報を、コンピュータが扱える0と1のビット列へ一定の規則で対応づける処理です。例えば「A」という文字に特定の数値(ビットの並び)を割り当てるのが文字の符号化です。\n\n対応づけの規則を共有していれば、ビット列を元の情報へ戻す「復号(デコード)」ができます。送る側と受け取る側で規則(コード体系)が食い違うと、正しく戻せず文字化けが起こります。\n\n試験では、符号化が情報をデジタル化する一般原理であること、文字コードはその具体例であることを押さえておきましょう。",
-      "analogy_jp": "言葉を数字に置き換える暗号表のようなもの。「あ=01、い=02…」と決めておけば数字の列で言葉を伝えられ、同じ表を持つ相手だけが元に戻せます。",
-      "memory_hook_jp": "符号化といえば情報をビット列に対応づける規則",
+      "term_zh": "编码",
+      "term_en": "Encoding",
+      "one_jp": "**符号化** とは、文字・音・画像などの情報を、決められた規則に従って **ビット列** などの符号に対応づけることである。",
+      "one_zh": "**编码**（[[jp:符号化]]）是指按照既定规则，把文字、声音、图像等信息对应为 **比特串** 等代码。",
+      "one_en": "**Encoding** ([[jp:符号化]]) means mapping information such as text, sound or images to codes such as **bit strings** according to fixed rules.",
+      "detail_jp": "対応の規則 (**コード体系**) を送り手と受け手が共有していれば、符号を元の情報へ戻す **復号** ができ、規則が食い違うと文字化けなどが起こる。**n ビット** の符号では 2 の n 乗通りを区別できるので、表したい種類の数から必要なビット数が決まる。符号の長さには、すべての対象で同じにする **固定長** と、対象ごとに変える **可変長** がある。",
+      "detail_zh": "只要发送方和接收方共享对应规则（**代码体系**），就能把代码还原为原来的信息，即 **解码**；规则不一致就会出现乱码等问题。**n 比特** 的代码可以区分 2 的 n 次方种情况，所以所需比特数由要表示的种类数决定。代码长度既有对所有对象都相同的 **定长**，也有因对象而异的 **变长**。",
+      "detail_en": "If sender and receiver share the mapping rules (the **code system**), the receiver can turn the code back into the original information, which is **decoding**; if the rules differ, the result can be garbled text and similar errors. A code of **n bits** can distinguish 2^n patterns, so the number of bits needed follows from how many kinds of things must be represented. Code length is either **fixed-length**, the same for every item, or **variable-length**, differing from item to item.",
+      "analogy_jp": "灯台の光の点滅パターンに、あらかじめ意味を割り当てておくようなもの。同じ対応表を持つ船だけが、点滅から意味を読み取れる。",
+      "analogy_zh": "就像事先给灯塔灯光的闪烁模式分配好含义。只有持有同一张对照表的船，才能从闪烁中读出意思。",
+      "analogy_en": "It is like assigning meanings in advance to a lighthouse's flashing patterns. Only ships holding the same table can read the meaning from the flashes.",
+      "hook_jp": "「符号」は合図の記号、「化」はそれに変えること。逆向きの「復号」は、符号から元に「復(もど)す」と読む。",
+      "hook_zh": "日文 [[jp:符号化]] 的「符号」是表示信号的记号，「化」是转换成它；反方向的 [[jp:復号]] 取「復」（恢复原样）之意，相当于中文的“解码”。",
+      "hook_en": "The Japanese term [[jp:符号化]] combines [[jp:符号]] (a signal mark) and [[jp:化]] (turning into); its reverse, [[jp:復号]], uses [[jp:復]] (restore): getting the original back from the code.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "n ビットで区別できるのは 2 の n 乗通りで、表したい種類の数をまかなえる最小の n が必要なビット数になる。例えば 10 種類なら 3 ビットの 8 通りでは足りず、4 ビットが要る。",
+          "text_zh": "n 比特能区分 2 的 n 次方种情况，能覆盖要表示的种类数的最小 n 就是所需的比特数（[[jp:ビット数]]）。例如 10 种时，3 比特的 8 种不够，需要 4 比特。",
+          "text_en": "n bits distinguish 2^n patterns, and the smallest n that covers the number of kinds to represent is the required number of bits ([[jp:ビット数]]). For 10 kinds, for example, 3 bits give only 8 patterns, so 4 bits are needed.",
+          "qids": [
+            "2018h30h-q075"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "1 回の標本を表すビット数を増やすと、区別できる段階の数が増え、振幅の変化を細かい刻みで表せる。",
+          "text_zh": "增加表示一次采样（[[jp:標本]]）的比特数，可区分的级数就会增加，能以更细的刻度表示振幅的变化。",
+          "text_en": "Using more bits per sample ([[jp:標本]]) raises the number of distinguishable levels, so changes in amplitude can be represented in finer steps.",
+          "qids": [
+            "2010h22h-q060"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "可変長の符号でも、どの符号も別の符号の先頭部分にならなければ、区切りのない列を先頭から一意に読み戻せる。1 の桁が重ならない符号を割り当てると、組合せを加算、除去を減算で表せる。",
+          "text_zh": "即使是变长（[[jp:可変長]]）代码，只要任何一个代码都不是另一个代码的开头部分，没有分隔的序列也能从头唯一地还原。若分配各位上的 1 互不重叠的代码，就能用加法表示组合、用减法表示去除。",
+          "text_en": "Even with a variable-length ([[jp:可変長]]) code, an unseparated sequence can be read back uniquely from the start as long as no code is the leading part of another. If codes are assigned so that their 1 bits never overlap, a combination can be expressed by addition and a removal by subtraction.",
+          "qids": [
+            "2012h24a-q072",
+            "2009h21a-q060"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-13-35-u02-t01.svg"
+        }
+      },
+      "quiz": [
+        "2018h30h-q075",
+        "2012h24a-q072",
+        "2009h21a-q060"
+      ],
+      "definition_jp": "符号化 とは、文字・音・画像などの情報を、決められた規則に従って ビット列 などの符号に対応づけることである。",
+      "definition_zh": "编码（符号化）是指按照既定规则，把文字、声音、图像等信息对应为 比特串 等代码。",
+      "definition_en": "Encoding (符号化) means mapping information such as text, sound or images to codes such as bit strings according to fixed rules.",
+      "explanation_jp": "対応の規則 (コード体系) を送り手と受け手が共有していれば、符号を元の情報へ戻す 復号 ができ、規則が食い違うと文字化けなどが起こる。n ビット の符号では 2 の n 乗通りを区別できるので、表したい種類の数から必要なビット数が決まる。符号の長さには、すべての対象で同じにする 固定長 と、対象ごとに変える 可変長 がある。",
+      "explanation_zh": "只要发送方和接收方共享对应规则（代码体系），就能把代码还原为原来的信息，即 解码；规则不一致就会出现乱码等问题。n 比特 的代码可以区分 2 的 n 次方种情况，所以所需比特数由要表示的种类数决定。代码长度既有对所有对象都相同的 定长，也有因对象而异的 变长。",
+      "explanation_en": "If sender and receiver share the mapping rules (the code system), the receiver can turn the code back into the original information, which is decoding; if the rules differ, the result can be garbled text and similar errors. A code of n bits can distinguish 2^n patterns, so the number of bits needed follows from how many kinds of things must be represented. Code length is either fixed-length, the same for every item, or variable-length, differing from item to item.",
+      "memory_hook_jp": "「符号」は合図の記号、「化」はそれに変えること。逆向きの「復号」は、符号から元に「復(もど)す」と読む。",
+      "memory_hook_zh": "日文 符号化 的「符号」是表示信号的记号，「化」是转换成它；反方向的 復号 取「復」（恢复原样）之意，相当于中文的“解码”。",
+      "memory_hook_en": "The Japanese term 符号化 combines 符号 (a signal mark) and 化 (turning into); its reverse, 復号, uses 復 (restore): getting the original back from the code.",
       "inline_quiz": [
-        "2009h21h-q066"
+        "2018h30h-q075",
+        "2012h24a-q072",
+        "2009h21a-q060"
       ],
       "inline_fallback": false,
       "figure": {
         "mermaid": "graph LR; A[\"文字や情報\"] --> B[\"符号化(エンコード)\"]; B --> C[\"ビット列(0と1)\"]; C --> D[\"復号(デコード)\"]; D --> A",
         "svg_path": "figures/technology-13-35-u02-t01.svg",
         "rendered": true
-      },
-      "term_zh": "编码",
-      "term_en": "Encoding",
-      "definition_zh": "按照一定规则把信息对应到比特串等符号上。",
-      "definition_en": "Mapping information to a code such as a bit string according to a fixed set of rules.",
-      "explanation_zh": "编码（encode）是指按照一定规则，把字符、声音、图像等信息对应到计算机可处理的由 0 和 1 组成的比特串上的处理。例如，给「A」这个字符分配一个特定的数值（比特排列），就是字符的编码。\n\n只要双方共享对应规则，就能把比特串还原为原始信息，这称为「解码（decode）」。如果发送方与接收方的规则（编码体系）不一致，就无法正确还原，从而产生乱码。\n\n考试中要记住：编码是把信息数字化的一般原理，而字符编码是它的具体实例。",
-      "explanation_en": "Encoding (encode) is the process of mapping information such as characters, audio, and images to bit strings made of 0s and 1s that a computer can handle, according to a fixed set of rules. For example, assigning a specific numeric value (an arrangement of bits) to the character \"A\" is character encoding.\n\nAs long as both sides share the mapping rules, the bit string can be restored to the original information; this is called \"decoding (decode).\" If the rules (the code system) differ between sender and receiver, it cannot be restored correctly, and garbled text (mojibake) occurs.\n\nFor the exam, remember that encoding is the general principle of digitizing information, and a character code is a concrete example of it.",
-      "analogy_zh": "就像把语言替换成数字的密码对照表。只要事先约定「あ=01、い=02……」，就能用数字串传递语言，而且只有持有同一张表的对方才能还原出原文。",
-      "analogy_en": "Like a cipher table that replaces words with numbers. If you agree in advance that \"a=01, b=02 …,\" you can convey words as a string of numbers, and only a counterpart who has the same table can restore the original.",
-      "memory_hook_zh": "说到编码，就是把信息对应到比特串的规则",
-      "memory_hook_en": "Encoding → the rule that maps information to a bit string"
+      }
     },
     {
       "term": "JISコード",
-      "definition_jp": "日本語文字をJIS規格で定めた代表的な文字コード。",
-      "explanation_jp": "JISコードは、日本産業規格(JIS)で定められた日本語の文字コードで、漢字・ひらがな・カタカナなどに数値を割り当てたものです。日本語を扱う文字コードの基礎となる規格です。\n\n主に電子メールなどでの日本語のやり取りに使われてきた経緯があり、後のシフトJISコードはこのJISコードを実装上扱いやすく拡張したものです。\n\n試験では、JISが日本の標準規格であること、日本語(全角文字)を符号化するコードであることを押さえ、シフトJISやUnicodeとの関係を区別できるようにしておきましょう。",
-      "analogy_jp": "日本国内で共通に使う「漢字の番号表」のようなもの。国の規格として番号を統一しておくことで、誰が作った機器でも同じ漢字を指せます。",
-      "memory_hook_jp": "JISコードといえば日本語文字のJIS規格コード",
-      "inline_quiz": [
-        "2009h21a-q097"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "JIS 编码",
       "term_en": "JIS Code",
-      "definition_zh": "由 JIS 规格规定的、代表性的日语字符编码。",
-      "definition_en": "A representative character code for Japanese characters defined by the JIS standard.",
-      "explanation_zh": "JIS 编码是由日本工业规格（JIS）规定的日语字符编码，给汉字、平假名、片假名等分配了数值。它是处理日语的字符编码的基础规格。\n\n历史上它主要用于电子邮件等场合的日语传输，后来的 Shift_JIS 编码就是在实现上把这个 JIS 编码扩展为更易处理的版本。\n\n考试中要记住：JIS 是日本的标准规格，是对日语（全角字符）进行编码的编码，并能将它与 Shift_JIS、Unicode 之间的关系区分开。",
-      "explanation_en": "JIS code is a character code for Japanese defined by the Japanese Industrial Standards (JIS), assigning numeric values to kanji, hiragana, katakana, and so on. It is the foundational standard for character codes that handle Japanese.\n\nHistorically it was mainly used for exchanging Japanese in contexts such as email, and the later Shift_JIS code is an extension of this JIS code that is easier to handle in implementation.\n\nFor the exam, remember that JIS is Japan's standard, that it is a code for encoding Japanese (full-width characters), and be able to distinguish its relationship with Shift_JIS and Unicode.",
-      "analogy_zh": "就像在日本国内通用的「汉字编号表」。由国家作为规格统一编号后，无论是谁制造的设备都能指向同一个汉字。",
-      "analogy_en": "Like a \"kanji numbering table\" used in common throughout Japan. Because the numbers are unified as a national standard, equipment made by anyone can point to the same kanji.",
-      "memory_hook_zh": "说到 JIS 编码，就是日语字符的 JIS 规格编码",
-      "memory_hook_en": "JIS code → the JIS-standard code for Japanese characters"
-    },
-    {
-      "term": "シフトJISコード",
-      "definition_jp": "JISコードを基に拡張した日本語向け文字コード。",
-      "explanation_jp": "シフトJISコードは、JISコードを基にして、半角英数字(ASCII)と日本語の全角文字を混在させても扱いやすいように工夫した文字コードです。日本語のパソコン環境(Windowsなど)で広く使われてきました。\n\n名称の「シフト」は、文字に割り当てる数値の範囲をずらして配置したことに由来します。これにより英数字と日本語を一緒に処理しやすくしています。\n\n試験では、シフトJISがJISコードを前提に実装向けへ拡張した日本語コードであること、国内で広く普及した点を押さえておきましょう。",
-      "analogy_jp": "国の漢字番号表を、机の上で英語の番号表とぶつからないよう番号の置き場所をずらして並べ直した実用版のようなものです。",
-      "memory_hook_jp": "シフトJISコードといえばJISを拡張した日本語向けコード",
+      "one_jp": "**JISコード** は、日本産業規格 (**JIS**) が定めた文字コードで、英数字などを 1 バイト、漢字やひらがな・全角カナを 2 バイトで表す。",
+      "one_zh": "**JIS 编码**（[[jp:JISコード]]）是由日本工业标准（**JIS**）规定的字符编码，英文数字等用 1 字节、汉字、平假名和全角假名用 2 字节表示。",
+      "one_en": "**JIS Code** ([[jp:JISコード]]) is a character code defined by Japanese Industrial Standards (**JIS**); it uses 1 byte for alphanumerics and the like, and 2 bytes for kanji, hiragana and full-width kana.",
+      "detail_jp": "1 バイトで表す文字を **1 バイトコード**、2 バイトで表す文字を **2 バイトコード** と呼び、例えば英数字の集合は JIS X 0201、漢字などの集合は JIS X 0208 に定められている。狭い意味の **JISコード** は、1 つの文字列の中で 1 バイト文字と 2 バイト文字を切り替えるとき、切替えを示す特別な符号を挟む形式を指し、主に電子メールで使われてきた。",
+      "detail_zh": "用 1 字节表示的字符称为 **单字节码**，用 2 字节表示的称为 **双字节码**；例如英文数字的字符集由 JIS X 0201 规定，汉字等的字符集由 JIS X 0208 规定。狭义的 **JIS 编码** 是指在一个字符串中切换单字节和双字节字符时，插入表示切换的特殊代码的格式，主要用于电子邮件。",
+      "detail_en": "Characters represented in 1 byte are called **single-byte codes** and those in 2 bytes **double-byte codes**; the alphanumeric set is defined in JIS X 0201 and the set of kanji and other characters in JIS X 0208, for example. In the narrow sense, **JIS Code** refers to the format that inserts special switching codes whenever a string changes between single-byte and double-byte characters, and it has mainly been used for email.",
+      "analogy_jp": "国が配る共通の文字の番号表のようなもの。同じ番号表を使う機器どうしなら、同じ番号で同じ文字を指せる。",
+      "analogy_zh": "就像国家统一发放的字符编号表。使用同一张编号表的设备之间，同一个编号就指同一个字符。",
+      "analogy_en": "It is like a shared table of character numbers issued nationwide. Devices using the same table point to the same character with the same number.",
+      "hook_jp": "JIS は Japanese Industrial Standards の頭文字で、日本の工業製品の規格と同じ名前の仲間。",
+      "hook_zh": "JIS 是 Japanese Industrial Standards（日本工业标准）的首字母缩写，与日本工业产品的规格同名同源。",
+      "hook_en": "JIS stands for Japanese Industrial Standards, the same family of standards that covers Japanese industrial products.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "JIS の文字コードでは、英数字などは 1 文字 1 バイト (8 ビット)、漢字などは 1 文字 2 バイトで表す。1 バイトの英数字には、例えば JIS X 0201 で 8 ビットの値が割り当てられている。",
+          "text_zh": "在 JIS 的字符编码（[[jp:文字コード]]）中，英文数字等每个字符为 1 字节（8 比特），汉字等每个字符为 2 字节。例如在 JIS X 0201 中，单字节的英文数字被分配了 8 比特的值。",
+          "text_en": "In JIS character codes ([[jp:文字コード]]), alphanumerics and the like take 1 byte (8 bits) per character, and kanji and the like take 2 bytes. JIS X 0201, for example, assigns 8-bit values to single-byte alphanumerics.",
+          "qids": [
+            "2009h21a-q097",
+            "2012h24a-q093"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "圧縮しない文字データの容量は、項目ごとに文字数と 1 文字のバイト数を掛けて合計し、件数を掛けて求める。2 バイト文字は同じ文字数の 1 バイト文字の 2 倍の領域を使う。",
+          "text_zh": "未压缩的文字数据容量，是按项目把字符数乘以每个字符的字节数后求和，再乘以条数求得。双字节字符占用的空间是同样字符数的单字节字符的 2 倍。",
+          "text_en": "The size of uncompressed text data is found by multiplying each field's character count by its bytes per character, adding these up, and multiplying by the number of records. Double-byte characters take twice the space of the same number of single-byte characters.",
+          "qids": [
+            "2009h21a-q097"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "文字の集合の規格 (例)",
+              "zh": "字符集规格（例）",
+              "en": "Character set standard (example)"
+            },
+            {
+              "jp": "主な文字",
+              "zh": "主要字符",
+              "en": "Main characters"
+            },
+            {
+              "jp": "1 文字の大きさ",
+              "zh": "每个字符的大小",
+              "en": "Size per character"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "JIS X 0201",
+                  "zh": "JIS X 0201",
+                  "en": "JIS X 0201"
+                },
+                {
+                  "jp": "英数字・記号・半角カナ",
+                  "zh": "英文数字・符号・半角假名",
+                  "en": "Alphanumerics, symbols, half-width kana"
+                },
+                {
+                  "jp": "1 バイト (8 ビット)",
+                  "zh": "1 字节（8 比特）",
+                  "en": "1 byte (8 bits)"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "JIS X 0208",
+                  "zh": "JIS X 0208",
+                  "en": "JIS X 0208"
+                },
+                {
+                  "jp": "漢字・ひらがな・全角カナ",
+                  "zh": "汉字・平假名・全角假名",
+                  "en": "Kanji, hiragana, full-width kana"
+                },
+                {
+                  "jp": "2 バイト (16 ビット)",
+                  "zh": "2 字节（16 比特）",
+                  "en": "2 bytes (16 bits)"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2013h25h-q078"
+      ],
+      "definition_jp": "JISコード は、日本産業規格 (JIS) が定めた文字コードで、英数字などを 1 バイト、漢字やひらがな・全角カナを 2 バイトで表す。",
+      "definition_zh": "JIS 编码（JISコード）是由日本工业标准（JIS）规定的字符编码，英文数字等用 1 字节、汉字、平假名和全角假名用 2 字节表示。",
+      "definition_en": "JIS Code (JISコード) is a character code defined by Japanese Industrial Standards (JIS); it uses 1 byte for alphanumerics and the like, and 2 bytes for kanji, hiragana and full-width kana.",
+      "explanation_jp": "1 バイトで表す文字を 1 バイトコード、2 バイトで表す文字を 2 バイトコード と呼び、例えば英数字の集合は JIS X 0201、漢字などの集合は JIS X 0208 に定められている。狭い意味の JISコード は、1 つの文字列の中で 1 バイト文字と 2 バイト文字を切り替えるとき、切替えを示す特別な符号を挟む形式を指し、主に電子メールで使われてきた。",
+      "explanation_zh": "用 1 字节表示的字符称为 单字节码，用 2 字节表示的称为 双字节码；例如英文数字的字符集由 JIS X 0201 规定，汉字等的字符集由 JIS X 0208 规定。狭义的 JIS 编码 是指在一个字符串中切换单字节和双字节字符时，插入表示切换的特殊代码的格式，主要用于电子邮件。",
+      "explanation_en": "Characters represented in 1 byte are called single-byte codes and those in 2 bytes double-byte codes; the alphanumeric set is defined in JIS X 0201 and the set of kanji and other characters in JIS X 0208, for example. In the narrow sense, JIS Code refers to the format that inserts special switching codes whenever a string changes between single-byte and double-byte characters, and it has mainly been used for email.",
+      "memory_hook_jp": "JIS は Japanese Industrial Standards の頭文字で、日本の工業製品の規格と同じ名前の仲間。",
+      "memory_hook_zh": "JIS 是 Japanese Industrial Standards（日本工业标准）的首字母缩写，与日本工业产品的规格同名同源。",
+      "memory_hook_en": "JIS stands for Japanese Industrial Standards, the same family of standards that covers Japanese industrial products.",
       "inline_quiz": [
         "2013h25h-q078"
       ],
       "inline_fallback": false,
-      "figure": null,
+      "figure": null
+    },
+    {
+      "term": "シフトJISコード",
       "term_zh": "Shift_JIS 编码",
       "term_en": "Shift_JIS Code",
-      "definition_zh": "在 JIS 编码基础上扩展的、面向日语的字符编码。",
-      "definition_en": "A Japanese-oriented character code extended from JIS code.",
-      "explanation_zh": "Shift_JIS 编码是以 JIS 编码为基础，为了让半角英数字（ASCII）与日语全角字符即使混用也易于处理而设计的字符编码。它在日语的个人电脑环境（如 Windows）中曾被广泛使用。\n\n名称中的「Shift（移位）」源于把分配给字符的数值范围错开放置这一做法。借此使英数字与日语更易于一起处理。\n\n考试中要记住：Shift_JIS 是以 JIS 编码为前提、面向实现进行扩展的日语编码，并且在日本国内曾广泛普及。",
-      "explanation_en": "Shift_JIS code is a character code based on JIS code, designed so that half-width alphanumerics (ASCII) and full-width Japanese characters can be handled easily even when mixed together. It was widely used in Japanese personal computer environments (such as Windows).\n\nThe \"Shift\" in the name comes from shifting the ranges of numeric values assigned to characters so they are placed without conflict. This makes alphanumerics and Japanese easier to process together.\n\nFor the exam, remember that Shift_JIS is a Japanese code that, premised on JIS code, was extended toward implementation, and that it became widely adopted within Japan.",
-      "analogy_zh": "就像把国家的汉字编号表，在桌面上错开编号的摆放位置重新排列，使其不与英文编号表相撞的实用版本。",
-      "analogy_en": "Like a practical version of the national kanji numbering table, rearranged with the number positions shifted so they do not collide with the English numbering table on the desk.",
-      "memory_hook_zh": "说到 Shift_JIS 编码，就是在 JIS 上扩展的面向日语的编码",
-      "memory_hook_en": "Shift_JIS code → a Japanese-oriented code extended from JIS"
+      "one_jp": "**シフトJISコード** は、JIS の漢字などの 2 バイト文字の番号を、1 バイト文字と重ならない範囲へずらして割り当てた文字コードである。",
+      "one_zh": "**Shift_JIS 编码**（[[jp:シフトJISコード]]）是把 JIS 中汉字等双字节字符的编号，错开到与单字节字符不重叠的范围后再分配的字符编码。",
+      "one_en": "**Shift_JIS Code** ([[jp:シフトJISコード]]) is a character code that moves the numbers of JIS double-byte characters such as kanji into ranges that do not overlap with single-byte characters.",
+      "detail_jp": "2 バイト文字の 1 バイト目には 1 バイト文字に使われない値が来るので、読んだ値から 1 バイト文字か 2 バイト文字かを見分けられる。英数字や半角カナと漢字を混ぜた文書を扱いやすく、Windows などのパソコンの日本語処理で広く使われてきた。",
+      "detail_zh": "双字节字符的第 1 个字节使用单字节字符不用的值，因此读到一个值就能判断它是单字节字符还是双字节字符。它便于处理英文数字、半角假名与汉字混排的文档，在 Windows 等个人电脑的日语处理中被广泛使用。",
+      "detail_en": "The first byte of a double-byte character takes a value that single-byte characters do not use, so the value read shows whether a character is single-byte or double-byte. This makes documents mixing alphanumerics, half-width kana and kanji easy to handle, and it has been widely used for Japanese text on PCs such as Windows machines.",
+      "analogy_jp": "同じ棚に 2 種類の商品を並べるとき、片方の番号札を別の色の範囲にずらしておけば、仕切り板を置かなくても札の色だけで種類が分かる、というのに似ている。",
+      "analogy_zh": "就像在同一个货架上摆两类商品时，把其中一类的号码牌换到另一种颜色的号段，不放隔板也能只凭牌子颜色分辨种类。",
+      "analogy_en": "Picture two kinds of goods on one shelf: if one kind's number tags are moved into a different color range, you can tell them apart by tag color alone, with no dividers.",
+      "hook_jp": "シフト (shift) は「ずらす」。番号の置き場所をずらしたから「シフト」JIS。",
+      "hook_zh": "shift 意为“错开”。因为把编号的位置错开了，所以叫 Shift JIS。",
+      "hook_en": "Shift means to move over. The code numbers were shifted to a new place, hence Shift JIS.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**シフトJISコード** と **Unicode** は、対象とする文字の範囲で分かれる。シフトJISコードは日本語の文字と英数字を、Unicode は世界の多くの言語の文字を 1 つの体系で扱う。",
+          "text_zh": "**Shift_JIS 编码**（[[jp:シフトJISコード]]）与 **Unicode** 的区别在于所处理字符的范围。Shift_JIS 编码处理日语字符和英文数字，Unicode 则用一个体系处理世界上多种语言的字符。",
+          "text_en": "**Shift_JIS Code** ([[jp:シフトJISコード]]) and **Unicode** differ in the range of characters they cover. Shift_JIS Code handles Japanese characters and alphanumerics, while Unicode handles characters of many of the world's languages in one system."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2013h25h-q078"
+      ],
+      "definition_jp": "シフトJISコード は、JIS の漢字などの 2 バイト文字の番号を、1 バイト文字と重ならない範囲へずらして割り当てた文字コードである。",
+      "definition_zh": "Shift_JIS 编码（シフトJISコード）是把 JIS 中汉字等双字节字符的编号，错开到与单字节字符不重叠的范围后再分配的字符编码。",
+      "definition_en": "Shift_JIS Code (シフトJISコード) is a character code that moves the numbers of JIS double-byte characters such as kanji into ranges that do not overlap with single-byte characters.",
+      "explanation_jp": "2 バイト文字の 1 バイト目には 1 バイト文字に使われない値が来るので、読んだ値から 1 バイト文字か 2 バイト文字かを見分けられる。英数字や半角カナと漢字を混ぜた文書を扱いやすく、Windows などのパソコンの日本語処理で広く使われてきた。",
+      "explanation_zh": "双字节字符的第 1 个字节使用单字节字符不用的值，因此读到一个值就能判断它是单字节字符还是双字节字符。它便于处理英文数字、半角假名与汉字混排的文档，在 Windows 等个人电脑的日语处理中被广泛使用。",
+      "explanation_en": "The first byte of a double-byte character takes a value that single-byte characters do not use, so the value read shows whether a character is single-byte or double-byte. This makes documents mixing alphanumerics, half-width kana and kanji easy to handle, and it has been widely used for Japanese text on PCs such as Windows machines.",
+      "memory_hook_jp": "シフト (shift) は「ずらす」。番号の置き場所をずらしたから「シフト」JIS。",
+      "memory_hook_zh": "shift 意为“错开”。因为把编号的位置错开了，所以叫 Shift JIS。",
+      "memory_hook_en": "Shift means to move over. The code numbers were shifted to a new place, hence Shift JIS.",
+      "inline_quiz": [
+        "2013h25h-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "Unicode",
-      "definition_jp": "世界の文字を共通に扱う国際統一文字コード。",
-      "explanation_jp": "Unicode(ユニコード)は、日本語・英語・中国語・アラビア語など世界中の文字を、一つの体系でまとめて扱えるようにした国際的な文字コードです。多言語を統一的に符号化できる点が最大の特徴です。\n\nJISコードやシフトJISコードが主に日本語向けの国内コードであるのに対し、Unicodeはグローバルに通用します。Web上の文字エンコード方式であるUTF-8は、このUnicodeを表現する代表的な方式です。\n\n試験では、Unicodeが世界中の文字を統一して扱う国際規格であること、国内向けコードとの違い(ローカル対グローバル)を押さえておきましょう。",
-      "analogy_jp": "国ごとにバラバラだった文字の番号表を、世界共通の一冊の電話帳にまとめたようなもの。どの国の文字も同じ帳簿で番号を引けます。",
-      "memory_hook_jp": "Unicodeといえば世界の文字を統一する国際コード",
-      "inline_quiz": [
-        "2010h22h-q060"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "Unicode",
       "term_en": "Unicode",
-      "definition_zh": "用于统一处理世界各国文字的国际通用字符编码。",
-      "definition_en": "An international unified character code that handles the world's writing systems in common.",
-      "explanation_zh": "Unicode 是把日语、英语、汉语、阿拉伯语等世界各国的文字，用一套体系统一处理的国际字符编码。能够统一地对多语言进行编码，是它最大的特点。\n\n相对于 JIS 编码、Shift_JIS 编码主要是面向日语的国内编码，Unicode 在全球范围内通用。Web 上的字符编码方式 UTF-8，就是表示这个 Unicode 的代表性方式。\n\n考试中要记住：Unicode 是统一处理世界各国文字的国际规格，并把它与面向国内的编码之间的区别（本地 vs 全球）记牢。",
-      "explanation_en": "Unicode is an international character code that handles the writing systems of the world—Japanese, English, Chinese, Arabic, and more—within a single system. Its greatest feature is being able to encode many languages in a unified way.\n\nWhereas JIS code and Shift_JIS code are mainly domestic codes oriented toward Japanese, Unicode is usable globally. UTF-8, the character encoding scheme used on the Web, is a representative way of expressing this Unicode.\n\nFor the exam, remember that Unicode is an international standard that handles the world's writing systems in a unified way, and keep in mind its difference from domestic-oriented codes (local vs. global).",
-      "analogy_zh": "就像把各国各自为政、互不相同的文字编号表，汇集成一本全球通用的电话簿。无论哪个国家的文字，都能在同一本账簿里查到编号。",
-      "analogy_en": "Like compiling the writing-system numbering tables that used to differ from country to country into a single globally shared phone book. The characters of any country can be looked up by number in the same ledger.",
-      "memory_hook_zh": "说到 Unicode，就是统一世界各国文字的国际编码",
-      "memory_hook_en": "Unicode → the international code that unifies the world's writing systems"
+      "one_jp": "**Unicode** は、世界の多くの言語の文字に 1 つずつ番号を割り当て、1 つの体系で扱えるようにした文字コードである。",
+      "one_zh": "**Unicode** 是给世界上多种语言的字符逐一分配编号、使其能在一个体系中处理的字符编码。",
+      "one_en": "**Unicode** is a character code that gives each character of many of the world's languages its own number so that all of them can be handled in one system.",
+      "detail_jp": "文字に振った番号を実際のバイト列にする方法を **符号化方式** と呼び、例えば **UTF-8** や **UTF-16** がある。UTF-8 は英数字を 1 バイト、日本語の多くの文字を 3 バイトで表す可変長の方式で、Web ページなどで広く使われている。",
+      "detail_zh": "把分配给字符的编号转换为实际字节序列的方法称为 **编码方式**（[[jp:符号化方式]]），例如 **UTF-8** 和 **UTF-16**。UTF-8 是用 1 字节表示英文数字、用 3 字节表示大多数日语字符的变长方式，在网页等场合被广泛使用。",
+      "detail_en": "The method that turns the numbers assigned to characters into actual byte sequences is called an **encoding scheme** ([[jp:符号化方式]]); examples are **UTF-8** and **UTF-16**. UTF-8 is a variable-length scheme that uses 1 byte for alphanumerics and 3 bytes for most Japanese characters, and it is widely used on web pages.",
+      "analogy_jp": "世界中の図書を 1 つの通し番号で管理する図書館のようなもの。どの国の本でも、同じ台帳の番号で探せる。",
+      "analogy_zh": "就像用一套流水号管理全世界图书的图书馆。无论哪个国家的书，都能用同一本台账上的编号找到。",
+      "analogy_en": "It is like a library that catalogs books from every country under one running number. Any book can be found by its number in the same register.",
+      "hook_jp": "uni は「1 つの」(uniform、unit と同じ) という意味。1 つの体系で世界の文字を表すコード。",
+      "hook_zh": "uni 意为“一个”（与 uniform、unit 中的 uni 相同）。即用一个体系表示世界文字的编码。",
+      "hook_en": "Uni means one, as in uniform and unit: one system for the world's characters.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**Unicode** は多くの言語の文字を共通の番号体系にまとめた文字コードで、言語ごとに文字コードを使い分けなくても、多言語の文字を同じ文書で扱える。",
+          "text_zh": "**Unicode** 是把多种语言的字符整合到共同编号体系中的字符编码，无需按语言切换字符编码（[[jp:文字コード]]），就能在同一份文档中处理多语言字符。",
+          "text_en": "**Unicode** is a character code that unites the characters of many languages in one common numbering system, so multilingual text can share one document without switching character codes ([[jp:文字コード]]) by language.",
+          "qids": [
+            "2013h25h-q078"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "UTF-8 は Unicode の番号をバイト列で表す方式の 1 つで、文字の集合そのものの名前ではない。同じ Unicode の文字でも、UTF-8 と UTF-16 ではバイト列が異なる。",
+          "text_zh": "UTF-8 是用字节序列表示 Unicode 编号的方式之一，并不是字符集本身的名称。即使是同一个 Unicode 字符，在 UTF-8 和 UTF-16 中的字节序列也不同。",
+          "text_en": "UTF-8 is one of the schemes that express Unicode numbers as byte sequences; it is not the name of a character set. The same Unicode character has different byte sequences in UTF-8 and UTF-16."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "c",
+              "label": {
+                "jp": "文字 (例: あ)",
+                "zh": "字符（例：あ）",
+                "en": "Character (e.g. あ)"
+              }
+            },
+            {
+              "id": "n",
+              "label": {
+                "jp": "Unicode の番号 (U+3042)",
+                "zh": "Unicode 编号（U+3042）",
+                "en": "Unicode code point (U+3042)"
+              }
+            },
+            {
+              "id": "b",
+              "label": {
+                "jp": "UTF-8 のバイト列 (3 バイト)",
+                "zh": "UTF-8 字节序列（3 字节）",
+                "en": "UTF-8 byte sequence (3 bytes)"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2013h25h-q078"
+      ],
+      "definition_jp": "Unicode は、世界の多くの言語の文字に 1 つずつ番号を割り当て、1 つの体系で扱えるようにした文字コードである。",
+      "definition_zh": "Unicode 是给世界上多种语言的字符逐一分配编号、使其能在一个体系中处理的字符编码。",
+      "definition_en": "Unicode is a character code that gives each character of many of the world's languages its own number so that all of them can be handled in one system.",
+      "explanation_jp": "文字に振った番号を実際のバイト列にする方法を 符号化方式 と呼び、例えば UTF-8 や UTF-16 がある。UTF-8 は英数字を 1 バイト、日本語の多くの文字を 3 バイトで表す可変長の方式で、Web ページなどで広く使われている。",
+      "explanation_zh": "把分配给字符的编号转换为实际字节序列的方法称为 编码方式（符号化方式），例如 UTF-8 和 UTF-16。UTF-8 是用 1 字节表示英文数字、用 3 字节表示大多数日语字符的变长方式，在网页等场合被广泛使用。",
+      "explanation_en": "The method that turns the numbers assigned to characters into actual byte sequences is called an encoding scheme (符号化方式); examples are UTF-8 and UTF-16. UTF-8 is a variable-length scheme that uses 1 byte for alphanumerics and 3 bytes for most Japanese characters, and it is widely used on web pages.",
+      "memory_hook_jp": "uni は「1 つの」(uniform、unit と同じ) という意味。1 つの体系で世界の文字を表すコード。",
+      "memory_hook_zh": "uni 意为“一个”（与 uniform、unit 中的 uni 相同）。即用一个体系表示世界文字的编码。",
+      "memory_hook_en": "Uni means one, as in uniform and unit: one system for the world's characters.",
+      "inline_quiz": [
+        "2013h25h-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "JISコード",
+      "b": "シフトJISコード",
+      "rows": [
+        {
+          "label_jp": "1 バイト文字と 2 バイト文字の混ぜ方",
+          "label_zh": "单字节与双字节字符的混合方式",
+          "label_en": "How single-byte and double-byte characters are mixed",
+          "a_jp": "切替えを示す特別な符号を挟む",
+          "a_zh": "插入表示切换的特殊代码",
+          "a_en": "Inserts special codes marking each switch",
+          "b_jp": "2 バイト文字の 1 バイト目を 1 バイト文字と重ならない値にして見分ける",
+          "b_zh": "让双字节字符的第 1 字节取与单字节字符不重叠的值来区分",
+          "b_en": "Gives the first byte of a double-byte character a value that single-byte characters do not use",
+          "key": true
+        },
+        {
+          "label_jp": "主な利用場面",
+          "label_zh": "主要使用场合",
+          "label_en": "Main use",
+          "a_jp": "電子メール",
+          "a_zh": "电子邮件",
+          "a_en": "Email",
+          "b_jp": "パソコンの日本語処理 (Windows など)",
+          "b_zh": "个人电脑的日语处理（Windows 等）",
+          "b_en": "Japanese text on PCs (Windows etc.)",
+          "key": false
+        },
+        {
+          "label_jp": "基になる文字の集合",
+          "label_zh": "基础字符集",
+          "label_en": "Underlying character set",
+          "a_jp": "JIS の英数字と漢字などの集合",
+          "a_zh": "JIS 的英文数字及汉字等字符集",
+          "a_en": "JIS sets of alphanumerics, kanji, etc.",
+          "b_jp": "同じく JIS の英数字と漢字などの集合",
+          "b_zh": "同样是 JIS 的英文数字及汉字等字符集",
+          "b_en": "The same JIS sets of alphanumerics, kanji, etc.",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "シフトJISコード",
+      "b": "Unicode",
+      "rows": [
+        {
+          "label_jp": "対象とする文字",
+          "label_zh": "处理的字符",
+          "label_en": "Characters covered",
+          "a_jp": "日本語の文字と英数字",
+          "a_zh": "日语字符和英文数字",
+          "a_en": "Japanese characters and alphanumerics",
+          "b_jp": "世界の多くの言語の文字",
+          "b_zh": "世界上多种语言的字符",
+          "b_en": "Characters of many of the world's languages",
+          "key": true
+        },
+        {
+          "label_jp": "1 文字のバイト数",
+          "label_zh": "每个字符的字节数",
+          "label_en": "Bytes per character",
+          "a_jp": "1 または 2",
+          "a_zh": "1 或 2",
+          "a_en": "1 or 2",
+          "b_jp": "符号化方式による (UTF-8 は 1〜4)",
+          "b_zh": "取决于编码方式（UTF-8 为 1〜4）",
+          "b_en": "Depends on the encoding scheme (UTF-8: 1–4)",
+          "key": false
+        },
+        {
+          "label_jp": "多言語の文字の混在",
+          "label_zh": "多语言字符混排",
+          "label_en": "Mixing multilingual characters",
+          "a_jp": "日本語以外の多くの文字は表せない",
+          "a_zh": "无法表示日语以外的许多字符",
+          "a_en": "Cannot represent many non-Japanese characters",
+          "b_jp": "1 つの体系のまま混在できる",
+          "b_zh": "在一个体系中即可混排",
+          "b_en": "Can mix them within one system",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**符号化** は規則に従って情報を符号に対応づけることで、同じ規則で **復号** すれば元に戻り、規則が食い違うと文字化けが起こる。",
+    "n ビットで区別できるのは 2 の n 乗通りで、必要なビット数は表したい種類の数から決まる。",
+    "JIS の文字コードでは英数字などが 1 バイト、漢字などが 2 バイトで、文字データの容量はこのバイト数と文字数から見積もる。",
+    "**シフトJISコード** は 2 バイト文字の番号を 1 バイト文字と重ならない範囲へずらした文字コードで、パソコンの日本語処理で広く使われてきた。",
+    "**Unicode** は文字に振る番号の体系で、UTF-8 などの符号化方式がその番号をバイト列にする。"
+  ],
+  "key_points_zh": [
+    "**编码** 是按规则把信息对应到代码上，用同一规则 **解码** 就能还原，规则不一致则会出现乱码。",
+    "n 比特能区分 2 的 n 次方种情况，所需比特数由要表示的种类数决定。",
+    "JIS 的字符编码中英文数字等为 1 字节、汉字等为 2 字节，文字数据的容量根据这些字节数和字符数来估算。",
+    "**Shift_JIS 编码** 是把双字节字符的编号错开到与单字节字符不重叠范围的字符编码，在个人电脑的日语处理中被广泛使用。",
+    "**Unicode** 是给字符分配编号的体系，UTF-8 等编码方式负责把编号转换为字节序列。"
+  ],
+  "key_points_en": [
+    "**Encoding** maps information to codes by rules; **decoding** with the same rules restores it, and mismatched rules cause garbled text.",
+    "n bits distinguish 2^n patterns, and the bits needed depend on how many kinds must be represented.",
+    "In JIS character codes, alphanumerics and the like take 1 byte and kanji and the like take 2 bytes; text data size is estimated from these byte counts and the number of characters.",
+    "**Shift_JIS Code** shifts double-byte code numbers into a range that does not overlap with single-byte characters, and has been widely used for Japanese text on PCs.",
+    "**Unicode** is a system of numbers for characters; encoding schemes such as UTF-8 turn those numbers into byte sequences."
+  ],
+  "overview": {
+    "intro_jp": "符号化 と 復号 の関係を説明し、区別したい種類の数から必要な ビット数 を求められる。JISコード と シフトJISコード を、1 バイト文字と 2 バイト文字の混ぜ方で区別できる。Unicode を、扱う文字の範囲と符号化方式の考え方で説明できる。",
+    "intro_zh": "能说明 编码（符号化）与 解码（復号）的关系，并能根据需要区分的种类数求出所需的 比特数。能根据单字节字符与双字节字符的混合方式，区分 JIS 编码 与 Shift_JIS 编码。能从可处理的字符范围和编码方式的思路来说明 Unicode。",
+    "intro_en": "Explain how encoding and decoding relate, and work out the number of bits needed from how many kinds of things must be told apart. Tell JIS Code and Shift_JIS Code apart by how they mix single-byte and double-byte characters. Explain Unicode in terms of the range of characters it covers and the idea behind encoding schemes.",
+    "freq_badge": "標準",
+    "est_minutes": 31
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "符号化: 符号化といえば情報をビット列に対応づける規則",
-      "JISコード: JISコードといえば日本語文字のJIS規格コード",
-      "シフトJISコード: シフトJISコードといえばJISを拡張した日本語向けコード",
-      "Unicode: Unicodeといえば世界の文字を統一する国際コード"
-    ],
     "key_points_jp": [
-      "符号化(エンコード)は情報を一定の規則でビット列に対応づける一般原理で、文字コードはその具体例である。",
-      "送受信側で符号化の規則(コード体系)が食い違うと正しく復号できず文字化けが起こる。",
-      "JISコードは日本語文字を定めたJIS規格、シフトJISコードはそれを実装向けに拡張した国内コードである。",
-      "Unicodeは世界中の文字を一つの体系で扱う国際統一文字コードで、UTF-8がその代表的な表現方式である。",
-      "文字コードは『日本語向け(JIS・シフトJIS)』から『国際統一(Unicode)』へという、ローカルからグローバルへの発展で整理できる。"
+      "符号化 は規則に従って情報を符号に対応づけることで、同じ規則で 復号 すれば元に戻り、規則が食い違うと文字化けが起こる。",
+      "n ビットで区別できるのは 2 の n 乗通りで、必要なビット数は表したい種類の数から決まる。",
+      "JIS の文字コードでは英数字などが 1 バイト、漢字などが 2 バイトで、文字データの容量はこのバイト数と文字数から見積もる。",
+      "シフトJISコード は 2 バイト文字の番号を 1 バイト文字と重ならない範囲へずらした文字コードで、パソコンの日本語処理で広く使われてきた。",
+      "Unicode は文字に振る番号の体系で、UTF-8 などの符号化方式がその番号をバイト列にする。"
     ],
     "key_points_zh": [
-      "编码（encode）是按一定规则把信息对应到比特串的一般原理，而字符编码是它的具体实例。",
-      "如果收发双方的编码规则（编码体系）不一致，就无法正确解码，从而产生乱码。",
-      "JIS 编码是规定日语字符的 JIS 规格，Shift_JIS 编码是把它面向实现扩展的国内编码。",
-      "Unicode 是用一套体系处理世界各国文字的国际通用字符编码，UTF-8 是其代表性的表示方式。",
-      "字符编码可以按「面向日语（JIS、Shift_JIS）」到「国际统一（Unicode）」、即从本地到全球的发展脉络来梳理。"
+      "编码 是按规则把信息对应到代码上，用同一规则 解码 就能还原，规则不一致则会出现乱码。",
+      "n 比特能区分 2 的 n 次方种情况，所需比特数由要表示的种类数决定。",
+      "JIS 的字符编码中英文数字等为 1 字节、汉字等为 2 字节，文字数据的容量根据这些字节数和字符数来估算。",
+      "Shift_JIS 编码 是把双字节字符的编号错开到与单字节字符不重叠范围的字符编码，在个人电脑的日语处理中被广泛使用。",
+      "Unicode 是给字符分配编号的体系，UTF-8 等编码方式负责把编号转换为字节序列。"
     ],
     "key_points_en": [
-      "Encoding (encode) is the general principle of mapping information to a bit string according to fixed rules, and a character code is a concrete example of it.",
-      "If the encoding rules (the code system) differ between sender and receiver, the data cannot be decoded correctly and garbled text (mojibake) occurs.",
-      "JIS code is the JIS standard that defines Japanese characters, and Shift_JIS code is a domestic code that extends it toward implementation.",
-      "Unicode is an international unified character code that handles the world's writing systems within a single system, and UTF-8 is its representative expression scheme.",
-      "Character codes can be organized along a progression from \"Japanese-oriented (JIS, Shift_JIS)\" to \"internationally unified (Unicode),\" that is, from local to global."
+      "Encoding maps information to codes by rules; decoding with the same rules restores it, and mismatched rules cause garbled text.",
+      "n bits distinguish 2^n patterns, and the bits needed depend on how many kinds must be represented.",
+      "In JIS character codes, alphanumerics and the like take 1 byte and kanji and the like take 2 bytes; text data size is estimated from these byte counts and the number of characters.",
+      "Shift_JIS Code shifts double-byte code numbers into a range that does not overlap with single-byte characters, and has been widely used for Japanese text on PCs.",
+      "Unicode is a system of numbers for characters; encoding schemes such as UTF-8 turn those numbers into byte sequences."
+    ],
+    "memory_hooks_jp": [
+      "符号化: 「符号」は合図の記号、「化」はそれに変えること。逆向きの「復号」は、符号から元に「復(もど)す」と読む。",
+      "JISコード: JIS は Japanese Industrial Standards の頭文字で、日本の工業製品の規格と同じ名前の仲間。",
+      "シフトJISコード: シフト (shift) は「ずらす」。番号の置き場所をずらしたから「シフト」JIS。",
+      "Unicode: uni は「1 つの」(uniform、unit と同じ) という意味。1 つの体系で世界の文字を表すコード。"
     ],
     "memory_hooks_zh": [
-      "编码：说到编码，就是把信息对应到比特串的规则",
-      "JIS 编码：说到 JIS 编码，就是日语字符的 JIS 规格编码",
-      "Shift_JIS 编码：说到 Shift_JIS 编码，就是在 JIS 上扩展的面向日语的编码",
-      "Unicode：说到 Unicode，就是统一世界各国文字的国际编码"
+      "编码：日文 符号化 的「符号」是表示信号的记号，「化」是转换成它；反方向的 復号 取「復」（恢复原样）之意，相当于中文的“解码”。",
+      "JIS 编码：JIS 是 Japanese Industrial Standards（日本工业标准）的首字母缩写，与日本工业产品的规格同名同源。",
+      "Shift_JIS 编码：shift 意为“错开”。因为把编号的位置错开了，所以叫 Shift JIS。",
+      "Unicode：uni 意为“一个”（与 uniform、unit 中的 uni 相同）。即用一个体系表示世界文字的编码。"
     ],
     "memory_hooks_en": [
-      "Encoding: Encoding → the rule that maps information to a bit string",
-      "JIS code: JIS code → the JIS-standard code for Japanese characters",
-      "Shift_JIS code: Shift_JIS code → a Japanese-oriented code extended from JIS",
-      "Unicode: Unicode → the international code that unifies the world's writing systems"
+      "Encoding: The Japanese term 符号化 combines 符号 (a signal mark) and 化 (turning into); its reverse, 復号, uses 復 (restore): getting the original back from the code.",
+      "JIS Code: JIS stands for Japanese Industrial Standards, the same family of standards that covers Japanese industrial products.",
+      "Shift_JIS Code: Shift means to move over. The code numbers were shifted to a new place, hence Shift JIS.",
+      "Unicode: Uni means one, as in uniform and unit: one system for the world's characters."
     ]
   },
   "challenge_questions": [
-    "2010h22h-q088",
-    "2012h24a-q093",
     "2018h30h-q075",
+    "2012h24a-q072",
     "2009h21a-q060",
-    "2012h24a-q072"
+    "2013h25h-q078",
+    "2010h22h-q060"
   ],
   "source_figures": [
     {
@@ -212,9 +656,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "编码与字符编码",
-  "title_en": "Encoding and Character Codes",
-  "unit_summary_zh": "学习将信息对应到比特串的编码思想，以及对字符进行编码的代表性字符编码（JIS、Shift_JIS、Unicode）。",
-  "unit_summary_en": "Learn the concept of encoding, which maps information to bit strings, and the representative character codes used to encode characters (JIS, Shift_JIS, Unicode)."
+  }
 }

@@ -1,239 +1,1006 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-35-u01",
   "topic_id": "technology-13-35",
   "category": "technology",
   "title_jp": "情報量の単位とデジタル化の工程",
+  "title_zh": "信息量的单位与数字化的流程",
+  "title_en": "Units of Information and the Digitization Process",
   "unit_summary_jp": "情報量を測る単位(ビット・バイト)を理解し、アナログ情報をデジタルへ変換する標本化・量子化・A/D変換の工程を学ぶ。",
+  "unit_summary_zh": "理解衡量信息量的单位（比特、字节），并学习把模拟信息转换为数字的采样、量化、A/D 转换流程。",
+  "unit_summary_en": "Understand the units that measure information (bit and byte), and learn the sampling, quantization, and A/D conversion steps that convert analog information into digital form.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、情報を数える最小単位であるビットと、それを束ねたバイトを学び、情報量を定量化する考え方を身につける。さらに、音や画像などアナログ情報をコンピュータが扱える数値へ変える標本化・量子化・A/D変換の工程を理解する。情報量の計算とデジタル化の流れは試験で頻出のため、土台として確実に押さえたい。",
-    "freq_badge": "標準",
-    "est_minutes": 21,
-    "intro_zh": "在本单元中，我们将学习信息计数的最小单位——比特，以及由它们组合而成的字节，从而掌握对信息量进行定量化的思路。此外，还将理解把声音、图像等模拟信息转换为计算机可处理的数值的采样、量化、A/D 转换流程。信息量的计算与数字化的流程在考试中频繁出现，因此要作为基础牢牢掌握。",
-    "intro_en": "In this unit, you will learn the bit, the smallest unit for counting information, and the byte, which bundles bits together, and so acquire a way of thinking that quantifies the amount of information. You will also understand the sampling, quantization, and A/D conversion steps that turn analog information such as sound and images into numerical values a computer can handle. Because information-amount calculations and the flow of digitization appear frequently on the exam, you should master them firmly as a foundation."
-  },
-  "terms": [
+  "goals_jp": [
+    "**ビット** と **バイト** の関係を使い、区別できる通り数やデータ量を計算できる。",
+    "表したい状態の数から、必要な **情報量** (ビット数) を求められる。",
+    "**標本化** → **量子化** → 符号化の順でアナログ情報がデジタルデータになる流れを説明できる。"
+  ],
+  "goals_zh": [
+    "能利用**比特**与**字节**的关系，计算可区分的组合数和数据量。",
+    "能根据要表示的状态数，求出所需的**信息量**（比特数）。",
+    "能说明模拟信息按照**采样** → **量化** → 编码的顺序变成数字数据的过程。"
+  ],
+  "goals_en": [
+    "Use the relationship between the **bit** and the **byte** to work out how many patterns can be told apart and how large a piece of data is.",
+    "Find the **amount of information** (number of bits) needed from the number of states you want to represent.",
+    "Explain how analog information becomes digital data in the order **sampling** → **quantization** → encoding."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "目安"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "要点"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Rule of thumb"
+  ],
+  "overview_rows": [
     {
       "term": "ビット",
-      "definition_jp": "0か1の2通りを表す、情報量の最小単位。1ビットで2状態を区別できる。",
-      "explanation_jp": "ビット(bit)はコンピュータが扱う情報の最も小さい単位で、0か1のどちらか一方を表します。1ビットで2通り、2ビットで4通り、nビットで2のn乗通りの状態を区別できる、という関係が試験で頻出です。\n\nたとえば3ビットあれば2の3乗=8通りを表せます。バイトとの違いを問う問題も多く、ビットは最小単位、バイトはその上位単位、と整理して覚えておくと混同しません。",
-      "analogy_jp": "ビットは電気スイッチ1個のようなもの。オン(1)かオフ(0)かの2択しか持てませんが、スイッチを増やせば表せる組み合わせがどんどん増えていきます。",
-      "memory_hook_jp": "ビットといえば0か1の最小単位",
-      "inline_quiz": [
-        "2013h25a-q076"
+      "one_line_jp": "0 か 1 を表す情報量の最小単位",
+      "one_line_zh": "表示 0 或 1 的信息量最小单位",
+      "one_line_en": "The smallest unit of information, representing either 0 or 1",
+      "extra_jp": [
+        "単位",
+        "1 ビットで 2 通り"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "比特",
-      "term_en": "bit",
-      "definition_zh": "表示 0 或 1 两种可能的、信息量的最小单位。1 比特可以区分 2 种状态。",
-      "definition_en": "The smallest unit of information, representing one of two possibilities, 0 or 1. One bit can distinguish 2 states.",
-      "explanation_zh": "比特（bit）是计算机处理信息的最小单位，表示 0 或 1 中的某一个。1 比特可区分 2 种、2 比特可区分 4 种、n 比特可区分 2 的 n 次方种状态，这一关系在考试中频繁出现。\n\n例如有 3 比特就能表示 2 的 3 次方＝8 种。考查比特与字节区别的题目也很多，把比特记为最小单位、字节记为其上一级单位来梳理，就不会混淆。",
-      "explanation_en": "A bit is the smallest unit of information a computer handles, representing either 0 or 1. The relationship that 1 bit distinguishes 2 states, 2 bits distinguish 4, and n bits distinguish 2 to the n-th power of states appears frequently on the exam.\n\nFor example, with 3 bits you can represent 2 to the 3rd power = 8 states. Questions asking the difference from a byte are common; if you organize it as the bit being the smallest unit and the byte being the unit one level above it, you will not confuse them.",
-      "analogy_zh": "比特就像一个电气开关，只能取开（1）或关（0）两种选择；但只要增加开关，能表示的组合就会不断增多。",
-      "analogy_en": "A bit is like a single electrical switch: it can only be on (1) or off (0), just two choices. But add more switches and the combinations you can represent grow rapidly.",
-      "memory_hook_zh": "说到比特，就是 0 或 1 的最小单位",
-      "memory_hook_en": "bit → the smallest unit, 0 or 1"
+      "extra_zh": [
+        "单位",
+        "1 比特可表示 2 种"
+      ],
+      "extra_en": [
+        "Unit",
+        "1 bit gives 2 patterns"
+      ]
     },
     {
       "term": "バイト",
-      "definition_jp": "8ビットをまとめた情報量の単位。1バイトで256通りを表せる。",
-      "explanation_jp": "バイト(byte)は8ビットを1組にした単位で、1バイト=8ビットという関係は必ず覚えるべき基本です。8ビットなので2の8乗=256通りの状態を表せ、半角文字1文字をおよそ1バイトで扱えます。\n\nファイルサイズやメモリ容量はキロバイト(KB)・メガバイト(MB)・ギガバイト(GB)とバイトの上位単位で表されます。ビット(b、小文字)とバイト(B、大文字)は記号も意味も異なるため、通信速度のbpsはビット単位である点など、単位の取り違えに注意しましょう。",
-      "analogy_jp": "ビットが1文字ずつのアルファベットなら、バイトはそれを8個束ねた「1単語」のようなもの。束ねることで意味のあるひとまとまりとして扱えます。",
-      "memory_hook_jp": "バイトといえば8ビットで1組",
-      "inline_quiz": [
-        "2009h21a-q097"
+      "one_line_jp": "8 ビットを 1 組にした単位",
+      "one_line_zh": "把 8 比特合为一组的单位",
+      "one_line_en": "A unit made of 8 bits grouped together",
+      "extra_jp": [
+        "単位",
+        "1 バイトで 256 通り"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "字节",
-      "term_en": "byte",
-      "definition_zh": "把 8 比特组合在一起的信息量单位。1 字节可表示 256 种可能。",
-      "definition_en": "A unit of information that bundles 8 bits together. One byte can represent 256 possibilities.",
-      "explanation_zh": "字节（byte）是把 8 比特作为一组的单位，1 字节＝8 比特这一关系是必须记住的基础。因为是 8 比特，所以能表示 2 的 8 次方＝256 种状态，1 个半角字符大约用 1 字节来处理。\n\n文件大小和内存容量用千字节（KB）、兆字节（MB）、吉字节（GB）等字节的上一级单位来表示。比特（b，小写）与字节（B，大写）的符号和含义都不同，例如通信速率的 bps 是以比特为单位的，要注意不要弄错单位。",
-      "explanation_en": "A byte bundles 8 bits into one group, and the relationship 1 byte = 8 bits is a basic fact you must memorize. Because it is 8 bits, it can represent 2 to the 8th power = 256 states, and a single half-width character is handled with roughly 1 byte.\n\nFile sizes and memory capacity are expressed in kilobytes (KB), megabytes (MB), and gigabytes (GB), which are units above the byte. The bit (b, lowercase) and the byte (B, uppercase) differ in both symbol and meaning, so be careful not to mix up the units; note for instance that the communication speed bps is in bits.",
-      "analogy_zh": "如果说比特是一个个字母，那么字节就像把 8 个字母捆成的“一个单词”。捆在一起后，就能作为有意义的一整组来处理。",
-      "analogy_en": "If a bit is a single letter of the alphabet, a byte is like a \"word\" made by bundling 8 of them. Once bundled, it can be handled as one meaningful chunk.",
-      "memory_hook_zh": "说到字节，就是 8 比特为一组",
-      "memory_hook_en": "byte → 8 bits make one group"
+      "extra_zh": [
+        "单位",
+        "1 字节可表示 256 种"
+      ],
+      "extra_en": [
+        "Unit",
+        "1 byte gives 256 patterns"
+      ]
     },
     {
       "term": "情報量",
-      "definition_jp": "ある事象がもつ情報の多さを、ビットなどの単位で定量化した量。",
-      "explanation_jp": "情報量とは、データや事象がどれだけの情報を含むかをビット・バイトといった単位で数値化したものです。表したい状態の数が多いほど、必要な情報量(ビット数)も増えます。\n\n試験では「n通りの状態を区別するには何ビット必要か」という形で問われます。2のn乗が状態数以上になる最小のnが必要ビット数で、たとえば10通りなら2の4乗=16≧10より4ビットが必要です。単位を学んだうえで、情報を量として測る考え方を結びつけて理解しましょう。",
-      "analogy_jp": "情報量は「何通りの中から1つを選んだか」を測るものさし。選択肢が多い質問ほど答えに必要な情報が多い、というのと同じ感覚です。",
-      "memory_hook_jp": "情報量といえばビットで測る情報の多さ",
-      "inline_quiz": [
-        "2010h22a-q083"
+      "one_line_jp": "情報の多さをビット数などで表した量",
+      "one_line_zh": "用比特数等表示信息多少的量",
+      "one_line_en": "The quantity of information, expressed in bits or similar units",
+      "extra_jp": [
+        "量",
+        "2 の n 乗が状態数以上になる最小の n"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "信息量",
-      "term_en": "amount of information",
-      "definition_zh": "把某一事件所含信息的多少，用比特等单位定量化后得到的量。",
-      "definition_en": "The amount of information an event carries, quantified in units such as the bit.",
-      "explanation_zh": "信息量是指数据或事件包含多少信息，用比特、字节等单位将其数值化后得到的量。想要表示的状态数越多，所需的信息量（比特数）也越多。\n\n考试中会以“要区分 n 种状态需要多少比特”的形式出题。使 2 的 n 次方大于等于状态数的最小 n，就是所需比特数；例如 10 种时，由 2 的 4 次方＝16≥10 可知需要 4 比特。在学习单位的基础上，要把“将信息作为量来衡量”的思路结合起来理解。",
-      "explanation_en": "The amount of information is how much information a piece of data or an event contains, numerically expressed in units such as the bit and byte. The more states you want to represent, the more information (more bits) is required.\n\nOn the exam this is asked as \"how many bits are needed to distinguish n states.\" The required number of bits is the smallest n for which 2 to the n-th power is at least the number of states; for example, for 10 states, since 2 to the 4th power = 16 ≥ 10, 4 bits are needed. Building on the units, connect this with the idea of measuring information as a quantity.",
-      "analogy_zh": "信息量是衡量“从多少种可能中选出了一个”的尺子。这与“选项越多的问题，答案需要的信息就越多”是同样的感觉。",
-      "analogy_en": "The amount of information is a ruler that measures \"out of how many options did you pick one.\" It is the same sense in which a question with more choices needs more information to answer.",
-      "memory_hook_zh": "说到信息量，就是用比特衡量的信息多少",
-      "memory_hook_en": "amount of information → how much information, measured in bits"
+      "extra_zh": [
+        "量",
+        "使 2 的 n 次方不小于状态数的最小 n"
+      ],
+      "extra_en": [
+        "Quantity",
+        "The smallest n for which 2 to the n is at least the number of states"
+      ]
     },
     {
       "term": "デジタル化",
-      "definition_jp": "連続的なアナログ情報を、離散的な数値(デジタルデータ)へ変換すること。",
-      "explanation_jp": "デジタル化とは、音や光、温度のように連続的に変化するアナログ情報を、コンピュータが扱える0と1の離散的な数値へ変換することです。アナログは滑らかに連続し、デジタルは段階的なとびとびの値である点が両者の本質的な違いです。\n\n音声や画像のデジタル化は、標本化→量子化→符号化という工程で行われます。デジタル化すると、複製しても劣化しにくい、編集や圧縮がしやすい、といった利点が生まれます。この工程全体の総称がデジタル化であると押さえましょう。",
-      "analogy_jp": "なだらかな坂道(アナログ)を階段(デジタル)に置き換えるイメージ。連続した傾斜を一段ずつの高さに区切ることで、数値として記録・複製できるようになります。",
-      "memory_hook_jp": "デジタル化といえばアナログを離散の数値へ",
-      "inline_quiz": [
-        "2009h21h-q066"
+      "one_line_jp": "連続した情報をとびとびの数値に置き換えること",
+      "one_line_zh": "把连续的信息替换为离散数值",
+      "one_line_en": "Replacing continuous information with separate, discrete numbers",
+      "extra_jp": [
+        "変換の全体",
+        "連続から離散へ"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"アナログ情報(連続)\"] --> B[\"標本化\"]; B --> C[\"量子化\"]; C --> D[\"符号化\"]; D --> E[\"デジタルデータ(離散)\"]",
-        "svg_path": "figures/technology-13-35-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "数字化",
-      "term_en": "digitization",
-      "definition_zh": "把连续的模拟信息转换为离散的数值（数字数据）。",
-      "definition_en": "Converting continuous analog information into discrete numerical values (digital data).",
-      "explanation_zh": "数字化是指把像声音、光、温度那样连续变化的模拟信息，转换为计算机能处理的 0 和 1 的离散数值。模拟是平滑连续的，数字是分级的、断续的值，这是两者本质上的区别。\n\n声音和图像的数字化按采样→量化→编码的流程进行。数字化后会带来复制时不易劣化、便于编辑和压缩等优点。要记住，这整个流程的统称就是数字化。",
-      "explanation_en": "Digitization means converting analog information that changes continuously—such as sound, light, and temperature—into the discrete numerical values of 0s and 1s that a computer can handle. Analog is smooth and continuous, while digital takes stepwise, discrete values; this is the essential difference between them.\n\nDigitization of audio and images is carried out through the steps of sampling, then quantization, then encoding. Once digitized, data gains advantages such as resisting degradation when copied and being easy to edit and compress. Keep in mind that the collective name for this whole process is digitization.",
-      "analogy_zh": "可以想象成把平缓的斜坡（模拟）换成台阶（数字）。把连续的坡度切分成一级一级的高度，就能作为数值来记录和复制。",
-      "analogy_en": "Picture replacing a gentle slope (analog) with a staircase (digital). By dividing the continuous incline into one step-height at a time, it becomes possible to record and copy it as numbers.",
-      "memory_hook_zh": "说到数字化，就是把模拟变成离散的数值",
-      "memory_hook_en": "digitization → turn analog into discrete numbers"
+      "extra_zh": [
+        "整个转换过程",
+        "从连续到离散"
+      ],
+      "extra_en": [
+        "The whole conversion",
+        "From continuous to discrete"
+      ]
     },
     {
       "term": "標本化",
-      "definition_jp": "連続するアナログ信号を一定間隔で区切り、値を取り出す工程。",
-      "explanation_jp": "標本化(サンプリング)は、デジタル化の最初の工程で、時間とともに連続するアナログ信号を一定の時間間隔ごとに区切り、その時点の値を取り出す処理です。時間軸を離散化する段階だと覚えましょう。\n\n1秒間に取り出す回数を標本化周波数といい、回数が多いほど元の波形を細かく再現でき、音質や画質が向上します。次の工程である量子化(振幅の離散化)との違いがよく問われます。標本化=時間の刻み、量子化=値の刻み、と対で整理すると混同しません。",
-      "analogy_jp": "動く対象を一定間隔でパシャパシャ撮るパラパラ漫画のようなもの。撮る間隔が短いほど、元の連続した動きをなめらかに再現できます。",
-      "memory_hook_jp": "標本化といえば時間を一定間隔で区切る",
+      "one_line_jp": "一定の時間間隔で信号の値を取り出す工程",
+      "one_line_zh": "按一定时间间隔取出信号值的工序",
+      "one_line_en": "The step that takes signal values at fixed time intervals",
+      "extra_jp": [
+        "工程 1",
+        "1 秒間の取り出し回数 = 標本化周波数"
+      ],
+      "extra_zh": [
+        "工序 1",
+        "每秒取值次数 = 采样频率"
+      ],
+      "extra_en": [
+        "Step 1",
+        "Readings per second = sampling frequency"
+      ]
+    },
+    {
+      "term": "量子化",
+      "one_line_jp": "取り出した値を決められた段階に当てはめる工程",
+      "one_line_zh": "把取出的值归入既定等级的工序",
+      "one_line_en": "The step that fits each value taken onto one of a set of levels",
+      "extra_jp": [
+        "工程 2",
+        "段階の数は量子化ビット数で決まる"
+      ],
+      "extra_zh": [
+        "工序 2",
+        "等级数由量化位数决定"
+      ],
+      "extra_en": [
+        "Step 2",
+        "The number of levels is set by the quantization bit depth"
+      ]
+    },
+    {
+      "term": "A/D変換",
+      "one_line_jp": "アナログ信号をデジタル信号に変える処理",
+      "one_line_zh": "把模拟信号变为数字信号的处理",
+      "one_line_en": "Processing that turns an analog signal into a digital signal",
+      "extra_jp": [
+        "変換処理",
+        "A/Dコンバータが行う"
+      ],
+      "extra_zh": [
+        "转换处理",
+        "由 A/D 转换器完成"
+      ],
+      "extra_en": [
+        "Conversion process",
+        "Performed by an A/D converter"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "ビット",
+      "term_zh": "比特",
+      "term_en": "bit",
+      "one_jp": "**ビット** は、0 か 1 のどちらか一方だけを表す、情報量の **最小単位** である。",
+      "one_zh": "**比特**（[[jp:ビット]]）是只表示 0 或 1 其中之一的信息量**最小单位**。",
+      "one_en": "A **bit** ([[jp:ビット]]) is the **smallest unit** of information, and it represents only one of two values: 0 or 1.",
+      "detail_jp": "ビットを 1 つ増やすと、それまでの並び方それぞれに 0 と 1 の 2 通りが付くので、区別できる数は 2 倍になる。そのため n 個のビットでは **2 の n 乗通り** の組合せを表せる。文字などをビット列で表すとき、1 つの文字に割り当てる 0 と 1 の並びを **符号** という。",
+      "detail_zh": "每多一个比特，原有的每一种排列后面都可以接 0 或 1 两种情况，因此可区分的数量翻一倍。所以 n 个比特可以表示 **2 的 n 次方种** 组合。用比特串表示字符等时，分配给一个字符的 0 和 1 的排列称为 **编码**。",
+      "detail_en": "Each extra bit lets every existing arrangement be followed by either 0 or 1, so the number of patterns that can be told apart doubles. That is why n bits can represent **2 to the n** combinations. When characters and the like are written as bit strings, the arrangement of 0s and 1s assigned to one character is called its **code**.",
+      "analogy_jp": "部屋の照明スイッチ 1 個は点いているか消えているかの 2 通りしかないが、スイッチを 3 個並べれば点灯の組合せは 8 通りに増える。",
+      "analogy_zh": "房间里的一个电灯开关只有开和关两种状态，但并排装三个开关，亮灯的组合就增加到 8 种。",
+      "analogy_en": "A single light switch in a room is either on or off, but put three switches side by side and the on-off combinations grow to eight.",
+      "hook_jp": "bit は binary digit (2 進数の 1 けた) を縮めた語で、「2 進の 1 けた」と読み替えると 2 通りしかないことを思い出せる。",
+      "hook_zh": "bit 是 binary digit（二进制的一位）的缩写，想成“二进制的一位”，就能记起它只有两种状态。",
+      "hook_en": "Bit is short for binary digit, so reading it as \"one binary digit\" reminds you that it has only two possible values.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "n ビットで区別できる数は 2 の n 乗通りである。ビット数が 1 増えるたびに、表せる種類は 2 倍になる。",
+          "text_zh": "n 个比特（[[jp:ビット]]）可区分 2 的 n 次方种。比特数每增加 1，能表示的种类就翻一倍。",
+          "text_en": "n bits ([[jp:ビット]]) can tell apart 2 to the n patterns. Every time the number of bits goes up by one, the number of kinds you can represent doubles.",
+          "qids": [
+            "2013h25a-q076"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "どの符号も他の符号の先頭部分と一致しないように割り当てれば、長さの違う符号を並べたビット列でも、先頭から一通りに区切って元の文字に戻せる。",
+          "text_zh": "只要分配编码（[[jp:符号]]）时让任何一个编码都不与其他编码的开头部分相同，即使比特串（[[jp:ビット列]]）由长短不一的编码连成，也能从开头起只按一种方式切分，还原成原来的字符。",
+          "text_en": "If codes ([[jp:符号]]) are assigned so that no code matches the opening part of any other code, a bit string ([[jp:ビット列]]) made of codes of different lengths can still be split from the start in only one way and turned back into the original characters.",
+          "qids": [
+            "2012h24a-q072"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "ビット数",
+              "zh": "比特数",
+              "en": "Bits"
+            },
+            {
+              "jp": "区別できる通り数",
+              "zh": "可区分的组合数",
+              "en": "Patterns that can be told apart"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "2",
+                  "zh": "2",
+                  "en": "2"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "2",
+                  "zh": "2",
+                  "en": "2"
+                },
+                {
+                  "jp": "4",
+                  "zh": "4",
+                  "en": "4"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "3",
+                  "zh": "3",
+                  "en": "3"
+                },
+                {
+                  "jp": "8",
+                  "zh": "8",
+                  "en": "8"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "n",
+                  "zh": "n",
+                  "en": "n"
+                },
+                {
+                  "jp": "2 の n 乗",
+                  "zh": "2 的 n 次方",
+                  "en": "2 to the n"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2013h25a-q076",
+        "2012h24a-q072"
+      ],
+      "definition_jp": "ビット は、0 か 1 のどちらか一方だけを表す、情報量の 最小単位 である。",
+      "definition_zh": "比特（ビット）是只表示 0 或 1 其中之一的信息量最小单位。",
+      "definition_en": "A bit (ビット) is the smallest unit of information, and it represents only one of two values: 0 or 1.",
+      "explanation_jp": "ビットを 1 つ増やすと、それまでの並び方それぞれに 0 と 1 の 2 通りが付くので、区別できる数は 2 倍になる。そのため n 個のビットでは 2 の n 乗通り の組合せを表せる。文字などをビット列で表すとき、1 つの文字に割り当てる 0 と 1 の並びを 符号 という。",
+      "explanation_zh": "每多一个比特，原有的每一种排列后面都可以接 0 或 1 两种情况，因此可区分的数量翻一倍。所以 n 个比特可以表示 2 的 n 次方种 组合。用比特串表示字符等时，分配给一个字符的 0 和 1 的排列称为 编码。",
+      "explanation_en": "Each extra bit lets every existing arrangement be followed by either 0 or 1, so the number of patterns that can be told apart doubles. That is why n bits can represent 2 to the n combinations. When characters and the like are written as bit strings, the arrangement of 0s and 1s assigned to one character is called its code.",
+      "memory_hook_jp": "bit は binary digit (2 進数の 1 けた) を縮めた語で、「2 進の 1 けた」と読み替えると 2 通りしかないことを思い出せる。",
+      "memory_hook_zh": "bit 是 binary digit（二进制的一位）的缩写，想成“二进制的一位”，就能记起它只有两种状态。",
+      "memory_hook_en": "Bit is short for binary digit, so reading it as \"one binary digit\" reminds you that it has only two possible values.",
+      "inline_quiz": [
+        "2013h25a-q076",
+        "2012h24a-q072"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "バイト",
+      "term_zh": "字节",
+      "term_en": "byte",
+      "one_jp": "**バイト** は、**8 ビット** を 1 組にまとめて扱う情報量の単位である。",
+      "one_zh": "**字节**（[[jp:バイト]]）是把 **8 比特** 合为一组来处理的信息量单位。",
+      "one_en": "A **byte** ([[jp:バイト]]) is a unit of information that handles **8 bits** together as one group.",
+      "detail_jp": "1 バイトは 8 ビットなので 2 の 8 乗、つまり 256 通りを区別できる。ファイルや記憶装置の容量は、バイトに k・M・G・T などの **接頭語** を付けて表す。",
+      "detail_zh": "1 字节是 8 比特，所以能区分 2 的 8 次方即 256 种。文件和存储设备的容量，用在字节前加上 k、M、G、T 等 **词头** 的方式表示。",
+      "detail_en": "One byte is 8 bits, so it can tell apart 2 to the 8th, or 256, patterns. The capacity of files and storage devices is written by putting a **prefix** such as k, M, G or T in front of the byte.",
+      "analogy_jp": "卵を 1 個ずつ数える代わりに 8 個入りのパックで数えるようなもので、パックの数を言えば中の個数もすぐ分かる。",
+      "analogy_zh": "就像不再一个一个地数鸡蛋，而是按 8 个一盒来数，说出盒数就能马上知道里面有多少个。",
+      "analogy_en": "It is like counting eggs by the eight-egg carton instead of one by one: say how many cartons there are and you know at once how many eggs are inside.",
+      "hook_jp": "byte はかじる意味の bite をもじった造語といわれ、データの「ひと口分」と覚えられる。",
+      "hook_zh": "据说 byte 是仿照表示“咬”的 bite 造出的词，可以记成数据的“一口”。",
+      "hook_en": "Byte is said to be a coined word playing on bite, so you can remember it as one \"mouthful\" of data.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "バイト数で表せる通り数は、バイト数を 8 倍してビット数に直し、2 の累乗で求める。",
+          "text_zh": "用字节（[[jp:バイト]]）数能表示的组合数，要先乘以 8 换算成比特（[[jp:ビット]]）数，再用 2 的乘方求出。",
+          "text_en": "To find how many patterns a number of bytes ([[jp:バイト]]) can represent, multiply by 8 to convert to bits ([[jp:ビット]]) and then take 2 to that power.",
+          "qids": [
+            "2013h25a-q076"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "SI 接頭語は k から M、M から G、G から T へ進むごとに 1,000 倍 (10 の 3 乗倍) ずつ大きくなる。",
+          "text_zh": "SI 词头（[[jp:SI接頭語]]）从 k 到 M、从 M 到 G、从 G 到 T，每进一级就增大 1,000 倍（10 的 3 次方倍）。",
+          "text_en": "SI prefixes ([[jp:SI接頭語]]) grow by a factor of 1,000 (10 to the 3rd) at each step, from k to M, from M to G and from G to T.",
+          "qids": [
+            "2011h23a-q078",
+            "2023r05-q096"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "単位記号は小文字の b がビット、大文字の B がバイトを表し、同じ数字でも量は 8 倍違う。",
+          "text_zh": "单位符号中小写的 b 表示比特（[[jp:ビット]]），大写的 B 表示字节（[[jp:バイト]]），数字相同时两者的量相差 8 倍。",
+          "text_en": "In unit symbols, a lowercase b stands for bits ([[jp:ビット]]) and an uppercase B for bytes ([[jp:バイト]]), so the same number means amounts that differ by a factor of 8."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "単位",
+              "zh": "单位",
+              "en": "Unit"
+            },
+            {
+              "jp": "1 つ下の単位との関係 (SI 接頭語)",
+              "zh": "与下一级单位的关系（SI 词头）",
+              "en": "Relation to the next unit down (SI prefixes)"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "1 バイト",
+                  "zh": "1 字节",
+                  "en": "1 byte"
+                },
+                {
+                  "jp": "8 ビット",
+                  "zh": "8 比特",
+                  "en": "8 bits"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "1k バイト",
+                  "zh": "1k 字节",
+                  "en": "1 kbyte"
+                },
+                {
+                  "jp": "1,000 バイト",
+                  "zh": "1,000 字节",
+                  "en": "1,000 bytes"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "1M バイト",
+                  "zh": "1M 字节",
+                  "en": "1 Mbyte"
+                },
+                {
+                  "jp": "1,000k バイト",
+                  "zh": "1,000k 字节",
+                  "en": "1,000 kbytes"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "1G バイト",
+                  "zh": "1G 字节",
+                  "en": "1 Gbyte"
+                },
+                {
+                  "jp": "1,000M バイト",
+                  "zh": "1,000M 字节",
+                  "en": "1,000 Mbytes"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "1T バイト",
+                  "zh": "1T 字节",
+                  "en": "1 Tbyte"
+                },
+                {
+                  "jp": "1,000G バイト",
+                  "zh": "1,000G 字节",
+                  "en": "1,000 Gbytes"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2011h23a-q078",
+        "2023r05-q096"
+      ],
+      "definition_jp": "バイト は、8 ビット を 1 組にまとめて扱う情報量の単位である。",
+      "definition_zh": "字节（バイト）是把 8 比特 合为一组来处理的信息量单位。",
+      "definition_en": "A byte (バイト) is a unit of information that handles 8 bits together as one group.",
+      "explanation_jp": "1 バイトは 8 ビットなので 2 の 8 乗、つまり 256 通りを区別できる。ファイルや記憶装置の容量は、バイトに k・M・G・T などの 接頭語 を付けて表す。",
+      "explanation_zh": "1 字节是 8 比特，所以能区分 2 的 8 次方即 256 种。文件和存储设备的容量，用在字节前加上 k、M、G、T 等 词头 的方式表示。",
+      "explanation_en": "One byte is 8 bits, so it can tell apart 2 to the 8th, or 256, patterns. The capacity of files and storage devices is written by putting a prefix such as k, M, G or T in front of the byte.",
+      "memory_hook_jp": "byte はかじる意味の bite をもじった造語といわれ、データの「ひと口分」と覚えられる。",
+      "memory_hook_zh": "据说 byte 是仿照表示“咬”的 bite 造出的词，可以记成数据的“一口”。",
+      "memory_hook_en": "Byte is said to be a coined word playing on bite, so you can remember it as one \"mouthful\" of data.",
+      "inline_quiz": [
+        "2011h23a-q078",
+        "2023r05-q096"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "情報量",
+      "term_zh": "信息量",
+      "term_en": "amount of information",
+      "one_jp": "**情報量** は、データが含む情報の多さを **ビット数** などの単位で数として表したものである。",
+      "one_zh": "**信息量**（[[jp:情報量]]）是用 **比特数** 等单位，把数据所含信息的多少表示成数值的量。",
+      "one_en": "The **amount of information** ([[jp:情報量]]) is how much information a piece of data holds, expressed as a number in units such as the **number of bits**.",
+      "detail_jp": "区別したい状態が多いほど、必要なビット数も増える。例えば 100 通りを区別するには、6 ビット (64 通り) では足りず、7 ビット (128 通り) あればよい。",
+      "detail_zh": "要区分的状态越多，所需的比特数也越多。例如区分 100 种时，6 比特（64 种）不够，7 比特（128 种）就足够了。",
+      "detail_en": "The more states you need to tell apart, the more bits you need. To tell apart 100 cases, for example, 6 bits (64 patterns) fall short, while 7 bits (128 patterns) are enough.",
+      "analogy_jp": "はい・いいえで答える質問を何回重ねれば相手の考えた番号を当てられるか、という回数が必要なビット数に当たる。",
+      "analogy_zh": "要问多少个只能用“是”或“不是”回答的问题才能猜中对方心里想的号码，这个次数就相当于所需的比特数。",
+      "analogy_en": "Think of how many yes-or-no questions you would need to guess the number someone has in mind; that count corresponds to the number of bits needed.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "N 種類を表すのに最小限必要なビット数は、2 の n 乗が N 以上になる最小の n である。",
+          "text_zh": "表示 N 种所需的最少比特（[[jp:ビット]]）数，是使 2 的 n 次方不小于 N 的最小 n。",
+          "text_en": "The minimum number of bits ([[jp:ビット]]) needed to represent N kinds is the smallest n for which 2 to the n is N or more.",
+          "qids": [
+            "2018h30h-q075"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "圧縮しない文字だけのデータ量は、文字数に 1 文字当たりのバイト数を掛けて求める。容量に入る分量は、単位をそろえた容量を 1 件分のデータ量で割って求める。",
+          "text_zh": "不压缩的纯文本数据量，用字符数乘以每个字符的字节（[[jp:バイト]]）数求出。容量能装下多少份，用统一单位后的容量除以一份数据的数据量求出。",
+          "text_en": "The size of uncompressed text-only data is the number of characters times the bytes ([[jp:バイト]]) per character. How many items fit in a given capacity is found by dividing the capacity, in matching units, by the size of one item.",
+          "qids": [
+            "2010h22a-q083"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2018h30h-q075",
+        "2010h22a-q083"
+      ],
+      "definition_jp": "情報量 は、データが含む情報の多さを ビット数 などの単位で数として表したものである。",
+      "definition_zh": "信息量（情報量）是用 比特数 等单位，把数据所含信息的多少表示成数值的量。",
+      "definition_en": "The amount of information (情報量) is how much information a piece of data holds, expressed as a number in units such as the number of bits.",
+      "explanation_jp": "区別したい状態が多いほど、必要なビット数も増える。例えば 100 通りを区別するには、6 ビット (64 通り) では足りず、7 ビット (128 通り) あればよい。",
+      "explanation_zh": "要区分的状态越多，所需的比特数也越多。例如区分 100 种时，6 比特（64 种）不够，7 比特（128 种）就足够了。",
+      "explanation_en": "The more states you need to tell apart, the more bits you need. To tell apart 100 cases, for example, 6 bits (64 patterns) fall short, while 7 bits (128 patterns) are enough.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2018h30h-q075",
+        "2010h22a-q083"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "デジタル化",
+      "term_zh": "数字化",
+      "term_en": "digitization",
+      "one_jp": "**デジタル化** は、連続して変わるアナログの情報を、とびとびの **離散的な数値** に置き換えることである。",
+      "one_zh": "**数字化**（[[jp:デジタル化]]）是把连续变化的模拟信息替换为一个个分开的 **离散数值**。",
+      "one_en": "**Digitization** ([[jp:デジタル化]]) is replacing analog information that changes continuously with separate, **discrete numbers**.",
+      "detail_jp": "デジタルの情報は数値の並びとして記録されるので、複製や送信を繰り返しても劣化しにくく、コンピュータで計算や加工ができる。音声などは **標本化** と **量子化** を行い、最後に段階の番号を 0 と 1 の並びで書き表す **符号化** をして、デジタルデータにする。",
+      "detail_zh": "数字信息以数值序列的形式记录，因此即使反复复制或发送也不容易劣化，还能由计算机进行计算和加工。声音等信息要经过 **采样** 和 **量化**，最后再进行把等级编号写成 0 和 1 排列的 **编码**，才成为数字数据。",
+      "detail_en": "Digital information is recorded as a sequence of numbers, so it hardly degrades even when copied or sent again and again, and a computer can calculate with it and edit it. Sound and similar information goes through **sampling** and **quantization**, and finally **encoding**, which writes each level number as a sequence of 0s and 1s, to become digital data.",
+      "analogy_jp": "なだらかな坂を階段に作り替えるようなもので、段の位置と高さを数字で記録すれば同じ形を何度でも作り直せる。",
+      "analogy_zh": "就像把平缓的斜坡改造成台阶，只要用数字记下每一级台阶的位置和高度，就能一次又一次地重建出同样的形状。",
+      "analogy_en": "It is like rebuilding a gentle slope as a staircase: once you record the position and height of each step as numbers, you can build the same shape again as many times as you like.",
+      "hook_jp": "digit はもともと指を指す語で、指で 1 本ずつ数えるように「数えられる値」にするのがデジタル化と覚える。",
+      "hook_zh": "digit 原本是指手指的词，可以记成：像用手指一根根地数那样，把信息变成“可以数的值”就是数字化。",
+      "hook_en": "Digit originally meant a finger, so picture counting on your fingers one by one: digitization turns information into values you can count.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "音楽用の CD は、音を一定の間隔で数値に置き換えた値の並びを記録しているので、デジタルの記録媒体に当たる。",
+          "text_zh": "音乐 CD 记录的是把声音按一定间隔替换成数值后的数值序列，因此属于数字（[[jp:デジタル]]）记录媒体。",
+          "text_en": "A music CD records a sequence of values made by turning sound into numbers at fixed intervals, so it counts as a digital ([[jp:デジタル]]) recording medium.",
+          "qids": [
+            "2021r03-q089"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "analog",
+              "label": {
+                "jp": "アナログ信号",
+                "zh": "模拟信号",
+                "en": "Analog signal"
+              }
+            },
+            {
+              "id": "sample",
+              "label": {
+                "jp": "標本化",
+                "zh": "采样",
+                "en": "Sampling"
+              }
+            },
+            {
+              "id": "quant",
+              "label": {
+                "jp": "量子化",
+                "zh": "量化",
+                "en": "Quantization"
+              }
+            },
+            {
+              "id": "code",
+              "label": {
+                "jp": "符号化",
+                "zh": "编码",
+                "en": "Encoding"
+              }
+            },
+            {
+              "id": "digital",
+              "label": {
+                "jp": "デジタルデータ",
+                "zh": "数字数据",
+                "en": "Digital data"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "一定の時間間隔で信号の値を取り出す。",
+            "caption_zh": "按一定时间间隔取出信号的值。",
+            "caption_en": "Take the value of the signal at fixed time intervals.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "取り出した値を、決めておいた段階のうち最も近いものに当てはめる。",
+            "caption_zh": "把取出的值归入事先定好的等级中最接近的一个。",
+            "caption_en": "Fit each value taken to the closest of the levels decided in advance.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "段階の番号を 0 と 1 の並びで書き表す。",
+            "caption_zh": "把等级的编号写成 0 和 1 的排列。",
+            "caption_en": "Write the number of each level as a sequence of 0s and 1s.",
+            "state": {
+              "show": 4
+            }
+          },
+          {
+            "caption_jp": "並んだビット列がコンピュータで扱えるデータになる。",
+            "caption_zh": "排好的比特串就成为计算机能处理的数据。",
+            "caption_en": "The resulting bit string becomes data a computer can handle.",
+            "state": {
+              "show": 5
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2021r03-q089",
+        "2009h21h-q066"
+      ],
+      "definition_jp": "デジタル化 は、連続して変わるアナログの情報を、とびとびの 離散的な数値 に置き換えることである。",
+      "definition_zh": "数字化（デジタル化）是把连续变化的模拟信息替换为一个个分开的 离散数值。",
+      "definition_en": "Digitization (デジタル化) is replacing analog information that changes continuously with separate, discrete numbers.",
+      "explanation_jp": "デジタルの情報は数値の並びとして記録されるので、複製や送信を繰り返しても劣化しにくく、コンピュータで計算や加工ができる。音声などは 標本化 と 量子化 を行い、最後に段階の番号を 0 と 1 の並びで書き表す 符号化 をして、デジタルデータにする。",
+      "explanation_zh": "数字信息以数值序列的形式记录，因此即使反复复制或发送也不容易劣化，还能由计算机进行计算和加工。声音等信息要经过 采样 和 量化，最后再进行把等级编号写成 0 和 1 排列的 编码，才成为数字数据。",
+      "explanation_en": "Digital information is recorded as a sequence of numbers, so it hardly degrades even when copied or sent again and again, and a computer can calculate with it and edit it. Sound and similar information goes through sampling and quantization, and finally encoding, which writes each level number as a sequence of 0s and 1s, to become digital data.",
+      "memory_hook_jp": "digit はもともと指を指す語で、指で 1 本ずつ数えるように「数えられる値」にするのがデジタル化と覚える。",
+      "memory_hook_zh": "digit 原本是指手指的词，可以记成：像用手指一根根地数那样，把信息变成“可以数的值”就是数字化。",
+      "memory_hook_en": "Digit originally meant a finger, so picture counting on your fingers one by one: digitization turns information into values you can count.",
+      "inline_quiz": [
+        "2021r03-q089",
+        "2009h21h-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "標本化",
+      "term_zh": "采样",
+      "term_en": "sampling",
+      "one_jp": "**標本化** (サンプリング) は、時間とともに変わる信号から、**一定の時間間隔** ごとにその時点の値を取り出す工程である。",
+      "one_zh": "**采样**（[[jp:標本化]]，也称抽样）是从随时间变化的信号中，每隔 **一定的时间间隔** 取出当时的值的工序。",
+      "one_en": "**Sampling** ([[jp:標本化]]) is the step of taking, once every **fixed time interval**, the value that a signal changing over time has at that moment.",
+      "detail_jp": "値を取り出す時間間隔を **標本化周期** (サンプリング周期) といい、1 秒間に取り出す回数を **標本化周波数** という。周期を短くすると、記録する値の数はその分増える。",
+      "detail_zh": "取值的时间间隔称为 **采样周期**，每秒取值的次数称为 **采样频率**。周期越短，要记录的值的个数就相应越多。",
+      "detail_en": "The time between readings is called the **sampling period**, and the number of readings taken per second is called the **sampling frequency**. A shorter period means correspondingly more values to record.",
+      "analogy_jp": "走っている人を一定の間隔で連写する写真に似ていて、間隔を詰めるほど動きの途中まで残せる。",
+      "analogy_zh": "这就像按一定间隔给奔跑的人连拍照片，间隔越密，越能留下动作中间的样子。",
+      "analogy_en": "It is like taking burst photos of a runner at regular intervals: the shorter the gap between shots, the more of the motion in between you keep.",
+      "hook_jp": "「標本」は全体から抜き取った見本のことで、連続した波から見本の点を抜き取る作業と結び付ける。",
+      "hook_zh": "“标本”指从整体中抽取的样本，可以联想成从连续的波形中抽取样本点的工作。",
+      "hook_en": "The kanji 標本 means a specimen taken from a larger whole, which links to picking sample points out of a continuous wave.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "標本化周期を短くするほど、取り出す点が密になり、復元した波形は元の波形に近づく。",
+          "text_zh": "采样周期（[[jp:標本化周期]]）越短，取出的点就越密，复原后的波形就越接近原来的波形。",
+          "text_en": "The shorter the sampling period ([[jp:標本化周期]]), the more closely spaced the points taken, and the closer the restored waveform comes to the original.",
+          "qids": [
+            "2009h21h-q066"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2010h22h-q088",
+        "2009h21h-q066"
+      ],
+      "definition_jp": "標本化 (サンプリング) は、時間とともに変わる信号から、一定の時間間隔 ごとにその時点の値を取り出す工程である。",
+      "definition_zh": "采样（標本化，也称抽样）是从随时间变化的信号中，每隔 一定的时间间隔 取出当时的值的工序。",
+      "definition_en": "Sampling (標本化) is the step of taking, once every fixed time interval, the value that a signal changing over time has at that moment.",
+      "explanation_jp": "値を取り出す時間間隔を 標本化周期 (サンプリング周期) といい、1 秒間に取り出す回数を 標本化周波数 という。周期を短くすると、記録する値の数はその分増える。",
+      "explanation_zh": "取值的时间间隔称为 采样周期，每秒取值的次数称为 采样频率。周期越短，要记录的值的个数就相应越多。",
+      "explanation_en": "The time between readings is called the sampling period, and the number of readings taken per second is called the sampling frequency. A shorter period means correspondingly more values to record.",
+      "memory_hook_jp": "「標本」は全体から抜き取った見本のことで、連続した波から見本の点を抜き取る作業と結び付ける。",
+      "memory_hook_zh": "“标本”指从整体中抽取的样本，可以联想成从连续的波形中抽取样本点的工作。",
+      "memory_hook_en": "The kanji 標本 means a specimen taken from a larger whole, which links to picking sample points out of a continuous wave.",
+      "inline_quiz": [
+        "2010h22h-q088",
+        "2009h21h-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "量子化",
+      "term_zh": "量化",
+      "term_en": "quantization",
+      "one_jp": "**量子化** は、標本化で取り出した値を、あらかじめ決めた **段階** のうち最も近いものに当てはめる工程である。",
+      "one_zh": "**量化**（[[jp:量子化]]）是把采样取出的值，归入事先定好的 **等级** 中最接近的一个的工序。",
+      "one_en": "**Quantization** ([[jp:量子化]]) is the step that fits each value taken by sampling to the closest of a set of **levels** decided in advance.",
+      "detail_jp": "段階の数は 1 つの標本を何ビットで表すかで決まり、このビット数を **量子化ビット数** (符号化ビット数ともいう) という。段階に丸めるときに生じる元の値とのずれを **量子化誤差** といい、段階が細かいほど小さくなる。",
+      "detail_zh": "等级的数量取决于用多少比特表示一个样本，这个比特数称为 **量化位数**（也称编码位数）。归入等级时与原值产生的偏差称为 **量化误差**，等级越细，误差越小。",
+      "detail_en": "The number of levels depends on how many bits are used to represent one sample, and this number of bits is called the **quantization bit depth** (also called the encoding bit count). The gap from the original value that arises when rounding to a level is called the **quantization error**, and it gets smaller as the levels get finer.",
+      "analogy_jp": "体重計の表示が 0.1 kg 刻みか 1 kg 刻みかの違いに似ていて、刻みが細かいほど本当の値に近い数字が出る。",
+      "analogy_zh": "就像体重秤的显示是以 0.1 kg 为单位还是以 1 kg 为单位，刻度越细，显示的数字越接近真实值。",
+      "analogy_en": "It is like the difference between a bathroom scale that shows 0.1 kg steps and one that shows 1 kg steps: the finer the steps, the closer the reading is to the true value.",
+      "hook_jp": "「量子」は物理でとびとびの最小の量を指す語で、値を飛び飛びの目盛りに乗せる作業と結び付ける。",
+      "hook_zh": "“量子”在物理中指不连续的最小量，可以联想成把值放到一格一格刻度上的工作。",
+      "hook_en": "The kanji 量子 is the physics word for a quantum, the smallest step-like amount, which links to placing values onto separate marks on a scale.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "1 標本を表すビット数を増やすと段階数が増え、値の大きさを細かく記録できる。段階数が多いほど復元した波形は元に近づく。",
+          "text_zh": "增加表示一个样本的比特（[[jp:ビット]]）数，等级数就会增加，能更精细地记录值的大小。等级数越多，复原后的波形就越接近原来的波形。",
+          "text_en": "Using more bits ([[jp:ビット]]) per sample increases the number of levels, so the size of each value can be recorded more finely. The more levels there are, the closer the restored waveform comes to the original.",
+          "qids": [
+            "2010h22h-q060",
+            "2009h21h-q066"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "標本化は時間の方向を区切る工程、量子化は値の大きさの方向を区切る工程で、量子化は標本化の後に行う。",
+          "text_zh": "采样（[[jp:標本化]]）是在时间方向上划分的工序，量化（[[jp:量子化]]）是在值的大小方向上划分的工序，量化在采样之后进行。",
+          "text_en": "Sampling ([[jp:標本化]]) divides things along the time axis, and quantization ([[jp:量子化]]) divides them along the axis of value size; quantization comes after sampling."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2010h22h-q060"
+      ],
+      "definition_jp": "量子化 は、標本化で取り出した値を、あらかじめ決めた 段階 のうち最も近いものに当てはめる工程である。",
+      "definition_zh": "量化（量子化）是把采样取出的值，归入事先定好的 等级 中最接近的一个的工序。",
+      "definition_en": "Quantization (量子化) is the step that fits each value taken by sampling to the closest of a set of levels decided in advance.",
+      "explanation_jp": "段階の数は 1 つの標本を何ビットで表すかで決まり、このビット数を 量子化ビット数 (符号化ビット数ともいう) という。段階に丸めるときに生じる元の値とのずれを 量子化誤差 といい、段階が細かいほど小さくなる。",
+      "explanation_zh": "等级的数量取决于用多少比特表示一个样本，这个比特数称为 量化位数（也称编码位数）。归入等级时与原值产生的偏差称为 量化误差，等级越细，误差越小。",
+      "explanation_en": "The number of levels depends on how many bits are used to represent one sample, and this number of bits is called the quantization bit depth (also called the encoding bit count). The gap from the original value that arises when rounding to a level is called the quantization error, and it gets smaller as the levels get finer.",
+      "memory_hook_jp": "「量子」は物理でとびとびの最小の量を指す語で、値を飛び飛びの目盛りに乗せる作業と結び付ける。",
+      "memory_hook_zh": "“量子”在物理中指不连续的最小量，可以联想成把值放到一格一格刻度上的工作。",
+      "memory_hook_en": "The kanji 量子 is the physics word for a quantum, the smallest step-like amount, which links to placing values onto separate marks on a scale.",
       "inline_quiz": [
         "2010h22h-q060"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "采样",
-      "term_en": "sampling",
-      "definition_zh": "把连续的模拟信号按固定间隔切分、取出数值的工序。",
-      "definition_en": "The step of dividing a continuous analog signal at fixed intervals and extracting its values.",
-      "explanation_zh": "采样（sampling）是数字化的第一道工序，把随时间连续变化的模拟信号按固定的时间间隔切分，并取出该时刻数值的处理。记住它是把时间轴离散化的阶段。\n\n每秒取出的次数称为采样频率，次数越多，越能精细地再现原始波形，音质和画质也越好。它与下一道工序量化（振幅的离散化）的区别经常被考查。把采样＝时间的刻度、量化＝数值的刻度成对梳理，就不会混淆。",
-      "explanation_en": "Sampling is the first step of digitization, the process of dividing an analog signal that changes continuously over time at fixed time intervals and extracting the value at each of those moments. Remember that it is the stage that discretizes the time axis.\n\nThe number of times extracted per second is called the sampling frequency; the more times, the more finely the original waveform can be reproduced, improving sound and image quality. Its difference from the next step, quantization (discretizing the amplitude), is often asked. Organizing them as a pair—sampling = dividing time, quantization = dividing value—prevents confusion.",
-      "analogy_zh": "就像按固定间隔咔嚓咔嚓地拍下运动对象、做成的翻页动画（手翻书）。拍摄间隔越短，就越能流畅地再现原本连续的动作。",
-      "analogy_en": "It is like a flip book that snaps a moving subject at fixed intervals. The shorter the interval between shots, the more smoothly the original continuous motion can be reproduced.",
-      "memory_hook_zh": "说到采样，就是把时间按固定间隔切分",
-      "memory_hook_en": "sampling → divide time at fixed intervals"
-    },
-    {
-      "term": "量子化",
-      "definition_jp": "標本化で取り出した値を、決められた段階の数値に近似する工程。",
-      "explanation_jp": "量子化は、標本化で取り出した各時点の値を、あらかじめ決められた段階(レベル)のいずれかに割り当てて数値化する工程です。標本化が時間軸の離散化なのに対し、量子化は振幅(値の大きさ)の離散化である点が重要な違いです。\n\n段階の細かさを量子化ビット数で表し、ビット数が多いほど元の値に近く再現でき、誤差(量子化誤差)が小さくなります。標本化と量子化はどちらもデジタル化の必須工程で、順序(標本化が先、量子化が後)を問う問題も出ます。",
-      "analogy_jp": "身長を測るとき、ものさしの目盛りで一番近い数値に読み取るのと同じ。目盛りが細かいほど実際の値に近づき、粗いと丸めによる誤差が出ます。",
-      "memory_hook_jp": "量子化といえば値を段階(レベル)に丸める",
-      "inline_quiz": [
-        "2010h22h-q088"
-      ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "量化",
-      "term_en": "quantization",
-      "definition_zh": "把采样取出的数值近似为规定的若干级数值的工序。",
-      "definition_en": "The step of approximating each value extracted by sampling to one of a predetermined set of levels.",
-      "explanation_zh": "量化是把采样取出的各时刻数值，分配到预先确定的某个级别（level）并数值化的工序。采样是对时间轴的离散化，而量化是对振幅（数值大小）的离散化，这是重要的区别。\n\n级别的精细程度用量化比特数来表示，比特数越多，就越能接近原始数值地再现，误差（量化误差）也越小。采样和量化都是数字化的必备工序，考查其顺序（采样在先、量化在后）的题目也会出现。",
-      "explanation_en": "Quantization is the step of assigning each value extracted by sampling at each moment to one of a predetermined set of levels and turning it into a number. Whereas sampling discretizes the time axis, quantization discretizes the amplitude (the magnitude of the value); this is the important difference.\n\nThe fineness of the levels is expressed by the number of quantization bits; the more bits, the closer to the original value it can be reproduced, and the smaller the error (quantization error). Both sampling and quantization are essential steps of digitization, and questions asking their order (sampling first, quantization second) also appear.",
-      "analogy_zh": "就像量身高时，用尺子的刻度读取到最接近的数值。刻度越细，越接近实际值；刻度粗，就会因取整而产生误差。",
-      "analogy_en": "It is like measuring height and reading off the nearest value on a ruler's graduations. The finer the graduations, the closer to the actual value; coarse ones produce error from rounding.",
-      "memory_hook_zh": "说到量化，就是把数值取整到各级别（level）",
-      "memory_hook_en": "quantization → round the value to levels"
+      "figure": null
     },
     {
       "term": "A/D変換",
-      "definition_jp": "アナログ信号をデジタル信号へ変換する処理の総称。",
-      "explanation_jp": "A/D変換(アナログ-デジタル変換)は、アナログ信号をデジタル信号へ変える処理の総称で、標本化と量子化(そして符号化)を統合した工程全体を指します。これを行う装置をA/Dコンバータといいます。\n\n逆にデジタル信号をアナログへ戻す処理はD/A変換と呼ばれ、向きが反対である点を問う問題が頻出です。マイクで拾った音をコンピュータに取り込む際はA/D変換、スピーカーで音を鳴らす際はD/A変換、と具体例で対にして覚えると区別しやすくなります。",
-      "analogy_jp": "外国語(アナログ)を日本語(デジタル)へ訳す通訳のようなもの。逆向きに訳し返すのがD/A変換で、変換の方向が逆になっているだけ、と捉えると整理できます。",
-      "memory_hook_jp": "A/D変換といえばアナログをデジタルへ(逆はD/A)",
+      "term_zh": "A/D 转换",
+      "term_en": "A/D conversion",
+      "one_jp": "**A/D変換** は、**アナログ** 信号を **デジタル** 信号に変える処理である。",
+      "one_zh": "**A/D 转换**（[[jp:A/D変換]]）是把 **模拟** 信号变为 **数字** 信号的处理。",
+      "one_en": "**A/D conversion** ([[jp:A/D変換]]) is the processing that turns an **analog** signal into a **digital** signal.",
+      "detail_jp": "A/D変換では、入力信号に標本化と量子化を行い、得た値を符号化してビット列として出力する。この処理を行う回路や部品を **A/Dコンバータ** という。",
+      "detail_zh": "A/D 转换对输入信号进行采样和量化，再把得到的值编码，以比特串的形式输出。完成这一处理的电路或部件称为 **A/D 转换器**。",
+      "detail_en": "In A/D conversion, the input signal is sampled and quantized, and the resulting values are encoded and output as a bit string. The circuit or component that does this is called an **A/D converter**.",
+      "analogy_jp": "変わり続ける気温を 1 分おきに温度計で読み、いちばん近い目盛りの数字をノートに書き付けていく作業に似ている。",
+      "analogy_zh": "就像每隔 1 分钟用温度计读一次不断变化的气温，把最接近的刻度数字记到本子上。",
+      "analogy_en": "It is like reading a changing air temperature on a thermometer once a minute and writing down the nearest mark on the scale in a notebook.",
+      "hook_jp": "A は Analog、D は Digital の頭文字で、斜線の左から右へ「A から D へ」と変換の向きを読む。",
+      "hook_zh": "A 是 Analog、D 是 Digital 的首字母，从斜线左边读到右边，就是“从 A 到 D”的转换方向。",
+      "hook_en": "A stands for Analog and D for Digital, so read the slash from left to right as \"from A to D\" to get the direction of the conversion.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "A/D変換で得られるビット列は、標本化した時刻ごとに量子化した段階の番号を符号化して並べたものである。",
+          "text_zh": "A/D 转换（[[jp:A/D変換]]）得到的比特串，是把每个采样（[[jp:標本化]]）时刻经量化（[[jp:量子化]]）得到的等级编号编码（[[jp:符号化]]）后排列而成的。",
+          "text_en": "The bit string produced by A/D conversion ([[jp:A/D変換]]) is made of the level numbers found by quantization ([[jp:量子化]]) at each sampling ([[jp:標本化]]) moment, encoded ([[jp:符号化]]) and lined up in order.",
+          "qids": [
+            "2010h22h-q088"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "デジタル信号をアナログ信号に戻す処理は D/A変換で、A/D変換とは向きが逆である。",
+          "text_zh": "把数字信号还原为模拟信号的处理是 D/A 转换（[[jp:D/A変換]]），方向与 A/D 转换（[[jp:A/D変換]]）相反。",
+          "text_en": "Turning a digital signal back into an analog signal is D/A conversion ([[jp:D/A変換]]), which runs in the opposite direction to A/D conversion ([[jp:A/D変換]])."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "mic",
+              "label": {
+                "jp": "マイクが拾った音 (アナログ)",
+                "zh": "麦克风拾取的声音（模拟）",
+                "en": "Sound picked up by a microphone (analog)"
+              }
+            },
+            {
+              "id": "ad",
+              "label": {
+                "jp": "A/D変換",
+                "zh": "A/D 转换",
+                "en": "A/D conversion"
+              }
+            },
+            {
+              "id": "pc",
+              "label": {
+                "jp": "コンピュータで処理 (デジタル)",
+                "zh": "由计算机处理（数字）",
+                "en": "Processed by a computer (digital)"
+              }
+            },
+            {
+              "id": "da",
+              "label": {
+                "jp": "D/A変換",
+                "zh": "D/A 转换",
+                "en": "D/A conversion"
+              }
+            },
+            {
+              "id": "spk",
+              "label": {
+                "jp": "スピーカーの音 (アナログ)",
+                "zh": "扬声器发出的声音（模拟）",
+                "en": "Sound from a speaker (analog)"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22h-q088",
+        "2021r03-q089"
+      ],
+      "definition_jp": "A/D変換 は、アナログ 信号を デジタル 信号に変える処理である。",
+      "definition_zh": "A/D 转换（A/D変換）是把 模拟 信号变为 数字 信号的处理。",
+      "definition_en": "A/D conversion (A/D変換) is the processing that turns an analog signal into a digital signal.",
+      "explanation_jp": "A/D変換では、入力信号に標本化と量子化を行い、得た値を符号化してビット列として出力する。この処理を行う回路や部品を A/Dコンバータ という。",
+      "explanation_zh": "A/D 转换对输入信号进行采样和量化，再把得到的值编码，以比特串的形式输出。完成这一处理的电路或部件称为 A/D 转换器。",
+      "explanation_en": "In A/D conversion, the input signal is sampled and quantized, and the resulting values are encoded and output as a bit string. The circuit or component that does this is called an A/D converter.",
+      "memory_hook_jp": "A は Analog、D は Digital の頭文字で、斜線の左から右へ「A から D へ」と変換の向きを読む。",
+      "memory_hook_zh": "A 是 Analog、D 是 Digital 的首字母，从斜线左边读到右边，就是“从 A 到 D”的转换方向。",
+      "memory_hook_en": "A stands for Analog and D for Digital, so read the slash from left to right as \"from A to D\" to get the direction of the conversion.",
       "inline_quiz": [
+        "2010h22h-q088",
         "2021r03-q089"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"アナログ信号\"] --> B[\"標本化\"]; B --> C[\"量子化\"]; C --> D[\"デジタル信号\"]; D -. \"D/A変換(逆向き)\" .-> A",
-        "svg_path": "figures/technology-13-35-u01-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "A/D 转换",
-      "term_en": "A/D conversion",
-      "definition_zh": "把模拟信号转换为数字信号这一处理的统称。",
-      "definition_en": "The collective name for the process of converting an analog signal into a digital signal.",
-      "explanation_zh": "A/D 转换（模拟-数字转换）是把模拟信号变为数字信号这一处理的统称，指把采样和量化（以及编码）整合在一起的整个工序。进行这一处理的装置称为 A/D 转换器。\n\n反过来，把数字信号还原为模拟信号的处理称为 D/A 转换，考查二者方向相反的题目频繁出现。用麦克风采到的声音输入计算机时是 A/D 转换，用扬声器发出声音时是 D/A 转换，用这样的具体例子成对记忆，就更容易区分。",
-      "explanation_en": "A/D conversion (analog-to-digital conversion) is the collective name for the process of turning an analog signal into a digital signal, referring to the whole sequence that integrates sampling and quantization (and encoding). The device that performs it is called an A/D converter.\n\nConversely, the process of returning a digital signal to analog is called D/A conversion, and questions asking that the two go in opposite directions appear frequently. Pairing them with concrete examples—A/D conversion when bringing sound picked up by a microphone into a computer, and D/A conversion when producing sound from a speaker—makes them easier to tell apart.",
-      "analogy_zh": "就像把外语（模拟）翻译成中文（数字）的口译员。反向再翻回去的就是 D/A 转换，只是转换的方向相反，这样理解就能梳理清楚。",
-      "analogy_en": "It is like an interpreter who translates a foreign language (analog) into your own language (digital). Translating back the other way is D/A conversion—only the direction of conversion is reversed, and grasping it this way keeps it organized.",
-      "memory_hook_zh": "说到 A/D 转换，就是把模拟转成数字（反过来是 D/A）",
-      "memory_hook_en": "A/D conversion → analog to digital (the reverse is D/A)"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "ビット",
+      "b": "バイト",
+      "rows": [
+        {
+          "label_jp": "大きさ",
+          "label_zh": "大小",
+          "label_en": "Size",
+          "a_jp": "情報量の最小単位",
+          "a_zh": "信息量的最小单位",
+          "a_en": "The smallest unit of information",
+          "b_jp": "8 ビットを 1 組にした単位",
+          "b_zh": "把 8 比特合为一组的单位",
+          "b_en": "A unit of 8 bits grouped together",
+          "key": true
+        },
+        {
+          "label_jp": "区別できる数",
+          "label_zh": "可区分的数量",
+          "label_en": "Patterns it can tell apart",
+          "a_jp": "2 通り",
+          "a_zh": "2 种",
+          "a_en": "2",
+          "b_jp": "256 通り",
+          "b_zh": "256 种",
+          "b_en": "256",
+          "key": false
+        },
+        {
+          "label_jp": "単位記号",
+          "label_zh": "单位符号",
+          "label_en": "Unit symbol",
+          "a_jp": "小文字の b",
+          "a_zh": "小写的 b",
+          "a_en": "Lowercase b",
+          "b_jp": "大文字の B",
+          "b_zh": "大写的 B",
+          "b_en": "Uppercase B",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "標本化",
+      "b": "量子化",
+      "rows": [
+        {
+          "label_jp": "区切る方向",
+          "label_zh": "划分的方向",
+          "label_en": "Axis it divides",
+          "a_jp": "時間の方向",
+          "a_zh": "时间方向",
+          "a_en": "Time",
+          "b_jp": "値の大きさの方向",
+          "b_zh": "值的大小方向",
+          "b_en": "Size of the value",
+          "key": true
+        },
+        {
+          "label_jp": "工程の順",
+          "label_zh": "工序顺序",
+          "label_en": "Order of steps",
+          "a_jp": "先に行う",
+          "a_zh": "先进行",
+          "a_en": "Done first",
+          "b_jp": "標本化の後に行う",
+          "b_zh": "在采样之后进行",
+          "b_en": "Done after sampling",
+          "key": false
+        },
+        {
+          "label_jp": "細かさを決めるもの",
+          "label_zh": "决定精细程度的因素",
+          "label_en": "What sets how fine it is",
+          "a_jp": "標本化周期 (標本化周波数)",
+          "a_zh": "采样周期（采样频率）",
+          "a_en": "Sampling period (sampling frequency)",
+          "b_jp": "量子化ビット数 (段階数)",
+          "b_zh": "量化位数（等级数）",
+          "b_en": "Quantization bit depth (number of levels)",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "n ビットで 2 の n 乗通りを区別でき、1 バイトは 8 ビットで 256 通りになる。",
+    "必要なビット数は、2 の n 乗が状態数以上になる最小の n で求める。",
+    "データ量に付ける SI 接頭語は k・M・G・T の順に 1,000 倍ずつ大きくなる。",
+    "アナログ情報は **標本化** → **量子化** → **符号化** の順でデジタルデータになる。"
+  ],
+  "key_points_zh": [
+    "n 比特可区分 2 的 n 次方种，1 字节是 8 比特，可区分 256 种。",
+    "所需的比特数，是使 2 的 n 次方不小于状态数的最小 n。",
+    "数据量所用的 SI 词头按 k、M、G、T 的顺序，每级增大 1,000 倍。",
+    "模拟信息按 **采样** → **量化** → **编码** 的顺序变成数字数据。"
+  ],
+  "key_points_en": [
+    "n bits can tell apart 2 to the n patterns, and 1 byte is 8 bits, giving 256 patterns.",
+    "The number of bits needed is the smallest n for which 2 to the n is at least the number of states.",
+    "The SI prefixes used for data sizes grow by a factor of 1,000 at each step in the order k, M, G, T.",
+    "Analog information becomes digital data in the order **sampling** → **quantization** → **encoding**."
+  ],
+  "overview": {
+    "intro_jp": "ビット と バイト の関係を使い、区別できる通り数やデータ量を計算できる。表したい状態の数から、必要な 情報量 (ビット数) を求められる。標本化 → 量子化 → 符号化の順でアナログ情報がデジタルデータになる流れを説明できる。",
+    "intro_zh": "能利用比特与字节的关系，计算可区分的组合数和数据量。能根据要表示的状态数，求出所需的信息量（比特数）。能说明模拟信息按照采样 → 量化 → 编码的顺序变成数字数据的过程。",
+    "intro_en": "Use the relationship between the bit and the byte to work out how many patterns can be told apart and how large a piece of data is. Find the amount of information (number of bits) needed from the number of states you want to represent. Explain how analog information becomes digital data in the order sampling → quantization → encoding.",
+    "freq_badge": "標準",
+    "est_minutes": 33
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ビット: ビットといえば0か1の最小単位",
-      "バイト: バイトといえば8ビットで1組",
-      "情報量: 情報量といえばビットで測る情報の多さ",
-      "デジタル化: デジタル化といえばアナログを離散の数値へ",
-      "標本化: 標本化といえば時間を一定間隔で区切る",
-      "量子化: 量子化といえば値を段階(レベル)に丸める",
-      "A/D変換: A/D変換といえばアナログをデジタルへ(逆はD/A)"
-    ],
     "key_points_jp": [
-      "ビットは0か1の最小単位、バイトは8ビット。nビットで2のn乗通りを表せる、という関係が情報量計算の基本。",
-      "情報量は「n通りを区別するのに必要なビット数」として問われ、2のn乗が状態数以上になる最小のnを求める。",
-      "デジタル化はアナログ(連続)をデジタル(離散)へ変換することで、標本化→量子化→符号化の工程で行う。",
-      "標本化は時間軸の離散化、量子化は振幅(値)の離散化。順序は標本化が先、量子化が後。",
-      "A/D変換はアナログ→デジタルの総称(標本化+量子化+符号化)で、逆向きのD/A変換と区別する。"
+      "n ビットで 2 の n 乗通りを区別でき、1 バイトは 8 ビットで 256 通りになる。",
+      "必要なビット数は、2 の n 乗が状態数以上になる最小の n で求める。",
+      "データ量に付ける SI 接頭語は k・M・G・T の順に 1,000 倍ずつ大きくなる。",
+      "アナログ情報は 標本化 → 量子化 → 符号化 の順でデジタルデータになる。"
     ],
     "key_points_zh": [
-      "比特是 0 或 1 的最小单位，字节是 8 比特。n 比特能表示 2 的 n 次方种，这一关系是信息量计算的基础。",
-      "信息量以“区分 n 种所需的比特数”的形式被考查，求使 2 的 n 次方大于等于状态数的最小 n。",
-      "数字化是把模拟（连续）转换为数字（离散），通过采样→量化→编码的工序进行。",
-      "采样是对时间轴的离散化，量化是对振幅（数值）的离散化。顺序是采样在先、量化在后。",
-      "A/D 转换是模拟→数字的统称（采样＋量化＋编码），要与方向相反的 D/A 转换区分开。"
+      "n 比特可区分 2 的 n 次方种，1 字节是 8 比特，可区分 256 种。",
+      "所需的比特数，是使 2 的 n 次方不小于状态数的最小 n。",
+      "数据量所用的 SI 词头按 k、M、G、T 的顺序，每级增大 1,000 倍。",
+      "模拟信息按 采样 → 量化 → 编码 的顺序变成数字数据。"
     ],
     "key_points_en": [
-      "A bit is the smallest unit, 0 or 1, and a byte is 8 bits. The relationship that n bits can represent 2 to the n-th power of states is the basis of information-amount calculations.",
-      "The amount of information is asked as \"the number of bits needed to distinguish n states\"; find the smallest n for which 2 to the n-th power is at least the number of states.",
-      "Digitization converts analog (continuous) into digital (discrete), carried out through the steps of sampling, then quantization, then encoding.",
-      "Sampling discretizes the time axis, and quantization discretizes the amplitude (the value). The order is sampling first, quantization second.",
-      "A/D conversion is the collective name for analog-to-digital (sampling + quantization + encoding); distinguish it from the reverse, D/A conversion."
+      "n bits can tell apart 2 to the n patterns, and 1 byte is 8 bits, giving 256 patterns.",
+      "The number of bits needed is the smallest n for which 2 to the n is at least the number of states.",
+      "The SI prefixes used for data sizes grow by a factor of 1,000 at each step in the order k, M, G, T.",
+      "Analog information becomes digital data in the order sampling → quantization → encoding."
+    ],
+    "memory_hooks_jp": [
+      "ビット: bit は binary digit (2 進数の 1 けた) を縮めた語で、「2 進の 1 けた」と読み替えると 2 通りしかないことを思い出せる。",
+      "バイト: byte はかじる意味の bite をもじった造語といわれ、データの「ひと口分」と覚えられる。",
+      "デジタル化: digit はもともと指を指す語で、指で 1 本ずつ数えるように「数えられる値」にするのがデジタル化と覚える。",
+      "標本化: 「標本」は全体から抜き取った見本のことで、連続した波から見本の点を抜き取る作業と結び付ける。",
+      "量子化: 「量子」は物理でとびとびの最小の量を指す語で、値を飛び飛びの目盛りに乗せる作業と結び付ける。",
+      "A/D変換: A は Analog、D は Digital の頭文字で、斜線の左から右へ「A から D へ」と変換の向きを読む。"
     ],
     "memory_hooks_zh": [
-      "比特：说到比特，就是 0 或 1 的最小单位",
-      "字节：说到字节，就是 8 比特为一组",
-      "信息量：说到信息量，就是用比特衡量的信息多少",
-      "数字化：说到数字化，就是把模拟变成离散的数值",
-      "采样：说到采样，就是把时间按固定间隔切分",
-      "量化：说到量化，就是把数值取整到各级别（level）",
-      "A/D 转换：说到 A/D 转换，就是把模拟转成数字（反过来是 D/A）"
+      "比特：bit 是 binary digit（二进制的一位）的缩写，想成“二进制的一位”，就能记起它只有两种状态。",
+      "字节：据说 byte 是仿照表示“咬”的 bite 造出的词，可以记成数据的“一口”。",
+      "数字化：digit 原本是指手指的词，可以记成：像用手指一根根地数那样，把信息变成“可以数的值”就是数字化。",
+      "采样：“标本”指从整体中抽取的样本，可以联想成从连续的波形中抽取样本点的工作。",
+      "量化：“量子”在物理中指不连续的最小量，可以联想成把值放到一格一格刻度上的工作。",
+      "A/D 转换：A 是 Analog、D 是 Digital 的首字母，从斜线左边读到右边，就是“从 A 到 D”的转换方向。"
     ],
     "memory_hooks_en": [
-      "bit: bit → the smallest unit, 0 or 1",
-      "byte: byte → 8 bits make one group",
-      "amount of information: amount of information → how much information, measured in bits",
-      "digitization: digitization → turn analog into discrete numbers",
-      "sampling: sampling → divide time at fixed intervals",
-      "quantization: quantization → round the value to levels",
-      "A/D conversion: A/D conversion → analog to digital (the reverse is D/A)"
+      "bit: Bit is short for binary digit, so reading it as \"one binary digit\" reminds you that it has only two possible values.",
+      "byte: Byte is said to be a coined word playing on bite, so you can remember it as one \"mouthful\" of data.",
+      "digitization: Digit originally meant a finger, so picture counting on your fingers one by one: digitization turns information into values you can count.",
+      "sampling: The kanji 標本 means a specimen taken from a larger whole, which links to picking sample points out of a continuous wave.",
+      "quantization: The kanji 量子 is the physics word for a quantum, the smallest step-like amount, which links to placing values onto separate marks on a scale.",
+      "A/D conversion: A stands for Analog and D for Digital, so read the slash from left to right as \"from A to D\" to get the direction of the conversion."
     ]
   },
   "challenge_questions": [
     "2011h23a-q078",
     "2018h30h-q075",
-    "2012h24a-q093",
     "2023r05-q096",
-    "2012h24a-q072"
+    "2012h24a-q072",
+    "2010h22h-q060"
   ],
   "source_figures": [
     {
@@ -289,9 +1056,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "信息量的单位与数字化的流程",
-  "title_en": "Units of Information and the Digitization Process",
-  "unit_summary_zh": "理解衡量信息量的单位（比特、字节），并学习把模拟信息转换为数字的采样、量化、A/D 转换流程。",
-  "unit_summary_en": "Understand the units that measure information (bit and byte), and learn the sampling, quantization, and A/D conversion steps that convert analog information into digital form."
+  }
 }
