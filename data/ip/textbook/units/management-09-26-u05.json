@@ -1,225 +1,856 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "management-09-26-u05",
   "topic_id": "management-09-26",
   "category": "management",
   "title_jp": "継続的な改善と開発・運用の自動化",
+  "title_zh": "持续改进与开发、运维的自动化",
+  "title_en": "Continuous Improvement and Automation of Development and Operations",
   "unit_summary_jp": "ふりかえりによる改善活動、CIによる統合の自動化、そして開発と運用を統合するDevOps・MLOpsという発展的な実践を学ぶ。",
+  "unit_summary_zh": "学习通过回顾进行的改进活动、通过 CI 实现集成自动化，以及整合开发与运维的 DevOps、MLOps 等进阶实践。",
+  "unit_summary_en": "Learn improvement activities through retrospectives, integration automation via CI, and advanced practices like DevOps and MLOps that unify development and operations.",
   "order_in_topic": 5,
   "prerequisites": [
     "management-09-26-u04"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、アジャイル/スクラムを前提に、反復のたびに行う改善活動「ふりかえり(レトロスペクティブ)」、変更を頻繁に統合して自動でビルド・テストする「CI(継続的インテグレーション)」、開発と運用を一体化する「DevOps」、そして機械学習に応用した「MLOps」という発展的な実践を学ぶ。継続的な改善と自動化を支える現代的な考え方として、ITパスポートでも頻出する重要分野である。",
-    "freq_badge": "頻出",
-    "est_minutes": 18,
-    "intro_zh": "本单元以敏捷/Scrum 为前提，学习在每次迭代中进行的改进活动「回顾(retrospective)」、频繁集成变更并自动构建与测试的「CI(持续集成)」、将开发与运维一体化的「DevOps」，以及应用于机器学习的「MLOps」这些进阶实践。作为支撑持续改进与自动化的现代理念，它也是 IT 护照考试中的高频重要领域。",
-    "intro_en": "This unit, building on agile/Scrum, covers advanced practices: the improvement activity 'retrospective' performed every iteration, 'CI (continuous integration)' that frequently integrates changes and automatically builds and tests them, 'DevOps' that unifies development and operations, and 'MLOps' applied to machine learning. As a modern mindset underpinning continuous improvement and automation, it is an important and frequently tested area on the IT Passport exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**ふりかえり** で何を見直すのかを説明し、**レトロスペクティブ** との関係を言える",
+    "**CI** で変更が統合されてから結果が返るまでの流れを順に説明できる",
+    "**DevOps** と **MLOps** を、運用し続ける対象の違いで区別できる"
+  ],
+  "goals_zh": [
+    "能够说明**回顾**（[[jp:ふりかえり]]）要重新审视什么，并说出它与 **Retrospective(回顾)**（[[jp:レトロスペクティブ]]）的关系",
+    "能够按顺序说明在 **CI** 中，从变更被集成到结果反馈回来的流程",
+    "能够根据持续运维的对象不同，区分 **DevOps** 和 **MLOps**"
+  ],
+  "goals_en": [
+    "Explain what a **retrospective** ([[jp:ふりかえり]]) looks back on, and state how it relates to the English-derived name **Retrospective** ([[jp:レトロスペクティブ]])",
+    "Walk through, in order, how **CI** goes from merging a change to returning the result",
+    "Tell **DevOps** from **MLOps** by what each keeps running and maintaining"
+  ],
+  "overview_cols_jp": [
+    "主な対象"
+  ],
+  "overview_cols_zh": [
+    "主要对象"
+  ],
+  "overview_cols_en": [
+    "Main focus"
+  ],
+  "overview_rows": [
     {
       "term": "ふりかえり",
-      "definition_jp": "活動を定期的に振り返り、改善点を話し合って次に生かす改善活動。",
-      "explanation_jp": "ふりかえりは、一定期間(イテレーションやスプリント)の活動を終えたあとに、チームで「うまくいった点・問題点・次に試すこと」を話し合い、継続的に進め方を改善していく活動です。\n\n試験では、成果物そのものを評価するのではなく、チームの仕事の進め方(プロセス)を見直して改善する点がポイントです。アジャイルやスクラムでは反復のたびに必ず行い、改善文化を回す起点となります。失敗を責めるのではなく、次への学びに変える前向きな場である点も押さえましょう。",
-      "analogy_jp": "スポーツの試合後にチームで反省会を開くようなもの。勝敗そのものより「次はどう動けばもっと良くなるか」を全員で確認し、次の試合に生かします。",
-      "memory_hook_jp": "ふりかえりといえば反復ごとに進め方を見直す改善活動",
-      "inline_quiz": [
-        "2020r02o-q046"
+      "one_line_jp": "反復ごとにチームの進め方を見直し、次に試す改善を決める活動",
+      "one_line_zh": "每次迭代后重新审视团队的工作方式，决定下次要尝试的改进的活动",
+      "one_line_en": "An activity where the team reviews how it works after each iteration and picks an improvement to try next",
+      "extra_jp": [
+        "チームの仕事の進め方"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "回顾",
-      "term_en": "Retrospective (Furikaeri)",
-      "definition_zh": "定期回顾活动、共同讨论改进点并应用到下一次的改进活动。",
-      "definition_en": "An improvement activity in which the team periodically looks back on its work, discusses points to improve, and applies them next time.",
-      "explanation_zh": "回顾是指在一段时期(迭代或冲刺)的活动结束后，由团队共同讨论「做得好的地方、问题点、下次要尝试的事」，从而持续改进工作方式的活动。\n\n考试中的要点是：它评估的不是产出物本身，而是审视并改进团队的工作方式(流程)。在敏捷和 Scrum 中，每次迭代都必定进行，是推动改进文化运转的起点。它不是为了追究失败，而是把失败转化为面向未来的学习的积极场合，这一点也要记牢。",
-      "explanation_en": "A retrospective is an activity where, after finishing a period of work (an iteration or sprint), the team discusses 'what went well, what the problems were, and what to try next,' continuously improving how they work.\n\nThe exam point is that it does not evaluate the deliverables themselves, but reviews and improves the team's way of working (the process). In agile and Scrum it is always held every iteration, serving as the starting point that keeps the improvement culture running. Remember too that it is a positive setting that turns failures into learning for the future, rather than blaming people for failures.",
-      "analogy_zh": "就像球队在比赛后开总结会。比起胜负本身，全员一起确认「下次怎么打才能更好」，并应用到下一场比赛。",
-      "analogy_en": "Like a sports team holding a review meeting after a match. More than the win or loss itself, everyone confirms 'how to play better next time' and applies it to the next game.",
-      "memory_hook_zh": "说到回顾，就是每次迭代审视工作方式的改进活动",
-      "memory_hook_en": "Retrospective → an improvement activity that reviews how you work after each iteration"
+      "extra_zh": [
+        "团队的工作方式"
+      ],
+      "extra_en": [
+        "How the team works"
+      ]
     },
     {
       "term": "レトロスペクティブ",
-      "definition_jp": "ふりかえりの英語呼称で、スクラムの公式イベント(スプリントレトロスペクティブ)として行う改善活動。",
-      "explanation_jp": "レトロスペクティブ(retrospective)は「ふりかえり」の英語呼称で、同じ概念を指します。特にスクラムでは、スプリント(反復)の最後に行う「スプリントレトロスペクティブ」として定義された公式のイベントです。\n\n試験では、ふりかえりとレトロスペクティブが同一の改善活動を指す点が問われます。スクラムの5つのイベント(スプリント・スプリントプランニング・デイリースクラム・スプリントレビュー・レトロスペクティブ)の一つとして位置づけられ、進め方の改善を目的とする点を、成果物を確認するスプリントレビューと混同しないよう注意しましょう。",
-      "analogy_jp": "「ふりかえり」というニックネームの正式な英語名が「レトロスペクティブ」。同じ反省会の呼び方違いで、別物ではありません。",
-      "memory_hook_jp": "レトロスペクティブといえばふりかえりの英語呼称(スクラムの改善イベント)",
-      "inline_quiz": [
-        "2022r04-q042"
+      "one_line_jp": "ふりかえりの英語名。スクラムではスプリントの最後に行うイベント",
+      "one_line_zh": "回顾的英文名称。在 Scrum 中是冲刺最后举行的活动",
+      "one_line_en": "The English-derived name for a retrospective. In Scrum, it is the event held at the end of each sprint",
+      "extra_jp": [
+        "チームの仕事の進め方"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "Retrospective(回顾)",
-      "term_en": "Retrospective",
-      "definition_zh": "「回顾」的英文称呼，作为 Scrum 的正式事件(冲刺回顾)进行的改进活动。",
-      "definition_en": "The English term for 'furikaeri (retrospective)'; an improvement activity held as an official Scrum event (the Sprint Retrospective).",
-      "explanation_zh": "Retrospective(回顾)是「ふりかえり」的英文称呼，指的是同一个概念。特别是在 Scrum 中，它是定义在冲刺(迭代)最后进行的「冲刺回顾(Sprint Retrospective)」这一正式事件。\n\n考试会考查回顾与 retrospective 指的是同一改进活动这一点。它被定位为 Scrum 五个事件(冲刺、冲刺规划、每日站会、冲刺评审、回顾)之一，目的是改进工作方式；注意不要与确认产出物的冲刺评审(Sprint Review)混淆。",
-      "explanation_en": "Retrospective is the English term for 'furikaeri,' referring to the same concept. In Scrum especially, it is the official event defined as the 'Sprint Retrospective,' held at the end of a sprint (iteration).\n\nThe exam tests that 'furikaeri' and 'retrospective' refer to the same improvement activity. It is positioned as one of Scrum's five events (Sprint, Sprint Planning, Daily Scrum, Sprint Review, Retrospective), and its purpose is improving the way of working; be careful not to confuse it with the Sprint Review, which checks the deliverables.",
-      "analogy_zh": "「回顾」这个昵称的正式英文名就是「Retrospective」。同一个总结会的不同叫法，并非两回事。",
-      "analogy_en": "'Retrospective' is the formal English name for the nickname 'furikaeri.' Just a different label for the same review meeting, not a separate thing.",
-      "memory_hook_zh": "说到 Retrospective，就是回顾的英文称呼(Scrum 的改进事件)",
-      "memory_hook_en": "Retrospective → the English name for furikaeri (Scrum's improvement event)"
+      "extra_zh": [
+        "团队的工作方式"
+      ],
+      "extra_en": [
+        "How the team works"
+      ]
     },
     {
       "term": "CI",
-      "definition_jp": "変更を頻繁に統合し、自動でビルド・テストする実践の略称。",
-      "explanation_jp": "CIは継続的インテグレーション(Continuous Integration)の略で、各開発者が書いたコードの変更を一日に何度も中央の共有リポジトリへ統合し、そのたびに自動でビルドとテストを実行する実践です。\n\n試験では、変更を小まめに統合して自動テストにかけることで、不具合を早期に発見し、統合時の手戻りを減らせる点が問われます。最後にまとめて統合して大量のエラーに苦しむ従来のやり方との対比がポイントです。CDやDevOpsを支える自動化の基盤となる点も押さえましょう。",
-      "analogy_jp": "夏休みの宿題を最終日にまとめてやるのではなく、毎日少しずつ提出して先生に毎回チェックしてもらうようなもの。問題があってもすぐ気づけます。",
-      "memory_hook_jp": "CIといえば変更を頻繁に統合して自動ビルド・テストする実践",
-      "inline_quiz": [
-        "2023r05-q040"
+      "one_line_jp": "変更を頻繁に統合し、そのたびにビルドとテストを自動で行う実践",
+      "one_line_zh": "频繁集成变更，并在每次集成时自动执行构建和测试的实践",
+      "one_line_en": "A practice of merging changes often and running the build and tests automatically each time",
+      "extra_jp": [
+        "ソースコードの統合とテスト"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"コードを変更\"] --> B[\"共有リポジトリへ統合\"]; B --> C[\"自動でビルド\"]; C --> D[\"自動でテスト\"]; D --> E[\"問題を早期に発見\"]; E --> A",
-        "svg_path": "figures/management-09-26-u05-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "CI",
-      "term_en": "CI",
-      "definition_zh": "频繁集成变更、自动进行构建与测试的实践的简称。",
-      "definition_en": "The abbreviation for the practice of frequently integrating changes and automatically building and testing them.",
-      "explanation_zh": "CI 是持续集成(Continuous Integration)的简称，指各开发者编写的代码变更一天多次地集成到中央共享仓库，并每次都自动执行构建与测试的实践。\n\n考试会考查：通过频繁集成变更并交由自动测试，可以及早发现缺陷、减少集成时的返工。与最后一次性集成、被大量错误折磨的传统做法的对比是要点。它也是支撑 CD 和 DevOps 的自动化基础，这一点也要记牢。",
-      "explanation_en": "CI is the abbreviation for Continuous Integration. It is the practice in which each developer's code changes are integrated into a central shared repository many times a day, with builds and tests run automatically each time.\n\nThe exam tests that by integrating changes frequently and subjecting them to automated tests, defects can be found early and rework at integration time is reduced. The contrast with the traditional approach of integrating everything at the end and struggling with a flood of errors is the key point. Remember too that it is the automation foundation underpinning CD and DevOps.",
-      "analogy_zh": "就像暑假作业不是拖到最后一天一次做完，而是每天做一点就交给老师每次检查。即使有问题也能马上发现。",
-      "analogy_en": "Like doing your summer homework a little each day and having the teacher check it each time, instead of cramming it all into the last day. Even if there's a problem, you notice it right away.",
-      "memory_hook_zh": "说到 CI，就是频繁集成变更并自动构建、测试的实践",
-      "memory_hook_en": "CI → the practice of frequently integrating changes and auto-building and testing"
+      "extra_zh": [
+        "源代码的集成与测试"
+      ],
+      "extra_en": [
+        "Merging and testing source code"
+      ]
     },
     {
       "term": "継続的インテグレーション",
-      "definition_jp": "CIの正式名称。変更を頻繁に統合し自動ビルド・テストする実践。",
-      "explanation_jp": "継続的インテグレーション(Continuous Integration)は略称CIの正式名称で、同一の概念を指します。コードの変更を継続的(continuous)に統合(integration)していくことからこの名が付きました。\n\n試験では、CIと継続的インテグレーションが同じものを指す点、そして頻繁な統合と自動ビルド・テストにより品質を保ちながら開発を進める実践である点が問われます。略称と正式名称を結び付けて覚え、後工程まで自動化を広げる継続的デリバリー(CD)へ発展する基盤である点も意識しておきましょう。",
-      "analogy_jp": "「CI」というニックネームの正式なフルネームが「継続的インテグレーション」。同じ実践の呼び方違いで、別物ではありません。",
-      "memory_hook_jp": "継続的インテグレーションといえばCIの正式名称(同じ実践)",
-      "inline_quiz": [
-        "2024r06-q047"
+      "one_line_jp": "CI の正式名称で、同じ実践を指す",
+      "one_line_zh": "CI 的正式名称，指同一种实践",
+      "one_line_en": "The full name of CI, referring to the same practice",
+      "extra_jp": [
+        "ソースコードの統合とテスト"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "持续集成",
-      "term_en": "Continuous Integration",
-      "definition_zh": "CI 的正式名称。频繁集成变更并自动构建、测试的实践。",
-      "definition_en": "The formal name of CI. The practice of frequently integrating changes and automatically building and testing them.",
-      "explanation_zh": "持续集成(Continuous Integration)是简称 CI 的正式名称，指的是同一个概念。因为是把代码变更持续地(continuous)集成(integration)，所以得此名。\n\n考试会考查 CI 与持续集成指的是同一事物，以及它是通过频繁集成与自动构建、测试在保证质量的同时推进开发的实践。把简称与正式名称对应起来记忆，并意识到它是发展为将自动化扩展到后续工序的持续交付(CD)的基础。",
-      "explanation_en": "Continuous Integration is the formal name of the abbreviation CI, referring to the same concept. It is so named because code changes are continuously integrated.\n\nThe exam tests that CI and Continuous Integration refer to the same thing, and that it is a practice for advancing development while maintaining quality through frequent integration and automated building and testing. Memorize the abbreviation together with its formal name, and keep in mind that it is the foundation that evolves into Continuous Delivery (CD), which extends automation to later stages.",
-      "analogy_zh": "「CI」这个昵称的正式全名就是「持续集成」。同一个实践的不同叫法，并非两回事。",
-      "analogy_en": "'Continuous Integration' is the full formal name for the nickname 'CI.' Just a different label for the same practice, not a separate thing.",
-      "memory_hook_zh": "说到持续集成，就是 CI 的正式名称(同一个实践)",
-      "memory_hook_en": "Continuous Integration → the formal name of CI (the same practice)"
+      "extra_zh": [
+        "源代码的集成与测试"
+      ],
+      "extra_en": [
+        "Merging and testing source code"
+      ]
     },
     {
       "term": "DevOps",
-      "definition_jp": "開発と運用が連携・協力し、自動化で迅速に価値を届ける考え方。",
-      "explanation_jp": "DevOpsは、開発(Development)と運用(Operations)を組み合わせた言葉で、両者が密に連携・協力し、ツールによる自動化を活用して、ソフトウェアの開発から運用までを迅速かつ継続的に行う考え方や文化を指します。\n\n試験では、従来は対立しがちだった開発チームと運用チームの壁を取り払い、組織として協調する点が問われます。CIなどの自動化を取り込み、リリースを速く・安定して回すのが狙いです。特定のツールではなく、文化やチームのあり方を指す概念である点に注意しましょう。このトピックで最も出題頻度が高い用語です。",
-      "analogy_jp": "料理を作る厨房(開発)と客に運ぶホール(運用)が、別々に動くのではなく一つのチームとして連携するイメージ。注文から提供までスムーズに早く回せます。",
-      "memory_hook_jp": "DevOpsといえば開発と運用が連携・自動化して迅速に届ける考え方",
-      "inline_quiz": [
-        "2019r01a-q055"
+      "one_line_jp": "開発と運用が協力し、自動化で変更を素早く安定して届け続ける取組",
+      "one_line_zh": "开发与运维相互协作，借助自动化快速而稳定地不断交付变更的做法",
+      "one_line_en": "An approach where development and operations work together and use automation to keep delivering changes quickly and reliably",
+      "extra_jp": [
+        "開発から運用までのソフトウェア"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"開発(Dev)\"] --> B[\"ビルド・テストの自動化\"]; B --> C[\"リリース\"]; C --> D[\"運用(Ops)\"]; D --> E[\"監視・フィードバック\"]; E --> A",
-        "svg_path": "figures/management-09-26-u05-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "DevOps",
-      "term_en": "DevOps",
-      "definition_zh": "开发与运维相互协同、协作，借助自动化迅速交付价值的理念。",
-      "definition_en": "A mindset in which development and operations collaborate closely and use automation to deliver value quickly.",
-      "explanation_zh": "DevOps 是结合开发(Development)与运维(Operations)的词，指两者紧密协同、协作，运用工具实现自动化，从软件的开发到运维都迅速且持续地进行的理念或文化。\n\n考试会考查：消除以往容易对立的开发团队与运维团队之间的壁垒，作为一个组织协同合作这一点。它引入 CI 等自动化，目标是让发布又快又稳定地运转。注意它指的不是某种特定工具，而是文化和团队的存在方式这一概念。它是本主题出题频率最高的术语。",
-      "explanation_en": "DevOps is a word combining Development and Operations. It refers to a mindset or culture in which the two collaborate closely, leverage tool-based automation, and carry out everything from software development to operations quickly and continuously.\n\nThe exam tests the idea of removing the wall between development and operations teams—which traditionally tended to be in conflict—and having them cooperate as one organization. It incorporates automation such as CI, aiming to run releases quickly and stably. Note that it refers not to a specific tool but to a concept of culture and how teams are organized. It is the most frequently tested term in this topic.",
-      "analogy_zh": "想象做菜的后厨(开发)和给客人上菜的前厅(运维)，不是各自为政，而是作为一个团队协同配合。从下单到上菜都能顺畅又快速地运转。",
-      "analogy_en": "Picture the kitchen that cooks the food (development) and the dining floor that serves customers (operations) working as one team rather than separately. Everything from order to serving runs smoothly and fast.",
-      "memory_hook_zh": "说到 DevOps，就是开发与运维协同、自动化、迅速交付的理念",
-      "memory_hook_en": "DevOps → the mindset where development and operations collaborate and automate to deliver fast"
+      "extra_zh": [
+        "从开发到运维的软件"
+      ],
+      "extra_en": [
+        "Software from development through operations"
+      ]
     },
     {
       "term": "MLOps",
-      "definition_jp": "DevOpsの考え方を機械学習システムの開発・運用に応用した実践。",
-      "explanation_jp": "MLOpsは、機械学習(Machine Learning)とDevOpsを組み合わせた言葉で、DevOpsの考え方を機械学習システムに適用し、モデルの開発・学習・運用・改善を継続的かつ効率的に回す実践です。\n\n試験では、MLOpsがDevOpsの機械学習版である点が問われます。通常のソフトウェアに加え、データやモデルの管理・再学習が必要になるのが特徴で、運用後もデータの変化に合わせてモデルを更新し続ける点が狙われます。AIの普及に伴って登場した、最も新しく応用的な概念として押さえましょう。",
-      "analogy_jp": "DevOpsという仕事のやり方を、AI(機械学習モデル)の世話に応用したもの。育てたモデルを世に出すだけでなく、データの変化に合わせて継続的に学び直させ続けます。",
-      "memory_hook_jp": "MLOpsといえばDevOpsを機械学習に応用した実践",
-      "inline_quiz": [
-        "2026r08-q043"
+      "one_line_jp": "DevOps の考え方を機械学習システムの開発と運用に応用した取組",
+      "one_line_zh": "把 DevOps 的思路应用到机器学习系统的开发与运维中的做法",
+      "one_line_en": "An approach that applies DevOps thinking to building and running machine learning systems",
+      "extra_jp": [
+        "データ・モデルを含む機械学習システム"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "MLOps",
-      "term_en": "MLOps",
-      "definition_zh": "将 DevOps 的理念应用到机器学习系统的开发与运维的实践。",
-      "definition_en": "A practice that applies the DevOps mindset to the development and operations of machine learning systems.",
-      "explanation_zh": "MLOps 是结合机器学习(Machine Learning)与 DevOps 的词，指把 DevOps 的理念应用于机器学习系统，持续且高效地推进模型的开发、训练、运维与改进的实践。\n\n考试会考查 MLOps 是 DevOps 的机器学习版这一点。其特点是除了普通软件之外，还需要对数据和模型进行管理与再训练；上线后也要配合数据的变化持续更新模型，这一点是考查重点。把它作为随着 AI 普及而出现的、最新且最具应用性的概念来掌握。",
-      "explanation_en": "MLOps is a word combining Machine Learning and DevOps. It is the practice of applying the DevOps mindset to machine learning systems, running model development, training, operations, and improvement continuously and efficiently.\n\nThe exam tests that MLOps is the machine learning version of DevOps. Its characteristic is that, in addition to ordinary software, it requires managing and retraining data and models; the point tested is that even after deployment, the model must keep being updated to match changes in the data. Grasp it as the newest and most applied concept that emerged with the spread of AI.",
-      "analogy_zh": "把 DevOps 这种工作方式应用到照料 AI(机器学习模型)上。不只是把养成的模型推向市场，还要配合数据的变化让它持续不断地重新学习。",
-      "analogy_en": "Applying the DevOps way of working to caring for AI (machine learning models). Not only releasing the trained model into the world, but continuously having it relearn to match changes in the data.",
-      "memory_hook_zh": "说到 MLOps，就是把 DevOps 应用到机器学习的实践",
-      "memory_hook_en": "MLOps → the practice of applying DevOps to machine learning"
+      "extra_zh": [
+        "包括数据和模型在内的机器学习系统"
+      ],
+      "extra_en": [
+        "Machine learning systems, including their data and models"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "ふりかえり",
+      "term_zh": "回顾",
+      "term_en": "Retrospective (Furikaeri)",
+      "one_jp": "**ふりかえり** は、一定期間の活動を終えるたびにチームで仕事の **進め方** を見直し、次の期間に試す **改善策** を決める活動である。",
+      "one_zh": "**回顾**（[[jp:ふりかえり]]）是指每完成一段时间的工作，团队就一起重新审视**工作方式**，并决定下一阶段要尝试的**改进措施**的活动。",
+      "one_en": "A **retrospective** ([[jp:ふりかえり]]) is an activity in which, each time a period of work ends, the team reviews **how it works** and decides on an **improvement** to try in the next period.",
+      "detail_jp": "見直す対象は、作業の段取りやチーム内の連携といった仕事のやり方である。例えば「続けること・問題・次に試すこと」の 3 つの観点で意見を出し合う KPT という進め方がよく使われる。これを反復のたびに繰り返すことで、チームの働き方が少しずつ良くなっていく。",
+      "detail_zh": "审视的对象是工作的安排、团队内部的配合等做事方式。常用的方法之一是 KPT，即从“要继续的事、存在的问题、下次要尝试的事”这三个角度提出意见。每次迭代都这样做，团队的工作方式就会一点点变好。",
+      "detail_en": "What gets reviewed is the way the work is done, such as how tasks are organized and how members coordinate. A common format is KPT, where people give views under Keep, Problem and Try. Repeating this every iteration makes the team's way of working a little better each time.",
+      "analogy_jp": "料理を作り終えるたびに、段取りでうまくいった点と次は変えたい点をメモし、次に作るときにそのメモを試してみるようなもの。",
+      "analogy_zh": "就像每做完一道菜，就把流程中顺利的地方和下次想改的地方记下来，下次做菜时照着笔记试一试。",
+      "analogy_en": "It is like jotting down, after each meal you cook, which steps went smoothly and what you want to change, then trying those notes the next time you cook.",
+      "hook_jp": "漢字では「振り返り」。来た道を振り向いて確かめ、向き直って次の一歩を決める動作を思い浮かべる。",
+      "hook_zh": "写成汉字是 [[jp:振り返り]]，意思是“回头看”。可以想象回头确认走过的路，再转回身决定下一步的动作。",
+      "hook_en": "In kanji it is written [[jp:振り返り]], meaning to turn and look back. Picture turning around to check the road behind you, then facing forward again to choose your next step.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ふりかえり** の目的は失敗した人を探して責めることではなく、チーム全体のやり方を次の反復で良くすることにある。",
+          "text_zh": "**回顾**（[[jp:ふりかえり]]）的目的不是找出犯错的人加以责备，而是在下一次迭代中改善整个团队的做法。",
+          "text_en": "The purpose of a **retrospective** ([[jp:ふりかえり]]) is not to find and blame whoever made a mistake. It is to improve how the whole team works in the next iteration."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "end",
+              "label": {
+                "jp": "1 回の反復を終える",
+                "zh": "完成一次迭代",
+                "en": "Finish one iteration"
+              }
+            },
+            {
+              "id": "list",
+              "label": {
+                "jp": "よかった点と困った点を出し合う",
+                "zh": "提出做得好的地方和遇到的困难",
+                "en": "Share what went well and what got in the way"
+              }
+            },
+            {
+              "id": "try",
+              "label": {
+                "jp": "次に試す改善策を決める",
+                "zh": "决定下次要尝试的改进措施",
+                "en": "Choose an improvement to try next"
+              }
+            },
+            {
+              "id": "next",
+              "label": {
+                "jp": "次の反復で改善策を実行する",
+                "zh": "在下一次迭代中实施改进措施",
+                "en": "Carry out the improvement in the next iteration"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "反復の区切りで、チーム全員が手を止めて集まる。",
+            "caption_zh": "在迭代告一段落时，团队全体成员暂停手头工作聚在一起。",
+            "caption_en": "At the end of an iteration, the whole team pauses its work and gets together.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "続けたいやり方と、つまずいた原因を挙げて共有する。",
+            "caption_zh": "列出想继续保持的做法和受挫的原因，彼此分享。",
+            "caption_en": "Members name the practices worth keeping and the causes of any stumbles, and share them.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "挙がった問題から、次に変えることを具体的に絞り込む。",
+            "caption_zh": "从提出的问题中，具体锁定下次要改变的地方。",
+            "caption_en": "From the problems raised, the team narrows down exactly what to change next.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "決めた改善策を次の反復で試し、その結果を次回また見直す。",
+            "caption_zh": "在下一次迭代中试行决定的改进措施，下次回顾时再审视其效果。",
+            "caption_en": "The chosen improvement is tried in the next iteration, and its effect is reviewed at the following session.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ふりかえり は、一定期間の活動を終えるたびにチームで仕事の 進め方 を見直し、次の期間に試す 改善策 を決める活動である。",
+      "definition_zh": "回顾（ふりかえり）是指每完成一段时间的工作，团队就一起重新审视工作方式，并决定下一阶段要尝试的改进措施的活动。",
+      "definition_en": "A retrospective (ふりかえり) is an activity in which, each time a period of work ends, the team reviews how it works and decides on an improvement to try in the next period.",
+      "explanation_jp": "見直す対象は、作業の段取りやチーム内の連携といった仕事のやり方である。例えば「続けること・問題・次に試すこと」の 3 つの観点で意見を出し合う KPT という進め方がよく使われる。これを反復のたびに繰り返すことで、チームの働き方が少しずつ良くなっていく。",
+      "explanation_zh": "审视的对象是工作的安排、团队内部的配合等做事方式。常用的方法之一是 KPT，即从“要继续的事、存在的问题、下次要尝试的事”这三个角度提出意见。每次迭代都这样做，团队的工作方式就会一点点变好。",
+      "explanation_en": "What gets reviewed is the way the work is done, such as how tasks are organized and how members coordinate. A common format is KPT, where people give views under Keep, Problem and Try. Repeating this every iteration makes the team's way of working a little better each time.",
+      "memory_hook_jp": "漢字では「振り返り」。来た道を振り向いて確かめ、向き直って次の一歩を決める動作を思い浮かべる。",
+      "memory_hook_zh": "写成汉字是 振り返り，意思是“回头看”。可以想象回头确认走过的路，再转回身决定下一步的动作。",
+      "memory_hook_en": "In kanji it is written 振り返り, meaning to turn and look back. Picture turning around to check the road behind you, then facing forward again to choose your next step.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "レトロスペクティブ",
+      "term_zh": "Retrospective(回顾)",
+      "term_en": "Retrospective",
+      "one_jp": "**レトロスペクティブ** は **ふりかえり** の英語名で、スクラムではスプリント (開発の反復の単位) の最後に行う **スプリントレトロスペクティブ** というイベントとして定められている。",
+      "one_zh": "**Retrospective(回顾)**（[[jp:レトロスペクティブ]]）是**回顾**的英文名称。在 Scrum 中，它被规定为在冲刺（开发迭代的单位）最后举行的**冲刺回顾**（[[jp:スプリントレトロスペクティブ]]）活动。",
+      "one_en": "**Retrospective** ([[jp:レトロスペクティブ]]) is the English-derived name for a **retrospective** ([[jp:ふりかえり]]). In Scrum, it is defined as an event called the **sprint retrospective** ([[jp:スプリントレトロスペクティブ]]), held at the end of each sprint (the unit of one development iteration).",
+      "detail_jp": "中身はふりかえりと同じで、直前のスプリントでの人・やり方・道具の使い方などを見直し、次のスプリントで取り組む改善を決める。スクラムでは、完成した成果物を関係者に見せて意見をもらう **スプリントレビュー** の後に行う。",
+      "detail_zh": "其内容与回顾相同，审视上一个冲刺中的人员、做法和工具的使用等，并决定下一个冲刺要着手的改进。在 Scrum 中，它安排在向相关人员展示完成的成果并听取意见的**冲刺评审**（[[jp:スプリントレビュー]]）之后。",
+      "detail_en": "Its content is the same as a retrospective: the team looks back at people, methods, tool use and the like in the sprint just finished and decides on improvements for the next sprint. In Scrum, it comes after the **sprint review** ([[jp:スプリントレビュー]]), where the finished work is shown to stakeholders for feedback.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "retro は「後ろへ」、spective は「見る」。懐古趣味のレトロと同じ retro で、後ろを見る = 振り返る。",
+      "hook_zh": "retro 意为“向后”，spective 意为“看”。retro 就是“复古风”的那个 retro，向后看 = 回顾。",
+      "hook_en": "Retro means backward and spective means looking. It is the same retro as in retro fashion, so \"looking backward\" is exactly what [[jp:振り返り]] means.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**スプリントレビュー** は完成した成果物を確かめる場、**レトロスペクティブ** はチームの進め方を見直す場であり、見る対象が異なる。",
+          "text_zh": "**冲刺评审**（[[jp:スプリントレビュー]]）是确认完成成果的场合，**Retrospective(回顾)**（[[jp:レトロスペクティブ]]）是审视团队工作方式的场合，二者关注的对象不同。",
+          "text_en": "A **sprint review** ([[jp:スプリントレビュー]]) checks the finished work, while a **Retrospective** ([[jp:レトロスペクティブ]]) examines how the team works. They look at different things."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "レトロスペクティブ は ふりかえり の英語名で、スクラムではスプリント (開発の反復の単位) の最後に行う スプリントレトロスペクティブ というイベントとして定められている。",
+      "definition_zh": "Retrospective(回顾)（レトロスペクティブ）是回顾的英文名称。在 Scrum 中，它被规定为在冲刺（开发迭代的单位）最后举行的冲刺回顾（スプリントレトロスペクティブ）活动。",
+      "definition_en": "Retrospective (レトロスペクティブ) is the English-derived name for a retrospective (ふりかえり). In Scrum, it is defined as an event called the sprint retrospective (スプリントレトロスペクティブ), held at the end of each sprint (the unit of one development iteration).",
+      "explanation_jp": "中身はふりかえりと同じで、直前のスプリントでの人・やり方・道具の使い方などを見直し、次のスプリントで取り組む改善を決める。スクラムでは、完成した成果物を関係者に見せて意見をもらう スプリントレビュー の後に行う。",
+      "explanation_zh": "其内容与回顾相同，审视上一个冲刺中的人员、做法和工具的使用等，并决定下一个冲刺要着手的改进。在 Scrum 中，它安排在向相关人员展示完成的成果并听取意见的冲刺评审（スプリントレビュー）之后。",
+      "explanation_en": "Its content is the same as a retrospective: the team looks back at people, methods, tool use and the like in the sprint just finished and decides on improvements for the next sprint. In Scrum, it comes after the sprint review (スプリントレビュー), where the finished work is shown to stakeholders for feedback.",
+      "memory_hook_jp": "retro は「後ろへ」、spective は「見る」。懐古趣味のレトロと同じ retro で、後ろを見る = 振り返る。",
+      "memory_hook_zh": "retro 意为“向后”，spective 意为“看”。retro 就是“复古风”的那个 retro，向后看 = 回顾。",
+      "memory_hook_en": "Retro means backward and spective means looking. It is the same retro as in retro fashion, so \"looking backward\" is exactly what 振り返り means.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "CI",
+      "term_zh": "CI",
+      "term_en": "CI",
+      "one_jp": "**CI** は、開発者がソースコードの変更を小さな単位で頻繁に **共有リポジトリ** (チームで共用するコードの保管場所) へ統合し、そのたびに **ビルド** (ソースコードから動くプログラムを組み立てる作業) と **テスト** を自動で行う実践である。",
+      "one_zh": "**CI** 是指开发者把源代码的变更以较小的单位频繁地集成到**共享代码仓库**（团队共用的代码存放处）中，并在每次集成时自动执行**构建**（把源代码组装成可运行程序的工作）和**测试**的实践。",
+      "one_en": "**CI** is the practice in which developers frequently merge small source code changes into a **shared repository** (the place where the team keeps its common code), and each merge automatically triggers a **build** (assembling a working program from source code) and **tests**.",
+      "detail_jp": "開発の終盤に全員の変更をまとめて統合すると、食い違いが一度に表面化し、どの変更が原因かを探す手間が大きくなる。CI では統合の間隔を短くし、自動テストの結果を毎回すぐに返すため、不具合を見つけた時点で原因の範囲が狭い。",
+      "detail_zh": "如果到开发后期才把所有人的变更一起集成，矛盾会一下子集中暴露，查找究竟是哪处变更导致问题也要花很大功夫。CI 缩短集成的间隔，每次都立即反馈自动测试的结果，因此发现缺陷时，原因的范围已经很小。",
+      "detail_en": "If everyone's changes are merged together only near the end of development, conflicts surface all at once, and tracking down which change caused a problem takes a lot of effort. CI shortens the gap between merges and returns automated test results every time, so when a defect turns up, the range of possible causes is already small.",
+      "analogy_jp": "大人数で 1 冊の文集を作るとき、各自が 1 ページ書くたびにすぐ綴じて通し読みし、話の食い違いをその場で直していくようなもの。",
+      "analogy_zh": "就像很多人合写一本文集时，每人每写完一页就马上装订进去从头读一遍，当场修正前后不一致的地方。",
+      "analogy_en": "It is like a large group writing one anthology: each time someone finishes a page, it is bound in right away and the whole thing is read through, so mismatches in the story get fixed on the spot.",
+      "hook_jp": "C = Continuous (途切れずに続く)、I = Integration (1 つにまとめる)。",
+      "hook_zh": "C = Continuous（不间断地持续），I = Integration（合而为一）。",
+      "hook_en": "C stands for Continuous (going on without a break) and I for Integration (bringing things together into one).",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**CI** で毎回自動で行われるのは、統合された変更のビルドとテストまでである。テストを通った変更をいつでも本番へ出せる状態まで自動で運ぶ考え方は、**継続的デリバリー** (CD) と呼ぶ。",
+          "text_zh": "**CI** 每次自动执行的范围，只到已集成变更的构建和测试为止。把通过测试的变更自动推进到随时可以发布到生产环境的状态，这种思路称为**持续交付**（[[jp:継続的デリバリー]]，CD）。",
+          "text_en": "What **CI** runs automatically each time stops at building and testing the merged changes. Automatically carrying changes that pass the tests to a state where they can go to production at any time is called **continuous delivery** ([[jp:継続的デリバリー]], CD)."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "edit",
+              "label": {
+                "jp": "小さな変更を加える",
+                "zh": "做出小的变更",
+                "en": "Make a small change"
+              }
+            },
+            {
+              "id": "merge",
+              "label": {
+                "jp": "共有リポジトリへ統合",
+                "zh": "集成到共享代码仓库",
+                "en": "Merge into the shared repository"
+              }
+            },
+            {
+              "id": "auto",
+              "label": {
+                "jp": "自動でビルドとテスト",
+                "zh": "自动构建和测试",
+                "en": "Automatic build and tests"
+              }
+            },
+            {
+              "id": "notify",
+              "label": {
+                "jp": "結果をすぐ開発者へ返す",
+                "zh": "立即把结果反馈给开发者",
+                "en": "Send results straight back to the developer"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "開発者は、まとまった量をため込まず小さな変更ごとに作業を区切る。",
+            "caption_zh": "开发者不把大量改动积攒起来，而是以每个小变更为单位划分工作。",
+            "caption_en": "Instead of piling up large batches of work, developers split it into small changes.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "変更をチーム共用の保管場所へ、1 日に何度も取り込む。",
+            "caption_zh": "把变更合并到团队共用的存放处，一天之内要这样做很多次。",
+            "caption_en": "Each change is brought into the team's shared store, many times a day.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "取り込みのたびに、プログラムの組み立てと検査が人手を介さず走る。",
+            "caption_zh": "每次合并后，程序的组装和检查都会在无人工干预的情况下运行。",
+            "caption_en": "Every merge sets off assembly and checking of the program without anyone doing it by hand.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "失敗すればすぐ知らせが届き、原因が直前の小さな変更に絞られる。",
+            "caption_zh": "一旦失败就会马上收到通知，原因也被锁定在刚才那个小变更上。",
+            "caption_en": "A failure triggers an immediate alert, and the cause narrows to the small change just made.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "CI は、開発者がソースコードの変更を小さな単位で頻繁に 共有リポジトリ (チームで共用するコードの保管場所) へ統合し、そのたびに ビルド (ソースコードから動くプログラムを組み立てる作業) と テスト を自動で行う実践である。",
+      "definition_zh": "CI 是指开发者把源代码的变更以较小的单位频繁地集成到共享代码仓库（团队共用的代码存放处）中，并在每次集成时自动执行构建（把源代码组装成可运行程序的工作）和测试的实践。",
+      "definition_en": "CI is the practice in which developers frequently merge small source code changes into a shared repository (the place where the team keeps its common code), and each merge automatically triggers a build (assembling a working program from source code) and tests.",
+      "explanation_jp": "開発の終盤に全員の変更をまとめて統合すると、食い違いが一度に表面化し、どの変更が原因かを探す手間が大きくなる。CI では統合の間隔を短くし、自動テストの結果を毎回すぐに返すため、不具合を見つけた時点で原因の範囲が狭い。",
+      "explanation_zh": "如果到开发后期才把所有人的变更一起集成，矛盾会一下子集中暴露，查找究竟是哪处变更导致问题也要花很大功夫。CI 缩短集成的间隔，每次都立即反馈自动测试的结果，因此发现缺陷时，原因的范围已经很小。",
+      "explanation_en": "If everyone's changes are merged together only near the end of development, conflicts surface all at once, and tracking down which change caused a problem takes a lot of effort. CI shortens the gap between merges and returns automated test results every time, so when a defect turns up, the range of possible causes is already small.",
+      "memory_hook_jp": "C = Continuous (途切れずに続く)、I = Integration (1 つにまとめる)。",
+      "memory_hook_zh": "C = Continuous（不间断地持续），I = Integration（合而为一）。",
+      "memory_hook_en": "C stands for Continuous (going on without a break) and I for Integration (bringing things together into one).",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "継続的インテグレーション",
+      "term_zh": "持续集成",
+      "term_en": "Continuous Integration",
+      "one_jp": "**継続的インテグレーション** は **CI** (Continuous Integration) の正式名称で、同じ実践を指す。",
+      "one_zh": "**持续集成**（[[jp:継続的インテグレーション]]）是 **CI**（Continuous Integration）的正式名称，指的是同一种实践。",
+      "one_en": "**Continuous Integration** ([[jp:継続的インテグレーション]]) is the full name of **CI**, and refers to the same practice.",
+      "detail_jp": "インテグレーションは「統合」の意味で、各開発者の変更を 1 つのプログラムにまとめることを指す。「継続的」は、その統合を開発の途中で日常的に繰り返すことを表している。",
+      "detail_zh": "“集成”（[[jp:インテグレーション]]）就是“整合”的意思，指把各个开发者的变更合并成一个程序。“持续”表示在开发过程中把这种集成作为日常工作反复进行。",
+      "detail_en": "Integration ([[jp:インテグレーション]]) means combining, here bringing each developer's changes together into one program. Continuous means repeating that integration routinely while development is still under way.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "integrate は integer (欠けのない整数) と同じ語源で、ばらばらの部品を欠けのない 1 つにするという意味。",
+      "hook_zh": "integrate 与 integer（没有残缺的整数）同源，意思是把零散的部件拼成一个完整无缺的整体。",
+      "hook_en": "Integrate shares its root with integer (a whole number with nothing missing), and means turning scattered parts into one complete whole.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**継続的インテグレーション** の「継続的」は、統合を開発の最後に 1 回行うのでなく、小さな変更のたびに繰り返す点を表す。",
+          "text_zh": "**持续集成**（[[jp:継続的インテグレーション]]）中的“持续”，表示集成不是在开发最后做一次，而是每有小变更就重复进行。",
+          "text_en": "The continuous in **Continuous Integration** ([[jp:継続的インテグレーション]]) means integration is not done once at the end of development but repeated with every small change."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "継続的インテグレーション は CI (Continuous Integration) の正式名称で、同じ実践を指す。",
+      "definition_zh": "持续集成（継続的インテグレーション）是 CI（Continuous Integration）的正式名称，指的是同一种实践。",
+      "definition_en": "Continuous Integration (継続的インテグレーション) is the full name of CI, and refers to the same practice.",
+      "explanation_jp": "インテグレーションは「統合」の意味で、各開発者の変更を 1 つのプログラムにまとめることを指す。「継続的」は、その統合を開発の途中で日常的に繰り返すことを表している。",
+      "explanation_zh": "“集成”（インテグレーション）就是“整合”的意思，指把各个开发者的变更合并成一个程序。“持续”表示在开发过程中把这种集成作为日常工作反复进行。",
+      "explanation_en": "Integration (インテグレーション) means combining, here bringing each developer's changes together into one program. Continuous means repeating that integration routinely while development is still under way.",
+      "memory_hook_jp": "integrate は integer (欠けのない整数) と同じ語源で、ばらばらの部品を欠けのない 1 つにするという意味。",
+      "memory_hook_zh": "integrate 与 integer（没有残缺的整数）同源，意思是把零散的部件拼成一个完整无缺的整体。",
+      "memory_hook_en": "Integrate shares its root with integer (a whole number with nothing missing), and means turning scattered parts into one complete whole.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "DevOps",
+      "term_zh": "DevOps",
+      "term_en": "DevOps",
+      "one_jp": "**DevOps** は、**開発** (Development) の担当と **運用** (Operations) の担当が協力し、**自動化** の仕組みを使ってソフトウェアの変更を素早く安定して届け続ける取組である。",
+      "one_zh": "**DevOps** 是指负责**开发**（Development）的人员与负责**运维**（Operations）的人员相互协作，利用**自动化**机制快速而稳定地不断交付软件变更的做法。",
+      "one_en": "**DevOps** is an approach in which the people in charge of **development** and those in charge of **operations** work together, using **automation** to keep delivering software changes quickly and reliably.",
+      "detail_jp": "従来は、新しい機能を早く出したい開発側と、システムを止めたくない運用側が別々に動き、引き渡しのたびに時間がかかりがちだった。DevOps では両者が目標を共有し、CI などの自動化を取り入れて、仕様の変更にも短い間隔で応えられるようにする。特定の道具の名前ではなく、組織の協力体制と仕組みづくりを含む考え方である。",
+      "detail_zh": "过去，想尽快推出新功能的开发方和不想让系统停机的运维方各自为政，每次交接往往都很费时间。DevOps 让双方共享目标，并引入 CI 等自动化手段，使团队能以较短的间隔应对规格变更。它不是某种特定工具的名称，而是一种包含组织协作体制和机制建设的理念。",
+      "detail_en": "In the past, developers who wanted to ship new features fast and operators who did not want the system to go down worked separately, and every handover tended to take time. With DevOps, both sides share goals and adopt automation such as CI, so they can respond to specification changes at short intervals. It is not the name of a particular tool but a way of thinking that includes how the organization cooperates and builds its processes.",
+      "analogy_jp": "料理を作る厨房と客に出すホールが同じチームとしてお客の反応を共有し、メニューの改良を素早く繰り返すレストランのようなもの。",
+      "analogy_zh": "就像一家餐厅，做菜的后厨和上菜的前厅作为同一个团队共享顾客的反馈，快速反复改良菜单。",
+      "analogy_en": "It is like a restaurant where the kitchen that cooks and the floor staff who serve act as one team, share customers' reactions and keep refining the menu quickly.",
+      "hook_jp": "Dev と Ops をつないだ造語で、名前そのものが 2 つの担当の合体を表している。",
+      "hook_zh": "这是把 Dev 和 Ops 连在一起的合成词，名称本身就表示两种职责的结合。",
+      "hook_en": "The word joins Dev and Ops, so the name itself shows the two roles merged into one.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**DevOps** は、開発と運用の担当が協力し、自動化の仕組みを使って機能の追加や変更を素早く利用者へ届ける取組である。",
+          "text_zh": "**DevOps** 是开发人员与运维人员相互协作，利用自动化机制把功能的新增和变更快速交付给用户的做法。",
+          "text_en": "**DevOps** is an approach where development and operations staff cooperate and use automation to deliver new and changed features to users quickly.",
+          "qids": [
+            "2019r01a-q055",
+            "2020r02o-q046",
+            "2022r04-q042",
+            "2023r05-q040",
+            "2024r06-q047"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**DevOps** の自動化は開発側の作業にとどまらず、本番環境への反映といった運用側の作業にも及ぶ。",
+          "text_zh": "**DevOps** 的自动化不仅限于开发方的工作，还延伸到部署到生产环境等运维方的工作。",
+          "text_en": "Automation in **DevOps** is not limited to development work. It also covers operations work such as releasing to the production environment.",
+          "qids": [
+            "2020r02o-q046",
+            "2022r04-q042"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "アジャイルは短い反復で少しずつ作る開発の進め方、**DevOps** は開発と運用が協力して届ける流れを速くする体制づくりであり、両者は組み合わせて使われることも多い。",
+          "text_zh": "敏捷（[[jp:アジャイル]]）是以短周期迭代、一点点构建的开发方式，**DevOps** 则是让开发与运维协作、加快交付流程的体制建设，二者经常结合使用。",
+          "text_en": "Agile ([[jp:アジャイル]]) is a way of developing bit by bit in short iterations, while **DevOps** is about setting up teams so that development and operations together speed up delivery. The two are often used in combination."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "dev",
+              "label": {
+                "jp": "開発 (新機能・修正)",
+                "zh": "开发（新功能、修复）",
+                "en": "Development (new features, fixes)"
+              }
+            },
+            {
+              "id": "auto",
+              "label": {
+                "jp": "テストと本番反映を自動化",
+                "zh": "测试和上线部署自动化",
+                "en": "Automate testing and release"
+              }
+            },
+            {
+              "id": "ops",
+              "label": {
+                "jp": "運用 (稼働・監視)",
+                "zh": "运维（运行、监控）",
+                "en": "Operations (running, monitoring)"
+              }
+            },
+            {
+              "id": "fb",
+              "label": {
+                "jp": "運用で得た情報を開発へ戻す",
+                "zh": "把运维中获得的信息反馈给开发",
+                "en": "Feed operational findings back to development"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "開発の担当が、利用者の要望に応える機能や修正を作る。",
+            "caption_zh": "开发人员制作满足用户需求的功能和修复。",
+            "caption_en": "The development side builds features and fixes that answer users' requests.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "テストから本番環境への反映までを道具で自動化し、手作業を減らす。",
+            "caption_zh": "用工具把从测试到部署到生产环境的过程自动化，减少手工操作。",
+            "caption_en": "Tools automate everything from testing to release into production, cutting manual work.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "運用の担当がサービスを動かし続け、稼働状況や障害を見張る。",
+            "caption_zh": "运维人员保持服务持续运行，监视运行状况和故障。",
+            "caption_en": "The operations side keeps the service running and watches its status and failures.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "運用で分かった課題を開発へ伝えて次の改善に生かし、この輪を回し続ける。",
+            "caption_zh": "把运维中发现的问题传达给开发，用于下一次改进，如此不断循环。",
+            "caption_en": "Issues found in operations go back to development for the next improvement, and the loop keeps turning.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2019r01a-q055",
+        "2020r02o-q046"
+      ],
+      "definition_jp": "DevOps は、開発 (Development) の担当と 運用 (Operations) の担当が協力し、自動化 の仕組みを使ってソフトウェアの変更を素早く安定して届け続ける取組である。",
+      "definition_zh": "DevOps 是指负责开发（Development）的人员与负责运维（Operations）的人员相互协作，利用自动化机制快速而稳定地不断交付软件变更的做法。",
+      "definition_en": "DevOps is an approach in which the people in charge of development and those in charge of operations work together, using automation to keep delivering software changes quickly and reliably.",
+      "explanation_jp": "従来は、新しい機能を早く出したい開発側と、システムを止めたくない運用側が別々に動き、引き渡しのたびに時間がかかりがちだった。DevOps では両者が目標を共有し、CI などの自動化を取り入れて、仕様の変更にも短い間隔で応えられるようにする。特定の道具の名前ではなく、組織の協力体制と仕組みづくりを含む考え方である。",
+      "explanation_zh": "过去，想尽快推出新功能的开发方和不想让系统停机的运维方各自为政，每次交接往往都很费时间。DevOps 让双方共享目标，并引入 CI 等自动化手段，使团队能以较短的间隔应对规格变更。它不是某种特定工具的名称，而是一种包含组织协作体制和机制建设的理念。",
+      "explanation_en": "In the past, developers who wanted to ship new features fast and operators who did not want the system to go down worked separately, and every handover tended to take time. With DevOps, both sides share goals and adopt automation such as CI, so they can respond to specification changes at short intervals. It is not the name of a particular tool but a way of thinking that includes how the organization cooperates and builds its processes.",
+      "memory_hook_jp": "Dev と Ops をつないだ造語で、名前そのものが 2 つの担当の合体を表している。",
+      "memory_hook_zh": "这是把 Dev 和 Ops 连在一起的合成词，名称本身就表示两种职责的结合。",
+      "memory_hook_en": "The word joins Dev and Ops, so the name itself shows the two roles merged into one.",
+      "inline_quiz": [
+        "2019r01a-q055",
+        "2020r02o-q046"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "MLOps",
+      "term_zh": "MLOps",
+      "term_en": "MLOps",
+      "one_jp": "**MLOps** は、**DevOps** の考え方を **機械学習** (Machine Learning) を使うシステムに応用し、モデル (データから学習して予測や判定を行う仕組み) の開発から運用・更新までを継続的に回す取組である。",
+      "one_zh": "**MLOps** 是把 **DevOps** 的思路应用到使用**机器学习**（Machine Learning）的系统上，持续推动模型（从数据中学习并进行预测或判断的机制）从开发到运维、更新整个循环的做法。",
+      "one_en": "**MLOps** applies the thinking of **DevOps** to systems that use **machine learning**, keeping a model (a mechanism that learns from data to make predictions or judgments) cycling continuously from development through operation and updates.",
+      "detail_jp": "MLOps ではデータの準備・学習・評価・組込み・監視を一続きの流れとしてつなぎ、できるところは自動化する。データ分析の担当、開発の担当、運用の担当が協力して進める点も DevOps と共通している。",
+      "detail_zh": "MLOps 把数据准备、训练、评估、部署和监控连成一条连贯的流程，能自动化的部分都实现自动化。由数据分析人员、开发人员和运维人员协作推进这一点，也与 DevOps 相同。",
+      "detail_en": "MLOps links data preparation, training, evaluation, deployment and monitoring into one continuous flow and automates whatever it can. Like DevOps, it relies on data analysts, developers and operators working together.",
+      "analogy_jp": "天気予報の担当者が予報の当たり外れを毎日確かめ、外れが増えてきたら新しい観測データで予報の手順を作り直すようなもの。",
+      "analogy_zh": "就像天气预报员每天核对预报准不准，一旦不准的情况变多，就用新的观测数据重新制定预报方法。",
+      "analogy_en": "It is like a weather forecaster who checks every day whether the forecasts were right and, once misses start piling up, rebuilds the forecasting method from new observation data.",
+      "hook_jp": "DevOps の Dev を ML (Machine Learning) に差し替えた形の名前。",
+      "hook_zh": "名称就是把 DevOps 中的 Dev 换成了 ML（Machine Learning）。",
+      "hook_en": "The name is DevOps with Dev swapped out for ML (Machine Learning).",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**MLOps** の運用は、モデルを本番に組み込んで終わりではない。利用されるデータの傾向が変わると精度が落ちるため、監視と再学習を繰り返す。",
+          "text_zh": "**MLOps** 的运维并不是把模型部署到生产环境就结束了。所处理数据的趋势一旦变化，精度就会下降，因此要反复进行监控和重新训练。",
+          "text_en": "Running a model under **MLOps** does not end once it is deployed to production. When the trends in the data it handles shift, accuracy falls, so monitoring and retraining are repeated."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "data",
+              "label": {
+                "jp": "学習用データを集める",
+                "zh": "收集训练用数据",
+                "en": "Collect training data"
+              }
+            },
+            {
+              "id": "train",
+              "label": {
+                "jp": "モデルを学習・評価する",
+                "zh": "训练和评估模型",
+                "en": "Train and evaluate the model"
+              }
+            },
+            {
+              "id": "deploy",
+              "label": {
+                "jp": "本番のシステムに組み込む",
+                "zh": "部署到生产系统中",
+                "en": "Deploy into the production system"
+              }
+            },
+            {
+              "id": "watch",
+              "label": {
+                "jp": "精度を監視し再学習する",
+                "zh": "监控精度并重新训练",
+                "en": "Monitor accuracy and retrain"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "モデルのもとになるデータを集め、整えて記録する。",
+            "caption_zh": "收集作为模型基础的数据，加以整理并记录。",
+            "caption_en": "Data that will form the basis of the model is gathered, cleaned up and recorded.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "データからモデルを作り、どれだけ正しく予測できるかを確かめる。",
+            "caption_zh": "用数据建立模型，确认它能预测得多准确。",
+            "caption_en": "A model is built from the data and checked for how accurately it predicts.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "評価を通ったモデルを、実際のサービスで使える形にして組み込む。",
+            "caption_zh": "把通过评估的模型做成可在实际服务中使用的形式并部署进去。",
+            "caption_en": "A model that passes evaluation is packaged for use in the real service and put into it.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "運用中に予測の精度が落ちてきたら、新しいデータで学習し直して入れ替える。",
+            "caption_zh": "运行期间如果预测精度下降，就用新数据重新训练并替换模型。",
+            "caption_en": "If prediction accuracy drops during operation, the model is retrained on new data and swapped in.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "MLOps は、DevOps の考え方を 機械学習 (Machine Learning) を使うシステムに応用し、モデル (データから学習して予測や判定を行う仕組み) の開発から運用・更新までを継続的に回す取組である。",
+      "definition_zh": "MLOps 是把 DevOps 的思路应用到使用机器学习（Machine Learning）的系统上，持续推动模型（从数据中学习并进行预测或判断的机制）从开发到运维、更新整个循环的做法。",
+      "definition_en": "MLOps applies the thinking of DevOps to systems that use machine learning, keeping a model (a mechanism that learns from data to make predictions or judgments) cycling continuously from development through operation and updates.",
+      "explanation_jp": "MLOps ではデータの準備・学習・評価・組込み・監視を一続きの流れとしてつなぎ、できるところは自動化する。データ分析の担当、開発の担当、運用の担当が協力して進める点も DevOps と共通している。",
+      "explanation_zh": "MLOps 把数据准备、训练、评估、部署和监控连成一条连贯的流程，能自动化的部分都实现自动化。由数据分析人员、开发人员和运维人员协作推进这一点，也与 DevOps 相同。",
+      "explanation_en": "MLOps links data preparation, training, evaluation, deployment and monitoring into one continuous flow and automates whatever it can. Like DevOps, it relies on data analysts, developers and operators working together.",
+      "memory_hook_jp": "DevOps の Dev を ML (Machine Learning) に差し替えた形の名前。",
+      "memory_hook_zh": "名称就是把 DevOps 中的 Dev 换成了 ML（Machine Learning）。",
+      "memory_hook_en": "The name is DevOps with Dev swapped out for ML (Machine Learning).",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "CI",
+      "b": "DevOps",
+      "rows": [
+        {
+          "label_jp": "範囲",
+          "label_zh": "范围",
+          "label_en": "Scope",
+          "a_jp": "開発の中での変更の統合とテスト",
+          "a_zh": "开发过程中变更的集成与测试",
+          "a_en": "Merging and testing changes within development",
+          "b_jp": "開発から本番反映・運用までの全体",
+          "b_zh": "从开发到上线部署、运维的全过程",
+          "b_en": "The whole span from development to release and operations",
+          "key": true
+        },
+        {
+          "label_jp": "主な担い手",
+          "label_zh": "主要承担者",
+          "label_en": "Main roles",
+          "a_jp": "開発者",
+          "a_zh": "开发者",
+          "a_en": "Developers",
+          "b_jp": "開発の担当と運用の担当",
+          "b_zh": "开发人员和运维人员",
+          "b_en": "Development and operations staff",
+          "key": false
+        },
+        {
+          "label_jp": "性格",
+          "label_zh": "性质",
+          "label_en": "Nature",
+          "a_jp": "具体的な開発の実践",
+          "a_zh": "具体的开发实践",
+          "a_en": "A concrete development practice",
+          "b_jp": "協力体制と仕組みづくりを含む考え方",
+          "b_zh": "包含协作体制和机制建设的理念",
+          "b_en": "A way of thinking that includes cooperation and process building",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "DevOps",
+      "b": "MLOps",
+      "rows": [
+        {
+          "label_jp": "対象",
+          "label_zh": "对象",
+          "label_en": "Target",
+          "a_jp": "ソフトウェア全般",
+          "a_zh": "软件整体",
+          "a_en": "Software in general",
+          "b_jp": "機械学習を使うシステム",
+          "b_zh": "使用机器学习的系统",
+          "b_en": "Systems that use machine learning",
+          "key": false
+        },
+        {
+          "label_jp": "管理するもの",
+          "label_zh": "管理的内容",
+          "label_en": "What is managed",
+          "a_jp": "主にプログラム (ソースコード)",
+          "a_zh": "主要是程序（源代码）",
+          "a_en": "Mainly programs (source code)",
+          "b_jp": "プログラムに加えて学習データとモデル",
+          "b_zh": "除程序外，还有训练数据和模型",
+          "b_en": "Programs plus training data and models",
+          "key": true
+        },
+        {
+          "label_jp": "運用中の更新のきっかけ",
+          "label_zh": "运维中触发更新的原因",
+          "label_en": "What triggers updates in operation",
+          "a_jp": "機能の追加や不具合の修正",
+          "a_zh": "新增功能或修复缺陷",
+          "a_en": "New features or bug fixes",
+          "b_jp": "それに加えてデータの変化による精度の低下",
+          "b_zh": "除此之外，还有数据变化导致的精度下降",
+          "b_en": "Those, plus accuracy loss from changing data",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**ふりかえり** (英語名 **レトロスペクティブ**) は、反復のたびにチームの進め方を見直し、次に試す改善を決める活動である。",
+    "**CI** (**継続的インテグレーション**) は、小さな変更を頻繁に統合し、そのたびにビルドとテストを自動で行う。",
+    "**DevOps** は、開発と運用が協力し、自動化で変更を素早く安定して届け続ける取組である。",
+    "**MLOps** は、DevOps の考え方を機械学習を使うシステムに応用したものである。"
+  ],
+  "key_points_zh": [
+    "**回顾**（[[jp:ふりかえり]]，英文名称 **Retrospective(回顾)**）是每次迭代后重新审视团队的工作方式、决定下次要尝试的改进的活动。",
+    "**CI**（**持续集成**，[[jp:継続的インテグレーション]]）频繁地集成小的变更，并在每次集成时自动执行构建和测试。",
+    "**DevOps** 是开发与运维相互协作，借助自动化快速而稳定地不断交付变更的做法。",
+    "**MLOps** 是把 DevOps 的思路应用到使用机器学习的系统上的做法。"
+  ],
+  "key_points_en": [
+    "A **retrospective** ([[jp:ふりかえり]]; English-derived name **Retrospective**, [[jp:レトロスペクティブ]]) is an activity where the team reviews how it works after each iteration and decides what improvement to try next.",
+    "**CI** (**Continuous Integration**, [[jp:継続的インテグレーション]]) merges small changes frequently and runs the build and tests automatically each time.",
+    "**DevOps** is an approach where development and operations cooperate and use automation to keep delivering changes quickly and reliably.",
+    "**MLOps** applies DevOps thinking to systems that use machine learning."
+  ],
+  "overview": {
+    "intro_jp": "ふりかえり で何を見直すのかを説明し、レトロスペクティブ との関係を言える。CI で変更が統合されてから結果が返るまでの流れを順に説明できる。DevOps と MLOps を、運用し続ける対象の違いで区別できる。",
+    "intro_zh": "能够说明回顾（ふりかえり）要重新审视什么，并说出它与 Retrospective(回顾)（レトロスペクティブ）的关系。能够按顺序说明在 CI 中，从变更被集成到结果反馈回来的流程。能够根据持续运维的对象不同，区分 DevOps 和 MLOps。",
+    "intro_en": "Explain what a retrospective (ふりかえり) looks back on, and state how it relates to the English-derived name Retrospective (レトロスペクティブ). Walk through, in order, how CI goes from merging a change to returning the result. Tell DevOps from MLOps by what each keeps running and maintaining.",
+    "freq_badge": "頻出",
+    "est_minutes": 34
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ふりかえり: ふりかえりといえば反復ごとに進め方を見直す改善活動",
-      "レトロスペクティブ: レトロスペクティブといえばふりかえりの英語呼称(スクラムの改善イベント)",
-      "CI: CIといえば変更を頻繁に統合して自動ビルド・テストする実践",
-      "継続的インテグレーション: 継続的インテグレーションといえばCIの正式名称(同じ実践)",
-      "DevOps: DevOpsといえば開発と運用が連携・自動化して迅速に届ける考え方",
-      "MLOps: MLOpsといえばDevOpsを機械学習に応用した実践"
-    ],
     "key_points_jp": [
-      "ふりかえり(レトロスペクティブ)は反復のたびにチームの進め方を見直す改善活動で、成果物ではなくプロセスの改善が目的。両者は同一概念。",
-      "CI(継続的インテグレーション)は変更を頻繁に統合し自動でビルド・テストする実践で、不具合の早期発見と手戻り削減が狙い。両者は同一概念。",
-      "DevOpsは開発と運用が連携・協力し自動化で迅速に価値を届ける文化・考え方で、このトピック最頻出の用語。特定ツールではない点に注意。",
-      "MLOpsはDevOpsを機械学習システムに応用した実践で、データやモデルの管理・継続的な再学習が加わるのが特徴。",
-      "ふりかえり→CIによる自動化→DevOps→MLOpsへと、継続的な改善と開発・運用の統合が発展していく流れを押さえる。"
+      "ふりかえり (英語名 レトロスペクティブ) は、反復のたびにチームの進め方を見直し、次に試す改善を決める活動である。",
+      "CI (継続的インテグレーション) は、小さな変更を頻繁に統合し、そのたびにビルドとテストを自動で行う。",
+      "DevOps は、開発と運用が協力し、自動化で変更を素早く安定して届け続ける取組である。",
+      "MLOps は、DevOps の考え方を機械学習を使うシステムに応用したものである。"
     ],
     "key_points_zh": [
-      "回顾(retrospective)是每次迭代审视团队工作方式的改进活动，目的是改进流程而非产出物。两者是同一概念。",
-      "CI(持续集成)是频繁集成变更并自动构建、测试的实践，目标是及早发现缺陷、减少返工。两者是同一概念。",
-      "DevOps 是开发与运维协同、协作、借助自动化迅速交付价值的文化与理念，是本主题最高频的术语。注意它不是特定工具。",
-      "MLOps 是把 DevOps 应用于机器学习系统的实践，特点是加入了对数据和模型的管理与持续再训练。",
-      "把握「回顾 → 通过 CI 实现自动化 → DevOps → MLOps」这条持续改进与开发、运维整合不断发展的脉络。"
+      "回顾（ふりかえり，英文名称 Retrospective(回顾)）是每次迭代后重新审视团队的工作方式、决定下次要尝试的改进的活动。",
+      "CI（持续集成，継続的インテグレーション）频繁地集成小的变更，并在每次集成时自动执行构建和测试。",
+      "DevOps 是开发与运维相互协作，借助自动化快速而稳定地不断交付变更的做法。",
+      "MLOps 是把 DevOps 的思路应用到使用机器学习的系统上的做法。"
     ],
     "key_points_en": [
-      "A retrospective (furikaeri) is an improvement activity that reviews the team's way of working every iteration, aiming to improve the process rather than the deliverables. The two terms are the same concept.",
-      "CI (Continuous Integration) is the practice of frequently integrating changes and automatically building and testing them, aiming to find defects early and reduce rework. The two terms are the same concept.",
-      "DevOps is a culture and mindset in which development and operations collaborate and use automation to deliver value quickly; it is the most frequent term in this topic. Note that it is not a specific tool.",
-      "MLOps is the practice of applying DevOps to machine learning systems, characterized by adding the management and continuous retraining of data and models.",
-      "Grasp the flow in which continuous improvement and the integration of development and operations evolve: retrospective → automation via CI → DevOps → MLOps."
+      "A retrospective (ふりかえり; English-derived name Retrospective, レトロスペクティブ) is an activity where the team reviews how it works after each iteration and decides what improvement to try next.",
+      "CI (Continuous Integration, 継続的インテグレーション) merges small changes frequently and runs the build and tests automatically each time.",
+      "DevOps is an approach where development and operations cooperate and use automation to keep delivering changes quickly and reliably.",
+      "MLOps applies DevOps thinking to systems that use machine learning."
+    ],
+    "memory_hooks_jp": [
+      "ふりかえり: 漢字では「振り返り」。来た道を振り向いて確かめ、向き直って次の一歩を決める動作を思い浮かべる。",
+      "レトロスペクティブ: retro は「後ろへ」、spective は「見る」。懐古趣味のレトロと同じ retro で、後ろを見る = 振り返る。",
+      "CI: C = Continuous (途切れずに続く)、I = Integration (1 つにまとめる)。",
+      "継続的インテグレーション: integrate は integer (欠けのない整数) と同じ語源で、ばらばらの部品を欠けのない 1 つにするという意味。",
+      "DevOps: Dev と Ops をつないだ造語で、名前そのものが 2 つの担当の合体を表している。",
+      "MLOps: DevOps の Dev を ML (Machine Learning) に差し替えた形の名前。"
     ],
     "memory_hooks_zh": [
-      "回顾：说到回顾，就是每次迭代审视工作方式的改进活动",
-      "Retrospective：说到 Retrospective，就是回顾的英文称呼(Scrum 的改进事件)",
-      "CI：说到 CI，就是频繁集成变更并自动构建、测试的实践",
-      "持续集成：说到持续集成，就是 CI 的正式名称(同一个实践)",
-      "DevOps：说到 DevOps，就是开发与运维协同、自动化、迅速交付的理念",
-      "MLOps：说到 MLOps，就是把 DevOps 应用到机器学习的实践"
+      "回顾：写成汉字是 振り返り，意思是“回头看”。可以想象回头确认走过的路，再转回身决定下一步的动作。",
+      "Retrospective(回顾)：retro 意为“向后”，spective 意为“看”。retro 就是“复古风”的那个 retro，向后看 = 回顾。",
+      "CI：C = Continuous（不间断地持续），I = Integration（合而为一）。",
+      "持续集成：integrate 与 integer（没有残缺的整数）同源，意思是把零散的部件拼成一个完整无缺的整体。",
+      "DevOps：这是把 Dev 和 Ops 连在一起的合成词，名称本身就表示两种职责的结合。",
+      "MLOps：名称就是把 DevOps 中的 Dev 换成了 ML（Machine Learning）。"
     ],
     "memory_hooks_en": [
-      "Retrospective: Retrospective → an improvement activity that reviews how you work after each iteration",
-      "Retrospective: Retrospective → the English name for furikaeri (Scrum's improvement event)",
-      "CI: CI → the practice of frequently integrating changes and auto-building and testing",
-      "Continuous Integration: Continuous Integration → the formal name of CI (the same practice)",
-      "DevOps: DevOps → the mindset where development and operations collaborate and automate to deliver fast",
-      "MLOps: MLOps → the practice of applying DevOps to machine learning"
+      "Retrospective (Furikaeri): In kanji it is written 振り返り, meaning to turn and look back. Picture turning around to check the road behind you, then facing forward again to choose your next step.",
+      "Retrospective: Retro means backward and spective means looking. It is the same retro as in retro fashion, so \"looking backward\" is exactly what 振り返り means.",
+      "CI: C stands for Continuous (going on without a break) and I for Integration (bringing things together into one).",
+      "Continuous Integration: Integrate shares its root with integer (a whole number with nothing missing), and means turning scattered parts into one complete whole.",
+      "DevOps: The word joins Dev and Ops, so the name itself shows the two roles merged into one.",
+      "MLOps: The name is DevOps with Dev swapped out for ML (Machine Learning)."
     ]
   },
   "challenge_questions": [
-    "2009h21a-q047",
-    "2009h21h-q038",
-    "2010h22a-q034",
-    "2010h22h-q029",
-    "2012h24a-q045"
+    "2022r04-q042",
+    "2023r05-q040",
+    "2024r06-q047",
+    "2026r08-q043"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "持续改进与开发、运维的自动化",
-  "title_en": "Continuous Improvement and Automation of Development and Operations",
-  "unit_summary_zh": "学习通过回顾进行的改进活动、通过 CI 实现集成自动化，以及整合开发与运维的 DevOps、MLOps 等进阶实践。",
-  "unit_summary_en": "Learn improvement activities through retrospectives, integration automation via CI, and advanced practices like DevOps and MLOps that unify development and operations."
+  }
 }

@@ -1,250 +1,1018 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "management-09-26-u03",
   "topic_id": "management-09-26",
   "category": "management",
   "title_jp": "アジャイル開発とXPのプラクティス",
+  "title_zh": "敏捷开发与 XP 的实践方法",
+  "title_en": "Agile Development and XP Practices",
   "unit_summary_jp": "アジャイル開発の考え方を概観し、ユーザーストーリーによる要求記述とXP(エクストリームプログラミング)の具体的プラクティス群を学ぶ。",
+  "unit_summary_zh": "概览敏捷开发的理念，学习用用户故事来描述需求，以及 XP（极限编程）的一系列具体实践方法。",
+  "unit_summary_en": "Get an overview of the agile development mindset, and learn how to describe requirements with user stories and the concrete practices of XP (Extreme Programming).",
   "order_in_topic": 3,
   "prerequisites": [
     "management-09-26-u02"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、変化に柔軟に対応する反復・適応型の開発思想「アジャイル開発」を概観し、要求を記述するユーザーストーリーと、代表的方法論であるXP(エクストリームプログラミング)の具体的プラクティス(テスト駆動開発・ペアプログラミング・リファクタリング)を学ぶ。古典的なウォーターフォール型の課題に応える現代的な開発の考え方として、ITパスポートでも頻出する重要分野である。",
-    "freq_badge": "頻出",
-    "est_minutes": 21,
-    "intro_zh": "在本单元中，我们将概览能够灵活应对变化的迭代、适应型开发思想「敏捷开发」，并学习用于描述需求的用户故事，以及代表性方法论 XP（极限编程）的具体实践方法（测试驱动开发、结对编程、重构）。作为回应经典瀑布型开发课题的现代开发理念，它在 IT 护照考试中也是频繁出现的重要领域。",
-    "intro_en": "In this unit, we get an overview of \"agile development\"—an iterative, adaptive development philosophy that responds flexibly to change—and learn about user stories for describing requirements, along with the concrete practices of the representative methodology XP (Extreme Programming): test-driven development, pair programming, and refactoring. As a modern development mindset that answers the challenges of the classic waterfall model, it is an important and frequently tested area on the IT Passport exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**アジャイル**が短い反復で動くものを積み上げ、途中の要望の変化を取り込む開発の考え方だと説明できる",
+    "**XP** を、**アジャイル**の考え方を具体的な習慣の集まりにした手法の一つとして位置付けられる",
+    "**テスト駆動開発**と**リファクタリング**を、何を先に作るか・外から見た動作を変えるかで区別できる"
+  ],
+  "goals_zh": [
+    "能够说明**敏捷**是一种以短周期反复、逐步积累可运行的成果，并吸收中途需求变化的开发理念。",
+    "能够把 **XP** 定位为将**敏捷**理念落实为一组具体习惯的方法之一。",
+    "能够根据先做什么、是否改变外部可见的行为，区分**测试驱动开发**和**重构**。"
+  ],
+  "goals_en": [
+    "Explain that **Agile** is a development approach that builds up working software in short cycles and takes in requests that change along the way.",
+    "Place **XP** as one method that turns the **Agile** approach into a concrete set of habits.",
+    "Tell **test-driven development** from **refactoring** by what gets written first and whether the behavior seen from outside changes."
+  ],
+  "overview_cols_jp": [
+    "位置付け",
+    "手がかり"
+  ],
+  "overview_cols_zh": [
+    "定位",
+    "线索"
+  ],
+  "overview_cols_en": [
+    "Role",
+    "Clue"
+  ],
+  "overview_rows": [
     {
       "term": "アジャイル",
-      "definition_jp": "短い反復で開発を繰り返し、変化に柔軟に対応する適応型の開発の考え方。",
-      "explanation_jp": "アジャイルは「俊敏な」という意味で、短い期間(イテレーション)ごとに設計・実装・テストを繰り返し、動くソフトウェアを少しずつ作り上げていく開発思想です。仕様変更を前提とし、利用者と協調しながら優先度の高い機能から作ります。\n\n試験では、工程を一度きりで順に進めるウォーターフォール型との対比が問われます。アジャイルは仕様変更に強く、早期から動くものを確認できる一方、全体計画を最初に固めにくい点が特徴です。XPやスクラムを包含する上位の考え方である点も押さえましょう。",
-      "analogy_jp": "完成図を一度に描くのではなく、毎週少しずつ料理を試食しながら味を調整していくイメージ。途中で「やっぱり辛めに」と言われてもすぐ対応できます。",
-      "memory_hook_jp": "アジャイルといえば短い反復で変化に柔軟に対応する開発思想",
-      "inline_quiz": [
-        "2023r05-q049"
+      "one_line_jp": "短い反復を重ね、変化に合わせて作り進める開発の考え方",
+      "one_line_zh": "通过反复的短周期、随变化推进开发的理念",
+      "one_line_en": "A development approach that repeats short cycles and adapts as things change",
+      "extra_jp": [
+        "考え方の総称",
+        "動くものを早く見せる"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"要求の整理\"] --> B[\"計画\"]; B --> C[\"設計と実装\"]; C --> D[\"テスト\"]; D --> E[\"動くソフトを確認\"]; E --> A",
-        "svg_path": "figures/management-09-26-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "敏捷",
-      "term_en": "Agile",
-      "definition_zh": "以短迭代反复进行开发、灵活应对变化的适应型开发理念。",
-      "definition_en": "An adaptive development mindset that repeats development in short iterations and responds flexibly to change.",
-      "explanation_zh": "敏捷意为「敏捷迅速」，是一种以短周期（迭代）反复进行设计、实现、测试，逐步打造出可运行软件的开发思想。它以需求会变更为前提，与用户协作，优先开发优先级高的功能。\n\n考试中常考它与「将各工序一次性顺序推进」的瀑布型开发的对比。敏捷善于应对需求变更、能从早期就确认到可运行的成果，但其特点是难以在最初就把整体计划定死。还要记住它是包含 XP 和 Scrum 的上位理念。",
-      "explanation_en": "\"Agile\" means \"nimble.\" It is a development mindset in which design, implementation, and testing are repeated in short periods (iterations) to gradually build up working software. It assumes specifications will change, works in collaboration with users, and builds high-priority features first.\n\nOn the exam, the contrast with the waterfall model—where each phase is carried out in sequence only once—is tested. Agile is strong against specification changes and lets you confirm a working product early, but its characteristic trait is that it is hard to lock down the overall plan at the very start. Also note that it is a higher-level concept that encompasses XP and Scrum.",
-      "analogy_zh": "不是一次性画出完成图，而是像每周一点点试吃料理、边尝边调整味道的感觉。即使中途有人说「还是辣一点吧」，也能马上应对。",
-      "analogy_en": "Rather than drawing the finished picture all at once, it's like tasting a dish a little each week and adjusting the flavor as you go. Even if someone says midway \"actually, make it spicier,\" you can respond right away.",
-      "memory_hook_zh": "说到敏捷，就是以短迭代灵活应对变化的开发思想",
-      "memory_hook_en": "Agile → a development mindset that responds flexibly to change through short iterations"
+      "extra_zh": [
+        "理念的总称",
+        "尽早展示可运行的成果"
+      ],
+      "extra_en": [
+        "Umbrella term for an approach",
+        "Show working results early"
+      ]
     },
     {
       "term": "ユーザーストーリー",
-      "definition_jp": "利用者の視点で必要な機能を簡潔に記述した、アジャイルの要求の単位。",
-      "explanation_jp": "ユーザーストーリーは、「誰が・何を・なぜ」したいのかを利用者の言葉で短く書いた要求の記述です。詳細な仕様書ではなく、会話のきっかけとなる簡潔なメモとして扱い、優先度を付けて開発の単位にします。\n\n試験では、アジャイルにおける要求記述の基本単位であり、利用者の価値を中心に据える点が問われます。膨大な仕様書を最初に固める従来型とは異なり、必要なときに詳細を詰めていく柔軟さが特徴です。",
-      "analogy_jp": "付箋に「お客さんとして、注文履歴を見たい。なぜなら再注文を楽にしたいから」と一言で書くようなもの。細かい仕様は後で会話して決めます。",
-      "memory_hook_jp": "ユーザーストーリーといえば利用者視点で機能を簡潔に書く要求の単位",
+      "one_line_jp": "利用者の立場で、望むことと理由を短く書いた要求",
+      "one_line_zh": "从用户立场简短写出想要什么及其理由的需求",
+      "one_line_en": "A short requirement written from the user's side, stating what they want and why",
+      "extra_jp": [
+        "要求の書き方",
+        "誰が・何を・なぜ"
+      ],
+      "extra_zh": [
+        "需求的写法",
+        "谁·做什么·为什么"
+      ],
+      "extra_en": [
+        "A way to write requirements",
+        "Who, what, why"
+      ]
+    },
+    {
+      "term": "XP",
+      "one_line_jp": "良い開発習慣を徹底するアジャイルの手法の一つ",
+      "one_line_zh": "彻底贯彻良好开发习惯的一种敏捷方法",
+      "one_line_en": "An Agile method that carries good development habits through without exception",
+      "extra_jp": [
+        "具体的な手法",
+        "習慣の束"
+      ],
+      "extra_zh": [
+        "具体的方法",
+        "一组习惯"
+      ],
+      "extra_en": [
+        "A concrete method",
+        "A bundle of habits"
+      ]
+    },
+    {
+      "term": "エクストリームプログラミング",
+      "one_line_jp": "XP の正式名",
+      "one_line_zh": "XP 的正式名称",
+      "one_line_en": "The full name of XP",
+      "extra_jp": [
+        "XP と同じもの",
+        "Extreme の X"
+      ],
+      "extra_zh": [
+        "与 XP 相同",
+        "Extreme 的 X"
+      ],
+      "extra_en": [
+        "Same thing as XP",
+        "The X in Extreme"
+      ]
+    },
+    {
+      "term": "テスト駆動開発",
+      "one_line_jp": "テストを先に書き、それを通すコードを後から書く進め方",
+      "one_line_zh": "先写测试，再写让测试通过的代码的开发方式",
+      "one_line_en": "Writing the test first and then the code that passes it",
+      "extra_jp": [
+        "XP の習慣",
+        "テストが先"
+      ],
+      "extra_zh": [
+        "XP 的习惯",
+        "测试在先"
+      ],
+      "extra_en": [
+        "An XP habit",
+        "Test comes first"
+      ]
+    },
+    {
+      "term": "ペアプログラミング",
+      "one_line_jp": "2 人で 1 台に向かい、書きながら確かめ合う作り方",
+      "one_line_zh": "两人共用一台电脑，边写边相互确认的编程方式",
+      "one_line_en": "Two people at one computer, checking each other's work as they write",
+      "extra_jp": [
+        "XP の習慣",
+        "書く人と見る人"
+      ],
+      "extra_zh": [
+        "XP 的习惯",
+        "写的人与看的人"
+      ],
+      "extra_en": [
+        "An XP habit",
+        "One types, one reviews"
+      ]
+    },
+    {
+      "term": "リファクタリング",
+      "one_line_jp": "外から見た動作はそのままに、内部の作りを整える作業",
+      "one_line_zh": "保持外部可见的行为不变，整理内部结构的工作",
+      "one_line_en": "Tidying the internal structure while keeping the outward behavior the same",
+      "extra_jp": [
+        "XP の習慣",
+        "動作は変えない"
+      ],
+      "extra_zh": [
+        "XP 的习惯",
+        "不改变行为"
+      ],
+      "extra_en": [
+        "An XP habit",
+        "Behavior stays the same"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "アジャイル",
+      "term_zh": "敏捷",
+      "term_en": "Agile",
+      "one_jp": "**アジャイル**は、短い区切りで計画から確認までを何度も回し、動くソフトウェアを少しずつ増やしていく開発の考え方である。",
+      "one_zh": "**敏捷**（[[jp:アジャイル]]）是一种开发理念：以较短的周期反复进行从计划到确认的过程，一点点增加可运行的软件。",
+      "one_en": "**Agile** ([[jp:アジャイル]]) is a development approach that goes from planning to review again and again in short cycles, growing working software a little at a time.",
+      "detail_jp": "この短い区切りを**イテレーション**と呼び、毎回その時点で優先度の高い機能から作る。最初にすべての仕様を固めるのではなく、利用者と話しながら作る範囲を見直していく。文書を細かく整えることより、実際に動くものを早く見せて意見をもらうことを重く見る。",
+      "detail_zh": "这个短周期称为**迭代**（[[jp:イテレーション]]），每次都从当时优先级高的功能做起。不是一开始就定死全部规格，而是边与用户沟通边调整要做的范围。比起把文档整理得细致周全，更看重尽早展示能运行的东西并获取意见。",
+      "detail_en": "Each short cycle is called an **iteration** ([[jp:イテレーション]]), and every one starts with the features that rank highest at the time. Instead of fixing every specification up front, the team keeps revising the scope while talking with users. Showing something that runs early and getting feedback counts for more than polishing documents in detail.",
+      "analogy_jp": "旅行の行程を出発前に分刻みで決めるのではなく、1 日ごとに天気や体調を見て翌日の予定を組み直す旅に近い。",
+      "analogy_zh": "就像旅行时不在出发前把行程精确到分钟，而是每天看天气和身体状况，重新安排第二天的计划。",
+      "analogy_en": "It is like a trip where you don't plan every minute before leaving, but rework the next day's plan each evening based on the weather and how you feel.",
+      "hook_jp": "英語の agile は「身軽な・すばやい」。重い計画書を背負わず、向きを変えやすい身のこなしを思い浮かべる。",
+      "hook_zh": "英语 agile 意为“灵活、敏捷”。想象不背沉重的计划书、能随时转向的轻快身手。",
+      "hook_en": "The English word agile means nimble and quick. Picture someone traveling light, with no heavy plan on their back, able to change direction easily.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**アジャイル**の利点は、途中で仕様や要望が変わっても次の反復の計画に組み込める点にある。工程を一度ずつ順に進める**ウォーターフォール型**より変化に強い。",
+          "text_zh": "**敏捷**（[[jp:アジャイル]]）的优点是，即使中途规格或需求发生变化，也能纳入下一次迭代的计划。比按顺序逐一完成各工序的**瀑布模型**（[[jp:ウォーターフォール型]]）更能应对变化。",
+          "text_en": "The strength of **Agile** ([[jp:アジャイル]]) is that changes to specifications or requests midway can go into the plan for the next iteration. It copes with change better than the **waterfall model** ([[jp:ウォーターフォール型]]), which moves through each phase once, in order.",
+          "qids": [
+            "2019h31h-q047"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**アジャイル**は詳しい文書を作り込むより動くソフトウェアを優先し、顧客の新しい要望を早めに製品へ反映する。",
+          "text_zh": "**敏捷**重视可运行的软件胜过详细的文档，并把客户的新需求尽早反映到产品中。",
+          "text_en": "**Agile** puts working software ahead of detailed documentation and brings new customer requests into the product early.",
+          "qids": [
+            "2019r01a-q049"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "pick",
+              "label": {
+                "jp": "優先度の高い要望を選ぶ",
+                "zh": "选出优先级高的需求",
+                "en": "Pick the highest-priority requests"
+              }
+            },
+            {
+              "id": "build",
+              "label": {
+                "jp": "短い期間で作って試す",
+                "zh": "在短期内做出并试用",
+                "en": "Build and test within a short period"
+              }
+            },
+            {
+              "id": "show",
+              "label": {
+                "jp": "動く形で利用者に見せる",
+                "zh": "以可运行的形式展示给用户",
+                "en": "Show users something that runs"
+              }
+            },
+            {
+              "id": "next",
+              "label": {
+                "jp": "意見を次の回の計画へ",
+                "zh": "把意见带入下一轮计划",
+                "en": "Feed feedback into the next plan"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "その時点で価値の大きい要望から取りかかる。",
+            "caption_zh": "先着手当前价值最大的需求。",
+            "caption_en": "Start with the requests worth the most at that point.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "設計・実装・テストを短い期間の中で済ませる。",
+            "caption_zh": "在短期内完成设计、实现和测试。",
+            "caption_en": "Finish design, coding and testing within the short period.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "できた部分を実際に動かして見てもらう。",
+            "caption_zh": "让用户实际运行完成的部分并查看。",
+            "caption_en": "Let users see the finished part actually running.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "出た意見や変わった要望を次の回に入れ、また最初に戻る。",
+            "caption_zh": "把收到的意见和变化的需求放进下一轮，再回到起点。",
+            "caption_en": "Put the feedback and changed requests into the next round, then start over.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "アジャイルは、短い区切りで計画から確認までを何度も回し、動くソフトウェアを少しずつ増やしていく開発の考え方である。",
+      "definition_zh": "敏捷（アジャイル）是一种开发理念：以较短的周期反复进行从计划到确认的过程，一点点增加可运行的软件。",
+      "definition_en": "Agile (アジャイル) is a development approach that goes from planning to review again and again in short cycles, growing working software a little at a time.",
+      "explanation_jp": "この短い区切りをイテレーションと呼び、毎回その時点で優先度の高い機能から作る。最初にすべての仕様を固めるのではなく、利用者と話しながら作る範囲を見直していく。文書を細かく整えることより、実際に動くものを早く見せて意見をもらうことを重く見る。",
+      "explanation_zh": "这个短周期称为迭代（イテレーション），每次都从当时优先级高的功能做起。不是一开始就定死全部规格，而是边与用户沟通边调整要做的范围。比起把文档整理得细致周全，更看重尽早展示能运行的东西并获取意见。",
+      "explanation_en": "Each short cycle is called an iteration (イテレーション), and every one starts with the features that rank highest at the time. Instead of fixing every specification up front, the team keeps revising the scope while talking with users. Showing something that runs early and getting feedback counts for more than polishing documents in detail.",
+      "memory_hook_jp": "英語の agile は「身軽な・すばやい」。重い計画書を背負わず、向きを変えやすい身のこなしを思い浮かべる。",
+      "memory_hook_zh": "英语 agile 意为“灵活、敏捷”。想象不背沉重的计划书、能随时转向的轻快身手。",
+      "memory_hook_en": "The English word agile means nimble and quick. Picture someone traveling light, with no heavy plan on their back, able to change direction easily.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ユーザーストーリー",
+      "term_zh": "用户故事",
+      "term_en": "User Story",
+      "one_jp": "**ユーザーストーリー**は、使う人の立場から「誰として・何をしたいか・それはなぜか」を短い文で書いた、**アジャイル**の要求の書き方である。",
+      "one_zh": "**用户故事**（[[jp:ユーザーストーリー]]）是**敏捷**中描述需求的一种方式，从使用者的立场用简短的句子写出“作为谁、想做什么、为什么”。",
+      "one_en": "A **user story** ([[jp:ユーザーストーリー]]) is how **Agile** writes down requirements: a short sentence, from the user's point of view, saying who they are, what they want to do and why.",
+      "detail_jp": "1 つのストーリーはカード 1 枚に収まる程度の短さで書き、細かな条件は作る直前に利用者と話して決める。理由まで書くことで、作り手はその機能が誰のどんな困りごとを解くのかを見失いにくい。ストーリーには優先度を付け、反復ごとに上から順に作る。",
+      "detail_zh": "一个故事要短到能写在一张卡片上，细节条件在动手制作前再与用户商量决定。连理由也写下来，制作方就不容易忽略这个功能要为谁解决什么困扰。故事会标上优先级，每次迭代按从高到低的顺序制作。",
+      "detail_en": "Each story is short enough to fit on a single card, and the finer conditions are settled with users just before it is built. Writing down the reason keeps the builders from losing sight of whose problem the feature solves. Stories are ranked by priority and built from the top in each iteration.",
+      "analogy_jp": "料理店で客が「辛いものが苦手なので、子どもでも食べられる料理がほしい」と頼むようなもの。レシピの細部は厨房と客が話して詰める。",
+      "analogy_zh": "就像餐馆里客人点餐时说“我不太能吃辣，想要孩子也能吃的菜”。菜谱的细节由后厨和客人商量着定。",
+      "analogy_en": "It is like a diner telling a restaurant, \"I can't handle spicy food, so I'd like something my child can eat too.\" The kitchen and the diner work out the recipe details together.",
+      "hook_jp": "story = 物語。物語の主人公はいつも利用者で、作り手やシステムは主語にならない。",
+      "hook_zh": "story 就是“故事”。故事的主角永远是用户，制作方或系统不会成为主语。",
+      "hook_en": "Story as in a tale: the hero is always the user, and the builders or the system never take the subject's place.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ユーザーストーリー**は利用者の言葉で目的を伝える短い要求で、画面や処理の細部まで決め切る詳細な仕様書とは役割が違う。",
+          "text_zh": "**用户故事**（[[jp:ユーザーストーリー]]）是用用户自己的话传达目的的简短需求，与把界面和处理细节都定死的详细规格书作用不同。",
+          "text_en": "A **user story** ([[jp:ユーザーストーリー]]) is a short requirement that states a goal in the user's own words. It plays a different role from a detailed specification that pins down every screen and process."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "要素",
+              "zh": "要素",
+              "en": "Element"
+            },
+            {
+              "jp": "書く例",
+              "zh": "写法示例",
+              "en": "Example"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "誰として",
+                  "zh": "作为谁",
+                  "en": "As whom"
+                },
+                {
+                  "jp": "図書館の利用者として",
+                  "zh": "作为图书馆的读者",
+                  "en": "As a library user"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "何をしたいか",
+                  "zh": "想做什么",
+                  "en": "What I want"
+                },
+                {
+                  "jp": "借りた本の返却日をスマホで確かめたい",
+                  "zh": "想用手机查看所借图书的归还日期",
+                  "en": "To check my books' due dates on my phone"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "それはなぜか",
+                  "zh": "为什么",
+                  "en": "Why"
+                },
+                {
+                  "jp": "返し忘れを防ぎたいから",
+                  "zh": "因为想避免忘记还书",
+                  "en": "So that I don't forget to return them"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2019h31h-q047"
+      ],
+      "definition_jp": "ユーザーストーリーは、使う人の立場から「誰として・何をしたいか・それはなぜか」を短い文で書いた、アジャイルの要求の書き方である。",
+      "definition_zh": "用户故事（ユーザーストーリー）是敏捷中描述需求的一种方式，从使用者的立场用简短的句子写出“作为谁、想做什么、为什么”。",
+      "definition_en": "A user story (ユーザーストーリー) is how Agile writes down requirements: a short sentence, from the user's point of view, saying who they are, what they want to do and why.",
+      "explanation_jp": "1 つのストーリーはカード 1 枚に収まる程度の短さで書き、細かな条件は作る直前に利用者と話して決める。理由まで書くことで、作り手はその機能が誰のどんな困りごとを解くのかを見失いにくい。ストーリーには優先度を付け、反復ごとに上から順に作る。",
+      "explanation_zh": "一个故事要短到能写在一张卡片上，细节条件在动手制作前再与用户商量决定。连理由也写下来，制作方就不容易忽略这个功能要为谁解决什么困扰。故事会标上优先级，每次迭代按从高到低的顺序制作。",
+      "explanation_en": "Each story is short enough to fit on a single card, and the finer conditions are settled with users just before it is built. Writing down the reason keeps the builders from losing sight of whose problem the feature solves. Stories are ranked by priority and built from the top in each iteration.",
+      "memory_hook_jp": "story = 物語。物語の主人公はいつも利用者で、作り手やシステムは主語にならない。",
+      "memory_hook_zh": "story 就是“故事”。故事的主角永远是用户，制作方或系统不会成为主语。",
+      "memory_hook_en": "Story as in a tale: the hero is always the user, and the builders or the system never take the subject's place.",
       "inline_quiz": [
         "2019h31h-q047"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "用户故事",
-      "term_en": "User Story",
-      "definition_zh": "以用户视角简洁描述所需功能的、敏捷中的需求单位。",
-      "definition_en": "A unit of requirement in agile that concisely describes a needed feature from the user's perspective.",
-      "explanation_zh": "用户故事是用用户自己的话，简短地写出「谁、想要什么、为什么」的需求描述。它不是详细的规格书，而是作为引出对话的简洁便条来使用，再为其排定优先级、作为开发的单位。\n\n考试中常考它是敏捷中需求描述的基本单位，以及它把用户价值放在中心这一点。与最初就要把庞大规格书定死的传统方式不同，它的特点是可以在需要时再细化细节这种灵活性。",
-      "explanation_en": "A user story is a requirement description written in the user's own words, briefly stating \"who, wants what, and why.\" It is treated not as a detailed specification document but as a concise note that sparks conversation; it is then prioritized and used as a unit of development.\n\nThe exam tests that it is the basic unit of requirement description in agile and that it centers on user value. Unlike traditional methods that lock down a huge specification at the start, its characteristic strength is the flexibility to fill in details when they are needed.",
-      "analogy_zh": "就像在便利贴上一句话写下「作为顾客，我想查看订单历史，因为这样可以方便地再次下单」。细节规格之后再通过对话来确定。",
-      "analogy_en": "It's like writing one line on a sticky note: \"As a customer, I want to view my order history, because I want to reorder easily.\" The fine specifications are decided later through conversation.",
-      "memory_hook_zh": "说到用户故事，就是以用户视角简洁书写功能的需求单位",
-      "memory_hook_en": "User Story → a unit of requirement that concisely describes a feature from the user's perspective"
+      "figure": null
     },
     {
       "term": "XP",
-      "definition_jp": "少人数で反復しながら高品質を目指すアジャイルの代表的方法論の略称。",
-      "explanation_jp": "XPはエクストリームプログラミング(Extreme Programming)の略で、アジャイル開発を代表する方法論の一つです。少人数のチームで短い反復を行い、テスト駆動開発・ペアプログラミング・リファクタリングなどのプラクティスを徹底して、変化に強く高品質なソフトウェアを作ります。\n\n試験では、XPがアジャイルの具体的な実践方法であり、複数のプラクティスを束ねる枠組みである点が問われます。価値(初版で定義されたコミュニケーション・シンプルさ・フィードバック・勇気の4つ。後に「尊重」を加えて5つとされた)を重視する点も特徴です。",
-      "analogy_jp": "「良いと分かっている習慣を極端なまでに徹底する」流派。テストもレビューも『毎回・常に』やるという、基本を極限まで突き詰めた進め方です。",
-      "memory_hook_jp": "XPといえばエクストリームプログラミングの略でプラクティスを束ねるアジャイル方法論",
+      "term_zh": "XP",
+      "term_en": "XP",
+      "one_jp": "**XP** は、**アジャイル**の考え方を、日々の開発で守る具体的な習慣 (**プラクティス**) の集まりとして示した開発手法の一つである。",
+      "one_zh": "**XP** 是一种开发方法，它把**敏捷**理念整理成日常开发中要遵守的一组具体习惯（**实践**，[[jp:プラクティス]]）。",
+      "one_en": "**XP** is a development method that sets out the **Agile** approach as a set of concrete habits (**practices**, [[jp:プラクティス]]) to follow in day-to-day work.",
+      "detail_jp": "小さめのチームが短い周期でリリースを重ね、変化する要求に追い付きながらソフトウェアの品質を保つことをめざす。プラクティスには例えば**テスト駆動開発**や**ペアプログラミング**があり、どれも良いと分かっている習慣を毎回欠かさず行うものである。",
+      "detail_zh": "它面向规模较小的团队，以短周期反复发布，在跟上不断变化的需求的同时保持软件质量。实践包括**测试驱动开发**和**结对编程**等，都是把公认有益的习惯每次都不落下地执行。",
+      "detail_en": "It is aimed at fairly small teams that release in short cycles, keeping software quality high while keeping up with changing requirements. Its practices include **test-driven development** and **pair programming**, and each one means doing a habit known to work every time, without skipping it.",
+      "analogy_jp": "スポーツのチームが、準備運動・声かけ・試合後の振り返りといった基本を毎回欠かさず続けて強くなるやり方に似ている。",
+      "analogy_zh": "就像运动队每次都坚持热身、互相喊话、赛后复盘这些基本功，从而变强。",
+      "analogy_en": "It is like a sports team that gets stronger by never skipping the basics: warming up, calling to each other on the field and reviewing each game afterward.",
+      "hook_jp": "2 文字の略称は、Extreme の X と Programming の P を取ったもの。",
+      "hook_zh": "这个两字母缩写取自 Extreme 的 X 和 Programming 的 P。",
+      "hook_en": "The two-letter name takes the X from Extreme and the P from Programming.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**XP** は**アジャイル**の開発手法の一つで、短い周期で何度もリリースし、変わっていく要求に追い付きながら品質の高いソフトウェアをめざす。",
+          "text_zh": "**XP** 是**敏捷**（[[jp:アジャイル]]）的开发方法之一，通过短周期多次发布，在跟上不断变化的需求的同时追求高质量的软件。",
+          "text_en": "**XP** is one of the **Agile** ([[jp:アジャイル]]) development methods. It releases many times in short cycles and aims for high-quality software while keeping up with changing requirements.",
+          "qids": [
+            "2022r04-q038"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**アジャイル**は開発の考え方を広く指す呼び名で、**XP** はその考え方を実践する具体的な手法の一つである。",
+          "text_zh": "**敏捷**是泛指一种开发理念的名称，**XP** 则是实践这种理念的具体方法之一。",
+          "text_en": "**Agile** is the broad name for a development approach, while **XP** is one concrete method that puts it into practice."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "xp",
+            "label": {
+              "jp": "XP のプラクティス (例)",
+              "zh": "XP 的实践（示例）",
+              "en": "XP practices (examples)"
+            },
+            "children": [
+              {
+                "id": "test",
+                "label": {
+                  "jp": "テストを先に書く",
+                  "zh": "先写测试",
+                  "en": "Write tests first"
+                }
+              },
+              {
+                "id": "pair",
+                "label": {
+                  "jp": "2 人 1 組で書く",
+                  "zh": "两人一组编写",
+                  "en": "Write code in pairs"
+                }
+              },
+              {
+                "id": "refac",
+                "label": {
+                  "jp": "動作を変えずに作りを整える",
+                  "zh": "不改变行为地整理结构",
+                  "en": "Tidy structure without changing behavior"
+                }
+              },
+              {
+                "id": "ci",
+                "label": {
+                  "jp": "変更をこまめに統合する",
+                  "zh": "频繁集成变更",
+                  "en": "Integrate changes often"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2022r04-q038",
+        "2019r01a-q049"
+      ],
+      "definition_jp": "XP は、アジャイルの考え方を、日々の開発で守る具体的な習慣 (プラクティス) の集まりとして示した開発手法の一つである。",
+      "definition_zh": "XP 是一种开发方法，它把敏捷理念整理成日常开发中要遵守的一组具体习惯（实践，プラクティス）。",
+      "definition_en": "XP is a development method that sets out the Agile approach as a set of concrete habits (practices, プラクティス) to follow in day-to-day work.",
+      "explanation_jp": "小さめのチームが短い周期でリリースを重ね、変化する要求に追い付きながらソフトウェアの品質を保つことをめざす。プラクティスには例えばテスト駆動開発やペアプログラミングがあり、どれも良いと分かっている習慣を毎回欠かさず行うものである。",
+      "explanation_zh": "它面向规模较小的团队，以短周期反复发布，在跟上不断变化的需求的同时保持软件质量。实践包括测试驱动开发和结对编程等，都是把公认有益的习惯每次都不落下地执行。",
+      "explanation_en": "It is aimed at fairly small teams that release in short cycles, keeping software quality high while keeping up with changing requirements. Its practices include test-driven development and pair programming, and each one means doing a habit known to work every time, without skipping it.",
+      "memory_hook_jp": "2 文字の略称は、Extreme の X と Programming の P を取ったもの。",
+      "memory_hook_zh": "这个两字母缩写取自 Extreme 的 X 和 Programming 的 P。",
+      "memory_hook_en": "The two-letter name takes the X from Extreme and the P from Programming.",
       "inline_quiz": [
+        "2022r04-q038",
         "2019r01a-q049"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "XP",
-      "term_en": "XP",
-      "definition_zh": "以小团队反复迭代、追求高质量的敏捷代表性方法论的简称。",
-      "definition_en": "The abbreviation for a representative agile methodology that aims for high quality through small-team iterations.",
-      "explanation_zh": "XP 是极限编程（Extreme Programming）的简称，是敏捷开发的代表性方法论之一。它以小团队进行短迭代，彻底执行测试驱动开发、结对编程、重构等实践方法，打造出抗变化能力强、质量高的软件。\n\n考试中常考 XP 是敏捷的具体实践方法，以及它是把多种实践捆绑在一起的框架。它重视「价值」也是其特点（初版定义了沟通、简单、反馈、勇气这 4 项，后来加入「尊重」成为 5 项）。",
-      "explanation_en": "XP is the abbreviation for Extreme Programming, one of the representative methodologies of agile development. It carries out short iterations with a small team and thoroughly applies practices such as test-driven development, pair programming, and refactoring to build software that is resistant to change and high in quality.\n\nThe exam tests that XP is a concrete way to practice agile and is a framework that bundles multiple practices together. Emphasizing \"values\" is also a characteristic (the first edition defined four—communication, simplicity, feedback, and courage—and \"respect\" was later added to make five).",
-      "analogy_zh": "一种「把已知有益的习惯极端地贯彻到底」的流派。测试和评审都要「每次、总是」做，是把基本功钻研到极致的推进方式。",
-      "analogy_en": "A school of thought that \"takes habits known to be good to an extreme.\" You do both testing and review \"every time, always\"—a way of working that pushes the fundamentals to the limit.",
-      "memory_hook_zh": "说到 XP，就是极限编程的简称、捆绑各种实践的敏捷方法论",
-      "memory_hook_en": "XP → short for Extreme Programming, an agile methodology that bundles practices together"
+      "figure": null
     },
     {
       "term": "エクストリームプログラミング",
-      "definition_jp": "XPの正式名称。プラクティスを徹底するアジャイルの代表的方法論。",
-      "explanation_jp": "エクストリームプログラミング(Extreme Programming)は略称XPの正式名称で、同一の概念を指します。よいとされる開発習慣を「極端(extreme)」なまでに徹底することからこの名が付きました。\n\n試験では、XPとエクストリームプログラミングが同じものを指す点、そしてテスト駆動開発・ペアプログラミング・リファクタリングといったプラクティスの総称である点が問われます。略称と正式名称を結び付けて覚えておきましょう。",
-      "analogy_jp": "「XP」というニックネームの正式なフルネームが「エクストリームプログラミング」。同じ方法論の呼び方違いで、別物ではありません。",
-      "memory_hook_jp": "エクストリームプログラミングといえばXPの正式名称(同じ方法論)",
+      "term_zh": "极限编程",
+      "term_en": "Extreme Programming",
+      "one_jp": "**エクストリームプログラミング**は **XP** の正式名で、両者は同じ開発手法を指す。",
+      "one_zh": "**极限编程**（[[jp:エクストリームプログラミング]]）是 **XP** 的正式名称，两者指同一种开发方法。",
+      "one_en": "**Extreme Programming** ([[jp:エクストリームプログラミング]]) is the full name of **XP**, and both refer to the same development method.",
+      "detail_jp": "英語では Extreme Programming と書き、良いと分かっている開発習慣を極端なまでに徹底するという意味がこめられている。中身は略称の XP と全く同じなので、どちらの呼び方で出てきても同じ手法として読む。",
+      "detail_zh": "英语写作 Extreme Programming，含有把公认良好的开发习惯贯彻到极致的意思。内容与缩写 XP 完全相同，无论以哪种叫法出现，都当作同一种方法来理解。",
+      "detail_en": "The English name Extreme Programming carries the idea of pushing good development habits to the extreme. Its content is exactly the same as XP, so read either name as the same method.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "extreme は「極端な」。基本の習慣を手加減せずやり切る姿勢が名前になっている。",
+      "hook_zh": "extreme 意为“极端的”。名字体现的是毫不打折地把基本习惯做到底的态度。",
+      "hook_en": "Extreme means going to the limit. The name reflects an attitude of carrying the basic habits all the way, with no shortcuts.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**エクストリームプログラミング**と **XP** は正式名と略称の関係で、同じアジャイルの開発手法を表す。",
+          "text_zh": "**极限编程**（[[jp:エクストリームプログラミング]]）与 **XP** 是正式名称与缩写的关系，表示同一种敏捷（[[jp:アジャイル]]）开发方法。",
+          "text_en": "**Extreme Programming** ([[jp:エクストリームプログラミング]]) and **XP** are the full name and the abbreviation, and they stand for the same Agile ([[jp:アジャイル]]) development method.",
+          "qids": [
+            "2022r04-q038"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2022r04-q038"
+      ],
+      "definition_jp": "エクストリームプログラミングは XP の正式名で、両者は同じ開発手法を指す。",
+      "definition_zh": "极限编程（エクストリームプログラミング）是 XP 的正式名称，两者指同一种开发方法。",
+      "definition_en": "Extreme Programming (エクストリームプログラミング) is the full name of XP, and both refer to the same development method.",
+      "explanation_jp": "英語では Extreme Programming と書き、良いと分かっている開発習慣を極端なまでに徹底するという意味がこめられている。中身は略称の XP と全く同じなので、どちらの呼び方で出てきても同じ手法として読む。",
+      "explanation_zh": "英语写作 Extreme Programming，含有把公认良好的开发习惯贯彻到极致的意思。内容与缩写 XP 完全相同，无论以哪种叫法出现，都当作同一种方法来理解。",
+      "explanation_en": "The English name Extreme Programming carries the idea of pushing good development habits to the extreme. Its content is exactly the same as XP, so read either name as the same method.",
+      "memory_hook_jp": "extreme は「極端な」。基本の習慣を手加減せずやり切る姿勢が名前になっている。",
+      "memory_hook_zh": "extreme 意为“极端的”。名字体现的是毫不打折地把基本习惯做到底的态度。",
+      "memory_hook_en": "Extreme means going to the limit. The name reflects an attitude of carrying the basic habits all the way, with no shortcuts.",
       "inline_quiz": [
         "2022r04-q038"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "极限编程",
-      "term_en": "Extreme Programming",
-      "definition_zh": "XP 的全称。彻底贯彻各种实践方法的敏捷代表性方法论。",
-      "definition_en": "The full name of XP. A representative agile methodology that thoroughly applies its practices.",
-      "explanation_zh": "极限编程（Extreme Programming）是简称 XP 的全称，指的是同一个概念。因为它把被认为有益的开发习惯「极端地（extreme）」贯彻到底，故得此名。\n\n考试中常考 XP 与极限编程指的是同一事物，以及它是测试驱动开发、结对编程、重构等实践方法的总称。请把简称和全称对应起来记忆。",
-      "explanation_en": "Extreme Programming is the full name of the abbreviation XP and refers to the same concept. It got this name because it takes development habits considered good to an \"extreme.\"\n\nThe exam tests that XP and Extreme Programming refer to the same thing, and that it is a collective name for practices such as test-driven development, pair programming, and refactoring. Remember the abbreviation and full name as a pair.",
-      "analogy_zh": "「XP」这个昵称的正式全名就是「极限编程」。只是同一个方法论的不同叫法，并非两样东西。",
-      "analogy_en": "The official full name of the nickname \"XP\" is \"Extreme Programming.\" They are just different ways of calling the same methodology, not two different things.",
-      "memory_hook_zh": "说到极限编程，就是 XP 的全称（同一个方法论）",
-      "memory_hook_en": "Extreme Programming → the full name of XP (the same methodology)"
+      "figure": null
     },
     {
       "term": "テスト駆動開発",
-      "definition_jp": "実装前にテストを先に書き、それを満たすコードを作る開発手法。",
-      "explanation_jp": "テスト駆動開発(TDD)は、機能を実装する前に、まずその機能が満たすべきテストを先に書く手法です。最初は失敗するテストを書き、それを通す最小限のコードを書き、最後にコードを整理(リファクタリング)する流れを繰り返します。\n\n試験では、「テストを先に書く」という順序が最大のポイントです。後からテストする従来の進め方と逆で、仕様を明確にし、品質を作り込みながら開発できる点が問われます。XPの代表的プラクティスの一つです。",
-      "analogy_jp": "問題集の答え合わせの基準を先に決めてから問題を解くようなもの。「こうなれば正解」を先に用意し、それを満たすように作っていきます。",
-      "memory_hook_jp": "テスト駆動開発といえばテストを先に書いてから実装する手法",
+      "term_zh": "测试驱动开发",
+      "term_en": "Test-Driven Development",
+      "one_jp": "**テスト駆動開発**は、作る機能のテストを先に書き、そのテストに合格するコードを後から書く開発の進め方である。",
+      "one_zh": "**测试驱动开发**（[[jp:テスト駆動開発]]）是一种开发方式：先写要做的功能的测试，再写能通过该测试的代码。",
+      "one_en": "**Test-driven development** ([[jp:テスト駆動開発]]) is a way of working in which you first write the test for a feature, then write the code that passes it.",
+      "detail_jp": "先に書いたテストが「何ができれば完成か」を示すので、作る前に仕様がはっきりする。テストを書く、通す、整えるという小さな周期を何度も回し、そのたびにテストで動作を確かめる。英語の略称は TDD で、**XP** の代表的なプラクティスである。",
+      "detail_zh": "先写好的测试表明了“做到什么才算完成”，因此在动手之前规格就已清晰。写测试、让它通过、整理代码，这个小循环反复进行，每次都用测试确认行为。英文缩写为 TDD，是 **XP** 的代表性实践。",
+      "detail_en": "The test written first states what counts as done, so the specification is clear before any code exists. The small loop of writing a test, passing it and tidying up repeats many times, with the tests checking the behavior each round. Its abbreviation is TDD, and it is one of the signature practices of **XP**.",
+      "analogy_jp": "家具を組み立てる前に「この棚に本を 30 冊載せても傾かないこと」と合格の基準を決めてから作り始めるようなもの。",
+      "analogy_zh": "就像组装家具之前，先定下“这个书架放 30 本书也不会歪”这一合格标准，再开始动手。",
+      "analogy_en": "It is like deciding, before putting a shelf together, that it must hold 30 books without tilting, and only then starting to build.",
+      "hook_jp": "駆動は「動かす力」。テストが先頭に立って開発を引っ張る、と字面から読める。",
+      "hook_zh": "“驱动”就是“推动的力量”。从字面就能读出：由测试打头阵，带动整个开发。",
+      "hook_en": "\"Driven\" means pushed forward by something. Here the test leads the way and pulls the development along.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**テスト駆動開発**ではテストを書くのが最初の作業で、作り終えた後にまとめてテストする進め方とは順序が逆になる。",
+          "text_zh": "在**测试驱动开发**（[[jp:テスト駆動開発]]）中，写测试是第一项工作，与全部做完之后再集中测试的方式顺序相反。",
+          "text_en": "In **test-driven development** ([[jp:テスト駆動開発]]), writing the test is the first task. The order is the reverse of building everything and then testing it all at the end."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "red",
+              "label": {
+                "jp": "まだ通らないテストを書く",
+                "zh": "写一个还不能通过的测试",
+                "en": "Write a test that fails for now"
+              }
+            },
+            {
+              "id": "green",
+              "label": {
+                "jp": "テストが通る最小限のコードを書く",
+                "zh": "写出让测试通过的最少代码",
+                "en": "Write just enough code to pass"
+              }
+            },
+            {
+              "id": "clean",
+              "label": {
+                "jp": "テストを通したままコードを整える",
+                "zh": "保持测试通过并整理代码",
+                "en": "Tidy the code with tests still passing"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "これから作る動作をテストとして書く。コードが無いので、まだ失敗する。",
+            "caption_zh": "把将要实现的行为写成测试。因为还没有代码，此时会失败。",
+            "caption_en": "Write the behavior you are about to build as a test. With no code yet, it fails.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "そのテストに合格するだけのコードを書き、成功を確かめる。",
+            "caption_zh": "写出刚好能通过该测试的代码，并确认成功。",
+            "caption_en": "Write only the code needed to pass that test, and confirm it succeeds.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "テストが通る状態を保ちながら作りを整え、次のテストへ進む。",
+            "caption_zh": "在保持测试通过的状态下整理结构，然后进入下一个测试。",
+            "caption_en": "Tidy the structure while the tests keep passing, then move on to the next test.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2021r03-q048"
+      ],
+      "definition_jp": "テスト駆動開発は、作る機能のテストを先に書き、そのテストに合格するコードを後から書く開発の進め方である。",
+      "definition_zh": "测试驱动开发（テスト駆動開発）是一种开发方式：先写要做的功能的测试，再写能通过该测试的代码。",
+      "definition_en": "Test-driven development (テスト駆動開発) is a way of working in which you first write the test for a feature, then write the code that passes it.",
+      "explanation_jp": "先に書いたテストが「何ができれば完成か」を示すので、作る前に仕様がはっきりする。テストを書く、通す、整えるという小さな周期を何度も回し、そのたびにテストで動作を確かめる。英語の略称は TDD で、XP の代表的なプラクティスである。",
+      "explanation_zh": "先写好的测试表明了“做到什么才算完成”，因此在动手之前规格就已清晰。写测试、让它通过、整理代码，这个小循环反复进行，每次都用测试确认行为。英文缩写为 TDD，是 XP 的代表性实践。",
+      "explanation_en": "The test written first states what counts as done, so the specification is clear before any code exists. The small loop of writing a test, passing it and tidying up repeats many times, with the tests checking the behavior each round. Its abbreviation is TDD, and it is one of the signature practices of XP.",
+      "memory_hook_jp": "駆動は「動かす力」。テストが先頭に立って開発を引っ張る、と字面から読める。",
+      "memory_hook_zh": "“驱动”就是“推动的力量”。从字面就能读出：由测试打头阵，带动整个开发。",
+      "memory_hook_en": "\"Driven\" means pushed forward by something. Here the test leads the way and pulls the development along.",
       "inline_quiz": [
         "2021r03-q048"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"失敗するテストを書く\"] --> B[\"テストを通す最小コードを書く\"]; B --> C[\"リファクタリングで整える\"]; C --> A",
-        "svg_path": "figures/management-09-26-u03-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "测试驱动开发",
-      "term_en": "Test-Driven Development",
-      "definition_zh": "在实现之前先编写测试，再写出满足该测试的代码的开发手法。",
-      "definition_en": "A development method in which tests are written before implementation, then code is written to satisfy those tests.",
-      "explanation_zh": "测试驱动开发（TDD）是一种在实现功能之前，先编写该功能应满足的测试的手法。先写一个一开始会失败的测试，再写出刚好能让它通过的最小代码，最后整理（重构）代码，如此反复循环。\n\n考试中最大的考点是「先写测试」这一顺序。它与「事后再测试」的传统做法相反，能明确规格、在开发过程中把质量打造进去。它是 XP 的代表性实践之一。",
-      "explanation_en": "Test-driven development (TDD) is a method in which, before implementing a feature, you first write the test that the feature should satisfy. You write a test that fails at first, write the minimal code to make it pass, and finally tidy up (refactor) the code—repeating this cycle.\n\nThe biggest point on the exam is the order of \"write the test first.\" This is the reverse of the traditional approach of testing afterward; it clarifies the specification and builds quality in during development. It is one of XP's representative practices.",
-      "analogy_zh": "就像先定好习题集的对答案标准，再去解题一样。先准备好「达到这样就算正确」的标准，再朝着满足它的方向来做。",
-      "analogy_en": "It's like deciding the answer-checking criteria of a workbook before solving the problems. You prepare \"if it becomes like this, it's correct\" in advance, then build toward satisfying it.",
-      "memory_hook_zh": "说到测试驱动开发，就是先写测试再实现的手法",
-      "memory_hook_en": "Test-Driven Development → write the test first, then implement"
+      "figure": null
     },
     {
       "term": "ペアプログラミング",
-      "definition_jp": "2人1組で1台の画面を見ながら共同でプログラミングする手法。",
-      "explanation_jp": "ペアプログラミングは、2人が1台のPCを使い、一方がコードを書き(ドライバー)、もう一方が確認・助言する(ナビゲーター)役割で協働する手法です。役割は適宜交代します。\n\n試験では、その場で相互レビューが行われるため品質や知識共有が高まる一方、2人で1つの作業をするためコストはかかる点が問われます。XPの協働プラクティスの代表例であり、リアルタイムなレビューと教育効果が利点として狙われます。",
-      "analogy_jp": "車の運転で、運転手とナビ係が交代しながら一緒に目的地へ向かうようなもの。一人より目が増え、道を間違えにくくなります。",
-      "memory_hook_jp": "ペアプログラミングといえば2人1組で共同開発し相互レビューする手法",
-      "inline_quiz": [
-        "2023r05-q040"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "结对编程",
       "term_en": "Pair Programming",
-      "definition_zh": "两人一组、共看一块屏幕协作编程的手法。",
-      "definition_en": "A method in which two people work as a pair, looking at one screen and programming together.",
-      "explanation_zh": "结对编程是两人共用一台电脑，一方编写代码（驾驶员），另一方负责确认、提建议（领航员），以这样的角色协作的手法。两个角色会适时轮换。\n\n考试中常考：由于当场就进行相互评审，质量和知识共享会得到提升；但另一方面，两人做一件事会增加成本。它是 XP 协作实践的代表例，实时评审与教育效果常作为其优点被考查。",
-      "explanation_en": "Pair programming is a method in which two people share one computer: one writes the code (the driver) and the other checks and gives advice (the navigator), collaborating in these roles. The roles are swapped as appropriate.\n\nThe exam tests that, because mutual review happens on the spot, quality and knowledge sharing improve—while on the other hand, having two people do one task increases cost. It is a representative collaborative practice of XP, and real-time review and educational effect are often targeted as its advantages.",
-      "analogy_zh": "就像开车时，司机和领航员一边轮换一边一起开往目的地。比一个人多一双眼睛，更不容易走错路。",
-      "analogy_en": "It's like driving a car where the driver and the navigator take turns and head to the destination together. With more eyes than one person alone, you're less likely to take a wrong turn.",
-      "memory_hook_zh": "说到结对编程，就是两人一组协同开发、相互评审的手法",
-      "memory_hook_en": "Pair Programming → two people develop together as a pair and review each other"
+      "one_jp": "**ペアプログラミング**は、同じ画面の前に並んだ 2 人が、相談しながら同じコードを書き進める開発のやり方である。",
+      "one_zh": "**结对编程**（[[jp:ペアプログラミング]]）是两个人并排坐在同一屏幕前，一边商量一边编写同一段代码的开发方式。",
+      "one_en": "**Pair programming** ([[jp:ペアプログラミング]]) is a way of developing in which two people sit side by side at one screen and write the same code while talking it through.",
+      "detail_jp": "キーボードを持って入力する人を**ドライバー**、隣で確認しながら方針を考える人を**ナビゲーター**と呼び、ときどき役割を入れ替える。書いている最中にもう 1 人が目を通すので誤りに早く気付け、知識や書き方もチームの中で広がる。**XP** のプラクティスの一つである。",
+      "detail_zh": "握键盘输入的人称为**驾驶员**（[[jp:ドライバー]]），在旁边一边确认一边考虑方针的人称为**领航员**（[[jp:ナビゲーター]]），两人不时互换角色。编写过程中另一人同步查看，因此能尽早发现错误，知识和写法也能在团队中传开。这是 **XP** 的实践之一。",
+      "detail_en": "The person at the keyboard is the **driver** ([[jp:ドライバー]]), and the one beside them who checks the work and thinks about direction is the **navigator** ([[jp:ナビゲーター]]); they swap roles from time to time. Because a second person reads the code as it is written, mistakes are caught early, and knowledge and coding style spread across the team. It is one of the practices of **XP**.",
+      "analogy_jp": "車のラリーで、運転手がハンドルを握り、助手席の相棒が地図を見てコースを伝える組み合わせに似ている。",
+      "analogy_zh": "就像汽车拉力赛中，车手握方向盘，副驾驶座上的搭档看着地图报出路线。",
+      "analogy_en": "It is like a rally car crew: the driver holds the wheel while the co-driver reads the map and calls out the route.",
+      "hook_jp": "pair は靴や手袋と同じ「2 つで 1 組」。1 台の机に 2 脚の椅子を並べた光景で覚える。",
+      "hook_zh": "pair 和鞋子、手套一样，是“两个一组”。用“一张桌子前并排放两把椅子”的画面来记。",
+      "hook_en": "A pair is two that go together, like shoes or gloves. Picture one desk with two chairs side by side.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "コードレビューは書き終えたコードを後から別の人が読む確認で、**ペアプログラミング**は書いているその場で隣の人が確かめる点が違う。",
+          "text_zh": "代码评审（[[jp:コードレビュー]]）是写完之后由别人再读代码的检查，而**结对编程**（[[jp:ペアプログラミング]]）的不同之处在于，旁边的人在编写的当下就进行确认。",
+          "text_en": "A code review ([[jp:コードレビュー]]) is a check in which someone else reads the code after it is finished. In **pair programming** ([[jp:ペアプログラミング]]), the person alongside checks it at the moment it is written."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "役割",
+              "zh": "角色",
+              "en": "Role"
+            },
+            {
+              "jp": "すること",
+              "zh": "职责",
+              "en": "What they do"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "ドライバー",
+                  "zh": "驾驶员",
+                  "en": "Driver"
+                },
+                {
+                  "jp": "キーボードを持ってコードを入力する",
+                  "zh": "握着键盘输入代码",
+                  "en": "Holds the keyboard and types the code"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "ナビゲーター",
+                  "zh": "领航员",
+                  "en": "Navigator"
+                },
+                {
+                  "jp": "横で誤りを見つけ、進め方や設計を考える",
+                  "zh": "在旁边找出错误，思考推进方式和设计",
+                  "en": "Spots mistakes from the side and thinks about direction and design"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "交代",
+                  "zh": "轮换",
+                  "en": "Switching"
+                },
+                {
+                  "jp": "時間を区切って役割を入れ替える",
+                  "zh": "按时间段互换角色",
+                  "en": "Swap roles at set intervals"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2023r05-q040",
+        "2021r03-q048"
+      ],
+      "definition_jp": "ペアプログラミングは、同じ画面の前に並んだ 2 人が、相談しながら同じコードを書き進める開発のやり方である。",
+      "definition_zh": "结对编程（ペアプログラミング）是两个人并排坐在同一屏幕前，一边商量一边编写同一段代码的开发方式。",
+      "definition_en": "Pair programming (ペアプログラミング) is a way of developing in which two people sit side by side at one screen and write the same code while talking it through.",
+      "explanation_jp": "キーボードを持って入力する人をドライバー、隣で確認しながら方針を考える人をナビゲーターと呼び、ときどき役割を入れ替える。書いている最中にもう 1 人が目を通すので誤りに早く気付け、知識や書き方もチームの中で広がる。XP のプラクティスの一つである。",
+      "explanation_zh": "握键盘输入的人称为驾驶员（ドライバー），在旁边一边确认一边考虑方针的人称为领航员（ナビゲーター），两人不时互换角色。编写过程中另一人同步查看，因此能尽早发现错误，知识和写法也能在团队中传开。这是 XP 的实践之一。",
+      "explanation_en": "The person at the keyboard is the driver (ドライバー), and the one beside them who checks the work and thinks about direction is the navigator (ナビゲーター); they swap roles from time to time. Because a second person reads the code as it is written, mistakes are caught early, and knowledge and coding style spread across the team. It is one of the practices of XP.",
+      "memory_hook_jp": "pair は靴や手袋と同じ「2 つで 1 組」。1 台の机に 2 脚の椅子を並べた光景で覚える。",
+      "memory_hook_zh": "pair 和鞋子、手套一样，是“两个一组”。用“一张桌子前并排放两把椅子”的画面来记。",
+      "memory_hook_en": "A pair is two that go together, like shoes or gloves. Picture one desk with two chairs side by side.",
+      "inline_quiz": [
+        "2023r05-q040",
+        "2021r03-q048"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "リファクタリング",
-      "definition_jp": "外部から見た動作を変えずに、内部のコード構造を整理・改善すること。",
-      "explanation_jp": "リファクタリングは、プログラムの外部から見た振る舞い(機能)を変えないまま、内部のコードを読みやすく・保守しやすい構造へ改善する作業です。重複の除去や名前の整理などを行います。\n\n試験では、「機能を変えずに内部だけ改善する」という定義が最重要ポイントです。新機能の追加やバグ修正とは目的が異なります。テスト駆動開発と一体で行うことで、改善後も動作が壊れていないことを確認しながら品質を保てる点が問われます。",
-      "analogy_jp": "散らかった部屋を、置いてある物は変えずに整理整頓するイメージ。使えるものは同じでも、片付くと次に探しやすく・使いやすくなります。",
-      "memory_hook_jp": "リファクタリングといえば動作を変えずに内部構造を整理改善すること",
-      "inline_quiz": [
-        "2023r05-q039"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "重构",
       "term_en": "Refactoring",
-      "definition_zh": "在不改变外部可见行为的前提下，整理、改善代码的内部结构。",
-      "definition_en": "Tidying up and improving the internal structure of code without changing its externally visible behavior.",
-      "explanation_zh": "重构是在不改变程序从外部看到的行为（功能）的前提下，把内部代码改善为更易读、更易维护结构的工作。会进行消除重复、整理命名等操作。\n\n考试中最重要的考点是「不改变功能、只改善内部」这一定义。它与添加新功能或修复缺陷的目的不同。它与测试驱动开发结合进行时，可以在确认改善后行为没有被破坏的同时保持质量，这一点也是考点。",
-      "explanation_en": "Refactoring is the work of improving the internal code into a structure that is more readable and maintainable, without changing the program's externally visible behavior (its functionality). You do things like removing duplication and tidying up names.\n\nThe most important point on the exam is the definition: \"improve only the internals without changing functionality.\" Its purpose differs from adding new features or fixing bugs. The exam also tests that, by doing it together with test-driven development, you can maintain quality while confirming that behavior is not broken after the improvement.",
-      "analogy_zh": "就像把凌乱的房间在不改变所摆放物品的前提下收拾整齐。能用的东西还是同样那些，但收拾干净后，下次更容易找、更好用。",
-      "analogy_en": "It's like tidying up a messy room without changing the things placed in it. The usable items are the same, but once it's tidy, things are easier to find and use next time.",
-      "memory_hook_zh": "说到重构，就是不改变行为、整理改善内部结构",
-      "memory_hook_en": "Refactoring → tidy up and improve the internal structure without changing behavior"
+      "one_jp": "**リファクタリング**は、プログラムの**外部から見た動作**は変えずに、名前や構造など内側の作りを読みやすく直しやすい形に整える作業である。",
+      "one_zh": "**重构**（[[jp:リファクタリング]]）是在不改变程序**外部可见行为**的前提下，把命名、结构等内部构造整理得更易读、更易修改的工作。",
+      "one_en": "**Refactoring** ([[jp:リファクタリング]]) is the work of reshaping a program's insides, such as names and structure, so it is easier to read and change, without altering its **external behavior**.",
+      "detail_jp": "ここでいう外部から見た動作とは、同じ入力を与えたときに返ってくる結果や利用者が目にする振る舞いのことである。見た目の動きが同じでも、重複を減らしたり処理を分け直したりすると、後の修正や機能の追加がしやすくなる。整えた後も動作が変わっていないことは、テストを流して確かめる。",
+      "detail_zh": "这里所说的外部可见行为，是指给出相同输入时返回的结果以及用户能看到的表现。即使表面上的动作不变，减少重复或重新划分处理，也能让之后的修改和功能追加更容易。整理之后行为是否保持不变，要通过运行测试来确认。",
+      "detail_en": "External behavior here means the results returned for the same input and what users can see the program do. Even when that stays the same, removing duplication or splitting up the logic makes later fixes and new features easier. Running the tests after the cleanup confirms the behavior has not changed.",
+      "analogy_jp": "家具や持ち物は 1 つも捨てずに、引き出しの中を仕切り直して探しやすくする片付けに近い。",
+      "analogy_zh": "就像整理房间时一件东西都不扔，只是重新给抽屉分隔，让东西更好找。",
+      "analogy_en": "It is like tidying a room without throwing anything away, just re-dividing the drawers so things are easier to find.",
+      "hook_jp": "re-factor は数式の因数分解をやり直すイメージ。値は同じまま、式の形だけを組み替える。",
+      "hook_zh": "re-factor 可以想成把数学里的因式分解重新做一遍：值保持不变，只重组式子的形式。",
+      "hook_en": "Think of re-factor as redoing a factorization in algebra: the value stays the same, and only the form of the expression is rearranged.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**リファクタリング**で手を入れるのは内部の構造だけで、利用者から見た機能や動作はそのまま保たれる。",
+          "text_zh": "**重构**（[[jp:リファクタリング]]）只改动内部结构，用户看到的功能和行为保持不变。",
+          "text_en": "**Refactoring** ([[jp:リファクタリング]]) touches only the internal structure. The functions and behavior users see stay as they are.",
+          "qids": [
+            "2021r03-q048",
+            "2023r05-q049"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**リバースエンジニアリング**は既存のプログラムを解析して仕様を読み取る活動で、コードを書き直して整える**リファクタリング**とは作業の向きが違う。",
+          "text_zh": "**逆向工程**（[[jp:リバースエンジニアリング]]）是分析已有程序、从中读出规格的活动，与改写代码进行整理的**重构**方向不同。",
+          "text_en": "**Reverse engineering** ([[jp:リバースエンジニアリング]]) analyzes an existing program to work out its specification. It works in a different direction from **refactoring**, where the code is rewritten and tidied."
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**テスト駆動開発**は開発をテストから始める進め方で、**リファクタリング**は動作を保ったまま既存のコードを整える作業である。",
+          "text_zh": "**测试驱动开发**（[[jp:テスト駆動開発]]）是从测试开始推进开发的方式，**重构**则是在保持行为不变的前提下整理已有代码的工作。",
+          "text_en": "**Test-driven development** ([[jp:テスト駆動開発]]) is a way of building that starts from the test, while **refactoring** tidies existing code and keeps its behavior intact."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "区分",
+              "zh": "区分",
+              "en": "Category"
+            },
+            {
+              "jp": "中身の例",
+              "zh": "内容示例",
+              "en": "Examples"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "変えないもの",
+                  "zh": "不变的部分",
+                  "en": "What stays the same"
+                },
+                {
+                  "jp": "同じ入力に対して返す結果・画面の動き",
+                  "zh": "对同一输入返回的结果、界面的动作",
+                  "en": "Results returned for the same input, how screens behave"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "変えるもの",
+                  "zh": "改变的部分",
+                  "en": "What changes"
+                },
+                {
+                  "jp": "分かりにくい変数名・重複した処理・長すぎる関数",
+                  "zh": "难懂的变量名、重复的处理、过长的函数",
+                  "en": "Unclear variable names, duplicated logic, overly long functions"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2023r05-q049",
+        "2021r03-q048"
+      ],
+      "definition_jp": "リファクタリングは、プログラムの外部から見た動作は変えずに、名前や構造など内側の作りを読みやすく直しやすい形に整える作業である。",
+      "definition_zh": "重构（リファクタリング）是在不改变程序外部可见行为的前提下，把命名、结构等内部构造整理得更易读、更易修改的工作。",
+      "definition_en": "Refactoring (リファクタリング) is the work of reshaping a program's insides, such as names and structure, so it is easier to read and change, without altering its external behavior.",
+      "explanation_jp": "ここでいう外部から見た動作とは、同じ入力を与えたときに返ってくる結果や利用者が目にする振る舞いのことである。見た目の動きが同じでも、重複を減らしたり処理を分け直したりすると、後の修正や機能の追加がしやすくなる。整えた後も動作が変わっていないことは、テストを流して確かめる。",
+      "explanation_zh": "这里所说的外部可见行为，是指给出相同输入时返回的结果以及用户能看到的表现。即使表面上的动作不变，减少重复或重新划分处理，也能让之后的修改和功能追加更容易。整理之后行为是否保持不变，要通过运行测试来确认。",
+      "explanation_en": "External behavior here means the results returned for the same input and what users can see the program do. Even when that stays the same, removing duplication or splitting up the logic makes later fixes and new features easier. Running the tests after the cleanup confirms the behavior has not changed.",
+      "memory_hook_jp": "re-factor は数式の因数分解をやり直すイメージ。値は同じまま、式の形だけを組み替える。",
+      "memory_hook_zh": "re-factor 可以想成把数学里的因式分解重新做一遍：值保持不变，只重组式子的形式。",
+      "memory_hook_en": "Think of re-factor as redoing a factorization in algebra: the value stays the same, and only the form of the expression is rearranged.",
+      "inline_quiz": [
+        "2023r05-q049",
+        "2021r03-q048"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "アジャイル",
+      "b": "XP",
+      "rows": [
+        {
+          "label_jp": "位置付け",
+          "label_zh": "定位",
+          "label_en": "Role",
+          "a_jp": "開発の考え方を広く指す呼び名",
+          "a_zh": "泛指开发理念的名称",
+          "a_en": "Broad name for a development approach",
+          "b_jp": "その考え方を実践する具体的な手法の一つ",
+          "b_zh": "实践该理念的具体方法之一",
+          "b_en": "One concrete method that puts it into practice",
+          "key": true
+        },
+        {
+          "label_jp": "中身",
+          "label_zh": "内容",
+          "label_en": "Content",
+          "a_jp": "短い反復で変化を取り込むという方針",
+          "a_zh": "以短周期反复吸收变化的方针",
+          "a_en": "A principle of taking in change through short cycles",
+          "b_jp": "日々守るプラクティスの集まり",
+          "b_zh": "日常遵守的一组实践",
+          "b_en": "A set of practices followed every day",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "テスト駆動開発",
+      "b": "リファクタリング",
+      "rows": [
+        {
+          "label_jp": "何をするか",
+          "label_zh": "做什么",
+          "label_en": "What it does",
+          "a_jp": "テストを先に書き、それを通すコードを作る",
+          "a_zh": "先写测试，再写能通过测试的代码",
+          "a_en": "Write the test first, then the code that passes it",
+          "b_jp": "既存のコードの内側を整える",
+          "b_zh": "整理已有代码的内部",
+          "b_en": "Tidy the inside of existing code",
+          "key": false
+        },
+        {
+          "label_jp": "外から見た動作",
+          "label_zh": "外部可见的行为",
+          "label_en": "Behavior seen from outside",
+          "a_jp": "テストで決めた新しい動作を加えていく",
+          "a_zh": "逐步加入由测试确定的新行为",
+          "a_en": "Adds new behavior defined by the tests",
+          "b_jp": "変えない",
+          "b_zh": "不改变",
+          "b_en": "Stays the same",
+          "key": true
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**アジャイル**は短い反復ごとに動くものを見せ、利用者の意見や要望の変化を次の回に取り込む開発の考え方である。",
+    "**ユーザーストーリー**は「誰として・何を・なぜ」を利用者の言葉で短く書き、細部は作る直前に話し合って決める。",
+    "**XP** と**エクストリームプログラミング**は同じ手法で、良い開発習慣を毎回やり切ることを重んじる。",
+    "**ペアプログラミング**では入力する人と確認する人が並んで作業し、書いている途中で誤りに気付ける。",
+    "**リファクタリング**の決め手は、外から見た動作を保ったまま内部の作りだけを整えることにある。"
+  ],
+  "key_points_zh": [
+    "**敏捷**是一种开发理念：每个短周期都展示可运行的成果，把用户的意见和需求变化带入下一轮。",
+    "**用户故事**用用户的话简短写出“作为谁、做什么、为什么”，细节在动手前再商量决定。",
+    "**XP** 与**极限编程**是同一种方法，重视每次都把良好的开发习惯做到底。",
+    "**结对编程**中输入的人和确认的人并排工作，编写过程中就能发现错误。",
+    "**重构**的关键在于保持外部可见的行为不变，只整理内部结构。"
+  ],
+  "key_points_en": [
+    "**Agile** is a development approach that shows working results at the end of each short cycle and carries user feedback and changing requests into the next one.",
+    "A **user story** states who, what and why in the user's own words, and the details are agreed just before building.",
+    "**XP** and **Extreme Programming** are the same method, which values carrying good development habits through every time.",
+    "In **pair programming**, the person typing and the person checking work side by side, so mistakes surface while the code is being written.",
+    "What defines **refactoring** is tidying only the internal structure while the behavior seen from outside stays the same."
+  ],
+  "overview": {
+    "intro_jp": "アジャイルが短い反復で動くものを積み上げ、途中の要望の変化を取り込む開発の考え方だと説明できる。XP を、アジャイルの考え方を具体的な習慣の集まりにした手法の一つとして位置付けられる。テスト駆動開発とリファクタリングを、何を先に作るか・外から見た動作を変えるかで区別できる。",
+    "intro_zh": "能够说明敏捷是一种以短周期反复、逐步积累可运行的成果，并吸收中途需求变化的开发理念。能够把 XP 定位为将敏捷理念落实为一组具体习惯的方法之一。能够根据先做什么、是否改变外部可见的行为，区分测试驱动开发和重构。",
+    "intro_en": "Explain that Agile is a development approach that builds up working software in short cycles and takes in requests that change along the way. Place XP as one method that turns the Agile approach into a concrete set of habits. Tell test-driven development from refactoring by what gets written first and whether the behavior seen from outside changes.",
+    "freq_badge": "頻出",
+    "est_minutes": 37
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "アジャイル: アジャイルといえば短い反復で変化に柔軟に対応する開発思想",
-      "ユーザーストーリー: ユーザーストーリーといえば利用者視点で機能を簡潔に書く要求の単位",
-      "XP: XPといえばエクストリームプログラミングの略でプラクティスを束ねるアジャイル方法論",
-      "エクストリームプログラミング: エクストリームプログラミングといえばXPの正式名称(同じ方法論)",
-      "テスト駆動開発: テスト駆動開発といえばテストを先に書いてから実装する手法",
-      "ペアプログラミング: ペアプログラミングといえば2人1組で共同開発し相互レビューする手法",
-      "リファクタリング: リファクタリングといえば動作を変えずに内部構造を整理改善すること"
-    ],
     "key_points_jp": [
-      "アジャイルは短い反復を繰り返し、仕様変更に柔軟に対応する適応型の開発思想で、XPやスクラムを包含する上位概念。",
-      "ユーザーストーリーは利用者視点で要求を簡潔に書く単位で、アジャイルの要求記述の基本となる。",
-      "XP(エクストリームプログラミング)はアジャイルの代表的方法論で、複数のプラクティスを徹底して束ねる枠組み。",
-      "テスト駆動開発は『テストを先に書く』点、リファクタリングは『動作を変えずに内部を改善する』点が頻出の区別ポイント。",
-      "ペアプログラミングは2人1組でリアルタイムに相互レビューしながら開発し、品質と知識共有を高める協働プラクティス。"
+      "アジャイルは短い反復ごとに動くものを見せ、利用者の意見や要望の変化を次の回に取り込む開発の考え方である。",
+      "ユーザーストーリーは「誰として・何を・なぜ」を利用者の言葉で短く書き、細部は作る直前に話し合って決める。",
+      "XP とエクストリームプログラミングは同じ手法で、良い開発習慣を毎回やり切ることを重んじる。",
+      "ペアプログラミングでは入力する人と確認する人が並んで作業し、書いている途中で誤りに気付ける。",
+      "リファクタリングの決め手は、外から見た動作を保ったまま内部の作りだけを整えることにある。"
     ],
     "key_points_zh": [
-      "敏捷是反复进行短迭代、灵活应对需求变更的适应型开发思想，是包含 XP 和 Scrum 的上位概念。",
-      "用户故事是以用户视角简洁书写需求的单位，是敏捷中需求描述的基础。",
-      "XP（极限编程）是敏捷的代表性方法论，是把多种实践彻底捆绑在一起的框架。",
-      "测试驱动开发的「先写测试」、重构的「不改变行为只改善内部」是频繁出现的区分要点。",
-      "结对编程是两人一组、实时相互评审地进行开发，提升质量与知识共享的协作实践。"
+      "敏捷是一种开发理念：每个短周期都展示可运行的成果，把用户的意见和需求变化带入下一轮。",
+      "用户故事用用户的话简短写出“作为谁、做什么、为什么”，细节在动手前再商量决定。",
+      "XP 与极限编程是同一种方法，重视每次都把良好的开发习惯做到底。",
+      "结对编程中输入的人和确认的人并排工作，编写过程中就能发现错误。",
+      "重构的关键在于保持外部可见的行为不变，只整理内部结构。"
     ],
     "key_points_en": [
-      "Agile is an adaptive development mindset that repeats short iterations and responds flexibly to specification changes; it is a higher-level concept encompassing XP and Scrum.",
-      "A user story is a unit that concisely describes requirements from the user's perspective and is the basis of requirement description in agile.",
-      "XP (Extreme Programming) is a representative agile methodology, a framework that thoroughly bundles multiple practices together.",
-      "\"Write the test first\" for test-driven development and \"improve only the internals without changing behavior\" for refactoring are frequently tested distinguishing points.",
-      "Pair programming is a collaborative practice where two people develop while reviewing each other in real time, improving quality and knowledge sharing."
+      "Agile is a development approach that shows working results at the end of each short cycle and carries user feedback and changing requests into the next one.",
+      "A user story states who, what and why in the user's own words, and the details are agreed just before building.",
+      "XP and Extreme Programming are the same method, which values carrying good development habits through every time.",
+      "In pair programming, the person typing and the person checking work side by side, so mistakes surface while the code is being written.",
+      "What defines refactoring is tidying only the internal structure while the behavior seen from outside stays the same."
+    ],
+    "memory_hooks_jp": [
+      "アジャイル: 英語の agile は「身軽な・すばやい」。重い計画書を背負わず、向きを変えやすい身のこなしを思い浮かべる。",
+      "ユーザーストーリー: story = 物語。物語の主人公はいつも利用者で、作り手やシステムは主語にならない。",
+      "XP: 2 文字の略称は、Extreme の X と Programming の P を取ったもの。",
+      "エクストリームプログラミング: extreme は「極端な」。基本の習慣を手加減せずやり切る姿勢が名前になっている。",
+      "テスト駆動開発: 駆動は「動かす力」。テストが先頭に立って開発を引っ張る、と字面から読める。",
+      "ペアプログラミング: pair は靴や手袋と同じ「2 つで 1 組」。1 台の机に 2 脚の椅子を並べた光景で覚える。",
+      "リファクタリング: re-factor は数式の因数分解をやり直すイメージ。値は同じまま、式の形だけを組み替える。"
     ],
     "memory_hooks_zh": [
-      "敏捷：说到敏捷，就是以短迭代灵活应对变化的开发思想",
-      "用户故事：说到用户故事，就是以用户视角简洁书写功能的需求单位",
-      "XP：说到 XP，就是极限编程的简称、捆绑各种实践的敏捷方法论",
-      "极限编程：说到极限编程，就是 XP 的全称（同一个方法论）",
-      "测试驱动开发：说到测试驱动开发，就是先写测试再实现的手法",
-      "结对编程：说到结对编程，就是两人一组协同开发、相互评审的手法",
-      "重构：说到重构，就是不改变行为、整理改善内部结构"
+      "敏捷：英语 agile 意为“灵活、敏捷”。想象不背沉重的计划书、能随时转向的轻快身手。",
+      "用户故事：story 就是“故事”。故事的主角永远是用户，制作方或系统不会成为主语。",
+      "XP：这个两字母缩写取自 Extreme 的 X 和 Programming 的 P。",
+      "极限编程：extreme 意为“极端的”。名字体现的是毫不打折地把基本习惯做到底的态度。",
+      "测试驱动开发：“驱动”就是“推动的力量”。从字面就能读出：由测试打头阵，带动整个开发。",
+      "结对编程：pair 和鞋子、手套一样，是“两个一组”。用“一张桌子前并排放两把椅子”的画面来记。",
+      "重构：re-factor 可以想成把数学里的因式分解重新做一遍：值保持不变，只重组式子的形式。"
     ],
     "memory_hooks_en": [
-      "Agile: Agile → a development mindset that responds flexibly to change through short iterations",
-      "User Story: User Story → a unit of requirement that concisely describes a feature from the user's perspective",
-      "XP: XP → short for Extreme Programming, an agile methodology that bundles practices together",
-      "Extreme Programming: Extreme Programming → the full name of XP (the same methodology)",
-      "Test-Driven Development: Test-Driven Development → write the test first, then implement",
-      "Pair Programming: Pair Programming → two people develop together as a pair and review each other",
-      "Refactoring: Refactoring → tidy up and improve the internal structure without changing behavior"
+      "Agile: The English word agile means nimble and quick. Picture someone traveling light, with no heavy plan on their back, able to change direction easily.",
+      "User Story: Story as in a tale: the hero is always the user, and the builders or the system never take the subject's place.",
+      "XP: The two-letter name takes the X from Extreme and the P from Programming.",
+      "Extreme Programming: Extreme means going to the limit. The name reflects an attitude of carrying the basic habits all the way, with no shortcuts.",
+      "Test-Driven Development: \"Driven\" means pushed forward by something. Here the test leads the way and pulls the development along.",
+      "Pair Programming: A pair is two that go together, like shoes or gloves. Picture one desk with two chairs side by side.",
+      "Refactoring: Think of re-factor as redoing a factorization in algebra: the value stays the same, and only the form of the expression is rearranged."
     ]
   },
   "challenge_questions": [
-    "2009h21a-q047",
-    "2009h21h-q038",
-    "2010h22a-q034",
-    "2010h22h-q029",
-    "2012h24a-q045"
+    "2019h31h-q047",
+    "2019r01a-q049",
+    "2022r04-q038",
+    "2021r03-q048",
+    "2023r05-q049"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "敏捷开发与 XP 的实践方法",
-  "title_en": "Agile Development and XP Practices",
-  "unit_summary_zh": "概览敏捷开发的理念，学习用用户故事来描述需求，以及 XP（极限编程）的一系列具体实践方法。",
-  "unit_summary_en": "Get an overview of the agile development mindset, and learn how to describe requirements with user stories and the concrete practices of XP (Extreme Programming)."
+  }
 }

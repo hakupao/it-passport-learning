@@ -1,168 +1,713 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "management-09-26-u02",
   "topic_id": "management-09-26",
   "category": "management",
   "title_jp": "古典的なソフトウェア開発モデル",
+  "title_zh": "经典的软件开发模型",
+  "title_en": "Classic Software Development Models",
   "unit_summary_jp": "ウォーターフォール・スパイラル・プロトタイピング・RAD という代表的な開発プロセスモデルの特徴と適用場面を学ぶ。",
+  "unit_summary_zh": "学习瀑布、螺旋、原型、RAD 这几种有代表性的开发过程模型的特点和适用场景。",
+  "unit_summary_en": "Learn the characteristics and applicable scenarios of representative development process models: Waterfall, Spiral, Prototyping, and RAD.",
   "order_in_topic": 2,
   "prerequisites": [
     "management-09-26-u01"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、アジャイル以前から使われてきた古典的なソフトウェア開発プロセスモデル(ウォーターフォール・プロトタイピング・スパイラル・RAD)の特徴と適用場面を学ぶ。工程をどの順序・進め方で回すかを定める基本の枠組みであり、特にウォーターフォールは最頻出。各モデルの長所短所の対比が ITパスポートで繰り返し問われる重要分野である。",
-    "freq_badge": "頻出",
-    "est_minutes": 13,
-    "intro_zh": "本单元学习敏捷出现之前一直使用的经典软件开发过程模型(瀑布、原型、螺旋、RAD)的特点和适用场景。它们是规定各工序按什么顺序、以什么方式推进的基本框架,其中瀑布模型尤其高频出现。各模型优缺点的对比在 IT 护照考试中反复被考查,是重要领域。",
-    "intro_en": "In this unit you will learn the characteristics and applicable scenarios of the classic software development process models used before agile (Waterfall, Prototyping, Spiral, RAD). They are the basic frameworks that define in what order and in what manner the phases are run, and Waterfall in particular appears most frequently. Comparing the strengths and weaknesses of each model is repeatedly tested on the IT Passport exam, making it an important area."
-  },
-  "terms": [
+  "goals_jp": [
+    "この単元の開発モデルと手法を、工程を一方向に進めるか、試作や開発の一巡を繰り返すかで分けられる。",
+    "**ウォーターフォールモデル**で上流の誤りが後から見つかると、なぜ手戻りが大きくなるかを説明できる。",
+    "**プロトタイピングモデル**と**スパイラルモデル**で、繰り返す対象の違いを言える。",
+    "**RAD** が何を重視する手法かを言える。"
+  ],
+  "goals_zh": [
+    "能按照“工序单向推进”还是“反复进行试制或一轮开发”，区分本单元的开发模型和方法。",
+    "能说明在**瀑布模型**中，上游的错误到后期才被发现时，返工为什么会很大。",
+    "能说出**原型模型**和**螺旋模型**各自反复的对象有何不同。",
+    "能说出 **RAD** 是一种看重什么的方法。"
+  ],
+  "goals_en": [
+    "Sort the development models and methods in this unit by whether they move through phases in one direction or repeat prototyping or development cycles.",
+    "Explain why, in the **waterfall model**, an upstream error found late leads to large rework.",
+    "State how the **prototyping model** and the **spiral model** differ in what they repeat.",
+    "State what **RAD** puts first as a method."
+  ],
+  "overview_cols_jp": [
+    "進め方",
+    "向く開発"
+  ],
+  "overview_cols_zh": [
+    "推进方式",
+    "适合的开发"
+  ],
+  "overview_cols_en": [
+    "How it proceeds",
+    "Suited to"
+  ],
+  "overview_rows": [
     {
       "term": "ウォーターフォールモデル",
-      "definition_jp": "要件定義から順に各工程を上流から下流へ後戻りせず進める開発モデル。",
-      "explanation_jp": "ウォーターフォールモデルは、要件定義・設計・プログラミング・テストといった工程を、滝が上から下へ流れるように一方向で順番に進める開発手法です。前の工程が完了してから次に進むため、計画や進捗の管理がしやすいのが特長です。\n\n試験では、後戻りを前提としないため上流工程の誤りが下流で発覚すると手戻りが大きい、という弱点が頻出します。仕様が固まっている大規模開発に向く一方、要求が変わりやすい開発には不向きで、この弱点を補うのがプロトタイピングやアジャイルだという対比を押さえましょう。",
-      "analogy_jp": "工場の流れ作業ラインのようなもの。前の工程の品物が完成してから次の工程へ流れ、いったん下流に進むと前に戻ってやり直すのは大変です。",
-      "memory_hook_jp": "ウォーターフォールモデルといえば滝のように上流から下流へ後戻りしない開発",
-      "inline_quiz": [
-        "2009h21h-q038",
-        "2014h26a-q042"
+      "one_line_jp": "工程を上流から下流へ順に進める",
+      "one_line_zh": "从上游到下游依次推进各道工序",
+      "one_line_en": "Moves through phases in order, from upstream to downstream",
+      "extra_jp": [
+        "一方向で、前の工程へ戻らない前提",
+        "要求が明確で変更が少ない開発"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"要件定義\"] --> B[\"設計\"]; B --> C[\"プログラミング\"]; C --> D[\"テスト\"]; D --> E[\"運用\"]",
-        "svg_path": "figures/management-09-26-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "瀑布模型",
-      "term_en": "Waterfall model",
-      "definition_zh": "从需求定义开始,各工序自上游向下游依次推进、不返工的开发模型。",
-      "definition_en": "A development model in which each phase proceeds in order from upstream to downstream, starting from requirements definition, without going back.",
-      "explanation_zh": "瀑布模型是一种把需求定义、设计、编程、测试等工序像瀑布从上往下流那样,单向、按顺序推进的开发方法。由于前一道工序完成后才进入下一道,因此便于进行计划和进度管理,这是它的特长。\n\n在考试中,“不以返工为前提,因此上游工序的错误一旦在下游被发现,返工代价就很大”这一弱点经常出现。它适合规格已经确定的大型开发,但不适合需求容易变化的开发;要记住这一弱点正是由原型法和敏捷来弥补的这一对比。",
-      "explanation_en": "The Waterfall model is a development method in which phases such as requirements definition, design, programming, and testing proceed one-directionally and in order, like a waterfall flowing from top to bottom. Because you move to the next phase only after the previous one is complete, planning and progress management are easy, which is its strength.\n\nOn the exam, a frequently tested weakness is that because going back is not assumed, if an error in an upstream phase is discovered downstream, the rework is large. It suits large-scale development where specifications are fixed, but is unsuitable for development where requirements change easily; remember the contrast that this weakness is compensated for by prototyping and agile.",
-      "analogy_zh": "就像工厂的流水线作业。前一道工序的产品做完后才流向下一道工序,一旦流到下游,要退回前面重做是很费力的。",
-      "analogy_en": "Like a factory assembly line. Only after the item from the previous step is finished does it flow to the next step, and once it has moved downstream, going back to redo earlier work is very difficult.",
-      "memory_hook_zh": "说到瀑布模型,就是像瀑布一样从上游流向下游、不返工的开发",
-      "memory_hook_en": "Waterfall model → development that flows from upstream to downstream like a waterfall, with no going back"
+      "extra_zh": [
+        "单向推进，以不返回前道工序为前提",
+        "需求明确、变更少的开发"
+      ],
+      "extra_en": [
+        "One direction, assuming no return to earlier phases",
+        "Projects with clear requirements and few changes"
+      ]
     },
     {
       "term": "プロトタイピングモデル",
-      "definition_jp": "開発初期に試作品を作り、利用者の評価で要求を確認しながら進める開発モデル。",
-      "explanation_jp": "プロトタイピングモデルは、開発の早い段階で試作品(プロトタイプ)を作り、利用者に実際に触って評価してもらいながら要求を固めていく手法です。動くものを見せることで、仕様の認識のズレを早期に発見できます。\n\n試験では、要求があいまいな場合や利用者が完成イメージを持ちにくい場合に有効で、ウォーターフォールの「上流の誤りが下流で発覚する」弱点を補う点が問われます。試作と評価を通じて要求を明確化する手法、という位置づけが典型的な出題観点です。",
-      "analogy_jp": "家を建てる前に模型やモデルルームを見せて「ここをこう変えたい」と確認するようなもの。完成前に試作で認識を合わせます。",
-      "memory_hook_jp": "プロトタイピングモデルといえば試作品で要求を早期に確認",
-      "inline_quiz": [
-        "2013h25a-q034",
-        "2015h27a-q038"
+      "one_line_jp": "試作品を利用者が評価して要求を固める",
+      "one_line_zh": "让用户评估试制品，从而确定需求",
+      "one_line_en": "Users evaluate a prototype to pin down requirements",
+      "extra_jp": [
+        "試作、評価、要求の確定の順",
+        "要求があいまいな開発"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "原型模型",
-      "term_en": "Prototyping model",
-      "definition_zh": "在开发初期制作试做品,通过用户评价来确认需求并推进的开发模型。",
-      "definition_en": "A development model in which a prototype is made early in development, and requirements are confirmed through user evaluation as work proceeds.",
-      "explanation_zh": "原型模型是一种在开发的早期阶段制作试做品(原型),让用户实际操作并评价,在此过程中逐步确定需求的方法。通过展示能运行的东西,可以及早发现对规格认识上的偏差。\n\n在考试中,常考它在需求模糊、或用户难以想象成品的情况下很有效,以及它弥补了瀑布模型“上游的错误在下游才被发现”这一弱点。通过试做和评价来明确需求的方法,这是典型的出题视角。",
-      "explanation_en": "The Prototyping model is a method in which a prototype is created in the early stage of development, and requirements are firmed up while users actually operate and evaluate it. By showing something that works, gaps in understanding of the specifications can be found early.\n\nOn the exam, it is often tested that this is effective when requirements are vague or when users find it hard to picture the finished product, and that it compensates for the Waterfall model's weakness of upstream errors being discovered downstream. A method that clarifies requirements through prototyping and evaluation is the typical exam viewpoint.",
-      "analogy_zh": "就像盖房子前先给你看模型或样板间,让你确认“这里我想这样改”。在完工前用试做品来对齐认识。",
-      "analogy_en": "Like showing a model or a show room before building a house so you can confirm \"I want to change this part this way.\" You align understanding with a prototype before completion.",
-      "memory_hook_zh": "说到原型模型,就是用试做品及早确认需求",
-      "memory_hook_en": "Prototyping model → confirm requirements early with a prototype"
+      "extra_zh": [
+        "按试制、评估、确定需求的顺序",
+        "需求模糊的开发"
+      ],
+      "extra_en": [
+        "Build a prototype, evaluate it, then fix requirements",
+        "Projects with vague requirements"
+      ]
     },
     {
       "term": "スパイラルモデル",
-      "definition_jp": "システムを部分に分け、設計・試作・評価の反復をらせん状に繰り返して完成度を高める開発モデル。",
-      "explanation_jp": "スパイラルモデルは、システムを機能のまとまりごとに分割し、各部分について計画・設計・試作・評価のサイクルを繰り返しながら、らせん状に少しずつ完成へ近づけていく手法です。ウォーターフォールの計画性とプロトタイピングの試作・評価を組み合わせた発展形です。\n\n試験では、反復(イテレーション)のたびにリスクを評価しながら進める点や、大規模で不確実性の高い開発に向く点が問われます。後戻りしないウォーターフォールとの違い、反復を重ねる点が頻出の対比ポイントです。",
-      "analogy_jp": "料理を少量ずつ作って味見し、改良を繰り返して仕上げるようなもの。一気に作らず、試して直すサイクルを何周も回します。",
-      "memory_hook_jp": "スパイラルモデルといえば反復をらせん状に繰り返す発展形",
-      "inline_quiz": [
-        "2010h22a-q034"
+      "one_line_jp": "部分ごとに開発の一巡を繰り返して範囲を広げる",
+      "one_line_zh": "按部分反复进行一轮开发，逐步扩大范围",
+      "one_line_en": "Repeats a full development cycle part by part, widening the scope",
+      "extra_jp": [
+        "計画から評価までの周を重ねる",
+        "要求が途中で変わりやすい開発"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"計画\"] --> B[\"設計\"]; B --> C[\"試作\"]; C --> D[\"評価\"]; D --> A",
-        "svg_path": "figures/management-09-26-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "螺旋模型",
-      "term_en": "Spiral model",
-      "definition_zh": "把系统分成若干部分,以螺旋方式反复进行设计、试做、评价,从而提高完成度的开发模型。",
-      "definition_en": "A development model that divides the system into parts and repeats design, prototyping, and evaluation in a spiral to raise the level of completion.",
-      "explanation_zh": "螺旋模型是一种把系统按功能模块分割,对各部分反复进行计划、设计、试做、评价的循环,以螺旋方式一点一点接近完成的方法。它是把瀑布模型的计划性和原型法的试做、评价结合起来的进化形态。\n\n在考试中,常考它在每次反复(迭代)时一边评估风险一边推进,以及它适合大型、不确定性高的开发。与不返工的瀑布模型的区别、以及反复多次这一点,是高频的对比要点。",
-      "explanation_en": "The Spiral model is a method that divides the system into functional groupings and, for each part, repeats a cycle of planning, design, prototyping, and evaluation, approaching completion little by little in a spiral. It is an evolved form that combines the planning of Waterfall with the prototyping and evaluation of the Prototyping model.\n\nOn the exam, it is often tested that each iteration proceeds while assessing risk, and that it suits large-scale development with high uncertainty. The difference from the no-going-back Waterfall model and the fact that it repeats over and over are frequently tested points of contrast.",
-      "analogy_zh": "就像做菜时每次只做一点点先尝味道,反复改良直到做好。不是一口气做完,而是绕很多圈,边试边改。",
-      "analogy_en": "Like cooking a little at a time, tasting it, and repeatedly improving until it is done. Instead of making it all at once, you go around many loops, trying and fixing as you go.",
-      "memory_hook_zh": "说到螺旋模型,就是以螺旋方式反复迭代的进化形态",
-      "memory_hook_en": "Spiral model → an evolved form that repeats iterations in a spiral"
+      "extra_zh": [
+        "一圈圈重复从计划到评估的过程",
+        "需求容易中途变化的开发"
+      ],
+      "extra_en": [
+        "Adds loop after loop, each from planning to evaluation",
+        "Projects whose requirements tend to change midway"
+      ]
     },
     {
       "term": "RAD",
-      "definition_jp": "試作や開発支援ツールを活用し、短期間で素早くシステムを開発する手法。",
-      "explanation_jp": "RAD(Rapid Application Development、迅速なアプリケーション開発)は、プロトタイピングや開発支援ツール、少人数のチームを活用して、短い期間で素早くシステムを作り上げる開発手法です。利用者を巻き込みながら試作と改良を繰り返します。\n\n試験では、「Rapid=迅速」が示すとおり開発期間の短縮を重視する手法である点が問われます。プロトタイピングを発展させ、ツールや反復を使って短納期を実現する点が特徴で、用語の意味(迅速な開発)を押さえておくことが得点につながります。",
-      "analogy_jp": "出来合いの部品やキットを組み合わせて家具を素早く完成させるようなもの。ゼロから作らず道具と試作を使い、とにかく短時間で仕上げます。",
-      "memory_hook_jp": "RADといえばツールと試作で短期間に迅速開発",
-      "inline_quiz": [
-        "2016h28a-q046"
+      "one_line_jp": "ツールと試作を使い短期間で開発する",
+      "one_line_zh": "借助工具和试制，在短期内完成开发",
+      "one_line_en": "Uses tools and prototypes to develop in a short time",
+      "extra_jp": [
+        "少人数のチームに利用者も加わる",
+        "早く使い始めたい開発"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "RAD(快速应用开发)",
-      "term_en": "RAD",
-      "definition_zh": "利用试做和开发支持工具,在短时间内快速开发系统的方法。",
-      "definition_en": "A method that uses prototyping and development support tools to build a system quickly in a short period.",
-      "explanation_zh": "RAD(Rapid Application Development,快速应用开发)是一种利用原型法、开发支持工具和小规模团队,在短时间内快速做出系统的开发方法。它会让用户参与进来,反复进行试做和改良。\n\n在考试中,常考它正如“Rapid=快速”所表示的那样,是一种重视缩短开发周期的方法。它发展了原型法,利用工具和反复来实现短交期,这是它的特点;记住术语的含义(快速开发)有助于得分。",
-      "explanation_en": "RAD (Rapid Application Development) is a development method that uses prototyping, development support tools, and a small team to build a system quickly in a short period. It involves users and repeats prototyping and improvement.\n\nOn the exam, it is often tested that, as \"Rapid\" indicates, it is a method that emphasizes shortening the development period. Its characteristic is that it develops prototyping further and uses tools and iteration to achieve a short delivery time; remembering the meaning of the term (rapid development) helps you score.",
-      "analogy_zh": "就像用现成的零件或套件组合,快速做好家具。不从零开始做,而是用工具和试做,总之就是在很短时间内完成。",
-      "analogy_en": "Like assembling ready-made parts or a kit to finish furniture quickly. Instead of building from scratch, you use tools and prototypes and, above all, finish it in a very short time.",
-      "memory_hook_zh": "说到 RAD,就是用工具和试做在短时间内快速开发",
-      "memory_hook_en": "RAD → rapid development in a short time using tools and prototypes"
+      "extra_zh": [
+        "用户也加入人数不多的团队",
+        "希望尽早投入使用的开发"
+      ],
+      "extra_en": [
+        "Users join a small team",
+        "Projects that need to go live quickly"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "ウォーターフォールモデル",
+      "term_zh": "瀑布模型",
+      "term_en": "Waterfall model",
+      "one_jp": "**ウォーターフォールモデル**は、開発を複数の**工程**に区切り、前の工程を終えて確認してから次の工程へ移る形で、一方向に進める開発モデルである。",
+      "one_zh": "**瀑布模型**（[[jp:ウォーターフォールモデル]]）把开发划分为多道**工序**，做完并确认前一道工序后才进入下一道，是一种单向推进的开发模型。",
+      "one_en": "The **waterfall model** ([[jp:ウォーターフォールモデル]]) divides development into several **phases** and moves in one direction, entering the next phase only after the previous one is finished and checked.",
+      "detail_jp": "要件定義のように開発の初めに近い工程を**上流工程**、プログラミングやテストのように後の工程を**下流工程**と呼び、後の工程は前の工程の成果物(文書)を基に作業する。区切りが明確なため計画や進み具合を管理しやすいが、前の工程へ戻らないことを前提にしているので、途中の仕様変更には対応しにくい。上流の誤りが後で見つかり、前の工程へ戻ってやり直すことを**手戻り**という。",
+      "detail_zh": "像需求定义这样靠近开发起点的工序称为**上游工序**（[[jp:上流工程]]），像编程、测试这样靠后的工序称为**下游工序**（[[jp:下流工程]]），后面的工序以前面工序的成果物（文档）为依据开展工作。工序之间界限清楚，计划和进展都便于管理，但由于以不返回前道工序为前提，很难应对中途的规格变更。上游的错误到后期才被发现、只好退回前面的工序重做，这叫作**返工**（[[jp:手戻り]]）。",
+      "detail_en": "Phases near the start of development, such as requirements definition, are called **upstream phases** ([[jp:上流工程]]), and later ones, such as programming and testing, are **downstream phases** ([[jp:下流工程]]); each later phase works from the deliverables (documents) of the one before. The clear boundaries make plans and progress easy to manage, but because the model assumes no going back, it copes poorly with specification changes midway. Going back to an earlier phase to redo work after an upstream error surfaces late is called **rework** ([[jp:手戻り]]).",
+      "analogy_jp": "家を基礎、柱、屋根の順に建てるようなもの。屋根まで載せてから基礎の誤りに気付くと、やり直しが大がかりになる。",
+      "analogy_zh": "就像盖房子时按地基、柱子、屋顶的顺序施工。等屋顶都盖好了才发现地基有问题，重做起来就是大工程。",
+      "analogy_en": "It is like building a house in the order foundation, pillars, roof. Spot a flaw in the foundation after the roof is on, and fixing it becomes a major job.",
+      "hook_jp": "英語の waterfall は「滝」。工程を階段状に並べて描くと、水が段々に落ちていく形に見える。",
+      "hook_zh": "waterfall 在英语里是“瀑布”。把各道工序画成阶梯状，看起来就像水一级一级往下落。",
+      "hook_en": "Draw the phases as a staircase going down, and work seems to spill from one step to the next like water over a fall.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "工程ごとに完了を確かめてから次へ進むので、開発がどこまで進んだかという**進捗**をつかみやすい。",
+          "text_zh": "每道工序都确认完成后才进入下一道，因此容易掌握开发推进到哪一步的**进度**（[[jp:進捗]]）。",
+          "text_en": "Because each phase is confirmed complete before the next begins, it is easy to see **progress** ([[jp:進捗]]), meaning how far development has come.",
+          "qids": [
+            "2009h21h-q038",
+            "2013h25a-q034"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "上流工程の誤りは、見つかる工程が後になるほど**手戻り**が大きく、1 件当たりの訂正コストも開発の経過とともに増える。",
+          "text_zh": "上游工序（[[jp:上流工程]]）的错误越是在靠后的工序才被发现，**返工**（[[jp:手戻り]]）就越大，每处错误的修正成本也随开发推进而增加。",
+          "text_en": "The later the phase in which an error from an upstream phase ([[jp:上流工程]]) is found, the larger the **rework** ([[jp:手戻り]]), and the cost of fixing each error also rises as development goes on.",
+          "qids": [
+            "2015h27a-q043",
+            "2018h30h-q054"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "要求が最初から固まっていて、後から変わりにくい開発に向くモデルである。",
+          "text_zh": "这种模型适合需求一开始就已确定、之后不太会变化的开发。",
+          "text_en": "This model suits projects whose requirements are settled from the start and are unlikely to change later.",
+          "qids": [
+            "2026r08-q038"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "req",
+              "label": {
+                "jp": "要件定義",
+                "zh": "需求定义",
+                "en": "Requirements definition"
+              }
+            },
+            {
+              "id": "design",
+              "label": {
+                "jp": "設計",
+                "zh": "设计",
+                "en": "Design"
+              }
+            },
+            {
+              "id": "prog",
+              "label": {
+                "jp": "プログラミング",
+                "zh": "编程",
+                "en": "Programming"
+              }
+            },
+            {
+              "id": "test",
+              "label": {
+                "jp": "テスト",
+                "zh": "测试",
+                "en": "Testing"
+              }
+            },
+            {
+              "id": "ops",
+              "label": {
+                "jp": "運用",
+                "zh": "运行维护",
+                "en": "Operation"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "要件定義で、システムに求める機能を決めて文書にまとめる。",
+            "caption_zh": "在需求定义阶段，确定系统需要的功能并整理成文档。",
+            "caption_en": "Requirements definition decides the functions the system needs and writes them down in documents.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "確定した要件の文書を基に設計し、確認が済んでから次の工程へ渡す。",
+            "caption_zh": "依据已确定的需求文档进行设计，确认无误后再交给下一道工序。",
+            "caption_en": "Design works from the finalized requirements documents and hands off to the next phase once it is checked.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "プログラミングとテストへ進む。ここで前の工程の誤りが見つかると、戻って直す範囲が広い。",
+            "caption_zh": "接着进入编程和测试。如果此时发现前面工序的错误，需要返回修改的范围就很大。",
+            "caption_en": "Work moves on to programming and testing. An error from an earlier phase found here means going back and fixing a wide range of work.",
+            "state": {
+              "show": 4
+            }
+          },
+          {
+            "caption_jp": "テストを終えて運用に入り、開発が完了する。",
+            "caption_zh": "测试结束后进入运行维护，开发宣告完成。",
+            "caption_en": "After testing, the system goes into operation and development is complete.",
+            "state": {
+              "show": 5
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21h-q038",
+        "2013h25a-q034",
+        "2015h27a-q043"
+      ],
+      "definition_jp": "ウォーターフォールモデルは、開発を複数の工程に区切り、前の工程を終えて確認してから次の工程へ移る形で、一方向に進める開発モデルである。",
+      "definition_zh": "瀑布模型（ウォーターフォールモデル）把开发划分为多道工序，做完并确认前一道工序后才进入下一道，是一种单向推进的开发模型。",
+      "definition_en": "The waterfall model (ウォーターフォールモデル) divides development into several phases and moves in one direction, entering the next phase only after the previous one is finished and checked.",
+      "explanation_jp": "要件定義のように開発の初めに近い工程を上流工程、プログラミングやテストのように後の工程を下流工程と呼び、後の工程は前の工程の成果物(文書)を基に作業する。区切りが明確なため計画や進み具合を管理しやすいが、前の工程へ戻らないことを前提にしているので、途中の仕様変更には対応しにくい。上流の誤りが後で見つかり、前の工程へ戻ってやり直すことを手戻りという。",
+      "explanation_zh": "像需求定义这样靠近开发起点的工序称为上游工序（上流工程），像编程、测试这样靠后的工序称为下游工序（下流工程），后面的工序以前面工序的成果物（文档）为依据开展工作。工序之间界限清楚，计划和进展都便于管理，但由于以不返回前道工序为前提，很难应对中途的规格变更。上游的错误到后期才被发现、只好退回前面的工序重做，这叫作返工（手戻り）。",
+      "explanation_en": "Phases near the start of development, such as requirements definition, are called upstream phases (上流工程), and later ones, such as programming and testing, are downstream phases (下流工程); each later phase works from the deliverables (documents) of the one before. The clear boundaries make plans and progress easy to manage, but because the model assumes no going back, it copes poorly with specification changes midway. Going back to an earlier phase to redo work after an upstream error surfaces late is called rework (手戻り).",
+      "memory_hook_jp": "英語の waterfall は「滝」。工程を階段状に並べて描くと、水が段々に落ちていく形に見える。",
+      "memory_hook_zh": "waterfall 在英语里是“瀑布”。把各道工序画成阶梯状，看起来就像水一级一级往下落。",
+      "memory_hook_en": "Draw the phases as a staircase going down, and work seems to spill from one step to the next like water over a fall.",
+      "inline_quiz": [
+        "2009h21h-q038",
+        "2013h25a-q034",
+        "2015h27a-q043"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "プロトタイピングモデル",
+      "term_zh": "原型模型",
+      "term_en": "Prototyping model",
+      "one_jp": "**プロトタイピングモデル**は、開発の早い段階で**試作品(プロトタイプ)**を作り、利用者に確かめてもらいながら要求を固める開発モデルである。",
+      "one_zh": "**原型模型**（[[jp:プロトタイピングモデル]]）在开发早期就制作**试制品（原型）**，一边请用户确认，一边确定需求，是一种开发模型。",
+      "one_en": "The **prototyping model** ([[jp:プロトタイピングモデル]]) builds a **trial version (prototype)** early in development and pins down requirements while users check it.",
+      "detail_jp": "利用者は画面や操作を実際に見て意見を言えるので、文書だけでは伝わりにくい要望が早い段階で表に出る。試作と評価は意見がまとまるまで繰り返すことがあり、回数が増えるとそのぶん期間や費用がかかる。",
+      "detail_zh": "用户能亲眼看到画面和操作再提意见，所以光靠文档难以传达的要求，在早期就会暴露出来。试制和评估有时要反复到意见统一为止，次数越多，花费的时间和费用也越多。",
+      "detail_en": "Users can see the actual screens and operations before commenting, so wishes that are hard to convey in documents alone come out early. Prototyping and evaluation may be repeated until opinions settle, and each extra round adds time and cost.",
+      "analogy_jp": "家を建てる前にモデルルームを見てもらい、間取りや使い勝手の希望を聞き取るようなもの。",
+      "analogy_zh": "就像买房前先请客户参观样板间，听取他们对户型和使用便利性的想法。",
+      "analogy_en": "It is like showing buyers a model home before construction and asking what they want in layout and ease of use.",
+      "hook_jp": "proto- は「最初の」を表す接頭語で、prototype は「最初に作る型」という意味になる。",
+      "hook_zh": "proto- 是表示“最初的”前缀，prototype 就是“最先做出来的模子”。",
+      "hook_en": "The prefix proto- means \"first,\" so a prototype is the first form made, before the real thing.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "試作品を作る目的は、利用者に早い段階で実物を見てもらい、要求のあいまいさや開発者との認識のずれをなくすことである。",
+          "text_zh": "制作试制品（[[jp:試作品]]）的目的，是让用户尽早看到实物，消除需求的模糊之处以及与开发者（[[jp:開発者]]）之间的认识偏差。",
+          "text_en": "The purpose of building a prototype ([[jp:試作品]]) is to let users see something real early and remove vague requirements and gaps in understanding with the developers.",
+          "qids": [
+            "2010h22a-q034",
+            "2015h27a-q038",
+            "2025r07-q044"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "要求を定義する段階のプロトタイプは、利用者が実際に操作して確かめられる簡単なソフトウェアである。",
+          "text_zh": "需求定义阶段的原型（[[jp:プロトタイプ]]），是用户能亲手操作、加以确认的简单软件。",
+          "text_en": "A prototype ([[jp:プロトタイプ]]) at the requirements definition stage is simple software that users can actually operate to check things.",
+          "qids": [
+            "2016h28h-q049"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "proto",
+              "label": {
+                "jp": "試作品を作る",
+                "zh": "制作试制品",
+                "en": "Build a prototype"
+              }
+            },
+            {
+              "id": "eval",
+              "label": {
+                "jp": "利用者が操作して評価",
+                "zh": "用户操作并评估",
+                "en": "Users try it and evaluate"
+              }
+            },
+            {
+              "id": "fix",
+              "label": {
+                "jp": "要求を確定",
+                "zh": "确定需求",
+                "en": "Fix the requirements"
+              }
+            },
+            {
+              "id": "dev",
+              "label": {
+                "jp": "本番のシステムを開発",
+                "zh": "开发正式系统",
+                "en": "Develop the real system"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "画面や機能の一部を試作し、利用者に実際に触ってもらう。",
+            "caption_zh": "先试做部分画面和功能，让用户实际上手操作。",
+            "caption_en": "Some screens and functions are built as a trial, and users get their hands on them.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "評価で出た意見から要求を見直し、ずれがなくなった段階で確定する。",
+            "caption_zh": "根据评估中提出的意见修改需求，等双方没有偏差时再确定下来。",
+            "caption_en": "Feedback from the evaluation is used to revise the requirements, which are fixed once no gaps remain.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "確定した要求に基づいて本番のシステムを開発する。",
+            "caption_zh": "按照确定的需求开发正式系统。",
+            "caption_en": "The real system is developed from the fixed requirements.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2010h22a-q034",
+        "2015h27a-q038",
+        "2025r07-q044"
+      ],
+      "definition_jp": "プロトタイピングモデルは、開発の早い段階で試作品(プロトタイプ)を作り、利用者に確かめてもらいながら要求を固める開発モデルである。",
+      "definition_zh": "原型模型（プロトタイピングモデル）在开发早期就制作试制品（原型），一边请用户确认，一边确定需求，是一种开发模型。",
+      "definition_en": "The prototyping model (プロトタイピングモデル) builds a trial version (prototype) early in development and pins down requirements while users check it.",
+      "explanation_jp": "利用者は画面や操作を実際に見て意見を言えるので、文書だけでは伝わりにくい要望が早い段階で表に出る。試作と評価は意見がまとまるまで繰り返すことがあり、回数が増えるとそのぶん期間や費用がかかる。",
+      "explanation_zh": "用户能亲眼看到画面和操作再提意见，所以光靠文档难以传达的要求，在早期就会暴露出来。试制和评估有时要反复到意见统一为止，次数越多，花费的时间和费用也越多。",
+      "explanation_en": "Users can see the actual screens and operations before commenting, so wishes that are hard to convey in documents alone come out early. Prototyping and evaluation may be repeated until opinions settle, and each extra round adds time and cost.",
+      "memory_hook_jp": "proto- は「最初の」を表す接頭語で、prototype は「最初に作る型」という意味になる。",
+      "memory_hook_zh": "proto- 是表示“最初的”前缀，prototype 就是“最先做出来的模子”。",
+      "memory_hook_en": "The prefix proto- means \"first,\" so a prototype is the first form made, before the real thing.",
+      "inline_quiz": [
+        "2010h22a-q034",
+        "2015h27a-q038",
+        "2025r07-q044"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "スパイラルモデル",
+      "term_zh": "螺旋模型",
+      "term_en": "Spiral model",
+      "one_jp": "**スパイラルモデル**は、システムを部分に分け、部分ごとに計画から評価までの開発の一巡を**繰り返し**ながら、らせん状に完成へ近づける開発モデルである。",
+      "one_zh": "**螺旋模型**（[[jp:スパイラルモデル]]）把系统分成若干部分，对每个部分**反复**进行从计划到评估的一轮开发，呈螺旋状逐步接近完成，是一种开发模型。",
+      "one_en": "The **spiral model** ([[jp:スパイラルモデル]]) splits a system into parts and, by **repeating** a development cycle from planning to evaluation for each part, spirals toward completion.",
+      "detail_jp": "1 周ごとに計画を立て、問題になりそうな点(**リスク**)を見積もってから設計や試作に進み、評価の結果を次の周の計画に生かす。周を重ねるたびに開発する範囲が広がり、システムが少しずつ完成に近づく。",
+      "detail_zh": "每一圈都先制订计划、估计可能出问题的地方（**风险**，[[jp:リスク]]），再进入设计和试制，并把评估结果用到下一圈的计划中。圈数每增加一次，开发范围就扩大一些，系统也一点点接近完成。",
+      "detail_en": "Each loop starts with a plan and an estimate of likely trouble spots (**risks**, [[jp:リスク]]) before moving to design and prototyping, and the evaluation results feed into the next loop's plan. With every loop the scope of development widens, and the system gradually nears completion.",
+      "analogy_jp": "庭の一角に花を植えて育ち具合を確かめ、その結果を見て次の区画へ花壇を広げていく、を繰り返すようなもの。",
+      "analogy_zh": "就像先在院子一角种花、看看长势，再根据结果把花坛扩展到下一块地，如此反复。",
+      "analogy_en": "It is like planting flowers in one corner of a garden, seeing how they grow, and then using what you learned to extend the flower bed to the next patch, again and again.",
+      "hook_jp": "spiral は「らせん」。評価から次の計画へ戻って回るたびに、外へ一回り広がっていく形を思い浮かべる。",
+      "hook_zh": "spiral 意为“螺旋”。想象每次从评估绕回下一圈的计划时，都向外扩一圈的形状。",
+      "hook_en": "Picture a spiral: each time the work loops back from evaluation to the next plan, it reaches a little further out.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "1 周ごとの評価を次の周の改良や機能の追加へつなげるので、開発の途中で変わる要求にも合わせやすい。",
+          "text_zh": "每一圈的评估都会落实到下一圈的改进和功能追加上，因此也容易适应开发途中变化的需求。",
+          "text_en": "Because each loop's evaluation leads into improvements and added functions in the next loop, the model adapts well to requirements that change during development.",
+          "qids": [
+            "2014h26a-q042"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**プロトタイピングモデル**が繰り返すのは要求を確かめるための試作と評価であり、**スパイラルモデル**が繰り返すのはシステムの部分を作り上げる開発の一巡である。",
+          "text_zh": "**原型模型**（[[jp:プロトタイピングモデル]]）反复的是为确认需求而进行的试制和评估，**螺旋模型**（[[jp:スパイラルモデル]]）反复的则是把系统的各个部分做出来的一轮开发。",
+          "text_en": "What the **prototyping model** ([[jp:プロトタイピングモデル]]) repeats is prototyping and evaluation to confirm requirements, whereas what the **spiral model** ([[jp:スパイラルモデル]]) repeats is a development cycle that builds parts of the system."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "c1",
+              "label": {
+                "jp": "1 周目: 中心となる部分を開発",
+                "zh": "第 1 圈：开发核心部分",
+                "en": "Loop 1: build the core part"
+              }
+            },
+            {
+              "id": "e1",
+              "label": {
+                "jp": "評価を次の計画に生かす",
+                "zh": "把评估用于下一轮计划",
+                "en": "Feed the evaluation into the next plan"
+              }
+            },
+            {
+              "id": "c2",
+              "label": {
+                "jp": "2 周目: 部分を追加",
+                "zh": "第 2 圈：追加部分",
+                "en": "Loop 2: add a part"
+              }
+            },
+            {
+              "id": "c3",
+              "label": {
+                "jp": "3 周目: さらに追加して完成へ",
+                "zh": "第 3 圈：继续追加，走向完成",
+                "en": "Loop 3: add more and approach completion"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "1 周目は、計画を立て、問題になりそうな点を見積もってから、中心となる部分を設計・試作して評価する。",
+            "caption_zh": "第 1 圈先制订计划、估计可能出问题的地方，再对核心部分进行设计和试制并加以评估。",
+            "caption_en": "In loop 1, the team makes a plan and estimates likely trouble spots, then designs, prototypes, and evaluates the core part.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "評価の結果を、次の周の計画に生かす。",
+            "caption_zh": "把评估的结果用到下一圈的计划中。",
+            "caption_en": "The results of the evaluation shape the plan for the next loop.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "2 周目は新しい部分を加えて同じ一巡を行い、開発する範囲が広がる。",
+            "caption_zh": "第 2 圈加入新的部分，再走一遍同样的流程，开发范围随之扩大。",
+            "caption_en": "Loop 2 adds a new part and runs the same cycle, so the scope of development grows.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "周を重ねるごとに部分が増え、システムが完成に近づく。",
+            "caption_zh": "每多转一圈，部分就多一些，系统也离完成更近一步。",
+            "caption_en": "With each loop, more parts are added and the system gets closer to completion.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2014h26a-q042"
+      ],
+      "definition_jp": "スパイラルモデルは、システムを部分に分け、部分ごとに計画から評価までの開発の一巡を繰り返しながら、らせん状に完成へ近づける開発モデルである。",
+      "definition_zh": "螺旋模型（スパイラルモデル）把系统分成若干部分，对每个部分反复进行从计划到评估的一轮开发，呈螺旋状逐步接近完成，是一种开发模型。",
+      "definition_en": "The spiral model (スパイラルモデル) splits a system into parts and, by repeating a development cycle from planning to evaluation for each part, spirals toward completion.",
+      "explanation_jp": "1 周ごとに計画を立て、問題になりそうな点(リスク)を見積もってから設計や試作に進み、評価の結果を次の周の計画に生かす。周を重ねるたびに開発する範囲が広がり、システムが少しずつ完成に近づく。",
+      "explanation_zh": "每一圈都先制订计划、估计可能出问题的地方（风险，リスク），再进入设计和试制，并把评估结果用到下一圈的计划中。圈数每增加一次，开发范围就扩大一些，系统也一点点接近完成。",
+      "explanation_en": "Each loop starts with a plan and an estimate of likely trouble spots (risks, リスク) before moving to design and prototyping, and the evaluation results feed into the next loop's plan. With every loop the scope of development widens, and the system gradually nears completion.",
+      "memory_hook_jp": "spiral は「らせん」。評価から次の計画へ戻って回るたびに、外へ一回り広がっていく形を思い浮かべる。",
+      "memory_hook_zh": "spiral 意为“螺旋”。想象每次从评估绕回下一圈的计划时，都向外扩一圈的形状。",
+      "memory_hook_en": "Picture a spiral: each time the work loops back from evaluation to the next plan, it reaches a little further out.",
+      "inline_quiz": [
+        "2014h26a-q042"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "RAD",
+      "term_zh": "RAD(快速应用开发)",
+      "term_en": "RAD",
+      "one_jp": "**RAD**は、**開発支援ツール**や再利用できる部品、試作を活用して、短い期間でシステムを作り上げることを重視する開発手法である。",
+      "one_zh": "**RAD（快速应用开发）**（[[jp:RAD]]）是一种开发方法，借助**开发辅助工具**、可复用的部件和试制，力求在短时间内把系统做出来。",
+      "one_en": "**RAD** is a development method that puts building a system in a short time first, making use of **development support tools** ([[jp:開発支援ツール]]), reusable components, and prototypes.",
+      "detail_jp": "少人数のチームに利用者も加わり、試作を見ながら改良を重ねて仕上げていく。開発する期間をあらかじめ区切り、その期間内に完成させる進め方をとることが多い。",
+      "detail_zh": "用户也加入人数不多的团队，一边看试制品一边反复改进，直至完成。通常会事先划定开发期限，并在期限内完成系统。",
+      "detail_en": "Users join a small team, and the system is finished by refining it again and again while looking at prototypes. The development period is often fixed in advance, with the system completed within that window.",
+      "analogy_jp": "既製の部品とキットを使い、注文主と相談しながら組み立てて、短い日数で家具を仕上げるようなもの。",
+      "analogy_zh": "就像用现成的零件和套件，一边和订货人商量一边组装，在短短几天内做好一件家具。",
+      "analogy_en": "It is like assembling furniture from ready-made parts and a kit, talking it over with the customer as you go, and finishing in just a few days.",
+      "hook_jp": "Rapid Application Development の頭文字。Rapid は「速い」という意味。",
+      "hook_zh": "取自 Rapid Application Development 的首字母。Rapid 是“快速”的意思。",
+      "hook_en": "Short for Rapid Application Development, where \"rapid\" means fast.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**RAD** は試作やツールを使って短い期間でシステムを仕上げることを重視し、**プロトタイピングモデル**は要求を確かめて固めるために試作品を作る。",
+          "text_zh": "**RAD** 看重的是借助试制和工具在短时间内完成系统，**原型模型**（[[jp:プロトタイピングモデル]]）则是为了确认并确定需求而制作试制品。",
+          "text_en": "**RAD** puts first finishing a system in a short time with prototypes and tools, while the **prototyping model** ([[jp:プロトタイピングモデル]]) builds prototypes to confirm and settle requirements."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28a-q046",
+        "2019h31h-q048"
+      ],
+      "definition_jp": "RADは、開発支援ツールや再利用できる部品、試作を活用して、短い期間でシステムを作り上げることを重視する開発手法である。",
+      "definition_zh": "RAD（快速应用开发）（RAD）是一种开发方法，借助开发辅助工具、可复用的部件和试制，力求在短时间内把系统做出来。",
+      "definition_en": "RAD is a development method that puts building a system in a short time first, making use of development support tools (開発支援ツール), reusable components, and prototypes.",
+      "explanation_jp": "少人数のチームに利用者も加わり、試作を見ながら改良を重ねて仕上げていく。開発する期間をあらかじめ区切り、その期間内に完成させる進め方をとることが多い。",
+      "explanation_zh": "用户也加入人数不多的团队，一边看试制品一边反复改进，直至完成。通常会事先划定开发期限，并在期限内完成系统。",
+      "explanation_en": "Users join a small team, and the system is finished by refining it again and again while looking at prototypes. The development period is often fixed in advance, with the system completed within that window.",
+      "memory_hook_jp": "Rapid Application Development の頭文字。Rapid は「速い」という意味。",
+      "memory_hook_zh": "取自 Rapid Application Development 的首字母。Rapid 是“快速”的意思。",
+      "memory_hook_en": "Short for Rapid Application Development, where \"rapid\" means fast.",
+      "inline_quiz": [
+        "2016h28a-q046",
+        "2019h31h-q048"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "ウォーターフォールモデル",
+      "b": "プロトタイピングモデル",
+      "rows": [
+        {
+          "label_jp": "要求を固める時期",
+          "label_zh": "确定需求的时间",
+          "label_en": "When requirements are fixed",
+          "a_jp": "最初の要件定義で確定させ、その後は原則として変えない",
+          "a_zh": "在最初的需求定义中确定，之后原则上不再改动",
+          "a_en": "In the initial requirements definition, then in principle left unchanged",
+          "b_jp": "試作品を利用者が評価する過程で固めていく",
+          "b_zh": "在用户评估试制品的过程中逐步确定",
+          "b_en": "Gradually, as users evaluate the prototype",
+          "key": true
+        },
+        {
+          "label_jp": "利用者が動くものを見る時期",
+          "label_zh": "用户看到能运行的东西的时间",
+          "label_en": "When users first see something working",
+          "a_jp": "テストなどの下流工程に入ってから",
+          "a_zh": "进入测试等下游工序之后",
+          "a_en": "Only after downstream phases such as testing begin",
+          "b_jp": "開発の早い段階の試作品で",
+          "b_zh": "在开发早期的试制品上",
+          "b_en": "Early in development, through the prototype",
+          "key": false
+        },
+        {
+          "label_jp": "向く開発",
+          "label_zh": "适合的开发",
+          "label_en": "Suited to",
+          "a_jp": "要求が明確で変更が少ない開発",
+          "a_zh": "需求明确、变更少的开发",
+          "a_en": "Projects with clear requirements and few changes",
+          "b_jp": "要求があいまいで、完成形を思い描きにくい開発",
+          "b_zh": "需求模糊、难以想象最终形态的开发",
+          "b_en": "Projects with vague requirements and a hard-to-picture end result",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "プロトタイピングモデル",
+      "b": "スパイラルモデル",
+      "rows": [
+        {
+          "label_jp": "繰り返すもの",
+          "label_zh": "反复的对象",
+          "label_en": "What is repeated",
+          "a_jp": "要求を確かめるための試作と評価",
+          "a_zh": "为确认需求而进行的试制和评估",
+          "a_en": "Prototyping and evaluation to confirm requirements",
+          "b_jp": "部分ごとの計画から評価までの開発の一巡",
+          "b_zh": "按部分进行的、从计划到评估的一轮开发",
+          "b_en": "A development cycle from planning to evaluation, for each part",
+          "key": true
+        },
+        {
+          "label_jp": "繰り返しで得るもの",
+          "label_zh": "通过反复得到的东西",
+          "label_en": "What the repetition produces",
+          "a_jp": "確定した要求(その後に本番の開発へ進む)",
+          "a_zh": "确定下来的需求（之后再进入正式开发）",
+          "a_en": "Fixed requirements (real development follows)",
+          "b_jp": "周ごとに増えていく完成したシステムの部分",
+          "b_zh": "每一圈都在增加的、已完成的系统部分",
+          "b_en": "Finished parts of the system that grow with each loop",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**ウォーターフォールモデル**は工程の区切りが明確で進捗を管理しやすい一方、上流の誤りは発見が遅れるほど手戻りが大きい。",
+    "**プロトタイピングモデル**は試作品を利用者に見せ、要求のあいまいさを早い段階で取り除く。",
+    "**スパイラルモデル**は周を重ねるごとに開発範囲を広げ、途中で変わる要求にも合わせやすい。",
+    "**RAD** は開発支援ツールや試作を使い、開発期間の短さを重視する。"
+  ],
+  "key_points_zh": [
+    "**瀑布模型**工序界限清楚、进度便于管理，但上游的错误发现得越晚，返工就越大。",
+    "**原型模型**把试制品给用户看，尽早消除需求中的模糊之处。",
+    "**螺旋模型**每多转一圈就扩大开发范围，也容易适应中途变化的需求。",
+    "**RAD** 借助开发辅助工具和试制，看重缩短开发期限。"
+  ],
+  "key_points_en": [
+    "The **waterfall model** has clear phase boundaries that make progress easy to manage, but the later an upstream error is found, the larger the rework.",
+    "The **prototyping model** shows users a prototype to clear up vague requirements early.",
+    "The **spiral model** widens the scope of development with each loop and adapts well to requirements that change midway.",
+    "**RAD** uses development support tools and prototypes and puts a short development period first."
+  ],
+  "overview": {
+    "intro_jp": "この単元の開発モデルと手法を、工程を一方向に進めるか、試作や開発の一巡を繰り返すかで分けられる。ウォーターフォールモデルで上流の誤りが後から見つかると、なぜ手戻りが大きくなるかを説明できる。プロトタイピングモデルとスパイラルモデルで、繰り返す対象の違いを言える。RAD が何を重視する手法かを言える。",
+    "intro_zh": "能按照“工序单向推进”还是“反复进行试制或一轮开发”，区分本单元的开发模型和方法。能说明在瀑布模型中，上游的错误到后期才被发现时，返工为什么会很大。能说出原型模型和螺旋模型各自反复的对象有何不同。能说出 RAD 是一种看重什么的方法。",
+    "intro_en": "Sort the development models and methods in this unit by whether they move through phases in one direction or repeat prototyping or development cycles. Explain why, in the waterfall model, an upstream error found late leads to large rework. State how the prototyping model and the spiral model differ in what they repeat. State what RAD puts first as a method.",
+    "freq_badge": "頻出",
+    "est_minutes": 26
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ウォーターフォールモデル: ウォーターフォールモデルといえば滝のように上流から下流へ後戻りしない開発",
-      "プロトタイピングモデル: プロトタイピングモデルといえば試作品で要求を早期に確認",
-      "スパイラルモデル: スパイラルモデルといえば反復をらせん状に繰り返す発展形",
-      "RAD: RADといえばツールと試作で短期間に迅速開発"
-    ],
     "key_points_jp": [
-      "ウォーターフォールは工程を上流から下流へ後戻りせず進める基本モデルで、計画管理が容易な反面、上流の誤りによる手戻りが大きいのが弱点。",
-      "プロトタイピングは試作品を利用者に評価させて要求を早期に固め、ウォーターフォールの弱点(仕様の認識ズレ)を補う。",
-      "スパイラルはウォーターフォールとプロトタイピングを組み合わせ、反復をらせん状に繰り返してリスクを抑えつつ完成度を高める発展形。",
-      "RAD はツールや試作、少人数チームを使い、短期間での迅速な開発を重視する手法。",
-      "4モデルは『アジャイル以前の古典プロセスモデル』として、長所短所を対比して理解するのが頻出の要点。"
+      "ウォーターフォールモデルは工程の区切りが明確で進捗を管理しやすい一方、上流の誤りは発見が遅れるほど手戻りが大きい。",
+      "プロトタイピングモデルは試作品を利用者に見せ、要求のあいまいさを早い段階で取り除く。",
+      "スパイラルモデルは周を重ねるごとに開発範囲を広げ、途中で変わる要求にも合わせやすい。",
+      "RAD は開発支援ツールや試作を使い、開発期間の短さを重視する。"
     ],
     "key_points_zh": [
-      "瀑布是把工序自上游向下游、不返工地推进的基本模型,优点是计划管理容易,弱点是上游错误导致的返工代价大。",
-      "原型法让用户评价试做品以及早确定需求,弥补瀑布的弱点(对规格认识的偏差)。",
-      "螺旋把瀑布和原型法结合起来,以螺旋方式反复迭代,在抑制风险的同时提高完成度,是进化形态。",
-      "RAD 利用工具、试做和小规模团队,重视在短时间内快速开发的方法。",
-      "这 4 种模型作为“敏捷之前的经典过程模型”,对比理解其优缺点是高频的要点。"
+      "瀑布模型工序界限清楚、进度便于管理，但上游的错误发现得越晚，返工就越大。",
+      "原型模型把试制品给用户看，尽早消除需求中的模糊之处。",
+      "螺旋模型每多转一圈就扩大开发范围，也容易适应中途变化的需求。",
+      "RAD 借助开发辅助工具和试制，看重缩短开发期限。"
     ],
     "key_points_en": [
-      "Waterfall is the basic model that advances phases from upstream to downstream without going back; its strength is easy plan management, while its weakness is the large rework caused by upstream errors.",
-      "Prototyping has users evaluate a prototype to firm up requirements early, compensating for Waterfall's weakness (gaps in understanding of specifications).",
-      "Spiral combines Waterfall and Prototyping, repeating iterations in a spiral to raise the level of completion while controlling risk; it is an evolved form.",
-      "RAD is a method that uses tools, prototyping, and a small team, emphasizing rapid development in a short period.",
-      "Understanding these 4 models as \"classic process models before agile\" by comparing their strengths and weaknesses is a frequently tested key point."
+      "The waterfall model has clear phase boundaries that make progress easy to manage, but the later an upstream error is found, the larger the rework.",
+      "The prototyping model shows users a prototype to clear up vague requirements early.",
+      "The spiral model widens the scope of development with each loop and adapts well to requirements that change midway.",
+      "RAD uses development support tools and prototypes and puts a short development period first."
+    ],
+    "memory_hooks_jp": [
+      "ウォーターフォールモデル: 英語の waterfall は「滝」。工程を階段状に並べて描くと、水が段々に落ちていく形に見える。",
+      "プロトタイピングモデル: proto- は「最初の」を表す接頭語で、prototype は「最初に作る型」という意味になる。",
+      "スパイラルモデル: spiral は「らせん」。評価から次の計画へ戻って回るたびに、外へ一回り広がっていく形を思い浮かべる。",
+      "RAD: Rapid Application Development の頭文字。Rapid は「速い」という意味。"
     ],
     "memory_hooks_zh": [
-      "瀑布模型:说到瀑布模型,就是像瀑布一样从上游流向下游、不返工的开发",
-      "原型模型:说到原型模型,就是用试做品及早确认需求",
-      "螺旋模型:说到螺旋模型,就是以螺旋方式反复迭代的进化形态",
-      "RAD:说到 RAD,就是用工具和试做在短时间内快速开发"
+      "瀑布模型：waterfall 在英语里是“瀑布”。把各道工序画成阶梯状，看起来就像水一级一级往下落。",
+      "原型模型：proto- 是表示“最初的”前缀，prototype 就是“最先做出来的模子”。",
+      "螺旋模型：spiral 意为“螺旋”。想象每次从评估绕回下一圈的计划时，都向外扩一圈的形状。",
+      "RAD(快速应用开发)：取自 Rapid Application Development 的首字母。Rapid 是“快速”的意思。"
     ],
     "memory_hooks_en": [
-      "Waterfall model: Waterfall model → development that flows from upstream to downstream like a waterfall, with no going back",
-      "Prototyping model: Prototyping model → confirm requirements early with a prototype",
-      "Spiral model: Spiral model → an evolved form that repeats iterations in a spiral",
-      "RAD: RAD → rapid development in a short time using tools and prototypes"
+      "Waterfall model: Draw the phases as a staircase going down, and work seems to spill from one step to the next like water over a fall.",
+      "Prototyping model: The prefix proto- means \"first,\" so a prototype is the first form made, before the real thing.",
+      "Spiral model: Picture a spiral: each time the work loops back from evaluation to the next plan, it reaches a little further out.",
+      "RAD: Short for Rapid Application Development, where \"rapid\" means fast."
     ]
   },
   "challenge_questions": [
-    "2015h27a-q043",
     "2015h27h-q032",
-    "2019h31h-q048",
     "2016h28h-q049",
-    "2018h30h-q054"
+    "2018h30h-q054",
+    "2026r08-q038"
   ],
   "source_figures": [
     {
@@ -186,9 +731,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "经典的软件开发模型",
-  "title_en": "Classic Software Development Models",
-  "unit_summary_zh": "学习瀑布、螺旋、原型、RAD 这几种有代表性的开发过程模型的特点和适用场景。",
-  "unit_summary_en": "Learn the characteristics and applicable scenarios of representative development process models: Waterfall, Spiral, Prototyping, and RAD."
+  }
 }
