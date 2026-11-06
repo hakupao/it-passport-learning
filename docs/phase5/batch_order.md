@@ -24,7 +24,7 @@
 | b15 | technology-23-61 | 情報セキュリティ (2/3) | u06 u07 u08 u09 u10 | 89 | 30 | done (S142, attempts 1/1/2/3/1, Rule A PASS after 52 patches, D-206 auto) |
 | b16 | technology-23-61 | 情報セキュリティ (3/3) | u11 u12 u13 | 89 | 16 | done (S146, attempts 2/2/1, Rule A PASS after 31 patches, D-206 auto) |
 | b17 | technology-22-58 | ネットワーク方式 | u01 u02 u03 u04 u05 | 87 | 31 | done (S146, attempts 1/3/2/2/1, Rule A PASS after 78 patches, D-206 auto) |
-| b18 | management-11-29 | サービスマネジメントシステム | u01 u02 u03 u04 u05 | 77 | 25 | todo |
+| b18 | management-11-29 | サービスマネジメントシステム | u01 u02 u03 u04 u05 | 77 | 25 | done (S146, attempts 2/3/3/3/2, Rule A PASS after 39 patches, D-206 auto) |
 | b19 | strategy-06-19 | 業務プロセス | u01 u02 u03 | 71 | 21 | todo |
 | b20 | strategy-02-04 | 知的財産権 | u01 u02 u03 | 69 | 18 | todo |
 | b21 | strategy-01-01 | 経営・組織論 (1/3) | u01 u02 u03 u04 u05 | 62 | 33 | todo |
