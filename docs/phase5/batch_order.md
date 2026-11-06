@@ -41,7 +41,7 @@
 | b32 | management-09-26 | 開発プロセス・手法 | u01 u02 u03 u04 u05 | 41 | 30 | done (S148, attempts 1/2/1/1/1, Rule A PASS after 27 patches, D-206 auto) |
 | b33 | strategy-05-14 | ビジネスシステム (1/2) | u01 u02 u03 u04 u05 | 39 | 35 | done (S148, attempts 2/1/1/1/3, Rule A PASS after 38 patches, D-206 auto) |
 | b34 | strategy-05-14 | ビジネスシステム (2/2) | u06 u07 u08 u09 | 39 | 22 | done |
-| b35 | strategy-04-13 | 技術開発戦略の立案・技術開発計画 | u01 u02 u03 u04 | 38 | 25 | todo |
+| b35 | strategy-04-13 | 技術開発戦略の立案・技術開発計画 | u01 u02 u03 u04 | 38 | 25 | done |
 | b36 | strategy-07-24 | 調達計画・実施 | u01 | 38 | 4 | todo |
 | b37 | technology-16-43 | システムの構成 | u01 u02 u03 u04 | 38 | 25 | todo |
 | b38 | strategy-07-23 | 要件定義 | u01 | 37 | 4 | todo |
