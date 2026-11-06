@@ -1,98 +1,458 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-16-43-u01",
   "topic_id": "technology-16-43",
   "category": "technology",
   "title_jp": "処理形態とシステム構成の基本",
+  "title_zh": "处理形态与系统构成基础",
+  "title_en": "Fundamentals of Processing Types and System Configuration",
   "unit_summary_jp": "処理をどこに置き、機器同士がどう役割分担するかという、システム構成の最も基礎的な分類を学ぶ。",
+  "unit_summary_zh": "学习系统构成中最基础的分类：把处理放在哪里，以及设备之间如何分工。",
+  "unit_summary_en": "Learn the most fundamental classifications of system configuration: where to place processing, and how devices divide roles among themselves.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "処理をどこで行うか(集中・分散・並列)と、機器同士がどう役割分担するか(クライアントサーバ・ピアツーピア・Webシステム)という、システム構成の最も基礎的な分類を学ぶ単元です。これらは冗長化や仮想化を理解する土台であり、各方式の長所・短所の対比が試験で繰り返し問われます。",
-    "freq_badge": "標準",
-    "est_minutes": 18,
-    "intro_zh": "本单元学习系统构成中最基础的分类：在何处进行处理（集中、分散、并行），以及设备之间如何分工（客户机服务器、对等网络、Web系统）。这些是理解冗余化和虚拟化的基础，而各方式的优缺点对比在考试中反复被考查。",
-    "intro_en": "This unit covers the most fundamental classifications of system configuration: where processing is performed (centralized, distributed, parallel) and how devices divide roles among themselves (client-server, peer-to-peer, web systems). These form the foundation for understanding redundancy and virtualization, and the comparison of each method's pros and cons is repeatedly tested in the exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**集中処理**と**分散処理**を、それぞれの長所と短所とあわせて見分けられる。",
+    "**並列処理**が、処理を分けて同時に動かすことで処理時間を縮めるしくみを説明できる。",
+    "機器どうしの立場の違いで**クライアントサーバシステム**と**ピアツーピア**を見分け、**Webシステム**がどちらに属するかを説明できる。"
+  ],
+  "goals_zh": [
+    "能够区分**集中处理**和**分散处理**，并说出各自的优点和缺点。",
+    "能够说明**并行处理**如何把处理拆分开同时运行，从而缩短处理时间。",
+    "能够根据设备之间的立场差异区分**客户机服务器系统**和**对等网络**，并说明**Web系统**属于哪一种。"
+  ],
+  "goals_en": [
+    "Tell **centralized processing** and **distributed processing** apart, along with the strengths and weaknesses of each.",
+    "Explain how **parallel processing** shortens processing time by splitting work and running the parts at the same time.",
+    "Distinguish a **client-server system** from **peer-to-peer** by the roles devices play, and explain which one a **Web system** belongs to."
+  ],
+  "overview_cols_jp": [
+    "着目点"
+  ],
+  "overview_cols_zh": [
+    "着眼点"
+  ],
+  "overview_cols_en": [
+    "Focus"
+  ],
+  "overview_rows": [
     {
       "term": "集中処理",
-      "definition_jp": "1台のコンピュータに処理を集めて一括して行うシステム形態。",
-      "explanation_jp": "集中処理は、ホストコンピュータなど1か所にすべての処理を集めて実行する方式です。最も古くから使われてきた基本形で、管理やセキュリティ対策を1か所で行えるため運用しやすいのが利点です。\n\n一方で、中心となるコンピュータが故障するとシステム全体が止まってしまう(単一障害点になる)弱点があります。次に学ぶ分散処理との対比で、この長所・短所がよく問われます。\n\n試験では「集中処理は管理が容易だが障害に弱い」「分散処理は障害に強いが管理が複雑」という対の関係で整理して覚えると確実です。",
-      "analogy_jp": "1人の優秀な料理長がすべての注文を1か所でさばくレストラン。統率は取れますが、その人が倒れると店全体が止まってしまうイメージです。",
-      "memory_hook_jp": "集中処理といえば1か所に集約・管理は容易だが障害に弱い",
-      "inline_quiz": [
-        "2014h26a-q048"
+      "one_line_jp": "処理を 1 台のコンピュータに集めて行う形態。",
+      "one_line_zh": "把处理集中到 1 台计算机上进行的形态。",
+      "one_line_en": "A form in which processing is gathered on one computer.",
+      "extra_jp": [
+        "処理をどこで行うか"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "集中处理",
-      "term_en": "Centralized processing",
-      "definition_zh": "把处理集中到一台计算机上统一进行的系统形态。",
-      "definition_en": "A system configuration in which processing is concentrated on a single computer and carried out collectively.",
-      "explanation_zh": "集中处理是把所有处理集中到主机等一处来执行的方式。它是自古以来使用的最基本形态，由于可以在一处进行管理和安全防护，因此运维起来较为方便。\n\n另一方面，它存在弱点：作为中心的计算机一旦发生故障，整个系统就会停止（成为单点故障）。在与接下来要学习的分散处理的对比中，这一优缺点经常被考查。\n\n考试中，把它整理成「集中处理管理容易但抗故障能力弱」「分散处理抗故障能力强但管理复杂」这样的成对关系来记忆会更可靠。",
-      "explanation_en": "Centralized processing is a method in which all processing is concentrated and executed in one place, such as a host computer. It is the most basic form used since the earliest days, and because management and security measures can be handled in one place, it is easy to operate.\n\nOn the other hand, it has a weakness: if the central computer fails, the entire system stops (it becomes a single point of failure). This pair of pros and cons is often tested in contrast with distributed processing, which you will learn next.\n\nIn the exam, it is more reliable to memorize this as a paired relationship: \"centralized processing is easy to manage but weak against failures\" versus \"distributed processing is strong against failures but complex to manage.\"",
-      "analogy_zh": "就像一位优秀的厨师长在一处处理所有订单的餐厅。统筹有序，但那个人一旦倒下，整家店就会停摆。",
-      "analogy_en": "Imagine a restaurant where one excellent head chef handles all orders in one place. It is well coordinated, but if that person collapses, the whole restaurant grinds to a halt.",
-      "memory_hook_zh": "说到集中处理，就是集中到一处、管理容易但抗故障能力弱",
-      "memory_hook_en": "Centralized processing → concentrated in one place; easy to manage but weak against failures"
+      "extra_zh": [
+        "在哪里处理"
+      ],
+      "extra_en": [
+        "Where processing takes place"
+      ]
     },
     {
       "term": "分散処理",
-      "definition_jp": "複数のコンピュータに処理を分けて連携させながら行うシステム形態。",
-      "explanation_jp": "分散処理は、複数のコンピュータに処理を分担させ、互いに通信・連携しながら全体の処理を進める方式です。集中処理の対概念にあたります。\n\n一部の機器が故障しても他の機器で処理を続けられるため障害に強く、機器を増やすことで処理能力を拡張しやすい利点があります。反面、複数の機器を協調させる必要があるため、管理・運用は複雑になります。\n\n試験では集中処理との比較が定番です。分散処理は「障害に強い・拡張しやすいが、管理が複雑」という特徴を、集中処理の裏返しとして押さえましょう。",
-      "analogy_jp": "複数の料理人が役割を分けて調理するレストラン。1人が休んでも店は回りますが、連携を取るための調整役が必要になるイメージです。",
-      "memory_hook_jp": "分散処理といえば複数台で分担・障害に強いが管理は複雑",
-      "inline_quiz": [
-        "2018h30a-q094"
+      "one_line_jp": "ネットワークで結んだ複数のコンピュータに処理を分け持たせる形態。",
+      "one_line_zh": "把处理分给通过网络连接的多台计算机分担的形态。",
+      "one_line_en": "A form in which processing is shared among several networked computers.",
+      "extra_jp": [
+        "処理をどこで行うか"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD\n  A[\"処理形態\"] --> B[\"集中処理\\n1台に集約\"]\n  A --> C[\"分散処理\\n複数台に分担\"]\n  B --> D[\"管理は容易\\n障害に弱い\"]\n  C --> E[\"障害に強い\\n管理は複雑\"]",
-        "svg_path": "figures/technology-16-43-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "分散处理",
-      "term_en": "Distributed processing",
-      "definition_zh": "把处理分配到多台计算机上、相互协作进行的系统形态。",
-      "definition_en": "A system configuration in which processing is divided among multiple computers that cooperate with one another.",
-      "explanation_zh": "分散处理是把处理分担给多台计算机，让它们相互通信、协作以推进整体处理的方式。它是集中处理的对立概念。\n\n即使部分设备发生故障，也能用其他设备继续处理，因此抗故障能力强；并且通过增加设备容易扩展处理能力，这是它的优点。反过来，由于需要协调多台设备，管理和运维会变得复杂。\n\n考试中与集中处理的比较是惯例。请把分散处理「抗故障能力强、易于扩展，但管理复杂」的特征，作为集中处理的反面来掌握。",
-      "explanation_en": "Distributed processing is a method in which processing is divided among multiple computers that communicate and cooperate with one another to advance the overall processing. It is the opposite concept of centralized processing.\n\nEven if some devices fail, processing can continue on other devices, so it is strong against failures; and processing capacity can be easily expanded by adding more devices, which is an advantage. Conversely, because multiple devices must be coordinated, management and operation become complex.\n\nComparison with centralized processing is a standard exam topic. Grasp the characteristics of distributed processing—\"strong against failures and easy to expand, but complex to manage\"—as the reverse side of centralized processing.",
-      "analogy_zh": "就像多名厨师分工烹饪的餐厅。即使一个人休息，店仍能运转，但需要一个负责协调的人来统筹配合。",
-      "analogy_en": "Imagine a restaurant where multiple cooks divide the work. Even if one person takes a break, the restaurant keeps running, but a coordinator is needed to keep everyone in sync.",
-      "memory_hook_zh": "说到分散处理，就是多台分担、抗故障能力强但管理复杂",
-      "memory_hook_en": "Distributed processing → multiple machines share the work; strong against failures but complex to manage"
+      "extra_zh": [
+        "在哪里处理"
+      ],
+      "extra_en": [
+        "Where processing takes place"
+      ]
     },
     {
       "term": "並列処理",
-      "definition_jp": "1つの処理を複数の装置で同時に分担して高速に行う方式。",
-      "explanation_jp": "並列処理は、1つの大きな処理を複数のCPUやコンピュータに割り当て、同時並行で実行することで全体の処理時間を短縮する方式です。\n\n分散処理が「離れた複数の機器に処理を分けて連携する」ことに重点を置くのに対し、並列処理は「複数の装置で同時に実行して高速化する」ことに重点を置きます。両者は密接に関係しますが、目的の軸が異なる点に注意しましょう。\n\n試験では、処理を同時に行うことで性能を上げる仕組みであること、複数のプロセッサを活用する点が問われます。集中→分散→並列という発展の流れで理解すると整理しやすくなります。",
-      "analogy_jp": "大量の答案を複数の採点者で手分けして同時に採点するイメージ。人数を増やすほど早く終わります。",
-      "memory_hook_jp": "並列処理といえば複数装置で同時実行して高速化",
-      "inline_quiz": [
-        "2016h28a-q094",
-        "2021r03-q082"
+      "one_line_jp": "処理を分けて複数の CPU で同時に実行し、時間を縮める方式。",
+      "one_line_zh": "把处理拆分后在多个 CPU 上同时执行、缩短时间的方式。",
+      "one_line_en": "A method that splits work and runs it on several CPUs at once to save time.",
+      "extra_jp": [
+        "処理をどう進めるか"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "并行处理",
-      "term_en": "Parallel processing",
-      "definition_zh": "由多个装置同时分担一个处理以高速完成的方式。",
-      "definition_en": "A method in which a single task is divided among multiple devices and processed simultaneously to achieve high speed.",
-      "explanation_zh": "并行处理是把一个大的处理分配给多个CPU或计算机，同时并行执行，从而缩短整体处理时间的方式。\n\n分散处理侧重于「把处理分给相隔的多台设备并使其协作」，而并行处理侧重于「用多个装置同时执行以提速」。两者关系密切，但目的的侧重点不同，这一点需要注意。\n\n考试中会考查它是通过同时处理来提升性能的机制，以及利用多个处理器这一点。按照集中→分散→并行的发展脉络来理解会更易于整理。",
-      "explanation_en": "Parallel processing is a method that shortens the overall processing time by assigning one large task to multiple CPUs or computers and executing them concurrently.\n\nWhereas distributed processing emphasizes \"dividing processing among separate multiple devices and having them cooperate,\" parallel processing emphasizes \"executing simultaneously on multiple devices to speed things up.\" The two are closely related, but note that their focus differs in purpose.\n\nThe exam tests that it is a mechanism for improving performance by processing simultaneously, and that it utilizes multiple processors. Understanding it along the development flow of centralized → distributed → parallel makes it easier to organize.",
-      "analogy_zh": "就像大量答卷由多名阅卷者分工同时批改。人数越多，完成得越快。",
-      "analogy_en": "Imagine a large stack of exam papers being graded simultaneously by multiple graders who split the work. The more people, the faster it finishes.",
-      "memory_hook_zh": "说到并行处理，就是多个装置同时执行以提速",
-      "memory_hook_en": "Parallel processing → multiple devices execute simultaneously to speed things up"
+      "extra_zh": [
+        "如何推进处理"
+      ],
+      "extra_en": [
+        "How processing proceeds"
+      ]
     },
     {
       "term": "クライアントサーバシステム",
-      "definition_jp": "サービスを要求するクライアントと提供するサーバで役割分担する構成。",
-      "explanation_jp": "クライアントサーバシステムは、サービスを要求する側(クライアント)と、要求に応えてサービスを提供する側(サーバ)に役割を分けて連携させる構成です。処理の置き場所から、機器間の役割分担へと視点が移る代表的なモデルです。\n\nクライアントは利用者の端末、サーバはデータやアプリケーションを集中管理する側で、両者が要求と応答をやり取りします。次に学ぶピアツーピア(対等な関係)との対比が試験の定番です。\n\n試験では、サーバに機能が集中するため管理しやすい一方、サーバに負荷や障害が集中しやすいといった特徴が、対等型のピアツーピアと比較して問われます。",
-      "analogy_jp": "レストランで注文する客(クライアント)と料理を出す厨房(サーバ)の関係。客は頼むだけ、厨房が応えるという役割分担のイメージです。",
-      "memory_hook_jp": "クライアントサーバシステムといえば要求する側と提供する側の役割分担",
+      "one_line_jp": "要求する側と提供する側に役割を分けた構成。",
+      "one_line_zh": "把角色分为请求方和提供方的构成。",
+      "one_line_en": "A configuration that divides roles into a requesting side and a providing side.",
+      "extra_jp": [
+        "機器がどんな立場で関わるか"
+      ],
+      "extra_zh": [
+        "设备以什么立场参与"
+      ],
+      "extra_en": [
+        "What role each device plays"
+      ]
+    },
+    {
+      "term": "ピアツーピア",
+      "one_line_jp": "専用のサーバを置かず、対等な機器どうしが直接やり取りする構成。",
+      "one_line_zh": "不设专用服务器、由地位对等的设备直接交换数据的构成。",
+      "one_line_en": "A configuration with no dedicated server, where equal devices exchange data directly.",
+      "extra_jp": [
+        "機器がどんな立場で関わるか"
+      ],
+      "extra_zh": [
+        "设备以什么立场参与"
+      ],
+      "extra_en": [
+        "What role each device plays"
+      ]
+    },
+    {
+      "term": "Webシステム",
+      "one_line_jp": "Web ブラウザをクライアントとして使うクライアントサーバ型の仕組み。",
+      "one_line_zh": "把 Web 浏览器当作客户机使用的客户机服务器型机制。",
+      "one_line_en": "A client-server setup that uses a web browser as the client.",
+      "extra_jp": [
+        "機器がどんな立場で関わるか"
+      ],
+      "extra_zh": [
+        "设备以什么立场参与"
+      ],
+      "extra_en": [
+        "What role each device plays"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "集中処理",
+      "term_zh": "集中处理",
+      "term_en": "Centralized processing",
+      "one_jp": "**集中処理**は、処理を**1 台のコンピュータ** (ホストコンピュータ) に集めて、まとめて行う処理形態である。",
+      "one_zh": "**集中处理**[[jp:集中処理]]是把处理集中到**1 台计算机**（主机）上统一进行的处理形态。",
+      "one_en": "**Centralized processing** [[jp:集中処理]] is a processing form in which work is gathered on **a single computer** (a host computer) and handled there in one place.",
+      "detail_jp": "利用者の端末は中心のコンピュータに接続して使い、データの保管や計算は中心側が一手に引き受ける。管理や保守を 1 か所で行えるため運用をそろえやすいが、中心のコンピュータが故障すると全体が止まる。",
+      "detail_zh": "用户的终端连接到中心计算机使用，数据的保存和计算全部由中心一方承担。由于管理和维护可以在一处完成，运维容易统一，但中心计算机一旦故障，整个系统就会停止。",
+      "detail_en": "Users' terminals connect to the central computer, which takes on all data storage and computation. Because management and maintenance happen in one place, operations are easy to keep consistent, but if the central computer fails, the whole system stops.",
+      "analogy_jp": "町じゅうの荷物を 1 か所の大きな集配所だけで仕分けるやり方。目が行き届きやすい反面、その集配所が止まれば配達がすべて止まる。",
+      "analogy_zh": "就像全镇的包裹只靠 1 个大型集散站来分拣。容易照看周全，但这个集散站一停，所有投递都会停下。",
+      "analogy_en": "It is like sorting every parcel in town at one large depot. Nothing escapes notice, but if that depot shuts down, all deliveries stop.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "集中処理は、処理を1 台のコンピュータ (ホストコンピュータ) に集めて、まとめて行う処理形態である。",
+      "definition_zh": "集中处理集中処理是把处理集中到1 台计算机（主机）上统一进行的处理形态。",
+      "definition_en": "Centralized processing 集中処理 is a processing form in which work is gathered on a single computer (a host computer) and handled there in one place.",
+      "explanation_jp": "利用者の端末は中心のコンピュータに接続して使い、データの保管や計算は中心側が一手に引き受ける。管理や保守を 1 か所で行えるため運用をそろえやすいが、中心のコンピュータが故障すると全体が止まる。",
+      "explanation_zh": "用户的终端连接到中心计算机使用，数据的保存和计算全部由中心一方承担。由于管理和维护可以在一处完成，运维容易统一，但中心计算机一旦故障，整个系统就会停止。",
+      "explanation_en": "Users' terminals connect to the central computer, which takes on all data storage and computation. Because management and maintenance happen in one place, operations are easy to keep consistent, but if the central computer fails, the whole system stops.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "分散処理",
+      "term_zh": "分散处理",
+      "term_en": "Distributed processing",
+      "one_jp": "**分散処理**は、ネットワークで結んだ**複数のコンピュータ**に処理を分け持たせ、連携しながら全体の処理を進める処理形態である。",
+      "one_zh": "**分散处理**[[jp:分散処理]]是把处理分给通过网络连接的**多台计算机**分担，让它们相互配合推进整体处理的处理形态。",
+      "one_en": "**Distributed processing** [[jp:分散処理]] is a processing form in which work is shared among **multiple computers** linked by a network, which cooperate to carry out the whole job.",
+      "detail_jp": "一部の機器が止まっても残りの機器で処理を続けやすく、台数を増やして能力を伸ばしやすい一方、機器どうしの連携や管理は複雑になる。同じ階層の機器が横並びで処理を分け合う形を**水平分散**、上位と下位の機器が役割を分けて受け持つ形を**垂直分散**という。",
+      "detail_zh": "即使部分设备停止，也容易用其余设备继续处理，并且增加台数就能方便地提升能力；另一方面，设备之间的协作和管理会变得复杂。同一层级的设备并列分担处理的形式称为**水平分散**[[jp:水平分散]]，上层与下层设备分工承担的形式称为**垂直分散**[[jp:垂直分散]]。",
+      "detail_en": "If some machines stop, the rest can usually keep working, and capacity grows easily by adding machines; on the other hand, coordinating and managing the machines becomes more complex. When machines at the same level share the work side by side, it is called **horizontal distribution** [[jp:水平分散]], and when upper- and lower-level machines take on separate roles, it is called **vertical distribution** [[jp:垂直分散]].",
+      "analogy_jp": "地区ごとに集配所を置いて荷物を分け持つやり方。1 か所が止まっても他の集配所で回せるが、集配所どうしの連絡が欠かせない。",
+      "analogy_zh": "就像按地区设置多个集散站来分担包裹。一处停下，其他集散站还能继续运转，但集散站之间必须保持联络。",
+      "analogy_en": "It is like setting up a depot in each district to share the parcels. If one stops, the others keep things moving, but the depots must stay in touch with each other.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**水平負荷分散**は、同じ処理を行うコンピュータを横並びに複数置き、仕事を振り分けて 1 台に負荷が偏らないようにする方式である。",
+          "text_zh": "**水平负载分散**[[jp:水平負荷分散]]是把执行相同处理的计算机并列配置多台，分配工作以免负载集中在 1 台上的方式。",
+          "text_en": "**Horizontal load balancing** [[jp:水平負荷分散]] places several computers that do the same job side by side and spreads the work so that no single machine is overloaded.",
+          "qids": [
+            "2014h26a-q048"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**グリッドコンピューティング**は、ネットワーク上の多数のコンピュータの処理能力を束ね、仮想的に 1 台の大きな計算機として使う方式である。",
+          "text_zh": "**网格计算**[[jp:グリッドコンピューティング]]是汇集网络上大量计算机的处理能力，把它们当作虚拟的 1 台大型计算机来使用的方式。",
+          "text_en": "**Grid computing** [[jp:グリッドコンピューティング]] pools the processing power of many computers on a network and uses them as one large virtual computer.",
+          "qids": [
+            "2011h23tokubetsu-q057",
+            "2021r03-q082"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "dist",
+            "label": {
+              "jp": "分散処理",
+              "zh": "分散处理",
+              "en": "Distributed processing"
+            },
+            "children": [
+              {
+                "id": "horiz",
+                "label": {
+                  "jp": "水平分散",
+                  "zh": "水平分散",
+                  "en": "Horizontal distribution"
+                },
+                "children": [
+                  {
+                    "id": "horiz_d",
+                    "label": {
+                      "jp": "同じ階層の機器どうしで処理を分け合う",
+                      "zh": "同一层级的设备之间分担处理",
+                      "en": "Devices at the same level share the work"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "vert",
+                "label": {
+                  "jp": "垂直分散",
+                  "zh": "垂直分散",
+                  "en": "Vertical distribution"
+                },
+                "children": [
+                  {
+                    "id": "vert_d",
+                    "label": {
+                      "jp": "上位と下位の機器が役割を分けて受け持つ",
+                      "zh": "上层和下层的设备分工承担不同角色",
+                      "en": "Upper- and lower-level devices take on different roles"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2014h26a-q048",
+        "2021r03-q082",
+        "2011h23tokubetsu-q057"
+      ],
+      "definition_jp": "分散処理は、ネットワークで結んだ複数のコンピュータに処理を分け持たせ、連携しながら全体の処理を進める処理形態である。",
+      "definition_zh": "分散处理分散処理是把处理分给通过网络连接的多台计算机分担，让它们相互配合推进整体处理的处理形态。",
+      "definition_en": "Distributed processing 分散処理 is a processing form in which work is shared among multiple computers linked by a network, which cooperate to carry out the whole job.",
+      "explanation_jp": "一部の機器が止まっても残りの機器で処理を続けやすく、台数を増やして能力を伸ばしやすい一方、機器どうしの連携や管理は複雑になる。同じ階層の機器が横並びで処理を分け合う形を水平分散、上位と下位の機器が役割を分けて受け持つ形を垂直分散という。",
+      "explanation_zh": "即使部分设备停止，也容易用其余设备继续处理，并且增加台数就能方便地提升能力；另一方面，设备之间的协作和管理会变得复杂。同一层级的设备并列分担处理的形式称为水平分散水平分散，上层与下层设备分工承担的形式称为垂直分散垂直分散。",
+      "explanation_en": "If some machines stop, the rest can usually keep working, and capacity grows easily by adding machines; on the other hand, coordinating and managing the machines becomes more complex. When machines at the same level share the work side by side, it is called horizontal distribution 水平分散, and when upper- and lower-level machines take on separate roles, it is called vertical distribution 垂直分散.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
+        "2014h26a-q048",
+        "2021r03-q082",
+        "2011h23tokubetsu-q057"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "並列処理",
+      "term_zh": "并行处理",
+      "term_en": "Parallel processing",
+      "one_jp": "**並列処理**は、一連の処理を同時に進められる単位に分け、**複数の CPU** に割り当てて同時に実行し、処理時間を縮める方式である。",
+      "one_zh": "**并行处理**[[jp:並列処理]]是把一连串处理拆分成可以同时推进的单位，分配给**多个 CPU（中央处理器）**同时执行，从而缩短处理时间的方式。",
+      "one_en": "**Parallel processing** [[jp:並列処理]] splits a series of tasks into units that can run at the same time, assigns them to **multiple CPUs**, and executes them simultaneously to shorten processing time.",
+      "detail_jp": "1 台のコンピュータに載せた複数の CPU で行う場合も、複数台のコンピュータで分け合う場合もある。分けた部分どうしが互いの結果を待たずに進められるほど、時間を縮める効果が大きくなる。",
+      "detail_zh": "既可以用 1 台计算机内的多个 CPU 进行，也可以由多台计算机分担。拆分出的各部分越能不等待彼此的结果而推进，缩短时间的效果就越大。",
+      "detail_en": "It can be done with several CPUs in one computer or shared across several computers. The less the parts have to wait for each other's results, the more time is saved.",
+      "analogy_jp": "大量の封筒詰めを数人で分けて同時に進めると、1 人で順に詰めるより早く終わる。",
+      "analogy_zh": "把大量装信封的工作分给几个人同时做，会比 1 个人依次装完得更快。",
+      "analogy_en": "Stuffing a pile of envelopes goes faster when several people work on it at once than when one person does them one by one.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**マルチスレッド**は、1 本のプログラムの中に複数の処理の流れ (スレッド) を作り、それらを並行して進める仕組みである。",
+          "text_zh": "**多线程**[[jp:マルチスレッド]]是在 1 个程序中建立多条处理流程（线程），让它们并发推进的机制。",
+          "text_en": "**Multithreading** [[jp:マルチスレッド]] creates several flows of processing (threads) inside one program and advances them concurrently.",
+          "qids": [
+            "2018h30a-q059"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**スケールアウト**は、サーバの台数を増やして処理を並行して分け合い、システム全体の処理能力を高める方法である。",
+          "text_zh": "**横向扩展**[[jp:スケールアウト]]是增加服务器台数、把处理并行分担，以提高整个系统处理能力的方法。",
+          "text_en": "**Scale-out** [[jp:スケールアウト]] raises the processing capacity of a whole system by adding more servers that share the work in parallel.",
+          "qids": [
+            "2020r02o-q061"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**スーパコンピュータ**は、多数のプロセッサによる並列処理で計算能力を高めた計算機で、膨大な計算量の科学技術計算に使われる。",
+          "text_zh": "**超级计算机**[[jp:スーパコンピュータ]]是依靠大量处理器的并行处理[[jp:並列処理]]来提高计算能力的计算机，用于计算量庞大的科学技术计算。",
+          "text_en": "A **supercomputer** [[jp:スーパコンピュータ]] boosts its computing power through parallel processing [[jp:並列処理]] on many processors and is used for scientific and engineering calculations with enormous workloads.",
+          "qids": [
+            "2015h27h-q079"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "job",
+              "label": {
+                "jp": "まとまった処理",
+                "zh": "一整块处理",
+                "en": "A large job"
+              }
+            },
+            {
+              "id": "split",
+              "label": {
+                "jp": "同時に進められる単位に分割",
+                "zh": "拆分成可同时推进的单位",
+                "en": "Split into units that can run at once"
+              }
+            },
+            {
+              "id": "assign",
+              "label": {
+                "jp": "複数の CPU に割り当て",
+                "zh": "分配给多个 CPU",
+                "en": "Assign to multiple CPUs"
+              }
+            },
+            {
+              "id": "merge",
+              "label": {
+                "jp": "同時に実行して結果をまとめる",
+                "zh": "同时执行并汇总结果",
+                "en": "Run simultaneously and combine results"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "1 つの CPU で順に進めると時間がかかる処理がある。",
+            "caption_zh": "有些处理如果用 1 个 CPU 依次进行，会很花时间。",
+            "caption_en": "Some jobs take a long time when one CPU works through them in order.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "互いに待ち合わせずに進められる部分ごとに切り分ける。",
+            "caption_zh": "按彼此不必等待、可以各自推进的部分进行切分。",
+            "caption_en": "Cut the job into parts that can proceed without waiting for each other.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "切り分けた部分を、それぞれ別の CPU に受け持たせる。",
+            "caption_zh": "把切分出的部分分别交给不同的 CPU 负责。",
+            "caption_en": "Hand each part to a different CPU.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "各 CPU が同時に動き、結果をまとめるので全体の時間が縮む。",
+            "caption_zh": "各 CPU 同时运行，再汇总结果，因此整体时间缩短。",
+            "caption_en": "The CPUs run at the same time and their results are combined, so the total time shrinks.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2016h28a-q094",
+        "2018h30a-q059",
+        "2020r02o-q061"
+      ],
+      "definition_jp": "並列処理は、一連の処理を同時に進められる単位に分け、複数の CPU に割り当てて同時に実行し、処理時間を縮める方式である。",
+      "definition_zh": "并行处理並列処理是把一连串处理拆分成可以同时推进的单位，分配给多个 CPU（中央处理器）同时执行，从而缩短处理时间的方式。",
+      "definition_en": "Parallel processing 並列処理 splits a series of tasks into units that can run at the same time, assigns them to multiple CPUs, and executes them simultaneously to shorten processing time.",
+      "explanation_jp": "1 台のコンピュータに載せた複数の CPU で行う場合も、複数台のコンピュータで分け合う場合もある。分けた部分どうしが互いの結果を待たずに進められるほど、時間を縮める効果が大きくなる。",
+      "explanation_zh": "既可以用 1 台计算机内的多个 CPU 进行，也可以由多台计算机分担。拆分出的各部分越能不等待彼此的结果而推进，缩短时间的效果就越大。",
+      "explanation_en": "It can be done with several CPUs in one computer or shared across several computers. The less the parts have to wait for each other's results, the more time is saved.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2016h28a-q094",
+        "2018h30a-q059",
+        "2020r02o-q061"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "クライアントサーバシステム",
+      "term_zh": "客户机服务器系统",
+      "term_en": "Client-server system",
+      "one_jp": "**クライアントサーバシステム**は、サービスを**要求する側 (クライアント)** と**提供する側 (サーバ)** に役割を分け、ネットワークを通じて連携させる構成である。",
+      "one_zh": "**客户机服务器系统**[[jp:クライアントサーバシステム]]是把角色分为**请求服务的一方（客户机）**和**提供服务的一方（服务器）**，并通过网络让二者协作的构成。",
+      "one_en": "A **client-server system** [[jp:クライアントサーバシステム]] divides roles into **the side that requests a service (the client)** and **the side that provides it (the server)**, and links them over a network.",
+      "detail_jp": "クライアントが処理を依頼し、サーバが結果を返すという要求と応答のやり取りで動く。データやプログラムをサーバに置けば、管理や更新をサーバ側でまとめて行える。",
+      "detail_zh": "客户机委托处理，服务器返回结果，系统就靠这种请求与响应的往来运行。如果把数据和程序放在服务器上，管理和更新就可以在服务器一方统一进行。",
+      "detail_en": "It works through an exchange of requests and responses: the client asks for processing, and the server sends back the result. Placing data and programs on the server lets management and updates be handled together on the server side.",
+      "analogy_jp": "図書館の利用者がカウンターで本を頼み、職員が書庫から出してくる関係。頼む人と応じる人の役が決まっている。",
+      "analogy_zh": "就像图书馆的读者在柜台借书，馆员从书库里取出来。提出请求的人和回应的人，角色是固定的。",
+      "analogy_en": "It is like a library patron asking for a book at the counter and a librarian fetching it from the stacks. Who asks and who responds is fixed.",
+      "hook_jp": "client は「依頼人」、server は「仕える人」。依頼する側と応じる側という語の意味がそのまま役割になる。",
+      "hook_zh": "client 是“委托人”，server 是“侍奉者”。委托的一方和回应的一方，词义本身就是角色。",
+      "hook_en": "A client is someone who engages a service, and a server is one who serves. The meanings of the words are the two roles themselves.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**シンクライアント**は、クライアントには入力と表示などの最小限の機能だけをもたせ、アプリケーションの実行とデータの管理をサーバ側に集める形態である。",
+          "text_zh": "**瘦客户端**[[jp:シンクライアント]]是只让客户机具备输入和显示等最少功能，把应用程序的执行和数据管理集中到服务器一方的形态。",
+          "text_en": "A **thin client** [[jp:シンクライアント]] gives the client only minimal functions such as input and display, and concentrates application execution and data management on the server side.",
+          "qids": [
+            "2013h25h-q059",
+            "2011h23a-q086"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-16-43-u01-t02.svg"
+        }
+      },
+      "quiz": [
+        "2013h25h-q059",
+        "2011h23a-q086"
+      ],
+      "definition_jp": "クライアントサーバシステムは、サービスを要求する側 (クライアント) と提供する側 (サーバ) に役割を分け、ネットワークを通じて連携させる構成である。",
+      "definition_zh": "客户机服务器系统クライアントサーバシステム是把角色分为请求服务的一方（客户机）和提供服务的一方（服务器），并通过网络让二者协作的构成。",
+      "definition_en": "A client-server system クライアントサーバシステム divides roles into the side that requests a service (the client) and the side that provides it (the server), and links them over a network.",
+      "explanation_jp": "クライアントが処理を依頼し、サーバが結果を返すという要求と応答のやり取りで動く。データやプログラムをサーバに置けば、管理や更新をサーバ側でまとめて行える。",
+      "explanation_zh": "客户机委托处理，服务器返回结果，系统就靠这种请求与响应的往来运行。如果把数据和程序放在服务器上，管理和更新就可以在服务器一方统一进行。",
+      "explanation_en": "It works through an exchange of requests and responses: the client asks for processing, and the server sends back the result. Placing data and programs on the server lets management and updates be handled together on the server side.",
+      "memory_hook_jp": "client は「依頼人」、server は「仕える人」。依頼する側と応じる側という語の意味がそのまま役割になる。",
+      "memory_hook_zh": "client 是“委托人”，server 是“侍奉者”。委托的一方和回应的一方，词义本身就是角色。",
+      "memory_hook_en": "A client is someone who engages a service, and a server is one who serves. The meanings of the words are the two roles themselves.",
+      "inline_quiz": [
+        "2013h25h-q059",
         "2011h23a-q086"
       ],
       "inline_fallback": false,
@@ -100,116 +460,336 @@
         "mermaid": "graph LR\n  C1[\"クライアント\\n要求する側\"] -->|\"要求\"| S[\"サーバ\\n提供する側\"]\n  S -->|\"応答\"| C1\n  C2[\"クライアント\"] -->|\"要求\"| S\n  S -->|\"応答\"| C2",
         "svg_path": "figures/technology-16-43-u01-t02.svg",
         "rendered": true
-      },
-      "term_zh": "客户机服务器系统",
-      "term_en": "Client-server system",
-      "definition_zh": "由请求服务的客户机与提供服务的服务器进行分工的构成。",
-      "definition_en": "A configuration in which roles are divided between a client that requests services and a server that provides them.",
-      "explanation_zh": "客户机服务器系统是把请求服务的一方（客户机）与响应请求并提供服务的一方（服务器）分开角色并使其协作的构成。它是视角从处理的放置位置转向设备间分工的代表性模型。\n\n客户机是用户的终端，服务器是集中管理数据和应用程序的一方，两者之间往来请求与响应。与接下来要学习的对等网络（对等关系）的对比是考试的惯例。\n\n考试中会考查这样的特征：由于功能集中于服务器因此便于管理，但另一方面负荷和故障也容易集中到服务器，并与对等型的对等网络相比较。",
-      "explanation_en": "A client-server system is a configuration in which the role of requesting services (the client) and the role of responding to requests and providing services (the server) are separated and made to cooperate. It is a representative model where the viewpoint shifts from where processing is placed to how roles are divided among devices.\n\nThe client is the user's terminal, and the server is the side that centrally manages data and applications; the two exchange requests and responses. The contrast with peer-to-peer (an equal relationship), which you will learn next, is a standard exam topic.\n\nThe exam tests characteristics such as the fact that, because functions are concentrated on the server, it is easy to manage, while on the other hand load and failures tend to concentrate on the server—compared against the peer-type peer-to-peer.",
-      "analogy_zh": "就像在餐厅里点餐的客人（客户机）与出菜的后厨（服务器）之间的关系。客人只管点，后厨负责响应，这种分工的形象。",
-      "analogy_en": "Imagine the relationship between a customer placing an order in a restaurant (the client) and the kitchen that serves the food (the server). The customer only orders, the kitchen responds—a division of roles.",
-      "memory_hook_zh": "说到客户机服务器系统，就是请求方与提供方的分工",
-      "memory_hook_en": "Client-server system → division of roles between the requesting side and the providing side"
+      }
     },
     {
       "term": "ピアツーピア",
-      "definition_jp": "各機器が対等な立場で直接やり取りするネットワーク構成。",
-      "explanation_jp": "ピアツーピア(P2P)は、特定のサーバを置かず、参加する機器(ピア)がすべて対等な立場で互いに直接データをやり取りする構成です。各機器がクライアントにもサーバにもなります。\n\nクライアントサーバ型の対概念です。中心となるサーバがないため、1台が止まっても全体は影響を受けにくく、サーバへの負荷集中も避けられます。反面、各機器の管理がばらばらになりやすく、セキュリティ統制が難しいという弱点があります。\n\n試験では「対等」「サーバ不要」「直接通信」がキーワードです。クライアントサーバとの役割の違いを対比で覚えましょう。",
-      "analogy_jp": "店員と客の区別がなく、参加者全員が直接モノを貸し借りするフリーマーケットのようなイメージです。",
-      "memory_hook_jp": "ピアツーピアといえば対等な機器同士が直接やり取り",
+      "term_zh": "对等网络",
+      "term_en": "Peer-to-peer",
+      "one_jp": "**ピアツーピア**は、専用のサーバを置かず、ネットワークにつながる機器どうしが**対等な立場**で直接データをやり取りする構成である。",
+      "one_zh": "**对等网络**[[jp:ピアツーピア]]是不设专用服务器，由连接在网络上的设备以**对等的立场**直接交换数据的构成。",
+      "one_en": "**Peer-to-peer** [[jp:ピアツーピア]] is a configuration with no dedicated server, in which devices on a network exchange data directly **as equals**.",
+      "detail_jp": "各機器が、サービスを受ける側にも提供する側にもなる。特定のサーバに負荷が集まらない一方、管理が機器ごとに分かれるため、全体をまとめて管理しにくい。",
+      "detail_zh": "每台设备既可以是接受服务的一方，也可以是提供服务的一方。负载不会集中到特定服务器上，但由于管理分散在各台设备，难以对整体进行统一管理。",
+      "detail_en": "Each device can act both as the one receiving a service and as the one providing it. Load does not pile up on any particular server, but because management is split across the devices, the whole network is hard to manage as one.",
+      "analogy_jp": "参加者どうしが手渡しで本を貸し借りする読書会。図書館のような中心の窓口はなく、誰もが貸す側にも借りる側にもなる。",
+      "analogy_zh": "就像参加者之间直接递手借还书的读书会。没有图书馆那样的中心窗口，每个人既能借出也能借入。",
+      "analogy_en": "It is like a book club where members lend and borrow books hand to hand. There is no central desk like a library's, and everyone can be both lender and borrower.",
+      "hook_jp": "peer は「同輩・仲間」の意味。仲間から仲間へ (to) 直接つながる、と読む。",
+      "hook_zh": "peer 意为“同辈、伙伴”。可以理解为从伙伴到（to）伙伴直接相连。",
+      "hook_en": "A peer is an equal or a companion. Read the name as peer linking directly to peer.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**スタンドアロン**は PC をネットワークにつながずに 1 台で使う形態で、機器どうしがネットワークでつながって成り立つピアツーピアとは接続の有無で分かれる。",
+          "text_zh": "**单机**[[jp:スタンドアロン]]是不把 PC（个人计算机）接入网络、单独 1 台使用的形态，与依靠设备之间通过网络相连才能成立的对等网络[[jp:ピアツーピア]]，以是否联网来区分。",
+          "text_en": "**Standalone** [[jp:スタンドアロン]] means using a PC by itself without connecting it to a network, which sets it apart from peer-to-peer [[jp:ピアツーピア]], since that only works when devices are linked over a network.",
+          "qids": [
+            "2015h27h-q067"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2015h27h-q067"
+      ],
+      "definition_jp": "ピアツーピアは、専用のサーバを置かず、ネットワークにつながる機器どうしが対等な立場で直接データをやり取りする構成である。",
+      "definition_zh": "对等网络ピアツーピア是不设专用服务器，由连接在网络上的设备以对等的立场直接交换数据的构成。",
+      "definition_en": "Peer-to-peer ピアツーピア is a configuration with no dedicated server, in which devices on a network exchange data directly as equals.",
+      "explanation_jp": "各機器が、サービスを受ける側にも提供する側にもなる。特定のサーバに負荷が集まらない一方、管理が機器ごとに分かれるため、全体をまとめて管理しにくい。",
+      "explanation_zh": "每台设备既可以是接受服务的一方，也可以是提供服务的一方。负载不会集中到特定服务器上，但由于管理分散在各台设备，难以对整体进行统一管理。",
+      "explanation_en": "Each device can act both as the one receiving a service and as the one providing it. Load does not pile up on any particular server, but because management is split across the devices, the whole network is hard to manage as one.",
+      "memory_hook_jp": "peer は「同輩・仲間」の意味。仲間から仲間へ (to) 直接つながる、と読む。",
+      "memory_hook_zh": "peer 意为“同辈、伙伴”。可以理解为从伙伴到（to）伙伴直接相连。",
+      "memory_hook_en": "A peer is an equal or a companion. Read the name as peer linking directly to peer.",
       "inline_quiz": [
         "2015h27h-q067"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "对等网络",
-      "term_en": "Peer-to-peer",
-      "definition_zh": "各设备以对等的立场直接相互通信的网络构成。",
-      "definition_en": "A network configuration in which each device communicates directly with the others on an equal footing.",
-      "explanation_zh": "对等网络（P2P）是不设置特定服务器，参与的设备（对等节点）全部以对等的立场相互直接交换数据的构成。每台设备既可以是客户机，也可以是服务器。\n\n它是客户机服务器型的对立概念。由于没有作为中心的服务器，即使一台停止，整体也不易受影响，也能避免负荷集中到服务器。反过来，各设备的管理容易变得各自为政，安全管控较为困难，这是它的弱点。\n\n考试中「对等」「无需服务器」「直接通信」是关键词。请通过对比来记住它与客户机服务器在角色上的不同。",
-      "explanation_en": "Peer-to-peer (P2P) is a configuration in which no specific server is placed, and the participating devices (peers) all exchange data directly with one another on an equal footing. Each device can act as both a client and a server.\n\nIt is the opposite concept of the client-server type. Because there is no central server, even if one machine stops, the whole is not easily affected, and load concentration on a server can also be avoided. Conversely, management of each device tends to become fragmented and security control is difficult, which is its weakness.\n\nIn the exam, \"equal/peer,\" \"no server needed,\" and \"direct communication\" are the keywords. Memorize the difference in roles from client-server by contrast.",
-      "analogy_zh": "就像没有店员和顾客之分、所有参与者都直接相互借还物品的跳蚤市场。",
-      "analogy_en": "Imagine a flea market where there is no distinction between staff and customers, and all participants directly lend and borrow goods from one another.",
-      "memory_hook_zh": "说到对等网络，就是对等的设备之间直接相互通信",
-      "memory_hook_en": "Peer-to-peer → equal devices communicate directly with one another"
+      "figure": null
     },
     {
       "term": "Webシステム",
-      "definition_jp": "Web技術を用い、ブラウザ経由でサービスを提供する仕組み。",
-      "explanation_jp": "Webシステムは、Webブラウザをクライアントとして使い、HTTPなどのWeb技術を通じてサーバが提供する機能を利用する仕組みです。クライアントサーバ型をWeb技術で具体化した代表的な応用形です。\n\n利用者は専用ソフトを入れなくてもブラウザさえあればサービスを使え、機能の更新もサーバ側で行えるため運用しやすいのが特徴です。一般的にはWebサーバ・アプリケーションサーバ・データベースサーバが連携する多層(3層)構成で実現されます。\n\n試験では、ブラウザを使うクライアントサーバの一形態であること、サーバ側で集中管理できる利点が問われます。クライアントサーバの具体例として位置づけて理解しましょう。",
-      "analogy_jp": "専用の道具を持たなくても、共用の窓口(ブラウザ)から誰でもサービスを受けられる役所の窓口のようなイメージです。",
-      "memory_hook_jp": "Webシステムといえばブラウザで使うクライアントサーバの応用形",
-      "inline_quiz": [
-        "2013h25h-q059"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "Web系统",
       "term_en": "Web system",
-      "definition_zh": "运用Web技术、经由浏览器提供服务的机制。",
-      "definition_en": "A mechanism that uses web technology to provide services via a browser.",
-      "explanation_zh": "Web系统是把Web浏览器作为客户机使用，通过HTTP等Web技术来利用服务器所提供功能的机制。它是用Web技术将客户机服务器型具体化的代表性应用形态。\n\n用户即使不安装专用软件，只要有浏览器就能使用服务；并且功能的更新可以在服务器端进行，因此运维方便，这是它的特点。一般通过Web服务器、应用程序服务器、数据库服务器协作的多层（三层）构成来实现。\n\n考试中会考查它是使用浏览器的一种客户机服务器形态，以及可在服务器端集中管理的优点。请把它定位为客户机服务器的具体实例来理解。",
-      "explanation_en": "A web system is a mechanism in which a web browser is used as the client, and the functions provided by the server are utilized through web technologies such as HTTP. It is a representative applied form that gives concrete shape to the client-server type using web technology.\n\nIts characteristic is that users can use the service with just a browser, without installing dedicated software, and because function updates can be done on the server side, it is easy to operate. It is generally realized with a multi-tier (three-tier) configuration in which a web server, an application server, and a database server cooperate.\n\nThe exam tests that it is a form of client-server that uses a browser, and the advantage that it can be centrally managed on the server side. Understand it as positioned as a concrete example of client-server.",
-      "analogy_zh": "就像政府办事窗口：即使不自带专用工具，任何人都能从公共窗口（浏览器）获得服务。",
-      "analogy_en": "Imagine a government service counter: even without bringing your own dedicated tools, anyone can receive service through a shared window (the browser).",
-      "memory_hook_zh": "说到Web系统，就是用浏览器使用的客户机服务器应用形态",
-      "memory_hook_en": "Web system → an applied form of client-server used through a browser"
+      "one_jp": "**Webシステム**は、利用者側の**Webブラウザ**をクライアントとして使い、Webサーバとの要求と応答でサービスを提供するクライアントサーバシステムの一形態である。",
+      "one_zh": "**Web系统**[[jp:Webシステム]]是把用户一侧的**Web 浏览器**当作客户机，通过与 Web 服务器之间的请求和响应来提供服务的一种客户机服务器系统。",
+      "one_en": "A **Web system** [[jp:Webシステム]] is a type of client-server system that uses the user's **web browser** as the client and delivers services through requests and responses with a web server.",
+      "detail_jp": "利用者は専用のソフトウェアを入れなくても、ブラウザがあればサービスを使える。機能の追加や修正はサーバ側で行えば済むため、多くの端末に配り直す手間がかからない。規模の大きなシステムでは、例えば画面を返す Web サーバ、業務の処理を行うアプリケーションサーバ、データを管理するデータベースサーバのように、役割ごとにサーバを分けることがある。",
+      "detail_zh": "用户无需安装专用软件，只要有浏览器就能使用服务。功能的添加和修改只需在服务器一侧进行，因此不必重新分发到大量终端。在规模较大的系统中，有时会按角色拆分服务器，例如返回画面的 Web 服务器、执行业务处理的应用服务器、管理数据的数据库服务器。",
+      "detail_en": "Users can access the service with just a browser, without installing dedicated software. Features are added or fixed on the server side, so there is no need to redistribute anything to many terminals. Large systems sometimes split servers by role, for example a web server that returns screens, an application server that runs business logic, and a database server that manages data.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "web は「くもの巣」。世界中に張りめぐらされた網の上のサーバを、ブラウザという 1 つの入口から使う。",
+      "hook_zh": "web 意为“蜘蛛网”。遍布全世界的网上的服务器，都能从浏览器这 1 个入口使用。",
+      "hook_en": "A web is a spider's web. Servers spread across a worldwide web are all reached through a single entrance, the browser.",
+      "points": [],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "req",
+              "label": {
+                "jp": "ブラウザが要求を送る",
+                "zh": "浏览器发送请求",
+                "en": "Browser sends a request"
+              }
+            },
+            {
+              "id": "recv",
+              "label": {
+                "jp": "Webサーバが受け取る",
+                "zh": "Web 服务器接收",
+                "en": "Web server receives it"
+              }
+            },
+            {
+              "id": "proc",
+              "label": {
+                "jp": "サーバ側で処理する",
+                "zh": "在服务器一侧处理",
+                "en": "Server side processes it"
+              }
+            },
+            {
+              "id": "resp",
+              "label": {
+                "jp": "応答が画面に表示される",
+                "zh": "响应显示在画面上",
+                "en": "Response appears on screen"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者がブラウザでページを開くと、Webサーバへ要求が送られる。",
+            "caption_zh": "用户在浏览器中打开页面时，请求会发送到 Web 服务器。",
+            "caption_en": "When the user opens a page in the browser, a request is sent to the web server.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "Webサーバが、ネットワークを通じて届いた要求を受け取る。",
+            "caption_zh": "Web 服务器接收通过网络送达的请求。",
+            "caption_en": "The web server receives the request that arrived over the network.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "サーバ側で要求に応じた処理を行い、返す内容を用意する。",
+            "caption_zh": "服务器一侧按照请求进行处理，准备要返回的内容。",
+            "caption_en": "The server processes the request and prepares the content to send back.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "応答がブラウザに返り、利用者の画面に結果が表示される。",
+            "caption_zh": "响应返回浏览器，结果显示在用户的画面上。",
+            "caption_en": "The response returns to the browser, and the result appears on the user's screen.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "Webシステムは、利用者側のWebブラウザをクライアントとして使い、Webサーバとの要求と応答でサービスを提供するクライアントサーバシステムの一形態である。",
+      "definition_zh": "Web系统Webシステム是把用户一侧的Web 浏览器当作客户机，通过与 Web 服务器之间的请求和响应来提供服务的一种客户机服务器系统。",
+      "definition_en": "A Web system Webシステム is a type of client-server system that uses the user's web browser as the client and delivers services through requests and responses with a web server.",
+      "explanation_jp": "利用者は専用のソフトウェアを入れなくても、ブラウザがあればサービスを使える。機能の追加や修正はサーバ側で行えば済むため、多くの端末に配り直す手間がかからない。規模の大きなシステムでは、例えば画面を返す Web サーバ、業務の処理を行うアプリケーションサーバ、データを管理するデータベースサーバのように、役割ごとにサーバを分けることがある。",
+      "explanation_zh": "用户无需安装专用软件，只要有浏览器就能使用服务。功能的添加和修改只需在服务器一侧进行，因此不必重新分发到大量终端。在规模较大的系统中，有时会按角色拆分服务器，例如返回画面的 Web 服务器、执行业务处理的应用服务器、管理数据的数据库服务器。",
+      "explanation_en": "Users can access the service with just a browser, without installing dedicated software. Features are added or fixed on the server side, so there is no need to redistribute anything to many terminals. Large systems sometimes split servers by role, for example a web server that returns screens, an application server that runs business logic, and a database server that manages data.",
+      "memory_hook_jp": "web は「くもの巣」。世界中に張りめぐらされた網の上のサーバを、ブラウザという 1 つの入口から使う。",
+      "memory_hook_zh": "web 意为“蜘蛛网”。遍布全世界的网上的服务器，都能从浏览器这 1 个入口使用。",
+      "memory_hook_en": "A web is a spider's web. Servers spread across a worldwide web are all reached through a single entrance, the browser.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "集中処理",
+      "b": "分散処理",
+      "rows": [
+        {
+          "label_jp": "処理を受け持つ機器",
+          "label_zh": "承担处理的设备",
+          "label_en": "Machines that handle processing",
+          "a_jp": "1 台の中心のコンピュータ",
+          "a_zh": "1 台中心计算机",
+          "a_en": "One central computer",
+          "b_jp": "ネットワークで結んだ複数のコンピュータ",
+          "b_zh": "通过网络连接的多台计算机",
+          "b_en": "Multiple networked computers",
+          "key": true
+        },
+        {
+          "label_jp": "管理",
+          "label_zh": "管理",
+          "label_en": "Management",
+          "a_jp": "1 か所でまとめて行える",
+          "a_zh": "可以在一处统一进行",
+          "a_en": "Can be done in one place",
+          "b_jp": "機器ごとに分かれ、複雑になりやすい",
+          "b_zh": "分散在各台设备，容易变得复杂",
+          "b_en": "Split across machines and tends to get complex",
+          "key": false
+        },
+        {
+          "label_jp": "故障の影響",
+          "label_zh": "故障的影响",
+          "label_en": "Impact of a failure",
+          "a_jp": "中心が止まると全体が止まる",
+          "a_zh": "中心一停，整体都停",
+          "a_en": "If the center stops, everything stops",
+          "b_jp": "一部が止まっても残りで続けやすい",
+          "b_zh": "部分停止也容易用其余设备继续",
+          "b_en": "The rest can usually carry on if some stop",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "分散処理",
+      "b": "並列処理",
+      "rows": [
+        {
+          "label_jp": "着目点",
+          "label_zh": "着眼点",
+          "label_en": "Focus",
+          "a_jp": "処理を複数のコンピュータに分け持たせる構成",
+          "a_zh": "把处理分给多台计算机分担的构成",
+          "a_en": "A configuration that shares work among multiple computers",
+          "b_jp": "処理を同時に実行して時間を縮める進め方",
+          "b_zh": "同时执行处理以缩短时间的推进方式",
+          "b_en": "A way of running work simultaneously to save time",
+          "key": true
+        },
+        {
+          "label_jp": "使う装置",
+          "label_zh": "使用的装置",
+          "label_en": "Equipment used",
+          "a_jp": "ネットワークで結んだ複数台",
+          "a_zh": "通过网络连接的多台",
+          "a_en": "Multiple machines linked by a network",
+          "b_jp": "1 台の中の複数の CPU でも、複数台でもよい",
+          "b_zh": "1 台内的多个 CPU 或多台均可",
+          "b_en": "Multiple CPUs in one machine, or multiple machines",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "クライアントサーバシステム",
+      "b": "ピアツーピア",
+      "rows": [
+        {
+          "label_jp": "機器の立場",
+          "label_zh": "设备的立场",
+          "label_en": "Role of devices",
+          "a_jp": "要求する側と提供する側に分かれる",
+          "a_zh": "分为请求方和提供方",
+          "a_en": "Split into requesting and providing sides",
+          "b_jp": "すべての機器が対等で、どちらの役も担う",
+          "b_zh": "所有设备地位对等，两种角色都承担",
+          "b_en": "All devices are equal and play both roles",
+          "key": true
+        },
+        {
+          "label_jp": "サーバ",
+          "label_zh": "服务器",
+          "label_en": "Server",
+          "a_jp": "サービスを提供するサーバを置く",
+          "a_zh": "设置提供服务的服务器",
+          "a_en": "A server provides the service",
+          "b_jp": "専用のサーバを置かない",
+          "b_zh": "不设专用服务器",
+          "b_en": "No dedicated server",
+          "key": false
+        },
+        {
+          "label_jp": "管理",
+          "label_zh": "管理",
+          "label_en": "Management",
+          "a_jp": "サーバ側でまとめて行える",
+          "a_zh": "可以在服务器一侧统一进行",
+          "a_en": "Handled together on the server side",
+          "b_jp": "機器ごとに分かれる",
+          "b_zh": "分散在各台设备",
+          "b_en": "Split across devices",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "処理をどこで行うかの分け方 (集中処理と分散処理) と、機器がどんな立場で関わるかの分け方 (クライアントサーバシステムとピアツーピア) は別の軸である。",
+    "**並列処理**は、処理を同時に進められる単位に分けて複数の CPU で動かし、全体の処理時間を縮める。",
+    "**Webシステム**は、Web ブラウザをクライアントとして使うクライアントサーバシステムの一形態である。"
+  ],
+  "key_points_zh": [
+    "在哪里处理的分法（集中处理与分散处理）和设备以什么立场参与的分法（客户机服务器系统与对等网络）是两条不同的轴。",
+    "**并行处理**把处理拆分成可同时推进的单位，在多个 CPU 上运行，缩短整体处理时间。",
+    "**Web系统**是把 Web 浏览器当作客户机使用的一种客户机服务器系统。"
+  ],
+  "key_points_en": [
+    "Where processing happens (centralized or distributed processing) and what role each device plays (a client-server system or peer-to-peer) are separate axes.",
+    "**Parallel processing** splits work into units that can proceed at once and runs them on multiple CPUs, shortening the total processing time.",
+    "A **Web system** is a type of client-server system that uses a web browser as the client."
+  ],
+  "overview": {
+    "intro_jp": "集中処理と分散処理を、それぞれの長所と短所とあわせて見分けられる。並列処理が、処理を分けて同時に動かすことで処理時間を縮めるしくみを説明できる。機器どうしの立場の違いでクライアントサーバシステムとピアツーピアを見分け、Webシステムがどちらに属するかを説明できる。",
+    "intro_zh": "能够区分集中处理和分散处理，并说出各自的优点和缺点。能够说明并行处理如何把处理拆分开同时运行，从而缩短处理时间。能够根据设备之间的立场差异区分客户机服务器系统和对等网络，并说明Web系统属于哪一种。",
+    "intro_en": "Tell centralized processing and distributed processing apart, along with the strengths and weaknesses of each. Explain how parallel processing shortens processing time by splitting work and running the parts at the same time. Distinguish a client-server system from peer-to-peer by the roles devices play, and explain which one a Web system belongs to.",
+    "freq_badge": "標準",
+    "est_minutes": 31
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "集中処理: 集中処理といえば1か所に集約・管理は容易だが障害に弱い",
-      "分散処理: 分散処理といえば複数台で分担・障害に強いが管理は複雑",
-      "並列処理: 並列処理といえば複数装置で同時実行して高速化",
-      "クライアントサーバシステム: クライアントサーバシステムといえば要求する側と提供する側の役割分担",
-      "ピアツーピア: ピアツーピアといえば対等な機器同士が直接やり取り",
-      "Webシステム: Webシステムといえばブラウザで使うクライアントサーバの応用形"
-    ],
     "key_points_jp": [
-      "処理形態は集中処理→分散処理→並列処理の流れで理解する。集中は管理が容易だが障害に弱く、分散は障害に強いが管理が複雑、という対比が最頻出。",
-      "並列処理は複数の装置で同時実行して処理を高速化する方式で、性能向上が目的。",
-      "機器間の役割分担にはクライアントサーバ型(要求側と提供側に分担)とピアツーピア型(全機器が対等)があり、対比で問われる。",
-      "ピアツーピアはサーバ不要で対等・直接通信だが、管理やセキュリティ統制が難しい。",
-      "WebシステムはWeb技術でクライアントサーバを具体化した応用形で、ブラウザから利用しサーバ側で集中管理できる。"
+      "処理をどこで行うかの分け方 (集中処理と分散処理) と、機器がどんな立場で関わるかの分け方 (クライアントサーバシステムとピアツーピア) は別の軸である。",
+      "並列処理は、処理を同時に進められる単位に分けて複数の CPU で動かし、全体の処理時間を縮める。",
+      "Webシステムは、Web ブラウザをクライアントとして使うクライアントサーバシステムの一形態である。"
     ],
     "key_points_zh": [
-      "处理形态按集中处理→分散处理→并行处理的脉络来理解。「集中管理容易但抗故障能力弱，分散抗故障能力强但管理复杂」这一对比最为高频。",
-      "并行处理是用多个装置同时执行以加速处理的方式，目的在于提升性能。",
-      "设备间的分工有客户机服务器型（请求方与提供方分担）和对等网络型（所有设备对等）两种，常以对比形式考查。",
-      "对等网络无需服务器、对等且直接通信，但管理和安全管控较为困难。",
-      "Web系统是用Web技术将客户机服务器具体化的应用形态，从浏览器使用并可在服务器端集中管理。"
+      "在哪里处理的分法（集中处理与分散处理）和设备以什么立场参与的分法（客户机服务器系统与对等网络）是两条不同的轴。",
+      "并行处理把处理拆分成可同时推进的单位，在多个 CPU 上运行，缩短整体处理时间。",
+      "Web系统是把 Web 浏览器当作客户机使用的一种客户机服务器系统。"
     ],
     "key_points_en": [
-      "Understand processing types along the flow of centralized → distributed → parallel. The contrast \"centralized is easy to manage but weak against failures, while distributed is strong against failures but complex to manage\" is the most frequently tested.",
-      "Parallel processing is a method that speeds up processing by executing on multiple devices simultaneously; its purpose is to improve performance.",
-      "There are two types of role division among devices: the client-server type (divided between the requesting side and the providing side) and the peer-to-peer type (all devices are equal); they are tested by contrast.",
-      "Peer-to-peer needs no server and features equal, direct communication, but management and security control are difficult.",
-      "A web system is an applied form that gives concrete shape to client-server using web technology; it is used from a browser and can be centrally managed on the server side."
+      "Where processing happens (centralized or distributed processing) and what role each device plays (a client-server system or peer-to-peer) are separate axes.",
+      "Parallel processing splits work into units that can proceed at once and runs them on multiple CPUs, shortening the total processing time.",
+      "A Web system is a type of client-server system that uses a web browser as the client."
+    ],
+    "memory_hooks_jp": [
+      "クライアントサーバシステム: client は「依頼人」、server は「仕える人」。依頼する側と応じる側という語の意味がそのまま役割になる。",
+      "ピアツーピア: peer は「同輩・仲間」の意味。仲間から仲間へ (to) 直接つながる、と読む。",
+      "Webシステム: web は「くもの巣」。世界中に張りめぐらされた網の上のサーバを、ブラウザという 1 つの入口から使う。"
     ],
     "memory_hooks_zh": [
-      "集中处理：说到集中处理，就是集中到一处、管理容易但抗故障能力弱",
-      "分散处理：说到分散处理，就是多台分担、抗故障能力强但管理复杂",
-      "并行处理：说到并行处理，就是多个装置同时执行以提速",
-      "客户机服务器系统：说到客户机服务器系统，就是请求方与提供方的分工",
-      "对等网络：说到对等网络，就是对等的设备之间直接相互通信",
-      "Web系统：说到Web系统，就是用浏览器使用的客户机服务器应用形态"
+      "客户机服务器系统：client 是“委托人”，server 是“侍奉者”。委托的一方和回应的一方，词义本身就是角色。",
+      "对等网络：peer 意为“同辈、伙伴”。可以理解为从伙伴到（to）伙伴直接相连。",
+      "Web系统：web 意为“蜘蛛网”。遍布全世界的网上的服务器，都能从浏览器这 1 个入口使用。"
     ],
     "memory_hooks_en": [
-      "Centralized processing: Centralized processing → concentrated in one place; easy to manage but weak against failures",
-      "Distributed processing: Distributed processing → multiple machines share the work; strong against failures but complex to manage",
-      "Parallel processing: Parallel processing → multiple devices execute simultaneously to speed things up",
-      "Client-server system: Client-server system → division of roles between the requesting side and the providing side",
-      "Peer-to-peer: Peer-to-peer → equal devices communicate directly with one another",
-      "Web system: Web system → an applied form of client-server used through a browser"
+      "Client-server system: A client is someone who engages a service, and a server is one who serves. The meanings of the words are the two roles themselves.",
+      "Peer-to-peer: A peer is an equal or a companion. Read the name as peer linking directly to peer.",
+      "Web system: A web is a spider's web. Servers spread across a worldwide web are all reached through a single entrance, the browser."
     ]
   },
   "challenge_questions": [
-    "2011h23tokubetsu-q057",
-    "2013h25h-q057",
+    "2014h26a-q048",
+    "2016h28a-q094",
     "2015h27h-q079",
-    "2018h30a-q059",
-    "2020r02o-q061"
+    "2020r02o-q061",
+    "2013h25h-q059"
   ],
   "source_figures": [
     {
@@ -241,9 +821,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "处理形态与系统构成基础",
-  "title_en": "Fundamentals of Processing Types and System Configuration",
-  "unit_summary_zh": "学习系统构成中最基础的分类：把处理放在哪里，以及设备之间如何分工。",
-  "unit_summary_en": "Learn the most fundamental classifications of system configuration: where to place processing, and how devices divide roles among themselves."
+  }
 }

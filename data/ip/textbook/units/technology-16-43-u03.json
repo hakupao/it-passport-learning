@@ -1,225 +1,734 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-16-43-u03",
   "topic_id": "technology-16-43",
   "category": "technology",
   "title_jp": "仮想化の基本と方式",
+  "title_zh": "虚拟化的基础与方式",
+  "title_en": "Fundamentals and Types of Virtualization",
   "unit_summary_jp": "物理資源を論理的に分割・統合する仮想化の考え方と、その実現方式(ホスト型/ハイパーバイザー型/コンテナ型)および仮想マシンの概念を学ぶ。",
+  "unit_summary_zh": "学习将物理资源进行逻辑上的分割与整合的虚拟化思路，以及其实现方式（宿主型／管理程序型／容器型）和虚拟机的概念。",
+  "unit_summary_en": "Learn the idea of virtualization, which logically divides and consolidates physical resources, along with its implementation methods (hosted, hypervisor, and container types) and the concept of the virtual machine.",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-16-43-u01"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、1台の物理的なコンピュータの資源を論理的に分割・統合して扱う「仮想化」の考え方と、それを実現する3つの方式(ホスト型・ハイパーバイザー型・コンテナ型)、そして生み出される実体である仮想マシン(VM)を学びます。クラウドや効率的な資源運用の土台となる重要概念で、試験では方式の違いが頻出します。",
-    "freq_badge": "標準",
-    "est_minutes": 18,
-    "intro_zh": "在本单元中，你将学习把一台物理计算机的资源进行逻辑上的分割与整合来使用的「虚拟化」思路，以及实现它的三种方式（宿主型、管理程序型、容器型），还有由此产生的实体——虚拟机（VM）。这是云计算和高效资源运用的基础重要概念，考试中各方式的区别频繁出现。",
-    "intro_en": "In this unit, you will learn the idea of \"virtualization\"—logically dividing and consolidating the resources of a single physical computer for use—along with the three methods that realize it (hosted, hypervisor, and container types), and the virtual machine (VM) that is produced as the actual entity. It is an important foundational concept for the cloud and efficient resource management, and the differences between the methods appear frequently on the exam."
-  },
+  "goals_jp": [
+    "**仮想化**が物理的な資源を実際とは異なる構成に見せて使う技術であり、**サーバの仮想化**では 1 台の物理マシンを独立した複数の環境に分けて使うことを説明できる。",
+    "**サーバの仮想化**の代表的な 3 つの方式を、ハードウェアの上に何を置くか、仮想マシンごとに専用の OS を持つかで見分けられる。",
+    "**VM** と**仮想マシン**が同じものを指し、物理マシンの資源を分け合って動くことを説明できる。"
+  ],
+  "goals_zh": [
+    "能够说明**虚拟化**是把物理资源呈现为与实际不同的构成来使用的技术，而**服务器虚拟化**（[[jp:サーバの仮想化]]）是把一台物理机分成多个相互独立的环境来使用。",
+    "能够根据硬件之上放置什么、每台虚拟机是否拥有专用的操作系统，区分**服务器虚拟化**的三种代表性方式。",
+    "能够说明 **VM** 与**虚拟机**指的是同一个东西，并且是分享物理机的资源来运行的。"
+  ],
+  "goals_en": [
+    "Explain that **virtualization** is a technology that lets physical resources be used as if arranged differently from how they really are, and that **server virtualization** ([[jp:サーバの仮想化]]) splits one physical machine into several independent environments.",
+    "Tell apart the three main approaches to **server virtualization** by what sits on top of the hardware and whether each virtual machine has its own OS.",
+    "Explain that **VM** and **virtual machine** mean the same thing, and that it runs by sharing the resources of a physical machine."
+  ],
+  "overview_cols_jp": [
+    "区分",
+    "見分けの手がかり"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "区分线索"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "How to tell it apart"
+  ],
+  "overview_rows": [
+    {
+      "term": "仮想化",
+      "one_line_jp": "物理的な資源をソフトウェアで扱い、実際とは異なる構成に見せて使う技術",
+      "one_line_zh": "用软件处理物理资源，使其呈现为与实际不同的构成来使用的技术",
+      "one_line_en": "A technology that handles physical resources in software and presents them in a configuration different from the real one",
+      "extra_jp": [
+        "技術・考え方",
+        "1 台を複数に (複数を 1 つにも) 見せる"
+      ],
+      "extra_zh": [
+        "技术・思路",
+        "把一台呈现为多台（也可把多台呈现为一台）"
+      ],
+      "extra_en": [
+        "Technology / concept",
+        "Makes one look like many (or many look like one)"
+      ]
+    },
+    {
+      "term": "ホスト型",
+      "one_line_jp": "ホストOSの上に仮想化ソフトを入れて仮想マシンを動かす方式",
+      "one_line_zh": "在宿主操作系统上安装虚拟化软件来运行虚拟机的方式",
+      "one_line_en": "An approach that installs virtualization software on a host OS to run virtual machines",
+      "extra_jp": [
+        "実現方式",
+        "土台は普段使いの OS"
+      ],
+      "extra_zh": [
+        "实现方式",
+        "底座是日常使用的操作系统"
+      ],
+      "extra_en": [
+        "Implementation approach",
+        "Built on an everyday OS"
+      ]
+    },
+    {
+      "term": "ハイパーバイザー型",
+      "one_line_jp": "ハードウェアの直上にハイパーバイザーを置いて仮想マシンを動かす方式",
+      "one_line_zh": "在硬件之上直接放置管理程序来运行虚拟机的方式",
+      "one_line_en": "An approach that places a hypervisor directly on the hardware to run virtual machines",
+      "extra_jp": [
+        "実現方式",
+        "ホストOSを置かない"
+      ],
+      "extra_zh": [
+        "实现方式",
+        "不放宿主操作系统"
+      ],
+      "extra_en": [
+        "Implementation approach",
+        "No host OS"
+      ]
+    },
+    {
+      "term": "コンテナ型",
+      "one_line_jp": "ホストOSのカーネルを共有し、アプリの実行環境だけを分ける方式",
+      "one_line_zh": "共享宿主操作系统的内核，只划分应用程序运行环境的方式",
+      "one_line_en": "An approach that shares the host OS kernel and separates only the application runtime environments",
+      "extra_jp": [
+        "実現方式",
+        "OS を丸ごとは持たない"
+      ],
+      "extra_zh": [
+        "实现方式",
+        "不拥有完整的操作系统"
+      ],
+      "extra_en": [
+        "Implementation approach",
+        "No full OS of its own"
+      ]
+    },
+    {
+      "term": "VM",
+      "one_line_jp": "仮想マシン (Virtual Machine) の略語",
+      "one_line_zh": "虚拟机（Virtual Machine）的缩写",
+      "one_line_en": "Abbreviation of virtual machine",
+      "extra_jp": [
+        "実体の呼び名 (略称)",
+        "製品名や管理画面での短い書き方"
+      ],
+      "extra_zh": [
+        "实体的称呼（简称）",
+        "产品名和管理界面中的简短写法"
+      ],
+      "extra_en": [
+        "Name for the entity (short form)",
+        "Short form used in product names and admin screens"
+      ]
+    },
+    {
+      "term": "仮想マシン",
+      "one_line_jp": "物理マシンの上にソフトウェアで作られる仮想のコンピュータ",
+      "one_line_zh": "用软件在物理机上构建出来的虚拟计算机",
+      "one_line_en": "A virtual computer built in software on top of a physical machine",
+      "extra_jp": [
+        "実体の呼び名",
+        "専用の OS とアプリを持つ"
+      ],
+      "extra_zh": [
+        "实体的称呼",
+        "拥有专用的操作系统和应用程序"
+      ],
+      "extra_en": [
+        "Name for the entity",
+        "Has its own OS and applications"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "仮想化",
-      "definition_jp": "物理的な資源を論理的に分割・統合し、実体と異なる構成に見せかける技術。",
-      "explanation_jp": "仮想化とは、CPU・メモリ・ストレージといった物理資源をソフトウェアで抽象化し、1台を複数台に見せたり、複数台を1台に見せたりする技術です。これにより、サーバの台数を減らしつつ用途ごとに環境を分けられ、資源の利用効率が大きく高まります。\n\n試験では、仮想化の目的(資源の有効活用・コスト削減・環境の独立性)と、後述の3方式の違いがよく問われます。物理マシン1台に複数の独立した環境を同居させられる点が、集約や柔軟な運用につながる核心です。",
-      "analogy_jp": "1つの大きな部屋を間仕切りで複数の個室に分けるイメージです。壁(ソフトウェア)で区切れば、1部屋でも複数人がそれぞれ独立して使え、空間を無駄なく活用できます。逆に、複数の部屋の壁を取り払って1つの大部屋として使うように、複数の資源を束ねて1つに見せる『統合』も仮想化に含まれます。",
-      "memory_hook_jp": "仮想化といえば1台を複数に(複数を1台にも)見せる資源の分割・統合",
+      "term_zh": "虚拟化",
+      "term_en": "Virtualization",
+      "one_jp": "**仮想化**は、CPU やメモリ、ディスクなどの物理的な資源をソフトウェアで扱い、実際とは異なる構成に見せて使えるようにする技術である。",
+      "one_zh": "**虚拟化**（[[jp:仮想化]]）是用软件处理 CPU、内存、磁盘等物理资源，使其能够呈现为与实际不同的构成来使用的技术。",
+      "one_en": "**Virtualization** ([[jp:仮想化]]) is a technology that handles physical resources such as the CPU, memory, and disks in software, so they can be used in a configuration different from the real one.",
+      "detail_jp": "代表的な使い方は、1 台の物理コンピュータを区切って複数の環境として使う**サーバの仮想化**である。区切った環境を仮想的なコンピュータとして作るとき、その 1 台 1 台を**仮想マシン**、その中で動く OS を**ゲストOS**と呼ぶ。逆に、複数の物理資源を束ねて 1 つに見せる使い方も仮想化に含まれる。",
+      "detail_zh": "典型的用法是把一台物理计算机划分开来、作为多个环境使用的**服务器虚拟化**。把划分出的环境做成虚拟的计算机时，每一台称为**虚拟机**，在其中运行的操作系统称为**客户操作系统**。反过来，把多个物理资源汇集起来呈现为一个的用法也属于虚拟化。",
+      "detail_en": "A typical use is **server virtualization**, which divides one physical computer so it can serve as several environments. When each divided environment is built as a virtual computer, each one is called a **virtual machine**, and the OS running inside it is the **guest OS**. The reverse, bundling several physical resources so they appear as one, is also virtualization.",
+      "analogy_jp": "例えば、広いフロアを間仕切りで区切り、いくつもの個室として貸し出すようなもの。建物は 1 つでも、借りた人はそれぞれ自分専用の部屋として使える。",
+      "analogy_zh": "就好比用隔断把宽敞的楼层分成好几个单间来出租。楼只有一栋，租户却能各自把房间当作自己专用的空间来用。",
+      "analogy_en": "Think of dividing a large open floor with partitions and renting it out as many private rooms. There is only one building, but each tenant uses their room as their own.",
+      "hook_jp": "virtual は「実物ではないが、実質的にはそのように働く」という意味。仮想マシンや仮想記憶の「仮想」も、この virtual の訳語である。",
+      "hook_zh": "virtual 的意思是“并非实物，但实际上发挥着同样的作用”。虚拟机、虚拟存储器中的“虚拟”，也是这个 virtual 的译词。",
+      "hook_en": "Virtual means \"not the real thing, but working as if it were.\" The same word gives the virtual in virtual machine and virtual memory.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**サーバの仮想化**は、1 台の物理マシンを論理的に区切り、その上で何台ものサーバを並行して動かせるようにする技術である。",
+          "text_zh": "**服务器虚拟化**（[[jp:サーバの仮想化]]）是把一台物理机进行逻辑划分，使多台服务器能够在其上同时运行的技术。",
+          "text_en": "**Server virtualization** ([[jp:サーバの仮想化]]) logically divides one physical machine so that several servers can run on it at the same time.",
+          "qids": [
+            "2010h22h-q086",
+            "2011h23a-q054",
+            "2018h30h-q062"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**サーバの仮想化**では物理マシンの資源を区切った環境ごとに必要な分ずつ割り振れるので、需要に合わせて資源を柔軟に使い分けられる。",
+          "text_zh": "在**服务器虚拟化**中，物理机的资源可以按划分出的各个环境所需的量分配，因此能根据需求灵活地调配资源。",
+          "text_en": "In **server virtualization**, the physical machine's resources can be allotted to each divided environment in the amounts it needs, so resources can be shifted flexibly to match demand.",
+          "qids": [
+            "2019r01a-q074"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**仮想記憶**は補助記憶を使って主記憶の容量を実際より大きく見せる仕組みであり、**サーバの仮想化**は 1 台のコンピュータを独立した複数のコンピュータとして使う技術である。",
+          "text_zh": "**虚拟存储器**（[[jp:仮想記憶]]）是利用辅助存储器让主存储器的容量看起来比实际更大的机制，而**服务器虚拟化**是把一台计算机当作多台相互独立的计算机来使用的技术。",
+          "text_en": "**Virtual memory** ([[jp:仮想記憶]]) is a mechanism that uses auxiliary storage to make main memory look larger than it really is, while **server virtualization** is a technology that uses one computer as several independent computers."
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-16-43-u03-t01.svg"
+        }
+      },
+      "quiz": [
+        "2010h22h-q086",
+        "2018h30h-q062"
+      ],
+      "definition_jp": "仮想化は、CPU やメモリ、ディスクなどの物理的な資源をソフトウェアで扱い、実際とは異なる構成に見せて使えるようにする技術である。",
+      "definition_zh": "虚拟化（仮想化）是用软件处理 CPU、内存、磁盘等物理资源，使其能够呈现为与实际不同的构成来使用的技术。",
+      "definition_en": "Virtualization (仮想化) is a technology that handles physical resources such as the CPU, memory, and disks in software, so they can be used in a configuration different from the real one.",
+      "explanation_jp": "代表的な使い方は、1 台の物理コンピュータを区切って複数の環境として使うサーバの仮想化である。区切った環境を仮想的なコンピュータとして作るとき、その 1 台 1 台を仮想マシン、その中で動く OS をゲストOSと呼ぶ。逆に、複数の物理資源を束ねて 1 つに見せる使い方も仮想化に含まれる。",
+      "explanation_zh": "典型的用法是把一台物理计算机划分开来、作为多个环境使用的服务器虚拟化。把划分出的环境做成虚拟的计算机时，每一台称为虚拟机，在其中运行的操作系统称为客户操作系统。反过来，把多个物理资源汇集起来呈现为一个的用法也属于虚拟化。",
+      "explanation_en": "A typical use is server virtualization, which divides one physical computer so it can serve as several environments. When each divided environment is built as a virtual computer, each one is called a virtual machine, and the OS running inside it is the guest OS. The reverse, bundling several physical resources so they appear as one, is also virtualization.",
+      "memory_hook_jp": "virtual は「実物ではないが、実質的にはそのように働く」という意味。仮想マシンや仮想記憶の「仮想」も、この virtual の訳語である。",
+      "memory_hook_zh": "virtual 的意思是“并非实物，但实际上发挥着同样的作用”。虚拟机、虚拟存储器中的“虚拟”，也是这个 virtual 的译词。",
+      "memory_hook_en": "Virtual means \"not the real thing, but working as if it were.\" The same word gives the virtual in virtual machine and virtual memory.",
       "inline_quiz": [
-        "2011h23a-q054"
+        "2010h22h-q086",
+        "2018h30h-q062"
       ],
       "inline_fallback": false,
       "figure": {
         "mermaid": "graph TD; A[\"物理サーバ(1台)\"] --> B[\"仮想化\"]; B --> C[\"仮想環境1\"]; B --> D[\"仮想環境2\"]; B --> E[\"仮想環境3\"]",
         "svg_path": "figures/technology-16-43-u03-t01.svg",
         "rendered": true
-      },
-      "term_zh": "虚拟化",
-      "term_en": "Virtualization",
-      "definition_zh": "将物理资源进行逻辑上的分割与整合，使其呈现出与实体不同的构成的技术。",
-      "definition_en": "A technology that logically divides and consolidates physical resources, making them appear as a configuration different from the actual entity.",
-      "explanation_zh": "虚拟化是指用软件将 CPU、内存、存储等物理资源抽象化，让一台看起来像多台、或让多台看起来像一台的技术。借此可以在减少服务器数量的同时按用途划分环境，大幅提升资源的利用效率。\n\n考试中常考虚拟化的目的（资源的有效利用、降低成本、环境的独立性），以及后述三种方式的区别。能够在一台物理机上让多个相互独立的环境共存，正是实现集约化和灵活运用的核心。",
-      "explanation_en": "Virtualization is a technology that uses software to abstract physical resources such as CPU, memory, and storage, making one machine appear as many or many machines appear as one. This allows you to reduce the number of servers while separating environments by purpose, greatly improving the efficiency of resource utilization.\n\nThe exam often asks about the purposes of virtualization (effective use of resources, cost reduction, environment independence) and the differences among the three methods described later. The ability to host multiple independent environments together on a single physical machine is the core that leads to consolidation and flexible operation.",
-      "analogy_zh": "可以想象成用隔断把一个大房间分成多个独立小间。只要用墙（软件）隔开，即使是一个房间也能让多个人各自独立使用，把空间利用得不浪费。反过来，就像拆掉多个房间的墙合成一个大房间一样，把多个资源捆绑起来呈现为一个的「整合」也属于虚拟化。",
-      "analogy_en": "Imagine dividing one large room into several independent small rooms with partitions. As long as you separate them with walls (software), even a single room can be used independently by several people, making full use of the space without waste. Conversely, just as you might tear down the walls between several rooms to use them as one large room, \"consolidation\"—bundling multiple resources to appear as one—is also part of virtualization.",
-      "memory_hook_zh": "说到虚拟化，就是把一台呈现为多台（也能把多台呈现为一台）的资源分割与整合",
-      "memory_hook_en": "Virtualization → dividing and consolidating resources to make one look like many (and many look like one)"
+      }
     },
     {
       "term": "ホスト型",
-      "definition_jp": "OS上に仮想化ソフトを載せて仮想環境を動かす仮想化方式。",
-      "explanation_jp": "ホスト型は、既存のOS(ホストOS)の上に仮想化ソフトウェアをインストールし、その上で仮想マシンを動かす方式です。普段使っているPCにアプリを1つ追加する感覚で導入でき、最も手軽で分かりやすいのが特徴です。\n\n試験では、ハイパーバイザー型との対比が問われます。ホスト型はホストOSを経由する分だけ処理に余分なオーバーヘッドが生じ、性能面では不利になりがちです。手軽さと引き換えに効率が落ちる、と覚えておくとよいでしょう。",
-      "analogy_jp": "母屋(ホストOS)の中に簡易テントを張って住むイメージです。すぐに張れて手軽ですが、母屋を通る分だけ移動に手間がかかります。",
-      "memory_hook_jp": "ホスト型といえばOSの上に仮想化ソフトを載せる手軽な方式",
-      "inline_quiz": [
-        "2018h30h-q062"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "宿主型",
       "term_en": "Hosted (Host OS) type",
-      "definition_zh": "在操作系统之上加载虚拟化软件来运行虚拟环境的虚拟化方式。",
-      "definition_en": "A virtualization method that runs virtual environments by placing virtualization software on top of an OS.",
-      "explanation_zh": "宿主型是在既有的操作系统（宿主 OS）之上安装虚拟化软件，并在其上运行虚拟机的方式。它就像在平时使用的 PC 上多添加一个应用那样导入，最为便捷、易于理解是其特点。\n\n考试中常考它与管理程序型的对比。宿主型由于要经过宿主 OS，处理时会产生额外的开销，在性能方面往往处于劣势。记住「以便捷换来效率下降」即可。",
-      "explanation_en": "The hosted type installs virtualization software on top of an existing OS (the host OS) and runs virtual machines on top of that. It can be introduced with the feeling of just adding one application to the PC you normally use, and its characteristic is being the most convenient and easy to understand.\n\nThe exam asks about the contrast with the hypervisor type. Because the hosted type goes through the host OS, extra overhead arises in processing, and it tends to be at a disadvantage in terms of performance. It is good to remember that you trade convenience for lower efficiency.",
-      "analogy_zh": "就像在主屋（宿主 OS）里搭一顶简易帐篷住进去。搭起来很快很方便，但要经过主屋出入会多费些工夫。",
-      "analogy_en": "Imagine pitching a simple tent inside the main house (the host OS) and living in it. It can be set up quickly and conveniently, but coming and going takes extra effort because you have to pass through the main house.",
-      "memory_hook_zh": "说到宿主型，就是在操作系统之上加载虚拟化软件的便捷方式",
-      "memory_hook_en": "Hosted type → loading virtualization software on top of an OS; the convenient method"
+      "one_jp": "**ホスト型**は、普段使っている OS (**ホストOS**) の上に仮想化ソフトを入れ、その上で仮想マシンを動かす方式である。",
+      "one_zh": "**宿主型**（[[jp:ホスト型]]）是在平时使用的操作系统（**宿主操作系统**）上安装虚拟化软件，再在其上运行虚拟机的方式。",
+      "one_en": "The **hosted type** ([[jp:ホスト型]]) installs virtualization software on the OS you normally use (the **host OS**) and runs virtual machines on top of it.",
+      "detail_jp": "既存の PC にアプリケーションを 1 つ追加する感覚で導入でき、手軽に試せる。一方、仮想マシンがハードウェアを使う処理はホストOSを経由するため、その分の負担 (**オーバーヘッド**) で処理が遅くなりやすい。",
+      "detail_zh": "它可以像在现有的 PC 上多装一个应用程序那样导入，便于轻松试用。另一方面，虚拟机使用硬件的处理要经过宿主操作系统，这部分负担（**开销**）容易使处理变慢。",
+      "detail_en": "You can set it up much like adding one more application to an existing PC, so it is easy to try out. On the other hand, whenever a virtual machine uses the hardware, the work passes through the host OS, and that extra load (**overhead**) tends to slow processing down.",
+      "analogy_jp": "家主が暮らす家の一室を客に貸すようなもの。客は部屋を自由に使えるが、玄関や水回りは家主の家を通って使う。",
+      "analogy_zh": "就好比把房东自己住的房子里的一间租给客人。客人可以自由使用房间，但玄关和厨卫要穿过房东的家去用。",
+      "analogy_en": "It is like a homeowner renting one room of the house they live in to a guest. The guest can use the room freely, but must go through the owner's home to reach the front door, kitchen, and bathroom.",
+      "hook_jp": "host は「客をもてなす主人」、guest は「客」。主人役の OS の上に、客役の OS が乗る。",
+      "hook_zh": "host 是“招待客人的主人”，guest 是“客人”。扮演主人的操作系统之上，坐着扮演客人的操作系统。",
+      "hook_en": "A host is the one who receives guests, and a guest is the visitor. The guest OS sits on top of the OS playing the host.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ホストOS**は物理マシンの上で直接動く OS、**ゲストOS**は仮想マシンの中で動く OS で、どこで動くかで区別する。",
+          "text_zh": "**宿主操作系统**（[[jp:ホストOS]]）是直接在物理机上运行的操作系统，**客户操作系统**（[[jp:ゲストOS]]）是在虚拟机（[[jp:仮想マシン]]）中运行的操作系统，二者按运行位置区分。",
+          "text_en": "The **host OS** ([[jp:ホストOS]]) runs directly on the physical machine, and the **guest OS** ([[jp:ゲストOS]]) runs inside a virtual machine ([[jp:仮想マシン]]); they are told apart by where they run."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "hw",
+              "label": {
+                "jp": "ハードウェア",
+                "zh": "硬件",
+                "en": "Hardware"
+              }
+            },
+            {
+              "id": "hostos",
+              "label": {
+                "jp": "ホストOS",
+                "zh": "宿主操作系统",
+                "en": "Host OS"
+              }
+            },
+            {
+              "id": "vsoft",
+              "label": {
+                "jp": "仮想化ソフト",
+                "zh": "虚拟化软件",
+                "en": "Virtualization software"
+              }
+            },
+            {
+              "id": "guestos",
+              "label": {
+                "jp": "ゲストOS",
+                "zh": "客户操作系统",
+                "en": "Guest OS"
+              }
+            },
+            {
+              "id": "app",
+              "label": {
+                "jp": "アプリケーション",
+                "zh": "应用程序",
+                "en": "Applications"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "ホスト型は、普段使っている OS (ホストOS) の上に仮想化ソフトを入れ、その上で仮想マシンを動かす方式である。",
+      "definition_zh": "宿主型（ホスト型）是在平时使用的操作系统（宿主操作系统）上安装虚拟化软件，再在其上运行虚拟机的方式。",
+      "definition_en": "The hosted type (ホスト型) installs virtualization software on the OS you normally use (the host OS) and runs virtual machines on top of it.",
+      "explanation_jp": "既存の PC にアプリケーションを 1 つ追加する感覚で導入でき、手軽に試せる。一方、仮想マシンがハードウェアを使う処理はホストOSを経由するため、その分の負担 (オーバーヘッド) で処理が遅くなりやすい。",
+      "explanation_zh": "它可以像在现有的 PC 上多装一个应用程序那样导入，便于轻松试用。另一方面，虚拟机使用硬件的处理要经过宿主操作系统，这部分负担（开销）容易使处理变慢。",
+      "explanation_en": "You can set it up much like adding one more application to an existing PC, so it is easy to try out. On the other hand, whenever a virtual machine uses the hardware, the work passes through the host OS, and that extra load (overhead) tends to slow processing down.",
+      "memory_hook_jp": "host は「客をもてなす主人」、guest は「客」。主人役の OS の上に、客役の OS が乗る。",
+      "memory_hook_zh": "host 是“招待客人的主人”，guest 是“客人”。扮演主人的操作系统之上，坐着扮演客人的操作系统。",
+      "memory_hook_en": "A host is the one who receives guests, and a guest is the visitor. The guest OS sits on top of the OS playing the host.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ハイパーバイザー型",
-      "definition_jp": "ハードウェア上に直接仮想化基盤を載せて仮想環境を動かす方式。",
-      "explanation_jp": "ハイパーバイザー型は、ホストOSを介さず、ハードウェア上に直接「ハイパーバイザー」という仮想化専用の制御ソフトを置く方式です。各仮想マシンはハイパーバイザーが直接管理するため、ホストOSのオーバーヘッドがなく、処理効率が高くなります。\n\n試験では、ホスト型との性能差が頻出ポイントです。余分なOS層を挟まない分だけ高速で、サーバ仮想化の主流方式として大規模な環境で広く使われている点を押さえましょう。",
-      "analogy_jp": "土地の上に直接、複数戸の集合住宅を建てるイメージです。母屋を介さず直に建てるので、各戸の出入りが速く効率的です。",
-      "memory_hook_jp": "ハイパーバイザー型といえばハードに直接載せて高効率",
-      "inline_quiz": [
-        "2019r01a-q057"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "管理程序型（Hypervisor 型）",
       "term_en": "Hypervisor type",
-      "definition_zh": "在硬件之上直接加载虚拟化基础来运行虚拟环境的方式。",
-      "definition_en": "A method that runs virtual environments by placing the virtualization foundation directly on the hardware.",
-      "explanation_zh": "管理程序型是不经过宿主 OS，而是在硬件之上直接放置一个名为「管理程序（Hypervisor）」的虚拟化专用控制软件的方式。由于各虚拟机由管理程序直接管理，没有宿主 OS 的开销，处理效率更高。\n\n考试中，它与宿主型的性能差距是高频考点。由于不夹一层多余的 OS，所以更快速，作为服务器虚拟化的主流方式被广泛用于大规模环境，这点要记牢。",
-      "explanation_en": "The hypervisor type does not go through a host OS; instead, it places a dedicated virtualization control software called a \"hypervisor\" directly on the hardware. Because each virtual machine is managed directly by the hypervisor, there is no host-OS overhead, and processing efficiency is high.\n\nOn the exam, the performance difference from the hosted type is a frequent point. Be sure to note that, because no extra OS layer is inserted, it is faster and is widely used in large-scale environments as the mainstream method of server virtualization.",
-      "analogy_zh": "就像在地皮上直接建起多户的集合住宅。不经过主屋而直接建造，所以每户的出入都更快、更高效。",
-      "analogy_en": "Imagine building a multi-unit apartment complex directly on the land. Because it is built directly without going through a main house, coming and going for each unit is faster and more efficient.",
-      "memory_hook_zh": "说到管理程序型，就是直接装在硬件上、高效率",
-      "memory_hook_en": "Hypervisor type → placed directly on the hardware; high efficiency"
+      "one_jp": "**ハイパーバイザー型**は、ハードウェアの上に仮想化専用の制御ソフト (**ハイパーバイザー**) を直接置き、その上で仮想マシンを動かす方式である。",
+      "one_zh": "**管理程序型**（[[jp:ハイパーバイザー型]]）是在硬件上直接放置虚拟化专用的控制软件（**管理程序**），再在其上运行虚拟机的方式。",
+      "one_en": "The **hypervisor type** ([[jp:ハイパーバイザー型]]) places control software dedicated to virtualization (the **hypervisor**) directly on the hardware and runs virtual machines on top of it.",
+      "detail_jp": "各仮想マシンへの CPU やメモリの割り振りは、ハイパーバイザーが受け持つ。ゲストOSとハードウェアの間に挟まる層が少なく、多数の仮想マシンをまとめて動かすサーバの用途で広く使われる。",
+      "detail_zh": "向各台虚拟机分配 CPU 和内存的工作由管理程序负责。客户操作系统与硬件之间夹着的层较少，因此广泛用于集中运行大量虚拟机的服务器。",
+      "detail_en": "The hypervisor is in charge of allotting CPU and memory to each virtual machine. Few layers sit between the guest OS and the hardware, so this type is widely used on servers that run many virtual machines together.",
+      "analogy_jp": "更地にじかに、各戸が独立した集合住宅を建てるようなもの。間に家主の家を挟まないので、各戸から外へ出入りしやすい。",
+      "analogy_zh": "就好比直接在空地上盖起一栋各户相互独立的公寓楼。中间不隔着房东的家，所以各户进出外面都很方便。",
+      "analogy_en": "It is like building an apartment block with self-contained units straight onto an empty lot. With no owner's house in between, residents of each unit can come and go easily.",
+      "hook_jp": "OS の中核はかつて supervisor (監督役) とも呼ばれた。その一段上 (hyper) に立ち、複数の OS をまとめて監督するのが hypervisor。",
+      "hook_zh": "操作系统的核心过去也被称为 supervisor（监督者）。站在它更上一层（hyper）、统一监督多个操作系统的，就是 hypervisor。",
+      "hook_en": "The core of an OS was once also called the supervisor. Standing one level above it (hyper) and overseeing several OSs together is the hypervisor.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ハイパーバイザー**は仮想化を制御するソフトそのものの名前で、**ハイパーバイザー型**はそれをハードウェアの直上に置く方式の名前である。",
+          "text_zh": "**管理程序**（[[jp:ハイパーバイザー]]）是控制虚拟化（[[jp:仮想化]]）的软件本身的名称，**管理程序型**（[[jp:ハイパーバイザー型]]）则是把它直接放在硬件上的方式的名称。",
+          "text_en": "**Hypervisor** ([[jp:ハイパーバイザー]]) is the name of the software that controls virtualization ([[jp:仮想化]]), while **hypervisor type** ([[jp:ハイパーバイザー型]]) is the name of the approach that places it directly on the hardware."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "hw",
+              "label": {
+                "jp": "ハードウェア",
+                "zh": "硬件",
+                "en": "Hardware"
+              }
+            },
+            {
+              "id": "hv",
+              "label": {
+                "jp": "ハイパーバイザー",
+                "zh": "管理程序",
+                "en": "Hypervisor"
+              }
+            },
+            {
+              "id": "guestos",
+              "label": {
+                "jp": "ゲストOS",
+                "zh": "客户操作系统",
+                "en": "Guest OS"
+              }
+            },
+            {
+              "id": "app",
+              "label": {
+                "jp": "アプリケーション",
+                "zh": "应用程序",
+                "en": "Applications"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "ハイパーバイザー型は、ハードウェアの上に仮想化専用の制御ソフト (ハイパーバイザー) を直接置き、その上で仮想マシンを動かす方式である。",
+      "definition_zh": "管理程序型（ハイパーバイザー型）是在硬件上直接放置虚拟化专用的控制软件（管理程序），再在其上运行虚拟机的方式。",
+      "definition_en": "The hypervisor type (ハイパーバイザー型) places control software dedicated to virtualization (the hypervisor) directly on the hardware and runs virtual machines on top of it.",
+      "explanation_jp": "各仮想マシンへの CPU やメモリの割り振りは、ハイパーバイザーが受け持つ。ゲストOSとハードウェアの間に挟まる層が少なく、多数の仮想マシンをまとめて動かすサーバの用途で広く使われる。",
+      "explanation_zh": "向各台虚拟机分配 CPU 和内存的工作由管理程序负责。客户操作系统与硬件之间夹着的层较少，因此广泛用于集中运行大量虚拟机的服务器。",
+      "explanation_en": "The hypervisor is in charge of allotting CPU and memory to each virtual machine. Few layers sit between the guest OS and the hardware, so this type is widely used on servers that run many virtual machines together.",
+      "memory_hook_jp": "OS の中核はかつて supervisor (監督役) とも呼ばれた。その一段上 (hyper) に立ち、複数の OS をまとめて監督するのが hypervisor。",
+      "memory_hook_zh": "操作系统的核心过去也被称为 supervisor（监督者）。站在它更上一层（hyper）、统一监督多个操作系统的，就是 hypervisor。",
+      "memory_hook_en": "The core of an OS was once also called the supervisor. Standing one level above it (hyper) and overseeing several OSs together is the hypervisor.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "コンテナ型",
-      "definition_jp": "OSのカーネルを共有して軽量な実行環境を分離する仮想化方式。",
-      "explanation_jp": "コンテナ型は、1つのOSのカーネルを複数の環境(コンテナ)で共有しながら、アプリの実行環境だけを分離する方式です。仮想マシンのようにOSをまるごと積まないため、起動が速く、消費する資源も少ない軽量さが最大の特徴です。\n\n試験では、ホスト型・ハイパーバイザー型が仮想マシン単位でOSを持つのに対し、コンテナ型はOS(カーネル)を共有して軽量である、という違いが問われます。軽量・高速・省資源という3点で覚えると区別しやすくなります。",
-      "analogy_jp": "1つの建物の共用設備(カーネル)を皆で使いつつ、各自の作業ブースだけを仕切るシェアオフィスのイメージ。OSを丸ごと持たないので身軽です。",
-      "memory_hook_jp": "コンテナ型といえばOSカーネル共有で軽量・高速",
-      "inline_quiz": [
-        "2019r01a-q074"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"ホスト型: OS上にソフト\"] --> B[\"効率: 低\"]; C[\"ハイパーバイザー型: ハードに直接\"] --> D[\"効率: 高\"]; E[\"コンテナ型: カーネル共有\"] --> F[\"効率: 最高(軽量)\"]",
-        "svg_path": "figures/technology-16-43-u03-t02.svg",
-        "rendered": true
-      },
       "term_zh": "容器型",
       "term_en": "Container type",
-      "definition_zh": "共享操作系统的内核，分离出轻量执行环境的虚拟化方式。",
-      "definition_en": "A virtualization method that shares the OS kernel and isolates lightweight execution environments.",
-      "explanation_zh": "容器型是让多个环境（容器）共享一个操作系统的内核，同时只分离出应用的执行环境的方式。由于不像虚拟机那样整套装载操作系统，所以启动快、消耗的资源也少，轻量是其最大特点。\n\n考试中常考的区别是：宿主型、管理程序型都以虚拟机为单位各自拥有操作系统，而容器型则共享操作系统（内核）因而轻量。用「轻量、高速、省资源」三点来记，就容易区分。",
-      "explanation_en": "The container type shares the kernel of a single OS among multiple environments (containers) while isolating only the applications' execution environments. Because it does not load an entire OS as a virtual machine does, its greatest feature is being lightweight: it starts quickly and consumes few resources.\n\nThe exam asks about this difference: whereas the hosted and hypervisor types each have an OS per virtual machine, the container type shares the OS (kernel) and is therefore lightweight. Remembering the three points—lightweight, fast, resource-saving—makes it easy to distinguish.",
-      "analogy_zh": "就像一座大楼里大家共用公共设施（内核），但各自只隔出自己的工位的共享办公室。因为不必整套拥有操作系统，所以很轻便。",
-      "analogy_en": "Imagine a shared office where everyone uses the building's common facilities (the kernel) together but each person only partitions off their own workstation. Because you don't have to own an entire OS, it is lightweight.",
-      "memory_hook_zh": "说到容器型，就是共享操作系统内核、轻量·高速",
-      "memory_hook_en": "Container type → shares the OS kernel; lightweight and fast"
+      "one_jp": "**コンテナ型**は、1 つのホストOSの中核部分 (**カーネル**) を共有しながら、アプリケーションの実行環境 (**コンテナ**) だけを分けて動かす方式である。",
+      "one_zh": "**容器型**（[[jp:コンテナ型]]）是在共享一个宿主操作系统核心部分（**内核**）的同时，只把应用程序的运行环境（**容器**）分开来运行的方式。",
+      "one_en": "The **container type** ([[jp:コンテナ型]]) shares the core of one host OS (the **kernel**) while separating only the application runtime environments (**containers**).",
+      "detail_jp": "コンテナはゲストOSを持たず、アプリケーションとその動作に要る部品だけをまとめたものである。OS を丸ごと起動しなくてよいので起動が速く、使うメモリやディスクも少なくて済む。その反面、どのコンテナもホストOSのカーネルを使うため、カーネルの異なる OS を中で動かすことには向かない。",
+      "detail_zh": "容器不拥有客户操作系统，只是把应用程序及其运行所需的组件打包在一起。由于不必启动整个操作系统，启动快，占用的内存和磁盘也少。反过来，所有容器都使用宿主操作系统的内核，因此不适合在其中运行内核不同的操作系统。",
+      "detail_en": "A container has no guest OS; it bundles only the application and the components it needs to run. Because no full OS has to boot, it starts quickly and uses less memory and disk space. In exchange, every container relies on the host OS kernel, so it is not suited to running an OS with a different kernel inside.",
+      "analogy_jp": "受付や電気・水道は入居者全員で共用し、各社は仕切られた自分のブースだけを持つシェアオフィスのようなもの。",
+      "analogy_zh": "就好比一间共享办公室：前台和水电由全体入驻者共用，各家公司只拥有自己被隔开的工位区。",
+      "analogy_en": "It is like a shared office where all tenants share the reception desk and utilities, and each company has only its own partitioned booth.",
+      "hook_jp": "輸送用のコンテナは中身を箱ごと積み替えて運ぶ。ソフトのコンテナも、アプリを必要な部品ごと 1 つの箱に詰めて持ち運ぶ。",
+      "hook_zh": "运输用的集装箱（container）把货物连箱一起换装运输。软件的容器也是把应用程序连同所需组件装进一个箱子里带着走。",
+      "hook_en": "A shipping container moves its contents from carrier to carrier as one box. A software container likewise packs an application and the parts it needs into one box to carry around.",
+      "points": [],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "hw",
+              "label": {
+                "jp": "ハードウェア",
+                "zh": "硬件",
+                "en": "Hardware"
+              }
+            },
+            {
+              "id": "hostos",
+              "label": {
+                "jp": "ホストOS (カーネル)",
+                "zh": "宿主操作系统（内核）",
+                "en": "Host OS (kernel)"
+              }
+            },
+            {
+              "id": "ctr",
+              "label": {
+                "jp": "コンテナ (アプリと部品)",
+                "zh": "容器（应用程序和组件）",
+                "en": "Containers (apps and components)"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "コンテナ型は、1 つのホストOSの中核部分 (カーネル) を共有しながら、アプリケーションの実行環境 (コンテナ) だけを分けて動かす方式である。",
+      "definition_zh": "容器型（コンテナ型）是在共享一个宿主操作系统核心部分（内核）的同时，只把应用程序的运行环境（容器）分开来运行的方式。",
+      "definition_en": "The container type (コンテナ型) shares the core of one host OS (the kernel) while separating only the application runtime environments (containers).",
+      "explanation_jp": "コンテナはゲストOSを持たず、アプリケーションとその動作に要る部品だけをまとめたものである。OS を丸ごと起動しなくてよいので起動が速く、使うメモリやディスクも少なくて済む。その反面、どのコンテナもホストOSのカーネルを使うため、カーネルの異なる OS を中で動かすことには向かない。",
+      "explanation_zh": "容器不拥有客户操作系统，只是把应用程序及其运行所需的组件打包在一起。由于不必启动整个操作系统，启动快，占用的内存和磁盘也少。反过来，所有容器都使用宿主操作系统的内核，因此不适合在其中运行内核不同的操作系统。",
+      "explanation_en": "A container has no guest OS; it bundles only the application and the components it needs to run. Because no full OS has to boot, it starts quickly and uses less memory and disk space. In exchange, every container relies on the host OS kernel, so it is not suited to running an OS with a different kernel inside.",
+      "memory_hook_jp": "輸送用のコンテナは中身を箱ごと積み替えて運ぶ。ソフトのコンテナも、アプリを必要な部品ごと 1 つの箱に詰めて持ち運ぶ。",
+      "memory_hook_zh": "运输用的集装箱（container）把货物连箱一起换装运输。软件的容器也是把应用程序连同所需组件装进一个箱子里带着走。",
+      "memory_hook_en": "A shipping container moves its contents from carrier to carrier as one box. A software container likewise packs an application and the parts it needs into one box to carry around.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "VM",
-      "definition_jp": "仮想化で作られる仮想的なコンピュータ「仮想マシン」の略称。",
-      "explanation_jp": "VMは Virtual Machine の略で、仮想化技術によってソフトウェア的に作り出された仮想的なコンピュータを指します。物理的な1台のマシンの上に、それぞれ独立したOSとアプリを持つVMを複数動作させることができます。\n\n試験では、VM=仮想マシンであるという用語対応がそのまま問われることがあります。VMは物理マシンと同じように振る舞いますが実体はソフトウェアであり、コピーや移動が容易な点も特徴として押さえておきましょう。",
-      "analogy_jp": "ゲーム機の中に「もう一台の仮想のゲーム機」を作るようなものです。見た目も操作も本物そっくりですが、中身はソフトウェアで作られた仮想の機械です。",
-      "memory_hook_jp": "VMといえば仮想マシン(Virtual Machine)の略",
+      "term_zh": "VM（虚拟机）",
+      "term_en": "VM",
+      "one_jp": "**VM** は Virtual Machine の頭文字をとった略語で、**仮想マシン**と同じものを指す。",
+      "one_zh": "**VM** 是取 Virtual Machine 首字母构成的缩写，与**虚拟机**（[[jp:仮想マシン]]）指的是同一个东西。",
+      "one_en": "**VM** is an abbreviation formed from the initials of Virtual Machine, and it means the same thing as a **virtual machine** ([[jp:仮想マシン]]).",
+      "detail_jp": "製品の名前や管理画面、技術資料では、仮想マシンを VM と短く書くことが多い。これと区別するために、実物のコンピュータの方は物理マシンと呼ぶ。",
+      "detail_zh": "在产品名称、管理界面和技术资料中，虚拟机常被简写为 VM。为了与之区分，实际存在的计算机则称为物理机。",
+      "detail_en": "Product names, admin screens, and technical documents often shorten virtual machine to VM. To distinguish it, the real computer is called the physical machine.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**VM** は仮想化という技術の名前ではなく、仮想化によって作られた 1 台 1 台の仮想のコンピュータを指す。",
+          "text_zh": "**VM** 不是虚拟化这一技术的名称，而是指通过虚拟化构建出来的一台台虚拟计算机。",
+          "text_en": "**VM** is not the name of the technology of virtualization; it refers to each individual virtual computer created through virtualization."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2022r04-q099"
+      ],
+      "definition_jp": "VM は Virtual Machine の頭文字をとった略語で、仮想マシンと同じものを指す。",
+      "definition_zh": "VM 是取 Virtual Machine 首字母构成的缩写，与虚拟机（仮想マシン）指的是同一个东西。",
+      "definition_en": "VM is an abbreviation formed from the initials of Virtual Machine, and it means the same thing as a virtual machine (仮想マシン).",
+      "explanation_jp": "製品の名前や管理画面、技術資料では、仮想マシンを VM と短く書くことが多い。これと区別するために、実物のコンピュータの方は物理マシンと呼ぶ。",
+      "explanation_zh": "在产品名称、管理界面和技术资料中，虚拟机常被简写为 VM。为了与之区分，实际存在的计算机则称为物理机。",
+      "explanation_en": "Product names, admin screens, and technical documents often shorten virtual machine to VM. To distinguish it, the real computer is called the physical machine.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
         "2022r04-q099"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "VM（虚拟机）",
-      "term_en": "VM",
-      "definition_zh": "由虚拟化创建出的虚拟计算机「虚拟机（Virtual Machine）」的简称。",
-      "definition_en": "The abbreviation for \"virtual machine\"—a virtual computer created by virtualization.",
-      "explanation_zh": "VM 是 Virtual Machine 的缩写，指通过虚拟化技术以软件方式创建出的虚拟计算机。可以在一台物理机器之上同时运行多个各自拥有独立操作系统和应用的 VM。\n\n考试中，有时会直接考「VM＝虚拟机」这一用语对应。VM 的行为与物理机器相同，但其本体是软件，易于复制和迁移这一点也要记住。",
-      "explanation_en": "VM is the abbreviation for Virtual Machine, referring to a virtual computer created by software through virtualization technology. On top of a single physical machine, you can run multiple VMs, each with its own independent OS and applications.\n\nOn the exam, the term correspondence \"VM = virtual machine\" is sometimes asked directly. A VM behaves just like a physical machine, but its substance is software, and it is also worth noting that it is easy to copy and move.",
-      "analogy_zh": "就像在一台游戏机里再造出「另一台虚拟的游戏机」。外观和操作都跟真的一模一样，但内里是用软件做出来的虚拟机器。",
-      "analogy_en": "It's like creating \"another virtual game console\" inside a game console. It looks and operates exactly like the real thing, but inside it is a virtual machine made of software.",
-      "memory_hook_zh": "说到 VM，就是虚拟机（Virtual Machine）的简称",
-      "memory_hook_en": "VM → short for Virtual Machine"
+      "figure": null
     },
     {
       "term": "仮想マシン",
-      "definition_jp": "仮想化により物理マシン上に作られた、独立して動く仮想のコンピュータ。",
-      "explanation_jp": "仮想マシンは、仮想化技術によって作り出される仮想のコンピュータの正式名称で、VMと同じものを指します。1台の物理サーバ上に複数の仮想マシンを作り、それぞれに別々のOSをインストールして独立した1台のコンピュータのように使えます。\n\n試験では、VMとの用語対応に加え、各仮想マシンが独立性を持つ点が問われます。ある仮想マシンの障害が他に波及しにくく、用途ごとに環境を分けられるため、サーバ集約やテスト環境の構築に広く活用されています。",
-      "analogy_jp": "1棟のマンションの中の独立した各部屋のようなものです。建物(物理サーバ)は1つでも、部屋ごとに別々の住人(OS)が独立して暮らせます。",
-      "memory_hook_jp": "仮想マシンといえば物理1台上で動く独立した仮想のPC",
-      "inline_quiz": [
-        "2010h22h-q086"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "虚拟机",
       "term_en": "Virtual machine",
-      "definition_zh": "通过虚拟化在物理机器上创建出的、独立运行的虚拟计算机。",
-      "definition_en": "An independently running virtual computer created on a physical machine through virtualization.",
-      "explanation_zh": "虚拟机是通过虚拟化技术创建出的虚拟计算机的正式名称，与 VM 指的是同一个东西。可以在一台物理服务器之上创建多个虚拟机，分别安装不同的操作系统，把它们当作各自独立的一台计算机来使用。\n\n考试中，除了与 VM 的用语对应外，还会考各虚拟机具有独立性这一点。某个虚拟机的故障不易波及其他虚拟机，并且可以按用途划分环境，因此被广泛用于服务器集约化和测试环境的搭建。",
-      "explanation_en": "Virtual machine is the formal name for the virtual computer created by virtualization technology, and it refers to the same thing as VM. You can create multiple virtual machines on a single physical server, install a different OS on each, and use them as independent, separate computers.\n\nOn the exam, in addition to the term correspondence with VM, it is also asked that each virtual machine has independence. A failure in one virtual machine is unlikely to spread to others, and environments can be separated by purpose, so they are widely used for server consolidation and building test environments.",
-      "analogy_zh": "就像一栋公寓里相互独立的各个房间。即使建筑（物理服务器）只有一栋，每个房间也能住着各自不同的住户（操作系统），彼此独立生活。",
-      "analogy_en": "It's like the independent rooms within a single apartment building. Even though there is only one building (the physical server), each room can have its own separate resident (OS) living independently.",
-      "memory_hook_zh": "说到虚拟机，就是在一台物理机上运行的独立虚拟 PC",
-      "memory_hook_en": "Virtual machine → an independent virtual PC running on a single physical machine"
+      "one_jp": "**仮想マシン**は、仮想化によって物理マシンの上に作られる、ソフトウェアで実現された仮想のコンピュータである。",
+      "one_zh": "**虚拟机**（[[jp:仮想マシン]]）是通过虚拟化在物理机上构建出来、由软件实现的虚拟计算机。",
+      "one_en": "A **virtual machine** ([[jp:仮想マシン]]) is a virtual computer, realized in software, that virtualization creates on top of a physical machine.",
+      "detail_jp": "各仮想マシンには物理マシンの資源の一部が割り当てられ、ゲストOSとアプリケーションがその範囲で動く。各仮想マシンは互いに独立しているので、1 つで障害が起きても他の仮想マシンには広がりにくい。中身はファイルとデータなので、複製や別の物理マシンへの移動もしやすい。",
+      "detail_zh": "每台虚拟机都分配到物理机资源的一部分，客户操作系统和应用程序在这个范围内运行。各台虚拟机相互独立，因此即使一台发生故障，也不容易波及其他虚拟机。虚拟机的实体是文件和数据，所以也便于复制或迁移到另一台物理机。",
+      "detail_en": "Each virtual machine is given part of the physical machine's resources, and its guest OS and applications run within that share. Virtual machines are independent of one another, so a failure in one is unlikely to spread to the others. Since a virtual machine is really just files and data, it is also easy to copy or move to another physical machine.",
+      "analogy_jp": "1 棟のマンションの各住戸のようなもの。建物は 1 つでも住戸ごとに別の住人が暮らし、隣の部屋の騒ぎは自分の部屋に及びにくい。",
+      "analogy_zh": "就好比一栋公寓楼里的各户。楼只有一栋，但每户住着不同的人，隔壁的吵闹不太会影响到自己家。",
+      "analogy_en": "It is like the units in one apartment building. There is only one building, but different people live in each unit, and noise next door rarely reaches yours.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**仮想マシン**ごとに別の OS を入れ、それぞれを独立した 1 台のコンピュータとして動かせる。",
+          "text_zh": "可以在每台**虚拟机**（[[jp:仮想マシン]]）上安装不同的操作系统，让它们各自作为独立的一台计算机运行。",
+          "text_en": "Each **virtual machine** ([[jp:仮想マシン]]) can have its own separate OS installed and run as an independent computer.",
+          "qids": [
+            "2018h30h-q062",
+            "2022r04-q099"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2011h23a-q054",
+        "2019r01a-q074"
+      ],
+      "definition_jp": "仮想マシンは、仮想化によって物理マシンの上に作られる、ソフトウェアで実現された仮想のコンピュータである。",
+      "definition_zh": "虚拟机（仮想マシン）是通过虚拟化在物理机上构建出来、由软件实现的虚拟计算机。",
+      "definition_en": "A virtual machine (仮想マシン) is a virtual computer, realized in software, that virtualization creates on top of a physical machine.",
+      "explanation_jp": "各仮想マシンには物理マシンの資源の一部が割り当てられ、ゲストOSとアプリケーションがその範囲で動く。各仮想マシンは互いに独立しているので、1 つで障害が起きても他の仮想マシンには広がりにくい。中身はファイルとデータなので、複製や別の物理マシンへの移動もしやすい。",
+      "explanation_zh": "每台虚拟机都分配到物理机资源的一部分，客户操作系统和应用程序在这个范围内运行。各台虚拟机相互独立，因此即使一台发生故障，也不容易波及其他虚拟机。虚拟机的实体是文件和数据，所以也便于复制或迁移到另一台物理机。",
+      "explanation_en": "Each virtual machine is given part of the physical machine's resources, and its guest OS and applications run within that share. Virtual machines are independent of one another, so a failure in one is unlikely to spread to the others. Since a virtual machine is really just files and data, it is also easy to copy or move to another physical machine.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2011h23a-q054",
+        "2019r01a-q074"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "ホスト型",
+      "b": "ハイパーバイザー型",
+      "rows": [
+        {
+          "label_jp": "ハードウェアの直上",
+          "label_zh": "硬件之上直接放置的",
+          "label_en": "Directly on the hardware",
+          "a_jp": "ホストOS",
+          "a_zh": "宿主操作系统",
+          "a_en": "Host OS",
+          "b_jp": "ハイパーバイザー",
+          "b_zh": "管理程序",
+          "b_en": "Hypervisor",
+          "key": true
+        },
+        {
+          "label_jp": "ハードウェアとゲストOSの間の層",
+          "label_zh": "硬件与客户操作系统之间的层",
+          "label_en": "Layers between hardware and guest OS",
+          "a_jp": "ホストOSと仮想化ソフト",
+          "a_zh": "宿主操作系统和虚拟化软件",
+          "a_en": "Host OS and virtualization software",
+          "b_jp": "ハイパーバイザーだけ",
+          "b_zh": "只有管理程序",
+          "b_en": "Hypervisor only",
+          "key": false
+        },
+        {
+          "label_jp": "処理の負担",
+          "label_zh": "处理负担",
+          "label_en": "Processing overhead",
+          "a_jp": "ホストOSを経由する分だけ大きくなりやすい",
+          "a_zh": "要经过宿主操作系统，负担容易相应变大",
+          "a_en": "Tends to be larger, since work passes through the host OS",
+          "b_jp": "挟まる層が少なく小さい",
+          "b_zh": "夹着的层少，负担小",
+          "b_en": "Small, with fewer layers in between",
+          "key": false
+        },
+        {
+          "label_jp": "向く使い方",
+          "label_zh": "适合的用法",
+          "label_en": "Suited to",
+          "a_jp": "手元の PC で手軽に試す",
+          "a_zh": "在手边的 PC 上轻松试用",
+          "a_en": "Trying things out easily on your own PC",
+          "b_jp": "多数の仮想マシンをまとめて動かすサーバ",
+          "b_zh": "集中运行大量虚拟机的服务器",
+          "b_en": "Servers running many virtual machines together",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "ハイパーバイザー型",
+      "b": "コンテナ型",
+      "rows": [
+        {
+          "label_jp": "分ける単位",
+          "label_zh": "划分的单位",
+          "label_en": "Unit of separation",
+          "a_jp": "仮想マシン (OS ごと)",
+          "a_zh": "虚拟机（连同操作系统）",
+          "a_en": "Virtual machine (including its OS)",
+          "b_jp": "コンテナ (アプリの実行環境)",
+          "b_zh": "容器（应用程序的运行环境）",
+          "b_en": "Container (application runtime environment)",
+          "key": false
+        },
+        {
+          "label_jp": "ゲストOS",
+          "label_zh": "客户操作系统",
+          "label_en": "Guest OS",
+          "a_jp": "仮想マシンごとに持つ",
+          "a_zh": "每台虚拟机各自拥有",
+          "a_en": "Each virtual machine has its own",
+          "b_jp": "持たず、ホストOSのカーネルを共有する",
+          "b_zh": "不拥有，共享宿主操作系统的内核",
+          "b_en": "None; shares the host OS kernel",
+          "key": true
+        },
+        {
+          "label_jp": "起動",
+          "label_zh": "启动",
+          "label_en": "Startup",
+          "a_jp": "ゲストOSの起動が要る",
+          "a_zh": "需要启动客户操作系统",
+          "a_en": "The guest OS must boot",
+          "b_jp": "OS の起動が要らず速い",
+          "b_zh": "不需要启动操作系统，速度快",
+          "b_en": "No OS boot needed, so it is fast",
+          "key": false
+        },
+        {
+          "label_jp": "動かせる OS",
+          "label_zh": "能运行的操作系统",
+          "label_en": "OSs it can run",
+          "a_jp": "種類の異なる OS も動かせる",
+          "a_zh": "种类不同的操作系统也能运行",
+          "a_en": "Can run different kinds of OS",
+          "b_jp": "ホストOSのカーネルで動くものが前提",
+          "b_zh": "以能在宿主操作系统内核上运行为前提",
+          "b_en": "Limited to what runs on the host OS kernel",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**仮想化**は物理資源を実際とは異なる構成に見せる技術で、**サーバの仮想化**では 1 台の物理マシンを独立した複数の環境として使える。",
+    "**ホスト型**は普段使いの OS の上に仮想化ソフトを入れる方式で、既存の PC に手軽に導入できる。",
+    "**ハイパーバイザー型**はハードウェアの直上に制御ソフトを置く方式で、多数の仮想マシンを動かすサーバで広く使われる。",
+    "**コンテナ型**はカーネルを共有してアプリの実行環境だけを分ける方式で、資源の消費が少ない。",
+    "**仮想マシン** (略して **VM**) はゲストOSを持つ仮想のコンピュータで、物理マシンの資源を分け合って動く。"
+  ],
+  "key_points_zh": [
+    "**虚拟化**是把物理资源呈现为与实际不同的构成的技术，在**服务器虚拟化**中，一台物理机可以作为多个相互独立的环境使用。",
+    "**宿主型**是在日常使用的操作系统上安装虚拟化软件的方式，可以轻松地导入到现有的 PC 上。",
+    "**管理程序型**是在硬件上直接放置控制软件的方式，广泛用于运行大量虚拟机的服务器。",
+    "**容器型**是共享内核、只划分应用程序运行环境的方式，资源消耗少。",
+    "**虚拟机**（简称 **VM**）是拥有客户操作系统的虚拟计算机，分享物理机的资源来运行。"
+  ],
+  "key_points_en": [
+    "**Virtualization** presents physical resources in a configuration different from the real one, and with **server virtualization** one physical machine can serve as several independent environments.",
+    "The **hosted type** installs virtualization software on an everyday OS and is easy to add to an existing PC.",
+    "The **hypervisor type** places control software directly on the hardware and is widely used on servers that run many virtual machines.",
+    "The **container type** shares the kernel and separates only the application runtime environments, so it consumes few resources.",
+    "A **virtual machine** (**VM** for short) is a virtual computer with a guest OS that runs by sharing the physical machine's resources."
+  ],
+  "overview": {
+    "intro_jp": "仮想化が物理的な資源を実際とは異なる構成に見せて使う技術であり、サーバの仮想化では 1 台の物理マシンを独立した複数の環境に分けて使うことを説明できる。サーバの仮想化の代表的な 3 つの方式を、ハードウェアの上に何を置くか、仮想マシンごとに専用の OS を持つかで見分けられる。VM と仮想マシンが同じものを指し、物理マシンの資源を分け合って動くことを説明できる。",
+    "intro_zh": "能够说明虚拟化是把物理资源呈现为与实际不同的构成来使用的技术，而服务器虚拟化（サーバの仮想化）是把一台物理机分成多个相互独立的环境来使用。能够根据硬件之上放置什么、每台虚拟机是否拥有专用的操作系统，区分服务器虚拟化的三种代表性方式。能够说明 VM 与虚拟机指的是同一个东西，并且是分享物理机的资源来运行的。",
+    "intro_en": "Explain that virtualization is a technology that lets physical resources be used as if arranged differently from how they really are, and that server virtualization (サーバの仮想化) splits one physical machine into several independent environments. Tell apart the three main approaches to server virtualization by what sits on top of the hardware and whether each virtual machine has its own OS. Explain that VM and virtual machine mean the same thing, and that it runs by sharing the resources of a physical machine.",
+    "freq_badge": "標準",
+    "est_minutes": 33
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "仮想化: 仮想化といえば1台を複数に見せる資源の分割・統合",
-      "ホスト型: ホスト型といえばOSの上に仮想化ソフトを載せる手軽な方式",
-      "ハイパーバイザー型: ハイパーバイザー型といえばハードに直接載せて高効率",
-      "コンテナ型: コンテナ型といえばOSカーネル共有で軽量・高速",
-      "VM: VMといえば仮想マシン(Virtual Machine)の略",
-      "仮想マシン: 仮想マシンといえば物理1台上で動く独立した仮想のPC"
-    ],
     "key_points_jp": [
-      "仮想化は物理資源を論理的に分割・統合し、1台を複数に(または複数を1台に)見せる技術で、資源の有効活用とコスト削減が目的。",
-      "実現方式は3種類。ホスト型(OS上にソフト)→ハイパーバイザー型(ハードに直接で高効率)→コンテナ型(カーネル共有で軽量)の順に効率・軽量さが高まる。",
-      "コンテナ型はOSをまるごと持たずカーネルを共有するため、起動が速く省資源で、他方式と明確に区別される。",
-      "VMは仮想マシン(Virtual Machine)の略で、同じ概念を指す。",
-      "仮想マシンは物理1台上で独立して動く仮想のコンピュータで、障害が波及しにくくサーバ集約に役立つ。"
+      "仮想化は物理資源を実際とは異なる構成に見せる技術で、サーバの仮想化では 1 台の物理マシンを独立した複数の環境として使える。",
+      "ホスト型は普段使いの OS の上に仮想化ソフトを入れる方式で、既存の PC に手軽に導入できる。",
+      "ハイパーバイザー型はハードウェアの直上に制御ソフトを置く方式で、多数の仮想マシンを動かすサーバで広く使われる。",
+      "コンテナ型はカーネルを共有してアプリの実行環境だけを分ける方式で、資源の消費が少ない。",
+      "仮想マシン (略して VM) はゲストOSを持つ仮想のコンピュータで、物理マシンの資源を分け合って動く。"
     ],
     "key_points_zh": [
-      "虚拟化是把物理资源进行逻辑上的分割与整合，让一台呈现为多台（或让多台呈现为一台）的技术，目的是资源的有效利用与降低成本。",
-      "实现方式有三种。按宿主型（在操作系统上加软件）→管理程序型（直接装在硬件上、高效率）→容器型（共享内核、轻量）的顺序，效率与轻量程度依次提高。",
-      "容器型不整套拥有操作系统而是共享内核，因此启动快、省资源，与其他方式有明显区别。",
-      "VM 是虚拟机（Virtual Machine）的简称，指的是同一个概念。",
-      "虚拟机是在一台物理机上独立运行的虚拟计算机，故障不易波及，有助于服务器集约化。"
+      "虚拟化是把物理资源呈现为与实际不同的构成的技术，在服务器虚拟化中，一台物理机可以作为多个相互独立的环境使用。",
+      "宿主型是在日常使用的操作系统上安装虚拟化软件的方式，可以轻松地导入到现有的 PC 上。",
+      "管理程序型是在硬件上直接放置控制软件的方式，广泛用于运行大量虚拟机的服务器。",
+      "容器型是共享内核、只划分应用程序运行环境的方式，资源消耗少。",
+      "虚拟机（简称 VM）是拥有客户操作系统的虚拟计算机，分享物理机的资源来运行。"
     ],
     "key_points_en": [
-      "Virtualization is a technology that logically divides and consolidates physical resources to make one machine appear as many (or many as one); its purpose is effective use of resources and cost reduction.",
-      "There are three implementation methods. In the order of hosted (software on the OS) → hypervisor (directly on the hardware, high efficiency) → container (shared kernel, lightweight), efficiency and lightness increase.",
-      "The container type does not own an entire OS but shares the kernel, so it starts quickly and saves resources, clearly distinguishing it from the other methods.",
-      "VM is the abbreviation for virtual machine (Virtual Machine) and refers to the same concept.",
-      "A virtual machine is a virtual computer that runs independently on a single physical machine; failures are unlikely to spread, and it helps with server consolidation."
+      "Virtualization presents physical resources in a configuration different from the real one, and with server virtualization one physical machine can serve as several independent environments.",
+      "The hosted type installs virtualization software on an everyday OS and is easy to add to an existing PC.",
+      "The hypervisor type places control software directly on the hardware and is widely used on servers that run many virtual machines.",
+      "The container type shares the kernel and separates only the application runtime environments, so it consumes few resources.",
+      "A virtual machine (VM for short) is a virtual computer with a guest OS that runs by sharing the physical machine's resources."
+    ],
+    "memory_hooks_jp": [
+      "仮想化: virtual は「実物ではないが、実質的にはそのように働く」という意味。仮想マシンや仮想記憶の「仮想」も、この virtual の訳語である。",
+      "ホスト型: host は「客をもてなす主人」、guest は「客」。主人役の OS の上に、客役の OS が乗る。",
+      "ハイパーバイザー型: OS の中核はかつて supervisor (監督役) とも呼ばれた。その一段上 (hyper) に立ち、複数の OS をまとめて監督するのが hypervisor。",
+      "コンテナ型: 輸送用のコンテナは中身を箱ごと積み替えて運ぶ。ソフトのコンテナも、アプリを必要な部品ごと 1 つの箱に詰めて持ち運ぶ。"
     ],
     "memory_hooks_zh": [
-      "虚拟化：说到虚拟化，就是把一台呈现为多台的资源分割与整合",
-      "宿主型：说到宿主型，就是在操作系统之上加载虚拟化软件的便捷方式",
-      "管理程序型：说到管理程序型，就是直接装在硬件上、高效率",
-      "容器型：说到容器型，就是共享操作系统内核、轻量·高速",
-      "VM：说到 VM，就是虚拟机（Virtual Machine）的简称",
-      "虚拟机：说到虚拟机，就是在一台物理机上运行的独立虚拟 PC"
+      "虚拟化：virtual 的意思是“并非实物，但实际上发挥着同样的作用”。虚拟机、虚拟存储器中的“虚拟”，也是这个 virtual 的译词。",
+      "宿主型：host 是“招待客人的主人”，guest 是“客人”。扮演主人的操作系统之上，坐着扮演客人的操作系统。",
+      "管理程序型（Hypervisor 型）：操作系统的核心过去也被称为 supervisor（监督者）。站在它更上一层（hyper）、统一监督多个操作系统的，就是 hypervisor。",
+      "容器型：运输用的集装箱（container）把货物连箱一起换装运输。软件的容器也是把应用程序连同所需组件装进一个箱子里带着走。"
     ],
     "memory_hooks_en": [
-      "Virtualization: Virtualization → dividing and consolidating resources to make one look like many",
-      "Hosted type: Hosted type → loading virtualization software on top of an OS; the convenient method",
-      "Hypervisor type: Hypervisor type → placed directly on the hardware; high efficiency",
-      "Container type: Container type → shares the OS kernel; lightweight and fast",
-      "VM: VM → short for Virtual Machine",
-      "Virtual machine: Virtual machine → an independent virtual PC running on a single physical machine"
+      "Virtualization: Virtual means \"not the real thing, but working as if it were.\" The same word gives the virtual in virtual machine and virtual memory.",
+      "Hosted (Host OS) type: A host is the one who receives guests, and a guest is the visitor. The guest OS sits on top of the OS playing the host.",
+      "Hypervisor type: The core of an OS was once also called the supervisor. Standing one level above it (hyper) and overseeing several OSs together is the hypervisor.",
+      "Container type: A shipping container moves its contents from carrier to carrier as one box. A software container likewise packs an application and the parts it needs into one box to carry around."
     ]
   },
   "challenge_questions": [
-    "2009h21a-q078",
-    "2009h21h-q073",
-    "2010h22a-q081",
-    "2011h23a-q082",
-    "2012h24a-q055"
+    "2011h23a-q054",
+    "2018h30h-q062",
+    "2019r01a-q074",
+    "2022r04-q099"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "虚拟化的基础与方式",
-  "title_en": "Fundamentals and Types of Virtualization",
-  "unit_summary_zh": "学习将物理资源进行逻辑上的分割与整合的虚拟化思路，以及其实现方式（宿主型／管理程序型／容器型）和虚拟机的概念。",
-  "unit_summary_en": "Learn the idea of virtualization, which logically divides and consolidates physical resources, along with its implementation methods (hosted, hypervisor, and container types) and the concept of the virtual machine."
+  }
 }

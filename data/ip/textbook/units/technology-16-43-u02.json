@@ -1,226 +1,952 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-16-43-u02",
   "topic_id": "technology-16-43",
   "category": "technology",
   "title_jp": "可用性と信頼性のためのシステム構成",
+  "title_zh": "面向可用性与可靠性的系统构成",
+  "title_en": "System Configurations for Availability and Reliability",
   "unit_summary_jp": "複数台の機器やディスクを組み合わせて、システムを止めない・データを失わないための冗長化構成を学ぶ。",
+  "unit_summary_zh": "学习把多台设备或磁盘组合起来、让系统不停机并且不丢失数据的冗余化构成。",
+  "unit_summary_en": "Learn redundant configurations that combine multiple machines or disks so the system does not go down and data is not lost.",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-16-43-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、複数の機器やディスクを組み合わせてシステムを止めず、データを失わないための冗長化構成を学ぶ。デュアル・デュプレックス・クラスタといった機器の二重化から、レプリケーション・RAID・NAS というデータ面の信頼性確保までを扱う。可用性と信頼性は試験で頻出のテーマで、特に各方式の違い(同時稼働か待機か等)が問われる。",
-    "freq_badge": "標準",
-    "est_minutes": 18,
-    "intro_zh": "本单元学习把多台设备或磁盘组合起来、让系统不停机并且不丢失数据的冗余化构成。内容涵盖从双重系统（Dual）、双工系统（Duplex）、集群（Cluster）这类设备的双重化，到复制（Replication）、RAID、NAS 这类在数据层面确保可靠性的方式。可用性与可靠性是考试中频繁出现的主题，尤其会考查各方式之间的区别（是同时运行还是待机等）。",
-    "intro_en": "In this unit, you will learn redundant configurations that combine multiple machines or disks so the system does not go down and data is not lost. It covers everything from machine duplication such as dual, duplex, and cluster systems, to ensuring reliability on the data side with replication, RAID, and NAS. Availability and reliability are frequently appearing exam themes, and in particular the differences between each method (such as whether systems run simultaneously or on standby) are tested."
-  },
+  "goals_jp": [
+    "**デュアルシステム** と **デュプレックスシステム** を、平常時に 2 組の系統をどう使うかで区別できる。",
+    "**クラスタ** と **レプリケーション** が、それぞれ何を複数にして止まりにくさを高めるのかを説明できる。",
+    "**RAID** の方式ごとに 1 台の故障に耐えられるかと使える容量を判断し、**NAS** がどんな装置かを言える。"
+  ],
+  "goals_zh": [
+    "能够根据平时如何使用两套系统，区分 **双重系统** 与 **双工系统**。",
+    "能够说明 **集群** 与 **复制** 各自把什么做成多份，从而让系统更不容易停止。",
+    "能够判断 **RAID** 的各个方式能否承受 1 块磁盘故障以及可用容量是多少，并说出 **NAS** 是什么样的设备。"
+  ],
+  "goals_en": [
+    "Tell a **dual system** from a **duplex system** by how each uses its two sets of equipment in normal operation.",
+    "Explain what a **cluster** and **replication** each duplicate to make a system harder to bring down.",
+    "Judge, for each **RAID** level, whether it survives one disk failure and how much capacity is usable, and say what kind of device **NAS** is."
+  ],
+  "overview_cols_jp": [
+    "複数にするもの",
+    "主な狙い"
+  ],
+  "overview_cols_zh": [
+    "做成多份的对象",
+    "主要目的"
+  ],
+  "overview_cols_en": [
+    "What is multiplied",
+    "Main aim"
+  ],
+  "overview_rows": [
+    {
+      "term": "デュアルシステム",
+      "one_line_jp": "2 組の系統で同じ処理を同時に行い、結果を照合する構成",
+      "one_line_zh": "让两套系统同时执行同一处理并核对结果的结构",
+      "one_line_en": "A setup in which two systems run the same processing at once and compare the results",
+      "extra_jp": [
+        "処理する系統 (2 組とも本番)",
+        "処理の正しさと信頼性"
+      ],
+      "extra_zh": [
+        "处理系统（两套都是正式运行）",
+        "处理的正确性与可靠性"
+      ],
+      "extra_en": [
+        "Processing systems (both live)",
+        "Correct results and reliability"
+      ]
+    },
+    {
+      "term": "デュプレックスシステム",
+      "one_line_jp": "現用系が本番を受け持ち、待機系が故障に備える構成",
+      "one_line_zh": "由主用系统承担正式处理、备用系统防备故障的结构",
+      "one_line_en": "A setup in which an active system handles live work while a standby system waits in case it fails",
+      "extra_jp": [
+        "処理する系統 (1 組は待機)",
+        "故障時の切り替えによる継続"
+      ],
+      "extra_zh": [
+        "处理系统（一套待命）",
+        "故障时切换以持续运行"
+      ],
+      "extra_en": [
+        "Processing systems (one on standby)",
+        "Keeping work going by switching over on failure"
+      ]
+    },
+    {
+      "term": "クラスタ",
+      "one_line_jp": "何台かのコンピュータをまとめて 1 つのシステムに見せる構成",
+      "one_line_zh": "把若干台计算机组合起来、看起来像一个系统的结构",
+      "one_line_en": "A setup that groups several computers so they appear as one system",
+      "extra_jp": [
+        "コンピュータ (台数を増やせる)",
+        "止まりにくさと処理能力"
+      ],
+      "extra_zh": [
+        "计算机（可增加台数）",
+        "不易停止与处理能力"
+      ],
+      "extra_en": [
+        "Computers (more can be added)",
+        "Staying up and processing capacity"
+      ]
+    },
+    {
+      "term": "レプリケーション",
+      "one_line_jp": "データベースを別のサーバに複製し、同期させ続ける機能",
+      "one_line_zh": "把数据库复制到另一台服务器并持续保持同步的功能",
+      "one_line_en": "A function that copies a database to another server and keeps the two in sync",
+      "extra_jp": [
+        "サーバ上のデータ",
+        "止まりにくさと性能"
+      ],
+      "extra_zh": [
+        "服务器上的数据",
+        "不易停止与性能"
+      ],
+      "extra_en": [
+        "Data on the servers",
+        "Staying up and performance"
+      ]
+    },
+    {
+      "term": "RAID",
+      "one_line_jp": "複数のディスクを 1 台のように扱い、速さや耐故障性を高める技術",
+      "one_line_zh": "把多块磁盘当作一个整体使用，以提高速度或容错性的技术",
+      "one_line_en": "A technique that treats several disks as one to raise speed or fault tolerance",
+      "extra_jp": [
+        "ディスク",
+        "高速化と耐故障性"
+      ],
+      "extra_zh": [
+        "磁盘",
+        "高速化与容错性"
+      ],
+      "extra_en": [
+        "Disks",
+        "Speed and fault tolerance"
+      ]
+    },
+    {
+      "term": "NAS",
+      "one_line_jp": "LAN に直接つないでファイルを共有させる記憶装置",
+      "one_line_zh": "直接连接局域网（LAN）、用于共享文件的存储设备",
+      "one_line_en": "A storage device connected directly to a LAN so that files can be shared",
+      "extra_jp": [
+        "(装置そのもの。内部で RAID を使う製品もある)",
+        "ファイルの共有"
+      ],
+      "extra_zh": [
+        "（设备本身。也有在内部使用 RAID 的产品）",
+        "共享文件"
+      ],
+      "extra_en": [
+        "(The device itself; some models use RAID inside)",
+        "Sharing files"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "デュアルシステム",
-      "definition_jp": "2系統を同時に稼働させ、結果を相互照合して信頼性を高める冗長構成。",
-      "explanation_jp": "デュアルシステムは、まったく同じ処理を2つの系統で同時に実行し、両者の結果を突き合わせて誤りがないか確認する方式です。常に2系統が動いているため、片方が故障してももう片方で処理を続けられ、信頼性が非常に高くなります。\n\n試験では「待機系を持つデュプレックスシステム」との違いがよく問われます。デュアルは『両方とも本番稼働＋結果照合』、デュプレックスは『片方は待機』という点が決定的な区別です。コストは高いが高信頼が求められる銀行のオンライン処理などに使われます。",
-      "analogy_jp": "重要な計算を2人が別々に解き、答えが一致するか毎回突き合わせるようなもの。1人がミスしても、もう1人の答えで気づける。",
-      "memory_hook_jp": "デュアルシステムといえば2系統同時稼働で結果照合",
+      "term_zh": "双重系统",
+      "term_en": "Dual System",
+      "one_jp": "**デュアルシステム**は、2 組の系統に**同じ処理**を同時に行わせ、その**結果を照合**して正しさを確かめる構成である。",
+      "one_zh": "**双重系统**（[[jp:デュアルシステム]]）是让两套系统同时执行**同一处理**，并**核对结果**来确认其正确性的结构。",
+      "one_en": "A **dual system** ([[jp:デュアルシステム]]) is a setup in which two systems carry out **the same processing** at the same time and **compare the results** to confirm they are correct.",
+      "detail_jp": "2 組とも本番の処理を受け持ち、照合で食い違いが見つかれば、どちらかに異常が起きたと分かる。常に 2 組分の装置を動かすため費用はかかるが、高い信頼性が要る業務に向く。",
+      "detail_zh": "两套系统都承担正式处理，核对时一旦发现结果不一致，就能知道其中一套出现了异常。由于始终要让两套设备同时运转，成本较高，但适合需要高可靠性的业务。",
+      "detail_en": "Both systems handle live processing, so if the comparison turns up a mismatch, one of them has gone wrong. Running two full sets of equipment at all times is costly, but it suits work that demands high reliability.",
+      "analogy_jp": "2 人の係が同じ伝票の合計をそれぞれ計算し、答えが合うかを毎回確かめる経理の作業に似ている。",
+      "analogy_zh": "就像会计工作中，两名职员各自计算同一张单据的合计，每次都核对答案是否一致。",
+      "analogy_en": "It is like an accounts office where two clerks each total the same voucher and check every time that their answers agree.",
+      "hook_jp": "英語の dual は「二つの」。両手に持った刀を両方とも振る二刀流の姿で思い出す。",
+      "hook_zh": "英语 dual 意为“两个的”。可以联想双手各持一刀、两把刀同时挥动的“二刀流”。",
+      "hook_en": "\"Dual\" means \"two\". Picture a swordsman with a sword in each hand, both blades in action.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "デュアルシステムで一方の系統が故障したときは、その系統を切り離し、もう一方の系統だけで処理を続ける。",
+          "text_zh": "在双重系统（[[jp:デュアルシステム]]）中，若一套系统发生故障，就将其分离，只用另一套系统继续处理。",
+          "text_en": "When one side of a dual system ([[jp:デュアルシステム]]) fails, that side is cut off and the other carries on with the processing alone.",
+          "qids": [
+            "2016h28h-q075"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "入力",
+                "zh": "输入",
+                "en": "Input"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "2 組の系統が同じ処理を行う",
+                "zh": "两套系统执行同一处理",
+                "en": "Both systems run the same processing"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "2 つの結果を突き合わせる",
+                "zh": "核对两个结果",
+                "en": "Compare the two results"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "一致を確かめて出力",
+                "zh": "确认一致后输出",
+                "en": "Output once they match"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2016h28h-q075"
+      ],
+      "definition_jp": "デュアルシステムは、2 組の系統に同じ処理を同時に行わせ、その結果を照合して正しさを確かめる構成である。",
+      "definition_zh": "双重系统（デュアルシステム）是让两套系统同时执行同一处理，并核对结果来确认其正确性的结构。",
+      "definition_en": "A dual system (デュアルシステム) is a setup in which two systems carry out the same processing at the same time and compare the results to confirm they are correct.",
+      "explanation_jp": "2 組とも本番の処理を受け持ち、照合で食い違いが見つかれば、どちらかに異常が起きたと分かる。常に 2 組分の装置を動かすため費用はかかるが、高い信頼性が要る業務に向く。",
+      "explanation_zh": "两套系统都承担正式处理，核对时一旦发现结果不一致，就能知道其中一套出现了异常。由于始终要让两套设备同时运转，成本较高，但适合需要高可靠性的业务。",
+      "explanation_en": "Both systems handle live processing, so if the comparison turns up a mismatch, one of them has gone wrong. Running two full sets of equipment at all times is costly, but it suits work that demands high reliability.",
+      "memory_hook_jp": "英語の dual は「二つの」。両手に持った刀を両方とも振る二刀流の姿で思い出す。",
+      "memory_hook_zh": "英语 dual 意为“两个的”。可以联想双手各持一刀、两把刀同时挥动的“二刀流”。",
+      "memory_hook_en": "\"Dual\" means \"two\". Picture a swordsman with a sword in each hand, both blades in action.",
       "inline_quiz": [
         "2016h28h-q075"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "双重系统",
-      "term_en": "Dual System",
-      "definition_zh": "让两套系统同时运行、并将结果相互比对以提高可靠性的冗余构成。",
-      "definition_en": "A redundant configuration in which two systems run simultaneously and cross-check their results to raise reliability.",
-      "explanation_zh": "双重系统是用两套系统同时执行完全相同的处理，并把两者的结果加以比对、确认有无错误的方式。由于两套系统始终都在运行，即使一方发生故障，也能用另一方继续处理，可靠性非常高。\n\n考试中常考查它与“带待机系统的双工系统”的区别。决定性的区分在于：双重系统是“两套都在正式运行＋结果比对”，而双工系统是“其中一方处于待机”。它成本较高，多用于银行联机处理等要求高可靠性的场合。",
-      "explanation_en": "A dual system runs exactly the same processing on two systems at the same time and compares the two results to check for errors. Because two systems are always running, even if one fails the other can continue processing, giving very high reliability.\n\nThe exam often asks about the difference from a \"duplex system that has a standby system.\" The decisive distinction is that a dual system is \"both running in production + result comparison,\" while a duplex system has \"one side on standby.\" It is costly but is used in situations requiring high reliability, such as a bank's online processing.",
-      "analogy_zh": "就像让两个人各自分别解同一道重要的计算题，每次都核对两人的答案是否一致。即使一个人算错，也能凭另一个人的答案发现错误。",
-      "analogy_en": "It is like having two people each solve the same important calculation separately and checking every time whether their answers match. Even if one person makes a mistake, the other person's answer reveals it.",
-      "memory_hook_zh": "说到双重系统，就是两套系统同时运行并比对结果",
-      "memory_hook_en": "Dual System → two systems running at once and cross-checking results"
+      "figure": null
     },
     {
       "term": "デュプレックスシステム",
-      "definition_jp": "現用系が稼働し、もう一方を待機系として備える二重化構成。",
-      "explanation_jp": "デュプレックスシステムは、片方を現用系(本番)として動かし、もう片方を待機系として備えておく方式です。現用系が故障したら待機系に切り替えて処理を継続します。待機系の備え方には、起動・同期させておき即座に切り替えられるホットスタンバイ、待機系を停止しておき故障時に起動してから切り替える(切替に時間がかかる)コールドスタンバイなどがあります。\n\n試験では名前が似たデュアルシステムとの対比が定番です。デュプレックスは『片方が待機』なので無駄が少なくコストを抑えられる一方、切り替えに時間がかかる場合があります。同時稼働で照合するデュアルとの違いを押さえましょう。",
-      "analogy_jp": "野球の先発投手と控え投手のような関係。普段は先発が投げ、調子が悪くなったら控えが登板して試合を続ける。",
-      "memory_hook_jp": "デュプレックスシステムといえば現用系＋待機系で切り替え",
+      "term_zh": "双工系统",
+      "term_en": "Duplex System",
+      "one_jp": "**デュプレックスシステム**は、本番の処理を受け持つ**現用系** (主系) と、その故障に備える**待機系** (従系) を用意し、故障時に待機系へ**切り替える**構成である。",
+      "one_zh": "**双工系统**（[[jp:デュプレックスシステム]]）准备好承担正式处理的**主用系统**（[[jp:現用系]]，又称主系统）和防备其故障的**备用系统**（[[jp:待機系]]，又称从系统），在故障时**切换**到备用系统。",
+      "one_en": "A **duplex system** ([[jp:デュプレックスシステム]]) provides an **active system** ([[jp:現用系]], the primary) that handles live processing and a **standby system** ([[jp:待機系]], the secondary) kept ready in case it fails, and **switches over** to the standby system when a failure occurs.",
+      "detail_jp": "平常時に本番の処理をするのは現用系だけで、待機系は待っている間に別の処理を受け持つこともできる。現用系が止まると処理を待機系へ移して業務を続けるが、切り替えの間はサービスが一時止まることがある。",
+      "detail_zh": "平时只有主用系统执行正式处理，备用系统在待命期间也可以承担其他处理。主用系统停止后，处理会转移到备用系统以维持业务，但切换期间服务可能会暂时中断。",
+      "detail_en": "In normal operation only the active system does live processing, and the standby system can take on other jobs while it waits. When the active system stops, processing moves to the standby system so work can continue, though service may pause briefly during the switchover.",
+      "analogy_jp": "ふだんは事務の仕事をしている補欠の運転手が、担当の運転手が急に休んだ日にだけハンドルを握るバス会社に似ている。",
+      "analogy_zh": "就像一家公交公司：替补司机平时做办公室工作，只有在负责的司机突然请假的那天才握方向盘。",
+      "analogy_en": "It is like a bus company whose relief driver does office work most days and only takes the wheel when the regular driver suddenly calls in sick.",
+      "hook_jp": "duplex は英語で、壁を共有して 2 戸が並ぶ住宅も指す。隣の戸がいつでも住み替え先になる、と思い浮かべる。",
+      "hook_zh": "duplex 在英语中也指两户共用一面墙、并排而建的住宅。可以想象隔壁那户随时可以搬进去住。",
+      "hook_en": "In English, a \"duplex\" is also a house split into two homes that share a wall. Picture the unit next door, always ready to move into.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "デュプレックスシステムで本番の処理を受け持つのは現用系の 1 組だけで、待機系の空いた能力は別の処理に回せる。",
+          "text_zh": "在双工系统（[[jp:デュプレックスシステム]]）中，承担正式处理的只有主用系统（[[jp:現用系]]）这一套，备用系统（[[jp:待機系]]）的闲置能力可以用于其他处理。",
+          "text_en": "In a duplex system ([[jp:デュプレックスシステム]]), only the active system ([[jp:現用系]]) handles live processing, and the spare capacity of the standby system ([[jp:待機系]]) can go to other work.",
+          "qids": [
+            "2017h29a-q087"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "デュアルシステムは 2 組とも本番の処理を行って結果を照合し、デュプレックスシステムは本番を 1 組に任せて、もう 1 組を切り替え用に待たせる。",
+          "text_zh": "双重系统（[[jp:デュアルシステム]]）让两套都执行正式处理并核对结果；双工系统则把正式处理交给一套，让另一套待命以便切换。",
+          "text_en": "A dual system ([[jp:デュアルシステム]]) runs live processing on both sets and compares the results. A duplex system leaves live work to one set and keeps the other waiting to take over."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "現用系が本番を処理",
+                "zh": "主用系统处理正式业务",
+                "en": "Active system handles live work"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "現用系に障害",
+                "zh": "主用系统发生故障",
+                "en": "Active system fails"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "待機系へ切り替え",
+                "zh": "切换到备用系统",
+                "en": "Switch over to standby"
+              }
+            },
+            {
+              "id": "n4",
+              "label": {
+                "jp": "待機系が本番を引き継ぐ",
+                "zh": "备用系统接管正式业务",
+                "en": "Standby system takes over live work"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "平常時は現用系が本番の処理を行い、待機系は故障に備えて待つ。",
+            "caption_zh": "平时由主用系统执行正式处理，备用系统待命以防故障。",
+            "caption_en": "Normally the active system does the live processing while the standby system waits in case of failure.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "現用系に障害が起き、本番の処理が続けられなくなる。",
+            "caption_zh": "主用系统发生故障，正式处理无法继续。",
+            "caption_en": "A fault hits the active system, and live processing can no longer continue.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "処理を待機系へ移す。切り替えの間はサービスが一時止まることがある。",
+            "caption_zh": "把处理转移到备用系统。切换期间服务可能会暂时中断。",
+            "caption_en": "Processing moves to the standby system. Service may stop briefly during the switchover.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "待機系が本番の処理を受け持ち、業務が続く。",
+            "caption_zh": "备用系统承担正式处理，业务得以继续。",
+            "caption_en": "The standby system takes on live processing, and work carries on.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2017h29a-q087"
+      ],
+      "definition_jp": "デュプレックスシステムは、本番の処理を受け持つ現用系 (主系) と、その故障に備える待機系 (従系) を用意し、故障時に待機系へ切り替える構成である。",
+      "definition_zh": "双工系统（デュプレックスシステム）准备好承担正式处理的主用系统（現用系，又称主系统）和防备其故障的备用系统（待機系，又称从系统），在故障时切换到备用系统。",
+      "definition_en": "A duplex system (デュプレックスシステム) provides an active system (現用系, the primary) that handles live processing and a standby system (待機系, the secondary) kept ready in case it fails, and switches over to the standby system when a failure occurs.",
+      "explanation_jp": "平常時に本番の処理をするのは現用系だけで、待機系は待っている間に別の処理を受け持つこともできる。現用系が止まると処理を待機系へ移して業務を続けるが、切り替えの間はサービスが一時止まることがある。",
+      "explanation_zh": "平时只有主用系统执行正式处理，备用系统在待命期间也可以承担其他处理。主用系统停止后，处理会转移到备用系统以维持业务，但切换期间服务可能会暂时中断。",
+      "explanation_en": "In normal operation only the active system does live processing, and the standby system can take on other jobs while it waits. When the active system stops, processing moves to the standby system so work can continue, though service may pause briefly during the switchover.",
+      "memory_hook_jp": "duplex は英語で、壁を共有して 2 戸が並ぶ住宅も指す。隣の戸がいつでも住み替え先になる、と思い浮かべる。",
+      "memory_hook_zh": "duplex 在英语中也指两户共用一面墙、并排而建的住宅。可以想象隔壁那户随时可以搬进去住。",
+      "memory_hook_en": "In English, a \"duplex\" is also a house split into two homes that share a wall. Picture the unit next door, always ready to move into.",
       "inline_quiz": [
         "2017h29a-q087"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"現用系(稼働)\"] -->|故障| B[\"待機系へ切替\"]; B --> C[\"待機系(稼働)\"]",
-        "svg_path": "figures/technology-16-43-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "双工系统",
-      "term_en": "Duplex System",
-      "definition_zh": "由现用系统运行、另一方作为待机系统备用的双重化构成。",
-      "definition_en": "A duplicated configuration in which an active system runs while the other is kept ready as a standby system.",
-      "explanation_zh": "双工系统是让一方作为现用系统（正式运行）工作，另一方作为待机系统备用的方式。当现用系统发生故障时，就切换到待机系统继续处理。待机系统的备用方式有几种：始终启动并保持同步、可立即切换的热待机（Hot Standby），以及让待机系统处于停止状态、故障时先启动再切换（切换耗时）的冷待机（Cold Standby）等。\n\n考试中与名称相似的双重系统对比是经典考点。双工系统因为“其中一方处于待机”，所以浪费少、能压低成本，但另一方面切换有时会耗费时间。要把它与同时运行并比对的双重系统的区别记牢。",
-      "explanation_en": "A duplex system has one side work as the active system (production) and keeps the other as a standby system. When the active system fails, it switches to the standby system to continue processing. There are several ways to prepare the standby system: hot standby, which is started up and kept synchronized so it can switch over instantly, and cold standby, in which the standby is kept stopped and is started up before switching when a failure occurs (switching takes time).\n\nThe contrast with the similarly named dual system is a classic exam point. Because a duplex system keeps \"one side on standby,\" it wastes less and can hold down costs, but on the other hand switching can sometimes take time. Be sure to remember its difference from the dual system, which runs simultaneously and compares.",
-      "analogy_zh": "就像棒球里先发投手和替补投手的关系。平时由先发投手投球，状态变差时替补投手上场继续比赛。",
-      "analogy_en": "It is like the relationship between a starting pitcher and a relief pitcher in baseball. Normally the starter pitches, and when his form drops the reliever comes in to continue the game.",
-      "memory_hook_zh": "说到双工系统，就是现用系统＋待机系统、靠切换接力",
-      "memory_hook_en": "Duplex System → active system + standby system, kept going by switching over"
+      "figure": null
     },
     {
       "term": "クラスタ",
-      "definition_jp": "複数のコンピュータを連携させ1つのシステムに見せる構成。",
-      "explanation_jp": "クラスタは、複数台のコンピュータをネットワークでまとめ、利用者からは1つのシステムのように見せる構成です。目的は大きく2つで、1台が故障しても他の台で処理を引き継ぐ『可用性向上(HAクラスタ)』と、処理を分担して性能を上げる『負荷分散・高性能化』があります。\n\n試験では、二重化(デュアル・デュプレックス)の発展形として複数台を束ねる点が問われます。台数を増やせばさらに止まりにくく・速くできる、というスケールしやすさがクラスタの特徴です。",
-      "analogy_jp": "1人では運べない荷物を複数人で分担して運ぶチーム。誰かが抜けても他のメンバーで仕事を続けられる。",
-      "memory_hook_jp": "クラスタといえば複数台を束ねて1つに見せる",
-      "inline_quiz": [
-        "2009h21h-q073"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "集群",
       "term_en": "Cluster",
-      "definition_zh": "把多台计算机联动起来、对外看起来像一个系统的构成。",
-      "definition_en": "A configuration that links multiple computers together so they appear as a single system.",
-      "explanation_zh": "集群是用网络把多台计算机汇集起来，让使用者看起来像是一个系统的构成。它的目的大致有两个：一是即使一台发生故障也能由其他台接管处理的“提高可用性（HA 集群）”，二是分担处理以提升性能的“负载均衡、高性能化”。\n\n考试中会考查它作为双重化（双重系统、双工系统）的进阶形态、把多台捆绑在一起这一点。增加台数就能更不容易停机、也更快，这种易于扩展（可扩展性）是集群的特征。",
-      "explanation_en": "A cluster is a configuration that gathers multiple computers over a network so that, to users, they look like a single system. It has roughly two purposes: \"improving availability (HA cluster),\" where other machines take over processing even if one fails, and \"load balancing / higher performance,\" where processing is shared to boost performance.\n\nThe exam tests the point that it bundles multiple machines together as an advanced form of duplication (dual / duplex systems). The hallmark of a cluster is its scalability: adding more machines makes it even less likely to stop and even faster.",
-      "analogy_zh": "就像一个团队合力搬运一个人搬不动的货物。即使有人退出，其余成员也能继续完成工作。",
-      "analogy_en": "It is like a team that shares the work of carrying a load too heavy for one person. Even if someone drops out, the remaining members can keep the job going.",
-      "memory_hook_zh": "说到集群，就是把多台捆在一起、看起来像一台",
-      "memory_hook_en": "Cluster → bundle many machines together so they look like one"
+      "one_jp": "**クラスタ**は、何台かのコンピュータをネットワークでつないで連動させ、利用者からは**1 つのシステム**として見えるようにまとめた構成である。",
+      "one_zh": "**集群**（[[jp:クラスタ]]）是用网络把若干台计算机连接起来协同工作，使用户看来像**一个系统**的结构。",
+      "one_en": "A **cluster** ([[jp:クラスタ]]) links several computers over a network so they work together and appear to users as **a single system**.",
+      "detail_jp": "利用者は、どの台が処理しているかを意識せずに使える。どれかの台に障害が起きても残りの台が処理を引き継ぐので、システム全体としては止まらない。台数を足せば規模を広げやすいのも特徴である。",
+      "detail_zh": "用户无需关心是哪一台在处理就能使用。即使某一台发生故障，其余各台也会接手处理，整个系统不会停止。只要增加台数就能方便地扩大规模，这也是它的特点。",
+      "detail_en": "Users can work without knowing which machine is handling their request. If one machine fails, the others take over its work, so the system as a whole keeps running. Adding machines also makes it easy to scale up.",
+      "analogy_jp": "何人かの店員が同じレジの列を分担してさばく店のようなもの。1 人が休憩に入っても列は止まらず、客が増えれば店員を足せばよい。",
+      "analogy_zh": "就像几名店员分担同一条收银队伍的商店。一人去休息，队伍也不会停下；顾客多了，再加店员就行。",
+      "analogy_en": "It is like a shop where several clerks share one checkout line. When one goes on break the line keeps moving, and when more customers arrive the shop just adds clerks.",
+      "hook_jp": "cluster は英語で「ぶどうの房」。一粒ずつの実が集まって一房に見える形が、何台もの機械が 1 つに見える姿と重なる。",
+      "hook_zh": "cluster 在英语中是“一串葡萄”。一粒粒果实聚成一串的样子，正好对应多台机器看起来像一台。",
+      "hook_en": "A \"cluster\" can be a bunch of grapes. Many separate grapes look like one bunch, just as many machines look like one system.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "クラスタは障害に強くするためだけでなく、大量の要求を複数台で分担して処理能力を上げるためにも使われる。",
+          "text_zh": "集群（[[jp:クラスタ]]）不仅用于提高抗故障能力，也用于让多台计算机分担大量请求，从而提升处理能力。",
+          "text_en": "A cluster ([[jp:クラスタ]]) is used not only to withstand failures but also to share a heavy load of requests across machines and raise processing capacity.",
+          "qids": [
+            "2009h21h-q073",
+            "2023r05-q070"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2009h21h-q073",
+        "2023r05-q070"
+      ],
+      "definition_jp": "クラスタは、何台かのコンピュータをネットワークでつないで連動させ、利用者からは1 つのシステムとして見えるようにまとめた構成である。",
+      "definition_zh": "集群（クラスタ）是用网络把若干台计算机连接起来协同工作，使用户看来像一个系统的结构。",
+      "definition_en": "A cluster (クラスタ) links several computers over a network so they work together and appear to users as a single system.",
+      "explanation_jp": "利用者は、どの台が処理しているかを意識せずに使える。どれかの台に障害が起きても残りの台が処理を引き継ぐので、システム全体としては止まらない。台数を足せば規模を広げやすいのも特徴である。",
+      "explanation_zh": "用户无需关心是哪一台在处理就能使用。即使某一台发生故障，其余各台也会接手处理，整个系统不会停止。只要增加台数就能方便地扩大规模，这也是它的特点。",
+      "explanation_en": "Users can work without knowing which machine is handling their request. If one machine fails, the others take over its work, so the system as a whole keeps running. Adding machines also makes it easy to scale up.",
+      "memory_hook_jp": "cluster は英語で「ぶどうの房」。一粒ずつの実が集まって一房に見える形が、何台もの機械が 1 つに見える姿と重なる。",
+      "memory_hook_zh": "cluster 在英语中是“一串葡萄”。一粒粒果实聚成一串的样子，正好对应多台机器看起来像一台。",
+      "memory_hook_en": "A \"cluster\" can be a bunch of grapes. Many separate grapes look like one bunch, just as many machines look like one system.",
+      "inline_quiz": [
+        "2009h21h-q073",
+        "2023r05-q070"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "レプリケーション",
-      "definition_jp": "データを別の場所に複製し、同じ内容を保持する仕組み。",
-      "explanation_jp": "レプリケーションは、あるデータを別のサーバやディスクへ複製(コピー)し、同じ内容を持たせ続ける技術です。元のデータが壊れたり、サーバが止まったりしても、複製先のデータで処理を続けられるため、信頼性と可用性が高まります。\n\n機器の二重化が『装置』を複製するのに対し、レプリケーションは『データ』を複製する点が試験での着目点です。バックアップが過去の一時点を保存するのに対し、レプリケーションは更新を反映して常に最新を保つ点も区別して覚えましょう。",
-      "analogy_jp": "大事な書類を作るたびに、同じものをもう1部すぐ別の引き出しにも入れておくようなもの。片方を失っても困らない。",
-      "memory_hook_jp": "レプリケーションといえばデータを複製して同じ内容を保持",
-      "inline_quiz": [
-        "2013h25h-q073"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "复制",
       "term_en": "Replication",
-      "definition_zh": "把数据复制到另一处、并保持内容一致的机制。",
-      "definition_en": "A mechanism that copies data to another location and keeps the same content there.",
-      "explanation_zh": "复制是把某份数据复制（拷贝）到另一台服务器或磁盘上、并持续保持内容一致的技术。即使原始数据损坏、或服务器停机，也能用复制目标的数据继续处理，因此可靠性和可用性都得以提高。\n\n考试中的关注点是：设备的双重化复制的是“装置”，而复制（Replication）复制的是“数据”。还要把它与备份区分开记忆——备份保存的是过去某一时刻的状态，而复制会反映更新、始终保持最新。",
-      "explanation_en": "Replication is the technology of copying a piece of data to another server or disk and keeping the same content there continuously. Even if the original data is corrupted or the server goes down, processing can continue using the data at the replication target, so reliability and availability are improved.\n\nThe exam focuses on this: machine duplication copies the \"device,\" whereas replication copies the \"data.\" Remember it separately from backup, too—a backup saves a single point in the past, while replication reflects updates and always keeps the latest state.",
-      "analogy_zh": "就像每次做出重要文件时，立刻把同样的一份也放进另一个抽屉里。即使丢了其中一份也不会有麻烦。",
-      "analogy_en": "It is like, every time you create an important document, immediately putting an identical copy in another drawer as well. Even if you lose one, you are not in trouble.",
-      "memory_hook_zh": "说到复制，就是把数据复制一份并保持内容一致",
-      "memory_hook_en": "Replication → copy the data and keep the same content"
+      "one_jp": "**レプリケーション**は、データベースの内容を別のサーバにも**複製**して置き、元で起きた更新を複製先へ反映して両者を**同期**させる、主に **DBMS** (データベースを管理するソフトウェア) が備える機能である。",
+      "one_zh": "**复制**（[[jp:レプリケーション]]）是主要由 **DBMS**（管理数据库的软件）提供的一种功能：在另一台服务器上也放置数据库内容的**副本**，并把原服务器上的更新反映到副本一侧，使两者保持**同步**。",
+      "one_en": "**Replication** ([[jp:レプリケーション]]) is a function, mainly provided by a **DBMS** (the software that manages a database), that keeps a **copy** of a database on another server and applies each update made at the source to the copy, keeping the two **in sync**.",
+      "detail_jp": "複製先が元と同じ内容を持つので、元のサーバが故障しても複製先で処理を続けられ、システムを止めずに使い続けられる度合い (**可用性**) が高まる。読み出しの要求を複製先に振り分ければ元のサーバの負荷が減り、性能の向上にもつながる。",
+      "detail_zh": "副本服务器拥有与原服务器相同的内容，因此即使原服务器发生故障，也能在副本服务器上继续处理，系统不停机、持续可用的程度（**可用性**）随之提高。把读取请求分配给副本服务器，可以减轻原服务器的负担，也有助于提升性能。",
+      "detail_en": "Because the replica holds the same contents as the source, processing can continue on the replica if the source server fails, which raises **availability**, the degree to which a system stays usable without stopping. Sending read requests to the replica also lightens the load on the source server and improves performance.",
+      "analogy_jp": "本店の商品台帳に書き込むたびに、支店の台帳にも同じ書き込みが届く仕組み。本店が閉まっていても、支店の台帳で問い合わせに答えられる。",
+      "analogy_zh": "就像总店每在商品台账上记一笔，分店的台账上也会收到同样的一笔。即使总店关门，也能用分店的台账回答询问。",
+      "analogy_en": "It is like a head store whose every entry in the stock ledger is copied into the branch's ledger too. Even when the head store is closed, the branch can answer inquiries from its own ledger.",
+      "hook_jp": "replica は「複製品」。美術館のレプリカと同じ語で、本物と見分けがつかない写しを作り続ける機能と覚える。",
+      "hook_zh": "replica 意为“复制品”，和美术馆里的复制品是同一个词。可以记成：不断制作与真品难以分辨的副本的功能。",
+      "hook_en": "A \"replica\" is a copy, the same word used for museum reproductions. Think of a function that keeps making copies you cannot tell from the original.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "レプリケーションは DBMS が備える機能で、サーバ間でデータの複製と同期を続けることで可用性を高め、性能の向上にも役立てられる。",
+          "text_zh": "复制（[[jp:レプリケーション]]）是 DBMS 提供的功能，通过在服务器之间持续复制并同步数据来提高可用性（[[jp:可用性]]），也有助于提升性能。",
+          "text_en": "Replication ([[jp:レプリケーション]]) is a DBMS function that keeps copying and synchronizing data between servers, raising availability ([[jp:可用性]]) and helping performance as well.",
+          "qids": [
+            "2017h29h-q078",
+            "2025r07-q082"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "バックアップはある時点の内容を別に保存しておき、後でその時点へ戻すために使う。レプリケーションは更新のたびに複製先へ反映し、内容を一致させ続ける。",
+          "text_zh": "备份（[[jp:バックアップ]]）是把某一时刻的内容另行保存，以便日后恢复到那个时刻。复制则在每次更新时都反映到副本服务器，使内容始终保持一致。",
+          "text_en": "A backup ([[jp:バックアップ]]) saves the contents as of a certain moment so they can be restored to that point later. Replication applies every update to the replica and keeps the contents matching."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "元のサーバでデータを更新",
+                "zh": "在原服务器上更新数据",
+                "en": "Data is updated on the source server"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "更新の内容を複製先へ送る",
+                "zh": "把更新内容发送到副本服务器",
+                "en": "The update is sent to the replica"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "複製先にも反映され内容が一致",
+                "zh": "副本服务器也完成更新，内容一致",
+                "en": "The replica applies it and the contents match"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "元のサーバのデータベースで、データが書き換えられる。",
+            "caption_zh": "原服务器的数据库中，数据被改写。",
+            "caption_en": "Data is rewritten in the database on the source server.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "DBMS が、書き換えの内容を複製先のサーバへ送る。",
+            "caption_zh": "DBMS 把改写的内容发送到副本服务器。",
+            "caption_en": "The DBMS sends the change to the replica server.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "複製先でも同じ書き換えが行われ、2 つのデータベースの内容がそろう。",
+            "caption_zh": "副本服务器也进行同样的改写，两个数据库的内容保持一致。",
+            "caption_en": "The replica makes the same change, and the two databases now hold the same contents.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2025r07-q082",
+        "2017h29h-q078"
+      ],
+      "definition_jp": "レプリケーションは、データベースの内容を別のサーバにも複製して置き、元で起きた更新を複製先へ反映して両者を同期させる、主に DBMS (データベースを管理するソフトウェア) が備える機能である。",
+      "definition_zh": "复制（レプリケーション）是主要由 DBMS（管理数据库的软件）提供的一种功能：在另一台服务器上也放置数据库内容的副本，并把原服务器上的更新反映到副本一侧，使两者保持同步。",
+      "definition_en": "Replication (レプリケーション) is a function, mainly provided by a DBMS (the software that manages a database), that keeps a copy of a database on another server and applies each update made at the source to the copy, keeping the two in sync.",
+      "explanation_jp": "複製先が元と同じ内容を持つので、元のサーバが故障しても複製先で処理を続けられ、システムを止めずに使い続けられる度合い (可用性) が高まる。読み出しの要求を複製先に振り分ければ元のサーバの負荷が減り、性能の向上にもつながる。",
+      "explanation_zh": "副本服务器拥有与原服务器相同的内容，因此即使原服务器发生故障，也能在副本服务器上继续处理，系统不停机、持续可用的程度（可用性）随之提高。把读取请求分配给副本服务器，可以减轻原服务器的负担，也有助于提升性能。",
+      "explanation_en": "Because the replica holds the same contents as the source, processing can continue on the replica if the source server fails, which raises availability, the degree to which a system stays usable without stopping. Sending read requests to the replica also lightens the load on the source server and improves performance.",
+      "memory_hook_jp": "replica は「複製品」。美術館のレプリカと同じ語で、本物と見分けがつかない写しを作り続ける機能と覚える。",
+      "memory_hook_zh": "replica 意为“复制品”，和美术馆里的复制品是同一个词。可以记成：不断制作与真品难以分辨的副本的功能。",
+      "memory_hook_en": "A \"replica\" is a copy, the same word used for museum reproductions. Think of a function that keeps making copies you cannot tell from the original.",
+      "inline_quiz": [
+        "2025r07-q082",
+        "2017h29h-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "RAID",
-      "definition_jp": "複数のディスクを束ね、冗長化や高速化を図るストレージ技術。",
-      "explanation_jp": "RAID(Redundant Array of Independent Disks)は、複数のハードディスクを1つにまとめて、データを分散・複製して保存する技術です。1台が壊れても他のディスクからデータを復元できる『冗長化』や、読み書きを分担する『高速化』を実現します。本ユニットで最頻出の用語なので、確実に押さえましょう。\n\n試験では代表的な方式の違いが問われます。RAID0は分散書き込み(ストライピング)で高速だが冗長性なし、RAID1は同じデータを2台に書く複製(ミラーリング)で安全、RAID5はパリティ(故障ディスクのデータを復元するための冗長情報)を各ディスクに分散させ容量効率と冗長性を両立します。RAID0は信頼性向上ではない点に注意。",
-      "analogy_jp": "同じ資料を複数のキャビネットに分けて保管する仕組み。1つが燃えても他から復元でき、分担すれば出し入れも速い。",
-      "memory_hook_jp": "RAIDといえば複数ディスクで冗長化・高速化",
-      "inline_quiz": [
-        "2009h21a-q078",
-        "2011h23a-q082"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"RAID\"] --> B[\"RAID0 ストライピング 高速\"]; A --> C[\"RAID1 ミラーリング 複製\"]; A --> D[\"RAID5 パリティ分散 容量効率と冗長性\"]",
-        "svg_path": "figures/technology-16-43-u02-t02.svg",
-        "rendered": true
-      },
       "term_zh": "RAID",
       "term_en": "RAID",
-      "definition_zh": "把多块磁盘捆绑起来、实现冗余化或高速化的存储技术。",
-      "definition_en": "A storage technology that bundles multiple disks to achieve redundancy or higher speed.",
-      "explanation_zh": "RAID（Redundant Array of Independent Disks，独立磁盘冗余阵列）是把多块硬盘汇集为一个整体、将数据分散并复制存储的技术。它能实现“冗余化”——即使一块损坏也能从其他磁盘恢复数据，以及“高速化”——分担读写。它是本单元最常出现的术语，务必牢牢掌握。\n\n考试会考查各代表性方式的区别。RAID0 采用分散写入（条带化／Striping），速度快但没有冗余性；RAID1 把相同数据写入两块磁盘（镜像／Mirroring），安全；RAID5 把校验信息（Parity，用于恢复故障磁盘数据的冗余信息）分散到各块磁盘上，兼顾容量效率与冗余性。要注意 RAID0 并不能提高可靠性。",
-      "explanation_en": "RAID (Redundant Array of Independent Disks) is a technology that combines multiple hard disks into one and stores data in a distributed and duplicated way. It achieves \"redundancy,\" where data can be restored from other disks even if one fails, and \"higher speed,\" where reads and writes are shared. It is the most frequently appearing term in this unit, so master it firmly.\n\nThe exam asks about the differences between the representative methods. RAID 0 uses distributed writing (striping) and is fast but has no redundancy; RAID 1 writes the same data to two disks (mirroring) and is safe; RAID 5 distributes parity (redundant information used to restore the data of a failed disk) across the disks, balancing capacity efficiency and redundancy. Note that RAID 0 does not improve reliability.",
-      "analogy_zh": "就像把同一批资料分开存放在多个文件柜里。即使一个被烧毁也能从别处恢复，而且分头存取还更快。",
-      "analogy_en": "It is like storing the same set of documents split across several cabinets. Even if one burns down you can restore from the others, and sharing the work also makes retrieval faster.",
-      "memory_hook_zh": "说到 RAID，就是用多块磁盘做冗余化、高速化",
-      "memory_hook_en": "RAID → use multiple disks for redundancy and higher speed"
+      "one_jp": "**RAID** は、複数のディスクを組み合わせて**1 台のように扱い**、データの置き方によって**高速化**や**耐故障性**の向上を図る技術である。",
+      "one_zh": "**RAID** 是把多块磁盘组合起来**当作一个整体使用**，并通过数据的存放方式来实现**高速化**或提高**容错性**的技术。",
+      "one_en": "**RAID** combines several disks so they can be **handled as one**, and uses the way data is placed across them to gain **speed** or **fault tolerance**.",
+      "detail_jp": "データの置き方は **RAID レベル** と呼ぶ番号で区別し、方式ごとに速さ・故障への強さ・使える容量の釣り合いが変わる。RAID5 の **パリティ** は、データから計算して作る復元用の情報で、1 台分が失われても残りのデータと組み合わせれば元の内容を計算で求め直せる。",
+      "detail_zh": "数据的存放方式用称为 **RAID 级别**（[[jp:RAID レベル]]）的编号来区分，不同方式在速度、抗故障能力和可用容量之间的平衡各不相同。RAID5 的**奇偶校验**（[[jp:パリティ]]）是由数据计算得出的恢复用信息，即使丢失 1 块磁盘的内容，也能结合其余数据重新算出原来的内容。",
+      "detail_en": "The ways of placing data are identified by numbers called **RAID levels** ([[jp:RAID レベル]]), and each level strikes a different balance between speed, resistance to failure and usable capacity. The **parity** ([[jp:パリティ]]) in RAID5 is recovery information calculated from the data, so if one disk's worth is lost, the original contents can be recalculated from it and the remaining data.",
+      "analogy_jp": "3 人の点数を書いた紙とは別に合計点だけを書いた紙を残しておけば、1 人分の紙をなくしても、合計から残り 2 人の点数を引いて求め直せる。",
+      "analogy_zh": "如果在写有 3 个人分数的纸之外，另留一张只写总分的纸，那么即使丢了其中 1 个人的纸，也能用总分减去另外 2 人的分数求回来。",
+      "analogy_en": "If you keep a separate slip with just the total of three people's scores, losing one person's slip is no problem: subtract the other two scores from the total to get it back.",
+      "hook_jp": "RAID の R は Redundant (冗長)。ただし 0 番だけは冗長さがゼロ、と数字の 0 に重ねて覚える。",
+      "hook_zh": "RAID 的 R 是 Redundant（冗余）。不过只有 0 号的冗余为零，可以和数字 0 联系起来记。",
+      "hook_en": "The R in RAID stands for Redundant. Only level 0 has zero redundancy, which matches its number.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "RAID1 (ミラーリング) は全ディスクに同じデータを書くので、1 台が故障しても残りで運用を続けられる。その代わり、使える容量は 1 台分になる。",
+          "text_zh": "RAID1（镜像，[[jp:ミラーリング]]）在所有磁盘上写入相同数据，因此 1 块磁盘故障后也能用其余磁盘继续运行。代价是可用容量只有 1 块磁盘的量。",
+          "text_en": "RAID1 (mirroring, [[jp:ミラーリング]]) writes the same data to every disk, so it keeps running on the remaining disks if one fails. The trade-off is that usable capacity is only one disk's worth.",
+          "qids": [
+            "2011h23a-q082",
+            "2012h24a-q055",
+            "2018h30h-q094",
+            "2023r05-q063",
+            "2013h25h-q073"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "RAID5 は 1 台が故障しても、残りのデータとパリティから失われた内容を計算し直せる。パリティに 1 台分を使うので、使える容量は台数から 1 を引いた台数分になる。",
+          "text_zh": "RAID5 即使有 1 块磁盘故障，也能用其余数据和奇偶校验（[[jp:パリティ]]）重新算出丢失的内容。由于要用 1 块磁盘的容量存放奇偶校验，可用容量相当于（磁盘数 − 1）块磁盘。",
+          "text_en": "RAID5 can recalculate lost contents from the remaining data and parity ([[jp:パリティ]]) when one disk fails. Since one disk's worth goes to parity, usable capacity equals the number of disks minus one.",
+          "qids": [
+            "2018h30h-q077",
+            "2024r06-q069",
+            "2019h31h-q062"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "ストライピング (RAID0) はデータを分けて並行に書いて速さを上げる方式、ミラーリング (RAID1) は同じデータを重ねて書いて故障に備える方式である。",
+          "text_zh": "条带化（[[jp:ストライピング]]，RAID0）是分割数据并行写入以提高速度的方式，镜像（RAID1）是重复写入相同数据以防备故障的方式。",
+          "text_en": "Striping ([[jp:ストライピング]], RAID0) splits data and writes it in parallel for speed, while mirroring (RAID1) writes the same data more than once to guard against failure."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "方式",
+              "zh": "方式",
+              "en": "Level"
+            },
+            {
+              "jp": "データの書き方",
+              "zh": "数据的写入方式",
+              "en": "How data is written"
+            },
+            {
+              "jp": "1 台が故障したとき",
+              "zh": "1 块磁盘故障时",
+              "en": "When one disk fails"
+            },
+            {
+              "jp": "使える容量 (n 台構成)",
+              "zh": "可用容量（n 块磁盘）",
+              "en": "Usable capacity (n disks)"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "RAID0 (ストライピング)",
+                  "zh": "RAID0（条带化）",
+                  "en": "RAID0 (striping)"
+                },
+                {
+                  "jp": "分けて複数台に並行して書く",
+                  "zh": "分割后并行写入多块磁盘",
+                  "en": "Split and written to several disks in parallel"
+                },
+                {
+                  "jp": "データを失う",
+                  "zh": "数据丢失",
+                  "en": "Data is lost"
+                },
+                {
+                  "jp": "n 台分",
+                  "zh": "n 块的容量",
+                  "en": "n disks' worth"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "RAID1 (ミラーリング)",
+                  "zh": "RAID1（镜像）",
+                  "en": "RAID1 (mirroring)"
+                },
+                {
+                  "jp": "同じデータを複数台に重ねて書く",
+                  "zh": "把相同数据重复写入多块磁盘",
+                  "en": "The same data is written to several disks"
+                },
+                {
+                  "jp": "残りの台で運用を続けられる",
+                  "zh": "可用其余磁盘继续运行",
+                  "en": "The remaining disks keep running"
+                },
+                {
+                  "jp": "1 台分",
+                  "zh": "1 块的容量",
+                  "en": "One disk's worth"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "RAID5",
+                  "zh": "RAID5",
+                  "en": "RAID5"
+                },
+                {
+                  "jp": "データと、復元用に計算した値 (パリティ) を 3 台以上に分散して書く",
+                  "zh": "把数据和为恢复而计算出的值（奇偶校验）分散写入 3 块以上磁盘",
+                  "en": "Data and a value computed for recovery (parity) are spread across three or more disks"
+                },
+                {
+                  "jp": "残りのデータとパリティから計算で復元できる",
+                  "zh": "可由其余数据和奇偶校验计算恢复",
+                  "en": "Can be rebuilt by calculation from the remaining data and parity"
+                },
+                {
+                  "jp": "n − 1 台分",
+                  "zh": "n − 1 块的容量",
+                  "en": "n − 1 disks' worth"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2009h21a-q078",
+        "2023r05-q063",
+        "2024r06-q069"
+      ],
+      "definition_jp": "RAID は、複数のディスクを組み合わせて1 台のように扱い、データの置き方によって高速化や耐故障性の向上を図る技術である。",
+      "definition_zh": "RAID 是把多块磁盘组合起来当作一个整体使用，并通过数据的存放方式来实现高速化或提高容错性的技术。",
+      "definition_en": "RAID combines several disks so they can be handled as one, and uses the way data is placed across them to gain speed or fault tolerance.",
+      "explanation_jp": "データの置き方は RAID レベル と呼ぶ番号で区別し、方式ごとに速さ・故障への強さ・使える容量の釣り合いが変わる。RAID5 の パリティ は、データから計算して作る復元用の情報で、1 台分が失われても残りのデータと組み合わせれば元の内容を計算で求め直せる。",
+      "explanation_zh": "数据的存放方式用称为 RAID 级别（RAID レベル）的编号来区分，不同方式在速度、抗故障能力和可用容量之间的平衡各不相同。RAID5 的奇偶校验（パリティ）是由数据计算得出的恢复用信息，即使丢失 1 块磁盘的内容，也能结合其余数据重新算出原来的内容。",
+      "explanation_en": "The ways of placing data are identified by numbers called RAID levels (RAID レベル), and each level strikes a different balance between speed, resistance to failure and usable capacity. The parity (パリティ) in RAID5 is recovery information calculated from the data, so if one disk's worth is lost, the original contents can be recalculated from it and the remaining data.",
+      "memory_hook_jp": "RAID の R は Redundant (冗長)。ただし 0 番だけは冗長さがゼロ、と数字の 0 に重ねて覚える。",
+      "memory_hook_zh": "RAID 的 R 是 Redundant（冗余）。不过只有 0 号的冗余为零，可以和数字 0 联系起来记。",
+      "memory_hook_en": "The R in RAID stands for Redundant. Only level 0 has zero redundancy, which matches its number.",
+      "inline_quiz": [
+        "2009h21a-q078",
+        "2023r05-q063",
+        "2024r06-q069"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "NAS",
-      "definition_jp": "ネットワークに直接接続し、複数機器でファイルを共有する記憶装置。",
-      "explanation_jp": "NAS(Network Attached Storage)は、ネットワークに直接つながる専用のファイルサーバ型ストレージです。LAN上の複数のパソコンやサーバから、同じファイルを共有してアクセスできます。内部にRAIDを備える製品が多く、データの信頼性も確保できます。\n\n試験では『ネットワーク経由でファイル単位で共有する』点が特徴として問われます。各PCに直接つなぐ外付けディスク(DAS)と違い、NASは1台を皆で共有できるため、データの一元管理やバックアップがしやすくなります。",
-      "analogy_jp": "オフィスの共用書庫のようなもの。誰でもネットワーク越しに同じ棚へアクセスでき、資料を皆で出し入れできる。",
-      "memory_hook_jp": "NASといえばネットワーク接続でファイル共有するストレージ",
+      "term_zh": "NAS",
+      "term_en": "NAS",
+      "one_jp": "**NAS** は、**LAN** に直接つないで使う、ファイルの**共有**に特化した記憶装置である。",
+      "one_zh": "**NAS** 是直接连接**局域网（LAN）**使用、专门用于**共享**文件的存储设备。",
+      "one_en": "**NAS** is a storage device, connected directly to a **LAN**, that specializes in **sharing** files.",
+      "detail_jp": "ファイルを管理して配る機能を本体に持つので、別にサーバ用のコンピュータを用意しなくても、ネットワーク上の複数の端末から同じファイルを読み書きできる。内部のディスクを RAID で構成し、故障への備えを持たせた製品も多い。",
+      "detail_zh": "它本身具备管理和提供文件的功能，因此无需另外准备服务器用的计算机，网络上的多台终端就能读写同一批文件。也有很多产品用 RAID 构成内部磁盘，具备应对故障的能力。",
+      "detail_en": "Because it has its own built-in functions for managing and serving files, several terminals on the network can read and write the same files without a separate server computer. Many models also build their internal disks as RAID to guard against failure.",
+      "analogy_jp": "部署の真ん中に置いた共用の書棚のようなもの。誰の机からでも同じ棚の資料を取り出したり戻したりできる。",
+      "analogy_zh": "就像放在部门中央的公用书架。无论从谁的座位过来，都能从同一个书架取出或放回资料。",
+      "analogy_en": "It is like a shared bookcase in the middle of the office. Anyone can come over from their own desk to take out or put back the same documents.",
+      "hook_jp": "Network Attached Storage の頭文字。「ネットワークに取り付けた (attached) 倉庫」と英語のまま読むと形が浮かぶ。",
+      "hook_zh": "取自 Network Attached Storage 的首字母。按英语直接读成“连接（attached）在网络上的仓库”，样子就浮现出来了。",
+      "hook_en": "NAS stands for Network Attached Storage. Read it literally, \"storage attached to the network\", and the picture is right there.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "NAS はネットワークに直接つながるファイル共有用の記憶装置で、複数の端末がネットワーク越しに同じファイルを使える。",
+          "text_zh": "NAS 是直接连接网络、用于共享文件的存储设备，多台终端可以通过网络使用同一批文件。",
+          "text_en": "NAS is a file-sharing storage device connected directly to the network, letting several terminals use the same files over it.",
+          "qids": [
+            "2012h24h-q074",
+            "2013h25a-q059",
+            "2026r08-q087"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "RAID は複数のディスクを 1 台のように束ねる技術であり、NAS はネットワークにつないでファイルを共有させる装置である。",
+          "text_zh": "RAID 是把多块磁盘捆绑成一个整体使用的技术，而 NAS 是连接网络、让大家共享文件的设备。",
+          "text_en": "RAID is a technique for binding several disks into one, while NAS is a device that connects to the network so files can be shared."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2026r08-q087",
+        "2012h24h-q074"
+      ],
+      "definition_jp": "NAS は、LAN に直接つないで使う、ファイルの共有に特化した記憶装置である。",
+      "definition_zh": "NAS 是直接连接局域网（LAN）使用、专门用于共享文件的存储设备。",
+      "definition_en": "NAS is a storage device, connected directly to a LAN, that specializes in sharing files.",
+      "explanation_jp": "ファイルを管理して配る機能を本体に持つので、別にサーバ用のコンピュータを用意しなくても、ネットワーク上の複数の端末から同じファイルを読み書きできる。内部のディスクを RAID で構成し、故障への備えを持たせた製品も多い。",
+      "explanation_zh": "它本身具备管理和提供文件的功能，因此无需另外准备服务器用的计算机，网络上的多台终端就能读写同一批文件。也有很多产品用 RAID 构成内部磁盘，具备应对故障的能力。",
+      "explanation_en": "Because it has its own built-in functions for managing and serving files, several terminals on the network can read and write the same files without a separate server computer. Many models also build their internal disks as RAID to guard against failure.",
+      "memory_hook_jp": "Network Attached Storage の頭文字。「ネットワークに取り付けた (attached) 倉庫」と英語のまま読むと形が浮かぶ。",
+      "memory_hook_zh": "取自 Network Attached Storage 的首字母。按英语直接读成“连接（attached）在网络上的仓库”，样子就浮现出来了。",
+      "memory_hook_en": "NAS stands for Network Attached Storage. Read it literally, \"storage attached to the network\", and the picture is right there.",
       "inline_quiz": [
+        "2026r08-q087",
         "2012h24h-q074"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "NAS",
-      "term_en": "NAS",
-      "definition_zh": "直接连接到网络、供多台设备共享文件的存储装置。",
-      "definition_en": "A storage device that connects directly to the network and lets multiple machines share files.",
-      "explanation_zh": "NAS（Network Attached Storage，网络附加存储）是直接连接到网络的专用文件服务器型存储。LAN 上的多台电脑或服务器都可以共享访问同一份文件。许多产品内部配备 RAID，因此也能确保数据的可靠性。\n\n考试会把“经由网络以文件为单位进行共享”作为其特征来考查。与直接连接到各台 PC 的外置磁盘（DAS）不同，NAS 可以让一台设备供大家共享，因此便于数据的集中管理和备份。",
-      "explanation_en": "NAS (Network Attached Storage) is dedicated file-server-type storage that connects directly to the network. Multiple PCs or servers on the LAN can share access to the same files. Many products have RAID built in, so they can also ensure data reliability.\n\nThe exam tests its characteristic of \"sharing on a per-file basis over the network.\" Unlike an external disk (DAS) connected directly to each PC, NAS lets everyone share a single unit, making centralized data management and backup easier.",
-      "analogy_zh": "就像办公室的公共书库。谁都能越过网络访问同一个架子，大家都可以存取资料。",
-      "analogy_en": "It is like an office's shared storeroom. Anyone can access the same shelf over the network, and everyone can put things in and take them out.",
-      "memory_hook_zh": "说到 NAS，就是连接网络、共享文件的存储",
-      "memory_hook_en": "NAS → network-connected storage for sharing files"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "デュアルシステム",
+      "b": "デュプレックスシステム",
+      "rows": [
+        {
+          "label_jp": "平常時の 2 組の使い方",
+          "label_zh": "平时两套的用法",
+          "label_en": "How the two sets are used normally",
+          "a_jp": "2 組とも同じ本番の処理を行う",
+          "a_zh": "两套都执行同一正式处理",
+          "a_en": "Both run the same live processing",
+          "b_jp": "現用系だけが本番を行い、待機系は備える",
+          "b_zh": "只有主用系统执行正式处理，备用系统待命",
+          "b_en": "Only the active system runs live work; the standby waits",
+          "key": true
+        },
+        {
+          "label_jp": "結果の照合",
+          "label_zh": "结果核对",
+          "label_en": "Comparing results",
+          "a_jp": "2 組の結果を突き合わせる",
+          "a_zh": "核对两套的结果",
+          "a_en": "The two results are compared",
+          "b_jp": "行わない",
+          "b_zh": "不进行",
+          "b_en": "Not done",
+          "key": false
+        },
+        {
+          "label_jp": "故障したとき",
+          "label_zh": "发生故障时",
+          "label_en": "On failure",
+          "a_jp": "故障した系統を外し、残る系統で続ける",
+          "a_zh": "分离故障系统，由剩下的系统继续",
+          "a_en": "The failed side is cut off and the other continues",
+          "b_jp": "待機系へ切り替えて続ける",
+          "b_zh": "切换到备用系统继续",
+          "b_en": "Switches over to the standby and continues",
+          "key": false
+        },
+        {
+          "label_jp": "待機している側",
+          "label_zh": "待命的一方",
+          "label_en": "The waiting side",
+          "a_jp": "なし",
+          "a_zh": "无",
+          "a_en": "None",
+          "b_jp": "待つ間に別の処理を受け持てる",
+          "b_zh": "待命期间可承担其他处理",
+          "b_en": "Can handle other jobs while waiting",
+          "key": false
+        },
+        {
+          "label_jp": "費用",
+          "label_zh": "成本",
+          "label_en": "Cost",
+          "a_jp": "高くなりやすい",
+          "a_zh": "容易偏高",
+          "a_en": "Tends to be high",
+          "b_jp": "抑えやすい",
+          "b_zh": "相对较低",
+          "b_en": "Easier to keep down",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "RAID",
+      "b": "NAS",
+      "rows": [
+        {
+          "label_jp": "何であるか",
+          "label_zh": "是什么",
+          "label_en": "What it is",
+          "a_jp": "ディスクの組み方の技術",
+          "a_zh": "磁盘的组合技术",
+          "a_en": "A technique for organizing disks",
+          "b_jp": "ネットワークにつなぐ記憶装置 (機器)",
+          "b_zh": "连接网络的存储设备（硬件）",
+          "b_en": "A storage device (hardware) on the network",
+          "key": true
+        },
+        {
+          "label_jp": "主な目的",
+          "label_zh": "主要目的",
+          "label_en": "Main purpose",
+          "a_jp": "速さと耐故障性を高める",
+          "a_zh": "提高速度和容错性",
+          "a_en": "Raise speed and fault tolerance",
+          "b_jp": "複数の端末でファイルを共有する",
+          "b_zh": "让多台终端共享文件",
+          "b_en": "Let several terminals share files",
+          "key": false
+        },
+        {
+          "label_jp": "互いの関係",
+          "label_zh": "相互关系",
+          "label_en": "How they relate",
+          "a_jp": "NAS の内部で使われることがある",
+          "a_zh": "有时用在 NAS 内部",
+          "a_en": "Sometimes used inside a NAS",
+          "b_jp": "内部のディスクに RAID を使う製品が多い",
+          "b_zh": "很多产品的内部磁盘使用 RAID",
+          "b_en": "Many models use RAID for their internal disks",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**デュプレックスシステム** では現用系から待機系へ切り替える間、サービスが一時止まることがある。",
+    "**クラスタ** は台数を足して規模を広げやすく、1 台の障害で全体が止まることを防げる。",
+    "**レプリケーション** は複製先を元と同期させ続けるので、元のサーバが止まっても複製先で処理を続けられる。",
+    "**RAID** で使える容量は、n 台構成なら RAID0 が n 台分、RAID1 が 1 台分、RAID5 が n − 1 台分である。",
+    "**NAS** は LAN に直接つなぎ、複数の端末から同じファイルを使える記憶装置である。"
+  ],
+  "key_points_zh": [
+    "**双工系统** 在从主用系统切换到备用系统期间，服务可能会暂时中断。",
+    "**集群** 可通过增加台数方便地扩大规模，并能防止因 1 台故障导致整体停止。",
+    "**复制** 使副本服务器与原服务器持续同步，因此即使原服务器停止，也能在副本服务器上继续处理。",
+    "**RAID** 的可用容量：由 n 块磁盘构成时，RAID0 为 n 块，RAID1 为 1 块，RAID5 为 n − 1 块。",
+    "**NAS** 是直接连接局域网（LAN）、可供多台终端使用同一批文件的存储设备。"
+  ],
+  "key_points_en": [
+    "In a **duplex system**, service may stop briefly while it switches from the active to the standby system.",
+    "A **cluster** scales up easily by adding machines and keeps one machine's failure from stopping the whole system.",
+    "**Replication** keeps the replica in sync with the source, so processing can continue on the replica if the source server stops.",
+    "With n disks, usable **RAID** capacity is n disks' worth for RAID0, one disk's worth for RAID1 and n − 1 disks' worth for RAID5.",
+    "**NAS** is a storage device connected directly to a LAN that lets several terminals use the same files."
+  ],
+  "overview": {
+    "intro_jp": "デュアルシステム と デュプレックスシステム を、平常時に 2 組の系統をどう使うかで区別できる。クラスタ と レプリケーション が、それぞれ何を複数にして止まりにくさを高めるのかを説明できる。RAID の方式ごとに 1 台の故障に耐えられるかと使える容量を判断し、NAS がどんな装置かを言える。",
+    "intro_zh": "能够根据平时如何使用两套系统，区分 双重系统 与 双工系统。能够说明 集群 与 复制 各自把什么做成多份，从而让系统更不容易停止。能够判断 RAID 的各个方式能否承受 1 块磁盘故障以及可用容量是多少，并说出 NAS 是什么样的设备。",
+    "intro_en": "Tell a dual system from a duplex system by how each uses its two sets of equipment in normal operation. Explain what a cluster and replication each duplicate to make a system harder to bring down. Judge, for each RAID level, whether it survives one disk failure and how much capacity is usable, and say what kind of device NAS is.",
+    "freq_badge": "標準",
+    "est_minutes": 37
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "デュアルシステム: デュアルシステムといえば2系統同時稼働で結果照合",
-      "デュプレックスシステム: デュプレックスシステムといえば現用系＋待機系で切り替え",
-      "クラスタ: クラスタといえば複数台を束ねて1つに見せる",
-      "レプリケーション: レプリケーションといえばデータを複製して同じ内容を保持",
-      "RAID: RAIDといえば複数ディスクで冗長化・高速化",
-      "NAS: NASといえばネットワーク接続でファイル共有するストレージ"
-    ],
     "key_points_jp": [
-      "冗長化は『機器の二重化』と『データの複製』の2系統で理解する。デュアル/デュプレックス/クラスタは機器、レプリケーション/RAID/NASはデータ・ストレージ面の信頼性確保。",
-      "デュアル(2系統同時稼働＋結果照合)とデュプレックス(現用系＋待機系で切替)の違いは最頻出の対比ポイント。",
-      "RAIDは本ユニット最頻出。RAID0(高速・冗長なし)/RAID1(ミラーリング)/RAID5(パリティ分散)の特徴を区別する。",
-      "クラスタは二重化の発展形で、複数台を束ねて可用性向上と負荷分散の両方に使える。",
-      "NASはネットワーク接続でファイルを共有するストレージで、内部にRAIDを持つことが多い。"
+      "デュプレックスシステム では現用系から待機系へ切り替える間、サービスが一時止まることがある。",
+      "クラスタ は台数を足して規模を広げやすく、1 台の障害で全体が止まることを防げる。",
+      "レプリケーション は複製先を元と同期させ続けるので、元のサーバが止まっても複製先で処理を続けられる。",
+      "RAID で使える容量は、n 台構成なら RAID0 が n 台分、RAID1 が 1 台分、RAID5 が n − 1 台分である。",
+      "NAS は LAN に直接つなぎ、複数の端末から同じファイルを使える記憶装置である。"
     ],
     "key_points_zh": [
-      "冗余化要按“设备的双重化”和“数据的复制”两条线来理解。双重系统／双工系统／集群属于设备层面，复制／RAID／NAS 属于数据、存储层面的可靠性确保。",
-      "双重系统（两套同时运行＋结果比对）与双工系统（现用系统＋待机系统切换）的区别是最常考的对比要点。",
-      "RAID 是本单元最常出现的内容。要区分 RAID0（高速、无冗余）／RAID1（镜像）／RAID5（校验信息分散）的特征。",
-      "集群是双重化的进阶形态，把多台捆绑起来，既能提高可用性，也能用于负载均衡。",
-      "NAS 是连接网络、共享文件的存储，内部往往配备 RAID。"
+      "双工系统 在从主用系统切换到备用系统期间，服务可能会暂时中断。",
+      "集群 可通过增加台数方便地扩大规模，并能防止因 1 台故障导致整体停止。",
+      "复制 使副本服务器与原服务器持续同步，因此即使原服务器停止，也能在副本服务器上继续处理。",
+      "RAID 的可用容量：由 n 块磁盘构成时，RAID0 为 n 块，RAID1 为 1 块，RAID5 为 n − 1 块。",
+      "NAS 是直接连接局域网（LAN）、可供多台终端使用同一批文件的存储设备。"
     ],
     "key_points_en": [
-      "Understand redundancy along two lines: \"machine duplication\" and \"data duplication.\" Dual / duplex / cluster are on the machine side, while replication / RAID / NAS ensure reliability on the data and storage side.",
-      "The difference between a dual system (two running simultaneously + result comparison) and a duplex system (active system + standby system switchover) is the most frequently tested contrast.",
-      "RAID appears most often in this unit. Distinguish the characteristics of RAID 0 (fast, no redundancy) / RAID 1 (mirroring) / RAID 5 (distributed parity).",
-      "A cluster is an advanced form of duplication that bundles multiple machines together and can be used both to improve availability and for load balancing.",
-      "NAS is network-connected storage for sharing files, and it often has RAID built in."
+      "In a duplex system, service may stop briefly while it switches from the active to the standby system.",
+      "A cluster scales up easily by adding machines and keeps one machine's failure from stopping the whole system.",
+      "Replication keeps the replica in sync with the source, so processing can continue on the replica if the source server stops.",
+      "With n disks, usable RAID capacity is n disks' worth for RAID0, one disk's worth for RAID1 and n − 1 disks' worth for RAID5.",
+      "NAS is a storage device connected directly to a LAN that lets several terminals use the same files."
+    ],
+    "memory_hooks_jp": [
+      "デュアルシステム: 英語の dual は「二つの」。両手に持った刀を両方とも振る二刀流の姿で思い出す。",
+      "デュプレックスシステム: duplex は英語で、壁を共有して 2 戸が並ぶ住宅も指す。隣の戸がいつでも住み替え先になる、と思い浮かべる。",
+      "クラスタ: cluster は英語で「ぶどうの房」。一粒ずつの実が集まって一房に見える形が、何台もの機械が 1 つに見える姿と重なる。",
+      "レプリケーション: replica は「複製品」。美術館のレプリカと同じ語で、本物と見分けがつかない写しを作り続ける機能と覚える。",
+      "RAID: RAID の R は Redundant (冗長)。ただし 0 番だけは冗長さがゼロ、と数字の 0 に重ねて覚える。",
+      "NAS: Network Attached Storage の頭文字。「ネットワークに取り付けた (attached) 倉庫」と英語のまま読むと形が浮かぶ。"
     ],
     "memory_hooks_zh": [
-      "双重系统：说到双重系统，就是两套系统同时运行并比对结果",
-      "双工系统：说到双工系统，就是现用系统＋待机系统、靠切换接力",
-      "集群：说到集群，就是把多台捆在一起、看起来像一台",
-      "复制：说到复制，就是把数据复制一份并保持内容一致",
-      "RAID：说到 RAID，就是用多块磁盘做冗余化、高速化",
-      "NAS：说到 NAS，就是连接网络、共享文件的存储"
+      "双重系统：英语 dual 意为“两个的”。可以联想双手各持一刀、两把刀同时挥动的“二刀流”。",
+      "双工系统：duplex 在英语中也指两户共用一面墙、并排而建的住宅。可以想象隔壁那户随时可以搬进去住。",
+      "集群：cluster 在英语中是“一串葡萄”。一粒粒果实聚成一串的样子，正好对应多台机器看起来像一台。",
+      "复制：replica 意为“复制品”，和美术馆里的复制品是同一个词。可以记成：不断制作与真品难以分辨的副本的功能。",
+      "RAID：RAID 的 R 是 Redundant（冗余）。不过只有 0 号的冗余为零，可以和数字 0 联系起来记。",
+      "NAS：取自 Network Attached Storage 的首字母。按英语直接读成“连接（attached）在网络上的仓库”，样子就浮现出来了。"
     ],
     "memory_hooks_en": [
-      "Dual System: Dual System → two systems running at once and cross-checking results",
-      "Duplex System: Duplex System → active system + standby system, kept going by switching over",
-      "Cluster: Cluster → bundle many machines together so they look like one",
-      "Replication: Replication → copy the data and keep the same content",
-      "RAID: RAID → use multiple disks for redundancy and higher speed",
-      "NAS: NAS → network-connected storage for sharing files"
+      "Dual System: \"Dual\" means \"two\". Picture a swordsman with a sword in each hand, both blades in action.",
+      "Duplex System: In English, a \"duplex\" is also a house split into two homes that share a wall. Picture the unit next door, always ready to move into.",
+      "Cluster: A \"cluster\" can be a bunch of grapes. Many separate grapes look like one bunch, just as many machines look like one system.",
+      "Replication: A \"replica\" is a copy, the same word used for museum reproductions. Think of a function that keeps making copies you cannot tell from the original.",
+      "RAID: The R in RAID stands for Redundant. Only level 0 has zero redundancy, which matches its number.",
+      "NAS: NAS stands for Network Attached Storage. Read it literally, \"storage attached to the network\", and the picture is right there."
     ]
   },
   "challenge_questions": [
-    "2012h24a-q055",
-    "2013h25a-q059",
-    "2017h29h-q078",
     "2023r05-q070",
-    "2018h30h-q077"
+    "2017h29h-q078",
+    "2019h31h-q062",
+    "2018h30h-q077",
+    "2013h25a-q059"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "面向可用性与可靠性的系统构成",
-  "title_en": "System Configurations for Availability and Reliability",
-  "unit_summary_zh": "学习把多台设备或磁盘组合起来、让系统不停机并且不丢失数据的冗余化构成。",
-  "unit_summary_en": "Learn redundant configurations that combine multiple machines or disks so the system does not go down and data is not lost."
+  }
 }
