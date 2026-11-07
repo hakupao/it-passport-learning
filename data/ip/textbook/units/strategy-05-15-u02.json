@@ -1,227 +1,955 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-05-15-u02",
   "topic_id": "strategy-05-15",
   "category": "strategy",
   "title_jp": "生産管理の方式とシステム",
+  "title_zh": "生产管理的方式与系统",
+  "title_en": "Production Management Methods and Systems",
   "unit_summary_jp": "製造・生産フェーズで用いる代表的な生産方式(JIT・かんばん・リーン・MRP・FMS)の特徴と相互関係を理解する。",
+  "unit_summary_zh": "理解制造与生产阶段所采用的代表性生产方式（JIT、看板、精益、MRP、FMS）的特征及其相互关系。",
+  "unit_summary_en": "Understand the characteristics and interrelationships of representative production methods used in the manufacturing and production phase (JIT, Kanban, Lean, MRP, FMS).",
   "order_in_topic": 2,
   "prerequisites": [
     "strategy-05-15-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、工場の製造・生産フェーズで使われる代表的な生産方式を学びます。必要な分だけ作るプル型のJIT・かんばん方式・リーン生産方式、需要計画から逆算するプッシュ型のMRP、多品種少量に対応するFMSの特徴と相互関係を整理します。生産管理はストラテジ系で頻出の分野です。",
-    "freq_badge": "標準",
-    "est_minutes": 18,
-    "intro_zh": "本单元学习工厂在制造与生产阶段所使用的代表性生产方式。我们将梳理以下方式的特征与相互关系：只生产所需数量的拉动式 JIT、看板方式、精益生产方式；从需求计划倒推的推动式 MRP；以及应对多品种小批量的 FMS。生产管理是战略类中的高频考点。",
-    "intro_en": "In this unit, we learn the representative production methods used in a factory's manufacturing and production phase. We organize the characteristics and interrelationships of: the pull-type JIT, Kanban method, and Lean production that make only what is needed; the push-type MRP that works backward from demand planning; and FMS, which handles high-mix low-volume production. Production management is a frequently tested area in the strategy domain."
-  },
-  "terms": [
+  "goals_jp": [
+    "作り始めのきっかけや作業の組み方といった観点で、**生産方式**の種類を見分けられる。",
+    "**JIT** と**かんばん方式**の関係を、補充の指示が後工程から前工程へ流れる順に沿って説明できる。",
+    "**MRP** の手順に沿って、部品の正味所要量と発注の時期を計算できる。"
+  ],
+  "goals_zh": [
+    "能够从开始生产的契机、作业的组织方式等角度，区分各种**生产方式**（[[jp:生産方式]]）。",
+    "能够沿着补充指令从后工序流向前工序的顺序，说明 **JIT** 与**看板方式**（[[jp:かんばん方式]]）的关系。",
+    "能够按照 **MRP** 的步骤，计算零部件的净需求量和下单时间。"
+  ],
+  "goals_en": [
+    "Tell apart types of **production method** ([[jp:生産方式]]) by what triggers production and how the work is organized.",
+    "Explain how **JIT** and the **kanban method** ([[jp:かんばん方式]]) relate, following the replenishment instruction as it travels from the downstream process back upstream.",
+    "Follow the **MRP** procedure to calculate a part's net requirement and when to place the order."
+  ],
+  "overview_cols_jp": [
+    "位置づけ",
+    "手がかりの語"
+  ],
+  "overview_cols_zh": [
+    "定位",
+    "线索词"
+  ],
+  "overview_cols_en": [
+    "Role",
+    "Clue words"
+  ],
+  "overview_rows": [
     {
       "term": "生産方式",
-      "definition_jp": "製品をどのような考え方・手順で作るかを定めた生産の進め方の総称。",
-      "explanation_jp": "生産方式とは、製品をどのような考え方や仕組みで製造するかを表す上位の概念で、この後に学ぶJITやMRPなどはすべてこの一種です。大きく分けると、後工程の必要量に合わせて作る「プル型(引取り型)」と、需要予測や計画に基づき前もって作る「プッシュ型(押出し型)」があります。\n\n試験では、JIT・かんばん・リーンがプル型、MRPがプッシュ型という分類や、それぞれの方式が何を重視するかが問われます。まずは「生産方式=作り方の枠組みの総称」と捉え、各方式を位置づけて整理することが理解の出発点になります。",
-      "analogy_jp": "料理の「作り置きスタイル」か「注文を受けてから作るスタイル」かといった、調理の進め方の方針そのもの。個々のレシピより上位の考え方にあたります。",
-      "memory_hook_jp": "生産方式といえばプル型とプッシュ型を束ねる作り方の総称",
-      "inline_quiz": [
-        "2010h22a-q014",
-        "2011h23a-q019"
+      "one_line_jp": "製品をどう作るかを決める作り方の型の総称",
+      "one_line_zh": "决定产品如何制造的制造模式的总称",
+      "one_line_en": "Umbrella term for the patterns that decide how products are made",
+      "extra_jp": [
+        "総称",
+        "受注生産と見込生産、ライン生産とセル生産"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"生産方式\"] --> B[\"プル型 引取り型\"]; A --> C[\"プッシュ型 計画型\"]; B --> D[\"JIT\"]; B --> E[\"かんばん方式\"]; B --> F[\"リーン生産方式\"]; C --> G[\"MRP\"]",
-        "svg_path": "figures/strategy-05-15-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "生产方式",
-      "term_en": "Production method",
-      "definition_zh": "规定以怎样的思路与步骤来制造产品的生产推进方式的总称。",
-      "definition_en": "A general term for the way production is carried out, defining by what concept and procedure products are made.",
-      "explanation_zh": "生产方式是表示以怎样的思路或机制来制造产品的上位概念，之后要学习的 JIT、MRP 等都属于其中的一种。大致可分为：按后工序所需数量来生产的「拉动式（领取式）」，以及基于需求预测或计划提前生产的「推动式（推出式）」。\n\n考试中会考查 JIT、看板、精益属于拉动式、MRP 属于推动式这样的分类，以及各方式各自重视什么。首先把「生产方式＝制造方法的框架总称」记住，再为各方式定位并加以梳理，这是理解的出发点。",
-      "explanation_en": "A production method is a higher-level concept expressing by what idea or mechanism products are manufactured; the JIT, MRP, and others learned later are all kinds of it. Broadly, there are the \"pull type (withdrawal type),\" which makes goods according to the quantity needed by the downstream process, and the \"push type,\" which produces in advance based on demand forecasts or plans.\n\nThe exam asks about the classification—JIT, Kanban, and Lean as pull type, and MRP as push type—and what each method emphasizes. First grasp that \"a production method = a general term for the framework of how things are made,\" then position and organize each method; this is the starting point for understanding.",
-      "analogy_zh": "就像做菜时选择「提前备好（作り置き）的风格」还是「接到点单后才做的风格」——这是烹饪推进方式本身的方针，属于比一道道具体菜谱更上位的思路。",
-      "analogy_en": "Like the policy of cooking itself—whether to use a \"make-ahead style\" or a \"cook-to-order style.\" It is a higher-level idea than individual recipes.",
-      "memory_hook_zh": "说到生产方式，就是把拉动式和推动式统括起来的制造方法总称",
-      "memory_hook_en": "Production method → the umbrella term covering both pull type and push type ways of making things"
+      "extra_zh": [
+        "总称",
+        "订单生产与预测生产、流水线生产与单元生产"
+      ],
+      "extra_en": [
+        "Umbrella term",
+        "Make-to-order vs. make-to-stock, line vs. cell production"
+      ]
     },
     {
       "term": "JIT",
-      "definition_jp": "必要なものを必要なときに必要なだけ生産・調達する方式。",
-      "explanation_jp": "JIT(ジャストインタイム)は、トヨタ生産方式の中心となる考え方で、「必要なものを、必要なときに、必要なだけ」作る・運ぶことで、在庫のムダを徹底的に減らす生産方式です。後工程が使った分だけ前工程が補充するプル型(引取り型)の代表例です。\n\n在庫を抱えないため保管コストや作りすぎのムダを抑えられる一方、部品の供給が止まると生産全体が止まりやすいという弱点もあります。試験では、計画に基づいて前もって作るMRP(プッシュ型)との対比や、JITを現場で実現する手段がかんばん方式である点がよく問われます。",
-      "analogy_jp": "回転寿司で、なくなった皿の分だけ握りを追加するイメージ。先に大量に握っておかず、減った分を補充するので余りが出にくいです。",
-      "memory_hook_jp": "JITといえば必要なものを必要なときに必要なだけ",
-      "inline_quiz": [
-        "2018h30a-q023",
-        "2019h31h-q015"
+      "one_line_jp": "後工程の使う時期と量に合わせて作り、在庫をためない生産方式",
+      "one_line_zh": "配合后工序使用的时间和数量来生产、不积压库存的生产方式",
+      "one_line_en": "Producing to match when and how much the next process uses, without building up stock",
+      "extra_jp": [
+        "考え方",
+        "ジャストインタイム、仕掛品の削減"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "JIT（准时制）",
-      "term_en": "JIT (Just-In-Time)",
-      "definition_zh": "在需要的时候、按需要的数量、生产与采购所需物品的方式。",
-      "definition_en": "A method of producing and procuring what is needed, when it is needed, in the amount needed.",
-      "explanation_zh": "JIT（准时制，Just-In-Time）是丰田生产方式的核心思想，通过「在需要的时候、按需要的数量、生产所需物品」并运送，彻底减少库存浪费的生产方式。它是后工序用掉多少、前工序就补充多少的拉动式（领取式）的代表例。\n\n由于不囤积库存，可以抑制保管成本和过量生产的浪费；但另一方面也存在弱点——一旦零件供应中断，整个生产容易随之停滞。考试中常考查它与基于计划提前生产的 MRP（推动式）的对比，以及在现场实现 JIT 的手段就是看板方式这一点。",
-      "explanation_en": "JIT (Just-In-Time) is the central idea of the Toyota Production System: a method that thoroughly reduces inventory waste by making and conveying \"what is needed, when it is needed, in the amount needed.\" It is the leading example of the pull type (withdrawal type), where the upstream process replenishes only what the downstream process has used.\n\nBecause inventory is not held, storage costs and the waste of overproduction can be curbed; on the other hand, it has a weakness: if the supply of parts stops, the whole of production tends to stop as well. The exam often asks about the contrast with MRP (push type), which produces in advance based on a plan, and about the point that the means of realizing JIT on the shop floor is the Kanban method.",
-      "analogy_zh": "想象回转寿司中，盘子被取走多少就补做多少寿司。不会事先大量握好，而是减少多少补充多少，因此不易产生剩余。",
-      "analogy_en": "Picture a conveyor-belt sushi restaurant, where pieces are made only to replace the plates that have been taken. Rather than preparing a large batch in advance, you replenish only what has been consumed, so little goes to waste.",
-      "memory_hook_zh": "说到 JIT，就是在需要的时候、按需要的数量、生产所需物品",
-      "memory_hook_en": "JIT → what is needed, when it is needed, in the amount needed"
+      "extra_zh": [
+        "理念",
+        "准时化、减少在制品"
+      ],
+      "extra_en": [
+        "Concept",
+        "Just-in-time, fewer work-in-process items"
+      ]
     },
     {
       "term": "かんばん方式",
-      "definition_jp": "「かんばん」と呼ぶ指示票で後工程の必要量を前工程に伝える仕組み。",
-      "explanation_jp": "かんばん方式は、JITを工場の現場で実現するための具体的な仕組みです。「かんばん」と呼ばれる部品名や数量を書いた指示票(カード)を使い、後工程が使った分のかんばんを前工程へ戻すことで、「使われた分だけ作って補充する」流れを作ります。\n\nこれにより、必要な量だけが上流に伝わり、作りすぎや在庫のムダを防げます。試験では、かんばん方式がJITを支える情報伝達の手段であること、後工程が前工程に必要量を引き取りに行く「引取り型(プル型)」の仕組みである点が問われます。JITは考え方、かんばんはその実装手段、と区別しましょう。",
-      "analogy_jp": "冷蔵庫の在庫メモのようなもの。牛乳を使い切ったらメモを買い物リストに戻し、その分だけ買い足す。使った分の札を回すことで補充指示になります。",
-      "memory_hook_jp": "かんばん方式といえばJITを実現する指示票の仕組み",
-      "inline_quiz": [
-        "2009h21h-q028"
+      "one_line_jp": "指示票を後工程から前工程へ回し、使った分だけ補充させる仕組み",
+      "one_line_zh": "把指示卡从后工序传回前工序，只补充用掉部分的机制",
+      "one_line_en": "Passing instruction cards from the downstream process back upstream so only what was used gets replenished",
+      "extra_jp": [
+        "実現の手段",
+        "指示票、引取り"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "看板方式",
-      "term_en": "Kanban method",
-      "definition_zh": "用称为「看板」的指示票，将后工序所需数量传达给前工序的机制。",
-      "definition_en": "A mechanism that uses instruction cards called \"kanban\" to convey the quantity needed by the downstream process to the upstream process.",
-      "explanation_zh": "看板方式是在工厂现场实现 JIT 的具体机制。它使用写有零件名称和数量的、称为「看板」的指示票（卡片），后工序用掉多少就把对应数量的看板退回前工序，从而形成「用掉多少就生产多少加以补充」的流程。\n\n借此，只有所需的数量会向上游传达，从而防止过量生产和库存浪费。考试中会考查看板方式是支撑 JIT 的信息传递手段，以及它是后工序前往前工序领取所需数量的「领取式（拉动式）」机制这一点。请区分：JIT 是思想，看板是其实现手段。",
-      "explanation_en": "The Kanban method is the concrete mechanism for realizing JIT on the factory floor. Using instruction cards (called \"kanban\") that record part names and quantities, the downstream process returns kanban for the amount it has used to the upstream process, thereby creating a flow of \"making and replenishing only the amount used.\"\n\nThrough this, only the needed quantity is conveyed upstream, preventing overproduction and inventory waste. The exam asks about the point that the Kanban method is a means of information transmission supporting JIT, and that it is a \"withdrawal type (pull type)\" mechanism in which the downstream process goes to the upstream process to withdraw the needed amount. Distinguish them: JIT is the idea, and Kanban is the means of implementing it.",
-      "analogy_zh": "就像冰箱里的库存便签。牛奶用完后就把便签放回购物清单，再按这个数量补买。通过传递「用掉的那张牌」来形成补充指令。",
-      "analogy_en": "Like an inventory note on the refrigerator. When you finish the milk, you put the note back on the shopping list and buy just that amount. Passing back the \"card\" for what was used becomes the replenishment instruction.",
-      "memory_hook_zh": "说到看板方式，就是实现 JIT 的指示票机制",
-      "memory_hook_en": "Kanban method → the instruction-card mechanism that realizes JIT"
+      "extra_zh": [
+        "实现手段",
+        "指示卡、领取"
+      ],
+      "extra_en": [
+        "Means of implementation",
+        "Instruction cards, pulling parts"
+      ]
     },
     {
       "term": "リーン生産方式",
-      "definition_jp": "あらゆるムダを排除し効率を高めることを目指す生産思想。",
-      "explanation_jp": "リーン生産方式は、トヨタ生産方式(JITやかんばんによるムダ排除の取り組み)を欧米で研究・体系化し、一般化した生産の考え方です。「リーン(lean)」は「ぜい肉のない・むだのない」という意味で、在庫・作りすぎ・手待ち・運搬などあらゆるムダを継続的に取り除き、価値を生む活動に絞ることを目指します。\n\nJITやかんばんが具体的な仕組みであるのに対し、リーンはそれらを含むより広い生産思想・改善の枠組みです。試験では、ムダの排除を重視する方式であること、トヨタ生産方式を起源とする点が問われます。製造業以外の業務改善にも応用される考え方です。",
-      "analogy_jp": "家計の節約術全般のようなもの。特定の買い物術(かんばん)だけでなく、ムダな支出全体を見直して家計を引き締める、という幅広い方針にあたります。",
-      "memory_hook_jp": "リーン生産方式といえばあらゆるムダの排除",
-      "inline_quiz": [
-        "2013h25a-q025"
+      "one_line_jp": "価値を生まないムダを取り除き続ける改善の考え方",
+      "one_line_zh": "不断消除不产生价值的浪费的改善理念",
+      "one_line_en": "Improvement approach that keeps removing waste that adds no value",
+      "extra_jp": [
+        "改善の考え方",
+        "ムダ、ムリ、ムラ"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "精益生产方式",
-      "term_en": "Lean production",
-      "definition_zh": "旨在排除一切浪费、提高效率的生产思想。",
-      "definition_en": "A production philosophy aimed at eliminating all waste and raising efficiency.",
-      "explanation_zh": "精益生产方式是欧美对丰田生产方式（以 JIT 和看板进行的排除浪费的做法）加以研究、体系化并普及化后的生产思想。「精益（lean）」意为「没有赘肉、没有浪费」，旨在持续去除库存、过量生产、等待、搬运等一切浪费，将活动聚焦于创造价值。\n\n相对于 JIT 和看板是具体的机制，精益则是包含它们在内的更广义的生产思想与改善框架。考试中会考查它是重视排除浪费的方式，以及它起源于丰田生产方式这两点。这一思想也被应用于制造业以外的业务改善。",
-      "explanation_en": "Lean production is a production philosophy that arose when the Toyota Production System (the effort to eliminate waste through JIT and Kanban) was studied, systematized, and generalized in the West. \"Lean\" means \"having no excess fat, no waste,\" and it aims to continuously remove all waste—inventory, overproduction, waiting, conveyance, and so on—and to focus on value-creating activities.\n\nWhereas JIT and Kanban are concrete mechanisms, Lean is a broader production philosophy and improvement framework that includes them. The exam asks about the points that it is a method emphasizing the elimination of waste and that it originates from the Toyota Production System. It is an idea applied to business improvement beyond manufacturing as well.",
-      "analogy_zh": "就像家庭理财中各种省钱之道的总和。不仅是某一种特定的购物技巧（看板），而是审视全部多余开支、收紧家庭预算的宽泛方针。",
-      "analogy_en": "Like the whole of household money-saving techniques. Not just one specific shopping trick (Kanban), but a broad policy of reviewing all wasteful spending and tightening the household budget.",
-      "memory_hook_zh": "说到精益生产方式，就是排除一切浪费",
-      "memory_hook_en": "Lean production → eliminate all waste"
+      "extra_zh": [
+        "改善理念",
+        "浪费、过度负荷、不均衡"
+      ],
+      "extra_en": [
+        "Improvement approach",
+        "Muda, muri, mura"
+      ]
     },
     {
       "term": "MRP",
-      "definition_jp": "生産計画から必要な資材の所要量と発注時期を逆算する手法。",
-      "explanation_jp": "MRP(資材所要量計画)は、製品の生産計画(いつ・何を・いくつ作るか)をもとに、必要な部品や材料の量を部品表(BOM)から計算し、いつ・どれだけ発注すればよいかを逆算して決める手法です。需要予測や計画に基づき前もって作る「プッシュ型(押出し型)」の代表例です。\n\n計画的に資材を手配できる一方、計画と実需要がずれると在庫の過不足が起きやすい点が、必要な分だけ作るJIT(プル型)との大きな違いです。試験では、MRPがプッシュ型・計画起点であること、JITやかんばん(プル型・引取り型)との対比がよく問われます。",
-      "analogy_jp": "イベントの計画から逆算して食材を一括発注するようなもの。「100人分のカレーを作る」と決めたら、必要なルウや肉の量と買う日を先に割り出します。",
-      "memory_hook_jp": "MRPといえば計画から資材の所要量を逆算(プッシュ型)",
-      "inline_quiz": [
-        "2009h21h-q023"
+      "one_line_jp": "生産計画と部品表から資材の必要量と発注時期を計算する手法",
+      "one_line_zh": "根据生产计划和物料清单计算物料需求量与下单时间的方法",
+      "one_line_en": "Method that works out material quantities and order timing from the production plan and bill of materials",
+      "extra_jp": [
+        "計画の手法",
+        "部品表、正味所要量、リードタイム"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"生産計画\"] --> B[\"部品表 BOM\"]; B --> C[\"所要量の計算\"]; C --> D[\"発注時期と数量の決定\"]",
-        "svg_path": "figures/strategy-05-15-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "MRP（物料需求计划）",
-      "term_en": "MRP (Material Requirements Planning)",
-      "definition_zh": "从生产计划倒推所需物料的需求量与订货时机的方法。",
-      "definition_en": "A method that works backward from the production plan to determine the required quantity of materials and the timing of ordering.",
-      "explanation_zh": "MRP（物料需求计划）是以产品的生产计划（何时、做什么、做多少）为基础，依据物料清单（BOM）计算所需零件或材料的数量，并倒推出何时、订多少货的方法。它是基于需求预测或计划提前生产的「推动式（推出式）」的代表例。\n\n它一方面能有计划地筹备物料；另一方面，当计划与实际需求出现偏差时容易产生库存的过剩或不足，这是它与只生产所需数量的 JIT（拉动式）的重大区别。考试中常考查 MRP 属于推动式、以计划为起点这一点，以及它与 JIT 和看板（拉动式、领取式）的对比。",
-      "explanation_en": "MRP (Material Requirements Planning) is a method that, based on the product's production plan (when, what, and how many to make), calculates the quantity of required parts and materials from the bill of materials (BOM) and works backward to decide when and how much to order. It is the leading example of the \"push type,\" which produces in advance based on demand forecasts or plans.\n\nWhile it allows materials to be arranged in a planned way, a major difference from JIT (pull type)—which makes only what is needed—is that an excess or shortage of inventory tends to occur when the plan diverges from actual demand. The exam often asks about the point that MRP is push type and plan-driven, and about the contrast with JIT and Kanban (pull type, withdrawal type).",
-      "analogy_zh": "就像从活动计划倒推、一次性采购食材。一旦决定「做 100 人份的咖喱」，就先算出所需咖喱块和肉的数量以及采购日期。",
-      "analogy_en": "Like working backward from an event plan to order ingredients in bulk. Once you decide \"to make curry for 100 people,\" you first work out the amount of roux and meat needed and the day to buy them.",
-      "memory_hook_zh": "说到 MRP，就是从计划倒推物料的需求量（推动式）",
-      "memory_hook_en": "MRP → work backward from the plan to material requirements (push type)"
+      "extra_zh": [
+        "计划方法",
+        "物料清单、净需求量、提前期"
+      ],
+      "extra_en": [
+        "Planning method",
+        "Bill of materials, net requirement, lead time"
+      ]
     },
     {
       "term": "FMS",
-      "definition_jp": "多品種少量生産に柔軟に対応する自動化された生産システム。",
-      "explanation_jp": "FMS(フレキシブル生産システム)は、NC工作機械や産業用ロボット、無人搬送車などをコンピュータで統合制御し、多品種少量生産に柔軟(flexible)に対応できるようにした自動化生産システムです。段取り替えを自動で行い、製品の種類が変わっても生産ラインを大きく組み替えずに対応できます。\n\n少品種大量生産を前提とした従来の自動化ラインに対し、FMSは「種類の多さ・変更への柔軟さ」を重視する点が特徴です。試験では、FMSが多品種少量生産に対応する柔軟な自動化システムである、という定義そのものが問われます。",
-      "analogy_jp": "1台でコーヒーも紅茶もココアも作れる多機能ドリンクサーバーのようなもの。ボタンを変えるだけで違う飲み物を出せるよう、機械を組み替えずに対応します。",
-      "memory_hook_jp": "FMSといえば多品種少量に対応する柔軟な自動化システム",
-      "inline_quiz": [
-        "2015h27h-q031"
+      "one_line_jp": "コンピュータ制御で品種の切替えに強くした自動化の生産システム",
+      "one_line_zh": "借助计算机控制、便于切换品种的自动化生产系统",
+      "one_line_en": "Automated production system that uses computer control to switch between product types easily",
+      "extra_jp": [
+        "自動化システム",
+        "多品種少量、製造工程"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "FMS（柔性生产系统）",
-      "term_en": "FMS (Flexible Manufacturing System)",
-      "definition_zh": "灵活应对多品种小批量生产的自动化生产系统。",
-      "definition_en": "An automated production system that flexibly handles high-mix low-volume production.",
-      "explanation_zh": "FMS（柔性生产系统）是用计算机对 NC 机床、工业机器人、无人搬运车等进行集成控制，使其能够灵活（flexible）应对多品种小批量生产的自动化生产系统。它能自动完成换产准备（换型），即使产品种类发生变化，也无需大幅改组生产线即可应对。\n\n相对于以少品种大批量生产为前提的传统自动化生产线，FMS 的特征在于重视「品种之多、应对变更的灵活性」。考试中会考查 FMS 是应对多品种小批量生产的柔性自动化系统这一定义本身。",
-      "explanation_en": "FMS (Flexible Manufacturing System) is an automated production system that integrates and controls NC machine tools, industrial robots, automated guided vehicles, and the like with a computer so that it can flexibly handle high-mix low-volume production. It performs changeover (setup) automatically, so even when the product type changes, it can cope without greatly reconfiguring the production line.\n\nIn contrast to conventional automated lines premised on low-mix high-volume production, FMS is characterized by emphasizing \"the variety of types and flexibility in handling changes.\" The exam asks about the definition itself—that FMS is a flexible automated system that handles high-mix low-volume production.",
-      "analogy_zh": "就像一台能做咖啡、红茶和可可的多功能饮品机。只需换个按钮就能出不同的饮品，无需改组机器即可应对。",
-      "analogy_en": "Like a multifunction drink server that can make coffee, tea, and cocoa from a single machine. By just changing the button, it can serve different drinks without reconfiguring the machine.",
-      "memory_hook_zh": "说到 FMS，就是应对多品种小批量的柔性自动化系统",
-      "memory_hook_en": "FMS → the flexible automated system that handles high-mix low-volume production"
+      "extra_zh": [
+        "自动化系统",
+        "多品种小批量、制造工序"
+      ],
+      "extra_en": [
+        "Automated system",
+        "High-mix low-volume, manufacturing process"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "生産方式",
+      "term_zh": "生产方式",
+      "term_en": "Production method",
+      "one_jp": "**生産方式**は、製品をいつ・どれだけ・どのような体制で作るかを決める**作り方の型**の総称である。",
+      "one_zh": "**生产方式**（[[jp:生産方式]]）是决定产品在何时、生产多少、以何种体制来制造的**制造模式**的总称。",
+      "one_en": "A **production method** ([[jp:生産方式]]) is the umbrella term for the **patterns of making things** that decide when, how many, and under what setup a product is made.",
+      "detail_jp": "例えば、注文を受けてから作り始める**受注生産**と、需要を予測して先に作っておく**見込生産**は、作り始めのきっかけで分かれる。作業の組み方では、ベルトコンベアで工程を分担する**ライン生産**と、一人または少人数が全部の工程を受け持つ**セル生産**がある。",
+      "detail_zh": "例如，接到订单后才开始制造的**订单生产**，和预测需求提前做好的**预测生产**，区别在于开始生产的契机。按作业的组织方式，则有用传送带让各工序分工的**流水线生产**，以及由一人或少数几人负责全部工序的**单元生产**。",
+      "detail_en": "For example, **make-to-order** production, which starts only after an order comes in, and **make-to-stock** production, which builds ahead based on forecast demand, differ in what triggers production. By how the work is organized, there is **line production**, where a conveyor carries work through divided processes, and **cell production**, where one person or a small team handles every process.",
+      "analogy_jp": "飲食店に、注文が入ってから調理する店と、作り置きを並べておく店があるように、料理そのものではなく作り方の方針を指す言葉。",
+      "analogy_zh": "就像餐馆有接单后才下锅的，也有把做好的菜摆出来卖的，这个词指的不是菜本身，而是做菜的方针。",
+      "analogy_en": "Some restaurants cook only after you order, while others set out dishes made in advance. The term refers to that cooking policy, not to the food itself.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**セル生産**は、一人または少人数が最初から最後までの工程を受け持つ生産方式で、多品種少量の生産に向く。",
+          "text_zh": "**单元生产**（[[jp:セル生産]]）是由一人或少数几人从头到尾负责全部工序的生产方式（[[jp:生産方式]]），适合多品种小批量生产。",
+          "text_en": "**Cell production** ([[jp:セル生産]]) is a production method ([[jp:生産方式]]) in which one person or a small team handles every process from start to finish, and it suits high-mix, low-volume output.",
+          "qids": [
+            "2011h23a-q019"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**受注生産**は注文が確定してから作り始めるので、完成品が売れ残って在庫が余るおそれがない。その代わり、注文を受けた時点ではすぐに出荷できない。",
+          "text_zh": "**订单生产**（[[jp:受注生産]]）在订单确定后才开始制造，所以不会出现成品卖不掉、库存积压的情况。代价是接到订单时无法立刻发货。",
+          "text_en": "**Make-to-order** production ([[jp:受注生産]]) starts only once an order is confirmed, so there is no risk of finished goods going unsold and piling up as stock. The trade-off is that nothing can ship the moment the order arrives.",
+          "qids": [
+            "2016h28a-q010"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**CAM** は生産方式そのものではなく、工作機械を動かす加工データをコンピュータで作り、製造の作業を支えるシステムである。",
+          "text_zh": "**CAM** 本身不是生产方式，而是用计算机生成驱动机床的加工数据、支持制造作业的系统。",
+          "text_en": "**CAM** is not a production method itself but a system that uses computers to create the machining data that drives machine tools, supporting manufacturing work.",
+          "qids": [
+            "2012h24a-q012",
+            "2011h23tokubetsu-q031"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "分ける観点",
+              "zh": "划分角度",
+              "en": "Basis for dividing"
+            },
+            {
+              "jp": "生産方式の例",
+              "zh": "生产方式举例",
+              "en": "Example production methods"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "作り始めのきっかけ",
+                  "zh": "开始生产的契机",
+                  "en": "What triggers production"
+                },
+                {
+                  "jp": "受注生産 (注文の後に作る) / 見込生産 (需要を見込んで先に作る)",
+                  "zh": "订单生产（接单后再做）/ 预测生产（预估需求先做）",
+                  "en": "Make-to-order (build after the order) / make-to-stock (build ahead of forecast demand)"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "作業の組み方",
+                  "zh": "作业的组织方式",
+                  "en": "How the work is organized"
+                },
+                {
+                  "jp": "ライン生産 (工程を分担して流す) / セル生産 (少人数で全工程を受け持つ)",
+                  "zh": "流水线生产（分工流转各工序）/ 单元生产（少数人负责全部工序）",
+                  "en": "Line production (processes split and passed along) / cell production (a small team handles every process)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2011h23a-q019",
+        "2016h28a-q010",
+        "2012h24a-q012"
+      ],
+      "definition_jp": "生産方式は、製品をいつ・どれだけ・どのような体制で作るかを決める作り方の型の総称である。",
+      "definition_zh": "生产方式（生産方式）是决定产品在何时、生产多少、以何种体制来制造的制造模式的总称。",
+      "definition_en": "A production method (生産方式) is the umbrella term for the patterns of making things that decide when, how many, and under what setup a product is made.",
+      "explanation_jp": "例えば、注文を受けてから作り始める受注生産と、需要を予測して先に作っておく見込生産は、作り始めのきっかけで分かれる。作業の組み方では、ベルトコンベアで工程を分担するライン生産と、一人または少人数が全部の工程を受け持つセル生産がある。",
+      "explanation_zh": "例如，接到订单后才开始制造的订单生产，和预测需求提前做好的预测生产，区别在于开始生产的契机。按作业的组织方式，则有用传送带让各工序分工的流水线生产，以及由一人或少数几人负责全部工序的单元生产。",
+      "explanation_en": "For example, make-to-order production, which starts only after an order comes in, and make-to-stock production, which builds ahead based on forecast demand, differ in what triggers production. By how the work is organized, there is line production, where a conveyor carries work through divided processes, and cell production, where one person or a small team handles every process.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2011h23a-q019",
+        "2016h28a-q010",
+        "2012h24a-q012"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "JIT",
+      "term_zh": "JIT（准时制）",
+      "term_en": "JIT (Just-In-Time)",
+      "one_jp": "**JIT** (ジャストインタイム) は、各工程が**後工程の使う時期と量に合わせて**部品や製品を作り・届けることで、工程間の**在庫**を最小限にする生産方式である。",
+      "one_zh": "**JIT**（准时制，[[jp:ジャストインタイム]]）是让各工序**配合后工序使用的时间和数量**来生产和配送零部件或产品，从而把工序之间的**库存**压到最低的生产方式。",
+      "one_en": "**JIT** (just-in-time, [[jp:ジャストインタイム]]) is a production method in which each process makes and delivers parts or products **to match when and how much the next process uses**, keeping **inventory** between processes to a minimum.",
+      "detail_jp": "日本の自動車メーカーの生産方式で中心となってきた考え方で、原材料や部品の調達にも同じ考え方を当てはめる。工程の途中にある作りかけの品 (**仕掛品**) や部品の在庫が少ない分、置き場所や作りすぎのムダが減る。一方で、部品の供給が途切れるとラインがすぐに止まりやすい。",
+      "detail_zh": "这是日本汽车厂商生产方式中的核心理念，原材料和零部件的采购也套用同样的思路。工序中途的半成品（**在制品**）和零部件库存少，存放空间和过量生产的浪费也随之减少。另一方面，一旦零部件供应中断，生产线很容易马上停下来。",
+      "detail_en": "It has been the core idea behind the production systems of Japanese carmakers, and the same thinking is applied to sourcing raw materials and parts. With fewer half-finished items (**work in process**) and parts sitting between processes, wasted storage space and overproduction shrink. On the other hand, the line tends to stop right away if the parts supply is interrupted.",
+      "analogy_jp": "コンビニの棚に、売れた分だけの商品が一日に何度も届くイメージ。店の奥に大量の在庫を置かなくても、棚は空にならない。",
+      "analogy_zh": "就像便利店的货架，卖掉多少就补多少，一天送好几次货。店后面不用堆大量库存，货架也不会空。",
+      "analogy_en": "Think of a convenience store shelf restocked several times a day with exactly what sold. The shelf never goes empty, even without a big stockroom in the back.",
+      "hook_jp": "Just In Time は「発車ちょうどに駅に着く」感覚。早すぎれば在庫になり、遅すぎれば欠品になる。",
+      "hook_zh": "Just In Time 就像\"发车那一刻正好赶到车站\"。到得太早就成了库存，太晚就会缺货。",
+      "hook_en": "Just In Time is like reaching the platform right as the train leaves. Too early and you become inventory; too late and you have a stockout.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**JIT** では、どの工程も後工程からの要求を受けて作るので、工程と工程の間にたまる**仕掛品**や部品の在庫が減る。",
+          "text_zh": "在 **JIT** 中，每道工序都根据后工序的要求来生产，因此工序之间积压的**在制品**（[[jp:仕掛品]]）和零部件库存会减少。",
+          "text_en": "Under **JIT**, every process produces in response to requests from the next process, so the **work in process** ([[jp:仕掛品]]) and parts that pile up between processes decrease.",
+          "qids": [
+            "2013h25a-q025",
+            "2018h30a-q023",
+            "2024r06-q015"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**BTO** は在庫を部品の状態で持っておき、注文の仕様どおりに組み立てる受注生産の一種である。**JIT** は工程の間に在庫をためない流し方の考え方で、着目点が異なる。",
+          "text_zh": "**BTO**（接单装配）是先以零部件形态备货，再按订单规格组装的一种订单生产（[[jp:受注生産]]）。**JIT** 则是不在工序间积压库存的流转理念，两者着眼点不同。",
+          "text_en": "**BTO** (build to order) keeps stock as parts and assembles to the ordered specification, a type of make-to-order production ([[jp:受注生産]]). **JIT** is an idea about flowing work without stock building up between processes, so the two focus on different things."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2024r06-q015",
+        "2018h30a-q023",
+        "2009h21h-q028"
+      ],
+      "definition_jp": "JIT (ジャストインタイム) は、各工程が後工程の使う時期と量に合わせて部品や製品を作り・届けることで、工程間の在庫を最小限にする生産方式である。",
+      "definition_zh": "JIT（准时制，ジャストインタイム）是让各工序配合后工序使用的时间和数量来生产和配送零部件或产品，从而把工序之间的库存压到最低的生产方式。",
+      "definition_en": "JIT (just-in-time, ジャストインタイム) is a production method in which each process makes and delivers parts or products to match when and how much the next process uses, keeping inventory between processes to a minimum.",
+      "explanation_jp": "日本の自動車メーカーの生産方式で中心となってきた考え方で、原材料や部品の調達にも同じ考え方を当てはめる。工程の途中にある作りかけの品 (仕掛品) や部品の在庫が少ない分、置き場所や作りすぎのムダが減る。一方で、部品の供給が途切れるとラインがすぐに止まりやすい。",
+      "explanation_zh": "这是日本汽车厂商生产方式中的核心理念，原材料和零部件的采购也套用同样的思路。工序中途的半成品（在制品）和零部件库存少，存放空间和过量生产的浪费也随之减少。另一方面，一旦零部件供应中断，生产线很容易马上停下来。",
+      "explanation_en": "It has been the core idea behind the production systems of Japanese carmakers, and the same thinking is applied to sourcing raw materials and parts. With fewer half-finished items (work in process) and parts sitting between processes, wasted storage space and overproduction shrink. On the other hand, the line tends to stop right away if the parts supply is interrupted.",
+      "memory_hook_jp": "Just In Time は「発車ちょうどに駅に着く」感覚。早すぎれば在庫になり、遅すぎれば欠品になる。",
+      "memory_hook_zh": "Just In Time 就像\"发车那一刻正好赶到车站\"。到得太早就成了库存，太晚就会缺货。",
+      "memory_hook_en": "Just In Time is like reaching the platform right as the train leaves. Too early and you become inventory; too late and you have a stockout.",
+      "inline_quiz": [
+        "2024r06-q015",
+        "2018h30a-q023",
+        "2009h21h-q028"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "かんばん方式",
+      "term_zh": "看板方式",
+      "term_en": "Kanban method",
+      "one_jp": "**かんばん方式**は、部品の品番や数量を書いた**かんばん** (指示票) を後工程から前工程へ回し、使った分だけを作らせ・運ばせることで **JIT** を現場で実現する仕組みである。",
+      "one_zh": "**看板方式**（[[jp:かんばん方式]]）是把写有零部件编号和数量的**看板**（指示卡）从后工序传回前工序，只让前工序制造、搬运用掉的部分，从而在现场落实 **JIT** 的机制。",
+      "one_en": "The **kanban method** ([[jp:かんばん方式]]) puts **JIT** into practice on the shop floor by passing a **kanban** (instruction card) showing the part number and quantity from the downstream process back upstream, so only what was used gets made and moved.",
+      "detail_jp": "後工程が部品を使うとかんばんが外れ、それが前工程への「この分を補充する」という指示になる。前工程はかんばんの枚数を超えて作らないので、作りすぎが起きにくい。紙の札のほか、電子データで同じ指示を伝える形もある。",
+      "detail_zh": "后工序使用零部件时看板被取下，它就成了给前工序的\"补上这部分\"的指令。前工序不会超出看板的张数去生产，所以不容易过量生产。除了纸质卡片，也有用电子数据传递同样指令的形式。",
+      "detail_en": "When the downstream process uses parts, the kanban comes off and becomes the instruction to the upstream process to replace that amount. Because the upstream process never makes more than the number of kanban cards, overproduction is unlikely. Besides paper cards, the same instruction can also be sent as electronic data.",
+      "analogy_jp": "牛乳の空きパックを買い物メモ代わりにして、空いた本数だけ買い足すようなもの。空きが出なければ買い物には行かない。",
+      "analogy_zh": "就像把喝完的空牛奶盒当作购物清单，空了几盒就补买几盒。没有空盒就不去买。",
+      "analogy_en": "It is like using empty milk cartons as your shopping list and buying only as many as are empty. No empty cartons, no trip to the store.",
+      "hook_jp": "「看板」は店先で客に知らせる札。工場では、前工程に「この分を作って」と知らせる合図の役を受け持つ。",
+      "hook_zh": "\"看板\"本是店门口告知顾客的牌子。在工厂里，它充当提醒前工序\"请做这些\"的信号。",
+      "hook_en": "A kanban is originally a shop sign that tells customers something. In the factory it becomes the signal that tells the upstream process what to make.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**かんばん方式**は、後工程が使った分を前工程へ知らせて作らせる**引取り型**の仕組みで、JIT を実現する方式の一つである。",
+          "text_zh": "**看板方式**是把后工序用掉的量告知前工序、让其生产的**拉式**（[[jp:引取り型]]）机制，是实现 JIT（准时制）的方法之一。",
+          "text_en": "The **kanban method** is a **pull-type** ([[jp:引取り型]]) mechanism that tells the upstream process how much was used so it makes that amount, and it is one way of achieving JIT.",
+          "qids": [
+            "2021r03-q035"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "かんばんによる補充の指示は、社内の前工程に向けるだけでなく、部品を納める調達先にも向けて出される。",
+          "text_zh": "看板发出的补充指令不只针对公司内部的前工序，也会发给供应零部件的供应商。",
+          "text_en": "The replenishment instruction carried by kanban goes not only to upstream processes inside the company but also to the suppliers that deliver parts.",
+          "qids": [
+            "2021r03-q035",
+            "2023r05-q026"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "use",
+              "label": {
+                "jp": "後工程が部品を使う",
+                "zh": "后工序使用零部件",
+                "en": "Downstream process uses parts"
+              }
+            },
+            {
+              "id": "back",
+              "label": {
+                "jp": "外れたかんばんが前工程へ戻る",
+                "zh": "取下的看板回到前工序",
+                "en": "Removed kanban returns upstream"
+              }
+            },
+            {
+              "id": "make",
+              "label": {
+                "jp": "前工程がかんばんの分だけ作る",
+                "zh": "前工序只做看板所示的量",
+                "en": "Upstream makes only the kanban amount"
+              }
+            },
+            {
+              "id": "send",
+              "label": {
+                "jp": "かんばんを付けて後工程へ渡す",
+                "zh": "附上看板交给后工序",
+                "en": "Parts go downstream with the kanban"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "後工程が部品の箱を使い始めると、箱に付いていたかんばんが外れる。",
+            "caption_zh": "后工序开始使用一箱零部件时，箱上附着的看板就被取下。",
+            "caption_en": "When the downstream process starts using a box of parts, the kanban attached to the box comes off.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "外れたかんばんが前工程に届き、これが補充の指示になる。",
+            "caption_zh": "取下的看板送达前工序，这就成为补充的指令。",
+            "caption_en": "The removed kanban reaches the upstream process and serves as the instruction to replenish.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "前工程は届いたかんばんの枚数分だけを作り、それ以上は作らない。",
+            "caption_zh": "前工序只按收到的看板张数生产，不多做。",
+            "caption_en": "The upstream process makes only as many as the kanban cards it received, and no more.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "できた部品にかんばんを付けて渡し、同じ流れを繰り返す。",
+            "caption_zh": "给做好的零部件附上看板交出去，如此循环往复。",
+            "caption_en": "Finished parts go out with a kanban attached, and the same cycle repeats.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2021r03-q035",
+        "2023r05-q026"
+      ],
+      "definition_jp": "かんばん方式は、部品の品番や数量を書いたかんばん (指示票) を後工程から前工程へ回し、使った分だけを作らせ・運ばせることで JIT を現場で実現する仕組みである。",
+      "definition_zh": "看板方式（かんばん方式）是把写有零部件编号和数量的看板（指示卡）从后工序传回前工序，只让前工序制造、搬运用掉的部分，从而在现场落实 JIT 的机制。",
+      "definition_en": "The kanban method (かんばん方式) puts JIT into practice on the shop floor by passing a kanban (instruction card) showing the part number and quantity from the downstream process back upstream, so only what was used gets made and moved.",
+      "explanation_jp": "後工程が部品を使うとかんばんが外れ、それが前工程への「この分を補充する」という指示になる。前工程はかんばんの枚数を超えて作らないので、作りすぎが起きにくい。紙の札のほか、電子データで同じ指示を伝える形もある。",
+      "explanation_zh": "后工序使用零部件时看板被取下，它就成了给前工序的\"补上这部分\"的指令。前工序不会超出看板的张数去生产，所以不容易过量生产。除了纸质卡片，也有用电子数据传递同样指令的形式。",
+      "explanation_en": "When the downstream process uses parts, the kanban comes off and becomes the instruction to the upstream process to replace that amount. Because the upstream process never makes more than the number of kanban cards, overproduction is unlikely. Besides paper cards, the same instruction can also be sent as electronic data.",
+      "memory_hook_jp": "「看板」は店先で客に知らせる札。工場では、前工程に「この分を作って」と知らせる合図の役を受け持つ。",
+      "memory_hook_zh": "\"看板\"本是店门口告知顾客的牌子。在工厂里，它充当提醒前工序\"请做这些\"的信号。",
+      "memory_hook_en": "A kanban is originally a shop sign that tells customers something. In the factory it becomes the signal that tells the upstream process what to make.",
+      "inline_quiz": [
+        "2021r03-q035",
+        "2023r05-q026"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "リーン生産方式",
+      "term_zh": "精益生产方式",
+      "term_en": "Lean production",
+      "one_jp": "**リーン生産方式**は、トヨタ生産方式を欧米の研究者が整理し直した考え方で、価値を生まない**ムダ**を工程から取り除き、少ない資源で効率よく作ることを目指す。",
+      "one_zh": "**精益生产方式**（[[jp:リーン生産方式]]）是欧美研究者重新整理丰田生产方式而成的理念，目标是从工序中去除不产生价值的**浪费**，用较少的资源高效生产。",
+      "one_en": "**Lean production** ([[jp:リーン生産方式]]) is an approach in which Western researchers reorganized the Toyota Production System, aiming to remove **waste** that adds no value from processes and produce efficiently with fewer resources.",
+      "detail_jp": "lean は「ぜい肉のない」という意味の英語で、JIT やかんばん方式による在庫の削減を取り込んでいる。作りすぎや運搬、手待ちなどのムダを洗い出し、継続して改善する。業務改善では、能力以上の負荷である**ムリ**と、ばらつきである**ムラ**もあわせて見直す。",
+      "detail_zh": "lean 是英语\"没有赘肉\"的意思，它吸收了 JIT 和看板方式的减少库存做法。找出过量生产、搬运、等待等浪费，并持续改善。在业务改善中，还会一并审视超出能力的负荷**过度负荷**（[[jp:ムリ]]）和波动**不均衡**（[[jp:ムラ]]）。",
+      "detail_en": "Lean is an English word meaning without excess fat, and the approach takes in the inventory reduction of JIT and the kanban method. It identifies waste such as overproduction, transport, and waiting, and keeps improving. Business improvement also reviews **muri** ([[jp:ムリ]]), load beyond capacity, and **mura** ([[jp:ムラ]]), unevenness.",
+      "analogy_jp": "引っ越しの荷造りで、使わない物を処分し、運ぶ回数を減らし、段取りを整えていくように、身軽な状態を目指していく。",
+      "analogy_zh": "就像搬家打包时处理掉不用的东西、减少搬运次数、理顺安排一样，朝着轻装上阵的状态前进。",
+      "analogy_en": "Like packing for a move by getting rid of things you don't use, cutting the number of trips, and smoothing out the plan, it works toward traveling light.",
+      "hook_jp": "lean は「やせた」。在庫や手待ちという「ぜい肉」を落とした工場、と字義で覚える。",
+      "hook_zh": "lean 意为\"瘦\"。按字面记成去掉了库存和等待这些\"赘肉\"的工厂。",
+      "hook_en": "Lean means slim. Picture a factory that has trimmed the fat of inventory and idle waiting.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**リーン生産方式**の**ムダ**は、製品の価値を高めない作業や動作のことで、作りすぎや不要な運搬が例である。過大な負荷のムリやばらつきのムラとは別の観点である。",
+          "text_zh": "**精益生产方式**（[[jp:リーン生産方式]]）中的**浪费**（[[jp:ムダ]]）是指不提高产品价值的作业或动作，例如过量生产和不必要的搬运。它与过大负荷的[[jp:ムリ]]、波动的[[jp:ムラ]]是不同的角度。",
+          "text_en": "In **lean production** ([[jp:リーン生産方式]]), **muda** ([[jp:ムダ]]) means work or motion that does not raise a product's value, such as overproduction or unneeded transport. It is a separate angle from muri ([[jp:ムリ]]), excess load, and mura ([[jp:ムラ]]), unevenness.",
+          "qids": [
+            "2026r08-q031"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**リーン生産方式**は JIT やかんばん方式の考え方を取り込んでおり、部品を使う時期に合わせて手配して、仕掛品を適正な量に保つ。",
+          "text_zh": "**精益生产方式**吸收了 JIT 和看板方式（[[jp:かんばん方式]]）的理念，配合零部件的使用时间来安排采购，使在制品保持在合适的量。",
+          "text_en": "**Lean production** takes in the ideas of JIT and the kanban method ([[jp:かんばん方式]]), arranging parts to match when they are used and keeping work in process at a suitable level.",
+          "qids": [
+            "2019h31h-q015"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "lean",
+            "label": {
+              "jp": "業務改善で見直す観点",
+              "zh": "业务改善时审视的角度",
+              "en": "What to review in business improvement"
+            },
+            "children": [
+              {
+                "id": "muda",
+                "label": {
+                  "jp": "ムダ: 価値を生まない作業や動作",
+                  "zh": "浪费：不产生价值的作业或动作",
+                  "en": "Muda: work or motion that adds no value"
+                }
+              },
+              {
+                "id": "muri",
+                "label": {
+                  "jp": "ムリ: 能力を超える負荷",
+                  "zh": "过度负荷：超出能力的负担",
+                  "en": "Muri: load beyond capacity"
+                }
+              },
+              {
+                "id": "mura",
+                "label": {
+                  "jp": "ムラ: 負荷や出来ばえのばらつき",
+                  "zh": "不均衡：负荷或成果的波动",
+                  "en": "Mura: unevenness in load or results"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2026r08-q031",
+        "2019h31h-q015"
+      ],
+      "definition_jp": "リーン生産方式は、トヨタ生産方式を欧米の研究者が整理し直した考え方で、価値を生まないムダを工程から取り除き、少ない資源で効率よく作ることを目指す。",
+      "definition_zh": "精益生产方式（リーン生産方式）是欧美研究者重新整理丰田生产方式而成的理念，目标是从工序中去除不产生价值的浪费，用较少的资源高效生产。",
+      "definition_en": "Lean production (リーン生産方式) is an approach in which Western researchers reorganized the Toyota Production System, aiming to remove waste that adds no value from processes and produce efficiently with fewer resources.",
+      "explanation_jp": "lean は「ぜい肉のない」という意味の英語で、JIT やかんばん方式による在庫の削減を取り込んでいる。作りすぎや運搬、手待ちなどのムダを洗い出し、継続して改善する。業務改善では、能力以上の負荷であるムリと、ばらつきであるムラもあわせて見直す。",
+      "explanation_zh": "lean 是英语\"没有赘肉\"的意思，它吸收了 JIT 和看板方式的减少库存做法。找出过量生产、搬运、等待等浪费，并持续改善。在业务改善中，还会一并审视超出能力的负荷过度负荷（ムリ）和波动不均衡（ムラ）。",
+      "explanation_en": "Lean is an English word meaning without excess fat, and the approach takes in the inventory reduction of JIT and the kanban method. It identifies waste such as overproduction, transport, and waiting, and keeps improving. Business improvement also reviews muri (ムリ), load beyond capacity, and mura (ムラ), unevenness.",
+      "memory_hook_jp": "lean は「やせた」。在庫や手待ちという「ぜい肉」を落とした工場、と字義で覚える。",
+      "memory_hook_zh": "lean 意为\"瘦\"。按字面记成去掉了库存和等待这些\"赘肉\"的工厂。",
+      "memory_hook_en": "Lean means slim. Picture a factory that has trimmed the fat of inventory and idle waiting.",
+      "inline_quiz": [
+        "2026r08-q031",
+        "2019h31h-q015"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "MRP",
+      "term_zh": "MRP（物料需求计划）",
+      "term_en": "MRP (Material Requirements Planning)",
+      "one_jp": "**MRP** (資材所要量計画) は、製品の**生産計画**と**部品表**をもとに、必要な部品や資材の量と発注の時期を計算する手法である。",
+      "one_zh": "**MRP**（物料需求计划，[[jp:資材所要量計画]]）是根据产品的**生产计划**和**物料清单**，计算所需零部件和物料的数量及下单时间的方法。",
+      "one_en": "**MRP** (material requirements planning, [[jp:資材所要量計画]]) is a method that calculates the quantities of parts and materials needed and when to order them, based on the product's **production plan** and **bill of materials**.",
+      "detail_jp": "**部品表**は、製品 1 個がどの部品を何個使うかを階層で表した表である。MRP では製品の必要数に部品表の個数を掛けて**総所要量**を出し、使える在庫を差し引いて**正味所要量**を求める。さらに、調達や加工にかかる**リードタイム**の分だけさかのぼって、発注や着手の時期を決める。",
+      "detail_zh": "**物料清单**是用层级表示 1 个产品使用哪些零部件、各用几个的表。MRP 用产品需要数乘以物料清单上的个数得出**总需求量**，再减去可用库存求出**净需求量**。然后按采购或加工所需的**提前期**倒推，确定下单或开工的时间。",
+      "detail_en": "A **bill of materials** is a table that shows, in levels, which parts one unit of a product uses and how many of each. MRP multiplies the number of products needed by the quantities in the bill of materials to get the **gross requirement**, then subtracts usable stock to find the **net requirement**. It then counts back by the **lead time** needed for procurement or processing to set when to order or start work.",
+      "analogy_jp": "30 人分の弁当を金曜に作ると決めたら、1 人分の材料表から米や具材の量を割り出し、冷蔵庫にある分を引いて、届くまでの日数を見て注文日を決めるようなもの。",
+      "analogy_zh": "就像决定周五做 30 人份便当后，根据 1 人份的材料表算出米和配菜的量，减去冰箱里已有的，再看送货要几天来决定下单日。",
+      "analogy_en": "Say you decide to make boxed lunches for 30 people on Friday. You work out the rice and fillings from a one-serving ingredient list, subtract what is already in the fridge, and pick the order date from how many days delivery takes.",
+      "hook_jp": "Material (資材)・Requirements (所要量)・Planning (計画) の頭文字で、日本語名はその直訳になっている。",
+      "hook_zh": "取 Material（物料）・Requirements（需求量）・Planning（计划）的首字母，日语名称就是它的直译。",
+      "hook_en": "The letters stand for Material, Requirements, and Planning, and the Japanese name is a direct translation of those words.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**MRP** は、製品の納期と数量から構成部品の必要量を割り出し、部品在庫を過不足のない量に保つための仕組みである。",
+          "text_zh": "**MRP**（[[jp:資材所要量計画]]）根据产品的交货期和数量算出构成零部件的需要量，是让零部件库存保持不多不少的机制。",
+          "text_en": "**MRP** ([[jp:資材所要量計画]]) works out how many component parts are needed from a product's due date and quantity, keeping parts stock at neither too much nor too little.",
+          "qids": [
+            "2014h26a-q015"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**正味所要量**は、総所要量から使える在庫を引いた量である。部品が何段にも重なるときは、上の段の部品の在庫を差し引いてから下の段の所要量を計算する。",
+          "text_zh": "**净需求量**（[[jp:正味所要量]]）是从总需求量（[[jp:総所要量]]）中减去可用库存后的量。零部件有多层结构时，要先减去上层零部件的库存，再计算下层的需求量。",
+          "text_en": "The **net requirement** ([[jp:正味所要量]]) is the gross requirement ([[jp:総所要量]]) minus usable stock. When parts are stacked in several levels, subtract the upper-level part's stock first and then calculate the lower level's requirement.",
+          "qids": [
+            "2009h21h-q023",
+            "2018h30h-q015"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "部品の手配は、使う時期から**リードタイム**の分だけさかのぼって行う。並行して手配できる部品があるとき、全体にかかる期間は最も長い経路で決まる。",
+          "text_zh": "零部件的安排要从使用时间按**提前期**（[[jp:リードタイム]]）倒推进行。有可以并行安排的零部件时，整体所需的期间由最长的路径决定。",
+          "text_en": "Parts are arranged by counting back from when they are used by the **lead time** ([[jp:リードタイム]]). When some parts can be arranged in parallel, the total time needed is set by the longest path.",
+          "qids": [
+            "2010h22a-q014",
+            "2023r05-q033"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "plan",
+              "label": {
+                "jp": "生産計画 (製品と数量)",
+                "zh": "生产计划（产品与数量）",
+                "en": "Production plan (product and quantity)"
+              }
+            },
+            {
+              "id": "gross",
+              "label": {
+                "jp": "部品表で総所要量を出す",
+                "zh": "用物料清单算出总需求量",
+                "en": "Gross requirement from the bill of materials"
+              }
+            },
+            {
+              "id": "net",
+              "label": {
+                "jp": "在庫を引いて正味所要量",
+                "zh": "减去库存得净需求量",
+                "en": "Subtract stock for net requirement"
+              }
+            },
+            {
+              "id": "order",
+              "label": {
+                "jp": "リードタイム分さかのぼって発注",
+                "zh": "按提前期倒推下单",
+                "en": "Order earlier by the lead time"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "例えば、製品 X を 8 個作る計画を立てる。",
+            "caption_zh": "例如，制定生产 8 个产品 X 的计划。",
+            "caption_en": "Say the plan is to make 8 units of product X.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "X 1 個に部品 Y が 4 個要るので、Y の総所要量は 32 個になる。",
+            "caption_zh": "每个 X 需要 4 个零件 Y，所以 Y 的总需求量是 32 个。",
+            "caption_en": "Each X needs 4 of part Y, so the gross requirement for Y is 32.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "Y の在庫が 6 個あれば、正味所要量は 32 − 6 = 26 個になる。",
+            "caption_zh": "若 Y 有 6 个库存，净需求量就是 32 − 6 = 26 个。",
+            "caption_en": "With 6 of Y in stock, the net requirement is 32 − 6 = 26.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "Y の調達に 2 週かかるなら、使う週の 2 週前に 26 個を発注する。",
+            "caption_zh": "若采购 Y 需要 2 周，就在使用那周的 2 周前订购 26 个。",
+            "caption_en": "If Y takes 2 weeks to procure, order 26 two weeks before the week they are used.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2014h26a-q015",
+        "2009h21h-q023",
+        "2018h30h-q015"
+      ],
+      "definition_jp": "MRP (資材所要量計画) は、製品の生産計画と部品表をもとに、必要な部品や資材の量と発注の時期を計算する手法である。",
+      "definition_zh": "MRP（物料需求计划，資材所要量計画）是根据产品的生产计划和物料清单，计算所需零部件和物料的数量及下单时间的方法。",
+      "definition_en": "MRP (material requirements planning, 資材所要量計画) is a method that calculates the quantities of parts and materials needed and when to order them, based on the product's production plan and bill of materials.",
+      "explanation_jp": "部品表は、製品 1 個がどの部品を何個使うかを階層で表した表である。MRP では製品の必要数に部品表の個数を掛けて総所要量を出し、使える在庫を差し引いて正味所要量を求める。さらに、調達や加工にかかるリードタイムの分だけさかのぼって、発注や着手の時期を決める。",
+      "explanation_zh": "物料清单是用层级表示 1 个产品使用哪些零部件、各用几个的表。MRP 用产品需要数乘以物料清单上的个数得出总需求量，再减去可用库存求出净需求量。然后按采购或加工所需的提前期倒推，确定下单或开工的时间。",
+      "explanation_en": "A bill of materials is a table that shows, in levels, which parts one unit of a product uses and how many of each. MRP multiplies the number of products needed by the quantities in the bill of materials to get the gross requirement, then subtracts usable stock to find the net requirement. It then counts back by the lead time needed for procurement or processing to set when to order or start work.",
+      "memory_hook_jp": "Material (資材)・Requirements (所要量)・Planning (計画) の頭文字で、日本語名はその直訳になっている。",
+      "memory_hook_zh": "取 Material（物料）・Requirements（需求量）・Planning（计划）的首字母，日语名称就是它的直译。",
+      "memory_hook_en": "The letters stand for Material, Requirements, and Planning, and the Japanese name is a direct translation of those words.",
+      "inline_quiz": [
+        "2014h26a-q015",
+        "2009h21h-q023",
+        "2018h30h-q015"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "FMS",
+      "term_zh": "FMS（柔性生产系统）",
+      "term_en": "FMS (Flexible Manufacturing System)",
+      "one_jp": "**FMS** (フレキシブル生産システム) は、NC 工作機械やロボット、無人搬送車などをコンピュータでまとめて制御し、**多品種少量生産**に柔軟に対応できるようにした自動化の仕組みである。",
+      "one_zh": "**FMS**（柔性生产系统，[[jp:フレキシブル生産システム]]）是用计算机统一控制 NC 机床、机器人、无人搬运车等，使其能灵活应对**多品种小批量生产**的自动化机制。",
+      "one_en": "An **FMS** (flexible manufacturing system, [[jp:フレキシブル生産システム]]) is an automated setup that uses computers to control NC machine tools, robots, automated guided vehicles, and the like together, so it can flexibly handle **high-mix, low-volume production**.",
+      "detail_jp": "製品が切り替わっても、加工プログラムや工具の交換を自動で行い、ラインを大きく組み替えずに次の製品を作れる。加工物の搬送も無人搬送車やロボットが受け持つ。",
+      "detail_zh": "即使产品切换，也能自动更换加工程序和工具，不必大幅重组生产线就能制造下一种产品。工件的搬运也由无人搬运车和机器人负责。",
+      "detail_en": "Even when the product changes, machining programs and tools are swapped automatically, so the next product can be made without a major rebuild of the line. Automated guided vehicles and robots also handle moving the workpieces.",
+      "analogy_jp": "焼く・煮る・蒸すをボタン一つで切り替えられる調理家電のように、機械を入れ替えずに作る物を変えられる。",
+      "analogy_zh": "就像按一个键就能在烤、煮、蒸之间切换的厨房电器，不用换机器就能改变要做的东西。",
+      "analogy_en": "Like a kitchen appliance that switches between baking, boiling, and steaming at the press of a button, it changes what it makes without swapping machines.",
+      "hook_jp": "F は Flexible で、フレックス勤務の「フレックス」と同じく、決まった型に縛られないこと。",
+      "hook_zh": "F 是 Flexible，和\"弹性工作制\"的\"弹性\"一样，意思是不被固定模式束缚。",
+      "hook_en": "F stands for Flexible, as in flextime at work: not tied to one fixed pattern.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**FMS** は加工や組立てを行う**製造**の工程を自動化する仕組みで、導入による省力化や効率化はこの工程に表れる。",
+          "text_zh": "**FMS** 是把进行加工和组装的**制造**（[[jp:製造]]）工序自动化的机制，引入后带来的省力化和效率提升体现在这一工序上。",
+          "text_en": "An **FMS** automates the **manufacturing** ([[jp:製造]]) process of machining and assembly, and the labor savings and efficiency gains from adopting it show up in that process.",
+          "qids": [
+            "2018h30h-q025"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "専用の自動化ライン",
+            "zh": "专用自动化生产线",
+            "en": "Dedicated automated line"
+          },
+          "b": {
+            "jp": "FMS",
+            "zh": "FMS",
+            "en": "FMS"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "向いている生産",
+                "zh": "适合的生产",
+                "en": "Suited to"
+              },
+              "a": {
+                "jp": "同じ製品を大量に作る",
+                "zh": "大量制造同一产品",
+                "en": "Making one product in large volumes"
+              },
+              "b": {
+                "jp": "多くの品種を少しずつ作る",
+                "zh": "多品种、每种少量地制造",
+                "en": "Making many product types a little at a time"
+              }
+            },
+            {
+              "label": {
+                "jp": "品種の切替え",
+                "zh": "品种切换",
+                "en": "Switching product types"
+              },
+              "a": {
+                "jp": "ラインの組替えが必要",
+                "zh": "需要重组生产线",
+                "en": "Requires rebuilding the line"
+              },
+              "b": {
+                "jp": "プログラムの切替えで対応",
+                "zh": "切换程序即可应对",
+                "en": "Handled by switching programs"
+              },
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2018h30h-q025",
+        "2025r07-q011"
+      ],
+      "definition_jp": "FMS (フレキシブル生産システム) は、NC 工作機械やロボット、無人搬送車などをコンピュータでまとめて制御し、多品種少量生産に柔軟に対応できるようにした自動化の仕組みである。",
+      "definition_zh": "FMS（柔性生产系统，フレキシブル生産システム）是用计算机统一控制 NC 机床、机器人、无人搬运车等，使其能灵活应对多品种小批量生产的自动化机制。",
+      "definition_en": "An FMS (flexible manufacturing system, フレキシブル生産システム) is an automated setup that uses computers to control NC machine tools, robots, automated guided vehicles, and the like together, so it can flexibly handle high-mix, low-volume production.",
+      "explanation_jp": "製品が切り替わっても、加工プログラムや工具の交換を自動で行い、ラインを大きく組み替えずに次の製品を作れる。加工物の搬送も無人搬送車やロボットが受け持つ。",
+      "explanation_zh": "即使产品切换，也能自动更换加工程序和工具，不必大幅重组生产线就能制造下一种产品。工件的搬运也由无人搬运车和机器人负责。",
+      "explanation_en": "Even when the product changes, machining programs and tools are swapped automatically, so the next product can be made without a major rebuild of the line. Automated guided vehicles and robots also handle moving the workpieces.",
+      "memory_hook_jp": "F は Flexible で、フレックス勤務の「フレックス」と同じく、決まった型に縛られないこと。",
+      "memory_hook_zh": "F 是 Flexible，和\"弹性工作制\"的\"弹性\"一样，意思是不被固定模式束缚。",
+      "memory_hook_en": "F stands for Flexible, as in flextime at work: not tied to one fixed pattern.",
+      "inline_quiz": [
+        "2018h30h-q025",
+        "2025r07-q011"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "JIT",
+      "b": "かんばん方式",
+      "rows": [
+        {
+          "label_jp": "位置づけ",
+          "label_zh": "定位",
+          "label_en": "Role",
+          "a_jp": "在庫をためずに作る考え方",
+          "a_zh": "不积压库存地生产的理念",
+          "a_en": "Idea of producing without building stock",
+          "b_jp": "その考え方を現場で動かす手段",
+          "b_zh": "在现场推行该理念的手段",
+          "b_en": "Means of running that idea on the floor",
+          "key": true
+        },
+        {
+          "label_jp": "伝えるもの",
+          "label_zh": "传递的内容",
+          "label_en": "What is conveyed",
+          "a_jp": "使う時期と量に合わせるという方針",
+          "a_zh": "配合使用时间和数量的方针",
+          "a_en": "Policy of matching when and how much is used",
+          "b_jp": "品番と数量を書いた指示票",
+          "b_zh": "写有编号和数量的指示卡",
+          "b_en": "Instruction card with part number and quantity",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "JIT",
+      "b": "MRP",
+      "rows": [
+        {
+          "label_jp": "生産を動かすきっかけ",
+          "label_zh": "启动生产的契机",
+          "label_en": "What drives production",
+          "a_jp": "後工程が実際に使った分",
+          "a_zh": "后工序实际用掉的量",
+          "a_en": "What the next process actually used",
+          "b_jp": "前もって立てた生産計画",
+          "b_zh": "事先制定的生产计划",
+          "b_en": "Production plan made in advance",
+          "key": true
+        },
+        {
+          "label_jp": "型",
+          "label_zh": "类型",
+          "label_en": "Type",
+          "a_jp": "後工程が引き取るプル型",
+          "a_zh": "后工序领取的拉式",
+          "a_en": "Pull type, drawn by the next process",
+          "b_jp": "計画に沿って送り出すプッシュ型",
+          "b_zh": "按计划推送出去的推式",
+          "b_en": "Push type, sent out according to plan",
+          "key": false
+        },
+        {
+          "label_jp": "弱いところ",
+          "label_zh": "薄弱点",
+          "label_en": "Weak spot",
+          "a_jp": "部品の供給が止まるとラインも止まる",
+          "a_zh": "零部件供应一停，生产线也停",
+          "a_en": "If parts supply stops, the line stops too",
+          "b_jp": "計画と実際の需要がずれると在庫が過不足になる",
+          "b_zh": "计划与实际需求有偏差时，库存会过多或不足",
+          "b_en": "If the plan and actual demand diverge, stock ends up too high or too low",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**生産方式**は作り方の型の総称で、作り始めのきっかけや作業の組み方など、観点ごとに種類が分かれる。",
+    "**かんばん方式**では、前工程はかんばんの枚数分しか作らないので、作りすぎが起きにくい。",
+    "**リーン生産方式**は、価値を生まないムダを洗い出して取り除き続ける改善の考え方である。",
+    "**MRP** の正味所要量は総所要量から使える在庫を引いて求め、発注はリードタイムの分だけさかのぼって行う。",
+    "**FMS** はコンピュータ制御で品種の切替えを容易にし、多品種少量の生産を自動化する。"
+  ],
+  "key_points_zh": [
+    "**生产方式**是制造模式的总称，按开始生产的契机、作业的组织方式等角度分为不同种类。",
+    "在**看板方式**中，前工序只按看板张数生产，因此不容易过量生产。",
+    "**精益生产方式**是找出并持续消除不产生价值的浪费的改善理念。",
+    "**MRP** 的净需求量由总需求量减去可用库存求得，下单则按提前期倒推进行。",
+    "**FMS** 通过计算机控制使品种切换变得容易，实现多品种小批量生产的自动化。"
+  ],
+  "key_points_en": [
+    "A **production method** is the umbrella term for patterns of making things, and its types divide by angles such as what triggers production and how the work is organized.",
+    "Under the **kanban method**, the upstream process makes only as many as there are kanban cards, so overproduction is unlikely.",
+    "**Lean production** is an improvement approach that keeps finding and removing waste that adds no value.",
+    "In **MRP**, the net requirement is the gross requirement minus usable stock, and orders are placed by counting back the lead time.",
+    "An **FMS** uses computer control to make switching product types easy and automates high-mix, low-volume production."
+  ],
+  "overview": {
+    "intro_jp": "作り始めのきっかけや作業の組み方といった観点で、生産方式の種類を見分けられる。JIT とかんばん方式の関係を、補充の指示が後工程から前工程へ流れる順に沿って説明できる。MRP の手順に沿って、部品の正味所要量と発注の時期を計算できる。",
+    "intro_zh": "能够从开始生产的契机、作业的组织方式等角度，区分各种生产方式（生産方式）。能够沿着补充指令从后工序流向前工序的顺序，说明 JIT 与看板方式（かんばん方式）的关系。能够按照 MRP 的步骤，计算零部件的净需求量和下单时间。",
+    "intro_en": "Tell apart types of production method (生産方式) by what triggers production and how the work is organized. Explain how JIT and the kanban method (かんばん方式) relate, following the replenishment instruction as it travels from the downstream process back upstream. Follow the MRP procedure to calculate a part's net requirement and when to place the order.",
+    "freq_badge": "標準",
+    "est_minutes": 38
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "生産方式: 生産方式といえばプル型とプッシュ型を束ねる作り方の総称",
-      "JIT: JITといえば必要なものを必要なときに必要なだけ",
-      "かんばん方式: かんばん方式といえばJITを実現する指示票の仕組み",
-      "リーン生産方式: リーン生産方式といえばあらゆるムダの排除",
-      "MRP: MRPといえば計画から資材の所要量を逆算(プッシュ型)",
-      "FMS: FMSといえば多品種少量に対応する柔軟な自動化システム"
-    ],
     "key_points_jp": [
-      "生産方式は、後工程の必要量に合わせて作る「プル型(JIT・かんばん・リーン)」と、計画に基づき前もって作る「プッシュ型(MRP)」に大別される。",
-      "JITは「必要なものを必要なときに必要なだけ」作る考え方で、それを現場で実現する手段がかんばん方式である。",
-      "リーン生産方式はトヨタ生産方式を体系化した、あらゆるムダの排除を目指す生産思想で、JIT・かんばんを含む広い枠組み。",
-      "MRPは生産計画と部品表から資材の所要量・発注時期を逆算するプッシュ型の手法で、引取り型のJITと対比される。",
-      "FMSは多品種少量生産に柔軟に対応する自動化生産システムである。"
+      "生産方式は作り方の型の総称で、作り始めのきっかけや作業の組み方など、観点ごとに種類が分かれる。",
+      "かんばん方式では、前工程はかんばんの枚数分しか作らないので、作りすぎが起きにくい。",
+      "リーン生産方式は、価値を生まないムダを洗い出して取り除き続ける改善の考え方である。",
+      "MRP の正味所要量は総所要量から使える在庫を引いて求め、発注はリードタイムの分だけさかのぼって行う。",
+      "FMS はコンピュータ制御で品種の切替えを容易にし、多品種少量の生産を自動化する。"
     ],
     "key_points_zh": [
-      "生产方式大致可分为：按后工序所需数量来生产的「拉动式（JIT、看板、精益）」，以及基于计划提前生产的「推动式（MRP）」。",
-      "JIT 是「在需要的时候、按需要的数量、生产所需物品」的思想，而在现场实现它的手段就是看板方式。",
-      "精益生产方式是将丰田生产方式体系化、旨在排除一切浪费的生产思想，是包含 JIT、看板在内的广义框架。",
-      "MRP 是从生产计划和物料清单倒推物料需求量与订货时机的推动式方法，与领取式的 JIT 形成对比。",
-      "FMS 是灵活应对多品种小批量生产的自动化生产系统。"
+      "生产方式是制造模式的总称，按开始生产的契机、作业的组织方式等角度分为不同种类。",
+      "在看板方式中，前工序只按看板张数生产，因此不容易过量生产。",
+      "精益生产方式是找出并持续消除不产生价值的浪费的改善理念。",
+      "MRP 的净需求量由总需求量减去可用库存求得，下单则按提前期倒推进行。",
+      "FMS 通过计算机控制使品种切换变得容易，实现多品种小批量生产的自动化。"
     ],
     "key_points_en": [
-      "Production methods are broadly divided into the \"pull type (JIT, Kanban, Lean),\" which makes goods according to the quantity needed by the downstream process, and the \"push type (MRP),\" which produces in advance based on a plan.",
-      "JIT is the idea of making \"what is needed, when it is needed, in the amount needed,\" and the means of realizing it on the shop floor is the Kanban method.",
-      "Lean production is a production philosophy that systematizes the Toyota Production System and aims to eliminate all waste; it is a broad framework that includes JIT and Kanban.",
-      "MRP is a push-type method that works backward from the production plan and the bill of materials to material requirements and ordering timing, contrasted with the withdrawal-type JIT.",
-      "FMS is an automated production system that flexibly handles high-mix low-volume production."
+      "A production method is the umbrella term for patterns of making things, and its types divide by angles such as what triggers production and how the work is organized.",
+      "Under the kanban method, the upstream process makes only as many as there are kanban cards, so overproduction is unlikely.",
+      "Lean production is an improvement approach that keeps finding and removing waste that adds no value.",
+      "In MRP, the net requirement is the gross requirement minus usable stock, and orders are placed by counting back the lead time.",
+      "An FMS uses computer control to make switching product types easy and automates high-mix, low-volume production."
+    ],
+    "memory_hooks_jp": [
+      "JIT: Just In Time は「発車ちょうどに駅に着く」感覚。早すぎれば在庫になり、遅すぎれば欠品になる。",
+      "かんばん方式: 「看板」は店先で客に知らせる札。工場では、前工程に「この分を作って」と知らせる合図の役を受け持つ。",
+      "リーン生産方式: lean は「やせた」。在庫や手待ちという「ぜい肉」を落とした工場、と字義で覚える。",
+      "MRP: Material (資材)・Requirements (所要量)・Planning (計画) の頭文字で、日本語名はその直訳になっている。",
+      "FMS: F は Flexible で、フレックス勤務の「フレックス」と同じく、決まった型に縛られないこと。"
     ],
     "memory_hooks_zh": [
-      "生产方式：说到生产方式，就是把拉动式和推动式统括起来的制造方法总称",
-      "JIT：说到 JIT，就是在需要的时候、按需要的数量、生产所需物品",
-      "看板方式：说到看板方式，就是实现 JIT 的指示票机制",
-      "精益生产方式：说到精益生产方式，就是排除一切浪费",
-      "MRP：说到 MRP，就是从计划倒推物料的需求量（推动式）",
-      "FMS：说到 FMS，就是应对多品种小批量的柔性自动化系统"
+      "JIT（准时制）：Just In Time 就像\"发车那一刻正好赶到车站\"。到得太早就成了库存，太晚就会缺货。",
+      "看板方式：\"看板\"本是店门口告知顾客的牌子。在工厂里，它充当提醒前工序\"请做这些\"的信号。",
+      "精益生产方式：lean 意为\"瘦\"。按字面记成去掉了库存和等待这些\"赘肉\"的工厂。",
+      "MRP（物料需求计划）：取 Material（物料）・Requirements（需求量）・Planning（计划）的首字母，日语名称就是它的直译。",
+      "FMS（柔性生产系统）：F 是 Flexible，和\"弹性工作制\"的\"弹性\"一样，意思是不被固定模式束缚。"
     ],
     "memory_hooks_en": [
-      "Production method: Production method → the umbrella term covering both pull type and push type ways of making things",
-      "JIT: JIT → what is needed, when it is needed, in the amount needed",
-      "Kanban method: Kanban method → the instruction-card mechanism that realizes JIT",
-      "Lean production: Lean production → eliminate all waste",
-      "MRP: MRP → work backward from the plan to material requirements (push type)",
-      "FMS: FMS → the flexible automated system that handles high-mix low-volume production"
+      "JIT (Just-In-Time): Just In Time is like reaching the platform right as the train leaves. Too early and you become inventory; too late and you have a stockout.",
+      "Kanban method: A kanban is originally a shop sign that tells customers something. In the factory it becomes the signal that tells the upstream process what to make.",
+      "Lean production: Lean means slim. Picture a factory that has trimmed the fat of inventory and idle waiting.",
+      "MRP (Material Requirements Planning): The letters stand for Material, Requirements, and Planning, and the Japanese name is a direct translation of those words.",
+      "FMS (Flexible Manufacturing System): F stands for Flexible, as in flextime at work: not tied to one fixed pattern."
     ]
   },
   "challenge_questions": [
-    "2014h26a-q015",
-    "2016h28a-q010",
-    "2018h30h-q025",
-    "2021r03-q035",
-    "2026r08-q031"
+    "2013h25a-q025",
+    "2010h22a-q014",
+    "2023r05-q033",
+    "2013h25h-q015",
+    "2011h23tokubetsu-q031"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "生产管理的方式与系统",
-  "title_en": "Production Management Methods and Systems",
-  "unit_summary_zh": "理解制造与生产阶段所采用的代表性生产方式（JIT、看板、精益、MRP、FMS）的特征及其相互关系。",
-  "unit_summary_en": "Understand the characteristics and interrelationships of representative production methods used in the manufacturing and production phase (JIT, Kanban, Lean, MRP, FMS)."
+  }
 }
