@@ -1,192 +1,934 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-14-37-u05",
   "topic_id": "technology-14-37",
   "category": "technology",
   "title_jp": "探索と整列のアルゴリズム",
+  "title_zh": "查找与排序算法",
+  "title_en": "Search and Sorting Algorithms",
   "unit_summary_jp": "線形探索法・2分探索法の探索アルゴリズムと、選択ソート・バブルソート・クイックソートの整列アルゴリズムを理解する。",
+  "unit_summary_zh": "理解线性查找法、二分查找法这两种查找算法，以及选择排序、冒泡排序、快速排序这三种排序算法。",
+  "unit_summary_en": "Understand the search algorithms (linear search and binary search) and the sorting algorithms (selection sort, bubble sort, and quick sort).",
   "order_in_topic": 5,
   "prerequisites": [
     "technology-14-37-u01",
     "technology-14-37-u04"
   ],
-  "overview": {
-    "intro_jp": "このユニットでは、データの中から目的の値を見つける「探索」と、データを順番に並べ替える「整列(ソート)」の代表的なアルゴリズムを学ぶ。線形探索法・2分探索法、選択ソート・バブルソート・クイックソートを、素朴な手法から効率的な手法へと比較しながら理解する。処理の仕組みと速さ(計算量)の違いはITパスポートで頻出する重要分野である。",
-    "freq_badge": "標準",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习从数据中找出目标值的「查找」与将数据按顺序重新排列的「排序」的代表性算法。通过将朴素的方法与高效的方法相对比，理解线性查找法、二分查找法以及选择排序、冒泡排序、快速排序。处理机制与速度（计算量）的差异是 IT 护照考试中频繁出现的重要领域。",
-    "intro_en": "In this unit, you will learn representative algorithms for \"searching\" (finding a target value within data) and \"sorting\" (rearranging data in order). You will understand linear search, binary search, selection sort, bubble sort, and quick sort by comparing naive approaches with efficient ones. The differences in how they work and in their speed (computational complexity) form an important field that appears frequently on the IT Passport exam."
-  },
+  "goals_jp": [
+    "**線形探索法**と**2分探索法**を、前提となるデータの並びと比較回数の増え方で区別できる。",
+    "**選択ソート**と**バブルソート**で、並べ替えの途中の並びの変化を小さなデータで追える。",
+    "**クイックソート**が基準値で組を分け、同じ手順を繰り返して並べる流れを説明できる。"
+  ],
+  "goals_zh": [
+    "能从数据须满足的排列前提和比较次数的增长方式，区分**线性查找法**与**二分查找法**。",
+    "能用少量数据，逐步跟踪**选择排序**和**冒泡排序**在排序过程中数据排列的变化。",
+    "能说明**快速排序**如何用基准值把数据分组，并反复执行同一步骤完成排序。"
+  ],
+  "goals_en": [
+    "Tell **linear search** from **binary search** by the ordering each assumes and by how the number of comparisons grows.",
+    "Trace, on a small data set, how the order changes partway through a **selection sort** and a **bubble sort**.",
+    "Explain how **quick sort** splits data into groups around a pivot and repeats the same steps to finish sorting."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "1 回の操作",
+    "比較回数の目安"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "每次的操作",
+    "比较次数的大致规模"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "One operation",
+    "Rough number of comparisons"
+  ],
+  "overview_rows": [
+    {
+      "term": "線形探索法",
+      "one_line_jp": "先頭から 1 つずつ目的の値と比べる",
+      "one_line_zh": "从开头起逐个与目标值比较",
+      "one_line_en": "Compares each item with the target, one by one from the start",
+      "extra_jp": [
+        "探索",
+        "次の 1 件と比べる",
+        "件数に比例"
+      ],
+      "extra_zh": [
+        "查找",
+        "与下一个数据比较",
+        "与数据个数成正比"
+      ],
+      "extra_en": [
+        "Search",
+        "Compare with the next item",
+        "Proportional to the number of items"
+      ]
+    },
+    {
+      "term": "2分探索法",
+      "one_line_jp": "昇順か降順に並んだデータで範囲を半分ずつ絞る",
+      "one_line_zh": "在按升序或降序排好的数据中，每次把范围缩小一半",
+      "one_line_en": "Halves the range each time, on data in ascending or descending order",
+      "extra_jp": [
+        "探索",
+        "範囲の中央と比べて片側を捨てる",
+        "件数が 2 倍でも 1 回ほど増えるだけ"
+      ],
+      "extra_zh": [
+        "查找",
+        "与范围中间的值比较，舍去一侧",
+        "数据个数翻倍也只多 1 次左右"
+      ],
+      "extra_en": [
+        "Search",
+        "Compare with the middle of the range and drop one side",
+        "Only about 1 more even when the items double"
+      ]
+    },
+    {
+      "term": "選択ソート",
+      "one_line_jp": "残りの範囲から最小値を選んで端へ移す",
+      "one_line_zh": "从剩余范围中选出最小值，移到一端",
+      "one_line_en": "Picks the smallest value in the remaining range and moves it to one end of that range",
+      "extra_jp": [
+        "整列",
+        "最小値を探し終えてから、必要なら 1 回交換",
+        "件数の 2 乗に比例"
+      ],
+      "extra_zh": [
+        "排序",
+        "找完最小值后，必要时交换 1 次",
+        "与数据个数的平方成正比"
+      ],
+      "extra_en": [
+        "Sort",
+        "Finish finding the minimum, then swap once if needed",
+        "Proportional to the square of the number of items"
+      ]
+    },
+    {
+      "term": "バブルソート",
+      "one_line_jp": "隣り合う 2 つを比べ、逆なら入れ替える",
+      "one_line_zh": "比较相邻的两个值，顺序相反就交换",
+      "one_line_en": "Compares two neighbours and swaps them if they are out of order",
+      "extra_jp": [
+        "整列",
+        "隣同士を比べてその場で交換",
+        "件数の 2 乗に比例"
+      ],
+      "extra_zh": [
+        "排序",
+        "相邻两值比较后当场交换",
+        "与数据个数的平方成正比"
+      ],
+      "extra_en": [
+        "Sort",
+        "Compare neighbours and swap on the spot",
+        "Proportional to the square of the number of items"
+      ]
+    },
+    {
+      "term": "クイックソート",
+      "one_line_jp": "基準値で大小の組に分け、各組でも繰り返す",
+      "one_line_zh": "按基准值分成较小组和较大组，再在各组内重复",
+      "one_line_en": "Splits data into smaller and larger groups around a pivot, then repeats within each group",
+      "extra_jp": [
+        "整列",
+        "基準値より小さい組と大きい組に分ける",
+        "平均では件数の 2 乗型の方法より少ない"
+      ],
+      "extra_zh": [
+        "排序",
+        "分成比基准值小的组和大的组",
+        "平均比“平方型”方法少"
+      ],
+      "extra_en": [
+        "Sort",
+        "Split into a group below the pivot and a group above it",
+        "On average fewer than the square-type methods"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "線形探索法",
-      "definition_jp": "データの先頭から順番に1つずつ調べ、目的の値を探す最も素朴な探索法。",
-      "explanation_jp": "線形探索法は、配列やリストの先頭から末尾に向かって1つずつ値を照合し、目的のデータが見つかれば終了する方法です。逐次探索とも呼ばれます。\n\nデータが並べ替えられていなくても使える手軽さが利点ですが、データ件数が増えるほど調べる回数も増えます。最悪の場合は全件を調べることになり、n個のデータでは平均n/2回、最大n回の比較が必要です。\n\n試験では、整列が不要な点と、後述の2分探索法より一般に遅い点が対比して問われます。データ数nに比例して時間が増える特徴を押さえましょう。",
-      "analogy_jp": "出席番号順に並んでいない名簿で、特定の人を上から一行ずつ指でなぞって探すイメージ。並び順を気にせず探せますが、人数が多いと時間がかかります。",
-      "memory_hook_jp": "線形探索法といえば先頭から順に1つずつ調べる",
+      "term_zh": "线性查找法",
+      "term_en": "Linear search",
+      "one_jp": "**線形探索法**は、データの先頭から順に **1 つずつ** 目的の値と比べ、一致した時点で終える探索法である。",
+      "one_zh": "**线性查找法**（[[jp:線形探索法]]）是从数据开头起依次 **逐个** 与目标值比较，一旦相同就结束的查找方法。",
+      "one_en": "**Linear search** ([[jp:線形探索法]]) checks the data from the start, **one item at a time**, against the target value and stops as soon as it finds a match.",
+      "detail_jp": "データが並べ替えられていなくても、そのまま使える。比較回数は目的の値の位置で決まり、末尾にある場合や見つからない場合は全件と比べることになる。平均すると、およそ件数の半分の回数の比較が要る。",
+      "detail_zh": "数据即使没有排序，也可以直接使用。比较次数取决于目标值所在的位置，若它在末尾或根本不存在，就要与全部数据逐一比较。平均下来，大约需要比较数据个数一半的次数。",
+      "detail_en": "It works on data as it is, even if the data has not been sorted. The number of comparisons depends on where the target sits, and if it is last or missing altogether, every item gets compared. On average it takes about half as many comparisons as there are items.",
+      "analogy_jp": "背表紙の並びがばらばらの本棚で、目当ての本を左端から 1 冊ずつ確かめていくようなもの。",
+      "analogy_zh": "就像在书脊排列杂乱的书架上找一本书，只能从最左边开始一本一本地看。",
+      "analogy_en": "It is like hunting for a book on an unordered shelf by checking each spine from the left end, one book after another.",
+      "hook_jp": "「線形」は一本の線。線をなぞるように、端から一方向へ進む。",
+      "hook_zh": "“线性”就是一条线：像沿着线描一样，从一端朝一个方向推进。",
+      "hook_en": "\"Linear\" means along a line: you trace it from one end in a single direction.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**線形探索法**の比較回数はデータ件数に比例して増える。件数が 2 倍になれば、最悪の比較回数も 2 倍になる。",
+          "text_zh": "**线性查找法**（[[jp:線形探索法]]）的比较次数与数据个数成正比增长。数据个数翻倍，最坏情况下的比较次数也翻倍。",
+          "text_en": "In **linear search** ([[jp:線形探索法]]) the number of comparisons grows in proportion to the number of items. Double the items and the worst-case comparisons double too.",
+          "qids": [
+            "2023r05-q069"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "n1",
+              "label": {
+                "jp": "1 番目の 4 と比べる",
+                "zh": "与第 1 个的 4 比较",
+                "en": "Compare with 4 (1st)"
+              }
+            },
+            {
+              "id": "n2",
+              "label": {
+                "jp": "2 番目の 9 と比べる",
+                "zh": "与第 2 个的 9 比较",
+                "en": "Compare with 9 (2nd)"
+              }
+            },
+            {
+              "id": "n3",
+              "label": {
+                "jp": "3 番目の 7 で一致して終了",
+                "zh": "第 3 个的 7 相同，结束",
+                "en": "7 (3rd) matches: stop"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "並び 4, 9, 7, 2 から 7 を探す。まず先頭の 4 と比べる。",
+            "caption_zh": "在 4, 9, 7, 2 中查找 7。先与开头的 4 比较。",
+            "caption_en": "Look for 7 in 4, 9, 7, 2. First, compare with the leading 4.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "一致しないので、次の 9 と比べる。",
+            "caption_zh": "不相同，于是与下一个 9 比较。",
+            "caption_en": "No match, so compare with the next value, 9.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "3 回目の比較で一致したので、残りの 2 は調べずに終える。",
+            "caption_zh": "第 3 次比较时相同，剩下的 2 不再检查，直接结束。",
+            "caption_en": "The 3rd comparison matches, so the search ends without checking the remaining 2.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2023r05-q069"
+      ],
+      "definition_jp": "線形探索法は、データの先頭から順に 1 つずつ 目的の値と比べ、一致した時点で終える探索法である。",
+      "definition_zh": "线性查找法（線形探索法）是从数据开头起依次 逐个 与目标值比较，一旦相同就结束的查找方法。",
+      "definition_en": "Linear search (線形探索法) checks the data from the start, one item at a time, against the target value and stops as soon as it finds a match.",
+      "explanation_jp": "データが並べ替えられていなくても、そのまま使える。比較回数は目的の値の位置で決まり、末尾にある場合や見つからない場合は全件と比べることになる。平均すると、およそ件数の半分の回数の比較が要る。",
+      "explanation_zh": "数据即使没有排序，也可以直接使用。比较次数取决于目标值所在的位置，若它在末尾或根本不存在，就要与全部数据逐一比较。平均下来，大约需要比较数据个数一半的次数。",
+      "explanation_en": "It works on data as it is, even if the data has not been sorted. The number of comparisons depends on where the target sits, and if it is last or missing altogether, every item gets compared. On average it takes about half as many comparisons as there are items.",
+      "memory_hook_jp": "「線形」は一本の線。線をなぞるように、端から一方向へ進む。",
+      "memory_hook_zh": "“线性”就是一条线：像沿着线描一样，从一端朝一个方向推进。",
+      "memory_hook_en": "\"Linear\" means along a line: you trace it from one end in a single direction.",
       "inline_quiz": [
         "2023r05-q069"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "线性查找法",
-      "term_en": "Linear search",
-      "definition_zh": "从数据开头开始逐个依次检查，以找出目标值的最朴素的查找法。",
-      "definition_en": "The most basic search method, which checks data one by one in order from the beginning to find the target value.",
-      "explanation_zh": "线性查找法是从数组或列表的开头朝末尾逐个比对值，一旦找到目标数据就结束的方法。也称为顺序查找。\n\n它的优点在于即使数据没有经过排序也能使用，十分便捷；但数据条数越多，需要检查的次数也越多。在最坏的情况下需要检查全部数据，对于 n 个数据，平均需要 n/2 次、最多 n 次比较。\n\n在考试中，常将它「不需要排序」这一点，与后文二分查找法相比「一般较慢」这一点对比出题。请掌握其处理时间与数据数 n 成正比增长的特征。",
-      "explanation_en": "Linear search compares values one at a time from the beginning to the end of an array or list, and ends as soon as the target data is found. It is also called sequential search.\n\nIts advantage is the convenience of working even when the data is not sorted, but the more data items there are, the more times you have to check. In the worst case you end up checking every item: for n items, it requires n/2 comparisons on average and n comparisons at most.\n\nOn the exam, the point that it needs no sorting is often contrasted with the point that it is generally slower than the binary search covered later. Keep in mind the characteristic that the time increases in proportion to the number of data items n.",
-      "analogy_zh": "想象在一份没有按学号顺序排列的名单中，用手指从上往下逐行划过来寻找某个特定的人。可以不在意排列顺序就开始找，但人数一多就会很费时间。",
-      "analogy_en": "Imagine looking for a specific person on a roster that is not arranged in student-number order, tracing down line by line with your finger. You can search without worrying about the order, but it takes time when there are many people.",
-      "memory_hook_zh": "说到线性查找法，就是从开头依次逐个检查。",
-      "memory_hook_en": "Linear search → check one by one in order from the start."
+      "figure": null
     },
     {
       "term": "2分探索法",
-      "definition_jp": "整列済みデータの中央と比較し、範囲を半分ずつ絞り込んで探す効率的な探索法。",
-      "explanation_jp": "2分探索法(バイナリサーチ)は、あらかじめ昇順や降順に整列されたデータに対し、まん中の値と目的の値を比較し、目的の値がどちら側にあるかを判断して探索範囲を毎回半分に狭めていく方法です。\n\n1回の比較で候補が半減するため非常に高速で、n個のデータでも比較回数はおよそlog₂n回で済みます。たとえば1000件でも約10回で見つかります。\n\n試験では「データが整列済みであることが前提」という条件と、線形探索より圧倒的に速い点が頻出です。整列されていないデータには使えない点に注意しましょう。",
-      "analogy_jp": "辞書で単語を引くとき、まん中あたりを開いて前か後ろかを判断し、さらにその半分を開く、を繰り返すイメージ。数回めくるだけで目的のページに着きます。",
-      "memory_hook_jp": "2分探索法といえば整列済みを半分ずつ絞り込む",
-      "inline_quiz": [
-        "2026r08-q067"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"中央の値と比較\"] --> B{\"目的の値と一致?\"}; B -->|\"一致\"| C[\"発見・終了\"]; B -->|\"目的が小さい\"| D[\"左半分に範囲を絞る\"]; B -->|\"目的が大きい\"| E[\"右半分に範囲を絞る\"]; D --> A; E --> A",
-        "svg_path": "figures/technology-14-37-u05-t01.svg",
-        "rendered": true
-      },
       "term_zh": "二分查找法",
       "term_en": "Binary search",
-      "definition_zh": "与已排序数据的中间值比较，每次将范围缩小一半来查找的高效查找法。",
-      "definition_en": "An efficient search method that compares with the middle of sorted data and narrows the range by half each time.",
-      "explanation_zh": "二分查找法（binary search）是针对事先按升序或降序排好的数据，将正中间的值与目标值比较，判断目标值在哪一侧，从而每次将查找范围缩小一半的方法。\n\n由于每比较一次候选范围就减半，所以速度非常快，即使是 n 个数据，比较次数也大约只需 log₂n 次。例如即使有 1000 条，约 10 次就能找到。\n\n在考试中，「数据必须已经排序」这一前提条件，以及它远比线性查找快这一点频繁出现。请注意它无法用于未排序的数据。",
-      "explanation_en": "Binary search compares the value in the very middle with the target value for data sorted in ascending or descending order in advance, determines which side the target value is on, and narrows the search range by half each time.\n\nBecause each comparison halves the candidates, it is very fast: even for n items, the number of comparisons is only about log₂n. For example, even with 1,000 items, you can find the target in about 10 comparisons.\n\nOn the exam, the prerequisite that \"the data must already be sorted\" and the point that it is overwhelmingly faster than linear search appear frequently. Note that it cannot be used on unsorted data.",
-      "analogy_zh": "想象在字典里查单词时，先翻开大致中间的位置，判断要找的词在前面还是后面，然后再翻开那一半的中间，如此反复。只需翻几次就能到达目标页。",
-      "analogy_en": "Imagine looking up a word in a dictionary: you open it roughly in the middle, decide whether the word is before or after, then open the middle of that half, and repeat. You reach the target page in just a few flips.",
-      "memory_hook_zh": "说到二分查找法，就是对已排序数据每次缩小一半。",
-      "memory_hook_en": "Binary search → narrow sorted data by half each time."
+      "one_jp": "**2分探索法**は、値の小さい順 (**昇順**) か大きい順 (**降順**) に並んだ**整列済み**のデータで、探索範囲の **中央** の値と比べて目的の値がある側へ範囲を半分ずつ絞る探索法である。",
+      "one_zh": "**二分查找法**（[[jp:2分探索法]]）用于按从小到大（**升序**）或从大到小（**降序**）**排好序**的数据，每次与查找范围 **中间** 的值比较，把范围缩小为目标值所在的那一半。",
+      "one_en": "**Binary search** ([[jp:2分探索法]]) works on **sorted** data, in increasing (**ascending**) or decreasing (**descending**) order, and compares the target with the value in the **middle** of the range, keeping only the half where the target must be.",
+      "detail_jp": "昇順の場合、目的の値が中央の値より小さければ前半、大きければ後半だけを残し、一致するか範囲がなくなるまで繰り返す。1 回の比較で候補が約半分になるので、件数が 2 倍になっても比較は 1 回ほどしか増えない。ただし比較回数は探す値の位置でも変わり、先頭近くの値なら**線形探索法**の方が少ない回数で見つかることもある。",
+      "detail_zh": "以升序为例，目标值比中间值小就只保留前半部分，比中间值大就只保留后半部分，如此反复，直到找到或范围为空。每比较一次，候选就减少约一半，所以数据个数翻倍，比较次数也只增加 1 次左右。不过比较次数也会随目标值的位置而变，若目标值靠近开头，**线性查找法**有时反而用更少的次数就能找到。",
+      "detail_en": "With ascending data, you keep only the first half when the target is smaller than the middle value and only the second half when it is larger, repeating until you find it or the range is empty. Each comparison removes about half of the candidates, so doubling the number of items adds only about one comparison. The count still depends on where the target sits, though, and a value near the start can be found in fewer comparisons by **linear search**.",
+      "analogy_jp": "番号順に重ねた受付票の束から真ん中の 1 枚を抜き、目当ての番号が前か後ろかを決めて、残った半分でまた真ん中を見るようなもの。",
+      "analogy_zh": "就像在一沓按号码顺序叠好的挂号单里抽出中间那张，判断要找的号码在前还是在后，再到剩下的一半里看中间那张。",
+      "analogy_en": "It is like pulling the middle slip from a stack of numbered tickets, deciding whether your number comes before or after it, and then checking the middle of the half that remains.",
+      "hook_jp": "「2分」は 2 つに分けること。英語の binary search の binary も「2 つの」を表す。",
+      "hook_zh": "“二分”就是一分为二。英文 binary search 中的 binary 也是“二”的意思。",
+      "hook_en": "The \"binary\" in binary search means \"two\": every step cuts the range in two.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**2分探索法**は、残った範囲の中央の要素と比べることを繰り返し、1 回の比較ごとに候補を約半分に減らす。",
+          "text_zh": "**二分查找法**（[[jp:2分探索法]]）反复与剩余范围中间的元素比较，每比较一次就把候选减少约一半。",
+          "text_en": "**Binary search** ([[jp:2分探索法]]) keeps comparing the target with the middle element of the remaining range, cutting the candidates roughly in half with each comparison.",
+          "qids": [
+            "2023r05-q069"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "昇順か降順に整列済みであることが前提なのは**2分探索法**で、**線形探索法**はデータの並び順を問わずに使える。",
+          "text_zh": "以数据已按升序（[[jp:昇順]]）或降序（[[jp:降順]]）排好为前提的是**二分查找法**（[[jp:2分探索法]]），而**线性查找法**（[[jp:線形探索法]]）不论数据如何排列都能使用。",
+          "text_en": "It is **binary search** ([[jp:2分探索法]]) that requires data already sorted in ascending ([[jp:昇順]]) or descending ([[jp:降順]]) order, while **linear search** ([[jp:線形探索法]]) works whatever the order."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "b1",
+              "label": {
+                "jp": "範囲は 1〜8 番目",
+                "zh": "范围为第 1〜8 个",
+                "en": "Range: items 1–8"
+              }
+            },
+            {
+              "id": "b2",
+              "label": {
+                "jp": "中央の 4 番目 13 と比べる",
+                "zh": "与中间第 4 个的 13 比较",
+                "en": "Compare with middle item 4 (13)"
+              }
+            },
+            {
+              "id": "b3",
+              "label": {
+                "jp": "範囲を 5〜8 番目に絞る",
+                "zh": "范围缩小为第 5〜8 个",
+                "en": "Narrow to items 5–8"
+              }
+            },
+            {
+              "id": "b4",
+              "label": {
+                "jp": "中央の 6 番目 21 で一致",
+                "zh": "中间第 6 个的 21 相同",
+                "en": "Middle item 6 (21) matches"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "昇順の 8 件 3, 6, 10, 13, 18, 21, 25, 30 から 21 を探す。最初の範囲は全体。",
+            "caption_zh": "在升序排列的 8 个数 3, 6, 10, 13, 18, 21, 25, 30 中查找 21。最初的范围是全部数据。",
+            "caption_en": "Look for 21 among 8 values in ascending order: 3, 6, 10, 13, 18, 21, 25, 30. The first range is the whole list.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "範囲の中央にある 4 番目の 13 と比べると、21 の方が大きい。",
+            "caption_zh": "与范围中间第 4 个的 13 比较，21 更大。",
+            "caption_en": "Compared with 13, the 4th value at the middle of the range, 21 is larger.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "21 は後半にあるので、範囲を 5〜8 番目に絞る。",
+            "caption_zh": "21 在后半部分，因此把范围缩小为第 5〜8 个。",
+            "caption_en": "21 must be in the second half, so the range narrows to items 5–8.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "新しい範囲の中央の 6 番目が 21 で一致し、2 回の比較で見つかる。",
+            "caption_zh": "新范围中间的第 6 个正是 21，比较 2 次就找到了。",
+            "caption_en": "The 6th value, at the middle of the new range, is 21, so it is found in 2 comparisons.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2023r05-q069"
+      ],
+      "definition_jp": "2分探索法は、値の小さい順 (昇順) か大きい順 (降順) に並んだ整列済みのデータで、探索範囲の 中央 の値と比べて目的の値がある側へ範囲を半分ずつ絞る探索法である。",
+      "definition_zh": "二分查找法（2分探索法）用于按从小到大（升序）或从大到小（降序）排好序的数据，每次与查找范围 中间 的值比较，把范围缩小为目标值所在的那一半。",
+      "definition_en": "Binary search (2分探索法) works on sorted data, in increasing (ascending) or decreasing (descending) order, and compares the target with the value in the middle of the range, keeping only the half where the target must be.",
+      "explanation_jp": "昇順の場合、目的の値が中央の値より小さければ前半、大きければ後半だけを残し、一致するか範囲がなくなるまで繰り返す。1 回の比較で候補が約半分になるので、件数が 2 倍になっても比較は 1 回ほどしか増えない。ただし比較回数は探す値の位置でも変わり、先頭近くの値なら線形探索法の方が少ない回数で見つかることもある。",
+      "explanation_zh": "以升序为例，目标值比中间值小就只保留前半部分，比中间值大就只保留后半部分，如此反复，直到找到或范围为空。每比较一次，候选就减少约一半，所以数据个数翻倍，比较次数也只增加 1 次左右。不过比较次数也会随目标值的位置而变，若目标值靠近开头，线性查找法有时反而用更少的次数就能找到。",
+      "explanation_en": "With ascending data, you keep only the first half when the target is smaller than the middle value and only the second half when it is larger, repeating until you find it or the range is empty. Each comparison removes about half of the candidates, so doubling the number of items adds only about one comparison. The count still depends on where the target sits, though, and a value near the start can be found in fewer comparisons by linear search.",
+      "memory_hook_jp": "「2分」は 2 つに分けること。英語の binary search の binary も「2 つの」を表す。",
+      "memory_hook_zh": "“二分”就是一分为二。英文 binary search 中的 binary 也是“二”的意思。",
+      "memory_hook_en": "The \"binary\" in binary search means \"two\": every step cuts the range in two.",
+      "inline_quiz": [
+        "2023r05-q069"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "選択ソート",
-      "definition_jp": "未整列部分から最小(最大)値を選び、先頭に置くことを繰り返す整列法。",
-      "explanation_jp": "選択ソートは、データ全体から最小値(または最大値)を選び出して先頭の要素と交換し、次に残りの中から最小値を選んで2番目に置く、という操作を繰り返してデータを並べ替える方法です。\n\n「選んで(select)所定の位置に置く」という発想が直感的で分かりやすいのが特徴です。データ件数をnとすると、比較回数はおよそn²に比例し、データが多いと遅くなります。\n\n試験では、毎回未整列部分から最小値を探して確定させていく動作の流れが問われます。次のバブルソートとの違い(交換のしかた)を整理して覚えましょう。",
-      "analogy_jp": "背の順に並ぶとき、列全体から一番背の低い人を見つけて先頭に立たせ、次に残りで一番低い人を2番目に、と順に決めていくイメージ。",
-      "memory_hook_jp": "選択ソートといえば最小値を選んで先頭に置く",
-      "inline_quiz": [
-        "2025r07-q098"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "选择排序",
       "term_en": "Selection sort",
-      "definition_zh": "从未排序部分选出最小（最大）值放到开头，并反复进行这一操作的排序法。",
-      "definition_en": "A sorting method that repeatedly selects the minimum (or maximum) value from the unsorted portion and places it at the front.",
-      "explanation_zh": "选择排序是从整批数据中选出最小值（或最大值）与开头的元素交换，接着从剩余部分中选出最小值放到第二个位置，如此反复来重新排列数据的方法。\n\n它的特点是「选出（select）后放到指定位置」这一思路直观易懂。设数据条数为 n，则比较次数大约与 n² 成正比，数据多时就会变慢。\n\n在考试中，常考查每次都从未排序部分寻找最小值并将其确定下来的操作流程。请把它与接下来的冒泡排序的区别（交换的方式）整理清楚来记忆。",
-      "explanation_en": "Selection sort selects the minimum value (or maximum value) from all the data and swaps it with the first element, then selects the minimum from the remaining items and places it in the second position, repeating this to rearrange the data.\n\nIts characteristic is that the idea of \"selecting and placing it in a fixed position\" is intuitive and easy to understand. If the number of data items is n, the number of comparisons is roughly proportional to n², so it becomes slow with a lot of data.\n\nOn the exam, the flow of repeatedly finding the minimum from the unsorted portion and fixing it in place is tested. Sort out and memorize how it differs from the bubble sort that follows (the way swapping is done).",
-      "analogy_zh": "想象按身高排队时，从整列里找出个子最矮的人让他站到最前面，接着从剩下的人里再找最矮的站到第二位，依次确定下来。",
-      "analogy_en": "Imagine lining up by height: you find the shortest person in the whole line and put them at the front, then find the shortest among the rest and put them in second place, deciding positions one by one.",
-      "memory_hook_zh": "说到选择排序，就是选出最小值放到开头。",
-      "memory_hook_en": "Selection sort → select the minimum and place it at the front."
+      "one_jp": "**選択ソート**は、まだ並べ終えていない範囲から **最小値** (または最大値) を選び、その範囲の端の値と交換することを繰り返す整列法である。",
+      "one_zh": "**选择排序**（[[jp:選択ソート]]）是反复从尚未排好的范围中选出 **最小值**（或最大值），并与该范围一端的值交换的排序方法。",
+      "one_en": "**Selection sort** ([[jp:選択ソート]]) repeatedly picks the **smallest value** (or the largest) from the part not yet sorted and swaps it with the value at one end of that part.",
+      "detail_jp": "整列とは、データを値の大小の順に並べ替える処理である。未整列の範囲を一通り調べて端の 1 か所の値を確定させる一回りを 1 巡といい、1 巡ごとに範囲が 1 つずつ狭まる。比較回数はおよそ件数の 2 乗に比例するので、件数が多いと時間がかかる。",
+      "detail_zh": "排序是把数据按值的大小顺序重新排列的处理。把未排序范围检查一遍、确定一端 1 个位置的值，这一轮称为 1 趟，每过 1 趟范围就缩小 1 个。比较次数大约与数据个数的平方成正比，因此数据多时很费时间。",
+      "detail_en": "Sorting means rearranging data in order of value. One round that scans the unsorted range and fixes the value at one end is called a pass, and each pass shrinks the range by one. The number of comparisons grows roughly with the square of the number of items, so large data sets take a long time.",
+      "analogy_jp": "トランプの手札で、まだ並べていない札の中から一番小さい札を探し、並べ終えた札のすぐ右へ移すことを繰り返すようなもの。",
+      "analogy_zh": "就像整理手里的扑克牌：从还没理好的牌里找出最小的一张，放到已理好那几张的右边，如此反复。",
+      "analogy_en": "It is like tidying a hand of cards: find the lowest card among those not yet arranged, place it just to the right of the arranged ones, and repeat.",
+      "hook_jp": "英語の selection は「選び出す」。代表選考のように、全員を見比べてから 1 人を選ぶ。",
+      "hook_zh": "英文 selection 意为“挑选”：就像选拔代表，先把所有人比一遍，再选出 1 个。",
+      "hook_en": "Selection means picking out: like choosing a team captain, you compare everyone first and then pick one.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**選択ソート**は 1 巡で端の 1 か所が確定し、最後に残った 1 個は比べなくても位置が決まる。巡の回数は、残り 1 個も 1 巡と数える手順なら件数、数えない手順なら件数 − 1 になる。",
+          "text_zh": "**选择排序**（[[jp:選択ソート]]）每 1 趟确定一端的 1 个位置，最后剩下的 1 个不用比较位置就已确定。趟数在把剩下的 1 个也算作 1 趟的步骤中等于数据个数，不算的步骤中则等于数据个数 − 1。",
+          "text_en": "Each pass of **selection sort** ([[jp:選択ソート]]) fixes one position at one end, and the last remaining item needs no comparison to fall into place. The number of passes equals the number of items if the procedure counts that last item as a pass, and the number of items − 1 if it does not.",
+          "qids": [
+            "2025r07-q098",
+            "2026r08-q067"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "最小値を前へ移す**選択ソート**では、k 回目の選択と交換を終えた時点で、先頭の k 個が小さい順に確定している。",
+          "text_zh": "在把最小值移到前面的**选择排序**中，完成第 k 次选择与交换时，开头的 k 个值已按从小到大的顺序确定。",
+          "text_en": "In a **selection sort** that moves the minimum to the front, once the k-th selection and swap are done, the first k values are fixed in increasing order.",
+          "qids": [
+            "2026r08-q067"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "c0",
+              "label": {
+                "jp": "開始 6 2 9 4",
+                "zh": "开始 6 2 9 4",
+                "en": "Start 6 2 9 4"
+              }
+            },
+            {
+              "id": "c1",
+              "label": {
+                "jp": "1 回目 2 6 9 4",
+                "zh": "第 1 次 2 6 9 4",
+                "en": "Pass 1 2 6 9 4"
+              }
+            },
+            {
+              "id": "c2",
+              "label": {
+                "jp": "2 回目 2 4 9 6",
+                "zh": "第 2 次 2 4 9 6",
+                "en": "Pass 2 2 4 9 6"
+              }
+            },
+            {
+              "id": "c3",
+              "label": {
+                "jp": "3 回目 2 4 6 9 (残り 1 個も確定)",
+                "zh": "第 3 次 2 4 6 9（剩下的 1 个也确定）",
+                "en": "Pass 3 2 4 6 9 (last one fixed too)"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "並び 6 2 9 4 を昇順に並べ始める時点では、位置の確定した値はまだない。",
+            "caption_zh": "开始把 6 2 9 4 按升序排列时，还没有任何值的位置已确定。",
+            "caption_en": "When sorting 6 2 9 4 into ascending order begins, no value is in its final place yet.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "1 回目は全体の最小値 2 を 1 番目の 6 と交換し、1 番目が確定する。",
+            "caption_zh": "第 1 次把全体的最小值 2 与第 1 个的 6 交换，第 1 个确定。",
+            "caption_en": "Pass 1 swaps the overall minimum, 2, with the 6 in position 1, fixing position 1.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "2 回目は残り 6 9 4 の最小値 4 を 2 番目の 6 と交換し、2 番目が確定する。",
+            "caption_zh": "第 2 次把剩余 6 9 4 中的最小值 4 与第 2 个的 6 交换，第 2 个确定。",
+            "caption_en": "Pass 2 swaps 4, the minimum of the remaining 6 9 4, with the 6 in position 2, fixing position 2.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "3 回目は残り 9 6 の小さい方の 6 を 3 番目の 9 と交換して 3 番目が確定し、最後に残った 9 も比べずに 4 番目に決まる。",
+            "caption_zh": "第 3 次把剩余 9 6 中较小的 6 与第 3 个的 9 交换，第 3 个确定；最后剩下的 9 不用比较，就落在第 4 个。",
+            "caption_en": "Pass 3 swaps 6, the smaller of the remaining 9 6, with the 9 in position 3, fixing position 3, and the last 9 lands in position 4 without any comparison.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2025r07-q098",
+        "2026r08-q067"
+      ],
+      "definition_jp": "選択ソートは、まだ並べ終えていない範囲から 最小値 (または最大値) を選び、その範囲の端の値と交換することを繰り返す整列法である。",
+      "definition_zh": "选择排序（選択ソート）是反复从尚未排好的范围中选出 最小值（或最大值），并与该范围一端的值交换的排序方法。",
+      "definition_en": "Selection sort (選択ソート) repeatedly picks the smallest value (or the largest) from the part not yet sorted and swaps it with the value at one end of that part.",
+      "explanation_jp": "整列とは、データを値の大小の順に並べ替える処理である。未整列の範囲を一通り調べて端の 1 か所の値を確定させる一回りを 1 巡といい、1 巡ごとに範囲が 1 つずつ狭まる。比較回数はおよそ件数の 2 乗に比例するので、件数が多いと時間がかかる。",
+      "explanation_zh": "排序是把数据按值的大小顺序重新排列的处理。把未排序范围检查一遍、确定一端 1 个位置的值，这一轮称为 1 趟，每过 1 趟范围就缩小 1 个。比较次数大约与数据个数的平方成正比，因此数据多时很费时间。",
+      "explanation_en": "Sorting means rearranging data in order of value. One round that scans the unsorted range and fixes the value at one end is called a pass, and each pass shrinks the range by one. The number of comparisons grows roughly with the square of the number of items, so large data sets take a long time.",
+      "memory_hook_jp": "英語の selection は「選び出す」。代表選考のように、全員を見比べてから 1 人を選ぶ。",
+      "memory_hook_zh": "英文 selection 意为“挑选”：就像选拔代表，先把所有人比一遍，再选出 1 个。",
+      "memory_hook_en": "Selection means picking out: like choosing a team captain, you compare everyone first and then pick one.",
+      "inline_quiz": [
+        "2025r07-q098",
+        "2026r08-q067"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "バブルソート",
-      "definition_jp": "隣り合う要素を比較し、大小が逆なら交換することを繰り返す基本の整列法。",
-      "explanation_jp": "バブルソートは、隣接する2つの要素を順に比較し、並び順が逆であれば入れ替える操作を端から端まで繰り返して整列する方法です。隣接交換法とも呼ばれます。\n\nこの操作を1巡すると最大値(または最小値)が端に確定し、泡(bubble)が浮かび上がるように値が移動していくことが名前の由来です。比較回数はおよそn²に比例し、件数が多いと遅くなります。\n\n試験では、選択ソートが「最小値を選んで置く」のに対し、バブルソートは「隣同士を比較して交換する」点の違いが頻出です。動作の仕組みを取り違えないようにしましょう。",
-      "analogy_jp": "横一列に並んだ人が、隣の人と背を比べて高い方を右へずらす、を繰り返すイメージ。何巡もすると自然に背の順に整います。",
-      "memory_hook_jp": "バブルソートといえば隣同士を比較して交換",
+      "term_zh": "冒泡排序",
+      "term_en": "Bubble sort",
+      "one_jp": "**バブルソート**は、**隣り合う 2 つ**の値を比べて順序が逆なら入れ替えることを、端から端まで繰り返す整列法である。",
+      "one_zh": "**冒泡排序**（[[jp:バブルソート]]）是比较 **相邻的两个** 值、顺序相反就交换，并从一端到另一端反复进行的排序方法。",
+      "one_en": "**Bubble sort** ([[jp:バブルソート]]) compares **two neighbouring** values, swaps them if they are out of order, and repeats this from one end to the other.",
+      "detail_jp": "昇順に並べる場合、1 巡すると最も大きい値が末尾まで運ばれて確定する。次の巡は確定した末尾を除いた範囲で同じことを行い、1 巡の間に入れ替えが起きなければ並び終わっている。比較回数は**選択ソート**と同じく、およそ件数の 2 乗に比例する。",
+      "detail_zh": "按升序排列时，每走完 1 趟，最大的值就被送到末尾并确定下来。下一趟在除去已确定末尾的范围内做同样的操作，如果某 1 趟中一次交换也没发生，排序就已完成。比较次数与**选择排序**相同，大约与数据个数的平方成正比。",
+      "detail_en": "When sorting into ascending order, each pass carries the largest value to the end, where it stays. The next pass does the same over the range minus that fixed end, and if a whole pass makes no swaps, the data is already sorted. As with **selection sort**, the number of comparisons grows roughly with the square of the number of items.",
+      "analogy_jp": "一列に並んだ人が隣の人とだけ背比べをして、背の高い方が右へ 1 つずれることを列の端まで続けるようなもの。",
+      "analogy_zh": "就像排成一列的人只和身旁的人比身高，个子高的往右挪一位，一直比到队尾。",
+      "analogy_en": "It is like people in a row comparing height only with the person next to them, the taller one stepping one place to the right, all the way to the end of the row.",
+      "hook_jp": "bubble は泡。大きな値が泡のように 1 つずつ端へ浮かび上がっていく。",
+      "hook_zh": "bubble 是“气泡”：大的值像气泡一样，一个个浮到末端。",
+      "hook_en": "A bubble rises: the large values float up to the end one at a time.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "昇順の**バブルソート**は、隣り合う 2 つのうち左の値が大きいときに入れ替える。1 巡ごとに末尾の値が確定するので、次の巡では比べる範囲が 1 つ短くなる。",
+          "text_zh": "升序的**冒泡排序**（[[jp:バブルソート]]）在相邻两个值中左边较大时交换。每 1 趟确定末尾的值，所以下一趟要比较的范围缩短 1 个。",
+          "text_en": "An ascending **bubble sort** ([[jp:バブルソート]]) swaps two neighbours when the left one is larger. Each pass fixes the value at the end, so the next pass compares over a range one item shorter.",
+          "qids": [
+            "2023r05-q060"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**選択ソート**は 1 巡で最小値を探し終えてから多くても 1 回交換し、**バブルソート**は比べるたびに逆順の隣同士をその場で交換する。",
+          "text_zh": "**选择排序**（[[jp:選択ソート]]）在 1 趟中找完最小值后最多交换 1 次，而**冒泡排序**（[[jp:バブルソート]]）每比较一次，遇到顺序相反的相邻值就当场交换。",
+          "text_en": "**Selection sort** ([[jp:選択ソート]]) finishes finding the minimum in a pass and then swaps at most once, while **bubble sort** ([[jp:バブルソート]]) swaps out-of-order neighbours on the spot at every comparison."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "d0",
+              "label": {
+                "jp": "開始 6 2 9 4",
+                "zh": "开始 6 2 9 4",
+                "en": "Start 6 2 9 4"
+              }
+            },
+            {
+              "id": "d1",
+              "label": {
+                "jp": "6 と 2 を交換 → 2 6 9 4",
+                "zh": "交换 6 和 2 → 2 6 9 4",
+                "en": "Swap 6 and 2 → 2 6 9 4"
+              }
+            },
+            {
+              "id": "d2",
+              "label": {
+                "jp": "6 と 9 はそのまま → 2 6 9 4",
+                "zh": "6 和 9 不动 → 2 6 9 4",
+                "en": "Keep 6 and 9 → 2 6 9 4"
+              }
+            },
+            {
+              "id": "d3",
+              "label": {
+                "jp": "9 と 4 を交換 → 2 6 4 9",
+                "zh": "交换 9 和 4 → 2 6 4 9",
+                "en": "Swap 9 and 4 → 2 6 4 9"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "並び 6 2 9 4 を昇順に並べる 1 巡目を始める時点では、位置の確定した値はまだない。",
+            "caption_zh": "开始把 6 2 9 4 按升序排列的第 1 趟时，还没有任何值的位置已确定。",
+            "caption_en": "When the first pass of sorting 6 2 9 4 into ascending order begins, no value is in its final place yet.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "1 番目と 2 番目を比べると逆順なので入れ替えるが、まだ位置の確定した値はない。",
+            "caption_zh": "比较第 1 个和第 2 个，顺序相反，于是交换，但仍没有值的位置确定。",
+            "caption_en": "Items 1 and 2 are out of order, so they are swapped, but no value is fixed yet.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "2 番目と 3 番目は正しい順なので入れ替えず、まだ位置の確定した値はない。",
+            "caption_zh": "第 2 个和第 3 个顺序正确，不交换，仍没有值的位置确定。",
+            "caption_en": "Items 2 and 3 are already in order, so nothing is swapped, and still no value is fixed.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "3 番目と 4 番目を入れ替えると、最大の 9 が末尾に運ばれて 4 番目が確定する。",
+            "caption_zh": "交换第 3 个和第 4 个后，最大的 9 被送到末尾，第 4 个确定。",
+            "caption_en": "Swapping items 3 and 4 carries the largest value, 9, to the end, fixing position 4.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2023r05-q060"
+      ],
+      "definition_jp": "バブルソートは、隣り合う 2 つの値を比べて順序が逆なら入れ替えることを、端から端まで繰り返す整列法である。",
+      "definition_zh": "冒泡排序（バブルソート）是比较 相邻的两个 值、顺序相反就交换，并从一端到另一端反复进行的排序方法。",
+      "definition_en": "Bubble sort (バブルソート) compares two neighbouring values, swaps them if they are out of order, and repeats this from one end to the other.",
+      "explanation_jp": "昇順に並べる場合、1 巡すると最も大きい値が末尾まで運ばれて確定する。次の巡は確定した末尾を除いた範囲で同じことを行い、1 巡の間に入れ替えが起きなければ並び終わっている。比較回数は選択ソートと同じく、およそ件数の 2 乗に比例する。",
+      "explanation_zh": "按升序排列时，每走完 1 趟，最大的值就被送到末尾并确定下来。下一趟在除去已确定末尾的范围内做同样的操作，如果某 1 趟中一次交换也没发生，排序就已完成。比较次数与选择排序相同，大约与数据个数的平方成正比。",
+      "explanation_en": "When sorting into ascending order, each pass carries the largest value to the end, where it stays. The next pass does the same over the range minus that fixed end, and if a whole pass makes no swaps, the data is already sorted. As with selection sort, the number of comparisons grows roughly with the square of the number of items.",
+      "memory_hook_jp": "bubble は泡。大きな値が泡のように 1 つずつ端へ浮かび上がっていく。",
+      "memory_hook_zh": "bubble 是“气泡”：大的值像气泡一样，一个个浮到末端。",
+      "memory_hook_en": "A bubble rises: the large values float up to the end one at a time.",
       "inline_quiz": [
         "2023r05-q060"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "冒泡排序",
-      "term_en": "Bubble sort",
-      "definition_zh": "比较相邻元素，若大小顺序颠倒就交换，并反复进行这一操作的基本排序法。",
-      "definition_en": "A basic sorting method that repeatedly compares adjacent elements and swaps them if they are in the wrong order.",
-      "explanation_zh": "冒泡排序是依次比较相邻的两个元素，若排列顺序颠倒就将它们互换，从一端到另一端反复进行这一操作来排序的方法。也称为相邻交换法。\n\n这一操作每进行一轮，就会有一个最大值（或最小值）在末端被确定下来，数值会像气泡（bubble）上浮一样移动，这就是其名称的由来。比较次数大约与 n² 成正比，条数多时就会变慢。\n\n在考试中，选择排序是「选出最小值后放置」，而冒泡排序是「比较相邻两者并交换」，这一区别频繁出现。请不要把两者的工作机制搞混。",
-      "explanation_en": "Bubble sort compares two adjacent elements in turn and swaps them if their order is reversed, repeating this from one end to the other to sort the data. It is also called the adjacent-exchange method.\n\nEach pass of this operation fixes one maximum value (or minimum value) at the end, and values move as if a bubble were rising to the surface, which is the origin of the name. The number of comparisons is roughly proportional to n², so it becomes slow when there are many items.\n\nOn the exam, the difference between selection sort, which \"selects the minimum and places it,\" and bubble sort, which \"compares adjacent pairs and swaps,\" appears frequently. Be careful not to mix up how the two work.",
-      "analogy_zh": "想象横排站成一列的人，每个人和旁边的人比身高，把较高的那个往右挪，如此反复。经过多轮之后，自然就排成了身高顺序。",
-      "analogy_en": "Imagine people standing in a horizontal row, each comparing height with the neighbor and shifting the taller one to the right, repeatedly. After many passes, they naturally end up arranged by height.",
-      "memory_hook_zh": "说到冒泡排序，就是比较相邻两者并交换。",
-      "memory_hook_en": "Bubble sort → compare adjacent pairs and swap."
+      "figure": null
     },
     {
       "term": "クイックソート",
-      "definition_jp": "基準値で大小2グループに分け、各グループを再帰的に並べ替える高速整列法。",
-      "explanation_jp": "クイックソートは、基準値(ピボット)を1つ選び、それより小さい値の組と大きい値の組にデータを振り分け、それぞれの組に同じ処理を繰り返して整列する方法です。分割統治法に基づく代表的な高速ソートです。\n\n大きな問題を小さな部分問題に分けて解くため、平均的にはおよそn×log₂nに比例する速さで処理でき、選択ソートやバブルソートより高速です。\n\n試験では、ピボットで分割して再帰的に処理する考え方と、n²型の素朴なソートより速い点が問われます。名前のとおり「速い」整列法として位置づけて覚えましょう。",
-      "analogy_jp": "クラスを基準の身長で「それより低い人」「高い人」の2グループに分け、各グループでさらに同じ分け方を繰り返して並べていくイメージ。",
-      "memory_hook_jp": "クイックソートといえば基準値で分けて分割統治",
-      "inline_quiz": [
-        "2010h22a-q069"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"基準値(ピボット)を選ぶ\"] --> B[\"基準より小さい組\"]; A --> C[\"基準より大きい組\"]; B --> D[\"各組を再帰的に同じ手順で整列\"]; C --> D; D --> E[\"全体が整列済み\"]",
-        "svg_path": "figures/technology-14-37-u05-t02.svg",
-        "rendered": true
-      },
       "term_zh": "快速排序",
       "term_en": "Quick sort",
-      "definition_zh": "以基准值将数据分成大小两组，并对各组递归重新排列的高速排序法。",
-      "definition_en": "A fast sorting method that divides data into two groups (smaller and larger) by a pivot value and recursively rearranges each group.",
-      "explanation_zh": "快速排序是选出一个基准值（pivot），将数据分配到比它小的一组和比它大的一组，再对各组反复进行相同处理来排序的方法。它是基于分治法的代表性高速排序。\n\n由于是把大问题拆分成小的子问题来求解，平均而言能以大约与 n×log₂n 成正比的速度处理，比选择排序和冒泡排序都快。\n\n在考试中，常考查用基准值分割后递归处理的思路，以及它比 n² 型的朴素排序更快这一点。请把它定位为名副其实「快速」的排序法来记忆。",
-      "explanation_en": "Quick sort selects one pivot value, distributes the data into a group of values smaller than it and a group of larger values, and repeats the same process on each group to sort. It is a representative fast sort based on the divide-and-conquer method.\n\nBecause it solves a large problem by dividing it into small subproblems, on average it can process at a speed roughly proportional to n×log₂n, faster than selection sort and bubble sort.\n\nOn the exam, the idea of splitting by a pivot and processing recursively, and the point that it is faster than naive n²-type sorts, are tested. Memorize it as a sorting method that is, true to its name, \"quick.\"",
-      "analogy_zh": "想象以一个基准身高把班级分成「比它矮的人」和「比它高的人」两组，再在各组中反复进行同样的分组来排列。",
-      "analogy_en": "Imagine dividing a class into two groups, \"those shorter than the reference height\" and \"those taller,\" then repeating the same grouping within each group to arrange them.",
-      "memory_hook_zh": "说到快速排序，就是以基准值分组并分治。",
-      "memory_hook_en": "Quick sort → split by a pivot and divide and conquer."
+      "one_jp": "**クイックソート**は、**基準値** (ピボット) を 1 つ決めてデータをそれより小さい組と大きい組に分け、各組にも同じ手順を繰り返す整列法である。",
+      "one_zh": "**快速排序**（[[jp:クイックソート]]）是先选定 1 个 **基准值**（pivot），把数据分成比它小的组和比它大的组，再对各组重复同样步骤的排序方法。",
+      "one_en": "**Quick sort** ([[jp:クイックソート]]) chooses one **pivot** value, splits the data into a group smaller than it and a group larger than it, and repeats the same steps on each group.",
+      "detail_jp": "組の要素が 1 個以下になれば分ける必要がなくなり、各組を順に並べると全体が整列する。このように、同じ手順をより小さな部分に当てはめていくやり方を再帰という。平均的な比較回数は件数の 2 乗型の方法より少ないが、基準値の選び方が悪いと件数の 2 乗に近づく。",
+      "detail_zh": "组内元素只剩 1 个或没有时就不必再分，把各组按顺序排起来，整体就排好了。像这样把同一步骤套用到更小部分上的做法称为递归。平均比较次数比“平方型”方法少，但基准值选得不好时，会接近数据个数的平方。",
+      "detail_en": "Once a group has one element or none, there is nothing left to split, and lining up the groups in order sorts the whole set. Applying the same procedure to smaller and smaller parts like this is called recursion. On average it needs fewer comparisons than the square-type methods, but a poor choice of pivot pushes the count toward the square of the number of items.",
+      "analogy_jp": "書類の山を基準の日付より前の山と後の山に分け、それぞれの山をまた同じように分けていくようなもの。",
+      "analogy_zh": "就像把一堆文件按某个基准日期分成之前和之后两堆，再把每一堆照同样方法继续分下去。",
+      "analogy_en": "It is like splitting a pile of papers into those dated before a reference date and those after it, then splitting each pile the same way again.",
+      "hook_jp": "quick は英語で「速い」の意味。",
+      "hook_zh": "quick 在英文中是“快”的意思。",
+      "hook_en": "Quick, as the name says: on average it is fast.",
+      "points": [],
+      "fig": {
+        "kind": "tree",
+        "mode": "steps",
+        "data": {
+          "root": {
+            "id": "r",
+            "label": {
+              "jp": "5 8 2 7 1 4 (基準値 5)",
+              "zh": "5 8 2 7 1 4（基准值 5）",
+              "en": "5 8 2 7 1 4 (pivot 5)"
+            },
+            "children": [
+              {
+                "id": "s",
+                "label": {
+                  "jp": "小さい組 2 1 4 (基準値 2)",
+                  "zh": "较小组 2 1 4（基准值 2）",
+                  "en": "Smaller group 2 1 4 (pivot 2)"
+                },
+                "children": [
+                  {
+                    "id": "s1",
+                    "label": {
+                      "jp": "1",
+                      "zh": "1",
+                      "en": "1"
+                    }
+                  },
+                  {
+                    "id": "s2",
+                    "label": {
+                      "jp": "2",
+                      "zh": "2",
+                      "en": "2"
+                    }
+                  },
+                  {
+                    "id": "s3",
+                    "label": {
+                      "jp": "4",
+                      "zh": "4",
+                      "en": "4"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "p",
+                "label": {
+                  "jp": "5",
+                  "zh": "5",
+                  "en": "5"
+                }
+              },
+              {
+                "id": "l",
+                "label": {
+                  "jp": "大きい組 8 7 (基準値 8)",
+                  "zh": "较大组 8 7（基准值 8）",
+                  "en": "Larger group 8 7 (pivot 8)"
+                },
+                "children": [
+                  {
+                    "id": "l1",
+                    "label": {
+                      "jp": "7",
+                      "zh": "7",
+                      "en": "7"
+                    }
+                  },
+                  {
+                    "id": "l2",
+                    "label": {
+                      "jp": "8",
+                      "zh": "8",
+                      "en": "8"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "steps": [
+          {
+            "caption_jp": "6 個の値 5 8 2 7 1 4 から、先頭の 5 を基準値に選ぶ。",
+            "caption_zh": "从 6 个值 5 8 2 7 1 4 中，选开头的 5 作为基准值。",
+            "caption_en": "From the 6 values 5 8 2 7 1 4, the leading 5 is chosen as the pivot.",
+            "state": {
+              "depth": 1
+            }
+          },
+          {
+            "caption_jp": "5 より小さい組と大きい組に分けると、5 の位置が確定する。",
+            "caption_zh": "分成比 5 小的组和比 5 大的组后，5 的位置就确定了。",
+            "caption_en": "Splitting into a group below 5 and a group above 5 fixes the position of 5.",
+            "state": {
+              "depth": 2
+            }
+          },
+          {
+            "caption_jp": "各組でも基準値で分け、1 個になった値から位置が確定する。左から読むと 1 2 4 5 7 8 になる。",
+            "caption_zh": "各组也按基准值再分，只剩 1 个的值位置随即确定。从左往右读就是 1 2 4 5 7 8。",
+            "caption_en": "Each group is split by its own pivot, and a value is fixed once it stands alone. Read from left to right, the result is 1 2 4 5 7 8.",
+            "state": {
+              "depth": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "クイックソートは、基準値 (ピボット) を 1 つ決めてデータをそれより小さい組と大きい組に分け、各組にも同じ手順を繰り返す整列法である。",
+      "definition_zh": "快速排序（クイックソート）是先选定 1 个 基准值（pivot），把数据分成比它小的组和比它大的组，再对各组重复同样步骤的排序方法。",
+      "definition_en": "Quick sort (クイックソート) chooses one pivot value, splits the data into a group smaller than it and a group larger than it, and repeats the same steps on each group.",
+      "explanation_jp": "組の要素が 1 個以下になれば分ける必要がなくなり、各組を順に並べると全体が整列する。このように、同じ手順をより小さな部分に当てはめていくやり方を再帰という。平均的な比較回数は件数の 2 乗型の方法より少ないが、基準値の選び方が悪いと件数の 2 乗に近づく。",
+      "explanation_zh": "组内元素只剩 1 个或没有时就不必再分，把各组按顺序排起来，整体就排好了。像这样把同一步骤套用到更小部分上的做法称为递归。平均比较次数比“平方型”方法少，但基准值选得不好时，会接近数据个数的平方。",
+      "explanation_en": "Once a group has one element or none, there is nothing left to split, and lining up the groups in order sorts the whole set. Applying the same procedure to smaller and smaller parts like this is called recursion. On average it needs fewer comparisons than the square-type methods, but a poor choice of pivot pushes the count toward the square of the number of items.",
+      "memory_hook_jp": "quick は英語で「速い」の意味。",
+      "memory_hook_zh": "quick 在英文中是“快”的意思。",
+      "memory_hook_en": "Quick, as the name says: on average it is fast.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "線形探索法",
+      "b": "2分探索法",
+      "rows": [
+        {
+          "label_jp": "データの並び",
+          "label_zh": "数据的排列",
+          "label_en": "Data order",
+          "a_jp": "並び順を問わない",
+          "a_zh": "不限排列顺序",
+          "a_en": "Any order",
+          "b_jp": "昇順か降順に整列済みであること",
+          "b_zh": "须已按升序或降序排好",
+          "b_en": "Must be sorted in ascending or descending order",
+          "key": true
+        },
+        {
+          "label_jp": "比べ始める位置",
+          "label_zh": "开始比较的位置",
+          "label_en": "Where comparison starts",
+          "a_jp": "先頭",
+          "a_zh": "开头",
+          "a_en": "The first item",
+          "b_jp": "探索範囲の中央",
+          "b_zh": "查找范围的中间",
+          "b_en": "The middle of the range",
+          "key": false
+        },
+        {
+          "label_jp": "件数が 2 倍になったとき",
+          "label_zh": "数据个数翻倍时",
+          "label_en": "When the items double",
+          "a_jp": "最悪の比較回数も 2 倍",
+          "a_zh": "最坏比较次数也翻倍",
+          "a_en": "Worst-case comparisons double too",
+          "b_jp": "比較回数は 1 回ほど増える",
+          "b_zh": "比较次数增加 1 次左右",
+          "b_en": "About one more comparison",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "選択ソート",
+      "b": "バブルソート",
+      "rows": [
+        {
+          "label_jp": "1 回比べた後",
+          "label_zh": "每比较一次之后",
+          "label_en": "After each comparison",
+          "a_jp": "より小さい値なら最小値の候補として覚え直す (交換はしない)",
+          "a_zh": "若值更小，就把它记为新的最小值候选（不交换）",
+          "a_en": "If the value is smaller, remember it as the new minimum candidate (no swap)",
+          "b_jp": "逆順ならその場で隣同士を交換",
+          "b_zh": "顺序相反就当场交换相邻两值",
+          "b_en": "If out of order, swap the neighbours on the spot",
+          "key": true
+        },
+        {
+          "label_jp": "1 巡の交換回数",
+          "label_zh": "每趟的交换次数",
+          "label_en": "Swaps per pass",
+          "a_jp": "1 回まで",
+          "a_zh": "最多 1 次",
+          "a_en": "At most one",
+          "b_jp": "比べたときに逆順だった組の数だけ",
+          "b_zh": "与比较时顺序相反的相邻对数相同",
+          "b_en": "One for each pair found out of order when compared",
+          "key": false
+        },
+        {
+          "label_jp": "昇順の基本形で 1 巡に確定する値",
+          "label_zh": "升序基本形式下每趟确定的值",
+          "label_en": "Value fixed per pass (basic ascending form)",
+          "a_jp": "選んだ最小値 (先頭側)",
+          "a_zh": "选出的最小值（开头一侧）",
+          "a_en": "The chosen minimum (front side)",
+          "b_jp": "最大値 (末尾側)",
+          "b_zh": "最大值（末尾一侧）",
+          "b_en": "The maximum (end side)",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**探索**はデータの中から目的の値の位置を見つける処理、**整列**は値の大小順に並べ替える処理である。",
+    "**選択ソート**と**バブルソート**は、どちらも 1 巡ごとに端から値の位置が確定していき、比較回数はおよそ件数の 2 乗に比例する。",
+    "**クイックソート**は基準値で大小の組に分け、各組に同じ手順を繰り返す。平均では件数の 2 乗型の方法より比較回数が少ない。"
+  ],
+  "key_points_zh": [
+    "**查找**（[[jp:探索]]）是在数据中找出目标值所在位置的处理，**排序**（[[jp:整列]]）是按值的大小顺序重新排列的处理。",
+    "**选择排序**和**冒泡排序**都是每 1 趟从一端确定 1 个值的位置，比较次数大约与数据个数的平方成正比。",
+    "**快速排序**按基准值把数据分成较小组和较大组，并对各组重复同样的步骤。平均来看，它的比较次数比“平方型”方法少。"
+  ],
+  "key_points_en": [
+    "**Searching** ([[jp:探索]]) finds where a target value sits in the data, and **sorting** ([[jp:整列]]) rearranges the data in order of value.",
+    "**Selection sort** and **bubble sort** both fix one value's position from an end with each pass, and their comparisons grow roughly with the square of the number of items.",
+    "**Quick sort** splits the data into smaller and larger groups around a pivot and repeats the same steps on each group. On average it needs fewer comparisons than the square-type methods."
+  ],
+  "overview": {
+    "intro_jp": "線形探索法と2分探索法を、前提となるデータの並びと比較回数の増え方で区別できる。選択ソートとバブルソートで、並べ替えの途中の並びの変化を小さなデータで追える。クイックソートが基準値で組を分け、同じ手順を繰り返して並べる流れを説明できる。",
+    "intro_zh": "能从数据须满足的排列前提和比较次数的增长方式，区分线性查找法与二分查找法。能用少量数据，逐步跟踪选择排序和冒泡排序在排序过程中数据排列的变化。能说明快速排序如何用基准值把数据分组，并反复执行同一步骤完成排序。",
+    "intro_en": "Tell linear search from binary search by the ordering each assumes and by how the number of comparisons grows. Trace, on a small data set, how the order changes partway through a selection sort and a bubble sort. Explain how quick sort splits data into groups around a pivot and repeats the same steps to finish sorting.",
+    "freq_badge": "標準",
+    "est_minutes": 28
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "線形探索法: 線形探索法といえば先頭から順に1つずつ調べる",
-      "2分探索法: 2分探索法といえば整列済みを半分ずつ絞り込む",
-      "選択ソート: 選択ソートといえば最小値を選んで先頭に置く",
-      "バブルソート: バブルソートといえば隣同士を比較して交換",
-      "クイックソート: クイックソートといえば基準値で分けて分割統治"
-    ],
     "key_points_jp": [
-      "探索は線形探索法(先頭から順)と2分探索法(整列済みを半分ずつ絞る)の2つ。2分探索法はデータが整列済みであることが前提で、線形探索より高速。",
-      "整列(ソート)は選択ソート・バブルソート・クイックソートが代表。選択は最小値を選んで置く、バブルは隣同士を交換する点が違う。",
-      "クイックソートは基準値(ピボット)で大小2組に分け再帰的に処理する分割統治法で、選択・バブルより高速。",
-      "計算量の目安として、線形探索や選択・バブルソートはデータ数nが増えると処理時間が大きく増え、2分探索やクイックソートは効率がよい。",
-      "素朴な手法(線形探索・選択・バブル)と効率的な手法(2分探索・クイック)を対比して、仕組みと速さの違いを押さえることが試験対策の要点。"
+      "探索はデータの中から目的の値の位置を見つける処理、整列は値の大小順に並べ替える処理である。",
+      "選択ソートとバブルソートは、どちらも 1 巡ごとに端から値の位置が確定していき、比較回数はおよそ件数の 2 乗に比例する。",
+      "クイックソートは基準値で大小の組に分け、各組に同じ手順を繰り返す。平均では件数の 2 乗型の方法より比較回数が少ない。"
     ],
     "key_points_zh": [
-      "查找有线性查找法（从开头依次找）和二分查找法（对已排序数据每次缩小一半）两种。二分查找法以数据已排序为前提，比线性查找更快。",
-      "排序的代表是选择排序、冒泡排序和快速排序。区别在于：选择排序是选出最小值放置，冒泡排序是交换相邻两者。",
-      "快速排序是用基准值（pivot）将数据分成大小两组并递归处理的分治法，比选择排序和冒泡排序更快。",
-      "作为计算量的大致衡量，线性查找以及选择排序、冒泡排序在数据数 n 增加时处理时间会大幅增长，而二分查找和快速排序的效率较高。",
-      "把朴素的方法（线性查找、选择排序、冒泡排序）与高效的方法（二分查找、快速排序）对比，掌握其机制与速度的差异，是应考的要点。"
+      "查找（探索）是在数据中找出目标值所在位置的处理，排序（整列）是按值的大小顺序重新排列的处理。",
+      "选择排序和冒泡排序都是每 1 趟从一端确定 1 个值的位置，比较次数大约与数据个数的平方成正比。",
+      "快速排序按基准值把数据分成较小组和较大组，并对各组重复同样的步骤。平均来看，它的比较次数比“平方型”方法少。"
     ],
     "key_points_en": [
-      "There are two search methods: linear search (checking in order from the start) and binary search (narrowing sorted data by half each time). Binary search requires the data to be already sorted and is faster than linear search.",
-      "The representative sorts are selection sort, bubble sort, and quick sort. The difference is that selection sort selects the minimum and places it, while bubble sort swaps adjacent pairs.",
-      "Quick sort is a divide-and-conquer method that splits data into two groups (smaller and larger) by a pivot and processes them recursively, faster than selection sort and bubble sort.",
-      "As a rough measure of computational complexity, linear search and selection/bubble sort show a large increase in processing time as the number of data items n grows, whereas binary search and quick sort are efficient.",
-      "Contrasting the naive methods (linear search, selection sort, bubble sort) with the efficient methods (binary search, quick sort) and grasping the differences in how they work and in their speed is the key point for exam preparation."
+      "Searching (探索) finds where a target value sits in the data, and sorting (整列) rearranges the data in order of value.",
+      "Selection sort and bubble sort both fix one value's position from an end with each pass, and their comparisons grow roughly with the square of the number of items.",
+      "Quick sort splits the data into smaller and larger groups around a pivot and repeats the same steps on each group. On average it needs fewer comparisons than the square-type methods."
+    ],
+    "memory_hooks_jp": [
+      "線形探索法: 「線形」は一本の線。線をなぞるように、端から一方向へ進む。",
+      "2分探索法: 「2分」は 2 つに分けること。英語の binary search の binary も「2 つの」を表す。",
+      "選択ソート: 英語の selection は「選び出す」。代表選考のように、全員を見比べてから 1 人を選ぶ。",
+      "バブルソート: bubble は泡。大きな値が泡のように 1 つずつ端へ浮かび上がっていく。",
+      "クイックソート: quick は英語で「速い」の意味。"
     ],
     "memory_hooks_zh": [
-      "线性查找法：说到线性查找法，就是从开头依次逐个检查。",
-      "二分查找法：说到二分查找法，就是对已排序数据每次缩小一半。",
-      "选择排序：说到选择排序，就是选出最小值放到开头。",
-      "冒泡排序：说到冒泡排序，就是比较相邻两者并交换。",
-      "快速排序：说到快速排序，就是以基准值分组并分治。"
+      "线性查找法：“线性”就是一条线：像沿着线描一样，从一端朝一个方向推进。",
+      "二分查找法：“二分”就是一分为二。英文 binary search 中的 binary 也是“二”的意思。",
+      "选择排序：英文 selection 意为“挑选”：就像选拔代表，先把所有人比一遍，再选出 1 个。",
+      "冒泡排序：bubble 是“气泡”：大的值像气泡一样，一个个浮到末端。",
+      "快速排序：quick 在英文中是“快”的意思。"
     ],
     "memory_hooks_en": [
-      "Linear search: linear search → check one by one in order from the start.",
-      "Binary search: binary search → narrow sorted data by half each time.",
-      "Selection sort: selection sort → select the minimum and place it at the front.",
-      "Bubble sort: bubble sort → compare adjacent pairs and swap.",
-      "Quick sort: quick sort → split by a pivot and divide and conquer."
+      "Linear search: \"Linear\" means along a line: you trace it from one end in a single direction.",
+      "Binary search: The \"binary\" in binary search means \"two\": every step cuts the range in two.",
+      "Selection sort: Selection means picking out: like choosing a team captain, you compare everyone first and then pick one.",
+      "Bubble sort: A bubble rises: the large values float up to the end one at a time.",
+      "Quick sort: Quick, as the name says: on average it is fast."
     ]
   },
   "challenge_questions": [
-    "2010h22h-q053",
-    "2011h23a-q064",
-    "2011h23tokubetsu-q093",
-    "2013h25h-q053",
-    "2015h27a-q048"
+    "2023r05-q069",
+    "2023r05-q060",
+    "2025r07-q098",
+    "2026r08-q067"
   ],
   "source_figures": [
     {
@@ -218,9 +960,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "查找与排序算法",
-  "title_en": "Search and Sorting Algorithms",
-  "unit_summary_zh": "理解线性查找法、二分查找法这两种查找算法，以及选择排序、冒泡排序、快速排序这三种排序算法。",
-  "unit_summary_en": "Understand the search algorithms (linear search and binary search) and the sorting algorithms (selection sort, bubble sort, and quick sort)."
+  }
 }

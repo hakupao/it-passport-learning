@@ -1,73 +1,468 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-14-37-u01",
   "topic_id": "technology-14-37",
   "category": "technology",
   "title_jp": "制御構造と表現手法",
+  "title_zh": "控制结构与表示方法",
+  "title_en": "Control Structures and Notation Methods",
   "unit_summary_jp": "順次・選択・繰返しの3基本制御構造と、それを記述する流れ図・擬似言語などの表現手法を学ぶ。",
+  "unit_summary_zh": "学习顺序、选择、循环这3种基本控制结构，以及用来描述它们的流程图、伪代码等表示方法。",
+  "unit_summary_en": "Learn the three basic control structures—sequence, selection, and iteration—and the notation methods used to describe them, such as flowcharts and pseudocode.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、あらゆるアルゴリズムの骨格となる『順次・選択・繰返し』の3基本制御構造と、それを書き表すための表現手法(流れ図・フローチャート・擬似言語)を学びます。制御構造は構造化定理の土台であり、擬似言語は IPA 試験で多用される表記法のため、両者の理解はプログラミング分野の出発点として非常に重要です。",
-    "freq_badge": "標準",
-    "est_minutes": 18,
-    "intro_zh": "在本单元中，我们将学习构成一切算法骨架的「顺序、选择、循环」这3种基本控制结构，以及用来书写它们的表示方法(流程图、伪代码)。控制结构是结构化定理的基础，而伪代码又是 IPA 考试中大量使用的记法，因此理解这两者作为编程领域的出发点非常重要。",
-    "intro_en": "In this unit you will learn the three basic control structures—\"sequence, selection, and iteration\"—that form the skeleton of every algorithm, together with the notation methods used to write them out (flowcharts and pseudocode). Control structures are the foundation of the structured program theorem, and pseudocode is a notation heavily used in the IPA exam, so understanding both is very important as the starting point of the programming field."
-  },
-  "terms": [
+  "goals_jp": [
+    "3 つの **基本制御構造** を、処理の進み方 (一本道か、分かれるか、戻るか) で見分けられる",
+    "繰返しの **前判定** と **後判定**、**継続条件** と **終了条件** の違いを説明できる",
+    "**流れ図** の主な図記号と **擬似言語** の基本の書き方を読み、変数の値の変化をたどれる"
+  ],
+  "goals_zh": [
+    "能根据处理的推进方式（一路向下、分岔还是返回）区分三种 **基本控制结构**",
+    "能说明循环中 **前判定** 与 **后判定**、**继续条件** 与 **结束条件** 的区别",
+    "能读懂 **流程图** 的主要图形符号和 **伪代码** 的基本写法，并跟踪变量值的变化"
+  ],
+  "goals_en": [
+    "Tell the three **basic control structures** apart by how processing moves: straight through, branching, or looping back",
+    "Explain the difference between **pre-test** and **post-test** loops, and between a **continuation condition** and a **termination condition**",
+    "Read the main **flow diagram** symbols and basic **pseudocode** notation, and trace how variable values change"
+  ],
+  "overview_cols_jp": [
+    "区分",
+    "見分ける手がかり"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "辨别线索"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "How to tell it apart"
+  ],
+  "overview_rows": [
     {
       "term": "順次",
-      "definition_jp": "処理を記述した順番どおりに、上から1つずつ実行していく制御構造。",
-      "explanation_jp": "順次は、命令を書いた順番に上から下へ1つずつ実行していく最も基本的な制御構造です。分岐も繰返しもなく、処理が一直線に流れます。\n\n選択や繰返しといった他の制御構造も、その内部では結局この順次実行を含んでいるため、すべての土台となる概念です。試験では『順次・選択・繰返し』の3つが構造化定理(構造化プログラミング)の基本構造であることが問われます。順次は『分岐しない一本道の処理』と覚えておきましょう。",
-      "analogy_jp": "料理のレシピを手順1・2・3と上から順にこなしていくようなもの。途中で枝分かれせず、書かれた順番どおりに作業を1つずつ進めていきます。",
-      "memory_hook_jp": "順次といえば書いた順に上から1つずつ実行",
-      "inline_quiz": [
-        "2013h25h-q053"
+      "one_line_jp": "書かれた順に上から 1 つずつ実行する制御構造",
+      "one_line_zh": "按书写顺序从上到下逐个执行的控制结构",
+      "one_line_en": "A control structure that runs steps one at a time, top to bottom, in written order",
+      "extra_jp": [
+        "制御構造",
+        "分かれ道も戻りもない一本道"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "顺序",
-      "term_en": "Sequence",
-      "definition_zh": "按照编写处理的顺序，从上往下逐条执行的控制结构。",
-      "definition_en": "A control structure that executes operations one by one from top to bottom, in the order they are written.",
-      "explanation_zh": "顺序是按照命令的书写顺序，从上往下逐条执行的最基本的控制结构。它既没有分支也没有循环，处理沿一条直线流动。\n\n选择、循环等其他控制结构，在其内部归根结底也都包含这种顺序执行，因此它是一切结构的基础概念。考试中会考查「顺序、选择、循环」这三者是结构化定理(结构化程序设计)基本结构这一点。请记住顺序就是「不分支的单行道处理」。",
-      "explanation_en": "Sequence is the most basic control structure, executing instructions one by one from top to bottom in the order they are written. It has neither branching nor iteration, and the processing flows in a straight line.\n\nOther control structures such as selection and iteration also ultimately contain this sequential execution inside them, so it is the foundational concept underlying everything. The exam asks that these three—sequence, selection, and iteration—are the basic structures of the structured program theorem (structured programming). Remember that sequence is \"single-path processing that does not branch.\"",
-      "analogy_zh": "就像照着菜谱按步骤1、2、3从上往下逐步完成一样。中途不分岔，按照写好的顺序一步一步地推进工作。",
-      "analogy_en": "Like following a cooking recipe step by step 1, 2, 3 from top to bottom. There is no branching along the way; you carry out the work one step at a time in the order written.",
-      "memory_hook_zh": "说到顺序，就是按编写顺序从上往下逐条执行",
-      "memory_hook_en": "Sequence -> execute one by one from top to bottom in the written order"
+      "extra_zh": [
+        "控制结构",
+        "没有分岔也不返回的一条直路"
+      ],
+      "extra_en": [
+        "Control structure",
+        "One straight path with no branches or returns"
+      ]
     },
     {
       "term": "選択",
-      "definition_jp": "条件の真偽によって実行する処理を分岐させる制御構造。",
-      "explanation_jp": "選択は、ある条件が成り立つか(真)・成り立たないか(偽)によって、実行する処理を切り替える制御構造です。分岐構造とも呼ばれ、『もし〜ならばAを、そうでなければBを行う』という形で表します。\n\n条件によって処理を選ぶこの仕組みは、繰返しの継続判定の基礎にもなります。試験では、順次(分岐しない)との違いや、条件分岐を表す流れ図の『ひし形(判断記号)』が問われます。『条件で道が枝分かれする』のが選択です。",
-      "analogy_jp": "傘を持つか決めるようなもの。『雨が降りそうなら傘を持つ、そうでなければ持たない』と、条件しだいで取る行動を選び分けます。",
-      "memory_hook_jp": "選択といえば条件の真偽で処理を分岐",
-      "inline_quiz": [
-        "2010h22h-q095",
-        "2022r04-q079"
+      "one_line_jp": "条件の真偽で次に実行する処理を切り替える制御構造",
+      "one_line_zh": "根据条件的真假切换接下来要执行的处理的控制结构",
+      "one_line_en": "A control structure that switches the next step based on whether a condition is true or false",
+      "extra_jp": [
+        "制御構造",
+        "条件の結果ごとに別の処理へ分かれる"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "选择",
-      "term_en": "Selection",
-      "definition_zh": "根据条件的真假来分支所执行处理的控制结构。",
-      "definition_en": "A control structure that branches which operation is executed based on whether a condition is true or false.",
-      "explanation_zh": "选择是根据某个条件是否成立(真)/不成立(假)，来切换所执行处理的控制结构。它也称为分支结构，以「如果……则执行A，否则执行B」的形式来表示。\n\n这种根据条件来挑选处理的机制，也是循环中「是否继续」判定的基础。考试中会考查它与顺序(不分支)的区别，以及表示条件分支的流程图中的「菱形(判断符号)」。选择就是「根据条件让路径分岔」。",
-      "explanation_en": "Selection is a control structure that switches which operation is executed depending on whether a condition holds (true) or does not hold (false). It is also called a branching structure and is expressed in the form \"if ... then do A, otherwise do B.\"\n\nThis mechanism of choosing an operation based on a condition is also the basis for the continuation decision in iteration. The exam asks about the difference from sequence (which does not branch) and about the \"diamond (decision symbol)\" in a flowchart that represents conditional branching. Selection is \"the path branches according to a condition.\"",
-      "analogy_zh": "就像决定要不要带伞一样。「如果看起来要下雨就带伞，否则就不带」，根据条件来选择采取的行动。",
-      "analogy_en": "Like deciding whether to take an umbrella. \"If it looks like rain, take an umbrella; otherwise, don't,\" choosing your action depending on the condition.",
-      "memory_hook_zh": "说到选择，就是根据条件的真假来分支处理",
-      "memory_hook_en": "Selection -> branch the processing based on whether a condition is true or false"
+      "extra_zh": [
+        "控制结构",
+        "按条件的结果分别走向不同的处理"
+      ],
+      "extra_en": [
+        "Control structure",
+        "Splits off to a different step for each result of the condition"
+      ]
     },
     {
       "term": "繰返し",
-      "definition_jp": "条件が満たされる間、同じ処理を何度も実行する制御構造。",
-      "explanation_jp": "繰返しは、条件が成り立っている間、同じ処理を何度も繰り返し実行する制御構造です。反復構造・ループとも呼ばれ、内部に『繰返しを続けるかどうか』を判定する条件(選択の考え方)を含みます。\n\n判定を処理の前に行う『前判定』と、処理の後に行う『後判定』があり、前判定では条件しだいで一度も実行されない場合がある点が問われます。試験では、3基本構造の中で最も出題が多く、流れ図でループを表す記号や擬似言語の繰返し文の読み取りが頻出です。『条件を満たす間ぐるぐる回る』のが繰返しです。",
-      "analogy_jp": "『お湯が沸くまで待つ』を繰り返すようなもの。条件(沸いた)を満たすまで『確認する』動作を何度も繰り返し、満たした瞬間にループを抜けます。",
-      "memory_hook_jp": "繰返しといえば条件を満たす間ぐるぐる反復",
+      "one_line_jp": "条件を判定しながら同じ処理の範囲を繰り返し実行する制御構造",
+      "one_line_zh": "一边判断条件一边反复执行同一处理范围的控制结构",
+      "one_line_en": "A control structure that runs the same block of steps repeatedly while checking a condition",
+      "extra_jp": [
+        "制御構造",
+        "同じ処理の範囲を何度も通る"
+      ],
+      "extra_zh": [
+        "控制结构",
+        "多次经过同一处理范围"
+      ],
+      "extra_en": [
+        "Control structure",
+        "Passes through the same block many times"
+      ]
+    },
+    {
+      "term": "流れ図",
+      "one_line_jp": "処理の手順を図記号と矢印で表した図",
+      "one_line_zh": "用图形符号和箭头表示处理步骤的图",
+      "one_line_en": "A diagram that shows processing steps with symbols and arrows",
+      "extra_jp": [
+        "表現手法",
+        "端子や判断などの記号を線でつなぐ"
+      ],
+      "extra_zh": [
+        "表示方法",
+        "用线连接端点、判断等符号"
+      ],
+      "extra_en": [
+        "Notation",
+        "Lines connect symbols such as terminals and decisions"
+      ]
+    },
+    {
+      "term": "フローチャート",
+      "one_line_jp": "流れ図の英語名で、同じ図を指す",
+      "one_line_zh": "“流程图”（[[jp:流れ図]]）的英文叫法，指同一种图",
+      "one_line_en": "The English name for the flow diagram ([[jp:流れ図]]); both mean the same diagram",
+      "extra_jp": [
+        "表現手法",
+        "呼び名が違うだけで中身は流れ図と同じ"
+      ],
+      "extra_zh": [
+        "表示方法",
+        "只是叫法不同，内容与流程图相同"
+      ],
+      "extra_en": [
+        "Notation",
+        "Only the name differs; the diagram is the same"
+      ]
+    },
+    {
+      "term": "擬似言語",
+      "one_line_jp": "特定の言語に縛られずに手順を決まった書式の文字で書く表記法",
+      "one_line_zh": "不受特定语言约束、用固定格式的文字书写步骤的表示法",
+      "one_line_en": "A notation that writes steps as text in a fixed format, independent of any specific language",
+      "extra_jp": [
+        "表現手法",
+        "代入の矢印や if・while などの書式で書く"
+      ],
+      "extra_zh": [
+        "表示方法",
+        "用赋值箭头以及 if、while 等格式书写"
+      ],
+      "extra_en": [
+        "Notation",
+        "Uses an assignment arrow and forms such as if and while"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "順次",
+      "term_zh": "顺序",
+      "term_en": "Sequence",
+      "one_jp": "**順次** は、処理を書かれた順に上から 1 つずつ実行していく制御構造である。",
+      "one_zh": "**顺序**（[[jp:順次]]）是按书写顺序从上到下逐个执行处理的控制结构。",
+      "one_en": "**Sequence** ([[jp:順次]]) is a control structure that runs steps one at a time, top to bottom, in the order they are written.",
+      "detail_jp": "**アルゴリズム** は目的を果たすための処理の手順のことで、どんな手順も順次に **選択** と **繰返し** を加えた 3 つの **基本制御構造** の組合せで書ける (構造化定理)。順次では分かれ道も戻りもなく、処理が一本道で進む。",
+      "detail_zh": "**算法**（[[jp:アルゴリズム]]）是为达成目的而进行处理的步骤，任何步骤都能用顺序加上 **选择** 和 **循环** 这三种 **基本控制结构**（[[jp:基本制御構造]]）的组合来书写（结构化定理）。在顺序结构中既没有岔路也没有返回，处理沿一条直路推进。",
+      "detail_en": "An **algorithm** ([[jp:アルゴリズム]]) is a procedure of processing steps that achieves a goal, and any procedure can be built from three **basic control structures** ([[jp:基本制御構造]]): sequence plus **selection** and **iteration** (the structured program theorem). A sequence has no branches and no returns, so processing follows one straight path.",
+      "analogy_jp": "カップ麺を作るときに、お湯を注ぐ、待つ、ふたを開ける、を書いてある順にこなすのと同じ。",
+      "analogy_zh": "就像做泡面时，按包装上写的顺序依次倒热水、等待、揭开盖子。",
+      "analogy_en": "It is like making instant noodles: pour in hot water, wait, then peel back the lid, in exactly the order printed on the cup.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "アルゴリズムは特定の目的を果たすための処理の手順そのものを指す。書き表す言語を変えても、手順の中身は変わらない。",
+          "text_zh": "算法（[[jp:アルゴリズム]]）指的是为达成特定目的而进行处理的步骤本身。即使换一种语言来书写，步骤的内容也不会改变。",
+          "text_en": "An algorithm ([[jp:アルゴリズム]]) is the processing procedure itself for achieving a specific goal. Writing it in a different language does not change what the procedure does.",
+          "qids": [
+            "2013h25h-q053"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "繰り返す範囲に並べた複数の処理も順次で実行され、1 周ごとに上から同じ順で実行し直される。",
+          "text_zh": "放在循环范围内的多个处理也按顺序（[[jp:順次]]）执行，每一轮都从上到下按同样的次序重新执行。",
+          "text_en": "Several steps placed inside a loop also run in sequence ([[jp:順次]]), and each pass runs them again from the top in the same order.",
+          "qids": [
+            "2026r08-q088"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "s1",
+              "label": {
+                "jp": "a に 5 を入れる",
+                "zh": "把 5 存入 a",
+                "en": "Store 5 in a"
+              }
+            },
+            {
+              "id": "s2",
+              "label": {
+                "jp": "b に 3 を入れる",
+                "zh": "把 3 存入 b",
+                "en": "Store 3 in b"
+              }
+            },
+            {
+              "id": "s3",
+              "label": {
+                "jp": "a と b の和を表示する",
+                "zh": "显示 a 与 b 之和",
+                "en": "Display the sum of a and b"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "1 つ目の処理を実行し、a の値が 5 になる。",
+            "caption_zh": "执行第 1 个处理，a 的值变为 5。",
+            "caption_en": "The first step runs, and a becomes 5.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "次の処理へ進み、b の値が 3 になる。",
+            "caption_zh": "进入下一个处理，b 的值变为 3。",
+            "caption_en": "Processing moves to the next step, and b becomes 3.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "最後の処理で和の 8 を表示して終わる。途中で分かれも戻りもしない。",
+            "caption_zh": "最后一个处理显示和 8 后结束。途中既不分岔也不返回。",
+            "caption_en": "The last step displays the sum, 8, and processing ends. Nothing branches or loops back along the way.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2013h25h-q053",
+        "2026r08-q088"
+      ],
+      "definition_jp": "順次 は、処理を書かれた順に上から 1 つずつ実行していく制御構造である。",
+      "definition_zh": "顺序（順次）是按书写顺序从上到下逐个执行处理的控制结构。",
+      "definition_en": "Sequence (順次) is a control structure that runs steps one at a time, top to bottom, in the order they are written.",
+      "explanation_jp": "アルゴリズム は目的を果たすための処理の手順のことで、どんな手順も順次に 選択 と 繰返し を加えた 3 つの 基本制御構造 の組合せで書ける (構造化定理)。順次では分かれ道も戻りもなく、処理が一本道で進む。",
+      "explanation_zh": "算法（アルゴリズム）是为达成目的而进行处理的步骤，任何步骤都能用顺序加上 选择 和 循环 这三种 基本控制结构（基本制御構造）的组合来书写（结构化定理）。在顺序结构中既没有岔路也没有返回，处理沿一条直路推进。",
+      "explanation_en": "An algorithm (アルゴリズム) is a procedure of processing steps that achieves a goal, and any procedure can be built from three basic control structures (基本制御構造): sequence plus selection and iteration (the structured program theorem). A sequence has no branches and no returns, so processing follows one straight path.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2013h25h-q053",
+        "2026r08-q088"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "選択",
+      "term_zh": "选择",
+      "term_en": "Selection",
+      "one_jp": "**選択** は、**条件** が成り立つ (真) か成り立たない (偽) かによって、次に実行する処理を切り替える制御構造である。",
+      "one_zh": "**选择**（[[jp:選択]]）是根据 **条件** 成立（真）还是不成立（假），切换下一步要执行的处理的控制结构。",
+      "one_en": "**Selection** ([[jp:選択]]) is a control structure that switches the next step depending on whether a **condition** ([[jp:条件]]) holds (true) or does not hold (false).",
+      "detail_jp": "**分岐** とも呼び、図で描くときはひし形の **判断** の記号から真と偽 (Yes と No) などの結果ごとに線を出す。選択の中に別の選択を入れると、3 通り以上に処理を分けられる。",
+      "detail_zh": "也称为 **分支**（[[jp:分岐]]），画图时从菱形的 **判断** 符号按真和假（Yes 和 No）等结果分别引出线。在选择中再放入另一个选择，就能把处理分成 3 种以上。",
+      "detail_en": "Selection is also called **branching** ([[jp:分岐]]); in a diagram, one line leaves the diamond-shaped **decision** ([[jp:判断]]) symbol for each result, such as true and false (Yes and No). Placing one selection inside another divides processing into three or more paths.",
+      "analogy_jp": "駅の改札で、切符が有効なら扉が開き、無効なら閉じたままになる仕組み。",
+      "analogy_zh": "就像车站的检票口：车票有效闸门就打开，无效就保持关闭。",
+      "analogy_en": "It works like a station ticket gate: a valid ticket opens the gate, and an invalid one keeps it shut.",
+      "hook_jp": "英語では selection、プログラムでは if (もし) で始める書き方が多い。",
+      "hook_zh": "英语叫 selection，程序里多用 if（如果）开头来写。",
+      "hook_en": "Programs usually write a selection starting with the word if.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "選択の内側に別の選択を入れる (入れ子にする) と、外側の条件で進んだ側にある内側の条件で、更に処理が分かれる。",
+          "text_zh": "在选择（[[jp:選択]]）的内部再放入另一个选择（嵌套）时，按外层条件进入的那一侧中的内层条件会把处理进一步分开。",
+          "text_en": "When one selection ([[jp:選択]]) is placed inside another (nesting), the inner condition on the side the outer condition leads to splits processing further.",
+          "qids": [
+            "2025r07-q099"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "判断を縦に並べてデータを区分ごとに振り分けるときは、該当する件数の多い区分を先に調べるほど比較の合計回数が減る。",
+          "text_zh": "把判断纵向排列、按类别分配数据时，越先检查符合件数多的类别，比较的总次数就越少。",
+          "text_en": "When decisions ([[jp:判断]]) are stacked vertically to sort data into categories, checking the categories with more matching items first reduces the total number of comparisons.",
+          "qids": [
+            "2015h27a-q048"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "steps",
+        "data": {
+          "root": {
+            "id": "c1",
+            "label": {
+              "jp": "点数は 80 以上か",
+              "zh": "分数在 80 分以上吗",
+              "en": "Score 80 or higher?"
+            },
+            "children": [
+              {
+                "id": "ra",
+                "label": {
+                  "jp": "真: 評価 A",
+                  "zh": "真：评价 A",
+                  "en": "True: grade A"
+                }
+              },
+              {
+                "id": "c2",
+                "label": {
+                  "jp": "偽: 点数は 60 以上か",
+                  "zh": "假：分数在 60 分以上吗",
+                  "en": "False: score 60 or higher?"
+                },
+                "children": [
+                  {
+                    "id": "rb",
+                    "label": {
+                      "jp": "真: 評価 B",
+                      "zh": "真：评价 B",
+                      "en": "True: grade B"
+                    }
+                  },
+                  {
+                    "id": "rc",
+                    "label": {
+                      "jp": "偽: 評価 C",
+                      "zh": "假：评价 C",
+                      "en": "False: grade C"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "steps": [
+          {
+            "caption_jp": "最初の条件を調べる。",
+            "caption_zh": "检查第一个条件。",
+            "caption_en": "Check the first condition.",
+            "state": {
+              "depth": 1
+            }
+          },
+          {
+            "caption_jp": "真なら評価 A に決まり、偽なら 2 つ目の条件へ進む。",
+            "caption_zh": "为真则定为评价 A，为假则进入第二个条件。",
+            "caption_en": "If true, the grade is A; if false, move on to the second condition.",
+            "state": {
+              "depth": 2
+            }
+          },
+          {
+            "caption_jp": "2 つ目の条件の真偽で評価 B か C に分かれる。選択を入れ子にすると 3 通り以上に分けられる。",
+            "caption_zh": "第二个条件的真假决定评价是 B 还是 C。把选择嵌套起来，就能分成 3 种以上的情况。",
+            "caption_en": "The second condition decides between grade B and C. Nesting selections lets you split processing into three or more cases.",
+            "state": {
+              "depth": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2015h27a-q048",
+        "2025r07-q099"
+      ],
+      "definition_jp": "選択 は、条件 が成り立つ (真) か成り立たない (偽) かによって、次に実行する処理を切り替える制御構造である。",
+      "definition_zh": "选择（選択）是根据 条件 成立（真）还是不成立（假），切换下一步要执行的处理的控制结构。",
+      "definition_en": "Selection (選択) is a control structure that switches the next step depending on whether a condition (条件) holds (true) or does not hold (false).",
+      "explanation_jp": "分岐 とも呼び、図で描くときはひし形の 判断 の記号から真と偽 (Yes と No) などの結果ごとに線を出す。選択の中に別の選択を入れると、3 通り以上に処理を分けられる。",
+      "explanation_zh": "也称为 分支（分岐），画图时从菱形的 判断 符号按真和假（Yes 和 No）等结果分别引出线。在选择中再放入另一个选择，就能把处理分成 3 种以上。",
+      "explanation_en": "Selection is also called branching (分岐); in a diagram, one line leaves the diamond-shaped decision (判断) symbol for each result, such as true and false (Yes and No). Placing one selection inside another divides processing into three or more paths.",
+      "memory_hook_jp": "英語では selection、プログラムでは if (もし) で始める書き方が多い。",
+      "memory_hook_zh": "英语叫 selection，程序里多用 if（如果）开头来写。",
+      "memory_hook_en": "Programs usually write a selection starting with the word if.",
+      "inline_quiz": [
+        "2015h27a-q048",
+        "2025r07-q099"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "繰返し",
+      "term_zh": "循环",
+      "term_en": "Iteration",
+      "one_jp": "**繰返し** は、条件を判定しながら同じ処理の範囲 (**本体**) を繰り返し実行する制御構造で、**ループ** ともいう。",
+      "one_zh": "**循环**（[[jp:繰返し]]）是一边判断条件、一边反复执行同一处理范围（**循环体**，[[jp:本体]]）的控制结构，也叫 **loop**（[[jp:ループ]]）。",
+      "one_en": "**Iteration** ([[jp:繰返し]]) is a control structure that runs the same block of steps (the **body**, [[jp:本体]]) again and again while checking a condition; it is also called a **loop** ([[jp:ループ]]).",
+      "detail_jp": "条件を調べる位置によって、処理の前に調べる **前判定** と、処理の後に調べる **後判定** がある。条件には、成り立つ間続ける **継続条件** と、成り立ったら抜ける **終了条件** の書き方がある。回数を決めて回すときは、変数の **初期値**・**増分**・**終値** を指定する。",
+      "detail_zh": "根据检查条件的位置，分为在处理之前检查的 **前判定** 和在处理之后检查的 **后判定**（[[jp:後判定]]）。条件有两种写法：成立期间一直继续的 **继续条件**（[[jp:継続条件]]），以及一旦成立就退出的 **结束条件**（[[jp:終了条件]]）。按确定的次数循环时，要指定变量的 **初始值**（[[jp:初期値]]）、**增量**（[[jp:増分]]）和 **终值**（[[jp:終値]]）。",
+      "detail_en": "Depending on where the condition is checked, there is the **pre-test** loop ([[jp:前判定]]), which checks before the steps, and the **post-test** loop ([[jp:後判定]]), which checks after them. A condition can be written as a **continuation condition** ([[jp:継続条件]]), which keeps the loop going while it holds, or as a **termination condition** ([[jp:終了条件]]), which exits once it holds. For a loop with a set number of passes, you specify the variable's **initial value** ([[jp:初期値]]), **increment** ([[jp:増分]]), and **final value** ([[jp:終値]]).",
+      "analogy_jp": "階段を上るときに、まだ上の段があるかを確かめ、あれば 1 段上がり、なくなったら止まる動き。",
+      "analogy_zh": "就像爬楼梯：先确认上面还有没有台阶，有就上一级，没有了就停下。",
+      "analogy_en": "It is like climbing stairs: check whether there is another step above, climb it if there is, and stop when none are left.",
+      "hook_jp": "ループ (loop) は英語で「輪」の意味。判断の記号で描く図では矢印が輪のように上へ戻り、同じ範囲をもう一度通る。",
+      "hook_zh": "ループ（loop）在英语里是“环”的意思。用判断符号画的图中，箭头像一个环一样向上绕回，再次经过同一范围。",
+      "hook_en": "A loop is literally a ring, and in a diagram drawn with a decision the arrow curves back up like one, so the same range is passed through again.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "繰返しの結果を求めるには、1 周ごとに変数の値を書き出し、終了の判定が成り立つ周で止める。",
+          "text_zh": "要求出循环（[[jp:繰返し]]）的结果，就逐轮写出变量的值，在结束判断成立的那一轮停下。",
+          "text_en": "To find the result of a loop ([[jp:繰返し]]), write down the variable values pass by pass and stop at the pass where the exit check holds.",
+          "qids": [
+            "2010h22a-q069",
+            "2025r07-q098"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "1 ずつ数える繰返しでは、カウンタの初期値と終了判定の境目 (未満か以下か) の組合せで実行回数が決まる。どちらかを 1 ずらすと回数も 1 回ずれる。",
+          "text_zh": "在每次加 1 计数的循环（[[jp:繰返し]]）中，执行次数由计数器的初始值（[[jp:初期値]]）和结束判断的边界（小于还是小于等于）的组合决定。其中任何一方偏移 1，次数也会偏移 1 次。",
+          "text_en": "In a loop ([[jp:繰返し]]) that counts up by 1, the number of passes depends on the counter's initial value ([[jp:初期値]]) combined with the boundary of the exit check (less than, or less than or equal to). Shifting either one by 1 shifts the count by one pass.",
+          "qids": [
+            "2026r08-q088"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "変数を初期値から増分ずつ変えて終値まで回す繰返しでは、変数がとる値の並び (例えば 1 から 9 まで 4 ずつなら 1, 5, 9) が本体の計算に使われる。",
+          "text_zh": "在让变量从初始值（[[jp:初期値]]）按增量（[[jp:増分]]）变化到终值（[[jp:終値]]）的循环（[[jp:繰返し]]）中，变量依次取的值（例如从 1 到 9、每次加 4，就是 1、5、9）会用于循环体的计算。",
+          "text_en": "In a loop ([[jp:繰返し]]) that steps a variable from its initial value ([[jp:初期値]]) by an increment ([[jp:増分]]) up to its final value ([[jp:終値]]), the series of values it takes (for example 1, 5, 9 when going from 1 to 9 in steps of 4) feeds the calculation in the body.",
+          "qids": [
+            "2021r03-q074",
+            "2022r04-q096"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-14-37-u01-t01.svg"
+        }
+      },
+      "quiz": [
+        "2010h22a-q069",
+        "2025r07-q098",
+        "2011h23a-q064"
+      ],
+      "definition_jp": "繰返し は、条件を判定しながら同じ処理の範囲 (本体) を繰り返し実行する制御構造で、ループ ともいう。",
+      "definition_zh": "循环（繰返し）是一边判断条件、一边反复执行同一处理范围（循环体，本体）的控制结构，也叫 loop（ループ）。",
+      "definition_en": "Iteration (繰返し) is a control structure that runs the same block of steps (the body, 本体) again and again while checking a condition; it is also called a loop (ループ).",
+      "explanation_jp": "条件を調べる位置によって、処理の前に調べる 前判定 と、処理の後に調べる 後判定 がある。条件には、成り立つ間続ける 継続条件 と、成り立ったら抜ける 終了条件 の書き方がある。回数を決めて回すときは、変数の 初期値・増分・終値 を指定する。",
+      "explanation_zh": "根据检查条件的位置，分为在处理之前检查的 前判定 和在处理之后检查的 后判定（後判定）。条件有两种写法：成立期间一直继续的 继续条件（継続条件），以及一旦成立就退出的 结束条件（終了条件）。按确定的次数循环时，要指定变量的 初始值（初期値）、增量（増分）和 终值（終値）。",
+      "explanation_en": "Depending on where the condition is checked, there is the pre-test loop (前判定), which checks before the steps, and the post-test loop (後判定), which checks after them. A condition can be written as a continuation condition (継続条件), which keeps the loop going while it holds, or as a termination condition (終了条件), which exits once it holds. For a loop with a set number of passes, you specify the variable's initial value (初期値), increment (増分), and final value (終値).",
+      "memory_hook_jp": "ループ (loop) は英語で「輪」の意味。判断の記号で描く図では矢印が輪のように上へ戻り、同じ範囲をもう一度通る。",
+      "memory_hook_zh": "ループ（loop）在英语里是“环”的意思。用判断符号画的图中，箭头像一个环一样向上绕回，再次经过同一范围。",
+      "memory_hook_en": "A loop is literally a ring, and in a diagram drawn with a decision the arrow curves back up like one, so the same range is passed through again.",
       "inline_quiz": [
         "2010h22a-q069",
+        "2025r07-q098",
         "2011h23a-q064"
       ],
       "inline_fallback": false,
@@ -75,145 +470,556 @@
         "mermaid": "graph TD; A[\"処理の開始\"]; A --> B{\"継続条件は真か\"}; B -->|\"真\"| C[\"処理を実行\"]; C --> B; B -->|\"偽\"| D[\"繰返しを終了\"]",
         "svg_path": "figures/technology-14-37-u01-t01.svg",
         "rendered": true
-      },
-      "term_zh": "循环",
-      "term_en": "Iteration",
-      "definition_zh": "在条件满足期间，反复多次执行同一处理的控制结构。",
-      "definition_en": "A control structure that executes the same operation repeatedly while a condition is satisfied.",
-      "explanation_zh": "循环是在条件成立期间，反复多次执行同一处理的控制结构。它也称为反复结构、循环(loop)，内部包含一个判定「是否继续循环」的条件(即选择的思路)。\n\n它分为在处理之前进行判定的「前判定」和在处理之后进行判定的「后判定」，会考查前判定中根据条件可能一次都不执行这一点。考试中，它在3种基本结构里出题最多，常考流程图里表示循环的符号以及伪代码循环语句的读取。循环就是「在满足条件期间不停打转」。",
-      "explanation_en": "Iteration is a control structure that executes the same operation over and over while a condition holds. It is also called a repetition structure or a loop, and it contains inside it a condition (the idea of selection) that decides \"whether to continue the loop.\"\n\nThere is \"pre-testing,\" where the decision is made before the operation, and \"post-testing,\" where it is made after the operation; the exam asks that with pre-testing the operation may not run even once depending on the condition. In the exam, iteration is asked the most among the three basic structures, and the symbols representing a loop in a flowchart and reading iteration statements in pseudocode appear frequently. Iteration is \"going round and round while the condition is satisfied.\"",
-      "analogy_zh": "就像反复做「等水烧开」这件事一样。在满足条件(烧开了)之前，一次次重复「确认」这个动作，一旦满足就跳出循环。",
-      "analogy_en": "Like repeating \"wait until the water boils.\" You repeat the action of \"checking\" again and again until the condition (boiled) is met, and the moment it is met you exit the loop.",
-      "memory_hook_zh": "说到循环，就是在满足条件期间不停打转反复",
-      "memory_hook_en": "Iteration -> repeat round and round while the condition is satisfied"
+      }
     },
     {
       "term": "流れ図",
-      "definition_jp": "処理の流れを定められた図記号と矢印で表す図。フローチャート。",
-      "explanation_jp": "流れ図は、処理の手順や流れを、決められた図記号と矢印を使って視覚的に表した図です。順次・選択・繰返しの3基本制御構造を、誰が見ても分かる形で図示できます。\n\n主な記号には、処理を表す長方形、条件分岐を表すひし形(判断)、開始・終了を表す角丸の端子などがあり、矢印で流れの向きを示します。試験では、各図記号が何を表すか、また流れ図を順にたどって処理結果を求める読み取り問題が頻出です。『処理の流れを図記号で見える化したもの』が流れ図です。",
-      "analogy_jp": "旅行の道順を地図に矢印で書き込むようなもの。分かれ道(分岐)や同じ道を回る区間(繰返し)を、決まった記号と矢印で誰にでも追えるように描き表します。",
-      "memory_hook_jp": "流れ図といえば処理の流れを図記号と矢印で表す",
-      "inline_quiz": [
-        "2015h27a-q048",
-        "2015h27h-q059"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"端子(開始・終了)\"]; B[\"処理を表す長方形\"]; C[\"判断を表すひし形\"]; A --> B; B --> C; C --> A",
-        "svg_path": "figures/technology-14-37-u01-t02.svg",
-        "rendered": true
-      },
       "term_zh": "流程图",
       "term_en": "Flow diagram",
-      "definition_zh": "用规定的图形符号和箭头表示处理流程的图。即流程图(flowchart)。",
-      "definition_en": "A diagram that represents the flow of processing using defined graphic symbols and arrows. A flowchart.",
-      "explanation_zh": "流程图是用规定的图形符号和箭头，将处理的步骤和流程直观地表示出来的图。它能把顺序、选择、循环这3种基本控制结构，以人人都看得懂的形式图示出来。\n\n主要符号有表示处理的长方形、表示条件分支的菱形(判断)、表示开始/结束的圆角端子等，并用箭头指示流程的方向。考试中常考各个图形符号表示什么，以及顺着流程图依次追踪、求出处理结果的读取题。流程图就是「把处理流程用图形符号可视化的东西」。",
-      "explanation_en": "A flow diagram is a diagram that visually represents the steps and flow of processing using defined graphic symbols and arrows. It can illustrate the three basic control structures—sequence, selection, and iteration—in a form that anyone can understand.\n\nThe main symbols include a rectangle for processing, a diamond (decision) for conditional branching, and rounded terminators for start and end, with arrows indicating the direction of flow. The exam frequently asks what each graphic symbol represents, as well as reading problems where you follow the flowchart in order to find the processing result. A flow diagram is \"making the flow of processing visible with graphic symbols.\"",
-      "analogy_zh": "就像把旅行的路线用箭头标注在地图上一样。把岔路(分支)和绕同一段路的区间(循环)，用固定的符号和箭头画出来，让任何人都能跟着走。",
-      "analogy_en": "Like marking a travel route on a map with arrows. Forks (branches) and segments that loop around the same road (iteration) are drawn with fixed symbols and arrows so that anyone can follow them.",
-      "memory_hook_zh": "说到流程图，就是用图形符号和箭头表示处理流程",
-      "memory_hook_en": "Flow diagram -> represent the flow of processing with graphic symbols and arrows"
-    },
-    {
-      "term": "フローチャート",
-      "definition_jp": "流れ図の英語名で、同じく処理の流れを図記号で表したもの。",
-      "explanation_jp": "フローチャートは流れ図の英語名(flowchart)で、両者は基本的に同じものを指します。処理の流れを、定められた図記号と矢印を使って視覚的に表現します。\n\n日本語の試験問題では『流れ図』、英語由来の場面では『フローチャート』と呼ばれることが多いですが、表す内容も使う記号も同じです。試験では、流れ図とフローチャートが同義であることを押さえ、用語の言い換えに惑わされないことが大切です。『フローチャート=流れ図(英語名)』と対応づけて覚えましょう。",
-      "analogy_jp": "『すし』と『SUSHI』が同じ料理を指すようなもの。呼び名が日本語か英語かの違いだけで、表している中身(処理の流れを図記号で示すこと)はまったく同じです。",
-      "memory_hook_jp": "フローチャートといえば流れ図の英語名で同じもの",
+      "one_jp": "**流れ図** は、処理の手順を決められた図記号と矢印 (流れ線) でつないで表した図である。",
+      "one_zh": "**流程图**（[[jp:流れ図]]）是用规定的图形符号和箭头（流程线）连接起来、表示处理步骤的图。",
+      "one_en": "A **flow diagram** ([[jp:流れ図]]) shows processing steps as standard symbols joined by arrows (flow lines).",
+      "detail_jp": "主な図記号には、例えば開始と終了を示す **端子**、計算などを表す **処理**、条件で道を分ける **判断**、繰返しの範囲を上下から挟む **ループ端** がある。上から下、左から右へ読むのが基本で、それ以外の向きに進むときは矢印で示す。3 つの基本制御構造は、記号を縦につなぐ形、判断で分かれる形、ループ端で挟む形 (または判断から上へ戻る形) で描ける。",
+      "detail_zh": "主要的图形符号有：例如表示开始和结束的 **端点**（[[jp:端子]]）、表示计算等的 **处理**、按条件分路的 **判断**，以及从上下夹住循环范围的 **循环端点**（[[jp:ループ端]]）。阅读时基本按从上到下、从左到右的方向，朝其他方向前进时用箭头标出。三种基本控制结构分别可以画成：符号纵向相连的形式、由判断分岔的形式、用循环端点夹住的形式（或从判断向上返回的形式）。",
+      "detail_en": "The main symbols include, for example, the **terminal** ([[jp:端子]]) for start and end, the **process** ([[jp:処理]]) for calculations, the **decision** ([[jp:判断]]) that splits the path by a condition, and the **loop limit** ([[jp:ループ端]]) placed above and below the repeated range. The basic reading direction is top to bottom and left to right, and arrows mark any other direction. The three basic control structures appear as symbols linked vertically, as a split at a decision, and as a range enclosed by loop limits (or an arrow from a decision back upward).",
+      "analogy_jp": "道案内の地図に、分かれ道と回り道を決まった印で書き込み、矢印で進む向きを示したもの。",
+      "analogy_zh": "就像在导航地图上用固定的记号标出岔路和绕行路，再用箭头标明前进方向。",
+      "analogy_en": "It is like a route map that marks forks and detours with fixed symbols and uses arrows to show which way to go.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ループ端には、繰返しの条件か、変数の初期値・増分・終値を書く。条件を終了条件として書いたときは、ループ端の位置で判定して成り立てば繰返しを抜ける。",
+          "text_zh": "循环端点（[[jp:ループ端]]）上写循环（[[jp:繰返し]]）的条件，或者写变量的初始值（[[jp:初期値]]）、增量（[[jp:増分]]）和终值（[[jp:終値]]）。把条件作为结束条件（[[jp:終了条件]]）书写时，在循环端点的位置进行判断，成立就退出循环。",
+          "text_en": "A loop limit ([[jp:ループ端]]) holds either the condition of the loop ([[jp:繰返し]]) or the variable's initial value ([[jp:初期値]]), increment ([[jp:増分]]), and final value ([[jp:終値]]). When the condition is written as a termination condition ([[jp:終了条件]]), it is checked at the loop limit, and the loop exits once it holds.",
+          "qids": [
+            "2021r03-q074",
+            "2022r04-q079"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "流れ図の結果は、データごとに判断の分岐を線に沿ってたどって求める。ある枝へ進んだデータは、別の枝にある判断を通らない。",
+          "text_zh": "流程图（[[jp:流れ図]]）的结果，要针对每条数据沿着线追踪判断的分支来求得。进入某一分支的数据，不会经过另一分支上的判断。",
+          "text_en": "To get the result of a flow diagram ([[jp:流れ図]]), follow each data item along the lines through the branches at each decision ([[jp:判断]]). Data that goes down one branch never passes the decisions on another branch.",
+          "qids": [
+            "2015h27a-q048"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "記号の名前",
+              "zh": "符号名称",
+              "en": "Symbol"
+            },
+            {
+              "jp": "形",
+              "zh": "形状",
+              "en": "Shape"
+            },
+            {
+              "jp": "表すもの",
+              "zh": "表示的内容",
+              "en": "Meaning"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "端子",
+                  "zh": "端点",
+                  "en": "Terminal"
+                },
+                {
+                  "jp": "両端が丸い横長の形",
+                  "zh": "两端为圆弧的横长形",
+                  "en": "Wide shape with rounded ends"
+                },
+                {
+                  "jp": "開始と終了",
+                  "zh": "开始与结束",
+                  "en": "Start and end"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "処理",
+                  "zh": "处理",
+                  "en": "Process"
+                },
+                {
+                  "jp": "長方形",
+                  "zh": "矩形",
+                  "en": "Rectangle"
+                },
+                {
+                  "jp": "計算や代入などの処理",
+                  "zh": "计算、赋值等处理",
+                  "en": "Processing such as calculation or assignment"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "判断",
+                  "zh": "判断",
+                  "en": "Decision"
+                },
+                {
+                  "jp": "ひし形",
+                  "zh": "菱形",
+                  "en": "Diamond"
+                },
+                {
+                  "jp": "条件による分かれ道",
+                  "zh": "按条件分出的岔路",
+                  "en": "A fork based on a condition"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "ループ端",
+                  "zh": "循环端点",
+                  "en": "Loop limit"
+                },
+                {
+                  "jp": "角を落とした長方形 (上下で対)",
+                  "zh": "切去角的矩形（上下成对）",
+                  "en": "Rectangle with clipped corners (paired top and bottom)"
+                },
+                {
+                  "jp": "繰返しの始まりと終わり",
+                  "zh": "循环的开始与结束",
+                  "en": "Start and end of a loop"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "流れ線",
+                  "zh": "流程线",
+                  "en": "Flow line"
+                },
+                {
+                  "jp": "線・矢印",
+                  "zh": "线、箭头",
+                  "en": "Line or arrow"
+                },
+                {
+                  "jp": "処理の進む向き",
+                  "zh": "处理推进的方向",
+                  "en": "Direction of processing"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2022r04-q079",
+        "2021r03-q074"
+      ],
+      "definition_jp": "流れ図 は、処理の手順を決められた図記号と矢印 (流れ線) でつないで表した図である。",
+      "definition_zh": "流程图（流れ図）是用规定的图形符号和箭头（流程线）连接起来、表示处理步骤的图。",
+      "definition_en": "A flow diagram (流れ図) shows processing steps as standard symbols joined by arrows (flow lines).",
+      "explanation_jp": "主な図記号には、例えば開始と終了を示す 端子、計算などを表す 処理、条件で道を分ける 判断、繰返しの範囲を上下から挟む ループ端 がある。上から下、左から右へ読むのが基本で、それ以外の向きに進むときは矢印で示す。3 つの基本制御構造は、記号を縦につなぐ形、判断で分かれる形、ループ端で挟む形 (または判断から上へ戻る形) で描ける。",
+      "explanation_zh": "主要的图形符号有：例如表示开始和结束的 端点（端子）、表示计算等的 处理、按条件分路的 判断，以及从上下夹住循环范围的 循环端点（ループ端）。阅读时基本按从上到下、从左到右的方向，朝其他方向前进时用箭头标出。三种基本控制结构分别可以画成：符号纵向相连的形式、由判断分岔的形式、用循环端点夹住的形式（或从判断向上返回的形式）。",
+      "explanation_en": "The main symbols include, for example, the terminal (端子) for start and end, the process (処理) for calculations, the decision (判断) that splits the path by a condition, and the loop limit (ループ端) placed above and below the repeated range. The basic reading direction is top to bottom and left to right, and arrows mark any other direction. The three basic control structures appear as symbols linked vertically, as a split at a decision, and as a range enclosed by loop limits (or an arrow from a decision back upward).",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
-        "2011h23tokubetsu-q093",
+        "2022r04-q079",
         "2021r03-q074"
       ],
       "inline_fallback": false,
-      "figure": null,
+      "figure": null
+    },
+    {
+      "term": "フローチャート",
       "term_zh": "流程图(flowchart)",
       "term_en": "Flowchart",
-      "definition_zh": "「流れ図」的英文名称，同样是用图形符号表示处理流程的东西。",
-      "definition_en": "The English name for a flow diagram; likewise, it represents the flow of processing with graphic symbols.",
-      "explanation_zh": "Flowchart 是「流れ図(流程图)」的英文名称(flowchart)，两者基本上指的是同一种东西。它用规定的图形符号和箭头，把处理的流程直观地表现出来。\n\n在日文考题中多称为「流れ図」，在源自英文的场合多称为「フローチャート(flowchart)」，但它们表示的内容和使用的符号都相同。考试中重要的是把握流程图与 flowchart 是同义词，不被术语的换说法所迷惑。请把「flowchart = 流れ图(英文名称)」对应起来记住。",
-      "explanation_en": "Flowchart is the English name (flowchart) for a flow diagram, and the two basically refer to the same thing. It visually expresses the flow of processing using defined graphic symbols and arrows.\n\nIn Japanese exam questions it is often called \"nagarezu (flow diagram),\" while in contexts derived from English it is often called \"flowchart,\" but the content they represent and the symbols they use are identical. In the exam, it is important to grasp that flow diagram and flowchart are synonyms and not to be confused by the change in terminology. Remember the correspondence \"flowchart = flow diagram (English name).\"",
-      "analogy_zh": "就像「寿司」和「SUSHI」指的是同一种食物一样。区别只在于叫法是日文还是英文，所表示的内容(用图形符号表示处理流程)完全相同。",
-      "analogy_en": "Like how \"sushi\" and \"SUSHI\" refer to the same food. The only difference is whether the name is in Japanese or English; what they represent (showing the flow of processing with graphic symbols) is exactly the same.",
-      "memory_hook_zh": "说到 flowchart，就是流程图的英文名称、是同一种东西",
-      "memory_hook_en": "Flowchart -> the English name for a flow diagram; the same thing"
+      "one_jp": "**フローチャート** は流れ図の英語名 (flowchart) で、同じ図を指す。",
+      "one_zh": "**流程图(flowchart)**（[[jp:フローチャート]]）是“流程图”（[[jp:流れ図]]）的英文叫法，两者指同一种图。",
+      "one_en": "A **flowchart** ([[jp:フローチャート]]) is the English name for the flow diagram ([[jp:流れ図]]), and both refer to the same diagram.",
+      "detail_jp": "呼び名が違うだけで、使う記号も読み方も流れ図と同じである。プログラムの処理手順に限らず、仕事の進め方を図にするときにも使う。",
+      "detail_zh": "只是叫法不同，所用的符号和读法都与流程图（[[jp:流れ図]]）相同。它不限于程序的处理步骤，也用于把工作的进行方式画成图。",
+      "detail_en": "Only the name differs: the symbols and the way you read them are the same as for a flow diagram. It is used not only for program steps but also for mapping out how work proceeds.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "flow (流れ) と chart (図) をそのまま訳すと「流れ図」になる。",
+      "hook_zh": "把 flow（流动）和 chart（图）直译过来，就是日语的“流れ図”，也就是流程图。",
+      "hook_en": "Translate flow and chart word for word into Japanese and you get [[jp:流れ図]].",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "フローチャートは、プログラムなどの処理の順序と分かれ道を、図記号でたどれるように描いた図である。",
+          "text_zh": "流程图(flowchart)（[[jp:フローチャート]]）是把程序等处理的顺序和岔路用图形符号画出、便于追踪的图。",
+          "text_en": "A flowchart ([[jp:フローチャート]]) uses symbols to draw the order and branching of processing, such as a program's, so that you can trace it.",
+          "qids": [
+            "2015h27h-q059"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "データフローダイアグラム (DFD) は、データがどこから来てどの処理を通り、どこへ蓄えられるかを描く図である。フローチャートが描くのは処理を行う順序である。",
+          "text_zh": "数据流图（[[jp:データフローダイアグラム]]，DFD）描绘数据从哪里来、经过哪些处理、存放到哪里。流程图(flowchart)（[[jp:フローチャート]]）描绘的则是执行处理的顺序。",
+          "text_en": "A data flow diagram ([[jp:データフローダイアグラム]], DFD) shows where data comes from, which processes it passes through, and where it is stored. A flowchart ([[jp:フローチャート]]) shows the order in which processing is carried out."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2015h27h-q059"
+      ],
+      "definition_jp": "フローチャート は流れ図の英語名 (flowchart) で、同じ図を指す。",
+      "definition_zh": "流程图(flowchart)（フローチャート）是“流程图”（流れ図）的英文叫法，两者指同一种图。",
+      "definition_en": "A flowchart (フローチャート) is the English name for the flow diagram (流れ図), and both refer to the same diagram.",
+      "explanation_jp": "呼び名が違うだけで、使う記号も読み方も流れ図と同じである。プログラムの処理手順に限らず、仕事の進め方を図にするときにも使う。",
+      "explanation_zh": "只是叫法不同，所用的符号和读法都与流程图（流れ図）相同。它不限于程序的处理步骤，也用于把工作的进行方式画成图。",
+      "explanation_en": "Only the name differs: the symbols and the way you read them are the same as for a flow diagram. It is used not only for program steps but also for mapping out how work proceeds.",
+      "memory_hook_jp": "flow (流れ) と chart (図) をそのまま訳すと「流れ図」になる。",
+      "memory_hook_zh": "把 flow（流动）和 chart（图）直译过来，就是日语的“流れ図”，也就是流程图。",
+      "memory_hook_en": "Translate flow and chart word for word into Japanese and you get 流れ図.",
+      "inline_quiz": [
+        "2015h27h-q059"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "擬似言語",
-      "definition_jp": "実在の言語に依らず処理手順を文章主体で記述する表記法。",
-      "explanation_jp": "擬似言語(疑似言語)は、特定のプログラミング言語に依存せず、処理の手順を文章に近い形で記述するための表記法です。IPA の試験で出題に用いられる、コードに近い表現として広く使われます。\n\n変数への代入、選択(条件分岐)、繰返しなどを決められた書き方で表し、図的な流れ図に対して『文字で書く』表現手法という位置づけです。試験では、擬似言語で書かれた処理を1行ずつ追って、変数の値や最終結果を求める読み取り問題が頻出です。『言語に依らず手順を文章で書く』のが擬似言語です。",
-      "analogy_jp": "実際の建築に入る前に描く『設計図の下書き』のようなもの。特定の工法(言語)に縛られず、やることの段取りを言葉で書き出して、処理の中身を正確に伝えます。",
-      "memory_hook_jp": "擬似言語といえば言語に依らず手順を文章で記述",
-      "inline_quiz": [
-        "2022r04-q078",
-        "2022r04-q096"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "伪代码",
       "term_en": "Pseudocode",
-      "definition_zh": "不依赖实际存在的语言，以文字为主来描述处理步骤的记法。",
-      "definition_en": "A notation that describes processing steps mainly in prose, without relying on any actual existing language.",
-      "explanation_zh": "伪代码(又写作疑似语言)是一种不依赖特定编程语言、以接近文字的形式来描述处理步骤的记法。它作为接近代码的表达方式，被广泛用于 IPA 考试的出题中。\n\n它用规定的写法来表示对变量的赋值、选择(条件分支)、循环等，相对于图形化的流程图，它的定位是「用文字书写」的表示方法。考试中常考逐行追踪用伪代码写成的处理、求出变量的值或最终结果的读取题。伪代码就是「不依赖语言、用文字书写步骤」。",
-      "explanation_en": "Pseudocode is a notation for describing processing steps in a form close to prose, without depending on any specific programming language. As an expression close to code, it is widely used in IPA exam questions.\n\nIt represents assignment to variables, selection (conditional branching), iteration, and so on with a prescribed way of writing; compared with the graphical flowchart, it is positioned as a notation method that \"writes in text.\" The exam frequently asks reading problems where you follow processing written in pseudocode line by line to find variable values or the final result. Pseudocode is \"writing steps in text without relying on a language.\"",
-      "analogy_zh": "就像在真正开始施工之前画的「设计图草稿」一样。不受特定工法(语言)的束缚，用语言把要做的事情的步骤写出来，准确地传达处理的内容。",
-      "analogy_en": "Like a \"rough draft of a blueprint\" drawn before actual construction begins. Without being bound by a specific construction method (language), you write out the steps of what to do in words, conveying the content of the processing accurately.",
-      "memory_hook_zh": "说到伪代码，就是不依赖语言、用文字描述步骤",
-      "memory_hook_en": "Pseudocode -> describe steps in text without relying on a language"
+      "one_jp": "**擬似言語** は、特定のプログラム言語の文法に縛られずに、アルゴリズムを文章に近い決まった書式で記述する表記法である。",
+      "one_zh": "**伪代码**（[[jp:擬似言語]]）是不受特定程序语言语法约束、用接近文章的固定格式描述算法的表示法。",
+      "one_en": "**Pseudocode** ([[jp:擬似言語]]) is a notation that describes an algorithm in a fixed, near-prose format, free from the grammar of any particular programming language.",
+      "detail_jp": "2022 年度以降の過去問で使われている書式では、代入を「←」で表し、右側の式の値を左側の変数に入れる。選択は if 〜 endif、繰返しは while 〜 endwhile や for 〜 endfor で挟み、字下げで本体の範囲を示す。処理をまとめた関数では、受け取る値を **引数**、返す値を **戻り値** と呼ぶ。",
+      "detail_zh": "在 2022 年度以后的历年真题所用的格式中，赋值用“←”表示，即把右侧表达式的值放入左侧的变量。选择用 if ～ endif、循环用 while ～ endwhile 或 for ～ endfor 夹住，并用缩进表示其中处理的范围。在把处理归纳起来的函数中，接收的值称为 **参数**（[[jp:引数]]），返回的值称为 **返回值**（[[jp:戻り値]]）。",
+      "detail_en": "In the format used in past exam questions from fiscal 2022 onward, assignment is written with ←, which puts the value of the expression on the right into the variable on the left. Selection is enclosed by if … endif, iteration by while … endwhile or for … endfor, and indentation marks the range of the body. In a function that groups processing together, the values it receives are called **arguments** ([[jp:引数]]) and the value it returns is called the **return value** ([[jp:戻り値]]).",
+      "analogy_jp": "どの店の厨房でも使えるように、決まった記号と言い回しだけで書いたレシピのメモ。",
+      "analogy_zh": "就像为了在任何一家店的厨房都能用，只用固定的符号和说法写成的菜谱笔记。",
+      "analogy_en": "It is like a recipe note written only with fixed symbols and phrases so that it works in any restaurant's kitchen.",
+      "hook_jp": "「擬似」は「本物に似せた」の意味。本物のプログラム言語に似せた書き方である。",
+      "hook_zh": "“擬似”意为“模仿真品”，即模仿真正程序语言的写法。",
+      "hook_en": "[[jp:擬似]] means imitating the real thing: it is a way of writing that imitates a real programming language.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "「a ← a × 2」は等式ではなく、今の a を 2 倍した値で a を置き換える代入である。",
+          "text_zh": "“a ← a × 2”不是等式，而是用当前 a 的 2 倍的值替换 a 的赋值（[[jp:代入]]）。",
+          "text_en": "“a ← a × 2” is not an equation but an assignment ([[jp:代入]]) that replaces a with twice its current value.",
+          "qids": [
+            "2023r05-q064"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "while の条件は継続条件であり、成り立つ間だけ本体を実行し、成り立たなくなったら endwhile の次へ進む。",
+          "text_zh": "while 的条件是继续条件（[[jp:継続条件]]），只在条件成立期间执行循环体，不再成立时就转到 endwhile 的下一行。",
+          "text_en": "The condition of while is a continuation condition ([[jp:継続条件]]): the body runs only while it holds, and once it no longer holds, processing moves past endwhile.",
+          "qids": [
+            "2022r04-q078",
+            "2026r08-q085"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "for の中に if があると、各周で条件を判定し、真なら if 側、偽なら else 側の処理を実行する。else が無ければ、偽の周では if と endif の間の処理を実行しない。",
+          "text_zh": "for 中含有 if 时，每一轮都会判断条件，为真执行 if 一侧的处理，为假执行 else 一侧的处理。如果没有 else，在条件为假的那一轮就不执行 if 与 endif 之间的处理。",
+          "text_en": "When an if sits inside a for, the condition is checked on every pass: if it is true the if side runs, and if it is false the else side runs. Without an else, nothing between if and endif runs on a pass where the condition is false.",
+          "qids": [
+            "2025r07-q078",
+            "2024r06-q062"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "書き方",
+              "zh": "写法",
+              "en": "Notation"
+            },
+            {
+              "jp": "意味",
+              "zh": "含义",
+              "en": "Meaning"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "変数 ← 式",
+                  "zh": "变量 ← 表达式",
+                  "en": "variable ← expression"
+                },
+                {
+                  "jp": "式の値を変数に代入する",
+                  "zh": "把表达式的值赋给变量",
+                  "en": "Assign the value of the expression to the variable"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "if (条件) … else … endif",
+                  "zh": "if (条件) … else … endif",
+                  "en": "if (condition) … else … endif"
+                },
+                {
+                  "jp": "選択",
+                  "zh": "选择",
+                  "en": "Selection"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "while (条件) … endwhile",
+                  "zh": "while (条件) … endwhile",
+                  "en": "while (condition) … endwhile"
+                },
+                {
+                  "jp": "条件が成り立つ間の繰返し (前判定)",
+                  "zh": "条件成立期间的循环（前判定）",
+                  "en": "Repeat while the condition holds (pre-test)"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "for (変数の変え方) … endfor",
+                  "zh": "for (变量的变化方式) … endfor",
+                  "en": "for (how the variable changes) … endfor"
+                },
+                {
+                  "jp": "変数を変えながら回す繰返し",
+                  "zh": "一边改变变量一边循环",
+                  "en": "Repeat while changing a variable"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "○ 型: 名前(引数)",
+                  "zh": "○ 类型: 名称(参数)",
+                  "en": "○ type: name(arguments)"
+                },
+                {
+                  "jp": "関数の宣言 (型は戻り値の型)",
+                  "zh": "函数声明（类型为返回值的类型）",
+                  "en": "Function declaration (the type is that of the return value)"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "○ 名前(引数)",
+                  "zh": "○ 名称(参数)",
+                  "en": "○ name(arguments)"
+                },
+                {
+                  "jp": "戻り値の無い手続の宣言",
+                  "zh": "无返回值的过程的声明",
+                  "en": "Declaration of a procedure with no return value"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "return 値",
+                  "zh": "return 值",
+                  "en": "return value"
+                },
+                {
+                  "jp": "戻り値を返して終わる",
+                  "zh": "返回返回值后结束",
+                  "en": "Finish and hand back the return value"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2022r04-q078",
+        "2023r05-q064",
+        "2026r08-q085"
+      ],
+      "definition_jp": "擬似言語 は、特定のプログラム言語の文法に縛られずに、アルゴリズムを文章に近い決まった書式で記述する表記法である。",
+      "definition_zh": "伪代码（擬似言語）是不受特定程序语言语法约束、用接近文章的固定格式描述算法的表示法。",
+      "definition_en": "Pseudocode (擬似言語) is a notation that describes an algorithm in a fixed, near-prose format, free from the grammar of any particular programming language.",
+      "explanation_jp": "2022 年度以降の過去問で使われている書式では、代入を「←」で表し、右側の式の値を左側の変数に入れる。選択は if 〜 endif、繰返しは while 〜 endwhile や for 〜 endfor で挟み、字下げで本体の範囲を示す。処理をまとめた関数では、受け取る値を 引数、返す値を 戻り値 と呼ぶ。",
+      "explanation_zh": "在 2022 年度以后的历年真题所用的格式中，赋值用“←”表示，即把右侧表达式的值放入左侧的变量。选择用 if ～ endif、循环用 while ～ endwhile 或 for ～ endfor 夹住，并用缩进表示其中处理的范围。在把处理归纳起来的函数中，接收的值称为 参数（引数），返回的值称为 返回值（戻り値）。",
+      "explanation_en": "In the format used in past exam questions from fiscal 2022 onward, assignment is written with ←, which puts the value of the expression on the right into the variable on the left. Selection is enclosed by if … endif, iteration by while … endwhile or for … endfor, and indentation marks the range of the body. In a function that groups processing together, the values it receives are called arguments (引数) and the value it returns is called the return value (戻り値).",
+      "memory_hook_jp": "「擬似」は「本物に似せた」の意味。本物のプログラム言語に似せた書き方である。",
+      "memory_hook_zh": "“擬似”意为“模仿真品”，即模仿真正程序语言的写法。",
+      "memory_hook_en": "擬似 means imitating the real thing: it is a way of writing that imitates a real programming language.",
+      "inline_quiz": [
+        "2022r04-q078",
+        "2023r05-q064",
+        "2026r08-q085"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "選択",
+      "b": "繰返し",
+      "rows": [
+        {
+          "label_jp": "条件を調べた後",
+          "label_zh": "检查条件之后",
+          "label_en": "After the condition is checked",
+          "a_jp": "結果に応じた処理を行い、先へ進む",
+          "a_zh": "执行与结果对应的处理，然后继续往下",
+          "a_en": "Run the step for that result, then move on",
+          "b_jp": "結果に応じて、本体を実行して再び判定するか、繰返しを抜ける",
+          "b_zh": "根据结果，执行循环体后再次判断，或者退出循环",
+          "b_en": "Depending on the result, run the body and check again, or leave the loop",
+          "key": true
+        },
+        {
+          "label_jp": "同じ処理の実行回数",
+          "label_zh": "同一处理的执行次数",
+          "label_en": "How many times the same step runs",
+          "a_jp": "多くても 1 回",
+          "a_zh": "最多 1 次",
+          "a_en": "At most once",
+          "b_jp": "前判定なら 0 回以上、後判定なら 1 回以上",
+          "b_zh": "前判定为 0 次以上，后判定为 1 次以上",
+          "b_en": "Zero or more times for a pre-test loop, one or more for a post-test loop",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "流れ図",
+      "b": "擬似言語",
+      "rows": [
+        {
+          "label_jp": "表し方",
+          "label_zh": "表示方式",
+          "label_en": "Form",
+          "a_jp": "図記号と矢印で描く",
+          "a_zh": "用图形符号和箭头画出",
+          "a_en": "Drawn with symbols and arrows",
+          "b_jp": "文字と決まった書式で書く",
+          "b_zh": "用文字和固定格式书写",
+          "b_en": "Written as text in a fixed format",
+          "key": true
+        },
+        {
+          "label_jp": "繰返しの範囲の示し方",
+          "label_zh": "循环范围的表示方法",
+          "label_en": "How the loop range is shown",
+          "a_jp": "ループ端で挟む、または矢印で判定へ戻す",
+          "a_zh": "用循环端点夹住，或用箭头返回判断处",
+          "a_en": "Enclosed by loop limits, or an arrow back to the check",
+          "b_jp": "while や for と、対になる終わりの語で挟み、字下げする",
+          "b_zh": "用 while 或 for 与对应的结束词夹住，并加缩进",
+          "b_en": "Enclosed by while or for and its matching end word, with indentation",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "どのアルゴリズムも、順次・選択・繰返しの 3 つの基本制御構造の組合せで書ける。",
+    "流れ図とフローチャートは同じ図を指す呼び名で、端子や判断、ループ端などの記号で手順を描く。",
+    "擬似言語の「←」は代入で、右側の式の値で左側の変数を置き換える。",
+    "回数を決めた繰返しでは、変数の初期値・増分・終値によって実行回数と変数がとる値が決まる。"
+  ],
+  "key_points_zh": [
+    "任何算法都能用顺序、选择、循环这三种基本控制结构的组合来书写。",
+    "[[jp:流れ図]]与[[jp:フローチャート]]是同一种图（流程图）的两种叫法，用端点、判断、循环端点等符号描绘步骤。",
+    "伪代码中的“←”是赋值，用右侧表达式的值替换左侧的变量。",
+    "按确定次数循环时，变量的初始值、增量和终值决定执行次数以及变量依次取的值。"
+  ],
+  "key_points_en": [
+    "Any algorithm can be written by combining the three basic control structures: sequence, selection, and iteration.",
+    "[[jp:流れ図]] (flow diagram) and [[jp:フローチャート]] (flowchart) are two names for the same diagram, which draws a procedure with symbols such as terminals, decisions, and loop limits.",
+    "In pseudocode, ← means assignment: the value of the expression on the right replaces the variable on the left.",
+    "In a loop with a set number of passes, the variable's initial value, increment, and final value determine how many passes run and which values the variable takes."
+  ],
+  "overview": {
+    "intro_jp": "3 つの 基本制御構造 を、処理の進み方 (一本道か、分かれるか、戻るか) で見分けられる。繰返しの 前判定 と 後判定、継続条件 と 終了条件 の違いを説明できる。流れ図 の主な図記号と 擬似言語 の基本の書き方を読み、変数の値の変化をたどれる。",
+    "intro_zh": "能根据处理的推进方式（一路向下、分岔还是返回）区分三种 基本控制结构。能说明循环中 前判定 与 后判定、继续条件 与 结束条件 的区别。能读懂 流程图 的主要图形符号和 伪代码 的基本写法，并跟踪变量值的变化。",
+    "intro_en": "Tell the three basic control structures apart by how processing moves: straight through, branching, or looping back. Explain the difference between pre-test and post-test loops, and between a continuation condition and a termination condition. Read the main flow diagram symbols and basic pseudocode notation, and trace how variable values change.",
+    "freq_badge": "標準",
+    "est_minutes": 32
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "順次: 順次といえば書いた順に上から1つずつ実行",
-      "選択: 選択といえば条件の真偽で処理を分岐",
-      "繰返し: 繰返しといえば条件を満たす間ぐるぐる反復",
-      "流れ図: 流れ図といえば処理の流れを図記号と矢印で表す",
-      "フローチャート: フローチャートといえば流れ図の英語名で同じもの",
-      "擬似言語: 擬似言語といえば言語に依らず手順を文章で記述"
-    ],
     "key_points_jp": [
-      "順次・選択・繰返しは構造化定理の3基本制御構造で、あらゆるアルゴリズムの骨格となる。",
-      "順次は一本道、選択は条件で分岐、繰返しは条件を満たす間ループする処理である。",
-      "繰返しには前判定・後判定があり、前判定では一度も実行されないことがある。",
-      "流れ図(フローチャート)は処理の流れを図記号と矢印で視覚化したもので、両者は同義である。",
-      "擬似言語は特定の言語に依らず手順を文章主体で書く表記法で、IPA 試験で多用される。"
+      "どのアルゴリズムも、順次・選択・繰返しの 3 つの基本制御構造の組合せで書ける。",
+      "流れ図とフローチャートは同じ図を指す呼び名で、端子や判断、ループ端などの記号で手順を描く。",
+      "擬似言語の「←」は代入で、右側の式の値で左側の変数を置き換える。",
+      "回数を決めた繰返しでは、変数の初期値・増分・終値によって実行回数と変数がとる値が決まる。"
     ],
     "key_points_zh": [
-      "顺序、选择、循环是结构化定理的3种基本控制结构，构成一切算法的骨架。",
-      "顺序是单行道，选择是按条件分支，循环是在满足条件期间反复的处理。",
-      "循环有前判定和后判定，前判定可能一次都不执行。",
-      "流程图(flowchart)是用图形符号和箭头把处理流程可视化的东西，两者是同义的。",
-      "伪代码是不依赖特定语言、以文字为主书写步骤的记法，在 IPA 考试中大量使用。"
+      "任何算法都能用顺序、选择、循环这三种基本控制结构的组合来书写。",
+      "流れ図与フローチャート是同一种图（流程图）的两种叫法，用端点、判断、循环端点等符号描绘步骤。",
+      "伪代码中的“←”是赋值，用右侧表达式的值替换左侧的变量。",
+      "按确定次数循环时，变量的初始值、增量和终值决定执行次数以及变量依次取的值。"
     ],
     "key_points_en": [
-      "Sequence, selection, and iteration are the three basic control structures of the structured program theorem and form the skeleton of every algorithm.",
-      "Sequence is a single path, selection branches according to a condition, and iteration is processing that repeats while a condition is satisfied.",
-      "Iteration has pre-testing and post-testing; with pre-testing it may not execute even once.",
-      "A flow diagram (flowchart) visualizes the flow of processing with graphic symbols and arrows, and the two are synonymous.",
-      "Pseudocode is a notation that writes steps mainly in text without depending on a specific language, and it is heavily used in the IPA exam."
+      "Any algorithm can be written by combining the three basic control structures: sequence, selection, and iteration.",
+      "流れ図 (flow diagram) and フローチャート (flowchart) are two names for the same diagram, which draws a procedure with symbols such as terminals, decisions, and loop limits.",
+      "In pseudocode, ← means assignment: the value of the expression on the right replaces the variable on the left.",
+      "In a loop with a set number of passes, the variable's initial value, increment, and final value determine how many passes run and which values the variable takes."
+    ],
+    "memory_hooks_jp": [
+      "選択: 英語では selection、プログラムでは if (もし) で始める書き方が多い。",
+      "繰返し: ループ (loop) は英語で「輪」の意味。判断の記号で描く図では矢印が輪のように上へ戻り、同じ範囲をもう一度通る。",
+      "フローチャート: flow (流れ) と chart (図) をそのまま訳すと「流れ図」になる。",
+      "擬似言語: 「擬似」は「本物に似せた」の意味。本物のプログラム言語に似せた書き方である。"
     ],
     "memory_hooks_zh": [
-      "顺序: 说到顺序，就是按编写顺序从上往下逐条执行",
-      "选择: 说到选择，就是根据条件的真假来分支处理",
-      "循环: 说到循环，就是在满足条件期间不停打转反复",
-      "流程图: 说到流程图，就是用图形符号和箭头表示处理流程",
-      "flowchart: 说到 flowchart，就是流程图的英文名称、是同一种东西",
-      "伪代码: 说到伪代码，就是不依赖语言、用文字描述步骤"
+      "选择：英语叫 selection，程序里多用 if（如果）开头来写。",
+      "循环：ループ（loop）在英语里是“环”的意思。用判断符号画的图中，箭头像一个环一样向上绕回，再次经过同一范围。",
+      "流程图(flowchart)：把 flow（流动）和 chart（图）直译过来，就是日语的“流れ図”，也就是流程图。",
+      "伪代码：“擬似”意为“模仿真品”，即模仿真正程序语言的写法。"
     ],
     "memory_hooks_en": [
-      "Sequence: Sequence -> execute one by one from top to bottom in the written order",
-      "Selection: Selection -> branch the processing based on whether a condition is true or false",
-      "Iteration: Iteration -> repeat round and round while the condition is satisfied",
-      "Flow diagram: Flow diagram -> represent the flow of processing with graphic symbols and arrows",
-      "Flowchart: Flowchart -> the English name for a flow diagram; the same thing",
-      "Pseudocode: Pseudocode -> describe steps in text without relying on a language"
+      "Selection: Programs usually write a selection starting with the word if.",
+      "Iteration: A loop is literally a ring, and in a diagram drawn with a decision the arrow curves back up like one, so the same range is passed through again.",
+      "Flowchart: Translate flow and chart word for word into Japanese and you get 流れ図.",
+      "Pseudocode: 擬似 means imitating the real thing: it is a way of writing that imitates a real programming language."
     ]
   },
   "challenge_questions": [
     "2023r05-q060",
     "2024r06-q062",
-    "2026r08-q088",
-    "2009h21a-q090",
-    "2025r07-q078"
+    "2025r07-q078",
+    "2022r04-q096",
+    "2026r08-q067"
   ],
   "source_figures": [
     {
@@ -309,9 +1115,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "控制结构与表示方法",
-  "title_en": "Control Structures and Notation Methods",
-  "unit_summary_zh": "学习顺序、选择、循环这3种基本控制结构，以及用来描述它们的流程图、伪代码等表示方法。",
-  "unit_summary_en": "Learn the three basic control structures—sequence, selection, and iteration—and the notation methods used to describe them, such as flowcharts and pseudocode."
+  }
 }

@@ -1,192 +1,879 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-14-37-u02",
   "topic_id": "technology-14-37",
   "category": "technology",
   "title_jp": "式・代入・注釈",
+  "title_zh": "表达式・赋值・注释",
+  "title_en": "Expressions, Assignment, and Comments",
   "unit_summary_jp": "プログラムを構成する基本要素である式・演算子・条件式・代入・注釈を理解する。",
+  "unit_summary_zh": "理解构成程序的基本要素——表达式、运算符、条件表达式、赋值和注释。",
+  "unit_summary_en": "Understand the basic building blocks of a program: expressions, operators, conditional expressions, assignment, and comments.",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-14-37-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、プログラム本体を組み立てる最小の部品である式・演算子・条件式・代入・注釈を学びます。値を計算する式と、それを変数へ格納する代入は処理の土台であり、条件式は前ユニットで学んだ選択・繰返しの判定に直結します。擬似言語を読み解くうえで欠かせない頻出分野です。",
-    "freq_badge": "標準",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习用来搭建程序主体的最小部件——表达式、运算符、条件表达式、赋值和注释。计算出值的表达式，以及把这个值存入变量的赋值，是处理逻辑的基础；而条件表达式则直接关系到上一单元学过的选择与循环的判断。这是读懂伪代码不可或缺的高频领域。",
-    "intro_en": "In this unit, you will learn the smallest components used to build the body of a program: expressions, operators, conditional expressions, assignment, and comments. The expression that computes a value, together with the assignment that stores that value into a variable, forms the foundation of processing, while conditional expressions connect directly to the selection and iteration decisions you learned in the previous unit. This is a high-frequency area that is essential for reading pseudocode."
-  },
-  "terms": [
+  "goals_jp": [
+    "**演算子**の優先順位に従って、**式**の値を求められる。",
+    "**条件式**が真か偽のどちらかになることを使って、分岐や繰返しの流れを追える。",
+    "**代入**の右辺と左辺の役割を区別し、変数の値の移り変わりを順に追える。",
+    "**注釈**が処理結果に影響しない理由を説明できる。"
+  ],
+  "goals_zh": [
+    "能按照**运算符**的优先级求出**表达式**的值。",
+    "能利用**条件表达式**的结果非真即假这一点，跟踪分支和循环的执行流程。",
+    "能区分**赋值**中右边和左边各自的作用，按顺序跟踪变量值的变化。",
+    "能说明**注释**为什么不影响处理结果。"
+  ],
+  "goals_en": [
+    "Find the value of an **expression** by following **operator** precedence.",
+    "Trace the flow of branches and loops, using the fact that a **conditional expression** is always either true or false.",
+    "Tell apart the roles of the right side and the left side of an **assignment**, and follow how a variable's value changes step by step.",
+    "Explain why a **comment** has no effect on the processing result."
+  ],
+  "overview_cols_jp": [
+    "何をするか",
+    "擬似言語での例"
+  ],
+  "overview_cols_zh": [
+    "作用",
+    "伪代码示例"
+  ],
+  "overview_cols_en": [
+    "What it does",
+    "Pseudo-language example"
+  ],
+  "overview_rows": [
     {
       "term": "式",
-      "definition_jp": "値・変数・演算子を組み合わせ、計算して一つの値を求める記述。",
-      "explanation_jp": "式とは、数値や変数を演算子でつないで「ある一つの値を導き出す」記述のことです。例えば「3 + 5」や「price × 1.1」は計算すると一つの値になり、これが式です。\n\nプログラムは式を評価(計算)してその結果を使って動きます。式は計算されると必ず一つの値になる点がポイントで、後で学ぶ「代入」や「条件式」もすべて式を土台にしています。試験では、式を評価した結果がどうなるか(演算の順序を含む)を読み取れることが問われます。",
-      "analogy_jp": "材料(値)を調理器具(演算子)で処理して一皿の料理(値)に仕上げるレシピの一行のようなもの。最終的に必ず一つの結果が出来上がります。",
-      "memory_hook_jp": "式といえば計算して一つの値になる記述",
-      "inline_quiz": [
-        "2010h22h-q053"
+      "one_line_jp": "評価すると一つの値になる記述",
+      "extra_jp": [
+        "値を求める",
+        "a + b × 2"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "表达式",
-      "term_en": "Expression",
-      "definition_zh": "组合值、变量和运算符，经过计算求出一个值的写法。",
-      "definition_en": "A piece of code that combines values, variables, and operators and computes a single value.",
-      "explanation_zh": "表达式是指用运算符把数值或变量连接起来，从而「推导出某一个值」的写法。例如「3 + 5」或「price × 1.1」，计算后会得到一个值，这就是表达式。\n\n程序通过对表达式求值（计算）并使用其结果来运行。表达式的关键在于：一经计算就一定会变成一个值。后面要学的「赋值」和「条件表达式」也全都以表达式为基础。考试中会要求你读懂对表达式求值后的结果会怎样（包括运算的先后顺序）。",
-      "explanation_en": "An expression is a piece of code that connects numbers or variables with operators to \"derive a single value.\" For example, \"3 + 5\" or \"price × 1.1\" produces one value when computed, and that is an expression.\n\nA program runs by evaluating (computing) expressions and using their results. The key point is that an expression, once computed, always becomes a single value. The \"assignment\" and \"conditional expression\" you will learn later are all built on top of expressions. Exams ask you to read what the result of evaluating an expression will be, including the order of operations.",
-      "analogy_zh": "就像菜谱中的一行：用厨具（运算符）处理食材（值），最终做成一盘菜（值）。最后一定会做出一个结果。",
-      "analogy_en": "Like one line of a recipe that processes ingredients (values) with kitchen tools (operators) to finish a single dish (value). In the end, exactly one result is always produced.",
-      "memory_hook_zh": "说到表达式，就是计算后得到一个值的写法",
-      "memory_hook_en": "Expression → code that computes down to a single value"
+      "one_line_zh": "求值后得到一个值的写法",
+      "one_line_en": "Code that yields one value when evaluated",
+      "extra_zh": [
+        "求出值",
+        "a + b × 2"
+      ],
+      "extra_en": [
+        "Computes a value",
+        "a + b × 2"
+      ]
     },
     {
       "term": "演算子",
-      "definition_jp": "計算や比較などの操作を表す記号。式を組み立てる部品。",
-      "explanation_jp": "演算子は、足し算や掛け算、比較などの操作を表す記号です。代表的には、四則演算などを行う算術演算子(+ - × ÷)、大小や等しさを調べる比較(関係)演算子(< > = など)、かつ・または・でないを表す論理演算子(AND・OR・NOT)があります。\n\n演算子には計算する順番(優先順位)があり、掛け算・割り算は足し算・引き算より先に計算されます。試験では、種類の区別と、優先順位を踏まえて式の結果を正しく求められるかが問われます。比較・論理演算子は次の条件式を作る土台になります。",
-      "analogy_jp": "工具箱の中の道具のようなもの。「足す」ハンマー、「比べる」ものさし、「かつ・または」のスイッチなど、用途ごとに使い分けて式を組み立てます。",
-      "memory_hook_jp": "演算子といえば算術・比較・論理の操作記号",
-      "inline_quiz": [
-        "2015h27a-q048"
+      "one_line_jp": "値に施す操作を表す記号",
+      "extra_jp": [
+        "計算・比較・組合せの操作を決める",
+        "+ × ≦ and"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"演算子\"]; A --> B[\"算術演算子(+ - × ÷)\"]; A --> C[\"比較(関係)演算子(< > =)\"]; A --> D[\"論理演算子(AND OR NOT)\"]",
-        "svg_path": "figures/technology-14-37-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "运算符",
-      "term_en": "Operator",
-      "definition_zh": "表示计算或比较等操作的符号，是搭建表达式的部件。",
-      "definition_en": "A symbol that represents an operation such as calculation or comparison; a building block of expressions.",
-      "explanation_zh": "运算符是表示加法、乘法、比较等操作的符号。代表性的有：进行四则运算等的算术运算符（+ - × ÷）、判断大小或是否相等的比较（关系）运算符（< > = 等）、表示并且・或者・非的逻辑运算符（AND・OR・NOT）。\n\n运算符有计算的先后顺序（优先级），乘法・除法会比加法・减法先计算。考试中会要求你区分各种类型，并在考虑优先级的前提下正确求出表达式的结果。比较运算符和逻辑运算符是构建下一个知识点——条件表达式的基础。",
-      "explanation_en": "An operator is a symbol that represents an operation such as addition, multiplication, or comparison. The main types are: arithmetic operators (+ - × ÷) for the four basic operations and more, comparison (relational) operators (< > =, etc.) that check size or equality, and logical operators (AND, OR, NOT) that express \"and,\" \"or,\" and \"not.\"\n\nOperators have an order of evaluation (precedence): multiplication and division are computed before addition and subtraction. Exams ask you to distinguish the types and to correctly compute the result of an expression while accounting for precedence. Comparison and logical operators form the basis of the conditional expressions covered next.",
-      "analogy_zh": "就像工具箱里的工具。「加法」的锤子、「比较」的尺子、「并且・或者」的开关等，按用途分别使用来搭建表达式。",
-      "analogy_en": "Like tools in a toolbox. The \"add\" hammer, the \"compare\" ruler, the \"and/or\" switch, and so on—you pick the right one for each purpose to build an expression.",
-      "memory_hook_zh": "说到运算符，就是算术・比较・逻辑的操作符号",
-      "memory_hook_en": "Operator → arithmetic, comparison, and logical operation symbols"
+      "one_line_zh": "表示对值进行何种操作的符号",
+      "one_line_en": "A symbol for an operation applied to values",
+      "extra_zh": [
+        "决定计算、比较、组合等操作",
+        "+ × ≦ and"
+      ],
+      "extra_en": [
+        "Sets the operation: calculate, compare or combine",
+        "+ × ≦ and"
+      ]
     },
     {
       "term": "条件式",
-      "definition_jp": "真・偽(True/False)を判定する、比較・論理演算を使った式。",
-      "explanation_jp": "条件式は、ある条件が成り立つか(真)成り立たないか(偽)を判定する式です。「x > 10」「age = 20」のように比較演算子を使い、結果は必ず真・偽(True/False)のどちらかになります。複数の条件を AND・OR でつないで組み合わせることもできます。\n\nここで比較に使う「=」は『左右が等しいか』を調べる比較演算子で、後の代入(値を格納する操作)とは役割が異なります。前ユニットで学んだ選択(if)や繰返し(while)は、この条件式の真偽で次の動きを決めます。試験での出題が非常に多い重要概念で、AND・OR を含む式が真になるか偽になるかを正しく追えることがポイントです。",
-      "analogy_jp": "「気温は25度以上か?」というYES/NOで答えられる質問のようなもの。答えは必ず「はい(真)」か「いいえ(偽)」のどちらかになり、その答えで次の行動が分かれます。",
-      "memory_hook_jp": "条件式といえば真か偽かを判定する式",
-      "inline_quiz": [
-        "2011h23tokubetsu-q093",
-        "2011h23tokubetsu-q096"
+      "one_line_jp": "結果が真か偽になる式",
+      "extra_jp": [
+        "分岐や繰返しの判定に使う",
+        "x ≧ 0 and x < 10"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"条件式を評価\"] --> B{\"真(True)か?\"}; B -->|\"真\"| C[\"真のときの処理へ\"]; B -->|\"偽\"| D[\"偽のときの処理へ\"]",
-        "svg_path": "figures/technology-14-37-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "条件表达式",
-      "term_en": "Conditional Expression",
-      "definition_zh": "使用比较・逻辑运算来判定真・假（True/False）的表达式。",
-      "definition_en": "An expression that uses comparison and logical operations to evaluate to true or false (True/False).",
-      "explanation_zh": "条件表达式是用来判定某个条件成立（真）还是不成立（假）的表达式。像「x > 10」「age = 20」这样使用比较运算符，结果一定是真・假（True/False）之一。也可以用 AND・OR 把多个条件连接起来组合使用。\n\n这里用于比较的「=」是判断「左右两边是否相等」的比较运算符，与后面的赋值（存入值的操作）作用不同。上一单元学过的选择（if）和循环（while），就是根据这个条件表达式的真假来决定接下来的动作。这是考试出题非常频繁的重要概念，关键在于能否正确推导出含有 AND・OR 的表达式结果是真还是假。",
-      "explanation_en": "A conditional expression is an expression that determines whether some condition holds (true) or does not hold (false). Using comparison operators as in \"x > 10\" or \"age = 20,\" the result is always either true or false (True/False). You can also combine multiple conditions by connecting them with AND or OR.\n\nThe \"=\" used for comparison here is a comparison operator that checks \"whether the two sides are equal,\" and it plays a different role from assignment (the operation of storing a value) covered later. The selection (if) and iteration (while) you learned in the previous unit decide the next action based on the true/false result of this conditional expression. This is an important concept that appears very frequently in exams, and the key is being able to correctly trace whether an expression containing AND or OR is true or false.",
-      "analogy_zh": "就像「气温是否在25度以上？」这种能用 YES/NO 回答的问题。答案一定是「是（真）」或「否（假）」之一，并根据这个答案分出接下来的行动。",
-      "analogy_en": "Like a question that can be answered YES/NO, such as \"Is the temperature 25 degrees or higher?\" The answer is always either \"yes (true)\" or \"no (false),\" and the next action branches based on that answer.",
-      "memory_hook_zh": "说到条件表达式，就是判定真还是假的表达式",
-      "memory_hook_en": "Conditional expression → an expression that decides true or false"
+      "one_line_zh": "结果为真或假的表达式",
+      "one_line_en": "An expression whose result is true or false",
+      "extra_zh": [
+        "用于分支和循环的判断",
+        "x ≧ 0 and x < 10"
+      ],
+      "extra_en": [
+        "Used to decide branches and loops",
+        "x ≧ 0 and x < 10"
+      ]
     },
     {
       "term": "代入",
-      "definition_jp": "式を評価した結果(値)を変数に格納する操作。",
-      "explanation_jp": "代入は、式を計算した結果の値を変数(値を入れておく箱)に格納する操作です。IPA の擬似言語では矢印を使い「x ← 5」「total ← price × n」のように、右側の値を左側の変数へ入れます。\n\n「x ← x + 1」は『今の x に1を足した値を、改めて x に入れ直す』という意味です。右辺の式をまず評価し、その結果を左辺の変数へ格納する、という順序が要点です。なお C 言語や Java など一部の言語では代入に「=」を使いますが、本擬似言語では代入は「←」、等しさの比較は「=」と区別します。試験では、代入を順に追って変数の値がどう変化するかを正しく追跡できることが問われます。",
-      "analogy_jp": "ラベル付きの箱に物を入れ替える作業のようなもの。「x」という箱の中身を捨てて、新しく計算した値を入れ直します。前の中身は上書きされて消えます。",
-      "memory_hook_jp": "代入といえば値を変数に格納する操作(←)",
-      "inline_quiz": [
-        "2010h22a-q069"
+      "one_line_jp": "右辺の値を左辺の変数に格納する操作",
+      "extra_jp": [
+        "変数の値を書き換える",
+        "s ← s + x"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "赋值",
-      "term_en": "Assignment",
-      "definition_zh": "把对表达式求值得到的结果（值）存入变量的操作。",
-      "definition_en": "The operation of storing the result (value) of evaluating an expression into a variable.",
-      "explanation_zh": "赋值是把计算表达式得到的结果值存入变量（用来放值的箱子）的操作。在 IPA 的伪代码中使用箭头，像「x ← 5」「total ← price × n」这样，把右侧的值存入左侧的变量。\n\n「x ← x + 1」的意思是「把当前 x 加上 1 后的值，重新存回 x」。要点在于顺序：先对右边的表达式求值，再把其结果存入左边的变量。另外，C 语言或 Java 等部分语言用「=」表示赋值，但在本伪代码中，赋值用「←」，相等的比较用「=」，二者加以区分。考试中会要求你按顺序追踪赋值，正确跟踪变量的值是如何变化的。",
-      "explanation_en": "Assignment is the operation of storing the value resulting from computing an expression into a variable (a box that holds a value). In IPA pseudocode, an arrow is used, as in \"x ← 5\" or \"total ← price × n,\" to put the value on the right into the variable on the left.\n\n\"x ← x + 1\" means \"take the current x plus 1, and store that value back into x.\" The key point is the order: first evaluate the expression on the right, then store its result into the variable on the left. Note that some languages such as C and Java use \"=\" for assignment, but in this pseudocode, assignment uses \"←\" and the comparison for equality uses \"=,\" keeping the two distinct. Exams ask you to follow assignments in order and correctly trace how the values of variables change.",
-      "analogy_zh": "就像往贴了标签的箱子里换装东西。把名为「x」的箱子里的内容扔掉，重新装入新计算出的值。之前的内容会被覆盖而消失。",
-      "analogy_en": "Like swapping out the contents of a labeled box. You discard what is in the box labeled \"x\" and put in the newly computed value. The previous contents are overwritten and gone.",
-      "memory_hook_zh": "说到赋值，就是把值存入变量的操作（←）",
-      "memory_hook_en": "Assignment → storing a value into a variable (←)"
+      "one_line_zh": "把右边的值存入左边变量的操作",
+      "one_line_en": "Storing the right side's value in the variable on the left",
+      "extra_zh": [
+        "改写变量的值",
+        "s ← s + x"
+      ],
+      "extra_en": [
+        "Overwrites a variable's value",
+        "s ← s + x"
+      ]
     },
     {
       "term": "注釈",
-      "definition_jp": "プログラムの説明を書き添える、実行されないメモ書き。",
-      "explanation_jp": "注釈(コメント)は、プログラムの中に書く人間向けの説明文です。「この処理は合計を求める」といった補足を添えることで、後から読む人がコードを理解しやすくなります。\n\n注釈はコンピュータには無視され、プログラムの動作には一切影響しない点が最大の特徴です。実行されないので、書いても処理は変わりません。試験では、注釈が実行対象ではないこと、可読性(読みやすさ)を高めるための補助的な要素であることが問われます。擬似言語では「/* */」や行頭記号などで示されます。",
-      "analogy_jp": "料理レシピの余白に書いた「※焦げやすいので注意」というメモのようなもの。料理そのものには影響しませんが、作る人の理解を助けてくれます。",
-      "memory_hook_jp": "注釈といえば実行されない説明用のメモ書き",
-      "inline_quiz": [
-        "2022r04-q078"
+      "one_line_jp": "実行されない説明書き",
+      "extra_jp": [
+        "読む人に処理の意図を伝える",
+        "/* 合計を求める */"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "注释",
-      "term_en": "Comment",
-      "definition_zh": "为程序附上说明、不会被执行的备注文字。",
-      "definition_en": "A note added to explain a program; it is not executed.",
-      "explanation_zh": "注释（comment）是写在程序中、面向人阅读的说明文字。通过附上像「这段处理用来求合计」这样的补充说明，能让之后阅读的人更容易理解代码。\n\n注释最大的特点是：计算机会忽略它，对程序的运行没有任何影响。由于不会被执行，无论写什么都不会改变处理。考试中会考查：注释不属于执行对象，以及它是为提高可读性（易读性）而存在的辅助性要素。在伪代码中，注释用「/* */」或行首符号等方式表示。",
-      "explanation_en": "A comment is explanatory text written inside a program for humans to read. By adding supplementary notes such as \"this part computes the total,\" you make it easier for someone reading the code later to understand it.\n\nThe most important characteristic of a comment is that the computer ignores it and it has no effect at all on how the program runs. Because it is not executed, writing it does not change the processing. Exams ask about the facts that a comment is not an execution target and that it is a supporting element meant to improve readability. In pseudocode, comments are indicated with \"/* */\" or a line-leading symbol, for example.",
-      "analogy_zh": "就像在菜谱空白处写的「※容易烧焦，请注意」这样的备注。它不影响菜本身，但能帮助做菜的人理解。",
-      "analogy_en": "Like a note written in the margin of a recipe, such as \"*Burns easily, be careful.\" It does not affect the dish itself, but it helps the person cooking understand.",
-      "memory_hook_zh": "说到注释，就是不会被执行的说明用备注",
-      "memory_hook_en": "Comment → an explanatory note that is not executed"
+      "one_line_zh": "不会被执行的说明文字",
+      "one_line_en": "Explanatory text that is never executed",
+      "extra_zh": [
+        "向读者传达处理的意图",
+        "/* 求合计 */"
+      ],
+      "extra_en": [
+        "Tells readers what the code is meant to do",
+        "/* compute the total */"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "式",
+      "term_zh": "表达式",
+      "term_en": "Expression",
+      "one_jp": "**式**は、**評価**すると一つの値が得られる記述である。",
+      "one_zh": "**表达式**[[jp:式]]是经过**求值**[[jp:評価]]后能得到一个值的写法。",
+      "one_en": "An **expression** ([[jp:式]]) is a piece of code that yields a single value when it is **evaluated** ([[jp:評価]]).",
+      "detail_jp": "**評価**とは、式を計算してその値を求めることをいう。**変数**は値を入れておく名前付きの入れ物で、式の中では今入っている値として計算される。値や変数を演算子でつないだ形が典型だが、数値 1 つや変数 1 つだけでも式になる。",
+      "detail_zh": "**求值**是指计算表达式并求出它的值。**变量**[[jp:変数]]是用来存放值的、有名字的容器，在表达式中按它当前存放的值参与计算。用运算符连接值或变量是典型形式，但单独一个数值或一个变量也构成表达式。",
+      "detail_en": "**Evaluation** means calculating an expression to get its value. A **variable** ([[jp:変数]]) is a named container that holds a value, and inside an expression it stands for whatever value it holds at that moment. The typical form joins values or variables with operators, but a single number or a single variable on its own is also an expression.",
+      "analogy_jp": "電卓に打ち込んだ計算の並びのようなもので、イコールを押すと答えが一つだけ表示される。",
+      "analogy_zh": "就像在计算器里输入的一串算式，按下等号后只会显示一个答案。",
+      "analogy_en": "It is like a calculation keyed into a calculator: press the equals key and exactly one answer appears.",
+      "hook_jp": "英語では expression で、計算した結果の一つの値を「表すもの」と読める。",
+      "hook_zh": "英语叫 expression，可以理解为“表示”计算结果那一个值的东西。",
+      "hook_en": "In English it is an expression: something that \"expresses\" the one value the calculation produces.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**式**の値は、評価する時点で変数に入っている値によって決まる。同じ式でも、変数の値が変われば評価の結果も変わる。",
+          "qids": [
+            "2022r04-q096"
+          ],
+          "text_zh": "**表达式**[[jp:式]]的值取决于求值那一刻变量中存放的值。即使是同一个表达式，变量的值变了，求值结果也会变。",
+          "text_en": "The value of an **expression** ([[jp:式]]) depends on the values held in its variables at the moment it is evaluated. The same expression gives a different result once a variable's value changes."
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**式**は値を求めるだけで、変数の中身は変えない。変数の中身を書き換えるのは**代入**である。",
+          "text_zh": "**表达式**[[jp:式]]只负责求值，不会改变变量的内容。改写变量内容的是**赋值**[[jp:代入]]。",
+          "text_en": "An **expression** ([[jp:式]]) only computes a value and leaves the variables unchanged. What rewrites a variable's contents is **assignment** ([[jp:代入]])."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "e1",
+              "label": {
+                "jp": "(4 + 6) × 2",
+                "zh": "(4 + 6) × 2",
+                "en": "(4 + 6) × 2"
+              }
+            },
+            {
+              "id": "e2",
+              "label": {
+                "jp": "10 × 2",
+                "zh": "10 × 2",
+                "en": "10 × 2"
+              }
+            },
+            {
+              "id": "e3",
+              "label": {
+                "jp": "20",
+                "zh": "20",
+                "en": "20"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "評価する前の式。括弧の中から計算を始める。",
+            "state": {
+              "show": 1
+            },
+            "caption_zh": "求值前的表达式。先从括号里面开始计算。",
+            "caption_en": "The expression before evaluation. Calculation starts inside the parentheses."
+          },
+          {
+            "caption_jp": "括弧の中を計算すると 10 になり、掛け算が残る。",
+            "state": {
+              "show": 2
+            },
+            "caption_zh": "括号内算出 10，剩下乘法。",
+            "caption_en": "The parentheses give 10, leaving a multiplication."
+          },
+          {
+            "caption_jp": "残りの掛け算を計算し、式の値 20 が一つ得られる。",
+            "state": {
+              "show": 3
+            },
+            "caption_zh": "算完剩下的乘法，得到表达式唯一的值 20。",
+            "caption_en": "Doing the remaining multiplication gives the expression's single value, 20."
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "式は、評価すると一つの値が得られる記述である。",
+      "definition_zh": "表达式式是经过求值評価后能得到一个值的写法。",
+      "definition_en": "An expression (式) is a piece of code that yields a single value when it is evaluated (評価).",
+      "explanation_jp": "評価とは、式を計算してその値を求めることをいう。変数は値を入れておく名前付きの入れ物で、式の中では今入っている値として計算される。値や変数を演算子でつないだ形が典型だが、数値 1 つや変数 1 つだけでも式になる。",
+      "explanation_zh": "求值是指计算表达式并求出它的值。变量変数是用来存放值的、有名字的容器，在表达式中按它当前存放的值参与计算。用运算符连接值或变量是典型形式，但单独一个数值或一个变量也构成表达式。",
+      "explanation_en": "Evaluation means calculating an expression to get its value. A variable (変数) is a named container that holds a value, and inside an expression it stands for whatever value it holds at that moment. The typical form joins values or variables with operators, but a single number or a single variable on its own is also an expression.",
+      "memory_hook_jp": "英語では expression で、計算した結果の一つの値を「表すもの」と読める。",
+      "memory_hook_zh": "英语叫 expression，可以理解为“表示”计算结果那一个值的东西。",
+      "memory_hook_en": "In English it is an expression: something that \"expresses\" the one value the calculation produces.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "演算子",
+      "term_zh": "运算符",
+      "term_en": "Operator",
+      "one_jp": "**演算子**は、足す・比べる・組み合わせるといった**操作**を表す記号で、値と組み合わせて式を作る。",
+      "one_zh": "**运算符**[[jp:演算子]]是表示相加、比较、组合等**操作**的符号，与值组合在一起构成表达式。",
+      "one_en": "An **operator** ([[jp:演算子]]) is a symbol for an **operation** such as adding, comparing or combining, and it joins with values to form an expression.",
+      "detail_jp": "演算子が働きかける相手の値を**被演算子** (オペランド) という。例えば算術演算子は数値を計算し、比較演算子は 2 つの値の大小や等しさを調べ、論理演算子は真偽を組み合わせたり反転したりする。1 つの式に算術演算子が複数あるときは**優先順位**に従い、括弧の中、掛け算・割り算、足し算・引き算の順に計算する。",
+      "detail_zh": "运算符所作用的值叫作**操作数**[[jp:被演算子]]（operand）。例如，算术运算符对数值进行计算，比较运算符检查两个值的大小或是否相等，逻辑运算符则组合或反转真假。一个表达式中有多个算术运算符时，按照**优先级**[[jp:優先順位]]，依次计算括号内、乘除、加减。",
+      "detail_en": "The value an operator acts on is called an **operand** ([[jp:被演算子]]). For example, arithmetic operators calculate with numbers, comparison operators check which of two values is larger or whether they are equal, and logical operators combine or invert true and false. When one expression has several arithmetic operators, **precedence** ([[jp:優先順位]]) applies: parentheses first, then multiplication and division, then addition and subtraction.",
+      "analogy_jp": "料理の手順書にある「切る」「混ぜる」「焼く」のような動詞にあたり、材料に何をするかを決める。",
+      "analogy_zh": "相当于菜谱步骤里的“切”“拌”“烤”这类动词，决定对材料做什么。",
+      "analogy_en": "It plays the part of verbs like \"chop\", \"mix\" and \"bake\" in a recipe, deciding what to do with the ingredients.",
+      "hook_jp": "原子・因子と同じ「子」が付き、演算を担う小さな部品と読める。",
+      "hook_zh": "日语写作“演算子”，和“原子”“因子”一样带“子”字，可以理解为承担运算的小部件。",
+      "hook_en": "The Japanese word 演算子 ends in 子, the same character as in 原子 (atom) and 因子 (factor), so read it as a small part that carries out an operation.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "割り算の**余り**を求める演算を使うと、ある数が別の数で割り切れるかを判定できる。余りが 0 なら割り切れている。",
+          "qids": [
+            "2025r07-q078",
+            "2026r08-q085"
+          ],
+          "text_zh": "使用求除法**余数**[[jp:余り]]的运算，可以判断一个数能否被另一个数整除。余数为 0 就说明能整除。",
+          "text_en": "An operation that gives the **remainder** ([[jp:余り]]) of a division tells you whether one number divides another evenly. A remainder of 0 means it divides evenly."
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**優先順位**のため、「a + b × 2」では b × 2 が先に計算される。足し算を先にしたいときは、その部分を括弧で囲む。",
+          "qids": [
+            "2022r04-q078",
+            "2022r04-q096"
+          ],
+          "text_zh": "由于**优先级**[[jp:優先順位]]，在“a + b × 2”中先计算 b × 2。想先做加法时，就用括号把那部分括起来。",
+          "text_en": "Because of **precedence** ([[jp:優先順位]]), b × 2 is calculated first in \"a + b × 2\". To do the addition first, put that part in parentheses."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "op",
+            "label": {
+              "jp": "主な演算子",
+              "zh": "主要的运算符",
+              "en": "Main operators"
+            },
+            "children": [
+              {
+                "id": "arith",
+                "label": {
+                  "jp": "算術演算子 (例: + − × ÷)",
+                  "zh": "算术运算符（例：+ − × ÷）",
+                  "en": "Arithmetic operators (e.g. + − × ÷)"
+                },
+                "children": [
+                  {
+                    "id": "arith_r",
+                    "label": {
+                      "jp": "数値を計算する",
+                      "zh": "对数值进行计算",
+                      "en": "Calculate with numbers"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "cmp",
+                "label": {
+                  "jp": "比較演算子 (例: = ≠ < ≦)",
+                  "zh": "比较运算符（例：= ≠ < ≦）",
+                  "en": "Comparison operators (e.g. = ≠ < ≦)"
+                },
+                "children": [
+                  {
+                    "id": "cmp_r",
+                    "label": {
+                      "jp": "2 つの値を比べて真か偽を返す",
+                      "zh": "比较两个值，返回真或假",
+                      "en": "Compare two values and return true or false"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "logic",
+                "label": {
+                  "jp": "論理演算子 (例: and or not)",
+                  "zh": "逻辑运算符（例：and or not）",
+                  "en": "Logical operators (e.g. and or not)"
+                },
+                "children": [
+                  {
+                    "id": "logic_r",
+                    "label": {
+                      "jp": "真偽を組み合わせたり反転したりする",
+                      "zh": "组合或反转真假",
+                      "en": "Combine or invert true and false"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [],
+      "definition_jp": "演算子は、足す・比べる・組み合わせるといった操作を表す記号で、値と組み合わせて式を作る。",
+      "definition_zh": "运算符演算子是表示相加、比较、组合等操作的符号，与值组合在一起构成表达式。",
+      "definition_en": "An operator (演算子) is a symbol for an operation such as adding, comparing or combining, and it joins with values to form an expression.",
+      "explanation_jp": "演算子が働きかける相手の値を被演算子 (オペランド) という。例えば算術演算子は数値を計算し、比較演算子は 2 つの値の大小や等しさを調べ、論理演算子は真偽を組み合わせたり反転したりする。1 つの式に算術演算子が複数あるときは優先順位に従い、括弧の中、掛け算・割り算、足し算・引き算の順に計算する。",
+      "explanation_zh": "运算符所作用的值叫作操作数被演算子（operand）。例如，算术运算符对数值进行计算，比较运算符检查两个值的大小或是否相等，逻辑运算符则组合或反转真假。一个表达式中有多个算术运算符时，按照优先级優先順位，依次计算括号内、乘除、加减。",
+      "explanation_en": "The value an operator acts on is called an operand (被演算子). For example, arithmetic operators calculate with numbers, comparison operators check which of two values is larger or whether they are equal, and logical operators combine or invert true and false. When one expression has several arithmetic operators, precedence (優先順位) applies: parentheses first, then multiplication and division, then addition and subtraction.",
+      "memory_hook_jp": "原子・因子と同じ「子」が付き、演算を担う小さな部品と読める。",
+      "memory_hook_zh": "日语写作“演算子”，和“原子”“因子”一样带“子”字，可以理解为承担运算的小部件。",
+      "memory_hook_en": "The Japanese word 演算子 ends in 子, the same character as in 原子 (atom) and 因子 (factor), so read it as a small part that carries out an operation.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "条件式",
+      "term_zh": "条件表达式",
+      "term_en": "Conditional Expression",
+      "one_jp": "**条件式**は、評価した結果が**真**か**偽**のどちらかになる式で、分岐の行き先や繰返しを続けるかどうかを決める。",
+      "one_zh": "**条件表达式**[[jp:条件式]]是求值结果为**真**[[jp:真]]或**假**[[jp:偽]]之一的表达式，决定分支往哪里走、循环是否继续。",
+      "one_en": "A **conditional expression** ([[jp:条件式]]) is an expression that evaluates to either **true** ([[jp:真]]) or **false** ([[jp:偽]]), and it decides which way a branch goes and whether a loop continues.",
+      "detail_jp": "比較演算子で 2 つの値を比べるのが基本の形で、例えば「a ≧ 18」は a が 18 以上なら真になる。複数の条件は論理演算子でつなぎ、**and** はすべてが真のときだけ真、**or** はどれか一つでも真なら真になる。**not** は真と偽を入れ替える。",
+      "detail_zh": "基本形式是用比较运算符比较两个值，例如“a ≧ 18”在 a 大于等于 18 时为真。多个条件用逻辑运算符连接：**and** 只有全部为真时才为真，**or** 只要有一个为真就为真。**not** 则把真和假互换。",
+      "detail_en": "The basic form compares two values with a comparison operator; for example, \"a ≧ 18\" is true when a is 18 or more. Several conditions are joined with logical operators: **and** is true only when all of them are true, and **or** is true when at least one is true. **not** swaps true and false.",
+      "analogy_jp": "遊園地の乗り物の入口にある身長の目盛りのようなもので、基準を満たすかどうかの二択で通れるかが決まる。",
+      "analogy_zh": "就像游乐园设施入口处的身高刻度，是否达到标准只有两种结果，决定能不能进去。",
+      "analogy_en": "It is like the height marker at the entrance to a theme park ride: you either meet the mark or you do not, and that decides whether you get on.",
+      "hook_jp": "真を 1、偽を 0 と置くと、and は掛け算の結果、or は足し算の結果が 1 以上かどうかと同じになる。",
+      "hook_zh": "把真记作 1、假记作 0，and 就等于相乘的结果，or 就等于相加的结果是否不小于 1。",
+      "hook_en": "Write true as 1 and false as 0: and matches the product, and or matches whether the sum is 1 or more.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "複数の条件をすべて満たすことを求める判定には、それらの条件を and でつないだ**条件式**を使う。",
+          "qids": [
+            "2011h23tokubetsu-q093"
+          ],
+          "text_zh": "要求全部条件都满足的判断，使用把这些条件用 and 连接起来的**条件表达式**[[jp:条件式]]。",
+          "text_en": "A check that requires every condition to hold uses a **conditional expression** ([[jp:条件式]]) that joins those conditions with and."
+        },
+        {
+          "kind": "exam",
+          "text_jp": "分岐の中にさらに分岐があるときは、外側の**条件式**の真偽で進む枝が決まり、その枝の中で内側の条件式を評価する。",
+          "qids": [
+            "2025r07-q099"
+          ],
+          "text_zh": "分支里面还有分支时，由外层**条件表达式**[[jp:条件式]]的真假决定走哪一支，再在那一支里对内层的条件表达式求值。",
+          "text_en": "When a branch contains another branch, the outer **conditional expression** ([[jp:条件式]]) decides which path to take by being true or false, and the inner one is evaluated inside that path."
+        },
+        {
+          "kind": "mix",
+          "text_jp": "条件式の「=」は左右が等しいかを調べる比較演算子で、結果は真か偽である。値を変数に入れる**代入** (←) とは働きが違う。",
+          "text_zh": "条件表达式[[jp:条件式]]中的“=”是比较用的运算符[[jp:演算子]]，检查左右两边是否相等，结果为真或假。它和把值存入变量的**赋值**[[jp:代入]]（←）作用不同。",
+          "text_en": "In a conditional expression ([[jp:条件式]]), \"=\" is a comparison operator ([[jp:演算子]]) that checks whether both sides are equal, and its result is true or false. It works differently from **assignment** ([[jp:代入]]) (←), which puts a value into a variable."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "条件 P",
+              "zh": "条件 P",
+              "en": "Condition P"
+            },
+            {
+              "jp": "条件 Q",
+              "zh": "条件 Q",
+              "en": "Condition Q"
+            },
+            {
+              "jp": "P and Q",
+              "zh": "P and Q",
+              "en": "P and Q"
+            },
+            {
+              "jp": "P or Q",
+              "zh": "P or Q",
+              "en": "P or Q"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "真",
+                  "zh": "真",
+                  "en": "True"
+                },
+                {
+                  "jp": "真",
+                  "zh": "真",
+                  "en": "True"
+                },
+                {
+                  "jp": "真",
+                  "zh": "真",
+                  "en": "True"
+                },
+                {
+                  "jp": "真",
+                  "zh": "真",
+                  "en": "True"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "真",
+                  "zh": "真",
+                  "en": "True"
+                },
+                {
+                  "jp": "偽",
+                  "zh": "假",
+                  "en": "False"
+                },
+                {
+                  "jp": "偽",
+                  "zh": "假",
+                  "en": "False"
+                },
+                {
+                  "jp": "真",
+                  "zh": "真",
+                  "en": "True"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "偽",
+                  "zh": "假",
+                  "en": "False"
+                },
+                {
+                  "jp": "真",
+                  "zh": "真",
+                  "en": "True"
+                },
+                {
+                  "jp": "偽",
+                  "zh": "假",
+                  "en": "False"
+                },
+                {
+                  "jp": "真",
+                  "zh": "真",
+                  "en": "True"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "偽",
+                  "zh": "假",
+                  "en": "False"
+                },
+                {
+                  "jp": "偽",
+                  "zh": "假",
+                  "en": "False"
+                },
+                {
+                  "jp": "偽",
+                  "zh": "假",
+                  "en": "False"
+                },
+                {
+                  "jp": "偽",
+                  "zh": "假",
+                  "en": "False"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2024r06-q062",
+        "2025r07-q078",
+        "2025r07-q099"
+      ],
+      "definition_jp": "条件式は、評価した結果が真か偽のどちらかになる式で、分岐の行き先や繰返しを続けるかどうかを決める。",
+      "definition_zh": "条件表达式条件式是求值结果为真真或假偽之一的表达式，决定分支往哪里走、循环是否继续。",
+      "definition_en": "A conditional expression (条件式) is an expression that evaluates to either true (真) or false (偽), and it decides which way a branch goes and whether a loop continues.",
+      "explanation_jp": "比較演算子で 2 つの値を比べるのが基本の形で、例えば「a ≧ 18」は a が 18 以上なら真になる。複数の条件は論理演算子でつなぎ、and はすべてが真のときだけ真、or はどれか一つでも真なら真になる。not は真と偽を入れ替える。",
+      "explanation_zh": "基本形式是用比较运算符比较两个值，例如“a ≧ 18”在 a 大于等于 18 时为真。多个条件用逻辑运算符连接：and 只有全部为真时才为真，or 只要有一个为真就为真。not 则把真和假互换。",
+      "explanation_en": "The basic form compares two values with a comparison operator; for example, \"a ≧ 18\" is true when a is 18 or more. Several conditions are joined with logical operators: and is true only when all of them are true, and or is true when at least one is true. not swaps true and false.",
+      "memory_hook_jp": "真を 1、偽を 0 と置くと、and は掛け算の結果、or は足し算の結果が 1 以上かどうかと同じになる。",
+      "memory_hook_zh": "把真记作 1、假记作 0，and 就等于相乘的结果，or 就等于相加的结果是否不小于 1。",
+      "memory_hook_en": "Write true as 1 and false as 0: and matches the product, and or matches whether the sum is 1 or more.",
+      "inline_quiz": [
+        "2024r06-q062",
+        "2025r07-q078",
+        "2025r07-q099"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "代入",
+      "term_zh": "赋值",
+      "term_en": "Assignment",
+      "one_jp": "**代入**は、右辺の式を評価して得た値を左辺の**変数**に格納する操作で、擬似言語では「←」で表す。",
+      "one_zh": "**赋值**[[jp:代入]]是把右边表达式求值所得的值存入左边**变量**[[jp:変数]]的操作，在伪代码中用“←”表示。",
+      "one_en": "**Assignment** ([[jp:代入]]) evaluates the expression on the right and stores the resulting value in the **variable** ([[jp:変数]]) on the left; in the pseudo-language it is written with \"←\".",
+      "detail_jp": "代入すると変数の古い値は消え、新しい値に置き換わる。「n ← n × 2」のように両辺に同じ変数があっても、先に右辺を今の値で計算し、その結果を n に入れ直す。代入を順に実行していくと、変数の値は実行した順に移り変わる。",
+      "detail_zh": "赋值后变量原来的值会消失，被新值取代。像“n ← n × 2”这样两边出现同一个变量时，也是先用当前的值计算右边，再把结果重新存入 n。按顺序执行赋值，变量的值就会按执行顺序依次变化。",
+      "detail_en": "After an assignment, the variable's old value is gone and the new value takes its place. Even when the same variable appears on both sides, as in \"n ← n × 2\", the right side is computed first with the current value and the result is then stored back in n. As assignments run one after another, the variable's value changes in the order they are executed.",
+      "analogy_jp": "ホワイトボードの欄に書いた数字を消して、新しい数字に書き直すようなものである。",
+      "analogy_zh": "就像把白板格子里写的数字擦掉，再写上新的数字。",
+      "analogy_en": "It is like erasing the number written in a box on a whiteboard and writing a new one in its place.",
+      "hook_jp": "矢印「←」の向きが値の運ばれる向きで、右から左へ値が流れ込む。",
+      "hook_zh": "箭头“←”的方向就是值被搬运的方向，值从右向左流入。",
+      "hook_en": "The arrow \"←\" points the way the value travels: it flows from right to left.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "2 つの変数の値を入れ替えるには、これから上書きする変数の値を、先に退避用の変数に移しておく。そうしないと最初の**代入**で片方の値が上書きされて失われる。",
+          "qids": [
+            "2010h22h-q053"
+          ],
+          "text_zh": "要交换两个变量的值，先把即将被覆盖的那个变量的值移到临时变量里。否则第一次**赋值**[[jp:代入]]就会覆盖掉其中一个的值，使它丢失。",
+          "text_en": "To swap the values of two variables, first move the value of the variable about to be overwritten into a temporary variable. Otherwise the first **assignment** ([[jp:代入]]) overwrites one of the values and it is lost."
+        },
+        {
+          "kind": "exam",
+          "text_jp": "繰返しの中の**代入**は 1 回ごとに変数の値を更新し、次の回はその更新後の値から計算を始める。",
+          "qids": [
+            "2010h22a-q069",
+            "2022r04-q096"
+          ],
+          "text_zh": "循环中的**赋值**[[jp:代入]]每执行一次就更新一次变量的值，下一次从更新后的值开始计算。",
+          "text_en": "An **assignment** ([[jp:代入]]) inside a loop updates the variable on every pass, and the next pass starts calculating from the updated value."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "a1",
+              "label": {
+                "jp": "n ← n × 2 (n は 5)",
+                "zh": "n ← n × 2（n 为 5）",
+                "en": "n ← n × 2 (n is 5)"
+              }
+            },
+            {
+              "id": "a2",
+              "label": {
+                "jp": "右辺を計算: 5 × 2 = 10",
+                "zh": "计算右边：5 × 2 = 10",
+                "en": "Compute the right side: 5 × 2 = 10"
+              }
+            },
+            {
+              "id": "a3",
+              "label": {
+                "jp": "左辺の n に 10 を格納",
+                "zh": "把 10 存入左边的 n",
+                "en": "Store 10 in n on the left"
+              }
+            },
+            {
+              "id": "a4",
+              "label": {
+                "jp": "n の値は 10",
+                "zh": "n 的值为 10",
+                "en": "n is now 10"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "代入の文を読む。このとき n には 5 が入っている。",
+            "state": {
+              "show": 1
+            },
+            "caption_zh": "读这条赋值语句。此时 n 中存放的是 5。",
+            "caption_en": "Read the assignment statement. At this point n holds 5."
+          },
+          {
+            "caption_jp": "先に右辺を今の n の値で計算し、10 を得る。",
+            "state": {
+              "show": 2
+            },
+            "caption_zh": "先用 n 当前的值计算右边，得到 10。",
+            "caption_en": "First compute the right side with the current value of n, giving 10."
+          },
+          {
+            "caption_jp": "得た 10 を左辺の変数 n に格納する。",
+            "state": {
+              "show": 3
+            },
+            "caption_zh": "把得到的 10 存入左边的变量 n。",
+            "caption_en": "Store the resulting 10 in the variable n on the left."
+          },
+          {
+            "caption_jp": "n の中身は 10 に置き換わり、元の 5 は残らない。",
+            "state": {
+              "show": 4
+            },
+            "caption_zh": "n 的内容被替换为 10，原来的 5 不会保留。",
+            "caption_en": "The contents of n are replaced with 10, and the old 5 is gone."
+          }
+        ]
+      },
+      "quiz": [
+        "2010h22h-q053",
+        "2022r04-q078"
+      ],
+      "definition_jp": "代入は、右辺の式を評価して得た値を左辺の変数に格納する操作で、擬似言語では「←」で表す。",
+      "definition_zh": "赋值代入是把右边表达式求值所得的值存入左边变量変数的操作，在伪代码中用“←”表示。",
+      "definition_en": "Assignment (代入) evaluates the expression on the right and stores the resulting value in the variable (変数) on the left; in the pseudo-language it is written with \"←\".",
+      "explanation_jp": "代入すると変数の古い値は消え、新しい値に置き換わる。「n ← n × 2」のように両辺に同じ変数があっても、先に右辺を今の値で計算し、その結果を n に入れ直す。代入を順に実行していくと、変数の値は実行した順に移り変わる。",
+      "explanation_zh": "赋值后变量原来的值会消失，被新值取代。像“n ← n × 2”这样两边出现同一个变量时，也是先用当前的值计算右边，再把结果重新存入 n。按顺序执行赋值，变量的值就会按执行顺序依次变化。",
+      "explanation_en": "After an assignment, the variable's old value is gone and the new value takes its place. Even when the same variable appears on both sides, as in \"n ← n × 2\", the right side is computed first with the current value and the result is then stored back in n. As assignments run one after another, the variable's value changes in the order they are executed.",
+      "memory_hook_jp": "矢印「←」の向きが値の運ばれる向きで、右から左へ値が流れ込む。",
+      "memory_hook_zh": "箭头“←”的方向就是值被搬运的方向，值从右向左流入。",
+      "memory_hook_en": "The arrow \"←\" points the way the value travels: it flows from right to left.",
+      "inline_quiz": [
+        "2010h22h-q053",
+        "2022r04-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "注釈",
+      "term_zh": "注释",
+      "term_en": "Comment",
+      "one_jp": "**注釈**は、プログラムの中に人が読むための説明を書き添えたもので、**実行の対象にならない**。",
+      "one_zh": "**注释**[[jp:注釈]]是在程序中附加的、供人阅读的说明，**不会被执行**。",
+      "one_en": "A **comment** ([[jp:注釈]]) is an explanation written into a program for people to read, and it is **never executed**.",
+      "detail_jp": "処理の目的や変数の意味を書いておくと、後から読む人や手直しする人がプログラムを理解しやすくなる。IPA の擬似言語では、例えば「/* 〜 */」で囲む書き方や、「//」の後ろに書く書き方が使われる。注釈を書き足しても消しても、プログラムの処理結果は変わらない。",
+      "detail_zh": "写下处理的目的或变量的含义，之后阅读或修改程序的人就更容易理解它。IPA 的伪代码中会使用“/* 〜 */”括起来，或写在“//”后面等写法。无论添加还是删除注释，程序的处理结果都不会改变。",
+      "detail_en": "Writing down what a process is for or what a variable means makes the program easier to follow for whoever reads or fixes it later. IPA's pseudo-language uses forms such as enclosing the text in \"/* … */\" or writing it after \"//\". Adding or deleting comments does not change what the program produces.",
+      "analogy_jp": "地図に書き込んだ「ここは坂がきつい」というメモのようなもので、道そのものは変えずに見る人を助ける。",
+      "analogy_zh": "就像在地图上写下“这里坡很陡”的便签，不改变道路本身，却能帮助看地图的人。",
+      "analogy_en": "It is like a note on a map saying \"steep hill here\": the road stays the same, but the note helps whoever reads the map.",
+      "hook_jp": "英語では comment。「注」は書き添える、「釈」は説き明かすの意味で、本文に添える説明と読める。",
+      "hook_zh": "日语“注釈”中，“注”是附注，“释”是解释，可以理解为附在正文旁的说明。英语叫 comment。",
+      "hook_en": "The Japanese word combines \"note\" and \"explain\", so read it as an explanation added beside the main text.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "注釈は、プログラムの中に人が読むための説明を書き添えたもので、実行の対象にならない。",
+      "definition_zh": "注释注釈是在程序中附加的、供人阅读的说明，不会被执行。",
+      "definition_en": "A comment (注釈) is an explanation written into a program for people to read, and it is never executed.",
+      "explanation_jp": "処理の目的や変数の意味を書いておくと、後から読む人や手直しする人がプログラムを理解しやすくなる。IPA の擬似言語では、例えば「/* 〜 */」で囲む書き方や、「//」の後ろに書く書き方が使われる。注釈を書き足しても消しても、プログラムの処理結果は変わらない。",
+      "explanation_zh": "写下处理的目的或变量的含义，之后阅读或修改程序的人就更容易理解它。IPA 的伪代码中会使用“/* 〜 */”括起来，或写在“//”后面等写法。无论添加还是删除注释，程序的处理结果都不会改变。",
+      "explanation_en": "Writing down what a process is for or what a variable means makes the program easier to follow for whoever reads or fixes it later. IPA's pseudo-language uses forms such as enclosing the text in \"/* … */\" or writing it after \"//\". Adding or deleting comments does not change what the program produces.",
+      "memory_hook_jp": "英語では comment。「注」は書き添える、「釈」は説き明かすの意味で、本文に添える説明と読める。",
+      "memory_hook_zh": "日语“注釈”中，“注”是附注，“释”是解释，可以理解为附在正文旁的说明。英语叫 comment。",
+      "memory_hook_en": "The Japanese word combines \"note\" and \"explain\", so read it as an explanation added beside the main text.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "式",
+      "b": "条件式",
+      "rows": [
+        {
+          "label_jp": "評価の結果",
+          "a_jp": "数値などの一つの値",
+          "b_jp": "真か偽のどちらか",
+          "key": true,
+          "label_zh": "求值结果",
+          "label_en": "Result of evaluation",
+          "a_zh": "数值等一个值",
+          "a_en": "A single value such as a number",
+          "b_zh": "真或假之一",
+          "b_en": "Either true or false"
+        },
+        {
+          "label_jp": "主に使う演算子",
+          "a_jp": "算術演算子",
+          "b_jp": "比較演算子と論理演算子",
+          "key": false,
+          "label_zh": "主要使用的运算符",
+          "label_en": "Main operators used",
+          "a_zh": "算术运算符",
+          "a_en": "Arithmetic operators",
+          "b_zh": "比较运算符和逻辑运算符",
+          "b_en": "Comparison and logical operators"
+        },
+        {
+          "label_jp": "使われる場所",
+          "a_jp": "主に代入の右辺や計算",
+          "b_jp": "主に if や while の判定",
+          "key": false,
+          "label_zh": "使用场合",
+          "label_en": "Where it is used",
+          "a_zh": "主要用于赋值的右边和计算",
+          "a_en": "Mainly the right side of an assignment and calculations",
+          "b_zh": "主要用于 if 和 while 的判断",
+          "b_en": "Mainly the tests in if and while"
+        }
+      ]
+    },
+    {
+      "a": "条件式",
+      "b": "代入",
+      "rows": [
+        {
+          "label_jp": "擬似言語での記号",
+          "a_jp": "= (等しいかを調べる)",
+          "b_jp": "← (値を入れる)",
+          "key": false,
+          "label_zh": "伪代码中的符号",
+          "label_en": "Symbol in the pseudo-language",
+          "a_zh": "=（检查是否相等）",
+          "a_en": "= (checks equality)",
+          "b_zh": "←（存入值）",
+          "b_en": "← (stores a value)"
+        },
+        {
+          "label_jp": "変数の値",
+          "a_jp": "変わらない",
+          "b_jp": "左辺の変数が書き換わる",
+          "key": true,
+          "label_zh": "变量的值",
+          "label_en": "Variable's value",
+          "a_zh": "不变",
+          "a_en": "Unchanged",
+          "b_zh": "左边的变量被改写",
+          "b_en": "The variable on the left is overwritten"
+        },
+        {
+          "label_jp": "結果",
+          "a_jp": "真か偽が得られる",
+          "b_jp": "左辺の変数に新しい値が入る",
+          "key": false,
+          "label_zh": "结果",
+          "label_en": "Result",
+          "a_zh": "得到真或假",
+          "a_en": "Gives true or false",
+          "b_zh": "左边的变量存入新值",
+          "b_en": "The variable on the left gets a new value"
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**式**は評価すると一つの値になり、算術演算子が複数あれば括弧の中、掛け算・割り算、足し算・引き算の順に計算する。",
+    "**条件式**の値は真か偽で、and はすべての条件が真のとき、or はどれか一つでも真のときに真になる。",
+    "**代入**は右辺を先に評価してから左辺の変数に格納するので、両辺に同じ変数があっても今の値をもとに更新される。",
+    "**注釈**は人が読むための説明で、書き足しても消しても処理結果は変わらない。"
+  ],
+  "key_points_zh": [
+    "**表达式**[[jp:式]]求值后得到一个值；有多个算术运算符时，依次计算括号内、乘除、加减。",
+    "**条件表达式**[[jp:条件式]]的值为真或假：and 在全部条件为真时为真，or 在任一条件为真时为真。",
+    "**赋值**[[jp:代入]]先对右边求值，再存入左边的变量，因此两边出现同一个变量时，也是以当前的值为基础进行更新。",
+    "**注释**[[jp:注釈]]是供人阅读的说明，添加或删除都不会改变处理结果。"
+  ],
+  "key_points_en": [
+    "An **expression** ([[jp:式]]) evaluates to one value, and with several arithmetic operators the order is parentheses, then multiplication and division, then addition and subtraction.",
+    "A **conditional expression** ([[jp:条件式]]) is true or false: and is true when every condition is true, and or is true when any one of them is true.",
+    "**Assignment** ([[jp:代入]]) evaluates the right side before storing the result in the variable on the left, so a variable that appears on both sides is updated from its current value.",
+    "A **comment** ([[jp:注釈]]) is an explanation for people to read, and adding or deleting one leaves the processing result unchanged."
+  ],
+  "overview": {
+    "intro_jp": "演算子の優先順位に従って、式の値を求められる。条件式が真か偽のどちらかになることを使って、分岐や繰返しの流れを追える。代入の右辺と左辺の役割を区別し、変数の値の移り変わりを順に追える。注釈が処理結果に影響しない理由を説明できる。",
+    "intro_zh": "能按照运算符的优先级求出表达式的值。能利用条件表达式的结果非真即假这一点，跟踪分支和循环的执行流程。能区分赋值中右边和左边各自的作用，按顺序跟踪变量值的变化。能说明注释为什么不影响处理结果。",
+    "intro_en": "Find the value of an expression by following operator precedence. Trace the flow of branches and loops, using the fact that a conditional expression is always either true or false. Tell apart the roles of the right side and the left side of an assignment, and follow how a variable's value changes step by step. Explain why a comment has no effect on the processing result.",
+    "freq_badge": "標準",
+    "est_minutes": 27
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "式: 式といえば計算して一つの値になる記述",
-      "演算子: 演算子といえば算術・比較・論理の操作記号",
-      "条件式: 条件式といえば真か偽かを判定する式",
-      "代入: 代入といえば値を変数に格納する操作(←)",
-      "注釈: 注釈といえば実行されない説明用のメモ書き"
-    ],
     "key_points_jp": [
-      "式は値・変数・演算子の組合せで、評価(計算)すると必ず一つの値になる、プログラムの最小部品である。",
-      "演算子には算術・比較(関係)・論理の3種類があり、計算には優先順位(掛け算・割り算が先)がある。",
-      "条件式は比較・論理演算で真・偽(True/False)を判定する式で、選択(if)や繰返し(while)の判定に使われる頻出概念。",
-      "代入は右辺の式を評価し、その値を左辺の変数へ「←」で格納する操作で、x ← x + 1 のように自分自身を更新できる(比較の「=」とは別)。",
-      "注釈(コメント)は実行されず動作に影響しない、可読性を高めるための説明用メモである。"
+      "式は評価すると一つの値になり、算術演算子が複数あれば括弧の中、掛け算・割り算、足し算・引き算の順に計算する。",
+      "条件式の値は真か偽で、and はすべての条件が真のとき、or はどれか一つでも真のときに真になる。",
+      "代入は右辺を先に評価してから左辺の変数に格納するので、両辺に同じ変数があっても今の値をもとに更新される。",
+      "注釈は人が読むための説明で、書き足しても消しても処理結果は変わらない。"
     ],
     "key_points_zh": [
-      "表达式是值・变量・运算符的组合，求值（计算）后一定会变成一个值，是程序的最小部件。",
-      "运算符有算术・比较（关系）・逻辑三种，计算时存在优先级（乘法・除法在先）。",
-      "条件表达式是用比较・逻辑运算判定真・假（True/False）的表达式，用于选择（if）和循环（while）的判断，是高频概念。",
-      "赋值是对右边的表达式求值，再用「←」把其值存入左边变量的操作，可以像 x ← x + 1 那样更新自身（与比较的「=」不同）。",
-      "注释（comment）不会被执行、不影响运行，是为提高可读性而存在的说明用备注。"
+      "表达式式求值后得到一个值；有多个算术运算符时，依次计算括号内、乘除、加减。",
+      "条件表达式条件式的值为真或假：and 在全部条件为真时为真，or 在任一条件为真时为真。",
+      "赋值代入先对右边求值，再存入左边的变量，因此两边出现同一个变量时，也是以当前的值为基础进行更新。",
+      "注释注釈是供人阅读的说明，添加或删除都不会改变处理结果。"
     ],
     "key_points_en": [
-      "An expression is a combination of values, variables, and operators; when evaluated (computed) it always becomes a single value, and it is the smallest building block of a program.",
-      "There are three kinds of operators—arithmetic, comparison (relational), and logical—and computation has precedence (multiplication and division come first).",
-      "A conditional expression is an expression that uses comparison and logical operations to determine true or false (True/False); it is used in selection (if) and iteration (while) decisions and is a high-frequency concept.",
-      "Assignment evaluates the expression on the right and stores its value into the variable on the left with \"←\"; it can update the variable itself, as in x ← x + 1 (distinct from the comparison \"=\").",
-      "A comment is not executed and does not affect how the program runs; it is an explanatory note that exists to improve readability."
+      "An expression (式) evaluates to one value, and with several arithmetic operators the order is parentheses, then multiplication and division, then addition and subtraction.",
+      "A conditional expression (条件式) is true or false: and is true when every condition is true, and or is true when any one of them is true.",
+      "Assignment (代入) evaluates the right side before storing the result in the variable on the left, so a variable that appears on both sides is updated from its current value.",
+      "A comment (注釈) is an explanation for people to read, and adding or deleting one leaves the processing result unchanged."
+    ],
+    "memory_hooks_jp": [
+      "式: 英語では expression で、計算した結果の一つの値を「表すもの」と読める。",
+      "演算子: 原子・因子と同じ「子」が付き、演算を担う小さな部品と読める。",
+      "条件式: 真を 1、偽を 0 と置くと、and は掛け算の結果、or は足し算の結果が 1 以上かどうかと同じになる。",
+      "代入: 矢印「←」の向きが値の運ばれる向きで、右から左へ値が流れ込む。",
+      "注釈: 英語では comment。「注」は書き添える、「釈」は説き明かすの意味で、本文に添える説明と読める。"
     ],
     "memory_hooks_zh": [
-      "表达式：说到表达式，就是计算后得到一个值的写法",
-      "运算符：说到运算符，就是算术・比较・逻辑的操作符号",
-      "条件表达式：说到条件表达式，就是判定真还是假的表达式",
-      "赋值：说到赋值，就是把值存入变量的操作（←）",
-      "注释：说到注释，就是不会被执行的说明用备注"
+      "表达式：英语叫 expression，可以理解为“表示”计算结果那一个值的东西。",
+      "运算符：日语写作“演算子”，和“原子”“因子”一样带“子”字，可以理解为承担运算的小部件。",
+      "条件表达式：把真记作 1、假记作 0，and 就等于相乘的结果，or 就等于相加的结果是否不小于 1。",
+      "赋值：箭头“←”的方向就是值被搬运的方向，值从右向左流入。",
+      "注释：日语“注釈”中，“注”是附注，“释”是解释，可以理解为附在正文旁的说明。英语叫 comment。"
     ],
     "memory_hooks_en": [
-      "Expression: Expression → code that computes down to a single value",
-      "Operator: Operator → arithmetic, comparison, and logical operation symbols",
-      "Conditional expression: Conditional expression → an expression that decides true or false",
-      "Assignment: Assignment → storing a value into a variable (←)",
-      "Comment: Comment → an explanatory note that is not executed"
+      "Expression: In English it is an expression: something that \"expresses\" the one value the calculation produces.",
+      "Operator: The Japanese word 演算子 ends in 子, the same character as in 原子 (atom) and 因子 (factor), so read it as a small part that carries out an operation.",
+      "Conditional Expression: Write true as 1 and false as 0: and matches the product, and or matches whether the sum is 1 or more.",
+      "Assignment: The arrow \"←\" points the way the value travels: it flows from right to left.",
+      "Comment: The Japanese word combines \"note\" and \"explain\", so read it as an explanation added beside the main text."
     ]
   },
   "challenge_questions": [
-    "2022r04-q096",
-    "2024r06-q062",
-    "2025r07-q078",
+    "2010h22a-q069",
+    "2015h27a-q048",
     "2026r08-q085",
-    "2009h21a-q090"
+    "2022r04-q096"
   ],
   "source_figures": [
     {
@@ -258,9 +945,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "表达式・赋值・注释",
-  "title_en": "Expressions, Assignment, and Comments",
-  "unit_summary_zh": "理解构成程序的基本要素——表达式、运算符、条件表达式、赋值和注释。",
-  "unit_summary_en": "Understand the basic building blocks of a program: expressions, operators, conditional expressions, assignment, and comments."
+  }
 }
