@@ -1,217 +1,730 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-05-16-u03",
   "topic_id": "strategy-05-16",
   "category": "strategy",
   "title_jp": "電子決済とデータ交換の基盤",
+  "title_zh": "电子支付与数据交换的基础",
+  "title_en": "The Foundations of Electronic Payment and Data Exchange",
   "unit_summary_jp": "EC の取引を成立させる『お金とデータの流れ』——電子決済の各方式と企業間データ交換の仕組みを学ぶ。",
+  "unit_summary_zh": "支撑 EC 交易达成的『资金与数据的流动』——学习各种电子支付方式与企业间数据交换的机制。",
+  "unit_summary_en": "The 'flow of money and data' that makes EC transactions possible — learn the various electronic payment methods and the mechanisms of inter-company data exchange.",
   "order_in_topic": 3,
   "prerequisites": [
     "strategy-05-16-u01",
     "strategy-05-16-u02"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、EC の取引を成立させる「お金とデータの流れ」を学びます。企業間データ交換の EDI、資金移動の EFT という基盤から、キャッシュレス決済・電子マネー・インターネットバンキングなど消費者の支払い手段まで扱います。決済とデータ交換は e-ビジネスの中核で頻出する重要分野です。",
-    "freq_badge": "標準",
-    "est_minutes": 18,
-    "intro_zh": "在本单元中，我们学习支撑 EC 交易达成的「资金与数据的流动」。从企业间数据交换的 EDI、资金转移的 EFT 这些基础，到无现金支付、电子货币、网上银行等面向消费者的支付手段都会涉及。支付与数据交换是 e-商务的核心，也是高频出现的重要领域。",
-    "intro_en": "In this unit, you will learn the 'flow of money and data' that makes EC transactions possible. We cover everything from the foundations — EDI for inter-company data exchange and EFT for fund transfer — to consumer-facing payment methods such as cashless payment, electronic money, and internet banking. Payment and data exchange form the core of e-business and are an important, frequently tested area."
-  },
-  "terms": [
+  "goals_jp": [
+    "**EDI** と **EFT** を、やり取りするものが取引データか資金かで分けられる。",
+    "**キャッシュレス決済** を支払いのタイミングで分け、デビットカードやクレジットカード、前払い型の **電子マネー** がどこに入るかを説明できる。",
+    "**インターネットバンキング** と **アカウントアグリゲーション** を、扱う口座の範囲とできることで区別できる。"
+  ],
+  "goals_zh": [
+    "能根据交换的是交易数据还是资金，区分 **EDI** 与 **EFT**。",
+    "能按付款时间对 **无现金支付** 分类，并说明借记卡、信用卡和预付型 **电子货币** 各属于哪一类。",
+    "能从涉及的账户范围和能办理的事情，区分 **网上银行** 与 **账户聚合**。"
+  ],
+  "goals_en": [
+    "Tell **EDI** from **EFT** by whether what changes hands is business data or money.",
+    "Sort **cashless payment** by when the money leaves you, and place debit cards, credit cards and prepaid **electronic money** in the right group.",
+    "Distinguish **Internet banking** from **account aggregation** by the range of accounts each covers and what it lets you do."
+  ],
+  "overview_cols_jp": [
+    "主に動くもの",
+    "主な使い手"
+  ],
+  "overview_cols_zh": [
+    "主要流转对象",
+    "主要使用者"
+  ],
+  "overview_cols_en": [
+    "What mainly moves",
+    "Main users"
+  ],
+  "overview_rows": [
     {
       "term": "EDI",
-      "definition_jp": "企業間で取引データを標準形式により電子的に交換する仕組み。",
-      "explanation_jp": "EDI(Electronic Data Interchange、電子データ交換)は、受発注・請求・出荷などの取引情報を、企業間でコンピュータどうしが直接やり取りする仕組みです。紙の伝票や FAX を使わず、あらかじめ取り決めた標準的な形式(フォーマットや手順)でデータを交換します。\n\nポイントは「データの形式・伝送手順などを標準化しておくこと」で、これにより異なる企業のシステムどうしでも自動でデータを処理できます。試験では、EDI が企業間(B to B)の取引データ交換であること、人手を介さず効率化・ミス削減につながることが問われます。お金そのものを動かす EFT と対比して覚えましょう。",
-      "analogy_jp": "取引先どうしが「伝票はこの書式・この送り方で出す」と約束しておき、機械が自動で読み書きできるようにした共通の郵便ルールのようなものです。",
-      "memory_hook_jp": "EDIといえば企業間で取引データを標準形式で電子交換",
-      "inline_quiz": [
-        "2018h30h-q022"
+      "one_line_jp": "企業どうしが取引データを決めた形式で電子的に交換する仕組み",
+      "one_line_zh": "企业之间按约定格式以电子方式交换交易数据的机制",
+      "one_line_en": "A system for companies to exchange business data electronically in an agreed format",
+      "extra_jp": [
+        "受発注・請求などの取引データ",
+        "取引先の企業どうし"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"自社システム\"] --> B[\"標準フォーマットに変換\"]; B --> C[\"電子的に送信\"]; C --> D[\"取引先システム\"]",
-        "svg_path": "figures/strategy-05-16-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "EDI（电子数据交换）",
-      "term_en": "EDI (Electronic Data Interchange)",
-      "definition_zh": "企业之间以标准格式电子化地交换交易数据的机制。",
-      "definition_en": "A mechanism for exchanging transaction data electronically between companies using a standardized format.",
-      "explanation_zh": "EDI（Electronic Data Interchange，电子数据交换）是一种让企业之间的计算机直接相互传送订货、收货、开票、出货等交易信息的机制。它不使用纸质单据或传真，而是按照事先约定好的标准格式（格式和流程）来交换数据。\n\n要点在于「事先把数据的格式、传输流程等标准化」，这样不同企业的系统之间也能自动处理数据。考试中会考查 EDI 是企业间（B to B）的交易数据交换、不需人工介入从而提高效率并减少差错。请与移动资金本身的 EFT 对比记忆。",
-      "explanation_en": "EDI (Electronic Data Interchange) is a mechanism in which the computers of different companies directly exchange transaction information such as orders, billing, and shipping. Instead of paper slips or faxes, data is exchanged using a pre-agreed standard format (formats and procedures).\n\nThe key point is to 'standardize the data format, transmission procedures, and so on in advance,' which allows even the systems of different companies to process data automatically. On the exam, you are asked to recognize that EDI is the exchange of transaction data between companies (B to B), and that it improves efficiency and reduces errors without human intervention. Remember it in contrast to EFT, which moves the money itself.",
-      "analogy_zh": "就像交易双方事先约定好「单据用这个格式、用这种方式发送」，让机器能够自动读写的一套通用邮寄规则。",
-      "analogy_en": "It is like a shared set of mailing rules where trading partners agree in advance that 'slips will be issued in this format and sent this way,' so that machines can read and write them automatically.",
-      "memory_hook_zh": "说到 EDI 就是企业间以标准格式电子交换交易数据",
-      "memory_hook_en": "EDI → exchanging transaction data electronically between companies in a standard format"
+      "extra_zh": [
+        "订货、接单、开票等交易数据",
+        "有业务往来的企业之间"
+      ],
+      "extra_en": [
+        "Business data such as orders and invoices",
+        "Companies that trade with each other"
+      ]
     },
     {
       "term": "EFT",
-      "definition_jp": "金融機関間などで資金を電子的に移動させる仕組み。",
-      "explanation_jp": "EFT(Electronic Funds Transfer、電子資金移動)は、現金や紙の小切手を使わず、コンピュータネットワークを通じてお金そのものを移動させる仕組みです。銀行振込や口座引き落とし、給与の口座振込などがその代表例にあたります。\n\nEDI が「取引データ」を電子的にやり取りするのに対し、EFT は「資金(お金)」を電子的に動かす点が違いです。試験では、この EDI とのペア(データの流れ=EDI、お金の流れ=EFT)で問われやすく、後で学ぶインターネットバンキングはこの EFT を消費者が利用する形態にあたると理解しておくと整理しやすくなります。",
-      "analogy_jp": "現金を手渡しせず、銀行どうしの帳簿上で数字を書き換えてお金を動かす仕組み。財布の現金ではなく、口座の残高だけが移動するイメージです。",
-      "memory_hook_jp": "EFTといえば資金を電子的に移動させる仕組み",
+      "one_line_jp": "ネットワークを通じて資金を口座から口座へ移す仕組み",
+      "one_line_zh": "通过网络把资金从一个账户转到另一个账户的机制",
+      "one_line_en": "A system that moves money from account to account over a network",
+      "extra_jp": [
+        "資金(口座の残高)",
+        "金融機関と、それを使う企業・個人"
+      ],
+      "extra_zh": [
+        "资金（账户余额）",
+        "金融机构以及使用它的企业和个人"
+      ],
+      "extra_en": [
+        "Money (account balances)",
+        "Financial institutions and the firms and people who use them"
+      ]
+    },
+    {
+      "term": "キャッシュレス決済",
+      "one_line_jp": "現金を使わない支払い方法の総称",
+      "one_line_zh": "不用现金付款的各种方式的统称",
+      "one_line_en": "An umbrella term for ways of paying without cash",
+      "extra_jp": [
+        "代金(現金以外の手段で)",
+        "消費者と店"
+      ],
+      "extra_zh": [
+        "货款（用现金以外的手段）",
+        "消费者和商家"
+      ],
+      "extra_en": [
+        "The price, paid by non-cash means",
+        "Consumers and shops"
+      ]
+    },
+    {
+      "term": "電子マネー",
+      "one_line_jp": "お金の価値を電子データで持ち、それで支払う手段",
+      "one_line_zh": "以电子数据形式持有金钱价值并用它付款的手段",
+      "one_line_en": "A way to hold monetary value as electronic data and pay with it",
+      "extra_jp": [
+        "カードやスマートフォンに記録した残高",
+        "消費者と店"
+      ],
+      "extra_zh": [
+        "记录在卡片或智能手机里的余额",
+        "消费者和商家"
+      ],
+      "extra_en": [
+        "A balance stored on a card or smartphone",
+        "Consumers and shops"
+      ]
+    },
+    {
+      "term": "インターネットバンキング",
+      "one_line_jp": "銀行取引をインターネット経由で行えるサービス",
+      "one_line_zh": "可以通过互联网办理银行业务的服务",
+      "one_line_en": "A service for doing banking over the Internet",
+      "extra_jp": [
+        "契約した銀行の口座の資金",
+        "その銀行の利用者"
+      ],
+      "extra_zh": [
+        "签约银行账户里的资金",
+        "该银行的客户"
+      ],
+      "extra_en": [
+        "Money in accounts at the bank you signed up with",
+        "That bank's customers"
+      ]
+    },
+    {
+      "term": "アカウントアグリゲーション",
+      "one_line_jp": "複数の金融機関の口座情報を一か所に集めて見せるサービス",
+      "one_line_zh": "把多家金融机构的账户信息汇集到一处显示的服务",
+      "one_line_en": "A service that gathers account information from several financial institutions into one view",
+      "extra_jp": [
+        "複数の口座の情報",
+        "複数の口座を持つ利用者"
+      ],
+      "extra_zh": [
+        "多个账户的信息",
+        "拥有多个账户的用户"
+      ],
+      "extra_en": [
+        "Information from several accounts",
+        "Users with accounts in several places"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "EDI",
+      "term_zh": "EDI（电子数据交换）",
+      "term_en": "EDI (Electronic Data Interchange)",
+      "one_jp": "**EDI** は、企業どうしが受発注や請求などの**取引データ**を、あらかじめ取り決めた**標準形式**で電子的に交換する仕組みである。",
+      "one_zh": "**EDI**（电子数据交换）是企业之间把订货、接单、开票等**交易数据**，按事先约定的**标准格式**以电子方式交换的机制。",
+      "one_en": "**EDI** (Electronic Data Interchange) is a system in which companies exchange **business data** such as orders and invoices electronically, using a **standard format** agreed in advance.",
+      "detail_jp": "紙の伝票や FAX の代わりに、送り手のシステムが作ったデータを受け手のシステムがそのまま読み込んで処理する。入力し直す手間や転記の誤りが減り、受発注から請求までの事務が速くなる。",
+      "detail_zh": "它取代纸质单据和传真，由接收方系统直接读入并处理发送方系统生成的数据。重新录入的工夫和抄写错误都会减少，从订货到开票的事务处理也更快。",
+      "detail_en": "Instead of paper slips or faxes, the receiving system reads and processes the data produced by the sending system as it is. This cuts retyping and copying errors, and speeds up the paperwork from ordering through to invoicing.",
+      "analogy_jp": "取引先と同じ型の申込用紙を使うと約束しておけば、届いた用紙をそのまま機械に読ませて処理できる、というのに近い。",
+      "analogy_zh": "好比和合作方约好使用同一种格式的申请表，收到的表格就能直接交给机器读取处理。",
+      "analogy_en": "It is like agreeing with a partner to use the same form layout, so any form that arrives can be fed straight into a machine for processing.",
+      "hook_jp": "Electronic Data Interchange の頭文字。Interchange は「取り交わす」で、注文書や請求書の取り交わしを電子データに置き換えたものと覚える。",
+      "hook_zh": "Electronic Data Interchange 的首字母缩写。Interchange 意为“互相交换”，可以记成把订单、发票的互相往来换成电子数据。",
+      "hook_en": "Short for Electronic Data Interchange. \"Interchange\" means swapping back and forth, so picture the swapping of orders and invoices done as electronic data.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**EDI** は、受発注や決済などの取引の情報を、取引先の企業とネットワーク経由で電子的に交換する仕組みである。交換を成り立たせるため、データの形式や伝送の手順を企業間で事前に取り決めておく。",
+          "text_zh": "**EDI** 是与有业务往来的企业通过网络以电子方式交换订货、接单、结算等交易信息的机制。为了让交换顺利进行，企业之间要事先商定数据格式和传输规程。",
+          "text_en": "**EDI** is a system for exchanging transaction information such as orders and settlement details electronically with partner companies over a network. For the exchange to work, the companies agree beforehand on the data format and the transmission procedure.",
+          "qids": [
+            "2018h30h-q022",
+            "2020r02o-q027"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "make",
+              "label": {
+                "jp": "発注側のシステムで注文データを作る",
+                "zh": "订货方系统生成订单数据",
+                "en": "Buyer's system creates the order data"
+              }
+            },
+            {
+              "id": "conv",
+              "label": {
+                "jp": "取り決めた形式に変換する",
+                "zh": "转换成约定的格式",
+                "en": "Convert to the agreed format"
+              }
+            },
+            {
+              "id": "send",
+              "label": {
+                "jp": "ネットワークで相手へ送る",
+                "zh": "通过网络发给对方",
+                "en": "Send it to the partner over the network"
+              }
+            },
+            {
+              "id": "recv",
+              "label": {
+                "jp": "受注側のシステムが自動で取り込む",
+                "zh": "接单方系统自动读入",
+                "en": "Seller's system loads it automatically"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "発注する側の社内システムで、注文の内容がデータとしてできあがる。",
+            "caption_zh": "订货方的内部系统把订单内容生成为数据。",
+            "caption_en": "The buyer's in-house system turns the order into data.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "そのデータを、取引先と決めておいた共通の書き方に置き換える。",
+            "caption_zh": "把这份数据改写成与对方事先商定的通用写法。",
+            "caption_en": "That data is rewritten in the common layout both sides agreed on.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "置き換えたデータを通信回線で取引先へ届ける。",
+            "caption_zh": "改写好的数据经通信线路送到对方手里。",
+            "caption_en": "The converted data travels over a communication line to the partner.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "受け手は打ち直さずに、届いたデータをそのまま処理に回せる。",
+            "caption_zh": "接收方无需重新录入，可以直接处理收到的数据。",
+            "caption_en": "The receiver can process the data as it arrives, with no retyping.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2018h30h-q022",
+        "2020r02o-q027"
+      ],
+      "definition_jp": "EDI は、企業どうしが受発注や請求などの取引データを、あらかじめ取り決めた標準形式で電子的に交換する仕組みである。",
+      "definition_zh": "EDI（电子数据交换）是企业之间把订货、接单、开票等交易数据，按事先约定的标准格式以电子方式交换的机制。",
+      "definition_en": "EDI (Electronic Data Interchange) is a system in which companies exchange business data such as orders and invoices electronically, using a standard format agreed in advance.",
+      "explanation_jp": "紙の伝票や FAX の代わりに、送り手のシステムが作ったデータを受け手のシステムがそのまま読み込んで処理する。入力し直す手間や転記の誤りが減り、受発注から請求までの事務が速くなる。",
+      "explanation_zh": "它取代纸质单据和传真，由接收方系统直接读入并处理发送方系统生成的数据。重新录入的工夫和抄写错误都会减少，从订货到开票的事务处理也更快。",
+      "explanation_en": "Instead of paper slips or faxes, the receiving system reads and processes the data produced by the sending system as it is. This cuts retyping and copying errors, and speeds up the paperwork from ordering through to invoicing.",
+      "memory_hook_jp": "Electronic Data Interchange の頭文字。Interchange は「取り交わす」で、注文書や請求書の取り交わしを電子データに置き換えたものと覚える。",
+      "memory_hook_zh": "Electronic Data Interchange 的首字母缩写。Interchange 意为“互相交换”，可以记成把订单、发票的互相往来换成电子数据。",
+      "memory_hook_en": "Short for Electronic Data Interchange. \"Interchange\" means swapping back and forth, so picture the swapping of orders and invoices done as electronic data.",
+      "inline_quiz": [
+        "2018h30h-q022",
+        "2020r02o-q027"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "EFT",
+      "term_zh": "EFT（电子资金转移）",
+      "term_en": "EFT (Electronic Funds Transfer)",
+      "one_jp": "**EFT** (電子資金移動) は、現金や紙の小切手を使わずに、ネットワークを通じて**資金そのもの**を口座から口座へ移す仕組みである。",
+      "one_zh": "**EFT**（电子资金转移，[[jp:電子資金移動]]）是不用现金或纸质支票，而是通过网络把**资金本身**从一个账户转到另一个账户的机制。",
+      "one_en": "**EFT** (Electronic Funds Transfer, [[jp:電子資金移動]]) is a system that moves **money itself** from one account to another over a network, without cash or paper cheques.",
+      "detail_jp": "銀行振込、公共料金などの口座振替、給与の振込が身近な例である。実際に動くのは紙幣ではなく、金融機関のコンピュータ上にある口座残高の数字である。",
+      "detail_zh": "银行转账、水电费等的自动扣款、工资代发都是身边的例子。实际移动的不是纸币，而是金融机构计算机里账户余额的数字。",
+      "detail_en": "Bank transfers, automatic debits for utility bills and salary deposits are everyday examples. What actually moves is not banknotes but the balance figures held on financial institutions' computers.",
+      "analogy_jp": "お金を袋に詰めて運ぶ代わりに、回線の中を流して相手の口座に届けるイメージ。",
+      "analogy_zh": "不是把钱装袋运过去，而是让钱顺着线路流进对方的账户。",
+      "analogy_en": "Rather than carrying cash over in a bag, the money flows down a line into the other person's account.",
+      "hook_jp": "F は Funds(資金)、T は Transfer(移す)。名前のとおり「資金を移す」技術。",
+      "hook_zh": "F 是 Funds（资金），T 是 Transfer（转移）。顾名思义，就是“转移资金”的技术。",
+      "hook_en": "F is for Funds and T is for Transfer: just as the name says, a technique for moving money.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "店での支払いと同時に預金口座から代金を引き落とす**デビットカード**の決済も、ネットワークで資金を移す **EFT** の一種である。",
+          "text_zh": "在店里付款的同时从存款账户扣除货款的**借记卡**（[[jp:デビットカード]]）支付，也属于通过网络转移资金的 **EFT**。",
+          "text_en": "Paying by **debit card** ([[jp:デビットカード]]), where the price is taken from your bank account the moment you pay in a shop, is also a kind of **EFT** that moves money over a network.",
+          "qids": [
+            "2009h21h-q018"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**EDI** が運ぶのは受発注などの取引データで、**EFT** が運ぶのは資金そのものである。",
+          "text_zh": "**EDI** 传送的是订货、接单等交易数据，而 **EFT** 传送的是资金本身。",
+          "text_en": "**EDI** carries business data such as orders, while **EFT** carries the money itself."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2009h21h-q018"
+      ],
+      "definition_jp": "EFT (電子資金移動) は、現金や紙の小切手を使わずに、ネットワークを通じて資金そのものを口座から口座へ移す仕組みである。",
+      "definition_zh": "EFT（电子资金转移，電子資金移動）是不用现金或纸质支票，而是通过网络把资金本身从一个账户转到另一个账户的机制。",
+      "definition_en": "EFT (Electronic Funds Transfer, 電子資金移動) is a system that moves money itself from one account to another over a network, without cash or paper cheques.",
+      "explanation_jp": "銀行振込、公共料金などの口座振替、給与の振込が身近な例である。実際に動くのは紙幣ではなく、金融機関のコンピュータ上にある口座残高の数字である。",
+      "explanation_zh": "银行转账、水电费等的自动扣款、工资代发都是身边的例子。实际移动的不是纸币，而是金融机构计算机里账户余额的数字。",
+      "explanation_en": "Bank transfers, automatic debits for utility bills and salary deposits are everyday examples. What actually moves is not banknotes but the balance figures held on financial institutions' computers.",
+      "memory_hook_jp": "F は Funds(資金)、T は Transfer(移す)。名前のとおり「資金を移す」技術。",
+      "memory_hook_zh": "F 是 Funds（资金），T 是 Transfer（转移）。顾名思义，就是“转移资金”的技术。",
+      "memory_hook_en": "F is for Funds and T is for Transfer: just as the name says, a technique for moving money.",
       "inline_quiz": [
         "2009h21h-q018"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "EFT（电子资金转移）",
-      "term_en": "EFT (Electronic Funds Transfer)",
-      "definition_zh": "在金融机构之间等场景下电子化地转移资金的机制。",
-      "definition_en": "A mechanism for moving funds electronically, such as between financial institutions.",
-      "explanation_zh": "EFT（Electronic Funds Transfer，电子资金转移）是一种不使用现金或纸质支票，而是通过计算机网络来移动资金本身的机制。银行转账、账户扣款、工资的账户转入等都是其典型例子。\n\nEDI 是电子化地交换「交易数据」，而 EFT 则是电子化地移动「资金（钱）」，这是两者的区别。考试中容易以这一对（数据的流动＝EDI、资金的流动＝EFT）来考查；如果理解了后面要学的网上银行就是消费者使用 EFT 的一种形态，就更容易梳理清楚。",
-      "explanation_en": "EFT (Electronic Funds Transfer) is a mechanism that moves the money itself through a computer network without using cash or paper checks. Bank transfers, account debits, and salary deposits into accounts are typical examples.\n\nThe difference is that whereas EDI electronically exchanges 'transaction data,' EFT electronically moves 'funds (money).' On the exam, it is often tested as a pair with EDI (flow of data = EDI, flow of money = EFT). It helps to understand that internet banking, which you will learn later, is a form in which consumers use this EFT.",
-      "analogy_zh": "不当面交付现金，而是在银行之间的账簿上改写数字来移动资金的机制。移动的不是钱包里的现金，而只是账户里的余额。",
-      "analogy_en": "A mechanism that moves money not by handing over cash, but by rewriting the numbers in the ledgers between banks. It is the image of only the account balance moving, rather than the cash in your wallet.",
-      "memory_hook_zh": "说到 EFT 就是电子化地转移资金的机制",
-      "memory_hook_en": "EFT → a mechanism that moves funds electronically"
+      "figure": null
     },
     {
       "term": "キャッシュレス決済",
-      "definition_jp": "現金を使わずに支払いを行う決済方法の総称。",
-      "explanation_jp": "キャッシュレス決済は、紙幣・硬貨といった現金を使わずに支払いを済ませる決済方法をまとめて指す言葉です。クレジットカード、デビットカード、電子マネー、QR コード決済などが含まれ、消費者向けの支払い手段の入口となる総称です。\n\n支払いのタイミングで、先払い(プリペイド型、事前にチャージ)・即時払い(デビット型、その場で口座から引き落とし)・後払い(ポストペイ型、クレジット)に分類できる点が試験で問われます。現金管理の手間が減る一方、停電・通信障害時に使えないなどの特徴もあわせて押さえましょう。",
-      "analogy_jp": "財布の現金を出す代わりに、カードやスマホをかざして支払う方法の総称。会計の仕方が「現金以外」ならまとめてこの仲間に入ります。",
-      "memory_hook_jp": "キャッシュレス決済といえば現金を使わない支払いの総称",
-      "inline_quiz": [
-        "2009h21h-q021"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"キャッシュレス決済\"]; A --> B[\"先払い(プリペイド)\"]; A --> C[\"即時払い(デビット)\"]; A --> D[\"後払い(ポストペイ/クレジット)\"]",
-        "svg_path": "figures/strategy-05-16-u03-t02.svg",
-        "rendered": true
-      },
       "term_zh": "无现金支付",
       "term_en": "Cashless payment",
-      "definition_zh": "不使用现金进行支付的各种结算方式的总称。",
-      "definition_en": "A general term for payment methods that settle transactions without using cash.",
-      "explanation_zh": "无现金支付是对不使用纸币、硬币等现金完成支付的各种结算方式的统称。它包括信用卡、借记卡、电子货币、二维码支付等，是面向消费者各种支付手段的入口性总称。\n\n考试中会考查：按支付的时点可分为预付（预付型，事先充值）、即时付（借记型，当场从账户扣款）、后付（后付型，信用卡）。请一并掌握其特点：一方面减少了现金管理的麻烦，另一方面在停电、通信故障时无法使用。",
-      "explanation_en": "Cashless payment is a general term that collectively refers to payment methods that complete payment without using cash such as banknotes and coins. It includes credit cards, debit cards, electronic money, and QR code payments, and serves as the umbrella term that is the entry point to consumer payment methods.\n\nOn the exam, you are asked that, by the timing of payment, it can be classified into prepaid (prepaid type, charged in advance), immediate payment (debit type, deducted from the account on the spot), and deferred payment (postpaid type, credit). Be sure to also grasp its characteristics: while it reduces the trouble of cash handling, it cannot be used during power outages or communication failures.",
-      "analogy_zh": "不掏出钱包里的现金，而是刷一下卡或手机来付款的方式的总称。只要结账方式「不是现金」，就都归入这一类。",
-      "analogy_en": "A general term for ways of paying by tapping a card or smartphone instead of taking out the cash in your wallet. As long as the way of checking out is 'something other than cash,' it all falls into this group.",
-      "memory_hook_zh": "说到无现金支付就是不使用现金的支付方式总称",
-      "memory_hook_en": "Cashless payment → the umbrella term for paying without cash"
-    },
-    {
-      "term": "電子マネー",
-      "definition_jp": "貨幣価値を電子データで持ち、支払いに使えるIC等の手段。",
-      "explanation_jp": "電子マネーは、お金の価値を電子データとして IC カードやスマートフォンに記録し、それを使って支払いをする手段です。交通系 IC カードや流通系のプリペイド型がよく知られ、キャッシュレス決済の代表的な具体例の一つです。\n\n多くは事前にお金をチャージして使う先払い(プリペイド)型で、少額の支払いをかざすだけで素早く済ませられるのが特徴です。試験では、キャッシュレス決済という総称の中の一手段であること、クレジットカード(後払い)との支払いタイミングの違いを押さえることがポイントです。",
-      "analogy_jp": "あらかじめお金を入れておく「電子のプリペイドカード」。残高ぶんだけ、かざすだけで支払える回数券や図書カードのデジタル版のようなものです。",
-      "memory_hook_jp": "電子マネーといえば貨幣価値を電子データで持つ支払い手段",
+      "one_jp": "**キャッシュレス決済** は、紙幣や硬貨を使わずに代金を支払う方法をまとめて呼ぶ**総称**である。",
+      "one_zh": "**无现金支付**（[[jp:キャッシュレス決済]]）是不用纸币和硬币支付货款的各种方式的**统称**。",
+      "one_en": "**Cashless payment** ([[jp:キャッシュレス決済]]) is an **umbrella term** for all the ways of paying without notes or coins.",
+      "detail_jp": "カード、スマートフォンの QR コード、IC カードなど、手段が違っても現金を使わなければこの仲間に入る。お金が出ていくタイミングで分けると、先に入金しておく**前払い**、支払いと同時に口座から引き落とす**即時払い**、後日まとめて請求される**後払い**の 3 つがある。",
+      "detail_zh": "无论是银行卡、智能手机上的 QR 码还是 IC 卡，手段虽不同，只要不用现金就都算在内。按钱付出去的时间来分，有先充值的**预付**、付款同时从账户扣款的**即时付**、日后合并收取的**后付**这 3 种。",
+      "detail_en": "Cards, QR codes on a smartphone, IC cards: whatever the method, anything that avoids cash belongs here. Sorted by when the money leaves you, there are 3 kinds: **prepaid**, where you load money first; **pay now**, where the price is taken from your account as you pay; and **pay later**, where you are billed together afterwards.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "cash(現金)+ less(〜がない)。手段の名前ではなく「現金がない」という条件の名前なので、総称になる。",
+      "hook_zh": "cash（现金）+ less（没有）。它不是某种手段的名字，而是“没有现金”这一条件的名字，所以是统称。",
+      "hook_en": "Cash plus \"-less\" (without). It names a condition, \"no cash\", rather than any one method, which is why it is an umbrella term.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "デビットカードは即時払いの手段で、使ったその時点で、ひも付いた預金口座の残高から代金が差し引かれる。",
+          "text_zh": "借记卡（[[jp:デビットカード]]）属于即时付（[[jp:即時払い]]）的手段，刷卡的那一刻就从绑定的存款账户余额中扣除货款。",
+          "text_en": "A debit card ([[jp:デビットカード]]) is a pay-now ([[jp:即時払い]]) method: the price comes off the balance of the linked bank account at the moment you use it.",
+          "qids": [
+            "2014h26a-q012"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "クレジットカード決済では、カード会社が加盟店(カードを使える店)へ代金を立て替えて払い、後日、利用者に利用額を請求して回収する。",
+          "text_zh": "信用卡（[[jp:クレジットカード]]）支付时，发卡公司先替用户把货款垫付给特约商户（[[jp:加盟店]]，即可以刷卡的商家），日后再向用户收取消费金额。",
+          "text_en": "With a credit card ([[jp:クレジットカード]]), the card company pays the merchant ([[jp:加盟店]], a shop that accepts the card) on the user's behalf, then later bills the user for the amount spent and collects it.",
+          "qids": [
+            "2009h21h-q021"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "root",
+            "label": {
+              "jp": "キャッシュレス決済",
+              "zh": "无现金支付",
+              "en": "Cashless payment"
+            },
+            "children": [
+              {
+                "id": "pre",
+                "label": {
+                  "jp": "前払い(先に入金しておく)",
+                  "zh": "预付（先充值）",
+                  "en": "Prepaid (load money first)"
+                },
+                "children": [
+                  {
+                    "id": "pre_ex",
+                    "label": {
+                      "jp": "例: 前払い型の電子マネー",
+                      "zh": "例：预付型电子货币",
+                      "en": "e.g. prepaid electronic money"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "now",
+                "label": {
+                  "jp": "即時払い(支払いと同時に口座から)",
+                  "zh": "即时付（付款时从账户扣）",
+                  "en": "Pay now (from your account as you pay)"
+                },
+                "children": [
+                  {
+                    "id": "now_ex",
+                    "label": {
+                      "jp": "例: デビットカード",
+                      "zh": "例：借记卡",
+                      "en": "e.g. debit card"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "post",
+                "label": {
+                  "jp": "後払い(後日まとめて請求)",
+                  "zh": "后付（日后合并收取）",
+                  "en": "Pay later (billed together afterwards)"
+                },
+                "children": [
+                  {
+                    "id": "post_ex",
+                    "label": {
+                      "jp": "例: クレジットカード",
+                      "zh": "例：信用卡",
+                      "en": "e.g. credit card"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2009h21h-q021",
+        "2014h26a-q012"
+      ],
+      "definition_jp": "キャッシュレス決済 は、紙幣や硬貨を使わずに代金を支払う方法をまとめて呼ぶ総称である。",
+      "definition_zh": "无现金支付（キャッシュレス決済）是不用纸币和硬币支付货款的各种方式的统称。",
+      "definition_en": "Cashless payment (キャッシュレス決済) is an umbrella term for all the ways of paying without notes or coins.",
+      "explanation_jp": "カード、スマートフォンの QR コード、IC カードなど、手段が違っても現金を使わなければこの仲間に入る。お金が出ていくタイミングで分けると、先に入金しておく前払い、支払いと同時に口座から引き落とす即時払い、後日まとめて請求される後払いの 3 つがある。",
+      "explanation_zh": "无论是银行卡、智能手机上的 QR 码还是 IC 卡，手段虽不同，只要不用现金就都算在内。按钱付出去的时间来分，有先充值的预付、付款同时从账户扣款的即时付、日后合并收取的后付这 3 种。",
+      "explanation_en": "Cards, QR codes on a smartphone, IC cards: whatever the method, anything that avoids cash belongs here. Sorted by when the money leaves you, there are 3 kinds: prepaid, where you load money first; pay now, where the price is taken from your account as you pay; and pay later, where you are billed together afterwards.",
+      "memory_hook_jp": "cash(現金)+ less(〜がない)。手段の名前ではなく「現金がない」という条件の名前なので、総称になる。",
+      "memory_hook_zh": "cash（现金）+ less（没有）。它不是某种手段的名字，而是“没有现金”这一条件的名字，所以是统称。",
+      "memory_hook_en": "Cash plus \"-less\" (without). It names a condition, \"no cash\", rather than any one method, which is why it is an umbrella term.",
       "inline_quiz": [
+        "2009h21h-q021",
         "2014h26a-q012"
       ],
       "inline_fallback": false,
-      "figure": null,
+      "figure": null
+    },
+    {
+      "term": "電子マネー",
       "term_zh": "电子货币",
       "term_en": "Electronic money",
-      "definition_zh": "以电子数据持有货币价值、可用于支付的 IC 卡等手段。",
-      "definition_en": "A means such as an IC card that holds monetary value as electronic data and can be used for payment.",
-      "explanation_zh": "电子货币是把货币的价值作为电子数据记录在 IC 卡或智能手机上，并用它来支付的手段。交通类 IC 卡和流通类的预付型较为知名，是无现金支付的代表性具体例子之一。\n\n大多是事先充值后使用的预付型，特点是只需刷一下就能快速完成小额支付。考试中的要点在于：它是无现金支付这一总称之中的一种手段，以及要掌握它与信用卡（后付）在支付时点上的差异。",
-      "explanation_en": "Electronic money is a means of recording the value of money as electronic data on an IC card or smartphone and using it to pay. Transit IC cards and retail prepaid types are well known, and it is one of the representative concrete examples of cashless payment.\n\nMost are prepaid types that are used after charging money in advance, and the characteristic is that you can quickly complete small payments just by tapping. The key points on the exam are that it is one means within the umbrella term of cashless payment, and that you should grasp the difference in payment timing from credit cards (deferred payment).",
-      "analogy_zh": "事先存入钱的「电子预付卡」。就像回数票或图书卡的数字版，在余额范围内只需刷一下就能支付。",
-      "analogy_en": "An 'electronic prepaid card' into which money is loaded in advance. It is like a digital version of a coupon ticket or book card, where you can pay just by tapping, up to the remaining balance.",
-      "memory_hook_zh": "说到电子货币就是以电子数据持有货币价值的支付手段",
-      "memory_hook_en": "Electronic money → a payment means that holds monetary value as electronic data"
+      "one_jp": "**電子マネー** は、お金の価値を**電子データ**として IC カードやスマートフォンに記録し、そのデータで支払う手段である。",
+      "one_zh": "**电子货币**（[[jp:電子マネー]]）是把金钱的价值作为**电子数据**记录在 IC 卡或智能手机里，并用这份数据付款的手段。",
+      "one_en": "**Electronic money** ([[jp:電子マネー]]) is a means of payment that records monetary value as **electronic data** on an IC card or smartphone and pays with that data.",
+      "detail_jp": "キャッシュレス決済の手段の一つで、代表的なのは、例えば交通系の IC カードのように先に入金(チャージ)した残高から支払う**前払い型**である。読み取り機にかざすだけで済むので、少額の支払いを素早く終えられる。",
+      "detail_zh": "它是无现金支付的一种手段，典型的是像交通 IC 卡那样，从事先充值的余额里付款的**预付型**。只要在读卡器上一贴即可，小额付款很快就能完成。",
+      "detail_en": "It is one form of cashless payment, and the typical kind is **prepaid**: like a transit IC card, you pay from a balance you topped up beforehand. You just hold it over a reader, so small payments are over in a moment.",
+      "analogy_jp": "前払い型の電子マネーは、中身を先に入れておく電子のお財布のようなもの。使うたびに中身が減り、空になったら入れ直す。",
+      "analogy_zh": "预付型电子货币就像一个先往里装钱的电子钱包，每用一次里面的钱就少一些，用完了再装进去。",
+      "analogy_en": "Prepaid electronic money is like an electronic purse you fill in advance: each purchase empties it a little, and when it runs dry you fill it up again.",
+      "hook_jp": "チャージは英語の charge(充電)。前払い型では、スマートフォンの電池のように先に満たしてから使う。",
+      "hook_zh": "日语中表示“充值”的“チャージ”来自英语 charge（充电）。预付型就像智能手机的电池一样，先充满再使用。",
+      "hook_en": "The Japanese word for topping up, チャージ, comes from \"charge\", as in charging a battery: with the prepaid type, you fill it first, like a phone battery, and then use it.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "前払い型の **電子マネー** は先に入れた残高から代金が減り、デビットカードは支払いの時点で預金口座から代金が引き落とされる。",
+          "text_zh": "预付型的 **电子货币**（[[jp:電子マネー]]）从事先存入的余额中扣减货款，而借记卡（[[jp:デビットカード]]）是在付款时从存款账户扣款。",
+          "text_en": "Prepaid **electronic money** ([[jp:電子マネー]]) deducts the price from a balance you loaded beforehand, while a debit card ([[jp:デビットカード]]) takes it from your bank account at the moment you pay."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2014h26a-q012",
+        "2009h21h-q018"
+      ],
+      "definition_jp": "電子マネー は、お金の価値を電子データとして IC カードやスマートフォンに記録し、そのデータで支払う手段である。",
+      "definition_zh": "电子货币（電子マネー）是把金钱的价值作为电子数据记录在 IC 卡或智能手机里，并用这份数据付款的手段。",
+      "definition_en": "Electronic money (電子マネー) is a means of payment that records monetary value as electronic data on an IC card or smartphone and pays with that data.",
+      "explanation_jp": "キャッシュレス決済の手段の一つで、代表的なのは、例えば交通系の IC カードのように先に入金(チャージ)した残高から支払う前払い型である。読み取り機にかざすだけで済むので、少額の支払いを素早く終えられる。",
+      "explanation_zh": "它是无现金支付的一种手段，典型的是像交通 IC 卡那样，从事先充值的余额里付款的预付型。只要在读卡器上一贴即可，小额付款很快就能完成。",
+      "explanation_en": "It is one form of cashless payment, and the typical kind is prepaid: like a transit IC card, you pay from a balance you topped up beforehand. You just hold it over a reader, so small payments are over in a moment.",
+      "memory_hook_jp": "チャージは英語の charge(充電)。前払い型では、スマートフォンの電池のように先に満たしてから使う。",
+      "memory_hook_zh": "日语中表示“充值”的“チャージ”来自英语 charge（充电）。预付型就像智能手机的电池一样，先充满再使用。",
+      "memory_hook_en": "The Japanese word for topping up, チャージ, comes from \"charge\", as in charging a battery: with the prepaid type, you fill it first, like a phone battery, and then use it.",
+      "inline_quiz": [
+        "2014h26a-q012",
+        "2009h21h-q018"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "インターネットバンキング",
-      "definition_jp": "銀行取引をインターネット経由で行えるサービス。",
-      "explanation_jp": "インターネットバンキングは、銀行の窓口や ATM に出向かなくても、パソコンやスマートフォンからインターネット経由で残高照会・振込・振替などの銀行取引を行えるサービスです。24 時間どこからでも利用できる利便性が特徴です。\n\nこれは EFT(電子資金移動)を消費者が直接操作して利用する形態にあたります。試験では、利便性と引き換えにフィッシングや不正送金などのセキュリティ対策(ワンタイムパスワードなど)が重要になる点も問われます。次のアカウントアグリゲーションは、このサービスの口座情報を複数まとめる発展形です。",
-      "analogy_jp": "銀行の窓口や ATM を、手元のスマホの中に持ち歩くようなもの。並ばずに自宅から振込や残高確認ができる、いつでも開いている銀行の支店です。",
-      "memory_hook_jp": "インターネットバンキングといえば銀行取引をネット経由で行うサービス",
-      "inline_quiz": [
-        "2020r02o-q027"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "网上银行",
       "term_en": "Internet banking",
-      "definition_zh": "可通过互联网进行银行业务的服务。",
-      "definition_en": "A service that allows banking transactions to be conducted via the internet.",
-      "explanation_zh": "网上银行是一种无需前往银行柜台或 ATM，就能通过个人电脑或智能手机经由互联网进行余额查询、转账、转存等银行业务的服务。其特点是 24 小时随时随地都能使用，十分便利。\n\n这相当于消费者直接操作并使用 EFT（电子资金转移）的一种形态。考试中也会考查：在带来便利的同时，应对钓鱼和非法转账等的安全措施（如一次性密码等）变得很重要。下一个要学的账户聚合，是把这项服务的多个账户信息汇总在一起的进阶形态。",
-      "explanation_en": "Internet banking is a service that allows you to conduct banking transactions such as balance inquiries, transfers, and account transfers via the internet from a PC or smartphone, without going to a bank counter or ATM. Its characteristic is the convenience of being able to use it 24 hours a day from anywhere.\n\nThis corresponds to a form in which consumers directly operate and use EFT (Electronic Funds Transfer). On the exam, it is also asked that, in exchange for the convenience, security measures (such as one-time passwords) against phishing and fraudulent transfers become important. Account aggregation, which you will learn next, is an advanced form that consolidates the account information of this service.",
-      "analogy_zh": "就像把银行柜台或 ATM 随身装进手边的手机里。它是一家随时营业的银行分行，让你不用排队就能在家完成转账和余额查询。",
-      "analogy_en": "It is like carrying the bank counter or ATM around inside the smartphone in your hand. It is a bank branch that is always open, letting you transfer money or check your balance from home without standing in line.",
-      "memory_hook_zh": "说到网上银行就是通过互联网进行银行业务的服务",
-      "memory_hook_en": "Internet banking → a service for banking transactions via the internet"
+      "one_jp": "**インターネットバンキング** は、銀行の窓口や ATM に行かずに、パソコンやスマートフォンからインターネット経由で**振込**や**残高照会**などの銀行取引を行えるサービスである。",
+      "one_zh": "**网上银行**（[[jp:インターネットバンキング]]）是无需前往银行柜台或 ATM，就能用电脑或智能手机通过互联网办理**转账**、**余额查询**等银行业务的服务。",
+      "one_en": "**Internet banking** ([[jp:インターネットバンキング]]) is a service that lets you carry out banking such as **transfers** and **balance checks** over the Internet from a PC or smartphone, without visiting a branch counter or ATM.",
+      "detail_jp": "時間や場所を選ばずに使える一方、ID やパスワードを盗まれると不正に送金されるおそれがあるため、ワンタイムパスワードなどで本人確認を強める。利用者が振込を指示すると、その先の資金の移動は EFT の仕組みで処理される。",
+      "detail_zh": "它不受时间和地点限制，但 ID 或密码一旦被盗，就可能被人非法转账，因此要用一次性口令等手段加强身份验证。用户发出转账指令后，后续的资金移动由 EFT 机制处理。",
+      "detail_en": "You can use it anytime and anywhere, but a stolen ID or password could lead to fraudulent transfers, so identity checks are tightened with measures such as one-time passwords. Once the user orders a transfer, the money itself is moved by the EFT mechanism.",
+      "analogy_jp": "銀行の窓口が、手元のスマートフォンの中に出張してきたようなもの。",
+      "analogy_zh": "就像银行柜台搬进了你手里的智能手机。",
+      "analogy_en": "It is as if the bank counter had moved into the smartphone in your hand.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "インターネットバンキング は、銀行の窓口や ATM に行かずに、パソコンやスマートフォンからインターネット経由で振込や残高照会などの銀行取引を行えるサービスである。",
+      "definition_zh": "网上银行（インターネットバンキング）是无需前往银行柜台或 ATM，就能用电脑或智能手机通过互联网办理转账、余额查询等银行业务的服务。",
+      "definition_en": "Internet banking (インターネットバンキング) is a service that lets you carry out banking such as transfers and balance checks over the Internet from a PC or smartphone, without visiting a branch counter or ATM.",
+      "explanation_jp": "時間や場所を選ばずに使える一方、ID やパスワードを盗まれると不正に送金されるおそれがあるため、ワンタイムパスワードなどで本人確認を強める。利用者が振込を指示すると、その先の資金の移動は EFT の仕組みで処理される。",
+      "explanation_zh": "它不受时间和地点限制，但 ID 或密码一旦被盗，就可能被人非法转账，因此要用一次性口令等手段加强身份验证。用户发出转账指令后，后续的资金移动由 EFT 机制处理。",
+      "explanation_en": "You can use it anytime and anywhere, but a stolen ID or password could lead to fraudulent transfers, so identity checks are tightened with measures such as one-time passwords. Once the user orders a transfer, the money itself is moved by the EFT mechanism.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "アカウントアグリゲーション",
-      "definition_jp": "複数の金融機関の口座情報を一つにまとめて閲覧できるサービス。",
-      "explanation_jp": "アカウントアグリゲーションは、複数の銀行口座・クレジットカード・証券口座などの情報を一つの画面に集約して、まとめて確認できるようにするサービスです。家計簿アプリや資産管理アプリで使われています。\n\n個々のインターネットバンキング(1 つの口座)を前提に、それらを横断して一元管理する応用的なサービスである点が特徴です。試験では、「アグリゲーション=集約」という意味と、複数口座の情報を一括で見える化するサービスだと理解しておけば判断できます。FinTech サービスの一例としても押さえておきましょう。",
-      "analogy_jp": "あちこちの銀行や証券会社に置いた通帳を、1 冊のノートに書き写してまとめて眺められるようにする「お金の見える化ダッシュボード」のようなものです。",
-      "memory_hook_jp": "アカウントアグリゲーションといえば複数口座の情報を一元化して閲覧",
+      "term_zh": "账户聚合",
+      "term_en": "Account aggregation",
+      "one_jp": "**アカウントアグリゲーション** は、利用者が持つ複数の金融機関の**口座情報**を、一つのアプリや画面に**集約**してまとめて確認できるようにするサービスである。",
+      "one_zh": "**账户聚合**（[[jp:アカウントアグリゲーション]]）是把用户在多家金融机构持有的**账户信息**，**汇集**到一个应用或页面上，让用户一并查看的服务。",
+      "one_en": "**Account aggregation** ([[jp:アカウントアグリゲーション]]) is a service that **gathers** a user's **account information** from several financial institutions into one app or screen so it can all be checked together.",
+      "detail_jp": "例えば家計簿アプリが、銀行の預金残高、証券会社の保有資産、カードの利用明細を一画面に並べて見せる。利用者は金融機関ごとにログインし直さなくても、自分のお金の全体を把握できる。",
+      "detail_zh": "例如记账应用会在同一个页面上并列显示银行存款余额、证券公司的持仓资产和信用卡消费明细。用户不必逐家金融机构重新登录，也能掌握自己资金的全貌。",
+      "detail_en": "A household budgeting app, for example, shows bank balances, holdings at a brokerage and card statements side by side on one screen. Users can see the whole picture of their money without logging in to each institution separately.",
+      "analogy_jp": "あちこちの郵便受けに届く明細を、毎日一つの箱にまとめて届けてくれる代行係のようなもの。",
+      "analogy_zh": "就像一位代办员，每天把寄到各处信箱的账单收拢到一个箱子里送来。",
+      "analogy_en": "It is like an agent who collects the statements arriving in mailboxes all over town and delivers them to you in a single box each day.",
+      "hook_jp": "aggregate は「寄せ集める」、account は「口座」。寄せ集めた口座の情報を見るのは利用者本人で、自分のお金の全体を見渡すために使う。",
+      "hook_zh": "aggregate 是“汇集”，account 是“账户”。查看汇集来的账户信息的是用户本人，用来纵览自己资金的全貌。",
+      "hook_en": "\"Aggregate\" means to gather together and \"account\" is a bank account; the one who looks at the gathered account information is the user, to see the whole picture of their own money.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**名寄せ** は、金融機関が同じ顧客の複数の口座を顧客単位に束ね、一元的に管理するための作業である。**アカウントアグリゲーション** は、利用者が自分の資産を見渡すためのサービスで、目的が異なる。",
+          "text_zh": "**名下归集**（[[jp:名寄せ]]）是金融机构把同一客户的多个账户按客户归拢起来、统一管理的作业。**账户聚合**（[[jp:アカウントアグリゲーション]]）则是供用户纵览自身资产的服务，两者目的不同。",
+          "text_en": "**Name-based consolidation** ([[jp:名寄せ]]) is the work a financial institution does to group one customer's several accounts under that customer and manage them in one place. **Account aggregation** ([[jp:アカウントアグリゲーション]]) is a service for users to survey their own assets, so the purpose is different.",
+          "qids": [
+            "2024r06-q013"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2024r06-q013"
+      ],
+      "definition_jp": "アカウントアグリゲーション は、利用者が持つ複数の金融機関の口座情報を、一つのアプリや画面に集約してまとめて確認できるようにするサービスである。",
+      "definition_zh": "账户聚合（アカウントアグリゲーション）是把用户在多家金融机构持有的账户信息，汇集到一个应用或页面上，让用户一并查看的服务。",
+      "definition_en": "Account aggregation (アカウントアグリゲーション) is a service that gathers a user's account information from several financial institutions into one app or screen so it can all be checked together.",
+      "explanation_jp": "例えば家計簿アプリが、銀行の預金残高、証券会社の保有資産、カードの利用明細を一画面に並べて見せる。利用者は金融機関ごとにログインし直さなくても、自分のお金の全体を把握できる。",
+      "explanation_zh": "例如记账应用会在同一个页面上并列显示银行存款余额、证券公司的持仓资产和信用卡消费明细。用户不必逐家金融机构重新登录，也能掌握自己资金的全貌。",
+      "explanation_en": "A household budgeting app, for example, shows bank balances, holdings at a brokerage and card statements side by side on one screen. Users can see the whole picture of their money without logging in to each institution separately.",
+      "memory_hook_jp": "aggregate は「寄せ集める」、account は「口座」。寄せ集めた口座の情報を見るのは利用者本人で、自分のお金の全体を見渡すために使う。",
+      "memory_hook_zh": "aggregate 是“汇集”，account 是“账户”。查看汇集来的账户信息的是用户本人，用来纵览自己资金的全貌。",
+      "memory_hook_en": "\"Aggregate\" means to gather together and \"account\" is a bank account; the one who looks at the gathered account information is the user, to see the whole picture of their own money.",
       "inline_quiz": [
         "2024r06-q013"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "账户聚合",
-      "term_en": "Account aggregation",
-      "definition_zh": "可将多个金融机构的账户信息汇总到一处进行查看的服务。",
-      "definition_en": "A service that consolidates the account information of multiple financial institutions into one place for viewing.",
-      "explanation_zh": "账户聚合是一种将多个银行账户、信用卡、证券账户等的信息汇集到同一个画面，从而可以一并查看的服务。它被用于记账应用和资产管理应用中。\n\n其特点是：以各个独立的网上银行（单个账户）为前提，跨越这些账户进行统一管理的一种应用型服务。考试中，只要理解「aggregation＝聚合」的含义，以及它是把多个账户信息一次性可视化的服务，就能作出判断。也请把它作为 FinTech 服务的一个实例来掌握。",
-      "explanation_en": "Account aggregation is a service that gathers the information of multiple bank accounts, credit cards, securities accounts, and so on onto a single screen so that you can check them all together. It is used in household budgeting apps and asset management apps.\n\nIts characteristic is that it is an applied service that, on the premise of individual internet banking (single accounts), manages them across the board in a unified way. On the exam, you can make the judgment as long as you understand the meaning of 'aggregation = consolidation' and that it is a service that makes the information of multiple accounts visible at once. Be sure to also grasp it as an example of a FinTech service.",
-      "analogy_zh": "就像把存放在各家银行和证券公司的存折都抄写到一本笔记本里，让你能汇总浏览的「资金可视化仪表盘」。",
-      "analogy_en": "It is like a 'money visualization dashboard' that copies the passbooks placed at various banks and securities firms into a single notebook so you can view them all together.",
-      "memory_hook_zh": "说到账户聚合就是把多个账户的信息统一汇总查看",
-      "memory_hook_en": "Account aggregation → consolidating and viewing the information of multiple accounts in one place"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "EDI",
+      "b": "EFT",
+      "rows": [
+        {
+          "label_jp": "運ぶもの",
+          "label_zh": "传送的东西",
+          "label_en": "What it carries",
+          "a_jp": "受発注・請求などの取引データ",
+          "a_zh": "订货、接单、开票等交易数据",
+          "a_en": "Business data such as orders and invoices",
+          "b_jp": "資金そのもの(口座の残高)",
+          "b_zh": "资金本身（账户余额）",
+          "b_en": "The money itself (account balances)",
+          "key": true
+        },
+        {
+          "label_jp": "身近な場面",
+          "label_zh": "常见场景",
+          "label_en": "Everyday examples",
+          "a_jp": "企業間の注文書や請求書のやり取り",
+          "a_zh": "企业之间往来订单和发票",
+          "a_en": "Orders and invoices passing between companies",
+          "b_jp": "振込・口座振替・給与の振込",
+          "b_zh": "转账、自动扣款、工资代发",
+          "b_en": "Transfers, direct debits, salary deposits",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "インターネットバンキング",
+      "b": "アカウントアグリゲーション",
+      "rows": [
+        {
+          "label_jp": "扱う範囲",
+          "label_zh": "涉及范围",
+          "label_en": "Coverage",
+          "a_jp": "契約した一つの銀行の口座",
+          "a_zh": "签约的一家银行的账户",
+          "a_en": "Accounts at the one bank you signed up with",
+          "b_jp": "複数の金融機関の口座情報",
+          "b_zh": "多家金融机构的账户信息",
+          "b_en": "Account information from several institutions",
+          "key": true
+        },
+        {
+          "label_jp": "主にできること",
+          "label_zh": "主要功能",
+          "label_en": "Main use",
+          "a_jp": "振込・振替などの取引",
+          "a_zh": "转账、划转等交易",
+          "a_en": "Transactions such as transfers",
+          "b_jp": "残高や明細をまとめて確認",
+          "b_zh": "一并查看余额和明细",
+          "b_en": "Checking balances and statements together",
+          "key": false
+        },
+        {
+          "label_jp": "提供するところ",
+          "label_zh": "提供方",
+          "label_en": "Provider",
+          "a_jp": "その銀行",
+          "a_zh": "该银行",
+          "a_en": "The bank itself",
+          "b_jp": "家計簿アプリなどのサービス事業者",
+          "b_zh": "记账应用等服务商",
+          "b_en": "Service firms such as budgeting-app makers",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**EDI** を使うと、企業のシステムどうしが取引データを打ち直さずに受け渡せるので、転記の誤りや事務の手間が減る。",
+    "**EFT** は、現金や小切手を使わずにネットワーク上で資金を移す仕組みで、振込や口座振替がその代表である。",
+    "**キャッシュレス決済** は、お金が出ていくタイミングで前払い・即時払い・後払いに分けると整理しやすい。",
+    "**インターネットバンキング** は便利な反面、不正送金を防ぐための本人確認の強化が欠かせない。",
+    "**アカウントアグリゲーション** は、利用者が複数の金融機関の口座情報を一か所で見渡せるようにするサービスである。"
+  ],
+  "key_points_zh": [
+    "使用 **EDI**，企业系统之间无需重新录入就能传递交易数据，抄写错误和事务工作量都会减少。",
+    "**EFT** 是不用现金或支票、在网络上转移资金的机制，转账和自动扣款是其代表。",
+    "**无现金支付** 按钱付出去的时间分成预付、即时付、后付，就容易理清。",
+    "**网上银行** 虽然方便，但必须加强身份验证以防止非法转账。",
+    "**账户聚合** 是让用户在一处纵览多家金融机构账户信息的服务。"
+  ],
+  "key_points_en": [
+    "With **EDI**, companies' systems hand business data to each other without retyping, which cuts copying errors and paperwork.",
+    "**EFT** moves money over a network without cash or cheques; bank transfers and direct debits are the typical cases.",
+    "**Cashless payment** is easiest to organise by when the money leaves you: prepaid, pay now or pay later.",
+    "**Internet banking** is convenient, but it needs stronger identity checks to stop fraudulent transfers.",
+    "**Account aggregation** is a service that lets users survey account information from several financial institutions in one place."
+  ],
+  "overview": {
+    "intro_jp": "EDI と EFT を、やり取りするものが取引データか資金かで分けられる。キャッシュレス決済 を支払いのタイミングで分け、デビットカードやクレジットカード、前払い型の 電子マネー がどこに入るかを説明できる。インターネットバンキング と アカウントアグリゲーション を、扱う口座の範囲とできることで区別できる。",
+    "intro_zh": "能根据交换的是交易数据还是资金，区分 EDI 与 EFT。能按付款时间对 无现金支付 分类，并说明借记卡、信用卡和预付型 电子货币 各属于哪一类。能从涉及的账户范围和能办理的事情，区分 网上银行 与 账户聚合。",
+    "intro_en": "Tell EDI from EFT by whether what changes hands is business data or money. Sort cashless payment by when the money leaves you, and place debit cards, credit cards and prepaid electronic money in the right group. Distinguish Internet banking from account aggregation by the range of accounts each covers and what it lets you do.",
+    "freq_badge": "標準",
+    "est_minutes": 31
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "EDI: EDIといえば企業間で取引データを標準形式で電子交換",
-      "EFT: EFTといえば資金を電子的に移動させる仕組み",
-      "キャッシュレス決済: キャッシュレス決済といえば現金を使わない支払いの総称",
-      "電子マネー: 電子マネーといえば貨幣価値を電子データで持つ支払い手段",
-      "インターネットバンキング: インターネットバンキングといえば銀行取引をネット経由で行うサービス",
-      "アカウントアグリゲーション: アカウントアグリゲーションといえば複数口座の情報を一元化して閲覧"
-    ],
     "key_points_jp": [
-      "EC の取引は「データの流れ(EDI)」と「お金の流れ(EFT)」という基盤の上に成り立つ。EDI=取引データの電子交換、EFT=資金の電子移動、と対で覚える。",
-      "キャッシュレス決済は現金を使わない支払いの総称で、支払いタイミングにより先払い(プリペイド)・即時払い(デビット)・後払い(ポストペイ)に分類できる。",
-      "電子マネーはキャッシュレス決済の代表例で、多くが事前チャージ型(先払い)。少額・かざすだけの素早い支払いが特徴。",
-      "インターネットバンキングは EFT を消費者が利用する形態。利便性が高い反面、不正送金対策などのセキュリティが重要。",
-      "アカウントアグリゲーションは複数金融機関の口座情報を一元化するサービスで、インターネットバンキングを前提とした発展形(FinTech の一例)。"
+      "EDI を使うと、企業のシステムどうしが取引データを打ち直さずに受け渡せるので、転記の誤りや事務の手間が減る。",
+      "EFT は、現金や小切手を使わずにネットワーク上で資金を移す仕組みで、振込や口座振替がその代表である。",
+      "キャッシュレス決済 は、お金が出ていくタイミングで前払い・即時払い・後払いに分けると整理しやすい。",
+      "インターネットバンキング は便利な反面、不正送金を防ぐための本人確認の強化が欠かせない。",
+      "アカウントアグリゲーション は、利用者が複数の金融機関の口座情報を一か所で見渡せるようにするサービスである。"
     ],
     "key_points_zh": [
-      "EC 的交易建立在「数据的流动（EDI）」和「资金的流动（EFT）」这两个基础之上。EDI＝交易数据的电子交换，EFT＝资金的电子转移，成对记忆。",
-      "无现金支付是不使用现金的支付方式的总称，按支付时点可分为预付（预付型）、即时付（借记型）、后付（后付型）。",
-      "电子货币是无现金支付的代表例，大多是事先充值型（预付）。特点是小额、只需刷一下的快速支付。",
-      "网上银行是消费者使用 EFT 的一种形态。便利性高，但另一方面应对非法转账等的安全措施很重要。",
-      "账户聚合是把多个金融机构的账户信息统一汇总的服务，是以网上银行为前提的进阶形态（FinTech 的一个实例）。"
+      "使用 EDI，企业系统之间无需重新录入就能传递交易数据，抄写错误和事务工作量都会减少。",
+      "EFT 是不用现金或支票、在网络上转移资金的机制，转账和自动扣款是其代表。",
+      "无现金支付 按钱付出去的时间分成预付、即时付、后付，就容易理清。",
+      "网上银行 虽然方便，但必须加强身份验证以防止非法转账。",
+      "账户聚合 是让用户在一处纵览多家金融机构账户信息的服务。"
     ],
     "key_points_en": [
-      "EC transactions are built on two foundations: the 'flow of data (EDI)' and the 'flow of money (EFT).' Remember them as a pair: EDI = electronic exchange of transaction data, EFT = electronic transfer of funds.",
-      "Cashless payment is the umbrella term for payment methods that do not use cash, and by the timing of payment it can be classified into prepaid (prepaid type), immediate payment (debit type), and deferred payment (postpaid type).",
-      "Electronic money is a representative example of cashless payment, and most are the prepaid (charge-in-advance) type. Its characteristics are small-amount, tap-only quick payments.",
-      "Internet banking is a form in which consumers use EFT. It is highly convenient, but on the other hand, security measures against fraudulent transfers and the like are important.",
-      "Account aggregation is a service that consolidates the account information of multiple financial institutions, and is an advanced form premised on internet banking (an example of FinTech)."
+      "With EDI, companies' systems hand business data to each other without retyping, which cuts copying errors and paperwork.",
+      "EFT moves money over a network without cash or cheques; bank transfers and direct debits are the typical cases.",
+      "Cashless payment is easiest to organise by when the money leaves you: prepaid, pay now or pay later.",
+      "Internet banking is convenient, but it needs stronger identity checks to stop fraudulent transfers.",
+      "Account aggregation is a service that lets users survey account information from several financial institutions in one place."
+    ],
+    "memory_hooks_jp": [
+      "EDI: Electronic Data Interchange の頭文字。Interchange は「取り交わす」で、注文書や請求書の取り交わしを電子データに置き換えたものと覚える。",
+      "EFT: F は Funds(資金)、T は Transfer(移す)。名前のとおり「資金を移す」技術。",
+      "キャッシュレス決済: cash(現金)+ less(〜がない)。手段の名前ではなく「現金がない」という条件の名前なので、総称になる。",
+      "電子マネー: チャージは英語の charge(充電)。前払い型では、スマートフォンの電池のように先に満たしてから使う。",
+      "アカウントアグリゲーション: aggregate は「寄せ集める」、account は「口座」。寄せ集めた口座の情報を見るのは利用者本人で、自分のお金の全体を見渡すために使う。"
     ],
     "memory_hooks_zh": [
-      "EDI：说到 EDI 就是企业间以标准格式电子交换交易数据",
-      "EFT：说到 EFT 就是电子化地转移资金的机制",
-      "无现金支付：说到无现金支付就是不使用现金的支付方式总称",
-      "电子货币：说到电子货币就是以电子数据持有货币价值的支付手段",
-      "网上银行：说到网上银行就是通过互联网进行银行业务的服务",
-      "账户聚合：说到账户聚合就是把多个账户的信息统一汇总查看"
+      "EDI（电子数据交换）：Electronic Data Interchange 的首字母缩写。Interchange 意为“互相交换”，可以记成把订单、发票的互相往来换成电子数据。",
+      "EFT（电子资金转移）：F 是 Funds（资金），T 是 Transfer（转移）。顾名思义，就是“转移资金”的技术。",
+      "无现金支付：cash（现金）+ less（没有）。它不是某种手段的名字，而是“没有现金”这一条件的名字，所以是统称。",
+      "电子货币：日语中表示“充值”的“チャージ”来自英语 charge（充电）。预付型就像智能手机的电池一样，先充满再使用。",
+      "账户聚合：aggregate 是“汇集”，account 是“账户”。查看汇集来的账户信息的是用户本人，用来纵览自己资金的全貌。"
     ],
     "memory_hooks_en": [
-      "EDI: EDI → exchanging transaction data electronically between companies in a standard format",
-      "EFT: EFT → a mechanism that moves funds electronically",
-      "Cashless payment: Cashless payment → the umbrella term for paying without cash",
-      "Electronic money: Electronic money → a payment means that holds monetary value as electronic data",
-      "Internet banking: Internet banking → a service for banking transactions via the internet",
-      "Account aggregation: Account aggregation → consolidating and viewing the information of multiple accounts in one place"
+      "EDI (Electronic Data Interchange): Short for Electronic Data Interchange. \"Interchange\" means swapping back and forth, so picture the swapping of orders and invoices done as electronic data.",
+      "EFT (Electronic Funds Transfer): F is for Funds and T is for Transfer: just as the name says, a technique for moving money.",
+      "Cashless payment: Cash plus \"-less\" (without). It names a condition, \"no cash\", rather than any one method, which is why it is an umbrella term.",
+      "Electronic money: The Japanese word for topping up, チャージ, comes from \"charge\", as in charging a battery: with the prepaid type, you fill it first, like a phone battery, and then use it.",
+      "Account aggregation: \"Aggregate\" means to gather together and \"account\" is a bank account; the one who looks at the gathered account information is the user, to see the whole picture of their own money."
     ]
   },
   "challenge_questions": [
-    "2010h22h-q027",
-    "2011h23a-q021",
-    "2012h24a-q017",
-    "2012h24h-q023",
-    "2014h26h-q018"
+    "2018h30h-q022",
+    "2009h21h-q018",
+    "2009h21h-q021",
+    "2014h26a-q012",
+    "2024r06-q013"
   ],
   "source_figures": [
     {
@@ -227,9 +740,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "电子支付与数据交换的基础",
-  "title_en": "The Foundations of Electronic Payment and Data Exchange",
-  "unit_summary_zh": "支撑 EC 交易达成的『资金与数据的流动』——学习各种电子支付方式与企业间数据交换的机制。",
-  "unit_summary_en": "The 'flow of money and data' that makes EC transactions possible — learn the various electronic payment methods and the mechanisms of inter-company data exchange."
+  }
 }
