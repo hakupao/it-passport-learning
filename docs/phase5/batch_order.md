@@ -58,7 +58,7 @@
 | b49 | technology-13-34 | 応用数学 (1/2) | u01 u02 u03 u04 u05 | 32 | 31 | done |
 | b50 | technology-13-34 | 応用数学 (2/2) | u06 u07 | 32 | 8 | done |
 | b51 | technology-14-37 | アルゴリズムとプログラミング | u01 u02 u03 u04 u05 | 32 | 26 | todo |
-| b52 | technology-21-56 | データ操作 | u01 | 31 | 5 | todo |
+| b52 | technology-21-56 | データ操作 | u01 | 31 | 5 | done |
 | b53 | strategy-02-08 | 標準化関連 | u01 u02 u03 | 29 | 18 | todo |
 | b54 | strategy-03-11 | ビジネス戦略と目標・評価 | u01 | 29 | 6 | todo |
 | b55 | strategy-05-16 | e-ビジネス | u01 u02 u03 u04 | 29 | 27 | todo |

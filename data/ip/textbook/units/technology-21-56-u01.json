@@ -1,188 +1,1011 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-21-56-u01",
   "topic_id": "technology-21-56",
   "category": "technology",
   "title_jp": "データ操作の基本(挿入・更新と抽出の関係演算)",
+  "title_zh": "数据操作的基础（插入・更新与抽取的关系运算）",
+  "title_en": "Basics of Data Operations (Insert/Update and the Relational Operations for Retrieval)",
   "unit_summary_jp": "リレーショナルデータベースに対する基本的なデータ操作(行の挿入・更新)と、データ抽出を担う関係演算(選択・射影・結合)を一通り理解する。",
+  "unit_summary_zh": "全面理解针对关系数据库的基本数据操作（行的插入・更新），以及负责数据抽取的关系运算（选择・投影・连接）。",
+  "unit_summary_en": "Gain a complete understanding of the basic data operations on a relational database (inserting and updating rows) and the relational operations responsible for data retrieval (selection, projection, and join).",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、リレーショナルデータベースに対する基本的なデータ操作を学びます。まず行を書き込む「挿入」「更新」を押さえ、続いて目的のデータを取り出す関係演算「選択」「射影」「結合」を理解します。特に選択・射影・結合は試験で最頻出のテーマで、データ抽出の基礎として確実に区別できることが重要です。",
-    "freq_badge": "標準",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习针对关系数据库的基本数据操作。首先掌握写入行的「插入」和「更新」，接着理解用于取出目标数据的关系运算「选择」「投影」「连接」。其中选择・投影・连接是考试中出现频率最高的主题，作为数据抽取的基础，能够确切地区分它们非常重要。",
-    "intro_en": "In this unit, you will learn the basic data operations performed on a relational database. First, you will master \"insert\" and \"update,\" which write rows; then you will understand the relational operations \"selection,\" \"projection,\" and \"join,\" which retrieve the data you want. Selection, projection, and join in particular are the most frequently tested topics on the exam, and as the foundation of data retrieval, being able to reliably tell them apart is essential."
-  },
-  "terms": [
+  "goals_jp": [
+    "表の中身を変える書き込み (**挿入**・**更新**) と、表から結果の表を作る **関係演算** を区別できる",
+    "結果の表で行と列のどちらが絞られているかから、**選択** と **射影** を見分けられる",
+    "共通の列を手がかりに表を **結合** し、条件と組み合わせて必要なデータを取り出す流れを説明できる"
+  ],
+  "goals_zh": [
+    "能区分改变表内容的写入操作（**插入**、**更新**）和由表生成结果表的**关系运算**。",
+    "能根据结果表中被缩减的是行还是列，分辨**选择**和**投影**。",
+    "能说明以共有的列为线索**连接**表，并结合条件取出所需数据的流程。"
+  ],
+  "goals_en": [
+    "Tell apart the write operations that change a table's contents (**insert** and **update**) from the **relational operations** that build a result table from a table.",
+    "Distinguish **selection** from **projection** by checking whether the result table has fewer rows or fewer columns.",
+    "Explain how tables are **joined** through a common column and combined with conditions to pull out the data you need."
+  ],
+  "overview_cols_jp": [
+    "操作の種類",
+    "結果の表の変化"
+  ],
+  "overview_cols_zh": [
+    "操作类型",
+    "结果表的变化"
+  ],
+  "overview_cols_en": [
+    "Type of operation",
+    "Change in the result table"
+  ],
+  "overview_rows": [
     {
       "term": "挿入",
-      "definition_jp": "テーブルに新しい行(レコード)を1件追加するデータ操作。",
-      "explanation_jp": "挿入は、テーブルに新しい行を1件追加する書き込み操作です。例えば「社員」表に新しく入社した人の行を加えるのが挿入にあたります。SQLでは INSERT 文で行います。\n\nデータ操作の出発点で、まず行を挿入して初めて以降の更新や抽出が成立します。試験では、既存の行を書き換える「更新」や、行を取り出すだけの関係演算との違いが問われます。挿入は『行を新たに増やす』操作だと押さえましょう。",
-      "analogy_jp": "名簿に新しいメンバーの行を1行書き足すようなもの。すでにある行はそのままで、新しい行が下に増えていくイメージです。",
-      "memory_hook_jp": "挿入といえば新しい行を1件追加する",
-      "inline_quiz": [
-        "2013h25h-q061"
+      "one_line_jp": "表に新しい行を加える操作",
+      "one_line_zh": "向表中添加新行的操作",
+      "one_line_en": "Adds a new row to a table",
+      "extra_jp": [
+        "書き込み",
+        "行が増える"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "插入",
-      "term_en": "Insert",
-      "definition_zh": "向表中追加一条新行（记录）的数据操作。",
-      "definition_en": "A data operation that adds one new row (record) to a table.",
-      "explanation_zh": "插入是向表中追加一条新行的写入操作。例如，在「员工」表中加入一个新入职者的行，就属于插入。在 SQL 中通过 INSERT 语句完成。\n\n它是数据操作的起点，只有先插入行，之后的更新或抽取才能成立。考试中常考查它与改写已有行的「更新」、以及仅取出行的关系运算之间的区别。请把插入掌握为『新增一行』的操作。",
-      "explanation_en": "Insert is a write operation that adds one new row to a table. For example, adding a row for a newly hired person to an \"Employees\" table is an insert. In SQL, it is done with the INSERT statement.\n\nIt is the starting point of data operations: only after a row has been inserted can subsequent updates or retrievals take place. The exam often asks how it differs from \"update,\" which rewrites an existing row, and from the relational operations that merely retrieve rows. Remember insert as the operation that \"adds a new row.\"",
-      "analogy_zh": "就像在名册里为新成员补写一行。已有的行保持不变，新的行会在下面逐渐增加。",
-      "analogy_en": "Like writing one extra line in a roster for a new member. The existing lines stay as they are, and the new line is added below them.",
-      "memory_hook_zh": "说到插入，就是追加一条新行",
-      "memory_hook_en": "Insert → add one new row"
+      "extra_zh": [
+        "写入",
+        "行数增加"
+      ],
+      "extra_en": [
+        "Write",
+        "More rows"
+      ]
     },
     {
       "term": "更新",
-      "definition_jp": "テーブルの既存の行の値を別の値に書き換えるデータ操作。",
-      "explanation_jp": "更新は、すでにテーブルにある行の値を書き換える操作です。例えば「社員」表の住所が変わった人の住所欄を新しい値に直すのが更新です。SQLでは UPDATE 文で行います。\n\n挿入と同じ「書き込み系」の操作ですが、挿入が行を増やすのに対し、更新は行数を変えずに中身だけを変える点が違います。試験では、行を追加する挿入、行を取り出す抽出操作との区別が問われます。更新は『既存の値を書き換える』操作だと覚えましょう。",
-      "analogy_jp": "名簿で引っ越した人の住所欄だけを消しゴムで消して書き直すようなもの。行そのものは増えも減りもせず、中身だけが変わります。",
-      "memory_hook_jp": "更新といえば既存の行の値を書き換える",
-      "inline_quiz": [
-        "2013h25h-q067"
+      "one_line_jp": "すでにある行の値を書き換える操作",
+      "one_line_zh": "改写已有行中值的操作",
+      "one_line_en": "Rewrites values in a row that already exists",
+      "extra_jp": [
+        "書き込み",
+        "行の数はそのままで値が変わる"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "更新",
-      "term_en": "Update",
-      "definition_zh": "把表中已有行的值改写为其他值的数据操作。",
-      "definition_en": "A data operation that rewrites the values of an existing row in a table to different values.",
-      "explanation_zh": "更新是改写表中已有行的值的操作。例如，把「员工」表里搬了家的人的地址栏改成新值，就是更新。在 SQL 中通过 UPDATE 语句完成。\n\n它和插入同属「写入类」操作，但插入是增加行，而更新不改变行数、只改变内容，这一点不同。考试中常考查它与追加行的插入、以及取出行的抽取操作之间的区别。请记住更新是『改写已有值』的操作。",
-      "explanation_en": "Update is the operation that rewrites the values of a row already in a table. For example, changing the address field of a person who has moved in the \"Employees\" table to a new value is an update. In SQL, it is done with the UPDATE statement.\n\nLike insert, it is a \"write\" operation, but whereas insert adds rows, update changes only the contents without changing the number of rows—that is the difference. The exam often asks how it differs from insert, which adds a row, and from the retrieval operations that take rows out. Remember update as the operation that \"rewrites existing values.\"",
-      "analogy_zh": "就像在名册里只把搬家者的地址栏用橡皮擦掉再重写。行本身既不增加也不减少，只有内容发生变化。",
-      "analogy_en": "Like erasing only the address field of someone who has moved in a roster and rewriting it. The row itself neither increases nor decreases; only its contents change.",
-      "memory_hook_zh": "说到更新，就是改写已有行的值",
-      "memory_hook_en": "Update → rewrite the value of an existing row"
+      "extra_zh": [
+        "写入",
+        "行数不变，值发生变化"
+      ],
+      "extra_en": [
+        "Write",
+        "Same number of rows, values change"
+      ]
     },
     {
       "term": "選択",
-      "definition_jp": "条件に合う行(レコード)だけを取り出す関係演算。",
-      "explanation_jp": "選択は、テーブルから条件に合う行だけを抜き出す関係演算です。例えば「社員」表から『部署=営業』の行だけを取り出すのが選択です。横方向(行)で絞り込むイメージです。\n\n本トピックで最も出題が多い操作で、列を絞る「射影」とよく対比されます。試験では『行を絞る=選択』『列を絞る=射影』の違いが頻出です。SQLでは WHERE 句による絞り込みが選択に対応すると押さえておきましょう。",
-      "analogy_jp": "名簿から「営業部の人だけ」を指でなぞって行ごと抜き出すようなもの。気になる人の行だけを残し、ほかの行は除きます。",
-      "memory_hook_jp": "選択といえば条件に合う行を取り出す",
-      "inline_quiz": [
-        "2011h23tokubetsu-q059",
-        "2011h23tokubetsu-q062"
+      "one_line_jp": "条件に合う行を取り出す関係演算",
+      "one_line_zh": "取出符合条件的行的关系运算",
+      "one_line_en": "A relational operation that picks out rows meeting a condition",
+      "extra_jp": [
+        "取り出し (関係演算)",
+        "列はそのままで、条件に合う行だけが残る"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "选择",
-      "term_en": "Selection",
-      "definition_zh": "只取出符合条件的行（记录）的关系运算。",
-      "definition_en": "A relational operation that retrieves only the rows (records) that match a condition.",
-      "explanation_zh": "选择是从表中抽出符合条件的行的关系运算。例如，从「员工」表中只取出『部门=销售』的行，就是选择。可以想象成在横向（行）上进行筛选。\n\n它是本主题中出题最多的操作，常与缩减列的「投影」相对比。考试中常考『缩减行=选择』『缩减列=投影』的区别。请记住，在 SQL 中用 WHERE 子句进行的筛选对应选择。",
-      "explanation_en": "Selection is the relational operation that picks out only the rows matching a condition from a table. For example, retrieving only the rows where \"Department = Sales\" from the \"Employees\" table is selection. Think of it as narrowing down horizontally (by rows).\n\nIt is the most frequently tested operation in this topic and is often contrasted with \"projection,\" which narrows down columns. The exam frequently tests the distinction \"narrow rows = selection\" vs. \"narrow columns = projection.\" Keep in mind that in SQL, filtering with the WHERE clause corresponds to selection.",
-      "analogy_zh": "就像用手指在名册上顺着「只要销售部的人」整行抽取出来。只留下你关心的人所在的行，去掉其他的行。",
-      "analogy_en": "Like running your finger down a roster and pulling out whole rows for \"only the people in the Sales department.\" You keep the rows of the people you care about and remove the others.",
-      "memory_hook_zh": "说到选择，就是取出符合条件的行",
-      "memory_hook_en": "Selection → pick out the rows that match a condition"
+      "extra_zh": [
+        "检索（关系运算）",
+        "列不变，只留下符合条件的行"
+      ],
+      "extra_en": [
+        "Retrieval (relational operation)",
+        "Columns unchanged; only matching rows remain"
+      ]
     },
     {
       "term": "射影",
-      "definition_jp": "指定した列(項目)だけを取り出す関係演算。",
-      "explanation_jp": "射影は、テーブルから必要な列だけを抜き出す関係演算です。例えば「社員」表から『氏名』と『部署』の列だけを取り出すのが射影です。縦方向(列)で絞り込むイメージです。\n\n行を絞る「選択」と対になる概念で、試験ではこの対比が頻出です。『選択=行を絞る(横方向)』『射影=列を絞る(縦方向)』とセットで覚えると区別しやすくなります。SQLでは SELECT 句で取り出す列の指定が射影に対応します。",
-      "analogy_jp": "名簿から「氏名と部署の列だけ」を縦に切り取るようなもの。すべての人の行は残しつつ、見たい項目の列だけを抜き出します。",
-      "memory_hook_jp": "射影といえば指定した列を取り出す",
-      "inline_quiz": [
-        "2009h21h-q093",
-        "2012h24h-q058"
+      "one_line_jp": "必要な列だけを残す関係演算",
+      "one_line_zh": "只保留所需列的关系运算",
+      "one_line_en": "A relational operation that keeps only the columns you need",
+      "extra_jp": [
+        "取り出し (関係演算)",
+        "指定した列だけが残る"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "投影",
-      "term_en": "Projection",
-      "definition_zh": "只取出指定列（项目）的关系运算。",
-      "definition_en": "A relational operation that retrieves only the specified columns (fields).",
-      "explanation_zh": "投影是从表中抽出所需列的关系运算。例如，从「员工」表中只取出『姓名』和『部门』这两列，就是投影。可以想象成在纵向（列）上进行筛选。\n\n它与缩减行的「选择」是一对相对的概念，考试中常考查这一对比。把『选择=缩减行（横向）』『投影=缩减列（纵向）』成对记忆，更容易区分。在 SQL 中，用 SELECT 子句指定要取出的列对应投影。",
-      "explanation_en": "Projection is the relational operation that pulls out only the needed columns from a table. For example, retrieving only the \"Name\" and \"Department\" columns from the \"Employees\" table is projection. Think of it as narrowing down vertically (by columns).\n\nIt is the counterpart to \"selection,\" which narrows down rows, and this contrast is frequently tested. Memorizing them as a pair—\"selection = narrow rows (horizontal)\" and \"projection = narrow columns (vertical)\"—makes them easier to distinguish. In SQL, specifying which columns to retrieve in the SELECT clause corresponds to projection.",
-      "analogy_zh": "就像从名册中纵向地把「只要姓名和部门这两列」切下来。保留所有人的行，只抽出想看的项目所在的列。",
-      "analogy_en": "Like cutting out vertically \"only the Name and Department columns\" from a roster. You keep everyone's rows but extract only the columns of the fields you want to see.",
-      "memory_hook_zh": "说到投影，就是取出指定的列",
-      "memory_hook_en": "Projection → pick out the specified columns"
+      "extra_zh": [
+        "检索（关系运算）",
+        "只留下指定的列"
+      ],
+      "extra_en": [
+        "Retrieval (relational operation)",
+        "Only the specified columns remain"
+      ]
     },
     {
       "term": "結合",
-      "definition_jp": "複数のテーブルを共通の項目でつなぎ1つの表として扱う関係演算。",
-      "explanation_jp": "結合は、複数のテーブルを共通の列(キー)を手がかりにつなぎ合わせ、1つの表のように扱う関係演算です。例えば「社員」表と「部署」表を共通の『部署コード』でつなぐと、社員ごとに部署名まで並べた表が得られます。\n\n単一の表で完結する選択・射影と違い、複数表をまたいでデータを取り出す応用操作です。試験では、選択・射影との役割の違いや、共通の項目をキーにして表をつなぐ点が問われます。結合は『複数の表をつなげる』操作だと押さえましょう。",
-      "analogy_jp": "社員名簿と部署一覧の2冊を、共通する「部署コード」を頼りに突き合わせ、1つの表にまとめるようなもの。別々の表の情報が1行につながります。",
-      "memory_hook_jp": "結合といえば複数の表を共通項目でつなぐ",
+      "one_line_jp": "共通の列の値で表同士をつなぐ関係演算",
+      "one_line_zh": "用共有列的值把表与表连接起来的关系运算",
+      "one_line_en": "A relational operation that links tables through the values of a common column",
+      "extra_jp": [
+        "取り出し (関係演算)",
+        "複数の表の列が 1 つの表に並ぶ"
+      ],
+      "extra_zh": [
+        "检索（关系运算）",
+        "多个表的列排进一个表中"
+      ],
+      "extra_en": [
+        "Retrieval (relational operation)",
+        "Columns from several tables line up in one table"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "挿入",
+      "term_zh": "插入",
+      "term_en": "Insert",
+      "one_jp": "**挿入** は、表に新しい **行** を書き加える操作である。",
+      "one_zh": "**插入**[[jp:挿入]]是向表中写入新**行**的操作。",
+      "one_en": "**Insert** ([[jp:挿入]]) is the operation that writes a new **row** into a table.",
+      "detail_jp": "リレーショナルデータベースの表は、項目を表す **列** (フィールド) と、1 件分のデータを表す行 (レコード) から成る。SQL では INSERT 文を使い、加える行の値を列ごとに指定する。行を 1 つに決める **主キー** の列には、ほかの行と重ならない値を入れる。",
+      "detail_zh": "关系数据库的表由表示数据项（属性）的**列**（字段）和表示一条数据的行（记录）构成。在 SQL 中使用 INSERT 语句，按列指定要添加的行的值。在用来唯一确定一行的**主键**[[jp:主キー]]列中，要填入与其他行不重复的值。",
+      "detail_en": "A table in a relational database is made of **columns** (fields), which represent attributes, and rows (records), each holding the data for one entry. In SQL, the INSERT statement adds a row by giving a value for each column. The **primary key** ([[jp:主キー]]) column, which identifies a single row, must get a value that no other row already has.",
+      "analogy_jp": "来店客の名簿に、初めて来た客の分を 1 行書き足すこと。",
+      "analogy_zh": "就像在到店顾客名册上，为第一次来的客人补写一行。",
+      "analogy_en": "Like adding a line for a first-time customer to a shop's visitor list.",
+      "hook_jp": "「挿」は差し込むという意味の字で、表の中へ行を差し込む姿と結び付けられる。",
+      "hook_zh": "日语「挿入」的「挿」就是汉语的「插」，可以联想成把一行插进表里的样子。",
+      "hook_en": "The kanji 挿 in [[jp:挿入]] means to slip something in, which matches the picture of slipping a new row into a table.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "挿入は表の中身そのものを変える書き込みの操作であり、元の表から結果の表を作り出す関係演算とは役割が違う。",
+          "text_zh": "插入[[jp:挿入]]是改变表内容本身的写入操作，与由原表生成结果表的关系运算[[jp:関係演算]]作用不同。",
+          "text_en": "Insert ([[jp:挿入]]) is a write operation that changes the contents of the table itself, a different job from a relational operation ([[jp:関係演算]]), which builds a result table from the original one."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "図書番号",
+              "zh": "图书编号",
+              "en": "Book No."
+            },
+            {
+              "jp": "書名",
+              "zh": "书名",
+              "en": "Title"
+            },
+            {
+              "jp": "在庫数",
+              "zh": "库存数",
+              "en": "Stock"
+            },
+            {
+              "jp": "状態",
+              "zh": "状态",
+              "en": "Status"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "B01",
+                  "zh": "B01",
+                  "en": "B01"
+                },
+                {
+                  "jp": "データベース入門",
+                  "zh": "数据库入门",
+                  "en": "Intro to Databases"
+                },
+                {
+                  "jp": "3",
+                  "zh": "3",
+                  "en": "3"
+                },
+                {
+                  "jp": "もとからある行",
+                  "zh": "原有的行",
+                  "en": "Existing row"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "B02",
+                  "zh": "B02",
+                  "en": "B02"
+                },
+                {
+                  "jp": "表計算の基本",
+                  "zh": "电子表格基础",
+                  "en": "Spreadsheet Basics"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "もとからある行",
+                  "zh": "原有的行",
+                  "en": "Existing row"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "B03",
+                  "zh": "B03",
+                  "en": "B03"
+                },
+                {
+                  "jp": "ネットワーク入門",
+                  "zh": "网络入门",
+                  "en": "Intro to Networks"
+                },
+                {
+                  "jp": "5",
+                  "zh": "5",
+                  "en": "5"
+                },
+                {
+                  "jp": "挿入で加えた行",
+                  "zh": "通过插入添加的行",
+                  "en": "Row added by insert"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "挿入 は、表に新しい 行 を書き加える操作である。",
+      "definition_zh": "插入挿入是向表中写入新行的操作。",
+      "definition_en": "Insert (挿入) is the operation that writes a new row into a table.",
+      "explanation_jp": "リレーショナルデータベースの表は、項目を表す 列 (フィールド) と、1 件分のデータを表す行 (レコード) から成る。SQL では INSERT 文を使い、加える行の値を列ごとに指定する。行を 1 つに決める 主キー の列には、ほかの行と重ならない値を入れる。",
+      "explanation_zh": "关系数据库的表由表示数据项（属性）的列（字段）和表示一条数据的行（记录）构成。在 SQL 中使用 INSERT 语句，按列指定要添加的行的值。在用来唯一确定一行的主键主キー列中，要填入与其他行不重复的值。",
+      "explanation_en": "A table in a relational database is made of columns (fields), which represent attributes, and rows (records), each holding the data for one entry. In SQL, the INSERT statement adds a row by giving a value for each column. The primary key (主キー) column, which identifies a single row, must get a value that no other row already has.",
+      "memory_hook_jp": "「挿」は差し込むという意味の字で、表の中へ行を差し込む姿と結び付けられる。",
+      "memory_hook_zh": "日语「挿入」的「挿」就是汉语的「插」，可以联想成把一行插进表里的样子。",
+      "memory_hook_en": "The kanji 挿 in 挿入 means to slip something in, which matches the picture of slipping a new row into a table.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "更新",
+      "term_zh": "更新",
+      "term_en": "Update",
+      "one_jp": "**更新** は、表にすでにある行の列の値を新しい値に書き換える操作である。",
+      "one_zh": "**更新**[[jp:更新]]是把表中已有行的列值改写为新值的操作。",
+      "one_en": "**Update** ([[jp:更新]]) is the operation that replaces column values in a row already in the table with new values.",
+      "detail_jp": "SQL では UPDATE 文で書き換える列と新しい値を指定し、WHERE 句の条件で対象の行を絞る。条件を付けずに実行すると、表のすべての行で指定した列の値が書き換わる。",
+      "detail_zh": "在 SQL 中用 UPDATE 语句指定要改写的列和新值，并用 WHERE 子句的条件限定对象行。如果不加条件就执行，表中所有行的指定列都会被改写。",
+      "detail_en": "In SQL, the UPDATE statement names the columns to rewrite and their new values, and the condition in the WHERE clause narrows down the target rows. Run it without a condition and the specified columns change in every row of the table.",
+      "analogy_jp": "連絡先リストで、電話番号が変わった人の番号欄だけを消して書き直すこと。",
+      "analogy_zh": "就像在联系人列表里，只把换了电话号码的人的号码栏擦掉重写。",
+      "analogy_en": "Like erasing and rewriting just the phone number of a contact whose number has changed.",
+      "hook_jp": "英語の update は up と date から成る語で、値を「最新の日付の状態」にそろえる操作と結び付けられる。",
+      "hook_zh": "英语 update 由 up 和 date 组成，可以联想成把值调整到「最新日期的状态」。",
+      "hook_en": "The word update is built from up and date, which fits an operation that brings values up to date.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "挿入では表の行が増え、更新では行の数は変わらず、すでにある行の値が変わる。",
+          "text_zh": "插入[[jp:挿入]]会使表的行增加，而更新[[jp:更新]]不改变行数，只改变已有行的值。",
+          "text_en": "Insert ([[jp:挿入]]) adds rows to the table, while update ([[jp:更新]]) keeps the number of rows and changes the values in existing rows."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "図書番号",
+              "zh": "图书编号",
+              "en": "Book No."
+            },
+            {
+              "jp": "書名",
+              "zh": "书名",
+              "en": "Title"
+            },
+            {
+              "jp": "在庫数",
+              "zh": "库存数",
+              "en": "Stock"
+            },
+            {
+              "jp": "状態",
+              "zh": "状态",
+              "en": "Status"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "B01",
+                  "zh": "B01",
+                  "en": "B01"
+                },
+                {
+                  "jp": "データベース入門",
+                  "zh": "数据库入门",
+                  "en": "Intro to Databases"
+                },
+                {
+                  "jp": "3",
+                  "zh": "3",
+                  "en": "3"
+                },
+                {
+                  "jp": "変更なし",
+                  "zh": "无变化",
+                  "en": "No change"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "B02",
+                  "zh": "B02",
+                  "en": "B02"
+                },
+                {
+                  "jp": "表計算の基本",
+                  "zh": "电子表格基础",
+                  "en": "Spreadsheet Basics"
+                },
+                {
+                  "jp": "1 から 4 へ",
+                  "zh": "从 1 改为 4",
+                  "en": "Changed from 1 to 4"
+                },
+                {
+                  "jp": "更新で書き換えた行",
+                  "zh": "通过更新改写的行",
+                  "en": "Row rewritten by update"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "B03",
+                  "zh": "B03",
+                  "en": "B03"
+                },
+                {
+                  "jp": "ネットワーク入門",
+                  "zh": "网络入门",
+                  "en": "Intro to Networks"
+                },
+                {
+                  "jp": "5",
+                  "zh": "5",
+                  "en": "5"
+                },
+                {
+                  "jp": "変更なし",
+                  "zh": "无变化",
+                  "en": "No change"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "更新 は、表にすでにある行の列の値を新しい値に書き換える操作である。",
+      "definition_zh": "更新更新是把表中已有行的列值改写为新值的操作。",
+      "definition_en": "Update (更新) is the operation that replaces column values in a row already in the table with new values.",
+      "explanation_jp": "SQL では UPDATE 文で書き換える列と新しい値を指定し、WHERE 句の条件で対象の行を絞る。条件を付けずに実行すると、表のすべての行で指定した列の値が書き換わる。",
+      "explanation_zh": "在 SQL 中用 UPDATE 语句指定要改写的列和新值，并用 WHERE 子句的条件限定对象行。如果不加条件就执行，表中所有行的指定列都会被改写。",
+      "explanation_en": "In SQL, the UPDATE statement names the columns to rewrite and their new values, and the condition in the WHERE clause narrows down the target rows. Run it without a condition and the specified columns change in every row of the table.",
+      "memory_hook_jp": "英語の update は up と date から成る語で、値を「最新の日付の状態」にそろえる操作と結び付けられる。",
+      "memory_hook_zh": "英语 update 由 up 和 date 组成，可以联想成把值调整到「最新日期的状态」。",
+      "memory_hook_en": "The word update is built from up and date, which fits an operation that brings values up to date.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "選択",
+      "term_zh": "选择",
+      "term_en": "Selection",
+      "one_jp": "**選択** は、表から **条件** に合う行を取り出して新しい表を作る演算である。",
+      "one_zh": "**选择**[[jp:選択]]是从表中取出符合**条件**的行、生成新表的运算。",
+      "one_en": "**Selection** ([[jp:選択]]) is the operation that takes the rows meeting a **condition** out of a table to form a new table.",
+      "detail_jp": "**関係演算** は、表を入力として受け取り、結果も表として返す取り出しの演算である。選択の結果の表は元と同じ列を持ち、条件に合う行だけが残る (どの行も合わなければ 0 行になる)。SQL では WHERE 句に書く条件が選択に当たる。",
+      "detail_zh": "**关系运算**[[jp:関係演算]]是以表为输入、结果也以表的形式返回的检索运算。选择的结果表与原表拥有相同的列，只留下符合条件的行（若没有任何行符合，就是 0 行）。在 SQL 中，写在 WHERE 子句里的条件就相当于选择。",
+      "detail_en": "A **relational operation** ([[jp:関係演算]]) is a retrieval operation that takes tables as input and returns a table as its result. A selection's result has the same columns as the original, with only the rows that meet the condition left (zero rows if none match). In SQL, the condition written in the WHERE clause plays the role of selection.",
+      "analogy_jp": "出席簿の中から、今日欠席した人の行だけを書き出すこと。",
+      "analogy_zh": "就像从点名册中只抄出今天缺席的人那几行。",
+      "analogy_en": "Like copying out only the lines for people absent today from an attendance register.",
+      "hook_jp": "関係代数の記号では σ (シグマ) で書き、selection の頭文字 s に当たるギリシャ文字と結び付けられる。",
+      "hook_zh": "关系代数中用 σ（西格玛）表示，可以联想为与 selection 首字母 s 对应的希腊字母。",
+      "hook_en": "Relational algebra writes it as σ (sigma), the Greek letter that matches the s of selection.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "条件を and でつなぐとすべてを満たす行が、or でつなぐとどれか 1 つでも満たす行が残る。and と or を混ぜるときは、括弧で先に評価する組を決める。",
+          "text_zh": "用 and 连接条件时，留下满足全部条件的行；用 or 连接时，只要满足其中任意一个就会留下。and 和 or 混用时，用括号决定先求值的组。",
+          "text_en": "Conditions linked with AND keep only the rows that satisfy all of them, while conditions linked with OR keep rows that satisfy at least one. When AND and OR are mixed, parentheses decide which group is evaluated first.",
+          "qids": [
+            "2011h23tokubetsu-q059",
+            "2016h28a-q074"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "文字列の条件では、% が空も含めて何文字分でもよい文字の並びに、_ がちょうど 1 文字に当たる。例えば「%山」は山で終わる値、「山%」は山で始まる値に合う。",
+          "text_zh": "在字符串条件中，% 代表任意个数（包括 0 个）的字符序列，_ 恰好代表 1 个字符。例如「%山」匹配以“山”结尾的值，「山%」匹配以“山”开头的值。",
+          "text_en": "In a string condition, % stands for any run of characters, including none, and _ stands for exactly one character. For example, \"%山\" matches values ending in 山, and \"山%\" matches values starting with 山.",
+          "qids": [
+            "2024r06-q093",
+            "2016h28h-q096",
+            "2017h29h-q090"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "図書番号",
+              "zh": "图书编号",
+              "en": "Book No."
+            },
+            {
+              "jp": "書名",
+              "zh": "书名",
+              "en": "Title"
+            },
+            {
+              "jp": "在庫数",
+              "zh": "库存数",
+              "en": "Stock"
+            },
+            {
+              "jp": "条件「在庫数が 4 以上」",
+              "zh": "条件：库存数在 4 以上",
+              "en": "Condition: stock of 4 or more"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "B01",
+                  "zh": "B01",
+                  "en": "B01"
+                },
+                {
+                  "jp": "データベース入門",
+                  "zh": "数据库入门",
+                  "en": "Intro to Databases"
+                },
+                {
+                  "jp": "3",
+                  "zh": "3",
+                  "en": "3"
+                },
+                {
+                  "jp": "合わない → 外れる",
+                  "zh": "不符合 → 去掉",
+                  "en": "No match → dropped"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "B02",
+                  "zh": "B02",
+                  "en": "B02"
+                },
+                {
+                  "jp": "表計算の基本",
+                  "zh": "电子表格基础",
+                  "en": "Spreadsheet Basics"
+                },
+                {
+                  "jp": "4",
+                  "zh": "4",
+                  "en": "4"
+                },
+                {
+                  "jp": "合う → 残る",
+                  "zh": "符合 → 保留",
+                  "en": "Match → kept"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "B03",
+                  "zh": "B03",
+                  "en": "B03"
+                },
+                {
+                  "jp": "ネットワーク入門",
+                  "zh": "网络入门",
+                  "en": "Intro to Networks"
+                },
+                {
+                  "jp": "5",
+                  "zh": "5",
+                  "en": "5"
+                },
+                {
+                  "jp": "合う → 残る",
+                  "zh": "符合 → 保留",
+                  "en": "Match → kept"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2013h25h-q067",
+        "2011h23tokubetsu-q059",
+        "2024r06-q093"
+      ],
+      "definition_jp": "選択 は、表から 条件 に合う行を取り出して新しい表を作る演算である。",
+      "definition_zh": "选择選択是从表中取出符合条件的行、生成新表的运算。",
+      "definition_en": "Selection (選択) is the operation that takes the rows meeting a condition out of a table to form a new table.",
+      "explanation_jp": "関係演算 は、表を入力として受け取り、結果も表として返す取り出しの演算である。選択の結果の表は元と同じ列を持ち、条件に合う行だけが残る (どの行も合わなければ 0 行になる)。SQL では WHERE 句に書く条件が選択に当たる。",
+      "explanation_zh": "关系运算関係演算是以表为输入、结果也以表的形式返回的检索运算。选择的结果表与原表拥有相同的列，只留下符合条件的行（若没有任何行符合，就是 0 行）。在 SQL 中，写在 WHERE 子句里的条件就相当于选择。",
+      "explanation_en": "A relational operation (関係演算) is a retrieval operation that takes tables as input and returns a table as its result. A selection's result has the same columns as the original, with only the rows that meet the condition left (zero rows if none match). In SQL, the condition written in the WHERE clause plays the role of selection.",
+      "memory_hook_jp": "関係代数の記号では σ (シグマ) で書き、selection の頭文字 s に当たるギリシャ文字と結び付けられる。",
+      "memory_hook_zh": "关系代数中用 σ（西格玛）表示，可以联想为与 selection 首字母 s 对应的希腊字母。",
+      "memory_hook_en": "Relational algebra writes it as σ (sigma), the Greek letter that matches the s of selection.",
       "inline_quiz": [
-        "2010h22a-q084",
+        "2013h25h-q067",
+        "2011h23tokubetsu-q059",
+        "2024r06-q093"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "射影",
+      "term_zh": "投影",
+      "term_en": "Projection",
+      "one_jp": "**射影** は、表から必要な **列** だけを残して新しい表を作る関係演算である。",
+      "one_zh": "**投影**[[jp:射影]]是只保留表中所需的**列**、生成新表的关系运算。",
+      "one_en": "**Projection** ([[jp:射影]]) is the relational operation that keeps only the **columns** you need from a table to form a new table.",
+      "detail_jp": "射影では行に条件を付けず、すべての行から指定した列の値を取り出す。SQL では SELECT の直後に並べる列名の指定が射影に当たる。",
+      "detail_zh": "投影不对行设条件，而是从所有行中取出指定列的值。在 SQL 中，紧跟在 SELECT 后面列出的列名就相当于投影。",
+      "detail_en": "Projection puts no condition on the rows and takes the values of the specified columns from every row. In SQL, the column names listed right after SELECT play the role of projection.",
+      "analogy_jp": "成績一覧の紙から、名前と合計点の 2 列だけを縦に切り取って残すこと。",
+      "analogy_zh": "就像从成绩单上只把姓名和总分这两列竖着剪下来保留。",
+      "analogy_en": "Like cutting just the name and total-score columns out of a printed grade sheet and keeping them.",
+      "hook_jp": "関係代数の記号では π (パイ) で書き、projection の頭文字 p に当たるギリシャ文字と結び付けられる。",
+      "hook_zh": "关系代数中用 π（派）表示，可以联想为与 projection 首字母 p 对应的希腊字母。",
+      "hook_en": "Relational algebra writes it as π (pi), the Greek letter that matches the p of projection.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "関係演算は続けて使える。条件で行を絞った表に射影をかけると、必要な項目だけを並べた結果になる。",
+          "text_zh": "关系运算[[jp:関係演算]]可以连续使用。对按条件筛选过行的表再做投影[[jp:射影]]，就能得到只列出所需项目的结果。",
+          "text_en": "Relational operations ([[jp:関係演算]]) can be applied one after another. Applying a projection ([[jp:射影]]) to a table whose rows were narrowed by a condition gives a result that lists only the items you need.",
+          "qids": [
+            "2012h24h-q058"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "表をつないだ後に射影をかけると、照合に使った共通の列など、結果に要らない列を外せる。",
+          "text_zh": "把表连接起来之后再做投影[[jp:射影]]，就能去掉用于对照的共有列等结果中不需要的列。",
+          "text_en": "Applying a projection ([[jp:射影]]) after linking tables removes columns the result does not need, such as the common column used for matching.",
+          "qids": [
+            "2016h28h-q095"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "選択は条件を手がかりに行の数を減らし、射影は列名を手がかりに列の数を減らす。",
+          "text_zh": "选择[[jp:選択]]以条件为依据减少行数，投影[[jp:射影]]以列名为依据减少列数。",
+          "text_en": "Selection ([[jp:選択]]) uses a condition to cut the number of rows, and projection ([[jp:射影]]) uses column names to cut the number of columns."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "図書番号 (外れる列)",
+              "zh": "图书编号（去掉的列）",
+              "en": "Book No. (dropped column)"
+            },
+            {
+              "jp": "書名 (残る列)",
+              "zh": "书名（保留的列）",
+              "en": "Title (kept column)"
+            },
+            {
+              "jp": "在庫数 (残る列)",
+              "zh": "库存数（保留的列）",
+              "en": "Stock (kept column)"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "B01",
+                  "zh": "B01",
+                  "en": "B01"
+                },
+                {
+                  "jp": "データベース入門",
+                  "zh": "数据库入门",
+                  "en": "Intro to Databases"
+                },
+                {
+                  "jp": "3",
+                  "zh": "3",
+                  "en": "3"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "B02",
+                  "zh": "B02",
+                  "en": "B02"
+                },
+                {
+                  "jp": "表計算の基本",
+                  "zh": "电子表格基础",
+                  "en": "Spreadsheet Basics"
+                },
+                {
+                  "jp": "4",
+                  "zh": "4",
+                  "en": "4"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "B03",
+                  "zh": "B03",
+                  "en": "B03"
+                },
+                {
+                  "jp": "ネットワーク入門",
+                  "zh": "网络入门",
+                  "en": "Intro to Networks"
+                },
+                {
+                  "jp": "5",
+                  "zh": "5",
+                  "en": "5"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2022r04-q098",
+        "2012h24h-q058",
+        "2016h28h-q095"
+      ],
+      "definition_jp": "射影 は、表から必要な 列 だけを残して新しい表を作る関係演算である。",
+      "definition_zh": "投影射影是只保留表中所需的列、生成新表的关系运算。",
+      "definition_en": "Projection (射影) is the relational operation that keeps only the columns you need from a table to form a new table.",
+      "explanation_jp": "射影では行に条件を付けず、すべての行から指定した列の値を取り出す。SQL では SELECT の直後に並べる列名の指定が射影に当たる。",
+      "explanation_zh": "投影不对行设条件，而是从所有行中取出指定列的值。在 SQL 中，紧跟在 SELECT 后面列出的列名就相当于投影。",
+      "explanation_en": "Projection puts no condition on the rows and takes the values of the specified columns from every row. In SQL, the column names listed right after SELECT play the role of projection.",
+      "memory_hook_jp": "関係代数の記号では π (パイ) で書き、projection の頭文字 p に当たるギリシャ文字と結び付けられる。",
+      "memory_hook_zh": "关系代数中用 π（派）表示，可以联想为与 projection 首字母 p 对应的希腊字母。",
+      "memory_hook_en": "Relational algebra writes it as π (pi), the Greek letter that matches the p of projection.",
+      "inline_quiz": [
+        "2022r04-q098",
+        "2012h24h-q058",
+        "2016h28h-q095"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "結合",
+      "term_zh": "连接",
+      "term_en": "Join",
+      "one_jp": "**結合** は、2 つ以上の表を **共通の列** の値が等しい行同士でつなぎ、1 つの表にまとめる関係演算である。",
+      "one_zh": "**连接**[[jp:結合]]是把两个以上的表中**共有列**[[jp:共通の列]]的值相等的行相互连接，汇总成一个表的关系运算。",
+      "one_en": "A **join** ([[jp:結合]]) is a relational operation that links two or more tables by pairing rows whose values in a **common column** ([[jp:共通の列]]) are equal, combining them into one table.",
+      "detail_jp": "つなぐ手がかりには、一方の表の **主キー** と、もう一方の表でその値を持つ **外部キー** の組を使うことが多い。結果の表には両方の表の列が並ぶので、片方の表にしかない項目を一緒に扱える。",
+      "detail_zh": "连接的线索多使用一方表的**主键**[[jp:主キー]]和另一方表中持有该值的**外键**[[jp:外部キー]]这一组。结果表中排列着两个表的列，因此可以把只存在于某一方表中的项目放在一起处理。",
+      "detail_en": "The link is usually a pair made of one table's **primary key** ([[jp:主キー]]) and the **foreign key** ([[jp:外部キー]]) in the other table that holds those values. Because the result table carries the columns of both tables, items that exist in only one of them can be handled together.",
+      "analogy_jp": "注文票の商品番号を商品カタログの同じ番号と見比べて、商品名を書き添えること。",
+      "analogy_zh": "就像把订单上的商品编号与商品目录里相同的编号对照，再补写上商品名称。",
+      "analogy_en": "Like checking the product number on an order slip against the same number in a catalog and writing the product name beside it.",
+      "hook_jp": "関係代数の記号では ⋈ (蝶ネクタイ形) で書き、左右の表が真ん中で結ばれる形と結び付けられる。",
+      "hook_zh": "关系代数中用 ⋈（领结形）表示，可以联想成左右两个表在中间系在一起的样子。",
+      "hook_en": "Relational algebra writes it as ⋈, a bow-tie shape that looks like the left and right tables tied together in the middle.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "結合で別の表の項目を取り込むには、その表と値を突き合わせられる **共通の列** (多くは相手の主キーに当たる外部キー) が、こちらの表にも要る。",
+          "text_zh": "要通过连接[[jp:結合]]引入另一个表的项目，本表中也需要有能与该表对照值的**共有列**[[jp:共通の列]]（多为对应对方主键[[jp:主キー]]的外键[[jp:外部キー]]）。",
+          "text_en": "To bring in items from another table with a join ([[jp:結合]]), this table also needs a **common column** ([[jp:共通の列]]) whose values can be matched against that table, usually a foreign key ([[jp:外部キー]]) that corresponds to the other table's primary key ([[jp:主キー]]).",
+          "qids": [
+            "2010h22a-q087"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "結合した表では、元は別々の表にあった列の値を使って行を選択できる。",
+          "text_zh": "在连接[[jp:結合]]后的表中，可以利用原本分属不同表的列的值来选择[[jp:選択]]行。",
+          "text_en": "In a joined ([[jp:結合]]) table, rows can be selected ([[jp:選択]]) by the values of columns that originally belonged to separate tables.",
+          "qids": [
+            "2019h31h-q078",
+            "2015h27a-q064"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "積 (共通集合演算) は同じ列構成の 2 つの表の両方にある行を集める演算であり、列の値を手がかりに別々の表を横につなぐ結合とは働きが違う。",
+          "text_zh": "交集运算[[jp:積]]是收集列结构相同的两个表中都存在的行的运算，与以列值为线索把不同的表横向连接起来的连接[[jp:結合]]作用不同。",
+          "text_en": "Intersection ([[jp:積]]) collects the rows found in both of two tables with the same column structure, which works differently from a join ([[jp:結合]]), which uses column values to link separate tables side by side."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "in",
+              "label": {
+                "jp": "貸出表と図書表 (どちらにも図書番号の列がある)",
+                "zh": "借阅表和图书表（两者都有图书编号列）",
+                "en": "Loan table and book table (both have a book number column)"
+              }
+            },
+            {
+              "id": "m",
+              "label": {
+                "jp": "図書番号の値が等しい行同士を突き合わせる",
+                "zh": "把图书编号相同的行相互对照",
+                "en": "Match up rows that have the same book number"
+              }
+            },
+            {
+              "id": "r",
+              "label": {
+                "jp": "両方の表の列が並んだ貸出一覧",
+                "zh": "包含两个表各列的借阅一览表",
+                "en": "Loan list with the columns of both tables"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "2 つの表はどちらも図書番号の列を持ち、これがつなぐ手がかりになる。",
+            "caption_zh": "两个表都有图书编号列，它就是连接的线索。",
+            "caption_en": "Both tables have a book number column, which is what links them.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "貸出表の各行に、図書番号が同じ図書表の行を突き合わせる。",
+            "caption_zh": "把借阅表的每一行，与图书编号相同的图书表行对照起来。",
+            "caption_en": "Each row of the loan table is matched with the book table row that has the same book number.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "両方の表の列が 1 行に並び、貸出ごとに書名まで分かる表ができる。",
+            "caption_zh": "两个表的列排在同一行里，得到每笔借阅都能看到书名的表。",
+            "caption_en": "The columns of both tables line up in one row, giving a table that shows the title for every loan.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2023r05-q100",
+        "2019h31h-q078",
+        "2010h22a-q087"
+      ],
+      "definition_jp": "結合 は、2 つ以上の表を 共通の列 の値が等しい行同士でつなぎ、1 つの表にまとめる関係演算である。",
+      "definition_zh": "连接結合是把两个以上的表中共有列共通の列的值相等的行相互连接，汇总成一个表的关系运算。",
+      "definition_en": "A join (結合) is a relational operation that links two or more tables by pairing rows whose values in a common column (共通の列) are equal, combining them into one table.",
+      "explanation_jp": "つなぐ手がかりには、一方の表の 主キー と、もう一方の表でその値を持つ 外部キー の組を使うことが多い。結果の表には両方の表の列が並ぶので、片方の表にしかない項目を一緒に扱える。",
+      "explanation_zh": "连接的线索多使用一方表的主键主キー和另一方表中持有该值的外键外部キー这一组。结果表中排列着两个表的列，因此可以把只存在于某一方表中的项目放在一起处理。",
+      "explanation_en": "The link is usually a pair made of one table's primary key (主キー) and the foreign key (外部キー) in the other table that holds those values. Because the result table carries the columns of both tables, items that exist in only one of them can be handled together.",
+      "memory_hook_jp": "関係代数の記号では ⋈ (蝶ネクタイ形) で書き、左右の表が真ん中で結ばれる形と結び付けられる。",
+      "memory_hook_zh": "关系代数中用 ⋈（领结形）表示，可以联想成左右两个表在中间系在一起的样子。",
+      "memory_hook_en": "Relational algebra writes it as ⋈, a bow-tie shape that looks like the left and right tables tied together in the middle.",
+      "inline_quiz": [
+        "2023r05-q100",
+        "2019h31h-q078",
         "2010h22a-q087"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"社員表\"]; B[\"部署表\"]; A -->|\"部署コードで突き合わせ\"| C[\"結合した表\"]; B -->|\"部署コードで突き合わせ\"| C",
-        "svg_path": "figures/technology-21-56-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "连接",
-      "term_en": "Join",
-      "definition_zh": "通过共同的项目把多张表连起来、当作一张表来处理的关系运算。",
-      "definition_en": "A relational operation that links multiple tables by a common field and treats them as a single table.",
-      "explanation_zh": "连接是以共同的列（键）为线索，把多张表连接起来、当作一张表来处理的关系运算。例如，把「员工」表和「部门」表用共同的『部门代码』连接起来，就能得到为每个员工排列出部门名称的表。\n\n与在单张表内即可完成的选择・投影不同，它是跨多张表取出数据的进阶操作。考试中常考它与选择・投影在作用上的区别，以及以共同项目为键把表连接起来这一点。请把连接掌握为『把多张表连起来』的操作。",
-      "explanation_en": "Join is the relational operation that links multiple tables using a common column (key) as a clue and treats them as a single table. For example, joining the \"Employees\" table and the \"Departments\" table by their common \"Department Code\" yields a table that lists the department name for each employee.\n\nUnlike selection and projection, which are complete within a single table, it is an advanced operation that retrieves data across multiple tables. The exam asks about how its role differs from selection and projection, and about how tables are linked using a common field as the key. Remember join as the operation that \"links multiple tables together.\"",
-      "analogy_zh": "就像把员工名册和部门一览这两本册子，以共同的「部门代码」为线索对照起来，整理成一张表。原本分开的表的信息在同一行里连接到了一起。",
-      "analogy_en": "Like matching up two booklets—the employee roster and the department list—using the common \"Department Code\" as a clue, and consolidating them into one table. Information from separate tables gets linked together in a single row.",
-      "memory_hook_zh": "说到连接，就是用共同项目把多张表连起来",
-      "memory_hook_en": "Join → link multiple tables by a common field"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "挿入",
+      "b": "更新",
+      "rows": [
+        {
+          "label_jp": "行の数",
+          "label_zh": "行数",
+          "label_en": "Number of rows",
+          "a_jp": "増える",
+          "a_zh": "增加",
+          "a_en": "Increases",
+          "b_jp": "変わらない",
+          "b_zh": "不变",
+          "b_en": "Stays the same",
+          "key": true
+        },
+        {
+          "label_jp": "操作の対象",
+          "label_zh": "操作对象",
+          "label_en": "What it acts on",
+          "a_jp": "まだ表にない新しい行",
+          "a_zh": "表中还没有的新行",
+          "a_en": "A new row not yet in the table",
+          "b_jp": "すでに表にある行",
+          "b_zh": "表中已有的行",
+          "b_en": "A row already in the table",
+          "key": false
+        },
+        {
+          "label_jp": "SQL の文",
+          "label_zh": "SQL 语句",
+          "label_en": "SQL statement",
+          "a_jp": "INSERT 文",
+          "a_zh": "INSERT 语句",
+          "a_en": "INSERT statement",
+          "b_jp": "UPDATE 文",
+          "b_zh": "UPDATE 语句",
+          "b_en": "UPDATE statement",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "選択",
+      "b": "射影",
+      "rows": [
+        {
+          "label_jp": "絞る向き",
+          "label_zh": "缩减的方向",
+          "label_en": "What gets narrowed",
+          "a_jp": "行 (横の並び)",
+          "a_zh": "行（横向排列）",
+          "a_en": "Rows (horizontal)",
+          "b_jp": "列 (縦の並び)",
+          "b_zh": "列（纵向排列）",
+          "b_en": "Columns (vertical)",
+          "key": true
+        },
+        {
+          "label_jp": "指定するもの",
+          "label_zh": "指定的内容",
+          "label_en": "What you specify",
+          "a_jp": "行が満たす条件",
+          "a_zh": "行需满足的条件",
+          "a_en": "A condition the rows must meet",
+          "b_jp": "残す列の名前",
+          "b_zh": "要保留的列名",
+          "b_en": "Names of the columns to keep",
+          "key": false
+        },
+        {
+          "label_jp": "SQL での書き方",
+          "label_zh": "SQL 中的写法",
+          "label_en": "How SQL writes it",
+          "a_jp": "WHERE 句の条件",
+          "a_zh": "WHERE 子句的条件",
+          "a_en": "Condition in the WHERE clause",
+          "b_jp": "SELECT の直後の列名",
+          "b_zh": "紧跟 SELECT 的列名",
+          "b_en": "Column names right after SELECT",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "選択の条件は and・or と括弧で組み合わせられ、文字列は % と _ を使ったパターンでも指定できる。",
+    "結合は、主キーと外部キーのように値が対応する列を手がかりに行同士をつなぐ。",
+    "関係演算は続けて使え、結合した表に条件をかけたり、最後に必要な列だけを残したりできる。",
+    "関係データベースの操作は SQL で書き、INSERT 文と UPDATE 文が書き込み、WHERE 句が行の条件に当たる。"
+  ],
+  "key_points_zh": [
+    "选择[[jp:選択]]的条件可以用 and、or 和括号组合，字符串还可以用含 % 和 _ 的模式来指定。",
+    "连接[[jp:結合]]以主键[[jp:主キー]]和外键[[jp:外部キー]]这类值相互对应的列为线索，把行与行连接起来。",
+    "关系运算[[jp:関係演算]]可以连续使用，既可以对连接后的表加条件，也可以在最后只保留所需的列。",
+    "关系数据库的操作用 SQL 编写，INSERT 语句和 UPDATE 语句负责写入，WHERE 子句对应行的条件。"
+  ],
+  "key_points_en": [
+    "Selection ([[jp:選択]]) conditions can be combined with AND, OR, and parentheses, and strings can also be specified with patterns that use % and _.",
+    "A join ([[jp:結合]]) links rows through columns whose values correspond, such as a primary key ([[jp:主キー]]) and a foreign key ([[jp:外部キー]]).",
+    "Relational operations ([[jp:関係演算]]) can be chained, so you can put a condition on a joined table and keep only the columns you need at the end.",
+    "Operations on a relational database are written in SQL: the INSERT and UPDATE statements write data, and the WHERE clause holds the condition on rows."
+  ],
+  "overview": {
+    "intro_jp": "表の中身を変える書き込み (挿入・更新) と、表から結果の表を作る 関係演算 を区別できる。結果の表で行と列のどちらが絞られているかから、選択 と 射影 を見分けられる。共通の列を手がかりに表を 結合 し、条件と組み合わせて必要なデータを取り出す流れを説明できる。",
+    "intro_zh": "能区分改变表内容的写入操作（插入、更新）和由表生成结果表的关系运算。能根据结果表中被缩减的是行还是列，分辨选择和投影。能说明以共有的列为线索连接表，并结合条件取出所需数据的流程。",
+    "intro_en": "Tell apart the write operations that change a table's contents (insert and update) from the relational operations that build a result table from a table. Distinguish selection from projection by checking whether the result table has fewer rows or fewer columns. Explain how tables are joined through a common column and combined with conditions to pull out the data you need.",
+    "freq_badge": "標準",
+    "est_minutes": 25
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "挿入: 挿入といえば新しい行を1件追加する",
-      "更新: 更新といえば既存の行の値を書き換える",
-      "選択: 選択といえば条件に合う行を取り出す",
-      "射影: 射影といえば指定した列を取り出す",
-      "結合: 結合といえば複数の表を共通項目でつなぐ"
-    ],
     "key_points_jp": [
-      "データ操作は、行を書き込む「挿入・更新」と、データを取り出す関係演算「選択・射影・結合」に大別される。",
-      "挿入は行を新たに追加し、更新は既存の行の値を書き換える(行数は変えない)操作で、ともに書き込み系である。",
-      "選択は条件に合う『行』を絞り、射影は必要な『列』を絞る対の概念で、横方向(行)か縦方向(列)かが違い。",
-      "結合は複数のテーブルを共通の項目(キー)でつなぎ、1つの表として扱う応用的な抽出操作である。",
-      "本トピックでは選択・射影・結合の出題が多く、それぞれの違いを区別できることが重要。"
+      "選択の条件は and・or と括弧で組み合わせられ、文字列は % と _ を使ったパターンでも指定できる。",
+      "結合は、主キーと外部キーのように値が対応する列を手がかりに行同士をつなぐ。",
+      "関係演算は続けて使え、結合した表に条件をかけたり、最後に必要な列だけを残したりできる。",
+      "関係データベースの操作は SQL で書き、INSERT 文と UPDATE 文が書き込み、WHERE 句が行の条件に当たる。"
     ],
     "key_points_zh": [
-      "数据操作大致分为写入行的「插入・更新」和取出数据的关系运算「选择・投影・连接」两类。",
-      "插入是新增行，更新是改写已有行的值（不改变行数）；两者都属于写入类操作。",
-      "选择缩减符合条件的『行』，投影缩减所需的『列』，二者是一对概念，区别在于是横向（行）还是纵向（列）。",
-      "连接通过共同的项目（键）把多张表连起来、当作一张表来处理，是一种进阶的抽取操作。",
-      "本主题中选择・投影・连接的出题较多，能够区分它们各自的不同非常重要。"
+      "选择選択的条件可以用 and、or 和括号组合，字符串还可以用含 % 和 _ 的模式来指定。",
+      "连接結合以主键主キー和外键外部キー这类值相互对应的列为线索，把行与行连接起来。",
+      "关系运算関係演算可以连续使用，既可以对连接后的表加条件，也可以在最后只保留所需的列。",
+      "关系数据库的操作用 SQL 编写，INSERT 语句和 UPDATE 语句负责写入，WHERE 子句对应行的条件。"
     ],
     "key_points_en": [
-      "Data operations are broadly divided into \"insert/update,\" which write rows, and the relational operations \"selection/projection/join,\" which retrieve data.",
-      "Insert adds a new row, while update rewrites the value of an existing row (without changing the number of rows); both are write operations.",
-      "Selection narrows down the 'rows' that match a condition, while projection narrows down the needed 'columns'; they are a pair of concepts, differing in whether they work horizontally (rows) or vertically (columns).",
-      "Join links multiple tables by a common field (key) and treats them as a single table; it is an advanced retrieval operation.",
-      "In this topic, selection, projection, and join are frequently tested, so being able to distinguish what makes each of them different is essential."
+      "Selection (選択) conditions can be combined with AND, OR, and parentheses, and strings can also be specified with patterns that use % and _.",
+      "A join (結合) links rows through columns whose values correspond, such as a primary key (主キー) and a foreign key (外部キー).",
+      "Relational operations (関係演算) can be chained, so you can put a condition on a joined table and keep only the columns you need at the end.",
+      "Operations on a relational database are written in SQL: the INSERT and UPDATE statements write data, and the WHERE clause holds the condition on rows."
+    ],
+    "memory_hooks_jp": [
+      "挿入: 「挿」は差し込むという意味の字で、表の中へ行を差し込む姿と結び付けられる。",
+      "更新: 英語の update は up と date から成る語で、値を「最新の日付の状態」にそろえる操作と結び付けられる。",
+      "選択: 関係代数の記号では σ (シグマ) で書き、selection の頭文字 s に当たるギリシャ文字と結び付けられる。",
+      "射影: 関係代数の記号では π (パイ) で書き、projection の頭文字 p に当たるギリシャ文字と結び付けられる。",
+      "結合: 関係代数の記号では ⋈ (蝶ネクタイ形) で書き、左右の表が真ん中で結ばれる形と結び付けられる。"
     ],
     "memory_hooks_zh": [
-      "插入：说到插入，就是追加一条新行",
-      "更新：说到更新，就是改写已有行的值",
-      "选择：说到选择，就是取出符合条件的行",
-      "投影：说到投影，就是取出指定的列",
-      "连接：说到连接，就是用共同项目把多张表连起来"
+      "插入：日语「挿入」的「挿」就是汉语的「插」，可以联想成把一行插进表里的样子。",
+      "更新：英语 update 由 up 和 date 组成，可以联想成把值调整到「最新日期的状态」。",
+      "选择：关系代数中用 σ（西格玛）表示，可以联想为与 selection 首字母 s 对应的希腊字母。",
+      "投影：关系代数中用 π（派）表示，可以联想为与 projection 首字母 p 对应的希腊字母。",
+      "连接：关系代数中用 ⋈（领结形）表示，可以联想成左右两个表在中间系在一起的样子。"
     ],
     "memory_hooks_en": [
-      "Insert: insert → add one new row",
-      "Update: update → rewrite the value of an existing row",
-      "Selection: selection → pick out the rows that match a condition",
-      "Projection: projection → pick out the specified columns",
-      "Join: join → link multiple tables by a common field"
+      "Insert: The kanji 挿 in 挿入 means to slip something in, which matches the picture of slipping a new row into a table.",
+      "Update: The word update is built from up and date, which fits an operation that brings values up to date.",
+      "Selection: Relational algebra writes it as σ (sigma), the Greek letter that matches the s of selection.",
+      "Projection: Relational algebra writes it as π (pi), the Greek letter that matches the p of projection.",
+      "Join: Relational algebra writes it as ⋈, a bow-tie shape that looks like the left and right tables tied together in the middle."
     ]
   },
   "challenge_questions": [
-    "2014h26a-q099",
+    "2018h30h-q065",
+    "2017h29h-q089",
     "2015h27a-q064",
     "2016h28a-q074",
-    "2016h28h-q095",
-    "2017h29a-q060"
+    "2020r02o-q073"
   ],
   "source_figures": [
     {
@@ -294,9 +1117,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "数据操作的基础（插入・更新与抽取的关系运算）",
-  "title_en": "Basics of Data Operations (Insert/Update and the Relational Operations for Retrieval)",
-  "unit_summary_zh": "全面理解针对关系数据库的基本数据操作（行的插入・更新），以及负责数据抽取的关系运算（选择・投影・连接）。",
-  "unit_summary_en": "Gain a complete understanding of the basic data operations on a relational database (inserting and updating rows) and the relational operations responsible for data retrieval (selection, projection, and join)."
+  }
 }
