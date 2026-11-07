@@ -67,7 +67,7 @@ export async function TextbookToc({
               <ul className={styles.units}>
                 {topic.units.map((u) => (
                   <li key={u.unit_id}>
-                    <Link href={`/textbook/${u.unit_id}`} className={styles.unitLink}>
+                    <Link href={`/textbook/${u.unit_id}`} prefetch={false} className={styles.unitLink}>
                       <span className={styles.unitTitle}>{u.title}</span>
                       <span className={styles.badge}>{u.badge}</span>
                       <span className={styles.terms}>

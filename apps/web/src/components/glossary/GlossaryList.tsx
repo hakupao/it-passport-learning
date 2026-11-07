@@ -70,7 +70,7 @@ export function GlossaryList({
             <ul className={styles.items}>
               {g.items.map((i) => (
                 <li key={i.id}>
-                  <Link href={`/glossary/${i.id}`} locale={locale} className={styles.itemLink}>
+                  <Link href={`/glossary/${i.id}`} locale={locale} prefetch={false} className={styles.itemLink}>
                     <span className={styles.term}>{i.term}</span>
                     {i.gloss !== i.term && <span className={styles.gloss}>{i.gloss}</span>}
                   </Link>

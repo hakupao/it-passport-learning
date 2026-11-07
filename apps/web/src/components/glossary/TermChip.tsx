@@ -93,7 +93,7 @@ export function TermChip({ card, label, locale, defaultOpen = false }: Props): R
           {card.senseCount > 1 ? (
             <span className={styles.chipField}>{t("otherSenses", { n: card.senseCount - 1 })}</span>
           ) : null}
-          <Link href={`/glossary/${card.id}`} locale={locale} className={styles.chipLink}>
+          <Link href={`/glossary/${card.id}`} locale={locale} prefetch={false} className={styles.chipLink}>
             {t("openInGlossary")} →
           </Link>
         </span>

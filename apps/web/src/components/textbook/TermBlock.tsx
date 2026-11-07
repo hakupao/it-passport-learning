@@ -41,7 +41,7 @@ export function TermBlock({ term, unitId, svg, locale, v2 = false }: Props): Rea
           <span className={styles.termJp}>{term.term}</span>
           {dl !== "jp" ? <span className={styles.termGloss}>{pick(term.gloss)}</span> : null}
         </h3>
-        <Link href={`/glossary/${term.id}`} locale={locale} className={styles.termLink}>
+        <Link href={`/glossary/${term.id}`} locale={locale} prefetch={false} className={styles.termLink}>
           {tg("openInGlossary")}
           <span className="sr-only"> {term.term}</span>
           <span aria-hidden="true"> →</span>
