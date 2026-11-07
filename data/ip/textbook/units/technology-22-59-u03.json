@@ -1,219 +1,907 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-59-u03",
   "topic_id": "technology-22-59",
   "category": "technology",
   "title_jp": "メール・ファイル・運用プロトコル",
+  "title_zh": "邮件、文件与运维协议",
+  "title_en": "Mail, File, and Operations Protocols",
   "unit_summary_jp": "電子メールの送受信(SMTP/POP/IMAP)、ファイル転送(FTP)、時刻同期とIP自動設定(NTP/DHCP)など、身近な応用層プロトコルを理解する。",
+  "unit_summary_zh": "理解贴近日常的应用层协议，包括电子邮件的收发（SMTP/POP/IMAP）、文件传输（FTP）、时间同步与 IP 自动配置（NTP/DHCP）。",
+  "unit_summary_en": "Understand the everyday application-layer protocols, including sending/receiving email (SMTP/POP/IMAP), file transfer (FTP), and time synchronization and automatic IP configuration (NTP/DHCP).",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-22-59-u01",
     "technology-22-59-u02"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、電子メールの送受信(SMTP・POP・IMAP)、ファイル転送(FTP)、時刻同期(NTP)、IPアドレスの自動設定(DHCP)といった、私たちが日常的に使う応用層プロトコルを学びます。どれが送信用でどれが受信用か、各プロトコルの役割を区別する問題が頻出で、ネットワーク分野の得点源になる重要単元です。",
-    "freq_badge": "標準",
-    "est_minutes": 18,
-    "intro_zh": "在本单元中，我们将学习日常生活中常用的应用层协议，包括电子邮件的收发（SMTP、POP、IMAP）、文件传输（FTP）、时间同步（NTP）以及 IP 地址的自动配置（DHCP）。考试经常出题要求区分各协议的作用——哪个用于发送、哪个用于接收，因此本单元是网络领域的重要得分点。",
-    "intro_en": "In this unit, we learn the application-layer protocols we use every day, including sending and receiving email (SMTP, POP, IMAP), file transfer (FTP), time synchronization (NTP), and automatic IP address configuration (DHCP). Exam questions frequently ask you to distinguish each protocol's role—which one is for sending and which is for receiving—making this an important unit and a reliable source of points in the networking field."
-  },
-  "terms": [
+  "goals_jp": [
+    "メールが届くまでの区間ごとに、送り出す側の **SMTP** と受け取る側のプロトコルの受け持ちを説明できる。",
+    "**POP** と **IMAP** の違いを、メールをどこに置いて管理するかという軸で説明できる。",
+    "ファイルの転送、時刻の同期、IPアドレスの自動設定を担うプロトコルを、それぞれの役割と結び付けて言える。"
+  ],
+  "goals_zh": [
+    "能够按邮件送达的各个区间，说明负责发送的 **SMTP** 与负责接收的协议各自承担什么。",
+    "能够以\"邮件放在哪里管理\"为轴，说明 **POP** 与 **IMAP** 的区别。",
+    "能够说出负责文件传输、时间同步、IP 地址自动设置的协议，并对应到各自的作用。"
+  ],
+  "goals_en": [
+    "Explain, for each leg of an email's journey, what **SMTP** handles on the sending side and what the receiving-side protocols handle.",
+    "Explain the difference between **POP** and **IMAP** in terms of where the mail is kept and managed.",
+    "Name the protocols for file transfer, time synchronization, and automatic IP address setup, and match each to its role."
+  ],
+  "overview_cols_jp": [
+    "役割",
+    "使う場面の例"
+  ],
+  "overview_cols_zh": [
+    "作用",
+    "使用场景举例"
+  ],
+  "overview_cols_en": [
+    "Role",
+    "Example use"
+  ],
+  "overview_rows": [
     {
       "term": "SMTP",
-      "definition_jp": "電子メールを送信・転送するためのプロトコル。",
-      "explanation_jp": "SMTP(Simple Mail Transfer Protocol)は、メールを送る側で使われるプロトコルです。利用者がメールを送信するとき、また送信側メールサーバから受信側メールサーバへメールを届けるときに使われます。\n\nメールの流れは「送信(SMTP)→ 受信(POP/IMAP)」と覚えます。SMTPはあくまで送る・運ぶ役で、受け取って読み出す役は別プロトコルである点が試験の定番です。POPやIMAPとの違い(送信か受信か)を必ず区別できるようにしましょう。",
-      "analogy_jp": "ポストに手紙を投函し、郵便局が宛先の郵便局まで配送する流れにあたります。SMTPは「送り出して運ぶ」担当で、受け取りは別の仕組みが行います。",
-      "memory_hook_jp": "SMTPといえばメール送信",
-      "inline_quiz": [
-        "2009h21a-q069",
-        "2011h23a-q077"
+      "one_line_jp": "電子メールを送り出し、メールサーバ間で運ぶ",
+      "one_line_zh": "发送并在邮件服务器之间传送电子邮件",
+      "one_line_en": "Sends email and carries it between mail servers",
+      "extra_jp": [
+        "送信・転送",
+        "メールソフトの送信用サーバの設定"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"送信者\"] -->|\"SMTP\"| B[\"送信メールサーバ\"]; B -->|\"SMTP\"| C[\"受信メールサーバ\"]; C -->|\"POP/IMAP\"| D[\"受信者\"]",
-        "svg_path": "figures/technology-22-59-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "SMTP",
-      "term_en": "SMTP",
-      "definition_zh": "用于发送和转发电子邮件的协议。",
-      "definition_en": "A protocol for sending and relaying email.",
-      "explanation_zh": "SMTP（Simple Mail Transfer Protocol，简单邮件传输协议）是邮件发送方使用的协议。当用户发送邮件时，以及发送方邮件服务器向接收方邮件服务器投递邮件时，都会用到它。\n\n邮件的流程可以记为「发送（SMTP）→ 接收（POP/IMAP）」。SMTP 只负责发送和传送，接收并读取邮件由其他协议负责，这是考试的常考点。请务必能够区分它与 POP、IMAP 的差异（是发送还是接收）。",
-      "explanation_en": "SMTP (Simple Mail Transfer Protocol) is the protocol used by the sending side of email. It is used when a user sends a message, and also when a sending mail server delivers a message to a receiving mail server.\n\nRemember the flow of mail as \"send (SMTP) → receive (POP/IMAP).\" SMTP is purely the role that sends and carries; receiving and reading messages is handled by a different protocol, and this is a classic exam point. Make sure you can always distinguish it from POP and IMAP (sending versus receiving).",
-      "analogy_zh": "相当于把信投进邮筒，再由邮局把信投递到收件方所在邮局的过程。SMTP 负责「寄出并运送」，而接收则由另一套机制完成。",
-      "analogy_en": "It is like dropping a letter into a mailbox, after which the post office delivers it to the post office at the destination. SMTP handles \"sending out and carrying,\" while receiving is done by a separate mechanism.",
-      "memory_hook_zh": "说到 SMTP 就是发送邮件",
-      "memory_hook_en": "SMTP → sending email"
+      "extra_zh": [
+        "发送/转发",
+        "邮件软件中发送服务器的设置"
+      ],
+      "extra_en": [
+        "Sending / relaying",
+        "Outgoing server setting in a mail client"
+      ]
     },
     {
       "term": "POP",
-      "definition_jp": "受信メールサーバからメールを取り出して受信する代表的なプロトコル。",
-      "explanation_jp": "POP(Post Office Protocol、現在はPOP3が主流)は、受信側がメールサーバに届いたメールを自分の端末にダウンロードして読むためのプロトコルです。\n\n基本動作として、メールを端末に取り込み、サーバ上の元メールは削除する(残さない)のが特徴です。そのため別の端末からは同じメールを見られないことがあります。試験では「送信のSMTP/受信のPOP」という対比と、サーバにメールを残すIMAPとの違いがよく問われます。",
-      "analogy_jp": "私書箱に届いた郵便物を自宅に全部持ち帰り、私書箱は空にするイメージ。手元には残りますが、他の場所からは見られなくなります。",
-      "memory_hook_jp": "POPといえばメールを端末に取り込む受信",
-      "inline_quiz": [
-        "2009h21h-q075",
-        "2013h25a-q065"
+      "one_line_jp": "サーバに届いたメールを端末へ取り出して受け取る",
+      "one_line_zh": "把服务器上收到的邮件取到终端上接收",
+      "one_line_en": "Pulls mail that has arrived at the server down to the device",
+      "extra_jp": [
+        "受信 (端末で管理)",
+        "1 台の端末でメールを読む"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "POP",
-      "term_en": "POP",
-      "definition_zh": "从接收邮件服务器取出邮件进行接收的代表性协议。",
-      "definition_en": "A representative protocol that retrieves and receives email from a receiving mail server.",
-      "explanation_zh": "POP（Post Office Protocol，邮局协议，目前以 POP3 为主流）是接收方把已送达邮件服务器的邮件下载到自己终端上阅读的协议。\n\n其基本动作的特点是：把邮件取到终端上，并删除服务器上的原始邮件（不保留）。因此从其他终端可能无法看到同一封邮件。考试中常考「发送用 SMTP / 接收用 POP」的对比，以及它与把邮件保留在服务器上的 IMAP 之间的差异。",
-      "explanation_en": "POP (Post Office Protocol; POP3 is the current mainstream version) is the protocol by which the receiving side downloads messages that have arrived at the mail server onto its own device to read them.\n\nA defining feature of its basic operation is that it pulls the message onto the device and deletes the original message on the server (it does not keep it). As a result, the same message may not be viewable from another device. Exams often test the contrast \"SMTP for sending / POP for receiving,\" as well as the difference from IMAP, which keeps messages on the server.",
-      "analogy_zh": "好比把信箱里收到的邮件全部取回家中，使信箱清空。邮件留在手边，但从其他地方就看不到了。",
-      "analogy_en": "Imagine taking all the mail that arrived in your P.O. box back home, leaving the box empty. The mail stays with you, but it can no longer be seen from anywhere else.",
-      "memory_hook_zh": "说到 POP 就是把邮件取到终端上的接收",
-      "memory_hook_en": "POP → receiving by pulling email onto your device"
+      "extra_zh": [
+        "接收（在终端管理）",
+        "在一台终端上阅读邮件"
+      ],
+      "extra_en": [
+        "Receiving (managed on the device)",
+        "Reading mail on a single device"
+      ]
     },
     {
       "term": "IMAP",
-      "definition_jp": "メールをサーバ上に保持したまま管理・閲覧する受信プロトコル。",
-      "explanation_jp": "IMAP(Internet Message Access Protocol)は、POPと同じく受信用のプロトコルですが、メールをサーバ上に残したまま読む点が異なります。既読・未読やフォルダ分けといった状態もサーバ側で管理されます。\n\nそのため、パソコン・スマートフォンなど複数の端末から同じメール環境を同期して使えるのが利点です。試験では、端末にダウンロードして削除するPOPとの違い(サーバに残すか・複数端末で同期できるか)が頻出ポイントです。",
-      "analogy_jp": "クラウド上のアルバムを見るように、写真本体はサーバに置いたまま、どの端末からでも同じ状態を見られるイメージです。",
-      "memory_hook_jp": "IMAPといえばサーバに残して複数端末で同期する受信",
-      "inline_quiz": [
-        "2012h24a-q077",
-        "2013h25h-q084"
+      "one_line_jp": "メールをサーバに置いたまま読み、整理する",
+      "one_line_zh": "邮件留在服务器上进行阅读和整理",
+      "one_line_en": "Reads and organizes mail while it stays on the server",
+      "extra_jp": [
+        "受信 (サーバで管理)",
+        "複数の端末で同じメールボックスを見る"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"受信メールサーバ\"]; A -->|\"取り込んで削除\"| B[\"POP: 端末に保存\"]; A -->|\"残したまま閲覧\"| C[\"IMAP: 複数端末で同期\"]",
-        "svg_path": "figures/technology-22-59-u03-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "IMAP",
-      "term_en": "IMAP",
-      "definition_zh": "在服务器上保留邮件的同时进行管理和查看的接收协议。",
-      "definition_en": "A receiving protocol that manages and views email while keeping it stored on the server.",
-      "explanation_zh": "IMAP（Internet Message Access Protocol，互联网邮件访问协议）和 POP 一样是接收用协议，但区别在于它把邮件保留在服务器上阅读。已读/未读、文件夹分类等状态也由服务器端管理。\n\n因此其优点是可以从电脑、智能手机等多个终端同步使用同一套邮件环境。考试中，它与「下载到终端并删除」的 POP 之间的差异（是否保留在服务器上、能否在多终端同步）是常考要点。",
-      "explanation_en": "IMAP (Internet Message Access Protocol) is a receiving protocol like POP, but it differs in that you read messages while they remain on the server. States such as read/unread and folder organization are also managed on the server side.\n\nIts advantage is therefore that you can use the same mail environment in sync across multiple devices, such as a PC and a smartphone. On exams, the difference from POP—which downloads to the device and deletes (whether messages stay on the server, and whether they can sync across multiple devices)—is a frequently tested point.",
-      "analogy_zh": "就像查看云端的相册一样，照片本身留在服务器上，从任何终端都能看到相同的状态。",
-      "analogy_en": "It is like viewing an album in the cloud: the photos themselves stay on the server, and you can see the same state from any device.",
-      "memory_hook_zh": "说到 IMAP 就是保留在服务器上、多终端同步的接收",
-      "memory_hook_en": "IMAP → receiving that keeps mail on the server and syncs across multiple devices"
+      "extra_zh": [
+        "接收（在服务器管理）",
+        "多台终端查看同一个邮箱"
+      ],
+      "extra_en": [
+        "Receiving (managed on the server)",
+        "Viewing the same mailbox from several devices"
+      ]
     },
     {
       "term": "FTP",
-      "definition_jp": "ネットワーク上でファイルを転送するためのプロトコル。",
-      "explanation_jp": "FTP(File Transfer Protocol)は、コンピュータ間でファイルをアップロード・ダウンロードするためのプロトコルです。サーバ上のファイルを取得したり、サーバへファイルを置いたりするときに使われます。\n\nメール系(SMTP/POP/IMAP)とは用途が異なり、扱うのは「ファイルそのもの」です。試験では各プロトコルの用途を結びつける問題が多く、FTP=ファイル転送、と用途で区別できることが重要です。なお通信を暗号化しないため、安全性を高めた方式が使われることもあります。",
-      "analogy_jp": "宅配便で荷物(ファイル)そのものを送り届けたり受け取ったりするサービスにあたります。手紙(メール)とは別の、荷物専用の運送です。",
-      "memory_hook_jp": "FTPといえばファイル転送",
-      "inline_quiz": [
-        "2012h24h-q060"
+      "one_line_jp": "コンピュータ間でファイルを送ったり受け取ったりする",
+      "one_line_zh": "在计算机之间发送或接收文件",
+      "one_line_en": "Sends and receives files between computers",
+      "extra_jp": [
+        "ファイル転送",
+        "Web サイトの原稿ファイルをサーバへ置く"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "FTP",
-      "term_en": "FTP",
-      "definition_zh": "用于在网络上传输文件的协议。",
-      "definition_en": "A protocol for transferring files over a network.",
-      "explanation_zh": "FTP（File Transfer Protocol，文件传输协议）是用于在计算机之间上传和下载文件的协议。它用于获取服务器上的文件，或把文件放到服务器上。\n\n它与邮件类协议（SMTP/POP/IMAP）用途不同，处理的是「文件本身」。考试中经常出题要求把各协议与其用途对应起来，因此能从用途上区分出「FTP＝文件传输」很重要。此外，由于它不对通信加密，有时会使用安全性更高的方式。",
-      "explanation_en": "FTP (File Transfer Protocol) is a protocol for uploading and downloading files between computers. It is used to retrieve files on a server or to place files onto a server.\n\nIts purpose differs from the mail protocols (SMTP/POP/IMAP): what it handles is \"the file itself.\" Exams often ask you to match each protocol to its purpose, so it is important to distinguish \"FTP = file transfer\" by purpose. Note that because it does not encrypt communication, a more secure method is sometimes used instead.",
-      "analogy_zh": "相当于用快递把包裹（文件）本身寄出或收取的服务。它与寄信（邮件）不同，是专门运送包裹的方式。",
-      "analogy_en": "It is like a courier service that sends or receives the package (the file) itself. Unlike sending letters (email), it is a separate delivery method dedicated to packages.",
-      "memory_hook_zh": "说到 FTP 就是文件传输",
-      "memory_hook_en": "FTP → file transfer"
+      "extra_zh": [
+        "文件传输",
+        "把网站的页面文件放到服务器上"
+      ],
+      "extra_en": [
+        "File transfer",
+        "Uploading website files to a server"
+      ]
     },
     {
       "term": "NTP",
-      "definition_jp": "ネットワーク経由でコンピュータの時刻を正しく同期するプロトコル。",
-      "explanation_jp": "NTP(Network Time Protocol)は、ネットワーク上の機器の時計を正確な時刻に合わせる(同期する)ためのプロトコルです。基準となる時刻サーバから時刻を取得し、各機器の時刻を一致させます。\n\nログの記録時刻をそろえたり、時刻のずれによるトラブルを防いだりする、通信を支える裏方の運用基盤プロトコルです。試験では「時刻同期=NTP」という用途の対応を押さえておけば十分です。",
-      "analogy_jp": "学校や駅の時計を標準時の電波に合わせて、みんなの時計を同じ時刻にそろえるようなものです。ずれをなくす役目を担います。",
-      "memory_hook_jp": "NTPといえば時刻同期",
-      "inline_quiz": [
-        "2011h23tokubetsu-q085"
+      "one_line_jp": "ネットワーク経由で機器の時計を正しい時刻に合わせる",
+      "one_line_zh": "通过网络把设备的时钟校准到正确时间",
+      "one_line_en": "Sets device clocks to the correct time over the network",
+      "extra_jp": [
+        "時刻同期",
+        "社内の機器のログの時刻をそろえる"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "NTP",
-      "term_en": "NTP",
-      "definition_zh": "通过网络将计算机的时间正确同步的协议。",
-      "definition_en": "A protocol that correctly synchronizes a computer's time over a network.",
-      "explanation_zh": "NTP（Network Time Protocol，网络时间协议）是用于把网络上设备的时钟调整到准确时间（同步）的协议。它从作为基准的时间服务器获取时间，使各设备的时间保持一致。\n\n它是支撑通信的幕后运维基础协议，能让日志记录的时间保持一致，并防止因时间偏差引起的故障。考试中只要掌握「时间同步＝NTP」这一用途对应即可。",
-      "explanation_en": "NTP (Network Time Protocol) is a protocol for setting (synchronizing) the clocks of devices on a network to the correct time. It obtains the time from a reference time server and brings each device's time into agreement.\n\nIt is a behind-the-scenes operational infrastructure protocol that supports communication—aligning the timestamps in logs and preventing trouble caused by time drift. On exams, it is enough to remember the correspondence \"time synchronization = NTP.\"",
-      "analogy_zh": "好比把学校或车站的时钟对准标准时的电波信号，使大家的时钟都统一到相同的时间。它承担消除时间偏差的职责。",
-      "analogy_en": "It is like setting the clocks at a school or station to a standard-time radio signal so that everyone's clocks show the same time. It plays the role of eliminating discrepancies.",
-      "memory_hook_zh": "说到 NTP 就是时间同步",
-      "memory_hook_en": "NTP → time synchronization"
+      "extra_zh": [
+        "时间同步",
+        "统一公司内各设备日志的时间"
+      ],
+      "extra_en": [
+        "Time synchronization",
+        "Aligning log timestamps across company devices"
+      ]
     },
     {
       "term": "DHCP",
-      "definition_jp": "IPアドレスなどの設定を端末へ自動的に割り当てるプロトコル。",
-      "explanation_jp": "DHCP(Dynamic Host Configuration Protocol)は、ネットワークに接続した端末に対し、IPアドレスやサブネットマスク、デフォルトゲートウェイ、DNSサーバなどの設定を自動で配布するプロトコルです。\n\nこれにより、利用者が手作業でIPアドレスを設定しなくても、機器をつなぐだけでネットワークが使えるようになります。試験では「IPアドレスの自動割り当て=DHCP」という役割と、NTP同様に通信を支える運用基盤プロトコルである点が問われます。",
-      "analogy_jp": "イベント会場で受付に行くと、座席番号(IPアドレス)を自動で割り振ってもらえるようなもの。自分で番号を決めなくても済みます。",
-      "memory_hook_jp": "DHCPといえばIPアドレスの自動割り当て",
+      "one_line_jp": "接続した端末に IPアドレスなどの設定を自動で配る",
+      "one_line_zh": "向接入的终端自动分发 IP 地址等设置",
+      "one_line_en": "Automatically hands out IP addresses and other settings to connected devices",
+      "extra_jp": [
+        "設定の自動割当て",
+        "来客用の無線 LAN に端末をつなぐ"
+      ],
+      "extra_zh": [
+        "设置的自动分配",
+        "把终端连到访客用的无线LAN"
+      ],
+      "extra_en": [
+        "Automatic assignment of settings",
+        "Connecting a device to a guest wireless LAN"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "SMTP",
+      "term_zh": "SMTP",
+      "term_en": "SMTP",
+      "one_jp": "**SMTP** は、電子メールを **送り出し**、メールサーバからメールサーバへ **転送** するためのプロトコルである。",
+      "one_zh": "**SMTP** 是用于 **发送** 电子邮件，并在邮件服务器之间 **转发** 的协议。",
+      "one_en": "**SMTP** is the protocol for **sending** email and **relaying** it from one mail server to another.",
+      "detail_jp": "**メールサーバ** は、利用者のメールを預かって送り届けたり、届いたメールを保管したりするサーバである。SMTP は、送信者の端末からメールサーバへメールを渡す区間と、メールサーバどうしで宛先まで運ぶ区間の両方で使われる。",
+      "detail_zh": "**邮件服务器** 是替用户保管并投递邮件、保存收到的邮件的服务器。从发件人终端把邮件交给邮件服务器的区间，以及邮件服务器之间一路送到收件方的区间，都使用 SMTP。",
+      "detail_en": "A **mail server** holds users' mail, delivers it onward, and stores mail that arrives. SMTP is used both on the leg from the sender's device to a mail server and on the legs where mail servers pass the message along to its destination.",
+      "analogy_jp": "手紙をポストに入れ、郵便局どうしが宛先の地域の局まで運んでいく部分にあたる。宛先の局に留め置かれた郵便を受取人が取りに行く部分は含まない。",
+      "analogy_zh": "相当于把信投进邮筒，再由邮局之间一路运到收件地区的邮局这一段。收件人去当地邮局取回留存信件的那一段不包括在内。",
+      "analogy_en": "It covers dropping a letter in the postbox and the post offices passing it along to the office in the recipient's area. It does not include the recipient going to pick up the mail held at that office.",
+      "hook_jp": "Simple Mail Transfer Protocol の略で、Transfer は「運ぶ・移す」。メールを運ぶ係と読める。",
+      "hook_zh": "是 Simple Mail Transfer Protocol 的缩写，Transfer 意为\"传送、转移\"。可以理解为负责运送邮件的角色。",
+      "hook_en": "It stands for Simple Mail Transfer Protocol, and \"Transfer\" means to carry or move. Read it as the protocol whose job is moving mail.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**SMTP** はメールを送る側のプロトコルである。メールソフトから送り出すときも、サーバ間で宛先まで中継するときも SMTP が使われる。",
+          "text_zh": "**SMTP** 是发送一方的邮件协议。从邮件软件发出时，以及在邮件服务器（[[jp:メールサーバ]]）之间中继到收件方时，用的都是 SMTP。",
+          "text_en": "**SMTP** is the protocol for the sending side of email. It is used both when a mail client sends a message out and when mail servers ([[jp:メールサーバ]]) relay it toward the destination.",
+          "qids": [
+            "2011h23a-q077",
+            "2009h21h-q075",
+            "2009h21a-q069",
+            "2019h31h-q082"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "送る役と受け取る役は別のプロトコルが担う。メールソフトには、送信に使う SMTP のサーバと、受信に使う POP または IMAP のサーバを分けて設定する。",
+          "text_zh": "发送和接收由不同的协议承担。邮件软件里要分别设置发送用的 SMTP 服务器，以及接收用的 POP 或 IMAP 服务器。",
+          "text_en": "Sending and receiving are handled by different protocols. A mail client is configured with a separate SMTP server for outgoing mail and a POP or IMAP server for incoming mail.",
+          "qids": []
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "sender",
+              "label": {
+                "jp": "送信者の端末",
+                "zh": "发件人的终端",
+                "en": "Sender's device"
+              }
+            },
+            {
+              "id": "srv1",
+              "label": {
+                "jp": "送信者側のメールサーバ",
+                "zh": "发件方的邮件服务器",
+                "en": "Sender's mail server"
+              }
+            },
+            {
+              "id": "srv2",
+              "label": {
+                "jp": "宛先側のメールサーバ",
+                "zh": "收件方的邮件服务器",
+                "en": "Recipient's mail server"
+              }
+            },
+            {
+              "id": "receiver",
+              "label": {
+                "jp": "受信者の端末",
+                "zh": "收件人的终端",
+                "en": "Recipient's device"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "送信者のメールソフトが、自分の使うメールサーバへ SMTP でメールを渡す",
+            "caption_zh": "发件人的邮件软件用 SMTP 把邮件交给自己使用的邮件服务器",
+            "caption_en": "The sender's mail client hands the message to its own mail server via SMTP",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "メールサーバが宛先のメールサーバへ SMTP でメールを運ぶ",
+            "caption_zh": "邮件服务器用 SMTP 把邮件送到收件方的邮件服务器",
+            "caption_en": "That mail server carries the message to the recipient's mail server via SMTP",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "受信者は POP や IMAP を使って、自分のメールサーバからメールを受け取る",
+            "caption_zh": "收件人用 POP 或 IMAP 从自己的邮件服务器接收邮件",
+            "caption_en": "The recipient collects the message from their own mail server via POP or IMAP",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21a-q069",
+        "2011h23a-q077",
+        "2009h21h-q075"
+      ],
+      "definition_jp": "SMTP は、電子メールを 送り出し、メールサーバからメールサーバへ 転送 するためのプロトコルである。",
+      "definition_zh": "SMTP 是用于 发送 电子邮件，并在邮件服务器之间 转发 的协议。",
+      "definition_en": "SMTP is the protocol for sending email and relaying it from one mail server to another.",
+      "explanation_jp": "メールサーバ は、利用者のメールを預かって送り届けたり、届いたメールを保管したりするサーバである。SMTP は、送信者の端末からメールサーバへメールを渡す区間と、メールサーバどうしで宛先まで運ぶ区間の両方で使われる。",
+      "explanation_zh": "邮件服务器 是替用户保管并投递邮件、保存收到的邮件的服务器。从发件人终端把邮件交给邮件服务器的区间，以及邮件服务器之间一路送到收件方的区间，都使用 SMTP。",
+      "explanation_en": "A mail server holds users' mail, delivers it onward, and stores mail that arrives. SMTP is used both on the leg from the sender's device to a mail server and on the legs where mail servers pass the message along to its destination.",
+      "memory_hook_jp": "Simple Mail Transfer Protocol の略で、Transfer は「運ぶ・移す」。メールを運ぶ係と読める。",
+      "memory_hook_zh": "是 Simple Mail Transfer Protocol 的缩写，Transfer 意为\"传送、转移\"。可以理解为负责运送邮件的角色。",
+      "memory_hook_en": "It stands for Simple Mail Transfer Protocol, and \"Transfer\" means to carry or move. Read it as the protocol whose job is moving mail.",
       "inline_quiz": [
+        "2009h21a-q069",
+        "2011h23a-q077",
+        "2009h21h-q075"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "POP",
+      "term_zh": "POP",
+      "term_en": "POP",
+      "one_jp": "**POP** は、メールサーバに届いた自分宛てのメールを、メールソフトが端末へ **取り出して受信** するためのプロトコルである。",
+      "one_zh": "**POP** 是邮件软件把送达邮件服务器的、发给自己的邮件 **取到终端上接收** 的协议。",
+      "one_en": "**POP** is the protocol a mail client uses to **retrieve** mail addressed to you from the mail server and download it to the device.",
+      "detail_jp": "広く使われている版は **POP3** である。基本的な動作では、メールを端末に取り込んで端末の側で管理し、サーバ上の元のメールは消す (設定で残すこともできる)。",
+      "detail_zh": "广泛使用的版本是 **POP3**。基本操作是把邮件取进终端、在终端一侧管理，并删除服务器上的原邮件（也可以设置为保留）。",
+      "detail_en": "The widely used version is **POP3**. By default it downloads mail to the device, manages it there, and deletes the original on the server, though a setting can keep a copy.",
+      "analogy_jp": "郵便局の私書箱に届いた郵便物を、まとめて自宅へ持ち帰るやり方に近い。持ち帰った後は自宅で整理する。",
+      "analogy_zh": "就像把寄到邮局信箱里的信件一次性带回家。带回家之后在家里整理。",
+      "analogy_en": "It is like collecting everything in your post office box and taking it home. Once home, you sort it there.",
+      "hook_jp": "Post Office Protocol の略で、名前どおり「郵便局」。局に留め置かれた郵便を取りに行く係と覚える。",
+      "hook_zh": "是 Post Office Protocol 的缩写，正如名字所示就是\"邮局\"。记作去邮局取回留存信件的角色。",
+      "hook_en": "It stands for Post Office Protocol, literally \"post office.\" Think of it as going to the post office to pick up the mail held for you.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**POP** は受信のためのプロトコルで、利用者の端末のメールソフトが、サーバの自分宛てのメールボックスからメールを引き取るときに使う。",
+          "text_zh": "**POP** 是用于接收的协议，用户终端上的邮件软件从服务器中自己的邮箱（[[jp:メールボックス]]）取回邮件时使用。",
+          "text_en": "**POP** is a receiving protocol, used when the mail client on a user's device pulls mail from that user's mailbox ([[jp:メールボックス]]) on the server.",
+          "qids": [
+            "2017h29h-q074",
+            "2012h24a-q077",
+            "2016h28h-q062"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2017h29h-q074",
+        "2012h24a-q077",
+        "2021r03-q084"
+      ],
+      "definition_jp": "POP は、メールサーバに届いた自分宛てのメールを、メールソフトが端末へ 取り出して受信 するためのプロトコルである。",
+      "definition_zh": "POP 是邮件软件把送达邮件服务器的、发给自己的邮件 取到终端上接收 的协议。",
+      "definition_en": "POP is the protocol a mail client uses to retrieve mail addressed to you from the mail server and download it to the device.",
+      "explanation_jp": "広く使われている版は POP3 である。基本的な動作では、メールを端末に取り込んで端末の側で管理し、サーバ上の元のメールは消す (設定で残すこともできる)。",
+      "explanation_zh": "广泛使用的版本是 POP3。基本操作是把邮件取进终端、在终端一侧管理，并删除服务器上的原邮件（也可以设置为保留）。",
+      "explanation_en": "The widely used version is POP3. By default it downloads mail to the device, manages it there, and deletes the original on the server, though a setting can keep a copy.",
+      "memory_hook_jp": "Post Office Protocol の略で、名前どおり「郵便局」。局に留め置かれた郵便を取りに行く係と覚える。",
+      "memory_hook_zh": "是 Post Office Protocol 的缩写，正如名字所示就是\"邮局\"。记作去邮局取回留存信件的角色。",
+      "memory_hook_en": "It stands for Post Office Protocol, literally \"post office.\" Think of it as going to the post office to pick up the mail held for you.",
+      "inline_quiz": [
+        "2017h29h-q074",
+        "2012h24a-q077",
+        "2021r03-q084"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "IMAP",
+      "term_zh": "IMAP",
+      "term_en": "IMAP",
+      "one_jp": "**IMAP** は、メールを **サーバ上に置いたまま** 端末から読み、整理するための受信用のプロトコルである。",
+      "one_zh": "**IMAP** 是让邮件 **留在服务器上**、从终端阅读和整理的接收用协议。",
+      "one_en": "**IMAP** is a receiving protocol for reading and organizing mail from a device while the mail **stays on the server**.",
+      "detail_jp": "広く使われている版は **IMAP4** である。端末はメールを読むたびにサーバのメールボックスへつなぎ、メールを手元にすべて写し取らずに扱う。",
+      "detail_zh": "广泛使用的版本是 **IMAP4**。终端每次阅读邮件时都连接服务器上的邮箱，不必把邮件全部复制到本地就能处理。",
+      "detail_en": "The widely used version is **IMAP4**. The device connects to the server mailbox each time mail is read, and works with the mail without copying all of it locally.",
+      "analogy_jp": "写真を手元に移さず、ネット上の自分のアルバムに置いたまま、いろいろな機器から開いて眺めたり整理したりする使い方に似ている。",
+      "analogy_zh": "类似于不把照片下载到本地，而是把它们留在网上自己的相册里，从各种设备打开来浏览和整理。",
+      "analogy_en": "It is like leaving your photos in your own online album and opening it from whichever device you have at hand to view and sort them.",
+      "hook_jp": "Internet Message Access Protocol の Access に注目する。メールを持ち帰らず、サーバにあるメールへ「アクセスしに行く」と覚える。",
+      "hook_zh": "留意 Internet Message Access Protocol 中的 Access。记作不把邮件带回，而是去\"访问\"服务器上的邮件。",
+      "hook_en": "Focus on \"Access\" in Internet Message Access Protocol. You do not take the mail home; you go and access it where it sits on the server.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**IMAP** では、メールの保管も整理の結果もサーバが受け持つ。端末を替えても同じメールボックスにつながるので、どの端末から見ても状態が共有される。",
+          "text_zh": "使用 **IMAP** 时，邮件的保存和整理结果都由服务器负责。换了终端也连接同一个邮箱（[[jp:メールボックス]]），所以无论从哪台终端看，状态都是共享的。",
+          "text_en": "With **IMAP**, the server keeps both the mail and the results of organizing it. Every device connects to the same mailbox ([[jp:メールボックス]]), so its state looks the same from any of them.",
+          "qids": [
+            "2017h29a-q083",
+            "2013h25h-q084",
+            "2022r04-q087",
+            "2016h28a-q085"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2017h29a-q083",
+        "2016h28a-q085",
+        "2013h25h-q084"
+      ],
+      "definition_jp": "IMAP は、メールを サーバ上に置いたまま 端末から読み、整理するための受信用のプロトコルである。",
+      "definition_zh": "IMAP 是让邮件 留在服务器上、从终端阅读和整理的接收用协议。",
+      "definition_en": "IMAP is a receiving protocol for reading and organizing mail from a device while the mail stays on the server.",
+      "explanation_jp": "広く使われている版は IMAP4 である。端末はメールを読むたびにサーバのメールボックスへつなぎ、メールを手元にすべて写し取らずに扱う。",
+      "explanation_zh": "广泛使用的版本是 IMAP4。终端每次阅读邮件时都连接服务器上的邮箱，不必把邮件全部复制到本地就能处理。",
+      "explanation_en": "The widely used version is IMAP4. The device connects to the server mailbox each time mail is read, and works with the mail without copying all of it locally.",
+      "memory_hook_jp": "Internet Message Access Protocol の Access に注目する。メールを持ち帰らず、サーバにあるメールへ「アクセスしに行く」と覚える。",
+      "memory_hook_zh": "留意 Internet Message Access Protocol 中的 Access。记作不把邮件带回，而是去\"访问\"服务器上的邮件。",
+      "memory_hook_en": "Focus on \"Access\" in Internet Message Access Protocol. You do not take the mail home; you go and access it where it sits on the server.",
+      "inline_quiz": [
+        "2017h29a-q083",
+        "2016h28a-q085",
+        "2013h25h-q084"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "FTP",
+      "term_zh": "FTP",
+      "term_en": "FTP",
+      "one_jp": "**FTP** は、ネットワーク上のコンピュータの間で **ファイルを転送** するためのプロトコルである。",
+      "one_zh": "**FTP** 是在网络上的计算机之间 **传输文件** 的协议。",
+      "one_en": "**FTP** is the protocol for **transferring files** between computers on a network.",
+      "detail_jp": "サーバにあるファイルを手元へ持ってくる操作にも、手元のファイルをサーバへ置く操作にも使える。もとの FTP は通信内容を暗号化しないため、安全にやり取りしたい場面では暗号化に対応した方式が使われる。",
+      "detail_zh": "既可以把服务器上的文件取到本地，也可以把本地文件放到服务器上。原本的 FTP 不对通信内容进行加密，因此需要安全传输的场合会使用支持加密的方式。",
+      "detail_en": "It works both for bringing a file from the server to your machine and for placing a local file on the server. The original FTP does not encrypt what it sends, so methods that support encryption are used where a secure exchange is needed.",
+      "analogy_jp": "手紙ではなく荷物そのものを運ぶ宅配便にあたる。届け先へ送ることも、預けた荷物を引き取ることもできる。",
+      "analogy_zh": "相当于不是寄信、而是运送货物本身的快递。既可以寄往目的地，也可以取回寄存的货物。",
+      "analogy_en": "It is a parcel courier rather than a letter service, moving the goods themselves. You can ship something out or collect something you left in storage.",
+      "hook_jp": "File Transfer Protocol の略。頭の F が File (ファイル) と覚えれば、メール系の名前と混ざらない。",
+      "hook_zh": "是 File Transfer Protocol 的缩写。记住开头的 F 是 File（文件），就不会和邮件类的名称混淆。",
+      "hook_en": "It stands for File Transfer Protocol. Remember that the leading F is for File and it will not get mixed up with the mail protocols.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**FTP** の役割は、PC やサーバなどのコンピュータの間でファイルをやり取りすることである。",
+          "text_zh": "**FTP** 的作用是在 PC、服务器等计算机之间交换文件。",
+          "text_en": "**FTP** exists to exchange files between computers such as PCs and servers.",
+          "qids": [
+            "2025r07-q060",
+            "2013h25a-q065"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**anonymous FTP** は、個別のアカウントを登録していない人でも共通の名前でログインし、公開されたファイルを取得できる FTP の運用である。",
+          "text_zh": "**anonymous FTP** 是一种 FTP 的使用方式：没有注册个人账户的人也能用共同的名称登录，获取公开的文件。",
+          "text_en": "**Anonymous FTP** is a way of running FTP in which people without their own account log in under a shared name and download the files made public.",
+          "qids": [
+            "2012h24h-q060"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "FTP やメールのプロトコルはアプリケーション層に属する。その下で共通の基本的な通信機能を受け持つのは **TCP/IP** である。",
+          "text_zh": "FTP 和邮件协议属于应用层（[[jp:アプリケーション層]]）。在其下方负责通用的基本通信功能的是 **TCP/IP**。",
+          "text_en": "FTP and the mail protocols belong to the application layer ([[jp:アプリケーション層]]). Beneath them, **TCP/IP** provides the common basic communication functions.",
+          "qids": [
+            "2023r05-q068"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "操作",
+              "zh": "操作",
+              "en": "Operation"
+            },
+            {
+              "jp": "ファイルの向き",
+              "zh": "文件的方向",
+              "en": "Direction of the file"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "ダウンロード",
+                  "zh": "下载",
+                  "en": "Download"
+                },
+                {
+                  "jp": "サーバから手元のコンピュータへ",
+                  "zh": "从服务器到本地计算机",
+                  "en": "From the server to your computer"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "アップロード",
+                  "zh": "上传",
+                  "en": "Upload"
+                },
+                {
+                  "jp": "手元のコンピュータからサーバへ",
+                  "zh": "从本地计算机到服务器",
+                  "en": "From your computer to the server"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2025r07-q060",
+        "2012h24h-q060",
+        "2023r05-q068"
+      ],
+      "definition_jp": "FTP は、ネットワーク上のコンピュータの間で ファイルを転送 するためのプロトコルである。",
+      "definition_zh": "FTP 是在网络上的计算机之间 传输文件 的协议。",
+      "definition_en": "FTP is the protocol for transferring files between computers on a network.",
+      "explanation_jp": "サーバにあるファイルを手元へ持ってくる操作にも、手元のファイルをサーバへ置く操作にも使える。もとの FTP は通信内容を暗号化しないため、安全にやり取りしたい場面では暗号化に対応した方式が使われる。",
+      "explanation_zh": "既可以把服务器上的文件取到本地，也可以把本地文件放到服务器上。原本的 FTP 不对通信内容进行加密，因此需要安全传输的场合会使用支持加密的方式。",
+      "explanation_en": "It works both for bringing a file from the server to your machine and for placing a local file on the server. The original FTP does not encrypt what it sends, so methods that support encryption are used where a secure exchange is needed.",
+      "memory_hook_jp": "File Transfer Protocol の略。頭の F が File (ファイル) と覚えれば、メール系の名前と混ざらない。",
+      "memory_hook_zh": "是 File Transfer Protocol 的缩写。记住开头的 F 是 File（文件），就不会和邮件类的名称混淆。",
+      "memory_hook_en": "It stands for File Transfer Protocol. Remember that the leading F is for File and it will not get mixed up with the mail protocols.",
+      "inline_quiz": [
+        "2025r07-q060",
+        "2012h24h-q060",
+        "2023r05-q068"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "NTP",
+      "term_zh": "NTP",
+      "term_en": "NTP",
+      "one_jp": "**NTP** は、ネットワークを通じて機器の **時刻を同期** させるためのプロトコルである。",
+      "one_zh": "**NTP** 是通过网络让设备 **同步时间** 的协议。",
+      "one_en": "**NTP** is the protocol for **synchronizing the time** of devices over a network.",
+      "detail_jp": "機器は、正確な時刻を提供する **時刻サーバ** に問い合わせ、返ってきた時刻に自分の時計を合わせる。ネットワーク上の機器の時刻がそろうと、別々の機器に残った記録を同じ時間軸で突き合わせられる。",
+      "detail_zh": "设备向提供准确时间的 **时间服务器** 查询，并把自己的时钟调整为返回的时间。网络上各设备的时间一致后，就能在同一时间轴上对照分散在不同设备上的记录。",
+      "detail_en": "A device queries a **time server** that provides the accurate time and sets its own clock to the time returned. Once the devices on a network agree on the time, records left on different devices can be lined up on a single timeline.",
+      "analogy_jp": "朝礼の前に、全員が腕時計を時報に合わせておくようなものである。",
+      "analogy_zh": "就像早会之前，大家先把手表对准报时。",
+      "analogy_en": "It is like everyone setting their watch to the time signal before the morning meeting.",
+      "hook_jp": "Network Time Protocol の略。真ん中の T が Time (時刻) と覚える。",
+      "hook_zh": "是 Network Time Protocol 的缩写。记住中间的 T 是 Time（时间）。",
+      "hook_en": "It stands for Network Time Protocol. Remember that the T in the middle is for Time.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**NTP** は、ネットワークでつながった PC やサーバなどの時計を、正確な時刻源を持つサーバに合わせて同期させるプロトコルである。",
+          "text_zh": "**NTP** 是让通过网络相连的 PC、服务器等的时钟，以拥有准确时间源的服务器为准进行同步的协议。",
+          "text_en": "**NTP** synchronizes the clocks of networked PCs, servers, and other devices to a server that has an accurate time source.",
+          "qids": [
+            "2011h23tokubetsu-q085",
+            "2018h30a-q088",
+            "2019r01a-q094"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "clock",
+              "label": {
+                "jp": "少しずれた機器の時計",
+                "zh": "略有偏差的设备时钟",
+                "en": "Device clock that has drifted"
+              }
+            },
+            {
+              "id": "ask",
+              "label": {
+                "jp": "時刻サーバへ問い合わせ",
+                "zh": "向时间服务器查询",
+                "en": "Query the time server"
+              }
+            },
+            {
+              "id": "reply",
+              "label": {
+                "jp": "正確な時刻を受け取る",
+                "zh": "接收准确的时间",
+                "en": "Receive the accurate time"
+              }
+            },
+            {
+              "id": "adjust",
+              "label": {
+                "jp": "機器の時計を合わせる",
+                "zh": "校准设备的时钟",
+                "en": "Adjust the device clock"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "機器の内蔵時計は使ううちに少しずつずれていく",
+            "caption_zh": "设备的内置时钟在使用中会逐渐产生偏差",
+            "caption_en": "A device's built-in clock gradually drifts as it runs",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "機器が NTP で時刻サーバに問い合わせ、正確な時刻を受け取る",
+            "caption_zh": "设备用 NTP 向时间服务器查询，接收准确的时间",
+            "caption_en": "The device queries a time server via NTP and receives the accurate time",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "受け取った時刻に合わせて、機器が自分の時計を直す",
+            "caption_zh": "设备按收到的时间校正自己的时钟",
+            "caption_en": "The device corrects its own clock to match the time it received",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2018h30a-q088",
+        "2011h23tokubetsu-q085",
+        "2019r01a-q094"
+      ],
+      "definition_jp": "NTP は、ネットワークを通じて機器の 時刻を同期 させるためのプロトコルである。",
+      "definition_zh": "NTP 是通过网络让设备 同步时间 的协议。",
+      "definition_en": "NTP is the protocol for synchronizing the time of devices over a network.",
+      "explanation_jp": "機器は、正確な時刻を提供する 時刻サーバ に問い合わせ、返ってきた時刻に自分の時計を合わせる。ネットワーク上の機器の時刻がそろうと、別々の機器に残った記録を同じ時間軸で突き合わせられる。",
+      "explanation_zh": "设备向提供准确时间的 时间服务器 查询，并把自己的时钟调整为返回的时间。网络上各设备的时间一致后，就能在同一时间轴上对照分散在不同设备上的记录。",
+      "explanation_en": "A device queries a time server that provides the accurate time and sets its own clock to the time returned. Once the devices on a network agree on the time, records left on different devices can be lined up on a single timeline.",
+      "memory_hook_jp": "Network Time Protocol の略。真ん中の T が Time (時刻) と覚える。",
+      "memory_hook_zh": "是 Network Time Protocol 的缩写。记住中间的 T 是 Time（时间）。",
+      "memory_hook_en": "It stands for Network Time Protocol. Remember that the T in the middle is for Time.",
+      "inline_quiz": [
+        "2018h30a-q088",
+        "2011h23tokubetsu-q085",
+        "2019r01a-q094"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "DHCP",
+      "term_zh": "DHCP",
+      "term_en": "DHCP",
+      "one_jp": "**DHCP** は、ネットワークにつないだ端末へ **IPアドレス** などの通信に必要な設定を **自動で割り当てる** プロトコルである。",
+      "one_zh": "**DHCP** 是向接入网络的终端 **自动分配** **IP 地址** 等通信所需设置的协议。",
+      "one_en": "**DHCP** is the protocol that **automatically assigns** an **IP address** and other settings needed for communication to devices joining a network.",
+      "detail_jp": "割り当てを行うのは LAN 上の **DHCP サーバ** で、端末側は設定を自動で受け取るようにしておくだけでよい。割り当てた IPアドレスは期限付きで貸し出され、使われなくなれば別の端末に回せる。",
+      "detail_zh": "负责分配的是局域网（LAN）上的 **DHCP 服务器**，终端一侧只需设为自动接收设置即可。分配的 IP 地址有使用期限（租期），不再使用后可以转给别的终端。",
+      "detail_en": "The assigning is done by a **DHCP server** on the LAN, and the device only needs to be set to receive its settings automatically. Assigned IP addresses are lent out for a limited period, and once one is no longer in use it can go to another device.",
+      "analogy_jp": "ホテルのフロントでチェックインすると、空いている部屋番号の鍵が渡されるようなもの。チェックアウトした部屋は次の客に回される。",
+      "analogy_zh": "就像在酒店前台办理入住时，会拿到一间空房的钥匙。退房后的房间会再分给下一位客人。",
+      "analogy_en": "It is like checking in at a hotel front desk and being handed the key to a vacant room. Once a guest checks out, the room goes to the next guest.",
+      "hook_jp": "Dynamic Host Configuration Protocol の略。Dynamic (動的) は「つないだときにその場で決まる」という意味と覚える。",
+      "hook_zh": "是 Dynamic Host Configuration Protocol 的缩写。把 Dynamic（动态）理解为\"在连接的当下当场决定\"。",
+      "hook_en": "It stands for Dynamic Host Configuration Protocol. Take \"Dynamic\" to mean the settings are decided on the spot when you connect.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**DHCP** を使うと、PC はネットワークにつながった時点で、IPアドレスをサーバから自動で受け取れる。",
+          "text_zh": "使用 **DHCP**，PC 在接入网络的那一刻就能从服务器自动获得 IP 地址（[[jp:IPアドレス]]）。",
+          "text_en": "With **DHCP**, a PC automatically receives an IP address ([[jp:IPアドレス]]) from a server the moment it connects to the network.",
+          "qids": [
+            "2014h26h-q058",
+            "2014h26a-q079"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "join",
+              "label": {
+                "jp": "端末を LAN につなぐ",
+                "zh": "把终端连接到 LAN",
+                "en": "Connect the device to the LAN"
+              }
+            },
+            {
+              "id": "req",
+              "label": {
+                "jp": "DHCP サーバに設定を求める",
+                "zh": "向 DHCP 服务器请求设置",
+                "en": "Request settings from the DHCP server"
+              }
+            },
+            {
+              "id": "lease",
+              "label": {
+                "jp": "IPアドレスなどが割り当てられる",
+                "zh": "分配到 IP 地址等",
+                "en": "IP address and other settings assigned"
+              }
+            },
+            {
+              "id": "use",
+              "label": {
+                "jp": "端末が通信を始める",
+                "zh": "终端开始通信",
+                "en": "The device starts communicating"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "LAN につながった端末が、DHCP サーバに設定を求める",
+            "caption_zh": "连接到 LAN 的终端向 DHCP 服务器请求设置",
+            "caption_en": "A device that has joined the LAN asks the DHCP server for its settings",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "DHCP サーバが、空いている IPアドレスなどの設定を端末に割り当てる",
+            "caption_zh": "DHCP 服务器把空闲的 IP 地址等设置分配给终端",
+            "caption_en": "The DHCP server assigns the device a free IP address and other settings",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "設定を受け取った端末は、そのままネットワークで通信できる",
+            "caption_zh": "收到设置的终端可以直接在网络上通信",
+            "caption_en": "With the settings received, the device can communicate on the network right away",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2014h26a-q079",
+        "2011h23tokubetsu-q086"
+      ],
+      "definition_jp": "DHCP は、ネットワークにつないだ端末へ IPアドレス などの通信に必要な設定を 自動で割り当てる プロトコルである。",
+      "definition_zh": "DHCP 是向接入网络的终端 自动分配 IP 地址 等通信所需设置的协议。",
+      "definition_en": "DHCP is the protocol that automatically assigns an IP address and other settings needed for communication to devices joining a network.",
+      "explanation_jp": "割り当てを行うのは LAN 上の DHCP サーバ で、端末側は設定を自動で受け取るようにしておくだけでよい。割り当てた IPアドレスは期限付きで貸し出され、使われなくなれば別の端末に回せる。",
+      "explanation_zh": "负责分配的是局域网（LAN）上的 DHCP 服务器，终端一侧只需设为自动接收设置即可。分配的 IP 地址有使用期限（租期），不再使用后可以转给别的终端。",
+      "explanation_en": "The assigning is done by a DHCP server on the LAN, and the device only needs to be set to receive its settings automatically. Assigned IP addresses are lent out for a limited period, and once one is no longer in use it can go to another device.",
+      "memory_hook_jp": "Dynamic Host Configuration Protocol の略。Dynamic (動的) は「つないだときにその場で決まる」という意味と覚える。",
+      "memory_hook_zh": "是 Dynamic Host Configuration Protocol 的缩写。把 Dynamic（动态）理解为\"在连接的当下当场决定\"。",
+      "memory_hook_en": "It stands for Dynamic Host Configuration Protocol. Take \"Dynamic\" to mean the settings are decided on the spot when you connect.",
+      "inline_quiz": [
+        "2014h26a-q079",
         "2011h23tokubetsu-q086"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "DHCP",
-      "term_en": "DHCP",
-      "definition_zh": "自动为终端分配 IP 地址等配置的协议。",
-      "definition_en": "A protocol that automatically assigns settings such as IP addresses to devices.",
-      "explanation_zh": "DHCP（Dynamic Host Configuration Protocol，动态主机配置协议）是为接入网络的终端自动分发 IP 地址、子网掩码、默认网关、DNS 服务器等配置的协议。\n\n有了它，用户无需手动设置 IP 地址，只要把设备接上就能使用网络。考试中会考查「IP 地址的自动分配＝DHCP」这一作用，以及它和 NTP 一样都是支撑通信的运维基础协议这一点。",
-      "explanation_en": "DHCP (Dynamic Host Configuration Protocol) is a protocol that automatically distributes settings such as the IP address, subnet mask, default gateway, and DNS server to devices that connect to a network.\n\nThanks to it, the network becomes usable simply by connecting a device, without the user manually configuring an IP address. On exams, the role \"automatic IP address assignment = DHCP\" is tested, as well as the point that, like NTP, it is an operational infrastructure protocol that supports communication.",
-      "analogy_zh": "好比在活动会场去前台报到时，自动被分配一个座位号（IP 地址），无需自己决定号码。",
-      "analogy_en": "It is like going to the reception desk at an event venue and being automatically assigned a seat number (IP address), so you do not have to decide the number yourself.",
-      "memory_hook_zh": "说到 DHCP 就是 IP 地址的自动分配",
-      "memory_hook_en": "DHCP → automatic IP address assignment"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "SMTP",
+      "b": "POP",
+      "rows": [
+        {
+          "label_jp": "受け持つ向き",
+          "label_zh": "负责的方向",
+          "label_en": "Direction handled",
+          "a_jp": "メールを送り出す・サーバ間で運ぶ",
+          "a_zh": "发送邮件、在服务器之间传送",
+          "a_en": "Sends mail and carries it between servers",
+          "b_jp": "サーバに届いたメールを受け取る",
+          "b_zh": "接收送达服务器的邮件",
+          "b_en": "Receives mail that has arrived at the server",
+          "key": true
+        },
+        {
+          "label_jp": "使う区間",
+          "label_zh": "使用的区间",
+          "label_en": "Legs used",
+          "a_jp": "端末からサーバ、サーバからサーバ",
+          "a_zh": "终端到服务器、服务器到服务器",
+          "a_en": "Device to server, server to server",
+          "b_jp": "サーバから受信者の端末",
+          "b_zh": "服务器到收件人的终端",
+          "b_en": "Server to the recipient's device",
+          "key": false
+        },
+        {
+          "label_jp": "メールソフトの設定",
+          "label_zh": "邮件软件的设置",
+          "label_en": "Mail client setting",
+          "a_jp": "送信用サーバとして指定する",
+          "a_zh": "指定为发送服务器",
+          "a_en": "Set as the outgoing server",
+          "b_jp": "受信用サーバとして指定する",
+          "b_zh": "指定为接收服务器",
+          "b_en": "Set as the incoming server",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "POP",
+      "b": "IMAP",
+      "rows": [
+        {
+          "label_jp": "メールを管理する場所",
+          "label_zh": "管理邮件的位置",
+          "label_en": "Where mail is managed",
+          "a_jp": "端末に取り込んで端末で管理する",
+          "a_zh": "取进终端，在终端管理",
+          "a_en": "Downloaded and managed on the device",
+          "b_jp": "サーバに置いたままサーバで管理する",
+          "b_zh": "留在服务器上，在服务器管理",
+          "b_en": "Kept and managed on the server",
+          "key": true
+        },
+        {
+          "label_jp": "サーバ上の元のメール",
+          "label_zh": "服务器上的原邮件",
+          "label_en": "Original mail on the server",
+          "a_jp": "基本の動作では取り込んだ後に消す",
+          "a_zh": "基本操作是取进后删除",
+          "a_en": "Deleted after download by default",
+          "b_jp": "残る",
+          "b_zh": "保留",
+          "b_en": "Kept",
+          "key": false
+        },
+        {
+          "label_jp": "複数の端末で使うとき",
+          "label_zh": "多台终端使用时",
+          "label_en": "Using several devices",
+          "a_jp": "端末ごとに受信状態が異なる",
+          "a_zh": "各终端的接收状态不同",
+          "a_en": "Each device has its own received state",
+          "b_jp": "どの端末でも同じ状態が見える",
+          "b_zh": "任何终端看到的状态都相同",
+          "b_en": "Every device sees the same state",
+          "key": false
+        },
+        {
+          "label_jp": "よく使われる版",
+          "label_zh": "常用的版本",
+          "label_en": "Common version",
+          "a_jp": "POP3",
+          "a_zh": "POP3",
+          "a_en": "POP3",
+          "b_jp": "IMAP4",
+          "b_zh": "IMAP4",
+          "b_en": "IMAP4",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "電子メールを送り出す区間は、端末からサーバへもサーバどうしの中継も **SMTP** が受け持つ。",
+    "届いたメールを受け取る側のプロトコルには **POP** と **IMAP** があり、広く使われている版はそれぞれ POP3 と IMAP4 である。",
+    "**FTP** はファイルの転送を担うアプリケーション層のプロトコルで、下位の **TCP/IP** の通信機能の上で動く。",
+    "**NTP** は機器の時計をそろえるプロトコル、**DHCP** は IPアドレスなどの設定を自動で配るプロトコルである。"
+  ],
+  "key_points_zh": [
+    "发送电子邮件的区间，无论是终端到服务器，还是服务器之间的中继，都由 **SMTP** 负责。",
+    "接收送达邮件的协议有 **POP** 和 **IMAP**，广泛使用的版本分别是 POP3 和 IMAP4。",
+    "**FTP** 是负责文件传输的应用层协议，运行在下层 **TCP/IP** 的通信功能之上。",
+    "**NTP** 是统一设备时钟的协议，**DHCP** 是自动分发 IP 地址等设置的协议。"
+  ],
+  "key_points_en": [
+    "On the sending side of email, **SMTP** handles both the leg from device to server and the relaying between servers.",
+    "The protocols for receiving mail are **POP** and **IMAP**, and their widely used versions are POP3 and IMAP4.",
+    "**FTP** is an application-layer protocol for file transfer that runs on top of the communication functions of **TCP/IP** below it.",
+    "**NTP** keeps device clocks in agreement, and **DHCP** automatically hands out IP addresses and other settings."
+  ],
+  "overview": {
+    "intro_jp": "メールが届くまでの区間ごとに、送り出す側の SMTP と受け取る側のプロトコルの受け持ちを説明できる。POP と IMAP の違いを、メールをどこに置いて管理するかという軸で説明できる。ファイルの転送、時刻の同期、IPアドレスの自動設定を担うプロトコルを、それぞれの役割と結び付けて言える。",
+    "intro_zh": "能够按邮件送达的各个区间，说明负责发送的 SMTP 与负责接收的协议各自承担什么。能够以\"邮件放在哪里管理\"为轴，说明 POP 与 IMAP 的区别。能够说出负责文件传输、时间同步、IP 地址自动设置的协议，并对应到各自的作用。",
+    "intro_en": "Explain, for each leg of an email's journey, what SMTP handles on the sending side and what the receiving-side protocols handle. Explain the difference between POP and IMAP in terms of where the mail is kept and managed. Name the protocols for file transfer, time synchronization, and automatic IP address setup, and match each to its role.",
+    "freq_badge": "標準",
+    "est_minutes": 33
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "SMTP: SMTPといえばメール送信",
-      "POP: POPといえばメールを端末に取り込む受信",
-      "IMAP: IMAPといえばサーバに残して複数端末で同期する受信",
-      "FTP: FTPといえばファイル転送",
-      "NTP: NTPといえば時刻同期",
-      "DHCP: DHCPといえばIPアドレスの自動割り当て"
-    ],
     "key_points_jp": [
-      "メールは「送信=SMTP」「受信=POP/IMAP」と役割で区別する。",
-      "POPはメールを端末にダウンロードしてサーバから削除、IMAPはサーバに残して複数端末で同期する点が違い。",
-      "FTPはファイルそのものを転送するプロトコルで、メール系とは用途が異なる。",
-      "NTPは時刻同期、DHCPはIPアドレスの自動割り当てを担う運用基盤プロトコル。",
-      "各プロトコルは「用途とプロトコル名の対応」を結びつけて覚えるのが得点のコツ。"
+      "電子メールを送り出す区間は、端末からサーバへもサーバどうしの中継も SMTP が受け持つ。",
+      "届いたメールを受け取る側のプロトコルには POP と IMAP があり、広く使われている版はそれぞれ POP3 と IMAP4 である。",
+      "FTP はファイルの転送を担うアプリケーション層のプロトコルで、下位の TCP/IP の通信機能の上で動く。",
+      "NTP は機器の時計をそろえるプロトコル、DHCP は IPアドレスなどの設定を自動で配るプロトコルである。"
     ],
     "key_points_zh": [
-      "邮件按作用区分为「发送＝SMTP」「接收＝POP/IMAP」。",
-      "POP 把邮件下载到终端并从服务器删除，IMAP 把邮件保留在服务器上并在多终端同步，这是两者的区别。",
-      "FTP 是传输文件本身的协议，与邮件类协议用途不同。",
-      "NTP 负责时间同步，DHCP 负责 IP 地址的自动分配，二者都是运维基础协议。",
-      "把「用途与协议名称的对应」联系起来记忆，是各协议得分的诀窍。"
+      "发送电子邮件的区间，无论是终端到服务器，还是服务器之间的中继，都由 SMTP 负责。",
+      "接收送达邮件的协议有 POP 和 IMAP，广泛使用的版本分别是 POP3 和 IMAP4。",
+      "FTP 是负责文件传输的应用层协议，运行在下层 TCP/IP 的通信功能之上。",
+      "NTP 是统一设备时钟的协议，DHCP 是自动分发 IP 地址等设置的协议。"
     ],
     "key_points_en": [
-      "Distinguish email by role: \"sending = SMTP,\" \"receiving = POP/IMAP.\"",
-      "POP downloads email to the device and deletes it from the server, while IMAP keeps it on the server and syncs across multiple devices—that is the difference.",
-      "FTP is a protocol that transfers files themselves, and its purpose differs from the mail protocols.",
-      "NTP handles time synchronization and DHCP handles automatic IP address assignment; both are operational infrastructure protocols.",
-      "Linking \"the purpose to the protocol name\" when memorizing each protocol is the key to scoring points."
+      "On the sending side of email, SMTP handles both the leg from device to server and the relaying between servers.",
+      "The protocols for receiving mail are POP and IMAP, and their widely used versions are POP3 and IMAP4.",
+      "FTP is an application-layer protocol for file transfer that runs on top of the communication functions of TCP/IP below it.",
+      "NTP keeps device clocks in agreement, and DHCP automatically hands out IP addresses and other settings."
+    ],
+    "memory_hooks_jp": [
+      "SMTP: Simple Mail Transfer Protocol の略で、Transfer は「運ぶ・移す」。メールを運ぶ係と読める。",
+      "POP: Post Office Protocol の略で、名前どおり「郵便局」。局に留め置かれた郵便を取りに行く係と覚える。",
+      "IMAP: Internet Message Access Protocol の Access に注目する。メールを持ち帰らず、サーバにあるメールへ「アクセスしに行く」と覚える。",
+      "FTP: File Transfer Protocol の略。頭の F が File (ファイル) と覚えれば、メール系の名前と混ざらない。",
+      "NTP: Network Time Protocol の略。真ん中の T が Time (時刻) と覚える。",
+      "DHCP: Dynamic Host Configuration Protocol の略。Dynamic (動的) は「つないだときにその場で決まる」という意味と覚える。"
     ],
     "memory_hooks_zh": [
-      "SMTP：说到 SMTP 就是发送邮件",
-      "POP：说到 POP 就是把邮件取到终端上的接收",
-      "IMAP：说到 IMAP 就是保留在服务器上、多终端同步的接收",
-      "FTP：说到 FTP 就是文件传输",
-      "NTP：说到 NTP 就是时间同步",
-      "DHCP：说到 DHCP 就是 IP 地址的自动分配"
+      "SMTP：是 Simple Mail Transfer Protocol 的缩写，Transfer 意为\"传送、转移\"。可以理解为负责运送邮件的角色。",
+      "POP：是 Post Office Protocol 的缩写，正如名字所示就是\"邮局\"。记作去邮局取回留存信件的角色。",
+      "IMAP：留意 Internet Message Access Protocol 中的 Access。记作不把邮件带回，而是去\"访问\"服务器上的邮件。",
+      "FTP：是 File Transfer Protocol 的缩写。记住开头的 F 是 File（文件），就不会和邮件类的名称混淆。",
+      "NTP：是 Network Time Protocol 的缩写。记住中间的 T 是 Time（时间）。",
+      "DHCP：是 Dynamic Host Configuration Protocol 的缩写。把 Dynamic（动态）理解为\"在连接的当下当场决定\"。"
     ],
     "memory_hooks_en": [
-      "SMTP: SMTP → sending email",
-      "POP: POP → receiving by pulling email onto your device",
-      "IMAP: IMAP → receiving that keeps mail on the server and syncs across multiple devices",
-      "FTP: FTP → file transfer",
-      "NTP: NTP → time synchronization",
-      "DHCP: DHCP → automatic IP address assignment"
+      "SMTP: It stands for Simple Mail Transfer Protocol, and \"Transfer\" means to carry or move. Read it as the protocol whose job is moving mail.",
+      "POP: It stands for Post Office Protocol, literally \"post office.\" Think of it as going to the post office to pick up the mail held for you.",
+      "IMAP: Focus on \"Access\" in Internet Message Access Protocol. You do not take the mail home; you go and access it where it sits on the server.",
+      "FTP: It stands for File Transfer Protocol. Remember that the leading F is for File and it will not get mixed up with the mail protocols.",
+      "NTP: It stands for Network Time Protocol. Remember that the T in the middle is for Time.",
+      "DHCP: It stands for Dynamic Host Configuration Protocol. Take \"Dynamic\" to mean the settings are decided on the spot when you connect."
     ]
   },
   "challenge_questions": [
-    "2014h26a-q079",
-    "2016h28a-q085",
-    "2017h29h-q074",
-    "2018h30a-q088",
+    "2019h31h-q082",
+    "2026r08-q068",
+    "2022r04-q087",
+    "2013h25a-q065",
     "2014h26h-q058"
   ],
   "source_figures": [
@@ -230,9 +918,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "邮件、文件与运维协议",
-  "title_en": "Mail, File, and Operations Protocols",
-  "unit_summary_zh": "理解贴近日常的应用层协议，包括电子邮件的收发（SMTP/POP/IMAP）、文件传输（FTP）、时间同步与 IP 自动配置（NTP/DHCP）。",
-  "unit_summary_en": "Understand the everyday application-layer protocols, including sending/receiving email (SMTP/POP/IMAP), file transfer (FTP), and time synchronization and automatic IP configuration (NTP/DHCP)."
+  }
 }

@@ -1,191 +1,831 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-22-59-u02",
   "topic_id": "technology-22-59",
   "category": "technology",
   "title_jp": "TCP/IPとWebプロトコル",
+  "title_zh": "TCP/IP 与 Web 协议",
+  "title_en": "TCP/IP and Web Protocols",
   "unit_summary_jp": "インターネットの基盤である TCP/IP アーキテクチャとトランスポート層・ポート番号を押さえ、その上で動く HTTP/HTTPS を理解する。",
+  "unit_summary_zh": "掌握作为互联网基础的 TCP/IP 体系结构、传输层与端口号，并在此基础上理解运行其上的 HTTP/HTTPS。",
+  "unit_summary_en": "Grasp the TCP/IP architecture that forms the foundation of the internet, the transport layer and port numbers, and on that basis understand HTTP/HTTPS, which run on top of it.",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-22-59-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、インターネットの基盤となる TCP/IP アーキテクチャと、その中でデータを運ぶ TCP/UDP・宛先サービスを識別するポート番号という土台を押さえ、その上で動く代表的な Web プロトコル HTTP/HTTPS までを学びます。通信プロトコルは試験で頻出の標準分野です。",
-    "freq_badge": "標準",
-    "est_minutes": 16,
-    "intro_zh": "本单元先打好基础：作为互联网根基的 TCP/IP 体系结构，其中负责搬运数据的 TCP/UDP，以及用于识别目标服务的端口号；然后再学习运行在其上的代表性 Web 协议 HTTP/HTTPS。通信协议是考试中的高频标准领域。",
-    "intro_en": "In this unit, you first build the foundation: the TCP/IP architecture that underpins the internet, the TCP/UDP that carry data within it, and the port numbers that identify the destination service. Then you learn the representative Web protocols HTTP/HTTPS that run on top of it. Communication protocols are a standard field that appears frequently on the exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**TCP/IP** の 4 階層について、代表的なプロトコルがどの層で何を受け持つかを分けられる。",
+    "**ポート番号** と IP アドレスが、それぞれ何を識別するのかを区別できる。",
+    "**HTTPS** が HTTP に加えるものを、暗号化とサーバの認証の 2 点で説明できる。"
+  ],
+  "goals_zh": [
+    "能分清 **TCP/IP** 的 4 个层次中，代表性协议各属于哪一层、各负责什么。",
+    "能区分 **端口号**（[[jp:ポート番号]]）和 IP 地址各自用来识别什么。",
+    "能从加密和服务器认证两方面，说明 **HTTPS** 在 HTTP 基础上增加了什么。"
+  ],
+  "goals_en": [
+    "Sort the main protocols of the four **TCP/IP** layers by which layer they belong to and what they handle.",
+    "Tell what a **port number** ([[jp:ポート番号]]) identifies and what an IP address identifies.",
+    "Explain what **HTTPS** adds to HTTP in two respects: encryption and server authentication."
+  ],
+  "overview_cols_jp": [
+    "属する層",
+    "見分ける手がかり"
+  ],
+  "overview_cols_zh": [
+    "所属层",
+    "辨认线索"
+  ],
+  "overview_cols_en": [
+    "Layer",
+    "How to recognize it"
+  ],
+  "overview_rows": [
     {
       "term": "TCP/IP",
-      "definition_jp": "インターネットで標準的に使われる通信プロトコルの体系(階層モデル)。",
-      "explanation_jp": "TCP/IP は、インターネットや多くのネットワークで標準として使われる通信規約(プロトコル)の集まりです。データを確実に届ける役割の TCP と、相手まで経路を選んで運ぶ役割の IP を中心に、複数のプロトコルを階層的に組み合わせて構成されます。\n\n一般に「アプリケーション層・トランスポート層・インターネット層・ネットワークインタフェース層」の4階層モデルで表され、OSI 基本参照モデル(u01 で学んだ7階層)を実用化した枠組みと位置づけられます。試験では、HTTP・TCP・IP などがこの体系のどの層に属するか、TCP と IP の役割の違いが問われます。",
-      "analogy_jp": "荷物を確実に届ける宅配の仕組み全体のようなもの。住所を見て経路を選ぶ係(IP)と、抜けや破損なく届いたか確認する係(TCP)が役割分担して協力します。",
-      "memory_hook_jp": "TCP/IPといえばインターネット標準の階層型プロトコル体系",
-      "inline_quiz": [
-        "2010h22h-q080"
+      "one_line_jp": "インターネット標準の、階層に分けたプロトコルの体系",
+      "one_line_zh": "互联网标准的、分层组织的协议体系",
+      "one_line_en": "A layered family of protocols that serves as the Internet standard",
+      "extra_jp": [
+        "体系全体 (4 階層)",
+        "多くのプロトコルをまとめた呼び名"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"アプリケーション層(HTTP等)\"] --> B[\"トランスポート層(TCP/UDP)\"]; B --> C[\"インターネット層(IP)\"]; C --> D[\"ネットワークインタフェース層\"]",
-        "svg_path": "figures/technology-22-59-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "TCP/IP",
-      "term_en": "TCP/IP",
-      "definition_zh": "互联网上标准使用的通信协议体系（分层模型）。",
-      "definition_en": "The protocol suite (layered model) used as the standard for communication on the internet.",
-      "explanation_zh": "TCP/IP 是在互联网和许多网络中作为标准使用的一组通信规约（协议）。它以负责可靠送达数据的 TCP 和负责为对端选择路径来搬运数据的 IP 为核心，把多个协议分层组合而成。\n\n通常用「应用层、传输层、互联网层、网络接口层」的 4 层模型来表示，可视为把 OSI 基本参考模型（u01 学过的 7 层）加以实用化的框架。考试中会考查 HTTP、TCP、IP 等属于该体系的哪一层，以及 TCP 与 IP 在职责上的区别。",
-      "explanation_en": "TCP/IP is a set of communication conventions (protocols) used as the standard on the internet and many networks. Centered on TCP, which is responsible for reliably delivering data, and IP, which is responsible for choosing a route to the destination and carrying the data, it is built by combining multiple protocols in layers.\n\nIt is generally expressed as a four-layer model of \"application layer, transport layer, internet layer, network interface layer,\" and is positioned as a practical framework that puts the OSI basic reference model (the seven layers learned in u01) into use. On the exam, you are asked which layer of this suite HTTP, TCP, IP, and so on belong to, and the difference in the roles of TCP and IP.",
-      "analogy_zh": "就像把包裹可靠送达的整个快递系统。看地址选路线的人员（IP）和确认有没有遗漏或破损送达的人员（TCP）各司其职、相互配合。",
-      "analogy_en": "It's like the whole courier system for delivering parcels reliably. The staff who read the address and pick the route (IP) and the staff who check that it arrived without anything missing or damaged (TCP) divide up the roles and cooperate.",
-      "memory_hook_zh": "说到 TCP/IP，就是互联网标准的分层式协议体系。",
-      "memory_hook_en": "TCP/IP → the internet's standard layered protocol suite."
+      "extra_zh": [
+        "整个体系（4 层）",
+        "许多协议的统称"
+      ],
+      "extra_en": [
+        "The whole family (4 layers)",
+        "A collective name for many protocols"
+      ]
     },
     {
       "term": "UDP",
-      "definition_jp": "確認応答を省き高速に送るコネクションレス型のトランスポート層プロトコル。",
-      "explanation_jp": "UDP は、TCP/IP のトランスポート層で TCP と対になるプロトコルです。相手と事前に接続を確立せず、到達確認や再送を行わないため、その分だけ高速・低負荷でデータを送れます。\n\nただし途中でデータが欠けても気付かないため、信頼性は TCP より低くなります。多少の欠落より速さ・リアルタイム性が重要な、音声通話・動画のストリーミング・DNS などで使われます。試験では、確実に届ける TCP との対比で「UDP=高速だが信頼性は保証しない」という性質が問われます。",
-      "analogy_jp": "返事を待たずに次々と一方的に話し続ける拡声器のようなもの。届いたか確認しない分テンポは速いですが、聞き逃しがあっても言い直してはくれません。",
-      "memory_hook_jp": "UDPといえば確認なしで高速だが信頼性は保証しない",
-      "inline_quiz": [
-        "2011h23a-q077"
+      "one_line_jp": "接続を確立せずに送り出すコネクションレス型のプロトコル",
+      "one_line_zh": "不建立连接就直接发送的无连接型协议",
+      "one_line_en": "A connectionless protocol that sends data without setting up a connection",
+      "extra_jp": [
+        "トランスポート層",
+        "確認と再送をしない"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "UDP",
-      "term_en": "UDP",
-      "definition_zh": "省去确认应答、高速发送的无连接型传输层协议。",
-      "definition_en": "A connectionless transport-layer protocol that sends data fast by omitting acknowledgments.",
-      "explanation_zh": "UDP 是在 TCP/IP 的传输层中与 TCP 成对的协议。它不与对端事先建立连接，也不做到达确认和重传，因此能以更高速、更低负载发送数据。\n\n不过，途中数据丢失也不会察觉，所以可靠性比 TCP 低。它用于比起少量丢失更看重速度和实时性的场景，如语音通话、视频流媒体、DNS 等。考试中会与可靠送达的 TCP 对比，考查「UDP＝高速但不保证可靠性」这一性质。",
-      "explanation_en": "UDP is the protocol paired with TCP in the transport layer of TCP/IP. Because it does not establish a connection with the other party in advance and does not perform delivery confirmation or retransmission, it can send data that much faster and with lower load.\n\nHowever, since it does not notice when data is lost along the way, its reliability is lower than TCP. It is used where speed and real-time performance matter more than a little loss, such as voice calls, video streaming, and DNS. On the exam, in contrast to TCP, which delivers reliably, the property \"UDP = fast but does not guarantee reliability\" is asked.",
-      "analogy_zh": "就像不等回应、一个劲儿单向地说下去的扩音喇叭。不确认是否送达所以节奏快，但即便有人没听到，它也不会再说一遍。",
-      "analogy_en": "It's like a loudspeaker that keeps talking one-way without waiting for a reply. Because it doesn't check whether the message got through, the tempo is fast, but even if someone misses it, it won't repeat itself.",
-      "memory_hook_zh": "说到 UDP，就是不做确认、高速但不保证可靠性。",
-      "memory_hook_en": "UDP → no acknowledgment, fast but reliability is not guaranteed."
+      "extra_zh": [
+        "传输层",
+        "不做确认和重传"
+      ],
+      "extra_en": [
+        "Transport layer",
+        "No acknowledgment or retransmission"
+      ]
     },
     {
       "term": "ポート番号",
-      "definition_jp": "1台の機器内でどの通信サービスかを識別する0〜65535の番号。",
-      "explanation_jp": "ポート番号は、トランスポート層(TCP/UDP)が、1台のコンピュータ上で動く複数のサービスのうち「どのアプリケーション宛ての通信か」を区別するための番号です。IP アドレスが機器を特定するのに対し、ポート番号は機器内のサービスを特定します。\n\n代表的なものは決められており(ウェルノウンポート)、HTTP は80番、HTTPS は443番などが割り当てられています。試験では、IP アドレスとポート番号の役割の違いや、主要プロトコルのポート番号(80/443 など)が問われます。",
-      "analogy_jp": "IP アドレスがマンションの建物の住所なら、ポート番号は各部屋の番号にあたります。建物に届いた荷物を、正しい部屋へ振り分けるためのものです。",
-      "memory_hook_jp": "ポート番号といえば機器内のサービスを識別する番号(HTTP=80,HTTPS=443)",
-      "inline_quiz": [
-        "2009h21a-q055"
+      "one_line_jp": "機器の中のどのアプリケーション宛てかを示す番号",
+      "one_line_zh": "表示发给设备中哪个应用程序的编号",
+      "one_line_en": "A number showing which application inside a device the data is for",
+      "extra_jp": [
+        "トランスポート層 (TCP や UDP が扱う)",
+        "0〜65535 の番号"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"IPアドレス(機器を特定)\"] --> B[\"ポート番号(サービスを特定)\"]; B --> C[\"80番:HTTP\"]; B --> D[\"443番:HTTPS\"]",
-        "svg_path": "figures/technology-22-59-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "端口号",
-      "term_en": "Port Number",
-      "definition_zh": "在一台设备内识别是哪个通信服务的 0～65535 的编号。",
-      "definition_en": "A number from 0 to 65535 that identifies which communication service is involved within a single device.",
-      "explanation_zh": "端口号是传输层（TCP/UDP）用来在一台计算机上运行的多个服务中区分「这是发往哪个应用程序的通信」的编号。IP 地址用于确定设备，而端口号用于确定设备内的服务。\n\n代表性的端口号是规定好的（知名端口），例如 HTTP 分配 80 号、HTTPS 分配 443 号。考试中会考查 IP 地址与端口号在职责上的区别，以及主要协议的端口号（如 80/443）。",
-      "explanation_en": "A port number is the number the transport layer (TCP/UDP) uses to distinguish \"which application the communication is addressed to\" among the multiple services running on a single computer. Whereas an IP address identifies a device, a port number identifies a service within the device.\n\nThe representative ones are fixed (well-known ports), with HTTP assigned port 80 and HTTPS assigned port 443. On the exam, the difference in roles between IP addresses and port numbers, and the port numbers of major protocols (such as 80/443), are asked.",
-      "analogy_zh": "如果说 IP 地址是公寓楼的楼栋地址，那么端口号就相当于各个房间的房号。它用于把送到楼里的包裹分送到正确的房间。",
-      "analogy_en": "If an IP address is the street address of an apartment building, the port number corresponds to each room's number. It is used to sort parcels that arrive at the building into the correct rooms.",
-      "memory_hook_zh": "说到端口号，就是识别设备内服务的编号（HTTP=80，HTTPS=443）。",
-      "memory_hook_en": "Port number → the number that identifies a service within a device (HTTP=80, HTTPS=443)."
+      "extra_zh": [
+        "传输层（由 TCP、UDP 处理）",
+        "0～65535 的编号"
+      ],
+      "extra_en": [
+        "Transport layer (handled by TCP and UDP)",
+        "A number from 0 to 65535"
+      ]
     },
     {
       "term": "HTTP",
-      "definition_jp": "WebブラウザとWebサーバ間でWebページをやり取りする通信プロトコル。",
-      "explanation_jp": "HTTP(HyperText Transfer Protocol)は、Web ブラウザと Web サーバの間で、HTML 文書や画像などの Web コンテンツをやり取りするための通信規約です。トランスポート層の TCP を使い、ポート番号は通常80番を利用します。\n\nブラウザがサーバへ「このページをください」と要求(リクエスト)を送り、サーバが内容を返す(レスポンス)という、要求と応答の組で通信します。試験では、HTTP が Web 通信の基本プロトコルであること、ポート80番、後述の HTTPS との違い(暗号化の有無)が問われます。",
-      "analogy_jp": "図書館の窓口で「この本をください」と申込用紙を出し、係員が本を渡してくれるやり取りのようなもの。要求と応答が一対で成り立っています。",
-      "memory_hook_jp": "HTTPといえばWebページをやり取りする通信プロトコル(ポート80)",
+      "one_line_jp": "ブラウザと Web サーバが Web ページをやり取りする手順",
+      "one_line_zh": "浏览器与 Web 服务器之间传送网页的规程",
+      "one_line_en": "The procedure a browser and a web server use to exchange web pages",
+      "extra_jp": [
+        "アプリケーション層",
+        "要求と応答の往復、通常 80 番"
+      ],
+      "extra_zh": [
+        "应用层",
+        "请求与响应的往返，通常用 80 号"
+      ],
+      "extra_en": [
+        "Application layer",
+        "Request-response round trips, usually port 80"
+      ]
+    },
+    {
+      "term": "HTTPS",
+      "one_line_jp": "HTTP の通信を SSL/TLS で守ったプロトコル",
+      "one_line_zh": "用 SSL/TLS 保护 HTTP 通信的协议",
+      "one_line_en": "A protocol that protects HTTP traffic with SSL/TLS",
+      "extra_jp": [
+        "アプリケーション層 (SSL/TLS を併用)",
+        "URL が https:// で始まる、通常 443 番"
+      ],
+      "extra_zh": [
+        "应用层（配合 SSL/TLS 使用）",
+        "URL 以 https:// 开头，通常用 443 号"
+      ],
+      "extra_en": [
+        "Application layer (used with SSL/TLS)",
+        "URL starts with https://, usually port 443"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "TCP/IP",
+      "term_zh": "TCP/IP",
+      "term_en": "TCP/IP",
+      "one_jp": "**TCP/IP** は、インターネットで標準として使われる通信プロトコルの体系で、役割の違う複数のプロトコルを **階層** に分けて組み合わせている。",
+      "one_zh": "**TCP/IP** 是互联网上作为标准使用的通信协议体系，它把职责不同的多个协议按 **层次**（[[jp:階層]]）划分并组合起来。",
+      "one_en": "**TCP/IP** is the family of communication protocols used as the standard on the Internet, combining several protocols with different roles by dividing them into **layers** ([[jp:階層]]).",
+      "detail_jp": "**通信プロトコル** とは、ネットワークでデータをやり取りするための手順や形式を定めた約束事である。TCP/IP は一般に、アプリケーション層・トランスポート層・インターネット層・ネットワークインタフェース層の 4 階層で表される。名前の由来である **TCP** はデータを抜けや重複なく確実に届ける役割を、**IP** は IP アドレスをもとに宛先の機器まで運ぶ役割を受け持つ。",
+      "detail_zh": "**通信协议**（[[jp:通信プロトコル]]）是规定网络上交换数据时所用步骤和格式的约定。TCP/IP 一般用应用层、传输层、网际层、网络接口层这 4 个层次来表示。名称来源中的 **TCP** 负责把数据无遗漏、无重复地可靠送达，**IP** 则负责根据 IP 地址把数据送到目标设备。",
+      "detail_en": "A **communication protocol** ([[jp:通信プロトコル]]) is an agreed set of procedures and formats for exchanging data over a network. TCP/IP is usually described in four layers: the application layer, the transport layer, the Internet layer, and the network interface layer. The two protocols in its name split the core work: **TCP** delivers data reliably with nothing missing or duplicated, and **IP** carries it to the destination device based on the IP address.",
+      "analogy_jp": "宅配便で、受付・仕分け・輸送を別々の部署が受け持ち、各部署は隣の部署とだけ荷物を受け渡すようなもの。どこか 1 つの部署のやり方を変えても、ほかの部署はそのまま働ける。",
+      "analogy_zh": "就像快递公司里，受理、分拣、运输分别由不同部门负责，每个部门只和相邻部门交接包裹。即使改变其中某一个部门的做法，其他部门照样能运转。",
+      "analogy_en": "Think of a delivery company where intake, sorting, and transport are handled by separate departments, and each one hands parcels only to the department next to it. If one department changes how it works, the others can carry on as before.",
+      "hook_jp": "名前は中心にある 2 つのプロトコル、TCP と IP を斜線でつないだもの。体系全体の呼び名として使うときは、それ以外の多くのプロトコルも含む。",
+      "hook_zh": "这个名称是用斜线把位于核心的两个协议 TCP 和 IP 连在一起。作为整个体系的名称使用时，也包括除此之外的许多协议。",
+      "hook_en": "The name joins the two core protocols, TCP and IP, with a slash. Used as the name of the whole family, it also covers many other protocols.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "通信プロトコルは通信のための取り決めの集まりであり、同じ取り決めに従えば、製品や OS が違う機器どうしでもデータをやり取りできる。",
+          "text_zh": "通信协议（[[jp:通信プロトコル]]）是为通信而定的一组约定；只要遵循同样的约定，即使产品或操作系统（[[jp:OS]]）不同的设备之间也能交换数据。",
+          "text_en": "A communication protocol ([[jp:通信プロトコル]]) is a set of rules for communication, and devices that follow the same rules can exchange data even if their products or operating systems ([[jp:OS]]) differ.",
+          "qids": [
+            "2015h27a-q077",
+            "2016h28a-q065"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**TCP/IP** という名前は 4 階層の体系全体を指すほか、中核の TCP と IP だけを指す狭い意味でも使われる。狭い意味の TCP/IP は、用途ごとのプロトコルが共通に頼る下位の通信機能である。",
+          "text_zh": "**TCP/IP** 这个名称既指 4 层的整个体系，也在狭义上只指核心的 TCP 和 IP。狭义的 TCP/IP 是各种用途的协议共同依赖的下层通信功能。",
+          "text_en": "The name **TCP/IP** refers to the whole four-layer family, and in a narrow sense to just its core, TCP and IP. In that narrow sense, TCP/IP is the lower-level communication function that protocols for specific uses all rely on.",
+          "qids": [
+            "2023r05-q068"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "階層",
+              "zh": "层次",
+              "en": "Layer"
+            },
+            {
+              "jp": "主な役割",
+              "zh": "主要职责",
+              "en": "Main role"
+            },
+            {
+              "jp": "プロトコルの例",
+              "zh": "协议示例",
+              "en": "Example protocols"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "アプリケーション層",
+                  "zh": "应用层",
+                  "en": "Application layer"
+                },
+                {
+                  "jp": "Web 閲覧やメールなど用途ごとのやり取りを決める",
+                  "zh": "规定 Web 浏览、电子邮件等各种用途的交互",
+                  "en": "Defines the exchanges for each use, such as web browsing and email"
+                },
+                {
+                  "jp": "HTTP、HTTPS、SMTP、POP3、FTP",
+                  "zh": "HTTP、HTTPS、SMTP、POP3、FTP",
+                  "en": "HTTP, HTTPS, SMTP, POP3, FTP"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "トランスポート層",
+                  "zh": "传输层",
+                  "en": "Transport layer"
+                },
+                {
+                  "jp": "宛先のアプリケーションまでデータを渡す",
+                  "zh": "把数据交给目标应用程序",
+                  "en": "Passes data to the destination application"
+                },
+                {
+                  "jp": "TCP、UDP",
+                  "zh": "TCP、UDP",
+                  "en": "TCP, UDP"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "インターネット層",
+                  "zh": "网际层",
+                  "en": "Internet layer"
+                },
+                {
+                  "jp": "IP アドレスをもとに宛先の機器まで中継する",
+                  "zh": "根据 IP 地址中继到目标设备",
+                  "en": "Relays data to the destination device by IP address"
+                },
+                {
+                  "jp": "IP",
+                  "zh": "IP",
+                  "en": "IP"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "ネットワークインタフェース層",
+                  "zh": "网络接口层",
+                  "en": "Network interface layer"
+                },
+                {
+                  "jp": "同じネットワーク内で信号を実際に送る",
+                  "zh": "在同一网络内实际发送信号",
+                  "en": "Actually sends signals within the same network"
+                },
+                {
+                  "jp": "イーサネット、無線 LAN",
+                  "zh": "以太网、无线局域网",
+                  "en": "Ethernet, wireless LAN"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2016h28a-q065",
+        "2023r05-q068"
+      ],
+      "definition_jp": "TCP/IP は、インターネットで標準として使われる通信プロトコルの体系で、役割の違う複数のプロトコルを 階層 に分けて組み合わせている。",
+      "definition_zh": "TCP/IP 是互联网上作为标准使用的通信协议体系，它把职责不同的多个协议按 层次（階層）划分并组合起来。",
+      "definition_en": "TCP/IP is the family of communication protocols used as the standard on the Internet, combining several protocols with different roles by dividing them into layers (階層).",
+      "explanation_jp": "通信プロトコル とは、ネットワークでデータをやり取りするための手順や形式を定めた約束事である。TCP/IP は一般に、アプリケーション層・トランスポート層・インターネット層・ネットワークインタフェース層の 4 階層で表される。名前の由来である TCP はデータを抜けや重複なく確実に届ける役割を、IP は IP アドレスをもとに宛先の機器まで運ぶ役割を受け持つ。",
+      "explanation_zh": "通信协议（通信プロトコル）是规定网络上交换数据时所用步骤和格式的约定。TCP/IP 一般用应用层、传输层、网际层、网络接口层这 4 个层次来表示。名称来源中的 TCP 负责把数据无遗漏、无重复地可靠送达，IP 则负责根据 IP 地址把数据送到目标设备。",
+      "explanation_en": "A communication protocol (通信プロトコル) is an agreed set of procedures and formats for exchanging data over a network. TCP/IP is usually described in four layers: the application layer, the transport layer, the Internet layer, and the network interface layer. The two protocols in its name split the core work: TCP delivers data reliably with nothing missing or duplicated, and IP carries it to the destination device based on the IP address.",
+      "memory_hook_jp": "名前は中心にある 2 つのプロトコル、TCP と IP を斜線でつないだもの。体系全体の呼び名として使うときは、それ以外の多くのプロトコルも含む。",
+      "memory_hook_zh": "这个名称是用斜线把位于核心的两个协议 TCP 和 IP 连在一起。作为整个体系的名称使用时，也包括除此之外的许多协议。",
+      "memory_hook_en": "The name joins the two core protocols, TCP and IP, with a slash. Used as the name of the whole family, it also covers many other protocols.",
+      "inline_quiz": [
+        "2016h28a-q065",
+        "2023r05-q068"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "UDP",
+      "term_zh": "UDP",
+      "term_en": "UDP",
+      "one_jp": "**UDP** は、トランスポート層で相手との **接続を確立せずに** データを送り出す、コネクションレス型のプロトコルである。",
+      "one_zh": "**UDP** 是传输层上 **不与对方建立连接** 就直接发送数据的无连接型协议。",
+      "one_en": "**UDP** is a connectionless transport-layer protocol that sends data **without setting up a connection** with the other side.",
+      "detail_jp": "届いたかどうかの確認や、失われたデータの送り直しを行わないため、手順が少なく遅れが小さい。データの欠けや順序の入れ替わりに対処する必要があれば、その処理はアプリケーション側が受け持つ。音声通話や動画の配信のように、多少欠けても待たされないことを重視する通信に向く。",
+      "detail_zh": "由于不确认数据是否送达，也不重发丢失的数据，所以步骤少、延迟小。如果需要处理数据缺失或顺序颠倒，就由应用程序一侧来负责。它适合语音通话、视频传送这类重视“少量缺失也无妨、但不能让人等”的通信。",
+      "detail_en": "Because it neither checks whether data arrived nor resends lost data, it involves fewer steps and less delay. If missing data or out-of-order arrival must be dealt with, the application handles it. It suits traffic such as voice calls and video streaming, where avoiding waits matters more than losing a little data.",
+      "analogy_jp": "相手の返事を待たずに流し続ける館内放送のようなもの。聞き逃した人がいても、同じ放送をその人のために流し直すことはしない。",
+      "analogy_zh": "就像不等听众回应、一直播放下去的场馆广播。即使有人没听到，也不会专门为那个人再播一遍。",
+      "analogy_en": "It is like a public announcement in a building that keeps playing without waiting for any response. If someone misses it, it is not replayed just for that person.",
+      "hook_jp": "正式名は User Datagram Protocol。データグラムは 1 個ずつ送り切る小包のことで、送ったら終わりという性格が名前に表れている。",
+      "hook_zh": "正式名称是 User Datagram Protocol。数据报（datagram）指一个个独立发出的小包，“发出去就结束”的性质体现在名称里。",
+      "hook_en": "Its full name is User Datagram Protocol. A datagram is a small packet sent off on its own, and the name reflects this send-and-forget nature.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "UDP も TCP と同じトランスポート層のプロトコルであり、宛先のアプリケーションはどちらもポート番号で区別する。",
+          "text_zh": "UDP 与 TCP 同属传输层协议，两者都用端口号（[[jp:ポート番号]]）来区分目标应用程序。",
+          "text_en": "UDP is a transport-layer protocol just like TCP, and both use port numbers ([[jp:ポート番号]]) to tell destination applications apart."
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "TCP",
+            "zh": "TCP",
+            "en": "TCP"
+          },
+          "b": {
+            "jp": "UDP",
+            "zh": "UDP",
+            "en": "UDP"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "通信前の接続",
+                "zh": "通信前的连接",
+                "en": "Connection before sending"
+              },
+              "a": {
+                "jp": "確立してから送る",
+                "zh": "先建立再发送",
+                "en": "Set up first, then send"
+              },
+              "b": {
+                "jp": "確立せずにすぐ送る",
+                "zh": "不建立，立即发送",
+                "en": "Send right away, no setup"
+              }
+            },
+            {
+              "label": {
+                "jp": "到達の確認と再送",
+                "zh": "送达确认与重传",
+                "en": "Delivery check and resend"
+              },
+              "a": {
+                "jp": "行う",
+                "zh": "进行",
+                "en": "Yes"
+              },
+              "b": {
+                "jp": "行わない",
+                "zh": "不进行",
+                "en": "No"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "向いている通信",
+                "zh": "适合的通信",
+                "en": "Suited to"
+              },
+              "a": {
+                "jp": "欠けては困るデータの転送",
+                "zh": "不允许缺失的数据传输",
+                "en": "Transfers where no data may be lost"
+              },
+              "b": {
+                "jp": "遅れを嫌う音声や映像の配信",
+                "zh": "怕延迟的语音、视频传送",
+                "en": "Voice and video that cannot wait"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "UDP は、トランスポート層で相手との 接続を確立せずに データを送り出す、コネクションレス型のプロトコルである。",
+      "definition_zh": "UDP 是传输层上 不与对方建立连接 就直接发送数据的无连接型协议。",
+      "definition_en": "UDP is a connectionless transport-layer protocol that sends data without setting up a connection with the other side.",
+      "explanation_jp": "届いたかどうかの確認や、失われたデータの送り直しを行わないため、手順が少なく遅れが小さい。データの欠けや順序の入れ替わりに対処する必要があれば、その処理はアプリケーション側が受け持つ。音声通話や動画の配信のように、多少欠けても待たされないことを重視する通信に向く。",
+      "explanation_zh": "由于不确认数据是否送达，也不重发丢失的数据，所以步骤少、延迟小。如果需要处理数据缺失或顺序颠倒，就由应用程序一侧来负责。它适合语音通话、视频传送这类重视“少量缺失也无妨、但不能让人等”的通信。",
+      "explanation_en": "Because it neither checks whether data arrived nor resends lost data, it involves fewer steps and less delay. If missing data or out-of-order arrival must be dealt with, the application handles it. It suits traffic such as voice calls and video streaming, where avoiding waits matters more than losing a little data.",
+      "memory_hook_jp": "正式名は User Datagram Protocol。データグラムは 1 個ずつ送り切る小包のことで、送ったら終わりという性格が名前に表れている。",
+      "memory_hook_zh": "正式名称是 User Datagram Protocol。数据报（datagram）指一个个独立发出的小包，“发出去就结束”的性质体现在名称里。",
+      "memory_hook_en": "Its full name is User Datagram Protocol. A datagram is a small packet sent off on its own, and the name reflects this send-and-forget nature.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ポート番号",
+      "term_zh": "端口号",
+      "term_en": "Port Number",
+      "one_jp": "**ポート番号** は、1 台のコンピュータの中で動く複数の通信アプリケーションのうち、どれ宛ての通信かを見分ける番号である。",
+      "one_zh": "**端口号**（[[jp:ポート番号]]）是用来分辨通信发给一台计算机中运行的多个通信应用程序里哪一个的编号。",
+      "one_en": "A **port number** ([[jp:ポート番号]]) tells which of the communication applications running on one computer the traffic is for.",
+      "detail_jp": "IP アドレスがネットワーク上の機器を特定するのに対し、ポート番号はその機器の中の宛先アプリケーションを特定する。番号は TCP や UDP が扱い、0〜65535 の範囲をとる。よく使うサービスにはあらかじめ番号が割り当てられており (ウェルノウンポート)、例えば HTTP は 80 番、HTTPS は 443 番を使う。",
+      "detail_zh": "IP 地址用来确定网络上的设备，而端口号用来确定该设备中的目标应用程序。端口号由 TCP 和 UDP 处理，取值范围为 0～65535。常用服务预先分配了编号（知名端口），例如 HTTP 用 80 号，HTTPS 用 443 号。",
+      "detail_en": "An IP address pinpoints a device on the network, while a port number pinpoints the destination application inside that device. Port numbers are handled by TCP and UDP and range from 0 to 65535. Common services have numbers assigned in advance, called well-known ports: HTTP uses 80 and HTTPS uses 443, for example.",
+      "analogy_jp": "会社の住所に届いた郵便物を、宛名の部署名を見て各部署の棚へ仕分けるようなもの。住所が IP アドレス、部署名がポート番号にあたる。",
+      "analogy_zh": "就像把寄到公司地址的邮件，按收件人写的部门名分到各部门的信架上。地址相当于 IP 地址，部门名相当于端口号。",
+      "analogy_en": "It is like mail delivered to a company's address being sorted onto each department's shelf by the department name on it. The address is the IP address, and the department name is the port number.",
+      "hook_jp": "ポートは英語で「港」。船 (データ) が同じ島 (機器) に着いても、どの港に入るかで行き先の町 (アプリケーション) が決まる。",
+      "hook_zh": "port 在英语里是“港口”的意思。船（数据）即使到了同一座岛（设备），进哪个港口决定了它去往哪座城镇（应用程序）。",
+      "hook_en": "Port means harbor. Ships (data) may reach the same island (device), but the harbor they enter decides which town (application) they go to.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ポート番号は機器の中で動く通信アプリケーションを識別する値で、ネットワーク上の機器を識別する IP アドレスとは役割が分かれている。",
+          "text_zh": "端口号（[[jp:ポート番号]]）是识别设备中运行的通信应用程序的值，与识别网络上设备的 IP 地址（[[jp:IPアドレス]]）分工不同。",
+          "text_en": "A port number ([[jp:ポート番号]]) identifies a communication application running inside a device, a different job from the IP address ([[jp:IPアドレス]]), which identifies a device on the network.",
+          "qids": [
+            "2009h21a-q055",
+            "2010h22h-q080",
+            "2020r02o-q067"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "1 台のサーバが複数のサービスを提供していても、利用する側はポート番号を指定することで、使いたいサービスを選び分けられる。",
+          "text_zh": "即使一台服务器（[[jp:サーバ]]）提供多种服务（[[jp:サービス]]），使用方也能通过指定端口号来选择想用的服务。",
+          "text_en": "Even when one server ([[jp:サーバ]]) offers several services ([[jp:サービス]]), users can pick the service they want by specifying its port number.",
+          "qids": [
+            "2024r06-q092"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "send",
+              "label": {
+                "jp": "送信側が宛先の IP アドレスとポート番号を付けて送る",
+                "zh": "发送方附上目标 IP 地址和端口号后发送",
+                "en": "The sender attaches the destination IP address and port number"
+              }
+            },
+            {
+              "id": "host",
+              "label": {
+                "jp": "IP アドレスで宛先の機器に届く",
+                "zh": "凭 IP 地址到达目标设备",
+                "en": "The IP address gets it to the destination device"
+              }
+            },
+            {
+              "id": "app",
+              "label": {
+                "jp": "ポート番号で機器の中のアプリケーションに渡る",
+                "zh": "凭端口号交给设备中的应用程序",
+                "en": "The port number hands it to the application inside"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "データには、宛先を示す 2 種類の番号が付いている。",
+            "caption_zh": "数据上附有表示目的地的两种编号。",
+            "caption_en": "The data carries two kinds of numbers that show where it is going.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "まず IP アドレスによって、ネットワーク上の宛先の機器が決まる。",
+            "caption_zh": "首先由 IP 地址确定网络上的目标设备。",
+            "caption_en": "First, the IP address decides the destination device on the network.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "次にポート番号によって、その機器の中で受け取るアプリケーションが決まる。",
+            "caption_zh": "接着由端口号确定该设备中负责接收的应用程序。",
+            "caption_en": "Next, the port number decides which application in that device receives it.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21a-q055",
+        "2024r06-q092"
+      ],
+      "definition_jp": "ポート番号 は、1 台のコンピュータの中で動く複数の通信アプリケーションのうち、どれ宛ての通信かを見分ける番号である。",
+      "definition_zh": "端口号（ポート番号）是用来分辨通信发给一台计算机中运行的多个通信应用程序里哪一个的编号。",
+      "definition_en": "A port number (ポート番号) tells which of the communication applications running on one computer the traffic is for.",
+      "explanation_jp": "IP アドレスがネットワーク上の機器を特定するのに対し、ポート番号はその機器の中の宛先アプリケーションを特定する。番号は TCP や UDP が扱い、0〜65535 の範囲をとる。よく使うサービスにはあらかじめ番号が割り当てられており (ウェルノウンポート)、例えば HTTP は 80 番、HTTPS は 443 番を使う。",
+      "explanation_zh": "IP 地址用来确定网络上的设备，而端口号用来确定该设备中的目标应用程序。端口号由 TCP 和 UDP 处理，取值范围为 0～65535。常用服务预先分配了编号（知名端口），例如 HTTP 用 80 号，HTTPS 用 443 号。",
+      "explanation_en": "An IP address pinpoints a device on the network, while a port number pinpoints the destination application inside that device. Port numbers are handled by TCP and UDP and range from 0 to 65535. Common services have numbers assigned in advance, called well-known ports: HTTP uses 80 and HTTPS uses 443, for example.",
+      "memory_hook_jp": "ポートは英語で「港」。船 (データ) が同じ島 (機器) に着いても、どの港に入るかで行き先の町 (アプリケーション) が決まる。",
+      "memory_hook_zh": "port 在英语里是“港口”的意思。船（数据）即使到了同一座岛（设备），进哪个港口决定了它去往哪座城镇（应用程序）。",
+      "memory_hook_en": "Port means harbor. Ships (data) may reach the same island (device), but the harbor they enter decides which town (application) they go to.",
+      "inline_quiz": [
+        "2009h21a-q055",
+        "2024r06-q092"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "HTTP",
+      "term_zh": "HTTP",
+      "term_en": "HTTP",
+      "one_jp": "**HTTP** は、Web ブラウザと Web サーバの間で Web ページのデータをやり取りするための、アプリケーション層のプロトコルである。",
+      "one_zh": "**HTTP** 是在 Web 浏览器与 Web 服务器之间交换网页数据的应用层协议。",
+      "one_en": "**HTTP** is the application-layer protocol a web browser and a web server use to exchange web page data.",
+      "detail_jp": "ブラウザが欲しいページを **リクエスト** (要求) として送り、サーバがその内容を **レスポンス** (応答) として返す、という往復で通信が進む。データを確実に運ぶ部分は、HTTP/1.1 や HTTP/2 ではトランスポート層の TCP に任せ、通常のポート番号は 80 番を使う。",
+      "detail_zh": "浏览器把想看的页面作为 **请求**（[[jp:リクエスト]]）发出，服务器把相应内容作为 **响应**（[[jp:レスポンス]]）返回，通信就靠这样的往返进行。在 HTTP/1.1 和 HTTP/2 中，可靠传送数据的部分交给传输层的 TCP，通常的端口号是 80 号。",
+      "detail_en": "The browser sends the page it wants as a **request** ([[jp:リクエスト]]), and the server returns the content as a **response** ([[jp:レスポンス]]); communication proceeds through these round trips. In HTTP/1.1 and HTTP/2, reliable delivery of the data is left to TCP at the transport layer, and port 80 is the usual number.",
+      "analogy_jp": "レストランで料理を注文すると、その料理が運ばれてくるやり取りのようなもの。1 回の注文に対して 1 回の提供が返ってくる。",
+      "analogy_zh": "就像在餐厅点菜后，那道菜被端上来的过程。一次点菜，就对应一次上菜。",
+      "analogy_en": "It is like ordering a dish at a restaurant and having it brought to your table. Each order gets one serving in return.",
+      "hook_jp": "HyperText Transfer Protocol の Transfer は「転送」。リンクでつながった文書 (ハイパーテキスト) を転送する手順、と名前を分解すれば役割が読める。",
+      "hook_zh": "HyperText Transfer Protocol 中的 Transfer 是“传送”。拆开名称来看，就是传送用链接相连的文档（超文本）的规程，作用一目了然。",
+      "hook_en": "The Transfer in HyperText Transfer Protocol means moving data. Break the name down and it reads as a procedure for transferring linked documents (hypertext), which is exactly its job.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "HTTP はアプリケーション層に属するプロトコルで、Web ページを閲覧するときのブラウザとサーバの間のやり取りを定める。",
+          "text_zh": "HTTP 属于应用层（[[jp:アプリケーション層]]）协议，规定浏览网页时浏览器与服务器（[[jp:サーバ]]）之间的交互。",
+          "text_en": "HTTP belongs to the application layer ([[jp:アプリケーション層]]) and defines how a browser and a server ([[jp:サーバ]]) interact when you view a web page.",
+          "qids": [
+            "2010h22a-q065"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "HTML は Web ページの中身や見た目を記述する言語、HTTP はそのデータを運ぶ通信手順であり、名前は似ていても役割が違う。",
+          "text_zh": "HTML 是描述网页内容和外观的语言，HTTP 是传送这些数据的通信规程，两者名称相似，作用却不同。",
+          "text_en": "HTML is a language that describes the content and appearance of a web page, while HTTP is the communication procedure that carries that data; the names look alike but the roles differ."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "req",
+              "label": {
+                "jp": "ブラウザが見たいページを要求する",
+                "zh": "浏览器请求想看的页面",
+                "en": "The browser asks for a page"
+              }
+            },
+            {
+              "id": "res",
+              "label": {
+                "jp": "サーバがページのデータを応答として返す",
+                "zh": "服务器把页面数据作为响应返回",
+                "en": "The server returns the page data as a response"
+              }
+            },
+            {
+              "id": "show",
+              "label": {
+                "jp": "ブラウザが受け取ったデータを表示する",
+                "zh": "浏览器显示收到的数据",
+                "en": "The browser displays what it received"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "ブラウザは、欲しいページを指定したリクエストをサーバへ送る。",
+            "caption_zh": "浏览器向服务器发送指定了所需页面的请求。",
+            "caption_en": "The browser sends the server a request naming the page it wants.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "サーバは、指定されたページの HTML をレスポンスとして返す。",
+            "caption_zh": "服务器把所指定页面的 HTML 作为响应返回。",
+            "caption_en": "The server sends back the requested page's HTML as a response.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "ブラウザが受け取ったデータを画面に表示し、1 往復が終わる。画像などは、同じ往復をくり返して取り寄せる。",
+            "caption_zh": "浏览器把收到的数据显示在画面上，一次往返结束。图片等内容通过重复同样的往返来获取。",
+            "caption_en": "The browser displays the data it received, and one round trip is complete. Images and other files are fetched by repeating the same round trip.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2010h22a-q065"
+      ],
+      "definition_jp": "HTTP は、Web ブラウザと Web サーバの間で Web ページのデータをやり取りするための、アプリケーション層のプロトコルである。",
+      "definition_zh": "HTTP 是在 Web 浏览器与 Web 服务器之间交换网页数据的应用层协议。",
+      "definition_en": "HTTP is the application-layer protocol a web browser and a web server use to exchange web page data.",
+      "explanation_jp": "ブラウザが欲しいページを リクエスト (要求) として送り、サーバがその内容を レスポンス (応答) として返す、という往復で通信が進む。データを確実に運ぶ部分は、HTTP/1.1 や HTTP/2 ではトランスポート層の TCP に任せ、通常のポート番号は 80 番を使う。",
+      "explanation_zh": "浏览器把想看的页面作为 请求（リクエスト）发出，服务器把相应内容作为 响应（レスポンス）返回，通信就靠这样的往返进行。在 HTTP/1.1 和 HTTP/2 中，可靠传送数据的部分交给传输层的 TCP，通常的端口号是 80 号。",
+      "explanation_en": "The browser sends the page it wants as a request (リクエスト), and the server returns the content as a response (レスポンス); communication proceeds through these round trips. In HTTP/1.1 and HTTP/2, reliable delivery of the data is left to TCP at the transport layer, and port 80 is the usual number.",
+      "memory_hook_jp": "HyperText Transfer Protocol の Transfer は「転送」。リンクでつながった文書 (ハイパーテキスト) を転送する手順、と名前を分解すれば役割が読める。",
+      "memory_hook_zh": "HyperText Transfer Protocol 中的 Transfer 是“传送”。拆开名称来看，就是传送用链接相连的文档（超文本）的规程，作用一目了然。",
+      "memory_hook_en": "The Transfer in HyperText Transfer Protocol means moving data. Break the name down and it reads as a procedure for transferring linked documents (hypertext), which is exactly its job.",
       "inline_quiz": [
         "2010h22a-q065"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "HTTP",
-      "term_en": "HTTP",
-      "definition_zh": "在 Web 浏览器与 Web 服务器之间收发网页的通信协议。",
-      "definition_en": "A communication protocol for exchanging web pages between a web browser and a web server.",
-      "explanation_zh": "HTTP（HyperText Transfer Protocol，超文本传输协议）是在 Web 浏览器与 Web 服务器之间收发 HTML 文档、图片等 Web 内容的通信规约。它使用传输层的 TCP，端口号通常用 80 号。\n\n通信以「请求—应答」成对进行：浏览器向服务器发出「请把这个页面给我」的请求（request），服务器返回内容（response）。考试中会考查 HTTP 是 Web 通信的基本协议、端口 80 号，以及它与后面要讲的 HTTPS 的区别（是否加密）。",
-      "explanation_en": "HTTP (HyperText Transfer Protocol) is the communication convention for exchanging web content such as HTML documents and images between a web browser and a web server. It uses TCP at the transport layer and normally uses port 80.\n\nCommunication takes place as request-and-response pairs: the browser sends the server a request saying \"please give me this page\" (request), and the server returns the content (response). On the exam, you are asked that HTTP is the basic protocol of web communication, port 80, and the difference from HTTPS discussed later (whether or not it is encrypted).",
-      "analogy_zh": "就像在图书馆窗口递上「请给我这本书」的申请单，工作人员把书递给你的那种往来。请求和应答成对地构成一次交互。",
-      "analogy_en": "It's like the exchange at a library counter where you hand in a request slip saying \"please give me this book\" and a staff member hands you the book. A request and a response form one interaction as a pair.",
-      "memory_hook_zh": "说到 HTTP，就是收发网页的通信协议（端口 80）。",
-      "memory_hook_en": "HTTP → the communication protocol that exchanges web pages (port 80)."
+      "figure": null
     },
     {
       "term": "HTTPS",
-      "definition_jp": "HTTP通信をTLS/SSLで暗号化し安全にした通信プロトコル。",
-      "explanation_jp": "HTTPS は、HTTP の通信内容を TLS(SSL)という暗号化のしくみで保護したものです。通信が暗号化されるため、途中で盗み見されても内容が読まれにくく、通信相手のサーバが本物かどうかも電子証明書で確認できます。ポート番号は通常443番を使います。\n\nID・パスワードやクレジットカード番号など、機密性が必要な通信で広く使われます。試験では、HTTP との違いが「暗号化の有無」である点、ブラウザの鍵マークや URL の『https://』が安全な通信を示すこと、TLS/SSL による保護であることが問われます。",
-      "analogy_jp": "HTTP がはがきでのやり取りなら、HTTPS は中身が見えない封筒に入れて封印した手紙のようなもの。途中の配達人にも内容を読まれずに届けられます。",
-      "memory_hook_jp": "HTTPSといえばHTTPをTLS/SSLで暗号化した安全な通信(ポート443)",
-      "inline_quiz": [
-        "2012h24h-q080"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "HTTPS",
       "term_en": "HTTPS",
-      "definition_zh": "用 TLS/SSL 对 HTTP 通信加密、使其更安全的通信协议。",
-      "definition_en": "A communication protocol that encrypts HTTP communication with TLS/SSL to make it secure.",
-      "explanation_zh": "HTTPS 是用 TLS（SSL）这种加密机制保护 HTTP 通信内容的协议。由于通信被加密，即便在途中被窃看也难以被读取，还能通过数字证书确认对方服务器是否为真。端口号通常用 443 号。\n\n它广泛用于 ID、密码、信用卡号等需要机密性的通信。考试中会考查它与 HTTP 的区别在于「是否加密」、浏览器的锁形图标和 URL 中的「https://」表示安全通信，以及它是通过 TLS/SSL 来保护的。",
-      "explanation_en": "HTTPS protects the content of HTTP communication with an encryption mechanism called TLS (SSL). Because the communication is encrypted, even if it is eavesdropped on along the way the content is hard to read, and you can also verify with a digital certificate whether the server you are communicating with is genuine. The port number is normally 443.\n\nIt is widely used for communication that requires confidentiality, such as IDs, passwords, and credit card numbers. On the exam, you are asked that the difference from HTTP is \"whether or not it is encrypted,\" that the browser's lock icon and \"https://\" in the URL indicate secure communication, and that it is protection by TLS/SSL.",
-      "analogy_zh": "如果说 HTTP 是用明信片来往，那么 HTTPS 就像把信纸装进看不见内容的信封并封口的信件。途中的投递员也读不到内容，就能送达。",
-      "analogy_en": "If HTTP is corresponding by postcard, HTTPS is like a letter sealed inside an envelope whose contents can't be seen. It can be delivered without even the carrier along the way reading the content.",
-      "memory_hook_zh": "说到 HTTPS，就是用 TLS/SSL 给 HTTP 加密的安全通信（端口 443）。",
-      "memory_hook_en": "HTTPS → secure communication that encrypts HTTP with TLS/SSL (port 443)."
+      "one_jp": "**HTTPS** は、HTTP の通信を **SSL/TLS** で暗号化し、あわせて通信相手のサーバが本物かを確かめられるようにしたプロトコルである。",
+      "one_zh": "**HTTPS** 是用 **SSL/TLS** 对 HTTP 通信进行加密，同时能确认通信对方的服务器是否真实的协议。",
+      "one_en": "**HTTPS** is a protocol that encrypts HTTP traffic with **SSL/TLS** and also lets you check that the server you are talking to is genuine.",
+      "detail_jp": "**SSL/TLS** は、通信内容の暗号化と、電子証明書を使ったサーバの認証を担うしくみである。パスワードやクレジットカード番号のように、他人に知られてはならない情報を扱うページで広く使われる。URL は「https://」で始まり、通常のポート番号は 443 番を使う。",
+      "detail_zh": "**SSL/TLS** 是负责通信内容加密，以及利用电子证书进行服务器认证的机制。在处理口令（密码）、信用卡号等不能让他人知道的信息的页面上被广泛使用。URL 以“https://”开头，通常的端口号是 443 号。",
+      "detail_en": "**SSL/TLS** is the mechanism that encrypts communication and authenticates servers using digital certificates. It is widely used on pages that handle information others must not see, such as passwords and credit card numbers. The URL starts with \"https://\", and port 443 is the usual number.",
+      "analogy_jp": "はがきで送っていた文面を、封をした封筒に入れてやり取りするようなもの。運ぶ途中の人には中身が見えず、店 (サーバ) からの封筒には公の証明印が押してあるので、客 (ブラウザ) は相手が本物の店かを確かめられる。",
+      "analogy_zh": "就像把原来写在明信片上的内容，改为装进封好的信封里往来。运送途中的人看不到内容，而且商店（服务器）寄来的信封上盖有公认的证明印章，顾客（浏览器）可以确认对方是不是真正的商店。",
+      "analogy_en": "It is like moving messages from postcards into sealed envelopes. People handling them on the way cannot see inside, and the envelopes from the shop (the server) carry an officially certified seal, so the customer (the browser) can confirm the shop is genuine.",
+      "hook_jp": "末尾の S は Secure (安全) の頭文字。HTTP に 1 文字足しただけの名前で、URL の先頭もこの 5 文字になる。",
+      "hook_zh": "末尾的 S 是 Secure（安全）的首字母。名称只是在 HTTP 后加了 1 个字母，URL 的开头也就是这 5 个字母。",
+      "hook_en": "The final S stands for Secure. The name just adds one letter to HTTP, and those five letters also open the URL.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "HTTPS を使う目的は、SSL/TLS によってサーバを認証し、やり取りする内容を暗号化して、Web 通信の安全を確保することにある。",
+          "text_zh": "使用 HTTPS 的目的，是通过 SSL/TLS 认证服务器（[[jp:サーバ]]）并对交换的内容进行加密（[[jp:暗号化]]），从而确保 Web 通信的安全。",
+          "text_en": "HTTPS is used to secure web traffic: SSL/TLS authenticates the server ([[jp:サーバ]]) and encrypts ([[jp:暗号化]]) the content exchanged.",
+          "qids": [
+            "2012h24h-q080",
+            "2013h25a-q073"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "HTTP を HTTPS に切り替えると、通信内容が第三者に読み取られにくくなり、機密性が保たれる。",
+          "text_zh": "把 HTTP 换成 HTTPS 后，通信内容不易被第三方读取，机密性（[[jp:機密性]]）得以保持。",
+          "text_en": "Switching from HTTP to HTTPS makes the traffic harder for third parties to read, which preserves confidentiality ([[jp:機密性]]).",
+          "qids": [
+            "2016h28h-q056"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "HTTPS の暗号化は、ブラウザから送る内容にもサーバから返ってくる内容にもかかる。",
+          "text_zh": "HTTPS 的加密既作用于浏览器发出的内容，也作用于服务器返回的内容。",
+          "text_en": "HTTPS encryption covers both what the browser sends and what the server sends back.",
+          "qids": [
+            "2015h27h-q083"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2012h24h-q080",
+        "2015h27h-q083"
+      ],
+      "definition_jp": "HTTPS は、HTTP の通信を SSL/TLS で暗号化し、あわせて通信相手のサーバが本物かを確かめられるようにしたプロトコルである。",
+      "definition_zh": "HTTPS 是用 SSL/TLS 对 HTTP 通信进行加密，同时能确认通信对方的服务器是否真实的协议。",
+      "definition_en": "HTTPS is a protocol that encrypts HTTP traffic with SSL/TLS and also lets you check that the server you are talking to is genuine.",
+      "explanation_jp": "SSL/TLS は、通信内容の暗号化と、電子証明書を使ったサーバの認証を担うしくみである。パスワードやクレジットカード番号のように、他人に知られてはならない情報を扱うページで広く使われる。URL は「https://」で始まり、通常のポート番号は 443 番を使う。",
+      "explanation_zh": "SSL/TLS 是负责通信内容加密，以及利用电子证书进行服务器认证的机制。在处理口令（密码）、信用卡号等不能让他人知道的信息的页面上被广泛使用。URL 以“https://”开头，通常的端口号是 443 号。",
+      "explanation_en": "SSL/TLS is the mechanism that encrypts communication and authenticates servers using digital certificates. It is widely used on pages that handle information others must not see, such as passwords and credit card numbers. The URL starts with \"https://\", and port 443 is the usual number.",
+      "memory_hook_jp": "末尾の S は Secure (安全) の頭文字。HTTP に 1 文字足しただけの名前で、URL の先頭もこの 5 文字になる。",
+      "memory_hook_zh": "末尾的 S 是 Secure（安全）的首字母。名称只是在 HTTP 后加了 1 个字母，URL 的开头也就是这 5 个字母。",
+      "memory_hook_en": "The final S stands for Secure. The name just adds one letter to HTTP, and those five letters also open the URL.",
+      "inline_quiz": [
+        "2012h24h-q080",
+        "2015h27h-q083"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "HTTP",
+      "b": "HTTPS",
+      "rows": [
+        {
+          "label_jp": "通信内容の暗号化",
+          "label_zh": "通信内容的加密",
+          "label_en": "Encryption of content",
+          "a_jp": "しない (そのまま送る)",
+          "a_zh": "不加密（原样发送）",
+          "a_en": "None (sent as is)",
+          "b_jp": "SSL/TLS で暗号化する",
+          "b_zh": "用 SSL/TLS 加密",
+          "b_en": "Encrypted with SSL/TLS",
+          "key": true
+        },
+        {
+          "label_jp": "サーバの認証",
+          "label_zh": "服务器认证",
+          "label_en": "Server authentication",
+          "a_jp": "行わない",
+          "a_zh": "不进行",
+          "a_en": "None",
+          "b_jp": "電子証明書で本物かを確かめる",
+          "b_zh": "用电子证书确认是否真实",
+          "b_en": "Checked as genuine with a digital certificate",
+          "key": false
+        },
+        {
+          "label_jp": "通常のポート番号",
+          "label_zh": "通常的端口号",
+          "label_en": "Usual port number",
+          "a_jp": "80 番",
+          "a_zh": "80 号",
+          "a_en": "80",
+          "b_jp": "443 番",
+          "b_zh": "443 号",
+          "b_en": "443",
+          "key": false
+        },
+        {
+          "label_jp": "URL の先頭",
+          "label_zh": "URL 的开头",
+          "label_en": "Start of the URL",
+          "a_jp": "http://",
+          "a_zh": "http://",
+          "a_en": "http://",
+          "b_jp": "https://",
+          "b_zh": "https://",
+          "b_en": "https://",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**通信プロトコル** はデータをやり取りするための約束事で、**TCP/IP** はそれを 4 階層に整理したインターネット標準の体系である。",
+    "**UDP** は接続の確立も到達の確認もせずに送り出す方式で、遅れを小さくしたい通信に使われる。",
+    "宛先は IP アドレスで機器まで、**ポート番号** で機器の中のアプリケーションまで決まる。",
+    "**HTTP** はリクエストとレスポンスの往復で Web ページを運ぶアプリケーション層のプロトコルである。",
+    "**HTTPS** は SSL/TLS により、両方向の暗号化とサーバの認証を HTTP に加えたものである。"
+  ],
+  "key_points_zh": [
+    "**通信协议**是交换数据所用的约定，**TCP/IP** 是把它整理成 4 个层次的互联网标准体系。",
+    "**UDP** 既不建立连接也不确认送达就直接发送，用于希望减小延迟的通信。",
+    "目的地先由 IP 地址确定到设备，再由 **端口号** 确定到设备中的应用程序。",
+    "**HTTP** 是靠请求与响应的往返来传送网页的应用层协议。",
+    "**HTTPS** 借助 SSL/TLS，为 HTTP 加上了双向加密和服务器认证。"
+  ],
+  "key_points_en": [
+    "A **communication protocol** is an agreed set of rules for exchanging data, and **TCP/IP** is the Internet-standard family that organizes such rules into four layers.",
+    "**UDP** sends data without setting up a connection or checking delivery, and is used where low delay matters.",
+    "The IP address takes data to the right device, and the **port number** takes it to the right application inside.",
+    "**HTTP** is the application-layer protocol that carries web pages through request-response round trips.",
+    "**HTTPS** uses SSL/TLS to add encryption in both directions and server authentication to HTTP."
+  ],
+  "overview": {
+    "intro_jp": "TCP/IP の 4 階層について、代表的なプロトコルがどの層で何を受け持つかを分けられる。ポート番号 と IP アドレスが、それぞれ何を識別するのかを区別できる。HTTPS が HTTP に加えるものを、暗号化とサーバの認証の 2 点で説明できる。",
+    "intro_zh": "能分清 TCP/IP 的 4 个层次中，代表性协议各属于哪一层、各负责什么。能区分 端口号（ポート番号）和 IP 地址各自用来识别什么。能从加密和服务器认证两方面，说明 HTTPS 在 HTTP 基础上增加了什么。",
+    "intro_en": "Sort the main protocols of the four TCP/IP layers by which layer they belong to and what they handle. Tell what a port number (ポート番号) identifies and what an IP address identifies. Explain what HTTPS adds to HTTP in two respects: encryption and server authentication.",
+    "freq_badge": "標準",
+    "est_minutes": 35
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "TCP/IP: TCP/IPといえばインターネット標準の階層型プロトコル体系",
-      "UDP: UDPといえば確認なしで高速だが信頼性は保証しない",
-      "ポート番号: ポート番号といえば機器内のサービスを識別する番号(HTTP=80,HTTPS=443)",
-      "HTTP: HTTPといえばWebページをやり取りする通信プロトコル(ポート80)",
-      "HTTPS: HTTPSといえばHTTPをTLS/SSLで暗号化した安全な通信(ポート443)"
-    ],
     "key_points_jp": [
-      "TCP/IP はインターネット標準のプロトコル体系で、アプリケーション層・トランスポート層・インターネット層・ネットワークインタフェース層の4階層で表される。",
-      "トランスポート層には、確実に届ける TCP と、高速だが信頼性を保証しない UDP の2方式がある。",
-      "ポート番号は1台の機器内でどのサービス宛ての通信かを識別する番号で、IP アドレス(機器の特定)と役割が異なる。",
-      "HTTP は Web ページをやり取りする基本プロトコルでポート80番を使う。",
-      "HTTPS は HTTP を TLS/SSL で暗号化した安全な通信でポート443番を使い、HTTP との違いは暗号化の有無である。"
+      "通信プロトコル はデータをやり取りするための約束事で、TCP/IP はそれを 4 階層に整理したインターネット標準の体系である。",
+      "UDP は接続の確立も到達の確認もせずに送り出す方式で、遅れを小さくしたい通信に使われる。",
+      "宛先は IP アドレスで機器まで、ポート番号 で機器の中のアプリケーションまで決まる。",
+      "HTTP はリクエストとレスポンスの往復で Web ページを運ぶアプリケーション層のプロトコルである。",
+      "HTTPS は SSL/TLS により、両方向の暗号化とサーバの認証を HTTP に加えたものである。"
     ],
     "key_points_zh": [
-      "TCP/IP 是互联网标准的协议体系，用应用层、传输层、互联网层、网络接口层这 4 层来表示。",
-      "传输层有两种方式：可靠送达的 TCP，以及高速但不保证可靠性的 UDP。",
-      "端口号是在一台设备内识别通信发往哪个服务的编号，与 IP 地址（确定设备）职责不同。",
-      "HTTP 是收发网页的基本协议，使用端口 80 号。",
-      "HTTPS 是用 TLS/SSL 给 HTTP 加密的安全通信，使用端口 443 号，与 HTTP 的区别在于是否加密。"
+      "通信协议是交换数据所用的约定，TCP/IP 是把它整理成 4 个层次的互联网标准体系。",
+      "UDP 既不建立连接也不确认送达就直接发送，用于希望减小延迟的通信。",
+      "目的地先由 IP 地址确定到设备，再由 端口号 确定到设备中的应用程序。",
+      "HTTP 是靠请求与响应的往返来传送网页的应用层协议。",
+      "HTTPS 借助 SSL/TLS，为 HTTP 加上了双向加密和服务器认证。"
     ],
     "key_points_en": [
-      "TCP/IP is the internet's standard protocol suite, expressed in four layers: application, transport, internet, and network interface.",
-      "The transport layer has two methods: TCP, which delivers reliably, and UDP, which is fast but does not guarantee reliability.",
-      "A port number is the number that identifies which service the communication is addressed to within a single device, and its role differs from an IP address (which identifies the device).",
-      "HTTP is the basic protocol for exchanging web pages, and it uses port 80.",
-      "HTTPS is secure communication that encrypts HTTP with TLS/SSL, uses port 443, and differs from HTTP in whether or not it is encrypted."
+      "A communication protocol is an agreed set of rules for exchanging data, and TCP/IP is the Internet-standard family that organizes such rules into four layers.",
+      "UDP sends data without setting up a connection or checking delivery, and is used where low delay matters.",
+      "The IP address takes data to the right device, and the port number takes it to the right application inside.",
+      "HTTP is the application-layer protocol that carries web pages through request-response round trips.",
+      "HTTPS uses SSL/TLS to add encryption in both directions and server authentication to HTTP."
+    ],
+    "memory_hooks_jp": [
+      "TCP/IP: 名前は中心にある 2 つのプロトコル、TCP と IP を斜線でつないだもの。体系全体の呼び名として使うときは、それ以外の多くのプロトコルも含む。",
+      "UDP: 正式名は User Datagram Protocol。データグラムは 1 個ずつ送り切る小包のことで、送ったら終わりという性格が名前に表れている。",
+      "ポート番号: ポートは英語で「港」。船 (データ) が同じ島 (機器) に着いても、どの港に入るかで行き先の町 (アプリケーション) が決まる。",
+      "HTTP: HyperText Transfer Protocol の Transfer は「転送」。リンクでつながった文書 (ハイパーテキスト) を転送する手順、と名前を分解すれば役割が読める。",
+      "HTTPS: 末尾の S は Secure (安全) の頭文字。HTTP に 1 文字足しただけの名前で、URL の先頭もこの 5 文字になる。"
     ],
     "memory_hooks_zh": [
-      "TCP/IP：说到 TCP/IP，就是互联网标准的分层式协议体系。",
-      "UDP：说到 UDP，就是不做确认、高速但不保证可靠性。",
-      "端口号：说到端口号，就是识别设备内服务的编号（HTTP=80，HTTPS=443）。",
-      "HTTP：说到 HTTP，就是收发网页的通信协议（端口 80）。",
-      "HTTPS：说到 HTTPS，就是用 TLS/SSL 给 HTTP 加密的安全通信（端口 443）。"
+      "TCP/IP：这个名称是用斜线把位于核心的两个协议 TCP 和 IP 连在一起。作为整个体系的名称使用时，也包括除此之外的许多协议。",
+      "UDP：正式名称是 User Datagram Protocol。数据报（datagram）指一个个独立发出的小包，“发出去就结束”的性质体现在名称里。",
+      "端口号：port 在英语里是“港口”的意思。船（数据）即使到了同一座岛（设备），进哪个港口决定了它去往哪座城镇（应用程序）。",
+      "HTTP：HyperText Transfer Protocol 中的 Transfer 是“传送”。拆开名称来看，就是传送用链接相连的文档（超文本）的规程，作用一目了然。",
+      "HTTPS：末尾的 S 是 Secure（安全）的首字母。名称只是在 HTTP 后加了 1 个字母，URL 的开头也就是这 5 个字母。"
     ],
     "memory_hooks_en": [
-      "TCP/IP: TCP/IP → the internet's standard layered protocol suite.",
-      "UDP: UDP → no acknowledgment, fast but reliability is not guaranteed.",
-      "Port number: Port number → the number that identifies a service within a device (HTTP=80, HTTPS=443).",
-      "HTTP: HTTP → the communication protocol that exchanges web pages (port 80).",
-      "HTTPS: HTTPS → secure communication that encrypts HTTP with TLS/SSL (port 443)."
+      "TCP/IP: The name joins the two core protocols, TCP and IP, with a slash. Used as the name of the whole family, it also covers many other protocols.",
+      "UDP: Its full name is User Datagram Protocol. A datagram is a small packet sent off on its own, and the name reflects this send-and-forget nature.",
+      "Port Number: Port means harbor. Ships (data) may reach the same island (device), but the harbor they enter decides which town (application) they go to.",
+      "HTTP: The Transfer in HyperText Transfer Protocol means moving data. Break the name down and it reads as a procedure for transferring linked documents (hypertext), which is exactly its job.",
+      "HTTPS: The final S stands for Secure. The name just adds one letter to HTTP, and those five letters also open the URL."
     ]
   },
   "challenge_questions": [
-    "2012h24a-q077",
+    "2010h22h-q080",
     "2015h27a-q077",
     "2016h28h-q056",
-    "2020r02o-q067",
-    "2016h28a-q065"
+    "2013h25a-q073",
+    "2020r02o-q067"
   ],
   "source_figures": [
     {
@@ -201,9 +841,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "TCP/IP 与 Web 协议",
-  "title_en": "TCP/IP and Web Protocols",
-  "unit_summary_zh": "掌握作为互联网基础的 TCP/IP 体系结构、传输层与端口号，并在此基础上理解运行其上的 HTTP/HTTPS。",
-  "unit_summary_en": "Grasp the TCP/IP architecture that forms the foundation of the internet, the transport layer and port numbers, and on that basis understand HTTP/HTTPS, which run on top of it."
+  }
 }
