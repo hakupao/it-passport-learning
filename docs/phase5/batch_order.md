@@ -50,7 +50,7 @@
 | b41 | technology-13-35 | 情報に関する理論 (1/2) | u01 u02 u03 u04 u05 | 35 | 25 | done |
 | b42 | technology-13-35 | 情報に関する理論 (2/2) | u06 u07 | 35 | 12 | done |
 | b43 | technology-15-41 | メモリ | u01 u02 u03 u04 | 35 | 25 | done |
-| b44 | management-11-28 | サービスマネジメント | u01 | 34 | 5 | todo |
+| b44 | management-11-28 | サービスマネジメント | u01 | 34 | 5 | done |
 | b45 | strategy-03-12 | 経営管理システム | u01 u02 | 34 | 10 | todo |
 | b46 | strategy-05-15 | エンジニアリングシステム | u01 u02 | 34 | 9 | todo |
 | b47 | technology-22-59 | 通信プロトコル | u01 u02 u03 | 34 | 19 | todo |

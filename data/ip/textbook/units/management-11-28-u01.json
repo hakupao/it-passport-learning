@@ -1,201 +1,690 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "management-11-28-u01",
   "topic_id": "management-11-28",
   "category": "management",
   "title_jp": "サービスマネジメントの基礎とサービスレベル管理",
+  "title_zh": "服务管理基础与服务级别管理",
+  "title_en": "Fundamentals of Service Management and Service Level Management",
   "unit_summary_jp": "サービスという概念から ITIL の枠組み、SLA・SLO・SLI によるサービス品質の合意と測定までを一続きに学ぶ。",
+  "unit_summary_zh": "从服务这一概念出发，到 ITIL 框架，再到通过 SLA、SLO、SLI 对服务质量进行约定与衡量，一气呵成地学习。",
+  "unit_summary_en": "Learn in one continuous flow, from the concept of a service to the ITIL framework, and on to agreeing on and measuring service quality through SLA, SLO, and SLI.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "このユニットでは、IT サービスを安定して提供・運営するための「サービスマネジメント」の土台を学ぶ。サービスとは何かという基礎から、運営のベストプラクティス体系である ITIL、そして品質を顧客と約束し測定するための SLA・SLO・SLI までを一続きに理解する。サービス分野すべての入口となり、ITパスポートでも頻出する重要分野である。",
-    "freq_badge": "標準",
-    "est_minutes": 16,
-    "intro_zh": "本单元学习稳定地提供和运营 IT 服务所需的“服务管理”基础。从服务是什么这一基础出发，到作为运营最佳实践体系的 ITIL，再到用于向客户承诺并衡量质量的 SLA、SLO、SLI，一气呵成地加以理解。它是服务领域全部内容的入口，也是 IT Passport 中的高频重要领域。",
-    "intro_en": "This unit covers the foundations of \"service management\" needed to provide and operate IT services stably. From the basics of what a service is, to ITIL—the body of best practices for operations—and on to SLA, SLO, and SLI for promising and measuring quality to customers, you will understand it all in one continuous flow. It is the entry point to the entire service domain and an important, frequently tested area on the IT Passport exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**サービス** の考え方と、**ITサービスマネジメント** が目指すことを説明できる。",
+    "**ITIL** がどのような性格の文書かを見分けられる。",
+    "SLA で合意し、SLO で目標を置き、SLI で実測するという役割の違いを区別できる。"
+  ],
+  "goals_zh": [
+    "能说明**服务**（[[jp:サービス]]）的思路，以及**IT服务管理**（[[jp:ITサービスマネジメント]]）追求的目标。",
+    "能辨别 **ITIL** 是一种什么性质的文档。",
+    "能区分三者的分工：用 SLA 达成协议，用 SLO 设定目标，用 SLI 进行实测。"
+  ],
+  "goals_en": [
+    "Explain the idea of a **service** ([[jp:サービス]]) and what **IT service management** ([[jp:ITサービスマネジメント]]) aims to achieve.",
+    "Tell what kind of document **ITIL** is.",
+    "Distinguish the roles: the SLA records the agreement, the SLO sets the target, and the SLI measures the actual result."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "例"
+  ],
+  "overview_cols_zh": [
+    "类型",
+    "例子"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "Example"
+  ],
+  "overview_rows": [
     {
       "term": "サービス",
-      "definition_jp": "利用者に価値を提供する手段で、利用者が費用やリスクを負わずに成果を得られる仕組み。",
-      "explanation_jp": "サービスとは、提供者が利用者に「価値」を届ける手段のことです。IT の世界では、メールやクラウド、社内システムの運用などが該当し、利用者は機器の購入や保守といった負担なしに、必要な成果(業務が回る・データが使える)だけを得られます。\n\n試験では、サービスが「モノ(製品)そのもの」ではなく「価値を提供する活動・仕組み」である点が問われます。利用者は所有や管理の手間を負わず、結果としての便益を受け取るという考え方が、以降のサービスマネジメント全体の出発点になります。",
-      "analogy_jp": "電車での移動のようなもの。利用者は車両を買ったり整備したりせず、運賃を払って「目的地まで運ばれる」という価値だけを受け取ります。所有せず成果を得るのがサービスです。",
-      "memory_hook_jp": "サービスといえば所有せず価値だけを受け取る仕組み",
-      "inline_quiz": [
-        "2009h21h-q046",
-        "2011h23tokubetsu-q038"
+      "one_line_jp": "所有や管理を負わずに成果を受け取れる形で価値を届ける仕組み",
+      "one_line_zh": "让用户无需承担拥有和管理之责，就能获得成果的价值提供方式",
+      "one_line_en": "A way of delivering value so users get outcomes without owning or managing anything",
+      "extra_jp": [
+        "考え方",
+        "クラウドのファイル保管"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "服务",
-      "term_en": "Service",
-      "definition_zh": "向用户提供价值的手段，是一种让用户无需承担费用或风险即可获得成果的机制。",
-      "definition_en": "A means of delivering value to users; a mechanism by which users can obtain results without bearing the costs or risks.",
-      "explanation_zh": "服务是指提供方向用户递交“价值”的手段。在 IT 领域，邮件、云、企业内部系统的运营等都属于服务，用户无需承担购买设备或维护等负担，只需获得作为成果的便利（业务能正常运转、数据可用）即可。\n\n考试中会考查服务并非“物品（产品）本身”，而是“提供价值的活动或机制”这一点。用户不承担拥有和管理的麻烦，而是接收作为结果的收益——这一思路是之后整个服务管理的出发点。",
-      "explanation_en": "A service is a means by which a provider delivers \"value\" to users. In the IT world, this includes email, cloud, and the operation of in-house systems; users obtain only the resulting benefit (business runs smoothly, data is usable) without burdens such as buying or maintaining equipment.\n\nThe exam asks whether a service is the \"thing (product) itself\" or the \"activity or mechanism that provides value.\" The idea that users receive the resulting benefit without bearing the effort of ownership and management is the starting point for all of service management that follows.",
-      "analogy_zh": "就像乘电车出行。乘客不用购买或维护车厢，只需付车费，就能获得“被送到目的地”这一价值。不拥有却获得成果，这就是服务。",
-      "analogy_en": "Like traveling by train. Passengers do not buy or maintain the cars; they pay a fare and receive only the value of \"being carried to their destination.\" Obtaining results without owning is what a service is.",
-      "memory_hook_zh": "说到服务，就是不拥有却只接收价值的机制",
-      "memory_hook_en": "Service → a mechanism where you receive only value without owning anything"
+      "extra_zh": [
+        "思路",
+        "云端文件存储"
+      ],
+      "extra_en": [
+        "Concept",
+        "Cloud file storage"
+      ]
     },
     {
       "term": "ITIL",
-      "definition_jp": "IT サービスマネジメントの成功事例(ベストプラクティス)をまとめた国際的なガイドライン集。",
-      "explanation_jp": "ITIL(Information Technology Infrastructure Library)は、IT サービスを効率よく安定して提供するための「うまくいくやり方」を体系的にまとめたベストプラクティス集です。インシデント管理や変更管理など、運用に必要な活動の進め方の手本を示します。\n\n試験では、ITIL が法律や強制規格ではなく「参考にすべき成功事例の集まり(ガイドライン)」である点が問われます。特定の企業の独自手順ではなく、世界中で共有される標準的な枠組みであり、これを土台に SLA などの具体的な管理手法を組み立てるという位置づけを押さえましょう。",
-      "analogy_jp": "料理の「定番レシピ集」のようなもの。必ず守る法律ではなく、先人が成功してきた手順をまとめた手本で、これを参考にすれば誰でも安定した品質に近づけます。",
-      "memory_hook_jp": "ITILといえばITサービス運営のベストプラクティス集",
-      "inline_quiz": [
-        "2009h21a-q042",
-        "2011h23a-q040"
+      "one_line_jp": "ITサービスマネジメントの成功事例を集めた枠組み",
+      "one_line_zh": "汇集IT服务管理成功实践的框架",
+      "one_line_en": "A framework collecting proven practices for IT service management",
+      "extra_jp": [
+        "フレームワーク",
+        "運用とサポートの手本"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"サービス戦略\"] --> B[\"サービス設計\"]; B --> C[\"サービス移行\"]; C --> D[\"サービス運用\"]; D --> E[\"継続的改善\"]; E --> A",
-        "svg_path": "figures/management-11-28-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "ITIL",
-      "term_en": "ITIL",
-      "definition_zh": "汇总了 IT 服务管理成功案例（最佳实践）的国际性指南集。",
-      "definition_en": "An international collection of guidelines compiling success stories (best practices) of IT service management.",
-      "explanation_zh": "ITIL（Information Technology Infrastructure Library）是将高效、稳定地提供 IT 服务的“行之有效的做法”系统化汇总而成的最佳实践集。它针对事件管理、变更管理等运营所需的活动，给出推进方法的范本。\n\n考试中会考查 ITIL 并非法律或强制规范，而是“值得参考的成功案例的集合（指南）”这一点。它不是某家特定企业的专有流程，而是全世界共享的标准框架；要把握它的定位——以它为基础来搭建 SLA 等具体的管理手法。",
-      "explanation_en": "ITIL (Information Technology Infrastructure Library) is a collection of best practices that systematically compiles \"approaches that work well\" for providing IT services efficiently and stably. It provides models for how to carry out activities needed in operations, such as incident management and change management.\n\nThe exam asks whether ITIL is a law or a mandatory standard, or a \"collection of success stories to refer to (guidelines).\" Understand its positioning: it is not the proprietary procedure of a specific company but a standard framework shared worldwide, on top of which concrete management methods such as SLA are built.",
-      "analogy_zh": "就像烹饪的“经典菜谱集”。它不是必须遵守的法律，而是汇集了前人成功经验的范本；只要参考它，谁都能接近稳定的质量。",
-      "analogy_en": "Like a collection of \"classic recipes\" for cooking. It is not a law you must obey, but a set of models compiling the successful methods of predecessors; by referring to it, anyone can get closer to consistent quality.",
-      "memory_hook_zh": "说到 ITIL，就是 IT 服务运营的最佳实践集",
-      "memory_hook_en": "ITIL → a collection of best practices for IT service operations"
+      "extra_zh": [
+        "框架",
+        "运维与支持的范本"
+      ],
+      "extra_en": [
+        "Framework",
+        "A model for operations and support"
+      ]
     },
     {
       "term": "SLA",
-      "definition_jp": "提供者と利用者がサービス品質の水準を取り決めた合意書(サービスレベル合意書)。",
-      "explanation_jp": "SLA(Service Level Agreement)は、提供するサービスの品質をどの水準で保証するかを、提供者と利用者の間で文書として取り決めた合意書です。稼働率・応答時間・障害時の復旧時間などを具体的な数値で示します。\n\n試験では、SLA が「口約束ではなく数値で品質を約束する文書」である点が頻出です。SLA の中に個々の目標値である SLO が定められ、その達成度は SLI という指標で測られる、という SLA → SLO → SLI の階層関係を理解しておくことが重要です。合意した水準を監視し、未達なら改善につなげます。",
-      "analogy_jp": "宅配便の「翌日午前までにお届け」という約束を書面にしたもの。何を・どの水準で・守れなかったらどうするかまで明文化した、サービス品質の契約書です。",
-      "memory_hook_jp": "SLAといえば品質水準を数値で約束する合意書",
-      "inline_quiz": [
-        "2009h21a-q035",
-        "2011h23a-q046"
+      "one_line_jp": "提供者と顧客がサービスの範囲と水準を取り決めた合意書",
+      "one_line_zh": "提供方与客户约定服务范围和水平的协议书",
+      "one_line_en": "An agreement in which the provider and the customer set the scope and level of a service",
+      "extra_jp": [
+        "文書",
+        "利用時間帯や復旧時間の取決め"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"SLA 合意書 全体の約束\"] --> B[\"SLO 個々の目標値\"]; B --> C[\"SLI 達成度を測る指標\"]",
-        "svg_path": "figures/management-11-28-u01-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "SLA",
-      "term_en": "SLA",
-      "definition_zh": "提供方与用户就服务质量水平作出约定的协议书（服务级别协议）。",
-      "definition_en": "An agreement (Service Level Agreement) in which the provider and user set the level of service quality.",
-      "explanation_zh": "SLA（Service Level Agreement）是提供方与用户之间，以文档形式约定所提供服务的质量保证到何种水平的协议书。它用可用率、响应时间、故障时的恢复时间等具体数值来表示。\n\n考试中常考 SLA 是“不是口头承诺，而是用数值承诺质量的文档”这一点。重要的是理解 SLA → SLO → SLI 的层级关系：SLA 中规定了各项目标值 SLO，其达成程度则用 SLI 这一指标来衡量。要监控约定的水平，未达标时则推动改进。",
-      "explanation_en": "An SLA (Service Level Agreement) is an agreement documenting, between provider and user, at what level the quality of the provided service is guaranteed. It is expressed with concrete figures such as availability rate, response time, and recovery time when a failure occurs.\n\nThe exam frequently tests that an SLA is \"a document that promises quality with numbers, not a verbal promise.\" It is important to understand the SLA → SLO → SLI hierarchy: within an SLA, individual target values called SLOs are set, and the degree of their achievement is measured by indicators called SLIs. The agreed levels are monitored, and if not met, this leads to improvement.",
-      "analogy_zh": "就像把快递“次日上午前送达”的承诺写成书面文件。它明确写出送什么、达到什么水平、未能遵守时怎么办，是一份服务质量的合同。",
-      "analogy_en": "Like putting a courier's promise of \"delivery by the next morning\" into writing. It spells out what is delivered, at what level, and what happens if it is not met—a contract for service quality.",
-      "memory_hook_zh": "说到 SLA，就是用数值承诺质量水平的协议书",
-      "memory_hook_en": "SLA → an agreement that promises quality levels with numbers"
+      "extra_zh": [
+        "文档",
+        "约定服务时段和恢复时间"
+      ],
+      "extra_en": [
+        "Document",
+        "Terms for service hours and recovery time"
+      ]
     },
     {
       "term": "SLO",
-      "definition_jp": "SLA の中で定める、個々のサービスレベルの具体的な目標値。",
-      "explanation_jp": "SLO(Service Level Objective)は、SLA という合意の中で定める、項目ごとの具体的な目標値のことです。たとえば「月間稼働率 99.9% 以上」「応答時間 1 秒以内」のように、達成すべき水準を数値で示します。\n\n試験では、SLO が「合意全体である SLA の中に含まれる個別目標」である点が問われます。SLA が品質に関する約束のまとまり全体を指すのに対し、SLO はその中の一つひとつのゴール、という上下関係を取り違えないことが重要です。",
-      "analogy_jp": "学習の目標設定で「テストで80点以上を取る」という具体的なゴールのようなもの。「成績を上げる」という大きな約束(SLA)の中の、測れる個別目標が SLO です。",
-      "memory_hook_jp": "SLOといえばSLA内の個々の目標値",
-      "inline_quiz": [
-        "2013h25h-q091"
+      "one_line_jp": "サービスレベルの項目ごとに置く目標値",
+      "one_line_zh": "按服务级别的各个项目设定的目标值",
+      "one_line_en": "A target value set for each service level item",
+      "extra_jp": [
+        "数値の目標",
+        "月間稼働率 99.9% 以上"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "SLO",
-      "term_en": "SLO",
-      "definition_zh": "在 SLA 中规定的、各项服务级别的具体目标值。",
-      "definition_en": "The concrete target value for each individual service level, defined within an SLA.",
-      "explanation_zh": "SLO（Service Level Objective）是在 SLA 这一约定之中，为各个项目规定的具体目标值。例如“月度可用率 99.9% 以上”“响应时间在 1 秒以内”，用数值来表示应当达成的水平。\n\n考试中会考查 SLO 是“包含在整体约定 SLA 之中的单项目标”这一点。SLA 指的是关于质量的整套承诺，而 SLO 是其中一个个的目标——不要把这种上下关系弄反，这一点很重要。",
-      "explanation_en": "An SLO (Service Level Objective) is the concrete target value set for each item within the SLA agreement. For example, \"monthly availability rate of 99.9% or higher\" or \"response time within 1 second\"—it expresses the level to be achieved as a number.\n\nThe exam asks whether an SLO is an \"individual target included within the SLA, which is the whole agreement.\" Whereas an SLA refers to the entire bundle of promises about quality, an SLO is each individual goal within it; it is important not to confuse this hierarchical relationship.",
-      "analogy_zh": "就像学习中的目标设定，“考试考到 80 分以上”这样的具体目标。在“提高成绩”这一大承诺（SLA）之中，可衡量的单项目标就是 SLO。",
-      "analogy_en": "Like setting a study goal such as \"score 80 or higher on the test.\" Within the larger promise of \"improving grades\" (the SLA), the measurable individual goal is the SLO.",
-      "memory_hook_zh": "说到 SLO，就是 SLA 内的各项目标值",
-      "memory_hook_en": "SLO → the individual target values within an SLA"
+      "extra_zh": [
+        "数值目标",
+        "月可用率 99.9% 以上"
+      ],
+      "extra_en": [
+        "Numeric target",
+        "Monthly availability of 99.9% or higher"
+      ]
     },
     {
       "term": "SLI",
-      "definition_jp": "SLO の達成度を測るために実際に計測する、具体的なサービスレベル指標。",
-      "explanation_jp": "SLI(Service Level Indicator)は、SLO で定めた目標がどれだけ達成できているかを測るために、実際に計測する指標のことです。たとえば「実測の稼働率」「実測の平均応答時間」など、現実の値そのものを指します。\n\n試験では、SLI が「目標(SLO)に対する実測値・ものさし」である点が問われます。合意(SLA)→ 目標(SLO)→ 指標(SLI)という入れ子の階層で、SLI は最も粒度の細かい計測レベルにあたります。SLO が「目指す値」、SLI が「実際に測った値」という違いを押さえましょう。",
-      "analogy_jp": "ダイエットで「体重計に乗って出る実際の数値」のようなもの。「○kgまで痩せる」という目標(SLO)に対し、毎日測る実測値が SLI です。測らなければ達成度はわかりません。",
-      "memory_hook_jp": "SLIといえばSLO達成度を測る実測指標",
-      "inline_quiz": [
-        "2011h23tokubetsu-q047"
+      "one_line_jp": "サービスの状態を実際に計測した指標",
+      "one_line_zh": "实际测量服务状态得到的指标",
+      "one_line_en": "An indicator obtained by actually measuring the state of a service",
+      "extra_jp": [
+        "実測値",
+        "今月の実測稼働率 99.95%"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "SLI",
-      "term_en": "SLI",
-      "definition_zh": "为衡量 SLO 的达成程度而实际测量的具体服务级别指标。",
-      "definition_en": "A concrete service level indicator that is actually measured to gauge the degree to which an SLO is achieved.",
-      "explanation_zh": "SLI（Service Level Indicator）是为了衡量 SLO 所定目标达成了多少，而实际测量的指标。例如“实测的可用率”“实测的平均响应时间”等，指的就是现实中的值本身。\n\n考试中会考查 SLI 是“针对目标（SLO）的实测值、衡量的尺度”这一点。在约定（SLA）→ 目标（SLO）→ 指标（SLI）这一层层嵌套的结构中，SLI 处于粒度最细的测量层级。要把握 SLO 是“想要达到的值”、SLI 是“实际测得的值”这一区别。",
-      "explanation_en": "An SLI (Service Level Indicator) is the indicator actually measured to gauge how much the target set in the SLO has been achieved. For example, \"the measured availability rate\" or \"the measured average response time\"—it refers to the real value itself.\n\nThe exam asks whether an SLI is the \"measured value, the yardstick, against the target (SLO).\" In the nested hierarchy of agreement (SLA) → target (SLO) → indicator (SLI), the SLI is at the finest-grained measurement level. Grasp the difference: the SLO is the \"value you aim for,\" and the SLI is the \"value you actually measure.\"",
-      "analogy_zh": "就像减肥时“站上体重秤显示出的实际数值”。针对“瘦到 ○ 公斤”这一目标（SLO），每天测量的实测值就是 SLI。不测量就无从知道达成程度。",
-      "analogy_en": "Like \"the actual number shown when you step on a scale\" while dieting. Against the target of \"losing weight to X kg\" (the SLO), the value you measure daily is the SLI. Without measuring, you cannot know the degree of achievement.",
-      "memory_hook_zh": "说到 SLI，就是衡量 SLO 达成度的实测指标",
-      "memory_hook_en": "SLI → the measured indicator that gauges how much an SLO is achieved"
+      "extra_zh": [
+        "实测值",
+        "本月实测可用率 99.95%"
+      ],
+      "extra_en": [
+        "Measured value",
+        "Measured availability this month: 99.95%"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "サービス",
+      "term_zh": "服务",
+      "term_en": "Service",
+      "one_jp": "**サービス** とは、利用者が所有や管理を自分で負わずに、望む **成果** を受け取れるようにして価値を届ける仕組みである。",
+      "one_zh": "**服务**（[[jp:サービス]]）是一种提供价值的方式：用户不必自己承担拥有和管理的责任，就能得到想要的**成果**。",
+      "one_en": "A **service** ([[jp:サービス]]) delivers value by letting users receive the **outcomes** they want without taking on ownership or management themselves.",
+      "detail_jp": "IT の分野では、メールやファイル保管のように、利用者は機器を持たずに必要な働きだけを使う形が多い。こうしたサービスを顧客のニーズに合わせて安定して届け、運用を管理しながら改善を続ける取組みを **ITサービスマネジメント** と呼ぶ。",
+      "detail_zh": "在 IT 领域，像电子邮件和文件存储那样，用户不持有设备、只使用所需功能的形式很常见。按照客户需求稳定地提供这类服务，并在管理运行的同时持续改进，这种工作称为**IT服务管理**（[[jp:ITサービスマネジメント]]）。",
+      "detail_en": "In IT, users often rely on just the functions they need, such as email or file storage, without owning any equipment. Delivering such services reliably to match customer needs, while managing operations and improving them continuously, is called **IT service management** ([[jp:ITサービスマネジメント]]).",
+      "analogy_jp": "タクシーに乗る人は車を買わず、整備もせず、目的地に着くという結果だけを料金と引き換えに受け取る。",
+      "analogy_zh": "打车的人既不买车，也不负责保养，只是付了车费，换来“到达目的地”这个结果。",
+      "analogy_en": "A taxi passenger neither buys the car nor maintains it; they pay the fare and simply get the result of reaching their destination.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ITサービスマネジメント** は、顧客の要求に合うITサービスを届け続けるために、運用を管理し継続的に改善していく取組みである。",
+          "text_zh": "**IT服务管理**（[[jp:ITサービスマネジメント]]）是为了持续提供符合客户要求的IT服务，而对运行进行管理并不断改进的工作。",
+          "text_en": "**IT service management** ([[jp:ITサービスマネジメント]]) is the ongoing work of managing operations and improving them continuously so that IT services keep meeting customer requirements.",
+          "qids": [
+            "2009h21a-q042",
+            "2017h29a-q052",
+            "2024r06-q044"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "サービスの価値は、何ができるかという機能と、**可用性** (使いたいときに使える性質) などを保つ **保証** に、提供価格を加えた兼ね合いで決まる。いつでも使える状態を保つことは保証の側に入る。",
+          "text_zh": "服务（[[jp:サービス]]）的价值，取决于“能做什么”的功能、维持**可用性**（[[jp:可用性]]，想用时就能用的性质）等方面的**保证**（[[jp:保証]]），再加上提供价格，三者之间的平衡。保持随时可用的状态，属于保证这一侧。",
+          "text_en": "The value of a service ([[jp:サービス]]) depends on the balance of its functions (what it can do), the **warranty** ([[jp:保証]]) that keeps qualities such as **availability** ([[jp:可用性]], being usable whenever needed) in place, and its price. Keeping the service usable at any time falls on the warranty side.",
+          "qids": [
+            "2022r04-q039"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2009h21a-q042",
+        "2017h29a-q052",
+        "2022r04-q039"
+      ],
+      "definition_jp": "サービス とは、利用者が所有や管理を自分で負わずに、望む 成果 を受け取れるようにして価値を届ける仕組みである。",
+      "definition_zh": "服务（サービス）是一种提供价值的方式：用户不必自己承担拥有和管理的责任，就能得到想要的成果。",
+      "definition_en": "A service (サービス) delivers value by letting users receive the outcomes they want without taking on ownership or management themselves.",
+      "explanation_jp": "IT の分野では、メールやファイル保管のように、利用者は機器を持たずに必要な働きだけを使う形が多い。こうしたサービスを顧客のニーズに合わせて安定して届け、運用を管理しながら改善を続ける取組みを ITサービスマネジメント と呼ぶ。",
+      "explanation_zh": "在 IT 领域，像电子邮件和文件存储那样，用户不持有设备、只使用所需功能的形式很常见。按照客户需求稳定地提供这类服务，并在管理运行的同时持续改进，这种工作称为IT服务管理（ITサービスマネジメント）。",
+      "explanation_en": "In IT, users often rely on just the functions they need, such as email or file storage, without owning any equipment. Delivering such services reliably to match customer needs, while managing operations and improving them continuously, is called IT service management (ITサービスマネジメント).",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2009h21a-q042",
+        "2017h29a-q052",
+        "2022r04-q039"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ITIL",
+      "term_zh": "ITIL",
+      "term_en": "ITIL",
+      "one_jp": "**ITIL** は、ITサービスマネジメントの **ベストプラクティス** (うまくいった実務のやり方) を体系的に集めたフレームワークである。",
+      "one_zh": "**ITIL** 是把IT服务管理的**最佳实践**（[[jp:ベストプラクティス]]，行之有效的工作方法）系统地汇集起来的框架。",
+      "one_en": "**ITIL** is a framework that systematically collects **best practices** ([[jp:ベストプラクティス]], ways of working that have proven successful) for IT service management.",
+      "detail_jp": "英国の政府機関がまとめた書籍群が始まりで、名前の Library はその本の集まりを指す。ITサービスの提供やサポートの進め方を手本として示すもので、組織は自分たちの状況に合わせて取り入れる。",
+      "detail_zh": "它起源于英国政府机构编写的一套丛书，名称中的 Library 指的就是这些书的集合。它以范本的形式展示提供和支持IT服务的做法，各组织根据自身情况加以采用。",
+      "detail_en": "It began as a set of books compiled by a UK government agency, and the word Library in its name refers to that collection. It presents model approaches to delivering and supporting IT services, and each organization adopts them to fit its own situation.",
+      "analogy_jp": "囲碁の定石集のように、多くの先人が試してうまくいった打ち方を集めた手本で、場面に合わせて選んで使う。",
+      "analogy_zh": "就像围棋的定式集，汇集了众多前人试过且行之有效的下法，根据局面挑选使用。",
+      "analogy_en": "Like a book of standard chess openings, it gathers moves that many earlier players tried with success, and you pick the ones that suit the position.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ITIL** は、ITサービスの運用管理の進め方を成功事例として体系立ててまとめた、ITサービスマネジメントのフレームワークである。",
+          "text_zh": "**ITIL** 把运维管理IT服务的做法作为成功案例系统地整理起来，是IT服务管理（[[jp:ITサービスマネジメント]]）的框架。",
+          "text_en": "**ITIL** is an IT service management ([[jp:ITサービスマネジメント]]) framework that systematically organizes proven ways of running and managing IT services.",
+          "qids": [
+            "2011h23a-q040",
+            "2012h24h-q042",
+            "2019r01a-q050"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**ITIL** は、提供者と顧客の両方の立場から、ITサービスの品質を測り続け、改善していくことに重きを置く。",
+          "text_zh": "**ITIL** 重视从提供方和客户双方的立场出发，持续衡量并改进IT服务的质量。",
+          "text_en": "**ITIL** emphasizes measuring and improving IT service quality continuously from the viewpoints of both the provider and the customer.",
+          "qids": [
+            "2020r02o-q038"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2011h23a-q040",
+        "2012h24h-q042",
+        "2021r03-q045"
+      ],
+      "definition_jp": "ITIL は、ITサービスマネジメントの ベストプラクティス (うまくいった実務のやり方) を体系的に集めたフレームワークである。",
+      "definition_zh": "ITIL 是把IT服务管理的最佳实践（ベストプラクティス，行之有效的工作方法）系统地汇集起来的框架。",
+      "definition_en": "ITIL is a framework that systematically collects best practices (ベストプラクティス, ways of working that have proven successful) for IT service management.",
+      "explanation_jp": "英国の政府機関がまとめた書籍群が始まりで、名前の Library はその本の集まりを指す。ITサービスの提供やサポートの進め方を手本として示すもので、組織は自分たちの状況に合わせて取り入れる。",
+      "explanation_zh": "它起源于英国政府机构编写的一套丛书，名称中的 Library 指的就是这些书的集合。它以范本的形式展示提供和支持IT服务的做法，各组织根据自身情况加以采用。",
+      "explanation_en": "It began as a set of books compiled by a UK government agency, and the word Library in its name refers to that collection. It presents model approaches to delivering and supporting IT services, and each organization adopts them to fit its own situation.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2011h23a-q040",
+        "2012h24h-q042",
+        "2021r03-q045"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "SLA",
+      "term_zh": "SLA",
+      "term_en": "SLA",
+      "one_jp": "**SLA** (サービスレベル合意書) は、サービスの提供者と顧客が、提供する範囲と品質の **水準** を取り決めて文書にしたものである。",
+      "one_zh": "**SLA**（服务级别协议，[[jp:サービスレベル合意書]]）是服务提供方与客户约定所提供的范围和质量**水平**，并形成书面的文件。",
+      "one_en": "An **SLA** (service level agreement, [[jp:サービスレベル合意書]]) is a document in which the service provider and the customer set out the scope of the service and the **level** of quality to be provided.",
+      "detail_jp": "例えば、利用できる時間帯や障害から復旧するまでの時間を、数値で書き込む。文書にしておくことで、提供者と顧客がサービスの中身と求める水準について同じ認識を持てる。合意した水準を保ち、高めていく管理活動は **サービスレベル管理** (SLM) と呼ばれる。",
+      "detail_zh": "例如，把可使用的时段、从故障中恢复所需的时间等用数值写进去。形成书面文件后，提供方和客户就能对服务内容和要求的水平形成相同的认识。维持并提升已约定水平的管理活动称为**服务级别管理**（[[jp:サービスレベル管理]]，SLM）。",
+      "detail_en": "For example, it states in numbers the hours when the service can be used and how long recovery from a failure may take. Putting this in writing gives the provider and the customer the same understanding of what the service includes and what level is expected. The management activity of maintaining and raising the agreed level is called **service level management** ([[jp:サービスレベル管理]], SLM).",
+      "analogy_jp": "宴会場を貸し切るとき、使える時間や人数、料理の内容を予約の書面で取り決めておくのに近い。",
+      "analogy_zh": "类似包场租用宴会厅时，把可使用的时间、人数和菜品写进预订单，事先约定好。",
+      "analogy_en": "It is like booking a banquet hall and fixing the hours, the number of guests, and the menu in the written reservation.",
+      "hook_jp": "末尾の A は Agreement、つまり合意を表す。",
+      "hook_zh": "末尾的 A 是 Agreement，即“协议”。",
+      "hook_en": "The final A stands for Agreement.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**SLA** は、サービスの内容と品質の水準について、提供者と顧客が合意した事項を記した文書である。",
+          "text_zh": "**SLA** 是记录提供方与客户就服务内容和质量水平所达成的一致事项的文件。",
+          "text_en": "An **SLA** is a document recording what the provider and the customer have agreed on regarding the content and quality level of a service.",
+          "qids": [
+            "2011h23tokubetsu-q047",
+            "2017h29a-q036",
+            "2013h25a-q033"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "提供者が **SLA** を結ぶ相手は、サービスを使う側の組織の責任者である。",
+          "text_zh": "提供方签订 **SLA** 的对象，是使用服务一方组织的负责人。",
+          "text_en": "The provider concludes an **SLA** with the person responsible at the organization that uses the service.",
+          "qids": [
+            "2015h27a-q041"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**SLA** は合意を記した文書そのもので、**SLM** は合意した水準を維持し高めるために続ける管理の活動である。",
+          "text_zh": "**SLA** 是记录协议的文件本身，**SLM**（服务级别管理）则是为维持并提升约定水平而持续开展的管理活动。",
+          "text_en": "An **SLA** is the document recording the agreement itself, while **SLM** (service level management) is the ongoing management activity of maintaining and raising the agreed level."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "取り決める項目の例",
+              "zh": "约定项目示例",
+              "en": "Example item"
+            },
+            {
+              "jp": "書き方の例",
+              "zh": "写法示例",
+              "en": "Example wording"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "稼働率",
+                  "zh": "可用率",
+                  "en": "Availability"
+                },
+                {
+                  "jp": "月間 99.9% 以上",
+                  "zh": "每月 99.9% 以上",
+                  "en": "99.9% or higher per month"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "障害時の復旧",
+                  "zh": "故障时的恢复",
+                  "en": "Recovery from failures"
+                },
+                {
+                  "jp": "発生から 4 時間以内",
+                  "zh": "发生后 4 小时以内",
+                  "en": "Within 4 hours of occurrence"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "問い合わせ窓口",
+                  "zh": "咨询窗口",
+                  "en": "Help desk"
+                },
+                {
+                  "jp": "平日 8:00〜20:00 に受付",
+                  "zh": "工作日 8:00～20:00 受理",
+                  "en": "Open weekdays 8:00–20:00"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2011h23tokubetsu-q047",
+        "2015h27a-q041",
+        "2018h30h-q039"
+      ],
+      "definition_jp": "SLA (サービスレベル合意書) は、サービスの提供者と顧客が、提供する範囲と品質の 水準 を取り決めて文書にしたものである。",
+      "definition_zh": "SLA（服务级别协议，サービスレベル合意書）是服务提供方与客户约定所提供的范围和质量水平，并形成书面的文件。",
+      "definition_en": "An SLA (service level agreement, サービスレベル合意書) is a document in which the service provider and the customer set out the scope of the service and the level of quality to be provided.",
+      "explanation_jp": "例えば、利用できる時間帯や障害から復旧するまでの時間を、数値で書き込む。文書にしておくことで、提供者と顧客がサービスの中身と求める水準について同じ認識を持てる。合意した水準を保ち、高めていく管理活動は サービスレベル管理 (SLM) と呼ばれる。",
+      "explanation_zh": "例如，把可使用的时段、从故障中恢复所需的时间等用数值写进去。形成书面文件后，提供方和客户就能对服务内容和要求的水平形成相同的认识。维持并提升已约定水平的管理活动称为服务级别管理（サービスレベル管理，SLM）。",
+      "explanation_en": "For example, it states in numbers the hours when the service can be used and how long recovery from a failure may take. Putting this in writing gives the provider and the customer the same understanding of what the service includes and what level is expected. The management activity of maintaining and raising the agreed level is called service level management (サービスレベル管理, SLM).",
+      "memory_hook_jp": "末尾の A は Agreement、つまり合意を表す。",
+      "memory_hook_zh": "末尾的 A 是 Agreement，即“协议”。",
+      "memory_hook_en": "The final A stands for Agreement.",
+      "inline_quiz": [
+        "2011h23tokubetsu-q047",
+        "2015h27a-q041",
+        "2018h30h-q039"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "SLO",
+      "term_zh": "SLO",
+      "term_en": "SLO",
+      "one_jp": "**SLO** (サービスレベル目標) は、サービスレベルの項目ごとに定める、達成を目指す具体的な **目標値** である。",
+      "one_zh": "**SLO**（服务级别目标，[[jp:サービスレベル目標]]）是针对服务级别的各个项目设定的、要努力达成的具体**目标值**。",
+      "one_en": "An **SLO** (service level objective, [[jp:サービスレベル目標]]) is a concrete **target value** set for each service level item, which the provider aims to achieve.",
+      "detail_jp": "例えば「月間稼働率 99.9% 以上」「画面の応答 2 秒以内」のように、達成したかどうかを判定できる数値で書く。SLA で合意する水準は、こうした項目ごとの目標値を積み重ねて表される。",
+      "detail_zh": "例如写成“月可用率 99.9% 以上”“界面应答 2 秒以内”，用能够判定是否达成的数值来表述。SLA 中约定的水平，就是由这些按项目设定的目标值累积起来表示的。",
+      "detail_en": "Examples are \"monthly availability of 99.9% or higher\" and \"screen response within 2 seconds\", written as numbers that show clearly whether they were met. The level agreed in an SLA is expressed by building up these item-by-item target values.",
+      "analogy_jp": "マラソンに出る前に決めておく目標タイムにあたる。",
+      "analogy_zh": "相当于参加马拉松之前定好的目标成绩。",
+      "analogy_en": "It is the target time you set before running a marathon.",
+      "hook_jp": "末尾の O は Objective、狙いを定める目標を表す。",
+      "hook_zh": "末尾的 O 是 Objective，表示瞄准的目标。",
+      "hook_en": "The final O stands for Objective, the target you aim at.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**SLO** は定量的な数値で表すので、達成できたかどうかを後から客観的に判定できる。",
+          "text_zh": "**SLO** 用定量的数值来表示，所以事后可以客观地判定是否已经达成。",
+          "text_en": "Because an **SLO** is expressed as a quantitative value, whether it was achieved can be judged objectively afterward.",
+          "qids": [
+            "2013h25h-q091"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**SLA** は合意の全体を記した文書、**SLO** はその中で項目ごとに置く目標値である。",
+          "text_zh": "**SLA** 是记录协议整体的文件，**SLO** 是其中按项目设定的目标值。",
+          "text_en": "An **SLA** is the document covering the whole agreement, and an **SLO** is a target value set for each item within it."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "SLO (サービスレベル目標) は、サービスレベルの項目ごとに定める、達成を目指す具体的な 目標値 である。",
+      "definition_zh": "SLO（服务级别目标，サービスレベル目標）是针对服务级别的各个项目设定的、要努力达成的具体目标值。",
+      "definition_en": "An SLO (service level objective, サービスレベル目標) is a concrete target value set for each service level item, which the provider aims to achieve.",
+      "explanation_jp": "例えば「月間稼働率 99.9% 以上」「画面の応答 2 秒以内」のように、達成したかどうかを判定できる数値で書く。SLA で合意する水準は、こうした項目ごとの目標値を積み重ねて表される。",
+      "explanation_zh": "例如写成“月可用率 99.9% 以上”“界面应答 2 秒以内”，用能够判定是否达成的数值来表述。SLA 中约定的水平，就是由这些按项目设定的目标值累积起来表示的。",
+      "explanation_en": "Examples are \"monthly availability of 99.9% or higher\" and \"screen response within 2 seconds\", written as numbers that show clearly whether they were met. The level agreed in an SLA is expressed by building up these item-by-item target values.",
+      "memory_hook_jp": "末尾の O は Objective、狙いを定める目標を表す。",
+      "memory_hook_zh": "末尾的 O 是 Objective，表示瞄准的目标。",
+      "memory_hook_en": "The final O stands for Objective, the target you aim at.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "SLI",
+      "term_zh": "SLI",
+      "term_en": "SLI",
+      "one_jp": "**SLI** (サービスレベル指標) は、サービスの状態を実際に計測して得る **指標** で、SLO を達成できているかを判断する材料になる。",
+      "one_zh": "**SLI**（服务级别指标，[[jp:サービスレベル指標]]）是实际测量服务状态得到的**指标**，是判断 SLO 是否达成的依据。",
+      "one_en": "An **SLI** (service level indicator, [[jp:サービスレベル指標]]) is an **indicator** obtained by actually measuring the state of a service, and it is the basis for judging whether an SLO is being met.",
+      "detail_jp": "例えば、ある月に実際に使えた時間の割合や、計測した応答時間の平均が SLI に当たる。SLI を SLO と照らし合わせて足りない項目が見つかれば、原因を調べて改善につなげる。",
+      "detail_zh": "例如，某个月实际可使用时间的比例、实测应答时间的平均值，都属于 SLI。把 SLI 与 SLO 相对照，如果发现未达标的项目，就调查原因并加以改进。",
+      "detail_en": "For example, the share of time a service was actually usable in a given month, or the average measured response time, is an SLI. When comparing SLIs against SLOs reveals an item that falls short, the cause is investigated and improvements follow.",
+      "analogy_jp": "マラソンのゴールで時計が示した実際の記録にあたる。",
+      "analogy_zh": "相当于跑到马拉松终点时，计时器上显示的实际成绩。",
+      "analogy_en": "It is the actual time shown on the clock when you cross the marathon finish line.",
+      "hook_jp": "末尾の I は Indicator、計器の針のように今の値を指し示す。",
+      "hook_zh": "末尾的 I 是 Indicator，像仪表的指针一样指示当前的数值。",
+      "hook_en": "The final I stands for Indicator, which points to the current value like the needle on a gauge.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**SLO** は前もって決めた目指す値、**SLI** は提供中に実際に測った値であり、SLI が SLO に届いているかで達成を判断する。",
+          "text_zh": "**SLO** 是事先确定的目标值，**SLI** 是提供服务期间实际测得的值，根据 SLI 是否达到 SLO 来判断是否达成。",
+          "text_en": "An **SLO** is the value aimed for and decided in advance, while an **SLI** is the value actually measured while the service is delivered; whether the SLI reaches the SLO decides achievement."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "steps",
+        "data": {
+          "root": {
+            "id": "sla",
+            "label": {
+              "jp": "SLA 合意書",
+              "zh": "SLA 协议书",
+              "en": "SLA document"
+            },
+            "children": [
+              {
+                "id": "slo1",
+                "label": {
+                  "jp": "SLO 月間稼働率 99.9% 以上",
+                  "zh": "SLO 月可用率 99.9% 以上",
+                  "en": "SLO monthly availability ≥ 99.9%"
+                },
+                "children": [
+                  {
+                    "id": "sli1",
+                    "label": {
+                      "jp": "SLI 今月の実測稼働率",
+                      "zh": "SLI 本月实测可用率",
+                      "en": "SLI measured availability this month"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "slo2",
+                "label": {
+                  "jp": "SLO 応答 2 秒以内",
+                  "zh": "SLO 应答 2 秒以内",
+                  "en": "SLO response within 2 s"
+                },
+                "children": [
+                  {
+                    "id": "sli2",
+                    "label": {
+                      "jp": "SLI 計測した応答時間",
+                      "zh": "SLI 实测的应答时间",
+                      "en": "SLI measured response time"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "steps": [
+          {
+            "caption_jp": "提供者と顧客が合意した内容を、合意書にまとめる。",
+            "caption_zh": "把提供方与客户约定的内容汇总成协议书。",
+            "caption_en": "The provider and the customer put what they agreed into an agreement document.",
+            "state": {
+              "depth": 1
+            }
+          },
+          {
+            "caption_jp": "合意の中身を、項目ごとの目標値として書き出す。",
+            "caption_zh": "把协议的内容按项目写成目标值。",
+            "caption_en": "The contents of the agreement are written out as a target value for each item.",
+            "state": {
+              "depth": 2
+            }
+          },
+          {
+            "caption_jp": "目標ごとに実際の値を測り、届いているかを比べる。",
+            "caption_zh": "针对每个目标测量实际数值，比较是否达到。",
+            "caption_en": "For each target, the actual value is measured and compared to see whether it is reached.",
+            "state": {
+              "depth": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "SLI (サービスレベル指標) は、サービスの状態を実際に計測して得る 指標 で、SLO を達成できているかを判断する材料になる。",
+      "definition_zh": "SLI（服务级别指标，サービスレベル指標）是实际测量服务状态得到的指标，是判断 SLO 是否达成的依据。",
+      "definition_en": "An SLI (service level indicator, サービスレベル指標) is an indicator obtained by actually measuring the state of a service, and it is the basis for judging whether an SLO is being met.",
+      "explanation_jp": "例えば、ある月に実際に使えた時間の割合や、計測した応答時間の平均が SLI に当たる。SLI を SLO と照らし合わせて足りない項目が見つかれば、原因を調べて改善につなげる。",
+      "explanation_zh": "例如，某个月实际可使用时间的比例、实测应答时间的平均值，都属于 SLI。把 SLI 与 SLO 相对照，如果发现未达标的项目，就调查原因并加以改进。",
+      "explanation_en": "For example, the share of time a service was actually usable in a given month, or the average measured response time, is an SLI. When comparing SLIs against SLOs reveals an item that falls short, the cause is investigated and improvements follow.",
+      "memory_hook_jp": "末尾の I は Indicator、計器の針のように今の値を指し示す。",
+      "memory_hook_zh": "末尾的 I 是 Indicator，像仪表的指针一样指示当前的数值。",
+      "memory_hook_en": "The final I stands for Indicator, which points to the current value like the needle on a gauge.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "SLA",
+      "b": "SLO",
+      "rows": [
+        {
+          "label_jp": "何か",
+          "label_zh": "是什么",
+          "label_en": "What it is",
+          "a_jp": "合意の全体を記した文書",
+          "a_zh": "记录协议整体的文件",
+          "a_en": "Document covering the whole agreement",
+          "b_jp": "項目ごとの目標値",
+          "b_zh": "按项目设定的目标值",
+          "b_en": "Target value for each item",
+          "key": true
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "例子",
+          "label_en": "Example",
+          "a_jp": "利用時間帯や復旧時間などを取り決めた合意書",
+          "a_zh": "约定服务时段、恢复时间等的协议书",
+          "a_en": "Agreement setting service hours, recovery time, and similar terms",
+          "b_jp": "月間稼働率 99.9% 以上",
+          "b_zh": "月可用率 99.9% 以上",
+          "b_en": "Monthly availability of 99.9% or higher",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "SLO",
+      "b": "SLI",
+      "rows": [
+        {
+          "label_jp": "何か",
+          "label_zh": "是什么",
+          "label_en": "What it is",
+          "a_jp": "目指す値",
+          "a_zh": "目标值",
+          "a_en": "Value aimed for",
+          "b_jp": "実際に測った値",
+          "b_zh": "实际测得的值",
+          "b_en": "Value actually measured",
+          "key": true
+        },
+        {
+          "label_jp": "決まる時期",
+          "label_zh": "何时确定",
+          "label_en": "When it is set",
+          "a_jp": "合意の段階で前もって決める",
+          "a_zh": "在协议阶段事先确定",
+          "a_en": "Decided in advance when the agreement is made",
+          "b_jp": "提供中に計測し続けて得る",
+          "b_zh": "在提供服务期间持续测量得到",
+          "b_en": "Obtained by measuring continuously during delivery",
+          "key": false
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "例子",
+          "label_en": "Example",
+          "a_jp": "応答 2 秒以内",
+          "a_zh": "应答 2 秒以内",
+          "a_en": "Response within 2 seconds",
+          "b_jp": "計測した応答時間の平均 1.4 秒",
+          "b_zh": "实测应答时间平均 1.4 秒",
+          "b_en": "Average measured response time of 1.4 seconds",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**サービス** は、利用者が所有や管理を負わずに成果を受け取れる形で価値を届ける仕組みであり、**ITサービスマネジメント** はそれを顧客のニーズに合わせて運用し、改善し続ける取組みである。",
+    "**ITIL** は、ITサービスマネジメントのベストプラクティスを体系的に集めたフレームワークで、組織が状況に合わせて取り入れる手本である。",
+    "**SLA** は、提供者と顧客がサービスの範囲と水準を取り決めた合意書で、数値で書くことで達成を確かめられる。",
+    "サービスの品質は、水準の合意、目標の設定、計測、改善という流れを繰り返して保つ。"
+  ],
+  "key_points_zh": [
+    "**服务**是让用户无需承担拥有和管理之责、就能获得成果的价值提供方式；**IT服务管理**则是按照客户需求运行服务并持续改进的工作。",
+    "**ITIL** 是系统地汇集IT服务管理最佳实践的框架，是各组织根据自身情况采用的范本。",
+    "**SLA** 是提供方与客户约定服务范围和水平的协议书，用数值书写就能确认是否达成。",
+    "服务质量要靠反复执行“约定水平、设定目标、测量、改进”这一流程来维持。"
+  ],
+  "key_points_en": [
+    "A **service** delivers value so that users receive outcomes without owning or managing anything, and **IT service management** is the work of running services to fit customer needs and improving them continuously.",
+    "**ITIL** is a framework systematically gathering best practices for IT service management, a model that each organization adopts to fit its own situation.",
+    "An **SLA** is an agreement in which the provider and the customer set the scope and level of a service, and writing it in numbers makes it possible to check whether it is met.",
+    "Service quality is maintained by repeating the cycle of agreeing on a level, setting targets, measuring, and improving."
+  ],
+  "overview": {
+    "intro_jp": "サービス の考え方と、ITサービスマネジメント が目指すことを説明できる。ITIL がどのような性格の文書かを見分けられる。SLA で合意し、SLO で目標を置き、SLI で実測するという役割の違いを区別できる。",
+    "intro_zh": "能说明服务（サービス）的思路，以及IT服务管理（ITサービスマネジメント）追求的目标。能辨别 ITIL 是一种什么性质的文档。能区分三者的分工：用 SLA 达成协议，用 SLO 设定目标，用 SLI 进行实测。",
+    "intro_en": "Explain the idea of a service (サービス) and what IT service management (ITサービスマネジメント) aims to achieve. Tell what kind of document ITIL is. Distinguish the roles: the SLA records the agreement, the SLO sets the target, and the SLI measures the actual result.",
+    "freq_badge": "標準",
+    "est_minutes": 26
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "サービス: サービスといえば所有せず価値だけを受け取る仕組み",
-      "ITIL: ITILといえばITサービス運営のベストプラクティス集",
-      "SLA: SLAといえば品質水準を数値で約束する合意書",
-      "SLO: SLOといえばSLA内の個々の目標値",
-      "SLI: SLIといえばSLO達成度を測る実測指標"
-    ],
     "key_points_jp": [
-      "サービスとは、利用者が所有や管理の負担を負わずに価値(成果)だけを得られる仕組みであり、サービスマネジメント全体の土台となる。",
-      "ITIL は IT サービス運営のベストプラクティスをまとめたガイドライン集で、法律や強制規格ではなく参考にすべき成功事例の体系である。",
-      "SLA は提供者と利用者が品質水準を数値で約束した合意書で、稼働率や応答時間などを明文化する。",
-      "SLA → SLO → SLI は入れ子の階層関係にあり、SLA(合意全体)→ SLO(個々の目標値)→ SLI(実測の指標)と粒度が細かくなる。",
-      "SLO は『目指す目標値』、SLI は『実際に測った値』という違いが頻出ポイントである。"
+      "サービス は、利用者が所有や管理を負わずに成果を受け取れる形で価値を届ける仕組みであり、ITサービスマネジメント はそれを顧客のニーズに合わせて運用し、改善し続ける取組みである。",
+      "ITIL は、ITサービスマネジメントのベストプラクティスを体系的に集めたフレームワークで、組織が状況に合わせて取り入れる手本である。",
+      "SLA は、提供者と顧客がサービスの範囲と水準を取り決めた合意書で、数値で書くことで達成を確かめられる。",
+      "サービスの品質は、水準の合意、目標の設定、計測、改善という流れを繰り返して保つ。"
     ],
     "key_points_zh": [
-      "服务是指用户无需承担拥有或管理的负担即可仅获得价值（成果）的机制，是整个服务管理的基础。",
-      "ITIL 是汇总 IT 服务运营最佳实践的指南集，它不是法律或强制规范，而是值得参考的成功案例体系。",
-      "SLA 是提供方与用户用数值约定质量水平的协议书，将可用率、响应时间等明文写出。",
-      "SLA → SLO → SLI 是层层嵌套的关系，从 SLA（整体约定）→ SLO（各项目标值）→ SLI（实测指标），粒度逐渐变细。",
-      "SLO 是“想要达到的目标值”、SLI 是“实际测得的值”——这一区别是高频考点。"
+      "服务是让用户无需承担拥有和管理之责、就能获得成果的价值提供方式；IT服务管理则是按照客户需求运行服务并持续改进的工作。",
+      "ITIL 是系统地汇集IT服务管理最佳实践的框架，是各组织根据自身情况采用的范本。",
+      "SLA 是提供方与客户约定服务范围和水平的协议书，用数值书写就能确认是否达成。",
+      "服务质量要靠反复执行“约定水平、设定目标、测量、改进”这一流程来维持。"
     ],
     "key_points_en": [
-      "A service is a mechanism by which users obtain only value (results) without bearing the burden of ownership or management, and it forms the foundation of all of service management.",
-      "ITIL is a collection of guidelines compiling best practices for IT service operations; it is not a law or mandatory standard but a body of success stories to refer to.",
-      "An SLA is an agreement in which the provider and user promise quality levels with numbers, putting availability rate, response time, and the like into writing.",
-      "SLA → SLO → SLI is a nested hierarchy, becoming finer in granularity from the SLA (the whole agreement) → SLO (individual target values) → SLI (measured indicators).",
-      "The distinction that the SLO is the \"target value you aim for\" and the SLI is the \"value you actually measure\" is a frequently tested point."
+      "A service delivers value so that users receive outcomes without owning or managing anything, and IT service management is the work of running services to fit customer needs and improving them continuously.",
+      "ITIL is a framework systematically gathering best practices for IT service management, a model that each organization adopts to fit its own situation.",
+      "An SLA is an agreement in which the provider and the customer set the scope and level of a service, and writing it in numbers makes it possible to check whether it is met.",
+      "Service quality is maintained by repeating the cycle of agreeing on a level, setting targets, measuring, and improving."
+    ],
+    "memory_hooks_jp": [
+      "SLA: 末尾の A は Agreement、つまり合意を表す。",
+      "SLO: 末尾の O は Objective、狙いを定める目標を表す。",
+      "SLI: 末尾の I は Indicator、計器の針のように今の値を指し示す。"
     ],
     "memory_hooks_zh": [
-      "服务：说到服务，就是不拥有却只接收价值的机制",
-      "ITIL：说到 ITIL，就是 IT 服务运营的最佳实践集",
-      "SLA：说到 SLA，就是用数值承诺质量水平的协议书",
-      "SLO：说到 SLO，就是 SLA 内的各项目标值",
-      "SLI：说到 SLI，就是衡量 SLO 达成度的实测指标"
+      "SLA：末尾的 A 是 Agreement，即“协议”。",
+      "SLO：末尾的 O 是 Objective，表示瞄准的目标。",
+      "SLI：末尾的 I 是 Indicator，像仪表的指针一样指示当前的数值。"
     ],
     "memory_hooks_en": [
-      "Service: Service → a mechanism where you receive only value without owning anything",
-      "ITIL: ITIL → a collection of best practices for IT service operations",
-      "SLA: SLA → an agreement that promises quality levels with numbers",
-      "SLO: SLO → the individual target values within an SLA",
-      "SLI: SLI → the measured indicator that gauges how much an SLO is achieved"
+      "SLA: The final A stands for Agreement.",
+      "SLO: The final O stands for Objective, the target you aim at.",
+      "SLI: The final I stands for Indicator, which points to the current value like the needle on a gauge."
     ]
   },
   "challenge_questions": [
     "2012h24a-q039",
-    "2012h24h-q042",
     "2014h26h-q048",
     "2013h25a-q033",
-    "2015h27a-q033"
+    "2015h27a-q033",
+    "2020r02o-q038"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "服务管理基础与服务级别管理",
-  "title_en": "Fundamentals of Service Management and Service Level Management",
-  "unit_summary_zh": "从服务这一概念出发，到 ITIL 框架，再到通过 SLA、SLO、SLI 对服务质量进行约定与衡量，一气呵成地学习。",
-  "unit_summary_en": "Learn in one continuous flow, from the concept of a service to the ITIL framework, and on to agreeing on and measuring service quality through SLA, SLO, and SLI."
+  }
 }
