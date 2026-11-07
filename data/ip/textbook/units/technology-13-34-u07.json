@@ -1,112 +1,435 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-34-u07",
   "topic_id": "technology-13-34",
   "category": "technology",
   "title_jp": "離散数学の応用(待ち行列と最適化)",
-  "unit_summary_jp": "グラフ理論を応用した待ち行列モデルと、最適解を求める最適化問題を学ぶ。",
+  "title_zh": "离散数学的应用（排队论与最优化）",
+  "title_en": "Applications of Discrete Mathematics (Queuing and Optimization)",
+  "unit_summary_jp": "確率と統計を応用した待ち行列モデルと、最適解を求める最適化問題を学ぶ。",
+  "unit_summary_zh": "学习应用概率与统计的排队模型，以及求解最优解的最优化问题。",
+  "unit_summary_en": "Learn queuing models that apply probability and statistics, and optimization problems that find the best solution.",
   "order_in_topic": 7,
   "prerequisites": [
     "technology-13-34-u06"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、離散数学を実務に応用した2つのテーマを学びます。レジや窓口に人が並ぶ「待ち行列」のモデルと、限られた条件のもとで最も良い答えを探す「最適化問題」です。いずれもグラフ理論(前ユニット)の考え方を土台とした応用領域で、特に最適化問題は本群で出題されやすい重要テーマです。",
-    "freq_badge": "標準",
-    "est_minutes": 8,
-    "intro_zh": "在本单元中，我们将学习离散数学在实务中应用的两个主题：人们在收银台或服务窗口排队的「排队」模型，以及在有限条件下寻找最优答案的「最优化问题」。两者都是以图论（上一单元）的思路为基础的应用领域，其中最优化问题尤其是本组中容易出题的重要主题。",
-    "intro_en": "In this unit, we learn two themes where discrete mathematics is applied to practical work: the 'queuing' model of people lining up at a checkout or service counter, and the 'optimization problem' of finding the best answer under limited conditions. Both are application areas built on the ideas of graph theory (the previous unit), and optimization problems in particular are an important theme that frequently appears in this group of exam questions."
-  },
-  "terms": [
+  "goals_jp": [
+    "**待ち行列** のモデルが何を見積もるのかを説明できる",
+    "**利用率** と待ち時間の関係を説明できる",
+    "**最適化問題** を **制約条件** と **目的関数** に分けて組み立て、小さな問題の **最適解** を求められる"
+  ],
+  "goals_zh": [
+    "能够说明**排队**模型是用来估算什么的",
+    "能够说明**利用率**与等待时间之间的关系",
+    "能够把**最优化问题**拆分为**约束条件**和**目标函数**来建立，并求出小规模问题的**最优解**"
+  ],
+  "goals_en": [
+    "Explain what a **queuing** model estimates",
+    "Explain how **utilization** relates to waiting time",
+    "Set up an **optimization problem** by separating its **constraints** from its **objective function**, and find the **optimal solution** of a small problem"
+  ],
+  "overview_cols_jp": [
+    "求めるもの",
+    "使う場面の例"
+  ],
+  "overview_cols_zh": [
+    "求解对象",
+    "应用场景举例"
+  ],
+  "overview_cols_en": [
+    "What it finds",
+    "Example uses"
+  ],
+  "overview_rows": [
     {
       "term": "待ち行列",
-      "definition_jp": "サービスを待つ対象が順番に並ぶ様子をモデル化した考え方。",
-      "explanation_jp": "待ち行列は、銀行の窓口やレジ、コンピュータの処理要求などで、サービスを受けるまで順番待ちする様子を数学的に表したモデルです。「到着する」「列に並んで待つ」「窓口で処理される」「出ていく」という流れで考えます。\n\n到着のペースや処理にかかる時間によって、待ち時間や行列の長さがどう変わるかを分析でき、窓口を増やすべきかなどの判断に使えます。\n\n試験では、列に並んで順に処理される仕組み(先に来たものから処理する考え方)であることを押さえておけば十分で、複雑な計算式までは問われない水準です。",
-      "analogy_jp": "スーパーのレジに客が一列に並ぶ様子そのもの。客が次々来て、レジで会計を済ませ、終わった人から店を出ていく一連の流れを思い浮かべると分かりやすいです。",
-      "memory_hook_jp": "待ち行列といえば順番待ちの列をモデル化したもの",
-      "inline_quiz": [
-        "2014h26h-q087"
+      "one_line_jp": "到着と処理のばらつきから、待ち時間や列の長さを見積もるモデル",
+      "one_line_zh": "根据到达与处理的波动，估算等待时间和队列长度的模型",
+      "one_line_en": "A model that estimates waiting times and line lengths from the variability of arrivals and service",
+      "extra_jp": [
+        "平均の待ち時間、平均の列の長さ",
+        "窓口や回線の混み具合の予測"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"到着\"] --> B[\"待ち行列(順番待ち)\"]; B --> C[\"窓口で処理\"]; C --> D[\"退去\"]",
-        "svg_path": "figures/technology-13-34-u07-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "排队（队列）",
-      "term_en": "Queue (Waiting Line)",
-      "definition_zh": "将等待服务的对象依次排队的情形加以建模的思路。",
-      "definition_en": "A way of thinking that models how objects waiting for service line up in order.",
-      "explanation_zh": "排队是对银行窗口、收银台、计算机的处理请求等场景中，在接受服务之前依次等待的情形进行数学化表示的模型。我们按照「到达」「在队列中排队等待」「在窗口被处理」「离开」这样的流程来思考。\n\n根据到达的节奏和处理所需的时间，可以分析等待时间和队列长度会如何变化，从而用于是否应增加窗口等判断。\n\n在考试中，只要掌握「排队后依次处理的机制（先到的先处理的思路）」即可，不会问到复杂的计算公式那种程度。",
-      "explanation_en": "Queuing is a model that mathematically represents situations such as bank counters, checkouts, and computer processing requests, where things wait their turn before receiving service. We think of it as a flow of 'arriving,' 'lining up and waiting in the queue,' 'being processed at the counter,' and 'leaving.'\n\nDepending on the pace of arrivals and the time required for processing, you can analyze how the waiting time and queue length change, which helps with decisions such as whether to add more counters.\n\nIn the exam, it is enough to grasp that it is a mechanism where things line up and are processed in order (the idea that the first to arrive is processed first); complex calculation formulas are not asked at this level.",
-      "analogy_zh": "就像超市收银台前顾客排成一列的情形本身。想象顾客接连到来、在收银台结账、结完账的人依次离开商店这一连串流程，就容易理解了。",
-      "analogy_en": "It is exactly like customers lining up in a single line at a supermarket checkout. It becomes easy to understand if you picture the whole flow: customers keep arriving, pay at the checkout, and those who finish leave the store one after another.",
-      "memory_hook_zh": "说到排队，就是把顺序等待的队列加以建模的东西",
-      "memory_hook_en": "Queue → modeling a line of things waiting their turn"
+      "extra_zh": [
+        "平均等待时间、平均队列长度",
+        "预测窗口或线路的拥挤程度"
+      ],
+      "extra_en": [
+        "Average wait, average line length",
+        "Forecasting how busy counters or communication lines get"
+      ]
     },
     {
       "term": "最適化問題",
-      "definition_jp": "与えられた制約のもとで最も良い解を求める問題のこと。",
-      "explanation_jp": "最適化問題は、いくつかの条件(制約)を満たす中で、コストを最小にする、利益を最大にするなど「最も良い答え」を探す問題です。例えば、限られた予算や時間の中で効果が一番高くなる組み合わせを選ぶ、といった場面が当てはまります。\n\n身近な例では、配送の最短ルートを求める、材料を無駄なく割り当てるなど、現実の意思決定の多くが最適化問題として扱えます。\n\n試験では、本群で最も出題されやすいテーマです。「制約の中で最大・最小を求める問題」という考え方と、単に答えを1つ出すのではなく『最も良い解』を探す点を区別できることがポイントです。",
-      "analogy_jp": "決まったお小遣いの中で、欲しいお菓子を一番たくさん(または一番満足できるように)買う組み合わせを選ぶようなもの。条件内で「一番得な選び方」を探します。",
-      "memory_hook_jp": "最適化問題といえば制約の中で最も良い解を探す問題",
+      "one_line_jp": "制約条件を満たす解のうち、目的関数が最も良い解を求める問題",
+      "one_line_zh": "在满足约束条件的解中，求目标函数最优的解的问题",
+      "one_line_en": "A problem of finding, among the solutions that satisfy the constraints, the one with the best objective function value",
+      "extra_jp": [
+        "最適解 (費用の最小、利益の最大など)",
+        "作業の順番決め、回る地点の順番決め"
+      ],
+      "extra_zh": [
+        "最优解（成本最小、利润最大等）",
+        "决定作业的顺序、决定巡回各地点的顺序"
+      ],
+      "extra_en": [
+        "Optimal solution (minimum cost, maximum profit and so on)",
+        "Ordering jobs, ordering the stops on a route"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "待ち行列",
+      "term_zh": "排队（队列）",
+      "term_en": "Queue (Waiting Line)",
+      "one_jp": "**待ち行列** は、サービスを受けるために順番を待つ列を、到着と処理の様子から数量的に扱うモデルである。",
+      "one_zh": "**排队** [[jp:待ち行列]]是根据到达与处理的情况，对为接受服务而依次等候的队列进行定量分析的模型。",
+      "one_en": "A **queue** ([[jp:待ち行列]]), in the sense of a waiting line, is a model that treats a line waiting its turn for service in numerical terms, based on how arrivals come in and how they are served.",
+      "detail_jp": "到着の間隔も 1 件あたりの処理時間もばらつくので、平均の待ち時間や列の長さを確率と統計で見積もる。基本の形は、窓口が 1 つで、先に着いたものから順に処理される。窓口が処理中である時間の割合を **利用率** といい、平均処理時間を平均到着間隔で割って求める。",
+      "detail_zh": "到达的间隔和每件的处理时间都有波动，因此要用概率与统计来估算平均等待时间和队列长度。基本形式是只有一个窗口，按先到先处理的顺序服务。窗口处于处理状态的时间所占的比例称为**利用率**，用平均处理时间除以平均到达间隔求得。",
+      "detail_en": "Both the gaps between arrivals and the time needed to serve each one vary, so the average wait and line length are estimated with probability and statistics. The basic form has a single counter that serves arrivals first come, first served. The share of time the counter is busy is called **utilization**, and it is found by dividing the average service time by the average interarrival time.",
+      "analogy_jp": "病院の受付で番号札を取り、呼ばれるまで待合室で待つ流れ。混む曜日ほど、待合室の人数も待つ時間も増える。",
+      "analogy_zh": "就像在医院挂号处取号，然后在候诊室等到叫号为止。越是人多的日子，候诊室里的人越多，等的时间也越长。",
+      "analogy_en": "Like taking a number at a clinic's front desk and sitting in the waiting room until it is called. On busy days, both the crowd in the waiting room and the wait itself grow.",
+      "hook_jp": "待ち行列の理論は、電話交換機の回線がどれだけ混み合うかを調べる研究から始まった。",
+      "hook_zh": "排队论起源于研究电话交换机线路会拥挤到什么程度的工作。",
+      "hook_en": "Queuing theory began with research into how congested telephone exchange lines would get.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "利用率が上がると、待ち時間は比例して少しずつ伸びるのではない。利用率が 1 に近づくにつれて、待ち時間は急に長くなる。",
+          "text_zh": "利用率 [[jp:利用率]]上升时，等待时间并不是按比例慢慢增加。利用率越接近 1，等待时间就会急剧变长。",
+          "text_en": "As utilization ([[jp:利用率]]) rises, waiting time does not creep up in proportion. As utilization approaches 1, waiting time shoots up."
+        },
+        {
+          "kind": "mix",
+          "text_jp": "待ち行列のモデルは混み具合を見積もるための道具であり、データを入れた順に取り出すデータ構造のキューとは目的が違う。",
+          "text_zh": "排队 [[jp:待ち行列]]模型是估算拥挤程度的工具，与按存入顺序取出数据的数据结构“队列”[[jp:キュー]]目的不同。",
+          "text_en": "The queuing model ([[jp:待ち行列]]) is a tool for estimating congestion, and its purpose differs from the queue ([[jp:キュー]]) data structure, which takes data out in the order it was put in."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "arrive",
+              "label": {
+                "jp": "到着",
+                "zh": "到达",
+                "en": "Arrive"
+              }
+            },
+            {
+              "id": "wait",
+              "label": {
+                "jp": "列で待つ",
+                "zh": "排队等候",
+                "en": "Wait in line"
+              }
+            },
+            {
+              "id": "serve",
+              "label": {
+                "jp": "窓口で処理",
+                "zh": "在窗口处理",
+                "en": "Served at counter"
+              }
+            },
+            {
+              "id": "leave",
+              "label": {
+                "jp": "退去",
+                "zh": "离开",
+                "en": "Leave"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者や処理要求が、ばらばらの間隔でやって来る。",
+            "caption_zh": "用户或处理请求以不规则的间隔陆续到来。",
+            "caption_en": "Users or processing requests arrive at irregular intervals.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "窓口がふさがっていれば、列の最後に並んで待つ。",
+            "caption_zh": "如果窗口正忙，就排到队尾等候。",
+            "caption_en": "If the counter is busy, they join the end of the line and wait.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "先に並んだものから順に、窓口で処理を受ける。",
+            "caption_zh": "按排队的先后顺序，依次在窗口接受处理。",
+            "caption_en": "They are served at the counter in the order they lined up.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "処理が終わると列を離れ、次のものが窓口に進む。",
+            "caption_zh": "处理结束后离开队列，下一位走到窗口前。",
+            "caption_en": "When service ends they leave, and the next in line moves up to the counter.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "待ち行列 は、サービスを受けるために順番を待つ列を、到着と処理の様子から数量的に扱うモデルである。",
+      "definition_zh": "排队 待ち行列是根据到达与处理的情况，对为接受服务而依次等候的队列进行定量分析的模型。",
+      "definition_en": "A queue (待ち行列), in the sense of a waiting line, is a model that treats a line waiting its turn for service in numerical terms, based on how arrivals come in and how they are served.",
+      "explanation_jp": "到着の間隔も 1 件あたりの処理時間もばらつくので、平均の待ち時間や列の長さを確率と統計で見積もる。基本の形は、窓口が 1 つで、先に着いたものから順に処理される。窓口が処理中である時間の割合を 利用率 といい、平均処理時間を平均到着間隔で割って求める。",
+      "explanation_zh": "到达的间隔和每件的处理时间都有波动，因此要用概率与统计来估算平均等待时间和队列长度。基本形式是只有一个窗口，按先到先处理的顺序服务。窗口处于处理状态的时间所占的比例称为利用率，用平均处理时间除以平均到达间隔求得。",
+      "explanation_en": "Both the gaps between arrivals and the time needed to serve each one vary, so the average wait and line length are estimated with probability and statistics. The basic form has a single counter that serves arrivals first come, first served. The share of time the counter is busy is called utilization, and it is found by dividing the average service time by the average interarrival time.",
+      "memory_hook_jp": "待ち行列の理論は、電話交換機の回線がどれだけ混み合うかを調べる研究から始まった。",
+      "memory_hook_zh": "排队论起源于研究电话交换机线路会拥挤到什么程度的工作。",
+      "memory_hook_en": "Queuing theory began with research into how congested telephone exchange lines would get.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "最適化問題",
+      "term_zh": "最优化问题",
+      "term_en": "Optimization Problem",
+      "one_jp": "**最適化問題** は、守るべき条件 (**制約条件**) を満たす解の中から、利益の最大や費用の最小のように良さの尺度 (**目的関数**) が最も良くなる解 (**最適解**) を求める問題である。",
+      "one_zh": "**最优化问题** [[jp:最適化問題]]是在满足必须遵守的条件（**约束条件**）的解中，求出使衡量优劣的标准（**目标函数**）达到最好的解（**最优解**）的问题，例如利润最大或成本最小。",
+      "one_en": "An **optimization problem** ([[jp:最適化問題]]) seeks, among the solutions that meet the conditions that must hold (**constraints**), the one (**optimal solution**) that makes a measure of goodness (**objective function**), such as maximum profit or minimum cost, as good as it can be.",
+      "detail_jp": "解の候補が少なければ、すべてを並べて目的関数の値を比べれば最適解が分かる。候補が多いときは、**線形計画法** のように条件と目的を式に表して解く手法を使う。作業をどの順番で進めるか、いくつもの地点をどの順番で回るかを決める問題も、最適化問題の例である。",
+      "detail_zh": "候选解较少时，把所有候选列出来比较目标函数的值，就能找到最优解。候选较多时，则使用**线性规划**这类把条件和目标写成式子来求解的方法。决定按什么顺序推进作业、按什么顺序走访多个地点，也都是最优化问题的例子。",
+      "detail_en": "When there are only a few candidate solutions, listing them all and comparing their objective function values reveals the optimal solution. When there are many, methods such as **linear programming** express the conditions and the goal as equations and solve them. Deciding the order in which to carry out jobs, or the order in which to visit several locations, are also examples of optimization problems.",
+      "analogy_jp": "旅行のかばんに入る量の範囲で、役に立つ持ち物が最も多くなるように詰める物を選ぶこと。",
+      "analogy_zh": "就像在旅行箱装得下的范围内挑选要带的东西，让有用的物品尽可能多。",
+      "analogy_en": "Like choosing what to pack so that your suitcase carries as many useful items as it can hold.",
+      "hook_jp": "英語の optimization の元は、ラテン語で「最良の」を意味する optimus。最大と最小のどちらを目指す場合も、まとめて「最良」と呼ぶ。",
+      "hook_zh": "英语 optimization 源自拉丁语 optimus，意思是“最好的”。无论追求最大还是最小，都统称为“最好”。",
+      "hook_en": "The English word optimization comes from the Latin optimus, meaning “best”. Whether the aim is a maximum or a minimum, both count as the “best”.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "最適化問題では、解が満たすべき制約条件と、最小化または最大化する目的関数を分けて書く。制約条件は問題の前提から導き、前提にない条件を足すと、本来の最適解が候補から外れることがある。",
+          "text_zh": "在最优化问题 [[jp:最適化問題]]中，要把解必须满足的约束条件 [[jp:制約条件]]和需要最小化或最大化的目标函数 [[jp:目的関数]]分开写。约束条件要从问题的前提中推出，如果加上前提中没有的条件，原本的最优解 [[jp:最適解]]可能会被排除在候选之外。",
+          "text_en": "In an optimization problem ([[jp:最適化問題]]), write the constraints ([[jp:制約条件]]) a solution must satisfy separately from the objective function ([[jp:目的関数]]) to be minimized or maximized. Derive the constraints from the problem's premises, because adding a condition the premises do not state can push the true optimal solution ([[jp:最適解]]) out of the candidates.",
+          "qids": [
+            "2014h26h-q087"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "経由する順番を自由に選べる経路の最短時間は、順番の候補ごとに所要時間の合計を出し、最も小さいものを選べば求まる。通れない区間を含む順番は候補から外す。",
+          "text_zh": "途经顺序可以自由选择的路线，其最短时间的求法是：按每种候选顺序算出所需时间的合计，再选出最小的那个。包含无法通行区间的顺序要从候选中剔除。",
+          "text_en": "When the order of stops along a route can be chosen freely, the shortest time comes from totaling the travel time for each candidate order and picking the smallest. Any order that includes an impassable leg is dropped from the candidates.",
+          "qids": [
+            "2016h28h-q033"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "2 台の機械を同じ順に使う作業を、全部が終わるまでの時間が最短になるよう並べるには、最も短い使用時間が前の機械ならその作業を先頭、後の機械なら最後に置き、残りで繰り返す (ジョンソン法)。",
+          "text_zh": "要把按相同顺序使用两台机器的作业排成全部完成时间最短的顺序，就看最短的使用时间：若它在前一台机器上，就把该作业排在最前，若在后一台机器上，就排在最后，然后对剩下的作业重复这一步（约翰逊法 [[jp:ジョンソン法]]）。",
+          "text_en": "To order jobs that use two machines in the same sequence so that everything finishes soonest, look at the shortest usage time: if it is on the first machine, put that job at the front, and if it is on the second, put it at the end, then repeat with the rest (Johnson's rule, [[jp:ジョンソン法]]).",
+          "qids": [
+            "2018h30a-q005"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "var",
+              "label": {
+                "jp": "決めるもの",
+                "zh": "决策对象",
+                "en": "What to decide"
+              }
+            },
+            {
+              "id": "cons",
+              "label": {
+                "jp": "制約条件",
+                "zh": "约束条件",
+                "en": "Constraints"
+              }
+            },
+            {
+              "id": "obj",
+              "label": {
+                "jp": "目的関数",
+                "zh": "目标函数",
+                "en": "Objective function"
+              }
+            },
+            {
+              "id": "best",
+              "label": {
+                "jp": "最適解",
+                "zh": "最优解",
+                "en": "Optimal solution"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "何を決めるのかをはっきりさせる (例: 2 種類の製品をそれぞれ何個作るか)。",
+            "caption_zh": "明确要决定的是什么（例：两种产品各生产多少个）。",
+            "caption_en": "Pin down what is being decided (for example, how many of each of two products to make).",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "守るべき条件を制約条件として書く (例: 使う材料が在庫を超えない)。",
+            "caption_zh": "把必须遵守的条件写成约束条件（例：所用材料不超过库存）。",
+            "caption_en": "Write the conditions that must hold as constraints (for example, materials used cannot exceed stock).",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "良さの尺度を目的関数として書く (例: 利益の合計)。",
+            "caption_zh": "把衡量优劣的标准写成目标函数（例：利润合计）。",
+            "caption_en": "Write the measure of goodness as the objective function (for example, total profit).",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "制約条件をすべて満たす解のうち、利益の合計が最も大きい解が最適解になる。",
+            "caption_zh": "在满足全部约束条件的解中，利润合计最大的解就是最优解。",
+            "caption_en": "Among the solutions that meet every constraint, the one with the largest total profit is the optimal solution.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2016h28h-q033",
+        "2018h30a-q005"
+      ],
+      "definition_jp": "最適化問題 は、守るべき条件 (制約条件) を満たす解の中から、利益の最大や費用の最小のように良さの尺度 (目的関数) が最も良くなる解 (最適解) を求める問題である。",
+      "definition_zh": "最优化问题 最適化問題是在满足必须遵守的条件（约束条件）的解中，求出使衡量优劣的标准（目标函数）达到最好的解（最优解）的问题，例如利润最大或成本最小。",
+      "definition_en": "An optimization problem (最適化問題) seeks, among the solutions that meet the conditions that must hold (constraints), the one (optimal solution) that makes a measure of goodness (objective function), such as maximum profit or minimum cost, as good as it can be.",
+      "explanation_jp": "解の候補が少なければ、すべてを並べて目的関数の値を比べれば最適解が分かる。候補が多いときは、線形計画法 のように条件と目的を式に表して解く手法を使う。作業をどの順番で進めるか、いくつもの地点をどの順番で回るかを決める問題も、最適化問題の例である。",
+      "explanation_zh": "候选解较少时，把所有候选列出来比较目标函数的值，就能找到最优解。候选较多时，则使用线性规划这类把条件和目标写成式子来求解的方法。决定按什么顺序推进作业、按什么顺序走访多个地点，也都是最优化问题的例子。",
+      "explanation_en": "When there are only a few candidate solutions, listing them all and comparing their objective function values reveals the optimal solution. When there are many, methods such as linear programming express the conditions and the goal as equations and solve them. Deciding the order in which to carry out jobs, or the order in which to visit several locations, are also examples of optimization problems.",
+      "memory_hook_jp": "英語の optimization の元は、ラテン語で「最良の」を意味する optimus。最大と最小のどちらを目指す場合も、まとめて「最良」と呼ぶ。",
+      "memory_hook_zh": "英语 optimization 源自拉丁语 optimus，意思是“最好的”。无论追求最大还是最小，都统称为“最好”。",
+      "memory_hook_en": "The English word optimization comes from the Latin optimus, meaning “best”. Whether the aim is a maximum or a minimum, both count as the “best”.",
       "inline_quiz": [
+        "2016h28h-q033",
         "2018h30a-q005"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "最优化问题",
-      "term_en": "Optimization Problem",
-      "definition_zh": "在给定约束条件下求出最优解的问题。",
-      "definition_en": "A problem of finding the best solution under given constraints.",
-      "explanation_zh": "最优化问题是在满足若干条件（约束）的前提下，寻找使成本最小、利益最大等「最优答案」的问题。例如，在有限的预算或时间内选出效果最高的组合，就属于这类情形。\n\n身边的例子有：求配送的最短路线、把材料毫无浪费地分配等等，现实中的许多决策都可以作为最优化问题来处理。\n\n在考试中，这是本组最容易出题的主题。要点是理解「在约束中求最大、最小的问题」这一思路，并能区分它不是单纯给出一个答案，而是寻找『最优解』这一点。",
-      "explanation_en": "An optimization problem is a problem of finding the 'best answer'—such as minimizing cost or maximizing profit—while satisfying several conditions (constraints). For example, choosing the combination that gives the highest effect within a limited budget or time fits this category.\n\nFamiliar examples include finding the shortest delivery route or allocating materials without waste; many real-world decisions can be handled as optimization problems.\n\nIn the exam, this is the theme most likely to appear in this group. The key points are to understand the idea of 'a problem of finding the maximum or minimum under constraints,' and to be able to distinguish that it is not about simply producing one answer but about searching for the 'best solution.'",
-      "analogy_zh": "就像在固定的零花钱范围内，选出能买到最多（或最令人满意）想要的零食的组合。在条件之内寻找「最划算的选法」。",
-      "analogy_en": "It is like choosing the combination that lets you buy the most (or the most satisfying) snacks you want within a fixed allowance. You search for 'the most worthwhile choice' within the conditions.",
-      "memory_hook_zh": "说到最优化问题，就是在约束中寻找最优解的问题",
-      "memory_hook_en": "Optimization problem → finding the best solution within constraints"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "待ち行列",
+      "b": "最適化問題",
+      "rows": [
+        {
+          "label_jp": "求めるもの",
+          "label_zh": "求解对象",
+          "label_en": "What it finds",
+          "a_jp": "混み具合 (平均の待ち時間や列の長さ) の見積もり",
+          "a_zh": "对拥挤程度（平均等待时间和队列长度）的估算",
+          "a_en": "An estimate of congestion (average wait and line length)",
+          "b_jp": "条件の中で最も良い解",
+          "b_zh": "在条件范围内最好的解",
+          "b_en": "The best solution within the conditions",
+          "key": true
+        },
+        {
+          "label_jp": "中心となる考え方",
+          "label_zh": "核心思路",
+          "label_en": "Core idea",
+          "a_jp": "到着と処理のばらつきを確率で扱う",
+          "a_zh": "用概率处理到达与处理的波动",
+          "a_en": "Treat the variability of arrivals and service with probability",
+          "b_jp": "制約条件と目的関数に分けて組み立てる",
+          "b_zh": "拆分为约束条件和目标函数来建立",
+          "b_en": "Build it from constraints and an objective function kept separate",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**待ち行列** は、到着と処理のばらつきから平均の待ち時間や列の長さを見積もるモデルである。",
+    "窓口が 1 つの場合、**利用率** は平均処理時間を平均到着間隔で割った値で、1 に近づくと待ち時間が急に伸びる。",
+    "**最適化問題** は、**制約条件** を満たす解の中で **目的関数** が最も良い **最適解** を探す。",
+    "候補が少ない最適化問題は、すべての候補の値を計算して比べれば解ける。"
+  ],
+  "key_points_zh": [
+    "**排队**模型根据到达与处理的波动，估算平均等待时间和队列长度。",
+    "只有一个窗口时，**利用率**等于平均处理时间除以平均到达间隔，越接近 1，等待时间增长得越急剧。",
+    "**最优化问题**是在满足**约束条件**的解中，寻找**目标函数**最好的**最优解**。",
+    "候选较少的最优化问题，算出所有候选的值加以比较即可求解。"
+  ],
+  "key_points_en": [
+    "A **queuing** model estimates the average wait and line length from the variability of arrivals and service.",
+    "With a single counter, **utilization** is the average service time divided by the average interarrival time, and as it nears 1 the waiting time climbs steeply.",
+    "An **optimization problem** searches, among solutions that meet the **constraints**, for the **optimal solution** with the best **objective function** value.",
+    "An optimization problem with few candidates can be solved by computing every candidate's value and comparing them."
+  ],
+  "overview": {
+    "intro_jp": "待ち行列 のモデルが何を見積もるのかを説明できる。利用率 と待ち時間の関係を説明できる。最適化問題 を 制約条件 と 目的関数 に分けて組み立て、小さな問題の 最適解 を求められる。",
+    "intro_zh": "能够说明排队模型是用来估算什么的。能够说明利用率与等待时间之间的关系。能够把最优化问题拆分为约束条件和目标函数来建立，并求出小规模问题的最优解。",
+    "intro_en": "Explain what a queuing model estimates. Explain how utilization relates to waiting time. Set up an optimization problem by separating its constraints from its objective function, and find the optimal solution of a small problem.",
+    "freq_badge": "標準",
+    "est_minutes": 16
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "待ち行列: 待ち行列といえば順番待ちの列をモデル化したもの",
-      "最適化問題: 最適化問題といえば制約の中で最も良い解を探す問題"
-    ],
     "key_points_jp": [
-      "待ち行列は、サービスを待つ対象が「到着→待つ→処理→退去」と順に流れる様子をモデル化したもの。",
-      "待ち行列モデルは、到着ペースや処理時間から待ち時間・行列の長さを分析し、窓口数などの判断に役立つ。",
-      "最適化問題は、制約条件を満たす中でコスト最小・利益最大など「最も良い解」を求める問題。",
-      "最適化問題は本群で最も出題されやすく、配送の最短ルートや資源の割り当てなど現実の意思決定に広く応用される。",
-      "どちらも離散数学(グラフ理論)を土台とした応用テーマである。"
+      "待ち行列 は、到着と処理のばらつきから平均の待ち時間や列の長さを見積もるモデルである。",
+      "窓口が 1 つの場合、利用率 は平均処理時間を平均到着間隔で割った値で、1 に近づくと待ち時間が急に伸びる。",
+      "最適化問題 は、制約条件 を満たす解の中で 目的関数 が最も良い 最適解 を探す。",
+      "候補が少ない最適化問題は、すべての候補の値を計算して比べれば解ける。"
     ],
     "key_points_zh": [
-      "排队是把等待服务的对象按「到达→等待→处理→离开」依次流动的情形加以建模的东西。",
-      "排队模型可根据到达节奏和处理时间分析等待时间和队列长度，有助于做出窗口数量等判断。",
-      "最优化问题是在满足约束条件的前提下，求成本最小、利益最大等「最优解」的问题。",
-      "最优化问题在本组最容易出题，广泛应用于配送最短路线、资源分配等现实决策中。",
-      "两者都是以离散数学（图论）为基础的应用主题。"
+      "排队模型根据到达与处理的波动，估算平均等待时间和队列长度。",
+      "只有一个窗口时，利用率等于平均处理时间除以平均到达间隔，越接近 1，等待时间增长得越急剧。",
+      "最优化问题是在满足约束条件的解中，寻找目标函数最好的最优解。",
+      "候选较少的最优化问题，算出所有候选的值加以比较即可求解。"
     ],
     "key_points_en": [
-      "Queuing models the situation where objects waiting for service flow in order: 'arrive → wait → process → leave.'",
-      "Queuing models analyze waiting time and queue length from the arrival pace and processing time, helping with decisions such as the number of counters.",
-      "An optimization problem is a problem of finding the 'best solution'—such as minimum cost or maximum profit—while satisfying constraints.",
-      "Optimization problems appear most often in this group and are widely applied to real-world decisions such as shortest delivery routes and resource allocation.",
-      "Both are application themes built on the foundation of discrete mathematics (graph theory)."
+      "A queuing model estimates the average wait and line length from the variability of arrivals and service.",
+      "With a single counter, utilization is the average service time divided by the average interarrival time, and as it nears 1 the waiting time climbs steeply.",
+      "An optimization problem searches, among solutions that meet the constraints, for the optimal solution with the best objective function value.",
+      "An optimization problem with few candidates can be solved by computing every candidate's value and comparing them."
+    ],
+    "memory_hooks_jp": [
+      "待ち行列: 待ち行列の理論は、電話交換機の回線がどれだけ混み合うかを調べる研究から始まった。",
+      "最適化問題: 英語の optimization の元は、ラテン語で「最良の」を意味する optimus。最大と最小のどちらを目指す場合も、まとめて「最良」と呼ぶ。"
     ],
     "memory_hooks_zh": [
-      "排队：说到排队，就是把顺序等待的队列加以建模的东西",
-      "最优化问题：说到最优化问题，就是在约束中寻找最优解的问题"
+      "排队（队列）：排队论起源于研究电话交换机线路会拥挤到什么程度的工作。",
+      "最优化问题：英语 optimization 源自拉丁语 optimus，意思是“最好的”。无论追求最大还是最小，都统称为“最好”。"
     ],
     "memory_hooks_en": [
-      "Queue: Queue → modeling a line of things waiting their turn",
-      "Optimization problem: Optimization problem → finding the best solution within constraints"
+      "Queue (Waiting Line): Queuing theory began with research into how congested telephone exchange lines would get.",
+      "Optimization Problem: The English word optimization comes from the Latin optimus, meaning “best”. Whether the aim is a maximum or a minimum, both count as the “best”."
     ]
   },
   "challenge_questions": [
     "2016h28h-q033",
-    "2009h21a-q046",
-    "2009h21h-q007",
-    "2010h22a-q082",
-    "2010h22h-q067"
+    "2018h30a-q005",
+    "2009h21h-q007"
   ],
   "source_figures": [
     {
@@ -154,9 +477,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "离散数学的应用（排队论与最优化）",
-  "title_en": "Applications of Discrete Mathematics (Queuing and Optimization)",
-  "unit_summary_zh": "学习应用图论的排队模型，以及求解最优解的最优化问题。",
-  "unit_summary_en": "Learn queuing models that apply graph theory, and optimization problems that find the best solution."
+  }
 }

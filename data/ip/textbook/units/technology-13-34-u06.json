@@ -1,214 +1,628 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-34-u06",
   "topic_id": "technology-13-34",
   "category": "technology",
   "title_jp": "グラフ理論の基礎",
+  "title_zh": "图论基础",
+  "title_en": "Basics of Graph Theory",
   "unit_summary_jp": "グラフを構成する頂点(ノード)と辺(エッジ)、および有向・無向グラフの種類を学ぶ。",
+  "unit_summary_zh": "学习构成图的顶点（节点）和边，以及有向图、无向图这两种图的类型。",
+  "unit_summary_en": "Learn the vertices (nodes) and edges that make up a graph, and the types of directed and undirected graphs.",
   "order_in_topic": 6,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、物事の「つながり」を表す離散数学の道具であるグラフ理論の基礎を学びます。グラフを形づくる頂点(ノード)と辺(エッジ)という2つの構成要素、そして辺に向きを持つ有向グラフと持たない無向グラフの違いを押さえます。経路や関係性をモデル化する基本概念として、応用数学分野で出題されます。",
-    "freq_badge": "標準",
-    "est_minutes": 18,
-    "intro_zh": "本单元学习图论的基础——它是表示事物之间「连接」的离散数学工具。我们会掌握构成图的两个要素：顶点（节点）和边，以及边带方向的有向图与不带方向的无向图之间的区别。作为对路径和关系进行建模的基本概念，它会在应用数学领域中出题。",
-    "intro_en": "In this unit you learn the basics of graph theory, a tool of discrete mathematics for representing the \"connections\" between things. You will grasp the two components that form a graph—vertices (nodes) and edges—and the difference between directed graphs, whose edges have a direction, and undirected graphs, which do not. As a fundamental concept for modeling paths and relationships, it appears on the exam in the applied mathematics field."
-  },
+  "goals_jp": [
+    "グラフを形づくる **頂点** と **辺** の役割を区別できる",
+    "**ノード**・**エッジ** がそれぞれ頂点・辺の別名であることを対応づけられる",
+    "矢印の有無から **有向グラフ** と **無向グラフ** を見分け、順序の付いた関係を矢印で描ける"
+  ],
+  "goals_zh": [
+    "能够区分构成图的**顶点**与**边**各自的作用。",
+    "能够将**节点**、**边（edge）**分别对应为顶点、边的别称。",
+    "能够根据有无箭头辨别**有向图**与**无向图**，并用箭头画出带顺序的关系。"
+  ],
+  "goals_en": [
+    "Distinguish the roles of the **vertices** and **edges** that make up a graph.",
+    "Match the loanwords **node** and **edge** (エッジ) to vertex and edge (辺).",
+    "Tell a **directed graph** from an **undirected graph** by whether arrows are present, and draw an ordered relationship with arrows."
+  ],
+  "overview_cols_jp": [
+    "表すもの",
+    "別名・対になる語"
+  ],
+  "overview_cols_zh": [
+    "表示的对象",
+    "别称・成对的词"
+  ],
+  "overview_cols_en": [
+    "What it represents",
+    "Other name / paired term"
+  ],
+  "overview_rows": [
+    {
+      "term": "頂点",
+      "one_line_jp": "グラフの中で対象や地点を表す点",
+      "one_line_zh": "图中表示对象或地点的点",
+      "one_line_en": "A point in a graph that stands for an object or a location",
+      "extra_jp": [
+        "もの・場所",
+        "別名はノード"
+      ],
+      "extra_zh": [
+        "事物・地点",
+        "别称为节点"
+      ],
+      "extra_en": [
+        "Things and places",
+        "Also called a node"
+      ]
+    },
+    {
+      "term": "ノード",
+      "one_line_jp": "頂点を英語由来の呼び名で言ったもの",
+      "one_line_zh": "用源自英语的叫法称呼顶点",
+      "one_line_en": "The English-derived name for a vertex",
+      "extra_jp": [
+        "頂点と同じ",
+        "頂点"
+      ],
+      "extra_zh": [
+        "与顶点相同",
+        "顶点"
+      ],
+      "extra_en": [
+        "Same as a vertex",
+        "Vertex"
+      ]
+    },
+    {
+      "term": "辺",
+      "one_line_jp": "2 つの頂点を結び、つながりを表す線",
+      "one_line_zh": "连接两个顶点、表示关联的线",
+      "one_line_en": "A line joining two vertices that shows a connection",
+      "extra_jp": [
+        "つながり・関係",
+        "別名はエッジ"
+      ],
+      "extra_zh": [
+        "关联・关系",
+        "别称为边（edge）"
+      ],
+      "extra_en": [
+        "Connections and relationships",
+        "Also called an edge (English term)"
+      ]
+    },
+    {
+      "term": "エッジ",
+      "one_line_jp": "辺を英語由来の呼び名で言ったもの",
+      "one_line_zh": "用源自英语的叫法称呼边",
+      "one_line_en": "The English-derived name for an edge",
+      "extra_jp": [
+        "辺と同じ",
+        "辺"
+      ],
+      "extra_zh": [
+        "与边相同",
+        "边"
+      ],
+      "extra_en": [
+        "Same as an edge",
+        "Edge"
+      ]
+    },
+    {
+      "term": "有向グラフ",
+      "one_line_jp": "辺に向きがあり、矢印で描くグラフ",
+      "one_line_zh": "边有方向、用箭头来画的图",
+      "one_line_en": "A graph whose edges have a direction and are drawn as arrows",
+      "extra_jp": [
+        "一方向の関係",
+        "無向グラフ"
+      ],
+      "extra_zh": [
+        "单向的关系",
+        "无向图"
+      ],
+      "extra_en": [
+        "One-way relationships",
+        "Undirected graph"
+      ]
+    },
+    {
+      "term": "無向グラフ",
+      "one_line_jp": "辺に向きがなく、ただの線で描くグラフ",
+      "one_line_zh": "边没有方向、只用线来画的图",
+      "one_line_en": "A graph whose edges have no direction and are drawn as plain lines",
+      "extra_jp": [
+        "両方向に対等な関係",
+        "有向グラフ"
+      ],
+      "extra_zh": [
+        "双向对等的关系",
+        "有向图"
+      ],
+      "extra_en": [
+        "Equal relationships in both directions",
+        "Directed graph"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "頂点",
-      "definition_jp": "グラフ上で対象や地点を表す点。辺で結ばれる要素そのもの。",
-      "explanation_jp": "頂点は、グラフの中で「もの」や「場所」を表す点です。例えば路線図なら駅、人間関係図なら一人ひとりの人が頂点にあたります。\n\nグラフは、この頂点と、頂点同士を結ぶ辺の2つで構成されます。頂点が対象そのものを表し、辺がそのつながりを表す、という役割分担が基本です。試験では、英語表記の「ノード」と同じ意味であること、辺との役割の違いを区別できることが問われます。",
-      "analogy_jp": "路線図にかかれた一つひとつの「駅」のようなもの。それ自体が地点を表し、線路(辺)でほかの駅と結ばれます。",
-      "memory_hook_jp": "頂点といえばグラフ上の点(対象・地点)",
+      "term_zh": "顶点",
+      "term_en": "Vertex",
+      "one_jp": "**頂点** は、グラフの中で人・駅・コンピュータなどの対象や地点を表す **点** である。",
+      "one_zh": "**顶点**[[jp:頂点]]是图中表示人、车站、计算机等对象或地点的**点**。",
+      "one_en": "A **vertex** [[jp:頂点]] is a **point** in a graph that stands for an object or location, such as a person, a station, or a computer.",
+      "detail_jp": "**グラフ** とは、いくつかの頂点と、頂点どうしを結ぶ線 (辺) の組で物事のつながりを表した図である。頂点は「何がつながっているか」の「何」にあたり、丸や点で描かれる。どの頂点を選ぶかは表したい対象しだいで、同じ鉄道網でも駅を頂点にすることも、路線を頂点にすることもできる。",
+      "detail_zh": "**图**[[jp:グラフ]]是用若干顶点和连接顶点的线（边）组合起来表示事物之间关联的图形。顶点相当于“什么和什么相连”中的“什么”，通常画成圆圈或点。选哪些东西作顶点取决于想表示的对象，同一张铁路网既可以把车站当作顶点，也可以把线路当作顶点。",
+      "detail_en": "A **graph** [[jp:グラフ]] is a diagram that shows how things are connected, using a set of vertices and lines (edges) that join them. A vertex is the \"what\" in \"what is connected to what,\" and it is drawn as a circle or a dot. Which things become vertices depends on what you want to show: in the same railway network, you can treat stations as vertices, or you can treat railway lines (routes) as vertices.",
+      "analogy_jp": "地図に打った待ち合わせ場所の印のようなもの。印そのものは場所を表すだけで、印の間をどう行くかは別の線が受け持つ。",
+      "analogy_zh": "就像在地图上标出的集合地点记号。记号本身只代表地点，记号之间怎么走则交给另外的线来表示。",
+      "analogy_en": "Think of the pins you drop on a map to mark meeting spots. A pin only marks a place; how to get from one pin to another is the job of a separate line.",
+      "hook_jp": "図形の三角形で、辺と辺が出会う角の点を「頂点」と呼ぶのと同じ字。",
+      "hook_zh": "和几何中三角形两条边相交处的角点叫“顶点”是同一个词。",
+      "hook_en": "It is the same word as the vertex of a triangle, the corner point where two sides meet.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "経路の問題では、出発地・経由地・目的地のそれぞれを **頂点** とみなし、地点どうしを結ぶ道を辺として整理すると見通しがよくなる。",
+          "text_zh": "做路线类题目时，把出发地、途经地、目的地都看作**顶点**[[jp:頂点]]，把连接地点的道路当作边[[jp:辺]]来整理，思路会更清楚。",
+          "text_en": "For route problems, treat the start, each stopover, and the destination as **vertices** [[jp:頂点]], and the roads between them as edges [[jp:辺]]; this makes the problem easier to work through.",
+          "qids": [
+            "2016h28h-q033"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**頂点** は対象そのもの、辺は対象どうしの関係を表す。点と線のどちらに当たるかで区別する。",
+          "text_zh": "**顶点**[[jp:頂点]]表示对象本身，边[[jp:辺]]表示对象之间的关系。看它对应的是点还是线来区分。",
+          "text_en": "A **vertex** [[jp:頂点]] is the object itself, while an edge [[jp:辺]] is the relationship between objects. Tell them apart by asking whether it is a point or a line."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28h-q033"
+      ],
+      "definition_jp": "頂点 は、グラフの中で人・駅・コンピュータなどの対象や地点を表す 点 である。",
+      "definition_zh": "顶点頂点是图中表示人、车站、计算机等对象或地点的点。",
+      "definition_en": "A vertex 頂点 is a point in a graph that stands for an object or location, such as a person, a station, or a computer.",
+      "explanation_jp": "グラフ とは、いくつかの頂点と、頂点どうしを結ぶ線 (辺) の組で物事のつながりを表した図である。頂点は「何がつながっているか」の「何」にあたり、丸や点で描かれる。どの頂点を選ぶかは表したい対象しだいで、同じ鉄道網でも駅を頂点にすることも、路線を頂点にすることもできる。",
+      "explanation_zh": "图グラフ是用若干顶点和连接顶点的线（边）组合起来表示事物之间关联的图形。顶点相当于“什么和什么相连”中的“什么”，通常画成圆圈或点。选哪些东西作顶点取决于想表示的对象，同一张铁路网既可以把车站当作顶点，也可以把线路当作顶点。",
+      "explanation_en": "A graph グラフ is a diagram that shows how things are connected, using a set of vertices and lines (edges) that join them. A vertex is the \"what\" in \"what is connected to what,\" and it is drawn as a circle or a dot. Which things become vertices depends on what you want to show: in the same railway network, you can treat stations as vertices, or you can treat railway lines (routes) as vertices.",
+      "memory_hook_jp": "図形の三角形で、辺と辺が出会う角の点を「頂点」と呼ぶのと同じ字。",
+      "memory_hook_zh": "和几何中三角形两条边相交处的角点叫“顶点”是同一个词。",
+      "memory_hook_en": "It is the same word as the vertex of a triangle, the corner point where two sides meet.",
       "inline_quiz": [
         "2016h28h-q033"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "顶点",
-      "term_en": "Vertex",
-      "definition_zh": "在图上表示对象或地点的点。也就是被边连接起来的元素本身。",
-      "definition_en": "A point on a graph that represents an object or location. The element itself that is connected by edges.",
-      "explanation_zh": "顶点是图中表示「事物」或「地点」的点。例如在线路图中是车站，在人际关系图中则是每一个人，这些都对应于顶点。\n\n图由顶点和连接顶点之间的边这两者构成。顶点表示对象本身，边表示它们之间的连接，这种分工是基本原则。考试中会考查：它与英文写法「节点（node）」含义相同，以及能否区分它和边在角色上的差异。",
-      "explanation_en": "A vertex is a point in a graph that represents a \"thing\" or a \"place.\" For example, in a route map it is a station, and in a relationship diagram it is each individual person—these correspond to vertices.\n\nA graph is made up of two things: these vertices and the edges that connect them. The basic division of roles is that vertices represent the objects themselves while edges represent the connections. On the exam you are asked whether you know it means the same as the English term \"node,\" and whether you can distinguish its role from that of an edge.",
-      "analogy_zh": "就像线路图上画的一个个「车站」。它本身表示一个地点，并通过轨道（边）与其他车站相连。",
-      "analogy_en": "Like each individual \"station\" drawn on a route map. It represents a location on its own and is connected to other stations by the tracks (edges).",
-      "memory_hook_zh": "说到顶点就是图上的点（对象、地点）",
-      "memory_hook_en": "Vertex → a point on a graph (object or location)"
+      "figure": null
     },
     {
       "term": "ノード",
-      "definition_jp": "頂点の英語表記(node)。グラフ上の点を指す同義語。",
-      "explanation_jp": "ノード(node)は、頂点の英語での呼び方で、意味は頂点とまったく同じです。グラフ上で対象や地点を表す点を指します。\n\nIT の分野ではネットワークの機器やデータ構造の要素を「ノード」と呼ぶことも多く、文脈によって頂点・ノードが使い分けられます。試験では、頂点=ノードという和英の対応を覚えておけば十分で、両者は同じものを別の言葉で呼んでいるだけだと理解しておきましょう。",
-      "analogy_jp": "「駅」を英語で「ステーション」と呼ぶのと同じで、頂点を英語にしただけ。指しているものは同一です。",
-      "memory_hook_jp": "ノードといえば頂点の英語表記(同じ意味)",
+      "term_zh": "节点",
+      "term_en": "Node",
+      "one_jp": "**ノード** は、グラフの **頂点** を英語由来の呼び名で言ったもので、指すものは頂点と同じである。",
+      "one_zh": "**节点**[[jp:ノード]]是图中**顶点**的源自英语的叫法，所指的东西与顶点相同。",
+      "one_en": "A **node** [[jp:ノード]] is the English-derived name for a **vertex** of a graph, and it refers to exactly the same thing.",
+      "detail_jp": "IT の分野では、ネットワークにつながる機器や、木構造・リストなどのデータ構造の要素もノードと呼ぶ。どれも「つながりの端に置かれる要素」という点で、グラフの頂点と同じ役割を持つ。",
+      "detail_zh": "在 IT 领域，连接到网络上的设备，以及树结构、列表等数据结构中的元素，也都叫作节点。它们都是“放在关联两端的元素”，与图中顶点的作用相同。",
+      "detail_en": "In IT, devices connected to a network and the elements of data structures such as trees and lists are also called nodes. All of them are elements placed at the ends of connections, so they play the same role as the vertices of a graph.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "英語の node はもともと「結び目」の意味。網の糸が交わる結び目を思い浮かべるとよい。",
+      "hook_zh": "英语 node 原本是“结”的意思。可以联想渔网上线与线交叉处的绳结。",
+      "hook_en": "The English word node originally means a knot. Picture the knots where the threads of a net cross.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ノード** と頂点は呼び名が違うだけで、別の構成要素ではない。",
+          "text_zh": "**节点**[[jp:ノード]]与顶点[[jp:頂点]]只是叫法不同，并不是不同的构成要素。",
+          "text_en": "A **node** [[jp:ノード]] and a vertex [[jp:頂点]] differ only in name; they are not separate components."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2010h22a-q066"
+      ],
+      "definition_jp": "ノード は、グラフの 頂点 を英語由来の呼び名で言ったもので、指すものは頂点と同じである。",
+      "definition_zh": "节点ノード是图中顶点的源自英语的叫法，所指的东西与顶点相同。",
+      "definition_en": "A node ノード is the English-derived name for a vertex of a graph, and it refers to exactly the same thing.",
+      "explanation_jp": "IT の分野では、ネットワークにつながる機器や、木構造・リストなどのデータ構造の要素もノードと呼ぶ。どれも「つながりの端に置かれる要素」という点で、グラフの頂点と同じ役割を持つ。",
+      "explanation_zh": "在 IT 领域，连接到网络上的设备，以及树结构、列表等数据结构中的元素，也都叫作节点。它们都是“放在关联两端的元素”，与图中顶点的作用相同。",
+      "explanation_en": "In IT, devices connected to a network and the elements of data structures such as trees and lists are also called nodes. All of them are elements placed at the ends of connections, so they play the same role as the vertices of a graph.",
+      "memory_hook_jp": "英語の node はもともと「結び目」の意味。網の糸が交わる結び目を思い浮かべるとよい。",
+      "memory_hook_zh": "英语 node 原本是“结”的意思。可以联想渔网上线与线交叉处的绳结。",
+      "memory_hook_en": "The English word node originally means a knot. Picture the knots where the threads of a net cross.",
       "inline_quiz": [
         "2010h22a-q066"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "节点",
-      "term_en": "Node",
-      "definition_zh": "顶点的英文写法（node）。指图上的点的同义词。",
-      "definition_en": "The English term for vertex (node). A synonym referring to a point on a graph.",
-      "explanation_zh": "节点（node）是顶点的英文叫法，含义和顶点完全相同，指图上表示对象或地点的点。\n\n在 IT 领域，常把网络中的设备或数据结构中的元素称为「节点」，因此会根据上下文交替使用顶点和节点。考试中只要记住顶点=节点这个中英（和英）对应关系就足够了，要理解两者只是用不同的词称呼同一个东西。",
-      "explanation_en": "A node is the English name for a vertex, and its meaning is exactly the same as vertex: a point on a graph that represents an object or location.\n\nIn the IT field, devices on a network or elements in a data structure are often called \"nodes,\" so vertex and node are used interchangeably depending on the context. On the exam it is enough to remember the correspondence vertex = node; understand that the two are simply different words for the same thing.",
-      "analogy_zh": "就像把「车站」用英文叫作「station」一样，只是把顶点换成了英文。指的是同一样东西。",
-      "analogy_en": "Just like calling a \"station\" by its English name, it is merely the English version of vertex. What it points to is identical.",
-      "memory_hook_zh": "说到节点就是顶点的英文写法（含义相同）",
-      "memory_hook_en": "Node → the English term for vertex (same meaning)"
+      "figure": null
     },
     {
       "term": "辺",
-      "definition_jp": "2つの頂点を結び、つながりや関係を表すグラフの線。",
-      "explanation_jp": "辺は、2つの頂点を結ぶ線で、それらの間に「つながり」や「関係」があることを表します。路線図なら駅と駅を結ぶ線路、人間関係図なら友人関係の線が辺にあたります。\n\nグラフは頂点と辺の2要素からできており、辺は必ず頂点と頂点の間に引かれます。試験では、英語表記の「エッジ」と同じ意味であること、対象を表す頂点に対して辺は関係を表すという役割の違いが問われます。",
-      "analogy_jp": "駅と駅を結ぶ「線路」のようなもの。線路があれば2つの駅は行き来でき、つながっていることを示します。",
-      "memory_hook_jp": "辺といえば頂点同士を結ぶつながりの線",
-      "inline_quiz": [
-        "2009h21a-q046"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "边",
       "term_en": "Edge",
-      "definition_zh": "连接两个顶点、表示连接或关系的图中的线。",
-      "definition_en": "A line in a graph that connects two vertices and represents a connection or relationship.",
-      "explanation_zh": "边是连接两个顶点的线，表示它们之间存在「连接」或「关系」。在线路图中是连接车站与车站的轨道，在人际关系图中是表示朋友关系的线，这些都对应于边。\n\n图由顶点和边这两个要素构成，边一定画在顶点与顶点之间。考试中会考查：它与英文写法「edge」含义相同，以及相对于表示对象的顶点，边表示的是关系这种角色上的差异。",
-      "explanation_en": "An edge is a line connecting two vertices, showing that there is a \"connection\" or \"relationship\" between them. In a route map it is the track linking station to station, and in a relationship diagram it is the line showing a friendship—these correspond to edges.\n\nA graph is made of the two elements vertices and edges, and an edge is always drawn between one vertex and another. On the exam you are asked whether you know it means the same as the English term \"edge,\" and the difference in role: whereas a vertex represents an object, an edge represents a relationship.",
-      "analogy_zh": "就像连接车站与车站的「轨道」。有了轨道，两个车站之间就能往来，表示它们是连通的。",
-      "analogy_en": "Like the \"track\" connecting one station to another. If there is a track, the two stations can travel back and forth, showing that they are connected.",
-      "memory_hook_zh": "说到边就是连接顶点之间的连线",
-      "memory_hook_en": "Edge → the connecting line that joins vertices"
+      "one_jp": "**辺** は、2 つの頂点を結び、その間に **つながり** や関係があることを表す線である。",
+      "one_zh": "**边**[[jp:辺]]是连接两个顶点、表示两者之间存在**关联**或关系的线。",
+      "one_en": "An **edge** [[jp:辺]] is a line that joins two vertices and shows that a **connection** or relationship exists between them.",
+      "detail_jp": "辺の両端には必ず頂点があり、どの 2 つの頂点を結ぶかによって関係が決まる。辺には距離・時間・費用などの値を付けることがあり、この値を **重み** という。重み付きの辺を使えば、ある地点から別の地点までの道のりを辺の値の合計として比べられる。",
+      "detail_zh": "边的两端一定有顶点，连接哪两个顶点决定了表示的是什么关系。边上有时会附加距离、时间、费用等数值，这个数值叫作**权重**。使用带权重的边，就能把从一个地点到另一个地点的路程当作边上数值的合计来比较。",
+      "detail_en": "An edge always has a vertex at each end, and which two vertices it joins determines the relationship. An edge can carry a value such as distance, time, or cost, and this value is called a **weight**. With weighted edges, you can compare routes from one place to another by adding up the values on the edges.",
+      "analogy_jp": "町と町を結ぶ道路のようなもの。道路があれば 2 つの町がつながり、道路ごとに所要時間を書き込んでおけば遠回りかどうかも分かる。",
+      "analogy_zh": "就像连接城镇与城镇的公路。有公路，两座城镇就连在了一起；在每条公路上写上所需时间，就能看出是不是绕了远路。",
+      "analogy_en": "Think of the roads between towns. A road connects two towns, and if you write the travel time on each road, you can tell whether a route is a detour.",
+      "hook_jp": "三角形の「辺」と同じ字で、角の点 (頂点) と角の点を結ぶ線と覚える。",
+      "hook_zh": "和三角形的“边”是同一个字，记作连接角点（顶点）与角点的线。",
+      "hook_en": "The kanji [[jp:辺]] is the one used for a side of a triangle; remember it as the line joining one corner (vertex) to another.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**辺** に所要時間を重みとして付けたグラフでは、ある経路の所要時間はその経路が通る辺の重みを足し合わせた値になる。",
+          "text_zh": "在给**边**[[jp:辺]]附上所需时间作为权重[[jp:重み]]的图中，某条路线的所需时间等于该路线经过的各条边的权重之和。",
+          "text_en": "In a graph where each **edge** [[jp:辺]] carries its travel time as a weight [[jp:重み]], the travel time of a route is the sum of the weights of the edges it passes through.",
+          "qids": [
+            "2016h28h-q033"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "どの 2 つの頂点も 1 本ずつの **辺** で結ぶと、頂点が n 個のとき辺は n(n−1)/2 本になる。例えば頂点 5 個なら辺は 10 本である。",
+          "text_zh": "若任意两个顶点[[jp:頂点]]之间都用一条**边**[[jp:辺]]相连，顶点有 n 个时，边共有 n(n−1)/2 条。例如顶点为 5 个时，边为 10 条。",
+          "text_en": "If every pair of vertices [[jp:頂点]] is joined by exactly one **edge** [[jp:辺]], a graph with n vertices has n(n−1)/2 edges. For example, 5 vertices give 10 edges.",
+          "qids": [
+            "2009h21a-q046"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28h-q033"
+      ],
+      "definition_jp": "辺 は、2 つの頂点を結び、その間に つながり や関係があることを表す線である。",
+      "definition_zh": "边辺是连接两个顶点、表示两者之间存在关联或关系的线。",
+      "definition_en": "An edge 辺 is a line that joins two vertices and shows that a connection or relationship exists between them.",
+      "explanation_jp": "辺の両端には必ず頂点があり、どの 2 つの頂点を結ぶかによって関係が決まる。辺には距離・時間・費用などの値を付けることがあり、この値を 重み という。重み付きの辺を使えば、ある地点から別の地点までの道のりを辺の値の合計として比べられる。",
+      "explanation_zh": "边的两端一定有顶点，连接哪两个顶点决定了表示的是什么关系。边上有时会附加距离、时间、费用等数值，这个数值叫作权重。使用带权重的边，就能把从一个地点到另一个地点的路程当作边上数值的合计来比较。",
+      "explanation_en": "An edge always has a vertex at each end, and which two vertices it joins determines the relationship. An edge can carry a value such as distance, time, or cost, and this value is called a weight. With weighted edges, you can compare routes from one place to another by adding up the values on the edges.",
+      "memory_hook_jp": "三角形の「辺」と同じ字で、角の点 (頂点) と角の点を結ぶ線と覚える。",
+      "memory_hook_zh": "和三角形的“边”是同一个字，记作连接角点（顶点）与角点的线。",
+      "memory_hook_en": "The kanji 辺 is the one used for a side of a triangle; remember it as the line joining one corner (vertex) to another.",
+      "inline_quiz": [
+        "2016h28h-q033"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "エッジ",
-      "definition_jp": "辺の英語表記(edge)。頂点を結ぶ線を指す同義語。",
-      "explanation_jp": "エッジ(edge)は、辺の英語での呼び方で、意味は辺とまったく同じです。2つの頂点(ノード)を結び、関係やつながりを表します。\n\nノードとエッジという英語の組で語られることも多く、頂点と辺の和英対応とセットで覚えると整理しやすくなります。試験では、辺=エッジという対応を押さえておけばよく、両者は同じものを呼び分けているだけだと理解しておきましょう。",
-      "analogy_jp": "「線路」を英語で言い換えただけのようなもの。辺をエッジと呼んでも、結んでいる役割は変わりません。",
-      "memory_hook_jp": "エッジといえば辺の英語表記(同じ意味)",
-      "inline_quiz": [
-        "2009h21a-q070"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "边（edge）",
       "term_en": "Edge (English term)",
-      "definition_zh": "边的英文写法（edge）。指连接顶点的线的同义词。",
-      "definition_en": "The English term for edge (Japanese: 辺, hen). A synonym referring to the line that connects vertices.",
-      "explanation_zh": "edge 是边的英文叫法，含义和边完全相同，连接两个顶点（节点），表示关系或连接。\n\n它常与「node」组成英文术语对一起出现，与顶点和边的中英（和英）对应关系配套记忆，更容易理清。考试中只要掌握边=edge 这个对应关系即可，要理解两者只是对同一样东西的不同称呼。",
-      "explanation_en": "Edge is the English name for the Japanese term 辺 (hen), and its meaning is exactly the same: it connects two vertices (nodes) and represents a relationship or connection.\n\nIt is often spoken of together with \"node\" as an English pair, and remembering it alongside the vertex-and-edge correspondence makes things easier to organize. On the exam it is enough to grasp the correspondence edge = the Japanese term 辺; understand that the two are simply different names for the same thing.",
-      "analogy_zh": "就像把「轨道」换成英文的说法一样。即使把边叫作 edge，它所连接的角色也不会改变。",
-      "analogy_en": "Like simply rephrasing \"track\" in English. Even if you call an edge by its English name, the connecting role it plays does not change.",
-      "memory_hook_zh": "说到 edge 就是边的英文写法（含义相同）",
-      "memory_hook_en": "Edge (English) → the English term for the Japanese word 辺 (same meaning)"
+      "one_jp": "**エッジ** は、グラフの **辺** を英語由来の呼び名で言ったもので、指すものは辺と同じである。",
+      "one_zh": "**边（edge）**[[jp:エッジ]]是图中**边**的源自英语的叫法，所指的东西与边相同。",
+      "one_en": "The loanword **edge** [[jp:エッジ]] is the English-derived name for a graph's **edge** [[jp:辺]], and it refers to exactly the same thing.",
+      "detail_jp": "頂点をノードと呼ぶ文脈では、辺もエッジと呼ぶことが多く、「ノードとエッジ」の組でグラフを説明する。ネットワークの分野では、機器 (ノード) の間をつなぐ回線や接続をエッジとみなすことがある。なお、エッジコンピューティングの「エッジ」は、ネットワークの末端 (利用者や機器に近い側) という別の意味である。",
+      "detail_zh": "在把顶点称为节点的场合，边也多改用英文叫法 edge，用“节点与 edge”这一组词来说明图。在网络领域，有时把设备（节点）之间相连的线路或连接看作边（edge）。另外，边缘计算[[jp:エッジコンピューティング]]中的“边缘”是另一种意思，指网络的末端（靠近用户或设备的一侧）。",
+      "detail_en": "Where vertices are called nodes [[jp:ノード]], the term 辺 is usually replaced by the loanword edge [[jp:エッジ]] as well, and a graph is described as a set of nodes and edges. In networking, the lines or links that connect devices (nodes) are sometimes treated as edges. The edge in edge computing [[jp:エッジコンピューティング]] is a different sense: the outer end of a network, close to the users and devices.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "英語の edge は「へり・縁」の意味。図形の縁、つまり角と角を結ぶ線と結び付けて覚える。",
+      "hook_zh": "英语 edge 是“边缘、边沿”的意思。把它与图形的边沿，也就是连接角与角的线联系起来记忆。",
+      "hook_en": "The English word edge means a rim or border. Link it to the border of a shape, that is, the line running from corner to corner.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "順序関係を図にするとき、関係の組 1 つが **エッジ** 1 本に当たるので、描くエッジの本数は組の数と一致する。",
+          "text_zh": "把顺序关系画成图时，一组关系对应一条**边（edge）**[[jp:エッジ]]，所以要画的边（edge）的条数与关系组数一致。",
+          "text_en": "When you draw an ordering relation as a diagram, each related pair becomes one **edge** [[jp:エッジ]], so the number of edges you draw equals the number of pairs.",
+          "qids": [
+            "2010h22a-q066"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**エッジ** と辺は呼び名が違うだけで、別の構成要素ではない。",
+          "text_zh": "**边（edge）**[[jp:エッジ]]与边[[jp:辺]]只是叫法不同，并不是不同的构成要素。",
+          "text_en": "The loanword **edge** [[jp:エッジ]] and the native term edge [[jp:辺]] differ only in name; they are not separate components."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2010h22a-q066"
+      ],
+      "definition_jp": "エッジ は、グラフの 辺 を英語由来の呼び名で言ったもので、指すものは辺と同じである。",
+      "definition_zh": "边（edge）エッジ是图中边的源自英语的叫法，所指的东西与边相同。",
+      "definition_en": "The loanword edge エッジ is the English-derived name for a graph's edge 辺, and it refers to exactly the same thing.",
+      "explanation_jp": "頂点をノードと呼ぶ文脈では、辺もエッジと呼ぶことが多く、「ノードとエッジ」の組でグラフを説明する。ネットワークの分野では、機器 (ノード) の間をつなぐ回線や接続をエッジとみなすことがある。なお、エッジコンピューティングの「エッジ」は、ネットワークの末端 (利用者や機器に近い側) という別の意味である。",
+      "explanation_zh": "在把顶点称为节点的场合，边也多改用英文叫法 edge，用“节点与 edge”这一组词来说明图。在网络领域，有时把设备（节点）之间相连的线路或连接看作边（edge）。另外，边缘计算エッジコンピューティング中的“边缘”是另一种意思，指网络的末端（靠近用户或设备的一侧）。",
+      "explanation_en": "Where vertices are called nodes ノード, the term 辺 is usually replaced by the loanword edge エッジ as well, and a graph is described as a set of nodes and edges. In networking, the lines or links that connect devices (nodes) are sometimes treated as edges. The edge in edge computing エッジコンピューティング is a different sense: the outer end of a network, close to the users and devices.",
+      "memory_hook_jp": "英語の edge は「へり・縁」の意味。図形の縁、つまり角と角を結ぶ線と結び付けて覚える。",
+      "memory_hook_zh": "英语 edge 是“边缘、边沿”的意思。把它与图形的边沿，也就是连接角与角的线联系起来记忆。",
+      "memory_hook_en": "The English word edge means a rim or border. Link it to the border of a shape, that is, the line running from corner to corner.",
+      "inline_quiz": [
+        "2010h22a-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "有向グラフ",
-      "definition_jp": "辺に向き(矢印)があり、一方向のつながりを表すグラフ。",
-      "explanation_jp": "有向グラフは、辺に向きがあるグラフで、辺が矢印で描かれます。AからBへは行けてもBからAへは行けない、というように一方通行の関係を表せます。\n\n一方通行の道路、Web ページ間のリンク、作業の前後関係などが有向グラフで表されます。試験では、向きのない無向グラフとの対比が頻出で、「矢印がある=有向」「行き来の方向が決まっている関係」を有向グラフと判断できることがポイントです。",
-      "analogy_jp": "一方通行の道路網のようなもの。「こちらからあちらへは行けるが逆は行けない」という向きのある道を矢印で表します。",
-      "memory_hook_jp": "有向グラフといえば矢印付きの一方向のつながり",
-      "inline_quiz": [
-        "2009h21h-q007"
+      "term_zh": "有向图",
+      "term_en": "Directed Graph",
+      "one_jp": "**有向グラフ** は、辺に **向き** があり、辺を矢印で描くグラフである。",
+      "one_zh": "**有向图**[[jp:有向グラフ]]是边带有**方向**、用箭头来画边的图。",
+      "one_en": "A **directed graph** [[jp:有向グラフ]] is a graph whose edges have a **direction** and are drawn as arrows.",
+      "detail_jp": "矢印は根元の頂点から先の頂点へ向かう関係を表し、逆向きの関係は別の矢印がない限り成り立たない。作業の前後関係、Web ページのリンク、一方通行の道路網などが有向グラフで表される。",
+      "detail_zh": "箭头表示从起点顶点指向终点顶点的关系，除非另有反向箭头，反方向的关系并不成立。作业的先后关系、Web 页面之间的链接、单行道组成的道路网等，都可以用有向图表示。",
+      "detail_en": "An arrow shows a relationship running from the vertex at its tail to the vertex at its head, and the reverse relationship does not hold unless there is a separate arrow for it. Directed graphs represent things like the order of tasks, links between web pages, and road networks made of one-way streets.",
+      "analogy_jp": "一方通行の標識がある道路網のようなもの。標識の向きにしか進めず、戻るには別の道が要る。",
+      "analogy_zh": "就像设有单行道标志的道路网。只能按标志的方向前进，想回去就得走另一条路。",
+      "analogy_en": "Think of a road network with one-way signs. You can only go the way the signs point, and getting back takes a different road.",
+      "hook_jp": "「有向」は文字どおり「向きが有る」。矢じりが付いているかどうかを見る。",
+      "hook_zh": "“有向”字面意思就是“有方向”。看线的一端有没有箭头。",
+      "hook_en": "Directed literally means having a direction. Check whether the line ends in an arrowhead.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "順序の付いた組 (P, Q) は、P を根元、Q を先とする矢印 1 本で描く。根元と先を入れ替えると別の関係になる。",
+          "text_zh": "带顺序的组（P, Q）画成一条以 P 为起点、Q 为终点的箭头。交换起点和终点就成了另一种关系。",
+          "text_en": "An ordered pair (P, Q) is drawn as one arrow with its tail at P and its head at Q. Swapping the tail and the head gives a different relationship.",
+          "qids": [
+            "2010h22a-q066"
+          ]
+        }
       ],
-      "inline_fallback": true,
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-13-34-u06-t01.svg"
+        }
+      },
+      "quiz": [
+        "2010h22a-q066"
+      ],
+      "definition_jp": "有向グラフ は、辺に 向き があり、辺を矢印で描くグラフである。",
+      "definition_zh": "有向图有向グラフ是边带有方向、用箭头来画边的图。",
+      "definition_en": "A directed graph 有向グラフ is a graph whose edges have a direction and are drawn as arrows.",
+      "explanation_jp": "矢印は根元の頂点から先の頂点へ向かう関係を表し、逆向きの関係は別の矢印がない限り成り立たない。作業の前後関係、Web ページのリンク、一方通行の道路網などが有向グラフで表される。",
+      "explanation_zh": "箭头表示从起点顶点指向终点顶点的关系，除非另有反向箭头，反方向的关系并不成立。作业的先后关系、Web 页面之间的链接、单行道组成的道路网等，都可以用有向图表示。",
+      "explanation_en": "An arrow shows a relationship running from the vertex at its tail to the vertex at its head, and the reverse relationship does not hold unless there is a separate arrow for it. Directed graphs represent things like the order of tasks, links between web pages, and road networks made of one-way streets.",
+      "memory_hook_jp": "「有向」は文字どおり「向きが有る」。矢じりが付いているかどうかを見る。",
+      "memory_hook_zh": "“有向”字面意思就是“有方向”。看线的一端有没有箭头。",
+      "memory_hook_en": "Directed literally means having a direction. Check whether the line ends in an arrowhead.",
+      "inline_quiz": [
+        "2010h22a-q066"
+      ],
+      "inline_fallback": false,
       "figure": {
         "mermaid": "graph LR; A[\"頂点A\"] --> B[\"頂点B\"]; B --> C[\"頂点C\"]; A --> C",
         "svg_path": "figures/technology-13-34-u06-t01.svg",
         "rendered": true
-      },
-      "term_zh": "有向图",
-      "term_en": "Directed Graph",
-      "definition_zh": "边带有方向（箭头）、表示单向连接的图。",
-      "definition_en": "A graph whose edges have a direction (arrow) and represent a one-way connection.",
-      "explanation_zh": "有向图是边带有方向的图，边用箭头来画。它可以表示单向通行的关系，比如能从 A 走到 B，却不能从 B 走到 A。\n\n单行道、网页之间的链接、作业的先后关系等，都可以用有向图来表示。考试中常把它与不带方向的无向图作对比，关键在于能判断出「有箭头=有向」「往来方向是确定的关系」就是有向图。",
-      "explanation_en": "A directed graph is a graph whose edges have a direction, and the edges are drawn as arrows. It can represent a one-way relationship, such as being able to go from A to B but not from B to A.\n\nOne-way roads, links between web pages, and the before-and-after order of tasks can all be represented with directed graphs. On the exam, the contrast with the directionless undirected graph appears frequently; the key point is being able to judge that \"having arrows = directed\" and \"a relationship whose direction of travel is fixed\" is a directed graph.",
-      "analogy_zh": "就像单行道构成的道路网。用箭头表示「从这边能到那边，但反过来不行」这种带方向的道路。",
-      "analogy_en": "Like a road network made of one-way streets. Arrows represent directional roads where \"you can go from here to there, but not the reverse.\"",
-      "memory_hook_zh": "说到有向图就是带箭头的单向连接",
-      "memory_hook_en": "Directed graph → a one-way connection with arrows"
+      }
     },
     {
       "term": "無向グラフ",
-      "definition_jp": "辺に向きがなく、双方向のつながりを表すグラフ。",
-      "explanation_jp": "無向グラフは、辺に向きがないグラフで、辺は単純な線で描かれます。AとBが結ばれていれば、AからBへもBからAへも行き来できる、双方向の関係を表します。\n\n相互に通行できる道路、友人関係(互いに友達)などが無向グラフで表されます。試験では、向きのある有向グラフとの対比が頻出で、「矢印がない=無向」「行き来が両方向の対等な関係」を無向グラフと判断できることがポイントです。",
-      "analogy_jp": "対面通行の道路網のようなもの。「どちらからでも行き来できる」つながりを、向きのない線で表します。",
-      "memory_hook_jp": "無向グラフといえば向きなしの双方向のつながり",
-      "inline_quiz": [
-        "2009h21h-q080"
+      "term_zh": "无向图",
+      "term_en": "Undirected Graph",
+      "one_jp": "**無向グラフ** は、辺に **向き** がなく、辺を矢じりのない線で描くグラフである。",
+      "one_zh": "**无向图**[[jp:無向グラフ]]是边没有**方向**、用不带箭头的线来画边的图。",
+      "one_en": "An **undirected graph** [[jp:無向グラフ]] is a graph whose edges have no **direction** and are drawn as lines without arrowheads.",
+      "detail_jp": "辺で結ばれた 2 つの頂点は対等で、どちらから見ても同じ関係が成り立つ。互いに知り合いである関係や、両方向に通れる道路網などが無向グラフで表される。",
+      "detail_zh": "由边相连的两个顶点是对等的，从哪一方看都是同样的关系。互相认识的关系、双向都能通行的道路网等，都可以用无向图表示。",
+      "detail_en": "The two vertices joined by an edge are equal partners, and the relationship is the same from either side. Undirected graphs represent things like people who know each other and road networks you can travel in both directions.",
+      "analogy_jp": "握手のようなもの。A が B と握手していれば、B も A と握手している。",
+      "analogy_zh": "就像握手。A 和 B 握手，B 也就在和 A 握手。",
+      "analogy_en": "Think of a handshake. If A is shaking hands with B, then B is shaking hands with A.",
+      "hook_jp": "「有向」と一字違いの「無向」。「無」は矢じりが無いと結び付ける。",
+      "hook_zh": "与“有向”只差一个字的“无向”。“无”就是没有箭头。",
+      "hook_en": "Undirected is directed with un- in front. The un- tells you there is no arrowhead.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**無向グラフ** の辺 1 本は、有向グラフでは向きの違う矢印 2 本に相当する。",
+          "text_zh": "**无向图**[[jp:無向グラフ]]中的一条边，相当于有向图[[jp:有向グラフ]]中方向相反的两条箭头。",
+          "text_en": "One edge of an **undirected graph** [[jp:無向グラフ]] corresponds to two arrows pointing in opposite directions in a directed graph [[jp:有向グラフ]]."
+        }
       ],
-      "inline_fallback": true,
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-13-34-u06-t02.svg"
+        }
+      },
+      "quiz": [],
+      "definition_jp": "無向グラフ は、辺に 向き がなく、辺を矢じりのない線で描くグラフである。",
+      "definition_zh": "无向图無向グラフ是边没有方向、用不带箭头的线来画边的图。",
+      "definition_en": "An undirected graph 無向グラフ is a graph whose edges have no direction and are drawn as lines without arrowheads.",
+      "explanation_jp": "辺で結ばれた 2 つの頂点は対等で、どちらから見ても同じ関係が成り立つ。互いに知り合いである関係や、両方向に通れる道路網などが無向グラフで表される。",
+      "explanation_zh": "由边相连的两个顶点是对等的，从哪一方看都是同样的关系。互相认识的关系、双向都能通行的道路网等，都可以用无向图表示。",
+      "explanation_en": "The two vertices joined by an edge are equal partners, and the relationship is the same from either side. Undirected graphs represent things like people who know each other and road networks you can travel in both directions.",
+      "memory_hook_jp": "「有向」と一字違いの「無向」。「無」は矢じりが無いと結び付ける。",
+      "memory_hook_zh": "与“有向”只差一个字的“无向”。“无”就是没有箭头。",
+      "memory_hook_en": "Undirected is directed with un- in front. The un- tells you there is no arrowhead.",
+      "inline_quiz": [],
+      "inline_fallback": false,
       "figure": {
         "mermaid": "graph LR; A[\"頂点A\"] --- B[\"頂点B\"]; B --- C[\"頂点C\"]; A --- C",
         "svg_path": "figures/technology-13-34-u06-t02.svg",
         "rendered": true
-      },
-      "term_zh": "无向图",
-      "term_en": "Undirected Graph",
-      "definition_zh": "边不带方向、表示双向连接的图。",
-      "definition_en": "A graph whose edges have no direction and represent a two-way connection.",
-      "explanation_zh": "无向图是边不带方向的图，边画成简单的线。只要 A 和 B 相连，就既能从 A 到 B，也能从 B 到 A，表示双向的关系。\n\n可相互通行的道路、朋友关系（彼此都是朋友）等，都可以用无向图来表示。考试中常把它与带方向的有向图作对比，关键在于能判断出「没有箭头=无向」「往来是双向的对等关系」就是无向图。",
-      "explanation_en": "An undirected graph is a graph whose edges have no direction, and the edges are drawn as simple lines. As long as A and B are connected, you can travel both from A to B and from B to A—representing a two-way relationship.\n\nRoads that allow mutual passage and friendships (each is the other's friend) can be represented with undirected graphs. On the exam, the contrast with the directed graph appears frequently; the key point is being able to judge that \"having no arrows = undirected\" and \"an equal relationship whose travel goes both ways\" is an undirected graph.",
-      "analogy_zh": "就像双向通行的道路网。用不带方向的线表示「从哪边都能往来」的连接。",
-      "analogy_en": "Like a road network with two-way traffic. A directionless line represents a connection where \"you can travel from either side.\"",
-      "memory_hook_zh": "说到无向图就是没有方向的双向连接",
-      "memory_hook_en": "Undirected graph → a two-way connection with no direction"
+      }
     }
   ],
+  "pairs": [
+    {
+      "a": "頂点",
+      "b": "辺",
+      "rows": [
+        {
+          "label_jp": "表すもの",
+          "label_zh": "表示的对象",
+          "label_en": "What it represents",
+          "a_jp": "対象や地点そのもの",
+          "a_zh": "对象或地点本身",
+          "a_en": "The object or location itself",
+          "b_jp": "2 つの対象の間のつながり",
+          "b_zh": "两个对象之间的关联",
+          "b_en": "The connection between two objects",
+          "key": true
+        },
+        {
+          "label_jp": "描き方",
+          "label_zh": "画法",
+          "label_en": "How it is drawn",
+          "a_jp": "丸や点",
+          "a_zh": "圆圈或点",
+          "a_en": "A circle or dot",
+          "b_jp": "頂点と頂点を結ぶ線",
+          "b_zh": "连接顶点与顶点的线",
+          "b_en": "A line joining two vertices",
+          "key": false
+        },
+        {
+          "label_jp": "英語由来の呼び名",
+          "label_zh": "源自英语的叫法",
+          "label_en": "English-derived name",
+          "a_jp": "ノード",
+          "a_zh": "节点",
+          "a_en": "Node",
+          "b_jp": "エッジ",
+          "b_zh": "边（edge）",
+          "b_en": "Edge",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "有向グラフ",
+      "b": "無向グラフ",
+      "rows": [
+        {
+          "label_jp": "辺の向き",
+          "label_zh": "边的方向",
+          "label_en": "Edge direction",
+          "a_jp": "ある (矢印で描く)",
+          "a_zh": "有（用箭头画）",
+          "a_en": "Present (drawn as arrows)",
+          "b_jp": "ない (線で描く)",
+          "b_zh": "无（用线画）",
+          "b_en": "Absent (drawn as lines)",
+          "key": true
+        },
+        {
+          "label_jp": "関係の性質",
+          "label_zh": "关系的性质",
+          "label_en": "Nature of the relationship",
+          "a_jp": "根元から先への一方向",
+          "a_zh": "从起点到终点的单向",
+          "a_en": "One way, from tail to head",
+          "b_jp": "両端の頂点が対等",
+          "b_zh": "两端的顶点对等",
+          "b_en": "Both end vertices are equal",
+          "key": false
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "例子",
+          "label_en": "Examples",
+          "a_jp": "作業の前後関係、Web ページのリンク",
+          "a_zh": "作业的先后关系、Web 页面的链接",
+          "a_en": "Order of tasks, links between web pages",
+          "b_jp": "互いの知り合い関係",
+          "b_zh": "互相认识的关系",
+          "b_en": "People who know each other",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "グラフの構成要素は、点として描く **頂点** と、頂点どうしを線で結ぶ **辺** である。",
+    "**ノード** は頂点の、**エッジ** は辺の英語由来の呼び名で、指すものは同じ。",
+    "順序の付いた組 1 つは矢印 1 本で描き、根元と先を入れ替えると別の関係になる。",
+    "辺に所要時間などの **重み** を付けると、経路の長さを通る辺の重みの合計で比べられる。",
+    "どの 2 つの頂点も辺で結ぶと、頂点 n 個で辺は n(n−1)/2 本になる。"
+  ],
+  "key_points_zh": [
+    "图的构成要素是画成点的**顶点**和用线连接顶点的**边**。",
+    "**节点**是顶点的、**边（edge）**是边的源自英语的叫法，所指的东西相同。",
+    "一个带顺序的组用一条箭头来画，交换起点和终点就成了另一种关系。",
+    "给边附上所需时间等**权重**，就能用经过的各条边的权重之和来比较路线的长短。",
+    "任意两个顶点之间都用边相连时，顶点 n 个则边有 n(n−1)/2 条。"
+  ],
+  "key_points_en": [
+    "A graph is made of **vertices**, drawn as points, and **edges**, the lines that join them.",
+    "In Japanese, **node** [[jp:ノード]] is the loanword for vertex [[jp:頂点]] and **edge** [[jp:エッジ]] the loanword for edge [[jp:辺]]; each pair refers to the same thing.",
+    "Each ordered pair is drawn as one arrow, and swapping its tail and head gives a different relationship.",
+    "Giving edges a **weight** such as travel time lets you compare route lengths by summing the weights of the edges passed through.",
+    "When every pair of vertices is joined by an edge, n vertices give n(n−1)/2 edges."
+  ],
+  "overview": {
+    "intro_jp": "グラフを形づくる 頂点 と 辺 の役割を区別できる。ノード・エッジ がそれぞれ頂点・辺の別名であることを対応づけられる。矢印の有無から 有向グラフ と 無向グラフ を見分け、順序の付いた関係を矢印で描ける。",
+    "intro_zh": "能够区分构成图的顶点与边各自的作用。能够将节点、边（edge）分别对应为顶点、边的别称。能够根据有无箭头辨别有向图与无向图，并用箭头画出带顺序的关系。",
+    "intro_en": "Distinguish the roles of the vertices and edges that make up a graph. Match the loanwords node and edge (エッジ) to vertex and edge (辺). Tell a directed graph from an undirected graph by whether arrows are present, and draw an ordered relationship with arrows.",
+    "freq_badge": "標準",
+    "est_minutes": 26
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "頂点: 頂点といえばグラフ上の点(対象・地点)",
-      "ノード: ノードといえば頂点の英語表記(同じ意味)",
-      "辺: 辺といえば頂点同士を結ぶつながりの線",
-      "エッジ: エッジといえば辺の英語表記(同じ意味)",
-      "有向グラフ: 有向グラフといえば矢印付きの一方向のつながり",
-      "無向グラフ: 無向グラフといえば向きなしの双方向のつながり"
-    ],
     "key_points_jp": [
-      "グラフは「頂点(ノード)」と「辺(エッジ)」の2つの要素で構成される。",
-      "頂点(=ノード)は対象や地点そのものを、辺(=エッジ)は頂点同士のつながり・関係を表す。",
-      "頂点とノード、辺とエッジは、それぞれ和英の同義語で意味は同じ。",
-      "有向グラフは辺に向き(矢印)があり一方向の関係を、無向グラフは向きがなく双方向の関係を表す。",
-      "矢印の有無で有向・無向を見分けることが試験のポイント。"
+      "グラフの構成要素は、点として描く 頂点 と、頂点どうしを線で結ぶ 辺 である。",
+      "ノード は頂点の、エッジ は辺の英語由来の呼び名で、指すものは同じ。",
+      "順序の付いた組 1 つは矢印 1 本で描き、根元と先を入れ替えると別の関係になる。",
+      "辺に所要時間などの 重み を付けると、経路の長さを通る辺の重みの合計で比べられる。",
+      "どの 2 つの頂点も辺で結ぶと、頂点 n 個で辺は n(n−1)/2 本になる。"
     ],
     "key_points_zh": [
-      "图由「顶点（节点）」和「边（edge）」这两个要素构成。",
-      "顶点（=节点）表示对象或地点本身，边（=edge）表示顶点之间的连接、关系。",
-      "顶点与节点、边与 edge，分别是中英（和英）同义词，含义相同。",
-      "有向图的边带有方向（箭头），表示单向关系；无向图的边不带方向，表示双向关系。",
-      "通过有无箭头来分辨有向与无向，是考试的要点。"
+      "图的构成要素是画成点的顶点和用线连接顶点的边。",
+      "节点是顶点的、边（edge）是边的源自英语的叫法，所指的东西相同。",
+      "一个带顺序的组用一条箭头来画，交换起点和终点就成了另一种关系。",
+      "给边附上所需时间等权重，就能用经过的各条边的权重之和来比较路线的长短。",
+      "任意两个顶点之间都用边相连时，顶点 n 个则边有 n(n−1)/2 条。"
     ],
     "key_points_en": [
-      "A graph is made up of two elements: \"vertices (nodes)\" and \"edges.\"",
-      "A vertex (= node) represents an object or location itself, while an edge represents the connection or relationship between vertices.",
-      "Vertex and node, and edge and the Japanese term 辺, are each pairs of synonyms across the two languages, with the same meaning.",
-      "A directed graph has edges with a direction (arrows), representing a one-way relationship; an undirected graph has no direction and represents a two-way relationship.",
-      "Distinguishing directed from undirected by the presence or absence of arrows is a key exam point."
+      "A graph is made of vertices, drawn as points, and edges, the lines that join them.",
+      "In Japanese, node ノード is the loanword for vertex 頂点 and edge エッジ the loanword for edge 辺; each pair refers to the same thing.",
+      "Each ordered pair is drawn as one arrow, and swapping its tail and head gives a different relationship.",
+      "Giving edges a weight such as travel time lets you compare route lengths by summing the weights of the edges passed through.",
+      "When every pair of vertices is joined by an edge, n vertices give n(n−1)/2 edges."
+    ],
+    "memory_hooks_jp": [
+      "頂点: 図形の三角形で、辺と辺が出会う角の点を「頂点」と呼ぶのと同じ字。",
+      "ノード: 英語の node はもともと「結び目」の意味。網の糸が交わる結び目を思い浮かべるとよい。",
+      "辺: 三角形の「辺」と同じ字で、角の点 (頂点) と角の点を結ぶ線と覚える。",
+      "エッジ: 英語の edge は「へり・縁」の意味。図形の縁、つまり角と角を結ぶ線と結び付けて覚える。",
+      "有向グラフ: 「有向」は文字どおり「向きが有る」。矢じりが付いているかどうかを見る。",
+      "無向グラフ: 「有向」と一字違いの「無向」。「無」は矢じりが無いと結び付ける。"
     ],
     "memory_hooks_zh": [
-      "顶点：说到顶点就是图上的点（对象、地点）",
-      "节点：说到节点就是顶点的英文写法（含义相同）",
-      "边：说到边就是连接顶点之间的连线",
-      "edge：说到 edge 就是边的英文写法（含义相同）",
-      "有向图：说到有向图就是带箭头的单向连接",
-      "无向图：说到无向图就是没有方向的双向连接"
+      "顶点：和几何中三角形两条边相交处的角点叫“顶点”是同一个词。",
+      "节点：英语 node 原本是“结”的意思。可以联想渔网上线与线交叉处的绳结。",
+      "边：和三角形的“边”是同一个字，记作连接角点（顶点）与角点的线。",
+      "边（edge）：英语 edge 是“边缘、边沿”的意思。把它与图形的边沿，也就是连接角与角的线联系起来记忆。",
+      "有向图：“有向”字面意思就是“有方向”。看线的一端有没有箭头。",
+      "无向图：与“有向”只差一个字的“无向”。“无”就是没有箭头。"
     ],
     "memory_hooks_en": [
-      "Vertex: Vertex → a point on a graph (object or location)",
-      "Node: Node → the English term for vertex (same meaning)",
-      "Edge: Edge → the connecting line that joins vertices",
-      "Edge (English): Edge → the English term for the Japanese word 辺 (same meaning)",
-      "Directed graph: Directed graph → a one-way connection with arrows",
-      "Undirected graph: Undirected graph → a two-way connection with no direction"
+      "Vertex: It is the same word as the vertex of a triangle, the corner point where two sides meet.",
+      "Node: The English word node originally means a knot. Picture the knots where the threads of a net cross.",
+      "Edge: The kanji 辺 is the one used for a side of a triangle; remember it as the line joining one corner (vertex) to another.",
+      "Edge (English term): The English word edge means a rim or border. Link it to the border of a shape, that is, the line running from corner to corner.",
+      "Directed Graph: Directed literally means having a direction. Check whether the line ends in an arrowhead.",
+      "Undirected Graph: Undirected is directed with un- in front. The un- tells you there is no arrowhead."
     ]
   },
   "challenge_questions": [
-    "2010h22a-q082",
-    "2010h22h-q067",
-    "2011h23tokubetsu-q056",
-    "2013h25h-q076",
-    "2014h26a-q095"
+    "2010h22a-q066",
+    "2016h28h-q033",
+    "2009h21a-q046",
+    "2013h25h-q076"
   ],
   "source_figures": [
     {
@@ -272,9 +686,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "图论基础",
-  "title_en": "Basics of Graph Theory",
-  "unit_summary_zh": "学习构成图的顶点（节点）和边，以及有向图、无向图这两种图的类型。",
-  "unit_summary_en": "Learn the vertices (nodes) and edges that make up a graph, and the types of directed and undirected graphs."
+  }
 }
