@@ -63,7 +63,7 @@
 | b54 | strategy-03-11 | ビジネス戦略と目標・評価 | u01 | 29 | 6 | done |
 | b55 | strategy-05-16 | e-ビジネス | u01 u02 u03 u04 | 29 | 27 | todo |
 | b56 | technology-13-33 | 離散数学 | u01 u02 | 28 | 12 | todo |
-| b57 | management-11-30 | ファシリティマネジメント | u01 | 27 | 5 | todo |
+| b57 | management-11-30 | ファシリティマネジメント | u01 | 27 | 5 | done |
 | b58 | technology-15-40 | プロセッサ | u01 u02 | 26 | 10 | todo |
 | b59 | technology-17-46 | ファイルシステム | u01 | 26 | 6 | todo |
 | b60 | strategy-06-18 | 情報システム戦略 | u01 | 25 | 4 | todo |
