@@ -1,264 +1,948 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-34-u04",
   "topic_id": "technology-13-34",
   "category": "technology",
   "title_jp": "データ操作と尺度水準",
+  "title_zh": "数据操作与测量尺度",
+  "title_en": "Data Operations and Levels of Measurement",
   "unit_summary_jp": "データの集計・並べ替え・ランキングといった基本操作と、4つの尺度水準を学ぶ。",
+  "unit_summary_zh": "学习数据的汇总、排序、排名等基本操作，以及四种测量尺度。",
+  "unit_summary_en": "Learn basic data operations such as aggregation, sorting, and ranking, along with the four levels of measurement.",
   "order_in_topic": 4,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、分析の前段としてデータをどう整理するかを学びます。前半は集計・並べ替え・ランキングという基本操作、後半はデータの種類を分類する4つの尺度水準(名義・順序・間隔・比例)です。尺度水準はデータに対して許される計算を左右するため、応用数学分野で繰り返し問われる頻出テーマです。",
-    "freq_badge": "標準",
-    "est_minutes": 23,
-    "intro_zh": "本单元学习在分析之前如何整理数据。前半部分讲解汇总、排序、排名这些基本操作；后半部分讲解对数据种类进行分类的四种测量尺度（名义、顺序、区间、比例）。测量尺度决定了对数据允许进行哪些计算，因此是应用数学领域反复出现的高频主题。",
-    "intro_en": "In this unit, you will learn how to organize data as a preliminary step before analysis. The first half covers the basic operations of aggregation, sorting, and ranking; the second half covers the four levels of measurement (nominal, ordinal, interval, and ratio) that classify the types of data. Because the level of measurement determines which calculations are permitted on the data, it is a frequently tested topic that appears repeatedly in the applied mathematics field."
-  },
-  "terms": [
+  "goals_jp": [
+    "データを少数の値に要約する**集計**と、データを整列して**順位**を付ける操作を区別できる。",
+    "4 つの**尺度**水準を、値がもつ情報が少ない順に並べ、それぞれで意味をもつ計算を説明できる。",
+    "あるデータが**間隔尺度**と**比例尺度**のどちらに当たるかを、0 が何を表すかから判断できる。"
+  ],
+  "goals_zh": [
+    "能够区分把数据归纳成少数几个数值的**汇总**，与把数据排列整齐后标出**名次**的操作。",
+    "能够按数值所含信息由少到多的顺序排列 4 个**测量尺度**水平，并说明各水平下有意义的计算。",
+    "能够根据 0 代表什么，判断某项数据属于**区间尺度**还是**比例尺度**。"
+  ],
+  "goals_en": [
+    "Distinguish **aggregation**, which condenses data into a few values, from the operations that put data in order and assign each item a **rank**.",
+    "Arrange the four **levels of measurement** from the one whose values carry the least information to the one carrying the most, and explain which calculations make sense at each.",
+    "Decide whether a set of data is on an **interval scale** or a **ratio scale** by looking at what 0 represents."
+  ],
+  "overview_cols_jp": [
+    "意味をもつこと",
+    "例"
+  ],
+  "overview_cols_zh": [
+    "有意义的内容",
+    "例子"
+  ],
+  "overview_cols_en": [
+    "What is meaningful",
+    "Example"
+  ],
+  "overview_rows": [
     {
       "term": "データの集計",
-      "definition_jp": "個々のデータをまとめ、合計・件数・平均などの値を求める操作。",
-      "explanation_jp": "データの集計は、ばらばらの個別データを目的に沿ってまとめ、合計・件数・平均・最大などの代表的な値を算出する操作です。表計算ソフトでの SUM(合計)や COUNT(件数)、グループごとの小計などが典型例です。\n\nデータ分析の最初の一歩であり、生のデータを「意味のある数値」に変える工程です。試験では、表計算の関数や、項目ごとにまとめて数える集計表(クロス集計など)の読み取りとして問われます。",
-      "analogy_jp": "レジの売上伝票を一日分まとめて「本日の合計売上」「来店客数」を出す作業のようなもの。一枚ずつの記録を全体の数値に束ねます。",
-      "memory_hook_jp": "データの集計といえば合計・件数・平均などにまとめる操作",
-      "inline_quiz": [
-        "2009h21a-q046"
+      "one_line_jp": "個々のデータをまとめ、合計・件数・平均などを求める操作",
+      "one_line_zh": "将个别数据归纳起来，求出合计、件数、平均值等的操作",
+      "one_line_en": "An operation that combines individual records to find totals, counts, averages and similar values",
+      "extra_jp": [
+        "全体や項目ごとの代表的な値",
+        "支店別の売上合計"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "数据汇总",
-      "term_en": "Data Aggregation",
-      "definition_zh": "将单个数据归集起来，求出合计、件数、平均等数值的操作。",
-      "definition_en": "An operation that gathers individual data together to obtain values such as totals, counts, and averages.",
-      "explanation_zh": "数据汇总是按照目的将零散的单个数据归集起来，计算出合计、件数、平均、最大值等代表性数值的操作。电子表格软件中的 SUM（合计）、COUNT（件数）以及按分组求小计等都是典型例子。\n\n它是数据分析的第一步，是将原始数据转化为「有意义的数值」的工序。考试中通常以电子表格函数，或按项目归集计数的汇总表（如交叉汇总）的读取形式出题。",
-      "explanation_en": "Data aggregation is the operation of gathering scattered individual data according to a purpose and calculating representative values such as totals, counts, averages, and maximums. Typical examples include SUM (total) and COUNT (count) in spreadsheet software, as well as subtotals by group.\n\nIt is the first step in data analysis and the process that turns raw data into 'meaningful numbers.' On the exam, it is tested through spreadsheet functions or by reading aggregation tables (such as cross-tabulations) that group and count data by item.",
-      "analogy_zh": "就像把收银台一整天的销售单据归集起来，得出「今日销售合计」「到店客数」的工作。把一张张的记录汇总成整体的数值。",
-      "analogy_en": "It is like gathering a whole day's sales slips from the cash register to produce 'today's total sales' and 'number of customers.' Individual records are bundled into overall figures.",
-      "memory_hook_zh": "说到数据汇总，就是归集成合计、件数、平均等的操作",
-      "memory_hook_en": "Data aggregation → bundling data into totals, counts, averages, etc."
+      "extra_zh": [
+        "整体或各项目的代表性数值",
+        "各分店的销售额合计"
+      ],
+      "extra_en": [
+        "Representative values for the whole or for each category",
+        "Total sales by branch"
+      ]
     },
     {
       "term": "データの並べ替え",
-      "definition_jp": "データを大小や五十音など一定の基準で順序通りに整列させる操作。",
-      "explanation_jp": "データの並べ替え(ソート)は、数値の大小、日付の前後、五十音順など一定の基準でデータを順序通りに並べる操作です。昇順(小さい順)と降順(大きい順)があります。\n\n並べ替えによってデータが整理され、後述のランキング付けや、特定範囲の抽出がしやすくなります。試験では、表計算ソフトでの昇順・降順の指定や、複数の基準で並べ替える(第1キー・第2キー)考え方が問われます。集計とは異なり、データの値そのものは変えず順番だけを変える点が特徴です。",
-      "analogy_jp": "テストの答案を点数の高い順に並べ直すようなもの。書かれている点数は変えず、置く順番だけをそろえて見やすくします。",
-      "memory_hook_jp": "データの並べ替えといえば昇順・降順で整列させる操作",
-      "inline_quiz": [
-        "2009h21a-q070"
+      "one_line_jp": "基準に従ってデータを昇順または降順に整列させる操作",
+      "one_line_zh": "按照某个基准把数据排成升序或降序的操作",
+      "one_line_en": "An operation that arranges data in ascending or descending order by a chosen criterion",
+      "extra_jp": [
+        "データの並び順 (値そのものは変わらない)",
+        "日付の新しい順に並べる"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "数据排序",
-      "term_en": "Data Sorting",
-      "definition_zh": "按数值大小、五十音等一定基准将数据按顺序排列的操作。",
-      "definition_en": "An operation that arranges data in order according to a fixed criterion such as magnitude or alphabetical/phonetic order.",
-      "explanation_zh": "数据排序是按照数值大小、日期先后、五十音顺序等一定基准，将数据按顺序排列的操作。分为升序（从小到大）和降序（从大到小）。\n\n通过排序可以整理数据，便于后述的排名以及特定范围的提取。考试中会考查电子表格软件中升序、降序的指定，以及按多个基准排序（第一关键字、第二关键字）的思路。与汇总不同，排序的特点是不改变数据值本身，只改变顺序。",
-      "explanation_en": "Data sorting is the operation of arranging data in order according to a fixed criterion such as numerical magnitude, date sequence, or phonetic order. There are two types: ascending (smallest first) and descending (largest first).\n\nSorting organizes data and makes it easier to perform ranking (described later) or to extract a specific range. The exam tests how to specify ascending/descending order in spreadsheet software and the idea of sorting by multiple criteria (primary key, secondary key). Unlike aggregation, sorting is characterized by changing only the order, not the data values themselves.",
-      "analogy_zh": "就像把考试答卷按分数从高到低重新排列。不改变写在上面的分数，只整理摆放的顺序，使其更易于查看。",
-      "analogy_en": "It is like rearranging test papers from highest to lowest score. The scores written on them stay the same; only the order in which they are placed is adjusted to make them easier to view.",
-      "memory_hook_zh": "说到数据排序，就是按升序、降序排列的操作",
-      "memory_hook_en": "Data sorting → arranging in ascending or descending order"
+      "extra_zh": [
+        "数据的排列顺序（数值本身不变）",
+        "按日期从新到旧排列"
+      ],
+      "extra_en": [
+        "The order of the data (the values themselves stay the same)",
+        "Listing records from the newest date to the oldest"
+      ]
     },
     {
       "term": "ランキング",
-      "definition_jp": "並べ替えた結果に基づき各データへ順位(1位・2位…)を付けること。",
-      "explanation_jp": "ランキングは、ある基準で並べ替えた結果をもとに、各データへ1位・2位…という順位を割り当てることです。売上ランキングや成績順位が典型例です。\n\n並べ替えが「順番に整列させる」操作なのに対し、ランキングはそこに「順位という値を付与する」点が違いです。表計算ソフトでは RANK 関数で順位を求められます。試験では、同点の扱い(同順位)や、並べ替えとの違いを意識して理解しておくとよいでしょう。",
-      "analogy_jp": "かけっこでゴール順に並んだ子どもへ、前から「1番・2番・3番」と番号を付けていくようなもの。並んだ列に順位の札を渡します。",
-      "memory_hook_jp": "ランキングといえば並べ替え結果に1位・2位の順位を付与",
-      "inline_quiz": [
-        "2009h21h-q007"
+      "one_line_jp": "並べ替えの結果に基づき、各データに順位を付けること",
+      "one_line_zh": "根据排序的结果，给每条数据标上名次",
+      "one_line_en": "Giving each record a position based on the result of sorting",
+      "extra_jp": [
+        "順位 (上下の関係)",
+        "売上の多い順の順位表"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"集計(まとめる)\"] --> B[\"並べ替え(整列する)\"]; B --> C[\"ランキング(順位を付ける)\"]",
-        "svg_path": "figures/technology-13-34-u04-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "排名",
-      "term_en": "Ranking",
-      "definition_zh": "根据排序结果，为每条数据赋予名次（第1名、第2名……）。",
-      "definition_en": "Assigning a rank (1st, 2nd, ...) to each data item based on the sorted result.",
-      "explanation_zh": "排名是以按某一基准排序的结果为依据，为每条数据赋予第1名、第2名……名次的操作。销售排名、成绩名次都是典型例子。\n\n排序是「按顺序排列」的操作，而排名的不同之处在于在此基础上「赋予名次这一数值」。在电子表格软件中，可用 RANK 函数求名次。考试中，需要注意理解同分的处理（并列名次）以及排名与排序的区别。",
-      "explanation_en": "Ranking is the operation of assigning ranks such as 1st, 2nd, ... to each data item based on the result of sorting by a certain criterion. Sales rankings and grade rankings are typical examples.\n\nWhile sorting is the operation of 'arranging in order,' ranking differs in that it 'assigns the value of a rank' on top of that. In spreadsheet software, ranks can be obtained with the RANK function. On the exam, it helps to understand the handling of ties (shared ranks) and the difference between ranking and sorting.",
-      "analogy_zh": "就像在赛跑中给按到达终点先后排好队的孩子，从前往后贴上「第1名、第2名、第3名」的号牌。给排好的队列发放名次牌。",
-      "analogy_en": "It is like giving the children lined up in the order they finished a race the labels '1st, 2nd, 3rd' from the front. You hand out rank tags to an already-lined-up row.",
-      "memory_hook_zh": "说到排名，就是给排序结果赋予第1名、第2名的名次",
-      "memory_hook_en": "Ranking → assigning 1st, 2nd ranks to the sorted result"
+      "extra_zh": [
+        "名次（上下关系）",
+        "按销售额从高到低的排名表"
+      ],
+      "extra_en": [
+        "Rank (which item stands above which)",
+        "A table ranking branches by sales, highest first"
+      ]
     },
     {
       "term": "尺度",
-      "definition_jp": "データの性質を測る基準で、許される計算を決める4つの水準の総称。",
-      "explanation_jp": "尺度(尺度水準)は、データがどのような性質をもつかを表す分類の基準です。情報量の少ない順に名義尺度・順序尺度・間隔尺度・比例尺度の4水準があり、それぞれ「許される計算」が異なります。\n\nどの尺度かによって、平均が取れる・大小比較ができる・比を語れるかが決まるため、分析手法の選択を左右します。試験では、具体例(性別・順位・気温・身長など)がどの尺度に当たるかを判別させる問題が頻出です。4水準を上位ほど多くの計算ができる階層として押さえましょう。",
-      "analogy_jp": "ものさしにも長さ用・温度計・順位表など種類があり、測れる内容が違うのと同じ。データにも「どこまで計算してよいか」を決める目盛りの種類があります。",
-      "memory_hook_jp": "尺度といえば名義・順序・間隔・比例の4水準の総称",
+      "one_line_jp": "値が何を表すかで分けたデータの種類で、意味のある計算を決めるもの",
+      "one_line_zh": "按数值代表什么来划分的数据种类，决定哪些计算有意义",
+      "one_line_en": "A classification of data by what its values represent, which decides which calculations make sense",
+      "extra_jp": [
+        "尺度によって意味をもつ計算が変わる",
+        "名義・順序・間隔・比例の 4 水準"
+      ],
+      "extra_zh": [
+        "测量尺度不同，有意义的计算也不同",
+        "名义、顺序、区间、比例 4 个水平"
+      ],
+      "extra_en": [
+        "The meaningful calculations change from scale to scale",
+        "Four levels: nominal, ordinal, interval and ratio"
+      ]
+    },
+    {
+      "term": "名義尺度",
+      "one_line_jp": "区別・分類のためだけに値を使う尺度",
+      "one_line_zh": "数值只用于区别和分类的尺度",
+      "one_line_en": "A scale whose values serve only to tell things apart and sort them into categories",
+      "extra_jp": [
+        "同じか違うか",
+        "性別、商品の分類コード"
+      ],
+      "extra_zh": [
+        "相同还是不同",
+        "性别、商品分类代码"
+      ],
+      "extra_en": [
+        "Same or different",
+        "Gender, product category codes"
+      ]
+    },
+    {
+      "term": "順序尺度",
+      "one_line_jp": "順序に意味はあるが、間隔が等しいとは限らない尺度",
+      "one_line_zh": "顺序有意义，但间隔不一定相等的尺度",
+      "one_line_en": "A scale in which order matters but the gaps between values are not necessarily equal",
+      "extra_jp": [
+        "大小や上下の比較",
+        "満足度の段階評価、競技の着順"
+      ],
+      "extra_zh": [
+        "大小或上下的比较",
+        "满意度分级评价、比赛名次"
+      ],
+      "extra_en": [
+        "Comparing larger or smaller, higher or lower",
+        "Satisfaction ratings in levels, finishing order in a race"
+      ]
+    },
+    {
+      "term": "間隔尺度",
+      "one_line_jp": "間隔が等しく差に意味があるが、0 が量のなさを表さない尺度",
+      "one_line_zh": "间隔相等、差值有意义，但 0 不代表“没有量”的尺度",
+      "one_line_en": "A scale with equal intervals where differences are meaningful, but 0 does not mean an absence of quantity",
+      "extra_jp": [
+        "差、平均",
+        "摂氏の気温、西暦の年"
+      ],
+      "extra_zh": [
+        "差值、平均值",
+        "摄氏温度、公历年份"
+      ],
+      "extra_en": [
+        "Differences, averages",
+        "Temperature in Celsius, calendar years"
+      ]
+    },
+    {
+      "term": "比例尺度",
+      "one_line_jp": "0 が量のなさを表し、比にも意味がある尺度",
+      "one_line_zh": "0 代表“没有量”，比值也有意义的尺度",
+      "one_line_en": "A scale in which 0 means no quantity at all, so ratios are meaningful as well",
+      "extra_jp": [
+        "差、平均、比",
+        "長さ、重さ、金額"
+      ],
+      "extra_zh": [
+        "差值、平均值、比值",
+        "长度、重量、金额"
+      ],
+      "extra_en": [
+        "Differences, averages, ratios",
+        "Length, weight, amounts of money"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "データの集計",
+      "term_zh": "数据汇总",
+      "term_en": "Data Aggregation",
+      "one_jp": "**データの集計**とは、個々のデータを目的に合わせてまとめ、**合計**や**件数**、**平均**などの値を求める操作である。",
+      "one_zh": "**数据汇总**[[jp:データの集計]]是指按照目的把个别数据归纳起来，求出**合计**、**件数**、**平均值**等数值的操作。",
+      "one_en": "**Data aggregation** [[jp:データの集計]] is the operation of combining individual records to suit a purpose and working out values such as the **total**, the **count** and the **average**.",
+      "detail_jp": "1 件ずつの記録のままでは全体の傾向が読み取りにくいため、集計によって少数の数値に要約する。地域別や月別のように項目でグループに分け、グループごとに小計を出すこともある。表計算ソフトでは、合計を求める関数や件数を数える関数がこの操作を担う。",
+      "detail_zh": "只看一条条的记录很难把握整体趋势，因此要通过汇总把数据概括成少数几个数值。也可以像按地区或按月份那样先把数据分组，再求出每组的小计。在电子表格软件中，求合计的函数和统计件数的函数就承担这项操作。",
+      "detail_en": "Record-by-record data makes the overall trend hard to see, so aggregation condenses it into a handful of numbers. You can also split the data into groups by an item such as region or month and work out a subtotal for each group. In spreadsheet software, the functions that add up values or count entries carry out this operation.",
+      "analogy_jp": "家計簿の一か月分の支出を費目ごとに足し上げ、食費はいくら、交通費はいくらと一覧にする作業に似ている。",
+      "analogy_zh": "这就像把记账本上一个月的支出按类别加总，列出伙食费多少、交通费多少一样。",
+      "analogy_en": "It is like adding up a month of household spending by category and listing how much went on food and how much on transport.",
+      "hook_jp": "「集」めてから「計」る、と字を分けて読むと、まとめる段と数値を出す段の 2 つの動きが見える。",
+      "hook_zh": "把“汇总”拆开来读：先“汇”集数据，再“总”计出数值，两个字正好对应这项操作的两个步骤。",
+      "hook_en": "The Japanese word 集計 joins 集 (gather) and 計 (measure), naming the two steps of the job: collect the records, then compute the figures.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**集計**は多数のデータを少数の代表的な値に要約する操作であり、データの並び順を整える並べ替えとは目的が異なる。",
+          "text_zh": "**汇总**[[jp:集計]]是把大量数据概括为少数代表性数值的操作，与调整数据排列顺序的排序[[jp:並べ替え]]目的不同。",
+          "text_en": "**Aggregation** [[jp:集計]] condenses many records into a few representative values, a different goal from sorting [[jp:並べ替え]], which only changes the order of the data."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "支店",
+              "zh": "分店",
+              "en": "Branch"
+            },
+            {
+              "jp": "取引の件数",
+              "zh": "交易件数",
+              "en": "Number of transactions"
+            },
+            {
+              "jp": "売上の合計 (万円)",
+              "zh": "销售额合计（万日元）",
+              "en": "Total sales (10,000 yen)"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "東支店",
+                  "zh": "东分店",
+                  "en": "East branch"
+                },
+                {
+                  "jp": "3",
+                  "zh": "3",
+                  "en": "3"
+                },
+                {
+                  "jp": "45",
+                  "zh": "45",
+                  "en": "45"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "西支店",
+                  "zh": "西分店",
+                  "en": "West branch"
+                },
+                {
+                  "jp": "2",
+                  "zh": "2",
+                  "en": "2"
+                },
+                {
+                  "jp": "30",
+                  "zh": "30",
+                  "en": "30"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "全体",
+                  "zh": "整体",
+                  "en": "All branches"
+                },
+                {
+                  "jp": "5",
+                  "zh": "5",
+                  "en": "5"
+                },
+                {
+                  "jp": "75",
+                  "zh": "75",
+                  "en": "75"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "データの集計とは、個々のデータを目的に合わせてまとめ、合計や件数、平均などの値を求める操作である。",
+      "definition_zh": "数据汇总データの集計是指按照目的把个别数据归纳起来，求出合计、件数、平均值等数值的操作。",
+      "definition_en": "Data aggregation データの集計 is the operation of combining individual records to suit a purpose and working out values such as the total, the count and the average.",
+      "explanation_jp": "1 件ずつの記録のままでは全体の傾向が読み取りにくいため、集計によって少数の数値に要約する。地域別や月別のように項目でグループに分け、グループごとに小計を出すこともある。表計算ソフトでは、合計を求める関数や件数を数える関数がこの操作を担う。",
+      "explanation_zh": "只看一条条的记录很难把握整体趋势，因此要通过汇总把数据概括成少数几个数值。也可以像按地区或按月份那样先把数据分组，再求出每组的小计。在电子表格软件中，求合计的函数和统计件数的函数就承担这项操作。",
+      "explanation_en": "Record-by-record data makes the overall trend hard to see, so aggregation condenses it into a handful of numbers. You can also split the data into groups by an item such as region or month and work out a subtotal for each group. In spreadsheet software, the functions that add up values or count entries carry out this operation.",
+      "memory_hook_jp": "「集」めてから「計」る、と字を分けて読むと、まとめる段と数値を出す段の 2 つの動きが見える。",
+      "memory_hook_zh": "把“汇总”拆开来读：先“汇”集数据，再“总”计出数值，两个字正好对应这项操作的两个步骤。",
+      "memory_hook_en": "The Japanese word 集計 joins 集 (gather) and 計 (measure), naming the two steps of the job: collect the records, then compute the figures.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "データの並べ替え",
+      "term_zh": "数据排序",
+      "term_en": "Data Sorting",
+      "one_jp": "**データの並べ替え** (**ソート**) とは、数値の大小や日付の前後などの基準に従って、データを順に整列させる操作である。",
+      "one_zh": "**数据排序**[[jp:データの並べ替え]]（**排序**[[jp:ソート]]）是指按照数值大小、日期先后等基准，把数据按顺序排列整齐的操作。",
+      "one_en": "**Data sorting** [[jp:データの並べ替え]] (**sort** [[jp:ソート]]) is the operation of arranging data in order by a criterion such as the size of a number or which date comes first.",
+      "detail_jp": "小さいものから大きいものへ並べるのを**昇順**、その逆を**降順**という。並べる基準にする項目を**キー**と呼び、第 1 キーで同じ値になったデータを第 2 キーでさらに並べることもできる。並べ替えでは各データの値は変わらず、位置だけが変わる。",
+      "detail_zh": "从小到大排列称为**升序**[[jp:昇順]]，反过来称为**降序**[[jp:降順]]。作为排序依据的项目称为**键**[[jp:キー]]，对于第 1 键值相同的数据，还可以再按第 2 键排序。排序时各条数据的值不变，只有位置发生变化。",
+      "detail_en": "Arranging from smallest to largest is **ascending order** [[jp:昇順]], and the reverse is **descending order** [[jp:降順]]. The item that decides the order is called the **key** [[jp:キー]], and records that tie on the first key can be ordered further by a second key. Sorting leaves every value unchanged and only moves records to new positions.",
+      "analogy_jp": "本棚の本を著者名の順に並べ直しても、本の中身は 1 冊も変わらないのと同じである。",
+      "analogy_zh": "把书架上的书按作者名重新排列，书的内容一本也不会改变，道理是一样的。",
+      "analogy_en": "Rearranging the books on a shelf by author name does not change what is inside a single book.",
+      "hook_jp": "昇順は階段を昇るように値が上がっていく並び、降順は降りていく並びと、字の向きで覚えられる。",
+      "hook_zh": "日语写作“昇順”“降順”：“昇”是像登台阶一样往上走，“降”是往下走，看字的方向就能记住数值的变化。",
+      "hook_en": "Ascending means climbing, as values do when they go up a staircase, and descending means walking back down it.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**昇順**は値の小さい方から並べることで、日付なら古い日付が先頭に来る。新しい日付から並べるのは**降順**である。",
+          "text_zh": "**升序**[[jp:昇順]]是从值小的一方开始排列，用于日期时，最早的日期排在最前面。从最新的日期开始排列则是**降序**[[jp:降順]]。",
+          "text_en": "**Ascending order** [[jp:昇順]] starts from the smallest value, so for dates the oldest date comes first. Listing from the newest date is **descending order** [[jp:降順]]."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "データの並べ替え (ソート) とは、数値の大小や日付の前後などの基準に従って、データを順に整列させる操作である。",
+      "definition_zh": "数据排序データの並べ替え（排序ソート）是指按照数值大小、日期先后等基准，把数据按顺序排列整齐的操作。",
+      "definition_en": "Data sorting データの並べ替え (sort ソート) is the operation of arranging data in order by a criterion such as the size of a number or which date comes first.",
+      "explanation_jp": "小さいものから大きいものへ並べるのを昇順、その逆を降順という。並べる基準にする項目をキーと呼び、第 1 キーで同じ値になったデータを第 2 キーでさらに並べることもできる。並べ替えでは各データの値は変わらず、位置だけが変わる。",
+      "explanation_zh": "从小到大排列称为升序昇順，反过来称为降序降順。作为排序依据的项目称为键キー，对于第 1 键值相同的数据，还可以再按第 2 键排序。排序时各条数据的值不变，只有位置发生变化。",
+      "explanation_en": "Arranging from smallest to largest is ascending order 昇順, and the reverse is descending order 降順. The item that decides the order is called the key キー, and records that tie on the first key can be ordered further by a second key. Sorting leaves every value unchanged and only moves records to new positions.",
+      "memory_hook_jp": "昇順は階段を昇るように値が上がっていく並び、降順は降りていく並びと、字の向きで覚えられる。",
+      "memory_hook_zh": "日语写作“昇順”“降順”：“昇”是像登台阶一样往上走，“降”是往下走，看字的方向就能记住数值的变化。",
+      "memory_hook_en": "Ascending means climbing, as values do when they go up a staircase, and descending means walking back down it.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ランキング",
+      "term_zh": "排名",
+      "term_en": "Ranking",
+      "one_jp": "**ランキング**とは、ある基準で並べ替えた結果に基づき、各データに 1 位、2 位という**順位**を付けることである。",
+      "one_zh": "**排名**[[jp:ランキング]]是指根据按某个基准排序后的结果，给每条数据标上第 1 名、第 2 名这样的**名次**。",
+      "one_en": "**Ranking** [[jp:ランキング]] means giving each record a **rank** such as 1st or 2nd, based on the result of sorting by some criterion.",
+      "detail_jp": "値の大きい方を 1 位にするか小さい方を 1 位にするかは、目的に合わせて決める。値が同じデータの扱いも決めておく必要があり、例えば同じ値のデータには同じ順位を付ける付け方がある。表計算ソフトには、指定した範囲の中での順位を求める関数が用意されている。",
+      "detail_zh": "让值大的一方排第 1 名还是让值小的一方排第 1 名，要根据目的来决定。值相同的数据怎样处理也需要事先定好，例如有一种做法是给值相同的数据标上相同的名次。电子表格软件中备有求出某个值在指定范围内名次的函数。",
+      "detail_en": "Whether the largest or the smallest value takes first place depends on the purpose. You also need to decide in advance how to treat records with equal values; one approach gives them the same rank. Spreadsheet software provides a function that returns the rank of a value within a specified range.",
+      "analogy_jp": "マラソンでゴールした順に着順を記録すると、前の走者との差が数秒でも数分でも、着順は 1 つずつしか違わない。",
+      "analogy_zh": "马拉松按冲过终点的顺序记录名次时，无论与前一名选手相差几秒还是几分钟，名次都只差 1 位。",
+      "analogy_en": "When a marathon records places in the order runners cross the line, neighboring places differ by exactly one whether the runner ahead was a few seconds or several minutes faster.",
+      "hook_jp": "英語の rank は「位」や「階級」の意味で、軍隊の階級も rank と呼ぶ。",
+      "hook_zh": "英语 rank 有“位次”“等级”的意思，军队的军衔也叫 rank。",
+      "hook_en": "Rank also means a level or grade, as in a military rank.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "順位の差は元の値の差の大きさを表さない。1 位と 2 位の値の差と、2 位と 3 位の値の差が等しいとは限らない。",
+          "text_zh": "名次[[jp:順位]]之差并不代表原始值之差的大小。第 1 名与第 2 名的差值，和第 2 名与第 3 名的差值不一定相等。",
+          "text_en": "A difference in rank [[jp:順位]] says nothing about how large the difference in the original values is. The gap between 1st and 2nd need not equal the gap between 2nd and 3rd."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "raw",
+              "label": {
+                "jp": "元のデータ",
+                "zh": "原始数据",
+                "en": "Original data"
+              }
+            },
+            {
+              "id": "sort",
+              "label": {
+                "jp": "基準の値で並べ替える",
+                "zh": "按基准值排序",
+                "en": "Sort by the criterion value"
+              }
+            },
+            {
+              "id": "rank",
+              "label": {
+                "jp": "順位を付ける",
+                "zh": "标上名次",
+                "en": "Assign ranks"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "得点などの値が、入力された順のまま並んでいる。",
+            "caption_zh": "得分等数值仍保持输入时的顺序。",
+            "caption_en": "Values such as scores are still in the order they were entered.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "例えば値の大きい順に並べ替えると、上位のデータが先頭に来る。",
+            "caption_zh": "例如按数值从大到小排序后，排在前列的数据来到最前面。",
+            "caption_en": "Sorting by value, largest first for example, brings the top records to the front.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "並んだ順に 1 位、2 位と順位を付ける。",
+            "caption_zh": "按排好的顺序依次标上第 1 名、第 2 名。",
+            "caption_en": "Ranks 1, 2 and so on are assigned in the order the records now stand.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ランキングとは、ある基準で並べ替えた結果に基づき、各データに 1 位、2 位という順位を付けることである。",
+      "definition_zh": "排名ランキング是指根据按某个基准排序后的结果，给每条数据标上第 1 名、第 2 名这样的名次。",
+      "definition_en": "Ranking ランキング means giving each record a rank such as 1st or 2nd, based on the result of sorting by some criterion.",
+      "explanation_jp": "値の大きい方を 1 位にするか小さい方を 1 位にするかは、目的に合わせて決める。値が同じデータの扱いも決めておく必要があり、例えば同じ値のデータには同じ順位を付ける付け方がある。表計算ソフトには、指定した範囲の中での順位を求める関数が用意されている。",
+      "explanation_zh": "让值大的一方排第 1 名还是让值小的一方排第 1 名，要根据目的来决定。值相同的数据怎样处理也需要事先定好，例如有一种做法是给值相同的数据标上相同的名次。电子表格软件中备有求出某个值在指定范围内名次的函数。",
+      "explanation_en": "Whether the largest or the smallest value takes first place depends on the purpose. You also need to decide in advance how to treat records with equal values; one approach gives them the same rank. Spreadsheet software provides a function that returns the rank of a value within a specified range.",
+      "memory_hook_jp": "英語の rank は「位」や「階級」の意味で、軍隊の階級も rank と呼ぶ。",
+      "memory_hook_zh": "英语 rank 有“位次”“等级”的意思，军队的军衔也叫 rank。",
+      "memory_hook_en": "Rank also means a level or grade, as in a military rank.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "尺度",
+      "term_zh": "测量尺度",
+      "term_en": "Scale (Level of Measurement)",
+      "one_jp": "**尺度** (**尺度水準**) とは、データの値が何を表すかで分けた種類であり、どの尺度に当たるかで大小の比較や平均などの計算に意味があるかが決まる。",
+      "one_zh": "**测量尺度**[[jp:尺度]]（**尺度水平**[[jp:尺度水準]]）是指按数据的值代表什么而划分的种类，属于哪种尺度决定了大小比较、求平均值等计算是否有意义。",
+      "one_en": "A **scale** [[jp:尺度]] (**level of measurement** [[jp:尺度水準]]) is a type of data defined by what its values represent, and the scale decides whether calculations such as comparing sizes or taking an average are meaningful.",
+      "detail_jp": "尺度には名義尺度・順序尺度・間隔尺度・比例尺度の 4 つの水準がある。この順に値がもつ情報が 1 つずつ増え、意味をもつ計算も増えていく。",
+      "detail_zh": "测量尺度有名义尺度、顺序尺度、区间尺度和比例尺度 4 个水平。按这个顺序，值所含的信息逐级增加一项，有意义的计算也随之增多。",
+      "detail_en": "There are four levels: the nominal, ordinal, interval and ratio scales. In that order, each level adds one more property to the values, and the range of meaningful calculations grows with it.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "「尺度」はもともと、長さを測るものさしを指す言葉。ものさしの種類によって測れることが違う、と字から読める。",
+      "hook_zh": "日语“尺度”原本指量长度用的尺子。尺子种类不同，能量的东西也不同，从字面就能读出这层意思。",
+      "hook_en": "The Japanese word 尺度 originally meant a ruler for measuring length, and different rulers can measure different things.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "どの**尺度**に当たるかは、値が「区別」「順序」「等しい間隔」「量のなさを表す 0」のうち、どこまでの性質をもつかで決まる。",
+          "text_zh": "属于哪种**测量尺度**[[jp:尺度]]，取决于值在“区别”“顺序”“等间隔”“表示没有量的 0”这几种性质中具备到哪一步。",
+          "text_en": "Which **scale** [[jp:尺度]] applies depends on how far the values go along the properties of distinction, order, equal intervals and a 0 that means no quantity.",
+          "qids": [
+            "2025r07-q063"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "nominal",
+              "label": {
+                "jp": "名義尺度: 区別できる",
+                "zh": "名义尺度：可以区别",
+                "en": "Nominal scale: can be told apart"
+              }
+            },
+            {
+              "id": "ordinal",
+              "label": {
+                "jp": "順序尺度: 順序がある",
+                "zh": "顺序尺度：有顺序",
+                "en": "Ordinal scale: has an order"
+              }
+            },
+            {
+              "id": "interval",
+              "label": {
+                "jp": "間隔尺度: 間隔が等しい",
+                "zh": "区间尺度：间隔相等",
+                "en": "Interval scale: equal intervals"
+              }
+            },
+            {
+              "id": "ratio",
+              "label": {
+                "jp": "比例尺度: 比が言える",
+                "zh": "比例尺度：比值有意义",
+                "en": "Ratio scale: ratios make sense"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "名義尺度では、値は同じか違うかを見分けるためだけに使う。",
+            "caption_zh": "在名义尺度中，值只用来分辨相同还是不同。",
+            "caption_en": "On a nominal scale, values only tell whether things are the same or different.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "順序尺度では、区別に加えて大小や上下の順序に意味がある。",
+            "caption_zh": "在顺序尺度中，除了区别之外，大小或上下的顺序也有意义。",
+            "caption_en": "On an ordinal scale, the order of larger and smaller or higher and lower also has meaning, on top of telling things apart.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "間隔尺度では、さらに目盛りの間隔が等しく、差に意味がある。",
+            "caption_zh": "在区间尺度中，刻度的间隔还相等，差值有意义。",
+            "caption_en": "On an interval scale, the steps between marks are also equal, so differences have meaning.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "比例尺度では、さらに 0 が量のないことを表し、比にも意味がある。",
+            "caption_zh": "在比例尺度中，0 还代表没有量，比值也有意义。",
+            "caption_en": "On a ratio scale, 0 also stands for no quantity, so ratios have meaning too.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2025r07-q063"
+      ],
+      "definition_jp": "尺度 (尺度水準) とは、データの値が何を表すかで分けた種類であり、どの尺度に当たるかで大小の比較や平均などの計算に意味があるかが決まる。",
+      "definition_zh": "测量尺度尺度（尺度水平尺度水準）是指按数据的值代表什么而划分的种类，属于哪种尺度决定了大小比较、求平均值等计算是否有意义。",
+      "definition_en": "A scale 尺度 (level of measurement 尺度水準) is a type of data defined by what its values represent, and the scale decides whether calculations such as comparing sizes or taking an average are meaningful.",
+      "explanation_jp": "尺度には名義尺度・順序尺度・間隔尺度・比例尺度の 4 つの水準がある。この順に値がもつ情報が 1 つずつ増え、意味をもつ計算も増えていく。",
+      "explanation_zh": "测量尺度有名义尺度、顺序尺度、区间尺度和比例尺度 4 个水平。按这个顺序，值所含的信息逐级增加一项，有意义的计算也随之增多。",
+      "explanation_en": "There are four levels: the nominal, ordinal, interval and ratio scales. In that order, each level adds one more property to the values, and the range of meaningful calculations grows with it.",
+      "memory_hook_jp": "「尺度」はもともと、長さを測るものさしを指す言葉。ものさしの種類によって測れることが違う、と字から読める。",
+      "memory_hook_zh": "日语“尺度”原本指量长度用的尺子。尺子种类不同，能量的东西也不同，从字面就能读出这层意思。",
+      "memory_hook_en": "The Japanese word 尺度 originally meant a ruler for measuring length, and different rulers can measure different things.",
       "inline_quiz": [
         "2025r07-q063"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"名義尺度(分類のみ)\"] --> B[\"順序尺度(順序を追加)\"]; B --> C[\"間隔尺度(等間隔の差)\"]; C --> D[\"比例尺度(絶対原点・比)\"]",
-        "svg_path": "figures/technology-13-34-u04-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "测量尺度",
-      "term_en": "Scale (Level of Measurement)",
-      "definition_zh": "衡量数据性质的基准，是决定允许进行哪些计算的四种水平的统称。",
-      "definition_en": "The criterion for measuring the nature of data; a collective term for the four levels that determine which calculations are permitted.",
-      "explanation_zh": "测量尺度（测量水平）是表示数据具有何种性质的分类基准。按信息量从少到多分为名义尺度、顺序尺度、区间尺度、比例尺度四种水平，各自「允许进行的计算」各不相同。\n\n属于哪种尺度，决定了能否取平均、能否比较大小、能否谈论比值，因此左右着分析方法的选择。考试中，让人判别具体例子（性别、名次、气温、身高等）属于哪种尺度的题目十分高频。应把这四种水平掌握为：越上位的尺度可进行的计算越多的层次结构。",
-      "explanation_en": "A scale (level of measurement) is a classification criterion that expresses what kind of nature data has. From least to most information, there are four levels: nominal, ordinal, interval, and ratio scales, each of which permits different calculations.\n\nWhich scale applies determines whether you can take an average, compare magnitudes, or speak of ratios, and therefore governs the choice of analysis method. The exam frequently asks you to determine which scale specific examples (sex, rank, temperature, height, etc.) belong to. Grasp the four levels as a hierarchy in which higher levels allow more calculations.",
-      "analogy_zh": "就像测量工具也有量长度的尺子、温度计、名次表等不同种类，能测量的内容各不相同。数据也有决定「可以计算到什么程度」的刻度种类。",
-      "analogy_en": "Just as measuring tools come in different kinds—a ruler for length, a thermometer, a ranking chart—and measure different things, data also has different kinds of 'scales' that decide 'how far you may calculate.'",
-      "memory_hook_zh": "说到测量尺度，就是名义、顺序、区间、比例四种水平的统称",
-      "memory_hook_en": "Scale → the collective term for the four levels: nominal, ordinal, interval, ratio"
+      "figure": null
     },
     {
       "term": "名義尺度",
-      "definition_jp": "区別・分類だけに意味があり、大小や順序を持たない尺度。",
-      "explanation_jp": "名義尺度は、データを区別・分類するためだけの尺度で、値に大小や順序の意味はありません。性別、血液型、都道府県名、電話番号などが該当します。背番号のように数字が振られていても、それは識別の記号にすぎません。\n\n4水準の中で最も情報量が少なく、できるのは「同じか違うか」の判定と件数の集計くらいです。平均や順位付けには意味がありません。試験では、数値で表されていても順序の意味を持たないものが名義尺度だと見抜けるかが問われます。",
-      "analogy_jp": "サッカー選手の背番号のようなもの。10番が7番より「大きい・上」という意味はなく、ただ選手を見分けるための番号にすぎません。",
-      "memory_hook_jp": "名義尺度といえば区別・分類だけで大小なし(性別・血液型)",
-      "inline_quiz": [
-        "2009h21h-q080"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "名义尺度",
       "term_en": "Nominal Scale",
-      "definition_zh": "只在区别、分类上有意义，不具有大小或顺序的尺度。",
-      "definition_en": "A scale that is meaningful only for distinguishing and classifying, with no magnitude or order.",
-      "explanation_zh": "名义尺度是仅用于区别、分类数据的尺度，其值不具有大小或顺序的意义。性别、血型、都道府县名、电话号码等都属于此类。即使像球衣号码那样标注了数字，那也只是用于识别的记号而已。\n\n它在四种水平中信息量最少，能做的只有「相同还是不同」的判定和件数汇总。求平均或排名都没有意义。考试中会考查能否看出：即使用数值表示，但不具有顺序意义的就是名义尺度。",
-      "explanation_en": "A nominal scale is a scale used only to distinguish and classify data; its values carry no meaning of magnitude or order. Sex, blood type, prefecture names, and telephone numbers fall into this category. Even when numbers are assigned, as with jersey numbers, they are merely symbols for identification.\n\nIt carries the least information among the four levels, and all you can do is judge 'same or different' and count the number of items. Averaging or ranking is meaningless. The exam tests whether you can see that something expressed in numbers but carrying no order meaning is a nominal scale.",
-      "analogy_zh": "就像足球运动员的球衣号码。10号并不比7号「更大、更高」，只是用来区分球员的号码而已。",
-      "analogy_en": "It is like a soccer player's jersey number. Number 10 does not mean 'larger or higher' than number 7; it is merely a number for telling players apart.",
-      "memory_hook_zh": "说到名义尺度，就是只用于区别、分类而无大小（性别、血型）",
-      "memory_hook_en": "Nominal scale → only distinguishing/classifying, no magnitude (sex, blood type)"
+      "one_jp": "**名義尺度**とは、値が対象を**区別**・**分類**するためだけに使われ、大小や順序の意味をもたない尺度である。",
+      "one_zh": "**名义尺度**[[jp:名義尺度]]是指值只用于**区别**和**分类**对象、不具有大小或顺序含义的尺度。",
+      "one_en": "A **nominal scale** [[jp:名義尺度]] is a scale whose values are used only to **distinguish** and **classify** things, with no meaning of size or order.",
+      "detail_jp": "性別や出身の都道府県、商品の分類コードなどが当たる。番号で表されていても、その番号は名札と同じく見分けるための印にすぎないので、足したり平均したりしても意味のある値にはならない。意味のある操作は、同じかどうかの判定や、区分ごとの件数を数えることなどである。",
+      "detail_zh": "性别、出生地所在的地区、商品分类代码等都属于这一类。即使用编号表示，这些编号也和名牌一样只是用来分辨的记号，相加或取平均都得不到有意义的值。有意义的操作是判断是否相同、统计各类别的件数等。",
+      "detail_en": "Examples include gender, home region and product category codes. Even when they are written as numbers, those numbers are only labels for telling things apart, like name tags, so adding or averaging them gives nothing meaningful. Meaningful operations include checking whether two values match and counting the entries in each category.",
+      "analogy_jp": "駅のコインロッカーの番号は場所を見分けるためのもので、10 番に 5 番の 2 倍の荷物が入るわけではない。",
+      "analogy_zh": "车站投币寄存柜的编号是用来分辨位置的，10 号柜并不能装下 5 号柜 2 倍的行李。",
+      "analogy_en": "The numbers on station coin lockers tell you which locker is which; locker 10 does not hold twice as much luggage as locker 5.",
+      "hook_jp": "「名義」は名前のこと。名前どうしは呼び分けられても、どちらが大きいとは言えない。",
+      "hook_zh": "日语“名義”就是名字的意思。名字之间可以互相区分，却说不出哪个更大。",
+      "hook_en": "Nominal comes from the Latin nomen, meaning name: names can be told apart, but no name is larger than another.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "数字で表されたデータでも、その数字が分類の印にすぎなければ**名義尺度**である。数字であることだけを理由に、順序や大きさがあると判断しない。",
+          "text_zh": "即使是用数字表示的数据，只要这些数字只是分类的记号，就属于**名义尺度**[[jp:名義尺度]]。不能仅凭它是数字，就认为它有顺序或大小。",
+          "text_en": "Data written as numbers is still on a **nominal scale** [[jp:名義尺度]] if the numbers are only category labels. Being numeric is not a reason to assume order or size."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2025r07-q063"
+      ],
+      "definition_jp": "名義尺度とは、値が対象を区別・分類するためだけに使われ、大小や順序の意味をもたない尺度である。",
+      "definition_zh": "名义尺度名義尺度是指值只用于区别和分类对象、不具有大小或顺序含义的尺度。",
+      "definition_en": "A nominal scale 名義尺度 is a scale whose values are used only to distinguish and classify things, with no meaning of size or order.",
+      "explanation_jp": "性別や出身の都道府県、商品の分類コードなどが当たる。番号で表されていても、その番号は名札と同じく見分けるための印にすぎないので、足したり平均したりしても意味のある値にはならない。意味のある操作は、同じかどうかの判定や、区分ごとの件数を数えることなどである。",
+      "explanation_zh": "性别、出生地所在的地区、商品分类代码等都属于这一类。即使用编号表示，这些编号也和名牌一样只是用来分辨的记号，相加或取平均都得不到有意义的值。有意义的操作是判断是否相同、统计各类别的件数等。",
+      "explanation_en": "Examples include gender, home region and product category codes. Even when they are written as numbers, those numbers are only labels for telling things apart, like name tags, so adding or averaging them gives nothing meaningful. Meaningful operations include checking whether two values match and counting the entries in each category.",
+      "memory_hook_jp": "「名義」は名前のこと。名前どうしは呼び分けられても、どちらが大きいとは言えない。",
+      "memory_hook_zh": "日语“名義”就是名字的意思。名字之间可以互相区分，却说不出哪个更大。",
+      "memory_hook_en": "Nominal comes from the Latin nomen, meaning name: names can be told apart, but no name is larger than another.",
+      "inline_quiz": [
+        "2025r07-q063"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "順序尺度",
-      "definition_jp": "大小や順序に意味はあるが、間隔の大きさには意味がない尺度。",
-      "explanation_jp": "順序尺度は、データの大小・順序に意味がある尺度です。アンケートの「満足・普通・不満」、成績の順位、震度などが該当します。順番は比較できますが、目盛りの間隔が等しいとは限りません。\n\nそのため「1位と2位の差」と「2位と3位の差」が同じ大きさとは言えず、平均を取っても意味が薄いとされます。名義尺度との違いは順序があること、間隔尺度との違いは間隔の等しさを保証しない点です。試験では、順位や段階評価が順序尺度に当たると判断できるかが問われます。",
-      "analogy_jp": "マラソンの順位のようなもの。1位・2位・3位の前後関係は分かっても、1位と2位のタイム差と2位と3位の差が同じとは限りません。",
-      "memory_hook_jp": "順序尺度といえば順序はあるが間隔は不均等(順位・満足度)",
-      "inline_quiz": [
-        "2010h22a-q082"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "顺序尺度",
       "term_en": "Ordinal Scale",
-      "definition_zh": "大小或顺序有意义，但间隔的大小没有意义的尺度。",
-      "definition_en": "A scale where magnitude or order is meaningful, but the size of the intervals is not.",
-      "explanation_zh": "顺序尺度是数据的大小、顺序具有意义的尺度。问卷中的「满意、一般、不满」，成绩名次，震度等都属于此类。顺序可以比较，但刻度间隔未必相等。\n\n因此「第1名与第2名之差」和「第2名与第3名之差」未必同样大小，即使取平均意义也不大。它与名义尺度的区别在于有顺序，与区间尺度的区别在于不保证间隔相等。考试中会考查能否判断名次或分级评价属于顺序尺度。",
-      "explanation_en": "An ordinal scale is a scale where the magnitude and order of data are meaningful. A questionnaire's 'satisfied, neutral, dissatisfied,' grade rankings, and seismic intensity fall into this category. Order can be compared, but the intervals between gradations are not necessarily equal.\n\nFor this reason, the 'difference between 1st and 2nd' is not necessarily the same size as the 'difference between 2nd and 3rd,' so taking an average is considered to have little meaning. The difference from a nominal scale is that it has order; the difference from an interval scale is that it does not guarantee equal intervals. The exam tests whether you can judge that rankings or graded evaluations are ordinal scales.",
-      "analogy_zh": "就像马拉松的名次。虽然能知道第1名、第2名、第3名的先后关系，但第1名与第2名的成绩差未必和第2名与第3名的差相同。",
-      "analogy_en": "It is like marathon rankings. You can tell the sequence of 1st, 2nd, and 3rd, but the time gap between 1st and 2nd is not necessarily the same as the gap between 2nd and 3rd.",
-      "memory_hook_zh": "说到顺序尺度，就是有顺序但间隔不均等（名次、满意度）",
-      "memory_hook_en": "Ordinal scale → order exists but intervals are uneven (rank, satisfaction)"
+      "one_jp": "**順序尺度**とは、値の大小や上下の**順序**には意味があるが、値と値の**間隔**が等しいとは限らない尺度である。",
+      "one_zh": "**顺序尺度**[[jp:順序尺度]]是指值的大小或上下**顺序**有意义，但值与值之间的**间隔**不一定相等的尺度。",
+      "one_en": "An **ordinal scale** [[jp:順序尺度]] is a scale in which the **order** of values, larger or smaller, higher or lower, has meaning, but the **intervals** between values are not necessarily equal.",
+      "detail_jp": "アンケートの「満足」「やや満足」「普通」のような段階評価や、競技の着順などが当たる。順番の比較はできても、隣り合う段階の差が同じ大きさとは言えないため、差や平均を計算しても解釈しにくい。代表的な値としては、順に並べたときの真ん中に当たる値 (中央値) がよく使われる。",
+      "detail_zh": "问卷中“满意”“比较满意”“一般”这类分级评价，以及比赛名次等都属于这一类。虽然能比较先后，但不能说相邻等级之间的差距一样大，因此即使计算差值或平均值也难以解释。作为代表值，常用按顺序排列后位于正中间的值（中位数[[jp:中央値]]）。",
+      "detail_en": "Survey ratings such as satisfied, somewhat satisfied and neutral, and finishing positions in a race, are examples. You can compare which comes first, but nothing says the gaps between neighboring levels are equal, so differences and averages are hard to interpret. The usual representative value is the one in the middle when the values are lined up in order, called the median [[jp:中央値]].",
+      "analogy_jp": "ホテルの星の数で、3 つ星と 4 つ星の違いが、1 つ星と 2 つ星の違いと同じだけの差だとは誰も保証していない。",
+      "analogy_zh": "酒店的星级中，没有人保证 3 星和 4 星之间的差距与 1 星和 2 星之间的差距一样大。",
+      "analogy_en": "With hotel star ratings, nobody guarantees that the step from three stars to four is as big as the step from one star to two.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "値を順位に置き換えたデータは**順序尺度**になる。元の値が比例尺度でも、順位にした時点で差の大きさの情報は失われる。",
+          "text_zh": "把值换成名次后的数据属于**顺序尺度**[[jp:順序尺度]]。即使原来的值属于比例尺度[[jp:比例尺度]]，一旦换成名次，差值大小的信息就丢失了。",
+          "text_en": "Data whose values have been replaced by ranks is on an **ordinal scale** [[jp:順序尺度]]. Even if the original values were on a ratio scale [[jp:比例尺度]], turning them into ranks throws away the information about how large the differences are."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2025r07-q063"
+      ],
+      "definition_jp": "順序尺度とは、値の大小や上下の順序には意味があるが、値と値の間隔が等しいとは限らない尺度である。",
+      "definition_zh": "顺序尺度順序尺度是指值的大小或上下顺序有意义，但值与值之间的间隔不一定相等的尺度。",
+      "definition_en": "An ordinal scale 順序尺度 is a scale in which the order of values, larger or smaller, higher or lower, has meaning, but the intervals between values are not necessarily equal.",
+      "explanation_jp": "アンケートの「満足」「やや満足」「普通」のような段階評価や、競技の着順などが当たる。順番の比較はできても、隣り合う段階の差が同じ大きさとは言えないため、差や平均を計算しても解釈しにくい。代表的な値としては、順に並べたときの真ん中に当たる値 (中央値) がよく使われる。",
+      "explanation_zh": "问卷中“满意”“比较满意”“一般”这类分级评价，以及比赛名次等都属于这一类。虽然能比较先后，但不能说相邻等级之间的差距一样大，因此即使计算差值或平均值也难以解释。作为代表值，常用按顺序排列后位于正中间的值（中位数中央値）。",
+      "explanation_en": "Survey ratings such as satisfied, somewhat satisfied and neutral, and finishing positions in a race, are examples. You can compare which comes first, but nothing says the gaps between neighboring levels are equal, so differences and averages are hard to interpret. The usual representative value is the one in the middle when the values are lined up in order, called the median 中央値.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2025r07-q063"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "間隔尺度",
-      "definition_jp": "目盛りの間隔が等しく差は意味を持つが、絶対原点(0)を持たない尺度。",
-      "explanation_jp": "間隔尺度は、順序に加えて目盛りの間隔が等しい尺度で、差(足し算・引き算)に意味があります。摂氏温度や西暦、テストの得点などが代表例です。\n\nただし0が「無」を意味する絶対原点ではないため、比には意味がありません。例えば20℃は10℃より10度高いとは言えても、「2倍暖かい」とは言えません。差は語れるが比は語れないのが特徴で、絶対原点を持つ比例尺度との最大の違いです。試験では温度がこの区別の定番例として問われます。",
-      "analogy_jp": "摂氏の温度計のようなもの。20℃と10℃の差は10度と分かりますが、0℃は「熱が無い」わけではないので「20℃は10℃の2倍暑い」とは言えません。",
-      "memory_hook_jp": "間隔尺度といえば差は意味あるが0が原点でない(摂氏温度・西暦)",
-      "inline_quiz": [
-        "2010h22h-q067"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "区间尺度",
       "term_en": "Interval Scale",
-      "definition_zh": "刻度间隔相等、差有意义，但不具有绝对原点（0）的尺度。",
-      "definition_en": "A scale with equal intervals where differences are meaningful, but which has no absolute zero point (0).",
-      "explanation_zh": "区间尺度是在顺序的基础上刻度间隔相等的尺度，差（加法、减法）具有意义。摄氏温度、公历年份、考试得分等是代表性例子。\n\n但由于0并非表示「无」的绝对原点，所以比值没有意义。例如20℃虽可说比10℃高10度，却不能说「暖2倍」。其特点是能谈论差却不能谈论比，这是与具有绝对原点的比例尺度的最大区别。考试中，温度是这一区别的经典例子。",
-      "explanation_en": "An interval scale is a scale where, in addition to order, the gradation intervals are equal, so differences (addition and subtraction) are meaningful. Celsius temperature, calendar years, and test scores are representative examples.\n\nHowever, because 0 is not an absolute zero point meaning 'nothing,' ratios have no meaning. For example, while 20°C can be said to be 10 degrees higher than 10°C, it cannot be said to be 'twice as warm.' Its characteristic is that differences can be discussed but ratios cannot—the biggest difference from the ratio scale, which has an absolute zero point. On the exam, temperature is the standard example for this distinction.",
-      "analogy_zh": "就像摄氏温度计。可以知道20℃与10℃之差是10度，但0℃并不意味着「没有热量」，所以不能说「20℃比10℃热2倍」。",
-      "analogy_en": "It is like a Celsius thermometer. You can tell that the difference between 20°C and 10°C is 10 degrees, but 0°C does not mean 'no heat,' so you cannot say '20°C is twice as hot as 10°C.'",
-      "memory_hook_zh": "说到区间尺度，就是差有意义但0不是原点（摄氏温度、公历年份）",
-      "memory_hook_en": "Interval scale → differences are meaningful but 0 is not the origin (Celsius, calendar year)"
+      "one_jp": "**間隔尺度**とは、目盛りの**間隔**が等しく値の**差**に意味があるが、0 が「量がない」ことを表さない尺度である。",
+      "one_zh": "**区间尺度**[[jp:間隔尺度]]是指刻度**间隔**相等、值的**差**有意义，但 0 并不代表“没有量”的尺度。",
+      "one_en": "An **interval scale** [[jp:間隔尺度]] is a scale with equal **intervals** between its marks, so the **difference** between values has meaning, but 0 does not mean there is no quantity.",
+      "detail_jp": "摂氏の気温や西暦の年などが当たる。0 ℃ は温度が存在しない状態ではなく目盛りの基点を決めただけなので、20 ℃ を 10 ℃ の 2 倍の暑さとは言えない。足し算・引き算や平均には意味があるが、比 (何倍か) には意味がない。",
+      "detail_zh": "摄氏温度、公历年份等都属于这一类。0 ℃ 并不是不存在温度的状态，只是规定了刻度的起点，所以不能说 20 ℃ 的热度是 10 ℃ 的 2 倍。加减运算和平均值有意义，但比值（是几倍）没有意义。",
+      "detail_en": "Temperature in degrees Celsius and calendar years are examples. Because 0 ℃ is not a state with no temperature but simply the chosen starting point of the scale, 20 ℃ cannot be called twice as hot as 10 ℃. Addition, subtraction and averages are meaningful, but ratios (how many times larger) are not.",
+      "analogy_jp": "身長計の台に乗ったまま全員を測ると、どの値も台の高さだけずれるが、2 人の差は変わらない。差は保たれ、比は保たれない目盛りである。",
+      "analogy_zh": "如果大家都站在身高计的垫台上测量，所有数值都会多出垫台的高度，但两人之间的差不变。这是一种保持差值、不保持比值的刻度。",
+      "analogy_en": "If everyone is measured while standing on the same platform of a height gauge, every reading is off by the platform's height, yet the difference between any two people stays the same. The scale keeps differences but not ratios.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "時刻は、0 時が時間のない状態を表さないので**間隔尺度**に当たる。2 つの時刻の差は求められるが、時刻どうしの比は意味をもたない。",
+          "text_zh": "时刻的 0 点并不代表没有时间的状态，因此时刻属于**区间尺度**[[jp:間隔尺度]]。可以求两个时刻之差，但时刻之间的比值没有意义。",
+          "text_en": "Clock time is on an **interval scale** [[jp:間隔尺度]], because 0 o'clock does not mean an absence of time. You can find the difference between two times, but a ratio of two times has no meaning.",
+          "qids": [
+            "2025r07-q063"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2025r07-q063"
+      ],
+      "definition_jp": "間隔尺度とは、目盛りの間隔が等しく値の差に意味があるが、0 が「量がない」ことを表さない尺度である。",
+      "definition_zh": "区间尺度間隔尺度是指刻度间隔相等、值的差有意义，但 0 并不代表“没有量”的尺度。",
+      "definition_en": "An interval scale 間隔尺度 is a scale with equal intervals between its marks, so the difference between values has meaning, but 0 does not mean there is no quantity.",
+      "explanation_jp": "摂氏の気温や西暦の年などが当たる。0 ℃ は温度が存在しない状態ではなく目盛りの基点を決めただけなので、20 ℃ を 10 ℃ の 2 倍の暑さとは言えない。足し算・引き算や平均には意味があるが、比 (何倍か) には意味がない。",
+      "explanation_zh": "摄氏温度、公历年份等都属于这一类。0 ℃ 并不是不存在温度的状态，只是规定了刻度的起点，所以不能说 20 ℃ 的热度是 10 ℃ 的 2 倍。加减运算和平均值有意义，但比值（是几倍）没有意义。",
+      "explanation_en": "Temperature in degrees Celsius and calendar years are examples. Because 0 ℃ is not a state with no temperature but simply the chosen starting point of the scale, 20 ℃ cannot be called twice as hot as 10 ℃. Addition, subtraction and averages are meaningful, but ratios (how many times larger) are not.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2025r07-q063"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "比例尺度",
-      "definition_jp": "間隔が等しく絶対原点(0)を持ち、差も比も意味を持つ最上位の尺度。",
-      "explanation_jp": "比例尺度(比率尺度)は、間隔尺度の性質に加えて0が「無」を表す絶対原点である尺度です。身長、体重、長さ、金額、年齢などが該当し、差だけでなく比にも意味があります。\n\n「60kgは30kgの2倍」と言えるのは絶対原点があるからで、これが間隔尺度との決定的な違いです。4水準の中で最も情報量が多く、すべての計算が可能です。試験では、温度(摂氏=間隔尺度)と長さ・重さ・金額(比例尺度)の対比で『0が無を意味するか』『2倍と言えるか』を判断させる問題が頻出です。",
-      "analogy_jp": "体重計のようなもの。0kgは「重さが無い」状態を指すので、60kgは30kgのちょうど2倍と言え、比較も倍率も自由に語れます。",
-      "memory_hook_jp": "比例尺度といえば絶対原点があり比も言える(身長・体重・金額)",
-      "inline_quiz": [
-        "2011h23tokubetsu-q056"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "比例尺度",
       "term_en": "Ratio Scale",
-      "definition_zh": "间隔相等且具有绝对原点（0），差与比都有意义的最高位尺度。",
-      "definition_en": "The highest-level scale, with equal intervals and an absolute zero point (0), where both differences and ratios are meaningful.",
-      "explanation_zh": "比例尺度（比率尺度）是在区间尺度性质之上，0为表示「无」的绝对原点的尺度。身高、体重、长度、金额、年龄等都属于此类，不仅差有意义，比也有意义。\n\n之所以能说「60kg是30kg的2倍」，正是因为有绝对原点，这是与区间尺度的决定性区别。它在四种水平中信息量最多，所有计算都可进行。考试中，常以温度（摄氏＝区间尺度）与长度、重量、金额（比例尺度）的对比，让人判断「0是否意味着无」「能否说2倍」，属于高频题。",
-      "explanation_en": "A ratio scale is a scale where, in addition to the properties of an interval scale, 0 is an absolute zero point representing 'nothing.' Height, weight, length, monetary amount, and age fall into this category, and not only differences but also ratios are meaningful.\n\nThe reason you can say '60 kg is twice 30 kg' is precisely because there is an absolute zero point, and this is the decisive difference from an interval scale. It carries the most information among the four levels, and all calculations are possible. On the exam, it frequently appears as a contrast between temperature (Celsius = interval scale) and length, weight, and monetary amount (ratio scale), asking you to judge 'whether 0 means nothing' and 'whether you can say twice.'",
-      "analogy_zh": "就像体重秤。0kg指的是「没有重量」的状态，所以60kg可以说正好是30kg的2倍，比较和倍率都能自由谈论。",
-      "analogy_en": "It is like a weighing scale. 0 kg refers to the state of 'having no weight,' so 60 kg can be said to be exactly twice 30 kg, and both comparison and multiples can be discussed freely.",
-      "memory_hook_zh": "说到比例尺度，就是有绝对原点、连比也能说（身高、体重、金额）",
-      "memory_hook_en": "Ratio scale → has an absolute zero point, can even state ratios (height, weight, amount)"
+      "one_jp": "**比例尺度** (**比率尺度**) とは、間隔が等しいことに加えて 0 が「量がない」ことを表し、値の**比**にも意味がある尺度である。",
+      "one_zh": "**比例尺度**[[jp:比例尺度]]（**比率尺度**[[jp:比率尺度]]）是指除了间隔相等之外，0 还代表“没有量”，值的**比**也有意义的尺度。",
+      "one_en": "A **ratio scale** [[jp:比例尺度]] (**ratio-level scale** [[jp:比率尺度]]) is a scale that, besides having equal intervals, has a 0 meaning no quantity, so the **ratio** of values is meaningful too.",
+      "detail_jp": "長さや重さ、金額などが当たる。0 が量のない状態として固定されているので、60 kg は 30 kg の 2 倍と言え、掛け算・割り算の結果にも意味がある。4 つの尺度のうち、値がもつ情報が最も多い。",
+      "detail_zh": "长度、重量、金额等都属于这一类。由于 0 被固定为没有量的状态，所以可以说 60 kg 是 30 kg 的 2 倍，乘除运算的结果也有意义。在 4 种测量尺度中，它的值所含的信息最多。",
+      "detail_en": "Length, weight and amounts of money are examples. Because 0 is fixed as the state of having none, 60 kg can be called twice 30 kg, and the results of multiplication and division are meaningful. Of the four scales, its values carry the most information.",
+      "analogy_jp": "財布の中身が 0 円なら本当にお金はなく、2000 円あれば 1000 円のちょうど 2 倍の金額を使える。",
+      "analogy_zh": "钱包里有 0 日元就真的没有钱；有 2000 日元，就能花掉正好是 1000 日元 2 倍的钱。",
+      "analogy_en": "A wallet holding 0 yen really has no money in it, and 2000 yen lets you spend exactly twice as much as 1000 yen.",
+      "hook_jp": "英語では ratio scale と呼び、ratio は「比」を意味する。",
+      "hook_zh": "英语称为 ratio scale，ratio 就是“比”的意思。",
+      "hook_en": "The name comes from ratio: this is the scale on which a ratio of two values makes sense.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "長さや面積は**比例尺度**の量なので比で比べられる。形が相似な図形では、面積の比は長さの比の 2 乗になる。",
+          "text_zh": "长度和面积是**比例尺度**[[jp:比例尺度]]的量，所以可以用比值来比较。形状相似的图形，面积之比等于长度之比的平方。",
+          "text_en": "Length and area are quantities on a **ratio scale** [[jp:比例尺度]], so they can be compared as ratios. For figures of similar shape, the ratio of their areas is the square of the ratio of their lengths.",
+          "qids": [
+            "2011h23tokubetsu-q056"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2011h23tokubetsu-q056",
+        "2025r07-q063"
+      ],
+      "definition_jp": "比例尺度 (比率尺度) とは、間隔が等しいことに加えて 0 が「量がない」ことを表し、値の比にも意味がある尺度である。",
+      "definition_zh": "比例尺度比例尺度（比率尺度比率尺度）是指除了间隔相等之外，0 还代表“没有量”，值的比也有意义的尺度。",
+      "definition_en": "A ratio scale 比例尺度 (ratio-level scale 比率尺度) is a scale that, besides having equal intervals, has a 0 meaning no quantity, so the ratio of values is meaningful too.",
+      "explanation_jp": "長さや重さ、金額などが当たる。0 が量のない状態として固定されているので、60 kg は 30 kg の 2 倍と言え、掛け算・割り算の結果にも意味がある。4 つの尺度のうち、値がもつ情報が最も多い。",
+      "explanation_zh": "长度、重量、金额等都属于这一类。由于 0 被固定为没有量的状态，所以可以说 60 kg 是 30 kg 的 2 倍，乘除运算的结果也有意义。在 4 种测量尺度中，它的值所含的信息最多。",
+      "explanation_en": "Length, weight and amounts of money are examples. Because 0 is fixed as the state of having none, 60 kg can be called twice 30 kg, and the results of multiplication and division are meaningful. Of the four scales, its values carry the most information.",
+      "memory_hook_jp": "英語では ratio scale と呼び、ratio は「比」を意味する。",
+      "memory_hook_zh": "英语称为 ratio scale，ratio 就是“比”的意思。",
+      "memory_hook_en": "The name comes from ratio: this is the scale on which a ratio of two values makes sense.",
+      "inline_quiz": [
+        "2011h23tokubetsu-q056",
+        "2025r07-q063"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "データの並べ替え",
+      "b": "ランキング",
+      "rows": [
+        {
+          "label_jp": "操作で加わるもの",
+          "label_zh": "操作后增加的内容",
+          "label_en": "What the operation adds",
+          "a_jp": "なし (データの位置が変わるだけ)",
+          "a_zh": "无（只是数据的位置改变）",
+          "a_en": "Nothing (only the positions of the data change)",
+          "b_jp": "各データに順位という値が加わる",
+          "b_zh": "每条数据多了名次这个值",
+          "b_en": "Each record gains a rank as a new value",
+          "key": true
+        },
+        {
+          "label_jp": "元の値",
+          "label_zh": "原始值",
+          "label_en": "Original values",
+          "a_jp": "そのまま",
+          "a_zh": "保持不变",
+          "a_en": "Unchanged",
+          "b_jp": "そのまま (順位は別の値として付く)",
+          "b_zh": "保持不变（名次作为另一个值附加上去）",
+          "b_en": "Unchanged (the rank is attached as a separate value)",
+          "key": false
+        },
+        {
+          "label_jp": "両者の関係",
+          "label_zh": "两者的关系",
+          "label_en": "How they relate",
+          "a_jp": "順位付けの前提になる",
+          "a_zh": "是标定名次的前提",
+          "a_en": "The step that ranking relies on",
+          "b_jp": "並べ替えた結果を使う",
+          "b_zh": "使用排序后的结果",
+          "b_en": "Uses the sorted result",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "名義尺度",
+      "b": "順序尺度",
+      "rows": [
+        {
+          "label_jp": "順序の意味",
+          "label_zh": "顺序的含义",
+          "label_en": "Meaning of order",
+          "a_jp": "ない",
+          "a_zh": "没有",
+          "a_en": "None",
+          "b_jp": "ある",
+          "b_zh": "有",
+          "b_en": "Present",
+          "key": true
+        },
+        {
+          "label_jp": "できる比較",
+          "label_zh": "可以进行的比较",
+          "label_en": "Possible comparisons",
+          "a_jp": "同じか違うか",
+          "a_zh": "相同还是不同",
+          "a_en": "Same or different",
+          "b_jp": "大きいか小さいか、上か下か",
+          "b_zh": "大还是小、上还是下",
+          "b_en": "Larger or smaller, higher or lower",
+          "key": false
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "例子",
+          "label_en": "Examples",
+          "a_jp": "性別、商品の分類コード",
+          "a_zh": "性别、商品分类代码",
+          "a_en": "Gender, product category codes",
+          "b_jp": "満足度の段階評価、競技の着順",
+          "b_zh": "满意度分级评价、比赛名次",
+          "b_en": "Satisfaction ratings in levels, finishing order in a race",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "間隔尺度",
+      "b": "比例尺度",
+      "rows": [
+        {
+          "label_jp": "0 が表すもの",
+          "label_zh": "0 代表什么",
+          "label_en": "What 0 represents",
+          "a_jp": "目盛りの基点にすぎない",
+          "a_zh": "只是刻度的起点",
+          "a_en": "Only the starting point of the scale",
+          "b_jp": "量がない状態",
+          "b_zh": "没有量的状态",
+          "b_en": "A state with no quantity",
+          "key": true
+        },
+        {
+          "label_jp": "差",
+          "label_zh": "差值",
+          "label_en": "Differences",
+          "a_jp": "意味がある",
+          "a_zh": "有意义",
+          "a_en": "Meaningful",
+          "b_jp": "意味がある",
+          "b_zh": "有意义",
+          "b_en": "Meaningful",
+          "key": false
+        },
+        {
+          "label_jp": "比 (何倍か)",
+          "label_zh": "比值（是几倍）",
+          "label_en": "Ratios (how many times)",
+          "a_jp": "意味がない",
+          "a_zh": "没有意义",
+          "a_en": "Not meaningful",
+          "b_jp": "意味がある",
+          "b_zh": "有意义",
+          "b_en": "Meaningful",
+          "key": false
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "例子",
+          "label_en": "Examples",
+          "a_jp": "摂氏の気温、西暦の年",
+          "a_zh": "摄氏温度、公历年份",
+          "a_en": "Temperature in Celsius, calendar years",
+          "b_jp": "長さ、重さ、金額",
+          "b_zh": "长度、重量、金额",
+          "b_en": "Length, weight, amounts of money",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**尺度**水準は名義から比例へ進むほど値の情報が増え、上の水準は下の水準でできる計算をすべて含む。",
+    "どの尺度に当たるかは、数字で書かれているかどうかではなく、その値が何を表すかで判断する。",
+    "意味をもつ代表値も尺度で変わり、例えば名義尺度では最も多い区分 (最頻値)、順序尺度では中央値、間隔尺度以上では平均が使える。"
+  ],
+  "key_points_zh": [
+    "**测量尺度**[[jp:尺度]]水平从名义到比例，值所含的信息越来越多，高一级的水平包含低一级水平能进行的全部计算。",
+    "属于哪种测量尺度，要看这个值代表什么，而不是看它是否用数字书写。",
+    "有意义的代表值也随测量尺度而变，例如名义尺度[[jp:名義尺度]]用数量最多的类别（众数[[jp:最頻値]]），顺序尺度[[jp:順序尺度]]用中位数[[jp:中央値]]，区间尺度[[jp:間隔尺度]]及以上可以用平均值。"
+  ],
+  "key_points_en": [
+    "Moving from nominal to ratio, each **scale** [[jp:尺度]] level carries more information, and a higher level supports every calculation that a lower level allows.",
+    "Which scale applies is decided by what the value represents, not by whether it happens to be written as a number.",
+    "The meaningful representative value also depends on the scale: the most common category (the mode [[jp:最頻値]]) for a nominal scale [[jp:名義尺度]], the median [[jp:中央値]] for an ordinal scale [[jp:順序尺度]], and the mean for an interval scale [[jp:間隔尺度]] or higher."
+  ],
+  "overview": {
+    "intro_jp": "データを少数の値に要約する集計と、データを整列して順位を付ける操作を区別できる。4 つの尺度水準を、値がもつ情報が少ない順に並べ、それぞれで意味をもつ計算を説明できる。あるデータが間隔尺度と比例尺度のどちらに当たるかを、0 が何を表すかから判断できる。",
+    "intro_zh": "能够区分把数据归纳成少数几个数值的汇总，与把数据排列整齐后标出名次的操作。能够按数值所含信息由少到多的顺序排列 4 个测量尺度水平，并说明各水平下有意义的计算。能够根据 0 代表什么，判断某项数据属于区间尺度还是比例尺度。",
+    "intro_en": "Distinguish aggregation, which condenses data into a few values, from the operations that put data in order and assign each item a rank. Arrange the four levels of measurement from the one whose values carry the least information to the one carrying the most, and explain which calculations make sense at each. Decide whether a set of data is on an interval scale or a ratio scale by looking at what 0 represents.",
+    "freq_badge": "標準",
+    "est_minutes": 36
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "データの集計: データの集計といえば合計・件数・平均などにまとめる操作",
-      "データの並べ替え: データの並べ替えといえば昇順・降順で整列させる操作",
-      "ランキング: ランキングといえば並べ替え結果に1位・2位の順位を付与",
-      "尺度: 尺度といえば名義・順序・間隔・比例の4水準の総称",
-      "名義尺度: 名義尺度といえば区別・分類だけで大小なし(性別・血液型)",
-      "順序尺度: 順序尺度といえば順序はあるが間隔は不均等(順位・満足度)",
-      "間隔尺度: 間隔尺度といえば差は意味あるが0が原点でない(摂氏温度・西暦)",
-      "比例尺度: 比例尺度といえば絶対原点があり比も言える(身長・体重・金額)"
-    ],
     "key_points_jp": [
-      "データ操作の基本は、集計(合計・件数・平均にまとめる)→並べ替え(昇順・降順に整列)→ランキング(順位を付与)の流れで理解する。",
-      "並べ替えは順番を変えるだけ、ランキングはそこに順位という値を付ける点が違い。",
-      "尺度水準は情報量の少ない順に名義→順序→間隔→比例の4つで、上位ほど多くの計算が許される。",
-      "名義=区別のみ、順序=大小はあるが間隔不均等、間隔=差は語れるが0は原点でない、比例=絶対原点があり比も語れる。",
-      "頻出の判別ポイントは『摂氏温度は間隔尺度(2倍と言えない)』『身長・体重・金額は比例尺度(2倍と言える)』。"
+      "尺度水準は名義から比例へ進むほど値の情報が増え、上の水準は下の水準でできる計算をすべて含む。",
+      "どの尺度に当たるかは、数字で書かれているかどうかではなく、その値が何を表すかで判断する。",
+      "意味をもつ代表値も尺度で変わり、例えば名義尺度では最も多い区分 (最頻値)、順序尺度では中央値、間隔尺度以上では平均が使える。"
     ],
     "key_points_zh": [
-      "数据操作的基础，按汇总（归集成合计、件数、平均）→排序（按升序、降序排列）→排名（赋予名次）的流程来理解。",
-      "排序只是改变顺序，排名则是在此基础上赋予名次这一数值，二者不同。",
-      "测量尺度按信息量从少到多分为名义→顺序→区间→比例四种，越上位允许的计算越多。",
-      "名义＝仅区别，顺序＝有大小但间隔不均等，区间＝能谈论差但0不是原点，比例＝有绝对原点连比也能谈论。",
-      "高频判别要点是『摄氏温度是区间尺度（不能说2倍）』『身高、体重、金额是比例尺度（能说2倍）』。"
+      "测量尺度尺度水平从名义到比例，值所含的信息越来越多，高一级的水平包含低一级水平能进行的全部计算。",
+      "属于哪种测量尺度，要看这个值代表什么，而不是看它是否用数字书写。",
+      "有意义的代表值也随测量尺度而变，例如名义尺度名義尺度用数量最多的类别（众数最頻値），顺序尺度順序尺度用中位数中央値，区间尺度間隔尺度及以上可以用平均值。"
     ],
     "key_points_en": [
-      "Understand the basics of data operations as the flow: aggregation (bundling into totals, counts, averages) → sorting (arranging in ascending/descending order) → ranking (assigning ranks).",
-      "Sorting only changes the order, whereas ranking adds the value of a rank on top of that—this is the difference.",
-      "Levels of measurement are the four—nominal → ordinal → interval → ratio—ordered from least to most information, and higher levels permit more calculations.",
-      "Nominal = distinction only; ordinal = has magnitude but uneven intervals; interval = differences can be discussed but 0 is not the origin; ratio = has an absolute zero point and ratios can also be discussed.",
-      "The frequently tested points of distinction are 'Celsius temperature is an interval scale (cannot say twice)' and 'height, weight, and monetary amount are ratio scales (can say twice).'"
+      "Moving from nominal to ratio, each scale 尺度 level carries more information, and a higher level supports every calculation that a lower level allows.",
+      "Which scale applies is decided by what the value represents, not by whether it happens to be written as a number.",
+      "The meaningful representative value also depends on the scale: the most common category (the mode 最頻値) for a nominal scale 名義尺度, the median 中央値 for an ordinal scale 順序尺度, and the mean for an interval scale 間隔尺度 or higher."
+    ],
+    "memory_hooks_jp": [
+      "データの集計: 「集」めてから「計」る、と字を分けて読むと、まとめる段と数値を出す段の 2 つの動きが見える。",
+      "データの並べ替え: 昇順は階段を昇るように値が上がっていく並び、降順は降りていく並びと、字の向きで覚えられる。",
+      "ランキング: 英語の rank は「位」や「階級」の意味で、軍隊の階級も rank と呼ぶ。",
+      "尺度: 「尺度」はもともと、長さを測るものさしを指す言葉。ものさしの種類によって測れることが違う、と字から読める。",
+      "名義尺度: 「名義」は名前のこと。名前どうしは呼び分けられても、どちらが大きいとは言えない。",
+      "比例尺度: 英語では ratio scale と呼び、ratio は「比」を意味する。"
     ],
     "memory_hooks_zh": [
-      "数据汇总：说到数据汇总，就是归集成合计、件数、平均等的操作",
-      "数据排序：说到数据排序，就是按升序、降序排列的操作",
-      "排名：说到排名，就是给排序结果赋予第1名、第2名的名次",
-      "测量尺度：说到测量尺度，就是名义、顺序、区间、比例四种水平的统称",
-      "名义尺度：说到名义尺度，就是只用于区别、分类而无大小（性别、血型）",
-      "顺序尺度：说到顺序尺度，就是有顺序但间隔不均等（名次、满意度）",
-      "区间尺度：说到区间尺度，就是差有意义但0不是原点（摄氏温度、公历年份）",
-      "比例尺度：说到比例尺度，就是有绝对原点、连比也能说（身高、体重、金额）"
+      "数据汇总：把“汇总”拆开来读：先“汇”集数据，再“总”计出数值，两个字正好对应这项操作的两个步骤。",
+      "数据排序：日语写作“昇順”“降順”：“昇”是像登台阶一样往上走，“降”是往下走，看字的方向就能记住数值的变化。",
+      "排名：英语 rank 有“位次”“等级”的意思，军队的军衔也叫 rank。",
+      "测量尺度：日语“尺度”原本指量长度用的尺子。尺子种类不同，能量的东西也不同，从字面就能读出这层意思。",
+      "名义尺度：日语“名義”就是名字的意思。名字之间可以互相区分，却说不出哪个更大。",
+      "比例尺度：英语称为 ratio scale，ratio 就是“比”的意思。"
     ],
     "memory_hooks_en": [
-      "Data aggregation: Data aggregation → bundling data into totals, counts, averages, etc.",
-      "Data sorting: Data sorting → arranging in ascending or descending order",
-      "Ranking: Ranking → assigning 1st, 2nd ranks to the sorted result",
-      "Scale: Scale → the collective term for the four levels: nominal, ordinal, interval, ratio",
-      "Nominal scale: Nominal scale → only distinguishing/classifying, no magnitude (sex, blood type)",
-      "Ordinal scale: Ordinal scale → order exists but intervals are uneven (rank, satisfaction)",
-      "Interval scale: Interval scale → differences are meaningful but 0 is not the origin (Celsius, calendar year)",
-      "Ratio scale: Ratio scale → has an absolute zero point, can even state ratios (height, weight, amount)"
+      "Data Aggregation: The Japanese word 集計 joins 集 (gather) and 計 (measure), naming the two steps of the job: collect the records, then compute the figures.",
+      "Data Sorting: Ascending means climbing, as values do when they go up a staircase, and descending means walking back down it.",
+      "Ranking: Rank also means a level or grade, as in a military rank.",
+      "Scale (Level of Measurement): The Japanese word 尺度 originally meant a ruler for measuring length, and different rulers can measure different things.",
+      "Nominal Scale: Nominal comes from the Latin nomen, meaning name: names can be told apart, but no name is larger than another.",
+      "Ratio Scale: The name comes from ratio: this is the scale on which a ratio of two values makes sense."
     ]
   },
   "challenge_questions": [
-    "2013h25h-q076",
-    "2014h26a-q095",
-    "2014h26h-q063",
-    "2016h28h-q098",
-    "2018h30a-q005"
+    "2025r07-q063",
+    "2011h23tokubetsu-q056",
+    "2010h22h-q067",
+    "2009h21h-q080"
   ],
   "source_figures": [
     {
@@ -314,9 +998,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "数据操作与测量尺度",
-  "title_en": "Data Operations and Levels of Measurement",
-  "unit_summary_zh": "学习数据的汇总、排序、排名等基本操作，以及四种测量尺度。",
-  "unit_summary_en": "Learn basic data operations such as aggregation, sorting, and ranking, along with the four levels of measurement."
+  }
 }

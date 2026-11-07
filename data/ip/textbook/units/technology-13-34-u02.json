@@ -1,264 +1,1026 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-34-u02",
   "topic_id": "technology-13-34",
   "category": "technology",
   "title_jp": "記述統計量(代表値と散布度)",
-  "unit_summary_jp": "データを要約する代表値(平均・中央・最頻)と、ばらつきを表す散布度(分散・標準偏差・偏差値)を学ぶ。",
+  "title_zh": "描述统计量（集中趋势与离散程度）",
+  "title_en": "Descriptive Statistics (Measures of Central Tendency and Dispersion)",
+  "unit_summary_jp": "データを要約する代表値(平均・中央・最頻)と、ばらつきを表す散布度(分散・標準偏差)、集団の中での位置を表す偏差値を学ぶ。",
+  "unit_summary_zh": "学习用于概括数据的集中趋势量（均值、中位数、众数），表示离散程度的散布度量（方差、标准差），以及表示在群体中所处位置的偏差值。",
+  "unit_summary_en": "Learn the measures of central tendency that summarize data (mean, median, mode), the measures of dispersion that express variability (variance, standard deviation), and the deviation value, which shows a position within a group.",
   "order_in_topic": 2,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、たくさんのデータを少数の数値に要約する記述統計量を学びます。中心の位置を表す代表値(平均値・中央値=メジアン・最頻値=モード)と、ばらつきの大きさを表す散布度(分散・標準偏差・偏差値)が対になります。応用数学の中でも平均値や標準偏差は頻出で、両者の使い分けが問われます。",
-    "freq_badge": "標準",
-    "est_minutes": 23,
-    "intro_zh": "在本单元中，我们将学习把大量数据概括为少数数值的描述统计量。表示中心位置的集中趋势量（均值、中位数=median、众数=mode）与表示离散大小的散布度量（方差、标准差、偏差值）成对出现。在应用数学中，均值和标准差都是高频考点，二者的区别使用经常被考查。",
-    "intro_en": "In this unit, we learn descriptive statistics, which summarize large amounts of data into a few numbers. The measures of central tendency that show the central position (mean, median, mode) are paired with the measures of dispersion that show the degree of variability (variance, standard deviation, deviation value). Among applied mathematics topics, the mean and standard deviation appear frequently, and knowing when to use each is often tested."
-  },
-  "terms": [
+  "goals_jp": [
+    "データの中心を表す**代表値**を、求め方の違いで区別できる。",
+    "**分散**と**標準偏差**を求める手順と、両者の関係を説明できる。",
+    "**偏差値**を平均値と標準偏差から計算し、集団の中での位置を読み取れる。"
+  ],
+  "goals_zh": [
+    "能够按求法的不同，区分表示数据中心位置的**代表值**。",
+    "能够说明求**方差**和**标准差**的步骤，以及两者之间的关系。",
+    "能够由均值和标准差算出**偏差值**，并读懂某个值在群体中的位置。"
+  ],
+  "goals_en": [
+    "Distinguish the **representative values** that describe the center of a data set by how each one is found.",
+    "Explain the steps for calculating **variance** and **standard deviation**, and how the two are related.",
+    "Calculate a **deviation value** from the mean and standard deviation, and read where a value stands within its group."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "求め方"
+  ],
+  "overview_cols_zh": [
+    "种类",
+    "求法"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "How to find it"
+  ],
+  "overview_rows": [
     {
       "term": "平均値",
-      "definition_jp": "全データの合計をデータの個数で割って求める代表値。",
-      "explanation_jp": "平均値は、すべての値を足し合わせ、データの個数で割った値で、最も基本的な代表値です。データ全体を「ならした」中心の位置を表します。\n\n全データを計算に使うため扱いやすい反面、極端に大きい(小さい)値があると、その影響を強く受けて中心からずれるという弱点があります。試験では、外れ値の影響を受けにくい中央値との違いがよく問われ、「平均は全値を使うので外れ値に弱い」と押さえることが重要です。",
-      "analogy_jp": "5人の所持金を全部集めて5人で山分けし直したときの「1人あたりの額」が平均値。1人だけ大金持ちがいると、平均は実感より高く出ます。",
-      "memory_hook_jp": "平均値といえば合計÷個数で求める代表値",
-      "inline_quiz": [
-        "2014h26a-q096"
+      "one_line_jp": "合計を個数で割った代表値",
+      "one_line_zh": "合计除以个数得到的代表值",
+      "one_line_en": "The total divided by the number of values",
+      "extra_jp": [
+        "代表値",
+        "合計 ÷ 個数"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "均值",
-      "term_en": "Mean",
-      "definition_zh": "将全部数据的总和除以数据个数所求得的集中趋势量。",
-      "definition_en": "A measure of central tendency obtained by dividing the sum of all data by the number of data items.",
-      "explanation_zh": "均值是把所有数值相加，再除以数据个数得到的值，是最基本的集中趋势量。它表示把整体数据“拉平”后的中心位置。\n\n由于使用全部数据进行计算，所以易于处理；但反过来，如果存在极端大（或极端小）的数值，均值会强烈受到其影响而偏离中心，这是它的弱点。考试中经常考查它与不易受异常值影响的中位数之间的区别，掌握“均值使用全部数值，所以易受异常值影响”这一点很重要。",
-      "explanation_en": "The mean is the value obtained by adding up all the values and dividing by the number of data items, and it is the most basic measure of central tendency. It expresses the central position after \"leveling out\" the entire dataset.\n\nBecause it uses all the data in the calculation, it is easy to handle; but conversely, if there are extremely large (or small) values, it is strongly affected by them and shifts away from the center, which is its weakness. Exams often ask about the difference from the median, which is less affected by outliers, so it is important to grasp that \"the mean uses all values, so it is weak against outliers.\"",
-      "analogy_zh": "把5个人的所持金额全部收集起来，再由5个人重新平分时，“每人分到的金额”就是均值。如果其中只有一个人是大富翁，均值就会显得比实际感受要高。",
-      "analogy_en": "When you collect all the money held by 5 people and redistribute it equally among the 5, the \"amount per person\" is the mean. If just one person is very rich, the mean comes out higher than what people actually feel.",
-      "memory_hook_zh": "说到均值，就是用总和÷个数求得的集中趋势量",
-      "memory_hook_en": "Mean → the measure of central tendency found by sum ÷ count"
+      "extra_zh": [
+        "代表值",
+        "合计 ÷ 个数"
+      ],
+      "extra_en": [
+        "Representative value",
+        "Total ÷ count"
+      ]
     },
     {
       "term": "中央値",
-      "definition_jp": "データを大きさ順に並べたとき、ちょうど中央に位置する値。",
-      "explanation_jp": "中央値は、データを小さい順(または大きい順)に並べたとき、真ん中に来る値です。データが偶数個のときは中央2つの平均をとります。\n\n順位だけで決まるため、極端な値(外れ値)があっても影響を受けにくいのが特徴で、ここが平均値との大きな違いです。試験では、所得や地価のように一部に極端な値があるデータでは平均より中央値のほうが実感に近い、という観点が問われます。",
-      "analogy_jp": "7人を背の順に並べたとき、ちょうど4番目に立つ人の身長が中央値。両端に飛び抜けて高い人や低い人がいても、真ん中の人は動きません。",
-      "memory_hook_jp": "中央値といえば順に並べた真ん中の値",
+      "one_line_jp": "大きさの順で真ん中に来る値",
+      "one_line_zh": "按大小排序后位于正中间的值",
+      "one_line_en": "The value in the middle when sorted by size",
+      "extra_jp": [
+        "代表値",
+        "並べ替えて真ん中を取る"
+      ],
+      "extra_zh": [
+        "代表值",
+        "排序后取正中间"
+      ],
+      "extra_en": [
+        "Representative value",
+        "Sort and take the middle"
+      ]
+    },
+    {
+      "term": "メジアン",
+      "one_line_jp": "中央値の英語名",
+      "one_line_zh": "中位数的英文名称",
+      "one_line_en": "Katakana loanword for the median",
+      "extra_jp": [
+        "代表値 (別名)",
+        "中央値と同じ"
+      ],
+      "extra_zh": [
+        "代表值（别名）",
+        "与中位数相同"
+      ],
+      "extra_en": [
+        "Representative value (alias)",
+        "Same as the median"
+      ]
+    },
+    {
+      "term": "最頻値",
+      "one_line_jp": "最も多く現れる値",
+      "one_line_zh": "出现次数最多的值",
+      "one_line_en": "The value that appears most often",
+      "extra_jp": [
+        "代表値",
+        "値ごとの出現回数を数える"
+      ],
+      "extra_zh": [
+        "代表值",
+        "统计每个值的出现次数"
+      ],
+      "extra_en": [
+        "Representative value",
+        "Count how often each value appears"
+      ]
+    },
+    {
+      "term": "モード",
+      "one_line_jp": "最頻値の英語名",
+      "one_line_zh": "众数的英文名称",
+      "one_line_en": "Katakana loanword for the mode",
+      "extra_jp": [
+        "代表値 (別名)",
+        "最頻値と同じ"
+      ],
+      "extra_zh": [
+        "代表值（别名）",
+        "与众数相同"
+      ],
+      "extra_en": [
+        "Representative value (alias)",
+        "Same as the mode"
+      ]
+    },
+    {
+      "term": "分散",
+      "one_line_jp": "平均値との差を 2 乗して平均した値",
+      "one_line_zh": "与均值之差平方后的平均值",
+      "one_line_en": "The average of the squared differences from the mean",
+      "extra_jp": [
+        "ばらつき",
+        "差を 2 乗して平均する"
+      ],
+      "extra_zh": [
+        "离散程度",
+        "差平方后取平均"
+      ],
+      "extra_en": [
+        "Spread",
+        "Square the differences and average them"
+      ]
+    },
+    {
+      "term": "標準偏差",
+      "one_line_jp": "分散の正の平方根",
+      "one_line_zh": "方差的正平方根",
+      "one_line_en": "The positive square root of the variance",
+      "extra_jp": [
+        "ばらつき",
+        "分散の平方根を取る"
+      ],
+      "extra_zh": [
+        "离散程度",
+        "取方差的平方根"
+      ],
+      "extra_en": [
+        "Spread",
+        "Take the square root of the variance"
+      ]
+    },
+    {
+      "term": "偏差値",
+      "one_line_jp": "平均 50、標準偏差 1 個分 10 の目盛りで表した位置",
+      "one_line_zh": "以均值为 50、1 个标准差为 10 的刻度表示的位置",
+      "one_line_en": "Position on a scale where the mean is 50 and one standard deviation is 10",
+      "extra_jp": [
+        "集団内の位置",
+        "50 + 10 ×(値 − 平均値)÷ 標準偏差"
+      ],
+      "extra_zh": [
+        "在群体中的位置",
+        "50 + 10 ×（值 − 均值）÷ 标准差"
+      ],
+      "extra_en": [
+        "Position in the group",
+        "50 + 10 × (value − mean) ÷ standard deviation"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "平均値",
+      "term_zh": "均值",
+      "term_en": "Mean",
+      "one_jp": "**平均値**は、すべての値の合計をデータの個数で割って求める代表値である。",
+      "one_zh": "**均值**[[jp:平均値]]是将所有值的合计除以数据个数求得的代表值。",
+      "one_en": "The **mean** [[jp:平均値]] is the representative value found by dividing the sum of all values by the number of values.",
+      "detail_jp": "**代表値**とは、データの中心や典型的な姿を、少数の値で表したものをいう。平均値はすべての値を計算に使うので、ほかの値から極端に離れた値 (**外れ値**) が混じると、その方向へ大きく引っ張られる。",
+      "detail_zh": "**代表值**是指用少数几个值来概括数据的中心或典型面貌。均值会用到所有的值，因此一旦混入与其他值相距极远的值（**异常值**），均值就会被大幅拉向那一侧。",
+      "detail_en": "A **representative value** sums up the center or typical shape of a data set with just one or a few numbers. Because the mean uses every value, a single value far from the rest (an **outlier**) pulls it strongly in that direction.",
+      "analogy_jp": "高さの違う積み木の山をならして、全部を同じ高さにそろえたときの高さが平均値にあたる。",
+      "analogy_zh": "把高低不一的积木堆推平，让所有积木堆一样高，这时的高度就相当于均值。",
+      "analogy_en": "Picture leveling block towers of different heights until they all stand equally tall; that shared height is the mean.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "平均値を求めるときは、同じ値が繰り返し現れてもその回数分をすべて合計に入れ、重複を含めたデータの個数で割る。",
+          "text_zh": "求均值[[jp:平均値]]时，即使同一个值重复出现，也要按出现次数全部计入合计，再除以包含重复在内的数据个数。",
+          "text_en": "When finding the mean [[jp:平均値]], add a repeated value into the total once for every time it appears, then divide by the count including the repeats.",
+          "qids": [
+            "2022r04-q059"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2022r04-q059",
+        "2023r05-q077"
+      ],
+      "definition_jp": "平均値は、すべての値の合計をデータの個数で割って求める代表値である。",
+      "definition_zh": "均值平均値是将所有值的合计除以数据个数求得的代表值。",
+      "definition_en": "The mean 平均値 is the representative value found by dividing the sum of all values by the number of values.",
+      "explanation_jp": "代表値とは、データの中心や典型的な姿を、少数の値で表したものをいう。平均値はすべての値を計算に使うので、ほかの値から極端に離れた値 (外れ値) が混じると、その方向へ大きく引っ張られる。",
+      "explanation_zh": "代表值是指用少数几个值来概括数据的中心或典型面貌。均值会用到所有的值，因此一旦混入与其他值相距极远的值（异常值），均值就会被大幅拉向那一侧。",
+      "explanation_en": "A representative value sums up the center or typical shape of a data set with just one or a few numbers. Because the mean uses every value, a single value far from the rest (an outlier) pulls it strongly in that direction.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [
+        "2022r04-q059",
+        "2023r05-q077"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "中央値",
+      "term_zh": "中位数",
+      "term_en": "Median",
+      "one_jp": "**中央値**は、データを大きさの順に並べたとき真ん中に来る値である。",
+      "one_zh": "**中位数**[[jp:中央値]]是将数据按大小顺序排列时位于正中间的值。",
+      "one_en": "The **median** [[jp:中央値]] is the value that sits in the middle when the data are arranged in order of size.",
+      "detail_jp": "データの個数が奇数なら真ん中の 1 つ、偶数なら真ん中の 2 つの平均を中央値とする。並べたときの位置だけで決まるので、いちばん大きい値をさらに大きくしても中央値は変わらない。",
+      "detail_zh": "数据个数为奇数时取正中间的 1 个，为偶数时取中间 2 个的平均作为中位数。中位数只由排序后的位置决定，所以即使把最大的值再调大，中位数也不会改变。",
+      "detail_en": "With an odd number of values, the median is the single middle value; with an even number, it is the average of the two middle values. Since it depends only on position in the sorted order, making the largest value even larger leaves the median unchanged.",
+      "analogy_jp": "背の順に並んだ列で、ちょうど真ん中に立つ人の身長が中央値にあたる。",
+      "analogy_zh": "在按身高排好的队伍里，恰好站在正中间那个人的身高就相当于中位数。",
+      "analogy_en": "In a line of people sorted by height, the height of the person standing exactly in the middle is the median.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "外れ値を含むデータでは、平均値は外れ値の側へ大きく動くが、中央値は並びの真ん中の値のままなので、両者が大きく離れることがある。",
+          "text_zh": "在含有异常值[[jp:外れ値]]的数据中，均值[[jp:平均値]]会被大幅拉向异常值一侧，而中位数[[jp:中央値]]仍是排列正中间的那个值，所以两者有时会相差很大。",
+          "text_en": "In data containing an outlier [[jp:外れ値]], the mean [[jp:平均値]] shifts strongly toward the outlier, while the median [[jp:中央値]] stays at the middle of the sorted order, so the two can end up far apart.",
+          "qids": [
+            "2022r04-q059"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "sort",
+              "label": {
+                "jp": "小さい順に並べ替える",
+                "zh": "按从小到大排序",
+                "en": "Sort from smallest to largest"
+              }
+            },
+            {
+              "id": "count",
+              "label": {
+                "jp": "個数が奇数か偶数かを見る",
+                "zh": "看个数是奇数还是偶数",
+                "en": "Check whether the count is odd or even"
+              }
+            },
+            {
+              "id": "pick",
+              "label": {
+                "jp": "奇数は真ん中の 1 つ、偶数は真ん中 2 つの平均",
+                "zh": "奇数取正中间 1 个，偶数取中间 2 个的平均",
+                "en": "Odd: the middle one; even: the average of the middle two"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "まず、すべての値を小さい順に並べ替える。",
+            "caption_zh": "首先，把所有值按从小到大的顺序排列。",
+            "caption_en": "First, arrange all the values from smallest to largest.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "次に、並べた値の個数が奇数か偶数かを確かめる。",
+            "caption_zh": "接着，确认排好的值的个数是奇数还是偶数。",
+            "caption_en": "Next, check whether the number of sorted values is odd or even.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "奇数なら真ん中の 1 つ、偶数なら真ん中の 2 つの平均が中央値になる。",
+            "caption_zh": "若为奇数，正中间的 1 个就是中位数；若为偶数，中间 2 个的平均就是中位数。",
+            "caption_en": "If the count is odd, the single middle value is the median; if even, the median is the average of the two middle values.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2022r04-q059"
+      ],
+      "definition_jp": "中央値は、データを大きさの順に並べたとき真ん中に来る値である。",
+      "definition_zh": "中位数中央値是将数据按大小顺序排列时位于正中间的值。",
+      "definition_en": "The median 中央値 is the value that sits in the middle when the data are arranged in order of size.",
+      "explanation_jp": "データの個数が奇数なら真ん中の 1 つ、偶数なら真ん中の 2 つの平均を中央値とする。並べたときの位置だけで決まるので、いちばん大きい値をさらに大きくしても中央値は変わらない。",
+      "explanation_zh": "数据个数为奇数时取正中间的 1 个，为偶数时取中间 2 个的平均作为中位数。中位数只由排序后的位置决定，所以即使把最大的值再调大，中位数也不会改变。",
+      "explanation_en": "With an odd number of values, the median is the single middle value; with an even number, it is the average of the two middle values. Since it depends only on position in the sorted order, making the largest value even larger leaves the median unchanged.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
         "2022r04-q059"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "中位数",
-      "term_en": "Median",
-      "definition_zh": "将数据按大小顺序排列时，恰好位于正中间的值。",
-      "definition_en": "The value located exactly in the middle when the data are arranged in order of size.",
-      "explanation_zh": "中位数是把数据按从小到大（或从大到小）排列时，位于正中间的值。当数据个数为偶数时，取中间两个值的平均。\n\n由于它仅由排序位置决定，因此即使存在极端的值（异常值）也不易受影响，这正是它与均值的最大区别。考试中会考查这样的观点：对于像收入或地价那样部分存在极端值的数据，中位数比均值更接近实际感受。",
-      "explanation_en": "The median is the value in the middle when data are arranged from smallest to largest (or largest to smallest). When the number of data items is even, the average of the two middle values is taken.\n\nBecause it is determined only by rank, it is little affected even when there are extreme values (outliers), and this is the major difference from the mean. Exams ask about the view that, for data with some extreme values such as income or land prices, the median is closer to actual perception than the mean.",
-      "analogy_zh": "把7个人按身高排队时，恰好站在第4位的人的身高就是中位数。即使两端有特别高或特别矮的人，站在正中间的人也不会改变。",
-      "analogy_en": "When 7 people line up by height, the height of the person standing exactly 4th is the median. Even if there are exceptionally tall or short people at both ends, the person in the middle does not move.",
-      "memory_hook_zh": "说到中位数，就是按顺序排列后正中间的值",
-      "memory_hook_en": "Median → the value in the middle after sorting in order"
+      "figure": null
     },
     {
       "term": "メジアン",
-      "definition_jp": "中央値を表す英語(median)。意味は中央値と同じ。",
-      "explanation_jp": "メジアン(median)は中央値の英語表記で、指す内容はまったく同じです。データを大きさ順に並べた中央の値を意味します。\n\n試験や統計の解説では和名「中央値」と英名「メジアン」が混在して使われるため、両者が同義だと知っていることが大切です。「メジアン=中央値」と即座に対応づけられれば、用語が変わっても戸惑いません。",
-      "analogy_jp": "「中央値」と「メジアン」は、同じ人を日本語の名前とニックネームで呼んでいるようなもの。呼び方が違うだけで中身は同一です。",
-      "memory_hook_jp": "メジアンといえば中央値の英語名",
-      "inline_quiz": [
-        "2010h22h-q011"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "median（中位数）",
       "term_en": "Median",
-      "definition_zh": "表示中位数的英语（median）。含义与中位数相同。",
-      "definition_en": "The English term (median) for the median (chūōchi). Its meaning is the same as the median.",
-      "explanation_zh": "median 是中位数的英语表记，所指内容完全相同，都表示把数据按大小顺序排列后的中间值。\n\n在考试和统计的讲解中，中文名“中位数”与英文名“median”会混用，因此了解二者是同义词很重要。只要能立刻把“median=中位数”对应起来，即使用词改变也不会感到困惑。",
-      "explanation_en": "Median is the English notation for the median, and what it refers to is exactly the same: the middle value when data are arranged in order of size.\n\nIn exams and statistics explanations, the native name \"median (chūōchi)\" and the English name \"median\" are used interchangeably, so it is important to know that the two are synonyms. If you can instantly map \"median = chūōchi,\" you will not be confused even when the terminology changes.",
-      "analogy_zh": "“中位数”和“median”就像用中文名字和外语名称称呼同一个人，只是叫法不同，内容完全一致。",
-      "analogy_en": "\"Chūōchi\" and \"median\" are like calling the same person by a name and a nickname; only the way of calling differs, the substance is identical.",
-      "memory_hook_zh": "说到 median，就是中位数的英文名",
-      "memory_hook_en": "Median → the English name for chūōchi (the median)"
+      "one_jp": "**メジアン**は中央値の英語名 (median) で、指す値は中央値と同じである。",
+      "one_zh": "**median（中位数）**[[jp:メジアン]]是中位数的英文名称（median）在日语中的片假名写法，所指的值与中位数完全相同。",
+      "one_en": "In Japanese, the **median** also appears as the loanword [[jp:メジアン]], another name for [[jp:中央値]] that refers to exactly the same value.",
+      "detail_jp": "統計の資料では、和名の中央値と英語名のメジアンが同じ意味で使われる。求め方も、大きさの順に並べて真ん中の値を取るという中央値の手順そのままである。",
+      "detail_zh": "在统计资料中，日语名称的中位数[[jp:中央値]]与来自英文的 median（中位数）[[jp:メジアン]]是同一个意思。求法也完全沿用中位数的步骤：按大小顺序排列，取正中间的值。",
+      "detail_en": "Statistical materials in Japan use the native term [[jp:中央値]] and the loanword [[jp:メジアン]] interchangeably. The calculation is also the same as for [[jp:中央値]]: sort the values by size and take the one in the middle.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "英語の median は「中間の」という意味で、道路の中央分離帯も英語で median と呼ばれる。",
+      "hook_zh": "英文 median 有“中间的”之意，道路的中央隔离带在英语里也叫 median。",
+      "hook_en": "The English word median means \"in the middle,\" and the strip dividing a highway is also called the median.",
+      "points": [],
+      "fig": null,
+      "quiz": [
+        "2022r04-q059"
+      ],
+      "definition_jp": "メジアンは中央値の英語名 (median) で、指す値は中央値と同じである。",
+      "definition_zh": "median（中位数）メジアン是中位数的英文名称（median）在日语中的片假名写法，所指的值与中位数完全相同。",
+      "definition_en": "In Japanese, the median also appears as the loanword メジアン, another name for 中央値 that refers to exactly the same value.",
+      "explanation_jp": "統計の資料では、和名の中央値と英語名のメジアンが同じ意味で使われる。求め方も、大きさの順に並べて真ん中の値を取るという中央値の手順そのままである。",
+      "explanation_zh": "在统计资料中，日语名称的中位数中央値与来自英文的 median（中位数）メジアン是同一个意思。求法也完全沿用中位数的步骤：按大小顺序排列，取正中间的值。",
+      "explanation_en": "Statistical materials in Japan use the native term 中央値 and the loanword メジアン interchangeably. The calculation is also the same as for 中央値: sort the values by size and take the one in the middle.",
+      "memory_hook_jp": "英語の median は「中間の」という意味で、道路の中央分離帯も英語で median と呼ばれる。",
+      "memory_hook_zh": "英文 median 有“中间的”之意，道路的中央隔离带在英语里也叫 median。",
+      "memory_hook_en": "The English word median means \"in the middle,\" and the strip dividing a highway is also called the median.",
+      "inline_quiz": [
+        "2022r04-q059"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "最頻値",
-      "definition_jp": "データの中で最も多く現れる(出現回数が最大の)値。",
-      "explanation_jp": "最頻値は、データの中で出現する回数が一番多い値です。数値だけでなく、アンケートの選択肢のような分類データでも「最も多かった項目」として使えます。\n\n平均値や中央値が必ず1つに定まるのに対し、最頻値は同数で並ぶと複数あったり、すべて1回ずつだと定まらなかったりします。試験では、3つの代表値(平均・中央・最頻)それぞれの求め方と意味の違いを区別できることが問われます。",
-      "analogy_jp": "靴屋で一番よく売れたサイズが最頻値。平均サイズより「最も数が出たサイズ」のほうが仕入れの判断に役立つ場面で重宝します。",
-      "memory_hook_jp": "最頻値といえば最も多く現れる値",
-      "inline_quiz": [
-        "2009h21a-q046"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "众数",
       "term_en": "Mode",
-      "definition_zh": "数据中出现次数最多（出现频率最高）的值。",
-      "definition_en": "The value that appears most often (with the highest frequency of occurrence) in the data.",
-      "explanation_zh": "众数是数据中出现次数最多的值。它不仅可用于数值，也可用于像问卷选项那样的分类数据，作为“出现最多的项目”。\n\n均值和中位数一定能确定为唯一一个，而众数则可能因多个值出现次数相同而存在多个，或因所有值都只出现一次而无法确定。考试中会考查能否区分3种集中趋势量（均值、中位数、众数）各自的求法和含义差异。",
-      "explanation_en": "The mode is the value that appears most often in the data. It can be used not only for numbers but also for categorical data such as questionnaire choices, as the \"item that appeared most.\"\n\nWhile the mean and median are always determined as a single value, the mode may have several values when multiple values tie in count, or may be undeterminable when every value appears just once. Exams ask whether you can distinguish how each of the three measures of central tendency (mean, median, mode) is found and how their meanings differ.",
-      "analogy_zh": "在鞋店里卖得最好的尺码就是众数。在进货决策等场合，“销量最多的尺码”比平均尺码更有用。",
-      "analogy_en": "In a shoe store, the size that sells the most is the mode. In situations like purchasing decisions, the \"size that sold the most\" is more useful than the average size.",
-      "memory_hook_zh": "说到众数，就是出现次数最多的值",
-      "memory_hook_en": "Mode → the value that appears most often"
+      "one_jp": "**最頻値**は、データの中で現れる回数が最も多い値である。",
+      "one_zh": "**众数**[[jp:最頻値]]是数据中出现次数最多的值。",
+      "one_en": "The **mode** [[jp:最頻値]] is the value that appears most often in the data.",
+      "detail_jp": "値ごとに出現回数を数え、回数がいちばん多い値を選んで求める。計算を使わないので、好きな色のように数値でないデータにも使える。最も多い回数の値が 2 つ以上あれば、最頻値も 2 つ以上になる。",
+      "detail_zh": "统计每个值的出现次数，选出次数最多的那个值即可。众数不需要计算，所以也能用于像喜欢的颜色这类非数值的数据。若出现次数最多的值有 2 个以上，众数也会有 2 个以上。",
+      "detail_en": "Count how many times each value appears and pick the value with the highest count. No arithmetic is involved, so the mode also works for non-numeric data such as favorite colors. If two or more values tie for the highest count, there are two or more modes.",
+      "analogy_jp": "売り場でその日いちばん多く売れた商品が、売上記録の最頻値にあたる。",
+      "analogy_zh": "卖场当天卖得最多的那件商品，就相当于销售记录中的众数。",
+      "analogy_en": "The item a store sold the most of on a given day is the mode of that day's sales record.",
+      "hook_jp": "「頻」は頻繁や頻度の頻で、回数の多さを表す字である。",
+      "hook_zh": "日语“最頻値”的“頻”就是“频繁”“频率”的“频”，表示次数之多。",
+      "hook_en": "The kanji 頻 in [[jp:最頻値]] is the one used in words for \"frequent\" and \"frequency,\" so it signals how often something occurs.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "最頻値は出現回数を数えて決める値であり、値を足し合わせる平均値とも、並べた位置で決まる中央値とも決め方が異なる。",
+          "text_zh": "众数[[jp:最頻値]]是通过统计出现次数来确定的值，与把值相加的均值[[jp:平均値]]、由排列位置决定的中位数[[jp:中央値]]，确定方式都不相同。",
+          "text_en": "The mode [[jp:最頻値]] is decided by counting occurrences, unlike the mean [[jp:平均値]], which adds values together, and the median [[jp:中央値]], which depends on position in the sorted order."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "代表値",
+              "zh": "代表值",
+              "en": "Representative value"
+            },
+            {
+              "jp": "求め方",
+              "zh": "求法",
+              "en": "How to find it"
+            },
+            {
+              "jp": "データ 2, 2, 3, 5, 8 の場合",
+              "zh": "数据 2, 2, 3, 5, 8 的情况",
+              "en": "For data 2, 2, 3, 5, 8"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "平均値",
+                  "zh": "均值",
+                  "en": "Mean"
+                },
+                {
+                  "jp": "合計を個数で割る",
+                  "zh": "合计除以个数",
+                  "en": "Divide the total by the count"
+                },
+                {
+                  "jp": "20 ÷ 5 = 4",
+                  "zh": "20 ÷ 5 = 4",
+                  "en": "20 ÷ 5 = 4"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "中央値",
+                  "zh": "中位数",
+                  "en": "Median"
+                },
+                {
+                  "jp": "並べた真ん中の値",
+                  "zh": "排序后正中间的值",
+                  "en": "Middle value after sorting"
+                },
+                {
+                  "jp": "3 番目の値 = 3",
+                  "zh": "第 3 个值 = 3",
+                  "en": "3rd value = 3"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "最頻値",
+                  "zh": "众数",
+                  "en": "Mode"
+                },
+                {
+                  "jp": "出現回数が最も多い値",
+                  "zh": "出现次数最多的值",
+                  "en": "Most frequent value"
+                },
+                {
+                  "jp": "2 回現れる 2",
+                  "zh": "出现 2 次的 2",
+                  "en": "2 (appears twice)"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "最頻値は、データの中で現れる回数が最も多い値である。",
+      "definition_zh": "众数最頻値是数据中出现次数最多的值。",
+      "definition_en": "The mode 最頻値 is the value that appears most often in the data.",
+      "explanation_jp": "値ごとに出現回数を数え、回数がいちばん多い値を選んで求める。計算を使わないので、好きな色のように数値でないデータにも使える。最も多い回数の値が 2 つ以上あれば、最頻値も 2 つ以上になる。",
+      "explanation_zh": "统计每个值的出现次数，选出次数最多的那个值即可。众数不需要计算，所以也能用于像喜欢的颜色这类非数值的数据。若出现次数最多的值有 2 个以上，众数也会有 2 个以上。",
+      "explanation_en": "Count how many times each value appears and pick the value with the highest count. No arithmetic is involved, so the mode also works for non-numeric data such as favorite colors. If two or more values tie for the highest count, there are two or more modes.",
+      "memory_hook_jp": "「頻」は頻繁や頻度の頻で、回数の多さを表す字である。",
+      "memory_hook_zh": "日语“最頻値”的“頻”就是“频繁”“频率”的“频”，表示次数之多。",
+      "memory_hook_en": "The kanji 頻 in 最頻値 is the one used in words for \"frequent\" and \"frequency,\" so it signals how often something occurs.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "モード",
-      "definition_jp": "最頻値を表す英語(mode)。意味は最頻値と同じ。",
-      "explanation_jp": "モード(mode)は最頻値の英語表記で、意味は最頻値とまったく同じです。最も多く出現する値を指します。\n\n中央値とメジアンの関係と同様に、最頻値とモードも和名・英名の対応を覚えておくべき組み合わせです。「モード=最頻値」「メジアン=中央値」をセットで押さえると、英語表記で出題されても落ち着いて対応できます。",
-      "analogy_jp": "「最頻値」と「モード」は、同じ料理を和名とメニューの横文字で書いているようなもの。表記が違うだけで指すものは同じです。",
-      "memory_hook_jp": "モードといえば最頻値の英語名",
-      "inline_quiz": [
-        "2009h21a-q070"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "mode（众数）",
       "term_en": "Mode",
-      "definition_zh": "表示众数的英语（mode）。含义与众数相同。",
-      "definition_en": "The English term (mode) for the mode (saihinchi). Its meaning is the same as the mode.",
-      "explanation_zh": "mode 是众数的英语表记，含义与众数完全相同，指出现次数最多的值。\n\n与中位数和 median 的关系一样，众数与 mode 也是应当记住中英文对应的组合。把“mode=众数”“median=中位数”成对掌握，即使以英文表记出题也能从容应对。",
-      "explanation_en": "Mode is the English notation for the mode, and its meaning is exactly the same: the value that appears most often.\n\nJust like the relationship between the median and its English name, the mode and its English name are also a pair whose native-English correspondence should be memorized. If you grasp \"mode = saihinchi\" and \"median = chūōchi\" as a set, you can stay calm even when questions use the English notation.",
-      "analogy_zh": "“众数”和“mode”就像把同一道菜用中文名和菜单上的外文写法来表示，只是写法不同，所指的东西完全一样。",
-      "analogy_en": "\"Saihinchi\" and \"mode\" are like writing the same dish with a native name and the foreign script on a menu; only the notation differs, what is referred to is the same.",
-      "memory_hook_zh": "说到 mode，就是众数的英文名",
-      "memory_hook_en": "Mode → the English name for saihinchi (the mode)"
+      "one_jp": "**モード**は最頻値の英語名 (mode) で、最も多く現れる値を指す。",
+      "one_zh": "**mode（众数）**[[jp:モード]]是众数的英文名称（mode）在日语中的片假名写法，指出现次数最多的值。",
+      "one_en": "In Japanese, the **mode** also appears as the loanword [[jp:モード]], another name for [[jp:最頻値]] meaning the value that appears most often.",
+      "detail_jp": "求め方は最頻値と同じで、値ごとの出現回数を数えて最も多いものを選ぶ。資料に和名と英語名のどちらで書かれていても、同じ値を指している。",
+      "detail_zh": "求法与众数相同：统计每个值的出现次数，选出最多的那个。资料中无论写作日语名称还是英文名称 mode（众数），指的都是同一个值。",
+      "detail_en": "It is found the same way as [[jp:最頻値]]: count how often each value appears and choose the most frequent one. Whether a document writes [[jp:最頻値]] or [[jp:モード]], it refers to the same value.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "ファッションのモード (流行) は、いちばん多くの人が選んでいるものと結び付ける。",
+      "hook_zh": "可以把时装界的 mode（流行）与“最多人选择的东西”联系起来记。",
+      "hook_en": "Link it to mode in fashion: what is in style is what the most people are choosing.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "モードは最頻値の英語名 (mode) で、最も多く現れる値を指す。",
+      "definition_zh": "mode（众数）モード是众数的英文名称（mode）在日语中的片假名写法，指出现次数最多的值。",
+      "definition_en": "In Japanese, the mode also appears as the loanword モード, another name for 最頻値 meaning the value that appears most often.",
+      "explanation_jp": "求め方は最頻値と同じで、値ごとの出現回数を数えて最も多いものを選ぶ。資料に和名と英語名のどちらで書かれていても、同じ値を指している。",
+      "explanation_zh": "求法与众数相同：统计每个值的出现次数，选出最多的那个。资料中无论写作日语名称还是英文名称 mode（众数），指的都是同一个值。",
+      "explanation_en": "It is found the same way as 最頻値: count how often each value appears and choose the most frequent one. Whether a document writes 最頻値 or モード, it refers to the same value.",
+      "memory_hook_jp": "ファッションのモード (流行) は、いちばん多くの人が選んでいるものと結び付ける。",
+      "memory_hook_zh": "可以把时装界的 mode（流行）与“最多人选择的东西”联系起来记。",
+      "memory_hook_en": "Link it to mode in fashion: what is in style is what the most people are choosing.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "分散",
-      "definition_jp": "各データと平均値との差(偏差)を2乗して平均した、ばらつきの指標。",
-      "explanation_jp": "分散は、データが平均値からどれだけ散らばっているかを表す散布度の基礎です。各値から平均を引いた差(偏差)を2乗し、それらを平均して求めます。2乗するのは、プラスとマイナスの偏差が打ち消し合わないようにするためです。\n\n分散が大きいほどばらつきが大きいことを意味します。ただし2乗しているため単位が元データと変わり、直感的に解釈しにくい点が標準偏差との違いです。試験では、分散の平方根が標準偏差であるという関係が問われます。",
-      "analogy_jp": "クラス全員の身長が平均から「どれだけ離れているか」を測り、離れ具合をまとめて1つの数にしたもの。みんな似た身長なら小さく、バラバラなら大きくなります。",
-      "memory_hook_jp": "分散といえば偏差の2乗を平均したばらつき",
+      "term_zh": "方差",
+      "term_en": "Variance",
+      "one_jp": "**分散**は、各データと平均値との差を 2 乗して平均した値で、データのばらつきの大きさを表す。",
+      "one_zh": "**方差**[[jp:分散]]是各数据与均值之差平方后的平均值，表示数据离散程度的大小。",
+      "one_en": "**Variance** [[jp:分散]] is the average of the squared differences between each value and the mean, and it shows how widely the data are spread.",
+      "detail_jp": "**散布度**とは、データが中心のまわりにどれだけばらついているかを表す数をいう。各値から平均値を引いた差を**偏差**といい、偏差はそのまま足すと正と負が打ち消し合って 0 になるため、2 乗してから平均する。全部の値が同じなら偏差はすべて 0 なので、分散も 0 になる。",
+      "detail_zh": "**离散度**是指表示数据围绕中心分散程度的数。各值减去均值所得的差称为**偏差**，偏差直接相加时正负会相互抵消而得 0，所以要先平方再取平均。如果所有值都相同，偏差全为 0，方差也为 0。",
+      "detail_en": "A **measure of dispersion** is a number that shows how far the data scatter around their center. The difference between each value and the mean is its **deviation**, and because deviations simply added together cancel out to 0, they are squared before being averaged. If every value is the same, all deviations are 0, so the variance is 0 too.",
+      "analogy_jp": "的当てで、刺さった矢の集まりの中心から各矢がどれだけ散ったかを測るとき、大きく離れた矢ほど重く数える採点法に似ている。",
+      "analogy_zh": "就像在投靶游戏中衡量每支箭离所有箭落点的中心有多远时，采用离得越远计分越重的评分方法。",
+      "analogy_en": "It resembles scoring a round of darts by how far each dart lands from the center of the whole cluster of darts, with darts far from that center counting much more heavily.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "度数分布のグラフでは、度数が平均の近くに集中し、平均から離れた点数の度数が少ない分布ほど分散は小さい。",
+          "text_zh": "在频数分布[[jp:度数分布]]图中，频数越集中于均值附近、离均值越远的分数频数越少，这样的分布方差[[jp:分散]]就越小。",
+          "text_en": "In a frequency distribution [[jp:度数分布]] graph, the more the frequencies cluster near the mean and the fewer scores lie far from it, the smaller the variance [[jp:分散]].",
+          "qids": [
+            "2009h21h-q080"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "mean",
+              "label": {
+                "jp": "平均値を求める",
+                "zh": "求出均值",
+                "en": "Find the mean"
+              }
+            },
+            {
+              "id": "dev",
+              "label": {
+                "jp": "各値から平均値を引く (偏差)",
+                "zh": "各值减去均值（偏差）",
+                "en": "Subtract the mean from each value (deviation)"
+              }
+            },
+            {
+              "id": "sq",
+              "label": {
+                "jp": "偏差を 2 乗する",
+                "zh": "将偏差平方",
+                "en": "Square each deviation"
+              }
+            },
+            {
+              "id": "var",
+              "label": {
+                "jp": "2 乗した値を平均する = 分散",
+                "zh": "求平方值的平均 = 方差",
+                "en": "Average the squares = variance"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "まず、全データの平均値を出す。",
+            "caption_zh": "首先，求出全部数据的均值。",
+            "caption_en": "First, find the mean of all the data.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "各値から平均値を引いて、偏差を求める。",
+            "caption_zh": "用各值减去均值，求出偏差。",
+            "caption_en": "Subtract the mean from each value to get its deviation.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "偏差を 2 乗して、正と負の打ち消し合いをなくす。",
+            "caption_zh": "将偏差平方，消除正负相互抵消的问题。",
+            "caption_en": "Square the deviations so positive and negative ones no longer cancel out.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "2 乗した値の平均が分散になる。",
+            "caption_zh": "平方值的平均就是方差。",
+            "caption_en": "The average of the squares is the variance.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21h-q080"
+      ],
+      "definition_jp": "分散は、各データと平均値との差を 2 乗して平均した値で、データのばらつきの大きさを表す。",
+      "definition_zh": "方差分散是各数据与均值之差平方后的平均值，表示数据离散程度的大小。",
+      "definition_en": "Variance 分散 is the average of the squared differences between each value and the mean, and it shows how widely the data are spread.",
+      "explanation_jp": "散布度とは、データが中心のまわりにどれだけばらついているかを表す数をいう。各値から平均値を引いた差を偏差といい、偏差はそのまま足すと正と負が打ち消し合って 0 になるため、2 乗してから平均する。全部の値が同じなら偏差はすべて 0 なので、分散も 0 になる。",
+      "explanation_zh": "离散度是指表示数据围绕中心分散程度的数。各值减去均值所得的差称为偏差，偏差直接相加时正负会相互抵消而得 0，所以要先平方再取平均。如果所有值都相同，偏差全为 0，方差也为 0。",
+      "explanation_en": "A measure of dispersion is a number that shows how far the data scatter around their center. The difference between each value and the mean is its deviation, and because deviations simply added together cancel out to 0, they are squared before being averaged. If every value is the same, all deviations are 0, so the variance is 0 too.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
         "2009h21h-q080"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "方差",
-      "term_en": "Variance",
-      "definition_zh": "将各数据与均值之差（偏差）平方后取平均所得的离散指标。",
-      "definition_en": "A measure of dispersion obtained by squaring the difference between each data item and the mean (the deviation) and averaging them.",
-      "explanation_zh": "方差是表示数据相对于均值散布程度的散布度量的基础。它把每个值减去均值的差（偏差）平方后，再取平均求得。之所以平方，是为了让正、负偏差不互相抵消。\n\n方差越大，意味着离散程度越大。不过由于经过了平方，其单位与原始数据不同，难以直观解释，这是它与标准差的区别。考试中会考查“方差的平方根就是标准差”这一关系。",
-      "explanation_en": "Variance is the foundation of the measures of dispersion that express how scattered the data are from the mean. It is found by squaring the difference of each value from the mean (the deviation) and then averaging those squares. The squaring is done so that positive and negative deviations do not cancel each other out.\n\nThe larger the variance, the larger the variability. However, because of the squaring, its unit differs from the original data and is hard to interpret intuitively, which is the difference from the standard deviation. Exams ask about the relationship that the square root of the variance is the standard deviation.",
-      "analogy_zh": "测量全班每个人的身高与均值“相差多少”，再把这些偏离程度汇总成一个数字。大家身高相近时它就小，参差不齐时它就大。",
-      "analogy_en": "It measures \"how far\" each person's height in the class is from the mean, and combines those amounts of deviation into a single number. When everyone's height is similar it is small, and when heights are scattered it is large.",
-      "memory_hook_zh": "说到方差，就是把偏差的平方取平均所得的离散程度",
-      "memory_hook_en": "Variance → the dispersion found by averaging the squares of the deviations"
+      "figure": null
     },
     {
       "term": "標準偏差",
-      "definition_jp": "分散の正の平方根で、元データと同じ単位で表すばらつきの指標。",
-      "explanation_jp": "標準偏差は、分散の平方根をとった値で、データのばらつきの大きさを表します。分散は2乗のせいで単位が元データと異なりますが、平方根に戻すことで元のデータと同じ単位になり、ばらつきを直感的に解釈できるのが利点です。\n\n値が小さいほどデータが平均の近くに集まり、大きいほど散らばっています。応用数学の中でも頻出で、「分散→平方根→標準偏差」という導出の流れと、標準偏差が偏差値の計算にも使われることを押さえておきましょう。",
-      "analogy_jp": "テストの点が「平均からおおよそ何点くらい上下にばらつくか」を、点数と同じ単位で示した目安。小さければ団子状態、大きければ点差が開いた状態です。",
-      "memory_hook_jp": "標準偏差といえば分散の平方根で表すばらつき",
-      "inline_quiz": [
-        "2014h26a-q095"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"各データの偏差(値-平均)\"] --> B[\"偏差を2乗して平均=分散\"]; B --> C[\"正の平方根=標準偏差\"]",
-        "svg_path": "figures/technology-13-34-u02-t01.svg",
-        "rendered": true
-      },
       "term_zh": "标准差",
       "term_en": "Standard Deviation",
-      "definition_zh": "方差的正平方根，用与原始数据相同的单位表示的离散指标。",
-      "definition_en": "The positive square root of the variance; a measure of dispersion expressed in the same unit as the original data.",
-      "explanation_zh": "标准差是取方差平方根所得的值，表示数据离散的大小。方差因为平方使得单位与原始数据不同，而开平方后又回到与原始数据相同的单位，从而能够直观地解释离散程度，这是它的优点。\n\n值越小，数据越集中在均值附近；值越大，则越分散。它在应用数学中也是高频考点，要牢记“方差→平方根→标准差”这一推导流程，以及标准差也用于偏差值的计算。",
-      "explanation_en": "The standard deviation is the value obtained by taking the square root of the variance, and it expresses the size of the data's variability. While the variance has a unit different from the original data because of squaring, taking the square root brings it back to the same unit as the original data, so the variability can be interpreted intuitively, which is its advantage.\n\nThe smaller the value, the more the data cluster near the mean; the larger it is, the more scattered they are. It is also a frequent topic in applied mathematics, so remember the derivation flow \"variance → square root → standard deviation\" and that the standard deviation is also used to calculate the deviation value.",
-      "analogy_zh": "用与分数相同的单位，显示考试成绩“大致在均值上下浮动多少分”的参考值。它小就说明大家挤在一起，大就说明分差拉开了。",
-      "analogy_en": "A guide that shows, in the same unit as the scores, \"roughly how many points test scores fluctuate above and below the mean.\" If it is small, everyone is bunched together; if it is large, the score gaps have widened.",
-      "memory_hook_zh": "说到标准差，就是用方差的平方根表示的离散程度",
-      "memory_hook_en": "Standard deviation → the dispersion expressed as the square root of the variance"
+      "one_jp": "**標準偏差**は分散の正の平方根で、ばらつきを元のデータと同じ単位で表す。",
+      "one_zh": "**标准差**[[jp:標準偏差]]是方差的正平方根，用与原始数据相同的单位表示离散程度。",
+      "one_en": "The **standard deviation** [[jp:標準偏差]] is the positive square root of the variance, expressing spread in the same unit as the original data.",
+      "detail_jp": "分散は偏差を 2 乗しているため、単位も 2 乗になる (点数なら「点の 2 乗」)。平方根に戻した標準偏差は元の単位にそろうので、平均値との差と並べて比べられる。",
+      "detail_zh": "方差由偏差平方而来，单位也成了平方（若是分数，就是“分的平方”）。开平方还原后的标准差与原始单位一致，可以与距均值的差放在一起比较。",
+      "detail_en": "Because variance squares the deviations, its unit is squared as well (for test scores, \"points squared\"). Taking the square root brings the standard deviation back to the original unit, so it can be set side by side with differences from the mean.",
+      "analogy_jp": "面積から一辺の長さに戻すように、2 乗で膨らんだ分散を元の物差しに戻したものが標準偏差である。",
+      "analogy_zh": "就像由面积还原出边长一样，把因平方而膨胀的方差还原到原来的尺度上，就是标准差。",
+      "analogy_en": "Just as you recover a side length from an area, the standard deviation brings the squared-up variance back to the original ruler.",
+      "hook_jp": "「標準的な偏差」と読み、1 個のデータが平均からふつうどれくらい離れているかの目安と結び付ける。",
+      "hook_zh": "可理解为“标准的偏差”，联想成一个数据通常离均值大约有多远的尺度。",
+      "hook_en": "Read it as the \"standard\" deviation: a rough gauge of how far a typical value sits from the mean.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "平均値との差を標準偏差で割ると、その値が平均から標準偏差何個分離れているかが分かり、ばらつきの違う集団どうしでも位置を比べられる。",
+          "text_zh": "用与均值[[jp:平均値]]之差除以标准差[[jp:標準偏差]]，就能知道该值离均值有几个标准差，即使是离散程度不同的群体之间也能比较位置。",
+          "text_en": "Dividing a value's difference from the mean [[jp:平均値]] by the standard deviation [[jp:標準偏差]] shows how many standard deviations it lies from the mean, so positions can be compared even between groups with different spreads.",
+          "qids": [
+            "2023r05-q077"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "データ",
+              "zh": "数据",
+              "en": "Data"
+            },
+            {
+              "jp": "平均値",
+              "zh": "均值",
+              "en": "Mean"
+            },
+            {
+              "jp": "分散",
+              "zh": "方差",
+              "en": "Variance"
+            },
+            {
+              "jp": "標準偏差",
+              "zh": "标准差",
+              "en": "Standard deviation"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "4, 4, 6, 6",
+                  "zh": "4, 4, 6, 6",
+                  "en": "4, 4, 6, 6"
+                },
+                {
+                  "jp": "5",
+                  "zh": "5",
+                  "en": "5"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "2, 2, 8, 8",
+                  "zh": "2, 2, 8, 8",
+                  "en": "2, 2, 8, 8"
+                },
+                {
+                  "jp": "5",
+                  "zh": "5",
+                  "en": "5"
+                },
+                {
+                  "jp": "9",
+                  "zh": "9",
+                  "en": "9"
+                },
+                {
+                  "jp": "3",
+                  "zh": "3",
+                  "en": "3"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2009h21h-q080",
+        "2023r05-q077"
+      ],
+      "definition_jp": "標準偏差は分散の正の平方根で、ばらつきを元のデータと同じ単位で表す。",
+      "definition_zh": "标准差標準偏差是方差的正平方根，用与原始数据相同的单位表示离散程度。",
+      "definition_en": "The standard deviation 標準偏差 is the positive square root of the variance, expressing spread in the same unit as the original data.",
+      "explanation_jp": "分散は偏差を 2 乗しているため、単位も 2 乗になる (点数なら「点の 2 乗」)。平方根に戻した標準偏差は元の単位にそろうので、平均値との差と並べて比べられる。",
+      "explanation_zh": "方差由偏差平方而来，单位也成了平方（若是分数，就是“分的平方”）。开平方还原后的标准差与原始单位一致，可以与距均值的差放在一起比较。",
+      "explanation_en": "Because variance squares the deviations, its unit is squared as well (for test scores, \"points squared\"). Taking the square root brings the standard deviation back to the original unit, so it can be set side by side with differences from the mean.",
+      "memory_hook_jp": "「標準的な偏差」と読み、1 個のデータが平均からふつうどれくらい離れているかの目安と結び付ける。",
+      "memory_hook_zh": "可理解为“标准的偏差”，联想成一个数据通常离均值大约有多远的尺度。",
+      "memory_hook_en": "Read it as the \"standard\" deviation: a rough gauge of how far a typical value sits from the mean.",
+      "inline_quiz": [
+        "2009h21h-q080",
+        "2023r05-q077"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "偏差値",
-      "definition_jp": "平均を50、標準偏差を10としたとき自分の値がどこに位置するかを示す指標。",
-      "explanation_jp": "偏差値は、集団の中での自分の相対的な位置を表す指標です。平均値を50、標準偏差1つ分を10として、自分の値が平均からどれだけ離れているかを変換します。平均と同じなら50、平均より標準偏差1つ分上なら60になります。\n\nテストの難易度や満点が違っても同じ尺度で比較できるのが特徴です。試験では、偏差値が平均値と標準偏差から計算される応用的な指標であること、50が平均を意味することを押さえておきましょう。",
-      "analogy_jp": "点数そのものではなく「全体の中で自分がどのあたりか」を50を真ん中にした共通ものさしで示すもの。難しい試験でも易しい試験でも同じ尺度で順位感がつかめます。",
-      "memory_hook_jp": "偏差値といえば平均50・標準偏差10で位置を示す指標",
+      "term_zh": "偏差值",
+      "term_en": "Deviation Value (Standard Score)",
+      "one_jp": "**偏差値**は、平均値を 50、標準偏差 1 個分を 10 とする目盛りに直して、集団の中での位置を表す数である。",
+      "one_zh": "**偏差值**[[jp:偏差値]]是把数值换算到以均值为 50、1 个标准差为 10 的刻度上，用来表示其在群体中位置的数。",
+      "one_en": "A **deviation value** [[jp:偏差値]] is a number that shows position within a group on a scale where the mean is 50 and each standard deviation is worth 10.",
+      "detail_jp": "式で書くと、偏差値 = 50 + 10 ×(値 − 平均値)÷ 標準偏差 となる。平均値ちょうどなら 50、平均より標準偏差 1 個分高ければ 60、1 個分低ければ 40 になる。満点や難しさの違うテストどうしでも、同じ目盛りで位置を比べられる。",
+      "detail_zh": "用公式表示为：偏差值 = 50 + 10 ×（值 − 均值）÷ 标准差。恰好等于均值时为 50，比均值高 1 个标准差时为 60，低 1 个标准差时为 40。即使是满分或难度不同的考试之间，也能用同一刻度比较位置。",
+      "detail_en": "As a formula, deviation value = 50 + 10 × (value − mean) ÷ standard deviation. A value exactly at the mean scores 50, one standard deviation above scores 60, and one below scores 40. Tests with different maximum scores or difficulty can thus be compared on the same scale.",
+      "analogy_jp": "国ごとに違う通貨を 1 つの通貨に両替して比べるように、集団ごとに違う点数を共通の目盛りに直して比べる。",
+      "analogy_zh": "就像把各国不同的货币兑换成同一种货币再比较一样，把各群体不同的分数换算到共同的刻度上再比较。",
+      "analogy_en": "Like exchanging different national currencies into one currency before comparing, it converts each group's scores onto a common scale before comparing them.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "偏差値の大小は、平均値との差を標準偏差で割った値で決まる。同じ得点でも、集団の平均値や標準偏差が違えば偏差値は変わりうる。",
+          "text_zh": "偏差值[[jp:偏差値]]的高低由与均值[[jp:平均値]]之差除以标准差[[jp:標準偏差]]的结果决定。即使得分相同，只要群体的均值或标准差不同，偏差值也可能不同。",
+          "text_en": "Whether a deviation value [[jp:偏差値]] is high or low depends on the difference from the mean [[jp:平均値]] divided by the standard deviation [[jp:標準偏差]]. The same score can give a different deviation value when the group's mean or standard deviation differs.",
+          "qids": [
+            "2023r05-q077"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "diff",
+              "label": {
+                "jp": "平均値との差を出す",
+                "zh": "求出与均值之差",
+                "en": "Find the difference from the mean"
+              }
+            },
+            {
+              "id": "div",
+              "label": {
+                "jp": "差を標準偏差で割る",
+                "zh": "用差除以标准差",
+                "en": "Divide the difference by the standard deviation"
+              }
+            },
+            {
+              "id": "scale",
+              "label": {
+                "jp": "10 倍して 50 を足す",
+                "zh": "乘以 10 再加 50",
+                "en": "Multiply by 10 and add 50"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "例えば平均 40、標準偏差 8 の集団で 52 なら、平均との差は 12 になる。",
+            "caption_zh": "例如在均值 40、标准差 8 的群体中，某个值为 52，则与均值之差为 12。",
+            "caption_en": "For example, a value of 52 in a group with mean 40 and standard deviation 8 is 12 above the mean.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "12 を 8 で割ると 1.5 で、標準偏差 1.5 個分上と分かる。",
+            "caption_zh": "12 除以 8 得 1.5，可知比均值高 1.5 个标准差。",
+            "caption_en": "12 divided by 8 is 1.5, so the value lies 1.5 standard deviations above the mean.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "1.5 × 10 + 50 で、偏差値は 65 になる。",
+            "caption_zh": "1.5 × 10 + 50，偏差值为 65。",
+            "caption_en": "1.5 × 10 + 50 gives a deviation value of 65.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2023r05-q077"
+      ],
+      "definition_jp": "偏差値は、平均値を 50、標準偏差 1 個分を 10 とする目盛りに直して、集団の中での位置を表す数である。",
+      "definition_zh": "偏差值偏差値是把数值换算到以均值为 50、1 个标准差为 10 的刻度上，用来表示其在群体中位置的数。",
+      "definition_en": "A deviation value 偏差値 is a number that shows position within a group on a scale where the mean is 50 and each standard deviation is worth 10.",
+      "explanation_jp": "式で書くと、偏差値 = 50 + 10 ×(値 − 平均値)÷ 標準偏差 となる。平均値ちょうどなら 50、平均より標準偏差 1 個分高ければ 60、1 個分低ければ 40 になる。満点や難しさの違うテストどうしでも、同じ目盛りで位置を比べられる。",
+      "explanation_zh": "用公式表示为：偏差值 = 50 + 10 ×（值 − 均值）÷ 标准差。恰好等于均值时为 50，比均值高 1 个标准差时为 60，低 1 个标准差时为 40。即使是满分或难度不同的考试之间，也能用同一刻度比较位置。",
+      "explanation_en": "As a formula, deviation value = 50 + 10 × (value − mean) ÷ standard deviation. A value exactly at the mean scores 50, one standard deviation above scores 60, and one below scores 40. Tests with different maximum scores or difficulty can thus be compared on the same scale.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
         "2023r05-q077"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"平均値\"] --> C[\"偏差値=平均50・標準偏差10に変換\"]; B[\"標準偏差\"] --> C; C --> D[\"集団内での相対位置\"]",
-        "svg_path": "figures/technology-13-34-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "偏差值",
-      "term_en": "Deviation Value (Standard Score)",
-      "definition_zh": "以均值为50、标准差为10时，表示自己的数值处于什么位置的指标。",
-      "definition_en": "An indicator that shows where one's own value is positioned when the mean is set to 50 and the standard deviation to 10.",
-      "explanation_zh": "偏差值是表示自己在群体中相对位置的指标。它把均值设为50、一个标准差设为10，将自己的数值距均值多远进行换算。与均值相同则为50，比均值高一个标准差则为60。\n\n它的特点是，即使考试的难易程度或满分不同，也能用同一尺度进行比较。考试中要记住：偏差值是由均值和标准差计算得出的应用性指标，且50表示均值。",
-      "explanation_en": "The deviation value is an indicator that shows one's relative position within a group. It sets the mean to 50 and one standard deviation to 10, converting how far one's own value is from the mean. If it equals the mean, it is 50; if it is one standard deviation above the mean, it is 60.\n\nIts feature is that even when the difficulty or maximum score of tests differs, comparisons can be made on the same scale. For the exam, remember that the deviation value is an applied indicator calculated from the mean and standard deviation, and that 50 means the mean.",
-      "analogy_zh": "它显示的不是分数本身，而是用以50为正中的统一标尺表示“你在整体中大约处在什么位置”。无论是难的考试还是容易的考试，都能用同一尺度把握名次感。",
-      "analogy_en": "Rather than the score itself, it shows \"about where you stand within the whole\" using a common ruler with 50 at the center. Whether the test is hard or easy, you can grasp a sense of rank on the same scale.",
-      "memory_hook_zh": "说到偏差值，就是以均值50、标准差10来表示位置的指标",
-      "memory_hook_en": "Deviation value → the indicator that shows position with mean 50 and standard deviation 10"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "平均値",
+      "b": "中央値",
+      "rows": [
+        {
+          "label_jp": "求め方",
+          "label_zh": "求法",
+          "label_en": "How to find it",
+          "a_jp": "合計を個数で割る",
+          "a_zh": "合计除以个数",
+          "a_en": "Divide the total by the count",
+          "b_jp": "大きさの順に並べて真ん中を取る",
+          "b_zh": "按大小排序后取正中间",
+          "b_en": "Sort by size and take the middle",
+          "key": false
+        },
+        {
+          "label_jp": "外れ値の影響",
+          "label_zh": "异常值的影响",
+          "label_en": "Effect of outliers",
+          "a_jp": "外れ値の側へ大きく動く",
+          "a_zh": "大幅偏向异常值一侧",
+          "a_en": "Shifts strongly toward the outlier",
+          "b_jp": "位置で決まるのでほとんど動かない",
+          "b_zh": "由位置决定，几乎不动",
+          "b_en": "Barely moves, since it depends on position",
+          "key": true
+        }
+      ]
+    },
+    {
+      "a": "メジアン",
+      "b": "モード",
+      "rows": [
+        {
+          "label_jp": "和名",
+          "label_zh": "日语名称",
+          "label_en": "Native Japanese term",
+          "a_jp": "中央値",
+          "a_zh": "中央值（中位数）",
+          "a_en": "中央値 (median)",
+          "b_jp": "最頻値",
+          "b_zh": "最频值（众数）",
+          "b_en": "最頻値 (mode)",
+          "key": false
+        },
+        {
+          "label_jp": "決め方",
+          "label_zh": "确定方式",
+          "label_en": "How it is determined",
+          "a_jp": "大きさの順に並べた真ん中の値",
+          "a_zh": "按大小排序后正中间的值",
+          "a_en": "Middle value in sorted order",
+          "b_jp": "出現回数が最も多い値",
+          "b_zh": "出现次数最多的值",
+          "b_en": "Most frequent value",
+          "key": true
+        }
+      ]
+    },
+    {
+      "a": "分散",
+      "b": "標準偏差",
+      "rows": [
+        {
+          "label_jp": "求め方",
+          "label_zh": "求法",
+          "label_en": "How to find it",
+          "a_jp": "偏差を 2 乗して平均する",
+          "a_zh": "偏差平方后取平均",
+          "a_en": "Square the deviations and average them",
+          "b_jp": "分散の正の平方根を取る",
+          "b_zh": "取方差的正平方根",
+          "b_en": "Take the positive square root of the variance",
+          "key": false
+        },
+        {
+          "label_jp": "単位",
+          "label_zh": "单位",
+          "label_en": "Unit",
+          "a_jp": "元の単位の 2 乗",
+          "a_zh": "原单位的平方",
+          "a_en": "Original unit squared",
+          "b_jp": "元のデータと同じ単位",
+          "b_zh": "与原始数据单位相同",
+          "b_en": "Same unit as the original data",
+          "key": true
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "この単元で扱う代表値は平均値・中央値・最頻値の 3 つで、メジアンとモードはそれぞれ中央値と最頻値の英語名である。",
+    "偏差は各値から平均値を引いた差で、偏差の 2 乗を平均すると分散、その正の平方根を取ると標準偏差になる。",
+    "値が平均の近くに集まるほど分散も標準偏差も小さく、全部の値が同じなら 0 になる。",
+    "偏差値は 50 + 10 ×(値 − 平均値)÷ 標準偏差 で求め、平均ちょうどの値は 50 になる。"
+  ],
+  "key_points_zh": [
+    "本单元涉及的代表值有均值、中位数、众数 3 种，median（中位数）[[jp:メジアン]]与 mode（众数）[[jp:モード]]分别是中位数与众数的英文名称。",
+    "偏差是各值减去均值所得的差；偏差平方的平均是方差，方差的正平方根是标准差。",
+    "数值越集中于均值附近，方差和标准差都越小；所有值都相同时两者均为 0。",
+    "偏差值按 50 + 10 ×（值 − 均值）÷ 标准差 计算，恰好等于均值的值偏差值为 50。"
+  ],
+  "key_points_en": [
+    "This unit covers three representative values (mean, median, and mode); the loanwords [[jp:メジアン]] and [[jp:モード]] are just the English names for [[jp:中央値]] and [[jp:最頻値]].",
+    "A deviation is each value minus the mean; averaging the squared deviations gives the variance, and its positive square root gives the standard deviation.",
+    "The more tightly values gather around the mean, the smaller both the variance and the standard deviation; if all values are equal, both are 0.",
+    "A deviation value is calculated as 50 + 10 × (value − mean) ÷ standard deviation, and a value exactly at the mean gets 50."
+  ],
+  "overview": {
+    "intro_jp": "データの中心を表す代表値を、求め方の違いで区別できる。分散と標準偏差を求める手順と、両者の関係を説明できる。偏差値を平均値と標準偏差から計算し、集団の中での位置を読み取れる。",
+    "intro_zh": "能够按求法的不同，区分表示数据中心位置的代表值。能够说明求方差和标准差的步骤，以及两者之间的关系。能够由均值和标准差算出偏差值，并读懂某个值在群体中的位置。",
+    "intro_en": "Distinguish the representative values that describe the center of a data set by how each one is found. Explain the steps for calculating variance and standard deviation, and how the two are related. Calculate a deviation value from the mean and standard deviation, and read where a value stands within its group.",
+    "freq_badge": "標準",
+    "est_minutes": 28
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "平均値: 平均値といえば合計÷個数で求める代表値",
-      "中央値: 中央値といえば順に並べた真ん中の値",
-      "メジアン: メジアンといえば中央値の英語名",
-      "最頻値: 最頻値といえば最も多く現れる値",
-      "モード: モードといえば最頻値の英語名",
-      "分散: 分散といえば偏差の2乗を平均したばらつき",
-      "標準偏差: 標準偏差といえば分散の平方根で表すばらつき",
-      "偏差値: 偏差値といえば平均50・標準偏差10で位置を示す指標"
-    ],
     "key_points_jp": [
-      "代表値はデータの中心を表し、平均値(合計÷個数)・中央値(=メジアン、順に並べた真ん中)・最頻値(=モード、最も多い値)の3つがある。",
-      "平均値は全データを使うため外れ値に弱く、中央値は順位で決まるため外れ値に強い、という使い分けが要点。",
-      "中央値=メジアン、最頻値=モードという和名・英名の対応を覚えておく。",
-      "散布度はばらつきを表し、分散(偏差の2乗の平均)の正の平方根が標準偏差で、標準偏差は元データと同じ単位になる。",
-      "偏差値は平均値と標準偏差から計算され、平均を50・標準偏差1つ分を10として集団内の相対位置を示す。"
+      "この単元で扱う代表値は平均値・中央値・最頻値の 3 つで、メジアンとモードはそれぞれ中央値と最頻値の英語名である。",
+      "偏差は各値から平均値を引いた差で、偏差の 2 乗を平均すると分散、その正の平方根を取ると標準偏差になる。",
+      "値が平均の近くに集まるほど分散も標準偏差も小さく、全部の値が同じなら 0 になる。",
+      "偏差値は 50 + 10 ×(値 − 平均値)÷ 標準偏差 で求め、平均ちょうどの値は 50 になる。"
     ],
     "key_points_zh": [
-      "集中趋势量表示数据的中心，有均值（总和÷个数）、中位数（=median，排序后的正中间）、众数（=mode，出现最多的值）这3种。",
-      "均值使用全部数据所以易受异常值影响，中位数由排序位置决定所以不易受异常值影响，这一区别使用是要点。",
-      "要记住中位数=median、众数=mode 这样的中英文名称对应。",
-      "散布度量表示离散程度，方差（偏差平方的平均）的正平方根就是标准差，标准差与原始数据的单位相同。",
-      "偏差值由均值和标准差计算得出，以均值为50、一个标准差为10来表示在群体内的相对位置。"
+      "本单元涉及的代表值有均值、中位数、众数 3 种，median（中位数）メジアン与 mode（众数）モード分别是中位数与众数的英文名称。",
+      "偏差是各值减去均值所得的差；偏差平方的平均是方差，方差的正平方根是标准差。",
+      "数值越集中于均值附近，方差和标准差都越小；所有值都相同时两者均为 0。",
+      "偏差值按 50 + 10 ×（值 − 均值）÷ 标准差 计算，恰好等于均值的值偏差值为 50。"
     ],
     "key_points_en": [
-      "Measures of central tendency express the center of the data, and there are three: the mean (sum ÷ count), the median (the middle after sorting), and the mode (the most frequent value).",
-      "The mean uses all data so it is weak against outliers, while the median is determined by rank so it is strong against outliers; knowing when to use each is a key point.",
-      "Remember the native-English name correspondences: median = chūōchi, mode = saihinchi.",
-      "Measures of dispersion express variability; the positive square root of the variance (the average of the squared deviations) is the standard deviation, which has the same unit as the original data.",
-      "The deviation value is calculated from the mean and standard deviation, showing the relative position within a group with the mean as 50 and one standard deviation as 10."
+      "This unit covers three representative values (mean, median, and mode); the loanwords メジアン and モード are just the English names for 中央値 and 最頻値.",
+      "A deviation is each value minus the mean; averaging the squared deviations gives the variance, and its positive square root gives the standard deviation.",
+      "The more tightly values gather around the mean, the smaller both the variance and the standard deviation; if all values are equal, both are 0.",
+      "A deviation value is calculated as 50 + 10 × (value − mean) ÷ standard deviation, and a value exactly at the mean gets 50."
+    ],
+    "memory_hooks_jp": [
+      "メジアン: 英語の median は「中間の」という意味で、道路の中央分離帯も英語で median と呼ばれる。",
+      "最頻値: 「頻」は頻繁や頻度の頻で、回数の多さを表す字である。",
+      "モード: ファッションのモード (流行) は、いちばん多くの人が選んでいるものと結び付ける。",
+      "標準偏差: 「標準的な偏差」と読み、1 個のデータが平均からふつうどれくらい離れているかの目安と結び付ける。"
     ],
     "memory_hooks_zh": [
-      "均值：说到均值，就是用总和÷个数求得的集中趋势量",
-      "中位数：说到中位数，就是按顺序排列后正中间的值",
-      "median：说到 median，就是中位数的英文名",
-      "众数：说到众数，就是出现次数最多的值",
-      "mode：说到 mode，就是众数的英文名",
-      "方差：说到方差，就是把偏差的平方取平均所得的离散程度",
-      "标准差：说到标准差，就是用方差的平方根表示的离散程度",
-      "偏差值：说到偏差值，就是以均值50、标准差10来表示位置的指标"
+      "median（中位数）：英文 median 有“中间的”之意，道路的中央隔离带在英语里也叫 median。",
+      "众数：日语“最頻値”的“頻”就是“频繁”“频率”的“频”，表示次数之多。",
+      "mode（众数）：可以把时装界的 mode（流行）与“最多人选择的东西”联系起来记。",
+      "标准差：可理解为“标准的偏差”，联想成一个数据通常离均值大约有多远的尺度。"
     ],
     "memory_hooks_en": [
-      "Mean: Mean → the measure of central tendency found by sum ÷ count",
-      "Median: Median → the value in the middle after sorting in order",
-      "Median (English): Median → the English name for chūōchi (the median)",
-      "Mode: Mode → the value that appears most often",
-      "Mode (English): Mode → the English name for saihinchi (the mode)",
-      "Variance: Variance → the dispersion found by averaging the squares of the deviations",
-      "Standard deviation: Standard deviation → the dispersion expressed as the square root of the variance",
-      "Deviation value: Deviation value → the indicator that shows position with mean 50 and standard deviation 10"
+      "Median: The English word median means \"in the middle,\" and the strip dividing a highway is also called the median.",
+      "Mode: The kanji 頻 in 最頻値 is the one used in words for \"frequent\" and \"frequency,\" so it signals how often something occurs.",
+      "Mode: Link it to mode in fashion: what is in style is what the most people are choosing.",
+      "Standard Deviation: Read it as the \"standard\" deviation: a rough gauge of how far a typical value sits from the mean."
     ]
   },
   "challenge_questions": [
-    "2009h21h-q007",
-    "2010h22a-q082",
-    "2010h22h-q067",
-    "2011h23tokubetsu-q056",
-    "2013h25h-q076"
+    "2022r04-q059",
+    "2009h21h-q080",
+    "2023r05-q077"
   ],
   "source_figures": [
     {
@@ -330,9 +1092,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "描述统计量（集中趋势与离散程度）",
-  "title_en": "Descriptive Statistics (Measures of Central Tendency and Dispersion)",
-  "unit_summary_zh": "学习用于概括数据的集中趋势量（均值、中位数、众数），以及表示离散程度的散布度量（方差、标准差、偏差值）。",
-  "unit_summary_en": "Learn the measures of central tendency that summarize data (mean, median, mode) and the measures of dispersion that express variability (variance, standard deviation, deviation value)."
+  }
 }

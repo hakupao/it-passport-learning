@@ -1,189 +1,641 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-34-u05",
   "topic_id": "technology-13-34",
   "category": "technology",
   "title_jp": "線形代数・微積分と誤差",
+  "title_zh": "线性代数、微积分与误差",
+  "title_en": "Linear Algebra, Calculus, and Error",
   "unit_summary_jp": "線形代数(ベクトル・行列)と微分積分の基礎、および測定に伴う誤差の概念を学ぶ。",
+  "unit_summary_zh": "学习线性代数（向量、矩阵）和微积分的基础，以及测量中伴随产生的误差概念。",
+  "unit_summary_en": "Learn the basics of linear algebra (vectors and matrices) and calculus, along with the concept of error that accompanies measurement.",
   "order_in_topic": 5,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、確率・統計以外の数学基盤として、線形代数(ベクトル・行列)、微分と積分、そして数値計算で重要な誤差を学ぶ。これらは情報処理を支える基礎数学であり、ITパスポートでは各用語の意味や、行列・ベクトルの基本的な扱い、誤差が生じる理由といった『考え方』が問われる。",
-    "freq_badge": "標準",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，作为概率与统计之外的数学基础，我们将学习线性代数（向量、矩阵）、微分与积分，以及在数值计算中十分重要的误差。这些是支撑信息处理的基础数学，在 IT 护照考试中，会考查各个术语的含义、向量与矩阵的基本处理方式，以及误差产生原因等『思路』。",
-    "intro_en": "In this unit, as the mathematical foundation beyond probability and statistics, we learn linear algebra (vectors and matrices), differentiation and integration, and error, which is important in numerical computation. These are the foundational mathematics that support information processing. The IT Passport exam tests the 'ways of thinking,' such as the meaning of each term, the basic handling of matrices and vectors, and the reasons why error arises."
-  },
-  "terms": [
+  "goals_jp": [
+    "**線形代数** で使う **ベクトル** と **行列** を、数の並べ方の違いで見分けられる。",
+    "**微分** と **積分** がそれぞれ何を求める操作かを説明できる。",
+    "**誤差** が生じる理由を説明し、近似値と真の値を区別できる。"
+  ],
+  "goals_zh": [
+    "能够根据数的排列方式的不同，区分**线性代数**中使用的**向量**与**矩阵**。",
+    "能够说明**微分**和**积分**分别是求什么的运算。",
+    "能够说明产生**误差**的原因，并区分近似值与真值。"
+  ],
+  "goals_en": [
+    "Tell apart the **vectors** and **matrices** used in **linear algebra** by how they arrange numbers.",
+    "Explain what **differentiation** and **integration** each compute.",
+    "Explain why **errors** arise, and distinguish approximate values from true values."
+  ],
+  "overview_cols_jp": [
+    "扱うもの",
+    "分野"
+  ],
+  "overview_cols_zh": [
+    "处理对象",
+    "所属分支"
+  ],
+  "overview_cols_en": [
+    "What it handles",
+    "Field"
+  ],
+  "overview_rows": [
     {
       "term": "線形代数",
-      "definition_jp": "ベクトルや行列を扱い、一次式(線形)の関係を研究する数学分野。",
-      "explanation_jp": "線形代数は、ベクトルや行列を用いて、複数の量が一次式(比例の関係)でつながった構造を扱う数学の分野です。連立一次方程式の解法や、データの変換・座標の回転など、多数の数値をまとめて計算する場面で使われます。\n\nコンピュータは大量のデータを表(行と列)の形で処理するため、線形代数はコンピュータグラフィックスや機械学習、検索など幅広い情報技術の土台になっています。試験では、線形代数が『ベクトルと行列を扱う上位分野』であり、ベクトル・行列がその構成要素である、という体系の関係を押さえておきましょう。",
-      "analogy_jp": "ベクトルや行列という部品を組み合わせて計算する『道具箱』のようなもの。表計算ソフトで大量のセルをまとめて足したり掛けたりする発想に近い。",
-      "memory_hook_jp": "線形代数といえばベクトルと行列を扱う数学分野",
-      "inline_quiz": [
-        "2009h21a-q046"
+      "one_line_jp": "一次式で結び付いた多数の量を、数の組や表でまとめて扱う数学の分野",
+      "one_line_zh": "用数组或数表统一处理由一次式联系起来的大量的量的数学分支",
+      "one_line_en": "The branch of mathematics that handles many quantities linked by linear expressions together, using sets and tables of numbers",
+      "extra_jp": [
+        "数の組と数の表",
+        "代数"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"線形代数\"] --> B[\"ベクトル\"]; A --> C[\"行列\"]; B --> C; C --> D[\"連立一次方程式やデータ変換に応用\"]",
-        "svg_path": "figures/technology-13-34-u05-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "线性代数",
-      "term_en": "Linear algebra",
-      "definition_zh": "处理向量和矩阵、研究一次式（线性）关系的数学分支。",
-      "definition_en": "A branch of mathematics that deals with vectors and matrices and studies first-degree (linear) relationships.",
-      "explanation_zh": "线性代数是利用向量和矩阵，处理多个量以一次式（成比例的关系）相连的结构的数学分支。它被用于求解联立一次方程组，以及数据变换、坐标旋转等需要将大量数值汇总计算的场景。\n\n由于计算机以表（行与列）的形式处理大量数据，线性代数成为计算机图形学、机器学习、检索等广泛信息技术的基础。考试中，请掌握这一体系关系：线性代数是『处理向量与矩阵的上位分支』，而向量和矩阵是它的构成要素。",
-      "explanation_en": "Linear algebra is a branch of mathematics that uses vectors and matrices to handle structures in which multiple quantities are connected by first-degree expressions (proportional relationships). It is used to solve systems of linear equations and in situations where many numbers are calculated together, such as data transformation and coordinate rotation.\n\nBecause computers process large amounts of data in the form of tables (rows and columns), linear algebra is the foundation of a wide range of information technologies such as computer graphics, machine learning, and search. For the exam, keep in mind the relationship within this system: linear algebra is the 'higher-level field that handles vectors and matrices,' and vectors and matrices are its building blocks.",
-      "analogy_zh": "就像一个把向量和矩阵这些零件组合起来进行计算的『工具箱』。接近于在电子表格软件中把大量单元格汇总起来一起做加法或乘法的思路。",
-      "analogy_en": "Like a 'toolbox' that combines parts such as vectors and matrices to perform calculations. It is close to the idea of adding or multiplying many cells together at once in spreadsheet software.",
-      "memory_hook_zh": "说到线性代数，就是处理向量和矩阵的数学分支",
-      "memory_hook_en": "Linear algebra → the math field that deals with vectors and matrices"
+      "extra_zh": [
+        "数组与数表",
+        "代数"
+      ],
+      "extra_en": [
+        "Sets and tables of numbers",
+        "Algebra"
+      ]
     },
     {
       "term": "ベクトル",
-      "definition_jp": "大きさと向きを持つ量。数を並べた組としても表される。",
-      "explanation_jp": "ベクトルは、『大きさ』と『向き』の両方を持つ量です。速度や力のように、どれだけ・どちらへ、を同時に表したいときに使われ、数学的には数を一列に並べた組(例:(3, 2))として表現できます。\n\n大きさだけを持つ量(スカラー)との違いが基本のポイントです。ベクトルは線形代数の最も基本的な対象であり、これを並べると次に学ぶ行列になります。試験では、ベクトルが『向きと大きさを持つ』こと、数の並びで表せることを押さえれば十分です。",
-      "analogy_jp": "地図上で『北東へ3km』のように、距離(大きさ)と方角(向き)をセットで示す矢印のようなもの。単なる『3km』(スカラー)とは違う。",
-      "memory_hook_jp": "ベクトルといえば大きさと向きを持つ量",
-      "inline_quiz": [
-        "2009h21a-q070"
+      "one_line_jp": "大きさと向きをあわせ持つ量で、数を一本の並びにした組で表せる",
+      "one_line_zh": "同时具有大小和方向的量，可用排成一串的数组表示",
+      "one_line_en": "A quantity with both magnitude and direction, written as a set of numbers in a single line",
+      "extra_jp": [
+        "一本に並べた数の組",
+        "線形代数"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "向量",
-      "term_en": "Vector",
-      "definition_zh": "既有大小又有方向的量。也可以表示为一组排列的数。",
-      "definition_en": "A quantity that has both magnitude and direction. It can also be represented as an ordered set of numbers.",
-      "explanation_zh": "向量是同时具有『大小』和『方向』两者的量。当我们想同时表示『有多少、朝哪个方向』时（如速度或力）就会用到它，在数学上可以表示为一列排列的数（例如：(3, 2)）。\n\n与只有大小的量（标量）之间的区别是基本要点。向量是线性代数中最基本的对象，把它们排列起来就构成了接下来要学的矩阵。考试中，只要掌握向量『具有方向和大小』、可以用一串数来表示这两点就足够了。",
-      "explanation_en": "A vector is a quantity that has both 'magnitude' and 'direction.' It is used when you want to express 'how much and in which direction' at the same time, as with velocity or force, and mathematically it can be represented as a set of numbers arranged in a row (e.g., (3, 2)).\n\nThe difference from a quantity that has only magnitude (a scalar) is the basic point. A vector is the most fundamental object in linear algebra, and arranging vectors produces the matrix you will learn next. For the exam, it is enough to grasp that a vector 'has direction and magnitude' and that it can be represented as a sequence of numbers.",
-      "analogy_zh": "就像在地图上以『向东北 3 公里』这样同时给出距离（大小）和方位（方向）的箭头。它不同于单纯的『3 公里』（标量）。",
-      "analogy_en": "Like an arrow on a map that shows distance (magnitude) and bearing (direction) together, as in '3 km to the northeast.' This differs from a plain '3 km' (a scalar).",
-      "memory_hook_zh": "说到向量，就是既有大小又有方向的量",
-      "memory_hook_en": "Vector → a quantity with both magnitude and direction"
+      "extra_zh": [
+        "排成一串的数组",
+        "线性代数"
+      ],
+      "extra_en": [
+        "Numbers in a single line",
+        "Linear algebra"
+      ]
     },
     {
       "term": "行列",
-      "definition_jp": "数を縦と横の格子状(行と列)に並べた数学的な表。",
-      "explanation_jp": "行列は、数を縦(列)と横(行)の格子状に並べたものです。ベクトルを複数並べた構造ともいえ、たとえば2行3列の行列は6個の数を表の形に配置したものです。\n\n行列は連立一次方程式をまとめて表したり、座標を回転・拡大するなどの変換を一度に計算したりするのに使われます。試験では、行列が『行(横)と列(縦)からなる数の表』であること、ベクトルを並べた線形代数の中心的な対象であることを押さえましょう。表計算ソフトのセルの並びをイメージすると理解しやすいです。",
-      "analogy_jp": "表計算ソフトのシートのように、数値を縦横のマス目に並べたもの。1行だけ取り出せばベクトルになる。",
-      "memory_hook_jp": "行列といえば数を行と列に並べた表",
-      "inline_quiz": [
-        "2009h21h-q007"
+      "one_line_jp": "数を行と列からなる長方形に並べたもの",
+      "one_line_zh": "把数排成由行和列构成的长方形",
+      "one_line_en": "Numbers arranged in a rectangle of rows and columns",
+      "extra_jp": [
+        "行と列に並べた数",
+        "線形代数"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "矩阵",
-      "term_en": "Matrix",
-      "definition_zh": "把数排列成纵横格子状（行与列）的数学表格。",
-      "definition_en": "A mathematical table in which numbers are arranged in a grid of rows and columns.",
-      "explanation_zh": "矩阵是把数排列成纵（列）横（行）格子状的结构。它也可以说是把多个向量排列在一起，例如一个 2 行 3 列的矩阵就是把 6 个数排成表格形式。\n\n矩阵被用来把联立一次方程组汇总表示，或一次性计算坐标的旋转、放大等变换。考试中，请掌握矩阵是『由行（横）和列（纵）构成的数的表格』，以及它是把向量排列起来、作为线性代数核心对象这两点。把它想象成电子表格软件中单元格的排列，会更容易理解。",
-      "explanation_en": "A matrix is a structure in which numbers are arranged in a grid of vertical (columns) and horizontal (rows) directions. It can also be described as several vectors arranged together; for example, a 2-row, 3-column matrix arranges 6 numbers in the form of a table.\n\nMatrices are used to express systems of linear equations together, and to compute transformations such as rotating or scaling coordinates all at once. For the exam, keep in mind that a matrix is 'a table of numbers consisting of rows (horizontal) and columns (vertical),' and that it is a central object of linear algebra formed by arranging vectors. Picturing the arrangement of cells in spreadsheet software makes it easier to understand.",
-      "analogy_zh": "就像电子表格软件的工作表那样，把数值排列在纵横的格子中。只取出一行就成了向量。",
-      "analogy_en": "Like a sheet in spreadsheet software, with values arranged in a vertical-and-horizontal grid. Take out just one row and it becomes a vector.",
-      "memory_hook_zh": "说到矩阵，就是把数排成行和列的表格",
-      "memory_hook_en": "Matrix → a table of numbers arranged in rows and columns"
+      "extra_zh": [
+        "按行和列排列的数",
+        "线性代数"
+      ],
+      "extra_en": [
+        "Numbers in rows and columns",
+        "Linear algebra"
+      ]
     },
     {
       "term": "微分と積分",
-      "definition_jp": "微分は変化の割合、積分は量の積み重ね(面積)を求める解析の基礎。",
-      "explanation_jp": "微分と積分は、変化する量を扱う『解析』分野の基礎です。微分はある瞬間の変化の割合(傾き)を求める操作で、たとえば位置の変化から速度を求めるのに使います。積分はその逆で、細かく分けた量を積み重ねて全体(面積や総量)を求める操作です。\n\n微分と積分は互いに逆の関係にあるのが大きな特徴です。試験では、微分が『変化の割合・傾き』、積分が『積み重ね・面積』を表すという基本的な意味と、両者が逆の操作である関係を押さえておけば十分です。",
-      "analogy_jp": "車のスピードメーターが微分(その瞬間の速さ=変化の割合)、走行距離計が積分(速さを積み重ねた合計)に当たる。両者は表裏一体の関係。",
-      "memory_hook_jp": "微分と積分といえば変化の割合と積み重ね(逆の操作)",
+      "one_line_jp": "微分は変化の割合を、積分は積み重ねた全体の量を求める操作",
+      "one_line_zh": "微分求变化率，积分求累加后的整体量的运算",
+      "one_line_en": "Operations that find a rate of change (differentiation) and an accumulated total (integration)",
+      "extra_jp": [
+        "変化する量",
+        "解析"
+      ],
+      "extra_zh": [
+        "变化的量",
+        "数学分析"
+      ],
+      "extra_en": [
+        "Changing quantities",
+        "Analysis"
+      ]
+    },
+    {
+      "term": "誤差",
+      "one_line_jp": "測定や計算で得た値と真の値との差",
+      "one_line_zh": "测量或计算所得的值与真值之差",
+      "one_line_en": "The difference between a measured or calculated value and the true value",
+      "extra_jp": [
+        "近似値と真の値のずれ",
+        "数値計算"
+      ],
+      "extra_zh": [
+        "近似值与真值的偏差",
+        "数值计算"
+      ],
+      "extra_en": [
+        "Gap between approximate and true values",
+        "Numerical computation"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "線形代数",
+      "term_zh": "线性代数",
+      "term_en": "Linear algebra",
+      "one_jp": "**線形代数** は、**ベクトル** や **行列** を使って、一次式で結び付いた多数の量をまとめて扱う数学の分野である。",
+      "one_zh": "**线性代数** [[jp:線形代数]]是利用**向量**和**矩阵**，对由一次式联系起来的大量的量进行统一处理的数学分支。",
+      "one_en": "**Linear algebra** ([[jp:線形代数]]) is the branch of mathematics that uses **vectors** and **matrices** to handle many quantities linked by linear expressions all at once.",
+      "detail_jp": "一次式とは、例えば y = 2x + 3 のように、変数に定数を掛けた項と定数だけを足し合わせた式を指す。連立一次方程式をまとめて解く計算や、画像の回転・拡大のように多数の座標を一度に変換する計算は、線形代数の考え方で表せる。大量の数値を表の形で処理するコンピュータグラフィックスや機械学習の土台にもなっている。",
+      "detail_zh": "一次式是指像 y = 2x + 3 这样，只由“变量乘以常数”的项和常数相加而成的式子。一次性求解线性方程组，或像旋转、放大图像那样同时变换大量坐标，这类计算都可以用线性代数的思路来表示。它也是以表格形式处理海量数值的计算机图形和机器学习的基础。",
+      "detail_en": "A linear expression, such as y = 2x + 3, is one built only by adding terms of the form constant times variable and a constant. Solving a system of linear equations in one go, or transforming many coordinates at once as when an image is rotated or enlarged, can be described with the ideas of linear algebra. It also underpins computer graphics and machine learning, which process large volumes of numbers in table form.",
+      "analogy_jp": "部品（数の組や表）と組み立て方（掛け算と足し算）が決まった工作セットのようなもので、同じ手順で大量の数をまとめて加工できる。",
+      "analogy_zh": "就像一套零件（数组和数表）与组装方法（乘法和加法）都已固定的手工套件，可以按同样的步骤把大量的数一起加工。",
+      "analogy_en": "It is like a building kit with fixed parts (sets and tables of numbers) and fixed assembly steps (multiplication and addition): the same steps process a large batch of numbers together.",
+      "hook_jp": "「線形」は英語 linear の訳で、一次式のグラフが真っすぐな線になることに由来する。",
+      "hook_zh": "“线性”译自英语 linear，源于一次式的图像是一条直线。",
+      "hook_en": "\"Linear\" comes from \"line\": the graph of a linear expression is a straight line.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "線形代数 は、ベクトル や 行列 を使って、一次式で結び付いた多数の量をまとめて扱う数学の分野である。",
+      "definition_zh": "线性代数 線形代数是利用向量和矩阵，对由一次式联系起来的大量的量进行统一处理的数学分支。",
+      "definition_en": "Linear algebra (線形代数) is the branch of mathematics that uses vectors and matrices to handle many quantities linked by linear expressions all at once.",
+      "explanation_jp": "一次式とは、例えば y = 2x + 3 のように、変数に定数を掛けた項と定数だけを足し合わせた式を指す。連立一次方程式をまとめて解く計算や、画像の回転・拡大のように多数の座標を一度に変換する計算は、線形代数の考え方で表せる。大量の数値を表の形で処理するコンピュータグラフィックスや機械学習の土台にもなっている。",
+      "explanation_zh": "一次式是指像 y = 2x + 3 这样，只由“变量乘以常数”的项和常数相加而成的式子。一次性求解线性方程组，或像旋转、放大图像那样同时变换大量坐标，这类计算都可以用线性代数的思路来表示。它也是以表格形式处理海量数值的计算机图形和机器学习的基础。",
+      "explanation_en": "A linear expression, such as y = 2x + 3, is one built only by adding terms of the form constant times variable and a constant. Solving a system of linear equations in one go, or transforming many coordinates at once as when an image is rotated or enlarged, can be described with the ideas of linear algebra. It also underpins computer graphics and machine learning, which process large volumes of numbers in table form.",
+      "memory_hook_jp": "「線形」は英語 linear の訳で、一次式のグラフが真っすぐな線になることに由来する。",
+      "memory_hook_zh": "“线性”译自英语 linear，源于一次式的图像是一条直线。",
+      "memory_hook_en": "\"Linear\" comes from \"line\": the graph of a linear expression is a straight line.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ベクトル",
+      "term_zh": "向量",
+      "term_en": "Vector",
+      "one_jp": "**ベクトル** は、**大きさ** と **向き** をあわせ持つ量で、数を一本の並びにした組として表せる。",
+      "one_zh": "**向量** [[jp:ベクトル]]是同时具有**大小**和**方向**的量，可以表示为把数排成一串的数组。",
+      "one_en": "A **vector** ([[jp:ベクトル]]) is a quantity that has both **magnitude** and **direction**, and it can be written as a set of numbers arranged in a single line.",
+      "detail_jp": "例えば平面上で「右へ 4、上へ 3」進む移動は (4, 3) というベクトルで表され、矢印の長さ 5 が大きさ、矢印の指す方向が向きに当たる。大きさだけを持つ量は **スカラー** と呼ばれ、温度や質量がその例である。",
+      "detail_zh": "例如，在平面上“向右 4、向上 3”的移动可以用向量 (4, 3) 表示，箭头的长度 5 是它的大小，箭头所指的方向就是它的方向。只有大小的量称为**标量** [[jp:スカラー]]，温度和质量都属于这一类。",
+      "detail_en": "For example, a move of 4 to the right and 3 up on a plane is the vector (4, 3): the arrow's length, 5, is its magnitude, and the way the arrow points is its direction. A quantity that has magnitude only is called a **scalar** ([[jp:スカラー]]), with temperature and mass as typical examples.",
+      "analogy_jp": "道案内の「駅から北東へ 300 m」は距離と方角の両方を伝えるので、矢印 1 本で描ける。",
+      "analogy_zh": "问路时听到的“从车站往东北走 300 米”同时说明了距离和方位，所以用一根箭头就能画出来。",
+      "analogy_en": "Directions such as \"300 m northeast of the station\" give both a distance and a bearing, so they can be drawn as a single arrow.",
+      "hook_jp": "vector の語源はラテン語の「運ぶもの」で、点をある場所から別の場所へ運ぶ矢印と結び付けると思い出しやすい。",
+      "hook_zh": "vector 源自拉丁语的“运载者”，把它想成把点从一处运到另一处的箭头，就容易记住。",
+      "hook_en": "\"Vector\" comes from the Latin for \"carrier\": picture an arrow that carries a point from one place to another.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ベクトル** は大きさと向きを持つ量であり、大きさだけを持つ **スカラー** とは向きを持つかどうかで分かれる。",
+          "text_zh": "**向量** [[jp:ベクトル]]是具有大小和方向的量，它与只有大小的**标量** [[jp:スカラー]]的区别在于有没有方向。",
+          "text_en": "A **vector** ([[jp:ベクトル]]) has magnitude and direction, and what separates it from a **scalar** ([[jp:スカラー]]), which has magnitude only, is whether it has a direction."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "ベクトル は、大きさ と 向き をあわせ持つ量で、数を一本の並びにした組として表せる。",
+      "definition_zh": "向量 ベクトル是同时具有大小和方向的量，可以表示为把数排成一串的数组。",
+      "definition_en": "A vector (ベクトル) is a quantity that has both magnitude and direction, and it can be written as a set of numbers arranged in a single line.",
+      "explanation_jp": "例えば平面上で「右へ 4、上へ 3」進む移動は (4, 3) というベクトルで表され、矢印の長さ 5 が大きさ、矢印の指す方向が向きに当たる。大きさだけを持つ量は スカラー と呼ばれ、温度や質量がその例である。",
+      "explanation_zh": "例如，在平面上“向右 4、向上 3”的移动可以用向量 (4, 3) 表示，箭头的长度 5 是它的大小，箭头所指的方向就是它的方向。只有大小的量称为标量 スカラー，温度和质量都属于这一类。",
+      "explanation_en": "For example, a move of 4 to the right and 3 up on a plane is the vector (4, 3): the arrow's length, 5, is its magnitude, and the way the arrow points is its direction. A quantity that has magnitude only is called a scalar (スカラー), with temperature and mass as typical examples.",
+      "memory_hook_jp": "vector の語源はラテン語の「運ぶもの」で、点をある場所から別の場所へ運ぶ矢印と結び付けると思い出しやすい。",
+      "memory_hook_zh": "vector 源自拉丁语的“运载者”，把它想成把点从一处运到另一处的箭头，就容易记住。",
+      "memory_hook_en": "\"Vector\" comes from the Latin for \"carrier\": picture an arrow that carries a point from one place to another.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "行列",
+      "term_zh": "矩阵",
+      "term_en": "Matrix",
+      "one_jp": "**行列** は、数を横の並び（**行**）と縦の並び（**列**）からなる長方形に並べたものである。",
+      "one_zh": "**矩阵** [[jp:行列]]是把数排成由横向排列（**行**）和纵向排列（**列**）构成的长方形。",
+      "one_en": "A **matrix** ([[jp:行列]]) is a set of numbers laid out in a rectangle made of horizontal lines (**rows**) and vertical lines (**columns**).",
+      "detail_jp": "m 個の行と n 個の列を持つ行列は m 行 n 列の行列と呼ばれ、m × n 個の数（**成分**）を含む。1 行だけ、または 1 列だけの行列はベクトルとみなせるので、行列はベクトルを並べたものとも言える。連立一次方程式の係数をまとめて書いたり、座標の変換を一度に計算したりするのに使われる。",
+      "detail_zh": "有 m 个行和 n 个列的矩阵称为 m 行 n 列的矩阵，其中包含 m × n 个数（**元素** [[jp:成分]]）。只有 1 行或只有 1 列的矩阵可以看作向量，因此也可以说矩阵是把向量排在一起得到的。矩阵常用来集中写出线性方程组的系数，或一次性完成坐标变换的计算。",
+      "detail_en": "A matrix with m rows and n columns is called an m-by-n matrix and holds m × n numbers, its **elements** ([[jp:成分]]). A matrix with only one row or only one column can be treated as a vector, so a matrix can also be seen as vectors placed side by side. Matrices are used to write the coefficients of a system of linear equations compactly and to carry out a coordinate transformation in one calculation.",
+      "analogy_jp": "映画館の座席表のように、何行目・何列目かで場所が決まり、その場所ごとに数が 1 つずつ入っている。",
+      "analogy_zh": "就像电影院的座位表，第几排第几座决定了位置，每个位置上各放着一个数。",
+      "analogy_en": "Think of a cinema seating chart: the row and seat number fix each position, and every position holds exactly one number.",
+      "hook_jp": "「行」の字は横線が、「列」の字は右側の縦線が目立つので、行は横、列は縦と字の形で思い出せる。",
+      "hook_zh": "日语里的“行”和“列”与中文同字同义：“行”字横笔显眼，“列”字右边的竖笔显眼，可以借字形记住行是横向、列是纵向。",
+      "hook_en": "Rows run across like a line of text, while columns stand upright like the columns holding up a building.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "行列の **行** は横方向の並び、**列** は縦方向の並びであり、2 行 3 列の行列は 3 個の数が横に並んだ段を上下に 2 段持つ。",
+          "text_zh": "矩阵 [[jp:行列]]的**行**是横向的排列，**列**是纵向的排列；2 行 3 列的矩阵由上下 2 层组成，每层横向排着 3 个数。",
+          "text_en": "In a matrix ([[jp:行列]]), a **row** ([[jp:行]]) runs horizontally and a **column** ([[jp:列]]) runs vertically, so a 2-by-3 matrix has two stacked tiers, each holding 3 numbers side by side."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "行＼列",
+              "zh": "行＼列",
+              "en": "Row \\ Column"
+            },
+            {
+              "jp": "第 1 列",
+              "zh": "第 1 列",
+              "en": "Column 1"
+            },
+            {
+              "jp": "第 2 列",
+              "zh": "第 2 列",
+              "en": "Column 2"
+            },
+            {
+              "jp": "第 3 列",
+              "zh": "第 3 列",
+              "en": "Column 3"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "第 1 行",
+                  "zh": "第 1 行",
+                  "en": "Row 1"
+                },
+                {
+                  "jp": "2",
+                  "zh": "2",
+                  "en": "2"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "7",
+                  "zh": "7",
+                  "en": "7"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "第 2 行",
+                  "zh": "第 2 行",
+                  "en": "Row 2"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "5",
+                  "zh": "5",
+                  "en": "5"
+                },
+                {
+                  "jp": "3",
+                  "zh": "3",
+                  "en": "3"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "行列 は、数を横の並び（行）と縦の並び（列）からなる長方形に並べたものである。",
+      "definition_zh": "矩阵 行列是把数排成由横向排列（行）和纵向排列（列）构成的长方形。",
+      "definition_en": "A matrix (行列) is a set of numbers laid out in a rectangle made of horizontal lines (rows) and vertical lines (columns).",
+      "explanation_jp": "m 個の行と n 個の列を持つ行列は m 行 n 列の行列と呼ばれ、m × n 個の数（成分）を含む。1 行だけ、または 1 列だけの行列はベクトルとみなせるので、行列はベクトルを並べたものとも言える。連立一次方程式の係数をまとめて書いたり、座標の変換を一度に計算したりするのに使われる。",
+      "explanation_zh": "有 m 个行和 n 个列的矩阵称为 m 行 n 列的矩阵，其中包含 m × n 个数（元素 成分）。只有 1 行或只有 1 列的矩阵可以看作向量，因此也可以说矩阵是把向量排在一起得到的。矩阵常用来集中写出线性方程组的系数，或一次性完成坐标变换的计算。",
+      "explanation_en": "A matrix with m rows and n columns is called an m-by-n matrix and holds m × n numbers, its elements (成分). A matrix with only one row or only one column can be treated as a vector, so a matrix can also be seen as vectors placed side by side. Matrices are used to write the coefficients of a system of linear equations compactly and to carry out a coordinate transformation in one calculation.",
+      "memory_hook_jp": "「行」の字は横線が、「列」の字は右側の縦線が目立つので、行は横、列は縦と字の形で思い出せる。",
+      "memory_hook_zh": "日语里的“行”和“列”与中文同字同义：“行”字横笔显眼，“列”字右边的竖笔显眼，可以借字形记住行是横向、列是纵向。",
+      "memory_hook_en": "Rows run across like a line of text, while columns stand upright like the columns holding up a building.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "微分と積分",
+      "term_zh": "微分与积分",
+      "term_en": "Differentiation and integration",
+      "one_jp": "**微分** はある点での変化の割合（グラフの傾き）を求める操作、**積分** は細かく分けた量を積み重ねて全体の量（面積など）を求める操作である。",
+      "one_zh": "在微分与积分 [[jp:微分と積分]]中，**微分**是求某一点上变化率（图像斜率）的运算，**积分**是把细分后的量累加起来、求出整体量（面积等）的运算。",
+      "one_en": "In differentiation and integration ([[jp:微分と積分]]), **differentiation** finds the rate of change at a point (the slope of the graph), while **integration** adds up finely divided pieces to find a total amount (such as an area).",
+      "detail_jp": "例えば、時刻ごとの位置を微分すると各瞬間の速さが得られ、速さを時間で積分すると進んだ距離が得られる。変化する量を扱うこの数学の分野は **解析** と呼ばれる。",
+      "detail_zh": "例如，对各时刻的位置求微分可以得到每一瞬间的速度，把速度对时间求积分则可以得到走过的距离。研究这类变化的量的数学分支称为**数学分析** [[jp:解析]]。",
+      "detail_en": "For example, differentiating position with respect to time gives the speed at each instant, and integrating speed over time gives the distance travelled. The branch of mathematics that deals with such changing quantities is called **analysis** ([[jp:解析]]).",
+      "analogy_jp": "蛇口から出る水の勢いが微分に当たる量で、それが積み重なってバケツにたまった水の量が積分に当たる量である。",
+      "analogy_zh": "水龙头里出水的快慢相当于微分得到的量，而这些水一点点积攒在水桶里的总量相当于积分得到的量。",
+      "analogy_en": "The flow rate from a tap corresponds to what differentiation gives, and the amount of water that builds up in the bucket corresponds to what integration gives.",
+      "hook_jp": "「微」はごく小さいこと、「積」は積み上げることを表す字で、ごく小さな変化に目を向けるのが微分、積み上げて合計するのが積分と字から思い出せる。",
+      "hook_zh": "“微”表示极小，“积”表示累积：着眼于极小变化的是微分，累积起来求总和的是积分，看字就能想起来。",
+      "hook_en": "Differentiation looks at the tiny difference between nearby values, while integration, like \"integrate\" in everyday English, puts the pieces together into a whole.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**微分** と **積分** は互いに逆の操作であり、ある量を微分して得た変化の割合を積分すると、元の量がどれだけ変わったかが求まる。",
+          "text_zh": "**微分**与**积分** [[jp:積分]]互为逆运算：对某个量求微分得到变化率，再对这个变化率求积分，就能求出原来的量变化了多少。",
+          "text_en": "**Differentiation** ([[jp:微分]]) and **integration** ([[jp:積分]]) are inverse operations: integrating the rate of change obtained by differentiating a quantity tells you how much the original quantity changed."
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "微分",
+            "zh": "微分",
+            "en": "Differentiation"
+          },
+          "b": {
+            "jp": "積分",
+            "zh": "积分",
+            "en": "Integration"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "求めるもの",
+                "zh": "所求对象",
+                "en": "What it finds"
+              },
+              "a": {
+                "jp": "ある点での変化の割合",
+                "zh": "某一点上的变化率",
+                "en": "Rate of change at a point"
+              },
+              "b": {
+                "jp": "積み重ねた全体の量",
+                "zh": "累加后的整体量",
+                "en": "Accumulated total"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "グラフで見ると",
+                "zh": "从图像上看",
+                "en": "On a graph"
+              },
+              "a": {
+                "jp": "接線の傾き",
+                "zh": "切线的斜率",
+                "en": "Slope of the tangent line"
+              },
+              "b": {
+                "jp": "グラフと横軸に挟まれた面積",
+                "zh": "图像与横轴之间所夹的面积",
+                "en": "Area between the graph and the horizontal axis"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2011h23tokubetsu-q056"
+      ],
+      "definition_jp": "微分 はある点での変化の割合（グラフの傾き）を求める操作、積分 は細かく分けた量を積み重ねて全体の量（面積など）を求める操作である。",
+      "definition_zh": "在微分与积分 微分と積分中，微分是求某一点上变化率（图像斜率）的运算，积分是把细分后的量累加起来、求出整体量（面积等）的运算。",
+      "definition_en": "In differentiation and integration (微分と積分), differentiation finds the rate of change at a point (the slope of the graph), while integration adds up finely divided pieces to find a total amount (such as an area).",
+      "explanation_jp": "例えば、時刻ごとの位置を微分すると各瞬間の速さが得られ、速さを時間で積分すると進んだ距離が得られる。変化する量を扱うこの数学の分野は 解析 と呼ばれる。",
+      "explanation_zh": "例如，对各时刻的位置求微分可以得到每一瞬间的速度，把速度对时间求积分则可以得到走过的距离。研究这类变化的量的数学分支称为数学分析 解析。",
+      "explanation_en": "For example, differentiating position with respect to time gives the speed at each instant, and integrating speed over time gives the distance travelled. The branch of mathematics that deals with such changing quantities is called analysis (解析).",
+      "memory_hook_jp": "「微」はごく小さいこと、「積」は積み上げることを表す字で、ごく小さな変化に目を向けるのが微分、積み上げて合計するのが積分と字から思い出せる。",
+      "memory_hook_zh": "“微”表示极小，“积”表示累积：着眼于极小变化的是微分，累积起来求总和的是积分，看字就能想起来。",
+      "memory_hook_en": "Differentiation looks at the tiny difference between nearby values, while integration, like \"integrate\" in everyday English, puts the pieces together into a whole.",
       "inline_quiz": [
         "2011h23tokubetsu-q056"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "微分与积分",
-      "term_en": "Differentiation and integration",
-      "definition_zh": "微分用于求变化的比率，积分用于求量的累积（面积），是解析（分析）的基础。",
-      "definition_en": "Differentiation finds the rate of change, and integration finds the accumulation of a quantity (area); they are the basics of analysis.",
-      "explanation_zh": "微分与积分是处理变化量的『解析（分析）』分支的基础。微分是求某一瞬间变化比率（斜率）的运算，例如可用于从位置的变化求出速度。积分则相反，是把细分后的量累积起来、求出整体（面积或总量）的运算。\n\n微分与积分互为逆运算是其重要特征。考试中，只要掌握微分表示『变化的比率、斜率』、积分表示『累积、面积』这一基本含义，以及两者互为逆运算的关系即可。",
-      "explanation_en": "Differentiation and integration are the basics of the field of 'analysis,' which deals with changing quantities. Differentiation is the operation of finding the rate of change (slope) at a given instant; for example, it is used to find velocity from the change in position. Integration is the reverse: it is the operation of accumulating finely divided quantities to find the whole (area or total amount).\n\nA major feature is that differentiation and integration are inverse operations of each other. For the exam, it is enough to grasp the basic meanings—that differentiation represents the 'rate of change / slope' and integration represents 'accumulation / area'—and the relationship that the two are inverse operations.",
-      "analogy_zh": "汽车的速度表相当于微分（那一瞬间的速度＝变化的比率），里程表相当于积分（把速度累积起来的总和）。两者是一体两面的关系。",
-      "analogy_en": "A car's speedometer corresponds to differentiation (the speed at that instant = the rate of change), and the odometer corresponds to integration (the total accumulated from speed). The two are two sides of the same coin.",
-      "memory_hook_zh": "说到微分与积分，就是变化的比率与累积（互为逆运算）",
-      "memory_hook_en": "Differentiation and integration → rate of change and accumulation (inverse operations)"
+      "figure": null
     },
     {
       "term": "誤差",
-      "definition_jp": "測定値や計算値と、真の値とのずれ(差)のこと。",
-      "explanation_jp": "誤差とは、測定や計算で得られた値と、本来の正しい値(真の値)との差(ずれ)のことです。測定器の精度や、コンピュータが数値を有限の桁でしか表せないことなどが原因で生じ、完全にゼロにはできない場合が多くあります。\n\nコンピュータの計算では、小数を限られた桁で丸めることで生じる丸め誤差や、桁数の大きく異なる数を足したときに小さい数が無視される情報落ちなどが代表例です。試験では、誤差が『真の値とのずれ』であること、数値計算では避けにくく扱いに注意が必要な横断的概念であることを押さえましょう。",
-      "analogy_jp": "体重計に乗ったとき、本当の体重(真の値)と表示された数字との差が誤差。目盛りの細かさや計りの癖で必ず少しはずれる。",
-      "memory_hook_jp": "誤差といえば真の値と測定・計算値とのずれ",
+      "term_zh": "误差",
+      "term_en": "Error",
+      "one_jp": "**誤差** は、測定や計算で得た値と **真の値** との差（ずれ）である。",
+      "one_zh": "**误差** [[jp:誤差]]是测量或计算所得的值与**真值**之间的差（偏差）。",
+      "one_en": "An **error** ([[jp:誤差]]) is the difference (the gap) between a value obtained by measurement or calculation and the **true value**.",
+      "detail_jp": "測定器の目盛りの細かさや、コンピュータが数を有限の桁でしか表せないことが原因となり、誤差は多くの場合ゼロにできない。コンピュータの計算では、例えば、決めた桁数に収めるために端数を処理するときに生じる **丸め誤差** や、絶対値が大きく異なる数どうしを足し引きしたときに小さい側の値が結果に反映されない **情報落ち** が起こる。",
+      "detail_zh": "由于测量仪器的刻度精细程度有限，计算机也只能用有限的位数表示数，误差在多数情况下无法降为零。在计算机的计算中会出现两种典型情况：为使数值容纳在规定位数内而处理尾数时产生的**舍入误差** [[jp:丸め誤差]]，以及绝对值相差悬殊的数相加减时、较小一方的值没有反映到结果中的**大数吃小数** [[jp:情報落ち]]。",
+      "detail_en": "Because measuring instruments have scales of limited fineness and computers can hold numbers only to a limited number of digits, error usually cannot be brought down to zero. In computer calculations, for instance, **rounding error** ([[jp:丸め誤差]]) arises when a value is trimmed to fit a set number of digits, and **absorption** ([[jp:情報落ち]]) occurs when numbers of very different magnitudes are added or subtracted and the smaller one fails to show up in the result.",
+      "analogy_jp": "メジャーで机の幅を測ると、目盛りと目盛りの間は目で読み取るしかないので、どれだけ丁寧に測っても本当の幅とのわずかな差が残る。",
+      "analogy_zh": "用卷尺量桌子的宽度时，两条刻度之间只能靠眼睛估读，所以无论量得多仔细，与真实宽度之间总会留下一点差距。",
+      "analogy_en": "When you measure a desk with a tape measure, anything between two marks has to be judged by eye, so however carefully you measure, a slight gap from the true width remains.",
+      "hook_jp": "英語の error はラテン語の errare（さまよう）に由来し、真の値の周りをさまようように散らばる測定値を思い浮かべると覚えやすい。",
+      "hook_zh": "英语 error 源自拉丁语 errare（徘徊），想象测量值像在真值周围徘徊一样散布开来，就容易记住。",
+      "hook_en": "\"Error\" comes from the Latin errare, \"to wander\": picture measured values wandering around the true value.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "無理数や終わらない小数を有限の桁で打ち切った値は **近似値** であり、真の値との差（誤差）を含む。",
+          "text_zh": "把无理数或无限小数截断到有限位数后得到的值是**近似值** [[jp:近似値]]，其中包含与真值 [[jp:真の値]]之间的差（误差 [[jp:誤差]]）。",
+          "text_en": "A value made by cutting off an irrational number or a non-terminating decimal at a finite number of digits is an **approximate value** ([[jp:近似値]]), and it contains a difference from the true value ([[jp:真の値]]), that is, an error ([[jp:誤差]]).",
+          "qids": [
+            "2022r04-q093"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "種類",
+              "zh": "种类",
+              "en": "Type"
+            },
+            {
+              "jp": "起こる場面",
+              "zh": "发生场景",
+              "en": "When it occurs"
+            },
+            {
+              "jp": "例",
+              "zh": "例子",
+              "en": "Example"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "丸め誤差",
+                  "zh": "舍入误差",
+                  "en": "Rounding error"
+                },
+                {
+                  "jp": "決めた桁数に収めるための端数処理",
+                  "zh": "为容纳在规定位数内而处理尾数",
+                  "en": "Trimming digits to fit a set number of places"
+                },
+                {
+                  "jp": "1/3 を 0.333 と表すと約 0.00033 のずれが残る",
+                  "zh": "把 1/3 表示为 0.333，会留下约 0.00033 的偏差",
+                  "en": "Writing 1/3 as 0.333 leaves a gap of about 0.00033"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "情報落ち",
+                  "zh": "大数吃小数",
+                  "en": "Absorption"
+                },
+                {
+                  "jp": "大きさが大きく異なる数どうしの足し引き",
+                  "zh": "大小相差悬殊的数相加减",
+                  "en": "Adding or subtracting numbers of very different sizes"
+                },
+                {
+                  "jp": "有効数字 7 桁で 10000000 に 0.0001 を足すと 0.0001 が結果に残らない",
+                  "zh": "以 7 位有效数字计算 10000000 加 0.0001，结果中不会留下 0.0001",
+                  "en": "With 7 significant digits, adding 0.0001 to 10000000 leaves no trace of the 0.0001"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2022r04-q093"
+      ],
+      "definition_jp": "誤差 は、測定や計算で得た値と 真の値 との差（ずれ）である。",
+      "definition_zh": "误差 誤差是测量或计算所得的值与真值之间的差（偏差）。",
+      "definition_en": "An error (誤差) is the difference (the gap) between a value obtained by measurement or calculation and the true value.",
+      "explanation_jp": "測定器の目盛りの細かさや、コンピュータが数を有限の桁でしか表せないことが原因となり、誤差は多くの場合ゼロにできない。コンピュータの計算では、例えば、決めた桁数に収めるために端数を処理するときに生じる 丸め誤差 や、絶対値が大きく異なる数どうしを足し引きしたときに小さい側の値が結果に反映されない 情報落ち が起こる。",
+      "explanation_zh": "由于测量仪器的刻度精细程度有限，计算机也只能用有限的位数表示数，误差在多数情况下无法降为零。在计算机的计算中会出现两种典型情况：为使数值容纳在规定位数内而处理尾数时产生的舍入误差 丸め誤差，以及绝对值相差悬殊的数相加减时、较小一方的值没有反映到结果中的大数吃小数 情報落ち。",
+      "explanation_en": "Because measuring instruments have scales of limited fineness and computers can hold numbers only to a limited number of digits, error usually cannot be brought down to zero. In computer calculations, for instance, rounding error (丸め誤差) arises when a value is trimmed to fit a set number of digits, and absorption (情報落ち) occurs when numbers of very different magnitudes are added or subtracted and the smaller one fails to show up in the result.",
+      "memory_hook_jp": "英語の error はラテン語の errare（さまよう）に由来し、真の値の周りをさまようように散らばる測定値を思い浮かべると覚えやすい。",
+      "memory_hook_zh": "英语 error 源自拉丁语 errare（徘徊），想象测量值像在真值周围徘徊一样散布开来，就容易记住。",
+      "memory_hook_en": "\"Error\" comes from the Latin errare, \"to wander\": picture measured values wandering around the true value.",
       "inline_quiz": [
         "2022r04-q093"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"真の値\"] --> C[\"誤差=ずれ\"]; B[\"測定値・計算値\"] --> C; C --> D[\"丸め誤差や情報落ちが代表例\"]",
-        "svg_path": "figures/technology-13-34-u05-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "误差",
-      "term_en": "Error",
-      "definition_zh": "测量值或计算值与真值之间的偏差（差）。",
-      "definition_en": "The deviation (difference) between a measured or calculated value and the true value.",
-      "explanation_zh": "误差是指通过测量或计算得到的值与本应正确的值（真值）之间的差（偏差）。它由测量仪器的精度，以及计算机只能用有限位数表示数值等原因产生，很多情况下无法完全归零。\n\n在计算机的计算中，因把小数四舍五入到有限位数而产生的舍入误差，以及把位数相差很大的数相加时小数被忽略的损失（信息丢失）等都是典型例子。考试中，请掌握误差是『与真值之间的偏差』，以及它是在数值计算中难以避免、需要谨慎处理的横跨性概念这两点。",
-      "explanation_en": "Error refers to the difference (deviation) between a value obtained by measurement or calculation and the originally correct value (the true value). It arises from causes such as the precision of measuring instruments and the fact that computers can represent numbers only with a finite number of digits, and in many cases it cannot be reduced completely to zero.\n\nIn computer calculations, typical examples include rounding error, which arises from rounding decimals to a limited number of digits, and loss of significance (information loss), in which the smaller number is ignored when adding numbers of greatly different magnitudes. For the exam, keep in mind that error is a 'deviation from the true value' and that it is a cross-cutting concept that is hard to avoid in numerical computation and requires careful handling.",
-      "analogy_zh": "站上体重秤时，真实体重（真值）与显示数字之间的差就是误差。由于刻度的精细程度和秤的固有偏差，总会有一点偏离。",
-      "analogy_en": "When you step on a scale, the difference between your true weight (the true value) and the displayed number is the error. Because of the fineness of the graduations and the scale's quirks, there will always be a slight deviation.",
-      "memory_hook_zh": "说到误差，就是真值与测量、计算值之间的偏差",
-      "memory_hook_en": "Error → the deviation between the true value and a measured or calculated value"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "ベクトル",
+      "b": "行列",
+      "rows": [
+        {
+          "label_jp": "数の並べ方",
+          "label_zh": "数的排列方式",
+          "label_en": "How numbers are arranged",
+          "a_jp": "数を一本の並びにした組",
+          "a_zh": "把数排成一串的数组",
+          "a_en": "A set of numbers in a single line",
+          "b_jp": "行と列からなる長方形に並べた表",
+          "b_zh": "排成由行和列构成的长方形的表",
+          "b_en": "A table laid out as a rectangle of rows and columns",
+          "key": true
+        },
+        {
+          "label_jp": "形の表し方",
+          "label_zh": "形状的表示方式",
+          "label_en": "How its shape is described",
+          "a_jp": "成分の個数（2 個なら平面上の矢印）",
+          "a_zh": "分量的个数（2 个时对应平面上的箭头）",
+          "a_en": "The number of components (two means an arrow on a plane)",
+          "b_jp": "行の数と列の数（m 行 n 列）",
+          "b_zh": "行数与列数（m 行 n 列）",
+          "b_en": "The number of rows and columns (m by n)",
+          "key": false
+        },
+        {
+          "label_jp": "互いの関係",
+          "label_zh": "相互关系",
+          "label_en": "How they relate",
+          "a_jp": "1 行だけ、または 1 列だけの行列とみなせる",
+          "a_zh": "可以看作只有 1 行或只有 1 列的矩阵",
+          "a_en": "Can be seen as a matrix with only one row or one column",
+          "b_jp": "ベクトルを並べたものとみなせる",
+          "b_zh": "可以看作把向量排在一起得到的",
+          "b_en": "Can be seen as vectors lined up together",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**線形代数** は、一次式で結び付いた多数の量を、数の組や表を使ってまとめて計算する分野である。",
+    "m 行 n 列の **行列** は m × n 個の成分を持ち、行は横、列は縦の並びを指す。",
+    "**微分** は変化の割合を、**積分** は積み重ねた全体の量を求める操作である。",
+    "**誤差** は真の値とのずれであり、無理数を有限の桁で表した近似値にも含まれる。"
+  ],
+  "key_points_zh": [
+    "**线性代数**是利用数组或数表，对由一次式联系起来的大量的量进行统一计算的分支。",
+    "m 行 n 列的**矩阵**有 m × n 个元素，行指横向排列，列指纵向排列。",
+    "**微分**是求变化率的运算，**积分**是求累加后整体量的运算。",
+    "**误差**是与真值之间的偏差，用有限位数表示无理数所得的近似值中也含有误差。"
+  ],
+  "key_points_en": [
+    "**Linear algebra** computes many quantities linked by linear expressions together, using sets and tables of numbers.",
+    "An m-by-n **matrix** has m × n elements, with rows running horizontally and columns vertically.",
+    "**Differentiation** finds a rate of change, and **integration** finds an accumulated total.",
+    "An **error** is a gap from the true value, and approximate values that express irrational numbers in a finite number of digits contain one too."
+  ],
+  "overview": {
+    "intro_jp": "線形代数 で使う ベクトル と 行列 を、数の並べ方の違いで見分けられる。微分 と 積分 がそれぞれ何を求める操作かを説明できる。誤差 が生じる理由を説明し、近似値と真の値を区別できる。",
+    "intro_zh": "能够根据数的排列方式的不同，区分线性代数中使用的向量与矩阵。能够说明微分和积分分别是求什么的运算。能够说明产生误差的原因，并区分近似值与真值。",
+    "intro_en": "Tell apart the vectors and matrices used in linear algebra by how they arrange numbers. Explain what differentiation and integration each compute. Explain why errors arise, and distinguish approximate values from true values.",
+    "freq_badge": "標準",
+    "est_minutes": 24
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "線形代数: 線形代数といえばベクトルと行列を扱う数学分野",
-      "ベクトル: ベクトルといえば大きさと向きを持つ量",
-      "行列: 行列といえば数を行と列に並べた表",
-      "微分と積分: 微分と積分といえば変化の割合と積み重ね(逆の操作)",
-      "誤差: 誤差といえば真の値と測定・計算値とのずれ"
-    ],
     "key_points_jp": [
-      "本ユニットは確率・統計以外の数学基盤として、線形代数(ベクトル・行列)、微分と積分、誤差を学ぶ。",
-      "線形代数はベクトルと行列を扱う上位分野で、ベクトルを並べると行列になるという体系の関係を押さえる。",
-      "ベクトルは大きさと向きを持つ量、行列は数を行と列に並べた表であり、両者は線形代数の中心的対象である。",
-      "微分は変化の割合(傾き)、積分は積み重ね(面積)を求める操作で、互いに逆の関係にある。",
-      "誤差は真の値と測定・計算値とのずれであり、丸め誤差や情報落ちなど数値計算で避けにくい横断的概念である。"
+      "線形代数 は、一次式で結び付いた多数の量を、数の組や表を使ってまとめて計算する分野である。",
+      "m 行 n 列の 行列 は m × n 個の成分を持ち、行は横、列は縦の並びを指す。",
+      "微分 は変化の割合を、積分 は積み重ねた全体の量を求める操作である。",
+      "誤差 は真の値とのずれであり、無理数を有限の桁で表した近似値にも含まれる。"
     ],
     "key_points_zh": [
-      "本单元作为概率与统计之外的数学基础，学习线性代数（向量、矩阵）、微分与积分以及误差。",
-      "线性代数是处理向量和矩阵的上位分支，要掌握把向量排列起来就成为矩阵这一体系关系。",
-      "向量是既有大小又有方向的量，矩阵是把数排成行和列的表格，两者都是线性代数的核心对象。",
-      "微分是求变化比率（斜率）、积分是求累积（面积）的运算，两者互为逆运算。",
-      "误差是真值与测量、计算值之间的偏差，舍入误差和信息丢失等是数值计算中难以避免的横跨性概念。"
+      "线性代数是利用数组或数表，对由一次式联系起来的大量的量进行统一计算的分支。",
+      "m 行 n 列的矩阵有 m × n 个元素，行指横向排列，列指纵向排列。",
+      "微分是求变化率的运算，积分是求累加后整体量的运算。",
+      "误差是与真值之间的偏差，用有限位数表示无理数所得的近似值中也含有误差。"
     ],
     "key_points_en": [
-      "As the mathematical foundation beyond probability and statistics, this unit covers linear algebra (vectors and matrices), differentiation and integration, and error.",
-      "Linear algebra is the higher-level field that handles vectors and matrices; grasp the systematic relationship that arranging vectors forms a matrix.",
-      "A vector is a quantity with magnitude and direction, and a matrix is a table of numbers arranged in rows and columns; both are central objects of linear algebra.",
-      "Differentiation finds the rate of change (slope) and integration finds accumulation (area); the two are inverse operations of each other.",
-      "Error is the deviation between the true value and a measured or calculated value; rounding error and loss of significance are cross-cutting concepts that are hard to avoid in numerical computation."
+      "Linear algebra computes many quantities linked by linear expressions together, using sets and tables of numbers.",
+      "An m-by-n matrix has m × n elements, with rows running horizontally and columns vertically.",
+      "Differentiation finds a rate of change, and integration finds an accumulated total.",
+      "An error is a gap from the true value, and approximate values that express irrational numbers in a finite number of digits contain one too."
+    ],
+    "memory_hooks_jp": [
+      "線形代数: 「線形」は英語 linear の訳で、一次式のグラフが真っすぐな線になることに由来する。",
+      "ベクトル: vector の語源はラテン語の「運ぶもの」で、点をある場所から別の場所へ運ぶ矢印と結び付けると思い出しやすい。",
+      "行列: 「行」の字は横線が、「列」の字は右側の縦線が目立つので、行は横、列は縦と字の形で思い出せる。",
+      "微分と積分: 「微」はごく小さいこと、「積」は積み上げることを表す字で、ごく小さな変化に目を向けるのが微分、積み上げて合計するのが積分と字から思い出せる。",
+      "誤差: 英語の error はラテン語の errare（さまよう）に由来し、真の値の周りをさまようように散らばる測定値を思い浮かべると覚えやすい。"
     ],
     "memory_hooks_zh": [
-      "线性代数：说到线性代数，就是处理向量和矩阵的数学分支",
-      "向量：说到向量，就是既有大小又有方向的量",
-      "矩阵：说到矩阵，就是把数排成行和列的表格",
-      "微分与积分：说到微分与积分，就是变化的比率与累积（互为逆运算）",
-      "误差：说到误差，就是真值与测量、计算值之间的偏差"
+      "线性代数：“线性”译自英语 linear，源于一次式的图像是一条直线。",
+      "向量：vector 源自拉丁语的“运载者”，把它想成把点从一处运到另一处的箭头，就容易记住。",
+      "矩阵：日语里的“行”和“列”与中文同字同义：“行”字横笔显眼，“列”字右边的竖笔显眼，可以借字形记住行是横向、列是纵向。",
+      "微分与积分：“微”表示极小，“积”表示累积：着眼于极小变化的是微分，累积起来求总和的是积分，看字就能想起来。",
+      "误差：英语 error 源自拉丁语 errare（徘徊），想象测量值像在真值周围徘徊一样散布开来，就容易记住。"
     ],
     "memory_hooks_en": [
-      "Linear algebra: Linear algebra → the math field that deals with vectors and matrices",
-      "Vector: Vector → a quantity with both magnitude and direction",
-      "Matrix: Matrix → a table of numbers arranged in rows and columns",
-      "Differentiation and integration: Differentiation and integration → rate of change and accumulation (inverse operations)",
-      "Error: Error → the deviation between the true value and a measured or calculated value"
+      "Linear algebra: \"Linear\" comes from \"line\": the graph of a linear expression is a straight line.",
+      "Vector: \"Vector\" comes from the Latin for \"carrier\": picture an arrow that carries a point from one place to another.",
+      "Matrix: Rows run across like a line of text, while columns stand upright like the columns holding up a building.",
+      "Differentiation and integration: Differentiation looks at the tiny difference between nearby values, while integration, like \"integrate\" in everyday English, puts the pieces together into a whole.",
+      "Error: \"Error\" comes from the Latin errare, \"to wander\": picture measured values wandering around the true value."
     ]
   },
   "challenge_questions": [
-    "2009h21h-q080",
-    "2010h22a-q082",
-    "2010h22h-q067",
-    "2013h25h-q076",
-    "2014h26a-q095"
+    "2011h23tokubetsu-q056",
+    "2022r04-q093",
+    "2009h21h-q080"
   ],
   "source_figures": [
     {
@@ -231,9 +683,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "线性代数、微积分与误差",
-  "title_en": "Linear Algebra, Calculus, and Error",
-  "unit_summary_zh": "学习线性代数（向量、矩阵）和微积分的基础，以及测量中伴随产生的误差概念。",
-  "unit_summary_en": "Learn the basics of linear algebra (vectors and matrices) and calculus, along with the concept of error that accompanies measurement."
+  }
 }

@@ -1,241 +1,954 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-34-u03",
   "topic_id": "technology-13-34",
   "category": "technology",
   "title_jp": "統計的分析と推測",
+  "title_zh": "统计分析与推断",
+  "title_en": "Statistical Analysis and Inference",
   "unit_summary_jp": "相関・回帰による変数間の関係分析と、推定・仮説検定による統計的推測を学ぶ。",
+  "unit_summary_zh": "学习通过相关与回归分析变量之间的关系，以及通过估计与假设检验进行统计推断。",
+  "unit_summary_en": "Learn to analyze relationships between variables using correlation and regression, and to make statistical inferences using estimation and hypothesis testing.",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-13-34-u02"
   ],
-  "overview": {
-    "intro_jp": "2つの変数の関係の強さを調べる相関、原因側の説明変数から結果側の目的変数を予測する回帰、そして標本から母集団を推し量る推定・仮説検定という、データから関係や結論を導く統計的分析・推測の基礎を学ぶ単元です。各手法の役割と用語の対応が試験で問われます。",
-    "freq_badge": "標準",
-    "est_minutes": 21,
-    "intro_zh": "本单元学习从数据中导出关系与结论的统计分析与推断基础：用于考察两个变量关系强弱的相关、从原因侧的说明变量预测结果侧的目标变量的回归，以及从样本推测总体的估计与假设检验。考试会考查各方法的作用以及术语之间的对应关系。",
-    "intro_en": "This unit covers the basics of statistical analysis and inference for drawing relationships and conclusions from data: correlation to examine the strength of the relationship between two variables, regression to predict a result-side target variable from a cause-side explanatory variable, and estimation and hypothesis testing to infer a population from a sample. The exam asks about the role of each method and the correspondence between the terms."
-  },
-  "terms": [
+  "goals_jp": [
+    "**相関係数** の値から、2 つの変数の関係の向きと強さを読み取れる。",
+    "回帰の式で、予測に使う側と予測される側の **変数の役割** を見分けられる。",
+    "**標本** から **母集団** を推し量る 2 つの方法 (値を見積もる・仮説を判断する) を区別できる。"
+  ],
+  "goals_zh": [
+    "能够根据**相关系数**的值，读出两个变量之间关系的方向与强弱。",
+    "能够在回归方程中分清用来预测的一方与被预测的一方，即**变量的角色**。",
+    "能够区分由**样本**推断**总体**的两种方法（估计数值、判断假设）。"
+  ],
+  "goals_en": [
+    "Read the direction and strength of the relationship between two variables from the value of the **correlation coefficient**.",
+    "In a regression equation, tell apart the **roles of the variables**: the one used to predict and the one being predicted.",
+    "Distinguish the two ways of drawing conclusions about a **population** from a **sample**: estimating a value and judging a hypothesis."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "結果・位置づけ"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "结果・定位"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Output / role"
+  ],
+  "overview_rows": [
     {
       "term": "相関係数",
-      "definition_jp": "2つの変数の関係の強さと向きを-1〜+1で表す指標。",
-      "explanation_jp": "相関係数は、2つの変数がどれくらい強く関連し合っているかを-1から+1の数値で示す指標です。+1に近いほど一方が増えると他方も増える正の相関が強く、-1に近いほど一方が増えると他方が減る負の相関が強く、0に近いほど関係が弱い(無相関)ことを表します。\n\n注意したいのは、相関が強くても、それが必ずしも因果関係(原因と結果)を意味するわけではないという点です。「相関関係≠因果関係」は試験でよく狙われる観点です。\n\n値の符号(正・負)が関係の向きを、絶対値の大きさが関係の強さを表す、と分けて覚えると確実です。",
-      "analogy_jp": "気温とアイスの売上のように、片方が上がるともう片方も上がる度合いを-1〜+1の物差しで測るイメージ。+1に近いほど二人三脚がそろっています。",
-      "memory_hook_jp": "相関係数といえば-1〜+1で関係の強さと向き(相関≠因果)",
-      "inline_quiz": [
-        "2009h21a-q046"
+      "one_line_jp": "2 変数の直線的な関係の向きと強さを −1〜+1 で表す指標",
+      "one_line_zh": "表示两个变量线性关系的方向与强弱的指标，取值 −1〜+1",
+      "one_line_en": "An index that expresses the direction and strength of a linear relationship between two variables on a scale from −1 to +1",
+      "extra_jp": [
+        "指標",
+        "−1 から +1 の数値"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "相关系数",
-      "term_en": "Correlation coefficient",
-      "definition_zh": "用 -1～+1 表示两个变量关系强弱与方向的指标。",
-      "definition_en": "An index that expresses the strength and direction of the relationship between two variables on a scale from -1 to +1.",
-      "explanation_zh": "相关系数是用 -1 到 +1 的数值来表示两个变量之间关联强度的指标。越接近 +1，表示一方增加时另一方也增加的正相关越强；越接近 -1，表示一方增加时另一方减少的负相关越强；越接近 0，表示关系越弱（无相关）。\n\n需要注意的是，即使相关性很强，也不一定意味着存在因果关系（原因与结果）。“相关关系≠因果关系”是考试常考的考点。\n\n把数值的符号（正、负）表示关系的方向、绝对值的大小表示关系的强弱分开记忆，就能记得牢靠。",
-      "explanation_en": "A correlation coefficient is an index that shows how strongly two variables are related, using a value from -1 to +1. The closer it is to +1, the stronger the positive correlation (when one increases, the other also increases); the closer to -1, the stronger the negative correlation (when one increases, the other decreases); and the closer to 0, the weaker the relationship (no correlation).\n\nBe careful: even when the correlation is strong, it does not necessarily mean there is a causal relationship (cause and effect). \"Correlation ≠ causation\" is a point often tested on the exam.\n\nIt is reliable to remember it by separating the two parts: the sign of the value (positive or negative) shows the direction of the relationship, and the magnitude of the absolute value shows its strength.",
-      "analogy_zh": "就像气温与冰淇淋销量那样，用 -1～+1 的标尺来衡量一方上升时另一方也跟着上升的程度。越接近 +1，两者就越像两人三足那样步调一致。",
-      "analogy_en": "Imagine using a -1 to +1 ruler to measure how much one thing rises when the other rises, like temperature and ice cream sales. The closer to +1, the more the two move in lockstep, like a three-legged race in perfect step.",
-      "memory_hook_zh": "说到相关系数，就是用 -1～+1 表示关系的强弱与方向（相关≠因果）。",
-      "memory_hook_en": "Correlation coefficient → strength and direction of the relationship on a -1 to +1 scale (correlation ≠ causation)."
+      "extra_zh": [
+        "指标",
+        "−1 到 +1 的数值"
+      ],
+      "extra_en": [
+        "Index",
+        "A number from −1 to +1"
+      ]
     },
     {
       "term": "説明変数",
-      "definition_jp": "結果を説明・予測するために使う原因側の変数。",
-      "explanation_jp": "説明変数は、回帰分析などで「原因」や「入力」にあたる変数で、結果を説明したり予測したりするために使います。独立変数とも呼ばれます。\n\n次に学ぶ目的変数と必ずペアで登場し、説明変数が原因側、目的変数が結果側という役割の対応を押さえることが重要です。例えば「広告費(説明変数)から売上(目的変数)を予測する」のように使います。\n\n試験では、説明変数=原因・入力側、目的変数=結果・出力側という対応の取り違えが狙われます。どちらが原因側かをセットで覚えましょう。",
-      "analogy_jp": "料理で「火加減」を変えると「焼き上がり」が変わるとき、火加減が説明変数。結果を左右する手元のつまみにあたります。",
-      "memory_hook_jp": "説明変数といえば原因・入力側(目的変数を説明する変数)",
-      "inline_quiz": [
-        "2009h21a-q070"
+      "one_line_jp": "結果を説明・予測するために使う、原因側の変数",
+      "one_line_zh": "用来解释或预测结果的、处于原因一侧的变量",
+      "one_line_en": "The variable on the cause side, used to explain or predict an outcome",
+      "extra_jp": [
+        "変数の役割",
+        "回帰式の入力 (x)"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "说明变量",
-      "term_en": "Explanatory variable",
-      "definition_zh": "为了说明、预测结果而使用的原因侧的变量。",
-      "definition_en": "The cause-side variable used to explain or predict a result.",
-      "explanation_zh": "说明变量是在回归分析等中相当于“原因”或“输入”的变量，用于说明或预测结果。它也被称为自变量。\n\n它一定与接下来要学的目标变量成对出现，关键是要把握说明变量为原因侧、目标变量为结果侧这一作用上的对应关系。例如可以这样使用：“从广告费（说明变量）预测销售额（目标变量）”。\n\n考试会考查把说明变量＝原因、输入侧与目标变量＝结果、输出侧弄混的情况。要把哪一个是原因侧成套记住。",
-      "explanation_en": "An explanatory variable is the variable that corresponds to the \"cause\" or \"input\" in regression analysis and similar methods, used to explain or predict a result. It is also called an independent variable.\n\nIt always appears paired with the target variable you will learn next, and it is important to grasp the correspondence of roles: the explanatory variable is the cause side and the target variable is the result side. For example, it is used as in \"predict sales (target variable) from advertising cost (explanatory variable).\"\n\nThe exam targets the confusion of which is which: explanatory variable = cause/input side, target variable = result/output side. Remember as a set which one is the cause side.",
-      "analogy_zh": "做菜时，改变“火候”就会改变“烤制成果”，这时火候就是说明变量。它相当于左右结果的、握在手里的那个旋钮。",
-      "analogy_en": "When cooking, changing the \"heat level\" changes how the dish turns out; here the heat level is the explanatory variable. It is like the knob in your hand that determines the result.",
-      "memory_hook_zh": "说到说明变量，就是原因、输入侧（用来说明目标变量的变量）。",
-      "memory_hook_en": "Explanatory variable → the cause/input side (the variable that explains the target variable)."
+      "extra_zh": [
+        "变量的角色",
+        "回归方程的输入 (x)"
+      ],
+      "extra_en": [
+        "Role of a variable",
+        "Input to the regression equation (x)"
+      ]
     },
     {
       "term": "目的変数",
-      "definition_jp": "説明変数から予測・説明される結果側の変数。",
-      "explanation_jp": "目的変数は、回帰分析などで「結果」や「出力」にあたる変数で、説明変数を使って予測・説明したい対象です。従属変数とも呼ばれます。\n\n説明変数と対をなし、目的変数が結果側、説明変数が原因側という役割の対応で理解します。「気温(説明変数)から来客数(目的変数)を予測する」のように、知りたい・当てたい方が目的変数です。\n\n試験では説明変数と目的変数のどちらが原因側・結果側かを問う形が定番です。目的変数=求めたい結果、と覚えると取り違えを防げます。",
-      "analogy_jp": "天気予報で「明日の気温」を当てたいとき、その気温が目的変数。手がかり(湿度や気圧など)から導き出したいゴールにあたります。",
-      "memory_hook_jp": "目的変数といえば結果・出力側(説明変数から予測したい変数)",
-      "inline_quiz": [
-        "2009h21h-q007"
+      "one_line_jp": "説明変数を使って予測・説明したい、結果側の変数",
+      "one_line_zh": "想借助说明变量来预测或解释的、处于结果一侧的变量",
+      "one_line_en": "The variable on the outcome side that you want to predict or explain using explanatory variables",
+      "extra_jp": [
+        "変数の役割",
+        "回帰式の出力 (y)"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "目标变量",
-      "term_en": "Target variable",
-      "definition_zh": "由说明变量预测、说明的结果侧的变量。",
-      "definition_en": "The result-side variable that is predicted or explained from the explanatory variable.",
-      "explanation_zh": "目标变量是在回归分析等中相当于“结果”或“输出”的变量，是想用说明变量来预测、说明的对象。它也被称为因变量。\n\n它与说明变量成对，按目标变量为结果侧、说明变量为原因侧的作用对应来理解。如“从气温（说明变量）预测来客数（目标变量）”那样，想了解、想预测的一方就是目标变量。\n\n考试中固定会考查说明变量与目标变量哪个是原因侧、哪个是结果侧。记住目标变量＝想求的结果，就能防止弄混。",
-      "explanation_en": "A target variable is the variable that corresponds to the \"result\" or \"output\" in regression analysis and similar methods; it is the thing you want to predict or explain using the explanatory variable. It is also called a dependent variable.\n\nIt forms a pair with the explanatory variable, and you understand it by the role correspondence: the target variable is the result side and the explanatory variable is the cause side. As in \"predict the number of customers (target variable) from temperature (explanatory variable),\" the thing you want to know or guess is the target variable.\n\nThe exam regularly asks which of the explanatory and target variables is the cause side or the result side. Remembering target variable = the result you want to find prevents mix-ups.",
-      "analogy_zh": "在天气预报中想要预测“明天的气温”时，那个气温就是目标变量。它相当于想从线索（湿度、气压等）推导出来的目标终点。",
-      "analogy_en": "When you want to predict \"tomorrow's temperature\" in a weather forecast, that temperature is the target variable. It is like the goal you want to derive from clues such as humidity and air pressure.",
-      "memory_hook_zh": "说到目标变量，就是结果、输出侧（想从说明变量预测出的变量）。",
-      "memory_hook_en": "Target variable → the result/output side (the variable you want to predict from the explanatory variable)."
+      "extra_zh": [
+        "变量的角色",
+        "回归方程的输出 (y)"
+      ],
+      "extra_en": [
+        "Role of a variable",
+        "Output of the regression equation (y)"
+      ]
     },
     {
       "term": "推定",
-      "definition_jp": "標本のデータから母集団の値を推し量る統計的手法。",
-      "explanation_jp": "推定は、全体(母集団)を調べきれないとき、その一部を抜き出した標本のデータから母集団の平均などの値を推し量る手法です。推測統計の出発点となる考え方です。\n\n推定には、平均を1つの値で示す点推定と、「95%の確からしさでこの範囲」のように幅を持たせて示す区間推定があります。標本から全体を見積もる、という方向性が核心です。\n\n試験では、全数調査が難しい場面で標本から母集団を見積もる手法であること、次に学ぶ仮説検定との役割の違いが問われます。推定=値を見積もる、と押さえましょう。",
-      "analogy_jp": "鍋全体の味見をするのに、一口だけすくって味を判断するイメージ。すくった一口(標本)から鍋全体(母集団)の味を推し量ります。",
-      "memory_hook_jp": "推定といえば標本から母集団の値を見積もる",
-      "inline_quiz": [
-        "2009h21h-q080"
+      "one_line_jp": "標本のデータから母集団の平均などの値を見積もる方法",
+      "one_line_zh": "根据样本数据推算总体平均值等数值的方法",
+      "one_line_en": "A method of working out values such as the population mean from sample data",
+      "extra_jp": [
+        "標本からの推測",
+        "1 つの値、または幅を持った範囲"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "估计",
-      "term_en": "Estimation",
-      "definition_zh": "从样本数据推测总体值的统计方法。",
-      "definition_en": "A statistical method for inferring values of the population from sample data.",
-      "explanation_zh": "当无法把整体（总体）全部调查清楚时，估计是从抽取出的一部分（样本）数据来推测总体的平均值等取值的方法。它是推断统计的出发点思想。\n\n估计包括用一个值表示平均的点估计，以及像“以 95% 的把握落在这个范围内”那样带有幅度地表示的区间估计。从样本来估算整体，这个方向是其核心。\n\n考试会考查它是在难以做全数调查的场景下从样本估算总体的方法，以及它与接下来要学的假设检验在作用上的区别。把握住估计＝估算取值即可。",
-      "explanation_en": "When you cannot fully investigate the whole (the population), estimation is a method that infers values such as the population mean from the data of a sample drawn from a part of it. It is the starting-point idea of inferential statistics.\n\nEstimation includes point estimation, which shows the mean as a single value, and interval estimation, which shows it with a range, as in \"this range with 95% confidence.\" Its core is the direction of estimating the whole from a sample.\n\nThe exam asks that it is a method for estimating the population from a sample when a complete survey is difficult, and how its role differs from the hypothesis testing you will learn next. Keep in mind estimation = estimating a value.",
-      "analogy_zh": "就像要尝整锅菜的味道，只舀一口来判断味道那样。从舀起的一口（样本）来推测整锅（总体）的味道。",
-      "analogy_en": "Imagine judging the taste of a whole pot by scooping out just one spoonful. From that one spoonful (the sample), you infer the taste of the whole pot (the population).",
-      "memory_hook_zh": "说到估计，就是从样本估算总体的取值。",
-      "memory_hook_en": "Estimation → estimating the value of the population from a sample."
+      "extra_zh": [
+        "由样本推断",
+        "一个数值，或有一定宽度的范围"
+      ],
+      "extra_en": [
+        "Inference from a sample",
+        "A single value, or a range with a width"
+      ]
     },
     {
       "term": "仮説検定",
-      "definition_jp": "立てた仮説が統計的に正しいかを標本データで判断する手法。",
-      "explanation_jp": "仮説検定は、「ある仮説が正しいといえるか」を標本データをもとに統計的に判断する手法です。推定が値を見積もるのに対し、仮説検定は仮説の妥当性を結論づける点が違います。\n\n手順は、否定したい仮説(帰無仮説)を立て、それが起こりにくいかどうかを基準と照らして判断し、起こりにくければ帰無仮説を棄却して対立仮説を採用します。判断には有意水準(例:5%)という基準を使います。\n\n試験では、推定と検定の役割の違いや、標本から仮説の真偽を統計的に判定する流れが問われます。検定=仮説のYES/NOを統計で判断、と整理しましょう。",
-      "analogy_jp": "「このコインは公平だ」という仮説を、何度も投げた結果(標本)で検証するイメージ。偏りが偶然では説明しにくいほど大きければ「公平でない」と判断します。",
-      "memory_hook_jp": "仮説検定といえば標本で仮説の正否を統計的に判断",
-      "inline_quiz": [
-        "2010h22a-q082"
+      "one_line_jp": "帰無仮説を標本のデータで退けるかどうかを判断する方法",
+      "one_line_zh": "用样本数据判断是否拒绝原假设的方法",
+      "one_line_en": "A method of deciding, from sample data, whether to reject the null hypothesis",
+      "extra_jp": [
+        "標本からの推測",
+        "棄却する／棄却しない の判断"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD\n  A[\"仮説を立てる\\n帰無仮説\"] --> B[\"標本データを集める\"]\n  B --> C[\"有意水準と照合\"]\n  C --> D[\"起こりにくい\\n→棄却\"]\n  C --> E[\"起こりうる\\n→棄却しない\"]",
-        "svg_path": "figures/technology-13-34-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "假设检验",
-      "term_en": "Hypothesis testing",
-      "definition_zh": "用样本数据判断所提出的假设在统计上是否正确的方法。",
-      "definition_en": "A method for judging, from sample data, whether a stated hypothesis is statistically correct.",
-      "explanation_zh": "假设检验是基于样本数据，从统计上判断“某个假设是否可以说是正确的”的方法。与估计是估算取值不同，假设检验在于对假设的合理性下结论，这是二者的区别。\n\n其步骤是：先提出想要否定的假设（原假设），对照基准判断它是否难以发生，如果难以发生就拒绝原假设、采用备择假设。判断时使用显著性水平（如 5%）这一基准。\n\n考试会考查估计与检验在作用上的区别，以及从样本对假设真伪做统计判定的流程。可整理为：检验＝用统计判断假设的 YES／NO。",
-      "explanation_en": "Hypothesis testing is a method that judges, statistically and based on sample data, whether \"a certain hypothesis can be said to be correct.\" Whereas estimation estimates a value, hypothesis testing differs in that it concludes whether a hypothesis is valid.\n\nThe procedure is: set up the hypothesis you want to reject (the null hypothesis), judge against a criterion whether it is unlikely to occur, and if it is unlikely, reject the null hypothesis and adopt the alternative hypothesis. For the judgment, a criterion called the significance level (e.g., 5%) is used.\n\nThe exam asks about the difference in roles between estimation and testing, and the flow of statistically judging whether a hypothesis is true or false from a sample. Organize it as: testing = judging YES/NO of a hypothesis with statistics.",
-      "analogy_zh": "就像通过多次投掷的结果（样本）来检验“这枚硬币是公平的”这一假设。如果偏差大到难以用偶然来解释，就判断为“不公平”。",
-      "analogy_en": "Imagine verifying the hypothesis \"this coin is fair\" by the results of tossing it many times (the sample). If the bias is too large to be explained by chance, you judge that it is \"not fair.\"",
-      "memory_hook_zh": "说到假设检验，就是用样本从统计上判断假设的正误。",
-      "memory_hook_en": "Hypothesis testing → statistically judging whether a hypothesis is right or wrong using a sample."
+      "extra_zh": [
+        "由样本推断",
+        "拒绝／不拒绝 的判断"
+      ],
+      "extra_en": [
+        "Inference from a sample",
+        "A decision: reject or do not reject"
+      ]
     },
     {
       "term": "回帰分析",
-      "definition_jp": "説明変数から目的変数を予測する関係式を求める分析手法。",
-      "explanation_jp": "回帰分析は、説明変数と目的変数の関係を数式(回帰式)で表し、説明変数の値から目的変数の値を予測する手法です。説明変数が1つの場合を単回帰、複数の場合を重回帰と呼びます。\n\n相関分析が「関係の強さを測る」ことに重点を置くのに対し、回帰分析は「関係を式にして予測する」ことに重点を置きます。両者の目的の違いが試験のポイントです。\n\n試験では、説明変数から目的変数を予測する手法であること、相関分析との役割の違いが問われます。回帰=式を作って予測、と覚えましょう。",
-      "analogy_jp": "過去の「気温」と「アイス売上」のデータから直線の式を引き、明日の気温を入れて売上を予測するイメージ。点の傾向を貫く一本の線を引く作業です。",
-      "memory_hook_jp": "回帰分析といえば説明変数から目的変数を式で予測",
-      "inline_quiz": [
-        "2010h22h-q067"
+      "one_line_jp": "説明変数と目的変数の関係を式で表し、予測に使う分析",
+      "one_line_zh": "用方程表示说明变量与目标变量的关系，并用于预测的分析",
+      "one_line_en": "An analysis that expresses the relationship between explanatory and target variables as an equation and uses it to predict",
+      "extra_jp": [
+        "関係の分析",
+        "回帰式"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR\n  A[\"説明変数\\n原因・入力\"] -->|\"回帰式\"| B[\"目的変数\\n結果・予測値\"]\n  C[\"過去データ\"] --> D[\"回帰式を求める\"]\n  D --> A",
-        "svg_path": "figures/technology-13-34-u03-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "回归分析",
-      "term_en": "Regression analysis",
-      "definition_zh": "求出从说明变量预测目标变量的关系式的分析方法。",
-      "definition_en": "An analysis method that finds a relational equation to predict the target variable from the explanatory variable.",
-      "explanation_zh": "回归分析是用数学式（回归式）表示说明变量与目标变量的关系，并由说明变量的值来预测目标变量的值的方法。说明变量只有一个时称为一元回归，有多个时称为多元回归。\n\n相对于相关分析侧重“测量关系的强弱”，回归分析侧重“把关系写成式子来预测”。二者目的的区别是考试要点。\n\n考试会考查它是从说明变量预测目标变量的方法，以及它与相关分析在作用上的区别。记住回归＝建立式子来预测即可。",
-      "explanation_en": "Regression analysis is a method that expresses the relationship between the explanatory variable and the target variable as a mathematical equation (regression equation) and predicts the value of the target variable from the value of the explanatory variable. The case of one explanatory variable is called simple regression, and the case of multiple is called multiple regression.\n\nWhereas correlation analysis emphasizes \"measuring the strength of the relationship,\" regression analysis emphasizes \"turning the relationship into an equation to predict.\" The difference in their purposes is a key exam point.\n\nThe exam asks that it is a method for predicting the target variable from the explanatory variable, and how its role differs from correlation analysis. Remember regression = build an equation and predict.",
-      "analogy_zh": "就像从过去的“气温”和“冰淇淋销量”数据画出一条直线的式子，再代入明天的气温来预测销量那样。这是画一条贯穿散点趋势的直线的工作。",
-      "analogy_en": "Imagine drawing a straight-line equation from past data of \"temperature\" and \"ice cream sales,\" then plugging in tomorrow's temperature to predict sales. It is the work of drawing a single line that runs through the trend of the points.",
-      "memory_hook_zh": "说到回归分析，就是用式子从说明变量预测目标变量。",
-      "memory_hook_en": "Regression analysis → predicting the target variable from the explanatory variable with an equation."
+      "extra_zh": [
+        "关系的分析",
+        "回归方程"
+      ],
+      "extra_en": [
+        "Analysis of relationships",
+        "Regression equation"
+      ]
     },
     {
       "term": "相関分析",
-      "definition_jp": "2変数の関係の強さを相関係数で調べる分析手法。",
-      "explanation_jp": "相関分析は、2つの変数の間にどれくらい強い関係があるかを、相関係数などを用いて調べる分析手法です。データを散布図に描いて傾向を確認することもよく行われます。\n\n回帰分析と対をなす手法で、相関分析は「関係の強さの測定」、回帰分析は「関係式による予測」という役割分担で理解します。相関分析では、関係が強くても因果関係があるとは限らない点に注意が必要です。\n\n試験では、相関分析と回帰分析の目的の違い、相関分析が関係の強さを測る手法であることが問われます。相関分析=強さを測る、回帰分析=式で予測、と対で覚えましょう。",
-      "analogy_jp": "勉強時間とテスト点数を散布図に並べ、点が右肩上がりに集まっているかを眺めて「関係の強さ」を確かめるイメージです。",
-      "memory_hook_jp": "相関分析といえば相関係数で2変数の関係の強さを測る",
-      "inline_quiz": [
-        "2011h23tokubetsu-q056"
+      "one_line_jp": "相関係数や散布図で 2 変数の関係の強さを調べる分析",
+      "one_line_zh": "用相关系数和散点图考察两个变量关系强弱的分析",
+      "one_line_en": "An analysis that examines how strongly two variables are related, using the correlation coefficient and a scatter plot",
+      "extra_jp": [
+        "関係の分析",
+        "相関係数と散布図"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "相关分析",
-      "term_en": "Correlation analysis",
-      "definition_zh": "用相关系数考察两个变量关系强弱的分析方法。",
-      "definition_en": "An analysis method that examines the strength of the relationship between two variables using the correlation coefficient.",
-      "explanation_zh": "相关分析是用相关系数等来考察两个变量之间存在多强关系的分析方法。也常把数据画成散点图来确认趋势。\n\n它与回归分析成对，按相关分析为“关系强弱的测量”、回归分析为“用关系式预测”的分工来理解。在相关分析中，需要注意即使关系很强也不一定存在因果关系。\n\n考试会考查相关分析与回归分析在目的上的区别，以及相关分析是测量关系强弱的方法。成对记住：相关分析＝测量强弱，回归分析＝用式子预测。",
-      "explanation_en": "Correlation analysis is an analysis method that uses the correlation coefficient and the like to examine how strong the relationship is between two variables. It is also common to plot the data as a scatter diagram to confirm the trend.\n\nIt forms a pair with regression analysis, and you understand it by the division of roles: correlation analysis is \"measuring the strength of the relationship,\" and regression analysis is \"prediction by a relational equation.\" In correlation analysis, note that even a strong relationship does not necessarily mean there is causation.\n\nThe exam asks about the difference in purpose between correlation analysis and regression analysis, and that correlation analysis is a method for measuring the strength of the relationship. Remember as a pair: correlation analysis = measure strength, regression analysis = predict with an equation.",
-      "analogy_zh": "就像把学习时间和考试分数并排画在散点图上，看那些点是否朝右上方聚集，从而确认“关系的强弱”那样。",
-      "analogy_en": "Imagine plotting study time and test scores together on a scatter diagram and looking at whether the points cluster toward the upper right, to confirm the \"strength of the relationship.\"",
-      "memory_hook_zh": "说到相关分析，就是用相关系数测量两个变量关系的强弱。",
-      "memory_hook_en": "Correlation analysis → measuring the strength of the relationship between two variables using the correlation coefficient."
+      "extra_zh": [
+        "关系的分析",
+        "相关系数与散点图"
+      ],
+      "extra_en": [
+        "Analysis of relationships",
+        "Correlation coefficient and scatter plot"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "相関係数",
+      "term_zh": "相关系数",
+      "term_en": "Correlation coefficient",
+      "one_jp": "**相関係数** は、2 つの変数の **直線的な関係** がどの向きにどれだけ強いかを、**−1 から +1** までの数値で表す指標である。",
+      "one_zh": "**相关系数**[[jp:相関係数]]是用 **−1 到 +1** 之间的数值，表示两个变量之间的**线性关系**朝哪个方向、有多强的指标。",
+      "one_en": "The **correlation coefficient** [[jp:相関係数]] is an index that expresses, as a number from **−1 to +1**, which way and how strongly two variables move together in a **linear relationship**.",
+      "detail_jp": "値が正なら一方が増えると他方も増える傾向にある **正の相関**、負なら一方が増えると他方が減る傾向にある **負の相関** を表し、符号が関係の向きを、絶対値の大きさが関係の強さを示す。2 つの変数の値の組を、縦軸と横軸をとった平面に 1 つずつ点として打った図を **散布図** といい、絶対値が 1 に近いほど点は直線に沿って並ぶ。",
+      "detail_zh": "值为正表示一方增加时另一方也有增加倾向的**正相关**，值为负表示一方增加时另一方有减少倾向的**负相关**；符号代表关系的方向，绝对值大小代表关系的强弱。把两个变量的每一对数值，在以纵轴和横轴构成的平面上逐一画成点，这样的图叫**散点图**[[jp:散布図]]，绝对值越接近 1，点就越沿着一条直线排列。",
+      "detail_en": "A positive value means **positive correlation**, where one variable tends to rise as the other rises, and a negative value means **negative correlation**, where one tends to fall as the other rises; the sign shows the direction, and the size of the absolute value shows the strength. A **scatter plot** [[jp:散布図]] places each pair of values as a dot on a plane with a vertical and a horizontal axis, and the closer the absolute value is to 1, the more closely the dots line up along a straight line.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "記号では **r** と書かれることが多い。",
+      "hook_zh": "常用符号 **r** 表示。",
+      "hook_en": "It is often written with the symbol **r**.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "相関係数の絶対値が大きくても、一方が他方の原因だとは限らない。両方に影響する別の要因があるだけでも、絶対値が大きくなることがある。",
+          "text_zh": "即使**相关系数**[[jp:相関係数]]的绝对值很大，也不能断定一方是另一方的原因。只要存在同时影响两者的其他因素，绝对值同样可能变大。",
+          "text_en": "A large absolute value of the **correlation coefficient** [[jp:相関係数]] does not mean one variable causes the other. A separate factor that affects both can be enough to push the absolute value up."
+        },
+        {
+          "kind": "mix",
+          "text_jp": "関係の強さは絶対値で比べる。例えば −0.8 は +0.3 よりも関係が強い。",
+          "text_zh": "关系的强弱要用绝对值来比较。例如 −0.8 比 +0.3 表示的关系更强。",
+          "text_en": "Compare strength by the absolute value. For example, −0.8 indicates a stronger relationship than +0.3."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "値の目安",
+              "zh": "值的大致范围",
+              "en": "Approximate value"
+            },
+            {
+              "jp": "関係の向き",
+              "zh": "关系的方向",
+              "en": "Direction of the relationship"
+            },
+            {
+              "jp": "値の組を点で打ったときの並び",
+              "zh": "把数值对画成点时的分布",
+              "en": "How the points line up when each pair of values is plotted"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "+1 に近い",
+                  "zh": "接近 +1",
+                  "en": "Close to +1"
+                },
+                {
+                  "jp": "正の相関 (一方が増えると他方も増える傾向)",
+                  "zh": "正相关（一方增加，另一方也倾向于增加）",
+                  "en": "Positive correlation (as one rises, the other tends to rise too)"
+                },
+                {
+                  "jp": "右上がりの直線に沿って集まる",
+                  "zh": "沿着向右上升的直线聚集",
+                  "en": "Clustered along a line rising to the right"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "0 に近い",
+                  "zh": "接近 0",
+                  "en": "Close to 0"
+                },
+                {
+                  "jp": "直線的な関係がほとんどない",
+                  "zh": "几乎没有线性关系",
+                  "en": "Almost no linear relationship"
+                },
+                {
+                  "jp": "直線の傾向が見えない",
+                  "zh": "看不出直线趋势",
+                  "en": "No straight-line trend is visible"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "−1 に近い",
+                  "zh": "接近 −1",
+                  "en": "Close to −1"
+                },
+                {
+                  "jp": "負の相関 (一方が増えると他方は減る傾向)",
+                  "zh": "负相关（一方增加，另一方倾向于减少）",
+                  "en": "Negative correlation (as one rises, the other tends to fall)"
+                },
+                {
+                  "jp": "右下がりの直線に沿って集まる",
+                  "zh": "沿着向右下降的直线聚集",
+                  "en": "Clustered along a line falling to the right"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "相関係数 は、2 つの変数の 直線的な関係 がどの向きにどれだけ強いかを、−1 から +1 までの数値で表す指標である。",
+      "definition_zh": "相关系数相関係数是用 −1 到 +1 之间的数值，表示两个变量之间的线性关系朝哪个方向、有多强的指标。",
+      "definition_en": "The correlation coefficient 相関係数 is an index that expresses, as a number from −1 to +1, which way and how strongly two variables move together in a linear relationship.",
+      "explanation_jp": "値が正なら一方が増えると他方も増える傾向にある 正の相関、負なら一方が増えると他方が減る傾向にある 負の相関 を表し、符号が関係の向きを、絶対値の大きさが関係の強さを示す。2 つの変数の値の組を、縦軸と横軸をとった平面に 1 つずつ点として打った図を 散布図 といい、絶対値が 1 に近いほど点は直線に沿って並ぶ。",
+      "explanation_zh": "值为正表示一方增加时另一方也有增加倾向的正相关，值为负表示一方增加时另一方有减少倾向的负相关；符号代表关系的方向，绝对值大小代表关系的强弱。把两个变量的每一对数值，在以纵轴和横轴构成的平面上逐一画成点，这样的图叫散点图散布図，绝对值越接近 1，点就越沿着一条直线排列。",
+      "explanation_en": "A positive value means positive correlation, where one variable tends to rise as the other rises, and a negative value means negative correlation, where one tends to fall as the other rises; the sign shows the direction, and the size of the absolute value shows the strength. A scatter plot 散布図 places each pair of values as a dot on a plane with a vertical and a horizontal axis, and the closer the absolute value is to 1, the more closely the dots line up along a straight line.",
+      "memory_hook_jp": "記号では r と書かれることが多い。",
+      "memory_hook_zh": "常用符号 r 表示。",
+      "memory_hook_en": "It is often written with the symbol r.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "説明変数",
+      "term_zh": "说明变量",
+      "term_en": "Explanatory variable",
+      "one_jp": "**説明変数** は、結果を説明したり予測したりするために使う、**原因側 (入力側)** の変数である。",
+      "one_zh": "**说明变量**[[jp:説明変数]]是用来解释或预测结果的、处于**原因一侧（输入一侧）**的变量。",
+      "one_en": "An **explanatory variable** [[jp:説明変数]] is a variable on the **cause side (input side)**, used to explain or predict an outcome.",
+      "detail_jp": "**独立変数** とも呼ばれ、回帰分析では式に値を入れる側にあたる。例えば、気温から飲み物の売れ行きを予測するなら、気温が説明変数になる。",
+      "detail_zh": "它也叫**自变量**[[jp:独立変数]]，在回归分析中是代入方程的一方。例如，要根据气温预测饮料的销量，气温就是说明变量。",
+      "detail_en": "It is also called an **independent variable** [[jp:独立変数]], and in regression analysis it is the value you plug into the equation. If you predict drink sales from the temperature, for example, the temperature is the explanatory variable.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "どの項目が説明変数になるかは、項目そのものでなく分析の目的で決まる。同じ項目でも、別の分析では予測したい側になることがある。",
+          "text_zh": "哪个项目成为**说明变量**[[jp:説明変数]]，取决于分析的目的，而不是项目本身。同一个项目在另一项分析中，也可能成为想要预测的一方。",
+          "text_en": "Whether an item becomes an **explanatory variable** [[jp:説明変数]] depends on the purpose of the analysis, not on the item itself. The same item can be the one you want to predict in a different analysis."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "説明変数 は、結果を説明したり予測したりするために使う、原因側 (入力側) の変数である。",
+      "definition_zh": "说明变量説明変数是用来解释或预测结果的、处于原因一侧（输入一侧）的变量。",
+      "definition_en": "An explanatory variable 説明変数 is a variable on the cause side (input side), used to explain or predict an outcome.",
+      "explanation_jp": "独立変数 とも呼ばれ、回帰分析では式に値を入れる側にあたる。例えば、気温から飲み物の売れ行きを予測するなら、気温が説明変数になる。",
+      "explanation_zh": "它也叫自变量独立変数，在回归分析中是代入方程的一方。例如，要根据气温预测饮料的销量，气温就是说明变量。",
+      "explanation_en": "It is also called an independent variable 独立変数, and in regression analysis it is the value you plug into the equation. If you predict drink sales from the temperature, for example, the temperature is the explanatory variable.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "目的変数",
+      "term_zh": "目标变量",
+      "term_en": "Target variable",
+      "one_jp": "**目的変数** は、説明変数を使って予測・説明したい、**結果側 (出力側)** の変数である。",
+      "one_zh": "**目标变量**[[jp:目的変数]]是想借助说明变量来预测或解释的、处于**结果一侧（输出一侧）**的变量。",
+      "one_en": "A **target variable** [[jp:目的変数]] is a variable on the **outcome side (output side)** that you want to predict or explain using explanatory variables.",
+      "detail_jp": "**従属変数** とも呼ばれ、回帰分析では式から値を求める側にあたる。分析で知りたい量そのものを目的変数に置く。",
+      "detail_zh": "它也叫**因变量**[[jp:従属変数]]，在回归分析中是由方程求出值的一方。分析中想知道的那个量本身，就设为目标变量。",
+      "detail_en": "It is also called a **dependent variable** [[jp:従属変数]], and in regression analysis it is the value the equation produces. The quantity you actually want to find out is the one you set as the target variable.",
+      "analogy_jp": "宝探しのゴールにあたる宝箱のようなもの。地図や手がかり (説明変数) をたどって、たどり着きたい先が目的変数である。",
+      "analogy_zh": "就像寻宝终点的宝箱。沿着地图和线索（说明变量）一路寻找，想要抵达的地方就是目标变量。",
+      "analogy_en": "Think of the treasure chest at the end of a treasure hunt. You follow the map and clues (explanatory variables), and the place you are trying to reach is the target variable.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "説明変数をいくつ使っても、1 つの式で求める目的変数は 1 つである。",
+          "text_zh": "无论用了多少个**说明变量**[[jp:説明変数]]，一个方程求出的**目标变量**[[jp:目的変数]]都只有一个。",
+          "text_en": "However many **explanatory variables** [[jp:説明変数]] you use, one equation yields only one **target variable** [[jp:目的変数]]."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "目的変数 は、説明変数を使って予測・説明したい、結果側 (出力側) の変数である。",
+      "definition_zh": "目标变量目的変数是想借助说明变量来预测或解释的、处于结果一侧（输出一侧）的变量。",
+      "definition_en": "A target variable 目的変数 is a variable on the outcome side (output side) that you want to predict or explain using explanatory variables.",
+      "explanation_jp": "従属変数 とも呼ばれ、回帰分析では式から値を求める側にあたる。分析で知りたい量そのものを目的変数に置く。",
+      "explanation_zh": "它也叫因变量従属変数，在回归分析中是由方程求出值的一方。分析中想知道的那个量本身，就设为目标变量。",
+      "explanation_en": "It is also called a dependent variable 従属変数, and in regression analysis it is the value the equation produces. The quantity you actually want to find out is the one you set as the target variable.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "推定",
+      "term_zh": "估计",
+      "term_en": "Estimation",
+      "one_jp": "**推定** は、調べたい集団全体 (**母集団**) から一部を取り出した **標本** のデータをもとに、母集団の平均などの値を見積もる方法である。",
+      "one_zh": "**估计**[[jp:推定]]是根据从想要调查的整个群体（**总体**[[jp:母集団]]）中抽出的一部分即**样本**[[jp:標本]]的数据，推算总体平均值等数值的方法。",
+      "one_en": "**Estimation** [[jp:推定]] is a method of working out values such as the mean of the whole group you want to study (the **population** [[jp:母集団]]) from data on a **sample** [[jp:標本]], a part taken from that group.",
+      "detail_jp": "1 つの値で示す **点推定** と、幅を持った範囲で示す **区間推定** がある。区間推定では、その範囲に母集団の値が入る確からしさを **信頼度** として添える。",
+      "detail_zh": "估计分为用一个数值表示的**点估计**[[jp:点推定]]和用有一定宽度的范围表示的**区间估计**[[jp:区間推定]]。在区间估计中，总体的值落在该范围内的可信程度，以**置信度**[[jp:信頼度]]的形式一并给出。",
+      "detail_en": "There is **point estimation** [[jp:点推定]], which gives a single value, and **interval estimation** [[jp:区間推定]], which gives a range with a width. Interval estimation also states how likely it is that the population value falls in that range, as a **confidence level** [[jp:信頼度]].",
+      "analogy_jp": "鍋のスープをひとさじ味見して、鍋全体の塩加減を判断するようなもの。ひとさじが標本、鍋全体が母集団にあたる。",
+      "analogy_zh": "就像舀一勺汤尝尝，来判断整锅汤咸淡如何。这一勺相当于样本，整锅汤相当于总体。",
+      "analogy_en": "It is like tasting one spoonful of soup to judge how salty the whole pot is. The spoonful is the sample, and the whole pot is the population.",
+      "hook_jp": "「推」し量って「定」める。手元の一部から全体の値を決めにいく、と字で覚える。",
+      "hook_zh": "日语写作「推定」：「推」是推测，「定」是确定。从手头的一部分出发，去确定整体的数值。",
+      "hook_en": "The Japanese word 推定 combines 推 (to infer) and 定 (to fix). You start from the part in hand and pin down a value for the whole.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "同じ信頼度なら、標本が大きいほど区間推定の幅は狭くなる。同じ標本で信頼度を高くすると、幅は広がる。",
+          "text_zh": "置信度相同时，样本越大，**区间估计**[[jp:区間推定]]的范围越窄。用同一样本提高置信度，范围就会变宽。",
+          "text_en": "At the same confidence level, a larger sample gives a narrower **interval estimate** [[jp:区間推定]]. With the same sample, raising the confidence level widens the range."
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "点推定",
+            "zh": "点估计",
+            "en": "Point estimation"
+          },
+          "b": {
+            "jp": "区間推定",
+            "zh": "区间估计",
+            "en": "Interval estimation"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "示し方",
+                "zh": "表示方式",
+                "en": "How it is stated"
+              },
+              "a": {
+                "jp": "1 つの値で示す",
+                "zh": "用一个数值表示",
+                "en": "As a single value"
+              },
+              "b": {
+                "jp": "幅を持った範囲で示す",
+                "zh": "用有一定宽度的范围表示",
+                "en": "As a range with a width"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "示し方の例",
+                "zh": "表示示例",
+                "en": "Example"
+              },
+              "a": {
+                "jp": "平均は 52 点",
+                "zh": "平均分为 52 分",
+                "en": "The mean is 52 points"
+              },
+              "b": {
+                "jp": "平均は 48〜56 点の範囲",
+                "zh": "平均分在 48〜56 分的范围内",
+                "en": "The mean lies between 48 and 56 points"
+              }
+            },
+            {
+              "label": {
+                "jp": "確からしさ",
+                "zh": "可信程度",
+                "en": "Certainty"
+              },
+              "a": {
+                "jp": "値だけで表す",
+                "zh": "只给出数值",
+                "en": "Shown by the value alone"
+              },
+              "b": {
+                "jp": "信頼度 (例えば 95%) を添える",
+                "zh": "附上置信度（例如 95%）",
+                "en": "Comes with a confidence level (for example, 95%)"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "推定 は、調べたい集団全体 (母集団) から一部を取り出した 標本 のデータをもとに、母集団の平均などの値を見積もる方法である。",
+      "definition_zh": "估计推定是根据从想要调查的整个群体（总体母集団）中抽出的一部分即样本標本的数据，推算总体平均值等数值的方法。",
+      "definition_en": "Estimation 推定 is a method of working out values such as the mean of the whole group you want to study (the population 母集団) from data on a sample 標本, a part taken from that group.",
+      "explanation_jp": "1 つの値で示す 点推定 と、幅を持った範囲で示す 区間推定 がある。区間推定では、その範囲に母集団の値が入る確からしさを 信頼度 として添える。",
+      "explanation_zh": "估计分为用一个数值表示的点估计点推定和用有一定宽度的范围表示的区间估计区間推定。在区间估计中，总体的值落在该范围内的可信程度，以置信度信頼度的形式一并给出。",
+      "explanation_en": "There is point estimation 点推定, which gives a single value, and interval estimation 区間推定, which gives a range with a width. Interval estimation also states how likely it is that the population value falls in that range, as a confidence level 信頼度.",
+      "memory_hook_jp": "「推」し量って「定」める。手元の一部から全体の値を決めにいく、と字で覚える。",
+      "memory_hook_zh": "日语写作「推定」：「推」是推测，「定」是确定。从手头的一部分出发，去确定整体的数值。",
+      "memory_hook_en": "The Japanese word 推定 combines 推 (to infer) and 定 (to fix). You start from the part in hand and pin down a value for the whole.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "仮説検定",
+      "term_zh": "假设检验",
+      "term_en": "Hypothesis testing",
+      "one_jp": "**仮説検定** は、否定したい仮説 (**帰無仮説**) を立て、標本のデータがその仮説のもとでどれほど起こりにくいかを見て、仮説を退けるかどうかを判断する方法である。",
+      "one_zh": "**假设检验**[[jp:仮説検定]]是先提出想要否定的假设（**原假设**[[jp:帰無仮説]]），再看样本数据在该假设下有多难出现，从而判断是否拒绝该假设的方法。",
+      "one_en": "**Hypothesis testing** [[jp:仮説検定]] is a method in which you set up a hypothesis you hope to reject (the **null hypothesis** [[jp:帰無仮説]]), check how unlikely the sample data would be if it were true, and decide whether to reject it.",
+      "detail_jp": "判断の基準になる確率を **有意水準** といい、例えば 5% や 1% を前もって決めておく。データが帰無仮説のもとで有意水準より起こりにくければ帰無仮説を **棄却** し、代わりに主張したい仮説 (**対立仮説**) を採る。",
+      "detail_zh": "作为判断标准的概率叫**显著性水平**[[jp:有意水準]]，例如事先定为 5% 或 1%。如果数据在原假设下出现的概率低于显著性水平，就**拒绝**[[jp:棄却]]原假设，转而采用想要主张的假设（**备择假设**[[jp:対立仮説]]）。",
+      "detail_en": "The probability used as the threshold is called the **significance level** [[jp:有意水準]], and it is set in advance, at 5% or 1% for example. If the data would be less likely than the significance level under the null hypothesis, you **reject** [[jp:棄却]] it and adopt the hypothesis you actually want to claim (the **alternative hypothesis** [[jp:対立仮説]]).",
+      "analogy_jp": "裁判の「疑わしきは罰せず」に近い。無罪 (帰無仮説) を前提に置き、それでは説明できないほどの証拠がそろったときにだけ有罪と判断する。",
+      "analogy_zh": "类似于审判中的“疑罪从无”。以无罪（原假设）为前提，只有当证据多到无法用无罪来解释时，才判定有罪。",
+      "analogy_en": "It resembles the courtroom rule of \"innocent until proven guilty.\" You start by assuming innocence (the null hypothesis) and find the defendant guilty only when the evidence is too strong to explain that way.",
+      "hook_jp": "**帰無** =「無に帰す」。最初から退けられることを狙って立てる仮説、と字で覚える。",
+      "hook_zh": "日语「**帰無**」意为“归于无”。可以从字面记住：这是一开始就打算被推翻而提出的假设。",
+      "hook_en": "The Japanese term **帰無** means \"to return to nothing.\" Remember it as a hypothesis set up from the start in the hope of being thrown out.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "帰無仮説を棄却できなかったことは、帰無仮説が正しいと示されたことではない。退けるだけの根拠がそろわなかった、という意味にとどまる。",
+          "text_zh": "不能拒绝**原假设**[[jp:帰無仮説]]，并不等于证明了原假设是正确的。它只意味着拒绝它的依据还不够充分。",
+          "text_en": "Failing to reject the **null hypothesis** [[jp:帰無仮説]] does not show that it is true. It only means there was not enough evidence to reject it."
+        },
+        {
+          "kind": "mix",
+          "text_jp": "有意水準はデータを見る前に決める判断の基準である。小さく決めるほど、帰無仮説は棄却されにくくなる。",
+          "text_zh": "**显著性水平**[[jp:有意水準]]是在查看数据之前就定好的判断标准。定得越小，原假设就越难被拒绝。",
+          "text_en": "The **significance level** [[jp:有意水準]] is a decision threshold fixed before looking at the data. The smaller you set it, the harder it is to reject the null hypothesis."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "h0",
+              "label": {
+                "jp": "帰無仮説を立てる",
+                "zh": "提出原假设",
+                "en": "Set up the null hypothesis"
+              }
+            },
+            {
+              "id": "data",
+              "label": {
+                "jp": "標本のデータを集める",
+                "zh": "收集样本数据",
+                "en": "Collect sample data"
+              }
+            },
+            {
+              "id": "cmp",
+              "label": {
+                "jp": "起こりにくさを前もって決めた基準と比べる",
+                "zh": "把出现的难易程度与事先定好的标准比较",
+                "en": "Compare how unlikely the result is with a preset threshold"
+              }
+            },
+            {
+              "id": "judge",
+              "label": {
+                "jp": "帰無仮説を退けるかを決める",
+                "zh": "决定是否拒绝原假设",
+                "en": "Decide whether to reject the null hypothesis"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "否定したい仮説を、確かめる対象として先に置く。",
+            "caption_zh": "先把想要否定的假设作为检验对象摆出来。",
+            "caption_en": "First, put forward the hypothesis you want to disprove as the thing to test.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "母集団から取り出した標本のデータを用意する。",
+            "caption_zh": "准备好从总体中抽取的样本数据。",
+            "caption_en": "Prepare data from a sample drawn from the population.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "仮説のもとでその結果がどれほど起こりにくいかを、前もって決めた基準と比べる。",
+            "caption_zh": "把在该假设下这一结果有多难出现，与事先定好的标准进行比较。",
+            "caption_en": "Compare how unlikely this result would be under that hypothesis with a threshold set in advance.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "基準より起こりにくければ帰無仮説を棄却し、そうでなければ棄却しない。",
+            "caption_zh": "如果比标准更难出现，就拒绝原假设；否则不拒绝。",
+            "caption_en": "If the result is less likely than the threshold, reject the null hypothesis; otherwise, do not reject it.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "仮説検定 は、否定したい仮説 (帰無仮説) を立て、標本のデータがその仮説のもとでどれほど起こりにくいかを見て、仮説を退けるかどうかを判断する方法である。",
+      "definition_zh": "假设检验仮説検定是先提出想要否定的假设（原假设帰無仮説），再看样本数据在该假设下有多难出现，从而判断是否拒绝该假设的方法。",
+      "definition_en": "Hypothesis testing 仮説検定 is a method in which you set up a hypothesis you hope to reject (the null hypothesis 帰無仮説), check how unlikely the sample data would be if it were true, and decide whether to reject it.",
+      "explanation_jp": "判断の基準になる確率を 有意水準 といい、例えば 5% や 1% を前もって決めておく。データが帰無仮説のもとで有意水準より起こりにくければ帰無仮説を 棄却 し、代わりに主張したい仮説 (対立仮説) を採る。",
+      "explanation_zh": "作为判断标准的概率叫显著性水平有意水準，例如事先定为 5% 或 1%。如果数据在原假设下出现的概率低于显著性水平，就拒绝棄却原假设，转而采用想要主张的假设（备择假设対立仮説）。",
+      "explanation_en": "The probability used as the threshold is called the significance level 有意水準, and it is set in advance, at 5% or 1% for example. If the data would be less likely than the significance level under the null hypothesis, you reject 棄却 it and adopt the hypothesis you actually want to claim (the alternative hypothesis 対立仮説).",
+      "memory_hook_jp": "帰無 =「無に帰す」。最初から退けられることを狙って立てる仮説、と字で覚える。",
+      "memory_hook_zh": "日语「帰無」意为“归于无”。可以从字面记住：这是一开始就打算被推翻而提出的假设。",
+      "memory_hook_en": "The Japanese term 帰無 means \"to return to nothing.\" Remember it as a hypothesis set up from the start in the hope of being thrown out.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "回帰分析",
+      "term_zh": "回归分析",
+      "term_en": "Regression analysis",
+      "one_jp": "**回帰分析** は、目的変数と説明変数の関係を **回帰式** という式で表し、説明変数の値から目的変数の値を予測する分析手法である。",
+      "one_zh": "**回归分析**[[jp:回帰分析]]是用叫作**回归方程**[[jp:回帰式]]的式子表示目标变量与说明变量的关系，并根据说明变量的值预测目标变量值的分析方法。",
+      "one_en": "**Regression analysis** [[jp:回帰分析]] is an analysis method that expresses the relationship between a target variable and explanatory variables as a **regression equation** [[jp:回帰式]], and uses the explanatory variable values to predict the target variable.",
+      "detail_jp": "説明変数が 1 つなら **単回帰分析**、2 つ以上なら **重回帰分析** と呼ぶ。単回帰では、散布図の点の並びに最もよく合う直線 y = ax + b を求めて予測に使う。",
+      "detail_zh": "说明变量只有 1 个时叫**一元回归分析**[[jp:単回帰分析]]，有 2 个以上时叫**多元回归分析**[[jp:重回帰分析]]。一元回归会求出与散点图中点的分布最吻合的直线 y = ax + b，用于预测。",
+      "detail_en": "With one explanatory variable it is called **simple regression analysis** [[jp:単回帰分析]], and with two or more it is called **multiple regression analysis** [[jp:重回帰分析]]. Simple regression finds the straight line y = ax + b that best fits the dots on a scatter plot and uses it for prediction.",
+      "analogy_jp": "散らばった足跡の間に一本の道を引き、その道をたどって次の一歩がどこに着くかを見積もるようなもの。",
+      "analogy_zh": "就像在零散的脚印之间画出一条路，再顺着这条路估计下一步会落在哪里。",
+      "analogy_en": "It is like drawing a single path through scattered footprints, then following that path to guess where the next step will land.",
+      "hook_jp": "「回帰」の名は、親子の身長を調べた研究で、子の身長が平均に戻る (回帰する) 傾向が見つかったことに由来する。",
+      "hook_zh": "“回归”一名源自一项考察父母与子女身高的研究：研究发现子女的身高有回到平均值（回归）的倾向。",
+      "hook_en": "The name \"regression\" comes from a study of parents' and children's heights, which found that children's heights tend to move back (regress) toward the average.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "回帰分析は、説明変数から目的変数を求める式を作る。2 変数を対等に扱い、関係の強さを測る相関分析とは目的が違う。",
+          "text_zh": "**回归分析**[[jp:回帰分析]]是建立由**说明变量**[[jp:説明変数]]求出**目标变量**[[jp:目的変数]]的方程。它与把两个变量同等看待、衡量关系强弱的**相关分析**[[jp:相関分析]]目的不同。",
+          "text_en": "**Regression analysis** [[jp:回帰分析]] builds an equation that gives the **target variable** [[jp:目的変数]] from the **explanatory variables** [[jp:説明変数]]. Its purpose differs from **correlation analysis** [[jp:相関分析]], which treats the two variables equally and measures how strongly they are related."
+        },
+        {
+          "kind": "mix",
+          "text_jp": "回帰式で予測できるのは、式を求めたデータの傾向が続く範囲である。データの範囲から大きく外れた値を入れた予測は当てにしにくい。",
+          "text_zh": "**回归方程**[[jp:回帰式]]能够预测的，只限于求方程时所用数据的趋势仍然延续的范围。代入远远超出数据范围的值所做的预测，难以信赖。",
+          "text_en": "A **regression equation** [[jp:回帰式]] can predict only within the range where the trend in the data used to build it continues. Predictions made by plugging in values far outside that data range are hard to trust."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "collect",
+              "label": {
+                "jp": "過去のデータを集める",
+                "zh": "收集过去的数据",
+                "en": "Collect past data"
+              }
+            },
+            {
+              "id": "fit",
+              "label": {
+                "jp": "回帰式を求める",
+                "zh": "求出回归方程",
+                "en": "Find the regression equation"
+              }
+            },
+            {
+              "id": "input",
+              "label": {
+                "jp": "説明変数の値を式に入れる",
+                "zh": "把说明变量的值代入方程",
+                "en": "Plug the explanatory variable values into the equation"
+              }
+            },
+            {
+              "id": "predict",
+              "label": {
+                "jp": "目的変数の値を予測する",
+                "zh": "预测目标变量的值",
+                "en": "Predict the target variable value"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "説明変数と目的変数の値をそろえた過去のデータを用意する。",
+            "caption_zh": "准备好说明变量与目标变量数值成对齐全的过去数据。",
+            "caption_en": "Prepare past data in which explanatory and target variable values are paired up.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "データの傾向に最もよく合う式を求める。",
+            "caption_zh": "求出与数据趋势最吻合的方程。",
+            "caption_en": "Find the equation that best fits the trend in the data.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "予測したい場面の説明変数の値を、求めた式に入れる。",
+            "caption_zh": "把想要预测的情形下说明变量的值代入求得的方程。",
+            "caption_en": "Plug the explanatory variable values for the case you want to predict into the equation.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "式の計算結果を、目的変数の予測値として使う。",
+            "caption_zh": "把方程的计算结果作为目标变量的预测值使用。",
+            "caption_en": "Use the result of the calculation as the predicted value of the target variable.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "回帰分析 は、目的変数と説明変数の関係を 回帰式 という式で表し、説明変数の値から目的変数の値を予測する分析手法である。",
+      "definition_zh": "回归分析回帰分析是用叫作回归方程回帰式的式子表示目标变量与说明变量的关系，并根据说明变量的值预测目标变量值的分析方法。",
+      "definition_en": "Regression analysis 回帰分析 is an analysis method that expresses the relationship between a target variable and explanatory variables as a regression equation 回帰式, and uses the explanatory variable values to predict the target variable.",
+      "explanation_jp": "説明変数が 1 つなら 単回帰分析、2 つ以上なら 重回帰分析 と呼ぶ。単回帰では、散布図の点の並びに最もよく合う直線 y = ax + b を求めて予測に使う。",
+      "explanation_zh": "说明变量只有 1 个时叫一元回归分析単回帰分析，有 2 个以上时叫多元回归分析重回帰分析。一元回归会求出与散点图中点的分布最吻合的直线 y = ax + b，用于预测。",
+      "explanation_en": "With one explanatory variable it is called simple regression analysis 単回帰分析, and with two or more it is called multiple regression analysis 重回帰分析. Simple regression finds the straight line y = ax + b that best fits the dots on a scatter plot and uses it for prediction.",
+      "memory_hook_jp": "「回帰」の名は、親子の身長を調べた研究で、子の身長が平均に戻る (回帰する) 傾向が見つかったことに由来する。",
+      "memory_hook_zh": "“回归”一名源自一项考察父母与子女身高的研究：研究发现子女的身高有回到平均值（回归）的倾向。",
+      "memory_hook_en": "The name \"regression\" comes from a study of parents' and children's heights, which found that children's heights tend to move back (regress) toward the average.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "相関分析",
+      "term_zh": "相关分析",
+      "term_en": "Correlation analysis",
+      "one_jp": "**相関分析** は、2 つの変数の間にどの程度の関係があるかを、**相関係数** や **散布図** を使って調べる分析手法である。",
+      "one_zh": "**相关分析**[[jp:相関分析]]是使用**相关系数**[[jp:相関係数]]和**散点图**[[jp:散布図]]，考察两个变量之间存在多大程度关系的分析方法。",
+      "one_en": "**Correlation analysis** [[jp:相関分析]] is an analysis method that uses the **correlation coefficient** [[jp:相関係数]] and a **scatter plot** [[jp:散布図]] to examine how closely two variables are related.",
+      "detail_jp": "まず散布図を描いて点の並びを見て、相関係数で関係の強さを数値にする。データは、例えば同じ人から測った身長と体重のように、2 つの値を 1 組として集める。",
+      "detail_zh": "先画出散点图观察点的分布，再用相关系数把关系的强弱化为数值。数据要把两个值作为一组来收集，例如从同一个人身上测得的身高和体重。",
+      "detail_en": "You first draw a scatter plot to see how the dots are arranged, then use the correlation coefficient to put the strength of the relationship into a number. The data are collected as pairs of values, such as the height and weight measured from the same person.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "相関係数が 0 に近くても、散布図では曲線状の関係が見えることがある。相関係数が測るのは直線的な関係だけだからである。",
+          "text_zh": "即使**相关系数**[[jp:相関係数]]接近 0，在**散点图**[[jp:散布図]]上也可能看出曲线状的关系。这是因为相关系数衡量的只是线性关系。",
+          "text_en": "Even when the **correlation coefficient** [[jp:相関係数]] is close to 0, a **scatter plot** [[jp:散布図]] may still reveal a curved relationship. This is because the correlation coefficient measures only linear relationships."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "相関分析 は、2 つの変数の間にどの程度の関係があるかを、相関係数 や 散布図 を使って調べる分析手法である。",
+      "definition_zh": "相关分析相関分析是使用相关系数相関係数和散点图散布図，考察两个变量之间存在多大程度关系的分析方法。",
+      "definition_en": "Correlation analysis 相関分析 is an analysis method that uses the correlation coefficient 相関係数 and a scatter plot 散布図 to examine how closely two variables are related.",
+      "explanation_jp": "まず散布図を描いて点の並びを見て、相関係数で関係の強さを数値にする。データは、例えば同じ人から測った身長と体重のように、2 つの値を 1 組として集める。",
+      "explanation_zh": "先画出散点图观察点的分布，再用相关系数把关系的强弱化为数值。数据要把两个值作为一组来收集，例如从同一个人身上测得的身高和体重。",
+      "explanation_en": "You first draw a scatter plot to see how the dots are arranged, then use the correlation coefficient to put the strength of the relationship into a number. The data are collected as pairs of values, such as the height and weight measured from the same person.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "説明変数",
+      "b": "目的変数",
+      "rows": [
+        {
+          "label_jp": "役割",
+          "label_zh": "角色",
+          "label_en": "Role",
+          "a_jp": "結果を説明・予測するための原因側",
+          "a_zh": "用来解释或预测结果的原因一侧",
+          "a_en": "The cause side, used to explain or predict an outcome",
+          "b_jp": "予測・説明したい結果側",
+          "b_zh": "想要预测或解释的结果一侧",
+          "b_en": "The outcome side you want to predict or explain",
+          "key": true
+        },
+        {
+          "label_jp": "別名",
+          "label_zh": "别称",
+          "label_en": "Other name",
+          "a_jp": "独立変数",
+          "a_zh": "自变量",
+          "a_en": "Independent variable",
+          "b_jp": "従属変数",
+          "b_zh": "因变量",
+          "b_en": "Dependent variable",
+          "key": false
+        },
+        {
+          "label_jp": "回帰式での位置",
+          "label_zh": "在回归方程中的位置",
+          "label_en": "Place in the regression equation",
+          "a_jp": "式に入れる値 (x)",
+          "a_zh": "代入方程的值 (x)",
+          "a_en": "The value put into the equation (x)",
+          "b_jp": "式から求める値 (y)",
+          "b_zh": "由方程求出的值 (y)",
+          "b_en": "The value the equation gives (y)",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "推定",
+      "b": "仮説検定",
+      "rows": [
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "母集団の値を見積もる",
+          "a_zh": "推算总体的数值",
+          "a_en": "To work out a population value",
+          "b_jp": "仮説を退けるかどうかを判断する",
+          "b_zh": "判断是否拒绝假设",
+          "b_en": "To decide whether to reject a hypothesis",
+          "key": true
+        },
+        {
+          "label_jp": "結果の形",
+          "label_zh": "结果的形式",
+          "label_en": "Form of the result",
+          "a_jp": "1 つの値、または幅を持った範囲",
+          "a_zh": "一个数值，或有一定宽度的范围",
+          "a_en": "A single value, or a range with a width",
+          "b_jp": "棄却する／棄却しない",
+          "b_zh": "拒绝／不拒绝",
+          "b_en": "Reject / do not reject",
+          "key": false
+        },
+        {
+          "label_jp": "添える確率",
+          "label_zh": "附带的概率",
+          "label_en": "Accompanying probability",
+          "a_jp": "信頼度 (区間推定)",
+          "a_zh": "置信度（区间估计）",
+          "a_en": "Confidence level (interval estimation)",
+          "b_jp": "有意水準",
+          "b_zh": "显著性水平",
+          "b_en": "Significance level",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "回帰分析",
+      "b": "相関分析",
+      "rows": [
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "関係を式で表して予測する",
+          "a_zh": "用方程表示关系并进行预测",
+          "a_en": "To express the relationship as an equation and predict",
+          "b_jp": "関係の強さを測る",
+          "b_zh": "衡量关系的强弱",
+          "b_en": "To measure how strong the relationship is",
+          "key": true
+        },
+        {
+          "label_jp": "変数の扱い",
+          "label_zh": "变量的处理",
+          "label_en": "How the variables are treated",
+          "a_jp": "説明する側と予測される側を分ける",
+          "a_zh": "区分解释的一方与被预测的一方",
+          "a_en": "Separates the explaining side from the predicted side",
+          "b_jp": "2 つの変数を対等に扱う",
+          "b_zh": "同等看待两个变量",
+          "b_en": "Treats the two variables equally",
+          "key": false
+        },
+        {
+          "label_jp": "主な結果",
+          "label_zh": "主要结果",
+          "label_en": "Main output",
+          "a_jp": "回帰式",
+          "a_zh": "回归方程",
+          "a_en": "Regression equation",
+          "b_jp": "相関係数と散布図",
+          "b_zh": "相关系数与散点图",
+          "b_en": "Correlation coefficient and scatter plot",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**相関係数** は −1〜+1 の値で、符号が関係の向き、絶対値が関係の強さを表す。",
+    "相関が強いことは、因果関係があることの証明にはならない。",
+    "**回帰分析** では、説明変数の値を回帰式に入れて目的変数の値を予測する。",
+    "**推定** と **仮説検定** は、どちらも一部の **標本** から全体の **母集団** の性質を推し量る方法である。",
+    "**帰無仮説** を棄却できなかったときは、その仮説が正しいと示されたわけではない。"
+  ],
+  "key_points_zh": [
+    "**相关系数**取 −1〜+1 之间的值，符号表示关系的方向，绝对值表示关系的强弱。",
+    "相关性强并不能证明存在因果关系。",
+    "在**回归分析**中，把说明变量的值代入回归方程，来预测目标变量的值。",
+    "**估计**和**假设检验**都是从一部分**样本**推断整体即**总体**性质的方法。",
+    "不能拒绝**原假设**时，并不意味着证明了该假设是正确的。"
+  ],
+  "key_points_en": [
+    "The **correlation coefficient** takes a value from −1 to +1: its sign shows the direction of the relationship and its absolute value shows the strength.",
+    "A strong correlation is not proof of a cause-and-effect relationship.",
+    "In **regression analysis**, you plug explanatory variable values into the regression equation to predict the target variable.",
+    "**Estimation** and **hypothesis testing** are both ways of inferring properties of the whole **population** from a part of it, the **sample**.",
+    "Failing to reject the **null hypothesis** does not mean it has been shown to be true."
+  ],
+  "overview": {
+    "intro_jp": "相関係数 の値から、2 つの変数の関係の向きと強さを読み取れる。回帰の式で、予測に使う側と予測される側の 変数の役割 を見分けられる。標本 から 母集団 を推し量る 2 つの方法 (値を見積もる・仮説を判断する) を区別できる。",
+    "intro_zh": "能够根据相关系数的值，读出两个变量之间关系的方向与强弱。能够在回归方程中分清用来预测的一方与被预测的一方，即变量的角色。能够区分由样本推断总体的两种方法（估计数值、判断假设）。",
+    "intro_en": "Read the direction and strength of the relationship between two variables from the value of the correlation coefficient. In a regression equation, tell apart the roles of the variables: the one used to predict and the one being predicted. Distinguish the two ways of drawing conclusions about a population from a sample: estimating a value and judging a hypothesis.",
+    "freq_badge": "標準",
+    "est_minutes": 30
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "相関係数: 相関係数といえば-1〜+1で関係の強さと向き(相関≠因果)",
-      "説明変数: 説明変数といえば原因・入力側(目的変数を説明する変数)",
-      "目的変数: 目的変数といえば結果・出力側(説明変数から予測したい変数)",
-      "推定: 推定といえば標本から母集団の値を見積もる",
-      "仮説検定: 仮説検定といえば標本で仮説の正否を統計的に判断",
-      "回帰分析: 回帰分析といえば説明変数から目的変数を式で予測",
-      "相関分析: 相関分析といえば相関係数で2変数の関係の強さを測る"
-    ],
     "key_points_jp": [
-      "相関係数は2変数の関係の強さと向きを-1〜+1で表す。符号が向き、絶対値が強さを示し、相関が強くても因果関係とは限らない点が頻出。",
-      "説明変数(原因・入力側)と目的変数(結果・出力側)はペアで登場し、どちらが原因側かの対応を取り違えないことが重要。",
-      "推定は標本から母集団の値を見積もる手法、仮説検定は標本データで仮説の正否を統計的に判断する手法で、役割の違いが問われる。",
-      "回帰分析は説明変数から目的変数を式で予測する手法、相関分析は相関係数で関係の強さを測る手法で、両者は対比で覚える。",
-      "記述統計(u02)で要約したデータをもとに、本単元では変数間の関係分析と母集団への推測へと発展させる。"
+      "相関係数 は −1〜+1 の値で、符号が関係の向き、絶対値が関係の強さを表す。",
+      "相関が強いことは、因果関係があることの証明にはならない。",
+      "回帰分析 では、説明変数の値を回帰式に入れて目的変数の値を予測する。",
+      "推定 と 仮説検定 は、どちらも一部の 標本 から全体の 母集団 の性質を推し量る方法である。",
+      "帰無仮説 を棄却できなかったときは、その仮説が正しいと示されたわけではない。"
     ],
     "key_points_zh": [
-      "相关系数用 -1～+1 表示两个变量关系的强弱与方向。符号表示方向，绝对值表示强弱；即使相关性强也不一定存在因果关系，这一点常考。",
-      "说明变量（原因、输入侧）与目标变量（结果、输出侧）成对出现，重要的是不要弄混哪一个是原因侧的对应关系。",
-      "估计是从样本估算总体取值的方法，假设检验是用样本数据从统计上判断假设正误的方法，二者作用上的区别会被考查。",
-      "回归分析是用式子从说明变量预测目标变量的方法，相关分析是用相关系数测量关系强弱的方法，二者可对比记忆。",
-      "在描述统计（u02）对数据做汇总的基础上，本单元进一步发展到变量间的关系分析与对总体的推断。"
+      "相关系数取 −1〜+1 之间的值，符号表示关系的方向，绝对值表示关系的强弱。",
+      "相关性强并不能证明存在因果关系。",
+      "在回归分析中，把说明变量的值代入回归方程，来预测目标变量的值。",
+      "估计和假设检验都是从一部分样本推断整体即总体性质的方法。",
+      "不能拒绝原假设时，并不意味着证明了该假设是正确的。"
     ],
     "key_points_en": [
-      "The correlation coefficient expresses the strength and direction of the relationship between two variables on a -1 to +1 scale. The sign shows direction and the absolute value shows strength; the point that a strong correlation does not necessarily mean causation appears frequently.",
-      "The explanatory variable (cause/input side) and the target variable (result/output side) appear as a pair, and it is important not to mix up which one is the cause side.",
-      "Estimation is a method for estimating population values from a sample, and hypothesis testing is a method for statistically judging whether a hypothesis is right or wrong from sample data; the difference in their roles is tested.",
-      "Regression analysis is a method for predicting the target variable from the explanatory variable with an equation, and correlation analysis is a method for measuring the strength of the relationship with the correlation coefficient; the two can be remembered by contrast.",
-      "Building on the data summarized by descriptive statistics (u02), this unit develops further into analyzing relationships between variables and making inferences about the population."
+      "The correlation coefficient takes a value from −1 to +1: its sign shows the direction of the relationship and its absolute value shows the strength.",
+      "A strong correlation is not proof of a cause-and-effect relationship.",
+      "In regression analysis, you plug explanatory variable values into the regression equation to predict the target variable.",
+      "Estimation and hypothesis testing are both ways of inferring properties of the whole population from a part of it, the sample.",
+      "Failing to reject the null hypothesis does not mean it has been shown to be true."
+    ],
+    "memory_hooks_jp": [
+      "相関係数: 記号では r と書かれることが多い。",
+      "推定: 「推」し量って「定」める。手元の一部から全体の値を決めにいく、と字で覚える。",
+      "仮説検定: 帰無 =「無に帰す」。最初から退けられることを狙って立てる仮説、と字で覚える。",
+      "回帰分析: 「回帰」の名は、親子の身長を調べた研究で、子の身長が平均に戻る (回帰する) 傾向が見つかったことに由来する。"
     ],
     "memory_hooks_zh": [
-      "相关系数：说到相关系数，就是用 -1～+1 表示关系的强弱与方向（相关≠因果）。",
-      "说明变量：说到说明变量，就是原因、输入侧（用来说明目标变量的变量）。",
-      "目标变量：说到目标变量，就是结果、输出侧（想从说明变量预测出的变量）。",
-      "估计：说到估计，就是从样本估算总体的取值。",
-      "假设检验：说到假设检验，就是用样本从统计上判断假设的正误。",
-      "回归分析：说到回归分析，就是用式子从说明变量预测目标变量。",
-      "相关分析：说到相关分析，就是用相关系数测量两个变量关系的强弱。"
+      "相关系数：常用符号 r 表示。",
+      "估计：日语写作「推定」：「推」是推测，「定」是确定。从手头的一部分出发，去确定整体的数值。",
+      "假设检验：日语「帰無」意为“归于无”。可以从字面记住：这是一开始就打算被推翻而提出的假设。",
+      "回归分析：“回归”一名源自一项考察父母与子女身高的研究：研究发现子女的身高有回到平均值（回归）的倾向。"
     ],
     "memory_hooks_en": [
-      "Correlation coefficient: Correlation coefficient → strength and direction of the relationship on a -1 to +1 scale (correlation ≠ causation).",
-      "Explanatory variable: Explanatory variable → the cause/input side (the variable that explains the target variable).",
-      "Target variable: Target variable → the result/output side (the variable you want to predict from the explanatory variable).",
-      "Estimation: Estimation → estimating the value of the population from a sample.",
-      "Hypothesis testing: Hypothesis testing → statistically judging whether a hypothesis is right or wrong using a sample.",
-      "Regression analysis: Regression analysis → predicting the target variable from the explanatory variable with an equation.",
-      "Correlation analysis: Correlation analysis → measuring the strength of the relationship between two variables using the correlation coefficient."
+      "Correlation coefficient: It is often written with the symbol r.",
+      "Estimation: The Japanese word 推定 combines 推 (to infer) and 定 (to fix). You start from the part in hand and pin down a value for the whole.",
+      "Hypothesis testing: The Japanese term 帰無 means \"to return to nothing.\" Remember it as a hypothesis set up from the start in the hope of being thrown out.",
+      "Regression analysis: The name \"regression\" comes from a study of parents' and children's heights, which found that children's heights tend to move back (regress) toward the average."
     ]
   },
   "challenge_questions": [
-    "2013h25h-q076",
-    "2014h26a-q095",
-    "2014h26h-q063",
-    "2016h28h-q098",
-    "2018h30a-q005"
+    "2009h21h-q080",
+    "2009h21a-q070",
+    "2009h21h-q007"
   ],
   "source_figures": [
     {
@@ -291,9 +1004,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "统计分析与推断",
-  "title_en": "Statistical Analysis and Inference",
-  "unit_summary_zh": "学习通过相关与回归分析变量之间的关系，以及通过估计与假设检验进行统计推断。",
-  "unit_summary_en": "Learn to analyze relationships between variables using correlation and regression, and to make statistical inferences using estimation and hypothesis testing."
+  }
 }

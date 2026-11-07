@@ -55,7 +55,7 @@
 | b46 | strategy-05-15 | エンジニアリングシステム | u01 u02 | 34 | 9 | done |
 | b47 | technology-22-59 | 通信プロトコル | u01 u02 u03 | 34 | 19 | done |
 | b48 | strategy-02-07 | その他の法律・ガイドライン・情報倫理 | u01 u02 u03 u04 | 32 | 23 | done |
-| b49 | technology-13-34 | 応用数学 (1/2) | u01 u02 u03 u04 u05 | 32 | 31 | todo |
+| b49 | technology-13-34 | 応用数学 (1/2) | u01 u02 u03 u04 u05 | 32 | 31 | done |
 | b50 | technology-13-34 | 応用数学 (2/2) | u06 u07 | 32 | 8 | todo |
 | b51 | technology-14-37 | アルゴリズムとプログラミング | u01 u02 u03 u04 u05 | 32 | 26 | todo |
 | b52 | technology-21-56 | データ操作 | u01 | 31 | 5 | todo |
