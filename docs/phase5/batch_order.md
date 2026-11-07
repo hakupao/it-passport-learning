@@ -62,7 +62,7 @@
 | b53 | strategy-02-08 | 標準化関連 | u01 u02 u03 | 29 | 18 | done |
 | b54 | strategy-03-11 | ビジネス戦略と目標・評価 | u01 | 29 | 6 | done |
 | b55 | strategy-05-16 | e-ビジネス | u01 u02 u03 u04 | 29 | 27 | done |
-| b56 | technology-13-33 | 離散数学 | u01 u02 | 28 | 12 | todo |
+| b56 | technology-13-33 | 離散数学 | u01 u02 | 28 | 12 | done |
 | b57 | management-11-30 | ファシリティマネジメント | u01 | 27 | 5 | done |
 | b58 | technology-15-40 | プロセッサ | u01 u02 | 26 | 10 | todo |
 | b59 | technology-17-46 | ファイルシステム | u01 | 26 | 6 | todo |

@@ -1,273 +1,1207 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-13-33-u02",
   "topic_id": "technology-13-33",
   "category": "technology",
   "title_jp": "集合と論理演算",
+  "title_zh": "集合与逻辑运算",
+  "title_en": "Sets and Logical Operations",
   "unit_summary_jp": "集合の考え方とベン図による表現を起点に、真理値表・論理演算(AND/OR/NOT/XOR)を体系的に学ぶ。",
+  "unit_summary_zh": "以集合的思路与韦恩图的表示为起点，系统地学习真值表和逻辑运算（AND/OR/NOT/XOR）。",
+  "unit_summary_en": "Starting from the concept of sets and their representation with Venn diagrams, systematically learn truth tables and logical operations (AND/OR/NOT/XOR).",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-13-33-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、ものの集まりを扱う「集合」と、それを視覚化する「ベン図」を起点に、論理の入出力を網羅する「真理値表」、そして AND・OR・NOT・XOR からなる「論理演算」を体系的に学びます。集合と論理は離散数学の柱であり、条件分岐やビット演算の基礎として試験でも頻出する重要分野です。",
-    "freq_badge": "標準",
-    "est_minutes": 23,
-    "intro_zh": "在本单元中，我们以处理事物聚集的「集合」及其可视化工具「韦恩图」为起点，进而学习涵盖逻辑输入输出的「真值表」，以及由 AND、OR、NOT、XOR 构成的「逻辑运算」，并系统地加以掌握。集合与逻辑是离散数学的支柱，作为条件分支和位运算的基础，在考试中也是频繁出现的重要领域。",
-    "intro_en": "In this unit, we start from \"sets,\" which deal with collections of things, and \"Venn diagrams,\" which visualize them. We then systematically learn \"truth tables,\" which cover the inputs and outputs of logic, and \"logical operations,\" consisting of AND, OR, NOT, and XOR. Sets and logic are pillars of discrete mathematics and, as the foundation of conditional branching and bit operations, form an important field that appears frequently on the exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**集合** の和・積・補と、**ベン図** の領域を対応させて読めるようになる",
+    "**真理値表** を作り、表から演算や論理式を見分けられるようになる",
+    "**AND** と **OR** は片方だけが 1 の行で、**OR** と **XOR** は両方が 1 の行で、出力の違いを区別できるようになる"
+  ],
+  "goals_zh": [
+    "能把**集合**的并、交、补与**韦恩图**中的区域对应起来解读。",
+    "能列出**真值表**，并从表中辨别出是哪种运算或逻辑式。",
+    "能区分 **AND** 与 **OR** 在只有一方为 1 的行上、**OR** 与 **XOR** 在两方都为 1 的行上的输出差异。"
+  ],
+  "goals_en": [
+    "Read the union, intersection, and complement of **sets** as regions of a **Venn diagram**.",
+    "Build a **truth table** and identify the operation or logical expression it shows.",
+    "Tell apart the outputs of **AND** and **OR** on rows where only one input is 1, and of **OR** and **XOR** on the row where both inputs are 1."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "見分ける手がかり"
+  ],
+  "overview_cols_zh": [
+    "类型",
+    "辨别线索"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "How to tell it apart"
+  ],
+  "overview_rows": [
     {
       "term": "集合",
-      "definition_jp": "ある条件で定まる、はっきり区別できるものの集まり。",
-      "explanation_jp": "集合とは、「条件を満たすものの集まり」を一つのまとまりとして扱う考え方です。集合に含まれる一つひとつを要素といい、ある対象がその集合に属するか否かが明確に決まることが前提です。\n\n基本的な操作に、両方に共通する部分を取る「積集合(AND に対応)」、いずれかに含まれる部分をまとめる「和集合(OR に対応)」、含まれないものを取る「補集合(NOT に対応)」があります。試験では、これらの集合演算が後の論理演算と対応する点や、ベン図での読み取りが問われます。集合の考え方は、データの絞り込みや検索条件の組み立ての土台にもなります。",
-      "analogy_jp": "クラスの「メガネをかけている人」「部活に入っている人」のような名簿のグループ分け。条件で人をまとめ、両方に入る人・どちらかに入る人を考えるのと同じです。",
-      "memory_hook_jp": "集合といえば条件で定まるものの集まり",
-      "inline_quiz": [
-        "2010h22h-q069"
+      "one_line_jp": "属するかどうかがはっきり決まるものの集まり",
+      "one_line_zh": "归属与否可以明确判定的事物的全体",
+      "one_line_en": "A collection of things whose membership is clearly decided",
+      "extra_jp": [
+        "考え方",
+        "要素・部分集合・和・積・補"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "集合",
-      "term_en": "Set",
-      "definition_zh": "由某个条件确定的、能够清楚区分的事物的聚集。",
-      "definition_en": "A collection of clearly distinguishable things determined by a certain condition.",
-      "explanation_zh": "集合是一种把「满足某条件的事物的聚集」作为一个整体来处理的思路。集合中的每一个个体称为元素，前提是某个对象是否属于该集合能够明确确定。\n\n基本操作有：取两者共同部分的「交集（对应 AND）」、把任意一方所包含的部分汇总起来的「并集（对应 OR）」、取不包含在内的部分的「补集（对应 NOT）」。考试中会考查这些集合运算与后续逻辑运算的对应关系，以及韦恩图的判读。集合的思路也是数据筛选和检索条件构建的基础。",
-      "explanation_en": "A set is a way of thinking that treats a \"collection of things satisfying a condition\" as a single whole. Each individual contained in a set is called an element, and the premise is that whether a given object belongs to the set is clearly determined.\n\nBasic operations include the \"intersection (corresponds to AND),\" which takes the part common to both; the \"union (corresponds to OR),\" which combines the parts contained in either; and the \"complement (corresponds to NOT),\" which takes what is not contained. The exam asks how these set operations correspond to the later logical operations, as well as how to read Venn diagrams. The concept of sets is also the foundation for narrowing down data and constructing search conditions.",
-      "analogy_zh": "就像把班级里「戴眼镜的人」「参加社团的人」这样按名册分组。用条件把人归类，再考虑同时属于两边的人、属于任意一边的人，道理是一样的。",
-      "analogy_en": "Like grouping a class roster into \"people who wear glasses\" or \"people in a club.\" You sort people by a condition, then consider who falls into both and who falls into either — the same idea as sets.",
-      "memory_hook_zh": "说到集合，就是由条件确定的事物的聚集",
-      "memory_hook_en": "Set → a collection of things determined by a condition"
+      "extra_zh": [
+        "概念",
+        "元素・子集・并・交・补"
+      ],
+      "extra_en": [
+        "Concept",
+        "Element, subset, union, intersection, complement"
+      ]
     },
     {
       "term": "ベン図",
-      "definition_jp": "集合の関係を円の重なりで視覚的に表す図。",
-      "explanation_jp": "ベン図は、複数の集合を円で表し、その重なりや位置関係で「共通部分」「合併部分」「含まれない部分」を一目で分かるようにした図です。円が重なった中央が積集合、二つの円全体が和集合、円の外側が補集合にあたります。\n\n集合の演算と論理演算(AND/OR/NOT)を直観的に結びつける橋渡し役で、塗りつぶされた領域がどの演算に対応するかを読み取る問題が試験で頻出します。文章だけでは分かりにくい条件の重なりを図で確かめられる点が強みです。",
-      "analogy_jp": "二つの輪を一部重ねて床に置き、重なった部分に「どちらの輪にも入る人」が立つ遊びのようなもの。立つ場所で所属が一目で分かります。",
-      "memory_hook_jp": "ベン図といえば円の重なりで集合の関係を表す図",
-      "inline_quiz": [
-        "2015h27a-q087"
+      "one_line_jp": "集合を円で描き、重なりで関係を示す図",
+      "one_line_zh": "用圆表示集合、以重叠表示关系的图",
+      "one_line_en": "Diagram that draws sets as circles and shows relations by overlap",
+      "extra_jp": [
+        "図",
+        "円の内側か外側かで領域を読む"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"ベン図\"]; A --> B[\"重なり=積集合(AND)\"]; A --> C[\"全体=和集合(OR)\"]; A --> D[\"円の外=補集合(NOT)\"]",
-        "svg_path": "figures/technology-13-33-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "韦恩图",
-      "term_en": "Venn Diagram",
-      "definition_zh": "用圆的重叠来直观表示集合关系的图。",
-      "definition_en": "A diagram that visually represents the relationships between sets using overlapping circles.",
-      "explanation_zh": "韦恩图用圆来表示多个集合，通过它们的重叠和位置关系，使「共同部分」「合并部分」「不包含的部分」一目了然。两圆重叠的中央对应交集，两个圆的整体对应并集，圆的外侧对应补集。\n\n它充当将集合运算与逻辑运算（AND/OR/NOT）直观联系起来的桥梁，考试中频繁出现判读涂色区域对应哪种运算的题目。其优势在于，仅凭文字难以理解的条件重叠关系，可以通过图来加以确认。",
-      "explanation_en": "A Venn diagram represents multiple sets as circles and, through their overlap and positional relationships, makes the \"common part,\" \"combined part,\" and \"non-included part\" clear at a glance. The center where two circles overlap is the intersection, the whole of the two circles is the union, and the outside of the circles is the complement.\n\nIt serves as a bridge that intuitively links set operations to logical operations (AND/OR/NOT), and questions asking which operation a shaded region corresponds to appear frequently on the exam. Its strength is that overlapping conditions, which are hard to grasp from text alone, can be confirmed with a diagram.",
-      "analogy_zh": "就像把两个圈部分重叠地放在地上，让「两个圈都属于的人」站在重叠部分的游戏。从站的位置就能一眼看出归属。",
-      "analogy_en": "Like a game where two hoops are placed partly overlapping on the floor, and \"people belonging to both hoops\" stand in the overlap. Where you stand shows your membership at a glance.",
-      "memory_hook_zh": "说到韦恩图，就是用圆的重叠表示集合关系的图",
-      "memory_hook_en": "Venn diagram → a figure showing set relationships through overlapping circles"
+      "extra_zh": [
+        "图",
+        "按圆内或圆外读取区域"
+      ],
+      "extra_en": [
+        "Diagram",
+        "Read each region by inside or outside a circle"
+      ]
     },
     {
       "term": "真理値表",
-      "definition_jp": "入力の全組合せに対する論理演算の結果を網羅した表。",
-      "explanation_jp": "真理値表は、論理演算の入力が取りうるすべての組合せ(真=1/偽=0)を並べ、それぞれに対する出力を一覧にした表です。入力が2つなら 00・01・10・11 の4通りすべてを書き出します。\n\n個別の論理演算子(AND・OR・NOT など)の振る舞いは、この表で定義・確認できます。試験では、与えられた真理値表がどの演算かを判定したり、AND と OR の結果の違いを表で見分けたりする問題が出ます。演算子の意味を暗記に頼らず、表で確実に読み解けることが得点の鍵です。",
-      "analogy_jp": "自動販売機の「ボタンA・Bを押したか押さないか」の全パターンと、その時出る商品を一覧にした早見表のようなもの。あらゆる入力と結果が一目で分かります。",
-      "memory_hook_jp": "真理値表といえば入力の全組合せと結果を網羅した表",
-      "inline_quiz": [
-        "2012h24a-q082"
+      "one_line_jp": "入力の全組合せと出力を並べた表",
+      "one_line_zh": "列出输入的所有组合及其输出的表",
+      "one_line_en": "Table listing every input combination with its output",
+      "extra_jp": [
+        "表",
+        "入力 n 個なら 2 の n 乗行"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"入力の全組合せ(00/01/10/11)\"] --> B[\"論理演算\"]; B --> C[\"出力(0または1)\"]; C --> D[\"真理値表に一覧化\"]",
-        "svg_path": "figures/technology-13-33-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "真值表",
-      "term_en": "Truth Table",
-      "definition_zh": "针对输入的所有组合，完整列出逻辑运算结果的表。",
-      "definition_en": "A table that exhaustively lists the results of a logical operation for all combinations of inputs.",
-      "explanation_zh": "真值表是把逻辑运算的输入所能取的所有组合（真=1／假=0）排列出来，并将各自对应的输出汇总成一览的表。若有两个输入，就要写出 00、01、10、11 共 4 种全部情况。\n\n各个逻辑运算符（AND、OR、NOT 等）的行为，都可以用这张表来定义和确认。考试中会出现判断给定真值表属于哪种运算、或用表来辨别 AND 与 OR 结果差异的题目。不依赖死记运算符的含义，而能用表确切解读，是得分的关键。",
-      "explanation_en": "A truth table lists all possible combinations of the inputs of a logical operation (true = 1 / false = 0) and compiles the corresponding output for each into a single overview. With two inputs, you write out all four cases: 00, 01, 10, and 11.\n\nThe behavior of each logical operator (AND, OR, NOT, etc.) can be defined and confirmed with this table. The exam includes questions that determine which operation a given truth table represents, or that distinguish the difference between AND and OR results using the table. Being able to read it reliably from the table, rather than relying on memorizing the meaning of operators, is the key to scoring.",
-      "analogy_zh": "就像把自动售货机「是否按下按钮A、B」的全部组合，以及此时出货的商品列成一张速查表。所有输入与结果一目了然。",
-      "analogy_en": "Like a quick-reference chart listing every pattern of \"whether buttons A and B on a vending machine are pressed\" together with the product that comes out each time. Every input and result is clear at a glance.",
-      "memory_hook_zh": "说到真值表，就是完整列出输入所有组合与结果的表",
-      "memory_hook_en": "Truth table → a table covering all input combinations and their results"
+      "extra_zh": [
+        "表",
+        "n 个输入就有 2 的 n 次方行"
+      ],
+      "extra_en": [
+        "Table",
+        "n inputs give 2 to the power n rows"
+      ]
     },
     {
       "term": "論理演算",
-      "definition_jp": "真(1)・偽(0)の値を扱う AND・OR・NOT などの演算の総称。",
-      "explanation_jp": "論理演算は、真(1)と偽(0)の二値を入力とし、決められた規則で結果を求める演算の総称です。基本となるのは論理積(AND)・論理和(OR)・否定(NOT)で、これに排他的論理和(XOR)などが加わります。\n\n各演算の意味は真理値表で定義され、集合演算(積・和・補)やベン図とも対応します。試験では、条件の組合せ判定やコンピュータ内部のビット演算の基礎として頻出します。AND は「すべて真で真」、OR は「一つでも真で真」、NOT は「真偽を反転」という基本の振る舞いを押さえることが重要です。",
-      "analogy_jp": "「傘を持ち、かつ長靴も履いていれば外出OK(AND)」「電車かバスのどちらかが動けば通勤可(OR)」のように、条件を組み合わせて可否を決める判断のしくみです。",
-      "memory_hook_jp": "論理演算といえば真偽を扱う AND・OR・NOT の総称",
-      "inline_quiz": [
-        "2013h25a-q064",
-        "2013h25h-q082"
+      "one_line_jp": "真 (1) と偽 (0) の 2 値に対する演算の総称",
+      "one_line_zh": "对真（1）和假（0）两个值进行的运算的总称",
+      "one_line_en": "Umbrella term for operations on the two values true (1) and false (0)",
+      "extra_jp": [
+        "総称",
+        "結果も 0 か 1"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"論理演算\"]; A --> B[\"AND(論理積)\"]; A --> C[\"OR(論理和)\"]; A --> D[\"NOT(否定)\"]; A --> E[\"XOR(排他的論理和)\"]",
-        "svg_path": "figures/technology-13-33-u02-t03.svg",
-        "rendered": true
-      },
-      "term_zh": "逻辑运算",
-      "term_en": "Logical Operation",
-      "definition_zh": "处理真（1）、假（0）值的 AND、OR、NOT 等运算的总称。",
-      "definition_en": "A general term for operations such as AND, OR, and NOT that handle true (1) and false (0) values.",
-      "explanation_zh": "逻辑运算是以真（1）和假（0）两个值作为输入，按既定规则求出结果的运算的总称。最基本的是逻辑与（AND）、逻辑或（OR）、否定（NOT），在此基础上再加上异或（XOR）等。\n\n各运算的含义由真值表定义，并与集合运算（交、并、补）以及韦恩图相对应。考试中，它作为条件组合判断和计算机内部位运算的基础而频繁出现。重要的是掌握基本行为：AND 是「全部为真才为真」，OR 是「只要有一个为真就为真」，NOT 是「反转真假」。",
-      "explanation_en": "A logical operation is a general term for operations that take the two values true (1) and false (0) as inputs and produce a result according to fixed rules. The basics are logical AND, logical OR, and negation (NOT), to which exclusive OR (XOR) and others are added.\n\nThe meaning of each operation is defined by a truth table and corresponds to set operations (intersection, union, complement) and to Venn diagrams. On the exam, it appears frequently as the basis for combining-condition judgments and for bit operations inside computers. It is important to grasp the basic behavior: AND is \"true only when all are true,\" OR is \"true when at least one is true,\" and NOT \"inverts true and false.\"",
-      "analogy_zh": "就像「带了伞，而且还穿了雨靴，才可以出门（AND）」「电车或公交只要有一个在运行就能通勤（OR）」这样，把条件组合起来决定是否可行的判断机制。",
-      "analogy_en": "A mechanism for deciding go/no-go by combining conditions, like \"OK to go out only if I have an umbrella AND am wearing rain boots\" or \"can commute if either the train OR the bus is running.\"",
-      "memory_hook_zh": "说到逻辑运算，就是处理真假的 AND、OR、NOT 的总称",
-      "memory_hook_en": "Logical operation → the umbrella term for AND, OR, NOT that handle true/false"
+      "extra_zh": [
+        "总称",
+        "结果也是 0 或 1"
+      ],
+      "extra_en": [
+        "Umbrella term",
+        "The result is also 0 or 1"
+      ]
     },
     {
       "term": "AND",
-      "definition_jp": "入力がすべて真のときだけ真になる論理積の演算。",
-      "explanation_jp": "AND(論理積)は、入力がすべて真(1)のときだけ結果が真(1)になり、一つでも偽(0)があれば偽になる演算です。集合では「両方に共通する部分(積集合)」に対応します。\n\n「条件Aかつ条件Bを満たす」という絞り込みに使われ、検索の絞り込み条件やビット演算で特定ビットを取り出すマスク処理などに登場します。試験では、OR との違い(AND は全部真で真、OR は一つ真で真)や真理値表での結果の見分けが頻出です。「かつ」と覚えるとよいでしょう。",
-      "analogy_jp": "二人の承認が両方そろわないと開かない金庫のようなもの。片方だけの賛成では開かず、二人がそろって初めて開きます。",
-      "memory_hook_jp": "ANDといえば「かつ」、すべて真で真の論理積",
-      "inline_quiz": [
-        "2013h25a-q054",
-        "2014h26h-q057"
+      "one_line_jp": "入力がすべて 1 のときだけ 1 になる論理積",
+      "one_line_zh": "输入全部为 1 时才为 1 的逻辑与",
+      "one_line_en": "Logical product: 1 only when all inputs are 1",
+      "extra_jp": [
+        "二項演算",
+        "0 が 1 つでもあれば 0"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "AND（逻辑与）",
-      "term_en": "AND",
-      "definition_zh": "仅当输入全部为真时才为真的逻辑与运算。",
-      "definition_en": "The logical AND operation that is true only when all inputs are true.",
-      "explanation_zh": "AND（逻辑与）是仅当输入全部为真（1）时结果才为真（1），只要有一个为假（0）就为假的运算。在集合中对应「两者共同的部分（交集）」。\n\n它用于「同时满足条件A和条件B」这样的筛选，常见于检索的筛选条件，以及位运算中取出特定位的掩码处理等。考试中频繁考查它与 OR 的区别（AND 是全部为真才为真，OR 是有一个为真就为真），以及用真值表辨别结果。记成「并且」即可。",
-      "explanation_en": "AND (logical AND) is an operation whose result is true (1) only when all inputs are true (1), and false if even one is false (0). In sets, it corresponds to the \"part common to both (the intersection).\"\n\nIt is used for narrowing down such as \"satisfy condition A and condition B,\" and appears in search-narrowing conditions and in mask processing that extracts specific bits in bit operations. The exam frequently asks about its difference from OR (AND is true when all are true, OR is true when one is true) and about distinguishing results in a truth table. It helps to remember it as \"and (both).\"",
-      "analogy_zh": "就像需要两个人同时批准才能打开的保险柜。只有一方同意打不开，两人都同意才第一次打开。",
-      "analogy_en": "Like a safe that opens only when two people both approve. One person's approval won't open it; only when both agree does it finally open.",
-      "memory_hook_zh": "说到 AND 就是「并且」，全部为真才为真的逻辑与",
-      "memory_hook_en": "AND → \"both,\" logical AND that is true only when all are true"
+      "extra_zh": [
+        "二元运算",
+        "只要有一个 0 就为 0"
+      ],
+      "extra_en": [
+        "Binary operation",
+        "A single 0 gives 0"
+      ]
     },
     {
       "term": "OR",
-      "definition_jp": "入力のいずれかが真なら真になる論理和の演算。",
-      "explanation_jp": "OR(論理和)は、入力のうち一つでも真(1)があれば結果が真(1)になり、すべて偽(0)のときだけ偽になる演算です。集合では「いずれかに含まれる部分(和集合)」に対応します。\n\n「条件Aまたは条件Bを満たす」という広げる条件に使われます。試験では AND との対比が定番で、AND が「すべて真で真」なのに対し OR は「一つでも真で真」という違いを真理値表で判断できることが問われます。「または」と覚えるとよいでしょう。",
-      "analogy_jp": "非常口が二つある部屋のようなもの。どちらか一方が開いていれば外に出られ、両方ふさがっているときだけ出られません。",
-      "memory_hook_jp": "ORといえば「または」、一つでも真で真の論理和",
-      "inline_quiz": [
-        "2012h24h-q069",
-        "2015h27h-q098"
+      "one_line_jp": "入力のどれか 1 つでも 1 なら 1 になる論理和",
+      "one_line_zh": "任一输入为 1 就为 1 的逻辑或",
+      "one_line_en": "Logical sum: 1 if any input is 1",
+      "extra_jp": [
+        "二項演算",
+        "すべて 0 のときだけ 0"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "OR（逻辑或）",
-      "term_en": "OR",
-      "definition_zh": "只要输入中有任意一个为真就为真的逻辑或运算。",
-      "definition_en": "The logical OR operation that is true if any of the inputs is true.",
-      "explanation_zh": "OR（逻辑或）是只要输入中有一个为真（1）结果就为真（1），仅当全部为假（0）时才为假的运算。在集合中对应「任意一方所包含的部分（并集）」。\n\n它用于「满足条件A或条件B」这样的放宽条件。考试中与 AND 的对比是常考点，会考查能否用真值表判断这一区别：AND 是「全部为真才为真」，而 OR 是「只要有一个为真就为真」。记成「或者」即可。",
-      "explanation_en": "OR (logical OR) is an operation whose result is true (1) if even one input is true (1), and false only when all are false (0). In sets, it corresponds to the \"part contained in either (the union).\"\n\nIt is used for broadening conditions such as \"satisfy condition A or condition B.\" On the exam, contrast with AND is a standard topic, asking whether you can judge from a truth table the difference that AND is \"true only when all are true\" while OR is \"true when at least one is true.\" It helps to remember it as \"or.\"",
-      "analogy_zh": "就像有两个紧急出口的房间。只要其中一个开着就能出去，只有两个都被堵住时才出不去。",
-      "analogy_en": "Like a room with two emergency exits. As long as one is open you can get out; only when both are blocked can you not.",
-      "memory_hook_zh": "说到 OR 就是「或者」，有一个为真就为真的逻辑或",
-      "memory_hook_en": "OR → \"or,\" logical OR that is true when at least one is true"
+      "extra_zh": [
+        "二元运算",
+        "全部为 0 时才为 0"
+      ],
+      "extra_en": [
+        "Binary operation",
+        "0 only when all inputs are 0"
+      ]
     },
     {
       "term": "NOT",
-      "definition_jp": "入力の真偽を反転させる単項の否定演算。",
-      "explanation_jp": "NOT(否定)は、入力が真(1)なら偽(0)へ、偽なら真へと値を反転させる演算です。入力を一つだけ取る単項演算で、AND・OR(二つの入力を取る二項演算)とは入力の数が異なります。集合では「含まれないもの(補集合)」に対応します。\n\n「〜でない」という条件の反転に使われ、ビット演算では全ビットを反転させます。試験では、二項演算である AND・OR との違い(NOT は入力が一つ)や、真理値表で値が反転している点を押さえることが問われます。「でない」と覚えるとよいでしょう。",
-      "analogy_jp": "照明のスイッチを切り替えるようなもの。点いていれば消え、消えていれば点く。今の状態を必ず逆にするはたらきです。",
-      "memory_hook_jp": "NOTといえば「でない」、真偽を反転する否定",
-      "inline_quiz": [
-        "2009h21h-q071"
+      "one_line_jp": "入力 1 つの 0 と 1 を入れ替える否定",
+      "one_line_zh": "将单个输入的 0 和 1 互换的否定",
+      "one_line_en": "Negation that swaps 0 and 1 of a single input",
+      "extra_jp": [
+        "単項演算",
+        "入力が 1 つだけ"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "NOT（否定）",
-      "term_en": "NOT",
-      "definition_zh": "将输入的真假反转的一元否定运算。",
-      "definition_en": "The unary negation operation that inverts the truth value of the input.",
-      "explanation_zh": "NOT（否定）是把输入由真（1）变为假（0）、由假变为真，即将值反转的运算。它只取一个输入，是一元运算，与取两个输入的 AND、OR（二元运算）在输入数量上不同。在集合中对应「不包含的部分（补集）」。\n\n它用于「不是……」这样的条件反转，在位运算中会把所有位反转。考试中会考查它与二元运算 AND、OR 的区别（NOT 只有一个输入），以及在真值表中值被反转这一点。记成「不」即可。",
-      "explanation_en": "NOT (negation) is an operation that inverts the value: if the input is true (1) it becomes false (0), and if false it becomes true. It takes only one input, making it a unary operation, differing in the number of inputs from AND and OR, which take two inputs (binary operations). In sets, it corresponds to \"what is not contained (the complement).\"\n\nIt is used for inverting a condition such as \"not …,\" and in bit operations it inverts all bits. The exam asks about its difference from the binary operations AND and OR (NOT has one input) and about the point that values are inverted in a truth table. It helps to remember it as \"not.\"",
-      "analogy_zh": "就像拨动照明开关。亮着就熄灭，熄着就点亮。其作用是必定把当前状态变成相反的。",
-      "analogy_en": "Like flipping a light switch. If it's on it turns off, if it's off it turns on. Its job is to always make the current state the opposite.",
-      "memory_hook_zh": "说到 NOT 就是「不」，反转真假的否定",
-      "memory_hook_en": "NOT → \"not,\" negation that inverts true and false"
+      "extra_zh": [
+        "一元运算",
+        "只有一个输入"
+      ],
+      "extra_en": [
+        "Unary operation",
+        "Takes only one input"
+      ]
     },
     {
       "term": "XOR",
-      "definition_jp": "入力が異なるときだけ真になる排他的論理和の演算。",
-      "explanation_jp": "XOR(排他的論理和)は、二つの入力が異なるとき(片方だけが真のとき)に真(1)、同じとき(両方真または両方偽)に偽(0)になる演算です。「どちらか一方だけ」を表す点で、両方真でも真になる通常の OR と区別されます。\n\n基本3演算(AND/OR/NOT)を前提とした応用的な演算で、同じ値で2回 XOR すると元に戻る性質から、簡易な暗号化やパリティ計算などに使われます。試験では、OR との違い(両方真のとき OR は真、XOR は偽)を真理値表で見分けられることが問われます。",
-      "analogy_jp": "シーソーのようなもの。片方だけが下がっている(傾いている)とき成り立ち、両方が同じ高さ(同じ値)のときは成り立ちません。",
-      "memory_hook_jp": "XORといえば「異なれば真」の排他的論理和",
-      "inline_quiz": [
-        "2010h22a-q068"
+      "one_line_jp": "2 つの入力が異なるときだけ 1 になる排他的論理和",
+      "one_line_zh": "两个输入不同时才为 1 的异或",
+      "one_line_en": "Exclusive OR: 1 only when the two inputs differ",
+      "extra_jp": [
+        "二項演算",
+        "両方 1 なら 0"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "XOR（异或）",
-      "term_en": "XOR",
-      "definition_zh": "仅当输入不相同时才为真的异或运算。",
-      "definition_en": "The exclusive OR operation that is true only when the inputs differ.",
-      "explanation_zh": "XOR（异或，排他逻辑或）是当两个输入不相同时（只有一方为真时）为真（1），相同时（都为真或都为假）为假（0）的运算。它表示「只有其中一方」，因此与两方都为真也为真的普通 OR 相区别。\n\n它是以基本三种运算（AND/OR/NOT）为前提的应用型运算，由于用同一个值进行两次 XOR 会还原成原值的性质，被用于简易加密和校验信息（奇偶校验）计算等。考试中会考查能否用真值表辨别它与 OR 的区别（两方都为真时 OR 为真，XOR 为假）。",
-      "explanation_en": "XOR (exclusive OR) is an operation that is true (1) when the two inputs differ (when only one is true) and false (0) when they are the same (both true or both false). Because it expresses \"only one or the other,\" it is distinguished from ordinary OR, which is also true when both are true.\n\nIt is an applied operation premised on the three basic operations (AND/OR/NOT), and because XORing with the same value twice returns to the original, it is used for simple encryption and parity computation, among other things. The exam asks whether you can distinguish it from OR using a truth table (when both are true, OR is true but XOR is false).",
-      "analogy_zh": "就像跷跷板。只有一方下沉（倾斜）时才成立，两边一样高（值相同）时则不成立。",
-      "analogy_en": "Like a seesaw. It holds when only one side goes down (tilts), but not when both sides are at the same height (the same value).",
-      "memory_hook_zh": "说到 XOR 就是「不同则为真」的异或",
-      "memory_hook_en": "XOR → \"true if they differ,\" exclusive OR"
+      "extra_zh": [
+        "二元运算",
+        "两者都为 1 时为 0"
+      ],
+      "extra_en": [
+        "Binary operation",
+        "Both 1 gives 0"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "集合",
+      "term_zh": "集合",
+      "term_en": "Set",
+      "one_jp": "**集合** は、ある条件に当てはまるかどうかがはっきり決まる **もの** の集まりである。",
+      "one_zh": "**集合**（[[jp:集合]]）是由是否符合某一条件可以明确判定的**事物**所组成的整体。",
+      "one_en": "A **set** ([[jp:集合]]) is a collection of **things** for which it is clearly decided whether each one meets a given condition.",
+      "detail_jp": "集合に入っている 1 つひとつを **要素** といい、集合 X の要素がすべて集合 Y にも入っているとき、X を Y の **部分集合** という。2 つの集合からは、どちらかに入る要素を集めた **和集合** と、両方に入る要素だけを集めた **積集合** を作れる。全体の中である集合に入らない要素の集まりは **補集合** と呼ぶ。",
+      "detail_zh": "集合中的每一个成员称为**元素**；当集合 X 的元素全部也属于集合 Y 时，称 X 为 Y 的**子集**。由两个集合可以构成收集属于其中任一集合的元素的**并集**，以及只收集同时属于两者的元素的**交集**。在全体中不属于某集合的元素所组成的集合称为**补集**。",
+      "detail_en": "Each individual member of a set is an **element**, and when every element of set X is also in set Y, X is a **subset** of Y. From two sets you can form the **union**, which gathers the elements in either one, and the **intersection**, which gathers only the elements in both. The elements of the whole that are not in a given set form its **complement**.",
+      "analogy_jp": "部活の名簿のように、名前があるかないかで入る・入らないが決まるまとまり。「背の高い人」のように基準があいまいな集まりは集合にならない。",
+      "analogy_zh": "就像社团的名册，有没有名字决定了在不在其中。像“个子高的人”这样标准模糊的群体构不成集合。",
+      "analogy_en": "Like a club roster: whether your name is on it decides whether you are in. A group such as \"tall people,\" with a vague standard, is not a set.",
+      "hook_jp": "記号の ∪ は Union (合併) の頭文字 U の形、∩ はそれを伏せた形と覚える。",
+      "hook_zh": "符号 ∪ 可记作 Union（合并）首字母 U 的形状，∩ 则是把它倒扣过来的形状。",
+      "hook_en": "Remember ∪ as the shape of U, the first letter of Union, and ∩ as that shape turned upside down.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "どんな 2 つの集合でも、積集合の要素はすべてもとの集合に入り、もとの集合の要素はすべて和集合に入る。包含は「積集合 ⊆ もとの集合 ⊆ 和集合」の順に並ぶ。",
+          "text_zh": "对于任意两个集合（[[jp:集合]]），交集（[[jp:積集合]]）的元素都属于原集合，原集合的元素又都属于并集（[[jp:和集合]]）。包含关系按“交集 ⊆ 原集合 ⊆ 并集”的顺序排列。",
+          "text_en": "For any two sets ([[jp:集合]]), every element of the intersection ([[jp:積集合]]) is in each original set, and every element of an original set is in the union ([[jp:和集合]]). Inclusion runs in the order \"intersection ⊆ original set ⊆ union.\"",
+          "qids": [
+            "2010h22h-q069",
+            "2015h27h-q062"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "操作",
+              "zh": "运算",
+              "en": "Operation"
+            },
+            {
+              "jp": "記号",
+              "zh": "符号",
+              "en": "Symbol"
+            },
+            {
+              "jp": "集まる要素",
+              "zh": "包含的元素",
+              "en": "Elements collected"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "和集合",
+                  "zh": "并集",
+                  "en": "Union"
+                },
+                {
+                  "jp": "A∪B",
+                  "zh": "A∪B",
+                  "en": "A∪B"
+                },
+                {
+                  "jp": "A と B の少なくともどちらかに入る要素",
+                  "zh": "属于 A 和 B 中至少一个的元素",
+                  "en": "Elements in at least one of A and B"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "積集合 (共通部分)",
+                  "zh": "交集（公共部分）",
+                  "en": "Intersection (common part)"
+                },
+                {
+                  "jp": "A∩B",
+                  "zh": "A∩B",
+                  "en": "A∩B"
+                },
+                {
+                  "jp": "A と B の両方に入る要素",
+                  "zh": "同时属于 A 和 B 的元素",
+                  "en": "Elements in both A and B"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "補集合",
+                  "zh": "补集",
+                  "en": "Complement"
+                },
+                {
+                  "jp": "A の上に横線など",
+                  "zh": "在 A 上方加横线等",
+                  "en": "A with a bar over it, etc."
+                },
+                {
+                  "jp": "全体のうち A に入らない要素",
+                  "zh": "全体中不属于 A 的元素",
+                  "en": "Elements of the whole that are not in A"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22h-q069",
+        "2015h27h-q062"
+      ],
+      "definition_jp": "集合 は、ある条件に当てはまるかどうかがはっきり決まる もの の集まりである。",
+      "definition_zh": "集合（集合）是由是否符合某一条件可以明确判定的事物所组成的整体。",
+      "definition_en": "A set (集合) is a collection of things for which it is clearly decided whether each one meets a given condition.",
+      "explanation_jp": "集合に入っている 1 つひとつを 要素 といい、集合 X の要素がすべて集合 Y にも入っているとき、X を Y の 部分集合 という。2 つの集合からは、どちらかに入る要素を集めた 和集合 と、両方に入る要素だけを集めた 積集合 を作れる。全体の中である集合に入らない要素の集まりは 補集合 と呼ぶ。",
+      "explanation_zh": "集合中的每一个成员称为元素；当集合 X 的元素全部也属于集合 Y 时，称 X 为 Y 的子集。由两个集合可以构成收集属于其中任一集合的元素的并集，以及只收集同时属于两者的元素的交集。在全体中不属于某集合的元素所组成的集合称为补集。",
+      "explanation_en": "Each individual member of a set is an element, and when every element of set X is also in set Y, X is a subset of Y. From two sets you can form the union, which gathers the elements in either one, and the intersection, which gathers only the elements in both. The elements of the whole that are not in a given set form its complement.",
+      "memory_hook_jp": "記号の ∪ は Union (合併) の頭文字 U の形、∩ はそれを伏せた形と覚える。",
+      "memory_hook_zh": "符号 ∪ 可记作 Union（合并）首字母 U 的形状，∩ 则是把它倒扣过来的形状。",
+      "memory_hook_en": "Remember ∪ as the shape of U, the first letter of Union, and ∩ as that shape turned upside down.",
+      "inline_quiz": [
+        "2010h22h-q069",
+        "2015h27h-q062"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ベン図",
+      "term_zh": "韦恩图",
+      "term_en": "Venn Diagram",
+      "one_jp": "**ベン図** は、集合を円で描き、円の **重なり** と位置で集合どうしの関係を示す図である。",
+      "one_zh": "**韦恩图**（[[jp:ベン図]]）是用圆表示集合，通过圆的**重叠**与位置来表示集合之间关系的图。",
+      "one_en": "A **Venn diagram** ([[jp:ベン図]]) draws sets as circles and shows how they relate through the circles' **overlap** and position.",
+      "detail_jp": "外枠の長方形が考えている全体を表し、円の内側がその集合、外側がその補集合に当たる。円が 2 つなら全体は 4 つ、3 つなら 8 つの領域に分かれ、各領域は「どの円の内側で、どの円の外側か」で 1 通りに決まる。塗った領域を言葉や式に直すと、条件の組み立てを目で確かめられる。",
+      "detail_zh": "外框的长方形表示所考虑的全体，圆的内侧是该集合，外侧相当于它的补集。两个圆把全体分成 4 个区域，三个圆则分成 8 个区域，每个区域都由“在哪些圆的内侧、哪些圆的外侧”唯一确定。把涂色区域换成文字或式子，就能直观地确认条件是如何组合的。",
+      "detail_en": "The outer rectangle stands for the whole under consideration; inside a circle is that set, and outside is its complement. Two circles split the whole into 4 regions and three circles into 8, and each region is fixed uniquely by which circles it lies inside and which it lies outside. Turning a shaded region into words or an expression lets you check by eye how the conditions are put together.",
+      "analogy_jp": "地図の上で、2 つの町の範囲を丸で囲み、重なった場所に両方の町に当てはまる家があると見るようなもの。",
+      "analogy_zh": "就像在地图上用圆圈出两个镇的范围，把重叠处看作同时属于两个镇的房子。",
+      "analogy_en": "Like circling the areas of two towns on a map and treating the houses where the circles overlap as belonging to both towns.",
+      "hook_jp": "イギリスの論理学者ジョン・ベンの名から付いた呼び名で、「便利な図」ではない。",
+      "hook_zh": "名称取自英国逻辑学家约翰·维恩（John Venn），是人名，而不是对图的描述。",
+      "hook_en": "It is named after the British logician John Venn, so the name is a person's, not a description.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "塗られた領域を論理式にするには、領域ごとに各円の内側か外側かを確かめ、内側はその条件、外側はその条件を否定したものとして組み合わせる。",
+          "text_zh": "要把涂色区域写成逻辑式（[[jp:論理式]]），需逐个区域确认它在各圆的内侧还是外侧，内侧取该条件，外侧取该条件的否定（[[jp:否定]]），再组合起来。",
+          "text_en": "To turn a shaded region into a logical expression ([[jp:論理式]]), check for each region whether it is inside or outside each circle, then combine the conditions, using the condition itself for inside and its negation ([[jp:否定]]) for outside.",
+          "qids": [
+            "2009h21h-q071",
+            "2017h29a-q098"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "円 2 つの領域",
+              "zh": "两个圆的区域",
+              "en": "Region (two circles)"
+            },
+            {
+              "jp": "円 A",
+              "zh": "圆 A",
+              "en": "Circle A"
+            },
+            {
+              "jp": "円 B",
+              "zh": "圆 B",
+              "en": "Circle B"
+            },
+            {
+              "jp": "表す集合",
+              "zh": "表示的集合",
+              "en": "Set represented"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "A だけの部分",
+                  "zh": "只属于 A 的部分",
+                  "en": "A-only part"
+                },
+                {
+                  "jp": "内側",
+                  "zh": "内侧",
+                  "en": "Inside"
+                },
+                {
+                  "jp": "外側",
+                  "zh": "外侧",
+                  "en": "Outside"
+                },
+                {
+                  "jp": "A に入り B に入らない要素",
+                  "zh": "属于 A 但不属于 B 的元素",
+                  "en": "Elements in A but not in B"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "重なった部分",
+                  "zh": "重叠部分",
+                  "en": "Overlap"
+                },
+                {
+                  "jp": "内側",
+                  "zh": "内侧",
+                  "en": "Inside"
+                },
+                {
+                  "jp": "内側",
+                  "zh": "内侧",
+                  "en": "Inside"
+                },
+                {
+                  "jp": "積集合 (A∩B)",
+                  "zh": "交集（A∩B）",
+                  "en": "Intersection (A∩B)"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "B だけの部分",
+                  "zh": "只属于 B 的部分",
+                  "en": "B-only part"
+                },
+                {
+                  "jp": "外側",
+                  "zh": "外侧",
+                  "en": "Outside"
+                },
+                {
+                  "jp": "内側",
+                  "zh": "内侧",
+                  "en": "Inside"
+                },
+                {
+                  "jp": "B に入り A に入らない要素",
+                  "zh": "属于 B 但不属于 A 的元素",
+                  "en": "Elements in B but not in A"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "どの円にも入らない部分",
+                  "zh": "不在任何圆内的部分",
+                  "en": "Part outside every circle"
+                },
+                {
+                  "jp": "外側",
+                  "zh": "外侧",
+                  "en": "Outside"
+                },
+                {
+                  "jp": "外側",
+                  "zh": "外侧",
+                  "en": "Outside"
+                },
+                {
+                  "jp": "和集合 (A∪B) の補集合",
+                  "zh": "并集（A∪B）的补集",
+                  "en": "Complement of the union (A∪B)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2009h21h-q071",
+        "2017h29a-q098"
+      ],
+      "definition_jp": "ベン図 は、集合を円で描き、円の 重なり と位置で集合どうしの関係を示す図である。",
+      "definition_zh": "韦恩图（ベン図）是用圆表示集合，通过圆的重叠与位置来表示集合之间关系的图。",
+      "definition_en": "A Venn diagram (ベン図) draws sets as circles and shows how they relate through the circles' overlap and position.",
+      "explanation_jp": "外枠の長方形が考えている全体を表し、円の内側がその集合、外側がその補集合に当たる。円が 2 つなら全体は 4 つ、3 つなら 8 つの領域に分かれ、各領域は「どの円の内側で、どの円の外側か」で 1 通りに決まる。塗った領域を言葉や式に直すと、条件の組み立てを目で確かめられる。",
+      "explanation_zh": "外框的长方形表示所考虑的全体，圆的内侧是该集合，外侧相当于它的补集。两个圆把全体分成 4 个区域，三个圆则分成 8 个区域，每个区域都由“在哪些圆的内侧、哪些圆的外侧”唯一确定。把涂色区域换成文字或式子，就能直观地确认条件是如何组合的。",
+      "explanation_en": "The outer rectangle stands for the whole under consideration; inside a circle is that set, and outside is its complement. Two circles split the whole into 4 regions and three circles into 8, and each region is fixed uniquely by which circles it lies inside and which it lies outside. Turning a shaded region into words or an expression lets you check by eye how the conditions are put together.",
+      "memory_hook_jp": "イギリスの論理学者ジョン・ベンの名から付いた呼び名で、「便利な図」ではない。",
+      "memory_hook_zh": "名称取自英国逻辑学家约翰·维恩（John Venn），是人名，而不是对图的描述。",
+      "memory_hook_en": "It is named after the British logician John Venn, so the name is a person's, not a description.",
+      "inline_quiz": [
+        "2009h21h-q071",
+        "2017h29a-q098"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "真理値表",
+      "term_zh": "真值表",
+      "term_en": "Truth Table",
+      "one_jp": "**真理値表** は、入力が取りうる **すべての組合せ** を行に並べ、それぞれの出力を書いた表である。",
+      "one_zh": "**真值表**（[[jp:真理値表]]）是把输入可能取的**所有组合**逐行列出，并写出各自输出的表。",
+      "one_en": "A **truth table** ([[jp:真理値表]]) lists **every combination** the inputs can take, one per row, together with each output.",
+      "detail_jp": "真 を 1、偽 を 0 と書くのが一般的で、入力が n 個なら行の数は 2 の n 乗になる。表は演算の働きをもれなく書き表すので、結果が同じ表になる 2 つの式は同じ働きをする式といえる。",
+      "detail_zh": "一般把真写作 1、假写作 0，输入有 n 个时行数为 2 的 n 次方。真值表毫无遗漏地写出了运算的作用，因此结果为同一张表的两个式子可以说作用相同。",
+      "detail_en": "True is usually written as 1 and false as 0, and with n inputs the table has 2 to the power n rows. Because the table spells out an operation's behavior completely, two expressions that produce the same table behave the same way.",
+      "analogy_jp": "スイッチ 2 つの照明について、オンとオフの全パターンを試して電球が点くかどうかを記録した一覧。",
+      "analogy_zh": "针对装有两个开关的照明，把开和关的全部组合都试一遍，记录灯泡是否点亮的一览表。",
+      "analogy_en": "For a light with two switches, a list made by trying every on/off pattern and noting whether the bulb lights.",
+      "hook_jp": "「真理値」は真か偽かという値のことで、その値を一覧にした表という名前である。",
+      "hook_zh": "“真值”指的是真或假这一值，把这些值逐一列出的表，就叫真值表。",
+      "hook_en": "A \"truth value\" is the value true or false, and the table is named for listing those values.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "表がどの演算かは、出力が 1 になる行の入力の組を見ると決まる。1 になるのが入力すべて 1 の行だけなら論理積である。",
+          "text_zh": "判断表是哪种运算，要看输出为 1 的那些行的输入组合。只有输入全为 1 的行输出为 1 时，就是逻辑与（[[jp:論理積]]）。",
+          "text_en": "Which operation a table shows is decided by the input combinations on the rows whose output is 1. If the output is 1 only on the row where all inputs are 1, it is the logical product ([[jp:論理積]]).",
+          "qids": [
+            "2012h24a-q082"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "否定を括弧の外に付けた式は、括弧の中の結果の列を作ってから、その 0 と 1 を入れ替えると表になる。",
+          "text_zh": "否定（[[jp:否定]]）加在括号外的式子，先做出括号内结果的一列，再把其中的 0 和 1 互换，就得到真值表。",
+          "text_en": "For an expression with a negation ([[jp:否定]]) outside the brackets, build the column for the result inside the brackets, then swap its 0s and 1s to get the table.",
+          "qids": [
+            "2013h25a-q064"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "rows",
+              "label": {
+                "jp": "入力の組を全部書く",
+                "zh": "写出所有输入组合",
+                "en": "Write every input combination"
+              }
+            },
+            {
+              "id": "inner",
+              "label": {
+                "jp": "括弧の中の列を作る",
+                "zh": "先算括号内的列",
+                "en": "Build the column inside the brackets"
+              }
+            },
+            {
+              "id": "outer",
+              "label": {
+                "jp": "外側の演算を当てる",
+                "zh": "套用外侧的运算",
+                "en": "Apply the outer operation"
+              }
+            },
+            {
+              "id": "read",
+              "label": {
+                "jp": "出力の列を読む",
+                "zh": "读出输出列",
+                "en": "Read the output column"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "入力が 2 つなら 00、01、10、11 の 4 行を書き出す。",
+            "caption_zh": "输入为 2 个时，写出 00、01、10、11 共 4 行。",
+            "caption_en": "With 2 inputs, write out the 4 rows 00, 01, 10, and 11.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "式に括弧があれば、その中の演算の結果を先に 1 列作る。",
+            "caption_zh": "式中有括号时，先用括号内运算的结果做出一列。",
+            "caption_en": "If the expression has brackets, first make a column with the result of the operation inside them.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "その列に外側の演算を当てて、次の列を作る。",
+            "caption_zh": "对这一列套用外侧的运算，做出下一列。",
+            "caption_en": "Apply the outer operation to that column to make the next one.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "最後の列が出力で、1 になる行を見れば式の性質が分かる。",
+            "caption_zh": "最后一列就是输出，看哪些行为 1 就能知道式子的性质。",
+            "caption_en": "The last column is the output, and the rows where it is 1 show what the expression does.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2012h24a-q082",
+        "2013h25a-q064"
+      ],
+      "definition_jp": "真理値表 は、入力が取りうる すべての組合せ を行に並べ、それぞれの出力を書いた表である。",
+      "definition_zh": "真值表（真理値表）是把输入可能取的所有组合逐行列出，并写出各自输出的表。",
+      "definition_en": "A truth table (真理値表) lists every combination the inputs can take, one per row, together with each output.",
+      "explanation_jp": "真 を 1、偽 を 0 と書くのが一般的で、入力が n 個なら行の数は 2 の n 乗になる。表は演算の働きをもれなく書き表すので、結果が同じ表になる 2 つの式は同じ働きをする式といえる。",
+      "explanation_zh": "一般把真写作 1、假写作 0，输入有 n 个时行数为 2 的 n 次方。真值表毫无遗漏地写出了运算的作用，因此结果为同一张表的两个式子可以说作用相同。",
+      "explanation_en": "True is usually written as 1 and false as 0, and with n inputs the table has 2 to the power n rows. Because the table spells out an operation's behavior completely, two expressions that produce the same table behave the same way.",
+      "memory_hook_jp": "「真理値」は真か偽かという値のことで、その値を一覧にした表という名前である。",
+      "memory_hook_zh": "“真值”指的是真或假这一值，把这些值逐一列出的表，就叫真值表。",
+      "memory_hook_en": "A \"truth value\" is the value true or false, and the table is named for listing those values.",
+      "inline_quiz": [
+        "2012h24a-q082",
+        "2013h25a-q064"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "論理演算",
+      "term_zh": "逻辑运算",
+      "term_en": "Logical Operation",
+      "one_jp": "**論理演算** は、真 (1) と偽 (0) の 2 つの値だけを入力にとり、決まった規則で 1 か 0 を返す演算の総称である。",
+      "one_zh": "**逻辑运算**（[[jp:論理演算]]）是只以真（1）和假（0）两个值作为输入，按既定规则返回 1 或 0 的运算的总称。",
+      "one_en": "A **logical operation** ([[jp:論理演算]]) is any operation that takes only the two values true (1) and false (0) as input and returns 1 or 0 by a fixed rule.",
+      "detail_jp": "代表的な演算として **AND** や **OR** があり、入力を 1 つだけとる否定もある。演算を組み合わせた式は括弧の中から順に計算し、検索の条件式やコンピュータ内部のビットごとの処理に使われる。集合の積・和・補は、それぞれ論理積・論理和・否定と対応する。",
+      "detail_zh": "代表性的运算有 **AND** 和 **OR**，还有只取一个输入的否定。组合多个运算的式子从括号内依次计算，用于检索的条件表达式和计算机内部按位进行的处理。集合的交、并、补分别对应逻辑与、逻辑或和否定。",
+      "detail_en": "Typical operations include **AND** and **OR**, along with negation, which takes just one input. Expressions combining operations are evaluated from the innermost brackets outward and are used in search conditions and in bit-by-bit processing inside computers. The intersection, union, and complement of sets correspond to the logical product, logical sum, and negation, respectively.",
+      "analogy_jp": "質問に「はい」か「いいえ」でしか答えない係が、受け取った 1 つ以上の答えから、決まった手順で「はい」か「いいえ」を 1 つ返す作業。",
+      "analogy_zh": "就像只用“是”或“否”回答问题的工作人员，根据收到的一个或多个回答，按固定步骤返回一个“是”或“否”。",
+      "analogy_en": "Like a clerk who answers only \"yes\" or \"no\" and, from the one or more answers received, returns a single \"yes\" or \"no\" by a fixed procedure.",
+      "hook_jp": "英語では Boolean operation ともいい、2 値の計算を体系にした数学者ブールの名に由来する。",
+      "hook_zh": "英语也称 Boolean operation，得名于将二值运算体系化的数学家布尔。",
+      "hook_en": "It is also called a Boolean operation, after George Boole, the mathematician who systematized two-valued calculation.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "条件式では、同じ項目のどれでもよい候補を OR でまとめて括弧に入れ、別の項目の条件と AND でつなぐと、候補を残したまま絞り込める。",
+          "text_zh": "在条件表达式中，把同一项目中任选其一皆可的候选用 OR 合并放进括号，再用 AND 与其他项目的条件连接，就能在保留候选的同时缩小范围。",
+          "text_en": "In a condition, group the acceptable alternatives for one field with OR inside brackets, then join that group to another field's condition with AND. This narrows the results while keeping every alternative.",
+          "qids": [
+            "2012h24h-q069",
+            "2013h25a-q054"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "A",
+              "zh": "A",
+              "en": "A"
+            },
+            {
+              "jp": "B",
+              "zh": "B",
+              "en": "B"
+            },
+            {
+              "jp": "A AND B",
+              "zh": "A AND B",
+              "en": "A AND B"
+            },
+            {
+              "jp": "A OR B",
+              "zh": "A OR B",
+              "en": "A OR B"
+            },
+            {
+              "jp": "A XOR B",
+              "zh": "A XOR B",
+              "en": "A XOR B"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "1",
+                  "zh": "1",
+                  "en": "1"
+                },
+                {
+                  "jp": "0",
+                  "zh": "0",
+                  "en": "0"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2012h24h-q069"
+      ],
+      "definition_jp": "論理演算 は、真 (1) と偽 (0) の 2 つの値だけを入力にとり、決まった規則で 1 か 0 を返す演算の総称である。",
+      "definition_zh": "逻辑运算（論理演算）是只以真（1）和假（0）两个值作为输入，按既定规则返回 1 或 0 的运算的总称。",
+      "definition_en": "A logical operation (論理演算) is any operation that takes only the two values true (1) and false (0) as input and returns 1 or 0 by a fixed rule.",
+      "explanation_jp": "代表的な演算として AND や OR があり、入力を 1 つだけとる否定もある。演算を組み合わせた式は括弧の中から順に計算し、検索の条件式やコンピュータ内部のビットごとの処理に使われる。集合の積・和・補は、それぞれ論理積・論理和・否定と対応する。",
+      "explanation_zh": "代表性的运算有 AND 和 OR，还有只取一个输入的否定。组合多个运算的式子从括号内依次计算，用于检索的条件表达式和计算机内部按位进行的处理。集合的交、并、补分别对应逻辑与、逻辑或和否定。",
+      "explanation_en": "Typical operations include AND and OR, along with negation, which takes just one input. Expressions combining operations are evaluated from the innermost brackets outward and are used in search conditions and in bit-by-bit processing inside computers. The intersection, union, and complement of sets correspond to the logical product, logical sum, and negation, respectively.",
+      "memory_hook_jp": "英語では Boolean operation ともいい、2 値の計算を体系にした数学者ブールの名に由来する。",
+      "memory_hook_zh": "英语也称 Boolean operation，得名于将二值运算体系化的数学家布尔。",
+      "memory_hook_en": "It is also called a Boolean operation, after George Boole, the mathematician who systematized two-valued calculation.",
+      "inline_quiz": [
+        "2012h24h-q069"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "AND",
+      "term_zh": "AND（逻辑与）",
+      "term_en": "AND",
+      "one_jp": "**AND** (論理積) は、入力が **すべて 1** のときだけ出力が 1 になる演算である。",
+      "one_zh": "**AND**（逻辑与，[[jp:論理積]]）是输入**全部为 1** 时输出才为 1 的运算。",
+      "one_en": "**AND** (logical product, [[jp:論理積]]) is an operation whose output is 1 only when **all inputs are 1**.",
+      "detail_jp": "入力に 0 が 1 つでもあれば出力は 0 になり、集合では両方に入る要素を集めた積集合に当たる。条件を「かつ」でつなぐ絞り込みや、データの一部の桁だけを取り出す処理に使う。",
+      "detail_zh": "输入中只要有一个 0，输出就为 0，在集合中相当于收集同时属于两者的元素的交集。它用于以“并且”连接条件来缩小范围，或只取出数据中部分位的处理。",
+      "detail_en": "A single 0 among the inputs makes the output 0, and in set terms it corresponds to the intersection, which gathers the elements in both sets. It is used to narrow results by joining conditions with \"and,\" and to pick out only certain bits of data.",
+      "analogy_jp": "鍵を 2 本とも回したときだけ開く金庫の扉。",
+      "analogy_zh": "两把钥匙都转动时才会打开的保险柜门。",
+      "analogy_en": "A safe door that opens only when both keys are turned.",
+      "hook_jp": "記号の ∧ や「・」(掛け算の点) で書くことがあり、0 と 1 の掛け算と結果が同じになる。",
+      "hook_zh": "有时用符号 ∧ 或“·”（乘号的点）表示，结果与 0 和 1 的乘法相同。",
+      "hook_en": "It is sometimes written ∧ or \"·\" (the multiplication dot), and its results match multiplying 0s and 1s.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ビットごとの AND では、相手のビットが 0 の桁は 0 になり、1 の桁は元のデータの値がそのまま残る。",
+          "text_zh": "在按位进行的 AND 中，对方比特为 0 的位变为 0，为 1 的位保留原数据的值。",
+          "text_en": "In a bitwise AND, positions where the other operand's bit is 0 become 0, and positions where it is 1 keep the original data's value.",
+          "qids": [
+            "2018h30a-q079"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "AND の出力をさらに別の入力と AND でつなぐと、すべての入力が 1 のときだけ最後の出力が 1 になる。",
+          "text_zh": "把 AND 的输出再与另一个输入用 AND 连接，只有所有输入都为 1 时最终输出才为 1。",
+          "text_en": "If an AND output is joined with a further input by another AND, the final output is 1 only when every input is 1.",
+          "qids": [
+            "2014h26h-q057"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2018h30a-q079",
+        "2014h26h-q057"
+      ],
+      "definition_jp": "AND (論理積) は、入力が すべて 1 のときだけ出力が 1 になる演算である。",
+      "definition_zh": "AND（逻辑与，論理積）是输入全部为 1 时输出才为 1 的运算。",
+      "definition_en": "AND (logical product, 論理積) is an operation whose output is 1 only when all inputs are 1.",
+      "explanation_jp": "入力に 0 が 1 つでもあれば出力は 0 になり、集合では両方に入る要素を集めた積集合に当たる。条件を「かつ」でつなぐ絞り込みや、データの一部の桁だけを取り出す処理に使う。",
+      "explanation_zh": "输入中只要有一个 0，输出就为 0，在集合中相当于收集同时属于两者的元素的交集。它用于以“并且”连接条件来缩小范围，或只取出数据中部分位的处理。",
+      "explanation_en": "A single 0 among the inputs makes the output 0, and in set terms it corresponds to the intersection, which gathers the elements in both sets. It is used to narrow results by joining conditions with \"and,\" and to pick out only certain bits of data.",
+      "memory_hook_jp": "記号の ∧ や「・」(掛け算の点) で書くことがあり、0 と 1 の掛け算と結果が同じになる。",
+      "memory_hook_zh": "有时用符号 ∧ 或“·”（乘号的点）表示，结果与 0 和 1 的乘法相同。",
+      "memory_hook_en": "It is sometimes written ∧ or \"·\" (the multiplication dot), and its results match multiplying 0s and 1s.",
+      "inline_quiz": [
+        "2018h30a-q079",
+        "2014h26h-q057"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "OR",
+      "term_zh": "OR（逻辑或）",
+      "term_en": "OR",
+      "one_jp": "**OR** (論理和) は、入力の **どれか 1 つでも 1** なら出力が 1 になる演算である。",
+      "one_zh": "**OR**（逻辑或，[[jp:論理和]]）是只要输入中**任意一个为 1**，输出就为 1 的运算。",
+      "one_en": "**OR** (logical sum, [[jp:論理和]]) is an operation whose output is 1 if **any one input is 1**.",
+      "detail_jp": "出力が 0 になるのは入力がすべて 0 のときだけで、集合ではどちらかに入る要素を集めた和集合に当たる。条件を「または」でつなぎ、対象を広げるときに使う。",
+      "detail_zh": "只有输入全部为 0 时输出才为 0，在集合中相当于收集属于任一集合的元素的并集。它用于以“或者”连接条件、扩大对象范围。",
+      "detail_en": "The output is 0 only when every input is 0, and in set terms it corresponds to the union, which gathers the elements in either set. It joins conditions with \"or\" to widen the range of targets.",
+      "analogy_jp": "玄関と勝手口のどちらから帰っても鳴る、家の帰宅チャイム。",
+      "analogy_zh": "无论从正门还是后门回家都会响的到家提示铃。",
+      "analogy_en": "A home arrival chime that rings whether you come in through the front door or the back door.",
+      "hook_jp": "記号の ∨ や「+」(足し算) で書くことがあり、1 + 1 も 1 と扱う点だけが普通の足し算と違う。",
+      "hook_zh": "有时用符号 ∨ 或“+”（加号）表示，只有把 1 + 1 也当作 1 这一点与普通加法不同。",
+      "hook_en": "It is sometimes written ∨ or \"+\", and the only difference from ordinary addition is that 1 + 1 is also treated as 1.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "2 つの条件を OR でつないだときの該当数は、それぞれの該当数の和から、両方に当てはまる数を引いて求める。",
+          "text_zh": "用 OR 连接两个条件时的符合数，等于各自符合数之和减去同时满足两者的数。",
+          "text_en": "The count matching two conditions joined by OR is the sum of each condition's count minus the count that meets both.",
+          "qids": [
+            "2015h27h-q099"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2013h25a-q054"
+      ],
+      "definition_jp": "OR (論理和) は、入力の どれか 1 つでも 1 なら出力が 1 になる演算である。",
+      "definition_zh": "OR（逻辑或，論理和）是只要输入中任意一个为 1，输出就为 1 的运算。",
+      "definition_en": "OR (logical sum, 論理和) is an operation whose output is 1 if any one input is 1.",
+      "explanation_jp": "出力が 0 になるのは入力がすべて 0 のときだけで、集合ではどちらかに入る要素を集めた和集合に当たる。条件を「または」でつなぎ、対象を広げるときに使う。",
+      "explanation_zh": "只有输入全部为 0 时输出才为 0，在集合中相当于收集属于任一集合的元素的并集。它用于以“或者”连接条件、扩大对象范围。",
+      "explanation_en": "The output is 0 only when every input is 0, and in set terms it corresponds to the union, which gathers the elements in either set. It joins conditions with \"or\" to widen the range of targets.",
+      "memory_hook_jp": "記号の ∨ や「+」(足し算) で書くことがあり、1 + 1 も 1 と扱う点だけが普通の足し算と違う。",
+      "memory_hook_zh": "有时用符号 ∨ 或“+”（加号）表示，只有把 1 + 1 也当作 1 这一点与普通加法不同。",
+      "memory_hook_en": "It is sometimes written ∨ or \"+\", and the only difference from ordinary addition is that 1 + 1 is also treated as 1.",
+      "inline_quiz": [
+        "2013h25a-q054"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "NOT",
+      "term_zh": "NOT（否定）",
+      "term_en": "NOT",
+      "one_jp": "**NOT** (否定) は、1 つの入力の **0 と 1 を入れ替える** 演算である。",
+      "one_zh": "**NOT**（否定，[[jp:否定]]）是把一个输入的 **0 和 1 互换**的运算。",
+      "one_en": "**NOT** (negation, [[jp:否定]]) is an operation that **swaps 0 and 1** for a single input.",
+      "detail_jp": "入力を 1 つだけとる単項演算で、2 つの入力を組み合わせる演算とは形が違う。集合ではある集合に入らない要素、つまり補集合に当たり、ベン図では円の外側の領域を表す。",
+      "detail_zh": "它是只取一个输入的一元运算，与组合两个输入的运算形式不同。在集合中相当于不属于某集合的元素，即补集，在韦恩图中表示圆外侧的区域。",
+      "detail_en": "It is a unary operation that takes a single input, unlike operations that combine two inputs. In set terms it corresponds to the elements not in a set, that is, the complement, and in a Venn diagram it is the region outside a circle.",
+      "analogy_jp": "押すたびに点灯と消灯が切り替わるボタン。",
+      "analogy_zh": "每按一次就在点亮和熄灭之间切换的按钮。",
+      "analogy_en": "A button that switches between on and off each time you press it.",
+      "hook_jp": "2 回続けて NOT をかけると元の値に戻る (否定の否定は肯定)。",
+      "hook_zh": "连续施加两次 NOT 就会回到原来的值（否定的否定即肯定）。",
+      "hook_en": "Applying NOT twice in a row gives back the original value (the negation of a negation is an affirmation).",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "括弧の外の NOT は括弧の中の結果全体を反転するので、OR の結果を否定すると、入力がすべて 0 の行だけが 1 になる。",
+          "text_zh": "括号外的 NOT 会把括号内的整体结果取反，因此对 OR 的结果取否定时，只有输入全为 0 的行为 1。",
+          "text_en": "A NOT outside the brackets inverts the whole result inside them, so negating an OR result gives 1 only on the row where all inputs are 0.",
+          "qids": [
+            "2013h25a-q064"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2013h25a-q064",
+        "2017h29a-q098"
+      ],
+      "definition_jp": "NOT (否定) は、1 つの入力の 0 と 1 を入れ替える 演算である。",
+      "definition_zh": "NOT（否定，否定）是把一个输入的 0 和 1 互换的运算。",
+      "definition_en": "NOT (negation, 否定) is an operation that swaps 0 and 1 for a single input.",
+      "explanation_jp": "入力を 1 つだけとる単項演算で、2 つの入力を組み合わせる演算とは形が違う。集合ではある集合に入らない要素、つまり補集合に当たり、ベン図では円の外側の領域を表す。",
+      "explanation_zh": "它是只取一个输入的一元运算，与组合两个输入的运算形式不同。在集合中相当于不属于某集合的元素，即补集，在韦恩图中表示圆外侧的区域。",
+      "explanation_en": "It is a unary operation that takes a single input, unlike operations that combine two inputs. In set terms it corresponds to the elements not in a set, that is, the complement, and in a Venn diagram it is the region outside a circle.",
+      "memory_hook_jp": "2 回続けて NOT をかけると元の値に戻る (否定の否定は肯定)。",
+      "memory_hook_zh": "连续施加两次 NOT 就会回到原来的值（否定的否定即肯定）。",
+      "memory_hook_en": "Applying NOT twice in a row gives back the original value (the negation of a negation is an affirmation).",
+      "inline_quiz": [
+        "2013h25a-q064",
+        "2017h29a-q098"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "XOR",
+      "term_zh": "XOR（异或）",
+      "term_en": "XOR",
+      "one_jp": "**XOR** (排他的論理和) は、2 つの入力の値が **異なる** ときだけ出力が 1 になる演算である。",
+      "one_zh": "**XOR**（异或，[[jp:排他的論理和]]）是两个输入的值**不同**时输出才为 1 的运算。",
+      "one_en": "**XOR** (exclusive OR, [[jp:排他的論理和]]) is an operation whose output is 1 only when the two inputs **differ**.",
+      "detail_jp": "入力が両方 0 でも両方 1 でも、値がそろっていれば出力は 0 になる。同じ値で 2 回 XOR をとると元の値に戻る性質があり、誤りの検出などにも使われる。",
+      "detail_zh": "无论两个输入都为 0 还是都为 1，只要值相同，输出就为 0。用同一个值做两次 XOR 会回到原值；XOR 还用于检测错误等。",
+      "detail_en": "Whether both inputs are 0 or both are 1, matching values give an output of 0. Applying XOR twice with the same value restores the original, and XOR is also used for purposes such as error detection.",
+      "analogy_jp": "階段の上と下にあるスイッチで 1 つの電灯を操作する配線。どちらか一方を切り替えるたびに点灯と消灯が入れ替わる。",
+      "analogy_zh": "在楼梯上下各装一个开关来控制同一盏灯的接线。无论切换哪一个，灯都会在亮与灭之间转换。",
+      "analogy_en": "The wiring of a stair light with one switch at the top and one at the bottom. Flipping either switch toggles the light on or off.",
+      "hook_jp": "「排他的」は相手を締め出すという意味で、「一方だけ」を認め、両方そろうことを締め出す。",
+      "hook_zh": "日语名称“排他的論理和”中的“排他”是把对方排除在外的意思，即只承认“其中一方”，排除两者同时成立的情况。",
+      "hook_en": "\"Exclusive\" means shutting the other out: it accepts \"only one\" and excludes the case where both hold.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "XOR は少なくとも一方が 1 であり、かつ両方が 1 ではないときに 1 になるので、ほかの基本演算を組み合わせた式でも表せる。",
+          "text_zh": "XOR 在至少一方为 1、并且两方并非都为 1 时为 1，因此也可以用组合其他基本运算的式子来表示。",
+          "text_en": "XOR is 1 when at least one input is 1 and not both are, so it can also be written as an expression combining the other basic operations.",
+          "qids": [
+            "2013h25h-q082"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ビットごとの XOR では、相手のビットが 1 の桁は 0 と 1 が反転し、0 の桁は元のデータの値が残る。",
+          "text_zh": "在按位进行的 XOR 中，对方比特为 1 的位会在 0 和 1 之间翻转，为 0 的位保留原数据的值。",
+          "text_en": "In a bitwise XOR, positions where the other operand's bit is 1 flip between 0 and 1, and positions where it is 0 keep the original data's value.",
+          "qids": [
+            "2010h22a-q068"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "両方の入力が 1 のとき、OR の出力は 1、XOR の出力は 0 になり、差はこの 1 行だけである。",
+          "text_zh": "两个输入都为 1 时，OR 输出 1，XOR 输出 0，两者只在这一行不同。",
+          "text_en": "When both inputs are 1, OR outputs 1 and XOR outputs 0, and this one row is the only difference."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2010h22a-q068",
+        "2013h25h-q082"
+      ],
+      "definition_jp": "XOR (排他的論理和) は、2 つの入力の値が 異なる ときだけ出力が 1 になる演算である。",
+      "definition_zh": "XOR（异或，排他的論理和）是两个输入的值不同时输出才为 1 的运算。",
+      "definition_en": "XOR (exclusive OR, 排他的論理和) is an operation whose output is 1 only when the two inputs differ.",
+      "explanation_jp": "入力が両方 0 でも両方 1 でも、値がそろっていれば出力は 0 になる。同じ値で 2 回 XOR をとると元の値に戻る性質があり、誤りの検出などにも使われる。",
+      "explanation_zh": "无论两个输入都为 0 还是都为 1，只要值相同，输出就为 0。用同一个值做两次 XOR 会回到原值；XOR 还用于检测错误等。",
+      "explanation_en": "Whether both inputs are 0 or both are 1, matching values give an output of 0. Applying XOR twice with the same value restores the original, and XOR is also used for purposes such as error detection.",
+      "memory_hook_jp": "「排他的」は相手を締め出すという意味で、「一方だけ」を認め、両方そろうことを締め出す。",
+      "memory_hook_zh": "日语名称“排他的論理和”中的“排他”是把对方排除在外的意思，即只承认“其中一方”，排除两者同时成立的情况。",
+      "memory_hook_en": "\"Exclusive\" means shutting the other out: it accepts \"only one\" and excludes the case where both hold.",
+      "inline_quiz": [
+        "2010h22a-q068",
+        "2013h25h-q082"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "AND",
+      "b": "OR",
+      "rows": [
+        {
+          "label_jp": "出力が 1 になる条件",
+          "label_zh": "输出为 1 的条件",
+          "label_en": "When the output is 1",
+          "a_jp": "入力がすべて 1",
+          "a_zh": "输入全部为 1",
+          "a_en": "All inputs are 1",
+          "b_jp": "入力のどれか 1 つ以上が 1",
+          "b_zh": "输入中有一个以上为 1",
+          "b_en": "One or more inputs are 1",
+          "key": true
+        },
+        {
+          "label_jp": "集合での対応",
+          "label_zh": "在集合中的对应",
+          "label_en": "Set counterpart",
+          "a_jp": "積集合 (共通部分)",
+          "a_zh": "交集（公共部分）",
+          "a_en": "Intersection (common part)",
+          "b_jp": "和集合",
+          "b_zh": "并集",
+          "b_en": "Union",
+          "key": false
+        },
+        {
+          "label_jp": "日常の言葉",
+          "label_zh": "日常用语",
+          "label_en": "Everyday word",
+          "a_jp": "かつ",
+          "a_zh": "并且",
+          "a_en": "and",
+          "b_jp": "または",
+          "b_zh": "或者",
+          "b_en": "or",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "OR",
+      "b": "XOR",
+      "rows": [
+        {
+          "label_jp": "両方の入力が 1 のとき",
+          "label_zh": "两个输入都为 1 时",
+          "label_en": "Both inputs are 1",
+          "a_jp": "1",
+          "a_zh": "1",
+          "a_en": "1",
+          "b_jp": "0",
+          "b_zh": "0",
+          "b_en": "0",
+          "key": true
+        },
+        {
+          "label_jp": "一方だけが 1 のとき",
+          "label_zh": "只有一方为 1 时",
+          "label_en": "Only one input is 1",
+          "a_jp": "1",
+          "a_zh": "1",
+          "a_en": "1",
+          "b_jp": "1",
+          "b_zh": "1",
+          "b_en": "1",
+          "key": false
+        },
+        {
+          "label_jp": "ベン図で塗る範囲",
+          "label_zh": "韦恩图中涂色的范围",
+          "label_en": "Shaded area in a Venn diagram",
+          "a_jp": "2 つの円の全体",
+          "a_zh": "两个圆的全部",
+          "a_en": "All of both circles",
+          "b_jp": "2 つの円から重なりを除いた部分",
+          "b_zh": "两个圆去掉重叠后的部分",
+          "b_en": "Both circles minus the overlap",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "積集合はもとの集合に含まれ、もとの集合は和集合に含まれる。",
+    "ベン図の各領域は、どの円の内側か外側かで決まり、外側は否定で表す。",
+    "真理値表は入力 n 個で 2 の n 乗行になり、出力が 1 になる行で演算を見分ける。",
+    "ビットごとの演算では、AND は相手が 0 の桁を 0 にし、XOR は相手が 1 の桁を反転する。"
+  ],
+  "key_points_zh": [
+    "交集包含于原集合，原集合包含于并集。",
+    "韦恩图的每个区域由它在哪些圆的内侧或外侧决定，外侧用否定表示。",
+    "真值表在 n 个输入时有 2 的 n 次方行，通过输出为 1 的行来辨别运算。",
+    "在按位运算中，AND 把对方为 0 的位变为 0，XOR 把对方为 1 的位取反。"
+  ],
+  "key_points_en": [
+    "An intersection is contained in each original set, and each original set is contained in the union.",
+    "Each region of a Venn diagram is fixed by which circles it lies inside or outside, and outside is expressed with negation.",
+    "A truth table with n inputs has 2 to the power n rows, and the rows where the output is 1 identify the operation.",
+    "In bitwise operations, AND clears the positions that are 0 in the other operand, and XOR flips the positions that are 1."
+  ],
+  "overview": {
+    "intro_jp": "集合 の和・積・補と、ベン図 の領域を対応させて読めるようになる。真理値表 を作り、表から演算や論理式を見分けられるようになる。AND と OR は片方だけが 1 の行で、OR と XOR は両方が 1 の行で、出力の違いを区別できるようになる。",
+    "intro_zh": "能把集合的并、交、补与韦恩图中的区域对应起来解读。能列出真值表，并从表中辨别出是哪种运算或逻辑式。能区分 AND 与 OR 在只有一方为 1 的行上、OR 与 XOR 在两方都为 1 的行上的输出差异。",
+    "intro_en": "Read the union, intersection, and complement of sets as regions of a Venn diagram. Build a truth table and identify the operation or logical expression it shows. Tell apart the outputs of AND and OR on rows where only one input is 1, and of OR and XOR on the row where both inputs are 1.",
+    "freq_badge": "標準",
+    "est_minutes": 35
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "集合: 集合といえば条件で定まるものの集まり",
-      "ベン図: ベン図といえば円の重なりで集合の関係を表す図",
-      "真理値表: 真理値表といえば入力の全組合せと結果を網羅した表",
-      "論理演算: 論理演算といえば真偽を扱う AND・OR・NOT の総称",
-      "AND: ANDといえば「かつ」、すべて真で真の論理積",
-      "OR: ORといえば「または」、一つでも真で真の論理和",
-      "NOT: NOTといえば「でない」、真偽を反転する否定",
-      "XOR: XORといえば「異なれば真」の排他的論理和"
-    ],
     "key_points_jp": [
-      "集合は条件で定まるものの集まりで、積集合(AND)・和集合(OR)・補集合(NOT)が論理演算に対応する。",
-      "ベン図は集合の関係を円の重なりで視覚化し、塗られた領域がどの演算に対応するかを読み取る問題が頻出する。",
-      "真理値表は入力の全組合せ(2入力なら4通り)と出力を網羅し、各論理演算の意味を定義・判別する道具となる。",
-      "基本の論理演算は AND(すべて真で真)・OR(一つでも真で真)・NOT(真偽を反転)の3つで、入力数は AND/OR が二項、NOT が単項。",
-      "XOR は二入力が異なるときだけ真で、両方真でも真になる OR との違いが問われる応用的な演算。"
+      "積集合はもとの集合に含まれ、もとの集合は和集合に含まれる。",
+      "ベン図の各領域は、どの円の内側か外側かで決まり、外側は否定で表す。",
+      "真理値表は入力 n 個で 2 の n 乗行になり、出力が 1 になる行で演算を見分ける。",
+      "ビットごとの演算では、AND は相手が 0 の桁を 0 にし、XOR は相手が 1 の桁を反転する。"
     ],
     "key_points_zh": [
-      "集合是由条件确定的事物的聚集，交集（AND）、并集（OR）、补集（NOT）与逻辑运算相对应。",
-      "韦恩图用圆的重叠将集合关系可视化，判读涂色区域对应哪种运算的题目频繁出现。",
-      "真值表完整列出输入的所有组合（2 个输入则为 4 种）与输出，是定义和判别各逻辑运算含义的工具。",
-      "基本逻辑运算有 AND（全部为真才为真）、OR（有一个为真就为真）、NOT（反转真假）三种，输入数量上 AND/OR 为二元，NOT 为一元。",
-      "XOR 仅当两个输入不同时才为真，常考查它与「两方都为真也为真」的 OR 的区别，是应用型运算。"
+      "交集包含于原集合，原集合包含于并集。",
+      "韦恩图的每个区域由它在哪些圆的内侧或外侧决定，外侧用否定表示。",
+      "真值表在 n 个输入时有 2 的 n 次方行，通过输出为 1 的行来辨别运算。",
+      "在按位运算中，AND 把对方为 0 的位变为 0，XOR 把对方为 1 的位取反。"
     ],
     "key_points_en": [
-      "A set is a collection of things determined by a condition, and the intersection (AND), union (OR), and complement (NOT) correspond to logical operations.",
-      "A Venn diagram visualizes set relationships through overlapping circles, and questions asking which operation a shaded region corresponds to appear frequently.",
-      "A truth table covers all input combinations (four cases for two inputs) and outputs, serving as a tool to define and identify the meaning of each logical operation.",
-      "The basic logical operations are three: AND (true only when all are true), OR (true when at least one is true), and NOT (inverts true/false); in input count, AND/OR are binary and NOT is unary.",
-      "XOR is true only when the two inputs differ; its difference from OR (which is also true when both are true) is frequently asked, and it is an applied operation."
+      "An intersection is contained in each original set, and each original set is contained in the union.",
+      "Each region of a Venn diagram is fixed by which circles it lies inside or outside, and outside is expressed with negation.",
+      "A truth table with n inputs has 2 to the power n rows, and the rows where the output is 1 identify the operation.",
+      "In bitwise operations, AND clears the positions that are 0 in the other operand, and XOR flips the positions that are 1."
+    ],
+    "memory_hooks_jp": [
+      "集合: 記号の ∪ は Union (合併) の頭文字 U の形、∩ はそれを伏せた形と覚える。",
+      "ベン図: イギリスの論理学者ジョン・ベンの名から付いた呼び名で、「便利な図」ではない。",
+      "真理値表: 「真理値」は真か偽かという値のことで、その値を一覧にした表という名前である。",
+      "論理演算: 英語では Boolean operation ともいい、2 値の計算を体系にした数学者ブールの名に由来する。",
+      "AND: 記号の ∧ や「・」(掛け算の点) で書くことがあり、0 と 1 の掛け算と結果が同じになる。",
+      "OR: 記号の ∨ や「+」(足し算) で書くことがあり、1 + 1 も 1 と扱う点だけが普通の足し算と違う。",
+      "NOT: 2 回続けて NOT をかけると元の値に戻る (否定の否定は肯定)。",
+      "XOR: 「排他的」は相手を締め出すという意味で、「一方だけ」を認め、両方そろうことを締め出す。"
     ],
     "memory_hooks_zh": [
-      "集合：说到集合，就是由条件确定的事物的聚集",
-      "韦恩图：说到韦恩图，就是用圆的重叠表示集合关系的图",
-      "真值表：说到真值表，就是完整列出输入所有组合与结果的表",
-      "逻辑运算：说到逻辑运算，就是处理真假的 AND、OR、NOT 的总称",
-      "AND：说到 AND 就是「并且」，全部为真才为真的逻辑与",
-      "OR：说到 OR 就是「或者」，有一个为真就为真的逻辑或",
-      "NOT：说到 NOT 就是「不」，反转真假的否定",
-      "XOR：说到 XOR 就是「不同则为真」的异或"
+      "集合：符号 ∪ 可记作 Union（合并）首字母 U 的形状，∩ 则是把它倒扣过来的形状。",
+      "韦恩图：名称取自英国逻辑学家约翰·维恩（John Venn），是人名，而不是对图的描述。",
+      "真值表：“真值”指的是真或假这一值，把这些值逐一列出的表，就叫真值表。",
+      "逻辑运算：英语也称 Boolean operation，得名于将二值运算体系化的数学家布尔。",
+      "AND（逻辑与）：有时用符号 ∧ 或“·”（乘号的点）表示，结果与 0 和 1 的乘法相同。",
+      "OR（逻辑或）：有时用符号 ∨ 或“+”（加号）表示，只有把 1 + 1 也当作 1 这一点与普通加法不同。",
+      "NOT（否定）：连续施加两次 NOT 就会回到原来的值（否定的否定即肯定）。",
+      "XOR（异或）：日语名称“排他的論理和”中的“排他”是把对方排除在外的意思，即只承认“其中一方”，排除两者同时成立的情况。"
     ],
     "memory_hooks_en": [
-      "Set: Set → a collection of things determined by a condition",
-      "Venn diagram: Venn diagram → a figure showing set relationships through overlapping circles",
-      "Truth table: Truth table → a table covering all input combinations and their results",
-      "Logical operation: Logical operation → the umbrella term for AND, OR, NOT that handle true/false",
-      "AND: AND → \"both,\" logical AND that is true only when all are true",
-      "OR: OR → \"or,\" logical OR that is true when at least one is true",
-      "NOT: NOT → \"not,\" negation that inverts true and false",
-      "XOR: XOR → \"true if they differ,\" exclusive OR"
+      "Set: Remember ∪ as the shape of U, the first letter of Union, and ∩ as that shape turned upside down.",
+      "Venn Diagram: It is named after the British logician John Venn, so the name is a person's, not a description.",
+      "Truth Table: A \"truth value\" is the value true or false, and the table is named for listing those values.",
+      "Logical Operation: It is also called a Boolean operation, after George Boole, the mathematician who systematized two-valued calculation.",
+      "AND: It is sometimes written ∧ or \"·\" (the multiplication dot), and its results match multiplying 0s and 1s.",
+      "OR: It is sometimes written ∨ or \"+\", and the only difference from ordinary addition is that 1 + 1 is also treated as 1.",
+      "NOT: Applying NOT twice in a row gives back the original value (the negation of a negation is an affirmation).",
+      "XOR: \"Exclusive\" means shutting the other out: it accepts \"only one\" and excludes the case where both hold."
     ]
   },
   "challenge_questions": [
     "2015h27h-q062",
     "2017h29a-q098",
-    "2018h30a-q079",
-    "2015h27h-q097",
-    "2015h27h-q099"
+    "2013h25a-q064",
+    "2013h25h-q082",
+    "2018h30a-q079"
   ],
   "source_figures": [
     {
@@ -355,9 +1289,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "集合与逻辑运算",
-  "title_en": "Sets and Logical Operations",
-  "unit_summary_zh": "以集合的思路与韦恩图的表示为起点，系统地学习真值表和逻辑运算（AND/OR/NOT/XOR）。",
-  "unit_summary_en": "Starting from the concept of sets and their representation with Venn diagrams, systematically learn truth tables and logical operations (AND/OR/NOT/XOR)."
+  }
 }
