@@ -1,216 +1,979 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-17-46-u01",
   "topic_id": "technology-17-46",
   "category": "technology",
   "title_jp": "ファイルシステムの基礎 — ディレクトリ管理とバックアップ",
+  "title_zh": "文件系统基础 — 目录管理与备份",
+  "title_en": "File System Basics — Directory Management and Backup",
   "unit_summary_jp": "ディレクトリによるファイル管理の考え方と、データを保全するバックアップ・アーカイブの基本を一体で学ぶ。",
+  "unit_summary_zh": "把基于目录的文件管理思路，与保全数据的备份、归档基础结合在一起学习。",
+  "unit_summary_en": "Learn how files are managed using directories, together with the basics of backup and archiving that keep data safe.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、コンピュータがファイルを整理して管理する仕組みを学びます。ディレクトリによる階層管理(ルート・カレント)とファイルの識別、記憶装置で起こる断片化、そしてデータを守るアーカイブ・バックアップを一体で扱います。出題頻度は低めですが、ルートディレクトリやバックアップは繰り返し問われる基礎用語です。",
-    "freq_badge": "低頻",
-    "est_minutes": 18,
-    "intro_zh": "在本单元中，你将学习计算机整理并管理文件的机制。我们会把基于目录的层级管理（根目录、当前目录）和文件的识别、存储设备上发生的碎片化，以及守护数据的归档与备份结合起来一并讲解。出题频率偏低，但根目录和备份是反复被考查的基础术语。",
-    "intro_en": "In this unit, you will learn how a computer organizes and manages files. We cover hierarchical management by directories (root and current), how files are identified, the fragmentation that occurs on storage devices, and the archiving and backup that protect your data — all as one connected topic. The exam frequency is on the lower side, but root directory and backup are basic terms that come up again and again."
-  },
-  "terms": [
+  "goals_jp": [
+    "**ルートディレクトリ**と**カレントディレクトリ**を区別し、絶対パスと相対パスでファイルの場所を書き表せる。",
+    "**ファイル拡張子**の役割と、**フラグメンテーション**が読み出し速度に与える影響を説明できる。",
+    "**アーカイブ**と**バックアップ**の目的の違いを説明し、バックアップの方式ごとに復元に使うファイルを判断できる。"
+  ],
+  "goals_zh": [
+    "能区分**根目录**（[[jp:ルートディレクトリ]]）和**当前目录**（[[jp:カレントディレクトリ]]），并能用绝对路径和相对路径写出文件所在的位置。",
+    "能说明**文件扩展名**（[[jp:ファイル拡張子]]）的作用，以及**碎片化**（[[jp:フラグメンテーション]]）对读取速度的影响。",
+    "能说明**归档**（[[jp:アーカイブ]]）与**备份**（[[jp:バックアップ]]）在目的上的不同，并能按备份方式判断恢复时要用哪些文件。"
+  ],
+  "goals_en": [
+    "Tell the **root directory** ([[jp:ルートディレクトリ]]) apart from the **current directory** ([[jp:カレントディレクトリ]]), and write a file's location as an absolute or a relative path.",
+    "Explain what a **file extension** ([[jp:ファイル拡張子]]) does and how **fragmentation** ([[jp:フラグメンテーション]]) affects read speed.",
+    "Explain how the purpose of an **archive** ([[jp:アーカイブ]]) differs from that of a **backup** ([[jp:バックアップ]]), and work out which files each backup method needs for a restore."
+  ],
+  "overview_cols_jp": [
+    "関係する語"
+  ],
+  "overview_cols_zh": [
+    "相关术语"
+  ],
+  "overview_cols_en": [
+    "Related terms"
+  ],
+  "overview_rows": [
     {
       "term": "ルートディレクトリ",
-      "definition_jp": "ディレクトリ階層の最上位にある、すべての起点となるディレクトリ。",
-      "explanation_jp": "ルートディレクトリは、ファイルやフォルダを入れ子状(ツリー状)に管理するディレクトリ階層の一番上に位置する基準点です。ここからたどることで、どのファイルの位置も一意に表せます。\n\n最上位からの位置を順にたどって示す表記を絶対パスと呼び、その出発点が常にルートディレクトリです。試験では、ルートが階層の最上位であること、そして「現在いる位置」を表すカレントディレクトリとの違い(ルートは固定の最上位、カレントは作業中の場所で変化する)が問われます。",
-      "analogy_jp": "ビルの「1階の正面玄関」のようなもの。どの部屋へ行くにも、まず共通の入口である玄関を基準に「玄関→3階→301号室」と道順をたどれます。",
-      "memory_hook_jp": "ルートディレクトリといえば階層の最上位・絶対パスの出発点",
-      "inline_quiz": [
-        "2009h21h-q057",
-        "2011h23a-q074"
+      "one_line_jp": "ディレクトリ階層の頂点にあるディレクトリ",
+      "one_line_zh": "位于目录层级顶端的目录",
+      "one_line_en": "The directory at the top of the directory hierarchy",
+      "extra_jp": [
+        "絶対パス"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"ルートディレクトリ\"] --> B[\"利用者フォルダ\"]; A --> C[\"システムフォルダ\"]; B --> D[\"文書\"]; B --> E[\"画像\"]; D --> F[\"report.txt\"]",
-        "svg_path": "figures/technology-17-46-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "根目录",
-      "term_en": "Root directory",
-      "definition_zh": "位于目录层级最顶端、作为一切起点的目录。",
-      "definition_en": "The directory at the very top of the directory hierarchy, serving as the starting point for everything.",
-      "explanation_zh": "根目录是把文件和文件夹以嵌套（树状）方式管理的目录层级中，位于最顶端的基准点。从这里逐级追溯，就能唯一地表示出任何文件的位置。\n\n从最顶端开始依次追溯位置来表示路径的写法称为绝对路径，而它的出发点始终是根目录。考试中会考查：根目录是层级的最顶端，以及它与表示「当前所在位置」的当前目录之间的区别（根目录是固定的最顶端，当前目录是作业中的位置、会发生变化）。",
-      "explanation_en": "The root directory is the reference point at the very top of the directory hierarchy, where files and folders are managed in a nested (tree) structure. By tracing down from here, the location of any file can be expressed uniquely.\n\nA notation that shows a path by tracing positions in order from the very top is called an absolute path, and its starting point is always the root directory. The exam asks that the root is the top of the hierarchy, and how it differs from the current directory, which shows \"where you are now\" (the root is the fixed top, while the current directory is your working location and changes).",
-      "analogy_zh": "就像大楼「一层的正门」。无论去哪个房间，都要先以共同入口的正门为基准，按「正门→3层→301室」的顺序追路线。",
-      "analogy_en": "Like the \"front entrance on the first floor\" of a building. To reach any room, you trace the route starting from the shared entrance: \"entrance → 3rd floor → room 301.\"",
-      "memory_hook_zh": "说到根目录，就是层级的最顶端、绝对路径的出发点",
-      "memory_hook_en": "Root directory → the top of the hierarchy and the starting point of an absolute path"
+      "extra_zh": [
+        "绝对路径"
+      ],
+      "extra_en": [
+        "Absolute path"
+      ]
     },
     {
       "term": "カレントディレクトリ",
-      "definition_jp": "利用者が現在作業の基準にしている、操作中のディレクトリ。",
-      "explanation_jp": "カレントディレクトリは、いま自分が作業している「現在位置」のディレクトリです。ファイルを指定するとき、この現在位置を基準にした表記を相対パスと呼びます。\n\nルートディレクトリが常に固定の最上位なのに対し、カレントディレクトリは移動操作によって変化します。試験では、絶対パス(ルート起点)と相対パス(カレント起点)の違いがよく問われ、「.」が現在のディレクトリ、「..」が一つ上(親)のディレクトリを表す点も押さえておきましょう。",
-      "analogy_jp": "建物内の案内図にある「現在地はここ」の赤い印のようなもの。同じ目的地でも、今いる場所が変われば「そこからの道順」も変わります。",
-      "memory_hook_jp": "カレントディレクトリといえば現在位置・相対パスの起点",
-      "inline_quiz": [
-        "2009h21a-q087",
-        "2011h23tokubetsu-q083"
+      "one_line_jp": "いま作業の基準にしているディレクトリ",
+      "one_line_zh": "当前作为操作基准的目录",
+      "one_line_en": "The directory you are working from right now",
+      "extra_jp": [
+        "相対パス、「.」と「..」"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "当前目录",
-      "term_en": "Current directory",
-      "definition_zh": "用户当前以其为作业基准、正在操作的目录。",
-      "definition_en": "The directory the user is currently working in and operating from as the reference point.",
-      "explanation_zh": "当前目录是你此刻正在作业的「当前位置」目录。指定文件时，以这个当前位置为基准的写法称为相对路径。\n\n与根目录始终固定为最顶端不同，当前目录会因移动操作而发生变化。考试中常考绝对路径（以根目录为起点）和相对路径（以当前目录为起点）的区别，也要记住「.」表示当前目录、「..」表示上一级（父）目录这一点。",
-      "explanation_en": "The current directory is the \"present location\" directory where you are working right now. When you specify a file, a notation based on this present location is called a relative path.\n\nWhile the root directory is always the fixed top, the current directory changes as you move around. The exam often asks the difference between an absolute path (starting from the root) and a relative path (starting from the current directory), and you should also remember that \".\" represents the current directory and \"..\" represents the directory one level up (the parent).",
-      "analogy_zh": "就像建筑内导览图上「您所在的位置」那个红色标记。即使目的地相同，只要你现在所在的位置变了，「从那里出发的路线」也会随之改变。",
-      "analogy_en": "Like the red \"You are here\" marker on a building's floor map. Even for the same destination, if where you are now changes, the \"route from there\" changes too.",
-      "memory_hook_zh": "说到当前目录，就是当前位置、相对路径的起点",
-      "memory_hook_en": "Current directory → your present location and the starting point of a relative path"
+      "extra_zh": [
+        "相对路径，「.」与「..」"
+      ],
+      "extra_en": [
+        "Relative path, \".\" and \"..\""
+      ]
     },
     {
       "term": "ファイル拡張子",
-      "definition_jp": "ファイル名末尾に付け、種類や形式を示す「.」以降の文字列。",
-      "explanation_jp": "ファイル拡張子は、ファイル名のうちピリオド(.)より後ろの部分で、そのファイルの種類や形式を表します。例として .txt は文書、.jpg や .png は画像、.mp3 は音声、.exe は実行ファイルなどがあります。\n\nOS はこの拡張子を見て、開くアプリケーションを判断します。試験では、拡張子がファイルの中身そのものではなく「種類を示す目印」であること、拡張子の例とファイル形式の対応が問われます。拡張子だけを書き換えても中身の形式は変わらない点にも注意が必要です。",
-      "analogy_jp": "荷物の箱に貼る「割れ物」「冷蔵」などの内容ラベルのようなもの。中身の種類が一目で分かり、どう扱えばよいかが判断できます。",
-      "memory_hook_jp": "ファイル拡張子といえばファイルの種類を示す末尾の目印",
-      "inline_quiz": [
-        "2013h25a-q093"
+      "one_line_jp": "ファイル名の末尾でファイルの種類を示す文字列",
+      "one_line_zh": "文件名末尾表示文件类型的字符串",
+      "one_line_en": "The string at the end of a file name that shows the file's type",
+      "extra_jp": [
+        "ワイルドカード検索"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "文件扩展名",
-      "term_en": "File extension",
-      "definition_zh": "加在文件名末尾、表示种类或格式的「.」之后的字符串。",
-      "definition_en": "The string after the \".\" appended to the end of a file name, indicating its type or format.",
-      "explanation_zh": "文件扩展名是文件名中句点（.）之后的部分，用来表示该文件的种类或格式。例如 .txt 是文档，.jpg 和 .png 是图像，.mp3 是音频，.exe 是可执行文件等。\n\n操作系统会看这个扩展名来判断用哪个应用程序打开。考试中会考查：扩展名并不是文件内容本身，而是「表示种类的标记」，以及扩展名示例与文件格式的对应关系。还要注意，只改写扩展名并不会改变内容本身的格式。",
-      "explanation_en": "A file extension is the part of a file name after the period (.), and it indicates the file's type or format. For example, .txt is a document, .jpg and .png are images, .mp3 is audio, and .exe is an executable file.\n\nThe OS looks at this extension to decide which application to open it with. The exam asks that an extension is not the file's content itself but a \"marker indicating its type,\" and the correspondence between example extensions and file formats. Note also that merely rewriting the extension does not change the actual format of the content.",
-      "analogy_zh": "就像贴在包裹箱子上「易碎品」「需冷藏」等内容标签。一眼就能看出里面是什么种类，从而判断该如何处理。",
-      "analogy_en": "Like the content labels stuck on a package box, such as \"Fragile\" or \"Keep refrigerated.\" You can tell at a glance what kind of thing is inside and judge how it should be handled.",
-      "memory_hook_zh": "说到文件扩展名，就是表示文件种类的末尾标记",
-      "memory_hook_en": "File extension → the trailing marker that shows a file's type"
+      "extra_zh": [
+        "通配符搜索"
+      ],
+      "extra_en": [
+        "Wildcard search"
+      ]
     },
     {
       "term": "フラグメンテーション",
-      "definition_jp": "ファイルが記憶装置上で断片化し、連続せず散らばる状態。",
-      "explanation_jp": "フラグメンテーション(断片化)は、ファイルの作成・削除・更新を繰り返すうちに、1つのファイルのデータがハードディスク上のあちこちに分かれて記録されてしまう現象です。\n\n断片化が進むと、読み書きの際にヘッドがあちこちを探しに行くため、アクセス速度が低下します。これを解消し、データを連続した領域へ並べ直す処理をデフラグ(デフラグメンテーション)と呼びます。試験では、断片化が性能低下の原因であること、デフラグが対策であることがセットで問われます(SSD ではデフラグは原則不要)。",
-      "analogy_jp": "本棚に本を出し入れするうち、同じシリーズの巻があちこちの棚にばらけてしまう状態。読むたびに棚中を探し回ることになり、時間がかかります。",
-      "memory_hook_jp": "フラグメンテーションといえば断片化で速度低下・対策はデフラグ",
+      "one_line_jp": "ファイルのデータが記憶装置の離れた場所に散らばった状態",
+      "one_line_zh": "文件数据分散在存储设备各处的状态",
+      "one_line_en": "A file's data scattered across separate places on a storage device",
+      "extra_jp": [
+        "デフラグ"
+      ],
+      "extra_zh": [
+        "碎片整理"
+      ],
+      "extra_en": [
+        "Defragmentation"
+      ]
+    },
+    {
+      "term": "アーカイブ",
+      "one_line_jp": "複数のファイルを 1 つに束ねること",
+      "one_line_zh": "把多个文件合为一个",
+      "one_line_en": "Bundling several files into one",
+      "extra_jp": [
+        "圧縮"
+      ],
+      "extra_zh": [
+        "压缩"
+      ],
+      "extra_en": [
+        "Compression"
+      ]
+    },
+    {
+      "term": "バックアップ",
+      "one_line_jp": "データの複製を別の媒体や場所に保管しておくこと",
+      "one_line_zh": "把数据副本保存在另外的介质或地点",
+      "one_line_en": "Keeping a copy of data on a separate medium or in a separate place",
+      "extra_jp": [
+        "リストア、フル・差分・増分"
+      ],
+      "extra_zh": [
+        "恢复；完全、差异、增量"
+      ],
+      "extra_en": [
+        "Restore; full, differential, incremental"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "ルートディレクトリ",
+      "term_zh": "根目录",
+      "term_en": "Root directory",
+      "one_jp": "**ルートディレクトリ**は、ファイルを木の形に整理する**階層型ディレクトリ構造**の頂点にあるディレクトリである。",
+      "one_zh": "**根目录**（[[jp:ルートディレクトリ]]）是**层次型目录结构**（[[jp:階層型ディレクトリ構造]]）顶端的目录，这种结构把文件整理成树的形状。",
+      "one_en": "The **root directory** ([[jp:ルートディレクトリ]]) is the directory at the top of a **hierarchical directory structure** ([[jp:階層型ディレクトリ構造]]), which organizes files in the shape of a tree.",
+      "detail_jp": "ディレクトリはファイルや下位のディレクトリを入れておく入れ物で、中にさらにディレクトリを作れるため、全体は木を逆さにした形になる。ルートから目当てのファイルまでの経路を順に書いて場所を示す方法を**絶対パス**といい、起点が動かないので、どこで作業していても表記は同じになる。",
+      "detail_zh": "目录是存放文件和下级目录的容器，里面还能再建目录，所以整体呈倒过来的树形。从根开始依次写出到目标文件所经过的路线来表示位置，这种方法叫**绝对路径**（[[jp:絶対パス]]）；由于起点固定不动，无论在哪里操作，写法都相同。",
+      "detail_en": "A directory is a container for files and lower-level directories, and since a directory can hold further directories, the whole structure forms an upside-down tree. Showing a location by writing the route from the root down to the target file is called an **absolute path** ([[jp:絶対パス]]); because its starting point never moves, the notation stays the same wherever you are working.",
+      "analogy_jp": "住所を都道府県から番地まで省略せずに書けば、手紙をどこから出しても同じ家に届く。ルートから書く絶対パスはこの書き方に当たる。",
+      "analogy_zh": "写地址时从省份一直写到门牌号、一点不省略，那么不管从哪里寄信，都会送到同一户人家。从根写起的绝对路径就相当于这种写法。",
+      "analogy_en": "If you write an address in full, from the region down to the house number, a letter reaches the same house no matter where it is posted from. An absolute path, written from the root, works the same way.",
+      "hook_jp": "root は英語で「根」。木を逆さに描いた図では、根が一番上に来る。",
+      "hook_zh": "root 在英语里是「根」。把树倒过来画，根就到了最上面。",
+      "hook_en": "A \"root\" is where a tree begins. Draw the tree upside down and the root ends up at the top.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "絶対パスはルートを起点に書くので、カレントディレクトリがどこにあっても、同じ場所は同じ表記で指せる。",
+          "text_zh": "绝对路径（[[jp:絶対パス]]）以根为起点书写，因此不论当前目录（[[jp:カレントディレクトリ]]）在哪里，同一位置总能用同一写法表示。",
+          "text_en": "An absolute path ([[jp:絶対パス]]) is written from the root, so the same location always has the same notation, wherever the current directory ([[jp:カレントディレクトリ]]) happens to be.",
+          "qids": [
+            "2019r01a-q083",
+            "2014h26h-q068"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "場所は経路全体で決まるので、親ディレクトリが違えば同じ名前のディレクトリを別々に置ける。",
+          "text_zh": "位置由整条路径决定，所以只要父目录（[[jp:親ディレクトリ]]）不同，同名的目录就可以分别存在。",
+          "text_en": "A location is fixed by the whole path, so directories with the same name can exist side by side as long as their parent directories ([[jp:親ディレクトリ]]) differ.",
+          "qids": [
+            "2009h21a-q087",
+            "2012h24a-q063"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "root",
+            "label": {
+              "jp": "ルート",
+              "zh": "根",
+              "en": "Root"
+            },
+            "children": [
+              {
+                "id": "home",
+                "label": {
+                  "jp": "home",
+                  "zh": "home",
+                  "en": "home"
+                },
+                "children": [
+                  {
+                    "id": "taro",
+                    "label": {
+                      "jp": "taro",
+                      "zh": "taro",
+                      "en": "taro"
+                    },
+                    "children": [
+                      {
+                        "id": "memo",
+                        "label": {
+                          "jp": "memo.txt",
+                          "zh": "memo.txt",
+                          "en": "memo.txt"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "work",
+                "label": {
+                  "jp": "work",
+                  "zh": "work",
+                  "en": "work"
+                },
+                "children": [
+                  {
+                    "id": "data",
+                    "label": {
+                      "jp": "data.csv",
+                      "zh": "data.csv",
+                      "en": "data.csv"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2019r01a-q083",
+        "2022r04-q090",
+        "2009h21a-q087"
+      ],
+      "definition_jp": "ルートディレクトリは、ファイルを木の形に整理する階層型ディレクトリ構造の頂点にあるディレクトリである。",
+      "definition_zh": "根目录（ルートディレクトリ）是层次型目录结构（階層型ディレクトリ構造）顶端的目录，这种结构把文件整理成树的形状。",
+      "definition_en": "The root directory (ルートディレクトリ) is the directory at the top of a hierarchical directory structure (階層型ディレクトリ構造), which organizes files in the shape of a tree.",
+      "explanation_jp": "ディレクトリはファイルや下位のディレクトリを入れておく入れ物で、中にさらにディレクトリを作れるため、全体は木を逆さにした形になる。ルートから目当てのファイルまでの経路を順に書いて場所を示す方法を絶対パスといい、起点が動かないので、どこで作業していても表記は同じになる。",
+      "explanation_zh": "目录是存放文件和下级目录的容器，里面还能再建目录，所以整体呈倒过来的树形。从根开始依次写出到目标文件所经过的路线来表示位置，这种方法叫绝对路径（絶対パス）；由于起点固定不动，无论在哪里操作，写法都相同。",
+      "explanation_en": "A directory is a container for files and lower-level directories, and since a directory can hold further directories, the whole structure forms an upside-down tree. Showing a location by writing the route from the root down to the target file is called an absolute path (絶対パス); because its starting point never moves, the notation stays the same wherever you are working.",
+      "memory_hook_jp": "root は英語で「根」。木を逆さに描いた図では、根が一番上に来る。",
+      "memory_hook_zh": "root 在英语里是「根」。把树倒过来画，根就到了最上面。",
+      "memory_hook_en": "A \"root\" is where a tree begins. Draw the tree upside down and the root ends up at the top.",
+      "inline_quiz": [
+        "2019r01a-q083",
+        "2022r04-q090",
+        "2009h21a-q087"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "カレントディレクトリ",
+      "term_zh": "当前目录",
+      "term_en": "Current directory",
+      "one_jp": "**カレントディレクトリ**は、利用者やプログラムがいま作業の基準にしているディレクトリで、移動の操作によって変わる。",
+      "one_zh": "**当前目录**（[[jp:カレントディレクトリ]]）是用户或程序眼下作为操作基准的目录，会随着移动操作而改变。",
+      "one_en": "The **current directory** ([[jp:カレントディレクトリ]]) is the directory a user or program is working from right now, and it changes when you move to another directory.",
+      "detail_jp": "カレントディレクトリを起点に目当ての場所までの道筋を書く方法を**相対パス**という。相対パスでは、多くの場合、自分のいるディレクトリを「.」、すぐ上の親ディレクトリを「..」で表す。同じファイルを指す場合でも、カレントディレクトリが変わると相対パスの書き方が変わることがある。",
+      "detail_zh": "以当前目录为起点写出到目标位置的路线，这种方法叫**相对路径**（[[jp:相対パス]]）。在相对路径中，多数情况下用「.」表示自己所在的目录，用「..」表示紧邻的上一级父目录。即使指向同一个文件，当前目录一变，相对路径的写法也可能跟着改变。",
+      "detail_en": "Writing the route from the current directory to the target is called a **relative path** ([[jp:相対パス]]). In most systems, \".\" stands for the directory you are in and \"..\" for its parent, one level up. Even for the same file, the relative path may have to be written differently once the current directory changes.",
+      "analogy_jp": "「ここから角を 2 つ戻って右」という道案内は、話す人が立っている場所を基準にした言い方である。",
+      "analogy_zh": "「从这儿往回走两个路口再右拐」这样的指路，是以说话人所站的位置为基准的说法。",
+      "analogy_en": "Directions such as \"go back two corners from here, then turn right\" only make sense from where the speaker is standing.",
+      "hook_jp": "current は英語で「いまの」。「カレントな話題」と言えば、いまの話題のこと。",
+      "hook_zh": "current 在英语里是「现在的」。current topic 就是眼下正在谈的话题。",
+      "hook_en": "\"Current\" means \"present\", as in current events: the news that is happening now.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "相対パスでは「..」を 1 つ書くごとに 1 階層上へ移り、そこから下位のディレクトリ名を順にたどって目的の場所に着く。",
+          "text_zh": "在相对路径（[[jp:相対パス]]）中，每写一个「..」就向上移一级，再依次沿着下级目录名走到目标位置。",
+          "text_en": "In a relative path ([[jp:相対パス]]), each \"..\" moves up one level, and from there you follow the lower-level directory names in order to reach the target.",
+          "qids": [
+            "2014h26a-q075",
+            "2019h31h-q096",
+            "2016h28a-q075"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "相対パスが指す場所を、ルートから順にたどる経路で書き直したものが絶対パスである。",
+          "text_zh": "把相对路径所指的位置改写成从根依次往下走的路线，得到的就是绝对路径（[[jp:絶対パス]]）。",
+          "text_en": "Rewriting the location a relative path points to as a route traced down from the root gives the absolute path ([[jp:絶対パス]]).",
+          "qids": [
+            "2014h26h-q068"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "カレントディレクトリは作業に合わせて移動するが、ルートディレクトリは階層の頂点に固定されていて動かない。",
+          "text_zh": "当前目录（[[jp:カレントディレクトリ]]）随着操作而移动，而根目录（[[jp:ルートディレクトリ]]）固定在层级顶端，不会移动。",
+          "text_en": "The current directory ([[jp:カレントディレクトリ]]) moves as you work, while the root directory ([[jp:ルートディレクトリ]]) stays fixed at the top of the hierarchy."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "s1",
+              "label": {
+                "jp": "現在地 2026",
+                "zh": "当前位置 2026",
+                "en": "Current: 2026"
+              }
+            },
+            {
+              "id": "s2",
+              "label": {
+                "jp": "親の photo",
+                "zh": "上一级 photo",
+                "en": "Parent: photo"
+              }
+            },
+            {
+              "id": "s3",
+              "label": {
+                "jp": "さらに上の home",
+                "zh": "再上一级 home",
+                "en": "One more up: home"
+              }
+            },
+            {
+              "id": "s4",
+              "label": {
+                "jp": "music の b.mp3",
+                "zh": "music 下的 b.mp3",
+                "en": "b.mp3 in music"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "../../music/b.mp3 という書き方をたどる。出発点はカレントディレクトリの 2026 である。",
+            "caption_zh": "沿着 ../../music/b.mp3 这一写法走一遍。出发点是当前目录 2026。",
+            "caption_en": "Follow the path ../../music/b.mp3 step by step. The starting point is the current directory, 2026.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "最初の .. で 1 階層上の photo へ移る。",
+            "caption_zh": "第一个 .. 向上一级，移到 photo。",
+            "caption_en": "The first .. moves up one level to photo.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "次の .. でさらに 1 階層上の home へ移る。",
+            "caption_zh": "第二个 .. 再向上一级，到达 home。",
+            "caption_en": "The second .. moves up one more level to home.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "home の下の music に入り、b.mp3 に着く。",
+            "caption_zh": "进入 home 下的 music，到达 b.mp3。",
+            "caption_en": "Go into music under home and arrive at b.mp3.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2014h26a-q075",
+        "2014h26h-q068",
+        "2019h31h-q096"
+      ],
+      "definition_jp": "カレントディレクトリは、利用者やプログラムがいま作業の基準にしているディレクトリで、移動の操作によって変わる。",
+      "definition_zh": "当前目录（カレントディレクトリ）是用户或程序眼下作为操作基准的目录，会随着移动操作而改变。",
+      "definition_en": "The current directory (カレントディレクトリ) is the directory a user or program is working from right now, and it changes when you move to another directory.",
+      "explanation_jp": "カレントディレクトリを起点に目当ての場所までの道筋を書く方法を相対パスという。相対パスでは、多くの場合、自分のいるディレクトリを「.」、すぐ上の親ディレクトリを「..」で表す。同じファイルを指す場合でも、カレントディレクトリが変わると相対パスの書き方が変わることがある。",
+      "explanation_zh": "以当前目录为起点写出到目标位置的路线，这种方法叫相对路径（相対パス）。在相对路径中，多数情况下用「.」表示自己所在的目录，用「..」表示紧邻的上一级父目录。即使指向同一个文件，当前目录一变，相对路径的写法也可能跟着改变。",
+      "explanation_en": "Writing the route from the current directory to the target is called a relative path (相対パス). In most systems, \".\" stands for the directory you are in and \"..\" for its parent, one level up. Even for the same file, the relative path may have to be written differently once the current directory changes.",
+      "memory_hook_jp": "current は英語で「いまの」。「カレントな話題」と言えば、いまの話題のこと。",
+      "memory_hook_zh": "current 在英语里是「现在的」。current topic 就是眼下正在谈的话题。",
+      "memory_hook_en": "\"Current\" means \"present\", as in current events: the news that is happening now.",
+      "inline_quiz": [
+        "2014h26a-q075",
+        "2014h26h-q068",
+        "2019h31h-q096"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ファイル拡張子",
+      "term_zh": "文件扩展名",
+      "term_en": "File extension",
+      "one_jp": "**ファイル拡張子**は、ファイル名の最後のピリオドより後ろに付けて、そのファイルの**種類や形式**を示す文字列である。",
+      "one_zh": "**文件扩展名**（[[jp:ファイル拡張子]]）是加在文件名最后一个句点之后、表示该文件**类型或格式**的字符串。",
+      "one_en": "A **file extension** ([[jp:ファイル拡張子]]) is the string after the last period in a file name that shows the file's **type or format**.",
+      "detail_jp": "OS は拡張子を手がかりに、そのファイルを開くアプリケーションや表示するアイコンを決める。拡張子は名前の一部なので、書き換えても中のデータの形式が変換されるわけではない。ファイル名の一部を任意の文字の代わりとなる記号で置き換えて検索するとき、その記号を**ワイルドカード**という。",
+      "detail_zh": "操作系统根据扩展名来决定用哪个应用程序打开该文件、显示什么图标。扩展名只是名称的一部分，改写它并不会转换里面数据的格式。搜索时用一个能代替任意字符的符号替换文件名的一部分，这种符号叫**通配符**（[[jp:ワイルドカード]]）。",
+      "detail_en": "The OS uses the extension to decide which application opens the file and which icon to show. Because the extension is only part of the name, changing it does not convert the format of the data inside. When you search by replacing part of a file name with a symbol that stands in for any characters, that symbol is called a **wildcard** ([[jp:ワイルドカード]]).",
+      "analogy_jp": "封筒の表に書いた「請求書在中」の文字のようなもの。中身が何かは一目で分かるが、文字を書き換えても中の書類は変わらない。",
+      "analogy_zh": "就像信封正面写的「内附账单」几个字。一眼就能知道里面装的是什么，但改掉这几个字，里面的文件并不会变。",
+      "analogy_en": "It is like writing \"Invoice enclosed\" on the front of an envelope. Anyone can tell at a glance what is inside, but rewriting those words does not change the document in the envelope.",
+      "hook_jp": "extension は英語で「延長」。ファイル名を後ろに少し延ばした部分と覚える。",
+      "hook_zh": "extension 在英语里是「延长」。可以记成把文件名往后稍微延长出来的那一段。",
+      "hook_en": "To \"extend\" something is to make it longer. Think of the extension as the bit that lengthens the file name at the end.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "名前で検索するとき、ワイルドカードの「?」はちょうど 1 文字分、「*」は 0 文字以上の文字列に当たり、拡張子の部分にも同じように働く。",
+          "text_zh": "按名称搜索时，通配符（[[jp:ワイルドカード]]）「?」恰好代表 1 个字符，「*」代表 0 个以上字符组成的字符串，对扩展名（[[jp:拡張子]]）部分也同样起作用。",
+          "text_en": "When searching by name, the wildcard ([[jp:ワイルドカード]]) \"?\" matches exactly one character and \"*\" matches a string of zero or more characters, and both work the same way on the extension ([[jp:拡張子]]) part.",
+          "qids": [
+            "2018h30h-q085"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "拡張子の例",
+              "zh": "扩展名示例",
+              "en": "Example extension"
+            },
+            {
+              "jp": "ファイルの種類",
+              "zh": "文件类型",
+              "en": "File type"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": ".txt",
+                  "zh": ".txt",
+                  "en": ".txt"
+                },
+                {
+                  "jp": "文字だけのテキスト",
+                  "zh": "只含文字的文本",
+                  "en": "Plain text only"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": ".png",
+                  "zh": ".png",
+                  "en": ".png"
+                },
+                {
+                  "jp": "画像",
+                  "zh": "图像",
+                  "en": "Image"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": ".mp4",
+                  "zh": ".mp4",
+                  "en": ".mp4"
+                },
+                {
+                  "jp": "動画",
+                  "zh": "视频",
+                  "en": "Video"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": ".zip",
+                  "zh": ".zip",
+                  "en": ".zip"
+                },
+                {
+                  "jp": "まとめて圧縮したファイル",
+                  "zh": "打包压缩后的文件",
+                  "en": "Files bundled and compressed together"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2018h30h-q085"
+      ],
+      "definition_jp": "ファイル拡張子は、ファイル名の最後のピリオドより後ろに付けて、そのファイルの種類や形式を示す文字列である。",
+      "definition_zh": "文件扩展名（ファイル拡張子）是加在文件名最后一个句点之后、表示该文件类型或格式的字符串。",
+      "definition_en": "A file extension (ファイル拡張子) is the string after the last period in a file name that shows the file's type or format.",
+      "explanation_jp": "OS は拡張子を手がかりに、そのファイルを開くアプリケーションや表示するアイコンを決める。拡張子は名前の一部なので、書き換えても中のデータの形式が変換されるわけではない。ファイル名の一部を任意の文字の代わりとなる記号で置き換えて検索するとき、その記号をワイルドカードという。",
+      "explanation_zh": "操作系统根据扩展名来决定用哪个应用程序打开该文件、显示什么图标。扩展名只是名称的一部分，改写它并不会转换里面数据的格式。搜索时用一个能代替任意字符的符号替换文件名的一部分，这种符号叫通配符（ワイルドカード）。",
+      "explanation_en": "The OS uses the extension to decide which application opens the file and which icon to show. Because the extension is only part of the name, changing it does not convert the format of the data inside. When you search by replacing part of a file name with a symbol that stands in for any characters, that symbol is called a wildcard (ワイルドカード).",
+      "memory_hook_jp": "extension は英語で「延長」。ファイル名を後ろに少し延ばした部分と覚える。",
+      "memory_hook_zh": "extension 在英语里是「延长」。可以记成把文件名往后稍微延长出来的那一段。",
+      "memory_hook_en": "To \"extend\" something is to make it longer. Think of the extension as the bit that lengthens the file name at the end.",
+      "inline_quiz": [
+        "2018h30h-q085"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "フラグメンテーション",
+      "term_zh": "碎片化",
+      "term_en": "Fragmentation",
+      "one_jp": "**フラグメンテーション**(断片化)は、1 つのファイルのデータが記憶装置の離れた場所に分かれて記録された状態である。",
+      "one_zh": "**碎片化**（[[jp:フラグメンテーション]]，又称[[jp:断片化]]）是指一个文件的数据被分开记录在存储设备上彼此相隔的位置的状态。",
+      "one_en": "**Fragmentation** ([[jp:フラグメンテーション]], also [[jp:断片化]]) is the state in which the data of one file is recorded in separate places spread across a storage device.",
+      "detail_jp": "ファイルの作成と削除を繰り返すうちに空き領域が細切れになり、新しいデータをひと続きの場所に書けなくなる。分かれたデータを読むには離れた場所を順に探す必要があるため、ハードディスクでは読み出しに時間がかかる。散らばったデータを連続した領域に並べ直して解消する処理を**デフラグ**という。",
+      "detail_zh": "在反复创建和删除文件的过程中，空闲区域变得零碎，新数据就无法写进一整段连续的位置。读取被拆开的数据需要依次寻找彼此相隔的位置，所以在硬盘上读取会更费时间。把分散的数据重新排到连续区域来消除碎片的处理叫**碎片整理**（[[jp:デフラグ]]）。",
+      "detail_en": "As files are created and deleted over and over, free space breaks into small pieces, and new data can no longer be written in one continuous stretch. Reading split data means seeking out distant locations one after another, so reads take longer on a hard disk. The process that fixes this by rearranging scattered data into contiguous areas is called **defragmentation** ([[jp:デフラグ]]).",
+      "analogy_jp": "駐車場の空きが点々としか残っていないと、団体で来た車を 1 か所にまとめて停められず、迎えに行くときにあちこち回ることになる。",
+      "analogy_zh": "停车场只剩零星几个空位时，一个团开来的几辆车就没法停在一起，回头取车时只好到处转。",
+      "analogy_en": "When a parking lot has only scattered empty spaces, a group arriving in several cars cannot park together, and collecting them later means driving all over the lot.",
+      "hook_jp": "fragment は英語で「かけら」。ファイルがかけらに割れた状態と覚える。",
+      "hook_zh": "fragment 在英语里是「碎片」。可以记成文件碎成了一块块碎片的状态。",
+      "hook_en": "A \"fragment\" is a broken-off piece. Picture a file shattered into pieces.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "ハードディスクのように読み取り位置を動かして読む記憶装置では、断片化を放っておくと読み出しが遅くなる。解消するにはデフラグでデータを連続した場所へ並べ直す。",
+          "text_zh": "像硬盘这样要移动读取位置来读数据的存储设备，碎片化（[[jp:断片化]]）放着不管就会让读取变慢。要消除它，就用碎片整理（[[jp:デフラグ]]）把数据重新排到连续的位置。",
+          "text_en": "On storage devices that read by moving a read position, such as hard disks, leaving fragmentation ([[jp:断片化]]) alone slows down reading. Defragmentation ([[jp:デフラグ]]) fixes it by rearranging the data into contiguous locations.",
+          "qids": [
+            "2011h23tokubetsu-q080"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "f1",
+              "label": {
+                "jp": "ファイルを続けて記録",
+                "zh": "连续记录文件",
+                "en": "Files stored contiguously"
+              }
+            },
+            {
+              "id": "f2",
+              "label": {
+                "jp": "削除で隙間ができる",
+                "zh": "删除后出现空隙",
+                "en": "Deletions leave gaps"
+              }
+            },
+            {
+              "id": "f3",
+              "label": {
+                "jp": "新しいファイルが隙間に分かれて入る",
+                "zh": "新文件被拆进各处空隙",
+                "en": "A new file is split into the gaps"
+              }
+            },
+            {
+              "id": "f4",
+              "label": {
+                "jp": "連続した場所へ並べ直す",
+                "zh": "重新排到连续的位置",
+                "en": "Rearranged into contiguous space"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "最初は各ファイルが連続した領域に記録されている。",
+            "caption_zh": "起初，各个文件都记录在连续的区域中。",
+            "caption_en": "At first, each file is stored in a contiguous area.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "一部のファイルを消すと、空き領域が細切れに残る。",
+            "caption_zh": "删掉部分文件后，空闲区域就零零碎碎地留了下来。",
+            "caption_en": "Deleting some files leaves free space behind in small, scattered pieces.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "大きなファイルは細切れの空きに分けて書かれ、読むときに離れた場所を順に探す。",
+            "caption_zh": "大文件被拆开写进这些零碎的空闲区域，读取时要依次去找彼此相隔的位置。",
+            "caption_en": "A large file is written in pieces across those gaps, so reading it means visiting distant spots one after another.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "データを連続した領域に並べ直すと、ハードディスクでは読み出しが速くなる。",
+            "caption_zh": "把数据重新排到连续的区域后，硬盘的读取就会变快。",
+            "caption_en": "Rearranging the data into contiguous areas makes reading faster on a hard disk.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2011h23tokubetsu-q080"
+      ],
+      "definition_jp": "フラグメンテーション(断片化)は、1 つのファイルのデータが記憶装置の離れた場所に分かれて記録された状態である。",
+      "definition_zh": "碎片化（フラグメンテーション，又称断片化）是指一个文件的数据被分开记录在存储设备上彼此相隔的位置的状态。",
+      "definition_en": "Fragmentation (フラグメンテーション, also 断片化) is the state in which the data of one file is recorded in separate places spread across a storage device.",
+      "explanation_jp": "ファイルの作成と削除を繰り返すうちに空き領域が細切れになり、新しいデータをひと続きの場所に書けなくなる。分かれたデータを読むには離れた場所を順に探す必要があるため、ハードディスクでは読み出しに時間がかかる。散らばったデータを連続した領域に並べ直して解消する処理をデフラグという。",
+      "explanation_zh": "在反复创建和删除文件的过程中，空闲区域变得零碎，新数据就无法写进一整段连续的位置。读取被拆开的数据需要依次寻找彼此相隔的位置，所以在硬盘上读取会更费时间。把分散的数据重新排到连续区域来消除碎片的处理叫碎片整理（デフラグ）。",
+      "explanation_en": "As files are created and deleted over and over, free space breaks into small pieces, and new data can no longer be written in one continuous stretch. Reading split data means seeking out distant locations one after another, so reads take longer on a hard disk. The process that fixes this by rearranging scattered data into contiguous areas is called defragmentation (デフラグ).",
+      "memory_hook_jp": "fragment は英語で「かけら」。ファイルがかけらに割れた状態と覚える。",
+      "memory_hook_zh": "fragment 在英语里是「碎片」。可以记成文件碎成了一块块碎片的状态。",
+      "memory_hook_en": "A \"fragment\" is a broken-off piece. Picture a file shattered into pieces.",
       "inline_quiz": [
         "2011h23tokubetsu-q080"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "碎片化",
-      "term_en": "Fragmentation",
-      "definition_zh": "文件在存储设备上被分割、不连续而分散存放的状态。",
-      "definition_en": "A state in which a file is split up on a storage device and scattered around instead of being stored contiguously.",
-      "explanation_zh": "碎片化（fragmentation）是指在反复创建、删除、更新文件的过程中，一个文件的数据被分散记录到硬盘上各处的现象。\n\n碎片化加剧后，读写时磁头要四处寻找，从而导致访问速度下降。把数据重新排列到连续区域以消除碎片化的处理称为碎片整理（defrag，磁盘碎片整理）。考试中会成对考查：碎片化是性能下降的原因，碎片整理是其对策（SSD 原则上不需要碎片整理）。",
-      "explanation_en": "Fragmentation is the phenomenon where, as you repeatedly create, delete, and update files, the data of a single file ends up recorded scattered across various places on a hard disk.\n\nAs fragmentation worsens, the head has to search here and there during reading and writing, which lowers access speed. The process of resolving this by rearranging data into a contiguous area is called defragmentation (defrag). The exam asks, as a pair, that fragmentation is a cause of performance degradation and defragmentation is the countermeasure (on an SSD, defragmentation is in principle unnecessary).",
-      "analogy_zh": "就像反复在书架上取放书籍后，同一套丛书的各卷散落到了书架各处的状态。每次想读都要在整个书架上四处翻找，很费时间。",
-      "analogy_en": "Like a state where, after repeatedly taking books off a shelf and putting them back, the volumes of one series end up scattered across various shelves. Every time you want to read, you have to hunt all over the shelves, which takes time.",
-      "memory_hook_zh": "说到碎片化，就是因分散而速度下降、对策是碎片整理",
-      "memory_hook_en": "Fragmentation → scattering slows things down; the countermeasure is defrag"
+      "figure": null
     },
     {
       "term": "アーカイブ",
-      "definition_jp": "複数のファイルを1つにまとめて保存・配布できるようにすること。",
-      "explanation_jp": "アーカイブは、複数のファイルやフォルダを1つのファイルにまとめる処理、またはそのまとめたファイルを指します。zip 形式などが代表例で、まとめる際にデータを圧縮してサイズを小さくすることもよくあります。\n\n多数のファイルを1つにまとめられるため、保存・配布・長期保管が扱いやすくなります。試験では、アーカイブが「複数を1つにまとめる」ことであり、圧縮(サイズを縮める)とは本来別の概念だが実用上一緒に行われることが多い、という関係が問われます。バックアップの保存単位としてもよく使われます。",
-      "analogy_jp": "ばらばらの書類を1つの封筒にまとめて封をするようなもの。1通として持ち運べて、必要なら真空パックのように小さく圧縮もできます。",
-      "memory_hook_jp": "アーカイブといえば複数ファイルを1つにまとめる",
+      "term_zh": "归档",
+      "term_en": "Archive",
+      "one_jp": "**アーカイブ**は、複数のファイルを 1 つのファイルに束ねること、または束ねてできたファイルである。",
+      "one_zh": "**归档**（[[jp:アーカイブ]]）是指把多个文件合成一个文件，也指合成后得到的那个文件。",
+      "one_en": "An **archive** ([[jp:アーカイブ]]) means bundling several files into one file, or the single file that results.",
+      "detail_jp": "束ねておけば、多数のファイルを保存・保管したり受け渡したりするときに 1 つのファイルとして扱える。例えば ZIP 形式では、束ねる際にデータを圧縮してサイズを小さくすることもできる。",
+      "detail_zh": "合成一个之后，在保存、保管或传递大量文件时，就能把它们当作一个文件来处理。例如 ZIP 格式在合并时还可以压缩数据，减小体积。",
+      "detail_en": "Once bundled, a large number of files can be handled as a single file when you save, store or hand them over. The ZIP format, for example, can also compress the data while bundling it to make it smaller.",
+      "analogy_jp": "引っ越しで細かい荷物を段ボール箱に詰めると、1 個の荷物として運べる。",
+      "analogy_zh": "搬家时把零碎的东西装进纸箱，就能当成一件行李来搬。",
+      "analogy_en": "When you move house, packing small items into a cardboard box lets you carry them as one parcel.",
+      "hook_jp": "archive の元の意味は「記録の保管所」。資料を 1 か所にしまい込むイメージ。",
+      "hook_zh": "archive 原本的意思是「档案馆」，可以想象成把资料收进同一个地方。",
+      "hook_en": "\"Archive\" originally meant a place where records are kept. Picture putting all your papers away in one spot.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "アーカイブは、たくさんのファイルを保存・保管しやすくするために 1 つに束ねて扱う方法である。",
+          "text_zh": "归档（[[jp:アーカイブ]]）是为了便于保存和保管大量文件，而把它们合成一个来处理的方法。",
+          "text_en": "An archive ([[jp:アーカイブ]]) is a way of bundling many files into one so they are easier to save and store.",
+          "qids": [
+            "2021r03-q083"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "アーカイブはファイルの個数を 1 つにまとめる処理で、圧縮はデータ量を小さくする処理である。同時に行う形式が多いが、働きは別である。",
+          "text_zh": "归档（[[jp:アーカイブ]]）是把文件个数合并成一个的处理，压缩（[[jp:圧縮]]）是减小数据量的处理。很多格式会同时进行这两种处理，但二者的作用不同。",
+          "text_en": "Archiving ([[jp:アーカイブ]]) reduces the number of files to one, while compression ([[jp:圧縮]]) reduces the amount of data. Many formats do both at once, but they are separate functions."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2021r03-q083"
+      ],
+      "definition_jp": "アーカイブは、複数のファイルを 1 つのファイルに束ねること、または束ねてできたファイルである。",
+      "definition_zh": "归档（アーカイブ）是指把多个文件合成一个文件，也指合成后得到的那个文件。",
+      "definition_en": "An archive (アーカイブ) means bundling several files into one file, or the single file that results.",
+      "explanation_jp": "束ねておけば、多数のファイルを保存・保管したり受け渡したりするときに 1 つのファイルとして扱える。例えば ZIP 形式では、束ねる際にデータを圧縮してサイズを小さくすることもできる。",
+      "explanation_zh": "合成一个之后，在保存、保管或传递大量文件时，就能把它们当作一个文件来处理。例如 ZIP 格式在合并时还可以压缩数据，减小体积。",
+      "explanation_en": "Once bundled, a large number of files can be handled as a single file when you save, store or hand them over. The ZIP format, for example, can also compress the data while bundling it to make it smaller.",
+      "memory_hook_jp": "archive の元の意味は「記録の保管所」。資料を 1 か所にしまい込むイメージ。",
+      "memory_hook_zh": "archive 原本的意思是「档案馆」，可以想象成把资料收进同一个地方。",
+      "memory_hook_en": "\"Archive\" originally meant a place where records are kept. Picture putting all your papers away in one spot.",
       "inline_quiz": [
         "2021r03-q083"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "归档",
-      "term_en": "Archive",
-      "definition_zh": "把多个文件合并为一个，便于保存与分发。",
-      "definition_en": "Bundling multiple files into one so they can be stored and distributed easily.",
-      "explanation_zh": "归档是指把多个文件或文件夹合并为一个文件的处理，或指合并后的那个文件。zip 格式等是其典型代表，合并时也常会压缩数据以缩小体积。\n\n由于能把大量文件合并为一个，保存、分发、长期保管都更易于处理。考试中会考查这样的关系：归档是「把多个合并为一个」，与压缩（缩小体积）本来是不同的概念，但在实用上常常一起进行。它也常被用作备份的保存单位。",
-      "explanation_en": "An archive refers to the process of bundling multiple files or folders into one file, or to the bundled file itself. The zip format is a typical example, and it is common to compress the data to reduce size when bundling.\n\nBecause many files can be bundled into one, storage, distribution, and long-term retention become easier to handle. The exam asks about this relationship: archiving means \"bundling many into one,\" and although it is originally a different concept from compression (reducing size), in practice the two are often done together. It is also frequently used as the unit of storage for backups.",
-      "analogy_zh": "就像把零散的文件汇总进一个信封并封口。可以当作一封整体来携带，需要时还能像真空包装那样压得更小。",
-      "analogy_en": "Like gathering scattered documents into one envelope and sealing it. You can carry it as a single item, and if needed you can also compress it small, like vacuum-packing.",
-      "memory_hook_zh": "说到归档，就是把多个文件合并为一个",
-      "memory_hook_en": "Archive → bundle multiple files into one"
+      "figure": null
     },
     {
       "term": "バックアップ",
-      "definition_jp": "障害に備え、データの複製を別の場所へ保存しておくこと。",
-      "explanation_jp": "バックアップは、機器の故障・誤操作・災害などでデータが失われる事態に備え、あらかじめデータの複製を取り、別の媒体や場所に保管しておくことです。失われても複製から元に戻せます(復元・リストア)。\n\n方式には、毎回すべてを複製するフルバックアップ、前回のバックアップ以降の変更分だけを取る増分バックアップ、基準のフルバックアップ以降の変更分を取る差分バックアップがあります。試験では、これら3方式の違いと、復元の手間・所要時間の差(増分は復元が手間、差分は中間)が問われます。",
-      "analogy_jp": "大事な書類のコピーを取り、自宅とは別の貸金庫にも預けておくようなもの。原本が火事で焼けても、別の場所の控えから元に戻せます。",
-      "memory_hook_jp": "バックアップといえばデータ複製を別の場所に保存して復元に備える",
+      "term_zh": "备份",
+      "term_en": "Backup",
+      "one_jp": "**バックアップ**は、故障や誤操作、災害などでデータを失ったときに備えて、データの**複製**を別の媒体や場所に保管しておくことである。",
+      "one_zh": "**备份**（[[jp:バックアップ]]）是为防备因故障、误操作或灾害等丢失数据，而把数据的**副本**保存在另外的介质或地点。",
+      "one_en": "A **backup** ([[jp:バックアップ]]) is a **copy** of data kept on a separate medium or in a separate place, in case the data is lost through a failure, a user's mistake or a disaster.",
+      "detail_jp": "失ったデータを複製から元に戻す作業を**リストア**(復元)という。取り方には、例えば対象をすべて複製する**フルバックアップ**、最後のフルバックアップ以降の変更を取る**差分バックアップ**、直前のバックアップ以降の変更だけを取る**増分バックアップ**がある。",
+      "detail_zh": "用副本把丢失的数据还原回来的操作叫**恢复**（[[jp:リストア]]，又称[[jp:復元]]）。备份的取法例如有：复制全部对象的**完全备份**（[[jp:フルバックアップ]]）、取上次完全备份以后变更内容的**差异备份**（[[jp:差分バックアップ]]），以及只取上一次备份以后变更内容的**增量备份**（[[jp:増分バックアップ]]）。",
+      "detail_en": "Bringing lost data back from a copy is called a **restore** ([[jp:リストア]], also [[jp:復元]]). Methods include, for example, a **full backup** ([[jp:フルバックアップ]]) that copies everything, a **differential backup** ([[jp:差分バックアップ]]) that takes the changes since the last full backup, and an **incremental backup** ([[jp:増分バックアップ]]) that takes only the changes since the previous backup.",
+      "analogy_jp": "家の合鍵を、自宅とは別の場所に住む家族に預けておくようなもの。家の中で鍵をなくしても、預けた合鍵で入れる。",
+      "analogy_zh": "就像把家里的备用钥匙交给住在别处的家人保管。即使在家里把钥匙弄丢了，也能用托付出去的备用钥匙进门。",
+      "analogy_en": "It is like leaving a spare house key with a relative who lives somewhere else. Even if you lose your key at home, the spare one gets you back in.",
+      "hook_jp": "back up は英語で「後ろで支える」。表に出ている元データを、控えが後ろから支える。",
+      "hook_zh": "back up 在英语里是「在后面支撑」。摆在台前的原始数据，由副本在背后撑着。",
+      "hook_en": "To \"back up\" someone is to support them from behind. The copy stands behind the original data, ready to step in.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "増分バックアップの方式で戻すときは、基準のフルバックアップと、そこから戻したい時点までに取った増分バックアップをすべて使う。",
+          "text_zh": "采用增量备份（[[jp:増分バックアップ]]）方式恢复时，要用作为基准的完全备份（[[jp:フルバックアップ]]），以及从那以后到要恢复的时间点为止取得的全部增量备份。",
+          "text_en": "To restore under the incremental backup ([[jp:増分バックアップ]]) method, you use the base full backup ([[jp:フルバックアップ]]) and every incremental backup taken from then up to the point you want to restore to.",
+          "qids": [
+            "2016h28h-q092"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "差分バックアップの方式で戻すときに最低限要るのは、最後のフルバックアップと、戻したい時点に取った差分バックアップである。",
+          "text_zh": "采用差异备份（[[jp:差分バックアップ]]）方式恢复时，最少需要的是上次的完全备份（[[jp:フルバックアップ]]），以及在要恢复的时间点取得的那份差异备份。",
+          "text_en": "To restore under the differential backup ([[jp:差分バックアップ]]) method, the minimum you need is the last full backup ([[jp:フルバックアップ]]) and the differential backup taken at the point you want to restore to.",
+          "qids": [
+            "2026r08-q086"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "方式",
+              "zh": "方式",
+              "en": "Method"
+            },
+            {
+              "jp": "毎回複製する範囲",
+              "zh": "每次复制的范围",
+              "en": "What each run copies"
+            },
+            {
+              "jp": "復元に使うもの",
+              "zh": "恢复时使用的文件",
+              "en": "What a restore needs"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "フルバックアップ",
+                  "zh": "完全备份",
+                  "en": "Full backup"
+                },
+                {
+                  "jp": "対象のデータ全部",
+                  "zh": "目标数据的全部",
+                  "en": "All target data"
+                },
+                {
+                  "jp": "そのフルバックアップ",
+                  "zh": "该次完全备份",
+                  "en": "That full backup"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "差分バックアップ",
+                  "zh": "差异备份",
+                  "en": "Differential backup"
+                },
+                {
+                  "jp": "最後のフルバックアップ以降に変わった分",
+                  "zh": "上次完全备份以后变化的部分",
+                  "en": "Changes since the last full backup"
+                },
+                {
+                  "jp": "フルバックアップと、戻したい時点の差分",
+                  "zh": "完全备份，加上要恢复到的时间点的差异备份",
+                  "en": "The full backup plus the differential taken at the point you want to restore to"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "増分バックアップ",
+                  "zh": "增量备份",
+                  "en": "Incremental backup"
+                },
+                {
+                  "jp": "直前のバックアップ以降に変わった分",
+                  "zh": "上一次备份以后变化的部分",
+                  "en": "Changes since the previous backup"
+                },
+                {
+                  "jp": "フルバックアップと、そこから戻したい時点までの増分すべて",
+                  "zh": "完全备份，加上从那以后到要恢复的时间点为止的全部增量备份",
+                  "en": "The full backup plus every incremental up to the point you want to restore to"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2016h28h-q092",
+        "2026r08-q086",
+        "2012h24h-q081"
+      ],
+      "definition_jp": "バックアップは、故障や誤操作、災害などでデータを失ったときに備えて、データの複製を別の媒体や場所に保管しておくことである。",
+      "definition_zh": "备份（バックアップ）是为防备因故障、误操作或灾害等丢失数据，而把数据的副本保存在另外的介质或地点。",
+      "definition_en": "A backup (バックアップ) is a copy of data kept on a separate medium or in a separate place, in case the data is lost through a failure, a user's mistake or a disaster.",
+      "explanation_jp": "失ったデータを複製から元に戻す作業をリストア(復元)という。取り方には、例えば対象をすべて複製するフルバックアップ、最後のフルバックアップ以降の変更を取る差分バックアップ、直前のバックアップ以降の変更だけを取る増分バックアップがある。",
+      "explanation_zh": "用副本把丢失的数据还原回来的操作叫恢复（リストア，又称復元）。备份的取法例如有：复制全部对象的完全备份（フルバックアップ）、取上次完全备份以后变更内容的差异备份（差分バックアップ），以及只取上一次备份以后变更内容的增量备份（増分バックアップ）。",
+      "explanation_en": "Bringing lost data back from a copy is called a restore (リストア, also 復元). Methods include, for example, a full backup (フルバックアップ) that copies everything, a differential backup (差分バックアップ) that takes the changes since the last full backup, and an incremental backup (増分バックアップ) that takes only the changes since the previous backup.",
+      "memory_hook_jp": "back up は英語で「後ろで支える」。表に出ている元データを、控えが後ろから支える。",
+      "memory_hook_zh": "back up 在英语里是「在后面支撑」。摆在台前的原始数据，由副本在背后撑着。",
+      "memory_hook_en": "To \"back up\" someone is to support them from behind. The copy stands behind the original data, ready to step in.",
       "inline_quiz": [
+        "2016h28h-q092",
+        "2026r08-q086",
         "2012h24h-q081"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"バックアップ\"] --> B[\"フルバックアップ\"]; A --> C[\"増分バックアップ\"]; A --> D[\"差分バックアップ\"]; B --> E[\"毎回すべてを複製\"]; C --> F[\"前回以降の変更分\"]; D --> G[\"フル以降の変更分\"]",
-        "svg_path": "figures/technology-17-46-u01-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "备份",
-      "term_en": "Backup",
-      "definition_zh": "为防备故障，把数据的副本保存到另一处。",
-      "definition_en": "Keeping a copy of data in a separate place to prepare for failures.",
-      "explanation_zh": "备份是指为防备因设备故障、误操作、灾害等导致数据丢失，事先制作数据的副本并保管到其他媒介或地点。即使丢失，也能从副本还原回去（还原、恢复）。\n\n方式上有：每次复制全部的完全备份；只复制上次备份以后变更部分的增量备份；以及复制基准的完全备份以后变更部分的差异备份。考试中会考查这三种方式的区别，以及还原的麻烦程度与所需时间的差异（增量还原较麻烦，差异居中）。",
-      "explanation_en": "A backup means making a copy of data in advance and keeping it on another medium or in another location, to prepare for situations where data is lost due to equipment failure, mistaken operations, disasters, and the like. Even if data is lost, you can restore it from the copy (restoration / restore).\n\nMethods include a full backup that copies everything each time, an incremental backup that takes only the changes since the previous backup, and a differential backup that takes the changes since the baseline full backup. The exam asks about the differences among these three methods and the differences in the effort and time required to restore (incremental is more troublesome to restore, differential is in between).",
-      "analogy_zh": "就像把重要文件复印一份，并存放到与家中不同的另一个保险箱里。即使原件在火灾中被烧毁，也能从异地的备份还原回来。",
-      "analogy_en": "Like making a copy of an important document and keeping it in a safe-deposit box separate from your home. Even if the original burns up in a fire, you can restore it from the copy kept elsewhere.",
-      "memory_hook_zh": "说到备份，就是把数据副本保存到另一处、为还原做准备",
-      "memory_hook_en": "Backup → keep a data copy in another place, ready to restore"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "ルートディレクトリ",
+      "b": "カレントディレクトリ",
+      "rows": [
+        {
+          "label_jp": "位置",
+          "label_zh": "位置",
+          "label_en": "Position",
+          "a_jp": "階層の頂点",
+          "a_zh": "层级顶端",
+          "a_en": "Top of the hierarchy",
+          "b_jp": "いま作業している所",
+          "b_zh": "当前正在操作的地方",
+          "b_en": "Where you are working now",
+          "key": false
+        },
+        {
+          "label_jp": "動くか",
+          "label_zh": "是否移动",
+          "label_en": "Does it move?",
+          "a_jp": "固定されていて動かない",
+          "a_zh": "固定不动",
+          "a_en": "Fixed; never moves",
+          "b_jp": "移動の操作で変わる",
+          "b_zh": "随移动操作而改变",
+          "b_en": "Changes when you move",
+          "key": true
+        },
+        {
+          "label_jp": "起点にする書き方",
+          "label_zh": "以它为起点的写法",
+          "label_en": "Path written from it",
+          "a_jp": "絶対パス",
+          "a_zh": "绝对路径",
+          "a_en": "Absolute path",
+          "b_jp": "相対パス",
+          "b_zh": "相对路径",
+          "b_en": "Relative path",
+          "key": true
+        }
+      ]
+    },
+    {
+      "a": "アーカイブ",
+      "b": "バックアップ",
+      "rows": [
+        {
+          "label_jp": "目的",
+          "label_zh": "目的",
+          "label_en": "Purpose",
+          "a_jp": "多数のファイルを 1 つにして扱いやすくする",
+          "a_zh": "把大量文件合成一个，便于处理",
+          "a_en": "Make many files easier to handle as one",
+          "b_jp": "データを失ったときに元に戻せるようにする",
+          "b_zh": "数据丢失时能够还原",
+          "b_en": "Make lost data recoverable",
+          "key": true
+        },
+        {
+          "label_jp": "できあがるもの",
+          "label_zh": "得到的结果",
+          "label_en": "What you end up with",
+          "a_jp": "複数のファイルを束ねた 1 つのファイル",
+          "a_zh": "把多个文件合在一起的一个文件",
+          "a_en": "One file that bundles several files",
+          "b_jp": "元のデータとは別に置いた複製",
+          "b_zh": "与原始数据分开存放的副本",
+          "b_en": "A copy kept apart from the original data",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "ファイルの場所はディレクトリの経路で表し、相対パスでは一般に「..」1 つで 1 階層上がる。",
+    "拡張子はファイルの種類を示す名前の一部で、書き換えても中身の形式は変わらない。",
+    "断片化はハードディスクの読み出しを遅くし、デフラグで連続した配置に戻せる。",
+    "バックアップの複製は、元の装置とは別の媒体や場所に置く。"
+  ],
+  "key_points_zh": [
+    "文件的位置用经过各级目录的路径来表示；在相对路径中，一般每个「..」向上一级。",
+    "扩展名是名称中表示文件类型的那一部分，改写它也不会改变内容的格式。",
+    "碎片化会让硬盘的读取变慢，用碎片整理可以恢复成连续的存放。",
+    "备份的副本要放在与原设备不同的介质或地点。"
+  ],
+  "key_points_en": [
+    "A file's location is written as a path through directories; in a relative path, each \"..\" generally moves up one level.",
+    "An extension is the part of the name that shows the file type, and changing it does not change the format of the contents.",
+    "Fragmentation slows reading on a hard disk, and defragmentation restores a contiguous layout.",
+    "Backup copies go on a different medium or in a different place from the original device."
+  ],
+  "overview": {
+    "intro_jp": "ルートディレクトリとカレントディレクトリを区別し、絶対パスと相対パスでファイルの場所を書き表せる。ファイル拡張子の役割と、フラグメンテーションが読み出し速度に与える影響を説明できる。アーカイブとバックアップの目的の違いを説明し、バックアップの方式ごとに復元に使うファイルを判断できる。",
+    "intro_zh": "能区分根目录（ルートディレクトリ）和当前目录（カレントディレクトリ），并能用绝对路径和相对路径写出文件所在的位置。能说明文件扩展名（ファイル拡張子）的作用，以及碎片化（フラグメンテーション）对读取速度的影响。能说明归档（アーカイブ）与备份（バックアップ）在目的上的不同，并能按备份方式判断恢复时要用哪些文件。",
+    "intro_en": "Tell the root directory (ルートディレクトリ) apart from the current directory (カレントディレクトリ), and write a file's location as an absolute or a relative path. Explain what a file extension (ファイル拡張子) does and how fragmentation (フラグメンテーション) affects read speed. Explain how the purpose of an archive (アーカイブ) differs from that of a backup (バックアップ), and work out which files each backup method needs for a restore.",
+    "freq_badge": "低頻",
+    "est_minutes": 34
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ルートディレクトリ: ルートディレクトリといえば階層の最上位・絶対パスの出発点",
-      "カレントディレクトリ: カレントディレクトリといえば現在位置・相対パスの起点",
-      "ファイル拡張子: ファイル拡張子といえばファイルの種類を示す末尾の目印",
-      "フラグメンテーション: フラグメンテーションといえば断片化で速度低下・対策はデフラグ",
-      "アーカイブ: アーカイブといえば複数ファイルを1つにまとめる",
-      "バックアップ: バックアップといえばデータ複製を別の場所に保存して復元に備える"
-    ],
     "key_points_jp": [
-      "ファイルはディレクトリで階層(ツリー)管理され、最上位がルートディレクトリ、現在の作業位置がカレントディレクトリ。",
-      "位置の表し方には、ルート起点の絶対パスと、カレント起点の相対パス(. は現在、.. は親)がある。",
-      "ファイル拡張子(.txt や .jpg など)はファイルの種類を示す目印で、OS が開くアプリの判断に使う。",
-      "フラグメンテーション(断片化)はアクセス速度低下の原因で、デフラグで連続領域に並べ直して解消する。",
-      "バックアップはデータ消失に備えた複製で、フル・増分・差分の3方式があり復元の手間が異なる。アーカイブは複数ファイルを1つにまとめる保全の基盤。"
+      "ファイルの場所はディレクトリの経路で表し、相対パスでは一般に「..」1 つで 1 階層上がる。",
+      "拡張子はファイルの種類を示す名前の一部で、書き換えても中身の形式は変わらない。",
+      "断片化はハードディスクの読み出しを遅くし、デフラグで連続した配置に戻せる。",
+      "バックアップの複製は、元の装置とは別の媒体や場所に置く。"
     ],
     "key_points_zh": [
-      "文件由目录以层级（树状）管理，最顶端是根目录，当前的作业位置是当前目录。",
-      "表示位置的方式有：以根目录为起点的绝对路径，和以当前目录为起点的相对路径（. 表示当前，.. 表示父目录）。",
-      "文件扩展名（如 .txt、.jpg 等）是表示文件种类的标记，操作系统用它来判断打开用的应用。",
-      "碎片化是访问速度下降的原因，通过碎片整理把数据重新排列到连续区域来消除。",
-      "备份是为防备数据丢失而做的副本，有完全、增量、差异三种方式，还原的麻烦程度各不相同。归档把多个文件合并为一个，是数据保全的基础。"
+      "文件的位置用经过各级目录的路径来表示；在相对路径中，一般每个「..」向上一级。",
+      "扩展名是名称中表示文件类型的那一部分，改写它也不会改变内容的格式。",
+      "碎片化会让硬盘的读取变慢，用碎片整理可以恢复成连续的存放。",
+      "备份的副本要放在与原设备不同的介质或地点。"
     ],
     "key_points_en": [
-      "Files are managed hierarchically (as a tree) by directories; the top is the root directory, and the current working location is the current directory.",
-      "Ways to express a location include the absolute path starting from the root and the relative path starting from the current directory (\".\" is current, \"..\" is the parent).",
-      "A file extension (such as .txt or .jpg) is a marker showing the file's type, which the OS uses to decide which application to open it with.",
-      "Fragmentation is a cause of lower access speed, and it is resolved by defragmentation, which rearranges data into a contiguous area.",
-      "A backup is a copy made to prepare for data loss; it comes in full, incremental, and differential methods that differ in restore effort. Archiving bundles multiple files into one and is the foundation of data preservation."
+      "A file's location is written as a path through directories; in a relative path, each \"..\" generally moves up one level.",
+      "An extension is the part of the name that shows the file type, and changing it does not change the format of the contents.",
+      "Fragmentation slows reading on a hard disk, and defragmentation restores a contiguous layout.",
+      "Backup copies go on a different medium or in a different place from the original device."
+    ],
+    "memory_hooks_jp": [
+      "ルートディレクトリ: root は英語で「根」。木を逆さに描いた図では、根が一番上に来る。",
+      "カレントディレクトリ: current は英語で「いまの」。「カレントな話題」と言えば、いまの話題のこと。",
+      "ファイル拡張子: extension は英語で「延長」。ファイル名を後ろに少し延ばした部分と覚える。",
+      "フラグメンテーション: fragment は英語で「かけら」。ファイルがかけらに割れた状態と覚える。",
+      "アーカイブ: archive の元の意味は「記録の保管所」。資料を 1 か所にしまい込むイメージ。",
+      "バックアップ: back up は英語で「後ろで支える」。表に出ている元データを、控えが後ろから支える。"
     ],
     "memory_hooks_zh": [
-      "根目录：说到根目录，就是层级的最顶端、绝对路径的出发点",
-      "当前目录：说到当前目录，就是当前位置、相对路径的起点",
-      "文件扩展名：说到文件扩展名，就是表示文件种类的末尾标记",
-      "碎片化：说到碎片化，就是因分散而速度下降、对策是碎片整理",
-      "归档：说到归档，就是把多个文件合并为一个",
-      "备份：说到备份，就是把数据副本保存到另一处、为还原做准备"
+      "根目录：root 在英语里是「根」。把树倒过来画，根就到了最上面。",
+      "当前目录：current 在英语里是「现在的」。current topic 就是眼下正在谈的话题。",
+      "文件扩展名：extension 在英语里是「延长」。可以记成把文件名往后稍微延长出来的那一段。",
+      "碎片化：fragment 在英语里是「碎片」。可以记成文件碎成了一块块碎片的状态。",
+      "归档：archive 原本的意思是「档案馆」，可以想象成把资料收进同一个地方。",
+      "备份：back up 在英语里是「在后面支撑」。摆在台前的原始数据，由副本在背后撑着。"
     ],
     "memory_hooks_en": [
-      "Root directory: Root directory → the top of the hierarchy and the starting point of an absolute path",
-      "Current directory: Current directory → your present location and the starting point of a relative path",
-      "File extension: File extension → the trailing marker that shows a file's type",
-      "Fragmentation: Fragmentation → scattering slows things down; the countermeasure is defrag",
-      "Archive: Archive → bundle multiple files into one",
-      "Backup: Backup → keep a data copy in another place, ready to restore"
+      "Root directory: A \"root\" is where a tree begins. Draw the tree upside down and the root ends up at the top.",
+      "Current directory: \"Current\" means \"present\", as in current events: the news that is happening now.",
+      "File extension: To \"extend\" something is to make it longer. Think of the extension as the bit that lengthens the file name at the end.",
+      "Fragmentation: A \"fragment\" is a broken-off piece. Picture a file shattered into pieces.",
+      "Archive: \"Archive\" originally meant a place where records are kept. Picture putting all your papers away in one spot.",
+      "Backup: To \"back up\" someone is to support them from behind. The copy stands behind the original data, ready to step in."
     ]
   },
   "challenge_questions": [
-    "2011h23tokubetsu-q100",
-    "2014h26a-q091",
-    "2013h25a-q095",
-    "2012h24a-q063",
-    "2014h26h-q068"
+    "2011h23a-q074",
+    "2009h21h-q057",
+    "2016h28a-q075",
+    "2017h29a-q073",
+    "2015h27a-q079"
   ],
   "source_figures": [
     {
@@ -282,9 +1045,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "文件系统基础 — 目录管理与备份",
-  "title_en": "File System Basics — Directory Management and Backup",
-  "unit_summary_zh": "把基于目录的文件管理思路，与保全数据的备份、归档基础结合在一起学习。",
-  "unit_summary_en": "Learn how files are managed using directories, together with the basics of backup and archiving that keep data safe."
+  }
 }

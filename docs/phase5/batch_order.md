@@ -65,7 +65,7 @@
 | b56 | technology-13-33 | 離散数学 | u01 u02 | 28 | 12 | done |
 | b57 | management-11-30 | ファシリティマネジメント | u01 | 27 | 5 | done |
 | b58 | technology-15-40 | プロセッサ | u01 u02 | 26 | 10 | done |
-| b59 | technology-17-46 | ファイルシステム | u01 | 26 | 6 | todo |
+| b59 | technology-17-46 | ファイルシステム | u01 | 26 | 6 | done |
 | b60 | strategy-06-18 | 情報システム戦略 | u01 | 25 | 4 | todo |
 | b61 | strategy-07-22 | システム化計画 | u01 | 25 | 6 | todo |
 | b62 | technology-15-42 | 入出力デバイス | u01 u02 u03 u04 u05 | 25 | 27 | todo |
