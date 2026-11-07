@@ -1,100 +1,456 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-15-40-u02",
   "topic_id": "technology-15-40",
   "category": "technology",
   "title_jp": "プロセッサの種類と性能",
+  "title_zh": "处理器的种类与性能",
+  "title_en": "Types and Performance of Processors",
   "unit_summary_jp": "CPU を中心に、マルチコア・GPU・GPGPU といったプロセッサの種類と、クロック周波数による性能指標を理解する。",
+  "unit_summary_zh": "以 CPU 为中心，理解多核、GPU、GPGPU 等处理器的种类，以及以时钟频率衡量的性能指标。",
+  "unit_summary_en": "Centering on the CPU, understand the types of processors such as multi-core, GPU, and GPGPU, as well as performance metrics measured by clock frequency.",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-15-40-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、コンピュータの頭脳であるプロセッサの種類と性能を学びます。中核の CPU を起点に、複数コアのマルチコアプロセッサ、画像処理特化の GPU、それを汎用計算へ応用する GPGPU、そして処理速度の指標クロック周波数を押さえます。頻度は高くないものの、用語の意味と違いがよく問われます。",
-    "freq_badge": "低頻",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习计算机的大脑——处理器的种类与性能。以核心的 CPU 为起点，掌握具有多个核心的多核处理器、专门用于图像处理的 GPU、将其应用于通用计算的 GPGPU，以及表示处理速度的指标时钟频率。虽然出题频率不高，但用语的含义与区别常被考查。",
-    "intro_en": "In this unit, we learn about the types and performance of the processor, the brain of a computer. Starting from the central CPU, we cover the multi-core processor with multiple cores, the GPU specialized for image processing, the GPGPU that applies it to general-purpose computing, and clock frequency as the metric of processing speed. Although it is not asked frequently, the meaning of and differences between these terms are commonly tested."
-  },
-  "terms": [
+  "goals_jp": [
+    "**CPU** が命令を取り出して解読・実行する流れと、32 ビット・64 ビットの違いを説明できる。",
+    "**CPU** と **GPU** を得意な計算の違いで、**マルチコアプロセッサ** と **クロック周波数** を性能を高める方法の違いで分けられる。",
+    "**クロック周波数** から 1 クロックの長さや 1 秒あたりの命令数を計算できる。"
+  ],
+  "goals_zh": [
+    "能够说明 **CPU（中央处理器）** 取出指令、译码并执行的流程，以及 32 位与 64 位的区别。",
+    "能够按擅长的计算类型区分 **CPU** 与 **GPU**，按提升性能的方式区分 **多核处理器** 与 **时钟频率**。",
+    "能够根据 **时钟频率** 算出 1 个时钟周期的长度和每秒可执行的指令数。"
+  ],
+  "goals_en": [
+    "Explain how the **CPU** fetches, decodes and executes instructions, and what separates 32-bit from 64-bit.",
+    "Tell the **CPU** and **GPU** apart by the kind of computation each is good at, and tell a **multi-core processor** and **clock frequency** apart by how each raises performance.",
+    "Calculate the length of one clock cycle and the number of instructions per second from the **clock frequency**."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "性能・用途の手がかり"
+  ],
+  "overview_cols_zh": [
+    "分类",
+    "判断性能与用途的线索"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Clue to performance or use"
+  ],
+  "overview_rows": [
     {
       "term": "CPU",
-      "definition_jp": "プログラムの命令を解釈・実行する、コンピュータの中核となる処理装置。",
-      "explanation_jp": "CPU(中央処理装置)は、メモリから命令を読み込み、解釈し、計算や制御を行うコンピュータの頭脳です。5大機能のうち「演算」と「制御」を担い、すべての処理の中心になります。\n\n汎用的に幅広い処理をこなせるのが特徴で、画像処理に特化した GPU と対比されます。試験では、CPU が命令の解釈・実行を担う中央処理装置であること、処理速度の指標としてクロック周波数が使われることがよく問われます。プロセッサ全般の基準となる最も基本的な用語です。",
-      "analogy_jp": "会社でいえば、あらゆる業務の指示を出し判断を下す「総合的な事務処理ができる中心社員」のような存在。何でもこなせる万能型の働き手です。",
-      "memory_hook_jp": "CPUといえば命令を解釈・実行する中央処理装置",
-      "inline_quiz": [
-        "2011h23tokubetsu-q060",
-        "2011h23tokubetsu-q067"
+      "one_line_jp": "命令を解読・実行し、ほかの装置を制御する中核の装置",
+      "one_line_zh": "译码并执行指令、控制其他部件的核心部件",
+      "one_line_en": "The core unit that decodes and executes instructions and controls the other units",
+      "extra_jp": [
+        "装置",
+        "ビット数は一度に扱うデータの幅"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "CPU（中央处理器）",
-      "term_en": "CPU (Central Processing Unit)",
-      "definition_zh": "解释并执行程序指令的、作为计算机核心的处理装置。",
-      "definition_en": "The processing unit at the core of a computer that interprets and executes program instructions.",
-      "explanation_zh": "CPU（中央处理器）是从内存读取指令、进行解释，并执行运算与控制的计算机大脑。它在五大功能中承担「运算」与「控制」，是所有处理的中心。\n\n其特征是能通用地处理各种各样的任务，与专门用于图像处理的 GPU 形成对比。考试中常考查：CPU 是负责解释并执行指令的中央处理器，以及时钟频率被用作处理速度的指标。它是处理器整体的基准，是最基本的用语。",
-      "explanation_en": "The CPU (Central Processing Unit) is the brain of a computer that reads instructions from memory, interprets them, and performs computation and control. Among the five major functions it handles \"operation\" and \"control,\" serving as the center of all processing.\n\nIts characteristic is that it can handle a wide variety of tasks in a general-purpose way, contrasting with the GPU specialized for image processing. The exam often asks that the CPU is the central processing unit responsible for interpreting and executing instructions, and that clock frequency is used as the metric of processing speed. It is the most basic term, serving as the benchmark for processors in general.",
-      "analogy_zh": "在公司里，它就像「能进行综合事务处理的核心员工」，对各种业务发出指示并做出判断。是一位什么都能胜任的全能型工作者。",
-      "analogy_en": "In a company, it is like a \"core employee who can handle comprehensive office work,\" giving instructions and making decisions for all kinds of business. It is an all-purpose worker who can do anything.",
-      "memory_hook_zh": "说到 CPU，就是解释并执行指令的中央处理器",
-      "memory_hook_en": "CPU → the central processing unit that interprets and executes instructions"
+      "extra_zh": [
+        "装置",
+        "位数表示一次能处理的数据宽度"
+      ],
+      "extra_en": [
+        "Unit",
+        "Bit count is the width of data handled at once"
+      ]
     },
     {
       "term": "マルチコアプロセッサ",
-      "definition_jp": "1つのCPU内に演算の中核(コア)を複数搭載したプロセッサ。",
-      "explanation_jp": "マルチコアプロセッサは、CPU の中に処理を行う「コア」を2つ以上載せたものです。複数のコアが同時並行で処理を分担できるため、全体の処理能力を高められます。コアが2つならデュアルコア、4つならクアッドコアと呼びます。\n\nクロック周波数を上げ続けると発熱や消費電力が増えて限界があるため、コアを増やすことで性能を伸ばす方式が主流になりました。試験では、コアを複数持つことで並列処理ができ性能が向上する、という点が問われます。コアの数が多いほど同時に処理できる作業が増える点を押さえましょう。",
-      "analogy_jp": "1人で順番に仕事をこなす窓口を、複数の窓口に増やして客を同時にさばくようなもの。担当者(コア)を増やして全体の処理を速くします。",
-      "memory_hook_jp": "マルチコアプロセッサといえば複数コアで並列処理",
+      "one_line_jp": "1 つのプロセッサに処理の中核 (コア) を複数載せたもの",
+      "one_line_zh": "在一个处理器中搭载多个处理核心（核）",
+      "one_line_en": "A processor carrying several processing cores on one chip",
+      "extra_jp": [
+        "装置",
+        "コアごとに別々の処理を同時に進める"
+      ],
+      "extra_zh": [
+        "装置",
+        "每个核同时推进各自的处理"
+      ],
+      "extra_en": [
+        "Unit",
+        "Each core runs its own work at the same time"
+      ]
+    },
+    {
+      "term": "GPU",
+      "one_line_jp": "描画に必要な大量の計算を一斉に処理する画像処理向けの装置",
+      "one_line_zh": "一齐处理绘图所需大量计算的图像处理专用部件",
+      "one_line_en": "A graphics unit that processes, all at once, the mass of calculations needed for drawing",
+      "extra_jp": [
+        "装置",
+        "単純なコアを多数持つ"
+      ],
+      "extra_zh": [
+        "装置",
+        "拥有大量结构简单的核"
+      ],
+      "extra_en": [
+        "Unit",
+        "Has many simple cores"
+      ]
+    },
+    {
+      "term": "GPGPU",
+      "one_line_jp": "GPU の計算能力を画像以外の汎用計算に使う技術",
+      "one_line_zh": "把 GPU 的计算能力用于图像以外通用计算的技术",
+      "one_line_en": "A technique that puts GPU computing power to general-purpose work beyond graphics",
+      "extra_jp": [
+        "技術 (使い方)",
+        "機械学習や科学技術計算"
+      ],
+      "extra_zh": [
+        "技术（用法）",
+        "机器学习、科学技术计算"
+      ],
+      "extra_en": [
+        "Technique (a way of using)",
+        "Machine learning, scientific computing"
+      ]
+    },
+    {
+      "term": "クロック周波数",
+      "one_line_jp": "動作の歩調をそろえる信号が 1 秒間に刻む回数",
+      "one_line_zh": "统一动作节拍的信号每秒跳动的次数",
+      "one_line_en": "The number of cycles per second of the signal that keeps operations in step",
+      "extra_jp": [
+        "指標",
+        "単位は Hz、1 GHz は毎秒 10 億回"
+      ],
+      "extra_zh": [
+        "指标",
+        "单位为 Hz，1 GHz 即每秒 10 亿次"
+      ],
+      "extra_en": [
+        "Metric",
+        "Unit is Hz; 1 GHz is 1 billion cycles per second"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "CPU",
+      "term_zh": "CPU（中央处理器）",
+      "term_en": "CPU (Central Processing Unit)",
+      "one_jp": "**CPU** (中央処理装置) は、主記憶から命令を取り出して **解読** し、演算を行いながらほかの装置を **制御** する、コンピュータの中核となる装置である。",
+      "one_zh": "**CPU（中央处理器）** 是计算机的核心部件：它从主存储器（内存）取出指令并加以 **译码**，在进行运算的同时 **控制** 其他部件。",
+      "one_en": "The **CPU** (central processing unit) is the core unit of a computer: it fetches instructions from main memory, **decodes** them, and **controls** the other units while carrying out calculations.",
+      "detail_jp": "CPU の中には、次に取り出す命令の番地 (アドレス) を覚えておく **プログラムカウンタ** などの小さな記憶回路 (レジスタ) がある。CPU はこの番地に従って命令を 1 つずつ取り出し、解読して実行する流れを繰り返す。**32 ビット CPU**・**64 ビット CPU** の数字は、一度にまとめて扱えるデータの幅を表す。",
+      "detail_zh": "CPU 内部有寄存器（小型存储电路），其中的 **程序计数器**（[[jp:プログラムカウンタ]]）用来记住下一条要取出的指令的地址。CPU 按这个地址逐条取出指令，反复进行译码和执行。**32 位 CPU**、**64 位 CPU** 中的数字表示一次能整体处理的数据宽度。",
+      "detail_en": "Inside the CPU are small storage circuits (registers) such as the **program counter** ([[jp:プログラムカウンタ]]), which remembers the address of the next instruction to fetch. Following that address, the CPU fetches instructions one at a time and repeats the cycle of decoding and executing them. The number in **32-bit CPU** and **64-bit CPU** is the width of data the CPU can handle in one go.",
+      "analogy_jp": "レシピ帳を 1 行ずつ読んで料理を進める料理長のようなもの。しおりで次に読む行を覚えておき、読んで意味を考え、手を動かしてから次の行へ進む。",
+      "analogy_zh": "就像一位逐行读菜谱做菜的主厨。用书签记住下一行，读完想清楚意思，动手做完再读下一行。",
+      "analogy_en": "It is like a head chef working through a recipe book line by line. A bookmark marks the next line; the chef reads it, works out what it means, does the step, and moves on.",
+      "hook_jp": "CPU の C は Central (中央)。装置の真ん中で全体を指揮する役だと名前が示している。",
+      "hook_zh": "CPU 的 C 是 Central（中央）。名字本身就说明它位于整台计算机的中央、指挥全局。",
+      "hook_en": "The C in CPU stands for Central. The name itself says it sits in the middle and directs everything.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "CPU は命令を主記憶から取り出し、解読し、実行する流れを繰り返す。どの命令を取り出すかは、次の命令の番地を保持する **プログラムカウンタ** が示す。",
+          "text_zh": "CPU 反复执行从主存储器（[[jp:主記憶]]）取出指令、译码、执行的流程。取哪条指令，由保存下一条指令地址的 **程序计数器**（[[jp:プログラムカウンタ]]）指示。",
+          "text_en": "The CPU repeats the cycle of fetching an instruction from main memory ([[jp:主記憶]]), decoding it and executing it. Which instruction comes next is indicated by the **program counter** ([[jp:プログラムカウンタ]]), which holds the address of the next instruction.",
+          "qids": [
+            "2012h24a-q076",
+            "2012h24h-q061"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "64 ビット CPU は 32 ビット CPU より一度に扱えるデータの幅が広く、番地で指定できる記憶領域の上限も理論上大きい。",
+          "text_zh": "与 32 位 CPU 相比，64 位 CPU 一次能处理的数据宽度更大，理论上能用地址指定的存储区域上限也更大。",
+          "text_en": "A 64-bit CPU handles wider data at once than a 32-bit CPU, and in theory the upper limit of memory it can specify by address is also larger.",
+          "qids": [
+            "2018h30h-q074",
+            "2022r04-q081"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**互換 CPU** は元の CPU と命令の体系をそろえて作られた別製品の CPU で、元の CPU 向けの OS やアプリケーションをそのまま動かせる。",
+          "text_zh": "**兼容 CPU**（[[jp:互換CPU]]）是与原 CPU 采用相同指令集的另一款 CPU 产品，面向原 CPU 的操作系统（OS）和应用程序可以直接在上面运行。",
+          "text_en": "A **compatible CPU** ([[jp:互換CPU]]) is a separate product built with the same instruction set as the original CPU, so OSs and applications made for the original run on it unchanged.",
+          "qids": [
+            "2015h27h-q051"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "pc",
+              "label": {
+                "jp": "番地を確認",
+                "zh": "确认地址",
+                "en": "Check address"
+              }
+            },
+            {
+              "id": "fetch",
+              "label": {
+                "jp": "命令を取り出す",
+                "zh": "取指令",
+                "en": "Fetch instruction"
+              }
+            },
+            {
+              "id": "decode",
+              "label": {
+                "jp": "命令を解読",
+                "zh": "指令译码",
+                "en": "Decode instruction"
+              }
+            },
+            {
+              "id": "exec",
+              "label": {
+                "jp": "処理を実行",
+                "zh": "执行处理",
+                "en": "Execute"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "次に扱う命令が主記憶のどの番地にあるかを確かめる。",
+            "caption_zh": "确认下一条要处理的指令位于主存储器的哪个地址。",
+            "caption_en": "Check which address in main memory holds the next instruction.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "その番地の命令を主記憶から CPU に取り出す。",
+            "caption_zh": "从主存储器把该地址的指令取到 CPU 中。",
+            "caption_en": "Bring the instruction at that address from main memory into the CPU.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "取り出した命令が何をせよという命令かを解読する。",
+            "caption_zh": "对取出的指令进行译码，弄清它要求做什么。",
+            "caption_en": "Decode the fetched instruction to work out what it asks for.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "命令どおりの処理を実行し、また次の命令の番地確認へ戻る。",
+            "caption_zh": "按指令执行处理，然后回到确认下一条指令地址的步骤。",
+            "caption_en": "Carry out the instruction, then go back to checking the next address.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2012h24a-q076",
+        "2012h24h-q061",
+        "2018h30h-q074"
+      ],
+      "definition_jp": "CPU (中央処理装置) は、主記憶から命令を取り出して 解読 し、演算を行いながらほかの装置を 制御 する、コンピュータの中核となる装置である。",
+      "definition_zh": "CPU（中央处理器） 是计算机的核心部件：它从主存储器（内存）取出指令并加以 译码，在进行运算的同时 控制 其他部件。",
+      "definition_en": "The CPU (central processing unit) is the core unit of a computer: it fetches instructions from main memory, decodes them, and controls the other units while carrying out calculations.",
+      "explanation_jp": "CPU の中には、次に取り出す命令の番地 (アドレス) を覚えておく プログラムカウンタ などの小さな記憶回路 (レジスタ) がある。CPU はこの番地に従って命令を 1 つずつ取り出し、解読して実行する流れを繰り返す。32 ビット CPU・64 ビット CPU の数字は、一度にまとめて扱えるデータの幅を表す。",
+      "explanation_zh": "CPU 内部有寄存器（小型存储电路），其中的 程序计数器（プログラムカウンタ）用来记住下一条要取出的指令的地址。CPU 按这个地址逐条取出指令，反复进行译码和执行。32 位 CPU、64 位 CPU 中的数字表示一次能整体处理的数据宽度。",
+      "explanation_en": "Inside the CPU are small storage circuits (registers) such as the program counter (プログラムカウンタ), which remembers the address of the next instruction to fetch. Following that address, the CPU fetches instructions one at a time and repeats the cycle of decoding and executing them. The number in 32-bit CPU and 64-bit CPU is the width of data the CPU can handle in one go.",
+      "memory_hook_jp": "CPU の C は Central (中央)。装置の真ん中で全体を指揮する役だと名前が示している。",
+      "memory_hook_zh": "CPU 的 C 是 Central（中央）。名字本身就说明它位于整台计算机的中央、指挥全局。",
+      "memory_hook_en": "The C in CPU stands for Central. The name itself says it sits in the middle and directs everything.",
+      "inline_quiz": [
+        "2012h24a-q076",
+        "2012h24h-q061",
+        "2018h30h-q074"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "マルチコアプロセッサ",
+      "term_zh": "多核处理器",
+      "term_en": "Multi-core processor",
+      "one_jp": "**マルチコアプロセッサ** は、命令を処理する中核部分である **コア** を 1 つのプロセッサの中に複数持ち、コアごとに別々の処理を **同時に** 進めるプロセッサである。",
+      "one_zh": "**多核处理器**（[[jp:マルチコアプロセッサ]]）是在一个处理器中拥有多个负责处理指令的核心部分（**核**），由各个核 **同时** 推进不同处理的处理器。",
+      "one_en": "A **multi-core processor** ([[jp:マルチコアプロセッサ]]) is a processor that has several **cores**, the central parts that process instructions, on one chip, with each core running different work **at the same time**.",
+      "detail_jp": "コアが 2 つのものを **デュアルコア**、4 つのものを **クアッドコア** と呼ぶ。プログラムの中で実行される一続きの処理の流れの単位を **スレッド** という。処理の中には順番にしか進められない部分があるため、コアを増やしても性能の伸びはコア数に比例するとは限らない。",
+      "detail_zh": "有 2 个核的称为 **双核**，有 4 个核的称为 **四核**。程序中执行的一连串处理流程的单位称为 **线程**。有些处理只能按顺序推进，所以增加核数后，性能的提升不一定与核数成正比。",
+      "detail_en": "A processor with 2 cores is called **dual-core**, and one with 4 cores is called **quad-core**. The unit of a continuous flow of processing that runs inside a program is called a **thread**. Some parts of a job can only proceed in order, so adding cores does not always raise performance in proportion to the core count.",
+      "analogy_jp": "レジが 1 台だけの店にレジを増やすようなもの。並んだ客をそれぞれ別のレジで同時に会計できる。",
+      "analogy_zh": "就像只有一台收银机的商店又增加了收银机。排队的顾客可以在不同的收银机同时结账。",
+      "analogy_en": "It is like a shop with one checkout adding more checkouts. Customers in line can pay at different registers at the same time.",
+      "hook_jp": "デュアルは二重唱 (デュエット) の 2、クアッドは四重奏 (カルテット) の 4 と同じ語源で、コアの数を表す。",
+      "hook_zh": "日语的デュアル（dual）与二重唱 duet、クアッド（quad）与四重奏 quartet 同源，分别表示 2 个、4 个核。",
+      "hook_en": "Dual is the 2 of a duet and quad is the 4 of a quartet. Both prefixes give the number of cores.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "マルチコアプロセッサの狙いは、各コアに異なる仕事を割り当てて並行に進め、システム全体でこなせる処理量を増やすことにある。",
+          "text_zh": "多核处理器（[[jp:マルチコアプロセッサ]]）的目的，是给各个核分配不同的工作并行推进，从而提高整个系统能完成的处理量。",
+          "text_en": "The aim of a multi-core processor ([[jp:マルチコアプロセッサ]]) is to give each core different work to run in parallel, raising the amount of processing the whole system can get through.",
+          "qids": [
+            "2013h25a-q066",
+            "2014h26a-q053",
+            "2017h29h-q057"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "コア数はプロセッサ内で命令を処理する中核部分の数で、2 個ならデュアルコア、4 個ならクアッドコアとなる。",
+          "text_zh": "核数是处理器内负责处理指令的核心部分的数量，2 个是双核（[[jp:デュアルコア]]），4 个是四核（[[jp:クアッドコア]]）。",
+          "text_en": "The core count is the number of central parts that process instructions inside a processor: 2 makes it dual-core ([[jp:デュアルコア]]) and 4 makes it quad-core ([[jp:クアッドコア]]).",
+          "qids": [
+            "2016h28a-q060"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "1 つのプログラムを複数のスレッドに分けて並行に進める方式を **マルチスレッド** といい、分けたスレッドは別々のコアが同時に受け持てる。",
+          "text_zh": "把一个程序分成多个线程（[[jp:スレッド]]）并行推进的方式称为 **多线程**（[[jp:マルチスレッド]]）。分出的线程可以由不同的核同时承担。",
+          "text_en": "Splitting one program into several threads ([[jp:スレッド]]) that run in parallel is called **multithreading** ([[jp:マルチスレッド]]). Separate cores can then take on the separate threads at the same time.",
+          "qids": [
+            "2015h27h-q065"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-15-40-u02-t01.svg"
+        }
+      },
+      "quiz": [
+        "2013h25a-q066",
+        "2014h26a-q053",
+        "2015h27h-q065"
+      ],
+      "definition_jp": "マルチコアプロセッサ は、命令を処理する中核部分である コア を 1 つのプロセッサの中に複数持ち、コアごとに別々の処理を 同時に 進めるプロセッサである。",
+      "definition_zh": "多核处理器（マルチコアプロセッサ）是在一个处理器中拥有多个负责处理指令的核心部分（核），由各个核 同时 推进不同处理的处理器。",
+      "definition_en": "A multi-core processor (マルチコアプロセッサ) is a processor that has several cores, the central parts that process instructions, on one chip, with each core running different work at the same time.",
+      "explanation_jp": "コアが 2 つのものを デュアルコア、4 つのものを クアッドコア と呼ぶ。プログラムの中で実行される一続きの処理の流れの単位を スレッド という。処理の中には順番にしか進められない部分があるため、コアを増やしても性能の伸びはコア数に比例するとは限らない。",
+      "explanation_zh": "有 2 个核的称为 双核，有 4 个核的称为 四核。程序中执行的一连串处理流程的单位称为 线程。有些处理只能按顺序推进，所以增加核数后，性能的提升不一定与核数成正比。",
+      "explanation_en": "A processor with 2 cores is called dual-core, and one with 4 cores is called quad-core. The unit of a continuous flow of processing that runs inside a program is called a thread. Some parts of a job can only proceed in order, so adding cores does not always raise performance in proportion to the core count.",
+      "memory_hook_jp": "デュアルは二重唱 (デュエット) の 2、クアッドは四重奏 (カルテット) の 4 と同じ語源で、コアの数を表す。",
+      "memory_hook_zh": "日语的デュアル（dual）与二重唱 duet、クアッド（quad）与四重奏 quartet 同源，分别表示 2 个、4 个核。",
+      "memory_hook_en": "Dual is the 2 of a duet and quad is the 4 of a quartet. Both prefixes give the number of cores.",
       "inline_quiz": [
         "2013h25a-q066",
-        "2014h26a-q053"
+        "2014h26a-q053",
+        "2015h27h-q065"
       ],
       "inline_fallback": false,
       "figure": {
         "mermaid": "graph TD; A[\"マルチコアプロセッサ\"]; A --> B[\"コア1\"]; A --> C[\"コア2\"]; A --> D[\"コア3\"]; A --> E[\"コア4\"]; B --> F[\"並列処理で性能向上\"]; C --> F; D --> F; E --> F",
         "svg_path": "figures/technology-15-40-u02-t01.svg",
         "rendered": true
-      },
-      "term_zh": "多核处理器",
-      "term_en": "Multi-core processor",
-      "definition_zh": "在一个 CPU 内搭载多个运算核心（核）的处理器。",
-      "definition_en": "A processor that carries multiple computing cores within a single CPU.",
-      "explanation_zh": "多核处理器是在 CPU 中搭载了两个以上进行处理的「核心」。由于多个核心可以同时并行分担处理，因此能够提高整体的处理能力。核心为两个称为双核，四个称为四核。\n\n由于持续提高时钟频率会增加发热与功耗，存在极限，因此通过增加核心来提升性能的方式成为主流。考试中常考查：拥有多个核心便能进行并行处理从而提升性能这一点。要记住核心数越多，能同时处理的工作就越多。",
-      "explanation_en": "A multi-core processor carries two or more \"cores\" that perform processing within a CPU. Because multiple cores can share the processing in parallel at the same time, the overall processing capability can be increased. With two cores it is called dual-core, and with four cores, quad-core.\n\nBecause continuously raising the clock frequency increases heat generation and power consumption and has its limits, the approach of boosting performance by increasing the number of cores became mainstream. The exam asks that having multiple cores enables parallel processing and thus improves performance. Remember that the more cores there are, the more tasks can be processed simultaneously.",
-      "analogy_zh": "就像把一个人按顺序处理工作的窗口增加为多个窗口，同时接待顾客一样。通过增加办事人员（核心）来加快整体处理速度。",
-      "analogy_en": "It is like increasing a single counter where one person handles work in sequence into multiple counters that serve customers simultaneously. By adding staff (cores), the overall processing is sped up.",
-      "memory_hook_zh": "说到多核处理器，就是用多个核心并行处理",
-      "memory_hook_en": "Multi-core processor → parallel processing with multiple cores"
+      }
     },
     {
       "term": "GPU",
-      "definition_jp": "画像処理・描画を高速に行うことに特化した処理装置。",
-      "explanation_jp": "GPU(画像処理装置)は、画面に映す映像や3D グラフィックスの計算を専門に行うプロセッサです。同じような計算を大量に同時並行で処理するのが得意で、ゲームや動画、画像の描画で力を発揮します。\n\n何でもこなす汎用の CPU に対し、GPU は単純な計算を膨大な数のコアで一斉にこなす用途特化型である点が対比のポイントです。試験では、GPU が画像処理に特化したプロセッサであること、CPU との役割の違いが問われます。",
-      "analogy_jp": "同じ作業(塗り絵)を大人数で一斉に分担して一気に仕上げる集団のようなもの。1つ1つは単純でも、数の力で大量の描画を高速にこなします。",
-      "memory_hook_jp": "GPUといえば画像処理に特化した処理装置",
-      "inline_quiz": [
-        "2016h28a-q058"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "GPU（图形处理器）",
       "term_en": "GPU (Graphics Processing Unit)",
-      "definition_zh": "专门用于高速进行图像处理与绘制的处理装置。",
-      "definition_en": "A processing unit specialized for performing image processing and rendering at high speed.",
-      "explanation_zh": "GPU（图形处理器）是专门进行屏幕显示影像与 3D 图形计算的处理器。它擅长大量同时并行地处理类似的计算，在游戏、视频和图像的绘制中发挥威力。\n\n相对于什么都能处理的通用 CPU，GPU 是用海量核心一齐完成简单计算的用途特化型，这是对比的要点。考试中常考查：GPU 是专门用于图像处理的处理器，以及它与 CPU 在职责上的区别。",
-      "explanation_en": "The GPU (Graphics Processing Unit) is a processor that specializes in computing the video displayed on screen and 3D graphics. It is good at processing large amounts of similar calculations in parallel at the same time, and shows its power in rendering games, videos, and images.\n\nIn contrast to the general-purpose CPU that handles anything, the GPU is a purpose-specialized type that performs simple calculations all at once with a huge number of cores—this is the point of comparison. The exam asks that the GPU is a processor specialized for image processing, and how its role differs from that of the CPU.",
-      "analogy_zh": "就像一大群人一齐分担同样的作业（涂色），一口气完成的群体。每一项虽然简单，但凭借数量的力量高速完成大量绘制。",
-      "analogy_en": "It is like a large group of people who share the same task (coloring) all at once and finish it in one go. Each piece is simple, but with the power of numbers they perform a large amount of rendering at high speed.",
-      "memory_hook_zh": "说到 GPU，就是专门用于图像处理的处理器",
-      "memory_hook_en": "GPU → the processing unit specialized for image processing"
+      "one_jp": "**GPU** は、立体画像の描画や動画の表示に必要な大量の計算を、多数のコアで **一斉に** 処理する画像処理向けのプロセッサである。",
+      "one_zh": "**GPU（图形处理器）** 是用大量的核 **一齐** 处理立体图像绘制、视频显示所需大量计算的图像处理专用处理器。",
+      "one_en": "A **GPU** (graphics processing unit) is a processor for graphics that uses many cores to handle, **all at once**, the large volume of calculations needed to draw 3D images and display video.",
+      "detail_jp": "画面の画素ごとに同じ種類の計算を繰り返す描画処理は、単純なコアを多数並べて同時に計算すると速くなる。GPU はこの種の計算を CPU から引き受けて担当し、CPU は全体の制御やほかの処理に専念できる。",
+      "detail_zh": "绘图时要对画面的每个像素重复同一类计算，把大量简单的核排在一起同时计算就能加快速度。GPU 从 CPU 那里接手这类计算，CPU 便能专注于整体控制和其他处理。",
+      "detail_en": "Drawing repeats the same kind of calculation for every pixel on the screen, and that goes faster when many simple cores line up and calculate at the same time. The GPU takes this kind of work off the CPU, leaving the CPU free to focus on overall control and other tasks.",
+      "analogy_jp": "大きな壁画を、ます目ごとに大勢で分担して同時に塗っていく作業班のようなもの。一人ひとりの作業は単純でも、人数が多いので全体が早く仕上がる。",
+      "analogy_zh": "就像一支施工队，把一大幅壁画按格子分给很多人同时上色。每个人的活儿都很简单，但人数多，整体很快就完成了。",
+      "analogy_en": "It is like a crew painting a huge mural by giving each person one square of the grid to fill in at the same time. Each person's job is simple, but with so many hands the whole picture is finished quickly.",
+      "hook_jp": "GPU の G は Graphics (図形・画像)。CPU と 1 文字違いで、何を専門にするかが頭文字に表れている。",
+      "hook_zh": "GPU 的 G 是 Graphics（图形、图像）。与 CPU 只差一个字母，首字母表明了它专门做什么。",
+      "hook_en": "The G in GPU stands for Graphics. It differs from CPU by one letter, and that first letter tells you its specialty.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "GPU は描画のための計算を得意とするプロセッサで、その速さは多数のコアによる並行処理から生まれる。",
+          "text_zh": "GPU 是擅长绘图计算的处理器，它的速度来自大量核的并行处理。",
+          "text_en": "The GPU is a processor that excels at the calculations for drawing, and its speed comes from many cores working in parallel.",
+          "qids": [
+            "2016h28a-q058",
+            "2025r07-q067",
+            "2019r01a-q095"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28a-q058",
+        "2025r07-q067",
+        "2019r01a-q095"
+      ],
+      "definition_jp": "GPU は、立体画像の描画や動画の表示に必要な大量の計算を、多数のコアで 一斉に 処理する画像処理向けのプロセッサである。",
+      "definition_zh": "GPU（图形处理器） 是用大量的核 一齐 处理立体图像绘制、视频显示所需大量计算的图像处理专用处理器。",
+      "definition_en": "A GPU (graphics processing unit) is a processor for graphics that uses many cores to handle, all at once, the large volume of calculations needed to draw 3D images and display video.",
+      "explanation_jp": "画面の画素ごとに同じ種類の計算を繰り返す描画処理は、単純なコアを多数並べて同時に計算すると速くなる。GPU はこの種の計算を CPU から引き受けて担当し、CPU は全体の制御やほかの処理に専念できる。",
+      "explanation_zh": "绘图时要对画面的每个像素重复同一类计算，把大量简单的核排在一起同时计算就能加快速度。GPU 从 CPU 那里接手这类计算，CPU 便能专注于整体控制和其他处理。",
+      "explanation_en": "Drawing repeats the same kind of calculation for every pixel on the screen, and that goes faster when many simple cores line up and calculate at the same time. The GPU takes this kind of work off the CPU, leaving the CPU free to focus on overall control and other tasks.",
+      "memory_hook_jp": "GPU の G は Graphics (図形・画像)。CPU と 1 文字違いで、何を専門にするかが頭文字に表れている。",
+      "memory_hook_zh": "GPU 的 G 是 Graphics（图形、图像）。与 CPU 只差一个字母，首字母表明了它专门做什么。",
+      "memory_hook_en": "The G in GPU stands for Graphics. It differs from CPU by one letter, and that first letter tells you its specialty.",
+      "inline_quiz": [
+        "2016h28a-q058",
+        "2025r07-q067",
+        "2019r01a-q095"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "GPGPU",
-      "definition_jp": "画像処理用のGPUを画像以外の汎用計算にも応用する技術。",
-      "explanation_jp": "GPGPU は、もともと画像処理用の GPU が持つ「大量の計算を同時並行でこなす能力」を、画像以外の一般的な計算にも使う技術です。GPU を汎用計算(General-Purpose computing)に活用することからこう呼ばれます。\n\nAI(機械学習)の学習や科学技術計算、暗号資産の計算など、膨大で並列化しやすい処理を高速化するのに使われます。試験では、GPGPU が GPU を画像処理以外の汎用計算に応用する技術である、という意味を押さえておけば十分です。GPU の理解が前提になります。",
-      "analogy_jp": "もともと印刷用に用意した高速大量コピー機を、印刷以外の大量処理にも転用するようなもの。専用機の処理力を別の用途へ広げて活かします。",
-      "memory_hook_jp": "GPGPUといえばGPUを汎用計算に応用",
+      "term_zh": "GPGPU（通用图形处理器）",
+      "term_en": "GPGPU (General-Purpose computing on GPU)",
+      "one_jp": "**GPGPU** は、GPU が持つ大量の計算を同時にこなす能力を、画像処理以外の **汎用計算** に使う技術である。",
+      "one_zh": "**GPGPU（通用图形处理器）** 指的是一种技术：把 GPU 同时完成大量计算的能力用于图像处理以外的 **通用计算**。",
+      "one_en": "**GPGPU** is a technique that applies the GPU's ability to carry out huge numbers of calculations at once to **general-purpose computing** beyond graphics.",
+      "detail_jp": "機械学習の学習処理や科学技術計算のように、同じ形の計算を膨大な回数繰り返す処理は、GPU の多数のコアに分けると速く終わる。名前は General-Purpose computing on GPU (GPU による汎用計算) の略である。",
+      "detail_zh": "像机器学习的训练和科学技术计算这样，要把同一形式的计算重复极多次的处理，分给 GPU 的大量核就能很快完成。这个名称是 General-Purpose computing on GPU（利用 GPU 的通用计算）的缩写。",
+      "detail_en": "Work that repeats the same form of calculation an enormous number of times, such as training in machine learning or scientific computing, finishes quickly when split across the GPU's many cores. The name is short for General-Purpose computing on GPU.",
+      "analogy_jp": "壁画を一斉に塗るために集めた大勢の作業班に、今度は大量の書類の集計を分担させるようなもの。人数の多さという強みはそのままで、仕事の中身を絵以外に広げている。",
+      "analogy_zh": "就像让原本为一齐画壁画而召集的大施工队，转而分工统计大量文件。人多这一优势不变，只是把工作内容从画画扩展到了别处。",
+      "analogy_en": "It is like taking the big crew gathered to paint a mural all at once and having them split up the tallying of a mountain of paperwork instead. Their strength in numbers stays the same; only the kind of work spreads beyond pictures.",
+      "hook_jp": "GPU の前に GP (General-Purpose = 汎用) を付けた形。前に付いた 2 文字が「画像以外にも」を表す。",
+      "hook_zh": "在 GPU 前面加上 GP（General-Purpose = 通用）的形式。前面的 2 个字母表示“图像以外也能用”。",
+      "hook_en": "It is GPU with GP (General-Purpose) in front. Those two extra letters mean \"for more than graphics\".",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "GPU は装置 (チップ) そのものの名前で、GPGPU はその GPU を汎用計算に使う技術 (使い方) の名前である。",
+          "text_zh": "GPU 是硬件（芯片）本身的名称，而 GPGPU 是把 GPU 用于通用计算的技术（用法）的名称。",
+          "text_en": "GPU is the name of the device (the chip) itself, while GPGPU is the name of the technique, a way of using that GPU for general-purpose computing."
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-15-40-u02-t02.svg"
+        }
+      },
+      "quiz": [
+        "2020r02o-q065"
+      ],
+      "definition_jp": "GPGPU は、GPU が持つ大量の計算を同時にこなす能力を、画像処理以外の 汎用計算 に使う技術である。",
+      "definition_zh": "GPGPU（通用图形处理器） 指的是一种技术：把 GPU 同时完成大量计算的能力用于图像处理以外的 通用计算。",
+      "definition_en": "GPGPU is a technique that applies the GPU's ability to carry out huge numbers of calculations at once to general-purpose computing beyond graphics.",
+      "explanation_jp": "機械学習の学習処理や科学技術計算のように、同じ形の計算を膨大な回数繰り返す処理は、GPU の多数のコアに分けると速く終わる。名前は General-Purpose computing on GPU (GPU による汎用計算) の略である。",
+      "explanation_zh": "像机器学习的训练和科学技术计算这样，要把同一形式的计算重复极多次的处理，分给 GPU 的大量核就能很快完成。这个名称是 General-Purpose computing on GPU（利用 GPU 的通用计算）的缩写。",
+      "explanation_en": "Work that repeats the same form of calculation an enormous number of times, such as training in machine learning or scientific computing, finishes quickly when split across the GPU's many cores. The name is short for General-Purpose computing on GPU.",
+      "memory_hook_jp": "GPU の前に GP (General-Purpose = 汎用) を付けた形。前に付いた 2 文字が「画像以外にも」を表す。",
+      "memory_hook_zh": "在 GPU 前面加上 GP（General-Purpose = 通用）的形式。前面的 2 个字母表示“图像以外也能用”。",
+      "memory_hook_en": "It is GPU with GP (General-Purpose) in front. Those two extra letters mean \"for more than graphics\".",
       "inline_quiz": [
         "2020r02o-q065"
       ],
@@ -103,92 +459,303 @@
         "mermaid": "graph LR; A[\"GPU(画像処理特化)\"] --> B[\"GPGPU(汎用計算へ応用)\"]; B --> C[\"AI・機械学習\"]; B --> D[\"科学技術計算\"]",
         "svg_path": "figures/technology-15-40-u02-t02.svg",
         "rendered": true
-      },
-      "term_zh": "GPGPU（通用图形处理器）",
-      "term_en": "GPGPU (General-Purpose computing on GPU)",
-      "definition_zh": "将图像处理用的 GPU 也应用于图像以外的通用计算的技术。",
-      "definition_en": "A technology that applies the GPU, used for image processing, to general-purpose computing other than images as well.",
-      "explanation_zh": "GPGPU 是一种技术，它将原本用于图像处理的 GPU 所具备的「同时并行完成大量计算的能力」，也用于图像以外的一般计算。由于将 GPU 用于通用计算（General-Purpose computing），故而得名。\n\n它被用于加速 AI（机器学习）的训练、科学技术计算、加密货币的计算等海量且易于并行化的处理。考试中只要掌握 GPGPU 是将 GPU 应用于图像处理以外的通用计算的技术这一含义就足够了。理解 GPU 是其前提。",
-      "explanation_en": "GPGPU is a technology that uses the \"ability to perform large amounts of calculations in parallel at the same time\" possessed by the GPU—originally for image processing—for general calculations other than images. It is so named because it utilizes the GPU for general-purpose computing.\n\nIt is used to speed up massive and easily parallelizable processing such as AI (machine learning) training, scientific and technical computing, and cryptocurrency calculations. For the exam, it is enough to grasp the meaning that GPGPU is a technology that applies the GPU to general-purpose computing other than image processing. Understanding the GPU is a prerequisite.",
-      "analogy_zh": "就像把原本为印刷准备的高速大批量复印机，也转用于印刷以外的大批量处理一样。把专用机的处理能力拓展应用到其他用途上。",
-      "analogy_en": "It is like repurposing a high-speed, high-volume copier originally prepared for printing to large-volume processing other than printing. It extends the processing power of a dedicated machine to other uses.",
-      "memory_hook_zh": "说到 GPGPU，就是把 GPU 应用于通用计算",
-      "memory_hook_en": "GPGPU → applying the GPU to general-purpose computing"
+      }
     },
     {
       "term": "クロック周波数",
-      "definition_jp": "プロセッサが処理の歩調を合わせる信号の1秒あたりの回数。",
-      "explanation_jp": "クロック周波数は、プロセッサ内部で動作の歩調を合わせる「クロック信号」が1秒間に何回刻むかを表す値で、単位は Hz(ヘルツ)です。現在の CPU では GHz(ギガヘルツ、10億回/秒)が使われます。\n\n一般に、同じ種類のプロセッサなら周波数が高いほど1秒あたりに処理できる量が多く、処理が速くなります。試験では、クロック周波数がプロセッサの処理速度を示す指標であること、単位が Hz・GHz であることが問われます。ただしコア数など他の要素もあるため、周波数だけで性能が決まるわけではない点にも注意します。",
-      "analogy_jp": "メトロノームのテンポのようなもの。1秒に刻む回数が多いほど作業の合図が速くなり、その分だけ仕事の進みも速くなります。",
-      "memory_hook_jp": "クロック周波数といえば処理速度を示す指標(Hz)",
-      "inline_quiz": [
-        "2010h22a-q057",
-        "2015h27a-q063"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "时钟频率",
       "term_en": "Clock frequency",
-      "definition_zh": "处理器用于统一处理步调的信号每秒的次数。",
-      "definition_en": "The number of times per second of the signal by which a processor synchronizes the pace of processing.",
-      "explanation_zh": "时钟频率是表示处理器内部用于统一动作步调的「时钟信号」每秒振荡多少次的数值，单位为 Hz（赫兹）。当前的 CPU 使用 GHz（吉赫兹，10 亿次/秒）。\n\n一般来说，对于同一种类的处理器，频率越高，每秒能处理的量越多，处理就越快。考试中常考查：时钟频率是表示处理器处理速度的指标，以及其单位为 Hz、GHz。但由于还有核心数等其他因素，因此要注意性能并非仅由频率决定。",
-      "explanation_en": "Clock frequency is a value indicating how many times per second the \"clock signal\" that synchronizes the pace of operation inside a processor ticks, with the unit Hz (hertz). Current CPUs use GHz (gigahertz, one billion times per second).\n\nIn general, for the same type of processor, the higher the frequency, the more it can process per second, and the faster the processing. The exam asks that clock frequency is a metric indicating the processing speed of a processor, and that its unit is Hz or GHz. However, since there are other factors such as the number of cores, note that performance is not determined by frequency alone.",
-      "analogy_zh": "就像节拍器的速度一样。每秒打的节拍次数越多，作业的信号就越快，工作的进度也就相应地越快。",
-      "analogy_en": "It is like the tempo of a metronome. The more beats it ticks per second, the faster the signal for the work, and correspondingly the faster the work progresses.",
-      "memory_hook_zh": "说到时钟频率，就是表示处理速度的指标（Hz）",
-      "memory_hook_en": "Clock frequency → the metric indicating processing speed (Hz)"
+      "one_jp": "**クロック周波数** は、プロセッサが動作の歩調をそろえるために使う **クロック信号** が 1 秒間に刻む回数で、単位は **Hz** (ヘルツ) である。",
+      "one_zh": "**时钟频率**（[[jp:クロック周波数]]）是处理器为统一动作节拍而使用的 **时钟信号** 每秒跳动的次数，单位是 **Hz**（赫兹）。",
+      "one_en": "**Clock frequency** ([[jp:クロック周波数]]) is the number of cycles (ticks) per second of the **clock signal** a processor uses to keep its operations in step, measured in **Hz** (hertz).",
+      "detail_jp": "1 クロックの長さは周波数の逆数で、1 つの命令にかかる時間は「命令に要するクロック数 × 1 クロックの長さ」で求める。例えば 4 GHz で 8 クロックかかる命令は 1 つに 2 ナノ秒かかり、1 秒間に 5 億回実行できる。性能はクロック周波数だけでなく、コア数やキャッシュメモリなどほかの要素にも左右される。",
+      "detail_zh": "1 个时钟周期的长度是频率的倒数，1 条指令所需的时间用“指令所需时钟数 × 1 个时钟周期的长度”求出。例如在 4 GHz 下需要 8 个时钟的指令，每条耗时 2 纳秒，每秒可执行 5 亿次。性能不只取决于时钟频率，还受核数、高速缓存等其他因素影响。",
+      "detail_en": "The length of one clock cycle is the reciprocal of the frequency, and the time one instruction takes is the number of clocks it needs × the length of one clock cycle. For example, an instruction that needs 8 clocks at 4 GHz takes 2 nanoseconds each, so it can run 500 million times per second. Performance depends not only on clock frequency but also on other factors such as the number of cores and cache memory.",
+      "analogy_jp": "ボート競技でこぎ手のリズムをそろえる掛け声のようなもの。掛け声の間隔が短いほど、同じ時間に多くこげる。",
+      "analogy_zh": "就像赛艇比赛中统一桨手节奏的口令。口令间隔越短，同样的时间里划的次数就越多。",
+      "analogy_en": "It is like the call that keeps rowers in rhythm in a boat race. The shorter the gap between calls, the more strokes fit into the same time.",
+      "hook_jp": "クロックは英語で時計。時計の秒針のように一定の間隔で刻む信号だと思い出す。GHz の G (ギガ) は 10 億。",
+      "hook_zh": "Clock 在英语里是时钟。可以联想到像时钟秒针一样以固定间隔跳动的信号。GHz 的 G（吉）表示 10 亿。",
+      "hook_en": "A clock tells time, and the clock signal ticks at fixed intervals like a second hand. The G (giga) in GHz means 1 billion.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "1 命令の実行時間はクロック数を周波数で割って求め、1 秒間に実行できる命令の回数は周波数をクロック数で割って求める。",
+          "text_zh": "1 条指令的执行时间用时钟数除以频率求出，每秒能执行的指令次数用频率除以时钟数求出。",
+          "text_en": "The time to execute one instruction is the number of clocks divided by the frequency, and the number of instructions that can run per second is the frequency divided by the number of clocks.",
+          "qids": [
+            "2010h22a-q057",
+            "2011h23tokubetsu-q060"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "クロックは命令を実行するタイミングをそろえる信号で、1 GHz は毎秒 10 億回刻む。同じ構造の CPU どうしなら、周波数が高いほど処理は速い。",
+          "text_zh": "时钟是统一指令执行时机的信号，1 GHz 即每秒跳动 10 亿次。结构相同的 CPU 之间，时钟频率（[[jp:クロック周波数]]）越高处理越快。",
+          "text_en": "The clock is the signal that keeps the timing of instruction execution in step, and 1 GHz means 1 billion cycles per second. Among CPUs of the same design, the higher the clock frequency ([[jp:クロック周波数]]), the faster the processing.",
+          "qids": [
+            "2021r03-q090",
+            "2019h31h-q097",
+            "2011h23tokubetsu-q067",
+            "2017h29a-q075"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "同じ種類の CPU では周波数を上げるほど発熱が増え、放熱の対策が要る。発熱や消費電力に余裕があるときだけ周波数を一時的に上げる技術を **ターボブースト** という。",
+          "text_zh": "同一种 CPU 的频率提得越高，发热就越多，需要散热措施。只在发热和功耗有余量时暂时提高频率的技术称为 **睿频加速**（[[jp:ターボブースト]]）。",
+          "text_en": "For the same type of CPU, raising the frequency increases heat, so cooling measures are needed. The technique of raising the frequency temporarily, only when there is headroom in heat and power consumption, is called **Turbo Boost** ([[jp:ターボブースト]]).",
+          "qids": [
+            "2015h27a-q063",
+            "2018h30a-q095"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "クロック周波数",
+              "zh": "时钟频率",
+              "en": "Clock frequency"
+            },
+            {
+              "jp": "1 秒に刻む回数",
+              "zh": "每秒跳动次数",
+              "en": "Cycles per second"
+            },
+            {
+              "jp": "1 クロックの長さ",
+              "zh": "1 个时钟周期的长度",
+              "en": "Length of one clock cycle"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "1 GHz",
+                  "zh": "1 GHz",
+                  "en": "1 GHz"
+                },
+                {
+                  "jp": "10 億回",
+                  "zh": "10 亿次",
+                  "en": "1 billion"
+                },
+                {
+                  "jp": "1 ナノ秒",
+                  "zh": "1 纳秒",
+                  "en": "1 nanosecond"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "4 GHz",
+                  "zh": "4 GHz",
+                  "en": "4 GHz"
+                },
+                {
+                  "jp": "40 億回",
+                  "zh": "40 亿次",
+                  "en": "4 billion"
+                },
+                {
+                  "jp": "0.25 ナノ秒",
+                  "zh": "0.25 纳秒",
+                  "en": "0.25 nanoseconds"
+                }
+              ],
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22a-q057",
+        "2011h23tokubetsu-q060",
+        "2021r03-q090"
+      ],
+      "definition_jp": "クロック周波数 は、プロセッサが動作の歩調をそろえるために使う クロック信号 が 1 秒間に刻む回数で、単位は Hz (ヘルツ) である。",
+      "definition_zh": "时钟频率（クロック周波数）是处理器为统一动作节拍而使用的 时钟信号 每秒跳动的次数，单位是 Hz（赫兹）。",
+      "definition_en": "Clock frequency (クロック周波数) is the number of cycles (ticks) per second of the clock signal a processor uses to keep its operations in step, measured in Hz (hertz).",
+      "explanation_jp": "1 クロックの長さは周波数の逆数で、1 つの命令にかかる時間は「命令に要するクロック数 × 1 クロックの長さ」で求める。例えば 4 GHz で 8 クロックかかる命令は 1 つに 2 ナノ秒かかり、1 秒間に 5 億回実行できる。性能はクロック周波数だけでなく、コア数やキャッシュメモリなどほかの要素にも左右される。",
+      "explanation_zh": "1 个时钟周期的长度是频率的倒数，1 条指令所需的时间用“指令所需时钟数 × 1 个时钟周期的长度”求出。例如在 4 GHz 下需要 8 个时钟的指令，每条耗时 2 纳秒，每秒可执行 5 亿次。性能不只取决于时钟频率，还受核数、高速缓存等其他因素影响。",
+      "explanation_en": "The length of one clock cycle is the reciprocal of the frequency, and the time one instruction takes is the number of clocks it needs × the length of one clock cycle. For example, an instruction that needs 8 clocks at 4 GHz takes 2 nanoseconds each, so it can run 500 million times per second. Performance depends not only on clock frequency but also on other factors such as the number of cores and cache memory.",
+      "memory_hook_jp": "クロックは英語で時計。時計の秒針のように一定の間隔で刻む信号だと思い出す。GHz の G (ギガ) は 10 億。",
+      "memory_hook_zh": "Clock 在英语里是时钟。可以联想到像时钟秒针一样以固定间隔跳动的信号。GHz 的 G（吉）表示 10 亿。",
+      "memory_hook_en": "A clock tells time, and the clock signal ticks at fixed intervals like a second hand. The G (giga) in GHz means 1 billion.",
+      "inline_quiz": [
+        "2010h22a-q057",
+        "2011h23tokubetsu-q060",
+        "2021r03-q090"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "CPU",
+      "b": "GPU",
+      "rows": [
+        {
+          "label_jp": "得意な処理",
+          "label_zh": "擅长的处理",
+          "label_en": "What it handles best",
+          "a_jp": "種類の異なる複雑な処理を幅広くこなす",
+          "a_zh": "广泛应对种类各异的复杂处理",
+          "a_en": "A wide range of complex, varied tasks",
+          "b_jp": "同じ形の単純な計算を大量に一斉に進める",
+          "b_zh": "一齐推进大量同一形式的简单计算",
+          "b_en": "Huge numbers of simple, identical calculations at once",
+          "key": true
+        },
+        {
+          "label_jp": "コアの作り",
+          "label_zh": "核的构成",
+          "label_en": "Core design",
+          "a_jp": "高機能なコアを少数持つ",
+          "a_zh": "拥有少量高性能的核",
+          "a_en": "A few powerful cores",
+          "b_jp": "単純なコアを多数持つ",
+          "b_zh": "拥有大量结构简单的核",
+          "b_en": "Many simple cores",
+          "key": false
+        },
+        {
+          "label_jp": "役割",
+          "label_zh": "作用",
+          "label_en": "Role",
+          "a_jp": "コンピュータ全体の制御と演算",
+          "a_zh": "控制整台计算机并进行运算",
+          "a_en": "Controlling and computing for the whole computer",
+          "b_jp": "描画など CPU から任された計算",
+          "b_zh": "绘图等由 CPU 委托的计算",
+          "b_en": "Drawing and other calculations handed over by the CPU",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "マルチコアプロセッサ",
+      "b": "クロック周波数",
+      "rows": [
+        {
+          "label_jp": "性能を高める方法",
+          "label_zh": "提升性能的方式",
+          "label_en": "How it raises performance",
+          "a_jp": "コアを増やして同時に進める処理の数を増やす",
+          "a_zh": "增加核数，增加同时推进的处理数量",
+          "a_en": "More cores, so more tasks run at the same time",
+          "b_jp": "刻みを速くして 1 つの処理を進める速さを上げる",
+          "b_zh": "加快节拍，提高推进单个处理的速度",
+          "b_en": "Faster ticks, so a single task moves faster",
+          "key": true
+        },
+        {
+          "label_jp": "表し方",
+          "label_zh": "表示方式",
+          "label_en": "How it is expressed",
+          "a_jp": "コア数 (デュアル = 2、クアッド = 4)",
+          "a_zh": "核数（双核 = 2，四核 = 4）",
+          "a_en": "Core count (dual = 2, quad = 4)",
+          "b_jp": "Hz (1 GHz = 毎秒 10 億回)",
+          "b_zh": "Hz（1 GHz = 每秒 10 亿次）",
+          "b_en": "Hz (1 GHz = 1 billion per second)",
+          "key": false
+        },
+        {
+          "label_jp": "伸ばすときの壁",
+          "label_zh": "继续提升时的障碍",
+          "label_en": "Limit to pushing it further",
+          "a_jp": "順番にしか進められない処理は分けられない",
+          "a_zh": "只能按顺序推进的处理无法拆分",
+          "a_en": "Work that must run in order cannot be split",
+          "b_jp": "上げるほど発熱と消費電力が増える",
+          "b_zh": "提得越高，发热和功耗越大",
+          "b_en": "The higher it goes, the more heat and power it uses",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "CPU は、プログラムカウンタが示す番地から命令を取り出し、解読して実行する流れを繰り返す。",
+    "マルチコアプロセッサはコアごとに別の処理を同時に進め、プログラムを複数のスレッドに分けるとその力を生かしやすい。",
+    "GPGPU は画像処理用の GPU を機械学習などの汎用計算に使う技術である。",
+    "1 命令の時間はクロック数を周波数で割って求める。1 GHz は毎秒 10 億回の刻みである。"
+  ],
+  "key_points_zh": [
+    "CPU 从程序计数器指示的地址取出指令，反复进行译码和执行。",
+    "多核处理器让各个核同时推进不同的处理，把程序分成多个线程更容易发挥这一能力。",
+    "GPGPU 是把图像处理用的 GPU 用于机器学习等通用计算的技术。",
+    "1 条指令的时间用时钟数除以频率求出。1 GHz 即每秒跳动 10 亿次。"
+  ],
+  "key_points_en": [
+    "The CPU fetches instructions from the address the program counter points to, then decodes and executes them, over and over.",
+    "A multi-core processor runs different work on each core at the same time, and splitting a program into threads makes the most of that.",
+    "GPGPU is the technique of using a GPU, built for graphics, for general-purpose computing such as machine learning.",
+    "The time for one instruction is the number of clocks divided by the frequency. 1 GHz means 1 billion cycles per second."
+  ],
+  "overview": {
+    "intro_jp": "CPU が命令を取り出して解読・実行する流れと、32 ビット・64 ビットの違いを説明できる。CPU と GPU を得意な計算の違いで、マルチコアプロセッサ と クロック周波数 を性能を高める方法の違いで分けられる。クロック周波数 から 1 クロックの長さや 1 秒あたりの命令数を計算できる。",
+    "intro_zh": "能够说明 CPU（中央处理器） 取出指令、译码并执行的流程，以及 32 位与 64 位的区别。能够按擅长的计算类型区分 CPU 与 GPU，按提升性能的方式区分 多核处理器 与 时钟频率。能够根据 时钟频率 算出 1 个时钟周期的长度和每秒可执行的指令数。",
+    "intro_en": "Explain how the CPU fetches, decodes and executes instructions, and what separates 32-bit from 64-bit. Tell the CPU and GPU apart by the kind of computation each is good at, and tell a multi-core processor and clock frequency apart by how each raises performance. Calculate the length of one clock cycle and the number of instructions per second from the clock frequency.",
+    "freq_badge": "低頻",
+    "est_minutes": 34
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "CPU: CPUといえば命令を解釈・実行する中央処理装置",
-      "マルチコアプロセッサ: マルチコアプロセッサといえば複数コアで並列処理",
-      "GPU: GPUといえば画像処理に特化した処理装置",
-      "GPGPU: GPGPUといえばGPUを汎用計算に応用",
-      "クロック周波数: クロック周波数といえば処理速度を示す指標(Hz)"
-    ],
     "key_points_jp": [
-      "CPU は命令の解釈・実行を担う中央処理装置で、汎用的に幅広い処理をこなすプロセッサの基準となる存在。",
-      "マルチコアプロセッサは1つのCPUに複数のコアを載せ、並列処理で性能を高める方式(デュアル・クアッドコアなど)。",
-      "GPU は画像処理に特化し大量の計算を同時並行でこなす用途特化型で、汎用の CPU と役割が異なる。",
-      "GPGPU は GPU の並列処理能力を AI や科学技術計算など画像以外の汎用計算に応用する技術。",
-      "クロック周波数(Hz・GHz)はプロセッサの処理速度を示す指標だが、コア数など他の要素も性能に影響する。"
+      "CPU は、プログラムカウンタが示す番地から命令を取り出し、解読して実行する流れを繰り返す。",
+      "マルチコアプロセッサはコアごとに別の処理を同時に進め、プログラムを複数のスレッドに分けるとその力を生かしやすい。",
+      "GPGPU は画像処理用の GPU を機械学習などの汎用計算に使う技術である。",
+      "1 命令の時間はクロック数を周波数で割って求める。1 GHz は毎秒 10 億回の刻みである。"
     ],
     "key_points_zh": [
-      "CPU 是负责解释并执行指令的中央处理器，是能通用处理各种任务、作为处理器基准的存在。",
-      "多核处理器在一个 CPU 上搭载多个核心，通过并行处理提升性能（双核、四核等）。",
-      "GPU 专门用于图像处理，同时并行完成大量计算，是用途特化型，与通用的 CPU 职责不同。",
-      "GPGPU 是将 GPU 的并行处理能力应用于 AI、科学技术计算等图像以外的通用计算的技术。",
-      "时钟频率（Hz、GHz）是表示处理器处理速度的指标，但核心数等其他因素也会影响性能。"
+      "CPU 从程序计数器指示的地址取出指令，反复进行译码和执行。",
+      "多核处理器让各个核同时推进不同的处理，把程序分成多个线程更容易发挥这一能力。",
+      "GPGPU 是把图像处理用的 GPU 用于机器学习等通用计算的技术。",
+      "1 条指令的时间用时钟数除以频率求出。1 GHz 即每秒跳动 10 亿次。"
     ],
     "key_points_en": [
-      "The CPU is the central processing unit responsible for interpreting and executing instructions, and serves as the benchmark processor that handles a wide variety of tasks in a general-purpose way.",
-      "A multi-core processor carries multiple cores on a single CPU and improves performance through parallel processing (dual-core, quad-core, etc.).",
-      "The GPU is specialized for image processing and performs large amounts of calculations in parallel; it is a purpose-specialized type whose role differs from that of the general-purpose CPU.",
-      "GPGPU is a technology that applies the parallel processing capability of the GPU to general-purpose computing other than images, such as AI and scientific and technical computing.",
-      "Clock frequency (Hz, GHz) is a metric indicating the processing speed of a processor, but other factors such as the number of cores also affect performance."
+      "The CPU fetches instructions from the address the program counter points to, then decodes and executes them, over and over.",
+      "A multi-core processor runs different work on each core at the same time, and splitting a program into threads makes the most of that.",
+      "GPGPU is the technique of using a GPU, built for graphics, for general-purpose computing such as machine learning.",
+      "The time for one instruction is the number of clocks divided by the frequency. 1 GHz means 1 billion cycles per second."
+    ],
+    "memory_hooks_jp": [
+      "CPU: CPU の C は Central (中央)。装置の真ん中で全体を指揮する役だと名前が示している。",
+      "マルチコアプロセッサ: デュアルは二重唱 (デュエット) の 2、クアッドは四重奏 (カルテット) の 4 と同じ語源で、コアの数を表す。",
+      "GPU: GPU の G は Graphics (図形・画像)。CPU と 1 文字違いで、何を専門にするかが頭文字に表れている。",
+      "GPGPU: GPU の前に GP (General-Purpose = 汎用) を付けた形。前に付いた 2 文字が「画像以外にも」を表す。",
+      "クロック周波数: クロックは英語で時計。時計の秒針のように一定の間隔で刻む信号だと思い出す。GHz の G (ギガ) は 10 億。"
     ],
     "memory_hooks_zh": [
-      "CPU：说到 CPU，就是解释并执行指令的中央处理器",
-      "多核处理器：说到多核处理器，就是用多个核心并行处理",
-      "GPU：说到 GPU，就是专门用于图像处理的处理器",
-      "GPGPU：说到 GPGPU，就是把 GPU 应用于通用计算",
-      "时钟频率：说到时钟频率，就是表示处理速度的指标（Hz）"
+      "CPU（中央处理器）：CPU 的 C 是 Central（中央）。名字本身就说明它位于整台计算机的中央、指挥全局。",
+      "多核处理器：日语的デュアル（dual）与二重唱 duet、クアッド（quad）与四重奏 quartet 同源，分别表示 2 个、4 个核。",
+      "GPU（图形处理器）：GPU 的 G 是 Graphics（图形、图像）。与 CPU 只差一个字母，首字母表明了它专门做什么。",
+      "GPGPU（通用图形处理器）：在 GPU 前面加上 GP（General-Purpose = 通用）的形式。前面的 2 个字母表示“图像以外也能用”。",
+      "时钟频率：Clock 在英语里是时钟。可以联想到像时钟秒针一样以固定间隔跳动的信号。GHz 的 G（吉）表示 10 亿。"
     ],
     "memory_hooks_en": [
-      "CPU: CPU → the central processing unit that interprets and executes instructions",
-      "Multi-core processor: Multi-core processor → parallel processing with multiple cores",
-      "GPU: GPU → the processing unit specialized for image processing",
-      "GPGPU: GPGPU → applying the GPU to general-purpose computing",
-      "Clock frequency: Clock frequency → the metric indicating processing speed (Hz)"
+      "CPU (Central Processing Unit): The C in CPU stands for Central. The name itself says it sits in the middle and directs everything.",
+      "Multi-core processor: Dual is the 2 of a duet and quad is the 4 of a quartet. Both prefixes give the number of cores.",
+      "GPU (Graphics Processing Unit): The G in GPU stands for Graphics. It differs from CPU by one letter, and that first letter tells you its specialty.",
+      "GPGPU (General-Purpose computing on GPU): It is GPU with GP (General-Purpose) in front. Those two extra letters mean \"for more than graphics\".",
+      "Clock frequency: A clock tells time, and the clock signal ticks at fixed intervals like a second hand. The G (giga) in GHz means 1 billion."
     ]
   },
   "challenge_questions": [
-    "2012h24h-q061",
-    "2015h27h-q051",
     "2016h28a-q060",
-    "2019r01a-q095",
-    "2017h29a-q075"
+    "2021r03-q064",
+    "2017h29a-q075",
+    "2015h27a-q063",
+    "2018h30a-q095"
   ],
   "source_figures": [
     {
@@ -212,9 +779,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "处理器的种类与性能",
-  "title_en": "Types and Performance of Processors",
-  "unit_summary_zh": "以 CPU 为中心，理解多核、GPU、GPGPU 等处理器的种类，以及以时钟频率衡量的性能指标。",
-  "unit_summary_en": "Centering on the CPU, understand the types of processors such as multi-core, GPU, and GPGPU, as well as performance metrics measured by clock frequency."
+  }
 }
