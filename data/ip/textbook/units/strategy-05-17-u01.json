@@ -1,225 +1,940 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-05-17-u01",
   "topic_id": "strategy-05-17",
   "category": "strategy",
   "title_jp": "IoT・組込みシステムの基礎概念",
+  "title_zh": "IoT 与嵌入式系统的基础概念",
+  "title_en": "Fundamental Concepts of IoT and Embedded Systems",
   "unit_summary_jp": "IoTと組込みシステムの基本概念、それを支えるファームウェア・クラウド・ロボティクスを学ぶ、本topicの土台ユニット。",
+  "unit_summary_zh": "学习 IoT 与嵌入式系统的基本概念，以及支撑它们的固件、云服务、机器人学，是本主题的基石单元。",
+  "unit_summary_en": "Learn the basic concepts of IoT and embedded systems, along with the firmware, cloud services, and robotics that support them—the foundational unit of this topic.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、身の回りのモノにコンピュータを組み込み、インターネットへつなぐIoTと組込みシステムの基礎概念を学びます。さらにそれらを動かすファームウェア、収集データを処理するクラウドサービス、組込み制御を応用するロボティクス・ロボットまで押さえます。IoT分野の土台となる頻出テーマです。",
-    "freq_badge": "低頻",
-    "est_minutes": 18,
-    "intro_zh": "本单元学习把计算机嵌入身边的物品并将其接入互联网的 IoT，以及嵌入式系统的基础概念。进而掌握驱动它们的固件、处理所采集数据的云服务，以及应用嵌入式控制的机器人学与机器人。这是构成 IoT 领域基石的高频主题。",
-    "intro_en": "In this unit, you will learn the fundamental concepts of IoT—embedding computers in everyday objects and connecting them to the Internet—and of embedded systems. You will further cover the firmware that drives them, the cloud services that process the collected data, and the robotics and robots that apply embedded control. This is a frequently tested theme that forms the foundation of the IoT field."
-  },
-  "terms": [
+  "goals_jp": [
+    "**IoT** の事例を、モノ自体がデータを送り出しているかどうかで見分けられる。",
+    "**組込みシステム** と **ファームウェア** が機器の中でそれぞれ何を受け持つかを説明できる。",
+    "**クラウドサービス** や **ロボット** が、モノにコンピュータを組み込む技術とどう結び付くかを説明できる。"
+  ],
+  "goals_zh": [
+    "能够根据物品本身是否在主动发出数据，判断一个事例是否属于 **IoT**。",
+    "能够说明**嵌入式系统**和**固件**在设备内部各自负责什么。",
+    "能够说明**云服务**和**机器人**与“把计算机装进物品”的技术有怎样的联系。"
+  ],
+  "goals_en": [
+    "Tell whether a case is **IoT** by checking whether the thing itself is sending out data.",
+    "Explain what an **embedded system** and **firmware** each take care of inside a device.",
+    "Explain how **cloud services** and **robots** tie in with the technology of building computers into things."
+  ],
+  "overview_cols_jp": [
+    "位置づけ",
+    "身近な例"
+  ],
+  "overview_cols_zh": [
+    "定位",
+    "身边的例子"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Everyday example"
+  ],
+  "overview_rows": [
     {
       "term": "IoT",
-      "definition_jp": "さまざまなモノをインターネットに接続し、情報をやり取りする仕組み。",
-      "explanation_jp": "IoT(Internet of Things、モノのインターネット)は、家電・自動車・センサーなど身の回りの「モノ」にコンピュータと通信機能を組み込み、インターネットを通じて互いに情報をやり取りする仕組みです。\n\nモノがセンサーで集めたデータをネット経由でサーバへ送り、分析や遠隔操作に使えるのが特徴です。例えば、温度センサーが室温を送り、外出先からエアコンを操作するといった使い方が代表例です。試験では「Internet of Thingsの略でモノのインターネット」を意味することや、センサー・通信・データ活用が一体となった概念であることが頻出です。",
-      "analogy_jp": "これまで人どうしがつながっていたインターネットに、冷蔵庫や車などの「モノ」も参加して会話できるようにしたイメージ。モノ自身がネットで報告し合います。",
-      "memory_hook_jp": "IoTといえばモノをインターネットにつなぐ仕組み",
-      "inline_quiz": [
-        "2010h22h-q015",
-        "2013h25a-q016"
+      "one_line_jp": "モノを通信でつなぎ、モノが集めたデータを活用する仕組み",
+      "one_line_zh": "让物品通过通信相连，并利用物品收集的数据的机制",
+      "one_line_en": "A mechanism that links things through communication and uses the data they collect",
+      "extra_jp": [
+        "仕組み",
+        "外出先から様子を確かめられるペット用カメラ"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"モノ(センサー)\"] --> B[\"インターネット\"]; B --> C[\"クラウド/サーバ\"]; C --> D[\"分析・遠隔操作\"]",
-        "svg_path": "figures/strategy-05-17-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "IoT（物联网）",
-      "term_en": "IoT",
-      "definition_zh": "将各种物品接入互联网、彼此交换信息的机制。",
-      "definition_en": "A mechanism that connects various objects to the Internet so they can exchange information.",
-      "explanation_zh": "IoT（Internet of Things，物联网）是把家电、汽车、传感器等身边的「物品」嵌入计算机和通信功能，使其通过互联网相互交换信息的机制。\n\n其特点在于：物品用传感器采集到的数据可经由网络发送到服务器，用于分析或远程操作。例如，温度传感器发送室温，让人在外出途中就能操控空调，这就是代表性用法。考试中常考它是「Internet of Things 的缩写，意为物联网」，以及它是传感、通信、数据利用融为一体的概念。",
-      "explanation_en": "IoT (Internet of Things) is a mechanism that embeds computers and communication functions into everyday \"things\" such as home appliances, cars, and sensors, so that they exchange information with one another over the Internet.\n\nIts hallmark is that data collected by a thing's sensors can be sent to a server over the network and used for analysis or remote control. A representative example is a temperature sensor sending the room temperature so you can operate the air conditioner while away from home. On the exam, it frequently appears that IoT \"stands for Internet of Things and means the Internet of Things,\" and that it is a concept integrating sensing, communication, and data utilization.",
-      "analogy_zh": "把过去只在人与人之间互联的互联网，扩展到让冰箱、汽车等「物品」也能加入并彼此「对话」的画面。物品自己就能在网上相互汇报。",
-      "analogy_en": "Imagine extending the Internet—which used to connect only people to people—so that \"things\" like refrigerators and cars can also join and \"talk\" to each other. The things themselves report to one another over the network.",
-      "memory_hook_zh": "说到 IoT，就是把物品接入互联网的机制",
-      "memory_hook_en": "IoT → the mechanism that connects things to the Internet"
+      "extra_zh": [
+        "机制",
+        "外出时也能查看家中情况的宠物摄像头"
+      ],
+      "extra_en": [
+        "Mechanism",
+        "A pet camera you can check on while you are out"
+      ]
     },
     {
       "term": "組込みシステム",
-      "definition_jp": "特定の機器に組み込まれ専用の制御を担うコンピュータシステム。",
-      "explanation_jp": "組込みシステム(エンベデッドシステム)は、家電・自動車・産業機器などの特定の製品の中に組み込まれ、その機器を制御するための専用コンピュータシステムです。\n\nパソコンのように何でもこなす汎用機ではなく、炊飯器の炊飯制御やエアコンの温度調節など、決められた特定の機能に特化しているのが特徴です。IoT機器の「中身」にあたる存在で、試験では汎用のパソコンとの違い(専用・特定機能向け)や、身近な家電に広く使われている点が問われます。",
-      "analogy_jp": "炊飯器や電子レンジの中に隠れている「小さな専属の頭脳」のようなもの。その機器の仕事だけを黙々とこなす専門係です。",
-      "memory_hook_jp": "組込みシステムといえば機器に組み込まれた専用コンピュータ",
+      "one_line_jp": "機器の中で決まった役割だけをこなす専用のコンピュータシステム",
+      "one_line_zh": "在设备中只完成固定任务的专用计算机系统",
+      "one_line_en": "A dedicated computer system inside a device that does only its fixed job",
+      "extra_jp": [
+        "機器の中のコンピュータ",
+        "洗濯機の水量や回転の制御"
+      ],
+      "extra_zh": [
+        "设备里的计算机",
+        "控制洗衣机的水量和转动"
+      ],
+      "extra_en": [
+        "Computer inside a device",
+        "Controlling a washing machine's water level and spin"
+      ]
+    },
+    {
+      "term": "ファームウェア",
+      "one_line_jp": "機器の内部メモリに書き込まれ、部品を直接動かすソフトウェア",
+      "one_line_zh": "写入设备内部存储器、直接驱动部件的软件",
+      "one_line_en": "Software written into a device's internal memory that drives its parts directly",
+      "extra_jp": [
+        "ソフトウェア",
+        "ルーターを動かす内蔵ソフトウェア"
+      ],
+      "extra_zh": [
+        "软件",
+        "让路由器运转的内置软件"
+      ],
+      "extra_en": [
+        "Software",
+        "The built-in software that runs a router"
+      ]
+    },
+    {
+      "term": "クラウドサービス",
+      "one_line_jp": "事業者がネット越しに貸し出すサーバーやソフトウェアを使うサービス",
+      "one_line_zh": "使用服务商通过网络出租的服务器或软件的服务",
+      "one_line_en": "A service for using servers and software that a provider rents out over the network",
+      "extra_jp": [
+        "IT 資源の提供形態",
+        "Web ブラウザで使うメールサービス"
+      ],
+      "extra_zh": [
+        "IT 资源的提供方式",
+        "在 Web 浏览器里使用的邮件服务"
+      ],
+      "extra_en": [
+        "A way of providing IT resources",
+        "An email service used in a web browser"
+      ]
+    },
+    {
+      "term": "ロボティクス",
+      "one_line_jp": "ロボットを設計し、作り、動かすための技術分野",
+      "one_line_zh": "设计、制造并操控机器人的技术领域",
+      "one_line_en": "The technical field of designing, building and operating robots",
+      "extra_jp": [
+        "技術分野",
+        "歩行や物のつかみ方の研究"
+      ],
+      "extra_zh": [
+        "技术领域",
+        "关于行走和抓取物体的研究"
+      ],
+      "extra_en": [
+        "Technical field",
+        "Research on walking and grasping objects"
+      ]
+    },
+    {
+      "term": "ロボット",
+      "one_line_jp": "周囲を感知し、判断して、自ら動く機械",
+      "one_line_zh": "能感知周围、作出判断并自行动作的机器",
+      "one_line_en": "A machine that senses its surroundings, makes decisions and moves on its own",
+      "extra_jp": [
+        "機械",
+        "床を自動で掃除する家庭用ロボット"
+      ],
+      "extra_zh": [
+        "机器",
+        "自动打扫地板的家用机器人"
+      ],
+      "extra_en": [
+        "Machine",
+        "A home robot that cleans the floor by itself"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "IoT",
+      "term_zh": "IoT（物联网）",
+      "term_en": "IoT",
+      "one_jp": "**IoT** (Internet of Things、モノのインターネット) は、身の回りの**モノ**に通信機能を持たせてネットワークにつなぎ、モノが集めたデータを活用する仕組みである。",
+      "one_zh": "**IoT**（Internet of Things，物联网）是让身边的**物品**具备通信功能并接入网络，进而利用物品收集到的数据的机制。",
+      "one_en": "**IoT** (Internet of Things) is a mechanism that gives everyday **things** a communication function, connects them to a network, and puts the data they collect to use.",
+      "detail_jp": "IoT の機器は、温度や位置などを測る**センサー**などで状態をつかみ、通信機能でサーバーへデータを送る。制御まで行う機器は、受け取った指示を動きに変える駆動部 (**アクチュエーター**) も備える。集まったデータはサーバー側で分析され、離れた場所からの監視や機器の自動制御に生かされる。",
+      "detail_zh": "IoT 设备用测量温度、位置等的**传感器**等掌握状态，再通过通信功能把数据发送到服务器。还要负责控制的设备，另外配有把收到的指令变成动作的驱动部件（**执行器**）。汇集起来的数据在服务器端分析，用于远程监视和设备的自动控制。",
+      "detail_en": "IoT devices read their state with **sensors** and similar parts that measure things like temperature and location, and send the data to a server through their communication function. Devices that also handle control carry a drive part, an **actuator**, that turns received instructions into motion. The collected data is analyzed on the server side and used for remote monitoring and automatic control of the devices.",
+      "analogy_jp": "これまで人どうしが連絡を取り合う場だったネットワークに、家の窓や畑の土までが加わり、自分から「今こうなっている」と知らせてくるイメージ。",
+      "analogy_zh": "过去网络是人与人互相联系的地方，如今连家里的窗户、田里的土壤也加了进来，主动报告“我现在是这个状态”。",
+      "analogy_en": "The network used to be where people got in touch with each other; now a house's windows and a field's soil have joined in, reporting on their own, \"Here is how I am right now.\"",
+      "hook_jp": "Things は英語の「モノ」。インターネットの参加者が人からモノへ広がった、と頭文字の T で覚える。",
+      "hook_zh": "Things 在英语里是“物品”。用首字母 T 来记：互联网的参与者从人扩展到了物品。",
+      "hook_en": "Let the T for Things remind you that the internet's participants widened from people to objects.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "IoT の事例は、機器に付けたセンサーなどが人の操作を介さずにデータを送り、そのデータが監視や制御に使われている点で見分けられる。",
+          "text_zh": "判断是否为 IoT 事例，要看装在设备上的传感器等是否不经人操作就发送数据，并且这些数据被用于监视或控制。",
+          "text_en": "An IoT case can be recognized when sensors or similar parts on a device send data without human operation and that data is used for monitoring or control.",
+          "qids": [
+            "2019r01a-q003",
+            "2020r02o-q010",
+            "2026r08-q008",
+            "2020r02o-q008",
+            "2019r01a-q013"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**エネルギーハーベスティング** は、周囲の光や振動、温度差などにあるわずかなエネルギーを電力に変えて取り出す技術で、IoT 機器の電源にも使われる。",
+          "text_zh": "**能量收集**（[[jp:エネルギーハーベスティング]]）是把周围的光、振动、温差等所含的微弱能量转换成电力并取出来的技术，也用作 IoT 设备的电源。",
+          "text_en": "**Energy harvesting** ([[jp:エネルギーハーベスティング]]) is a technology that converts the small amounts of energy in surrounding light, vibration, temperature differences and the like into electric power, and it is also used to power IoT devices.",
+          "qids": [
+            "2020r02o-q074"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "バッテリー容量の **mAh** は電流 (mA) と時間 (h) の積を表す。例えば 300mAh なら、300mA で約 1 時間、150mA で約 2 時間放電できる目安になる。",
+          "text_zh": "电池容量的单位 **mAh** 表示电流（mA）与时间（h）的乘积。例如 300mAh 的大致标准是：以 300mA 可放电约 1 小时，以 150mA 可放电约 2 小时。",
+          "text_en": "Battery capacity in **mAh** expresses current (mA) multiplied by time (h). For example, 300mAh means roughly 1 hour of discharge at 300mA, or about 2 hours at 150mA.",
+          "qids": [
+            "2022r04-q066"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "sense",
+              "label": {
+                "jp": "モノのセンサーが状態を測る",
+                "zh": "物品上的传感器测量状态",
+                "en": "Sensors on the thing measure its state"
+              }
+            },
+            {
+              "id": "send",
+              "label": {
+                "jp": "通信機能でサーバーへ送る",
+                "zh": "通过通信功能发送到服务器",
+                "en": "The communication function sends data to a server"
+              }
+            },
+            {
+              "id": "analyze",
+              "label": {
+                "jp": "サーバーがデータを分析する",
+                "zh": "服务器分析数据",
+                "en": "The server analyzes the data"
+              }
+            },
+            {
+              "id": "act",
+              "label": {
+                "jp": "結果を監視や制御に生かす",
+                "zh": "把结果用于监视和控制",
+                "en": "The results feed monitoring and control"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "温度や明るさなどを、モノに付けたセンサーが数値に変える。",
+            "caption_zh": "装在物品上的传感器把温度、亮度等转换成数值。",
+            "caption_en": "Sensors attached to the thing turn temperature, brightness and similar conditions into numbers.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "測った値を、人の操作を待たずにネットワーク経由で送る。",
+            "caption_zh": "测得的数值不必等人操作，就经网络发送出去。",
+            "caption_en": "The readings go out over the network without waiting for anyone to operate the device.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "サーバー側で多くのモノのデータをまとめて分析する。",
+            "caption_zh": "服务器端把大量物品的数据汇总起来进行分析。",
+            "caption_en": "On the server side, data from many things is pooled and analyzed.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "分析の結果を離れた場所からの監視に使い、制御まで行う場合は機器へ指示を返して動かす。",
+            "caption_zh": "分析结果用于远程监视；如果还要进行控制，就向设备回传指令让它动作。",
+            "caption_en": "The results support monitoring from a distance, and when control is also needed, instructions go back to the device to make it move.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2019r01a-q013",
+        "2022r04-q097",
+        "2020r02o-q074"
+      ],
+      "definition_jp": "IoT (Internet of Things、モノのインターネット) は、身の回りのモノに通信機能を持たせてネットワークにつなぎ、モノが集めたデータを活用する仕組みである。",
+      "definition_zh": "IoT（Internet of Things，物联网）是让身边的物品具备通信功能并接入网络，进而利用物品收集到的数据的机制。",
+      "definition_en": "IoT (Internet of Things) is a mechanism that gives everyday things a communication function, connects them to a network, and puts the data they collect to use.",
+      "explanation_jp": "IoT の機器は、温度や位置などを測るセンサーなどで状態をつかみ、通信機能でサーバーへデータを送る。制御まで行う機器は、受け取った指示を動きに変える駆動部 (アクチュエーター) も備える。集まったデータはサーバー側で分析され、離れた場所からの監視や機器の自動制御に生かされる。",
+      "explanation_zh": "IoT 设备用测量温度、位置等的传感器等掌握状态，再通过通信功能把数据发送到服务器。还要负责控制的设备，另外配有把收到的指令变成动作的驱动部件（执行器）。汇集起来的数据在服务器端分析，用于远程监视和设备的自动控制。",
+      "explanation_en": "IoT devices read their state with sensors and similar parts that measure things like temperature and location, and send the data to a server through their communication function. Devices that also handle control carry a drive part, an actuator, that turns received instructions into motion. The collected data is analyzed on the server side and used for remote monitoring and automatic control of the devices.",
+      "memory_hook_jp": "Things は英語の「モノ」。インターネットの参加者が人からモノへ広がった、と頭文字の T で覚える。",
+      "memory_hook_zh": "Things 在英语里是“物品”。用首字母 T 来记：互联网的参与者从人扩展到了物品。",
+      "memory_hook_en": "Let the T for Things remind you that the internet's participants widened from people to objects.",
+      "inline_quiz": [
+        "2019r01a-q013",
+        "2022r04-q097",
+        "2020r02o-q074"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "組込みシステム",
+      "term_zh": "嵌入式系统",
+      "term_en": "Embedded system",
+      "one_jp": "**組込みシステム** は、決まった役割だけをこなすために機器の中に組み込まれた**専用**のコンピュータシステムである。",
+      "one_zh": "**嵌入式系统**（[[jp:組込みシステム]]）是为了只完成固定任务而装进设备内部的**专用**计算机系统。",
+      "one_en": "An **embedded system** ([[jp:組込みシステム]]) is a **dedicated** computer system built into a device so that it does only its fixed job.",
+      "detail_jp": "組込みシステムは、機器に合わせて選んだ部品とソフトウェアで、決まった処理を繰り返し行う。中心になるのは、演算・記憶・入出力の回路を小さくまとめた**マイクロコンピュータ** (マイコン) である。",
+      "detail_zh": "嵌入式系统用根据设备挑选的部件和软件，反复执行固定的处理。它的核心是把运算、存储和输入输出电路集成在一个小器件里的**微型计算机**（单片机）。",
+      "detail_en": "An embedded system repeats fixed processing with parts and software chosen to fit its device. At its center is a **microcomputer**, which packs the circuits for computation, memory and input/output into one small unit.",
+      "analogy_jp": "何でも作れる料理人ではなく、毎日同じパンだけを同じ手順で焼き続けるパン焼き機の担当者のような存在。",
+      "analogy_zh": "它不是什么菜都会做的厨师，更像每天按同样步骤只烤同一种面包的烤面包机看管人。",
+      "analogy_en": "Less a chef who can cook anything, more the person minding a bread machine who bakes the same loaf the same way every day.",
+      "hook_jp": "英語では embedded (埋め込まれた) system。機器の中に埋まっていて外からは見えないコンピュータ、と語から思い出す。",
+      "hook_zh": "英语叫 embedded（嵌入的）system。从词义联想：埋在设备里、从外面看不到的计算机。",
+      "hook_en": "Embedded means set deep inside: picture a computer buried in the device where no one can see it from outside.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "組込みシステムは機能の多くをソフトウェアで実現するので、製品を改良するときにソフトウェアを変えれば、ある範囲までの機能を足せる。",
+          "text_zh": "嵌入式系统（[[jp:組込みシステム]]）的许多功能靠软件实现，所以改良产品时，只要修改软件，就能在一定范围内增加功能。",
+          "text_en": "An embedded system ([[jp:組込みシステム]]) realizes many of its functions in software, so when a product is improved, changing the software can add functions up to a point.",
+          "qids": [
+            "2011h23a-q011"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "機器の中で制御を受け持つ小型のコンピュータは、まとめて**マイクロコンピュータ** (マイコン) と呼ばれる。",
+          "text_zh": "在设备中负责控制的小型计算机，统称为**微型计算机**（[[jp:マイクロコンピュータ]]，简称 [[jp:マイコン]]）。",
+          "text_en": "Small computers that take charge of control inside devices are collectively called **microcomputers** ([[jp:マイクロコンピュータ]], or [[jp:マイコン]] for short).",
+          "qids": [
+            "2013h25h-q021"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "組込みシステムに当たるかは製品の種類ではなく、機器の中に専用の制御用コンピュータがあるかで決まるため、多くの電子機器が当てはまる。",
+          "text_zh": "是否属于嵌入式系统（[[jp:組込みシステム]]），不取决于产品种类，而取决于设备里有没有专用的控制计算机，因此很多电子设备都符合。",
+          "text_en": "Whether something is an embedded system ([[jp:組込みシステム]]) depends not on the type of product but on whether the device has a dedicated control computer inside, so many electronic devices qualify.",
+          "qids": [
+            "2013h25a-q016"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "組込みシステム",
+            "zh": "嵌入式系统",
+            "en": "Embedded system"
+          },
+          "b": {
+            "jp": "汎用のコンピュータ (PC など)",
+            "zh": "通用计算机（PC 等）",
+            "en": "General-purpose computer (a PC, etc.)"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "目的",
+                "zh": "目的",
+                "en": "Purpose"
+              },
+              "a": {
+                "jp": "その機器の決まった動作だけを受け持つ",
+                "zh": "只负责该设备的固定动作",
+                "en": "Handles only that device's fixed operations"
+              },
+              "b": {
+                "jp": "利用者がさまざまな用途に使う",
+                "zh": "用户拿来做各种用途",
+                "en": "Users put it to many different uses"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "構成",
+                "zh": "构成",
+                "en": "Makeup"
+              },
+              "a": {
+                "jp": "機器に合わせて選んだ部品とソフトウェア",
+                "zh": "根据设备挑选的部件和软件",
+                "en": "Parts and software chosen to fit the device"
+              },
+              "b": {
+                "jp": "共通の部品と OS の上にアプリを追加する",
+                "zh": "在通用部件和操作系统之上追加应用",
+                "en": "Apps added on top of common parts and an OS"
+              }
+            },
+            {
+              "label": {
+                "jp": "例",
+                "zh": "例子",
+                "en": "Example"
+              },
+              "a": {
+                "jp": "洗濯機の運転制御、エレベーターの停止位置の制御",
+                "zh": "洗衣机的运转控制、电梯停靠位置的控制",
+                "en": "Washing machine operation control, elevator stop-position control"
+              },
+              "b": {
+                "jp": "文書作成や表計算に使う PC",
+                "zh": "用来写文档和做表格计算的 PC",
+                "en": "A PC used for writing documents and spreadsheets"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2022r04-q066"
+      ],
+      "definition_jp": "組込みシステム は、決まった役割だけをこなすために機器の中に組み込まれた専用のコンピュータシステムである。",
+      "definition_zh": "嵌入式系统（組込みシステム）是为了只完成固定任务而装进设备内部的专用计算机系统。",
+      "definition_en": "An embedded system (組込みシステム) is a dedicated computer system built into a device so that it does only its fixed job.",
+      "explanation_jp": "組込みシステムは、機器に合わせて選んだ部品とソフトウェアで、決まった処理を繰り返し行う。中心になるのは、演算・記憶・入出力の回路を小さくまとめたマイクロコンピュータ (マイコン) である。",
+      "explanation_zh": "嵌入式系统用根据设备挑选的部件和软件，反复执行固定的处理。它的核心是把运算、存储和输入输出电路集成在一个小器件里的微型计算机（单片机）。",
+      "explanation_en": "An embedded system repeats fixed processing with parts and software chosen to fit its device. At its center is a microcomputer, which packs the circuits for computation, memory and input/output into one small unit.",
+      "memory_hook_jp": "英語では embedded (埋め込まれた) system。機器の中に埋まっていて外からは見えないコンピュータ、と語から思い出す。",
+      "memory_hook_zh": "英语叫 embedded（嵌入的）system。从词义联想：埋在设备里、从外面看不到的计算机。",
+      "memory_hook_en": "Embedded means set deep inside: picture a computer buried in the device where no one can see it from outside.",
       "inline_quiz": [
         "2022r04-q066"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "嵌入式系统",
-      "term_en": "Embedded system",
-      "definition_zh": "嵌入特定设备、承担专用控制的计算机系统。",
-      "definition_en": "A computer system embedded in a specific device to handle dedicated control.",
-      "explanation_zh": "嵌入式系统是嵌入在家电、汽车、工业设备等特定产品内部、用于控制该设备的专用计算机系统。\n\n它不像个人电脑那样什么都能干的通用机，而是专注于电饭煲的煮饭控制、空调的温度调节等既定的特定功能，这是它的特点。它相当于 IoT 设备的「内核」。考试中会考查它与通用个人电脑的区别（专用、面向特定功能），以及它被广泛用于身边家电这一点。",
-      "explanation_en": "An embedded system is a dedicated computer system built into a specific product—such as a home appliance, car, or industrial machine—in order to control that device.\n\nUnlike a general-purpose machine like a PC that can do anything, it is specialized for a fixed, specific function, such as cooking control in a rice cooker or temperature adjustment in an air conditioner. It is the \"insides\" of an IoT device. On the exam, you are asked about its difference from a general-purpose PC (dedicated, function-specific) and the fact that it is widely used in familiar home appliances.",
-      "analogy_zh": "就像藏在电饭煲或微波炉里的「专属小脑袋」，只默默完成那台设备的本职工作的专门人员。",
-      "analogy_en": "It is like a \"small dedicated brain\" hidden inside a rice cooker or microwave—a specialist that silently performs only the job of that one device.",
-      "memory_hook_zh": "说到嵌入式系统，就是嵌入设备的专用计算机",
-      "memory_hook_en": "Embedded system → a dedicated computer embedded in a device"
+      "figure": null
     },
     {
       "term": "ファームウェア",
-      "definition_jp": "機器に組み込まれハードウェアを制御する基本ソフトウェア。",
-      "explanation_jp": "ファームウェアは、組込みシステムや周辺機器の内部に書き込まれ、ハードウェアを直接制御する基本的なソフトウェアです。ハードウェアとソフトウェアの中間的な位置づけにあります。\n\n機器のROMなどに格納され、電源を入れるとすぐ動作して機器を制御します。後から書き換え(アップデート)て機能改善やバグ修正ができる点が特徴です。試験では、ハードウェアに密着した制御用ソフトであること、更新によって不具合修正や機能追加ができることが頻出ポイントです。",
-      "analogy_jp": "機器に最初から入っている「内蔵の取扱説明書兼操作係」のようなもの。普段は意識しないが、後から内容を差し替えて賢くもできます。",
-      "memory_hook_jp": "ファームウェアといえば機器内蔵でハードを制御する基本ソフト",
-      "inline_quiz": [
-        "2009h21a-q028",
-        "2012h24h-q021"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "固件",
       "term_en": "Firmware",
-      "definition_zh": "嵌入设备、控制硬件的基础软件。",
-      "definition_en": "Basic software embedded in a device to control its hardware.",
-      "explanation_zh": "固件是写入嵌入式系统或外围设备内部、直接控制硬件的基础软件，处在硬件与软件之间的中间位置。\n\n它存放在设备的 ROM 等存储器中，开机后立即运行以控制设备。它可以事后改写（更新），用于改善功能或修复缺陷，这是它的特点。考试中的高频要点是：它是紧贴硬件的控制用软件，以及通过更新可以修复故障、追加功能。",
-      "explanation_en": "Firmware is the basic software written inside an embedded system or peripheral device to directly control the hardware; it sits in an intermediate position between hardware and software.\n\nIt is stored in the device's ROM or similar memory, and it runs immediately on power-up to control the device. Its hallmark is that it can be rewritten (updated) later to improve functions or fix bugs. The frequently tested points on the exam are that it is control software closely tied to the hardware, and that updates can fix defects and add features.",
-      "analogy_zh": "就像设备里一开始就装好的「内置使用说明书兼操作员」。平时感觉不到它，但日后可以替换其内容，让设备变得更聪明。",
-      "analogy_en": "It is like a \"built-in instruction manual and operator\" that is in the device from the start. You usually do not notice it, but its contents can be swapped out later to make the device smarter.",
-      "memory_hook_zh": "说到固件，就是设备内置、控制硬件的基础软件",
-      "memory_hook_en": "Firmware → device built-in basic software that controls the hardware"
+      "one_jp": "**ファームウェア** は、機器の内部メモリに書き込まれ、ハードウェアの部品を直接動かす土台の役割を受け持つソフトウェアである。",
+      "one_zh": "**固件**（[[jp:ファームウェア]]）是写入设备内部存储器、承担直接驱动硬件部件这一基础角色的软件。",
+      "one_en": "**Firmware** ([[jp:ファームウェア]]) is software written into a device's internal memory that serves as the foundation, directly driving the hardware parts.",
+      "detail_jp": "電源を入れると最初に動き出し、ボタンやモーター、表示部などの部品を制御する。組込みシステムの中で動くソフトウェアを**組込みソフトウェア**といい、ファームウェアはその中で部品の制御という土台を受け持つ。書き換えできるフラッシュメモリに置かれることが多く、後から**アップデート**して不具合を直したり機能を足したりできる。",
+      "detail_zh": "接通电源后它最先运行，控制按钮、电机、显示屏等部件。在嵌入式系统中运行的软件叫作**嵌入式软件**，固件在其中负责控制部件这一基础工作。固件大多存放在可改写的闪存里，之后可以通过**更新**修复缺陷或增加功能。",
+      "detail_en": "It is the first thing to start when the power comes on, and it controls parts such as buttons, motors and displays. Software running in an embedded system is called **embedded software**, and firmware is the part of it that handles the groundwork of controlling those parts. It usually sits in rewritable flash memory, so it can later be **updated** to fix defects or add functions.",
+      "analogy_jp": "家電の本体に書き込まれた動作の手順書のようなもので、普段は目に触れないが、手順書を新しくすれば同じ本体のまま動きが変わる。",
+      "analogy_zh": "它就像写在家电机身里的操作手册，平时看不到，但只要换上新手册，同一台机器的动作就会改变。",
+      "analogy_en": "Think of it as a set of operating instructions written inside an appliance: you never see it, but swap in new instructions and the same machine behaves differently.",
+      "hook_jp": "firm は「固い」。hard (ハードウェア) と soft (ソフトウェア) の間に位置する、硬めのソフトという字面で覚える。",
+      "hook_zh": "firm 意思是“坚固”。它介于 hard（硬件）和 soft（软件）之间，按字面记成“偏硬的软件”。",
+      "hook_en": "Firm sits between hard and soft: firmware is software on the harder end, between hardware and software.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**組込みソフトウェア**は、専用の機器に内蔵され、その機器が受け持つ決まった動作を制御するソフトウェアである。",
+          "text_zh": "**嵌入式软件**（[[jp:組込みソフトウェア]]）是内置于专用设备、控制该设备所负责的固定动作的软件。",
+          "text_en": "**Embedded software** ([[jp:組込みソフトウェア]]) is software built into a dedicated device that controls the fixed operations that device is responsible for.",
+          "qids": [
+            "2010h22h-q015",
+            "2014h26a-q002"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "found",
+              "label": {
+                "jp": "不具合や改良点が見つかる",
+                "zh": "发现缺陷或可改进之处",
+                "en": "A defect or room for improvement is found"
+              }
+            },
+            {
+              "id": "release",
+              "label": {
+                "jp": "メーカーが新しい版を公開する",
+                "zh": "厂商发布新版本",
+                "en": "The maker releases a new version"
+              }
+            },
+            {
+              "id": "rewrite",
+              "label": {
+                "jp": "機器の内部メモリを書き換える",
+                "zh": "改写设备的内部存储器",
+                "en": "The device's internal memory is rewritten"
+              }
+            },
+            {
+              "id": "reflect",
+              "label": {
+                "jp": "再起動後に修正や新機能が働く",
+                "zh": "重启后修正和新功能生效",
+                "en": "After a restart, the fixes and new features work"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "出荷後の機器で、動作の誤りや足りない機能が分かる。",
+            "caption_zh": "在已出厂的设备上，发现了动作错误或缺少的功能。",
+            "caption_en": "Faulty behavior or missing functions come to light in devices already shipped.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "メーカーが直した版のファームウェアを配布する。",
+            "caption_zh": "厂商分发修正后的固件版本。",
+            "caption_en": "The maker distributes a corrected version of the firmware.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "機器の書き換えできるメモリに新しい版を上書きする。",
+            "caption_zh": "把新版本覆盖写入设备中可改写的存储器。",
+            "caption_en": "The new version is written over the old one in the device's rewritable memory.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "部品は同じままで、機器の動きだけが新しくなる。",
+            "caption_zh": "部件保持不变，只有设备的动作变新了。",
+            "caption_en": "The parts stay the same; only the way the device behaves is new.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2022r04-q003",
+        "2014h26a-q002",
+        "2011h23a-q011"
+      ],
+      "definition_jp": "ファームウェア は、機器の内部メモリに書き込まれ、ハードウェアの部品を直接動かす土台の役割を受け持つソフトウェアである。",
+      "definition_zh": "固件（ファームウェア）是写入设备内部存储器、承担直接驱动硬件部件这一基础角色的软件。",
+      "definition_en": "Firmware (ファームウェア) is software written into a device's internal memory that serves as the foundation, directly driving the hardware parts.",
+      "explanation_jp": "電源を入れると最初に動き出し、ボタンやモーター、表示部などの部品を制御する。組込みシステムの中で動くソフトウェアを組込みソフトウェアといい、ファームウェアはその中で部品の制御という土台を受け持つ。書き換えできるフラッシュメモリに置かれることが多く、後からアップデートして不具合を直したり機能を足したりできる。",
+      "explanation_zh": "接通电源后它最先运行，控制按钮、电机、显示屏等部件。在嵌入式系统中运行的软件叫作嵌入式软件，固件在其中负责控制部件这一基础工作。固件大多存放在可改写的闪存里，之后可以通过更新修复缺陷或增加功能。",
+      "explanation_en": "It is the first thing to start when the power comes on, and it controls parts such as buttons, motors and displays. Software running in an embedded system is called embedded software, and firmware is the part of it that handles the groundwork of controlling those parts. It usually sits in rewritable flash memory, so it can later be updated to fix defects or add functions.",
+      "memory_hook_jp": "firm は「固い」。hard (ハードウェア) と soft (ソフトウェア) の間に位置する、硬めのソフトという字面で覚える。",
+      "memory_hook_zh": "firm 意思是“坚固”。它介于 hard（硬件）和 soft（软件）之间，按字面记成“偏硬的软件”。",
+      "memory_hook_en": "Firm sits between hard and soft: firmware is software on the harder end, between hardware and software.",
+      "inline_quiz": [
+        "2022r04-q003",
+        "2014h26a-q002",
+        "2011h23a-q011"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "クラウドサービス",
-      "definition_jp": "ネット経由でサーバやソフトなどのIT資源を利用する形態。",
-      "explanation_jp": "クラウドサービスは、自前で機器を持たずに、インターネット経由で事業者が提供するサーバ・ストレージ・ソフトウェアなどのIT資源を必要なときに利用するサービス形態です。\n\nIoTでは、多数の機器が集めた大量のデータを蓄積・処理する基盤として使われます。利用形態にはSaaS(ソフト)・PaaS(開発環境)・IaaS(基盤)などがあり、使った分だけ料金を払えるのが特徴です。試験では、設備を自社で持たずネット越しに利用する点や、SaaSなどの提供区分が問われます。",
-      "analogy_jp": "自宅に井戸を掘らず、水道をひねって必要な分だけ水を使うようなもの。設備は事業者が持ち、利用者は使った分だけ払います。",
-      "memory_hook_jp": "クラウドサービスといえばネット越しに使うIT資源",
-      "inline_quiz": [
-        "2014h26a-q002"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"クラウドサービス\"]; A --> B[\"SaaS(ソフト)\"]; A --> C[\"PaaS(開発環境)\"]; A --> D[\"IaaS(基盤)\"]",
-        "svg_path": "figures/strategy-05-17-u01-t02.svg",
-        "rendered": true
-      },
       "term_zh": "云服务",
       "term_en": "Cloud service",
-      "definition_zh": "经由网络使用服务器、软件等 IT 资源的形态。",
-      "definition_en": "A form of using IT resources such as servers and software over the network.",
-      "explanation_zh": "云服务是一种无需自备设备、按需经由互联网使用服务商提供的服务器、存储、软件等 IT 资源的服务形态。\n\n在 IoT 中，它被用作存储和处理大量设备所采集的海量数据的基础。使用形态有 SaaS（软件）、PaaS（开发环境）、IaaS（基础设施）等，可以用多少付多少，这是它的特点。考试中会考查它无需自有设备、经由网络使用这一点，以及 SaaS 等提供分类。",
-      "explanation_en": "A cloud service is a service model in which, instead of owning equipment yourself, you use IT resources—servers, storage, software, and so on—provided by a vendor over the Internet whenever you need them.\n\nIn IoT, it is used as the foundation for storing and processing the vast amounts of data collected by many devices. Usage models include SaaS (software), PaaS (development environment), and IaaS (infrastructure), and a hallmark is that you pay only for what you use. On the exam, you are asked about using resources over the network without owning your own facilities, and about provision categories such as SaaS.",
-      "analogy_zh": "就像不在自家打井，而是拧开自来水龙头、用多少取多少水。设备由服务商持有，使用者只为用掉的部分付费。",
-      "analogy_en": "It is like turning on a tap and drawing only the water you need, instead of digging your own well at home. The vendor owns the facilities, and the user pays only for what is used.",
-      "memory_hook_zh": "说到云服务，就是经由网络使用的 IT 资源",
-      "memory_hook_en": "Cloud service → IT resources used over the network"
+      "one_jp": "**クラウドサービス** は、事業者がインターネット越しに提供するサーバーやソフトウェアなどの **IT 資源**を、利用者が必要な分だけ借りて使うサービスである。",
+      "one_zh": "**云服务**（[[jp:クラウドサービス]]）是用户按需租用服务商通过互联网提供的服务器、软件等 **IT 资源**的服务。",
+      "one_en": "A **cloud service** ([[jp:クラウドサービス]]) lets users rent only as much as they need of the **IT resources**, such as servers and software, that a provider offers over the internet.",
+      "detail_jp": "IoT では、多くの機器から届く大量のデータをためて分析する場としてよく使われる。利用者は設備を自分で持たずに済み、使った量に応じて料金を払う形が多い。",
+      "detail_zh": "在 IoT 中，它常被用作存放和分析大量设备传来的海量数据的地方。用户不必自己拥有这些设施，多数按使用量付费。",
+      "detail_en": "In IoT, it is often where the large volumes of data arriving from many devices are stored and analyzed. Users do not have to own the equipment, and they usually pay according to how much they use.",
+      "analogy_jp": "自宅に発電機を置かず、電力会社の電気を使った分だけ払うのと同じで、設備の持ち主と使う人が分かれている。",
+      "analogy_zh": "就像家里不装发电机，而是用电力公司的电并按用量付费一样，设施的所有者和使用者是分开的。",
+      "analogy_en": "Like paying the power company for the electricity you use instead of keeping a generator at home, the owner of the equipment and the person using it are different.",
+      "hook_jp": "cloud は「雲」。ネットワークの図でインターネットの部分を雲の形で描いた習慣から付いた名前。",
+      "hook_zh": "cloud 就是“云”。这个名字来自在网络示意图中把互联网部分画成云朵的习惯。",
+      "hook_en": "The name comes from the habit of drawing the internet as a cloud in network diagrams.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "クラウドサービスは IT 資源を貸し出す側の仕組みで、IoT はモノがデータを生み出して送る側の仕組みである。IoT のデータの置き場にクラウドが使われても、両者は同じものではない。",
+          "text_zh": "云服务（[[jp:クラウドサービス]]）是出租 IT 资源一方的机制，IoT 则是物品产生并发送数据一方的机制。即使 IoT 的数据放在云上，两者也不是同一回事。",
+          "text_en": "A cloud service ([[jp:クラウドサービス]]) is a mechanism on the side that rents out IT resources, while IoT is a mechanism on the side where things generate and send data. Even when IoT data is kept in the cloud, the two are not the same thing."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "cloud",
+            "label": {
+              "jp": "クラウドサービスの区分の例",
+              "zh": "云服务的分类示例",
+              "en": "Example categories of cloud services"
+            },
+            "children": [
+              {
+                "id": "saas",
+                "label": {
+                  "jp": "SaaS: ソフトウェアそのものを借りる",
+                  "zh": "SaaS：租用软件本身",
+                  "en": "SaaS: renting the software itself"
+                }
+              },
+              {
+                "id": "paas",
+                "label": {
+                  "jp": "PaaS: 開発や実行の環境を借りる",
+                  "zh": "PaaS：租用开发和运行环境",
+                  "en": "PaaS: renting a development and runtime environment"
+                }
+              },
+              {
+                "id": "iaas",
+                "label": {
+                  "jp": "IaaS: サーバーやネットワークの基盤を借りる",
+                  "zh": "IaaS：租用服务器、网络等基础设施",
+                  "en": "IaaS: renting the server and network infrastructure"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [],
+      "definition_jp": "クラウドサービス は、事業者がインターネット越しに提供するサーバーやソフトウェアなどの IT 資源を、利用者が必要な分だけ借りて使うサービスである。",
+      "definition_zh": "云服务（クラウドサービス）是用户按需租用服务商通过互联网提供的服务器、软件等 IT 资源的服务。",
+      "definition_en": "A cloud service (クラウドサービス) lets users rent only as much as they need of the IT resources, such as servers and software, that a provider offers over the internet.",
+      "explanation_jp": "IoT では、多くの機器から届く大量のデータをためて分析する場としてよく使われる。利用者は設備を自分で持たずに済み、使った量に応じて料金を払う形が多い。",
+      "explanation_zh": "在 IoT 中，它常被用作存放和分析大量设备传来的海量数据的地方。用户不必自己拥有这些设施，多数按使用量付费。",
+      "explanation_en": "In IoT, it is often where the large volumes of data arriving from many devices are stored and analyzed. Users do not have to own the equipment, and they usually pay according to how much they use.",
+      "memory_hook_jp": "cloud は「雲」。ネットワークの図でインターネットの部分を雲の形で描いた習慣から付いた名前。",
+      "memory_hook_zh": "cloud 就是“云”。这个名字来自在网络示意图中把互联网部分画成云朵的习惯。",
+      "memory_hook_en": "The name comes from the habit of drawing the internet as a cloud in network diagrams.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ロボティクス",
-      "definition_jp": "ロボットの設計・制御・運用を扱う技術分野・学問領域。",
-      "explanation_jp": "ロボティクスは、ロボットの設計・製作・制御・運用を総合的に扱う技術分野・学問領域です。機械・電子・センサー・ソフトウェアなど多様な技術を組み合わせます。\n\n組込みシステムによる制御技術を応用する代表的な応用分野で、産業用ロボットや自律走行などを実現します。試験では、ロボットという「具体的な物」に対して、ロボティクスはそれを扱う「分野・技術」を指すという用語の使い分けが押さえどころです。",
-      "analogy_jp": "「自動車そのもの」に対する「自動車工学」のような関係。ロボットという機械を生み出し動かすための学問・技術の総称です。",
-      "memory_hook_jp": "ロボティクスといえばロボットを扱う技術分野",
-      "inline_quiz": [
-        "2019r01a-q003"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "机器人学",
       "term_en": "Robotics",
-      "definition_zh": "研究机器人设计、控制与运用的技术领域和学科。",
-      "definition_en": "The technical field and academic discipline dealing with the design, control, and operation of robots.",
-      "explanation_zh": "机器人学是综合处理机器人的设计、制造、控制、运用的技术领域与学科，融合机械、电子、传感器、软件等多种技术。\n\n它是应用嵌入式系统控制技术的代表性应用领域，可实现工业机器人、自主行走等。考试中的要点在于用语的区分使用：机器人是「具体的物」，而机器人学指的是处理它的「领域、技术」。",
-      "explanation_en": "Robotics is the technical field and academic discipline that comprehensively deals with the design, manufacture, control, and operation of robots, combining diverse technologies such as mechanics, electronics, sensors, and software.\n\nIt is a representative application field that applies the control technology of embedded systems, realizing industrial robots, autonomous locomotion, and so on. The key point on the exam is the distinction in usage: a robot is the \"concrete thing,\" whereas robotics refers to the \"field and technology\" that handles it.",
-      "analogy_zh": "就像「汽车本身」与「汽车工程学」的关系。它是创造并驱动机器人这种机械的学问与技术的总称。",
-      "analogy_en": "It is like the relationship between \"the car itself\" and \"automotive engineering.\" It is the umbrella term for the discipline and technology that create and operate the machine called a robot.",
-      "memory_hook_zh": "说到机器人学，就是研究机器人的技术领域",
-      "memory_hook_en": "Robotics → the technical field that deals with robots"
+      "one_jp": "**ロボティクス** は、ロボットを設計し、作り、思いどおりに動かすための研究と技術をまとめた**技術分野**である。",
+      "one_zh": "**机器人学**（[[jp:ロボティクス]]）是汇集了设计、制造机器人并让它按意图动作的研究与技术的**技术领域**。",
+      "one_en": "**Robotics** ([[jp:ロボティクス]]) is the **technical field** that brings together the research and technology for designing robots, building them and making them move as intended.",
+      "detail_jp": "機械の構造、電子回路、制御のソフトウェアといった複数の分野の知識を組み合わせて扱う。周りの状況をセンサーでつかみ、動き方を決め、アクチュエーターで体を動かすまでの一連の仕組みづくりが中心になる。",
+      "detail_zh": "它把机械结构、电子电路、控制软件等多个领域的知识结合起来运用。核心是搭建一整套机制：用传感器掌握周围状况，决定怎样动，再用执行器驱动机体。",
+      "detail_en": "It combines knowledge from several fields, such as mechanical structure, electronic circuits and control software. Its core is building the whole chain from grasping the surroundings with sensors and deciding how to move to driving the body with actuators.",
+      "analogy_jp": "料理そのものに対する料理学のような関係で、一皿ずつではなく作り方の体系のほうを指す。",
+      "analogy_zh": "就像烹饪学之于菜肴，指的不是一道道菜，而是做菜方法的体系。",
+      "analogy_en": "It is to robots what culinary science is to food: it refers not to each dish but to the body of methods for making them.",
+      "hook_jp": "robot に学問を表す -ics (physics や electronics と同じ語尾) が付いた語。",
+      "hook_zh": "在 robot 后面加上表示学科的 -ics（与 physics、electronics 的词尾相同）构成的词。",
+      "hook_en": "Robot plus -ics, the ending for a field of study, as in physics and electronics.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "ロボティクス は、ロボットを設計し、作り、思いどおりに動かすための研究と技術をまとめた技術分野である。",
+      "definition_zh": "机器人学（ロボティクス）是汇集了设计、制造机器人并让它按意图动作的研究与技术的技术领域。",
+      "definition_en": "Robotics (ロボティクス) is the technical field that brings together the research and technology for designing robots, building them and making them move as intended.",
+      "explanation_jp": "機械の構造、電子回路、制御のソフトウェアといった複数の分野の知識を組み合わせて扱う。周りの状況をセンサーでつかみ、動き方を決め、アクチュエーターで体を動かすまでの一連の仕組みづくりが中心になる。",
+      "explanation_zh": "它把机械结构、电子电路、控制软件等多个领域的知识结合起来运用。核心是搭建一整套机制：用传感器掌握周围状况，决定怎样动，再用执行器驱动机体。",
+      "explanation_en": "It combines knowledge from several fields, such as mechanical structure, electronic circuits and control software. Its core is building the whole chain from grasping the surroundings with sensors and deciding how to move to driving the body with actuators.",
+      "memory_hook_jp": "robot に学問を表す -ics (physics や electronics と同じ語尾) が付いた語。",
+      "memory_hook_zh": "在 robot 后面加上表示学科的 -ics（与 physics、electronics 的词尾相同）构成的词。",
+      "memory_hook_en": "Robot plus -ics, the ending for a field of study, as in physics and electronics.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ロボット",
-      "definition_jp": "センサーで感知し判断して動作する自動制御の機械装置。",
-      "explanation_jp": "ロボットは、センサーで周囲の情報を感知し、その情報をもとに判断・制御を行い、自動で動作する機械装置です。組込みシステムによる制御の代表的な具体例です。\n\n工場で組立や溶接を行う産業用ロボット、掃除ロボット、対話するコミュニケーションロボットなど用途は多岐にわたります。試験では、感知(センサー)→判断(制御)→動作という流れで自律的に働く点や、ロボティクスが扱う対象としての具体物である点が問われます。",
-      "analogy_jp": "周りを見て自分で考えて動く「自動で働く機械の働き手」。工場の組立係や家の掃除係を機械が代わりに務めるイメージです。",
-      "memory_hook_jp": "ロボットといえば感知・判断・動作する自動機械",
-      "inline_quiz": [
-        "2019r01a-q013"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "机器人",
       "term_en": "Robot",
-      "definition_zh": "用传感器感知、加以判断并动作的自动控制机械装置。",
-      "definition_en": "An automatically controlled mechanical device that senses with sensors, judges, and acts.",
-      "explanation_zh": "机器人是用传感器感知周围信息、据此进行判断与控制、并自动动作的机械装置，是嵌入式系统控制的代表性具体实例。\n\n它用途广泛，包括在工厂进行装配或焊接的工业机器人、扫地机器人、能对话的交流机器人等。考试中会考查它按「感知（传感器）→判断（控制）→动作」的流程自主工作这一点，以及它是机器人学所处理的具体对象物这一点。",
-      "explanation_en": "A robot is a mechanical device that senses surrounding information with sensors, performs judgment and control based on it, and acts automatically; it is a representative concrete example of control by an embedded system.\n\nIts uses are diverse, including industrial robots that assemble or weld in factories, cleaning robots, and communication robots that converse. On the exam, you are asked about how it works autonomously in the flow of sensing (sensor) → judgment (control) → action, and about it being the concrete object that robotics deals with.",
-      "analogy_zh": "就像观察周围、自己思考再行动的「自动工作的机械工人」。让机械代替工厂的装配工或家里的清洁工来完成工作的画面。",
-      "analogy_en": "It is like an \"automatically working mechanical laborer\" that looks around, thinks for itself, and then acts. Picture a machine taking over the work of an assembly worker in a factory or a cleaner at home.",
-      "memory_hook_zh": "说到机器人，就是感知、判断、动作的自动机械",
-      "memory_hook_en": "Robot → an automatic machine that senses, judges, and acts"
+      "one_jp": "**ロボット** は、センサーで周囲の状況をつかみ、内部のコンピュータが判断して、モーターなどで自ら動く**機械**である。",
+      "one_zh": "**机器人**（[[jp:ロボット]]）是用传感器掌握周围状况、由内部计算机作出判断、再靠电机等自行动作的**机器**。",
+      "one_en": "A **robot** ([[jp:ロボット]]) is a **machine** that grasps its surroundings with sensors, decides with an internal computer, and moves on its own using motors and similar parts.",
+      "detail_jp": "工場で部品を組み付ける産業用ロボットのほか、家庭で床を掃除するロボットや、人と会話するロボットなど用途は広い。動きの制御には、機器の中の組込みシステムが使われる。",
+      "detail_zh": "除了在工厂里组装零件的工业机器人，还有在家里扫地的机器人、和人对话的机器人等，用途很广。动作的控制依靠的是设备内部的嵌入式系统。",
+      "detail_en": "Besides industrial robots that assemble parts in factories, there are robots that clean floors at home and robots that talk with people, so their uses are wide. Their movements are controlled by the embedded system inside the machine.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "チェコの作家チャペックの戯曲で生まれた語で、チェコ語の robota (労働) が元になっている。",
+      "hook_zh": "这个词诞生于捷克作家恰佩克的剧作，源自捷克语 robota（劳动）。",
+      "hook_en": "The word was born in a play by the Czech writer Karel Čapek and comes from the Czech robota, meaning labor.",
+      "points": [],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "sense",
+              "label": {
+                "jp": "感知: センサーで周囲を測る",
+                "zh": "感知：用传感器测量周围",
+                "en": "Sense: measure the surroundings with sensors"
+              }
+            },
+            {
+              "id": "decide",
+              "label": {
+                "jp": "判断: コンピュータが動きを決める",
+                "zh": "判断：计算机决定动作",
+                "en": "Decide: the computer chooses the movement"
+              }
+            },
+            {
+              "id": "move",
+              "label": {
+                "jp": "動作: 駆動部で体を動かす",
+                "zh": "动作：用驱动部件驱动机体",
+                "en": "Act: drive parts move the body"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "カメラや距離センサーで、障害物や目標の位置をつかむ。",
+            "caption_zh": "用摄像头和距离传感器掌握障碍物和目标的位置。",
+            "caption_en": "Cameras and distance sensors locate obstacles and targets.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "内部の組込みシステムが、測った値から次の動きを決める。",
+            "caption_zh": "内部的嵌入式系统根据测得的数值决定下一步动作。",
+            "caption_en": "The embedded system inside decides the next movement from the measured values.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "モーターなどの駆動部が動き、結果を再びセンサーで確かめる。",
+            "caption_zh": "电机等驱动部件开始动作，再用传感器确认结果。",
+            "caption_en": "Motors and other drive parts move, and the sensors check the result again.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ロボット は、センサーで周囲の状況をつかみ、内部のコンピュータが判断して、モーターなどで自ら動く機械である。",
+      "definition_zh": "机器人（ロボット）是用传感器掌握周围状况、由内部计算机作出判断、再靠电机等自行动作的机器。",
+      "definition_en": "A robot (ロボット) is a machine that grasps its surroundings with sensors, decides with an internal computer, and moves on its own using motors and similar parts.",
+      "explanation_jp": "工場で部品を組み付ける産業用ロボットのほか、家庭で床を掃除するロボットや、人と会話するロボットなど用途は広い。動きの制御には、機器の中の組込みシステムが使われる。",
+      "explanation_zh": "除了在工厂里组装零件的工业机器人，还有在家里扫地的机器人、和人对话的机器人等，用途很广。动作的控制依靠的是设备内部的嵌入式系统。",
+      "explanation_en": "Besides industrial robots that assemble parts in factories, there are robots that clean floors at home and robots that talk with people, so their uses are wide. Their movements are controlled by the embedded system inside the machine.",
+      "memory_hook_jp": "チェコの作家チャペックの戯曲で生まれた語で、チェコ語の robota (労働) が元になっている。",
+      "memory_hook_zh": "这个词诞生于捷克作家恰佩克的剧作，源自捷克语 robota（劳动）。",
+      "memory_hook_en": "The word was born in a play by the Czech writer Karel Čapek and comes from the Czech robota, meaning labor.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "IoT",
+      "b": "クラウドサービス",
+      "rows": [
+        {
+          "label_jp": "中心になる側",
+          "label_zh": "重心所在的一方",
+          "label_en": "Which side it centers on",
+          "a_jp": "データを生み出して送るモノの側",
+          "a_zh": "产生并发送数据的物品一方",
+          "a_en": "The things that generate and send data",
+          "b_jp": "IT 資源を貸し出す事業者の側",
+          "b_zh": "出租 IT 资源的服务商一方",
+          "b_en": "The provider that rents out IT resources",
+          "key": true
+        },
+        {
+          "label_jp": "主な働き",
+          "label_zh": "主要作用",
+          "label_en": "Main work",
+          "a_jp": "計測、送信、機器の制御",
+          "a_zh": "测量、发送、控制设备",
+          "a_en": "Measuring, sending and controlling devices",
+          "b_jp": "データの保管と処理、ソフトウェアの提供",
+          "b_zh": "存储和处理数据、提供软件",
+          "b_en": "Storing and processing data, providing software",
+          "key": false
+        },
+        {
+          "label_jp": "互いの関係",
+          "label_zh": "相互关系",
+          "label_en": "How they relate",
+          "a_jp": "集めたデータの送り先にクラウドを使うことが多い",
+          "a_zh": "收集到的数据多发送到云端",
+          "a_en": "Often sends the collected data to the cloud",
+          "b_jp": "IoT 以外の業務システムにも広く使われる",
+          "b_zh": "也广泛用于 IoT 以外的业务系统",
+          "b_en": "Also widely used for business systems other than IoT",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "組込みシステム",
+      "b": "ファームウェア",
+      "rows": [
+        {
+          "label_jp": "指す範囲",
+          "label_zh": "所指范围",
+          "label_en": "What it covers",
+          "a_jp": "ハードウェアとソフトウェアを合わせた仕組み全体",
+          "a_zh": "硬件和软件合在一起的整个机制",
+          "a_en": "The whole setup of hardware and software together",
+          "b_jp": "その中で部品を制御するソフトウェアの部分",
+          "b_zh": "其中控制部件的软件部分",
+          "b_en": "The software part within it that controls the parts",
+          "key": true
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "例子",
+          "label_en": "Example",
+          "a_jp": "洗濯機の中の制御装置一式",
+          "a_zh": "洗衣机里的整套控制装置",
+          "a_en": "The complete control unit inside a washing machine",
+          "b_jp": "その制御装置のメモリに入ったモーター制御のプログラム",
+          "b_zh": "存放在该控制装置存储器里的电机控制程序",
+          "b_en": "The motor control program stored in that unit's memory",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "ロボティクス",
+      "b": "ロボット",
+      "rows": [
+        {
+          "label_jp": "指すもの",
+          "label_zh": "所指对象",
+          "label_en": "What it refers to",
+          "a_jp": "技術分野や研究の領域",
+          "a_zh": "技术领域或研究领域",
+          "a_en": "A technical field or area of research",
+          "b_jp": "実際に動く機械",
+          "b_zh": "实际动起来的机器",
+          "b_en": "An actual machine that moves",
+          "key": true
+        },
+        {
+          "label_jp": "例",
+          "label_zh": "例子",
+          "label_en": "Example",
+          "a_jp": "歩き方や物のつかみ方の研究",
+          "a_zh": "关于走路方式和抓取物体方式的研究",
+          "a_en": "Research on how to walk and how to grasp objects",
+          "b_jp": "産業用ロボット、掃除ロボット",
+          "b_zh": "工业机器人、扫地机器人",
+          "b_en": "Industrial robots, cleaning robots",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**IoT** は、モノに付けたセンサーなどが集めたデータを通信で送り、分析や制御に生かす仕組みである。",
+    "**組込みシステム** は機器ごとに専用化され、製品の改良ではソフトウェアの書き換えで機能を足せる場合がある。",
+    "**ファームウェア** は機器の内部メモリに置かれ、部品を直接制御する土台のソフトウェアである。",
+    "**ロボット** は、感知・判断・動作の 3 つの働きを繰り返して動く。"
+  ],
+  "key_points_zh": [
+    "**IoT** 是把装在物品上的传感器等收集的数据通过通信发送出去，并用于分析和控制的机制。",
+    "**嵌入式系统**按设备专门定制，改良产品时，有时改写软件就能增加功能。",
+    "**固件**存放在设备的内部存储器里，是直接控制部件的基础软件。",
+    "**机器人**通过反复进行感知、判断、动作这 3 种作用来运行。"
+  ],
+  "key_points_en": [
+    "**IoT** is a mechanism that sends data gathered by sensors and similar parts on things over a network and uses it for analysis and control.",
+    "An **embedded system** is specialized for each device, and when a product is improved, rewriting the software can sometimes add functions.",
+    "**Firmware** sits in a device's internal memory and is the foundational software that controls its parts directly.",
+    "A **robot** works by repeating three functions: sensing, deciding and acting."
+  ],
+  "overview": {
+    "intro_jp": "IoT の事例を、モノ自体がデータを送り出しているかどうかで見分けられる。組込みシステム と ファームウェア が機器の中でそれぞれ何を受け持つかを説明できる。クラウドサービス や ロボット が、モノにコンピュータを組み込む技術とどう結び付くかを説明できる。",
+    "intro_zh": "能够根据物品本身是否在主动发出数据，判断一个事例是否属于 IoT。能够说明嵌入式系统和固件在设备内部各自负责什么。能够说明云服务和机器人与“把计算机装进物品”的技术有怎样的联系。",
+    "intro_en": "Tell whether a case is IoT by checking whether the thing itself is sending out data. Explain what an embedded system and firmware each take care of inside a device. Explain how cloud services and robots tie in with the technology of building computers into things.",
+    "freq_badge": "低頻",
+    "est_minutes": 34
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "IoT: IoTといえばモノをインターネットにつなぐ仕組み",
-      "組込みシステム: 組込みシステムといえば機器に組み込まれた専用コンピュータ",
-      "ファームウェア: ファームウェアといえば機器内蔵でハードを制御する基本ソフト",
-      "クラウドサービス: クラウドサービスといえばネット越しに使うIT資源",
-      "ロボティクス: ロボティクスといえばロボットを扱う技術分野",
-      "ロボット: ロボットといえば感知・判断・動作する自動機械"
-    ],
     "key_points_jp": [
-      "IoT(モノのインターネット)は、モノにコンピュータと通信機能を組み込み、インターネット経由で情報をやり取りする仕組み。",
-      "組込みシステムは特定機器を制御する専用コンピュータで、ファームウェアはその機器内蔵でハードウェアを制御する基本ソフト(更新可能)。",
-      "クラウドサービスはネット経由でIT資源を使う形態で、IoTが集めたデータの蓄積・処理基盤となり、SaaS/PaaS/IaaSの区分がある。",
-      "ロボティクスはロボットを扱う技術分野、ロボットはその具体物で、感知→判断→動作で自律的に働く。",
-      "IoT・組込み・ファームウェアはデバイス側、クラウドはデータ基盤側という役割の違いを押さえる。"
+      "IoT は、モノに付けたセンサーなどが集めたデータを通信で送り、分析や制御に生かす仕組みである。",
+      "組込みシステム は機器ごとに専用化され、製品の改良ではソフトウェアの書き換えで機能を足せる場合がある。",
+      "ファームウェア は機器の内部メモリに置かれ、部品を直接制御する土台のソフトウェアである。",
+      "ロボット は、感知・判断・動作の 3 つの働きを繰り返して動く。"
     ],
     "key_points_zh": [
-      "IoT（物联网）是把计算机和通信功能嵌入物品、经由互联网交换信息的机制。",
-      "嵌入式系统是控制特定设备的专用计算机，固件则是嵌入该设备、控制硬件的基础软件（可更新）。",
-      "云服务是经由网络使用 IT 资源的形态，可作为 IoT 所采集数据的存储与处理基础，分为 SaaS / PaaS / IaaS。",
-      "机器人学是研究机器人的技术领域，机器人是它的具体对象物，按感知→判断→动作自主工作。",
-      "要把握角色分工：IoT、嵌入式、固件属于设备侧，云属于数据基础侧。"
+      "IoT 是把装在物品上的传感器等收集的数据通过通信发送出去，并用于分析和控制的机制。",
+      "嵌入式系统按设备专门定制，改良产品时，有时改写软件就能增加功能。",
+      "固件存放在设备的内部存储器里，是直接控制部件的基础软件。",
+      "机器人通过反复进行感知、判断、动作这 3 种作用来运行。"
     ],
     "key_points_en": [
-      "IoT (Internet of Things) is a mechanism that embeds computers and communication functions into things and exchanges information over the Internet.",
-      "An embedded system is a dedicated computer that controls a specific device, while firmware is the basic software embedded in that device to control its hardware (updatable).",
-      "A cloud service is a form of using IT resources over the network; it serves as the storage and processing foundation for data collected by IoT, and is divided into SaaS / PaaS / IaaS.",
-      "Robotics is the technical field that deals with robots, and a robot is its concrete object, working autonomously through sensing → judgment → action.",
-      "Grasp the division of roles: IoT, embedded systems, and firmware are on the device side, while the cloud is on the data-foundation side."
+      "IoT is a mechanism that sends data gathered by sensors and similar parts on things over a network and uses it for analysis and control.",
+      "An embedded system is specialized for each device, and when a product is improved, rewriting the software can sometimes add functions.",
+      "Firmware sits in a device's internal memory and is the foundational software that controls its parts directly.",
+      "A robot works by repeating three functions: sensing, deciding and acting."
+    ],
+    "memory_hooks_jp": [
+      "IoT: Things は英語の「モノ」。インターネットの参加者が人からモノへ広がった、と頭文字の T で覚える。",
+      "組込みシステム: 英語では embedded (埋め込まれた) system。機器の中に埋まっていて外からは見えないコンピュータ、と語から思い出す。",
+      "ファームウェア: firm は「固い」。hard (ハードウェア) と soft (ソフトウェア) の間に位置する、硬めのソフトという字面で覚える。",
+      "クラウドサービス: cloud は「雲」。ネットワークの図でインターネットの部分を雲の形で描いた習慣から付いた名前。",
+      "ロボティクス: robot に学問を表す -ics (physics や electronics と同じ語尾) が付いた語。",
+      "ロボット: チェコの作家チャペックの戯曲で生まれた語で、チェコ語の robota (労働) が元になっている。"
     ],
     "memory_hooks_zh": [
-      "IoT：说到 IoT，就是把物品接入互联网的机制",
-      "嵌入式系统：说到嵌入式系统，就是嵌入设备的专用计算机",
-      "固件：说到固件，就是设备内置、控制硬件的基础软件",
-      "云服务：说到云服务，就是经由网络使用的 IT 资源",
-      "机器人学：说到机器人学，就是研究机器人的技术领域",
-      "机器人：说到机器人，就是感知、判断、动作的自动机械"
+      "IoT（物联网）：Things 在英语里是“物品”。用首字母 T 来记：互联网的参与者从人扩展到了物品。",
+      "嵌入式系统：英语叫 embedded（嵌入的）system。从词义联想：埋在设备里、从外面看不到的计算机。",
+      "固件：firm 意思是“坚固”。它介于 hard（硬件）和 soft（软件）之间，按字面记成“偏硬的软件”。",
+      "云服务：cloud 就是“云”。这个名字来自在网络示意图中把互联网部分画成云朵的习惯。",
+      "机器人学：在 robot 后面加上表示学科的 -ics（与 physics、electronics 的词尾相同）构成的词。",
+      "机器人：这个词诞生于捷克作家恰佩克的剧作，源自捷克语 robota（劳动）。"
     ],
     "memory_hooks_en": [
-      "IoT: IoT → the mechanism that connects things to the Internet",
-      "Embedded system: Embedded system → a dedicated computer embedded in a device",
-      "Firmware: Firmware → device built-in basic software that controls the hardware",
-      "Cloud service: Cloud service → IT resources used over the network",
-      "Robotics: Robotics → the technical field that deals with robots",
-      "Robot: Robot → an automatic machine that senses, judges, and acts"
+      "IoT: Let the T for Things remind you that the internet's participants widened from people to objects.",
+      "Embedded system: Embedded means set deep inside: picture a computer buried in the device where no one can see it from outside.",
+      "Firmware: Firm sits between hard and soft: firmware is software on the harder end, between hardware and software.",
+      "Cloud service: The name comes from the habit of drawing the internet as a cloud in network diagrams.",
+      "Robotics: Robot plus -ics, the ending for a field of study, as in physics and electronics.",
+      "Robot: The word was born in a play by the Czech writer Karel Čapek and comes from the Czech robota, meaning labor."
     ]
   },
   "challenge_questions": [
-    "2020r02o-q008",
-    "2022r04-q003",
     "2026r08-q008",
-    "2011h23a-q011",
-    "2013h25h-q021"
+    "2020r02o-q010",
+    "2012h24h-q021",
+    "2010h22h-q015",
+    "2023r05-q098"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "IoT 与嵌入式系统的基础概念",
-  "title_en": "Fundamental Concepts of IoT and Embedded Systems",
-  "unit_summary_zh": "学习 IoT 与嵌入式系统的基本概念，以及支撑它们的固件、云服务、机器人学，是本主题的基石单元。",
-  "unit_summary_en": "Learn the basic concepts of IoT and embedded systems, along with the firmware, cloud services, and robotics that support them—the foundational unit of this topic."
+  }
 }
