@@ -1,134 +1,488 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-20-52-u03",
   "topic_id": "technology-20-52",
   "category": "technology",
   "title_jp": "静止画のデータ表現方式",
+  "title_zh": "静态图像的数据表示方式",
+  "title_en": "Data Representation Methods for Still Images",
   "unit_summary_jp": "静止画をどう表現するか(ラスター/ビットマップ/ベクター)の根本方式を理解する。",
+  "unit_summary_zh": "理解如何表示静态图像的根本方式(光栅/位图/矢量)。",
+  "unit_summary_en": "Understand the fundamental ways of representing still images (raster / bitmap / vector).",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-20-52-u01"
   ],
-  "overview": {
-    "intro_jp": "静止画をコンピュータ内部でどう表すか、その根本方式を学ぶ単元です。画素の集まりで表すラスター(ビットマップ)方式と、図形を数式で表すベクター方式の二つを対比して理解します。次に学ぶ JPEG などの具体的なファイル形式の前提となる基礎で、両方式の長所・短所の違いが試験で問われます。",
-    "freq_badge": "低頻",
-    "est_minutes": 11,
-    "intro_zh": "这是学习计算机内部如何表示静态图像、以及其根本方式的单元。通过对比理解两种方式:用像素的集合来表示的光栅(位图)方式,以及用数学式来表示图形的矢量方式。它是接下来要学习的 JPEG 等具体文件格式的基础前提,考试常会考查两种方式在优缺点上的差异。",
-    "intro_en": "This unit teaches how a computer represents still images internally, along with the fundamental methods involved. You will understand, by contrast, two approaches: the raster (bitmap) method that represents an image as a collection of pixels, and the vector method that represents shapes with mathematical formulas. This is the foundation underlying the specific file formats such as JPEG that you will study next, and exams test the differences in the strengths and weaknesses of the two methods."
-  },
-  "terms": [
+  "goals_jp": [
+    "**ラスターデータ**が画素の格子と画素ごとの色の値で画像を表すことを説明できる。",
+    "**ビットマップデータ**のデータ量を、画素数と1画素あたりのビット数から求められる。",
+    "**ベクターデータ**とラスターデータを、拡大したときの見え方と向く画像で見分けられる。"
+  ],
+  "goals_zh": [
+    "能够说明**光栅数据**是用像素网格和每个像素的颜色值来表示图像的。",
+    "能够根据像素数和每个像素的比特数，算出**位图数据**的数据量。",
+    "能够从放大后的显示效果和适合的图像类型，区分**矢量数据**与光栅数据。"
+  ],
+  "goals_en": [
+    "Explain that **raster data** represents an image as a grid of pixels, each holding a color value.",
+    "Calculate the size of **bitmap data** from the number of pixels and the bits per pixel.",
+    "Tell **vector data** apart from raster data by how each looks when enlarged and which images each suits."
+  ],
+  "overview_cols_jp": [
+    "画像の持ち方",
+    "拡大したとき"
+  ],
+  "overview_cols_zh": [
+    "图像的表示方式",
+    "放大时"
+  ],
+  "overview_cols_en": [
+    "How the image is stored",
+    "When enlarged"
+  ],
+  "overview_rows": [
     {
       "term": "ラスターデータ",
-      "definition_jp": "画像を小さな画素(ピクセル)の集合として、色情報の格子で表す方式。",
-      "explanation_jp": "ラスターデータは、画面を細かいマス目(画素)に分け、各マスの色を一つずつ記録して画像を表す方式です。写真のように色や濃淡が複雑な画像を正確に表現できます。\n\n試験では、拡大すると画素が目立ってギザギザになり画質が落ちる点が問われます。また画素数(解像度)を増やすほど鮮明になりますが、データ量も大きくなります。JPEG や PNG などのファイル形式はこのラスター方式に基づきます。",
-      "analogy_jp": "方眼紙の一マスずつに色を塗って絵を作るようなもの。近くで見るとマス目が見え、拡大すると塗りの粒が荒く目立ちます。",
-      "memory_hook_jp": "ラスターデータといえば画素の集合で表す画像",
-      "inline_quiz": [
-        "2016h28a-q078"
+      "one_line_jp": "画像を画素の格子に分け、画素ごとの色の値で表すデータ。",
+      "one_line_zh": "把图像划分成像素网格，用每个像素的颜色值来表示的数据。",
+      "one_line_en": "Data that divides an image into a grid of pixels and stores a color value for each one.",
+      "extra_jp": [
+        "画素ごとの色の値",
+        "画素が引き伸ばされ輪郭が階段状になる"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "光栅数据",
-      "term_en": "Raster data",
-      "definition_zh": "将图像表示为细小像素(pixel)的集合,用颜色信息的网格来呈现的方式。",
-      "definition_en": "A method that represents an image as a collection of small pixels, expressing it as a grid of color information.",
-      "explanation_zh": "光栅数据是把画面划分成细密的小方格(像素),逐个记录每个方格的颜色来表示图像的方式。它能准确表现像照片那样颜色与浓淡复杂的图像。\n\n考试会考查的一点是:放大后像素会变得明显、出现锯齿,画质会下降。此外,像素数(分辨率)越高图像越清晰,但数据量也越大。JPEG、PNG 等文件格式都基于这种光栅方式。",
-      "explanation_en": "Raster data divides the screen into fine cells (pixels) and records the color of each cell one by one to represent the image. It can accurately express images with complex colors and shading, such as photographs.\n\nExams test the point that, when enlarged, the pixels become noticeable and jagged, lowering image quality. Also, the more pixels (the higher the resolution), the sharper the image, but the larger the data size. File formats such as JPEG and PNG are based on this raster method.",
-      "analogy_zh": "就像在方格纸上一格一格地涂色来作画。靠近看能看到方格,放大后涂色的颗粒会变粗、变明显。",
-      "analogy_en": "Like making a picture by coloring graph paper one square at a time. Up close you can see the squares, and when enlarged the colored dots become coarse and noticeable.",
-      "memory_hook_zh": "说到光栅数据,就是用像素的集合来表示的图像",
-      "memory_hook_en": "Raster data → an image represented by a collection of pixels"
+      "extra_zh": [
+        "每个像素的颜色值",
+        "像素被拉伸，轮廓呈锯齿状"
+      ],
+      "extra_en": [
+        "A color value per pixel",
+        "Pixels stretch and edges turn jagged"
+      ]
     },
     {
       "term": "ビットマップデータ",
-      "definition_jp": "画素ごとの色情報を並べて画像を表す方式で、ラスターデータとほぼ同義。",
-      "explanation_jp": "ビットマップデータは、画素一つひとつの色をビットの並び(マップ)として記録する方式で、ラスターデータと実質的に同じ意味で使われます。試験ではこの「同義語」である点をまず押さえます。\n\n写真などの自然画像に向く一方、拡大に弱くデータ量が大きくなる性質もラスターと共通です。BMP 形式はこの方式を素直に表したファイル形式の代表例です。",
-      "analogy_jp": "マス目一つずつに「この色」と書いた色見本表を画像全体ぶん並べたようなもの。ラスターという呼び名の別名と覚えます。",
-      "memory_hook_jp": "ビットマップデータといえばラスターデータの別名",
-      "inline_quiz": [
-        "2009h21h-q078"
+      "one_line_jp": "画素ごとの色をビットの並びで記録した画像データ。ラスターデータとほぼ同じ意味。",
+      "one_line_zh": "把每个像素的颜色记录为比特序列的图像数据，与光栅数据意思基本相同。",
+      "one_line_en": "Image data that records each pixel's color as a sequence of bits; it means almost the same as raster data.",
+      "extra_jp": [
+        "画素ごとの色をビット列で記録",
+        "ラスターデータと同じく縁が階段状になる"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "位图数据",
-      "term_en": "Bitmap data",
-      "definition_zh": "将每个像素的颜色信息排列起来表示图像的方式,与光栅数据几乎同义。",
-      "definition_en": "A method that represents an image by arranging the color information of each pixel; almost synonymous with raster data.",
-      "explanation_zh": "位图数据是把每一个像素的颜色记录为一串比特排列(map,即映射)的方式,与光栅数据实质上含义相同。考试首先要掌握的就是这一点:二者是「同义词」。\n\n它适合照片等自然图像,但放大时易失真、数据量大,这些性质也与光栅相同。BMP 格式是直白地体现这种方式的代表性文件格式。",
-      "explanation_en": "Bitmap data records the color of each individual pixel as an arrangement of bits (a map), and is used with essentially the same meaning as raster data. The first thing to grasp for the exam is this point: they are synonyms.\n\nIt is suited to natural images such as photographs, but its properties of being weak against enlargement and having a large data size are also shared with raster. The BMP format is a representative file format that expresses this method straightforwardly.",
-      "analogy_zh": "就像把写着「这是什么颜色」的色样表,按整幅图像的方格逐格排列起来。可以把它记成光栅这一名称的别名。",
-      "analogy_en": "Like lining up a color-sample chart that labels \"this color\" for each square, across all the squares of the whole image. Remember it as another name for raster.",
-      "memory_hook_zh": "说到位图数据,就是光栅数据的别名",
-      "memory_hook_en": "Bitmap data → another name for raster data"
+      "extra_zh": [
+        "用比特串记录每个像素的颜色",
+        "与光栅数据一样，边缘呈锯齿状"
+      ],
+      "extra_en": [
+        "Each pixel's color stored as bits",
+        "Edges turn jagged, as with raster data"
+      ]
     },
     {
       "term": "ベクターデータ",
-      "definition_jp": "点・線・面などの図形を座標や数式で表し、画像を再現する方式。",
-      "explanation_jp": "ベクターデータは、画像を画素ではなく「始点と終点を結ぶ直線」「半径いくつの円」といった図形の数式・座標で表す方式です。ラスター/ビットマップとの対比が最重要ポイントです。\n\n試験では、拡大・縮小しても数式から描き直すため画質が劣化せず、データ量も小さくなる利点が問われます。ただし写真のような複雑な濃淡表現は苦手で、図形・ロゴ・文字の輪郭などに向きます。",
-      "analogy_jp": "「中心からこの長さの円を描け」という指示書を持っておくようなもの。指示通りに描き直すので、どれだけ拡大してもなめらかな線になります。",
-      "memory_hook_jp": "ベクターデータといえば図形を数式で表し拡大しても劣化しない",
+      "one_line_jp": "点の座標と線・曲線などの図形の情報で画像を表すデータ。",
+      "one_line_zh": "用点的坐标以及线、曲线等图形信息来表示图像的数据。",
+      "one_line_en": "Data that represents an image with point coordinates and shape information such as lines and curves.",
+      "extra_jp": [
+        "座標と図形を描く式",
+        "描き直すので輪郭はなめらかなまま"
+      ],
+      "extra_zh": [
+        "坐标和描绘图形的公式",
+        "每次重新绘制，轮廓保持平滑"
+      ],
+      "extra_en": [
+        "Coordinates and formulas that draw shapes",
+        "Redrawn each time, so outlines stay smooth"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "ラスターデータ",
+      "term_zh": "光栅数据",
+      "term_en": "Raster data",
+      "one_jp": "**ラスターデータ**は、画像を縦横に並ぶ**画素**(ピクセル)の格子に分け、画素ごとに色の値を記録して表すデータである。",
+      "one_zh": "**光栅数据**[[jp:ラスターデータ]]是把图像划分成纵横排列的**像素**网格，并为每个像素记录颜色值来表示图像的数据。",
+      "one_en": "**Raster data** [[jp:ラスターデータ]] divides an image into a grid of **pixels** arranged in rows and columns and records a color value for each pixel.",
+      "detail_jp": "画素の数(**解像度**)を多くするほど細かな表現ができるが、記録する値が増えるのでデータ量も大きくなる。拡大表示すると画素が引き伸ばされ、斜めの線や曲線の縁に階段状のギザギザ(**ジャギー**)が出る。写真のように場所ごとに色や濃淡が細かく変わる画像を表すのに向く。",
+      "detail_zh": "像素越多（**分辨率**越高），画面就越精细，但要记录的值也随之增加，数据量变大。放大显示时像素会被拉伸，斜线和曲线的边缘会出现阶梯状的锯齿（**锯齿现象**）。它适合表示照片这类每个位置颜色和浓淡都细微变化的图像。",
+      "detail_en": "More pixels (higher **resolution**) give finer detail, but there are more values to store, so the data grows larger. When the image is enlarged, each pixel stretches and the edges of diagonal lines and curves show stair-step **jaggies**. Raster data suits images like photographs, where color and shading change finely from spot to spot.",
+      "analogy_jp": "小さな色タイルを敷き詰めて描くモザイク画のようなもの。遠くからは絵に見えるが、近づくとタイル1枚1枚の境目が見える。",
+      "analogy_zh": "就像用小块彩色瓷砖拼出来的马赛克画。远看是一幅画，凑近了就能看到每块瓷砖之间的接缝。",
+      "analogy_en": "It is like a mosaic made of small colored tiles. From a distance you see a picture, but up close you can see the seams between each tile.",
+      "hook_jp": "ラスター(raster)の語源はラテン語の「熊手」。熊手で引いたような平行な線がすき間なく並ぶ様子を、画素の行が積み重なる姿に重ねる。",
+      "hook_zh": "raster（光栅）一词源自拉丁语的“耙子”。耙子划出的平行线密密排列的样子，正好对应一行行像素层层叠起的形象。",
+      "hook_en": "The word raster comes from the Latin for rake. Picture the parallel lines a rake leaves, packed side by side, as rows of pixels stacked one on another.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**ラスターデータ**は画素ごとに色と明るさの値を持つので、1画素単位で色を変えて編集できる。",
+          "text_zh": "**光栅数据**[[jp:ラスターデータ]]的每个像素都带有颜色和亮度的值，因此可以以像素为单位改变颜色进行编辑。",
+          "text_en": "**Raster data** [[jp:ラスターデータ]] holds color and brightness values for every pixel, so it can be edited by changing colors one pixel at a time.",
+          "qids": [
+            "2013h25a-q061"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "grid",
+              "label": {
+                "jp": "画像を画素の格子に分ける",
+                "zh": "把图像划分为像素网格",
+                "en": "Divide the image into a pixel grid"
+              }
+            },
+            {
+              "id": "value",
+              "label": {
+                "jp": "画素ごとに色の値を記録",
+                "zh": "为每个像素记录颜色值",
+                "en": "Record a color value per pixel"
+              }
+            },
+            {
+              "id": "zoom",
+              "label": {
+                "jp": "拡大すると輪郭が階段状に",
+                "zh": "放大后轮廓呈锯齿状",
+                "en": "Enlarged, outlines turn jagged"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "画像を細かなマス目に区切り、1マスを1つの画素とする。",
+            "caption_zh": "把图像分成细小的方格，一个方格就是一个像素。",
+            "caption_en": "Split the image into tiny squares, each square being one pixel.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "マス目ごとに色と明るさの値を持たせて画像を表す。",
+            "caption_zh": "每个方格都保存颜色和亮度的值，用来表示图像。",
+            "caption_en": "Give every square its color and brightness values to represent the image.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "大きく表示すると1つの画素がそのまま引き伸ばされ、斜めの線の縁がギザギザに見える。",
+            "caption_zh": "放大显示时每个像素被原样拉伸，斜线的边缘看起来呈锯齿状。",
+            "caption_en": "When shown large, each pixel simply stretches, and the edges of diagonal lines look jagged.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2013h25a-q061",
+        "2016h28a-q078"
+      ],
+      "definition_jp": "ラスターデータは、画像を縦横に並ぶ画素(ピクセル)の格子に分け、画素ごとに色の値を記録して表すデータである。",
+      "definition_zh": "光栅数据ラスターデータ是把图像划分成纵横排列的像素网格，并为每个像素记录颜色值来表示图像的数据。",
+      "definition_en": "Raster data ラスターデータ divides an image into a grid of pixels arranged in rows and columns and records a color value for each pixel.",
+      "explanation_jp": "画素の数(解像度)を多くするほど細かな表現ができるが、記録する値が増えるのでデータ量も大きくなる。拡大表示すると画素が引き伸ばされ、斜めの線や曲線の縁に階段状のギザギザ(ジャギー)が出る。写真のように場所ごとに色や濃淡が細かく変わる画像を表すのに向く。",
+      "explanation_zh": "像素越多（分辨率越高），画面就越精细，但要记录的值也随之增加，数据量变大。放大显示时像素会被拉伸，斜线和曲线的边缘会出现阶梯状的锯齿（锯齿现象）。它适合表示照片这类每个位置颜色和浓淡都细微变化的图像。",
+      "explanation_en": "More pixels (higher resolution) give finer detail, but there are more values to store, so the data grows larger. When the image is enlarged, each pixel stretches and the edges of diagonal lines and curves show stair-step jaggies. Raster data suits images like photographs, where color and shading change finely from spot to spot.",
+      "memory_hook_jp": "ラスター(raster)の語源はラテン語の「熊手」。熊手で引いたような平行な線がすき間なく並ぶ様子を、画素の行が積み重なる姿に重ねる。",
+      "memory_hook_zh": "raster（光栅）一词源自拉丁语的“耙子”。耙子划出的平行线密密排列的样子，正好对应一行行像素层层叠起的形象。",
+      "memory_hook_en": "The word raster comes from the Latin for rake. Picture the parallel lines a rake leaves, packed side by side, as rows of pixels stacked one on another.",
+      "inline_quiz": [
+        "2013h25a-q061",
+        "2016h28a-q078"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ビットマップデータ",
+      "term_zh": "位图数据",
+      "term_en": "Bitmap data",
+      "one_jp": "**ビットマップデータ**は、画素ごとの色を**ビットの並び**として記録した画像データで、**ラスターデータ**とほぼ同じ意味で使われる。",
+      "one_zh": "**位图数据**[[jp:ビットマップデータ]]是把每个像素的颜色记录为**比特序列**的图像数据，与**光栅数据**意思基本相同。",
+      "one_en": "**Bitmap data** [[jp:ビットマップデータ]] is image data that records each pixel's color as a **sequence of bits**, and the term means almost the same as **raster data**.",
+      "detail_jp": "1画素に割り当てるビット数が多いほど表せる色の数が増え、白と黒の2色なら1ビット、約1,677万色のフルカラーなら24ビットになる。**BMP** 形式は、この方式で画像を保存する代表的なファイル形式である。",
+      "detail_zh": "分配给每个像素的比特数越多，能表示的颜色就越多：黑白两色用1比特即可，约1,677万色的全彩则需要24比特。**BMP** 格式是用这种方式保存图像的代表性文件格式。",
+      "detail_en": "The more bits assigned to each pixel, the more colors it can show: black and white need just 1 bit, while full color with about 16.77 million colors needs 24 bits. The **BMP** format is a typical file format that saves images this way.",
+      "analogy_jp": "方眼紙のマスごとに色番号を書き込んだ一覧表のようなもの。表の番号を順に読めば、元の絵を塗り直せる。",
+      "analogy_zh": "就像在方格纸的每个格子里写上颜色编号的一览表。按顺序读出表里的编号，就能把原来的画重新涂出来。",
+      "analogy_en": "It is like a sheet of graph paper with a color number written in each square. Read the numbers in order and you can paint the original picture again.",
+      "hook_jp": "ビット(bit)を画面の位置に対応させて地図(map)のように並べる、という字面のまま覚える。",
+      "hook_zh": "把比特（bit）对应到画面上的位置，像地图（map）一样排列起来，照字面记住即可。",
+      "hook_en": "Remember it literally: bits laid out to match positions on the screen, like a map.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "圧縮しない**ビットマップデータ**の容量は「画素数 × 1画素のビット数」で決まる。1画素のビット数が同じなら、縦と横の画素数をともに2倍にすると容量は4倍になる。",
+          "text_zh": "不压缩时，**位图数据**[[jp:ビットマップデータ]]的容量由“像素数 × 每个像素的比特数”决定。在每个像素比特数不变的情况下，纵向和横向像素数都变为2倍，容量就变为4倍。",
+          "text_en": "Without compression, the size of **bitmap data** [[jp:ビットマップデータ]] is set by pixel count × bits per pixel. With the same bits per pixel, doubling both the width and height in pixels makes the size four times larger.",
+          "qids": [
+            "2016h28a-q078"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**ビットマップデータ**と**ラスターデータ**はどちらも画素の格子で画像を表すデータで、呼び名が違うだけでほぼ同じものを指す。",
+          "text_zh": "**位图数据**[[jp:ビットマップデータ]]和**光栅数据**[[jp:ラスターデータ]]都是用像素网格表示图像的数据，只是叫法不同，指的几乎是同一种东西。",
+          "text_en": "**Bitmap data** [[jp:ビットマップデータ]] and **raster data** [[jp:ラスターデータ]] both represent images as a pixel grid; they differ only in name and refer to nearly the same thing.",
+          "qids": [
+            "2016h28a-q078"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28a-q078",
+        "2013h25a-q061"
+      ],
+      "definition_jp": "ビットマップデータは、画素ごとの色をビットの並びとして記録した画像データで、ラスターデータとほぼ同じ意味で使われる。",
+      "definition_zh": "位图数据ビットマップデータ是把每个像素的颜色记录为比特序列的图像数据，与光栅数据意思基本相同。",
+      "definition_en": "Bitmap data ビットマップデータ is image data that records each pixel's color as a sequence of bits, and the term means almost the same as raster data.",
+      "explanation_jp": "1画素に割り当てるビット数が多いほど表せる色の数が増え、白と黒の2色なら1ビット、約1,677万色のフルカラーなら24ビットになる。BMP 形式は、この方式で画像を保存する代表的なファイル形式である。",
+      "explanation_zh": "分配给每个像素的比特数越多，能表示的颜色就越多：黑白两色用1比特即可，约1,677万色的全彩则需要24比特。BMP 格式是用这种方式保存图像的代表性文件格式。",
+      "explanation_en": "The more bits assigned to each pixel, the more colors it can show: black and white need just 1 bit, while full color with about 16.77 million colors needs 24 bits. The BMP format is a typical file format that saves images this way.",
+      "memory_hook_jp": "ビット(bit)を画面の位置に対応させて地図(map)のように並べる、という字面のまま覚える。",
+      "memory_hook_zh": "把比特（bit）对应到画面上的位置，像地图（map）一样排列起来，照字面记住即可。",
+      "memory_hook_en": "Remember it literally: bits laid out to match positions on the screen, like a map.",
+      "inline_quiz": [
+        "2016h28a-q078",
+        "2013h25a-q061"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ベクターデータ",
+      "term_zh": "矢量数据",
+      "term_en": "Vector data",
+      "one_jp": "**ベクターデータ**は、画像を点の**座標**と、それを結ぶ線や曲線・塗りつぶしといった**図形の情報**で表すデータである。",
+      "one_zh": "**矢量数据**[[jp:ベクターデータ]]是用点的**坐标**，以及连接这些点的线、曲线、填充等**图形信息**来表示图像的数据。",
+      "one_en": "**Vector data** [[jp:ベクターデータ]] represents an image with point **coordinates** and **shape information** such as the lines and curves that connect them and the fills inside them.",
+      "detail_jp": "表示のたびに座標と式から描き直すので、拡大や縮小をしても輪郭がぼやけたりギザギザになったりしない。データ量は画面上の大きさではなく図形の数と複雑さで決まり、ロゴや図面のように単純な図形の組合せなら小さく済む。一方、写真のように1点ごとに色が変わる画像を表すのには向かない。",
+      "detail_zh": "每次显示时都根据坐标和公式重新绘制，所以无论放大还是缩小，轮廓都不会模糊或出现锯齿。数据量不取决于画面上的尺寸，而取决于图形的数量和复杂程度，像标志、图纸这样由简单图形组合而成的图像，数据量就很小。另一方面，它不适合表示照片这类每个点颜色都不同的图像。",
+      "detail_en": "Because it is redrawn from coordinates and formulas every time it is shown, its outlines never blur or turn jagged when scaled up or down. Its size depends not on the on-screen dimensions but on the number and complexity of shapes, so logos and drawings built from simple shapes stay small. On the other hand, it is a poor fit for images like photographs, where the color changes from point to point.",
+      "analogy_jp": "完成した絵ではなく「この点からこの点まで線を引く」という作図の手順書を渡すようなもの。手順どおりに描けば、どんなに大きな紙にもきれいに描ける。",
+      "analogy_zh": "就像不交出画好的成品，而是交出一份“从这个点到那个点画一条线”的作图步骤说明。只要照着步骤画，再大的纸也能画得很漂亮。",
+      "analogy_en": "It is like handing over drawing instructions such as “draw a line from this point to that one,” rather than a finished picture. Follow the steps and you can draw it cleanly on paper of any size.",
+      "hook_jp": "ベクター(vector)は数学の「ベクトル」と同じ語。始点から終点へ向かう矢印で線を引く姿を思い浮かべる。",
+      "hook_zh": "vector（矢量）与数学里的“向量”是同一个词。想象一支从起点指向终点的箭头画出线条的样子。",
+      "hook_en": "Vector is the same word as the math term for a quantity with direction. Picture an arrow running from a start point to an end point to draw a line.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "拡大したときの縁は画像の持ち方で決まる。**ベクターデータ**は式から描き直すのでなめらかなまま、画素で表す**ラスターデータ**は画素が引き伸ばされて階段状になる。",
+          "text_zh": "放大时边缘的效果取决于图像的表示方式。**矢量数据**[[jp:ベクターデータ]]根据公式重新绘制，所以保持平滑；而用像素表示的**光栅数据**[[jp:ラスターデータ]]因像素被拉伸，边缘呈锯齿状。",
+          "text_en": "How edges look when enlarged depends on how the image is stored. **Vector data** [[jp:ベクターデータ]] is redrawn from formulas and stays smooth, while pixel-based **raster data** [[jp:ラスターデータ]] stretches its pixels and its edges turn jagged.",
+          "qids": [
+            "2013h25a-q061"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "record",
+              "label": {
+                "jp": "座標と図形の情報を記録",
+                "zh": "记录坐标和图形信息",
+                "en": "Record coordinates and shape data"
+              }
+            },
+            {
+              "id": "calc",
+              "label": {
+                "jp": "表示の大きさに合わせて計算",
+                "zh": "按显示尺寸进行计算",
+                "en": "Calculate for the display size"
+              }
+            },
+            {
+              "id": "draw",
+              "label": {
+                "jp": "輪郭をなめらかに描く",
+                "zh": "平滑地绘制轮廓",
+                "en": "Draw smooth outlines"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "円なら中心の座標と半径、線なら両端の座標というように、図形を数値で記録する。",
+            "caption_zh": "例如圆记录圆心坐标和半径，线记录两端的坐标，用数值来记录图形。",
+            "caption_en": "Shapes are stored as numbers, such as a circle's center and radius or a line's two end points.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "表示するときに、画面の大きさに合わせて座標を計算し直す。",
+            "caption_zh": "显示时，按照画面的大小重新计算坐标。",
+            "caption_en": "At display time, the coordinates are recalculated to fit the screen size.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "計算した結果から毎回描くので、大きくしても縁はなめらかに描かれる。",
+            "caption_zh": "每次都根据计算结果来绘制，所以即使放大，边缘也画得很平滑。",
+            "caption_en": "Since it is drawn from the results every time, the edges stay smooth even when enlarged.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2013h25a-q061"
+      ],
+      "definition_jp": "ベクターデータは、画像を点の座標と、それを結ぶ線や曲線・塗りつぶしといった図形の情報で表すデータである。",
+      "definition_zh": "矢量数据ベクターデータ是用点的坐标，以及连接这些点的线、曲线、填充等图形信息来表示图像的数据。",
+      "definition_en": "Vector data ベクターデータ represents an image with point coordinates and shape information such as the lines and curves that connect them and the fills inside them.",
+      "explanation_jp": "表示のたびに座標と式から描き直すので、拡大や縮小をしても輪郭がぼやけたりギザギザになったりしない。データ量は画面上の大きさではなく図形の数と複雑さで決まり、ロゴや図面のように単純な図形の組合せなら小さく済む。一方、写真のように1点ごとに色が変わる画像を表すのには向かない。",
+      "explanation_zh": "每次显示时都根据坐标和公式重新绘制，所以无论放大还是缩小，轮廓都不会模糊或出现锯齿。数据量不取决于画面上的尺寸，而取决于图形的数量和复杂程度，像标志、图纸这样由简单图形组合而成的图像，数据量就很小。另一方面，它不适合表示照片这类每个点颜色都不同的图像。",
+      "explanation_en": "Because it is redrawn from coordinates and formulas every time it is shown, its outlines never blur or turn jagged when scaled up or down. Its size depends not on the on-screen dimensions but on the number and complexity of shapes, so logos and drawings built from simple shapes stay small. On the other hand, it is a poor fit for images like photographs, where the color changes from point to point.",
+      "memory_hook_jp": "ベクター(vector)は数学の「ベクトル」と同じ語。始点から終点へ向かう矢印で線を引く姿を思い浮かべる。",
+      "memory_hook_zh": "vector（矢量）与数学里的“向量”是同一个词。想象一支从起点指向终点的箭头画出线条的样子。",
+      "memory_hook_en": "Vector is the same word as the math term for a quantity with direction. Picture an arrow running from a start point to an end point to draw a line.",
       "inline_quiz": [
         "2013h25a-q061"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD\n  A[\"静止画の表現方式\"] --> B[\"ラスター/ビットマップ\"]\n  A --> C[\"ベクター\"]\n  B --> D[\"画素の集合で表す\"]\n  B --> E[\"拡大で劣化・容量大\"]\n  C --> F[\"図形を数式で表す\"]\n  C --> G[\"拡大しても劣化しない\"]",
-        "svg_path": "figures/technology-20-52-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "矢量数据",
-      "term_en": "Vector data",
-      "definition_zh": "用坐标和数学式来表示点、线、面等图形,从而再现图像的方式。",
-      "definition_en": "A method that represents shapes such as points, lines, and surfaces with coordinates and mathematical formulas to reproduce an image.",
-      "explanation_zh": "矢量数据不是用像素,而是用「连接起点与终点的直线」「半径为多少的圆」这类图形的数学式与坐标来表示图像的方式。与光栅/位图的对比是最重要的要点。\n\n考试会考查的优点是:因为是从数学式重新绘制,所以放大或缩小都不会使画质劣化,数据量也较小。不过它不擅长表现像照片那样复杂的浓淡,适合图形、徽标、文字轮廓等。",
-      "explanation_en": "Vector data represents an image not with pixels but with mathematical formulas and coordinates of shapes, such as \"a straight line connecting a start point and an end point\" or \"a circle of a certain radius.\" The contrast with raster / bitmap is the most important point.\n\nExams test the advantage that, because the image is redrawn from the formulas, the quality does not degrade when enlarged or reduced, and the data size is also smaller. However, it is not good at expressing complex shading like a photograph, and is suited to shapes, logos, and the outlines of text.",
-      "analogy_zh": "就像手里拿着一份「以中心为起点画一个这么长半径的圆」的指示书。因为是按指示重新绘制,所以无论怎么放大都能得到平滑的线条。",
-      "analogy_en": "Like keeping an instruction sheet that says \"draw a circle of this radius from the center.\" Because it is redrawn exactly as instructed, you get smooth lines no matter how much you enlarge it.",
-      "memory_hook_zh": "说到矢量数据,就是用数学式表示图形、放大也不劣化",
-      "memory_hook_en": "Vector data → shapes expressed by formulas, no degradation when enlarged"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "ラスターデータ",
+      "b": "ベクターデータ",
+      "rows": [
+        {
+          "label_jp": "画像の持ち方",
+          "label_zh": "图像的表示方式",
+          "label_en": "How the image is stored",
+          "a_jp": "画素ごとの色の値",
+          "a_zh": "每个像素的颜色值",
+          "a_en": "A color value per pixel",
+          "b_jp": "座標と図形を描く式",
+          "b_zh": "坐标和描绘图形的公式",
+          "b_en": "Coordinates and formulas that draw shapes",
+          "key": true
+        },
+        {
+          "label_jp": "拡大したとき",
+          "label_zh": "放大时",
+          "label_en": "When enlarged",
+          "a_jp": "画素が引き伸ばされ縁が階段状になる",
+          "a_zh": "像素被拉伸，边缘呈锯齿状",
+          "a_en": "Pixels stretch and edges turn jagged",
+          "b_jp": "描き直すので縁はなめらか",
+          "b_zh": "重新绘制，边缘保持平滑",
+          "b_en": "Redrawn, so edges stay smooth",
+          "key": false
+        },
+        {
+          "label_jp": "データ量を左右するもの",
+          "label_zh": "决定数据量的因素",
+          "label_en": "What sets the data size",
+          "a_jp": "画素数と1画素のビット数",
+          "a_zh": "像素数和每个像素的比特数",
+          "a_en": "Pixel count and bits per pixel",
+          "b_jp": "図形の数と複雑さ",
+          "b_zh": "图形的数量和复杂程度",
+          "b_en": "Number and complexity of shapes",
+          "key": false
+        },
+        {
+          "label_jp": "向く画像",
+          "label_zh": "适合的图像",
+          "label_en": "Suited images",
+          "a_jp": "写真など濃淡が細かく変わる画像",
+          "a_zh": "照片等浓淡细微变化的图像",
+          "a_en": "Photos and other finely shaded images",
+          "b_jp": "ロゴ・図面など図形の組合せ",
+          "b_zh": "标志、图纸等图形组合",
+          "b_en": "Logos, drawings and other shape combinations",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**ラスターデータ**は画素の格子で画像を表し、解像度を上げるほど細かくなる代わりにデータ量も増える。",
+    "**ビットマップデータ**はラスターデータとほぼ同じ意味で、圧縮しない場合の容量は画素数に1画素のビット数を掛けて求める。",
+    "1画素のビット数で表せる色の数が決まり、白黒2色なら1ビットで足りる。",
+    "**ベクターデータ**は座標と図形の情報を持ち、表示のたびに描き直すため大きさを変えても輪郭が崩れない。"
+  ],
+  "key_points_zh": [
+    "**光栅数据**用像素网格表示图像，分辨率越高越精细，但数据量也随之增加。",
+    "**位图数据**与光栅数据意思基本相同，不压缩时的容量用像素数乘以每个像素的比特数求得。",
+    "每个像素的比特数决定能表示的颜色数，黑白两色用1比特就够了。",
+    "**矢量数据**保存坐标和图形信息，每次显示都重新绘制，因此改变大小轮廓也不会走样。"
+  ],
+  "key_points_en": [
+    "**Raster data** shows an image as a pixel grid; higher resolution gives finer detail but also more data.",
+    "**Bitmap data** means almost the same as raster data, and its uncompressed size is the pixel count multiplied by the bits per pixel.",
+    "The bits per pixel decide how many colors can be shown, and 1 bit is enough for black and white.",
+    "**Vector data** holds coordinates and shape information and is redrawn each time it is shown, so its outlines hold up at any size."
+  ],
+  "overview": {
+    "intro_jp": "ラスターデータが画素の格子と画素ごとの色の値で画像を表すことを説明できる。ビットマップデータのデータ量を、画素数と1画素あたりのビット数から求められる。ベクターデータとラスターデータを、拡大したときの見え方と向く画像で見分けられる。",
+    "intro_zh": "能够说明光栅数据是用像素网格和每个像素的颜色值来表示图像的。能够根据像素数和每个像素的比特数，算出位图数据的数据量。能够从放大后的显示效果和适合的图像类型，区分矢量数据与光栅数据。",
+    "intro_en": "Explain that raster data represents an image as a grid of pixels, each holding a color value. Calculate the size of bitmap data from the number of pixels and the bits per pixel. Tell vector data apart from raster data by how each looks when enlarged and which images each suits.",
+    "freq_badge": "低頻",
+    "est_minutes": 20
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ラスターデータ: ラスターデータといえば画素の集合で表す画像",
-      "ビットマップデータ: ビットマップデータといえばラスターデータの別名",
-      "ベクターデータ: ベクターデータといえば図形を数式で表し拡大しても劣化しない"
-    ],
     "key_points_jp": [
-      "静止画の表現方式は大きく、画素の集合で表すラスター方式と、図形を数式で表すベクター方式の二つに分かれる。",
-      "ラスターデータとビットマップデータはほぼ同義で、写真など複雑な画像に向くが、拡大すると画質が劣化しデータ量も大きくなる。",
-      "ベクターデータは拡大・縮小しても画質が劣化せずデータ量も小さいが、写真のような複雑な濃淡表現は苦手で、図形やロゴに向く。",
-      "この表現方式の違いが、次に学ぶ JPEG・PNG・BMP などの具体的なファイル形式の前提となる。"
+      "ラスターデータは画素の格子で画像を表し、解像度を上げるほど細かくなる代わりにデータ量も増える。",
+      "ビットマップデータはラスターデータとほぼ同じ意味で、圧縮しない場合の容量は画素数に1画素のビット数を掛けて求める。",
+      "1画素のビット数で表せる色の数が決まり、白黒2色なら1ビットで足りる。",
+      "ベクターデータは座標と図形の情報を持ち、表示のたびに描き直すため大きさを変えても輪郭が崩れない。"
     ],
     "key_points_zh": [
-      "静态图像的表示方式大致分为两种:用像素集合表示的光栅方式,以及用数学式表示图形的矢量方式。",
-      "光栅数据与位图数据几乎同义,适合照片等复杂图像,但放大时画质会劣化、数据量也会变大。",
-      "矢量数据在放大、缩小时画质都不会劣化、数据量也小,但不擅长表现像照片那样复杂的浓淡,适合图形和徽标。",
-      "这种表示方式上的差异,是接下来要学习的 JPEG、PNG、BMP 等具体文件格式的前提。"
+      "光栅数据用像素网格表示图像，分辨率越高越精细，但数据量也随之增加。",
+      "位图数据与光栅数据意思基本相同，不压缩时的容量用像素数乘以每个像素的比特数求得。",
+      "每个像素的比特数决定能表示的颜色数，黑白两色用1比特就够了。",
+      "矢量数据保存坐标和图形信息，每次显示都重新绘制，因此改变大小轮廓也不会走样。"
     ],
     "key_points_en": [
-      "Methods for representing still images are broadly divided into two: the raster method that represents images with a collection of pixels, and the vector method that represents shapes with mathematical formulas.",
-      "Raster data and bitmap data are almost synonymous; they are suited to complex images such as photographs, but when enlarged the image quality degrades and the data size also grows.",
-      "Vector data does not degrade in quality when enlarged or reduced and has a small data size, but it is not good at expressing complex shading like a photograph, and is suited to shapes and logos.",
-      "This difference in representation methods is the premise for the specific file formats such as JPEG, PNG, and BMP that you will study next."
+      "Raster data shows an image as a pixel grid; higher resolution gives finer detail but also more data.",
+      "Bitmap data means almost the same as raster data, and its uncompressed size is the pixel count multiplied by the bits per pixel.",
+      "The bits per pixel decide how many colors can be shown, and 1 bit is enough for black and white.",
+      "Vector data holds coordinates and shape information and is redrawn each time it is shown, so its outlines hold up at any size."
+    ],
+    "memory_hooks_jp": [
+      "ラスターデータ: ラスター(raster)の語源はラテン語の「熊手」。熊手で引いたような平行な線がすき間なく並ぶ様子を、画素の行が積み重なる姿に重ねる。",
+      "ビットマップデータ: ビット(bit)を画面の位置に対応させて地図(map)のように並べる、という字面のまま覚える。",
+      "ベクターデータ: ベクター(vector)は数学の「ベクトル」と同じ語。始点から終点へ向かう矢印で線を引く姿を思い浮かべる。"
     ],
     "memory_hooks_zh": [
-      "光栅数据: 说到光栅数据,就是用像素的集合来表示的图像",
-      "位图数据: 说到位图数据,就是光栅数据的别名",
-      "矢量数据: 说到矢量数据,就是用数学式表示图形、放大也不劣化"
+      "光栅数据：raster（光栅）一词源自拉丁语的“耙子”。耙子划出的平行线密密排列的样子，正好对应一行行像素层层叠起的形象。",
+      "位图数据：把比特（bit）对应到画面上的位置，像地图（map）一样排列起来，照字面记住即可。",
+      "矢量数据：vector（矢量）与数学里的“向量”是同一个词。想象一支从起点指向终点的箭头画出线条的样子。"
     ],
     "memory_hooks_en": [
-      "Raster data: Raster data → an image represented by a collection of pixels",
-      "Bitmap data: Bitmap data → another name for raster data",
-      "Vector data: Vector data → shapes expressed by formulas, no degradation when enlarged"
+      "Raster data: The word raster comes from the Latin for rake. Picture the parallel lines a rake leaves, packed side by side, as rows of pixels stacked one on another.",
+      "Bitmap data: Remember it literally: bits laid out to match positions on the screen, like a map.",
+      "Vector data: Vector is the same word as the math term for a quantity with direction. Picture an arrow running from a start point to an end point to draw a line."
     ]
   },
   "challenge_questions": [
-    "2010h22a-q085",
-    "2012h24a-q094",
-    "2012h24h-q064",
-    "2013h25h-q079",
-    "2015h27a-q046"
+    "2013h25a-q061",
+    "2016h28a-q078",
+    "2010h22a-q085"
   ],
   "source_figures": [
     {
@@ -152,9 +506,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "静态图像的数据表示方式",
-  "title_en": "Data Representation Methods for Still Images",
-  "unit_summary_zh": "理解如何表示静态图像的根本方式(光栅/位图/矢量)。",
-  "unit_summary_en": "Understand the fundamental ways of representing still images (raster / bitmap / vector)."
+  }
 }

@@ -74,8 +74,8 @@
 | b65 | technology-21-57 | トランザクション処理 | u01 u02 | 24 | 9 | done |
 | b66 | strategy-05-17 | IoTシステム・組込みシステム | u01 u02 u03 u04 | 22 | 26 | done |
 | b67 | strategy-06-20 | ソリューションビジネス | u01 u02 u03 | 21 | 16 | done |
-| b68 | technology-20-52 | マルチメディア技術 (1/2) | u01 u02 u03 u04 u05 | 20 | 30 | todo |
-| b69 | technology-20-52 | マルチメディア技術 (2/2) | u06 | 20 | 6 | todo |
+| b68 | technology-20-52 | マルチメディア技術 (1/2) | u01 u02 u03 u04 u05 | 20 | 30 | done |
+| b69 | technology-20-52 | マルチメディア技術 (2/2) | u06 | 20 | 6 | done |
 | b70 | technology-17-45 | オペレーティングシステム | u01 u02 | 18 | 12 | done |
 | b71 | technology-19-51 | インタフェース設計 | u01 u02 u03 u04 | 17 | 28 | todo |
 | b72 | strategy-06-21 | システム活用促進・評価 | u01 | 14 | 8 | todo |

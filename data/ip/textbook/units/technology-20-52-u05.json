@@ -1,237 +1,907 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-20-52-u05",
   "topic_id": "technology-20-52",
   "category": "technology",
   "title_jp": "動画の仕組みとファイル形式",
+  "title_zh": "视频的原理与文件格式",
+  "title_en": "How Video Works and Its File Formats",
   "unit_summary_jp": "動画を構成するフレーム概念と、代表的な映像符号化方式・コンテナ形式を理解する。",
+  "unit_summary_zh": "理解构成视频的帧概念，以及代表性的视频编码方式与容器格式。",
+  "unit_summary_en": "Understand the concept of frames that make up video, along with the major video encoding methods and container formats.",
   "order_in_topic": 5,
   "prerequisites": [
     "technology-20-52-u04"
   ],
-  "overview": {
-    "intro_jp": "動画(動画像)の仕組みとファイル形式を学ぶ単元です。動画が静止画(フレーム)を時間方向に連ねたものであることを起点に、フレームレートという基本概念、MPEG・H.264・H.265といった映像符号化(圧縮)方式、そしてAVI・MP4といったコンテナ形式までを扱います。出題頻度は低めですが、『圧縮方式』と『入れ物(コンテナ)』を混同しない区別が得点の鍵です。",
-    "freq_badge": "低頻",
-    "est_minutes": 21,
-    "intro_zh": "本单元学习视频（动态图像）的原理与文件格式。我们从“视频是把静止图像（帧）沿时间方向连接起来”这一点出发，依次讲解帧率这一基本概念、MPEG/H.264/H.265 等视频编码（压缩）方式，以及 AVI/MP4 等容器格式。该主题出题频率较低，但能否区分“压缩方式”与“容器（盛放容器）”不混淆，是得分的关键。",
-    "intro_en": "This unit covers how video (moving images) works and its file formats. Starting from the idea that video is a series of still images (frames) joined along the time axis, it walks through the basic concept of frame rate, the video encoding (compression) methods such as MPEG, H.264, and H.265, and finally container formats like AVI and MP4. Although this topic appears infrequently on the exam, the key to scoring is not confusing the 'compression method' with the 'container'."
-  },
-  "terms": [
+  "goals_jp": [
+    "動画が **フレーム** の連続でできていることと、**フレームレート** が表す量を説明できる。",
+    "**MPEG** の規格群と、その中の映像の符号化規格 H.264・H.265 の世代の違いを説明できる。",
+    "AVI や MP4 が、圧縮済みの映像と音声を 1 つのファイルに収める **コンテナ形式** に当たることを説明できる。"
+  ],
+  "goals_zh": [
+    "能说明视频由一连串 **帧** 组成，以及 **帧率** 表示的是什么量。",
+    "能说明 **MPEG** 这一系列标准，以及其中的视频编码标准 H.264 与 H.265 在世代上的区别。",
+    "能说明 AVI 和 MP4 属于 **容器格式**，用来把压缩好的视频和音频装进同一个文件。"
+  ],
+  "goals_en": [
+    "Explain that video is a sequence of **frames**, and what quantity the **frame rate** measures.",
+    "Explain the **MPEG** family of standards and the generational difference between H.264 and H.265, the video coding standards within it.",
+    "Explain that AVI and MP4 are **container formats** that hold compressed video and audio in a single file."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "覚える手がかり"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "记忆线索"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "Memory cue"
+  ],
+  "overview_rows": [
     {
       "term": "フレーム",
-      "definition_jp": "動画を構成する1枚1枚の静止画。動画の最小単位。",
-      "explanation_jp": "フレームとは、動画を構成している1枚ずつの静止画(コマ)のことです。動画は、わずかに異なる静止画を高速で次々に切り替えて表示することで、人の目に動いているように見せています。\n\nつまり動画は「パラパラ漫画」と同じ原理で、1枚の絵がフレームにあたります。試験では、動画が静止画の連続で成り立っていること、その1枚をフレームと呼ぶことが基礎知識として問われます。次に学ぶフレームレートやフレーム間の差分を利用した圧縮を理解する前提となる、最も基本的な用語です。",
-      "analogy_jp": "パラパラ漫画の1ページ1枚が「フレーム」。そのページを高速でめくると絵が動いて見えるのと同じで、動画もフレームを次々に切り替えて動きを表します。",
-      "memory_hook_jp": "フレームといえば動画を構成する1枚の静止画(コマ)",
-      "inline_quiz": [
-        "2009h21h-q078"
+      "one_line_jp": "動画を形づくる 1 コマ分の静止画",
+      "one_line_zh": "构成视频的一格静止图像",
+      "one_line_en": "A single still image that makes up a video",
+      "extra_jp": [
+        "構成概念",
+        "パラパラ漫画の 1 ページ"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "帧",
-      "term_en": "Frame",
-      "definition_zh": "构成视频的每一张静止图像。是视频的最小单位。",
-      "definition_en": "Each individual still image that makes up a video. The smallest unit of video.",
-      "explanation_zh": "帧指的是构成视频的一张张静止图像（画面）。视频通过把略有差异的静止图像高速地一张接一张切换显示，让人眼看上去像是在动。\n\n也就是说，视频和“手翻动画（翻页动画）”是同样的原理，其中一张画就相当于一帧。考试中会作为基础知识考查：视频由连续的静止图像构成，其中的一张称为帧。这是在学习接下来的帧率，以及利用帧间差分进行压缩之前的前提，是最基本的术语。",
-      "explanation_en": "A frame is each individual still image (picture) that makes up a video. Video switches between slightly different still images at high speed, one after another, so that the human eye perceives motion.\n\nIn other words, video works on the same principle as a 'flip-book,' where each single drawing corresponds to one frame. On the exam, the basic knowledge tested is that video consists of a series of still images, and that each single image is called a frame. This is the most fundamental term, serving as the prerequisite for understanding the frame rate you will learn next and compression that uses the differences between frames.",
-      "analogy_zh": "手翻动画里的一页一张画就是“帧”。高速翻动这些页面时画面看上去就动了起来，视频也是同样地把一帧帧依次切换来表现动作。",
-      "analogy_en": "One page, one drawing in a flip-book is a 'frame.' Just as flipping those pages quickly makes the pictures appear to move, video switches through frames one after another to show motion.",
-      "memory_hook_zh": "说到帧，就是构成视频的一张静止图像（画面）",
-      "memory_hook_en": "Frame → one still image (picture) that makes up a video"
+      "extra_zh": [
+        "构成概念",
+        "翻页动画里的一页"
+      ],
+      "extra_en": [
+        "Building block",
+        "One page of a flip book"
+      ]
     },
     {
       "term": "フレームレート",
-      "definition_jp": "1秒間に表示するフレーム数。単位はfps(frames per second)。",
-      "explanation_jp": "フレームレートは、動画で1秒間に表示する(切り替える)フレームの枚数を表す値で、単位はfps(frames per second)です。例えば30fpsなら1秒間に30枚の静止画を表示します。\n\nフレームレートが高いほど動きが滑らかになりますが、その分1秒あたりの画像枚数が増えるためデータ量も大きくなります。試験では『fps=1秒あたりのフレーム数』という意味と、値が大きいほど滑らかでデータ量も増えるという関係が問われます。解像度(画素数)とは別物である点も区別しておきましょう。",
-      "analogy_jp": "パラパラ漫画を1秒間に何ページめくるか、がフレームレート。たくさんめくる(高fps)ほど動きは滑らかになりますが、その分ページ数=データ量も増えます。",
-      "memory_hook_jp": "フレームレートといえば1秒間のフレーム数(fps)、高いほど滑らか",
-      "inline_quiz": [
-        "2010h22a-q085"
+      "one_line_jp": "1 秒間に表示するフレームの枚数",
+      "one_line_zh": "每秒显示的帧数",
+      "one_line_en": "The number of frames shown per second",
+      "extra_jp": [
+        "構成概念",
+        "単位は fps"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "帧率",
-      "term_en": "Frame rate",
-      "definition_zh": "每秒显示的帧数。单位是 fps（frames per second）。",
-      "definition_en": "The number of frames displayed per second. The unit is fps (frames per second).",
-      "explanation_zh": "帧率表示视频每秒显示（切换）的帧的数量，单位是 fps（frames per second）。例如 30fps 就是每秒显示 30 张静止图像。\n\n帧率越高，动作越流畅，但相应地每秒的图像张数增多，数据量也会变大。考试中会考查“fps＝每秒的帧数”这一含义，以及数值越大越流畅、数据量也越大这种关系。还要注意，帧率与分辨率（像素数）是两回事。",
-      "explanation_en": "Frame rate is the value that represents the number of frames a video displays (switches through) per second, measured in fps (frames per second). For example, 30 fps means 30 still images are displayed per second.\n\nThe higher the frame rate, the smoother the motion, but because the number of images per second increases accordingly, the data size also grows. The exam tests the meaning of 'fps = number of frames per second' and the relationship that a higher value means smoother motion and a larger data size. Keep in mind, too, that frame rate is a separate matter from resolution (the number of pixels).",
-      "analogy_zh": "每秒翻多少页手翻动画，就是帧率。翻得越多（高 fps）动作越流畅，但相应地页数＝数据量也会增加。",
-      "analogy_en": "How many pages of a flip-book you flip per second is the frame rate. The more you flip (higher fps), the smoother the motion, but the page count—that is, the data size—increases as well.",
-      "memory_hook_zh": "说到帧率，就是每秒的帧数（fps），越高越流畅",
-      "memory_hook_en": "Frame rate → frames per second (fps); higher means smoother"
+      "extra_zh": [
+        "构成概念",
+        "单位是 fps"
+      ],
+      "extra_en": [
+        "Building block",
+        "Measured in fps"
+      ]
     },
     {
       "term": "MPEG",
-      "definition_jp": "動画・音声を圧縮する代表的な符号化方式(規格群)の総称。",
-      "explanation_jp": "MPEG(エムペグ)は、動画と音声を効率よく圧縮するために定められた符号化方式の規格群の総称です。Moving Picture Experts Groupという標準化団体の名前に由来します。\n\nMPEGは、フレーム間でほとんど変化しない部分は繰り返し送らず、変化した差分だけを記録するなどして、動画の大きなデータ量を大幅に圧縮します。試験では、MPEGが『動画(と音声)の圧縮(符号化)方式の総称』であること、用途別にMPEG-1/2/4などの規格があることが問われます。次のH.264・H.265はこのMPEG系統の具体的な規格です。",
-      "analogy_jp": "MPEGは「動画を小さくまとめる圧縮ルールの大きな家系」。同じような風景が続く部分は毎回描き直さず、変わった所だけメモして荷物(データ)を軽くするイメージです。",
-      "memory_hook_jp": "MPEGといえば動画・音声を圧縮する符号化方式の総称",
+      "one_line_jp": "映像や音声の圧縮方式を中心とした規格群の総称",
+      "one_line_zh": "以视频、音频压缩方式为核心的一系列标准的总称",
+      "one_line_en": "The umbrella name for a family of standards centered on video and audio compression",
+      "extra_jp": [
+        "規格群",
+        "M は Moving"
+      ],
+      "extra_zh": [
+        "标准系列",
+        "M 代表 Moving"
+      ],
+      "extra_en": [
+        "Family of standards",
+        "M stands for Moving"
+      ]
+    },
+    {
+      "term": "H.264",
+      "one_line_jp": "長く広く使われてきた映像の符号化規格",
+      "one_line_zh": "长期以来被广泛使用的视频编码标准",
+      "one_line_en": "A video coding standard that has long been widely used",
+      "extra_jp": [
+        "符号化方式",
+        "別名 MPEG-4 AVC"
+      ],
+      "extra_zh": [
+        "编码方式",
+        "别名 MPEG-4 AVC"
+      ],
+      "extra_en": [
+        "Coding method",
+        "Also called MPEG-4 AVC"
+      ]
+    },
+    {
+      "term": "H.265",
+      "one_line_jp": "H.264 の後継で圧縮効率が高い規格",
+      "one_line_zh": "H.264 的后继标准，压缩效率更高",
+      "one_line_en": "The successor to H.264, with higher compression efficiency",
+      "extra_jp": [
+        "符号化方式",
+        "別名 HEVC"
+      ],
+      "extra_zh": [
+        "编码方式",
+        "别名 HEVC"
+      ],
+      "extra_en": [
+        "Coding method",
+        "Also called HEVC"
+      ]
+    },
+    {
+      "term": "AVI",
+      "one_line_jp": "映像と音声を 1 ファイルにまとめる入れ物の形式",
+      "one_line_zh": "把视频和音频装进一个文件的“容器”格式",
+      "one_line_en": "A \"container\" format that puts video and audio into one file",
+      "extra_jp": [
+        "コンテナ形式",
+        "拡張子 .avi"
+      ],
+      "extra_zh": [
+        "容器格式",
+        "扩展名 .avi"
+      ],
+      "extra_en": [
+        "Container format",
+        "Extension .avi"
+      ]
+    },
+    {
+      "term": "MP4",
+      "one_line_jp": "MPEG-4 の中で定められた汎用の入れ物の形式",
+      "one_line_zh": "在 MPEG-4 中定义的通用“容器”格式",
+      "one_line_en": "A general-purpose \"container\" format defined within MPEG-4",
+      "extra_jp": [
+        "コンテナ形式",
+        "拡張子 .mp4"
+      ],
+      "extra_zh": [
+        "容器格式",
+        "扩展名 .mp4"
+      ],
+      "extra_en": [
+        "Container format",
+        "Extension .mp4"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "フレーム",
+      "term_zh": "帧",
+      "term_en": "Frame",
+      "one_jp": "**フレーム** とは、動画を形づくる 1 コマ分の **静止画** である。",
+      "one_zh": "**帧**（[[jp:フレーム]]）是构成视频的一格 **静止图像**（[[jp:静止画]]）。",
+      "one_en": "A **frame** ([[jp:フレーム]]) is a single **still image** ([[jp:静止画]]) that makes up a video.",
+      "detail_jp": "動画は、少しずつ違うフレームを短い間隔で次々に切り替えて表示し、人の目に動いているように見せている。映画のフィルムに並ぶ 1 コマも 1 フレームに当たる。時間あたりの枚数や、隣り合うコマの違いを使う圧縮も、このフレームを単位にして考える。",
+      "detail_zh": "视频把内容略有差异的帧以很短的间隔依次切换显示，让人眼觉得画面在动。电影胶片上排列的每一格，也各相当于 1 帧。按单位时间计算张数，或利用相邻画面差异进行压缩时，都以帧为单位来考虑。",
+      "detail_en": "A video switches through frames that differ only slightly, at short intervals, so the eye sees motion. Each picture lined up on a strip of movie film is also one frame. Counting pictures per unit of time, or compressing by using the differences between neighboring pictures, both treat the frame as the basic unit.",
+      "analogy_jp": "パラパラ漫画の 1 ページに描かれた絵がフレームで、ページを素早くめくる動きが動画の再生に当たる。",
+      "analogy_zh": "翻页动画每一页上画的图就是帧，快速翻页的动作就相当于播放视频。",
+      "analogy_en": "Each drawing on a page of a flip book is a frame, and flipping the pages quickly is like playing the video.",
+      "hook_jp": "英語の frame の元の意味は「枠」。1 つの枠に収まった 1 枚の絵、と字面で覚える。",
+      "hook_zh": "英语 frame 的本义是“框”。可以按字面记成：装在一个框里的一张画。",
+      "hook_en": "Think of a picture frame: one frame holds exactly one picture.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "フレームは前後のコマと続けて表示されることで動きを表す 1 枚であり、単独で眺める静止画の画像ファイルとは使われ方が違う。",
+          "text_zh": "帧（[[jp:フレーム]]）要和前后画面连续显示才能表现动作，这与单独欣赏的静止图像文件用法不同。",
+          "text_en": "A frame ([[jp:フレーム]]) shows motion only when it is displayed in sequence with the pictures before and after it, which is a different use from a still image file viewed on its own."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "フレーム とは、動画を形づくる 1 コマ分の 静止画 である。",
+      "definition_zh": "帧（フレーム）是构成视频的一格 静止图像（静止画）。",
+      "definition_en": "A frame (フレーム) is a single still image (静止画) that makes up a video.",
+      "explanation_jp": "動画は、少しずつ違うフレームを短い間隔で次々に切り替えて表示し、人の目に動いているように見せている。映画のフィルムに並ぶ 1 コマも 1 フレームに当たる。時間あたりの枚数や、隣り合うコマの違いを使う圧縮も、このフレームを単位にして考える。",
+      "explanation_zh": "视频把内容略有差异的帧以很短的间隔依次切换显示，让人眼觉得画面在动。电影胶片上排列的每一格，也各相当于 1 帧。按单位时间计算张数，或利用相邻画面差异进行压缩时，都以帧为单位来考虑。",
+      "explanation_en": "A video switches through frames that differ only slightly, at short intervals, so the eye sees motion. Each picture lined up on a strip of movie film is also one frame. Counting pictures per unit of time, or compressing by using the differences between neighboring pictures, both treat the frame as the basic unit.",
+      "memory_hook_jp": "英語の frame の元の意味は「枠」。1 つの枠に収まった 1 枚の絵、と字面で覚える。",
+      "memory_hook_zh": "英语 frame 的本义是“框”。可以按字面记成：装在一个框里的一张画。",
+      "memory_hook_en": "Think of a picture frame: one frame holds exactly one picture.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "フレームレート",
+      "term_zh": "帧率",
+      "term_en": "Frame rate",
+      "one_jp": "**フレームレート** は、動画が 1 秒間に表示するフレームの枚数で、単位は **fps** (frames per second) である。",
+      "one_zh": "**帧率**（[[jp:フレームレート]]）是视频每秒显示的帧数，单位是 **fps**（frames per second）。",
+      "one_en": "The **frame rate** ([[jp:フレームレート]]) is the number of frames a video shows per second, measured in **fps** (frames per second).",
+      "detail_jp": "例えば 30 fps なら、1 秒間に 30 枚のフレームが約 0.033 秒ずつ切り替わる。値を大きくするほど動きは滑らかになるが、圧縮する前のデータ量は「1 フレームのデータ量 × フレームレート × 秒数」で増えていく。",
+      "detail_zh": "以 30 fps 为例，每秒有 30 帧，每帧约 0.033 秒切换一次。数值越大，动作越流畅，但压缩前的数据量会按“1 帧的数据量 × 帧率 × 秒数”增加。",
+      "detail_en": "At 30 fps, for example, 30 frames go by each second, one about every 0.033 seconds. A higher value gives smoother motion, but the data size before compression grows as \"data per frame × frame rate × seconds.\"",
+      "analogy_jp": "パラパラ漫画を 1 秒に何ページめくるかに当たる。めくる枚数を増やせば動きは滑らかになるが、描くページも増える。",
+      "analogy_zh": "相当于翻页动画 1 秒翻几页。翻得越多动作越流畅，但要画的页数也越多。",
+      "analogy_en": "It is how many pages of a flip book you turn in one second. Turn more pages and the motion gets smoother, but you also have more pages to draw.",
+      "hook_jp": "fps の f は frame、ps は per second (毎秒)。単位の綴りが「1 秒あたりのフレーム」を表している。",
+      "hook_zh": "fps 的 f 是 frame，ps 是 per second（每秒）。单位的拼写本身就表示“每秒的帧数”。",
+      "hook_en": "In fps, the f is frame and ps is per second. The unit itself spells out \"frames per second.\"",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**フレーム** は 1 枚の静止画そのもの、**フレームレート** はその枚数を 1 秒あたりで数えた値である。",
+          "text_zh": "**帧**（[[jp:フレーム]]）指的是一张静止图像本身，**帧率**（[[jp:フレームレート]]）则是按每秒计算的张数。",
+          "text_en": "A **frame** ([[jp:フレーム]]) is the still image itself, while the **frame rate** ([[jp:フレームレート]]) is how many of them are counted per second."
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**解像度** は 1 フレームの画素の数で画面の細かさを表し、フレームレートは時間方向の細かさを表す。どちらを上げても圧縮前のデータ量は増える。",
+          "text_zh": "**分辨率**（[[jp:解像度]]）用 1 帧的像素数表示画面的精细程度，帧率表示的是时间方向上的精细程度。两者无论提高哪一个，压缩前的数据量都会增加。",
+          "text_en": "**Resolution** ([[jp:解像度]]) is the number of pixels in one frame and describes how fine the picture is, while the frame rate describes how fine the video is over time. Raising either one increases the data size before compression."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "フレームレート",
+              "zh": "帧率",
+              "en": "Frame rate"
+            },
+            {
+              "jp": "1 枚を表示する時間",
+              "zh": "每张显示时间",
+              "en": "Time per frame"
+            },
+            {
+              "jp": "10 秒間の枚数",
+              "zh": "10 秒内的张数",
+              "en": "Frames in 10 seconds"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "15 fps",
+                  "zh": "15 fps",
+                  "en": "15 fps"
+                },
+                {
+                  "jp": "約 0.067 秒",
+                  "zh": "约 0.067 秒",
+                  "en": "About 0.067 s"
+                },
+                {
+                  "jp": "150 枚",
+                  "zh": "150 张",
+                  "en": "150"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "30 fps",
+                  "zh": "30 fps",
+                  "en": "30 fps"
+                },
+                {
+                  "jp": "約 0.033 秒",
+                  "zh": "约 0.033 秒",
+                  "en": "About 0.033 s"
+                },
+                {
+                  "jp": "300 枚",
+                  "zh": "300 张",
+                  "en": "300"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "60 fps",
+                  "zh": "60 fps",
+                  "en": "60 fps"
+                },
+                {
+                  "jp": "約 0.017 秒",
+                  "zh": "约 0.017 秒",
+                  "en": "About 0.017 s"
+                },
+                {
+                  "jp": "600 枚",
+                  "zh": "600 张",
+                  "en": "600"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "フレームレート は、動画が 1 秒間に表示するフレームの枚数で、単位は fps (frames per second) である。",
+      "definition_zh": "帧率（フレームレート）是视频每秒显示的帧数，单位是 fps（frames per second）。",
+      "definition_en": "The frame rate (フレームレート) is the number of frames a video shows per second, measured in fps (frames per second).",
+      "explanation_jp": "例えば 30 fps なら、1 秒間に 30 枚のフレームが約 0.033 秒ずつ切り替わる。値を大きくするほど動きは滑らかになるが、圧縮する前のデータ量は「1 フレームのデータ量 × フレームレート × 秒数」で増えていく。",
+      "explanation_zh": "以 30 fps 为例，每秒有 30 帧，每帧约 0.033 秒切换一次。数值越大，动作越流畅，但压缩前的数据量会按“1 帧的数据量 × 帧率 × 秒数”增加。",
+      "explanation_en": "At 30 fps, for example, 30 frames go by each second, one about every 0.033 seconds. A higher value gives smoother motion, but the data size before compression grows as \"data per frame × frame rate × seconds.\"",
+      "memory_hook_jp": "fps の f は frame、ps は per second (毎秒)。単位の綴りが「1 秒あたりのフレーム」を表している。",
+      "memory_hook_zh": "fps 的 f 是 frame，ps 是 per second（每秒）。单位的拼写本身就表示“每秒的帧数”。",
+      "memory_hook_en": "In fps, the f is frame and ps is per second. The unit itself spells out \"frames per second.\"",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "MPEG",
+      "term_zh": "MPEG",
+      "term_en": "MPEG",
+      "one_jp": "**MPEG** (エムペグ) は、映像や音声のデータを圧縮する方式を中心とした規格群の総称である。",
+      "one_zh": "**MPEG** 是以压缩视频和音频数据的方式为核心的一系列标准的总称。",
+      "one_en": "**MPEG** is the umbrella name for a family of standards centered on methods for compressing video and audio data.",
+      "detail_jp": "隣り合うフレームはよく似ているため、MPEG の映像の圧縮では、基準のフレーム以外は前後との違いだけを記録してデータ量を大きく減らす。用途ごとに番号の付いた規格 (例えば DVD やデジタル放送で使われる MPEG-2) があり、MPEG-4 のように、圧縮したデータを収めるファイルの形式まで定めている規格もある。音声だけの規格も含まれ、例えば MP3 は MPEG-1 の音声の規格から生まれた形式である。",
+      "detail_zh": "相邻的帧往往非常相似，所以 MPEG 的视频压缩除基准帧外只记录与前后帧的差异，从而大幅减少数据量。它按用途分出带编号的各个标准（例如用于 DVD 和数字电视广播的 MPEG-2），也有像 MPEG-4 这样连存放压缩数据的文件格式都一并规定的标准。其中也包括只针对音频的标准，例如 MP3 就是由 MPEG-1 的音频标准而来的格式。",
+      "detail_en": "Neighboring frames tend to look very much alike, so MPEG video compression stores only the differences from nearby frames for everything except reference frames, which cuts the data size sharply. The family has numbered standards for different uses, such as MPEG-2 for DVDs and digital broadcasting, and some, like MPEG-4, even define the file format that holds the compressed data. The family also includes audio-only standards; MP3, for example, comes from the audio part of MPEG-1.",
+      "analogy_jp": "背景が同じ連続写真を人に伝えるとき、毎回全部を描き直さず「前の写真から人物が少し右へ動いた」とだけ伝えるやり方に近い。",
+      "analogy_zh": "就像向别人描述一组背景相同的连拍照片时，不必每次都从头画起，只说“和上一张相比，人往右挪了一点”。",
+      "analogy_en": "It is like describing a series of photos with the same background: instead of redrawing everything each time, you just say \"the person moved a little to the right since the last one.\"",
+      "hook_jp": "MPEG は規格を作った専門家の組織 Moving Picture Experts Group の頭文字で、Moving Picture は「動く絵」、つまり動画を指す。",
+      "hook_zh": "MPEG 是制定这些标准的专家组织 Moving Picture Experts Group 的首字母缩写，Moving Picture 意为“会动的画”，也就是视频。",
+      "hook_en": "MPEG comes from the Moving Picture Experts Group, the body of experts that wrote the standards. A \"moving picture\" is simply video.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**MPEG** は、映像の圧縮方式と音声の圧縮方式の両方を含む規格群の名前である。",
+          "text_zh": "**MPEG** 是一系列标准的名称，既包括视频压缩方式，也包括音频压缩方式。",
+          "text_en": "**MPEG** is the name of a family of standards that covers both video compression and audio compression methods.",
+          "qids": [
+            "2013h25h-q079"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "base",
+              "label": {
+                "jp": "基準のフレームを単独で圧縮して記録",
+                "zh": "基准帧单独压缩后记录",
+                "en": "Compress and store a reference frame on its own"
+              }
+            },
+            {
+              "id": "diff",
+              "label": {
+                "jp": "前後のフレームとの違いを求める",
+                "zh": "求出与前后帧的差异",
+                "en": "Find the differences from nearby frames"
+              }
+            },
+            {
+              "id": "keep",
+              "label": {
+                "jp": "違いの部分だけを記録",
+                "zh": "只记录有差异的部分",
+                "en": "Store only the parts that differ"
+              }
+            },
+            {
+              "id": "play",
+              "label": {
+                "jp": "再生時に基準と違いから復元",
+                "zh": "播放时由基准和差异还原",
+                "en": "Rebuild from the reference and differences on playback"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "まず基準になる 1 枚は、その画像だけで元に戻せる形で記録する。",
+            "caption_zh": "先把作为基准的 1 张图，以单凭它自己就能还原的形式记录下来。",
+            "caption_en": "First, the reference picture is stored in a form that can be restored from that picture alone.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "続くフレームは、前後のフレームと比べてどこが変わったかを調べる。",
+            "caption_zh": "后续的帧要与前后帧比较，找出哪些地方发生了变化。",
+            "caption_en": "Each following frame is compared with the frames around it to find what changed.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "変わらない背景などは記録せず、変わった部分だけを残してデータ量を減らす。",
+            "caption_zh": "不变的背景等不再记录，只保留变化的部分，以减少数据量。",
+            "caption_en": "Unchanged areas such as the background are not stored again; only the changed parts are kept, which cuts the data size.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "再生する側は、基準の 1 枚に違いを足し合わせて各フレームを組み立て直す。",
+            "caption_zh": "播放端在基准图上叠加差异，重新组装出每一帧。",
+            "caption_en": "The player adds the differences to the reference picture to rebuild each frame.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2013h25h-q079"
+      ],
+      "definition_jp": "MPEG (エムペグ) は、映像や音声のデータを圧縮する方式を中心とした規格群の総称である。",
+      "definition_zh": "MPEG 是以压缩视频和音频数据的方式为核心的一系列标准的总称。",
+      "definition_en": "MPEG is the umbrella name for a family of standards centered on methods for compressing video and audio data.",
+      "explanation_jp": "隣り合うフレームはよく似ているため、MPEG の映像の圧縮では、基準のフレーム以外は前後との違いだけを記録してデータ量を大きく減らす。用途ごとに番号の付いた規格 (例えば DVD やデジタル放送で使われる MPEG-2) があり、MPEG-4 のように、圧縮したデータを収めるファイルの形式まで定めている規格もある。音声だけの規格も含まれ、例えば MP3 は MPEG-1 の音声の規格から生まれた形式である。",
+      "explanation_zh": "相邻的帧往往非常相似，所以 MPEG 的视频压缩除基准帧外只记录与前后帧的差异，从而大幅减少数据量。它按用途分出带编号的各个标准（例如用于 DVD 和数字电视广播的 MPEG-2），也有像 MPEG-4 这样连存放压缩数据的文件格式都一并规定的标准。其中也包括只针对音频的标准，例如 MP3 就是由 MPEG-1 的音频标准而来的格式。",
+      "explanation_en": "Neighboring frames tend to look very much alike, so MPEG video compression stores only the differences from nearby frames for everything except reference frames, which cuts the data size sharply. The family has numbered standards for different uses, such as MPEG-2 for DVDs and digital broadcasting, and some, like MPEG-4, even define the file format that holds the compressed data. The family also includes audio-only standards; MP3, for example, comes from the audio part of MPEG-1.",
+      "memory_hook_jp": "MPEG は規格を作った専門家の組織 Moving Picture Experts Group の頭文字で、Moving Picture は「動く絵」、つまり動画を指す。",
+      "memory_hook_zh": "MPEG 是制定这些标准的专家组织 Moving Picture Experts Group 的首字母缩写，Moving Picture 意为“会动的画”，也就是视频。",
+      "memory_hook_en": "MPEG comes from the Moving Picture Experts Group, the body of experts that wrote the standards. A \"moving picture\" is simply video.",
       "inline_quiz": [
         "2013h25h-q079"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "MPEG",
-      "term_en": "MPEG",
-      "definition_zh": "压缩视频和音频的代表性编码方式（标准系列）的总称。",
-      "definition_en": "A general term for the major encoding methods (a family of standards) that compress video and audio.",
-      "explanation_zh": "MPEG（读作“恩派格”）是为高效压缩视频和音频而制定的编码方式标准系列的总称，名字源自标准化组织 Moving Picture Experts Group。\n\nMPEG 对帧之间几乎没有变化的部分不重复发送，只记录发生变化的差分等，从而将视频庞大的数据量大幅压缩。考试中会考查：MPEG 是“视频（及音频）压缩（编码）方式的总称”，并且按用途有 MPEG-1/2/4 等不同标准。接下来要讲的 H.264、H.265 就是这一 MPEG 系列中具体的标准。",
-      "explanation_en": "MPEG is a general term for the family of encoding-method standards established to efficiently compress video and audio, named after the standardization body Moving Picture Experts Group.\n\nMPEG greatly compresses the large data size of video by, for example, not repeatedly sending the parts that barely change between frames and recording only the changed differences. The exam tests that MPEG is a 'general term for video (and audio) compression (encoding) methods' and that there are standards such as MPEG-1/2/4 for different purposes. The H.264 and H.265 coming up next are specific standards within this MPEG family.",
-      "analogy_zh": "MPEG 是“把视频压小的压缩规则的大家族”。对连续出现的相似画面不每次重画，只把变化的地方记下来，从而让行李（数据）变轻。",
-      "analogy_en": "MPEG is 'a big family of compression rules that shrink video.' For stretches where the scenery stays similar, it doesn't redraw everything each time—it just notes what changed, making the luggage (data) lighter.",
-      "memory_hook_zh": "说到 MPEG，就是压缩视频与音频的编码方式的总称",
-      "memory_hook_en": "MPEG → general term for encoding methods that compress video and audio"
+      "figure": null
     },
     {
       "term": "H.264",
-      "definition_jp": "MPEG系の高い圧縮率で広く普及した映像符号化規格。MPEG-4 AVCとも呼ぶ。",
-      "explanation_jp": "H.264は、MPEG系統の映像符号化規格の一つで、MPEG-4 AVCとも呼ばれます。従来方式より高い圧縮率と画質を両立し、地上デジタル放送・ブルーレイ・インターネット動画配信など幅広い場面で長く標準的に使われてきました。\n\n試験では、H.264がMPEG系の代表的な映像圧縮規格であること、高画質を保ちながらデータ量を抑えられる点が問われます。次に学ぶH.265は、このH.264をさらに改良した後継規格にあたります。規格名(H.264)とコンテナ形式(MP4など)は別の概念である点に注意しましょう。",
-      "analogy_jp": "H.264は「広く普及した定番の圧縮の名人」。多くの動画配信やブルーレイで採用され、きれいなまま荷物を小さくまとめてくれる、長年の定番選手というイメージです。",
-      "memory_hook_jp": "H.264といえばMPEG系の定番映像符号化規格(MPEG-4 AVC)",
-      "inline_quiz": [
-        "2012h24a-q094"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "H.264",
       "term_en": "H.264",
-      "definition_zh": "MPEG 系列中以高压缩率而广泛普及的视频编码标准。也称为 MPEG-4 AVC。",
-      "definition_en": "A widely adopted video encoding standard in the MPEG family with a high compression ratio. Also called MPEG-4 AVC.",
-      "explanation_zh": "H.264 是 MPEG 系列的视频编码标准之一，也称为 MPEG-4 AVC。它兼顾了比传统方式更高的压缩率与画质，长期以来在地面数字广播、蓝光、互联网视频分发等广泛场景中作为标准被普遍使用。\n\n考试中会考查：H.264 是 MPEG 系列的代表性视频压缩标准，以及它能在保持高画质的同时压低数据量这一点。接下来要学的 H.265 就是在 H.264 基础上进一步改进的后继标准。要注意标准名称（H.264）和容器格式（如 MP4）是不同的概念。",
-      "explanation_en": "H.264 is one of the video encoding standards in the MPEG family, also called MPEG-4 AVC. It achieves both a higher compression ratio and better image quality than earlier methods, and has long been used as a standard in a wide range of settings such as terrestrial digital broadcasting, Blu-ray, and internet video streaming.\n\nThe exam tests that H.264 is a representative video compression standard of the MPEG family and that it can keep data size down while maintaining high image quality. The H.265 you will learn next is the successor standard that further improves on this H.264. Note that the standard name (H.264) and a container format (such as MP4) are separate concepts.",
-      "analogy_zh": "H.264 是“广泛普及的经典压缩高手”。它被许多视频分发服务和蓝光采用，能在保持清晰的同时把行李打包得很小，是一位多年来的常青选手。",
-      "analogy_en": "H.264 is 'the widely adopted, classic master of compression.' Used in many video streaming services and Blu-ray, it packs the luggage small while keeping things crisp—a long-running standby player.",
-      "memory_hook_zh": "说到 H.264，就是 MPEG 系列的经典视频编码标准（MPEG-4 AVC）",
-      "memory_hook_en": "H.264 → the classic MPEG-family video encoding standard (MPEG-4 AVC)"
+      "one_jp": "**H.264** は、通信の国際標準化機関である ITU-T と MPEG が共同で定めた映像の符号化規格で、**MPEG-4 AVC** とも呼ばれる。",
+      "one_zh": "**H.264** 是由负责通信国际标准化的机构 ITU-T 与 MPEG 联合制定的视频编码标准，也称为 **MPEG-4 AVC**。",
+      "one_en": "**H.264** is a video coding standard developed jointly by ITU-T, the international standards body for telecommunications, and MPEG, and is also called **MPEG-4 AVC**.",
+      "detail_jp": "それ以前の MPEG-2 と比べて、同じ画質をおよそ半分のデータ量で表せるとされる。ブルーレイディスクやインターネットの動画配信、ワンセグ放送などで長く使われてきた。H. で始まる名前は ITU-T の勧告の番号で、MPEG の側では同じ規格を MPEG-4 の一部として AVC と呼ぶ。",
+      "detail_zh": "与之前的 MPEG-2 相比，一般认为它只需约一半的数据量就能表现相同画质。蓝光光盘、在线视频以及日本的手机电视广播（One Seg）等长期都在使用它。以 H. 开头的名称是 ITU-T 建议书的编号，而在 MPEG 一方，同一标准作为 MPEG-4 的一部分被称为 AVC。",
+      "detail_en": "Compared with the earlier MPEG-2, it is said to reach the same picture quality with roughly half the data. It has long been used for Blu-ray discs, online video streaming, and Japan's One Seg mobile TV broadcasts. The \"H.\" name is an ITU-T recommendation number, while on the MPEG side the same standard is called AVC as part of MPEG-4.",
+      "analogy_jp": "荷物を小さく畳むための、広く知られた標準の畳み方に当たる。多くの機器やサービスがこの畳み方を知っているので、畳んだ荷物を元に広げられる。",
+      "analogy_zh": "相当于一种广为人知的、把行李叠小的标准叠法。很多设备和服务都懂这种叠法，所以叠好的行李能被重新展开。",
+      "analogy_en": "It is like a well-known, standard way of folding luggage small. Many devices and services know this folding method, so they can unfold what was packed.",
+      "hook_jp": "AVC は Advanced Video Coding の頭文字で、「高度な映像の符号化」という意味になる。",
+      "hook_zh": "AVC 是 Advanced Video Coding 的首字母缩写，意思是“高级视频编码”。",
+      "hook_en": "AVC stands for Advanced Video Coding.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**H.264** は ITU-T の勧告としての番号、**MPEG-4 AVC** は MPEG の規格の中での名前で、指している規格は同じである。",
+          "text_zh": "**H.264** 是作为 ITU-T 建议书的编号，**MPEG-4 AVC** 是在 MPEG 标准中的名称，两者指的是同一个标准。",
+          "text_en": "**H.264** is its number as an ITU-T recommendation and **MPEG-4 AVC** is its name within the MPEG standards; both refer to the same standard."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "H.264 は、通信の国際標準化機関である ITU-T と MPEG が共同で定めた映像の符号化規格で、MPEG-4 AVC とも呼ばれる。",
+      "definition_zh": "H.264 是由负责通信国际标准化的机构 ITU-T 与 MPEG 联合制定的视频编码标准，也称为 MPEG-4 AVC。",
+      "definition_en": "H.264 is a video coding standard developed jointly by ITU-T, the international standards body for telecommunications, and MPEG, and is also called MPEG-4 AVC.",
+      "explanation_jp": "それ以前の MPEG-2 と比べて、同じ画質をおよそ半分のデータ量で表せるとされる。ブルーレイディスクやインターネットの動画配信、ワンセグ放送などで長く使われてきた。H. で始まる名前は ITU-T の勧告の番号で、MPEG の側では同じ規格を MPEG-4 の一部として AVC と呼ぶ。",
+      "explanation_zh": "与之前的 MPEG-2 相比，一般认为它只需约一半的数据量就能表现相同画质。蓝光光盘、在线视频以及日本的手机电视广播（One Seg）等长期都在使用它。以 H. 开头的名称是 ITU-T 建议书的编号，而在 MPEG 一方，同一标准作为 MPEG-4 的一部分被称为 AVC。",
+      "explanation_en": "Compared with the earlier MPEG-2, it is said to reach the same picture quality with roughly half the data. It has long been used for Blu-ray discs, online video streaming, and Japan's One Seg mobile TV broadcasts. The \"H.\" name is an ITU-T recommendation number, while on the MPEG side the same standard is called AVC as part of MPEG-4.",
+      "memory_hook_jp": "AVC は Advanced Video Coding の頭文字で、「高度な映像の符号化」という意味になる。",
+      "memory_hook_zh": "AVC 是 Advanced Video Coding 的首字母缩写，意思是“高级视频编码”。",
+      "memory_hook_en": "AVC stands for Advanced Video Coding.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "H.265",
-      "definition_jp": "H.264の後継で、より高い圧縮効率をもつ映像符号化規格。HEVCとも呼ぶ。",
-      "explanation_jp": "H.265は、H.264の後継となる映像符号化規格で、HEVC(High Efficiency Video Coding)とも呼ばれます。同じ画質なら、H.264よりおおよそ半分程度のデータ量に抑えられるとされ、4K・8Kなど高解像度動画の配信に適しています。\n\n試験では、H.265がH.264の後継・上位の高効率規格であること、より少ないデータ量で高画質を実現できる点が問われます。H.264との世代関係(264→265)を押さえておくと選択肢の区別がしやすくなります。符号化方式の世代が新しいほど、一般に圧縮効率が高くなる傾向があります。",
-      "analogy_jp": "H.265は「定番(H.264)を更新した新世代の圧縮名人」。同じ見た目の動画を、より小さい荷物にまとめられるので、4K・8Kのような大きな映像を運ぶのに向いています。",
-      "memory_hook_jp": "H.265といえばH.264の後継・高効率な映像符号化規格(HEVC)",
-      "inline_quiz": [
-        "2012h24a-q095"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "H.265",
       "term_en": "H.265",
-      "definition_zh": "H.264 的后继，具有更高压缩效率的视频编码标准。也称为 HEVC。",
-      "definition_en": "The successor to H.264, a video encoding standard with higher compression efficiency. Also called HEVC.",
-      "explanation_zh": "H.265 是 H.264 的后继视频编码标准，也称为 HEVC（High Efficiency Video Coding）。据称在画质相同的情况下，它能把数据量压低到 H.264 的大约一半，适合 4K、8K 等高分辨率视频的分发。\n\n考试中会考查：H.265 是 H.264 的后继、更高一级的高效率标准，以及它能用更少的数据量实现高画质这一点。记住它与 H.264 的世代关系（264→265），有助于区分选项。一般来说，编码方式的世代越新，压缩效率往往越高。",
-      "explanation_en": "H.265 is the successor video encoding standard to H.264, also called HEVC (High Efficiency Video Coding). It is said to keep data size to roughly half that of H.264 at the same image quality, making it well suited for streaming high-resolution video such as 4K and 8K.\n\nThe exam tests that H.265 is the successor to and a higher grade than H.264 as a high-efficiency standard, and that it can achieve high image quality with less data. Keeping the generational relationship with H.264 in mind (264 → 265) makes it easier to tell the options apart. In general, the newer the generation of an encoding method, the higher its compression efficiency tends to be.",
-      "analogy_zh": "H.265 是“升级了经典款（H.264）的新一代压缩高手”。它能把外观相同的视频打包成更小的行李，因此适合搬运 4K、8K 这样的大型影像。",
-      "analogy_en": "H.265 is 'the new-generation master of compression that upgraded the classic (H.264).' It can pack video that looks the same into smaller luggage, so it's well suited for carrying large footage like 4K and 8K.",
-      "memory_hook_zh": "说到 H.265，就是 H.264 的后继、高效率视频编码标准（HEVC）",
-      "memory_hook_en": "H.265 → the successor to H.264, a high-efficiency video encoding standard (HEVC)"
+      "one_jp": "**H.265** は、H.264 の後継となる映像の符号化規格で、**HEVC** (High Efficiency Video Coding) とも呼ばれる。",
+      "one_zh": "**H.265** 是 H.264 的后继视频编码标准，也称为 **HEVC**（High Efficiency Video Coding）。",
+      "one_en": "**H.265** is the video coding standard that succeeds H.264, also called **HEVC** (High Efficiency Video Coding).",
+      "detail_jp": "同じ画質なら H.264 のおよそ半分のデータ量で済むとされ、その分、圧縮や再生 (伸長) のための計算は重くなる。データ量の大きい 4K や 8K の高解像度映像の放送や配信に使われている。",
+      "detail_zh": "一般认为在相同画质下，它只需 H.264 约一半的数据量，代价是压缩和播放（解压缩）所需的计算更重。它被用于数据量很大的 4K、8K 高分辨率视频的广播和分发。",
+      "detail_en": "At the same picture quality it is said to need only about half the data of H.264, at the cost of heavier computation for compression and playback (decompression). It is used to broadcast and stream 4K and 8K high-resolution video, which carries a lot of data.",
+      "analogy_jp": "同じ荷物を、手間をかけてさらに小さく畳む新しい畳み方に当たる。",
+      "analogy_zh": "相当于一种更费功夫、能把同样的行李叠得更小的新叠法。",
+      "analogy_en": "It is a newer folding method that takes more effort but packs the same luggage even smaller.",
+      "hook_jp": "HEVC の HE は High Efficiency (高効率) の頭文字。",
+      "hook_zh": "HEVC 的 HE 是 High Efficiency（高效率）的首字母。",
+      "hook_en": "The HE in HEVC stands for High Efficiency.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**H.265** と **HEVC** は、同じ規格を指す 2 つの呼び名である。",
+          "text_zh": "**H.265** 和 **HEVC** 是同一标准的两个名称。",
+          "text_en": "**H.265** and **HEVC** are two names for the same standard."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "H.265 は、H.264 の後継となる映像の符号化規格で、HEVC (High Efficiency Video Coding) とも呼ばれる。",
+      "definition_zh": "H.265 是 H.264 的后继视频编码标准，也称为 HEVC（High Efficiency Video Coding）。",
+      "definition_en": "H.265 is the video coding standard that succeeds H.264, also called HEVC (High Efficiency Video Coding).",
+      "explanation_jp": "同じ画質なら H.264 のおよそ半分のデータ量で済むとされ、その分、圧縮や再生 (伸長) のための計算は重くなる。データ量の大きい 4K や 8K の高解像度映像の放送や配信に使われている。",
+      "explanation_zh": "一般认为在相同画质下，它只需 H.264 约一半的数据量，代价是压缩和播放（解压缩）所需的计算更重。它被用于数据量很大的 4K、8K 高分辨率视频的广播和分发。",
+      "explanation_en": "At the same picture quality it is said to need only about half the data of H.264, at the cost of heavier computation for compression and playback (decompression). It is used to broadcast and stream 4K and 8K high-resolution video, which carries a lot of data.",
+      "memory_hook_jp": "HEVC の HE は High Efficiency (高効率) の頭文字。",
+      "memory_hook_zh": "HEVC 的 HE 是 High Efficiency（高效率）的首字母。",
+      "memory_hook_en": "The HE in HEVC stands for High Efficiency.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "AVI",
-      "definition_jp": "映像と音声を1つにまとめて格納する動画コンテナ形式の一つ。",
-      "explanation_jp": "AVI(Audio Video Interleave)は、映像データと音声データを1つのファイルにまとめて格納する動画コンテナ形式の一つで、主にWindows環境で古くから用いられてきました。\n\nここで重要なのは、AVIのようなコンテナ形式は『入れ物(箱)』であり、中身を圧縮するMPEGやH.264などの符号化方式とは役割が異なるという点です。試験では、AVIが圧縮方式ではなくファイル形式(コンテナ)であること、符号化方式と入れ物を区別する観点が問われます。コンテナの中に、どの符号化方式で圧縮した映像・音声を入れるかが組み合わされます。",
-      "analogy_jp": "AVIは映像と音声を一緒に詰める「お弁当箱」。中のおかず(映像・音声)をどう調理して小さくするか(圧縮方式)は別の話で、箱はあくまで入れ物の役割です。",
-      "memory_hook_jp": "AVIといえば映像と音声をまとめる動画コンテナ(入れ物)形式",
+      "term_zh": "AVI",
+      "term_en": "AVI",
+      "one_jp": "**AVI** は、映像と音声を 1 つのファイルにまとめて格納する **コンテナ形式** の 1 つで、拡張子は .avi である。",
+      "one_zh": "**AVI** 是一种把视频和音频合在一个文件里存放的 **容器格式**（[[jp:コンテナ形式]]），扩展名是 .avi。",
+      "one_en": "**AVI** is a **container format** ([[jp:コンテナ形式]]) that stores video and audio together in one file, with the extension .avi.",
+      "detail_jp": "コンテナ形式とは、圧縮済みの映像や音声のデータを収めて 1 本の動画ファイルにするための、入れ物の決まりである。AVI は Microsoft が Windows 向けに定めた古くからある形式で、中に入れる映像の符号化方式は 1 つに決まっていない。",
+      "detail_zh": "容器格式规定了如何把压缩好的视频和音频数据装在一起，做成一个视频文件。AVI 是 Microsoft 为 Windows 制定的老牌格式，里面装的视频用哪种编码方式并不固定。",
+      "detail_en": "A container format is a set of rules for a \"container\" that holds already compressed video and audio data as a single video file. AVI is a long-standing format that Microsoft created for Windows, and it does not fix which coding method the video inside must use.",
+      "analogy_jp": "引っ越しの段ボール箱に当たる。箱の決まりと、中に入れる荷物の畳み方は別々に選べる。",
+      "analogy_zh": "相当于搬家用的纸箱。箱子的规格和箱内行李的叠法可以分别选择。",
+      "analogy_en": "It is like a moving box. You can choose the box and the way you fold the things inside separately.",
+      "hook_jp": "Audio Video Interleave の interleave は「交互に差し込む」。映像と音声を少しずつ交互に並べて収める作りが、そのまま名前になっている。",
+      "hook_zh": "Audio Video Interleave 中的 interleave 意为“交错插入”。把视频和音频一小段一小段交替排列存放的结构，直接成了它的名字。",
+      "hook_en": "In Audio Video Interleave, \"interleave\" means to slot things in alternately. The way it stores video and audio in small alternating chunks gave the format its name.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "拡張子 .avi が付くのは動画のファイルで、映像を中心に、音声も合わせて収められる。",
+          "text_zh": "带扩展名 .avi 的是视频文件，以视频为主，也可以一并存放音频。",
+          "text_en": "A file with the .avi extension is a video file; it centers on video and can hold audio along with it.",
+          "qids": [
+            "2016h28h-q097"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2016h28h-q097"
+      ],
+      "definition_jp": "AVI は、映像と音声を 1 つのファイルにまとめて格納する コンテナ形式 の 1 つで、拡張子は .avi である。",
+      "definition_zh": "AVI 是一种把视频和音频合在一个文件里存放的 容器格式（コンテナ形式），扩展名是 .avi。",
+      "definition_en": "AVI is a container format (コンテナ形式) that stores video and audio together in one file, with the extension .avi.",
+      "explanation_jp": "コンテナ形式とは、圧縮済みの映像や音声のデータを収めて 1 本の動画ファイルにするための、入れ物の決まりである。AVI は Microsoft が Windows 向けに定めた古くからある形式で、中に入れる映像の符号化方式は 1 つに決まっていない。",
+      "explanation_zh": "容器格式规定了如何把压缩好的视频和音频数据装在一起，做成一个视频文件。AVI 是 Microsoft 为 Windows 制定的老牌格式，里面装的视频用哪种编码方式并不固定。",
+      "explanation_en": "A container format is a set of rules for a \"container\" that holds already compressed video and audio data as a single video file. AVI is a long-standing format that Microsoft created for Windows, and it does not fix which coding method the video inside must use.",
+      "memory_hook_jp": "Audio Video Interleave の interleave は「交互に差し込む」。映像と音声を少しずつ交互に並べて収める作りが、そのまま名前になっている。",
+      "memory_hook_zh": "Audio Video Interleave 中的 interleave 意为“交错插入”。把视频和音频一小段一小段交替排列存放的结构，直接成了它的名字。",
+      "memory_hook_en": "In Audio Video Interleave, \"interleave\" means to slot things in alternately. The way it stores video and audio in small alternating chunks gave the format its name.",
       "inline_quiz": [
         "2016h28h-q097"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "AVI",
-      "term_en": "AVI",
-      "definition_zh": "将视频与音频合并存放在一起的视频容器格式之一。",
-      "definition_en": "One of the video container formats that stores video and audio together in a single file.",
-      "explanation_zh": "AVI（Audio Video Interleave）是把视频数据与音频数据合并存放在一个文件中的视频容器格式之一，很早以来主要用于 Windows 环境。\n\n这里重要的是：像 AVI 这样的容器格式是“盛放容器（盒子）”，与压缩其内容的 MPEG、H.264 等编码方式在职能上是不同的。考试中会考查：AVI 不是压缩方式，而是文件格式（容器），以及区分编码方式与盛放容器的视角。在容器之中，会组合放入用哪种编码方式压缩过的视频与音频。",
-      "explanation_en": "AVI (Audio Video Interleave) is one of the video container formats that stores video data and audio data together in a single file, and it has long been used mainly in the Windows environment.\n\nThe important point here is that a container format like AVI is a 'holder (box),' and its role differs from encoding methods such as MPEG or H.264 that compress the contents. The exam tests that AVI is not a compression method but a file format (container), and the perspective of distinguishing an encoding method from a holder. Inside the container, the choice of which encoding method was used to compress the stored video and audio is combined.",
-      "analogy_zh": "AVI 是把视频和音频一起装进去的“便当盒”。盒里的菜（视频、音频）如何烹调、如何变小（压缩方式）是另一回事，盒子始终只起盛放容器的作用。",
-      "analogy_en": "AVI is a 'lunchbox' that packs video and audio together. How the food inside (video and audio) is cooked and made smaller (the compression method) is a separate matter; the box only plays the role of a holder.",
-      "memory_hook_zh": "说到 AVI，就是把视频和音频归集起来的视频容器（盛放容器）格式",
-      "memory_hook_en": "AVI → a video container (holder) format that bundles video and audio together"
+      "figure": null
     },
     {
       "term": "MP4",
-      "definition_jp": "現在広く普及している、汎用的な動画コンテナ形式。",
-      "explanation_jp": "MP4(MPEG-4 Part 14)は、映像・音声・字幕などをまとめて格納できる動画コンテナ形式で、現在もっとも広く使われている汎用形式の一つです。拡張子は「.mp4」です。\n\nMP4はAVIと同じく『入れ物(コンテナ)』であり、その中身としてH.264やH.265などの符号化方式で圧縮された映像を格納するのが一般的です。試験では、MP4が幅広い機器・サービスで標準的に使われるコンテナ形式であること、AVIと同様に圧縮方式ではなくファイル形式である点が問われます。符号化方式(H.264など)とコンテナ形式(MP4など)の組み合わせを意識しましょう。",
-      "analogy_jp": "MP4はスマホでも配信でも使える「いまの定番のお弁当箱」。中身(映像)はH.264やH.265で小さく調理して詰め、どこへ持って行っても開けやすい、汎用的な入れ物です。",
-      "memory_hook_jp": "MP4といえば現在主流の汎用動画コンテナ形式",
-      "inline_quiz": [
-        "2012h24a-q096"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"フレーム(静止画)\"] --> B[\"フレームレートで連続表示\"]; B --> C[\"符号化方式で圧縮\"]; C --> D[\"MPEG/H.264/H.265\"]; D --> E[\"コンテナ形式に格納\"]; E --> F[\"AVI/MP4\"]",
-        "svg_path": "figures/technology-20-52-u05-t01.svg",
-        "rendered": true
-      },
       "term_zh": "MP4",
       "term_en": "MP4",
-      "definition_zh": "当前广泛普及的通用视频容器格式。",
-      "definition_en": "A general-purpose video container format that is widely used today.",
-      "explanation_zh": "MP4（MPEG-4 Part 14）是能把视频、音频、字幕等归集存放的视频容器格式，是目前使用最广泛的通用格式之一，扩展名为“.mp4”。\n\nMP4 与 AVI 一样都是“盛放容器（容器）”，其内容通常存放用 H.264、H.265 等编码方式压缩过的视频。考试中会考查：MP4 是在广泛的设备与服务中作为标准使用的容器格式，以及它和 AVI 一样不是压缩方式而是文件格式这一点。要有意识地把编码方式（如 H.264）与容器格式（如 MP4）的组合区分开来。",
-      "explanation_en": "MP4 (MPEG-4 Part 14) is a video container format that can store video, audio, subtitles, and more together, and is one of the most widely used general-purpose formats today. Its file extension is '.mp4.'\n\nLike AVI, MP4 is a 'holder (container),' and its contents typically store video compressed with encoding methods such as H.264 or H.265. The exam tests that MP4 is a container format used as a standard across a wide range of devices and services, and that, like AVI, it is a file format rather than a compression method. Be conscious of the combination of an encoding method (such as H.264) and a container format (such as MP4).",
-      "analogy_zh": "MP4 是手机和分发都能用的“当今主流便当盒”。里面的内容（视频）用 H.264 或 H.265 烹调变小后装入，无论带到哪里都容易打开，是一种通用的盛放容器。",
-      "analogy_en": "MP4 is 'today's standard lunchbox' usable on smartphones and for streaming alike. The contents (video) are cooked smaller with H.264 or H.265 and packed inside, and it opens easily wherever you take it—a general-purpose holder.",
-      "memory_hook_zh": "说到 MP4，就是当前主流的通用视频容器格式",
-      "memory_hook_en": "MP4 → today's mainstream, general-purpose video container format"
+      "one_jp": "**MP4** は、MPEG-4 規格の一部 (Part 14) として定められた **コンテナ形式** で、拡張子は .mp4 である。",
+      "one_zh": "**MP4** 是作为 MPEG-4 标准的一部分（Part 14）定义的 **容器格式**（[[jp:コンテナ形式]]），扩展名是 .mp4。",
+      "one_en": "**MP4** is a **container format** ([[jp:コンテナ形式]]) defined as part of the MPEG-4 standard (Part 14), with the extension .mp4.",
+      "detail_jp": "映像と音声に加えて字幕などのデータも 1 つのファイルに入れられ、中の映像は H.264 や H.265 で圧縮されていることが多い。パソコンだけでなくスマートフォンや動画配信サービスでも扱え、現在もっとも普及した動画の形式の 1 つである。",
+      "detail_zh": "除了视频和音频，字幕等数据也能放进同一个文件，里面的视频多用 H.264 或 H.265 压缩。它不仅能在电脑上使用，也能在智能手机和在线视频服务中处理，是目前最普及的视频格式之一。",
+      "detail_en": "Besides video and audio, it can also carry data such as subtitles in the same file, and the video inside is usually compressed with H.264 or H.265. It works not only on PCs but also on smartphones and video streaming services, making it one of the most widespread video formats today.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**MPEG-4** は圧縮方式などを含む規格群全体の名前、**MP4** はその中で定められたファイルの入れ物の形式の名前である。",
+          "text_zh": "**MPEG-4** 是包括压缩方式等在内的整个标准系列的名称，**MP4** 则是其中规定的文件“容器”格式的名称。",
+          "text_en": "**MPEG-4** is the name of the whole family of standards, including its compression methods, while **MP4** is the name of the file container format defined within it."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "video",
+              "label": {
+                "jp": "映像を符号化して圧縮",
+                "zh": "对视频进行编码压缩",
+                "en": "Encode and compress the video"
+              }
+            },
+            {
+              "id": "audio",
+              "label": {
+                "jp": "音声も符号化して圧縮",
+                "zh": "对音频也进行编码压缩",
+                "en": "Encode and compress the audio too"
+              }
+            },
+            {
+              "id": "box",
+              "label": {
+                "jp": "両方を 1 つのファイルに格納",
+                "zh": "把两者存进一个文件",
+                "en": "Store both in one file"
+              }
+            },
+            {
+              "id": "play",
+              "label": {
+                "jp": "再生時に取り出して伸長",
+                "zh": "播放时取出并解压缩",
+                "en": "Extract and decompress on playback"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "映像は H.264 などの符号化方式で圧縮される。",
+            "caption_zh": "视频用 H.264 等编码方式进行压缩。",
+            "caption_en": "The video is compressed with a coding method such as H.264.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "音声も音声用の方式で別に圧縮される。",
+            "caption_zh": "音频也用音频专用的方式单独压缩。",
+            "caption_en": "The audio is compressed separately with a method made for audio.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "圧縮済みの映像と音声を、コンテナ形式の決まりに従って 1 つのファイルに収める。",
+            "caption_zh": "按照容器格式的规则，把压缩好的视频和音频装进一个文件。",
+            "caption_en": "The compressed video and audio are placed in one file following the rules of the container format.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "再生機器はファイルから映像と音声を取り出し、それぞれ伸長して同時に再生する。",
+            "caption_zh": "播放设备从文件中取出视频和音频，分别解压缩后同时播放。",
+            "caption_en": "The player takes the video and audio out of the file, decompresses each, and plays them together.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "MP4 は、MPEG-4 規格の一部 (Part 14) として定められた コンテナ形式 で、拡張子は .mp4 である。",
+      "definition_zh": "MP4 是作为 MPEG-4 标准的一部分（Part 14）定义的 容器格式（コンテナ形式），扩展名是 .mp4。",
+      "definition_en": "MP4 is a container format (コンテナ形式) defined as part of the MPEG-4 standard (Part 14), with the extension .mp4.",
+      "explanation_jp": "映像と音声に加えて字幕などのデータも 1 つのファイルに入れられ、中の映像は H.264 や H.265 で圧縮されていることが多い。パソコンだけでなくスマートフォンや動画配信サービスでも扱え、現在もっとも普及した動画の形式の 1 つである。",
+      "explanation_zh": "除了视频和音频，字幕等数据也能放进同一个文件，里面的视频多用 H.264 或 H.265 压缩。它不仅能在电脑上使用，也能在智能手机和在线视频服务中处理，是目前最普及的视频格式之一。",
+      "explanation_en": "Besides video and audio, it can also carry data such as subtitles in the same file, and the video inside is usually compressed with H.264 or H.265. It works not only on PCs but also on smartphones and video streaming services, making it one of the most widespread video formats today.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "H.264",
+      "b": "H.265",
+      "rows": [
+        {
+          "label_jp": "別名",
+          "label_zh": "别名",
+          "label_en": "Other name",
+          "a_jp": "MPEG-4 AVC",
+          "a_zh": "MPEG-4 AVC",
+          "a_en": "MPEG-4 AVC",
+          "b_jp": "HEVC",
+          "b_zh": "HEVC",
+          "b_en": "HEVC",
+          "key": false
+        },
+        {
+          "label_jp": "世代",
+          "label_zh": "世代",
+          "label_en": "Generation",
+          "a_jp": "先に普及した世代",
+          "a_zh": "较早普及的一代",
+          "a_en": "The earlier, widely adopted generation",
+          "b_jp": "H.264 の後継",
+          "b_zh": "H.264 的后继",
+          "b_en": "Successor to H.264",
+          "key": false
+        },
+        {
+          "label_jp": "同じ画質でのデータ量",
+          "label_zh": "相同画质下的数据量",
+          "label_en": "Data size at the same quality",
+          "a_jp": "基準",
+          "a_zh": "基准",
+          "a_en": "Baseline",
+          "b_jp": "およそ半分とされる",
+          "b_zh": "一般认为约为一半",
+          "b_en": "Said to be about half",
+          "key": true
+        },
+        {
+          "label_jp": "主な使われ方",
+          "label_zh": "主要用途",
+          "label_en": "Main uses",
+          "a_jp": "ブルーレイディスク、ネットの動画配信",
+          "a_zh": "蓝光光盘、在线视频",
+          "a_en": "Blu-ray discs, online video streaming",
+          "b_jp": "4K や 8K の高解像度映像",
+          "b_zh": "4K、8K 高分辨率视频",
+          "b_en": "4K and 8K high-resolution video",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "H.264",
+      "b": "AVI",
+      "rows": [
+        {
+          "label_jp": "種類",
+          "label_zh": "类型",
+          "label_en": "Type",
+          "a_jp": "符号化方式 (映像の圧縮の規格)",
+          "a_zh": "编码方式（视频压缩标准）",
+          "a_en": "Coding method (video compression standard)",
+          "b_jp": "コンテナ形式 (入れ物の形式)",
+          "b_zh": "容器格式（装数据的“箱子”）",
+          "b_en": "Container format (a wrapper that holds the data)",
+          "key": true
+        },
+        {
+          "label_jp": "決めていること",
+          "label_zh": "规定的内容",
+          "label_en": "What it defines",
+          "a_jp": "映像のデータをどう小さく表すか",
+          "a_zh": "如何把视频数据表示得更小",
+          "a_en": "How to represent video data in less space",
+          "b_jp": "圧縮済みの映像と音声をどう 1 ファイルに収めるか",
+          "b_zh": "如何把压缩好的视频和音频装进一个文件",
+          "b_en": "How to put compressed video and audio into one file",
+          "key": false
+        },
+        {
+          "label_jp": "荷物で例えると",
+          "label_zh": "用行李来比喻",
+          "label_en": "As luggage",
+          "a_jp": "荷物の畳み方",
+          "a_zh": "行李的叠法",
+          "a_en": "How the luggage is folded",
+          "b_jp": "荷物を入れる箱",
+          "b_zh": "装行李的箱子",
+          "b_en": "The box the luggage goes in",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "AVI",
+      "b": "MP4",
+      "rows": [
+        {
+          "label_jp": "定めたところ",
+          "label_zh": "制定方",
+          "label_en": "Defined by",
+          "a_jp": "Microsoft (Windows 向け)",
+          "a_zh": "Microsoft（面向 Windows）",
+          "a_en": "Microsoft (for Windows)",
+          "b_jp": "MPEG (MPEG-4 の Part 14)",
+          "b_zh": "MPEG（MPEG-4 的 Part 14）",
+          "b_en": "MPEG (Part 14 of MPEG-4)",
+          "key": true
+        },
+        {
+          "label_jp": "拡張子",
+          "label_zh": "扩展名",
+          "label_en": "Extension",
+          "a_jp": ".avi",
+          "a_zh": ".avi",
+          "a_en": ".avi",
+          "b_jp": ".mp4",
+          "b_zh": ".mp4",
+          "b_en": ".mp4",
+          "key": false
+        },
+        {
+          "label_jp": "主な使われ方",
+          "label_zh": "主要用途",
+          "label_en": "Main uses",
+          "a_jp": "古くからの Windows のパソコン",
+          "a_zh": "早期的 Windows 电脑",
+          "a_en": "Windows PCs from earlier years",
+          "b_jp": "スマートフォンや動画配信など幅広い機器",
+          "b_zh": "智能手机、在线视频等多种设备",
+          "b_en": "Smartphones, video streaming, and many other devices",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "動画は少しずつ違う静止画 (**フレーム**) を次々に表示したもので、1 秒あたりの枚数が **フレームレート** (fps) である。値を上げると動きは滑らかになるが、圧縮前のデータ量はそれに比例して増える。",
+    "**MPEG** は映像や音声の圧縮方式を中心とした規格群で、動画の圧縮では隣り合うフレームの違いを利用してデータ量を減らす。",
+    "**H.265** (HEVC) は **H.264** (MPEG-4 AVC) の後継の符号化規格で、4K や 8K のようなデータ量の大きい映像に向く。",
+    "動画ファイルは、圧縮した映像と音声を **コンテナ形式** の決まりで 1 つに収めたもので、AVI や MP4 はこの入れ物の形式の名前である。"
+  ],
+  "key_points_zh": [
+    "视频是依次显示一张张略有差异的静止图像（**帧**）而成，每秒的张数就是 **帧率**（fps）。数值越高动作越流畅，但压缩前的数据量也成比例增加。",
+    "**MPEG** 是以视频、音频压缩方式为核心的一系列标准，视频压缩时利用相邻帧之间的差异来减少数据量。",
+    "**H.265**（HEVC）是 **H.264**（MPEG-4 AVC）的后继编码标准，适合 4K、8K 这类数据量大的视频。",
+    "视频文件是按照 **容器格式** 的规则，把压缩好的视频和音频装在一起的文件，AVI 和 MP4 就是这种“容器”格式的名称。"
+  ],
+  "key_points_en": [
+    "Video is a series of slightly different still images (**frames**) shown one after another, and the number per second is the **frame rate** (fps). A higher value makes motion smoother, but the data size before compression grows in proportion.",
+    "**MPEG** is a family of standards centered on video and audio compression, and its video compression uses the differences between neighboring frames to reduce data size.",
+    "**H.265** (HEVC) is the coding standard that succeeds **H.264** (MPEG-4 AVC), and it suits data-heavy video such as 4K and 8K.",
+    "A video file holds compressed video and audio together under the rules of a **container format**, and AVI and MP4 are names of such container formats."
+  ],
+  "overview": {
+    "intro_jp": "動画が フレーム の連続でできていることと、フレームレート が表す量を説明できる。MPEG の規格群と、その中の映像の符号化規格 H.264・H.265 の世代の違いを説明できる。AVI や MP4 が、圧縮済みの映像と音声を 1 つのファイルに収める コンテナ形式 に当たることを説明できる。",
+    "intro_zh": "能说明视频由一连串 帧 组成，以及 帧率 表示的是什么量。能说明 MPEG 这一系列标准，以及其中的视频编码标准 H.264 与 H.265 在世代上的区别。能说明 AVI 和 MP4 属于 容器格式，用来把压缩好的视频和音频装进同一个文件。",
+    "intro_en": "Explain that video is a sequence of frames, and what quantity the frame rate measures. Explain the MPEG family of standards and the generational difference between H.264 and H.265, the video coding standards within it. Explain that AVI and MP4 are container formats that hold compressed video and audio in a single file.",
+    "freq_badge": "低頻",
+    "est_minutes": 37
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "フレーム: フレームといえば動画を構成する1枚の静止画(コマ)",
-      "フレームレート: フレームレートといえば1秒間のフレーム数(fps)、高いほど滑らか",
-      "MPEG: MPEGといえば動画・音声を圧縮する符号化方式の総称",
-      "H.264: H.264といえばMPEG系の定番映像符号化規格(MPEG-4 AVC)",
-      "H.265: H.265といえばH.264の後継・高効率な映像符号化規格(HEVC)",
-      "AVI: AVIといえば映像と音声をまとめる動画コンテナ(入れ物)形式",
-      "MP4: MP4といえば現在主流の汎用動画コンテナ形式"
-    ],
     "key_points_jp": [
-      "動画は静止画(フレーム)を時間方向に連ねたもので、1秒あたりの枚数をフレームレート(fps)と呼ぶ。fpsが高いほど滑らかだがデータ量は増える。",
-      "MPEGは動画・音声を圧縮する符号化方式の総称で、H.264(MPEG-4 AVC)はその代表的な規格、H.265(HEVC)はH.264の後継で高効率。",
-      "符号化方式(MPEG/H.264/H.265)は『中身をどう圧縮するか』、コンテナ形式(AVI/MP4)は『映像・音声をまとめる入れ物』であり、両者は役割が異なる。",
-      "AVIは主にWindows系で使われてきたコンテナ形式、MP4は現在もっとも広く使われる汎用コンテナ形式。",
-      "試験では『圧縮方式』と『ファイル形式(コンテナ)』の混同を問う出題が中心。H.264→H.265の世代関係も押さえる。"
+      "動画は少しずつ違う静止画 (フレーム) を次々に表示したもので、1 秒あたりの枚数が フレームレート (fps) である。値を上げると動きは滑らかになるが、圧縮前のデータ量はそれに比例して増える。",
+      "MPEG は映像や音声の圧縮方式を中心とした規格群で、動画の圧縮では隣り合うフレームの違いを利用してデータ量を減らす。",
+      "H.265 (HEVC) は H.264 (MPEG-4 AVC) の後継の符号化規格で、4K や 8K のようなデータ量の大きい映像に向く。",
+      "動画ファイルは、圧縮した映像と音声を コンテナ形式 の決まりで 1 つに収めたもので、AVI や MP4 はこの入れ物の形式の名前である。"
     ],
     "key_points_zh": [
-      "视频是把静止图像（帧）沿时间方向连接而成，每秒的张数称为帧率（fps）。fps 越高越流畅，但数据量也会增加。",
-      "MPEG 是压缩视频与音频的编码方式的总称；H.264（MPEG-4 AVC）是其代表性标准，H.265（HEVC）是 H.264 的后继且更高效。",
-      "编码方式（MPEG/H.264/H.265）解决的是“如何压缩内容”，容器格式（AVI/MP4）则是“把视频与音频归集起来的盛放容器”，两者职能不同。",
-      "AVI 是主要在 Windows 系统中使用的容器格式，MP4 是当前使用最广泛的通用容器格式。",
-      "考试以考查“压缩方式”与“文件格式（容器）”的混淆为主，同时要记住 H.264→H.265 的世代关系。"
+      "视频是依次显示一张张略有差异的静止图像（帧）而成，每秒的张数就是 帧率（fps）。数值越高动作越流畅，但压缩前的数据量也成比例增加。",
+      "MPEG 是以视频、音频压缩方式为核心的一系列标准，视频压缩时利用相邻帧之间的差异来减少数据量。",
+      "H.265（HEVC）是 H.264（MPEG-4 AVC）的后继编码标准，适合 4K、8K 这类数据量大的视频。",
+      "视频文件是按照 容器格式 的规则，把压缩好的视频和音频装在一起的文件，AVI 和 MP4 就是这种“容器”格式的名称。"
     ],
     "key_points_en": [
-      "Video is made by joining still images (frames) along the time axis, and the number per second is called the frame rate (fps). A higher fps means smoother motion but a larger data size.",
-      "MPEG is a general term for encoding methods that compress video and audio; H.264 (MPEG-4 AVC) is its representative standard, and H.265 (HEVC) is the successor to H.264 and more efficient.",
-      "Encoding methods (MPEG/H.264/H.265) deal with 'how to compress the contents,' while container formats (AVI/MP4) are 'holders that bundle video and audio together'—the two have different roles.",
-      "AVI is a container format used mainly on Windows systems, while MP4 is the most widely used general-purpose container format today.",
-      "The exam mainly tests confusion between the 'compression method' and the 'file format (container),' and you should also keep the H.264 → H.265 generational relationship in mind."
+      "Video is a series of slightly different still images (frames) shown one after another, and the number per second is the frame rate (fps). A higher value makes motion smoother, but the data size before compression grows in proportion.",
+      "MPEG is a family of standards centered on video and audio compression, and its video compression uses the differences between neighboring frames to reduce data size.",
+      "H.265 (HEVC) is the coding standard that succeeds H.264 (MPEG-4 AVC), and it suits data-heavy video such as 4K and 8K.",
+      "A video file holds compressed video and audio together under the rules of a container format, and AVI and MP4 are names of such container formats."
+    ],
+    "memory_hooks_jp": [
+      "フレーム: 英語の frame の元の意味は「枠」。1 つの枠に収まった 1 枚の絵、と字面で覚える。",
+      "フレームレート: fps の f は frame、ps は per second (毎秒)。単位の綴りが「1 秒あたりのフレーム」を表している。",
+      "MPEG: MPEG は規格を作った専門家の組織 Moving Picture Experts Group の頭文字で、Moving Picture は「動く絵」、つまり動画を指す。",
+      "H.264: AVC は Advanced Video Coding の頭文字で、「高度な映像の符号化」という意味になる。",
+      "H.265: HEVC の HE は High Efficiency (高効率) の頭文字。",
+      "AVI: Audio Video Interleave の interleave は「交互に差し込む」。映像と音声を少しずつ交互に並べて収める作りが、そのまま名前になっている。"
     ],
     "memory_hooks_zh": [
-      "帧：说到帧，就是构成视频的一张静止图像（画面）",
-      "帧率：说到帧率，就是每秒的帧数（fps），越高越流畅",
-      "MPEG：说到 MPEG，就是压缩视频与音频的编码方式的总称",
-      "H.264：说到 H.264，就是 MPEG 系列的经典视频编码标准（MPEG-4 AVC）",
-      "H.265：说到 H.265，就是 H.264 的后继、高效率视频编码标准（HEVC）",
-      "AVI：说到 AVI，就是把视频和音频归集起来的视频容器（盛放容器）格式",
-      "MP4：说到 MP4，就是当前主流的通用视频容器格式"
+      "帧：英语 frame 的本义是“框”。可以按字面记成：装在一个框里的一张画。",
+      "帧率：fps 的 f 是 frame，ps 是 per second（每秒）。单位的拼写本身就表示“每秒的帧数”。",
+      "MPEG：MPEG 是制定这些标准的专家组织 Moving Picture Experts Group 的首字母缩写，Moving Picture 意为“会动的画”，也就是视频。",
+      "H.264：AVC 是 Advanced Video Coding 的首字母缩写，意思是“高级视频编码”。",
+      "H.265：HEVC 的 HE 是 High Efficiency（高效率）的首字母。",
+      "AVI：Audio Video Interleave 中的 interleave 意为“交错插入”。把视频和音频一小段一小段交替排列存放的结构，直接成了它的名字。"
     ],
     "memory_hooks_en": [
-      "Frame: Frame → one still image (picture) that makes up a video",
-      "Frame rate: Frame rate → frames per second (fps); higher means smoother",
-      "MPEG: MPEG → general term for encoding methods that compress video and audio",
-      "H.264: H.264 → the classic MPEG-family video encoding standard (MPEG-4 AVC)",
-      "H.265: H.265 → the successor to H.264, a high-efficiency video encoding standard (HEVC)",
-      "AVI: AVI → a video container (holder) format that bundles video and audio together",
-      "MP4: MP4 → today's mainstream, general-purpose video container format"
+      "Frame: Think of a picture frame: one frame holds exactly one picture.",
+      "Frame rate: In fps, the f is frame and ps is per second. The unit itself spells out \"frames per second.\"",
+      "MPEG: MPEG comes from the Moving Picture Experts Group, the body of experts that wrote the standards. A \"moving picture\" is simply video.",
+      "H.264: AVC stands for Advanced Video Coding.",
+      "H.265: The HE in HEVC stands for High Efficiency.",
+      "AVI: In Audio Video Interleave, \"interleave\" means to slot things in alternately. The way it stores video and audio in small alternating chunks gave the format its name."
     ]
   },
   "challenge_questions": [
-    "2012h24h-q064",
-    "2013h25a-q061",
-    "2015h27a-q046",
-    "2015h27h-q076",
-    "2016h28a-q078"
+    "2013h25h-q079",
+    "2016h28h-q097",
+    "2009h21h-q078",
+    "2015h27h-q076"
   ],
   "source_figures": [
     {
@@ -255,9 +925,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "视频的原理与文件格式",
-  "title_en": "How Video Works and Its File Formats",
-  "unit_summary_zh": "理解构成视频的帧概念，以及代表性的视频编码方式与容器格式。",
-  "unit_summary_en": "Understand the concept of frames that make up video, along with the major video encoding methods and container formats."
+  }
 }

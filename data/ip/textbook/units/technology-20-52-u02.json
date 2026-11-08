@@ -1,191 +1,660 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-20-52-u02",
   "topic_id": "technology-20-52",
   "category": "technology",
   "title_jp": "音声のデジタル表現とファイル形式",
+  "title_zh": "声音的数字化表示与文件格式",
+  "title_en": "Digital Representation of Audio and File Formats",
   "unit_summary_jp": "音声をデジタル化する方式(PCM・MIDI)と代表的な音声ファイル形式を理解する。",
+  "unit_summary_zh": "理解将声音数字化的方式（PCM、MIDI）以及具有代表性的音频文件格式。",
+  "unit_summary_en": "Understand the methods of digitizing audio (PCM, MIDI) and the representative audio file formats.",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-20-52-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、音声をコンピュータで扱うためのデジタル化方式(波形を符号化するPCMと、演奏情報を記述するMIDI)と、代表的な音声ファイル形式(無圧縮のWAV、非可逆圧縮のMP3・AAC)を学びます。マルチメディアの中では低頻度ですが、圧縮の可逆・非可逆の違いと各形式の特徴は出題されます。",
-    "freq_badge": "低頻",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习用计算机处理声音所需的数字化方式（对波形进行编码的 PCM，以及描述演奏信息的 MIDI），以及具有代表性的音频文件格式（无压缩的 WAV，有损压缩的 MP3、AAC）。它在多媒体内容中属于低频考点，但压缩的无损与有损之分，以及各格式的特点都会出题。",
-    "intro_en": "In this unit, you will learn the digitization methods used to handle audio on a computer (PCM, which encodes the waveform, and MIDI, which describes performance information), as well as the representative audio file formats (uncompressed WAV, and lossy-compressed MP3 and AAC). Within multimedia topics it appears infrequently, but the difference between lossless and lossy compression and the characteristics of each format do come up on the exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**PCM** で音の波が数値になるまでの順序と、細かく記録したときの音質とデータ量の関係を説明できる。",
+    "音の波形を記録する方式と、**演奏情報** を伝える **MIDI** を区別できる。",
+    "音声ファイル形式を、圧縮しない形式と **非可逆圧縮** の形式に分けられる。"
+  ],
+  "goals_zh": [
+    "能说明 **PCM** 把声音波形变成数值的处理顺序，以及记录得越精细，音质和数据量会如何变化。",
+    "能区分记录声音波形的方式和传递 **演奏信息** 的 **MIDI**。",
+    "能把音频文件格式分成不压缩的格式和 **有损压缩** 的格式。"
+  ],
+  "goals_en": [
+    "Explain the order in which **PCM** turns a sound wave into numbers, and how finer recording affects both sound quality and data size.",
+    "Tell methods that record the sound waveform apart from **MIDI**, which carries **performance information**.",
+    "Sort audio file formats into uncompressed formats and **lossy compression** formats."
+  ],
+  "overview_cols_jp": [
+    "分類",
+    "中に入るもの"
+  ],
+  "overview_cols_zh": [
+    "分类",
+    "包含的内容"
+  ],
+  "overview_cols_en": [
+    "Category",
+    "What it holds"
+  ],
+  "overview_rows": [
     {
       "term": "PCM",
-      "definition_jp": "アナログ音声を標本化・量子化・符号化でデジタル化する基本方式。",
-      "explanation_jp": "PCM(パルス符号変調)は、連続的なアナログ音声の波形を一定間隔で測って数値に置き換える、最も基本的なデジタル化方式です。手順は『標本化(一定間隔で波の高さを取る)→量子化(その高さを段階値に丸める)→符号化(段階値を0と1のビット列にする)』の3段階で進みます。\n\n標本化の回数を増やすほど、また量子化の段階を細かくするほど、元の音に近い高音質になりますが、データ量は大きくなります。試験では、この3段階の順序や、波形そのものを記録する方式である点(演奏情報を記述するMIDIとの違い)が問われます。CDの音声もPCMで記録されています。",
-      "analogy_jp": "なだらかな坂道(アナログ波形)を、等間隔の階段(標本化・量子化)に置き換えて段数を数値で記録するようなもの。段を細かくするほど元の坂に近づきます。",
-      "memory_hook_jp": "PCMといえば標本化・量子化・符号化で波形をデジタル化",
-      "inline_quiz": [
-        "2010h22a-q085"
+      "one_line_jp": "音の波を一定間隔で測って 0 と 1 の並びに置き換える方式",
+      "one_line_zh": "按固定间隔测量声音波形，并换成 0 和 1 序列的方式",
+      "one_line_en": "A method that measures a sound wave at fixed intervals and turns it into a sequence of 0s and 1s",
+      "extra_jp": [
+        "デジタル化の方式",
+        "波形を測った数値"
       ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"アナログ音声\"] --> B[\"標本化\"]; B --> C[\"量子化\"]; C --> D[\"符号化\"]; D --> E[\"デジタルデータ\"]",
-        "svg_path": "figures/technology-20-52-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "PCM（脉冲编码调制）",
-      "term_en": "PCM (Pulse Code Modulation)",
-      "definition_zh": "通过采样、量化、编码将模拟声音数字化的基本方式。",
-      "definition_en": "The basic method of digitizing analog audio through sampling, quantization, and encoding.",
-      "explanation_zh": "PCM（脉冲编码调制）是将连续的模拟声音波形按固定间隔测量并转换为数值的最基本数字化方式。其步骤分三个阶段进行：『采样（按固定间隔取波的高度）→量化（将该高度归整为分级数值）→编码（将分级数值转为 0 和 1 的比特串）』。\n\n采样次数越多、量化的级别越细，就越接近原声、音质越高，但数据量也会越大。考试中会考查这三个阶段的顺序，以及它是记录波形本身的方式这一点（与描述演奏信息的 MIDI 的区别）。CD 中的声音也是用 PCM 记录的。",
-      "explanation_en": "PCM (Pulse Code Modulation) is the most basic digitization method, in which the continuous analog audio waveform is measured at fixed intervals and replaced with numerical values. The procedure has three stages: 'sampling (take the height of the wave at fixed intervals) → quantization (round that height to a stepped value) → encoding (turn the stepped value into a bit string of 0s and 1s).'\n\nThe more times you sample, and the finer the quantization steps, the closer the result is to the original sound and the higher the quality, but the data size also grows larger. The exam asks about the order of these three stages, and about the fact that this method records the waveform itself (the difference from MIDI, which describes performance information). The audio on CDs is also recorded using PCM.",
-      "analogy_zh": "就像把一段平缓的斜坡（模拟波形）换成等间隔的台阶（采样、量化），再用数值记录台阶的级数。台阶分得越细，就越接近原来的斜坡。",
-      "analogy_en": "It's like replacing a gentle slope (the analog waveform) with evenly spaced stairs (sampling and quantization) and recording the number of steps as numbers. The finer the steps, the closer it gets to the original slope.",
-      "memory_hook_zh": "说到 PCM，就是用采样、量化、编码把波形数字化",
-      "memory_hook_en": "PCM → digitize the waveform via sampling, quantization, and encoding"
+      "extra_zh": [
+        "数字化方式",
+        "测量波形得到的数值"
+      ],
+      "extra_en": [
+        "Digitization method",
+        "Numbers measured from the waveform"
+      ]
     },
     {
       "term": "MIDI",
-      "definition_jp": "波形でなく演奏情報を記述する電子楽器の音声規格。",
-      "explanation_jp": "MIDIは、音そのものの波形を記録するのではなく、『どの音を・いつ・どの強さで・どの楽器で鳴らすか』という演奏情報(命令)を記述する規格です。電子楽器(シンセサイザーなど)やパソコンが演奏データをやり取りするための共通ルールとして使われます。\n\n波形を持たず命令だけなので、PCMに比べてデータ量が非常に小さいのが特徴ですが、実際に鳴る音は再生する音源(楽器)によって変わります。試験では、PCM(波形を記録)とMIDI(演奏情報を記述)の対比が頻出で、『MIDIは楽譜のような演奏指示』とイメージできることがポイントです。",
-      "analogy_jp": "歌そのものの録音ではなく、『この音符をこの強さで』と書いた楽譜を渡すようなもの。演奏する人(音源)が変われば、同じ楽譜でも響きが変わります。",
-      "memory_hook_jp": "MIDIといえば波形でなく演奏情報を記述する楽譜のような規格",
+      "one_line_jp": "どの音をいつどの強さで鳴らすかを機器の間で伝える規格",
+      "one_line_zh": "在设备之间传递哪个音、何时、以多大力度发声的标准",
+      "one_line_en": "A standard for telling devices which note to play, when, and how strongly",
+      "extra_jp": [
+        "演奏情報の規格",
+        "音の高さ・長さ・強さの指示"
+      ],
+      "extra_zh": [
+        "演奏信息的标准",
+        "音高、时长、力度的指令"
+      ],
+      "extra_en": [
+        "Performance information standard",
+        "Instructions for pitch, length, and loudness"
+      ]
+    },
+    {
+      "term": "WAV",
+      "one_line_jp": "PCM の音声データを圧縮せずに収めるファイル形式",
+      "one_line_zh": "不经压缩地保存 PCM 音频数据的文件格式",
+      "one_line_en": "A file format that stores PCM audio data without compression",
+      "extra_jp": [
+        "音声ファイル形式",
+        "無圧縮の波形データ"
+      ],
+      "extra_zh": [
+        "音频文件格式",
+        "未压缩的波形数据"
+      ],
+      "extra_en": [
+        "Audio file format",
+        "Uncompressed waveform data"
+      ]
+    },
+    {
+      "term": "MP3",
+      "one_line_jp": "聞こえにくい成分を捨てて音声を小さくするファイル形式",
+      "one_line_zh": "舍弃不易听到的成分来缩小音频的文件格式",
+      "one_line_en": "A file format that shrinks audio by discarding components that are hard to hear",
+      "extra_jp": [
+        "音声ファイル形式",
+        "非可逆圧縮した波形データ"
+      ],
+      "extra_zh": [
+        "音频文件格式",
+        "经有损压缩的波形数据"
+      ],
+      "extra_en": [
+        "Audio file format",
+        "Lossy-compressed waveform data"
+      ]
+    },
+    {
+      "term": "AAC",
+      "one_line_jp": "MP3 より後に作られ、同じ大きさで音質を保ちやすいファイル形式",
+      "one_line_zh": "晚于 MP3 出现，在同等大小下更容易保住音质的文件格式",
+      "one_line_en": "A file format created after MP3 that tends to keep better sound quality at the same size",
+      "extra_jp": [
+        "音声ファイル形式",
+        "非可逆圧縮した波形データ"
+      ],
+      "extra_zh": [
+        "音频文件格式",
+        "经有损压缩的波形数据"
+      ],
+      "extra_en": [
+        "Audio file format",
+        "Lossy-compressed waveform data"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "PCM",
+      "term_zh": "PCM（脉冲编码调制）",
+      "term_en": "PCM (Pulse Code Modulation)",
+      "one_jp": "**PCM** (パルス符号変調) は、アナログ音声の波を **標本化**・**量子化**・**符号化** の順に処理して、0 と 1 の並びに置き換える方式である。",
+      "one_zh": "**PCM**（脉冲编码调制）是按 **采样**、**量化**、**编码** 的顺序处理模拟声音的波形，把它换成 0 和 1 序列的方式。",
+      "one_en": "**PCM** (Pulse Code Modulation) is a method that processes an analog sound wave through **sampling**, **quantization**, and **encoding**, in that order, turning it into a sequence of 0s and 1s.",
+      "detail_jp": "**標本化** は一定の時間間隔で波の高さを読み取ること、**量子化** は読み取った値を決まった段階の数値に丸めること、**符号化** はその数値を 0 と 1 の並びで表すことである。1 秒あたりの標本化の回数 (**標本化周波数**) と、量子化の段階を表すビット数 (**量子化ビット数**) を増やすほど元の波に近づくが、データ量も増える。データ量は「標本化周波数 × 量子化ビット数 × チャンネル数 × 秒数」で求まり、例えば 1 秒に 8,000 回、8 ビット、1 チャンネルで 10 秒記録すると 640,000 ビット (80,000 バイト) になる。",
+      "detail_zh": "**采样** 是按固定的时间间隔读取波的高度，**量化** 是把读到的值归整为规定级别的数值，**编码** 则是用 0 和 1 的序列表示这些数值。每秒的采样次数（**采样频率**，[[jp:標本化周波数]]）和表示量化级别的比特数（**量化比特数**，[[jp:量子化ビット数]]）越大，结果越接近原来的波形，但数据量也随之增加。数据量可按“采样频率 × 量化比特数 × 声道数 × 秒数”计算，例如以每秒 8,000 次、8 比特、单声道录制 10 秒，就是 640,000 比特（80,000 字节）。",
+      "detail_en": "**Sampling** reads the height of the wave at fixed time intervals, **quantization** rounds each reading to one of a fixed set of levels, and **encoding** writes those numbers as 0s and 1s. Raising the number of samples per second (**sampling frequency**, [[jp:標本化周波数]]) and the number of bits used to express the levels (**quantization bit depth**, [[jp:量子化ビット数]]) brings the result closer to the original wave, but also increases the data size. The data size equals sampling frequency × bit depth × channels × seconds, so recording 10 seconds at 8,000 samples per second, 8 bits, and 1 channel gives 640,000 bits (80,000 bytes).",
+      "analogy_jp": "走っている人を一定の間隔で連写し、写真ごとに位置を最も近い目盛りで読んで、数字で書き留めていくようなもの。",
+      "analogy_zh": "就像按固定间隔连拍一个奔跑的人，每张照片都按最近的刻度读出位置，再用数字记下来。",
+      "analogy_en": "It is like taking burst photos of a runner at fixed intervals, reading each position off the nearest mark on a scale, and writing it down as a number.",
+      "hook_jp": "「測る → 丸める → 書く」の 3 つの動作で順序を覚える。名前の中の C (Code = 符号) が最後の段の符号化にあたる。",
+      "hook_zh": "用“测 → 归整 → 写下”这三个动作记住顺序。名称中的 C（Code，码）对应最后一步的编码。",
+      "hook_en": "Remember the order as three actions: measure → round → write. The C in the name (Code) matches the last step, encoding.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**標本化** は時間の方向を区切る操作、**量子化** は値の大きさの方向を区切る操作であり、細かくする対象が異なる。",
+          "text_zh": "**采样**（[[jp:標本化]]）是在时间方向上分段的操作，**量化**（[[jp:量子化]]）是在数值大小方向上分段的操作，两者细分的对象不同。",
+          "text_en": "**Sampling** ([[jp:標本化]]) divides the time axis, while **quantization** ([[jp:量子化]]) divides the range of values, so each one makes a different dimension finer."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "wave",
+              "label": {
+                "jp": "アナログの音の波",
+                "zh": "模拟声波",
+                "en": "Analog sound wave"
+              }
+            },
+            {
+              "id": "sample",
+              "label": {
+                "jp": "標本化",
+                "zh": "采样",
+                "en": "Sampling"
+              }
+            },
+            {
+              "id": "quant",
+              "label": {
+                "jp": "量子化",
+                "zh": "量化",
+                "en": "Quantization"
+              }
+            },
+            {
+              "id": "code",
+              "label": {
+                "jp": "符号化",
+                "zh": "编码",
+                "en": "Encoding"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "出発点は、時間とともに切れ目なく変わる音の波である。",
+            "caption_zh": "起点是随时间连续变化的声音波形。",
+            "caption_en": "The starting point is a sound wave that changes continuously over time.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "一定の時間間隔で波の高さを読み取る。",
+            "caption_zh": "按固定的时间间隔读取波的高度。",
+            "caption_en": "Read the height of the wave at fixed time intervals.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "読み取った高さを、決められた段階のうち最も近い値に丸める。",
+            "caption_zh": "把读到的高度归到预先设定的级别中最接近的那个值。",
+            "caption_en": "Round each reading to the nearest of a set of predefined levels.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "丸めた値を 0 と 1 の並びで表し、デジタルデータができあがる。",
+            "caption_zh": "用 0 和 1 的序列表示归整后的值，得到数字数据。",
+            "caption_en": "Write the rounded values as 0s and 1s, producing digital data.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "PCM (パルス符号変調) は、アナログ音声の波を 標本化・量子化・符号化 の順に処理して、0 と 1 の並びに置き換える方式である。",
+      "definition_zh": "PCM（脉冲编码调制）是按 采样、量化、编码 的顺序处理模拟声音的波形，把它换成 0 和 1 序列的方式。",
+      "definition_en": "PCM (Pulse Code Modulation) is a method that processes an analog sound wave through sampling, quantization, and encoding, in that order, turning it into a sequence of 0s and 1s.",
+      "explanation_jp": "標本化 は一定の時間間隔で波の高さを読み取ること、量子化 は読み取った値を決まった段階の数値に丸めること、符号化 はその数値を 0 と 1 の並びで表すことである。1 秒あたりの標本化の回数 (標本化周波数) と、量子化の段階を表すビット数 (量子化ビット数) を増やすほど元の波に近づくが、データ量も増える。データ量は「標本化周波数 × 量子化ビット数 × チャンネル数 × 秒数」で求まり、例えば 1 秒に 8,000 回、8 ビット、1 チャンネルで 10 秒記録すると 640,000 ビット (80,000 バイト) になる。",
+      "explanation_zh": "采样 是按固定的时间间隔读取波的高度，量化 是把读到的值归整为规定级别的数值，编码 则是用 0 和 1 的序列表示这些数值。每秒的采样次数（采样频率，標本化周波数）和表示量化级别的比特数（量化比特数，量子化ビット数）越大，结果越接近原来的波形，但数据量也随之增加。数据量可按“采样频率 × 量化比特数 × 声道数 × 秒数”计算，例如以每秒 8,000 次、8 比特、单声道录制 10 秒，就是 640,000 比特（80,000 字节）。",
+      "explanation_en": "Sampling reads the height of the wave at fixed time intervals, quantization rounds each reading to one of a fixed set of levels, and encoding writes those numbers as 0s and 1s. Raising the number of samples per second (sampling frequency, 標本化周波数) and the number of bits used to express the levels (quantization bit depth, 量子化ビット数) brings the result closer to the original wave, but also increases the data size. The data size equals sampling frequency × bit depth × channels × seconds, so recording 10 seconds at 8,000 samples per second, 8 bits, and 1 channel gives 640,000 bits (80,000 bytes).",
+      "memory_hook_jp": "「測る → 丸める → 書く」の 3 つの動作で順序を覚える。名前の中の C (Code = 符号) が最後の段の符号化にあたる。",
+      "memory_hook_zh": "用“测 → 归整 → 写下”这三个动作记住顺序。名称中的 C（Code，码）对应最后一步的编码。",
+      "memory_hook_en": "Remember the order as three actions: measure → round → write. The C in the name (Code) matches the last step, encoding.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "MIDI",
+      "term_zh": "MIDI（乐器数字接口）",
+      "term_en": "MIDI (Musical Instrument Digital Interface)",
+      "one_jp": "**MIDI** は、音の波形ではなく、どの音をいつどの強さで鳴らすかという **演奏情報** を、電子楽器とコンピュータの間で伝えるための規格である。",
+      "one_zh": "**MIDI**（乐器数字接口）是在电子乐器和计算机之间传递 **演奏信息**（[[jp:演奏情報]]）的标准，传递的不是声音波形，而是哪个音、在何时、以多大力度发声。",
+      "one_en": "**MIDI** (Musical Instrument Digital Interface) is a standard for passing **performance information** ([[jp:演奏情報]]) between electronic instruments and computers: not the sound waveform, but which note to play, when, and how strongly.",
+      "detail_jp": "音そのものを含まず指示だけを送るので、曲の長さに対してデータ量はごく小さい。実際の音は、受け取った側の **音源** (音を作り出す装置やソフトウェア) が演奏情報に従って作るため、音源が変われば同じデータでも響きが変わる。録音した人の声のような波形そのものは、MIDI の演奏情報としては表せない。",
+      "detail_zh": "它只发送指令、不包含声音本身，所以相对于乐曲长度，数据量非常小。实际的声音由接收方的 **音源**（生成声音的装置或软件）按照演奏信息生成，因此换一个音源，同样的数据听起来也会不同。像录下来的人声这样的波形本身，无法用 MIDI 的演奏信息来表示。",
+      "detail_en": "Because it sends only instructions and no sound itself, its data size is very small for the length of a piece. The actual sound is produced by the receiver's **sound source** (a device or software that generates sound) following the performance information, so the same data sounds different on a different sound source. A waveform itself, such as a recorded human voice, cannot be expressed as MIDI performance information.",
+      "analogy_jp": "演奏を録音したものではなく楽譜を手渡すようなもので、同じ楽譜でも弾く人と楽器が変われば聞こえ方が変わる。",
+      "analogy_zh": "这不像交出一段演奏录音，而像递过去一份乐谱：同一份乐谱，换了演奏者和乐器，听起来就会不同。",
+      "analogy_en": "It is like handing over sheet music rather than a recording: the same score sounds different depending on who plays it and on what instrument.",
+      "hook_jp": "正式名の最後は Interface (つなぐ口)。もともと楽器と楽器をつなぐための取り決めとして生まれた。",
+      "hook_zh": "正式名称的最后一个词是 Interface（接口）。它原本是为了把乐器和乐器连接起来而定下的约定。",
+      "hook_en": "The last word of its full name is Interface. It began as an agreement for connecting one instrument to another.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**MIDI** が受け渡すのは音の高さ・長さ・強さなどの指示であり、受け取った電子楽器やコンピュータがその指示から音を作る。",
+          "text_zh": "**MIDI** 传递的是音高、时长、力度等指令，由接收的电子乐器或计算机根据这些指令生成声音。",
+          "text_en": "**MIDI** carries instructions such as pitch, length, and loudness, and the receiving electronic instrument or computer produces the sound from them.",
+          "qids": [
+            "2012h24h-q064"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2012h24h-q064"
+      ],
+      "definition_jp": "MIDI は、音の波形ではなく、どの音をいつどの強さで鳴らすかという 演奏情報 を、電子楽器とコンピュータの間で伝えるための規格である。",
+      "definition_zh": "MIDI（乐器数字接口）是在电子乐器和计算机之间传递 演奏信息（演奏情報）的标准，传递的不是声音波形，而是哪个音、在何时、以多大力度发声。",
+      "definition_en": "MIDI (Musical Instrument Digital Interface) is a standard for passing performance information (演奏情報) between electronic instruments and computers: not the sound waveform, but which note to play, when, and how strongly.",
+      "explanation_jp": "音そのものを含まず指示だけを送るので、曲の長さに対してデータ量はごく小さい。実際の音は、受け取った側の 音源 (音を作り出す装置やソフトウェア) が演奏情報に従って作るため、音源が変われば同じデータでも響きが変わる。録音した人の声のような波形そのものは、MIDI の演奏情報としては表せない。",
+      "explanation_zh": "它只发送指令、不包含声音本身，所以相对于乐曲长度，数据量非常小。实际的声音由接收方的 音源（生成声音的装置或软件）按照演奏信息生成，因此换一个音源，同样的数据听起来也会不同。像录下来的人声这样的波形本身，无法用 MIDI 的演奏信息来表示。",
+      "explanation_en": "Because it sends only instructions and no sound itself, its data size is very small for the length of a piece. The actual sound is produced by the receiver's sound source (a device or software that generates sound) following the performance information, so the same data sounds different on a different sound source. A waveform itself, such as a recorded human voice, cannot be expressed as MIDI performance information.",
+      "memory_hook_jp": "正式名の最後は Interface (つなぐ口)。もともと楽器と楽器をつなぐための取り決めとして生まれた。",
+      "memory_hook_zh": "正式名称的最后一个词是 Interface（接口）。它原本是为了把乐器和乐器连接起来而定下的约定。",
+      "memory_hook_en": "The last word of its full name is Interface. It began as an agreement for connecting one instrument to another.",
       "inline_quiz": [
         "2012h24h-q064"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "MIDI（乐器数字接口）",
-      "term_en": "MIDI (Musical Instrument Digital Interface)",
-      "definition_zh": "不记录波形而描述演奏信息的电子乐器声音规格。",
-      "definition_en": "An audio standard for electronic instruments that describes performance information rather than the waveform.",
-      "explanation_zh": "MIDI 不是记录声音本身的波形，而是描述『弹哪个音、在什么时候、以多大力度、用什么乐器发声』这类演奏信息（指令）的规格。它被用作电子乐器（如合成器）和个人计算机之间交换演奏数据的通用规则。\n\n由于它不含波形、只有指令，因此与 PCM 相比数据量非常小，这是它的特点；但实际发出的声音会因播放所用的音源（乐器）而变化。考试中常考 PCM（记录波形）与 MIDI（描述演奏信息）的对比，能把『MIDI 是类似乐谱的演奏指示』形象记住是关键。",
-      "explanation_en": "MIDI is a standard that does not record the waveform of the sound itself, but instead describes performance information (commands) such as 'which note, when, at what intensity, and with which instrument to play.' It is used as a common set of rules for exchanging performance data between electronic instruments (such as synthesizers) and personal computers.\n\nBecause it holds only commands and no waveform, its data size is very small compared with PCM, which is its key feature; however, the sound that actually plays varies depending on the sound source (instrument) used for playback. The exam frequently contrasts PCM (records the waveform) with MIDI (describes performance information), and the key is to picture 'MIDI as performance instructions like a musical score.'",
-      "analogy_zh": "它不是录下歌声本身，而是递给你一张写着『这个音符用这个力度弹』的乐谱。换一个演奏者（音源），同一张乐谱奏出的效果也会不同。",
-      "analogy_en": "Rather than a recording of the song itself, it's like handing over a musical score that says 'play this note at this intensity.' If the performer (sound source) changes, the same score sounds different.",
-      "memory_hook_zh": "说到 MIDI，就是不记波形、而像乐谱一样描述演奏信息的规格",
-      "memory_hook_en": "MIDI → a score-like standard that describes performance info, not the waveform"
+      "figure": null
     },
     {
       "term": "WAV",
-      "definition_jp": "音声を無圧縮(主にPCM)で格納する代表的な音声ファイル形式。",
-      "explanation_jp": "WAVは、PCMでデジタル化した音声をそのまま圧縮せずに格納する、Windows標準の音声ファイル形式です。圧縮しないため音質の劣化がなく、編集にも向きますが、その分ファイルサイズは大きくなります。\n\n試験では、WAV=無圧縮で高音質だが大容量、MP3やAAC=圧縮で小容量という対比が問われます。音声形式を『無圧縮(WAV)』と『非可逆圧縮(MP3・AAC)』に大別して整理しておくと、形式ごとの特徴を取り違えずに済みます。",
-      "analogy_jp": "撮った写真を一切縮めずにそのまま保存するようなもの。画質は最高のまま保てますが、保存場所(容量)をたくさん使います。",
-      "memory_hook_jp": "WAVといえば無圧縮・高音質・大容量の音声形式",
-      "inline_quiz": [
-        "2012h24a-q094"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD; A[\"音声ファイル形式\"]; A --> B[\"無圧縮\"]; A --> C[\"非可逆圧縮\"]; B --> D[\"WAV\"]; C --> E[\"MP3\"]; C --> F[\"AAC\"]",
-        "svg_path": "figures/technology-20-52-u02-t02.svg",
-        "rendered": true
-      },
       "term_zh": "WAV",
       "term_en": "WAV",
-      "definition_zh": "以无压缩（主要为 PCM）方式存储声音的代表性音频文件格式。",
-      "definition_en": "A representative audio file format that stores audio uncompressed (mainly as PCM).",
-      "explanation_zh": "WAV 是把用 PCM 数字化的声音原样不压缩地存储的 Windows 标准音频文件格式。由于不压缩，音质不会劣化，也适合编辑，但相应地文件大小会很大。\n\n考试中会考查 WAV = 无压缩、高音质但容量大，MP3 和 AAC = 压缩、容量小这样的对比。把音频格式大致分为『无压缩（WAV）』和『有损压缩（MP3、AAC）』来整理，就不会把各格式的特点搞混。",
-      "explanation_en": "WAV is the standard Windows audio file format that stores PCM-digitized audio as-is, without compression. Because it is not compressed, there is no loss of sound quality and it is well suited to editing, but the file size is correspondingly large.\n\nThe exam asks about the contrast: WAV = uncompressed, high quality but large in size, while MP3 and AAC = compressed and small in size. If you organize audio formats broadly into 'uncompressed (WAV)' and 'lossy-compressed (MP3, AAC),' you won't mix up the characteristics of each format.",
-      "analogy_zh": "就像把拍好的照片完全不缩小、原样保存。画质能保持在最好，但要占用很多存储空间（容量）。",
-      "analogy_en": "It's like saving a photo you took exactly as-is, without shrinking it at all. The quality stays at its best, but it uses up a lot of storage space (capacity).",
-      "memory_hook_zh": "说到 WAV，就是无压缩、高音质、大容量的音频格式",
-      "memory_hook_en": "WAV → the uncompressed, high-quality, large-size audio format"
+      "one_jp": "**WAV** は、主に PCM でデジタル化した音声を **圧縮せずに** 収める、Windows で標準的に使われる音声ファイル形式である。",
+      "one_zh": "**WAV** 是 Windows 的标准音频文件格式，主要用来 **不经压缩** 地保存以 PCM 数字化的声音。",
+      "one_en": "**WAV** is the standard audio file format on Windows, mainly used to store PCM-digitized audio **without compression**.",
+      "detail_jp": "圧縮しないので情報が捨てられず、保存しても音質は変わらないため、編集の素材に向く。その代わり、PCM のデータ量がほぼそのままファイルの大きさになる。",
+      "detail_zh": "因为不经压缩，信息不会被舍弃，保存后音质不变，适合作为编辑素材。代价是 PCM 的数据量几乎原样成为文件的大小。",
+      "detail_en": "Because it is not compressed, no information is discarded, so saving does not change the sound quality, which makes it suitable as material for editing. The trade-off is that the PCM data size becomes almost exactly the file size.",
+      "analogy_jp": "撮った写真を縮小も加工もせずに、そのまま保存しておくようなもの。",
+      "analogy_zh": "就像把拍好的照片既不缩小也不加工，原样保存下来。",
+      "analogy_en": "It is like saving a photo exactly as taken, with no resizing or editing.",
+      "hook_jp": "名前は波形 (Waveform) から来ている。波形をそのまま入れた箱と結び付ける。",
+      "hook_zh": "名称来自波形（Waveform）。把它和“原样装着波形的盒子”联系起来记。",
+      "hook_en": "The name comes from Waveform. Picture a box that holds the waveform just as it is.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**PCM** はアナログ音声を数値にする方式、**WAV** はその数値を収めるファイルの形式であり、方式と入れ物の関係にある。",
+          "text_zh": "**PCM** 是把模拟声音变成数值的方式，**WAV** 是存放这些数值的文件格式，两者是方式与容器的关系。",
+          "text_en": "**PCM** is the method that turns analog audio into numbers, and **WAV** is the file format that holds those numbers: one is the method, the other the container."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "WAV は、主に PCM でデジタル化した音声を 圧縮せずに 収める、Windows で標準的に使われる音声ファイル形式である。",
+      "definition_zh": "WAV 是 Windows 的标准音频文件格式，主要用来 不经压缩 地保存以 PCM 数字化的声音。",
+      "definition_en": "WAV is the standard audio file format on Windows, mainly used to store PCM-digitized audio without compression.",
+      "explanation_jp": "圧縮しないので情報が捨てられず、保存しても音質は変わらないため、編集の素材に向く。その代わり、PCM のデータ量がほぼそのままファイルの大きさになる。",
+      "explanation_zh": "因为不经压缩，信息不会被舍弃，保存后音质不变，适合作为编辑素材。代价是 PCM 的数据量几乎原样成为文件的大小。",
+      "explanation_en": "Because it is not compressed, no information is discarded, so saving does not change the sound quality, which makes it suitable as material for editing. The trade-off is that the PCM data size becomes almost exactly the file size.",
+      "memory_hook_jp": "名前は波形 (Waveform) から来ている。波形をそのまま入れた箱と結び付ける。",
+      "memory_hook_zh": "名称来自波形（Waveform）。把它和“原样装着波形的盒子”联系起来记。",
+      "memory_hook_en": "The name comes from Waveform. Picture a box that holds the waveform just as it is.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "MP3",
-      "definition_jp": "人間に聞こえにくい音を削る代表的な非可逆圧縮音声形式。",
-      "explanation_jp": "MP3は、人間の耳に聞こえにくい音(他の大きな音に隠れる音など)を削ることでデータ量を大きく減らす、非可逆圧縮の代表的な音声形式です。WAVに比べてファイルサイズを大幅に小さくでき、音楽配信や携帯音楽プレーヤーで広く普及しました。\n\n非可逆圧縮なので、一度圧縮すると削られた情報は元に戻せず、圧縮を強めるほど音質は劣化します。試験では、WAV(無圧縮)との容量・音質の違いや、『非可逆=元に戻せない』という性質、後継のAACとの位置づけが問われます。",
-      "analogy_jp": "大きな荷物から、なくても困らない物を抜いて軽くするようなもの。持ち運びは楽になりますが、抜いた物は二度と戻ってきません。",
-      "memory_hook_jp": "MP3といえば聞こえにくい音を削る非可逆圧縮の定番",
+      "term_zh": "MP3",
+      "term_en": "MP3",
+      "one_jp": "**MP3** は、人の耳に聞こえにくい成分を取り除いて音声データを小さくする、**非可逆圧縮** の音声ファイル形式である。",
+      "one_zh": "**MP3** 是一种 **有损压缩** 的音频文件格式，通过去除人耳不易听到的成分来缩小音频数据。",
+      "one_en": "**MP3** is a **lossy compression** audio file format that makes audio data smaller by removing components the human ear has trouble hearing.",
+      "detail_jp": "**非可逆圧縮** は、圧縮したデータを **伸長** (元の形式に戻す処理) しても、捨てた情報が戻らない方式である。MP3 は、大きな音のすぐ近くにある小さな音のように聞き取りにくい部分を削り、設定によっては元の PCM データの 10 分の 1 程度まで小さくできる。削る量を増やすほどファイルは小さくなるが、音質は落ちる。",
+      "detail_zh": "**有损压缩** 是指压缩后的数据即使经过 **解压**（[[jp:伸長]]，恢复为原来格式的处理），被舍弃的信息也无法恢复的方式。MP3 会削去紧挨在大声音旁边的小声音这类难以听清的部分，根据设置可以缩小到原始 PCM 数据的十分之一左右。削去得越多，文件越小，但音质也会下降。",
+      "detail_en": "**Lossy compression** is a method in which discarded information does not come back even when the compressed data is **decompressed** ([[jp:伸長]], converted back to its original form). MP3 cuts parts that are hard to make out, such as a quiet sound right next to a loud one, and depending on the settings can shrink the data to about one tenth of the original PCM data. The more it cuts, the smaller the file, but the lower the sound quality.",
+      "analogy_jp": "荷造りで、なくても困らない物を抜いて鞄を軽くするようなもの。抜いた物は後から取り戻せない。",
+      "analogy_zh": "就像打包时把用不着的东西拿出来，让包变轻。拿出去的东西事后就找不回来了。",
+      "analogy_en": "It is like lightening a bag by taking out things you can do without when packing. What you take out cannot be recovered later.",
+      "hook_jp": "MP3 は MPEG-1 Audio Layer-3 の略で、映像と音声の圧縮規格 MPEG の音声部分から生まれた名前である。",
+      "hook_zh": "MP3 是 MPEG-1 Audio Layer-3 的缩写，名称来自视频与音频压缩标准 MPEG 的音频部分。",
+      "hook_en": "MP3 stands for MPEG-1 Audio Layer-3, a name taken from the audio part of MPEG, the compression standard for video and audio.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**MP3** が扱う対象は音声で、聞き取りにくい成分を捨てる **非可逆圧縮** によってファイルを小さくする。",
+          "text_zh": "**MP3** 处理的对象是声音，通过舍弃难以听清成分的 **有损压缩**（[[jp:非可逆圧縮]]）来缩小文件。",
+          "text_en": "**MP3** handles audio, and it makes files smaller through **lossy compression** ([[jp:非可逆圧縮]]), which discards components that are hard to hear.",
+          "qids": [
+            "2009h21h-q078"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**非可逆圧縮** は伸長しても元のデータに完全には戻らず、ZIP のような **可逆圧縮** は完全に戻る。",
+          "text_zh": "**有损压缩** 即使解压也无法完全恢复原来的数据，而像 ZIP 这样的 **无损压缩**（[[jp:可逆圧縮]]）可以完全恢复。",
+          "text_en": "Data compressed with **lossy compression** cannot be fully restored even after decompression, while **lossless compression** ([[jp:可逆圧縮]]) such as ZIP restores it completely."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2009h21h-q078"
+      ],
+      "definition_jp": "MP3 は、人の耳に聞こえにくい成分を取り除いて音声データを小さくする、非可逆圧縮 の音声ファイル形式である。",
+      "definition_zh": "MP3 是一种 有损压缩 的音频文件格式，通过去除人耳不易听到的成分来缩小音频数据。",
+      "definition_en": "MP3 is a lossy compression audio file format that makes audio data smaller by removing components the human ear has trouble hearing.",
+      "explanation_jp": "非可逆圧縮 は、圧縮したデータを 伸長 (元の形式に戻す処理) しても、捨てた情報が戻らない方式である。MP3 は、大きな音のすぐ近くにある小さな音のように聞き取りにくい部分を削り、設定によっては元の PCM データの 10 分の 1 程度まで小さくできる。削る量を増やすほどファイルは小さくなるが、音質は落ちる。",
+      "explanation_zh": "有损压缩 是指压缩后的数据即使经过 解压（伸長，恢复为原来格式的处理），被舍弃的信息也无法恢复的方式。MP3 会削去紧挨在大声音旁边的小声音这类难以听清的部分，根据设置可以缩小到原始 PCM 数据的十分之一左右。削去得越多，文件越小，但音质也会下降。",
+      "explanation_en": "Lossy compression is a method in which discarded information does not come back even when the compressed data is decompressed (伸長, converted back to its original form). MP3 cuts parts that are hard to make out, such as a quiet sound right next to a loud one, and depending on the settings can shrink the data to about one tenth of the original PCM data. The more it cuts, the smaller the file, but the lower the sound quality.",
+      "memory_hook_jp": "MP3 は MPEG-1 Audio Layer-3 の略で、映像と音声の圧縮規格 MPEG の音声部分から生まれた名前である。",
+      "memory_hook_zh": "MP3 是 MPEG-1 Audio Layer-3 的缩写，名称来自视频与音频压缩标准 MPEG 的音频部分。",
+      "memory_hook_en": "MP3 stands for MPEG-1 Audio Layer-3, a name taken from the audio part of MPEG, the compression standard for video and audio.",
       "inline_quiz": [
         "2009h21h-q078"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "MP3",
-      "term_en": "MP3",
-      "definition_zh": "通过删除人耳难以听到的声音的代表性有损压缩音频格式。",
-      "definition_en": "A representative lossy-compression audio format that removes sounds the human ear can barely hear.",
-      "explanation_zh": "MP3 是通过删除人耳难以听到的声音（如被其他大音量掩盖的声音等）来大幅减少数据量的有损压缩代表性音频格式。它能比 WAV 大幅缩小文件大小，在音乐分发和便携音乐播放器中广泛普及。\n\n由于是有损压缩，一旦压缩，被删除的信息就无法还原，压缩越强音质越劣化。考试中会考查它与 WAV（无压缩）在容量和音质上的区别、『有损 = 无法还原』这一性质，以及它与后继格式 AAC 的定位关系。",
-      "explanation_en": "MP3 is a representative lossy-compression audio format that greatly reduces data size by removing sounds the human ear can barely hear (such as sounds masked by other loud sounds). It can make file sizes far smaller than WAV, and became widely popular for music distribution and portable music players.\n\nBecause it is lossy compression, once compressed, the removed information cannot be restored, and the stronger the compression the more the quality degrades. The exam asks about its difference from WAV (uncompressed) in size and quality, the property that 'lossy = cannot be restored,' and how it relates to its successor format, AAC.",
-      "analogy_zh": "就像从沉重的行李中抽走那些没有也不要紧的东西，让它变轻。携带是更轻松了，但抽走的东西再也回不来了。",
-      "analogy_en": "It's like pulling out the things you can do without from heavy luggage to make it lighter. It becomes easier to carry, but the things you took out never come back.",
-      "memory_hook_zh": "说到 MP3，就是删除难听到的声音的有损压缩经典格式",
-      "memory_hook_en": "MP3 → the classic lossy compression that removes barely audible sounds"
+      "figure": null
     },
     {
       "term": "AAC",
-      "definition_jp": "MP3の後継として高音質化を図った非可逆圧縮音声形式。",
-      "explanation_jp": "AACは、MP3の後継として開発された非可逆圧縮の音声形式で、同じファイルサイズならMP3より高音質になりやすいのが特徴です。音楽配信サービスやスマートフォン、動画の音声などで広く使われています。\n\nMP3と同じく非可逆圧縮なので、削った情報は元に戻せません。試験では、MP3とAACがともに非可逆圧縮であること、AACがMP3の後継・改良形式という位置づけであることを押さえておけば十分です。無圧縮のWAVと混同しないことが大切です。",
-      "analogy_jp": "荷物を軽くする道具を新しく改良したようなもの。同じ重さに抑えても、古い道具(MP3)より中身を上手に残せます。",
-      "memory_hook_jp": "AACといえばMP3後継で同容量なら高音質な非可逆圧縮",
-      "inline_quiz": [
-        "2012h24a-q095"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "AAC",
       "term_en": "AAC",
-      "definition_zh": "作为 MP3 后继、追求更高音质的有损压缩音频格式。",
-      "definition_en": "A lossy-compression audio format developed as the successor to MP3, aiming for higher sound quality.",
-      "explanation_zh": "AAC 是作为 MP3 后继而开发的有损压缩音频格式，其特点是在相同文件大小下往往比 MP3 音质更高。它被广泛用于音乐分发服务、智能手机以及视频的音频等。\n\n与 MP3 一样属于有损压缩，因此删除的信息无法还原。考试中只要掌握 MP3 与 AAC 都是有损压缩，以及 AAC 是 MP3 的后继、改良格式这一定位即可。关键是不要把它与无压缩的 WAV 混淆。",
-      "explanation_en": "AAC is a lossy-compression audio format developed as the successor to MP3, and its characteristic is that at the same file size it tends to offer higher sound quality than MP3. It is widely used in music distribution services, smartphones, and the audio of videos, among others.\n\nLike MP3, it is lossy compression, so the removed information cannot be restored. For the exam, it is enough to grasp that both MP3 and AAC are lossy compression, and that AAC is positioned as the successor and improved format of MP3. The important point is not to confuse it with the uncompressed WAV.",
-      "analogy_zh": "就像把用来减轻行李的工具做了新的改良。即便压到同样的重量，它也能比旧工具（MP3）更巧妙地保留里面的东西。",
-      "analogy_en": "It's like a newly improved tool for making luggage lighter. Even when squeezed down to the same weight, it preserves the contents more skillfully than the old tool (MP3).",
-      "memory_hook_zh": "说到 AAC，就是 MP3 后继、同容量下音质更高的有损压缩",
-      "memory_hook_en": "AAC → MP3's successor; lossy compression with higher quality at the same size"
+      "one_jp": "**AAC** は、MP3 より後に開発された **非可逆圧縮** の音声形式で、同じデータ量なら MP3 より音質を保ちやすい。",
+      "one_zh": "**AAC** 是晚于 MP3 开发的 **有损压缩** 音频格式，在同等数据量下比 MP3 更容易保住音质。",
+      "one_en": "**AAC** is a **lossy compression** audio format developed after MP3 that tends to keep better sound quality than MP3 at the same data size.",
+      "detail_jp": "名前は Advanced Audio Coding (高度な音声符号化) の略で、MPEG-2 や MPEG-4 の規格の一部として定められた。音楽配信サービスやスマートフォン、デジタル放送の音声などで使われている。",
+      "detail_zh": "名称是 Advanced Audio Coding（高级音频编码）的缩写，作为 MPEG-2 和 MPEG-4 标准的一部分而制定。它用于音乐流媒体服务、智能手机以及数字广播的声音等场合。",
+      "detail_en": "Its name stands for Advanced Audio Coding, and it was defined as part of the MPEG-2 and MPEG-4 standards. It is used in music streaming services, smartphones, and the audio of digital broadcasting.",
+      "analogy_jp": "荷物を軽くする道具の改良版で、同じ重さに詰めても中身を多く残せるようなもの。",
+      "analogy_zh": "就像减轻行李的工具出了改良版：装到同样重量时，能留下更多东西。",
+      "analogy_en": "It is like an improved packing tool: at the same weight, it lets you keep more of the contents.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**AAC** と **MP3** はどちらも非可逆圧縮であり、使ううえでの主な違いは同じデータ量でどれだけ音質を保てるかにあって、AAC のほうが有利になりやすい。",
+          "text_zh": "**AAC** 和 **MP3** 都是有损压缩，使用上的主要区别在于同等数据量下能保住多少音质，AAC 往往更占优势。",
+          "text_en": "**AAC** and **MP3** are both lossy compression formats; the main practical difference lies in how much sound quality each keeps at the same data size, and AAC usually has the edge."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "audio",
+            "label": {
+              "jp": "音声ファイル形式",
+              "zh": "音频文件格式",
+              "en": "Audio file formats"
+            },
+            "children": [
+              {
+                "id": "raw",
+                "label": {
+                  "jp": "圧縮しない",
+                  "zh": "不压缩",
+                  "en": "Uncompressed"
+                },
+                "children": [
+                  {
+                    "id": "wav",
+                    "label": {
+                      "jp": "WAV",
+                      "zh": "WAV",
+                      "en": "WAV"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "lossy",
+                "label": {
+                  "jp": "非可逆圧縮",
+                  "zh": "有损压缩",
+                  "en": "Lossy compression"
+                },
+                "children": [
+                  {
+                    "id": "mp3",
+                    "label": {
+                      "jp": "MP3",
+                      "zh": "MP3",
+                      "en": "MP3"
+                    }
+                  },
+                  {
+                    "id": "aac",
+                    "label": {
+                      "jp": "AAC",
+                      "zh": "AAC",
+                      "en": "AAC"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [],
+      "definition_jp": "AAC は、MP3 より後に開発された 非可逆圧縮 の音声形式で、同じデータ量なら MP3 より音質を保ちやすい。",
+      "definition_zh": "AAC 是晚于 MP3 开发的 有损压缩 音频格式，在同等数据量下比 MP3 更容易保住音质。",
+      "definition_en": "AAC is a lossy compression audio format developed after MP3 that tends to keep better sound quality than MP3 at the same data size.",
+      "explanation_jp": "名前は Advanced Audio Coding (高度な音声符号化) の略で、MPEG-2 や MPEG-4 の規格の一部として定められた。音楽配信サービスやスマートフォン、デジタル放送の音声などで使われている。",
+      "explanation_zh": "名称是 Advanced Audio Coding（高级音频编码）的缩写，作为 MPEG-2 和 MPEG-4 标准的一部分而制定。它用于音乐流媒体服务、智能手机以及数字广播的声音等场合。",
+      "explanation_en": "Its name stands for Advanced Audio Coding, and it was defined as part of the MPEG-2 and MPEG-4 standards. It is used in music streaming services, smartphones, and the audio of digital broadcasting.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "PCM",
+      "b": "MIDI",
+      "rows": [
+        {
+          "label_jp": "記録・伝達するもの",
+          "label_zh": "记录、传递的内容",
+          "label_en": "What is recorded or sent",
+          "a_jp": "音の波を測った数値",
+          "a_zh": "测量声音波形得到的数值",
+          "a_en": "Numbers measured from the sound wave",
+          "b_jp": "音の高さ・長さ・強さなどの演奏の指示",
+          "b_zh": "音高、时长、力度等演奏指令",
+          "b_en": "Performance instructions such as pitch, length, and loudness",
+          "key": true
+        },
+        {
+          "label_jp": "データ量",
+          "label_zh": "数据量",
+          "label_en": "Data size",
+          "a_jp": "標本化周波数と量子化ビット数に比例して増える",
+          "a_zh": "与采样频率和量化比特数成正比增加",
+          "a_en": "Grows in proportion to sampling frequency and quantization bit depth",
+          "b_jp": "曲の長さに対してごく小さい",
+          "b_zh": "相对于乐曲长度非常小",
+          "b_en": "Very small for the length of the piece",
+          "key": false
+        },
+        {
+          "label_jp": "再生される音",
+          "label_zh": "播放出的声音",
+          "label_en": "Sound on playback",
+          "a_jp": "記録した波形のデータどおりに鳴り、音源の違いに左右されない",
+          "a_zh": "按记录的波形数据发声，不受音源不同的影响",
+          "a_en": "Plays back the recorded waveform data as is, unaffected by which sound source is used",
+          "b_jp": "受け取った側の音源によって変わる",
+          "b_zh": "随接收方的音源而改变",
+          "b_en": "Changes with the receiver's sound source",
+          "key": false
+        },
+        {
+          "label_jp": "人の声",
+          "label_zh": "人声",
+          "label_en": "Human voice",
+          "a_jp": "録音できる",
+          "a_zh": "可以录制",
+          "a_en": "Can be recorded",
+          "b_jp": "演奏情報としては表せない",
+          "b_zh": "无法用演奏信息表示",
+          "b_en": "Cannot be expressed as performance information",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "WAV",
+      "b": "MP3",
+      "rows": [
+        {
+          "label_jp": "圧縮",
+          "label_zh": "压缩",
+          "label_en": "Compression",
+          "a_jp": "しない",
+          "a_zh": "不压缩",
+          "a_en": "None",
+          "b_jp": "非可逆圧縮する",
+          "b_zh": "有损压缩",
+          "b_en": "Lossy compression",
+          "key": true
+        },
+        {
+          "label_jp": "ファイルの大きさ",
+          "label_zh": "文件大小",
+          "label_en": "File size",
+          "a_jp": "大きい",
+          "a_zh": "大",
+          "a_en": "Large",
+          "b_jp": "小さい",
+          "b_zh": "小",
+          "b_en": "Small",
+          "key": false
+        },
+        {
+          "label_jp": "音質",
+          "label_zh": "音质",
+          "label_en": "Sound quality",
+          "a_jp": "記録したときのまま",
+          "a_zh": "保持录制时的原样",
+          "a_en": "Same as when recorded",
+          "b_jp": "削った分だけ元の音と異なる",
+          "b_zh": "因削去的部分而与原声有差异",
+          "b_en": "Differs from the original by what was cut",
+          "key": false
+        },
+        {
+          "label_jp": "向いている使い方",
+          "label_zh": "适合的用途",
+          "label_en": "Best suited for",
+          "a_jp": "編集の素材",
+          "a_zh": "编辑素材",
+          "a_en": "Editing material",
+          "b_jp": "配信や持ち歩き",
+          "b_zh": "在线分发和随身收听",
+          "b_en": "Distribution and listening on the go",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**PCM** は標本化、量子化、符号化の順に音の波を数値にし、標本化周波数と量子化ビット数を上げるほど元の音に近づく一方でデータ量が増える。",
+    "**MIDI** のデータに入るのは演奏の指示であり、鳴る音は受け取った側の音源が作る。",
+    "**WAV** は PCM のデータを圧縮せずに収めるため、劣化はないがファイルが大きくなる。",
+    "**非可逆圧縮** で捨てた情報は伸長しても戻らず、**MP3** と **AAC** はこの方式で音声を小さくする。"
+  ],
+  "key_points_zh": [
+    "**PCM** 按采样、量化、编码的顺序把声音波形变成数值，采样频率和量化比特数越高，越接近原声，但数据量也越大。",
+    "**MIDI** 数据中包含的是演奏指令，实际发出的声音由接收方的音源生成。",
+    "**WAV** 不经压缩地保存 PCM 数据，因此没有劣化，但文件较大。",
+    "**有损压缩** 舍弃的信息即使解压也无法恢复，**MP3** 和 **AAC** 都用这种方式缩小音频。"
+  ],
+  "key_points_en": [
+    "**PCM** turns a sound wave into numbers through sampling, quantization, and encoding, in that order; higher sampling frequency and quantization bit depth bring it closer to the original sound but increase the data size.",
+    "**MIDI** data contains performance instructions, and the sound you hear is generated by the receiver's sound source.",
+    "**WAV** stores PCM data without compression, so there is no loss in quality, but files are large.",
+    "Information discarded by **lossy compression** does not return after decompression, and **MP3** and **AAC** both use this method to make audio smaller."
+  ],
+  "overview": {
+    "intro_jp": "PCM で音の波が数値になるまでの順序と、細かく記録したときの音質とデータ量の関係を説明できる。音の波形を記録する方式と、演奏情報 を伝える MIDI を区別できる。音声ファイル形式を、圧縮しない形式と 非可逆圧縮 の形式に分けられる。",
+    "intro_zh": "能说明 PCM 把声音波形变成数值的处理顺序，以及记录得越精细，音质和数据量会如何变化。能区分记录声音波形的方式和传递 演奏信息 的 MIDI。能把音频文件格式分成不压缩的格式和 有损压缩 的格式。",
+    "intro_en": "Explain the order in which PCM turns a sound wave into numbers, and how finer recording affects both sound quality and data size. Tell methods that record the sound waveform apart from MIDI, which carries performance information. Sort audio file formats into uncompressed formats and lossy compression formats.",
+    "freq_badge": "低頻",
+    "est_minutes": 29
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "PCM: PCMといえば標本化・量子化・符号化で波形をデジタル化",
-      "MIDI: MIDIといえば波形でなく演奏情報を記述する楽譜のような規格",
-      "WAV: WAVといえば無圧縮・高音質・大容量の音声形式",
-      "MP3: MP3といえば聞こえにくい音を削る非可逆圧縮の定番",
-      "AAC: AACといえばMP3後継で同容量なら高音質な非可逆圧縮"
-    ],
     "key_points_jp": [
-      "音声のデジタル化方式には、波形を記録するPCMと、演奏情報を記述するMIDIの2つがある。",
-      "PCMは『標本化→量子化→符号化』の3段階で行い、細かくするほど高音質だがデータ量は増える。",
-      "音声ファイル形式は、無圧縮のWAVと、非可逆圧縮のMP3・AACに大別できる。",
-      "WAVは無圧縮で高音質だが大容量、MP3・AACは圧縮で小容量だが元に戻せない(非可逆)。",
-      "AACはMP3の後継で、同じ容量ならより高音質になりやすい。"
+      "PCM は標本化、量子化、符号化の順に音の波を数値にし、標本化周波数と量子化ビット数を上げるほど元の音に近づく一方でデータ量が増える。",
+      "MIDI のデータに入るのは演奏の指示であり、鳴る音は受け取った側の音源が作る。",
+      "WAV は PCM のデータを圧縮せずに収めるため、劣化はないがファイルが大きくなる。",
+      "非可逆圧縮 で捨てた情報は伸長しても戻らず、MP3 と AAC はこの方式で音声を小さくする。"
     ],
     "key_points_zh": [
-      "声音的数字化方式有两种：记录波形的 PCM，以及描述演奏信息的 MIDI。",
-      "PCM 按『采样→量化→编码』三个阶段进行，分得越细音质越高，但数据量也会增加。",
-      "音频文件格式可大致分为无压缩的 WAV，以及有损压缩的 MP3、AAC。",
-      "WAV 无压缩、音质高但容量大；MP3、AAC 经压缩、容量小但无法还原（有损）。",
-      "AAC 是 MP3 的后继，在相同容量下往往音质更高。"
+      "PCM 按采样、量化、编码的顺序把声音波形变成数值，采样频率和量化比特数越高，越接近原声，但数据量也越大。",
+      "MIDI 数据中包含的是演奏指令，实际发出的声音由接收方的音源生成。",
+      "WAV 不经压缩地保存 PCM 数据，因此没有劣化，但文件较大。",
+      "有损压缩 舍弃的信息即使解压也无法恢复，MP3 和 AAC 都用这种方式缩小音频。"
     ],
     "key_points_en": [
-      "There are two methods of digitizing audio: PCM, which records the waveform, and MIDI, which describes performance information.",
-      "PCM is carried out in three stages, 'sampling → quantization → encoding'; the finer it is, the higher the quality, but the data size also increases.",
-      "Audio file formats can be broadly divided into uncompressed WAV, and lossy-compressed MP3 and AAC.",
-      "WAV is uncompressed, high quality but large in size; MP3 and AAC are compressed, small in size but cannot be restored (lossy).",
-      "AAC is the successor to MP3 and tends to offer higher sound quality at the same size."
+      "PCM turns a sound wave into numbers through sampling, quantization, and encoding, in that order; higher sampling frequency and quantization bit depth bring it closer to the original sound but increase the data size.",
+      "MIDI data contains performance instructions, and the sound you hear is generated by the receiver's sound source.",
+      "WAV stores PCM data without compression, so there is no loss in quality, but files are large.",
+      "Information discarded by lossy compression does not return after decompression, and MP3 and AAC both use this method to make audio smaller."
+    ],
+    "memory_hooks_jp": [
+      "PCM: 「測る → 丸める → 書く」の 3 つの動作で順序を覚える。名前の中の C (Code = 符号) が最後の段の符号化にあたる。",
+      "MIDI: 正式名の最後は Interface (つなぐ口)。もともと楽器と楽器をつなぐための取り決めとして生まれた。",
+      "WAV: 名前は波形 (Waveform) から来ている。波形をそのまま入れた箱と結び付ける。",
+      "MP3: MP3 は MPEG-1 Audio Layer-3 の略で、映像と音声の圧縮規格 MPEG の音声部分から生まれた名前である。"
     ],
     "memory_hooks_zh": [
-      "PCM：说到 PCM，就是用采样、量化、编码把波形数字化",
-      "MIDI：说到 MIDI，就是不记波形、而像乐谱一样描述演奏信息的规格",
-      "WAV：说到 WAV，就是无压缩、高音质、大容量的音频格式",
-      "MP3：说到 MP3，就是删除难听到的声音的有损压缩经典格式",
-      "AAC：说到 AAC，就是 MP3 后继、同容量下音质更高的有损压缩"
+      "PCM（脉冲编码调制）：用“测 → 归整 → 写下”这三个动作记住顺序。名称中的 C（Code，码）对应最后一步的编码。",
+      "MIDI（乐器数字接口）：正式名称的最后一个词是 Interface（接口）。它原本是为了把乐器和乐器连接起来而定下的约定。",
+      "WAV：名称来自波形（Waveform）。把它和“原样装着波形的盒子”联系起来记。",
+      "MP3：MP3 是 MPEG-1 Audio Layer-3 的缩写，名称来自视频与音频压缩标准 MPEG 的音频部分。"
     ],
     "memory_hooks_en": [
-      "PCM: PCM → digitize the waveform via sampling, quantization, and encoding",
-      "MIDI: MIDI → a score-like standard that describes performance info, not the waveform",
-      "WAV: WAV → the uncompressed, high-quality, large-size audio format",
-      "MP3: MP3 → the classic lossy compression that removes barely audible sounds",
-      "AAC: AAC → MP3's successor; lossy compression with higher quality at the same size"
+      "PCM (Pulse Code Modulation): Remember the order as three actions: measure → round → write. The C in the name (Code) matches the last step, encoding.",
+      "MIDI (Musical Instrument Digital Interface): The last word of its full name is Interface. It began as an agreement for connecting one instrument to another.",
+      "WAV: The name comes from Waveform. Picture a box that holds the waveform just as it is.",
+      "MP3: MP3 stands for MPEG-1 Audio Layer-3, a name taken from the audio part of MPEG, the compression standard for video and audio."
     ]
   },
   "challenge_questions": [
-    "2012h24a-q096",
-    "2013h25a-q061",
-    "2013h25h-q079",
-    "2015h27a-q046",
-    "2015h27h-q076"
+    "2012h24h-q064",
+    "2009h21h-q078",
+    "2013h25h-q079"
   ],
   "source_figures": [
     {
@@ -209,9 +678,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "声音的数字化表示与文件格式",
-  "title_en": "Digital Representation of Audio and File Formats",
-  "unit_summary_zh": "理解将声音数字化的方式（PCM、MIDI）以及具有代表性的音频文件格式。",
-  "unit_summary_en": "Understand the methods of digitizing audio (PCM, MIDI) and the representative audio file formats."
+  }
 }
