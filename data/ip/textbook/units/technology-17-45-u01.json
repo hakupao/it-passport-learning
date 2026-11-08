@@ -1,190 +1,825 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-17-45-u01",
   "topic_id": "technology-17-45",
   "category": "technology",
   "title_jp": "OS の役割と基本機能",
+  "title_zh": "操作系统的作用与基本功能",
+  "title_en": "The Role and Basic Functions of an OS",
   "unit_summary_jp": "OS の必要性と、メモリ・ユーザー・ファイル・アクセス権を統括する OS の中核的な管理機能を学ぶ。",
+  "unit_summary_zh": "学习操作系统的必要性，以及统管内存、用户、文件和访问权限的操作系统核心管理功能。",
+  "unit_summary_en": "Learn why an OS is necessary and the core management functions through which an OS governs memory, users, files, and access rights.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、コンピュータを動かす土台となるOS(オペレーティングシステム)の役割と、その中核をなす管理機能を学びます。メモリを扱う仮想記憶、利用者を扱うユーザー管理、データを扱うファイル管理、そして「誰が何をしてよいか」を定めるアクセス権が対象です。OSは全ソフトの前提となる基礎概念で、試験でも繰り返し問われます。",
-    "freq_badge": "低頻",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习作为计算机运行基础的操作系统（OS，Operating System）的作用，以及构成其核心的各项管理功能。涉及的对象包括：处理内存的虚拟存储、处理用户的用户管理、处理数据的文件管理，以及规定“谁可以做什么”的访问权限。操作系统是所有软件赖以运行的基础概念，在考试中也会被反复考查。",
-    "intro_en": "In this unit, you will learn the role of the OS (Operating System)—the foundation that makes a computer run—and the core management functions at its heart. The topics covered are: virtual memory, which handles memory; user management, which handles users; file management, which handles data; and access rights, which define \"who is allowed to do what.\" The OS is a fundamental concept that underlies all software, and it is asked about repeatedly on the exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "**OS** が基本ソフトウェアとして何を引き受け、なぜ必要なのかを説明できる",
+    "**仮想記憶** の目的と、主記憶と補助記憶の入れ替えが増えたときに起きることを説明できる",
+    "利用者を確かめる機能と、利用者ごとに操作を許すかどうかを決める設定とを区別できる"
+  ],
+  "goals_zh": [
+    "能说明 **操作系统** 作为基础软件承担哪些工作，以及为什么需要它",
+    "能说明 **虚拟存储** 的目的，以及主存储器与辅助存储器之间的换入换出增多时会发生什么",
+    "能区分确认用户身份的功能，与按用户决定是否允许操作的设置"
+  ],
+  "goals_en": [
+    "Explain what an **OS** takes on as basic software and why it is needed",
+    "Explain the purpose of **virtual memory** and what happens when swapping between main memory and auxiliary storage increases",
+    "Tell the function that confirms who a user is apart from the setting that decides, per user, which operations are allowed"
+  ],
+  "overview_cols_jp": [
+    "扱う対象"
+  ],
+  "overview_cols_zh": [
+    "管理对象"
+  ],
+  "overview_cols_en": [
+    "What it handles"
+  ],
+  "overview_rows": [
     {
       "term": "OS",
-      "definition_jp": "ハードウェアを管理し応用ソフトに共通機能を提供する基本ソフトウェア。",
-      "explanation_jp": "OS(オペレーティングシステム)は、CPU・メモリ・記憶装置などのハードウェアを管理し、アプリケーション(応用ソフトウェア)が共通して使う機能を提供する基本ソフトウェアです。Windows・macOS・Linux・Android などが代表例です。\n\nOSがあることで、各アプリは細かなハードウェア制御を意識せず、ファイル読み書きや画面表示などをOSに任せられます。試験では、OSが「基本ソフトウェア」であり応用ソフトウェアとは区別されること、複数の処理を並行して扱うマルチタスクなど、OSが資源を統括する立場であることが問われます。",
-      "analogy_jp": "ビルの管理人のような存在。電気・水道・エレベーターといった共用設備をまとめて管理し、各部屋(アプリ)はその設備を使うだけで済むようにしてくれます。",
-      "memory_hook_jp": "OSといえばハードを管理し共通機能を提供する基本ソフト",
-      "inline_quiz": [
-        "2010h22h-q056",
-        "2012h24h-q071"
+      "one_line_jp": "ハードウェアを管理し、アプリに共通の機能を提供する基本ソフトウェア",
+      "one_line_zh": "管理硬件、为应用程序提供通用功能的基础软件",
+      "one_line_en": "Basic software that manages hardware and provides common functions to apps",
+      "extra_jp": [
+        "コンピュータ全体の資源"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "操作系统",
-      "term_en": "OS (Operating System)",
-      "definition_zh": "管理硬件并向应用软件提供通用功能的基本软件。",
-      "definition_en": "The basic software that manages hardware and provides common functions to application software.",
-      "explanation_zh": "操作系统（OS，Operating System）是一种基本软件，它管理 CPU、内存、存储设备等硬件，并提供各类应用程序（应用软件）共同使用的功能。Windows、macOS、Linux、Android 等都是典型代表。\n\n有了操作系统，各个应用程序就无需关心细致的硬件控制，可以把文件读写、屏幕显示等工作交给操作系统处理。考试中常考查：操作系统属于“基本软件”，要与应用软件区分开；以及操作系统能够并行处理多项任务的多任务等特性，体现出操作系统处于统管资源的地位。",
-      "explanation_en": "The OS (Operating System) is the basic software that manages hardware such as the CPU, memory, and storage devices, and provides functions that applications (application software) use in common. Windows, macOS, Linux, and Android are typical examples.\n\nBecause the OS exists, each app can leave tasks such as reading and writing files or displaying things on the screen to the OS, without having to deal with detailed hardware control itself. On the exam, you are asked that the OS is \"basic software\" distinct from application software, and that—through features like multitasking, which handles several processes in parallel—the OS is in the position of governing resources.",
-      "analogy_zh": "就像大楼的管理员。它统一管理电力、供水、电梯等公共设施，让每个房间（应用程序）只需使用这些设施即可。",
-      "analogy_en": "Like a building manager. They manage shared facilities such as electricity, water, and elevators all together, so that each room (an app) only has to use those facilities.",
-      "memory_hook_zh": "说到操作系统，就是管理硬件、提供通用功能的基本软件",
-      "memory_hook_en": "OS → the basic software that manages hardware and provides common functions"
+      "extra_zh": [
+        "整台计算机的资源"
+      ],
+      "extra_en": [
+        "Resources of the whole computer"
+      ]
     },
     {
       "term": "仮想記憶",
-      "definition_jp": "補助記憶の一部を主記憶のように使い見かけのメモリを拡張する方式。",
-      "explanation_jp": "仮想記憶は、主記憶(メモリ)が足りないとき、ハードディスクなど補助記憶の一部を主記憶の代わりに使い、見かけ上のメモリ容量を増やすOSのしくみです。当面使わないデータを補助記憶へ退避し、必要になったら主記憶へ戻します。\n\nこれにより、実際の主記憶より大きなプログラムも実行できます。試験では、仮想記憶が「主記憶+補助記憶」で容量を補う技術であること、補助記憶への入れ替え(スワップ)が頻発すると速度が落ちる点がポイントです。物理的な主記憶そのものを増やすメモリ増設とは異なる概念である点に注意しましょう。",
-      "analogy_jp": "机(主記憶)が狭いとき、当面使わない書類を引き出し(補助記憶)にしまい、必要なときだけ机に出す働き方。机を広く使えるが、出し入れが多いと作業が遅くなります。",
-      "memory_hook_jp": "仮想記憶といえば補助記憶を使って主記憶を広く見せる方式",
-      "inline_quiz": [
-        "2009h21a-q059"
+      "one_line_jp": "補助記憶の一部を使い、主記憶を実際より大きく見せるしくみ",
+      "one_line_zh": "借用辅助存储器的一部分，使主存储器看起来比实际更大的机制",
+      "one_line_en": "A mechanism that uses part of auxiliary storage to make main memory look larger than it is",
+      "extra_jp": [
+        "主記憶 (メモリ)"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"主記憶(メモリ)\"]; B[\"補助記憶(ディスク)\"]; A -->|\"使わないデータを退避(スワップアウト)\"| B; B -->|\"必要なデータを戻す(スワップイン)\"| A",
-        "svg_path": "figures/technology-17-45-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "虚拟存储",
-      "term_en": "virtual memory",
-      "definition_zh": "把一部分辅助存储当作主存使用，从而扩展表面上内存容量的方式。",
-      "definition_en": "A scheme that uses part of auxiliary storage as if it were main memory, thereby expanding the apparent amount of memory.",
-      "explanation_zh": "虚拟存储是一种操作系统机制：当主存（内存）不足时，把硬盘等辅助存储的一部分当作主存来使用，从而增加表面上的内存容量。它会把暂时不用的数据转存到辅助存储，等需要时再调回主存。\n\n借助这种方式，比实际主存更大的程序也能运行。考试要点是：虚拟存储是用“主存＋辅助存储”来补足容量的技术；以及如果频繁地与辅助存储进行换入换出（交换，swap），速度就会下降。要注意，它与直接增加物理主存本身的内存扩容是不同的概念。",
-      "explanation_en": "Virtual memory is an OS mechanism that, when main memory (RAM) is insufficient, uses part of auxiliary storage such as a hard disk in place of main memory, thereby increasing the apparent amount of memory. It moves data that is not currently needed out to auxiliary storage and brings it back to main memory when required.\n\nThanks to this, programs larger than the actual main memory can still run. The exam points are that virtual memory is a technique that supplements capacity with \"main memory + auxiliary storage,\" and that performance drops if swapping in and out of auxiliary storage (swap) happens frequently. Note that it is a different concept from a memory upgrade, which increases the physical main memory itself.",
-      "analogy_zh": "当书桌（主存）太小时，把暂时不用的文件收进抽屉（辅助存储），只在需要时才拿到桌上。这样桌面能用得更宽敞，但来回取放太多就会让工作变慢。",
-      "analogy_en": "When your desk (main memory) is small, you put papers you don't need right now into a drawer (auxiliary storage) and take them out onto the desk only when you need them. You get a roomier desk, but if you move things in and out too often, the work slows down.",
-      "memory_hook_zh": "说到虚拟存储，就是借辅助存储把主存“看起来更大”的方式",
-      "memory_hook_en": "virtual memory → using auxiliary storage to make main memory look bigger"
+      "extra_zh": [
+        "主存储器（内存）"
+      ],
+      "extra_en": [
+        "Main memory"
+      ]
     },
     {
       "term": "ユーザー管理",
-      "definition_jp": "利用者の登録・認証・権限割り当てを行うOSの管理機能。",
-      "explanation_jp": "ユーザー管理は、コンピュータを使う利用者(ユーザー)を登録し、ログイン時に本人かどうかを確認(認証)し、各利用者に応じた権限を与えるOSの機能です。利用者ごとにアカウントを作り、IDとパスワードなどで管理します。\n\n一台を複数人で使う場合でも、利用者ごとに設定やアクセスできる範囲を分けられます。試験では、ユーザー管理が「誰が使っているか」を扱う基礎機能であり、後述のアクセス権が前提とする『誰が』を決める仕組みである点を押さえると、機能どうしのつながりが理解しやすくなります。",
-      "analogy_jp": "会社の入館証(社員証)を発行する総務の役割。誰が社員かを登録し、入口で本人確認し、人ごとに入れる部屋を決めるのに似ています。",
-      "memory_hook_jp": "ユーザー管理といえば利用者の登録・認証・権限を扱う機能",
-      "inline_quiz": [
-        "2009h21h-q085"
+      "one_line_jp": "利用者のアカウントを登録し、ログイン時に本人かを確かめる機能",
+      "one_line_zh": "登记用户账户，并在登录时确认是否为本人的功能",
+      "one_line_en": "A function that registers user accounts and checks identity at login",
+      "extra_jp": [
+        "利用者"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "用户管理",
-      "term_en": "user management",
-      "definition_zh": "进行用户的注册、认证和权限分配的操作系统管理功能。",
-      "definition_en": "The OS management function that registers users, authenticates them, and assigns rights.",
-      "explanation_zh": "用户管理是一项操作系统功能：注册使用计算机的用户，在登录时确认是否为本人（认证），并为每个用户授予相应的权限。它为每个用户创建账户，用 ID 和密码等进行管理。\n\n即使一台计算机由多人共用，也能按用户区分各自的设置和可访问的范围。考试中应把握：用户管理是处理“谁在使用”的基础功能，是后文访问权限所依赖的、用来确定“谁”的机制；这样就更容易理解各功能之间的关联。",
-      "explanation_en": "User management is an OS function that registers the users who use a computer, confirms at login whether the person is who they claim to be (authentication), and grants each user the appropriate rights. It creates an account for each user and manages them with an ID, password, and so on.\n\nEven when one machine is shared by several people, settings and the range each user can access can be separated per user. On the exam, grasp that user management is a basic function dealing with \"who is using\" the system, and that it is the mechanism that decides the \"who\" presupposed by access rights, discussed later; this makes the connections between functions easier to understand.",
-      "analogy_zh": "就像总务部门发放公司门禁卡（员工证）的工作。登记谁是员工、在入口核实本人，并按人决定可以进入哪些房间，与之类似。",
-      "analogy_en": "Like the general-affairs department issuing building passes (employee ID cards). It registers who is an employee, verifies identity at the entrance, and decides which rooms each person may enter.",
-      "memory_hook_zh": "说到用户管理，就是处理用户注册、认证、权限的功能",
-      "memory_hook_en": "user management → handles user registration, authentication, and rights"
+      "extra_zh": [
+        "用户"
+      ],
+      "extra_en": [
+        "Users"
+      ]
     },
     {
       "term": "ファイル管理",
-      "definition_jp": "ファイルやフォルダの作成・保存・整理を統括するOSの機能。",
-      "explanation_jp": "ファイル管理は、データをファイル単位で扱い、その作成・保存・読み書き・削除や、フォルダ(ディレクトリ)による階層的な整理を行うOSの機能です。利用者は記憶装置上の物理的な位置を意識せず、名前でファイルを扱えます。\n\nフォルダで階層をつくり、ファイルを分類・整理できるのが特徴です。試験では、ファイル管理がデータを名前と階層構造で扱う仕組みであること、そしてこの「ファイル」という単位に対してアクセス権(読み取り・書き込み等)が設定される点を、後続のアクセス権と結びつけて理解しておくとよいでしょう。",
-      "analogy_jp": "書類を扱う書庫(キャビネット)の管理。フォルダという引き出しに分けて整理し、ラベル(ファイル名)で目的の書類をすぐ取り出せるようにする仕組みです。",
-      "memory_hook_jp": "ファイル管理といえばファイルとフォルダで整理する機能",
+      "one_line_jp": "データをファイルとして名前で扱い、フォルダの階層で整理する機能",
+      "one_line_zh": "把数据作为文件按名称处理，并用文件夹层级加以整理的功能",
+      "one_line_en": "A function that handles data as named files and organizes them in a folder hierarchy",
+      "extra_jp": [
+        "ファイルとフォルダ"
+      ],
+      "extra_zh": [
+        "文件和文件夹"
+      ],
+      "extra_en": [
+        "Files and folders"
+      ]
+    },
+    {
+      "term": "アクセス権",
+      "one_line_jp": "どの利用者がそのファイルにどんな操作をしてよいかを決める設定",
+      "one_line_zh": "决定哪个用户可以对该文件进行哪些操作的设置",
+      "one_line_en": "A setting that decides which users may do what with a file",
+      "extra_jp": [
+        "利用者ごとの操作の可否"
+      ],
+      "extra_zh": [
+        "每个用户能否进行各项操作"
+      ],
+      "extra_en": [
+        "What each user is allowed to do"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "OS",
+      "term_zh": "操作系统",
+      "term_en": "OS (Operating System)",
+      "one_jp": "**OS** (オペレーティングシステム) は、ハードウェアを管理してアプリケーションに共通の機能を提供する **基本ソフトウェア** である。",
+      "one_zh": "**操作系统**（OS，Operating System）是管理硬件、为应用程序提供通用功能的 **基础软件**（[[jp:基本ソフトウェア]]）。",
+      "one_en": "An **OS** (Operating System) is the **basic software** ([[jp:基本ソフトウェア]]) that manages the hardware and provides common functions to applications.",
+      "detail_jp": "アプリは画面表示や記憶装置への読み書きを OS に頼むだけでよく、機器ごとの細かな制御を自分で持たずに済む。複数のプログラムを並行して動かす **マルチタスク** も、OS が処理装置の時間を配分することで成り立つ。PC の電源を入れた直後には、機器の初期設定を行う **BIOS** という OS とは別のプログラムが動く。",
+      "detail_zh": "应用程序只需请操作系统代为显示画面、读写存储设备，不必自己掌握每种设备的细节控制。让多个程序并行运行的 **多任务**（[[jp:マルチタスク]]），也是靠操作系统分配处理器的时间才得以实现。PC 刚开机时，运行的是负责设备初始设置、独立于操作系统的 **BIOS** 程序。",
+      "detail_en": "An application only has to ask the OS to draw the screen or read and write storage, so it does not need its own control logic for each device. **Multitasking** ([[jp:マルチタスク]]), where several programs run side by side, also works because the OS divides up processor time. Right after a PC is switched on, a separate program called **BIOS** runs to set up the hardware before the OS takes over.",
+      "analogy_jp": "鉄道会社に近い存在。線路や信号の管理を一手に引き受けるので、乗客 (アプリ) は行き先を選んで乗るだけで目的地に着ける。",
+      "analogy_zh": "有点像铁路公司。线路和信号都由它一手管理，乘客（应用程序）只要选好目的地上车，就能到站。",
+      "analogy_en": "It is a bit like a railway company. It looks after all the tracks and signals, so passengers (apps) just pick a destination, get on, and arrive.",
+      "hook_jp": "Operating は「運転する・動かす」。機械を動かす係のシステムだから **Operating System**。",
+      "hook_zh": "Operating 意为“操作、使运转”。负责让机器运转起来的系统，所以叫 **Operating System**。",
+      "hook_en": "To operate a machine is to run it. The system whose job is running the machine is the **Operating System**.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**OS** は、処理装置や主記憶などの資源を、実行中のそれぞれのプログラムに振り分けて使わせる。",
+          "text_zh": "**操作系统**（OS）把处理器、主存储器（[[jp:主記憶]]）等资源分配给正在运行的各个程序使用。",
+          "text_en": "The **OS** hands out resources such as the processor and main memory ([[jp:主記憶]]) to each running program.",
+          "qids": [
+            "2010h22h-q056"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**マルチタスク** は、処理装置の時間を細かく区切って複数の処理へ交互に回し、同時に動いているように見せる OS の機能である。",
+          "text_zh": "**多任务**（[[jp:マルチタスク]]）是操作系统的一项功能：把处理器时间切成细小的片段，轮流分给多个任务，使它们看起来在同时运行。",
+          "text_en": "**Multitasking** ([[jp:マルチタスク]]) is an OS function that slices processor time finely and passes it to several tasks in turn, so they appear to run at once.",
+          "qids": [
+            "2012h24h-q071",
+            "2017h29h-q073"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "PC の電源を入れると、OS より先に **BIOS** が実行され、その後で OS が読み込まれる。",
+          "text_zh": "PC 开机后，**BIOS** 先于操作系统运行，之后操作系统才被载入。",
+          "text_en": "When a PC is powered on, **BIOS** runs before the OS, and only then is the OS loaded.",
+          "qids": [
+            "2013h25h-q066",
+            "2016h28h-q085"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "user",
+              "label": {
+                "jp": "利用者",
+                "zh": "用户",
+                "en": "Users"
+              }
+            },
+            {
+              "id": "app",
+              "label": {
+                "jp": "応用ソフトウェア (アプリ)",
+                "zh": "应用软件（应用程序）",
+                "en": "Application software (apps)"
+              }
+            },
+            {
+              "id": "os",
+              "label": {
+                "jp": "OS (基本ソフトウェア)",
+                "zh": "操作系统（基础软件）",
+                "en": "OS (basic software)"
+              }
+            },
+            {
+              "id": "hw",
+              "label": {
+                "jp": "ハードウェア",
+                "zh": "硬件",
+                "en": "Hardware"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22h-q056",
+        "2012h24h-q071",
+        "2013h25h-q066"
+      ],
+      "definition_jp": "OS (オペレーティングシステム) は、ハードウェアを管理してアプリケーションに共通の機能を提供する 基本ソフトウェア である。",
+      "definition_zh": "操作系统（OS，Operating System）是管理硬件、为应用程序提供通用功能的 基础软件（基本ソフトウェア）。",
+      "definition_en": "An OS (Operating System) is the basic software (基本ソフトウェア) that manages the hardware and provides common functions to applications.",
+      "explanation_jp": "アプリは画面表示や記憶装置への読み書きを OS に頼むだけでよく、機器ごとの細かな制御を自分で持たずに済む。複数のプログラムを並行して動かす マルチタスク も、OS が処理装置の時間を配分することで成り立つ。PC の電源を入れた直後には、機器の初期設定を行う BIOS という OS とは別のプログラムが動く。",
+      "explanation_zh": "应用程序只需请操作系统代为显示画面、读写存储设备，不必自己掌握每种设备的细节控制。让多个程序并行运行的 多任务（マルチタスク），也是靠操作系统分配处理器的时间才得以实现。PC 刚开机时，运行的是负责设备初始设置、独立于操作系统的 BIOS 程序。",
+      "explanation_en": "An application only has to ask the OS to draw the screen or read and write storage, so it does not need its own control logic for each device. Multitasking (マルチタスク), where several programs run side by side, also works because the OS divides up processor time. Right after a PC is switched on, a separate program called BIOS runs to set up the hardware before the OS takes over.",
+      "memory_hook_jp": "Operating は「運転する・動かす」。機械を動かす係のシステムだから Operating System。",
+      "memory_hook_zh": "Operating 意为“操作、使运转”。负责让机器运转起来的系统，所以叫 Operating System。",
+      "memory_hook_en": "To operate a machine is to run it. The system whose job is running the machine is the Operating System.",
+      "inline_quiz": [
+        "2010h22h-q056",
+        "2012h24h-q071",
+        "2013h25h-q066"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "仮想記憶",
+      "term_zh": "虚拟存储",
+      "term_en": "virtual memory",
+      "one_jp": "**仮想記憶** は、補助記憶の一部を主記憶の延長として使い、実際の主記憶より大きなメモリがあるように見せる OS のしくみである。",
+      "one_zh": "**虚拟存储**（[[jp:仮想記憶]]）是操作系统的一种机制：把辅助存储器的一部分当作主存储器的延伸来使用，让系统看起来拥有比实际主存储器更大的内存。",
+      "one_en": "**Virtual memory** ([[jp:仮想記憶]]) is an OS mechanism that uses part of auxiliary storage as an extension of main memory, making it look as if there is more memory than is physically installed.",
+      "detail_jp": "OS は、主記憶に置ききれない部分を補助記憶へ移し、使う番が来たら主記憶へ戻す。この出し入れによって、主記憶の実容量に縛られずにプログラムを動かせるが、主記憶そのものが増えるわけではない。出し入れが頻繁になりすぎて処理が極端に遅くなる状態を **スラッシング** という。",
+      "detail_zh": "操作系统把主存储器放不下的部分移到辅助存储器，轮到使用时再调回主存储器。借助这种调出调入，程序可以不受主存储器实际容量的限制运行，但主存储器本身并没有增加。调出调入过于频繁、处理速度变得极慢的状态叫作 **抖动**（[[jp:スラッシング]]）。",
+      "detail_en": "The OS moves the parts that do not fit in main memory out to auxiliary storage and brings them back when their turn comes. This swapping lets programs run without being bound by the physical size of main memory, though main memory itself does not grow. When swapping becomes so frequent that processing slows to a crawl, the state is called **thrashing** ([[jp:スラッシング]]).",
+      "analogy_jp": "楽屋と舞台の関係に近い。舞台に立てる人数は限られるが、出番の終わった役者が楽屋へ下がり、次の役者が上がることで大勢の出演する芝居が成り立つ。ただし入れ替わりが多すぎると芝居が進まない。",
+      "analogy_zh": "就像后台和舞台。舞台上能站的人数有限，但演完的演员退回后台、下一位登台，就能演出一场有很多角色的戏。不过换人太频繁，戏就演不下去了。",
+      "analogy_en": "Think of backstage and the stage. Only so many actors fit on stage, but when actors whose scene is over step back and the next ones come on, a play with a large cast can go ahead. With too many changeovers, though, the play stalls.",
+      "hook_jp": "virtual は「実質上の」。実物の主記憶ではないが、実質的にメモリとして働くから **virtual memory**。",
+      "hook_zh": "virtual 意为“实质上的”。虽然不是真正的主存储器，却实际起着内存的作用，所以叫 **virtual memory**。",
+      "hook_en": "Virtual means \"in effect\". It is not real main memory, but in effect it works as memory, hence **virtual memory**.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**仮想記憶** の狙いは、主記憶の実容量を上回る大きさのプログラムを動かせるようにすることにある。",
+          "text_zh": "**虚拟存储**（[[jp:仮想記憶]]）的目的，是让大小超过主存储器实际容量的程序也能运行。",
+          "text_en": "The aim of **virtual memory** ([[jp:仮想記憶]]) is to let programs larger than the physical capacity of main memory run.",
+          "qids": [
+            "2009h21a-q059"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "スラッシングは主記憶の不足から起きるので、主記憶を増設すると解消する。",
+          "text_zh": "抖动（[[jp:スラッシング]]）源于主存储器（[[jp:主記憶]]）不足，因此增加主存储器即可消除。",
+          "text_en": "Thrashing ([[jp:スラッシング]]) comes from a shortage of main memory ([[jp:主記憶]]), so adding main memory removes it.",
+          "qids": [
+            "2020r02o-q059"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "主記憶から追い出す部分を選ぶ方法の一つに、最後に使われてから最も時間のたったものを選ぶ **LRU** 方式がある。",
+          "text_zh": "选择把哪一部分移出主存储器的方法之一，是挑出最近一次使用距今最久者的 **LRU** 方式。",
+          "text_en": "One way to choose which part to push out of main memory is the **LRU** method, which picks the part that has gone unused the longest.",
+          "qids": [
+            "2009h21h-q085"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "big",
+              "label": {
+                "jp": "主記憶に入りきらないプログラム",
+                "zh": "主存储器装不下的程序",
+                "en": "A program too big for main memory"
+              }
+            },
+            {
+              "id": "out",
+              "label": {
+                "jp": "今使わない部分を補助記憶へ移す",
+                "zh": "把暂时不用的部分移到辅助存储器",
+                "en": "Move unused parts to auxiliary storage"
+              }
+            },
+            {
+              "id": "in",
+              "label": {
+                "jp": "必要になった部分を主記憶へ戻す",
+                "zh": "把需要的部分调回主存储器",
+                "en": "Bring needed parts back to main memory"
+              }
+            },
+            {
+              "id": "run",
+              "label": {
+                "jp": "主記憶より大きなプログラムが動く",
+                "zh": "比主存储器更大的程序得以运行",
+                "en": "A program larger than main memory runs"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "プログラムの大きさが、実際の主記憶の容量を上回っている。",
+            "caption_zh": "程序的大小超过了实际主存储器的容量。",
+            "caption_en": "The program is larger than the actual capacity of main memory.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "OS は、しばらく使わない部分を補助記憶の領域へ退避させる。",
+            "caption_zh": "操作系统把一段时间内用不到的部分暂时移到辅助存储器的区域。",
+            "caption_en": "The OS moves parts that will not be used for a while out to an area of auxiliary storage.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "退避した部分が必要になると、OS がそれを主記憶へ読み戻す。",
+            "caption_zh": "移出去的部分一旦需要，操作系统就把它读回主存储器。",
+            "caption_en": "When a moved-out part is needed, the OS reads it back into main memory.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "出し入れを繰り返すことで、主記憶を超える大きさのプログラムを実行できる。",
+            "caption_zh": "通过反复调出调入，就能运行比主存储器更大的程序。",
+            "caption_en": "By repeating this moving out and back in, programs larger than main memory can run.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21a-q059",
+        "2025r07-q062",
+        "2020r02o-q059"
+      ],
+      "definition_jp": "仮想記憶 は、補助記憶の一部を主記憶の延長として使い、実際の主記憶より大きなメモリがあるように見せる OS のしくみである。",
+      "definition_zh": "虚拟存储（仮想記憶）是操作系统的一种机制：把辅助存储器的一部分当作主存储器的延伸来使用，让系统看起来拥有比实际主存储器更大的内存。",
+      "definition_en": "Virtual memory (仮想記憶) is an OS mechanism that uses part of auxiliary storage as an extension of main memory, making it look as if there is more memory than is physically installed.",
+      "explanation_jp": "OS は、主記憶に置ききれない部分を補助記憶へ移し、使う番が来たら主記憶へ戻す。この出し入れによって、主記憶の実容量に縛られずにプログラムを動かせるが、主記憶そのものが増えるわけではない。出し入れが頻繁になりすぎて処理が極端に遅くなる状態を スラッシング という。",
+      "explanation_zh": "操作系统把主存储器放不下的部分移到辅助存储器，轮到使用时再调回主存储器。借助这种调出调入，程序可以不受主存储器实际容量的限制运行，但主存储器本身并没有增加。调出调入过于频繁、处理速度变得极慢的状态叫作 抖动（スラッシング）。",
+      "explanation_en": "The OS moves the parts that do not fit in main memory out to auxiliary storage and brings them back when their turn comes. This swapping lets programs run without being bound by the physical size of main memory, though main memory itself does not grow. When swapping becomes so frequent that processing slows to a crawl, the state is called thrashing (スラッシング).",
+      "memory_hook_jp": "virtual は「実質上の」。実物の主記憶ではないが、実質的にメモリとして働くから virtual memory。",
+      "memory_hook_zh": "virtual 意为“实质上的”。虽然不是真正的主存储器，却实际起着内存的作用，所以叫 virtual memory。",
+      "memory_hook_en": "Virtual means \"in effect\". It is not real main memory, but in effect it works as memory, hence virtual memory.",
+      "inline_quiz": [
+        "2009h21a-q059",
+        "2025r07-q062",
+        "2020r02o-q059"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ユーザー管理",
+      "term_zh": "用户管理",
+      "term_en": "user management",
+      "one_jp": "**ユーザー管理** は、利用者ごとに **アカウント** を登録し、ログインのときに本人かどうかを確かめる (**認証**) OS の機能である。",
+      "one_zh": "**用户管理**（[[jp:ユーザー管理]]）是操作系统的一项功能：为每个用户登记 **账户**（[[jp:アカウント]]），并在登录时确认是否为本人（**认证**，[[jp:認証]]）。",
+      "one_en": "**User management** ([[jp:ユーザー管理]]) is the OS function that registers an **account** ([[jp:アカウント]]) for each user and checks at login whether the person is really that user (**authentication**, [[jp:認証]]).",
+      "detail_jp": "1 台のコンピュータを複数の人で使っても、利用者ごとにアカウントが分かれていれば、誰が操作しているかを OS が区別できる。利用者は部署などの **グループ** にまとめて扱うこともできる。こうして識別された利用者が、後で学ぶアクセス権の「誰に」に当たる。",
+      "detail_zh": "即使多人共用一台计算机，只要按用户分开账户，操作系统就能分辨是谁在操作。用户还可以按部门等归入 **组**（[[jp:グループ]]）统一管理。这样识别出来的用户，就是后面要学的访问权限中的“对谁”。",
+      "detail_en": "Even when several people share one computer, separate accounts let the OS tell who is operating it. Users can also be gathered into **groups** ([[jp:グループ]]), such as by department, and handled together. A user identified in this way is the \"who\" in the access rights covered later.",
+      "analogy_jp": "会員制ジムの受付のようなもの。入会時に会員として登録し、来館のたびに会員証で本人かを確かめる。",
+      "analogy_zh": "就像会员制健身房的前台。入会时登记为会员，每次到馆都凭会员卡确认是否为本人。",
+      "analogy_en": "It works like the front desk of a members-only gym. You register as a member when you join, and on each visit your membership card is checked to confirm it is you.",
+      "hook_jp": "ログイン画面は、ユーザー管理の入口。",
+      "hook_zh": "登录界面就是用户管理的入口。",
+      "hook_en": "The login screen is the front door of user management.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ユーザー管理** の認証は「その人が誰か」を確かめる段階で、何を操作してよいかはアクセス権の設定で決まる。",
+          "text_zh": "**用户管理**（[[jp:ユーザー管理]]）中的认证，是确认“这个人是谁”的环节；可以进行哪些操作，则由访问权限（[[jp:アクセス権]]）的设置决定。",
+          "text_en": "Authentication in **user management** ([[jp:ユーザー管理]]) is the step that confirms who the person is; what they may do is decided by the access rights ([[jp:アクセス権]]) settings."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "reg",
+              "label": {
+                "jp": "アカウントを登録する",
+                "zh": "登记账户",
+                "en": "Register an account"
+              }
+            },
+            {
+              "id": "login",
+              "label": {
+                "jp": "ログインで ID とパスワードを確かめる",
+                "zh": "登录时核对 ID 和口令",
+                "en": "Check ID and password at login"
+              }
+            },
+            {
+              "id": "id",
+              "label": {
+                "jp": "利用者として識別された状態で使う",
+                "zh": "以已识别的用户身份使用",
+                "en": "Work as an identified user"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用者ごとにアカウントを作り、OS に登録しておく。",
+            "caption_zh": "为每个用户建立账户，并预先登记到操作系统中。",
+            "caption_en": "An account is created for each user and registered with the OS in advance.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "ログインのとき、入力された ID とパスワードで本人かどうかを確かめる。",
+            "caption_zh": "登录时，根据输入的 ID 和口令确认是否为本人。",
+            "caption_en": "At login, the entered ID and password are used to confirm the person's identity.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "確かめられた後は、OS がその利用者として操作を区別する。",
+            "caption_zh": "确认之后，操作系统就把这些操作当作该用户的操作来区分。",
+            "caption_en": "Once confirmed, the OS treats the operations as that user's.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ユーザー管理 は、利用者ごとに アカウント を登録し、ログインのときに本人かどうかを確かめる (認証) OS の機能である。",
+      "definition_zh": "用户管理（ユーザー管理）是操作系统的一项功能：为每个用户登记 账户（アカウント），并在登录时确认是否为本人（认证，認証）。",
+      "definition_en": "User management (ユーザー管理) is the OS function that registers an account (アカウント) for each user and checks at login whether the person is really that user (authentication, 認証).",
+      "explanation_jp": "1 台のコンピュータを複数の人で使っても、利用者ごとにアカウントが分かれていれば、誰が操作しているかを OS が区別できる。利用者は部署などの グループ にまとめて扱うこともできる。こうして識別された利用者が、後で学ぶアクセス権の「誰に」に当たる。",
+      "explanation_zh": "即使多人共用一台计算机，只要按用户分开账户，操作系统就能分辨是谁在操作。用户还可以按部门等归入 组（グループ）统一管理。这样识别出来的用户，就是后面要学的访问权限中的“对谁”。",
+      "explanation_en": "Even when several people share one computer, separate accounts let the OS tell who is operating it. Users can also be gathered into groups (グループ), such as by department, and handled together. A user identified in this way is the \"who\" in the access rights covered later.",
+      "memory_hook_jp": "ログイン画面は、ユーザー管理の入口。",
+      "memory_hook_zh": "登录界面就是用户管理的入口。",
+      "memory_hook_en": "The login screen is the front door of user management.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ファイル管理",
+      "term_zh": "文件管理",
+      "term_en": "file management",
+      "one_jp": "**ファイル管理** は、データを **ファイル** という単位で名前を付けて扱い、**フォルダ** (ディレクトリ) の階層で整理する OS の機能である。",
+      "one_zh": "**文件管理**（[[jp:ファイル管理]]）是操作系统的一项功能：以 **文件**（[[jp:ファイル]]）为单位给数据命名并加以处理，再用 **文件夹**（[[jp:フォルダ]]，即目录）的层级进行整理。",
+      "one_en": "**File management** ([[jp:ファイル管理]]) is the OS function that handles data in named units called **files** ([[jp:ファイル]]) and organizes them in a hierarchy of **folders** ([[jp:フォルダ]], also called directories).",
+      "detail_jp": "利用者は、データが記憶装置のどこに物理的に置かれているかを知らなくても、名前を指定するだけでファイルを開いたり保存したりできる。フォルダの中にさらにフォルダを作れるので、ファイルを木の枝分かれのような階層に分類できる。",
+      "detail_zh": "用户无需知道数据实际存放在存储设备的哪个位置，只要指定名称就能打开或保存文件。文件夹里还能再建文件夹，因此可以把文件归类到像树枝分叉一样的层级中。",
+      "detail_en": "Users can open or save a file just by giving its name, without knowing where on the storage device the data physically sits. Because folders can hold further folders, files can be sorted into a hierarchy that branches like a tree.",
+      "analogy_jp": "図書館の分類棚に近い。分野の棚、その中の小さな区分と順に絞り込んでいけば、目当ての本に行き着ける。",
+      "analogy_zh": "近似图书馆的分类书架。先找学科的书架，再找其中更细的分区，一步步缩小范围，就能找到想要的书。",
+      "analogy_en": "It resembles the classified shelves of a library. Narrow down from the subject shelf to a smaller section within it, and you reach the book you are after.",
+      "hook_jp": "パスの「/」や「¥」は、フォルダの階層を 1 段下りる区切りの印。",
+      "hook_zh": "路径中的“/”或“\\”（日文系统里显示为“¥”），是向下进入一层文件夹的分隔符。",
+      "hook_en": "In a path, \"/\" or \"\\\" (shown as \"¥\" on Japanese systems) is the separator for stepping down one folder level.",
+      "points": [],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "root",
+            "label": {
+              "jp": "最上位のフォルダ",
+              "zh": "最上层文件夹",
+              "en": "Top-level folder"
+            },
+            "children": [
+              {
+                "id": "docs",
+                "label": {
+                  "jp": "書類フォルダ",
+                  "zh": "文档文件夹",
+                  "en": "Documents folder"
+                },
+                "children": [
+                  {
+                    "id": "f1",
+                    "label": {
+                      "jp": "議事録ファイル",
+                      "zh": "会议记录文件",
+                      "en": "Meeting minutes file"
+                    }
+                  },
+                  {
+                    "id": "f2",
+                    "label": {
+                      "jp": "予定表ファイル",
+                      "zh": "日程表文件",
+                      "en": "Schedule file"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "pics",
+                "label": {
+                  "jp": "写真フォルダ",
+                  "zh": "照片文件夹",
+                  "en": "Photos folder"
+                },
+                "children": [
+                  {
+                    "id": "trip",
+                    "label": {
+                      "jp": "旅行フォルダ",
+                      "zh": "旅行文件夹",
+                      "en": "Trip folder"
+                    },
+                    "children": [
+                      {
+                        "id": "f3",
+                        "label": {
+                          "jp": "画像ファイル",
+                          "zh": "图像文件",
+                          "en": "Image file"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2020r02o-q085"
+      ],
+      "definition_jp": "ファイル管理 は、データを ファイル という単位で名前を付けて扱い、フォルダ (ディレクトリ) の階層で整理する OS の機能である。",
+      "definition_zh": "文件管理（ファイル管理）是操作系统的一项功能：以 文件（ファイル）为单位给数据命名并加以处理，再用 文件夹（フォルダ，即目录）的层级进行整理。",
+      "definition_en": "File management (ファイル管理) is the OS function that handles data in named units called files (ファイル) and organizes them in a hierarchy of folders (フォルダ, also called directories).",
+      "explanation_jp": "利用者は、データが記憶装置のどこに物理的に置かれているかを知らなくても、名前を指定するだけでファイルを開いたり保存したりできる。フォルダの中にさらにフォルダを作れるので、ファイルを木の枝分かれのような階層に分類できる。",
+      "explanation_zh": "用户无需知道数据实际存放在存储设备的哪个位置，只要指定名称就能打开或保存文件。文件夹里还能再建文件夹，因此可以把文件归类到像树枝分叉一样的层级中。",
+      "explanation_en": "Users can open or save a file just by giving its name, without knowing where on the storage device the data physically sits. Because folders can hold further folders, files can be sorted into a hierarchy that branches like a tree.",
+      "memory_hook_jp": "パスの「/」や「¥」は、フォルダの階層を 1 段下りる区切りの印。",
+      "memory_hook_zh": "路径中的“/”或“\\”（日文系统里显示为“¥”），是向下进入一层文件夹的分隔符。",
+      "memory_hook_en": "In a path, \"/\" or \"\\\" (shown as \"¥\" on Japanese systems) is the separator for stepping down one folder level.",
       "inline_quiz": [
         "2020r02o-q085"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "文件管理",
-      "term_en": "file management",
-      "definition_zh": "统管文件和文件夹的创建、保存与整理的操作系统功能。",
-      "definition_en": "The OS function that governs the creation, saving, and organization of files and folders.",
-      "explanation_zh": "文件管理是一项操作系统功能：以文件为单位处理数据，进行其创建、保存、读写、删除，并通过文件夹（目录）进行层次化的整理。用户无需关心数据在存储设备上的物理位置，用名称就能处理文件。\n\n它的特点是可以用文件夹建立层次，对文件进行分类整理。考试中应结合后续的访问权限来理解：文件管理是用名称和层次结构来处理数据的机制；并且正是针对“文件”这一单位，才设置了访问权限（读取、写入等）。",
-      "explanation_en": "File management is an OS function that handles data in units of files—creating, saving, reading and writing, and deleting them—and organizes them hierarchically with folders (directories). Users can work with files by name, without being aware of their physical location on the storage device.\n\nA key feature is that you can build hierarchies with folders and classify and organize files. On the exam, it helps to understand—together with access rights, covered next—that file management is the mechanism that handles data by name and hierarchical structure, and that it is for this unit called a \"file\" that access rights (read, write, etc.) are set.",
-      "analogy_zh": "就像管理存放文件的档案柜。把资料分类放进名为“文件夹”的抽屉里整理，靠标签（文件名）就能立刻取出目标资料。",
-      "analogy_en": "Like managing a filing cabinet that holds documents. You organize papers by sorting them into drawers called \"folders,\" and you can pull out the document you want right away by its label (the file name).",
-      "memory_hook_zh": "说到文件管理，就是用文件和文件夹来整理的功能",
-      "memory_hook_en": "file management → organizing things with files and folders"
+      "figure": null
     },
     {
       "term": "アクセス権",
-      "definition_jp": "誰がどのファイルに何の操作をしてよいかを定める権限設定。",
-      "explanation_jp": "アクセス権は、「どの利用者が、どのファイルやフォルダに対して、どんな操作をしてよいか」を定める権限の設定です。代表的な操作には、読み取り(参照)・書き込み(変更)・実行などがあり、利用者やグループごとに与えられます。\n\nアクセス権は、ユーザー管理が決める『誰が』と、ファイル管理が扱う『どのファイル』を前提に成り立つ応用的な機能です。試験では、必要最小限の権限だけを与える考え方(最小権限)や、読み取りのみ・書き込み可など権限の種類を区別できることが問われます。不適切な権限設定は情報漏えいや改ざんにつながる点も重要です。",
-      "analogy_jp": "図書館の利用カードに付く区分のようなもの。閲覧だけ許される本、貸出できる本、立入禁止の書庫など、人ごと・棚ごとに「できること」が決められています。",
-      "memory_hook_jp": "アクセス権といえば誰がどのファイルに何をできるかの権限",
-      "inline_quiz": [
-        "2012h24h-q083"
-      ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; U[\"利用者(ユーザー管理)\"]; P[\"アクセス権\"]; F[\"ファイル(ファイル管理)\"]; U -->|\"誰が\"| P; F -->|\"どのファイルを\"| P; P -->|\"読取・書込・実行を許可\"| R[\"操作の可否\"]",
-        "svg_path": "figures/technology-17-45-u01-t02.svg",
-        "rendered": true
-      },
       "term_zh": "访问权限",
       "term_en": "access rights",
-      "definition_zh": "规定谁可以对哪个文件执行什么操作的权限设置。",
-      "definition_en": "A rights setting that defines who may perform what operation on which file.",
-      "explanation_zh": "访问权限是一种权限设置，用来规定“哪个用户，可以对哪个文件或文件夹，执行什么操作”。典型的操作包括读取（参阅）、写入（修改）、执行等，可按用户或组分别授予。\n\n访问权限是一项应用性功能，它以用户管理所确定的“谁”和文件管理所处理的“哪个文件”为前提才能成立。考试中常考查：只授予必要的最小权限的思路（最小权限），以及能区分只读、可写等不同的权限种类。此外，权限设置不当会导致信息泄露或被篡改，这一点也很重要。",
-      "explanation_en": "Access rights are a rights setting that defines \"which user may perform what operation on which file or folder.\" Typical operations include read (reference), write (modify), and execute, and they are granted per user or per group.\n\nAccess rights are an applied function that holds only on the premise of the \"who\" decided by user management and the \"which file\" handled by file management. On the exam, you are asked about the idea of granting only the minimum necessary rights (least privilege) and about being able to distinguish kinds of rights such as read-only or writable. It is also important that improper rights settings can lead to information leakage or tampering.",
-      "analogy_zh": "就像图书馆借阅卡上的分类。只能阅览的书、可以外借的书、禁止进入的书库等，针对每个人、每个书架都规定了“能做什么”。",
-      "analogy_en": "Like the categories attached to a library card. Books you may only read on-site, books you may borrow, stacks you may not enter—\"what you can do\" is decided per person and per shelf.",
-      "memory_hook_zh": "说到访问权限，就是规定谁能对哪个文件做什么的权限",
-      "memory_hook_en": "access rights → who may do what to which file"
+      "one_jp": "**アクセス権** は、どの利用者がそのファイルやフォルダに対して、**読取り** や **書込み** などのどの操作をしてよいかを定める設定である。",
+      "one_zh": "**访问权限**（[[jp:アクセス権]]）是规定哪个用户可以对该文件或文件夹执行 **读取**（[[jp:読取り]]）、**写入**（[[jp:書込み]]）等哪些操作的设置。",
+      "one_en": "**Access rights** ([[jp:アクセス権]]) are settings that define which users may perform which operations, such as **read** ([[jp:読取り]]) and **write** ([[jp:書込み]]), on a file or folder.",
+      "detail_jp": "操作の種類には、例えば内容を読む読取り、内容を変える書込み、プログラムとして動かす **実行** がある。権限は利用者ごとやグループごとに付けられ、業務に要る分だけを与えるのが基本の考え方 (**最小権限**) である。",
+      "detail_zh": "操作的种类有：读出内容的读取、改动内容的写入、作为程序运行的 **执行**（[[jp:実行]]）等。权限可以按用户或按组授予，基本思路是只给予业务所需的部分（**最小权限**，[[jp:最小権限]]）。",
+      "detail_en": "Kinds of operations include read, which views the content, write, which changes it, and **execute** ([[jp:実行]]), which runs it as a program. Permissions can be granted per user or per group, and the basic idea is to give only what the job requires (**least privilege**, [[jp:最小権限]]).",
+      "analogy_jp": "マンションの鍵の違いに似ている。住人の鍵は自分の部屋と共用部の両方を開けられるが、宅配業者向けの暗証番号では宅配ボックスしか開かない。",
+      "analogy_zh": "就像公寓里不同的钥匙。住户的钥匙既能开自己的房门，也能开公共区域，而给快递员的密码只能打开快递柜。",
+      "analogy_en": "It is like the different keys in an apartment building. A resident's key opens both their own unit and the shared areas, while the code given to couriers opens only the parcel lockers.",
+      "hook_jp": "R・W・X は Read・Write・eXecute の頭文字で、読む・書く・動かすの 3 つ。",
+      "hook_zh": "R、W、X 是 Read、Write、eXecute 的首字母，分别对应读、写、运行。",
+      "hook_en": "R, W and X stand for Read, Write and eXecute: viewing, changing and running.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "あるファイルを複製して別のファイルを作るには、複製する人に元のファイルを読み取る権限がなければならない。",
+          "text_zh": "要复制某个文件来生成另一个文件，复制的人必须拥有读取原文件的权限。",
+          "text_en": "To make a new file by copying an existing one, the person copying must have permission to read the original.",
+          "qids": [
+            "2012h24h-q083"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ファイルを開いて内容を読むには読取り権限、変更を加えて上書き保存するにはそのファイルの書込み権限が要る。",
+          "text_zh": "打开文件阅读内容需要读取权限（[[jp:読取り権限]]），修改后覆盖保存则需要该文件的写入权限（[[jp:書込み権限]]）。",
+          "text_en": "Opening a file to read it requires read permission ([[jp:読取り権限]]), and saving changes over it requires write permission ([[jp:書込み権限]]) for that file.",
+          "qids": [
+            "2020r02o-q085"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "売上集計ファイルの利用者",
+              "zh": "销售汇总文件的用户",
+              "en": "Users of the sales summary file"
+            },
+            {
+              "jp": "読取り",
+              "zh": "读取",
+              "en": "Read"
+            },
+            {
+              "jp": "書込み",
+              "zh": "写入",
+              "en": "Write"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "経理担当",
+                  "zh": "财务人员",
+                  "en": "Accounting staff"
+                },
+                {
+                  "jp": "可",
+                  "zh": "允许",
+                  "en": "Yes"
+                },
+                {
+                  "jp": "可",
+                  "zh": "允许",
+                  "en": "Yes"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "営業担当",
+                  "zh": "销售人员",
+                  "en": "Sales staff"
+                },
+                {
+                  "jp": "可",
+                  "zh": "允许",
+                  "en": "Yes"
+                },
+                {
+                  "jp": "不可",
+                  "zh": "不允许",
+                  "en": "No"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "来客用アカウント",
+                  "zh": "访客账户",
+                  "en": "Guest account"
+                },
+                {
+                  "jp": "不可",
+                  "zh": "不允许",
+                  "en": "No"
+                },
+                {
+                  "jp": "不可",
+                  "zh": "不允许",
+                  "en": "No"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2012h24h-q083",
+        "2020r02o-q085"
+      ],
+      "definition_jp": "アクセス権 は、どの利用者がそのファイルやフォルダに対して、読取り や 書込み などのどの操作をしてよいかを定める設定である。",
+      "definition_zh": "访问权限（アクセス権）是规定哪个用户可以对该文件或文件夹执行 读取（読取り）、写入（書込み）等哪些操作的设置。",
+      "definition_en": "Access rights (アクセス権) are settings that define which users may perform which operations, such as read (読取り) and write (書込み), on a file or folder.",
+      "explanation_jp": "操作の種類には、例えば内容を読む読取り、内容を変える書込み、プログラムとして動かす 実行 がある。権限は利用者ごとやグループごとに付けられ、業務に要る分だけを与えるのが基本の考え方 (最小権限) である。",
+      "explanation_zh": "操作的种类有：读出内容的读取、改动内容的写入、作为程序运行的 执行（実行）等。权限可以按用户或按组授予，基本思路是只给予业务所需的部分（最小权限，最小権限）。",
+      "explanation_en": "Kinds of operations include read, which views the content, write, which changes it, and execute (実行), which runs it as a program. Permissions can be granted per user or per group, and the basic idea is to give only what the job requires (least privilege, 最小権限).",
+      "memory_hook_jp": "R・W・X は Read・Write・eXecute の頭文字で、読む・書く・動かすの 3 つ。",
+      "memory_hook_zh": "R、W、X 是 Read、Write、eXecute 的首字母，分别对应读、写、运行。",
+      "memory_hook_en": "R, W and X stand for Read, Write and eXecute: viewing, changing and running.",
+      "inline_quiz": [
+        "2012h24h-q083",
+        "2020r02o-q085"
+      ],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "ユーザー管理",
+      "b": "アクセス権",
+      "rows": [
+        {
+          "label_jp": "決めること",
+          "label_zh": "决定的内容",
+          "label_en": "What it decides",
+          "a_jp": "操作しているのが誰か",
+          "a_zh": "操作的人是谁",
+          "a_en": "Who is operating",
+          "b_jp": "その人に何の操作を許すか",
+          "b_zh": "允许此人进行哪些操作",
+          "b_en": "What that person may do",
+          "key": true
+        },
+        {
+          "label_jp": "働く場面",
+          "label_zh": "起作用的时机",
+          "label_en": "When it applies",
+          "a_jp": "ログインのとき",
+          "a_zh": "登录时",
+          "a_en": "At login",
+          "b_jp": "ファイルやフォルダを操作するとき",
+          "b_zh": "操作文件或文件夹时",
+          "b_en": "When files or folders are used",
+          "key": false
+        },
+        {
+          "label_jp": "設定の単位",
+          "label_zh": "设置的单位",
+          "label_en": "Unit of setting",
+          "a_jp": "利用者ごとのアカウント",
+          "a_zh": "每个用户各自的账户",
+          "a_en": "One account per user",
+          "b_jp": "ファイルやフォルダごとに、利用者・グループ別",
+          "b_zh": "按文件或文件夹，分别针对用户和组",
+          "b_en": "Per file or folder, by user and group",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**OS** は資源の配分や機器の制御を引き受ける基本ソフトウェアで、アプリはその機能を呼び出して動く。",
+    "**仮想記憶** は補助記憶を使って主記憶を大きく見せるしくみで、入れ替えが増えすぎると処理が遅くなる。",
+    "**ファイル管理** により、データは名前とフォルダの階層で扱える。",
+    "**アクセス権** は利用者ごとに許す操作を決める設定で、内容を読むには読取り、変更を保存するには書込みの権限が要る。"
+  ],
+  "key_points_zh": [
+    "**操作系统** 是承担资源分配和设备控制的基础软件，应用程序调用它的功能来运行。",
+    "**虚拟存储** 是借助辅助存储器让主存储器显得更大的机制，换入换出过多时处理会变慢。",
+    "借助 **文件管理**，数据可以按名称和文件夹层级来处理。",
+    "**访问权限** 是按用户决定允许哪些操作的设置，阅读内容需要读取权限，保存修改需要写入权限。"
+  ],
+  "key_points_en": [
+    "The **OS** is basic software that handles resource allocation and device control, and applications run by calling on its functions.",
+    "**Virtual memory** uses auxiliary storage to make main memory seem larger, and processing slows when swapping becomes excessive.",
+    "**File management** lets data be handled by name and by folder hierarchy.",
+    "**Access rights** set which operations each user may perform; reading content needs read permission, and saving changes needs write permission."
+  ],
+  "overview": {
+    "intro_jp": "OS が基本ソフトウェアとして何を引き受け、なぜ必要なのかを説明できる。仮想記憶 の目的と、主記憶と補助記憶の入れ替えが増えたときに起きることを説明できる。利用者を確かめる機能と、利用者ごとに操作を許すかどうかを決める設定とを区別できる。",
+    "intro_zh": "能说明 操作系统 作为基础软件承担哪些工作，以及为什么需要它。能说明 虚拟存储 的目的，以及主存储器与辅助存储器之间的换入换出增多时会发生什么。能区分确认用户身份的功能，与按用户决定是否允许操作的设置。",
+    "intro_en": "Explain what an OS takes on as basic software and why it is needed. Explain the purpose of virtual memory and what happens when swapping between main memory and auxiliary storage increases. Tell the function that confirms who a user is apart from the setting that decides, per user, which operations are allowed.",
+    "freq_badge": "低頻",
+    "est_minutes": 28
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "OS: OSといえばハードを管理し共通機能を提供する基本ソフト",
-      "仮想記憶: 仮想記憶といえば補助記憶を使って主記憶を広く見せる方式",
-      "ユーザー管理: ユーザー管理といえば利用者の登録・認証・権限を扱う機能",
-      "ファイル管理: ファイル管理といえばファイルとフォルダで整理する機能",
-      "アクセス権: アクセス権といえば誰がどのファイルに何をできるかの権限"
-    ],
     "key_points_jp": [
-      "OSはハードウェアを管理し応用ソフトに共通機能を提供する基本ソフトウェアで、Windows・macOS・Linux・Android などがある。",
-      "仮想記憶は補助記憶の一部を主記憶のように使い、見かけ上のメモリ容量を拡張する方式(スワップが多いと速度低下)。",
-      "ユーザー管理は利用者の登録・認証・権限割り当てを行い、『誰が』使うかを管理する基礎機能。",
-      "ファイル管理はデータをファイル・フォルダの階層で整理し、名前でデータを扱えるようにする機能。",
-      "アクセス権はユーザー管理(誰が)とファイル管理(どのファイル)を前提に、操作の可否(読取・書込・実行)を定める権限設定。"
+      "OS は資源の配分や機器の制御を引き受ける基本ソフトウェアで、アプリはその機能を呼び出して動く。",
+      "仮想記憶 は補助記憶を使って主記憶を大きく見せるしくみで、入れ替えが増えすぎると処理が遅くなる。",
+      "ファイル管理 により、データは名前とフォルダの階層で扱える。",
+      "アクセス権 は利用者ごとに許す操作を決める設定で、内容を読むには読取り、変更を保存するには書込みの権限が要る。"
     ],
     "key_points_zh": [
-      "操作系统是管理硬件、向应用软件提供通用功能的基本软件，常见的有 Windows、macOS、Linux、Android 等。",
-      "虚拟存储是把一部分辅助存储当作主存使用、从而扩展表面上内存容量的方式（交换过多会导致速度下降）。",
-      "用户管理进行用户的注册、认证和权限分配，是管理“谁”在使用的基础功能。",
-      "文件管理把数据按文件、文件夹的层次整理，使数据可以用名称来处理。",
-      "访问权限以用户管理（谁）和文件管理（哪个文件）为前提，规定操作的可否（读取、写入、执行）的权限设置。"
+      "操作系统 是承担资源分配和设备控制的基础软件，应用程序调用它的功能来运行。",
+      "虚拟存储 是借助辅助存储器让主存储器显得更大的机制，换入换出过多时处理会变慢。",
+      "借助 文件管理，数据可以按名称和文件夹层级来处理。",
+      "访问权限 是按用户决定允许哪些操作的设置，阅读内容需要读取权限，保存修改需要写入权限。"
     ],
     "key_points_en": [
-      "The OS is the basic software that manages hardware and provides common functions to application software; examples include Windows, macOS, Linux, and Android.",
-      "Virtual memory is a scheme that uses part of auxiliary storage like main memory to expand the apparent amount of memory (excessive swapping slows performance).",
-      "User management registers users, authenticates them, and assigns rights; it is the basic function that manages \"who\" is using the system.",
-      "File management organizes data in a hierarchy of files and folders, so that data can be handled by name.",
-      "Access rights, premised on user management (who) and file management (which file), are a rights setting that defines whether operations (read, write, execute) are permitted."
+      "The OS is basic software that handles resource allocation and device control, and applications run by calling on its functions.",
+      "Virtual memory uses auxiliary storage to make main memory seem larger, and processing slows when swapping becomes excessive.",
+      "File management lets data be handled by name and by folder hierarchy.",
+      "Access rights set which operations each user may perform; reading content needs read permission, and saving changes needs write permission."
+    ],
+    "memory_hooks_jp": [
+      "OS: Operating は「運転する・動かす」。機械を動かす係のシステムだから Operating System。",
+      "仮想記憶: virtual は「実質上の」。実物の主記憶ではないが、実質的にメモリとして働くから virtual memory。",
+      "ユーザー管理: ログイン画面は、ユーザー管理の入口。",
+      "ファイル管理: パスの「/」や「¥」は、フォルダの階層を 1 段下りる区切りの印。",
+      "アクセス権: R・W・X は Read・Write・eXecute の頭文字で、読む・書く・動かすの 3 つ。"
     ],
     "memory_hooks_zh": [
-      "操作系统：说到操作系统，就是管理硬件、提供通用功能的基本软件",
-      "虚拟存储：说到虚拟存储，就是借辅助存储把主存“看起来更大”的方式",
-      "用户管理：说到用户管理，就是处理用户注册、认证、权限的功能",
-      "文件管理：说到文件管理，就是用文件和文件夹来整理的功能",
-      "访问权限：说到访问权限，就是规定谁能对哪个文件做什么的权限"
+      "操作系统：Operating 意为“操作、使运转”。负责让机器运转起来的系统，所以叫 Operating System。",
+      "虚拟存储：virtual 意为“实质上的”。虽然不是真正的主存储器，却实际起着内存的作用，所以叫 virtual memory。",
+      "用户管理：登录界面就是用户管理的入口。",
+      "文件管理：路径中的“/”或“\\”（日文系统里显示为“¥”），是向下进入一层文件夹的分隔符。",
+      "访问权限：R、W、X 是 Read、Write、eXecute 的首字母，分别对应读、写、运行。"
     ],
     "memory_hooks_en": [
-      "OS: OS → the basic software that manages hardware and provides common functions",
-      "virtual memory: virtual memory → using auxiliary storage to make main memory look bigger",
-      "user management: user management → handles user registration, authentication, and rights",
-      "file management: file management → organizing things with files and folders",
-      "access rights: access rights → who may do what to which file"
+      "OS (Operating System): To operate a machine is to run it. The system whose job is running the machine is the Operating System.",
+      "virtual memory: Virtual means \"in effect\". It is not real main memory, but in effect it works as memory, hence virtual memory.",
+      "user management: The login screen is the front door of user management.",
+      "file management: In a path, \"/\" or \"\\\" (shown as \"¥\" on Japanese systems) is the separator for stepping down one folder level.",
+      "access rights: R, W and X stand for Read, Write and eXecute: viewing, changing and running."
     ]
   },
   "challenge_questions": [
     "2013h25a-q070",
-    "2017h29a-q092",
-    "2020r02o-q059",
     "2014h26h-q078",
-    "2015h27h-q080"
+    "2016h28h-q085",
+    "2017h29a-q092",
+    "2017h29h-q073"
   ],
   "source_figures": [
     {
@@ -216,9 +851,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "操作系统的作用与基本功能",
-  "title_en": "The Role and Basic Functions of an OS",
-  "unit_summary_zh": "学习操作系统的必要性，以及统管内存、用户、文件和访问权限的操作系统核心管理功能。",
-  "unit_summary_en": "Learn why an OS is necessary and the core management functions through which an OS governs memory, users, files, and access rights."
+  }
 }

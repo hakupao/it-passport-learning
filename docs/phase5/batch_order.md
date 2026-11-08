@@ -76,7 +76,7 @@
 | b67 | strategy-06-20 | ソリューションビジネス | u01 u02 u03 | 21 | 16 | done |
 | b68 | technology-20-52 | マルチメディア技術 (1/2) | u01 u02 u03 u04 u05 | 20 | 30 | todo |
 | b69 | technology-20-52 | マルチメディア技術 (2/2) | u06 | 20 | 6 | todo |
-| b70 | technology-17-45 | オペレーティングシステム | u01 u02 | 18 | 12 | todo |
+| b70 | technology-17-45 | オペレーティングシステム | u01 u02 | 18 | 12 | done |
 | b71 | technology-19-51 | インタフェース設計 | u01 u02 u03 u04 | 17 | 28 | todo |
 | b72 | strategy-06-21 | システム活用促進・評価 | u01 | 14 | 8 | todo |
 | b73 | technology-14-38 | プログラム言語 | u01 u02 u03 | 13 | 19 | todo |
