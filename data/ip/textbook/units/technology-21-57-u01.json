@@ -1,166 +1,799 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-21-57-u01",
   "topic_id": "technology-21-57",
   "category": "technology",
   "title_jp": "トランザクションの基礎と並行制御",
+  "title_zh": "事务基础与并发控制",
+  "title_en": "Transaction Fundamentals and Concurrency Control",
   "unit_summary_jp": "トランザクションとは何か、その正しさを保証する ACID 特性、複数トランザクション同時実行や分散環境で生じる問題と対処を学ぶ。",
+  "unit_summary_zh": "学习事务是什么、保证其正确性的 ACID 特性，以及多个事务同时执行或在分布式环境下产生的问题与应对方法。",
+  "unit_summary_en": "Learn what a transaction is, the ACID properties that guarantee its correctness, and the problems and countermeasures that arise when multiple transactions run concurrently or across distributed environments.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、データベース更新の基本単位であるトランザクションと、その正しさを保証する ACID 特性、さらに複数処理を同時に動かしたときに起こるデッドロックや、複数 DB をまたぐ更新を整合させる2相コミットメントを学びます。データの一貫性を守る土台となる重要分野です。",
-    "freq_badge": "低頻",
-    "est_minutes": 13,
-    "intro_zh": "本单元将学习数据库更新的基本单位——事务，以及保证其正确性的 ACID 特性；进一步学习多个处理同时运行时发生的死锁，以及让跨多个数据库的更新保持一致的两阶段提交。它是守护数据一致性的基础，是很重要的领域。",
-    "intro_en": "In this unit you will learn about the transaction, the basic unit of database updates, and the ACID properties that guarantee its correctness. You will also learn about deadlocks that occur when multiple operations run at the same time, and the two-phase commit that keeps updates across multiple databases consistent. This is a key field that forms the foundation for protecting data consistency."
-  },
-  "terms": [
+  "goals_jp": [
+    "**コミット** と **ロールバック** の違いを、処理が成功した場合と失敗した場合に分けて説明できる。",
+    "**ACID特性** の 4 つの性質を、それぞれが何を守るかで区別できる。",
+    "同じデータへの同時アクセスで起こる矛盾を防ぐ **排他制御** と、ロックの待ち合いで起こる **デッドロック** を区別できる。",
+    "**2相コミットメント** が複数のデータベースの更新をどうそろえるかを、段階の順に説明できる。"
+  ],
+  "goals_zh": [
+    "能分成处理成功和失败两种情况，说明**提交**与**回滚**的区别。",
+    "能按各自保护的内容，区分**ACID 特性**的 4 种性质。",
+    "能区分防止多个处理同时访问同一数据而产生矛盾的**排他控制**，与因互相等待锁而发生的**死锁**。",
+    "能按阶段顺序说明**两阶段提交**如何让多个数据库的更新保持一致。"
+  ],
+  "goals_en": [
+    "Explain how **commit** and **rollback** differ, separating the case where processing succeeds from the case where it fails.",
+    "Tell apart the four **ACID properties** by what each one protects.",
+    "Distinguish **exclusive control**, which prevents conflicts when several processes access the same data at once, from **deadlock**, which arises when processes wait on each other's locks.",
+    "Explain, stage by stage, how **two-phase commit** keeps updates across several databases in step."
+  ],
+  "overview_cols_jp": [
+    "扱う場面",
+    "手がかりの語"
+  ],
+  "overview_cols_zh": [
+    "适用场景",
+    "关键线索词"
+  ],
+  "overview_cols_en": [
+    "Where it applies",
+    "Clue words"
+  ],
+  "overview_rows": [
     {
       "term": "トランザクション",
-      "definition_jp": "分けられない一連の処理を一つのまとまりとして扱うデータベースの更新単位。",
-      "explanation_jp": "トランザクションとは、複数の処理を「全部成功」か「全部なかったことにする」かのどちらかにする、ひとまとまりの処理単位です。例えば銀行振込では「A口座から引く」「B口座へ足す」の両方が必ずそろって完了しなければなりません。\n\n途中で失敗したら、それまでの更新をすべて取り消して元に戻します(ロールバック)。逆にすべて成功したら確定します(コミット)。\n\n試験では、片方だけ実行されてデータが矛盾する事態を防ぐ仕組みとして問われます。「全部やるか、全部やらないか」という性質を押さえることが重要です。",
-      "analogy_jp": "ネット通販の注文で「代金の支払い」と「商品の発送手配」がセットになっているようなもの。どちらか一方だけ成立することはなく、両方そろって初めて取引が成立します。",
-      "memory_hook_jp": "トランザクションといえば全部やるか全部やらないかの処理単位",
-      "inline_quiz": [
-        "2013h25a-q067",
-        "2014h26a-q071"
+      "one_line_jp": "複数の更新を、すべて反映するか一つも反映しないかで終わらせる処理の単位",
+      "one_line_zh": "把多个更新作为整体，要么全部生效、要么全部不生效的处理单位",
+      "one_line_en": "A unit of processing that ends with all of its updates applied or none of them",
+      "extra_jp": [
+        "データベースへの一連の更新",
+        "コミット、ロールバック、ログ"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "事务",
-      "term_en": "Transaction",
-      "definition_zh": "将不可分割的一连串处理作为一个整体来对待的数据库更新单位。",
-      "definition_en": "A database update unit that treats an indivisible sequence of operations as a single whole.",
-      "explanation_zh": "事务是把多个处理变成「要么全部成功，要么全部当作没发生过」二者之一的一整组处理单位。例如银行转账中，「从 A 账户扣款」和「向 B 账户入款」两者必须同时完成。\n\n如果中途失败，就把此前的所有更新撤销、恢复原状（回滚）。反之如果全部成功，就予以确定（提交）。\n\n考试中会作为防止只执行其中一方而导致数据矛盾的机制来出题。掌握「要么全做，要么全不做」这一性质很重要。",
-      "explanation_en": "A transaction is a single group of operations that ends up as one of two outcomes: either everything succeeds, or everything is treated as if it never happened. For example, in a bank transfer, both \"deduct from account A\" and \"add to account B\" must complete together without fail.\n\nIf it fails partway, all updates made so far are undone and restored to the original state (rollback). Conversely, if everything succeeds, it is finalized (commit).\n\nOn the exam, it is asked as the mechanism that prevents data inconsistency caused by only one side being executed. The key is to grasp the property of \"do it all, or do none of it.\"",
-      "analogy_zh": "就像网购下单时「付款」和「安排发货」是配套的一样。绝不会只有其中一方成立，只有两者同时齐备，交易才算成立。",
-      "analogy_en": "It's like how, in online shopping, \"making the payment\" and \"arranging the shipment\" come as a set. Neither side can stand alone; the deal is only complete when both are in place together.",
-      "memory_hook_zh": "说到事务，就是「要么全做、要么全不做」的处理单位。",
-      "memory_hook_en": "Transaction → the \"all or nothing\" unit of processing."
+      "extra_zh": [
+        "对数据库的一系列更新",
+        "提交、回滚、日志"
+      ],
+      "extra_en": [
+        "A series of updates to a database",
+        "Commit, rollback, log"
+      ]
     },
     {
       "term": "ACID特性",
-      "definition_jp": "トランザクションが信頼性を保つために満たすべき4つの性質。",
-      "explanation_jp": "ACID特性は、トランザクションが守るべき4つの性質の頭文字をとったものです。原子性(Atomicity:全部実行か全部取消)、一貫性(Consistency:データの矛盾がない)、独立性(Isolation:同時実行しても互いに干渉しない)、耐久性(Durability:確定後は障害でも消えない)を指します。\n\nこの4つがそろうことで、トランザクションは安全に処理されます。\n\n試験では各文字が何を表すかが頻出です。特に「原子性=全部か無か」「独立性=並行実行でも結果が崩れない」をきちんと区別できることがポイントです。",
-      "analogy_jp": "料理の作り置きルールに例えると、「作りかけは出さない(原子性)」「レシピ通り(一貫性)」「複数人が同時に作っても混ざらない(独立性)」「冷蔵庫に入れたら腐らせない(耐久性)」という4つの約束事です。",
-      "memory_hook_jp": "ACID特性といえば原子性・一貫性・独立性・耐久性の4つ",
-      "inline_quiz": [
-        "2009h21a-q088",
-        "2018h30a-q075"
+      "one_line_jp": "トランザクションが満たすべき 4 つの性質の頭文字",
+      "one_line_zh": "事务应满足的 4 种性质的首字母",
+      "one_line_en": "The initials of four properties a transaction should satisfy",
+      "extra_jp": [
+        "トランザクションの正しさの基準",
+        "原子性、一貫性、独立性、耐久性"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "ACID 特性",
-      "term_en": "ACID Properties",
-      "definition_zh": "事务为保持可靠性而必须满足的 4 个性质。",
-      "definition_en": "The four properties a transaction must satisfy to maintain reliability.",
-      "explanation_zh": "ACID 特性是取了事务必须遵守的 4 个性质的首字母而成。它们指原子性（Atomicity：全部执行或全部撤销）、一致性（Consistency：数据没有矛盾）、隔离性（Isolation：同时执行也互不干扰）、持久性（Durability：确定后即使发生故障也不会消失）。\n\n这 4 个齐备，事务才能被安全地处理。\n\n考试中经常考查每个字母代表什么。尤其要能清楚区分「原子性＝全有或全无」「隔离性＝并发执行结果也不会被破坏」，这是要点。",
-      "explanation_en": "ACID is formed from the initials of the four properties a transaction must uphold. They refer to Atomicity (execute all or undo all), Consistency (no data inconsistencies), Isolation (no mutual interference even when executed at the same time), and Durability (once finalized, it is not lost even on failure).\n\nWhen all four are in place, a transaction can be processed safely.\n\nOn the exam, what each letter stands for is frequently asked. In particular, the key point is being able to clearly distinguish \"Atomicity = all or nothing\" from \"Isolation = the result is not broken even under concurrent execution.\"",
-      "analogy_zh": "拿做好备餐的规则来比喻，就是 4 条约定：「半成品不端上桌（原子性）」「照菜谱来（一致性）」「多人同时做也不会混在一起（隔离性）」「放进冰箱就别让它坏掉（持久性）」。",
-      "analogy_en": "Compared to rules for batch-cooking meals ahead of time, it's four promises: \"don't serve half-finished dishes (Atomicity),\" \"follow the recipe (Consistency),\" \"even if several people cook at once, dishes don't get mixed up (Isolation),\" and \"once it's in the fridge, don't let it spoil (Durability).\"",
-      "memory_hook_zh": "说到 ACID 特性，就是原子性、一致性、隔离性、持久性这 4 个。",
-      "memory_hook_en": "ACID properties → Atomicity, Consistency, Isolation, Durability — these four."
+      "extra_zh": [
+        "衡量事务是否正确的标准",
+        "原子性、一致性、隔离性、持久性"
+      ],
+      "extra_en": [
+        "The yardstick for a correct transaction",
+        "Atomicity, consistency, isolation, durability"
+      ]
     },
     {
       "term": "デッドロック",
-      "definition_jp": "複数の処理が互いの資源解放を待ち続け、永久に進めなくなる状態。",
-      "explanation_jp": "デッドロックは、複数のトランザクションが互いに相手の使っている資源(データ)を待ち合い、どちらも先に進めなくなる膠着状態です。Aさんがデータ1を確保したまま2を待ち、Bさんがデータ2を確保したまま1を待つと、お互い永遠に解放されません。\n\n同時実行(並行制御)で資源にロックをかける際に起こります。\n\n試験では、二者が互いに待ち合う「循環した待ち」が原因である点が問われます。対策として、片方の処理を強制終了させて巻き戻す方法などがあることも押さえましょう。",
-      "analogy_jp": "狭い一本道で2台の車が正面で向き合い、互いに「相手が先に下がれ」と譲らず、どちらも動けなくなった状態に似ています。",
-      "memory_hook_jp": "デッドロックといえば互いに資源を待ち合って動けない状態",
-      "inline_quiz": [
-        "2011h23tokubetsu-q078"
+      "one_line_jp": "資源を持ったまま互いに相手の資源を待ち、どの処理も進めなくなる状態",
+      "one_line_zh": "持有资源的同时互相等待对方的资源，导致所有处理都无法推进的状态",
+      "one_line_en": "A state where processes hold resources while waiting for each other's, so none can proceed",
+      "extra_jp": [
+        "ロックを使う複数処理の同時実行",
+        "待ち合いの輪"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; T1[\"処理1\"] -->|\"資源Bを待つ\"| RB[\"資源B\"]; RB -->|\"処理2が確保中\"| T2[\"処理2\"]; T2 -->|\"資源Aを待つ\"| RA[\"資源A\"]; RA -->|\"処理1が確保中\"| T1",
-        "svg_path": "figures/technology-21-57-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "死锁",
-      "term_en": "Deadlock",
-      "definition_zh": "多个处理互相等待对方释放资源，永远无法继续推进的状态。",
-      "definition_en": "A state in which multiple operations keep waiting for each other to release resources and can never make progress.",
-      "explanation_zh": "死锁是指多个事务互相等待对方正在使用的资源（数据），双方都无法继续推进的僵持状态。如果甲一直占着数据 1 等待数据 2，而乙一直占着数据 2 等待数据 1，那么二者就永远不会释放。\n\n它在并发执行（并发控制）对资源加锁时发生。\n\n考试中会考查其原因在于二者互相等待的「循环等待」这一点。也要掌握其对策，例如可以强制终止其中一方的处理并回退。",
-      "explanation_en": "A deadlock is a stalemate in which multiple transactions each wait for the resource (data) the other is using, and neither can move forward. If user A holds data 1 while waiting for data 2, and user B holds data 2 while waiting for data 1, neither will ever be released.\n\nIt occurs when locks are placed on resources during concurrent execution (concurrency control).\n\nOn the exam, it is asked that the cause is a \"circular wait\" in which the two sides wait on each other. Also keep in mind that countermeasures exist, such as forcibly terminating one side's processing and rolling it back.",
-      "analogy_zh": "类似于在狭窄的单行道上两辆车迎面相对，彼此都坚持「该你先退」而不相让，结果谁都动不了的状态。",
-      "analogy_en": "It's like two cars facing each other head-on on a narrow one-lane road, each insisting \"you back up first\" and refusing to yield, so neither can move.",
-      "memory_hook_zh": "说到死锁，就是互相等待资源、谁都动不了的状态。",
-      "memory_hook_en": "Deadlock → a state where parties wait on each other's resources and nobody can move."
+      "extra_zh": [
+        "多个使用锁的处理同时运行",
+        "等待形成环"
+      ],
+      "extra_en": [
+        "Several processes running at once with locks",
+        "A ring of waiting"
+      ]
     },
     {
       "term": "2相コミットメント",
-      "definition_jp": "複数DBにまたがる更新を全体で確定/取消し整合させる2段階の手順。",
-      "explanation_jp": "2相コミットメント(2相コミット)は、複数のデータベースにまたがるトランザクションを、全体として確実に確定させるための手順です。第1相で各DBに「コミットできるか」を問い合わせ(準備)、全員が「可能」と答えたら第2相で一斉に確定(コミット)します。\n\n一つでも「不可能」があれば全体を取り消します。\n\n試験では、分散環境で複数DBの整合をとる仕組みである点が問われます。準備フェーズと確定フェーズの2段階で進める点を押さえましょう。",
-      "analogy_jp": "複数の出席者で日程を決めるとき、まず全員に「この日で大丈夫?」と確認し、全員OKなら正式に「では確定」と通知する流れに似ています。一人でも不可なら全員分を白紙に戻します。",
-      "memory_hook_jp": "2相コミットメントといえば準備と確定の2段階で分散更新を整合",
+      "one_line_jp": "複数のデータベースにまたがる更新を、準備と確定の 2 段階でそろえる手順",
+      "one_line_zh": "把跨多个数据库的更新，分准备和确定两个阶段统一起来的步骤",
+      "one_line_en": "A procedure that aligns updates across several databases in two stages, prepare and commit",
+      "extra_jp": [
+        "複数のデータベースにまたがる更新",
+        "調整役、準備、確定"
+      ],
+      "extra_zh": [
+        "跨多个数据库的更新",
+        "协调者、准备、确定"
+      ],
+      "extra_en": [
+        "Updates spanning several databases",
+        "Coordinator, prepare, commit"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "トランザクション",
+      "term_zh": "事务",
+      "term_en": "Transaction",
+      "one_jp": "**トランザクション** は、関連する複数の更新処理をひとまとまりにし、すべてを反映するか一つも反映しないかのどちらかで終わらせる処理の単位である。",
+      "one_zh": "**事务**（[[jp:トランザクション]]）是把相关的多个更新处理归为一组，以全部生效或全部不生效之一结束的处理单位。",
+      "one_en": "A **transaction** ([[jp:トランザクション]]) is a unit of processing that groups several related updates and ends in one of two ways: all of them take effect, or none do.",
+      "detail_jp": "まとめた処理がすべて正常に終わったら更新を確定させる操作を **コミット**、途中で失敗したら更新を取り消して開始前の状態に戻す操作を **ロールバック** という。取り消しに備えて、DBMS は更新の履歴を **ログ** というファイルに記録している。複数の利用者が同じデータに同時にアクセスすると結果に矛盾が出ることがあるため、使用中のデータに **ロック** をかけて他の処理を待たせる **排他制御** を行う。",
+      "detail_zh": "归组的处理全部正常结束后确定更新的操作叫**提交**（[[jp:コミット]]），中途失败时取消更新、恢复到开始前状态的操作叫**回滚**（[[jp:ロールバック]]）。为了能够撤销，DBMS 会把更新的历史记录在名为**日志**（[[jp:ログ]]）的文件中。多个用户同时访问同一数据时结果可能出现矛盾，因此要实行**排他控制**（[[jp:排他制御]]）：给正在使用的数据加上**锁**（[[jp:ロック]]），让其他处理等待。",
+      "detail_en": "The operation that makes updates final once every grouped step has finished normally is a **commit** ([[jp:コミット]]), and undoing the updates after a failure partway through so the data returns to its starting state is a **rollback** ([[jp:ロールバック]]). To be able to undo, the DBMS records the history of updates in a file called the **log** ([[jp:ログ]]). When several users reach the same data at the same moment the results can conflict, so the DBMS applies **exclusive control** ([[jp:排他制御]]): it places a **lock** ([[jp:ロック]]) on data in use and makes other processes wait.",
+      "analogy_jp": "航空券とホテルをセットでしか取らないパック旅行の予約に似ている。ホテルが満室なら航空券も取らず、両方そろって初めて予約が成立する。",
+      "analogy_zh": "就像只能把机票和酒店一起预订的套餐旅行。酒店满房的话机票也不订，两者都订到才算预订成功。",
+      "analogy_en": "It is like a package holiday where the flight and the hotel can only be booked together. If the hotel is full, the flight is not booked either; the booking stands only once both are secured.",
+      "hook_jp": "英語の transaction は「取引」の意味。取引は品物の受け渡しと代金の支払いがそろって初めて成り立つ、と語の由来で思い出す。",
+      "hook_zh": "英语 transaction 原意是“交易”：交货和付款缺一不可，两者都完成，交易才算成立。",
+      "hook_en": "In everyday English a transaction is a deal, and a deal only counts when the goods change hands and the payment is made, both together.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**コミット** は、まとめた処理がすべて正常に終わった時点で更新を確定させる操作である。失敗時に開始前の状態へ戻す **ロールバック** とは逆の働きをする。",
+          "text_zh": "**提交**（[[jp:コミット]]）是在归组的处理全部正常结束时确定更新的操作。它与失败时恢复到开始前状态的**回滚**（[[jp:ロールバック]]）作用相反。",
+          "text_en": "A **commit** ([[jp:コミット]]) makes the updates final at the point when every grouped step has finished normally. It works the opposite way to a **rollback** ([[jp:ロールバック]]), which returns to the starting state on failure.",
+          "qids": [
+            "2023r05-q066",
+            "2021r03-q062",
+            "2018h30a-q063"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**排他制御** は、複数の処理が同じデータに同時にアクセスして不整合が出るのを防ぐ仕組みで、使用中のデータにロックをかけ、使い終わるまで他の処理を待たせて実現する。",
+          "text_zh": "**排他控制**（[[jp:排他制御]]）是防止多个处理同时访问同一数据而产生不一致的机制，做法是给正在使用的数据加锁（[[jp:ロック]]），在用完之前让其他处理等待。",
+          "text_en": "**Exclusive control** ([[jp:排他制御]]) is the mechanism that prevents inconsistencies when several processes access the same data at once, and it works by locking ([[jp:ロック]]) data in use and making other processes wait until the first one is done with it.",
+          "qids": [
+            "2015h27h-q077",
+            "2019r01a-q064",
+            "2016h28a-q081",
+            "2009h21a-q088"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ロックをかけずに並行して更新し、二つの処理が同じ値を読み込んでから順に書き込むと、後で書き込んだ側の結果だけが残り、先の更新は失われる。",
+          "text_zh": "如果不加锁就并行更新，两个处理读入同一个值后依次写入，只有后写入一方的结果会留下，先前的更新会丢失。",
+          "text_en": "If two processes update in parallel without locks and both read the same value before writing in turn, only the later write survives and the earlier update is lost.",
+          "qids": [
+            "2009h21h-q082",
+            "2010h22h-q082",
+            "2012h24a-q080",
+            "2020r02o-q072"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "コミット",
+            "zh": "提交",
+            "en": "Commit"
+          },
+          "b": {
+            "jp": "ロールバック",
+            "zh": "回滚",
+            "en": "Rollback"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "行うとき",
+                "zh": "执行时机",
+                "en": "When it is used"
+              },
+              "a": {
+                "jp": "まとめた処理がすべて正常に終わったとき",
+                "zh": "归组的处理全部正常结束时",
+                "en": "When every grouped step finishes normally"
+              },
+              "b": {
+                "jp": "まとめた処理の途中で失敗したとき",
+                "zh": "归组的处理中途失败时",
+                "en": "When a grouped step fails partway"
+              }
+            },
+            {
+              "label": {
+                "jp": "更新の扱い",
+                "zh": "更新的处理",
+                "en": "What happens to updates"
+              },
+              "a": {
+                "jp": "更新を確定し、以後も残す",
+                "zh": "确定更新，此后一直保留",
+                "en": "Updates are made final and kept"
+              },
+              "b": {
+                "jp": "更新を取り消し、開始前の状態に戻す",
+                "zh": "取消更新，恢复到开始前的状态",
+                "en": "Updates are undone, restoring the state before the start"
+              },
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2018h30a-q075",
+        "2025r07-q061",
+        "2017h29a-q076"
+      ],
+      "definition_jp": "トランザクション は、関連する複数の更新処理をひとまとまりにし、すべてを反映するか一つも反映しないかのどちらかで終わらせる処理の単位である。",
+      "definition_zh": "事务（トランザクション）是把相关的多个更新处理归为一组，以全部生效或全部不生效之一结束的处理单位。",
+      "definition_en": "A transaction (トランザクション) is a unit of processing that groups several related updates and ends in one of two ways: all of them take effect, or none do.",
+      "explanation_jp": "まとめた処理がすべて正常に終わったら更新を確定させる操作を コミット、途中で失敗したら更新を取り消して開始前の状態に戻す操作を ロールバック という。取り消しに備えて、DBMS は更新の履歴を ログ というファイルに記録している。複数の利用者が同じデータに同時にアクセスすると結果に矛盾が出ることがあるため、使用中のデータに ロック をかけて他の処理を待たせる 排他制御 を行う。",
+      "explanation_zh": "归组的处理全部正常结束后确定更新的操作叫提交（コミット），中途失败时取消更新、恢复到开始前状态的操作叫回滚（ロールバック）。为了能够撤销，DBMS 会把更新的历史记录在名为日志（ログ）的文件中。多个用户同时访问同一数据时结果可能出现矛盾，因此要实行排他控制（排他制御）：给正在使用的数据加上锁（ロック），让其他处理等待。",
+      "explanation_en": "The operation that makes updates final once every grouped step has finished normally is a commit (コミット), and undoing the updates after a failure partway through so the data returns to its starting state is a rollback (ロールバック). To be able to undo, the DBMS records the history of updates in a file called the log (ログ). When several users reach the same data at the same moment the results can conflict, so the DBMS applies exclusive control (排他制御): it places a lock (ロック) on data in use and makes other processes wait.",
+      "memory_hook_jp": "英語の transaction は「取引」の意味。取引は品物の受け渡しと代金の支払いがそろって初めて成り立つ、と語の由来で思い出す。",
+      "memory_hook_zh": "英语 transaction 原意是“交易”：交货和付款缺一不可，两者都完成，交易才算成立。",
+      "memory_hook_en": "In everyday English a transaction is a deal, and a deal only counts when the goods change hands and the payment is made, both together.",
+      "inline_quiz": [
+        "2018h30a-q075",
+        "2025r07-q061",
+        "2017h29a-q076"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ACID特性",
+      "term_zh": "ACID 特性",
+      "term_en": "ACID Properties",
+      "one_jp": "**ACID特性** は、トランザクションが正しく処理されるために満たすべき 4 つの性質を、英語名の頭文字で表したものである。",
+      "one_zh": "**ACID 特性**（[[jp:ACID特性]]）是用英文名称首字母表示的、事务为得到正确处理而应满足的 4 种性质。",
+      "one_en": "The **ACID properties** ([[jp:ACID特性]]) are the four properties a transaction must satisfy to be processed correctly, named by the initials of their English names.",
+      "detail_jp": "**原子性** は更新が全部反映されるか一つも反映されないか、**一貫性** は処理の前後でデータが決められた条件 (例えば数量が負の値にならない) を満たし続けることを指す。**独立性** は同時に動く複数のトランザクションが互いの途中結果に左右されないこと、**耐久性** はコミットした結果が後で障害が起きても失われないことを指す。",
+      "detail_zh": "**原子性**（[[jp:原子性]]）指更新要么全部生效、要么全部不生效；**一致性**（[[jp:一貫性]]）指处理前后数据始终满足既定条件（例如数量不会变成负数）。**隔离性**（[[jp:独立性]]）指同时运行的多个事务不受彼此中间结果的影响；**持久性**（[[jp:耐久性]]）指已提交的结果即使之后发生故障也不会丢失。",
+      "detail_en": "**Atomicity** ([[jp:原子性]]) means updates either all take effect or none do, and **consistency** ([[jp:一貫性]]) means the data keeps meeting its defined rules before and after processing, such as a quantity never going negative. **Isolation** ([[jp:独立性]]) means several transactions running at the same time are not swayed by each other's partial results, and **durability** ([[jp:耐久性]]) means a committed result is not lost even if a failure occurs later.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "A・C・I・D を続けると英語の acid (アシッド) になる。先頭の Atomicity は atom (それ以上分けられない原子) から来ており、一連の更新を分けて一部だけ残すことはしない、と結び付ける。",
+      "hook_zh": "把 A、C、I、D 连起来就是英语 acid（酸）。打头的 Atomicity 来自 atom（不可再分的原子），联想到一连串更新不会被拆开、只留下一部分。",
+      "hook_en": "Put A, C, I and D together and you get the word acid. The first one, Atomicity, comes from atom, something that cannot be split, so a series of updates is never split to keep just part of it.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**原子性** は、一連の更新を全部反映するか一つも反映しないかにそろえる性質で、成功時に確定し失敗時に元へ戻すトランザクションの動きそのものに当たる。",
+          "text_zh": "**原子性**（[[jp:原子性]]）是让一连串更新要么全部生效、要么全部不生效的性质，正对应事务（[[jp:トランザクション]]）成功时确定、失败时复原的行为。",
+          "text_en": "**Atomicity** ([[jp:原子性]]) is the property that makes a series of updates take effect entirely or not at all, which is exactly what a transaction ([[jp:トランザクション]]) does when it commits on success and reverts on failure.",
+          "qids": [
+            "2022r04-q077",
+            "2018h30a-q075"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "**独立性** は、同時に動く処理が互いの途中結果に左右されない性質で、使用中のデータにロックをかけ、他の処理をその処理の終了まで待たせる排他制御によって保たれる。",
+          "text_zh": "**隔离性**（[[jp:独立性]]）是同时运行的处理不受彼此中间结果影响的性质，靠排他控制来保持：给正在使用的数据加锁，让其他处理等到该处理结束。",
+          "text_en": "**Isolation** ([[jp:独立性]]) is the property that concurrent processes are not swayed by each other's partial results, and it is maintained through exclusive control, which locks data in use and makes other processes wait until that process ends.",
+          "qids": [
+            "2009h21a-q088"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**原子性** はコミット前の中途半端な状態を残さない性質、**耐久性** はコミット後の結果を障害から守る性質であり、コミットの前と後のどちらを守るかで分かれる。",
+          "text_zh": "**原子性**是不留下提交前半途状态的性质，**持久性**（[[jp:耐久性]]）是保护提交后的结果不受故障影响的性质，两者的区别在于保护的是提交之前还是之后。",
+          "text_en": "**Atomicity** leaves no half-finished state before a commit, while **durability** ([[jp:耐久性]]) protects the result after a commit from failures, so the two split on whether they guard the time before or after the commit."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "頭文字",
+              "zh": "首字母",
+              "en": "Initial"
+            },
+            {
+              "jp": "性質",
+              "zh": "性质",
+              "en": "Property"
+            },
+            {
+              "jp": "守る内容",
+              "zh": "保护的内容",
+              "en": "What it protects"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "A (Atomicity)",
+                  "zh": "A (Atomicity)",
+                  "en": "A (Atomicity)"
+                },
+                {
+                  "jp": "原子性",
+                  "zh": "原子性",
+                  "en": "Atomicity"
+                },
+                {
+                  "jp": "更新を全部反映するか、一つも反映しないか",
+                  "zh": "更新要么全部生效，要么全部不生效",
+                  "en": "All updates take effect, or none do"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "C (Consistency)",
+                  "zh": "C (Consistency)",
+                  "en": "C (Consistency)"
+                },
+                {
+                  "jp": "一貫性",
+                  "zh": "一致性",
+                  "en": "Consistency"
+                },
+                {
+                  "jp": "処理の前後でデータが決められた条件を満たす",
+                  "zh": "处理前后数据都满足既定条件",
+                  "en": "Data meets its defined rules before and after processing"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "I (Isolation)",
+                  "zh": "I (Isolation)",
+                  "en": "I (Isolation)"
+                },
+                {
+                  "jp": "独立性",
+                  "zh": "隔离性",
+                  "en": "Isolation"
+                },
+                {
+                  "jp": "同時に動く処理が互いの途中結果に左右されない",
+                  "zh": "同时运行的处理不受彼此中间结果影响",
+                  "en": "Concurrent processes are unaffected by each other's partial results"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "D (Durability)",
+                  "zh": "D (Durability)",
+                  "en": "D (Durability)"
+                },
+                {
+                  "jp": "耐久性",
+                  "zh": "持久性",
+                  "en": "Durability"
+                },
+                {
+                  "jp": "コミットした結果は障害が起きても失われない",
+                  "zh": "已提交的结果即使发生故障也不会丢失",
+                  "en": "Committed results survive failures"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2022r04-q077",
+        "2009h21a-q088"
+      ],
+      "definition_jp": "ACID特性 は、トランザクションが正しく処理されるために満たすべき 4 つの性質を、英語名の頭文字で表したものである。",
+      "definition_zh": "ACID 特性（ACID特性）是用英文名称首字母表示的、事务为得到正确处理而应满足的 4 种性质。",
+      "definition_en": "The ACID properties (ACID特性) are the four properties a transaction must satisfy to be processed correctly, named by the initials of their English names.",
+      "explanation_jp": "原子性 は更新が全部反映されるか一つも反映されないか、一貫性 は処理の前後でデータが決められた条件 (例えば数量が負の値にならない) を満たし続けることを指す。独立性 は同時に動く複数のトランザクションが互いの途中結果に左右されないこと、耐久性 はコミットした結果が後で障害が起きても失われないことを指す。",
+      "explanation_zh": "原子性（原子性）指更新要么全部生效、要么全部不生效；一致性（一貫性）指处理前后数据始终满足既定条件（例如数量不会变成负数）。隔离性（独立性）指同时运行的多个事务不受彼此中间结果的影响；持久性（耐久性）指已提交的结果即使之后发生故障也不会丢失。",
+      "explanation_en": "Atomicity (原子性) means updates either all take effect or none do, and consistency (一貫性) means the data keeps meeting its defined rules before and after processing, such as a quantity never going negative. Isolation (独立性) means several transactions running at the same time are not swayed by each other's partial results, and durability (耐久性) means a committed result is not lost even if a failure occurs later.",
+      "memory_hook_jp": "A・C・I・D を続けると英語の acid (アシッド) になる。先頭の Atomicity は atom (それ以上分けられない原子) から来ており、一連の更新を分けて一部だけ残すことはしない、と結び付ける。",
+      "memory_hook_zh": "把 A、C、I、D 连起来就是英语 acid（酸）。打头的 Atomicity 来自 atom（不可再分的原子），联想到一连串更新不会被拆开、只留下一部分。",
+      "memory_hook_en": "Put A, C, I and D together and you get the word acid. The first one, Atomicity, comes from atom, something that cannot be split, so a series of updates is never split to keep just part of it.",
+      "inline_quiz": [
+        "2022r04-q077",
+        "2009h21a-q088"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "デッドロック",
+      "term_zh": "死锁",
+      "term_en": "Deadlock",
+      "one_jp": "**デッドロック** は、複数の処理がそれぞれ資源を確保したまま相手が持つ資源の解放を待ち合い、どの処理も先へ進めなくなる状態である。",
+      "one_zh": "**死锁**（[[jp:デッドロック]]）是多个处理各自占有资源，同时等待对方释放其持有的资源，结果所有处理都无法继续推进的状态。",
+      "one_en": "A **deadlock** ([[jp:デッドロック]]) is a state in which several processes each hold a resource while waiting for another to release the resource it holds, so none of them can move forward.",
+      "detail_jp": "例えば処理1が資源Xを、処理2が資源Yをロックした後、処理1がYを、処理2がXを求めると、互いに相手のロック解除を待つ輪ができる。この待ち合いはどちらかが譲らない限り解けないため、DBMS は一方の処理をロールバックしてロックを解放させるなどして解消する。",
+      "detail_zh": "例如处理1锁定资源X、处理2锁定资源Y之后，如果处理1请求Y、处理2请求X，就会形成互相等待对方解锁的环。只要没有一方让步，这种等待就解不开，因此 DBMS 会采取让其中一个处理回滚、释放锁等方式来解除。",
+      "detail_en": "Suppose process 1 locks resource X and process 2 locks resource Y, and then process 1 asks for Y while process 2 asks for X: each now waits for the other to unlock, forming a ring. This standoff cannot clear unless one side gives way, so the DBMS resolves it by, for instance, rolling back one process to free its locks.",
+      "analogy_jp": "二人が箸を 1 本ずつ持ったまま、相手の 1 本が空くのを待って、どちらも食べ始められない様子に似ている。",
+      "analogy_zh": "就像两个人各拿一根筷子，都在等对方那一根空出来，结果谁也吃不上饭。",
+      "analogy_en": "Picture two diners who each hold one chopstick and wait for the other's to free up, so neither can start eating.",
+      "hook_jp": "dead (動かない) と lock (鍵) の組み合わせ。互いに鍵を掛け合ったまま固まる、と字面で覚える。",
+      "hook_zh": "dead（不动）加上 lock（锁）。互相锁住、僵在原地，看字面就能记住。",
+      "hook_en": "Dead (not moving) plus lock: two parties lock each other out and freeze, just as the word says.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**デッドロック** の核心は、各処理が資源を持ったまま別の資源を待ち、その待ちが互いに輪になっている点にある。",
+          "text_zh": "**死锁**（[[jp:デッドロック]]）的关键在于：每个处理都持有资源又在等待别的资源，而且这些等待互相连成了一个环。",
+          "text_en": "The heart of a **deadlock** ([[jp:デッドロック]]) is that each process holds a resource while waiting for another, and those waits link up into a ring.",
+          "qids": [
+            "2012h24a-q067"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "ロックは、データを読み込む前にかけ、結果を書き込み終えてから外す。読み込みから書き込みまでの間に他の処理が入り込まないようにするためである。",
+          "text_zh": "锁要在读入数据之前加上，在写完结果之后再解除。这是为了不让其他处理在读入到写入之间插进来。",
+          "text_en": "A lock goes on before the data is read and comes off only after the result has been written. This keeps other processes from slipping in between the read and the write.",
+          "qids": [
+            "2013h25a-q067"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**排他制御** は同時アクセスで起こる矛盾を防ぐための仕組みであり、**デッドロック** はロックを使う処理どうしの待ち合いで起こりうる停止状態である。目的の仕組みか、生じる問題かで分かれる。",
+          "text_zh": "**排他控制**是为防止同时访问引起矛盾而设的机制，**死锁**则是使用锁的处理之间互相等待时可能发生的停滞状态。区别在于一个是目的所在的机制，一个是由此产生的问题。",
+          "text_en": "**Exclusive control** is the mechanism meant to prevent conflicts from simultaneous access, whereas a **deadlock** is a stall that can occur when processes using locks wait on each other. One is the intended mechanism, the other a problem it can produce.",
+          "qids": [
+            "2015h27h-q077"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "p1x",
+              "label": {
+                "jp": "処理1が資源Xをロック",
+                "zh": "处理1锁定资源X",
+                "en": "Process 1 locks resource X"
+              }
+            },
+            {
+              "id": "p2y",
+              "label": {
+                "jp": "処理2が資源Yをロック",
+                "zh": "处理2锁定资源Y",
+                "en": "Process 2 locks resource Y"
+              }
+            },
+            {
+              "id": "p1w",
+              "label": {
+                "jp": "処理1が資源Yの解放を待つ",
+                "zh": "处理1等待资源Y释放",
+                "en": "Process 1 waits for Y to be released"
+              }
+            },
+            {
+              "id": "p2w",
+              "label": {
+                "jp": "処理2が資源Xの解放を待つ",
+                "zh": "处理2等待资源X释放",
+                "en": "Process 2 waits for X to be released"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "処理1が資源Xを確保し、他の処理はXを使えなくなる。",
+            "caption_zh": "处理1占用资源X，其他处理无法再使用X。",
+            "caption_en": "Process 1 takes resource X, and no other process can use X.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "処理2が資源Yを確保する。ここまではどちらも動ける。",
+            "caption_zh": "处理2占用资源Y。到这一步两者都还能运行。",
+            "caption_en": "Process 2 takes resource Y. Up to here, both can still run.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "処理1がYを求めるが、処理2が持っているので待つ。",
+            "caption_zh": "处理1需要Y，但Y在处理2手里，只能等待。",
+            "caption_en": "Process 1 needs Y, but process 2 holds it, so it waits.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "処理2もXを求めて待つ。待ちが輪になり、両方とも止まる。",
+            "caption_zh": "处理2也需要X而进入等待。等待形成一个环，两者都停住了。",
+            "caption_en": "Process 2 also waits, for X. The waiting forms a ring and both stop.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2012h24a-q067",
+        "2011h23tokubetsu-q078",
+        "2013h25a-q067"
+      ],
+      "definition_jp": "デッドロック は、複数の処理がそれぞれ資源を確保したまま相手が持つ資源の解放を待ち合い、どの処理も先へ進めなくなる状態である。",
+      "definition_zh": "死锁（デッドロック）是多个处理各自占有资源，同时等待对方释放其持有的资源，结果所有处理都无法继续推进的状态。",
+      "definition_en": "A deadlock (デッドロック) is a state in which several processes each hold a resource while waiting for another to release the resource it holds, so none of them can move forward.",
+      "explanation_jp": "例えば処理1が資源Xを、処理2が資源Yをロックした後、処理1がYを、処理2がXを求めると、互いに相手のロック解除を待つ輪ができる。この待ち合いはどちらかが譲らない限り解けないため、DBMS は一方の処理をロールバックしてロックを解放させるなどして解消する。",
+      "explanation_zh": "例如处理1锁定资源X、处理2锁定资源Y之后，如果处理1请求Y、处理2请求X，就会形成互相等待对方解锁的环。只要没有一方让步，这种等待就解不开，因此 DBMS 会采取让其中一个处理回滚、释放锁等方式来解除。",
+      "explanation_en": "Suppose process 1 locks resource X and process 2 locks resource Y, and then process 1 asks for Y while process 2 asks for X: each now waits for the other to unlock, forming a ring. This standoff cannot clear unless one side gives way, so the DBMS resolves it by, for instance, rolling back one process to free its locks.",
+      "memory_hook_jp": "dead (動かない) と lock (鍵) の組み合わせ。互いに鍵を掛け合ったまま固まる、と字面で覚える。",
+      "memory_hook_zh": "dead（不动）加上 lock（锁）。互相锁住、僵在原地，看字面就能记住。",
+      "memory_hook_en": "Dead (not moving) plus lock: two parties lock each other out and freeze, just as the word says.",
+      "inline_quiz": [
+        "2012h24a-q067",
+        "2011h23tokubetsu-q078",
+        "2013h25a-q067"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "2相コミットメント",
+      "term_zh": "两阶段提交",
+      "term_en": "Two-Phase Commit",
+      "one_jp": "**2相コミットメント** は、複数のデータベースにまたがるトランザクションを全体で確定するか全体で取り消すかにそろえるため、準備と確定の 2 段階でコミットを進める手順である。",
+      "one_zh": "**两阶段提交**（[[jp:2相コミットメント]]）是为使跨多个数据库的事务整体确定或整体取消，分准备和确定两个阶段推进提交的步骤。",
+      "one_en": "**Two-phase commit** ([[jp:2相コミットメント]]) is a procedure that carries out a commit in two stages, prepare and commit, so that a transaction spanning several databases is either committed as a whole or cancelled as a whole.",
+      "detail_jp": "全体を取りまとめる **調整役** は、第1相で各データベースに確定の準備ができたかを問い合わせ、各データベースは更新をいつでも確定できる状態にしてから可否を返す。全員が可と答えたときだけ第2相で確定を指示し、一つでも否があれば全員にロールバックを指示する。これにより、ある拠点では確定し別の拠点では取り消された、という食い違いを防ぐ。",
+      "detail_zh": "统筹全局的**协调者**（[[jp:調整役]]）在第1阶段询问各数据库是否已做好确定的准备，各数据库先把更新置于随时可以确定的状态，再答复可否。只有全部答复可以时，才在第2阶段指示确定；只要有一个不可以，就指示全部数据库回滚。这样就能避免某个站点已经确定、另一个站点却被取消的不一致。",
+      "detail_en": "In phase 1 the **coordinator** ([[jp:調整役]]) overseeing the whole transaction asks each database whether it is ready to commit, and each database brings its updates to a state where they can be committed at any moment before answering yes or no. Only if every answer is yes does it order a commit in phase 2, and if even one is no it tells all databases to roll back. This prevents a mismatch in which one site has committed while another has cancelled.",
+      "analogy_jp": "共同購入で、参加者全員から支払えるという返事がそろってから一斉に代金を引き落とし、一人でも支払えなければ誰からも引き落とさないやり方に似ている。",
+      "analogy_zh": "就像团购：先等所有参与者都回复“能付款”，再一起扣款；只要有一个人付不了，就谁的钱也不扣。",
+      "analogy_en": "It is like a group purchase where everyone is charged at once only after every member confirms they can pay; if a single person cannot, nobody is charged.",
+      "hook_jp": "「相」は phase (段階) の訳語。1 相目で聞き、2 相目で決める、と数字と動作を対にして覚える。",
+      "hook_zh": "日语名称里的“相”是 phase（阶段）的译词。第 1 相询问，第 2 相决定，把数字和动作配成对来记。",
+      "hook_en": "The [[jp:相]] in the Japanese name translates phase. Phase 1 asks and phase 2 decides, so pair each number with its action.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "1 つのデータベースで完結する更新はそのデータベースのコミット 1 回で確定するが、**2相コミットメント** は確定の前に、参加する全データベースの準備完了を確かめる段階を挟む。",
+          "text_zh": "在单个数据库内完成的更新，靠该数据库的 1 次提交就能确定；而**两阶段提交**（[[jp:2相コミットメント]]）在确定之前，还要加入一个确认所有参与数据库都已准备完毕的阶段。",
+          "text_en": "An update confined to one database is made final by a single commit in that database, but **two-phase commit** ([[jp:2相コミットメント]]) inserts a stage before committing that confirms every participating database is ready.",
+          "qids": [
+            "2021r03-q062"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "第1相で可と答えたデータベースも、その時点ではまだ確定していない。第2相で取消の指示を受ければ、そのデータベースもロールバックする。",
+          "text_zh": "在第1阶段答复可以的数据库，此时也还没有确定。如果在第2阶段收到取消的指示，这个数据库同样要回滚。",
+          "text_en": "A database that votes yes in phase 1 has still not committed at that point. If it receives a cancel order in phase 2, it rolls back as well."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "req",
+              "label": {
+                "jp": "調整役が各DBに準備を依頼",
+                "zh": "协调者请求各DB准备",
+                "en": "Coordinator asks each DB to prepare"
+              }
+            },
+            {
+              "id": "vote",
+              "label": {
+                "jp": "各DBが準備して可否を回答",
+                "zh": "各DB准备并答复可否",
+                "en": "Each DB prepares and votes yes or no"
+              }
+            },
+            {
+              "id": "judge",
+              "label": {
+                "jp": "調整役が全員の回答を確認",
+                "zh": "协调者确认全部答复",
+                "en": "Coordinator checks every vote"
+              }
+            },
+            {
+              "id": "fin",
+              "label": {
+                "jp": "全DBに確定か取消を指示",
+                "zh": "向全部DB指示确定或取消",
+                "en": "All DBs told to commit or cancel"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "第1相: 全体を取りまとめる調整役が、参加する各データベースに確定の準備を依頼する。",
+            "caption_zh": "第1阶段：统筹全局的协调者请参与的各个数据库做好确定的准备。",
+            "caption_en": "Phase 1: the coordinator overseeing the whole transaction asks each participating database to get ready to commit.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "各データベースは、いつでも確定できる状態にしてから可か否かを返す。",
+            "caption_zh": "各数据库先进入随时可以确定的状态，再答复可以或不可以。",
+            "caption_en": "Each database puts itself in a state where it can commit at any moment, then answers yes or no.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "調整役は、全員が可と答えたかどうかを確かめる。",
+            "caption_zh": "协调者确认是否所有数据库都答复了可以。",
+            "caption_en": "The coordinator checks whether every database answered yes.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "第2相: 全員が可なら確定を、一つでも否があれば取消を全員に指示する。",
+            "caption_zh": "第2阶段：全部可以就指示确定，只要有一个不可以，就向全部数据库指示取消。",
+            "caption_en": "Phase 2: if all said yes it orders a commit, and if even one said no it orders every database to cancel.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2021r03-q062"
+      ],
+      "definition_jp": "2相コミットメント は、複数のデータベースにまたがるトランザクションを全体で確定するか全体で取り消すかにそろえるため、準備と確定の 2 段階でコミットを進める手順である。",
+      "definition_zh": "两阶段提交（2相コミットメント）是为使跨多个数据库的事务整体确定或整体取消，分准备和确定两个阶段推进提交的步骤。",
+      "definition_en": "Two-phase commit (2相コミットメント) is a procedure that carries out a commit in two stages, prepare and commit, so that a transaction spanning several databases is either committed as a whole or cancelled as a whole.",
+      "explanation_jp": "全体を取りまとめる 調整役 は、第1相で各データベースに確定の準備ができたかを問い合わせ、各データベースは更新をいつでも確定できる状態にしてから可否を返す。全員が可と答えたときだけ第2相で確定を指示し、一つでも否があれば全員にロールバックを指示する。これにより、ある拠点では確定し別の拠点では取り消された、という食い違いを防ぐ。",
+      "explanation_zh": "统筹全局的协调者（調整役）在第1阶段询问各数据库是否已做好确定的准备，各数据库先把更新置于随时可以确定的状态，再答复可否。只有全部答复可以时，才在第2阶段指示确定；只要有一个不可以，就指示全部数据库回滚。这样就能避免某个站点已经确定、另一个站点却被取消的不一致。",
+      "explanation_en": "In phase 1 the coordinator (調整役) overseeing the whole transaction asks each database whether it is ready to commit, and each database brings its updates to a state where they can be committed at any moment before answering yes or no. Only if every answer is yes does it order a commit in phase 2, and if even one is no it tells all databases to roll back. This prevents a mismatch in which one site has committed while another has cancelled.",
+      "memory_hook_jp": "「相」は phase (段階) の訳語。1 相目で聞き、2 相目で決める、と数字と動作を対にして覚える。",
+      "memory_hook_zh": "日语名称里的“相”是 phase（阶段）的译词。第 1 相询问，第 2 相决定，把数字和动作配成对来记。",
+      "memory_hook_en": "The 相 in the Japanese name translates phase. Phase 1 asks and phase 2 decides, so pair each number with its action.",
       "inline_quiz": [
         "2021r03-q062"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; C[\"調整役\"] -->|\"第1相:準備可否を確認\"| D1[\"DB1\"]; C -->|\"第1相:準備可否を確認\"| D2[\"DB2\"]; D1 -->|\"準備OK\"| C; D2 -->|\"準備OK\"| C; C -->|\"第2相:全員へ確定指示\"| E[\"全DBコミット\"]",
-        "svg_path": "figures/technology-21-57-u01-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "两阶段提交",
-      "term_en": "Two-Phase Commit",
-      "definition_zh": "让跨多个数据库的更新作为整体确定/撤销并保持一致的两步骤流程。",
-      "definition_en": "A two-step procedure that commits/aborts updates spanning multiple databases as a whole to keep them consistent.",
-      "explanation_zh": "两阶段提交（2PC）是让跨多个数据库的事务作为整体可靠地确定下来的流程。第 1 阶段向各数据库询问「能否提交」（准备），如果所有数据库都回答「可以」，第 2 阶段就一起确定（提交）。\n\n只要有一个回答「不行」，就把整体撤销。\n\n考试中会考查它是在分布式环境下让多个数据库保持一致的机制这一点。要掌握它分准备阶段和确定阶段两步推进这一点。",
-      "explanation_en": "The two-phase commit (2PC) is a procedure for reliably finalizing a transaction that spans multiple databases as a whole. In phase 1, each database is asked \"can you commit?\" (prepare), and if every one answers \"yes,\" phase 2 finalizes them all together (commit).\n\nIf even one answers \"no,\" the whole thing is aborted.\n\nOn the exam, it is asked that it is the mechanism for keeping multiple databases consistent in a distributed environment. Keep in mind that it proceeds in two steps: a prepare phase and a commit phase.",
-      "analogy_zh": "类似于多人一起定日程时，先向所有人确认「这天行吗？」，所有人都 OK 后才正式通知「那就定下来」。只要有一个人不行，就把所有人的安排都作废重来。",
-      "analogy_en": "It's like deciding a schedule with several attendees: first you check with everyone, \"is this day OK?\", and only after everyone says yes do you formally announce \"then it's settled.\" If even one person can't, everyone's arrangement is scrapped and reset.",
-      "memory_hook_zh": "说到两阶段提交，就是用准备和确定两个阶段让分布式更新保持一致。",
-      "memory_hook_en": "Two-phase commit → keep distributed updates consistent in two stages: prepare and commit."
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "トランザクション",
+      "b": "2相コミットメント",
+      "rows": [
+        {
+          "label_jp": "何か",
+          "label_zh": "是什么",
+          "label_en": "What it is",
+          "a_jp": "ひとまとまりで扱う処理の単位",
+          "a_zh": "作为整体处理的处理单位",
+          "a_en": "A unit of processing handled as one",
+          "b_jp": "複数のデータベースにまたがる単位を確定させる手順",
+          "b_zh": "让跨多个数据库的单位得以确定的步骤",
+          "b_en": "A procedure for committing a unit that spans several databases",
+          "key": false
+        },
+        {
+          "label_jp": "確定の進め方",
+          "label_zh": "确定的方式",
+          "label_en": "How it commits",
+          "a_jp": "1 つのデータベースで完結するなら、コミット 1 回で確定する",
+          "a_zh": "如果在单个数据库内完成，1 次提交即可确定",
+          "a_en": "Within a single database, one commit makes it final",
+          "b_jp": "全データベースの準備完了を確かめてから、一斉に確定する",
+          "b_zh": "确认全部数据库准备完毕后，一齐确定",
+          "b_en": "Confirms every database is ready, then commits them all at once",
+          "key": true
+        },
+        {
+          "label_jp": "失敗したとき",
+          "label_zh": "失败时",
+          "label_en": "On failure",
+          "a_jp": "ロールバックで開始前の状態に戻す",
+          "a_zh": "通过回滚恢复到开始前的状态",
+          "a_en": "Rolls back to the state before it began",
+          "b_jp": "一つでも否があれば、全データベースをロールバックさせる",
+          "b_zh": "只要有一个不可以，就让全部数据库回滚",
+          "b_en": "If even one says no, every database rolls back",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**トランザクション** は一連の更新をすべて反映するか一つも反映しないかにそろえる単位で、成功時は **コミット**、失敗時は **ロールバック** で開始前に戻す。",
+    "複数の処理が同じデータに同時にアクセスすると矛盾が出ることがあり (例えば後から書き込んだ結果で先の更新が消える)、ロックで他の処理を待たせる **排他制御** で防ぐ。",
+    "**ACID特性** は原子性・一貫性・独立性・耐久性の 4 つで、例えば独立性は同時に動く処理が互いの途中結果に左右されないことを指す。",
+    "**デッドロック** は資源を持ったまま相手の資源を待つ輪ができた状態で、一方をロールバックしてロックを解放させるなどして解消する。",
+    "**2相コミットメント** では、調整役が全データベースから準備完了の返事を集めてから、確定か取消かを一斉に指示する。"
+  ],
+  "key_points_zh": [
+    "**事务**是让一连串更新全部生效或全部不生效的单位，成功时**提交**，失败时**回滚**到开始前的状态。",
+    "多个处理同时访问同一数据可能产生矛盾（例如后写入的结果冲掉先前的更新），可以用加锁让其他处理等待的**排他控制**来防止。",
+    "**ACID 特性**指原子性、一致性、隔离性、持久性这 4 种性质，例如隔离性是指同时运行的处理不受彼此中间结果的影响。",
+    "**死锁**是持有资源的同时等待对方资源而形成环的状态，可以通过让其中一方回滚、释放锁等方式解除。",
+    "**两阶段提交**中，协调者先从全部数据库收齐准备完毕的答复，再一齐指示确定或取消。"
+  ],
+  "key_points_en": [
+    "A **transaction** is a unit that makes a series of updates take effect entirely or not at all, ending with a **commit** on success and a **rollback** to the starting state on failure.",
+    "When several processes access the same data at once, conflicts can arise (a later write wiping out an earlier update, for example), and **exclusive control**, which uses locks to make other processes wait, prevents them.",
+    "The **ACID properties** are atomicity, consistency, isolation and durability; isolation, for example, means concurrent processes are not swayed by each other's partial results.",
+    "A **deadlock** is a ring of processes each holding a resource while waiting for another's, and it is resolved by, for instance, rolling back one of them to free its locks.",
+    "In **two-phase commit**, the coordinator collects a ready reply from every database before ordering all of them to commit or cancel at once."
+  ],
+  "overview": {
+    "intro_jp": "コミット と ロールバック の違いを、処理が成功した場合と失敗した場合に分けて説明できる。ACID特性 の 4 つの性質を、それぞれが何を守るかで区別できる。同じデータへの同時アクセスで起こる矛盾を防ぐ 排他制御 と、ロックの待ち合いで起こる デッドロック を区別できる。2相コミットメント が複数のデータベースの更新をどうそろえるかを、段階の順に説明できる。",
+    "intro_zh": "能分成处理成功和失败两种情况，说明提交与回滚的区别。能按各自保护的内容，区分ACID 特性的 4 种性质。能区分防止多个处理同时访问同一数据而产生矛盾的排他控制，与因互相等待锁而发生的死锁。能按阶段顺序说明两阶段提交如何让多个数据库的更新保持一致。",
+    "intro_en": "Explain how commit and rollback differ, separating the case where processing succeeds from the case where it fails. Tell apart the four ACID properties by what each one protects. Distinguish exclusive control, which prevents conflicts when several processes access the same data at once, from deadlock, which arises when processes wait on each other's locks. Explain, stage by stage, how two-phase commit keeps updates across several databases in step.",
+    "freq_badge": "低頻",
+    "est_minutes": 35
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "トランザクション: トランザクションといえば全部やるか全部やらないかの処理単位",
-      "ACID特性: ACID特性といえば原子性・一貫性・独立性・耐久性の4つ",
-      "デッドロック: デッドロックといえば互いに資源を待ち合って動けない状態",
-      "2相コミットメント: 2相コミットメントといえば準備と確定の2段階で分散更新を整合"
-    ],
     "key_points_jp": [
-      "トランザクションは「全部成功(コミット)か全部取消(ロールバック)か」を保証するデータベースの更新単位である。",
-      "ACID特性は原子性(Atomicity)・一貫性(Consistency)・独立性(Isolation)・耐久性(Durability)の4つの性質で、各文字の意味が頻出。",
-      "デッドロックは複数トランザクションが互いの資源を待ち合う循環で発生し、片方を強制終了して巻き戻すなどで解消する。",
-      "2相コミットメントは複数DBにまたがる更新を、準備フェーズと確定フェーズの2段階で整合させる仕組みである。",
-      "並行実行や分散環境でもデータの一貫性を崩さないことが、これら全ての目的である。"
+      "トランザクション は一連の更新をすべて反映するか一つも反映しないかにそろえる単位で、成功時は コミット、失敗時は ロールバック で開始前に戻す。",
+      "複数の処理が同じデータに同時にアクセスすると矛盾が出ることがあり (例えば後から書き込んだ結果で先の更新が消える)、ロックで他の処理を待たせる 排他制御 で防ぐ。",
+      "ACID特性 は原子性・一貫性・独立性・耐久性の 4 つで、例えば独立性は同時に動く処理が互いの途中結果に左右されないことを指す。",
+      "デッドロック は資源を持ったまま相手の資源を待つ輪ができた状態で、一方をロールバックしてロックを解放させるなどして解消する。",
+      "2相コミットメント では、調整役が全データベースから準備完了の返事を集めてから、確定か取消かを一斉に指示する。"
     ],
     "key_points_zh": [
-      "事务是保证「要么全部成功（提交），要么全部撤销（回滚）」的数据库更新单位。",
-      "ACID 特性是原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）、持久性（Durability）这 4 个性质，各字母的含义是高频考点。",
-      "死锁发生于多个事务互相等待对方资源的循环中，可通过强制终止其中一方并回退等方式解除。",
-      "两阶段提交是让跨多个数据库的更新通过准备阶段和确定阶段这两个步骤保持一致的机制。",
-      "即使在并发执行或分布式环境下也不破坏数据的一致性，正是这一切的共同目的。"
+      "事务是让一连串更新全部生效或全部不生效的单位，成功时提交，失败时回滚到开始前的状态。",
+      "多个处理同时访问同一数据可能产生矛盾（例如后写入的结果冲掉先前的更新），可以用加锁让其他处理等待的排他控制来防止。",
+      "ACID 特性指原子性、一致性、隔离性、持久性这 4 种性质，例如隔离性是指同时运行的处理不受彼此中间结果的影响。",
+      "死锁是持有资源的同时等待对方资源而形成环的状态，可以通过让其中一方回滚、释放锁等方式解除。",
+      "两阶段提交中，协调者先从全部数据库收齐准备完毕的答复，再一齐指示确定或取消。"
     ],
     "key_points_en": [
-      "A transaction is a database update unit that guarantees \"either everything succeeds (commit) or everything is undone (rollback).\"",
-      "The ACID properties are the four properties Atomicity, Consistency, Isolation, and Durability, and the meaning of each letter is a frequent exam point.",
-      "A deadlock occurs in a cycle where multiple transactions wait on each other's resources, and it can be resolved by means such as forcibly terminating one side and rolling it back.",
-      "The two-phase commit is a mechanism that keeps updates spanning multiple databases consistent through two steps: a prepare phase and a commit phase.",
-      "Not breaking data consistency even under concurrent execution or in distributed environments is the common purpose of all of these."
+      "A transaction is a unit that makes a series of updates take effect entirely or not at all, ending with a commit on success and a rollback to the starting state on failure.",
+      "When several processes access the same data at once, conflicts can arise (a later write wiping out an earlier update, for example), and exclusive control, which uses locks to make other processes wait, prevents them.",
+      "The ACID properties are atomicity, consistency, isolation and durability; isolation, for example, means concurrent processes are not swayed by each other's partial results.",
+      "A deadlock is a ring of processes each holding a resource while waiting for another's, and it is resolved by, for instance, rolling back one of them to free its locks.",
+      "In two-phase commit, the coordinator collects a ready reply from every database before ordering all of them to commit or cancel at once."
+    ],
+    "memory_hooks_jp": [
+      "トランザクション: 英語の transaction は「取引」の意味。取引は品物の受け渡しと代金の支払いがそろって初めて成り立つ、と語の由来で思い出す。",
+      "ACID特性: A・C・I・D を続けると英語の acid (アシッド) になる。先頭の Atomicity は atom (それ以上分けられない原子) から来ており、一連の更新を分けて一部だけ残すことはしない、と結び付ける。",
+      "デッドロック: dead (動かない) と lock (鍵) の組み合わせ。互いに鍵を掛け合ったまま固まる、と字面で覚える。",
+      "2相コミットメント: 「相」は phase (段階) の訳語。1 相目で聞き、2 相目で決める、と数字と動作を対にして覚える。"
     ],
     "memory_hooks_zh": [
-      "事务：说到事务，就是「要么全做、要么全不做」的处理单位。",
-      "ACID 特性：说到 ACID 特性，就是原子性、一致性、隔离性、持久性这 4 个。",
-      "死锁：说到死锁，就是互相等待资源、谁都动不了的状态。",
-      "两阶段提交：说到两阶段提交，就是用准备和确定两个阶段让分布式更新保持一致。"
+      "事务：英语 transaction 原意是“交易”：交货和付款缺一不可，两者都完成，交易才算成立。",
+      "ACID 特性：把 A、C、I、D 连起来就是英语 acid（酸）。打头的 Atomicity 来自 atom（不可再分的原子），联想到一连串更新不会被拆开、只留下一部分。",
+      "死锁：dead（不动）加上 lock（锁）。互相锁住、僵在原地，看字面就能记住。",
+      "两阶段提交：日语名称里的“相”是 phase（阶段）的译词。第 1 相询问，第 2 相决定，把数字和动作配成对来记。"
     ],
     "memory_hooks_en": [
-      "Transaction: Transaction → the \"all or nothing\" unit of processing.",
-      "ACID properties: ACID properties → Atomicity, Consistency, Isolation, Durability — these four.",
-      "Deadlock: Deadlock → a state where parties wait on each other's resources and nobody can move.",
-      "Two-phase commit: Two-phase commit → keep distributed updates consistent in two stages: prepare and commit."
+      "Transaction: In everyday English a transaction is a deal, and a deal only counts when the goods change hands and the payment is made, both together.",
+      "ACID Properties: Put A, C, I and D together and you get the word acid. The first one, Atomicity, comes from atom, something that cannot be split, so a series of updates is never split to keep just part of it.",
+      "Deadlock: Dead (not moving) plus lock: two parties lock each other out and freeze, just as the word says.",
+      "Two-Phase Commit: The 相 in the Japanese name translates phase. Phase 1 asks and phase 2 decides, so pair each number with its action."
     ]
   },
   "challenge_questions": [
-    "2012h24a-q067",
-    "2015h27a-q071",
-    "2022r04-q077",
+    "2023r05-q066",
+    "2024r06-q074",
     "2015h27h-q077",
-    "2016h28a-q081"
+    "2020r02o-q072",
+    "2015h27a-q071"
   ],
   "source_figures": [
     {
@@ -200,9 +833,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "事务基础与并发控制",
-  "title_en": "Transaction Fundamentals and Concurrency Control",
-  "unit_summary_zh": "学习事务是什么、保证其正确性的 ACID 特性，以及多个事务同时执行或在分布式环境下产生的问题与应对方法。",
-  "unit_summary_en": "Learn what a transaction is, the ACID properties that guarantee its correctness, and the problems and countermeasures that arise when multiple transactions run concurrently or across distributed environments."
+  }
 }
