@@ -68,7 +68,7 @@
 | b59 | technology-17-46 | ファイルシステム | u01 | 26 | 6 | done |
 | b60 | strategy-06-18 | 情報システム戦略 | u01 | 25 | 4 | done |
 | b61 | strategy-07-22 | システム化計画 | u01 | 25 | 6 | done |
-| b62 | technology-15-42 | 入出力デバイス | u01 u02 u03 u04 u05 | 25 | 27 | todo |
+| b62 | technology-15-42 | 入出力デバイス | u01 u02 u03 u04 u05 | 25 | 27 | done |
 | b63 | technology-17-48 | オープンソースソフトウェア | u01 | 25 | 3 | done |
 | b64 | technology-18-49 | ハードウェア（コンピュータ・入出力装置） | u01 u02 u03 u04 | 24 | 22 | todo |
 | b65 | technology-21-57 | トランザクション処理 | u01 u02 | 24 | 9 | todo |
