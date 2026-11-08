@@ -1,216 +1,630 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-06-20-u02",
   "topic_id": "strategy-06-20",
   "category": "strategy",
   "title_jp": "クラウドの配置形態と運用形態",
+  "title_zh": "云的部署形态与运维形态",
+  "title_en": "Cloud Deployment Models and Operation Models",
   "unit_summary_jp": "パブリック/プライベート/ハイブリッド/マルチクラウドという配置形態、対比となるオンプレミス、運用を委託するマネージドサービスを学ぶ。",
+  "unit_summary_zh": "学习公有云/私有云/混合云/多云这几种部署形态、作为对比的本地部署，以及将运维委托出去的托管服务。",
+  "unit_summary_en": "Learn the deployment models of public, private, hybrid, and multi-cloud; on-premises as a contrast; and managed services that outsource operations.",
   "order_in_topic": 2,
   "prerequisites": [
     "strategy-06-20-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、クラウドを『どこに配置し、誰が運用するか』という軸を学ぶ。パブリック・プライベート・ハイブリッド・マルチクラウドの4配置形態、対比となるオンプレミス、運用を委託するマネージドサービスを取り上げる。ITパスポートでは各形態の違いと使い分けが問われ、ソリューション選択の基礎となる。",
-    "freq_badge": "低頻",
-    "est_minutes": 18,
-    "intro_zh": "本单元学习云的两条核心轴线：『部署在哪里、由谁来运维』。内容涵盖公有云、私有云、混合云、多云这 4 种部署形态，作为对比的本地部署，以及将运维委托出去的托管服务。在 IT 护照考试中，会考查各形态的差异与适用场景，这是选择解决方案的基础。",
-    "intro_en": "This unit covers two core axes of cloud computing: where it is deployed and who operates it. It addresses the four deployment models — public, private, hybrid, and multi-cloud — plus on-premises as a contrast and managed services that outsource operations. The IT Passport exam asks about the differences and proper use of each model, which forms the basis for choosing solutions."
-  },
-  "terms": [
+  "goals_jp": [
+    "**パブリッククラウド** と **プライベートクラウド** を、設備を誰と使うかで分けられる。",
+    "**ハイブリッドクラウド** と **マルチクラウド** を、何を組み合わせるかで分けられる。",
+    "機器を自社で管理・運用する **オンプレミス** と、運用・保守を任せる **マネージドサービス** を説明できる。"
+  ],
+  "goals_zh": [
+    "能够根据设备与谁共用，区分**公有云**和**私有云**。",
+    "能够根据组合的是什么，区分**混合云**和**多云**。",
+    "能够说明由本公司自行管理和运维设备的**本地部署**，以及把运维和维护交给他人的**托管服务**。"
+  ],
+  "goals_en": [
+    "Tell **public cloud** and **private cloud** apart by who you share the facilities with.",
+    "Tell **hybrid cloud** and **multi-cloud** apart by what is being combined.",
+    "Explain **on-premises**, where a company manages and runs its own equipment, and a **managed service**, where operation and maintenance are handed to others."
+  ],
+  "overview_cols_jp": [
+    "使う設備",
+    "分ける軸"
+  ],
+  "overview_cols_zh": [
+    "使用的设备",
+    "区分的标准"
+  ],
+  "overview_cols_en": [
+    "Facilities used",
+    "Dividing line"
+  ],
+  "overview_rows": [
     {
       "term": "パブリッククラウド",
-      "definition_jp": "クラウド事業者が不特定多数に提供する、共用型のクラウドサービス。",
-      "explanation_jp": "パブリッククラウドは、AWS や Azure などのクラウド事業者が用意した基盤を、インターネット経由で不特定多数の利用者が共同で使う形態です。自社で設備を持たずに必要な分だけ使え、初期費用を抑えて素早く利用を始められるのが大きな利点です。\n\n試験では、後述のプライベートクラウド(自社専有型)との対比でよく問われます。共用のため低コスト・拡張が容易な反面、自社専用の細かい設定や独自要件への対応はプライベートに比べて制約がある、という特徴を押さえましょう。",
-      "analogy_jp": "賃貸マンションのように、設備を大家(事業者)が用意し、多くの入居者が共同で使う形。自分で建てる必要がなく、使った分だけ家賃を払う。",
-      "memory_hook_jp": "パブリッククラウドといえば事業者が不特定多数に提供する共用型",
-      "inline_quiz": [
-        "2009h21a-q006"
+      "one_line_jp": "事業者の設備を不特定多数で共用する",
+      "one_line_zh": "由众多不特定用户共用服务商的设备",
+      "one_line_en": "Many unspecified users share a provider's facilities",
+      "extra_jp": [
+        "事業者の設備 (共用)",
+        "誰と使うか"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "公有云",
-      "term_en": "Public cloud",
-      "definition_zh": "云服务商面向不特定多数用户提供的、共用型云服务。",
-      "definition_en": "A shared cloud service that a cloud provider offers to the general public (an unspecified large number of users).",
-      "explanation_zh": "公有云是指由 AWS、Azure 等云服务商搭建的基础设施，经由互联网供不特定多数用户共同使用的形态。无需自建设备、用多少买多少，能压低初期费用并快速开始使用，这是它的最大优点。\n\n考试中常与后面讲到的私有云（自有专用型）做对比。由于是共用，因此成本低、易于扩展；但另一方面，相比私有云，在自有专属的精细配置和满足独特需求方面会受到一些限制，请记住这一特征。",
-      "explanation_en": "A public cloud is a model in which infrastructure prepared by cloud providers such as AWS or Azure is shared over the internet by the general public. You can use as much as you need without owning equipment, keeping initial costs low and starting quickly — its biggest advantage.\n\nOn the exam, it is often contrasted with the private cloud (dedicated to one organization) discussed later. Because it is shared, it is low-cost and easy to scale; on the other hand, compared with a private cloud, fine-grained dedicated configuration and meeting unique requirements are somewhat more restricted. Keep this characteristic in mind.",
-      "analogy_zh": "就像租赁公寓：设备由房东（服务商）准备好，众多住户共同使用。自己不必盖房，用多少就付多少『租金』。",
-      "analogy_en": "Like a rental apartment: the landlord (provider) prepares the facilities, and many tenants share them. You don't need to build anything, and you pay rent only for what you use.",
-      "memory_hook_zh": "说到公有云，就是服务商面向不特定多数提供的共用型。",
-      "memory_hook_en": "Public cloud → a shared service offered by a provider to the general public."
+      "extra_zh": [
+        "服务商的设备（共用）",
+        "与谁共用"
+      ],
+      "extra_en": [
+        "Provider's facilities (shared)",
+        "Who you share with"
+      ]
     },
     {
       "term": "プライベートクラウド",
-      "definition_jp": "特定の組織が専有して利用する、自社向けのクラウド環境。",
-      "explanation_jp": "プライベートクラウドは、クラウドの仕組みを特定の企業・組織が専有して使う形態です。自社のデータセンター内に構築する場合と、事業者の設備の一部を専用区画として借りる場合があります。\n\n試験では、パブリッククラウドとの違いが問われます。専有のためセキュリティや独自要件への対応に優れ、機密性の高い情報を扱う組織に向く一方、自社で構築・管理する負担やコストが大きくなりやすい点が対比のポイントです。『専有=プライベート、共用=パブリック』と整理して覚えましょう。",
-      "analogy_jp": "自社専用に建てた一戸建てオフィスのようなもの。自由に設計でき外部と共有しないが、その分の建設・維持の手間と費用は自分持ち。",
-      "memory_hook_jp": "プライベートクラウドといえば特定組織が専有する自社向け環境",
-      "inline_quiz": [
-        "2009h21a-q017"
+      "one_line_jp": "1 つの組織が専用に使うクラウド",
+      "one_line_zh": "由一个组织专用的云",
+      "one_line_en": "A cloud used exclusively by one organization",
+      "extra_jp": [
+        "自社内、または事業者内の専用区画",
+        "誰と使うか"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "私有云",
-      "term_en": "Private cloud",
-      "definition_zh": "由特定组织专属使用的、面向自有需求的云环境。",
-      "definition_en": "A cloud environment used exclusively by a specific organization for its own needs.",
-      "explanation_zh": "私有云是指将云的机制供特定企业或组织专属使用的形态。既可以在自有数据中心内搭建，也可以把服务商设备的一部分作为专用区域租来使用。\n\n考试中会考查它与公有云的区别。由于是专属，在安全性和满足独特需求方面更有优势，适合处理高机密信息的组织；但另一方面，自行搭建与管理的负担和成本往往更高，这是对比的要点。记忆时可整理为『专属＝私有，共用＝公有』。",
-      "explanation_en": "A private cloud is a model in which cloud mechanisms are used exclusively by a specific company or organization. It may be built inside the organization's own data center, or part of a provider's facilities may be rented as a dedicated section.\n\nThe exam asks about its difference from a public cloud. Because it is exclusive, it excels at security and meeting unique requirements and suits organizations handling highly confidential information; on the other hand, the burden and cost of building and managing it yourself tend to be larger — that is the key contrast. Remember it as 'exclusive = private, shared = public.'",
-      "analogy_zh": "就像专为自家建的独栋办公楼：可自由设计、不与外部共用，但建造与维护的工夫和费用都得自己承担。",
-      "analogy_en": "Like a detached office building built solely for your own company: you can design it freely and don't share it with outsiders, but the effort and cost of construction and upkeep are all on you.",
-      "memory_hook_zh": "说到私有云，就是特定组织专属的自有环境。",
-      "memory_hook_en": "Private cloud → an environment used exclusively by one specific organization."
+      "extra_zh": [
+        "本公司内部，或服务商内的专用区域",
+        "与谁共用"
+      ],
+      "extra_en": [
+        "In-house, or a dedicated section at a provider",
+        "Who you share with"
+      ]
     },
     {
       "term": "ハイブリッドクラウド",
-      "definition_jp": "パブリックとプライベート(やオンプレミス)を組み合わせて使う形態。",
-      "explanation_jp": "ハイブリッドクラウドは、パブリッククラウドとプライベートクラウド(またはオンプレミス)を連携させ、用途に応じて使い分ける形態です。両者のよいところを組み合わせるのが狙いです。\n\n試験では『組み合わせ』である点が問われます。例えば、機密性の高いデータは自社専有のプライベート側に置き、アクセスが急増する公開Webなどは拡張が容易なパブリック側に置く、といった使い分けが典型例です。セキュリティとコスト・柔軟性を両立できる反面、複数環境をまたぐ連携・管理が複雑になる点も理解しておきましょう。",
-      "analogy_jp": "自宅(専有)と貸し倉庫(共用)を併用するようなもの。大事な物は自宅に、量が増減する物は倉庫にと、性質で置き場所を使い分ける。",
-      "memory_hook_jp": "ハイブリッドクラウドといえばパブリックとプライベートの組み合わせ",
-      "inline_quiz": [
-        "2009h21h-q006"
+      "one_line_jp": "性質の違う環境をつないで使い分ける",
+      "one_line_zh": "把性质不同的环境连接起来分别使用",
+      "one_line_en": "Links environments of different kinds and uses each for what it suits",
+      "extra_jp": [
+        "共用側と専用側の両方",
+        "形態の組み合わせ"
       ],
-      "inline_fallback": true,
+      "extra_zh": [
+        "共用的一方和专用的一方都有",
+        "部署形态的组合"
+      ],
+      "extra_en": [
+        "Both shared and dedicated sides",
+        "Combination of deployment models"
+      ]
+    },
+    {
+      "term": "マルチクラウド",
+      "one_line_jp": "複数の事業者のクラウドを併用する",
+      "one_line_zh": "同时使用多家服务商的云",
+      "one_line_en": "Uses clouds from several providers side by side",
+      "extra_jp": [
+        "複数の事業者の設備",
+        "事業者の数"
+      ],
+      "extra_zh": [
+        "多家服务商的设备",
+        "服务商的数量"
+      ],
+      "extra_en": [
+        "Facilities of several providers",
+        "Number of providers"
+      ]
+    },
+    {
+      "term": "オンプレミス",
+      "one_line_jp": "自社の施設に機器を置き自社で運用する",
+      "one_line_zh": "设备放在本公司的场所并由本公司运维",
+      "one_line_en": "Equipment sits at the company's own site and the company runs it",
+      "extra_jp": [
+        "自社が管理する施設の設備",
+        "設備の管理と運用を自社で担うか"
+      ],
+      "extra_zh": [
+        "本公司管理的场所里的设备",
+        "设备的管理和运维是否由本公司承担"
+      ],
+      "extra_en": [
+        "Equipment at a site the company manages",
+        "Whether the company itself manages and runs the equipment"
+      ]
+    },
+    {
+      "term": "マネージドサービス",
+      "one_line_jp": "運用・保守を専門事業者に任せる",
+      "one_line_zh": "把运维和维护交给专业服务商",
+      "one_line_en": "Hands operation and maintenance to a specialist provider",
+      "extra_jp": [
+        "自社の設備、または事業者の設備",
+        "運用を誰が担うか"
+      ],
+      "extra_zh": [
+        "本公司的设备，或服务商的设备",
+        "由谁负责运维"
+      ],
+      "extra_en": [
+        "The company's own or a provider's facilities",
+        "Who takes care of operation"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "パブリッククラウド",
+      "term_zh": "公有云",
+      "term_en": "Public cloud",
+      "one_jp": "**パブリッククラウド** は、クラウド事業者が用意した設備を、インターネットを通じて **不特定多数** の利用者が **共用** する形態である。",
+      "one_zh": "**公有云**（[[jp:パブリッククラウド]]）是由云服务商准备设备，再由**不特定多数**用户通过互联网**共用**这些设备的形态。",
+      "one_en": "**Public cloud** ([[jp:パブリッククラウド]]) is a model in which facilities prepared by a cloud provider are **shared** over the internet by **many unspecified** users.",
+      "detail_jp": "利用者は自前の機器を買わずに、申し込めば短い期間で使い始められ、使った量に応じて料金を払う。設備を多くの利用者で分け合うため、1 社あたりの費用を抑えやすく、利用量の増減にも合わせやすい。反面、設定や機能は事業者が用意した範囲から選ぶことになる。",
+      "detail_zh": "用户不必自己购买设备，提出申请后很快就能开始使用，并按使用量付费。由于设备由许多用户分摊，每家公司的费用比较容易压低，也容易跟上使用量的增减。另一方面，设置和功能只能在服务商提供的范围内选择。",
+      "detail_en": "Users do not buy their own equipment; once they sign up they can start within a short time, and they pay for what they use. Because many users split the facilities, the cost per company tends to stay low and it is easy to scale with rising or falling demand. On the other hand, settings and features must be chosen from what the provider offers.",
+      "analogy_jp": "店の洗濯機を大勢で順番に使うコインランドリー。自分で洗濯機を買わず、使った回数だけ払う。",
+      "analogy_zh": "就像自助洗衣店里大家轮流使用店里的洗衣机。不用自己买洗衣机，用几次付几次的钱。",
+      "analogy_en": "A laundromat, where many people take turns using the shop's machines. You do not buy a washer yourself; you pay only for each load.",
+      "hook_jp": "パブリックは英語の public (公衆の)。公衆電話のように、誰でも同じ設備を使う姿を思い浮かべる。",
+      "hook_zh": "“public”在英语里意为“公众的”。可以联想公用电话：谁都在用同一套设备。",
+      "hook_en": "\"Public\" means open to everyone. Picture a public phone booth that anyone can use.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**パブリッククラウド** の利用者は事業者の設備を他の利用者と分け合う。自社専用の環境を持つのは **プライベートクラウド** の側である。",
+          "text_zh": "**公有云**（[[jp:パブリッククラウド]]）的用户要与其他用户分享服务商的设备。拥有本公司专用环境的是**私有云**（[[jp:プライベートクラウド]]）。",
+          "text_en": "Users of a **public cloud** ([[jp:パブリッククラウド]]) share the provider's facilities with other users. Having an environment dedicated to your own company belongs to the **private cloud** ([[jp:プライベートクラウド]]) side."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "パブリッククラウド は、クラウド事業者が用意した設備を、インターネットを通じて 不特定多数 の利用者が 共用 する形態である。",
+      "definition_zh": "公有云（パブリッククラウド）是由云服务商准备设备，再由不特定多数用户通过互联网共用这些设备的形态。",
+      "definition_en": "Public cloud (パブリッククラウド) is a model in which facilities prepared by a cloud provider are shared over the internet by many unspecified users.",
+      "explanation_jp": "利用者は自前の機器を買わずに、申し込めば短い期間で使い始められ、使った量に応じて料金を払う。設備を多くの利用者で分け合うため、1 社あたりの費用を抑えやすく、利用量の増減にも合わせやすい。反面、設定や機能は事業者が用意した範囲から選ぶことになる。",
+      "explanation_zh": "用户不必自己购买设备，提出申请后很快就能开始使用，并按使用量付费。由于设备由许多用户分摊，每家公司的费用比较容易压低，也容易跟上使用量的增减。另一方面，设置和功能只能在服务商提供的范围内选择。",
+      "explanation_en": "Users do not buy their own equipment; once they sign up they can start within a short time, and they pay for what they use. Because many users split the facilities, the cost per company tends to stay low and it is easy to scale with rising or falling demand. On the other hand, settings and features must be chosen from what the provider offers.",
+      "memory_hook_jp": "パブリックは英語の public (公衆の)。公衆電話のように、誰でも同じ設備を使う姿を思い浮かべる。",
+      "memory_hook_zh": "“public”在英语里意为“公众的”。可以联想公用电话：谁都在用同一套设备。",
+      "memory_hook_en": "\"Public\" means open to everyone. Picture a public phone booth that anyone can use.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "プライベートクラウド",
+      "term_zh": "私有云",
+      "term_en": "Private cloud",
+      "one_jp": "**プライベートクラウド** は、クラウドの仕組みを特定の 1 つの組織が **専有** して使う形態である。",
+      "one_zh": "**私有云**（[[jp:プライベートクラウド]]）是由某一个特定组织**独占**使用云机制的形态。",
+      "one_en": "**Private cloud** ([[jp:プライベートクラウド]]) is a model in which a single, specific organization uses cloud technology **exclusively**.",
+      "detail_jp": "自社のデータセンターに構築する場合もあれば、事業者の設備の一部を専用の区画として借りる場合もある。他の組織と設備を分け合わないので、独自の安全対策や業務の要件に合わせた設定がしやすい。その分、構築や管理の手間と費用は自社の負担になりやすい。",
+      "detail_zh": "它既可以建在本公司的数据中心里，也可以租用服务商设备中的一部分作为专用区域。由于不与其他组织共享设备，比较容易按照自己的安全措施和业务要求进行设置。相应地，构建和管理的工作量与费用往往要由本公司承担。",
+      "detail_en": "It may be built in the company's own data center, or set up by renting part of a provider's facilities as a dedicated section. Since the facilities are not shared with other organizations, it is easier to configure them around the company's own security measures and business needs. In return, the effort and cost of building and managing it tend to fall on the company.",
+      "analogy_jp": "社員だけが入れる社員食堂。外の人とは席を分け合わず、献立も会社の都合で決められるが、運営の費用は会社持ちになる。",
+      "analogy_zh": "就像只有员工才能进的员工食堂。不和外人共用座位，菜单也可以按公司需要来定，但运营费用由公司承担。",
+      "analogy_en": "A staff cafeteria only employees can enter. You do not share seats with outsiders and the company can set the menu, but the company also pays to run it.",
+      "hook_jp": "プライベートは英語の private (私的な)。プライベートビーチのように、決まった人だけが使える場所を連想する。",
+      "hook_zh": "“private”在英语里意为“私人的”。可以联想私人海滩：只有特定的人才能使用的地方。",
+      "hook_en": "\"Private\" means belonging to particular people. Think of a private beach that only certain people may use.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**プライベートクラウド** は置き場所で決まる形態ではない。事業者の施設内にあっても、1 つの組織の専用であればプライベートクラウドである。",
+          "text_zh": "**私有云**（[[jp:プライベートクラウド]]）不是由放置地点决定的形态。即使位于服务商的设施内，只要由一个组织专用，就是私有云。",
+          "text_en": "A **private cloud** ([[jp:プライベートクラウド]]) is not defined by where it is located. Even inside a provider's facility, it is a private cloud as long as one organization uses it exclusively."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "プライベートクラウド は、クラウドの仕組みを特定の 1 つの組織が 専有 して使う形態である。",
+      "definition_zh": "私有云（プライベートクラウド）是由某一个特定组织独占使用云机制的形态。",
+      "definition_en": "Private cloud (プライベートクラウド) is a model in which a single, specific organization uses cloud technology exclusively.",
+      "explanation_jp": "自社のデータセンターに構築する場合もあれば、事業者の設備の一部を専用の区画として借りる場合もある。他の組織と設備を分け合わないので、独自の安全対策や業務の要件に合わせた設定がしやすい。その分、構築や管理の手間と費用は自社の負担になりやすい。",
+      "explanation_zh": "它既可以建在本公司的数据中心里，也可以租用服务商设备中的一部分作为专用区域。由于不与其他组织共享设备，比较容易按照自己的安全措施和业务要求进行设置。相应地，构建和管理的工作量与费用往往要由本公司承担。",
+      "explanation_en": "It may be built in the company's own data center, or set up by renting part of a provider's facilities as a dedicated section. Since the facilities are not shared with other organizations, it is easier to configure them around the company's own security measures and business needs. In return, the effort and cost of building and managing it tend to fall on the company.",
+      "memory_hook_jp": "プライベートは英語の private (私的な)。プライベートビーチのように、決まった人だけが使える場所を連想する。",
+      "memory_hook_zh": "“private”在英语里意为“私人的”。可以联想私人海滩：只有特定的人才能使用的地方。",
+      "memory_hook_en": "\"Private\" means belonging to particular people. Think of a private beach that only certain people may use.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ハイブリッドクラウド",
+      "term_zh": "混合云",
+      "term_en": "Hybrid cloud",
+      "one_jp": "**ハイブリッドクラウド** は、パブリッククラウドとプライベートクラウド (または自社設備) のように性質の違う環境を **連携** させ、用途で使い分ける形態である。",
+      "one_zh": "**混合云**（[[jp:ハイブリッドクラウド]]）是把公有云和私有云（或本公司设备）这样性质不同的环境**联动**起来，按用途分别使用的形态。",
+      "one_en": "**Hybrid cloud** ([[jp:ハイブリッドクラウド]]) is a model that **links** environments of different kinds, such as a public cloud and a private cloud (or in-house equipment), and uses each for the purposes it suits.",
+      "detail_jp": "例えば、外に出したくない顧客情報は専用の環境に置き、アクセス数が季節で大きく変わる販売サイトは共用の環境に置く。こうして機密性と拡張のしやすさを両立させるのが狙いである。ただし、環境の間でデータをやり取りする仕組みや管理が複雑になりやすい。",
+      "detail_zh": "例如，不想对外流出的客户信息放在专用环境中，访问量随季节大幅变化的销售网站放在共用环境中。这样做的目的是兼顾机密性和易于扩展。不过，在环境之间交换数据的机制和管理往往会变得复杂。",
+      "detail_en": "For example, customer information that must not leave the company is kept in the dedicated environment, while a sales site whose traffic swings sharply with the seasons runs in the shared one. The aim is to get both confidentiality and easy scaling. However, the mechanisms and management for moving data between the environments tend to become complicated.",
+      "analogy_jp": "社員だけが入れる会議室と、ビルの入居者みんなで使う共用ラウンジを、話の中身で使い分けること。内密の相談は専用の会議室で、気軽な打ち合わせは共用ラウンジで行う。",
+      "analogy_zh": "就像根据谈话内容，分别使用只有员工能进的会议室和整栋楼租户都能用的公共休息区。机密的商谈在专用会议室进行，随意的碰头就在公共休息区。",
+      "analogy_en": "Choosing between a meeting room only your staff can enter and a lounge shared by every tenant in the building, depending on the topic. Confidential talks go to the private room; casual catch-ups happen in the lounge.",
+      "hook_jp": "ハイブリッドカーはエンジンとモーターという仕組みの違う動力を組み合わせる。違う種類のものを混ぜるのがハイブリッドの手がかり。",
+      "hook_zh": "混合动力汽车把发动机和电动机这两种机制不同的动力组合在一起。把不同种类的东西混在一起，就是“hybrid”的线索。",
+      "hook_en": "A hybrid car combines two different power sources, an engine and a motor. Mixing things of different kinds is the clue behind \"hybrid.\"",
+      "points": [],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/strategy-06-20-u02-t01.svg"
+        }
+      },
+      "quiz": [],
+      "definition_jp": "ハイブリッドクラウド は、パブリッククラウドとプライベートクラウド (または自社設備) のように性質の違う環境を 連携 させ、用途で使い分ける形態である。",
+      "definition_zh": "混合云（ハイブリッドクラウド）是把公有云和私有云（或本公司设备）这样性质不同的环境联动起来，按用途分别使用的形态。",
+      "definition_en": "Hybrid cloud (ハイブリッドクラウド) is a model that links environments of different kinds, such as a public cloud and a private cloud (or in-house equipment), and uses each for the purposes it suits.",
+      "explanation_jp": "例えば、外に出したくない顧客情報は専用の環境に置き、アクセス数が季節で大きく変わる販売サイトは共用の環境に置く。こうして機密性と拡張のしやすさを両立させるのが狙いである。ただし、環境の間でデータをやり取りする仕組みや管理が複雑になりやすい。",
+      "explanation_zh": "例如，不想对外流出的客户信息放在专用环境中，访问量随季节大幅变化的销售网站放在共用环境中。这样做的目的是兼顾机密性和易于扩展。不过，在环境之间交换数据的机制和管理往往会变得复杂。",
+      "explanation_en": "For example, customer information that must not leave the company is kept in the dedicated environment, while a sales site whose traffic swings sharply with the seasons runs in the shared one. The aim is to get both confidentiality and easy scaling. However, the mechanisms and management for moving data between the environments tend to become complicated.",
+      "memory_hook_jp": "ハイブリッドカーはエンジンとモーターという仕組みの違う動力を組み合わせる。違う種類のものを混ぜるのがハイブリッドの手がかり。",
+      "memory_hook_zh": "混合动力汽车把发动机和电动机这两种机制不同的动力组合在一起。把不同种类的东西混在一起，就是“hybrid”的线索。",
+      "memory_hook_en": "A hybrid car combines two different power sources, an engine and a motor. Mixing things of different kinds is the clue behind \"hybrid.\"",
+      "inline_quiz": [],
+      "inline_fallback": false,
       "figure": {
         "mermaid": "graph TD; A[\"ハイブリッドクラウド\"] --> B[\"プライベート側\"]; A --> C[\"パブリック側\"]; B --> D[\"機密データを配置\"]; C --> E[\"変動の大きい処理を配置\"]",
         "svg_path": "figures/strategy-06-20-u02-t01.svg",
         "rendered": true
-      },
-      "term_zh": "混合云",
-      "term_en": "Hybrid cloud",
-      "definition_zh": "将公有云与私有云（或本地部署）组合起来使用的形态。",
-      "definition_en": "A model that combines public cloud with private cloud (or on-premises).",
-      "explanation_zh": "混合云是指将公有云与私有云（或本地部署）相互联动、根据用途分别使用的形态，目的是把两者的优点结合起来。\n\n考试中会考查它『组合』这一点。例如，把高机密的数据放在自有专属的私有侧，把访问量会骤增的公开 Web 等放在易于扩展的公有侧，这种分工是典型例子。它既能兼顾安全性又能兼顾成本与灵活性，但另一方面，跨多个环境的联动与管理会变得复杂，这一点也要理解。",
-      "explanation_en": "A hybrid cloud links a public cloud with a private cloud (or on-premises) and uses each according to purpose, aiming to combine the strengths of both.\n\nThe exam asks about the point that it is a 'combination.' A typical example: place highly confidential data on the private side that you own, and place public-facing websites whose traffic can spike on the public side that scales easily. It can balance security with cost and flexibility; on the other hand, linking and managing across multiple environments becomes complex — understand this too.",
-      "analogy_zh": "就像同时使用自家住宅（专属）和租赁仓库（共用）：重要物品放家里，数量增减的物品放仓库，按物品性质来安排存放地点。",
-      "analogy_en": "Like using your own home (exclusive) and a rented warehouse (shared) together: keep important items at home, and store items whose quantity fluctuates in the warehouse — choosing where to put things by their nature.",
-      "memory_hook_zh": "说到混合云，就是公有与私有的组合。",
-      "memory_hook_en": "Hybrid cloud → a combination of public and private."
+      }
     },
     {
       "term": "マルチクラウド",
-      "definition_jp": "複数のクラウド事業者のサービスを併用して利用する形態。",
-      "explanation_jp": "マルチクラウドは、複数のクラウド事業者(例:AWS と Azure と Google Cloud)のサービスを組み合わせて使う形態です。サービスごとに得意分野が異なるため、適材適所で選んで使うことができます。\n\n試験では、ハイブリッドクラウドとの違いに注意が必要です。ハイブリッドが『パブリックとプライベートという配置形態の組み合わせ』であるのに対し、マルチクラウドは『複数の事業者の併用』に着目した概念です。特定の1社に依存しない(ベンダーロックインを避ける)・障害リスクを分散できる利点がある一方、管理が複雑になります。",
-      "analogy_jp": "電力やガスを複数の会社から契約して使い分けるようなもの。1社に頼り切らず、得意分野や料金で会社を選び、片方が止まっても困りにくい。",
-      "memory_hook_jp": "マルチクラウドといえば複数の事業者のサービスを併用",
-      "inline_quiz": [
-        "2010h22a-q003"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "多云",
       "term_en": "Multi-cloud",
-      "definition_zh": "同时使用多家云服务商的服务的形态。",
-      "definition_en": "A model that uses the services of multiple cloud providers together.",
-      "explanation_zh": "多云是指把多家云服务商（例如 AWS、Azure 和 Google Cloud）的服务组合起来使用的形态。由于各家服务的擅长领域不同，可以按需择优、各取所长。\n\n考试中需要注意它与混合云的区别。混合云着眼于『公有与私有这两种部署形态的组合』，而多云着眼于『多家服务商的并用』这一概念。它的优点是不依赖某一家（避免供应商锁定）、能分散故障风险；但另一方面，管理会变得复杂。",
-      "explanation_en": "Multi-cloud is a model that combines the services of multiple cloud providers (for example, AWS, Azure, and Google Cloud). Because each provider's strengths differ, you can pick the best fit for each task.\n\nOn the exam, be careful about its difference from a hybrid cloud. Whereas a hybrid cloud focuses on 'combining the deployment models of public and private,' multi-cloud focuses on the concept of 'using multiple providers together.' Its advantages are not depending on a single vendor (avoiding vendor lock-in) and being able to spread failure risk; on the other hand, management becomes complex.",
-      "analogy_zh": "就像同时与多家电力或燃气公司签约、分别使用：不把希望全压在一家身上，按擅长领域或价格挑选公司，即使一家停摆也不太为难。",
-      "analogy_en": "Like contracting with multiple electricity or gas companies and using them selectively: you don't rely entirely on one company, you choose by strengths or price, and even if one stops, you're not in much trouble.",
-      "memory_hook_zh": "说到多云，就是同时并用多家服务商的服务。",
-      "memory_hook_en": "Multi-cloud → using the services of multiple providers together."
+      "one_jp": "**マルチクラウド** は、複数のクラウド事業者のサービスを **併用** する形態である。",
+      "one_zh": "**多云**（[[jp:マルチクラウド]]）是**同时使用**多家云服务商服务的形态。",
+      "one_en": "**Multi-cloud** ([[jp:マルチクラウド]]) is a model that **uses services from several cloud providers side by side**.",
+      "detail_jp": "事業者ごとに得意な機能や料金が違うため、用途ごとに向いたサービスを選んで組み合わせられる。1 社の障害で全体が止まる危険を減らせるほか、特定の事業者から乗り換えにくくなる状態 (ベンダーロックイン) を避けやすい。一方で、事業者ごとに操作や契約が違うため、運用の手間は増えやすい。",
+      "detail_zh": "各服务商擅长的功能和收费各不相同，因此可以按用途挑选合适的服务加以组合。除了能降低一家服务商出故障就导致整体停摆的风险外，还更容易避免被某家服务商绑定、难以更换的状态（供应商锁定）。另一方面，由于各服务商的操作和合同不同，运维的工作量往往会增加。",
+      "detail_en": "Providers differ in their strengths and pricing, so you can pick the service that fits each use and combine them. Besides reducing the risk that one provider's outage stops everything, it helps avoid a state where switching away from a particular provider becomes hard (vendor lock-in). On the other hand, operations take more work because each provider has its own controls and contracts.",
+      "analogy_jp": "給与の振込は A 銀行、ネット決済は B 銀行と、目的ごとに口座を使い分けること。1 行に何かあっても、全部は止まらない。",
+      "analogy_zh": "就像工资打到A银行、网上支付用B银行，按目的分别使用不同的账户。一家银行出了问题，也不会全部停掉。",
+      "analogy_en": "Having your salary paid into Bank A while using Bank B for online payments, one account per purpose. If one bank has trouble, not everything stops.",
+      "hook_jp": "マルチは multi (多数の)。マルチリンガルが複数の言語を使い分ける人であるように、複数の事業者を相手にする姿を思い浮かべる。",
+      "hook_zh": "“multi”意为“多个的”。就像会说多种语言的人（multilingual）分场合使用不同语言，可以想象同时与多家服务商打交道的样子。",
+      "hook_en": "\"Multi\" means many. Just as a multilingual person switches between languages, picture dealing with several providers at once.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**マルチクラウド** は事業者の数に着目した語で、**ハイブリッドクラウド** は性質の違う環境の連携に着目した語である。両方に当てはまる構成もある。",
+          "text_zh": "**多云**（[[jp:マルチクラウド]]）着眼于服务商的数量，**混合云**（[[jp:ハイブリッドクラウド]]）着眼于性质不同的环境之间的联动。也有同时符合两者的构成。",
+          "text_en": "**Multi-cloud** ([[jp:マルチクラウド]]) focuses on the number of providers, while **hybrid cloud** ([[jp:ハイブリッドクラウド]]) focuses on linking environments of different kinds. Some setups fit both."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "マルチクラウド は、複数のクラウド事業者のサービスを 併用 する形態である。",
+      "definition_zh": "多云（マルチクラウド）是同时使用多家云服务商服务的形态。",
+      "definition_en": "Multi-cloud (マルチクラウド) is a model that uses services from several cloud providers side by side.",
+      "explanation_jp": "事業者ごとに得意な機能や料金が違うため、用途ごとに向いたサービスを選んで組み合わせられる。1 社の障害で全体が止まる危険を減らせるほか、特定の事業者から乗り換えにくくなる状態 (ベンダーロックイン) を避けやすい。一方で、事業者ごとに操作や契約が違うため、運用の手間は増えやすい。",
+      "explanation_zh": "各服务商擅长的功能和收费各不相同，因此可以按用途挑选合适的服务加以组合。除了能降低一家服务商出故障就导致整体停摆的风险外，还更容易避免被某家服务商绑定、难以更换的状态（供应商锁定）。另一方面，由于各服务商的操作和合同不同，运维的工作量往往会增加。",
+      "explanation_en": "Providers differ in their strengths and pricing, so you can pick the service that fits each use and combine them. Besides reducing the risk that one provider's outage stops everything, it helps avoid a state where switching away from a particular provider becomes hard (vendor lock-in). On the other hand, operations take more work because each provider has its own controls and contracts.",
+      "memory_hook_jp": "マルチは multi (多数の)。マルチリンガルが複数の言語を使い分ける人であるように、複数の事業者を相手にする姿を思い浮かべる。",
+      "memory_hook_zh": "“multi”意为“多个的”。就像会说多种语言的人（multilingual）分场合使用不同语言，可以想象同时与多家服务商打交道的样子。",
+      "memory_hook_en": "\"Multi\" means many. Just as a multilingual person switches between languages, picture dealing with several providers at once.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "オンプレミス",
-      "definition_jp": "自社の施設内に機器を設置し、自前で運用する従来型の形態。",
-      "explanation_jp": "オンプレミス(on-premises)は、サーバーやネットワーク機器を自社の建物内に設置し、自分たちで構築・運用する形態です。クラウドが普及する前から行われてきた従来型の方式で、クラウド全体と対比される『非クラウドの基準』として位置づけられます。\n\n試験では、クラウドとの対比で問われます。自社管理のため自由度やセキュリティ面で安心できる反面、機器の購入(初期投資)・設置場所・保守要員が必要で、導入に時間とコストがかかります。クラウドが『借りる・使った分だけ』なのに対し、オンプレミスは『自分で持つ・所有する』と整理すると違いが明確です。下図のように配置形態を非クラウドとクラウドに大別して整理しましょう。",
-      "analogy_jp": "持ち家を建てて自分で維持するようなもの。自由に手を入れられるが、土地・建物の購入費や修繕の手間はすべて自分でまかなう。",
-      "memory_hook_jp": "オンプレミスといえば自社設備で自前運用する従来型",
+      "term_zh": "本地部署",
+      "term_en": "On-premises",
+      "one_jp": "**オンプレミス** は、情報システムの機器を **自社が管理する施設** に設置し、自社で運用する形態である。",
+      "one_zh": "**本地部署**（[[jp:オンプレミス]]）是把信息系统的设备安装在**本公司管理的场所**，并由本公司自行运维的形态。",
+      "one_en": "**On-premises** ([[jp:オンプレミス]]) is a model in which information system equipment is installed at **a site the company manages** and run by the company itself.",
+      "detail_jp": "クラウドが広まる前から行われてきた方式で、クラウドの各形態を比べるときの基準になる。機器を自社で用意して管理するため、構成や安全対策を自社の判断で決められる。その代わり、購入費や設置場所、保守を担う人員を自社で用意する必要がある。",
+      "detail_zh": "这是云普及之前就一直采用的方式，比较各种云形态时会以它为基准。由于设备由本公司准备和管理，系统构成和安全措施可以由本公司自行决定。相应地，购置费用、安装场地以及负责维护的人员都需要本公司自己准备。",
+      "detail_en": "It is the approach used since before the cloud spread, and it serves as the baseline when comparing cloud models. Because the company prepares and manages the equipment, it can decide the configuration and security measures on its own. In exchange, the company has to provide the purchase cost, the installation space and the staff for maintenance.",
+      "analogy_jp": "賃貸ではなく持ち家に住むこと。間取りは自由に変えられるが、購入費も修繕も自分持ちになる。",
+      "analogy_zh": "就像不租房而住在自己买的房子里。格局可以随意改，但购房款和修缮费都得自己出。",
+      "analogy_en": "Living in a home you own instead of renting. You can change the layout freely, but the purchase price and repairs are all on you.",
+      "hook_jp": "英語の premises は「建物や敷地」。on-premises で「自社の敷地の上で」と読める。",
+      "hook_zh": "英语的 premises 意为“建筑物及其用地”。on-premises 可以理解为“在本公司的场地上”。",
+      "hook_en": "\"Premises\" means a building and its grounds, so on-premises reads as \"on the company's own grounds.\"",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**オンプレミス** は、機器を自社の管理下にある施設に置き、運用まで自社で行う形態の呼び名である。",
+          "text_zh": "**本地部署**（[[jp:オンプレミス]]）是指把设备放在本公司管理的场所，并由本公司负责到运维为止的形态。",
+          "text_en": "**On-premises** ([[jp:オンプレミス]]) is the name for a model in which equipment is placed at a site under the company's control and the company handles everything up to operation.",
+          "qids": [
+            "2019h31h-q030"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "自社の施設で自社が運用する環境でも、クラウドの仕組みで 1 つの組織が専用に使うものは **プライベートクラウド** とも呼ばれる。",
+          "text_zh": "即使是放在本公司场所、由本公司运维的环境，只要是用云机制供一个组织专用，也可以称为**私有云**（[[jp:プライベートクラウド]]）。",
+          "text_en": "Even an environment at the company's own site and run by the company can also be called a **private cloud** ([[jp:プライベートクラウド]]) when it uses cloud technology for one organization's exclusive use."
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "オンプレミス",
+            "zh": "本地部署",
+            "en": "On-premises"
+          },
+          "b": {
+            "jp": "パブリッククラウド",
+            "zh": "公有云",
+            "en": "Public cloud"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "設備を用意し管理する者",
+                "zh": "准备并管理设备的一方",
+                "en": "Who prepares and manages the facilities"
+              },
+              "a": {
+                "jp": "自社",
+                "zh": "本公司",
+                "en": "The company itself"
+              },
+              "b": {
+                "jp": "クラウド事業者",
+                "zh": "云服务商",
+                "en": "The cloud provider"
+              },
+              "key": true
+            },
+            {
+              "label": {
+                "jp": "費用の掛かり方",
+                "zh": "费用的产生方式",
+                "en": "How costs arise"
+              },
+              "a": {
+                "jp": "機器の購入費が先に掛かる",
+                "zh": "先要支付设备购置费",
+                "en": "Equipment purchase cost comes first"
+              },
+              "b": {
+                "jp": "使った量に応じて払う",
+                "zh": "按使用量付费",
+                "en": "Pay for what you use"
+              }
+            },
+            {
+              "label": {
+                "jp": "使い始めるまで",
+                "zh": "开始使用之前",
+                "en": "Before you can start"
+              },
+              "a": {
+                "jp": "機器の調達と設置が要る",
+                "zh": "需要采购和安装设备",
+                "en": "Equipment must be procured and installed"
+              },
+              "b": {
+                "jp": "申し込めば短期間で使える",
+                "zh": "申请后短时间内即可使用",
+                "en": "Usable shortly after signing up"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2019h31h-q030"
+      ],
+      "definition_jp": "オンプレミス は、情報システムの機器を 自社が管理する施設 に設置し、自社で運用する形態である。",
+      "definition_zh": "本地部署（オンプレミス）是把信息系统的设备安装在本公司管理的场所，并由本公司自行运维的形态。",
+      "definition_en": "On-premises (オンプレミス) is a model in which information system equipment is installed at a site the company manages and run by the company itself.",
+      "explanation_jp": "クラウドが広まる前から行われてきた方式で、クラウドの各形態を比べるときの基準になる。機器を自社で用意して管理するため、構成や安全対策を自社の判断で決められる。その代わり、購入費や設置場所、保守を担う人員を自社で用意する必要がある。",
+      "explanation_zh": "这是云普及之前就一直采用的方式，比较各种云形态时会以它为基准。由于设备由本公司准备和管理，系统构成和安全措施可以由本公司自行决定。相应地，购置费用、安装场地以及负责维护的人员都需要本公司自己准备。",
+      "explanation_en": "It is the approach used since before the cloud spread, and it serves as the baseline when comparing cloud models. Because the company prepares and manages the equipment, it can decide the configuration and security measures on its own. In exchange, the company has to provide the purchase cost, the installation space and the staff for maintenance.",
+      "memory_hook_jp": "英語の premises は「建物や敷地」。on-premises で「自社の敷地の上で」と読める。",
+      "memory_hook_zh": "英语的 premises 意为“建筑物及其用地”。on-premises 可以理解为“在本公司的场地上”。",
+      "memory_hook_en": "\"Premises\" means a building and its grounds, so on-premises reads as \"on the company's own grounds.\"",
       "inline_quiz": [
         "2019h31h-q030"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"配置形態\"] --> B[\"オンプレミス(自社設置)\"]; A --> C[\"クラウド(事業者提供)\"]; C --> D[\"パブリック\"]; C --> E[\"プライベート\"]; C --> F[\"ハイブリッド\"]; C --> G[\"マルチ\"]",
-        "svg_path": "figures/strategy-06-20-u02-t02.svg",
-        "rendered": true
-      },
-      "term_zh": "本地部署",
-      "term_en": "On-premises",
-      "definition_zh": "在自有设施内安装设备、自行运维的传统形态。",
-      "definition_en": "The traditional model of installing equipment within one's own facilities and operating it in-house.",
-      "explanation_zh": "本地部署（on-premises）是指把服务器和网络设备安装在自有建筑内、由自己搭建与运维的形态。这是云普及之前就一直采用的传统方式，被定位为与整个云形成对比的『非云基准』。\n\n考试中会与云做对比来考查。由于是自有管理，在自由度和安全方面让人安心；但另一方面，需要购置设备（初期投资）、安放场地和维护人员，导入既费时间又费成本。云是『租用、用多少付多少』，而本地部署是『自己持有、自己拥有』，这样整理差异就很清晰。请如下图那样把部署形态大致分为非云与云两类来梳理。",
-      "explanation_en": "On-premises means installing servers and network equipment inside your own building and building and operating them yourself. It is the traditional approach used before the cloud spread and is positioned as the 'non-cloud baseline' contrasted with the cloud as a whole.\n\nThe exam asks about it in contrast with the cloud. Because you manage it yourself, you can feel secure about flexibility and security; on the other hand, you need to purchase equipment (initial investment), provide a location to place it, and have maintenance staff, so deployment takes time and cost. Whereas the cloud is 'rent and pay only for what you use,' on-premises is 'own it yourself' — sorting it out this way makes the difference clear. As shown in the figure below, organize deployment models broadly into non-cloud and cloud.",
-      "analogy_zh": "就像盖一栋自有住宅并自己维护：可自由改造，但土地、建筑的购置费和修缮的工夫都要自己全部承担。",
-      "analogy_en": "Like building your own house and maintaining it yourself: you can freely modify it, but the purchase cost of land and building and the effort of repairs are all entirely on you.",
-      "memory_hook_zh": "说到本地部署，就是用自有设备自行运维的传统形态。",
-      "memory_hook_en": "On-premises → the traditional model of operating your own equipment in-house."
+      "figure": null
     },
     {
       "term": "マネージドサービス",
-      "definition_jp": "システムの運用・保守を専門事業者に委託するサービス。",
-      "explanation_jp": "マネージドサービスは、サーバーやネットワーク、クラウド基盤などの運用・監視・保守といった管理業務を、専門の事業者に任せる(委託する)サービスです。配置をどこにするかとは別の『運用を誰がやるか』という軸の概念です。\n\n試験では、利用者が運用負担から解放され本業に専念できる利点が問われます。自社に専門の運用要員を抱えなくてよい一方、運用を外部に任せるため対応範囲や費用を契約で明確にする必要があります。クラウドのパブリック/プライベートといった『配置形態』とは別軸の『運用形態』である点を区別しましょう。",
-      "analogy_jp": "ビルの管理を専門の管理会社に任せるようなもの。清掃・点検・トラブル対応をプロに委ね、自分は本来の仕事に集中できる。",
-      "memory_hook_jp": "マネージドサービスといえば運用・保守を専門事業者に委託",
-      "inline_quiz": [
-        "2010h22h-q013"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "托管服务",
       "term_en": "Managed service",
-      "definition_zh": "将系统的运维与维护委托给专业服务商的服务。",
-      "definition_en": "A service that outsources the operation and maintenance of a system to a specialized provider.",
-      "explanation_zh": "托管服务是指把服务器、网络、云基础设施等的运维、监控、维护等管理工作交给（委托给）专业服务商的服务。这是与『部署在哪里』不同的另一条轴线，即『由谁来运维』的概念。\n\n考试中会考查它的优点：用户可从运维负担中解脱出来、专注于主营业务。自己不必养专门的运维人员；但另一方面，由于把运维交给外部，需要在合同中明确服务范围和费用。请把它与公有/私有这类云的『部署形态』区分开，认清它是另一条轴线上的『运维形态』。",
-      "explanation_en": "A managed service entrusts (outsources) management work — such as the operation, monitoring, and maintenance of servers, networks, and cloud infrastructure — to a specialized provider. It is a concept on a different axis from where things are deployed: the axis of 'who operates it.'\n\nThe exam asks about the benefit that users are freed from the operational burden and can focus on their core business. You don't need to keep dedicated operations staff in-house; on the other hand, because operations are entrusted to an outside party, you must clarify the scope of coverage and costs in the contract. Distinguish it from the 'deployment models' of cloud such as public/private, and recognize it as an 'operation model' on a separate axis.",
-      "analogy_zh": "就像把大楼的管理交给专业物业公司：清洁、巡检、故障处理都交给专业人员，自己得以专注于本职工作。",
-      "analogy_en": "Like entrusting the management of a building to a professional property-management company: cleaning, inspection, and trouble handling are left to professionals, so you can focus on your real job.",
-      "memory_hook_zh": "说到托管服务，就是把运维与维护委托给专业服务商。",
-      "memory_hook_en": "Managed service → outsourcing operation and maintenance to a specialized provider."
+      "one_jp": "**マネージドサービス** は、システムの **運用・保守** を専門の事業者に任せるサービスである。",
+      "one_zh": "**托管服务**（[[jp:マネージドサービス]]）是把系统的**运维和维护**交给专业服务商的服务。",
+      "one_en": "A **managed service** ([[jp:マネージドサービス]]) is a service in which a specialist provider takes over the **operation and maintenance** of a system.",
+      "detail_jp": "任せる業務には、例えば稼働の監視、障害への対応、ソフトウェアの更新などがある。利用者は運用を担う専門の人員を自社で抱えずに済み、本来の業務に力を向けやすい。任せる範囲と費用は契約で取り決めるため、どこまでが事業者の担当かを事前に確かめておく必要がある。",
+      "detail_zh": "委托的业务包括运行监控、故障处理、软件更新等。用户不必在公司内配备专门负责运维的人员，更容易把精力集中在本职业务上。委托的范围和费用由合同约定，因此需要事先确认哪些工作属于服务商的职责。",
+      "detail_en": "The tasks handed over include, for example, monitoring operations, responding to failures and updating software. Users need not keep dedicated operations staff in-house and can focus more easily on their core business. The scope and cost are set by contract, so you need to confirm in advance where the provider's responsibilities end.",
+      "analogy_jp": "マンションの清掃や設備点検を管理会社に任せること。住人は日々の手入れを自分でしなくてよいが、任せる範囲は管理契約で決まる。",
+      "analogy_zh": "就像把公寓的清扫和设备检查交给物业管理公司。住户不用自己做日常维护，但委托的范围由管理合同决定。",
+      "analogy_en": "Leaving an apartment building's cleaning and equipment checks to a management company. Residents do not handle daily upkeep, but the management contract decides what is covered.",
+      "hook_jp": "マネージドは managed (管理された)。「誰かが管理してくれる」状態を表す語と読む。",
+      "hook_zh": "“managed”意为“被管理的”。可以理解为表示“有人替你管理”这种状态的词。",
+      "hook_en": "\"Managed\" means looked after. Read it as \"someone else manages it for you.\"",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**マネージドサービス** は運用・保守を誰が担うかに着目した語で、パブリッククラウドとプライベートクラウドを分ける軸 (設備を誰と使うか) とは別の軸である。",
+          "text_zh": "**托管服务**（[[jp:マネージドサービス]]）着眼于由谁承担运维和维护，与区分公有云（[[jp:パブリッククラウド]]）和私有云的标准（与谁共用设备）是不同的标准。",
+          "text_en": "A **managed service** ([[jp:マネージドサービス]]) focuses on who handles operation and maintenance, a different dividing line from the one that separates public cloud ([[jp:パブリッククラウド]]) and private cloud (who you share facilities with)."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "マネージドサービス は、システムの 運用・保守 を専門の事業者に任せるサービスである。",
+      "definition_zh": "托管服务（マネージドサービス）是把系统的运维和维护交给专业服务商的服务。",
+      "definition_en": "A managed service (マネージドサービス) is a service in which a specialist provider takes over the operation and maintenance of a system.",
+      "explanation_jp": "任せる業務には、例えば稼働の監視、障害への対応、ソフトウェアの更新などがある。利用者は運用を担う専門の人員を自社で抱えずに済み、本来の業務に力を向けやすい。任せる範囲と費用は契約で取り決めるため、どこまでが事業者の担当かを事前に確かめておく必要がある。",
+      "explanation_zh": "委托的业务包括运行监控、故障处理、软件更新等。用户不必在公司内配备专门负责运维的人员，更容易把精力集中在本职业务上。委托的范围和费用由合同约定，因此需要事先确认哪些工作属于服务商的职责。",
+      "explanation_en": "The tasks handed over include, for example, monitoring operations, responding to failures and updating software. Users need not keep dedicated operations staff in-house and can focus more easily on their core business. The scope and cost are set by contract, so you need to confirm in advance where the provider's responsibilities end.",
+      "memory_hook_jp": "マネージドは managed (管理された)。「誰かが管理してくれる」状態を表す語と読む。",
+      "memory_hook_zh": "“managed”意为“被管理的”。可以理解为表示“有人替你管理”这种状态的词。",
+      "memory_hook_en": "\"Managed\" means looked after. Read it as \"someone else manages it for you.\"",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "パブリッククラウド",
+      "b": "プライベートクラウド",
+      "rows": [
+        {
+          "label_jp": "設備を使う相手",
+          "label_zh": "使用设备的对象",
+          "label_en": "Who uses the facilities",
+          "a_jp": "不特定多数の利用者と共用",
+          "a_zh": "与不特定多数用户共用",
+          "a_en": "Shared with many unspecified users",
+          "b_jp": "1 つの組織が専有",
+          "b_zh": "由一个组织独占",
+          "b_en": "Used exclusively by one organization",
+          "key": true
+        },
+        {
+          "label_jp": "設定の自由度",
+          "label_zh": "设置的自由度",
+          "label_en": "Freedom of configuration",
+          "a_jp": "事業者が用意した範囲で選ぶ",
+          "a_zh": "在服务商提供的范围内选择",
+          "a_en": "Chosen within what the provider offers",
+          "b_jp": "組織の要件に合わせやすい",
+          "b_zh": "容易配合组织的要求",
+          "b_en": "Easy to fit the organization's needs",
+          "key": false
+        },
+        {
+          "label_jp": "費用の傾向",
+          "label_zh": "费用的倾向",
+          "label_en": "Cost tendency",
+          "a_jp": "分け合う分だけ抑えやすい",
+          "a_zh": "因分摊而容易压低",
+          "a_en": "Kept low by sharing",
+          "b_jp": "構築と管理の負担が大きくなりやすい",
+          "b_zh": "构建和管理的负担容易变大",
+          "b_en": "Building and managing tend to be costly",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "ハイブリッドクラウド",
+      "b": "マルチクラウド",
+      "rows": [
+        {
+          "label_jp": "組み合わせるもの",
+          "label_zh": "组合的对象",
+          "label_en": "What is combined",
+          "a_jp": "性質の違う環境 (共用と専用など)",
+          "a_zh": "性质不同的环境（共用与专用等）",
+          "a_en": "Environments of different kinds (shared and dedicated, etc.)",
+          "b_jp": "複数の事業者のサービス",
+          "b_zh": "多家服务商的服务",
+          "b_en": "Services from several providers",
+          "key": true
+        },
+        {
+          "label_jp": "主な狙い",
+          "label_zh": "主要目的",
+          "label_en": "Main aim",
+          "a_jp": "機密性と拡張のしやすさの両立",
+          "a_zh": "兼顾机密性和易于扩展",
+          "a_en": "Both confidentiality and easy scaling",
+          "b_jp": "用途に合う事業者の選択と依存の分散",
+          "b_zh": "选择适合用途的服务商并分散依赖",
+          "b_en": "Choosing providers that suit each use and spreading dependence",
+          "key": false
+        },
+        {
+          "label_jp": "難しくなる点",
+          "label_zh": "难点",
+          "label_en": "What gets harder",
+          "a_jp": "環境の間の連携",
+          "a_zh": "环境之间的联动",
+          "a_en": "Linking the environments",
+          "b_jp": "事業者ごとに違う操作と契約の管理",
+          "b_zh": "管理各服务商不同的操作和合同",
+          "b_en": "Managing each provider's different controls and contracts",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**オンプレミス** は機器の購入費や保守の人員を自社で負う代わりに、構成や安全対策を自社の判断で決められる。",
+    "形態は組織全体で 1 つに決めるものではなく、システムや用途ごとに選べる。",
+    "形態を選ぶときは、例えば費用、機密性、使い始めるまでの早さ、特定の事業者への依存の度合いを比べる。"
+  ],
+  "key_points_zh": [
+    "**本地部署**要由本公司承担设备购置费和维护人员，但换来的是能自行决定系统构成和安全措施。",
+    "部署形态不是整个组织只定一种，而是可以按系统或用途分别选择。",
+    "选择部署形态时，可以比较费用、机密性、开始使用的快慢、对特定服务商的依赖程度等。"
+  ],
+  "key_points_en": [
+    "With **on-premises**, the company bears the equipment cost and maintenance staff, but in return it decides the configuration and security measures itself.",
+    "A deployment model is not fixed once for the whole organization; it can be chosen per system or per use.",
+    "When choosing a model, compare factors such as cost, confidentiality, how fast you can start, and how much you would depend on a particular provider."
+  ],
+  "overview": {
+    "intro_jp": "パブリッククラウド と プライベートクラウド を、設備を誰と使うかで分けられる。ハイブリッドクラウド と マルチクラウド を、何を組み合わせるかで分けられる。機器を自社で管理・運用する オンプレミス と、運用・保守を任せる マネージドサービス を説明できる。",
+    "intro_zh": "能够根据设备与谁共用，区分公有云和私有云。能够根据组合的是什么，区分混合云和多云。能够说明由本公司自行管理和运维设备的本地部署，以及把运维和维护交给他人的托管服务。",
+    "intro_en": "Tell public cloud and private cloud apart by who you share the facilities with. Tell hybrid cloud and multi-cloud apart by what is being combined. Explain on-premises, where a company manages and runs its own equipment, and a managed service, where operation and maintenance are handed to others.",
+    "freq_badge": "低頻",
+    "est_minutes": 32
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "パブリッククラウド: パブリッククラウドといえば事業者が不特定多数に提供する共用型",
-      "プライベートクラウド: プライベートクラウドといえば特定組織が専有する自社向け環境",
-      "ハイブリッドクラウド: ハイブリッドクラウドといえばパブリックとプライベートの組み合わせ",
-      "マルチクラウド: マルチクラウドといえば複数の事業者のサービスを併用",
-      "オンプレミス: オンプレミスといえば自社設備で自前運用する従来型",
-      "マネージドサービス: マネージドサービスといえば運用・保守を専門事業者に委託"
-    ],
     "key_points_jp": [
-      "クラウドは『どこに配置し誰が運用するか』で分類され、本ユニットは配置4形態+対比のオンプレミス+運用委託のマネージドサービスを扱う。",
-      "パブリック(共用)とプライベート(専有)が配置の基本2形態で、ハイブリッドは両者の組み合わせ、マルチクラウドは複数事業者の併用である。",
-      "ハイブリッド(配置形態の組み合わせ)とマルチクラウド(複数事業者の併用)は着眼点が異なる別概念として区別する。",
-      "オンプレミスは自社設備で自前運用する従来型で、『借りる』クラウドに対する『所有する』非クラウド基準である。",
-      "マネージドサービスは配置とは別軸の『運用委託』形態で、利用者は運用負担を減らし本業に集中できる。"
+      "オンプレミス は機器の購入費や保守の人員を自社で負う代わりに、構成や安全対策を自社の判断で決められる。",
+      "形態は組織全体で 1 つに決めるものではなく、システムや用途ごとに選べる。",
+      "形態を選ぶときは、例えば費用、機密性、使い始めるまでの早さ、特定の事業者への依存の度合いを比べる。"
     ],
     "key_points_zh": [
-      "云按『部署在哪里、由谁来运维』分类，本单元处理 4 种部署形态＋作为对比的本地部署＋委托运维的托管服务。",
-      "公有（共用）与私有（专属）是部署的两种基本形态，混合云是两者的组合，多云是多家服务商的并用。",
-      "混合云（部署形态的组合）与多云（多家服务商的并用）着眼点不同，要作为两个不同概念加以区分。",
-      "本地部署是用自有设备自行运维的传统形态，相对于『租用』的云，它是『拥有』的非云基准。",
-      "托管服务是与部署不同轴线的『运维委托』形态，用户可减轻运维负担、专注于主营业务。"
+      "本地部署要由本公司承担设备购置费和维护人员，但换来的是能自行决定系统构成和安全措施。",
+      "部署形态不是整个组织只定一种，而是可以按系统或用途分别选择。",
+      "选择部署形态时，可以比较费用、机密性、开始使用的快慢、对特定服务商的依赖程度等。"
     ],
     "key_points_en": [
-      "Cloud is classified by 'where it is deployed and who operates it'; this unit covers four deployment models plus on-premises as a contrast plus managed services that outsource operations.",
-      "Public (shared) and private (exclusive) are the two basic deployment models; hybrid is a combination of both, and multi-cloud is the joint use of multiple providers.",
-      "Hybrid (a combination of deployment models) and multi-cloud (joint use of multiple providers) have different focuses and should be distinguished as two separate concepts.",
-      "On-premises is the traditional model of operating your own equipment in-house; against the 'rented' cloud, it is the 'owned' non-cloud baseline.",
-      "A managed service is an 'operations outsourcing' model on a different axis from deployment; users can reduce their operational burden and focus on their core business."
+      "With on-premises, the company bears the equipment cost and maintenance staff, but in return it decides the configuration and security measures itself.",
+      "A deployment model is not fixed once for the whole organization; it can be chosen per system or per use.",
+      "When choosing a model, compare factors such as cost, confidentiality, how fast you can start, and how much you would depend on a particular provider."
+    ],
+    "memory_hooks_jp": [
+      "パブリッククラウド: パブリックは英語の public (公衆の)。公衆電話のように、誰でも同じ設備を使う姿を思い浮かべる。",
+      "プライベートクラウド: プライベートは英語の private (私的な)。プライベートビーチのように、決まった人だけが使える場所を連想する。",
+      "ハイブリッドクラウド: ハイブリッドカーはエンジンとモーターという仕組みの違う動力を組み合わせる。違う種類のものを混ぜるのがハイブリッドの手がかり。",
+      "マルチクラウド: マルチは multi (多数の)。マルチリンガルが複数の言語を使い分ける人であるように、複数の事業者を相手にする姿を思い浮かべる。",
+      "オンプレミス: 英語の premises は「建物や敷地」。on-premises で「自社の敷地の上で」と読める。",
+      "マネージドサービス: マネージドは managed (管理された)。「誰かが管理してくれる」状態を表す語と読む。"
     ],
     "memory_hooks_zh": [
-      "公有云：说到公有云，就是服务商面向不特定多数提供的共用型。",
-      "私有云：说到私有云，就是特定组织专属的自有环境。",
-      "混合云：说到混合云，就是公有与私有的组合。",
-      "多云：说到多云，就是同时并用多家服务商的服务。",
-      "本地部署：说到本地部署，就是用自有设备自行运维的传统形态。",
-      "托管服务：说到托管服务，就是把运维与维护委托给专业服务商。"
+      "公有云：“public”在英语里意为“公众的”。可以联想公用电话：谁都在用同一套设备。",
+      "私有云：“private”在英语里意为“私人的”。可以联想私人海滩：只有特定的人才能使用的地方。",
+      "混合云：混合动力汽车把发动机和电动机这两种机制不同的动力组合在一起。把不同种类的东西混在一起，就是“hybrid”的线索。",
+      "多云：“multi”意为“多个的”。就像会说多种语言的人（multilingual）分场合使用不同语言，可以想象同时与多家服务商打交道的样子。",
+      "本地部署：英语的 premises 意为“建筑物及其用地”。on-premises 可以理解为“在本公司的场地上”。",
+      "托管服务：“managed”意为“被管理的”。可以理解为表示“有人替你管理”这种状态的词。"
     ],
     "memory_hooks_en": [
-      "Public cloud: Public cloud → a shared service offered by a provider to the general public.",
-      "Private cloud: Private cloud → an environment used exclusively by one specific organization.",
-      "Hybrid cloud: Hybrid cloud → a combination of public and private.",
-      "Multi-cloud: Multi-cloud → using the services of multiple providers together.",
-      "On-premises: On-premises → the traditional model of operating your own equipment in-house.",
-      "Managed service: Managed service → outsourcing operation and maintenance to a specialized provider."
+      "Public cloud: \"Public\" means open to everyone. Picture a public phone booth that anyone can use.",
+      "Private cloud: \"Private\" means belonging to particular people. Think of a private beach that only certain people may use.",
+      "Hybrid cloud: A hybrid car combines two different power sources, an engine and a motor. Mixing things of different kinds is the clue behind \"hybrid.\"",
+      "Multi-cloud: \"Multi\" means many. Just as a multilingual person switches between languages, picture dealing with several providers at once.",
+      "On-premises: \"Premises\" means a building and its grounds, so on-premises reads as \"on the company's own grounds.\"",
+      "Managed service: \"Managed\" means looked after. Read it as \"someone else manages it for you.\""
     ]
   },
   "challenge_questions": [
-    "2010h22h-q022",
-    "2011h23a-q005",
+    "2019h31h-q030",
     "2012h24a-q023",
-    "2012h24h-q026",
-    "2013h25h-q004"
+    "2010h22h-q022",
+    "2009h21a-q017"
   ],
   "source_figures": [
     {
@@ -242,9 +656,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "云的部署形态与运维形态",
-  "title_en": "Cloud Deployment Models and Operation Models",
-  "unit_summary_zh": "学习公有云/私有云/混合云/多云这几种部署形态、作为对比的本地部署，以及将运维委托出去的托管服务。",
-  "unit_summary_en": "Learn the deployment models of public, private, hybrid, and multi-cloud; on-premises as a contrast; and managed services that outsource operations."
+  }
 }

@@ -1,186 +1,724 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "strategy-06-20-u01",
   "topic_id": "strategy-06-20",
   "category": "strategy",
   "title_jp": "クラウドのサービスモデル(○aaS)",
+  "title_zh": "云的服务模型（○aaS）",
+  "title_en": "Cloud Service Models (○aaS)",
   "unit_summary_jp": "クラウドコンピューティングの基本概念と、SaaS・PaaS・IaaS・DaaS という提供レイヤー別のサービスモデルを学ぶ。",
+  "unit_summary_zh": "学习云计算的基本概念，以及按提供层次划分的 SaaS、PaaS、IaaS、DaaS 这几种服务模型。",
+  "unit_summary_en": "Learn the basic concept of cloud computing and the service models SaaS, PaaS, IaaS, and DaaS, classified by the layer each one provides.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "このユニットでは、IT資源をインターネット経由で必要なだけ利用する「クラウドコンピューティング」の基本概念と、提供する層が異なる代表的サービスモデルのSaaS・PaaS・IaaS・DaaSを学ぶ。ソリューションビジネスの中核で、特にSaaSは頻出のため、各モデルが「どの層まで提供するか」を区別できることが重要である。",
-    "freq_badge": "低頻",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，将学习「云计算」的基本概念——按需通过互联网使用所需数量的 IT 资源——以及提供层次各不相同的代表性服务模型 SaaS、PaaS、IaaS、DaaS。它是解决方案业务的核心，尤其 SaaS 出题频繁，因此能够区分各模型「提供到哪一层」非常重要。",
-    "intro_en": "In this unit, you will learn the basic concept of \"cloud computing\"—using just as much IT resource as you need over the internet—together with the representative service models SaaS, PaaS, IaaS, and DaaS, which differ in the layer they provide. Cloud is at the core of the solutions business, and SaaS in particular appears frequently, so it is important to be able to distinguish \"up to which layer\" each model provides."
-  },
-  "terms": [
+  "goals_jp": [
+    "事業者から借りる**クラウドコンピューティング**と**オンプレミス**を、資源の持ち主と料金の払い方で見分けられる。",
+    "サービスモデルごとに、事業者が用意する範囲と利用者が受け持つ範囲を説明できる。",
+    "**DaaS** で端末に残る役割と、その利点を説明できる。"
+  ],
+  "goals_zh": [
+    "能根据资源归谁所有、费用怎么付，分清向服务商租用的**云计算**[[jp:クラウドコンピューティング]]和**本地部署**[[jp:オンプレミス]]。",
+    "能针对每种服务模型，说明哪些部分由服务商准备、哪些部分由使用者自己负责。",
+    "能说明在 **DaaS** 中终端还留有什么作用，以及这样做的好处。"
+  ],
+  "goals_en": [
+    "Tell **cloud computing** [[jp:クラウドコンピューティング]] rented from a provider and **on-premises** [[jp:オンプレミス]] apart by who owns the resources and how they are paid for.",
+    "Explain, for each service model, what the provider supplies and what is left for the user to handle.",
+    "Explain what role the device still plays in **DaaS** and what advantage that brings."
+  ],
+  "overview_cols_jp": [
+    "事業者が用意する範囲",
+    "利用者が受け持つこと"
+  ],
+  "overview_cols_zh": [
+    "服务商准备的范围",
+    "使用者负责的事"
+  ],
+  "overview_cols_en": [
+    "What the provider supplies",
+    "What the user handles"
+  ],
+  "overview_rows": [
     {
       "term": "クラウドコンピューティング",
-      "definition_jp": "ITサービスをインターネット経由で必要に応じて利用する形態。",
-      "explanation_jp": "クラウドコンピューティングは、サーバやソフトウェアなどのIT資源を自社で保有せず、インターネットを通じて必要なときに必要なだけ利用する仕組みです。利用者は手元の端末から接続するだけでよく、設備の購入や保守は事業者側が担います。\n\n試験では、自社で機器を抱える「オンプレミス」との対比が問われます。初期投資を抑えられ、使った分だけ料金を払う(従量課金)、必要に応じて能力を増減できる(拡張性)といった利点が特徴です。SaaS・PaaS・IaaSなどはすべて、このクラウドという土台の上で『どの層を提供するか』を分けた派生概念である点を押さえましょう。",
-      "analogy_jp": "発電機を自宅に置く代わりに、電力会社から必要な分だけ電気を買って使うようなもの。設備は事業者が持ち、利用者は使った分だけ払います。",
-      "memory_hook_jp": "クラウドコンピューティングといえばIT資源をインターネット経由で必要な分だけ利用",
-      "inline_quiz": [
-        "2009h21h-q006"
+      "one_line_jp": "IT 資源をネットワーク越しに必要な分だけ使う利用形態",
+      "one_line_zh": "通过网络按需使用 IT 资源的使用形态",
+      "one_line_en": "A way of using only the IT resources you need over the network",
+      "extra_jp": [
+        "サービスモデルによって異なる",
+        "使う量の選択と料金の支払い"
       ],
-      "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"クラウドコンピューティング\"]; A --> B[\"SaaS(アプリ層)\"]; A --> C[\"PaaS(開発基盤層)\"]; A --> D[\"IaaS(インフラ層)\"]; A --> E[\"DaaS(デスクトップ提供)\"]",
-        "svg_path": "figures/strategy-06-20-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "云计算",
-      "term_en": "Cloud Computing",
-      "definition_zh": "通过互联网按需使用 IT 服务的形态。",
-      "definition_en": "A way of using IT services on demand over the internet.",
-      "explanation_zh": "云计算是一种不自行持有服务器、软件等 IT 资源，而是在需要时通过互联网按需使用所需数量的机制。使用者只需从手边的终端进行连接即可，设备的购置和维护由服务商一方承担。\n\n考试中会考查它与自行持有设备的「本地部署（on-premises）」之间的对比。它能够压低初期投资、按使用量付费（按量计费），并能根据需要增减处理能力（可扩展性），这些都是其优点和特点。要把握住一点：SaaS、PaaS、IaaS 等全都建立在「云」这一基础之上，是按「提供哪一层」区分而来的派生概念。",
-      "explanation_en": "Cloud computing is a system in which you do not own IT resources such as servers and software yourself, but instead use just as much as you need, when you need it, over the internet. Users simply connect from a device at hand, while the provider handles purchasing and maintaining the equipment.\n\nExams ask about the contrast with \"on-premises,\" where you keep your own equipment in house. Its benefits and features include lower up-front investment, paying only for what you use (metered billing), and being able to increase or decrease capacity as needed (scalability). Keep in mind that SaaS, PaaS, IaaS, and so on are all derived concepts that sit on top of this cloud foundation, distinguished by \"which layer they provide.\"",
-      "analogy_zh": "就像不在家里放发电机，而是从电力公司只买用得到的那部分电来使用一样。设备由服务商持有，使用者只为用掉的部分付费。",
-      "analogy_en": "Like buying only as much electricity as you need from the power company instead of putting a generator in your home. The provider owns the equipment, and you pay only for what you use.",
-      "memory_hook_zh": "说到云计算，就是通过互联网按需使用所需数量的 IT 资源",
-      "memory_hook_en": "Cloud computing → using just as much IT resource as you need over the internet"
+      "extra_zh": [
+        "因服务模型而异",
+        "选择用量并支付费用"
+      ],
+      "extra_en": [
+        "Varies by service model",
+        "Choosing how much to use and paying for it"
+      ]
     },
     {
       "term": "SaaS",
-      "definition_jp": "完成したソフトウェアをインターネット経由で利用するサービス形態。",
-      "explanation_jp": "SaaS(Software as a Service、サース)は、事業者が用意した完成済みのソフトウェアを、インターネット経由でそのまま利用するサービスです。利用者はインストールや管理をせず、ブラウザなどから機能を使うだけで済みます。電子メールやオンライン表計算、会計ソフトなどが代表例です。\n\n試験では、クラウドサービスの中で利用者が最も触れる『最上位(アプリケーション)層』を提供する点が問われます。PaaSやIaaSと違い、利用者は開発もインフラ管理も不要で、出来上がったアプリをそのまま使うのが最大の特徴です。本topic内で出題頻度が最も高い用語なので確実に押さえましょう。",
-      "analogy_jp": "出来上がった料理をレストランで注文して食べるようなもの。調理も後片付けも店任せで、利用者は完成した料理を使うだけです。",
-      "memory_hook_jp": "SaaSといえば完成済みソフトをそのまま使えるアプリ層のサービス",
-      "inline_quiz": [
-        "2009h21a-q017",
-        "2010h22h-q013"
+      "one_line_jp": "完成したアプリケーションの機能を使う",
+      "one_line_zh": "直接使用现成应用程序的功能",
+      "one_line_en": "Use the features of a finished application",
+      "extra_jp": [
+        "アプリケーションまで一式",
+        "機能の利用と業務データの入力"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "SaaS",
-      "term_en": "SaaS",
-      "definition_zh": "通过互联网使用已完成软件的服务形态。",
-      "definition_en": "A service model in which you use ready-made software over the internet.",
-      "explanation_zh": "SaaS（Software as a Service，软件即服务）是一种由服务商准备好的、已完成的软件，让使用者通过互联网直接使用的服务。使用者无需安装和管理，只要从浏览器等处使用功能即可。电子邮件、在线电子表格、会计软件等都是代表性例子。\n\n考试中会考查这一点：在各类云服务中，它提供的是使用者接触最多的「最上层（应用）层」。与 PaaS、IaaS 不同，使用者既不需要开发也不需要管理基础设施，直接使用做好的应用，这是它最大的特点。它是本 topic 内出题频率最高的术语，要确实掌握。",
-      "explanation_en": "SaaS (Software as a Service) is a service in which ready-made software prepared by the provider is used as-is over the internet. Users do not install or manage anything; they simply use the features from a browser or similar. Email, online spreadsheets, and accounting software are typical examples.\n\nExams ask about this point: among cloud services, SaaS provides the \"topmost (application) layer,\" the one users touch the most. Unlike PaaS and IaaS, the user needs neither development nor infrastructure management and simply uses the finished application as-is—this is its biggest feature. It is the most frequently tested term within this topic, so be sure to master it.",
-      "analogy_zh": "就像在餐厅点一份做好的菜来吃。烹饪和收拾都交给店家，使用者只是享用做好的菜。",
-      "analogy_en": "Like ordering a finished dish at a restaurant. Cooking and cleanup are left to the restaurant; the customer just enjoys the completed meal.",
-      "memory_hook_zh": "说到 SaaS，就是可以直接使用现成软件的应用层服务",
-      "memory_hook_en": "SaaS → an application-layer service where you use ready-made software as-is"
+      "extra_zh": [
+        "连同应用程序在内的整套环境",
+        "使用功能、录入业务数据"
+      ],
+      "extra_en": [
+        "Everything up to the application",
+        "Using the features and entering business data"
+      ]
     },
     {
       "term": "PaaS",
-      "definition_jp": "アプリ開発・実行の基盤をインターネット経由で提供するサービス。",
-      "explanation_jp": "PaaS(Platform as a Service、パース)は、アプリケーションを開発・実行するための基盤(OSやデータベース、開発環境など)をインターネット経由で提供するサービスです。利用者はその上に自分のアプリを載せて動かします。\n\n試験では、SaaSとIaaSの中間に位置する『開発基盤(プラットフォーム)層』を提供する点が問われます。完成アプリを使うSaaSと違い、利用者がアプリを開発する点、またインフラだけを借りるIaaSと違い、開発環境まで整っている点が区別のポイントです。開発者向けのサービスといえます。",
-      "analogy_jp": "調理器具や食材がそろったレンタルキッチンのようなもの。利用者は設備を借りて自分の料理(アプリ)を作りますが、厨房の管理は店任せです。",
-      "memory_hook_jp": "PaaSといえばアプリ開発の基盤を提供するプラットフォーム層",
-      "inline_quiz": [
-        "2015h27a-q005"
+      "one_line_jp": "アプリケーションを動かす基盤を借りる",
+      "one_line_zh": "租用运行应用程序的平台",
+      "one_line_en": "Rent the platform your applications run on",
+      "extra_jp": [
+        "ハードウェアと OS などの実行基盤",
+        "自社アプリケーションの開発と運用"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "PaaS",
-      "term_en": "PaaS",
-      "definition_zh": "通过互联网提供应用开发与运行平台的服务。",
-      "definition_en": "A service that provides a platform for developing and running applications over the internet.",
-      "explanation_zh": "PaaS（Platform as a Service，平台即服务）是一种通过互联网提供应用开发与运行所需平台（操作系统、数据库、开发环境等）的服务。使用者在其上放置并运行自己的应用。\n\n考试中会考查这一点：它位于 SaaS 与 IaaS 之间，提供的是「开发平台（platform）层」。与使用现成应用的 SaaS 不同，使用者要自行开发应用；与只租用基础设施的 IaaS 不同，它连开发环境都已配备齐全——这是区分的要点。可以说它是面向开发者的服务。",
-      "explanation_en": "PaaS (Platform as a Service) is a service that provides, over the internet, the platform needed to develop and run applications (OS, database, development environment, and so on). Users place their own applications on top of it and run them.\n\nExams ask about this point: PaaS sits between SaaS and IaaS and provides the \"development-platform layer.\" The distinguishing points are that, unlike SaaS where you use a finished app, with PaaS the user develops the application, and unlike IaaS where you rent only infrastructure, with PaaS the development environment is also fully set up. It can be called a service for developers.",
-      "analogy_zh": "就像一间备齐了厨具和食材的出租厨房。使用者租用设备来做自己的菜（应用），但厨房的管理交给店家。",
-      "analogy_en": "Like a rental kitchen stocked with cookware and ingredients. The user rents the facilities to make their own dish (application), but management of the kitchen is left to the operator.",
-      "memory_hook_zh": "说到 PaaS，就是提供应用开发平台的平台层",
-      "memory_hook_en": "PaaS → the platform layer that provides a foundation for app development"
+      "extra_zh": [
+        "硬件和操作系统等运行平台",
+        "开发并运行本公司的应用程序"
+      ],
+      "extra_en": [
+        "The runtime platform, such as hardware and the OS",
+        "Building and running the company's own applications"
+      ]
     },
     {
       "term": "IaaS",
-      "definition_jp": "サーバやストレージなどの基盤設備をインターネット経由で提供する形態。",
-      "explanation_jp": "IaaS(Infrastructure as a Service、イアース/アイアース)は、サーバ・ストレージ・ネットワークといったハードウェア基盤(インフラ)だけをインターネット経由で提供するサービスです。利用者はその上にOSやソフトウェアを自分で導入して使います。\n\n試験では、クラウドの『最下層(インフラ層)』を提供し、提供範囲が最も狭い(=利用者が自分で構築・管理する範囲が最も広い)点が問われます。OSや開発環境まで用意されるPaaSとの違いを押さえましょう。自由度が高い反面、利用者側の管理負担も大きいのが特徴です。",
-      "analogy_jp": "空の厨房スペースだけを借りるようなもの。調理器具(OSやソフト)は自分で持ち込んで設置し、料理まで自分で行います。",
-      "memory_hook_jp": "IaaSといえばサーバなど基盤設備だけを提供する最下層インフラ",
-      "inline_quiz": [
-        "2017h29a-q011"
+      "one_line_jp": "サーバなどのハードウェア資源を借りる",
+      "one_line_zh": "租用服务器等硬件资源",
+      "one_line_en": "Rent hardware resources such as servers",
+      "extra_jp": [
+        "処理能力・記憶装置・回線",
+        "OS から上の導入と管理"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "IaaS",
-      "term_en": "IaaS",
-      "definition_zh": "通过互联网提供服务器、存储等基础设备的形态。",
-      "definition_en": "A model that provides foundational equipment such as servers and storage over the internet.",
-      "explanation_zh": "IaaS（Infrastructure as a Service，基础设施即服务）是一种只通过互联网提供服务器、存储、网络等硬件基础（基础设施）的服务。使用者在其上自行安装操作系统和软件来使用。\n\n考试中会考查这一点：它提供云的「最底层（基础设施层）」，提供范围最窄（＝使用者需要自行搭建和管理的范围最广）。要把握它与连操作系统、开发环境都已备好的 PaaS 之间的区别。其特点是自由度高，但相应地使用者一方的管理负担也大。",
-      "explanation_en": "IaaS (Infrastructure as a Service) is a service that provides only the hardware foundation (infrastructure)—servers, storage, and networks—over the internet. Users install the OS and software on top of it themselves.\n\nExams ask about this point: IaaS provides the cloud's \"bottommost (infrastructure) layer,\" and its scope of provision is the narrowest (i.e., the range the user must build and manage themselves is the widest). Keep in mind the difference from PaaS, where even the OS and development environment are prepared. Its feature is a high degree of freedom, but in exchange the management burden on the user is also large.",
-      "analogy_zh": "就像只租用一块空的厨房场地。厨具（操作系统和软件）要自己带来安装，连菜也要自己做。",
-      "analogy_en": "Like renting only an empty kitchen space. You bring and set up the cookware (OS and software) yourself, and you also do all the cooking yourself.",
-      "memory_hook_zh": "说到 IaaS，就是只提供服务器等基础设备的最底层基础设施",
-      "memory_hook_en": "IaaS → the bottommost infrastructure layer that provides only foundational equipment such as servers"
+      "extra_zh": [
+        "处理能力、存储设备、线路",
+        "安装和管理操作系统及其上层"
+      ],
+      "extra_en": [
+        "Processing power, storage and network lines",
+        "Installing and managing everything from the OS up"
+      ]
     },
     {
       "term": "DaaS",
-      "definition_jp": "デスクトップ環境をインターネット経由で提供するサービス形態。",
-      "explanation_jp": "DaaS(Desktop as a Service、ダース)は、利用者のデスクトップ環境(画面・アプリ・データ)をクラウド上のサーバで動かし、インターネット経由で手元の端末に映し出して使うサービスです。処理はサーバ側で行われ、端末は画面表示と操作を担います。\n\n試験では、基本3層(SaaS/PaaS/IaaS)から派生した応用形として、デスクトップそのものを提供する点が問われます。端末にデータが残らないため紛失・盗難時の情報漏えいリスクを抑えられ、どの端末からも同じ環境を使えるのが利点です。テレワークなどでの活用が想定されます。",
-      "analogy_jp": "自分の机の上(デスクトップ)をまるごと貸金庫に預け、どこからでも画面越しに同じ机を呼び出して使うようなイメージです。",
-      "memory_hook_jp": "DaaSといえばデスクトップ環境をまるごとクラウドから提供",
-      "inline_quiz": [
-        "2011h23a-q005"
+      "one_line_jp": "デスクトップ環境一式を端末に届けてもらう",
+      "one_line_zh": "由服务商把整套桌面环境送到终端",
+      "one_line_en": "Have a complete desktop environment delivered to your device",
+      "extra_jp": [
+        "デスクトップ環境とその実行",
+        "端末での画面表示と操作"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "DaaS",
-      "term_en": "DaaS",
-      "definition_zh": "通过互联网提供桌面环境的服务形态。",
-      "definition_en": "A service model that provides a desktop environment over the internet.",
-      "explanation_zh": "DaaS（Desktop as a Service，桌面即服务）是一种把使用者的桌面环境（画面、应用、数据）放在云端服务器上运行，再通过互联网投射到手边终端来使用的服务。处理在服务器一侧进行，终端负责画面显示和操作。\n\n考试中会考查这一点：作为从基础三层（SaaS／PaaS／IaaS）派生出来的应用形态，它提供的是桌面本身。由于数据不残留在终端上，能够降低丢失、被盗时的信息泄露风险，且从任何终端都能使用同一环境，这是它的优点。可以设想它会用于远程办公等场景。",
-      "explanation_en": "DaaS (Desktop as a Service) is a service that runs the user's desktop environment (screen, applications, and data) on a server in the cloud and projects it over the internet onto a device at hand for use. Processing is done on the server side, while the device handles screen display and operation.\n\nExams ask about this point: as an applied form derived from the three basic layers (SaaS/PaaS/IaaS), DaaS provides the desktop itself. Because no data remains on the device, it can reduce the risk of information leakage when a device is lost or stolen, and the same environment can be used from any device—these are its advantages. It is expected to be used in scenarios such as telework.",
-      "analogy_zh": "就像把自己桌面（desktop）整个寄存进保管箱，无论身在何处都能隔着画面把同一张桌子调出来使用的感觉。",
-      "analogy_en": "Picture depositing your entire desktop into a safe-deposit box and then, from anywhere, calling up that same desk through a screen to use it.",
-      "memory_hook_zh": "说到 DaaS，就是把桌面环境整个从云端提供出来",
-      "memory_hook_en": "DaaS → providing the whole desktop environment from the cloud"
+      "extra_zh": [
+        "桌面环境及其运行",
+        "在终端上显示画面和进行操作"
+      ],
+      "extra_en": [
+        "The desktop environment and running it",
+        "Showing the screen and handling input on the device"
+      ]
     }
   ],
+  "terms": [
+    {
+      "term": "クラウドコンピューティング",
+      "term_zh": "云计算",
+      "term_en": "Cloud Computing",
+      "one_jp": "**クラウドコンピューティング**は、サーバやソフトウェアなどの IT 資源を、ネットワークの向こう側 (多くは事業者の設備) に用意されたものから**必要なときに必要な量だけ**使う利用形態である。",
+      "one_zh": "**云计算**[[jp:クラウドコンピューティング]]是一种使用形态：服务器、软件等 IT 资源准备在网络另一端（多数是服务商的设施），使用者**在需要时只取用所需的量**。",
+      "one_en": "**Cloud computing** [[jp:クラウドコンピューティング]] is a way of using IT resources such as servers and software that are set up across the network (usually in a provider's facilities), drawing on them **only when you need them and only as much as you need**.",
+      "detail_jp": "料金は使った量や期間に応じて払う形が多く、機器を買いそろえる初期費用を抑えやすい。事業者がどの層まで用意するかによって提供の型が分かれ、この型を**サービスモデル**と呼ぶ。なお、情報システムを自社で保有・管理する設備に置いて自ら運用する形態は**オンプレミス**と呼ぶ。",
+      "detail_zh": "费用大多按使用量或使用时长支付，容易压低购置设备的初期投入。按服务商准备到哪一层来区分，提供方式分成几种类型，这种类型称为**服务模型**[[jp:サービスモデル]]。另外，把信息系统放在本公司持有和管理的设施里、由自己运营的形态称为**本地部署**[[jp:オンプレミス]]。",
+      "detail_en": "Charges are usually based on how much or how long you use the service, which makes it easier to keep the up-front cost of buying equipment low. Offerings are grouped by how many layers the provider supplies, and each such type is called a **service model** [[jp:サービスモデル]]. A setup where a company places its information systems in facilities it owns and manages, and runs them itself, is called **on-premises** [[jp:オンプレミス]].",
+      "analogy_jp": "井戸を掘って自前で水をくむ代わりに水道を引き、蛇口をひねった分だけ料金を払う関係に似ている。",
+      "analogy_zh": "就像不自己打井取水，而是接通自来水，拧开水龙头用了多少就付多少钱。",
+      "analogy_en": "It is like hooking up to the water mains instead of digging your own well, then paying for however much comes out of the tap.",
+      "hook_jp": "cloud は「雲」。ネットワーク図でインターネットの向こう側を雲の形で描いてきた習慣から、中身の場所を気にせず使う形態の名前になった。",
+      "hook_zh": "cloud 意为「云」。过去画网络图时习惯把互联网那一端画成一朵云，于是它成了不必在意内部位置、直接拿来用的形态的名字。",
+      "hook_en": "Network diagrams have long drawn the internet side as a cloud shape, so \"cloud\" became the name for using resources without caring where they actually sit.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**クラウドコンピューティング**は、コンピュータ資源を事業者が用意して利用者に使わせるという、資源の提供と利用の形態を指す言葉である。",
+          "text_zh": "**云计算**[[jp:クラウドコンピューティング]]指的是一种资源提供与使用的形态：由服务商准备计算机资源，供使用者使用。",
+          "text_en": "**Cloud computing** [[jp:クラウドコンピューティング]] names a model for providing and using resources, in which a provider prepares computer resources and lets users work with them.",
+          "qids": [
+            "2018h30a-q009"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "利用者は資源の置き場所を意識せずにネットワーク越しに使い、必要になった時点で確保して、使う量を後から増減できる。",
+          "text_zh": "使用者无需在意资源放在哪里，通过网络使用即可；需要时再取得资源，之后还能增减用量。",
+          "text_en": "Users reach the resources over the network without caring where they are located, obtain them at the moment they are needed, and can scale the amount up or down later.",
+          "qids": [
+            "2021r03-q005",
+            "2015h27h-q020"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "**オンプレミス**は自社の設備に情報システムを置いて自ら運用する形態であり、事業者の資源を借りて使う形態とは設備の持ち主で分かれる。",
+          "text_zh": "**本地部署**[[jp:オンプレミス]]是把信息系统放在本公司设施里自行运营的形态；它和租用服务商资源的使用形态，区别在于设施归谁所有。",
+          "text_en": "**On-premises** [[jp:オンプレミス]] means keeping information systems in your own facilities and running them yourself; what separates it from renting a provider's resources is who owns the equipment.",
+          "qids": [
+            "2019h31h-q030"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "compare",
+        "mode": "static",
+        "data": {
+          "a": {
+            "jp": "オンプレミス",
+            "zh": "本地部署",
+            "en": "On-premises"
+          },
+          "b": {
+            "jp": "事業者のクラウドを借りる",
+            "zh": "租用服务商的云",
+            "en": "Renting a provider's cloud"
+          },
+          "rows": [
+            {
+              "label": {
+                "jp": "設備の持ち主",
+                "zh": "设施归谁所有",
+                "en": "Owner of the equipment"
+              },
+              "a": {
+                "jp": "自社",
+                "zh": "本公司",
+                "en": "Your company"
+              },
+              "b": {
+                "jp": "サービス事業者",
+                "zh": "服务商",
+                "en": "Service provider"
+              }
+            },
+            {
+              "label": {
+                "jp": "始めるときの費用",
+                "zh": "起步时的费用",
+                "en": "Cost to get started"
+              },
+              "a": {
+                "jp": "機器の購入や設置が先に要る",
+                "zh": "要先购买和安装设备",
+                "en": "Equipment must be bought and installed first"
+              },
+              "b": {
+                "jp": "機器を買わずに始められる",
+                "zh": "不买设备也能开始",
+                "en": "You can start without buying equipment"
+              }
+            },
+            {
+              "label": {
+                "jp": "料金の考え方",
+                "zh": "费用的思路",
+                "en": "How charges work"
+              },
+              "a": {
+                "jp": "保有する設備の費用がかかり続ける",
+                "zh": "持有设施的费用一直发生",
+                "en": "Costs of owned equipment keep running"
+              },
+              "b": {
+                "jp": "使った量や期間に応じて払う",
+                "zh": "按使用量或时长付费",
+                "en": "Pay by amount or period of use"
+              }
+            },
+            {
+              "label": {
+                "jp": "能力を増減するとき",
+                "zh": "增减能力时",
+                "en": "Changing capacity"
+              },
+              "a": {
+                "jp": "機器を追加したり撤去したりする",
+                "zh": "增加或撤掉设备",
+                "en": "Add or remove equipment"
+              },
+              "b": {
+                "jp": "契約や設定の変更で増減する",
+                "zh": "改合同或设置即可增减",
+                "en": "Change the contract or settings"
+              },
+              "key": true
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2018h30a-q009",
+        "2021r03-q005",
+        "2019h31h-q030"
+      ],
+      "definition_jp": "クラウドコンピューティングは、サーバやソフトウェアなどの IT 資源を、ネットワークの向こう側 (多くは事業者の設備) に用意されたものから必要なときに必要な量だけ使う利用形態である。",
+      "definition_zh": "云计算クラウドコンピューティング是一种使用形态：服务器、软件等 IT 资源准备在网络另一端（多数是服务商的设施），使用者在需要时只取用所需的量。",
+      "definition_en": "Cloud computing クラウドコンピューティング is a way of using IT resources such as servers and software that are set up across the network (usually in a provider's facilities), drawing on them only when you need them and only as much as you need.",
+      "explanation_jp": "料金は使った量や期間に応じて払う形が多く、機器を買いそろえる初期費用を抑えやすい。事業者がどの層まで用意するかによって提供の型が分かれ、この型をサービスモデルと呼ぶ。なお、情報システムを自社で保有・管理する設備に置いて自ら運用する形態はオンプレミスと呼ぶ。",
+      "explanation_zh": "费用大多按使用量或使用时长支付，容易压低购置设备的初期投入。按服务商准备到哪一层来区分，提供方式分成几种类型，这种类型称为服务模型サービスモデル。另外，把信息系统放在本公司持有和管理的设施里、由自己运营的形态称为本地部署オンプレミス。",
+      "explanation_en": "Charges are usually based on how much or how long you use the service, which makes it easier to keep the up-front cost of buying equipment low. Offerings are grouped by how many layers the provider supplies, and each such type is called a service model サービスモデル. A setup where a company places its information systems in facilities it owns and manages, and runs them itself, is called on-premises オンプレミス.",
+      "memory_hook_jp": "cloud は「雲」。ネットワーク図でインターネットの向こう側を雲の形で描いてきた習慣から、中身の場所を気にせず使う形態の名前になった。",
+      "memory_hook_zh": "cloud 意为「云」。过去画网络图时习惯把互联网那一端画成一朵云，于是它成了不必在意内部位置、直接拿来用的形态的名字。",
+      "memory_hook_en": "Network diagrams have long drawn the internet side as a cloud shape, so \"cloud\" became the name for using resources without caring where they actually sit.",
+      "inline_quiz": [
+        "2018h30a-q009",
+        "2021r03-q005",
+        "2019h31h-q030"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "SaaS",
+      "term_zh": "SaaS",
+      "term_en": "SaaS",
+      "one_jp": "**SaaS** (Software as a Service) は、事業者のサーバで動く**アプリケーションソフトウェア**の機能を、利用者がネットワーク越しに借りて使う形態である。",
+      "one_zh": "**SaaS**（Software as a Service）是使用者通过网络租用在服务商服务器上运行的**应用软件**[[jp:アプリケーションソフトウェア]]功能的形态。",
+      "one_en": "**SaaS** (Software as a Service) is a model in which users rent, over the network, the functions of **application software** [[jp:アプリケーションソフトウェア]] running on a provider's servers.",
+      "detail_jp": "ソフトウェアの導入や更新、それを動かすサーバの管理は事業者が受け持ち、利用者はブラウザなどから機能を呼び出すだけでよい。同じソフトウェアを多くの利用企業が共同で使い、各社は利用量や期間に応じて料金を払う。",
+      "detail_zh": "软件的安装和更新、运行它的服务器的管理都由服务商负责，使用者只需在浏览器等界面中调用功能。同一套软件由许多企业共同使用，各公司按使用量或使用时长付费。",
+      "detail_en": "The provider takes care of installing and updating the software and managing the servers it runs on, so users only need to call up its functions from a browser or similar. Many client companies share the same software, and each pays according to how much or how long it uses it.",
+      "analogy_jp": "映画のディスクを買いそろえる代わりに動画配信に加入し、見たい作品をその都度再生するようなもの。",
+      "analogy_zh": "就像不去买一张张电影光盘，而是订阅视频平台，想看哪部就随时播放。",
+      "analogy_en": "It is like subscribing to a streaming service instead of buying a shelf of movie discs, and playing whatever you want whenever you want.",
+      "hook_jp": "頭の S は Software。売り物がソフトそのものなので、利用者の手元に残る仕事は「使う」ことだけになる。",
+      "hook_zh": "开头的 S 是 Software。卖的就是软件本身，所以留给使用者的事只剩下「用」。",
+      "hook_en": "The leading S stands for Software. Since the product is the software itself, the only job left for the user is to use it.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**SaaS** はアプリケーションの層まで事業者が用意するサービスモデルであり、利用者は業務に使うソフトウェアを自前で開発も導入もしない。",
+          "text_zh": "**SaaS** 是服务商一直准备到应用程序这一层的服务模型，使用者既不用自己开发、也不用自己安装业务所需的软件。",
+          "text_en": "**SaaS** is the service model in which the provider supplies everything up to the application layer, so users neither develop nor install the business software themselves.",
+          "qids": [
+            "2017h29a-q011",
+            "2015h27a-q005"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2009h21h-q006",
+        "2017h29a-q011",
+        "2015h27h-q020"
+      ],
+      "definition_jp": "SaaS (Software as a Service) は、事業者のサーバで動くアプリケーションソフトウェアの機能を、利用者がネットワーク越しに借りて使う形態である。",
+      "definition_zh": "SaaS（Software as a Service）是使用者通过网络租用在服务商服务器上运行的应用软件アプリケーションソフトウェア功能的形态。",
+      "definition_en": "SaaS (Software as a Service) is a model in which users rent, over the network, the functions of application software アプリケーションソフトウェア running on a provider's servers.",
+      "explanation_jp": "ソフトウェアの導入や更新、それを動かすサーバの管理は事業者が受け持ち、利用者はブラウザなどから機能を呼び出すだけでよい。同じソフトウェアを多くの利用企業が共同で使い、各社は利用量や期間に応じて料金を払う。",
+      "explanation_zh": "软件的安装和更新、运行它的服务器的管理都由服务商负责，使用者只需在浏览器等界面中调用功能。同一套软件由许多企业共同使用，各公司按使用量或使用时长付费。",
+      "explanation_en": "The provider takes care of installing and updating the software and managing the servers it runs on, so users only need to call up its functions from a browser or similar. Many client companies share the same software, and each pays according to how much or how long it uses it.",
+      "memory_hook_jp": "頭の S は Software。売り物がソフトそのものなので、利用者の手元に残る仕事は「使う」ことだけになる。",
+      "memory_hook_zh": "开头的 S 是 Software。卖的就是软件本身，所以留给使用者的事只剩下「用」。",
+      "memory_hook_en": "The leading S stands for Software. Since the product is the software itself, the only job left for the user is to use it.",
+      "inline_quiz": [
+        "2009h21h-q006",
+        "2017h29a-q011",
+        "2015h27h-q020"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "PaaS",
+      "term_zh": "PaaS",
+      "term_en": "PaaS",
+      "one_jp": "**PaaS** (Platform as a Service) は、アプリケーションを開発して動かすための**基盤** (プラットフォーム) を、事業者がネットワーク越しに提供する形態である。",
+      "one_zh": "**PaaS**（Platform as a Service）是服务商通过网络提供开发和运行应用程序所需**平台**[[jp:基盤]]的形态。",
+      "one_en": "**PaaS** (Platform as a Service) is a model in which a provider offers, over the network, the **platform** [[jp:基盤]] for building and running applications.",
+      "detail_jp": "基盤には OS や、データベース管理システムのように OS とアプリケーションの間で働く**ミドルウェア**が含まれ、それらを動かすサーバも事業者が用意する。利用者はその上で自社のアプリケーションを作って動かし、基盤の保守や更新は事業者に任せられる。",
+      "detail_zh": "平台包括操作系统，以及像数据库管理系统那样在操作系统和应用程序之间工作的**中间件**[[jp:ミドルウェア]]，运行它们的服务器也由服务商准备。使用者在其上开发并运行本公司的应用程序，平台的维护和更新可以交给服务商。",
+      "detail_en": "The platform includes the OS and **middleware** [[jp:ミドルウェア]], software such as a database management system that works between the OS and applications, and the provider also supplies the servers they run on. Users build and run their own applications on top, leaving maintenance and updates of the platform to the provider.",
+      "analogy_jp": "調理器具とコンロがそろった貸しキッチンを借り、自分のレシピで料理を作るようなもの。",
+      "analogy_zh": "就像租一间厨具和灶台都已备齐的出租厨房，按自己的菜谱做菜。",
+      "analogy_en": "It is like renting a kitchen already fitted with cookware and a stove, then cooking from your own recipes.",
+      "hook_jp": "P は Platform、駅のホームの「プラットホーム」と同じ語。ホームは鉄道会社が整え、そこから走らせる電車 (アプリ) は利用者が用意する。",
+      "hook_zh": "P 是 Platform，在英语里和车站的「站台」（platform）是同一个词。站台由铁路公司修好，从那里开出的列车（应用）由使用者自己准备。",
+      "hook_en": "P stands for Platform, the same word as a railway platform. The railway company builds the platform, while the trains that leave from it (the apps) are the user's own.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**SaaS** は出来上がったアプリケーションをそのまま使い、**PaaS** は自社のアプリケーションを載せる基盤を借りる。両者はアプリケーションを用意するのが事業者か利用者かで分かれる。",
+          "text_zh": "**SaaS** 直接使用现成的应用程序，**PaaS** 则是租用搭载本公司应用程序的平台。两者的区别在于应用程序由服务商还是使用者来准备。",
+          "text_en": "**SaaS** lets you use a finished application as it is, while **PaaS** rents the platform on which you place your own applications. The two differ in whether the provider or the user supplies the application.",
+          "qids": [
+            "2017h29a-q011",
+            "2015h27a-q005"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2015h27a-q005",
+        "2017h29a-q011"
+      ],
+      "definition_jp": "PaaS (Platform as a Service) は、アプリケーションを開発して動かすための基盤 (プラットフォーム) を、事業者がネットワーク越しに提供する形態である。",
+      "definition_zh": "PaaS（Platform as a Service）是服务商通过网络提供开发和运行应用程序所需平台基盤的形态。",
+      "definition_en": "PaaS (Platform as a Service) is a model in which a provider offers, over the network, the platform 基盤 for building and running applications.",
+      "explanation_jp": "基盤には OS や、データベース管理システムのように OS とアプリケーションの間で働くミドルウェアが含まれ、それらを動かすサーバも事業者が用意する。利用者はその上で自社のアプリケーションを作って動かし、基盤の保守や更新は事業者に任せられる。",
+      "explanation_zh": "平台包括操作系统，以及像数据库管理系统那样在操作系统和应用程序之间工作的中间件ミドルウェア，运行它们的服务器也由服务商准备。使用者在其上开发并运行本公司的应用程序，平台的维护和更新可以交给服务商。",
+      "explanation_en": "The platform includes the OS and middleware ミドルウェア, software such as a database management system that works between the OS and applications, and the provider also supplies the servers they run on. Users build and run their own applications on top, leaving maintenance and updates of the platform to the provider.",
+      "memory_hook_jp": "P は Platform、駅のホームの「プラットホーム」と同じ語。ホームは鉄道会社が整え、そこから走らせる電車 (アプリ) は利用者が用意する。",
+      "memory_hook_zh": "P 是 Platform，在英语里和车站的「站台」（platform）是同一个词。站台由铁路公司修好，从那里开出的列车（应用）由使用者自己准备。",
+      "memory_hook_en": "P stands for Platform, the same word as a railway platform. The railway company builds the platform, while the trains that leave from it (the apps) are the user's own.",
+      "inline_quiz": [
+        "2015h27a-q005",
+        "2017h29a-q011"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "IaaS",
+      "term_zh": "IaaS",
+      "term_en": "IaaS",
+      "one_jp": "**IaaS** (Infrastructure as a Service) は、サーバの処理能力や記憶装置 (ストレージ)、回線といった**ハードウェア資源**を、事業者がネットワーク越しに提供する形態である。",
+      "one_zh": "**IaaS**（Infrastructure as a Service）是服务商通过网络提供服务器处理能力、存储设备、线路等**硬件资源**[[jp:ハードウェア資源]]的形态。",
+      "one_en": "**IaaS** (Infrastructure as a Service) is a model in which a provider offers, over the network, **hardware resources** [[jp:ハードウェア資源]] such as server processing power, storage and network lines.",
+      "detail_jp": "利用者は必要な台数や容量を選んで借り、その上に OS から上のソフトウェアを自分で導入して管理する。構成を自由に決められる分、運用の手間も利用者の側に多く残る。",
+      "detail_zh": "使用者选好所需的台数和容量后租用，再自己在上面安装和管理操作系统及以上的软件。配置可以自由决定，相应地，运维的工作也更多地留在使用者一方。",
+      "detail_en": "Users choose and rent the number of machines and the capacity they need, then install and manage the software from the OS up on their own. They are free to decide the configuration, but in exchange more of the operating work stays on their side.",
+      "analogy_jp": "柱と壁だけが仕上がった建物を借り、内装や家具は自分でそろえるようなもの。",
+      "analogy_zh": "就像租下一栋只完成了梁柱和墙壁的房子，内部装修和家具由自己置办。",
+      "analogy_en": "It is like renting a building where only the frame and walls are finished, and fitting out the interior and furniture yourself.",
+      "hook_jp": "I は Infrastructure、道路や水道のような「下支え」の意味。サービスモデルの層の一番下を指す。",
+      "hook_zh": "I 是 Infrastructure，意思是像道路、自来水那样「在底下支撑」的东西，指服务模型各层中最底下的一层。",
+      "hook_en": "I stands for Infrastructure, the things like roads and water mains that hold everything up from below. It points to the bottom layer of the service models.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**PaaS** では OS やミドルウェアまで事業者が用意し、**IaaS** ではハードウェア資源までを事業者が用意して OS から上を利用者が整える。",
+          "text_zh": "**PaaS** 由服务商准备到操作系统和中间件，**IaaS** 则只准备到硬件资源，操作系统及以上由使用者自己搭建。",
+          "text_en": "With **PaaS** the provider supplies everything up to the OS and middleware, while with **IaaS** it supplies only the hardware resources and the user sets up everything from the OS up.",
+          "qids": []
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "層",
+              "zh": "层",
+              "en": "Layer"
+            },
+            {
+              "jp": "IaaS",
+              "zh": "IaaS",
+              "en": "IaaS"
+            },
+            {
+              "jp": "PaaS",
+              "zh": "PaaS",
+              "en": "PaaS"
+            },
+            {
+              "jp": "SaaS",
+              "zh": "SaaS",
+              "en": "SaaS"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "アプリケーション",
+                  "zh": "应用程序",
+                  "en": "Application"
+                },
+                {
+                  "jp": "利用者",
+                  "zh": "使用者",
+                  "en": "User"
+                },
+                {
+                  "jp": "利用者",
+                  "zh": "使用者",
+                  "en": "User"
+                },
+                {
+                  "jp": "事業者",
+                  "zh": "服务商",
+                  "en": "Provider"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "OS・ミドルウェア",
+                  "zh": "操作系统、中间件",
+                  "en": "OS and middleware"
+                },
+                {
+                  "jp": "利用者",
+                  "zh": "使用者",
+                  "en": "User"
+                },
+                {
+                  "jp": "事業者",
+                  "zh": "服务商",
+                  "en": "Provider"
+                },
+                {
+                  "jp": "事業者",
+                  "zh": "服务商",
+                  "en": "Provider"
+                }
+              ],
+              "key": true
+            },
+            {
+              "cells": [
+                {
+                  "jp": "サーバ・ストレージ・回線",
+                  "zh": "服务器、存储、线路",
+                  "en": "Servers, storage, lines"
+                },
+                {
+                  "jp": "事業者",
+                  "zh": "服务商",
+                  "en": "Provider"
+                },
+                {
+                  "jp": "事業者",
+                  "zh": "服务商",
+                  "en": "Provider"
+                },
+                {
+                  "jp": "事業者",
+                  "zh": "服务商",
+                  "en": "Provider"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2017h29a-q011",
+        "2015h27a-q005"
+      ],
+      "definition_jp": "IaaS (Infrastructure as a Service) は、サーバの処理能力や記憶装置 (ストレージ)、回線といったハードウェア資源を、事業者がネットワーク越しに提供する形態である。",
+      "definition_zh": "IaaS（Infrastructure as a Service）是服务商通过网络提供服务器处理能力、存储设备、线路等硬件资源ハードウェア資源的形态。",
+      "definition_en": "IaaS (Infrastructure as a Service) is a model in which a provider offers, over the network, hardware resources ハードウェア資源 such as server processing power, storage and network lines.",
+      "explanation_jp": "利用者は必要な台数や容量を選んで借り、その上に OS から上のソフトウェアを自分で導入して管理する。構成を自由に決められる分、運用の手間も利用者の側に多く残る。",
+      "explanation_zh": "使用者选好所需的台数和容量后租用，再自己在上面安装和管理操作系统及以上的软件。配置可以自由决定，相应地，运维的工作也更多地留在使用者一方。",
+      "explanation_en": "Users choose and rent the number of machines and the capacity they need, then install and manage the software from the OS up on their own. They are free to decide the configuration, but in exchange more of the operating work stays on their side.",
+      "memory_hook_jp": "I は Infrastructure、道路や水道のような「下支え」の意味。サービスモデルの層の一番下を指す。",
+      "memory_hook_zh": "I 是 Infrastructure，意思是像道路、自来水那样「在底下支撑」的东西，指服务模型各层中最底下的一层。",
+      "memory_hook_en": "I stands for Infrastructure, the things like roads and water mains that hold everything up from below. It points to the bottom layer of the service models.",
+      "inline_quiz": [
+        "2017h29a-q011",
+        "2015h27a-q005"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "DaaS",
+      "term_zh": "DaaS",
+      "term_en": "DaaS",
+      "one_jp": "**DaaS** (Desktop as a Service) は、OS やアプリケーション、データを含むパソコンの**デスクトップ環境**をクラウド上のサーバで動かし、ネットワーク越しに利用者の端末へ届ける形態である。",
+      "one_zh": "**DaaS**（Desktop as a Service）是把包含操作系统、应用程序和数据在内的电脑**桌面环境**[[jp:デスクトップ環境]]放在云端服务器上运行，再通过网络送到使用者终端的形态。",
+      "one_en": "**DaaS** (Desktop as a Service) is a model that runs a PC's **desktop environment** [[jp:デスクトップ環境]], including the OS, applications and data, on a cloud server and delivers it over the network to the user's device.",
+      "detail_jp": "処理とデータの保存はサーバ側で行われ、端末は画面の表示と、キーボードやマウスの操作をサーバへ送る役を受け持つ。端末にデータを残さずに済むため、端末をなくしたときの情報漏えいを抑えやすく、別の端末からでも同じ環境を呼び出せる。",
+      "detail_zh": "处理和数据保存都在服务器一侧进行，终端负责显示画面，并把键盘和鼠标的操作发送给服务器。终端上不必留存数据，因此容易抑制终端丢失时的信息泄露，换一台终端也能调出同一个环境。",
+      "detail_en": "Processing and data storage happen on the server, while the device shows the screen and sends keyboard and mouse input to the server. Because no data needs to stay on the device, losing it is less likely to leak information, and the same environment can be called up from another device.",
+      "analogy_jp": "自分の書斎を遠くの建物に置いたまま、どこにいても窓越しにその書斎の机で作業するようなもの。",
+      "analogy_zh": "就像把自己的书房留在远处的楼里，人在哪里都能隔着窗户在那间书房的书桌上干活。",
+      "analogy_en": "It is like leaving your study in a distant building and, wherever you are, working at its desk through a window.",
+      "hook_jp": "D は Desktop。届くのはアプリ 1 本ではなく、机の上一式である。",
+      "hook_zh": "D 是 Desktop。送过来的不是一个应用，而是整张桌面上的一切。",
+      "hook_en": "D stands for Desktop. What arrives is not a single app but everything on top of the desk.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "DaaS (Desktop as a Service) は、OS やアプリケーション、データを含むパソコンのデスクトップ環境をクラウド上のサーバで動かし、ネットワーク越しに利用者の端末へ届ける形態である。",
+      "definition_zh": "DaaS（Desktop as a Service）是把包含操作系统、应用程序和数据在内的电脑桌面环境デスクトップ環境放在云端服务器上运行，再通过网络送到使用者终端的形态。",
+      "definition_en": "DaaS (Desktop as a Service) is a model that runs a PC's desktop environment デスクトップ環境, including the OS, applications and data, on a cloud server and delivers it over the network to the user's device.",
+      "explanation_jp": "処理とデータの保存はサーバ側で行われ、端末は画面の表示と、キーボードやマウスの操作をサーバへ送る役を受け持つ。端末にデータを残さずに済むため、端末をなくしたときの情報漏えいを抑えやすく、別の端末からでも同じ環境を呼び出せる。",
+      "explanation_zh": "处理和数据保存都在服务器一侧进行，终端负责显示画面，并把键盘和鼠标的操作发送给服务器。终端上不必留存数据，因此容易抑制终端丢失时的信息泄露，换一台终端也能调出同一个环境。",
+      "explanation_en": "Processing and data storage happen on the server, while the device shows the screen and sends keyboard and mouse input to the server. Because no data needs to stay on the device, losing it is less likely to leak information, and the same environment can be called up from another device.",
+      "memory_hook_jp": "D は Desktop。届くのはアプリ 1 本ではなく、机の上一式である。",
+      "memory_hook_zh": "D 是 Desktop。送过来的不是一个应用，而是整张桌面上的一切。",
+      "memory_hook_en": "D stands for Desktop. What arrives is not a single app but everything on top of the desk.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    }
+  ],
+  "pairs": [
+    {
+      "a": "SaaS",
+      "b": "PaaS",
+      "rows": [
+        {
+          "label_jp": "アプリケーションを用意するのは",
+          "label_zh": "准备应用程序的一方",
+          "label_en": "Who supplies the application",
+          "a_jp": "事業者",
+          "a_zh": "服务商",
+          "a_en": "Provider",
+          "b_jp": "利用者",
+          "b_zh": "使用者",
+          "b_en": "User",
+          "key": true
+        },
+        {
+          "label_jp": "利用者の主な作業",
+          "label_zh": "使用者的主要工作",
+          "label_en": "Main work for the user",
+          "a_jp": "機能を使い、業務データを入れる",
+          "a_zh": "使用功能、录入业务数据",
+          "a_en": "Use the features and enter business data",
+          "b_jp": "自社のアプリケーションを開発して動かす",
+          "b_zh": "开发并运行本公司的应用程序",
+          "b_en": "Build and run the company's own applications",
+          "key": false
+        },
+        {
+          "label_jp": "主な使い手",
+          "label_zh": "主要使用者",
+          "label_en": "Typical users",
+          "a_jp": "業務の担当者",
+          "a_zh": "业务人员",
+          "a_en": "Business staff",
+          "b_jp": "アプリケーションの開発者",
+          "b_zh": "应用程序开发者",
+          "b_en": "Application developers",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "PaaS",
+      "b": "IaaS",
+      "rows": [
+        {
+          "label_jp": "事業者が用意する範囲",
+          "label_zh": "服务商准备的范围",
+          "label_en": "What the provider supplies",
+          "a_jp": "ハードウェアと OS・ミドルウェア",
+          "a_zh": "硬件以及操作系统、中间件",
+          "a_en": "Hardware, the OS and middleware",
+          "b_jp": "ハードウェア資源まで",
+          "b_zh": "只到硬件资源为止",
+          "b_en": "Hardware resources only",
+          "key": true
+        },
+        {
+          "label_jp": "OS の管理",
+          "label_zh": "操作系统的管理",
+          "label_en": "Managing the OS",
+          "a_jp": "事業者",
+          "a_zh": "服务商",
+          "a_en": "Provider",
+          "b_jp": "利用者",
+          "b_zh": "使用者",
+          "b_en": "User",
+          "key": false
+        },
+        {
+          "label_jp": "構成の自由度",
+          "label_zh": "配置的自由度",
+          "label_en": "Freedom of configuration",
+          "a_jp": "用意された基盤の範囲内で決める",
+          "a_zh": "在既有平台的范围内决定",
+          "a_en": "Decided within the platform provided",
+          "b_jp": "OS から選んで組める",
+          "b_zh": "可从操作系统开始自选组合",
+          "b_en": "Can be built up from your choice of OS",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**クラウドコンピューティング**では IT 資源をネットワーク越しに使い、事業者から借りる場合は機器を自社で持たずに済み、使う量も後から増減できる。",
+    "サービスモデルは事業者がどの層まで用意するかで分かれ、用意される範囲が狭いほど利用者が自分で管理する範囲は広がる。",
+    "**DaaS** は端末にデータを残さずにデスクトップ環境を使えるので、端末の紛失に伴う情報漏えいを抑えやすい。"
+  ],
+  "key_points_zh": [
+    "**云计算**[[jp:クラウドコンピューティング]]通过网络使用 IT 资源；向服务商租用时不必自己持有设备，用量之后也能增减。",
+    "服务模型按服务商准备到哪一层来区分，准备的范围越窄，使用者自己管理的范围就越宽。",
+    "**DaaS** 不在终端上留存数据就能使用桌面环境，因此容易抑制终端丢失带来的信息泄露。"
+  ],
+  "key_points_en": [
+    "With **cloud computing** [[jp:クラウドコンピューティング]], you use IT resources over the network; when you rent them from a provider you need not own the equipment, and you can change the amount you use later.",
+    "Service models differ in how many layers the provider supplies, and the less the provider supplies, the more the user has to manage.",
+    "**DaaS** lets you use a desktop environment without keeping data on the device, which helps prevent information leaks when a device is lost."
+  ],
+  "overview": {
+    "intro_jp": "事業者から借りるクラウドコンピューティングとオンプレミスを、資源の持ち主と料金の払い方で見分けられる。サービスモデルごとに、事業者が用意する範囲と利用者が受け持つ範囲を説明できる。DaaS で端末に残る役割と、その利点を説明できる。",
+    "intro_zh": "能根据资源归谁所有、费用怎么付，分清向服务商租用的云计算クラウドコンピューティング和本地部署オンプレミス。能针对每种服务模型，说明哪些部分由服务商准备、哪些部分由使用者自己负责。能说明在 DaaS 中终端还留有什么作用，以及这样做的好处。",
+    "intro_en": "Tell cloud computing クラウドコンピューティング rented from a provider and on-premises オンプレミス apart by who owns the resources and how they are paid for. Explain, for each service model, what the provider supplies and what is left for the user to handle. Explain what role the device still plays in DaaS and what advantage that brings.",
+    "freq_badge": "低頻",
+    "est_minutes": 29
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "クラウドコンピューティング: クラウドコンピューティングといえばIT資源をインターネット経由で必要な分だけ利用",
-      "SaaS: SaaSといえば完成済みソフトをそのまま使えるアプリ層のサービス",
-      "PaaS: PaaSといえばアプリ開発の基盤を提供するプラットフォーム層",
-      "IaaS: IaaSといえばサーバなど基盤設備だけを提供する最下層インフラ",
-      "DaaS: DaaSといえばデスクトップ環境をまるごとクラウドから提供"
-    ],
     "key_points_jp": [
-      "クラウドコンピューティングはIT資源をインターネット経由で必要なだけ利用する形態で、SaaS/PaaS/IaaS/DaaSすべての土台となる上位概念。",
-      "SaaSは完成済みソフトを使う最上位のアプリ層を提供し、本topicで最頻出。利用者は開発もインフラ管理も不要。",
-      "PaaSはアプリ開発・実行の基盤(プラットフォーム層)を提供し、SaaSとIaaSの中間に位置する開発者向けサービス。",
-      "IaaSはサーバなどの基盤設備だけ(最下層インフラ)を提供し、提供範囲が最も狭く利用者の管理範囲が最も広い。",
-      "SaaS→PaaS→IaaSは『どの層まで提供するか』の階層関係で覚え、DaaSはデスクトップ提供という派生形として区別する。"
+      "クラウドコンピューティングでは IT 資源をネットワーク越しに使い、事業者から借りる場合は機器を自社で持たずに済み、使う量も後から増減できる。",
+      "サービスモデルは事業者がどの層まで用意するかで分かれ、用意される範囲が狭いほど利用者が自分で管理する範囲は広がる。",
+      "DaaS は端末にデータを残さずにデスクトップ環境を使えるので、端末の紛失に伴う情報漏えいを抑えやすい。"
     ],
     "key_points_zh": [
-      "云计算是通过互联网按需使用所需数量 IT 资源的形态，是 SaaS／PaaS／IaaS／DaaS 全部的基础，属上位概念。",
-      "SaaS 提供使用现成软件的最上层应用层，是本 topic 中出题最频繁的；使用者既不需开发也不需管理基础设施。",
-      "PaaS 提供应用开发与运行的平台（平台层），位于 SaaS 与 IaaS 之间，是面向开发者的服务。",
-      "IaaS 只提供服务器等基础设备（最底层基础设施），提供范围最窄，使用者的管理范围最广。",
-      "SaaS→PaaS→IaaS 按「提供到哪一层」的层级关系来记，DaaS 则作为提供桌面的派生形态来区分。"
+      "云计算クラウドコンピューティング通过网络使用 IT 资源；向服务商租用时不必自己持有设备，用量之后也能增减。",
+      "服务模型按服务商准备到哪一层来区分，准备的范围越窄，使用者自己管理的范围就越宽。",
+      "DaaS 不在终端上留存数据就能使用桌面环境，因此容易抑制终端丢失带来的信息泄露。"
     ],
     "key_points_en": [
-      "Cloud computing is a way of using just as much IT resource as you need over the internet, and is the higher-level concept that serves as the foundation for all of SaaS/PaaS/IaaS/DaaS.",
-      "SaaS provides the topmost application layer where you use ready-made software, and is the most frequently tested in this topic; the user needs neither development nor infrastructure management.",
-      "PaaS provides the platform for developing and running applications (the platform layer), sits between SaaS and IaaS, and is a service for developers.",
-      "IaaS provides only foundational equipment such as servers (the bottommost infrastructure), with the narrowest scope of provision and the widest range the user must manage.",
-      "Remember SaaS→PaaS→IaaS as a layered relationship of \"up to which layer is provided,\" and distinguish DaaS as a derived form that provides the desktop."
+      "With cloud computing クラウドコンピューティング, you use IT resources over the network; when you rent them from a provider you need not own the equipment, and you can change the amount you use later.",
+      "Service models differ in how many layers the provider supplies, and the less the provider supplies, the more the user has to manage.",
+      "DaaS lets you use a desktop environment without keeping data on the device, which helps prevent information leaks when a device is lost."
+    ],
+    "memory_hooks_jp": [
+      "クラウドコンピューティング: cloud は「雲」。ネットワーク図でインターネットの向こう側を雲の形で描いてきた習慣から、中身の場所を気にせず使う形態の名前になった。",
+      "SaaS: 頭の S は Software。売り物がソフトそのものなので、利用者の手元に残る仕事は「使う」ことだけになる。",
+      "PaaS: P は Platform、駅のホームの「プラットホーム」と同じ語。ホームは鉄道会社が整え、そこから走らせる電車 (アプリ) は利用者が用意する。",
+      "IaaS: I は Infrastructure、道路や水道のような「下支え」の意味。サービスモデルの層の一番下を指す。",
+      "DaaS: D は Desktop。届くのはアプリ 1 本ではなく、机の上一式である。"
     ],
     "memory_hooks_zh": [
-      "云计算：说到云计算，就是通过互联网按需使用所需数量的 IT 资源",
-      "SaaS：说到 SaaS，就是可以直接使用现成软件的应用层服务",
-      "PaaS：说到 PaaS，就是提供应用开发平台的平台层",
-      "IaaS：说到 IaaS，就是只提供服务器等基础设备的最底层基础设施",
-      "DaaS：说到 DaaS，就是把桌面环境整个从云端提供出来"
+      "云计算：cloud 意为「云」。过去画网络图时习惯把互联网那一端画成一朵云，于是它成了不必在意内部位置、直接拿来用的形态的名字。",
+      "SaaS：开头的 S 是 Software。卖的就是软件本身，所以留给使用者的事只剩下「用」。",
+      "PaaS：P 是 Platform，在英语里和车站的「站台」（platform）是同一个词。站台由铁路公司修好，从那里开出的列车（应用）由使用者自己准备。",
+      "IaaS：I 是 Infrastructure，意思是像道路、自来水那样「在底下支撑」的东西，指服务模型各层中最底下的一层。",
+      "DaaS：D 是 Desktop。送过来的不是一个应用，而是整张桌面上的一切。"
     ],
     "memory_hooks_en": [
-      "Cloud computing: cloud computing → using just as much IT resource as you need over the internet",
-      "SaaS: SaaS → an application-layer service where you use ready-made software as-is",
-      "PaaS: PaaS → the platform layer that provides a foundation for app development",
-      "IaaS: IaaS → the bottommost infrastructure layer that provides only foundational equipment such as servers",
-      "DaaS: DaaS → providing the whole desktop environment from the cloud"
+      "Cloud Computing: Network diagrams have long drawn the internet side as a cloud shape, so \"cloud\" became the name for using resources without caring where they actually sit.",
+      "SaaS: The leading S stands for Software. Since the product is the software itself, the only job left for the user is to use it.",
+      "PaaS: P stands for Platform, the same word as a railway platform. The railway company builds the platform, while the trains that leave from it (the apps) are the user's own.",
+      "IaaS: I stands for Infrastructure, the things like roads and water mains that hold everything up from below. It points to the bottom layer of the service models.",
+      "DaaS: D stands for Desktop. What arrives is not a single app but everything on top of the desk."
     ]
   },
   "challenge_questions": [
-    "2012h24h-q026",
+    "2021r03-q005",
     "2015h27h-q020",
-    "2016h28a-q022",
-    "2016h28h-q006",
-    "2018h30a-q009"
+    "2009h21h-q006",
+    "2017h29a-q011",
+    "2015h27a-q005"
   ],
   "source_figures": [
     {
@@ -204,9 +742,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "云的服务模型（○aaS）",
-  "title_en": "Cloud Service Models (○aaS)",
-  "unit_summary_zh": "学习云计算的基本概念，以及按提供层次划分的 SaaS、PaaS、IaaS、DaaS 这几种服务模型。",
-  "unit_summary_en": "Learn the basic concept of cloud computing and the service models SaaS, PaaS, IaaS, and DaaS, classified by the layer each one provides."
+  }
 }
