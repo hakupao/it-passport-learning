@@ -1,136 +1,541 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-17-48-u01",
   "topic_id": "technology-17-48",
   "category": "technology",
   "title_jp": "オープンソースソフトウェア(OSS)とライセンス",
+  "title_zh": "开源软件(OSS)与许可证",
+  "title_en": "Open Source Software (OSS) and Licenses",
   "unit_summary_jp": "OSS の定義と特徴を理解し、その代表的ライセンス GPL と根幹思想であるコピーレフトを学ぶ。",
+  "unit_summary_zh": "理解 OSS 的定义与特征，并学习其代表性许可证 GPL 以及作为根本思想的 Copyleft(著佐权)。",
+  "unit_summary_en": "Understand the definition and characteristics of OSS, and learn its representative license GPL and its underlying philosophy, copyleft.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本ユニットでは、ソースコードが公開され誰でも自由に利用・改変・再配布できるオープンソースソフトウェア(OSS)の定義と特徴を学びます。さらに代表的ライセンスである GPL と、その根幹思想であるコピーレフトを理解します。OSS は出題頻度こそ低めですが、ライセンス条件の違いは実務でも問われる重要分野です。",
-    "freq_badge": "低頻",
-    "est_minutes": 11,
-    "intro_zh": "在本单元中，你将学习开源软件(OSS)的定义与特征——这类软件公开源代码，任何人都可以自由地使用、修改与再发布。此外，你还将理解其代表性许可证 GPL，以及作为其根本思想的 Copyleft(著佐权)。OSS 在考试中出现的频率虽然偏低，但不同许可证条件的差异在实际工作中也会被问及，是一个重要领域。",
-    "intro_en": "In this unit, you will learn the definition and characteristics of open source software (OSS)—software whose source code is published so that anyone can freely use, modify, and redistribute it. You will also understand its representative license, GPL, and its underlying philosophy, copyleft. OSS appears relatively infrequently on the exam, but differences in license conditions are also asked about in real-world work, making it an important area."
-  },
-  "terms": [
+  "goals_jp": [
+    "**OSS** に認められる自由 (利用・改変・再配布) と、著作権やライセンスとの関係を説明できる。",
+    "**GPL** のプログラムを改変して配るときに、配る人が果たすべきことを説明できる。",
+    "考え方としての **コピーレフト** と、それを条文にしたライセンスである GPL を区別できる。"
+  ],
+  "goals_zh": [
+    "能说明 **开源软件(OSS)** 所允许的自由（使用、修改、再分发）及其与著作权、许可证之间的关系。",
+    "能说明修改 **GPL** 程序并分发时，分发者需要履行的义务。",
+    "能区分作为理念的 **Copyleft(著佐权)** 与把这一理念写成条款的许可证 GPL。"
+  ],
+  "goals_en": [
+    "Explain the freedoms **OSS** grants (use, modification and redistribution) and how they relate to copyright and licenses.",
+    "Explain what a person must do when they modify a **GPL** program and distribute it.",
+    "Tell **copyleft** as an idea apart from GPL, the license that puts that idea into written terms."
+  ],
+  "overview_cols_jp": [
+    "何を指すか",
+    "改変版を配るとき"
+  ],
+  "overview_cols_zh": [
+    "指的是什么",
+    "分发修改版时"
+  ],
+  "overview_cols_en": [
+    "What it is",
+    "When distributing a modified version"
+  ],
+  "overview_rows": [
     {
       "term": "OSS",
-      "definition_jp": "ソースコードが公開され、自由に利用・改変・再配布できるソフトウェア。",
-      "explanation_jp": "OSS(Open Source Software)は、プログラムの設計図にあたるソースコードが公開され、誰でも自由に利用・改変・再配布できるソフトウェアです。Linux、Apache、Firefox などが代表例です。\n\n「無料(フリー)」と混同されがちですが、OSS の本質は価格ではなく「ソースコードが開かれていて改変や再配布の自由が認められている」点にあります。有償サポート付きで提供される OSS もあります。\n\n試験では、誰でも改変・再配布できること、利用にあたってはライセンス条件に従う必要があること、そして「自由=無保証」で原則として作者は動作を保証しない点が問われます。",
-      "analogy_jp": "料理のレシピを完全公開し、誰でも自由に作り変えて配ってよいとした店のようなもの。味の改良も再配布も自由ですが、店が味を保証するわけではありません。",
-      "memory_hook_jp": "OSSといえばソースコード公開で自由に利用・改変・再配布",
-      "inline_quiz": [
-        "2009h21h-q055",
-        "2010h22a-q077"
+      "one_line_jp": "ソースコードが公開され、ライセンスの条件の下で誰でも利用・改変・再配布できるソフトウェア",
+      "one_line_zh": "源代码公开、在许可证条件下任何人都可以使用、修改、再分发的软件",
+      "one_line_en": "Software whose source code is public and that anyone may use, modify and redistribute under its license terms",
+      "extra_jp": [
+        "ソフトウェアの区分",
+        "条件はライセンスごとに異なる"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "开源软件(OSS)",
-      "term_en": "OSS (Open Source Software)",
-      "definition_zh": "公开源代码、可自由使用、修改与再发布的软件。",
-      "definition_en": "Software whose source code is published and which can be freely used, modified, and redistributed.",
-      "explanation_zh": "OSS(Open Source Software，开源软件)是指相当于程序设计图的源代码被公开、任何人都可以自由使用、修改与再发布的软件。Linux、Apache、Firefox 等都是其代表例子。\n\n它常被与「免费(free)」混淆，但 OSS 的本质并不在于价格，而在于「源代码是开放的，并被允许自由修改与再发布」这一点。也存在附带收费支持提供的 OSS。\n\n考试中会考查：任何人都可以修改与再发布；使用时必须遵守许可证条件；以及「自由＝无保证」，即作者原则上不保证其正常运行这一点。",
-      "explanation_en": "OSS (Open Source Software) is software whose source code—the blueprint of the program—is published so that anyone can freely use, modify, and redistribute it. Linux, Apache, and Firefox are representative examples.\n\nIt is often confused with being \"free of charge,\" but the essence of OSS lies not in price but in the fact that \"the source code is open and the freedom to modify and redistribute it is granted.\" There is also OSS provided with paid support.\n\nOn the exam, you are asked about: anyone being able to modify and redistribute it; the need to comply with the license conditions when using it; and the point that \"freedom = no warranty,\" meaning the author in principle does not guarantee its operation.",
-      "analogy_zh": "就像一家把菜谱完全公开、允许任何人自由改编并分发的餐馆。改良口味和再分发都是自由的，但餐馆并不会为味道提供担保。",
-      "analogy_en": "Like a restaurant that fully publishes its recipes and lets anyone freely modify and hand them out. Improving the flavor and redistributing are free, but the restaurant does not guarantee the taste.",
-      "memory_hook_zh": "说到 OSS，就是公开源代码、可自由使用、修改与再发布",
-      "memory_hook_en": "OSS → published source code, freely usable, modifiable, and redistributable"
+      "extra_zh": [
+        "软件的类别",
+        "条件因许可证而异"
+      ],
+      "extra_en": [
+        "A category of software",
+        "The conditions differ from license to license"
+      ]
     },
     {
       "term": "GPL",
-      "definition_jp": "コピーレフトを採用する代表的な OSS ライセンスの一つ。",
-      "explanation_jp": "GPL(GNU General Public License)は、OSS の代表的なライセンスの一つです。利用・改変・再配布の自由を認める一方で、改変して再配布する場合はソースコードを公開し、同じ GPL を引き継がせることを義務づけます。\n\nこの「自由を引き継がせる」考え方がコピーレフトで、GPL はその代表例です。改変版を非公開にできる BSD・MIT ライセンスに対し、GPL は再配布時の公開義務がある点が大きな違いです。\n\n試験では、GPL が代表的 OSS ライセンスであること、改変・再配布時のソース公開義務、ライセンスごとに条件が異なる点が問われます。",
-      "analogy_jp": "「自由に作り変えてよいが、配るときは必ずレシピも公開し、同じ約束を次の人にも守らせること」という条件付きの公開レシピのようなものです。",
-      "memory_hook_jp": "GPLといえば再配布時にソース公開義務のあるコピーレフト系ライセンス",
-      "inline_quiz": [
-        "2011h23tokubetsu-q074"
+      "one_line_jp": "コピーレフトの考え方に立つ代表的な OSS のライセンス",
+      "one_line_zh": "基于 Copyleft 理念的代表性开源软件许可证",
+      "one_line_en": "A leading OSS license built on the copyleft idea",
+      "extra_jp": [
+        "個別のライセンス",
+        "ソースコードを入手できるようにし、同じ GPL で配る"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "GPL",
-      "term_en": "GPL",
-      "definition_zh": "采用 Copyleft(著佐权)的代表性 OSS 许可证之一。",
-      "definition_en": "One of the representative OSS licenses that adopts copyleft.",
-      "explanation_zh": "GPL(GNU General Public License)是 OSS 的代表性许可证之一。它一方面认可使用、修改与再发布的自由，另一方面又规定：在修改后再发布时，必须公开源代码，并让其继续沿用同一份 GPL。\n\n这种「让自由继续传承下去」的思路就是 Copyleft(著佐权)，GPL 正是其代表例子。与允许将修改版保持不公开的 BSD、MIT 许可证相比，GPL 在再发布时负有公开义务，这是二者的重大区别。\n\n考试中会考查：GPL 是代表性的 OSS 许可证；修改、再发布时的源代码公开义务；以及不同许可证条件各异这一点。",
-      "explanation_en": "GPL (GNU General Public License) is one of the representative OSS licenses. While it grants the freedom to use, modify, and redistribute, it also requires that when you modify and redistribute, you must publish the source code and pass the same GPL down to it.\n\nThis idea of \"passing freedom down\" is copyleft, and GPL is its representative example. Compared with the BSD and MIT licenses, which allow modified versions to be kept private, GPL has a disclosure obligation upon redistribution, which is a major difference.\n\nOn the exam, you are asked about: GPL being a representative OSS license; the source-code disclosure obligation upon modification and redistribution; and the point that conditions differ from license to license.",
-      "analogy_zh": "就像一份附带条件的公开菜谱：「你可以自由改编，但分发时必须连同菜谱一起公开，并让下一个人也遵守同样的约定。」",
-      "analogy_en": "Like a conditionally published recipe that says: \"You may freely modify it, but when you hand it out you must publish the recipe too, and make the next person keep the same promise.\"",
-      "memory_hook_zh": "说到 GPL，就是再发布时负有源代码公开义务的 Copyleft(著佐权)系许可证",
-      "memory_hook_en": "GPL → a copyleft-type license with a source-disclosure obligation upon redistribution"
+      "extra_zh": [
+        "具体的一种许可证",
+        "让对方能获取源代码，并以同样的 GPL 分发"
+      ],
+      "extra_en": [
+        "A specific license",
+        "Make the source code obtainable and distribute under the same GPL"
+      ]
     },
     {
       "term": "コピーレフト",
-      "definition_jp": "改変版にも同じ自由とソース公開を引き継がせる思想・仕組み。",
-      "explanation_jp": "コピーレフトは、OSS の「自由に利用・改変・再配布できる」という性質を、改変版や再配布版にも同じ条件で引き継がせる思想・仕組みです。著作権(コピーライト)を逆手に取り、自由を制限ではなく継承のために使う考え方で、GPL がその代表例です。\n\n具体的には、コピーレフトなソフトウェアを改変して再配布する際、ソースコードを公開し、同じライセンスを適用する義務が生じます。これにより自由が連鎖的に守られます。\n\n試験では、コピーレフトと非コピーレフト(BSD・MIT 等で改変版を非公開にできる)の違い、GPL がコピーレフトの代表である点が問われます。",
-      "analogy_jp": "「この知恵を受け取った人は、改良したら必ず同じく無料で公開し、次の人にも同じ約束を守らせること」という、善意を鎖のように引き継がせる取り決めです。",
-      "memory_hook_jp": "コピーレフトといえば自由を改変版にも引き継がせる仕組み",
+      "one_line_jp": "改変して配られたソフトウェアにも元と同じ自由を引き継がせる考え方",
+      "one_line_zh": "让经过修改再分发的软件也继承与原软件相同自由的理念",
+      "one_line_en": "The idea that software modified and passed on keeps the same freedoms as the original",
+      "extra_jp": [
+        "ライセンスの設計の考え方",
+        "元と同じ条件を次の受け手にも付ける"
+      ],
+      "extra_zh": [
+        "设计许可证时的理念",
+        "把与原软件相同的条件也附给下一位接收者"
+      ],
+      "extra_en": [
+        "An idea for designing licenses",
+        "Attach the original conditions for the next recipient too"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "OSS",
+      "term_zh": "开源软件(OSS)",
+      "term_en": "OSS (Open Source Software)",
+      "one_jp": "**OSS** (オープンソースソフトウェア) は、**ソースコード** が公開され、ライセンスの条件の下で誰でも **利用・改変・再配布** できるソフトウェアである。",
+      "one_zh": "**开源软件(OSS)**（Open Source Software）是 **源代码** 公开、在许可证条件下任何人都可以 **使用、修改、再分发** 的软件。",
+      "one_en": "**OSS (Open Source Software)** is software whose **source code** is made public and that anyone may **use, modify and redistribute** under the terms of its license.",
+      "detail_jp": "**ソースコード** は人が読み書きできる形で書かれたプログラムの文面で、**ライセンス** は著作権者が利用者に示す利用許諾の条件である。OSS と呼べるのは、ソースコードを読めるだけでなく、改変や再配布の自由までライセンスで認められているソフトウェアである。動作や安全性は原則として無保証で提供されるので、使う側が品質を確かめて導入する。",
+      "detail_zh": "**源代码** 是用人能读写的形式写成的程序文本，**许可证** 是著作权人向使用者提出的使用许可条件。能称为 OSS 的软件，不仅源代码可以阅读，修改和再分发的自由也由许可证明确允许。其运行效果和安全性原则上不作保证，因此使用方要自行确认质量后再引入。",
+      "detail_en": "**Source code** is the text of a program written in a form people can read and edit, and a **license** is the set of usage terms a copyright holder grants to users. Software counts as OSS only when its license allows not just reading the source code but also changing and redistributing it. It generally comes with no guarantee of how well or how safely it works, so whoever adopts it checks the quality first.",
+      "analogy_jp": "作り方を細かく書いたレシピを公開し、決められた約束を守る限り、誰でも作り変えて人に配ってよいとする仕組みに近い。",
+      "analogy_zh": "就像把详细写明做法的菜谱公开出来，只要遵守约定，任何人都可以改良做法并分给别人。",
+      "analogy_en": "It is like publishing a detailed recipe and letting anyone adapt it and share it with others, as long as they keep to the agreed rules.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "OSS は、入手した人が中身を改良し、その改良版を配り直すことまで認める。配る相手や使う分野によって扱いを分けることもしない。",
+          "text_zh": "OSS 允许拿到它的人改进内容，并把改进后的版本再次分发。也不会因分发对象或使用领域不同而区别对待。",
+          "text_en": "OSS lets whoever receives it improve the contents and pass the improved version on. It also does not treat people differently by who receives it or what field it is used in.",
+          "qids": [
+            "2016h28a-q076",
+            "2011h23a-q066",
+            "2014h26h-q067"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "OSS の著作権は放棄されておらず、著作権者が持ち続けたまま、ライセンスで利用の条件を定める。利用者はライセンスごとに異なる条件を確かめて従う。",
+          "text_zh": "OSS 的著作权（[[jp:著作権]]）并没有被放弃，著作权人继续持有，并通过许可证（[[jp:ライセンス]]）规定使用条件。使用者需确认并遵守各许可证不同的条件。",
+          "text_en": "The copyright ([[jp:著作権]]) in OSS is not given up. The copyright holder keeps it and sets the terms of use through a license ([[jp:ライセンス]]), and users check and follow the terms, which differ from license to license.",
+          "qids": [
+            "2015h27a-q065",
+            "2017h29a-q100"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "OSS は「無料のソフト」と同じ意味ではない。再配布に代金を取ることも、有償のサポートを付けて提供することも認められる。",
+          "text_zh": "OSS 并不等同于“免费软件”。再分发时收取费用，或附带有偿支持来提供，都是允许的。",
+          "text_en": "OSS does not mean the same thing as free-of-charge software. Charging a fee for redistribution and offering it with paid support are both allowed.",
+          "qids": [
+            "2011h23tokubetsu-q074",
+            "2021r03-q078"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "用途",
+              "zh": "用途",
+              "en": "Use"
+            },
+            {
+              "jp": "代表的な OSS",
+              "zh": "代表性的开源软件",
+              "en": "Well-known OSS"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "OS",
+                  "zh": "操作系统",
+                  "en": "OS"
+                },
+                {
+                  "jp": "Linux、Android、FreeBSD",
+                  "zh": "Linux、Android、FreeBSD",
+                  "en": "Linux, Android, FreeBSD"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "Web サーバ",
+                  "zh": "Web 服务器",
+                  "en": "Web server"
+                },
+                {
+                  "jp": "Apache HTTP Server",
+                  "zh": "Apache HTTP Server",
+                  "en": "Apache HTTP Server"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "DBMS",
+                  "zh": "DBMS",
+                  "en": "DBMS"
+                },
+                {
+                  "jp": "MySQL、PostgreSQL",
+                  "zh": "MySQL、PostgreSQL",
+                  "en": "MySQL, PostgreSQL"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "Web ブラウザ",
+                  "zh": "Web 浏览器",
+                  "en": "Web browser"
+                },
+                {
+                  "jp": "Firefox",
+                  "zh": "Firefox",
+                  "en": "Firefox"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "メールソフト",
+                  "zh": "电子邮件软件",
+                  "en": "Email client"
+                },
+                {
+                  "jp": "Thunderbird",
+                  "zh": "Thunderbird",
+                  "en": "Thunderbird"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2009h21h-q055",
+        "2013h25a-q058",
+        "2019h31h-q067"
+      ],
+      "definition_jp": "OSS (オープンソースソフトウェア) は、ソースコード が公開され、ライセンスの条件の下で誰でも 利用・改変・再配布 できるソフトウェアである。",
+      "definition_zh": "开源软件(OSS)（Open Source Software）是 源代码 公开、在许可证条件下任何人都可以 使用、修改、再分发 的软件。",
+      "definition_en": "OSS (Open Source Software) is software whose source code is made public and that anyone may use, modify and redistribute under the terms of its license.",
+      "explanation_jp": "ソースコード は人が読み書きできる形で書かれたプログラムの文面で、ライセンス は著作権者が利用者に示す利用許諾の条件である。OSS と呼べるのは、ソースコードを読めるだけでなく、改変や再配布の自由までライセンスで認められているソフトウェアである。動作や安全性は原則として無保証で提供されるので、使う側が品質を確かめて導入する。",
+      "explanation_zh": "源代码 是用人能读写的形式写成的程序文本，许可证 是著作权人向使用者提出的使用许可条件。能称为 OSS 的软件，不仅源代码可以阅读，修改和再分发的自由也由许可证明确允许。其运行效果和安全性原则上不作保证，因此使用方要自行确认质量后再引入。",
+      "explanation_en": "Source code is the text of a program written in a form people can read and edit, and a license is the set of usage terms a copyright holder grants to users. Software counts as OSS only when its license allows not just reading the source code but also changing and redistributing it. It generally comes with no guarantee of how well or how safely it works, so whoever adopts it checks the quality first.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
+        "2009h21h-q055",
+        "2013h25a-q058",
+        "2019h31h-q067"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "GPL",
+      "term_zh": "GPL",
+      "term_en": "GPL",
+      "one_jp": "**GPL** (GNU General Public License) は、改変版にも同じ条件を引き継がせる考え方に立つ、代表的な **OSS のライセンス** である。",
+      "one_zh": "**GPL**（GNU General Public License）是基于让修改版也继承相同条件这一理念的代表性 **开源软件许可证**。",
+      "one_en": "**GPL** (GNU General Public License) is a leading **OSS license** built on the idea that modified versions carry the same conditions.",
+      "detail_jp": "GPL は GNU プロジェクトのソフトウェアのために作られたライセンスで、Linux カーネルなども採用している。GPL のプログラムは自由に利用・改変・再配布できるが、配るときは改変したものも含めて、受け手がそのソースコードを入手できるようにし、配布物にも同じ GPL を付ける必要がある。改変版を配らずに手元だけで使う場合には、この義務は生じない。",
+      "detail_zh": "GPL 是为 GNU 项目的软件制定的许可证，Linux 内核等也采用了它。GPL 程序可以自由使用、修改、再分发，但分发时（包括分发修改后的版本），必须让接收者能够获取其源代码，并给分发物附上同样的 GPL。只在自己手头使用、不分发修改版时，不产生这项义务。",
+      "detail_en": "GPL was written for the software of the GNU Project, and the Linux kernel is among the programs that use it. A GPL program can be used, modified and redistributed freely, but anyone who distributes it, modified or not, must let the recipients obtain its source code and attach the same GPL to it. Someone who only uses a modified version themselves and does not distribute it has no such obligation.",
+      "analogy_jp": "「作り変えて人に渡すなら、作り変えた後の作り方も一緒に渡し、同じ約束書きも付けること」と書かれたレシピのようなもの。",
+      "analogy_zh": "就像一份写着“若改良后转给别人，就要把改良后的做法一并交出，并附上同样的约定书”的菜谱。",
+      "analogy_en": "It is like a recipe that says: if you adapt this and hand it on, include your adapted method and attach the same set of rules.",
+      "hook_jp": "G は GNU (グヌー) の頭文字で、GNU は「GNU's Not Unix」の頭文字を自分自身で繰り返す名前になっている。",
+      "hook_zh": "G 是 GNU 的首字母，GNU 是“GNU's Not Unix”的递归缩写，名字本身又出现在展开式里。",
+      "hook_en": "The G stands for GNU, a name that is an acronym of \"GNU's Not Unix\" and so repeats itself inside its own expansion.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "GPL のプログラムを改変して配布するときは、配布物にも元と同じ GPL を適用し、受け手が対応するソースコードを入手できるようにする。",
+          "text_zh": "修改 GPL 程序并分发时，要对分发物同样适用原来的 GPL，并让接收者能够获取对应的源代码（[[jp:ソースコード]]）。",
+          "text_en": "When you modify a GPL program and distribute it, apply the same GPL to what you distribute and let recipients obtain the matching source code ([[jp:ソースコード]]).",
+          "qids": [
+            "2026r08-q073"
+          ]
+        },
+        {
+          "kind": "mix",
+          "text_jp": "BSD ライセンスや MIT ライセンスのように、改変版を別の条件で配ることを認める OSS のライセンスもある。GPL は改変版にも同じ GPL を求める点でこれらと分かれる。",
+          "text_zh": "也有像 BSD 许可证（[[jp:BSDライセンス]]）、MIT 许可证（[[jp:MITライセンス]]）这样允许以其他条件分发修改版的开源软件(OSS)许可证。GPL 要求修改版也使用同样的 GPL，这一点与它们不同。",
+          "text_en": "Some OSS licenses, such as the BSD license ([[jp:BSDライセンス]]) and the MIT license ([[jp:MITライセンス]]), allow a modified version to be distributed under other terms. GPL differs from them in requiring the same GPL for modified versions too."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2026r08-q073",
+        "2011h23tokubetsu-q074"
+      ],
+      "definition_jp": "GPL (GNU General Public License) は、改変版にも同じ条件を引き継がせる考え方に立つ、代表的な OSS のライセンス である。",
+      "definition_zh": "GPL（GNU General Public License）是基于让修改版也继承相同条件这一理念的代表性 开源软件许可证。",
+      "definition_en": "GPL (GNU General Public License) is a leading OSS license built on the idea that modified versions carry the same conditions.",
+      "explanation_jp": "GPL は GNU プロジェクトのソフトウェアのために作られたライセンスで、Linux カーネルなども採用している。GPL のプログラムは自由に利用・改変・再配布できるが、配るときは改変したものも含めて、受け手がそのソースコードを入手できるようにし、配布物にも同じ GPL を付ける必要がある。改変版を配らずに手元だけで使う場合には、この義務は生じない。",
+      "explanation_zh": "GPL 是为 GNU 项目的软件制定的许可证，Linux 内核等也采用了它。GPL 程序可以自由使用、修改、再分发，但分发时（包括分发修改后的版本），必须让接收者能够获取其源代码，并给分发物附上同样的 GPL。只在自己手头使用、不分发修改版时，不产生这项义务。",
+      "explanation_en": "GPL was written for the software of the GNU Project, and the Linux kernel is among the programs that use it. A GPL program can be used, modified and redistributed freely, but anyone who distributes it, modified or not, must let the recipients obtain its source code and attach the same GPL to it. Someone who only uses a modified version themselves and does not distribute it has no such obligation.",
+      "memory_hook_jp": "G は GNU (グヌー) の頭文字で、GNU は「GNU's Not Unix」の頭文字を自分自身で繰り返す名前になっている。",
+      "memory_hook_zh": "G 是 GNU 的首字母，GNU 是“GNU's Not Unix”的递归缩写，名字本身又出现在展开式里。",
+      "memory_hook_en": "The G stands for GNU, a name that is an acronym of \"GNU's Not Unix\" and so repeats itself inside its own expansion.",
+      "inline_quiz": [
+        "2026r08-q073",
+        "2011h23tokubetsu-q074"
+      ],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "コピーレフト",
+      "term_zh": "Copyleft(著佐权)",
+      "term_en": "Copyleft",
+      "one_jp": "**コピーレフト** は、ソフトウェアを改変して配るときにも、元と同じ **利用・改変・再配布の自由** を受け手に引き継がせる考え方である。",
+      "one_zh": "**Copyleft(著佐权)**（[[jp:コピーレフト]]）是一种理念：修改软件后再分发时，也要把与原软件相同的 **使用、修改、再分发的自由** 传给接收者。",
+      "one_en": "**Copyleft** ([[jp:コピーレフト]]) is the idea that when software is modified and passed on, the recipients still receive the same **freedom to use, modify and redistribute** it as the original gave.",
+      "detail_jp": "著作権者は著作権に基づいてライセンスを定め、その中で「配るときは同じ条件で配ること」を求める。こうすると、改変版が途中で自由のない形に変わることを防げ、自由が次々と受け手に受け継がれる。",
+      "detail_zh": "著作权人依据著作权制定许可证，并在其中要求“分发时须以同样的条件分发”。这样可以防止修改版在中途变成没有自由的形式，让自由一代代传给接收者。",
+      "detail_en": "The copyright holder uses their copyright to set a license, and the license requires that anyone passing the software on does so under the same terms. This stops a modified version from turning into a form without those freedoms partway along, so the freedoms carry on from one recipient to the next.",
+      "analogy_jp": "苗を分けてもらった人が、育てた株を人に分けるのなら、自分が受けたのと同じ「自由に育てて分けてよい」という約束も付けて渡す取り決めに近い。",
+      "analogy_zh": "就像分到幼苗的人若要把自己培育的植株分给别人，也要附上自己当初得到的那份“可以自由培育、自由分享”的约定。",
+      "analogy_en": "It is like an arrangement where someone given a seedling, if they share the plants they grow, must pass on the same promise they received: grow it freely and share it freely.",
+      "hook_jp": "著作権を表す copyright の right (権利) を方向の「右」に見立て、left (左) に置き換えた言葉遊びの名前。",
+      "hook_zh": "把表示著作权的 copyright 中的 right（权利）当作方向的“右”，换成 left（左）的文字游戏。",
+      "hook_en": "The name is wordplay that swaps the \"right\" in copyright for \"left\".",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "コピーレフトの下で改変版を配る人は、自分が受け取ったときの条件をそのまま次の受け手にも付ける。",
+          "text_zh": "在 Copyleft（[[jp:コピーレフト]]）之下分发修改版的人，要把自己当初接收时的条件原样附给下一位接收者。",
+          "text_en": "Under copyleft ([[jp:コピーレフト]]), a person who distributes a modified version passes the conditions they received on to the next recipient unchanged.",
+          "qids": [
+            "2026r08-q073"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "origin",
+              "label": {
+                "jp": "元の OSS: 自由と条件が付く",
+                "zh": "原来的开源软件：附有自由与条件",
+                "en": "Original OSS: comes with freedoms and conditions"
+              }
+            },
+            {
+              "id": "modify",
+              "label": {
+                "jp": "改変: 機能を足す",
+                "zh": "修改：增加功能",
+                "en": "Modify: add features"
+              }
+            },
+            {
+              "id": "distribute",
+              "label": {
+                "jp": "配布: ソースコードを渡せるようにし、元と同じ条件を付ける",
+                "zh": "分发：让人能获取源代码，并附上与原来相同的条件",
+                "en": "Distribute: make the source code obtainable and attach the original conditions"
+              }
+            },
+            {
+              "id": "next",
+              "label": {
+                "jp": "受け手: 同じ自由を得る",
+                "zh": "接收者：获得同样的自由",
+                "en": "Recipient: gets the same freedoms"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "元のソフトウェアには、利用・改変・再配布の自由と、配るときの条件がライセンスとして付いている。",
+            "caption_zh": "原来的软件以许可证的形式附有使用、修改、再分发的自由，以及分发时的条件。",
+            "caption_en": "The original software carries, as its license, the freedom to use, modify and redistribute it and the conditions for passing it on.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "受け取った人が機能を足すなどして、自分の改変版を作る。",
+            "caption_zh": "拿到软件的人增加功能等，做出自己的修改版。",
+            "caption_en": "The person who received it adds features or makes other changes to create their own modified version.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "改変版を配るときは、ソースコードを入手できるようにし、元と同じライセンスを付ける。",
+            "caption_zh": "分发修改版时，让人能获取源代码，并附上与原来相同的许可证。",
+            "caption_en": "When distributing the modified version, they make the source code obtainable and attach the same license as the original.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "次の受け手も同じ自由と同じ条件を受け取り、さらに改変して配るときも同じ流れが続く。",
+            "caption_zh": "下一位接收者也得到同样的自由和同样的条件，再修改并分发时也延续同样的流程。",
+            "caption_en": "The next recipient gets the same freedoms and the same conditions, and the same flow repeats when they modify and distribute it in turn.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2026r08-q073",
+        "2017h29h-q093"
+      ],
+      "definition_jp": "コピーレフト は、ソフトウェアを改変して配るときにも、元と同じ 利用・改変・再配布の自由 を受け手に引き継がせる考え方である。",
+      "definition_zh": "Copyleft(著佐权)（コピーレフト）是一种理念：修改软件后再分发时，也要把与原软件相同的 使用、修改、再分发的自由 传给接收者。",
+      "definition_en": "Copyleft (コピーレフト) is the idea that when software is modified and passed on, the recipients still receive the same freedom to use, modify and redistribute it as the original gave.",
+      "explanation_jp": "著作権者は著作権に基づいてライセンスを定め、その中で「配るときは同じ条件で配ること」を求める。こうすると、改変版が途中で自由のない形に変わることを防げ、自由が次々と受け手に受け継がれる。",
+      "explanation_zh": "著作权人依据著作权制定许可证，并在其中要求“分发时须以同样的条件分发”。这样可以防止修改版在中途变成没有自由的形式，让自由一代代传给接收者。",
+      "explanation_en": "The copyright holder uses their copyright to set a license, and the license requires that anyone passing the software on does so under the same terms. This stops a modified version from turning into a form without those freedoms partway along, so the freedoms carry on from one recipient to the next.",
+      "memory_hook_jp": "著作権を表す copyright の right (権利) を方向の「右」に見立て、left (左) に置き換えた言葉遊びの名前。",
+      "memory_hook_zh": "把表示著作权的 copyright 中的 right（权利）当作方向的“右”，换成 left（左）的文字游戏。",
+      "memory_hook_en": "The name is wordplay that swaps the \"right\" in copyright for \"left\".",
+      "inline_quiz": [
+        "2026r08-q073",
         "2017h29h-q093"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"OSS(コピーレフト)\"] --> B[\"改変\"]; B --> C[\"再配布\"]; C --> D[\"ソース公開＋同一ライセンス継承\"]; D --> A",
-        "svg_path": "figures/technology-17-48-u01-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "Copyleft(著佐权)",
-      "term_en": "Copyleft",
-      "definition_zh": "让修改版也继承同样的自由与源代码公开的思想与机制。",
-      "definition_en": "The philosophy and mechanism of passing the same freedom and source-code disclosure down to modified versions.",
-      "explanation_zh": "Copyleft(著佐权)是一种思想与机制：它让 OSS「可自由使用、修改与再发布」的性质，以同样的条件继承到修改版和再发布版上。它反过来利用著作权(copyright)，把自由用于继承而非限制，GPL 正是其代表例子。\n\n具体来说，当你修改一款采用 Copyleft 的软件并再发布时，就会产生公开源代码、并适用同一许可证的义务。借此，自由得以呈链式地被守护下去。\n\n考试中会考查：Copyleft 与非 Copyleft(BSD、MIT 等允许将修改版保持不公开)之间的区别，以及 GPL 是 Copyleft 的代表这一点。",
-      "explanation_en": "Copyleft is a philosophy and mechanism that passes the OSS property of being \"freely usable, modifiable, and redistributable\" down to modified and redistributed versions under the same conditions. It turns copyright on its head, using freedom for inheritance rather than restriction, and GPL is its representative example.\n\nSpecifically, when you modify and redistribute copyleft software, an obligation arises to publish the source code and apply the same license. In this way, freedom is protected in a chained manner.\n\nOn the exam, you are asked about the difference between copyleft and non-copyleft (BSD, MIT, etc., which allow modified versions to be kept private), and the point that GPL is the representative of copyleft.",
-      "analogy_zh": "就像一个把善意像锁链一样传递下去的约定：「凡是接受了这份智慧的人，一旦加以改良，就必须同样免费公开，并让下一个人也遵守同样的约定。」",
-      "analogy_en": "Like an arrangement that passes goodwill down like a chain: \"Whoever receives this wisdom must, if they improve it, likewise publish it for free, and make the next person keep the same promise.\"",
-      "memory_hook_zh": "说到 Copyleft，就是把自由也继承给修改版的机制",
-      "memory_hook_en": "Copyleft → the mechanism that passes freedom down to modified versions too"
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "GPL",
+      "b": "コピーレフト",
+      "rows": [
+        {
+          "label_jp": "正体",
+          "label_zh": "本质",
+          "label_en": "What it is",
+          "a_jp": "文言の決まった個別のライセンス",
+          "a_zh": "条文确定的具体许可证",
+          "a_en": "A specific license with fixed wording",
+          "b_jp": "ライセンスを作るときの考え方",
+          "b_zh": "制定许可证时的理念",
+          "b_en": "An idea used when writing licenses",
+          "key": true
+        },
+        {
+          "label_jp": "互いの関係",
+          "label_zh": "相互关系",
+          "label_en": "How they relate",
+          "a_jp": "コピーレフトを採る代表例",
+          "a_zh": "采用 Copyleft 的代表性例子",
+          "a_en": "A leading example that adopts copyleft",
+          "b_jp": "GPL 以外のライセンスにも採られている",
+          "b_zh": "GPL 以外的许可证也有采用",
+          "b_en": "Also adopted by licenses other than GPL",
+          "key": false
+        },
+        {
+          "label_jp": "改変版を配るとき",
+          "label_zh": "分发修改版时",
+          "label_en": "When distributing a modified version",
+          "a_jp": "ソースコードを入手できるようにし、GPL を付ける",
+          "a_zh": "让人能获取源代码，并附上 GPL",
+          "a_en": "Make the source code obtainable and attach the GPL",
+          "b_jp": "元と同じ条件を次の受け手に引き継がせる",
+          "b_zh": "把与原来相同的条件传给下一位接收者",
+          "b_en": "Pass the original conditions on to the next recipient",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**OSS** はソースコードが公開され、利用・改変・再配布の自由がライセンスで認められたソフトウェアで、著作権は放棄されず著作権者が持ち続ける。",
+    "OSS を使う人は、ライセンスごとに異なる条件を確かめて従う。",
+    "**GPL** のプログラムを改変して配るときは、受け手がソースコードを入手できるようにし、同じ GPL を付ける。",
+    "**コピーレフト** は、改変して配られたソフトウェアにも元と同じ自由と条件を引き継がせる考え方である。"
+  ],
+  "key_points_zh": [
+    "**开源软件(OSS)** 是源代码公开，且使用、修改、再分发的自由由许可证明确允许的软件，著作权并未被放弃，仍由著作权人持有。",
+    "使用 OSS 的人要确认并遵守各许可证不同的条件。",
+    "修改 **GPL** 程序并分发时，要让接收者能获取源代码，并附上同样的 GPL。",
+    "**Copyleft(著佐权)** 是让经过修改再分发的软件也继承与原软件相同的自由和条件的理念。"
+  ],
+  "key_points_en": [
+    "**OSS** is software whose source code is public and whose license grants the freedom to use, modify and redistribute it, while the copyright is not given up and stays with the copyright holder.",
+    "People who use OSS check and follow the terms, which differ from license to license.",
+    "When you modify a **GPL** program and distribute it, let recipients obtain the source code and attach the same GPL.",
+    "**Copyleft** is the idea that software modified and passed on keeps the same freedoms and conditions as the original."
+  ],
+  "overview": {
+    "intro_jp": "OSS に認められる自由 (利用・改変・再配布) と、著作権やライセンスとの関係を説明できる。GPL のプログラムを改変して配るときに、配る人が果たすべきことを説明できる。考え方としての コピーレフト と、それを条文にしたライセンスである GPL を区別できる。",
+    "intro_zh": "能说明 开源软件(OSS) 所允许的自由（使用、修改、再分发）及其与著作权、许可证之间的关系。能说明修改 GPL 程序并分发时，分发者需要履行的义务。能区分作为理念的 Copyleft(著佐权) 与把这一理念写成条款的许可证 GPL。",
+    "intro_en": "Explain the freedoms OSS grants (use, modification and redistribution) and how they relate to copyright and licenses. Explain what a person must do when they modify a GPL program and distribute it. Tell copyleft as an idea apart from GPL, the license that puts that idea into written terms.",
+    "freq_badge": "低頻",
+    "est_minutes": 22
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "OSS: OSSといえばソースコード公開で自由に利用・改変・再配布",
-      "GPL: GPLといえば再配布時にソース公開義務のあるコピーレフト系ライセンス",
-      "コピーレフト: コピーレフトといえば自由を改変版にも引き継がせる仕組み"
-    ],
     "key_points_jp": [
-      "OSS はソースコードが公開され、自由に利用・改変・再配布できるソフトウェアで、「無料」とは別概念であり原則として無保証である。",
-      "OSS の利用にはライセンス条件への遵守が必要で、ライセンスごとに条件が異なる。",
-      "GPL は代表的な OSS ライセンスで、改変して再配布する際はソースコードの公開と同一ライセンスの継承を義務づける。",
-      "コピーレフトは自由を改変版・再配布版にも引き継がせる思想・仕組みで、GPL がその代表例である。",
-      "BSD・MIT などの非コピーレフト系ライセンスは改変版を非公開にできる点が GPL との違いである。"
+      "OSS はソースコードが公開され、利用・改変・再配布の自由がライセンスで認められたソフトウェアで、著作権は放棄されず著作権者が持ち続ける。",
+      "OSS を使う人は、ライセンスごとに異なる条件を確かめて従う。",
+      "GPL のプログラムを改変して配るときは、受け手がソースコードを入手できるようにし、同じ GPL を付ける。",
+      "コピーレフト は、改変して配られたソフトウェアにも元と同じ自由と条件を引き継がせる考え方である。"
     ],
     "key_points_zh": [
-      "OSS 是公开源代码、可自由使用、修改与再发布的软件，它与「免费」是不同的概念，并且原则上无保证。",
-      "使用 OSS 必须遵守许可证条件，而且不同许可证的条件各不相同。",
-      "GPL 是代表性的 OSS 许可证，规定在修改后再发布时必须公开源代码并继承同一许可证。",
-      "Copyleft(著佐权)是一种让自由也继承给修改版与再发布版的思想与机制，GPL 正是其代表例子。",
-      "BSD、MIT 等非 Copyleft 系许可证允许将修改版保持不公开，这是它们与 GPL 的区别。"
+      "开源软件(OSS) 是源代码公开，且使用、修改、再分发的自由由许可证明确允许的软件，著作权并未被放弃，仍由著作权人持有。",
+      "使用 OSS 的人要确认并遵守各许可证不同的条件。",
+      "修改 GPL 程序并分发时，要让接收者能获取源代码，并附上同样的 GPL。",
+      "Copyleft(著佐权) 是让经过修改再分发的软件也继承与原软件相同的自由和条件的理念。"
     ],
     "key_points_en": [
-      "OSS is software whose source code is published and which can be freely used, modified, and redistributed; it is a different concept from \"free of charge\" and in principle comes with no warranty.",
-      "Using OSS requires complying with license conditions, and conditions differ from license to license.",
-      "GPL is a representative OSS license that requires publishing the source code and inheriting the same license when modifying and redistributing.",
-      "Copyleft is a philosophy and mechanism that passes freedom down to modified and redistributed versions too, and GPL is its representative example.",
-      "Non-copyleft licenses such as BSD and MIT allow modified versions to be kept private, which is the difference from GPL."
+      "OSS is software whose source code is public and whose license grants the freedom to use, modify and redistribute it, while the copyright is not given up and stays with the copyright holder.",
+      "People who use OSS check and follow the terms, which differ from license to license.",
+      "When you modify a GPL program and distribute it, let recipients obtain the source code and attach the same GPL.",
+      "Copyleft is the idea that software modified and passed on keeps the same freedoms and conditions as the original."
+    ],
+    "memory_hooks_jp": [
+      "GPL: G は GNU (グヌー) の頭文字で、GNU は「GNU's Not Unix」の頭文字を自分自身で繰り返す名前になっている。",
+      "コピーレフト: 著作権を表す copyright の right (権利) を方向の「右」に見立て、left (左) に置き換えた言葉遊びの名前。"
     ],
     "memory_hooks_zh": [
-      "OSS：说到 OSS，就是公开源代码、可自由使用、修改与再发布",
-      "GPL：说到 GPL，就是再发布时负有源代码公开义务的 Copyleft(著佐权)系许可证",
-      "Copyleft：说到 Copyleft，就是把自由也继承给修改版的机制"
+      "GPL：G 是 GNU 的首字母，GNU 是“GNU's Not Unix”的递归缩写，名字本身又出现在展开式里。",
+      "Copyleft(著佐权)：把表示著作权的 copyright 中的 right（权利）当作方向的“右”，换成 left（左）的文字游戏。"
     ],
     "memory_hooks_en": [
-      "OSS: OSS → published source code, freely usable, modifiable, and redistributable",
-      "GPL: GPL → a copyleft-type license with a source-disclosure obligation upon redistribution",
-      "Copyleft: Copyleft → the mechanism that passes freedom down to modified versions too"
+      "GPL: The G stands for GNU, a name that is an acronym of \"GNU's Not Unix\" and so repeats itself inside its own expansion.",
+      "Copyleft: The name is wordplay that swaps the \"right\" in copyright for \"left\"."
     ]
   },
   "challenge_questions": [
-    "2011h23a-q066",
-    "2017h29a-q064",
     "2023r05-q082",
-    "2013h25a-q058",
-    "2014h26h-q067"
+    "2024r06-q080",
+    "2025r07-q096",
+    "2018h30h-q078",
+    "2026r08-q097"
   ],
   "source_figures": [
     {
@@ -146,9 +551,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "开源软件(OSS)与许可证",
-  "title_en": "Open Source Software (OSS) and Licenses",
-  "unit_summary_zh": "理解 OSS 的定义与特征，并学习其代表性许可证 GPL 以及作为根本思想的 Copyleft(著佐权)。",
-  "unit_summary_en": "Understand the definition and characteristics of OSS, and learn its representative license GPL and its underlying philosophy, copyleft."
+  }
 }
