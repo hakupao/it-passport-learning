@@ -78,7 +78,7 @@
 | b69 | technology-20-52 | マルチメディア技術 (2/2) | u06 | 20 | 6 | done |
 | b70 | technology-17-45 | オペレーティングシステム | u01 u02 | 18 | 12 | done |
 | b71 | technology-19-51 | インタフェース設計 | u01 u02 u03 u04 | 17 | 28 | done |
-| b72 | strategy-06-21 | システム活用促進・評価 | u01 | 14 | 8 | todo |
+| b72 | strategy-06-21 | システム活用促進・評価 | u01 | 14 | 8 | done |
 | b73 | technology-14-38 | プログラム言語 | u01 u02 u03 | 13 | 19 | todo |
 | b74 | technology-20-53 | マルチメディア応用 | u01 u02 u03 | 10 | 18 | todo |
 | b75 | technology-19-50 | 情報デザイン | u01 u02 | 8 | 12 | todo |
