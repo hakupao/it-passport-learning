@@ -23,7 +23,7 @@
 | C13 | (l) validateV2 `wordAt` の漢字境界、en 層 D-198 Dice 基準 | **行わない** (生成は完了し、両者は新規生成・補丁時の検査のみに効く)。B3 を再開する場合に再検討 | — | — | 不採用 |
 | C14 | (j) 金商法等改正の施行後に strategy-02-06-u03 へ暗号資産、日付追跡 4 件 | 日付到来時に B3 (STATE 次セッション行で追跡) | B3 | verifier opus | 日付待ち |
 | C15 | リモート `stage7-ui` ブランチ | 削除を推奨: `origin/stage7-ui` (`1ef669ad`) は `origin/main` の祖先で独自 commit 0 (S152 確認)。外部への破壊的操作のためユーザー自身が実行: `! git push origin --delete stage7-ui` | ユーザー | — | **done (S152、ユーザー実行、`[deleted] stage7-ui`)** |
-| C16 | Vercel deploy 保持期間 (D-212 §4) | 推奨 7 日 (最少 10 保持)。Vercel Project → Settings → Security → Deployment Retention でユーザーが設定 | ユーザー | — | ユーザー実行待ち |
+| C16 | Vercel deploy 保持期間 (D-212 §4) | 推奨 7 日 (最少 10 保持)。Vercel Project → Settings → Security → Deployment Retention でユーザーが設定 | ユーザー | — | **done (ユーザー設定済、S152 に Vercel API 読取で確認: expirationDays 7 / production 7 / canceled 7 / errored 7、deploymentsToKeep 10)** |
 
 ## 順序 (S153)
 1. C1 (テスト、独立) と C3・C10 (小さい直接修正) を先に。
