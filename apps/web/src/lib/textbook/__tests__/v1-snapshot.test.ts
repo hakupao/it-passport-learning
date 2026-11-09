@@ -22,7 +22,10 @@ describe("v1 snapshot", () => {
     if (process.env.V1_SNAPSHOT_WRITE === "1") writeFileSync(FILE, `${JSON.stringify(now, null, 1)}\n`);
     expect(existsSync(FILE), FILE).toBe(true);
     const saved = JSON.parse(readFileSync(FILE, "utf-8")) as Record<string, V1UnitHash>;
-    expect(Object.keys(now).length).toBeGreaterThan(0);
+    // The v1 set shrinks with every batch rewritten to v2 and is empty once all units are v2 (S152, b78):
+    // the guard is that the loader returns units and every non-v2 unit gets a fingerprint row.
+    expect(units.length).toBeGreaterThan(0);
+    expect(Object.keys(now)).toHaveLength(units.filter((u) => u.schema_version !== "textbook-unit-v2").length);
     for (const [id, h] of Object.entries(now)) {
       expect(saved[id], id).toEqual(h);
     }

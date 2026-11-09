@@ -113,10 +113,15 @@ test("--check-units: every committed v2 unit (or --unit …) checked, warnings l
   const r = run("textbook-v2-zh-terms.mjs", ["--check-units"]);
   assert.ok(r.code === 0 || r.code === 1, r.out);
   for (const id of ["management-10-27-u01", "management-10-27-u02", "management-10-27-u03"]) assert.match(r.out, new RegExp(id));
-  assert.doesNotMatch(r.out, /technology-21-54-u01/, "v1 units are not checked"); // b78 = the last batch (S147: was strategy-01-01-u01, v2 since b21)
+  // v1 units are not checked; once every unit is v2 (S152, b78) there is none left, and every unit is listed.
+  const all = units();
+  const v1 = all.find((u) => u.schema_version !== "textbook-unit-v2")?.unit_id;
+  if (v1) assert.doesNotMatch(r.out, new RegExp(v1), "v1 units are not checked");
+  else for (const u of all) assert.match(r.out, new RegExp(`${u.unit_id}:`));
   const one = run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "management-10-27-u02"]);
   assert.doesNotMatch(one.out, /management-10-27-u01/);
-  assert.equal(run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "technology-21-54-u01"]).code, 2, "a v1 unit is a usage error");
+  if (v1) assert.equal(run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", v1]).code, 2, "a v1 unit is a usage error");
+  assert.equal(run("textbook-v2-zh-terms.mjs", ["--check-units", "--unit", "technology-99-99-u99"]).code, 2, "an unknown unit is a usage error");
 });
 
 // ---- B6 review (F1 / F2 / F3 / F5) --------------------------------------------------------------
