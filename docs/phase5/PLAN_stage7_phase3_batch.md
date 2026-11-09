@@ -1,5 +1,7 @@
 # Stage 7 Phase 3 — 教科书批量重写 Implementation Plan（v2，S135）
 
+> **状态（S152，2026-11-09）**：全 78 批（241 单元）完成并上线（最终批 b78 `df8a3156`），连同试点共 244 单元为 v2。汇总与回顾见 `RETROSPECTIVE_stage7_ui.md`「Phase 3 一括書き直し」节。
+
 > **For agentic workers:** 前置任务 B1〜B7 用 superpowers:subagent-driven-development；内容循环（Task B8）按 §2 逐批执行，不一次跑完。
 
 > **修订记录**：v1 草案 → 独立 critic（`oh-my-claudecode:critic` opus）判 REVISE（Critical 0 / Major 8 / Minor 14）→ 本 v2 全部吸收：workflow 全结局→动作表 + 每次失败 Rule B（M1）、补丁作用在 merge 内存 loc part 上并带 base_sha256（M2）、测试钉点盘点 B4（M3）、全语料检查改 vitest SSR、e2e 只跑本批（M4）、无匹配图种的回退规则（M5）、启动前用量检查 + 实测每单元占比 + 日历（M6）、zh 译语表来源与 warn 检查（M7）、等待确认期间只推进到 `.planning`（M8）；数字按脚本重算（62 topic / 241 单元 / 1402 用语 / 78 批）。→ 范围限定复审 REVISE（措辞 3 处 + Minor 2）→ 已全部改字：B3 验收改为试点冻结基线（N1）、loc-seed 的双 journal（N2）、0-6 计入 Rule A 与并行算法、zh 冲突清单（N3）、确认点 5 与 0-3 统一（N4）、日数 41。
