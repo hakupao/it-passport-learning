@@ -83,5 +83,5 @@
 | b74 | technology-20-53 | マルチメディア応用 | u01 u02 u03 | 10 | 18 | done |
 | b75 | technology-19-50 | 情報デザイン | u01 u02 | 8 | 12 | done |
 | b76 | technology-14-36 | データ構造 | u01 | 7 | 5 | done |
-| b77 | technology-14-39 | その他の言語 | u01 | 7 | 5 | todo |
+| b77 | technology-14-39 | その他の言語 | u01 | 7 | 5 | done |
 | b78 | technology-21-54 | データベース方式 | u01 | 7 | 8 | todo |
