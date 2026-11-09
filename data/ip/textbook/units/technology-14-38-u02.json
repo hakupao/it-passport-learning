@@ -1,240 +1,848 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-14-38-u02",
   "topic_id": "technology-14-38",
   "category": "technology",
   "title_jp": "コーディング規約と構造化",
+  "title_zh": "编码规范与结构化",
+  "title_en": "Coding Conventions and Structuring",
   "unit_summary_jp": "字下げ・命名規則・モジュール分割など、読みやすく保守しやすいコードを書くための作法とプログラム構造を理解する。",
+  "unit_summary_zh": "理解缩进、命名规则、模块划分等编写易读、易维护代码的写法规范，以及程序的结构。",
+  "unit_summary_en": "Understand the conventions for writing readable, maintainable code—such as indentation, naming rules, and module decomposition—and the structure of a program.",
   "order_in_topic": 2,
   "prerequisites": [
     "technology-14-38-u01"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、プログラムを「どう書くか」の作法と構造を学びます。字下げ・命名規則といった可読性を高める書き方から、プログラムを部品に分けるモジュール分割、メインルーチンとサブルーチンによる処理の組み立て方までを扱います。読みやすく保守しやすいコードの基礎であり、構造化の考え方は試験でも問われます。",
-    "freq_badge": "低頻",
-    "est_minutes": 21,
-    "intro_zh": "在本单元中，你将学习“如何编写”程序的写法规范与结构。内容涵盖：从缩进、命名规则这类提升可读性的写法，到把程序拆分成部件的模块划分，再到由主例程和子例程组装处理流程的方法。这些是编写易读、易维护代码的基础，结构化的思路在考试中也会被考查。",
-    "intro_en": "In this unit, you will learn the conventions and structure for \"how to write\" a program. It covers writing styles that improve readability such as indentation and naming rules, module decomposition that splits a program into parts, and how to assemble processing using a main routine and subroutines. These are the basics of readable, maintainable code, and the idea of structuring is also tested on the exam."
-  },
-  "terms": [
+  "goals_jp": [
+    "行頭の空白でまとまりを見せる **字下げ** と、入れ子の段数を表す **ネストの深さ** を区別できる。",
+    "名前の付け方を決める **命名規則** と、部品に分ける **モジュール分割** が、直しやすさにどう効くかを説明できる。",
+    "**メインルーチン** と **サブルーチン** の、呼び出す側と呼び出される側の関係を説明できる。"
+  ],
+  "goals_zh": [
+    "能够区分用行首空白显示处理块的**缩进**，与表示嵌套层数的**嵌套深度**。",
+    "能够说明规定命名方式的**命名规则**和把程序拆成部件的**模块划分**，如何让程序更容易修改。",
+    "能够说明**主例程**与**子例程**之间调用方与被调用方的关系。"
+  ],
+  "goals_en": [
+    "Tell **indentation**, which shows blocks with leading spaces, apart from **nesting depth**, the number of nested levels.",
+    "Explain how **naming conventions** for names and **module decomposition** into parts make a program easier to modify.",
+    "Explain the caller and callee relationship between a **main routine** and a **subroutine**."
+  ],
+  "overview_cols_jp": [
+    "観点",
+    "主な効果"
+  ],
+  "overview_cols_zh": [
+    "着眼点",
+    "主要效果"
+  ],
+  "overview_cols_en": [
+    "Aspect",
+    "Main benefit"
+  ],
+  "overview_rows": [
     {
       "term": "字下げ",
-      "definition_jp": "行の先頭に空白を入れ、処理のまとまりや階層を見やすく整える書き方。",
-      "explanation_jp": "字下げは、行頭にスペースやタブを入れて、条件分岐や繰り返しの中身を一段ずらして書く整形の作法です。同じ深さの処理を縦にそろえることで、どこからどこまでが一つのまとまりかが一目で分かります。\n\nプログラムの動作そのものは変わりませんが、可読性が大きく上がり、誤りも見つけやすくなります。試験では、字下げが処理の階層構造を見やすくするための書き方であること、後述のインデンテーションと同じ意味であることを押さえておきましょう。",
-      "analogy_jp": "文章の段落で、話のまとまりごとに行頭を一文字下げて書くのと同じ。見た目で「ここは一つのかたまり」と伝わるようにする工夫です。",
-      "memory_hook_jp": "字下げといえば行頭をずらして階層を見やすくする整形",
-      "inline_quiz": [
-        "2013h25h-q060"
+      "one_line_jp": "行頭に空白を入れて処理のまとまりを見せる書き方",
+      "one_line_zh": "在行首加入空白，显示处理块的写法",
+      "one_line_en": "Adding spaces at the start of lines to show blocks of processing",
+      "extra_jp": [
+        "見た目",
+        "まとまりの範囲が一目で分かる"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "缩进",
-      "term_en": "Indentation",
-      "definition_zh": "在行首加入空白，使处理的层次或归类一目了然的写法。",
-      "definition_en": "A writing style of inserting whitespace at the start of a line so that the grouping and hierarchy of processing are easy to see.",
-      "explanation_zh": "缩进是在行首加入空格或制表符，把条件分支或循环的内部内容向右错开一级来书写的排版规范。把同一深度的处理纵向对齐，就能一眼看出哪里到哪里是一个整体。\n\n它并不会改变程序本身的运行结果，但可读性大幅提升，也更容易发现错误。考试中要记住：缩进是一种让处理的层次结构更易于阅读的写法，且它与后面讲到的 indentation（英文表达）含义相同。",
-      "explanation_en": "Indentation is a formatting convention in which you insert spaces or tabs at the start of a line, shifting the contents of a conditional branch or loop one level to the right. By vertically aligning processing at the same depth, you can see at a glance where one block begins and ends.\n\nIt does not change how the program runs, but it greatly improves readability and makes errors easier to spot. On the exam, remember that indentation is a writing style for making the hierarchical structure of processing easy to read, and that it means the same thing as the term \"indentation\" described next.",
-      "analogy_zh": "就像写文章时，按每段话的归类把段首缩进一个字一样。这是一种让外观就能传达“这里是一个整体”的巧思。",
-      "analogy_en": "It is like indenting the first line of each paragraph in an essay according to its grouping. It is a device that lets the appearance itself convey \"this part is one block.\"",
-      "memory_hook_zh": "说到缩进，就是把行首错开、让层次更易读的排版",
-      "memory_hook_en": "Indentation → formatting that shifts line starts to make the hierarchy easy to read"
+      "extra_zh": [
+        "外观",
+        "一眼看出代码块的范围"
+      ],
+      "extra_en": [
+        "Appearance",
+        "Block boundaries are visible at a glance"
+      ]
     },
     {
       "term": "インデンテーション",
-      "definition_jp": "字下げの英語表現。行頭に空白を入れて階層を表す整形手法のこと。",
-      "explanation_jp": "インデンテーション(indentation)は「字下げ」の英語名で、まったく同じ概念を指します。プログラムの入れ子構造を、行頭の空白の量(インデント幅)で表現します。\n\nスペース何個分で一段とするかをそろえることが大切で、これがばらつくと逆に読みにくくなります。試験では、字下げとインデンテーションが同じものを指す用語であること、可読性向上のための整形手法である点を理解しておけば十分です。",
-      "analogy_jp": "「字下げ」という和語に対する「インデンテーション」という外来語の関係。日本語と英語で呼び名が違うだけの、同じ一つの作法です。",
-      "memory_hook_jp": "インデンテーションといえば字下げの英語表現で同じ意味",
-      "inline_quiz": [
-        "2010h22a-q054"
+      "one_line_jp": "字下げの英語名",
+      "one_line_zh": "缩进的英文名称",
+      "one_line_en": "The English name for the same leading-space practice",
+      "extra_jp": [
+        "見た目",
+        "字下げと同じ"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "indentation（缩进的英文）",
-      "term_en": "Indentation",
-      "definition_zh": "“缩进”的英文表达。指在行首加入空白来表示层次的排版手法。",
-      "definition_en": "The English term for \"indentation.\" A formatting technique that represents hierarchy by inserting whitespace at the start of a line.",
-      "explanation_zh": "indentation（インデンテーション）是“缩进”的英文名称，指的是完全相同的概念。它用行首空白的多少（缩进宽度）来表现程序的嵌套结构。\n\n关键在于统一“用几个空格作为一级”，如果这一点不一致，反而会变得难读。考试中只要理解：缩进和 indentation 指的是同一个术语，是一种用于提升可读性的排版手法，就足够了。",
-      "explanation_en": "Indentation is the English name for the Japanese term meaning \"indentation,\" and it refers to exactly the same concept. It expresses the nested structure of a program through the amount of whitespace at the start of a line (the indent width).\n\nWhat matters is keeping consistent how many spaces count as one level; if this varies, it actually becomes harder to read. On the exam, it is enough to understand that the Japanese and English terms refer to the same thing—a formatting technique for improving readability.",
-      "analogy_zh": "就像和语词“字下げ”与外来词“indentation”之间的关系：只是日语和英语叫法不同，却是同一种写法规范。",
-      "analogy_en": "It is like the relationship between the native word and the loanword for the same idea: only the name differs between the two languages, while it is one and the same convention.",
-      "memory_hook_zh": "说到 indentation，就是“缩进”的英文表达、含义相同",
-      "memory_hook_en": "Indentation → the English term for indentation, with the same meaning"
+      "extra_zh": [
+        "外观",
+        "与缩进相同"
+      ],
+      "extra_en": [
+        "Appearance",
+        "Same as the entry above"
+      ]
     },
     {
       "term": "ネストの深さ",
-      "definition_jp": "条件分岐や繰り返しが入れ子になっている段数(階層の深さ)。",
-      "explanation_jp": "ネストとは、if文やループの中にさらに別のif文やループが入っている入れ子の構造のことです。ネストの深さは、その入れ子が何段重なっているかを表します。字下げの段数として目に見える形で現れます。\n\nネストが深くなるほど処理の条件が複雑になり、読みにくく間違えやすいコードになります。そのため、深いネストは避け、浅く保つのが良いとされます。試験では、ネスト=入れ子であること、深いほど可読性が下がるという点を押さえましょう。",
-      "analogy_jp": "箱の中にさらに小さい箱、その中にまた箱…と入れ子になっている状態。段が深くなるほど中身を取り出すのが面倒になるのと同じです。",
-      "memory_hook_jp": "ネストの深さといえば入れ子の段数で深いほど読みにくい",
-      "inline_quiz": [
-        "2012h24a-q073"
+      "one_line_jp": "入れ子が重なっている段数",
+      "one_line_zh": "嵌套重叠的层数",
+      "one_line_en": "How many levels of nesting are stacked",
+      "extra_jp": [
+        "構造",
+        "浅いほど読み違いが減る"
       ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "嵌套深度",
-      "term_en": "Nesting Depth",
-      "definition_zh": "条件分支或循环嵌套的层数（层次的深度）。",
-      "definition_en": "The number of levels (the depth of hierarchy) at which conditional branches or loops are nested.",
-      "explanation_zh": "嵌套（nest）是指在 if 语句或循环的内部，又包含另一个 if 语句或循环的套叠结构。嵌套深度表示这种套叠重叠了多少层，它会以缩进的级数这种可见的形式呈现出来。\n\n嵌套越深，处理的条件就越复杂，代码也越难读、越容易出错。因此一般认为应避免过深的嵌套、尽量保持浅。考试中要记住：嵌套＝套叠，越深可读性越差。",
-      "explanation_en": "Nesting refers to a structure in which an if statement or loop contains yet another if statement or loop inside it. Nesting depth expresses how many levels deep this is, and it shows up visibly as the number of indentation levels.\n\nThe deeper the nesting, the more complex the conditions become, and the harder the code is to read and the more error-prone it is. For this reason, it is considered good to avoid deep nesting and keep it shallow. On the exam, remember that nesting means \"being nested,\" and the deeper it is, the lower the readability.",
-      "analogy_zh": "就像箱子里还有更小的箱子，里面又有箱子……这样层层套叠的状态。层数越深，取出里面的东西就越麻烦。",
-      "analogy_en": "It is like a box containing a smaller box, which contains yet another box, and so on—a state of being nested. The deeper the levels, the more troublesome it is to take out what is inside.",
-      "memory_hook_zh": "说到嵌套深度，就是套叠的层数、越深越难读",
-      "memory_hook_en": "Nesting Depth → the number of nested levels; the deeper, the harder to read"
+      "extra_zh": [
+        "结构",
+        "层数越浅越不易读错"
+      ],
+      "extra_en": [
+        "Structure",
+        "Fewer levels mean fewer misreadings"
+      ]
     },
     {
       "term": "命名規則",
-      "definition_jp": "変数や関数などの名前の付け方をあらかじめ統一して定めた取り決め。",
-      "explanation_jp": "命名規則は、変数・関数・ファイルといった識別子に名前を付けるときのルールです。「単語の区切りは大文字にする」「意味の分かる英単語を使う」など、付け方をチームで統一しておきます。\n\n名前から中身の役割が推測でき、誰が読んでも理解しやすいコードになります。整形が「見た目の作法」なのに対し、命名規則は「名前の付け方の作法」という別の観点です。試験では、命名規則が可読性・保守性を高めるための取り決めであることを理解しておきましょう。",
-      "analogy_jp": "会社で書類のファイル名を「日付_案件名_版数」と決めておくのと同じ。名前を見ただけで中身が分かり、皆が同じ流儀でそろえられます。",
-      "memory_hook_jp": "命名規則といえば名前の付け方を統一する取り決め",
+      "one_line_jp": "名前の付け方の取り決め",
+      "one_line_zh": "关于命名方式的约定",
+      "one_line_en": "An agreement on how to name things",
+      "extra_jp": [
+        "名前",
+        "名前から役割を推測できる"
+      ],
+      "extra_zh": [
+        "名称",
+        "能从名称推测作用"
+      ],
+      "extra_en": [
+        "Names",
+        "A name hints at its role"
+      ]
+    },
+    {
+      "term": "モジュール分割",
+      "one_line_jp": "機能ごとの部品に分けて組み立てる手法",
+      "one_line_zh": "按功能拆成部件再组装的方法",
+      "one_line_en": "Building a program from parts split by function",
+      "extra_jp": [
+        "構造",
+        "修正の範囲が狭まり部品を使い回せる"
+      ],
+      "extra_zh": [
+        "结构",
+        "修改范围变小，部件可以复用"
+      ],
+      "extra_en": [
+        "Structure",
+        "Changes stay local and parts can be reused"
+      ]
+    },
+    {
+      "term": "メインルーチン",
+      "one_line_jp": "最初に動き全体の流れを取りまとめる処理",
+      "one_line_zh": "最先运行并统筹整体流程的处理",
+      "one_line_en": "The processing that runs first and directs the overall flow",
+      "extra_jp": [
+        "構造",
+        "全体の手順を読み取れる"
+      ],
+      "extra_zh": [
+        "结构",
+        "能读出整体步骤"
+      ],
+      "extra_en": [
+        "Structure",
+        "Shows the overall sequence of steps"
+      ]
+    },
+    {
+      "term": "サブルーチン",
+      "one_line_jp": "呼び出して使う処理のまとまり",
+      "one_line_zh": "被调用来使用的一段处理",
+      "one_line_en": "A block of processing that is called when needed",
+      "extra_jp": [
+        "構造",
+        "同じ処理を何度も書かずに済む"
+      ],
+      "extra_zh": [
+        "结构",
+        "同样的处理不必重复编写"
+      ],
+      "extra_en": [
+        "Structure",
+        "The same code need not be written repeatedly"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "字下げ",
+      "term_zh": "缩进",
+      "term_en": "Indentation",
+      "one_jp": "**字下げ** は、行の先頭に空白を入れて、処理のまとまりと入れ子の段を見た目で分かるようにする書き方である。",
+      "one_zh": "**缩进**（[[jp:字下げ]]）是在行首加入空白，让处理块和嵌套层次在外观上一目了然的写法。",
+      "one_en": "**Indentation** ([[jp:字下げ]]) is the practice of adding spaces at the start of lines so that blocks of processing and nesting levels are visible on sight.",
+      "detail_jp": "条件分岐や繰り返しの中に入る行を一段右へずらし、同じ段の行は先頭の位置をそろえる。多くの言語では字下げを変えても処理の結果は変わらないが、Python のように字下げでまとまりの範囲を決める言語もある。どちらの場合も、まとまりの切れ目が一目で分かり、読み違いが減る。",
+      "detail_zh": "条件分支或循环内部的行向右移一级，同一层的行则让行首位置对齐。在多数语言中，改变缩进不影响处理结果，但也有像 Python 这样用缩进决定代码块范围的语言。无论哪种情况，代码块的分界都一目了然，读错的情况也会减少。",
+      "detail_en": "Lines inside a conditional branch or a loop are shifted one level to the right, and lines at the same level start at the same position. In most languages changing the indentation does not change the result, but some languages such as Python use indentation to decide where a block begins and ends. Either way, block boundaries are clear at a glance and misreadings become less likely.",
+      "analogy_jp": "箇条書きで大項目の下に小項目を少し右へずらして書くと、どの小項目がどの大項目に属するかがすぐ分かるのと同じ。",
+      "analogy_zh": "就像写提纲时把小项目稍微往右缩进写在大项目下面，一看就知道哪个小项目属于哪个大项目。",
+      "analogy_en": "It works like an outline in which sub-items are written slightly to the right under a main item, so you see at once which sub-item belongs to which main item.",
+      "hook_jp": "「字を下げる」と書くとおり、行頭の文字を右へ押し下げる操作がそのまま名前になっている。",
+      "hook_zh": "日语写作「字を下げる」，意思是把行首的字往右推下去，这个动作直接成了名称。",
+      "hook_en": "The Japanese name literally means \"lowering the characters\": the act of pushing the first characters of a line to the right became the name itself.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "字下げ は、行の先頭に空白を入れて、処理のまとまりと入れ子の段を見た目で分かるようにする書き方である。",
+      "definition_zh": "缩进（字下げ）是在行首加入空白，让处理块和嵌套层次在外观上一目了然的写法。",
+      "definition_en": "Indentation (字下げ) is the practice of adding spaces at the start of lines so that blocks of processing and nesting levels are visible on sight.",
+      "explanation_jp": "条件分岐や繰り返しの中に入る行を一段右へずらし、同じ段の行は先頭の位置をそろえる。多くの言語では字下げを変えても処理の結果は変わらないが、Python のように字下げでまとまりの範囲を決める言語もある。どちらの場合も、まとまりの切れ目が一目で分かり、読み違いが減る。",
+      "explanation_zh": "条件分支或循环内部的行向右移一级，同一层的行则让行首位置对齐。在多数语言中，改变缩进不影响处理结果，但也有像 Python 这样用缩进决定代码块范围的语言。无论哪种情况，代码块的分界都一目了然，读错的情况也会减少。",
+      "explanation_en": "Lines inside a conditional branch or a loop are shifted one level to the right, and lines at the same level start at the same position. In most languages changing the indentation does not change the result, but some languages such as Python use indentation to decide where a block begins and ends. Either way, block boundaries are clear at a glance and misreadings become less likely.",
+      "memory_hook_jp": "「字を下げる」と書くとおり、行頭の文字を右へ押し下げる操作がそのまま名前になっている。",
+      "memory_hook_zh": "日语写作「字を下げる」，意思是把行首的字往右推下去，这个动作直接成了名称。",
+      "memory_hook_en": "The Japanese name literally means \"lowering the characters\": the act of pushing the first characters of a line to the right became the name itself.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "インデンテーション",
+      "term_zh": "indentation（缩进的英文）",
+      "term_en": "Indentation",
+      "one_jp": "**インデンテーション** (indentation) は字下げの英語名で、指す内容は字下げと同じである。",
+      "one_zh": "**indentation**（[[jp:インデンテーション]]）是缩进的英文名称，所指内容与缩进相同。",
+      "one_en": "**Indentation** ([[jp:インデンテーション]]) is simply the English name for [[jp:字下げ]] and refers to exactly the same thing.",
+      "detail_jp": "行頭に入れる空白そのもの、またはその幅を **インデント** と呼び、空白文字やタブで一段分を作る。一段の幅をプログラム全体でそろえないと、まとまりの境目がかえって読み取りにくくなる。",
+      "detail_zh": "加在行首的空白本身或其宽度称为 **indent**（缩进量），用空格或制表符做出一级的宽度。如果整个程序中一级的宽度不统一，代码块之间的界线反而更难看清。",
+      "detail_en": "The leading space itself, or its width, is called an **indent**, and one level is made of space characters or a tab. If the width of one level is not kept the same across the whole program, the boundaries between blocks become harder to read, not easier.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "英語の indent は、紙の端から文字が内側へ引っ込んだ「くぼみ」を表す。",
+      "hook_zh": "英语的 indent 指文字从纸边向内退进去形成的「凹进处」。",
+      "hook_en": "The English word indent describes the notch where text is set back inward from the edge of the page.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**インデンテーション** と **字下げ** は同じ整形を英語と日本語で呼んだもので、別々の手法ではない。",
+          "text_zh": "**indentation**（[[jp:インデンテーション]]）和**缩进**（[[jp:字下げ]]）是同一种排版方式的英文叫法和日文叫法，并不是两种不同的方法。",
+          "text_en": "**Indentation** ([[jp:インデンテーション]]) and [[jp:字下げ]] are the English and Japanese names for the same formatting practice, not two separate techniques."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "インデンテーション (indentation) は字下げの英語名で、指す内容は字下げと同じである。",
+      "definition_zh": "indentation（インデンテーション）是缩进的英文名称，所指内容与缩进相同。",
+      "definition_en": "Indentation (インデンテーション) is simply the English name for 字下げ and refers to exactly the same thing.",
+      "explanation_jp": "行頭に入れる空白そのもの、またはその幅を インデント と呼び、空白文字やタブで一段分を作る。一段の幅をプログラム全体でそろえないと、まとまりの境目がかえって読み取りにくくなる。",
+      "explanation_zh": "加在行首的空白本身或其宽度称为 indent（缩进量），用空格或制表符做出一级的宽度。如果整个程序中一级的宽度不统一，代码块之间的界线反而更难看清。",
+      "explanation_en": "The leading space itself, or its width, is called an indent, and one level is made of space characters or a tab. If the width of one level is not kept the same across the whole program, the boundaries between blocks become harder to read, not easier.",
+      "memory_hook_jp": "英語の indent は、紙の端から文字が内側へ引っ込んだ「くぼみ」を表す。",
+      "memory_hook_zh": "英语的 indent 指文字从纸边向内退进去形成的「凹进处」。",
+      "memory_hook_en": "The English word indent describes the notch where text is set back inward from the edge of the page.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "ネストの深さ",
+      "term_zh": "嵌套深度",
+      "term_en": "Nesting Depth",
+      "one_jp": "**ネストの深さ** は、条件分岐や繰り返しの中にさらに条件分岐や繰り返しが入る **入れ子** (ネスト) が、何段重なっているかを表す。",
+      "one_zh": "**嵌套深度**（[[jp:ネストの深さ]]）表示在条件分支或循环里面再放入条件分支或循环的**嵌套**（nest）重叠了几层。",
+      "one_en": "**Nesting depth** ([[jp:ネストの深さ]]) is how many levels of **nesting** are stacked, where a conditional branch or loop is placed inside another conditional branch or loop.",
+      "detail_jp": "例えば、繰り返しの中に条件分岐があり、その中にもう一つ条件分岐があれば、入れ子は 3 段になる。段が深いほど、ある行が実行される条件を確かめるのに多くの段をさかのぼる必要があり、読み違いや修正の誤りが起きやすい。深くなった部分は別の処理として切り出すなどして、段を浅く保つ工夫をする。",
+      "detail_zh": "例如，循环中有条件分支，其中又有一个条件分支，嵌套就是 3 层。层数越深，要确认某一行在什么条件下执行，就得往回追溯越多的层，容易读错或改错。对于变深的部分，可以把它拆出来作为单独的处理等，设法保持较浅的层数。",
+      "detail_en": "For example, a loop containing a branch that contains another branch is nested three levels deep. The deeper the nesting, the more levels you must trace back to see when a line runs, which invites misreadings and faulty fixes. Deep parts are kept shallow by measures such as moving them out into separate processing.",
+      "analogy_jp": "箱の中に箱、その中にまた箱を入れた入れ子の箱では、奥の箱ほど取り出すまでに開ける手間が増える。",
+      "analogy_zh": "就像套娃式的盒子，盒中有盒、盒中再有盒，越里面的盒子，要取出来就得多开几层。",
+      "analogy_en": "Think of boxes inside boxes inside boxes: the innermost box takes the most opening to reach.",
+      "hook_jp": "nest は英語で「鳥の巣」。巣に卵が収まるように、処理の中に処理が収まる。",
+      "hook_zh": "nest 在英语中是「鸟巢」。就像蛋安放在巢里一样，处理里面安放着处理。",
+      "hook_en": "Nest means a bird's nest in English: just as eggs sit in a nest, processing sits inside processing.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ネストの深さ** は入れ子の段数という構造の性質で、**字下げ** はその段を見た目に表す手段なので、一段の幅を一律に広げても深さは変わらない。",
+          "text_zh": "**嵌套深度**（[[jp:ネストの深さ]]）是嵌套层数这一结构上的性质，**缩进**（[[jp:字下げ]]）是把层次在外观上表现出来的手段，所以把每一级的宽度统一加宽，深度也不会改变。",
+          "text_en": "**Nesting depth** ([[jp:ネストの深さ]]) is a structural property, the number of nested levels, while **indentation** ([[jp:字下げ]]) is a way to show those levels visually, so widening every level uniformly leaves the depth unchanged."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "steps",
+        "data": {
+          "root": {
+            "id": "n1",
+            "label": {
+              "jp": "繰り返し (1 段目)",
+              "zh": "循环（第 1 层）",
+              "en": "Loop (level 1)"
+            },
+            "children": [
+              {
+                "id": "n2",
+                "label": {
+                  "jp": "条件分岐 (2 段目)",
+                  "zh": "条件分支（第 2 层）",
+                  "en": "Branch (level 2)"
+                },
+                "children": [
+                  {
+                    "id": "n3",
+                    "label": {
+                      "jp": "条件分岐 (3 段目)",
+                      "zh": "条件分支（第 3 层）",
+                      "en": "Branch (level 3)"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "steps": [
+          {
+            "caption_jp": "外側に繰り返しが 1 つあるだけなら、入れ子は 1 段。",
+            "caption_zh": "外侧只有 1 个循环时，嵌套为 1 层。",
+            "caption_en": "With just one loop on the outside, nesting is one level.",
+            "state": {
+              "depth": 1
+            }
+          },
+          {
+            "caption_jp": "繰り返しの中に条件分岐が入ると、入れ子は 2 段になる。",
+            "caption_zh": "循环中放入条件分支后，嵌套变为 2 层。",
+            "caption_en": "Placing a branch inside the loop makes nesting two levels.",
+            "state": {
+              "depth": 2
+            }
+          },
+          {
+            "caption_jp": "その条件分岐の中にもう 1 つ条件分岐が入ると 3 段になり、内側の行ほど実行される条件を追いにくい。",
+            "caption_zh": "在那个条件分支中再放 1 个条件分支就成了 3 层，越靠内侧的行，越难追踪它在什么条件下执行。",
+            "caption_en": "Another branch inside that branch makes three levels, and the further in a line sits, the harder it is to trace when it runs.",
+            "state": {
+              "depth": 3
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "ネストの深さ は、条件分岐や繰り返しの中にさらに条件分岐や繰り返しが入る 入れ子 (ネスト) が、何段重なっているかを表す。",
+      "definition_zh": "嵌套深度（ネストの深さ）表示在条件分支或循环里面再放入条件分支或循环的嵌套（nest）重叠了几层。",
+      "definition_en": "Nesting depth (ネストの深さ) is how many levels of nesting are stacked, where a conditional branch or loop is placed inside another conditional branch or loop.",
+      "explanation_jp": "例えば、繰り返しの中に条件分岐があり、その中にもう一つ条件分岐があれば、入れ子は 3 段になる。段が深いほど、ある行が実行される条件を確かめるのに多くの段をさかのぼる必要があり、読み違いや修正の誤りが起きやすい。深くなった部分は別の処理として切り出すなどして、段を浅く保つ工夫をする。",
+      "explanation_zh": "例如，循环中有条件分支，其中又有一个条件分支，嵌套就是 3 层。层数越深，要确认某一行在什么条件下执行，就得往回追溯越多的层，容易读错或改错。对于变深的部分，可以把它拆出来作为单独的处理等，设法保持较浅的层数。",
+      "explanation_en": "For example, a loop containing a branch that contains another branch is nested three levels deep. The deeper the nesting, the more levels you must trace back to see when a line runs, which invites misreadings and faulty fixes. Deep parts are kept shallow by measures such as moving them out into separate processing.",
+      "memory_hook_jp": "nest は英語で「鳥の巣」。巣に卵が収まるように、処理の中に処理が収まる。",
+      "memory_hook_zh": "nest 在英语中是「鸟巢」。就像蛋安放在巢里一样，处理里面安放着处理。",
+      "memory_hook_en": "Nest means a bird's nest in English: just as eggs sit in a nest, processing sits inside processing.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "命名規則",
+      "term_zh": "命名规则",
+      "term_en": "Naming Conventions",
+      "one_jp": "**命名規則** は、変数や関数などに付ける名前の付け方を、あらかじめ決めておく取り決めである。",
+      "one_zh": "**命名规则**（[[jp:命名規則]]）是事先定好给变量、函数等起名方式的约定。",
+      "one_en": "**Naming conventions** ([[jp:命名規則]]) are rules agreed in advance on how to name variables, functions and other elements.",
+      "detail_jp": "例えば、役割の分かる英単語を使う、単語の区切りを大文字や下線で示す、定数はすべて大文字にする、といった決まりを作る。命名規則は字下げの幅などの決まりと合わせて、プログラムの書き方をそろえる **コーディング規約** の一部として定めることが多い。名前の付け方が統一されていると、書いた本人以外も名前から役割を推測できる。",
+      "detail_zh": "例如，规定使用能看出作用的英文单词、用大写字母或下划线标出单词分界、常量全部大写等。命名规则通常与缩进宽度等规定一起，作为统一程序写法的**编码规范**的一部分来制定。命名方式统一后，编写者以外的人也能从名称推测出它的作用。",
+      "detail_en": "Typical rules are to use English words that show the role, to mark word breaks with capitals or underscores, and to write constants in all capitals. Naming conventions are usually set together with rules such as the indentation width, as part of the **coding standards** that keep the way programs are written consistent. When names follow one scheme, people other than the author can guess a name's role from the name alone.",
+      "analogy_jp": "書類棚のファイル名を「年月_取引先_内容」の順に統一しておくと、誰が探しても中身の見当がつくのと同じ。",
+      "analogy_zh": "就像把文件柜里的文件名统一成「年月_客户_内容」的顺序，不管谁来找都能猜到里面是什么。",
+      "analogy_en": "It is like naming every file in a cabinet as \"year-month_client_content\", so anyone looking can guess what is inside.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**命名規則** などで書き方を統一する主なねらいは、後から読んで直す作業をしやすくすること、つまり **保守性** を高めることである。",
+          "text_zh": "用**命名规则**（[[jp:命名規則]]）等统一写法，主要目的是让日后阅读和修改的工作更轻松，也就是提高**可维护性**（[[jp:保守性]]）。",
+          "text_en": "The main aim of unifying the way code is written, with **naming conventions** ([[jp:命名規則]]) and the like, is to make later reading and fixing easier, that is, to raise **maintainability** ([[jp:保守性]]).",
+          "qids": [
+            "2010h22a-q043"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "決まりの例",
+              "zh": "规则示例",
+              "en": "Example rule"
+            },
+            {
+              "jp": "名前の例",
+              "zh": "名称示例",
+              "en": "Example name"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "単語の区切りを大文字で示す",
+                  "zh": "用大写字母标出单词分界",
+                  "en": "Mark word breaks with capitals"
+                },
+                {
+                  "jp": "orderCount",
+                  "zh": "orderCount",
+                  "en": "orderCount"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "単語の区切りを下線で示す",
+                  "zh": "用下划线标出单词分界",
+                  "en": "Mark word breaks with underscores"
+                },
+                {
+                  "jp": "order_count",
+                  "zh": "order_count",
+                  "en": "order_count"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "定数はすべて大文字で書く",
+                  "zh": "常量全部用大写字母书写",
+                  "en": "Write constants in all capitals"
+                },
+                {
+                  "jp": "TAX_RATE",
+                  "zh": "TAX_RATE",
+                  "en": "TAX_RATE"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2010h22a-q043"
+      ],
+      "definition_jp": "命名規則 は、変数や関数などに付ける名前の付け方を、あらかじめ決めておく取り決めである。",
+      "definition_zh": "命名规则（命名規則）是事先定好给变量、函数等起名方式的约定。",
+      "definition_en": "Naming conventions (命名規則) are rules agreed in advance on how to name variables, functions and other elements.",
+      "explanation_jp": "例えば、役割の分かる英単語を使う、単語の区切りを大文字や下線で示す、定数はすべて大文字にする、といった決まりを作る。命名規則は字下げの幅などの決まりと合わせて、プログラムの書き方をそろえる コーディング規約 の一部として定めることが多い。名前の付け方が統一されていると、書いた本人以外も名前から役割を推測できる。",
+      "explanation_zh": "例如，规定使用能看出作用的英文单词、用大写字母或下划线标出单词分界、常量全部大写等。命名规则通常与缩进宽度等规定一起，作为统一程序写法的编码规范的一部分来制定。命名方式统一后，编写者以外的人也能从名称推测出它的作用。",
+      "explanation_en": "Typical rules are to use English words that show the role, to mark word breaks with capitals or underscores, and to write constants in all capitals. Naming conventions are usually set together with rules such as the indentation width, as part of the coding standards that keep the way programs are written consistent. When names follow one scheme, people other than the author can guess a name's role from the name alone.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
       "inline_quiz": [
         "2010h22a-q043"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "命名规则",
-      "term_en": "Naming Conventions",
-      "definition_zh": "事先统一规定变量、函数等名称取法的约定。",
-      "definition_en": "An agreed-upon set of rules that standardizes in advance how names are given to variables, functions, and the like.",
-      "explanation_zh": "命名规则是为变量、函数、文件等标识符取名时所遵循的规则。例如“单词的分隔处用大写字母”“使用含义明确的英文单词”等，把取名方式在团队内统一起来。\n\n这样一来，从名字就能推测出内容的作用，写出谁来读都易于理解的代码。如果说排版是“外观上的规范”，那么命名规则就是“取名方式的规范”，属于另一个角度。考试中要理解：命名规则是为提升可读性、可维护性而约定的规则。",
-      "explanation_en": "Naming conventions are the rules followed when naming identifiers such as variables, functions, and files. For example, \"capitalize letters at word boundaries\" or \"use meaningful English words\"—the team standardizes the way names are given.\n\nThis lets you infer the role of the contents from the name, producing code that is easy to understand no matter who reads it. While formatting is a \"convention about appearance,\" naming conventions are a \"convention about how to name,\" a separate perspective. On the exam, understand that naming conventions are an agreement made to improve readability and maintainability.",
-      "analogy_zh": "就像在公司里把文件名规定为“日期_项目名_版本号”一样。只看名字就能知道内容，大家也能按同一套方式保持统一。",
-      "analogy_en": "It is like a company deciding that document file names should be \"date_project-name_version.\" Just by looking at the name you know the contents, and everyone can keep things consistent in the same style.",
-      "memory_hook_zh": "说到命名规则，就是统一取名方式的约定",
-      "memory_hook_en": "Naming Conventions → an agreement that standardizes how names are given"
+      "figure": null
     },
     {
       "term": "モジュール分割",
-      "definition_jp": "プログラムを機能ごとの部品(モジュール)に分けて構成する手法。",
-      "explanation_jp": "モジュール分割は、大きなプログラムを、機能のまとまりごとに小さな部品(モジュール)へ分けて作る考え方です。一つのモジュールは一つの役割を担い、部品同士を組み合わせて全体を構成します。\n\n分けることで、修正範囲が局所化されて保守しやすく、部品を別の場所で再利用しやすくなります。整形・命名から一歩進んだ構造化の中心概念で、後のメインルーチン・サブルーチンの前提にもなります。試験では、モジュール分割が保守性・再利用性を高めるための分割手法であることが問われます。",
-      "analogy_jp": "料理を「下ごしらえ」「味付け」「盛り付け」と工程ごとに分担するようなもの。役割を部品に分ければ、一部を直すときも全体を作り直さずに済みます。",
-      "memory_hook_jp": "モジュール分割といえば機能ごとに部品へ分ける構造化",
+      "term_zh": "模块划分",
+      "term_en": "Module Decomposition",
+      "one_jp": "**モジュール分割** は、大きなプログラムを機能のまとまりごとの部品 (**モジュール**) に分けて組み立てる手法である。",
+      "one_zh": "**模块划分**（[[jp:モジュール分割]]）是把大型程序按功能拆成一个个部件（**模块**），再组装起来的方法。",
+      "one_en": "**Module decomposition** ([[jp:モジュール分割]]) is a technique of splitting a large program into parts by function, called **modules**, and assembling it from them.",
+      "detail_jp": "1 つのモジュールには 1 つの役割を持たせ、モジュール同士は受け渡す情報を決めて組み合わせる。修正が必要になっても影響する範囲がそのモジュールの中に収まりやすく、作った部品を別のプログラムで使い回すこともできる。なお、モジュールという語は、ソースコードを翻訳・結合する段階で作られるプログラムの単位の呼び名にも使われる。",
+      "detail_zh": "让 1 个模块只承担 1 项职责，模块之间先定好要传递的信息再组合起来。即使需要修改，影响范围也容易限制在该模块内部，做好的部件还能在别的程序中复用。另外，模块一词也用来指源代码在编译、链接阶段产生的程序单位。",
+      "detail_en": "Each module is given a single role, and modules are combined after deciding what information they pass to one another. When a change is needed, its effect tends to stay inside that module, and parts already built can be reused in other programs. The word module is also used for the program units produced when source code is translated and linked.",
+      "analogy_jp": "家具を板・脚・引き出しの部品で組み立てておくと、壊れた引き出しだけを取り替えられるのに似ている。",
+      "analogy_zh": "就像用板材、桌腿、抽屉这些部件组装家具，坏了的抽屉可以单独换掉。",
+      "analogy_en": "It is like furniture built from boards, legs and drawers, where a broken drawer can be replaced on its own.",
+      "hook_jp": "module は「規格をそろえた交換できる単位」を表し、宇宙船の居住モジュールのように差し替え・追加ができる部品をいう。",
+      "hook_zh": "module 指「规格统一、可以互换的单位」，就像宇宙飞船的居住舱模块，是可以替换、追加的部件。",
+      "hook_en": "Module means a standardized, interchangeable unit, like a spacecraft's habitation module, a part that can be swapped or added.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "翻訳したプログラムを結合し、コンピュータがそのまま実行できる形の機械語にしたものを **ロードモジュール** と呼ぶ。",
+          "text_zh": "把编译后的程序链接起来，成为计算机可以直接执行的机器语言形式，这样的程序称为**装入模块**（[[jp:ロードモジュール]]）。",
+          "text_en": "Machine code produced by linking translated programs, ready for the computer to run as is, is called a **load module** ([[jp:ロードモジュール]]).",
+          "qids": [
+            "2013h25h-q060"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "pay",
+            "label": {
+              "jp": "給与計算プログラム",
+              "zh": "工资计算程序",
+              "en": "Payroll program"
+            },
+            "children": [
+              {
+                "id": "m1",
+                "label": {
+                  "jp": "勤務記録の読み込み",
+                  "zh": "读取考勤记录",
+                  "en": "Read attendance records"
+                }
+              },
+              {
+                "id": "m2",
+                "label": {
+                  "jp": "支給額の計算",
+                  "zh": "计算发放金额",
+                  "en": "Calculate pay amounts"
+                }
+              },
+              {
+                "id": "m3",
+                "label": {
+                  "jp": "明細の印刷",
+                  "zh": "打印工资明细",
+                  "en": "Print pay slips"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [
+        "2013h25h-q060",
+        "2009h21h-q060"
+      ],
+      "definition_jp": "モジュール分割 は、大きなプログラムを機能のまとまりごとの部品 (モジュール) に分けて組み立てる手法である。",
+      "definition_zh": "模块划分（モジュール分割）是把大型程序按功能拆成一个个部件（模块），再组装起来的方法。",
+      "definition_en": "Module decomposition (モジュール分割) is a technique of splitting a large program into parts by function, called modules, and assembling it from them.",
+      "explanation_jp": "1 つのモジュールには 1 つの役割を持たせ、モジュール同士は受け渡す情報を決めて組み合わせる。修正が必要になっても影響する範囲がそのモジュールの中に収まりやすく、作った部品を別のプログラムで使い回すこともできる。なお、モジュールという語は、ソースコードを翻訳・結合する段階で作られるプログラムの単位の呼び名にも使われる。",
+      "explanation_zh": "让 1 个模块只承担 1 项职责，模块之间先定好要传递的信息再组合起来。即使需要修改，影响范围也容易限制在该模块内部，做好的部件还能在别的程序中复用。另外，模块一词也用来指源代码在编译、链接阶段产生的程序单位。",
+      "explanation_en": "Each module is given a single role, and modules are combined after deciding what information they pass to one another. When a change is needed, its effect tends to stay inside that module, and parts already built can be reused in other programs. The word module is also used for the program units produced when source code is translated and linked.",
+      "memory_hook_jp": "module は「規格をそろえた交換できる単位」を表し、宇宙船の居住モジュールのように差し替え・追加ができる部品をいう。",
+      "memory_hook_zh": "module 指「规格统一、可以互换的单位」，就像宇宙飞船的居住舱模块，是可以替换、追加的部件。",
+      "memory_hook_en": "Module means a standardized, interchangeable unit, like a spacecraft's habitation module, a part that can be swapped or added.",
       "inline_quiz": [
+        "2013h25h-q060",
         "2009h21h-q060"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph TD; A[\"プログラム全体\"]; A --> B[\"モジュールA\"]; A --> C[\"モジュールB\"]; A --> D[\"モジュールC\"]",
-        "svg_path": "figures/technology-14-38-u02-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "模块划分",
-      "term_en": "Module Decomposition",
-      "definition_zh": "把程序按功能拆分成部件（模块）来构成的手法。",
-      "definition_en": "A technique of structuring a program by dividing it into parts (modules) according to function.",
-      "explanation_zh": "模块划分是把庞大的程序，按功能的归类拆分成一个个小部件（模块）来编写的思路。一个模块承担一项职责，再由各部件相互组合构成整体。\n\n经过拆分，修改的影响范围被局部化，便于维护；部件也更容易在别处复用。它是从排版、命名再进一步的结构化的核心概念，也是后面主例程、子例程的前提。考试会考查：模块划分是为提升可维护性、可复用性而采用的拆分手法。",
-      "explanation_en": "Module decomposition is the idea of writing a large program by dividing it into small parts (modules) according to groupings of function. One module takes on one role, and the whole is built by combining the parts with one another.\n\nBy dividing it up, the scope of modifications is localized, making maintenance easier, and parts become easier to reuse elsewhere. It is a core concept of structuring that goes one step beyond formatting and naming, and it is also the premise for the main routine and subroutines covered later. The exam tests that module decomposition is a dividing technique adopted to improve maintainability and reusability.",
-      "analogy_zh": "就像做菜时把“备料”“调味”“摆盘”按工序分工一样。把职责拆成部件后，要修改某一部分时也无需把整体重做一遍。",
-      "analogy_en": "It is like dividing cooking into stages such as \"prep,\" \"seasoning,\" and \"plating,\" each handled separately. Once roles are split into parts, you can fix one part without rebuilding the whole.",
-      "memory_hook_zh": "说到模块划分，就是按功能拆成部件的结构化",
-      "memory_hook_en": "Module Decomposition → structuring by splitting into parts by function"
+      "figure": null
     },
     {
       "term": "メインルーチン",
-      "definition_jp": "プログラムの起点となり、全体の流れを制御する主たる処理。",
-      "explanation_jp": "メインルーチンは、プログラムが実行されたときに最初に動き出す中心の処理で、全体の流れを取りまとめます。必要に応じてサブルーチンを呼び出し、結果を受け取りながら処理を進めます。\n\n主処理としての司令塔の役割を持ち、細かい個別処理は下位のサブルーチンに任せます。試験では、メインルーチンが処理の起点・全体制御を担うこと、そこから呼び出される従属処理がサブルーチンであるという関係を理解しておくことが重要です。",
-      "analogy_jp": "料理の段取りを指揮する「主担当のコック」。自分で全部をやらず、下ごしらえなどを担当者(サブルーチン)に頼みながら全体を進めます。",
-      "memory_hook_jp": "メインルーチンといえばプログラムの起点で全体を制御する主処理",
-      "inline_quiz": [
-        "2017h29h-q070"
+      "term_zh": "主例程",
+      "term_en": "Main Routine",
+      "one_jp": "**メインルーチン** は、プログラムを実行したときに最初に動き、処理全体の流れを取りまとめる中心の処理である。",
+      "one_zh": "**主例程**（[[jp:メインルーチン]]）是程序运行时最先启动、统筹整个处理流程的核心处理。",
+      "one_en": "A **main routine** ([[jp:メインルーチン]]) is the central processing that starts first when a program runs and directs the flow of the whole program.",
+      "detail_jp": "細かな個別の処理は自分で書かずに下位の処理を呼び出して任せ、処理が戻ってきたら次の手順へ進む。そのため、メインルーチンを読めば、プログラム全体が何をどの順で行うかをつかめる。",
+      "detail_zh": "细节的个别处理不由自己编写，而是调用下层处理来完成，处理返回后再进入下一步。因此，只要读主例程，就能把握整个程序按什么顺序做什么。",
+      "detail_en": "It leaves individual detailed tasks to lower-level processing that it calls, then moves on to the next step once that processing returns. Reading the main routine therefore tells you what the whole program does and in what order.",
+      "analogy_jp": "工事の現場監督が作業の順番を決め、各工程はそれぞれの職人に頼んで、終わった報告を受けてから次の工程に進めるのに似ている。",
+      "analogy_zh": "就像工地的现场负责人决定作业顺序，把各道工序交给各自的师傅，收到完工报告后再推进下一道工序。",
+      "analogy_en": "It resembles a site supervisor who sets the order of the work, hands each stage to the right tradesperson, and moves to the next stage after hearing that one is done.",
+      "points": [],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "s1",
+              "label": {
+                "jp": "メインルーチン開始",
+                "zh": "主例程开始",
+                "en": "Main routine starts"
+              }
+            },
+            {
+              "id": "s2",
+              "label": {
+                "jp": "下位の処理を呼び出す",
+                "zh": "调用下层处理",
+                "en": "Call lower-level processing"
+              }
+            },
+            {
+              "id": "s3",
+              "label": {
+                "jp": "処理が終わり呼び出し元へ戻る",
+                "zh": "处理结束，返回调用方",
+                "en": "Processing ends and returns to the caller"
+              }
+            },
+            {
+              "id": "s4",
+              "label": {
+                "jp": "戻ったところから次の手順へ",
+                "zh": "从返回处进入下一步",
+                "en": "Continue with the next step"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "プログラムを実行すると、まずメインルーチンが動き出す。",
+            "caption_zh": "运行程序后，主例程最先开始工作。",
+            "caption_en": "When the program runs, the main routine starts first.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "細かな処理は自分で書かず、下位の処理を呼び出して任せる。",
+            "caption_zh": "细节处理不自己写，而是调用下层处理来完成。",
+            "caption_en": "Instead of doing the details itself, it calls lower-level processing.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "呼び出された処理は、終わると呼び出し元の続きへ戻る。",
+            "caption_zh": "被调用的处理结束后，回到调用方接着往下执行。",
+            "caption_en": "The called processing finishes and returns to where it was called.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "処理が戻ると、メインルーチンは次の手順へ進む。",
+            "caption_zh": "处理返回后，主例程进入下一步。",
+            "caption_en": "Once the processing returns, the main routine moves on to the next step.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [],
+      "definition_jp": "メインルーチン は、プログラムを実行したときに最初に動き、処理全体の流れを取りまとめる中心の処理である。",
+      "definition_zh": "主例程（メインルーチン）是程序运行时最先启动、统筹整个处理流程的核心处理。",
+      "definition_en": "A main routine (メインルーチン) is the central processing that starts first when a program runs and directs the flow of the whole program.",
+      "explanation_jp": "細かな個別の処理は自分で書かずに下位の処理を呼び出して任せ、処理が戻ってきたら次の手順へ進む。そのため、メインルーチンを読めば、プログラム全体が何をどの順で行うかをつかめる。",
+      "explanation_zh": "细节的个别处理不由自己编写，而是调用下层处理来完成，处理返回后再进入下一步。因此，只要读主例程，就能把握整个程序按什么顺序做什么。",
+      "explanation_en": "It leaves individual detailed tasks to lower-level processing that it calls, then moves on to the next step once that processing returns. Reading the main routine therefore tells you what the whole program does and in what order.",
+      "memory_hook_jp": "",
+      "memory_hook_zh": "",
+      "memory_hook_en": "",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
+    },
+    {
+      "term": "サブルーチン",
+      "term_zh": "子例程",
+      "term_en": "Subroutine",
+      "one_jp": "**サブルーチン** は、特定のまとまった処理を 1 つにまとめ、ほかの処理から呼び出して使えるようにした部品である。",
+      "one_zh": "**子例程**（[[jp:サブルーチン]]）是把特定的一段处理归为一体，使其他处理能够调用它的部件。",
+      "one_en": "A **subroutine** ([[jp:サブルーチン]]) is a part that packs a specific block of processing into one unit so that other processing can call it.",
+      "detail_jp": "呼び出されると処理を実行し、終わると呼び出した側の続きへ戻る。同じ処理を何か所にも書かずに済み、1 か所直せば呼び出しているすべての箇所に反映される。言語によっては **関数** や **手続き** とも呼ばれ、サブルーチンがさらに別のサブルーチンを呼び出すこともできる。",
+      "detail_zh": "被调用后执行处理，结束后回到调用方接着往下执行。同样的处理不必在多处重复编写，只改 1 处，所有调用它的地方都会反映出来。根据语言不同，它也称为**函数**或**过程**，子例程还可以再调用别的子例程。",
+      "detail_en": "When called, it carries out its processing and then returns to where the caller left off. The same code need not be written in several places, and one fix applies everywhere it is called. Depending on the language it is also called a **function** or **procedure**, and a subroutine can itself call other subroutines.",
+      "analogy_jp": "料理の手順書で「だしの取り方は別ページ参照」と書いておき、必要な場面で何度でもそのページを見に行くのに似ている。",
+      "analogy_zh": "就像菜谱里写着「熬高汤的方法见另页」，需要时随时翻到那一页去看。",
+      "analogy_en": "It is like a recipe that says \"for making stock, see the separate page\", which you can turn to whenever that step comes up.",
+      "hook_jp": "sub は「下の・従属の」を表す接頭語で、サブマリン (水面の下を進む船) の sub と同じ。",
+      "hook_zh": "sub 是表示「下面的、从属的」的前缀，与 submarine（在水面下行进的船）中的 sub 相同。",
+      "hook_en": "Sub is a prefix meaning below or subordinate, the same sub as in submarine, a ship that travels below the surface.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**メインルーチン** は実行の起点として全体の順序を決め、**サブルーチン** は呼び出されたときだけ動いて呼び出し元へ戻る。",
+          "text_zh": "**主例程**（[[jp:メインルーチン]]）作为运行的起点决定整体顺序，**子例程**（[[jp:サブルーチン]]）只在被调用时才运行，并返回调用方。",
+          "text_en": "A **main routine** ([[jp:メインルーチン]]) is where execution starts and sets the overall order, while a **subroutine** ([[jp:サブルーチン]]) runs only when called and then returns to its caller."
+        }
       ],
-      "inline_fallback": true,
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-14-38-u02-t02.svg"
+        }
+      },
+      "quiz": [],
+      "definition_jp": "サブルーチン は、特定のまとまった処理を 1 つにまとめ、ほかの処理から呼び出して使えるようにした部品である。",
+      "definition_zh": "子例程（サブルーチン）是把特定的一段处理归为一体，使其他处理能够调用它的部件。",
+      "definition_en": "A subroutine (サブルーチン) is a part that packs a specific block of processing into one unit so that other processing can call it.",
+      "explanation_jp": "呼び出されると処理を実行し、終わると呼び出した側の続きへ戻る。同じ処理を何か所にも書かずに済み、1 か所直せば呼び出しているすべての箇所に反映される。言語によっては 関数 や 手続き とも呼ばれ、サブルーチンがさらに別のサブルーチンを呼び出すこともできる。",
+      "explanation_zh": "被调用后执行处理，结束后回到调用方接着往下执行。同样的处理不必在多处重复编写，只改 1 处，所有调用它的地方都会反映出来。根据语言不同，它也称为函数或过程，子例程还可以再调用别的子例程。",
+      "explanation_en": "When called, it carries out its processing and then returns to where the caller left off. The same code need not be written in several places, and one fix applies everywhere it is called. Depending on the language it is also called a function or procedure, and a subroutine can itself call other subroutines.",
+      "memory_hook_jp": "sub は「下の・従属の」を表す接頭語で、サブマリン (水面の下を進む船) の sub と同じ。",
+      "memory_hook_zh": "sub 是表示「下面的、从属的」的前缀，与 submarine（在水面下行进的船）中的 sub 相同。",
+      "memory_hook_en": "Sub is a prefix meaning below or subordinate, the same sub as in submarine, a ship that travels below the surface.",
+      "inline_quiz": [],
+      "inline_fallback": false,
       "figure": {
         "mermaid": "graph TD; A[\"メインルーチン\"]; A --> B[\"サブルーチン1\"]; A --> C[\"サブルーチン2\"]; B --> A; C --> A",
         "svg_path": "figures/technology-14-38-u02-t02.svg",
         "rendered": true
-      },
-      "term_zh": "主例程",
-      "term_en": "Main Routine",
-      "definition_zh": "作为程序的起点、控制整体流程的主处理。",
-      "definition_en": "The main processing that serves as the program's starting point and controls the overall flow.",
-      "explanation_zh": "主例程是程序被执行时最先开始运行的核心处理，负责统筹整体流程。它会根据需要调用子例程，一边接收结果一边推进处理。\n\n作为主处理，它扮演着指挥中枢的角色，而细小的具体处理则交给下层的子例程。考试中重要的是理解：主例程承担处理的起点与整体控制，而由它调用的从属处理就是子例程，二者构成这样的关系。",
-      "explanation_en": "The main routine is the central processing that starts running first when the program is executed, and it pulls together the overall flow. As needed, it calls subroutines and advances the processing while receiving their results.\n\nAs the main processing, it plays the role of a command center, leaving the small individual tasks to the lower-level subroutines. On the exam, it is important to understand that the main routine handles the starting point and overall control of processing, and that the subordinate processing it calls is the subroutine—this is the relationship between them.",
-      "analogy_zh": "就像指挥做菜流程的“主厨”。他不亲自做全部，而是把备料等交给负责人（子例程），同时推进整体。",
-      "analogy_en": "It is like the \"head chef\" who directs the flow of cooking. Rather than doing everything personally, the chef advances the whole while delegating tasks such as prep to those in charge (the subroutines).",
-      "memory_hook_zh": "说到主例程，就是程序的起点、控制整体的主处理",
-      "memory_hook_en": "Main Routine → the program's starting point, the main processing that controls the whole"
-    },
-    {
-      "term": "サブルーチン",
-      "definition_jp": "メインルーチンなどから呼び出される、特定処理をまとめた従属部品。",
-      "explanation_jp": "サブルーチンは、特定のまとまった処理を一つにまとめ、呼び出して使えるようにした部品です。メインルーチンや他のサブルーチンから呼ばれて実行され、終わると呼び出し元へ戻ります。関数やメソッドと呼ばれることもあります。\n\n同じ処理を何度も書かずに済み、繰り返し使える(再利用できる)のが利点で、モジュール分割を実現する具体的な仕組みです。試験では、サブルーチンが呼び出される従属部品であること、メインルーチンとの呼ぶ・呼ばれるの関係を押さえておきましょう。",
-      "analogy_jp": "主担当のコックから「野菜を切っておいて」と頼まれる担当者。頼まれた仕事だけをこなして報告し、別の場面でも同じように呼ばれて働けます。",
-      "memory_hook_jp": "サブルーチンといえば呼び出されて使う従属部品",
-      "inline_quiz": [
-        "2024r06-q088"
-      ],
-      "inline_fallback": true,
-      "figure": null,
-      "term_zh": "子例程",
-      "term_en": "Subroutine",
-      "definition_zh": "被主例程等调用、汇集了特定处理的从属部件。",
-      "definition_en": "A subordinate part that bundles specific processing and is called from the main routine and the like.",
-      "explanation_zh": "子例程是把某项成组的处理汇集为一个、可被调用来使用的部件。它由主例程或其他子例程调用执行，结束后返回到调用方。有时也称为函数或方法。\n\n它的优点是无需把相同的处理反复书写，可以重复使用（复用），是实现模块划分的具体机制。考试中要记住：子例程是被调用的从属部件，并把握它与主例程之间“调用与被调用”的关系。",
-      "explanation_en": "A subroutine is a part that bundles a certain set of processing into one and makes it callable for use. It is executed when called from the main routine or another subroutine, and when it finishes it returns to the caller. It is sometimes also called a function or a method.\n\nIts advantage is that you do not have to write the same processing over and over—it can be used repeatedly (reused)—and it is the concrete mechanism that realizes module decomposition. On the exam, remember that a subroutine is a subordinate part that is called, and grasp the \"calling and being called\" relationship between it and the main routine.",
-      "analogy_zh": "就像主厨吩咐“你先把菜切好”的那位负责人。他只完成被交代的工作并汇报，在别的场合也能被同样地叫来干活。",
-      "analogy_en": "It is like the person the head chef asks to \"go cut the vegetables.\" They do only the assigned job and report back, and can be called in the same way to work in other situations too.",
-      "memory_hook_zh": "说到子例程，就是被调用来使用的从属部件",
-      "memory_hook_en": "Subroutine → a subordinate part that is called and used"
+      }
     }
   ],
+  "pairs": [
+    {
+      "a": "字下げ",
+      "b": "ネストの深さ",
+      "rows": [
+        {
+          "label_jp": "表すもの",
+          "label_zh": "表示的内容",
+          "label_en": "What it represents",
+          "a_jp": "行頭の空白による見た目の段",
+          "a_zh": "由行首空白形成的外观层次",
+          "a_en": "Visual levels made by leading spaces",
+          "b_jp": "入れ子が重なっている段数",
+          "b_zh": "嵌套重叠的层数",
+          "b_en": "Number of stacked nesting levels",
+          "key": true
+        },
+        {
+          "label_jp": "性質",
+          "label_zh": "性质",
+          "label_en": "Nature",
+          "a_jp": "書き方 (整形) の作法",
+          "a_zh": "写法（排版）上的规范",
+          "a_en": "A writing (formatting) practice",
+          "b_jp": "処理の組み立て (構造) の性質",
+          "b_zh": "处理组织方式（结构）的性质",
+          "b_en": "A property of how processing is organized (structure)",
+          "key": false
+        },
+        {
+          "label_jp": "変えるには",
+          "label_zh": "改变的方法",
+          "label_en": "How to change it",
+          "a_jp": "空白の幅を変える",
+          "a_zh": "改变空白宽度",
+          "a_en": "Change the width of the spaces",
+          "b_jp": "処理を切り出すなど組み立てを変える",
+          "b_zh": "拆出处理等，改变组织方式",
+          "b_en": "Reorganize, e.g. by moving processing out",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "メインルーチン",
+      "b": "サブルーチン",
+      "rows": [
+        {
+          "label_jp": "役割",
+          "label_zh": "职责",
+          "label_en": "Role",
+          "a_jp": "全体の流れを取りまとめる",
+          "a_zh": "统筹整体流程",
+          "a_en": "Directs the overall flow",
+          "b_jp": "特定のまとまった処理を受け持つ",
+          "b_zh": "承担特定的一段处理",
+          "b_en": "Handles a specific block of processing",
+          "key": false
+        },
+        {
+          "label_jp": "動き出すきっかけ",
+          "label_zh": "开始运行的契机",
+          "label_en": "What starts it",
+          "a_jp": "プログラムの実行開始",
+          "a_zh": "程序开始运行",
+          "a_en": "The program starting to run",
+          "b_jp": "ほかの処理からの呼び出し",
+          "b_zh": "来自其他处理的调用",
+          "b_en": "A call from other processing",
+          "key": true
+        },
+        {
+          "label_jp": "処理の後",
+          "label_zh": "处理之后",
+          "label_en": "After processing",
+          "a_jp": "プログラムの終了へ向かう",
+          "a_zh": "走向程序结束",
+          "a_en": "Heads toward the end of the program",
+          "b_jp": "呼び出し元の続きへ戻る",
+          "b_zh": "回到调用方接着执行",
+          "b_en": "Returns to the caller and continues",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**字下げ** と **インデンテーション** は同じ整形を指し、行頭の空白でまとまりの範囲を見せる。",
+    "入れ子の段が深いほど読み違いが起きやすいので、深い部分は別の処理に切り出して浅く保つ。",
+    "**命名規則** などの書き方の取り決めをそろえると、書いた本人以外も読みやすく、後から直しやすい。",
+    "**モジュール分割** は役割ごとに部品を作り、修正の影響範囲を小さくし、部品の使い回しを可能にする。",
+    "**サブルーチン** にまとめた処理は何度でも呼び出せ、直すのは 1 か所で済む。"
+  ],
+  "key_points_zh": [
+    "**缩进**和 **indentation** 指同一种排版方式，用行首空白显示代码块的范围。",
+    "嵌套层次越深越容易读错，所以要把深的部分拆成别的处理，保持较浅的层数。",
+    "统一**命名规则**等写法约定，编写者以外的人也容易读懂，日后也容易修改。",
+    "**模块划分**按职责制作部件，缩小修改的影响范围，并使部件可以复用。",
+    "归入**子例程**的处理可以反复调用，修改时只需改 1 处。"
+  ],
+  "key_points_en": [
+    "**Indentation**, under its Japanese and English names, shows the extent of blocks with leading spaces.",
+    "Deeper nesting invites misreadings, so deep parts are moved out into separate processing to keep levels shallow.",
+    "Shared rules such as **naming conventions** make code readable by people other than the author and easier to fix later.",
+    "**Module decomposition** builds parts by role, narrowing the impact of changes and allowing parts to be reused.",
+    "Processing placed in a **subroutine** can be called any number of times, and a fix is needed in only one place."
+  ],
+  "overview": {
+    "intro_jp": "行頭の空白でまとまりを見せる 字下げ と、入れ子の段数を表す ネストの深さ を区別できる。名前の付け方を決める 命名規則 と、部品に分ける モジュール分割 が、直しやすさにどう効くかを説明できる。メインルーチン と サブルーチン の、呼び出す側と呼び出される側の関係を説明できる。",
+    "intro_zh": "能够区分用行首空白显示处理块的缩进，与表示嵌套层数的嵌套深度。能够说明规定命名方式的命名规则和把程序拆成部件的模块划分，如何让程序更容易修改。能够说明主例程与子例程之间调用方与被调用方的关系。",
+    "intro_en": "Tell indentation, which shows blocks with leading spaces, apart from nesting depth, the number of nested levels. Explain how naming conventions for names and module decomposition into parts make a program easier to modify. Explain the caller and callee relationship between a main routine and a subroutine.",
+    "freq_badge": "低頻",
+    "est_minutes": 32
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "字下げ: 字下げといえば行頭をずらして階層を見やすくする整形",
-      "インデンテーション: インデンテーションといえば字下げの英語表現で同じ意味",
-      "ネストの深さ: ネストの深さといえば入れ子の段数で深いほど読みにくい",
-      "命名規則: 命名規則といえば名前の付け方を統一する取り決め",
-      "モジュール分割: モジュール分割といえば機能ごとに部品へ分ける構造化",
-      "メインルーチン: メインルーチンといえばプログラムの起点で全体を制御する主処理",
-      "サブルーチン: サブルーチンといえば呼び出されて使う従属部品"
-    ],
     "key_points_jp": [
-      "字下げ(インデンテーション)は行頭に空白を入れて処理の階層を見やすくする整形で、両者は同じ概念を指す。",
-      "ネストの深さは入れ子の段数を表し、深いほど可読性が下がるため浅く保つのが望ましい。",
-      "命名規則は名前の付け方を統一する取り決めで、可読性・保守性を高める(整形とは別の観点)。",
-      "モジュール分割はプログラムを機能ごとの部品に分ける構造化手法で、保守性・再利用性を高める。",
-      "メインルーチンは処理の起点・全体制御を担い、そこから呼び出される従属部品がサブルーチンである。"
+      "字下げ と インデンテーション は同じ整形を指し、行頭の空白でまとまりの範囲を見せる。",
+      "入れ子の段が深いほど読み違いが起きやすいので、深い部分は別の処理に切り出して浅く保つ。",
+      "命名規則 などの書き方の取り決めをそろえると、書いた本人以外も読みやすく、後から直しやすい。",
+      "モジュール分割 は役割ごとに部品を作り、修正の影響範囲を小さくし、部品の使い回しを可能にする。",
+      "サブルーチン にまとめた処理は何度でも呼び出せ、直すのは 1 か所で済む。"
     ],
     "key_points_zh": [
-      "缩进（indentation）是在行首加入空白、让处理的层次更易读的排版，二者指的是同一概念。",
-      "嵌套深度表示套叠的层数，越深可读性越差，因此希望保持浅。",
-      "命名规则是统一取名方式的约定，能提升可读性、可维护性（与排版是不同的角度）。",
-      "模块划分是把程序按功能拆成部件的结构化手法，能提升可维护性、可复用性。",
-      "主例程承担处理的起点与整体控制，由它调用的从属部件就是子例程。"
+      "缩进和 indentation 指同一种排版方式，用行首空白显示代码块的范围。",
+      "嵌套层次越深越容易读错，所以要把深的部分拆成别的处理，保持较浅的层数。",
+      "统一命名规则等写法约定，编写者以外的人也容易读懂，日后也容易修改。",
+      "模块划分按职责制作部件，缩小修改的影响范围，并使部件可以复用。",
+      "归入子例程的处理可以反复调用，修改时只需改 1 处。"
     ],
     "key_points_en": [
-      "Indentation is formatting that inserts whitespace at the start of a line to make the hierarchy of processing easy to read; the two terms refer to the same concept.",
-      "Nesting depth expresses the number of nested levels; the deeper it is, the lower the readability, so it is desirable to keep it shallow.",
-      "Naming conventions are an agreement that standardizes how names are given, improving readability and maintainability (a different perspective from formatting).",
-      "Module decomposition is a structuring technique that divides a program into parts by function, improving maintainability and reusability.",
-      "The main routine handles the starting point and overall control of processing, and the subordinate part it calls is the subroutine."
+      "Indentation, under its Japanese and English names, shows the extent of blocks with leading spaces.",
+      "Deeper nesting invites misreadings, so deep parts are moved out into separate processing to keep levels shallow.",
+      "Shared rules such as naming conventions make code readable by people other than the author and easier to fix later.",
+      "Module decomposition builds parts by role, narrowing the impact of changes and allowing parts to be reused.",
+      "Processing placed in a subroutine can be called any number of times, and a fix is needed in only one place."
+    ],
+    "memory_hooks_jp": [
+      "字下げ: 「字を下げる」と書くとおり、行頭の文字を右へ押し下げる操作がそのまま名前になっている。",
+      "インデンテーション: 英語の indent は、紙の端から文字が内側へ引っ込んだ「くぼみ」を表す。",
+      "ネストの深さ: nest は英語で「鳥の巣」。巣に卵が収まるように、処理の中に処理が収まる。",
+      "モジュール分割: module は「規格をそろえた交換できる単位」を表し、宇宙船の居住モジュールのように差し替え・追加ができる部品をいう。",
+      "サブルーチン: sub は「下の・従属の」を表す接頭語で、サブマリン (水面の下を進む船) の sub と同じ。"
     ],
     "memory_hooks_zh": [
-      "缩进：说到缩进，就是把行首错开、让层次更易读的排版",
-      "indentation（缩进的英文）：说到 indentation，就是“缩进”的英文表达、含义相同",
-      "嵌套深度：说到嵌套深度，就是套叠的层数、越深越难读",
-      "命名规则：说到命名规则，就是统一取名方式的约定",
-      "模块划分：说到模块划分，就是按功能拆成部件的结构化",
-      "主例程：说到主例程，就是程序的起点、控制整体的主处理",
-      "子例程：说到子例程，就是被调用来使用的从属部件"
+      "缩进：日语写作「字を下げる」，意思是把行首的字往右推下去，这个动作直接成了名称。",
+      "indentation（缩进的英文）：英语的 indent 指文字从纸边向内退进去形成的「凹进处」。",
+      "嵌套深度：nest 在英语中是「鸟巢」。就像蛋安放在巢里一样，处理里面安放着处理。",
+      "模块划分：module 指「规格统一、可以互换的单位」，就像宇宙飞船的居住舱模块，是可以替换、追加的部件。",
+      "子例程：sub 是表示「下面的、从属的」的前缀，与 submarine（在水面下行进的船）中的 sub 相同。"
     ],
     "memory_hooks_en": [
-      "Indentation: Indentation → formatting that shifts line starts to make the hierarchy easy to read",
-      "Indentation: Indentation → the English term for indentation, with the same meaning",
-      "Nesting Depth: Nesting Depth → the number of nested levels; the deeper, the harder to read",
-      "Naming Conventions: Naming Conventions → an agreement that standardizes how names are given",
-      "Module Decomposition: Module Decomposition → structuring by splitting into parts by function",
-      "Main Routine: Main Routine → the program's starting point, the main processing that controls the whole",
-      "Subroutine: Subroutine → a subordinate part that is called and used"
+      "Indentation: The Japanese name literally means \"lowering the characters\": the act of pushing the first characters of a line to the right became the name itself.",
+      "Indentation: The English word indent describes the notch where text is set back inward from the edge of the page.",
+      "Nesting Depth: Nest means a bird's nest in English: just as eggs sit in a nest, processing sits inside processing.",
+      "Module Decomposition: Module means a standardized, interchangeable unit, like a spacecraft's habitation module, a part that can be swapped or added.",
+      "Subroutine: Sub is a prefix meaning below or subordinate, the same sub as in submarine, a ship that travels below the surface."
     ]
   },
   "challenge_questions": [
-    "2009h21a-q068",
-    "2011h23tokubetsu-q081",
-    "2012h24h-q055",
-    "2013h25a-q055",
+    "2010h22a-q043",
+    "2013h25h-q060",
+    "2009h21h-q060",
     "2017h29a-q081"
   ],
   "source_figures": [
@@ -251,9 +859,5 @@
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "编码规范与结构化",
-  "title_en": "Coding Conventions and Structuring",
-  "unit_summary_zh": "理解缩进、命名规则、模块划分等编写易读、易维护代码的写法规范，以及程序的结构。",
-  "unit_summary_en": "Understand the conventions for writing readable, maintainable code—such as indentation, naming rules, and module decomposition—and the structure of a program."
+  }
 }

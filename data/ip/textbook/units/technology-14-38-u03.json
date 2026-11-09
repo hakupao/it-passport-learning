@@ -1,201 +1,612 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-14-38-u03",
   "topic_id": "technology-14-38",
   "category": "technology",
   "title_jp": "ライブラリ・API と低コード開発",
+  "title_zh": "库与 API 及低代码开发",
+  "title_en": "Libraries, APIs, and Low-Code Development",
   "unit_summary_jp": "ライブラリや API による既存機能の再利用、WebAPI による連携、ローコード・ノーコード開発を理解する。",
+  "unit_summary_zh": "理解通过库和 API 复用既有功能、通过 WebAPI 实现协作，以及低代码、无代码开发。",
+  "unit_summary_en": "Understand reusing existing functionality through libraries and APIs, integration via Web APIs, and low-code / no-code development.",
   "order_in_topic": 3,
   "prerequisites": [
     "technology-14-38-u01",
     "technology-14-38-u02"
   ],
-  "overview": {
-    "intro_jp": "本ユニットでは、プログラムをゼロから書かず「既存資産を再利用して組み立てる」考え方を学びます。再利用部品のライブラリ、呼び出しの取り決めの API、Web 経由で連携する WebAPI、コードを極力書かないローコード・ノーコード開発を押さえます。各用語の意味の区別が問われます。",
-    "freq_badge": "低頻",
-    "est_minutes": 16,
-    "intro_zh": "在本单元中，我们将学习不从零开始编写程序，而是「复用既有资产来搭建」的思路。我们会掌握作为复用部件的库、约定调用方式的 API、通过 Web 进行协作的 WebAPI，以及尽量不写代码的低代码、无代码开发。考试会考查各术语含义之间的区别。",
-    "intro_en": "In this unit, you will learn the mindset of not writing programs from scratch but \"assembling by reusing existing assets.\" You will cover libraries as reusable parts, APIs as the agreed way to make calls, Web APIs that integrate over the web, and low-code / no-code development that writes as little code as possible. The exam asks about the distinctions in meaning among these terms."
-  },
+  "goals_jp": [
+    "**ライブラリ**と**API**を、部品そのものか呼び出し方の取り決めかで区別できる。",
+    "**WebAPI** がネットワーク越しに外部サービスの機能を使う仕組みであることと、それを生かす**マッシュアップ**を説明できる。",
+    "**ローコード**と**ノーコード**を、コードを書く量と拡張の自由度で区別できる。"
+  ],
+  "goals_zh": [
+    "能从“部件本身”还是“调用方式的约定”这一点，区分**库**与 **API**。",
+    "能说明 **WebAPI** 是通过网络使用外部服务功能的机制，并能说明利用它的**混搭**。",
+    "能从需要编写的代码量和扩展的自由度，区分**低代码**与**无代码**。"
+  ],
+  "goals_en": [
+    "Tell a **library** from an **API** by whether it is the component itself or the agreed way of calling it.",
+    "Explain that a **Web API** lets you use an external service's functions over a network, and describe the **mashup** that builds on it.",
+    "Tell **low-code** from **no-code** by how much code is written and how freely the result can be extended."
+  ],
+  "overview_cols_jp": [
+    "種類",
+    "要点"
+  ],
+  "overview_cols_zh": [
+    "类别",
+    "要点"
+  ],
+  "overview_cols_en": [
+    "Type",
+    "Key point"
+  ],
+  "overview_rows": [
+    {
+      "term": "ライブラリ",
+      "one_line_jp": "よく使う処理をまとめた再利用できる部品",
+      "one_line_zh": "汇总常用处理、可重复使用的部件",
+      "one_line_en": "A reusable component that bundles frequently used processing",
+      "extra_jp": [
+        "部品",
+        "呼び出して再利用する"
+      ],
+      "extra_zh": [
+        "部件",
+        "调用后重复使用"
+      ],
+      "extra_en": [
+        "Component",
+        "Called and reused"
+      ]
+    },
+    {
+      "term": "API",
+      "one_line_jp": "機能をほかのプログラムから使うための呼び出し方の取り決め",
+      "one_line_zh": "让其他程序使用某项功能的调用方式约定",
+      "one_line_en": "An agreed way for other programs to call a function",
+      "extra_jp": [
+        "取り決め",
+        "中身を知らずに機能を使える"
+      ],
+      "extra_zh": [
+        "约定",
+        "不了解内部也能使用功能"
+      ],
+      "extra_en": [
+        "Agreement",
+        "Use functions without knowing the inside"
+      ]
+    },
+    {
+      "term": "WebAPI",
+      "one_line_jp": "Web の通信で呼び出せるように公開された API",
+      "one_line_zh": "公开出来、可通过 Web 通信调用的 API",
+      "one_line_en": "An API published so it can be called over web communication",
+      "extra_jp": [
+        "取り決め (Web 版)",
+        "HTTP などで外部サービスを呼ぶ"
+      ],
+      "extra_zh": [
+        "约定（Web 版）",
+        "通过 HTTP 等调用外部服务"
+      ],
+      "extra_en": [
+        "Agreement (web version)",
+        "Calls external services over HTTP and the like"
+      ]
+    },
+    {
+      "term": "ローコード",
+      "one_line_jp": "画面操作中心に、必要な部分だけ少量のコードを書く開発手法",
+      "one_line_zh": "以界面操作为主，只在必要部分编写少量代码的开发方法",
+      "one_line_en": "A development method centred on screen operations, writing a little code only where needed",
+      "extra_jp": [
+        "開発手法",
+        "不足分をコードで補う"
+      ],
+      "extra_zh": [
+        "开发方法",
+        "不足部分用代码补充"
+      ],
+      "extra_en": [
+        "Development method",
+        "Code fills the gaps"
+      ]
+    },
+    {
+      "term": "ノーコード",
+      "one_line_jp": "コードを書かず、画面上の配置と設定だけで作る開発手法",
+      "one_line_zh": "不写代码，只靠在界面上摆放和设置来制作的开发方法",
+      "one_line_en": "A development method that builds apps only by arranging and configuring on screen, without code",
+      "extra_jp": [
+        "開発手法",
+        "コードを書かない"
+      ],
+      "extra_zh": [
+        "开发方法",
+        "不写代码"
+      ],
+      "extra_en": [
+        "Development method",
+        "No code written"
+      ]
+    }
+  ],
   "terms": [
     {
       "term": "ライブラリ",
-      "definition_jp": "よく使う機能を再利用できる部品としてまとめたプログラムの集合。",
-      "explanation_jp": "ライブラリは、画面表示や計算、暗号化など「よく使う処理」をあらかじめ部品(関数やモジュール)として用意し、まとめたものです。自分のプログラムからこれらを呼び出して使えば、同じ処理を一から書かずに済み、開発が速く・品質も安定します。\n\n再利用の考え方の最も基本となる入口です。試験では、ライブラリが「再利用可能な部品の集まり」であること、自作せず既存資産を活用して開発効率を高める仕組みである点が問われます。後述の API は、このライブラリの機能を呼び出すための取り決めにあたります。",
-      "analogy_jp": "料理で言えば、だしの素や合わせ調味料のように「すぐ使える出来合いのパーツ」を集めた棚のようなもの。毎回ゼロから作らず、必要なものを取り出して使えます。",
-      "memory_hook_jp": "ライブラリといえば再利用できるプログラム部品の集まり",
+      "term_zh": "库",
+      "term_en": "Library",
+      "one_jp": "**ライブラリ**は、よく使う処理を関数などの部品としてまとめ、ほかのプログラムから呼び出して**再利用**できるようにしたものである。",
+      "one_zh": "**库**（[[jp:ライブラリ]]，Library）是把常用处理整理成函数等部件、供其他程序调用并**重复使用**的东西。",
+      "one_en": "A **library** ([[jp:ライブラリ]]) bundles frequently used processing into components such as functions so that other programs can call and **reuse** them.",
+      "detail_jp": "文字列の整形や日付の計算のような処理を毎回自作せず、用意された部品を呼び出して使う。多くの開発者に使われてきた部品を使えば、開発の手間が減り、品質もそろえやすい。ライブラリの部品をどう呼び出すかを定めたものが、次の **API** である。",
+      "detail_zh": "像格式化字符串、计算日期这类处理，不必每次自己写，调用现成的部件就行。使用许多开发者长期用过的部件，可以减少开发工作量，质量也容易保持一致。规定如何调用库中部件的，就是下面要讲的 **API**。",
+      "detail_en": "Tasks like formatting strings or calculating dates do not have to be written from scratch each time, because you can call a ready-made component instead. Components that many developers have already used cut development effort and help keep quality consistent. What defines how to call a library's components is the **API**, covered next.",
+      "analogy_jp": "料理のたびにだしを一から取らず、市販のだしの素を使うようなもの。",
+      "analogy_zh": "就像每次做菜不从头熬高汤，而是用市售的高汤粉。",
+      "analogy_en": "It is like using store-bought stock powder instead of making soup stock from scratch every time you cook.",
+      "hook_jp": "library は英語で「蔵書・図書館」。本を借りるように、必要な処理を借りてくる。",
+      "hook_zh": "library 在英语里是“藏书、图书馆”的意思。就像借书一样，把需要的处理借过来用。",
+      "hook_en": "In English, a library is a collection of books. You borrow the processing you need, just as you borrow a book.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**プラグイン**は完成したアプリに後から差し込んで機能を足す追加部品であり、開発者が自分のコードから呼び出して使うライブラリとは使われ方が違う。",
+          "text_zh": "**插件**（[[jp:プラグイン]]）是事后插入已完成的应用、为其增加功能的附加部件，与开发者在自己的代码中调用的库（[[jp:ライブラリ]]）用法不同。",
+          "text_en": "A **plug-in** ([[jp:プラグイン]]) is an add-on inserted into a finished application afterwards to add features, so it is used differently from a library ([[jp:ライブラリ]]) that developers call from their own code.",
+          "qids": [
+            "2009h21h-q060"
+          ]
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2009h21h-q060"
+      ],
+      "definition_jp": "ライブラリは、よく使う処理を関数などの部品としてまとめ、ほかのプログラムから呼び出して再利用できるようにしたものである。",
+      "definition_zh": "库（ライブラリ，Library）是把常用处理整理成函数等部件、供其他程序调用并重复使用的东西。",
+      "definition_en": "A library (ライブラリ) bundles frequently used processing into components such as functions so that other programs can call and reuse them.",
+      "explanation_jp": "文字列の整形や日付の計算のような処理を毎回自作せず、用意された部品を呼び出して使う。多くの開発者に使われてきた部品を使えば、開発の手間が減り、品質もそろえやすい。ライブラリの部品をどう呼び出すかを定めたものが、次の API である。",
+      "explanation_zh": "像格式化字符串、计算日期这类处理，不必每次自己写，调用现成的部件就行。使用许多开发者长期用过的部件，可以减少开发工作量，质量也容易保持一致。规定如何调用库中部件的，就是下面要讲的 API。",
+      "explanation_en": "Tasks like formatting strings or calculating dates do not have to be written from scratch each time, because you can call a ready-made component instead. Components that many developers have already used cut development effort and help keep quality consistent. What defines how to call a library's components is the API, covered next.",
+      "memory_hook_jp": "library は英語で「蔵書・図書館」。本を借りるように、必要な処理を借りてくる。",
+      "memory_hook_zh": "library 在英语里是“藏书、图书馆”的意思。就像借书一样，把需要的处理借过来用。",
+      "memory_hook_en": "In English, a library is a collection of books. You borrow the processing you need, just as you borrow a book.",
       "inline_quiz": [
         "2009h21h-q060"
       ],
       "inline_fallback": false,
-      "figure": null,
-      "term_zh": "库",
-      "term_en": "Library",
-      "definition_zh": "将常用功能整理成可复用部件的程序集合。",
-      "definition_en": "A collection of programs that bundles frequently used functions as reusable parts.",
-      "explanation_zh": "库是把画面显示、计算、加密等「常用处理」预先做成部件（函数或模块）并整理在一起的程序集合。只要从自己的程序中调用它们来使用，就不必把相同的处理从头写一遍，开发更快、质量也更稳定。\n\n它是复用思路最基础的入口。考试会考查：库是「可复用部件的集合」，是一种不自行编写、而是利用既有资产来提高开发效率的机制。后文所讲的 API，就是用于调用这个库的功能的约定。",
-      "explanation_en": "A library is a collection of programs that prepares \"frequently used processing\" — such as screen display, calculation, and encryption — in advance as parts (functions or modules) and bundles them together. If you call and use them from your own program, you avoid writing the same processing from scratch, so development is faster and quality is more stable.\n\nIt is the most basic entry point to the idea of reuse. The exam asks that a library is a \"collection of reusable parts\" and a mechanism that raises development efficiency by leveraging existing assets rather than building your own. The API described later is the agreement used to call the functions of this library.",
-      "analogy_zh": "用做菜来比喻，就像把高汤粉、复合调味料这类「拿来即用的现成配件」集中起来的柜架。不必每次从零制作，需要什么取出来用即可。",
-      "analogy_en": "In cooking terms, like a shelf that gathers \"ready-to-use prepared parts\" such as soup stock granules and blended seasonings. Instead of making everything from scratch each time, you take out what you need and use it.",
-      "memory_hook_zh": "说到库，就是可复用的程序部件的集合",
-      "memory_hook_en": "Library → a collection of reusable program parts"
+      "figure": null
     },
     {
       "term": "API",
-      "definition_jp": "ソフトウェアの機能を外部から呼び出すための取り決め(インタフェース)。",
-      "explanation_jp": "API(Application Programming Interface)は、あるソフトウェアの機能を別のプログラムから利用するための「呼び出し方の取り決め」です。中身の仕組みを知らなくても、決められた手順で命令を渡せば結果が返ってきます。\n\nライブラリやサービスを「使うための窓口」と考えると分かりやすく、内部の作りを隠して必要な機能だけを提供する点が利点です。試験では、API が機能を呼び出すためのインタフェース(取り決め)であること、これにより異なるソフトウェア同士を連携・再利用できる点が問われます。",
-      "analogy_jp": "レストランのメニューと注文の仕組みに似ています。客は厨房の作り方を知らなくても、メニュー通りに注文すれば料理が出てきます。この「注文の決まりごと」が API です。",
-      "memory_hook_jp": "APIといえば機能を呼び出すための取り決め(窓口)",
+      "term_zh": "API（应用程序编程接口）",
+      "term_en": "API",
+      "one_jp": "**API** (Application Programming Interface) は、あるソフトウェアの機能をほかのプログラムから使うための**呼び出し方の取り決め**である。",
+      "one_zh": "**API**（应用程序编程接口，Application Programming Interface）是让其他程序使用某个软件功能的**调用方式约定**。",
+      "one_en": "An **API** (Application Programming Interface) is an **agreed way of calling** that lets other programs use a piece of software's functions.",
+      "detail_jp": "呼び出す側は、決められた名前と値の渡し方に従って依頼すれば、内部の仕組みを知らなくても結果を受け取れる。提供する側は中身を隠したまま必要な機能だけを公開でき、取り決めを変えなければ内部を作り直しても呼び出す側に影響しない。",
+      "detail_zh": "调用方只要按照规定的名称和传值方式提出请求，即使不了解内部机制也能拿到结果。提供方可以把内部隐藏起来、只公开需要的功能，只要约定不变，即使重做内部也不会影响调用方。",
+      "detail_en": "The caller makes a request using the specified names and way of passing values, and gets the result without knowing the internal workings. The provider can keep its internals hidden and expose only the functions needed, and as long as the agreement stays the same, rebuilding the internals does not affect the caller.",
+      "analogy_jp": "飲食店の注文票のようなもの。決まった書式で頼めば、厨房での作り方を知らなくても料理が届く。",
+      "analogy_zh": "就像餐馆的点菜单。按固定格式点菜，即使不知道后厨怎么做，菜也会端上来。",
+      "analogy_en": "It is like a restaurant order slip. Order in the set format and the dish arrives, even though you do not know how the kitchen makes it.",
+      "hook_jp": "最後の I は Interface (接点・境目)。プログラム同士の境目に置く約束事。",
+      "hook_zh": "最后的 I 是 Interface（接口、分界处），也就是放在程序与程序分界处的约定。",
+      "hook_en": "The final I stands for Interface, the boundary where two things meet: an agreement placed at the boundary between programs.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**API** は機能を呼び出すための約束事を指し、呼び出される処理を部品として収めた**ライブラリ**とは指す対象が違う。",
+          "text_zh": "**API** 指调用功能时的约定，与把被调用的处理作为部件收纳起来的**库**（[[jp:ライブラリ]]）所指的对象不同。",
+          "text_en": "An **API** is the agreement for calling functions, whereas a **library** ([[jp:ライブラリ]]) is the set of components that hold the processing being called, so the two refer to different things."
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "static",
+        "data": {
+          "nodes": [
+            {
+              "id": "caller",
+              "label": {
+                "jp": "呼び出す側のプログラム",
+                "zh": "调用方程序",
+                "en": "Calling program"
+              }
+            },
+            {
+              "id": "api",
+              "label": {
+                "jp": "API (呼び出し方の取り決め)",
+                "zh": "API（调用方式的约定）",
+                "en": "API (agreed way of calling)"
+              }
+            },
+            {
+              "id": "provider",
+              "label": {
+                "jp": "機能を提供するソフトウェア",
+                "zh": "提供功能的软件",
+                "en": "Software providing the function"
+              }
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2022r04-q061"
+      ],
+      "definition_jp": "API (Application Programming Interface) は、あるソフトウェアの機能をほかのプログラムから使うための呼び出し方の取り決めである。",
+      "definition_zh": "API（应用程序编程接口，Application Programming Interface）是让其他程序使用某个软件功能的调用方式约定。",
+      "definition_en": "An API (Application Programming Interface) is an agreed way of calling that lets other programs use a piece of software's functions.",
+      "explanation_jp": "呼び出す側は、決められた名前と値の渡し方に従って依頼すれば、内部の仕組みを知らなくても結果を受け取れる。提供する側は中身を隠したまま必要な機能だけを公開でき、取り決めを変えなければ内部を作り直しても呼び出す側に影響しない。",
+      "explanation_zh": "调用方只要按照规定的名称和传值方式提出请求，即使不了解内部机制也能拿到结果。提供方可以把内部隐藏起来、只公开需要的功能，只要约定不变，即使重做内部也不会影响调用方。",
+      "explanation_en": "The caller makes a request using the specified names and way of passing values, and gets the result without knowing the internal workings. The provider can keep its internals hidden and expose only the functions needed, and as long as the agreement stays the same, rebuilding the internals does not affect the caller.",
+      "memory_hook_jp": "最後の I は Interface (接点・境目)。プログラム同士の境目に置く約束事。",
+      "memory_hook_zh": "最后的 I 是 Interface（接口、分界处），也就是放在程序与程序分界处的约定。",
+      "memory_hook_en": "The final I stands for Interface, the boundary where two things meet: an agreement placed at the boundary between programs.",
       "inline_quiz": [
         "2022r04-q061"
       ],
       "inline_fallback": false,
-      "figure": {
-        "mermaid": "graph LR; A[\"自分のプログラム\"] -->|\"呼び出し\"| B[\"API(取り決め)\"]; B --> C[\"ライブラリ・サービス\"]; C -->|\"結果\"| A",
-        "svg_path": "figures/technology-14-38-u03-t01.svg",
-        "rendered": true
-      },
-      "term_zh": "API（应用程序编程接口）",
-      "term_en": "API",
-      "definition_zh": "从外部调用软件功能的约定（接口）。",
-      "definition_en": "An agreement (interface) for calling a piece of software's functionality from the outside.",
-      "explanation_zh": "API（Application Programming Interface）是从另一个程序使用某软件功能的「调用方式约定」。即使不了解内部的运作机制，只要按规定的步骤传入指令，就会返回结果。\n\n把它理解为「使用库或服务的窗口」就容易明白；它的优点在于隐藏内部构造，只对外提供所需的功能。考试会考查：API 是用于调用功能的接口（约定），借此可以让不同的软件之间相互协作、复用。",
-      "explanation_en": "An API (Application Programming Interface) is the \"agreed way of making calls\" for using a piece of software's functionality from another program. Even without knowing how the internals work, if you pass commands following the prescribed steps, a result is returned.\n\nIt is easiest to understand as a \"window for using a library or service\"; its advantage is that it hides the internal construction and provides only the functionality you need. The exam asks that an API is an interface (agreement) for calling functions, which lets different pieces of software integrate with and reuse one another.",
-      "analogy_zh": "类似于餐厅的菜单和点餐机制。顾客即使不懂后厨的做法，只要照菜单点餐，菜就会端上来。这套「点餐的规矩」就是 API。",
-      "analogy_en": "Similar to a restaurant's menu and ordering system. Even without knowing how the kitchen works, customers get their dish as long as they order according to the menu. This \"set of ordering rules\" is the API.",
-      "memory_hook_zh": "说到 API，就是调用功能的约定（窗口）",
-      "memory_hook_en": "API → the agreement (window) for calling functions"
+      "figure": null
     },
     {
       "term": "WebAPI",
-      "definition_jp": "API をインターネット経由(HTTP 等)で公開・利用できる形にしたもの。",
-      "explanation_jp": "WebAPI は、API を Web(インターネット)経由で呼び出せるようにした仕組みです。HTTP などの通信を使い、URL に対してリクエストを送ると、地図・天気・決済などの機能やデータが応答として返ってきます。\n\n手元のライブラリではなく「外部のサービス」を部品として利用できるのが特徴で、複数のサービスを組み合わせて新しいアプリを作る(マッシュアップ)基盤になります。試験では、WebAPI が API を Web 上で公開・連携する形態であること、外部サービスとの機能連携を実現する点が問われます。",
-      "analogy_jp": "出前の注文に似ています。自分の台所(手元の部品)ではなく、電話やアプリで外のお店(外部サービス)に注文を出すと料理が届く。その「ネット越しの注文窓口」が WebAPI です。",
-      "memory_hook_jp": "WebAPIといえばAPIをWeb経由で公開・利用する仕組み",
-      "inline_quiz": [
-        "2010h22a-q043"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph LR; A[\"利用側のアプリ\"] -->|\"リクエスト(HTTP)\"| B[\"WebAPI\"]; B --> C[\"外部サービス(地図・天気等)\"]; C --> B; B -->|\"応答(データ)\"| A",
-        "svg_path": "figures/technology-14-38-u03-t02.svg",
-        "rendered": true
-      },
       "term_zh": "WebAPI",
       "term_en": "Web API",
-      "definition_zh": "把 API 做成可经由互联网（HTTP 等）公开和使用的形式。",
-      "definition_en": "A form of API made so that it can be published and used over the Internet (HTTP, etc.).",
-      "explanation_zh": "WebAPI 是把 API 做成可经由 Web（互联网）调用的机制。它使用 HTTP 等通信，向 URL 发送请求后，地图、天气、支付等功能或数据就会作为响应返回。\n\n它的特点是可以把「外部的服务」而非本地的库当作部件来使用，并成为把多个服务组合起来制作新应用（混搭，mashup）的基础。考试会考查：WebAPI 是把 API 在 Web 上公开、协作的形态，能够实现与外部服务的功能协作。",
-      "explanation_en": "A Web API is a mechanism that makes an API callable over the Web (the Internet). Using communication such as HTTP, when you send a request to a URL, functions or data such as maps, weather, and payments are returned as a response.\n\nIts characteristic is that you can use \"external services,\" rather than local libraries, as parts, and it becomes the foundation for combining multiple services to create a new app (mashup). The exam asks that a Web API is a form of publishing and integrating APIs on the Web, realizing functional integration with external services.",
-      "analogy_zh": "类似于点外卖。不是用自己的厨房（本地部件），而是通过电话或应用向外面的店家（外部服务）下单，菜就会送来。这个「隔着网络的下单窗口」就是 WebAPI。",
-      "analogy_en": "Similar to ordering food delivery. Instead of using your own kitchen (local parts), you place an order with an outside shop (an external service) by phone or app, and the food is delivered. This \"ordering window across the network\" is the Web API.",
-      "memory_hook_zh": "说到 WebAPI，就是把 API 经由 Web 公开、使用的机制",
-      "memory_hook_en": "Web API → the mechanism that publishes and uses an API over the Web"
+      "one_jp": "**WebAPI** は、ネットワーク上のサービスの機能やデータを、**HTTP** などの Web の通信で呼び出せるように公開した API である。",
+      "one_zh": "**WebAPI** 是把网络上服务的功能和数据公开出来、使其能通过 **HTTP** 等 Web 通信调用的 API。",
+      "one_en": "A **Web API** ([[jp:WebAPI]]) is an API published so that the functions and data of a service on a network can be called over web communication such as **HTTP**.",
+      "detail_jp": "サービスの側は受け取った依頼を処理し、結果をデータとして返す。利用する側は手元に部品を置かずに相手のサービスの機能を使えるので、例えば天気予報や為替レートの情報を自分のアプリに表示できる。",
+      "detail_zh": "服务端处理收到的请求，并把结果作为数据返回。使用方不必在手边放置部件就能使用对方服务的功能，例如可以在自己的应用里显示天气预报或汇率信息。",
+      "detail_en": "The service processes the request it receives and returns the result as data. The calling app can use the other service's functions without keeping components on hand, so an app can show, for example, weather forecasts or exchange rates.",
+      "analogy_jp": "電話で問い合わせ窓口に質問して答えをもらうようなもの。相手の社内の仕組みは見えないが、決まった聞き方をすれば答えが返る。",
+      "analogy_zh": "就像打电话向咨询窗口提问并得到答复。看不到对方公司内部的运作，但只要按规定的方式询问，就会得到回答。",
+      "analogy_en": "It is like phoning an inquiry desk and getting an answer. You cannot see how the company works inside, but asking in the expected way gets you a reply.",
+      "hook_jp": "Web + API。いつもの API 呼び出しが、Web の通信に乗って遠くのサービスへ届く。",
+      "hook_zh": "Web + API。平常的 API 调用搭上 Web 通信，送达远处的服务。",
+      "hook_en": "Web + API: an ordinary API call that rides on web communication to reach a distant service.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "**マッシュアップ**は、公開されている複数のサービスの機能やデータを WebAPI などで取り込み、新しいサービスを作る手法である。",
+          "text_zh": "**混搭**（[[jp:マッシュアップ]]，mashup）是通过 WebAPI 等引入多个公开服务的功能和数据，构建新服务的方法。",
+          "text_en": "A **mashup** ([[jp:マッシュアップ]]) is a method of building a new service by pulling in the functions and data of several published services through Web APIs and similar means.",
+          "qids": [
+            "2022r04-q061"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "req",
+              "label": {
+                "jp": "アプリが要求を送る",
+                "zh": "应用发送请求",
+                "en": "App sends a request"
+              }
+            },
+            {
+              "id": "recv",
+              "label": {
+                "jp": "WebAPI が受け付ける",
+                "zh": "WebAPI 接收请求",
+                "en": "Web API receives it"
+              }
+            },
+            {
+              "id": "proc",
+              "label": {
+                "jp": "サービスが処理する",
+                "zh": "服务进行处理",
+                "en": "Service processes it"
+              }
+            },
+            {
+              "id": "resp",
+              "label": {
+                "jp": "結果のデータを返す",
+                "zh": "返回结果数据",
+                "en": "Result data is returned"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "利用する側のアプリが、決められた URL に依頼の内容を付けて HTTP で要求を送る。",
+            "caption_zh": "使用方的应用向规定的 URL 附上请求内容，通过 HTTP 发送请求。",
+            "caption_en": "The calling app sends an HTTP request to a set URL, with the details of the request attached.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "インターネットの向こうで、サービスが公開している WebAPI が要求を受け取る。",
+            "caption_zh": "在互联网另一端，服务公开的 WebAPI 接收这个请求。",
+            "caption_en": "On the other side of the internet, the Web API that the service publishes receives the request.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "サービスの内部で依頼が処理される。この中身は利用する側からは見えない。",
+            "caption_zh": "请求在服务内部得到处理，使用方看不到其中的过程。",
+            "caption_en": "The request is processed inside the service, out of the calling app's sight.",
+            "state": {
+              "show": 3
+            }
+          },
+          {
+            "caption_jp": "処理の結果がデータとしてアプリに返り、アプリはそれを画面などに使う。",
+            "caption_zh": "处理结果以数据形式返回应用，应用把它用于画面显示等。",
+            "caption_en": "The result comes back to the app as data, and the app uses it on screen or elsewhere.",
+            "state": {
+              "show": 4
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2022r04-q061"
+      ],
+      "definition_jp": "WebAPI は、ネットワーク上のサービスの機能やデータを、HTTP などの Web の通信で呼び出せるように公開した API である。",
+      "definition_zh": "WebAPI 是把网络上服务的功能和数据公开出来、使其能通过 HTTP 等 Web 通信调用的 API。",
+      "definition_en": "A Web API (WebAPI) is an API published so that the functions and data of a service on a network can be called over web communication such as HTTP.",
+      "explanation_jp": "サービスの側は受け取った依頼を処理し、結果をデータとして返す。利用する側は手元に部品を置かずに相手のサービスの機能を使えるので、例えば天気予報や為替レートの情報を自分のアプリに表示できる。",
+      "explanation_zh": "服务端处理收到的请求，并把结果作为数据返回。使用方不必在手边放置部件就能使用对方服务的功能，例如可以在自己的应用里显示天气预报或汇率信息。",
+      "explanation_en": "The service processes the request it receives and returns the result as data. The calling app can use the other service's functions without keeping components on hand, so an app can show, for example, weather forecasts or exchange rates.",
+      "memory_hook_jp": "Web + API。いつもの API 呼び出しが、Web の通信に乗って遠くのサービスへ届く。",
+      "memory_hook_zh": "Web + API。平常的 API 调用搭上 Web 通信，送达远处的服务。",
+      "memory_hook_en": "Web + API: an ordinary API call that rides on web communication to reach a distant service.",
+      "inline_quiz": [
+        "2022r04-q061"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ローコード",
-      "definition_jp": "コードの記述を最小限にし、画面操作中心でアプリを開発する手法。",
-      "explanation_jp": "ローコード(low-code)は、部品を画面上で組み合わせる視覚的な操作を中心に、必要な部分だけ少しのコードを書いてアプリを開発する手法です。専門的なプログラミングを減らせるため、開発を速く進められます。\n\n「少し(low)はコードを書く」点がポイントで、まったく書かないノーコードとは程度の違いがあります。試験では、ローコードが開発の生産性を高める近年の手法であること、必要に応じてコードで細かな拡張ができる点(ノーコードとの違い)が問われます。",
-      "analogy_jp": "プラモデルを組み立てるとき、ほとんどは用意された部品を組むだけで、こだわる箇所だけ自分で塗装や改造を加えるようなもの。基本は出来合い、要所だけ手を入れます。",
-      "memory_hook_jp": "ローコードといえばコードを少しだけ書く開発",
-      "inline_quiz": [
-        "2010h22a-q054"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "低代码",
       "term_en": "Low-code",
-      "definition_zh": "尽量减少代码编写、以画面操作为主来开发应用的方法。",
-      "definition_en": "A method of developing apps centered on on-screen operations while writing a minimal amount of code.",
-      "explanation_zh": "低代码（low-code）是以在画面上组合部件的可视化操作为主，只在必要的部分写少量代码来开发应用的方法。由于能减少专业编程，开发可以更快推进。\n\n重点在于「写一点点（low）代码」，与完全不写代码的无代码在程度上有所不同。考试会考查：低代码是近年来提高开发生产率的方法，且可在需要时用代码做细致扩展（这是它与无代码的区别）。",
-      "explanation_en": "Low-code is a method of developing apps centered on visual operations that combine parts on screen, writing only a little code where necessary. Because it reduces specialized programming, development can proceed faster.\n\nThe key point is that you \"write a little (low) code,\" which differs in degree from no-code, which writes none at all. The exam asks that low-code is a recent method for raising development productivity and that, when needed, fine-grained extension can be done with code (the difference from no-code).",
-      "analogy_zh": "就像组装塑料模型时，大部分只是把现成的部件拼起来，只在讲究的地方自己上色或改造。基本上用现成的，关键处才动手。",
-      "analogy_en": "Like assembling a plastic model: for the most part you just put together the ready-made parts, adding your own painting or modification only where you want to be particular. Mostly off-the-shelf, with hands-on work only at key spots.",
-      "memory_hook_zh": "说到低代码，就是只写一点点代码的开发",
-      "memory_hook_en": "Low-code → development that writes just a little code"
+      "one_jp": "**ローコード**は、画面上で部品を配置・設定する操作を中心に、必要な部分だけ**少量のコード**を書いてアプリを作る開発手法である。",
+      "one_zh": "**低代码**（[[jp:ローコード]]，Low-code）是以在界面上摆放、设置部件的操作为主，只在必要部分编写**少量代码**来制作应用的开发方法。",
+      "one_en": "**Low-code** ([[jp:ローコード]]) is a development method that builds apps mainly by placing and configuring components on screen, writing **a small amount of code** only where it is needed.",
+      "detail_jp": "画面や処理の流れの多くを用意された部品の組合せで作れるので、一からプログラムを書くより早く形にできる。部品だけでは表せない処理は、その部分にコードを書き足して補える。",
+      "detail_zh": "界面和处理流程的大部分可以靠组合现成部件完成，所以比从零写程序更快成形。部件表达不了的处理，可以在相应位置补写代码。",
+      "detail_en": "Most screens and process flows can be made by combining ready-made components, so an app takes shape faster than when a program is written from scratch. Processing that the components cannot express can be covered by adding code at that spot.",
+      "analogy_jp": "組立式の家具を説明書どおりに組み、足りない棚だけ自分で板を切って足すようなもの。",
+      "analogy_zh": "就像按说明书组装拼装家具，只有缺的那块搁板自己锯木板补上。",
+      "analogy_en": "It is like assembling flat-pack furniture by the instructions and cutting a board yourself only for the shelf that is missing.",
+      "hook_jp": "low は「少ない」。コードはゼロではなく少しだけ。",
+      "hook_zh": "low 是“少”的意思。代码不是零，而是只有一点。",
+      "hook_en": "Low means \"little\": the code is not zero, just a small amount.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "ローコードは、画面上で部品を配置・設定する操作を中心に、必要な部分だけ少量のコードを書いてアプリを作る開発手法である。",
+      "definition_zh": "低代码（ローコード，Low-code）是以在界面上摆放、设置部件的操作为主，只在必要部分编写少量代码来制作应用的开发方法。",
+      "definition_en": "Low-code (ローコード) is a development method that builds apps mainly by placing and configuring components on screen, writing a small amount of code only where it is needed.",
+      "explanation_jp": "画面や処理の流れの多くを用意された部品の組合せで作れるので、一からプログラムを書くより早く形にできる。部品だけでは表せない処理は、その部分にコードを書き足して補える。",
+      "explanation_zh": "界面和处理流程的大部分可以靠组合现成部件完成，所以比从零写程序更快成形。部件表达不了的处理，可以在相应位置补写代码。",
+      "explanation_en": "Most screens and process flows can be made by combining ready-made components, so an app takes shape faster than when a program is written from scratch. Processing that the components cannot express can be covered by adding code at that spot.",
+      "memory_hook_jp": "low は「少ない」。コードはゼロではなく少しだけ。",
+      "memory_hook_zh": "low 是“少”的意思。代码不是零，而是只有一点。",
+      "memory_hook_en": "Low means \"little\": the code is not zero, just a small amount.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ノーコード",
-      "definition_jp": "コードを書かず画面操作だけでアプリを開発する手法。",
-      "explanation_jp": "ノーコード(no-code)は、プログラムコードをまったく書かず、部品の配置やマウス操作・設定だけでアプリを作る手法です。プログラミングの知識がない人でも開発でき、業務担当者が自分で簡単なアプリを作れるのが利点です。\n\nローコードとの対で「コードを書かない究極形」と位置づけられます。手軽な反面、用意された機能の範囲を超える複雑な処理や細かな拡張は難しいという制約があります。試験では、コードを書かない点でローコードと区別できること、誰でも開発に参加しやすくする手法である点が問われます。",
-      "analogy_jp": "ブロック玩具を、説明書どおりにはめ込むだけで作品を完成させるようなもの。道具(コード)を一切使わず、手で組むだけで形になります。",
-      "memory_hook_jp": "ノーコードといえばコードを書かない開発",
-      "inline_quiz": [
-        "2012h24a-q073"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "无代码",
       "term_en": "No-code",
-      "definition_zh": "完全不写代码、仅靠画面操作来开发应用的方法。",
-      "definition_en": "A method of developing apps using only on-screen operations, without writing any code.",
-      "explanation_zh": "无代码（no-code）是完全不写程序代码，仅靠摆放部件、鼠标操作和设置来制作应用的方法。即使没有编程知识的人也能开发，业务人员可以自己制作简单的应用，这是它的优点。\n\n它与低代码相对，被定位为「不写代码的极致形态」。它虽然便捷，但也有制约：超出所提供功能范围的复杂处理或细致扩展难以实现。考试会考查：无代码以不写代码这一点与低代码相区别，是一种让任何人都更容易参与开发的方法。",
-      "explanation_en": "No-code is a method of making apps without writing any program code at all, relying solely on placing parts, mouse operations, and settings. Even people without programming knowledge can develop, and business staff can build simple apps themselves — that is its advantage.\n\nPaired against low-code, it is positioned as the \"ultimate form of writing no code.\" While convenient, it has a constraint: complex processing or fine-grained extension beyond the range of the provided functions is difficult. The exam asks that no-code is distinguished from low-code by the point of writing no code, and is a method that makes it easier for anyone to take part in development.",
-      "analogy_zh": "就像玩积木玩具，只按说明书把零件拼好就能完成作品。完全不用工具（代码），仅靠手拼就能成形。",
-      "analogy_en": "Like building-block toys, where you complete a creation just by fitting the pieces together as the instructions show. You form it by hand alone, without using any tools (code) at all.",
-      "memory_hook_zh": "说到无代码，就是不写代码的开发",
-      "memory_hook_en": "No-code → development that writes no code"
+      "one_jp": "**ノーコード**は、コードを一切書かず、画面上での部品の配置や設定だけでアプリを作る開発手法である。",
+      "one_zh": "**无代码**（[[jp:ノーコード]]，No-code）是完全不写代码，只靠在界面上摆放和设置部件来制作应用的开发方法。",
+      "one_en": "**No-code** ([[jp:ノーコード]]) is a development method that builds apps without writing any code, only by placing and configuring components on screen.",
+      "detail_jp": "プログラミングの知識が少ない業務の担当者でも、入力フォームや簡単な業務アプリを自分で作りやすい。作れるものは、ツールが用意した部品と設定の範囲に収まる。",
+      "detail_zh": "即使是编程知识不多的业务人员，也比较容易自己做出输入表单或简单的业务应用。能做出的东西，限于工具准备好的部件和设置范围之内。",
+      "detail_en": "Even business staff with little programming knowledge can fairly easily build input forms or simple business apps themselves. What can be built stays within the components and settings the tool provides.",
+      "analogy_jp": "完成品の家具をカタログから選んで並べ、色や置き場所だけを決めるようなもの。",
+      "analogy_zh": "就像从目录里挑选成品家具摆放，只决定颜色和摆放位置。",
+      "analogy_en": "It is like picking finished furniture from a catalogue and deciding only its colour and where it goes.",
+      "hook_jp": "no は「ゼロ」。キーボードでコードを打つ場面がない。",
+      "hook_zh": "no 是“零”的意思。完全没有用键盘敲代码的环节。",
+      "hook_en": "No means zero: there is no point where you type code on the keyboard.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "**ノーコード**はコードを書かずに用意された機能の範囲で作り、**ローコード**は足りない部分をコードで書き足して広げられる。",
+          "text_zh": "**无代码**（[[jp:ノーコード]]）不写代码，在现成功能的范围内制作；**低代码**（[[jp:ローコード]]）则可以用代码补写不足的部分来扩展。",
+          "text_en": "**No-code** ([[jp:ノーコード]]) builds within the provided features without writing code, while **low-code** ([[jp:ローコード]]) can be extended by writing code for the missing parts."
+        }
+      ],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "ノーコードは、コードを一切書かず、画面上での部品の配置や設定だけでアプリを作る開発手法である。",
+      "definition_zh": "无代码（ノーコード，No-code）是完全不写代码，只靠在界面上摆放和设置部件来制作应用的开发方法。",
+      "definition_en": "No-code (ノーコード) is a development method that builds apps without writing any code, only by placing and configuring components on screen.",
+      "explanation_jp": "プログラミングの知識が少ない業務の担当者でも、入力フォームや簡単な業務アプリを自分で作りやすい。作れるものは、ツールが用意した部品と設定の範囲に収まる。",
+      "explanation_zh": "即使是编程知识不多的业务人员，也比较容易自己做出输入表单或简单的业务应用。能做出的东西，限于工具准备好的部件和设置范围之内。",
+      "explanation_en": "Even business staff with little programming knowledge can fairly easily build input forms or simple business apps themselves. What can be built stays within the components and settings the tool provides.",
+      "memory_hook_jp": "no は「ゼロ」。キーボードでコードを打つ場面がない。",
+      "memory_hook_zh": "no 是“零”的意思。完全没有用键盘敲代码的环节。",
+      "memory_hook_en": "No means zero: there is no point where you type code on the keyboard.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     }
   ],
+  "pairs": [
+    {
+      "a": "API",
+      "b": "WebAPI",
+      "rows": [
+        {
+          "label_jp": "呼び出しの経路",
+          "label_zh": "调用途径",
+          "label_en": "Call path",
+          "a_jp": "通信の方法を限らない (同じコンピュータ内の呼び出しも含む)",
+          "a_zh": "不限通信方式（也包括同一台计算机内的调用）",
+          "a_en": "Any means of communication (including calls within the same computer)",
+          "b_jp": "ネットワーク越しに HTTP などで呼び出す",
+          "b_zh": "通过网络用 HTTP 等调用",
+          "b_en": "Called over a network using HTTP and the like",
+          "key": true
+        },
+        {
+          "label_jp": "範囲",
+          "label_zh": "范围",
+          "label_en": "Scope",
+          "a_jp": "機能を呼び出す取り決め全般",
+          "a_zh": "调用功能的约定的总称",
+          "a_en": "Agreements for calling functions in general",
+          "b_jp": "そのうち Web の通信で公開されたもの",
+          "b_zh": "其中通过 Web 通信公开的那部分",
+          "b_en": "Those among them published over web communication",
+          "key": false
+        },
+        {
+          "label_jp": "使う場面の例",
+          "label_zh": "使用场景举例",
+          "label_en": "Example use",
+          "a_jp": "OS やライブラリの機能を呼ぶ",
+          "a_zh": "调用操作系统或库的功能",
+          "a_en": "Calling OS or library functions",
+          "b_jp": "外部事業者のサービスからデータを受け取る",
+          "b_zh": "从外部企业的服务接收数据",
+          "b_en": "Receiving data from an outside company's service",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "ローコード",
+      "b": "ノーコード",
+      "rows": [
+        {
+          "label_jp": "コードを書く量",
+          "label_zh": "编写代码的量",
+          "label_en": "Amount of code written",
+          "a_jp": "必要な部分だけ少量書く",
+          "a_zh": "只在必要部分少量编写",
+          "a_en": "A little, only where needed",
+          "b_jp": "書かない",
+          "b_zh": "不写",
+          "b_en": "None",
+          "key": true
+        },
+        {
+          "label_jp": "機能の広げ方",
+          "label_zh": "功能的扩展方式",
+          "label_en": "How features are extended",
+          "a_jp": "部品で足りない処理をコードで補える",
+          "a_zh": "部件不够的处理可用代码补充",
+          "a_en": "Code covers what components cannot",
+          "b_jp": "ツールが用意した部品と設定の範囲に収まる",
+          "b_zh": "限于工具准备的部件和设置范围",
+          "b_en": "Limited to the tool's components and settings",
+          "key": false
+        },
+        {
+          "label_jp": "作り手",
+          "label_zh": "制作者",
+          "label_en": "Builders",
+          "a_jp": "ある程度のプログラミング知識があると幅広く使える",
+          "a_zh": "具备一定编程知识就能广泛使用",
+          "a_en": "Widely usable with some programming knowledge",
+          "b_jp": "プログラミングの知識が少なくても使いやすい",
+          "b_zh": "编程知识不多也容易上手",
+          "b_en": "Easy to use even with little programming knowledge",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "**ライブラリ**を使えば、よく使う処理を自作せずに部品として再利用できる。",
+    "**API** に従って依頼すれば、内部の仕組みを知らなくても相手の機能を使える。",
+    "公開されている既存のサービスや情報を組み合わせて新しいサービスを作る**マッシュアップ**では、**WebAPI** などが取り込みの手段になる。",
+    "画面操作中心の開発手法は、開発を速め、専門の開発者以外も開発に加わりやすくする。"
+  ],
+  "key_points_zh": [
+    "使用**库**，常用处理不必自己编写，可以作为部件重复使用。",
+    "按照 **API** 提出请求，即使不了解内部机制也能使用对方的功能。",
+    "在组合公开的现有服务和信息来构建新服务的**混搭**中，**WebAPI** 等是引入它们的手段。",
+    "以界面操作为主的开发方法能加快开发，也让专业开发者以外的人更容易参与开发。"
+  ],
+  "key_points_en": [
+    "With a **library**, frequently used processing can be reused as components instead of being written yourself.",
+    "Making requests according to an **API** lets you use another program's functions without knowing its internal workings.",
+    "In a **mashup**, which builds a new service by combining existing published services and information, **Web APIs** and similar means are how those are pulled in.",
+    "Development methods centred on screen operations speed up development and make it easier for people other than professional developers to take part."
+  ],
+  "overview": {
+    "intro_jp": "ライブラリとAPIを、部品そのものか呼び出し方の取り決めかで区別できる。WebAPI がネットワーク越しに外部サービスの機能を使う仕組みであることと、それを生かすマッシュアップを説明できる。ローコードとノーコードを、コードを書く量と拡張の自由度で区別できる。",
+    "intro_zh": "能从“部件本身”还是“调用方式的约定”这一点，区分库与 API。能说明 WebAPI 是通过网络使用外部服务功能的机制，并能说明利用它的混搭。能从需要编写的代码量和扩展的自由度，区分低代码与无代码。",
+    "intro_en": "Tell a library from an API by whether it is the component itself or the agreed way of calling it. Explain that a Web API lets you use an external service's functions over a network, and describe the mashup that builds on it. Tell low-code from no-code by how much code is written and how freely the result can be extended.",
+    "freq_badge": "低頻",
+    "est_minutes": 25
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "ライブラリ: ライブラリといえば再利用できるプログラム部品の集まり",
-      "API: APIといえば機能を呼び出すための取り決め(窓口)",
-      "WebAPI: WebAPIといえばAPIをWeb経由で公開・利用する仕組み",
-      "ローコード: ローコードといえばコードを少しだけ書く開発",
-      "ノーコード: ノーコードといえばコードを書かない開発"
-    ],
     "key_points_jp": [
-      "ライブラリは「よく使う機能をまとめた再利用部品の集合」で、自作せず既存資産を活用して開発を効率化する。",
-      "API は機能を呼び出すための取り決め(窓口)であり、ライブラリ→API→WebAPI と再利用の対象が手元の部品から外部サービスへ広がる。",
-      "WebAPI は API を Web(HTTP)経由で公開・利用する形態で、外部サービスとの機能連携を実現する。",
-      "ローコードは「少しコードを書く」、ノーコードは「コードを書かない」開発手法で、コード量の程度が違う。",
-      "ローコード・ノーコードは開発の生産性向上と開発者以外の参加を可能にするが、複雑な拡張には制約がある。"
+      "ライブラリを使えば、よく使う処理を自作せずに部品として再利用できる。",
+      "API に従って依頼すれば、内部の仕組みを知らなくても相手の機能を使える。",
+      "公開されている既存のサービスや情報を組み合わせて新しいサービスを作るマッシュアップでは、WebAPI などが取り込みの手段になる。",
+      "画面操作中心の開発手法は、開発を速め、専門の開発者以外も開発に加わりやすくする。"
     ],
     "key_points_zh": [
-      "库是「把常用功能整理在一起的可复用部件的集合」，不自行编写而是利用既有资产来提升开发效率。",
-      "API 是用于调用功能的约定（窗口）；按「库→API→WebAPI」的顺序，复用的对象从本地部件扩展到外部服务。",
-      "WebAPI 是把 API 经由 Web（HTTP）公开、使用的形态，能够实现与外部服务的功能协作。",
-      "低代码是「写一点点代码」、无代码是「不写代码」的开发方法，二者在代码量的程度上不同。",
-      "低代码、无代码能提升开发生产率、让开发者以外的人也能参与，但在复杂扩展方面存在制约。"
+      "使用库，常用处理不必自己编写，可以作为部件重复使用。",
+      "按照 API 提出请求，即使不了解内部机制也能使用对方的功能。",
+      "在组合公开的现有服务和信息来构建新服务的混搭中，WebAPI 等是引入它们的手段。",
+      "以界面操作为主的开发方法能加快开发，也让专业开发者以外的人更容易参与开发。"
     ],
     "key_points_en": [
-      "A library is a \"collection of reusable parts that bundle frequently used functions,\" improving development efficiency by leveraging existing assets rather than building your own.",
-      "An API is the agreement (window) for calling functions; in the order \"library → API → Web API,\" the target of reuse expands from local parts to external services.",
-      "A Web API is a form of publishing and using an API over the Web (HTTP), realizing functional integration with external services.",
-      "Low-code is development that \"writes a little code\" and no-code is development that \"writes no code\"; they differ in the degree of code volume.",
-      "Low-code and no-code raise development productivity and let people other than developers take part, but they have constraints when it comes to complex extension."
+      "With a library, frequently used processing can be reused as components instead of being written yourself.",
+      "Making requests according to an API lets you use another program's functions without knowing its internal workings.",
+      "In a mashup, which builds a new service by combining existing published services and information, Web APIs and similar means are how those are pulled in.",
+      "Development methods centred on screen operations speed up development and make it easier for people other than professional developers to take part."
+    ],
+    "memory_hooks_jp": [
+      "ライブラリ: library は英語で「蔵書・図書館」。本を借りるように、必要な処理を借りてくる。",
+      "API: 最後の I は Interface (接点・境目)。プログラム同士の境目に置く約束事。",
+      "WebAPI: Web + API。いつもの API 呼び出しが、Web の通信に乗って遠くのサービスへ届く。",
+      "ローコード: low は「少ない」。コードはゼロではなく少しだけ。",
+      "ノーコード: no は「ゼロ」。キーボードでコードを打つ場面がない。"
     ],
     "memory_hooks_zh": [
-      "库：说到库，就是可复用的程序部件的集合",
-      "API：说到 API，就是调用功能的约定（窗口）",
-      "WebAPI：说到 WebAPI，就是把 API 经由 Web 公开、使用的机制",
-      "低代码：说到低代码，就是只写一点点代码的开发",
-      "无代码：说到无代码，就是不写代码的开发"
+      "库：library 在英语里是“藏书、图书馆”的意思。就像借书一样，把需要的处理借过来用。",
+      "API（应用程序编程接口）：最后的 I 是 Interface（接口、分界处），也就是放在程序与程序分界处的约定。",
+      "WebAPI：Web + API。平常的 API 调用搭上 Web 通信，送达远处的服务。",
+      "低代码：low 是“少”的意思。代码不是零，而是只有一点。",
+      "无代码：no 是“零”的意思。完全没有用键盘敲代码的环节。"
     ],
     "memory_hooks_en": [
-      "Library: Library → a collection of reusable program parts",
-      "API: API → the agreement (window) for calling functions",
-      "Web API: Web API → the mechanism that publishes and uses an API over the Web",
-      "Low-code: Low-code → development that writes just a little code",
-      "No-code: No-code → development that writes no code"
+      "Library: In English, a library is a collection of books. You borrow the processing you need, just as you borrow a book.",
+      "API: The final I stands for Interface, the boundary where two things meet: an agreement placed at the boundary between programs.",
+      "Web API: Web + API: an ordinary API call that rides on web communication to reach a distant service.",
+      "Low-code: Low means \"little\": the code is not zero, just a small amount.",
+      "No-code: No means zero: there is no point where you type code on the keyboard."
     ]
   },
   "challenge_questions": [
-    "2017h29h-q070",
+    "2009h21h-q060",
+    "2022r04-q061",
     "2024r06-q088",
-    "2009h21a-q068",
-    "2011h23tokubetsu-q081",
-    "2012h24h-q055"
+    "2017h29h-q070"
   ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "库与 API 及低代码开发",
-  "title_en": "Libraries, APIs, and Low-Code Development",
-  "unit_summary_zh": "理解通过库和 API 复用既有功能、通过 WebAPI 实现协作，以及低代码、无代码开发。",
-  "unit_summary_en": "Understand reusing existing functionality through libraries and APIs, integration via Web APIs, and low-code / no-code development."
+  }
 }
