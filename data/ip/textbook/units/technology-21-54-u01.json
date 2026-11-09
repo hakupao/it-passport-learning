@@ -1,265 +1,1000 @@
 {
-  "schema_version": "stage4-unit-v1-trilingual",
+  "schema_version": "textbook-unit-v2",
   "unit_id": "technology-21-54-u01",
   "topic_id": "technology-21-54",
   "category": "technology",
   "title_jp": "データベースと DBMS の基礎・NoSQL の種類",
+  "title_zh": "数据库与 DBMS 基础、NoSQL 的种类",
+  "title_en": "Database and DBMS Basics, and Types of NoSQL",
   "unit_summary_jp": "データベースと DBMS の意義・目的を押さえ、関係データベース(RDBMS)から非関係型である NoSQL の主要種類までを一望する。",
+  "unit_summary_zh": "掌握数据库与 DBMS 的意义和目的，从关系数据库（RDBMS）到非关系型的 NoSQL 主要种类，进行一次整体性的概览。",
+  "unit_summary_en": "Grasp the significance and purpose of databases and DBMS, and survey everything from relational databases (RDBMS) to the major types of non-relational NoSQL.",
   "order_in_topic": 1,
   "prerequisites": [],
-  "overview": {
-    "intro_jp": "本単元では、データを整理して蓄える「データベース」と、それを管理する仕組み「DBMS」の意義・目的を学び、代表方式である関係データベース(RDBMS)から、非関係型である NoSQL の主要な種類までを一望します。データの扱い方の全体像を押さえる土台となり、試験では用語の意味と各方式の特徴の違いがよく問われます。",
-    "freq_badge": "低頻",
-    "est_minutes": 23,
-    "intro_zh": "在本单元中，我们将学习用于整理和存储数据的「数据库」，以及管理它的机制「DBMS」的意义和目的，并从代表性方式——关系数据库（RDBMS），到非关系型的 NoSQL 主要种类做一次整体概览。这是掌握数据处理方式全貌的基础，考试中常考查术语的含义以及各方式特征上的差异。",
-    "intro_en": "In this unit, you will learn the significance and purpose of the \"database\" used to organize and store data, and the \"DBMS\" mechanism that manages it. You will then survey everything from the representative approach, the relational database (RDBMS), to the major types of non-relational NoSQL. This forms the foundation for grasping the overall picture of how data is handled, and exams often ask about the meanings of the terms and the differences in characteristics among the approaches."
-  },
-  "terms": [
+  "goals_jp": [
+    "**データベース**（データの集まり）と **DBMS**（それを管理するソフトウェア）を分けて説明できる。",
+    "DBMS を使う目的と、DBMS が受け持つ主な機能を挙げられる。",
+    "表で管理する **RDBMS** と、表に縛られない **NoSQL** の各型を、データの持ち方で見分けられる。"
+  ],
+  "goals_zh": [
+    "能够区分并说明**数据库**（数据的集合）与 **DBMS**（管理数据库的软件）。",
+    "能够说出使用 DBMS 的目的，以及 DBMS 承担的主要功能。",
+    "能够根据数据的存储方式，分辨用表管理数据的 **RDBMS** 与不受表约束的 **NoSQL** 各类型。"
+  ],
+  "goals_en": [
+    "Explain the difference between a **database** (a collection of data) and a **DBMS** (the software that manages it).",
+    "State why a DBMS is used and name the main functions it handles.",
+    "Tell apart an **RDBMS**, which manages data in tables, and the types of **NoSQL**, which are not bound to tables, by how each holds data."
+  ],
+  "overview_cols_jp": [
+    "データの持ち方"
+  ],
+  "overview_cols_zh": [
+    "数据的存储方式"
+  ],
+  "overview_cols_en": [
+    "How data is held"
+  ],
+  "overview_rows": [
     {
       "term": "データベース",
-      "definition_jp": "複数の利用者で共有できるよう整理・蓄積されたデータの集合体。",
-      "explanation_jp": "データベースとは、目的に沿って整理し、後から検索・更新しやすい形でまとめて保存したデータの集まりです。バラバラのファイルに散らばった情報を一元化することで、重複を減らし、複数人が同じデータを共有できます。\n\n試験では「データを単に集めただけのもの」ではなく、整理・構造化されている点が重要です。後述の DBMS が管理する対象がこのデータベースであることを押さえましょう。",
-      "analogy_jp": "バラバラのメモを箱に放り込むのではなく、項目ごとに仕切りを付けて並べた整理棚のようなもの。誰でも目的の紙をすぐ取り出せます。",
-      "memory_hook_jp": "データベースといえば整理・共有されたデータの集合体",
-      "inline_quiz": [
-        "2009h21h-q058"
+      "one_line_jp": "共有できるよう整理して蓄えたデータの集まり",
+      "one_line_zh": "为便于共享而整理、存储的数据集合",
+      "one_line_en": "A collection of data organized and stored so it can be shared",
+      "extra_jp": [
+        "方式は問わない（データそのもの）"
       ],
-      "inline_fallback": false,
-      "figure": null,
-      "term_zh": "数据库",
-      "term_en": "Database",
-      "definition_zh": "经过整理和存储、可供多个用户共享的数据集合体。",
-      "definition_en": "A collection of data organized and stored so that it can be shared by multiple users.",
-      "explanation_zh": "数据库是指按目的整理、以便日后易于检索和更新的形式集中保存的数据集合。通过把散落在各个分散文件中的信息统一管理，可以减少重复，并让多个人共享同一份数据。\n\n在考试中，重点在于它不是「单纯把数据聚到一起的东西」，而是经过整理和结构化的。要记住，后面所讲的 DBMS 所管理的对象正是这个数据库。",
-      "explanation_en": "A database is a collection of data organized according to a purpose and stored together in a form that makes it easy to search and update later. By centralizing information that would otherwise be scattered across separate files, it reduces duplication and lets multiple people share the same data.\n\nIn exams, the key point is that it is not just \"data simply gathered together\" but data that is organized and structured. Remember that the database is exactly what the DBMS described later manages.",
-      "analogy_zh": "它不像把零散的便条随手扔进箱子里，而像按项目加上隔板、整齐排列的整理架。任何人都能立刻取出想要的那张纸。",
-      "analogy_en": "Rather than tossing scattered notes into a box, it is like a tidy shelf with dividers arranged by category. Anyone can immediately pull out the exact sheet they want.",
-      "memory_hook_zh": "说到数据库，就是经过整理、可共享的数据集合体",
-      "memory_hook_en": "Database → an organized, shareable collection of data"
+      "extra_zh": [
+        "不限方式（指数据本身）"
+      ],
+      "extra_en": [
+        "Any method (it is the data itself)"
+      ]
     },
     {
       "term": "DBMS",
-      "definition_jp": "データベースを管理・操作するためのソフトウェア。Database Management System の略。",
-      "explanation_jp": "DBMS(データベース管理システム)は、データベースへのデータの登録・検索・更新・削除を効率よく安全に行うためのソフトウェアです。利用者やアプリは DBMS を介してデータにアクセスします。\n\n試験では、複数人が同時にアクセスしても矛盾が起きないようにする制御や、障害時の復旧、アクセス権限の管理など「データを守り共有を支える役割」が問われます。データベース(箱の中身)と DBMS(管理する仕組み)を混同しないことが大切です。",
-      "analogy_jp": "整理棚そのものがデータベースなら、DBMS は出し入れを取り仕切る図書館の司書。誰が何を借りるか管理し、混乱なく貸し出します。",
-      "memory_hook_jp": "DBMS といえばデータベースを管理するソフトウェア",
+      "one_line_jp": "データベースを管理し、利用者との間を取り持つソフトウェア",
+      "one_line_zh": "管理数据库、在数据库与用户之间居中处理的软件",
+      "one_line_en": "Software that manages a database and stands between it and its users",
+      "extra_jp": [
+        "データの管理と操作を担う（データの集まりそのものではない）"
+      ],
+      "extra_zh": [
+        "负责数据的管理与操作（并非数据集合本身）"
+      ],
+      "extra_en": [
+        "Manages and operates on data (not the collection of data itself)"
+      ]
+    },
+    {
+      "term": "RDBMS",
+      "one_line_jp": "関係データモデルに基づき、表でデータを管理する DBMS",
+      "one_line_zh": "基于关系数据模型、用表管理数据的 DBMS",
+      "one_line_en": "A DBMS that manages data in tables based on the relational data model",
+      "extra_jp": [
+        "行と列の表、表どうしを共通の項目で関連付ける"
+      ],
+      "extra_zh": [
+        "由行和列组成的表，表与表之间用共同的项目关联"
+      ],
+      "extra_en": [
+        "Tables of rows and columns, linked to one another by shared fields"
+      ]
+    },
+    {
+      "term": "NoSQL",
+      "one_line_jp": "関係データモデルの表によらないデータベースの総称",
+      "one_line_zh": "不采用关系数据模型的表的数据库总称",
+      "one_line_en": "An umbrella term for databases that do not use the tables of the relational data model",
+      "extra_jp": [
+        "型によって異なる"
+      ],
+      "extra_zh": [
+        "因类型而异"
+      ],
+      "extra_en": [
+        "Varies by type"
+      ]
+    },
+    {
+      "term": "キーバリューストア",
+      "one_line_jp": "キーと値の組でデータを持つ NoSQL",
+      "one_line_zh": "以键和值的组合保存数据的 NoSQL",
+      "one_line_en": "A NoSQL type that holds data as key-value pairs",
+      "extra_jp": [
+        "キー 1 つに値 1 つ"
+      ],
+      "extra_zh": [
+        "一个键对应一个值"
+      ],
+      "extra_en": [
+        "One value per key"
+      ]
+    },
+    {
+      "term": "KVS",
+      "one_line_jp": "キーバリューストアの略称",
+      "one_line_zh": "键值存储的缩写",
+      "one_line_en": "Abbreviation of key-value store",
+      "extra_jp": [
+        "キーバリューストアと同じ"
+      ],
+      "extra_zh": [
+        "与键值存储相同"
+      ],
+      "extra_en": [
+        "Same as a key-value store"
+      ]
+    },
+    {
+      "term": "ドキュメント指向データベース",
+      "one_line_jp": "JSON などの文書を 1 件の単位として持つ NoSQL",
+      "one_line_zh": "以 JSON 等文档作为一条数据单位的 NoSQL",
+      "one_line_en": "A NoSQL type that holds documents such as JSON as single records",
+      "extra_jp": [
+        "文書ごとに項目が違ってよい"
+      ],
+      "extra_zh": [
+        "每个文档的项目可以不同"
+      ],
+      "extra_en": [
+        "Each document may have different fields"
+      ]
+    },
+    {
+      "term": "グラフ指向データベース",
+      "one_line_jp": "ノードとエッジでデータのつながりを持つ NoSQL",
+      "one_line_zh": "用节点和边保存数据之间联系的 NoSQL",
+      "one_line_en": "A NoSQL type that holds the connections between data as nodes and edges",
+      "extra_jp": [
+        "点と線のネットワーク"
+      ],
+      "extra_zh": [
+        "由点和线构成的网络"
+      ],
+      "extra_en": [
+        "A network of points and lines"
+      ]
+    }
+  ],
+  "terms": [
+    {
+      "term": "データベース",
+      "term_zh": "数据库",
+      "term_en": "Database",
+      "one_jp": "**データベース**は、複数の利用者やアプリケーションが共有できるように、目的に沿って整理して蓄えたデータの集まりである。",
+      "one_zh": "**数据库**（[[jp:データベース]]）是按目的整理并存储起来、可供多个用户和应用程序共享的数据集合。",
+      "one_en": "A **database** ([[jp:データベース]]) is a collection of data organized for a purpose and stored so that many users and applications can share it.",
+      "detail_jp": "部署ごとにばらばらのファイルで同じ顧客情報を持つと、片方だけ住所を直して食い違う、といったことが起こる。データを一か所にまとめて整理しておけば、重複が減り、誰が見ても同じ最新の内容を参照できる。",
+      "detail_zh": "如果各部门用各自的文件保存同一份客户信息，就可能出现只改了其中一处地址、导致两边内容不一致的情况。把数据集中到一处整理好，就能减少重复，任何人查看到的都是同样的最新内容。",
+      "detail_en": "If each department keeps the same customer details in its own separate files, one copy may get a new address while the other does not, and the two disagree. Gathering the data in one place and organizing it cuts duplication and lets everyone see the same up-to-date content.",
+      "analogy_jp": "家族の連絡先を各自の手帳に書く代わりに、居間に 1 冊の共用アドレス帳を置くようなもの。誰かが書き直せば、全員が同じ内容を見られる。",
+      "analogy_zh": "就像不再让家人各自在记事本上记联系方式，而是在客厅放一本共用的通讯录。有人改了，所有人看到的都是同样的内容。",
+      "analogy_en": "It is like keeping one shared address book in the living room instead of each family member writing contacts in a personal notebook. When someone updates it, everyone sees the same entries.",
+      "hook_jp": "データの「ベース（基地）」= データが集まって置かれている場所、と字面で覚える。",
+      "hook_zh": "按字面记：database 的 base 是“基地”，也就是数据集中存放的地方。",
+      "hook_en": "Read the word literally: the \"base\" where data is gathered and kept.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "データベースはデータの集まりそのものであり、管理するソフトウェアである DBMS とは別物である。",
+          "text_zh": "数据库（[[jp:データベース]]）是数据的集合本身，与管理它的软件 DBMS 是两回事。",
+          "text_en": "A database ([[jp:データベース]]) is the collection of data itself, separate from the DBMS, the software that manages it."
+        }
+      ],
+      "fig": null,
+      "quiz": [
+        "2011h23a-q053"
+      ],
+      "definition_jp": "データベースは、複数の利用者やアプリケーションが共有できるように、目的に沿って整理して蓄えたデータの集まりである。",
+      "definition_zh": "数据库（データベース）是按目的整理并存储起来、可供多个用户和应用程序共享的数据集合。",
+      "definition_en": "A database (データベース) is a collection of data organized for a purpose and stored so that many users and applications can share it.",
+      "explanation_jp": "部署ごとにばらばらのファイルで同じ顧客情報を持つと、片方だけ住所を直して食い違う、といったことが起こる。データを一か所にまとめて整理しておけば、重複が減り、誰が見ても同じ最新の内容を参照できる。",
+      "explanation_zh": "如果各部门用各自的文件保存同一份客户信息，就可能出现只改了其中一处地址、导致两边内容不一致的情况。把数据集中到一处整理好，就能减少重复，任何人查看到的都是同样的最新内容。",
+      "explanation_en": "If each department keeps the same customer details in its own separate files, one copy may get a new address while the other does not, and the two disagree. Gathering the data in one place and organizing it cuts duplication and lets everyone see the same up-to-date content.",
+      "memory_hook_jp": "データの「ベース（基地）」= データが集まって置かれている場所、と字面で覚える。",
+      "memory_hook_zh": "按字面记：database 的 base 是“基地”，也就是数据集中存放的地方。",
+      "memory_hook_en": "Read the word literally: the \"base\" where data is gathered and kept.",
       "inline_quiz": [
         "2011h23a-q053"
       ],
       "inline_fallback": false,
-      "figure": null,
+      "figure": null
+    },
+    {
+      "term": "DBMS",
       "term_zh": "DBMS",
       "term_en": "DBMS",
-      "definition_zh": "用于管理和操作数据库的软件。是 Database Management System 的缩写。",
-      "definition_en": "Software for managing and operating a database. Short for Database Management System.",
-      "explanation_zh": "DBMS（数据库管理系统）是用于高效、安全地对数据库进行数据的录入、检索、更新、删除的软件。用户和应用程序通过 DBMS 来访问数据。\n\n在考试中，会考查「保护数据并支撑共享的作用」，例如：在多人同时访问时也不产生矛盾的控制、故障时的恢复、访问权限的管理等。重要的是不要把数据库（箱子里的内容）和 DBMS（管理的机制）混为一谈。",
-      "explanation_en": "A DBMS (Database Management System) is software for efficiently and safely registering, searching, updating, and deleting data in a database. Users and applications access the data through the DBMS.\n\nExams ask about its role of \"protecting data and supporting sharing\": control that prevents inconsistencies even when many people access it at the same time, recovery in case of failures, and management of access privileges. It is important not to confuse the database (the contents of the box) with the DBMS (the mechanism that manages it).",
-      "analogy_zh": "如果整理架本身就是数据库，那么 DBMS 就是负责存取调度的图书馆管理员。它管理谁借了什么，做到有条不紊地借出。",
-      "analogy_en": "If the shelf itself is the database, then the DBMS is the librarian who oversees putting things in and taking them out. It manages who borrows what and lends items out without confusion.",
-      "memory_hook_zh": "说到 DBMS，就是管理数据库的软件",
-      "memory_hook_en": "DBMS → software that manages a database"
+      "one_jp": "**DBMS**（Database Management System、データベース管理システム）は、データベースを管理し、利用者やアプリケーションの代わりにデータを読み書きするソフトウェアである。",
+      "one_zh": "**DBMS**（Database Management System，数据库管理系统）是管理数据库、代替用户和应用程序读写数据的软件。",
+      "one_en": "A **DBMS** (Database Management System) is software that manages a database and reads and writes data on behalf of users and applications.",
+      "detail_jp": "アプリケーションはデータの置き場所や形式を直接扱わず、DBMS に依頼してデータを取り出したり書き換えたりする。DBMS は、同じデータを何人もが同時に更新しても矛盾が出ないように、ほかの処理を待たせるなどして調整する**同時実行制御**を受け持つ。ほかにも、障害で壊れたデータをバックアップなどから元に戻す**障害回復**や、利用者ごとに操作できる範囲を決める**アクセス権管理**も DBMS の役割である。",
+      "detail_zh": "应用程序不直接处理数据的存放位置和格式，而是委托 DBMS 读取或改写数据。DBMS 负责**并发控制**（[[jp:同時実行制御]]），通过让其他处理等待等方式进行协调，使多人同时更新同一数据时也不会产生矛盾。此外，利用备份等把因故障而损坏的数据恢复原状的**故障恢复**（[[jp:障害回復]]），以及规定每个用户可操作范围的**访问权限管理**（[[jp:アクセス権管理]]），也是 DBMS 的职责。",
+      "detail_en": "The application does not deal with where or in what format data is stored; it asks the DBMS to fetch or change data. The DBMS handles **concurrency control** ([[jp:同時実行制御]]), coordinating operations, for example by making some wait, so that data stays consistent even when many people update it at once. It also handles **failure recovery** ([[jp:障害回復]]), which restores data damaged by a failure from backups and the like, and **access rights management** ([[jp:アクセス権管理]]), which sets what each user may do.",
+      "analogy_jp": "図書館の書庫係のようなもの。利用者は書庫に入らず窓口で頼み、係が本を探して渡し、返却や貸出の記録も係がつける。",
+      "analogy_zh": "就像图书馆的书库管理员。读者不进书库，而是在柜台提出请求，由管理员找书交给读者，借还记录也由管理员登记。",
+      "analogy_en": "It is like a library's stacks clerk. Patrons do not enter the stacks but ask at the counter; the clerk finds the book, hands it over, and keeps the loan and return records.",
+      "hook_jp": "Management は「管理」。データの管理人を名前に持つのが DBMS。",
+      "hook_zh": "Management 意为“管理”。名字里就带着“数据管理员”的，正是 DBMS。",
+      "hook_en": "Management means managing: the DBMS carries \"data manager\" right in its name.",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "DBMS は、アプリケーションの依頼に応じてデータベースの中のデータを探したり書き換えたりするソフトウェアである。",
+          "text_zh": "DBMS 是根据应用程序的请求，查找或改写数据库（[[jp:データベース]]）中数据的软件。",
+          "text_en": "A DBMS is software that searches for or changes data in a database ([[jp:データベース]]) at an application's request.",
+          "qids": [
+            "2009h21h-q058"
+          ]
+        },
+        {
+          "kind": "exam",
+          "text_jp": "DBMS を使う目的は、多くの利用者やプログラムが同じデータを同時に使っても、内容の整合性を崩さずに共有できるようにすることである。",
+          "text_zh": "使用 DBMS 的目的在于：即使许多用户和程序同时使用同一数据，也能在不破坏内容一致性的前提下共享数据。",
+          "text_en": "The purpose of using a DBMS is to let many users and programs share the same data at the same time without breaking its consistency.",
+          "qids": [
+            "2011h23a-q053",
+            "2020r02o-q064"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "flow",
+        "mode": "steps",
+        "data": {
+          "nodes": [
+            {
+              "id": "app",
+              "label": {
+                "jp": "アプリケーション",
+                "zh": "应用程序",
+                "en": "Application"
+              }
+            },
+            {
+              "id": "dbms",
+              "label": {
+                "jp": "DBMS",
+                "zh": "DBMS",
+                "en": "DBMS"
+              }
+            },
+            {
+              "id": "db",
+              "label": {
+                "jp": "データベース",
+                "zh": "数据库",
+                "en": "Database"
+              }
+            }
+          ]
+        },
+        "steps": [
+          {
+            "caption_jp": "アプリケーションが、欲しいデータや書き換えたい内容を伝える。",
+            "caption_zh": "应用程序告知想要的数据或想修改的内容。",
+            "caption_en": "The application states what data it wants or what it wants to change.",
+            "state": {
+              "show": 1
+            }
+          },
+          {
+            "caption_jp": "DBMS が依頼を受け取り、権限や他の処理との競合を確かめる。",
+            "caption_zh": "DBMS 接收请求，确认权限以及是否与其他处理冲突。",
+            "caption_en": "The DBMS receives the request and checks permissions and conflicts with other processing.",
+            "state": {
+              "show": 2
+            }
+          },
+          {
+            "caption_jp": "DBMS がデータベースを読み書きし、結果をアプリケーションへ返す。",
+            "caption_zh": "DBMS 读写数据库，并把结果返回给应用程序。",
+            "caption_en": "The DBMS reads or writes the database and returns the result to the application.",
+            "state": {
+              "show": 3
+            }
+          }
+        ]
+      },
+      "quiz": [
+        "2009h21h-q058",
+        "2020r02o-q064",
+        "2021r03-q075"
+      ],
+      "definition_jp": "DBMS（Database Management System、データベース管理システム）は、データベースを管理し、利用者やアプリケーションの代わりにデータを読み書きするソフトウェアである。",
+      "definition_zh": "DBMS（Database Management System，数据库管理系统）是管理数据库、代替用户和应用程序读写数据的软件。",
+      "definition_en": "A DBMS (Database Management System) is software that manages a database and reads and writes data on behalf of users and applications.",
+      "explanation_jp": "アプリケーションはデータの置き場所や形式を直接扱わず、DBMS に依頼してデータを取り出したり書き換えたりする。DBMS は、同じデータを何人もが同時に更新しても矛盾が出ないように、ほかの処理を待たせるなどして調整する同時実行制御を受け持つ。ほかにも、障害で壊れたデータをバックアップなどから元に戻す障害回復や、利用者ごとに操作できる範囲を決めるアクセス権管理も DBMS の役割である。",
+      "explanation_zh": "应用程序不直接处理数据的存放位置和格式，而是委托 DBMS 读取或改写数据。DBMS 负责并发控制（同時実行制御），通过让其他处理等待等方式进行协调，使多人同时更新同一数据时也不会产生矛盾。此外，利用备份等把因故障而损坏的数据恢复原状的故障恢复（障害回復），以及规定每个用户可操作范围的访问权限管理（アクセス権管理），也是 DBMS 的职责。",
+      "explanation_en": "The application does not deal with where or in what format data is stored; it asks the DBMS to fetch or change data. The DBMS handles concurrency control (同時実行制御), coordinating operations, for example by making some wait, so that data stays consistent even when many people update it at once. It also handles failure recovery (障害回復), which restores data damaged by a failure from backups and the like, and access rights management (アクセス権管理), which sets what each user may do.",
+      "memory_hook_jp": "Management は「管理」。データの管理人を名前に持つのが DBMS。",
+      "memory_hook_zh": "Management 意为“管理”。名字里就带着“数据管理员”的，正是 DBMS。",
+      "memory_hook_en": "Management means managing: the DBMS carries \"data manager\" right in its name.",
+      "inline_quiz": [
+        "2009h21h-q058",
+        "2020r02o-q064",
+        "2021r03-q075"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "RDBMS",
-      "definition_jp": "データを表(テーブル)形式で管理する関係データベース管理システム。",
-      "explanation_jp": "RDBMS(関係データベース管理システム)は、データを行と列からなる表(テーブル)で表し、複数の表を関連づけて扱う最も普及した DBMS です。SQL という言語で操作します。\n\n試験では、表形式で構造がはっきりしている点、表どうしを関連づけられる点が特徴として問われます。後述の NoSQL は、この「表に固定する関係型」とは異なる発想であることを対比で覚えると理解が深まります。",
-      "analogy_jp": "Excel の表をたくさん作り、共通の番号で互いに結びつけるイメージ。社員表と部署表を社員番号でつなぐような関連づけができます。",
-      "memory_hook_jp": "RDBMS といえば表(テーブル)形式の関係データベース",
-      "inline_quiz": [
-        "2014h26a-q074"
-      ],
-      "inline_fallback": false,
-      "figure": null,
       "term_zh": "RDBMS",
       "term_en": "RDBMS",
-      "definition_zh": "以表（table）形式管理数据的关系数据库管理系统。",
-      "definition_en": "A relational database management system that manages data in table form.",
-      "explanation_zh": "RDBMS（关系数据库管理系统）以由行和列构成的表（table）来表示数据，并将多个表相互关联起来处理，是目前最普及的 DBMS。它使用一种叫 SQL 的语言来操作。\n\n在考试中，会考查它的特征：以表形式呈现、结构清晰，以及表与表之间可以相互关联。把后面讲的 NoSQL 与这种「固定为表的关系型」做对比来记忆，理解会更深入。",
-      "explanation_en": "An RDBMS (Relational Database Management System) represents data as tables made up of rows and columns, and handles multiple tables by relating them to each other. It is the most widely used type of DBMS and is operated using a language called SQL.\n\nExams ask about its characteristics: that its structure is clear in table form, and that tables can be related to one another. Understanding deepens if you memorize the later NoSQL in contrast with this \"relational type that fixes data into tables.\"",
-      "analogy_zh": "可以想象成做了许多张 Excel 表格，并用共同的编号把它们相互连接起来。例如可以用员工编号把员工表和部门表关联起来。",
-      "analogy_en": "Picture making many Excel tables and linking them to each other with a shared number. For example, you can relate an employee table and a department table using the employee number.",
-      "memory_hook_zh": "说到 RDBMS，就是表（table）形式的关系数据库",
-      "memory_hook_en": "RDBMS → a relational database in table form"
+      "one_jp": "**RDBMS**（関係データベース管理システム）は、データを**表**（テーブル）の形で持つ**関係データモデル**に基づいてデータベースを管理する DBMS である。",
+      "one_zh": "**RDBMS**（关系数据库管理系统）是基于**关系数据模型**（[[jp:関係データモデル]]）管理数据库的 DBMS，该模型以**表**（数据表）的形式保存数据。",
+      "one_en": "An **RDBMS** (Relational Database Management System) is a DBMS that manages a database based on the **relational data model** ([[jp:関係データモデル]]), which holds data in the form of **tables**.",
+      "detail_jp": "表の横 1 行が 1 件のデータ（**レコード**）、縦 1 列が 1 つの項目に当たり、列の名前と型はあらかじめ決めておく。別の表と共通の項目（例えば商品番号）を持たせれば、表どうしを結び付けて取り出せる。RDBMS の操作には **SQL** という言語を使う。",
+      "detail_zh": "表中横向的一行是一条数据（**记录**），纵向的一列对应一个项目，列名和数据类型要事先确定。只要让一张表与另一张表拥有共同的项目（例如商品编号），就能把两张表关联起来取出数据。操作 RDBMS 使用名为 **SQL** 的语言。",
+      "detail_en": "Each row of a table is one item of data (a **record**) and each column is one field, with column names and data types fixed in advance. Giving two tables a field in common, such as the product number, lets you link them and retrieve data across both. An RDBMS is operated with a language called **SQL**.",
+      "analogy_jp": "列見出しを先に決めた表計算ソフトのシートを何枚も用意し、共通の番号で行どうしを突き合わせるようなもの。",
+      "analogy_zh": "就像在电子表格软件里准备好几张预先定好列标题的工作表，再用共同的编号把各张表的行对应起来。",
+      "analogy_en": "It is like setting up several spreadsheet sheets with the column headings decided first, then matching rows across them by a shared number.",
+      "hook_jp": "R は Relational（関係）の頭文字。関係データモデルでは表そのものを「関係」（リレーション）と呼ぶので、「表でデータを管理する DBMS」と読める。",
+      "hook_zh": "R 是 Relational（关系）的首字母。在关系数据模型中，表本身就叫作“关系”（relation），所以可以读作“用表管理数据的 DBMS”。",
+      "hook_en": "R stands for Relational. In the relational data model a table itself is called a \"relation,\" so read it as \"a DBMS that manages data in tables.\"",
+      "points": [
+        {
+          "kind": "exam",
+          "text_jp": "関係データモデルは、データを表の形で表現するモデルで、1 行が 1 件、1 列が 1 項目に当たる。",
+          "text_zh": "关系数据模型（[[jp:関係データモデル]]）是以表的形式表示数据的模型，一行对应一条数据，一列对应一个项目。",
+          "text_en": "The relational data model ([[jp:関係データモデル]]) represents data as tables, where one row is one record and one column is one field.",
+          "qids": [
+            "2014h26a-q074",
+            "2022r04-q083"
+          ]
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "商品番号",
+              "zh": "商品编号",
+              "en": "Product no."
+            },
+            {
+              "jp": "商品名",
+              "zh": "商品名称",
+              "en": "Product name"
+            },
+            {
+              "jp": "単価",
+              "zh": "单价",
+              "en": "Unit price"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "P01",
+                  "zh": "P01",
+                  "en": "P01"
+                },
+                {
+                  "jp": "ノート",
+                  "zh": "笔记本",
+                  "en": "Notebook"
+                },
+                {
+                  "jp": "150",
+                  "zh": "150",
+                  "en": "150"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "P02",
+                  "zh": "P02",
+                  "en": "P02"
+                },
+                {
+                  "jp": "ボールペン",
+                  "zh": "圆珠笔",
+                  "en": "Ballpoint pen"
+                },
+                {
+                  "jp": "120",
+                  "zh": "120",
+                  "en": "120"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "P03",
+                  "zh": "P03",
+                  "en": "P03"
+                },
+                {
+                  "jp": "消しゴム",
+                  "zh": "橡皮",
+                  "en": "Eraser"
+                },
+                {
+                  "jp": "80",
+                  "zh": "80",
+                  "en": "80"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [
+        "2014h26a-q074",
+        "2022r04-q083"
+      ],
+      "definition_jp": "RDBMS（関係データベース管理システム）は、データを表（テーブル）の形で持つ関係データモデルに基づいてデータベースを管理する DBMS である。",
+      "definition_zh": "RDBMS（关系数据库管理系统）是基于关系数据模型（関係データモデル）管理数据库的 DBMS，该模型以表（数据表）的形式保存数据。",
+      "definition_en": "An RDBMS (Relational Database Management System) is a DBMS that manages a database based on the relational data model (関係データモデル), which holds data in the form of tables.",
+      "explanation_jp": "表の横 1 行が 1 件のデータ（レコード）、縦 1 列が 1 つの項目に当たり、列の名前と型はあらかじめ決めておく。別の表と共通の項目（例えば商品番号）を持たせれば、表どうしを結び付けて取り出せる。RDBMS の操作には SQL という言語を使う。",
+      "explanation_zh": "表中横向的一行是一条数据（记录），纵向的一列对应一个项目，列名和数据类型要事先确定。只要让一张表与另一张表拥有共同的项目（例如商品编号），就能把两张表关联起来取出数据。操作 RDBMS 使用名为 SQL 的语言。",
+      "explanation_en": "Each row of a table is one item of data (a record) and each column is one field, with column names and data types fixed in advance. Giving two tables a field in common, such as the product number, lets you link them and retrieve data across both. An RDBMS is operated with a language called SQL.",
+      "memory_hook_jp": "R は Relational（関係）の頭文字。関係データモデルでは表そのものを「関係」（リレーション）と呼ぶので、「表でデータを管理する DBMS」と読める。",
+      "memory_hook_zh": "R 是 Relational（关系）的首字母。在关系数据模型中，表本身就叫作“关系”（relation），所以可以读作“用表管理数据的 DBMS”。",
+      "memory_hook_en": "R stands for Relational. In the relational data model a table itself is called a \"relation,\" so read it as \"a DBMS that manages data in tables.\"",
+      "inline_quiz": [
+        "2014h26a-q074",
+        "2022r04-q083"
+      ],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "NoSQL",
-      "definition_jp": "表形式の関係データベースとは異なる構造でデータを扱う非関係型データベースの総称。",
-      "explanation_jp": "NoSQL は「Not only SQL」を意味し、RDBMS のような固定した表形式に縛られず、多様な構造でデータを格納するデータベースの総称です。大量データや柔軟なデータ構造、高速処理が求められる用途で使われます。\n\n試験では、NoSQL が一つの製品ではなく複数の種類(キーバリュー型・ドキュメント型・グラフ型など)を含む「分類の傘」である点が重要です。RDBMS との違い(表に固定しない・SQL 以外の操作)を対比で押さえましょう。",
-      "analogy_jp": "RDBMS が「決まったマス目の原稿用紙」なら、NoSQL は白紙のノートやカード、付箋など、用途に合わせて形を選べる文房具一式のようなものです。",
-      "memory_hook_jp": "NoSQL といえば表に縛られない非関係型の総称",
-      "inline_quiz": [
-        "2016h28a-q077"
-      ],
-      "inline_fallback": true,
-      "figure": {
-        "mermaid": "graph TD\n  A[\"NoSQL\"] --> B[\"キーバリューストア(KVS)\"]\n  A --> C[\"ドキュメント指向DB\"]\n  A --> D[\"グラフ指向DB\"]",
-        "svg_path": "figures/technology-21-54-u01-t01.svg",
-        "rendered": true
-      },
       "term_zh": "NoSQL",
       "term_en": "NoSQL",
-      "definition_zh": "以不同于表形式关系数据库的结构来处理数据的非关系型数据库的统称。",
-      "definition_en": "A general term for non-relational databases that handle data with a structure different from that of table-form relational databases.",
-      "explanation_zh": "NoSQL 意为「Not only SQL」，是不被 RDBMS 那样固定的表形式所束缚、以多样结构来存储数据的数据库的统称。它用于需要海量数据、灵活数据结构、高速处理的场景。\n\n在考试中，重点在于 NoSQL 不是单一的某个产品，而是包含多个种类（键值型、文档型、图型等）的「分类的伞」。把它与 RDBMS 的差异（不固定为表、用 SQL 以外的方式操作）做对比来掌握。",
-      "explanation_en": "NoSQL means \"Not only SQL.\" It is a general term for databases that store data in diverse structures, without being bound by the fixed table form of an RDBMS. It is used where large volumes of data, flexible data structures, and high-speed processing are required.\n\nIn exams, the key point is that NoSQL is not a single product but an \"umbrella category\" that includes several types (key-value, document, graph, and so on). Grasp it in contrast with the RDBMS by its differences (not fixed into tables; operated by means other than SQL).",
-      "analogy_zh": "如果 RDBMS 是「格子固定的稿纸」，那么 NoSQL 就像可以根据用途选择形态的一整套文具——空白笔记本、卡片、便利贴等。",
-      "analogy_en": "If an RDBMS is \"manuscript paper with fixed squares,\" then NoSQL is like a whole set of stationery whose form you can choose to suit the purpose: blank notebooks, cards, sticky notes, and so on.",
-      "memory_hook_zh": "说到 NoSQL，就是不受表束缚的非关系型的统称",
-      "memory_hook_en": "NoSQL → an umbrella term for non-relational types not bound by tables"
+      "one_jp": "**NoSQL** は、関係データモデルの表によらない形でデータを持つデータベースをまとめて呼ぶ総称である。",
+      "one_zh": "**NoSQL** 是对不采用关系数据模型的表、而以其他形式保存数据的各类数据库的总称。",
+      "one_en": "**NoSQL** is an umbrella term for databases that hold data in forms other than the tables of the relational data model.",
+      "detail_jp": "名前は「Not only SQL」の意味とされ、1 つの製品ではなく、データの持ち方が異なる複数の型をまとめた呼び名である。表の列をあらかじめ決めなくてもよい型が多く、形のそろわないデータや、多数のサーバに分けて置く大量のデータを扱う用途で使われる。",
+      "detail_zh": "这一名称一般被解释为“Not only SQL”，它指的不是某一个产品，而是把数据存储方式各不相同的多种类型合在一起的称呼。许多类型不需要事先确定表的列，常用于处理形式不统一的数据，或分散存放在大量服务器上的海量数据。",
+      "detail_en": "The name is usually read as \"Not only SQL,\" and it refers not to one product but to several types that hold data in different ways. Many of these types do not require table columns to be fixed in advance, and they are used for data whose shape varies or for large volumes of data spread across many servers.",
+      "analogy_jp": "RDBMS がマス目の決まった原稿用紙だとすると、NoSQL は無地のノート、単語カード、付箋などをまとめた文具の棚にあたる。",
+      "analogy_zh": "如果说 RDBMS 是格子固定的稿纸，那么 NoSQL 就像一个文具架，上面放着空白笔记本、单词卡、便利贴等。",
+      "analogy_en": "If an RDBMS is manuscript paper with a fixed grid, NoSQL is a stationery shelf holding plain notebooks, flashcards, sticky notes and more.",
+      "hook_jp": "No は「いいえ」ではなく Not only（〜だけではない）と読むのが一般的。SQL を捨てるのではなく、表以外の持ち方も認めるという意味になる。",
+      "hook_zh": "No 一般不理解为“否定”，而是读作 Not only（不仅是）。这样读，这个名字的意思就不是抛弃 SQL，而是也接纳表以外的存储方式。",
+      "hook_en": "No is usually read not as \"no\" but as \"Not only.\" Read that way, the name does not reject SQL; it admits ways of holding data other than tables.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "NoSQL は特定の製品名ではなく、表によらないデータベースの型をまとめた総称である。",
+          "text_zh": "NoSQL 不是特定的产品名称，而是对不采用表的各类数据库的总称。",
+          "text_en": "NoSQL is not a specific product name but an umbrella term for the types of databases that do not use tables."
+        }
+      ],
+      "fig": {
+        "kind": "tree",
+        "mode": "static",
+        "data": {
+          "root": {
+            "id": "nosql",
+            "label": {
+              "jp": "NoSQL（代表的な型の例）",
+              "zh": "NoSQL（代表性类型示例）",
+              "en": "NoSQL (examples of common types)"
+            },
+            "children": [
+              {
+                "id": "kvs",
+                "label": {
+                  "jp": "キーバリューストア（KVS）",
+                  "zh": "键值存储（KVS）",
+                  "en": "Key-value store (KVS)"
+                }
+              },
+              {
+                "id": "doc",
+                "label": {
+                  "jp": "ドキュメント指向データベース",
+                  "zh": "文档型数据库",
+                  "en": "Document-oriented database"
+                }
+              },
+              {
+                "id": "graph",
+                "label": {
+                  "jp": "グラフ指向データベース",
+                  "zh": "图型数据库",
+                  "en": "Graph-oriented database"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "quiz": [],
+      "definition_jp": "NoSQL は、関係データモデルの表によらない形でデータを持つデータベースをまとめて呼ぶ総称である。",
+      "definition_zh": "NoSQL 是对不采用关系数据模型的表、而以其他形式保存数据的各类数据库的总称。",
+      "definition_en": "NoSQL is an umbrella term for databases that hold data in forms other than the tables of the relational data model.",
+      "explanation_jp": "名前は「Not only SQL」の意味とされ、1 つの製品ではなく、データの持ち方が異なる複数の型をまとめた呼び名である。表の列をあらかじめ決めなくてもよい型が多く、形のそろわないデータや、多数のサーバに分けて置く大量のデータを扱う用途で使われる。",
+      "explanation_zh": "这一名称一般被解释为“Not only SQL”，它指的不是某一个产品，而是把数据存储方式各不相同的多种类型合在一起的称呼。许多类型不需要事先确定表的列，常用于处理形式不统一的数据，或分散存放在大量服务器上的海量数据。",
+      "explanation_en": "The name is usually read as \"Not only SQL,\" and it refers not to one product but to several types that hold data in different ways. Many of these types do not require table columns to be fixed in advance, and they are used for data whose shape varies or for large volumes of data spread across many servers.",
+      "memory_hook_jp": "No は「いいえ」ではなく Not only（〜だけではない）と読むのが一般的。SQL を捨てるのではなく、表以外の持ち方も認めるという意味になる。",
+      "memory_hook_zh": "No 一般不理解为“否定”，而是读作 Not only（不仅是）。这样读，这个名字的意思就不是抛弃 SQL，而是也接纳表以外的存储方式。",
+      "memory_hook_en": "No is usually read not as \"no\" but as \"Not only.\" Read that way, the name does not reject SQL; it admits ways of holding data other than tables.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "キーバリューストア",
-      "definition_jp": "キーと値を一対で格納する最も単純な構造の NoSQL。",
-      "explanation_jp": "キーバリューストアは、「キー(目印)」と「値(中身)」を組にして保存する NoSQL の一種です。キーを指定すれば対応する値を高速に取り出せ、構造が単純なため大量データを高速にさばけます。\n\n試験では、表のように列を細かく決めず、キーで値を引く仕組みである点が特徴として問われます。値の中身までは細かく検索しにくい代わりに、単純さと速さが利点です。",
-      "analogy_jp": "コインロッカーのようなもの。番号(キー)を渡せば中の荷物(値)が出てきますが、荷物の中身そのものでは探せません。",
-      "memory_hook_jp": "キーバリューストアといえばキーと値の組で格納",
-      "inline_quiz": [
-        "2020r02o-q064"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "键值存储",
       "term_en": "Key-Value Store",
-      "definition_zh": "以键和值成对存储、结构最简单的 NoSQL。",
-      "definition_en": "The simplest-structured NoSQL, which stores keys and values in pairs.",
-      "explanation_zh": "键值存储是把「键（标记）」和「值（内容）」配成一对来保存的一种 NoSQL。只要指定键，就能高速取出对应的值；由于结构简单，可以高速处理海量数据。\n\n在考试中，会考查它的特征：不像表那样细致地规定列，而是用键来取值的机制。代价是难以对值的内部内容做细致检索，但它的优点是简单和快速。",
-      "explanation_en": "A key-value store is a type of NoSQL that saves a \"key (label)\" and a \"value (contents)\" as a pair. If you specify the key, you can retrieve the corresponding value at high speed, and because the structure is simple, it can handle large volumes of data quickly.\n\nExams ask about its characteristic: rather than finely defining columns as a table does, it is a mechanism that looks up a value by its key. The trade-off is that it is hard to search finely into the contents of a value, but its advantages are simplicity and speed.",
-      "analogy_zh": "就像投币储物柜。把号码（键）交出去，里面的行李（值）就会出来；但你无法用行李的内容本身去查找。",
-      "analogy_en": "It is like a coin locker. Hand over the number (key) and the luggage inside (value) comes out, but you cannot search by the contents of the luggage itself.",
-      "memory_hook_zh": "说到键值存储，就是以键和值成对存储",
-      "memory_hook_en": "Key-value store → stores data as key-and-value pairs"
+      "one_jp": "**キーバリューストア**は、データを探すための**キー**と、その中身である**値**（バリュー）を 1 組にして保存する NoSQL である。",
+      "one_zh": "**键值存储**（[[jp:キーバリューストア]]）是把用于查找数据的**键**与其内容**值**（value）作为一组保存的 NoSQL。",
+      "one_en": "A **key-value store** ([[jp:キーバリューストア]]) is a NoSQL type that saves a **key**, used to look up data, together with its content, the **value**, as one pair.",
+      "detail_jp": "キーを指定すると対応する値が 1 つ返ってくる、という単純な仕組みで、そのぶん読み書きが速い。値の中身の形は DBMS が決めないため、値の内部の項目を条件にして探すような使い方には向かない。",
+      "detail_zh": "指定键就会返回一个对应的值，机制简单，因此读写速度快。值的内容形式不由 DBMS 规定，所以不适合以值内部的项目为条件进行查找。",
+      "detail_en": "Specify a key and the one matching value comes back; the mechanism is that simple, so reads and writes are fast. Because the DBMS does not define the form of what is inside a value, it is a poor fit for searches that use a field inside the value as the condition.",
+      "analogy_jp": "番号札で預けるクロークのようなもの。札の番号を言えば荷物はすぐ出てくるが、荷物の中身を手がかりに探してもらうことはできない。",
+      "analogy_zh": "就像凭号码牌寄存物品的衣帽间。报出号码牌上的号码，物品马上就能取出，但不能请工作人员根据物品里装了什么来找。",
+      "analogy_en": "It is like a cloakroom that works with numbered tags. Give the tag number and your item comes right out, but you cannot ask the staff to find it by what is inside.",
+      "hook_jp": "辞書の「見出し語 → 説明」と同じ形。見出し語がキー、説明が値。",
+      "hook_zh": "和词典的“词条 → 释义”是同一个形式。词条是键，释义是值。",
+      "hook_en": "It has the same shape as a dictionary entry: headword, then definition. The headword is the key and the definition is the value.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "キーバリューストアはキーで値を引くことに特化し、値の内部を条件にした検索はドキュメント指向データベースのほうが得意である。",
+          "text_zh": "键值存储（[[jp:キーバリューストア]]）专门用于凭键取值，而以值的内部为条件的查找，则是文档型数据库（[[jp:ドキュメント指向データベース]]）更擅长。",
+          "text_en": "A key-value store ([[jp:キーバリューストア]]) specializes in retrieving a value by its key, while searches that use the inside of a value as the condition suit a document-oriented database ([[jp:ドキュメント指向データベース]]) better."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "キー",
+              "zh": "键",
+              "en": "Key"
+            },
+            {
+              "jp": "値",
+              "zh": "值",
+              "en": "Value"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "session:7731",
+                  "zh": "session:7731",
+                  "en": "session:7731"
+                },
+                {
+                  "jp": "ログイン中の利用者情報",
+                  "zh": "已登录用户的信息",
+                  "en": "Logged-in user's details"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "cart:2048",
+                  "zh": "cart:2048",
+                  "en": "cart:2048"
+                },
+                {
+                  "jp": "買い物かごの中身",
+                  "zh": "购物车中的商品",
+                  "en": "Shopping cart contents"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "img:logo",
+                  "zh": "img:logo",
+                  "en": "img:logo"
+                },
+                {
+                  "jp": "画像データ",
+                  "zh": "图像数据",
+                  "en": "Image data"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "キーバリューストアは、データを探すためのキーと、その中身である値（バリュー）を 1 組にして保存する NoSQL である。",
+      "definition_zh": "键值存储（キーバリューストア）是把用于查找数据的键与其内容值（value）作为一组保存的 NoSQL。",
+      "definition_en": "A key-value store (キーバリューストア) is a NoSQL type that saves a key, used to look up data, together with its content, the value, as one pair.",
+      "explanation_jp": "キーを指定すると対応する値が 1 つ返ってくる、という単純な仕組みで、そのぶん読み書きが速い。値の中身の形は DBMS が決めないため、値の内部の項目を条件にして探すような使い方には向かない。",
+      "explanation_zh": "指定键就会返回一个对应的值，机制简单，因此读写速度快。值的内容形式不由 DBMS 规定，所以不适合以值内部的项目为条件进行查找。",
+      "explanation_en": "Specify a key and the one matching value comes back; the mechanism is that simple, so reads and writes are fast. Because the DBMS does not define the form of what is inside a value, it is a poor fit for searches that use a field inside the value as the condition.",
+      "memory_hook_jp": "辞書の「見出し語 → 説明」と同じ形。見出し語がキー、説明が値。",
+      "memory_hook_zh": "和词典的“词条 → 释义”是同一个形式。词条是键，释义是值。",
+      "memory_hook_en": "It has the same shape as a dictionary entry: headword, then definition. The headword is the key and the definition is the value.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "KVS",
-      "definition_jp": "キーバリューストアの略称・別表記(Key-Value Store)。",
-      "explanation_jp": "KVS は Key-Value Store の頭文字をとった略称で、直前のキーバリューストアと同じものを指します。文献や問題文では日本語表記と KVS の両方が使われます。\n\n試験では、KVS とキーバリューストアが同一概念であることを知っていれば十分です。略語と正式名称が結びつくよう、対応を覚えておきましょう。",
-      "analogy_jp": "「キーバリューストア」というフルネームに対する「KVS」というニックネームのようなもの。呼び方が違うだけで同じ人物です。",
-      "memory_hook_jp": "KVS といえばキーバリューストアの略称",
-      "inline_quiz": [
-        "2021r03-q075"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "KVS",
       "term_en": "KVS",
-      "definition_zh": "键值存储的缩写、别称（Key-Value Store）。",
-      "definition_en": "An abbreviation and alternative notation for Key-Value Store.",
-      "explanation_zh": "KVS 是 Key-Value Store 的首字母缩写，指的就是前面所讲的键值存储这同一事物。在文献和试题中，中文（日文）写法和 KVS 两种说法都会用到。\n\n在考试中，只要知道 KVS 与键值存储是同一概念就足够了。请把缩写与正式名称对应起来记住。",
-      "explanation_en": "KVS is an abbreviation made from the initials of Key-Value Store, and it refers to the very same thing as the key-value store described just before. In the literature and exam questions, both the spelled-out form and KVS are used.\n\nIn exams, it is enough to know that KVS and key-value store are the same concept. Memorize the correspondence so the abbreviation and the full name are linked.",
-      "analogy_zh": "就像相对于「键值存储」这个全名而言的「KVS」这个昵称。只是叫法不同，其实是同一个人。",
-      "analogy_en": "It is like the nickname \"KVS\" for the full name \"Key-Value Store.\" Only the way of calling it differs; it is the same person.",
-      "memory_hook_zh": "说到 KVS，就是键值存储的缩写",
-      "memory_hook_en": "KVS → the abbreviation for key-value store"
+      "one_jp": "**KVS** は Key-Value Store の頭文字をとった、**キーバリューストア**の略称である。",
+      "one_zh": "**KVS** 取自 Key-Value Store 的首字母，是**键值存储**的缩写。",
+      "one_en": "**KVS** is short for **key-value store**, formed from the initials of Key-Value Store.",
+      "detail_jp": "指すものはキーバリューストアと同じで、文章によって日本語表記と略称のどちらも使われる。キーと値の組でデータを持つという性質も、そのまま当てはまる。",
+      "detail_zh": "它所指的与键值存储相同，有的资料写日语名称（[[jp:キーバリューストア]]），有的写缩写。以键和值的组合保存数据这一特点，也同样适用。",
+      "detail_en": "It means the same thing as a key-value store, and texts use either the Japanese name ([[jp:キーバリューストア]]) or the abbreviation. Its trait of holding data as key-value pairs applies just the same.",
+      "analogy_jp": "",
+      "analogy_zh": "",
+      "analogy_en": "",
+      "hook_jp": "K（Key）・V（Value）・S（Store）の 3 文字を順に開くと正式名になる。",
+      "hook_zh": "把 K（Key）、V（Value）、S（Store）这几个字母依次展开，就是正式名称。",
+      "hook_en": "Expand K (Key), V (Value) and S (Store) in order and you have the full name.",
+      "points": [],
+      "fig": null,
+      "quiz": [],
+      "definition_jp": "KVS は Key-Value Store の頭文字をとった、キーバリューストアの略称である。",
+      "definition_zh": "KVS 取自 Key-Value Store 的首字母，是键值存储的缩写。",
+      "definition_en": "KVS is short for key-value store, formed from the initials of Key-Value Store.",
+      "explanation_jp": "指すものはキーバリューストアと同じで、文章によって日本語表記と略称のどちらも使われる。キーと値の組でデータを持つという性質も、そのまま当てはまる。",
+      "explanation_zh": "它所指的与键值存储相同，有的资料写日语名称（キーバリューストア），有的写缩写。以键和值的组合保存数据这一特点，也同样适用。",
+      "explanation_en": "It means the same thing as a key-value store, and texts use either the Japanese name (キーバリューストア) or the abbreviation. Its trait of holding data as key-value pairs applies just the same.",
+      "memory_hook_jp": "K（Key）・V（Value）・S（Store）の 3 文字を順に開くと正式名になる。",
+      "memory_hook_zh": "把 K（Key）、V（Value）、S（Store）这几个字母依次展开，就是正式名称。",
+      "memory_hook_en": "Expand K (Key), V (Value) and S (Store) in order and you have the full name.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "ドキュメント指向データベース",
-      "definition_jp": "JSON など文書単位でデータを柔軟に格納する NoSQL。",
-      "explanation_jp": "ドキュメント指向データベースは、JSON や XML のような構造を持つ「文書(ドキュメント)」を一単位として格納する NoSQL です。キーバリューより中身が構造化されており、項目を含んだまま保存・検索できます。\n\n試験では、表のように事前に列を固定しなくても、文書ごとに異なる項目を持てる柔軟さが特徴として問われます。キーバリューストアより一段構造化された方式と位置づけて覚えましょう。",
-      "analogy_jp": "決まった様式の用紙ではなく、必要な項目だけ書き込んだ自由形式のカルテをそのまま束ねて保管するイメージです。",
-      "memory_hook_jp": "ドキュメント指向データベースといえばJSON等の文書単位で格納",
-      "inline_quiz": [
-        "2022r04-q083"
-      ],
-      "inline_fallback": true,
-      "figure": null,
       "term_zh": "文档型数据库",
       "term_en": "Document-Oriented Database",
-      "definition_zh": "以 JSON 等文档为单位、灵活存储数据的 NoSQL。",
-      "definition_en": "A NoSQL that flexibly stores data on a per-document basis, such as in JSON.",
-      "explanation_zh": "文档型数据库是把具有 JSON 或 XML 那样结构的「文档」作为一个单位来存储的 NoSQL。它的内容比键值更结构化，可以连同各个项目一起保存和检索。\n\n在考试中，会考查它的特征：不必像表那样事先固定列，每个文档可以拥有不同的项目，具有灵活性。把它定位为比键值存储更进一步结构化的方式来记忆。",
-      "explanation_en": "A document-oriented database is a NoSQL that stores a structured \"document,\" such as one in JSON or XML, as a single unit. Its contents are more structured than a key-value store, and it can be saved and searched together with the fields it contains.\n\nExams ask about its characteristic: the flexibility that each document can have different fields without fixing columns in advance as a table would. Memorize it as positioned one step more structured than a key-value store.",
-      "analogy_zh": "想象成：不是固定格式的表单，而是只填写了所需项目的自由格式病历，原样成沓地保管起来。",
-      "analogy_en": "Picture it as bundling and storing, as-is, free-format charts on which only the needed fields are written, rather than fixed-format forms.",
-      "memory_hook_zh": "说到文档型数据库，就是以 JSON 等文档为单位存储",
-      "memory_hook_en": "Document-oriented database → stores data per document, such as in JSON"
+      "one_jp": "**ドキュメント指向データベース**は、JSON や XML のように項目を持った**文書**（ドキュメント）を 1 件の単位として保存する NoSQL である。",
+      "one_zh": "**文档型数据库**（[[jp:ドキュメント指向データベース]]）是以 JSON、XML 这类带有项目的**文档**（document）作为一条数据单位进行保存的 NoSQL。",
+      "one_en": "A **document-oriented database** ([[jp:ドキュメント指向データベース]]) is a NoSQL type that saves each **document** that has fields, such as JSON or XML, as one record.",
+      "detail_jp": "文書ごとに持つ項目が違ってもよく、表のように列をそろえておく必要がない。DBMS が文書の中の項目を読み取れるため、項目の値を条件にした検索もできる。",
+      "detail_zh": "每个文档所包含的项目可以不同，不必像表那样统一各列。DBMS 能够读取文档中的项目，因此也可以以项目的值为条件进行查找。",
+      "detail_en": "Each document may carry different fields, so there is no need to align columns as in a table. Because the DBMS can read the fields inside a document, you can also search using a field's value as the condition.",
+      "analogy_jp": "決まった様式の申込用紙ではなく、人によって書く欄の違う自由記入のカードを 1 枚ずつ綴じたファイルのようなもの。",
+      "analogy_zh": "它不像格式固定的申请表，而像一个文件夹，里面一张张装订着因人而异、栏目各不相同的自由填写卡片。",
+      "analogy_en": "Rather than a fixed application form, it is like a binder of free-form cards, each with different boxes filled in depending on the person.",
+      "hook_jp": "ドキュメント（document）は「書類」。書類 1 枚がそのまま 1 件のデータ。",
+      "hook_zh": "document 就是“文书”。一份文书原样就是一条数据。",
+      "hook_en": "A document is a piece of paperwork: one sheet is one record, just as it is.",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "ドキュメント指向データベースは 1 件ごとに項目が違ってよく、列を先に決める RDBMS の表とは持ち方が異なる。",
+          "text_zh": "文档型数据库（[[jp:ドキュメント指向データベース]]）中每条数据的项目可以不同，这与先定好列的 RDBMS 表在存储方式上不同。",
+          "text_en": "In a document-oriented database ([[jp:ドキュメント指向データベース]]) each record may have different fields, which differs from an RDBMS table whose columns are fixed first."
+        }
+      ],
+      "fig": {
+        "kind": "table",
+        "mode": "static",
+        "data": {
+          "cols": [
+            {
+              "jp": "文書",
+              "zh": "文档",
+              "en": "Document"
+            },
+            {
+              "jp": "持っている項目",
+              "zh": "包含的项目",
+              "en": "Fields it has"
+            }
+          ],
+          "rows": [
+            {
+              "cells": [
+                {
+                  "jp": "会員 1",
+                  "zh": "会员 1",
+                  "en": "Member 1"
+                },
+                {
+                  "jp": "氏名、メールアドレス",
+                  "zh": "姓名、电子邮件地址",
+                  "en": "Name, email address"
+                }
+              ]
+            },
+            {
+              "cells": [
+                {
+                  "jp": "会員 2",
+                  "zh": "会员 2",
+                  "en": "Member 2"
+                },
+                {
+                  "jp": "氏名、電話番号、好きなジャンル",
+                  "zh": "姓名、电话号码、喜欢的类型",
+                  "en": "Name, phone number, favorite genre"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "quiz": [],
+      "definition_jp": "ドキュメント指向データベースは、JSON や XML のように項目を持った文書（ドキュメント）を 1 件の単位として保存する NoSQL である。",
+      "definition_zh": "文档型数据库（ドキュメント指向データベース）是以 JSON、XML 这类带有项目的文档（document）作为一条数据单位进行保存的 NoSQL。",
+      "definition_en": "A document-oriented database (ドキュメント指向データベース) is a NoSQL type that saves each document that has fields, such as JSON or XML, as one record.",
+      "explanation_jp": "文書ごとに持つ項目が違ってもよく、表のように列をそろえておく必要がない。DBMS が文書の中の項目を読み取れるため、項目の値を条件にした検索もできる。",
+      "explanation_zh": "每个文档所包含的项目可以不同，不必像表那样统一各列。DBMS 能够读取文档中的项目，因此也可以以项目的值为条件进行查找。",
+      "explanation_en": "Each document may carry different fields, so there is no need to align columns as in a table. Because the DBMS can read the fields inside a document, you can also search using a field's value as the condition.",
+      "memory_hook_jp": "ドキュメント（document）は「書類」。書類 1 枚がそのまま 1 件のデータ。",
+      "memory_hook_zh": "document 就是“文书”。一份文书原样就是一条数据。",
+      "memory_hook_en": "A document is a piece of paperwork: one sheet is one record, just as it is.",
+      "inline_quiz": [],
+      "inline_fallback": false,
+      "figure": null
     },
     {
       "term": "グラフ指向データベース",
-      "definition_jp": "ノードと関係(エッジ)でデータのつながりを表現する NoSQL。",
-      "explanation_jp": "グラフ指向データベースは、データを「ノード(点)」、その間のつながりを「関係(エッジ)」として表現する NoSQL です。要素どうしの関係性をたどる処理を得意とします。\n\n試験では、SNS の友人関係や経路探索のように「つながり」を扱う用途に向く点が特徴として問われます。表で関連を都度結合する RDBMS と違い、関係そのものをデータとして保持する発想を押さえましょう。",
-      "analogy_jp": "人と人を線で結んだ相関図のようなもの。誰と誰がつながっているかをたどって、友達の友達まで素早く探せます。",
-      "memory_hook_jp": "グラフ指向データベースといえばノードと関係でつながりを表現",
+      "term_zh": "图型数据库",
+      "term_en": "Graph-Oriented Database",
+      "one_jp": "**グラフ指向データベース**は、データを**ノード**（点）、データ同士のつながりを**エッジ**（線）として保存する NoSQL である。",
+      "one_zh": "**图型数据库**（[[jp:グラフ指向データベース]]）是把数据作为**节点**（点）、把数据之间的联系作为**边**（线）来保存的 NoSQL。",
+      "one_en": "A **graph-oriented database** ([[jp:グラフ指向データベース]]) is a NoSQL type that saves data as **nodes** (points) and the connections between data as **edges** (lines).",
+      "detail_jp": "ここでのグラフは折れ線グラフではなく、点と線で結んだネットワークの形を指す。つながりそのものをデータとして持つため、知り合いの知り合いや、駅から駅への経路のように、つながりを何段もたどる処理が得意である。",
+      "detail_zh": "这里的“图”不是折线图，而是指用点和线连接起来的网络形状。由于把联系本身作为数据保存，它擅长沿着联系一层层追踪的处理，例如朋友的朋友，或者从一个车站到另一个车站的路线。",
+      "detail_en": "\"Graph\" here does not mean a line chart but a network of points joined by lines. Because it stores the connections themselves as data, it is good at following links through many steps, such as friends of friends or routes from station to station.",
+      "analogy_jp": "人物の名前を丸で囲み、関係のある人同士を線で結んだ相関図をそのまま保存しておくようなもの。",
+      "analogy_zh": "就像把一张人物关系图原样保存下来：人名用圆圈圈起，有关系的人之间用线相连。",
+      "analogy_en": "It is like saving a relationship chart as is, with each person's name circled and lines drawn between people who are connected.",
+      "hook_jp": "グラフ = 棒や折れ線ではなく、鉄道の路線図のような「駅（点）と線路（線）」の図。",
+      "hook_zh": "这里的图不是柱状图或折线图，而是像铁路线路图那样由“车站（点）和线路（线）”构成的图。",
+      "hook_en": "A graph here means not bars or lines on a chart but a rail map of stations (points) and tracks (lines).",
+      "points": [
+        {
+          "kind": "mix",
+          "text_jp": "RDBMS は表どうしを共通の項目で結び付けてつながりを表し、グラフ指向データベースはつながりをエッジとして直接持つ。",
+          "text_zh": "RDBMS 用共同的项目把表与表关联起来表示联系，而图型数据库（[[jp:グラフ指向データベース]]）则把联系作为边直接保存。",
+          "text_en": "An RDBMS expresses relationships by linking tables through shared fields, while a graph-oriented database ([[jp:グラフ指向データベース]]) holds the connections directly as edges."
+        }
+      ],
+      "fig": {
+        "kind": "svg",
+        "mode": "static",
+        "data": {
+          "path": "figures/technology-21-54-u01-t02.svg"
+        }
+      },
+      "quiz": [],
+      "definition_jp": "グラフ指向データベースは、データをノード（点）、データ同士のつながりをエッジ（線）として保存する NoSQL である。",
+      "definition_zh": "图型数据库（グラフ指向データベース）是把数据作为节点（点）、把数据之间的联系作为边（线）来保存的 NoSQL。",
+      "definition_en": "A graph-oriented database (グラフ指向データベース) is a NoSQL type that saves data as nodes (points) and the connections between data as edges (lines).",
+      "explanation_jp": "ここでのグラフは折れ線グラフではなく、点と線で結んだネットワークの形を指す。つながりそのものをデータとして持つため、知り合いの知り合いや、駅から駅への経路のように、つながりを何段もたどる処理が得意である。",
+      "explanation_zh": "这里的“图”不是折线图，而是指用点和线连接起来的网络形状。由于把联系本身作为数据保存，它擅长沿着联系一层层追踪的处理，例如朋友的朋友，或者从一个车站到另一个车站的路线。",
+      "explanation_en": "\"Graph\" here does not mean a line chart but a network of points joined by lines. Because it stores the connections themselves as data, it is good at following links through many steps, such as friends of friends or routes from station to station.",
+      "memory_hook_jp": "グラフ = 棒や折れ線ではなく、鉄道の路線図のような「駅（点）と線路（線）」の図。",
+      "memory_hook_zh": "这里的图不是柱状图或折线图，而是像铁路线路图那样由“车站（点）和线路（线）”构成的图。",
+      "memory_hook_en": "A graph here means not bars or lines on a chart but a rail map of stations (points) and tracks (lines).",
       "inline_quiz": [],
-      "inline_fallback": true,
+      "inline_fallback": false,
       "figure": {
         "mermaid": "graph LR\n  A[\"利用者A\"] -->|友人| B[\"利用者B\"]\n  B -->|友人| C[\"利用者C\"]\n  A -->|友人| C",
         "svg_path": "figures/technology-21-54-u01-t02.svg",
         "rendered": true
-      },
-      "term_zh": "图型数据库",
-      "term_en": "Graph-Oriented Database",
-      "definition_zh": "用节点和关系（边）来表现数据之间联系的 NoSQL。",
-      "definition_en": "A NoSQL that expresses connections between data using nodes and relationships (edges).",
-      "explanation_zh": "图型数据库是把数据表现为「节点（点）」、把它们之间的联系表现为「关系（边）」的 NoSQL。它擅长沿着要素之间的关系进行追溯的处理。\n\n在考试中，会考查它的特征：适用于处理「联系」的场景，例如 SNS 的好友关系或路径搜索。与每次都通过表来连接关联的 RDBMS 不同，要掌握它把关系本身作为数据来保存的思路。",
-      "explanation_en": "A graph-oriented database is a NoSQL that expresses data as \"nodes (points)\" and the connections between them as \"relationships (edges).\" It excels at processing that traces relationships among elements.\n\nExams ask about its characteristic: it suits uses that deal with \"connections,\" such as friend relationships on social networks or route searching. Unlike an RDBMS, which joins relations each time using tables, grasp the idea of holding the relationships themselves as data.",
-      "analogy_zh": "就像用线把人与人连起来的关系图。沿着谁和谁有联系去追溯，就能迅速找到朋友的朋友。",
-      "analogy_en": "It is like a correlation diagram connecting people with lines. By tracing who is connected to whom, you can quickly find even a friend of a friend.",
-      "memory_hook_zh": "说到图型数据库，就是用节点和关系表现联系",
-      "memory_hook_en": "Graph-oriented database → expresses connections with nodes and relationships"
+      }
     }
   ],
+  "pairs": [
+    {
+      "a": "データベース",
+      "b": "DBMS",
+      "rows": [
+        {
+          "label_jp": "正体",
+          "label_zh": "本质",
+          "label_en": "What it is",
+          "a_jp": "整理して蓄えたデータの集まり",
+          "a_zh": "经过整理并存储的数据集合",
+          "a_en": "A collection of organized, stored data",
+          "b_jp": "データベースを管理するソフトウェア",
+          "b_zh": "管理数据库的软件",
+          "b_en": "Software that manages the database",
+          "key": true
+        },
+        {
+          "label_jp": "役割",
+          "label_zh": "作用",
+          "label_en": "Role",
+          "a_jp": "共有される中身を持つ",
+          "a_zh": "承载被共享的内容",
+          "a_en": "Holds the shared content",
+          "b_jp": "データの読み書きと保護を受け持つ",
+          "b_zh": "负责数据的读写与保护",
+          "b_en": "Handles reading, writing and protecting data",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "RDBMS",
+      "b": "NoSQL",
+      "rows": [
+        {
+          "label_jp": "データの持ち方",
+          "label_zh": "数据的存储方式",
+          "label_en": "How data is held",
+          "a_jp": "関係データモデルの表（行と列）",
+          "a_zh": "关系数据模型的表（行与列）",
+          "a_en": "Tables of the relational data model (rows and columns)",
+          "b_jp": "表によらない形（型によって異なる）",
+          "b_zh": "不依赖表的形式（因类型而异）",
+          "b_en": "Forms other than tables (varies by type)",
+          "key": true
+        },
+        {
+          "label_jp": "項目の決め方",
+          "label_zh": "项目的确定方式",
+          "label_en": "How fields are defined",
+          "a_jp": "列をあらかじめ決める",
+          "a_zh": "事先确定列",
+          "a_en": "Columns are fixed in advance",
+          "b_jp": "先に決めなくてよい型が多い",
+          "b_zh": "很多类型不必事先确定",
+          "b_en": "Many types need not fix them first",
+          "key": false
+        },
+        {
+          "label_jp": "範囲",
+          "label_zh": "范围",
+          "label_en": "Scope",
+          "a_jp": "表で管理する DBMS",
+          "a_zh": "用表管理数据的 DBMS",
+          "a_en": "A DBMS that manages data in tables",
+          "b_jp": "複数の型をまとめた総称",
+          "b_zh": "多种类型的总称",
+          "b_en": "An umbrella term for several types",
+          "key": false
+        }
+      ]
+    },
+    {
+      "a": "キーバリューストア",
+      "b": "ドキュメント指向データベース",
+      "rows": [
+        {
+          "label_jp": "1 件の形",
+          "label_zh": "一条数据的形式",
+          "label_en": "Shape of one record",
+          "a_jp": "キーと値の組",
+          "a_zh": "键与值的组合",
+          "a_en": "A key-value pair",
+          "b_jp": "項目を持つ文書",
+          "b_zh": "带有项目的文档",
+          "b_en": "A document with fields",
+          "key": false
+        },
+        {
+          "label_jp": "中身の扱い",
+          "label_zh": "对内容的处理",
+          "label_en": "Handling of contents",
+          "a_jp": "値の中身は DBMS が解釈しない",
+          "a_zh": "DBMS 不解析值的内容",
+          "a_en": "The DBMS does not interpret what is inside a value",
+          "b_jp": "文書の中の項目を DBMS が読み取れる",
+          "b_zh": "DBMS 能读取文档中的项目",
+          "b_en": "The DBMS can read the fields inside a document",
+          "key": true
+        },
+        {
+          "label_jp": "検索",
+          "label_zh": "查找",
+          "label_en": "Search",
+          "a_jp": "キーで引く",
+          "a_zh": "凭键查取",
+          "a_en": "Look up by key",
+          "b_jp": "項目の値を条件にして探せる",
+          "b_zh": "可以以项目的值为条件查找",
+          "b_en": "Can search using field values as conditions",
+          "key": false
+        }
+      ]
+    }
+  ],
+  "key_points_jp": [
+    "データベースは、重複を減らして共有するために、目的に沿って整理して蓄えたデータの集まりである。",
+    "DBMS は、多くの利用者が同じデータを同時に使っても整合性が崩れないように共有を支え、障害回復やアクセス権管理も受け持つ。",
+    "RDBMS は関係データモデルに基づき、行と列から成る表でデータを管理し、SQL で操作する。",
+    "NoSQL は表によらないデータベースの総称で、キーと値の組、文書、ノードとエッジなど、型ごとに異なる持ち方をする。"
+  ],
+  "key_points_zh": [
+    "数据库是为了减少重复、实现共享，按目的整理并存储起来的数据集合。",
+    "DBMS 支撑数据共享，使许多用户同时使用同一数据也不会破坏一致性，还负责故障恢复和访问权限管理。",
+    "RDBMS 基于关系数据模型，用由行和列组成的表管理数据，并用 SQL 进行操作。",
+    "NoSQL 是不依赖表的数据库的总称，各类型以不同方式保存数据，如键与值的组合、文档、节点与边等。"
+  ],
+  "key_points_en": [
+    "A database is a collection of data organized for a purpose and stored to cut duplication and allow sharing.",
+    "A DBMS supports sharing so that consistency holds even when many users use the same data at once, and it also handles failure recovery and access rights management.",
+    "An RDBMS is based on the relational data model, manages data in tables made of rows and columns, and is operated with SQL.",
+    "NoSQL is an umbrella term for databases that do not rely on tables, and each type holds data in its own way, such as key-value pairs, documents, or nodes and edges."
+  ],
+  "overview": {
+    "intro_jp": "データベース（データの集まり）と DBMS（それを管理するソフトウェア）を分けて説明できる。DBMS を使う目的と、DBMS が受け持つ主な機能を挙げられる。表で管理する RDBMS と、表に縛られない NoSQL の各型を、データの持ち方で見分けられる。",
+    "intro_zh": "能够区分并说明数据库（数据的集合）与 DBMS（管理数据库的软件）。能够说出使用 DBMS 的目的，以及 DBMS 承担的主要功能。能够根据数据的存储方式，分辨用表管理数据的 RDBMS 与不受表约束的 NoSQL 各类型。",
+    "intro_en": "Explain the difference between a database (a collection of data) and a DBMS (the software that manages it). State why a DBMS is used and name the main functions it handles. Tell apart an RDBMS, which manages data in tables, and the types of NoSQL, which are not bound to tables, by how each holds data.",
+    "freq_badge": "低頻",
+    "est_minutes": 39
+  },
   "summary": {
-    "memory_hooks_jp": [
-      "データベース: データベースといえば整理・共有されたデータの集合体",
-      "DBMS: DBMS といえばデータベースを管理するソフトウェア",
-      "RDBMS: RDBMS といえば表(テーブル)形式の関係データベース",
-      "NoSQL: NoSQL といえば表に縛られない非関係型の総称",
-      "キーバリューストア: キーバリューストアといえばキーと値の組で格納",
-      "KVS: KVS といえばキーバリューストアの略称",
-      "ドキュメント指向データベース: ドキュメント指向データベースといえばJSON等の文書単位で格納",
-      "グラフ指向データベース: グラフ指向データベースといえばノードと関係でつながりを表現"
-    ],
     "key_points_jp": [
-      "データベースは整理・共有されたデータの集合体、DBMS はそれを管理するソフトウェアであり、両者を混同しない。",
-      "RDBMS はデータを表(テーブル)形式で管理する関係型で、SQL で操作する最も普及した方式。",
-      "NoSQL は表に縛られない非関係型データベースの総称で、キーバリュー型・ドキュメント型・グラフ型などを含む。",
-      "キーバリューストア(KVS)は単純・高速、ドキュメント指向は柔軟な文書単位、グラフ指向はつながりの表現に強い。",
-      "NoSQL の各種類は RDBMS との対比で特徴を理解すると、用途の違いが整理しやすい。"
+      "データベースは、重複を減らして共有するために、目的に沿って整理して蓄えたデータの集まりである。",
+      "DBMS は、多くの利用者が同じデータを同時に使っても整合性が崩れないように共有を支え、障害回復やアクセス権管理も受け持つ。",
+      "RDBMS は関係データモデルに基づき、行と列から成る表でデータを管理し、SQL で操作する。",
+      "NoSQL は表によらないデータベースの総称で、キーと値の組、文書、ノードとエッジなど、型ごとに異なる持ち方をする。"
     ],
     "key_points_zh": [
-      "数据库是经过整理、可共享的数据集合体，DBMS 是管理它的软件，两者不要混淆。",
-      "RDBMS 是以表（table）形式管理数据的关系型，用 SQL 操作，是最普及的方式。",
-      "NoSQL 是不受表束缚的非关系型数据库的统称，包含键值型、文档型、图型等。",
-      "键值存储（KVS）简单且高速，文档型以灵活的文档为单位，图型擅长表现联系。",
-      "把 NoSQL 的各个种类放在与 RDBMS 的对比中理解，更容易梳理出用途上的差异。"
+      "数据库是为了减少重复、实现共享，按目的整理并存储起来的数据集合。",
+      "DBMS 支撑数据共享，使许多用户同时使用同一数据也不会破坏一致性，还负责故障恢复和访问权限管理。",
+      "RDBMS 基于关系数据模型，用由行和列组成的表管理数据，并用 SQL 进行操作。",
+      "NoSQL 是不依赖表的数据库的总称，各类型以不同方式保存数据，如键与值的组合、文档、节点与边等。"
     ],
     "key_points_en": [
-      "A database is an organized, shareable collection of data, and a DBMS is the software that manages it; do not confuse the two.",
-      "An RDBMS is the relational type that manages data in table form, operated with SQL, and is the most widely used approach.",
-      "NoSQL is a general term for non-relational databases not bound by tables, and includes key-value, document, and graph types, among others.",
-      "Key-value stores (KVS) are simple and fast, the document type works per flexible document, and the graph type is strong at expressing connections.",
-      "Understanding each type of NoSQL in contrast with the RDBMS makes it easier to sort out the differences in their uses."
+      "A database is a collection of data organized for a purpose and stored to cut duplication and allow sharing.",
+      "A DBMS supports sharing so that consistency holds even when many users use the same data at once, and it also handles failure recovery and access rights management.",
+      "An RDBMS is based on the relational data model, manages data in tables made of rows and columns, and is operated with SQL.",
+      "NoSQL is an umbrella term for databases that do not rely on tables, and each type holds data in its own way, such as key-value pairs, documents, or nodes and edges."
+    ],
+    "memory_hooks_jp": [
+      "データベース: データの「ベース（基地）」= データが集まって置かれている場所、と字面で覚える。",
+      "DBMS: Management は「管理」。データの管理人を名前に持つのが DBMS。",
+      "RDBMS: R は Relational（関係）の頭文字。関係データモデルでは表そのものを「関係」（リレーション）と呼ぶので、「表でデータを管理する DBMS」と読める。",
+      "NoSQL: No は「いいえ」ではなく Not only（〜だけではない）と読むのが一般的。SQL を捨てるのではなく、表以外の持ち方も認めるという意味になる。",
+      "キーバリューストア: 辞書の「見出し語 → 説明」と同じ形。見出し語がキー、説明が値。",
+      "KVS: K（Key）・V（Value）・S（Store）の 3 文字を順に開くと正式名になる。",
+      "ドキュメント指向データベース: ドキュメント（document）は「書類」。書類 1 枚がそのまま 1 件のデータ。",
+      "グラフ指向データベース: グラフ = 棒や折れ線ではなく、鉄道の路線図のような「駅（点）と線路（線）」の図。"
     ],
     "memory_hooks_zh": [
-      "数据库：说到数据库，就是经过整理、可共享的数据集合体",
-      "DBMS：说到 DBMS，就是管理数据库的软件",
-      "RDBMS：说到 RDBMS，就是表（table）形式的关系数据库",
-      "NoSQL：说到 NoSQL，就是不受表束缚的非关系型的统称",
-      "键值存储：说到键值存储，就是以键和值成对存储",
-      "KVS：说到 KVS，就是键值存储的缩写",
-      "文档型数据库：说到文档型数据库，就是以 JSON 等文档为单位存储",
-      "图型数据库：说到图型数据库，就是用节点和关系表现联系"
+      "数据库：按字面记：database 的 base 是“基地”，也就是数据集中存放的地方。",
+      "DBMS：Management 意为“管理”。名字里就带着“数据管理员”的，正是 DBMS。",
+      "RDBMS：R 是 Relational（关系）的首字母。在关系数据模型中，表本身就叫作“关系”（relation），所以可以读作“用表管理数据的 DBMS”。",
+      "NoSQL：No 一般不理解为“否定”，而是读作 Not only（不仅是）。这样读，这个名字的意思就不是抛弃 SQL，而是也接纳表以外的存储方式。",
+      "键值存储：和词典的“词条 → 释义”是同一个形式。词条是键，释义是值。",
+      "KVS：把 K（Key）、V（Value）、S（Store）这几个字母依次展开，就是正式名称。",
+      "文档型数据库：document 就是“文书”。一份文书原样就是一条数据。",
+      "图型数据库：这里的图不是柱状图或折线图，而是像铁路线路图那样由“车站（点）和线路（线）”构成的图。"
     ],
     "memory_hooks_en": [
-      "Database: Database → an organized, shareable collection of data",
-      "DBMS: DBMS → software that manages a database",
-      "RDBMS: RDBMS → a relational database in table form",
-      "NoSQL: NoSQL → an umbrella term for non-relational types not bound by tables",
-      "Key-value store: Key-value store → stores data as key-and-value pairs",
-      "KVS: KVS → the abbreviation for key-value store",
-      "Document-oriented database: Document-oriented database → stores data per document, such as in JSON",
-      "Graph-oriented database: Graph-oriented database → expresses connections with nodes and relationships"
+      "Database: Read the word literally: the \"base\" where data is gathered and kept.",
+      "DBMS: Management means managing: the DBMS carries \"data manager\" right in its name.",
+      "RDBMS: R stands for Relational. In the relational data model a table itself is called a \"relation,\" so read it as \"a DBMS that manages data in tables.\"",
+      "NoSQL: No is usually read not as \"no\" but as \"Not only.\" Read that way, the name does not reject SQL; it admits ways of holding data other than tables.",
+      "Key-Value Store: It has the same shape as a dictionary entry: headword, then definition. The headword is the key and the definition is the value.",
+      "KVS: Expand K (Key), V (Value) and S (Store) in order and you have the full name.",
+      "Document-Oriented Database: A document is a piece of paperwork: one sheet is one record, just as it is.",
+      "Graph-Oriented Database: A graph here means not bars or lines on a chart but a rail map of stations (points) and tracks (lines)."
     ]
   },
-  "challenge_questions": [],
+  "challenge_questions": [
+    "2011h23a-q053",
+    "2016h28a-q077",
+    "2021r03-q075",
+    "2022r04-q083"
+  ],
   "source_figures": [],
   "lang_status": {
     "jp": "generated",
     "zh": "generated",
     "en": "generated"
-  },
-  "title_zh": "数据库与 DBMS 基础、NoSQL 的种类",
-  "title_en": "Database and DBMS Basics, and Types of NoSQL",
-  "unit_summary_zh": "掌握数据库与 DBMS 的意义和目的，从关系数据库（RDBMS）到非关系型的 NoSQL 主要种类，进行一次整体性的概览。",
-  "unit_summary_en": "Grasp the significance and purpose of databases and DBMS, and survey everything from relational databases (RDBMS) to the major types of non-relational NoSQL."
+  }
 }
