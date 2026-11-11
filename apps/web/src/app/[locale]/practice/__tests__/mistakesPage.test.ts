@@ -1,9 +1,8 @@
-// Stage 7 Phase 1 Task 12 — /[locale]/practice/mistakes on the server side: force-dynamic (owner
-// cookie) with the record provider around MistakesList, fed the dictionary-free payload (a glossary
+// Stage 7 Phase 1 Task 12 — /[locale]/practice/mistakes on the server side: force-dynamic (no
+// cookie read: H1-1) with the record provider around MistakesList, fed the dictionary-free payload (a glossary
 // failure cannot break it). Real corpus; only Next's runtime pieces are stubbed.
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock("next-intl/server", () => ({
   setRequestLocale: () => {},
   getTranslations: async ({ namespace }: { namespace: string }) => (k: string) => `${namespace}.${k}`,
@@ -33,7 +32,7 @@ describe("/practice/mistakes", () => {
     try {
       const el = await page("ja");
       expect(el.type).toBe(LearningRecordProvider);
-      expect(el.props.isOwner).toBe(false);
+      expect(el.props).not.toHaveProperty("isOwner"); // owner flag: browser-side (useOwner, H1-1)
       const list = el.props.children!;
       expect(list.type).toBe(MistakesList);
       const p = list.props as unknown as MistakesListProps;

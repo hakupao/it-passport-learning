@@ -86,7 +86,6 @@ export interface PracticeSessionProps {
   /** the group, in order (the ids are their ids) */
   questions: QuizQuestion[];
   locale: string;
-  isOwner: boolean;
   /** dictionary cards keyed by JP term; {} when the dictionary failed to load (plain-text terms) */
   termCards: Record<string, TermCard>;
   topics: Record<string, SessionTopic>;
@@ -368,7 +367,6 @@ export function SessionTimer({
 export function SessionView({
   questions,
   locale,
-  isOwner,
   termCards,
   topics,
   folds,
@@ -465,7 +463,6 @@ export function SessionView({
           locale={locale}
           picked={picked}
           termCards={termCards}
-          isOwner={isOwner}
           unitBack={from?.kind === "unit" ? { href: unitReturnHref(from, q.terms), title: from.title } : null}
         />
       </div>

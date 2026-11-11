@@ -4,15 +4,14 @@
 // unit_index.json (in-repo per D-133), groups it (D-114 path order), and renders
 // the reader ToC.
 // D-180 Task 12: wrapped in LearningRecordProvider for the per-unit read marks
-// (owner flag from the D-148 cookie gates the server sync).
+// (the owner flag that gates the server sync is read in the browser: useOwner, H1-1;
+// force-dynamic stays until H1-4).
 
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { TextbookToc } from "@/components/textbook/TextbookToc";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
-import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { buildNav, loadReaderIndex } from "@/lib/textbook/reader";
 
 export const dynamic = "force-dynamic";
@@ -33,10 +32,9 @@ export default async function TextbookIndexPage({
 
   const index = await loadReaderIndex();
   const nav = buildNav(index, locale);
-  const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
 
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <TextbookToc nav={nav} stats={index.stats} locale={locale} />
     </LearningRecordProvider>
   );

@@ -140,6 +140,9 @@ async function becomeOwner(page: Page): Promise<void> {
   await expect(page).toHaveURL(/\/ja\/glossary$/);
   const cookies = await page.context().cookies();
   expect(cookies.map((c) => c.name)).toContain("itp_owner");
+  // H1-1: the readable hint useOwner() reads (pages no longer read itp_owner on the server)
+  expect(cookies.find((c) => c.name === "itp_owner_hint")).toMatchObject({ value: "1", httpOnly: false });
+  expect(cookies.find((c) => c.name === "itp_owner")).toMatchObject({ httpOnly: true });
 }
 
 const choice = (page: Page, letter: string) =>

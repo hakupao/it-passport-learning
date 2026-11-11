@@ -2,7 +2,14 @@ import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { routing } from "@/i18n/routing";
-import { OWNER_COOKIE, OWNER_COOKIE_MAX_AGE, isOwnerKey, sha256Hex } from "@/lib/owner";
+import {
+  OWNER_COOKIE,
+  OWNER_COOKIE_MAX_AGE,
+  OWNER_HINT_COOKIE,
+  OWNER_HINT_VALUE,
+  isOwnerKey,
+  sha256Hex,
+} from "@/lib/owner";
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -14,7 +21,8 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   }
 
   // D-148 owner activation: `?owner_key=<OWNER_KEY>` on any page sets the
-  // hashed owner cookie; `?owner_key=logout` clears it. Either way (including a
+  // hashed owner cookie (plus the readable UI hint, H1-1); `?owner_key=logout`
+  // clears both. Either way (including a
   // wrong key) the param is stripped via redirect so the secret does not stay
   // in the address bar / history. Handled before i18n routing, which would
   // otherwise return its own rewrite/redirect.
@@ -25,9 +33,18 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     const res = NextResponse.redirect(clean);
     if (candidate === "logout") {
       res.cookies.delete(OWNER_COOKIE);
+      res.cookies.delete(OWNER_HINT_COOKIE);
     } else if (await isOwnerKey(candidate)) {
       res.cookies.set(OWNER_COOKIE, await sha256Hex(candidate), {
         httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: OWNER_COOKIE_MAX_AGE,
+      });
+      // H1-1: readable UI hint for useOwner() (pages no longer read cookies on the server).
+      res.cookies.set(OWNER_HINT_COOKIE, OWNER_HINT_VALUE, {
+        httpOnly: false,
         secure: true,
         sameSite: "lax",
         path: "/",

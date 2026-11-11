@@ -2,15 +2,14 @@
 // Every number comes from the learning record in the browser, so the server sends the today payload
 // without the dictionary (loadSetupIndex: topics, ★, question ids — topicTerms are not used here)
 // and RecordPage computes the rest. The topic-table sort lives in the URL (?sort=rate; anything else
-// = 頻出度). LearningRecordProvider is mounted here and the owner flag reads a cookie → force-dynamic.
+// = 頻出度). LearningRecordProvider is mounted here; the owner flag is read in the browser (useOwner,
+// H1-1). force-dynamic remains for searchParams (until H1-3/H1-4).
 
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { RecordPage } from "@/components/record/RecordPage";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
-import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { loadSetupIndex } from "@/lib/practice/practiceReader";
 import type { RecordSort } from "@/lib/record/recordModel";
 
@@ -32,12 +31,9 @@ export default async function RecordRoute({ params, searchParams }: Props): Prom
   setRequestLocale(locale);
   const sp = await searchParams;
   const sort: RecordSort = (Array.isArray(sp.sort) ? sp.sort[0] : sp.sort) === "rate" ? "rate" : "stars";
-  const [index, owner] = await Promise.all([
-    loadSetupIndex(locale),
-    cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value)),
-  ]);
+  const index = await loadSetupIndex(locale);
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <RecordPage index={index} locale={locale} sort={sort} />
     </LearningRecordProvider>
   );

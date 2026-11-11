@@ -80,7 +80,7 @@ async function render(locale: "ja" | "zh" | "en"): Promise<string> {
     h(NextIntlClientProvider, {
       locale,
       messages: messages(locale),
-      children: h(LearningRecordProvider, { isOwner: false, children: await element(locale) }),
+      children: h(LearningRecordProvider, { children: await element(locale) }),
     }),
   );
 }
@@ -295,7 +295,7 @@ async function renderV2(locale: "ja" | "zh" | "en", raw: TextbookUnitV2 = V2): P
     h(NextIntlClientProvider, {
       locale,
       messages: messages(locale),
-      children: h(LearningRecordProvider, { isOwner: false, children: el }),
+      children: h(LearningRecordProvider, { children: el }),
     }),
   );
 }

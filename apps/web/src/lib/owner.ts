@@ -15,6 +15,13 @@
 
 export const OWNER_COOKIE = "itp_owner";
 
+// H1-1 (D-217) — readable UI hint set / cleared next to OWNER_COOKIE by the middleware, so pages need
+// no server cookie read (static prerender). Not a secret, not httpOnly: it only gates UI (the learning
+// sync attempt, the feedback button) via useOwner(); the API routes still check OWNER_COOKIE, so a
+// forged hint only earns 403s.
+export const OWNER_HINT_COOKIE = "itp_owner_hint";
+export const OWNER_HINT_VALUE = "1";
+
 /** Cookie lifetime: 1 year. */
 export const OWNER_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 

@@ -39,13 +39,12 @@ import session from "./session.module.css";
 export interface SingleQuestionProps {
   q: QuizQuestion;
   locale: string;
-  isOwner: boolean;
   termCards: Record<string, TermCard>;
   stars: Stars;
   topic: { id: string; category: string; /** JP 「中分類 › 小分類」 */ path: string };
 }
 
-export function SingleQuestion({ q, locale, isOwner, termCards, stars, topic }: SingleQuestionProps): React.ReactElement {
+export function SingleQuestion({ q, locale, termCards, stars, topic }: SingleQuestionProps): React.ReactElement {
   const t = useTranslations("Practice");
   const { record, loaded } = useLearningRecord();
   const [trOverride, setTrOverride] = useState<boolean | null>(null);
@@ -94,7 +93,6 @@ export function SingleQuestion({ q, locale, isOwner, termCards, stars, topic }: 
             locale={locale}
             picked={picked}
             termCards={termCards}
-            isOwner={isOwner}
             reveal
           />
           <div>

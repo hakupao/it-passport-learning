@@ -264,7 +264,7 @@ describe("ExplanationPane — 「単元に戻る：<単元名>」 (Phase 3 §0-8
       ["zh", "回到单元：要件定義と設計"],
       ["en", "Back to the unit: 要件定義と設計"],
     ] as const) {
-      const out = renderPane(q, locale, wrongOf(q), {}, false, back);
+      const out = renderPane(q, locale, wrongOf(q), {}, back);
       const link = out.match(/<p[^>]*data-unit-back=""[^>]*><a href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/);
       expect(link?.[1], locale).toBe(back.href);
       expect(link![2]!.replace(/<[^>]+>/g, "")).toBe(`${label} →`);
@@ -274,8 +274,8 @@ describe("ExplanationPane — 「単元に戻る：<単元名>」 (Phase 3 §0-8
 
   it("nothing for a right answer, an unanswered pane or a set not from a unit", () => {
     const q = byId("2024r06-q001");
-    expect(renderPane(q, "ja", q.correct_answer as ChoiceLetter, {}, false, back)).not.toContain("data-unit-back");
-    expect(renderPane(q, "ja", null, {}, false, back)).not.toContain("data-unit-back");
-    expect(renderPane(q, "ja", wrongOf(q), {}, false, null)).not.toContain("data-unit-back");
+    expect(renderPane(q, "ja", q.correct_answer as ChoiceLetter, {}, back)).not.toContain("data-unit-back");
+    expect(renderPane(q, "ja", null, {}, back)).not.toContain("data-unit-back");
+    expect(renderPane(q, "ja", wrongOf(q), {}, null)).not.toContain("data-unit-back");
   });
 });

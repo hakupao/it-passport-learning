@@ -2,8 +2,8 @@
 //
 // loadUnit() allowlists the unitId slug (path-traversal guard retained from the
 // harness loader). The index is read once for in-topic prev/next + breadcrumb.
-// D-180 Task 12: wrapped in LearningRecordProvider (owner flag from the D-148
-// cookie gates the server sync); Stage 7 Phase 3 (D-196 §0-4) the unit is marked
+// D-180 Task 12: wrapped in LearningRecordProvider (the owner flag that gates the
+// server sync is read in the browser: useOwner, H1-1); Stage 7 Phase 3 (D-196 §0-4) the unit is marked
 // read by its 読了 button. The reader renders the normalized unit (normalizeUnit,
 // chumon group members dropped via the chumon_groups.json-only loader) with its
 // breadcrumb place and confirmation questions (pickConfirm).
@@ -11,7 +11,6 @@
 // definition / explanation / memory hook) for the 「AI 先生に聞く」 button.
 
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
@@ -19,7 +18,6 @@ import { setRequestLocale } from "next-intl/server";
 import { UnitReader } from "@/components/textbook/UnitReader";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { routing } from "@/i18n/routing";
-import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { loadChumonMembers } from "@/lib/practice/chumonMembers";
 import { unitAnchor } from "@/lib/sensei/textbookAnchors";
 import { pickConfirm } from "@/lib/textbook/confirm";
@@ -62,11 +60,10 @@ export default async function UnitPage({
 
   const [index, members] = await Promise.all([loadReaderIndex(), loadChumonMembers()]);
   const reader = normalizeUnit(unit, members);
-  const owner = await isOwner((await cookies()).get(OWNER_COOKIE)?.value);
   const appLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
 
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <UnitReader
         unit={reader}
         place={unitPlace(index, unitId, locale)}

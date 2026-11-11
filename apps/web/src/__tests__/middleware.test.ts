@@ -20,6 +20,13 @@ function makeRequest(pathname: string): NextRequest {
   return new NextRequest(`http://test.example.com${pathname}`);
 }
 
+/** The one Set-Cookie line for `name` (exact name match; fails when absent). */
+function cookieLine(lines: string[], name: string): string {
+  const hits = lines.filter((l) => l.startsWith(`${name}=`));
+  expect(hits, name).toHaveLength(1);
+  return hits[0]!;
+}
+
 describe("middleware — routing", () => {
   beforeEach(() => {
     i18nHandlerCalls.length = 0;
@@ -105,15 +112,29 @@ describe("middleware — D-148 owner_key activation", () => {
     expect(res.headers.get("location")).toBe(
       "http://test.example.com/ja/quiz?mode=exam&id=2016h28h",
     );
-    const setCookie = res.headers.get("set-cookie") ?? "";
-    expect(setCookie).toContain(`itp_owner=${KEY_HASH}`);
-    expect(setCookie).not.toContain(KEY + ";");
-    expect(setCookie).toMatch(/HttpOnly/i);
-    expect(setCookie).toMatch(/Secure/i);
-    expect(setCookie).toMatch(/SameSite=lax/i);
-    expect(setCookie).toMatch(/Path=\//);
-    expect(setCookie).toMatch(/Max-Age=31536000/);
+    const lines = res.headers.getSetCookie();
+    expect(lines).toHaveLength(2);
+    const owner = cookieLine(lines, "itp_owner");
+    expect(owner).toContain(`itp_owner=${KEY_HASH};`);
+    expect(owner).not.toContain(KEY + ";");
+    expect(owner).toMatch(/HttpOnly/i);
+    expect(owner).toMatch(/Secure/i);
+    expect(owner).toMatch(/SameSite=lax/i);
+    expect(owner).toMatch(/Path=\//);
+    expect(owner).toMatch(/Max-Age=31536000/);
     expect(i18nHandlerCalls).toHaveLength(0);
+  });
+
+  it("correct key: also sets the readable UI hint cookie (H1-1) — value 1, not httpOnly, same scope / lifetime", async () => {
+    const res = await middleware(makeRequest(`/ja/textbook?owner_key=${KEY}`));
+    const hint = cookieLine(res.headers.getSetCookie(), "itp_owner_hint");
+    expect(hint).toMatch(/^itp_owner_hint=1;/);
+    expect(hint).not.toMatch(/HttpOnly/i);
+    expect(hint).not.toContain(KEY_HASH);
+    expect(hint).toMatch(/Secure/i);
+    expect(hint).toMatch(/SameSite=lax/i);
+    expect(hint).toMatch(/Path=\//);
+    expect(hint).toMatch(/Max-Age=31536000/);
   });
 
   it("wrong key: strips the param, sets no cookie", async () => {
@@ -130,13 +151,17 @@ describe("middleware — D-148 owner_key activation", () => {
     expect(res.headers.get("set-cookie")).toBeNull();
   });
 
-  it("owner_key=logout clears the cookie", async () => {
+  it("owner_key=logout clears the owner cookie and the hint cookie", async () => {
     const res = await middleware(makeRequest("/zh?owner_key=logout"));
     expect(res.status).toBe(307);
     expect(res.headers.get("location")).toBe("http://test.example.com/zh");
-    const setCookie = res.headers.get("set-cookie") ?? "";
-    expect(setCookie).toMatch(/itp_owner=;/);
-    expect(setCookie).toMatch(/Max-Age=0|Expires=Thu, 01 Jan 1970/i);
+    const lines = res.headers.getSetCookie();
+    expect(lines).toHaveLength(2);
+    for (const name of ["itp_owner", "itp_owner_hint"]) {
+      const line = cookieLine(lines, name);
+      expect(line).toMatch(new RegExp(`^${name}=;`));
+      expect(line).toMatch(/Max-Age=0|Expires=Thu, 01 Jan 1970/i);
+    }
   });
 
   it("does not intercept /api/* even with owner_key", async () => {

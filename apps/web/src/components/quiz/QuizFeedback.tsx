@@ -1,7 +1,7 @@
 // D-149 (Session 126) — owner-only per-question problem report.
 //
-// Rendered by the practice ExplanationPane only when the server page resolved the D-148 owner cookie
-// (`isOwner` prop), so non-owners never see it; the API also re-checks (403).
+// Rendered by the practice ExplanationPane only when useOwner() is true (the browser-side owner hint
+// cookie, H1-1 / D-217), so non-owners never see it; the API re-checks the httpOnly D-148 cookie (403).
 // Inline disclosure panel (no modal): trigger has aria-expanded/aria-controls,
 // first category radio receives focus on open, Esc closes and returns focus to
 // the trigger, submit/list results are announced via aria-live.

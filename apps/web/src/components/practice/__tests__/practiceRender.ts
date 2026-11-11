@@ -56,10 +56,9 @@ export function renderPane(
   locale: string,
   picked: ChoiceLetter | null,
   termCards: Record<string, TermCard> = {},
-  isOwner = false,
   unitBack: { href: string; title: string } | null = null,
 ): string {
-  return withIntl(locale, h(ExplanationPane, { q, locale, picked, termCards, isOwner, unitBack }));
+  return withIntl(locale, h(ExplanationPane, { q, locale, picked, termCards, unitBack }));
 }
 
 export function renderAnswerBar(q: QuizQuestion, locale: string): string {

@@ -1,10 +1,9 @@
 // Stage 7 Phase 1 Task 11 — the home route /[locale] (today page) on the server side: no redirect
-// to the old quiz list any more; force-dynamic (owner cookie) with the record provider; the today
+// to the old quiz list any more; force-dynamic with the record provider (no cookie read: H1-1); the today
 // payload, or the dictionary-free payload when the glossary fails (no terms box then). Real corpus;
 // only Next's runtime pieces are stubbed.
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock("next-intl/server", () => ({
   setRequestLocale: () => {},
   getTranslations: async ({ namespace }: { namespace: string }) => (k: string) => `${namespace}.${k}`,
@@ -38,7 +37,7 @@ describe("/[locale] → the today page", () => {
     expect(dynamic).toBe("force-dynamic");
     const el = await home("zh");
     expect(el.type).toBe(LearningRecordProvider);
-    expect(el.props.isOwner).toBe(false);
+    expect(el.props).not.toHaveProperty("isOwner"); // owner flag: browser-side (useOwner, H1-1)
     const page = el.props.children!;
     expect(page.type).toBe(TodayPage);
     const p = page.props as unknown as TodayPageProps;

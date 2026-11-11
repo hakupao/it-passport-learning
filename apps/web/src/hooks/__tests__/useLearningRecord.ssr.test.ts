@@ -31,7 +31,7 @@ function WritesOnly(): React.ReactElement {
 
 describe("LearningRecordProvider (SSR)", () => {
   it("serves the v2 emptyRecord() plus the actions to useLearningRecord()", () => {
-    const out = renderToStaticMarkup(h(LearningRecordProvider, { isOwner: true, children: h(ReadsRecord) }));
+    const out = renderToStaticMarkup(h(LearningRecordProvider, { children: h(ReadsRecord) }));
     expect(out).toBe(
       `<pre>${JSON.stringify({ v: 2, attempts: {}, unitsRead: {}, settings: {} }).replace(/"/g, "&quot;")}|function|function</pre>`,
     );
@@ -42,10 +42,9 @@ describe("LearningRecordProvider (SSR)", () => {
       const { loaded } = useLearningRecord();
       return h("b", null, String(loaded));
     }
-    for (const isOwner of [false, true]) {
-      const out = renderToStaticMarkup(h(LearningRecordProvider, { isOwner, children: h(ReadsLoaded) }));
-      expect(out).toBe("<b>false</b>");
-    }
+    // the owner flag is read in the browser (useOwner, null on the server), so there is no prop
+    const out = renderToStaticMarkup(h(LearningRecordProvider, { children: h(ReadsLoaded) }));
+    expect(out).toBe("<b>false</b>");
   });
 
   it("exposedLoaded: an owner's readers also wait for the initial GET to settle (no local-only flash)", () => {
@@ -59,8 +58,25 @@ describe("LearningRecordProvider (SSR)", () => {
     expect(exposedLoaded(true, true, true)).toBe(true);
   });
 
+  it("exposedLoaded: an owner flag still null (useOwner before mount) is never loaded", () => {
+    for (const local of [false, true]) for (const remote of [false, true]) expect(exposedLoaded(local, null, remote)).toBe(false);
+  });
+
+  it("exposedLoaded across the flag settling: null → false shows the local record; null → true waits for the GET", () => {
+    // (localLoaded, owner, remoteSettled) as the provider passes through them after mount
+    const toFalse = [exposedLoaded(false, null, false), exposedLoaded(true, null, false), exposedLoaded(true, false, false)];
+    expect(toFalse).toEqual([false, false, true]);
+    const toTrue = [
+      exposedLoaded(false, null, false),
+      exposedLoaded(true, null, false),
+      exposedLoaded(true, true, false),
+      exposedLoaded(true, true, true),
+    ];
+    expect(toTrue).toEqual([false, false, false, true]);
+  });
+
   it("useLearningActions() exposes only answer + answerBatch + readUnit + setSetting", () => {
-    const out = renderToStaticMarkup(h(LearningRecordProvider, { isOwner: false, children: h(WritesOnly) }));
+    const out = renderToStaticMarkup(h(LearningRecordProvider, { children: h(WritesOnly) }));
     expect(out).toBe("<i>answer,answerBatch,readUnit,setSetting</i>");
   });
 

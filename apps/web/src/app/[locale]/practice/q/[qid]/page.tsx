@@ -4,11 +4,10 @@
 // `#<question_id>` links land. An id not shaped `<exam_id>-q<NNN>` or not in the corpus → 404.
 //
 // Only this question (explanation merged) and its terms as cards cross to the client. The owner flag
-// gates the record sync and the report button; LearningRecordProvider is mounted here, so
-// force-dynamic.
+// that gates the record sync and the report button is read in the browser (useOwner, H1-1);
+// LearningRecordProvider is mounted here. force-dynamic stays until H1-4.
 
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
@@ -16,7 +15,6 @@ import { SingleQuestion } from "@/components/practice/SingleQuestion";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
-import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { topicStars } from "@/lib/practice/practiceIndex";
 import { loadQuestionsByIds } from "@/lib/practice/practiceReader";
 import { QUESTION_ID } from "@/lib/quiz/questionId";
@@ -43,22 +41,20 @@ export default async function QuestionRoute({ params }: Props): Promise<React.Re
   const q = await load(qid);
   if (!q) notFound();
 
-  const [index, dict, owner] = await Promise.all([
+  const [index, dict] = await Promise.all([
     loadQuizIndex(),
     loadDictionary().catch((err: unknown) => {
       console.error("[practice/q] glossary dictionary load failed; term chips fall back to plain text", err);
       return null;
     }),
-    cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value)),
   ]);
   const topic = index.topics.find((t) => t.topic_id === q.topic_id);
 
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <SingleQuestion
         q={q}
         locale={locale}
-        isOwner={owner}
         termCards={buildTermCards(dict, [q], locale)}
         stars={topicStars(index)[q.topic_id] ?? 1}
         topic={{

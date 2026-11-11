@@ -7,10 +7,10 @@
 //   - Only questions.json + the translation sidecars cross to the client — no explanation (§0-3: the
 //     result's rows link to /practice/q/<id>, where the explanation is). Every id must resolve to a
 //     question (R3: scoring over fewer than the mock's questions would be silent) — else 404.
-//   - LearningRecordProvider here (the finish writes the answers to the record), so force-dynamic.
+//   - LearningRecordProvider here (the finish writes the answers to the record); the owner flag is
+//     read in the browser (useOwner, H1-1). force-dynamic remains for searchParams (until H1-3/H1-4).
 
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
@@ -19,7 +19,6 @@ import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { redirect } from "@/i18n/navigation";
 import { examMockIds } from "@/lib/mock/mockModel";
 import { parseMockScope } from "@/lib/mock/mockScope";
-import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { topicStars, type Stars } from "@/lib/practice/practiceIndex";
 import { loadChumonGroups } from "@/lib/practice/practiceReader";
 import { foldPlan, type SearchParams } from "@/lib/practice/practiceSession";
@@ -59,11 +58,7 @@ export default async function MockRunPage({ params, searchParams }: Props): Prom
   });
   if (ids.length === 0 || found.length !== ids.length) notFound();
 
-  const [tr, groups, owner] = await Promise.all([
-    loadTranslations(),
-    loadChumonGroups(),
-    cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value)),
-  ]);
+  const [tr, groups] = await Promise.all([loadTranslations(), loadChumonGroups()]);
   // translation only — base questions carry no explanation, and none is merged (§0-3)
   const questions: QuizQuestion[] = found.map((q) => mergeTranslation(q, tr.get(q.id)));
 
@@ -74,7 +69,7 @@ export default async function MockRunPage({ params, searchParams }: Props): Prom
     scope.kind === "exam" ? (index.exams.find((e) => e.exam_id === scope.examId)?.label_jp ?? scope.examId) : null;
 
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <MockRun
         key={ids.join(",")}
         kind={scope.kind}

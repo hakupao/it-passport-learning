@@ -1,8 +1,10 @@
 // D-180 §0-6/§0-7 / D-190 — learning-record (v2) state for one page.
 //
 // `LearningRecordProvider` is mounted per page (quiz set + landing, textbook
-// TOC + unit reader), never in the locale layout: the owner flag comes
-// from cookies, and reading cookies in the layout would make every page dynamic.
+// TOC + unit reader), never in the locale layout. The owner flag is read in the
+// browser (useOwner: the readable hint cookie; H1-1 / D-217), not passed in by the
+// page, so pages do not read cookies on the server. It is null until mount; while
+// null nothing remote happens and readers do not see `loaded`.
 // Two contexts: the record (changes on every answer) and the actions (stable
 // identities). Write-only islands use `useLearningActions()` and do not
 // re-render when the record changes; readers use `useLearningRecord()`.
@@ -12,7 +14,7 @@
 //      mismatch); after mount the localStorage record is merged in
 //      (itp:learn:v2 plus, read-only, the itp:learn:v1 an old tab may still
 //      write, upgraded with now = Date.now()).
-//   2. Owner only: GET /api/learning?v=2 once and merge the server copy in.
+//   2. Owner only (once useOwner() is true): GET /api/learning?v=2 once and merge the server copy in.
 //   3. Every change after (1) is saved with saveLocal (v2 key only), which
 //      merges with what is stored (another tab may have written since); other
 //      tabs' writes (v2 key, or an old tab's v1 key) are merged in through the
@@ -40,8 +42,9 @@
 //      full PUT when the delta is over the keepalive size cap; hideFlushPlan).
 //      Answers the server still has not seen (a failed flush) go up on the next
 //      change or the next page load, right after the GET.
-// `loaded` (as exposed to readers) is false for an owner until the GET has
-// settled too, so progress islands never flash local-only counts on a new device.
+// `loaded` (as exposed to readers) is false while the owner flag is null, and for an
+// owner until the GET has settled too, so progress islands never flash local-only
+// counts on a new device.
 // Network failure → console.warn only (syncClient); local keeps working.
 
 "use client";
@@ -82,6 +85,8 @@ import {
   type FetchLike,
 } from "@/lib/learning/syncClient";
 import type { StorageLike } from "@/lib/storage";
+
+import { useOwner } from "./useOwner";
 
 export const PUT_DEBOUNCE_MS = 2000;
 
@@ -166,18 +171,18 @@ export function persistNow(storage: StorageLike | null, r: LearningRecord): bool
 
 const browserFetch: FetchLike = (input, init) => fetch(input, init);
 
-/** The `loaded` flag readers see: an owner also waits for the initial GET to settle. */
-export function exposedLoaded(localLoaded: boolean, isOwner: boolean, remoteSettled: boolean): boolean {
-  return localLoaded && (!isOwner || remoteSettled);
+/**
+ * The `loaded` flag readers see: false while the owner flag is not settled (null); an owner also
+ * waits for the initial GET to settle.
+ */
+export function exposedLoaded(localLoaded: boolean, isOwner: boolean | null, remoteSettled: boolean): boolean {
+  return localLoaded && isOwner !== null && (!isOwner || remoteSettled);
 }
 
-export function LearningRecordProvider({
-  isOwner,
-  children,
-}: {
-  isOwner: boolean;
-  children: React.ReactNode;
-}): React.ReactElement {
+export function LearningRecordProvider({ children }: { children: React.ReactNode }): React.ReactElement {
+  /** null until mount (useOwner); remote sync runs only once it is true. */
+  const owner = useOwner();
+  const isOwner = owner === true;
   const [record, setRecord] = useState<LearningRecord>(emptyRecord);
   const [loaded, setLoaded] = useState(false);
   /** Owner: the initial GET has finished (either way); PUTs wait for it. */
@@ -203,12 +208,16 @@ export function LearningRecordProvider({
     recordRef.current = record;
   }, [record]);
 
-  // (1) + (2): local load, then the owner's server copy.
+  // (1) local load, once on mount (independent of the owner flag).
   useEffect(() => {
     const storage = browserStorage();
     const local = storage ? loadLocal(storage, Date.now()) : emptyRecord();
     setRecord((prev) => mergeRecords(prev, local));
     setLoaded(true);
+  }, []);
+
+  // (2) owner: the server copy, once the flag has settled to true.
+  useEffect(() => {
     if (!isOwner) return;
     const ac = new AbortController();
     void pullRemote(browserFetch, ac.signal).then((remote) => {
@@ -276,7 +285,7 @@ export function LearningRecordProvider({
     [],
   );
 
-  const readersLoaded = exposedLoaded(loaded, isOwner, remoteSettled);
+  const readersLoaded = exposedLoaded(loaded, owner, remoteSettled);
   const state = useMemo<RecordState>(
     () => ({ record, loaded: readersLoaded }),
     [record, readersLoaded],

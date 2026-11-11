@@ -3,19 +3,17 @@
 //
 // The tasks come from the learning record, which lives in the browser, so the server sends the today
 // payload (loadTodayIndex: topics, ★, question ids, chumon groups, 3 terms per topic, exam labels) and
-// TodayPage computes the rest. LearningRecordProvider is mounted here (never in the locale layout) and
-// the owner flag reads a cookie, so the route is force-dynamic. A failed payload load (in practice the
-// glossary dictionary, the only part the fallback skips) falls back to the dictionary-free payload
+// TodayPage computes the rest. LearningRecordProvider is mounted here (never in the locale layout);
+// the owner flag is read in the browser (useOwner, H1-1), not here. force-dynamic stays until H1-4.
+// A failed payload load (in practice the glossary dictionary, the only part the fallback skips) falls back to the dictionary-free payload
 // (loadSetupIndex: topicTerms empty → no 「今天的 3 个用语」 box), as the practice setup panel does, so
 // the page never 500s on it; if the fallback fails too, the error propagates.
 
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { TodayPage } from "@/components/today/TodayPage";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
-import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { loadSetupIndex, loadTodayIndex } from "@/lib/practice/practiceReader";
 
 export const dynamic = "force-dynamic";
@@ -33,15 +31,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function HomePage({ params }: Props): Promise<React.ReactElement> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [index, owner] = await Promise.all([
-    loadTodayIndex(locale).catch((err: unknown) => {
-      console.error("[today] today payload failed to load; falling back to the payload without terms", err);
-      return loadSetupIndex(locale);
-    }),
-    cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value)),
-  ]);
+  const index = await loadTodayIndex(locale).catch((err: unknown) => {
+    console.error("[today] today payload failed to load; falling back to the payload without terms", err);
+    return loadSetupIndex(locale);
+  });
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <TodayPage index={index} locale={locale} />
     </LearningRecordProvider>
   );

@@ -230,7 +230,6 @@ describe("SingleQuestion", () => {
     return {
       q,
       locale: "ja",
-      isOwner: false,
       termCards: {},
       stars: topicStars(INDEX)[q.topic_id]!,
       topic: { id: t.topic_id, category: t.category, path: `${t.medium_jp} › ${t.name_jp}` },

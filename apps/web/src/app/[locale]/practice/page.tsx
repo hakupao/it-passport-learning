@@ -13,8 +13,9 @@
 // the same list (the sessionStorage key is the list's hash, §0-13).
 //
 // Server data as on the quiz page: the dictionary loads alongside the questions and a failure
-// falls back to plain-text terms; the owner flag (cookie) gates the record sync and the report
-// button; LearningRecordProvider is mounted here (never in the locale layout), so force-dynamic.
+// falls back to plain-text terms; the owner flag that gates the record sync and the report button is
+// read in the browser (useOwner, H1-1); LearningRecordProvider is mounted here (never in the locale
+// layout). force-dynamic remains for searchParams (until H1-3/H1-4).
 // Only this group's questions, their topics' labels and fold points cross to the client; the
 // today payload (§0-20) only for from=today (the summary's 「继续下一项」).
 // Stage 7 Phase 3 (D-196 §0-2): `from=unit&unit=<id>` (a textbook unit's questions) — the id must
@@ -25,7 +26,6 @@
 // is a new round. from=unit counts only for an ids scope.
 
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { PracticeSession } from "@/components/practice/PracticeSession";
@@ -35,7 +35,6 @@ import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { redirect } from "@/i18n/navigation";
 import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
-import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { groupMap, resolveScope, topicStars } from "@/lib/practice/practiceIndex";
 import { examsNewestFirst } from "@/lib/practice/practiceLabels";
 import { loadChumonGroups, loadQuestionsByIds, loadSetupIndex, loadTodayIndex } from "@/lib/practice/practiceReader";
@@ -74,8 +73,6 @@ function queryOf(sp: SearchParams): Record<string, string> {
   return query;
 }
 
-const ownerFlag = (): Promise<boolean> => cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value));
-
 async function setupPanel(
   locale: string,
   sp: SearchParams,
@@ -83,10 +80,10 @@ async function setupPanel(
   validTopics: ReadonlySet<string>,
   validExams: ReadonlySet<string>,
 ): Promise<React.ReactElement> {
-  const [index, owner] = await Promise.all([loadSetupIndex(locale), ownerFlag()]);
+  const index = await loadSetupIndex(locale);
   const prefill = prefillOf(sp, validTopics, validExams);
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <PracticeSetup
         key={`${prefill.topics.join(",")}|${prefill.exam ?? ""}`}
         index={index}
@@ -134,9 +131,8 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
 
   const fromToday = from?.kind === "today";
   const run = parseRun(sp);
-  const [dict, owner, today] = await Promise.all([
+  const [dict, today] = await Promise.all([
     dictPromise,
-    ownerFlag(),
     fromToday
       ? loadTodayIndex(locale).catch((err: unknown) => {
           console.error("[practice] today payload failed; the summary offers no 「继续下一项」", err);
@@ -154,14 +150,13 @@ export default async function PracticePage({ params, searchParams }: Props): Pro
   }
 
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <PracticeSession
         // one instance per group (ids + run nonce): the summary's links carry a new run, so the
         // same ids again (all wrong) mount a new group
         key={sessionKey(ids, run)}
         questions={questions}
         locale={locale}
-        isOwner={owner}
         termCards={buildTermCards(dict, questions, locale)}
         topics={topics}
         folds={foldPlan(ids, groups)}

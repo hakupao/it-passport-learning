@@ -75,11 +75,9 @@ function renderSession(questions: QuizQuestion[], locale: string, initialState?:
   return withIntl(
     locale,
     h(LearningRecordProvider, {
-      isOwner: false,
       children: h(PracticeSession, {
         questions,
         locale,
-        isOwner: false,
         termCards: {},
         topics: TOPICS,
         folds: foldPlan(
@@ -98,7 +96,6 @@ function renderView(questions: QuizQuestion[], locale: string, over: Partial<Ses
   const props: SessionViewProps = {
     questions,
     locale,
-    isOwner: false,
     termCards: {},
     topics: TOPICS,
     folds: foldPlan(
@@ -263,11 +260,9 @@ describe("PracticeSession — one question per screen", () => {
       withIntl(
         "zh",
         h(LearningRecordProvider, {
-          isOwner: false,
           children: h(PracticeSession, {
             questions: qs,
             locale: "zh",
-            isOwner: false,
             termCards: {},
             topics: TOPICS,
             folds: {},
@@ -478,11 +473,9 @@ describe("fix round 1: reload on the summary, start over, run nonce, status afte
     const out = withIntl(
       "ja",
       h(LearningRecordProvider, {
-        isOwner: false,
         children: h(PracticeSession, {
           questions: qs,
           locale: "ja",
-          isOwner: false,
           termCards: {},
           topics: TOPICS,
           folds: {},

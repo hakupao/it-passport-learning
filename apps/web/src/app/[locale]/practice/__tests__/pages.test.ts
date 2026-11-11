@@ -1,7 +1,7 @@
 // Stage 7 Phase 1 Task 10 — the practice routes' server side: /practice without a scope or with
 // prefill=1 → the setup panel (pre-selected), /practice/browse/<topicId> and /practice/q/<qid>
 // (notFound for unknown ids). Real corpus; only Next's runtime pieces are stubbed (notFound,
-// cookies, next-intl/server, the next-intl navigation wrappers).
+// next-intl/server, the next-intl navigation wrappers).
 import { describe, expect, it, vi } from "vitest";
 
 const NOT_FOUND = new Error("NEXT_NOT_FOUND (test sentinel)");
@@ -12,7 +12,6 @@ vi.mock("next/navigation", () => ({
   },
   useSearchParams: () => new URLSearchParams(),
 }));
-vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock("next-intl/server", () => ({ setRequestLocale: () => {}, getTranslations: async () => (k: string) => k }));
 const nav = vi.hoisted(() => ({ redirects: [] as unknown[], allow: false }));
 vi.mock("@/i18n/navigation", () => ({

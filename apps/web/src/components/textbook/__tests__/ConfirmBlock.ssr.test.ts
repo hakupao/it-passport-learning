@@ -25,7 +25,7 @@ const render = (locale: string, ids: string[]) =>
     h(NextIntlClientProvider, {
       locale,
       messages: messages(locale),
-      children: h(LearningRecordProvider, { isOwner: false, children: h(ConfirmBlock, { ids, unitId: UNIT }) }),
+      children: h(LearningRecordProvider, { children: h(ConfirmBlock, { ids, unitId: UNIT }) }),
     }),
   );
 

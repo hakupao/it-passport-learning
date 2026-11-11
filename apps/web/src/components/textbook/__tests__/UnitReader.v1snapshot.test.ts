@@ -94,7 +94,7 @@ describe("UnitReader v1 output is unchanged", () => {
           confirm: pickConfirm(unit, members),
         });
         const out = renderToStaticMarkup(
-          h(NextIntlClientProvider, { locale, messages: messages(locale), children: h(LearningRecordProvider, { isOwner: false, children: el }) }),
+          h(NextIntlClientProvider, { locale, messages: messages(locale), children: h(LearningRecordProvider, { children: el }) }),
         );
         now[`${raw.unit_id}:${locale}`] = createHash("sha256").update(parts(out)).digest("hex").slice(0, 16);
       }

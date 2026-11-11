@@ -1,4 +1,6 @@
 // D-149 (S126): the per-question report button is owner-gated at render time.
+// H1-1 (D-217): the gate is useOwner() (the browser-side hint cookie) inside ExplanationPane, no prop;
+// it is null under SSR, so the owner cases stub the hook (true / false / null).
 // Stage 7 Task 13: QuizSet is gone; the button now lives in the practice ExplanationPane and
 // its keys in the Practice namespace. Same SSR approach as QuizRichText.ssr.test.ts (node env,
 // renderToStaticMarkup, createElement instead of JSX).
@@ -14,6 +16,12 @@ vi.mock("@/i18n/navigation", () => ({
     h("a", { href, className }, children),
 }));
 
+const ownerFlag = vi.hoisted(() => ({ value: null as boolean | null, real: true }));
+vi.mock("@/hooks/useOwner", async (importOriginal) => {
+  const real = await importOriginal<typeof import("@/hooks/useOwner")>();
+  return { ...real, useOwner: () => (ownerFlag.real ? real.useOwner() : ownerFlag.value) };
+});
+
 import { renderPane } from "@/components/practice/__tests__/practiceRender";
 import type { ChoiceLetter } from "@/lib/learning/record";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
@@ -26,8 +34,11 @@ const QUESTIONS = Q.filter((q) => q.id === "2016h28h-q033" || q.id === "2017h29a
 const messages = (l: string): Record<string, Record<string, string>> =>
   JSON.parse(readFileSync(path.resolve(__dirname, `../../../../messages/${l}.json`), "utf-8"));
 
-function render(locale: "ja" | "zh" | "en", isOwner: boolean): string {
-  return QUESTIONS.map((q) => renderPane(q, locale, q.correct_answer as ChoiceLetter, {}, isOwner)).join("");
+/** Render both seed questions answered, with useOwner() stubbed to `owner` ("real" = the actual hook). */
+function render(locale: "ja" | "zh" | "en", owner: boolean | null | "real"): string {
+  ownerFlag.real = owner === "real";
+  ownerFlag.value = owner === "real" ? null : owner;
+  return QUESTIONS.map((q) => renderPane(q, locale, q.correct_answer as ChoiceLetter, {})).join("");
 }
 
 describe("owner-gated report button in the explanation pane (SSR)", () => {
@@ -35,10 +46,16 @@ describe("owner-gated report button in the explanation pane (SSR)", () => {
     expect(QUESTIONS).toHaveLength(2);
   });
 
-  it("non-owner: no report button", () => {
-    const out = render("ja", false);
-    expect(out).not.toContain("問題を報告");
-    expect(out).not.toContain("aria-expanded");
+  it("non-owner (false) and not yet settled (null): no report button", () => {
+    for (const owner of [false, null] as const) {
+      const out = render("ja", owner);
+      expect(out).not.toContain("問題を報告");
+      expect(out).not.toContain("aria-expanded");
+    }
+  });
+
+  it("server HTML (the real useOwner, null under SSR) has no report button", () => {
+    expect(render("ja", "real")).not.toContain("問題を報告");
   });
 
   it("owner: one collapsed report button per question, localized in ja/zh/en", () => {

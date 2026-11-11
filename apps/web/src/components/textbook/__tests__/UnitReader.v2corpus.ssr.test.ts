@@ -69,7 +69,7 @@ async function renderUnit(raw: TextbookUnitV2, locale: (typeof LOCALES)[number])
     h(NextIntlClientProvider, {
       locale,
       messages: messages(locale),
-      children: h(LearningRecordProvider, { isOwner: false, children: el }),
+      children: h(LearningRecordProvider, { children: el }),
     }),
   );
 }

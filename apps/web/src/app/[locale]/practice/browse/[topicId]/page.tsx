@@ -5,11 +5,10 @@
 // Only the topic's light rows cross to the client (D-193 §0-1: id / exam / source / key / terms; the
 // review fetches its wrong questions' full text on open, GET /api/quiz/questions) plus only this
 // topic's terms as cards and the exam labels it uses.
-// The owner flag (cookie) gates the record sync; LearningRecordProvider is mounted here (never in the
-// locale layout), so force-dynamic.
+// The owner flag that gates the record sync is read in the browser (useOwner, H1-1);
+// LearningRecordProvider is mounted here (never in the locale layout). force-dynamic stays until H1-4.
 
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
@@ -17,7 +16,6 @@ import { TopicPage } from "@/components/practice/TopicPage";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
-import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 import { topicStars } from "@/lib/practice/practiceIndex";
 import type { SearchParams } from "@/lib/practice/practiceSession";
 import { toTopicRow } from "@/lib/practice/topicRows";
@@ -48,15 +46,12 @@ export default async function TopicRoute({ params }: Props): Promise<React.React
     return null;
   });
   const questions = (await loadBaseQuestions()).filter((q) => q.topic_id === topicId);
-  const [dict, owner] = await Promise.all([
-    dictPromise,
-    cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value)),
-  ]);
+  const dict = await dictPromise;
   const used = new Set(questions.map((q) => q.exam_id));
   const exams = Object.fromEntries(index.exams.filter((e) => used.has(e.exam_id)).map((e) => [e.exam_id, e.label_jp]));
 
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <TopicPage
         locale={locale}
         topic={{

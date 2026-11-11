@@ -2,16 +2,14 @@
 // translation default (the v2 record's settings), interface language and the /sensei entry.
 //
 // The settings live in the learning record (browser; synced for the owner), so the page needs no
-// corpus payload. LearningRecordProvider is mounted here (never in the locale layout) and the owner
-// flag reads a cookie, so the route is force-dynamic.
+// corpus payload. LearningRecordProvider is mounted here (never in the locale layout); the owner flag
+// is read in the browser (useOwner, H1-1), not here. force-dynamic stays until H1-4.
 
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { SettingsForm } from "@/components/settings/SettingsForm";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
-import { OWNER_COOKIE, isOwner } from "@/lib/owner";
 
 export const dynamic = "force-dynamic";
 
@@ -28,9 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SettingsPage({ params }: Props): Promise<React.ReactElement> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const owner = await cookies().then((c) => isOwner(c.get(OWNER_COOKIE)?.value));
   return (
-    <LearningRecordProvider isOwner={owner}>
+    <LearningRecordProvider>
       <SettingsForm />
     </LearningRecordProvider>
   );
