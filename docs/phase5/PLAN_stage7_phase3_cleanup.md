@@ -27,6 +27,8 @@
 | C17 | C2 の残余 (S153): keyword 以外の直後の裸 `[[jp:…]]` (zh 約 284 / en 約 206)。注記 (`系统管理标准[[jp:システム管理基準]]`) と言及 (`日语的[[jp:憲章]]`) が混在し位置規則では分けられない → compat 欄で連結のまま | 本文側に括弧を入れる B3 補丁 (注記のみを人手で選別)。本 pass では行わず候補として記録 (読書画面は色分けで区別される) | B3 | verifier opus | **done (S154、glossary 可視欄 one / detail / hook に限定: 209 件判定 → 括弧付け 16 件 / 10 単元、B3 + in-place、`cleanup/C17.md`)** |
 | C18 | S153 Rule D LOW: unit_summary_zh の半角句読点 (management-11-29-u02 / management-12-31-u02 / strategy-04-13-u01 / strategy-06-21-u01) と strategy-04-13-u01 title_zh「(MOT)」、technology-23-62-u01 unit_summary_zh「一整套手续」(手続き の直訳) | unit-level B3 補丁 (title は直接 + index + pin) | B3 | verifier opus | **done (S154、全走査で unit_summary_zh 11 + title_zh 6 に拡大、B3 unit-level + in-place / 題名は直接 + index、pins 不変量、verifier PASS、`cleanup/C18.md`)** |
 | C19 | S154 C18 Rule D LOW: zh 本文欄の ASCII 句読点 (verifier 計数 text_zh 920 / one_zh 576 / detail_zh 218 / hook_zh 46 / term_zh 18 ほか) | コード・式・時刻等の正当な用法を含むため要選別。読書画面の可読性への影響は小 → 候補として記録のみ | B3 | verifier opus | 候補 (未着手) |
+| C20 | S154 L3 B20: quiz zh/en 解説が ja と対応しない (篇幅 2〜4 倍、論証の追加、commit `b0a60fbd`) | 訳の忠実度。quiz 層の別工程で対象を洗い出す | quiz sidecar | verifier opus | 候補 (未着手) |
+| C21 | S154 L3 B26: duplex system — 教科書「双重系统」/ quiz「双工系统」(D-175) | quiz 側 (D-175) に合わせて教科書を統一するか判断 | B3 + zh_terms | verifier opus | 候補 (未着手) |
 
 ## 順序 (S153)
 1. C1 (テスト、独立) と C3・C10 (小さい直接修正) を先に。

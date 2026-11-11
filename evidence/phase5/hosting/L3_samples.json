@@ -1,0 +1,2553 @@
+{
+ "step": "L3 (PLAN_hosting_migration §3, Rule A)",
+ "auditor": "oh-my-claudecode:critic (opus), Rule D: scanner writer とは別 subagent_type",
+ "date": "2026-11-11",
+ "read_only": true,
+ "basis": {
+  "l2_generated_at": "2026-11-11T06:34:27.275Z",
+  "l2_hit_count": 4034,
+  "note": "scripts/lang-leak-scan.ts の収集部を読み取り専用で再実行し、同じ 4034 件と全 89,611 欄グループを得てから抽出した (L2 の json/md は書き換えていない)"
+ },
+ "procedure": {
+  "prng": "mulberry32(seed)、Fisher-Yates shuffle で先頭 n 件",
+  "taskA": {
+   "seed": 20261111,
+   "population": "L2 hits のうち tag=content (606 件、punct-only を含む)",
+   "strata": "rule|source、キー昇順で処理、各層内は L2_scan.json の hits 配列順を shuffle",
+   "allocation": "各非空層に 1、残り 15 を (層サイズ−1) 比例の最大剰余法",
+   "cell_sizes": {
+    "R-en-cjk|quiz-explanations": 51,
+    "R-en-cjk|quiz-translations": 24,
+    "R-en-cjk|textbook-units": 115,
+    "R-en-cjk|ui-messages": 20,
+    "R-ja-latin-run|quiz-explanations": 14,
+    "R-ja-latin-run|quiz-translations": 9,
+    "R-ja-latin-run|textbook-units": 1,
+    "R-same|quiz-translations": 9,
+    "R-same|textbook-units": 3,
+    "R-same|ui-messages": 2,
+    "R-zh-kana|quiz-explanations": 147,
+    "R-zh-kana|quiz-translations": 59,
+    "R-zh-kana|textbook-index": 4,
+    "R-zh-kana|textbook-units": 134,
+    "R-zh-kana|ui-messages": 14
+   },
+   "alloc": {
+    "R-en-cjk|quiz-explanations": 2,
+    "R-en-cjk|quiz-translations": 2,
+    "R-en-cjk|textbook-units": 4,
+    "R-en-cjk|ui-messages": 2,
+    "R-ja-latin-run|quiz-explanations": 1,
+    "R-ja-latin-run|quiz-translations": 1,
+    "R-ja-latin-run|textbook-units": 1,
+    "R-same|quiz-translations": 1,
+    "R-same|textbook-units": 1,
+    "R-same|ui-messages": 1,
+    "R-zh-kana|quiz-explanations": 5,
+    "R-zh-kana|quiz-translations": 3,
+    "R-zh-kana|textbook-index": 1,
+    "R-zh-kana|textbook-units": 4,
+    "R-zh-kana|ui-messages": 1
+   }
+  },
+  "taskB": {
+   "seed": 20261112,
+   "population": "L2 と同じ欄グループのうち tag=content、source ∈ {textbook-units, quiz-translations, quiz-explanations}、その言語の欄が scan 対象・文字列・\\p{L} を 1 字以上含み、どの規則にも当たっていない欄",
+   "strata": "言語 ja→zh→en の順、各言語 textbook-units 10 / quiz-translations 5 / quiz-explanations 5",
+   "pool_sizes": {
+    "ja|textbook-units": 26592,
+    "zh|textbook-units": 26481,
+    "en|textbook-units": 26478,
+    "zh|quiz-translations": 13395,
+    "en|quiz-translations": 13457,
+    "ja|quiz-translations": 1693,
+    "ja|quiz-explanations": 17406,
+    "zh|quiz-explanations": 17273,
+    "en|quiz-explanations": 17369
+   },
+   "note": "ja の quiz-translations は stem_jp_clean だけが走査対象 (choices の jp は questions.json を比較にのみ使う)"
+  },
+  "taskC": {
+   "seed": 20261113,
+   "population": "tag=content、pattern terms[].hook、punct-only 以外",
+   "pool": {
+    "zh": 34,
+    "en": 75
+   },
+   "strata": "zh 5 → en 5"
+  }
+ },
+ "taskA": [
+  {
+   "id": "A01",
+   "cell": "R-en-cjk|quiz-explanations",
+   "file": "data/ip/quiz/explanations/2009h21a.json",
+   "path": "questions.2009h21a-q094.distractors.エ.en",
+   "lang": "en",
+   "subtag": null,
+   "chars": "こ",
+   "classification": "OK-OTHER",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "题目自定义的商品标签 あ〜こ（表格中的标识符），stem/选项/解析三语一致沿用",
+   "siblings": {
+    "ja": {
+     "path": "questions.2009h21a-q094.distractors.エ.jp",
+     "text": "このバブルチャートから読み取れるのは売上総利益率・商品回転率・売上高の三つだけで、販売数量や商品単価は表されていません。「販売数量は少ないが価格が高い高級商品」「幅広い顧客層」は図から導けない推測です。しかも商品こ はバブルが大きい＝売上高は多い部類で、商品回転率も約14回と高く、売れ行きが鈍い商品という描き方自体が図と合いません。"
+    },
+    "zh": {
+     "path": "questions.2009h21a-q094.distractors.エ.zh",
+     "text": "从这张气泡图中能读出的只有销售毛利率、商品周转率和销售额三项，销售数量与商品单价并未表示出来。「销售数量少但价格高的高级商品」「广泛的客户群」都是无法从图中推导出的臆测。而且商品こ 的气泡较大＝销售额属于多的一类，商品周转率约14次也很高，把它描述成销路不佳的商品本身就与图不符。"
+    },
+    "en": {
+     "path": "questions.2009h21a-q094.distractors.エ.en",
+     "text": "This bubble chart shows only three quantities — gross profit margin, inventory turnover ratio, and sales amount; sales quantity and unit price are not represented. A high-priced premium product with a low sales quantity, and a broad custome…(+272)"
+    }
+   }
+  },
+  {
+   "id": "A02",
+   "cell": "R-en-cjk|quiz-explanations",
+   "file": "data/ip/quiz/explanations/2009h21a.json",
+   "path": "questions.2009h21a-q096.distractors.エ.en",
+   "lang": "en",
+   "subtag": null,
+   "chars": "えうあこ",
+   "classification": "OK-OTHER",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "同 A01，商品标签 え・う・あ・こ",
+   "siblings": {
+    "ja": {
+     "path": "questions.2009h21a-q096.distractors.エ.jp",
+     "text": "4品目は、降順に並べた上位4件（え・う・あ・こ）をそのまま数えた場合の数です。こ を入れると累計は76.9%となり70%を超え、しかも回転率14.0回で10回以下の条件も満たさないため誤りです。"
+    },
+    "zh": {
+     "path": "questions.2009h21a-q096.distractors.エ.zh",
+     "text": "4个品目是把降序排列后的前4件（商品え、商品う、商品あ、商品こ）直接数出来的个数。加入商品こ后累计变为76.9%，超过70%，而且其周转率为14.0次，也不满足10次以下的条件，因此是错误的。"
+    },
+    "en": {
+     "path": "questions.2009h21a-q096.distractors.エ.en",
+     "text": "Four items is the count obtained by simply taking the top four after sorting in descending order (Product え, Product う, Product あ, and Product こ). Including Product こ makes the cumulative ratio 76.9%, which exceeds 70%, and its turnover rat…(+90)"
+    }
+   }
+  },
+  {
+   "id": "A03",
+   "cell": "R-en-cjk|quiz-translations",
+   "file": "data/ip/quiz/translations/2016h28h.json",
+   "path": "questions.2016h28h-q096.choices.ア.en",
+   "lang": "en",
+   "subtag": null,
+   "chars": "子",
+   "classification": "OK-OTHER",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "LIKE 模式 \"%子\" 是题目数据（日本人名）本身，不能翻译",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2016h28h-q096.choices_jp.ア",
+     "text": "国語が合格で，かつ，氏名が“%子”に該当する学生"
+    },
+    "zh": {
+     "path": "questions.2016h28h-q096.choices.ア.zh",
+     "text": "语文合格，并且姓名符合“%子”的学生"
+    },
+    "en": {
+     "path": "questions.2016h28h-q096.choices.ア.en",
+     "text": "Students whose Japanese is passing and whose name matches “%子”"
+    }
+   }
+  },
+  {
+   "id": "A04",
+   "cell": "R-en-cjk|quiz-translations",
+   "file": "data/ip/quiz/translations/2026r08.json",
+   "path": "questions.2026r08-q029.stem.en",
+   "lang": "en",
+   "subtag": null,
+   "chars": "請負契約",
+   "classification": "OK-CONVENTION",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "quiz sidecar 的括号原语惯例：contract for work (請負契約)",
+   "siblings": {
+    "ja": {
+     "path": "questions.2026r08-q029.stem_jp_clean",
+     "text": "プログラム開発業務の委託に当たり, 請負契約における注文者及び請負業者の権利や義務について特段の取決めがない場合の説明として, 適切なものはどれか。"
+    },
+    "zh": {
+     "path": "questions.2026r08-q029.stem.zh",
+     "text": "在委托程序开发业务时，对于承揽合同中发包方与承揽方的权利和义务没有特别约定的情况，下列说明中哪一项是恰当的？"
+    },
+    "en": {
+     "path": "questions.2026r08-q029.stem.en",
+     "text": "When outsourcing program development work, which is an appropriate description of the case where there is no special agreement on the rights and obligations of the orderer and the contractor under a contract for work (請負契約)?"
+    }
+   }
+  },
+  {
+   "id": "A05",
+   "cell": "R-en-cjk|textbook-units",
+   "file": "data/ip/textbook/units/technology-16-44-u01.json",
+   "path": "terms[1].hook_en",
+   "lang": "en",
+   "subtag": null,
+   "chars": "応答時間レスポン",
+   "classification": "OK-CONVENTION*",
+   "rule_verdict": "rule-correct/markup-gap",
+   "reason": "hook 拆解日语词 応答時間/レスポンス，内容有意为日语，但未加 [[jp:]]（D-202 未豁免 hook）",
+   "siblings": {
+    "ja": {
+     "path": "terms[1].hook_jp",
+     "text": "「応答時間」の「応答」は英語の response に当てた訳語なので、カタカナの「レスポンス」と同じ中身になる。"
+    },
+    "zh": {
+     "path": "terms[1].hook_zh",
+     "text": "「応答時間」中的「応答」是给英语 response 配的译词，所以与片假名的「レスポンス」含义相同。"
+    },
+    "en": {
+     "path": "terms[1].hook_en",
+     "text": "In 応答時間, 応答 is the word used to render the English \"response,\" so it means the same as the katakana レスポンス."
+    }
+   }
+  },
+  {
+   "id": "A06",
+   "cell": "R-en-cjk|textbook-units",
+   "file": "data/ip/textbook/units/strategy-02-04-u01.json",
+   "path": "terms[5].hook_en",
+   "lang": "en",
+   "subtag": null,
+   "chars": "標商識",
+   "classification": "OK-CONVENTION*",
+   "rule_verdict": "rule-correct/markup-gap",
+   "reason": "hook 拆字 標/商標/標識，未加 [[jp:]]；zh 兄弟同样用日本字形 “標” 未标记且未被扫描到",
+   "siblings": {
+    "ja": {
+     "path": "terms[5].hook_jp",
+     "text": "「標」は「標識」の標で、目じるしのこと。商いの目じるしを守る法律と読む。"
+    },
+    "zh": {
+     "path": "terms[5].hook_zh",
+     "text": "“標”取自“標識”，意为标记。读作：保护商业标记的法律。"
+    },
+    "en": {
+     "path": "terms[5].hook_en",
+     "text": "The 標 in 商標 is the one in 標識 (signpost), meaning a marker. Read the name as the law that protects a business's marker."
+    }
+   }
+  },
+  {
+   "id": "A07",
+   "cell": "R-en-cjk|textbook-units",
+   "file": "data/ip/textbook/units/technology-23-63-u12.json",
+   "path": "terms[1].hook_en",
+   "lang": "en",
+   "subtag": null,
+   "chars": "認証局",
+   "classification": "OK-CONVENTION*",
+   "rule_verdict": "rule-correct/markup-gap",
+   "reason": "hook 拆字 認証/局，未加 [[jp:]]",
+   "siblings": {
+    "ja": {
+     "path": "terms[1].hook_jp",
+     "text": "「認証」は本人だと認めること、「局」はある仕事を受け持つ部署を表す字。「本人だと認める部署」と字から読める。"
+    },
+    "zh": {
+     "path": "terms[1].hook_zh",
+     "text": "日文「認証」是认定为本人，「局」是表示负责某项事务的部门的字。从字面就能读出“认定本人身份的部门”。"
+    },
+    "en": {
+     "path": "terms[1].hook_en",
+     "text": "In the Japanese name, 認証 means confirming someone is who they say, and 局 is the character for a bureau or office: literally, \"the bureau that confirms identity.\""
+    }
+   }
+  },
+  {
+   "id": "A08",
+   "cell": "R-en-cjk|textbook-units",
+   "file": "data/ip/textbook/units/strategy-03-09-u02.json",
+   "path": "terms[0].hook_en",
+   "lang": "en",
+   "subtag": null,
+   "chars": "優位",
+   "classification": "OK-CONVENTION*",
+   "rule_verdict": "rule-correct/markup-gap",
+   "reason": "hook 拆字 優位，未加 [[jp:]]",
+   "siblings": {
+    "ja": {
+     "path": "terms[0].hook_jp",
+     "text": "優位は「優れた位置」と書く。能力そのものではなく、競争の中での立ち位置を表す語。"
+    },
+    "zh": {
+     "path": "terms[0].hook_zh",
+     "text": "日语「優位」二字的字面意思是“优越的位置”。它表示的不是能力本身，而是在竞争中所站的位置。"
+    },
+    "en": {
+     "path": "terms[0].hook_en",
+     "text": "The Japanese 優位 literally reads \"superior position.\" It names where you stand in the competition, not the capability itself."
+    }
+   }
+  },
+  {
+   "id": "A09",
+   "cell": "R-en-cjk|ui-messages",
+   "file": "apps/web/messages/en.json",
+   "path": "Mock.randomLead",
+   "lang": "en",
+   "subtag": null,
+   "chars": "ストラテジ系マネメンクノロ",
+   "classification": "OK-CONVENTION",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "D-189 书面标签在所有 locale 保持日语（ストラテジ系 等，70978b70/7c993eac）；但此句是普通字符串，渲染时无 lang=\"ja\"（MockSetup.tsx:153）",
+   "siblings": {
+    "ja": {
+     "path": "Mock.randomLead",
+     "text": "分野の比率は本番どおりです（ストラテジ系 35 問・マネジメント系 20 問・テクノロジ系 45 問）。"
+    },
+    "zh": {
+     "path": "Mock.randomLead",
+     "text": "三分野比例与正式考试相同（ストラテジ系 35 题・マネジメント系 20 题・テクノロジ系 45 题）。"
+    },
+    "en": {
+     "path": "Mock.randomLead",
+     "text": "Areas in the official ratio (ストラテジ系 35, マネジメント系 20, テクノロジ系 45)."
+    }
+   }
+  },
+  {
+   "id": "A10",
+   "cell": "R-en-cjk|ui-messages",
+   "file": "apps/web/messages/en.json",
+   "path": "Practice.cat_technology",
+   "lang": "en",
+   "subtag": null,
+   "chars": "テクノロジ系",
+   "classification": "OK-CONVENTION",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "D-189 分类标签三语同为日语，测试断言 <span lang=\"ja\">ストラテジ系</span>",
+   "siblings": {
+    "ja": {
+     "path": "Practice.cat_technology",
+     "text": "テクノロジ系"
+    },
+    "zh": {
+     "path": "Practice.cat_technology",
+     "text": "テクノロジ系"
+    },
+    "en": {
+     "path": "Practice.cat_technology",
+     "text": "テクノロジ系"
+    }
+   }
+  },
+  {
+   "id": "A11",
+   "cell": "R-ja-latin-run|quiz-explanations",
+   "file": "data/ip/quiz/explanations/2011h23a.json",
+   "path": "questions.2011h23a-q089.distractors.ウ.jp",
+   "lang": "ja",
+   "subtag": null,
+   "chars": "w,b,w,w,w,w,w",
+   "classification": "OK-OTHER",
+   "rule_verdict": "scanner-FP",
+   "reason": "像素数据串 w,b,w,…（题目数据），不是英语句子；R-ja-latin-run 误把单字母当单词",
+   "siblings": {
+    "ja": {
+     "path": "questions.2011h23a-q089.distractors.ウ.jp",
+     "text": "数字「6」は輪（ループ）が下半分にあり、3 行目は左に下りる線の 1 画素だけの□■□□□□□。出力は「w,b,w,w,w,w,w」で、6 列目が白のため一致しない。"
+    },
+    "zh": {
+     "path": "questions.2011h23a-q089.distractors.ウ.zh",
+     "text": "数字「6」的圆圈（环）位于下半部分，第 3 行只有向左下方延伸的那条线的 1 个像素，即□■□□□□□。输出为「w,b,w,w,w,w,w」，第 6 列是白色，因此不一致。"
+    },
+    "en": {
+     "path": "questions.2011h23a-q089.distractors.ウ.en",
+     "text": "In the digit “6”, the loop lies in the lower half, so row 3 contains only the single pixel of the stroke coming down on the left: □■□□□□□. The output is “w,b,w,w,w,w,w”, and because column 6 is white it does not match."
+    }
+   }
+  },
+  {
+   "id": "A12",
+   "cell": "R-ja-latin-run|quiz-translations",
+   "file": "data/ip/quiz/translations/2011h23a.json",
+   "path": "questions.2011h23a-q092.stem_jp_clean",
+   "lang": "ja",
+   "subtag": null,
+   "chars": "w,w,b,b,b,w,w,w,b,w,w,w,b,w,w,b,w,w,w,b,w,w,b,w,w,w,b,w,w,b,w,w,w,b,w,w,b,w,w,w,b,w,w,w,b,b,b,w,w",
+   "classification": "OK-OTHER",
+   "rule_verdict": "scanner-FP",
+   "reason": "同 A11，题干中的像素数据串",
+   "siblings": {
+    "ja": {
+     "path": "questions.2011h23a-q092.stem_jp_clean",
+     "text": "文字や図形を白黒で縦 7 画素，横 7 画素のディジタル画像で表すとき，数字の“0”を図 1 のように表現する。このディジタル画像を画素データとして出力する処理，画素データを圧縮する処理及びディジタル画像を回転させる処理について考える。\n\n図 1 数字の“0”のディジタル画像\n\n| | 1列 | 2列 | 3列 | 4列 | 5列 | 6列 | 7列 |\n|---|---|---|---|---|---|---|---|\n| 1行 | □ | □ | ■ | ■ | ■ | …(+907)"
+    },
+    "zh": {
+     "path": "questions.2011h23a-q092.stem.zh",
+     "text": "用黑白方式以纵向 7 像素、横向 7 像素的数字图像来表示文字或图形时，数字「0」如图 1 所示进行表示。考虑将该数字图像作为像素数据输出的处理、对像素数据进行压缩的处理以及将数字图像旋转的处理。\n\n图 1 数字「0」的数字图像\n\n| | 第1列 | 第2列 | 第3列 | 第4列 | 第5列 | 第6列 | 第7列 |\n|---|---|---|---|---|---|---|---|\n| 第1行 | □ | □ | ■ | ■ | ■ | □ | □ |\n| 第2行 | …(+824)"
+    },
+    "en": {
+     "path": "questions.2011h23a-q092.stem.en",
+     "text": "When characters or figures are represented in black and white as a digital image of 7 pixels vertically and 7 pixels horizontally, the digit “0” is represented as shown in Figure 1. Consider the process of outputting this digital image as p…(+2013)"
+    }
+   }
+  },
+  {
+   "id": "A13",
+   "cell": "R-ja-latin-run|textbook-units",
+   "file": "data/ip/textbook/units/technology-23-62-u06.json",
+   "path": "terms[6].detail_jp",
+   "lang": "ja",
+   "subtag": null,
+   "chars": "Cyber Rescue and Advice Team against targeted attack of Japan",
+   "classification": "OK-OTHER",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "J-CRAT 的英文正式名称（专有名词），ja 正文有意引用",
+   "siblings": {
+    "ja": {
+     "path": "terms[6].detail_jp",
+     "text": "英語の正式名を略したのが J-CRAT、その役割を日本語で言い表したのがサイバーレスキュー隊という関係にある。正式名 Cyber Rescue and Advice Team against targeted attack of Japan には「標的型攻撃に対する」という意味の語句 (against targeted attack) が入っており、支援の対象とする攻撃が名前からも読み取れる。"
+    },
+    "zh": {
+     "path": "terms[6].detail_zh",
+     "text": "两者的关系是：英语正式名称的缩写是 J-CRAT，用日语表达其职能的是网络救援队。正式名称 Cyber Rescue and Advice Team against targeted attack of Japan 中含有“针对定向攻击”这一意思的词句（against targeted attack），从名字上也能看出支援所针对的攻击。"
+    },
+    "en": {
+     "path": "terms[6].detail_en",
+     "text": "J-CRAT is the abbreviation of the official English name, while the Japanese name describes its role. The official name, Cyber Rescue and Advice Team against targeted attack of Japan, includes the words \"against targeted attack\", so the name…(+68)"
+    }
+   }
+  },
+  {
+   "id": "A14",
+   "cell": "R-same|quiz-translations",
+   "file": "data/ip/quiz/translations/2018h30h.json",
+   "path": "questions.2018h30h-q060.choices.ウ.zh",
+   "lang": "zh",
+   "subtag": null,
+   "chars": "",
+   "classification": "OK-OTHER",
+   "rule_verdict": "scanner-FP",
+   "reason": "表计算公式 IF(…平均…)，平均 在中文中也成立；en 译成 AVERAGE 而 zh 保留，属风格不一致，不是串写",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2018h30h-q060.choices_jp.ウ",
+     "text": "IF(C2＜平均($C2：$E2)，'○'，'×')"
+    },
+    "zh": {
+     "path": "questions.2018h30h-q060.choices.ウ.zh",
+     "text": "IF(C2＜平均($C2：$E2)，'○'，'×')"
+    },
+    "en": {
+     "path": "questions.2018h30h-q060.choices.ウ.en",
+     "text": "IF(C2＜AVERAGE($C2：$E2)，'○'，'×')"
+    }
+   }
+  },
+  {
+   "id": "A15",
+   "cell": "R-same|textbook-units",
+   "file": "data/ip/textbook/units/management-08-25-u01.json",
+   "path": "terms[2].fig.data.cols[0].zh",
+   "lang": "zh",
+   "subtag": null,
+   "chars": "",
+   "classification": "OK-OTHER",
+   "rule_verdict": "scanner-FP",
+   "reason": "“特性 (JIS X 25010:2013)” 在中文里写法相同，相同是正确的",
+   "siblings": {
+    "ja": {
+     "path": "terms[2].fig.data.cols[0].jp",
+     "text": "特性 (JIS X 25010:2013)"
+    },
+    "zh": {
+     "path": "terms[2].fig.data.cols[0].zh",
+     "text": "特性 (JIS X 25010:2013)"
+    },
+    "en": {
+     "path": "terms[2].fig.data.cols[0].en",
+     "text": "Characteristic (JIS X 25010:2013)"
+    }
+   }
+  },
+  {
+   "id": "A16",
+   "cell": "R-same|ui-messages",
+   "file": "apps/web/messages/en.json",
+   "path": "App.siteName",
+   "lang": "en",
+   "subtag": null,
+   "chars": "",
+   "classification": "OK-OTHER",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "站点名（品牌名）三语统一为日语；与 D-189 书面标签同一方针",
+   "siblings": {
+    "ja": {
+     "path": "App.siteName",
+     "text": "ITパスポート 過去問ノート"
+    },
+    "zh": {
+     "path": "App.siteName",
+     "text": "ITパスポート 過去問ノート"
+    },
+    "en": {
+     "path": "App.siteName",
+     "text": "ITパスポート 過去問ノート"
+    }
+   }
+  },
+  {
+   "id": "A17",
+   "cell": "R-zh-kana|quiz-explanations",
+   "file": "data/ip/quiz/explanations/2025r07.json",
+   "path": "questions.2025r07-q015.points[0].zh",
+   "lang": "zh",
+   "subtag": null,
+   "chars": "カンパニー",
+   "classification": "OK-CONVENTION",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "quiz 括号原语惯例：独立公司（カンパニー）",
+   "siblings": {
+    "ja": {
+     "path": "questions.2025r07-q015.points[0].jp",
+     "text": "カンパニー制組織=社内の各事業部門を独立した会社(カンパニー)のように扱い、損益責任と意思決定権限を委譲することで、独立採算の推進と意思決定の迅速化を図る組織形態。"
+    },
+    "zh": {
+     "path": "questions.2025r07-q015.points[0].zh",
+     "text": "公司制组织=把公司内部的各个事业部门当作独立公司（カンパニー）来对待，下放损益责任与决策权限，以推动独立核算、加快决策的组织形态。"
+    },
+    "en": {
+     "path": "questions.2025r07-q015.points[0].en",
+     "text": "Company-system organization = an organizational form that treats each in-house business unit like an independent company, delegating profit-and-loss responsibility and decision-making authority in order to promote independent accounting and…(+26)"
+    }
+   }
+  },
+  {
+   "id": "A18",
+   "cell": "R-zh-kana|quiz-explanations",
+   "file": "data/ip/quiz/explanations/2013h25a.json",
+   "path": "questions.2013h25a-q052.distractors.エ.zh",
+   "lang": "zh",
+   "subtag": "punct-only",
+   "chars": "・",
+   "classification": "OK-OTHER[punct]",
+   "rule_verdict": "rule-correct/punct-carryover",
+   "reason": "zh 中 “串联・并联” 的 ・ (U+30FB) 沿用自 ja；中文规范用 、 ，属标点层面沿用，非文字串写",
+   "siblings": {
+    "ja": {
+     "path": "questions.2013h25a-q052.distractors.エ.jp",
+     "text": "0.45 は桁違いに大きすぎます。低下量は装置A部分の差 0.99−0.90=0.09 に装置Bの0.8を掛けた 0.072 が上限であり、0.1すら超えられません（例えば「並列冗長を外すと稼働率が半分になる」と誤解して 0.9×0.5=0.45 と考えるような値で、稼働率の直列・並列計算とは無関係です）。"
+    },
+    "zh": {
+     "path": "questions.2013h25a-q052.distractors.エ.zh",
+     "text": "0.45 大得离谱，数量级就不对。下降量的上限，是装置A部分的差 0.99−0.90＝0.09 再乘以装置B的0.8所得的 0.072，连0.1都超不过（它属于这样一类数值：误以为「拆掉并联冗余后可用率会变成一半」而算成 0.9×0.5＝0.45，与可用率的串联・并联计算毫无关系）。"
+    },
+    "en": {
+     "path": "questions.2013h25a-q052.distractors.エ.en",
+     "text": "0.45 is far too large, off by an order of magnitude. The upper bound of the decrease is 0.072, obtained by multiplying the difference of the device A part, 0.99−0.90＝0.09, by device B's 0.8, so it cannot even exceed 0.1 (it is the kind of v…(+199)"
+    }
+   }
+  },
+  {
+   "id": "A19",
+   "cell": "R-zh-kana|quiz-explanations",
+   "file": "data/ip/quiz/explanations/2021r03.json",
+   "path": "questions.2021r03-q041.distractors.エ.zh",
+   "lang": "zh",
+   "subtag": "punct-only",
+   "chars": "・",
+   "classification": "OK-OTHER[punct]",
+   "rule_verdict": "rule-correct/punct-carryover",
+   "reason": "“部件化・复用” 的 ・，同 A18",
+   "siblings": {
+    "ja": {
+     "path": "questions.2021r03-q041.distractors.エ.jp",
+     "text": "プロトタイピングは、早い段階で試作品（プロトタイプ）を作って利用者に確認しながら要求を固めていく開発プロセスモデルであり、開発の進め方に関する概念。クラスや継承による部品化・再利用とは対象が違うため誤り。"
+    },
+    "zh": {
+     "path": "questions.2021r03-q041.distractors.エ.zh",
+     "text": "原型法是一种在早期阶段制作试作品(原型)、一边让用户确认一边逐步明确需求的开发过程模型，属于关于开发推进方式的概念。它与依靠类和继承的部件化・复用所针对的对象不同，因此错误。"
+    },
+    "en": {
+     "path": "questions.2021r03-q041.distractors.エ.en",
+     "text": "Prototyping is a development process model in which a trial product (prototype) is built at an early stage and requirements are firmed up while having users confirm it; it is a concept about how to proceed with development. Its subject diff…(+89)"
+    }
+   }
+  },
+  {
+   "id": "A20",
+   "cell": "R-zh-kana|quiz-explanations",
+   "file": "data/ip/quiz/explanations/2013h25a.json",
+   "path": "questions.2013h25a-q054.points[0].zh",
+   "lang": "zh",
+   "subtag": null,
+   "chars": "のうちかつまたはいずれ",
+   "classification": "OK-CONVENTION",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "解析专门讲日语检索用语 〜のうち/〜かつ/〜または，且附中文括注；内容有意为日语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2013h25a-q054.points[0].jp",
+     "text": "検索式における論理演算の基本: AND (論理積) は複数条件を同時に満たすものだけに絞り込むので対象は狭くなり、OR (論理和) はいずれかの条件を満たすものを集めるので対象は広がる。日本語の「〜のうち」「〜かつ」は AND、「〜または」「〜のいずれか」は OR に対応する。"
+    },
+    "zh": {
+     "path": "questions.2013h25a-q054.points[0].zh",
+     "text": "检索式中逻辑运算的基础：AND（逻辑与）只把同时满足多个条件的对象筛选出来，因此对象范围变窄；OR（逻辑或）把满足其中任一条件的对象收集起来，因此对象范围变宽。日语中的「〜のうち（〜当中）」「〜かつ（〜并且）」对应 AND，「〜または（〜或者）」「〜のいずれか（〜之中任一）」对应 OR。"
+    },
+    "en": {
+     "path": "questions.2013h25a-q054.points[0].en",
+     "text": "The basics of logical operations in a search expression: AND (logical conjunction) narrows the result to only those items that satisfy several conditions at once, so the target set becomes smaller, while OR (logical disjunction) gathers ite…(+194)"
+    }
+   }
+  },
+  {
+   "id": "A21",
+   "cell": "R-zh-kana|quiz-explanations",
+   "file": "data/ip/quiz/explanations/2014h26h.json",
+   "path": "questions.2014h26h-q026.points[0].zh",
+   "lang": "zh",
+   "subtag": null,
+   "chars": "フレーム",
+   "classification": "OK-CONVENTION",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "括号原语：共通框架（共通フレーム）。“共通框架” 本身偏日式（中文常用 通用/共同），但它是 SLCP-JCF 的专名直译，记为可接受",
+   "siblings": {
+    "ja": {
+     "path": "questions.2014h26h-q026.points[0].jp",
+     "text": "共通フレームのソフトウェアライフサイクルでは、企画プロセス (システム化構想・計画) → 要件定義プロセス (業務要件の定義と合意) → 開発プロセス (システム要件定義・ソフトウェア要件定義・設計・実装・テスト) → 運用プロセス の順に進む。どのプロセスで何を確認するかは、その時点で存在する成果物が何かで判断できる。"
+    },
+    "zh": {
+     "path": "questions.2014h26h-q026.points[0].zh",
+     "text": "在共通框架（共通フレーム）的软件生命周期中，顺序是：策划过程（系统化构想与计划）→ 需求定义过程（业务需求的定义与达成共识）→ 开发过程（系统需求定义、软件需求定义、设计、实现、测试）→ 运用过程。在哪个过程确认什么，可以根据该时点已经存在哪些交付物来判断。"
+    },
+    "en": {
+     "path": "questions.2014h26h-q026.points[0].en",
+     "text": "In the software life cycle of the Common Frame, the order is: planning process (system concept and plan) → requirements definition process (defining and agreeing on business requirements) → development process (system requirements definitio…(+190)"
+    }
+   }
+  },
+  {
+   "id": "A22",
+   "cell": "R-zh-kana|quiz-translations",
+   "file": "data/ip/quiz/translations/2016h28h.json",
+   "path": "questions.2016h28h-q040.stem.zh",
+   "lang": "zh",
+   "subtag": "punct-only",
+   "chars": "・",
+   "classification": "OK-OTHER[punct]",
+   "rule_verdict": "rule-correct/punct-carryover",
+   "reason": "题干列表的 ・ 作项目符号，照搬原题版式；另 zh 用半角 \", \" 逗号（照搬 jp 的 ，体裁），同属体裁沿用",
+   "siblings": {
+    "ja": {
+     "path": "questions.2016h28h-q040.stem_jp_clean",
+     "text": "システム開発プロジェクトのテスト工程において, 各担当者が報告書をチームリーダに提出し, チームリーダがそれらの内容をまとめてプロジェクトマネージャに報告している。次の報告ルールを定めているとき, チームリーダの報告として適切なものはどれか。\n〔報告ルール〕\n・各担当者は, 担当する機能のテストの進捗率を報告書に記載する。\n・各担当者は, 遅れがあるときに, その原因と対策内容を報告書に記載する。\n・チームリーダは, 各担当者の進捗率の適切さを確認した後, それらを集約して全…(+120)"
+    },
+    "zh": {
+     "path": "questions.2016h28h-q040.stem.zh",
+     "text": "在系统开发项目的测试工序中, 各负责人将报告书提交给团队负责人(组长), 团队负责人汇总这些内容后向项目经理报告。在制定了以下报告规则的情况下, 作为团队负责人的报告, 恰当的是哪一项?\n〔报告规则〕\n・各负责人在报告书中记载自己所负责功能的测试进度率。\n・各负责人在出现延迟时, 在报告书中记载其原因和对策内容。\n・团队负责人在确认各负责人进度率的适当性之后, 将它们汇总求出整体的进度率, 并在报告书中记载与计划的差异以及今后的预期。\n・团队负责人在出现延迟时, 对负责人进行…(+52)"
+    },
+    "en": {
+     "path": "questions.2016h28h-q040.stem.en",
+     "text": "In the testing process of a system development project, each member submits a report to the team leader, and the team leader compiles their contents and reports to the project manager. Given the following reporting rules, which is the appro…(+734)"
+    }
+   }
+  },
+  {
+   "id": "A23",
+   "cell": "R-zh-kana|quiz-translations",
+   "file": "data/ip/quiz/translations/2009h21a.json",
+   "path": "questions.2009h21a-q096.stem.zh",
+   "lang": "zh",
+   "subtag": null,
+   "chars": "あいうえおかきくけこ",
+   "classification": "OK-OTHER",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "题目表格中的商品标签 あ〜こ",
+   "siblings": {
+    "ja": {
+     "path": "questions.2009h21a-q096.stem_jp_clean",
+     "text": "N社の営業部では，今年度の販売戦略立案に向けて，前年度の商品売上実績を売上総利益率，商品回転率及び売上構成比率の視点で分析することにした。ここで，商品回転率は，一定期間の売上高を平均在庫高で割った値である。\n\n分析には表計算ソフトを用いることとし，前年度の売上に関する資料を基に図のようなワークシートを作成した。ここで，列I，列Jの計算式は，セルA2～H11の範囲を，列Bをキーとして降順に整列した後に入力する。\n\n| | A | B | C | D | E | F | G | …(+880)"
+    },
+    "zh": {
+     "path": "questions.2009h21a-q096.stem.zh",
+     "text": "N公司的营业部为制定本年度的销售战略，决定从销售毛利率、商品周转率及销售构成比率的视角分析上年度的商品销售实绩。这里，商品周转率是指将一定期间的销售额除以平均库存额所得的值。\n\n分析采用电子表格软件，并基于上年度销售相关资料制作了如图所示的工作表。这里，列I、列J的计算公式，是在将单元格A2〜H11的范围以列B为关键字降序排列之后再输入的。\n\n| | A | B | C | D | E | F | G | H | I | J |\n|---|---|---|---|---|--…(+836)"
+    },
+    "en": {
+     "path": "questions.2009h21a-q096.stem.en",
+     "text": "The sales department of Company N decided to analyze the previous fiscal year's product sales results from the perspectives of gross profit margin on sales, inventory turnover ratio, and sales composition ratio, in order to formulate this f…(+1996)"
+    }
+   }
+  },
+  {
+   "id": "A24",
+   "cell": "R-zh-kana|quiz-translations",
+   "file": "data/ip/quiz/translations/2009h21a.json",
+   "path": "questions.2009h21a-q094.choices.ア.zh",
+   "lang": "zh",
+   "subtag": null,
+   "chars": "え",
+   "classification": "OK-OTHER",
+   "rule_verdict": "rule-correct/benign",
+   "reason": "商品标签 え",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2009h21a-q094.choices_jp.ア",
+     "text": "“商品え”は, 薄利多売で利益を上げている商品であり, 利益を維持するためには品切れが起こらないよう商品管理に注意する必要がある。"
+    },
+    "zh": {
+     "path": "questions.2009h21a-q094.choices.ア.zh",
+     "text": "商品え属于薄利多销获取利润的商品，为了维持利润，需要注意商品管理以免发生缺货。"
+    },
+    "en": {
+     "path": "questions.2009h21a-q094.choices.ア.en",
+     "text": "Product え earns profit through low-margin, high-volume sales; to maintain its profit, care must be taken in inventory management so that stockouts do not occur."
+    }
+   }
+  },
+  {
+   "id": "A25",
+   "cell": "R-zh-kana|textbook-index",
+   "file": "data/ip/textbook/unit_index.json",
+   "path": "topics[36].units[1].title_zh",
+   "lang": "zh",
+   "subtag": "punct-only",
+   "chars": "・",
+   "classification": "OK-OTHER[punct]",
+   "rule_verdict": "rule-correct/punct-carryover",
+   "reason": "单元标题 “表达式・赋值・注释” 的 ・",
+   "siblings": {
+    "ja": {
+     "path": "topics[36].units[1].title_jp",
+     "text": "式・代入・注釈"
+    },
+    "zh": {
+     "path": "topics[36].units[1].title_zh",
+     "text": "表达式・赋值・注释"
+    },
+    "en": {
+     "path": "topics[36].units[1].title_en",
+     "text": "Expressions, Assignment, and Comments"
+    }
+   }
+  },
+  {
+   "id": "A26",
+   "cell": "R-zh-kana|textbook-units",
+   "file": "data/ip/textbook/units/strategy-01-02-u01.json",
+   "path": "pairs[1].rows[1].a_zh",
+   "lang": "zh",
+   "subtag": "punct-only",
+   "chars": "・",
+   "classification": "OK-OTHER[punct]",
+   "rule_verdict": "rule-correct/punct-carryover",
+   "reason": "“件数・金额” 的 ・",
+   "siblings": {
+    "ja": {
+     "path": "pairs[1].rows[1].a_jp",
+     "text": "項目ごとの件数・金額と累積比率"
+    },
+    "zh": {
+     "path": "pairs[1].rows[1].a_zh",
+     "text": "各项目的件数・金额及累积比率"
+    },
+    "en": {
+     "path": "pairs[1].rows[1].a_en",
+     "text": "Counts or amounts per item, and the cumulative percentage"
+    }
+   }
+  },
+  {
+   "id": "A27",
+   "cell": "R-zh-kana|textbook-units",
+   "file": "data/ip/textbook/units/strategy-06-19-u01.json",
+   "path": "pairs[0].rows[1].b_zh",
+   "lang": "zh",
+   "subtag": "punct-only",
+   "chars": "・",
+   "classification": "OK-OTHER[punct]",
+   "rule_verdict": "rule-correct/punct-carryover",
+   "reason": "“外部实体・处理・数据流・数据存储” 的 ・",
+   "siblings": {
+    "ja": {
+     "path": "pairs[0].rows[1].b_jp",
+     "text": "外部実体・処理・データフロー・データストア"
+    },
+    "zh": {
+     "path": "pairs[0].rows[1].b_zh",
+     "text": "外部实体・处理・数据流・数据存储"
+    },
+    "en": {
+     "path": "pairs[0].rows[1].b_en",
+     "text": "External entities, processes, data flows, data stores"
+    }
+   }
+  },
+  {
+   "id": "A28",
+   "cell": "R-zh-kana|textbook-units",
+   "file": "data/ip/textbook/units/strategy-05-16-u03.json",
+   "path": "terms[3].hook_zh",
+   "lang": "zh",
+   "subtag": null,
+   "chars": "チャージ",
+   "classification": "OK-CONVENTION*",
+   "rule_verdict": "rule-correct/markup-gap",
+   "reason": "hook 讲日语词 チャージ 的语源，未加 [[jp:]]",
+   "siblings": {
+    "ja": {
+     "path": "terms[3].hook_jp",
+     "text": "チャージは英語の charge(充電)。前払い型では、スマートフォンの電池のように先に満たしてから使う。"
+    },
+    "zh": {
+     "path": "terms[3].hook_zh",
+     "text": "日语中表示“充值”的“チャージ”来自英语 charge（充电）。预付型就像智能手机的电池一样，先充满再使用。"
+    },
+    "en": {
+     "path": "terms[3].hook_en",
+     "text": "The Japanese word for topping up, チャージ, comes from \"charge\", as in charging a battery: with the prepaid type, you fill it first, like a phone battery, and then use it."
+    }
+   }
+  },
+  {
+   "id": "A29",
+   "cell": "R-zh-kana|textbook-units",
+   "file": "data/ip/textbook/units/strategy-02-06-u01.json",
+   "path": "terms[3].hook_zh",
+   "lang": "zh",
+   "subtag": null,
+   "chars": "サブロク",
+   "classification": "OK-CONVENTION*",
+   "rule_verdict": "rule-correct/markup-gap",
+   "reason": "hook 讲 サブロク协定 的读法，未加 [[jp:]]",
+   "siblings": {
+    "ja": {
+     "path": "terms[3].hook_jp",
+     "text": "「36」は条文の番号。労働基準法の第 36 条に書かれた協定なので「サブロク協定」と呼ばれる。"
+    },
+    "zh": {
+     "path": "terms[3].hook_zh",
+     "text": "“36”是条文编号。因为是劳动基准法第 36 条规定的协定，所以在日语中读作“サブロク协定”。"
+    },
+    "en": {
+     "path": "terms[3].hook_en",
+     "text": "The \"36\" is an article number: the agreement is set out in Article 36 of the Labor Standards Act, which is why it is called a \"saburoku\" (three-six) agreement in Japanese."
+    }
+   }
+  },
+  {
+   "id": "A30",
+   "cell": "R-zh-kana|ui-messages",
+   "file": "apps/web/messages/zh.json",
+   "path": "Practice.scope_topic",
+   "lang": "zh",
+   "subtag": "punct-only",
+   "chars": "・",
+   "classification": "LEAK",
+   "rule_verdict": "right-field/wrong-reason",
+   "reason": "zh UI “分野・领域”：真正的问题是日语词 分野（中文应为 领域/范围/类别），S86 曾把 zh 的 分野 改为 个领域，现 zh.json 中 分野 又出现 12 处，且不在 70978b70 的“三语日语书面标签”清单中。规则只因 ・ 命中，分野 本身扫描器看不到。修复：zh.json 中 分野 → 领域/科目类别（scope_topic 改为 “领域・主题” 等），与 S86 一致",
+   "siblings": {
+    "ja": {
+     "path": "Practice.scope_topic",
+     "text": "分野・領域"
+    },
+    "zh": {
+     "path": "Practice.scope_topic",
+     "text": "分野・领域"
+    },
+    "en": {
+     "path": "Practice.scope_topic",
+     "text": "Fields & topics"
+    }
+   }
+  }
+ ],
+ "taskB": [
+  {
+   "id": "B01",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-22-59-u02.json",
+   "path": "terms[3].fig.steps[0].caption_jp",
+   "len": 30,
+   "classification": "CLEAN",
+   "reason": "纯日语，与 zh/en 对应",
+   "siblings": {
+    "ja": {
+     "path": "terms[3].fig.steps[0].caption_jp",
+     "text": "ブラウザは、欲しいページを指定したリクエストをサーバへ送る。"
+    },
+    "zh": {
+     "path": "terms[3].fig.steps[0].caption_zh",
+     "text": "浏览器向服务器发送指定了所需页面的请求。"
+    },
+    "en": {
+     "path": "terms[3].fig.steps[0].caption_en",
+     "text": "The browser sends the server a request naming the page it wants."
+    }
+   }
+  },
+  {
+   "id": "B02",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/strategy-05-16-u02.json",
+   "path": "goals_jp[1]",
+   "len": 42,
+   "classification": "CLEAN",
+   "reason": "纯日语；zh 第三方托管服务 对应",
+   "siblings": {
+    "ja": {
+     "path": "goals_jp[1]",
+     "text": "**エスクローサービス** が代金を預かる流れと、それで防げるトラブルを説明できる。"
+    },
+    "zh": {
+     "path": "goals_zh[1]",
+     "text": "能说明**第三方托管服务**代管货款的流程，以及它能防止哪些纠纷。"
+    },
+    "en": {
+     "path": "goals_en[1]",
+     "text": "Explain how an **escrow service** holds the payment, and which troubles this prevents."
+    }
+   }
+  },
+  {
+   "id": "B03",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-21-57-u01.json",
+   "path": "terms[0].fig.data.rows[0].b.jp",
+   "len": 16,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "terms[0].fig.data.rows[0].b.jp",
+     "text": "まとめた処理の途中で失敗したとき"
+    },
+    "zh": {
+     "path": "terms[0].fig.data.rows[0].b.zh",
+     "text": "归组的处理中途失败时"
+    },
+    "en": {
+     "path": "terms[0].fig.data.rows[0].b.en",
+     "text": "When a grouped step fails partway"
+    }
+   }
+  },
+  {
+   "id": "B04",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-13-35-u03.json",
+   "path": "terms[3].points[0].text_jp",
+   "len": 47,
+   "classification": "CLEAN",
+   "reason": "纯日语；zh/en 带 [[jp:]] 合规",
+   "siblings": {
+    "ja": {
+     "path": "terms[3].points[0].text_jp",
+     "text": "ルールベースでは判断の基準を人が書いて与え、機械学習では判断の基準をデータから自動で獲得する。"
+    },
+    "zh": {
+     "path": "terms[3].points[0].text_zh",
+     "text": "基于规则（[[jp:ルールベース]]）由人写好判断标准交给机器，机器学习（[[jp:機械学習]]）则从数据中自动获得判断标准。"
+    },
+    "en": {
+     "path": "terms[3].points[0].text_en",
+     "text": "In a rule-based ([[jp:ルールベース]]) approach, people write the decision criteria and hand them to the machine, while machine learning ([[jp:機械学習]]) acquires those criteria from data automatically."
+    }
+   }
+  },
+  {
+   "id": "B05",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-13-34-u02.json",
+   "path": "terms[6].fig.data.cols[0].jp",
+   "len": 3,
+   "classification": "CLEAN",
+   "reason": "短标签 データ，信息量低（uninformative）",
+   "siblings": {
+    "ja": {
+     "path": "terms[6].fig.data.cols[0].jp",
+     "text": "データ"
+    },
+    "zh": {
+     "path": "terms[6].fig.data.cols[0].zh",
+     "text": "数据"
+    },
+    "en": {
+     "path": "terms[6].fig.data.cols[0].en",
+     "text": "Data"
+    }
+   }
+  },
+  {
+   "id": "B06",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-14-38-u01.json",
+   "path": "terms[6].analogy_jp",
+   "len": 34,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "terms[6].analogy_jp",
+     "text": "統計の計算とグラフ作りに特化した、専門家向けの関数電卓のようなもの。"
+    },
+    "zh": {
+     "path": "terms[6].analogy_zh",
+     "text": "就像一台专攻统计计算和绘图的专业级科学计算器。"
+    },
+    "en": {
+     "path": "terms[6].analogy_en",
+     "text": "Think of it as a professional-grade scientific calculator dedicated to statistics and charts."
+    }
+   }
+  },
+  {
+   "id": "B07",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/management-11-29-u05.json",
+   "path": "terms[1].term",
+   "len": 4,
+   "classification": "CLEAN",
+   "reason": "SPOC，语言中立（uninformative）",
+   "siblings": {
+    "zh": {
+     "path": "terms[1].term_zh",
+     "text": "SPOC（单一联系窗口）"
+    },
+    "en": {
+     "path": "terms[1].term_en",
+     "text": "SPOC (Single Point of Contact)"
+    },
+    "ja": {
+     "path": "terms[1].term",
+     "text": "SPOC"
+    }
+   }
+  },
+  {
+   "id": "B08",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-22-58-u01.json",
+   "path": "overview_rows[6].extra_jp[0]",
+   "len": 6,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "overview_rows[6].extra_jp[0]",
+     "text": "機器側の部品"
+    },
+    "zh": {
+     "path": "overview_rows[6].extra_zh[0]",
+     "text": "设备一侧的部件"
+    },
+    "en": {
+     "path": "overview_rows[6].extra_en[0]",
+     "text": "Part on the device side"
+    }
+   }
+  },
+  {
+   "id": "B09",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-16-44-u03.json",
+   "path": "pairs[3].rows[1].b_jp",
+   "len": 29,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "pairs[3].rows[1].b_jp",
+     "text": "誤った操作をさせない、または誤っても害にならないようにする"
+    },
+    "zh": {
+     "path": "pairs[3].rows[1].b_zh",
+     "text": "让人无法进行错误操作，或即使操作错了也不会造成危害"
+    },
+    "en": {
+     "path": "pairs[3].rows[1].b_en",
+     "text": "Prevents wrong operations, or makes them harmless when they happen"
+    }
+   }
+  },
+  {
+   "id": "B10",
+   "lang": "ja",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/strategy-05-15-u02.json",
+   "path": "terms[3].points[0].text_jp",
+   "len": 82,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "terms[3].points[0].text_jp",
+     "text": "**リーン生産方式**の**ムダ**は、製品の価値を高めない作業や動作のことで、作りすぎや不要な運搬が例である。過大な負荷のムリやばらつきのムラとは別の観点である。"
+    },
+    "zh": {
+     "path": "terms[3].points[0].text_zh",
+     "text": "**精益生产方式**（[[jp:リーン生産方式]]）中的**浪费**（[[jp:ムダ]]）是指不提高产品价值的作业或动作，例如过量生产和不必要的搬运。它与过大负荷的[[jp:ムリ]]、波动的[[jp:ムラ]]是不同的角度。"
+    },
+    "en": {
+     "path": "terms[3].points[0].text_en",
+     "text": "In **lean production** ([[jp:リーン生産方式]]), **muda** ([[jp:ムダ]]) means work or motion that does not raise a product's value, such as overproduction or unneeded transport. It is a separate angle from muri ([[jp:ムリ]]), excess load, and mura ([[j…(+20)"
+    }
+   }
+  },
+  {
+   "id": "B11",
+   "lang": "ja",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2011h23a.json",
+   "path": "questions.2011h23a-q024.stem_jp_clean",
+   "len": 430,
+   "classification": "CLEAN",
+   "reason": "IPA 题干，纯日语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2011h23a-q024.stem_jp_clean",
+     "text": "A社と競合B社の相互の意思決定において，A社先手で相互に3手目までの打つ手を次の表のとおり作成した。表の数値は3手目の局面におけるA社の期待値である。A社は自社の期待値を大きくするように打つ手を選択し，B社は，3手目の結果を予測してA社の期待値を小さくするように打つ手を選択するとき，3手目の局面におけるA社の期待値は何億円か。\n\n単位　億円\n\n| 1手目：A社 | 2手目：B社 | 3手目：A社 | 3手目の局面におけるA社の期待値 |\n|---|---|---|---|\n|…(+190)"
+    },
+    "zh": {
+     "path": "questions.2011h23a-q024.stem.zh",
+     "text": "A公司与竞争对手B公司在相互决策中，由A公司先手，相互作出直至第3手的招数，制作成下表。表中的数值为第3手局面下A公司的期望值。当A公司选择使本公司期望值变大的招数，而B公司预测第3手的结果、选择使A公司期望值变小的招数时，第3手局面下A公司的期望值为多少亿日元？\n\n单位　亿日元\n\n| 第1手：A公司 | 第2手：B公司 | 第3手：A公司 | 第3手局面下A公司的期望值 |\n|---|---|---|---|\n| 降价 | 降价 | 做广告 | 9 |\n|  |  | 不做…(+133)"
+    },
+    "en": {
+     "path": "questions.2011h23a-q024.stem.en",
+     "text": "In the mutual decision-making between Company A and its competitor Company B, with Company A moving first, the moves up to the 3rd move were drawn up as in the following table. The values in the table are Company A's expected value at the 3…(+754)"
+    }
+   }
+  },
+  {
+   "id": "B12",
+   "lang": "ja",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2023r05.json",
+   "path": "questions.2023r05-q042.stem_jp_clean",
+   "len": 116,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2023r05-q042.stem_jp_clean",
+     "text": "ソフトウェア開発における，テストに関する記述a～cとテスト工程の適切な組合せはどれか。\na 運用予定時間内に処理が終了することを確認する。\nb ソフトウェア間のインタフェースを確認する。\nc プログラムの内部パスを網羅的に確認する。"
+    },
+    "zh": {
+     "path": "questions.2023r05-q042.stem.zh",
+     "text": "在软件开发中，关于测试的描述 a～c 与测试工序的恰当组合是哪一个？\na 确认处理在预定的运行时间内完成。\nb 确认软件之间的接口。\nc 全面确认程序的内部路径。"
+    },
+    "en": {
+     "path": "questions.2023r05-q042.stem.en",
+     "text": "In software development, which is the appropriate combination of the test descriptions a–c and the test phases?\na Verify that processing completes within the scheduled operation time.\nb Verify the interfaces between pieces of software.\nc Ex…(+52)"
+    }
+   }
+  },
+  {
+   "id": "B13",
+   "lang": "ja",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2021r03.json",
+   "path": "questions.2021r03-q055.stem_jp_clean",
+   "len": 107,
+   "classification": "CLEAN",
+   "reason": "纯日语；zh 多加 （性价比） 属附加，不是串写",
+   "siblings": {
+    "ja": {
+     "path": "questions.2021r03-q055.stem_jp_clean",
+     "text": "有料のメールサービスを提供している企業において, メールサービスに関する開発・設備投資の費用対効果の効率性を対象にしてシステム監査を実施するとき, システム監査人が所属している組織として, 最も適切なものはどれか。"
+    },
+    "zh": {
+     "path": "questions.2021r03-q055.stem.zh",
+     "text": "某企业提供付费的电子邮件服务。在以与电子邮件服务相关的开发与设备投资的成本效益（性价比）作为对象实施系统审计时，系统审计人员所隶属的组织，最为恰当的是哪一项？"
+    },
+    "en": {
+     "path": "questions.2021r03-q055.stem.en",
+     "text": "A company provides a paid email service. When conducting a systems audit targeting the cost-effectiveness (efficiency) of the development and facility investment related to the email service, which organization is the most appropriate one f…(+36)"
+    }
+   }
+  },
+  {
+   "id": "B14",
+   "lang": "ja",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2018h30a.json",
+   "path": "questions.2018h30a-q077.stem_jp_clean",
+   "len": 267,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2018h30a-q077.stem_jp_clean",
+     "text": "情報セキュリティの脅威に関する説明①～③と，用語の適切な組合せはどれか。\n①　Webページに，利用者の入力データをそのまま表示するフォーム又は処理があるとき，第三者が悪意あるスクリプトを埋め込み，訪問者のブラウザ上で実行させることによって，cookieなどのデータを盗み出す攻撃\n②　多数のPCに感染し，ネットワークを介した指示に従ってPCを不正に操作することによって，一斉攻撃などを行うプログラム\n③　利用者に有用なプログラムと見せかけて，インストール及び実行させることによって…(+27)"
+    },
+    "zh": {
+     "path": "questions.2018h30a-q077.stem.zh",
+     "text": "关于信息安全威胁的说明①～③与术语的恰当组合是哪一个？\n①　当 Web 页面存在将用户输入的数据原样显示的表单或处理时，第三方植入恶意脚本，使其在访问者的浏览器上执行，从而盗取 cookie 等数据的攻击\n②　感染大量 PC，并按照通过网络下达的指令非法操控 PC，从而实施集中攻击等的程序\n③　伪装成对用户有用的程序，诱使用户安装并执行，从而进行用户非本意的信息破坏或泄露的程序"
+    },
+    "en": {
+     "path": "questions.2018h30a-q077.stem.en",
+     "text": "Which is the appropriate combination of the descriptions ①–③ of information security threats and the terms?\n①　An attack in which, when a Web page has a form or process that displays the user's input data as-is, a third party embeds a malici…(+451)"
+    }
+   }
+  },
+  {
+   "id": "B15",
+   "lang": "ja",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2023r05.json",
+   "path": "questions.2023r05-q082.stem_jp_clean",
+   "len": 160,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2023r05-q082.stem_jp_clean",
+     "text": "OSS (Open Source Software) に関する記述 a～c のうち, 適切なものだけを全て挙げたものはどれか。\na ソースコードに手を加えて再配布することができる。\nb ソースコードの入手は無償だが, 有償の保守サポートを受けなければならない。\nc 著作権が放棄されており, 無断で利用することができる。"
+    },
+    "zh": {
+     "path": "questions.2023r05-q082.stem.zh",
+     "text": "关于开源软件(OSS)的描述 a~c 中，仅列出全部恰当项的是哪一个？\na 可以对源代码进行修改并重新发布。\nb 源代码的获取是免费的，但必须接受收费的维护支持。\nc 著作权已被放弃，可以擅自使用。"
+    },
+    "en": {
+     "path": "questions.2023r05-q082.stem.en",
+     "text": "Among the statements a through c about OSS (Open Source Software), which lists all and only the appropriate ones?\na You can modify the source code and redistribute it.\nb The source code is available free of charge, but you must receive paid…(+95)"
+    }
+   }
+  },
+  {
+   "id": "B16",
+   "lang": "ja",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2020r02o.json",
+   "path": "questions.2020r02o-q040.distractors.エ.jp",
+   "len": 94,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2020r02o-q040.distractors.エ.jp",
+     "text": "所要期間を見積もりスケジュールを変更するのは、プロジェクトスケジュールマネジメントの活動。時間軸の計画に閉じた作業であり、競合する目標の調整にはならないため統合マネジメントには該当しない。"
+    },
+    "zh": {
+     "path": "questions.2020r02o-q040.distractors.エ.zh",
+     "text": "估算工期并变更进度计划，属于项目进度管理的活动。这是局限于时间维度规划的工作，并非对相互冲突目标的协调，因此不属于整合管理。"
+    },
+    "en": {
+     "path": "questions.2020r02o-q040.distractors.エ.en",
+     "text": "Estimating the required duration and changing the schedule is an activity of project schedule management. It is work confined to time-axis planning, not coordinating competing objectives, so it does not fall under integration management."
+    }
+   }
+  },
+  {
+   "id": "B17",
+   "lang": "ja",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2014h26h.json",
+   "path": "questions.2014h26h-q055.points[0].jp",
+   "len": 95,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2014h26h-q055.points[0].jp",
+     "text": "VPN = 公衆回線 (インターネットなど) 上に、認証・暗号化・トンネリングによって仮想的な専用線を構築する技術。専用線を敷設するより低コストで安全な拠点間接続やテレワーク接続を実現する。"
+    },
+    "zh": {
+     "path": "questions.2014h26h-q055.points[0].zh",
+     "text": "VPN = 在公共线路（互联网等）之上，通过认证、加密和隧道构建出虚拟专用线路的技术。它比铺设真正的专用线路成本更低，同时实现安全的站点间连接和远程办公连接。"
+    },
+    "en": {
+     "path": "questions.2014h26h-q055.points[0].en",
+     "text": "VPN = a technology that builds a virtual dedicated line over a public line (the Internet, etc.) by means of authentication, encryption, and tunneling. It achieves secure site-to-site and remote-work connections at a lower cost than laying a…(+18)"
+    }
+   }
+  },
+  {
+   "id": "B18",
+   "lang": "ja",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2021r03.json",
+   "path": "questions.2021r03-q053.points[1].jp",
+   "len": 62,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2021r03-q053.points[1].jp",
+     "text": "SLA の作成は手段であり最終目的ではない。合意レベルは顧客要求に見合う適切な水準に設定し、継続的改善を怠らないことが重要。"
+    },
+    "zh": {
+     "path": "questions.2021r03-q053.points[1].zh",
+     "text": "制定 SLA 是手段而非最终目的。应将约定级别设定为与客户需求相匹配的适当水平，并且不可疏于持续改善，这一点很重要。"
+    },
+    "en": {
+     "path": "questions.2021r03-q053.points[1].en",
+     "text": "Creating the SLA is a means, not the ultimate goal. It is important to set the agreed levels at an appropriate standard matching customer requirements, and not to neglect continuous improvement."
+    }
+   }
+  },
+  {
+   "id": "B19",
+   "lang": "ja",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2023r05.json",
+   "path": "questions.2023r05-q098.correct.jp",
+   "len": 166,
+   "classification": "CLEAN",
+   "reason": "纯日语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2023r05-q098.correct.jp",
+     "text": "スマートメーターは、住宅やビルなどに設置して電気・ガス・水道などの使用量を自動的に計測し、携帯電話回線などの通信を介して供給事業者へ計測データを送信する通信機能付きの計量器で、IoT 機器の代表例。検針員による訪問が不要になり、遠隔でのデータ収集や使用量の見える化、HEMS との連携が可能になる。この説明に一致する「イ」が正しい。"
+    },
+    "zh": {
+     "path": "questions.2023r05-q098.correct.zh",
+     "text": "智能电表是安装在住宅、楼宇等处，自动计量电、燃气、自来水等的使用量，并通过手机线路等通信将计量数据发送给供应商的带通信功能的计量器，是 IoT 设备的典型代表。无需抄表员上门，可实现远程数据采集、使用量的可视化以及与 HEMS（家庭能源管理系统）的联动。与此说明一致的「イ」是正确的。"
+    },
+    "en": {
+     "path": "questions.2023r05-q098.correct.en",
+     "text": "A smart meter is a metering device with a communication function that is installed in homes, buildings, and the like; it automatically measures the consumption of electricity, gas, water, and so on, and transmits the measured data to the su…(+331)"
+    }
+   }
+  },
+  {
+   "id": "B20",
+   "lang": "ja",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2013h25a.json",
+   "path": "questions.2013h25a-q098.correct.jp",
+   "len": 557,
+   "classification": "UNSURE",
+   "reason": "ja 自身是纯日语，但 zh/en 与 ja 不对应：zh/en 以“正确答案是ア”开头、篇幅约为 ja 的 2〜4 倍，多出借阅者卡更换顺序、对照表转换风险等论证；三语出自同一提交 b0a60fbd。属兄弟语言内容分歧（忠实度），不是串写，不计入泄漏率",
+   "siblings": {
+    "ja": {
+     "path": "questions.2013h25a-q098.correct.jp",
+     "text": "決め手は問題文の 2 つの前提です。第 1 に「貸出履歴を管理するためのファイル (テーブル) は現在のシステムのものをそのまま利用する」、第 2 に「移行期間中はバーコードと RFID を併用する」。貸出履歴テーブルは、どの書籍を誰が借りたかを書籍の識別番号と利用者番号で記録しています。このテーブルをそのまま使い続けるなら、そこに格納されるキー、すなわち a の書籍の識別番号も b の利用者番号も、現行の番号体系を変えてはいけません。もし新しい番号に振り直すと、過去の貸出履…(+317)"
+    },
+    "zh": {
+     "path": "questions.2013h25a-q098.correct.zh",
+     "text": "正确答案是ア「a-沿用现有的，b-沿用现有的」。本题问的是：在不停止系统、新旧并用地进行迁移（并行迁移）时，应该如何处理识别代码。判断的决定性依据是题干给出的两个前提。第一，题目已经确定：管理借阅履历的文件（表）直接沿用现有系统的。借阅履历的记录，是用书籍的识别号和借阅者卡的借阅者号来指明「借的是哪本书」「借书的是哪位借阅者」的。如果配合迁移把号码重新编成新的体系，那么已经积累的履历记录中的号码，与今后要追加的记录中的号码就成了两套不同的东西，混在同一张表里就无法追踪同一本书…(+375)"
+    },
+    "en": {
+     "path": "questions.2013h25a-q098.correct.en",
+     "text": "The correct answer is ア: “a-Use the current one, b-Use the current one.” This question asks how identification codes should be handled when migrating without stopping the system, using the old and new methods together (parallel migration). …(+2080)"
+    }
+   }
+  },
+  {
+   "id": "B21",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-22-59-u02.json",
+   "path": "terms[0].fig.data.rows[1].cells[1].zh",
+   "len": 11,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "terms[0].fig.data.rows[1].cells[1].jp",
+     "text": "宛先のアプリケーションまでデータを渡す"
+    },
+    "zh": {
+     "path": "terms[0].fig.data.rows[1].cells[1].zh",
+     "text": "把数据交给目标应用程序"
+    },
+    "en": {
+     "path": "terms[0].fig.data.rows[1].cells[1].en",
+     "text": "Passes data to the destination application"
+    }
+   }
+  },
+  {
+   "id": "B22",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-14-37-u03.json",
+   "path": "terms[3].fig.data.cols[2].zh",
+   "len": 7,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "terms[3].fig.data.cols[2].jp",
+     "text": "呼出しで渡す値"
+    },
+    "zh": {
+     "path": "terms[3].fig.data.cols[2].zh",
+     "text": "调用时传入的值"
+    },
+    "en": {
+     "path": "terms[3].fig.data.cols[2].en",
+     "text": "Value passed in the call"
+    }
+   }
+  },
+  {
+   "id": "B23",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/management-10-27-u02.json",
+   "path": "terms[3].fig.data.rows[7].cells[0].zh",
+   "len": 9,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "terms[3].fig.data.rows[7].cells[0].jp",
+     "text": "研修会の実施（予定）"
+    },
+    "zh": {
+     "path": "terms[3].fig.data.rows[7].cells[0].zh",
+     "text": "举办培训会（计划）"
+    },
+    "en": {
+     "path": "terms[3].fig.data.rows[7].cells[0].en",
+     "text": "Hold the training (planned)"
+    }
+   }
+  },
+  {
+   "id": "B24",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-23-63-u08.json",
+   "path": "terms[1].detail_zh",
+   "len": 173,
+   "classification": "CLEAN",
+   "reason": "纯中文，[[jp:]] 合规",
+   "siblings": {
+    "ja": {
+     "path": "terms[1].detail_jp",
+     "text": "入力された内容を事前に登録した情報と照合し、本人かどうかを確かめることを**認証**という。その照合の結果や、誰に何を使わせるかを定めた**アクセス権**に従って、利用を許すか拒むかを決める働きを**アクセス制御**という。利用を終える操作は**ログアウト**で、席を離れる前に行えば他人に続きを操作されにくい。"
+    },
+    "zh": {
+     "path": "terms[1].detail_zh",
+     "text": "将输入的内容与事先登记的信息核对、确认是否本人，称为**认证**（[[jp:認証]]）。根据核对结果以及规定允许谁使用什么的**访问权限**（[[jp:アクセス権]]），决定允许还是拒绝使用，这一功能称为**访问控制**（[[jp:アクセス制御]]）。结束使用的操作是**登出**（[[jp:ログアウト]]），离开座位前登出，别人就难以接着操作。"
+    },
+    "en": {
+     "path": "terms[1].detail_en",
+     "text": "Checking what was entered against registered information to confirm the user's identity is called **authentication** ([[jp:認証]]). Deciding whether to allow or refuse use, based on that result and on the **access rights** ([[jp:アクセス権]]) that…(+218)"
+    }
+   }
+  },
+  {
+   "id": "B25",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-22-58-u03.json",
+   "path": "pairs[0].rows[1].b_zh",
+   "len": 5,
+   "classification": "CLEAN",
+   "reason": "纯中文（短）",
+   "siblings": {
+    "ja": {
+     "path": "pairs[0].rows[1].b_jp",
+     "text": "製造時に割り当てられる"
+    },
+    "zh": {
+     "path": "pairs[0].rows[1].b_zh",
+     "text": "出厂时分配"
+    },
+    "en": {
+     "path": "pairs[0].rows[1].b_en",
+     "text": "Assigned at manufacture"
+    }
+   }
+  },
+  {
+   "id": "B26",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-16-44-u03.json",
+   "path": "terms[1].points[1].text_zh",
+   "len": 72,
+   "classification": "CLEAN",
+   "reason": "纯中文；但 duplex system 译作 双重系统，与 quiz 侧 D-175 统一的 双工系统 不一致（术语问题，非串写）",
+   "siblings": {
+    "ja": {
+     "path": "terms[1].points[1].text_jp",
+     "text": "**デュプレックスシステム**で主系が故障したときの停止時間は、待機系をどの状態で控えさせているかによって変わる。"
+    },
+    "zh": {
+     "path": "terms[1].points[1].text_zh",
+     "text": "在**双重系统**（[[jp:デュプレックスシステム]]）中，主系统发生故障时的停机时间，取决于备用系统（[[jp:待機系]]）以什么状态待命。"
+    },
+    "en": {
+     "path": "terms[1].points[1].text_en",
+     "text": "In a **duplex system** ([[jp:デュプレックスシステム]]), how long processing stops after the primary system fails depends on the state the standby system ([[jp:待機系]]) is kept in."
+    }
+   }
+  },
+  {
+   "id": "B27",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-20-52-u04.json",
+   "path": "terms[2].term_zh",
+   "len": 3,
+   "classification": "CLEAN",
+   "reason": "PNG，语言中立（uninformative）",
+   "siblings": {
+    "zh": {
+     "path": "terms[2].term_zh",
+     "text": "PNG"
+    },
+    "en": {
+     "path": "terms[2].term_en",
+     "text": "PNG"
+    },
+    "ja": {
+     "path": "terms[2].term",
+     "text": "PNG"
+    }
+   }
+  },
+  {
+   "id": "B28",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-14-37-u02.json",
+   "path": "terms[2].hook_zh",
+   "len": 45,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "terms[2].hook_jp",
+     "text": "真を 1、偽を 0 と置くと、and は掛け算の結果、or は足し算の結果が 1 以上かどうかと同じになる。"
+    },
+    "zh": {
+     "path": "terms[2].hook_zh",
+     "text": "把真记作 1、假记作 0，and 就等于相乘的结果，or 就等于相加的结果是否不小于 1。"
+    },
+    "en": {
+     "path": "terms[2].hook_en",
+     "text": "Write true as 1 and false as 0: and matches the product, and or matches whether the sum is 1 or more."
+    }
+   }
+  },
+  {
+   "id": "B29",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/management-11-29-u05.json",
+   "path": "terms[2].term_zh",
+   "len": 9,
+   "classification": "CLEAN",
+   "reason": "FAQ（常见问题），信息量低（uninformative）",
+   "siblings": {
+    "zh": {
+     "path": "terms[2].term_zh",
+     "text": "FAQ（常见问题）"
+    },
+    "en": {
+     "path": "terms[2].term_en",
+     "text": "FAQ (Frequently Asked Questions)"
+    },
+    "ja": {
+     "path": "terms[2].term",
+     "text": "FAQ"
+    }
+   }
+  },
+  {
+   "id": "B30",
+   "lang": "zh",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-23-62-u04.json",
+   "path": "terms[5].points[1].text_zh",
+   "len": 55,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "terms[5].points[1].text_jp",
+     "text": "被害の起こりやすさや大きさそのものを減らす対策はリスク低減で、起きた後の損失を外部に負担してもらう保険とは別物である。"
+    },
+    "zh": {
+     "path": "terms[5].points[1].text_zh",
+     "text": "直接降低损害发生的可能性或规模的对策属于风险降低（[[jp:リスク低減]]），与事后由外部承担损失的保险不同。"
+    },
+    "en": {
+     "path": "terms[5].points[1].text_en",
+     "text": "Measures that reduce the likelihood or size of the damage itself are risk reduction ([[jp:リスク低減]]), which is different from insurance, where an outside party bears the loss after the fact."
+    }
+   }
+  },
+  {
+   "id": "B31",
+   "lang": "zh",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2017h29a.json",
+   "path": "questions.2017h29a-q019.choices.エ.zh",
+   "len": 36,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2017h29a-q019.choices_jp.エ",
+     "text": "どのようなシステムを構築するかを，機能，性能，利用方法などの観点で，利用者側と開発者側で明確にする。"
+    },
+    "zh": {
+     "path": "questions.2017h29a-q019.choices.エ.zh",
+     "text": "从功能、性能、使用方法等角度，由用户方和开发方共同明确要构建怎样的系统。"
+    },
+    "en": {
+     "path": "questions.2017h29a-q019.choices.エ.en",
+     "text": "Clarify, from the perspectives of function, performance, usage method, etc., what kind of system is to be built, jointly by the user side and the developer side."
+    }
+   }
+  },
+  {
+   "id": "B32",
+   "lang": "zh",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2017h29a.json",
+   "path": "questions.2017h29a-q024.choices.エ.zh",
+   "len": 25,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2017h29a-q024.choices_jp.エ",
+     "text": "販売システムの満足度を調査してシステム改善のロードマップを描く方法"
+    },
+    "zh": {
+     "path": "questions.2017h29a-q024.choices.エ.zh",
+     "text": "调查销售系统的满意度，从而描绘系统改进路线图的方法"
+    },
+    "en": {
+     "path": "questions.2017h29a-q024.choices.エ.en",
+     "text": "A method for surveying the satisfaction level of the sales system in order to draw up a roadmap for system improvement"
+    }
+   }
+  },
+  {
+   "id": "B33",
+   "lang": "zh",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2012h24a.json",
+   "path": "questions.2012h24a-q092.choices.ウ.zh",
+   "len": 18,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2012h24a-q092.choices_jp.ウ",
+     "text": "電子メールを利用して, 交通費が支払われる日を連絡すること"
+    },
+    "zh": {
+     "path": "questions.2012h24a-q092.choices.ウ.zh",
+     "text": "利用电子邮件，通知支付交通费的日期。"
+    },
+    "en": {
+     "path": "questions.2012h24a-q092.choices.ウ.en",
+     "text": "Use email to notify the date on which transportation expenses will be paid."
+    }
+   }
+  },
+  {
+   "id": "B34",
+   "lang": "zh",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2024r06.json",
+   "path": "questions.2024r06-q075.choices.エ.zh",
+   "len": 17,
+   "classification": "CLEAN",
+   "reason": "a:机密性…，信息量低（uninformative）",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2024r06-q075.choices_jp.エ",
+     "text": "a:機密性 b:完全性 c:可用性"
+    },
+    "zh": {
+     "path": "questions.2024r06-q075.choices.エ.zh",
+     "text": "a:机密性 b:完整性 c:可用性"
+    },
+    "en": {
+     "path": "questions.2024r06-q075.choices.エ.en",
+     "text": "a: Confidentiality  b: Integrity  c: Availability"
+    }
+   }
+  },
+  {
+   "id": "B35",
+   "lang": "zh",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2011h23tokubetsu.json",
+   "path": "questions.2011h23tokubetsu-q020.choices.イ.zh",
+   "len": 21,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2011h23tokubetsu-q020.choices_jp.イ",
+     "text": "自社で使っているドメイン名が，偶然他社のドメイン名と類似していた。"
+    },
+    "zh": {
+     "path": "questions.2011h23tokubetsu-q020.choices.イ.zh",
+     "text": "本公司使用的域名碰巧与其他公司的域名相似。"
+    },
+    "en": {
+     "path": "questions.2011h23tokubetsu-q020.choices.イ.en",
+     "text": "The domain name used by one's own company happened to be similar to another company's domain name."
+    }
+   }
+  },
+  {
+   "id": "B36",
+   "lang": "zh",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2021r03.json",
+   "path": "questions.2021r03-q082.distractors.エ.zh",
+   "len": 69,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "questions.2021r03-q082.distractors.エ.jp",
+     "text": "ユビキタスコンピューティングは、あらゆる場所や物にコンピュータが埋め込まれ、いつでもどこでも利用できる環境を指す概念で、複数機の並列処理による処理能力の集約とは異なります。"
+    },
+    "zh": {
+     "path": "questions.2021r03-q082.distractors.エ.zh",
+     "text": "泛在计算（普适计算）指的是在各种场所和物体中都嵌入计算机、随时随地都能使用的环境这一概念，与通过多台机器并行处理来汇聚处理能力的方式不同。"
+    },
+    "en": {
+     "path": "questions.2021r03-q082.distractors.エ.en",
+     "text": "Ubiquitous computing refers to an environment in which computers are embedded in all kinds of places and objects so they can be used anytime and anywhere; it differs from aggregating processing power through parallel processing across multi…(+13)"
+    }
+   }
+  },
+  {
+   "id": "B37",
+   "lang": "zh",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2019r01a.json",
+   "path": "questions.2019r01a-q006.distractors.エ.zh",
+   "len": 50,
+   "classification": "CLEAN",
+   "reason": "纯中文；非法访问禁止法 为日本法名的意译",
+   "siblings": {
+    "ja": {
+     "path": "questions.2019r01a-q006.distractors.エ.jp",
+     "text": "不正アクセス禁止法は、他人のIDやパスワードを悪用するなどしてコンピュータへ不正にアクセスする行為を禁止・処罰する法律であり、資料の開示請求とは無関係である。"
+    },
+    "zh": {
+     "path": "questions.2019r01a-q006.distractors.エ.zh",
+     "text": "非法访问禁止法是禁止并处罚盗用他人ID或密码等方式非法访问计算机的行为的法律，与资料的公开请求无关。"
+    },
+    "en": {
+     "path": "questions.2019r01a-q006.distractors.エ.en",
+     "text": "The Unauthorized Computer Access Prohibition Act is a law that prohibits and punishes acts of illegally accessing computers, such as by misusing another person's ID or password. It has nothing to do with requests for disclosure of documents…(+1)"
+    }
+   }
+  },
+  {
+   "id": "B38",
+   "lang": "zh",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2017h29h.json",
+   "path": "questions.2017h29h-q087.distractors.イ.zh",
+   "len": 54,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "questions.2017h29h-q087.distractors.イ.jp",
+     "text": "作業の所要期間の見積りやスケジューリングを行い工程を管理するのは、アローダイアグラム (PERT図) やガントチャートなど日程管理の技法であり、E-R図とは無関係。"
+    },
+    "zh": {
+     "path": "questions.2017h29h-q087.distractors.イ.zh",
+     "text": "估算作业所需工期并进行排程以管理工序的，是箭线图（PERT图）或甘特图等进度管理的方法，与 E-R 图无关。"
+    },
+    "en": {
+     "path": "questions.2017h29h-q087.distractors.イ.en",
+     "text": "Estimating the duration of tasks, performing scheduling, and managing the work process is done with schedule-management techniques such as an arrow diagram (PERT chart) or a Gantt chart, which have nothing to do with an E-R diagram."
+    }
+   }
+  },
+  {
+   "id": "B39",
+   "lang": "zh",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2025r07.json",
+   "path": "questions.2025r07-q074.correct.zh",
+   "len": 199,
+   "classification": "LEAK",
+   "reason": "“正解为ア” 用日语词 正解（中文应为 正确答案），属只用汉字的日式写法；项目 S86 已把 UI 的 正解 视为偏日并改为 答案。同兄弟 B40 用的是“正确答案是”。修复：zh 解析中 正解为/正解是 → 正确答案为（全库 112 个 zh 解析欄含 正解，需逐条看）",
+   "siblings": {
+    "ja": {
+     "path": "questions.2025r07-q074.correct.jp",
+     "text": "正解はア。デジタルフォレンジックス(digital forensics)とは、コンピュータに関わる犯罪や法的紛争が発生した際に、コンピュータやストレージに残された痕跡(ログ、削除された電子メールやファイルなど)を復元・解析し、改ざんされていない形で証拠を収集・保全する技術および一連の手続きを指す。裁判などで証拠として通用させるため、収集・保管の過程(証拠保全の連鎖)を厳密に管理する点が特徴。アは『削除された電子メールを復元するなどして証拠を収集し保全する』とあり、この定義に完…(+7)"
+    },
+    "zh": {
+     "path": "questions.2025r07-q074.correct.zh",
+     "text": "正解为ア。数字取证（digital forensics）是指：当发生与计算机相关的犯罪或法律纠纷时，对残留在计算机或存储介质中的痕迹（日志、被删除的电子邮件或文件等）进行恢复与分析，并以未被篡改的形式收集和保全证据的技术及一整套手续。其特点在于，为了使证据能在法庭等场合被采信，会严格管理收集与保管的全过程（证据保管链）。ア 写道“通过恢复已删除的电子邮件等方式收集并保全证据”，与该定义完全吻合。"
+    },
+    "en": {
+     "path": "questions.2025r07-q074.correct.en",
+     "text": "The correct answer is ア. Digital forensics refers to the technology and the series of procedures by which, when a crime or legal dispute involving computers occurs, the traces left on computers or storage media (logs, deleted emails or file…(+430)"
+    }
+   }
+  },
+  {
+   "id": "B40",
+   "lang": "zh",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2013h25h.json",
+   "path": "questions.2013h25h-q020.correct.zh",
+   "len": 403,
+   "classification": "CLEAN",
+   "reason": "纯中文",
+   "siblings": {
+    "ja": {
+     "path": "questions.2013h25h-q020.correct.jp",
+     "text": "正解はア「派遣労働者からの苦情に対する適切かつ迅速な処理」。労働者派遣のしくみでは、派遣労働者を雇用して賃金を支払うのは派遣元 (派遣会社) であり、派遣先 (派遣労働者を受け入れる企業) は雇用主ではなく、自社の職場で派遣労働者に対して指揮命令を行う立場である。この役割分担から、雇用主としての義務は原則として派遣元が負う。しかし苦情処理だけは事情が異なる。就業中に生じる苦情 (作業内容や作業環境、セクシュアルハラスメントなど) は派遣先の職場で起きる事柄であり、派遣先でなけ…(+229)"
+    },
+    "zh": {
+     "path": "questions.2013h25h-q020.correct.zh",
+     "text": "正确答案是 ア「对派遣劳动者提出的投诉进行恰当且迅速的处理」。在劳动者派遣的机制中，雇用派遣劳动者并支付工资的是派遣公司（派遣单位），而接受派遣的企业（接收派遣劳动者的企业）并不是雇主，只是在本公司的工作场所对派遣劳动者进行指挥命令的一方。基于这种角色分工，作为雇主的义务原则上由派遣公司承担。但唯独投诉处理不同。工作期间产生的投诉（涉及工作内容、工作环境、性骚扰等）是在接受派遣的企业的工作场所发生的事情，只有接受派遣的企业才能核实事实并采取改善现场的措施。因此《劳动者派遣法》…(+163)"
+    },
+    "en": {
+     "path": "questions.2013h25h-q020.correct.en",
+     "text": "The correct answer is ア, “Appropriate and prompt handling of complaints from dispatched workers”. Under the worker dispatch arrangement, the party that employs dispatched workers and pays their wages is the dispatching agency (the staffing …(+1284)"
+    }
+   }
+  },
+  {
+   "id": "B41",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-13-34-u07.json",
+   "path": "pairs[0].rows[0].a_en",
+   "len": 56,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "pairs[0].rows[0].a_jp",
+     "text": "混み具合 (平均の待ち時間や列の長さ) の見積もり"
+    },
+    "zh": {
+     "path": "pairs[0].rows[0].a_zh",
+     "text": "对拥挤程度（平均等待时间和队列长度）的估算"
+    },
+    "en": {
+     "path": "pairs[0].rows[0].a_en",
+     "text": "An estimate of congestion (average wait and line length)"
+    }
+   }
+  },
+  {
+   "id": "B42",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-23-61-u01.json",
+   "path": "terms[2].detail_en",
+   "len": 322,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "terms[2].detail_jp",
+     "text": "データだけでなく、それを保存した媒体や書類、処理する機器やソフトウェアも守る対象として扱う。情報資産を傷つけるもとになる要因を**脅威**と呼び、情報セキュリティは情報資産を脅威から守る取組みといえる。"
+    },
+    "zh": {
+     "path": "terms[2].detail_zh",
+     "text": "不只是数据，保存数据的介质和文件、处理数据的设备和软件也都作为保护对象。可能伤害信息资产的根源因素称为**威胁**，信息安全可以说就是保护信息资产免受威胁的工作。"
+    },
+    "en": {
+     "path": "terms[2].detail_en",
+     "text": "Not only the data but also the media and documents that store it and the equipment and software that process it are treated as things to protect. A factor that can lead to harm to information assets is called a **threat**, so information se…(+82)"
+    }
+   }
+  },
+  {
+   "id": "B43",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/strategy-03-09-u05.json",
+   "path": "overview_rows[2].one_line_en",
+   "len": 57,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "overview_rows[2].one_line_jp",
+     "text": "製品ごとの差がなくなり価格で選ばれるようになること"
+    },
+    "zh": {
+     "path": "overview_rows[2].one_line_zh",
+     "text": "产品之间的差别消失，顾客按价格挑选"
+    },
+    "en": {
+     "path": "overview_rows[2].one_line_en",
+     "text": "Products become indistinguishable and are chosen on price"
+    }
+   }
+  },
+  {
+   "id": "B44",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-23-62-u02.json",
+   "path": "overview_rows[2].extra_en[0]",
+   "len": 14,
+   "classification": "CLEAN",
+   "reason": "纯英语（短）",
+   "siblings": {
+    "ja": {
+     "path": "overview_rows[2].extra_jp[0]",
+     "text": "そのまま残る"
+    },
+    "zh": {
+     "path": "overview_rows[2].extra_zh[0]",
+     "text": "原样保留"
+    },
+    "en": {
+     "path": "overview_rows[2].extra_en[0]",
+     "text": "Stays as it is"
+    }
+   }
+  },
+  {
+   "id": "B45",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/strategy-05-14-u08.json",
+   "path": "terms[0].fig.data.cols[0].en",
+   "len": 12,
+   "classification": "CLEAN",
+   "reason": "纯英语（短）",
+   "siblings": {
+    "ja": {
+     "path": "terms[0].fig.data.cols[0].jp",
+     "text": "入力の形式"
+    },
+    "zh": {
+     "path": "terms[0].fig.data.cols[0].zh",
+     "text": "输入形式"
+    },
+    "en": {
+     "path": "terms[0].fig.data.cols[0].en",
+     "text": "Input format"
+    }
+   }
+  },
+  {
+   "id": "B46",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/strategy-03-10-u06.json",
+   "path": "terms[1].fig.steps[1].caption_en",
+   "len": 102,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "terms[1].fig.steps[1].caption_jp",
+     "text": "同じ期間に、利用者を無作為に 2 組に分け、組ごとに別の案を見せる。"
+    },
+    "zh": {
+     "path": "terms[1].fig.steps[1].caption_zh",
+     "text": "在同一时期内，把用户随机分成两组，每组看到不同的方案。"
+    },
+    "en": {
+     "path": "terms[1].fig.steps[1].caption_en",
+     "text": "During the same period, split users at random into two groups and show each group a different version."
+    }
+   }
+  },
+  {
+   "id": "B47",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-13-34-u06.json",
+   "path": "terms[2].points[1].text_en",
+   "len": 162,
+   "classification": "CLEAN",
+   "reason": "纯英语，[[jp:]] 合规",
+   "siblings": {
+    "ja": {
+     "path": "terms[2].points[1].text_jp",
+     "text": "どの 2 つの頂点も 1 本ずつの **辺** で結ぶと、頂点が n 個のとき辺は n(n−1)/2 本になる。例えば頂点 5 個なら辺は 10 本である。"
+    },
+    "zh": {
+     "path": "terms[2].points[1].text_zh",
+     "text": "若任意两个顶点[[jp:頂点]]之间都用一条**边**[[jp:辺]]相连，顶点有 n 个时，边共有 n(n−1)/2 条。例如顶点为 5 个时，边为 10 条。"
+    },
+    "en": {
+     "path": "terms[2].points[1].text_en",
+     "text": "If every pair of vertices [[jp:頂点]] is joined by exactly one **edge** [[jp:辺]], a graph with n vertices has n(n−1)/2 edges. For example, 5 vertices give 10 edges."
+    }
+   }
+  },
+  {
+   "id": "B48",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-23-63-u01.json",
+   "path": "overview_rows[4].one_line_en",
+   "len": 147,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "overview_rows[4].one_line_jp",
+     "text": "組織の内部で起きる不正を防ぐ考え方と対策を、情報処理推進機構 (IPA) がまとめた指針"
+    },
+    "zh": {
+     "path": "overview_rows[4].one_line_zh",
+     "text": "由信息处理推进机构（IPA）整理的、防范组织内部违规的思路与措施的指南"
+    },
+    "en": {
+     "path": "overview_rows[4].one_line_en",
+     "text": "Guidance from Japan's Information-technology Promotion Agency (IPA) on the principles and measures for preventing misconduct inside an organization"
+    }
+   }
+  },
+  {
+   "id": "B49",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/technology-19-51-u02.json",
+   "path": "terms[2].fig.data.rows[0].cells[2].en",
+   "len": 29,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "terms[2].fig.data.rows[0].cells[2].jp",
+     "text": "短く素早く払って離す"
+    },
+    "zh": {
+     "path": "terms[2].fig.data.rows[0].cells[2].zh",
+     "text": "短促快速地一划即离开"
+    },
+    "en": {
+     "path": "terms[2].fig.data.rows[0].cells[2].en",
+     "text": "Short, quick brush, then lift"
+    }
+   }
+  },
+  {
+   "id": "B50",
+   "lang": "en",
+   "source": "textbook-units",
+   "file": "data/ip/textbook/units/strategy-01-02-u13.json",
+   "path": "terms[4].detail_en",
+   "len": 264,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "terms[4].detail_jp",
+     "text": "来店客数や機械の故障のように、毎回の値が揺れる量を表すのに向く。値ごとの起こりやすさを並べたものを確率分布と呼び、そこから平均的な値である期待値が求まる。"
+    },
+    "zh": {
+     "path": "terms[4].detail_zh",
+     "text": "它适合表示到店人数、机器故障这类每次取值都有波动的量。把每个值出现的可能性排列出来，就是概率分布，由此可以求出平均意义上的值，即期望值。"
+    },
+    "en": {
+     "path": "terms[4].detail_en",
+     "text": "It suits quantities that vary from one occasion to the next, such as customer numbers or machine failures. Listing how likely each value is gives a probability distribution, and from that you can work out the probability-weighted average ca…(+24)"
+    }
+   }
+  },
+  {
+   "id": "B51",
+   "lang": "en",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2023r05.json",
+   "path": "questions.2023r05-q066.choices.エ.en",
+   "len": 90,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2023r05-q066.choices_jp.エ",
+     "text": "複数の表を, 互いに関係付ける列をキーとして, 一つの表にすること"
+    },
+    "zh": {
+     "path": "questions.2023r05-q066.choices.エ.zh",
+     "text": "以相互关联的列作为键，将多个表合并成一个表。"
+    },
+    "en": {
+     "path": "questions.2023r05-q066.choices.エ.en",
+     "text": "Combining multiple tables into a single table, using the columns that relate them as keys."
+    }
+   }
+  },
+  {
+   "id": "B52",
+   "lang": "en",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2013h25h.json",
+   "path": "questions.2013h25h-q025.choices.ウ.en",
+   "len": 50,
+   "classification": "CLEAN",
+   "reason": "纯英语（法律正式英文名）",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2013h25h-q025.choices_jp.ウ",
+     "text": "不正アクセス行為の禁止等に関する法律"
+    },
+    "zh": {
+     "path": "questions.2013h25h-q025.choices.ウ.zh",
+     "text": "禁止非法访问行为等相关法律"
+    },
+    "en": {
+     "path": "questions.2013h25h-q025.choices.ウ.en",
+     "text": "Act on Prohibition of Unauthorized Computer Access"
+    }
+   }
+  },
+  {
+   "id": "B53",
+   "lang": "en",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2023r05.json",
+   "path": "questions.2023r05-q072.choices.エ.en",
+   "len": 178,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2023r05-q072.choices_jp.エ",
+     "text": "リスクの発生確率やリスクが発生したときの損害が小さいと考えられる場合に,リスクを認識した上で特に対策を講じず, そのリスクを受け入れること"
+    },
+    "zh": {
+     "path": "questions.2023r05-q072.choices.エ.zh",
+     "text": "当认为风险的发生概率或风险发生时的损失较小时，在认识到该风险的前提下不特别采取对策，而是接受该风险。"
+    },
+    "en": {
+     "path": "questions.2023r05-q072.choices.エ.en",
+     "text": "When the probability of a risk occurring or the damage when it occurs is considered small, accepting the risk after recognizing it, without taking any particular countermeasures."
+    }
+   }
+  },
+  {
+   "id": "B54",
+   "lang": "en",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2021r03.json",
+   "path": "questions.2021r03-q029.choices.ア.en",
+   "len": 33,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2021r03-q029.choices_jp.ア",
+     "text": "（売上高）－（売上原価）"
+    },
+    "zh": {
+     "path": "questions.2021r03-q029.choices.ア.zh",
+     "text": "（销售收入）－（销售成本）"
+    },
+    "en": {
+     "path": "questions.2021r03-q029.choices.ア.en",
+     "text": "(Sales revenue) − (Cost of sales)"
+    }
+   }
+  },
+  {
+   "id": "B55",
+   "lang": "en",
+   "source": "quiz-translations",
+   "file": "data/ip/quiz/translations/2016h28h.json",
+   "path": "questions.2016h28h-q074.choices.イ.en",
+   "len": 3,
+   "classification": "CLEAN",
+   "reason": "WEP，语言中立（uninformative）",
+   "siblings": {
+    "ja": {
+     "path": "data/ip/quiz/questions.json#2016h28h-q074.choices_jp.イ",
+     "text": "WEP"
+    },
+    "zh": {
+     "path": "questions.2016h28h-q074.choices.イ.zh",
+     "text": "WEP"
+    },
+    "en": {
+     "path": "questions.2016h28h-q074.choices.イ.en",
+     "text": "WEP"
+    }
+   }
+  },
+  {
+   "id": "B56",
+   "lang": "en",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2013h25h.json",
+   "path": "questions.2013h25h-q065.correct.en",
+   "len": 1020,
+   "classification": "CLEAN",
+   "reason": "纯英语；选项记号 エ 为惯例",
+   "siblings": {
+    "ja": {
+     "path": "questions.2013h25h-q065.correct.jp",
+     "text": "正解はエ。プルダウンメニュー (ドロップダウンメニューともいう) は、ふだんはタイトル (見出し) の部分だけが表示されていて、そこをクリックすると選択項目の一覧が下方向へカーテンを引き下ろすように展開され、表示された一覧の中から一つを選ぶと、選んだ項目がタイトル部分に表示されて一覧は閉じる、という GUI 部品である。エはこの動作をそのまま述べているので適切である。この部品の特徴は二つある。第一に、選ぶときだけ一覧を開くので、項目数が多くても画面上の占有面積が小さくて済む …(+142)"
+    },
+    "zh": {
+     "path": "questions.2013h25h-q065.correct.zh",
+     "text": "正确答案是 エ。下拉菜单（pull-down menu，也称为 drop-down menu）是这样一种 GUI 控件：平时只显示标题（标题栏）部分，点击该处后，选项列表就会像拉下窗帘一样向下展开；从展开的列表中选择一项后，所选项目会显示在标题部分，列表随之收起。エ 正是原样描述了这一动作，因此是恰当的。这种控件有两个特点。第一，只有在选择时才展开列表，所以即使项目数量很多，在画面上占用的面积也很小（节省空间）。第二，只能从列表中选出其中一个，属于互斥式的选择。它用于像选择都…(+81)"
+    },
+    "en": {
+     "path": "questions.2013h25h-q065.correct.en",
+     "text": "The correct answer is エ. A pull-down menu (also called a drop-down menu) is a GUI component in which normally only the title (heading) part is displayed; when you click it, the list of choices unfolds downward like a curtain being drawn dow…(+780)"
+    }
+   }
+  },
+  {
+   "id": "B57",
+   "lang": "en",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2023r05.json",
+   "path": "questions.2023r05-q061.points[0].en",
+   "len": 173,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2023r05-q061.points[0].jp",
+     "text": "セキュリティバイデザイン＝企画・設計という上流工程から情報セキュリティを作り込む基本原則（IoT を含むシステム設計の考え方）。"
+    },
+    "zh": {
+     "path": "questions.2023r05-q061.points[0].zh",
+     "text": "安全内建（Security by Design）＝从规划、设计这一上游工序起就把信息安全构建进去的基本原则（包括 IoT 在内的系统设计理念）。"
+    },
+    "en": {
+     "path": "questions.2023r05-q061.points[0].en",
+     "text": "Security by Design = the basic principle of building information security in from the upstream processes of planning and design (a system-design approach that includes IoT)."
+    }
+   }
+  },
+  {
+   "id": "B58",
+   "lang": "en",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2012h24h.json",
+   "path": "questions.2012h24h-q024.distractors.エ.en",
+   "len": 482,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2012h24h-q024.distractors.エ.jp",
+     "text": "「品質に関する活動を手順化・文書化・記録化することによって、品質の保証と顧客満足の向上を図る」のは、ISO 9001 に代表される品質マネジメントシステム (QMS) の説明である。決めたとおりに仕事が行われたことを文書と記録で示し、品質を保証する仕組みづくりが目的で、統計的にばらつきを削減する活動そのものではない。したがってシックスシグマの説明としては誤り。"
+    },
+    "zh": {
+     "path": "questions.2012h24h-q024.distractors.エ.zh",
+     "text": "「通过将质量相关活动加以程序化、文档化、记录化，谋求质量保证和顾客满意度的提升」说的是以 ISO 9001 为代表的质量管理体系（QMS）。它的目的是建立一套机制，用文件和记录表明工作确实按规定执行，从而保证质量，而不是用统计方法削减波动的活动本身。因此作为六西格玛的说明是错误的。"
+    },
+    "en": {
+     "path": "questions.2012h24h-q024.distractors.エ.en",
+     "text": "“By turning quality-related activities into defined procedures, documents, and records, achieve quality assurance and improved customer satisfaction” describes a quality management system (QMS), represented by ISO 9001. Its purpose is to bu…(+242)"
+    }
+   }
+  },
+  {
+   "id": "B59",
+   "lang": "en",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2023r05.json",
+   "path": "questions.2023r05-q057.distractors.イ.en",
+   "len": 223,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2023r05-q057.distractors.イ.jp",
+     "text": "通信データの暗号化は, 通信路上のデータの機密性を守る対策であって, 機器内部の解析を困難にするものではないため, 耐タンパ性の対策には当たらない。"
+    },
+    "zh": {
+     "path": "questions.2023r05-q057.distractors.イ.zh",
+     "text": "对通信数据进行加密，是保护通信路径上数据机密性的对策，并不能使设备内部的分析变得困难，因此不属于防篡改性的对策。"
+    },
+    "en": {
+     "path": "questions.2023r05-q057.distractors.イ.en",
+     "text": "Encrypting communication data is a measure to protect the confidentiality of data on the communication path; it does not make analysis of the device’s interior difficult, so it does not count as a tamper-resistance measure."
+    }
+   }
+  },
+  {
+   "id": "B60",
+   "lang": "en",
+   "source": "quiz-explanations",
+   "file": "data/ip/quiz/explanations/2013h25a.json",
+   "path": "questions.2013h25a-q016.distractors.ウ.en",
+   "len": 279,
+   "classification": "CLEAN",
+   "reason": "纯英语",
+   "siblings": {
+    "ja": {
+     "path": "questions.2013h25a-q016.distractors.ウ.jp",
+     "text": "「a，c，d」は b カーナビゲーション装置を除いていますが、カーナビは測位計算と経路探索という特定機能のために自動車に組み込まれた専用コンピュータであり、組込みシステムの代表例です。除外する理由がありません。"
+    },
+    "zh": {
+     "path": "questions.2013h25a-q016.distractors.ウ.zh",
+     "text": "「a，c，d」把 b 车载导航装置排除在外，但车载导航是为定位计算和路径搜索这些特定功能而装入汽车的专用计算机，正是嵌入式系统的代表例子，没有理由把它排除。"
+    },
+    "en": {
+     "path": "questions.2013h25a-q016.distractors.ウ.en",
+     "text": "“a, c, d” excludes b, the car navigation device, but a car navigation unit is a dedicated computer built into the automobile for the specific functions of positioning calculation and route search, making it a prime example of an embedded sy…(+39)"
+    }
+   }
+  }
+ ],
+ "taskC": [
+  {
+   "id": "C01",
+   "lang": "zh",
+   "file": "data/ip/textbook/units/technology-18-49-u03.json",
+   "path": "terms[0].hook_zh",
+   "chars": "テン",
+   "classification": "CONVENTION-GAP",
+   "reason": "部分标记：[[jp:テンキー]] 有标记，但同句的 “テン” 未标记",
+   "siblings": {
+    "ja": {
+     "path": "terms[0].hook_jp",
+     "text": "テンキーの「テン」は英語の ten (10)。0〜9 の 10 個の数字が集まった区画、と名前から思い出せる。"
+    },
+    "zh": {
+     "path": "terms[0].hook_zh",
+     "text": "日语叫法 [[jp:テンキー]] 里的“テン”就是英语的 ten（10），从名字就能想到这是 0〜9 共 10 个数字聚在一起的区域。"
+    },
+    "en": {
+     "path": "terms[0].hook_en",
+     "text": "The Japanese name [[jp:テンキー]] literally means \"ten key\", a reminder that it is the block holding the ten digits 0 to 9."
+    }
+   }
+  },
+  {
+   "id": "C02",
+   "lang": "zh",
+   "file": "data/ip/textbook/units/strategy-05-16-u03.json",
+   "path": "terms[3].hook_zh",
+   "chars": "チャージ",
+   "classification": "CONVENTION-GAP",
+   "reason": "讲 チャージ 语源，未标记",
+   "siblings": {
+    "ja": {
+     "path": "terms[3].hook_jp",
+     "text": "チャージは英語の charge(充電)。前払い型では、スマートフォンの電池のように先に満たしてから使う。"
+    },
+    "zh": {
+     "path": "terms[3].hook_zh",
+     "text": "日语中表示“充值”的“チャージ”来自英语 charge（充电）。预付型就像智能手机的电池一样，先充满再使用。"
+    },
+    "en": {
+     "path": "terms[3].hook_en",
+     "text": "The Japanese word for topping up, チャージ, comes from \"charge\", as in charging a battery: with the prepaid type, you fill it first, like a phone battery, and then use it."
+    }
+   }
+  },
+  {
+   "id": "C03",
+   "lang": "zh",
+   "file": "data/ip/textbook/units/strategy-05-14-u01.json",
+   "path": "terms[6].hook_zh",
+   "chars": "レジセルフ",
+   "classification": "CONVENTION-GAP",
+   "reason": "讲 レジ/セルフレジ，未标记；en 兄弟改用罗马字 reji，未出现日文",
+   "siblings": {
+    "ja": {
+     "path": "terms[6].hook_jp",
+     "text": "英語では self-checkout と呼ぶ。「レジ」はレジスター (register) を略した語である。"
+    },
+    "zh": {
+     "path": "terms[6].hook_zh",
+     "text": "日语的“レジ”是 register（收银机）的简称，“セルフレジ”就是“自助的收银机”，英语叫 self-checkout。"
+    },
+    "en": {
+     "path": "terms[6].hook_en",
+     "text": "The Japanese name pairs self with reji, short for register, so it literally reads as a self register."
+    }
+   }
+  },
+  {
+   "id": "C04",
+   "lang": "zh",
+   "file": "data/ip/textbook/units/technology-23-62-u05.json",
+   "path": "terms[1].hook_zh",
+   "chars": "シーサト",
+   "classification": "CONVENTION-GAP",
+   "reason": "日语读法 シーサート，未标记",
+   "siblings": {
+    "ja": {
+     "path": "terms[1].hook_jp",
+     "text": "読みはシーサート。後半の IRT は Incident Response Team の頭文字で、名前の中に「インシデントに応答するチーム」という意味がそのまま入っている。"
+    },
+    "zh": {
+     "path": "terms[1].hook_zh",
+     "text": "日语读作“シーサート”。后半部分 IRT 是 Incident Response Team 的首字母，名字本身就含有“响应事件的团队”这层意思。"
+    },
+    "en": {
+     "path": "terms[1].hook_en",
+     "text": "In Japanese it is read \"see-sert\". The IRT at the end stands for Incident Response Team, so the name itself says \"the team that responds to incidents\"."
+    }
+   }
+  },
+  {
+   "id": "C05",
+   "lang": "zh",
+   "file": "data/ip/textbook/units/strategy-05-14-u03.json",
+   "path": "terms[2].hook_zh",
+   "chars": "ツイン",
+   "classification": "CONVENTION-GAP",
+   "reason": "讲 ツイン，未标记；en 兄弟完全不提日语",
+   "siblings": {
+    "ja": {
+     "path": "terms[2].hook_jp",
+     "text": "ツインは英語で双子のこと。現実の片割れがデジタルの中にもう一人いる、と字面から思い浮かべる。"
+    },
+    "zh": {
+     "path": "terms[2].hook_zh",
+     "text": "“ツイン”就是英语 twin，意思是双胞胎。从字面想象：现实中那个的另一半，在数字世界里还有一个。"
+    },
+    "en": {
+     "path": "terms[2].hook_en",
+     "text": "Twin means one of a matched pair. Picture the name literally: the real object has a sibling living inside the digital world."
+    }
+   }
+  },
+  {
+   "id": "C06",
+   "lang": "en",
+   "file": "data/ip/textbook/units/strategy-01-03-u04.json",
+   "path": "terms[1].hook_en",
+   "chars": "固定",
+   "classification": "CONVENTION-GAP",
+   "reason": "“Fixed” (固定) 只是释义加注原语，未标记；另 ja hook 本身只是定义改述（D-195 §6 不建议），属内容质量问题",
+   "siblings": {
+    "ja": {
+     "path": "terms[1].hook_jp",
+     "text": "「固定」はその場に据えて動かさないこと。"
+    },
+    "zh": {
+     "path": "terms[1].hook_zh",
+     "text": "“固定”就是放在原处、不去移动。"
+    },
+    "en": {
+     "path": "terms[1].hook_en",
+     "text": "“Fixed” (固定) means set in place and not moved."
+    }
+   }
+  },
+  {
+   "id": "C07",
+   "lang": "en",
+   "file": "data/ip/textbook/units/technology-14-37-u03.json",
+   "path": "terms[2].hook_en",
+   "chars": "函数",
+   "classification": "CONVENTION-GAP",
+   "reason": "拆字 函数/函，未标记（函数 在中文里也成立，但这里讲的是日语旧写法）",
+   "siblings": {
+    "ja": {
+     "path": "terms[2].hook_jp",
+     "text": "もとは「函数」と書き、「函」は箱の意味である。値を入れると結果が出てくる箱と覚えられる。"
+    },
+    "zh": {
+     "path": "terms[2].hook_zh",
+     "text": "日语里它原本写作“函数”，“函”是匣子的意思。可以把它记成“放进值，就会出来结果的匣子”。"
+    },
+    "en": {
+     "path": "terms[2].hook_en",
+     "text": "In Japanese it was once written 函数, and 函 means box. Picture a box that gives back a result when you put a value in."
+    }
+   }
+  },
+  {
+   "id": "C08",
+   "lang": "en",
+   "file": "data/ip/textbook/units/strategy-02-04-u01.json",
+   "path": "terms[0].hook_en",
+   "chars": "著す",
+   "classification": "CONVENTION-GAP",
+   "reason": "拆字 著/著す，未标记",
+   "siblings": {
+    "ja": {
+     "path": "terms[0].hook_jp",
+     "text": "「著」は「著す (あらわす)」の著で、書き表すこと。作品を表したその瞬間に権利が付く、と字から覚える。"
+    },
+    "zh": {
+     "path": "terms[0].hook_zh",
+     "text": "日文“著”取自“著す（あらわす）”，意为写出、表达出来。从字面记：作品一表达出来，权利就随之产生。"
+    },
+    "en": {
+     "path": "terms[0].hook_en",
+     "text": "The character 著 comes from arawasu (著す), meaning to write down or express. Remember it from the character: the right attaches the instant a work is expressed."
+    }
+   }
+  },
+  {
+   "id": "C09",
+   "lang": "en",
+   "file": "data/ip/textbook/units/technology-23-61-u01.json",
+   "path": "terms[3].hook_en",
+   "chars": "漏",
+   "classification": "CONVENTION-GAP",
+   "reason": "拆字 漏，未标记",
+   "siblings": {
+    "ja": {
+     "path": "terms[3].hook_jp",
+     "text": "「漏」は器から水がもれる字。中身が外へにじみ出るイメージで覚える。"
+    },
+    "zh": {
+     "path": "terms[3].hook_zh",
+     "text": "“漏”字是水从容器里漏出来。可以想象里面的东西向外渗出来记住它。"
+    },
+    "en": {
+     "path": "terms[3].hook_en",
+     "text": "The kanji 漏 depicts water dripping out of a container. Remember it as the contents seeping outside."
+    }
+   }
+  },
+  {
+   "id": "C10",
+   "lang": "en",
+   "file": "data/ip/textbook/units/technology-15-40-u01.json",
+   "path": "terms[0].hook_en",
+   "chars": "演",
+   "classification": "CONVENTION-GAP",
+   "reason": "拆字 演，未标记",
+   "siblings": {
+    "ja": {
+     "path": "terms[0].hook_jp",
+     "text": "「演」は演じるの演。台本にあたる命令を受け取って初めて舞台に立つ役者と結びつける。"
+    },
+    "zh": {
+     "path": "terms[0].hook_zh",
+     "text": "日文「演」是表演的「演」。可以联想到拿到剧本（指令）后才登台的演员。"
+    },
+    "en": {
+     "path": "terms[0].hook_en",
+     "text": "The kanji 演 means \"to perform\", as on a stage: picture an actor who goes on only after receiving the script, which here is the instruction."
+    }
+   }
+  }
+ ],
+ "counts": {
+  "taskA": {
+   "OK-OTHER": 11,
+   "OK-CONVENTION": 6,
+   "OK-CONVENTION*": 6,
+   "OK-OTHER[punct]": 6,
+   "LEAK": 1
+  },
+  "taskB": {
+   "CLEAN": 58,
+   "UNSURE": 1,
+   "LEAK": 1
+  },
+  "taskC": {
+   "CONVENTION-GAP": 10
+  }
+ }
+}
