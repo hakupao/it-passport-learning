@@ -1,7 +1,13 @@
 #!/bin/sh
 # Vercel "Ignored Build Step" (vercel.json ignoreCommand). exit 0 = skip build, exit 1 = build.
-# Skips only when every file changed since the last deployed commit is under
+# Skips (1) any branch other than main, (2) on main, only when every file changed since the last deployed commit is under
 # docs/, evidence/, failures/ or a repo-root *.md (D-212). Any doubt => build.
+# D-217 H0-2: only main deploys on Vercel. Other branches (the Cloudflare migration
+# branch hosting-cf) would each build a preview that spends quota and adds a crawlable host.
+ref="${VERCEL_GIT_COMMIT_REF:-}"
+if [ -n "$ref" ] && [ "$ref" != "main" ]; then
+  echo "branch $ref is not main -> skip build"; exit 0
+fi
 base="${VERCEL_GIT_PREVIOUS_SHA:-}"
 target="${VERCEL_IGNORE_TARGET:-HEAD}"
 [ -n "$base" ] || { echo "no previous sha -> build"; exit 1; }
