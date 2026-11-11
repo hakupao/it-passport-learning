@@ -246,7 +246,7 @@ describe("TodayPage — weak topics, area rates, terms", () => {
     const html = render("zh");
     const table = /<table[^>]*data-weak=""[^>]*>[\s\S]*?<\/table>/.exec(html)![0];
     const head = textOf(/<thead>[\s\S]*?<\/thead>/.exec(table)![0]);
-    expect(head).toBe("领域 大类 頻出度 正答率 操作"); // the last header is sr-only
+    expect(head).toBe("领域 大类 頻出度 正确率 操作"); // the last header is sr-only
     const rows = [...table.matchAll(/<tr[^>]*data-weak-row="([^"]+)"[^>]*>([\s\S]*?)<\/tr>/g)];
     const weak = weakTopicRows(r, index);
     expect(weak.map((w) => w.topicId).sort()).toEqual([index.topics[0]!.id, index.topics[1]!.id].sort());
