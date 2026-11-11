@@ -66,10 +66,20 @@ describe("middleware — routing", () => {
 });
 
 describe("config", () => {
-  it("matcher excludes _next/static, _next/image, favicon.ico, robots.txt, quiz-figures/", () => {
+  it("matcher excludes _next/static, _next/image, favicon.ico, robots.txt, quiz-figures/, data/", () => {
     expect(config.matcher).toBe(
-      "/((?!_next/static|_next/image|favicon.ico|robots.txt|quiz-figures/).*)",
+      "/((?!_next/static|_next/image|favicon.ico|robots.txt|quiz-figures/|data/).*)",
     );
+  });
+
+  it("matcher boundary: skips /data/* (the static JSON files, D-217 H1-2) but not look-alikes", () => {
+    const re = new RegExp(`^${config.matcher}$`);
+    // excluded → served as the build-time file, no /ja/data/… redirect
+    expect(re.test("/data/quiz/index.json")).toBe(false);
+    expect(re.test("/data/quiz/2026r08.zh.json")).toBe(false);
+    // anchored by the slash: an unrelated path still goes through the middleware
+    expect(re.test("/database")).toBe(true);
+    expect(re.test("/ja/data/quiz/index.json")).toBe(true);
   });
 
   it("matcher boundary: skips /robots.txt at the root (D-217)", () => {

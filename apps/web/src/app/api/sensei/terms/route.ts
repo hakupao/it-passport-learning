@@ -21,14 +21,13 @@ import { hasLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { isValidTermId } from "@/lib/glossary/termId";
+import { SENSEI_MAX_IDS as MAX_IDS } from "@/lib/staticData/shards";
 import type { SenseiTermContext } from "@/lib/sensei/anchors";
 import { termContext } from "@/lib/sensei/textbookAnchors";
 import { loadReaderIndex } from "@/lib/textbook/reader";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const MAX_IDS = 8;
 
 const CACHE_OK = "public, s-maxage=86400, stale-while-revalidate=604800";
 
