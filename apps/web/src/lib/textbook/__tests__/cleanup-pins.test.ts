@@ -1,6 +1,6 @@
 // Stage 7 Phase 3c (D-215, S153) — direct edits outside the merge path. A later merge --write of these units
 // re-assembles titles / the v1 figure from manifest.v1 and would silently revert them: this test makes that red.
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -51,5 +51,20 @@ describe("D-215 direct edits stay in place", () => {
       expect(ch, id).toEqual(a.after);
       for (const q of a.removed) expect(ch, `${id} ${q}`).not.toContain(q);
     }
+  });
+
+  it("C18: no unit's title_zh / unit_summary_zh uses ASCII , : ; ( ) ! ? (full-width is the corpus norm), in units and unit_index.json", () => {
+    const ascii = /[,:;()!?]/;
+    const bad: string[] = [];
+    for (const f of readdirSync(path.join(TB, "units")).filter((x) => x.endsWith(".json"))) {
+      const u = JSON.parse(readFileSync(path.join(TB, "units", f), "utf-8"));
+      for (const k of ["title_zh", "unit_summary_zh"]) if (ascii.test(u[k])) bad.push(`${f} ${k}: ${u[k]}`);
+    }
+    for (const iu of index().topics.flatMap((t) => t.units)) if (ascii.test(iu.title_zh)) bad.push(`index ${iu.unit_id}: ${iu.title_zh}`);
+    expect(bad).toEqual([]);
+  });
+
+  it("C18 technology-23-62-u01: unit_summary_zh no longer calls 手続き 手续", () => {
+    expect(unit("technology-23-62-u01").unit_summary_zh).not.toContain("手续");
   });
 });
