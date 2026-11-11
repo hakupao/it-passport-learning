@@ -1,7 +1,8 @@
 // D-181 Phase C (§0-9) — the /sensei free question. Each question starts a new
 // thread, anchorId `free:<epoch ms in base 36>`, title = the question (shortened).
 // The anchor is fixed by the thread's FIRST question: matchTerms over the page's
-// light index → every sense of those terms from GET /api/sensei/terms → freeAnchor. Reopening the
+// light index → every sense of those terms from the static sensei term files (D-217 H1-3; the
+// former GET /api/sensei/terms) → freeAnchor. Reopening the
 // thread on /sensei derives it again from the stored first user message, so the
 // same question gives a byte-equal anchor (prompt cache, Review Focus 4). A failed
 // term fetch rejects: the caller shows a notice and sends nothing, rather than
@@ -12,6 +13,8 @@ import type { UIMessage } from "ai";
 
 import type { AppLocale } from "@/i18n/routing";
 import type { TermIndexEntry } from "@/lib/glossary/dictionary";
+import { staticData, type StaticData } from "@/lib/staticData/client";
+import { senseiTermIds } from "@/lib/staticData/shards";
 
 import { freeAnchor, type SenseiTermContext } from "./anchors";
 import { matchTerms } from "./termMatch";
@@ -46,15 +49,17 @@ export async function deriveFreeAnchor(
   return freeAnchor(terms, locale);
 }
 
-/** GET /api/sensei/terms; throws on a non-2xx status or an unexpected body. */
+/**
+ * The term contexts of `ids` from the static sensei term files (senseiTermIds: request order,
+ * repeats once, ids not termId-shaped skipped). Throws where the former API answered 400 (no ids,
+ * more than SENSEI_MAX_IDS) and when a file fails to load.
+ */
 export async function fetchTermContexts(
   ids: string[],
   locale: AppLocale,
-  fetchImpl: (url: string) => Promise<Response> = (url) => fetch(url),
+  data: Pick<StaticData, "fetchSenseiTermContexts"> = staticData,
 ): Promise<SenseiTermContext[]> {
-  const res = await fetchImpl(`/api/sensei/terms?${new URLSearchParams({ ids: ids.join(","), locale })}`);
-  if (!res.ok) throw new Error(`terms ${res.status}`);
-  const body = (await res.json()) as { terms?: unknown };
-  if (!Array.isArray(body?.terms)) throw new Error("terms: unexpected body");
-  return body.terms as SenseiTermContext[];
+  const picked = senseiTermIds(ids);
+  if (!picked) throw new Error(`terms: ${ids.length} ids refused`);
+  return data.fetchSenseiTermContexts(picked, locale);
 }

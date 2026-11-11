@@ -8,7 +8,9 @@
 //     localizedChoices / localizedExplanation / questionAnchor of toQuizQuestion(shard) are
 //     byte-identical to those of the loader question.
 //   - index / today / setup / term cards / units / sensei terms deep-equal their loaders.
-//   - GET /api/quiz/questions and GET /api/sensei/terms vs the shard helpers on samples (incl. 400s).
+//   - the review / free-question lookups (reviewIds + pickQuestions, senseiTermIds + pickSenseiTerms;
+//     they replaced GET /api/quiz/questions and GET /api/sensei/terms in H1-3) vs the loaders those
+//     routes read (loadQuestionsByIds, termContext over the dictionary) on samples, incl. the 400s.
 //   - allow-list: every file conforms to ./allowList, no FORBIDDEN_KEYS anywhere, no FORBIDDEN_TEXT.
 
 import { describe, expect, it } from "vitest";
@@ -20,11 +22,10 @@ import { GET as todayGET, generateStaticParams as todayParams } from "@/app/data
 import { GET as cardsGET, generateStaticParams as cardsParams } from "@/app/data/glossary/[file]/route";
 import { GET as unitsGET, generateStaticParams as unitsParams } from "@/app/data/textbook/[file]/route";
 import { GET as senseiGET, generateStaticParams as senseiParams } from "@/app/data/sensei/[file]/route";
-import { GET as questionsApiGET } from "@/app/api/quiz/questions/route";
-import { GET as termsApiGET } from "@/app/api/sensei/terms/route";
 import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
-import { loadChumonGroups, loadSetupIndex, loadTodayIndex } from "@/lib/practice/practiceReader";
+import { isValidTermId } from "@/lib/glossary/termId";
+import { loadChumonGroups, loadQuestionsByIds, loadSetupIndex, loadTodayIndex } from "@/lib/practice/practiceReader";
 import type { SearchParams } from "@/lib/practice/practiceSession";
 import { resolveSessionFrom } from "@/lib/practice/sessionFrom";
 import {
@@ -39,6 +40,8 @@ import {
   type QuizQuestion,
 } from "@/lib/quiz/quizReader";
 import { questionAnchor } from "@/lib/sensei/anchors";
+import { termContext } from "@/lib/sensei/textbookAnchors";
+import { loadReaderIndex } from "@/lib/textbook/reader";
 
 import {
   allKeys,
@@ -140,10 +143,10 @@ const shardOf = async (examId: string, locale: StaticLocale) => (await files).ex
 const explOf = async (examId: string, chunk: number) => (await files).expl.get(`${examId}-${chunk}.json`)!.body;
 
 describe("static data — file families", () => {
-  it("file counts: 87 exam, 116 explanation, 3 today / cards / units, 48 sensei, 1 index", async () => {
+  it("file counts: 87 exam, 290 explanation, 3 today / cards / units, 48 sensei, 1 index", async () => {
     const f = await files;
     expect([f.exams.size, f.expl.size, f.today.size, f.cards.size, f.units.size, f.sensei.size, f.index.size]).toEqual([
-      87, 116, 3, 3, 3, 48, 1,
+      87, 290, 3, 3, 3, 48, 1,
     ]);
   });
 
@@ -286,10 +289,7 @@ describe("static data — indexes vs their loaders", () => {
   });
 });
 
-describe("static data — the two read-only APIs vs the shard helpers", () => {
-  const termsApi = async (qs: string) => termsApiGET(new Request(`http://localhost/api/sensei/terms${qs}`));
-  const questionsApi = async (qs: string) => questionsApiGET(new Request(`http://localhost/api/quiz/questions${qs}`));
-
+describe("static data — the review / free-question lookups vs the loaders of the former APIs", () => {
   it("sensei: every dictionary term sits in exactly its shard, once per locale", async () => {
     const dict = await loadDictionary();
     for (const locale of STATIC_LOCALES) {
@@ -306,8 +306,11 @@ describe("static data — the two read-only APIs vs the shard helpers", () => {
     }
   });
 
-  it("sensei: GET /api/sensei/terms = pickSenseiTerms(senseiTermIds) on samples (order, repeats, unknown, invalid, 400s)", async () => {
-    const ids = (await loadDictionary()).entries.map((e) => e.id);
+  it("sensei: pickSenseiTerms(senseiTermIds) = termContext of each dictionary term (order, repeats, unknown, invalid, 400s)", async () => {
+    const [dict, readerIndex] = await Promise.all([loadDictionary(), loadReaderIndex()]);
+    const unitTitlesJp: Record<string, string> = {};
+    for (const u of readerIndex.topics.flatMap((t) => t.units ?? [])) unitTitlesJp[u.unit_id] = u.title_jp;
+    const ids = dict.entries.map((e) => e.id);
     const samples: string[][] = [];
     for (let i = 0; i < ids.length; i += 37) samples.push(ids.slice(i, i + 1 + (i % 8)));
     samples.push(
@@ -315,35 +318,32 @@ describe("static data — the two read-only APIs vs the shard helpers", () => {
       [ids[1]!, "t0000000000000000", "not-an-id", ids[2]!],
       ["", ids[9]!, ""],
       ids.slice(0, 8),
-      ids.slice(0, 9),
-      [],
-      [""],
     );
+    // the former API's 400s: 9 ids, no ids, only empty segments
+    for (const refused of [ids.slice(0, 9), [], [""]]) expect(senseiTermIds(refused.join(",").split(","))).toBeNull();
     let ok = 0;
-    let rejected = 0;
     for (const locale of STATIC_LOCALES) {
       const loaded = [...(await files).sensei.values()].map((f) => f.body).filter((f) => f.locale === locale);
       for (const sample of samples) {
-        const res = await termsApi(`?${new URLSearchParams({ ids: sample.join(","), locale })}`);
         const picked = senseiTermIds(sample.join(",").split(","));
-        if (res.status === 400) {
-          expect(picked, sample.join(",")).toBeNull();
-          rejected++;
-          continue;
-        }
-        ok++;
-        expect(res.status).toBe(200);
-        const body = (await res.json()) as { terms: unknown };
-        expect(picked).not.toBeNull();
+        expect(picked, sample.join(",")).not.toBeNull();
+        // the route's loop: valid, first occurrence, in the dictionary → termContext
+        const seen = new Set<string>();
+        const want = sample.flatMap((id) => {
+          if (!isValidTermId(id) || seen.has(id)) return [];
+          seen.add(id);
+          const entry = dict.byId.get(id);
+          return entry ? [termContext(entry, locale, unitTitlesJp)] : [];
+        });
         const needed = loaded.filter((f) => picked!.some((id) => senseiShardOf(id) === f.shard));
-        expect(pickSenseiTerms(picked!, needed), sample.join(",")).toEqual(body.terms);
+        expect(pickSenseiTerms(picked!, needed), sample.join(",")).toEqual(want);
+        ok++;
       }
     }
-    expect(rejected).toBe(3 * 3); // 9 ids, no ids, only empty segments
-    expect(ok).toBe((samples.length - 3) * 3);
+    expect(ok).toBe(samples.length * 3);
   });
 
-  it("quiz: GET /api/quiz/questions = pickQuestions(reviewIds) of the exam shards + explanation chunks (samples, 400s)", async () => {
+  it("quiz: pickQuestions(reviewIds) of the exam shards + explanation chunks = loadQuestionsByIds (samples, 400s)", async () => {
     const [index, base] = await Promise.all([loadQuizIndex(), loadBaseQuestions()]);
     const indexFile = (await files).index.get("index.json")!.body;
     const samples: [string, string[]][] = [];
@@ -355,28 +355,20 @@ describe("static data — the two read-only APIs vs the shard helpers", () => {
     const t1 = index.topics[1]!.topic_id;
     const in0 = base.filter((q) => q.topic_id === t0).map((q) => q.id);
     const in1 = base.filter((q) => q.topic_id === t1).map((q) => q.id);
-    samples.push(
-      [t0, [in0[1]!, in0[0]!, in0[1]!, in0[0]!, in0[1]!, in0[0]!]],
+    samples.push([t0, [in0[1]!, in0[0]!, in0[1]!, in0[0]!, in0[1]!, in0[0]!]]);
+    // the former API's 400s: 6 ids, another topic's id, a bad id, an unknown topic, no ids
+    const refused: [string, string[]][] = [
       [t0, in0.slice(0, 6)],
       [t0, [in0[0]!, in1[0]!]],
       [t0, ["bad"]],
       ["no-such-topic", [in0[0]!]],
       [t0, []],
-    );
-    let ok = 0;
-    let rejected = 0;
+    ];
+    for (const [topic, ids] of refused) expect(reviewIds(topic, ids.join(",").split(","), indexFile), topic).toBeNull();
     for (const [topic, ids] of samples) {
-      const res = await questionsApi(`?topic=${topic}&ids=${ids.join(",")}`);
       const accepted = reviewIds(topic, ids.join(",").split(","), indexFile);
-      if (res.status === 400) {
-        expect(accepted, `${topic} ${ids.join(",")}`).toBeNull();
-        rejected++;
-        continue;
-      }
-      ok++;
-      expect(res.status).toBe(200);
-      const { questions } = (await res.json()) as { questions: QuizQuestion[] };
-      expect(accepted).not.toBeNull();
+      expect(accepted, `${topic} ${ids.join(",")}`).toEqual([...new Set(ids)]);
+      const questions = await loadQuestionsByIds(accepted!);
       for (const locale of STATIC_LOCALES) {
         const shards = await Promise.all([...new Set(accepted!.map(examOfId))].map((e) => shardOf(e, locale)));
         const expl = await Promise.all(accepted!.map((id) => explOf(examOfId(id), explChunkOf(id))));
@@ -390,8 +382,6 @@ describe("static data — the two read-only APIs vs the shard helpers", () => {
         });
       }
     }
-    expect(rejected).toBe(5); // 6 ids, another topic's id, a bad id, an unknown topic, no ids
-    expect(ok).toBe(index.topics.length + 1); // every topic sample + the deduped repeat
   });
 });
 
@@ -418,7 +408,7 @@ describe("static data — allow-list", () => {
         checked++;
       }
     }
-    expect(checked).toBe(261);
+    expect(checked).toBe(435);
   });
 
   it("the walker itself flags an extra key, a forbidden nested key and a wrong locale's text", () => {

@@ -2,22 +2,23 @@
 // Every number comes from the learning record in the browser, so the server sends the today payload
 // without the dictionary (loadSetupIndex: topics, ★, question ids — topicTerms are not used here)
 // and RecordPage computes the rest. The topic-table sort lives in the URL (?sort=rate; anything else
-// = 頻出度). LearningRecordProvider is mounted here; the owner flag is read in the browser (useOwner,
-// H1-1). force-dynamic remains for searchParams (until H1-3/H1-4).
+// = 頻出度) and is read in the browser (RecordFromUrl, D-217 H1-3: the page depends on the locale
+// only; the Suspense fallback is the 頻出度 render, which before the record loads shows no number).
+// LearningRecordProvider is mounted here; the owner flag is read in the browser (useOwner, H1-1).
+// force-dynamic stays until H1-4.
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { RecordPage } from "@/components/record/RecordPage";
+import { RecordFromUrl, RecordPage } from "@/components/record/RecordPage";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { loadSetupIndex } from "@/lib/practice/practiceReader";
-import type { RecordSort } from "@/lib/record/recordModel";
 
 export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -26,15 +27,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t("title") };
 }
 
-export default async function RecordRoute({ params, searchParams }: Props): Promise<React.ReactElement> {
+export default async function RecordRoute({ params }: Props): Promise<React.ReactElement> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const sp = await searchParams;
-  const sort: RecordSort = (Array.isArray(sp.sort) ? sp.sort[0] : sp.sort) === "rate" ? "rate" : "stars";
   const index = await loadSetupIndex(locale);
   return (
     <LearningRecordProvider>
-      <RecordPage index={index} locale={locale} sort={sort} />
+      <Suspense fallback={<RecordPage index={index} locale={locale} sort="stars" />}>
+        <RecordFromUrl index={index} locale={locale} />
+      </Suspense>
     </LearningRecordProvider>
   );
 }

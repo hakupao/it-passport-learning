@@ -15,7 +15,7 @@
 // single-question page the test also opens the 「AI 先生に聞く」 panel and sends one question to the fake Anthropic API
 // (helpers/fakeAnthropic.ts), so the lazily loaded AI SDK and the rendered reply are
 // checked under the CSP too. On /sensei (Task C2) it sends one free question
-// naming a dictionary term (so /api/sensei/terms is fetched too) and waits for the
+// naming a dictionary term (so a static /data/sensei/ term file is fetched too) and waits for the
 // rendered reply.
 //
 // Base URL: prod canonical by default; `PLAYWRIGHT_BASE_URL` overrides it for a
@@ -104,7 +104,7 @@ for (const path of PAGES) {
       await page.getByTestId("sensei-free-send").click();
       await expect(page.getByRole("dialog").getByTestId("sensei-log")).toContainText(REPLY_MARK);
       expect(fake.requests).toHaveLength(1);
-      expect(JSON.stringify(fake.requests[0]!.body.system)).toContain("#### 1. ISO/IEC 27000"); // the term came from /api/sensei/terms
+      expect(JSON.stringify(fake.requests[0]!.body.system)).toContain("#### 1. ISO/IEC 27000"); // the term came from the static term file
     }
     if (fake && ask) {
       await page.getByTestId("ask-sensei").click();

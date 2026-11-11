@@ -15,7 +15,7 @@
 // JP text.
 //
 // termContext (Phase C, §0-9) is not an anchor: it is the per-term data that
-// GET /api/sensei/terms returns for the /sensei free question (./anchors freeAnchor
+// the /data/sensei/ term files hold for the /sensei free question (./anchors freeAnchor
 // renders it in the browser).
 
 import type { AppLocale } from "@/i18n/routing";
@@ -108,7 +108,7 @@ export function unitAnchor(unit: TextbookUnit, locale: AppLocale): string {
 }
 
 /**
- * A term for the free question (GET /api/sensei/terms): every sense in dictionary
+ * A term for the free question (the /data/sensei/ term files): every sense in dictionary
  * order, under its unit's JP title (`unitTitlesJp`; the unit id when absent), with the
  * JP definition (always), JP explanation and memory hook, and — zh / en — the UI-locale
  * ones; a blank field is left out (freeAnchor decides how much of it to show).

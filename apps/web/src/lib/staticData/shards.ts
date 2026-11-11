@@ -131,10 +131,16 @@ export interface SenseiTermsFile {
 
 // ---- file names ---------------------------------------------------------------
 
-/** Questions per explanation file: an exam's explanations reach 268 KB gzip in one file, 25 keep each ≤ 150 KB. */
-export const EXPL_CHUNK = 25;
+/**
+ * Questions per explanation file. An exam's explanations reach 268 KB gzip in one file. H1-3 measured
+ * the practice session's downloads (gzip, all questions answered): 10 per file cuts a 10-question
+ * cross-exam or topic-random set from ~650–720 KB of explanations (25 per file: one ~50–100 KB file per
+ * answered question, each from another exam) to ~270–320 KB, and costs a whole exam +2–4 % (10 files
+ * instead of 4); 290 files instead of 116 (max 45 KB).
+ */
+export const EXPL_CHUNK = 10;
 
-/** The explanation chunk of a question id (`…-qNNN` → 1 for q001–q025, 2 for q026–q050, …). */
+/** The explanation chunk of a question id (`…-qNNN` → 1 for q001–q010, 2 for q011–q020, …). */
 export function explChunkOf(id: string): number {
   return Math.ceil(Number(id.slice(id.lastIndexOf("-q") + 2)) / EXPL_CHUNK);
 }
@@ -247,27 +253,39 @@ export function quizIndexOf(file: Pick<QuizIndexFile, "topics" | "exams">): Pick
 
 // ---- browser-side helpers (pure) ------------------------------------------------
 
+/** A shard explanation back in the QuizExplanationEntry shape: key_guard holds its suspect flag only. */
+export function toExplanation(explanation: ShardExplanation): QuizExplanationEntry {
+  const distractors: Record<string, ShardText> = {};
+  for (const [L, d] of Object.entries(explanation.distractors)) distractors[L] = text(d);
+  return {
+    key_guard: { suspect: explanation.suspect },
+    correct: text(explanation.correct),
+    distractors,
+    points: explanation.points.map(text),
+  };
+}
+
 /**
  * A shard question (+ its explanation shard entry) back in the QuizQuestion shape the components
- * take. Fields the files do not carry are filled neutrally: figure_type null, key_guard reduced to
- * its suspect flag. The exam shard holds the stem / choices in JP + the page locale only (the
- * question face's translation toggle shows exactly those two); the explanation keeps all three
- * languages (ExplanationPane's switch). Rendering is identical to the loader question for every
- * page locale × displayed language the UI can reach (pinned for all 2,900 by the staticData test).
+ * take, with no field the files do not carry (no figure_type; key_guard reduced to its suspect flag,
+ * toExplanation) — so what crosses to the client holds no internal field name either (H1-3). The
+ * exam shard holds the stem / choices in JP + the page locale only (the question face's translation
+ * toggle shows exactly those two); the explanation keeps all three languages (ExplanationPane's
+ * switch). Rendering is identical to the loader question for every page locale × displayed
+ * language the UI can reach (pinned for all 2,900 by the staticData test).
  */
 export function toQuizQuestion(q: ShardQuestion, explanation?: ShardExplanation): QuizQuestion {
-  const out: QuizQuestion = { ...q, choices_jp: { ...q.choices_jp }, terms: [...q.terms], figure_type: null };
-  if (explanation) {
-    const distractors: Record<string, ShardText> = {};
-    for (const [L, d] of Object.entries(explanation.distractors)) distractors[L] = text(d);
-    out.explanation = {
-      key_guard: { figure_derivable: null, derived_answer: null, matches_key: null, suspect: explanation.suspect, note_jp: "" },
-      correct: text(explanation.correct),
-      distractors,
-      points: explanation.points.map(text),
-    };
-  }
+  const out: QuizQuestion = { ...q, choices_jp: { ...q.choices_jp }, terms: [...q.terms] };
+  if (explanation) out.explanation = toExplanation(explanation);
   return out;
+}
+
+/**
+ * The question as a server page may hand it to a client component (H1-3, MEDIUM-1): the loader
+ * question through the same allow-list projections the static files use, then toQuizQuestion.
+ */
+export function clientQuestion(q: QuizQuestion, locale: StaticLocale): QuizQuestion {
+  return toQuizQuestion(projectQuestion(q, locale), q.explanation ? projectExplanation(q.explanation) : undefined);
 }
 
 /** The exam shard a question id lives in (`<examId>-qNNN`). */
@@ -306,9 +324,10 @@ export function termCardsFor(
 }
 
 /**
- * The ids GET /api/quiz/questions would accept for `topic`: empty segments dropped, repeats deduped
- * (first kept); null where it answers 400 (0 or more than REVIEW_MAX_WRONG ids, an id not
- * QUESTION_ID_RE-shaped, an unknown topic, an id not of that topic). The questions are then
+ * The ids the former GET /api/quiz/questions accepted for `topic` (ReviewLauncher): empty
+ * segments dropped, repeats deduped (first kept); null where it answered 400 (0 or more than
+ * REVIEW_MAX_WRONG ids, an id not QUESTION_ID_RE-shaped, an unknown topic, an id not of that
+ * topic). The questions are then
  * pickQuestions(ids, the exam shards of examOfId(id), their explanation chunks).
  */
 export function reviewIds(
@@ -324,13 +343,14 @@ export function reviewIds(
   return ids.every((id) => inTopic.has(id)) ? ids : null;
 }
 
-/** At most this many term ids per lookup (GET /api/sensei/terms imports it as its MAX_IDS). */
+/** At most this many term ids per lookup (the former GET /api/sensei/terms' MAX_IDS). */
 export const SENSEI_MAX_IDS = 8;
 
 /**
- * The term ids GET /api/sensei/terms would look up: empty segments dropped, then null when none or
- * more than SENSEI_MAX_IDS remain (its 400); ids not termId-shaped are skipped, repeats returned once,
- * request order kept. Their files are senseiShardOf(id).
+ * The term ids the former GET /api/sensei/terms looked up (fetchTermContexts): empty segments
+ * dropped, then null when none or more than SENSEI_MAX_IDS remain (its 400); ids not
+ * termId-shaped are skipped, repeats returned once, request order kept. Their files are
+ * senseiShardOf(id).
  */
 export function senseiTermIds(requested: readonly string[]): string[] | null {
   const ids = requested.filter((id) => id !== "");

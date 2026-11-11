@@ -15,7 +15,7 @@
 //
 // freeAnchor (Phase C) is the /sensei free-question anchor: every sense of the terms
 // matched in the thread's first question (lib/sensei/freeQuestion; the contexts come
-// from /api/sensei/terms, built by textbookAnchors.termContext), or the
+// from the static /data/sensei/ term files, built by textbookAnchors.termContext), or the
 // 「該当する教材の項目なし」 notice with the general-knowledge allowance.
 //
 // The term / unit anchors (Phase C) live in ./textbookAnchors: they read textbook
@@ -300,7 +300,7 @@ export interface SenseiTermSense {
   memoryHookLocale?: string;
 }
 
-/** A dictionary term as GET /api/sensei/terms returns it: every sense, in dictionary order. */
+/** A dictionary term as the /data/sensei/ term files hold it: every sense, in dictionary order. */
 export interface SenseiTermContext {
   id: string;
   term: string;

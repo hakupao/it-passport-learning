@@ -64,7 +64,8 @@ export interface QuizQuestion {
   has_figure: boolean;
   /** Figure image basename (=id) served at /quiz-figures/<figure>.webp, or null. */
   figure: string | null;
-  figure_type: string | null;
+  /** corpus only: no component reads it, and the client copies (lib/staticData) leave it out */
+  figure_type?: string | null;
   /** D-144 段 2: per-choice figure basenames (ア..エ → /quiz-figures/<basename>.webp) for
    *  questions whose choices ARE figures. When present all 4 letters are set and `figure` is null. */
   choice_figures?: Record<string, string>;
@@ -131,12 +132,14 @@ export function mergeTranslation(
  * means the keyed answer could not be confirmed and awaits human adjudication (D-137-C).
  */
 export interface QuizExplanationEntry {
+  /** The client copies (lib/staticData) carry `suspect` only: the other fields are the writer's
+   *  internal notes, read by the corpus scripts, never displayed. */
   key_guard: {
-    figure_derivable: boolean | null;
-    derived_answer: string | null;
-    matches_key: boolean | null;
+    figure_derivable?: boolean | null;
+    derived_answer?: string | null;
+    matches_key?: boolean | null;
     suspect: boolean;
-    note_jp: string;
+    note_jp?: string;
   };
   /** Why the keyed answer is correct (trilingual). */
   correct: { jp: string; zh: string; en: string };

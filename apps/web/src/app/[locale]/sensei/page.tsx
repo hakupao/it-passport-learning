@@ -4,7 +4,7 @@
 // dictionary index (id + JP / zh / en headwords of every entry) for free-question
 // term matching. It is built from the committed corpus at prerender — no cookies, no
 // request data — so the page stays static (prerendered per locale by the [locale]
-// layout's generateStaticParams); the term cards come later from /api/sensei/terms.
+// layout's generateStaticParams); the term cards come later from the static sensei term files (/data/sensei/…).
 
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";

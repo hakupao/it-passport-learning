@@ -1072,8 +1072,8 @@ test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary a
 // ── D-181 Phase C (Task C2): the free question on /sensei ──
 //
 //  19. No AI SDK chunk on /sensei until the free-question input is focused. A question
-//      naming dictionary terms → one GET /api/sensei/terms with their ids (order of
-//      appearance) → the panel opens and sends the question once; the anchor holds
+//      naming dictionary terms → the static term files (/data/sensei/terms-<h>.<locale>.json, one
+//      per shard of their ids; D-217 H1-3 replaced GET /api/sensei/terms) → the panel opens and sends the question once; the anchor holds
 //      every sense of those terms (JP definition, explanation and memory hook — ≤ 3
 //      terms — under the unit titles); the thread is kind "free", anchorId free:<base36>,
 //      title = the question. Reopened from its /sensei row (a button, no link) after
@@ -1087,7 +1087,7 @@ test("unit page (en): 「AI 先生に聞く」 sends the unit's title, summary a
 //  21b. A free thread row whose first question is not stored: its own notice (not the
 //      terms-load one), no panel, no request.
 //  22. /zh: a zh spelling found only in E-R図's second dictionary sense (the strategy
-//      unit's 「E-R 图」; technology senses come first) matches; the request carries locale=zh and the anchor holds both senses, each
+//      unit's 「E-R 图」; technology senses come first) matches; the zh term file is read and the anchor holds both senses, each
 //      with its JP original and zh definition, explanation and memory hook.
 
 const ISO_TERM = "ISO/IEC 27000";
@@ -1105,14 +1105,19 @@ function corpusSenseUnits(term: string): { titleJp: string; t: CorpusTerm }[] {
 const freeInput = (page: Page) => page.getByLabel(S.freeLabel);
 const freeSend = (page: Page) => page.getByTestId("sensei-free-send");
 
-/** URLs of the /api/sensei/terms requests the page makes. */
+/** Paths of the static sensei term file requests the page makes (/data/sensei/terms-<h>.<locale>.json). */
 function trackTermRequests(page: Page): string[] {
-  const urls: string[] = [];
+  const paths: string[] = [];
   page.on("request", (r) => {
-    if (new URL(r.url()).pathname === "/api/sensei/terms") urls.push(r.url());
+    const { pathname } = new URL(r.url());
+    if (pathname.startsWith("/data/sensei/")) paths.push(pathname);
   });
-  return urls;
+  return paths;
 }
+
+/** The term files holding these term ids (their shard = the id's first hex digit). */
+const termFiles = (ids: string[], locale: string): string[] =>
+  [...new Set(ids.map((id) => `/data/sensei/terms-${id.charAt(1)}.${locale}.json`))].sort();
 
 async function senseiIndex(page: Page): Promise<{ kind: string; anchorId: string; title: string }[]> {
   const raw = await page.evaluate(() => localStorage.getItem("itp:sensei:index:v1"));
@@ -1142,10 +1147,8 @@ test("free question: no AI SDK before focus; matched definitions in the anchor; 
   await expect(log(page)).toContainText(REPLY_MARK);
   await expect(log(page).locator('[data-role="user"]')).toHaveText([`${S.you}: ${question}`]);
 
-  expect(termRequests).toHaveLength(1);
-  const params = new URL(termRequests[0]!).searchParams;
-  expect(params.get("ids")).toBe([TERM_ID, termId(ISO_TERM)].join(","));
-  expect(params.get("locale")).toBe("ja");
+  expect([...new Set(termRequests)].sort()).toEqual(termFiles([TERM_ID, termId(ISO_TERM)], "ja"));
+  const firstLoad = termRequests.length;
 
   expect(fake.requests).toHaveLength(1);
   const first = systemText(fake.requests[0]!);
@@ -1192,8 +1195,10 @@ test("free question: no AI SDK before focus; matched definitions in the anchor; 
   await expect(panel(page)).toBeVisible();
   await expect(log(page)).toContainText(question);
   await expect(log(page)).toContainText(REPLY_MARK);
-  expect(termRequests).toHaveLength(2);
-  expect(termRequests[1]).toBe(termRequests[0]);
+  // derived again from the stored question: the same files (the HTTP cache may serve them)
+  expect([...new Set(termRequests.slice(firstLoad))].sort()).toEqual(
+    termRequests.length > firstLoad ? termFiles([TERM_ID, termId(ISO_TERM)], "ja") : [],
+  );
 
   await ask(page, "もう少し詳しく教えてください");
   await expect(log(page).locator('[data-role="assistant"]')).toHaveCount(2);
@@ -1242,7 +1247,7 @@ test("free question: a failed term request shows a notice, keeps the question an
   await presetKey(page);
   let release!: () => void;
   const held = new Promise<void>((resolve) => (release = resolve));
-  await page.route("**/api/sensei/terms?**", async (route) => {
+  await page.route("**/data/sensei/**", async (route) => {
     await held;
     await route.fulfill({ status: 500, body: "{}" });
   });
@@ -1298,10 +1303,7 @@ test("free question (zh): a later sense's zh spelling matches; every sense with 
   await freeSend(page).click();
   await expect(log(page)).toContainText(REPLY_MARK);
 
-  expect(termRequests).toHaveLength(1);
-  const params = new URL(termRequests[0]!).searchParams;
-  expect(params.get("ids")).toBe(termId(ER));
-  expect(params.get("locale")).toBe("zh");
+  expect([...new Set(termRequests)]).toEqual(termFiles([termId(ER)], "zh"));
   const system = systemText(fake.requests[0]!);
   expect(system).toContain("回答言語: 簡体字中国語");
   expect(system).toContain(`#### 1. ${ER}`);

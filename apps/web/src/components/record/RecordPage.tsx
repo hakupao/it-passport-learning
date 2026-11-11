@@ -6,7 +6,8 @@
 //      answered that day (every src), 0 → 「·」; days after today stay blank. Today's cell carries
 //      data-day-today / data-count.
 //   ④ 领域正答率: per field a table (領域 JP → topic page · ★ · answered / total · rate, 「—」 when
-//      unanswered); sort 頻出度 / 正答率 by the URL (?sort=rate), passed in by the server page.
+//      unanswered); sort 頻出度 / 正答率 by the URL (?sort=rate; anything else = 頻出度) — read in the
+//      browser by RecordFromUrl (useSearchParams, D-217 H1-3), which the page wraps in Suspense.
 // The record lives in the browser: before it loads (the server render, the first client frame) every
 // block keeps its place (data-pending) and shows no number, so the server's clock never reaches the
 // markup. An empty record → one empty-state line; the totals still show 0, the other bodies are hidden.
@@ -15,6 +16,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 
 import { useLearningRecord } from "@/hooks/useLearningRecord";
 import { Link } from "@/i18n/navigation";
@@ -38,6 +40,12 @@ export interface RecordPageProps {
   index: TodayIndex;
   locale: string;
   sort: RecordSort;
+}
+
+/** RecordPage with the sort of the URL's `sort=` (rate; anything else = stars). */
+export function RecordFromUrl(props: Omit<RecordPageProps, "sort">): React.ReactElement {
+  const params = useSearchParams();
+  return <RecordPage {...props} sort={params?.get("sort") === "rate" ? "rate" : "stars"} />;
 }
 
 const DAY_MS = 86_400_000;

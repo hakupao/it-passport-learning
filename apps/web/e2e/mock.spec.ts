@@ -10,7 +10,8 @@
 //      deadline (Review Focus 1: expired while away).
 //   5. two tabs: A finishes → B shows the result within 3 s; the batch is in the record once
 //      (Review Focus 2).
-//   6. bad URLs: unknown exam → 404; 99 valid ids → back to /mock (Review Focus 5).
+//   6. bad URLs: unknown exam → the not-found page (client-rendered since H1-3); 99 valid ids → back
+//      to /mock (Review Focus 5).
 //   7. phone 360 / 390: no horizontal scroll on the exam and the result; 回答見直し has 5 columns.
 //   8. OQ-13 / D-194: the exam face has the full content width and its text choices stack one per line.
 //
@@ -257,9 +258,13 @@ test("mock two tabs: A finishes → B shows the result within 3 s; the batch is 
   expect([...ua, ...ub]).toEqual([]);
 });
 
-test("mock bad URLs: unknown exam → 404; 99 valid ids → back to /mock", async ({ page }) => {
-  const res = await page.goto("/ja/mock/run?exam=1999h11a");
-  expect(res?.status()).toBe(404);
+test("mock bad URLs: unknown exam → the not-found page; 99 valid ids → back to /mock", async ({ page }) => {
+  // D-217 H1-3: the query is read in the browser, so the page itself answers 200 and the not-found
+  // page is rendered client-side (notFound()); what the learner sees is the same 404 page
+  await page.goto("/ja/mock/run?exam=1999h11a");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("404");
+  await expect(page.getByText("This page could not be found.")).toBeVisible();
+  await expect(page.locator("[data-mock-setup], [data-pending]")).toHaveCount(0);
   const ids = Array.from({ length: 99 }, (_, i) => Q(i + 1)).join(",");
   await page.goto(`/ja/mock/run?ids=${ids},9999x-q001`);
   await expect(page).toHaveURL(/\/ja\/mock$/);

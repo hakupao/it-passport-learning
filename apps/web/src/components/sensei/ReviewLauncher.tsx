@@ -19,19 +19,22 @@
 // sends, and its anchor is a fresh snapshot of today's record. Both parameters are
 // removed in the same replaceState. They are read with useSearchParams, so they
 // are gone again after the replace (also on a back / forward to this entry);
-// `consumed` guards effect re-runs before that.
+// `consumed` guards effect re-runs before that. useSearchParams sits under a Suspense boundary
+// whose fallback is the button as it first renders (disabled), so the page can be prerendered.
 // The button stays disabled until the record has loaded (an earlier click would
 // freeze an empty-record anchor into the snapshot).
 // The page sends light rows only (D-193 §0-1): opening first takes the ≤ 5 wrong ids
 // (reviewWrongIds) of the record snapshot and, when there are any, fetches their full
-// text from GET /api/quiz/questions (the button is aria-busy and disabled meanwhile);
-// a failed fetch leaves each of them as its `- #id（出典）` line in the anchor.
+// text from the static data (D-217 H1-3: reviewIds over index.json — the checks the former
+// GET /api/quiz/questions made — then the exam shards + explanation chunks; the button is aria-busy
+// and disabled meanwhile); a failed fetch (or ids reviewIds refuses) leaves each of them as its
+// `- #id（出典）` line in the anchor.
 // That degraded anchor (id lines only, no question text) is accepted as is — documented, not
 // retried (Stage 7 Phase 2 final review M-2).
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { hasLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 
@@ -41,6 +44,8 @@ import { routing } from "@/i18n/routing";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { TopicRow } from "@/lib/practice/topicRows";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
+import { staticData } from "@/lib/staticData/client";
+import { reviewIds } from "@/lib/staticData/shards";
 import { reviewAnchor, reviewWrongIds } from "@/lib/sensei/anchors";
 import { reviewIntentStorage, takeReviewIntent } from "@/lib/sensei/reviewIntent";
 import { REVIEW_THREAD_PARAM, reviewAnchorId, reviewThreadDate } from "@/lib/sensei/threadLinks";
@@ -49,13 +54,7 @@ import { useSenseiHost } from "./AskSensei";
 
 export const REVIEW_PARAM = "review";
 
-export function ReviewLauncher({
-  topicId,
-  title,
-  rows,
-  termCards,
-  locale,
-}: {
+type ReviewLauncherProps = {
   topicId: string;
   /** The topic name: the thread title and the anchor's 分野 line. */
   title: string;
@@ -63,7 +62,34 @@ export function ReviewLauncher({
   rows: TopicRow[];
   termCards: Record<string, TermCard>;
   locale: string;
-}): React.ReactElement | null {
+};
+
+export function ReviewLauncher(props: ReviewLauncherProps): React.ReactElement {
+  return (
+    <Suspense fallback={<PendingButton />}>
+      <ReviewLauncherBody {...props} />
+    </Suspense>
+  );
+}
+
+/** The button as it first renders (the record not loaded yet: disabled). */
+function PendingButton(): React.ReactElement | null {
+  const t = useTranslations("Sensei");
+  if (!useSenseiHost()) return null;
+  return (
+    <Button type="button" variant="outline" size="sm" aria-haspopup="dialog" data-testid="review-launcher" disabled>
+      {t("reviewButton")}
+    </Button>
+  );
+}
+
+function ReviewLauncherBody({
+  topicId,
+  title,
+  rows,
+  termCards,
+  locale,
+}: ReviewLauncherProps): React.ReactElement | null {
   const t = useTranslations("Sensei");
   const openFor = useSenseiHost();
   const { record, loaded } = useLearningRecord();
@@ -85,11 +111,9 @@ export function ReviewLauncher({
     if (ids.length > 0) {
       setBusy(true);
       try {
-        const res = await fetch(`/api/quiz/questions?${new URLSearchParams({ topic: topicId, ids: ids.join(",") })}`);
-        if (!res.ok) throw new Error(`questions ${res.status}`);
-        const body = (await res.json()) as { questions?: unknown };
-        if (!Array.isArray(body?.questions)) throw new Error("questions: unexpected body");
-        for (const q of body.questions as QuizQuestion[]) full.set(q.id, q);
+        const accepted = reviewIds(topicId, ids, await staticData.fetchQuizIndex());
+        if (!accepted) throw new Error(`questions: ids refused (${ids.join(",")})`);
+        for (const q of await staticData.fetchQuestions(accepted, appLocale, { explanations: true })) full.set(q.id, q);
       } catch (err) {
         console.error("[review] wrong questions fetch failed; the anchor lists their ids only", err);
       } finally {

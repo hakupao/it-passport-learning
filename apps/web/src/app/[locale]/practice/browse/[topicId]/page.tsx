@@ -1,9 +1,10 @@
 // Stage 7 Phase 1 Task 10 (D-189 §4 / D-190 §0-17) — /[locale]/practice/browse/<topicId>: one topic
 // (TopicPage) with the AI 先生 topic review (the existing ReviewLauncher: `?review=1` / `&thread=`
-// arrive here — the today page's 「AI 分析」 and the legacy /quiz review links). Unknown topic → 404.
+// arrive here — the today page's 「AI 分析」 and the legacy /quiz review links — and are read in the
+// browser; the page depends on the path only, D-217 H1-3). Unknown topic → 404.
 //
 // Only the topic's light rows cross to the client (D-193 §0-1: id / exam / source / key / terms; the
-// review fetches its wrong questions' full text on open, GET /api/quiz/questions) plus only this
+// review fetches its wrong questions' full text on open, from the static data) plus only this
 // topic's terms as cards and the exam labels it uses.
 // The owner flag that gates the record sync is read in the browser (useOwner, H1-1);
 // LearningRecordProvider is mounted here (never in the locale layout). force-dynamic stays until H1-4.
@@ -17,7 +18,6 @@ import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { buildTermCards } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { topicStars } from "@/lib/practice/practiceIndex";
-import type { SearchParams } from "@/lib/practice/practiceSession";
 import { toTopicRow } from "@/lib/practice/topicRows";
 import { loadBaseQuestions, loadQuizIndex } from "@/lib/quiz/quizReader";
 
@@ -25,7 +25,6 @@ export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ locale: string; topicId: string }>;
-  searchParams: Promise<SearchParams>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

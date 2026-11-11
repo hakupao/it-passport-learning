@@ -39,6 +39,11 @@
 //   - from=unit (Phase 3 §0-2 / §0-8): the summary's 「単元に戻る」, and a wrong answer's link back to
 //     the unit under the explanation (unitReturnHref).
 //   - AI 先生 (§0-18): SenseiHost.onQuestionLink jumps to a question of this group (true).
+//   - Explanations (D-217 H1-3): with `loadExplanation` the questions come without them; once the
+//     question on screen is answered (a pick, a restore, a revisit) its explanation is fetched (the
+//     static chunk file, shared by the chunk's questions) and merged at render — `questions` itself
+//     never changes (the group's ids and the restore hang on it). Meanwhile ExplanationPane shows the
+//     answered pane with a loading line (status), a failure a failed line; nothing else waits on it.
 
 "use client";
 
@@ -72,12 +77,12 @@ import {
   type StatusLine,
   type TodayKind,
 } from "@/lib/practice/practiceSession";
-import type { QuizQuestion } from "@/lib/quiz/quizModel";
+import type { QuizExplanationEntry, QuizQuestion } from "@/lib/quiz/quizModel";
 import type { StorageLike } from "@/lib/storage";
 
 import { AnswerBar } from "./AnswerBar";
 import { AnswerCard } from "./AnswerCard";
-import { EXPLANATION_ID, ExplanationPane } from "./ExplanationPane";
+import { EXPLANATION_ID, ExplanationPane, type ExplanationStatus } from "./ExplanationPane";
 import { PracticeQuestion } from "./PracticeQuestion";
 import { SESSION_SUMMARY_HEADING_ID as SUMMARY_HEADING_ID, SessionSummary, type SessionTopic } from "./SessionSummary";
 import styles from "./session.module.css";
@@ -101,7 +106,12 @@ export interface PracticeSessionProps {
   kindParam?: TodayKind | null;
   /** tests: start from this state and skip the sessionStorage restore */
   initialState?: SessionState;
+  /** fetch a question's explanation once it is answered (null = it has none); absent = `questions` carry them */
+  loadExplanation?: (id: string) => Promise<QuizExplanationEntry | null>;
 }
+
+/** Fetched explanations by question id: null = the question has none, "failed" = the fetch failed. */
+export type LoadedExplanations = Readonly<Record<string, QuizExplanationEntry | null | "failed">>;
 
 /** where the explanation's heading lands after an answer: this fraction of the viewport from its top */
 const EXPLANATION_VIEW_AT = 0.45;
@@ -171,6 +181,10 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
   const scrollToExplanation = useRef(false);
   /** bumped on every move to another question / the summary: a waiting answer scroll is then dropped (OQ-14) */
   const navSeq = useRef(0);
+  const { loadExplanation } = props;
+  const [explanations, setExplanations] = useState<LoadedExplanations>({});
+  /** ids whose explanation fetch is pending or done (a failed one is removed: a revisit retries) */
+  const explRequested = useRef(new Set<string>());
 
   // restore (once per group; the page keys this component by the group)
   useEffect(() => {
@@ -277,6 +291,23 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
     });
   }, [state]);
 
+  // the explanation of the answered question on screen (see header)
+  const shownQid = ready && !state.finished ? state.ids[state.pos] : undefined;
+  const shownAnswered = shownQid !== undefined && hasOwn(state.answers, shownQid);
+  useEffect(() => {
+    if (!loadExplanation || shownQid === undefined || !shownAnswered || explRequested.current.has(shownQid)) return;
+    const qid = shownQid;
+    explRequested.current.add(qid);
+    loadExplanation(qid).then(
+      (e) => setExplanations((prev) => ({ ...prev, [qid]: e })),
+      (err: unknown) => {
+        console.error("[practice] the explanation could not be loaded", qid, err);
+        explRequested.current.delete(qid);
+        setExplanations((prev) => ({ ...prev, [qid]: "failed" }));
+      },
+    );
+  }, [loadExplanation, shownQid, shownAnswered]);
+
   // from=today: the task kind, fixed once the record is loaded
   useEffect(() => {
     if (!fromToday || !today || !loaded || kind !== undefined) return;
@@ -321,12 +352,13 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
         onToggleTranslation={() => setTrOverride(!showTranslation)}
         act={act}
         onStartOver={startOver}
+        explanations={loadExplanation ? explanations : undefined}
       />
     </SenseiHost>
   );
 }
 
-export interface SessionViewProps extends Omit<PracticeSessionProps, "initialState" | "run" | "kindParam"> {
+export interface SessionViewProps extends Omit<PracticeSessionProps, "initialState" | "run" | "kindParam" | "loadExplanation"> {
   state: SessionState;
   record: LearningRecord;
   /** the record has been read (localStorage, and the server for the owner) */
@@ -337,6 +369,8 @@ export interface SessionViewProps extends Omit<PracticeSessionProps, "initialSta
   onToggleTranslation: () => void;
   act: (a: SessionAction) => void;
   onStartOver?: () => void;
+  /** fetched explanations (PracticeSession.loadExplanation); absent = the questions carry theirs */
+  explanations?: LoadedExplanations;
 }
 
 /** Elapsed time of the group, mm:ss: its own 1 s clock, frozen at endedAt; "00:00" until mounted. */
@@ -380,6 +414,7 @@ export function SessionView({
   onToggleTranslation,
   act,
   onStartOver,
+  explanations,
 }: SessionViewProps): React.ReactElement {
   const t = useTranslations("Practice");
   const keyOf = useMemo(() => new Map(questions.map((q) => [q.id, q.correct_answer])), [questions]);
@@ -408,6 +443,10 @@ export function SessionView({
   const total = state.ids.length;
   const isLast = state.pos === total - 1;
   const catKey = topic ? PRACTICE_CATEGORY_LABEL_KEYS[topic.category] : undefined;
+  const loadedExpl = explanations && hasOwn(explanations, q.id) ? explanations[q.id] : undefined;
+  const explStatus: ExplanationStatus =
+    explanations === undefined ? "ready" : loadedExpl === undefined ? "loading" : loadedExpl === "failed" ? "failed" : "ready";
+  const explained = loadedExpl && loadedExpl !== "failed" ? { ...q, explanation: loadedExpl } : q;
 
   let status: StatusLine | null = null;
   if (picked !== null && recordLoaded) {
@@ -459,11 +498,12 @@ export function SessionView({
         />
         <ExplanationPane
           key={`${q.id}:explanation`}
-          q={q}
+          q={explained}
           locale={locale}
           picked={picked}
           termCards={termCards}
           unitBack={from?.kind === "unit" ? { href: unitReturnHref(from, q.terms), title: from.title } : null}
+          status={explStatus}
         />
       </div>
 

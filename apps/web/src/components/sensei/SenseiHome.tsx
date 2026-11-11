@@ -10,7 +10,7 @@
 //
 // Free question: each send is a new thread (`free:<epoch ms base 36>`). The terms of
 // the question are matched against `termIndex` (the light dictionary index the page
-// builds at prerender), their senses are fetched from /api/sensei/terms, and the panel
+// builds at prerender), their senses are fetched from the static sensei term files, and the panel
 // opens with the question as its opener (sent once into the empty thread); on close,
 // focus returns to the input. Sending needs a saved key (the disabled Send is described
 // by the key-missing reason). While the terms load the input is read-only and the form

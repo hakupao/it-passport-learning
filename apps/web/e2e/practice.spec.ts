@@ -474,3 +474,77 @@ async function expectAnswerScroll(page: Page): Promise<void> {
   expect(m.h2.top).toBeGreaterThanOrEqual(0);
   expect(m.h2.bottom).toBeLessThanOrEqual(m.vh);
 }
+
+// D-217 H1-3: the session reads the static data in the browser; explanations are fetched per chunk
+// file (/data/quiz-expl/<exam>-<k>.json) only once a question is answered.
+const explPane = (page: Page) => page.locator("#practice-explanation");
+
+test("practice ja (H1-3): the explanation is fetched only after an answer — a loading line, then the text", async ({
+  page,
+}) => {
+  const expl: string[] = [];
+  page.on("request", (r) => {
+    const p = new URL(r.url()).pathname;
+    if (p.startsWith("/data/quiz-expl/")) expl.push(p);
+  });
+  let release!: () => void;
+  const held = new Promise<void>((r) => (release = r));
+  await page.route("**/data/quiz-expl/**", async (route) => {
+    await held;
+    await route.continue();
+  });
+  await page.goto(`/ja/practice?ids=${A},${B}`);
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/2");
+  await page.waitForLoadState("networkidle");
+  expect(expl, "no explanation before an answer").toEqual([]);
+  await expect(explPane(page)).toContainText(P.awaitAnswer);
+
+  await pressToAnswer(page, "2", "イ");
+  // while the chunk loads: the answered pane (○ / × rows) with a loading line, no AI 先生 button yet
+  await expect(explPane(page).locator('[data-expl-status="loading"]')).toHaveText(P.explLoading);
+  await expect(explPane(page).locator("[data-verdict]")).toHaveCount(4);
+  await expect(explPane(page).getByTestId("ask-sensei")).toHaveCount(0);
+  release();
+  await expect(explPane(page).locator('[data-fid="expl-correct"]')).not.toBeEmpty();
+  await expect(explPane(page).locator("[data-expl-status]")).toHaveCount(0);
+  await expect(explPane(page).getByTestId("ask-sensei")).toBeVisible();
+  expect(expl).toEqual(["/data/quiz-expl/2009h21a-6.json"]);
+
+  // a reload restores the answered question and fetches its explanation again
+  await page.unroute("**/data/quiz-expl/**");
+  await page.reload();
+  await expect(choiceButton(page, "イ")).toHaveAttribute("aria-pressed", "true");
+  await expect(explPane(page).locator('[data-fid="expl-correct"]')).not.toBeEmpty();
+});
+
+test("practice ja (H1-3): a failed explanation fetch shows a line; going away and back retries", async ({ page }) => {
+  let fail = true;
+  await page.route("**/data/quiz-expl/**", (route) =>
+    fail ? route.fulfill({ status: 500, body: "{}" }) : route.continue(),
+  );
+  await page.goto(`/ja/practice?ids=${A},${B}`);
+  await pressToAnswer(page, "2", "イ");
+  await expect(explPane(page).locator('[data-expl-status="failed"]')).toHaveText(P.explFailed);
+  await expect(explPane(page).getByTestId("ask-sensei")).toBeVisible();
+  fail = false;
+  await page.keyboard.press("ArrowRight");
+  await expect(progress(page)).toHaveAttribute("data-progress", "2/2");
+  await page.keyboard.press("ArrowLeft");
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/2");
+  await expect(explPane(page).locator('[data-fid="expl-correct"]')).not.toBeEmpty();
+  await expect(explPane(page).locator("[data-expl-status]")).toHaveCount(0);
+});
+
+test("practice ja (H1-3): order=rand without a seed is replaced by the same URL plus a seed; a reload keeps the list", async ({
+  page,
+}) => {
+  await page.goto("/ja/practice?topic=technology-14-36&n=10&order=rand");
+  await expect(page).toHaveURL(/\/ja\/practice\?topic=technology-14-36&n=10&order=rand&seed=\d+$/);
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/7"); // the topic has 7 questions
+  const first = await face(page).getAttribute("id");
+  const url = page.url();
+  await page.reload();
+  expect(page.url()).toBe(url);
+  await expect(progress(page)).toHaveAttribute("data-progress", "1/7");
+  await expect(face(page)).toHaveAttribute("id", first!);
+});

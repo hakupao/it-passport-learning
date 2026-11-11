@@ -10,6 +10,7 @@ import {
   pickQuestions,
   pickSenseiTerms,
   senseiShardOf,
+  toExplanation,
   type ExamShard,
   type ExplanationShard,
   type QuizIndexFile,
@@ -20,7 +21,7 @@ import {
 } from "./shards";
 import type { TodayIndex } from "../practice/practiceIndex";
 import { QUESTION_ID_RE } from "../quiz/feedbackModel";
-import type { QuizQuestion } from "../quiz/quizModel";
+import type { QuizExplanationEntry, QuizQuestion } from "../quiz/quizModel";
 import type { SenseiTermContext } from "../sensei/anchors";
 
 export type FetchImpl = (url: string) => Promise<Response>;
@@ -50,6 +51,12 @@ export function createStaticData(fetchImpl: FetchImpl = (url) => fetch(url)) {
     fetchQuizIndex,
     fetchExamShard,
     fetchExplanationShard,
+    /** One question's explanation from its chunk file (shared with the chunk's other questions); null = none. */
+    async fetchExplanation(id: string): Promise<QuizExplanationEntry | null> {
+      const shard = await fetchExplanationShard(examOfId(id), explChunkOf(id));
+      const e = Object.prototype.hasOwnProperty.call(shard.explanations, id) ? shard.explanations[id] : undefined;
+      return e ? toExplanation(e) : null;
+    },
     fetchToday: (locale: StaticLocale) => get<TodayIndex>(dataPaths.today(locale)),
     fetchTermCards: (locale: StaticLocale) => get<TermCardsFile>(dataPaths.termCards(locale)),
     fetchUnits: (locale: StaticLocale) => get<UnitsFile>(dataPaths.units(locale)),
@@ -76,7 +83,7 @@ export function createStaticData(fetchImpl: FetchImpl = (url) => fetch(url)) {
       return pickQuestions(ids, shards, expl);
     },
 
-    /** The term contexts GET /api/sensei/terms returned, for ids already checked by senseiTermIds. */
+    /** The term contexts the former GET /api/sensei/terms returned, for ids already checked by senseiTermIds. */
     async fetchSenseiTermContexts(ids: readonly string[], locale: StaticLocale): Promise<SenseiTermContext[]> {
       const shards = [...new Set(ids.map(senseiShardOf))];
       const files = await Promise.all(shards.map((s) => get<SenseiTermsFile>(dataPaths.senseiTerms(s, locale))));

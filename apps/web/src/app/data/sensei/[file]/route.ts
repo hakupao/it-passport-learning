@@ -1,5 +1,5 @@
-// D-217 H1-2 — /data/sensei/terms-<h>.<locale>.json: the AI 先生 term contexts (what GET
-// /api/sensei/terms returns) of every dictionary term whose termId starts with hex digit <h>,
+// D-217 H1-2 — /data/sensei/terms-<h>.<locale>.json: the AI 先生 term contexts (what the
+// former GET /api/sensei/terms returned) of every dictionary term whose termId starts with hex digit <h>,
 // built at build time.
 import { buildSenseiTermsFile } from "@/lib/staticData/build";
 import { parseLocaleFile, SENSEI_SHARDS, STATIC_LOCALES } from "@/lib/staticData/shards";

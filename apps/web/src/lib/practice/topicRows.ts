@@ -1,7 +1,7 @@
 // Stage 7 Phase 2 §0-1 (D-193) — the topic page's light row. The page sends these instead of the
 // full questions (the full text + explanations of ≤ 217 questions were the bulk of the 2.32 MB
 // payload); the AI 先生 review fetches the full text of its ≤ REVIEW_MAX_WRONG wrong questions on
-// open (GET /api/quiz/questions). Pure, client-safe.
+// open (the static data, D-217 H1-3). Pure, client-safe.
 
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 

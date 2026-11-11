@@ -21,6 +21,9 @@
 // `unitBack` (Phase 3 §0-8, a textbook unit's set): a wrong answer gets 「単元に戻る：<単元名>」 under
 // the explanation (unitReturnHref: the unit, at a term the question shares); nothing for a right answer.
 // The section carries EXPLANATION_ID: PracticeSession scrolls its heading into view on an answer (OQ-13 / D-194).
+// `status` (D-217 H1-3, the practice session fetches the explanation text once a question is answered):
+// "loading" / "failed" render the answered pane without the text — heading, ○ / × rows — and one line
+// in place of the points; 「AI 先生に聞く」 waits while loading (its anchor carries the explanation).
 
 "use client";
 
@@ -61,7 +64,11 @@ interface Props {
   reveal?: boolean;
   /** a textbook unit's set: where a wrong answer links back to (§0-8); null / absent = no link */
   unitBack?: { href: string; title: string } | null;
+  /** whether `q.explanation` is final ("ready", the default) or still being fetched / failed */
+  status?: ExplanationStatus;
 }
+
+export type ExplanationStatus = "ready" | "loading" | "failed";
 
 export function ExplanationPane({
   q,
@@ -70,6 +77,7 @@ export function ExplanationPane({
   termCards,
   reveal = false,
   unitBack = null,
+  status = "ready",
 }: Props): React.ReactElement {
   const t = useTranslations("Practice");
   const [explLocale, setExplLocale] = useState(locale);
@@ -91,6 +99,7 @@ export function ExplanationPane({
           termCards={termCards}
           explLocale={explLocale}
           setExplLocale={setExplLocale}
+          status={status}
           t={t}
         />
       )}
@@ -113,9 +122,11 @@ function Answered({
   termCards,
   explLocale,
   setExplLocale,
+  status,
   t,
-}: Omit<Props, "picked" | "reveal" | "unitBack"> & {
+}: Omit<Props, "picked" | "reveal" | "unitBack" | "status"> & {
   picked: ChoiceLetter | null;
+  status: ExplanationStatus;
   explLocale: string;
   setExplLocale: (l: string) => void;
   t: ReturnType<typeof useTranslations>;
@@ -225,6 +236,12 @@ function Answered({
         })}
       </ul>
 
+      {status !== "ready" ? (
+        <p className={styles.await} data-expl-status={status} aria-busy={status === "loading"} role="status">
+          {t(status === "loading" ? "explLoading" : "explFailed")}
+        </p>
+      ) : null}
+
       {ex && ex.points.length > 0 ? (
         <div className={styles.points}>
           <div className={styles.pointsHead} lang="ja">
@@ -260,14 +277,16 @@ function Answered({
             </span>
           </Fragment>
         ))}
-        <span className={styles.ask}>
-          <AskSensei
-            kind="question"
-            anchorId={`${q.id}:${picked ?? "reveal"}`}
-            title={q.source_label}
-            getAnchorText={() => questionAnchor(q, appLocale, { choice: picked ?? undefined, termCards })}
-          />
-        </span>
+        {status === "loading" ? null : (
+          <span className={styles.ask}>
+            <AskSensei
+              kind="question"
+              anchorId={`${q.id}:${picked ?? "reveal"}`}
+              title={q.source_label}
+              getAnchorText={() => questionAnchor(q, appLocale, { choice: picked ?? undefined, termCards })}
+            />
+          </span>
+        )}
       </div>
       {isOwner === true ? <QuizFeedback questionId={q.id} locale={locale} /> : null}
     </>

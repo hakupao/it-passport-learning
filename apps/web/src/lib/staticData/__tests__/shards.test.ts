@@ -54,7 +54,7 @@ describe("file names", () => {
 
   it("examOfId / explChunkOf / senseiShardOf", () => {
     expect(examOfId("2011h23tokubetsu-q007")).toBe("2011h23tokubetsu");
-    expect([1, 25, 26, 50, 51, 100].map((n) => explChunkOf(`2026r08-q${String(n).padStart(3, "0")}`))).toEqual([1, 1, 2, 2, 3, 4]);
+    expect([1, 10, 11, 20, 21, 100].map((n) => explChunkOf(`2026r08-q${String(n).padStart(3, "0")}`))).toEqual([1, 1, 2, 2, 3, 10]);
     expect(senseiShardOf("tab00000000000000")).toBe("a");
   });
 
@@ -67,17 +67,17 @@ describe("file names", () => {
 });
 
 describe("toQuizQuestion / pickQuestions", () => {
-  it("fills figure_type null and key_guard with the suspect flag only; the explanation keeps all three languages", () => {
+  it("no figure_type and key_guard with the suspect flag only (no internal field name); the explanation keeps all three languages", () => {
     const out = toQuizQuestion(q("2026r08-q001", { stem_zh: "题干" }), {
       suspect: true,
       correct: { jp: "正", zh: "对", en: "" },
       distractors: { ア: { jp: "誤", zh: "错", en: "" } },
       points: [{ jp: "要", zh: "要点", en: "" }],
     });
-    expect(out.figure_type).toBeNull();
+    expect("figure_type" in out).toBe(false);
     expect(out.stem_zh).toBe("题干");
     expect(out.explanation).toEqual({
-      key_guard: { figure_derivable: null, derived_answer: null, matches_key: null, suspect: true, note_jp: "" },
+      key_guard: { suspect: true },
       correct: { jp: "正", zh: "对", en: "" },
       distractors: { ア: { jp: "誤", zh: "错", en: "" } },
       points: [{ jp: "要", zh: "要点", en: "" }],
@@ -211,17 +211,17 @@ describe("createStaticData (fake fetch)", () => {
       questions: [
         ["2025r07-q001", "2025r07", "technology-01-01"],
         ["2026r08-q001", "2026r08", "technology-01-01"],
-        ["2026r08-q030", "2026r08", "technology-01-01"],
+        ["2026r08-q015", "2026r08", "technology-01-01"],
       ],
       chumonGroups: [],
     },
-    "/data/quiz/2026r08.zh.json": shard("2026r08", ["2026r08-q001", "2026r08-q030"]),
+    "/data/quiz/2026r08.zh.json": shard("2026r08", ["2026r08-q001", "2026r08-q015"]),
     "/data/quiz/2025r07.zh.json": shard("2025r07", ["2025r07-q001"]),
     "/data/quiz-expl/2026r08-1.json": { exam_id: "2026r08", chunk: 1, explanations: {} },
     "/data/quiz-expl/2026r08-2.json": {
       exam_id: "2026r08",
       chunk: 2,
-      explanations: { "2026r08-q030": { suspect: false, correct: { jp: "c", zh: "c", en: "c" }, distractors: {}, points: [] } },
+      explanations: { "2026r08-q015": { suspect: false, correct: { jp: "c", zh: "c", en: "c" }, distractors: {}, points: [] } },
     },
     "/data/quiz-expl/2025r07-1.json": { exam_id: "2025r07", chunk: 1, explanations: {} },
   });
@@ -231,7 +231,7 @@ describe("createStaticData (fake fetch)", () => {
   it("fetchQuestions loads the index + each needed exam shard once, + the explanation chunks only when asked", async () => {
     const fetchImpl = serve(quizFiles());
     const data = createStaticData(fetchImpl);
-    const ids = ["2026r08-q030", "2025r07-q001", "2026r08-q001"];
+    const ids = ["2026r08-q015", "2025r07-q001", "2026r08-q001"];
 
     const plain = await data.fetchQuestions(ids, "zh", { explanations: false });
     expect(plain.map((x) => x.id)).toEqual(ids);
@@ -258,7 +258,7 @@ describe("createStaticData (fake fetch)", () => {
     const data = createStaticData(fetchImpl);
     const ids = [
       "../../etc/passwd-q001", // malformed (path-like)
-      "2026r08-q030",
+      "2026r08-q015",
       "2026r08-q1", // malformed number
       "1999h11a-q001", // well-formed, unknown exam
       "2026r08-q999", // well-formed, out of range
@@ -266,7 +266,7 @@ describe("createStaticData (fake fetch)", () => {
       "",
     ];
     const got = await data.fetchQuestions(ids, "zh", { explanations: true });
-    expect(got.map((x) => x.id)).toEqual(["2026r08-q030", "2026r08-q001"]);
+    expect(got.map((x) => x.id)).toEqual(["2026r08-q015", "2026r08-q001"]);
     const urls = fetchImpl.mock.calls.map((c) => c[0]);
     expect(urls.some((u) => u.includes("1999h11a") || u.includes("etc") || u.includes("-40."))).toBe(false);
     expect(urls.sort()).toEqual([

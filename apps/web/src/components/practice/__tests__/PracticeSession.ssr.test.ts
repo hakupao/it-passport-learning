@@ -502,3 +502,59 @@ describe("fix round 1: reload on the summary, start over, run nonce, status afte
     expect(renderView(qs, "zh", { state, recordLoaded: true })).toContain("已记入错题本，明天再出");
   });
 });
+
+describe("D-217 H1-3: explanations fetched once answered (SessionView.explanations)", () => {
+  const bare = (q: QuizQuestion): QuizQuestion => {
+    const out = { ...q };
+    delete out.explanation;
+    return out;
+  };
+  const answered = (qs: QuizQuestion[]) =>
+    run(newSession(qs.map((q) => q.id), 0), { type: "pick", choice: wrongOf(qs[0]!) });
+
+  it("answered, not fetched yet: the answered pane (heading, ○ / × rows) with a loading line, no text, no AI 先生 button", () => {
+    const qs = three().map(bare);
+    for (const [locale, line] of [
+      ["ja", "解説を読み込んでいます…"],
+      ["zh", "正在读取解析…"],
+      ["en", "Loading the explanation…"],
+    ] as const) {
+      const out = renderView(qs, locale, { state: answered(qs), explanations: {} });
+      expect(out).toMatch(/data-expl-status="loading"/);
+      expect(out).toContain(line);
+      expect(out).toMatch(/<h2[^>]*>/);
+      expect((out.match(/data-verdict=/g) ?? []).length).toBe(4);
+      expect(fidOne(out, "expl-correct")).toBeNull();
+      expect(out).not.toContain('data-testid="ask-sensei"');
+    }
+  });
+
+  it("fetched: renders exactly what the eager question renders", () => {
+    const eager = three();
+    const qs = eager.map(bare);
+    const state = answered(qs);
+    const lazy = renderView(qs, "zh", { state, explanations: { [qs[0]!.id]: eager[0]!.explanation! } });
+    expect(lazy).toBe(renderView(eager, "zh", { state }));
+    expect(lazy).toContain('data-testid="ask-sensei"');
+    expect(lazy).not.toContain("data-expl-status");
+  });
+
+  it("failed: a failed line, the AI 先生 button stays; none in the corpus (null): no line, no text", () => {
+    const qs = three().map(bare);
+    const state = answered(qs);
+    const failed = renderView(qs, "en", { state, explanations: { [qs[0]!.id]: "failed" } });
+    expect(failed).toMatch(/data-expl-status="failed"/);
+    expect(failed).toContain("The explanation could not be loaded.");
+    expect(failed).toContain('data-testid="ask-sensei"');
+    const none = renderView(qs, "en", { state, explanations: { [qs[0]!.id]: null } });
+    expect(none).not.toContain("data-expl-status");
+    expect(fidOne(none, "expl-correct")).toBeNull();
+  });
+
+  it("unanswered: only the placeholder (nothing is fetched before an answer)", () => {
+    const qs = three().map(bare);
+    const out = renderView(qs, "ja", { explanations: {} });
+    expect(out).toContain("解答すると解説が表示されます");
+    expect(out).not.toContain("data-expl-status");
+  });
+});

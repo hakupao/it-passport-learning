@@ -112,17 +112,21 @@ describe("deriveFreeAnchor", () => {
 });
 
 describe("fetchTermContexts", () => {
-  it("GETs /api/sensei/terms with the ids and the locale and returns the terms", async () => {
+  it("looks up senseiTermIds(ids) in the static term files of the locale (request order, repeats once, bad ids skipped)", async () => {
     const terms = [ctx("t0000000000000001", "機能要件")];
-    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ terms }), { status: 200 }));
-    expect(await fetchTermContexts(["t0000000000000001", "t0000000000000002"], "zh", fetchImpl)).toEqual(terms);
-    expect(fetchImpl).toHaveBeenCalledWith("/api/sensei/terms?ids=t0000000000000001%2Ct0000000000000002&locale=zh");
+    const fetchSenseiTermContexts = vi.fn(async () => terms);
+    const ids = ["t0000000000000001", "nope", "t0000000000000002", "t0000000000000001"];
+    expect(await fetchTermContexts(ids, "zh", { fetchSenseiTermContexts })).toEqual(terms);
+    expect(fetchSenseiTermContexts).toHaveBeenCalledWith(["t0000000000000001", "t0000000000000002"], "zh");
   });
 
-  it("throws on a non-2xx status or a body without a terms array", async () => {
-    const id = ["t0000000000000001"];
-    await expect(fetchTermContexts(id, "ja", async () => new Response('{"terms":[]}', { status: 500 }))).rejects.toThrow();
-    await expect(fetchTermContexts(id, "ja", async () => new Response('{"cards":[]}', { status: 200 }))).rejects.toThrow();
-    await expect(fetchTermContexts(id, "ja", async () => new Response("not json", { status: 200 }))).rejects.toThrow();
+  it("throws where the former API answered 400 (no ids, more than 8) and when a file fails", async () => {
+    const fetchSenseiTermContexts = vi.fn(async () => []);
+    await expect(fetchTermContexts([], "ja", { fetchSenseiTermContexts })).rejects.toThrow();
+    const nine = Array.from({ length: 9 }, (_, i) => `t000000000000000${i}`);
+    await expect(fetchTermContexts(nine, "ja", { fetchSenseiTermContexts })).rejects.toThrow();
+    expect(fetchSenseiTermContexts).not.toHaveBeenCalled();
+    const failing = { fetchSenseiTermContexts: async () => Promise.reject(new Error("/data/sensei/terms-0.ja.json: 500")) };
+    await expect(fetchTermContexts(["t0000000000000001"], "ja", failing)).rejects.toThrow("500");
   });
 });
