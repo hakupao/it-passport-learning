@@ -42,7 +42,11 @@ vi.mock("@/lib/learning/syncStore", async () => {
 
 import { LEARNING_REDIS_KEY, LEARNING_REDIS_V1_KEY } from "@/lib/learning/syncStore";
 
-import { GET, PUT } from "../route.dev";
+import * as dev from "../route.dev";
+import { routeTarget } from "../../../../../worker/testing/routeTarget";
+
+// D-217 H3: the same cases also run against the Worker (vitest project "worker-routes").
+const { GET, PUT } = routeTarget({ GET: dev.GET, PUT: dev.PUT });
 
 const OWNER_KEY = "test-owner-key";
 const OWNER_COOKIE = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;

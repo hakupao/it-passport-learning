@@ -44,7 +44,11 @@ import {
   readStored,
 } from "@/lib/learning/syncStore";
 
-import { GET, PUT } from "../route.dev";
+import * as dev from "../route.dev";
+import { ROUTE_TARGET, routeTarget } from "../../../../../worker/testing/routeTarget";
+
+// D-217 H3: the same cases also run against the Worker (vitest project "worker-routes").
+const { GET, PUT } = routeTarget({ GET: dev.GET, PUT: dev.PUT });
 
 const OWNER_KEY = "test-owner-key";
 const OWNER_COOKIE_HEADER = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;
@@ -250,6 +254,12 @@ describe("readStored", () => {
 });
 
 describe("owner gate (403) and Redis config (503)", () => {
+  it(`D-217 H3: answered by the target under test (${ROUTE_TARGET})`, async () => {
+    // the Worker adds X-Robots-Tag to every /api response; the next dev route does not
+    const res = await GET(get(null));
+    expect(res.headers.get("X-Robots-Tag")).toBe(ROUTE_TARGET === "worker" ? "noindex" : null);
+  });
+
   it("non-owner GET / PUT → 403 and nothing is written", async () => {
     for (const cookie of [null, "itp_owner=nope"]) {
       expect((await GET(get(cookie))).status).toBe(403);
@@ -627,5 +637,21 @@ describe("final fix 7: stored size observability", () => {
     } finally {
       warnSpy.mockRestore();
     }
+  });
+});
+
+describe("D-217 H3: cross-site PUT", () => {
+  it("PUT with Sec-Fetch-Site other than same-origin → 403 before anything, nothing written; GET unaffected", async () => {
+    redisHolder.current = makeFakeLearningRedis();
+    for (const site of ["cross-site", "same-site", "none"]) {
+      const res = await PUT(put(encodeRecord(v2Doc), OWNER_COOKIE_HEADER, { "Sec-Fetch-Site": site }));
+      expect(res.status, site).toBe(403);
+      expect(await res.json()).toEqual({ error: "cross-site request" });
+    }
+    expect(redisHolder.current.sets).toBe(0);
+    expect((await PUT(put(encodeRecord(v2Doc), OWNER_COOKIE_HEADER, { "Sec-Fetch-Site": "same-origin" }))).status).toBe(200);
+    const g = get();
+    g.headers.set("sec-fetch-site", "cross-site");
+    expect((await GET(g)).status).toBe(200);
   });
 });

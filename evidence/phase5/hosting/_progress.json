@@ -1,8 +1,8 @@
 {
   "plan": "docs/phase5/PLAN_hosting_migration.md",
   "branch": "hosting-cf",
-  "current_step": "H3 Worker (executor)",
-  "next_step": "H3 の Rule D → H4 (ユーザーと Cloudflare preview: wrangler login・secret 設定・deploy、CPU 実測)",
+  "current_step": "H4 (ユーザー操作が要る)",
+  "next_step": "H4: ユーザーと Cloudflare preview へ deploy (H3_worker.md §9-5 の手順)",
   "completed": [
     {
       "step": "H0-1",
@@ -127,6 +127,19 @@
         "H4: HTML・/data・quiz-figures の既定 Cache-Control/ETag を curl -I",
         "H3/H4: Worker がある時の asset 未命中が Worker 要求になるかを実測",
         "e2e コメントの next start 記述 (learning-owner:9-13, sensei:50) を更新"
+      ]
+    },
+    {
+      "step": "H3",
+      "status": "PASS",
+      "attempts": 2,
+      "review": "security-reviewer opus PASS (attempt 1 FAIL open redirect → failures/phase5/hosting/step_H3_attempt_1_open_redirect.md)",
+      "carry": [
+        "H4 deploy checklist = evidence/phase5/hosting/H3_worker.md §9-5",
+        "CPU: preview で実記録の GET ?v=2 / 全量 PUT / delta PUT (D-224)",
+        "preview: /%2F%2Fevil.com・//evil.com の Location、next=/.//evil.com → /ja、cross-site PUT 403、text/plain 415",
+        "main の Next 15.5.18 → 15.5.28 はユーザー判断 (非緊急)",
+        "wrangler は devDependencies に未追加 (H4 で版固定を決める)"
       ]
     }
   ],

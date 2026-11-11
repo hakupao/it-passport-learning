@@ -4,8 +4,20 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["src/**/*.{test,spec}.ts"],
     testTimeout: 20_000,
+    projects: [
+      { extends: true, test: { name: "unit", include: ["src/**/*.{test,spec}.ts", "worker/**/*.test.ts"] } },
+      // D-217 H3: the owner API route tests once more, every handler replaced by the Cloudflare Worker's
+      // fetch (worker/testing/routeTarget.ts).
+      {
+        extends: true,
+        test: {
+          name: "worker-routes",
+          include: ["src/app/api/**/__tests__/*.test.ts"],
+          env: { ROUTE_TARGET: "worker" },
+        },
+      },
+    ],
   },
   // D-144 段 4: component (.tsx) を SSR テストで import するため JSX を automatic runtime で変換する (tsconfig は Next 用に preserve)
   oxc: { jsx: { runtime: "automatic" } },

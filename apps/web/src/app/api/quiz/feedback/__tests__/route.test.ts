@@ -18,7 +18,11 @@ vi.mock("@/lib/quiz/feedback", async () => {
   return { ...actual, loadFeedbackRedis: async () => redisHolder.current };
 });
 
-import { GET, POST } from "../route.dev";
+import * as dev from "../route.dev";
+import { routeTarget } from "../../../../../../worker/testing/routeTarget";
+
+// D-217 H3: the same cases also run against the Worker (vitest project "worker-routes").
+const { GET, POST } = routeTarget({ GET: dev.GET, POST: dev.POST });
 
 const OWNER_KEY = "test-owner-key";
 const OWNER_COOKIE_HEADER = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;
@@ -143,5 +147,56 @@ describe("GET /api/quiz/feedback", () => {
     expect((await GET(get(""))).status).toBe(400);
     redisHolder.current = null;
     expect((await GET(get("?question_id=2016h28h-q033"))).status).toBe(503);
+  });
+});
+
+describe("D-217 H3 guards: cross-site 403, Content-Type 415, body cap", () => {
+  it("POST with Sec-Fetch-Site other than same-origin → 403 before the owner check; same-origin / absent pass", async () => {
+    for (const site of ["cross-site", "same-site", "none"]) {
+      const r = post(VALID);
+      r.headers.set("sec-fetch-site", site);
+      const res = await POST(r);
+      expect(res.status, site).toBe(403);
+      expect(await res.json()).toEqual({ error: "cross-site request" });
+    }
+    expect(redisHolder.current!.kv.size).toBe(0);
+    const ok = post(VALID);
+    ok.headers.set("sec-fetch-site", "same-origin");
+    expect((await POST(ok)).status).toBe(201);
+    expect((await POST(post(VALID))).status).toBe(201);
+  });
+
+  it("GET is not subject to the Sec-Fetch-Site check", async () => {
+    const r = get("?question_id=2016h28h-q033");
+    r.headers.set("sec-fetch-site", "cross-site");
+    expect((await GET(r)).status).toBe(200);
+  });
+
+  it("POST without Content-Type application/json → 415 (after 403 / 503); charset parameter allowed", async () => {
+    const withType = (type: string | null, cookie: string | null = OWNER_COOKIE_HEADER) => {
+      const r = new Request(URL_BASE, { method: "POST", body: JSON.stringify(VALID), headers: cookie ? { cookie } : {} });
+      if (type === null) r.headers.delete("content-type");
+      else r.headers.set("content-type", type);
+      return r;
+    };
+    for (const type of [null, "text/plain", "text/plain;charset=UTF-8", "application/x-www-form-urlencoded", "multipart/form-data", "application/jsonx"]) {
+      const res = await POST(withType(type));
+      expect(res.status, String(type)).toBe(415);
+    }
+    expect((await POST(withType("text/plain", null))).status).toBe(403);
+    expect((await POST(withType("Application/JSON; charset=utf-8"))).status).toBe(201);
+    redisHolder.current = null;
+    expect((await POST(withType("text/plain"))).status).toBe(503);
+  });
+
+  it(`body over ${8192} bytes (read or declared) → 400; a valid body padded to exactly 8192 → 201`, async () => {
+    const base = JSON.stringify(VALID);
+    const exact = base + " ".repeat(8192 - new TextEncoder().encode(base).byteLength);
+    expect((await POST(post(exact))).status).toBe(201);
+    expect((await POST(post(exact + " "))).status).toBe(400);
+    const declared = post(base);
+    declared.headers.set("content-length", "8193");
+    expect((await POST(declared)).status).toBe(400);
+    expect((await POST(post(JSON.stringify({ ...VALID, pad: "x".repeat(9000) })))).status).toBe(400);
   });
 });

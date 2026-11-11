@@ -3,8 +3,9 @@
 // Single-user site owner identity, shared by the AI routes (D-148: 503 unless
 // owner) and quiz feedback (D-149: owner-only submit/list).
 //
-//   - env `OWNER_KEY` = the secret. Opening any page once with
-//     `?owner_key=<OWNER_KEY>` makes the middleware set the `itp_owner` cookie.
+//   - env `OWNER_KEY` = the secret. Opening `/api/owner?key=<OWNER_KEY>&next=/ja` once (the Worker,
+//     lib/ownerActivation.ts, D-217 H3) — or any page with `?owner_key=<OWNER_KEY>`, forwarded there
+//     by lib/ownerLegacy.ts (the middleware under `next dev`) — sets the `itp_owner` cookie.
 //   - Cookie value = hex SHA-256 of OWNER_KEY — the plaintext key is never
 //     stored client-side.
 //   - Fail-closed: OWNER_KEY unset/empty ⇒ nobody is owner.

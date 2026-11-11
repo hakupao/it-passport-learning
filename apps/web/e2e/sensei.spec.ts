@@ -45,10 +45,11 @@
 //      linking to /practice/q/<question_id>; delete removes the row and its storage;
 //      the empty state once none is left.
 //
-// Runs against a local prod build (the production CSP is then active, so a
-// request to api.anthropic.com also proves connect-src allows it):
-//   npm run build && npx next start -p 3015
-//   PLAYWRIGHT_BASE_URL=http://localhost:3015 npx playwright test e2e/sensei.spec.ts --retries=0
+// Runs against the local static export (the production CSP of out/_headers is then active, so a
+// request to api.anthropic.com also proves connect-src allows it; there is no `next start` since
+// D-217 H1-5): `pnpm build`, then serve out/ with scripts/local-cf.ts (owner part 7: with the Worker
+// stack, see learning-owner.spec.ts), e.g.
+//   PLAYWRIGHT_BASE_URL=http://127.0.0.1:3150 npx playwright test e2e/sensei.spec.ts --retries=0
 
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
@@ -560,7 +561,7 @@ if (OWNER_KEY) {
       if (req.method() === "PUT") bodies.push(req.postData() ?? "");
       await route.fulfill({ status: 200, json: req.method() === "PUT" ? req.postDataJSON() : encodeRecord(emptyRecord()) });
     });
-    await page.goto(`/ja/glossary?owner_key=${encodeURIComponent(OWNER_KEY)}`);
+    await page.goto(`/api/owner?key=${encodeURIComponent(OWNER_KEY)}&next=${encodeURIComponent("/ja/glossary")}`); // D-217 H3
     await presetKey(page);
     await page.goto(SET_URL);
     await openPanel(page, Q1, 1);

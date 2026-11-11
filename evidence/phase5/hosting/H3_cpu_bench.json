@@ -1,0 +1,327 @@
+{
+ "note": "D-217 H3 local CPU proxy: apps/web/scripts/worker-cpu-bench.ts on the wrangler 4.160 dry-run bundle (worker-dist/index.js), macOS arm64. ms = process.cpuUsage user+system (all threads, includes GC helpers); wallP50 = performance.now (canned Upstash fetch, no I/O wait). Not the Workers CPU time; H4 reads that from Workers Logs.",
+ "runs": [
+  {
+   "node": "v26.13.0",
+   "iter": 300,
+   "warmup": 30,
+   "results": [
+    {
+     "case": "GET /api/owner (activation, correct key)",
+     "storedBytes": 0,
+     "bodyBytes": 0,
+     "status": 307,
+     "coldMs": 3.36,
+     "p50": 0.05,
+     "p95": 0.18,
+     "max": 0.32,
+     "wallP50": 0.04
+    },
+    {
+     "case": "GET /api/learning (403, no cookie)",
+     "storedBytes": 0,
+     "bodyBytes": 0,
+     "status": 403,
+     "coldMs": 0.95,
+     "p50": 0.02,
+     "p95": 0.19,
+     "max": 2.72,
+     "wallP50": 0.02
+    },
+    {
+     "case": "GET ?v=2 — typical (1,000 q × 2)",
+     "storedBytes": 75295,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 12.92,
+     "p50": 1.41,
+     "p95": 4.12,
+     "max": 18.9,
+     "wallP50": 1.4
+    },
+    {
+     "case": "GET v1 — typical (1,000 q × 2)",
+     "storedBytes": 75295,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 2.59,
+     "p50": 1.42,
+     "p95": 3.32,
+     "max": 22.26,
+     "wallP50": 1.42
+    },
+    {
+     "case": "PUT full record — typical (1,000 q × 2)",
+     "storedBytes": 75295,
+     "bodyBytes": 75295,
+     "status": 200,
+     "coldMs": 5.79,
+     "p50": 4.25,
+     "p95": 8.22,
+     "max": 48.62,
+     "wallP50": 3.63
+    },
+    {
+     "case": "PUT delta (1 attempt) — typical (1,000 q × 2)",
+     "storedBytes": 75295,
+     "bodyBytes": 69,
+     "status": 200,
+     "coldMs": 3.72,
+     "p50": 2.31,
+     "p95": 4.29,
+     "max": 7.4,
+     "wallP50": 2.19
+    },
+    {
+     "case": "GET ?v=2 — saturated bank (2,900 q × 10 = ATTEMPTS_K)",
+     "storedBytes": 757495,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 18.29,
+     "p50": 14.78,
+     "p95": 22.58,
+     "max": 52.67,
+     "wallP50": 10.51
+    },
+    {
+     "case": "GET v1 — saturated bank (2,900 q × 10 = ATTEMPTS_K)",
+     "storedBytes": 757495,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 14.16,
+     "p50": 11.64,
+     "p95": 16.65,
+     "max": 43.87,
+     "wallP50": 7.56
+    },
+    {
+     "case": "PUT full record — saturated bank (2,900 q × 10 = ATTEMPTS_K)",
+     "storedBytes": 757495,
+     "bodyBytes": 757495,
+     "status": 200,
+     "coldMs": 27.7,
+     "p50": 26.15,
+     "p95": 60.14,
+     "max": 66.2,
+     "wallP50": 22.17
+    },
+    {
+     "case": "PUT delta (1 attempt) — saturated bank (2,900 q × 10 = ATTEMPTS_K)",
+     "storedBytes": 757495,
+     "bodyBytes": 69,
+     "status": 200,
+     "coldMs": 23.44,
+     "p50": 17.2,
+     "p95": 31.21,
+     "max": 59,
+     "wallP50": 13.49
+    },
+    {
+     "case": "GET ?v=2 — ~1 MiB (3,800 q × 10, beyond the current bank)",
+     "storedBytes": 989695,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 17.59,
+     "p50": 14.84,
+     "p95": 21.99,
+     "max": 41.85,
+     "wallP50": 10.71
+    },
+    {
+     "case": "GET v1 — ~1 MiB (3,800 q × 10, beyond the current bank)",
+     "storedBytes": 989695,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 8.65,
+     "p50": 13.18,
+     "p95": 18.26,
+     "max": 38.48,
+     "wallP50": 8.58
+    },
+    {
+     "case": "PUT full record — ~1 MiB (3,800 q × 10, beyond the current bank)",
+     "storedBytes": 989695,
+     "bodyBytes": 989695,
+     "status": 200,
+     "coldMs": 33.88,
+     "p50": 32.65,
+     "p95": 60.72,
+     "max": 65.11,
+     "wallP50": 25.47
+    },
+    {
+     "case": "PUT delta (1 attempt) — ~1 MiB (3,800 q × 10, beyond the current bank)",
+     "storedBytes": 989695,
+     "bodyBytes": 69,
+     "status": 200,
+     "coldMs": 43.71,
+     "p50": 18.53,
+     "p95": 34.22,
+     "max": 54.71,
+     "wallP50": 15.03
+    }
+   ]
+  },
+  {
+   "node": "v26.13.0",
+   "iter": 300,
+   "warmup": 30,
+   "results": [
+    {
+     "case": "GET /api/owner (activation, correct key)",
+     "storedBytes": 0,
+     "bodyBytes": 0,
+     "status": 307,
+     "coldMs": 3.46,
+     "p50": 0.05,
+     "p95": 0.23,
+     "max": 0.56,
+     "wallP50": 0.05
+    },
+    {
+     "case": "GET /api/learning (403, no cookie)",
+     "storedBytes": 0,
+     "bodyBytes": 0,
+     "status": 403,
+     "coldMs": 1.08,
+     "p50": 0.03,
+     "p95": 0.27,
+     "max": 3.53,
+     "wallP50": 0.03
+    },
+    {
+     "case": "GET ?v=2 — typical (1,000 q × 2)",
+     "storedBytes": 75295,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 13.13,
+     "p50": 1.38,
+     "p95": 3.97,
+     "max": 22.11,
+     "wallP50": 1.25
+    },
+    {
+     "case": "GET v1 — typical (1,000 q × 2)",
+     "storedBytes": 75295,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 10.14,
+     "p50": 1.1,
+     "p95": 3.18,
+     "max": 15,
+     "wallP50": 1.05
+    },
+    {
+     "case": "PUT full record — typical (1,000 q × 2)",
+     "storedBytes": 75295,
+     "bodyBytes": 75295,
+     "status": 200,
+     "coldMs": 4.39,
+     "p50": 3.35,
+     "p95": 5.62,
+     "max": 51.59,
+     "wallP50": 2.7
+    },
+    {
+     "case": "PUT delta (1 attempt) — typical (1,000 q × 2)",
+     "storedBytes": 75295,
+     "bodyBytes": 69,
+     "status": 200,
+     "coldMs": 2.46,
+     "p50": 2.4,
+     "p95": 5.95,
+     "max": 20.8,
+     "wallP50": 1.84
+    },
+    {
+     "case": "GET ?v=2 — saturated bank (2,900 q × 10 = ATTEMPTS_K)",
+     "storedBytes": 757495,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 11.23,
+     "p50": 19.95,
+     "p95": 27.82,
+     "max": 55.24,
+     "wallP50": 18.85
+    },
+    {
+     "case": "GET v1 — saturated bank (2,900 q × 10 = ATTEMPTS_K)",
+     "storedBytes": 757495,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 14.24,
+     "p50": 16.95,
+     "p95": 24.86,
+     "max": 49.34,
+     "wallP50": 14.46
+    },
+    {
+     "case": "PUT full record — saturated bank (2,900 q × 10 = ATTEMPTS_K)",
+     "storedBytes": 757495,
+     "bodyBytes": 757495,
+     "status": 200,
+     "coldMs": 33.81,
+     "p50": 28.79,
+     "p95": 63.96,
+     "max": 67.6,
+     "wallP50": 19.41
+    },
+    {
+     "case": "PUT delta (1 attempt) — saturated bank (2,900 q × 10 = ATTEMPTS_K)",
+     "storedBytes": 757495,
+     "bodyBytes": 69,
+     "status": 200,
+     "coldMs": 22.79,
+     "p50": 15.04,
+     "p95": 25.57,
+     "max": 53.41,
+     "wallP50": 11.3
+    },
+    {
+     "case": "GET ?v=2 — ~1 MiB (3,800 q × 10, beyond the current bank)",
+     "storedBytes": 989695,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 14.01,
+     "p50": 11.12,
+     "p95": 21.75,
+     "max": 39.7,
+     "wallP50": 9.04
+    },
+    {
+     "case": "GET v1 — ~1 MiB (3,800 q × 10, beyond the current bank)",
+     "storedBytes": 989695,
+     "bodyBytes": 0,
+     "status": 200,
+     "coldMs": 11.12,
+     "p50": 12.28,
+     "p95": 17.98,
+     "max": 39.42,
+     "wallP50": 7.92
+    },
+    {
+     "case": "PUT full record — ~1 MiB (3,800 q × 10, beyond the current bank)",
+     "storedBytes": 989695,
+     "bodyBytes": 989695,
+     "status": 200,
+     "coldMs": 38.43,
+     "p50": 39.02,
+     "p95": 66,
+     "max": 67.52,
+     "wallP50": 24.31
+    },
+    {
+     "case": "PUT delta (1 attempt) — ~1 MiB (3,800 q × 10, beyond the current bank)",
+     "storedBytes": 989695,
+     "bodyBytes": 69,
+     "status": 200,
+     "coldMs": 34.72,
+     "p50": 25.24,
+     "p95": 34.22,
+     "max": 60.66,
+     "wallP50": 16.35
+    }
+   ]
+  }
+ ]
+}

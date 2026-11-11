@@ -5,19 +5,23 @@
 // Hermetic: every /api/learning request is answered by `page.route` from an
 // in-test "server" (a fixed remote record, merged with each v2 PUT body and
 // answered in v2 wire exactly as the real route's v2 path does), so no Redis
-// is touched. Run it against a LOCAL prod
-// build whose `next start` has OWNER_KEY set and every KV_* / UPSTASH_* var set
-// to the empty string (empty, not unset: .env.local may define them), e.g.
+// is touched — except the last group (D-217 H3), which talks to the real Worker. Run it against
+// the LOCAL static export + Worker stack (D-217 H3; there is no `next start` since the export,
+// evidence/phase5/hosting/H3_worker.md §6): `pnpm build`, then
 //
-//   OWNER_KEY=k KV_REST_API_URL= KV_REST_API_TOKEN= UPSTASH_REDIS_REST_URL= \
-//     UPSTASH_REDIS_REST_TOKEN= npx next start -p 3100
-//   E2E_OWNER_KEY=k PLAYWRIGHT_BASE_URL=http://localhost:3100 \
+//   node scripts/fake-upstash.ts --port 3161                   # in-memory Upstash REST
+//   (cd worker/local && wrangler dev --port 3152 --ip 127.0.0.1) # the Worker; worker/local/.dev.vars:
+//                                                              #   OWNER_KEY=k, KV_REST_API_URL=http://127.0.0.1:3161,
+//                                                              #   KV_REST_API_TOKEN=fake-token
+//   node scripts/local-cf.ts --out out --port 3150 --api http://127.0.0.1:3152
+//   E2E_OWNER_KEY=k PLAYWRIGHT_BASE_URL=http://127.0.0.1:3150 \
 //     npx playwright test e2e/learning-owner.spec.ts
 //
+// (`next dev` with OWNER_KEY=k works too: it serves the same /api routes, app/api/**/route.dev.ts.)
 // playwright.config.ts ignores this spec unless E2E_OWNER_KEY is set, and the
 // spec refuses any base URL that is not localhost / 127.0.0.1.
 // `E2E_OWNER_KEY` must equal the server's OWNER_KEY: each test first opens
-// `/ja/glossary?owner_key=<key>` once so the middleware sets the itp_owner cookie.
+// `/api/owner?key=<key>&next=/ja/glossary` once so the Worker sets the itp_owner cookie.
 //
 // Asserted:
 //   (a) one GET per page load;
@@ -135,9 +139,13 @@ async function becomeOwner(page: Page): Promise<void> {
     throw new Error("E2E_OWNER_KEY is not set — it must equal the local server's OWNER_KEY (see the header).");
   }
   // The glossary mounts no LearningRecordProvider (the today page `/ja` does), so this
-  // visit issues no /api/learning request.
-  await page.goto(`/ja/glossary?owner_key=${encodeURIComponent(OWNER_KEY)}`);
+  // visit issues no /api/learning request. D-217 H3: activation is the Worker path /api/owner.
+  await page.goto(`/api/owner?key=${encodeURIComponent(OWNER_KEY)}&next=${encodeURIComponent("/ja/glossary")}`);
   await expect(page).toHaveURL(/\/ja\/glossary$/);
+  await expectOwnerCookies(page);
+}
+
+async function expectOwnerCookies(page: Page): Promise<void> {
   const cookies = await page.context().cookies();
   expect(cookies.map((c) => c.name)).toContain("itp_owner");
   // H1-1: the readable hint useOwner() reads (pages no longer read itp_owner on the server)
@@ -278,4 +286,76 @@ test("owner + an old tab's itp:learn:v1: the upgraded answers go up in the v2 PU
   await page.waitForTimeout(2 * 2000 + 500);
   expect(sync.puts).toHaveLength(1);
   expect(sync.gets).toBe(1);
+});
+
+// D-217 H3 — activation on the static site and one real round trip through the Worker (no page.route).
+test.describe("owner activation (Worker /api/owner)", () => {
+  test("the old ?owner_key= link on a static page → /api/owner → back on the page, cleaned, not in history", async ({
+    page,
+  }) => {
+    await page.goto("/ja/textbook");
+    const mainUrls: string[] = [];
+    page.on("request", (r) => {
+      if (r.isNavigationRequest() && r.frame() === page.mainFrame()) mainUrls.push(r.url());
+    });
+    await page.goto(`/ja/glossary?a=1&owner_key=${encodeURIComponent(OWNER_KEY)}#top`);
+    await expect(page).toHaveURL(/\/ja\/glossary\?a=1#top$/);
+    await expectOwnerCookies(page);
+    // static stack: page → /api/owner → page (next dev: the middleware strips the param in one 307)
+    expect(mainUrls.some((u) => new URL(u).pathname === "/api/owner") || mainUrls.length === 1).toBe(true);
+    await page.goBack();
+    await expect(page).toHaveURL(/\/ja\/textbook$/); // the URL with the key was replaced, not pushed
+  });
+
+  test("a wrong key sets nothing; key=logout clears both cookies", async ({ page }) => {
+    await page.goto(`/api/owner?key=wrong&next=${encodeURIComponent("/ja/glossary")}`);
+    await expect(page).toHaveURL(/\/ja\/glossary$/);
+    expect((await page.context().cookies()).map((c) => c.name)).not.toContain("itp_owner");
+    await becomeOwner(page);
+    await page.goto(`/api/owner?key=logout&next=${encodeURIComponent("/ja/textbook")}`);
+    await expect(page).toHaveURL(/\/ja\/textbook$/);
+    const names = (await page.context().cookies()).map((c) => c.name);
+    expect(names).not.toContain("itp_owner");
+    expect(names).not.toContain("itp_owner_hint");
+  });
+
+  test("an off-site next is ignored (→ /ja)", async ({ page }) => {
+    await page.goto(`/api/owner?key=wrong&next=${encodeURIComponent("//example.com/x")}`);
+    await expect(page).toHaveURL(/\/ja$/);
+  });
+
+  test("real round trip: browser fetch PUT v2 → GET ?v=2 through the Worker and the store", async ({ page }) => {
+    await becomeOwner(page);
+    const qid = `2009h21a-q0${String(Date.now() % 90 + 10)}`;
+    const result = await page.evaluate(async (id) => {
+      const body = { v: 2, a: { [id]: [[1_700_000_000_000, 1, 1, "p"]] }, u: {}, s: {} };
+      const put = await fetch("/api/learning", { method: "PUT", body: JSON.stringify(body) });
+      const get = await fetch("/api/learning?v=2");
+      const anon = await fetch("/api/learning", { credentials: "omit" });
+      return {
+        put: put.status,
+        get: get.status,
+        anon: anon.status,
+        robots: get.headers.get("x-robots-tag"),
+        cache: get.headers.get("cache-control"),
+        stored: ((await get.json()) as { a: Record<string, unknown> }).a[id],
+      };
+    }, qid);
+    expect(result).toMatchObject({ put: 200, get: 200, anon: 403, cache: "no-store" });
+    expect(result.stored).toEqual([[1_700_000_000_000, 1, 1, "p"]]);
+  });
+});
+
+// D-217 H3 attempt 2: the browser's own same-origin POST passes the Sec-Fetch-Site / Content-Type guards.
+test("real feedback POST from the page: JSON → 201, text/plain → 415, then listed", async ({ page }) => {
+  await becomeOwner(page);
+  const r = await page.evaluate(async () => {
+    const body = JSON.stringify({ question_id: "2009h21a-q054", locale: "ja", category: "other", note: "e2e" });
+    const ok = await fetch("/api/quiz/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body });
+    const plain = await fetch("/api/quiz/feedback", { method: "POST", headers: { "Content-Type": "text/plain" }, body });
+    const list = await fetch("/api/quiz/feedback?question_id=2009h21a-q054");
+    return { ok: ok.status, plain: plain.status, list: list.status, n: ((await list.json()) as { records: unknown[] }).records.length };
+  });
+  expect(r).toMatchObject({ ok: 201, plain: 415, list: 200 });
+  expect(r.n).toBeGreaterThan(0);
 });

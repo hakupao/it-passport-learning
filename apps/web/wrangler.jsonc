@@ -1,0 +1,27 @@
+// D-217 H3 — Cloudflare Worker: static assets = out/ (`pnpm build && pnpm scan:out` first) + the
+// owner-only API in worker/index.ts. Config reference: developers.cloudflare.com/workers/wrangler/
+// configuration/#assets, static-assets/binding/, static-assets/routing/worker-script/ (2026-11-11).
+//
+// Secrets (never committed; H4 sets them with `wrangler secret put`, local runs use .dev.vars which
+// is gitignored): OWNER_KEY, and the Upstash REST pair KV_REST_API_URL + KV_REST_API_TOKEN (or
+// UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN, preferred when both are set). The handlers read
+// them from process.env (nodejs_compat + compatibility_date ≥ 2025-04-01 populate it).
+{
+  "name": "itlearn",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    // Unknown paths get out/404.html with status 404. html_handling stays the default
+    // (auto-trailing-slash).
+    "not_found_handling": "404-page",
+    // Only /api/* invokes the Worker before the assets; every page, /data/*, /_next/* and figure stays
+    // a free static-asset request. (The docs say a non-navigation request that matches no asset may
+    // still invoke the Worker — not seen in local workerd; it hands such a request back to ASSETS.)
+    "run_worker_first": ["/api/*"]
+  }
+  // No "observability" block on purpose: Workers Logs would store each invocation's full URL, and
+  // /api/owner?key=… carries the owner key. H4 decides how to read CPU time (evidence H3_worker.md §7).
+}

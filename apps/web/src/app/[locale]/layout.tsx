@@ -19,6 +19,7 @@ import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/app/AppShell";
 import { routing } from "@/i18n/routing";
+import { OWNER_LEGACY_REDIRECT_SCRIPT } from "@/lib/ownerLegacy";
 import { SITE_ORIGIN } from "@/lib/seo/canonical";
 
 import "../../fonts/fonts.css";
@@ -67,6 +68,10 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        {/* D-217 H3: the old `?owner_key=` link → the Worker's /api/owner (lib/ownerLegacy.ts) */}
+        <script dangerouslySetInnerHTML={{ __html: OWNER_LEGACY_REDIRECT_SCRIPT }} />
+      </head>
       <body className="antialiased">
         <NextIntlClientProvider>
           <AppShell>{children}</AppShell>
