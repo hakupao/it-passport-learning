@@ -13,13 +13,14 @@ import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { examsNewestFirst } from "@/lib/practice/practiceLabels";
 import { loadSetupIndex } from "@/lib/practice/practiceReader";
 import { loadQuizIndex } from "@/lib/quiz/quizReader";
+import { pageAlternates } from "@/lib/seo/canonical";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Mock" });
-  return { title: t("title") };
+  return { title: t("title"), alternates: pageAlternates(locale, "/mock") };
 }
 
 export default async function MockPage({ params }: Props): Promise<React.ReactElement> {

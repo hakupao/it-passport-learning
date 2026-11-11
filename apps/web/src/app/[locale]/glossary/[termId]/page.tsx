@@ -19,8 +19,16 @@ import { isValidTermId } from "@/lib/glossary/termId";
 import { routing } from "@/i18n/routing";
 import { termAnchor } from "@/lib/sensei/textbookAnchors";
 import { loadGeneratedSvg, loadReaderIndex, pick } from "@/lib/textbook/reader";
+import { pageAlternates } from "@/lib/seo/canonical";
 
-export const dynamic = "force-dynamic";
+// D-223 (A′): every dictionary term is prerendered; any other id is a 404 (out/404.html). The
+// family's RSC payloads (.txt) are deleted after export (scripts/postexport.ts), so every link
+// here is a plain <a> (lib/seo/detailLinks.ts), never a client transition.
+export const dynamicParams = false;
+
+export async function generateStaticParams(): Promise<{ termId: string }[]> {
+  return [...(await loadDictionary()).byId.keys()].map((termId) => ({ termId }));
+}
 
 type Props = { params: Promise<{ locale: string; termId: string }> };
 
@@ -32,7 +40,9 @@ async function findEntry(id: string): Promise<DictEntry | undefined> {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, termId } = await params;
   const entry = await findEntry(termId);
-  return entry ? { title: toTermCard(entry, locale).gloss } : {};
+  return entry
+    ? { title: toTermCard(entry, locale).gloss, alternates: pageAlternates(locale, `/glossary/${termId}`) }
+    : {};
 }
 
 export default async function TermPage({ params }: Props): Promise<React.ReactElement> {

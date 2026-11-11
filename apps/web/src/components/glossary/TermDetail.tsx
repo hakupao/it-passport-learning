@@ -17,6 +17,7 @@ import { field, type DictEntry } from "@/lib/glossary/dictionary";
 import { pickTerm } from "@/lib/textbook/reader";
 
 import styles from "./glossary.module.css";
+import { DetailLink } from "@/components/app/DetailLink";
 
 interface Props {
   locale: string;
@@ -100,9 +101,9 @@ export function TermDetail({ locale, entry, unitTitles, svgs, senseiAnchorText }
           <ul className={styles.qList}>
             {entry.questions.map((q) => (
               <li key={q.id}>
-                <Link href={`/practice/q/${q.id}`} locale={locale}>
+                <DetailLink href={`/practice/q/${q.id}`} locale={locale}>
                   {q.sourceLabel}
-                </Link>
+                </DetailLink>
               </li>
             ))}
           </ul>

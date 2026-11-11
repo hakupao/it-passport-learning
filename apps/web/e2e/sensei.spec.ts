@@ -679,11 +679,13 @@ test("review: today's 「AI 分析」 opens the topic page and AI 先生 speaks 
   await seedRecord(page);
   const scripts = trackScripts(page);
   // RSC fetches of the topic page that are not prefetches: the link's navigation only
-  // (removing ?review=1 uses history.replaceState, which refetches nothing)
+  // (removing ?review=1 uses history.replaceState, which refetches nothing). The static export
+  // (D-217 H1-5) fetches the payload as `<page>.txt`; a server build fetches the page URL itself.
   const topicFetches: string[] = [];
   page.on("request", (r) => {
     const u = new URL(r.url());
-    if (u.pathname === REVIEW_URL && r.headers()["rsc"] === "1" && !r.headers()["next-router-prefetch"]) {
+    const isTopic = u.pathname === REVIEW_URL || u.pathname === `${REVIEW_URL}.txt`;
+    if (isTopic && r.headers()["rsc"] === "1" && !r.headers()["next-router-prefetch"]) {
       topicFetches.push(r.url());
     }
   });

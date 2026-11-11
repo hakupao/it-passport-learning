@@ -19,6 +19,7 @@ import { formatElapsed, summarize, type SessionFrom } from "@/lib/practice/pract
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 import styles from "./session.module.css";
+import { DetailLink } from "@/components/app/DetailLink";
 
 export const SESSION_SUMMARY_HEADING_ID = "practice-summary";
 
@@ -83,9 +84,9 @@ export function SessionSummary({
             const q = byId.get(id)!;
             return (
               <li key={id} className={styles.wrongRow} data-wrong={id}>
-                <Link href={`/practice/q/${id}`} className={styles.wrongLink}>
+                <DetailLink href={`/practice/q/${id}`} className={styles.wrongLink}>
                   <span lang="ja">{q.source_label}</span>
-                </Link>
+                </DetailLink>
                 <span className={styles.wrongTopic} lang="ja">
                   {topics[q.topic_id]?.path ?? ""}
                 </span>

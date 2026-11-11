@@ -25,7 +25,7 @@
 //   it moved to that question of the group); else, when that question is on the page,
 //   as before. Either way the panel closes, then scrolls to the question and focuses
 //   its <article> (tabIndex -1) — not a choice button, where Enter would answer it.
-//   Otherwise the link opens the question's own page, /practice/q/<id>.
+//   Otherwise the link opens the question's own page, /practice/q/<id> (a full page load, D-223).
 // - Phase C: a free-question thread (/sensei) arrives with its question as the
 //   `opener`; its hint and placeholder are the free-question ones and it shows no
 //   「なぜ」 suggestion.
@@ -33,20 +33,20 @@
 "use client";
 
 import { useEffect, useRef, useState, type RefObject } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import type { UIMessage } from "ai";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from "@/components/ui/dialog";
 import { useSensei } from "@/hooks/useSensei";
-import { useRouter } from "@/i18n/navigation";
 import { QUESTION_ID } from "@/lib/quiz/questionId";
 import type { SenseiError } from "@/lib/sensei/errors";
 import type { ThreadKind } from "@/lib/sensei/threadStore";
 
 import { KeySettings } from "./KeySettings";
 import { SenseiMarkdown } from "./SenseiMarkdown";
+import { detailNavigate } from "@/lib/seo/detailLinks";
 
 export interface SenseiAnchor {
   kind: ThreadKind;
@@ -76,7 +76,7 @@ export function SenseiPanel({
   onQuestionLink?: (id: string) => boolean;
 }): React.ReactElement {
   const t = useTranslations("Sensei");
-  const router = useRouter();
+  const locale = useLocale();
   const s = useSensei(anchor);
   const [input, setInput] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -148,7 +148,7 @@ export function SenseiPanel({
       onOpenChange(false);
       return;
     }
-    router.push(`/practice/q/${id}`);
+    detailNavigate(locale, `/practice/q/${id}`); // a full page load (D-223: no .txt payload)
   }
 
   const generating = s.status === "submitted" || s.status === "streaming";

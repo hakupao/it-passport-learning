@@ -17,35 +17,9 @@ export type AllowSpec =
   | { arr: AllowSpec }
   | { tuple: AllowSpec[] };
 
-/** Internal / provenance fields of the corpus and its sidecars. */
-export const FORBIDDEN_KEYS = [
-  "source_note",
-  "suspect_count",
-  "stem_corruption_count",
-  "stem_corruption_suspected",
-  "stem_reconstructed_s975",
-  "key_guard",
-  "key_guard_round1",
-  "round1",
-  "note_jp",
-  "figure_derivable",
-  "derived_answer",
-  "matches_key",
-  "generated_from",
-  "attribution",
-  "schema_version",
-  "stem_jp_clean",
-  "figure_type",
-  "stats",
-  "count",
-  "pages",
-  "page",
-  "bbox",
-  "svg_path",
-] as const;
-
-/** Paths / names of the raw IPA material and the extraction pipeline. */
-export const FORBIDDEN_TEXT = ["data/ip/", "question_bank", ".pdf", "/exams/", "/sources/", "/syllabus/", ".source/"] as const;
+// The forbidden lists live in ./forbidden (no imports) so the out/ scan (scripts/scan-out.ts, plain
+// Node) uses the same lists.
+export { FORBIDDEN_KEYS, FORBIDDEN_TEXT } from "./forbidden";
 
 const S = "string" as const;
 const N = "number" as const;

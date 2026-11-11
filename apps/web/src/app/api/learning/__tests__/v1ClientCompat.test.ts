@@ -42,7 +42,7 @@ vi.mock("@/lib/learning/syncStore", async () => {
 
 import { LEARNING_REDIS_KEY, LEARNING_REDIS_V1_KEY } from "@/lib/learning/syncStore";
 
-import { GET, PUT } from "../route";
+import { GET, PUT } from "../route.dev";
 
 const OWNER_KEY = "test-owner-key";
 const OWNER_COOKIE = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;

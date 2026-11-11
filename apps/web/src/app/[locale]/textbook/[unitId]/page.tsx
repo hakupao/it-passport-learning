@@ -30,6 +30,7 @@ import {
   unitPlace,
   type TextbookUnit,
 } from "@/lib/textbook/reader";
+import { pageAlternates } from "@/lib/seo/canonical";
 
 // D-217 H1-4: every listed unit is prerendered per locale (the [locale] layout supplies the locales);
 // any other unitId is a 404 without rendering.
@@ -46,7 +47,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, unitId } = await params;
   try {
     const unit = await loadUnit(unitId);
-    return { title: pick(unit as unknown as Record<string, unknown>, "title", locale) };
+    return {
+      title: pick(unit as unknown as Record<string, unknown>, "title", locale),
+      alternates: pageAlternates(locale, `/textbook/${unitId}`),
+    };
   } catch {
     return {};
   }

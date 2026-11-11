@@ -14,6 +14,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { RecordFromUrl, RecordPage } from "@/components/record/RecordPage";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { loadSetupIndex } from "@/lib/practice/practiceReader";
+import { pageAlternates } from "@/lib/seo/canonical";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -22,7 +23,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Record" });
-  return { title: t("title") };
+  return { title: t("title"), alternates: pageAlternates(locale, "/record") };
 }
 
 export default async function RecordRoute({ params }: Props): Promise<React.ReactElement> {

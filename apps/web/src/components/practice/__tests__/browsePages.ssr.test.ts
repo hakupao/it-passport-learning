@@ -190,7 +190,7 @@ describe("TopicPage", () => {
     expect(html).toContain('data-testid="review-launcher"');
     const qs = topicQs();
     expect(count(html, /data-question-row="/g)).toBe(qs.length);
-    for (const q of qs) expect(html).toContain(`href="/practice/q/${q.id}"`);
+    for (const q of qs) expect(html).toContain(`href="/ja/practice/q/${q.id}"`); // a plain <a> (D-223)
     const q0 = qs[0]!;
     const row = new RegExp(`data-question-row="${q0.id}"[\\s\\S]*?</tr>`).exec(html)![0];
     expect(textOf(row)).toContain(`問 ${Number(q0.id.slice(-3))}`);

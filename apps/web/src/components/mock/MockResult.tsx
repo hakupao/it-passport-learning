@@ -16,6 +16,7 @@ import { PRACTICE_CATEGORY_LABEL_KEYS } from "@/lib/practice/practiceLabels";
 import type { QuizQuestion } from "@/lib/quiz/quizModel";
 
 import styles from "./mock.module.css";
+import { DetailLink } from "@/components/app/DetailLink";
 
 export type MockResultQuestion = Pick<QuizQuestion, "id" | "source_label" | "correct_answer" | "category">;
 
@@ -94,9 +95,9 @@ export function MockResult({ ids, answers, questions, score, elapsedMs }: MockRe
                 {result === "right" ? "○" : result === "wrong" ? "×" : "—"}
               </span>
               <span className={styles.rowResult}>{t(result === "right" ? "right" : result === "wrong" ? "wrong" : "unanswered")}</span>
-              <Link href={`/practice/q/${id}`} className={styles.link}>
+              <DetailLink href={`/practice/q/${id}`} className={styles.link}>
                 <span lang="ja">{q?.source_label ?? id}</span>
-              </Link>
+              </DetailLink>
               <span className={styles.rowAnswers}>
                 <span>
                   {t("colYours")} <strong>{yours ?? "—"}</strong>

@@ -56,7 +56,7 @@
 
 ### H5 検証
 - local: Playwright 全項目を `out/` の静的配信 (:3150) に対して実行。
-- **Rule A (内容の同一性)**: Vercel 版 (local `next start`) と静的版の本文テキストを機械比較 — 全 textbook 単元 × 3 言語は全件 diff、その他のページは 30 件 (10 / 言語) を抽出し目視確認。結果は `audit_matrix.md`。
+- **Rule A (内容の同一性)**: Vercel 版と静的版の本文テキストを機械比較 (基線 = main を別 worktree で server build して起動したもの。この branch は production build が export 固定で `next start` が無いため、S154 H1-5 審査 MEDIUM-1) — 全 textbook 単元 × 3 言語は全件 diff、その他のページは 30 件 (10 / 言語) を抽出し目視確認。結果は `audit_matrix.md`。
 - preview: HTML smoke (`prod-smoke` を preview に向ける)、所有者の同期を実機で 1 回。
 - Rule D: verifier opus (コード)、別 subagent で preview の挙動。
 

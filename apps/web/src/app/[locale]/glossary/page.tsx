@@ -13,13 +13,14 @@ import { GlossaryList } from "@/components/glossary/GlossaryList";
 import { buildListGroups } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { loadReaderIndex } from "@/lib/textbook/reader";
+import { pageAlternates } from "@/lib/seo/canonical";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Glossary" });
-  return { title: t("title") };
+  return { title: t("title"), alternates: pageAlternates(locale, "/glossary") };
 }
 
 export default async function GlossaryPage({ params }: Props): Promise<React.ReactElement> {

@@ -57,45 +57,27 @@ const GLOSSARY_TRACE = [...TEXTBOOK_TRACE, "../../data/ip/quiz/questions.json"];
 // S131 (D-179 §9 改訂): `next build --turbopack` (Next 15.5.18) does NOT apply
 // outputFileTracingIncludes / outputFileTracingExcludes — the turbopack build
 // returns no buildTraceContext, so these per-route entries are inert. What ships
-// is whatever turbopack's own tracing of the fs reads picks up. IPA protection
-// therefore rests on the Phase gate: `find .next -name '*.nft.json' -exec grep
-// -lE 'data/ip/(exams|sources|syllabus)/' {} + | wc -l` must print 0. Do not
-// add new trace entries here; the existing ones are left untouched.
+// is whatever turbopack's own tracing of the fs reads picks up. Since D-217 H1-5/H1-6 the build is
+// a static export (no server bundle ships), and the IPA leak gate is the scan of the whole output:
+// `pnpm scan:out` (scripts/scan-out.ts) must pass before any deploy — it replaces the S131
+// `.nft.json` gate. Do not add new trace entries here; the existing ones are left untouched.
 
-// D-181 §0-8 — static CSP, production only (dev needs the HMR websocket and
-// va.vercel-scripts.com). A static header keeps every page's rendering mode
-// (the glossary list stays prerendered); a nonce would need a per-request
-// header and make every page dynamic. script-src therefore keeps 'unsafe-inline'
-// for Next's inline flight scripts (self.__next_f.push), to keep static rendering.
-// Residual risk, accepted: connect-src (only self + api.anthropic.com) limits
-// where fetch / XHR / WebSocket / sendBeacon can send data, but top-level
-// navigation and window.open are outside CSP, so an injected script can still
-// carry the key out that way: any XSS still means key exposure.
-// style-src 'unsafe-inline' is for next/font and component style={{}}.
-// Vercel Analytics / Speed Insights are same-origin in production.
-const CONTENT_SECURITY_POLICY = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
-  "font-src 'self'",
-  "connect-src 'self' https://api.anthropic.com",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-].join("; ");
+// D-217 H1-5 — the production build is a static export (`out/` = the whole site, served by
+// Cloudflare Workers static assets). `next dev` keeps the server (middleware, /api routes) so local
+// development and the owner sync still work. Response headers (the D-181 §0-8 CSP, cache rules) are
+// no longer set here — `headers()` does not apply to an export — but in out/_headers, written by
+// scripts/postexport.ts (src/lib/export/headers.ts).
+const STATIC_EXPORT = process.env.NODE_ENV === "production";
+
+// The server-only files (src/middleware.dev.ts: `/` + locale-less redirects and `?owner_key=`;
+// app/api/learning, app/api/quiz/feedback: the owner API) are named `*.dev.ts` and exist only for
+// `next dev`: the export build leaves the "dev.ts" page extension out, so it does not see them.
+// In production their jobs move to out/_redirects (scripts/postexport.ts) and to the H3 Worker.
+const PAGE_EXTENSIONS = ["tsx", "ts", "jsx", "js"];
 
 const nextConfig: NextConfig = {
-  async headers() {
-    if (process.env.NODE_ENV !== "production") return [];
-    return [
-      {
-        source: "/:path*",
-        headers: [{ key: "Content-Security-Policy", value: CONTENT_SECURITY_POLICY }],
-      },
-    ];
-  },
+  output: STATIC_EXPORT ? "export" : undefined,
+  pageExtensions: STATIC_EXPORT ? PAGE_EXTENSIONS : [...PAGE_EXTENSIONS, "dev.ts"],
   outputFileTracingRoot: path.join(process.cwd(), "..", ".."),
   outputFileTracingIncludes: {
     "/[locale]/textbook": TEXTBOOK_TRACE,

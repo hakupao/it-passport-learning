@@ -48,6 +48,7 @@ import type { StorageLike } from "@/lib/storage";
 
 import { SenseiHost, useSenseiHost } from "./AskSensei";
 import { KeySettings } from "./KeySettings";
+import { isDetailPath, localeHref } from "@/lib/seo/detailLinks";
 
 /** Where a saved thread links back to: its question, topic page, glossary term or textbook unit
  *  (null: a free thread, which opens in place). */
@@ -221,7 +222,12 @@ function SenseiHomeBody({
                 <li key={th.id} className="flex items-center gap-3 py-3" data-testid="sensei-thread">
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold">
-                      {href ? (
+                      {href && isDetailPath(href) ? (
+                        // D-223: a question / term thread opens its detail page with a full page load
+                        <a href={localeHref(locale, href)} className="underline underline-offset-[3px] decoration-ink-muted hover:decoration-ink">
+                          {th.title}
+                        </a>
+                      ) : href ? (
                         <Link href={href} className="underline underline-offset-[3px] decoration-ink-muted hover:decoration-ink">
                           {th.title}
                         </Link>

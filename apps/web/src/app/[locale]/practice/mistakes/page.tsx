@@ -12,6 +12,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MistakesList } from "@/components/practice/MistakesList";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { loadSetupIndex } from "@/lib/practice/practiceReader";
+import { pageAlternates } from "@/lib/seo/canonical";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -20,7 +21,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Mistakes" });
-  return { title: t("title") };
+  return { title: t("title"), robots: { index: false }, alternates: pageAlternates(locale, "/practice/mistakes") };
 }
 
 export default async function MistakesPage({ params }: Props): Promise<React.ReactElement> {

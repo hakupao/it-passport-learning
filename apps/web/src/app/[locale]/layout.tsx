@@ -9,42 +9,28 @@
 //
 // Static rendering enabled via setRequestLocale per next-intl docs — without
 // this the build would degrade to dynamic rendering for any RSC that calls
-// useTranslations(), losing the static optimization of the static pages (since D-217 H1-4
-// every page under /[locale] is prerendered except the two detail families gate H2 decides:
-// practice/q/[qid] and glossary/[termId]).
+// useTranslations(), losing the static optimization of the static pages (every page under
+// /[locale] is prerendered, D-217 H1-4 / H1-5, the two detail families included per D-223).
 
 import type { Metadata, Viewport } from "next";
-import { BIZ_UDPGothic, Noto_Sans_SC } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-
 import { AppShell } from "@/components/app/AppShell";
 import { routing } from "@/i18n/routing";
+import { SITE_ORIGIN } from "@/lib/seo/canonical";
 
+import "../../fonts/fonts.css";
 import "../globals.css";
 
-// D-189 §3.2: BIZ UDPGothic site-wide; Noto Sans SC covers the simplified-Chinese
-// glyphs BIZ UD lacks. CJK files are large and Google serves them in unicode-range
-// slices, so no preload (preload: false also lifts the subsets requirement).
-// The .variable classes go on <html>: Tailwind resolves --font-sans and
-// --default-font-family on :root, so --font-biz / --font-sc must exist there.
-const bizUDPGothic = BIZ_UDPGothic({
-  weight: ["400", "700"],
-  variable: "--font-biz",
-  display: "swap",
-  preload: false,
-});
+// D-189 §3.2: BIZ UDPGothic site-wide; Noto Sans SC covers the simplified-Chinese glyphs BIZ UD
+// lacks. Self-hosted since D-217 H1-5 (src/fonts/fonts.css: Google's unicode-range slices, no
+// preload, --font-biz / --font-sc on :root) so the export build fetches nothing.
 
-const notoSansSC = Noto_Sans_SC({
-  weight: ["400", "700"],
-  variable: "--font-sc",
-  display: "swap",
-  preload: false,
-});
+// D-220: Cloudflare Web Analytics beacon, only when the build has a site token (none → nothing is
+// emitted, and the CSP in _headers allows no analytics host either; lib/export/headers.ts).
+const CF_BEACON_TOKEN = process.env.CF_WEB_ANALYTICS_TOKEN?.trim() || null;
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -54,6 +40,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_ORIGIN),
   title: "ITパスポート 過去問ノート",
   description:
     "Trilingual (jp/zh/en) study companion for the Japanese IT Passport exam — α private build.",
@@ -79,13 +66,18 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className={`${bizUDPGothic.variable} ${notoSansSC.variable}`}>
+    <html lang={locale}>
       <body className="antialiased">
         <NextIntlClientProvider>
           <AppShell>{children}</AppShell>
-          <Analytics />
-          <SpeedInsights />
         </NextIntlClientProvider>
+        {CF_BEACON_TOKEN ? (
+          <script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={JSON.stringify({ token: CF_BEACON_TOKEN })}
+          />
+        ) : null}
       </body>
     </html>
   );

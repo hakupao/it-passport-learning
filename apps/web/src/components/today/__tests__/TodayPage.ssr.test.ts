@@ -308,7 +308,7 @@ describe("TodayPage — weak topics, area rates, terms", () => {
     const html = render("zh");
     const box = /<section[^>]*data-terms=""[^>]*>[\s\S]*?<\/section>/.exec(html)![0];
     expect(textOf(box)).toContain("今天的 3 个用语");
-    const links = [...box.matchAll(/<a href="\/glossary\/([^"]+)"/g)].map((m) => m[1]);
+    const links = [...box.matchAll(/<a href="\/zh\/glossary\/([^"]+)"/g)].map((m) => m[1]); // a plain <a> (D-223)
     const firstId = dailyPlan(r, poolFromIndex(index), TODAY, toLocalDay, DK).mistakes[0]!;
     const firstTopic = Object.keys(index.topicQuestionIds).find((t) => index.topicQuestionIds[t]!.includes(firstId))!;
     expect([index.topics[0]!.id, index.topics[1]!.id]).toContain(firstTopic);

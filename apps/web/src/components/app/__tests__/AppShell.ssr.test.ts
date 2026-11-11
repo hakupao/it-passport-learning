@@ -193,9 +193,19 @@ describe("AppShell SSR", () => {
     expect(group).toMatch(/<strong[^>]*aria-current="true"[^>]*>中<\/strong>/);
     expect(group).toMatch(/<a[^>]*href="\/ja\/glossary\/t1"[^>]*>日<\/a>/);
     expect(group).toMatch(/<a[^>]*href="\/en\/glossary\/t1"[^>]*>EN<\/a>/);
-    // same mechanics as the old <select>: a replace navigation, not a new history entry
-    expect(group.match(/data-replace="true"/g)).toHaveLength(2);
+    // a detail page (D-223): plain links (full page load, its .txt is not deployed) that still
+    // replace the history entry, not the client router
+    expect(group.match(/data-full-load="replace"/g)).toHaveLength(2);
+    expect(group).not.toMatch(/data-replace=/);
     expect(group).not.toMatch(/<select|🌐/);
+  });
+
+  it("language switch on a non-detail page: the i18n Link with a replace navigation (same mechanics as the old <select>)", () => {
+    const html = render("zh", "/glossary");
+    const group = /<div[^>]*role="group"[^>]*>([\s\S]*?)<\/div>/.exec(html)?.[0] ?? "";
+    expect(group).toMatch(/<a[^>]*href="\/ja\/glossary"[^>]*>日<\/a>/);
+    expect(group.match(/data-replace="true"/g)).toHaveLength(2);
+    expect(group).not.toMatch(/data-full-load=/);
   });
 
   it("children render inside the content frame after the header; skip link targets it", () => {

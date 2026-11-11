@@ -7,8 +7,8 @@
 // none. Each response must carry the CSP header, so a run against a build
 // without it fails instead of passing vacuously.
 //
-// Needs a production build (`next build` + `next start`, or the deployed app):
-// next.config.ts only sets the header when NODE_ENV === "production".
+// Needs the static export served with its out/_headers (D-217 H1-5: `pnpm build` → out/, served by
+// Cloudflare or a local server that applies _headers), or the deployed app; `next dev` sets no CSP.
 // No LLM call fires on these pages by themselves; a guard routes api.anthropic.com
 // in every test, so one that did would fail.
 // D-181 Phase C: on the glossary term page, the textbook unit page and (Stage 7) the

@@ -11,10 +11,10 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/i18n/navigation";
 import type { DictListGroup } from "@/lib/glossary/dictionary";
 
 import styles from "./glossary.module.css";
+import { DetailLink } from "@/components/app/DetailLink";
 
 // Mirrors searchNorm in lib/glossary/dictionary (DictListItem.search is pre-normalized).
 const norm = (s: string): string => s.normalize("NFKC").toLowerCase();
@@ -70,10 +70,10 @@ export function GlossaryList({
             <ul className={styles.items}>
               {g.items.map((i) => (
                 <li key={i.id}>
-                  <Link href={`/glossary/${i.id}`} locale={locale} prefetch={false} className={styles.itemLink}>
+                  <DetailLink href={`/glossary/${i.id}`} locale={locale} className={styles.itemLink}>
                     <span className={styles.term}>{i.term}</span>
                     {i.gloss !== i.term && <span className={styles.gloss}>{i.gloss}</span>}
-                  </Link>
+                  </DetailLink>
                 </li>
               ))}
             </ul>

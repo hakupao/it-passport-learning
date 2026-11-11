@@ -44,7 +44,7 @@ import {
   readStored,
 } from "@/lib/learning/syncStore";
 
-import { GET, PUT } from "../route";
+import { GET, PUT } from "../route.dev";
 
 const OWNER_KEY = "test-owner-key";
 const OWNER_COOKIE_HEADER = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;

@@ -103,7 +103,7 @@ describe("MistakesList", () => {
     expect(textOf(leech[3]!)).toContain("顽固");
     expect(textOf(leech[3]!)).toContain("近 10 次错 4 次");
     expect(leech[3]).toMatch(new RegExp(`<a href="/textbook/${tech.units[0]!.id}"[^>]*>读单元</a>`));
-    expect(leech[3]).toMatch(new RegExp(`<a href="/practice/q/${t[0]}"[^>]*>问 AI</a>`));
+    expect(leech[3]).toMatch(new RegExp(`<a href="/zh/practice/q/${t[0]}"[^>]*>问 AI</a>`));
     // a plain mistake: no tag, no unit / AI links
     const plain = rows.find((m) => m[1] === t[1])!;
     expect(plain[2]).not.toContain("data-leech");
@@ -127,7 +127,7 @@ describe("MistakesList", () => {
     const row = rowsOf(render("en")).find((m) => m[1] === t[1])!;
     const examId = t[1]!.replace(/-q\d+$/, "");
     const n = Number(/-q(\d+)$/.exec(t[1]!)![1]);
-    expect(row[3]).toMatch(new RegExp(`<a href="/practice/q/${t[1]}"[^>]*lang="ja"[^>]*>問 ${n}</a>`));
+    expect(row[3]).toMatch(new RegExp(`<a href="/en/practice/q/${t[1]}"[^>]*lang="ja"[^>]*>問 ${n}</a>`));
     expect(row[3]).toContain(`lang="ja">${index.exams[examId]}<`);
     expect(row[3]).toMatch(new RegExp(`<td lang="ja"[^>]*>${tech.name_jp}</td>`));
     expect(textOf(row[3]!)).toMatch(new RegExp(`^問 ${n} ${index.exams[examId]} ${tech.name_jp} `));

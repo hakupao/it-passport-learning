@@ -28,6 +28,8 @@ function groups(src: string): Array<{ agents: string[]; disallow: string[] }> {
         inRules = false;
       }
       cur.agents.push(value);
+    } else if (key === "sitemap") {
+      // a non-group record (RFC 9309 §2.2.4); checked on its own below
     } else if (key === "disallow") {
       if (!cur) throw new Error("Disallow before any User-agent");
       cur.disallow.push(value);
@@ -87,5 +89,10 @@ describe("public/robots.txt (D-217)", () => {
       expect(blocked(`/${locale}/settings`)).toBe(true);
     }
     expect(blocked("/api/learning")).toBe(true);
+  });
+
+  it("names the sitemap on the production origin (D-217 H1-5)", () => {
+    const lines = text.split("\n").filter((l) => /^sitemap:/i.test(l));
+    expect(lines).toEqual(["Sitemap: https://itlearn.bojiangz.com/sitemap.xml"]);
   });
 });

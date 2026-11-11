@@ -30,6 +30,7 @@ import { MAX_SCOPE_IDS } from "@/lib/practice/practiceSession";
 import styles from "./browse.module.css";
 import own from "./mistakes.module.css";
 import { FreshLink } from "./FreshLink";
+import { DetailLink } from "@/components/app/DetailLink";
 
 export interface MistakesListProps {
   /** the dictionary-free today payload (loadSetupIndex): topics, question ids, exam labels */
@@ -42,9 +43,9 @@ function Row({ row, t, qLabel }: { row: MistakeRow; t: T; qLabel: string }): Rea
   return (
     <tr data-mistake-row={row.qid} {...(row.isLeech ? { "data-leech": "" } : {})}>
       <td className={styles.strong}>
-        <Link href={`/practice/q/${row.qid}`} className={styles.link} lang="ja">
+        <DetailLink href={`/practice/q/${row.qid}`} className={styles.link} lang="ja">
           {qLabel} {row.number}
-        </Link>
+        </DetailLink>
       </td>
       <td lang="ja">{row.exam}</td>
       <td lang="ja" className={own.topicCell}>
@@ -61,9 +62,9 @@ function Row({ row, t, qLabel }: { row: MistakeRow; t: T; qLabel: string }): Rea
                 {t("readUnit")}
               </Link>
             ) : null}
-            <Link href={`/practice/q/${row.qid}`} className={styles.link}>
+            <DetailLink href={`/practice/q/${row.qid}`} className={styles.link}>
               {t("askAi")}
-            </Link>
+            </DetailLink>
           </span>
         ) : null}
       </td>

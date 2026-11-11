@@ -14,10 +14,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/i18n/navigation";
 import type { TermCard } from "@/lib/glossary/dictionary";
 
 import styles from "./glossary.module.css";
+import { DetailLink } from "@/components/app/DetailLink";
 
 interface Props {
   card: TermCard | undefined;
@@ -93,9 +93,9 @@ export function TermChip({ card, label, locale, defaultOpen = false }: Props): R
           {card.senseCount > 1 ? (
             <span className={styles.chipField}>{t("otherSenses", { n: card.senseCount - 1 })}</span>
           ) : null}
-          <Link href={`/glossary/${card.id}`} locale={locale} prefetch={false} className={styles.chipLink}>
+          <DetailLink href={`/glossary/${card.id}`} locale={locale} className={styles.chipLink}>
             {t("openInGlossary")} →
-          </Link>
+          </DetailLink>
         </span>
       ) : null}
     </span>

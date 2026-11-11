@@ -7,7 +7,7 @@
 // through the static data's allow-list projection (clientQuestion: no internal corpus field, H1-3
 // MEDIUM-1). The owner flag
 // that gates the record sync and the report button is read in the browser (useOwner, H1-1);
-// LearningRecordProvider is mounted here. force-dynamic stays until H1-4.
+// LearningRecordProvider is mounted here. Prerendered (D-223).
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -22,10 +22,18 @@ import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { topicStars } from "@/lib/practice/practiceIndex";
 import { loadQuestionsByIds } from "@/lib/practice/practiceReader";
 import { QUESTION_ID } from "@/lib/quiz/questionId";
-import { loadQuizIndex } from "@/lib/quiz/quizReader";
+import { loadBaseQuestions, loadQuizIndex } from "@/lib/quiz/quizReader";
 import { clientQuestion } from "@/lib/staticData/shards";
+import { pageAlternates } from "@/lib/seo/canonical";
 
-export const dynamic = "force-dynamic";
+// D-223 (A′): all 2,900 questions are prerendered; any other id is a 404 (out/404.html). The
+// family's RSC payloads (.txt) are deleted after export (scripts/postexport.ts), so every link
+// here is a plain <a> (lib/seo/detailLinks.ts), never a client transition.
+export const dynamicParams = false;
+
+export async function generateStaticParams(): Promise<{ qid: string }[]> {
+  return (await loadBaseQuestions()).map((q) => ({ qid: q.id }));
+}
 
 type Props = { params: Promise<{ locale: string; qid: string }> };
 
@@ -35,9 +43,9 @@ async function load(qid: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { qid } = await params;
+  const { locale, qid } = await params;
   const q = await load(qid);
-  return q ? { title: q.source_label } : {};
+  return q ? { title: q.source_label, alternates: pageAlternates(locale, `/practice/q/${qid}`) } : {};
 }
 
 export default async function QuestionRoute({ params }: Props): Promise<React.ReactElement> {

@@ -8,13 +8,13 @@
 
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/i18n/navigation";
 import { parseInline } from "@/lib/textbook/inline";
 import { toDataLang, type ReaderTerm } from "@/lib/textbook/reader";
 
 import { renderFig } from "./figures/registry";
 import styles from "./reader.module.css";
 import { UnitPracticeLink } from "./UnitPracticeLink";
+import { DetailLink } from "@/components/app/DetailLink";
 
 interface Props {
   term: ReaderTerm;
@@ -41,11 +41,11 @@ export function TermBlock({ term, unitId, svg, locale, v2 = false }: Props): Rea
           <span className={styles.termJp}>{term.term}</span>
           {dl !== "jp" ? <span className={styles.termGloss}>{pick(term.gloss)}</span> : null}
         </h3>
-        <Link href={`/glossary/${term.id}`} locale={locale} prefetch={false} className={styles.termLink}>
+        <DetailLink href={`/glossary/${term.id}`} locale={locale} className={styles.termLink}>
           {tg("openInGlossary")}
           <span className="sr-only"> {term.term}</span>
           <span aria-hidden="true"> →</span>
-        </Link>
+        </DetailLink>
       </div>
       <p data-part="one" className={styles.def}>
         {rich(term.one)}

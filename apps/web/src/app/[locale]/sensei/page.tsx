@@ -12,13 +12,14 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SenseiHome } from "@/components/sensei/SenseiHome";
 import { buildTermIndex } from "@/lib/glossary/dictionary";
 import { loadDictionary } from "@/lib/glossary/dictionaryReader";
+import { pageAlternates } from "@/lib/seo/canonical";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Sensei" });
-  return { title: t("panelTitle") };
+  return { title: t("panelTitle"), alternates: pageAlternates(locale, "/sensei") };
 }
 
 export default async function SenseiPage({ params }: Props): Promise<React.ReactElement> {

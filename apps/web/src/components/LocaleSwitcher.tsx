@@ -19,6 +19,7 @@ import { Fragment } from "react";
 import styles from "@/components/app/app.module.css";
 import { Link, usePathname } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
+import { isDetailPath, localeHref } from "@/lib/seo/detailLinks";
 
 const SHORT_LABEL: Record<AppLocale, string> = { ja: "日", zh: "中", en: "EN" };
 
@@ -42,6 +43,24 @@ export function LocaleSwitcherLinks({ query = "" }: { query?: string }): React.R
             <strong aria-current="true" lang={l} className={styles.localeCurrent}>
               {SHORT_LABEL[l]}
             </strong>
+          ) : isDetailPath(pathname) ? (
+            // D-223: the other-language detail page is a full page load (its .txt payload is not
+            // deployed); a plain click still replaces the history entry, as the Link below does.
+            <a
+              href={localeHref(l, target)}
+              lang={l}
+              hrefLang={l}
+              aria-label={tLocale(l)}
+              className={styles.localeLink}
+              data-full-load="replace"
+              onClick={(e) => {
+                if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                e.preventDefault();
+                window.location.replace(e.currentTarget.href);
+              }}
+            >
+              {SHORT_LABEL[l]}
+            </a>
           ) : (
             <Link
               href={target}

@@ -14,7 +14,7 @@ vi.mock("next-intl/middleware", () => ({
   },
 }));
 
-import { config, middleware } from "../middleware";
+import { config, middleware } from "../middleware.dev";
 
 function makeRequest(pathname: string): NextRequest {
   return new NextRequest(`http://test.example.com${pathname}`);

@@ -7,10 +7,10 @@
 
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/i18n/navigation";
 import type { TodayTermCard } from "@/lib/practice/practiceIndex";
 
 import styles from "./today.module.css";
+import { DetailLink } from "@/components/app/DetailLink";
 
 export function TodayTerms({ cards }: { cards: TodayTermCard[] | null }): React.ReactElement | null {
   const t = useTranslations("Today");
@@ -23,9 +23,9 @@ export function TodayTerms({ cards }: { cards: TodayTermCard[] | null }): React.
       <ul className={styles.terms}>
         {cards.map((c) => (
           <li key={c.id}>
-            <Link href={`/glossary/${c.id}`} className={styles.termLink} lang="ja">
+            <DetailLink href={`/glossary/${c.id}`} className={styles.termLink} lang="ja">
               {c.term}
-            </Link>
+            </DetailLink>
             {c.gloss !== c.term ? <span className={styles.gloss}>（{c.gloss}）</span> : null} → {c.definition}
           </li>
         ))}

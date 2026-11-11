@@ -316,7 +316,7 @@ describe("SessionSummary", () => {
     expect(out).toContain(">02:05<");
     for (const q of [qs[1]!, qs[2]!]) {
       const row = new RegExp(`<li[^>]*data-wrong="${q.id}"[^>]*>([\\s\\S]*?)</li>`).exec(out)![1]!;
-      expect(row).toContain(`href="/practice/q/${q.id}"`);
+      expect(row).toContain(`href="/ja/practice/q/${q.id}"`); // a plain <a> (D-223)
       expect(row).toContain(q.source_label);
       expect(row).toContain(`>${wrongOf(q)}</span>`);
       expect(row).toContain(`>${q.correct_answer}</span>`);

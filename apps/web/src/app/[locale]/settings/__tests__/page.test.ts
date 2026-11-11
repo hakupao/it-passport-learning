@@ -23,6 +23,12 @@ describe("/settings", () => {
     expect(el.props.children!.type).toBe(SettingsForm);
   });
   it("title from the Settings namespace", async () => {
-    expect(await generateMetadata({ params: Promise.resolve({ locale: "ja" }) })).toEqual({ title: "Settings.title" });
+    expect(await generateMetadata({ params: Promise.resolve({ locale: "ja" }) })).toEqual({
+      title: "Settings.title",
+      alternates: {
+        canonical: "/ja/settings",
+        languages: { ja: "/ja/settings", zh: "/zh/settings", en: "/en/settings", "x-default": "/ja/settings" },
+      },
+    });
   });
 });

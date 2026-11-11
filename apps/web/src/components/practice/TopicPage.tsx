@@ -32,6 +32,7 @@ import type { TopicRow } from "@/lib/practice/topicRows";
 import { sourceNumber } from "./choiceLayout";
 import styles from "./browse.module.css";
 import { FreshLink } from "./FreshLink";
+import { DetailLink } from "@/components/app/DetailLink";
 
 export interface TopicPageProps {
   locale: string;
@@ -156,9 +157,9 @@ export function TopicPage({ locale, topic, rows, termCards, exams }: TopicPagePr
               return (
                 <tr key={q.id} id={q.id} tabIndex={-1} data-question-row={q.id}>
                   <td className={styles.strong}>
-                    <Link href={`/practice/q/${q.id}`} className={styles.link} lang="ja">
+                    <DetailLink href={`/practice/q/${q.id}`} className={styles.link} lang="ja">
                       {t("qLabel")} {sourceNumber(q)}
-                    </Link>
+                    </DetailLink>
                   </td>
                   <td lang="ja">{exams[q.exam_id] ?? q.exam_id}</td>
                   <ResultCell state={state} t={t} />

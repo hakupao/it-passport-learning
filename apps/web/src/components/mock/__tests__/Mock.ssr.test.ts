@@ -86,7 +86,7 @@ describe("MockResult", () => {
       expect(out).toContain(M.failed);
       expect(out).not.toContain(M.passed);
       expect(out.match(/data-result-row="/g)).toHaveLength(IDS.length);
-      for (const id of IDS) expect(rowOf(out, id)).toContain(`href="/practice/q/${id}"`);
+      for (const id of IDS) expect(rowOf(out, id)).toContain(`href="/${locale}/practice/q/${id}"`); // a plain <a> (D-223)
       expect(rowOf(out, q1!.id)).toMatch(/data-result="right"/);
       expect(rowOf(out, q1!.id)).toContain(M.right);
       expect(rowOf(out, q2!.id)).toMatch(/data-result="wrong"/);

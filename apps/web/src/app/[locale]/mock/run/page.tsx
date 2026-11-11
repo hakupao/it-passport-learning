@@ -20,6 +20,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MockPending, MockRoute } from "@/components/mock/MockRoute";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { routing } from "@/i18n/routing";
+import { pageAlternates } from "@/lib/seo/canonical";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -28,7 +29,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Mock" });
-  return { title: t("title") };
+  return { title: t("title"), alternates: pageAlternates(locale, "/mock/run") };
 }
 
 export default async function MockRunPage({ params }: Props): Promise<React.ReactElement> {

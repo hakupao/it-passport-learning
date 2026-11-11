@@ -20,6 +20,7 @@ import { loadDictionary } from "@/lib/glossary/dictionaryReader";
 import { topicStars } from "@/lib/practice/practiceIndex";
 import { toTopicRow } from "@/lib/practice/topicRows";
 import { loadBaseQuestions, loadQuizIndex } from "@/lib/quiz/quizReader";
+import { pageAlternates } from "@/lib/seo/canonical";
 
 // D-217 H1-4: every topic is prerendered per locale (the [locale] layout supplies the locales); any
 // other topicId is a 404 without rendering.
@@ -34,9 +35,9 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { topicId } = await params;
+  const { locale, topicId } = await params;
   const t = (await loadQuizIndex()).topics.find((x) => x.topic_id === topicId);
-  return t ? { title: t.name_jp } : {};
+  return t ? { title: t.name_jp, alternates: pageAlternates(locale, `/practice/browse/${topicId}`) } : {};
 }
 
 export default async function TopicRoute({ params }: Props): Promise<React.ReactElement> {

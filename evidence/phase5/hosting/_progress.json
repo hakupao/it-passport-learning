@@ -1,8 +1,8 @@
 {
   "plan": "docs/phase5/PLAN_hosting_migration.md",
   "branch": "hosting-cf",
-  "current_step": "H1-5 + H1-6 (executor) / L5 (executor)",
-  "next_step": "H1-5/H1-6 と L5 の Rule D → H3 Worker",
+  "current_step": "H1 完了 → H3",
+  "next_step": "fidelity baseline 取り直し (L5 の 2 欄) → H3 Worker",
   "completed": [
     {
       "step": "H0-1",
@@ -97,6 +97,37 @@
         "73ef1646"
       ],
       "baseline": "d16059ef (319 欄完全一致)"
+    },
+    {
+      "step": "H1-5 + H1-6",
+      "status": "PASS",
+      "evidence": "evidence/phase5/hosting/H1-5_export.md; failures/phase5/hosting/step_H1-5_attempt_1_wrangler.md",
+      "carry": [
+        "H3: ?owner_key= の有効化は静的配信では動かない (middleware は src/middleware.dev.ts として next dev 専用)。Worker が引き継ぐ: ?owner_key=<key> → itp_owner (httpOnly, Secure, SameSite=Lax, Path=/, Max-Age=31536000, 値 = sha256(key)) と itp_owner_hint=1 (非 httpOnly、同じ属性) を設定、?owner_key=logout → 両方削除、どちらも (誤りの key でも) param を除いた同じ URL へ 307。仕様と期待値は src/__tests__/middleware.test.ts (D-148 owner_key activation の describe) をそのまま移す。run_worker_first は ?owner_key= の付く要求だけに限る方法を H3 で決める (assets の routing は query を見ないので、Worker 側で判定するか、全 navigation を Worker に通すかの比較が要る)",
+        "H3: /api/learning と /api/quiz/feedback は src/app/api/**/route.dev.ts (next dev 専用、export には入らない)。Worker へ移植する元コードとテスト (route.test.ts・v1/v2ClientCompat.test.ts・feedback route.test.ts) はそのまま残してある",
+        "H3: _headers は Worker が作る応答には付かない → Worker の応答 (api と owner の 307) に CSP / X-Robots-Tag (workers.dev では noindex) を Worker 自身で付ける",
+        "H4: workers.dev (worker URL と preview URL、どちらも <x>.<sub>.workers.dev の 2 label) の noindex は out/_headers の host 規則 https://:name.:subdomain.workers.dev/* で実施済 → preview 上で curl -I で実測する。Vercel 側 (H7 で残す 7 日間) の noindex は別途 H7",
+        "H4: _redirects の query 保持 (/practice?ids=… → /ja/practice?ids=…) と `/` を source にした規則は Cloudflare docs に明記がない → preview で実測 (local は自作 server で保持を仮定)",
+        "H4/H6: 走査 rule (c) は gitignore された IPA 原本 (data/ip/exams・sources・syllabus) と pdftotext が要る → Workers Builds (clone からの build) では走らない。配置は local build + 走査 + wrangler deploy を前提にするか、走査を build 前に local で必須にするかを H4/H6 で決める",
+        "H5: 404.html は root layout が素通しのため <html> 無しの既定 not-found (Vercel でも同じ)。not_found_handling 404-page で全ての未知 URL に出るので、見た目と noindex を H5 で確認",
+        "H5: robots.txt の backlink crawler 群 (MJ12bot 等 7 UA) は「静的配信になったら外す」(D-217 第 0 段) → 切替 (H7) 後に外すかを判断",
+        "H5: public/ の create-next-app 由来 svg 5 個 (file/globe/next/vercel/window.svg) は未使用。走査では名前で許可、削除は任意",
+        "local の wrangler dev 4.156 は spawn EBADF で起動できず (failures/…wrangler.md)、e2e は自作の静的 server で実施 → H4 の preview で本物の asset 配信の挙動を確認",
+        "H4: 同名のファイルとディレクトリ (ja.html + ja/、ja/practice.html + ja/practice/、glossary・textbook・mock も同じ) を Cloudflare の auto-trailing-slash がどう扱うかは docs に無い (local の代用 server はファイル優先と仮定)。preview で最初に curl -I /ja /ja/practice /ja/glossary /ja/textbook /ja/mock を確認 (ディレクトリ優先なら区画の入口が 404 になる)",
+        "H4/H6: pnpm build が node scripts/postexport.ts (Node の型除去、Node ≥ 22.18 / 23.6) を使う。root の engines は >=20.9 のまま → Workers Builds 等で build するなら Node の版を固定",
+        "H4: Web Analytics の beacon は <script defer …> (FAQ の例は type=\"module\")。本物の token で preview 上の送信と CSP 違反 0 を確認"
+      ],
+      "review": "verifier opus PASS (HIGH 0 / MEDIUM 1 = PLAN H5 基線 → 修正済)",
+      "review_carry": [
+        "LOW-1: out 走査で \"page\":\"page-NN.png\" 文字列値を見逃す → FORBIDDEN_TEXT に /page-\\d+\\.png/",
+        "LOW-2: 走査 (c) の corpus に内部欄・未表示ファイルが入る → 表示欄 (out/data + messages) を corpus に",
+        "LOW-4: locale なし旧 link の _redirects を preview で curl (query・fragment 保持)",
+        "LOW-6: noindex ページの hreflang (任意)",
+        "LOW-7: detailLinksPlain は変数 href を見ない → navigation wrapper で isDetailPath を断言 or e2e で全 <a> を巡回",
+        "H4: HTML・/data・quiz-figures の既定 Cache-Control/ETag を curl -I",
+        "H3/H4: Worker がある時の asset 未命中が Worker 要求になるかを実測",
+        "e2e コメントの next start 記述 (learning-owner:9-13, sensei:50) を更新"
+      ]
     }
   ],
   "gates_pending_user": [

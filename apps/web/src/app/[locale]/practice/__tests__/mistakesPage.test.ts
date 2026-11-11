@@ -42,7 +42,19 @@ describe("/practice/mistakes", () => {
       dict.fail = false;
     }
   });
-  it("title from the Mistakes namespace", async () => {
-    expect(await generateMetadata({ params: Promise.resolve({ locale: "zh" }) })).toEqual({ title: "Mistakes.title" });
+  it("title from the Mistakes namespace; never indexed (a per-user page, empty for a crawler); canonical + hreflang (H1-5)", async () => {
+    expect(await generateMetadata({ params: Promise.resolve({ locale: "zh" }) })).toEqual({
+      title: "Mistakes.title",
+      robots: { index: false },
+      alternates: {
+        canonical: "/zh/practice/mistakes",
+        languages: {
+          ja: "/ja/practice/mistakes",
+          zh: "/zh/practice/mistakes",
+          en: "/en/practice/mistakes",
+          "x-default": "/ja/practice/mistakes",
+        },
+      },
+    });
   });
 });

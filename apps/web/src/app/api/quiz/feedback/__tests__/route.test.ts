@@ -18,7 +18,7 @@ vi.mock("@/lib/quiz/feedback", async () => {
   return { ...actual, loadFeedbackRedis: async () => redisHolder.current };
 });
 
-import { GET, POST } from "../route";
+import { GET, POST } from "../route.dev";
 
 const OWNER_KEY = "test-owner-key";
 const OWNER_COOKIE_HEADER = `itp_owner=${createHash("sha256").update(OWNER_KEY).digest("hex")}`;
