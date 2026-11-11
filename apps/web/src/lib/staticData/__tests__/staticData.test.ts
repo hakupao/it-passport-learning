@@ -32,6 +32,7 @@ import {
   loadAllQuestions,
   loadBaseQuestions,
   loadQuizIndex,
+  isSuspect,
   loadTranslations,
   localizedChoices,
   localizedExplanation,
@@ -39,6 +40,7 @@ import {
   mergeTranslation,
   type QuizQuestion,
 } from "@/lib/quiz/quizReader";
+import type { QuizQuestion as ViewQuestion } from "@/lib/quiz/quizModel";
 import { questionAnchor } from "@/lib/sensei/anchors";
 import { termContext } from "@/lib/sensei/textbookAnchors";
 import { loadReaderIndex } from "@/lib/textbook/reader";
@@ -106,9 +108,10 @@ const OTHER_LANG_KEYS: Record<StaticLocale, string[]> = {
 };
 
 /** The loader question cut to what a `locale` shard should hold, by omission (see header). */
-function expectedShardQuestion(q: QuizQuestion, locale: StaticLocale): Record<string, unknown> {
+function expectedShardQuestion(q: ViewQuestion, locale: StaticLocale): Record<string, unknown> {
   const out: Record<string, unknown> = { ...q };
   for (const k of ["figure_type", "explanation", ...OTHER_LANG_KEYS[locale]]) delete out[k];
+  if (isSuspect(q)) out.suspect = true; // H1-4 LOW-2: the caveat without the chunk
   return out;
 }
 

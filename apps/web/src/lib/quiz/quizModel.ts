@@ -49,7 +49,12 @@ export interface QuizIndex {
   exams: QuizExamRef[];
 }
 
-export interface QuizQuestion {
+/**
+ * A question as the components and the AI 先生 anchors take it. `E` is its explanation: the display
+ * shape (QuizExplanation) by default; the server loader's questions carry the sidecar entry with its
+ * suspect flag lifted (quizReader's QuizQuestion), which is assignable here.
+ */
+export interface QuizQuestion<E extends QuizExplanation = QuizExplanation> {
   id: string;
   exam_id: string;
   topic_id: string;
@@ -78,7 +83,10 @@ export interface QuizQuestion {
   choices_en?: Record<string, string>;
   // --- Phase 2 explanation backfill (D-137): merged from the explanation sidecar at
   //     read time; absent until a question's exam batch is explained. ---
-  explanation?: QuizExplanationEntry;
+  explanation?: E;
+  /** The client copies only (lib/staticData exam shard, D-217 H1-4): true when the keyed answer
+   *  is unconfirmed, so the caveat shows before / without the explanation file. Absent otherwise. */
+  suspect?: boolean;
 }
 
 /**
@@ -105,10 +113,10 @@ export interface QuizTranslationFile {
  * the question is returned unchanged (JP fallback = incremental backfill, D-135/Q5).
  * A `stem_jp_clean` overrides the displayed JP stem (figure garble removal, D-136-C).
  */
-export function mergeTranslation(
-  q: QuizQuestion,
+export function mergeTranslation<E extends QuizExplanation>(
+  q: QuizQuestion<E>,
   entry: QuizTranslationEntry | undefined,
-): QuizQuestion {
+): QuizQuestion<E> {
   if (!entry) return q;
   const pick = (lang: "zh" | "en"): Record<string, string> => {
     const out: Record<string, string> = {};
@@ -126,14 +134,29 @@ export function mergeTranslation(
 }
 
 /**
- * One question's explanation (D-137), stored in the per-exam sidecar
+ * One question's explanation as displayed: the sidecar entry's texts plus its `suspect` flag (the
+ * keyed answer could not be confirmed and awaits human adjudication, D-137-C). This is all the
+ * client copies (lib/staticData) carry; the loader lifts the flag out of the writer's self-check
+ * (quizReader), so no display code reads that internal block (D-217 H1-4).
+ */
+export interface QuizExplanation {
+  suspect: boolean;
+  /** Why the keyed answer is correct (trilingual). */
+  correct: { jp: string; zh: string; en: string };
+  /** Per non-correct letter: why it is wrong (trilingual). Keyed by ア/イ/ウ/エ. */
+  distractors: Record<string, { jp: string; zh: string; en: string }>;
+  /** 1–2 key concepts (trilingual). */
+  points: { jp: string; zh: string; en: string }[];
+}
+
+/**
+ * One question's explanation (D-137) as stored in the per-exam sidecar
  * `data/ip/quiz/explanations/<exam_id>.json`. JP-authored then translated; `key_guard`
- * is the writer's self-check (re-derived the answer from the figure/stem) — `suspect`
- * means the keyed answer could not be confirmed and awaits human adjudication (D-137-C).
+ * is the writer's self-check (re-derived the answer from the figure/stem) — its `suspect`
+ * is the flag QuizExplanation displays.
  */
 export interface QuizExplanationEntry {
-  /** The client copies (lib/staticData) carry `suspect` only: the other fields are the writer's
-   *  internal notes, read by the corpus scripts, never displayed. */
+  /** The writer's internal notes, read by the corpus scripts and the loader, never displayed. */
   key_guard: {
     figure_derivable?: boolean | null;
     derived_answer?: string | null;
@@ -161,10 +184,10 @@ export interface QuizExplanationFile {
  * question is returned unchanged (no explanation shown = legitimate pre-/partial
  * backfill, D-137-D).
  */
-export function mergeExplanation(
-  q: QuizQuestion,
-  entry: QuizExplanationEntry | undefined,
-): QuizQuestion {
+export function mergeExplanation<E extends QuizExplanation>(
+  q: QuizQuestion<E>,
+  entry: E | undefined,
+): QuizQuestion<E> {
   if (!entry) return q;
   return { ...q, explanation: entry };
 }
@@ -249,6 +272,12 @@ export function localizedExplanation(
     correct: localized(e.correct.jp, e.correct.zh, e.correct.en, locale),
     distractors,
     points: e.points.map((p) => localized(p.jp, p.zh, p.en, locale)),
-    suspect: Boolean(e.key_guard?.suspect),
+    suspect: e.suspect === true,
   };
+}
+
+/** The keyed answer is unconfirmed: the question's own flag (its explanation not loaded yet, or
+ *  failed) or its explanation's. ExplanationPane's caveat and the AI 先生 anchors read this. */
+export function isSuspect(q: Pick<QuizQuestion, "suspect" | "explanation">): boolean {
+  return q.suspect === true || q.explanation?.suspect === true;
 }

@@ -7,7 +7,7 @@
 // review fetches its wrong questions' full text on open, from the static data) plus only this
 // topic's terms as cards and the exam labels it uses.
 // The owner flag that gates the record sync is read in the browser (useOwner, H1-1);
-// LearningRecordProvider is mounted here (never in the locale layout). force-dynamic stays until H1-4.
+// LearningRecordProvider is mounted here (never in the locale layout).
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -21,7 +21,13 @@ import { topicStars } from "@/lib/practice/practiceIndex";
 import { toTopicRow } from "@/lib/practice/topicRows";
 import { loadBaseQuestions, loadQuizIndex } from "@/lib/quiz/quizReader";
 
-export const dynamic = "force-dynamic";
+// D-217 H1-4: every topic is prerendered per locale (the [locale] layout supplies the locales); any
+// other topicId is a 404 without rendering.
+export const dynamicParams = false;
+
+export async function generateStaticParams(): Promise<{ topicId: string }[]> {
+  return (await loadQuizIndex()).topics.map((t) => ({ topicId: t.topic_id }));
+}
 
 type Props = {
   params: Promise<{ locale: string; topicId: string }>;

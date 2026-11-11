@@ -43,7 +43,7 @@ import { loadAllQuestions, loadBaseQuestions, loadQuizIndex, localizedExplanatio
 import { routeData } from "@/lib/staticData/__tests__/routeData";
 import type { StaticLocale } from "@/lib/staticData/shards";
 
-import PracticePage, { dynamic } from "../page";
+import PracticePage from "../page";
 import BrowsePage from "../browse/page";
 import TopicRoute from "../browse/[topicId]/page";
 import QuestionRoute from "../q/[qid]/page";
@@ -68,7 +68,6 @@ const sessionOf = async (sp: Record<string, string>, locale: StaticLocale = "ja"
 
 describe("/practice page shell (H1-3)", () => {
   it("renders PracticeRoute for the locale in Suspense under the record provider; no query read on the server", async () => {
-    expect(dynamic).toBe("force-dynamic");
     const el = (await PracticePage({ params: Promise.resolve({ locale: "zh" }) })) as El;
     expect(el.type).toBe(LearningRecordProvider);
     const suspense = childOf(el);

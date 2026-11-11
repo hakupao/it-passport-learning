@@ -3,7 +3,7 @@
 // mock in this browser's storage is offered first (continue / discard). The setup payload is the
 // today payload without the dictionary (loadSetupIndex: topics with their area, question ids,
 // chumon groups, exam labels). LearningRecordProvider here (the random draw reads the record); the
-// owner flag is read in the browser (useOwner, H1-1). force-dynamic stays until H1-4.
+// owner flag is read in the browser (useOwner, H1-1). Prerendered per locale (D-217 H1-4).
 
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -13,8 +13,6 @@ import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { examsNewestFirst } from "@/lib/practice/practiceLabels";
 import { loadSetupIndex } from "@/lib/practice/practiceReader";
 import { loadQuizIndex } from "@/lib/quiz/quizReader";
-
-export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ locale: string }> };
 

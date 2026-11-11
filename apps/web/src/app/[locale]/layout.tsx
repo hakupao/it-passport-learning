@@ -9,9 +9,9 @@
 //
 // Static rendering enabled via setRequestLocale per next-intl docs — without
 // this the build would degrade to dynamic rendering for any RSC that calls
-// useTranslations(), losing the static optimization of the static pages (the home page
-// /[locale] itself is force-dynamic since Stage 7 Task 11; since H1-1 it no longer reads the owner
-// cookie — the flag is read in the browser — and force-dynamic stays until H1-4).
+// useTranslations(), losing the static optimization of the static pages (since D-217 H1-4
+// every page under /[locale] is prerendered except the two detail families gate H2 decides:
+// practice/q/[qid] and glossary/[termId]).
 
 import type { Metadata, Viewport } from "next";
 import { BIZ_UDPGothic, Noto_Sans_SC } from "next/font/google";

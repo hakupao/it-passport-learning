@@ -26,7 +26,7 @@ const q: QuizQuestion = {
   choices_zh: { ウ: "ZH丙", ア: "ZH甲", エ: "ZH丁", イ: "ZH乙" },
   choices_en: { イ: "EN choice b", ア: "EN choice a", エ: "EN choice d", ウ: "EN choice c" },
   explanation: {
-    key_guard: { figure_derivable: null, derived_answer: "ア", matches_key: true, suspect: false, note_jp: "" },
+    suspect: false,
     correct: { jp: "JP正解理由", zh: "ZH正确理由", en: "EN why correct" },
     distractors: {
       エ: { jp: "JPエ誤り", zh: "ZH丁错误", en: "EN d wrong" },
@@ -108,12 +108,12 @@ describe("questionAnchor", () => {
     expect(a).toContain("ZH开源记忆");
   });
 
-  it("flags a key_guard suspect key and a figure the model cannot see", () => {
+  it("flags a suspect key and a figure the model cannot see", () => {
     const sus: QuizQuestion = {
       ...q,
       has_figure: true,
       figure: q.id,
-      explanation: { ...q.explanation!, key_guard: { ...q.explanation!.key_guard, suspect: true } },
+      explanation: { ...q.explanation!, suspect: true },
     };
     const a = questionAnchor(sus, "ja", { termCards: {} });
     expect(a).toContain("確認中");
@@ -126,6 +126,13 @@ describe("questionAnchor", () => {
     const a = questionAnchor(bare, "zh", { termCards: {} });
     expect(a).toContain("JP問題文");
     expect(a).not.toContain("JP正解理由");
+  });
+
+  it("flags the question-level suspect key while its explanation is not loaded / failed (H1-4 LOW-2)", () => {
+    const { explanation: _omit, ...bare } = q;
+    void _omit;
+    expect(questionAnchor({ ...bare, suspect: true }, "zh", { termCards: {} })).toContain("確認中");
+    expect(questionAnchor(bare, "zh", { termCards: {} })).not.toContain("確認中");
   });
 });
 
@@ -151,7 +158,7 @@ function tq(n: number, key: string, terms: string[] = []): QuizQuestion {
     correct_answer: key,
     terms,
     explanation: {
-      key_guard: { figure_derivable: null, derived_answer: key, matches_key: true, suspect: false, note_jp: "" },
+      suspect: false,
       correct: { jp: `JP${n}正解理由`, zh: `ZH${n}正确理由`, en: `EN${n} why correct` },
       distractors,
       points: [{ jp: `JP${n}要点`, zh: `ZH${n}要点`, en: `EN${n} point` }],

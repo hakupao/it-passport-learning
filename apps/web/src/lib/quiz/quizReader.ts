@@ -21,15 +21,23 @@ import path from "node:path";
 import {
   mergeExplanation,
   mergeTranslation,
+  type QuizExplanation,
   type QuizExplanationEntry,
   type QuizExplanationFile,
   type QuizIndex,
-  type QuizQuestion,
+  type QuizQuestion as ModelQuestion,
   type QuizTranslationEntry,
   type QuizTranslationFile,
 } from "./quizModel";
 
 export * from "./quizModel";
+
+/** A sidecar entry as the loader holds it: key_guard kept (corpus scripts / tests read it), its
+ *  suspect flag lifted to `suspect` for the display code (D-217 H1-4). */
+export type LoadedExplanation = QuizExplanationEntry & QuizExplanation;
+
+/** The loader's question: the model question with a LoadedExplanation (assignable to the model's). */
+export type QuizQuestion = ModelQuestion<LoadedExplanation>;
 
 // Resolve straight to data/ip/quiz (sibling of data/ip/textbook). Pointing at the
 // quiz dir directly keeps the gitignored IPA exams/sources/syllabus trees out of
@@ -50,7 +58,7 @@ let indexPromise: Promise<QuizIndex> | null = null;
 let baseQuestionsPromise: Promise<QuizQuestion[]> | null = null;
 let questionsPromise: Promise<QuizQuestion[]> | null = null;
 let translationsPromise: Promise<Map<string, QuizTranslationEntry>> | null = null;
-let explanationsPromise: Promise<Map<string, QuizExplanationEntry>> | null = null;
+let explanationsPromise: Promise<Map<string, LoadedExplanation>> | null = null;
 
 export function loadQuizIndex(): Promise<QuizIndex> {
   return (indexPromise ??= readJson<QuizIndex>(path.join(quizDataRoot(), "quiz_index.json")));
@@ -91,7 +99,7 @@ export function loadTranslations(): Promise<Map<string, QuizTranslationEntry>> {
  * incremental-backfill contract as translations: a MISSING explanations/ directory
  * → empty map (no explanation rendered); a corrupt sidecar throws loudly.
  */
-async function loadExplanationMap(): Promise<Map<string, QuizExplanationEntry>> {
+async function loadExplanationMap(): Promise<Map<string, LoadedExplanation>> {
   const dir = path.join(quizDataRoot(), "explanations");
   let files: string[];
   try {
@@ -100,17 +108,19 @@ async function loadExplanationMap(): Promise<Map<string, QuizExplanationEntry>> 
     if ((err as NodeJS.ErrnoException).code === "ENOENT") return new Map();
     throw err;
   }
-  const map = new Map<string, QuizExplanationEntry>();
+  const map = new Map<string, LoadedExplanation>();
   const loaded = await Promise.all(
     files.map((f) => readJson<QuizExplanationFile>(path.join(dir, f))),
   );
   for (const file of loaded) {
-    for (const [id, entry] of Object.entries(file.questions)) map.set(id, entry);
+    for (const [id, entry] of Object.entries(file.questions)) {
+      map.set(id, { ...entry, suspect: entry.key_guard?.suspect === true });
+    }
   }
   return map;
 }
 
-export function loadExplanations(): Promise<Map<string, QuizExplanationEntry>> {
+export function loadExplanations(): Promise<Map<string, LoadedExplanation>> {
   return (explanationsPromise ??= loadExplanationMap());
 }
 

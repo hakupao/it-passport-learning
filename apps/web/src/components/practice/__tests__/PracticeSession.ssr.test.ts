@@ -30,6 +30,7 @@ import {
   type SessionState,
 } from "@/lib/practice/practiceSession";
 import { CHOICE_LETTERS, loadAllQuestions, loadQuizIndex, type QuizQuestion } from "@/lib/quiz/quizReader";
+import { clientQuestion } from "@/lib/staticData/shards";
 
 import { PracticeSession, SessionTimer, SessionView, type SessionViewProps } from "../PracticeSession";
 
@@ -62,7 +63,7 @@ beforeAll(async () => {
 /** three strategy questions without figures, in corpus order */
 const three = (): QuizQuestion[] =>
   QS.filter((q) => q.category === "strategy" && !q.figure && q.explanation).slice(0, 3);
-const wrongOf = (q: QuizQuestion): ChoiceLetter => CHOICE_LETTERS.find((L) => L !== q.correct_answer)!;
+const wrongOf = (q: Pick<QuizQuestion, "correct_answer">): ChoiceLetter => CHOICE_LETTERS.find((L) => L !== q.correct_answer)!;
 const run = (s: SessionState, ...as: SessionAction[]): SessionState => as.reduce(practiceReducer, s);
 
 function withIntl(locale: string, child: React.ReactElement): string {
@@ -92,7 +93,7 @@ function renderSession(questions: QuizQuestion[], locale: string, initialState?:
   );
 }
 
-function renderView(questions: QuizQuestion[], locale: string, over: Partial<SessionViewProps> = {}): string {
+function renderView(questions: SessionViewProps["questions"], locale: string, over: Partial<SessionViewProps> = {}): string {
   const props: SessionViewProps = {
     questions,
     locale,
@@ -504,12 +505,12 @@ describe("fix round 1: reload on the summary, start over, run nonce, status afte
 });
 
 describe("D-217 H1-3: explanations fetched once answered (SessionView.explanations)", () => {
-  const bare = (q: QuizQuestion): QuizQuestion => {
+  const bare = <Q extends { explanation?: unknown }>(q: Q): Q => {
     const out = { ...q };
     delete out.explanation;
     return out;
   };
-  const answered = (qs: QuizQuestion[]) =>
+  const answered = (qs: SessionViewProps["questions"]) =>
     run(newSession(qs.map((q) => q.id), 0), { type: "pick", choice: wrongOf(qs[0]!) });
 
   it("answered, not fetched yet: the answered pane (heading, ○ / × rows) with a loading line, no text, no AI 先生 button", () => {
@@ -556,5 +557,19 @@ describe("D-217 H1-3: explanations fetched once answered (SessionView.explanatio
     const out = renderView(qs, "ja", { explanations: {} });
     expect(out).toContain("解答すると解説が表示されます");
     expect(out).not.toContain("data-expl-status");
+  });
+
+  it("H1-4 LOW-2: a suspect question (its shard flag) shows the 正解確認中 line once while loading, failed and fetched", () => {
+    const eager = QS.find((q) => q.explanation?.suspect)!;
+    const shardQ = bare(clientQuestion(eager, "zh"));
+    expect(shardQ.suspect).toBe(true);
+    const state = answered([shardQ]);
+    for (const explanations of [{}, { [shardQ.id]: "failed" as const }, { [shardQ.id]: clientQuestion(eager, "zh").explanation! }]) {
+      const out = renderView([shardQ], "zh", { state, explanations });
+      expect((out.match(/data-fid="suspect"/g) ?? []).length).toBe(1);
+    }
+    const plain = QS.find((q) => q.explanation && !q.explanation.suspect)!;
+    const out = renderView([bare(clientQuestion(plain, "zh"))], "zh", { state: answered([plain]), explanations: {} });
+    expect(out).not.toContain('data-fid="suspect"');
   });
 });

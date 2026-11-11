@@ -4,8 +4,8 @@
 // unit_index.json (in-repo per D-133), groups it (D-114 path order), and renders
 // the reader ToC.
 // D-180 Task 12: wrapped in LearningRecordProvider for the per-unit read marks
-// (the owner flag that gates the server sync is read in the browser: useOwner, H1-1;
-// force-dynamic stays until H1-4).
+// (the owner flag that gates the server sync is read in the browser: useOwner, H1-1).
+// Prerendered per locale (D-217 H1-4).
 
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -13,8 +13,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { TextbookToc } from "@/components/textbook/TextbookToc";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { buildNav, loadReaderIndex } from "@/lib/textbook/reader";
-
-export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ locale: string }> };
 

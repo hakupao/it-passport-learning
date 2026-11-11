@@ -1,5 +1,5 @@
 // Stage 7 Phase 1 Task 11 — the home route /[locale] (today page) on the server side: no redirect
-// to the old quiz list any more; force-dynamic with the record provider (no cookie read: H1-1); the today
+// to the old quiz list any more; prerendered, with the record provider (no cookie read: H1-1); the today
 // payload, or the dictionary-free payload when the glossary fails (no terms box then). Real corpus;
 // only Next's runtime pieces are stubbed.
 import { describe, expect, it, vi } from "vitest";
@@ -27,14 +27,13 @@ vi.mock("@/lib/glossary/dictionaryReader", async (importOriginal) => {
 import { TodayPage, type TodayPageProps } from "@/components/today/TodayPage";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 
-import HomePage, { dynamic, generateMetadata } from "../page";
+import HomePage, { generateMetadata } from "../page";
 
 type El = { type: unknown; props: { children?: El } & Record<string, unknown> };
 const home = (locale: string) => HomePage({ params: Promise.resolve({ locale }) }) as Promise<El>;
 
 describe("/[locale] → the today page", () => {
-  it("renders TodayPage under the record provider (no redirect), force-dynamic", async () => {
-    expect(dynamic).toBe("force-dynamic");
+  it("renders TodayPage under the record provider (no redirect), prerendered (staticRendering.test)", async () => {
     const el = await home("zh");
     expect(el.type).toBe(LearningRecordProvider);
     expect(el.props).not.toHaveProperty("isOwner"); // owner flag: browser-side (useOwner, H1-1)

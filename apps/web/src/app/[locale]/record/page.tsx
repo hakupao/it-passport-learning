@@ -5,7 +5,7 @@
 // = 頻出度) and is read in the browser (RecordFromUrl, D-217 H1-3: the page depends on the locale
 // only; the Suspense fallback is the 頻出度 render, which before the record loads shows no number).
 // LearningRecordProvider is mounted here; the owner flag is read in the browser (useOwner, H1-1).
-// force-dynamic stays until H1-4.
+// Prerendered per locale (D-217 H1-4).
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
@@ -14,8 +14,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { RecordFromUrl, RecordPage } from "@/components/record/RecordPage";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { loadSetupIndex } from "@/lib/practice/practiceReader";
-
-export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ locale: string }>;

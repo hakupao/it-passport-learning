@@ -4,7 +4,7 @@
 // dictionary-free today payload (loadSetupIndex: topics, question ids, exam labels — what the row
 // labels and the 「做全部错题」 URL need; a glossary failure cannot break it) and MistakesList computes
 // the rest. LearningRecordProvider is mounted here (never in the locale layout); the owner flag is read
-// in the browser (useOwner, H1-1), not here. force-dynamic stays until H1-4.
+// in the browser (useOwner, H1-1), not here. Prerendered per locale (D-217 H1-4).
 
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -12,8 +12,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MistakesList } from "@/components/practice/MistakesList";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { loadSetupIndex } from "@/lib/practice/practiceReader";
-
-export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ locale: string }>;

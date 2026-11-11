@@ -86,6 +86,7 @@ export function examShardSpec(locale: StaticLocale): AllowSpec {
             figure: "string|null",
             choice_figures: letters(S),
             terms: { arr: S },
+            suspect: "boolean",
             ...extra,
           },
         },

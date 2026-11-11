@@ -1,4 +1,4 @@
-// Stage 7 Phase 1 Task 12 — /[locale]/practice/mistakes on the server side: force-dynamic (no
+// Stage 7 Phase 1 Task 12 — /[locale]/practice/mistakes on the server side: prerendered (no
 // cookie read: H1-1) with the record provider around MistakesList, fed the dictionary-free payload (a glossary
 // failure cannot break it). Real corpus; only Next's runtime pieces are stubbed.
 import { describe, expect, it, vi } from "vitest";
@@ -20,14 +20,13 @@ vi.mock("@/lib/glossary/dictionaryReader", async (importOriginal) => {
 import { MistakesList, type MistakesListProps } from "@/components/practice/MistakesList";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 
-import MistakesPage, { dynamic, generateMetadata } from "../mistakes/page";
+import MistakesPage, { generateMetadata } from "../mistakes/page";
 
 type El = { type: unknown; props: { children?: El } & Record<string, unknown> };
 const page = (locale: string) => MistakesPage({ params: Promise.resolve({ locale }) }) as Promise<El>;
 
 describe("/practice/mistakes", () => {
-  it("MistakesList under the record provider, force-dynamic, the payload without terms", async () => {
-    expect(dynamic).toBe("force-dynamic");
+  it("MistakesList under the record provider (prerendered: staticRendering.test), the payload without terms", async () => {
     dict.fail = true;
     try {
       const el = await page("ja");

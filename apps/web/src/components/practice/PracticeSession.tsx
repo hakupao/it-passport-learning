@@ -77,7 +77,7 @@ import {
   type StatusLine,
   type TodayKind,
 } from "@/lib/practice/practiceSession";
-import type { QuizExplanationEntry, QuizQuestion } from "@/lib/quiz/quizModel";
+import type { QuizExplanation, QuizQuestion } from "@/lib/quiz/quizModel";
 import type { StorageLike } from "@/lib/storage";
 
 import { AnswerBar } from "./AnswerBar";
@@ -107,11 +107,11 @@ export interface PracticeSessionProps {
   /** tests: start from this state and skip the sessionStorage restore */
   initialState?: SessionState;
   /** fetch a question's explanation once it is answered (null = it has none); absent = `questions` carry them */
-  loadExplanation?: (id: string) => Promise<QuizExplanationEntry | null>;
+  loadExplanation?: (id: string) => Promise<QuizExplanation | null>;
 }
 
 /** Fetched explanations by question id: null = the question has none, "failed" = the fetch failed. */
-export type LoadedExplanations = Readonly<Record<string, QuizExplanationEntry | null | "failed">>;
+export type LoadedExplanations = Readonly<Record<string, QuizExplanation | null | "failed">>;
 
 /** where the explanation's heading lands after an answer: this fraction of the viewport from its top */
 const EXPLANATION_VIEW_AT = 0.45;

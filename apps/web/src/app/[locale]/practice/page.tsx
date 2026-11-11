@@ -8,8 +8,8 @@
 // are a client router.replace to the same URL. The session's questions come without explanations;
 // each answered question's explanation is fetched then (its 10-question chunk file, EXPL_CHUNK).
 // LearningRecordProvider is mounted here (never in the locale layout), so the record loads while the
-// static data does; the owner flag is read in the browser (useOwner, H1-1). force-dynamic stays until
-// H1-4.
+// static data does; the owner flag is read in the browser (useOwner, H1-1).
+// Prerendered per locale (D-217 H1-4).
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -20,8 +20,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PracticePending, PracticeRoute } from "@/components/practice/PracticeRoute";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { routing } from "@/i18n/routing";
-
-export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ locale: string }>;

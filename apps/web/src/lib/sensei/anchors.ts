@@ -28,6 +28,7 @@ import type { TopicRow } from "@/lib/practice/topicRows";
 import { latestResult, type Attempt, type LearningRecord } from "@/lib/learning/record";
 import {
   CHOICE_LETTERS,
+  isSuspect,
   localizedChoices,
   localizedExplanation,
   localizedStem,
@@ -99,7 +100,7 @@ export function questionAnchor(
   }
 
   out.push("", `正解: ${q.correct_answer}`);
-  if (q.explanation?.key_guard?.suspect) out.push("注意: 正解は確認中です（この問題の正解キーは検証できていません）。");
+  if (isSuspect(q)) out.push("注意: 正解は確認中です（この問題の正解キーは検証できていません）。");
   const verdict = ctx.choice === undefined ? "未解答" : `${ctx.choice}（${ctx.choice === q.correct_answer ? "正解" : "不正解"}）`;
   out.push(`学習者の解答: ${verdict}`);
 
@@ -161,7 +162,7 @@ function wrongQuestionLines(q: QuizQuestion, choice: string, locale: AppLocale):
     out.push("", `#### 選択肢（${label}）`, ...choiceLines(q, texts));
   }
   out.push("", `正解: ${q.correct_answer}`);
-  if (q.explanation?.key_guard?.suspect) out.push("注意: 正解は確認中です（この問題の正解キーは検証できていません）。");
+  if (isSuspect(q)) out.push("注意: 正解は確認中です（この問題の正解キーは検証できていません）。");
   out.push(`学習者の解答: ${choice}（不正解）`);
 
   // explanation.correct + the note for the learner's (wrong) choice + points only

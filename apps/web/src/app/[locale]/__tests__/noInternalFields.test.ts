@@ -40,6 +40,7 @@ import QuestionRoute from "../practice/q/[qid]/page";
 import RecordRoute from "../record/page";
 
 const INTERNAL = [
+  "key_guard",
   "note_jp",
   "round1",
   "derived_answer",

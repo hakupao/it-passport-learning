@@ -3,14 +3,15 @@
 //
 // Every file is built through an explicit projection that copies display fields only, by name
 // (never a spread of corpus objects): the corpus also carries provenance / audit fields
-// (sidecar `source_note`, `suspect_count`, `stem_corruption_count`, the explanation `key_guard`
-// with the writer's `note_jp`, quiz_index `generated_from`, …) that must not leave the build.
+// (sidecar `source_note`, `suspect_count`, `stem_corruption_count`, the explanation's writer
+// self-check block with its `note_jp`, quiz_index `generated_from`, …) that must not leave the build.
 // ALLOW below declares, per file family, every key the files may hold; the allow-list test walks
 // every built file against it.
 //
 // Layout (sizes measured in S154, see the H1-2 report):
 //   /data/quiz/index.json                     locale-free: topics, exams, [id, exam, topic] rows, 中問 groups
 //   /data/quiz/<examId>.<locale>.json         one exam's questions, JP + the locale's language, no explanation
+//                                             (a suspect question carries `suspect: true`, H1-4 LOW-2)
 //   /data/quiz-expl/<examId>-<k>.json         explanations of that exam's questions in chunk k (explChunkOf), all
 //                                             three languages: ExplanationPane's 日/中/EN switch is independent of
 //                                             the page locale (D-186). Practice loads them, the mock run never does.
@@ -27,8 +28,9 @@ import type { ChumonGroup, TodayIndex } from "../practice/practiceIndex";
 import { QUESTION_ID_RE } from "../quiz/feedbackModel";
 import {
   CHOICE_LETTERS,
+  isSuspect,
   type QuizExamRef,
-  type QuizExplanationEntry,
+  type QuizExplanation,
   type QuizIndex,
   type QuizQuestion,
   type QuizTopicRef,
@@ -46,7 +48,8 @@ function extraLang(locale: StaticLocale): "zh" | "en" | null {
 // ---- shapes -----------------------------------------------------------------
 
 /** A question as the exam shard carries it: QuizQuestion's names, only JP + the locale's
- *  language, without `figure_type` (no reader) and without the explanation (own file). */
+ *  language, without `figure_type` (no reader) and without the explanation (own file); `suspect`
+ *  only when true, so the caveat shows while the explanation loads or if it fails (H1-4 LOW-2). */
 export interface ShardQuestion {
   id: string;
   exam_id: string;
@@ -64,6 +67,7 @@ export interface ShardQuestion {
   stem_en?: string;
   choices_zh?: Record<string, string>;
   choices_en?: Record<string, string>;
+  suspect?: true;
 }
 
 /** A `{jp,zh,en}` triple (explanations keep all three, see the layout note). */
@@ -73,13 +77,8 @@ export interface ShardText {
   en: string;
 }
 
-/** An explanation without `key_guard`: only its `suspect` flag is displayed (the caveat). */
-export interface ShardExplanation {
-  suspect: boolean;
-  correct: ShardText;
-  distractors: Record<string, ShardText>;
-  points: ShardText[];
-}
+/** An explanation as displayed (QuizExplanation): its texts and its `suspect` flag (the caveat). */
+export type ShardExplanation = QuizExplanation;
 
 export interface ExamShard {
   exam_id: string;
@@ -195,6 +194,7 @@ export function projectQuestion(q: QuizQuestion, locale: StaticLocale): ShardQue
     terms: [...q.terms],
   };
   if (q.choice_figures) out.choice_figures = letters(q.choice_figures);
+  if (isSuspect(q)) out.suspect = true;
   const lang = extraLang(locale);
   if (lang === "zh") {
     if (q.stem_zh !== undefined) out.stem_zh = q.stem_zh;
@@ -206,14 +206,14 @@ export function projectQuestion(q: QuizQuestion, locale: StaticLocale): ShardQue
   return out;
 }
 
-export function projectExplanation(e: QuizExplanationEntry): ShardExplanation {
+export function projectExplanation(e: QuizExplanation): ShardExplanation {
   const distractors: Record<string, ShardText> = {};
   for (const L of CHOICE_LETTERS) {
     const d = e.distractors[L];
     if (d) distractors[L] = text(d);
   }
   return {
-    suspect: Boolean(e.key_guard?.suspect),
+    suspect: e.suspect === true,
     correct: text(e.correct),
     distractors,
     points: e.points.map(text),
@@ -253,12 +253,12 @@ export function quizIndexOf(file: Pick<QuizIndexFile, "topics" | "exams">): Pick
 
 // ---- browser-side helpers (pure) ------------------------------------------------
 
-/** A shard explanation back in the QuizExplanationEntry shape: key_guard holds its suspect flag only. */
-export function toExplanation(explanation: ShardExplanation): QuizExplanationEntry {
+/** A shard explanation as the components take it (a copy). */
+export function toExplanation(explanation: ShardExplanation): QuizExplanation {
   const distractors: Record<string, ShardText> = {};
   for (const [L, d] of Object.entries(explanation.distractors)) distractors[L] = text(d);
   return {
-    key_guard: { suspect: explanation.suspect },
+    suspect: explanation.suspect,
     correct: text(explanation.correct),
     distractors,
     points: explanation.points.map(text),
@@ -267,7 +267,7 @@ export function toExplanation(explanation: ShardExplanation): QuizExplanationEnt
 
 /**
  * A shard question (+ its explanation shard entry) back in the QuizQuestion shape the components
- * take, with no field the files do not carry (no figure_type; key_guard reduced to its suspect flag,
+ * take, with no field the files do not carry (no figure_type; the explanation's suspect flag only,
  * toExplanation) — so what crosses to the client holds no internal field name either (H1-3). The
  * exam shard holds the stem / choices in JP + the page locale only (the question face's translation
  * toggle shows exactly those two); the explanation keeps all three languages (ExplanationPane's

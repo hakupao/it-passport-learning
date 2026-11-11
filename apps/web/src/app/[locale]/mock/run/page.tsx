@@ -9,7 +9,7 @@
 //   - The exam shards carry no explanation (§0-3: the result's rows link to /practice/q/<id>, where
 //     the explanation is). Every id must resolve to a question (R3) — else the not-found page.
 //   - LearningRecordProvider here (the finish writes the answers to the record); the owner flag is
-//     read in the browser (useOwner, H1-1). force-dynamic stays until H1-4.
+//     read in the browser (useOwner, H1-1). Prerendered per locale (D-217 H1-4).
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -20,8 +20,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MockPending, MockRoute } from "@/components/mock/MockRoute";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { routing } from "@/i18n/routing";
-
-export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ locale: string }>;

@@ -5,7 +5,8 @@
 //     and a 日 / 中 / EN switch: explanation language (state explLocale, starts at the UI locale,
 //     D-186); it changes the explanation only, never the question face;
 //   - suspect (84 questions, key-guard could not confirm the key): one ink-muted line, §0-24 copy in
-//     the UI language; the scoring is unchanged;
+//     the UI language; the scoring is unchanged; shown from the question's own flag too, so it is there
+//     while the explanation loads or if it fails (D-217 H1-4);
 //   - verdict list ア〜エ: ○ row = the keyed answer with the correct reason, × rows = <details>
 //     with the distractor reason; your row is tinted with 「← あなたの答え」, your wrong row open,
 //     the other wrong rows closed;
@@ -38,7 +39,7 @@ import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { ChoiceLetter } from "@/lib/learning/record";
-import { CHOICE_LETTERS, localizedExplanation, type QuizQuestion } from "@/lib/quiz/quizModel";
+import { CHOICE_LETTERS, isSuspect, localizedExplanation, type QuizQuestion } from "@/lib/quiz/quizModel";
 import { questionAnchor } from "@/lib/sensei/anchors";
 
 import { explanationTitle, LANG_TAG, sourceNumber } from "./choiceLayout";
@@ -181,7 +182,7 @@ function Answered({
         </div>
       </div>
 
-      {ex?.suspect ? (
+      {isSuspect(q) ? (
         <p className={styles.suspect} data-fid="suspect">
           {t("suspect")}
         </p>

@@ -4,7 +4,7 @@
 // The tasks come from the learning record, which lives in the browser, so the server sends the today
 // payload (loadTodayIndex: topics, ★, question ids, chumon groups, 3 terms per topic, exam labels) and
 // TodayPage computes the rest. LearningRecordProvider is mounted here (never in the locale layout);
-// the owner flag is read in the browser (useOwner, H1-1), not here. force-dynamic stays until H1-4.
+// the owner flag is read in the browser (useOwner, H1-1), not here. Prerendered per locale (D-217 H1-4).
 // A failed payload load (in practice the glossary dictionary, the only part the fallback skips) falls back to the dictionary-free payload
 // (loadSetupIndex: topicTerms empty → no 「今天的 3 个用语」 box), as the practice setup panel does, so
 // the page never 500s on it; if the fallback fails too, the error propagates.
@@ -15,8 +15,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { TodayPage } from "@/components/today/TodayPage";
 import { LearningRecordProvider } from "@/hooks/useLearningRecord";
 import { loadSetupIndex, loadTodayIndex } from "@/lib/practice/practiceReader";
-
-export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ locale: string }>;

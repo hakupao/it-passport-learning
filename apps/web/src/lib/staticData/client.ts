@@ -21,7 +21,7 @@ import {
 } from "./shards";
 import type { TodayIndex } from "../practice/practiceIndex";
 import { QUESTION_ID_RE } from "../quiz/feedbackModel";
-import type { QuizExplanationEntry, QuizQuestion } from "../quiz/quizModel";
+import type { QuizExplanation, QuizQuestion } from "../quiz/quizModel";
 import type { SenseiTermContext } from "../sensei/anchors";
 
 export type FetchImpl = (url: string) => Promise<Response>;
@@ -52,7 +52,7 @@ export function createStaticData(fetchImpl: FetchImpl = (url) => fetch(url)) {
     fetchExamShard,
     fetchExplanationShard,
     /** One question's explanation from its chunk file (shared with the chunk's other questions); null = none. */
-    async fetchExplanation(id: string): Promise<QuizExplanationEntry | null> {
+    async fetchExplanation(id: string): Promise<QuizExplanation | null> {
       const shard = await fetchExplanationShard(examOfId(id), explChunkOf(id));
       const e = Object.prototype.hasOwnProperty.call(shard.explanations, id) ? shard.explanations[id] : undefined;
       return e ? toExplanation(e) : null;

@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { TermCard } from "@/lib/glossary/dictionary";
 import type { TodayIndex } from "@/lib/practice/practiceIndex";
+import { isSuspect } from "@/lib/quiz/quizModel";
 
 import { createStaticData } from "../client";
 import {
@@ -14,6 +15,7 @@ import {
   parseLocaleFile,
   pickQuestions,
   pickSenseiTerms,
+  projectQuestion,
   reviewIds,
   senseiShardOf,
   senseiTermIds,
@@ -67,7 +69,7 @@ describe("file names", () => {
 });
 
 describe("toQuizQuestion / pickQuestions", () => {
-  it("no figure_type and key_guard with the suspect flag only (no internal field name); the explanation keeps all three languages", () => {
+  it("no figure_type, no key_guard: the explanation carries its suspect flag (H1-4 LOW-1) and keeps all three languages", () => {
     const out = toQuizQuestion(q("2026r08-q001", { stem_zh: "题干" }), {
       suspect: true,
       correct: { jp: "正", zh: "对", en: "" },
@@ -77,7 +79,7 @@ describe("toQuizQuestion / pickQuestions", () => {
     expect("figure_type" in out).toBe(false);
     expect(out.stem_zh).toBe("题干");
     expect(out.explanation).toEqual({
-      key_guard: { suspect: true },
+      suspect: true,
       correct: { jp: "正", zh: "对", en: "" },
       distractors: { ア: { jp: "誤", zh: "错", en: "" } },
       points: [{ jp: "要", zh: "要点", en: "" }],
@@ -108,6 +110,25 @@ describe("toQuizQuestion / pickQuestions", () => {
     expect(got.map((x) => x.id)).toEqual(["2025r07-q001", "2026r08-q002", "2026r08-q001"]);
     expect(got[0]!.explanation?.correct.jp).toBe("c");
     expect(got[1]!.explanation).toBeUndefined();
+  });
+});
+
+describe("the suspect flag on the exam shard question (H1-4 LOW-2)", () => {
+  const expl = (suspect: boolean) => ({ suspect, correct: { jp: "c", zh: "c", en: "c" }, distractors: {}, points: [] });
+
+  it("projectQuestion: suspect: true only for a suspect question (absent otherwise); never the explanation", () => {
+    const flagged = projectQuestion({ ...q("2026r08-q001"), explanation: expl(true) }, "zh");
+    expect(flagged.suspect).toBe(true);
+    expect("explanation" in flagged).toBe(false);
+    expect("suspect" in projectQuestion({ ...q("2026r08-q002"), explanation: expl(false) }, "zh")).toBe(false);
+    expect("suspect" in projectQuestion(q("2026r08-q003"), "ja")).toBe(false);
+  });
+
+  it("isSuspect: the question's own flag (explanation not loaded / failed) or its explanation's", () => {
+    expect(isSuspect(toQuizQuestion(q("2026r08-q001", { suspect: true })))).toBe(true);
+    expect(isSuspect(toQuizQuestion(q("2026r08-q001"), expl(true)))).toBe(true);
+    expect(isSuspect(toQuizQuestion(q("2026r08-q001"), expl(false)))).toBe(false);
+    expect(isSuspect(toQuizQuestion(q("2026r08-q001")))).toBe(false);
   });
 });
 

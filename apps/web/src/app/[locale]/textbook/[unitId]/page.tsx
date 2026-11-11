@@ -31,7 +31,14 @@ import {
   type TextbookUnit,
 } from "@/lib/textbook/reader";
 
-export const dynamic = "force-dynamic";
+// D-217 H1-4: every listed unit is prerendered per locale (the [locale] layout supplies the locales);
+// any other unitId is a 404 without rendering.
+export const dynamicParams = false;
+
+export async function generateStaticParams(): Promise<{ unitId: string }[]> {
+  const index = await loadReaderIndex();
+  return index.topics.flatMap((t) => (t.units ?? []).map((u) => ({ unitId: u.unit_id })));
+}
 
 type Props = { params: Promise<{ locale: string; unitId: string }> };
 

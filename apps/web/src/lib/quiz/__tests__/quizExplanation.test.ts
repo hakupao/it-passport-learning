@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   localizedExplanation,
   mergeExplanation,
-  type QuizExplanationEntry,
+  type QuizExplanation,
   type QuizQuestion,
 } from "../quizModel";
 
@@ -27,9 +27,9 @@ function baseQuestion(overrides: Partial<QuizQuestion> = {}): QuizQuestion {
   };
 }
 
-function entry(overrides: Partial<QuizExplanationEntry> = {}): QuizExplanationEntry {
+function entry(overrides: Partial<QuizExplanation> = {}): QuizExplanation {
   return {
-    key_guard: { figure_derivable: true, derived_answer: "ウ", matches_key: true, suspect: false, note_jp: "120/0.4=300" },
+    suspect: false,
     correct: { jp: "固定費120÷限界利益率0.4=300", zh: "固定成本120÷边际利益率0.4=300", en: "Fixed 120 / CM ratio 0.4 = 300" },
     distractors: {
       ア: { jp: "160は限界利益", zh: "160是边际利益", en: "160 is the contribution margin" },
@@ -98,13 +98,10 @@ describe("localizedExplanation", () => {
     expect(localizedExplanation(q, "ja")!.distractors.map((d) => d.letter)).toEqual(["ア", "エ"]);
   });
 
-  it("surfaces the key-guard suspect flag", () => {
+  it("surfaces the suspect flag (the loader lifts it from key_guard, H1-4)", () => {
     const clean = mergeExplanation(baseQuestion(), entry());
     expect(localizedExplanation(clean, "ja")!.suspect).toBe(false);
-    const flagged = mergeExplanation(
-      baseQuestion(),
-      entry({ key_guard: { figure_derivable: true, derived_answer: "イ", matches_key: false, suspect: true, note_jp: "図はイ" } }),
-    );
+    const flagged = mergeExplanation(baseQuestion(), entry({ suspect: true }));
     expect(localizedExplanation(flagged, "ja")!.suspect).toBe(true);
   });
 });
