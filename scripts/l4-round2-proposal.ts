@@ -265,6 +265,24 @@ const HOOK_ADD: HL[] = [
   ["technology-13-35-u02", "符号化", "化", 1, "mark", "「化」是转换成它 = [[jp:符号化]] の字 (en も [[jp:化]]) (追加、reviewer 判断)"],
 ];
 
+// --final: the Rule D review (L4_round2_review.md) + main-session decisions (session-154 log) applied → L4_round2_final.json
+const FINAL = process.argv.includes("--final");
+if (FINAL) {
+  const fix: Record<string, [string, string]> = {
+    B0285: ["原型 = 用试作品在早期获得用户的评价", "原型 = 先做出可试用的版本，在早期获得用户的评价"],
+    B0438: ["在收到审计指摘这一检查结果之后", "在审计中被指出问题这一检查结果之后"],
+    B0182: ["作为该指摘内容，", "作为所指出的内容，"],
+    B0404: ["这一イ的指摘是恰当的", "这一イ所指出的内容是恰当的"],
+  };
+  for (const e of E) for (const id of e.ids ?? []) if (fix[id]) [e.before, e.after] = fix[id], (e.note = `${e.note} / review L-${{ B0285: 1, B0438: 2, B0182: 3, B0404: 3 }[id]}`);
+  MYN_OVERRIDE["u:strategy-05-14-u05:terms[3].hook_zh"] = "「My Number」（我的号码）是昵称，法律上的正式名称是「[[jp:個人番号]]」（即个人编号）。";
+  const unmark = (u: string, l: string) => HOOK75.forEach((h) => { if (h[0] === u && h[2] === l) [h[4], h[5]] = ["drop", `review 規則 d: 普通の中国語で意味同一・term_zh の一部 (${h[5]})`]; });
+  unmark("strategy-02-05-u01", "匿名");
+  unmark("strategy-02-05-u01", "加工");
+  unmark("technology-23-63-u05", "管理");
+  const k = HOOK_ADD.findIndex((h) => h[0] === "strategy-01-02-u04" && h[2] === "相");
+  if (k >= 0) HOOK_ADD.splice(k, 1);
+}
 // ---------- data access ----------
 const quizDocs = new Map<string, Row>();
 const quizDoc = (kind: "translations" | "explanations", exam: string) => {
@@ -566,4 +584,4 @@ const summary = {
 };
 console.log(JSON.stringify(summary, null, 1));
 if (process.argv.includes("--write"))
-  writeFileSync(path.join(ROOT, "evidence/phase5/hosting/L4_round2.json"), `${JSON.stringify({ schema: "l4-round2-1", generated_at: new Date().toISOString(), command: "node scripts/l4-round2-proposal.ts --write", read_only: true, base: "data after L4 round 1 (uncommitted)", summary, occurrence_edits: items, hook_labels: hookItems, fields: fieldRows, units: unitReports }, null, 1)}\n`);
+  writeFileSync(path.join(ROOT, FINAL ? "evidence/phase5/hosting/L4_round2_final.json" : "evidence/phase5/hosting/L4_round2.json"), `${JSON.stringify({ schema: "l4-round2-1", final: FINAL, generated_at: new Date().toISOString(), command: `node scripts/l4-round2-proposal.ts ${process.argv.slice(2).join(" ")}`, read_only: true, base: "data after L4 round 1 (uncommitted)", summary, occurrence_edits: items, hook_labels: hookItems, fields: fieldRows, units: unitReports }, null, 1)}\n`);

@@ -2919,7 +2919,7 @@
         },
         "ウ": {
           "jp": "4D は 10進数で 4×16 + 13 = 77 (8進数では 115) であり、8進数 55 = 10進数 45 とは別の値です。実際に基数変換をせずに字面の似た値を選ぶと引っかかる誤答肢です。",
-          "zh": "4D 在十进制中是 4×16 + 13 = 77（八进制为 115），与八进制 55 = 十进制 45 是不同的值。如果不实际做基数转换，只挑字面相近的值，就会掉进这个误答项。",
+          "zh": "4D 在十进制中是 4×16 + 13 = 77（八进制为 115），与八进制 55 = 十进制 45 是不同的值。如果不实际做基数转换，只挑字面相近的值，就会掉进这个错误选项。",
           "en": "4D is 4×16 + 13 = 77 in decimal (115 in octal), which is a different value from octal 55 = decimal 45. It is the trap for anyone who picks a similar-looking value without actually carrying out the radix conversion."
         },
         "エ": {
@@ -4658,35 +4658,35 @@
       },
       "correct": {
         "jp": "請求書1枚には、伝票番号・日付・取引先コード・部署名という「1枚に1つだけ決まる項目」と、商品コード・数量・単価という「明細行の数だけ繰り返される項目」が混在している。正規化ではまずこの繰返し部分を切り離して別の表にする（第1正規形）。ウは伝票ヘッダ表〔伝票番号、日付、取引先コード、部署名〕と明細表〔伝票番号、商品コード、数量、単価〕に分割している。明細表が伝票番号を持つことで「どの伝票の明細か」をたどれ、明細表の主キーは〔伝票番号＋商品コード〕、伝票番号は伝票ヘッダ表への外部キーとして機能する。分割しても元の請求書を復元でき、日付や取引先コードの重複記録もなくなるので、ウが適切である。",
-        "zh": "一张发票里混杂着两类数据项：传票编号、日期、交易对象代码、部门名称属于「一张发票只确定一个值」的项目；商品代码、数量、单价则属于「有多少明细行就重复多少次」的项目。规范化的第一步就是把这个重复部分分离出去，放进另一个表（第一范式）。ウ 把它拆成了传票头表〔传票编号、日期、交易对象代码、部门名称〕和明细表〔传票编号、商品代码、数量、单价〕。明细表带有传票编号，就能追溯「这条明细属于哪张传票」；明细表的主键是〔传票编号＋商品代码〕，传票编号则作为指向传票头表的外键发挥作用。这样拆分后既能还原出原来的发票，也不会重复记录日期和交易对象代码，因此 ウ 是恰当的。",
+        "zh": "一张发票里混杂着两类数据项：单据编号、日期、交易对象代码、部门名称属于「一张发票只确定一个值」的项目；商品代码、数量、单价则属于「有多少明细行就重复多少次」的项目。规范化的第一步就是把这个重复部分分离出去，放进另一个表（第一范式）。ウ 把它拆成了单据头表〔单据编号、日期、交易对象代码、部门名称〕和明细表〔单据编号、商品代码、数量、单价〕。明细表带有单据编号，就能追溯「这条明细属于哪张单据」；明细表的主键是〔单据编号＋商品代码〕，单据编号则作为指向单据头表的外键发挥作用。这样拆分后既能还原出原来的发票，也不会重复记录日期和交易对象代码，因此 ウ 是恰当的。",
         "en": "One invoice mixes two kinds of data items: slip number, date, business partner code and department name are items that take exactly one value per invoice, while product code, quantity and unit price repeat once for every line item. The first step of normalization is to separate this repeating part into another table (first normal form). Choice ウ splits the data into a slip header table [slip number, date, business partner code, department name] and a line-item table [slip number, product code, quantity, unit price]. Because the line-item table carries the slip number, you can tell which slip each line belongs to; the primary key of the line-item table is [slip number + product code], and the slip number works as a foreign key pointing to the slip header table. Even after the split the original invoice can be reconstructed, and the date and business partner code are no longer recorded redundantly, so ウ is appropriate."
       },
       "distractors": {
         "ア": {
           "jp": "7項目すべてを1つの表にまとめており、明細行が複数ある請求書では同じ伝票番号・日付・取引先コード・部署名を行数分だけ重複して持つことになる。繰返し項目が分離されておらず正規化されていないうえ、更新時の不整合（更新異常）を招く。",
-          "zh": "它把全部 7 个数据项放进了 1 个表。对于有多条明细行的发票来说，相同的传票编号、日期、交易对象代码、部门名称就要按行数重复保存。重复项目没有被分离出去，等于没有做规范化，而且会引起更新时的数据不一致（更新异常）。",
+          "zh": "它把全部 7 个数据项放进了 1 个表。对于有多条明细行的发票来说，相同的单据编号、日期、交易对象代码、部门名称就要按行数重复保存。重复项目没有被分离出去，等于没有做规范化，而且会引起更新时的数据不一致（更新异常）。",
           "en": "It puts all seven data items into a single table. For an invoice with several line items, the same slip number, date, business partner code and department name must be stored again for every row. The repeating items are not separated out, so the data is not normalized, and it invites inconsistency when data is updated (update anomalies)."
         },
         "イ": {
           "jp": "明細部分を切り出した点はよいが、明細表〔商品コード、数量、単価〕に伝票番号がないため、どの明細行がどの伝票に属するのかを特定できない。表を結合して元の請求書を復元できず、分割の仕方として不適切である。",
-          "zh": "把明细部分拆出来这一点是好的，但明细表〔商品代码、数量、单价〕中没有传票编号，因此无法确定哪条明细行属于哪张传票。把表连接起来也还原不出原来的发票，作为拆分方式并不恰当。",
+          "zh": "把明细部分拆出来这一点是好的，但明细表〔商品代码、数量、单价〕中没有单据编号，因此无法确定哪条明细行属于哪张单据。把表连接起来也还原不出原来的发票，作为拆分方式并不恰当。",
           "en": "Separating out the line-item part is fine, but the line-item table [product code, quantity, unit price] has no slip number, so there is no way to tell which line item belongs to which slip. The tables cannot be joined back into the original invoice, so this way of splitting is inappropriate."
         },
         "エ": {
           "jp": "伝票番号と日付、取引先コードと部署名、明細の3表に分けているが、いずれの表にも他表と結び付けるキーが不足している。取引先コード・部署名がどの伝票のものか、明細がどの伝票のものかをたどれず、やはり元の請求書を復元できない。分割し過ぎて関連が切れてしまった例である。",
-          "zh": "它拆成了传票编号与日期、交易对象代码与部门名称、明细这 3 个表，但每个表都缺少与其他表相连的键。既无法追溯交易对象代码和部门名称属于哪张传票，也无法追溯明细属于哪张传票，同样还原不出原来的发票。这是拆分过度、关联被切断的例子。",
+          "zh": "它拆成了单据编号与日期、交易对象代码与部门名称、明细这 3 个表，但每个表都缺少与其他表相连的键。既无法追溯交易对象代码和部门名称属于哪张单据，也无法追溯明细属于哪张单据，同样还原不出原来的发票。这是拆分过度、关联被切断的例子。",
           "en": "It splits the data into three tables — slip number with date, business partner code with department name, and the line items — but none of the tables has enough keys to link it to the others. You cannot tell which slip the business partner code and department name belong to, nor which slip the line items belong to, so again the original invoice cannot be reconstructed. This is an example of splitting too far and cutting the relationships."
         }
       },
       "points": [
         {
           "jp": "正規化の第一歩は繰返し項目（明細行）を別表に切り出すこと。伝票のヘッダ部と明細部を分けるのが基本形。",
-          "zh": "规范化的第一步是把重复项目（明细行）拆到另一个表里。把传票的表头部分和明细部分分开是最基本的形式。",
+          "zh": "规范化的第一步是把重复项目（明细行）拆到另一个表里。把单据的表头部分和明细部分分开是最基本的形式。",
           "en": "The first step of normalization is to move the repeating items (the line items) into a separate table. Splitting a slip into a header part and a line-item part is the basic pattern."
         },
         {
           "jp": "表を分割したら、切り出した側に元の表を指す項目（外部キー、ここでは伝票番号）を必ず残す。これがないと結合できず元データを復元できない。",
-          "zh": "拆分表之后，一定要在拆出去的那一侧保留指向原表的数据项（外键，这里是传票编号）。没有它就无法连接，也就还原不出原始数据。",
+          "zh": "拆分表之后，一定要在拆出去的那一侧保留指向原表的数据项（外键，这里是单据编号）。没有它就无法连接，也就还原不出原始数据。",
           "en": "Once you split a table, always keep in the separated table an item that points back to the original table (a foreign key, here the slip number). Without it the tables cannot be joined and the original data cannot be reconstructed."
         }
       ]

@@ -43,7 +43,7 @@
 5. **`output: 'export'`**: CSP 等の header を `_headers` へ (テストも移す)。`@vercel/analytics`・`@vercel/speed-insights` を外し Cloudflare Web Analytics (D-220)。全ページに `itlearn.bojiangz.com` の canonical。
 6. **IPA 漏洩 gate の再定義**: 出力 `out/` 全体を走査 (IPA 原本のパス・内部欄・未許可ファイルが無いこと)。`.nft.json` 版は移設後に退役。
 
-### H2 関門: OQ-22 (過去問詳細・用語詳細の出し方) を実測で決める
+### H2 関門: OQ-22 (過去問詳細・用語詳細の出し方) を実測で決める — **決定 D-223 = A′** (詳細も HTML、export 後に 2 系統の `.txt` を削除、約 16,200 ファイル)。H1-5 で実装、H5 で詳細への遷移と prefetch を実測
 - branch で詳細ページも事前生成した版を作り、**実際のファイル数・build 時間・upload 時間**を測る (見積 16,000 は未実測。各ページ附属の `.txt` を除いても画面遷移が壊れないかも確認)。
 - 数字を添えてユーザーに A (詳細も HTML) / B (browser 読込) を決めてもらう。**ここだけは実装前にユーザー判断**。
 
