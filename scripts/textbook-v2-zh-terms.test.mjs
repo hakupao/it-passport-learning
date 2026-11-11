@@ -46,8 +46,20 @@ test("seed: conflict-free v1 term_zh + per-unit MBO + unified E-R図 + pilot wor
   assert.equal(JSON.stringify(seedTable(units())), JSON.stringify(t));
 });
 
-test("the committed data/ip/textbook/zh_terms.json is the seed (until edited by hand); --seed never overwrites a different table", () => {
-  assert.deepEqual(readJson(P.zhTerms), seedTable(units()));
+// S153 (D-215 C5〜C8): the first hand edits. The committed table keeps every seed entry except HAND_CHANGED,
+// and adds terms / per_unit entries (C8: per_unit for compound-word false positives, the global value kept for
+// every other unit that checked the term).
+const HAND_CHANGED = { アクセシビリティ: "可访问性" };
+
+test("the committed data/ip/textbook/zh_terms.json is the seed + the recorded hand edits; --seed never overwrites a different table", () => {
+  const seed = seedTable(units());
+  const t = readJson(P.zhTerms);
+  for (const [k, v] of Object.entries(seed.terms)) assert.equal(t.terms[k], HAND_CHANGED[k] ?? v, k);
+  for (const [k, v] of Object.entries(HAND_CHANGED)) assert.equal(t.terms[k], v, k);
+  for (const [k, by] of Object.entries(seed.per_unit)) assert.deepEqual(t.per_unit[k], by, k);
+  assert.deepEqual(t.excluded, seed.excluded);
+  for (const [k, by] of Object.entries(t.per_unit)) if (!(k in seed.per_unit)) assert.ok(k in t.terms, `${k}: a C8 per_unit entry keeps its global term`);
+  assert.equal(readFileSync(P.zhTerms, "utf-8"), `${JSON.stringify(t, null, 2)}\n`);
   const dir = mkdtempSync(path.join(tmpdir(), "tbv2-zh-"));
   const out = path.join(dir, "zh_terms.json");
   assert.equal(run("textbook-v2-zh-terms.mjs", ["--seed", "--out", out]).code, 0);

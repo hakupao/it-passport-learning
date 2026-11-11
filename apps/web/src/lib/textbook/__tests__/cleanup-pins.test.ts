@@ -28,4 +28,16 @@ describe("D-215 direct edits stay in place", () => {
     const iu = index().topics.flatMap((t) => t.units).find((x) => x.unit_id === "strategy-04-13-u02");
     expect(iu?.title_zh).toBe(want);
   });
+
+  it("C8 technology-23-63-u10: title_zh says 生物特征认证 (生体認証, as the body), in the unit and in unit_index.json", () => {
+    const want = "生物特征认证与认证精度指标";
+    expect(unit("technology-23-63-u10").title_zh).toBe(want);
+    expect(index().topics.flatMap((t) => t.units).find((x) => x.unit_id === "technology-23-63-u10")?.title_zh).toBe(want);
+  });
+
+  it("C4 management-09-26-u04: the Scrum tree has the Increment node (Scrum Guide 2020 artifact) in all three languages", () => {
+    const root = unit("management-09-26-u04").terms[0].fig.data.root as { children: { id: string; label: Record<string, string> }[] };
+    const inc = root.children.find((c) => c.id === "increment");
+    expect(inc?.label).toEqual({ jp: "インクリメント (完成した成果)", zh: "增量（完成的成果）", en: "Increment (finished result)" });
+  });
 });
