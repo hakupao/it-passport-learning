@@ -1,0 +1,33 @@
+# D-217 (2026-11-11). Search engines are welcome: the textbook, glossary and
+# past-question pages are all crawlable.
+
+# Backlink / SEO-audit crawlers are not search engines and fetched tens of
+# thousands of per-request pages a day. Blocked only until the site is served
+# as static files (D-217 phase 2); remove this group then.
+User-agent: MJ12bot
+User-agent: SemrushBot
+User-agent: SERankingBacklinksBot
+User-agent: AhrefsBot
+User-agent: DotBot
+User-agent: BLEXBot
+User-agent: DataForSeoBot
+Disallow: /
+
+# Everyone else: the API, the per-user pages and the session URLs are off limits.
+# "practice?" matches only URLs with a query string: each fetch of one redirects
+# to a fresh seed / run, so they are an unbounded set of per-request pages.
+# /xx/practice, /xx/practice/q/<id> and /xx/practice/browse/<topic> stay crawlable.
+User-agent: *
+Disallow: /api/
+Disallow: /ja/record
+Disallow: /zh/record
+Disallow: /en/record
+Disallow: /ja/settings
+Disallow: /zh/settings
+Disallow: /en/settings
+Disallow: /ja/practice?
+Disallow: /zh/practice?
+Disallow: /en/practice?
+Disallow: /ja/mock/run
+Disallow: /zh/mock/run
+Disallow: /en/mock/run

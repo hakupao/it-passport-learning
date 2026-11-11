@@ -46,5 +46,8 @@ export const config = {
   // i18n middleware would rewrite /quiz-figures/<id>.webp → /ja/quiz-figures/…
   // (Session 86). The trailing slash anchors it to the real dir so an unrelated
   // path like /quiz-figuresX is still processed (Rule D LOW, Session 86).
-  matcher: "/((?!_next/static|_next/image|favicon.ico|quiz-figures/).*)",
+  // robots.txt (D-217) is the static public file: without the exclusion the i18n
+  // middleware redirected /robots.txt → /ja/robots.txt (a 404 rendered per request).
+  // Same form as the Next.js matcher docs (no end anchor).
+  matcher: "/((?!_next/static|_next/image|favicon.ico|robots.txt|quiz-figures/).*)",
 };

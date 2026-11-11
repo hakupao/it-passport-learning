@@ -59,10 +59,18 @@ describe("middleware — routing", () => {
 });
 
 describe("config", () => {
-  it("matcher excludes _next/static, _next/image, favicon.ico, quiz-figures/", () => {
+  it("matcher excludes _next/static, _next/image, favicon.ico, robots.txt, quiz-figures/", () => {
     expect(config.matcher).toBe(
-      "/((?!_next/static|_next/image|favicon.ico|quiz-figures/).*)",
+      "/((?!_next/static|_next/image|favicon.ico|robots.txt|quiz-figures/).*)",
     );
+  });
+
+  it("matcher boundary: skips /robots.txt at the root (D-217)", () => {
+    const re = new RegExp(`^${config.matcher}$`);
+    // excluded → served as the static public file, no middleware, no /ja/robots.txt redirect
+    expect(re.test("/robots.txt")).toBe(false);
+    // a locale-prefixed path still goes through the middleware
+    expect(re.test("/ja/robots.txt")).toBe(true);
   });
 
   it("matcher boundary: skips /quiz-figures/* but processes app routes (Session 86)", () => {
