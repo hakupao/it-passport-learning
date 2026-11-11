@@ -8,7 +8,7 @@
 //     headwords and their order as unit_index lists them, term_zh / term_en as
 //     the v1 unit had them. A broken invariant is fatal: nothing else is checked.
 //   - three-language completeness, well-formed inline markup (§0-12),
-//     compat field == the value derived from the new fields (stripInline,
+//     compat field == the value derived from the new fields (compatText,
 //     introOf, hookLines; the merge script writes them with the same functions),
 //   - D-200: ≤ 3 考点 per term, each JP ≤ 2 sentences / ≤ 100 characters (POINT_LIMITS),
 //   - D-195: 展開 2〜3 sentences, 要点 3〜5, banned phrasing (§9 → BANNED_PHRASES
@@ -26,7 +26,7 @@
 // an object belongs, …) is reported as `schema` issues: validateV2 never throws.
 
 import { figErrors } from "./figureSpec.ts";
-import { inlineErrors, stripInline } from "./inline.ts";
+import { compatText, inlineErrors, stripInline } from "./inline.ts";
 import { LANGS, V2_SCHEMA, type Lang, type TextbookUnitV2, type UnitTermV2 } from "./types.ts";
 
 export type V2IssueCode =
@@ -139,7 +139,7 @@ const ENDS: Record<Lang, RegExp> = { jp: /[。！？]$/, zh: /[。！？]$/, en:
 export function introOf(goals: readonly string[], lang: Lang): string {
   const stop = lang === "en" ? "." : "。";
   return goals
-    .map((g) => stripInline(g).trim())
+    .map((g) => compatText(g, lang).trim())
     .map((g) => (ENDS[lang].test(g) ? g : `${g}${stop}`))
     .join(lang === "en" ? " " : "");
 }
@@ -150,7 +150,7 @@ const gloss = (t: UnitTermV2, lang: Lang): string => (lang === "jp" ? t.term : l
 export function hookLines(u: TextbookUnitV2, lang: Lang): string[] {
   return u.terms
     .filter((t) => nonEmpty(t[`hook_${lang}`]))
-    .map((t) => `${gloss(t, lang)}${lang === "zh" ? "：" : ": "}${stripInline(t[`hook_${lang}`] as string)}`);
+    .map((t) => `${gloss(t, lang)}${lang === "zh" ? "：" : ": "}${compatText(t[`hook_${lang}`] as string, lang)}`);
 }
 
 // ---- D-195 §9 style rules ----------------------------------------------------
@@ -617,7 +617,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
   if (keys) {
     const n = keys.jp.length;
     if (n < KEY_POINTS.min || n > KEY_POINTS.max) push("key-points", "key_points", `${n} items (D-195 §7: ${KEY_POINTS.min}〜${KEY_POINTS.max})`);
-    for (const l of LANGS) compat(`summary.key_points_${l}`, sum[`key_points_${l}`], keys[l]);
+    for (const l of LANGS) compat(`summary.key_points_${l}`, sum[`key_points_${l}`], (ur[`key_points_${l}`] as string[]).map((x) => compatText(x, l)));
   }
 
   // ---- 用語総表 ----
@@ -652,7 +652,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
     const where = `terms[${i}](${t.term})`;
 
     const one = prose(tr, "one", where);
-    if (one) for (const l of LANGS) compat(`${where}.definition_${l}`, tr[`definition_${l}`], one[l]);
+    if (one) for (const l of LANGS) compat(`${where}.definition_${l}`, tr[`definition_${l}`], compatText(tr[`one_${l}`] as string, l));
     // D-202: one_zh / one_en name the headword (field …_zh / …_en: a JP-only part drops it, jpOnlyIssues)
     for (const l of ["zh", "en"] as const) {
       const s = tr[`one_${l}`];
@@ -662,7 +662,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
     }
     const detail = prose(tr, "detail", where);
     if (detail) {
-      for (const l of LANGS) compat(`${where}.explanation_${l}`, tr[`explanation_${l}`], detail[l]);
+      for (const l of LANGS) compat(`${where}.explanation_${l}`, tr[`explanation_${l}`], compatText(tr[`detail_${l}`] as string, l));
       const bad = LANGS.filter((l) => {
         const n = sentences(detail[l], l).length;
         return n < DETAIL_SENTENCES.min || n > DETAIL_SENTENCES.max;
@@ -699,7 +699,7 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
       const ok = markupOk(`${where}.hook_${l}`, h as string);
       const plain = stripInline(h as string);
       style(`${where}.hook_${l}`, plain, l);
-      if (ok) compat(`${where}.memory_hook_${l}`, tr[`memory_hook_${l}`], plain);
+      if (ok) compat(`${where}.memory_hook_${l}`, tr[`memory_hook_${l}`], compatText(h as string, l));
     });
     if (hasHook.every(Boolean)) {
       const same = LANGS.filter((l) => one && stripInline(tr[`hook_${l}`] as string).trim() === one[l].trim());

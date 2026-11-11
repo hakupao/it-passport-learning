@@ -73,6 +73,32 @@ export function stripInline(src: string): string {
     .join("");
 }
 
+/**
+ * v2 text → plain text for the v1 compat fields (D-215 C2, S153): as stripInline, except that a JP label
+ * right after a keyword (`**语**[[jp:語]]`, or with one space between) is the keyword's gloss and is
+ * parenthesised, so the plain text does not run the two together ("会计审计会計監査"): en → "term (語)",
+ * jp / zh → "术语（語）" (the space dropped). A label equal to its keyword is dropped ("金融商品", not
+ * "金融商品（金融商品）"). Labels the writer already parenthesised, or that follow plain text, stay as
+ * stripInline prints them.
+ */
+export function compatText(src: string, lang: "jp" | "zh" | "en"): string {
+  const toks = tokenize(src);
+  let out = "";
+  toks.forEach((tok, i) => {
+    const prev = toks[i - 1];
+    const sp = prev?.t === "text" && prev.s === " " && toks[i - 2]?.t === "key";
+    if (tok.t === "jp" && (prev?.t === "key" || sp)) {
+      const key = (sp ? toks[i - 2]?.s : prev?.s) ?? "";
+      if (key !== tok.s) out += lang === "en" ? ` (${tok.s})` : `（${tok.s}）`;
+      return;
+    }
+    // the single space between a keyword and its gloss is emitted with the gloss (en) or dropped
+    if (tok.t === "text" && tok.s === " " && prev?.t === "key" && toks[i + 1]?.t === "jp") return;
+    out += tok.s;
+  });
+  return out;
+}
+
 /** Problems that parseInline would print as raw markers (empty = well-formed). */
 export function inlineErrors(src: string): string[] {
   const errors: string[] = [];

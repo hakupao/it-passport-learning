@@ -27,10 +27,11 @@
 // Assembly (lib assemble, the same as validate --part): new fields from the localised part; from the
 // v1 original (manifest.v1): ids, titles, unit_summary_*, order_in_topic, prerequisites,
 // source_figures, overview.freq_badge, term_zh / term_en (manifest.v1_terms) and the v1 `figure`
-// object of an svg fig. Compat (validateV2's formulas): definition_* = stripInline(one_*),
-// explanation_* = stripInline(detail_*), memory_hook_* = stripInline(hook_*) or "", inline_quiz =
+// object of an svg fig. Compat (validateV2's formulas; compatText = stripInline with a keyword's JP label parenthesised,
+// D-215 C2): definition_* = compatText(one_*),
+// explanation_* = compatText(detail_*), memory_hook_* = compatText(hook_*) or "", inline_quiz =
 // quiz, inline_fallback = false, figure = null unless fig.kind = svg, overview.intro_* =
-// introOf(goals_*), summary.key_points_* = stripInline(key_points_*), summary.memory_hooks_* =
+// introOf(goals_*), summary.key_points_* = compatText(key_points_*), summary.memory_hooks_* =
 // hookLines(), lang_status = generated ×3, analogy_* stripped, overview.est_minutes = max(3,
 // ceil(n / 80)), n = JP characters of one + detail + analogy + hook + 考点 + 易混 rows + key points +
 // goals without markers / whitespace (lib estMinutes, S135 M4).

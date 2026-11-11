@@ -9,7 +9,7 @@
 | # | 項目 (出所) | 処置 | 編集経路 | 審査 | 状態 |
 |---|---|---|---|---|---|
 | C1 | OQ-19: v1 回帰テスト 2 件が v1 = 0 で無検査 | **D-214**: `v1-snapshot.test.ts` と `__snapshots__/v1-units.json`、zh-terms の `--probe-v1` を退役し、`v2-corpus.test.ts` に「全単元が `textbook-unit-v2`」の不変量を 1 件追加。`--check-units` は現行 (S152) のまま | コード (TDD: 不変量を先に追加して通過確認 → 旧テスト削除) | code-reviewer opus | **done (S153、APPROVE)** |
-| C2 | zh 本文 `**…**[[jp:…]]` 括弧なし表記で派生欄が「会计审计会計監査」と連結 (S150 b56 O1、S152 再計数 24 単元 / 244) | 派生欄を作る関数を直して全単元を再派生 (単元ごとの補丁にしない)。まず派生が merge 時保存か描画時かを確認し、保存なら merge 経路で再 `--write` | コード + 再 merge | verifier opus (派生欄の差分全件) | todo |
+| C2 | zh 本文 `**…**[[jp:…]]` 括弧なし表記で派生欄が「会计审计会計監査」と連結 (S150 b56 O1、S152 再計数 24 単元 / 244) | 派生欄を作る関数を直して全単元を再派生 (単元ごとの補丁にしない)。まず派生が merge 時保存か描画時かを確認し、保存なら merge 経路で再 `--write` | コード + 再 merge | verifier opus (派生欄の差分全件) | **done (S153、verifier PASS、in-place 再派生 = 計画からの逸脱、`cleanup/C2.md`)** |
 | C3 | b77 L3: v1 図 `figures/technology-14-39-u01-t01.svg` と `terms[1].figure.mermaid` の 〈p〉〈/p〉 全角山かっこ | 直接修正 (`&lt;p&gt;` / mermaid `#lt;p#gt;`)。`figure_index.json` に当該図の hash 等が無いことは S152 で確認済 | 図ファイル直接編集 | verifier opus (截図で目視) | **done (S153、verifier PASS、`cleanup/C3_C10.md`)** |
 | C4 | b32 u04 スクラム tree 図のインクリメント欠落 (f) | 図の構造修正 (図 data の追加)。B3 は文字列置換のみのため、merge 経路外の直接編集として evidence に before/after を残す | 単元 JSON 直接 + 記録 | verifier opus | todo |
 | C5 | zh 訳語の単元間分裂: アクセシビリティ 可访问性 (19-50-u02) / 无障碍设计 (19-51-u01) | **可访问性に統一**。根拠: 2015h27a-q061 の誤答ア バリアフリーデザイン の zh 訳が「无障碍设计」で、19-51-u01 の訳は誤答肢と同語 (型 6)。zh_terms に登録 + B3 補丁 | B3 | verifier opus | todo |
@@ -24,6 +24,7 @@
 | C14 | (j) 金商法等改正の施行後に strategy-02-06-u03 へ暗号資産、日付追跡 4 件 | 日付到来時に B3 (STATE 次セッション行で追跡) | B3 | verifier opus | 日付待ち |
 | C15 | リモート `stage7-ui` ブランチ | 削除を推奨: `origin/stage7-ui` (`1ef669ad`) は `origin/main` の祖先で独自 commit 0 (S152 確認)。外部への破壊的操作のためユーザー自身が実行: `! git push origin --delete stage7-ui` | ユーザー | — | **done (S152、ユーザー実行、`[deleted] stage7-ui`)** |
 | C16 | Vercel deploy 保持期間 (D-212 §4) | 推奨 7 日 (最少 10 保持)。Vercel Project → Settings → Security → Deployment Retention でユーザーが設定 | ユーザー | — | **done (ユーザー設定済、S152 に Vercel API 読取で確認: expirationDays 7 / production 7 / canceled 7 / errored 7、deploymentsToKeep 10)** |
+| C17 | C2 の残余 (S153): keyword 以外の直後の裸 `[[jp:…]]` (zh 約 284 / en 約 206)。注記 (`系统管理标准[[jp:システム管理基準]]`) と言及 (`日语的[[jp:憲章]]`) が混在し位置規則では分けられない → compat 欄で連結のまま | 本文側に括弧を入れる B3 補丁 (注記のみを人手で選別)。本 pass では行わず候補として記録 (読書画面は色分けで区別される) | B3 | verifier opus | 候補 (未着手) |
 
 ## 順序 (S153)
 1. C1 (テスト、独立) と C3・C10 (小さい直接修正) を先に。

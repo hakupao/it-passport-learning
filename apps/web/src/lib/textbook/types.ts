@@ -150,7 +150,7 @@ export interface TextbookUnit {
 // markup, written deterministically by the merge script from the new fields), so
 // the glossary, AI 先生 anchors, today page and validateContent read a v2 unit as
 // if it were v1. The new fields carry the D-195 content; the reader uses them via
-// normalizeUnit. validateV2 asserts stripInline(new) == compat. Imported by Node
+// normalizeUnit. validateV2 asserts compatText(new) == compat (D-215 C2). Imported by Node
 // scripts through validateV2.ts (native type stripping): no enums / namespaces.
 
 export const V2_SCHEMA = "textbook-unit-v2";

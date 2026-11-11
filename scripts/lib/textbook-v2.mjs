@@ -6,7 +6,7 @@
 //   - resolves paths under one data root (`--data-root`, default <repo>/data/ip) so tests can
 //     point every read and write at a temp copy,
 //   - turns a writer part (JP-only or localised) + the prep manifest into a full v2 unit whose
-//     v1-compat fields are derived with validateV2's own exported formulas (stripInline /
+//     v1-compat fields are derived with validateV2's own exported formulas (compatText /
 //     introOf / hookLines), i.e. the same assembly the merge script writes,
 //   - counts per-language structure for the parity script,
 //   - reads the workflow journal.jsonl (S121: the journal is the record of what each agent returned).
@@ -75,12 +75,12 @@ export async function loadV2() {
   v2mod ??= await import(pathToFileURL(path.join(REPO, "apps/web/src/lib/textbook/validateV2.ts")).href);
   return v2mod;
 }
-/** What assemble() needs: validateV2 formulas + stripInline + V2_SCHEMA (from the web modules). */
+/** What assemble() needs: validateV2 formulas + stripInline / compatText + V2_SCHEMA (from the web modules). */
 export async function loadKit() {
   const v2 = await loadV2();
-  const { stripInline } = await import(pathToFileURL(path.join(REPO, "apps/web/src/lib/textbook/inline.ts")).href);
+  const { stripInline, compatText } = await import(pathToFileURL(path.join(REPO, "apps/web/src/lib/textbook/inline.ts")).href);
   const { V2_SCHEMA } = await import(pathToFileURL(path.join(REPO, "apps/web/src/lib/textbook/types.ts")).href);
-  return { v2, stripInline, introOf: v2.introOf, hookLines: v2.hookLines, V2_SCHEMA };
+  return { v2, stripInline, compatText, introOf: v2.introOf, hookLines: v2.hookLines, V2_SCHEMA };
 }
 
 // ---- parts ----------------------------------------------------------------------
@@ -424,7 +424,7 @@ function v1FigureFor(v1, svgPath) {
  * prerequisites, source_figures, freq_badge, term_zh / term_en (manifest v1_terms). Compat fields
  * derived exactly as validateV2 checks them.
  */
-export function assemble(part, manifest, { stripInline, introOf, hookLines, V2_SCHEMA }) {
+export function assemble(part, manifest, { stripInline, compatText, introOf, hookLines, V2_SCHEMA }) {
   const v1 = manifest.v1;
   const gl = new Map(manifest.v1_terms.map((t) => [t.term, t]));
   const terms = (part.terms ?? []).map((t) => {
@@ -438,9 +438,10 @@ export function assemble(part, manifest, { stripInline, introOf, hookLines, V2_S
     out.points = t.points;
     out.fig = t.fig ?? null;
     out.quiz = t.quiz;
-    for (const l of LANGS) out[`definition_${l}`] = stripInline(t[`one_${l}`] ?? "");
-    for (const l of LANGS) out[`explanation_${l}`] = stripInline(t[`detail_${l}`] ?? "");
-    for (const l of LANGS) out[`memory_hook_${l}`] = typeof out[`hook_${l}`] === "string" ? stripInline(out[`hook_${l}`]) : "";
+    // compat text (D-215 C2): a keyword's JP label is parenthesised (inline.ts compatText)
+    for (const l of LANGS) out[`definition_${l}`] = compatText(t[`one_${l}`] ?? "", l);
+    for (const l of LANGS) out[`explanation_${l}`] = compatText(t[`detail_${l}`] ?? "", l);
+    for (const l of LANGS) out[`memory_hook_${l}`] = typeof out[`hook_${l}`] === "string" ? compatText(out[`hook_${l}`], l) : "";
     out.inline_quiz = t.quiz;
     out.inline_fallback = false;
     out.figure = out.fig?.kind === "svg" ? v1FigureFor(v1, out.fig.data?.path) : null;
@@ -472,7 +473,7 @@ export function assemble(part, manifest, { stripInline, introOf, hookLines, V2_S
   ov.est_minutes = estMinutes(part, stripInline);
   u.overview = ov;
   const sum = {};
-  for (const l of LANGS) sum[`key_points_${l}`] = Array.isArray(part[`key_points_${l}`]) ? part[`key_points_${l}`].map(stripInline) : [];
+  for (const l of LANGS) sum[`key_points_${l}`] = Array.isArray(part[`key_points_${l}`]) ? part[`key_points_${l}`].map((x) => compatText(x, l)) : [];
   for (const l of LANGS) sum[`memory_hooks_${l}`] = hookLines(u, l);
   u.summary = sum;
   u.challenge_questions = part.challenge_questions;

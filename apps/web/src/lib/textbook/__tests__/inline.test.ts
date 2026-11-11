@@ -3,7 +3,7 @@ import { createElement as h, Fragment, isValidElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { inlineErrors, parseInline, stripInline } from "../inline";
+import { compatText, inlineErrors, parseInline, stripInline } from "../inline";
 
 const html = (s: string): string => renderToStaticMarkup(h(Fragment, null, ...parseInline(s)));
 
@@ -51,6 +51,36 @@ describe("stripInline", () => {
   it("keeps unclosed / nested markup as-is (same reading as parseInline)", () => {
     expect(stripInline("a **b")).toBe("a **b");
     expect(stripInline("**a [[jp:b]] c**")).toBe("**a [[jp:b]] c**");
+  });
+});
+
+describe("compatText (D-215 C2: the compat fields)", () => {
+  it("a JP label right after a keyword becomes a parenthesised gloss (zh: full-width, no space)", () => {
+    expect(compatText("**会计审计**[[jp:会計監査]]是审计。", "zh")).toBe("会计审计（会計監査）是审计。");
+    expect(compatText("**合规** [[jp:コンプライアンス]]是指", "zh")).toBe("合规（コンプライアンス）是指");
+    expect(compatText("**绿色 IT**[[jp:グリーンIT]]的理念", "zh")).toBe("绿色 IT（グリーンIT）的理念");
+    expect(compatText("（**浪涌**[[jp:サージ]]）导走", "zh")).toBe("（浪涌（サージ））导走");
+  });
+  it("en: an ASCII keyword, a space, the label → ' (label)'", () => {
+    expect(compatText("A **financial audit** [[jp:会計監査]] checks", "en")).toBe("A financial audit (会計監査) checks");
+    expect(compatText("(**controls** [[jp:コントロール]]) are", "en")).toBe("(controls (コントロール)) are");
+  });
+  it("leaves every other label as stripInline does (written parens, mentions, non-keyword text)", () => {
+    for (const s of [
+      "**接口**（[[jp:インタフェース]]，即数据传",
+      "日语的[[jp:憲章]]相当于",
+      "财务报表[[jp:財務諸表]]审计",
+      "**x**, [[jp:デグレード]], a",
+      "**a**  [[jp:二つの空白]]",
+      "plain **key** only",
+      "**unclosed [[jp:x]]",
+    ]) for (const l of ["zh", "en"] as const) expect(compatText(s, l), s).toBe(stripInline(s));
+  });
+  it("the language decides the parens, not the characters; a label equal to its keyword is dropped", () => {
+    expect(compatText("**IT** [[jp:アイティー]]是", "zh")).toBe("IT（アイティー）是");
+    expect(compatText("**café**[[jp:カフェ]] is", "en")).toBe("café (カフェ) is");
+    expect(compatText("**金融商品**[[jp:金融商品]]是", "zh")).toBe("金融商品是");
+    expect(compatText("**比例尺度**[[jp:比例尺度]]（**比率尺度**[[jp:比率尺度]]）", "zh")).toBe("比例尺度（比率尺度）");
   });
 });
 
