@@ -178,6 +178,14 @@ function windowOf(raw: string, sp: Span) {
   return { a: 0, b: raw.length, before: raw };
 }
 
+// --round1 (L4 round 1, L4_review.md "批准范围"): keep only the en labels and the zh labels detected by kana /
+// Japanese glyph form; サブロク协定 waits for the D-222.7 redo (round 2). Output goes to --out, never L4c_hooks.json.
+const ROUND1 = process.argv.includes("--round1");
+const R1_WHY = new Set(["en: kanji / kana run", "zh: quoted, kana / Japanese glyph", "zh: unquoted kana / Japanese glyph run"]);
+const R1_EXCLUDE = new Set(["サブロク协定"]);
+const outAt = process.argv.indexOf("--out");
+const OUT_FILE = outAt > 0 ? path.resolve(process.argv[outAt + 1]) : ROUND1 ? null : path.join(ROOT, "evidence/phase5/hosting/L4c_hooks.json");
+
 type Row = Record<string, unknown>;
 const rows: Row[] = [];
 const residual: Row[] = [];
@@ -200,7 +208,8 @@ for (const f of readdirSync(UNITS_DIR).filter((x) => x.endsWith(".json")).sort()
     for (const l of ["zh", "en"] as const) {
       const raw = t[`hook_${l}`] as string;
       const drop: Dropped[] = [];
-      const sps = l === "en" ? enSpans(raw) : zhSpans(raw, enRuns, jaText, drop, MANUAL[unit] ?? []);
+      const all = l === "en" ? enSpans(raw) : zhSpans(raw, enRuns, jaText, drop, MANUAL[unit] ?? []);
+      const sps = ROUND1 ? all.filter((sp) => R1_WHY.has(sp.why) && !R1_EXCLUDE.has(raw.slice(sp.s, sp.e))) : all;
       for (const d of drop) droppedAll.push({ unit, path: `terms[${i}](${t.term}).hook_zh`, ...d, final: "no mark (read in the S154 review: Chinese gloss / Chinese word, or a translated part of the name)", hook_zh: raw });
       if (sps.length === 0) {
         if (l === "zh" && enRuns.length > 0) residual.push({ unit, path: `terms[${i}](${t.term}).hook_zh`, en_runs: enRuns, hook_zh: raw, hook_en: t.hook_en });
@@ -331,8 +340,8 @@ const summary = {
   dropped_zh_candidates: Object.fromEntries([...new Set(droppedAll.map((d) => String(d.judgement)))].map((k) => [k, droppedAll.filter((d) => d.judgement === k).length])),
 };
 console.log(JSON.stringify(summary, null, 1));
-if (process.argv.includes("--write"))
+if (process.argv.includes("--write") && OUT_FILE)
   writeFileSync(
-    path.join(ROOT, "evidence/phase5/hosting/L4c_hooks.json"),
-    `${JSON.stringify({ schema: "l4c-hooks-1", generated_at: new Date().toISOString(), command: "node scripts/l4-hooks.ts --write", read_only: true, decision: "D-221", summary, units: unitReports, hooks: rows, residual_zh: residual, dropped_zh_candidates: droppedAll }, null, 1)}\n`,
+    OUT_FILE,
+    `${JSON.stringify({ schema: "l4c-hooks-1", generated_at: new Date().toISOString(), command: `node scripts/l4-hooks.ts ${process.argv.slice(2).join(" ")}`, read_only: true, decision: "D-221", round1: ROUND1, summary, units: unitReports, hooks: rows, residual_zh: residual, dropped_zh_candidates: droppedAll }, null, 1)}\n`,
   );
