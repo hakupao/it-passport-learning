@@ -32,11 +32,11 @@
 
 ### H0 準備
 1. 本計画と D-218〜D-220 の記録を commit (docs のみ → Vercel は build しない)。
-2. `apps/web/scripts/vercel-ignore-build.sh`: **main 以外の branch は build しない** (`VERCEL_GIT_COMMIT_REF`)。理由: branch の push ごとに Vercel preview が build され、crawl される別ホストも増える。テスト追加。main に入れる時 1 回だけ build が走る。
+2. `apps/web/scripts/vercel-ignore-build.sh`: **main 以外の branch は build しない** (`VERCEL_GIT_COMMIT_REF`)。理由: branch の push ごとに Vercel preview が build され、crawl される別ホストも増える。テスト追加。ignoreCommand は build 対象 commit の script を使うので branch に入れれば足り、main を余分に build しない (S154 実施・確認済)。
 3. branch `hosting-cf` を作成。evidence 置き場と `_progress.json` を作る。
 
 ### H1 静的化の共通部分 (OQ-22 の A / B どちらでも必要)
-1. **所有者判定を browser 側へ**: ページから `cookies()` を外す。`useOwner` (小 endpoint `/api/owner` に問い合わせ) を `LearningRecordProvider`・`QuizFeedback` に渡す。非所有者の挙動は不変 (localStorage のみ)。
+1. **所有者判定を browser 側へ**: ページから `cookies()` を外す。`?owner_key=` の有効化時に非秘密・非 httpOnly の hint cookie `itp_owner_hint=1` を本物の httpOnly cookie と並べて設定し、`useOwner()` がそれを読む (毎ページの `/api/owner` 呼出は Worker 要求を消費するため採らない、S154)。hint は UI の出し分けだけで、API は従来どおり httpOnly cookie を検査する。非所有者の挙動は不変 (localStorage のみ、/api 要求 0)。**移行時の注意**: 既存の所有者は hint を持たないため、切替後に `?owner_key=` を 1 回開き直す (H7 の手順に入れる)。
 2. **公開データの切り出し (build 時生成)**: 過去問を試験回 × 言語の JSON に分ける (約 87)。**表示に使う欄だけを許可リストで出す** (`source_note`・`suspect_count`・`stem_corruption_count` 等の内部欄は出さない)。用語集・今日 / 練習の索引も同様。`/api/quiz/questions`・`/api/sensei/terms` はこの静的ファイルに置き換える (Worker 不要)。
 3. **網址パラメータで動くページを browser 側へ**: 練習セッション (`?ids` / `?topic` / `order=rand` の seed / `from=unit` の run)、模試 (`/mock/run`)、記録 (`/record`)、browse の `?review` 等。server の `redirect()` は client の `replace` に。
 4. **事前生成**: `force-dynamic` を外し `generateStaticParams` — textbook 一覧・単元 (244 × 3)、glossary 一覧、browse の topic・試験回、今日・練習入口・模試入口・記録・設定・AI 先生。`/` → `/ja` (D-219)。locale なし・旧 link の転送は `_redirects`。
@@ -48,7 +48,7 @@
 - 数字を添えてユーザーに A (詳細も HTML) / B (browser 読込) を決めてもらう。**ここだけは実装前にユーザー判断**。
 
 ### H3 Worker (所有者用の API のみ)
-- `/api/learning` (学習記録の同期、Upstash Redis REST)、`/api/quiz/feedback`、`/api/owner`、`?owner_key=` の有効化。
+- `/api/learning` (学習記録の同期、Upstash Redis REST)、`/api/quiz/feedback`、`?owner_key=` の有効化 (static export では middleware が無いため、owner cookie と hint cookie の設定・削除を Worker が引き継ぐ。`run_worker_first` を `?owner_key=` の付く要求だけに限る方法を H3 で決める)。
 - **リスク**: `/api/learning` は最大 1 MiB を受けて merge する。Free の CPU 10 ms に収まるかを、所有者の実際の記録サイズで **preview 上で計測**。収まらなければユーザーに報告 (選択肢: Workers Paid 月 5 ドル / 同期処理の分割)。
 
 ### H4 Cloudflare preview に配置
