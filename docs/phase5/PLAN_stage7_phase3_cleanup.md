@@ -8,7 +8,7 @@
 
 | # | 項目 (出所) | 処置 | 編集経路 | 審査 | 状態 |
 |---|---|---|---|---|---|
-| C1 | OQ-19: v1 回帰テスト 2 件が v1 = 0 で無検査 | **D-214**: `v1-snapshot.test.ts` と `__snapshots__/v1-units.json`、zh-terms の `--probe-v1` を退役し、`v2-corpus.test.ts` に「全単元が `textbook-unit-v2`」の不変量を 1 件追加。`--check-units` は現行 (S152) のまま | コード (TDD: 不変量を先に追加して通過確認 → 旧テスト削除) | code-reviewer opus | todo |
+| C1 | OQ-19: v1 回帰テスト 2 件が v1 = 0 で無検査 | **D-214**: `v1-snapshot.test.ts` と `__snapshots__/v1-units.json`、zh-terms の `--probe-v1` を退役し、`v2-corpus.test.ts` に「全単元が `textbook-unit-v2`」の不変量を 1 件追加。`--check-units` は現行 (S152) のまま | コード (TDD: 不変量を先に追加して通過確認 → 旧テスト削除) | code-reviewer opus | **done (S153、APPROVE)** |
 | C2 | zh 本文 `**…**[[jp:…]]` 括弧なし表記で派生欄が「会计审计会計監査」と連結 (S150 b56 O1、S152 再計数 24 単元 / 244) | 派生欄を作る関数を直して全単元を再派生 (単元ごとの補丁にしない)。まず派生が merge 時保存か描画時かを確認し、保存なら merge 経路で再 `--write` | コード + 再 merge | verifier opus (派生欄の差分全件) | todo |
 | C3 | b77 L3: v1 図 `figures/technology-14-39-u01-t01.svg` と `terms[1].figure.mermaid` の 〈p〉〈/p〉 全角山かっこ | 直接修正 (`&lt;p&gt;` / mermaid `#lt;p#gt;`)。`figure_index.json` に当該図の hash 等が無いことは S152 で確認済 | 図ファイル直接編集 | verifier opus (截図で目視) | todo |
 | C4 | b32 u04 スクラム tree 図のインクリメント欠落 (f) | 図の構造修正 (図 data の追加)。B3 は文字列置換のみのため、merge 経路外の直接編集として evidence に before/after を残す | 単元 JSON 直接 + 記録 | verifier opus | todo |

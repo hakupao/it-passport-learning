@@ -2,8 +2,7 @@
 // v1 consumers untouched: the glossary dictionary, the glossary term page (SSR),
 // the AI 先生 unit / term anchors and /api/sensei/terms' termContext read only the
 // compat fields, so nothing throws, nothing is blank and no inline markup leaks.
-// With the sample substituted for its v1 unit (as the pilot will do), every
-// remaining v1 unit still matches the v1 snapshot.
+// (The v1-snapshot check that stood here was retired by D-214, S153: no v1 unit is left.)
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -23,7 +22,6 @@ import { loadBaseQuestions } from "../../quiz/quizReader";
 import { termAnchor, termContext, unitAnchor } from "../../sensei/textbookAnchors";
 import { loadAllUnits, loadGeneratedSvg, loadReaderIndex, type TextbookUnit } from "../reader";
 import type { TextbookUnitV2 } from "../types";
-import { V1_SCHEMA, v1Fingerprint, type V1UnitHash } from "./v1Snapshot";
 
 const SAMPLE = JSON.parse(
   readFileSync(path.join(__dirname, "..", "__fixtures__", "v2-sample.json"), "utf-8"),
@@ -102,12 +100,4 @@ describe("v2 sample through the v1 consumers", () => {
     }
   });
 
-  it("every remaining v1 unit still matches the v1 snapshot (cross-unit headwords keep their v1 sense)", () => {
-    const saved = JSON.parse(readFileSync(path.join(__dirname, "__snapshots__", "v1-units.json"), "utf-8")) as Record<string, V1UnitHash>;
-    const now = v1Fingerprint(dict, units);
-    expect(now[SAMPLE.unit_id]).toBeUndefined();
-    const v1Ids = units.filter((u) => u.schema_version === V1_SCHEMA).map((u) => u.unit_id);
-    expect(Object.keys(now).sort()).toEqual([...v1Ids].sort());
-    for (const [id, hsh] of Object.entries(now)) expect(saved[id], id).toEqual(hsh);
-  });
 });

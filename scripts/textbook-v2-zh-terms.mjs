@@ -8,9 +8,7 @@
 //   node scripts/textbook-v2-zh-terms.mjs --check-units [--unit <id> …]
 //        the WARN check (lib zhTermWarnings) over the committed v2 units (default all of them); run it after any
 //        table change — hits on already-published units go through the B3 patch procedure. Exit 1 when any hit.
-//   node scripts/textbook-v2-zh-terms.mjs --probe-v1 [--top <n>]
-//        the check's noise on v1 prose: every v1 unit's definition / explanation jp↔zh pairs → share of pairs with
-//        a warning + the most frequent (term → zh) hits (B6 review: before / after rates in the B6 evidence)
+//   (--probe-v1, the check's noise on v1 prose, was retired by D-214 (S153): no v1 unit is left)
 //   [--data-root <dir>]
 //
 // Table: { schema, note,
@@ -155,23 +153,6 @@ export function seedTable(units) {
   };
 }
 
-/** --probe-v1: {pairs, hit (pairs with ≥ 1 warning), warnings, top: [[label, n]]}. */
-export function probeV1(units, table) {
-  let pairs = 0;
-  let hit = 0;
-  const by = new Map();
-  for (const u of units.filter((x) => x.schema_version !== V2_SCHEMA)) {
-    const probe = { unit_id: u.unit_id, terms: u.terms.map((t) => ({ term: t.term, one_jp: t.definition_jp, one_zh: t.definition_zh, detail_jp: t.explanation_jp, detail_zh: t.explanation_zh })) };
-    const w = zhTermWarnings(probe, table);
-    pairs += probe.terms.length * 2;
-    hit += new Set(w.map((x) => x.field)).size;
-    for (const x of w) by.set(x.term, (by.get(x.term) ?? 0) + 1);
-  }
-  const map = new Map(Object.entries(table.terms ?? {}));
-  const top = [...by].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map(([k, n]) => [`${k} → ${map.get(k) ?? "(per unit)"}`, n]);
-  return { pairs, hit, warnings: [...by.values()].reduce((a, b) => a + b, 0), top };
-}
-
 export function conflictsMarkdown(conflicts) {
   const lines = ["| 用語 | 単元 | v1 term_zh | term_en | 処置 |", "|---|---|---|---|---|"];
   for (const [jp, rows] of Object.entries(conflicts)) {
@@ -187,23 +168,19 @@ const allUnits = (P) => readJson(P.index).topics.flatMap((t) => t.units.map((u) 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   let opt;
   try {
-    opt = parseArgs(process.argv.slice(2), { conflicts: "bool", seed: "bool", "check-units": "bool", "probe-v1": "bool", top: "string", unit: "list", out: "string", "data-root": "string" });
+    opt = parseArgs(process.argv.slice(2), { conflicts: "bool", seed: "bool", "check-units": "bool", unit: "list", out: "string", "data-root": "string" });
   } catch (e) {
     console.error(`✗ ${e.message}`);
     process.exit(2);
   }
-  const modes = ["conflicts", "seed", "check-units", "probe-v1"].filter((k) => opt[k]);
+  const modes = ["conflicts", "seed", "check-units"].filter((k) => opt[k]);
   if (modes.length !== 1 || (opt.unit && !opt["check-units"])) {
-    console.error("usage: textbook-v2-zh-terms.mjs (--conflicts | --seed [--out <file>] | --check-units [--unit <id> …] | --probe-v1 [--top <n>]) [--data-root <dir>]");
+    console.error("usage: textbook-v2-zh-terms.mjs (--conflicts | --seed [--out <file>] | --check-units [--unit <id> …]) [--data-root <dir>]");
     process.exit(2);
   }
   const P = dataPaths(opt["data-root"]);
   const units = allUnits(P);
-  if (opt["probe-v1"]) {
-    const r = probeV1(units, readJson(P.zhTerms));
-    console.log(`v1 definition / explanation pairs ${r.pairs}: ${r.hit} with a warning (${((100 * r.hit) / r.pairs).toFixed(1)}%), ${r.warnings} warning(s)`);
-    for (const [k, n] of r.top.slice(0, Number(opt.top ?? 15))) console.log(`  ${n}  ${k}`);
-  } else if (opt.conflicts) {
+  if (opt.conflicts) {
     process.stdout.write(conflictsMarkdown(termZhConflicts(units)));
   } else if (opt.seed) {
     const out = path.resolve(opt.out ?? P.zhTerms);

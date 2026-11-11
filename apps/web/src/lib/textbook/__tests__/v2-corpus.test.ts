@@ -10,7 +10,7 @@
 // D-202 (S136): `jp-origin` was added after batch 1 was committed. Its calibration on the committed units is
 // recorded in PRE_D202 and not patched (D-201: content already read stays as it is), so those units are checked
 // for every other issue here and their jp-origin count must stay exactly as recorded; any later unit is fully gated.
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -31,6 +31,7 @@ const LIB = pathToFileURL(path.resolve(__dirname, "../../../../../../scripts/lib
 const PRE_D202: Record<string, number> = { "technology-23-63-u05": 17 };
 
 let units: TextbookUnitV2[] = [];
+let allCount = 0;
 let issuesOf: (u: TextbookUnitV2) => V2Issue[];
 let parityDiff: (u: unknown) => [string, { jp: number; zh: number; en: number }][];
 
@@ -42,6 +43,7 @@ beforeAll(async () => {
     loadChumonMembers(),
     import(/* @vite-ignore */ LIB) as Promise<{ parityDiff: typeof parityDiff }>,
   ]);
+  allCount = all.length;
   units = all.filter((u) => u.schema_version === V2_SCHEMA) as unknown as TextbookUnitV2[];
   parityDiff = lib.parityDiff;
   issuesOf = (u) => {
@@ -52,6 +54,15 @@ beforeAll(async () => {
 });
 
 describe("committed v2 units", () => {
+  // D-214 (locked S152, impl S153): the rewrite is complete (b78) — every committed unit is v2. This replaces the
+  // retired v1 snapshot / --probe-v1 checks, which had no v1 unit left to guard. units/ holds only indexed units.
+  it("every committed unit is textbook-unit-v2 (no v1 unit left)", () => {
+    expect(allCount).toBeGreaterThan(0);
+    expect(units.length).toBe(allCount);
+    const files = readdirSync(path.resolve(__dirname, "../../../../../../data/ip/textbook/units")).filter((f) => f.endsWith(".json"));
+    expect(files.length).toBe(allCount);
+  });
+
   it("exist (the pilot) and each has its v1 glosses in the fixture", () => {
     expect(units.length).toBeGreaterThan(0);
     for (const u of units) expect(V1TERMS[u.unit_id], u.unit_id).toBeDefined();

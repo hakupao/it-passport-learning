@@ -9,7 +9,7 @@ import { test } from "node:test";
 
 import { dataPaths, readJson, zhTermWarnings } from "./lib/textbook-v2.mjs";
 import { fixture, run, tempRoot, writeJson } from "./lib/textbook-v2-testkit.mjs";
-import { OVERRIDES, PILOT_WORDS, probeV1, seedTable, termZhConflicts } from "./textbook-v2-zh-terms.mjs";
+import { OVERRIDES, PILOT_WORDS, seedTable, termZhConflicts } from "./textbook-v2-zh-terms.mjs";
 
 const P = dataPaths();
 const units = () => readJson(P.index).topics.flatMap((t) => t.units.map((u) => readJson(P.unit(u.unit_id))));
@@ -164,21 +164,6 @@ test("S137 u10 O1: 生体認証 → 生物特征认证 (b02 body text; not a hea
   assert.equal(readJson(P.zhTerms).terms["生体認証"], "生物特征认证");
   assert.deepEqual(probe("生体認証を使う。", "使用生物特征认证。", { 生体認証: "生物特征认证" }), []);
   assert.deepEqual(probe("生体認証を使う。", "使用生物识别认证。", { 生体認証: "生物特征认证" }), ["生体認証"]);
-});
-
-test("--probe-v1: the check's noise on v1 definition / explanation pairs stays under 10% (15.2% before the B6 review)", (t) => {
-  const all = units();
-  const v1 = all.filter((u) => u.schema_version !== "textbook-unit-v2").length;
-  // v1 units only: the pool shrinks with every batch rewritten to v2 (S137: 2662 pairs after b02) and ends at 0 when
-  // every unit is v2 (B9 then decides the probe's fate). The floor scales with the v1 units left (≈11 pairs each)
-  // and only guards against an empty / broken probe.
-  if (v1 === 0) return t.skip("no v1 units left");
-  const r = probeV1(all, readJson(P.zhTerms));
-  assert.ok(r.pairs > v1 * 5, `${r.pairs} pairs for ${v1} v1 units`);
-  // the share is noise below ~100 pairs (one hit in ten pairs is 10%)
-  if (r.pairs >= 100) assert.ok(r.hit / r.pairs < 0.1, `${r.hit} / ${r.pairs}`);
-  const top = new Map(r.top);
-  for (const k of ["項目 → 数据项", "手続 → 过程", "分散 → 方差", "パスワード → 口令（密码）"]) assert.equal(top.get(k), undefined, k);
 });
 
 test("F3: prep writes the unit's relevant entries to <planning>/<id>/zh_terms.unit.json (same matcher, per_unit included)", () => {
