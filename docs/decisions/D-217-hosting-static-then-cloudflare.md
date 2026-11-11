@@ -4,6 +4,8 @@
 - 関連: OQ-21 (本決定で CLOSE)、D-212 (docs のみは build しない)、D-213 (本番確認は HTML smoke)、D-148 (owner gate)、D-206 (自動投入)、D-110 (TypeScript のみ)
 - 部分 supersede (第 2 段の完了時): D-212 の `vercel.json` ignoreCommand、D-213 の確認対象ホスト、S131 の IPA 漏洩 gate の定義 (`.nft.json`)。完了までは現行のまま有効。
 
+- **追記 (2026-11-11 S154、D-218〜D-220)**: 段取りを変更 — 第 1 段を Vercel 本番で行わず、branch で静的出力に作り替え → Cloudflare の preview で検証 → ドメイン切替 (NS は既に Cloudflare)。切替まで Vercel 本番は現状維持。`/` は固定で `/ja` へ転送 (D-219)。訪問統計は Cloudflare Web Analytics (D-220)。詳細ページの出し方は OQ-22 で協議中 (下の第 2 段 3 は未確定)。
+
 ## 背景
 Vercel Hobby の告警 (2026-11-11): Fluid Active CPU 4 時間の 90%。超過すると project が停止する。
 
@@ -42,10 +44,10 @@ Vercel Hobby の告警 (2026-11-11): Fluid Active CPU 4 時間の 90%。超過�
 1. Next.js `output: 'export'` で静的出力し、Cloudflare Workers の静的 asset として配信する (asset 要求は無料・無制限で Worker を起動しない)。
 2. 実行時の fs 読取 8 モジュールを build 時の読取へ移す。
 3. 過去問詳細・用語詳細は 1 ページずつ事前生成しない: ページの殻 + 取得する JSON 分割 (Free は 20,000 ファイル / version。2,900 題 × 3 言語 × 2 ファイルだけで 17,400)。
-4. API 4 本 (`learning` / `quiz/feedback` / `quiz/questions` / `sensei/terms`) + owner endpoint を 1 つの Worker にする。学習記録の Upstash Redis REST はそのまま使う。Worker は 1 要求 CPU 10 ms の範囲に収める (大きな JSON を要求ごとに parse しない)。
+4. 所有者用の API (`learning` / `quiz/feedback` + owner endpoint・`?owner_key=` 有効化) だけを 1 つの Worker にする。`quiz/questions`・`sensei/terms` は corpus を読むだけなので build 時の静的 JSON に置き換える (S154 修正)。学習記録の Upstash Redis REST はそのまま使う。Worker は 1 要求 CPU 10 ms の範囲に収める (大きな JSON を要求ごとに parse しない)。
 5. 付随: CSP を `_headers` 相当へ移す / `@vercel/analytics`・`@vercel/speed-insights` を外す / IPA 漏洩 gate を新しい出力物に対して定義し直す / D-206 自動投入・D-212・`prod-smoke.mjs` を新ホストへ合わせる / 独自ドメインの切替は最後、Vercel 側は切替確認後まで残す。
 
-各段の開始時に PLAN (`docs/phase5/PLAN_hosting_migration.md`) を起こし、Tier 3 の evidence / failures / Rule D を適用する。第 1 段・第 2 段の設計細目は D-019 に従い開始時に問いから始める。
+実施計画 = `docs/phase5/PLAN_hosting_migration.md` (S154 起案、三言語混入検査 Track L を切替前の関門として含む)。各段、Tier 3 の evidence / failures / Rule D を適用する。第 1 段・第 2 段の設計細目は D-019 に従い開始時に問いから始める。
 
 ## 却下
 - **OpenNext で Cloudflare に SSR のまま移設**: Free は 1 要求 CPU 10 ms・100,000 要求 / 日。事前生成ページも Worker 経由 (incremental cache) と読め、数 MB の JSON を parse する SSR は収まらない見込み。実行時に repo の fs が無い。
