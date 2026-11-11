@@ -82,3 +82,9 @@ Next 15.5.18 の export が 1 ページあたりに出すもの (install 済み�
 - A をそのまま採ると Free の 20,000 ファイルを超える ([推定] 約 29,080)。A を採るなら A' (`.txt` を消す後処理) が必須で、余りは約 3,800 しかない。Workers Paid でも 1 version 20,000 ファイルの上限は同じかどうかは確認していない (D-217 の根拠は Free の値)。
 - B は余りが大きい ([推定] 約 3,370 / 20,000)。URL を変えないなら B1 (rewrite)。`_redirects` の 200 proxy は docs で可と確認済み、殻を別 URL で配ったときの hydration は [未検証]。
 - upload 時間はこの機械では測れない (Cloudflare に配置していない)。H4 の preview で測る。
+
+
+## 審査による訂正 (S154、verifier opus、H1-4 Rule D)
+1. Workers Paid の上限: Cloudflare limits ページでは 1 version あたりのファイル数は Free 20,000 / **Paid 100,000** (Wrangler ≥ 4.34.0)、単一ファイル 25 MiB。A (約 29,080) は Paid なら `.txt` を消さずに載る (ユーザーには「A + 月 5 ドル」の選択肢として提示済み)。
+2. 「prefetch の 404 は asset 要求なので無料」は Worker script が無い場合だけ成り立つ。H3 で Worker を置くと、一致する asset の無い **非 navigation の fetch** (Next の RSC `.txt` 取得) は Worker を起動し、Free の 10 万要求 / 日を消費する。A′ では詳細ページへの client 遷移 1 回ごとに 1 要求かかり得る → **対策 (D-223 細目)**: 詳細ページへのリンクは prefetch を止め、client 遷移でなく通常の `<a>` (MPA 遷移) にして `.txt` の取得自体を起こさない。H1-5 で実装し H5 で Worker 要求数を実測する。
+3. `out/` のファイル数 (29,080 / 16,190 / 3,370) は `.next` と Next のソースからの**推定**。実測は H1-5 の export で取る。upload 時間は H4 で測る。build 時間は A 版 n=1 の実測。
