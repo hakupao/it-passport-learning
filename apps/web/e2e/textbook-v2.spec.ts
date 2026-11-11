@@ -25,6 +25,7 @@ import en from "../messages/en.json";
 import ja from "../messages/ja.json";
 import zh from "../messages/zh.json";
 import { termId } from "../src/lib/glossary/termId";
+import { CONFIRM_SHORT } from "../src/lib/textbook/confirmShort";
 import { NETWORK_DAYS_MAX } from "../src/lib/textbook/figureSpec";
 import { guardAnthropic } from "./helpers/fakeAnthropic";
 import { waitForRecord } from "./helpers/learning";
@@ -360,7 +361,9 @@ for (const unit of E2E_UNITS) {
         }
         return out;
       });
-      expect(order).toEqual(["goals", "overview", "article", "key-points", "confirm", "read"]);
+      // D-216: a unit registered with 0 confirm questions has no #confirm section
+      const confirm = CONFIRM_SHORT[unit.unit_id]?.n === 0 ? [] : ["confirm"];
+      expect(order).toEqual(["goals", "overview", "article", "key-points", ...confirm, "read"]);
       await expect(page.locator("main:has(article) article")).toHaveCount(unit.terms.length);
       await expect(page.locator('main:has(article) button[data-part="read"]')).toHaveText(
         MESSAGES[locale].Textbook.readDone,

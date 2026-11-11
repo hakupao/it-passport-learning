@@ -17,6 +17,7 @@ import { loadAllUnits, normalizeUnit } from "../reader";
 import {
   BANNED_PHRASES,
   confirmIds,
+  CONFIRM,
   hasJpOrigin,
   hookLines,
   introOf,
@@ -30,6 +31,7 @@ import {
   type V2Context,
   type V2Issue,
 } from "../validateV2";
+import { CONFIRM_SHORT } from "../confirmShort";
 
 // the sample's pre-rewrite v1 glosses (copied once from the v1 u03), as the Task 9 manifest keeps them
 const V1_TERMS = JSON.parse(
@@ -411,6 +413,27 @@ describe("validateV2 — review fixes", () => {
     expect(issues.map((i) => i.code)).toEqual(["challenge"]);
     // more than 5 challenge ids
     expectOne((u) => void u.challenge_questions.push("2011h23a-q038"), "challenge");
+  });
+
+  it("D-216: a unit registered in CONFIRM_SHORT may have fewer than 3 confirm questions, exactly as registered", () => {
+    const all = [...SAMPLE.challenge_questions, ...SAMPLE.terms.flatMap((t) => t.quiz)];
+    const zero: V2Context = { ...ctx, members: new Set(all), confirmShort: 0 };
+    expect(validateV2(clone(), zero)).toEqual([]);
+    // registered 2 but the unit shows 0 → issue (the register must match)
+    const issues = validateV2(clone(), { ...zero, confirmShort: 2 });
+    expect(issues.map((i) => i.code)).toEqual(["challenge"]);
+    expect(issues[0]!.message).toMatch(/CONFIRM_SHORT/);
+    // registered but the unit reaches 3 → issue (stale entry)
+    expect(validateV2(clone(), { ...ctx, confirmShort: 1 }).map((i) => i.code)).toEqual(["challenge"]);
+  });
+
+  it("D-216: CONFIRM_SHORT entries are below the minimum, with a reason, and v2Context passes them on", () => {
+    for (const [id, e] of Object.entries(CONFIRM_SHORT)) {
+      expect(e.n, id).toBeGreaterThanOrEqual(0);
+      expect(e.n, id).toBeLessThan(CONFIRM.min);
+      expect(e.reason.length, id).toBeGreaterThan(10);
+    }
+    expect(ctx.confirmShort).toBe(CONFIRM_SHORT[SAMPLE.unit_id]?.n);
   });
 
   it("confirmIds mirrors pickConfirm on every corpus unit", async () => {

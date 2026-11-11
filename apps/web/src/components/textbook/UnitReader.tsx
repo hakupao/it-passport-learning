@@ -103,7 +103,7 @@ export async function UnitReader({
       ) : null}
 
       <ConfirmBlock ids={confirm} unitId={unit.id} />
-      {/* Stage 7 Task 13: every past question of the topic (the confirm set is only 3〜5 of them) */}
+      {/* Stage 7 Task 13: every past question of the topic (the confirm set is only 0〜5 of them, D-216) */}
       <p data-part="topic-past" className={styles.topicPast}>
         <Link href={`/practice/browse/${unit.topicId}`}>
           {t("topicPast")}

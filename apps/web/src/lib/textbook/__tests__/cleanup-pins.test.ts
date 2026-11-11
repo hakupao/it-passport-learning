@@ -40,4 +40,16 @@ describe("D-215 direct edits stay in place", () => {
     const inc = root.children.find((c) => c.id === "increment");
     expect(inc?.label).toEqual({ jp: "インクリメント (完成した成果)", zh: "增量（完成的成果）", en: "Increment (finished result)" });
   });
+
+  it("C11 (D-216): the 40 edited units keep their new challenge_questions (a merge --write would bring back the v1 ones)", () => {
+    const applied = JSON.parse(
+      readFileSync(path.resolve(__dirname, "../../../../../../evidence/phase5/stage_07_ui/phase3/cleanup/C11_applied.json"), "utf-8"),
+    ) as Record<string, { after: string[]; removed: string[] }>;
+    expect(Object.keys(applied)).toHaveLength(40);
+    for (const [id, a] of Object.entries(applied)) {
+      const ch = unit(id).challenge_questions as string[];
+      expect(ch, id).toEqual(a.after);
+      for (const q of a.removed) expect(ch, `${id} ${q}`).not.toContain(q);
+    }
+  });
 });

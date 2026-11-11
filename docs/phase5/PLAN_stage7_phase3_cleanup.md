@@ -18,7 +18,7 @@
 | C8 | `zh_terms.json` の偽陽性 warn (バリュー→价值观、スイッチ→交换机、集合、尺度 等) | per_unit / excluded に登録して warn を消す (本文は変えない) | zh_terms | verifier opus | **done (S153、warn 71 → 0)** |
 | C9 | v1 由来 `unit_summary_*` (b74 u02「高清」、b78「押さえ」) | 全 244 単元の `unit_summary_*` を §9 禁止句と既知の訳語問題で機械走査 → 該当を unit-level B3 補丁 (`unit.unit_summary_*`、既に 4 単元で実績) | B3 (unit-level) | verifier opus (Rule A: 走査結果の N 抽検) | **done (S153、3 単元)** |
 | C10 | (i) strategy-04-13-u02 `title_zh`「产业化」 | 直接修正 + `unit_index.json` の title_zh も同時更新 (patch tool 対象外) | 直接 + index | 同上 | **done (S153、verifier PASS、`cleanup/C3_C10.md`)** |
-| C11 | (e) b30 u04 2012h24h-q012 クロスセリング (本文で解けない紐付け)、(h) 該当過去問 0 単元の `challenge_questions` が v1 継承の無関係題 (strategy-05-14-u08、technology-13-35-u07 等) | 全単元の `challenge_questions` / `term_questions` を「その単元の本文で解けるか」で走査し、無関係題を外す。配列欄のため直接編集 + evidence | 直接 + 記録 | verifier opus | **D-216 で処置決定 (S153)、実施 S154〜 (`cleanup/C11.md`)** |
+| C11 | (e) b30 u04 2012h24h-q012 クロスセリング (本文で解けない紐付け)、(h) 該当過去問 0 単元の `challenge_questions` が v1 継承の無関係題 (strategy-05-14-u08、technology-13-35-u07 等) | 全単元の `challenge_questions` / `term_questions` を「その単元の本文で解けるか」で走査し、無関係題を外す。配列欄のため直接編集 + evidence | 直接 + 記録 | verifier opus | **done (S153、D-216: 除去 95・差し替え 11・CONFIRM_SHORT 29 単元、verifier PASS、`cleanup/C11.md`)** |
 | C12 | (k) quiz 解説 q091・q069 の「絶対参照」呼称 | **本 pass から外す**: quiz 層 (D-143 explfix 方針) の別工程に引き渡す | — | — | 引継ぎ |
 | C13 | (l) validateV2 `wordAt` の漢字境界、en 層 D-198 Dice 基準 | **行わない** (生成は完了し、両者は新規生成・補丁時の検査のみに効く)。B3 を再開する場合に再検討 | — | — | 不採用 |
 | C14 | (j) 金商法等改正の施行後に strategy-02-06-u03 へ暗号資産、日付追跡 4 件 | 日付到来時に B3 (STATE 次セッション行で追跡) | B3 | verifier opus | 日付待ち |

@@ -34,6 +34,7 @@ import type { Dictionary } from "@/lib/glossary/dictionary";
 import { loadChumonMembers } from "@/lib/practice/chumonMembers";
 import type { ChumonMembers } from "@/lib/practice/chumonMembers";
 import { pickConfirm } from "@/lib/textbook/confirm";
+import { CONFIRM_SHORT } from "@/lib/textbook/confirmShort";
 import { loadAllUnits, loadGeneratedSvg, loadReaderIndex, neighbors, normalizeUnit, unitPlace, type ReaderIndex } from "@/lib/textbook/reader";
 import { V2_SCHEMA, type TextbookUnitV2 } from "@/lib/textbook/types";
 
@@ -86,7 +87,10 @@ describe("every committed v2 unit (SSR)", () => {
       for (const locale of LOCALES) {
         const out = await renderUnit(u, locale);
         const where = `${u.unit_id} /${locale}`;
-        const marks = ["<h1", ...BLOCKS].map((m) => out.indexOf(m));
+        // D-216: a unit registered with 0 confirm questions renders no #confirm block
+        const blocks = CONFIRM_SHORT[u.unit_id]?.n === 0 ? BLOCKS.filter((b) => b !== 'id="confirm"') : BLOCKS;
+        if (blocks !== BLOCKS && out.includes('id="confirm"')) bad.push(`${where}: #confirm rendered for a 0-confirm unit`);
+        const marks = ["<h1", ...blocks].map((m) => out.indexOf(m));
         if (marks.some((i) => i < 0) || marks.some((i, k) => k > 0 && i < marks[k - 1]!)) bad.push(`${where}: block order ${JSON.stringify(marks)}`);
         if (out.lastIndexOf("</article>") > out.indexOf('data-part="key-points"')) bad.push(`${where}: an article after the key points`);
         const n = (out.match(/<article/g) ?? []).length;

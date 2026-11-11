@@ -1,5 +1,5 @@
 // Stage 7 Phase 3 (D-196 §0-1 / §0-6) — the unit-end confirmation questions: pickConfirm's ids
-// (3〜5, no chumon group members) as one practice set: UnitPracticeLink (from=unit, click-time
+// (3〜5, or a D-216 CONFIRM_SHORT unit's 0〜2; no chumon group members; none → no section) as one practice set: UnitPracticeLink (from=unit, click-time
 // run, orderConfirm once the record has loaded).
 
 import { useTranslations } from "next-intl";

@@ -7,6 +7,7 @@ import { loadChumonMembers, type ChumonMembers } from "../../practice/chumonMemb
 import { loadChumonRegistry } from "../../practice/practiceReader";
 import { loadBaseQuestions } from "../../quiz/quizReader";
 import { confirmHref, nextRun, orderConfirm, pastCount, pickConfirm } from "../confirm";
+import { CONFIRM_SHORT } from "../confirmShort";
 import { loadAllUnits, normalizeUnit, type ReaderTerm, type ReaderUnit } from "../reader";
 import { frozenV1 } from "./v1Frozen";
 
@@ -56,7 +57,7 @@ describe("pickConfirm", () => {
     expect(pickConfirm(unit(["a", "a", "b", "c"], [["d"]]), m)).toEqual(["a", "b", "c"]);
   });
 
-  it("every corpus unit gets 3〜5 resolvable, same-topic, non-member questions", async () => {
+  it("every corpus unit gets 3〜5 resolvable, same-topic, non-member questions (D-216: CONFIRM_SHORT units exactly their registered 0〜2)", async () => {
     const [units, members, groups, questions] = await Promise.all([
       loadAllUnits(),
       loadChumonMembers(),
@@ -64,6 +65,9 @@ describe("pickConfirm", () => {
       loadBaseQuestions(),
     ]);
     const byId = new Map(questions.map((q) => [q.id, q]));
+    // D-216: every CONFIRM_SHORT entry names a committed unit (a stale key would go unchecked)
+    const unitIds = new Set(units.map((u) => u.unit_id));
+    for (const id of Object.keys(CONFIRM_SHORT)) expect(unitIds.has(id), id).toBe(true);
     for (const raw of units) {
       const u = normalizeUnit(raw, members);
       const ids = pickConfirm(u, members);
@@ -77,7 +81,9 @@ describe("pickConfirm", () => {
       raw.challenge_questions.forEach(take);
       for (const t of raw.terms) for (const id of t.inline_fallback ? [] : t.inline_quiz) if (want.length < 3) take(id);
       expect(ids, u.id).toEqual(want.slice(0, 5));
-      expect(ids.length, u.id).toBeGreaterThanOrEqual(3);
+      const short = CONFIRM_SHORT[u.id];
+      if (short) expect(ids.length, u.id).toBe(short.n);
+      else expect(ids.length, u.id).toBeGreaterThanOrEqual(3);
       expect(ids.length, u.id).toBeLessThanOrEqual(5);
       expect(new Set(ids).size, u.id).toBe(ids.length);
       for (const id of ids) {

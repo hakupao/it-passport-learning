@@ -26,6 +26,7 @@
 // an object belongs, …) is reported as `schema` issues: validateV2 never throws.
 
 import { figErrors } from "./figureSpec.ts";
+import { CONFIRM_SHORT } from "./confirmShort.ts";
 import { compatText, inlineErrors, stripInline } from "./inline.ts";
 import { LANGS, V2_SCHEMA, type Lang, type TextbookUnitV2, type UnitTermV2 } from "./types.ts";
 
@@ -85,6 +86,8 @@ export interface V2Context {
   questions: ReadonlyMap<string, V2QuestionRef>;
   /** Chumon group member ids (data/ip/quiz/chumon_groups.json): the confirm count (§0-1) needs them. */
   members: ReadonlySet<string>;
+  /** D-216: the registered confirm count of a CONFIRM_SHORT unit (fewer than CONFIRM.min); undefined = 3〜5. */
+  confirmShort?: number;
 }
 
 /** The parts of unit_index.json that v2Context reads. */
@@ -126,6 +129,7 @@ export function v2Context(
       v1Terms,
       questions: new Map(questions.map((q) => [q.id, { topic_id: q.topic_id, terms: q.terms }])),
       members,
+      confirmShort: CONFIRM_SHORT[u.unit_id]?.n,
     };
   }
   return null;
@@ -824,7 +828,12 @@ function check(unit: TextbookUnitV2, ctx: V2Context): V2Issue[] {
     const picked = confirmIds(ch, terms.map((t) => (strList(t.quiz) ? t.quiz : [])), isMember);
     if (issues.length > before) return issues;
     if (kept.length > CONFIRM.max) push("challenge", "challenge_questions", `${kept.length} after removing chumon members (max ${CONFIRM.max})`);
-    if (picked.length < CONFIRM.min) {
+    if (ctx.confirmShort !== undefined) {
+      // D-216: a registered unit shows exactly its registered count (below the minimum)
+      if (picked.length !== ctx.confirmShort) {
+        push("challenge", "challenge_questions", `${picked.length} confirm questions ≠ ${ctx.confirmShort} registered in CONFIRM_SHORT (D-216)`);
+      }
+    } else if (picked.length < CONFIRM.min) {
       push("challenge", "challenge_questions", `${picked.length} confirm questions after removing chumon members and topping up from the terms (min ${CONFIRM.min})`);
     }
   }
