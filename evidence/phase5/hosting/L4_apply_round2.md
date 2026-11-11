@@ -76,3 +76,18 @@
 - 期待集合 = 第 1 回 179 欄 ∪ 第 2 回 141 欄 (重なり 16) = **313 欄**、全て zh。`L4_apply_round2.json` の `fidelity.expected_fields` に一覧。
 - 種類ごとの件数が 12 種すべて期待集合と一致 (expl-correct 134・stem-tr 22・choice-tr 5/4/5/8・expl-0〜3 23/22/26/17・point-0/1 15/32)。テストが表示する先頭 20 件はすべて locale = zh かつ期待集合内。ja / en はデータで 0 変化。
 - 個々の (題・欄) の完全一致は、テストが 20 件しか出さないため件数での照合。baseline 取り直し時 (H1-4 後) に第 1 回と同じ行単位の機械照合を行う。
+
+## 追加施工 (主 session が「要主 session 確認」の 2 件を採択)
+
+- 工具: `node --no-warnings scripts/l4-r2b-quiz-apply.ts` (dry-run、12 置換すべて before が欄内 1 回) → `… --apply --out evidence/phase5/hosting/L4_apply_round2b.json` → `node scripts/quiz-phase2-merge.mjs 2010h22a`。基準 = HEAD (施工前 `git diff HEAD -- data` 空)。
+- 置換 12 / 欄 7:
+  - 2010h22a-q006 訳 選択肢ア「到审批（rin-gi 决裁）的一系列流程」→「到会签审批的一系列流程」
+  - 同 解説 correct「会签审批（ringi 决裁）→ 归档」→「会签审批 → 归档」、「到审批（rin-gi 决裁）的一系列流程」→「到会签审批的一系列流程」
+  - 同 解説 要点 1「审批（决裁）等」→「审批与最终核准等」
+  - 2009h21a-q097〜q100 訳 stem (各 2):「**图2 请求书（发票）的格式**」→「**图2 请款单（发票）的格式**」、「- 标题：请求书（发票）」→「- 标题：请款单（发票）」
+- 全欄比較 (HEAD vs 現在、3 ファイル全欄): 変化 = 上記 7 欄のみ (zh)、各欄 = HEAD 値に置換を順に当てた値。key_guard / jp / en 変化 0。
+- `quiz-keys-crosscheck.mjs`: ✓ all invariants hold (A1–A7, B1–B7)。
+- 残留: 3 ファイルの「决裁」「请求书（发票）」= 0。
+- 走査: `lang-leak-scan` hits 3,926 → 3,926 (漢字だけの語は文字種走査に出ない)、`l4-jpword-scan` 当たり 345 (LEAK 0 / 0 / 1 / 9、UNSURE 50) で変化なし (どちらの語も語表外)。
+- vitest (apps/web、読み取り): 1 failed / 1353 passed、失敗は fidelity のみ: `diffs 319, per-field {"expl-correct":135,"point-0":16,"expl-2":26,"stem-tr":25,"choice-tr-0":6,"choice-tr-1":4,"choice-tr-2":5,"choice-tr-3":8,"expl-0":23,"expl-1":22,"expl-3":17,"point-1":32}`。
+- **fidelity の期待集合 (更新)** = 第 1 回 179 ∪ 第 2 回 141 ∪ 追加 7 = **319 欄** (追加 7 のうち 2009h21a-q100 stem は既に集合内、新規 6)。一覧は `L4_apply_round2b.json` の `fidelity.expected_fields`。種類ごとの件数 12 種すべて一致。baseline は未更新 (H1-4 後)。
