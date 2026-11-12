@@ -2,7 +2,7 @@
 //   node prod-smoke.mjs <units comma> [--target vercel|workers|prod|<https://…>]   (env SMOKE_TARGET でも可)
 // 判定: HTTP 200 / 単元の title が HTML に含まれる / 生記法 (**, [[jp:) と "undefined" が本文に無い /
 //       本文が空でない / Vercel 以外の対象では <link rel="canonical"> = https://itlearn.bojiangz.com/<locale>/textbook/<unit>
-//       (静的版は末尾 / なし、S154 H5 Rule D LOW-2。Vercel の main build は canonical を出さないので見ない)。
+//       (静的版は末尾 / なし、S154 H5 Rule D LOW-2。Vercel = main の src には canonical が無い (S154 H6 に git grep で確認) ので見ない)。
 // 対象の既定 = 今 live の本番。H7 (itlearn.bojiangz.com を Worker に切替) までは vercel、切替後に DEFAULT_TARGET を 'prod' に。
 // 単体で完結させる (README の手順で scratchpad に複製して使うため、相対 import をしない)。
 import fs from 'node:fs';

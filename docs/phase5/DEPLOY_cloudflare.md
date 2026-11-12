@@ -246,7 +246,7 @@ D-206 の条件 (Rule A PASS + 再審 PASS + Gates + IPA 閘 + local e2e) と「
 | 落とし穴 | branch push の "Canceled by Ignored Build Step" も `success` (配置されていない) | check run は build の終了時にだけ現れることがある (6701ac43 は started = completed)。docs だけの push は check suite だけで check run 0 |
 | smoke 対象 | `--target vercel` (canonical は見ない) | `--target prod` (H7 前の確認は `--target workers`) |
 | docs だけの commit | `vercel-ignore-build.sh` で skip (D-212) | build watch paths で skip (§2-3) |
-| 連続 push | 中間 commit に status が付かないことがある | 同時 1 build、push ごとに最新の commit を build。中間 commit に check run が付かないことがある → どちらも **最新 commit を待ち、区間の全単元を smoke** |
+| 連続 push | 中間 commit に status が付かないことがある | 同時 1 build (§7-2)。push ごとに build されるのか、待ちの間に来た push がまとめられるのかは**未確認** (docs に記述なし、まだ連続 push をしていない) → どちらでも安全なように **最新 commit を待ち、区間の全単元を smoke** |
 
 - `vercel api` を使う作業 (使用量の確認、`docs/discussion/2026-11-11-session-154.md`) は H7 で Vercel を止めたら不要。Cloudflare 側の使用量は §10。
 

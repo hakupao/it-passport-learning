@@ -122,6 +122,14 @@ describe("prod-smoke.mjs", () => {
     expect(r.code).toBe(1);
   });
 
+  it("defaults to the live production host (Vercel until H7) without the canonical check", async () => {
+    // The unit JSON does not exist in SMOKE_REPO, so the script stops before its first request (no network).
+    const r = await smoke(["no-such-unit"]);
+    expect(r.out).toMatch(/^target https:\/\/web-mu-sandy-78\.vercel\.app\n/);
+    expect(r.out).not.toContain("canonical checked");
+    expect(r.code).not.toBe(0);
+  });
+
   it("rejects an unknown target name and a missing unit list (exit 2, no request)", async () => {
     expect((await smoke([UNIT, "--target", "staging"])).code).toBe(2);
     expect((await smoke([])).code).toBe(2);
