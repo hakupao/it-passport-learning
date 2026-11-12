@@ -3,7 +3,6 @@
 // only /api/* here. The Worker serves the owner-only API:
 //
 //   /api/learning        GET, PUT  → lib/learning/syncRoute.ts   (D-180 / D-190 learning-record sync)
-//   /api/quiz/feedback   GET, POST → lib/quiz/feedbackRoute.ts   (D-149 per-question reports)
 //   /api/owner           GET       → lib/ownerActivation.ts      (D-148 owner cookie + hint)
 //   other /api/*                   → 404 JSON; a known path with another method → 405 + Allow
 //   any non-GET with Sec-Fetch-Site present and not same-origin → 403 first (lib/apiGuards.ts)
@@ -27,7 +26,6 @@ import { isCrossSiteWrite } from "../src/lib/apiGuards";
 import { contentSecurityPolicy } from "../src/lib/export/headers";
 import { GET as learningGet, PUT as learningPut } from "../src/lib/learning/syncRoute";
 import { OWNER_ACTIVATION_PATH, ownerActivation } from "../src/lib/ownerActivation";
-import { GET as feedbackGet, POST as feedbackPost } from "../src/lib/quiz/feedbackRoute";
 
 /** The bindings this Worker uses (hand-written: the app's tsconfig has no workers-types). */
 export interface Env {
@@ -38,7 +36,6 @@ type Handler = (request: Request) => Promise<Response>;
 
 const ROUTES = new Map<string, Readonly<Record<string, Handler>>>([
   ["/api/learning", { GET: learningGet, PUT: learningPut }],
-  ["/api/quiz/feedback", { GET: feedbackGet, POST: feedbackPost }],
   [OWNER_ACTIVATION_PATH, { GET: ownerActivation }],
 ]);
 

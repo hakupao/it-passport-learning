@@ -70,17 +70,16 @@ itlearn.bojiangz.com
 │    textbook · glossary · record          │
 │    settings · quiz (old-link redirect)   │
 ├──────────────────────────────────────────┤
-│  API routes                              │
-│    /api/quiz/questions                   │
-│    /api/quiz/feedback  (owner only)      │
+│  Worker (/api/* only, Cloudflare)        │
+│    /api/owner          (owner activation)│
 │    /api/learning       (owner sync)      │
-│    /api/sensei/terms   (tutor lookup)    │
+│  Static JSON /data/** (questions, terms) │
 ├──────────────────────────────────────────┤
 │  Data: committed JSON corpus             │
 │    data/ip/quiz      2,900 questions     │
 │    data/ip/textbook  244 units           │
 │  Learning record: browser storage        │
-│    (+ Upstash Redis sync for the owner)  │
+│    (owner sync store removed, D-228)     │
 ├──────────────────────────────────────────┤
 │  Cloudflare Workers · Web Analytics      │
 └──────────────────────────────────────────┘
@@ -128,8 +127,8 @@ The live state is in [`docs/STATE.md`](docs/STATE.md).
 | Framework | Next.js 15.5 (App Router, Turbopack) |
 | UI | React 19, Tailwind CSS v4, Radix UI, Lucide icons |
 | i18n | next-intl (Japanese / Chinese / English) |
-| Storage | Browser storage for the learning record; Upstash Redis for owner sync and question feedback |
-| Testing | Vitest (1,264 tests), Playwright (e2e) |
+| Storage | Browser storage for the learning record (owner sync code kept, but no store configured since D-228 → 503) |
+| Testing | Vitest (1,474 tests), Playwright (e2e) |
 | Deploy | Cloudflare Workers (static assets + Worker), Cloudflare Web Analytics |
 | Content pipeline | Node / TypeScript scripts; Claude (Anthropic) for extraction, review and translation |
 
@@ -197,8 +196,8 @@ All optional.
 
 | Variable | Description |
 |---|---|
-| `OWNER_KEY` | Site-owner secret. Opening any page once with `?owner_key=<OWNER_KEY>` sets the owner cookie, which enables record sync and question feedback. Unset = nobody is owner. |
-| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis for the owner's record sync and question feedback (`KV_REST_API_URL` / `KV_REST_API_TOKEN` are also accepted). |
+| `OWNER_KEY` | Site-owner secret. Opening any page once with `?owner_key=<OWNER_KEY>` sets the owner cookie, which enables record sync (no sync store configured since D-228). Unset = nobody is owner. |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis for the owner's record sync (`KV_REST_API_URL` / `KV_REST_API_TOKEN` are also accepted). |
 | `QUIZ_DATA_ROOT` / `TEXTBOOK_DATA_ROOT` | Override the data directory (default `../../data/ip`, relative to `apps/web`). |
 
 ---
@@ -213,7 +212,7 @@ All optional.
 | Glossary | 1,395 entries |
 | Locked decisions | 203 (D-001 … D-203) |
 | Session logs | 73 in `docs/discussion/` |
-| Unit tests | 1,264 (Vitest, 110 files) |
+| Unit tests | 1,474 (Vitest, 132 files) |
 
 </details>
 

@@ -76,7 +76,7 @@ function smoke(args: string[], env: Record<string, string> = {}): Promise<{ code
 }
 
 describe("prod-smoke.mjs", () => {
-  it("passes 3/3 on a good static page and checks the canonical on a non-Vercel target", async () => {
+  it("passes 3/3 on a good static page and checks the canonical (every target, D-228)", async () => {
     const base = await serve(good);
     const r = await smoke([UNIT, "--target", base]);
     expect(r.out).toContain("(canonical checked)");
@@ -94,13 +94,13 @@ describe("prod-smoke.mjs", () => {
   it("fails on a trailing-slash, wrong-host, wrong-locale or missing canonical", async () => {
     const bad: Record<Loc, string | null> = {
       ja: `https://itlearn.bojiangz.com/ja/textbook/${UNIT}/`,
-      zh: `https://web-mu-sandy-78.vercel.app/zh/textbook/${UNIT}`,
+      zh: `https://itlearn.bojiang.workers.dev/zh/textbook/${UNIT}`,
       en: null,
     };
     const base = await serve(page((l) => bad[l]));
     const r = await smoke([UNIT, "--target", base]);
     expect(r.out).toMatch(/✗ \S+ ja 200 canonical https:\/\/itlearn\.bojiangz\.com\/ja\/textbook\/\S+\//);
-    expect(r.out).toMatch(/✗ \S+ zh 200 canonical https:\/\/web-mu-sandy-78/);
+    expect(r.out).toMatch(/✗ \S+ zh 200 canonical https:\/\/itlearn\.bojiang\.workers\.dev\//);
     expect(r.out).toMatch(/✗ \S+ en 200 canonical missing/);
     expect(r.out).toContain("smoke 0/3");
     expect(r.code).toBe(1);
@@ -154,8 +154,9 @@ describe("prod-smoke.mjs", () => {
     expect(r.code).not.toBe(0);
   });
 
-  it("rejects an unknown target name and a missing unit list (exit 2, no request)", async () => {
+  it("rejects an unknown target name (incl. the removed vercel, D-228) and a missing unit list (exit 2, no request)", async () => {
     expect((await smoke([UNIT, "--target", "staging"])).code).toBe(2);
+    expect((await smoke([UNIT, "--target", "vercel"])).code).toBe(2);
     expect((await smoke([])).code).toBe(2);
   });
 });

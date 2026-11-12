@@ -242,7 +242,7 @@ describe("PracticeQuestion — 复习三格 / 頻出度 / figure / 中問", () =
 // Stage 7 Phase 2 Task 4 (D-193 §0-7): the mock exam's face — picking only marks 「選択中」 (re-pick
 // allowed), nothing tells right from wrong, the number is the mock's own 第 N 問 / 100.
 describe("PracticeQuestion — mode exam (mock)", () => {
-  it("picked イ: that <li> is data-state picked; no ○ / ×, no lock, no explanation / AI / report", () => {
+  it("picked イ: that <li> is data-state picked; no ○ / ×, no lock, no explanation / AI", () => {
     const q = QS.find((x) => x.correct_answer !== "イ" && choiceLayout(x) === "list" && !x.figure && !x.choice_figures)!;
     for (const locale of ["ja", "zh", "en"]) {
       const out = renderFace(q, locale, {
@@ -258,7 +258,7 @@ describe("PracticeQuestion — mode exam (mock)", () => {
       expect(out).not.toMatch(/data-state="(correct|picked-wrong|other)"/);
       expect(out).not.toMatch(/[○×]/); // neither the choice marks nor the recent cells
       const P = messagesFor(locale).Practice as Record<string, string>;
-      for (const k of ["markCorrect", "markYourWrong", "markYourCorrect", "explanationTab", "fbReport"]) {
+      for (const k of ["markCorrect", "markYourWrong", "markYourCorrect", "explanationTab"]) {
         expect(out, k).not.toContain(P[k]!);
       }
       expect(out).not.toContain((messagesFor(locale).Sensei as Record<string, string>).askButton);

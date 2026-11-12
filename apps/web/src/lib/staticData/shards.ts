@@ -25,7 +25,7 @@
 import type { TermCard } from "../glossary/dictionary";
 import { isValidTermId } from "../glossary/termId";
 import type { ChumonGroup, TodayIndex } from "../practice/practiceIndex";
-import { QUESTION_ID_RE } from "../quiz/feedbackModel";
+import { QUESTION_ID_RE } from "../quiz/questionId";
 import {
   CHOICE_LETTERS,
   isSuspect,

@@ -1,7 +1,7 @@
 // H1-1 (D-217) — the owner flag, read in the browser so pages need no server cookie read (static
 // prerender). The middleware sets the readable hint cookie (OWNER_HINT_COOKIE) next to the httpOnly
 // itp_owner on `?owner_key=` and clears both on logout. The hint only gates UI (the learning-record
-// sync attempt, the feedback button); /api/learning and /api/quiz/feedback still check itp_owner
+// sync attempt); /api/learning still checks itp_owner
 // (isOwnerRequest), so a forged hint only earns 403s.
 //
 // null = not settled: during SSR and the first client render (the server HTML has no owner UI, so

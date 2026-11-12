@@ -99,7 +99,7 @@ When in doubt, read STATE.md and ask the user.
 ```
 /
 ├── apps/web/              # Next.js 15 app (pnpm workspace)
-│   ├── src/app/           # App Router routes ([locale]/practice|quiz|mock|textbook|glossary|record|settings|sensei; api/learning|quiz|sensei)
+│   ├── src/app/           # App Router routes ([locale]/practice|quiz|mock|textbook|glossary|record|settings|sensei; api/learning|owner — dev only; prod = apps/web/worker)
 │   ├── src/components/    # UI components, one folder per surface
 │   ├── src/lib/           # Data layer per surface (quiz, practice, mock, textbook, glossary, record, learning, sensei, owner)
 │   ├── e2e/               # Playwright e2e tests

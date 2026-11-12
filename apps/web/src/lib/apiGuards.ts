@@ -1,6 +1,5 @@
-// D-217 H3 — request guards shared by the owner API handlers (lib/learning/syncRoute.ts,
-// lib/quiz/feedbackRoute.ts) and the Worker (worker/index.ts), so `next dev` and Cloudflare behave
-// the same.
+// D-217 H3 — request guards shared by the owner API handler (lib/learning/syncRoute.ts) and the
+// Worker (worker/index.ts), so `next dev` and Cloudflare behave the same.
 
 /**
  * CSRF defence in depth (the owner cookie is SameSite=Lax already): a state-changing request (any
@@ -12,12 +11,6 @@ export function isCrossSiteWrite(request: Request): boolean {
   if (request.method === "GET") return false;
   const site = request.headers.get("sec-fetch-site");
   return site !== null && site !== "same-origin";
-}
-
-/** True iff the Content-Type media type is application/json (parameters such as charset allowed). */
-export function isJsonContentType(request: Request): boolean {
-  const type = request.headers.get("content-type");
-  return type !== null && type.split(";")[0]!.trim().toLowerCase() === "application/json";
 }
 
 /**

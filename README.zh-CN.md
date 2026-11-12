@@ -70,17 +70,16 @@ itlearn.bojiangz.com
 │    textbook · glossary · record          │
 │    settings · quiz (old-link redirect)   │
 ├──────────────────────────────────────────┤
-│  API routes                              │
-│    /api/quiz/questions                   │
-│    /api/quiz/feedback  (owner only)      │
+│  Worker (/api/* only, Cloudflare)        │
+│    /api/owner          (owner activation)│
 │    /api/learning       (owner sync)      │
-│    /api/sensei/terms   (tutor lookup)    │
+│  Static JSON /data/** (questions, terms) │
 ├──────────────────────────────────────────┤
 │  Data: committed JSON corpus             │
 │    data/ip/quiz      2,900 questions     │
 │    data/ip/textbook  244 units           │
 │  Learning record: browser storage        │
-│    (+ Upstash Redis sync for the owner)  │
+│    (owner sync store removed, D-228)     │
 ├──────────────────────────────────────────┤
 │  Cloudflare Workers · Web Analytics      │
 └──────────────────────────────────────────┘
@@ -128,8 +127,8 @@ itlearn.bojiangz.com
 | 框架 | Next.js 15.5（App Router, Turbopack） |
 | UI | React 19, Tailwind CSS v4, Radix UI, Lucide icons |
 | 国际化 | next-intl（日语 / 中文 / 英语） |
-| 存储 | 学习记录存浏览器；站长同步和题目反馈用 Upstash Redis |
-| 测试 | Vitest（1,264 个测试）、Playwright（e2e） |
+| 存储 | 学习记录存浏览器（站长同步代码保留，但自 D-228 起未配置存储 → 503） |
+| 测试 | Vitest（1,474 个测试）、Playwright（e2e） |
 | 部署 | Cloudflare Workers（static assets + Worker）、Cloudflare Web Analytics |
 | 内容 pipeline | Node / TypeScript 脚本；用 Claude（Anthropic）做提取、审核和翻译 |
 
@@ -197,8 +196,8 @@ pnpm check:quiz:ci    # 只查已提交的数据
 
 | 变量 | 说明 |
 |---|---|
-| `OWNER_KEY` | 站长密钥。带 `?owner_key=<OWNER_KEY>` 打开任意页面一次即设置站长 cookie，启用记录同步和题目反馈。未设置 = 没有站长。 |
-| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | 站长记录同步和题目反馈用的 Upstash Redis（也接受 `KV_REST_API_URL` / `KV_REST_API_TOKEN`）。 |
+| `OWNER_KEY` | 站长密钥。带 `?owner_key=<OWNER_KEY>` 打开任意页面一次即设置站长 cookie，启用记录同步（自 D-228 起未配置同步存储）。未设置 = 没有站长。 |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | 站长记录同步用的 Upstash Redis（也接受 `KV_REST_API_URL` / `KV_REST_API_TOKEN`）。 |
 | `QUIZ_DATA_ROOT` / `TEXTBOOK_DATA_ROOT` | 覆盖数据目录（默认是相对 `apps/web` 的 `../../data/ip`）。 |
 
 ---
@@ -213,7 +212,7 @@ pnpm check:quiz:ci    # 只查已提交的数据
 | 术语表 | 1,395 条 |
 | 已锁决策 | 203（D-001 … D-203） |
 | Session log | `docs/discussion/` 下 73 份 |
-| 单元测试 | 1,264 个（Vitest，110 个文件） |
+| 单元测试 | 1,474 个（Vitest，132 个文件） |
 
 </details>
 

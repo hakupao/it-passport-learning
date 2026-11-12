@@ -3,6 +3,7 @@
 > 対象: Worker `itlearn` (`apps/web/wrangler.jsonc`)。push → Cloudflare 側で build + deploy (GitHub 連携)。
 > 移設中の production branch = `hosting-cf` (→ https://itlearn.bojiang.workers.dev)、H7 で `main` に戻す。
 > **[2026-11-12 H7 済]** production branch は `main`、custom domain `itlearn.bojiangz.com`。Preview builds は OFF のまま、扱いは OQ-23 (§2-2 の秘密の扱い LOW-2 を先に確認)。
+> **[2026-11-12 D-227 / D-228 / D-229]** (1) Preview builds は **ON にする** (D-227、OQ-23 CLOSED)。条件は §2-2 の末尾。(2) Vercel project `web` と Upstash 統合 `upstash-kv-orange-fence` (学習記録・題目報告の DB) を**削除** (D-228、OQ-24 CLOSED、D-226 を supersede)。Worker の `KV_REST_API_URL` / `KV_REST_API_TOKEN` は削除済で、`/api/learning` は所有者にも 503 (保存先未設定)。`/api/quiz/feedback` は D-229 で機能ごと削除し 404。同期コードは残し、新しい DB の秘密を入れれば戻る。**Vercel への戻し道は無い**。以下の Vercel・Upstash を前提にした記述は履歴として残し、各所に `[D-228]` の注記を付けた。
 > 根拠: D-225 (session 154)、`docs/phase5/PLAN_hosting_migration.md` §2 H4〜H7、`evidence/phase5/hosting/H3_worker.md` §9-5。
 > Cloudflare docs の確認日: 2026-11-12 (Workers Builds の configuration・build watch paths・previews・rollbacks の各ページ、build image・Free の上限)。docs で確かめられなかった点は「未確認」と書き、§7-3 で実地に確かめる。
 > この手順を始めたら local の `wrangler deploy` は使わない (H4 の version 5b3a802e が最後の local deploy)。
@@ -20,8 +21,8 @@
 | `pnpm check:release` | `apps/web/package.json` | push 前の local 検査。規則 (c) を含む全走査 (§5) |
 | pre-push hook (opt-in) | `.githooks/pre-push` + `apps/web/scripts/needs-build.ts` | production branch への build される push の前に `check:release` を強制 (§5、S154 H6) |
 | watch paths の規則 | `apps/web/src/lib/release/watchPaths.ts` | dashboard の build watch paths (§2-3) と同じ規則。hook が使う |
-| 監視 script | `apps/web/scripts/cf-monitor.ts` | 月 1 回の記録の大きさ + Worker CPU (§10、D-224) |
-| 本番 smoke | `docs/templates/batch-tools/prod-smoke.mjs` / `prod-e2e.sh` | 対象ホストを選べる (`vercel` / `workers` / `prod`)、Cloudflare は check run を待つ (§9) |
+| 監視 script | `apps/web/scripts/cf-monitor.ts` | 月 1 回の記録の大きさ + Worker CPU (§10、D-224。[D-228] DB 削除後は記録の大きさを飛ばし CPU だけ) |
+| 本番 smoke | `docs/templates/batch-tools/prod-smoke.mjs` / `prod-e2e.sh` | 対象ホストを選べる (`workers` / `prod`、`vercel` は 2026-11-12 D-228 で削除)、Cloudflare は check run を待つ (§9) |
 | `esbuild` / `workerd` = `false` | `pnpm-workspace.yaml` の `allowBuilds` | pnpm 11 は未承認の build script があると install を失敗させるため明示 |
 
 `pnpm build:cf` の中身 (順に実行、失敗で即停止):
@@ -72,6 +73,13 @@ preview builds をオフにする理由:
 
 D-225 の文言は「他 branch は preview build」だが、上の理由で H7 までは オフ (S154 ユーザー確認済み)。H7 で改めて決める。
 
+> **[2026-11-12 D-227]** Preview builds を **ON** にする (OQ-23 CLOSED、ユーザー選択)。上の理由 1 は H7 で解消 (`main` が production branch)。条件:
+> 1. ON の前に dashboard で preview command (Non-production branch deploy command) が `npx wrangler preview` (新モデル = Worker Previews、production の設定を使わない) であることを確認する。旧モデルや `wrangler versions upload` なら本番の秘密を使うので、ON にせず止めてユーザーに報告する (上の理由 3)。
+> 2. 最初の branch build で、check run 名が production と区別できるか (`prod-e2e.sh` は名前 `Workers Builds: itlearn` で判定、§6 OQ-1) と、preview URL が noindex になるか (`_headers` の workers.dev 規則が preview の host に当たるか) を確かめる。
+> 3. preview には秘密を設定しない (`/api/*` は 403 のまま)。
+>
+> 条件 1〜3 の実地の確認結果は本書にはまだ無い (session log を参照)。
+
 ### 2-3. Build watch paths
 
 docs・evidence・failures だけの commit では build しない (Vercel の D-212 と同じ範囲)。
@@ -106,6 +114,8 @@ docs・evidence・failures だけの commit では build しない (Vercel の D
 
 3 件。すべて **Type = Secret** で入れる (Text にしない)。
 
+> **[2026-11-12 D-228]** `KV_REST_API_URL` / `KV_REST_API_TOKEN` は削除済 (DB ごと削除)。今の secret は `OWNER_KEY` だけで、`/api/learning` は 503 (`/api/quiz/feedback` は D-229 で削除、404)。下の KV の 2 行は、新しい Upstash DB を作って同期を戻すときの手順として残す (値は新しい DB のもの。「Vercel と同じ DB」はもう無い)。
+
 | 名前 | 値 |
 |---|---|
 | `OWNER_KEY` | **新しく生成した 128 bit 以上の乱数**。Vercel の旧 key を流用しない。例: `openssl rand -base64 32 \| tr '+/' '-_' \| tr -d '='` (256 bit、URL にそのまま入る形) を password manager に保存してから貼る |
@@ -119,7 +129,7 @@ cd apps/web
 pnpm exec wrangler secret put OWNER_KEY
 pnpm exec wrangler secret put KV_REST_API_URL
 pnpm exec wrangler secret put KV_REST_API_TOKEN
-pnpm exec wrangler secret list   # 名前が 3 件だけあること
+pnpm exec wrangler secret list   # 名前が 3 件だけあること ([D-228] 今は OWNER_KEY の 1 件)
 ```
 
 - secret が deploy をまたいで残ることは H4 以降の実地で確認する (§7-3 の 6。docs のページには明記が無い)。
@@ -160,9 +170,10 @@ pnpm check:release
 
 前提: Track L PASS、H5 PASS、`hosting-cf` の HEAD で `pnpm check:release` が exit 0。
 
-**事前確認 (切替の前に、S154 H6 Rule D OQ-1 / OQ-2)**:
+**事前確認 (切替の前に、S154 H6 Rule D OQ-1 / OQ-2)** — [D-228] OQ-2 は決着 (DB ごと削除)、OQ-1 は D-227 の条件 2 に引き継ぎ:
 - **OQ-1 check run の名前**: preview builds を H7 で有効にする場合、preview の build も同じ名前 `Workers Builds: itlearn` の check run を付けるかもしれない (docs に記述なし)。`prod-e2e.sh` は名前だけで判定するので、有効にするなら最初の preview build の check run を `gh api …/check-runs --jq '.check_runs[] | [.name, .head_sha, (.output.summary // "" | .[0:200])]'` で見て、production と区別できる (summary の URL が `/production/builds/` か) ことを確かめ、区別できなければ `prod-e2e.sh` に summary の検査を足す。preview builds が OFF のままなら影響なし。
 - **OQ-2 Upstash の所属**: 学習記録の DB は Vercel Marketplace の統合 `upstash-kv-orange-fence` として作られ、project `web` に接続されている (S126 session log: 前の統合 `upstash-kv-gray-ridge` が Uninstalled になったとき接続先 DB が消えていた)。→ **Vercel project の削除や統合の解除で DB が消える可能性がある**。§6-7 で Vercel を止める前に、(a) Vercel の Integrations / Upstash の console で DB の所有 (Vercel 管理か Upstash の自前 account か) を確認し、(b) Vercel 管理なら Upstash 側への移管手順を確かめるか、project を削除せず「停止 (Git 連携の解除・domain の除去)」に留める。確かめるまで project の削除・統合の解除はしない。所有者の記録は local (localStorage) にも残るが、端末間の同期は失われる。
+  - **[2026-11-12 D-228]** 決着: ユーザーは云記録を不要と判断し、統合と project を削除 (DB も消える)。移管はしない。学習記録は各ブラウザの localStorage のみ。
 
 1. **Vercel 側の退避**: 今の Vercel production deployment の ID を控える (戻し先)。`hosting-cf` を `main` に merge すると Vercel が `main` を build し直すので、merge の前に Vercel の Git 連携を外すか、build を止める方法を決めて実行する (H7 で確認)。
 2. Cloudflare: Settings → Build → Branch control の **Production branch を `main`** に変える。
@@ -170,7 +181,7 @@ pnpm check:release
 4. Settings → **Domains & Routes** → Add → **Custom domain** = `itlearn.bojiangz.com`。zone `bojiangz.com` が Cloudflare の DNS にあることが条件。既存の Vercel 向け DNS record があると追加できないので、その record を外してから追加する (外した値は控えておく = 戻し用)。
 5. 切替後: `node prod-smoke.mjs <units> --target prod` (`itlearn.bojiangz.com`、canonical も検査)。所有者は新しい `OWNER_KEY` で `/api/owner?key=…` を 1 回開き直す (H1-1 の hint cookie、旧 key は無効)。
 6. WAF の rate limit (§4-4)。Web Analytics を使うなら site を作り `CF_WEB_ANALYTICS_TOKEN` を build variable に入れて再 build。
-7. Vercel は 7 日程度残す (その間 Vercel 側は noindex、PLAN H7)。問題がなければ Vercel project を停止。
+7. Vercel は 7 日程度残す (その間 Vercel 側は noindex、PLAN H7)。問題がなければ Vercel project を停止。 **[2026-11-12 D-228]** 戻し期間は打ち切り、project は削除 (停止ではなく)。
 8. **運用の既定を切り替える (S154 H6 で用意、H7 で 1 commit にまとめて変える)** — 下の項目は **済 (S154 H7)**、ただし §9-2 の確認だけは未了 (最初の内容 push 待ち):
    - [済] `docs/templates/batch-tools/prod-smoke.mjs` の `DEFAULT_TARGET` を `'prod'` に、`prod-e2e.sh` の `T=${4:-vercel}` を `T=${4:-prod}` に (§9)。
    - [済] `.githooks/pre-push` の `PROD_BRANCH` を `main` に。
@@ -180,11 +191,11 @@ pnpm check:release
    - [未了] 本書 §9-2 の内容 push で watch paths の基準 (§2-3) を確かめる。
    - [済] `apps/web/src/__tests__/prodSmoke.test.ts` の既定 target のテスト (「defaults to the live production host」、Vercel の host と canonical なしを断言) を `prod` (`itlearn.bojiangz.com`、canonical あり) に合わせる。
    - [済] batch-tools の `README.md` (20 行目の `prod-smoke.mjs` の行: 既定 = vercel) と `prod-e2e.sh` の行を書き換える。
-9. **Vercel を止めた後の片付け** (§6-7 の後、OQ-2 を確かめてから) — **済 (S154 H7)**、ただし最後の項目 (`TARGETS.vercel`) は D-226 の戻し期間の間は残す:
+9. **Vercel を止めた後の片付け** (§6-7 の後、OQ-2 を確かめてから) — **済 (S154 H7)**、ただし最後の項目 (`TARGETS.vercel`) は D-226 の戻し期間の間は残す ([2026-11-12 D-228] 最後の項目も済):
    - [済] `apps/web/vercel.json` (`ignoreCommand`)、`apps/web/scripts/vercel-ignore-build.sh` と `apps/web/src/__tests__/vercelIgnoreBuild.test.ts` を削除 (D-212 の Vercel 版の退役。Cloudflare 版は §2-3)。
-   - [済] `scripts/quiz-feedback.mjs` の 16 行目・61 行目の `vercel env pull` / 「Vercel project env」の注記を `.env.local` (Upstash の値) の説明に書き換える。
+   - [済] `scripts/quiz-feedback.mjs` の 16 行目・61 行目の `vercel env pull` / 「Vercel project env」の注記を `.env.local` (Upstash の値) の説明に書き換える。([2026-11-12 D-229] 題目報告機能ごと削除: `scripts/quiz-feedback.mjs`・`/api/quiz/feedback`・`QuizFeedback` UI。)
    - [済、`README.zh-CN.md` も同じ 3 箇所] root `README.md` の 9 行目 (Live badge の Vercel logo)、85 行目 (`Vercel · Analytics · Speed Insights`)、133 行目 (Deploy 行) を Cloudflare Workers (static assets + Worker、Web Analytics) に。
-   - [残す] `prod-smoke.mjs` の `TARGETS.vercel` と、`checkCanonical` の Vercel 例外 (と `prod-e2e.sh` の `vercel` 対象) は Vercel の URL が消えたら削る。D-226 で Vercel project は停止 (pause、503) のまま削除せず戻し先として残すので、戻し期間の間は残す (Vercel project を削除するときに一緒に削る)。
+   - [済 2026-11-12 D-228、Vercel project の削除で] ~~[残す]~~ `prod-smoke.mjs` の `TARGETS.vercel` と、`checkCanonical` の Vercel 例外 (と `prod-e2e.sh` の `vercel` 対象) は Vercel の URL が消えたら削る。D-226 で Vercel project は停止 (pause、503) のまま削除せず戻し先として残すので、戻し期間の間は残す (Vercel project を削除するときに一緒に削る)。→ 削除済: canonical はどの対象でも検査、`prod-e2e.sh` の対象は `workers` / `prod` だけ。
 
 ---
 
@@ -229,9 +240,9 @@ build log と dashboard で 1 つずつ確認する。
 
 | 状況 | 戻し方 |
 |---|---|
-| 新しい deploy が壊れている (Worker) | dashboard → **Workers & Pages** → `itlearn` → **Deployments** → 戻したい version の「…」→ **Rollback** (CLI: `pnpm exec wrangler rollback [version-id]`、直近 100 version から選べる)。docs: binding 先の資源 (Upstash 等) は変わらない。static assets も同じ version に戻るかは docs に明記が無い → 初回の rollback 時に HTML の build id で確認。その後、原因の commit を `git revert` して push (次の build で正しい版が出る) |
+| 新しい deploy が壊れている (Worker) | dashboard → **Workers & Pages** → `itlearn` → **Deployments** → 戻したい version の「…」→ **Rollback** (CLI: `pnpm exec wrangler rollback [version-id]`、直近 100 version から選べる)。docs: binding 先の資源 (Upstash 等) は変わらない ([D-228] 今は Upstash の秘密が無い)。static assets も同じ version に戻るかは docs に明記が無い → 初回の rollback 時に HTML の build id で確認。その後、原因の commit を `git revert` して push (次の build で正しい版が出る) |
 | build が失敗した | deploy されないので現行 version のまま。log を見て直して push |
-| H7 の後、Cloudflare 側で解決できない (Vercel を残す 7 日間) | Worker の custom domain `itlearn.bojiangz.com` を外し、DNS を控えておいた Vercel 向け record に戻す。Vercel では控えた production deployment が使われていることを確認 (違えば Instant Rollback でそれに戻す) |
+| ~~H7 の後、Cloudflare 側で解決できない (Vercel を残す 7 日間)~~ **[2026-11-12 D-228 で廃止: Vercel project を削除、戻し先は無い]** | (履歴) Worker の custom domain `itlearn.bojiangz.com` を外し、DNS を控えておいた Vercel 向け record に戻す。Vercel では控えた production deployment が使われていることを確認 (違えば Instant Rollback でそれに戻す) |
 
 緊急時に Workers Builds が使えない場合だけ、手で deploy する (H3 §9-5 の 1〜2)。clean worktree には gitignore の IPA 原本 (`data/ip/exams`・`sources`・`syllabus`) が無く `check:release` が必ず exit 2 になるので、次の順で行う (S154 Rule D MEDIUM-1):
 1. 主 checkout で、deploy する commit に対して `cd apps/web && pnpm check:release` を通す (規則 (c) 込み)。
@@ -252,15 +263,17 @@ D-206 の条件 (Rule A PASS + 再審 PASS + Gates + IPA 閘 + local e2e) と「
 3. `prod-e2e.sh <最新 commit> <units> <tag> prod`: check run `Workers Builds: itlearn` が `success` になるのを待ち (最大 20 分、20 秒ごと)、`prod-smoke.mjs --target prod` (HTML のみ、canonical も検査)。
 4. 失敗 (build 失敗 = check run `failure`、20 分で check run が無い、smoke ✗) → 自動投入を止める。build 失敗なら deploy されていないので本番は前の version のまま。smoke ✗ なら §8 の Rollback か `git revert`。
 
+[D-228] 下の表の Vercel の列は履歴 (Vercel project は削除済、`--target vercel` も削除)。
+
 | | Vercel (H7 まで) | Cloudflare (H7 後) |
 |---|---|---|
 | 配置の完了 | `gh api repos/hakupao/it-passport-learning/commits/<sha>/status` の `.state` | `gh api repos/hakupao/it-passport-learning/commits/<sha>/check-runs` の `name == "Workers Builds: itlearn"` の `conclusion` |
 | 落とし穴 | branch push の "Canceled by Ignored Build Step" も `success` (配置されていない) | check run は build の終了時にだけ現れることがある (6701ac43 は started = completed)。docs だけの push は check suite だけで check run 0 |
-| smoke 対象 | `--target vercel` (canonical は見ない) | `--target prod` (H7 前の確認は `--target workers`) |
+| smoke 対象 | `--target vercel` (canonical は見ない。D-228 で削除) | `--target prod` (H7 前の確認は `--target workers`) |
 | docs だけの commit | `vercel-ignore-build.sh` で skip (D-212) | build watch paths で skip (§2-3) |
 | 連続 push | 中間 commit に status が付かないことがある | 同時 1 build (§7-2)。push ごとに build されるのか、待ちの間に来た push がまとめられるのかは**未確認** (docs に記述なし、まだ連続 push をしていない) → どちらでも安全なように **最新 commit を待ち、区間の全単元を smoke** |
 
-- `vercel api` を使う作業 (使用量の確認、`docs/discussion/2026-11-11-session-154.md`) は H7 で Vercel を止めたら不要。Cloudflare 側の使用量は §10。
+- `vercel api` を使う作業 (使用量の確認、`docs/discussion/2026-11-11-session-154.md`) は H7 で Vercel を止めたら不要 ([D-228] project 削除で使えない)。Cloudflare 側の使用量は §10。
 
 ### 9-2. watch paths の基準を確かめる (H7 前後の最初の内容 push で 1 回)
 
@@ -276,6 +289,8 @@ gh api repos/hakupao/it-passport-learning/commits/<sha>/check-suites --jq '.chec
 ## 10. CPU と記録の大きさの監視 (D-224、月 1 回)
 
 H4 の実測 (`evidence/phase5/hosting/H4_cpu_measurement.md`) で Free のまま (D-224)。月 1 回、次を実行して記録する (session log に 1 行):
+
+> **[2026-11-12 D-228]** 学習記録の DB を削除したので、(1) 記録の大きさ と判定の「記録 > 200 KB」・選択肢 B (同期の分割) は前提が無い。`cf-monitor.ts` は `.env.local` に `KV_REST_API_URL` + `KV_REST_API_READ_ONLY_TOKEN` が無ければ記録を飛ばし (`record: skipped …`)、CPU だけで判定する (ASK USER は A Workers Paid だけ)。削除した DB の古い値が `.env.local` に残っていると (1) が接続に失敗して exit 2 になるので、その値は消す。新しい DB を作れば (1) は元どおり動く。
 
 ```sh
 cd apps/web

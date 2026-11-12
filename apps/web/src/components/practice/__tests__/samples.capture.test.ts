@@ -18,7 +18,6 @@ vi.mock("@/i18n/navigation", () => ({
 }));
 
 import glossaryStyles from "@/components/glossary/glossary.module.css";
-import feedbackStyles from "@/components/quiz/feedback.module.css";
 import richTextStyles from "@/components/quiz/richText.module.css";
 import type { ChoiceLetter } from "@/lib/learning/record";
 import { loadChumonGroups } from "@/lib/practice/practiceReader";
@@ -82,7 +81,6 @@ function page(s: Sample, body: string): string {
     : [];
   const css = [
     moduleCss(path.join(WEB, "src/components/quiz/richText.module.css"), richTextStyles as Record<string, string>),
-    moduleCss(path.join(WEB, "src/components/quiz/feedback.module.css"), feedbackStyles as Record<string, string>),
     moduleCss(path.join(WEB, "src/components/glossary/glossary.module.css"), glossaryStyles as Record<string, string>),
     moduleCss(path.join(WEB, "src/components/practice/practice.module.css"), practiceStyles as Record<string, string>),
   ].join("\n");

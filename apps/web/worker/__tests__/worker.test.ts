@@ -1,10 +1,10 @@
 // D-217 H3 — the Cloudflare Worker's fetch handler, Request in → Response out, end to end through
 // the real @upstash/redis client: `fetch` is the in-memory Upstash REST emulation
 // (worker/testing/fakeUpstash.ts, base64 response encoding like the real service), env comes from
-// process.env as nodejs_compat populates it in workerd. Covers every status path of /api/learning,
-// /api/quiz/feedback and /api/owner, routing (404 / 405 / non-/api), the security headers and the
-// owner cookie attributes; the full contract of the two APIs is also run against the Worker by the
-// route tests (vitest project "worker-routes").
+// process.env as nodejs_compat populates it in workerd. Covers every status path of /api/learning
+// and /api/owner, routing (404 / 405 / non-/api; /api/quiz/feedback is gone, D-229), the security
+// headers and the owner cookie attributes; the full contract of /api/learning is also run against the
+// Worker by the route tests (vitest project "worker-routes").
 // Each test imports a fresh module graph: the Redis loaders cache their client (or null) per module.
 
 import { createHash } from "node:crypto";
@@ -72,7 +72,7 @@ const WIRE: WireRecordV2 = encodeRecord(
 
 describe("routing", () => {
   it("unknown /api path → 404 JSON with the API headers", async () => {
-    for (const path of ["/api", "/api/", "/api/nope", "/api/learning/", "/api/quiz/questions", "/api/sensei/terms"]) {
+    for (const path of ["/api", "/api/", "/api/nope", "/api/learning/", "/api/quiz/questions", "/api/sensei/terms", "/api/quiz/feedback"]) {
       const res = await call(req(path));
       expect(res.status, path).toBe(404);
       expect(await res.json()).toEqual({ error: "not found" });
@@ -86,7 +86,6 @@ describe("routing", () => {
       ["/api/learning", "DELETE", "GET, PUT"],
       ["/api/learning", "HEAD", "GET, PUT"],
       ["/api/learning", "OPTIONS", "GET, PUT"],
-      ["/api/quiz/feedback", "PUT", "GET, POST"],
       ["/api/owner", "POST", "GET"],
     ];
     for (const [path, method, allow] of cases) {
@@ -102,7 +101,6 @@ describe("routing", () => {
     const cases: [string, string][] = [
       ["/api/learning", "PUT"],
       ["/api/learning", "DELETE"],
-      ["/api/quiz/feedback", "POST"],
       ["/api/owner", "POST"],
       ["/api/nope", "POST"],
     ];
@@ -273,65 +271,6 @@ describe("/api/learning through the Upstash REST client", () => {
     });
     const res = await call(req("/api/learning"));
     expect(res.status).toBe(502);
-  });
-});
-
-describe("/api/quiz/feedback through the Upstash REST client", () => {
-  const VALID = { question_id: "2016h28h-q033", locale: "ja", category: "text_error", note: " 誤字 " };
-  const post = (body: unknown, cookie: string | null = OWNER) =>
-    req("/api/quiz/feedback", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: typeof body === "string" ? body : JSON.stringify(body),
-      cookie,
-    });
-
-  it("POST → 201 record (MULTI/EXEC: record + 2 indexes); GET lists it newest first", async () => {
-    const a = await call(post(VALID));
-    expect(a.status).toBe(201);
-    expectApiHeaders(a);
-    const rec = (await a.json()) as { id: string; note: string; status: string };
-    expect(rec).toMatchObject({ note: "誤字", status: "open" });
-    expect(upstash.calls).toEqual(["set", "zadd", "zadd"]);
-    expect(upstash.zsets.get("quiz:feedback:index")!.has(rec.id)).toBe(true);
-    await new Promise((r) => setTimeout(r, 5));
-    const b = (await (await call(post({ ...VALID, note: "second" }))).json()) as { id: string };
-    const list = await call(req("/api/quiz/feedback?question_id=2016h28h-q033"));
-    expect(list.status).toBe(200);
-    const { records } = (await list.json()) as { records: { id: string }[] };
-    expect(records.map((r) => r.id)).toEqual([b.id, rec.id]);
-  });
-
-  it("GET for a question without reports → 200 { records: [] }", async () => {
-    const res = await call(req("/api/quiz/feedback?question_id=2017h29a-q015"));
-    expect(await res.json()).toEqual({ records: [] });
-  });
-
-  it("403 / 503 / 400 in that order", async () => {
-    expect((await call(post("not json", null))).status).toBe(403);
-    expect((await call(req("/api/quiz/feedback?question_id=bad", { cookie: null }))).status).toBe(403);
-    expect((await call(post("not json"))).status).toBe(400);
-    expect((await call(post({ ...VALID, category: "nope" }))).status).toBe(400);
-    expect((await call(req("/api/quiz/feedback?question_id=../x"))).status).toBe(400);
-    vi.stubEnv("KV_REST_API_TOKEN", "");
-    await freshWorker();
-    expect((await call(post("not json"))).status).toBe(503);
-    expect((await call(req("/api/quiz/feedback?question_id=bad"))).status).toBe(503);
-    expect(upstash.calls).toEqual([]);
-  });
-
-  it("an Upstash failure → 502; the log names the error, not the command or the note", async () => {
-    upstash.failWith = 500;
-    const p = await call(post({ ...VALID, note: "note-marker" }));
-    expect(p.status).toBe(502);
-    expect(await p.json()).toEqual({ error: "feedback store error" });
-    const g = await call(req("/api/quiz/feedback?question_id=2016h28h-q033"));
-    expect(g.status).toBe(502);
-    const log = logged();
-    expect(log).toContain("[quiz-feedback-store-error]");
-    expect(log).not.toContain("note-marker");
-    expect(log).not.toContain("fake outage");
-    expect(log).not.toContain("command was");
   });
 });
 

@@ -32,6 +32,11 @@ describe("verdict (D-224)", () => {
     expect(v.reasons[0]).toContain("200000");
   });
 
+  it("skips the record check when the record was not measured (null, no sync DB since D-228)", () => {
+    expect(verdict(null, [])).toEqual({ askUser: false, reasons: [], notes: [] });
+    expect(verdict(null, summarizeDays([row("d", 3_000, 5_000, 1)])).askUser).toBe(true);
+  });
+
   it("asks the user on any error or a p50 at the 10 ms limit", () => {
     expect(verdict(445, summarizeDays([row("d", 3_000, 5_000, 1)])).askUser).toBe(true);
     expect(verdict(445, summarizeDays([row("d", 10_000, 12_000)])).askUser).toBe(true);

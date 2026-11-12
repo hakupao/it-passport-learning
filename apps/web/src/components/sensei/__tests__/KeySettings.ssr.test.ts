@@ -1,5 +1,5 @@
 // D-181 Task A2 — KeySettings first render (node env, renderToStaticMarkup, same
-// approach as QuizFeedback.ssr.test.ts). Effects do not run in SSR, so this is the
+// approach as GlossaryList.ssr.test.ts). Effects do not run in SSR, so this is the
 // pre-mount markup: no key shown yet. Save / delete behaviour is covered in e2e.
 import { describe, expect, it } from "vitest";
 import { createElement as h } from "react";

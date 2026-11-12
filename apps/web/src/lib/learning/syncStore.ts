@@ -1,10 +1,11 @@
 // D-180 §0-7 / D-190 §0-3 — owner-only server copy of the learning record.
 //
-// Storage = the existing Upstash Redis (D-100), one JSON document in the v2
+// Storage = an Upstash Redis (D-100; the original DB was deleted 2026-11-12, D-228 — production
+// answers 503 until a new DB's env is set), one JSON document in the v2
 // wire form (encodeRecord) at `learn:owner:v2`. When that key is missing the
 // old v1 document at `learn:owner:v1` is read and upgraded (upgradeV1, v2Since
 // = now); the v1 key is never written or deleted, so the first merge-and-write
-// moves the data to the v2 key. Env precedence mirrors lib/quiz/feedback.ts:
+// moves the data to the v2 key. Env precedence:
 // UPSTASH_REDIS_REST_URL/TOKEN preferred, KV_REST_API_URL/TOKEN fallback;
 // missing env ⇒ loader returns null and the route answers 503. Narrow
 // `LearningRedis` interface so tests inject an in-memory fake.

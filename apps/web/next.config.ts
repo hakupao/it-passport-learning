@@ -70,7 +70,7 @@ const GLOSSARY_TRACE = [...TEXTBOOK_TRACE, "../../data/ip/quiz/questions.json"];
 const STATIC_EXPORT = process.env.NODE_ENV === "production";
 
 // The server-only files (src/middleware.dev.ts: `/` + locale-less redirects and `?owner_key=`;
-// app/api/learning, app/api/quiz/feedback: the owner API) are named `*.dev.ts` and exist only for
+// app/api/learning, app/api/owner: the owner API) are named `*.dev.ts` and exist only for
 // `next dev`: the export build leaves the "dev.ts" page extension out, so it does not see them.
 // In production their jobs move to out/_redirects (scripts/postexport.ts) and to the H3 Worker.
 const PAGE_EXTENSIONS = ["tsx", "ts", "jsx", "js"];

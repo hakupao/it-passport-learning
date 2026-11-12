@@ -1,7 +1,7 @@
 // D-148 — owner gate (Session 126).
 //
 // Single-user site owner identity, shared by the AI routes (D-148: 503 unless
-// owner) and quiz feedback (D-149: owner-only submit/list).
+// owner) and the learning-record sync (D-180). (The D-149 quiz feedback was removed, D-229.)
 //
 //   - env `OWNER_KEY` = the secret. Opening `/api/owner?key=<OWNER_KEY>&next=/ja` once (the Worker,
 //     lib/ownerActivation.ts, D-217 H3) — or any page with `?owner_key=<OWNER_KEY>`, forwarded there
@@ -18,7 +18,7 @@ export const OWNER_COOKIE = "itp_owner";
 
 // H1-1 (D-217) — readable UI hint set / cleared next to OWNER_COOKIE by the middleware, so pages need
 // no server cookie read (static prerender). Not a secret, not httpOnly: it only gates UI (the learning
-// sync attempt, the feedback button) via useOwner(); the API routes still check OWNER_COOKIE, so a
+// sync attempt) via useOwner(); the API routes still check OWNER_COOKIE, so a
 // forged hint only earns 403s.
 export const OWNER_HINT_COOKIE = "itp_owner_hint";
 export const OWNER_HINT_VALUE = "1";

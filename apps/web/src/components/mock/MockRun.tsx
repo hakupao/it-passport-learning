@@ -38,8 +38,8 @@
 //   - Other tabs (storage event): the same mock → adopt (except over our own finished state, which
 //     is written back; and a finished + recorded result is never replaced). Another mock or the key
 //     removed (the setup page's 「破棄」 or a new mock) → this tab stops with a note (superseded).
-//   - Exam view (§0-7 / §0-8): PracticeQuestion mode="exam" (no ○ / ×, no explanation, no AI 先生,
-//     no report); top bar = time left (bold from 10 min), 回答見直し, 試験終了; bottom bar = prev,
+//   - Exam view (§0-7 / §0-8): PracticeQuestion mode="exam" (no ○ / ×, no explanation, no AI 先生);
+//     top bar = time left (bold from 10 min), 回答見直し, 試験終了; bottom bar = prev,
 //     あとで見直す, next (on the last question: the review). 試験終了 opens an in-page confirmation
 //     with 未回答 N 問 (no modal, no confirm()).
 //   - Result: MockResult (score over every question of the mock: the page guarantees one question

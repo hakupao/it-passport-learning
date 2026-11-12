@@ -11,8 +11,7 @@
 //     with the distractor reason; your row is tinted with 「← あなたの答え」, your wrong row open,
 //     the other wrong rows closed;
 //   - 「ここがポイント」 = points (1–3), term chips (TermChip), 「AI 先生に聞く」 (AskSensei; needs a
-//     SenseiHost above, anchor `<question_id>:<picked>` as in QuizSet), owner-only QuizFeedback (the flag
-//     from useOwner() in the browser, H1-1; none in the server HTML).
+//     SenseiHost above, anchor `<question_id>:<picked>` as in QuizSet).
 // Key terms (§0-25): the question's terms that have a dictionary card are spot bold where they occur
 // in the explanation (splitTerms; style only, the text is unchanged). No wavy underline this phase.
 // Every compared text sits alone in its data-fid element (fidelity.test.ts).
@@ -32,9 +31,7 @@ import { Fragment, useState } from "react";
 import { hasLocale, useTranslations } from "next-intl";
 
 import { TermChip } from "@/components/glossary/TermChip";
-import { QuizFeedback } from "@/components/quiz/QuizFeedback";
 import { AskSensei } from "@/components/sensei/AskSensei";
-import { useOwner } from "@/hooks/useOwner";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import type { TermCard } from "@/lib/glossary/dictionary";
@@ -132,7 +129,6 @@ function Answered({
   setExplLocale: (l: string) => void;
   t: ReturnType<typeof useTranslations>;
 }): React.ReactElement {
-  const isOwner = useOwner();
   const ex = localizedExplanation(q, explLocale);
   const title = ex ? explanationTitle(ex.points) : null;
   const lang = LANG_TAG[explLocale] ?? explLocale;
@@ -289,7 +285,6 @@ function Answered({
           </span>
         )}
       </div>
-      {isOwner === true ? <QuizFeedback questionId={q.id} locale={locale} /> : null}
     </>
   );
 }

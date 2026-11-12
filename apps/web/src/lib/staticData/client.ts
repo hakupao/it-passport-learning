@@ -20,7 +20,7 @@ import {
   type UnitsFile,
 } from "./shards";
 import type { TodayIndex } from "../practice/practiceIndex";
-import { QUESTION_ID_RE } from "../quiz/feedbackModel";
+import { QUESTION_ID_RE } from "../quiz/questionId";
 import type { QuizExplanation, QuizQuestion } from "../quiz/quizModel";
 import type { SenseiTermContext } from "../sensei/anchors";
 

@@ -345,17 +345,3 @@ test.describe("owner activation (Worker /api/owner)", () => {
     expect(result.stored).toEqual([[1_700_000_000_000, 1, 1, "p"]]);
   });
 });
-
-// D-217 H3 attempt 2: the browser's own same-origin POST passes the Sec-Fetch-Site / Content-Type guards.
-test("real feedback POST from the page: JSON → 201, text/plain → 415, then listed", async ({ page }) => {
-  await becomeOwner(page);
-  const r = await page.evaluate(async () => {
-    const body = JSON.stringify({ question_id: "2009h21a-q054", locale: "ja", category: "other", note: "e2e" });
-    const ok = await fetch("/api/quiz/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body });
-    const plain = await fetch("/api/quiz/feedback", { method: "POST", headers: { "Content-Type": "text/plain" }, body });
-    const list = await fetch("/api/quiz/feedback?question_id=2009h21a-q054");
-    return { ok: ok.status, plain: plain.status, list: list.status, n: ((await list.json()) as { records: unknown[] }).records.length };
-  });
-  expect(r).toMatchObject({ ok: 201, plain: 415, list: 200 });
-  expect(r.n).toBeGreaterThan(0);
-});

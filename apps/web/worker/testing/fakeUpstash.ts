@@ -10,18 +10,16 @@
 //   POST <base>/multi-exec   body = array of commands      → [{ result }, …] (applied in order)
 //   Authorization: Bearer <token> (else 401 { error }); `Upstash-Encoding: base64` → string results
 //   (and strings inside array results) base64-encoded, "OK" left as is — the client's default.
-//   Commands: GET, SET key value, MGET, ZADD key score member [score member …], ZRANGE key start stop
-//   [REV]. Anything else → 400 { error: "ERR unknown command …" }.
-// Not emulated: expiry, options of SET/ZADD (NX, XX, GT …), ZRANGE BYSCORE/BYLEX/WITHSCORES, sync
-// tokens (the `upstash-sync-token` header is ignored), latency, size limits, partial MULTI failure.
+//   Commands: GET, SET key value (all /api/learning sends). Anything else → 400 { error: "ERR unknown
+//   command …" }. (MGET / ZADD / ZRANGE went with the D-149 question reports, D-229.)
+// Not emulated: expiry, options of SET (NX, XX …), sync tokens (the `upstash-sync-token` header is
+// ignored), latency, size limits, partial MULTI failure.
 
 export interface FakeUpstash {
   readonly url: string;
   readonly token: string;
   /** key → stored string (what SET wrote, JSON as the client serialized it). */
   readonly strings: Map<string, string>;
-  /** key → member → score. */
-  readonly zsets: Map<string, Map<string, number>>;
   /** Command names in call order (lower case), e.g. ["get", "get", "set"]. */
   readonly calls: string[];
   /** When set, every request answers this status with an error body (simulates an outage). */
@@ -51,7 +49,6 @@ function encodeResult(result: unknown, base64: boolean): unknown {
 
 export function createFakeUpstash(url = "https://fake-upstash.test", token = "fake-token"): FakeUpstash {
   const strings = new Map<string, string>();
-  const zsets = new Map<string, Map<string, number>>();
   const calls: string[] = [];
 
   function run(cmd: Command): { result?: unknown; error?: string } {
@@ -65,29 +62,6 @@ export function createFakeUpstash(url = "https://fake-upstash.test", token = "fa
       case "set":
         strings.set(s(0), s(1));
         return { result: "OK" };
-      case "mget":
-        return { result: args.map((k) => strings.get(String(k)) ?? null) };
-      case "zadd": {
-        const z = zsets.get(s(0)) ?? new Map<string, number>();
-        let added = 0;
-        for (let i = 1; i + 1 < args.length; i += 2) {
-          if (!z.has(s(i + 1))) added++;
-          z.set(s(i + 1), Number(args[i]));
-        }
-        zsets.set(s(0), z);
-        return { result: added };
-      }
-      case "zrange": {
-        const z = zsets.get(s(0)) ?? new Map<string, number>();
-        const sorted = [...z.entries()]
-          .sort((a, b) => a[1] - b[1] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
-          .map(([m]) => m);
-        const rev = args.slice(3).some((a) => String(a).toLowerCase() === "rev");
-        const list = rev ? sorted.reverse() : sorted;
-        const n = list.length;
-        const norm = (i: number): number => (i < 0 ? n + i : i);
-        return { result: list.slice(Math.max(0, norm(Number(args[1]))), norm(Number(args[2])) + 1) };
-      }
       default:
         return { error: `ERR unknown command '${op}'` };
     }
@@ -97,7 +71,6 @@ export function createFakeUpstash(url = "https://fake-upstash.test", token = "fa
     url,
     token,
     strings,
-    zsets,
     calls,
     failWith: null,
     async handle(request: Request): Promise<Response> {

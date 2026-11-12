@@ -31,7 +31,7 @@
 // 「選択中」 (data-state "picked", aria-pressed) and another pick replaces it; nothing tells right
 // from wrong — no ○ / ×, no lock, no 复习三格 (its cells are ○ / ×). `examNo` puts the mock's own
 // number in the 問 block (「問 N / 100」); the 出典 line stays. The face never had the explanation,
-// the AI 先生 entry or the report button — those live in the practice session around it.
+// or the AI 先生 entry — those live in the practice session around it.
 
 "use client";
 

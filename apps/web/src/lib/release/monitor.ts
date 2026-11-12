@@ -50,11 +50,12 @@ export interface Verdict {
 /**
  * askUser when the record exceeds RECORD_LIMIT_BYTES, any invocation errored (1102 = CPU exceeded), or a
  * day's p50 reached the CPU limit. A max above 10 ms alone is a note: H4 saw it on cold isolates only.
+ * recordBytes null = not measured (no sync DB configured, D-228): the record check is skipped.
  */
-export function verdict(recordBytes: number, days: readonly DaySummary[]): Verdict {
+export function verdict(recordBytes: number | null, days: readonly DaySummary[]): Verdict {
   const reasons: string[] = [];
   const notes: string[] = [];
-  if (recordBytes > RECORD_LIMIT_BYTES) reasons.push(`record ${recordBytes} B > ${RECORD_LIMIT_BYTES} B`);
+  if (recordBytes !== null && recordBytes > RECORD_LIMIT_BYTES) reasons.push(`record ${recordBytes} B > ${RECORD_LIMIT_BYTES} B`);
   const errors = days.reduce((n, d) => n + d.errors, 0);
   if (errors > 0) reasons.push(`${errors} errored invocations`);
   for (const d of days) {

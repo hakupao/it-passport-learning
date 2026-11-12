@@ -6,7 +6,7 @@
 // Only this question (explanation merged) and its terms as cards cross to the client, the question
 // through the static data's allow-list projection (clientQuestion: no internal corpus field, H1-3
 // MEDIUM-1). The owner flag
-// that gates the record sync and the report button is read in the browser (useOwner, H1-1);
+// that gates the record sync is read in the browser (useOwner, H1-1);
 // LearningRecordProvider is mounted here. Prerendered (D-223).
 
 import type { Metadata } from "next";

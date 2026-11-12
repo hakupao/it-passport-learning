@@ -1,5 +1,5 @@
 // Stage 6 (D-179 / D-180) Task 4 — glossary list page component.
-// Same SSR approach as QuizFeedback.ssr.test.ts (node env, renderToStaticMarkup,
+// SSR approach (node env, renderToStaticMarkup,
 // createElement instead of JSX, NextIntlClientProvider with the real catalogs).
 import { describe, expect, it, vi } from "vitest";
 import { createElement as h } from "react";
