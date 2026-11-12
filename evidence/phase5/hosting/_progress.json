@@ -1,202 +1,207 @@
 {
-  "plan": "docs/phase5/PLAN_hosting_migration.md",
-  "branch": "hosting-cf",
-  "current_step": "H6 PASS (Rule D code-reviewer opus PASS、LOW 7 + minor 修正済、OQ-1/OQ-2 は DEPLOY §6 の事前確認へ。H6_ops.md, H6_review.md)",
-  "next_step": "H7 (ユーザー確認の上で): DEPLOY_cloudflare.md §6 — 事前確認 OQ-1 (preview の check run 名) / OQ-2 (Upstash が Vercel Marketplace 統合 → Vercel 停止前に DB の所有を確認)、手順 1〜7、§6-8 の既定切替 1 commit、§6-9 Vercel 片付け。未確定: watch paths のパス基準 (§9-2)",
-  "completed": [
-    {
-      "step": "H0-1",
-      "status": "PASS",
-      "commit": "1956a486 (main)"
-    },
-    {
-      "step": "H0-2",
-      "status": "PASS",
-      "commit": "7d095d1a (hosting-cf)",
-      "evidence": "branch push → Vercel status \"Canceled by Ignored Build Step\"; vitest 4/4; Rule D は H1-1 と合同で実施予定",
-      "note": "ignoreCommand は build 対象 commit の script を使うため、branch に入れた時点で branch push を防げる。main へは branch merge 時に入る (main を余分に build しない)"
-    },
-    {
-      "step": "H0-3",
-      "status": "PASS",
-      "note": "branch hosting-cf 作成・push"
-    },
-    {
-      "step": "L1-L2",
-      "status": "PASS",
-      "evidence": "evidence/phase5/hosting/L1_existing_checks.md, L2_scan.md/json; scripts/lang-leak-scan.ts (+lib, node:test 9/9)",
-      "note": "4,034 hits: derived 3,344 (expected), content ~600, ja-only 80"
-    },
-    {
-      "step": "H1-1",
-      "status": "PASS",
-      "commit": "89b210af (hosting-cf)",
-      "review": "verifier opus PASS, HIGH/MEDIUM 0",
-      "carry": [
-        "LOW-1: 既存の所有者は hint を持たない → 本番に入った時点 (H7 切替) で ?owner_key= を 1 回開き直す",
-        "LOW-2: hint だけ残ると 403 の GET/PUT が出る (無害、ノイズ)",
-        "LOW-4: provider の状態遷移は e2e のみが守る → H5 で learning-owner / learning spec を必ず実行",
-        "console 404: /_vercel/insights・speed-insights が middleware で /ja/ へ転送される (main でも同じ) → H1-5 で Vercel analytics を外せば消える"
-      ]
-    },
-    {
-      "step": "L3",
-      "status": "PASS",
-      "verdict": "critic opus ACCEPT-WITH-RESERVATIONS",
-      "evidence": "L3_audit.md, L3_samples.json"
-    },
-    {
-      "step": "H1-2",
-      "status": "PASS",
-      "commit": "08c1d6ca",
-      "attempts": 2,
-      "files": "261 (/data/**), gzip 13.0 MB",
-      "carry": [
-        "MEDIUM-1 = H1-3 の阻断項: ページ props が loader の QuizQuestion 全体 (key_guard.note_jp・round1・figure_type) を渡している (practice/q/[qid], practice, mock/run, /api/quiz/questions)",
-        "解説は答えた後に fetchExplanationShard で取る (初画面は題目ファイルだけ)",
-        "EXPL_CHUNK 25→10 は H1-3 の実測で判断",
-        "用語カード 148 KB gzip は上限際"
-      ]
-    },
-    {
-      "step": "H1-3",
-      "status": "PASS",
-      "commit": "9b3eb125",
-      "carry": [
-        "LOW-1: key_guard:{suspect} を explanation.suspect に平坦化 (H1-6 の out/ 走査と衝突させない) → H1-4 で",
-        "LOW-2: suspect を試験 shard にも載せ、解説読込中・失敗でも「正解確認中」を出す → H1-4 で",
-        "LOW-3: /practice 入口は読込 1 行のみ (問題なしと判断、Googlebot は JS 実行)",
-        "LOW-7: robots.txt コメントと STATE の /api/sensei/terms 記述を更新 → H1-4 で",
-        "LOW-8: force-dynamic なのに build 表が SSG 表示 → H1-4 で確認",
-        "fidelity.test の zh 179 差分は L4 のデータ変更による → L4 側で baseline 更新"
-      ]
-    },
-    {
-      "step": "H1-4",
-      "status": "PASS",
-      "commit": "073cd900",
-      "carry": [
-        "LOW-1: staticRendering の守りは暗黙の動的 API を見ない → H1-5 の output export で build が落ちるので実質担保",
-        "LOW-3: scripts/lang-leak-scan.ts:313 の説明を explanation.suspect に",
-        "H2 訂正: A′ の詳細リンクは prefetch なし + 通常 <a> (Worker 要求を起こさない)"
-      ]
-    },
-    {
-      "step": "H2",
-      "status": "DECIDED",
-      "decision": "D-223 = A′"
-    },
-    {
-      "step": "L4",
-      "status": "PASS",
-      "commits": [
-        "6f476dec",
-        "e5aa09fd",
-        "cade606e",
-        "e2f8a0de",
-        "73ef1646"
-      ],
-      "baseline": "d16059ef (319 欄完全一致)"
-    },
-    {
-      "step": "H1-5 + H1-6",
-      "status": "PASS",
-      "evidence": "evidence/phase5/hosting/H1-5_export.md; failures/phase5/hosting/step_H1-5_attempt_1_wrangler.md",
-      "carry": [
-        "H3: ?owner_key= の有効化は静的配信では動かない (middleware は src/middleware.dev.ts として next dev 専用)。Worker が引き継ぐ: ?owner_key=<key> → itp_owner (httpOnly, Secure, SameSite=Lax, Path=/, Max-Age=31536000, 値 = sha256(key)) と itp_owner_hint=1 (非 httpOnly、同じ属性) を設定、?owner_key=logout → 両方削除、どちらも (誤りの key でも) param を除いた同じ URL へ 307。仕様と期待値は src/__tests__/middleware.test.ts (D-148 owner_key activation の describe) をそのまま移す。run_worker_first は ?owner_key= の付く要求だけに限る方法を H3 で決める (assets の routing は query を見ないので、Worker 側で判定するか、全 navigation を Worker に通すかの比較が要る)",
-        "H3: /api/learning と /api/quiz/feedback は src/app/api/**/route.dev.ts (next dev 専用、export には入らない)。Worker へ移植する元コードとテスト (route.test.ts・v1/v2ClientCompat.test.ts・feedback route.test.ts) はそのまま残してある",
-        "H3: _headers は Worker が作る応答には付かない → Worker の応答 (api と owner の 307) に CSP / X-Robots-Tag (workers.dev では noindex) を Worker 自身で付ける",
-        "H4: workers.dev (worker URL と preview URL、どちらも <x>.<sub>.workers.dev の 2 label) の noindex は out/_headers の host 規則 https://:name.:subdomain.workers.dev/* で実施済 → preview 上で curl -I で実測する。Vercel 側 (H7 で残す 7 日間) の noindex は別途 H7",
-        "H4: _redirects の query 保持 (/practice?ids=… → /ja/practice?ids=…) と `/` を source にした規則は Cloudflare docs に明記がない → preview で実測 (local は自作 server で保持を仮定)",
-        "H4/H6: 走査 rule (c) は gitignore された IPA 原本 (data/ip/exams・sources・syllabus) と pdftotext が要る → Workers Builds (clone からの build) では走らない。配置は local build + 走査 + wrangler deploy を前提にするか、走査を build 前に local で必須にするかを H4/H6 で決める",
-        "H5: 404.html は root layout が素通しのため <html> 無しの既定 not-found (Vercel でも同じ)。not_found_handling 404-page で全ての未知 URL に出るので、見た目と noindex を H5 で確認",
-        "H5: robots.txt の backlink crawler 群 (MJ12bot 等 7 UA) は「静的配信になったら外す」(D-217 第 0 段) → 切替 (H7) 後に外すかを判断",
-        "H5: public/ の create-next-app 由来 svg 5 個 (file/globe/next/vercel/window.svg) は未使用。走査では名前で許可、削除は任意",
-        "local の wrangler dev 4.156 は spawn EBADF で起動できず (failures/…wrangler.md)、e2e は自作の静的 server で実施 → H4 の preview で本物の asset 配信の挙動を確認",
-        "H4: 同名のファイルとディレクトリ (ja.html + ja/、ja/practice.html + ja/practice/、glossary・textbook・mock も同じ) を Cloudflare の auto-trailing-slash がどう扱うかは docs に無い (local の代用 server はファイル優先と仮定)。preview で最初に curl -I /ja /ja/practice /ja/glossary /ja/textbook /ja/mock を確認 (ディレクトリ優先なら区画の入口が 404 になる)",
-        "H4/H6: pnpm build が node scripts/postexport.ts (Node の型除去、Node ≥ 22.18 / 23.6) を使う。root の engines は >=20.9 のまま → Workers Builds 等で build するなら Node の版を固定",
-        "H4: Web Analytics の beacon は <script defer …> (FAQ の例は type=\"module\")。本物の token で preview 上の送信と CSP 違反 0 を確認"
-      ],
-      "review": "verifier opus PASS (HIGH 0 / MEDIUM 1 = PLAN H5 基線 → 修正済)",
-      "review_carry": [
-        "LOW-1: out 走査で \"page\":\"page-NN.png\" 文字列値を見逃す → FORBIDDEN_TEXT に /page-\\d+\\.png/",
-        "LOW-2: 走査 (c) の corpus に内部欄・未表示ファイルが入る → 表示欄 (out/data + messages) を corpus に",
-        "LOW-4: locale なし旧 link の _redirects を preview で curl (query・fragment 保持)",
-        "LOW-6: noindex ページの hreflang (任意)",
-        "LOW-7: detailLinksPlain は変数 href を見ない → navigation wrapper で isDetailPath を断言 or e2e で全 <a> を巡回",
-        "H4: HTML・/data・quiz-figures の既定 Cache-Control/ETag を curl -I",
-        "H3/H4: Worker がある時の asset 未命中が Worker 要求になるかを実測",
-        "e2e コメントの next start 記述 (learning-owner:9-13, sensei:50) を更新"
-      ]
-    },
-    {
-      "step": "H3",
-      "status": "PASS",
-      "attempts": 2,
-      "review": "security-reviewer opus PASS (attempt 1 FAIL open redirect → failures/phase5/hosting/step_H3_attempt_1_open_redirect.md)",
-      "carry": [
-        "H4 deploy checklist = evidence/phase5/hosting/H3_worker.md §9-5",
-        "CPU: preview で実記録の GET ?v=2 / 全量 PUT / delta PUT (D-224)",
-        "preview: /%2F%2Fevil.com・//evil.com の Location、next=/.//evil.com → /ja、cross-site PUT 403、text/plain 415",
-        "main の Next 15.5.18 → 15.5.28 はユーザー判断 (非緊急)",
-        "wrangler は devDependencies に未追加 (H4 で版固定を決める)"
-      ]
-    },
-    {
-      "step": "H6-D225 repo",
-      "status": "PASS",
-      "commit": "2c69dd25",
-      "note": "Workers Builds 準備、preview builds は H7 まで OFF (ユーザー確認)"
-    },
-    {
-      "step": "H4",
-      "status": "PASS",
-      "evidence": "H4_cpu_measurement.md, H4_preview_checks.md"
-    },
-    {
-      "step": "H5-local",
-      "status": "PASS",
-      "evidence": "evidence/phase5/hosting/H5_fidelity.md, H5_fidelity.json, H5_tools/; failures/phase5/hosting/step_H5_attempt_1_compare_timeout.md",
-      "attempts": 2,
-      "note": "基線 main 1956a486 (別 worktree、next start :3160、.env.local なし) vs out/ (local-cf :3150 + Worker の Node bundle + fake Upstash)。textbook 735 頁: 615 完全一致、差 120 頁は全て L4 内容 (対照 main コード + branch data で 120/120 一致)。30 件 30/30 PASS + 補足 27。e2e 159 passed / 0 failed / 2 skipped",
-      "carry": [
-        "Cloudflare beacon は local build (token なし) で未確認 → preview / H7",
-        "Worker は Node V8 で実行 (wrangler dev 禁止のため)、workerd は H3/H4 で確認済",
-        "nojs (生 HTML) で練習入口・session は読込 1 行のみ (H1-3 LOW-3 受容済)"
-      ]
-    },
-    "H5",
-    {
-      "step": "H6",
-      "status": "PASS",
-      "review": "code-reviewer opus PASS (HIGH 0 / MEDIUM 0 / LOW 7 + minor 1、全修正)",
-      "evidence": "evidence/phase5/hosting/H6_ops.md, H6_smoke_workers.log (preview 30/30), H6_review.md",
-      "carry": [
-        "watch paths のパス基準 (repo root / root directory) は未確定: bc24d650 (docs のみ) の skip は確認済、apps/web の外だけを変える push で確定 (DEPLOY §9-2)。root directory 基準なら内容 push が本番に出ない → ユーザー報告 + dashboard 変更",
-        "H7 の既定切替 (DEPLOY §6-8): prod-smoke DEFAULT_TARGET=prod、prod-e2e 既定 prod、pre-push PROD_BRANCH=main、gates.sh の .nft.json 閘 → check:release、local-e2e.sh の next start → local-cf + Worker + fake Upstash、playwright.config の既定 base URL (Vercel 本番)",
-        "pre-push hook は opt-in (core.hooksPath 未設定)。有効化はユーザー判断",
-        "OQ-1/OQ-2 (H6 review) → DEPLOY §6 事前確認。OQ-2: Upstash は Vercel Marketplace 統合 (S126) → project 削除前に DB 所有を確認"
-      ]
-    }
-  ],
-  "gates_pending_user": [
-    "H2 OQ-22 方式 (実測後)",
-    "H3 CPU 超過時のみ",
-    "H7 ドメイン切替"
-  ],
-  "recovery_hint": "新 session 恢复: 1) 读本文件 current_step / next_step; 2) 读 PLAN §2/§3 的对应 step; 3) completed[] 内 status=PASS 的跳过; 4) 从 next_step 续跑。",
-  "l4_queue": [
-    "L4-a zh.json「分野」12 処 → 领域 (S86 の後退)",
-    "L4-b zh の日本語語彙 (正解 112・立案 約 15 ほか語表) を抽出 → opus 判定 → 修正",
-    "L4-c hook の [[jp:]] 付け (zh ≥約 97 + en ≥75、D-221)",
-    "L4-d (任意) zh の ・ 242 → 規則を決めてから"
-  ],
-  "l5_notes": [
-    "R-ja-latin-run は WARN に降格 + 6 語以上・各 2 字以上",
-    "R-same: fixture で許可 (式・JIS 名)、ui-messages の 12 字制限は外す",
-    "quiz の題目固有ラベル・LIKE 文字列は fixture",
-    "punct-only は件数に入れない",
-    "新規 R-zh-jpform (日本字形) / R-zh-jpword (語表、WARN から)",
-    "分野 は allow に入れない"
-  ]
+ "plan": "docs/phase5/PLAN_hosting_migration.md",
+ "branch": "hosting-cf",
+ "current_step": "H7",
+ "next_step": "H7 残り: §6-8 既定切替 commit + §6-9 Vercel 片付け (executor + Rule D)、WAF rate limit、Web Analytics、§9-2 watch paths、§7-6 asset 数",
+ "completed": [
+  {
+   "step": "H0-1",
+   "status": "PASS",
+   "commit": "1956a486 (main)"
+  },
+  {
+   "step": "H0-2",
+   "status": "PASS",
+   "commit": "7d095d1a (hosting-cf)",
+   "evidence": "branch push → Vercel status \"Canceled by Ignored Build Step\"; vitest 4/4; Rule D は H1-1 と合同で実施予定",
+   "note": "ignoreCommand は build 対象 commit の script を使うため、branch に入れた時点で branch push を防げる。main へは branch merge 時に入る (main を余分に build しない)"
+  },
+  {
+   "step": "H0-3",
+   "status": "PASS",
+   "note": "branch hosting-cf 作成・push"
+  },
+  {
+   "step": "L1-L2",
+   "status": "PASS",
+   "evidence": "evidence/phase5/hosting/L1_existing_checks.md, L2_scan.md/json; scripts/lang-leak-scan.ts (+lib, node:test 9/9)",
+   "note": "4,034 hits: derived 3,344 (expected), content ~600, ja-only 80"
+  },
+  {
+   "step": "H1-1",
+   "status": "PASS",
+   "commit": "89b210af (hosting-cf)",
+   "review": "verifier opus PASS, HIGH/MEDIUM 0",
+   "carry": [
+    "LOW-1: 既存の所有者は hint を持たない → 本番に入った時点 (H7 切替) で ?owner_key= を 1 回開き直す",
+    "LOW-2: hint だけ残ると 403 の GET/PUT が出る (無害、ノイズ)",
+    "LOW-4: provider の状態遷移は e2e のみが守る → H5 で learning-owner / learning spec を必ず実行",
+    "console 404: /_vercel/insights・speed-insights が middleware で /ja/ へ転送される (main でも同じ) → H1-5 で Vercel analytics を外せば消える"
+   ]
+  },
+  {
+   "step": "L3",
+   "status": "PASS",
+   "verdict": "critic opus ACCEPT-WITH-RESERVATIONS",
+   "evidence": "L3_audit.md, L3_samples.json"
+  },
+  {
+   "step": "H1-2",
+   "status": "PASS",
+   "commit": "08c1d6ca",
+   "attempts": 2,
+   "files": "261 (/data/**), gzip 13.0 MB",
+   "carry": [
+    "MEDIUM-1 = H1-3 の阻断項: ページ props が loader の QuizQuestion 全体 (key_guard.note_jp・round1・figure_type) を渡している (practice/q/[qid], practice, mock/run, /api/quiz/questions)",
+    "解説は答えた後に fetchExplanationShard で取る (初画面は題目ファイルだけ)",
+    "EXPL_CHUNK 25→10 は H1-3 の実測で判断",
+    "用語カード 148 KB gzip は上限際"
+   ]
+  },
+  {
+   "step": "H1-3",
+   "status": "PASS",
+   "commit": "9b3eb125",
+   "carry": [
+    "LOW-1: key_guard:{suspect} を explanation.suspect に平坦化 (H1-6 の out/ 走査と衝突させない) → H1-4 で",
+    "LOW-2: suspect を試験 shard にも載せ、解説読込中・失敗でも「正解確認中」を出す → H1-4 で",
+    "LOW-3: /practice 入口は読込 1 行のみ (問題なしと判断、Googlebot は JS 実行)",
+    "LOW-7: robots.txt コメントと STATE の /api/sensei/terms 記述を更新 → H1-4 で",
+    "LOW-8: force-dynamic なのに build 表が SSG 表示 → H1-4 で確認",
+    "fidelity.test の zh 179 差分は L4 のデータ変更による → L4 側で baseline 更新"
+   ]
+  },
+  {
+   "step": "H1-4",
+   "status": "PASS",
+   "commit": "073cd900",
+   "carry": [
+    "LOW-1: staticRendering の守りは暗黙の動的 API を見ない → H1-5 の output export で build が落ちるので実質担保",
+    "LOW-3: scripts/lang-leak-scan.ts:313 の説明を explanation.suspect に",
+    "H2 訂正: A′ の詳細リンクは prefetch なし + 通常 <a> (Worker 要求を起こさない)"
+   ]
+  },
+  {
+   "step": "H2",
+   "status": "DECIDED",
+   "decision": "D-223 = A′"
+  },
+  {
+   "step": "L4",
+   "status": "PASS",
+   "commits": [
+    "6f476dec",
+    "e5aa09fd",
+    "cade606e",
+    "e2f8a0de",
+    "73ef1646"
+   ],
+   "baseline": "d16059ef (319 欄完全一致)"
+  },
+  {
+   "step": "H1-5 + H1-6",
+   "status": "PASS",
+   "evidence": "evidence/phase5/hosting/H1-5_export.md; failures/phase5/hosting/step_H1-5_attempt_1_wrangler.md",
+   "carry": [
+    "H3: ?owner_key= の有効化は静的配信では動かない (middleware は src/middleware.dev.ts として next dev 専用)。Worker が引き継ぐ: ?owner_key=<key> → itp_owner (httpOnly, Secure, SameSite=Lax, Path=/, Max-Age=31536000, 値 = sha256(key)) と itp_owner_hint=1 (非 httpOnly、同じ属性) を設定、?owner_key=logout → 両方削除、どちらも (誤りの key でも) param を除いた同じ URL へ 307。仕様と期待値は src/__tests__/middleware.test.ts (D-148 owner_key activation の describe) をそのまま移す。run_worker_first は ?owner_key= の付く要求だけに限る方法を H3 で決める (assets の routing は query を見ないので、Worker 側で判定するか、全 navigation を Worker に通すかの比較が要る)",
+    "H3: /api/learning と /api/quiz/feedback は src/app/api/**/route.dev.ts (next dev 専用、export には入らない)。Worker へ移植する元コードとテスト (route.test.ts・v1/v2ClientCompat.test.ts・feedback route.test.ts) はそのまま残してある",
+    "H3: _headers は Worker が作る応答には付かない → Worker の応答 (api と owner の 307) に CSP / X-Robots-Tag (workers.dev では noindex) を Worker 自身で付ける",
+    "H4: workers.dev (worker URL と preview URL、どちらも <x>.<sub>.workers.dev の 2 label) の noindex は out/_headers の host 規則 https://:name.:subdomain.workers.dev/* で実施済 → preview 上で curl -I で実測する。Vercel 側 (H7 で残す 7 日間) の noindex は別途 H7",
+    "H4: _redirects の query 保持 (/practice?ids=… → /ja/practice?ids=…) と `/` を source にした規則は Cloudflare docs に明記がない → preview で実測 (local は自作 server で保持を仮定)",
+    "H4/H6: 走査 rule (c) は gitignore された IPA 原本 (data/ip/exams・sources・syllabus) と pdftotext が要る → Workers Builds (clone からの build) では走らない。配置は local build + 走査 + wrangler deploy を前提にするか、走査を build 前に local で必須にするかを H4/H6 で決める",
+    "H5: 404.html は root layout が素通しのため <html> 無しの既定 not-found (Vercel でも同じ)。not_found_handling 404-page で全ての未知 URL に出るので、見た目と noindex を H5 で確認",
+    "H5: robots.txt の backlink crawler 群 (MJ12bot 等 7 UA) は「静的配信になったら外す」(D-217 第 0 段) → 切替 (H7) 後に外すかを判断",
+    "H5: public/ の create-next-app 由来 svg 5 個 (file/globe/next/vercel/window.svg) は未使用。走査では名前で許可、削除は任意",
+    "local の wrangler dev 4.156 は spawn EBADF で起動できず (failures/…wrangler.md)、e2e は自作の静的 server で実施 → H4 の preview で本物の asset 配信の挙動を確認",
+    "H4: 同名のファイルとディレクトリ (ja.html + ja/、ja/practice.html + ja/practice/、glossary・textbook・mock も同じ) を Cloudflare の auto-trailing-slash がどう扱うかは docs に無い (local の代用 server はファイル優先と仮定)。preview で最初に curl -I /ja /ja/practice /ja/glossary /ja/textbook /ja/mock を確認 (ディレクトリ優先なら区画の入口が 404 になる)",
+    "H4/H6: pnpm build が node scripts/postexport.ts (Node の型除去、Node ≥ 22.18 / 23.6) を使う。root の engines は >=20.9 のまま → Workers Builds 等で build するなら Node の版を固定",
+    "H4: Web Analytics の beacon は <script defer …> (FAQ の例は type=\"module\")。本物の token で preview 上の送信と CSP 違反 0 を確認"
+   ],
+   "review": "verifier opus PASS (HIGH 0 / MEDIUM 1 = PLAN H5 基線 → 修正済)",
+   "review_carry": [
+    "LOW-1: out 走査で \"page\":\"page-NN.png\" 文字列値を見逃す → FORBIDDEN_TEXT に /page-\\d+\\.png/",
+    "LOW-2: 走査 (c) の corpus に内部欄・未表示ファイルが入る → 表示欄 (out/data + messages) を corpus に",
+    "LOW-4: locale なし旧 link の _redirects を preview で curl (query・fragment 保持)",
+    "LOW-6: noindex ページの hreflang (任意)",
+    "LOW-7: detailLinksPlain は変数 href を見ない → navigation wrapper で isDetailPath を断言 or e2e で全 <a> を巡回",
+    "H4: HTML・/data・quiz-figures の既定 Cache-Control/ETag を curl -I",
+    "H3/H4: Worker がある時の asset 未命中が Worker 要求になるかを実測",
+    "e2e コメントの next start 記述 (learning-owner:9-13, sensei:50) を更新"
+   ]
+  },
+  {
+   "step": "H3",
+   "status": "PASS",
+   "attempts": 2,
+   "review": "security-reviewer opus PASS (attempt 1 FAIL open redirect → failures/phase5/hosting/step_H3_attempt_1_open_redirect.md)",
+   "carry": [
+    "H4 deploy checklist = evidence/phase5/hosting/H3_worker.md §9-5",
+    "CPU: preview で実記録の GET ?v=2 / 全量 PUT / delta PUT (D-224)",
+    "preview: /%2F%2Fevil.com・//evil.com の Location、next=/.//evil.com → /ja、cross-site PUT 403、text/plain 415",
+    "main の Next 15.5.18 → 15.5.28 はユーザー判断 (非緊急)",
+    "wrangler は devDependencies に未追加 (H4 で版固定を決める)"
+   ]
+  },
+  {
+   "step": "H6-D225 repo",
+   "status": "PASS",
+   "commit": "2c69dd25",
+   "note": "Workers Builds 準備、preview builds は H7 まで OFF (ユーザー確認)"
+  },
+  {
+   "step": "H4",
+   "status": "PASS",
+   "evidence": "H4_cpu_measurement.md, H4_preview_checks.md"
+  },
+  {
+   "step": "H5-local",
+   "status": "PASS",
+   "evidence": "evidence/phase5/hosting/H5_fidelity.md, H5_fidelity.json, H5_tools/; failures/phase5/hosting/step_H5_attempt_1_compare_timeout.md",
+   "attempts": 2,
+   "note": "基線 main 1956a486 (別 worktree、next start :3160、.env.local なし) vs out/ (local-cf :3150 + Worker の Node bundle + fake Upstash)。textbook 735 頁: 615 完全一致、差 120 頁は全て L4 内容 (対照 main コード + branch data で 120/120 一致)。30 件 30/30 PASS + 補足 27。e2e 159 passed / 0 failed / 2 skipped",
+   "carry": [
+    "Cloudflare beacon は local build (token なし) で未確認 → preview / H7",
+    "Worker は Node V8 で実行 (wrangler dev 禁止のため)、workerd は H3/H4 で確認済",
+    "nojs (生 HTML) で練習入口・session は読込 1 行のみ (H1-3 LOW-3 受容済)"
+   ]
+  },
+  "H5",
+  {
+   "step": "H6",
+   "status": "PASS",
+   "review": "code-reviewer opus PASS (HIGH 0 / MEDIUM 0 / LOW 7 + minor 1、全修正)",
+   "evidence": "evidence/phase5/hosting/H6_ops.md, H6_smoke_workers.log (preview 30/30), H6_review.md",
+   "carry": [
+    "watch paths のパス基準 (repo root / root directory) は未確定: bc24d650 (docs のみ) の skip は確認済、apps/web の外だけを変える push で確定 (DEPLOY §9-2)。root directory 基準なら内容 push が本番に出ない → ユーザー報告 + dashboard 変更",
+    "H7 の既定切替 (DEPLOY §6-8): prod-smoke DEFAULT_TARGET=prod、prod-e2e 既定 prod、pre-push PROD_BRANCH=main、gates.sh の .nft.json 閘 → check:release、local-e2e.sh の next start → local-cf + Worker + fake Upstash、playwright.config の既定 base URL (Vercel 本番)",
+    "pre-push hook は opt-in (core.hooksPath 未設定)。有効化はユーザー判断",
+    "OQ-1/OQ-2 (H6 review) → DEPLOY §6 事前確認。OQ-2: Upstash は Vercel Marketplace 統合 (S126) → project 削除前に DB 所有を確認"
+   ]
+  },
+  {
+   "step": "H7-cutover",
+   "status": "PASS",
+   "evidence": "evidence/phase5/hosting/H7_cutover.md",
+   "note": "main 075aca3a を Workers Builds で deploy、DNS を Cloudflare へ、prod smoke 30/30、所有者の実同期 04:40、Vercel pause (503、project と Upstash 統合は残す)"
+  }
+ ],
+ "gates_pending_user": [
+  "H2 OQ-22 方式 (実測後)",
+  "H3 CPU 超過時のみ"
+ ],
+ "recovery_hint": "新 session 恢复: 1) 读本文件 current_step / next_step; 2) 读 PLAN §2/§3 的对应 step; 3) completed[] 内 status=PASS 的跳过; 4) 从 next_step 续跑。",
+ "l4_queue": [
+  "L4-a zh.json「分野」12 処 → 领域 (S86 の後退)",
+  "L4-b zh の日本語語彙 (正解 112・立案 約 15 ほか語表) を抽出 → opus 判定 → 修正",
+  "L4-c hook の [[jp:]] 付け (zh ≥約 97 + en ≥75、D-221)",
+  "L4-d (任意) zh の ・ 242 → 規則を決めてから"
+ ],
+ "l5_notes": [
+  "R-ja-latin-run は WARN に降格 + 6 語以上・各 2 字以上",
+  "R-same: fixture で許可 (式・JIS 名)、ui-messages の 12 字制限は外す",
+  "quiz の題目固有ラベル・LIKE 文字列は fixture",
+  "punct-only は件数に入れない",
+  "新規 R-zh-jpform (日本字形) / R-zh-jpword (語表、WARN から)",
+  "分野 は allow に入れない"
+ ]
 }
