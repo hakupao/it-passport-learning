@@ -1,8 +1,8 @@
 {
   "plan": "docs/phase5/PLAN_hosting_migration.md",
   "branch": "hosting-cf",
-  "current_step": "H4 完了 + preview 手動点検 PASS (H4_preview_checks.md)。D-224 = Free 継続",
-  "next_step": "H5: 1) Workers Builds log で asset 数 (§7-6) 2) Rule A 基線 = main の server build を別 worktree (:31xx) と out/ 静的配信 (:3150) の本文比較 (textbook 全件 + 他 30) 3) Playwright 全項目を local 静的配信に 4) preview で prod-smoke 5) Rule D verifier",
+  "current_step": "H5 local 部分 完了 (H5_fidelity.md): Rule A 本文一致 PASS (real regression 0)、Playwright 159/0/2、関門 PASS",
+  "next_step": "H5 残り: 1) Rule D — verifier opus で H5 local (H5_fidelity.md・H5_tools) を審査 2) preview で prod-smoke (HTML smoke) と所有者同期を実機 1 回 (別 subagent) 3) Workers Builds log で asset 数 (§7-6) → H6",
   "completed": [
     {
       "step": "H0-1",
@@ -148,7 +148,23 @@
       "commit": "2c69dd25",
       "note": "Workers Builds 準備、preview builds は H7 まで OFF (ユーザー確認)"
     },
-    "H4"
+    {
+      "step": "H4",
+      "status": "PASS",
+      "evidence": "H4_cpu_measurement.md, H4_preview_checks.md"
+    },
+    {
+      "step": "H5-local",
+      "status": "PASS",
+      "evidence": "evidence/phase5/hosting/H5_fidelity.md, H5_fidelity.json, H5_tools/; failures/phase5/hosting/step_H5_attempt_1_compare_timeout.md",
+      "attempts": 2,
+      "note": "基線 main 1956a486 (別 worktree、next start :3160、.env.local なし) vs out/ (local-cf :3150 + Worker の Node bundle + fake Upstash)。textbook 735 頁: 615 完全一致、差 120 頁は全て L4 内容 (対照 main コード + branch data で 120/120 一致)。30 件 30/30 PASS + 補足 27。e2e 159 passed / 0 failed / 2 skipped",
+      "carry": [
+        "Cloudflare beacon は local build (token なし) で未確認 → preview / H7",
+        "Worker は Node V8 で実行 (wrangler dev 禁止のため)、workerd は H3/H4 で確認済",
+        "nojs (生 HTML) で練習入口・session は読込 1 行のみ (H1-3 LOW-3 受容済)"
+      ]
+    }
   ],
   "gates_pending_user": [
     "H2 OQ-22 方式 (実測後)",
