@@ -64,12 +64,13 @@
 - D-206 自動投入、`prod-smoke.mjs` の対象ホスト、D-212 (docs のみは build しない) の新ホスト版、配置手順を `docs/` に。
 - **S154 writer 完了 (Rule D 待ち)**: `prod-smoke.mjs --target vercel|workers|prod` + canonical 検査 (H5 LOW-2)、`prod-e2e.sh` は Cloudflare の check run `Workers Builds: itlearn` を待つ、watch paths = D-212 (`lib/release/watchPaths.ts`、docs だけの push の skip は `bc24d650` で実地確認、パスの基準は内容 push で確定)、監視 `scripts/cf-monitor.ts` (D-224、200 KB でユーザーへ)、pre-push hook `.githooks/pre-push` (D-225 LOW-1、opt-in)。手順は `docs/phase5/DEPLOY_cloudflare.md` §2-3・§5・§6-8・§9・§10。既定の切替 (smoke 対象・hook の branch・gates.sh・local-e2e.sh・playwright 既定) は H7 の 1 commit (§6-8)。
 
-### H7 切替 (ユーザー確認の上で実施)
+### H7 切替 (ユーザー確認の上で実施) — **done 2026-11-12** (`evidence/phase5/hosting/H7_cutover.md`、D-226: Vercel は 7 日待たず切替後すぐ pause、削除なし)
 - `itlearn.bojiangz.com` を Worker の custom domain に。切替後 smoke。Vercel は 7 日程度残して戻せるようにし、その間 Vercel 側は noindex。問題なければ Vercel project を停止。
 - **前提**: Track L が PASS していること。
 
-### H8 収尾
+### H8 収尾 — **done 2026-11-12** (Rule D = `evidence/phase5/hosting/H8_review.md`)
 - `RETROSPECTIVE_hosting.md` (Rule C)、STATE・PLAN 更新、ADR D-217 の「却下」等を実績で更新。
+- 完了時点の残り (ユーザー判断 = OQ-23 Preview Builds・OQ-24 Vercel / Upstash の後始末、他は session-154 末尾「What's Next (H8 後)」)。§0 の「日付つき」のうち Vercel 使用量の再確認と本番 push の抑制は、Vercel 停止で不要になった。
 
 ## §3 Track L — 三言語の混入検査
 

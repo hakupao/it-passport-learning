@@ -2,7 +2,7 @@
 
 - 状態: **LOCKED** (2026-11-11 Session 154、ユーザー「同意，按照你的建议来」→ Claude 推奨案)
 - 関連: OQ-21 (本決定で CLOSE)、D-212 (docs のみは build しない)、D-213 (本番確認は HTML smoke)、D-148 (owner gate)、D-206 (自動投入)、D-110 (TypeScript のみ)
-- 部分 supersede (第 2 段の完了時): D-212 の `vercel.json` ignoreCommand、D-213 の確認対象ホスト、S131 の IPA 漏洩 gate の定義 (`.nft.json`)。完了までは現行のまま有効。
+- 部分 supersede (第 2 段の完了時): D-212 の `vercel.json` ignoreCommand、D-213 の確認対象ホスト、S131 の IPA 漏洩 gate の定義 (`.nft.json`)。完了までは現行のまま有効。**[2026-11-12 H7 で発効]** D-212 → Workers Builds の build watch paths、D-213 → `prod-smoke.mjs --target prod`、IPA gate → `out/` 走査 `scan:out` (末尾「実績」節)。
 
 - **追記 (2026-11-11 S154、D-218〜D-220)**: 段取りを変更 — 第 1 段を Vercel 本番で行わず、branch で静的出力に作り替え → Cloudflare の preview で検証 → ドメイン切替 (NS は既に Cloudflare)。切替まで Vercel 本番は現状維持。`/` は固定で `/ja` へ転送 (D-219)。訪問統計は Cloudflare Web Analytics (D-220)。詳細ページの出し方は OQ-22 で協議中 (下の第 2 段 3 は未確定)。
 
@@ -33,6 +33,7 @@ Vercel Hobby の告警 (2026-11-11): Fluid Active CPU 4 時間の 90%。超過�
 4. 本番への Playwright 実行は引き続き禁止 (D-213)。移動窓のため、10-26〜11-08 の山が抜ける 11 月下旬までは投入回数も絞る。
 
 ### 第 1 段 — 動的要因の除去 (Vercel 上で実施・計測)
+> **[注記 2026-11-12]** D-218 により Vercel 上では行わず、branch `hosting-cf` で実施して Cloudflare preview で検証した (末尾「実績」節)。下の 6 (Vercel の計器で効果確認) は実施していない。
 1. owner 判定を server の cookie 読取から client 側 (小さな endpoint への問い合わせ) へ移し、ページから `cookies()` を無くす。
 2. `searchParams` に依存する route は client 側で query を読む形にする。
 3. `sitemap.xml` を出す (索引のため)。正規 URL のみ (query 付き URL は入れない)。`/practice/mistakes` は `robots: { index: false }` (個人ページ、crawler には空の一覧)。
@@ -43,7 +44,7 @@ Vercel Hobby の告警 (2026-11-11): Fluid Active CPU 4 時間の 90%。超過�
 ### 第 2 段 — Cloudflare へ移設 (静的出力 + 小 Worker)
 1. Next.js `output: 'export'` で静的出力し、Cloudflare Workers の静的 asset として配信する (asset 要求は無料・無制限で Worker を起動しない)。
 2. 実行時の fs 読取 8 モジュールを build 時の読取へ移す。
-3. 過去問詳細・用語詳細は 1 ページずつ事前生成しない: ページの殻 + 取得する JSON 分割 (Free は 20,000 ファイル / version。2,900 題 × 3 言語 × 2 ファイルだけで 17,400)。
+3. **[D-223 で覆った: 詳細も HTML を事前生成し、2 系統の `.txt` を削除して 20,000 ファイル内に収める (A′)]** 過去問詳細・用語詳細は 1 ページずつ事前生成しない: ページの殻 + 取得する JSON 分割 (Free は 20,000 ファイル / version。2,900 題 × 3 言語 × 2 ファイルだけで 17,400)。
 4. 所有者用の API (`learning` / `quiz/feedback` + owner endpoint・`?owner_key=` 有効化) だけを 1 つの Worker にする。`quiz/questions`・`sensei/terms` は corpus を読むだけなので build 時の静的 JSON に置き換える (S154 修正)。学習記録の Upstash Redis REST はそのまま使う。Worker は 1 要求 CPU 10 ms の範囲に収める (大きな JSON を要求ごとに parse しない)。
 5. 付随: CSP を `_headers` 相当へ移す / `@vercel/analytics`・`@vercel/speed-insights` を外す / IPA 漏洩 gate を新しい出力物に対して定義し直す / D-206 自動投入・D-212・`prod-smoke.mjs` を新ホストへ合わせる / 独自ドメインの切替は最後、Vercel 側は切替確認後まで残す。
 
@@ -52,7 +53,7 @@ Vercel Hobby の告警 (2026-11-11): Fluid Active CPU 4 時間の 90%。超過�
 ## 却下
 - **OpenNext で Cloudflare に SSR のまま移設**: Free は 1 要求 CPU 10 ms・100,000 要求 / 日。事前生成ページも Worker 経由 (incremental cache) と読め、数 MB の JSON を parse する SSR は収まらない見込み。実行時に repo の fs が無い。
 - **vinext**: Cloudflare 推奨だが beta。
-- **Vercel のまま静的化だけ**: 第 1 段として採用するが終点にはしない。4 時間の枠と middleware の計上は残り、当方の投入でも枠を使う。
+- **Vercel のまま静的化だけ**: 第 1 段として採用するが終点にはしない。**[注記]** D-218 で第 1 段も Vercel 上では行わなかった。4 時間の枠と middleware の計上は残り、当方の投入でも枠を使う。
 - **Vercel Pro (有料)**: ユーザー方針 = 無料が望ましい、他 project は Cloudflare。
 - **Bot Protection の一括有効化のみ**: 当方の prod-smoke を止めるおそれ、原因 (動的描画) は残る。
 
@@ -61,3 +62,13 @@ Vercel Hobby の告警 (2026-11-11): Fluid Active CPU 4 時間の 90%。超過�
 - OpenNext Cloudflare (opennext.js.org/cloudflare、/caching)、Cloudflare Next.js guide。
 - Vercel Fluid compute pricing、Active CPU の最適化 guide (middleware も Active CPU 計上)。
 - Next.js static exports (cookies / proxy / headers / redirects / Request 依存 Route Handler / `generateStaticParams` 無しの動的 route は不可)、middleware matcher の例 (`robots.txt` を除外する形)。
+
+## 実績 (2026-11-12 S154 H8 追記、原文は上のまま)
+- 段取り: 第 0 段 (robots.txt + matcher 除外) は Vercel 本番に投入 (`3a6db142`)。第 1 段・第 2 段は D-218 により branch `hosting-cf` でまとめて実施し、Cloudflare preview (`itlearn.bojiang.workers.dev`) で検証 → H7 (2026-11-12 04:24〜06:25 UTC) で main に fast-forward、custom domain `itlearn.bojiangz.com` を Worker へ切替、Vercel project は pause (D-226、削除なし)。
+- 第 2 段 3 は **D-223 (A′)** で逆になった: 詳細 2 系統も HTML を事前生成し、`.txt` 12,885 を export 後に削除 → `out/` 16,194 ファイル (上限 20,000、余り 3,806)。
+- 第 2 段 4 の Worker: `/api/learning`・`/api/quiz/feedback`・`/api/owner` (有効化) のみ (`run_worker_first: ["/api/*"]`)。CPU は D-224 で実測: 定常 p50 約 3 ms、冷えた isolate で max 26.2 ms (errors 0)、記録 445 byte。
+- 配信の build は **D-225** (Workers Builds、push で build + deploy)。IPA 原本の混入検査 (規則 (c)) は CI では走らず、local の pre-push hook (`check:release`) が担う。
+- 第 2 段 5: CSP は `_headers` + Worker 応答、Vercel analytics は除去して Cloudflare Web Analytics (D-220)、IPA gate は `scan:out` に置換、`prod-smoke.mjs` の既定対象は prod (Cloudflare)。
+- 根拠の補足と訂正 (H1-4 審査): Workers **Paid** の静的 asset 上限は 100,000 ファイル / version (H2 資料では未確認のまま、判断には影響なし)。H2 資料の「prefetch の 404 は asset 要求なので無料」は誤り — Worker を置く構成では、一致する asset の無い非 navigation の fetch (RSC `.txt` 等) は Worker を起動して要求を消費するため、詳細へのリンクは prefetch なしの通常 `<a>` にした (D-223 細目)。
+- 第 0 段 4 (11 月下旬まで投入を絞る) と Vercel Usage の再確認は、Vercel 停止により不要になった。第 0 段 1 の被リンク系 7 UA の Disallow は「静的配信になったら外す」が未実施 (S154 What's Next)。
+- 振り返り: `RETROSPECTIVE_hosting.md`。

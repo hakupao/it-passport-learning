@@ -2,6 +2,7 @@
 
 > 対象: Worker `itlearn` (`apps/web/wrangler.jsonc`)。push → Cloudflare 側で build + deploy (GitHub 連携)。
 > 移設中の production branch = `hosting-cf` (→ https://itlearn.bojiang.workers.dev)、H7 で `main` に戻す。
+> **[2026-11-12 H7 済]** production branch は `main`、custom domain `itlearn.bojiangz.com`。Preview builds は OFF のまま、扱いは OQ-23 (§2-2 の秘密の扱い LOW-2 を先に確認)。
 > 根拠: D-225 (session 154)、`docs/phase5/PLAN_hosting_migration.md` §2 H4〜H7、`evidence/phase5/hosting/H3_worker.md` §9-5。
 > Cloudflare docs の確認日: 2026-11-12 (Workers Builds の configuration・build watch paths・previews・rollbacks の各ページ、build image・Free の上限)。docs で確かめられなかった点は「未確認」と書き、§7-3 で実地に確かめる。
 > この手順を始めたら local の `wrangler deploy` は使わない (H4 の version 5b3a802e が最後の local deploy)。
