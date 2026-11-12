@@ -17,3 +17,4 @@
 | L-7 | LOW | pre-push の既定 `main` が未テスト | テスト追加 |
 
 INFO: push 前に未追跡の failures ファイルを commit (hook は作業木 clean を要求)。
+- 修正 commit: abfe7ecf (M-1・M-2・L-1〜L-7 全件、tsc 0 / lint 0 / vitest 1523、早期終了の 9 経路を scratchpad で確認。server 起動後の M-1 経路は未実走)
