@@ -34,7 +34,7 @@ function repo(): string {
   return tmp + "/";
 }
 
-type Page = (loc: Loc, url: string) => { status?: number; html: string };
+type Page = (loc: Loc, url: string) => { status?: number; html: string; location?: string };
 const page =
   (canonical: (loc: Loc) => string | null, body = "本文"): Page =>
   (loc) => {
@@ -56,7 +56,9 @@ async function serve(p: Page): Promise<string> {
       return;
     }
     const r = p(m[1] as Loc, req.url!);
-    res.writeHead(r.status ?? 200, { "content-type": "text/html; charset=utf-8" }).end(r.html);
+    res
+      .writeHead(r.status ?? 200, { "content-type": "text/html; charset=utf-8", ...(r.location ? { location: r.location } : {}) })
+      .end(r.html);
   });
   await new Promise<void>((r) => server!.listen(0, "127.0.0.1", r));
   return `http://127.0.0.1:${(server!.address() as AddressInfo).port}`;
@@ -119,6 +121,29 @@ describe("prod-smoke.mjs", () => {
     const base = await serve(page((l) => `https://itlearn.bojiangz.com/${l}/textbook/${UNIT}`, "**太字** [[jp:x]]"));
     const r = await smoke([UNIT, "--target", base]);
     expect(r.out).toContain("raw markup");
+    expect(r.code).toBe(1);
+  });
+
+  it("accepts --target=<x> and --target before the unit list", async () => {
+    const base = await serve(good);
+    expect((await smoke([`--target=${base}`, UNIT])).out).toContain("smoke 3/3");
+    expect((await smoke(["--target", base, UNIT])).code).toBe(0);
+  });
+
+  it("exits 2 on an unknown flag, before or after the units, and on extra positionals", async () => {
+    expect((await smoke(["--taget", "workers", UNIT])).code).toBe(2);
+    expect((await smoke([UNIT, "--dry-run"])).code).toBe(2);
+    expect((await smoke([UNIT, "workers"])).code).toBe(2);
+    expect((await smoke([UNIT, "--target", "constructor"])).code).toBe(2);
+  });
+
+  it("does not follow redirects: a 30x fails even when the target page is good (Rule D LOW-3)", async () => {
+    const base = await serve((loc, url) =>
+      loc === "ja" && !url.endsWith("?r") ? { status: 307, html: "", location: `${url}?r` } : good(loc, url),
+    );
+    const r = await smoke([UNIT, "--target", base]);
+    expect(r.out).toMatch(/✗ \S+ ja 307 status 307/);
+    expect(r.out).toContain("smoke 2/3");
     expect(r.code).toBe(1);
   });
 

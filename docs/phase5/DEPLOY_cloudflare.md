@@ -159,6 +159,10 @@ pnpm check:release
 
 前提: Track L PASS、H5 PASS、`hosting-cf` の HEAD で `pnpm check:release` が exit 0。
 
+**事前確認 (切替の前に、S154 H6 Rule D OQ-1 / OQ-2)**:
+- **OQ-1 check run の名前**: preview builds を H7 で有効にする場合、preview の build も同じ名前 `Workers Builds: itlearn` の check run を付けるかもしれない (docs に記述なし)。`prod-e2e.sh` は名前だけで判定するので、有効にするなら最初の preview build の check run を `gh api …/check-runs --jq '.check_runs[] | [.name, .head_sha, (.output.summary // "" | .[0:200])]'` で見て、production と区別できる (summary の URL が `/production/builds/` か) ことを確かめ、区別できなければ `prod-e2e.sh` に summary の検査を足す。preview builds が OFF のままなら影響なし。
+- **OQ-2 Upstash の所属**: 学習記録の DB は Vercel Marketplace の統合 `upstash-kv-orange-fence` として作られ、project `web` に接続されている (S126 session log: 前の統合 `upstash-kv-gray-ridge` が Uninstalled になったとき接続先 DB が消えていた)。→ **Vercel project の削除や統合の解除で DB が消える可能性がある**。§6-7 で Vercel を止める前に、(a) Vercel の Integrations / Upstash の console で DB の所有 (Vercel 管理か Upstash の自前 account か) を確認し、(b) Vercel 管理なら Upstash 側への移管手順を確かめるか、project を削除せず「停止 (Git 連携の解除・domain の除去)」に留める。確かめるまで project の削除・統合の解除はしない。所有者の記録は local (localStorage) にも残るが、端末間の同期は失われる。
+
 1. **Vercel 側の退避**: 今の Vercel production deployment の ID を控える (戻し先)。`hosting-cf` を `main` に merge すると Vercel が `main` を build し直すので、merge の前に Vercel の Git 連携を外すか、build を止める方法を決めて実行する (H7 で確認)。
 2. Cloudflare: Settings → Build → Branch control の **Production branch を `main`** に変える。
 3. `hosting-cf` を `main` に merge して push (ユーザーの承認後) → Workers Builds が `main` を build + deploy。Deployments で成功を確認し、workers.dev で smoke (HTML のみ、D-213)。
@@ -173,6 +177,14 @@ pnpm check:release
    - batch-tools の `local-e2e.sh` (`next start -p 3150`) を静的配信に: `node scripts/local-cf.ts --out out --port 3150 --api http://127.0.0.1:3152` + Worker (H5 の `evidence/phase5/hosting/H5_tools/worker-node.mjs`、:3152) + `node scripts/fake-upstash.ts --port 3161` (H5_fidelity.md の手順)。export build に `next start` は無い。
    - `apps/web/playwright.config.ts` の既定 base URL (`web-mu-sandy-78.vercel.app` = Vercel 本番) を、local (`http://127.0.0.1:3150`) か「`PLAYWRIGHT_BASE_URL` 必須」に。本番への Playwright は D-213 で禁止で、既定が本番なのは事故の元。
    - 本書 §9-2 の内容 push で watch paths の基準 (§2-3) を確かめる。
+   - `apps/web/src/__tests__/prodSmoke.test.ts` の既定 target のテスト (「defaults to the live production host」、Vercel の host と canonical なしを断言) を `prod` (`itlearn.bojiangz.com`、canonical あり) に合わせる。
+   - batch-tools の `README.md` (20 行目の `prod-smoke.mjs` の行: 既定 = vercel) と `prod-e2e.sh` の行を書き換える。
+   - **gates.sh の IPA 閘は今 (hosting-cf) すでに空振り** (S154 H6 Rule D LOW-7): hosting-cf の build は export なので `.nft.json` が無く `ipa 0 nft 0` が出るだけ。**H7 まで、hosting-cf 上の作業では `pnpm check:release` を IPA 閘とする** (`gates.sh` の `ipa` 行は判定に使わない)。main (Vercel) 上の作業では従来どおり有効。
+9. **Vercel を止めた後の片付け** (§6-7 の後、OQ-2 を確かめてから):
+   - `apps/web/vercel.json` (`ignoreCommand`)、`apps/web/scripts/vercel-ignore-build.sh` と `apps/web/src/__tests__/vercelIgnoreBuild.test.ts` を削除 (D-212 の Vercel 版の退役。Cloudflare 版は §2-3)。
+   - `scripts/quiz-feedback.mjs` の 16 行目・61 行目の `vercel env pull` / 「Vercel project env」の注記を `.env.local` (Upstash の値) の説明に書き換える。
+   - root `README.md` の 9 行目 (Live badge の Vercel logo)、85 行目 (`Vercel · Analytics · Speed Insights`)、133 行目 (Deploy 行) を Cloudflare Workers (static assets + Worker、Web Analytics) に。
+   - `prod-smoke.mjs` の `TARGETS.vercel` と、`checkCanonical` の Vercel 例外は Vercel の URL が消えたら削る。
 
 ---
 

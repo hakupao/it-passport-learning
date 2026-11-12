@@ -13,7 +13,7 @@ if (!from || !to) {
 }
 try {
   const git = (...a: string[]) => execFileSync("git", a, { encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });
-  const files = git("diff", "--name-only", `${from}..${to}`).split("\n");
+  const files = git("diff", "--no-renames", "--name-only", `${from}..${to}`).split("\n");
   const commits = Number(git("rev-list", "--count", `${from}..${to}`).trim());
   console.log(needsBuild(files, commits) ? "build" : "skip");
 } catch {

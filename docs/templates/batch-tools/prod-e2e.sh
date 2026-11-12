@@ -17,7 +17,9 @@ case $T in
   workers|prod)
     s=absent
     for i in {1..60}; do
-      s=$(gh api repos/hakupao/it-passport-learning/commits/$1/check-runs --jq '[.check_runs[] | select(.name == "Workers Builds: itlearn")][0] | if . == null then "absent" elif .status != "completed" then "pending" else .conclusion end')
+      s=$(gh api repos/hakupao/it-passport-learning/commits/$1/check-runs --jq '[.check_runs[] | select(.name == "Workers Builds: itlearn")][0] | if . == null then "absent" elif .status != "completed" then "pending" else .conclusion end' 2>/dev/null)
+      # gh の失敗 (network・rate limit) は空 → 期限 (20 分) まで待ち続ける (Rule D LOW-4)
+      [ -z "$s" ] && { echo "gh error (retry)"; s=absent; }
       [ "$s" != absent ] && [ "$s" != pending ] && break; perl -e 'select(undef,undef,undef,20)'
     done
     echo "cloudflare $s" ;;

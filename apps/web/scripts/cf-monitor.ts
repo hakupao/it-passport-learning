@@ -39,7 +39,7 @@ async function strlen(key: string): Promise<number> {
     body: JSON.stringify(["STRLEN", key]),
   }).catch(() => fail("Upstash unreachable"));
   if (!r.ok) fail(`Upstash HTTP ${r.status}`);
-  const j = (await r.json()) as { result?: unknown };
+  const j = (await r.json().catch(() => fail("Upstash: reply is not JSON"))) as { result?: unknown };
   if (typeof j.result !== "number") fail("Upstash: unexpected STRLEN reply");
   return j.result;
 }
@@ -61,11 +61,15 @@ const r = await fetch("https://api.cloudflare.com/client/v4/graphql", {
   body: JSON.stringify({ query: QUERY, variables: { a: account, s: day(start), e: day(end) } }),
 }).catch(() => fail("Cloudflare GraphQL unreachable"));
 if (!r.ok) fail(`Cloudflare GraphQL HTTP ${r.status}`);
-const g = (await r.json()) as {
+const g = (await r.json().catch(() => fail("Cloudflare GraphQL: reply is not JSON"))) as {
   data?: { viewer?: { accounts?: { workersInvocationsAdaptive?: InvocationRow[] }[] } };
-  errors?: { message?: string }[];
+  errors?: { extensions?: { code?: unknown } }[];
 };
-if (g.errors?.length) fail(`Cloudflare GraphQL error: ${g.errors.map((e) => e.message ?? "?").join("; ").slice(0, 300)}`);
+// Only the count and extensions.code: messages may echo query input (Rule D LOW-5).
+if (g.errors?.length) {
+  const codes = g.errors.map((e) => (typeof e.extensions?.code === "string" ? e.extensions.code : "?"));
+  fail(`Cloudflare GraphQL: ${g.errors.length} error(s), code ${codes.join(",").slice(0, 200)}`);
+}
 const rows = g.data?.viewer?.accounts?.[0]?.workersInvocationsAdaptive;
 if (!rows) fail("Cloudflare GraphQL: no data for this account");
 

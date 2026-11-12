@@ -1,8 +1,8 @@
 {
   "plan": "docs/phase5/PLAN_hosting_migration.md",
   "branch": "hosting-cf",
-  "current_step": "H6 writer done (Rule D 待ち): prod-smoke 対象選択 + canonical、watch paths 規則 (lib/release/watchPaths)、prod-e2e の Cloudflare 待ち、cf-monitor (D-224)、pre-push hook (LOW-1)。H6_ops.md",
-  "next_step": "H6 Rule D (verifier opus、writer = executor): H6_ops.md の表と DEPLOY_cloudflare.md §2-3・§5・§6-8・§9・§10 を審査。その後 H7 (ユーザー確認): DEPLOY §6 の手順 + §6-8 の既定切替 1 commit。未確定: watch paths のパス基準 (apps/web の外だけの最初の push で §9-2 の command)",
+  "current_step": "H6 PASS (Rule D code-reviewer opus PASS、LOW 7 + minor 修正済、OQ-1/OQ-2 は DEPLOY §6 の事前確認へ。H6_ops.md, H6_review.md)",
+  "next_step": "H7 (ユーザー確認の上で): DEPLOY_cloudflare.md §6 — 事前確認 OQ-1 (preview の check run 名) / OQ-2 (Upstash が Vercel Marketplace 統合 → Vercel 停止前に DB の所有を確認)、手順 1〜7、§6-8 の既定切替 1 commit、§6-9 Vercel 片付け。未確定: watch paths のパス基準 (§9-2)",
   "completed": [
     {
       "step": "H0-1",
@@ -168,13 +168,14 @@
     "H5",
     {
       "step": "H6",
-      "status": "WRITER_DONE",
-      "review": "pending (Rule D)",
-      "evidence": "evidence/phase5/hosting/H6_ops.md, H6_smoke_workers.log (preview 30/30)",
+      "status": "PASS",
+      "review": "code-reviewer opus PASS (HIGH 0 / MEDIUM 0 / LOW 7 + minor 1、全修正)",
+      "evidence": "evidence/phase5/hosting/H6_ops.md, H6_smoke_workers.log (preview 30/30), H6_review.md",
       "carry": [
         "watch paths のパス基準 (repo root / root directory) は未確定: bc24d650 (docs のみ) の skip は確認済、apps/web の外だけを変える push で確定 (DEPLOY §9-2)。root directory 基準なら内容 push が本番に出ない → ユーザー報告 + dashboard 変更",
         "H7 の既定切替 (DEPLOY §6-8): prod-smoke DEFAULT_TARGET=prod、prod-e2e 既定 prod、pre-push PROD_BRANCH=main、gates.sh の .nft.json 閘 → check:release、local-e2e.sh の next start → local-cf + Worker + fake Upstash、playwright.config の既定 base URL (Vercel 本番)",
-        "pre-push hook は opt-in (core.hooksPath 未設定)。有効化はユーザー判断"
+        "pre-push hook は opt-in (core.hooksPath 未設定)。有効化はユーザー判断",
+        "OQ-1/OQ-2 (H6 review) → DEPLOY §6 事前確認。OQ-2: Upstash は Vercel Marketplace 統合 (S126) → project 削除前に DB 所有を確認"
       ]
     }
   ],

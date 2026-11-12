@@ -117,9 +117,23 @@ describe(".githooks/pre-push", () => {
     expect(del.code).toBe(0);
   });
 
+  it("treats a move from app code into docs/ as app-relevant (no rename folding, Rule D LOW-1)", () => {
+    sandbox();
+    const base = commit("apps/web/src/keep.ts", "export const keep = 1;\n".repeat(20));
+    mkdirSync(path.join(tmp, "docs"));
+    git("mv", "apps/web/src/keep.ts", "docs/keep.ts");
+    git("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "mv");
+    const head = git("rev-parse", "HEAD");
+    const cli = spawnSync(process.execPath, ["--no-warnings", "apps/web/scripts/needs-build.ts", base, head], {
+      cwd: tmp,
+      encoding: "utf-8",
+    });
+    expect(cli.stdout.trim()).toBe("build");
+    expect(hook([line(head, base)]).out).toContain("CHECK_RAN");
+  });
+
   it("is committed executable", () => {
     const mode = execFileSync("git", ["-C", REPO, "ls-files", "-s", ".githooks/pre-push"], { encoding: "utf-8" });
-    // Before the first commit the index may not have it yet; once tracked it must be 100755.
-    if (mode) expect(mode.split(" ")[0]).toBe("100755");
+    expect(mode.split(" ")[0]).toBe("100755");
   });
 });
