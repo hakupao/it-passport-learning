@@ -65,7 +65,7 @@ preview builds をオフにする理由:
 2. 外部から見える preview URL が増える (H0-2 で Vercel の branch preview を止めたのと同じ理由。docs: Version URL は有効にすると誰でも開ける)。
 3. 秘密の扱いを別に決める必要がある: docs (Workers → Previews) では `wrangler preview` の Preview は production の変数・secret・binding を**引き継がない** (`previews` block と専用の secret 設定が要る)。今の `wrangler.jsonc` に `previews` は無いので、Preview では `/api/*` が秘密なし (403) で動くだけで本番データには触れないはずだが、実地では未確認。なお docs は、Worker Previews 導入前の**旧モデル**の Worker では preview が production の設定 (秘密を含む) を使うと書いている → preview を将来オンにする前に、dashboard で `itlearn` がどちらのモデルかを確認する (S154 Rule D LOW-2)。
 
-D-225 の文言は「他 branch は preview build」だが、上の理由で H7 までは オフ にしておき、必要になった時点で改めて決める (要ユーザー確認)。
+D-225 の文言は「他 branch は preview build」だが、上の理由で H7 までは オフ (S154 ユーザー確認済み)。H7 で改めて決める。
 
 ### 2-3. Build watch paths
 
