@@ -1,19 +1,11 @@
 # D-217 (2026-11-11). Search engines are welcome: the textbook, glossary and
 # past-question pages are all crawlable.
 
-# Backlink / SEO-audit crawlers are not search engines and fetched tens of
-# thousands of per-request pages a day. Blocked only until the site is served
-# as static files (D-217 phase 2); remove this group then.
-User-agent: MJ12bot
-User-agent: SemrushBot
-User-agent: SERankingBacklinksBot
-User-agent: AhrefsBot
-User-agent: DotBot
-User-agent: BLEXBot
-User-agent: DataForSeoBot
-Disallow: /
+# The temporary block on backlink / SEO-audit crawlers (MJ12bot, SemrushBot, …) was
+# removed once the site was served as static files on Cloudflare (D-217 stage 0.1, S154):
+# static asset requests are free and invoke no Worker.
 
-# Everyone else: the API, the per-user pages and the session URLs are off limits.
+# All crawlers: the API, the per-user pages and the session URLs are off limits.
 # "practice?" matches only URLs with a query string: the browser builds each
 # session from the query (a missing seed / run is added by a client-side URL
 # replace, D-217 H1-3), so they are an unbounded set of session URLs.
