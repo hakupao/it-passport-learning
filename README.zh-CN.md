@@ -6,7 +6,7 @@
 
 *29 回 IPA 过去问（FY2009–FY2026）、对齐シラバス的教科书和术语表 —— **日 / 中 / 英** 三语。*
 
-[![在线访问](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E8%AE%BF%E9%97%AE-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://itlearn.bojiangz.com)
+[![在线访问](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E8%AE%BF%E9%97%AE-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=cloudflare&logoColor=white)](https://itlearn.bojiangz.com)
 [![Stage 7](https://img.shields.io/badge/Stage%207-%E6%95%99%E7%A7%91%E4%B9%A6%20v2%20%E9%87%8D%E5%86%99%E4%B8%AD-orange?style=for-the-badge)](docs/STATE.md)
 [![Tests](https://img.shields.io/badge/%E6%B5%8B%E8%AF%95-1264%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#技术栈)
 [![Decisions](https://img.shields.io/badge/%E5%B7%B2%E9%94%81%E5%86%B3%E7%AD%96-203-6f42c1?style=for-the-badge)](docs/STATE.md)
@@ -82,7 +82,7 @@ itlearn.bojiangz.com
 │  Learning record: browser storage        │
 │    (+ Upstash Redis sync for the owner)  │
 ├──────────────────────────────────────────┤
-│  Vercel · Analytics · Speed Insights     │
+│  Cloudflare Workers · Web Analytics      │
 └──────────────────────────────────────────┘
         ▲
         │ built offline by
@@ -130,7 +130,7 @@ itlearn.bojiangz.com
 | 国际化 | next-intl（日语 / 中文 / 英语） |
 | 存储 | 学习记录存浏览器；站长同步和题目反馈用 Upstash Redis |
 | 测试 | Vitest（1,264 个测试）、Playwright（e2e） |
-| 部署 | Vercel, Vercel Analytics, Speed Insights |
+| 部署 | Cloudflare Workers（static assets + Worker）、Cloudflare Web Analytics |
 | 内容 pipeline | Node / TypeScript 脚本；用 Claude（Anthropic）做提取、审核和翻译 |
 
 ---

@@ -50,7 +50,8 @@ describe("needsBuild (D-212 on Workers Builds)", () => {
   });
 
   it("agrees with Vercel's D-212 script on the pattern classes it shares", () => {
-    // vercel-ignore-build.sh: skip iff every path matches ^(docs/|evidence/|failures/|[^/]+\.md$)
+    // vercel-ignore-build.sh (removed in S154 H7, DEPLOY §6-9; its rule is kept here as the reference):
+    // skip iff every path matches ^(docs/|evidence/|failures/|[^/]+\.md$)
     const vercel = (fs: string[]) => !fs.every((f) => /^(docs\/|evidence\/|failures\/|[^/]+\.md$)/.test(f));
     for (const set of [["docs/a.md"], ["evidence/x.json", "README.md"], ["apps/web/x.ts"], ["data/ip/a.json"]]) {
       expect(needsBuild(set), set.join(",")).toBe(vercel(set));

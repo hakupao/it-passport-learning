@@ -13,7 +13,8 @@
 //   node scripts/quiz-feedback.mjs resolve <id> --note "what was fixed"
 //
 // Credentials: UPSTASH_REDIS_REST_URL/TOKEN (preferred) or KV_REST_API_URL/TOKEN,
-// from the process env first, else apps/web/.env.local (e.g. after `vercel env pull`).
+// from the process env first, else apps/web/.env.local (the Upstash REST URL/token of the learning DB,
+// the same values the Worker has as secrets; DEPLOY_cloudflare.md §3).
 // Secrets are never printed. @upstash/redis is resolved from apps/web (pnpm
 // workspace) so (de)serialisation matches the app exactly.
 
@@ -58,7 +59,7 @@ function loadCreds() {
   if (!url || !token) {
     die(
       "Redis credentials not found. Set UPSTASH_REDIS_REST_URL/TOKEN or KV_REST_API_URL/TOKEN " +
-        "in the environment or apps/web/.env.local (values from the Vercel project env).",
+        "in the environment or apps/web/.env.local (the Upstash REST URL/token of the learning DB).",
     );
   }
   return { url, token };

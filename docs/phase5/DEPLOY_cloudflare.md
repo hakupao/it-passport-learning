@@ -84,7 +84,7 @@ docs・evidence・failures だけの commit では build しない (Vercel の D
 - docs の例外: 変更 0 ファイル、または 3,000 ファイル以上・20 commit 以上の push は watch paths を無視して必ず build する。
 - パスの基準 (repo root か root directory か) は docs に明記が無い (2026-11-12 再確認。例の `project-a/*`・`packages/*` は monorepo の repo root 基準に読める)。実地 (S154 H6、§7-3 の 7): docs + evidence だけの push `bc24d650` (`docs/discussion/…`・`evidence/phase5/hosting/…` = 深い階層) は Cloudflare の check suite が作られたが check run 0 (= build なし)、直前の `6701ac43` (`apps/web/wrangler.jsonc` を含む) は build された。→ **docs だけの push が build されないこと・深い階層も除外されることは確認済**。ただし root directory 基準でも同じ結果になる (apps/web の外の変更は無視) ので、基準そのものは**未確定**。確定するのは `apps/web` の外の除外されないパスだけ (`data/ip/**`・`scripts/**`、D-206 の内容 push がこれ) を変えた最初の push: build されれば repo root 基準。build されなければ root directory 基準で、そのときは内容 push が本番に出ないので**ユーザーに報告して dashboard の watch paths を見直す** (確認 command は §9-2)。
 - 同じ規則を repo 側に `apps/web/src/lib/release/watchPaths.ts` (`EXCLUDE_PATHS`、テスト `__tests__/watchPaths.test.ts` が tracked の root `*.md` 全部が除外に当たることを検査) として持つ。pre-push hook (§5) がこれで「build される push か」を判定する。**dashboard と watchPaths.ts は一緒に変える**。
-- Vercel の D-212 (`apps/web/scripts/vercel-ignore-build.sh`) との差: Vercel は root の `*.md` を全部除外、Cloudflare は上の名前だけ。新しい root の `.md` を足すと Cloudflare では build される (安全側、上のテストが落ちて気付く)。
+- Vercel の D-212 (`apps/web/scripts/vercel-ignore-build.sh`、S154 H7 に削除) との差: Vercel は root の `*.md` を全部除外、Cloudflare は上の名前だけ。新しい root の `.md` を足すと Cloudflare では build される (安全側、上のテストが落ちて気付く)。
 - include を `apps/web/*` に絞らない理由: build は `scripts/` (関門)、`data/ip/quiz`・`data/ip/textbook` (corpus)、root の `package.json`・`pnpm-lock.yaml`・`pnpm-workspace.yaml` も読む。
 - exclude に `*.md` を使わない理由: `*.md` は `apps/web/README.md` 等の深い階層にも当たる。Vercel の規則は「root の *.md」だけなので、root の 6 つを名前で書く。`RETROSPECTIVE*` は先頭一致なので root の `RETROSPECTIVE_*.md` だけに当たる。新しい root の .md を足したらここにも足す。
 
@@ -179,11 +179,11 @@ pnpm check:release
    - [未了] 本書 §9-2 の内容 push で watch paths の基準 (§2-3) を確かめる。
    - [済] `apps/web/src/__tests__/prodSmoke.test.ts` の既定 target のテスト (「defaults to the live production host」、Vercel の host と canonical なしを断言) を `prod` (`itlearn.bojiangz.com`、canonical あり) に合わせる。
    - [済] batch-tools の `README.md` (20 行目の `prod-smoke.mjs` の行: 既定 = vercel) と `prod-e2e.sh` の行を書き換える。
-9. **Vercel を止めた後の片付け** (§6-7 の後、OQ-2 を確かめてから):
-   - `apps/web/vercel.json` (`ignoreCommand`)、`apps/web/scripts/vercel-ignore-build.sh` と `apps/web/src/__tests__/vercelIgnoreBuild.test.ts` を削除 (D-212 の Vercel 版の退役。Cloudflare 版は §2-3)。
-   - `scripts/quiz-feedback.mjs` の 16 行目・61 行目の `vercel env pull` / 「Vercel project env」の注記を `.env.local` (Upstash の値) の説明に書き換える。
-   - root `README.md` の 9 行目 (Live badge の Vercel logo)、85 行目 (`Vercel · Analytics · Speed Insights`)、133 行目 (Deploy 行) を Cloudflare Workers (static assets + Worker、Web Analytics) に。
-   - `prod-smoke.mjs` の `TARGETS.vercel` と、`checkCanonical` の Vercel 例外は Vercel の URL が消えたら削る。
+9. **Vercel を止めた後の片付け** (§6-7 の後、OQ-2 を確かめてから) — **済 (S154 H7)**、ただし最後の項目 (`TARGETS.vercel`) は D-226 の戻し期間の間は残す:
+   - [済] `apps/web/vercel.json` (`ignoreCommand`)、`apps/web/scripts/vercel-ignore-build.sh` と `apps/web/src/__tests__/vercelIgnoreBuild.test.ts` を削除 (D-212 の Vercel 版の退役。Cloudflare 版は §2-3)。
+   - [済] `scripts/quiz-feedback.mjs` の 16 行目・61 行目の `vercel env pull` / 「Vercel project env」の注記を `.env.local` (Upstash の値) の説明に書き換える。
+   - [済、`README.zh-CN.md` も同じ 3 箇所] root `README.md` の 9 行目 (Live badge の Vercel logo)、85 行目 (`Vercel · Analytics · Speed Insights`)、133 行目 (Deploy 行) を Cloudflare Workers (static assets + Worker、Web Analytics) に。
+   - [残す] `prod-smoke.mjs` の `TARGETS.vercel` と、`checkCanonical` の Vercel 例外 (と `prod-e2e.sh` の `vercel` 対象) は Vercel の URL が消えたら削る。D-226 で Vercel project は停止 (pause、503) のまま削除せず戻し先として残すので、戻し期間の間は残す (Vercel project を削除するときに一緒に削る)。
 
 ---
 
@@ -242,7 +242,7 @@ Rollback と static assets: rollback ページには assets の扱いが書か�
 
 ## 9. D-206 自動投入の Cloudflare 版 (S154 H6)
 
-D-206 の条件 (Rule A PASS + 再審 PASS + Gates + IPA 閘 + local e2e) と「push 後に本番 smoke、失敗なら自動投入を止めて Rule B + ユーザー報告」は変えない。変わるのは **何を待つか** と **どこを smoke するか** だけ。H7 までは Vercel (main) が本番のままなので、今の手順 (`prod-e2e.sh <commit> <units> <tag>` = Vercel) が有効。
+D-206 の条件 (Rule A PASS + 再審 PASS + Gates + IPA 閘 + local e2e) と「push 後に本番 smoke、失敗なら自動投入を止めて Rule B + ユーザー報告」は変えない。変わるのは **何を待つか** と **どこを smoke するか** だけ。S154 H7 から本番は Cloudflare (`main`) で、`prod-e2e.sh <commit> <units> <tag>` の既定 = `prod` (H7 までは Vercel が既定だった)。
 
 ### 9-1. 流れ (H7 後 = production branch `main`)
 

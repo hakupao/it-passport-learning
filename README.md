@@ -6,7 +6,7 @@
 
 *29 IPA past exams (FY2009–FY2026), a syllabus-aligned textbook and a glossary — in **JP / ZH / EN**.*
 
-[![Live](https://img.shields.io/badge/live-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=vercel&logoColor=white)](https://itlearn.bojiangz.com)
+[![Live](https://img.shields.io/badge/live-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=cloudflare&logoColor=white)](https://itlearn.bojiangz.com)
 [![Stage 7](https://img.shields.io/badge/Stage%207-textbook%20v2%20rewrite%20in%20progress-orange?style=for-the-badge)](docs/STATE.md)
 [![Tests](https://img.shields.io/badge/tests-1264%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#tech-stack)
 [![Decisions](https://img.shields.io/badge/locked%20decisions-203-6f42c1?style=for-the-badge)](docs/STATE.md)
@@ -82,7 +82,7 @@ itlearn.bojiangz.com
 │  Learning record: browser storage        │
 │    (+ Upstash Redis sync for the owner)  │
 ├──────────────────────────────────────────┤
-│  Vercel · Analytics · Speed Insights     │
+│  Cloudflare Workers · Web Analytics      │
 └──────────────────────────────────────────┘
         ▲
         │ built offline by
@@ -130,7 +130,7 @@ The live state is in [`docs/STATE.md`](docs/STATE.md).
 | i18n | next-intl (Japanese / Chinese / English) |
 | Storage | Browser storage for the learning record; Upstash Redis for owner sync and question feedback |
 | Testing | Vitest (1,264 tests), Playwright (e2e) |
-| Deploy | Vercel, Vercel Analytics, Speed Insights |
+| Deploy | Cloudflare Workers (static assets + Worker), Cloudflare Web Analytics |
 | Content pipeline | Node / TypeScript scripts; Claude (Anthropic) for extraction, review and translation |
 
 ---
