@@ -3,7 +3,7 @@
 // 判定: HTTP 200 (転送は追わない = 30x は失敗、Rule D LOW-3) / 単元の title が HTML に含まれる / 生記法 (**, [[jp:) と "undefined" が本文に無い /
 //       本文が空でない / Vercel 以外の対象では <link rel="canonical"> = https://itlearn.bojiangz.com/<locale>/textbook/<unit>
 //       (静的版は末尾 / なし、S154 H5 Rule D LOW-2。Vercel = main の src には canonical が無い (S154 H6 に git grep で確認) ので見ない)。
-// 対象の既定 = 今 live の本番。H7 (itlearn.bojiangz.com を Worker に切替) までは vercel、切替後に DEFAULT_TARGET を 'prod' に。
+// 対象の既定 = 今 live の本番 = prod (S154 H7 で itlearn.bojiangz.com を Worker に切替済)。vercel は戻し期間 (D-226) の間だけ残す。
 // 単体で完結させる (README の手順で scratchpad に複製して使うため、相対 import をしない)。
 import fs from 'node:fs';
 import { parseArgs } from 'node:util';
@@ -12,7 +12,7 @@ const TARGETS = {
   workers: 'https://itlearn.bojiang.workers.dev',
   prod: 'https://itlearn.bojiangz.com',
 };
-const DEFAULT_TARGET = 'vercel'; // H7 で 'prod'
+const DEFAULT_TARGET = 'prod';
 const CANONICAL_ORIGIN = 'https://itlearn.bojiangz.com';
 const R = process.env.SMOKE_REPO ?? '/Volumes/DevSSD/Project/IT-Passport-Learning/';
 const usage = () => {

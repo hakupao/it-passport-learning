@@ -147,11 +147,10 @@ describe("prod-smoke.mjs", () => {
     expect(r.code).toBe(1);
   });
 
-  it("defaults to the live production host (Vercel until H7) without the canonical check", async () => {
+  it("defaults to the live production host (itlearn.bojiangz.com since H7) with the canonical check", async () => {
     // The unit JSON does not exist in SMOKE_REPO, so the script stops before its first request (no network).
     const r = await smoke(["no-such-unit"]);
-    expect(r.out).toMatch(/^target https:\/\/web-mu-sandy-78\.vercel\.app\n/);
-    expect(r.out).not.toContain("canonical checked");
+    expect(r.out).toMatch(/^target https:\/\/itlearn\.bojiangz\.com \(canonical checked\)\n/);
     expect(r.code).not.toBe(0);
   });
 

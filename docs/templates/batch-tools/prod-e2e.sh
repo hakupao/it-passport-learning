@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $1 commit, $2 units (comma), $3 tag, $4 target (vercel | workers | prod; 省略時 = vercel、H7 で prod に変える)
+# $1 commit, $2 units (comma), $3 tag, $4 target (vercel | workers | prod; 省略時 = prod、S154 H7 から。vercel は戻し期間 D-226 の間だけ残す)
 # D-213: 本番は prod-smoke.mjs (新単元 × 3 locale の HTML GET のみ)。Playwright 全項目は local :3150 で担保
 # 配置の完了待ち (S154 H6):
 #   vercel          : commit status (combined) が pending でなくなるまで。branch push の "Canceled by Ignored Build Step"
@@ -8,7 +8,7 @@
 #                     check run は build の終了時にだけ現れることがある (S154 6701ac43 は started = completed) ので
 #                     「無い」= build 中か watch paths で skip (D-212)。20 分待って無ければ exit 1 (docs だけの push には使わない)
 N=<SCRATCH>
-T=${4:-vercel}
+T=${4:-prod}
 cd /Volumes/DevSSD/Project/IT-Passport-Learning
 case $T in
   vercel)

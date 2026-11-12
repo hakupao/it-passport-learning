@@ -20,8 +20,8 @@
 // messages/*.json so they cannot drift. Fixture headwords exist in the committed
 // corpus (data/ip/textbook/units/*.json). No LLM call fires on this surface.
 //
-// Base URL: prod canonical by default; `PLAYWRIGHT_BASE_URL` overrides it for a
-// local run (see playwright.config.ts).
+// Base URL: the local static stand-in (127.0.0.1:3150) by default; `PLAYWRIGHT_BASE_URL`
+// overrides it (see playwright.config.ts).
 
 import { test, expect, type Page } from "@playwright/test";
 

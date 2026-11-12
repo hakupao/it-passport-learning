@@ -1,13 +1,10 @@
 // Phase 2 Step 15 — Playwright E2E config (Session 48).
 //
-// Targets the **prod canonical** alias `web-mu-sandy-78.vercel.app` because:
-//   - Session 44 obs §ii: preview URLs `*-bojiangs-projects.vercel.app` are
-//     intercepted by Vercel team-level SSO Protection (separate from D-097
-//     application Basic Auth firewall). Tests issued at preview URLs see an
-//     SSO redirect, not the app. The prod alias serves the actual app behind
-//     D-097 Basic Auth.
-//   - Session 47 close Q1=a locks Playwright Medium = 9 happy-path tests
-//     against prod with Basic Auth header injection.
+// Default base URL = the local static stand-in `http://127.0.0.1:3150` (S154 H7, DEPLOY_cloudflare.md
+// §6-8): scripts/local-cf.ts serving out/ + the Worker + fake Upstash, started by
+// docs/templates/batch-tools/local-e2e.sh. Playwright against production is not allowed (D-213); the
+// default used to be the Vercel production alias, which made an accidental prod run one command away.
+// `PLAYWRIGHT_BASE_URL` overrides it (local servers only, never :3000).
 //
 // Auth strategy: read `FIREWALL_BASIC_AUTH` (base64 of `user:pass`) from the
 // process env or from `apps/web/.env.local`. Inject as `Authorization: Basic
@@ -44,8 +41,8 @@ if (!FIREWALL_BASIC_AUTH) {
   );
 }
 
-const PROD_CANONICAL = "https://web-mu-sandy-78.vercel.app";
-const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? PROD_CANONICAL;
+const LOCAL_STATIC = "http://127.0.0.1:3150";
+const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? LOCAL_STATIC;
 
 export default defineConfig({
   testDir: "./e2e",

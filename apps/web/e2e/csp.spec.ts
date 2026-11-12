@@ -18,8 +18,8 @@
 // naming a dictionary term (so a static /data/sensei/ term file is fetched too) and waits for the
 // rendered reply.
 //
-// Base URL: prod canonical by default; `PLAYWRIGHT_BASE_URL` overrides it for a
-// local run (see playwright.config.ts).
+// Base URL: the local static stand-in (127.0.0.1:3150) by default; `PLAYWRIGHT_BASE_URL`
+// overrides it (see playwright.config.ts).
 
 import { test, expect } from "@playwright/test";
 

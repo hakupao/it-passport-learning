@@ -6,7 +6,7 @@ const b = await chromium.launch();
 const bad = [], overflow = [];
 for (const u of units) for (const l of ["ja", "zh", "en"]) for (const w of [1440, 390, 360, 320]) {
   const p = await b.newPage({ viewport: { width: w, height: 900 } });
-  const r = await p.goto(`http://localhost:3150/${l}/textbook/${topic}-${u}`, { waitUntil: "networkidle" });
+  const r = await p.goto(`http://127.0.0.1:3150/${l}/textbook/${topic}-${u}`, { waitUntil: "networkidle" });
   const txt = await p.locator("main").innerText();
   if (/\*\*|\[\[jp:|undefined/.test(txt) || r.status() !== 200) bad.push(`${u} ${l} ${w} ${r.status()}`);
   const sw = await p.evaluate(() => document.documentElement.scrollWidth);

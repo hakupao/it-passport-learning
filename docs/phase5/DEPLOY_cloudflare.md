@@ -147,7 +147,7 @@ pnpm check:release
 
 - 中身: 三言語関門 → v2-corpus → `pnpm build` → `pnpm scan:out` (規則 (c) を含む全走査。local の `data/ip/exams`・`sources`・`syllabus` と `pdftotext` を使う)。
 - exit 0 のときだけ push する。docs・evidence・failures だけの commit (§2-3 で build されない) は不要。
-- **pre-push hook で強制できる (opt-in、S154 H6 = D-225 Rule D LOW-1)**: `.githooks/pre-push`。production branch (`hosting-cf`、H7 で hook 内の `PROD_BRANCH` を `main` に) への push だけを見て、build される push (§2-3 と同じ規則、`apps/web/scripts/needs-build.ts`) なら、push する commit = HEAD かつ作業木が clean (未追跡ファイルも無し) であることを確かめてから `pnpm -C apps/web check:release` を実行し、失敗なら push を止める。docs だけの push・他の branch・branch 削除は素通り。
+- **pre-push hook で強制できる (opt-in、S154 H6 = D-225 Rule D LOW-1)**: `.githooks/pre-push`。production branch (`main`、S154 H7 から。H7 までは `hosting-cf`) への push だけを見て、build される push (§2-3 と同じ規則、`apps/web/scripts/needs-build.ts`) なら、push する commit = HEAD かつ作業木が clean (未追跡ファイルも無し) であることを確かめてから `pnpm -C apps/web check:release` を実行し、失敗なら push を止める。docs だけの push・他の branch・branch 削除は素通り。
   - 有効化 (clone ごとに 1 回): `git config core.hooksPath .githooks` (`.git/hooks/` には何も入れない。解除 = `git config --unset core.hooksPath`)。2026-11-12 時点でこの clone の `.git/hooks/` に有効な hook は無いので、hooksPath の切替で失うものは無い。
   - 緊急時の回避: `git push --no-verify` (理由を session log に書く)。
   - テスト: `apps/web/src/__tests__/prePushHook.test.ts` (一時 repo で hook を実行、check:release は stub)。
@@ -170,16 +170,15 @@ pnpm check:release
 5. 切替後: `node prod-smoke.mjs <units> --target prod` (`itlearn.bojiangz.com`、canonical も検査)。所有者は新しい `OWNER_KEY` で `/api/owner?key=…` を 1 回開き直す (H1-1 の hint cookie、旧 key は無効)。
 6. WAF の rate limit (§4-4)。Web Analytics を使うなら site を作り `CF_WEB_ANALYTICS_TOKEN` を build variable に入れて再 build。
 7. Vercel は 7 日程度残す (その間 Vercel 側は noindex、PLAN H7)。問題がなければ Vercel project を停止。
-8. **運用の既定を切り替える (S154 H6 で用意、H7 で 1 commit にまとめて変える)**:
-   - `docs/templates/batch-tools/prod-smoke.mjs` の `DEFAULT_TARGET` を `'prod'` に、`prod-e2e.sh` の `T=${4:-vercel}` を `T=${4:-prod}` に (§9)。
-   - `.githooks/pre-push` の `PROD_BRANCH` を `main` に。
-   - batch-tools の `gates.sh` (`npm run build` + `.nft.json` の IPA 閘) を `pnpm check:release` に置き換える。export build には `.nft.json` が無く、今のままでは `ipa 0 nft 0` で素通りする。
-   - batch-tools の `local-e2e.sh` (`next start -p 3150`) を静的配信に: `node scripts/local-cf.ts --out out --port 3150 --api http://127.0.0.1:3152` + Worker (H5 の `evidence/phase5/hosting/H5_tools/worker-node.mjs`、:3152) + `node scripts/fake-upstash.ts --port 3161` (H5_fidelity.md の手順)。export build に `next start` は無い。
-   - `apps/web/playwright.config.ts` の既定 base URL (`web-mu-sandy-78.vercel.app` = Vercel 本番) を、local (`http://127.0.0.1:3150`) か「`PLAYWRIGHT_BASE_URL` 必須」に。本番への Playwright は D-213 で禁止で、既定が本番なのは事故の元。
-   - 本書 §9-2 の内容 push で watch paths の基準 (§2-3) を確かめる。
-   - `apps/web/src/__tests__/prodSmoke.test.ts` の既定 target のテスト (「defaults to the live production host」、Vercel の host と canonical なしを断言) を `prod` (`itlearn.bojiangz.com`、canonical あり) に合わせる。
-   - batch-tools の `README.md` (20 行目の `prod-smoke.mjs` の行: 既定 = vercel) と `prod-e2e.sh` の行を書き換える。
-   - **gates.sh の IPA 閘は今 (hosting-cf) すでに空振り** (S154 H6 Rule D LOW-7): hosting-cf の build は export なので `.nft.json` が無く `ipa 0 nft 0` が出るだけ。**H7 まで、hosting-cf 上の作業では `pnpm check:release` を IPA 閘とする** (`gates.sh` の `ipa` 行は判定に使わない)。main (Vercel) 上の作業では従来どおり有効。
+8. **運用の既定を切り替える (S154 H6 で用意、H7 で 1 commit にまとめて変える)** — 下の項目は **済 (S154 H7)**、ただし §9-2 の確認だけは未了 (最初の内容 push 待ち):
+   - [済] `docs/templates/batch-tools/prod-smoke.mjs` の `DEFAULT_TARGET` を `'prod'` に、`prod-e2e.sh` の `T=${4:-vercel}` を `T=${4:-prod}` に (§9)。
+   - [済] `.githooks/pre-push` の `PROD_BRANCH` を `main` に。
+   - [済] batch-tools の `gates.sh` (`npm run build` + `.nft.json` の IPA 閘) を `pnpm check:release` に置き換える。export build には `.nft.json` が無く、今のままでは `ipa 0 nft 0` で素通りする。
+   - [済] batch-tools の `local-e2e.sh` (`next start -p 3150`) を静的配信に: `node scripts/local-cf.ts --out out --port 3150 --api http://127.0.0.1:3152` + Worker (H5 の `evidence/phase5/hosting/H5_tools/worker-node.mjs`、:3152) + `node scripts/fake-upstash.ts --port 3161` (H5_fidelity.md の手順)。export build に `next start` は無い。
+   - [済、local `http://127.0.0.1:3150`] `apps/web/playwright.config.ts` の既定 base URL (`web-mu-sandy-78.vercel.app` = Vercel 本番) を、local (`http://127.0.0.1:3150`) か「`PLAYWRIGHT_BASE_URL` 必須」に。本番への Playwright は D-213 で禁止で、既定が本番なのは事故の元。
+   - [未了] 本書 §9-2 の内容 push で watch paths の基準 (§2-3) を確かめる。
+   - [済] `apps/web/src/__tests__/prodSmoke.test.ts` の既定 target のテスト (「defaults to the live production host」、Vercel の host と canonical なしを断言) を `prod` (`itlearn.bojiangz.com`、canonical あり) に合わせる。
+   - [済] batch-tools の `README.md` (20 行目の `prod-smoke.mjs` の行: 既定 = vercel) と `prod-e2e.sh` の行を書き換える。
 9. **Vercel を止めた後の片付け** (§6-7 の後、OQ-2 を確かめてから):
    - `apps/web/vercel.json` (`ignoreCommand`)、`apps/web/scripts/vercel-ignore-build.sh` と `apps/web/src/__tests__/vercelIgnoreBuild.test.ts` を削除 (D-212 の Vercel 版の退役。Cloudflare 版は §2-3)。
    - `scripts/quiz-feedback.mjs` の 16 行目・61 行目の `vercel env pull` / 「Vercel project env」の注記を `.env.local` (Upstash の値) の説明に書き換える。
