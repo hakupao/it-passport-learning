@@ -95,7 +95,7 @@ docs・evidence・failures だけの commit では build しない (Vercel の D
 | `SKIP_DEPENDENCY_INSTALL` | `1` | 自動 install を止め、build command の root での `pnpm install` だけにする |
 | `PUPPETEER_SKIP_DOWNLOAD` | `true` | root devDependency の `@mermaid-js/mermaid-cli` → puppeteer の postinstall が browser を download し、clean install で失敗したため。site の build は browser を使わない (Mermaid → SVG は local の Stage 4 作業だけ)。local の install には影響しない |
 | `NODE_VERSION` | 設定しない | `apps/web/.node-version` (`24.22.1`、build image に同梱の版) が使われる。効いていなければ (§7 で確認) ここに `24.22.1` を入れる |
-| `CF_WEB_ANALYTICS_TOKEN` | 今は設定しない | D-220 の Web Analytics。token があるときだけ beacon と CSP の許可が入る (走査の規則 (e) が両者の一致を検査)。Web Analytics の site を作ったら (H7 の custom domain の後) 入れる |
+| `CF_WEB_ANALYTICS_TOKEN` | 設定済 (S154 H7、site `itlearn.bojiangz.com` の手動 snippet の token。公開値) | D-220 の Web Analytics。token があるときだけ beacon と CSP の許可が入る (走査の規則 (e) が両者の一致を検査)。Web Analytics の site を作ったら (H7 の custom domain の後) 入れる |
 
 ここには秘密を置かない (build log や build 産物に出うる)。runtime の秘密は §3。
 

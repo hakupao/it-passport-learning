@@ -24,3 +24,9 @@
 - §6-6 WAF rate limit (`/api/*`、zone `bojiangz.com`、Free は 1 rule) と Web Analytics (D-220)
 - §6-8 運用の既定の切替 commit、§6-9 Vercel の片付け
 - §9-2 watch paths の基準 (最初の内容のみの push)、§7-6 asset 数 (dashboard の build log)
+
+## 追記 (06:2x UTC): 運用の切替・Web Analytics
+- §6-8 / §6-9: 69b5daf5・7f0658cf・abfe7ecf (Rule D PASS、`H7_review.md`)。push 6d471314 (pre-push の check:release exit 0、HTML 13,842 頁)、build success。
+- §6-6 WAF: 付けない (rate limiting 枠 1/1 が既存の Leaked credential check、ユーザー判断、session log)。
+- D-220 Web Analytics: site `itlearn.bojiangz.com` (手動 snippet) を作成、ユーザーが build variable `CF_WEB_ANALYTICS_TOKEN` を設定 → dashboard の Retry build (06:17:54 開始、success)。本番 `/ja`・`/zh`・`/en/textbook`・`/ja/glossary` で beacon 1 本 + CSP に `static.cloudflareinsights.com/beacon.min.js` と `cloudflareinsights.com` (規則 (e) の一致)。prod smoke (既定 target = prod) 6/6。
+- 既存 site `bojiangz.com` (automatic setup) は itlearn に注入しない (切替後の HTML で確認) → 二重計測なし。

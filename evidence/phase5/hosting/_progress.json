@@ -1,8 +1,8 @@
 {
  "plan": "docs/phase5/PLAN_hosting_migration.md",
  "branch": "hosting-cf",
- "current_step": "H7",
- "next_step": "H7 残り: §6-8 既定切替 commit + §6-9 Vercel 片付け (executor + Rule D)、WAF rate limit、Web Analytics、§9-2 watch paths、§7-6 asset 数",
+ "current_step": "H8",
+ "next_step": "H8: RETROSPECTIVE_hosting.md (Rule C)、PLAN・STATE・ADR D-217 の更新",
  "completed": [
   {
    "step": "H0-1",
@@ -183,6 +183,19 @@
    "status": "PASS",
    "evidence": "evidence/phase5/hosting/H7_cutover.md",
    "note": "main 075aca3a を Workers Builds で deploy、DNS を Cloudflare へ、prod smoke 30/30、所有者の実同期 04:40、Vercel pause (503、project と Upstash 統合は残す)"
+  },
+  {
+   "step": "H7",
+   "status": "PASS",
+   "review": "code-reviewer opus PASS (M2/L7 全修正 abfe7ecf)",
+   "evidence": "H7_cutover.md, H7_review.md; failures/phase5/hosting/step_H7_attempt_1_local_e2e.md",
+   "carry": [
+    "§9-2 watch paths の基準: 最初の apps/web 外だけの内容 push で確定",
+    "§7-6 asset 数 (dashboard build log)",
+    "PLAYWRIGHT_BROWSERS_PATH (~/.zshrc) が存在しない dir → local-e2e は早期失敗。browser install か zshrc 修正はユーザー判断",
+    "Vercel project・TARGETS.vercel は D-226 の戻し期間後に片付け判断",
+    "robots.txt の backlink bot group / preview builds の扱い"
+   ]
   }
  ],
  "gates_pending_user": [
