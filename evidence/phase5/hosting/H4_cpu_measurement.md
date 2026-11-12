@@ -19,7 +19,7 @@
 errors = 0、status はすべて success (1102 なし)。
 
 ## 判定
-- 10 ms を超えたのは 3 分だけで、いずれも **新 version の直後の最初の要求** (isolate の起動・bundle の評価)。定常の p50 は約 3 ms、max 8.3 ms。
+- 10 ms を超えたのは 3 分だけで、いずれも **新 version の直後の最初の要求** (isolate の起動・bundle の評価)。[訂正 02:18] 新 version なしの 02:18 にも max 13.6 ms (p50 6.1 ms) — 冷えた isolate 全般で起きる (`H4_preview_checks.md` 補足)。errors 0。定常の p50 は約 3 ms、max 8.3 ms。
 - 記録が 445 byte と小さいため merge / encode の負荷はほぼ 0。H3 の local bench (PUT 全量は 250〜300 KB で 10 ms) までは 約 600 倍の余裕。
 - **D-224 の結論: Free のまま (H3 §5 の選択肢 D「様子見」)**。ユーザー判断が要る「10 ms 近く / 超」には当たらない (超過は起動時だけ、エラー 0)。
 - 監視: H6 で運用手順に「月 1 回 `STRLEN learn:owner:v2` と上の GraphQL で p50 / max / errors を見る、記録が 200 KB を超えたら A (Workers Paid) か B (分割) をユーザーへ」を入れる。
