@@ -70,5 +70,5 @@ Vercel Hobby の告警 (2026-11-11): Fluid Active CPU 4 時間の 90%。超過�
 - 配信の build は **D-225** (Workers Builds、push で build + deploy)。IPA 原本の混入検査 (規則 (c)) は CI では走らず、local の pre-push hook (`check:release`) が担う。
 - 第 2 段 5: CSP は `_headers` + Worker 応答、Vercel analytics は除去して Cloudflare Web Analytics (D-220)、IPA gate は `scan:out` に置換、`prod-smoke.mjs` の既定対象は prod (Cloudflare)。
 - 根拠の補足と訂正 (H1-4 審査): Workers **Paid** の静的 asset 上限は 100,000 ファイル / version (H2 資料では未確認のまま、判断には影響なし)。H2 資料の「prefetch の 404 は asset 要求なので無料」は誤り — Worker を置く構成では、一致する asset の無い非 navigation の fetch (RSC `.txt` 等) は Worker を起動して要求を消費するため、詳細へのリンクは prefetch なしの通常 `<a>` にした (D-223 細目)。
-- 第 0 段 4 (11 月下旬まで投入を絞る) と Vercel Usage の再確認は、Vercel 停止により不要になった。第 0 段 1 の被リンク系 7 UA の Disallow は「静的配信になったら外す」が未実施 (S154 What's Next)。
+- 第 0 段 4 (11 月下旬まで投入を絞る) と Vercel Usage の再確認は、Vercel 停止により不要になった。第 0 段 1 の被リンク系 7 UA の Disallow は S154 `dbaa0368` で除去した (`*` group は不変、Rule D verifier PASS)。
 - 振り返り: `RETROSPECTIVE_hosting.md`。
