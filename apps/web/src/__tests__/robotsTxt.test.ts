@@ -1,4 +1,5 @@
-// D-217 止血 — public/robots.txt: search engines may crawl the content; backlink crawlers may not (until static).
+// D-217 — public/robots.txt: search engines may crawl the content. The temporary backlink-crawler block
+// (stage 0.1, "until static") was removed after the Cloudflare static cutover (S154).
 // The file is static (no function, no middleware); these checks pin its intent.
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -45,22 +46,14 @@ describe("public/robots.txt (D-217)", () => {
   const gs = groups(text);
   const star = gs.find((g) => g.agents.includes("*"));
 
-  it("blocks the SEO / backlink crawlers seen in the Vercel firewall log from the whole site", () => {
-    const blocked = gs.filter((g) => g.disallow.includes("/")).flatMap((g) => g.agents);
-    for (const bot of ["MJ12bot", "SemrushBot", "SERankingBacklinksBot", "AhrefsBot"]) {
-      expect(blocked).toContain(bot);
-    }
-    expect(blocked).not.toContain("*");
+  it("blocks no crawler from the whole site (the backlink-crawler group was removed once static, D-217 stage 0.1)", () => {
+    expect(gs.filter((g) => g.disallow.includes("/"))).toEqual([]);
   });
 
-  it("has exactly two groups: the named backlink crawlers and *", () => {
+  it("has exactly one group: *", () => {
     // A crawler that matches a named group ignores `*` (RFC 9309 §2.2.1), so a stray named group
     // (say Googlebot) could hide content without touching the `*` rules.
-    expect(gs).toHaveLength(2);
-    expect(gs.map((g) => [...g.agents].sort())).toEqual([
-      ["AhrefsBot", "BLEXBot", "DataForSeoBot", "DotBot", "MJ12bot", "SERankingBacklinksBot", "SemrushBot"],
-      ["*"],
-    ]);
+    expect(gs.map((g) => g.agents)).toEqual([["*"]]);
   });
 
   it("keeps every crawler off the API and the per-user pages in all locales", () => {
