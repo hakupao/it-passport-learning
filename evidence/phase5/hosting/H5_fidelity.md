@@ -49,7 +49,7 @@
 | 分類 | js | nojs | 説明 |
 |---|---:|---:|---|
 | expected: L4 内容 (同文、分割位置のみ) | 192 | 192 | L4-c の `[[jp:]]` 付け (例 zh「封装在日语里叫“カプセル化”」の カプセル化 が別 span に)。全連結は一致 |
-| expected: L4 内容 (文言の変更) | 43 | 43 | L4-b の zh 日本語語彙置換・en の hook 修正等。削除側 = main の源、追加側 = branch の源に存在 |
+| expected: L4 内容 (文言の変更) | 43 | 43 | L4-b の zh 日本語語彙置換 (43 hunk はすべて zh。en 44 頁は分割位置の差 77 hunk のみ — Rule D LOW-4 で訂正)。削除側 = main の源、追加側 = branch の源に存在 |
 | expected: L4 内容 (手で分類) | 1 | 1 | zh/strategy-05-14-u05 の見出し「个人番号（My Number）」→「个人编号（My Number）」: term_zh (cade606e) から合成される文字列で単純照合に掛からない |
 | expected: meta.title (手で分類) | 1 | 1 | zh/strategy-02-05-u03 の title「我的编号法」→「个人编号法」(unit_index.json の title_zh、L4) |
 | expected: chrome (nojs のみ) | — | 732 | main の streaming SSR が LocaleSwitcher (日 / 中 / EN) を fallback と `<div hidden id="S:0">` の 2 回出力、静的版は fallback 1 回 (`BAILOUT_TO_CLIENT_SIDE_RENDERING`)。表示は同じ、JS 有りでは一致 |
