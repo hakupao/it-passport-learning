@@ -23,3 +23,8 @@
 
 ## 補足 (CPU)
 02:18 の 14 件は p50 6.1 ms / max 13.6 ms (新 version なし)。10 ms 超は deploy 直後だけでなく **しばらく使われなかった後の冷えた isolate** でも起きる。errors 0 は変わらず、D-224 の結論 (Free 継続) は維持。
+
+## 追記 (H5 中、02:5x UTC)
+- **HTML smoke** (`docs/templates/batch-tools/prod-smoke.mjs` の BASE を workers.dev に替えた scratchpad 複製、D-213): 10 単元 × 3 言語 **30/30** (200・title・生記法なし)。対象ホストの引数化は H6。
+- **§7-6 asset 数**: `wrangler versions view` は件数を出さず、Builds の log API は OAuth token で 403 (code 12004)。deploy は成功しているので 20,000 未満は確定 (local build 16,195)。正確な upload 件数は H7 で dashboard の build log を見る。
+- **所有者の実同期**: ユーザーの browser で 1 回 (02:09〜02:11 の Worker 要求に Upstash subrequest 2 件ずつ、記録 445 B、errors 0)。
