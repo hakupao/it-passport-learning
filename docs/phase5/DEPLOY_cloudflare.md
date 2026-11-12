@@ -138,7 +138,7 @@ pnpm exec wrangler secret list   # 名前が 3 件だけあること
 
 ## 5. push 前の local 検査 (`pnpm check:release`)
 
-CI では規則 (c) が走らないので、**production branch (今は `hosting-cf`、H7 後は `main`) へ app に関わる commit を push する前に毎回**、local で実行する:
+CI では規則 (c) が走らないので、**production branch `main` (S154 H7 から。H7 までは hosting-cf) へ app に関わる commit を push する前に毎回**、local で実行する:
 
 ```sh
 cd apps/web

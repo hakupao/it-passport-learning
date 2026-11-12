@@ -40,12 +40,12 @@ function sandbox(): string {
   return commit("README.md", "base");
 }
 
-function hook(lines: string[], check = "echo CHECK_RAN") {
+function hook(lines: string[], check = "echo CHECK_RAN", branch: Record<string, string> = { ITP_PROD_BRANCH: "prod" }) {
   const r = spawnSync("sh", [path.join(tmp, ".githooks/pre-push"), "origin", "git@example.invalid:x.git"], {
     cwd: tmp,
     input: lines.map((l) => l + "\n").join(""),
     encoding: "utf-8",
-    env: { PATH: process.env.PATH ?? "", HOME: tmp, ITP_PROD_BRANCH: "prod", ITP_CHECK_RELEASE_CMD: check } as unknown as NodeJS.ProcessEnv,
+    env: { PATH: process.env.PATH ?? "", HOME: tmp, ...branch, ITP_CHECK_RELEASE_CMD: check } as unknown as NodeJS.ProcessEnv,
   });
   return { code: r.status, out: r.stdout + r.stderr };
 }
@@ -130,6 +130,15 @@ describe(".githooks/pre-push", () => {
     });
     expect(cli.stdout.trim()).toBe("build");
     expect(hook([line(head, base)]).out).toContain("CHECK_RAN");
+  });
+
+  it("defaults the production branch to main (S154 H7) when ITP_PROD_BRANCH is unset", () => {
+    const base = sandbox();
+    const head = commit("apps/web/src/a.ts");
+    const r = hook([line(head, base, "main")], "echo CHECK_RAN", {});
+    expect(r.out).toContain("CHECK_RAN");
+    expect(r.code).toBe(0);
+    expect(hook([line(head, base, "hosting-cf")], "echo CHECK_RAN", {}).out).not.toContain("CHECK_RAN");
   });
 
   it("is committed executable", () => {

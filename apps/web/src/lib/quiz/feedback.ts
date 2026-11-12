@@ -1,6 +1,6 @@
 // D-149 — owner-only per-question quiz feedback (Session 126).
 //
-// Storage = the existing Upstash Redis (Vercel KV integration, D-100). Layout:
+// Storage = the existing Upstash Redis (D-100; created via Vercel Marketplace integration, see DEPLOY §6 OQ-2). Layout:
 //   quiz:feedback:rec:<id>            → FeedbackRecord (JSON; @upstash/redis
 //                                       auto-serialises objects)
 //   quiz:feedback:index               → ZSET  member=<id> score=created ms

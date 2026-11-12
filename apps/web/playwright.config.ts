@@ -6,10 +6,10 @@
 // default used to be the Vercel production alias, which made an accidental prod run one command away.
 // `PLAYWRIGHT_BASE_URL` overrides it (local servers only, never :3000).
 //
-// Auth strategy: read `FIREWALL_BASIC_AUTH` (base64 of `user:pass`) from the
-// process env or from `apps/web/.env.local`. Inject as `Authorization: Basic
-// <token>` on every request via `use.extraHTTPHeaders`. Chrome carries this
-// for sub-resource fetches, so the SPA's AI SDK calls inherit it too.
+// Auth (Vercel era, D-097): `FIREWALL_BASIC_AUTH` (base64 of `user:pass`) from the process env or
+// `apps/web/.env.local` is still injected as `Authorization: Basic <token>` when set. The local static
+// stand-in and Cloudflare production have no Basic Auth, so it is normally unset and the warning below
+// is harmless.
 
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -50,7 +50,7 @@ export default defineConfig({
   // base URLs; without E2E_OWNER_KEY it is left out so a plain run still passes.
   testIgnore: process.env.E2E_OWNER_KEY ? [] : ["**/learning-owner.spec.ts"],
   fullyParallel: false,
-  workers: 1, // serial — gentle on prod LLM cost envelope; total LLM calls ≤9.
+  workers: 1, // serial — specs share one local server (+ fake Upstash state); LLM calls are faked or blocked (helpers/fakeAnthropic).
   retries: 1,
   timeout: 30_000,
   expect: { timeout: 10_000 },
