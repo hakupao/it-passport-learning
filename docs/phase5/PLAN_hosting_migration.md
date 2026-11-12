@@ -62,6 +62,7 @@
 
 ### H6 運用の付け替え
 - D-206 自動投入、`prod-smoke.mjs` の対象ホスト、D-212 (docs のみは build しない) の新ホスト版、配置手順を `docs/` に。
+- **S154 writer 完了 (Rule D 待ち)**: `prod-smoke.mjs --target vercel|workers|prod` + canonical 検査 (H5 LOW-2)、`prod-e2e.sh` は Cloudflare の check run `Workers Builds: itlearn` を待つ、watch paths = D-212 (`lib/release/watchPaths.ts`、docs だけの push の skip は `bc24d650` で実地確認、パスの基準は内容 push で確定)、監視 `scripts/cf-monitor.ts` (D-224、200 KB でユーザーへ)、pre-push hook `.githooks/pre-push` (D-225 LOW-1、opt-in)。手順は `docs/phase5/DEPLOY_cloudflare.md` §2-3・§5・§6-8・§9・§10。既定の切替 (smoke 対象・hook の branch・gates.sh・local-e2e.sh・playwright 既定) は H7 の 1 commit (§6-8)。
 
 ### H7 切替 (ユーザー確認の上で実施)
 - `itlearn.bojiangz.com` を Worker の custom domain に。切替後 smoke。Vercel は 7 日程度残して戻せるようにし、その間 Vercel 側は noindex。問題なければ Vercel project を停止。

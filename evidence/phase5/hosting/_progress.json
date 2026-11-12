@@ -1,8 +1,8 @@
 {
   "plan": "docs/phase5/PLAN_hosting_migration.md",
   "branch": "hosting-cf",
-  "current_step": "H5 PASS (local Rule A + e2e 159/0/2 + preview smoke 30/30、Rule D verifier PASS LOW 6、H5_review.md)",
-  "next_step": "H6: 1) prod-smoke の BASE を引数化 (Vercel / workers.dev / itlearn.bojiangz.com) + canonical 値の検査 (LOW-2) 2) D-206 自動投入・D-212 docs-only skip の新ホスト版 (Workers Builds の watch paths) 3) CPU 監視手順 (H4_cpu_measurement.md) 4) DEPLOY_cloudflare.md 更新 5) LOW-1 pre-push hook 6) Rule D",
+  "current_step": "H6 writer done (Rule D 待ち): prod-smoke 対象選択 + canonical、watch paths 規則 (lib/release/watchPaths)、prod-e2e の Cloudflare 待ち、cf-monitor (D-224)、pre-push hook (LOW-1)。H6_ops.md",
+  "next_step": "H6 Rule D (verifier opus、writer = executor): H6_ops.md の表と DEPLOY_cloudflare.md §2-3・§5・§6-8・§9・§10 を審査。その後 H7 (ユーザー確認): DEPLOY §6 の手順 + §6-8 の既定切替 1 commit。未確定: watch paths のパス基準 (apps/web の外だけの最初の push で §9-2 の command)",
   "completed": [
     {
       "step": "H0-1",
@@ -165,7 +165,18 @@
         "nojs (生 HTML) で練習入口・session は読込 1 行のみ (H1-3 LOW-3 受容済)"
       ]
     },
-    "H5"
+    "H5",
+    {
+      "step": "H6",
+      "status": "WRITER_DONE",
+      "review": "pending (Rule D)",
+      "evidence": "evidence/phase5/hosting/H6_ops.md, H6_smoke_workers.log (preview 30/30)",
+      "carry": [
+        "watch paths のパス基準 (repo root / root directory) は未確定: bc24d650 (docs のみ) の skip は確認済、apps/web の外だけを変える push で確定 (DEPLOY §9-2)。root directory 基準なら内容 push が本番に出ない → ユーザー報告 + dashboard 変更",
+        "H7 の既定切替 (DEPLOY §6-8): prod-smoke DEFAULT_TARGET=prod、prod-e2e 既定 prod、pre-push PROD_BRANCH=main、gates.sh の .nft.json 閘 → check:release、local-e2e.sh の next start → local-cf + Worker + fake Upstash、playwright.config の既定 base URL (Vercel 本番)",
+        "pre-push hook は opt-in (core.hooksPath 未設定)。有効化はユーザー判断"
+      ]
+    }
   ],
   "gates_pending_user": [
     "H2 OQ-22 方式 (実測後)",

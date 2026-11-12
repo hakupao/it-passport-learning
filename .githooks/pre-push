@@ -1,0 +1,46 @@
+#!/bin/sh
+# S154 H6 (D-225 Rule D LOW-1: "check:release は約束のみ") — opt-in pre-push hook.
+# Workers Builds cannot run scan rule (c) (the IPA sources are gitignored), so every push of app-relevant
+# commits to the production branch must first pass `pnpm check:release` locally (DEPLOY_cloudflare.md §5).
+# This hook enforces that for pushes to refs/heads/$PROD_BRANCH only:
+#   - docs / evidence / failures / root docs only (the build watch paths, apps/web/scripts/needs-build.ts) → pass
+#   - otherwise the pushed commit must be HEAD with a clean tree (check:release builds the working tree),
+#     then check:release runs; a failure refuses the push.
+# Install (once per clone, opt-in):   git config core.hooksPath .githooks
+# Uninstall:                          git config --unset core.hooksPath
+# Emergency bypass (record why in the session log): git push --no-verify
+# Test stubs: ITP_PROD_BRANCH, ITP_CHECK_RELEASE_CMD (apps/web/src/__tests__/prePushHook.test.ts).
+set -u
+PROD_BRANCH="${ITP_PROD_BRANCH:-hosting-cf}" # H7: main
+CHECK="${ITP_CHECK_RELEASE_CMD:-pnpm -C apps/web check:release}"
+cd "$(git rev-parse --show-toplevel)" || exit 1
+status=0
+while read -r lref lsha rref rsha; do
+  [ "$rref" = "refs/heads/$PROD_BRANCH" ] || continue
+  case "$lsha" in *[!0]*) ;; *) continue ;; esac # branch deletion
+  case "$rsha" in
+    *[!0]*) d=$(node --no-warnings apps/web/scripts/needs-build.ts "$rsha" "$lsha" 2>/dev/null) || d=build ;;
+    *) d=build ;; # new remote branch: no base to diff against
+  esac
+  if [ "$d" = skip ]; then
+    echo "pre-push: $PROD_BRANCH <- docs-only change, Workers Builds will not build; check:release not needed"
+    continue
+  fi
+  head=$(git rev-parse HEAD)
+  if [ "$lsha" != "$head" ]; then
+    echo "pre-push: refusing — pushing $lsha to $PROD_BRANCH but HEAD is $head; check:release builds the working tree, check out the pushed commit first"
+    status=1
+    continue
+  fi
+  if [ -n "$(git status --porcelain --untracked-files=normal)" ]; then
+    echo "pre-push: refusing — uncommitted or untracked files; check:release would not test the pushed commit"
+    status=1
+    continue
+  fi
+  echo "pre-push: $PROD_BRANCH <- app-relevant change, running check:release for $lsha"
+  if ! sh -c "$CHECK" </dev/null; then
+    echo "pre-push: check:release failed — push refused"
+    status=1
+  fi
+done
+exit $status
