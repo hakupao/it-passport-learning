@@ -78,7 +78,7 @@ D-225 の文言は「他 branch は preview build」だが、上の理由で H7 
 > 2. 最初の branch build で、check run 名が production と区別できるか (`prod-e2e.sh` は名前 `Workers Builds: itlearn` で判定、§6 OQ-1) と、preview URL が noindex になるか (`_headers` の workers.dev 規則が preview の host に当たるか) を確かめる。
 > 3. preview には秘密を設定しない (`/api/*` は 403 のまま)。
 >
-> 条件 1〜3 の実地の確認結果は本書にはまだ無い (session log を参照)。
+> **[2026-11-12 D-227 実地、条件 1〜3 確認済]** Preview Builds = ON。`wrangler.jsonc` に空の `"previews": {}` が必須 (無いと `wrangler preview` が deploy で失敗、`failures/phase5/hosting/step_D227_attempt_1_preview_block.md`)。空 block = preview は vars・secrets・binding を受け取らない (docs「Previews do not inherit production settings」、assets と compatibility は top-level のみで共有)。preview URL = `https://<branch>-itlearn.bojiang.workers.dev`。実測 (branch `robots-open-backlink`): `X-Robots-Tag: noindex`、`/api/learning` 403、`/api/owner?key=x` は Set-Cookie なし。preview の check run は本番と同名 → `prod-e2e.sh` は summary に `/previews/` を含む run を除外、merge は `--no-ff`。上の「preview builds はオフを推奨」「`previews` は無い」「実地では未確認」は H7 前の記述。
 
 ### 2-3. Build watch paths
 

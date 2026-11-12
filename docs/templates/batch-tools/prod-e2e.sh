@@ -17,9 +17,10 @@ case $T in
   workers|prod)
     s=absent
     for i in {1..60}; do
-      s=$(gh api repos/hakupao/it-passport-learning/commits/$1/check-runs --jq '[.check_runs[] | select(.name == "Workers Builds: itlearn" and ((.output.summary // "") | contains("/previews/") | not))] | sort_by(.started_at) | last | if . == null then "absent" elif .status != "completed" then "pending" else .conclusion end' 2>/dev/null)
+      s=$(gh api repos/hakupao/it-passport-learning/commits/$1/check-runs --jq '[.check_runs[] | select(.name == "Workers Builds: itlearn" and ((.output.summary // "") | contains("/previews/") | not))] | if length == 0 then "absent" elif any(.[]; .status != "completed") then "pending" else (sort_by(.started_at) | last | .conclusion) end' 2>/dev/null)
       # gh の失敗 (network・rate limit) は空 → 期限 (20 分) まで待ち続ける (Rule D LOW-4)
-      [ -z "$s" ] && { echo "gh error (retry)"; s=absent; }
+      # 4xx (例: 未 push の sha) は --jq があっても error JSON が stdout に出る → 既知の値以外は gh error 扱い (S154 Rule D L-2)
+      case "$s" in success|failure|cancelled|timed_out|action_required|neutral|skipped|stale|absent|pending) ;; *) echo "gh error (retry)"; s=absent ;; esac
       [ "$s" != absent ] && [ "$s" != pending ] && break; perl -e 'select(undef,undef,undef,20)'
     done
     echo "cloudflare $s" ;;
