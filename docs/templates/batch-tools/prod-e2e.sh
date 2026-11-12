@@ -6,6 +6,9 @@
 #   workers / prod  : Cloudflare Workers Builds の check run "Workers Builds: itlearn" が success になるまで。
 #                     check run は build の終了時にだけ現れることがある (S154 6701ac43 は started = completed) ので
 #                     「無い」= build 中か watch paths で skip (D-212)。20 分待って無ければ exit 1 (docs だけの push には使わない)
+#                     D-227 (S154): preview build も同じ名前の check run を付ける (区別できる欄なし)。branch の commit を
+#                     main へ fast-forward すると同じ sha に preview と本番の 2 本が並ぶので、最も新しく始まった 1 本を見る。
+#                     branch は main へ `git merge --no-ff` で入れ、本番の sha に preview の check run を載せない。
 N=<SCRATCH>
 T=${4:-prod}
 cd /Volumes/DevSSD/Project/IT-Passport-Learning
@@ -13,7 +16,7 @@ case $T in
   workers|prod)
     s=absent
     for i in {1..60}; do
-      s=$(gh api repos/hakupao/it-passport-learning/commits/$1/check-runs --jq '[.check_runs[] | select(.name == "Workers Builds: itlearn")][0] | if . == null then "absent" elif .status != "completed" then "pending" else .conclusion end' 2>/dev/null)
+      s=$(gh api repos/hakupao/it-passport-learning/commits/$1/check-runs --jq '[.check_runs[] | select(.name == "Workers Builds: itlearn")] | sort_by(.started_at) | last | if . == null then "absent" elif .status != "completed" then "pending" else .conclusion end' 2>/dev/null)
       # gh の失敗 (network・rate limit) は空 → 期限 (20 分) まで待ち続ける (Rule D LOW-4)
       [ -z "$s" ] && { echo "gh error (retry)"; s=absent; }
       [ "$s" != absent ] && [ "$s" != pending ] && break; perl -e 'select(undef,undef,undef,20)'
