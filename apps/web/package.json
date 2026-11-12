@@ -6,6 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack && node scripts/postexport.ts out",
     "scan:out": "node scripts/scan-out.ts out",
+    "scan:out:ci": "node scripts/scan-out.ts out --no-ipa-sources",
+    "gate:content": "node --no-warnings ../../scripts/lang-leak-scan.ts --gate && vitest run --project unit src/lib/textbook/__tests__/v2-corpus.test.ts",
+    "build:cf": "pnpm gate:content && pnpm build && pnpm scan:out:ci",
+    "check:release": "pnpm gate:content && pnpm build && pnpm scan:out",
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -46,6 +50,7 @@
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.6",
+    "wrangler": "4.160.0"
   }
 }

@@ -1,0 +1,292 @@
+$ pnpm gate:content && pnpm build && pnpm scan:out
+$ node --no-warnings ../../scripts/lang-leak-scan.ts --gate && vitest run --project unit src/lib/textbook/__tests__/v2-corpus.test.ts
+lang-leak gate (scripts/fixtures/lang-allow.json, 522 entries): groups 89833, hits 7602
+  allowed 659 · scope-excluded derived=6010 key-guard-note=193 · punct-only 543 · warn 197 (R-ja-latin-run=13 R-zh-jpword-ctx=184)
+  rule allowances (summed over rules): [[jp:]] chars 51129 in 7856 fields · choice labels 9062 · quiz-bracket jpform chars 45
+  messages key set zh vs ja: missing 0, extra 0
+  messages key set en vs ja: missing 0, extra 0
+lang-leak gate: PASS
+
+ RUN  v4.1.6 /Volumes/DevSSD/Project/IT-Passport-Learning/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  10:02:00
+   Duration  577ms (transform 46ms, setup 0ms, import 49ms, tests 435ms, environment 0ms)
+
+$ next build --turbopack && node scripts/postexport.ts out
+   ▲ Next.js 15.5.18 (Turbopack)
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+(node:88799) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:88800) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ Finished writing to disk in 164ms
+ ✓ Compiled successfully in 2.7s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/14281) ...
+   Generating static pages (3570/14281) 
+   Generating static pages (7140/14281) 
+   Generating static pages (10710/14281) 
+ ✓ Generating static pages (14281/14281)
+   Finalizing page optimization ...
+   Collecting build traces ...
+   Exporting (0/2) ...
+ ✓ Exporting (2/2)
+
+Route (app)                                    Size  First Load JS
+┌ ○ /_not-found                                 0 B         115 kB
+├ ● /[locale]                               6.14 kB         151 kB
+├   ├ /ja
+├   ├ /zh
+├   └ /en
+├ ● /[locale]/glossary                      1.15 kB         136 kB
+├   ├ /ja/glossary
+├   ├ /zh/glossary
+├   └ /en/glossary
+├ ● /[locale]/glossary/[termId]             1.77 kB         147 kB
+├   ├ /ja/glossary/t8d27efa9bfde163e
+├   ├ /ja/glossary/t483af4986fcf4261
+├   ├ /ja/glossary/t18f93394074c6915
+├   └ [+4182 more paths]
+├ ● /[locale]/mock                          10.6 kB         145 kB
+├   ├ /ja/mock
+├   ├ /zh/mock
+├   └ /en/mock
+├ ● /[locale]/mock/run                      21.9 kB         167 kB
+├   ├ /ja/mock/run
+├   ├ /zh/mock/run
+├   └ /en/mock/run
+├ ● /[locale]/practice                      27.4 kB         183 kB
+├   ├ /ja/practice
+├   ├ /zh/practice
+├   └ /en/practice
+├ ● /[locale]/practice/browse                8.3 kB         143 kB
+├   ├ /ja/practice/browse
+├   ├ /zh/practice/browse
+├   └ /en/practice/browse
+├ ● /[locale]/practice/browse/[topicId]     10.5 kB         166 kB
+├   ├ /ja/practice/browse/technology-13-33
+├   ├ /ja/practice/browse/technology-13-34
+├   ├ /ja/practice/browse/technology-13-35
+├   └ [+186 more paths]
+├ ● /[locale]/practice/mistakes              3.6 kB         148 kB
+├   ├ /ja/practice/mistakes
+├   ├ /zh/practice/mistakes
+├   └ /en/practice/mistakes
+├ ● /[locale]/practice/q/[qid]              19.8 kB         175 kB
+├   ├ /ja/practice/q/2009h21a-q001
+├   ├ /ja/practice/q/2009h21a-q002
+├   ├ /ja/practice/q/2009h21a-q003
+├   └ [+8697 more paths]
+├ ● /[locale]/quiz                          1.58 kB         136 kB
+├   ├ /ja/quiz
+├   ├ /zh/quiz
+├   └ /en/quiz
+├ ● /[locale]/record                        9.93 kB         144 kB
+├   ├ /ja/record
+├   ├ /zh/record
+├   └ /en/record
+├ ● /[locale]/sensei                        15.4 kB         160 kB
+├   ├ /ja/sensei
+├   ├ /zh/sensei
+├   └ /en/sensei
+├ ● /[locale]/settings                      6.73 kB         141 kB
+├   ├ /ja/settings
+├   ├ /zh/settings
+├   └ /en/settings
+├ ● /[locale]/textbook                      5.82 kB         140 kB
+├   ├ /ja/textbook
+├   ├ /zh/textbook
+├   └ /en/textbook
+├ ● /[locale]/textbook/[unitId]               15 kB         160 kB
+├   ├ /ja/textbook/strategy-01-01-u01
+├   ├ /ja/textbook/strategy-01-01-u02
+├   ├ /ja/textbook/strategy-01-01-u03
+├   └ [+729 more paths]
+├ ● /data/glossary/[file]                       0 B            0 B
+├   ├ /data/glossary/cards.ja.json
+├   ├ /data/glossary/cards.zh.json
+├   └ /data/glossary/cards.en.json
+├ ● /data/practice/[file]                       0 B            0 B
+├   ├ /data/practice/today.ja.json
+├   ├ /data/practice/today.zh.json
+├   └ /data/practice/today.en.json
+├ ● /data/quiz-expl/[file]                      0 B            0 B
+├   ├ /data/quiz-expl/2009h21a-1.json
+├   ├ /data/quiz-expl/2009h21a-2.json
+├   ├ /data/quiz-expl/2009h21a-3.json
+├   └ [+287 more paths]
+├ ● /data/quiz/[file]                           0 B            0 B
+├   ├ /data/quiz/2009h21h.ja.json
+├   ├ /data/quiz/2009h21h.zh.json
+├   ├ /data/quiz/2009h21h.en.json
+├   └ [+84 more paths]
+├ ○ /data/quiz/index.json                       0 B            0 B
+├ ● /data/sensei/[file]                         0 B            0 B
+├   ├ /data/sensei/terms-0.ja.json
+├   ├ /data/sensei/terms-0.zh.json
+├   ├ /data/sensei/terms-0.en.json
+├   └ [+45 more paths]
+└ ● /data/textbook/[file]                       0 B            0 B
+    ├ /data/textbook/units.ja.json
+    ├ /data/textbook/units.zh.json
+    └ /data/textbook/units.en.json
++ First Load JS shared by all                115 kB
+  ├ chunks/2cd29438f8abb3da.js              59.2 kB
+  ├ chunks/694c0fe0fb8037e8.js              17.2 kB
+  ├ chunks/98151e3513f74f5b.js              21.2 kB
+  └ other shared chunks (total)             17.3 kB
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+
+(node:89087) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/DevSSD/Project/IT-Passport-Learning/apps/web/scripts/postexport.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Volumes/DevSSD/Project/IT-Passport-Learning/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "pruned": {
+    "ja/practice/q": {
+      "html": 2900,
+      "deleted": 2900
+    },
+    "ja/glossary": {
+      "html": 1395,
+      "deleted": 1395
+    },
+    "zh/practice/q": {
+      "html": 2900,
+      "deleted": 2900
+    },
+    "zh/glossary": {
+      "html": 1395,
+      "deleted": 1395
+    },
+    "en/practice/q": {
+      "html": 2900,
+      "deleted": 2900
+    },
+    "en/glossary": {
+      "html": 1395,
+      "deleted": 1395
+    }
+  },
+  "redirects": {
+    "sections": [
+      "glossary",
+      "mock",
+      "practice",
+      "quiz",
+      "record",
+      "sensei",
+      "settings",
+      "textbook"
+    ]
+  },
+  "headers": {
+    "analytics": false
+  },
+  "sitemap": {
+    "pages": 13842,
+    "listed": 13827,
+    "noindex": 6,
+    "disallowed": 9,
+    "files": [
+      "sitemap.xml"
+    ]
+  }
+}
+$ node scripts/scan-out.ts out
+(node:89174) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Volumes/DevSSD/Project/IT-Passport-Learning/apps/web/scripts/scan-out.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Volumes/DevSSD/Project/IT-Passport-Learning/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "outDir": "/Volumes/DevSSD/Project/IT-Passport-Learning/apps/web/out",
+  "pass": true,
+  "findings": {
+    "a": 0,
+    "b": 0,
+    "c": 0,
+    "d": 0,
+    "e": 0
+  },
+  "files": {
+    "total": 16195,
+    "limit": 20000,
+    "headroom": 3805,
+    "bytes": 983341280,
+    "largest": {
+      "rel": "sitemap.xml",
+      "size": 1105493
+    },
+    "byTop": {
+      "(root)": {
+        "files": 18,
+        "bytes": 2179218
+      },
+      "_next/": {
+        "files": 406,
+        "bytes": 11590406
+      },
+      "data/": {
+        "files": 435,
+        "bytes": 39348900
+      },
+      "en/": {
+        "files": 4931,
+        "bytes": 299939489
+      },
+      "ja/": {
+        "files": 4931,
+        "bytes": 304417370
+      },
+      "quiz-figures/": {
+        "files": 543,
+        "bytes": 34562180
+      },
+      "zh/": {
+        "files": 4931,
+        "bytes": 291303717
+      }
+    },
+    "families": {
+      "questionHtml": 8700,
+      "termHtml": 4185,
+      "detailTxt": 0,
+      "otherHtml": 957,
+      "otherTxt": 957,
+      "data": 435,
+      "quizFigures": 543,
+      "nextStatic": 406
+    }
+  },
+  "sourceText": {
+    "sourceJsonFiles": 3654,
+    "sourcePdfs": 61,
+    "sourceChars": 9184154,
+    "sourceWindows": 688545,
+    "idWindowsSkipped": 118771,
+    "sourceOnlyWindows": 424636,
+    "corpusFiles": 718,
+    "textFilesScanned": 15301,
+    "hashCandidates": 0,
+    "confirmed": 0
+  },
+  "analytics": {
+    "htmlPages": 13842,
+    "beaconPages": 0
+  },
+  "seconds": {
+    "index": 7.25,
+    "total": 57.587
+  },
+  "sample": []
+}
+check_release=0 seconds=88

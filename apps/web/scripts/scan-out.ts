@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 // D-217 H1-6 — the IPA leak gate on out/ (run after the export build, before every deploy; H6):
-//   node scripts/scan-out.ts [out-dir] [--json report.json]      (default out-dir: out)
+//   node scripts/scan-out.ts [out-dir] [--json report.json] [--no-ipa-sources]   (default out-dir: out)
 // Exit 0 only when every rule of src/lib/export/outScan.ts has 0 findings. Rule (c) needs the
 // gitignored IPA source material (data/ip/exams, data/ip/sources PDFs via pdftotext, data/ip/syllabus):
 // when any of it is missing the scan fails — it never passes on an empty source set.
+// --no-ipa-sources (D-225, Cloudflare Workers Builds only — the clone has no IPA sources): skips rule
+// (c) and nothing else, says so loudly on stderr and reports findings.c = "skipped". Rule (c) then
+// rests on `pnpm check:release` having passed locally on the same commit before the push.
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -22,6 +25,7 @@ import {
 } from "../src/lib/export/outScan.ts";
 
 const args = process.argv.slice(2);
+const skipSourceText = args.includes("--no-ipa-sources");
 const jsonAt = args.indexOf("--json");
 const jsonOut = jsonAt >= 0 ? args[jsonAt + 1] : undefined;
 const positional = args.filter((a, i) => !a.startsWith("--") && (jsonAt < 0 || i !== jsonAt + 1));
@@ -50,16 +54,26 @@ function jsonLeaves(file: string): string[] {
 }
 
 // ---- (c) sources and corpora --------------------------------------------------------------------
+if (skipSourceText) {
+  console.error(
+    "scan-out: ******** RULE (c) SKIPPED (--no-ipa-sources) ********\n" +
+      "scan-out: the IPA source-text check did NOT run on this out/. It must have passed locally on this\n" +
+      "scan-out: commit (`pnpm check:release`) before the push. Rules (a) (b) (d) (e) run as usual.",
+  );
+}
 const SOURCE_DIRS = ["exams", "sources", "syllabus"].map((d) => path.join(IP, d));
-for (const d of SOURCE_DIRS) {
+for (const d of skipSourceText ? [] : SOURCE_DIRS) {
   if (!existsSync(d)) {
     console.error(`scan-out: IPA source dir missing: ${d} — rule (c) cannot run, refusing to pass`);
     process.exit(2);
   }
 }
-const sourceJson = [...files(path.join(IP, "exams"), /\.json$/), ...files(path.join(IP, "syllabus"), /\.json$/)];
-const pdfs = files(path.join(IP, "sources"), /\.pdf$/i);
-if (sourceJson.length === 0 || pdfs.length === 0) {
+// Skipped: no source and no corpus → an empty index, no candidates, no (c) findings.
+const sourceJson = skipSourceText
+  ? []
+  : [...files(path.join(IP, "exams"), /\.json$/), ...files(path.join(IP, "syllabus"), /\.json$/)];
+const pdfs = skipSourceText ? [] : files(path.join(IP, "sources"), /\.pdf$/i);
+if (!skipSourceText && (sourceJson.length === 0 || pdfs.length === 0)) {
   console.error(`scan-out: no IPA source files (json ${sourceJson.length}, pdf ${pdfs.length}) — refusing to pass`);
   process.exit(2);
 }
@@ -73,7 +87,7 @@ function pdfText(file: string): string {
 }
 
 /** The texts the site is built from (D-217 H1-2 / lib readers) + the UI messages. */
-const corpusFiles = [
+const corpusFiles = skipSourceText ? [] : [
   ...files(path.join(IP, "quiz"), /\.json$/, false),
   ...files(path.join(IP, "quiz/translations"), /\.json$/, false),
   ...files(path.join(IP, "quiz/explanations"), /\.json$/, false),
@@ -152,7 +166,14 @@ const count = (re: RegExp): number => all.filter((f) => re.test(f.rel)).length;
 const report = {
   outDir,
   pass: findings.length === 0,
-  findings: { a: 0, b: 0, c: 0, d: 0, e: 0, ...Object.fromEntries(Object.entries(Object.groupBy(findings, (x) => x.rule)).map(([k, v]) => [k, v!.length])) },
+  findings: {
+    a: 0,
+    b: 0,
+    c: skipSourceText ? "skipped" : 0,
+    d: 0,
+    e: 0,
+    ...Object.fromEntries(Object.entries(Object.groupBy(findings, (x) => x.rule)).map(([k, v]) => [k, v!.length])),
+  },
   files: {
     total: limits.total,
     limit: 20_000,
@@ -171,7 +192,7 @@ const report = {
       nextStatic: count(/^_next\//),
     },
   },
-  sourceText: {
+  sourceText: skipSourceText ? { skipped: "--no-ipa-sources (rule c not run)" } : {
     sourceJsonFiles: sourceJson.length,
     sourcePdfs: pdfs.length,
     sourceChars: index.sourceChars,
@@ -189,4 +210,5 @@ const report = {
 };
 if (jsonOut) writeFileSync(jsonOut, JSON.stringify({ ...report, sample: findings }, null, 2) + "\n");
 console.log(JSON.stringify(report, null, 2));
+if (skipSourceText) console.error("scan-out: reminder — rule (c) was SKIPPED; it rests on the local `pnpm check:release`.");
 process.exit(report.pass ? 0 : 1);

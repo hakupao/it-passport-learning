@@ -10,7 +10,12 @@ packages:
 allowBuilds:
   '@parcel/watcher': false
   '@swc/core': false
+  # esbuild / workerd = wrangler (D-225 Workers Builds deploy). Their postinstall only checks or fetches the
+  # platform binary, which pnpm already installs from the @esbuild/* and @cloudflare/workerd-* optional
+  # packages; `wrangler deploy` bundles with esbuild's JS API and never starts workerd.
+  esbuild: false
   # puppeteer = headless Chromium for @mermaid-js/mermaid-cli (Stage 4 Mermaid→SVG render, D-131-E)
   puppeteer: true
   sharp: true
   unrs-resolver: true
+  workerd: false
