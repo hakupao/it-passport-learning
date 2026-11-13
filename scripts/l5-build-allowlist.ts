@@ -29,7 +29,6 @@ const CATEGORIES: Record<string, string> = {
   "proper-name": "Japanese place names and the official Japanese names of systems (本駒込, 栃木県, みちびき).",
   "bracket-original": "Quiz sidecar convention (L2 / L3 A04/A17/A21): the Japanese original next to its translation, in brackets / quotes or introduced by 日语称 / in Japanese. The quiz sidecars have no [[jp:]] markup.",
   "jp-explained": "The text explains a Japanese word itself (its reading, its characters, a Japanese search word); the Japanese is the subject of the sentence.",
-  "tb-jp-unmarked": "D-221 marking pending (follow-up): textbook intended Japanese (a word explained, a 'Japanese name' row) without the [[jp:]] mark — a convention gap, not a leak. Enumerated exactly; mark via a B3 patch, then rebuild.",
   "tb-data": "Textbook: example data (a sample character, a LIKE example, exam pseudo-language type names).",
   "d222-6": "D-222.6: the bold **帰無** in the 帰無仮説 hook stays unmarked (removing the bold loses the emphasis; one case).",
   "same-formula": "R-same: a formula or label whose Japanese spelling is also the correct Chinese (exam spreadsheet notation 平均 / 整数部, 特性 (JIS …), if (条件) …) — L3 A14/A15.",
@@ -113,33 +112,6 @@ const KEEP_AT: Record<string, [string, string][]> = {
     ["data/ip/quiz/explanations/2014h26h.json","questions.2014h26h-q010.correct.zh"],
   ],
 };
-/** tb-jp-unmarked: enumerated (file, path, text) — D-221 marking pending. */
-const TB_UNMARKED_AT: [string, string, string][] = [
-  ["data/ip/textbook/units/strategy-03-09-u04.json","terms[2].detail_en","公開"],
-  ["data/ip/textbook/units/strategy-03-09-u05.json","terms[3].detail_zh","い"],
-  ["data/ip/textbook/units/strategy-03-10-u07.json","pairs[0].rows[3].a_en","上澄み吸収価格戦略"],
-  ["data/ip/textbook/units/strategy-03-10-u07.json","pairs[0].rows[3].a_zh","収価"],
-  ["data/ip/textbook/units/strategy-03-10-u07.json","pairs[0].rows[3].a_zh","戦"],
-  ["data/ip/textbook/units/strategy-03-10-u07.json","pairs[0].rows[3].a_zh","み"],
-  ["data/ip/textbook/units/strategy-03-10-u07.json","pairs[0].rows[3].b_en","市場浸透価格戦略"],
-  ["data/ip/textbook/units/strategy-03-10-u07.json","pairs[0].rows[3].b_zh","場"],
-  ["data/ip/textbook/units/strategy-03-10-u07.json","pairs[0].rows[3].b_zh","価"],
-  ["data/ip/textbook/units/strategy-03-10-u07.json","pairs[0].rows[3].b_zh","戦"],
-  ["data/ip/textbook/units/technology-13-34-u02.json","pairs[1].rows[0].a_en","中央値"],
-  ["data/ip/textbook/units/technology-13-34-u02.json","pairs[1].rows[0].b_en","最頻値"],
-  ["data/ip/textbook/units/technology-13-34-u06.json","goals_en[1]","エッジ"],
-  ["data/ip/textbook/units/technology-13-34-u06.json","goals_en[1]","辺"],
-  ["data/ip/textbook/units/technology-13-34-u06.json","terms[3].detail_en","辺"],
-  ["data/ip/textbook/units/technology-14-37-u03.json","terms[1].detail_en","手続"],
-  ["data/ip/textbook/units/technology-14-37-u03.json","terms[1].detail_zh","続"],
-  ["data/ip/textbook/units/technology-20-53-u03.json","terms[3].detail_zh","拡張"],
-  ["data/ip/textbook/units/technology-20-53-u03.json","terms[5].detail_zh","複"],
-  ["data/ip/textbook/units/technology-21-55-u01.json","terms[4].term_en","表"],
-  ["data/ip/textbook/units/technology-22-60-u06.json","terms[0].detail_zh","マイモ"],
-  ["data/ip/textbook/units/technology-23-62-u05.json","terms[1].one_zh","シーサート"],
-  ["data/ip/textbook/units/technology-23-62-u05.json","terms[2].one_zh","ソック"],
-  ["data/ip/textbook/units/technology-23-63-u10.json","terms[6].detail_en","本人拒否率"],
-];
 /** bracket-original words (R-zh-jpword): enumerated (file, path, text). */
 const BRACKET_WORD_AT: [string, string, string][] = [
   ["data/ip/quiz/explanations/2009h21h.json","questions.2009h21h-q049.distractors.ア.zh","结合测试"],
@@ -248,7 +220,7 @@ export const CLASSES: Cls[] = [
   { cat: "tb-data", file: /(technology-13-35-u02|technology-14-37-u04)\.json$/, text: /^あ$/, when: bracketed, reason: "sample character あ in a character-code example" },
   { cat: "tb-data", at: [["data/ip/textbook/units/technology-21-56-u01.json", "terms[2].points[1].text_en", "山"]], reason: "LIKE example %山 / 山%" },
   { cat: "tb-data", at: [["data/ip/textbook/units/technology-14-37-u03.json", "terms[2].detail_en", "整数型"]], reason: "exam pseudo-language type name 整数型 (○整数型: functionName(整数型: name))" },
-  { cat: "tb-jp-unmarked", at: TB_UNMARKED_AT },
+  { cat: "jp-explained", at: [["data/ip/textbook/units/technology-21-55-u01.json", "terms[4].term_en", "表"]], reason: "S155: the en headword 'Table (Japanese term 表)' names the Japanese word the term explains; term_en is a plain-string headword (manifest.v1_terms → reader h3 gloss, glossary termEn / search; B3 refuses term keys), so [[jp:]] is not parsed there and the word stays unmarked" },
 ];
 
 export const claim = (h: Hit, c: Ctx): Cls | undefined =>
