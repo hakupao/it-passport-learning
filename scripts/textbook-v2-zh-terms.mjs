@@ -14,8 +14,8 @@
 // Table: { schema, note,
 //          terms:    { jp: zh }                       global (v1 term_zh of conflict-free headwords + pilot words),
 //          per_unit: { jp: { unit_id: zh } }          the zh for that unit only (homographs, context-specific words),
-//          excluded: { jp: reason } }                 never checked (known v1 mistranslations, OQ-15) }
-// Seed (S135 D-201 plan B6): headword → its v1 term_zh when every unit agrees; the 4 known conflicts resolved as
+//          excluded: { jp: reason } }                 never checked (empty since S155: the OQ-15 v1 mistranslations were fixed in the units) }
+// Seed (S135 D-201 plan B6): headword → its v1 term_zh when every unit agrees; the known conflicts resolved as
 // CONFLICT_RULES (a new conflict stops the seed: it needs a decision); PILOT_WORDS = the jp → zh pairs the S135
 // pilot localisation settled on ([[jp:…]] glosses in management-10-27-u01〜u03), added where they are not headwords
 // (a headword keeps its v1 term_zh: term_zh = v1 is a v2 invariant).
@@ -37,8 +37,8 @@ export const TABLE_SCHEMA = "textbook-zh-terms-1";
 export const CONFLICT_RULES = {
   MBO: { kind: "per_unit", why: "homograph: 目标管理 (management by objectives) vs 管理层收购 (management buyout)" },
   "E-R図": { kind: "unify", zh: "E-R图", why: "spelling only (E-R 图 / E-R图（实体-关联图）)" },
-  デュアルシステム: { kind: "excluded", why: "OQ-15: v1 term_zh swapped with デュプレックスシステム across technology-16-43-u02 / technology-16-44-u03 (v1 mistranslation; term_zh = v1 invariant)" },
-  デュプレックスシステム: { kind: "excluded", why: "OQ-15: v1 term_zh swapped with デュアルシステム across technology-16-43-u02 / technology-16-44-u03 (v1 mistranslation; term_zh = v1 invariant)" },
+  // S155 OQ-15: the デュアルシステム / デュプレックスシステム swap of technology-16-44-u03 was corrected (scripts/oq15-apply.ts), so the
+  // pair is conflict-free and seeds as 双重系统 / 双工系统; its two "excluded" rules were removed so that a re-swap stops the seed.
 };
 
 /**

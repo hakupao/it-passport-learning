@@ -14,30 +14,35 @@ import { OVERRIDES, PILOT_WORDS, seedTable, termZhConflicts } from "./textbook-v
 const P = dataPaths();
 const units = () => readJson(P.index).topics.flatMap((t) => t.units.map((u) => readJson(P.unit(u.unit_id))));
 
-test("conflicts: exactly MBO / E-R図 / デュアルシステム / デュプレックスシステム, recomputed from the unit files", () => {
-  const c = termZhConflicts(units());
-  assert.deepEqual(Object.keys(c).sort(), ["E-R図", "MBO", "デュアルシステム", "デュプレックスシステム"].sort());
+test("conflicts: exactly MBO / E-R図, recomputed from the unit files", () => {
+  const all = units();
+  const c = termZhConflicts(all);
+  assert.deepEqual(Object.keys(c).sort(), ["E-R図", "MBO"].sort());
   assert.deepEqual(c["MBO"].map((x) => x.unit_id), ["strategy-01-01-u06", "strategy-03-09-u04"]);
-  // the swap (OQ-15): each system has both translations, crosswise in the two units
-  const z = (t, u) => c[t].find((x) => x.unit_id === u).term_zh;
-  assert.equal(z("デュアルシステム", "technology-16-43-u02"), z("デュプレックスシステム", "technology-16-44-u03"));
-  assert.equal(z("デュプレックスシステム", "technology-16-43-u02"), z("デュアルシステム", "technology-16-44-u03"));
+  // S155 OQ-15: the swap in technology-16-44-u03 was corrected — both units agree (D-175: dual = 双重系统, duplex = 双工系统)
+  const zh = (t, u) => all.find((x) => x.unit_id === u).terms.find((x) => x.term === t).term_zh;
+  for (const u of ["technology-16-43-u02", "technology-16-44-u03"]) {
+    assert.equal(zh("デュアルシステム", u), "双重系统", u);
+    assert.equal(zh("デュプレックスシステム", u), "双工系统", u);
+  }
 });
 
-test("seed: conflict-free v1 term_zh + per-unit MBO + unified E-R図 + pilot words; the swapped pair excluded (OQ-15); deterministic", () => {
+test("seed: conflict-free v1 term_zh + per-unit MBO + unified E-R図 + pilot words; nothing excluded (OQ-15 corrected S155); deterministic", () => {
   const all = units();
   const t = seedTable(all);
   const headwords = new Map();
   for (const u of all) for (const x of u.terms) headwords.set(x.term, x.term_zh);
   // every conflict-free headword with its v1 term_zh
   for (const [jp, zh] of headwords) {
-    if (["E-R図", "MBO", "デュアルシステム", "デュプレックスシステム"].includes(jp) || jp in OVERRIDES) continue;
+    if (["E-R図", "MBO"].includes(jp) || jp in OVERRIDES) continue;
     assert.equal(t.terms[jp], zh, jp);
   }
   assert.equal(t.terms["E-R図"], "E-R图");
   assert.deepEqual(t.per_unit["MBO"], { "strategy-01-01-u06": "MBO(目标管理)", "strategy-03-09-u04": "管理层收购（MBO）" });
-  for (const jp of ["MBO", "デュアルシステム", "デュプレックスシステム"]) assert.equal(t.terms[jp], undefined, jp);
-  for (const jp of ["デュアルシステム", "デュプレックスシステム"]) assert.match(t.excluded[jp], /OQ-15/);
+  assert.equal(t.terms["MBO"], undefined);
+  assert.equal(t.terms["デュアルシステム"], "双重系统");
+  assert.equal(t.terms["デュプレックスシステム"], "双工系统");
+  assert.deepEqual(t.excluded, {});
   // pilot words: added where they are not headwords; a headword keeps its v1 term_zh
   assert.equal(t.terms["変更管理"], "变更管理");
   for (const [jp, zh] of Object.entries(PILOT_WORDS.global)) if (!headwords.has(jp)) assert.equal(t.terms[jp], zh, jp);
@@ -71,11 +76,11 @@ test("the committed data/ip/textbook/zh_terms.json is the seed + the recorded ha
   assert.match(r.out, /hand-maintained/);
 });
 
-test("--conflicts prints the four conflicts as a markdown table", () => {
+test("--conflicts prints the two conflicts as a markdown table", () => {
   const r = run("textbook-v2-zh-terms.mjs", ["--conflicts"]);
   assert.equal(r.code, 0, r.out);
-  for (const jp of ["MBO", "E-R図", "デュアルシステム", "デュプレックスシステム"]) assert.match(r.out, new RegExp(`^\\| ${jp} \\|`, "m"));
-  assert.match(r.out, /OQ-15/);
+  for (const jp of ["MBO", "E-R図"]) assert.match(r.out, new RegExp(`^\\| ${jp} \\|`, "m"));
+  for (const jp of ["デュアルシステム", "デュプレックスシステム"]) assert.doesNotMatch(r.out, new RegExp(`^\\| ${jp} \\|`, "m"));
 });
 
 const TABLE = {
