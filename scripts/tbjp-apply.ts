@@ -9,7 +9,7 @@
 //   merge diff must be exactly the target paths.
 // Each EDIT inserts [[jp:…]] around existing text: `from` must occur once in the current value, `to` = `from` with marks.
 // Plan mode (default) simulates every unit's patch list in memory; --apply registers and writes.
-// Run: node --no-warnings scripts/tbjp-apply.ts [--round b] [--apply] --out <report.json>
+// Run: node --no-warnings scripts/tbjp-apply.ts [--round b|c22] [--apply] --out <report.json>
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -30,8 +30,13 @@ if (outAt < 0) throw new Error("--out <report.json> is required");
 const OUT = path.resolve(process.argv[outAt + 1]);
 // --round b (S155 main-session minor decision): the 日语名称 row of technology-13-34-u02 shows the Japanese form in zh too —
 // a text change (simplified 值 / 频 → 値 / 頻 + mark), exact after-values, these 2 fields only.
-const ROUND_B = process.argv.includes("--round") && process.argv[process.argv.indexOf("--round") + 1] === "b";
-const REASON = ROUND_B
+const ROUND = process.argv.includes("--round") ? process.argv[process.argv.indexOf("--round") + 1] : "";
+const ROUND_B = ROUND === "b";
+// --round c22 (S156 minor decision): the exam pseudo-language type name 整数型 explained in en (lang-allow tb-data) — marks only.
+const ROUND_C22 = ROUND === "c22";
+const REASON = ROUND_C22
+  ? "S156 C22: exam pseudo-language type name 整数型 explained in en — [[jp:]] marks (lang-allow tb-data entry removed)"
+  : ROUND_B
   ? "S155 minor decision (main session): 日语名称 row shows the Japanese form in zh as in en — 中央值 / 最频值 → [[jp:中央値]] / [[jp:最頻値]]"
   : "S155 D-221 follow-up: tb-jp-unmarked — [[jp:]] mark around intended Japanese (lang-allow tb-jp-unmarked removed)";
 type Row = Record<string, any>;
@@ -63,6 +68,9 @@ const EDITS: [string, string, [string, string][]][] = [
 const EDITS_B: [string, string, [string, string][]][] = [
   ["technology-13-34-u02", "pairs[1].rows[0].a_zh", [["中央值（中位数）", "[[jp:中央値]]（中位数）"]]],
   ["technology-13-34-u02", "pairs[1].rows[0].b_zh", [["最频值（众数）", "[[jp:最頻値]]（众数）"]]],
+];
+const EDITS_C22: [string, string, [string, string][]][] = [
+  ["technology-14-37-u03", "terms[2].detail_en", [["○整数型: functionName(整数型: name), where 整数型 is", "○[[jp:整数型]]: functionName([[jp:整数型]]: name), where [[jp:整数型]] is"]]],
 ];
 
 const UNITS_DIR = P("data/ip/textbook/units");
@@ -116,7 +124,7 @@ const loc2field = (u: Row, p: string) => p.replace(/^terms\[(\d+)\]/, (_m, i) =>
 
 const report: Row = { mode: APPLY ? "apply" : "plan", fields: [] as Row[], units: [] as Row[] };
 const unitFields = new Map<string, Row[]>();
-for (const [unit, p, subs] of ROUND_B ? EDITS_B : EDITS) {
+for (const [unit, p, subs] of ROUND_C22 ? EDITS_C22 : ROUND_B ? EDITS_B : EDITS) {
   const u = lib.readJson(path.join(UNITS_DIR, `${unit}.json`));
   const before = getPath(u, p);
   if (typeof before !== "string") throw new Error(`${unit} ${p}: not a string`);

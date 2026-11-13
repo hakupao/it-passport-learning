@@ -29,7 +29,7 @@ const CATEGORIES: Record<string, string> = {
   "proper-name": "Japanese place names and the official Japanese names of systems (本駒込, 栃木県, みちびき).",
   "bracket-original": "Quiz sidecar convention (L2 / L3 A04/A17/A21): the Japanese original next to its translation, in brackets / quotes or introduced by 日语称 / in Japanese. The quiz sidecars have no [[jp:]] markup.",
   "jp-explained": "The text explains a Japanese word itself (its reading, its characters, a Japanese search word); the Japanese is the subject of the sentence.",
-  "tb-data": "Textbook: example data (a sample character, a LIKE example, exam pseudo-language type names).",
+  "tb-data": "Textbook: example data (a sample character, a LIKE example) — not exam wording, so not [[jp:]]-marked (S156 C22).",
   "d222-6": "D-222.6: the bold **帰無** in the 帰無仮説 hook stays unmarked (removing the bold loses the emphasis; one case).",
   "same-formula": "R-same: a formula or label whose Japanese spelling is also the correct Chinese (exam spreadsheet notation 平均 / 整数部, 特性 (JIS …), if (条件) …) — L3 A14/A15.",
 };
@@ -219,7 +219,7 @@ export const CLASSES: Cls[] = [
   { cat: "same-formula", rules: ["R-same"], file: /(management-08-25-u01|technology-14-37-u01)\.json$/, path: /\.fig\.data\./, value: /^(特性 \(JIS X 25010:2013\)|if \(条件\) … else … endif|while \(条件\) … endwhile)$/ },
   { cat: "tb-data", file: /(technology-13-35-u02|technology-14-37-u04)\.json$/, text: /^あ$/, when: bracketed, reason: "sample character あ in a character-code example" },
   { cat: "tb-data", at: [["data/ip/textbook/units/technology-21-56-u01.json", "terms[2].points[1].text_en", "山"]], reason: "LIKE example %山 / 山%" },
-  { cat: "tb-data", at: [["data/ip/textbook/units/technology-14-37-u03.json", "terms[2].detail_en", "整数型"]], reason: "exam pseudo-language type name 整数型 (○整数型: functionName(整数型: name))" },
+  // technology-14-37-u03 terms[2].detail_en 整数型 (exam pseudo-language type name) is marked [[jp:]] since S156 C22.
   { cat: "jp-explained", at: [["data/ip/textbook/units/technology-21-55-u01.json", "terms[4].term_en", "表"]], reason: "S155: the en headword 'Table (Japanese term 表)' names the Japanese word the term explains; term_en is a plain-string headword (manifest.v1_terms → reader h3 gloss, glossary termEn / search; B3 refuses term keys), so [[jp:]] is not parsed there and the word stays unmarked" },
 ];
 
