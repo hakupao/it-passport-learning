@@ -282,6 +282,8 @@ gh api repos/hakupao/it-passport-learning/commits/<sha>/check-runs --jq '.check_
 gh api repos/hakupao/it-passport-learning/commits/<sha>/check-suites --jq '.check_suites[] | select(.app.slug == "cloudflare-workers-and-pages") | [.status, .latest_check_runs_count] | @tsv'
 ```
 
+> **[2026-11-13 S155] 確定 = repo root 基準**: apps/web 外だけ (data/・scripts/・evidence/・docs/) の push `a836e233` で `Workers Builds: itlearn` の check run が作られ success。§2-3 の設定はそのままで正しい。
+
 `<sha>` = `data/ip/**` か `scripts/**` だけを変えた push の先頭。`Workers Builds: itlearn` の行がある → repo root 基準 (§2-3 の設定で正しい)。suite だけで check run 0 → root directory 基準 = 内容の変更が本番に出ない → ユーザーに報告 (dashboard の watch paths を変える必要)。
 
 ---
