@@ -90,6 +90,42 @@ describe("D-215 direct edits stay in place", () => {
     expect(bad).toEqual([]);
   });
 
+  // C19a (S158): in zh the annotation parentheses are full-width （ ） (corpus 10,067 vs 119). ASCII ( ) around Chinese stays
+  // only where it is syntax — math grouping, predicate logic, pseudo-code — or in a headword of zh_terms.json (C19b, pending).
+  // The reviewed list is evidence/phase5/hosting/c19_table.json; a new ASCII gloss like「HR (人事)」turns this red.
+  it("C19a: ASCII ( ) around Chinese in zh text only for math / logic / pseudo-code / C19b headwords", () => {
+    const KEEP = new Set([
+      // math grouping
+      "1 − 变动成本率", "1 − 变动成本率（[[jp:変動費率]]）", "1 − 销售毛利率", "固定成本（[[jp:固定費]]） + 目标利润",
+      "订货间隔（[[jp:発注間隔]]） + 采购周期（[[jp:調達期間]]）",
+      // predicate logic (technology-13-35-u03) and pseudo-code (technology-14-37-u01 / u03)
+      "咪咪", "咪咪, 小花", "对象", "猫(x) → 动物(x)", "猫(x) ∧ 白(x)", "条件", "变量的变化方式", "参数", "接收的值", "整数型: 名称",
+      // C19b: headwords of zh_terms.json with ASCII parens (changed together with zh_terms / fixture, not yet)
+      "人力资源管理", "信息收集", "回顾", "多样性、公平性与包容", "客户端访问许可", "快速应用开发", "技术经营", "目标管理", "职业发展计划",
+      "著佐权", "认证中心", "证书吊销列表",
+    ]);
+    const DERIVED = /(^|\.)(terms\[\d+\]\.(definition|explanation|memory_hook)|overview\.intro|summary\.(key_points|memory_hooks))_zh(\[\d+\])?$/;
+    const bad: string[] = [];
+    const walk = (o: unknown, p: string, where: string) => {
+      if (typeof o === "string") {
+        if (!/(_zh|\.zh)(\[\d+\])?$/.test(p) || DERIVED.test(p)) return;
+        const t = o.replace(/\[\[jp:[^\]]*\]\]/g, (m) => "J".repeat(m.length));
+        const st: number[] = [];
+        for (let i = 0; i < t.length; i++) {
+          if (t[i] === "(") st.push(i);
+          else if (t[i] === ")" && st.length) {
+            const a = st.pop()!;
+            const inner = o.slice(a + 1, i);
+            if (/[一-鿿]/.test(t.slice(a + 1, i)) && !KEEP.has(inner)) bad.push(`${where} ${p}: (${inner})`);
+          }
+        }
+      } else if (Array.isArray(o)) o.forEach((x, i) => walk(x, `${p}[${i}]`, where));
+      else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) walk(v, p ? `${p}.${k}` : k, where);
+    };
+    for (const f of readdirSync(path.join(TB, "units")).filter((x) => x.endsWith(".json"))) walk(JSON.parse(readFileSync(path.join(TB, "units", f), "utf-8")), "", f);
+    expect(bad).toEqual([]);
+  });
+
   it("C18 technology-23-62-u01: unit_summary_zh no longer calls 手続き 手续", () => {
     expect(unit("technology-23-62-u01").unit_summary_zh).not.toContain("手续");
   });
