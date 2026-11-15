@@ -38,7 +38,7 @@ test("seed: conflict-free v1 term_zh + per-unit MBO + unified E-R図 + pilot wor
     assert.equal(t.terms[jp], zh, jp);
   }
   assert.equal(t.terms["E-R図"], "E-R图");
-  assert.deepEqual(t.per_unit["MBO"], { "strategy-01-01-u06": "MBO(目标管理)", "strategy-03-09-u04": "管理层收购（MBO）" });
+  assert.deepEqual(t.per_unit["MBO"], { "strategy-01-01-u06": "MBO（目标管理）", "strategy-03-09-u04": "管理层收购（MBO）" });
   assert.equal(t.terms["MBO"], undefined);
   assert.equal(t.terms["デュアルシステム"], "双重系统");
   assert.equal(t.terms["デュプレックスシステム"], "双工系统");

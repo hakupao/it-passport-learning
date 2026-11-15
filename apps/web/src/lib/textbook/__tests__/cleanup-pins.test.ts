@@ -91,18 +91,26 @@ describe("D-215 direct edits stay in place", () => {
   });
 
   // C19a (S158): in zh the annotation parentheses are full-width （ ） (corpus 10,067 vs 119). ASCII ( ) around Chinese stays
-  // only where it is syntax — math grouping, predicate logic, pseudo-code — or in a headword of zh_terms.json (C19b, pending).
+  // only where it is syntax — math grouping, predicate logic, pseudo-code. C19b (S158) moved the 18 zh_terms headwords too.
   // The reviewed list is evidence/phase5/hosting/c19_table.json; a new ASCII gloss like「HR (人事)」turns this red.
-  it("C19a: ASCII ( ) around Chinese in zh text only for math / logic / pseudo-code / C19b headwords", () => {
+  it("C19b: no zh_terms.json value uses ASCII ( ) (the headwords take （ ）, like the rest of the table)", () => {
+    const zt = JSON.parse(readFileSync(path.join(TB, "zh_terms.json"), "utf-8")) as Record<string, unknown>;
+    const bad: string[] = [];
+    const walk = (o: unknown, k: string): void => {
+      if (typeof o === "string") { if (k !== "note" && /[()]/.test(o)) bad.push(o); }
+      else if (o && typeof o === "object") for (const [kk, v] of Object.entries(o)) walk(v, kk);
+    };
+    walk(zt, "");
+    expect(bad).toEqual([]);
+  });
+
+  it("C19a: ASCII ( ) around Chinese in zh text only for math / logic / pseudo-code", () => {
     const KEEP = new Set([
       // math grouping
       "1 − 变动成本率", "1 − 变动成本率（[[jp:変動費率]]）", "1 − 销售毛利率", "固定成本（[[jp:固定費]]） + 目标利润",
       "订货间隔（[[jp:発注間隔]]） + 采购周期（[[jp:調達期間]]）",
       // predicate logic (technology-13-35-u03) and pseudo-code (technology-14-37-u01 / u03)
       "咪咪", "咪咪, 小花", "对象", "猫(x) → 动物(x)", "猫(x) ∧ 白(x)", "条件", "变量的变化方式", "参数", "接收的值", "整数型: 名称",
-      // C19b: headwords of zh_terms.json with ASCII parens (changed together with zh_terms / fixture, not yet)
-      "人力资源管理", "信息收集", "回顾", "多样性、公平性与包容", "客户端访问许可", "快速应用开发", "技术经营", "目标管理", "职业发展计划",
-      "著佐权", "认证中心", "证书吊销列表",
     ]);
     const DERIVED = /(^|\.)(terms\[\d+\]\.(definition|explanation|memory_hook)|overview\.intro|summary\.(key_points|memory_hooks))_zh(\[\d+\])?$/;
     const bad: string[] = [];
