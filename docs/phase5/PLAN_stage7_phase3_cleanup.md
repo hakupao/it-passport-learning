@@ -30,7 +30,7 @@
 | C20 | S154 L3 B20: quiz zh/en 解説が ja と対応しない (篇幅 2〜4 倍、論証の追加、commit `b0a60fbd`) | 訳の忠実度。quiz 層の別工程で対象を洗い出す | quiz sidecar | verifier opus | 候補 (未着手) |
 | C21 | S154 L3 B26: duplex system — 教科書「双重系统」/ quiz「双工系统」(D-175) | quiz 側 (D-175) に合わせて教科書を統一するか判断 | B3 + zh_terms | verifier opus | **done (S155、OQ-15 と同一として解消: technology-16-44-u03 の入替え、critic opus PASS、`93e9bc1c`、`evidence/phase5/hosting/oq15_*`)** |
 | C22 | S155 tb-jp-unmarked Rule D LOW-1: lang-allow `tb-data` 6 項目中の説明された日本語 (例 technology-14-37-u03 `整数型`) | 選別: 試験の語 (整数型 en ×3) に `[[jp:]]`、例データ (あ・山) と図ラベル (印の描画経路なし) は `tb-data` のまま。zh の 整数型 は中国語形として印なし | B3 (`tbjp-apply.ts --round c22`) + allowlist 再生成 | 別 type (Rule D) | **done (S156、verifier opus PASS、`evidence/phase5/hosting/c22_{apply,review}.md`)** |
-| C23 | S157 L4-d 截図: quiz 表示の生記法 — 表 cell の生 `<br>` (例 2016h28h-q001 ja・en) と zh 題文の生 `**图1 …**` (例 2009h21a-q097)、本変更前から | まず全件の棚卸し (sidecar と questions の `<br>` / `**` を描画経路で分類) → 描画側で直すかデータで直すか判断 | 描画 or sidecar | verifier opus | 候補 (未着手) |
+| C23 | S157 L4-d 截図: quiz 表示の生記法 — 表 cell の生 `<br>` (73、全て表の中) と生 `**` (2009h21a q097〜q100 の図見出し、q096 解説イ) | `<br>` は描画側 (`CellText`)、`**` はデータで外す (quiz の描画器に太字なし) | QuizRichText + sidecar / .phase2 | code-reviewer opus | **done (S158、Rule D PASS、`evidence/phase5/hosting/c23_review.md`)** |
 
 ## 順序 (S153)
 1. C1 (テスト、独立) と C3・C10 (小さい直接修正) を先に。
