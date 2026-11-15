@@ -1,4 +1,4 @@
-import { APICallError, RetryError } from "ai";
+import { APICallError, NoOutputGeneratedError, RetryError } from "ai";
 import { describe, expect, it } from "vitest";
 
 import { formatSenseiError, toSenseiError } from "../errors";
@@ -44,6 +44,13 @@ describe("toSenseiError", () => {
       isRetryable: true,
     });
     expect(toSenseiError(wrapped).kind).toBe("network");
+  });
+
+  // ai >= 6.0.200 (S157 Rule D LOW-1): a stream that ends with no finish chunk and no output raises
+  // NoOutputGeneratedError — the connection dropped before any text, so it reads as network, not raw English.
+  it("maps NoOutputGeneratedError (stream ended with no output) to network", () => {
+    expect(toSenseiError(new NoOutputGeneratedError()).kind).toBe("network");
+    expect(toSenseiError(new RetryError({ message: "x", reason: "maxRetriesExceeded", errors: [new NoOutputGeneratedError()] })).kind).toBe("network");
   });
 
   it("maps the content-filter finish reason (Anthropic refusal) to refusal, and length to length", () => {

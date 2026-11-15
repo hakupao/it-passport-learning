@@ -5,6 +5,8 @@
 // public `jitless` config (zod/v4/core/util.js `allowsEval`); zod is a direct
 // dependency at the version the AI SDK resolves, so this configures the same instance.
 // Side-effect module: import it before anything that loads the AI SDK.
+// Do not use `z.compile()` / `zod/compile` (zod >= 4.5): its generated parser calls `new Function` without a
+// jitless check, so it would trip the CSP (S157 Rule D LOW-4).
 
 import { z } from "zod";
 

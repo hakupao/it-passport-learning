@@ -1,6 +1,6 @@
 // D-181 §0-11 — map a failed AI 先生 call to a kind the panel can explain
 // (auth → key が無効 + open settings; rate → 混雑; refusal → 答えられません;
-// network → 接続できません; length → the reply hit the output limit before any
+// network → 接続できません (also a stream that ended with no output); length → the reply hit the output limit before any
 // visible text). Only the error's message text is kept: an
 // APICallError carries the request data, so the error object itself is never
 // stored, logged or returned. Any occurrence of the key (or of an `sk-ant-…`
@@ -10,7 +10,7 @@
 // formatSenseiError(); useChat then surfaces it as `new Error(errorText)`, and
 // toSenseiError() reads that text back unchanged (idempotent).
 
-import { APICallError, RetryError } from "ai";
+import { APICallError, NoOutputGeneratedError, RetryError } from "ai";
 
 export type SenseiErrorKind = "auth" | "rate" | "refusal" | "network" | "length" | "other";
 
@@ -52,6 +52,8 @@ function kindOf(e: unknown): SenseiErrorKind {
     if (finishReason === "content-filter") return "refusal";
     if (finishReason === "length") return "length";
   }
+  // ai >= 6.0.200: the stream ended with no finish chunk and no output (connection dropped before any text).
+  if (NoOutputGeneratedError.isInstance(e)) return "network";
   if (APICallError.isInstance(e)) {
     const status = e.statusCode;
     if (status === 401 || status === 403) return "auth";
