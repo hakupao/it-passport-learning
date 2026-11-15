@@ -31,6 +31,40 @@ describe("StemBlocks (SSR)", () => {
     expect(out).toContain("<td>Z00003</td><td>0002</td>");
     expect(out).not.toMatch(/\|\s*商品コード/);
   });
+  // C23 (S157): a cell holding several bullet lines carries them as `<br>` (a markdown cell cannot hold a newline);
+  // it is shown as a line break, never as the literal text「<br>」(2016h28h-q001 ja, 12 stems in zh / en).
+  it("turns <br> inside a table cell into a line break, not literal text (2016h28h-q001)", () => {
+    const out = html(h(StemBlocks, { stem: byId.get("2016h28h-q001")!.stem_jp }));
+    expect(out).toContain("<table");
+    expect(out).not.toContain("&lt;br&gt;");
+    expect(out).toMatch(/<td>[^<]*<br\/>[^<]*/);
+  });
+  // Rule D (c23_review) LOW-1/LOW-2: choices and the shown explanation fields too (key_guard is stripped at build time).
+  it("no stem, choice or explanation of any question shows a literal <br> or ** (ja original, stem_jp_clean, zh, en)", () => {
+    type L3 = { jp?: string; zh?: string; en?: string };
+    type Entry = { stem_jp_clean?: string; stem?: L3; choices?: Record<string, L3>; correct?: L3; distractors?: Record<string, L3>; points?: L3[] };
+    const sidecar = (dir: string, exam: string): Record<string, Entry> =>
+      JSON.parse(readFileSync(path.join(ROOT, "data/ip/quiz", dir, `${exam}.json`), "utf-8")).questions as Record<string, Entry>;
+    const tr = new Map<string, Record<string, Entry>>();
+    const ex = new Map<string, Record<string, Entry>>();
+    const of = (m: Map<string, Record<string, Entry>>, dir: string, exam: string): Record<string, Entry> => m.get(exam) ?? (m.set(exam, sidecar(dir, exam)), m.get(exam)!);
+    const bad: string[] = [];
+    for (const q of Q) {
+      const t = of(tr, "translations", q.exam_id)[q.id];
+      const e = of(ex, "explanations", q.exam_id)[q.id];
+      for (const [k, s] of [["jp", q.stem_jp], ["clean", t?.stem_jp_clean], ["zh", t?.stem?.zh], ["en", t?.stem?.en]] as const) {
+        if (s && /&lt;br|\*\*/.test(html(h(StemBlocks, { stem: s })))) bad.push(`${q.id} stem ${k}`);
+      }
+      for (const [L, jp] of Object.entries(q.choices_jp)) {
+        for (const [k, s] of [["jp", jp], ["zh", t?.choices?.[L]?.zh], ["en", t?.choices?.[L]?.en]] as const) {
+          if (s && /&lt;br|\*\*/.test(html(h(ChoiceBody, { text: s, jpText: jp })))) bad.push(`${q.id} choice ${L} ${k}`);
+        }
+      }
+      const shown = e ? [e.correct, ...Object.values(e.distractors ?? {}), ...(e.points ?? [])] : [];
+      for (const f of shown) for (const k of ["jp", "zh", "en"] as const) if (typeof f?.[k] === "string" && /<br|\*\*/.test(f[k])) bad.push(`${q.id} expl ${k}`);
+    }
+    expect(bad).toEqual([]);
+  });
   it("keeps pseudo-code verbatim inside <p> (2026r08-q085) and renders ``` fences as <pre> (2019h31h-q096)", () => {
     const a = html(h(StemBlocks, { stem: clean("2026r08-q085") }));
     expect(a).not.toContain("<table");

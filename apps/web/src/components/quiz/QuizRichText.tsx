@@ -2,12 +2,27 @@
 //
 // `parseStemBlocks` / `parseChoice` (純関数、全量テスト済) の出力をそのまま DOM に写す薄い層。
 // text ブロックは従来どおり white-space: pre-wrap (擬似言語のインデント・改行を保持)。
-// table は <table> に、`[表] a: X, b: Y` は <dl> 風の 2 列に。データは一切変換しない。
+// table は <table> に、`[表] a: X, b: Y` は <dl> 風の 2 列に。データは一切変換しない (セル内の `<br>` を改行として描くだけ、C23)。
+
+import { Fragment } from "react";
 
 import { figureDims } from "@/lib/quiz/figureDims";
 import { parseChoiceWithHint, parseStemBlocks } from "@/lib/quiz/quizRichText";
 
 import styles from "./richText.module.css";
+
+/** C23 (S157): a markdown cell cannot hold a newline, so the source joins a cell's lines with `<br>` — show it as a
+ *  line break (React text, never innerHTML). Any other text is unchanged. */
+const BR = /<br\s*\/?>/i;
+function CellText({ text }: { text: string }): React.ReactNode {
+  if (!BR.test(text)) return text;
+  return text.split(new RegExp(BR.source, "gi")).map((part, i) => (
+    <Fragment key={i}>
+      {i > 0 ? <br /> : null}
+      {part}
+    </Fragment>
+  ));
+}
 
 function DataTable({
   header,
@@ -27,7 +42,7 @@ function DataTable({
             <tr>
               {header.map((h, i) => (
                 <th key={i} scope="col">
-                  {h}
+                  <CellText text={h} />
                 </th>
               ))}
             </tr>
@@ -38,7 +53,9 @@ function DataTable({
             {rows.map((r, ri) => (
               <tr key={ri}>
                 {r.map((c, ci) => (
-                  <td key={ci}>{c}</td>
+                  <td key={ci}>
+                    <CellText text={c} />
+                  </td>
                 ))}
               </tr>
             ))}
