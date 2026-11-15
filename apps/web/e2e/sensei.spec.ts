@@ -371,6 +371,25 @@ test("clear while a reply is in flight: after a reload the thread is empty", asy
   await expect(log(page)).not.toContainText("消える質問");
 });
 
+// S157: ai >= 6.0.200 maps a stream that ends with no output to NoOutputGeneratedError (errors.ts → network).
+// A deliberate Stop before the first token must not surface that as 接続できません.
+test("stop before the reply arrives: no error is shown and the question stays", async ({ page }) => {
+  fake = await fakeAnthropic(page, { mode: "ok", delayMs: 3000 });
+  await presetKey(page);
+  await page.goto(SET_URL);
+
+  await openPanel(page, Q1, 1);
+  await ask(page, "止める質問");
+  const p = panel(page);
+  await expect(p.getByTestId("sensei-thinking")).toBeVisible();
+  await p.getByRole("button", { name: S.stop }).click();
+  await expect(p.getByTestId("sensei-thinking")).toHaveCount(0);
+  await page.waitForTimeout(3500); // past the held reply
+  await expect(p.getByTestId("sensei-error")).toHaveCount(0);
+  await expect(log(page)).toContainText("止める質問");
+  await expect(log(page)).not.toContainText(REPLY_MARK);
+});
+
 test("move to another question while the first reply is in flight: each thread keeps its own messages", async ({
   page,
 }) => {

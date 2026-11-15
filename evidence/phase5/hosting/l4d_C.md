@@ -26,3 +26,6 @@
 - EXACT は実質 15 + 追補 3。LOW-3 (apply 途中失敗の rollback なし・再実行不可・indent 判定) は記録のみ。
 - 審査中に審査側が `lang-leak-scan.ts` を report モードで流して `evidence/phase5/hosting/L5_scan.{json,md}` (未追跡) ができた。commit には含めない (evidence 下の削除はユーザー確認事項)。
 - 再審 (同 verifier) = **PASS** (sidecar vs HEAD 152 葉 = 計画 (3 欄は新値)、.phase2 = sidecar、baseline 152 / 118 / ja 0、gate PASS)。**最終値 = `l4d_quiz_apply.json` + `l4d_quiz_fix2.json`** (後者の 3 欄が前者の after を上書き)。
+- 追補 3 (advisor の描画確認): 訳 39 欄を `StemBlocks` / `ChoiceBody` で施工前後とも描画し `fieldText` の `#sig` (pre/table/tr/th/td/img/br/ul/li の数) が全欄一致、本文の差は ・ → •/、 と EXACT の「/」4 欄だけ。描画経路 (QuizRichText・lib/quiz) に ・ を特別扱いする処理なし。en では U+2022 の後に空白がなく「•The results」になる → `scripts/l4d-quiz-fix3.ts` で en の行頭 • の後に空白 1 つ (3 欄 12 か所、zh は CJK として空白なし)、baseline 再取得で直前から 3 行 (en) だけ変化。記録 `l4d_quiz_fix3.json`。**最終値 = apply + fix2 + fix3**。
+- attempt 1 の業務 FAIL は `failures/phase5/hosting/step_L4d_C_attempt_1_review_fail.md` (Rule B)。
+- AI 先生: 回答前の「停止」が `NoOutputGeneratedError` (→ 接続できません) を出さないことを e2e に追加 (`sensei.spec.ts`「stop before the reply arrives」、緑)。
