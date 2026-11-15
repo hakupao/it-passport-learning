@@ -64,6 +64,32 @@ describe("D-215 direct edits stay in place", () => {
     expect(bad).toEqual([]);
   });
 
+  // L4-d (D-230, W3C clreq §5.1): zh「・」(U+30FB, JIS) → 顿号「、」. Allowed: inside [[jp:…]] (Japanese names), inside
+  // the （…）/ (…) Japanese original that compatText derives from a mark (derived fields only), and the Gantt figure
+  // symbol (the figure whose legend defines 「・无工作」). Titles are direct edits (a merge --write would revert them).
+  // Rule D MEDIUM-1: the parenthesis exemption is limited to derived fields — a kana test would also match ・ itself.
+  it("L4-d: no zh field of any unit or of unit_index.json uses ・ outside Japanese names / the Gantt symbol", () => {
+    const DERIVED = /(^|\.)(terms\[\d+\]\.(definition|explanation|memory_hook)|overview\.intro|summary\.(key_points|memory_hooks))_zh(\[\d+\])?$/;
+    const strip = (s: string, p: string) => {
+      const t = s.replace(/\[\[jp:[^\]]*\]\]/g, "");
+      return DERIVED.test(p) ? t.replace(/[（(][^（()）]*[）)]/g, "") : t;
+    };
+    const bad: string[] = [];
+    const walk = (o: unknown, p: string, where: string) => {
+      if (typeof o === "string") {
+        if (/(_zh|\.zh)(\[\d+\])?$/.test(p) && strip(o, p).includes("・")) bad.push(`${where} ${p}: ${o.slice(0, 60)}`);
+      } else if (Array.isArray(o)) o.forEach((x, i) => walk(x, `${p}[${i}]`, where));
+      else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) walk(v, p ? `${p}.${k}` : k, where);
+    };
+    for (const f of readdirSync(path.join(TB, "units")).filter((x) => x.endsWith(".json"))) {
+      const u = JSON.parse(readFileSync(path.join(TB, "units", f), "utf-8"));
+      for (const t of u.terms ?? []) if (JSON.stringify(t.fig?.data?.cols ?? []).includes("・无工作")) t.fig = null; // the Gantt symbol (Rule D LOW-5: found by its legend, not by position)
+      walk(u, "", f);
+    }
+    walk(index(), "", "index");
+    expect(bad).toEqual([]);
+  });
+
   it("C18 technology-23-62-u01: unit_summary_zh no longer calls 手続き 手续", () => {
     expect(unit("technology-23-62-u01").unit_summary_zh).not.toContain("手续");
   });

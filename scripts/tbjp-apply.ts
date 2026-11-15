@@ -9,7 +9,7 @@
 //   merge diff must be exactly the target paths.
 // Each EDIT inserts [[jp:…]] around existing text: `from` must occur once in the current value, `to` = `from` with marks.
 // Plan mode (default) simulates every unit's patch list in memory; --apply registers and writes.
-// Run: node --no-warnings scripts/tbjp-apply.ts [--round b|c22] [--apply] --out <report.json>
+// Run: node --no-warnings scripts/tbjp-apply.ts [--round b|c22|l4d] [--apply] --out <report.json>
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -34,7 +34,13 @@ const ROUND = process.argv.includes("--round") ? process.argv[process.argv.index
 const ROUND_B = ROUND === "b";
 // --round c22 (S156 minor decision): the exam pseudo-language type name 整数型 explained in en (lang-allow tb-data) — marks only.
 const ROUND_C22 = ROUND === "c22";
-const REASON = ROUND_C22
+// --round l4d (S157 D-230, W3C clreq §5.1): zh「・」(U+30FB, JIS) between coordinate items → 顿号「、」. Not inside [[jp:…]]
+// (Japanese names), not the Gantt figure of management-10-27-u02 terms[3] (「・ = 作業なし」, a defined symbol), not derived
+// fields (the merge re-derives them; their diff must be the same ・ → 、 only). Titles are direct edits (C18 pattern, not here).
+const ROUND_L4D = ROUND === "l4d";
+const REASON = ROUND_L4D
+  ? "S157 L4-d D-230: zh katakana middle dot ・ (JIS) between coordinate items → 顿号 、 (W3C clreq §5.1)"
+  : ROUND_C22
   ? "S156 C22: exam pseudo-language type name 整数型 explained in en — [[jp:]] marks (lang-allow tb-data entry removed)"
   : ROUND_B
   ? "S155 minor decision (main session): 日语名称 row shows the Japanese form in zh as in en — 中央值 / 最频值 → [[jp:中央値]] / [[jp:最頻値]]"
@@ -74,6 +80,41 @@ const EDITS_C22: [string, string, [string, string][]][] = [
 ];
 
 const UNITS_DIR = P("data/ip/textbook/units");
+const DERIVED = /(^|\.)(terms\[\d+\]\.(definition|explanation|memory_hook)|overview\.intro|summary\.(key_points|memory_hooks))_(zh|en)(\[\d+\])?$/;
+/** l4d: a and b differ only where a has ・ and b has 、 or ，(same length, every other char equal). */
+const dotOnly = (a: unknown, b: unknown) =>
+  typeof a === "string" && typeof b === "string" && a.length === b.length && [...a].every((c, i) => c === b[i] || (c === "・" && (b[i] === "、" || b[i] === "，")));
+// l4d exceptions: exact replacement for one occurrence (not a coordinate pair).
+const L4D_EXACT: Record<string, [string, string]> = {
+  "strategy-04-13-u03 terms[2].fig.data.rows[0].cells[1].zh": ["森健太・38 岁", "森健太，38 岁"],
+};
+function l4dEdits(): [string, string, [string, string][]][] {
+  const out: [string, string, [string, string][]][] = [];
+  const walk = (o: unknown, p: string, unit: string) => {
+    if (typeof o === "string") {
+      if (!/(_zh|\.zh)(\[\d+\])?$/.test(p) || !o.includes("・") || DERIVED.test(p) || /^(title_zh|unit_summary_zh)$/.test(p)) return; // title = direct (C18), summary = unit-level patch (--manifest, by hand)
+      if (unit === "management-10-27-u02" && p.startsWith("terms[3].fig.")) return;
+      let after = "";
+      let depth = 0;
+      for (let i = 0; i < o.length; i++) {
+        if (o.startsWith("[[jp:", i)) depth++;
+        else if (o.startsWith("]]", i) && depth > 0) depth--;
+        after += o[i] === "・" && depth === 0 ? "、" : o[i];
+      }
+      const ex = L4D_EXACT[`${unit} ${p}`];
+      if (ex) {
+        if (o.split(ex[0]).length !== 2) throw new Error(`${unit} ${p}: exception «${ex[0]}» not found once`);
+        after = o.replace(ex[0], ex[1]);
+      }
+      if (after !== o) out.push([unit, p, [[o, after]]]);
+      return;
+    }
+    if (Array.isArray(o)) o.forEach((x, i) => walk(x, `${p}[${i}]`, unit));
+    else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) walk(v, p ? `${p}.${k}` : k, unit);
+  };
+  for (const f of readdirSync(UNITS_DIR).filter((x) => x.endsWith(".json")).sort()) walk(lib.readJson(path.join(UNITS_DIR, f)), "", f.replace(/\.json$/, ""));
+  return out;
+}
 const getPath = (o: Row, p: string) => p.replace(/\(([^)]*)\)/g, "").split(/\.|\[|\]/).filter(Boolean).reduce((a: any, k) => a?.[/^\d+$/.test(k) ? +k : k], o);
 const setPath = (o: Row, p: string, v: unknown) => {
   const ks = p.split(/\.|\[|\]/).filter(Boolean).map((k) => (/^\d+$/.test(k) ? +k : k));
@@ -124,17 +165,18 @@ const loc2field = (u: Row, p: string) => p.replace(/^terms\[(\d+)\]/, (_m, i) =>
 
 const report: Row = { mode: APPLY ? "apply" : "plan", fields: [] as Row[], units: [] as Row[] };
 const unitFields = new Map<string, Row[]>();
-for (const [unit, p, subs] of ROUND_C22 ? EDITS_C22 : ROUND_B ? EDITS_B : EDITS) {
+for (const [unit, p, subs] of ROUND_L4D ? l4dEdits() : ROUND_C22 ? EDITS_C22 : ROUND_B ? EDITS_B : EDITS) {
   const u = lib.readJson(path.join(UNITS_DIR, `${unit}.json`));
   const before = getPath(u, p);
   if (typeof before !== "string") throw new Error(`${unit} ${p}: not a string`);
   let after = before;
   for (const [from, to] of subs) {
     if (occ(after, from) !== 1) throw new Error(`${unit} ${p}: «${from}» occurs ${occ(after, from)}×`);
-    if (!ROUND_B && stripInline(to) !== from) throw new Error(`${unit} ${p}: «${to}» is not «${from}» plus marks`);
+    if (ROUND_L4D && !dotOnly(from, to)) throw new Error(`${unit} ${p}: l4d edit is not ・ → 、/， only`);
+    if (!ROUND_B && !ROUND_L4D && stripInline(to) !== from) throw new Error(`${unit} ${p}: «${to}» is not «${from}» plus marks`);
     after = after.replace(from, to);
   }
-  if (!ROUND_B && stripInline(after) !== stripInline(before)) throw new Error(`${unit} ${p}: strip(after) ≠ strip(before)`);
+  if (!ROUND_B && !ROUND_L4D && stripInline(after) !== stripInline(before)) throw new Error(`${unit} ${p}: strip(after) ≠ strip(before)`);
   const f = { unit, path: p, before, after, ...(ROUND_B ? { exact: true } : {}) };
   report.fields.push(f);
   unitFields.set(unit, [...(unitFields.get(unit) ?? []), f]);
@@ -204,7 +246,10 @@ for (const [unit, fps] of [...unitFields].sort()) {
   const targets = fps.map((f) => f.path);
   const newDiff = diffPaths(m1.merged, u).filter((p) => !ur.baseline_diff.includes(p));
   ur.new_diff = newDiff;
-  const bad = newDiff.filter((p) => !targets.includes(p));
+  // l4d: a derived field may follow its source, but only by the same ・ → 、 change.
+  const followers = ROUND_L4D ? newDiff.filter((p) => !targets.includes(p) && DERIVED.test(p) && dotOnly(getPath(u, p), getPath(m1.merged, p))) : [];
+  ur.derived_followers = followers;
+  const bad = newDiff.filter((p) => !targets.includes(p) && !followers.includes(p));
   if (bad.length) throw new Error(`${unit}: merged differs outside the targets: ${bad.join(", ")} (patches registered; units/ NOT written)`);
   const mod = clone(u);
   for (const p of newDiff) setPath(mod, p, getPath(m1.merged, p));

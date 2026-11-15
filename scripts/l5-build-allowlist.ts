@@ -172,7 +172,7 @@ const atMatch = (h: Hit, at: (readonly string[])[]): boolean => at.some(([f, p, 
 export const CLASSES: Cls[] = [
   // ---- ui-messages (exact values)
   { cat: "site-name", file: UI, path: /^App\.siteName$/, value: /^ITパスポート 過去問ノート$/ },
-  { cat: "locale-name", file: UI, path: /^(Locale\.(ja|zh)|Glossary\.searchPlaceholder)$/, text: /^(日本語|中文|日本語・中文・|語)$/, value: /^(日本語|中文|Search terms \(日本語・中文・English\)|搜索术语（日本語・中文・English）)$/ },
+  { cat: "locale-name", file: UI, path: /^(Locale\.(ja|zh)|Glossary\.searchPlaceholder)$/, text: /^(日本語|中文|日本語・中文・|語)$/, value: /^(日本語|中文|Search terms \(日本語・中文・English\)|搜索术语（日本語、中文、English）)$/ }, // zh: 、 since L4-d (D-230)
   { cat: "d189-label", file: UI, path: /^Practice\.(qLabel|starsLabel|preamble|sourcePrefix|explanationTab|correct|pointsTitle|terms|answerTag|cat_(strategy|management|technology))$/, value: /^(問|頻出度|共通前文 ▸|出典|解説|正解|ここがポイント|用語|解答|ストラテジ系|マネジメント系|テクノロジ系)$/ },
   { cat: "d189-label", file: UI, path: /^(Today\.colStars|Record\.(sortStars|colStars))$/, value: /^頻出度$/, reason: "頻出度 (D-189 label) as a column / sort label outside Practice (7e7f4b27)" },
   { cat: "d189-label", file: UI, path: /^Mock\.randomLead$/, text: /^・?(ストラテジ|マネジメント|テクノロジ)系?$/, reason: "the three D-189 category names quoted in a sentence" },

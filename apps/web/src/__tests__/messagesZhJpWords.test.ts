@@ -15,6 +15,13 @@ describe("messages/zh.json has no Japanese-only kanji words", () => {
 
   it("names the three categories 大类 and keeps 领域 for topics", () => {
     expect(zh).toContain("三个大类的正确率");
-    expect(zh).toContain("大类・领域");
+    expect(zh).toContain("大类、领域");
+  });
+
+  // L4-d (D-230, W3C clreq §5.1): U+30FB comes from JIS and is not Chinese punctuation; coordinate
+  // items take 顿号「、」, a flag appended to a status takes「，」(as en ", marked").
+  it("uses no katakana middle dot ・", () => {
+    expect(zh.split("・").length - 1).toBe(0);
+    expect(zh).toContain("{，已标记}");
   });
 });
