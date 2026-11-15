@@ -48,8 +48,6 @@ const TERM = "t[0-9a-f]{16}";
 /** (a) The expected paths of out/. Anything else is a finding. */
 export const PATH_RULES: { name: string; re: RegExp }[] = [
   { name: "root files", re: /^(?:404\.html|index\.html|_headers|_redirects|robots\.txt|sitemap(?:-\d+)?\.xml|favicon\.ico)$/ },
-  // create-next-app leftovers in public/ (unused; listed by name so nothing else slips in)
-  { name: "public svg", re: /^(?:file|globe|next|vercel|window)\.svg$/ },
   { name: "locale index", re: new RegExp(`^${L}\\.(?:html|txt)$`) },
   { name: "question page", re: new RegExp(`^${L}/practice/q/${QID}\\.html$`) },
   { name: "term page", re: new RegExp(`^${L}/glossary/${TERM}\\.html$`) },

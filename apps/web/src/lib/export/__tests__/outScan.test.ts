@@ -20,7 +20,7 @@ const f = (rel: string, size = 1) => ({ rel, size });
 describe("(a) paths", () => {
   it("accepts every expected family", () => {
     const ok = [
-      "404.html", "index.html", "_headers", "_redirects", "robots.txt", "sitemap.xml", "favicon.ico", "vercel.svg",
+      "404.html", "index.html", "_headers", "_redirects", "robots.txt", "sitemap.xml", "favicon.ico",
       "ja.html", "zh.txt", "en/practice.html", "en/practice.txt", "ja/practice/browse/technology-14-36.txt",
       "ja/textbook/management-08-25-u01.html", "zh/mock/run.html", "ja/practice/q/2009h21a-q054.html",
       "en/glossary/t00219f657aedbb32.html", "ja/glossary.txt", "data/quiz/2026r08.ja.json", "data/quiz/index.json",
@@ -42,6 +42,7 @@ describe("(a) paths", () => {
       "secret.env",
       "ja/textbook/unit.pdf",
       "_next/server/app/page.js",
+      "vercel.svg", // create-next-app leftover, removed from public/ (S157)
     ];
     expect(checkPaths(bad.map((p) => f(p))).map((x) => x.path)).toEqual(bad);
   });
