@@ -9,7 +9,7 @@
 //   merge diff must be exactly the target paths.
 // Each EDIT inserts [[jp:…]] around existing text: `from` must occur once in the current value, `to` = `from` with marks.
 // Plan mode (default) simulates every unit's patch list in memory; --apply registers and writes.
-// Run: node --no-warnings scripts/tbjp-apply.ts [--round b|c22|l4d|c19a|c24|c25|c25b [--edits <file>]] [--apply] --out <report.json>
+// Run: node --no-warnings scripts/tbjp-apply.ts [--round b|c22|l4d|c19a|c24|c25|c25b|c26 [--edits <file>]] [--apply] --out <report.json>
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -20,7 +20,7 @@ const ROOT = path.resolve(import.meta.dirname, "..");
 const imp = (p: string) => import(pathToFileURL(path.join(ROOT, p)).href);
 const lib = await imp("scripts/lib/textbook-v2.mjs");
 const { journalRows, pickFinal } = await imp("scripts/textbook-v2-merge.mjs");
-const { applyPatches, readPatches, readFrozen, BATCH_DIR } = await imp("scripts/textbook-v2-patch.mjs");
+const { applyPatches, applyUnitPatches, readPatches, readFrozen, v1Sha256, BATCH_DIR } = await imp("scripts/textbook-v2-patch.mjs");
 const { stripInline, compatText } = await imp("apps/web/src/lib/textbook/inline.ts");
 const paths = lib.dataPaths();
 const frozen: Record<string, string> = readFrozen(BATCH_DIR);
@@ -54,7 +54,12 @@ const ROUND_C25 = ROUND === "c25";
 // --round c25b (S160 D-232): bare [[jp:]] neighbours in zh — a mention gets quotes “”/「」, other spaces dropped, one
 // annotation space → 「，」 (edits = whole fields from scripts/c25b-edits.ts). Check: only U+0020 removed and “”「」， added.
 const ROUND_C25B = ROUND === "c25b";
-const REASON = ROUND_C25
+// --round c26 (S161 D-233): zh 「」 → “” (‘’ when nested), whole fields from scripts/c26-edits.ts. Check: same length,
+// only 「→“/‘ and 」→”/’ (quoteSwapOnly), derived followers by the same check.
+const ROUND_C26 = ROUND === "c26";
+const REASON = ROUND_C26
+  ? "S161 C26 D-233: zh quotation marks 「」 → “” (‘’ nested), GB/T 15834-2011 horizontal text"
+  : ROUND_C25
   ? "S159 C25 D-231: zh no space at a keyword edge between Chinese characters (corpus norm, clreq §6.3.1)"
   : ROUND_C25B
   ? "S160 C25b D-232: zh bare [[jp:]] — a mention quoted, spaces between Chinese characters dropped"
@@ -134,6 +139,22 @@ const quoteSpaceOnly = (a: unknown, b: unknown) => {
     else return false;
   }
   return true;
+};
+/** c26: same length, a and b equal except 「 → “/‘ and 」 → ”/’ (at least one). */
+const quoteSwapOnly = (a: unknown, b: unknown) => {
+  if (typeof a !== "string" || typeof b !== "string" || a === b || a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] === b[i]) continue;
+    if (!((a[i] === "「" && "“‘".includes(b[i])) || (a[i] === "」" && "”’".includes(b[i])))) return false;
+  }
+  // S161 Rule D L1: b's quotes pair up, ‘ never at depth 0, no “ inside a quote (D-233 rule 1)
+  const st: string[] = [];
+  for (const ch of b) {
+    if (ch === "“") { if (st.length) return false; st.push("”"); }
+    else if (ch === "‘") { if (!st.length) return false; st.push("’"); }
+    else if ((ch === "”" || ch === "’") && st.pop() !== ch) return false;
+  }
+  return st.length === 0;
 };
 const parenOnly = (a: unknown, b: unknown) => typeof a === "string" && typeof b === "string" && a !== b && parenNorm(a) === parenNorm(b);
 /** l4d: a and b differ only where a has ・ and b has 、 or ，(same length, every other char equal). */
@@ -221,9 +242,9 @@ const loc2field = (u: Row, p: string) => p.replace(/^terms\[(\d+)\]/, (_m, i) =>
 const report: Row = { mode: APPLY ? "apply" : "plan", fields: [] as Row[], units: [] as Row[] };
 const unitFields = new Map<string, Row[]>();
 // --edits <file> (default c19a_edits.json): a later reviewed addition is applied as its own list (S158 Rule D M1: c19a_edits2.json).
-const EDITS_FILE = process.argv.includes("--edits") ? path.resolve(process.argv[process.argv.indexOf("--edits") + 1]) : P(ROUND_C25B ? "evidence/phase5/hosting/c25b_edits.json" : ROUND_C25 ? "evidence/phase5/hosting/c25_edits.json" : ROUND_C24 ? "evidence/phase5/hosting/c24_edits.json" : "evidence/phase5/hosting/c19a_edits.json");
+const EDITS_FILE = process.argv.includes("--edits") ? path.resolve(process.argv[process.argv.indexOf("--edits") + 1]) : P(ROUND_C26 ? "evidence/phase5/hosting/c26_edits.json" : ROUND_C25B ? "evidence/phase5/hosting/c25b_edits.json" : ROUND_C25 ? "evidence/phase5/hosting/c25_edits.json" : ROUND_C24 ? "evidence/phase5/hosting/c24_edits.json" : "evidence/phase5/hosting/c19a_edits.json");
 const c19aEdits = (): [string, string, [string, string][]][] => JSON.parse(readFileSync(EDITS_FILE, "utf-8"));
-for (const [unit, p, subs] of ROUND_C19A || ROUND_C24 || ROUND_C25 || ROUND_C25B ? c19aEdits() : ROUND_L4D ? l4dEdits() : ROUND_C22 ? EDITS_C22 : ROUND_B ? EDITS_B : EDITS) {
+for (const [unit, p, subs] of ROUND_C19A || ROUND_C24 || ROUND_C25 || ROUND_C25B || ROUND_C26 ? c19aEdits() : ROUND_L4D ? l4dEdits() : ROUND_C22 ? EDITS_C22 : ROUND_B ? EDITS_B : EDITS) {
   const u = lib.readJson(path.join(UNITS_DIR, `${unit}.json`));
   const before = getPath(u, p);
   if (typeof before !== "string") throw new Error(`${unit} ${p}: not a string`);
@@ -234,11 +255,12 @@ for (const [unit, p, subs] of ROUND_C19A || ROUND_C24 || ROUND_C25 || ROUND_C25B
     if (ROUND_C19A && parenNorm(from) !== parenNorm(to)) throw new Error(`${unit} ${p}: c19a edit is not a paren-width change`);
     if (ROUND_C25 && !spaceDelOnly(from, to)) throw new Error(`${unit} ${p}: c25 edit is not a space deletion`);
     if (ROUND_C25B && !quoteSpaceOnly(from, to)) throw new Error(`${unit} ${p}: c25b edit is not a space / quote change`);
+    if (ROUND_C26 && !quoteSwapOnly(from, to)) throw new Error(`${unit} ${p}: c26 edit is not a 「」 → “”/‘’ swap`);
     if (ROUND_C24 && c24Norm(from) !== to) throw new Error(`${unit} ${p}: c24 edit is not a dropped space after ）`);
-    if (!ROUND_B && !ROUND_L4D && !ROUND_C19A && !ROUND_C24 && !ROUND_C25 && !ROUND_C25B && stripInline(to) !== from) throw new Error(`${unit} ${p}: «${to}» is not «${from}» plus marks`);
+    if (!ROUND_B && !ROUND_L4D && !ROUND_C19A && !ROUND_C24 && !ROUND_C25 && !ROUND_C25B && !ROUND_C26 && stripInline(to) !== from) throw new Error(`${unit} ${p}: «${to}» is not «${from}» plus marks`);
     after = after.replace(from, to);
   }
-  if (!ROUND_B && !ROUND_L4D && !ROUND_C19A && !ROUND_C24 && !ROUND_C25 && !ROUND_C25B && stripInline(after) !== stripInline(before)) throw new Error(`${unit} ${p}: strip(after) ≠ strip(before)`);
+  if (!ROUND_B && !ROUND_L4D && !ROUND_C19A && !ROUND_C24 && !ROUND_C25 && !ROUND_C25B && !ROUND_C26 && stripInline(after) !== stripInline(before)) throw new Error(`${unit} ${p}: strip(after) ≠ strip(before)`);
   const f = { unit, path: p, before, after, ...(ROUND_B ? { exact: true } : {}) };
   report.fields.push(f);
   unitFields.set(unit, [...(unitFields.get(unit) ?? []), f]);
@@ -247,7 +269,7 @@ for (const [unit, p, subs] of ROUND_C19A || ROUND_C24 || ROUND_C25 || ROUND_C25B
 for (const [unit, fps] of [...unitFields].sort()) {
   // c25b: a frozen unit (D-201 §0-4, merge --write refused) takes a reviewed direct edit of its glossary fields + the zh
   // compat fields re-derived (l4-r2-apply.ts route, S154); derived changes must pass the same check.
-  if (frozen[unit] && ROUND_C25B) {
+  if (frozen[unit] && (ROUND_C25B || ROUND_C26)) {
     const u = lib.readJson(path.join(UNITS_DIR, `${unit}.json`));
     const mod = clone(u);
     const ur: Row = { unit, frozen: frozen[unit], fields: [] as Row[], steps: [] as Row[] };
@@ -265,7 +287,7 @@ for (const [unit, fps] of [...unitFields].sort()) {
     mod.summary.memory_hooks_zh = (await lib.loadKit()).hookLines(mod, "zh");
     const changed = diffPaths(u, mod);
     const targets = fps.map((f) => f.path);
-    const bad = changed.filter((p) => !targets.includes(p) && !(DERIVED.test(p) && quoteSpaceOnly(getPath(u, p), getPath(mod, p))));
+    const bad = changed.filter((p) => !targets.includes(p) && !(DERIVED.test(p) && (ROUND_C26 ? quoteSwapOnly : quoteSpaceOnly)(getPath(u, p), getPath(mod, p))));
     if (bad.length) throw new Error(`${unit}: frozen direct edit changes ${bad.join(", ")}`);
     ur.derived_followers = changed.filter((p) => !targets.includes(p));
     if (APPLY) writeFileSync(path.join(UNITS_DIR, `${unit}.json`), lib.jsonText(mod));
@@ -283,7 +305,13 @@ for (const [unit, fps] of [...unitFields].sort()) {
   const sim = clone(doc.patches) as Row[];
   const full = lib.readJson(partFile);
   applyPatches(full, doc.patches, locSha);
-  for (const fp of fps) {
+  // c26: unit_summary_zh is carried from manifest.v1 → a unit-level patch (--manifest), l4-r2-apply.ts route (S154).
+  const sumF = ROUND_C26 ? fps.find((f) => f.path === "unit_summary_zh") : undefined;
+  const locFps = fps.filter((f) => f !== sumF);
+  const manifestFile = paths.manifest(unit);
+  const manifest = sumF ? lib.readJson(manifestFile) : null;
+  const vSha = manifest ? v1Sha256(manifest) : "";
+  for (const fp of locFps) {
     const field0 = loc2field(u, fp.path);
     const same = sim.filter((p) => p.status === "active" && String(p.field).replace(/\(.*?\)/g, "") === fp.path);
     const fieldStr = same[0]?.field ?? field0;
@@ -313,10 +341,23 @@ for (const [unit, fps] of [...unitFields].sort()) {
       break;
     }
   }
+  if (sumF) {
+    const a = { unit_summary_zh: manifest.v1.unit_summary_zh };
+    applyUnitPatches(a, sim, vSha);
+    if (a.unit_summary_zh !== sumF.before) throw new Error(`${unit}: unit_summary replay ≠ units`);
+    if (sim.some((p) => p.status === "active" && p.field === "unit.unit_summary_zh")) throw new Error(`${unit}: unit_summary_zh already has an active unit-level patch (composite not prepared)`);
+    const w = windowOf(sumF.before, sumF.after);
+    ur.steps.push({ op: "register", kind: "unit", field: "unit.unit_summary_zh", before: w.before, after: w.after, reason: REASON });
+    sim.push({ id: `sim${sim.length + 1}`, status: "active", base_sha256: vSha, field: "unit.unit_summary_zh", before: w.before, after: w.after });
+    ur.fields.push({ path: "unit_summary_zh", route: "unit-level patch" });
+    const b = { unit_summary_zh: manifest.v1.unit_summary_zh };
+    applyUnitPatches(b, sim, vSha);
+    if (b.unit_summary_zh !== sumF.after) throw new Error(`${unit}: simulated unit_summary ≠ final`);
+  }
   const simLoc = lib.readJson(partFile);
   applyPatches(simLoc, sim, locSha);
-  for (const fp of fps) if (getPath(simLoc, fp.path) !== fp.after) throw new Error(`${unit} ${fp.path}: simulated replay ≠ final`);
-  const stray = diffPaths(full, simLoc).filter((p) => !fps.some((f) => f.path === p));
+  for (const fp of locFps) if (getPath(simLoc, fp.path) !== fp.after) throw new Error(`${unit} ${fp.path}: simulated replay ≠ final`);
+  const stray = diffPaths(full, simLoc).filter((p) => !locFps.some((f) => f.path === p));
   if (stray.length) throw new Error(`${unit}: simulated replay changes other fields: ${stray.join(", ")}`);
   if (!APPLY) continue;
 
@@ -326,7 +367,7 @@ for (const [unit, fps] of [...unitFields].sort()) {
   for (const s of ur.steps) {
     const out = s.op === "retire"
       ? cli(["--unit", unit, "--retire", s.id, "--reason", s.reason])
-      : cli(["--unit", unit, "--register", "--part", partFile, "--field", s.field, "--before", s.before, "--after", s.after, "--reason", s.reason]);
+      : cli(["--unit", unit, "--register", ...(s.kind === "unit" ? ["--manifest", manifestFile] : ["--part", partFile]), "--field", s.field, "--before", s.before, "--after", s.after, "--reason", s.reason]);
     (ur.cli ??= []).push(out);
   }
   const m1 = mergeDry(unit);
@@ -335,8 +376,8 @@ for (const [unit, fps] of [...unitFields].sort()) {
   const newDiff = diffPaths(m1.merged, u).filter((p) => !ur.baseline_diff.includes(p));
   ur.new_diff = newDiff;
   // l4d: a derived field may follow its source, but only by the same ・ → 、 change.
-  const followers = ROUND_L4D || ROUND_C19A || ROUND_C24 || ROUND_C25 || ROUND_C25B
-    ? newDiff.filter((p) => !targets.includes(p) && DERIVED.test(p) && (ROUND_L4D ? dotOnly : ROUND_C25B ? quoteSpaceOnly : ROUND_C25 ? spaceDelOnly : ROUND_C24 ? c24Only : parenOnly)(getPath(u, p), getPath(m1.merged, p)))
+  const followers = ROUND_L4D || ROUND_C19A || ROUND_C24 || ROUND_C25 || ROUND_C25B || ROUND_C26
+    ? newDiff.filter((p) => !targets.includes(p) && DERIVED.test(p) && (ROUND_L4D ? dotOnly : ROUND_C26 ? quoteSwapOnly : ROUND_C25B ? quoteSpaceOnly : ROUND_C25 ? spaceDelOnly : ROUND_C24 ? c24Only : parenOnly)(getPath(u, p), getPath(m1.merged, p)))
     : [];
   ur.derived_followers = followers;
   const bad = newDiff.filter((p) => !targets.includes(p) && !followers.includes(p));

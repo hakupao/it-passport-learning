@@ -199,4 +199,28 @@ describe("D-215 direct edits stay in place", () => {
     expect(unit("strategy-01-01-u06").terms[1].hook_zh).toContain("”来管理");
     expect(unit("strategy-01-01-u06").terms[1].hook_zh).not.toContain("” 来管理");
   });
+
+  // C26 (S161, D-233): zh quotes are “” with ‘’ only inside a “” (validateV2 OPEN/CLOSE has no ‘’) — no 「」 in any zh
+  // field of the units (derived included) or the index, quotes balanced, ‘ never at depth 0, no “ inside a “.
+  it("C26: zh fields use “” (‘’ nested only), no 「」", () => {
+    const bad: string[] = [];
+    const walk = (o: unknown, p: string, where: string) => {
+      if (typeof o === "string") {
+        if (!/(_zh|\.zh)(\[\d+\])?$/.test(p)) return;
+        if (/[「」]/.test(o)) bad.push(`${where} ${p}: 「」`);
+        const st: string[] = [];
+        for (const ch of o) {
+          if (ch === "“") (st.length ? bad.push(`${where} ${p}: “ nested in ${st.at(-1)}`) : 0, st.push("”"));
+          else if (ch === "‘") (st.length ? 0 : bad.push(`${where} ${p}: ‘ at depth 0`), st.push("’"));
+          else if (ch === "”" || ch === "’") { if (st.pop() !== ch) bad.push(`${where} ${p}: unbalanced ${ch}`); }
+        }
+        if (st.length) bad.push(`${where} ${p}: unclosed`);
+      } else if (Array.isArray(o)) o.forEach((x, i) => walk(x, `${p}[${i}]`, where));
+      else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) walk(v, p ? `${p}.${k}` : k, where);
+    };
+    for (const f of readdirSync(path.join(TB, "units")).filter((x) => x.endsWith(".json")).sort()) walk(unit(f.replace(/\.json$/, "")), "", f.replace(/\.json$/, ""));
+    walk(index(), "", "index");
+    expect(bad).toEqual([]);
+    expect(unit("strategy-01-02-u04").terms[2].hook_zh).toContain("日语的“[[jp:相関]]”“[[jp:因果]]”");
+  });
 });

@@ -24,4 +24,10 @@ describe("messages/zh.json has no Japanese-only kanji words", () => {
     expect(zh.split("・").length - 1).toBe(0);
     expect(zh).toContain("{，已标记}");
   });
+
+  // C26 (D-233): zh UI quotes are “” as in the textbook body (pairTitle sits beside it), not the JP-style 「」.
+  it("quotes with “” and uses no 「」", () => {
+    expect(zh.split(/[「」]/).length - 1).toBe(0);
+    expect(zh).toContain("“{a}”与“{b}”的区别");
+  });
 });
