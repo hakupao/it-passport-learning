@@ -9,7 +9,7 @@
 //   merge diff must be exactly the target paths.
 // Each EDIT inserts [[jp:…]] around existing text: `from` must occur once in the current value, `to` = `from` with marks.
 // Plan mode (default) simulates every unit's patch list in memory; --apply registers and writes.
-// Run: node --no-warnings scripts/tbjp-apply.ts [--round b|c22|l4d|c19a [--edits <file>]] [--apply] --out <report.json>
+// Run: node --no-warnings scripts/tbjp-apply.ts [--round b|c22|l4d|c19a|c24 [--edits <file>]] [--apply] --out <report.json>
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -43,7 +43,14 @@ const ROUND_L4D = ROUND === "l4d";
 // is evidence/phase5/hosting/c19a_edits.json (from c19_table.json); math, tuples, logic and pseudo-code keep ASCII; headwords
 // (term_zh in zh_terms.json) are C19b. Invariant: before = after once （）： map back to ():, and a space before ( is ignored.
 const ROUND_C19A = ROUND === "c19a";
-const REASON = ROUND_C19A
+// --round c24 (S158, C24 minor D): a space between a full-width closing paren and a Chinese character is dropped
+// (corpus 「）漢字」4,469 / 「） 漢字」4), also after a keyword ending in ）(「）** 是」→「）**是」, 82 in content: compatText drops
+// the ** and leaves「） 是」in the derived fields). Spaces around operators stay. Also a keyword + its JP gloss before a space (c24_edits3.json).
+// Edits: c24_edits.json, c24_edits2.json, c24_edits3.json.
+const ROUND_C24 = ROUND === "c24";
+const REASON = ROUND_C24
+  ? "S158 C24: zh no space between a full-width ） and a Chinese character (corpus norm)"
+  : ROUND_C19A
   ? "S158 C19a: zh annotation parentheses ASCII ( ) → full-width （ ） (corpus norm), math / logic / pseudo-code keep ASCII"
   : ROUND_L4D
   ? "S157 L4-d D-230: zh katakana middle dot ・ (JIS) between coordinate items → 顿号 、 (W3C clreq §5.1)"
@@ -90,6 +97,11 @@ const UNITS_DIR = P("data/ip/textbook/units");
 const DERIVED = /(^|\.)(terms\[\d+\]\.(definition|explanation|memory_hook)|overview\.intro|summary\.(key_points|memory_hooks))_(zh|en)(\[\d+\])?$/;
 /** c19a: equal once full-width （）： are mapped back and the space before ( is dropped. */
 const parenNorm = (s: string) => s.replace(/（/g, "(").replace(/）/g, ")").replace(/例：/g, "例: ").replace(/ \(/g, "(");
+// also a keyword ending in ） (`**MBO（目标管理）** 是`): the space after the closing ** is the same gap once rendered / derived.
+const c24Norm = (s: string) => s.replace(/） (?=[\u4E00-\u9FFF])/g, "）").replace(/）\*\* (?=[\u4E00-\u9FFF])/g, "）**")
+  // a keyword + its JP gloss (`**响应时间** [[jp:レスポンスタイム]] 是`): compatText derives「响应时间（レスポンスタイム） 是」
+  .replace(/(\*\* ?\[\[jp:[^\]]+\]\]) (?=[\u4E00-\u9FFF])/g, "$1");
+const c24Only = (a: unknown, b: unknown) => typeof a === "string" && typeof b === "string" && a !== b && c24Norm(a) === c24Norm(b) && c24Norm(a) === b;
 const parenOnly = (a: unknown, b: unknown) => typeof a === "string" && typeof b === "string" && a !== b && parenNorm(a) === parenNorm(b);
 /** l4d: a and b differ only where a has ・ and b has 、 or ，(same length, every other char equal). */
 const dotOnly = (a: unknown, b: unknown) =>
@@ -176,9 +188,9 @@ const loc2field = (u: Row, p: string) => p.replace(/^terms\[(\d+)\]/, (_m, i) =>
 const report: Row = { mode: APPLY ? "apply" : "plan", fields: [] as Row[], units: [] as Row[] };
 const unitFields = new Map<string, Row[]>();
 // --edits <file> (default c19a_edits.json): a later reviewed addition is applied as its own list (S158 Rule D M1: c19a_edits2.json).
-const EDITS_FILE = process.argv.includes("--edits") ? path.resolve(process.argv[process.argv.indexOf("--edits") + 1]) : P("evidence/phase5/hosting/c19a_edits.json");
+const EDITS_FILE = process.argv.includes("--edits") ? path.resolve(process.argv[process.argv.indexOf("--edits") + 1]) : P(ROUND_C24 ? "evidence/phase5/hosting/c24_edits.json" : "evidence/phase5/hosting/c19a_edits.json");
 const c19aEdits = (): [string, string, [string, string][]][] => JSON.parse(readFileSync(EDITS_FILE, "utf-8"));
-for (const [unit, p, subs] of ROUND_C19A ? c19aEdits() : ROUND_L4D ? l4dEdits() : ROUND_C22 ? EDITS_C22 : ROUND_B ? EDITS_B : EDITS) {
+for (const [unit, p, subs] of ROUND_C19A || ROUND_C24 ? c19aEdits() : ROUND_L4D ? l4dEdits() : ROUND_C22 ? EDITS_C22 : ROUND_B ? EDITS_B : EDITS) {
   const u = lib.readJson(path.join(UNITS_DIR, `${unit}.json`));
   const before = getPath(u, p);
   if (typeof before !== "string") throw new Error(`${unit} ${p}: not a string`);
@@ -187,10 +199,11 @@ for (const [unit, p, subs] of ROUND_C19A ? c19aEdits() : ROUND_L4D ? l4dEdits() 
     if (occ(after, from) !== 1) throw new Error(`${unit} ${p}: «${from}» occurs ${occ(after, from)}×`);
     if (ROUND_L4D && !dotOnly(from, to)) throw new Error(`${unit} ${p}: l4d edit is not ・ → 、/， only`);
     if (ROUND_C19A && parenNorm(from) !== parenNorm(to)) throw new Error(`${unit} ${p}: c19a edit is not a paren-width change`);
-    if (!ROUND_B && !ROUND_L4D && !ROUND_C19A && stripInline(to) !== from) throw new Error(`${unit} ${p}: «${to}» is not «${from}» plus marks`);
+    if (ROUND_C24 && c24Norm(from) !== to) throw new Error(`${unit} ${p}: c24 edit is not a dropped space after ）`);
+    if (!ROUND_B && !ROUND_L4D && !ROUND_C19A && !ROUND_C24 && stripInline(to) !== from) throw new Error(`${unit} ${p}: «${to}» is not «${from}» plus marks`);
     after = after.replace(from, to);
   }
-  if (!ROUND_B && !ROUND_L4D && !ROUND_C19A && stripInline(after) !== stripInline(before)) throw new Error(`${unit} ${p}: strip(after) ≠ strip(before)`);
+  if (!ROUND_B && !ROUND_L4D && !ROUND_C19A && !ROUND_C24 && stripInline(after) !== stripInline(before)) throw new Error(`${unit} ${p}: strip(after) ≠ strip(before)`);
   const f = { unit, path: p, before, after, ...(ROUND_B ? { exact: true } : {}) };
   report.fields.push(f);
   unitFields.set(unit, [...(unitFields.get(unit) ?? []), f]);
@@ -261,8 +274,8 @@ for (const [unit, fps] of [...unitFields].sort()) {
   const newDiff = diffPaths(m1.merged, u).filter((p) => !ur.baseline_diff.includes(p));
   ur.new_diff = newDiff;
   // l4d: a derived field may follow its source, but only by the same ・ → 、 change.
-  const followers = ROUND_L4D || ROUND_C19A
-    ? newDiff.filter((p) => !targets.includes(p) && DERIVED.test(p) && (ROUND_L4D ? dotOnly : parenOnly)(getPath(u, p), getPath(m1.merged, p)))
+  const followers = ROUND_L4D || ROUND_C19A || ROUND_C24
+    ? newDiff.filter((p) => !targets.includes(p) && DERIVED.test(p) && (ROUND_L4D ? dotOnly : ROUND_C24 ? c24Only : parenOnly)(getPath(u, p), getPath(m1.merged, p)))
     : [];
   ur.derived_followers = followers;
   const bad = newDiff.filter((p) => !targets.includes(p) && !followers.includes(p));

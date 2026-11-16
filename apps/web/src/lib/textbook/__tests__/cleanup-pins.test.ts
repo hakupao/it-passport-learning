@@ -134,6 +134,22 @@ describe("D-215 direct edits stay in place", () => {
     expect(bad).toEqual([]);
   });
 
+  // C24 (S158): no space between a full-width ） and a Chinese character in any zh field (corpus 4,469 vs 4); spaces
+  // around operators (「） + 」「） − 」) are formula spacing and stay.
+  it("C24: no zh field has a space between ） and a Chinese character", () => {
+    const bad: string[] = [];
+    const walk = (o: unknown, p: string, where: string) => {
+      if (typeof o === "string") {
+        // Rule D (c24_review) LOW: also the content shapes that produced it —「）** 汉」and a keyword + JP gloss「**X** [[jp:Y]] 汉」.
+        if (/(_zh|\.zh)(\[\d+\])?$/.test(p) && /）(\*\*)? [一-鿿]|\*\* ?\[\[jp:[^\]]+\]\] [一-鿿]/.test(o)) bad.push(`${where} ${p}`);
+      } else if (Array.isArray(o)) o.forEach((x, i) => walk(x, `${p}[${i}]`, where));
+      else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) walk(v, p ? `${p}.${k}` : k, where);
+    };
+    for (const f of readdirSync(path.join(TB, "units")).filter((x) => x.endsWith(".json"))) walk(JSON.parse(readFileSync(path.join(TB, "units", f), "utf-8")), "", f);
+    walk(index(), "", "index");
+    expect(bad).toEqual([]);
+  });
+
   it("C18 technology-23-62-u01: unit_summary_zh no longer calls 手続き 手续", () => {
     expect(unit("technology-23-62-u01").unit_summary_zh).not.toContain("手续");
   });
