@@ -153,4 +153,50 @@ describe("D-215 direct edits stay in place", () => {
   it("C18 technology-23-62-u01: unit_summary_zh no longer calls 手続き 手续", () => {
     expect(unit("technology-23-62-u01").unit_summary_zh).not.toContain("手续");
   });
+
+  // C25 (S159, D-231): in zh, no space at a **keyword** edge when both neighbours are Han / kana / Chinese punctuation
+  // (incl. `**X** [[jp:Y]]`). Kept: Han–Latin spaces, and keywords that are formulas — exactly the 8 edges below
+  // (the space is the only delimiter left once compatText drops the **). Bare [[jp:]] neighbours are C25b, not pinned here.
+  it("C25: no zh keyword edge has a space between Chinese characters (formula keywords excepted)", () => {
+    const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー，。、；：？！“”‘’《》（）【】「」『』…—～]/u;
+    const HK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー]/u;
+    const KEEP = [
+      "strategy-01-03-u02 terms[3].one_zh 销售单价 × 销售量",
+      "strategy-01-03-u02 terms[4].one_zh 变动成本 ÷ 销售额",
+      "strategy-01-03-u02 terms[4].one_zh 变动成本 ÷ 销售额",
+      "strategy-01-03-u03 goals_zh[1] 资产 = 负债 + 净资产",
+      "strategy-01-03-u03 goals_zh[1] 资产 = 负债 + 净资产",
+      "strategy-01-03-u03 terms[0].detail_zh 资产 = 负债 + 净资产",
+      "strategy-01-03-u03 key_points_zh[1] 资产 = 负债 + 净资产",
+      "strategy-01-03-u03 key_points_zh[1] 资产 = 负债 + 净资产",
+    ];
+    const bad: string[] = [];
+    const kept: string[] = [];
+    const walk = (o: unknown, p: string, where: string) => {
+      if (typeof o === "string") {
+        if (!/(_zh|\.zh)(\[\d+\])?$/.test(p) || !o.includes("**")) return;
+        const seg = o.split("**"); // well-formed (v2-corpus gate): odd segments are keywords
+        for (let i = 1; i < seg.length - 1; i += 2) {
+          const key = seg[i] ?? "";
+          const before = seg[i - 1] ?? "";
+          const after = seg[i + 1] ?? "";
+          const open = / $/.test(before) && CJK.test(before.at(-2) ?? "") && HK.test(key[0] ?? "");
+          const gloss = /^ \[\[jp:/.test(after) && CJK.test(key.at(-1) ?? "") && HK.test(after[6] ?? "");
+          const close = /^ [^[]/.test(after) && CJK.test(key.at(-1) ?? "") && HK.test(after[1] ?? "");
+          for (const e of [open, gloss, close]) {
+            if (!e) continue;
+            if (/[=＝+＋−－×÷]/.test(key)) kept.push(`${where} ${p} ${key}`);
+            else bad.push(`${where} ${p} «${key}»`);
+          }
+        }
+      } else if (Array.isArray(o)) o.forEach((x, i) => walk(x, `${p}[${i}]`, where));
+      else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) walk(v, p ? `${p}.${k}` : k, where);
+    };
+    for (const f of readdirSync(path.join(TB, "units")).filter((x) => x.endsWith(".json")).sort()) walk(unit(f.replace(/\.json$/, "")), "", f.replace(/\.json$/, ""));
+    expect(bad).toEqual([]);
+    expect(kept.sort()).toEqual([...KEEP].sort());
+    // the one unmarked exception of D-231 (Rule D L3(c))
+    expect(unit("strategy-01-01-u06").terms[1].hook_zh).toContain("”来管理");
+    expect(unit("strategy-01-01-u06").terms[1].hook_zh).not.toContain("” 来管理");
+  });
 });
