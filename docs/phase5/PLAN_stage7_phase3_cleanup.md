@@ -32,7 +32,7 @@
 | C22 | S155 tb-jp-unmarked Rule D LOW-1: lang-allow `tb-data` 6 項目中の説明された日本語 (例 technology-14-37-u03 `整数型`) | 選別: 試験の語 (整数型 en ×3) に `[[jp:]]`、例データ (あ・山) と図ラベル (印の描画経路なし) は `tb-data` のまま。zh の 整数型 は中国語形として印なし | B3 (`tbjp-apply.ts --round c22`) + allowlist 再生成 | 別 type (Rule D) | **done (S156、verifier opus PASS、`evidence/phase5/hosting/c22_{apply,review}.md`)** |
 | C23 | S157 L4-d 截図: quiz 表示の生記法 — 表 cell の生 `<br>` (73、全て表の中) と生 `**` (2009h21a q097〜q100 の図見出し、q096 解説イ) | `<br>` は描画側 (`CellText`)、`**` はデータで外す (quiz の描画器に太字なし) | QuizRichText + sidecar / .phase2 | code-reviewer opus | **done (S158、Rule D PASS、`evidence/phase5/hosting/c23_review.md`)** |
 | C24 | S158 C19a Rule D L3: zh の全角閉じ括弧の後の空白 (「HR（人事） 与」、コーパス「）漢字」7,375 / 「） 漢字」61) | 61 件を選別 (英字との間の空白は残す等) | B3 | verifier opus | **done (S158)**: 「） 汉」4・「）** 汉」82・keyword+gloss+空白 10 の空白を除去 (派生 65 追従)、Rule D code-reviewer PASS (`c24_review.md`) |
-| C25 | S158 C24 Rule D MEDIUM: 太字の漢字キーワードの前後の空白 (「漢字** 漢字」485・「漢字 **漢字」788、派生欄で「以 手机号码 为」)、「** [[jp:X]]漢」22、中国語文に埋め込んだ日本語の前後「]] 汉」30、「”␣漢」3・「》␣漢」2 | 規則を先に決める (CJK–Latin の空白は維持、太字の前後は描画で隙間になるか確認) → 全件選別 | B3 | verifier opus | 候補 (未着手) |
+| C25 | S158 C24 Rule D MEDIUM: 太字の漢字キーワードの前後の空白 (「漢字** 漢字」485・「漢字 **漢字」788、派生欄で「以 手机号码 为」)、「** [[jp:X]]漢」22、中国語文に埋め込んだ日本語の前後「]] 汉」30、「”␣漢」3・「》␣漢」2 | 規則を先に決める (CJK–Latin の空白は維持、太字の前後は描画で隙間になるか確認) → 全件選別 | B3 | verifier opus | 準備済 (S158: 計数 1,480 / 818 欄、太字の隣 1,306 と裸 jp の隣 97 を分ける、D-231 を lock してから canary → 全件、手順は session-158 log) |
 
 ## 順序 (S153)
 1. C1 (テスト、独立) と C3・C10 (小さい直接修正) を先に。
