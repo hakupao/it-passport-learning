@@ -12,3 +12,7 @@
 ## 第 2 回 (M1・L1・L3・L5 の 6 欄)
 - 判定 **PASS** (blocker 0)。HEAD との差 = 67 欄 (第 1 回 66 + 2023r05-q002 stem.zh)、計画外 0。第 2 回の before = HEAD または第 1 回の after、第 1 回の他 61 欄は不変。lang-leak gate PASS・quiz-keys-crosscheck PASS・quiz vitest 68/68。
 - 残り (記録のみ): MOT の訳名 (p:1「技术经营」/ d:ウ・選択肢「技术管理」) は選択肢の訳を変える必要があり範囲外。
+
+## round 3 (12 題 29 欄、writer = executor opus) + 3b (3 欄、writer = main)
+- round 3: **CONDITIONAL** (MEDIUM 1 = 2026r08-q038 p:0 zh が補丁で「工序」を増やした、LOW 5)。2025r07-q034 全 6 欄の再訳は stem から算術を検算 (単価 12,000・限界利益 5,000・固定費 2,100 万・N≥6,200 → 追加 1,200 = イ) し三語一致。diff = 計画 29 欄、baseline = 12 題の解説キーだけ。
+- 3b: M1 (工序 → 阶段)、L1 (q093 zh の漢字間の空白を “” で区切る。「编制者」は題文 zh と同じ語なので維持)、L3 (2025r07-q032 en の文) → **PASS**。L2 (q093 の出典「中問C の〔…〕(2)」の省略) は受け入れ、L4 (2014h26a-q086 エ) は `round3_jp_errors.json` に登録済、L5 説明のみ。
