@@ -181,11 +181,12 @@ describe("display fidelity vs frozen baseline (2900 × ja/zh/en)", () => {
     expect(diffs.length).toBe(0);
   }, 240_000);
 
-  it("suspect questions = 84, questions with 3 points = 22 (corpus anchors)", () => {
+  // D-235: all 84 generate-time suspects were cleared by the S163 blind re-check → 0 displayed.
+  it("generate-time suspect questions = 84 (0 displayed), questions with 3 points = 22 (corpus anchors)", () => {
     expect(QS.filter((q) => q.explanation?.key_guard.suspect)).toHaveLength(84);
     expect(QS.filter((q) => q.explanation?.points.length === 3)).toHaveLength(22);
     const rows = [...BASE.values()];
-    expect(rows.filter((r) => r.suspect)).toHaveLength(84 * 3);
+    expect(rows.filter((r) => r.suspect)).toHaveLength(0);
     expect(rows.filter((r) => r.points.length === 3)).toHaveLength(22 * 3);
   });
 });

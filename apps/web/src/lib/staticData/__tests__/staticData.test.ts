@@ -116,9 +116,10 @@ function expectedShardQuestion(q: ViewQuestion, locale: StaticLocale): Record<st
 }
 
 /** The loader explanation as the (locale-free) chunk should hold it, by omission: key_guard dropped,
- *  its suspect flag lifted to `suspect`; every language kept. */
+ *  its suspect flag lifted to `suspect` (minus re-check clears, D-235); every language kept. */
 function expectedExplanation(q: QuizQuestion): Record<string, unknown> {
-  const out: Record<string, unknown> = { ...q.explanation!, suspect: q.explanation!.key_guard.suspect };
+  const kg = q.explanation!.key_guard;
+  const out: Record<string, unknown> = { ...q.explanation!, suspect: kg.suspect === true && kg.recheck?.cleared !== true };
   delete out.key_guard;
   return out;
 }

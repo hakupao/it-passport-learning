@@ -560,7 +560,9 @@ describe("D-217 H1-3: explanations fetched once answered (SessionView.explanatio
   });
 
   it("H1-4 LOW-2: a suspect question (its shard flag) shows the 正解確認中 line once while loading, failed and fetched", () => {
-    const eager = QS.find((q) => q.explanation?.suspect)!;
+    // D-235: no corpus question is displayed as suspect any more → a real one with suspect forced on.
+    const base = QS.find((q) => q.explanation)!;
+    const eager = { ...base, explanation: { ...base.explanation!, suspect: true } };
     const shardQ = bare(clientQuestion(eager, "zh"));
     expect(shardQ.suspect).toBe(true);
     const state = answered([shardQ]);

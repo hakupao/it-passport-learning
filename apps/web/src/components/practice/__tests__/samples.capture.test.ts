@@ -55,7 +55,10 @@ function samples(): Sample[] {
   const g = GROUPS.find((x) => x.preambleChars.jp !== null)!;
   const chumon = QS.find((q) => q.id === g.memberIds[1])!;
   const cf = QS.find((q) => q.choice_figures)!;
-  const sus = QS.find((q) => q.explanation?.key_guard.suspect && !q.figure)!;
+  // D-235: no corpus question is displayed as suspect any more (all re-check cleared) → a real
+  // non-figure question with its explanation's suspect forced on, so the sample still shows the line.
+  const susBase = QS.find((q) => q.explanation && !q.figure)!;
+  const sus: QuizQuestion = { ...susBase, explanation: { ...susBase.explanation!, suspect: true } };
   const three = QS.find((q) => q.explanation?.points.length === 3)!;
   return [
     { name: "figure", q: fig, locale: "ja", picked: wrongOf(fig), expect: ["figure", "stem", "expl-correct"] },

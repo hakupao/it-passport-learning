@@ -54,6 +54,14 @@ for (const r of JSON.parse(readFileSync(resultFile, "utf-8")).results ?? []) {
 }
 console.log(`  key_guard source: generate_result (${kgById.size} entries)`);
 
+// D-235 (S163 C28): blind re-check of suspect entries, derived only from what the practice page
+// shows (committed record). cleared = the re-derivation reached the keyed answer with sufficient
+// information and not low confidence. The generate-time suspect (union, anti-masking) is kept as is;
+// only the displayed flag drops (quizReader).
+const RECHECK = path.join(ROOT, "data/ip/quiz/key_recheck.json");
+if (!existsSync(RECHECK)) fail(`missing ${path.relative(ROOT, RECHECK)} (D-235 re-check record, committed)`);
+const recheckById = new Map(Object.entries(JSON.parse(readFileSync(RECHECK, "utf-8")).rechecks ?? {}));
+
 const merged = {};
 const missing = [];
 const errors = [];
@@ -143,6 +151,16 @@ for (const q of examQuestions) {
       kg1.stem_corruption_suspected !== kgFinal.stem_corruption_suspected ||
       kg1.note_jp !== kgFinal.note_jp);
 
+  let recheck = null;
+  const rc = recheckById.get(q.id);
+  if (rc) {
+    if (!suspect) errors.push(`${q.id}: key_recheck.json entry for a non-suspect question`);
+    if (!["ア", "イ", "ウ", "エ", "unsure"].includes(rc.derived_answer)) errors.push(`${q.id}: key_recheck derived_answer '${rc.derived_answer}'`);
+    if (!nonEmpty(rc.by) || !nonEmpty(rc.note_jp)) errors.push(`${q.id}: key_recheck needs by + note_jp`);
+    const cleared = rc.derived_answer === q.correct_answer && rc.info_sufficient === true && rc.confidence !== "low";
+    recheck = { derived_answer: rc.derived_answer, cleared, by: rc.by, note_jp: rc.note_jp };
+  }
+
   merged[q.id] = {
     key_guard: {
       figure_derivable: kgFinal.figure_derivable ?? null,
@@ -162,6 +180,7 @@ for (const q of examQuestions) {
             },
           }
         : {}),
+      ...(recheck ? { recheck } : {}),
     },
     correct: { jp: jp.correct_jp, zh: tr.correct?.zh ?? "", en: tr.correct?.en ?? "" },
     distractors,
@@ -181,7 +200,7 @@ const sidecar = {
   source_note:
     "解説 (正解理由+各誤答肢の誤り+要点) を JP 先生成→zh/en 翻訳 (Claude opus, D-137)。key_guard=図から正解を独立導出した自己検査 (suspect=keyed answer と不一致/導出不可、要人手裁決)。出典は IPA 過去問 (改変=解説生成)。",
   count: Object.keys(merged).length,
-  suspect_count: suspects.length,
+  suspect_count: suspects.length, // generate-time suspects (round1 ∪ final); the displayed count also drops key_guard.recheck.cleared (D-235)
   stem_corruption_count: stemCorruptions.length,
   questions: merged,
 };

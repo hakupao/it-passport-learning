@@ -19,6 +19,7 @@
 //      registry が空/縮んだ時に無条件 GREEN にならないよう組数・member 数の床も持つ。exceptions は reason 必須。
 //      registry の再生成は scripts/quiz-chumon-groups-build.mjs (--check で差分検出。vitest からも走る)。
 //   A2 には sidecar top-level の suspect_count / stem_corruption_count と実数の一致も含む
+//   A2 は D-235 の key_recheck.json と sidecar の key_guard.recheck の一致 (suspect 題だけ・cleared 規則・未知 id なし) も見る
 //
 // ══ Layer B: raw (gitignored) がある時だけ走る (ローカル gate) ══
 //   B1 questions.correct_answer == question_bank.correct_answer
@@ -73,6 +74,9 @@ const byExam = new Map();
   if (questions.length !== 2900) bad("A1", `questions.json has ${questions.length} questions (expected 2900)`);
 }
 
+const RECHECK_FILE = path.join(Q, "key_recheck.json");
+const RECHECKS = existsSync(RECHECK_FILE) ? rj(RECHECK_FILE).rechecks ?? {} : {};
+const seenRecheck = new Set();
 for (const [exam, qs] of byExam) {
   // A2 explanations
   const ef = path.join(Q, "explanations", `${exam}.json`);
@@ -86,6 +90,15 @@ for (const [exam, qs] of byExam) {
       const got = Object.keys(ent.distractors ?? {}).sort().join("");
       if (got !== want) bad("A2", `${q.id}: distractors=${got} but non-correct letters=${want} (key=${q.correct_answer})`);
       if (typeof ent.key_guard?.suspect !== "boolean") bad("A2", `${q.id}: key_guard.suspect not boolean`);
+      // D-235: the sidecar's recheck = key_recheck.json's entry, only on a suspect entry, cleared by rule
+      const rc = RECHECKS[q.id], sr = ent.key_guard?.recheck;
+      if (rc) seenRecheck.add(q.id);
+      if (!!rc !== !!sr) bad("A2", `${q.id}: key_recheck.json ${rc ? "has" : "lacks"} an entry but the sidecar ${sr ? "has" : "lacks"} recheck`);
+      if (rc && sr) {
+        if (ent.key_guard.suspect !== true) bad("A2", `${q.id}: recheck on a non-suspect entry`);
+        const cleared = rc.derived_answer === q.correct_answer && rc.info_sufficient === true && rc.confidence !== "low";
+        if (sr.derived_answer !== rc.derived_answer || sr.cleared !== cleared || sr.note_jp !== rc.note_jp || sr.by !== rc.by) bad("A2", `${q.id}: sidecar recheck ≠ key_recheck.json (re-run quiz-phase2-merge)`);
+      }
     }
     if (e.count !== qs.length) bad("A2", `${exam}: sidecar count=${e.count} vs ${qs.length}`);
     const nSus = Object.values(e.questions).filter((x) => x.key_guard?.suspect === true).length;
@@ -342,6 +355,8 @@ if (!COMMITTED_ONLY) {
     }
   }
 }
+
+for (const id of Object.keys(RECHECKS)) if (!seenRecheck.has(id)) bad("A2", `${id}: key_recheck.json entry for an unknown question`);
 
 // ───────────────────────── report ─────────────────────────
 console.log(`quiz-keys-crosscheck: questions=${questions.length} exams=${byExam.size} layerB=${rawStatus}`);

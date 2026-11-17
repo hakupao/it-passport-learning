@@ -138,7 +138,9 @@ describe("ExplanationPane — title, points, suspect, language", () => {
   });
 
   it("suspect question shows the suspect line in ja/zh/en", () => {
-    const q = QS.find((x) => x.explanation?.key_guard.suspect)!;
+    // D-235: no corpus question is displayed as suspect any more → a real one with suspect forced on.
+    const base = QS.find((x) => x.explanation)!;
+    const q = { ...base, explanation: { ...base.explanation!, suspect: true } };
     for (const locale of ["ja", "zh", "en"] as const) {
       const out = renderPane(q, locale, wrongOf(q));
       expect(textOf(fidOne(out, "suspect")!.inner)).toBe(SUSPECT[locale]);

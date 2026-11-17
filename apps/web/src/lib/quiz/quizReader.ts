@@ -33,7 +33,7 @@ import {
 export * from "./quizModel";
 
 /** A sidecar entry as the loader holds it: key_guard kept (corpus scripts / tests read it), its
- *  suspect flag lifted to `suspect` for the display code (D-217 H1-4). */
+ *  suspect flag lifted to `suspect` for the display code (D-217 H1-4), minus re-check clears (D-235). */
 export type LoadedExplanation = QuizExplanationEntry & QuizExplanation;
 
 /** The loader's question: the model question with a LoadedExplanation (assignable to the model's). */
@@ -114,7 +114,8 @@ async function loadExplanationMap(): Promise<Map<string, LoadedExplanation>> {
   );
   for (const file of loaded) {
     for (const [id, entry] of Object.entries(file.questions)) {
-      map.set(id, { ...entry, suspect: entry.key_guard?.suspect === true });
+      // D-235: a blind re-check that reached the keyed answer clears the displayed flag.
+      map.set(id, { ...entry, suspect: entry.key_guard?.suspect === true && entry.key_guard.recheck?.cleared !== true });
     }
   }
   return map;

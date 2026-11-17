@@ -17,6 +17,8 @@ export const FORBIDDEN_KEYS = [
   "figure_derivable",
   "derived_answer",
   "matches_key",
+  "recheck",
+  "info_sufficient",
   "generated_from",
   "attribution",
   "schema_version",

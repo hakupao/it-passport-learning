@@ -153,7 +153,7 @@ export interface QuizExplanation {
  * One question's explanation (D-137) as stored in the per-exam sidecar
  * `data/ip/quiz/explanations/<exam_id>.json`. JP-authored then translated; `key_guard`
  * is the writer's self-check (re-derived the answer from the figure/stem) — its `suspect`
- * is the flag QuizExplanation displays.
+ * is the flag QuizExplanation displays, unless a later blind re-check cleared it (`recheck`, D-235).
  */
 export interface QuizExplanationEntry {
   /** The writer's internal notes, read by the corpus scripts and the loader, never displayed. */
@@ -163,6 +163,10 @@ export interface QuizExplanationEntry {
     matches_key?: boolean | null;
     suspect: boolean;
     note_jp?: string;
+    /** D-235 (S163 C28): blind re-derivation from what the practice page shows, for a suspect entry
+     *  only. `cleared` = it reached the keyed answer with the information shown → not displayed as
+     *  suspect. `suspect` above keeps the generate-time union (audit trail). */
+    recheck?: { derived_answer: string; cleared: boolean; by: string; note_jp: string };
   };
   /** Why the keyed answer is correct (trilingual). */
   correct: { jp: string; zh: string; en: string };

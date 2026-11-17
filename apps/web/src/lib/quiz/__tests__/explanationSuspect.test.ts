@@ -6,14 +6,20 @@ import { describe, expect, it } from "vitest";
 
 import { loadAllQuestions } from "../quizReader";
 
-describe("loader: explanation.suspect = key_guard.suspect", () => {
-  it("every explained question, 84 suspect (corpus anchor)", async () => {
+// D-235 (S163 C28): a blind re-check that reached the keyed answer (key_guard.recheck.cleared) clears
+// the displayed flag; key_guard.suspect keeps the generate-time count (audit trail).
+describe("loader: explanation.suspect = key_guard.suspect minus re-check clears", () => {
+  it("every explained question; 84 generate-time suspect, all re-checked and cleared → 0 displayed (corpus anchors)", async () => {
     const all = await loadAllQuestions();
     const explained = all.filter((q) => q.explanation);
     expect(explained.length).toBeGreaterThan(2800);
     for (const q of explained) {
-      expect(q.explanation!.suspect, q.id).toBe(q.explanation!.key_guard.suspect === true);
+      const kg = q.explanation!.key_guard;
+      expect(q.explanation!.suspect, q.id).toBe(kg.suspect === true && kg.recheck?.cleared !== true);
     }
-    expect(explained.filter((q) => q.explanation!.suspect)).toHaveLength(84);
+    const generated = explained.filter((q) => q.explanation!.key_guard.suspect === true);
+    expect(generated).toHaveLength(84);
+    expect(explained.filter((q) => q.explanation!.key_guard.recheck).map((q) => q.id)).toEqual(generated.map((q) => q.id));
+    expect(explained.filter((q) => q.explanation!.suspect)).toHaveLength(0);
   });
 });
