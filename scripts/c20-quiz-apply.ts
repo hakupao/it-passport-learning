@@ -36,6 +36,30 @@ const slot = (q: Row, where: string): Row => {
   throw new Error(`bad where ${where}`);
 };
 
+// Upstream sources of the translations sidecar (gitignored): .phase1/tr_<id>.json (stem + choices[] {letter, zh, en})
+// and, for stems, .phase1.5/stem_<id>.json (stem {zh, en}, overrides phase1). A source is rewritten only when it holds
+// exactly the pre-patch text; otherwise it is left and reported.
+const PH15 = P("data/ip/quiz/.phase1.5");
+function syncUpstream(fl: Row): Row {
+  const one = (file: string, pick: (t: Row) => Row | undefined) => {
+    let raw: string;
+    try { raw = readFileSync(file, "utf-8"); } catch (e) { if ((e as { code?: string }).code === "ENOENT") return "no file"; throw e; }
+    const t = JSON.parse(raw);
+    const o = pick(t);
+    if (o?.[fl.lang] !== fl.before) return "differs (left)";
+    o[fl.lang] = fl.after;
+    writeFileSync(file, `${JSON.stringify(t, null, raw.startsWith("{\n  ") ? 2 : 0)}${raw.endsWith("\n") ? "\n" : ""}`);
+    return "fixed";
+  };
+  const letter = fl.where.slice(2);
+  const out: Row = {
+    phase1: one(path.join(PH1, `tr_${fl.id}.json`), (t) =>
+      fl.where === "stem" ? t.stem : Array.isArray(t.choices) ? t.choices.find((c: Row) => c.letter === letter) : t.choices?.[letter]),
+  };
+  if (fl.where === "stem") out.phase1_5 = one(path.join(PH15, `stem_${fl.id}.json`), (t) => t.stem);
+  return out;
+}
+
 const pAt = process.argv.indexOf("--patches");
 const patches: Patch[] = read(pAt < 0 ? P("evidence/phase5/hosting/c20/patches.json") : path.resolve(process.argv[pAt + 1]!)).patches;
 const sides = new Map<string, Row>();
@@ -125,15 +149,7 @@ if (APPLY) {
     const d = trSide(exam);
     for (const fl of report.fields.filter((x: Row) => x.layer === "translations" && x.exam === exam)) {
       slot(d.questions[fl.id], fl.where)[fl.lang] = fl.after;
-      const file = path.join(PH1, `tr_${fl.id}.json`);
-      let status = "no file";
-      try {
-        const raw = readFileSync(file, "utf-8");
-        const t = JSON.parse(raw);
-        const o = fl.where === "stem" ? t.stem : t.choices?.[fl.where.slice(2)];
-        if (o?.[fl.lang] === fl.before) { o[fl.lang] = fl.after; writeFileSync(file, `${JSON.stringify(t, null, raw.startsWith("{\n  ") ? 2 : 0)}${raw.endsWith("\n") ? "\n" : ""}`); status = "fixed"; } else status = "differs (left)";
-      } catch (e) { if ((e as { code?: string }).code !== "ENOENT") throw e; }
-      ph1.push({ id: fl.id, where: fl.where, lang: fl.lang, phase1: status });
+      ph1.push({ id: fl.id, where: fl.where, lang: fl.lang, ...syncUpstream(fl) });
     }
     writeFileSync(path.join(TRD, `${exam}.json`), `${JSON.stringify(d, null, 2)}\n`);
   }
