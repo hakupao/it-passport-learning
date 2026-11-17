@@ -35,7 +35,8 @@
 | C25 | S158 C24 Rule D MEDIUM: 太字の漢字キーワードの前後の空白 (「漢字** 漢字」485・「漢字 **漢字」788、派生欄で「以 手机号码 为」)、「** [[jp:X]]漢」22、中国語文に埋め込んだ日本語の前後「]] 汉」30、「”␣漢」3・「》␣漢」2 | 規則を先に決める (CJK–Latin の空白は維持、太字の前後は描画で隙間になるか確認) → 全件選別 | B3 | verifier opus | 準備済 (S158: 計数 1,480 / 818 欄、太字の隣 1,306 と裸 jp の隣 97 を分ける、D-231 を lock してから canary → 全件、手順は session-158 log) |
 | C25b | S159 C25 の範囲外: 裸 `[[jp:]]` の隣の CJK 間空白 97 (73 ラベル)、glossary 平文で漢字の言及が溶ける (「日语与信字面」) | D-232 (働きで分ける: 言及 → 引号、注釈 → 空白削除) | B3 (凍結 1 単元は直接編集) | verifier opus | **done** (S160: 44 単元 81 欄 + 派生 110、Rule D PASS、Playwright 331/0/2) |
 | C26 | zh の引号の形が混在 (教科書「」178 / “ 1,615、UI「」11) | D-233 (教科書・UI は “”、入れ子は ‘’。quiz は C20 で) | B3 (unit_summary 3 は unit-level) + UI 直接 | critic opus | **done** (S161: 31 単元 119 欄 + 派生 184 + UI 11、Rule D PASS、Playwright 283/0/2) |
-| C27 | S162 C20 round 3: jp 解説の誤り 27 件 (zh/en も同じ誤り、例 RASIS→RAS・DHCP を 3 文字略語・チェックサムが改ざんを検出、境界判定 8) | 三語同時に修正、境界判定 8 は 1 件ずつ判断 (ユーザー選択「另开一项来修」) | quiz explanations (.phase2) | verifier opus | 候補 (未着手、`evidence/phase5/hosting/c20/round3_jp_errors.json`) |
+| C27 | S162 C20 round 3: jp 解説の誤り 27 件 (zh/en も同じ誤り、例 RASIS→RAS・DHCP を 3 文字略語・チェックサムが改ざんを検出、境界判定 8) | 三語同時に修正、境界判定 8 は 1 件ずつ判断 (ユーザー選択「另开一项来修」) | quiz explanations (.phase2) | verifier opus | **done** (S163: 27 題 97 欄 三語、境界 8 は全件採用、Rule D PASS → LOW 5 処置、`evidence/phase5/hosting/c27/`) |
+| C28 | S163 C27 の範囲外: 2015h27a-q098 の key_guard が「料金表が stem に無い」の誤った前提で suspect: true (UI に「正解を確認できなかった」1 行が出る)。他の suspect 83 題に同型が混じるか未調査 | key_guard の再判定 (merge の generate_result 層、`explanationSuspect.test.ts` anchor 84) | quiz explanations (key_guard) | 未定 | 候補 (未着手) |
 
 ## 順序 (S153)
 1. C1 (テスト、独立) と C3・C10 (小さい直接修正) を先に。
