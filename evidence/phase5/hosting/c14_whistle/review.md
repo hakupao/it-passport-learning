@@ -6,4 +6,4 @@
 - Facts vs 要綱 (`source_excerpt.md`): フリーランス (特定受託業務従事者) added (第一 一); 刑事罰 only on 解雇等特定不利益取扱い = 解雇・懲戒 (第五 一) → "解雇や懲戒が刑事罰の対象" accurate, not overstated. The 1-year presumption (第二 一 3) omitted (omission, not error).
 - Tense: non-past + explicit 施行日 in all three languages → true before and after 2026-12-01.
 - LOW-1 p08 retired_reason pointed to retired p18 → fixed (p18 → p20 → p22). LOW-2 zh「也被纳入」lacked an object → p22「也被纳入保护范围」. LOW-3 (penalty applies to employer's dismissal/discipline of workers; juxtaposition with freelancers could be over-read) → kept: 解雇・懲戒 are employment concepts, low risk at textbook granularity.
-- After LOW-2: merge --journal --write validate 0 / parity 0, zh-terms 0 warning, gate:content PASS.
+- After LOW-2: merge --journal --write validate 0 / parity 0, zh-terms 0 warning in this unit (corpus-wide 2 known since S158: 尺度・応答時間), gate:content PASS.
