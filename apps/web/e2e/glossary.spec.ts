@@ -127,3 +127,18 @@ test(`glossary detail: ${MULTI_SENSE_TERM} learn-in link lands on the unit's #te
   await expect(article).toBeInViewport();
   await expect(article.getByRole("heading", { level: 3 })).toContainText(MULTI_SENSE_TERM);
 });
+
+// D-239 (mobile): the URL term's explanation holds an unbreakable example URL; at phone widths it
+// wraps inside the column instead of scrolling the page.
+const URL_ID = termId("URL");
+for (const width of [320, 375])
+  test(`glossary detail at ${width}px: URL's example URL does not scroll the page (ja / zh / en)`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 667 });
+    for (const { locale } of LOCALES) {
+      const res = await page.goto(`/${locale}/glossary/${URL_ID}`);
+      expect(res?.status()).toBe(200);
+      await expect(page.locator("main")).toContainText("https://www.example.ne.jp/");
+      await page.evaluate(() => document.fonts.ready);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth), locale).toBeLessThanOrEqual(width);
+    }
+  });

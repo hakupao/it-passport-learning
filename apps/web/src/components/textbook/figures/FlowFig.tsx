@@ -29,7 +29,7 @@ function FlowView({ data, show, focus, locale }: { data: FlowFigData; show: numb
             aria-hidden={off ? true : undefined}
             className={`${styles.flowNode}${on ? ` ${styles.focus}` : ""}${off ? ` ${styles.off}` : ""}`}
           >
-            {pick3(n.label, locale)}
+            <span className={styles.label}>{pick3(n.label, locale)}</span>
           </li>
         );
       })}

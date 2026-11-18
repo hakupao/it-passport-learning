@@ -27,7 +27,7 @@ function TreeLevel({ nodes, level, depth, focus, locale }: { nodes: TreeNode[]; 
             aria-hidden={off ? true : undefined}
             className={`${styles.treeNode}${focus && level === depth ? ` ${styles.focus}` : ""}${off ? ` ${styles.off}` : ""}`}
           >
-            {pick3(n.label, locale)}
+            <span className={styles.label}>{pick3(n.label, locale)}</span>
           </span>
           {n.children ? <TreeLevel nodes={n.children} level={level + 1} depth={depth} focus={focus} locale={locale} /> : null}
         </li>

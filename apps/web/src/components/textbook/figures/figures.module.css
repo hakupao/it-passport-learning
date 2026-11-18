@@ -75,18 +75,32 @@
   transform: translateY(-50%);
   color: var(--ink-muted);
 }
+/* Phones (D-239, Rule D (c)): a tighter column — 20px arrow gap, 5px node padding, line-height 1.5 —
+ * so a 4-node step figure is ~40px and a 7-node one ~75px shorter than with the desktop rhythm. */
 @media (max-width: 640px) {
   .flow {
     flex-direction: column;
   }
+  .flowNode {
+    padding: 5px 12px;
+    line-height: 1.5;
+  }
   .flowNode + .flowNode {
-    margin: 26px 0 0;
+    margin: 20px 0 0;
   }
   .flowNode + .flowNode::before {
     content: "↓";
-    top: -24px;
+    top: -20px;
     left: 50%;
+    line-height: 20px;
     transform: translateX(-50%);
+  }
+  .tree li,
+  .treeKids li {
+    margin: 4px 0;
+  }
+  .treeNode {
+    line-height: 1.5;
   }
 }
 
@@ -142,6 +156,15 @@
   font-size: 14px;
   min-height: 1.75em;
 }
+.capBox {
+  display: grid;
+}
+.capBox > * {
+  grid-area: 1 / 1;
+}
+.capSizer {
+  display: none;
+}
 .controls {
   display: flex;
   align-items: center;
@@ -192,6 +215,42 @@
   color: var(--ink-muted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+}
+/* Phones (D-239): the flow turns into a column, so the nodes a step has not reached yet left a blank
+ * of up to ~230px between the frame and the caption. They keep their place (the caption and the
+ * buttons do not move under the thumb between steps) but read as dashed empty slots; the label inside
+ * stays visibility: hidden (and aria-hidden). The caption box keeps the tallest caption's height (.capSizer, StepStage), so the
+ * buttons stay put on every step. Controls: taller buttons for the thumb; figure padding 12px, a tighter
+ * gap and side padding so the row (上一步 … 再看一遍 / Back … Play again) stays one line at 320px; the wrap
+ * is only a safety net for a longer label, never an inner scroll. */
+@media (max-width: 640px) {
+  .off {
+    visibility: visible;
+    border-style: dashed;
+    border-color: var(--rule);
+    background: transparent;
+  }
+  /* the label itself stays visibility: hidden (Rule D L-2): find-in-page and forced colors do not reveal it */
+  .off .label {
+    visibility: hidden;
+  }
+  .flowNode.off::before {
+    color: var(--rule);
+  }
+  .capSizer {
+    display: block;
+    visibility: hidden;
+  }
+  .fig {
+    padding: 12px;
+  }
+  .controls {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .btn {
+    padding: 8px 10px;
+  }
 }
 
 /* ---- network widget ---- */

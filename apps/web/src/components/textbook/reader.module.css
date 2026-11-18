@@ -161,6 +161,17 @@
   font-weight: 700;
   line-height: 1.45;
   border-bottom: 2px dotted var(--spot);
+  /* OQ-18 (D-239): an English title word wider than a phone column ("Integration/Performance",
+   * "Telecommunications" at 320px) breaks instead of scrolling the page. break-word, not anywhere:
+   * it only breaks a word that overflows and leaves min-content (table columns) alone. */
+  overflow-wrap: break-word;
+}
+/* Phones (D-239): 22px keeps the longest title word ("Integration/Performance") whole from 375px up
+ * with the 16px phone gutter of app.module.css .content (with a 32px gutter it would break mid-word at 375) */
+@media (max-width: 640px) {
+  .h1 {
+    font-size: 22px;
+  }
 }
 .meta {
   display: flex;
@@ -260,6 +271,9 @@
 }
 .prose {
   margin: 0 0 0.75rem;
+  /* OQ-18 (D-239): an example URL (https://www.example.ne.jp/news/top.html) breaks instead of
+   * scrolling the page at 320〜390px */
+  overflow-wrap: break-word;
 }
 .analogy,
 .hook {

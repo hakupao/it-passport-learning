@@ -1,0 +1,10 @@
+import { createRequire } from "node:module";
+const require = createRequire("/Volumes/DevSSD/Project/IT-Passport-Learning/apps/web/package.json");
+const { chromium } = require("@playwright/test");
+const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 375, height: 600 } });
+await p.goto("http://127.0.0.1:3161/en/textbook/management-08-25-u03"); await p.evaluate(() => document.fonts.ready);
+const r = await p.evaluate(() => { const h = document.querySelector("main h1"); const c = document.querySelector("main").closest("[class*=content]");
+  const m = (g) => { c.style.paddingLeft = c.style.paddingRight = g + "px"; h.style.overflowWrap = "normal"; const o = [g, h.clientWidth, h.scrollWidth]; h.style.overflowWrap = ""; return o; };
+  return [m(16), m(32)]; });
+console.log("[gutter, h1 clientWidth, h1 scrollWidth with wrapping off]", JSON.stringify(r));
+await b.close();

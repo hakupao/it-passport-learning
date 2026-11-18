@@ -251,14 +251,34 @@ test(`network widget (${NETWORK.unitId} / ${NETWORK.term}): a new duration recom
   await expect(input).not.toHaveAttribute("aria-invalid", "true");
 });
 
-test("v2 units at 390px: no horizontal page scroll", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  for (const unit of E2E_UNITS) {
-    await page.goto(`/ja/textbook/${unit.unit_id}`);
-    await waitForRecord(page);
-    await page.evaluate(() => document.fonts.ready);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth), unit.unit_id).toBeLessThanOrEqual(390);
-  }
+// OQ-18 (D-239): the 3 locales at 320 / 360 / 390. The units that scrolled the page before the fix (an
+// English title word, an example URL in a detail) stay in the loop whatever TEXTBOOK_E2E_UNITS is.
+const NO_SCROLL_UNITS = [...new Set([...E2E_IDS, "management-08-25-u03", "technology-22-60-u02", "technology-22-60-u04"])];
+for (const width of [320, 360, 390])
+  for (const locale of ["ja", "zh", "en"] as const)
+    test(`v2 units at ${width}px /${locale}: no horizontal page scroll`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 844 });
+      for (const id of NO_SCROLL_UNITS) {
+        await page.goto(`/${locale}/textbook/${id}`);
+        await waitForRecord(page);
+        await page.evaluate(() => document.fonts.ready);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth), `${id} /${locale}`).toBeLessThanOrEqual(width);
+      }
+    });
+
+// OQ-18: injected text, so the check keeps working when the units above are rewritten — an unbreakable
+// title word and an unbreakable token in a detail paragraph wrap inside the column at 320px.
+test("v2 unit at 320px: an unbreakable word in the title or a detail does not scroll the page", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto(`/en/textbook/${PILOT_IDS[0]}`);
+  await waitForRecord(page);
+  await page.evaluate(() => document.fonts.ready);
+  const sw = await page.evaluate(() => {
+    document.querySelector("main h1")!.textContent = "Telecommunications/Interconnection";
+    document.querySelector('[data-part="detail"]')!.textContent = "https://www.example.ne.jp/news/2026/archive/top.html";
+    return document.documentElement.scrollWidth;
+  });
+  expect(sw).toBeLessThanOrEqual(320);
 });
 
 // S137 (user, b02 u10 at 390px): the term table squeezed its text columns to one character a line

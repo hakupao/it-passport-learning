@@ -41,9 +41,18 @@ export function StageView({ step, frames, captions, label, onGo, rootRef }: View
   return (
     <div ref={rootRef} role="group" aria-label={label} className={styles.stage}>
       <div className={styles.frame}>{frames[step]}</div>
-      <p className={styles.caption} aria-live="polite">
-        {captions[step]}
-      </p>
+      {/* D-239: on a phone every caption also sits in the same grid cell, hidden, so the caption box keeps
+          the tallest caption's height and the buttons below do not move between steps (CSS: .capSizer). */}
+      <div className={styles.capBox}>
+        <p className={styles.caption} aria-live="polite">
+          {captions[step]}
+        </p>
+        {captions.map((c, i) => (
+          <span key={i} aria-hidden="true" className={`${styles.caption} ${styles.capSizer}`}>
+            {c}
+          </span>
+        ))}
+      </div>
       <div className={styles.controls}>
         <button
           type="button"

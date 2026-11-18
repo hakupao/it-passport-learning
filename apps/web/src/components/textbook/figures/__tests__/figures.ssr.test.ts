@@ -306,9 +306,22 @@ describe("widget accessibility", () => {
     expect(first).not.toMatch(/<button[^>]*disabled=""/);
     expect(first).toContain('aria-live="polite"');
     expect(view(2)).toContain('aria-live="polite"');
+    // D-239: one hidden sizer per caption next to the live one (phones keep the tallest caption's height);
+    // the live region holds only the current caption
+    expect((first.match(/<span aria-hidden="true"[^>]*>c\d<\/span>/g) ?? []).length).toBe(3);
+    expect(first).toMatch(/aria-live="polite"[^>]*>c1<\/p>/);
     // the aria-disabled 前へ looks disabled too (N1)
     const css = readFileSync(path.resolve(__dirname, "../figures.module.css"), "utf-8");
     expect(css).toMatch(/\.btn\[aria-disabled="true"\][^{]*\{[^}]*cursor:\s*default/);
+  });
+
+  it("D-239 / Rule D L-2: a flow or tree node label is its own element, kept visibility: hidden in an unreached slot on phones", () => {
+    const css = readFileSync(path.resolve(__dirname, "../figures.module.css"), "utf-8");
+    const phone = css.slice(css.lastIndexOf("@media (max-width: 640px)"));
+    expect(phone).toMatch(/\.off \.label\s*\{[^}]*visibility:\s*hidden/);
+    expect(phone).not.toMatch(/color:\s*transparent/);
+    for (const [loc, fig, label] of [["ja", FIG.flow, "要因を見つける"], ["zh", FIG.tree, "规避"]] as const)
+      expect(render(loc, fig)).toMatch(new RegExp(`<span class="[^"]*label[^"]*">${label}</span>`));
   });
 });
 
