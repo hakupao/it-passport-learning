@@ -276,3 +276,22 @@ describe("PracticeQuestion — mode exam (mock)", () => {
     expect(out).toMatch(/aria-disabled="true"/);
   });
 });
+
+// Stage 7 Phase 5 (D-239): at phone width the left column (問番号 / 复习三格 / 頻出度) becomes one row
+// above the stem, so the stem and the choices take the whole face width. Desktop rules stay as they were.
+describe("D-239 phone width: the face", () => {
+  const phone = /@media \(max-width: 640px\)\s*\{([\s\S]*)\}\s*$/.exec(CSS)?.[1] ?? "";
+
+  it("the 640px block stacks .hang, lays .side out as a row and narrows the face padding", () => {
+    expect(phone).toMatch(/\.hang\s*\{[^}]*flex-direction:\s*column;/);
+    expect(phone).toMatch(/\.side\s*\{[^}]*flex-direction:\s*row;/);
+    expect(phone).toMatch(/\.face\s*\{[^}]*padding:\s*14px 14px 18px;/);
+  });
+
+  it("desktop: the hanging left column is unchanged outside the block", () => {
+    const desktop = CSS.slice(0, CSS.lastIndexOf("@media (max-width: 640px)"));
+    expect(desktop).toMatch(/\.hang\s*\{\s*display:\s*flex;\s*gap:\s*16px;\s*align-items:\s*flex-start;\s*\}/);
+    expect(desktop).toMatch(/\.side\s*\{[^}]*flex-direction:\s*column;/);
+    expect(desktop).toMatch(/\.face\s*\{[^}]*padding:\s*26px 28px 30px;/);
+  });
+});

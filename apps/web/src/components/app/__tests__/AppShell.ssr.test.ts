@@ -235,3 +235,28 @@ describe("messages", () => {
     }
   });
 });
+
+// Stage 7 Phase 5 (D-239): at phone width the header is two rows (site name + 日 / 中 / EN + 設定, then
+// the nav) and the side gutter is 16px; not sticky. CSS order only — the DOM order stays name → nav → tools.
+describe("D-239 phone width: the header", () => {
+  const CSS = readFileSync(path.resolve(__dirname, "../app.module.css"), "utf-8");
+  const phone = /@media \(max-width: 640px\)\s*\{([\s\S]*)\}\s*$/.exec(CSS)?.[1] ?? "";
+
+  it("the nav takes its own full-width row after the tools; header and content gutters are 16px", () => {
+    expect(phone).toMatch(/\.tools\s*\{[^}]*order:\s*1;/);
+    expect(phone).toMatch(/\.nav\s*\{[^}]*order:\s*2;[^}]*flex-basis:\s*100%;/);
+    expect(phone).toMatch(/\.bar\s*\{[^}]*padding:\s*8px 16px 6px;/);
+    expect(phone).toMatch(/\.content\s*\{[^}]*padding:\s*0 16px;/);
+    expect(CSS).not.toMatch(/position:\s*(sticky|fixed)/);
+  });
+
+  it("DOM order is unchanged: site name, nav, tools", () => {
+    const html = render("zh");
+    const name = html.indexOf('href="/zh"');
+    const nav = html.indexOf("<nav");
+    const settings = html.indexOf('href="/zh/settings"');
+    expect(name).toBeGreaterThan(-1);
+    expect(name).toBeLessThan(nav);
+    expect(nav).toBeLessThan(settings);
+  });
+});

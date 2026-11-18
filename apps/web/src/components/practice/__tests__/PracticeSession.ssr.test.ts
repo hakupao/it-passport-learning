@@ -1,6 +1,8 @@
 // Stage 7 Phase 1 Task 9 (D-189 §6.2 / D-190 §0-8 / §0-13) — the practice session screen and the
 // summary (SSR). Node env, renderToStaticMarkup, real corpus + catalogs: PracticeSession renders
 // its first (server) frame — or a given initialState — and SessionView renders any (state, record).
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
@@ -573,5 +575,53 @@ describe("D-217 H1-3: explanations fetched once answered (SessionView.explanatio
     const plain = QS.find((q) => q.explanation && !q.explanation.suspect)!;
     const out = renderView([bare(clientQuestion(plain, "zh"))], "zh", { state: answered([plain]), explanations: {} });
     expect(out).not.toContain('data-fid="suspect"');
+  });
+});
+
+// Stage 7 Phase 5 (D-239): at phone width the prev / next row is pinned to the bottom once the question on
+// screen is answered — the same buttons (one element, DOM / tab order unchanged), switched by data-answered.
+describe("D-239 phone width: the next bar after an answer", () => {
+  const SESSION_CSS = readFileSync(path.resolve(__dirname, "../session.module.css"), "utf-8");
+  const phone = /@media \(max-width: 640px\)\s*\{([\s\S]*)\}\s*$/.exec(SESSION_CSS)?.[1] ?? "";
+
+  it("data-answered appears on the session <main> only once the question on screen is answered", () => {
+    const qs = three();
+    const ids = qs.map((q) => q.id);
+    expect(renderSession(qs, "zh")).toMatch(/<main(?![^>]*data-answered)[^>]*data-session=""[^>]*>/);
+    const s = run(newSession(ids, 0), { type: "pick", choice: wrongOf(qs[0]!) });
+    const out = renderSession(qs, "zh", s);
+    expect(out).toMatch(/<main[^>]*data-session=""[^>]*data-answered=""/);
+    // still one next button and one prev button (no duplicate for the bar)
+    expect(out.match(/data-nav="next"/g)).toHaveLength(1);
+    expect(out.match(/data-nav="prev"/g)).toHaveLength(1);
+    // moving on to the unanswered 2nd question drops it again
+    expect(renderSession(qs, "zh", run(s, { type: "next" }))).not.toContain("data-answered");
+  });
+
+  it("session.module.css: only in the 640px block — nav fixed at the bottom, safe-area aware, the session padded by the bar", () => {
+    expect(phone).not.toBe("");
+    expect(SESSION_CSS.slice(0, SESSION_CSS.indexOf("@media"))).not.toMatch(/position:\s*fixed/);
+    expect(phone).toMatch(/\.session\[data-answered\] \.nav\s*\{[^}]*position:\s*fixed;[^}]*bottom:\s*0;/);
+    expect(phone).toMatch(/\.session\[data-answered\] \.nav\s*\{[^}]*env\(safe-area-inset-bottom\)/);
+    // one bar height (--practice-bar-h), derived: the primary button + the bar's vertical padding + its top rule
+    const barH = Number(/--practice-bar-h:\s*(\d+)px;/.exec(phone)?.[1]);
+    const btnH = Number(/\.navBtnPrimary\s*\{[^}]*height:\s*(\d+)px;/.exec(SESSION_CSS)?.[1]);
+    const padY = /\.session\[data-answered\] \.nav\s*\{[^}]*padding:\s*(\d+)px [^;]*calc\((\d+)px \+ env\(safe-area-inset-bottom\)\)/.exec(phone);
+    const rule = Number(/\.session\[data-answered\] \.nav\s*\{[^}]*border-top:\s*(\d+)px/.exec(phone)?.[1]);
+    expect(barH).toBe(btnH + Number(padY![1]) + Number(padY![2]) + rule);
+    // without :has() the var is undefined → the padding keeps a fallback equal to the bar height (R2-M1)
+    const fb = Number(/\.session\[data-answered\]\s*\{[^}]*padding-bottom:\s*calc\(var\(--practice-bar-h, (\d+)px\) \+ env\(safe-area-inset-bottom\)\)/.exec(phone)?.[1]);
+    expect(fb).toBe(barH);
+    // WCAG 2.4.11: the page's scroll-padding keeps a focused element clear of the bar
+    expect(phone).toMatch(/html:has\(\.session\[data-answered\]\)\s*\{[^}]*scroll-padding-bottom:\s*calc\(var\(--practice-bar-h\) \+ env\(safe-area-inset-bottom\)\)/);
+    expect(phone.match(/--practice-bar-h:/g)).toHaveLength(1);
+    // below the AI 先生 panel (z-50), no shadow
+    expect(phone).toMatch(/z-index:\s*10;/);
+    expect(SESSION_CSS).not.toMatch(/box-shadow|gradient\(/);
+  });
+
+  it("session.module.css: progress / 答题卡 / timer / 終了 share one row; the 答题卡 scrolls instead of wrapping", () => {
+    expect(phone).toMatch(/\.topBar::after\s*\{[^}]*order:\s*1;[^}]*flex-basis:\s*100%;/);
+    expect(phone).toMatch(/\.card\s*\{[^}]*flex-wrap:\s*nowrap;[^}]*overflow-x:\s*auto;/);
   });
 });

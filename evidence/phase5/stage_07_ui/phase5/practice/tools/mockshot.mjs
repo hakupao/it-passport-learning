@@ -1,0 +1,10 @@
+import pw from "/Volumes/DevSSD/Project/IT-Passport-Learning/node_modules/.pnpm/@playwright+test@1.60.0/node_modules/@playwright/test/index.js"; const { chromium } = pw;
+const [base, out, tag] = process.argv.slice(2);
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport: { width: 375, height: 667 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+const p = await ctx.newPage();
+await p.goto(`${base}/zh/mock/run?exam=2025r07`, { waitUntil: "networkidle" });
+await p.locator("main article [data-qno]").waitFor();
+console.log(tag, JSON.stringify(await p.evaluate(() => ({ stemW: Math.round(document.querySelector('[data-fid="stem"]').getBoundingClientRect().width), sw: document.documentElement.scrollWidth }))));
+await p.screenshot({ path: `${out}/${tag}-extra-mock-375x667.png` });
+await ctx.close(); await b.close();

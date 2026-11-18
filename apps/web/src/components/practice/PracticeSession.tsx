@@ -38,6 +38,8 @@
 //     pending or right after a reload, which would plan from an empty record).
 //   - from=unit (Phase 3 §0-2 / §0-8): the summary's 「単元に戻る」, and a wrong answer's link back to
 //     the unit under the explanation (unitReturnHref).
+//   - Phone width (D-239): `data-answered` on the <main> lets session.module.css pin the prev / next
+//     row to the bottom of the viewport once the question on screen is answered (the same buttons).
 //   - AI 先生 (§0-18): SenseiHost.onQuestionLink jumps to a question of this group (true).
 //   - Explanations (D-217 H1-3): with `loadExplanation` the questions come without them; once the
 //     question on screen is answered (a pick, a restore, a revisit) its explanation is fetched (the
@@ -284,7 +286,10 @@ export function PracticeSession(props: PracticeSessionProps): React.ReactElement
       if (!el) return;
       const heading = el.querySelector("h2") ?? el;
       const r = heading.getBoundingClientRect();
-      if (r.top >= 0 && r.bottom <= window.innerHeight) return; // already in view
+      // phone width (D-239): the prev / next row is then a bar fixed to the bottom — what it covers is not "in view"
+      const bar = el.closest("main")?.querySelector('[data-nav="next"]')?.parentElement;
+      const visibleBottom = bar && getComputedStyle(bar).position === "fixed" ? bar.getBoundingClientRect().top : window.innerHeight;
+      if (r.top >= 0 && r.bottom <= visibleBottom) return; // already in view
       const top = Math.max(window.scrollY, window.scrollY + r.top - window.innerHeight * EXPLANATION_VIEW_AT);
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       window.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
@@ -455,7 +460,7 @@ export function SessionView({
   }
 
   return (
-    <main className={styles.session} data-session="">
+    <main className={styles.session} data-session="" data-answered={picked !== null ? "" : undefined}>
       <h1 className="sr-only">{t("title")}</h1>
       <div className={styles.topBar}>
         {catKey ? (

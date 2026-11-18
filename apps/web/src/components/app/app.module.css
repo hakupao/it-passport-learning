@@ -121,3 +121,36 @@
 .content:focus {
   outline: none;
 }
+
+/* Stage 7 Phase 5 (D-239) — phone width: about 100px of header instead of 160 (not sticky, zoom
+   untouched). Row 1 = site name + 日 / 中 / EN + 設定, row 2 = the nav. Only the visual order changes
+   (CSS order); the DOM / tab order stays site name → nav → tools. The side gutter drops to 16px for
+   the header and the content alike, so the practice stem gets the width (≥ 300px at 375). */
+@media (max-width: 640px) {
+  .bar {
+    padding: 8px 16px 6px;
+    gap: 6px 10px;
+  }
+  /* en at 360 (content 328px): name 164 + 日 / 中 / EN 76 + Settings 60 + 2 × 10 gaps = 321 — one row
+     only with the 14px name and 10px gaps */
+  .siteName {
+    font-size: 14px;
+  }
+  .tools {
+    order: 1;
+    gap: 10px;
+  }
+  .nav {
+    order: 2;
+    flex-basis: 100%;
+    gap: 4px 18px;
+  }
+  /* the 5 en items are ~306px at 14px, ~285px at 13px: 13px + 8px gaps = 317 keep them on one row at 360 */
+  .nav:lang(en) {
+    font-size: 13px;
+    gap: 4px 8px;
+  }
+  .content {
+    padding: 0 16px;
+  }
+}

@@ -266,3 +266,78 @@
   color: var(--paper);
   font-weight: 700;
 }
+
+/* Stage 7 Phase 5 (D-239) — phone width.
+ * Top bar: 分野 tag + topic path on the first row, then progress / 答题卡 / timer / 終了 on one row (a
+ * flex line break: ::after, order 1). The 答题卡 keeps one cell per question but no longer wraps:
+ * smaller cells, and a long group scrolls sideways (AnswerCard keeps the current cell in view).
+ * After an answer, the prev / next row is a bar fixed to the bottom of the viewport (thumb reach,
+ * safe-area aware) — the same element, so the DOM / tab order does not change; the session gets
+ * the bar's height as bottom padding so the bar never covers the end of the page. */
+@media (max-width: 640px) {
+  .topBar {
+    gap: 6px 10px;
+    padding-top: 10px;
+  }
+  .session[data-session] > .topBar::after {
+    content: "";
+    order: 1;
+    flex-basis: 100%;
+  }
+  .session[data-session] > .topBar > .progress,
+  .session[data-session] > .topBar > .card,
+  .session[data-session] > .topBar > .timer,
+  .session[data-session] > .topBar > .finishBtn {
+    order: 2;
+  }
+  .progress {
+    margin-left: 0;
+  }
+  .card {
+    /* positioned: the cells' sr-only text (position: absolute) must be clipped by this scroller,
+       or it widens the page (a 30-question group overflowed to 540px at 375) */
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .card > .cell {
+    flex: 0 0 14px;
+    width: 14px;
+  }
+  .stack {
+    padding: 12px 0 32px;
+    gap: 24px;
+  }
+  /* the fixed bar's height: .navBtnPrimary 44px + 2 × 8px padding + the 1px top rule (safe area added
+     where used). Defined on <html> (inherited by the session): the page's scroll-padding keeps a
+     focused / scrolled-to element clear of the bar (WCAG 2.4.11), the session's padding keeps the
+     end of the page clear of it. */
+  html:has(.session[data-answered]) {
+    --practice-bar-h: 61px;
+    scroll-padding-bottom: calc(var(--practice-bar-h) + env(safe-area-inset-bottom));
+  }
+  /* fallback = the same height, for browsers without :has() (the var is defined on html:has(...) only) */
+  .session[data-answered] {
+    padding-bottom: calc(var(--practice-bar-h, 61px) + env(safe-area-inset-bottom));
+  }
+  .session[data-answered] .nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    margin: 0;
+    gap: 10px;
+    padding: 8px max(16px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom))
+      max(16px, env(safe-area-inset-left));
+    background: var(--paper);
+    border-top: 1px solid var(--rule);
+  }
+  .session[data-answered] .navBtnPrimary {
+    flex: 1;
+  }
+}
