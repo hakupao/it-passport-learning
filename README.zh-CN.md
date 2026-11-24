@@ -7,9 +7,9 @@
 *29 回 IPA 过去问（FY2009–FY2026）、对齐シラバス的教科书和术语表 —— **日 / 中 / 英** 三语。*
 
 [![在线访问](https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E8%AE%BF%E9%97%AE-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=cloudflare&logoColor=white)](https://itlearn.bojiangz.com)
-[![Stage 7](https://img.shields.io/badge/Stage%207-%E6%95%99%E7%A7%91%E4%B9%A6%20v2%20%E9%87%8D%E5%86%99%E4%B8%AD-orange?style=for-the-badge)](docs/STATE.md)
-[![Tests](https://img.shields.io/badge/%E6%B5%8B%E8%AF%95-1264%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#技术栈)
-[![Decisions](https://img.shields.io/badge/%E5%B7%B2%E9%94%81%E5%86%B3%E7%AD%96-203-6f42c1?style=for-the-badge)](docs/STATE.md)
+[![Stage 7](https://img.shields.io/badge/Stage%207-%E6%95%99%E7%A7%91%E4%B9%A6%20v2%20%E9%87%8D%E5%86%99%E5%AE%8C%E6%88%90-brightgreen?style=for-the-badge)](docs/STATE.md)
+[![Tests](https://img.shields.io/badge/%E6%B5%8B%E8%AF%95-1497%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#技术栈)
+[![Decisions](https://img.shields.io/badge/%E5%B7%B2%E9%94%81%E5%86%B3%E7%AD%96-239-6f42c1?style=for-the-badge)](docs/STATE.md)
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-000?logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=000)](https://react.dev/)
@@ -113,7 +113,7 @@ itlearn.bojiangz.com
 | **Stage 4 —— 教科书 v1** | :white_check_mark: 完成 | 生成 244 个三语单元。 |
 | **Stage 6 —— 应用数据整合** | :white_check_mark: 已上线 | 教科书阅读、带译文和解析的过去问练习、术语表。 |
 | **Stage 7 —— UI 重新设计** | :white_check_mark: 已上线 | 所有页面统一一套设计（今日 / 练习 / 教科书 / 术语表 / 学习记录 / 设置），模拟考试、学习记录、新的教科书阅读界面。 |
-| **Stage 7 —— 教科书 v2 分批重写** | :hourglass: 进行中 | 单元正分批重写为 v2 格式：目前 244 个中已完成 13 个。 |
+| **Stage 7 —— 教科书 v2 分批重写** | :white_check_mark: 完成 | 244 个单元已全部重写为 v2 格式，共 78 批。 |
 | **AI 辅导** | :test_tube: 预览 | 自带 Anthropic key；入口在 Ask AI Tutor 和设置页。正式版计划中。 |
 
 实时状态见 [`docs/STATE.md`](docs/STATE.md)。
@@ -128,7 +128,7 @@ itlearn.bojiangz.com
 | UI | React 19, Tailwind CSS v4, Radix UI, Lucide icons |
 | 国际化 | next-intl（日语 / 中文 / 英语） |
 | 存储 | 学习记录存浏览器（站长同步代码保留，但自 D-228 起未配置存储 → 503） |
-| 测试 | Vitest（1,474 个测试）、Playwright（e2e） |
+| 测试 | Vitest（1,497 个测试）、Playwright（e2e） |
 | 部署 | Cloudflare Workers（static assets + Worker）、Cloudflare Web Analytics |
 | 内容 pipeline | Node / TypeScript 脚本；用 Claude（Anthropic）做提取、审核和翻译 |
 
@@ -208,11 +208,11 @@ pnpm check:quiz:ci    # 只查已提交的数据
 | 指标 | 值 |
 |---|---|
 | 过去问 | 2,900 题（29 回，FY2009–FY2026） |
-| 教科书 | 63 个主题、244 个单元（13 个为 v2） |
+| 教科书 | 63 个主题、244 个单元（全部为 v2） |
 | 术语表 | 1,395 条 |
-| 已锁决策 | 203（D-001 … D-203） |
-| Session log | `docs/discussion/` 下 73 份 |
-| 单元测试 | 1,474 个（Vitest，132 个文件） |
+| 已锁决策 | 239（D-001 … D-239） |
+| Session log | `docs/discussion/` 下 100 份 |
+| 单元测试 | 1,497 个（Vitest，134 个文件） |
 
 </details>
 

@@ -7,9 +7,9 @@
 *29 IPA past exams (FY2009–FY2026), a syllabus-aligned textbook and a glossary — in **JP / ZH / EN**.*
 
 [![Live](https://img.shields.io/badge/live-itlearn.bojiangz.com-0070f3?style=for-the-badge&logo=cloudflare&logoColor=white)](https://itlearn.bojiangz.com)
-[![Stage 7](https://img.shields.io/badge/Stage%207-textbook%20v2%20rewrite%20in%20progress-orange?style=for-the-badge)](docs/STATE.md)
-[![Tests](https://img.shields.io/badge/tests-1264%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#tech-stack)
-[![Decisions](https://img.shields.io/badge/locked%20decisions-203-6f42c1?style=for-the-badge)](docs/STATE.md)
+[![Stage 7](https://img.shields.io/badge/Stage%207-textbook%20v2%20rewrite%20complete-brightgreen?style=for-the-badge)](docs/STATE.md)
+[![Tests](https://img.shields.io/badge/tests-1497%20passing-0A9EDC?style=for-the-badge&logo=vitest&logoColor=white)](#tech-stack)
+[![Decisions](https://img.shields.io/badge/locked%20decisions-239-6f42c1?style=for-the-badge)](docs/STATE.md)
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-000?logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=000)](https://react.dev/)
@@ -113,7 +113,7 @@ The past-exam text was extracted from the IPA PDFs with Claude vision, then repa
 | **Stage 4 — Textbook v1** | :white_check_mark: Done | 244 trilingual units generated. |
 | **Stage 6 — App data integration** | :white_check_mark: Shipped | Textbook reader, past-question practice with translations and explanations, glossary. |
 | **Stage 7 — UI redesign** | :white_check_mark: Shipped | One design for every page (Today / Practice / Textbook / Glossary / Record / Settings), mock exam, learning record, new textbook reader. |
-| **Stage 7 — Textbook v2 batch rewrite** | :hourglass: In progress | Units are being rewritten to the v2 format in batches: 13 of 244 so far. |
+| **Stage 7 — Textbook v2 batch rewrite** | :white_check_mark: Done | All 244 units rewritten to the v2 format, in 78 batches. |
 | **AI tutor** | :test_tube: Preview | Bring your own Anthropic key; reachable from Ask AI Tutor and Settings. Full release planned. |
 
 The live state is in [`docs/STATE.md`](docs/STATE.md).
@@ -128,7 +128,7 @@ The live state is in [`docs/STATE.md`](docs/STATE.md).
 | UI | React 19, Tailwind CSS v4, Radix UI, Lucide icons |
 | i18n | next-intl (Japanese / Chinese / English) |
 | Storage | Browser storage for the learning record (owner sync code kept, but no store configured since D-228 → 503) |
-| Testing | Vitest (1,474 tests), Playwright (e2e) |
+| Testing | Vitest (1,497 tests), Playwright (e2e) |
 | Deploy | Cloudflare Workers (static assets + Worker), Cloudflare Web Analytics |
 | Content pipeline | Node / TypeScript scripts; Claude (Anthropic) for extraction, review and translation |
 
@@ -208,11 +208,11 @@ All optional.
 | Metric | Value |
 |---|---|
 | Past questions | 2,900 (29 exams, FY2009–FY2026) |
-| Textbook | 63 topics, 244 units (13 on v2) |
+| Textbook | 63 topics, 244 units (all on v2) |
 | Glossary | 1,395 entries |
-| Locked decisions | 203 (D-001 … D-203) |
-| Session logs | 73 in `docs/discussion/` |
-| Unit tests | 1,474 (Vitest, 132 files) |
+| Locked decisions | 239 (D-001 … D-239) |
+| Session logs | 100 in `docs/discussion/` |
+| Unit tests | 1,497 (Vitest, 134 files) |
 
 </details>
 
